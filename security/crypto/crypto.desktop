@@ -7,6 +7,6 @@ X-KDE-ModuleType=Library
 X-KDE-Library=crypto
 
 Name=Crypto
-Comment=Configure your identity, e-mail addresses, mail servers, etc.
+Comment=Configure SSL, manage certificates, and other cryptography settings
 Keywords=Crypto,Krypto,Cryptography,encryption,SSL,https,certificates,ciphers
 
