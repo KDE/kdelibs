@@ -35,21 +35,21 @@ class DCOPClientTransaction;
 typedef QValueList<QCString> QCStringList;
 
 /**
- * Provides inter-process communication and remote procedure calls
+ * Provide inter-process communication and remote procedure calls
  * for KDE applications.
- *
  * This class provides IPC and RPC for KDE applications.  Usually you
- * will not have to instantiate one yourself, because KApplication
- * contains a method to return a pointer to a DCOPClient object which
+ * will not have to instantiate one yourself because @ref KApplication
+ * contains a method to return a pointer to a @ref DCOPClient object which
  * can be used for your whole application.
  *
  * Before being able to send or receive any DCOP messages, you will have
  * to attach your client object to the DCOP server, and then register
- * your application with a specific name. See #attach and #registerAs for
+ * your application with a specific name. See @ref attach() 
+ * and @ref registerAs() for
  * more information.
  *
- * Data to be sent should be serialized into a QDataStream which was
- * initialized with the QByteArray that you actually intend to send
+ * Data to be sent should be serialized into a @ref QDataStream which was
+ * initialized with the @ref QByteArray that you actually intend to send
  * the data in.  An example of how you might do this:
  *
  * <pre>
@@ -59,7 +59,7 @@ typedef QValueList<QCString> QCStringList;
  *   client->send("someApp", "someObject", "someFunction", data);
  * </pre>
  *
- * @see KApplication::dcopClient
+ * @see KApplication::dcopClient()
  * @author Preston Brown <pbrown@kde.org>, Matthias Ettrich <ettrich@kde.org>
  */
 class DCOPClient : public QObject
@@ -68,43 +68,47 @@ class DCOPClient : public QObject
 
  public:
   /**
-   * Creates a new DCOP client, but does not attach to any server.  */
+   * Create a new DCOP client, but do not attach to any server.  */
   DCOPClient();
 
   /**
-   * clean up any open connections and dynamic data.
+   * Clean up any open connections and dynamic data.
    */
   virtual ~DCOPClient();
 
   /**
-   * specify the address of a server to use upon attaching.
-   * if no server address is ever specified, attach will try its best to
+   * Specify the address of a server to use upon attaching.
+   *
+   * If no server address is ever specified, attach will try its best to
    * find the server anyway.
    */
   static void setServerAddress(const QCString &addr);
 
   /**
-   * Attach to the DCOP server.   If the connection was already attached,
+   * Attach to the DCOP server.
+   *
+   * If the connection was already attached,
    * the connection will be re-established with the current server address.
    *
    * Naturally, only attached application can use DCOP services.
    *
-   * If a QApplication oject exist the client registers itself as
-   * QApplication->name() + "-" + <pid>.
-   * If no QApplication object exists the client registers itself as
+   * If a @ref QApplication object exists then client registers itself as
+   * @ref QApplication->name() + "-" + <pid>.
+   * If no @ref QApplication object exists the client registers itself as
    * "anonymous".
    *
-   * If you want to register differently, you should use registerAs()
+   * If you want to register differently, you should use @ref registerAs()
    * instead. 
    *
-   * @return true if attaching was successful.
+   * @return @p true if attaching was successful.
    */
   bool attach();
 
   /**
-   * Internal function for KUniqueApplication to register the DCOPClient
+   * @internal
+   * Internal function for @ref KUniqueApplication to register the @ref DCOPClient
    * with the application in case the application didn't exist at the
-   * time the DCOPClient was created.
+   * time the @ref DCOPClient was created.
    */
   void bindToApp();
 
@@ -119,23 +123,27 @@ class DCOPClient : public QObject
   bool isAttached() const;
 
   /**
-   * Register at the DCOP server.  If the application was already registered,
-   * the registration will be re-done with the new appId.
+   * Register at the DCOP server.
    *
-   * @p appId is a UNIQUE application/program id that the server
+   * If the application was already registered,
+   * the registration will be re-done with the new @ref appId.
+   *
+   * @p appId is a @em uniquie application/program id that the server
    * will use to associate requests with. If there is already an application
    * registered with the same name, the server will add a number to the
-   * id to unify it. If addPID is true, the PID of the current process
+   * id to unify it. If @p addPID is true, the PID of the current process
    * will be added to id.
    *
    * Registration is necessary if you want to allow other clients to talk
    * to you.  They can do so using your @p appId as first parameter
-   * for send() or call(). If you just want to talk to other clients, you
-   * do not need to register at the server. In that case attach() is enough.
-   * It will implicitely register you as "anonymous".
+   * for @ref send() or @ref call(). If you just want to talk to
+   *  other clients, you
+   * do not need to register at the server. In that case @ref attach() is 
+   * enough.
+   * It will implicitly register you as "anonymous".
    *
-   * @returns the actuall appId used for the registration or a null string
-   * if the registration wasn't successfull.
+   * @return The actual @p appId used for the registration or a null string
+   * if the registration wasn't successful.
    */
   QCString registerAs( QCString appId, bool addPID = true );
 
@@ -145,29 +153,30 @@ class DCOPClient : public QObject
   bool isRegistered() const;
 
  /**
-  * Returns the current app id or a null string if the application wasn't
-  * registered yet.
+  * Returns the current app id or a null string if the application 
+  * hasn't yet been registered.
   */
   QCString appId() const;
 
 
   /**
-   * return the socket over which DCOP is communicating with the server.
+   * @return The socket over which DCOP is communicating with the server.
    */
   int socket() const;
 
   /**
-   * send a data block to the server.
-   * @param remApp the remote application id.
-   * @param remObj the name of the remote object.
-   * @param remFun the remote function in the specified object to call.
-   * @param data the data to provide to the remote function.
-   * @param fast if set to true, a "fast" form of IPC will be used.
+   * Send a data block to the server.
+   *
+   * @param remApp The remote application id.
+   * @param remObj The name of the remote object.
+   * @param remFun The remote function in the specified object to call.
+   * @param data The data to provide to the remote function.
+   * @param fast Tf set to @p true, a "fast" form of IPC will be used.
    *        Fast connections are not guaranteed to be implemented, but
    *        if they are they work only on the local machine, not across
    *        the network.  "fast" is only a hint not an order.
    *
-   * @return whether or not the server was able to accept the send.
+   * @return Whether or not the server was able to accept the send.
    */
   bool send(const QCString &remApp, const QCString &remObj,
 	    const QCString &remFun, const QByteArray &data,
@@ -175,18 +184,20 @@ class DCOPClient : public QObject
 
   /**
    * This function acts exactly the same as the above, but the data
-   * parameter can be specified as a QString for convenience.
+   * parameter can be specified as a @ref QString for convenience.
    */
   bool send(const QCString &remApp, const QCString &remObj,
 	    const QCString &remFun, const QString &data,
 	    bool fast=false);
 
   /**
-   * performs a synchronous send and receive.  The parameters are
-   * the same as for send, with the exception of another QByteArray
+   * Perform a synchronous send and receive.
+   *
+   *  The parameters are
+   * the same as for send, with the exception of another @ref QByteArray
    * being provided for results to be (optionally) returned in.
    *
-   * @see #send
+   * @see send()
    */
   bool call(const QCString &remApp, const QCString &remObj,
 	    const QCString &remFun, const QByteArray &data,
@@ -194,18 +205,19 @@ class DCOPClient : public QObject
 
 
   /**
-   * reimplement to handle app-wide function calls unassociated w/an object.
-   * Note that @p fun is normalized. See normalizeFunctionSignature().
+   * Reimplement to handle app-wide function calls unassociated w/an object.
+   *
+   * Note that @p fun is normalized. See @ref normalizeFunctionSignature().
    *
    * If you do not want to reimplement this function for whatever reason,
-   * you can also use a DCOPObjectProxy.
+   * you can also use a @ref DCOPObjectProxy.
    */
   virtual bool process(const QCString &fun, const QByteArray &data,
 		       QCString& replyType, QByteArray &replyData);
 
   /**
-   * Delays the reply of the current function call 
-   * until 'endTransaction()' is called.
+   * Delay the reply of the current function call 
+   * until @ref endTransaction() is called.
    *
    * This allows a server to queue requests.
    *
@@ -214,38 +226,39 @@ class DCOPClient : public QObject
   DCOPClientTransaction *beginTransaction( );
   
   /**
-   * Sends the delayed reply of a function call.
+   * Send the delayed reply of a function call.
    */
   void endTransaction( DCOPClientTransaction *, QCString& replyType, QByteArray &replyData);
 
   /**
-   * Returns whether the current function call is delayed.
+   * Test whether the current function call is delayed.
    *
    * NOTE: Should be called from inside process(...) only!
-   * @return the ID of the current transaction
+   * @return The ID of the current transaction
    *         0 if no transaction is going on.
    */
   Q_INT32 transactionId(); 
    
   /**
-   * Check whether @p remApp is registered with the DCOPServer.
-   * @return true if the remote application is registered, otherwise false.
+   * Check whether @p remApp is registered with the @ref DCOPServer.
+   * @return @p true if the remote application is registered, otherwise @p false.
    */
   bool isApplicationRegistered( const QCString& remApp);
 
   /**
-   * Return the list of all currently registered applications.
+   * Retrieve the list of all currently registered applications.
    */
   QCStringList registeredApplications();
 
   /**
-   * receive a piece of data from the server.
-   * @param app the application the data was intended for.  Should be
-   *        equal to our appId that we passed when the DCOPClient was
+   * Receive a piece of data from the server.
+   *
+   * @param app The application the data was intended for.  Should be
+   *        equal to our appId that we passed when the @ref DCOPClient was
    *        created.
-   * @param obj the name of the object to pass the data on to.
-   * @param fun the name of the function in the object to call.
-   * @param data the arguments for the function.
+   * @param obj The name of the object to pass the data on to.
+   * @param fun The name of the function in the object to call.
+   * @param data The arguments for the function.
    * @internal
    */
   bool receive(const QCString &app, const QCString &obj,
@@ -254,31 +267,32 @@ class DCOPClient : public QObject
 
 
 
-    /**
-     * Normalizes the function signature @p fun.
-     *
-     * A normalized signature doesn't contain any unnecessary whitespace
-     * anymore. The remaining whitespace consists of single blanks only (0x20).
-     *
-     * Example for a normalized signature:
-     * <pre>
-     *   "void someFunction(QString,int)"
-     * </pre>
-     *
-     * When using send() or call(), normlization is done automatically for you.
-     *
-     */
-    static QCString normalizeFunctionSignature( const QCString& fun );
+  /**
+   * Normalizes the function signature @p fun.
+   *
+   * A normalized signature doesn't contain any unnecessary whitespace
+   * anymore. The remaining whitespace consists of single blanks only (0x20).
+   *
+   * Example for a normalized signature:
+   * <pre>
+   *   "void someFunction(QString,int)"
+   * </pre>
+   *
+   * When using @ref send() or @ref call(), normlization is done
+   * automatically for you.
+   *
+   */
+  static QCString normalizeFunctionSignature( const QCString& fun );
 
 
-    /*
-     * Returns the appId of the last application that talked to us.
-     */
-    QCString senderId() const;
+  /*
+   * Retrieve the @p appId of the last application that talked to us.
+   */
+  QCString senderId() const;
     
     
     /*
-     * Installs object @p objId as application-wide default object. 
+     * Install object @p objId as application-wide default object. 
      *
      * All app-wide messages that have not been processed by the dcopclient
      * will be send further to @p objId.
@@ -286,17 +300,19 @@ class DCOPClient : public QObject
     void setDefaultObject( const QCString& objId );
     
     /*
-     * Returns the current default object or an empty string, if no object is 
+     * Retrieve the current default object or an empty string if no object is 
      * installed as default object.
      *
      * A default object receives application-wide messages that have not
-     * been processed by the dcopclient itself.
+     * been processed by the @ref DCOPClient itself.
      */
     QCString defaultObject() const;
 
     /**
-     * Enable / disable the applicationRegistered/applicationRemoved
-     * signals. They are disabled by default.
+     * Enable / disable the @ref applicationRegistered() / @ref applicationRemoved()
+     * signals.
+     *
+     * They are disabled by default.
      */
     void setNotifications( bool enabled );
 
@@ -305,7 +321,7 @@ signals:
    * Indicates that the application @p appId has been registered with
    * the server we are attached to.
    *
-   * You need to call setNotifications() first, to tell the DCOPServer 
+   * You need to call @ref setNotifications() first, to tell the @ref DCOPServer 
    * that you want to get these events
    */
   void applicationRegistered( const QCString& appId );
@@ -313,14 +329,15 @@ signals:
    * Indicates that the formerly registered application @p appId has
    * been removed.
    *
-   * You need to call setNotifications() first, to tell the DCOPServer 
+   * You need to call @ref setNotifications() first, to tell the @ref DCOPServer 
    * that you want to get these events
    */
   void applicationRemoved( const QCString& appId );
 
   /**
    * Indicates that the process of establishing DCOP communications failed
-   * in some manner.  Usually attached to a dialog box or some other visual
+   * in some manner.
+   *  Usually attached to a dialog box or some other visual
    * aid.
    */
   void attachFailed(const QString &msg);

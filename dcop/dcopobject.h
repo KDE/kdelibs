@@ -39,12 +39,12 @@ private:
 #define k_dcop public
 
 /**
- * DCOPObject provides an interface for receiving DCOP messages.
+ * Provides an interface for receiving DCOP messages.
  *
  * This class provides an interface for receiving DCOP messages.  To use it,
  * simply multiply-inherit from DCOPObject and from some other class, and
- * then implement the DCOPObject::process method.  Because this method is
- * pure virtual, you <em>must</em> implement the method.
+ * then implement the @ref DCOPObject::process() method.  Because this method is
+ * pure virtual, you @em must implement the method.
  *
  * @author Preston Brown <pbrown@kde.org>, Matthias Ettrich <ettrich@kde.org>
  */
@@ -52,20 +52,20 @@ class DCOPObject
 {
  public:
   /**
-   * Create a non valid DCOPObject
+   * Create a non valid @ref DCOPObject
    */
   DCOPObject();
   /**
-   * Create a DCOPObject and calculate the object id
-   * using @ref QObject::name.
+   * Create a @ref DCOPObject and calculate the object id
+   * using @ref QObject::name().
    */
   DCOPObject(QObject *obj);
   /**
-   * Creates a valid DCOPObject.
+   * Creates a valid @ref DCOPObject.
    */
   DCOPObject(const QCString &objId);
   /**
-   * Destroys the DCOPObject and removes it from the map
+   * Destroys the @ref DCOPObject and removes it from the map
    * of known objects.
    */
   virtual ~DCOPObject();
@@ -73,20 +73,22 @@ class DCOPObject
   QCString objId() const;
 
   /**
-   * Dispatch a message. Usually you may want to use an IDL
+   * Dispatch a message.
+   *
+   * Usually you want to use an IDL
    * compiler to automatically generate an implementation for
    * this function.
    *
-   * If this function returns FALSE, then @ref #processDynamic
+   * If this function returns @p false, then @ref processDynamic()
    * is called.
    *
    * @param fun is the normalized function signature.
    *            Such a signature usually looks like
-   *            "foobar(QString,int)". The returntype,
+   *            @p foobar(QString,int). The return type,
    *            qualifiers like "const" etc. are not part of
    *            the signature.
    *
-   * @see DCOPClient::normalizeFunctionSignature
+   * @see DCOPClient::normalizeFunctionSignature()
    */
   virtual bool process(const QCString &fun, const QByteArray &data,
 		       QCString& replyType, QByteArray &replyData);
@@ -94,20 +96,20 @@ class DCOPObject
 
   /**
    * This function is of interest when you used an IDL compiler
-   * to generate the implementation for @ref #process but
+   * to generate the implementation for @ref process() but
    * you still want to dispatch some functions dynamically.
    * Dynamically means that methods may appear and vanish
    * during runtime.
    *
-   * @return FALSE by default.
+   * @return @p false by default.
    *
-   * @see #process
+   * @see process()
    */
   virtual bool processDynamic(const QCString &fun, const QByteArray &data,
 			      QCString& replyType, QByteArray &replyData);
 
   /**
-   * @retrun TRUE if an obejct with the questionable objId is
+   * @return @p true if an obejct with the questionable @p objId is
    *         known in this process. This query does not ask proxies.
    *
    * @ref DCOPObjectProxy
@@ -115,7 +117,7 @@ class DCOPObject
   static bool hasObject(const QCString &objId);
 
   /**
-   * @return the DCOPObject for the id @p objId.
+   * @return the @ref DCOPObject for the id @p objId.
    *
    * This function does not query the @ref DCOPObjectProxy.
    */
@@ -149,7 +151,7 @@ public:
      */
     DCOPObjectProxy( DCOPClient* client );
     /**
-     * Destroys the proxy.
+     * Destroy the proxy.
      */
     virtual ~DCOPObjectProxy();
 
@@ -158,7 +160,7 @@ public:
      *
      * This method is called of all proxies if the @ref DCOPClient
      * knows no object with the id @p obj. If the first proxy returns
-     * TRUE, the DCOPClient will no longer call other proxies.
+     * @p true, the @ref DCOPClient will no longer call other proxies.
      *
      * The object id @p obj may be empty for app-wide function calls no
      * associated with any object.
