@@ -608,8 +608,8 @@ bool KJavaEmbed::x11Event( XEvent* e)
                     c.window = window;
                     c.x = 0;
                     c.y = 0;
-                    c.width = e->xconfigurerequest.width;
-                    c.height = e->xconfigurerequest.height;
+                    c.width = width();
+                    c.height = height();
                     c.border_width = 0;
                     c.above = None;
                     c.override_redirect = 0;
