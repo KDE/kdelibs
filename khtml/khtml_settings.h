@@ -156,6 +156,7 @@ public:
 
     // Autoload images
     bool autoLoadImages() const;
+    bool unfinishedImageFrame() const;
 
     bool isOpenMiddleClickEnabled();
     bool isBackRightClickEnabled();

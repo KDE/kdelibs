@@ -72,6 +72,7 @@ public:
     bool m_bEnableJavaScriptErrorReporting : 1;
     bool enforceCharset : 1;
     bool m_bAutoLoadImages : 1;
+    bool m_bUnfinishedImageFrame : 1;
     bool m_formCompletionEnabled : 1;
     bool m_autoDelayedActionsEnabled : 1;
     bool m_jsErrorsEnabled : 1;
@@ -354,6 +355,9 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     // Other
     if ( reset || config->hasKey( "AutoLoadImages" ) )
       d->m_bAutoLoadImages = config->readBoolEntry( "AutoLoadImages", true );
+
+    if ( reset || config->hasKey( "UnfinishedImageFrame" ) )
+      d->m_bUnfinishedImageFrame = config->readBoolEntry( "UnfinishedImageFrame", false );
 
     if ( reset || config->hasKey( "ShowAnimations" ) )
     {
@@ -852,6 +856,11 @@ const QColor& KHTMLSettings::vLinkColor() const
 bool KHTMLSettings::autoLoadImages() const
 {
   return d->m_bAutoLoadImages;
+}
+
+bool KHTMLSettings::unfinishedImageFrame() const
+{
+  return d->m_bUnfinishedImageFrame;
 }
 
 KHTMLSettings::KAnimationAdvice KHTMLSettings::showAnimations() const

@@ -45,6 +45,8 @@
 #include "xml/dom2_eventsimpl.h"
 #include "html/html_documentimpl.h"
 #include "html/html_objectimpl.h"
+#include "khtmlview.h"
+#include "khtml_part.h"
 #include <math.h>
 
 using namespace DOM;
@@ -60,6 +62,9 @@ RenderImage::RenderImage(NodeImpl *_element)
     m_selectionState = SelectionNone;
     berrorPic = false;
     loadEventSent = false;
+
+    const KHTMLSettings *settings = _element->getDocument()->view()->part()->settings();
+    bUnfinishedImageFrame = settings->unfinishedImageFrame();
 
     setIntrinsicWidth( 0 );
     setIntrinsicHeight( 0 );
@@ -230,6 +235,13 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
 
     CachedImage* i = oimage && oimage->valid_rect().size() == oimage->pixmap_size()
                      ? oimage : image;
+
+    // paint frame around image as long as it is not completely loaded from web.
+    if (bUnfinishedImageFrame && paintInfo.phase == PaintActionForeground && cWidth > 2 && cHeight > 2 && !complete()) {
+	paintInfo.p->setPen(QPen(Qt::gray, 1));
+	paintInfo.p->setBrush( Qt::NoBrush );
+	paintInfo.p->drawRect(_tx, _ty, m_width, m_height);
+    }
 
     //kdDebug( 6040 ) << "    contents (" << contentWidth << "/" << contentHeight << ") border=" << borderLeft() << " padding=" << paddingLeft() << endl;
     if ( !i || berrorPic)
