@@ -385,9 +385,9 @@ bool KRegEntry::isInDirectory( const QString& _path, bool _allow_subdir ) const
       return true;
     return false;
   }
-  
+
   unsigned int pos = m_strFile.findRev( '/' );
-  if ( pos != _path.length() )
+  if ( pos != _path.length()-1 )
     return false;
   
   if ( strncmp( _path.ascii(), m_strFile.ascii(), pos + 1 ) == 0 )

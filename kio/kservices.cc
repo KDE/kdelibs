@@ -175,7 +175,7 @@ bool KService::hasServiceType( const QString& _servicetype ) const
 KService::PropertyPtr KService::property( const QString& _name ) const
 {
   QProperty* p = 0;
-  
+
   if ( _name == "Name" )
     p = new QProperty( m_strName );
   if ( _name == "Exec" )
@@ -190,6 +190,10 @@ KService::PropertyPtr KService::property( const QString& _name ) const
     p = new QProperty( m_strPath );
   if ( _name == "Comment" )
     p = new QProperty( m_strComment );
+  if ( _name == "ActivationMode" )
+    p = new QProperty( m_strActivationMode );
+  if ( _name == "RepoIds" )
+    p = new QProperty( m_lstRepoIds );
   //  if ( _name == "File" )
   //    p = new QProperty( m_strFile );
   if ( _name == "ServiceTypes" )
@@ -231,6 +235,8 @@ QStringList KService::propertyNames() const
   res.append( "File" );
   res.append( "ServiceTypes" );
   res.append( "AllowAsDefault" );
+  res.append( "RepoIds" );
+  res.append( "ActivationMode" );
 
   return res;
 }
