@@ -157,7 +157,10 @@ QPixmap KIconLoader::loadInternal ( const QString &name, int w,  int h )
 	{ 
 	  name_list.append(name);
 	  pixmap_list.append(pix);
-	}
+	} else {
+ 	  delete pix;
+          return QPixmap(w, h);
+        } 
     }
   else
     {
