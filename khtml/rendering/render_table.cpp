@@ -27,7 +27,6 @@
 //#define TABLE_PRINT
 //#define DEBUG_LAYOUT
 //#define BOX_DEBUG
-
 #include "rendering/render_table.h"
 #include "rendering/table_layout.h"
 #include "html/html_tableimpl.h"
@@ -62,6 +61,8 @@ RenderTable::RenderTable(DOM::NodeImpl* node)
 
     columnPos.resize( 2 );
     columnPos.fill( 0 );
+    columns.resize( 1 );
+    columns.fill( ColumnStruct() );
 
     columnPos[0] = spacing;
 }
@@ -218,7 +219,7 @@ void RenderTable::layout()
     // layout that tells us if something has changed in the min max
     // calculations to do it correctly.
 //     if ( oldWidth != m_width || columns.size() + 1 != columnPos.size() )
-	tableLayout->layout();
+    tableLayout->layout();
 
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(Table)::layout1() width=" << width() << ", marginLeft=" << marginLeft() << " marginRight=" << marginRight() << endl;
@@ -456,6 +457,7 @@ void RenderTable::splitColumn( int pos, int firstSpan )
 	}
 	child = child->nextSibling();
     }
+    columnPos.resize( numEffCols()+1 );
     setMinMaxKnown( false );
     setLayouted( false );
 }
@@ -485,6 +487,7 @@ void RenderTable::appendColumn( int span )
 	}
 	child = child->nextSibling();
     }
+    columnPos.resize( numEffCols()+1 );
     setMinMaxKnown( false );
     setLayouted( false );
 }

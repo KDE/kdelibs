@@ -274,7 +274,6 @@ void FixedTableLayout::layout()
 #ifdef DEBUG_LAYOUT
     qDebug("FixedTableLayout::layout:");
 #endif
-    table->columnPos.resize( table->numEffCols() + 1 );
 
     int w = table->width() - table->borderLeft() - table->borderRight() - table->cellSpacing();
     // we know the table width by now.
@@ -432,11 +431,13 @@ void AutoTableLayout::recalcColumn( int effCol )
 	     && (l.maxWidth > l.width.value) && (fixedContributor != maxContributor)) {
 	    l.width = Length();
 	    fixedContributor = 0;
-      }
+	}
     }
 
     l.maxWidth = QMAX(l.maxWidth, l.minWidth);
-
+#ifdef DEBUG_LAYOUT
+    qDebug("col %d, final min=%d, max=%d, width=%d(%d)", effCol, l.minWidth, l.maxWidth, l.width.value,  l.width.type );
+#endif
 
     // ### we need to add col elements aswell
 }
@@ -651,7 +652,7 @@ int AutoTableLayout::calcEffectiveWidth()
 		if ( !(w.type == Percent ) ) {
 		    // make sure minWidth and maxWidth of the spanning cell are honoured
 		    if ( cMinWidth > minWidth ) {
-//  			qDebug("extending minWidth of cols %d-%d to %dpx", i, lastCol-1, cMinWidth );
+//  			qDebug("extending minWidth of cols %d-%d to %dpx currentMin=%d", i, lastCol-1, cMinWidth, minWidth );
 			for ( int pos = i; minWidth > 0 && pos < lastCol; pos++ ) {
 			    int w = QMAX( layoutStruct[pos].effMinWidth, cMinWidth * layoutStruct[pos].minWidth / minWidth );
 //  			    qDebug("   col %d: min=%d, effMin=%d, new=%d", pos, layoutStruct[pos].minWidth, layoutStruct[pos].effMinWidth, w );
@@ -729,10 +730,13 @@ void AutoTableLayout::layout()
 
     int tableWidth = table->width() - table->bordersAndSpacing();
     int available = tableWidth;
-    int nEffCols = layoutStruct.size();
+    int nEffCols = table->numEffCols();
 
-    //bool htmlHacks = table->style()->htmlHacks();
-
+    if ( nEffCols != layoutStruct.size() ) {
+	qWarning("WARNING: nEffCols is not equal to layoutstruct!" );
+	fullRecalc();
+	nEffCols = table->numEffCols();
+    }
 #ifdef DEBUG_LAYOUT
     qDebug("AutoTableLayout::layout()");
 #endif
@@ -927,8 +931,6 @@ void AutoTableLayout::layout()
     }
 
     //qDebug( "    final available=%d", available );
-
-    table->columnPos.resize( nEffCols + 1 );
 
     int pos = 0;
     for ( int i = 0; i < nEffCols; i++ ) {
