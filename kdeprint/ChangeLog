@@ -374,3 +374,11 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
     directives are supported and a listview is used in the GUI
   * CUPS: configuration tool now handles gracefully unrecognized options,
     a warning is issued, and they are restored as-is on file saving.
+
+13/02/2002 Michael Goffioul <goffioul@imec.be>
+  * CUPS: added support for job-billing and page-label, and put them
+    along with the scredule option into a single "Advanced" tab.
+  * CUPS: added job billing info to the job viewer
+  * CUPS: added job priority selection in the Advanced tab of the print
+    dialog
+  * general: allow multi selection in the file list of print dialog
