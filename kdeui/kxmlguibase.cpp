@@ -26,6 +26,15 @@
 #include <kstddirs.h>
 #include <kdebug.h>
 
+#include <qtextstream.h>
+static void dump_xml(const QDomElement& elem)
+{
+    QString doc;
+    QTextStream ts(&doc, IO_WriteOnly);
+    ts << elem;
+    qDebug("%s", doc.ascii());
+}
+
 class KXMLGUIBasePrivate
 {
 public:
@@ -111,6 +120,7 @@ void KXMLGUIBase::setXML( const QString &document, bool merge )
       doc.setContent( document );
 
     mergeXML(base, doc.documentElement(), actionCollection());
+    dump_xml(base.toElement());
 
     // we want some sort of failsafe.. just in case
     if ( base.isNull() )
@@ -130,6 +140,7 @@ bool KXMLGUIBase::mergeXML( QDomElement &base, const QDomElement &additive, QAct
   static QString attrWeakSeparator = QString::fromLatin1( "weakSeparator" );
   static QString tagMergeLocal = QString::fromLatin1( "MergeLocal" );
   static QString tagText = QString::fromLatin1( "text" );
+  static QString attrAlreadyVisited = QString::fromLatin1( "alreadyVisited" );
 
   QString tag;
 
@@ -158,6 +169,18 @@ bool KXMLGUIBase::mergeXML( QDomElement &base, const QDomElement &additive, QAct
     else if ( tag == tagSeparator )
     {
       e.setAttribute( attrWeakSeparator, (uint)1 );
+
+      // okay, hack time. if the last item was a weak separator, then
+      // we nuke the current one
+      QDomElement prev = e.previousSibling().toElement();
+      if ( prev.tagName() == tagSeparator && !prev.attribute( attrWeakSeparator ).isNull() )
+      {
+        // the previous element was a weak separator
+        QDomElement oldChild = e;
+        e = e.nextSibling().toElement();
+        base.removeChild( oldChild );
+        continue;
+      }
     }
 
     // the MergeLocal tag lets us specify where non-standard elements
@@ -177,6 +200,12 @@ bool KXMLGUIBase::mergeXML( QDomElement &base, const QDomElement &additive, QAct
         QDomElement newChild = it;
 
         it = it.nextSibling().toElement();
+
+        if ( newChild.tagName() == tagText )
+          continue;
+
+        if ( newChild.attribute( attrAlreadyVisited ) == "1" )
+          continue;
 
         QString itAppend( newChild.attribute( attrAppend ) );
         QString elemName( currElement.attribute( attrName ) );
@@ -212,6 +241,8 @@ bool KXMLGUIBase::mergeXML( QDomElement &base, const QDomElement &additive, QAct
 
       if ( !matchingElement.isNull() )
       {
+        matchingElement.setAttribute( attrAlreadyVisited, (uint)1 );
+        
         if ( mergeXML( currElement, matchingElement, actionCollection ) )
           base.removeChild( currElement );
         continue;
