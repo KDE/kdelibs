@@ -127,8 +127,6 @@ int main(int argc, char** argv)
 	for (int c = 1; c<argc; c++)
 	{
 
-		if (QString(argv[c]).endsWith("M.png"))
-			continue;
 		QImage input(argv[c]);
 
 
@@ -143,20 +141,15 @@ int main(int argc, char** argv)
 		
 		int readJustID = 0;
 		
+
 		if ((pos = s.findRev("-")) != -1)
 		{
-			int suffix = evalSuffix(s.mid(pos));
-			if (s.endsWith("-small-slider1"))
-			{
-				pos = s.findRev("-small-slider1");
-				suffix = KeramikSmallSlider1;
-			}
-			//cerr<<<<"\n";
-			if (suffix !=-1 )
-			{
-				id = s.mid(0,pos);
-				readJustID = suffix;
-			}
+				int suffix = evalSuffix(s.mid(pos));
+				if (suffix !=-1 )
+				{
+						id = s.mid(0,pos);
+						readJustID = suffix;
+				}
 		}
 		
 		if (!assignID.contains(id))
@@ -167,35 +160,6 @@ int main(int argc, char** argv)
 		
 		s.replace(QRegExp("-"),"_");
 		
-		QString maskBase = fi.dirPath()+"/"+s+"M.png";
-		//cerr<<maskBase.latin1()<<"\n";
-		
-		bool useMaskImage  = false;
-		
-		if ( s == "checkbox_on" || s == "checkbox_off" )
-		{
-			maskBase = fi.dirPath()+"/checkboxM.png";
-			//mask
-		}
-		
-		if ( s == "radiobutton_on" || s == "radiobutton_off" )
-		{
-			maskBase = fi.dirPath()+"/radiobuttonM.png";
-		}
-		
-		QFile ftest(maskBase);
-		
-		QImage mask;
-		Q_UINT32* maskRead  = 0;;
-		
-		if (ftest.exists())
-		{
-			cerr<<"Using mask:"<<maskBase.latin1()<<"\n";
-			mask.load(maskBase);
-			mask.convertDepth(32);
-			useMaskImage = true;
-			maskRead = reinterpret_cast< Q_UINT32* >(mask.bits() );
-		}
 								
 		if (s.contains("button"))
 			KImageEffect::contrastHSV(input);
@@ -289,51 +253,40 @@ int main(int argc, char** argv)
 			int targetColorAlpha = 0 , greyAdd = 0;
 			//int srcAlpha = qAlpha(basePix);
 			
-			if (useMaskImage)
-			{
-				QRgb mask_pix = (QRgb)*maskRead;
-				float colorDegree = qRed(mask_pix)/255.0;
-				
-				targetColorAlpha = int(v*colorDegree+0.5);
-				greyAdd              = int(v*(1-colorDegree)+0.5);
+			if (s>0 || v > 128)
+			{ //Non-shadow
+				float fv = v/255.0;
+				fv = pow(fv, gamma);
+				v = int(255.5*fv);
+
+
+				if (s<17 && highlights) //A bit of a highligt..
+				{
+					float effectPortion = (16 - s)/15.0;
+
+					greyAdd             = (int)(v/4.0 * effectPortion*1.2);
+					targetColorAlpha = v - greyAdd;
+				}
+				else
+				{
+					targetColorAlpha = v;//(int)(fv*255);
+					greyAdd              = 0;
+				}
 			}
 			else
 			{
-				if (s>0 || v > 128)
-				{ //Non-shadow
-					float fv = v/255.0;
-					fv = pow(fv, gamma);
-					v = int(255.5*fv);
-					
-					
-					if (s<17 && highlights) //A bit of a highligt..
-					{
-						float effectPortion = (16 - s)/15.0;
-						
-						greyAdd             = (int)(v/4.0 * effectPortion*1.2);
-						targetColorAlpha = v - greyAdd;
-					}
-					else
-					{
-						targetColorAlpha = v;//(int)(fv*255);
-						greyAdd              = 0;
-					}
-				}
-		    	else
+				if (shadows)
 				{
-					if (shadows)
-					{
-						targetColorAlpha = 0;
-						greyAdd              = v;
-					}
-					else
-					{
-						targetColorAlpha = v;//(int)(fv*255);
-						greyAdd              = 0;
-					}
+					targetColorAlpha = 0;
+					greyAdd              = v;
+				}
+				else
+				{
+					targetColorAlpha = v;//(int)(fv*255);
+					greyAdd              = 0;
 				}
 			}
-			
+
 			greyAdd+=brightAdj;
 
 			if (reallySolid)
@@ -341,12 +294,11 @@ int main(int argc, char** argv)
 			else
 				cout<<targetColorAlpha<<","<<greyAdd<<","<<qAlpha(basePix)<<",";
 			//cout<<qRed(basePix)<<","<<qGreen(basePix)<<","<<qBlue(basePix)<<","<<qAlpha(basePix)<<",";
-			
+
 			if (pos%8 == 7)
 				cout<<"\n";
-			
+
 			read++;
-			maskRead++;
 		}
 		
 		cerr<<s.latin1()<<":"<<pixSolid<<"/"<<pixCount<<"("<<reallySolid<<")\n";
@@ -354,9 +306,6 @@ int main(int argc, char** argv)
 		cout<<!reallySolid<<"\n";
 
 		cout<<"};\n\n";
-		
-		
-		
 	}
 	
 	cout<<"static const KeramikEmbedImage  image_db[] = {\n";

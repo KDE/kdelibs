@@ -46,11 +46,11 @@ pixmaps.keramik: pics/checkbox-off.png pics/checkbox-on.png pics/combobox-list-b
 	  pics/scrollbar-hbar-arrow1.png \
 	 pics/scrollbar-hbar-arrow2.png pics/scrollbar-hbar-groove1.png pics/scrollbar-hbar-groove2.png\
 	 pics/scrollbar-hbar-slider1.png pics/scrollbar-hbar-slider2.png pics/scrollbar-hbar-slider3.png pics/scrollbar-hbar-slider4.png\
-	 pics/scrollbar-hbar-small-slider1.png pics/scrollbar-vbar-arrow1.png\
+	 pics/scrollbar-vbar-arrow1.png\
 	  pics/scrollbar-vbar-arrow2.png pics/scrollbar-vbar-groove1.png\
 	 pics/scrollbar-vbar-groove2.png pics/scrollbar-vbar-slider1.png pics/scrollbar-vbar-slider2.png\
 	 pics/menuitem-cl.png pics/menuitem-cc.png pics/menuitem-cr.png\
-	 pics/scrollbar-vbar-slider3.png pics/scrollbar-vbar-slider4.png pics/scrollbar-vbar-small-slider1.png pics/slider-hgroove-bc.png\
+	 pics/scrollbar-vbar-slider3.png pics/scrollbar-vbar-slider4.png  pics/slider-hgroove-bc.png\
 	 pics/slider-hgroove-bl.png pics/slider-hgroove-br.png pics/slider-hgroove-cc.png pics/slider-hgroove-cl.png pics/slider-hgroove-cr.png\
 	 pics/slider-hgroove-tc.png pics/slider-hgroove-tl.png pics/slider-hgroove-tr.png pics/slider-vgroove-bc.png pics/slider-vgroove-bl.png\
 	 pics/slider-vgroove-br.png pics/slider-vgroove-cc.png pics/slider-vgroove-cl.png pics/slider-vgroove-cr.png pics/slider-vgroove-tc.png\

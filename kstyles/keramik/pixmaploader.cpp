@@ -400,7 +400,7 @@ void TilePainter::draw( QPainter *p, int x, int y, int width, int height, const 
 	bool swBlend = (mode != PaintFullBlend);
 	unsigned int scaledColumns = 0, scaledRows = 0, lastScaledColumn = 0, lastScaledRow = 0;
 	int scaleWidth = width, scaleHeight = height;
-    
+  
 	for ( unsigned int col = 0; col < columns(); ++col )
 		if ( columnMode( col ) != Fixed )
 		{
@@ -417,6 +417,7 @@ void TilePainter::draw( QPainter *p, int x, int y, int width, int height, const 
 		else scaleHeight -= PixmapLoader::the().size (absTileName( 0, row ) ).height();
 	if ( scaleWidth < 0 ) scaleWidth = 0;
 	if ( scaleHeight < 0 ) scaleHeight = 0;
+
 	
 
 	int ypos = y;
@@ -429,6 +430,14 @@ void TilePainter::draw( QPainter *p, int x, int y, int width, int height, const 
 		if ( scaledRows && row == lastScaledRow ) h += scaleHeight - scaleHeight / scaledRows * scaledRows;
 		
 		int realH = h ? h : PixmapLoader::the().size (absTileName( 0, row ) ).height();
+    
+			//Skip non-fitting tiles, too.
+			if (rowMode( row ) != Fixed && h == 0)
+			{
+				continue;
+			}
+    
+   
 		if ( rowMode( row ) == Tiled ) h = 0;
 
 		for ( unsigned int col = 0; col < columns(); ++col )

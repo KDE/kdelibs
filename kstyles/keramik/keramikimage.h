@@ -64,7 +64,6 @@ enum KeramikTileType
 	KeramikSlider4 = 80,
 	KeramikGroove1 = 96,
 	KeramikGroove2 = 112,
-	KeramikSmallSlider1 = 128
 };
 
 #endif

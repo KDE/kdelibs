@@ -550,20 +550,8 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			bool active = ( flags & Style_Active ) || ( flags & Style_Down );
 			int name = KeramikSlider1;
 			unsigned int count = 3;
-
-			if ( horizontal )
-			{
-				if ( w < loader.size( keramik_scrollbar_hbar + KeramikSmallSlider1).width() )
-				{
-					name = KeramikSmallSlider1;
-					count = 1;
-				}
-			}
-			else if ( h < loader.size( keramik_scrollbar_vbar + KeramikSmallSlider1 ).height() )
-			{
-				name = KeramikSmallSlider1;
-				count = 1;
-			}
+      
+      
 
 			if ( horizontal )
 			{
@@ -576,11 +564,19 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			                loader.size( keramik_scrollbar_vbar+KeramikSlider4 ).height() +
 			                loader.size( keramik_scrollbar_vbar+KeramikSlider3 ).height() + 2 ) )
 					count = 5;
+					
+			QColor col = cg.highlight();
+			
+			if (cg.button() != QApplication::palette().active().button() )
+			{
+				col = cg.button();
+			}
 
 			if (!active)
-				Keramik::ScrollBarPainter( name, count, horizontal ).draw( p, r, cg.highlight(), cg.background(), false, pmode() );
+				Keramik::ScrollBarPainter( name, count, horizontal ).draw( p, r, col, cg.background(), false, pmode() );
 			else
-				Keramik::ScrollBarPainter( name, count, horizontal ).draw( p, r, Keramik::ColorUtil::lighten(cg.highlight(),110) , cg.background(), false, pmode() );
+				Keramik::ScrollBarPainter( name, count, horizontal ).draw( p, r, Keramik::ColorUtil::lighten(col ,110), 
+																					cg.background(), false, pmode() );
 			break;
 		}
 
@@ -1844,7 +1840,8 @@ int KeramikStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 		case PM_ScrollBarExtent:
 			return loader.size( keramik_scrollbar_vbar + KeramikGroove1).width();
 		case PM_ScrollBarSliderMin:
-			return loader.size( keramik_scrollbar_vbar + KeramikSmallSlider1 ).height();
+			return loader.size( keramik_scrollbar_vbar + KeramikSlider1 ).height() + 
+                        loader.size( keramik_scrollbar_vbar + KeramikSlider3 ).height();
 
 		case PM_DefaultFrameWidth:
 			return 1;
@@ -2053,8 +2050,8 @@ QRect KeramikStyle::querySubControlMetrics( ComplexControl control,
 					else return QRect( 0, subline, sb->width(), maxlen );
 
 				case SC_ScrollBarSlider:
-					if (horizontal) return QRect( sliderpos, 1, sliderlen, sb->height() - 2 );
-					else return QRect( 1, sliderpos, sb->width() - 2, sliderlen );
+					if (horizontal) return QRect( sliderpos, 0, sliderlen, sb->height() );
+					else return QRect( 0, sliderpos, sb->width(), sliderlen );
 
 				case SC_ScrollBarSubLine:
 					if ( horizontal ) return QRect( 0, 0, subline, sb->height() );
