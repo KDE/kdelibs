@@ -503,6 +503,27 @@ bool HTMLFormElementImpl::prepareSubmit()
     if(m_insubmit || !view || !view->part() || view->part()->onlyLocalReferences())
         return m_insubmit;
 
+    // check if we have any password input's
+    m_walletMap.clear();
+    m_havePassword = false;
+    m_haveTextarea = false;
+    const KURL formUrl(getDocument()->URL());
+    if (!view->nonPasswordStorableSite(formUrl.host())) {
+        for (QPtrListIterator<HTMLGenericFormElementImpl> it(formElements); it.current(); ++it)
+            if (it.current()->id() == ID_INPUT)  {
+                HTMLInputElementImpl* const c = static_cast<HTMLInputElementImpl*> (it.current());
+                if (c->inputType() == HTMLInputElementImpl::TEXT ||
+                        c->inputType() == HTMLInputElementImpl::PASSWORD)  {
+                    m_walletMap.insert(c->name().string(), c->value().string());
+                    if (c->inputType() == HTMLInputElementImpl::PASSWORD &&
+                            !c->value().isEmpty())
+                        m_havePassword = true;
+                }
+            }
+            else if (it.current()->id() == ID_TEXTAREA)
+                m_haveTextarea = true;
+    }
+
     m_insubmit = true;
     m_doingsubmit = false;
 
@@ -533,30 +554,10 @@ void HTMLFormElementImpl::submit(  )
     bool ok;
     KHTMLView* const view = getDocument()->view();
     const QByteArray form_data = formData(ok);
+    const KURL formUrl(getDocument()->URL());
 
     if (ok && view) {
-        // check if we have any password input's
-        QMap<QString, QString> walletMap;
-        bool havePassword = false;
-        bool haveTextarea = false;
-        const KURL formUrl(getDocument()->URL());
-        if (!view->nonPasswordStorableSite(formUrl.host())) {
-            for (QPtrListIterator<HTMLGenericFormElementImpl> it(formElements); it.current(); ++it)
-                if (it.current()->id() == ID_INPUT)  {
-                    HTMLInputElementImpl* const c = static_cast<HTMLInputElementImpl*> (it.current());
-                    if (c->inputType() == HTMLInputElementImpl::TEXT ||
-                        c->inputType() == HTMLInputElementImpl::PASSWORD)  {
-                        walletMap.insert(c->name().string(), c->value().string());
-                        if (c->inputType() == HTMLInputElementImpl::PASSWORD &&
-                            !c->value().isEmpty())
-                            havePassword = true;
-                    }
-                }
-                else if (it.current()->id() == ID_TEXTAREA)
-                    haveTextarea = true;
-        }
-
-        if (havePassword && !haveTextarea && KWallet::Wallet::isEnabled()) {
+        if (m_havePassword && !m_haveTextarea && KWallet::Wallet::isEnabled()) {
             const QString key = calculateAutoFillKey(*this);
             const bool doesnotexist = KWallet::Wallet::keyDoesNotExist(KWallet::Wallet::NetworkWallet(), KWallet::Wallet::FormDataFolder(), key);
 
@@ -573,7 +574,7 @@ void HTMLFormElementImpl::submit(  )
                                 QMapConstIterator<QString, QString> it = map.begin();
                                 const QMapConstIterator<QString, QString> itEnd = map.end();
                                 for ( ; it != itEnd; ++it )
-                                    if ( map[it.key()] != walletMap[it.key()] ) {
+                                    if ( map[it.key()] != m_walletMap[it.key()] ) {
                                         login_changed = true;
                                         break;
                                     }
@@ -606,7 +607,7 @@ void HTMLFormElementImpl::submit(  )
                         // otherwise we might have a potential security problem
                         // by saving passwords under wrong lookup key.
 
-                        getDocument()->view()->part()->saveToWallet(key, walletMap);
+                        getDocument()->view()->part()->saveToWallet(key, m_walletMap);
                     } else if ( savePassword == KDialogBase::No ) {
                         view->addNonPasswordStorableSite(formUrl.host());
                     }
