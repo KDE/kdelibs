@@ -122,7 +122,11 @@ QString& KJavaApplet::baseURL()
 
 void KJavaApplet::setCodeBase( const QString& codeBase )
 {
-    d->codeBase = codeBase;
+    if (d->baseURL.isEmpty())
+        return; //FIXME
+    KURL newURL(d->baseURL, codeBase);
+    if (kapp->authorizeURLAction("redirect", KURL(d->baseURL), newURL))
+        d->codeBase = newURL.url();
 }
 
 QString& KJavaApplet::codeBase()
