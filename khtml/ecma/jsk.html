@@ -39,6 +39,7 @@ function do_properties() {
 	var result = eval(expr);
         var i;
 	fo.restyp.value = typeof(result);
+	var fieldvalue = "";
         if (typeof(result) != "undefined") {
            for (i in result) {
                 var tuedel = "";
@@ -46,12 +47,12 @@ function do_properties() {
                 if (typeof(propval) == "string") {
                         tuedel = '"';
                 }
-                fo.field.value +=
+                fieldvalue +=
                         i
                         + " [" + typeof(propval) + "] = "
                         + tuedel + propval + tuedel + "\n";
            }
-
+           fo.field.value = fieldvalue;
         }
 }
 
