@@ -520,7 +520,8 @@ const char *footer = "-----END CERTIFICATE-----\n";
 
    // We just do base64 on the ASN1
    //  64 character lines  (unpadded)
-   for (unsigned int i = 0; i < (thecert.length()-1)/64; i++) {
+   unsigned int xx = thecert.length()-1;
+   for (unsigned int i = 0; i < xx/64; i++) {
       thecert.insert(64*(i+1)+i, '\n');
    }
    thecert.prepend(header);
