@@ -18,7 +18,7 @@
 
 INCLUDES= $(all_includes)
 
-SUBDIRS = . kded
+SUBDIRS = . kded file
 
 lib_LTLIBRARIES = libkio.la
 libkio_la_LDFLAGS = -version-info 3:0
