@@ -1,6 +1,6 @@
 SUBDIRS = sample
 
-INCLUDES = -I$(top_srcdir)/kio -I$(top_srcdir) $(all_includes)
+INCLUDES = -I$(top_srcdir)/kio -I$(top_srcdir) -I$(srcdir)/.. $(all_includes)
 
 lib_LTLIBRARIES = libkscriptloader.la 
 
