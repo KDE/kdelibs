@@ -21,9 +21,11 @@
 #ifndef _KJS_DEBUGGER_H_
 #define _KJS_DEBUGGER_H_
 
-//#if QT_VERSION >= 300
+#include <qglobal.h>
+
+#if QT_VERSION >= 300
 #define KJS_DEBUGGER
-//#endif  
+#endif  
 
 #ifdef KJS_DEBUGGER
 
