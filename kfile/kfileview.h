@@ -22,6 +22,7 @@
 #define KFILEVIEW_H
 
 class KFileViewItem;
+class KFileViewItemList;
 class QSignal;
 class QPoint;
 
