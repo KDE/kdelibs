@@ -179,6 +179,8 @@ KPrinter::ApplicationType KPrinter::applicationType()
 bool KPrinter::cmd(int c, QPainter *painter, QPDevCmdParam *p)
 {
 	bool value(true);
+	if (c == PdcBegin)        // TO BE CHANGED: there should be a test to see if
+		preparePrinting();     // printing has been already prepared !
 	value = m_wrapper->cmd(c,painter,p);
 	if (c == QPaintDevice::PdcEnd && !m_outputtofile)
 	{
@@ -237,6 +239,7 @@ void KPrinter::setOutputToFile(bool on)
 void KPrinter::setOutputFileName(const QString& f)
 {
 	m_psbuffer = f;
+	setOutputToFile(!f.isEmpty());
 	m_wrapper->setOutputFileName(m_psbuffer);
 }
 
