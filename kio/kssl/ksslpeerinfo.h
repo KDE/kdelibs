@@ -39,7 +39,7 @@ class KInetSocketAddress;
  * @see KSSL
  * @short KDE SSL Peer Data
  */
-class KSSLPeerInfo {
+class KIO_EXPORT KSSLPeerInfo {
 friend class KSSL;
 public:
 	/**

@@ -23,11 +23,13 @@
 #ifndef _KSSLCERTIFICATEFACTORY_H
 #define _KSSLCERTIFICATEFACTORY_H
 
+#include <kdelibs_export.h>
+
 class KSSLCertificate;
 
 typedef enum {KEYTYPE_UNKNOWN, KEYTYPE_RSA, KEYTYPE_DSA} KSSLKeyType;
 
-class KSSLCertificateFactory {
+class KIO_EXPORT KSSLCertificateFactory {
  
 public:
 

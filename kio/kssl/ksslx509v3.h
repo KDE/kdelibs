@@ -23,6 +23,7 @@
 
 #include <qstring.h>
 
+#include <kdelibs_export.h>
 
 // ### KDE4: fix constness of methods
 /**
@@ -34,7 +35,7 @@
  * @see KExtendedSocket, TCPSlaveBase
  * @short KDE SSL Class
  */
-class KSSLX509V3 {
+class KIO_EXPORT KSSLX509V3 {
 friend class KSSLCertificate;
 friend class KSSLCertificatePrivate;
 public:

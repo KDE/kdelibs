@@ -102,6 +102,7 @@ void KSSLKeyGen::slotGenerate() {
 	int rc = generateCSR("This CSR" /*FIXME */, page2->_password1->text(), bits, 0x10001 /* This is the traditional exponent used */);
 	kpd->progressBar()->setProgress(100);
 
+#ifndef Q_OS_WIN //TODO: reenable for WIN32
 	if (rc == 0 && KWallet::Wallet::isEnabled()) {
 		rc = KMessageBox::questionYesNo(this, i18n("Do you wish to store the passphrase in your wallet file?"), i18n("KDE"));
 		if (rc == KMessageBox::Yes) {
@@ -112,6 +113,7 @@ void KSSLKeyGen::slotGenerate() {
 			}
 		}
 	}
+#endif
 
 	kpd->deleteLater();
 }

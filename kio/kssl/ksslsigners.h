@@ -27,6 +27,8 @@ class DCOPClient;
 
 #include <qstringlist.h>
 
+#include <kdelibs_export.h>
+
 // ### KDE4 - Fix constness
 /**
  * KDE SSL Signer Database
@@ -38,7 +40,7 @@ class DCOPClient;
  * @see KSSL, KSSLCertificate
  * @short KDE SSL Signer Database
  */
-class KSSLSigners {
+class KIO_EXPORT KSSLSigners {
 public:
 	/**
 	 *  Construct a KSSLSigner object.

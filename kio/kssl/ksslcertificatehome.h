@@ -26,8 +26,9 @@ class KSSLPKCS12;
 #include <qstring.h>
 #include <qstringlist.h>
 
+#include <kdelibs_export.h>
 
-class KSSLCertificateHome {
+class KIO_EXPORT KSSLCertificateHome {
  
 public:
 

@@ -37,7 +37,7 @@ class KSSLSessionPrivate;
  * @see KSSL
  * @short KDE SSL Session Information
  */
-class KSSLSession {
+class KIO_EXPORT KSSLSession {
 friend class KSSL;
 public:
 	/**

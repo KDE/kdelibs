@@ -30,7 +30,7 @@
 class KOpenSSLProxy;
 class KSMIMECryptoPrivate;
 
-class KSMIMECrypto {
+class KIO_EXPORT KSMIMECrypto {
  public:
     KSMIMECrypto();
     ~KSMIMECrypto();

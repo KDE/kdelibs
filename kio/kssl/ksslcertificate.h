@@ -47,6 +47,8 @@ class QDateTime;
 class KSSLCertChain;
 class KSSLX509V3;
 
+#include <kdelibs_export.h>
+
 #ifdef Q_WS_WIN
 #include "ksslconfig_win.h"
 #else
@@ -70,7 +72,7 @@ class X509;
  * @see KSSL
  * @short KDE X.509 Certificate
  */
-class KSSLCertificate {
+class KIO_EXPORT KSSLCertificate {
 friend class KSSL;
 friend class KSSLCertificateHome;
 friend class KSSLCertificateFactory;
@@ -358,8 +360,8 @@ protected:
 };
 
 
-QDataStream& operator<<(QDataStream& s, const KSSLCertificate& r);
-QDataStream& operator>>(QDataStream& s, KSSLCertificate& r);
+KIO_EXPORT QDataStream& operator<<(QDataStream& s, const KSSLCertificate& r);
+KIO_EXPORT QDataStream& operator>>(QDataStream& s, KSSLCertificate& r);
 
 #endif
 

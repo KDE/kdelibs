@@ -26,8 +26,9 @@ class KSSLCertificate;
 #include <qstringlist.h>
 #include <qdatetime.h>
 
+#include <kdelibs_export.h>
 
-class KSSLCertificateCache {
+class KIO_EXPORT KSSLCertificateCache {
 public:
 
 enum KSSLCertificatePolicy { Unknown, Reject, Accept, Prompt, Ambiguous };
@@ -100,7 +101,7 @@ private:
 };
 
 
-QDataStream& operator<<(QDataStream& s, const KSSLCertificateCache::KSSLCertificatePolicy& p);
-QDataStream& operator>>(QDataStream& s, KSSLCertificateCache::KSSLCertificatePolicy& p);
+KIO_EXPORT QDataStream& operator<<(QDataStream& s, const KSSLCertificateCache::KSSLCertificatePolicy& p);
+KIO_EXPORT QDataStream& operator>>(QDataStream& s, KSSLCertificateCache::KSSLCertificatePolicy& p);
 
 #endif

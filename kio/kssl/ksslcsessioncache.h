@@ -21,10 +21,12 @@
 #ifndef __KSSLCSESSIONCACHE_H
 #define __KSSLCSESSIONCACHE_H
 
+#include <kdelibs_export.h>
+
 class KURL;
 class QString;
 
-class KSSLCSessionCache {
+class KIO_EXPORT KSSLCSessionCache {
  public:
 
     /**

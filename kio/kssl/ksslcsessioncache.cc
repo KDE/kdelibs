@@ -26,7 +26,11 @@
 #include <kstaticdeleter.h>
 #include <kurl.h>
 
+#ifdef Q_WS_WIN
+#include "ksslconfig_win.h"
+#else
 #include "ksslconfig.h"
+#endif
 
 #include "ksslcsessioncache.h"
 

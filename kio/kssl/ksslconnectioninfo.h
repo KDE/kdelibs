@@ -23,6 +23,8 @@
 
 #include <qstring.h>
 
+#include <kdelibs_export.h>
+
 class KSSL;
 
 /**
@@ -35,7 +37,7 @@ class KSSL;
  * @see KSSL
  * @short KDE SSL Connection Information
  */
-class KSSLConnectionInfo {
+class KIO_EXPORT KSSLConnectionInfo {
 friend class KSSL;
 public:
 	/**

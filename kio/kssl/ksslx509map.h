@@ -24,6 +24,8 @@
 #include <qmap.h>
 #include <qstring.h>
 
+#include <kdelibs_export.h>
+
 /**
  * X.509 Map Parsing Class
  *
@@ -34,7 +36,7 @@
  * @see KSSL, KSSLCertificate
  * @short X.509 Map Parser
  */
-class KSSLX509Map {
+class KIO_EXPORT KSSLX509Map {
 public:
 	/**
 	 *  Construct an X.509 Map

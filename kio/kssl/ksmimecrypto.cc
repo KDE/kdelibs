@@ -23,7 +23,7 @@
 #include <qcstring.h>
 #include <qstring.h>
 #include <kdebug.h>
-#include "ksslconfig.h"
+
 #include "kopenssl.h"
 #include "ksslcertificate.h"
 #include "ksslpkcs12.h"

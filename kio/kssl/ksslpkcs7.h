@@ -57,7 +57,7 @@ class KOpenSSLProxy;
  * @see KSSL
  * @short KDE PKCS#7 Certificate
  */
-class KSSLPKCS7 {
+class KIO_EXPORT KSSLPKCS7 {
 friend class KSSL;
 
 public:
