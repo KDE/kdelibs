@@ -48,9 +48,11 @@ class KInstance;
  * #include <kgenericfactory.h>
  *
  * typedef KGenericFactory<YourKCModule, QWidget> YourKCModuleFactory;
- * K_EXPORT_COMPONENT_FACTORY( yourLibName, YourKCModuleFactory );
+ * K_EXPORT_COMPONENT_FACTORY( yourLibName, YourKCModuleFactory("name_of_the_po_file") );
  * </pre>
  *
+ * The parameter "name_of_the_po_file" has to correspond with the messages target
+ * that you created in your Makefile.am.
  *
  * See kdebase/kcontrol/HOWTO for more detailed documentation.
  *
