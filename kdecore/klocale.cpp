@@ -408,7 +408,7 @@ void KLocale::initFormat()
 
   _datefmt = config->readEntry("DateFormat");
   if (_datefmt.isEmpty())
-    _datefmt = timentry.readEntry("DateFormat", "%m/%d/%y");
+    _datefmt = timentry.readEntry("DateFormat", "%A %d %B %Y");
 
   _datefmtshort = config->readEntry("DateFormatShort");
   if (_datefmtshort.isEmpty())
