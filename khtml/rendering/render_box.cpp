@@ -451,9 +451,17 @@ void RenderBox::relativePositionOffset(int &tx, int &ty)
     else if(!m_style->right().isVariable())
 	tx -= m_style->right().width(containingBlockWidth());
     if(!m_style->top().isVariable())
-	ty += m_style->top().width(containingBlockHeight());
+    {
+    	if (!m_style->top().isPercent() 
+	    	|| containingBlock()->style()->height().isFixed())
+	    ty += m_style->top().width(containingBlockHeight());
+    }
     else if(!m_style->bottom().isVariable())
-	ty -= m_style->bottom().width(containingBlockHeight());
+    {
+    	if (!m_style->bottom().isPercent() 
+	    	|| containingBlock()->style()->height().isFixed())
+	    ty -= m_style->bottom().width(containingBlockHeight());
+    }
 }
 
 void RenderBox::calcAbsoluteHorizontal()
@@ -555,9 +563,11 @@ void RenderBox::calcAbsoluteVertical()
     if (m_height<h)
     	m_height = h;
 
-//    printf("v: %d, %d, %d\n",t,h,b);
+    
 
     m_y = t + marginTop() +
     	containingBlock()->paddingTop() + containingBlock()->borderTop();
+	
+//    printf("v: %d, %d, %d, %d\n",t,h,b,m_y);
     	
 }
