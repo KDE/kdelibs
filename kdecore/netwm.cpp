@@ -22,13 +22,12 @@
 
 */
 
-#include "netwm.h"
-
 #include <string.h>
 #include <stdio.h>
 
 #include <X11/Xlibint.h>
 
+#include "netwm.h"
 
 // root window properties
 static Atom net_supported            = 0;
