@@ -20,6 +20,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.5  1999/08/24 13:16:17  waba
+ * WABA: Adding enums, fixing default for warningYesNo
+ *
  * Revision 1.4  1999/08/16 15:38:32  waba
  * WABA: Make dialogs fixed size.
  *
@@ -75,8 +78,8 @@ KMessageBox::questionYesNo(QWidget *parent, const QString &text,
              QMessageBox::Yes | QMessageBox::Default,
              QMessageBox::No | QMessageBox::Escape,	     
 	     0, parent, "information" );
-    box->setButtonText(0, _buttonYes);
-    box->setButtonText(1, _buttonNo);
+    box->setButtonText(QMessageBox::Yes, _buttonYes); // 0
+    box->setButtonText(QMessageBox::No, _buttonNo); // 1
     box->adjustSize();
     box->setFixedSize(box->size());
     result = box->exec();
@@ -109,10 +112,10 @@ KMessageBox::warningYesNo(QWidget *parent, const QString &text,
     box = new QMessageBox( _caption, text,
              QMessageBox::Warning,
              QMessageBox::Yes,
-             QMessageBox::No | QMessageBox::Escape | QMessageBox::Default,	     
+             QMessageBox::No | QMessageBox::Escape | QMessageBox::Default,
 	     0, parent, "warning" );
-    box->setButtonText(0, _buttonYes);
-    box->setButtonText(1, _buttonNo);
+    box->setButtonText(QMessageBox::Yes, _buttonYes); // 0
+    box->setButtonText(QMessageBox::No, _buttonNo); // 1
     box->adjustSize();
     box->setFixedSize(box->size());
     result = box->exec();
@@ -148,9 +151,9 @@ KMessageBox::warningYesNoCancel(QWidget *parent, const QString &text,
              QMessageBox::No,
              QMessageBox::Cancel | QMessageBox::Escape,	     
 	     parent, "warning" );
-    box->setButtonText(0, _buttonYes);
-    box->setButtonText(1, _buttonNo);
-    box->setButtonText(1, i18n("&Cancel"));
+    box->setButtonText(QMessageBox::Yes, _buttonYes);  // 0
+    box->setButtonText(QMessageBox::No, _buttonNo);   // 1
+    box->setButtonText(QMessageBox::Cancel, i18n("&Cancel")); // 1
     box->adjustSize();
     box->setFixedSize(box->size());
     result = box->exec();
@@ -177,7 +180,7 @@ KMessageBox::error(QWidget *parent,  const QString &text,
              QMessageBox::Critical,
              QMessageBox::Ok | QMessageBox::Default | QMessageBox::Escape,
 	     0, 0, parent, "critical" );
-    box->setButtonText(0, i18n("&OK"));
+    box->setButtonText(QMessageBox::Ok, i18n("&OK"));
     box->adjustSize();
     box->setFixedSize(box->size());
     box->exec();
@@ -199,7 +202,7 @@ KMessageBox::sorry(QWidget *parent, const QString &text,
              QMessageBox::Warning,
              QMessageBox::Ok | QMessageBox::Default | QMessageBox::Escape,
 	     0, 0, parent, "warning" );
-    box->setButtonText(0, i18n("&OK"));
+    box->setButtonText(QMessageBox::Ok, i18n("&OK"));
     box->adjustSize();
     box->setFixedSize(box->size());
     box->exec();
@@ -222,7 +225,7 @@ KMessageBox::information(QWidget *parent,const QString &text,
              QMessageBox::Information,
              QMessageBox::Ok | QMessageBox::Default | QMessageBox::Escape,
 	     0, 0, parent, "information" );
-    box->setButtonText(0, i18n("&OK"));
+    box->setButtonText(QMessageBox::Ok, i18n("&OK"));
     box->adjustSize();
     box->setFixedSize(box->size());
     box->exec();
@@ -244,7 +247,7 @@ KMessageBox::about(QWidget *parent, const QString &text,
               QMessageBox::Ok | QMessageBox::Default | QMessageBox::Escape, 
               0, 0,
               parent, "about" );
-    box->setButtonText(0, i18n("&OK"));
+    box->setButtonText(QMessageBox::Ok, i18n("&OK"));
     box->setIconPixmap(kapp->getIcon());
     box->adjustSize();
     box->setFixedSize(box->size());

@@ -20,6 +20,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.5  1999/08/24 13:16:17  waba
+ * WABA: Adding enums, fixing default for warningYesNo
+ *
  * Revision 1.4  1999/08/15 15:41:47  porten
  * fixed documentation typos
  *
@@ -91,7 +94,7 @@ public:
   *                widget, the message box becomes modal relative to parent.
   * @param text    Message string. May contain newlines.
   * @param caption Message box title. The application name is added to
-  *                the title. The default title is i18n("Question").
+  *                the title. The default title is i18n("Warning").
   * @param buttonYes The text for the first button. 
   *                  The default is i18n("&Yes").
   * @param buttonNo  The text for the second button. 
