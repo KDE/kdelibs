@@ -1564,7 +1564,22 @@ void KJS::HTMLCollection::tryPut(const UString &p, const KJSO& v)
       node = node.parentNode();
   }
   DOM::HTMLSelectElement sel = static_cast<DOM::HTMLSelectElement>(node);
-  sel.add(option, DOM::HTMLElement());
+  long diff = long(u) - sel.length();
+  DOM::HTMLElement before;
+  // out of array bounds ? first insert empty dummies
+  if (diff > 0) {
+    DOM::Document doc = sel.ownerDocument();
+    while (diff--) {
+      DOM::Element dummy = doc.createElement("OPTION");
+      sel.add(dummy, before);
+    }
+    // replace an existing entry ?
+  } else if (diff < 0) {
+    before = sel.options().item(u+1);
+    sel.remove(u);
+  }
+  // finally add the new element
+  sel.add(option, before);
 }
 
 Completion KJS::HTMLCollectionFunc::tryExecute(const List &args)
