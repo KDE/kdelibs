@@ -117,6 +117,9 @@ public slots: // public for bookmark bar
 
 protected slots:
   void slotAboutToShow();
+  void slotAboutToShowContextMenu( KPopupMenu *, int, QPopupMenu * );
+  void slotRMBActionRemoveBookmark();
+  void slotRMBActionOpenBookmark();
   void slotBookmarkSelected();
   void slotAddBookmark();
   void slotNewFolder();
@@ -132,6 +135,8 @@ protected:
   void addAddBookmark();
   void addEditBookmarks();
   void addNewFolder();
+
+  QString contextMenuItemAddress();
 
   bool m_bIsRoot:1;
   bool m_bAddBookmark:1;

@@ -88,6 +88,12 @@ KBookmarkMenu::KBookmarkMenu( KBookmarkManager* mgr,
     connect( _parentMenu, SIGNAL( aboutToShow() ),
              SLOT( slotAboutToShow() ) );
 
+#if 0
+    (void) _parentMenu->contextMenu();
+    connect( _parentMenu, SIGNAL( aboutToShowContextMenu(KPopupMenu*, int, QPopupMenu*) ),
+             this, SLOT( slotAboutToShowContextMenu(KPopupMenu*, int, QPopupMenu*) ));
+#endif
+
     if ( m_bIsRoot )
     {
       connect( m_pManager, SIGNAL( changed(const QString &, const QString &) ),
@@ -132,6 +138,64 @@ void KBookmarkMenu::slotAboutToShow()
     m_bDirty = false;
     refill();
   }
+}
+
+QString KBookmarkMenu::contextMenuItemAddress()
+{
+  int idx = 0 - (KPopupMenu::contextMenuFocusItem() - m_parentMenu->idAt(0));
+  // hack - remove the first few items when root menu
+  //        breaks if toolbar is == root menu, then offsets are wrong
+  if (m_parentAddress.isEmpty())
+     idx = idx - 4;
+  return QString("%1/%2").arg(m_parentAddress).arg(idx);
+}
+
+void KBookmarkMenu::slotAboutToShowContextMenu( KPopupMenu*, int, QPopupMenu* contextMenu )
+{
+  QString address = contextMenuItemAddress();
+  kdDebug(1203) << "slotAboutToShowContextMenu" << address << endl;
+  if (address.isNull())
+     return;
+  KBookmark bookmark = m_pManager->findByAddress( address );
+  Q_ASSERT(!bookmark.isNull());
+  
+  contextMenu->clear();
+
+  if (bookmark.isGroup()) {
+     contextMenu->insertItem("Delete Folder", this, SLOT(slotRMBActionRemoveBookmark()));
+     // contextMenu->insertItem("Open Folder in Tabs", this, SLOT(slotRMBActionOpenFolder()));
+  } else {
+     contextMenu->insertItem("Delete bookmark", this, SLOT(slotRMBActionRemoveBookmark()));
+     contextMenu->insertItem("Open bookmark", this, SLOT(slotRMBActionOpenBookmark()));
+  }
+}
+
+void KBookmarkMenu::slotRMBActionRemoveBookmark()
+{
+  QString address = contextMenuItemAddress();
+  kdDebug(1203) << "slotRMBActionRemoveBookmark" << address << endl;
+  if (address.isNull())
+     return;
+  KBookmark bookmark = m_pManager->findByAddress( address );
+  Q_ASSERT(!bookmark.isNull());
+
+  KBookmarkGroup parentBookmark = m_pManager->findByAddress( m_parentAddress ).toGroup();
+  Q_ASSERT(!parentBookmark.isNull());
+  parentBookmark.deleteBookmark( bookmark );
+  m_pManager->emitChanged( parentBookmark );
+  m_parentMenu->hide();
+}
+
+void KBookmarkMenu::slotRMBActionOpenBookmark()
+{
+  QString address = contextMenuItemAddress();
+  kdDebug(1203) << "slotRMBActionOpenBookmark" << address << endl;
+  if (address.isNull())
+     return;
+  KBookmark bookmark = m_pManager->findByAddress( address );
+  Q_ASSERT(!bookmark.isNull());
+
+  m_pOwner->openBookmarkURL( bookmark.url().url() );
 }
 
 void KBookmarkMenu::slotBookmarksChanged( const QString & groupAddress )
