@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 2 -*-
 /* This file is part of the KDE project
  *
  * Copyright (C) 1998, 1999 Torben Weis <weis@kde.org>
@@ -1397,7 +1398,9 @@ void KHTMLPart::write( const char *str, int len )
       d->m_doc->applyChanges(true, true);
   }
 
-  d->m_doc->write( decoded );
+  Tokenizer* t = d->m_doc->tokenizer();
+  if(t)
+    t->write( decoded, true );
 }
 
 void KHTMLPart::write( const QString &str )
@@ -1410,7 +1413,9 @@ void KHTMLPart::write( const QString &str )
       d->m_doc->setParseMode( DocumentImpl::Strict );
       d->m_bFirstData = false;
   }
-  d->m_doc->write( str );
+  Tokenizer* t = d->m_doc->tokenizer();
+  if(t)
+    t->write( str, true );
 }
 
 void KHTMLPart::end()

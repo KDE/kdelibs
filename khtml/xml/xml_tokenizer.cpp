@@ -182,7 +182,7 @@ bool XMLHandler::processingInstruction(const QString &target, const QString &dat
 	    return false;
 	if (attrs.value("type") != "text/css")
 	    return false;
-	
+
 	// ### some validation on the URL?
 	(void) new XMLStyleSheetLoader(m_doc,attrs.value("href"));
     }
@@ -206,7 +206,7 @@ bool XMLHandler::fatalError( const QXmlParseException& exception )
 
     errorLine = exception.lineNumber();
     errorCol = exception.columnNumber();
-	
+
     return false;
 }
 
@@ -295,7 +295,7 @@ void XMLTokenizer::begin()
 {
 }
 
-void XMLTokenizer::write( const QString &str )
+void XMLTokenizer::write( const QString &str, bool /*appendData*/ )
 {
     m_xmlCode += str;
 }
@@ -325,7 +325,7 @@ void XMLTokenizer::finish()
 	int exceptioncode;
 	while (m_doc->hasChildNodes())
 	    static_cast<NodeImpl*>(m_doc)->removeChild(m_doc->firstChild(),exceptioncode);
-	
+
 	// construct a HTML page giving the error message
 	// ### for multiple error messages, display the code for each
 	QTextIStream stream(&m_xmlCode);
@@ -333,34 +333,34 @@ void XMLTokenizer::finish()
 	for (lineno = 0; lineno < handler.errorLine-1; lineno++)
 	  stream.readLine();
 	QString line = stream.readLine();
-	
+
 	m_doc->appendChild(m_doc->createElementNS("http://www.w3.org/1999/xhtml","html"),exceptioncode);
 	NodeImpl *body = m_doc->createElementNS("http://www.w3.org/1999/xhtml","body");
 	m_doc->firstChild()->appendChild(body,exceptioncode);
-	
+
 	NodeImpl *h1 = m_doc->createElementNS("http://www.w3.org/1999/xhtml","h1");
 	body->appendChild(h1,exceptioncode);
 	h1->appendChild(m_doc->createTextNode(i18n("XML parsing error")),exceptioncode);
 	h1->renderer()->close();
-	
+
 	body->appendChild(m_doc->createTextNode(handler.errorProtocol()),exceptioncode);
 	body->appendChild(m_doc->createElementNS("http://www.w3.org/1999/xhtml","hr"),exceptioncode);
 	NodeImpl *pre = m_doc->createElementNS("http://www.w3.org/1999/xhtml","pre");
 	body->appendChild(pre,exceptioncode);
 	pre->appendChild(m_doc->createTextNode(line+"\n"),exceptioncode);
-	
+
 	unsigned long colno;
 	QString indent = "";
 	for (colno = 0; colno < handler.errorCol-1; colno++)
 	    indent += " ";
-	
+
 	pre->appendChild(m_doc->createTextNode(indent+"^"),exceptioncode);
 	pre->renderer()->close();
-	
+
 	body->renderer()->close();
 	m_doc->applyChanges();
 	m_doc->updateRendering();
-		
+
 	end();
     }
     else {

@@ -105,7 +105,7 @@ public:
     XMLTokenizer(DOM::DocumentImpl *, KHTMLView * = 0);
     virtual ~XMLTokenizer();
     virtual void begin();
-    virtual void write( const QString &str );
+    virtual void write( const QString &str, bool );
     virtual void end();
     virtual void finish();
 

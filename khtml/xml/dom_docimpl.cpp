@@ -759,13 +759,13 @@ void DocumentImpl::close(  )
 void DocumentImpl::write( const DOMString &text )
 {
     if(m_tokenizer)
-        m_tokenizer->write(text.string());
+        m_tokenizer->write(text.string(), false);
 }
 
 void DocumentImpl::write( const QString &text )
 {
     if(m_tokenizer)
-        m_tokenizer->write(text);
+        m_tokenizer->write(text, false);
 }
 
 void DocumentImpl::writeln( const DOMString &text )

@@ -49,6 +49,7 @@
 #include <ctype.h>
 #include <assert.h>
 #include <kdebug.h>
+#include <stdlib.h>
 
 #include "kjs.h"
 #include "kentities.c"
@@ -61,8 +62,9 @@ static const QChar styleEnd [] = { '<','/','s','t','y','l','e','>', QChar::null 
 static const QChar listingEnd [] = { '<','/','l','i','s','t','i','n','g','>', QChar::null };
 static const QChar textareaEnd [] = { '<','/','t','e','x','t','a','r','e','a','>', QChar::null };
 
-#define QT_ALLOC_QCHAR_VEC( N ) (QChar*) new char[ sizeof(QChar)*( N ) ]
-#define QT_DELETE_QCHAR_VEC( P ) delete[] ((char*)( P ))
+#define KHTML_ALLOC_QCHAR_VEC( N ) (QChar*) malloc( sizeof(QChar)*( N ) )
+#define KHTML_REALLOC_QCHAR_VEC(P, N ) (QChar*) P = realloc(p, sizeof(QChar)*( N ))
+#define KHTML_DELETE_QCHAR_VEC( P ) free((char*)( P ))
 
 // Partial support for MS Windows Latin-1 extensions
 // full list http://www.bbsinc.com/iso8859.html
@@ -98,7 +100,7 @@ HTMLTokenizer::HTMLTokenizer(DOM::HTMLDocumentImpl *_doc, KHTMLView *_view)
     charsets = KGlobal::charsets();
     parser = new KHTMLParser(_view, _doc);
     cachedScript = 0;
-    executingScript = false;
+    m_executingScript = false;
     onHold = false;
 
     reset();
@@ -113,7 +115,7 @@ HTMLTokenizer::HTMLTokenizer(DOM::HTMLDocumentImpl *_doc, DOM::DocumentFragmentI
     charsets = KGlobal::charsets();
     parser = new KHTMLParser( i, _doc );
     cachedScript = 0;
-    executingScript = false;
+    m_executingScript = false;
     onHold = false;
 
     reset();
@@ -121,19 +123,19 @@ HTMLTokenizer::HTMLTokenizer(DOM::HTMLDocumentImpl *_doc, DOM::DocumentFragmentI
 
 void HTMLTokenizer::reset()
 {
-    assert(executingScript == false);
+    assert(m_executingScript == false);
     assert(onHold == false);
     if (cachedScript)
         cachedScript->deref(this);
     cachedScript = 0;
 
     if ( buffer )
-        QT_DELETE_QCHAR_VEC(buffer);
-    buffer = 0;
+        KHTML_DELETE_QCHAR_VEC(buffer);
+    buffer = dest = 0;
     size = 0;
 
     if ( scriptCode )
-        QT_DELETE_QCHAR_VEC(scriptCode);
+        KHTML_DELETE_QCHAR_VEC(scriptCode);
     scriptCode = 0;
     scriptCodeSize = scriptCodeMaxSize = 0;
 
@@ -142,11 +144,11 @@ void HTMLTokenizer::reset()
 
 void HTMLTokenizer::begin()
 {
-    executingScript = false;
+    m_executingScript = false;
     onHold = false;
     reset();
-    size = 4095;
-    buffer = QT_ALLOC_QCHAR_VEC( 4096 );
+    size = 254;
+    buffer = KHTML_ALLOC_QCHAR_VEC( 255 );
     dest = buffer;
     tag = NoTag;
     pending = NonePending;
@@ -333,14 +335,14 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
                 if (cachedScript) { // will be 0 if script was already loaded and ref() executed it
                     loadingExtScript = true;
                     pendingSrc = QString(src.current(), src.length());
-                    _src = "";
-                    src = DOMStringIt();
+                    _src = QString::null;
+                    src = DOMStringIt(_src);
                 }
             }
             else if (view && doScriptExec && javascript && !parser->skipMode()) {
-                executingScript = true;
+                m_executingScript = true;
                 view->part()->executeScript(QString(scriptCode, scriptCodeSize));
-                executingScript = false;
+                m_executingScript = false;
             }
             script = style = listing = textarea = false;
             scriptCodeSize = 0;
@@ -452,7 +454,7 @@ void HTMLTokenizer::parseComment(DOMStringIt &src)
             return; // Finished parsing comment
         }
 
-        scriptCode[ scriptCodeSize++ ] = *src;
+        scriptCode[ scriptCodeSize++ ] = src[0];
         ++src;
     }
 }
@@ -636,6 +638,9 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
 
             fixUpChar(EntityChar);
 
+            if(tag && EntityChar != '&' && src[0] != ';')
+                EntityChar = QChar::null;
+
             if ( EntityChar != QChar::null ) {
                 checkBuffer();
                 // Just insert it
@@ -683,443 +688,454 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
     {
         checkBuffer();
         char curchar = src[0].latin1();
-
-        if (( discard == AllDiscard &&
-              ( curchar == ' ' || curchar == '\t' || curchar == '\n' || curchar == '\r' ) ) ||
-            ( discard == SpaceDiscard && ( curchar == ' ' || curchar == '\t') ) ||
-            ( discard == LFDiscard && ( curchar == '\n' || curchar == '\r' ) ))
+//         int l = 0;
+//         while(l < src.length() && (*(src.current()+l)).latin1() != '>')
+//             l++;
+//         qDebug("src is now: *%s*, tquote: %d",
+//                QConstString((QChar*)src.current(), l).string().latin1(), tquote);
+        switch(tag) {
+        case NoTag:
         {
-            pending = (discard == LFDiscard ? LFPending : SpacePending);
-            ++src;
+            return;
         }
-        else
+        case TagName:
         {
-//              int l = 0;
-//              while(l < src.length() && (*(src.current()+l)).latin1() != '>')
-//                  l++;
-//              qDebug("src is now: *%s*, pending: %d, discard: %d, tquote: %d",
-//                     QConstString((QChar*)src.current(), l).string().latin1(), pending, discard, tquote);
-            switch(tag) {
-            case NoTag:
-            {
-                return;
-            }
-            case TagName:
-            {
-                if (searchCount > 0)
-                {
-                    if (src[0] == commentStart[searchCount])
-                    {
-                        searchCount++;
-                        if (searchCount == 4)
-                        {
 #ifdef TOKEN_DEBUG
-                            kdDebug( 6036 ) << "Found comment" << endl;
+            qDebug("TagName");
 #endif
-                            // Found '<!--' sequence
-                            ++src;
-                            dest = buffer; // ignore the previous part of this tag
-                            comment = true;
-                            tag = NoTag;
-                            parseComment(src);
+            if (searchCount > 0)
+            {
+                if (src[0] == commentStart[searchCount])
+                {
+                    searchCount++;
+                    if (searchCount == 4)
+                    {
+#ifdef TOKEN_DEBUG
+                        kdDebug( 6036 ) << "Found comment" << endl;
+#endif
+                        // Found '<!--' sequence
+                        ++src;
+                        dest = buffer; // ignore the previous part of this tag
+                        comment = true;
+                        tag = NoTag;
+                        parseComment(src);
 
-                            return; // Finished parsing tag!
+                        return; // Finished parsing tag!
+                    }
+                    // cuts of high part, is okay
+                    cBuffer[cBufferPos++] = src->cell();
+                    ++src;
+                    break;
+                }
+                else
+                    searchCount = 0; // Stop looking for '<!--' sequence
+            }
+
+            bool finish = false;
+            unsigned int ll = kMin(src.length(), CBUFLEN-cBufferPos);
+            while(ll--) {
+                ushort curchar = *src;
+                if(curchar <= ' ' || curchar == '>') {
+                    finish = true;
+                    break;
+                }
+                // this is a nasty performance trick. will work for the A-Z
+                // characters, but not for others. if it contains one,
+                // we fail anyway
+                char cc = curchar;
+                cBuffer[cBufferPos++] = cc | 0x20;
+//                      cBuffer[cBufferPos++] = (cc >= 'A' && cc <= 'Z') ?
+//                                              cc +'a' - 'A' : cc;
+                ++src;
+            }
+
+            // Disadvantage: we add the possible rest of the tag
+            // as attribute names. ### judge if this causes problems
+            if(finish || CBUFLEN == cBufferPos) {
+                bool beginTag;
+                const char* ptr = cBuffer;
+                unsigned int len = cBufferPos;
+                cBuffer[cBufferPos] = '\0';
+                if ((cBufferPos > 0) && (*ptr == '/'))
+                {
+                    // End Tag
+                    beginTag = false;
+                    ptr++;
+                    len--;
+                }
+                else
+                    // Start Tag
+                    beginTag = true;
+                // limited xhtml support. Accept empty xml tags like <br/>
+                if((len > 1) && (*(ptr+len-1) == '/')) len--;
+
+                uint tagID = khtml::getTagID(ptr, len);
+                if (!tagID) {
+#ifdef TOKEN_DEBUG
+                    QCString tmp(cBuffer, cBufferPos+1);
+                    kdDebug( 6036 ) << "Unknown tag: \"" << tmp.data() << "\"" << endl;
+#endif
+                    dest = buffer;
+                }
+                else
+                {
+#ifdef TOKEN_DEBUG
+                    QCString tmp(cBuffer, cBufferPos+1);
+                    kdDebug( 6036 ) << "found tag id=" << tagID << ": " << tmp.data() << endl;
+#endif
+                    currToken.id = beginTag ? tagID : tagID + ID_CLOSE_TAG;
+                    dest = buffer;
+                }
+                tag = SearchAttribute;
+                cBufferPos = 0;
+            }
+            break;
+        }
+        case SearchAttribute:
+        {
+#ifdef TOKEN_DEBUG
+                qDebug("SearchAttribute");
+#endif
+            bool atespace = false;
+            ushort curchar;
+            while(src.length()) {
+                curchar = *src;
+                if(curchar > ' ') {
+                    if(curchar == '>')
+                        tag = SearchEnd;
+                    else if(atespace && (curchar == '\'' || curchar == '"'))
+                    {
+                        tag = SearchValue;
+                        *dest++ = 0;
+                        attrName = QString::null;
+                    }
+                    else
+                        tag = AttributeName;
+
+                    cBufferPos = 0;
+                    break;
+                }
+                atespace = true;
+                ++src;
+            }
+            break;
+        }
+        case AttributeName:
+        {
+#ifdef TOKEN_DEBUG
+                qDebug("AttributeName");
+#endif
+            ushort curchar;
+            int ll = kMin(src.length(), CBUFLEN-cBufferPos);
+
+            while(ll--) {
+                curchar = *src;
+                if(curchar <= '>') {
+                    if(curchar <= ' ' || curchar == '=' || curchar == '>') {
+                        unsigned int a;
+                        if(cBufferPos) {
+                            cBuffer[cBufferPos] = '\0';
+                            a = khtml::getAttrID(cBuffer, cBufferPos);
                         }
-                        // cuts of high part, is okay
-                        cBuffer[cBufferPos++] = src->cell();
+                        else {
+                            a = 0;
+                            // ugh, expensive!!
+                            attrName = QString::fromLatin1(QCString(cBuffer, cBufferPos+1).data());
+                        }
+
+                        dest = buffer;
+                        *dest++ = a;
+#ifdef TOKEN_DEBUG
+                        if (!a || (cBufferPos && *cBuffer == '!'))
+                            kdDebug( 6036 ) << "Unknown attribute: *" << QCString(cBuffer, cBufferPos+1).data() << "*" << endl;
+                        else
+                            kdDebug( 6036 ) << "Known attribute: " << QCString(cBuffer, cBufferPos+1).data() << endl;
+#endif
+                        tag = SearchEqual;
+                        break;
+                    }
+                }
+                cBuffer[cBufferPos++] = (char) curchar | 0x20;
+                ++src;
+            }
+            if(cBufferPos == CBUFLEN) tag = SearchEqual;
+            break;
+        }
+        case SearchEqual:
+        {
+#ifdef TOKEN_DEBUG
+                qDebug("SearchEqual");
+#endif
+            while(src.length()) {
+                if(curchar >= '=') {
+                    if(curchar == '=') {
+#ifdef TOKEN_DEBUG
+                        kdDebug(6036) << "found equal" << endl;
+#endif
+                        tag = SearchValue;
+                        ++src;
+                    }
+                    else {
+                        AttrImpl* a;
+                        if(*buffer)
+                            a = new AttrImpl(parser->doc(), (int)*buffer);
+                        else
+                            a = new AttrImpl(parser->doc(), attrName);
+
+                        a->setValue("");
+                        currToken.insertAttr(a);
+
+                        dest = buffer;
+                        tag = SearchAttribute;
+                        discard = AllDiscard;
+                    }
+                    break;
+                }
+                ++src;
+                curchar = src->unicode();
+            }
+            break;
+        }
+        case SearchValue:
+        {
+            while(src.length()) {
+                if(curchar > ' ') {
+                    if(curchar == '\'' || curchar == '\"') {
+                        tquote = curchar == '\"' ? DoubleQuote : SingleQuote;
+                        tag = QuotedValue;
+                        ++src;
+                    } else
+                        tag = Value;
+
+                    break;
+                }
+                ++src;
+            }
+            break;
+        }
+        case QuotedValue:
+        {
+#ifdef TOKEN_DEBUG
+                qDebug("QuotedValue");
+#endif
+            while(src.length()) {
+                curchar = src[0];
+
+                if(curchar <= '\'') {
+                    // ### attributes like '&{blaa....};' are supposed to be treated as jscript.
+                    if ( curchar == '&' )
+                    {
+                        ++src;
+                        parseEntity(src, dest, true);
+                        break;
+                    }
+                    else if ( (tquote == SingleQuote && curchar == '\'') ||
+                              (tquote == DoubleQuote && curchar == '\"') )
+                    {
+                        // end of attribute
+                        AttrImpl* a;
+
+                        if(*buffer)
+                            a = new AttrImpl(parser->doc(), (int)*buffer);
+                        else
+                            a = new AttrImpl(parser->doc(), DOMString(attrName));
+
+                        if(a->attrId || !attrName.isNull())
+                        {
+                            // some <input type=hidden> rely on trailing spaces. argh
+                            while(dest > buffer+1 && (*(dest-1) == '\n' || *(dest-1) == '\r'))
+                                dest--; // remove trailing newlines
+                            a->setValue(DOMString(buffer+1, dest-buffer-1));
+                            currToken.insertAttr(a);
+                        }
+                        else {
+                            // hmm, suboptimal, but happens seldom
+                            delete a;
+                            a = 0;
+                        }
+
+                        dest = buffer;
+                        tag = SearchAttribute;
+                        tquote = NoQuote;
                         ++src;
                         break;
                     }
-                    else
-                        searchCount = 0; // Stop looking for '<!--' sequence
                 }
-
-                bool finish = false;
-                unsigned int ll = kMin(src.length(), CBUFLEN-cBufferPos);
-                while(ll--) {
-                    ushort curchar = *src;
-                    if(curchar <= ' ' || curchar == '>') {
-                        finish = true;
-                        break;
-                    }
-                    // this will cut off the MSB, is okay
-                    char cc = curchar;
-                    cBuffer[cBufferPos++] = (cc >= 'A' && cc <= 'Z') ?
-                                            cc +'a' - 'A' : cc;
-                    ++src;
-                }
-
-                // Disadvantage: we add the possible rest of the tag
-                // as attribute names. ### judge if this causes problems
-                if(finish || CBUFLEN == cBufferPos) {
-                    bool beginTag;
-                    const char* ptr = cBuffer;
-                    unsigned int len = cBufferPos;
-                    if ((cBufferPos > 0) && (*ptr == '/'))
-                    {
-                        // End Tag
-                        beginTag = false;
-                        ptr++;
-                        len--;
-                    }
-                    else
-                    {
-                        // Start Tag
-                        beginTag = true;
-                        // Ignore CR/LF's and spaces after a start tag
-                        discard = AllDiscard;
-                    }
-                    // limited xhtml support. Accept empty xml tags like <br/>
-                    if((len > 1) && (*(ptr+len-1) == '/')) len--;
-
-                    uint tagID = khtml::getTagID(ptr, len);
-                    if (!tagID) {
-#ifdef TOKEN_DEBUG
-                        QCString tmp(cBuffer, cBufferPos+1);
-                        kdDebug( 6036 ) << "Unknown tag: \"" << tmp.data() << "\"" << endl;
-#endif
-                        dest = buffer;
-                        discard = NoneDiscard;
-                    }
-                    else
-                    {
-#ifdef TOKEN_DEBUG
-                        QCString tmp(cBuffer, cBufferPos+1);
-                        kdDebug( 6036 ) << "found tag id=" << tagID << ": " << tmp.data() << endl;
-#endif
-                        currToken.id = beginTag ? tagID : tagID + ID_CLOSE_TAG;
-                        dest = buffer;
-                    }
-                    tag = SearchAttribute;
-                    discard = AllDiscard;
-                }
-                break;
+                *dest++ = src[0];
+                ++src;
             }
-            case SearchAttribute:
+            break;
+        }
+        case Value:
+        {
+#ifdef TOKEN_DEBUG
+            qDebug("Value");
+#endif
+            // parse Entities
+            if ( curchar == '&' )
             {
-                if( curchar == '>' )
-                    tag = SearchEnd; // we reached the end
-                else if(pending != NonePending && (curchar == '\'' || curchar == '"'))
-                {
-                    // something went wrong, lets assume it
-                    // is a value because only there we handle quotes
-                    tag = SearchValue;
-                    discard = NoneDiscard;
-                    pending = NonePending;
-                    *dest++ = 0;
-                    attrName = QString::null;
-                }
-                else
-                {
-                    tag = AttributeName;
-                    discard = NoneDiscard;
-                    pending = NonePending;
-                }
+                ++src;
+                parseEntity(src, dest, true);
                 break;
             }
-            case AttributeName:
+            if ( curchar <= ' ' || curchar == '>')
+            {
+                // no quotes. Every space means end of value
+                AttrImpl* a;
+                if(*buffer)
+                    a = new AttrImpl(parser->doc(), (int)*buffer);
+                else
+                    a = new AttrImpl(parser->doc(), DOMString(attrName));
+
+                a->setValue(DOMString(buffer+1, dest-buffer-1));
+                currToken.insertAttr(a);
+
+                dest = buffer;
+                    tag = SearchAttribute;
+                    break;
+            }
+            *dest++ = src[0];
+            ++src;
+            break;
+        }
+        case SearchEnd:
+        {
+#ifdef TOKEN_DEBUG
+                qDebug("SearchEnd");
+#endif
+            while(src.length()) {
+                if(curchar == '>')
+                    break;
+
+                ++src;
+                curchar = src->unicode();
+            }
+            if(curchar != '>') break;
+
+            searchCount = 0; // Stop looking for '<!--' sequence
+            tag = NoTag;
+            tquote = NoQuote;
+            pending = NonePending; // Ignore pending spaces
+            ++src;
+
+            if ( currToken.id == 0 ) //stop if tag is unknown
             {
                 discard = NoneDiscard;
-                if(!isSeparator(curchar) && curchar != '=' && curchar != '>')
-                {
-                    if((curchar >= 'A') && (curchar <= 'Z'))
-                        *dest = curchar + 'a' - 'A';
-                    else
-                        *dest = src[0];
-
-                    dest++;
-                    ++src;
+                return;
+            }
+            uint tagID = currToken.id;
+#ifdef TOKEN_DEBUG
+            kdDebug( 6036 ) << "appending Tag: " << tagID << endl;
+#endif
+            bool beginTag = tagID < ID_CLOSE_TAG;
+            if(!(pre || textarea || tagID == ID_PRE)) {
+                // Ignore Space/LF's after a start tag
+                // Don't ignore CR/LF's after a close tag
+                discard = beginTag ? LFDiscard : NoneDiscard;
                 }
                 else
-                {
-                    // beginning of name
-                    QChar *ptr = buffer;
-                    attrName = QString(ptr, dest-buffer);
-                    unsigned int a = 0;
-                    // ignore attributes with leading '!'
-                    if(dest-buffer && attrName[0].latin1() != '!')
-                        a = khtml::getAttrID(attrName.latin1(), dest-buffer);
-                    dest = buffer;
-                    *dest++ = a;
-
-#ifdef TOKEN_DEBUG
-                    if (!a || (attrName.length() && attrName[0].latin1() == '!')) {
-                       kdDebug( 6036 ) << "Unknown attribute: " << attrName << endl;
-                    } else
-                    {
-                       kdDebug( 6036 ) << "Known attribute: " << attrName << endl;
-                    }
-#endif
-                    tag = SearchEqual;
-                    discard = AllDiscard; // discard whitespaces before '='
-                }
-                break;
-            }
-            case SearchEqual:
-            {
-                if( curchar == '=' )
-                {
-#ifdef TOKEN_DEBUG
-                    kdDebug(6036) << "found equal" << endl;
-#endif
-                    tag = SearchValue;
-                    pending = NonePending; // ignore spaces before '='
-                    discard = AllDiscard; // discard whitespaces after '='
-                    ++src;
-                }
-                else // other chars indicate a new attribute or '>'
-                {
-                    AttrImpl* a;
-                    if(*buffer)
-                        a = new AttrImpl(parser->doc(), (int)*buffer);
-                    else
-                        a = new AttrImpl(parser->doc(), attrName);
-
-                    a->setValue("");
-                    currToken.insertAttr(a);
-
-                    dest = buffer;
-                    tag = SearchAttribute;
-                    discard = AllDiscard;
-                }
-                break;
-            }
-            case SearchValue:
-            {
-                if(curchar == '\'' || curchar == '\"') {
-                    tquote = curchar == '\"' ? DoubleQuote : SingleQuote;
-                    tag = QuotedValue;
-                    ++src;
                     discard = NoneDiscard;
+
+            if(!beginTag)
+                tagID -= ID_CLOSE_TAG;
+
+            if ( beginTag && tagID == ID_SCRIPT ) {
+                AttrImpl* a = 0;
+                if(currToken.attrs) {
+                    a = currToken.attrs->getIdItem(ATTR_SRC);
+                    scriptSrc = a ? a->value().string() : QString("");
+                    a = currToken.attrs->getIdItem(ATTR_LANGUAGE);
+                }
+                javascript = true;
+                if( a ) {
+                    QString lang = a->value().string();
+                    lang = lang.lower();
+                    if( !lang.contains("javascript") &&
+                        !lang.contains("ecmascript") &&
+                        !lang.contains("jscript") )
+                        javascript = false;
                 } else {
-                    tag = Value;
-                    discard = AllDiscard;
-                }
-                pending = NonePending;
-                break;
-            }
-            case QuotedValue:
-            {
-                // ### attributes like '&{blaa....};' are supposed to be treated as jscript.
-                if ( curchar == '&' )
-                {
-                    ++src;
-                    discard = NoneDiscard;
-                    parseEntity(src, dest, true);
-                    break;
-                }
-                else if ( (tquote == SingleQuote && curchar == '\'') ||
-                          (tquote == DoubleQuote && curchar == '\"') )
-                {
-                    // end of attribute
-                    AttrImpl* a;
-
-                    if(*buffer)
-                        a = new AttrImpl(parser->doc(), (int)*buffer);
-                    else
-                        a = new AttrImpl(parser->doc(), DOMString(attrName));
-
-                    if(a->attrId || !attrName.isNull())
-                    {
-                        // some <input type=hidden> rely on trailing spaces. argh
-                        while(dest > buffer+1 && (*(dest-1) == '\n' || *(dest-1) == '\r'))
-                            dest--; // remove trailing newlines
-                        a->setValue(DOMString(buffer+1, dest-buffer-1));
-                        currToken.insertAttr(a);
-                    }
-                    else {
-                        // hmm, suboptimal, but happens seldom
-                        delete a;
-                        a = 0;
-                    }
-
-                    dest = buffer;
-                    tag = SearchAttribute;
-                    tquote = NoQuote;
-                    discard = AllDiscard;
-                    pending = NonePending;
-                    ++src;
-                    break;
-                }
-                discard = NoneDiscard;
-
-                *dest++ = src[0];
-                ++src;
-                break;
-            }
-            case Value:
-            {
-                // parse Entities
-                if ( curchar == '&' )
-                {
-                    ++src;
-                    parseEntity(src, dest, true);
-                    break;
-                }
-                if ( pending || curchar == '>')
-                {
-                    // no quotes. Every space means end of value
-                    AttrImpl* a;
-                    if(*buffer)
-                        a = new AttrImpl(parser->doc(), (int)*buffer);
-                    else
-                        a = new AttrImpl(parser->doc(), DOMString(attrName));
-
-                    a->setValue(DOMString(buffer+1, dest-buffer-1));
-                    currToken.insertAttr(a);
-
-                    dest = buffer;
-                    tag = SearchAttribute;
-                    discard = AllDiscard;
-                    pending = NonePending;
-                    break;
-                }
-                *dest++ = src[0];
-                ++src;
-                break;
-            }
-            case SearchEnd:
-            {
-                if ( curchar != '>')
-                {
-                    // discard everything, until we found the end
-                    ++src;
-                    break;
-                }
-
-                searchCount = 0; // Stop looking for '<!--' sequence
-                tag = NoTag;
-                tquote = NoQuote;
-                pending = NonePending; // Ignore pending spaces
-                ++src;
-
-                if ( currToken.id == 0 ) //stop if tag is unknown
-                {
-                    discard = NoneDiscard;
-                    return;
-                }
-                uint tagID = currToken.id;
-#ifdef TOKEN_DEBUG
-                kdDebug( 6036 ) << "appending Tag: " << tagID << endl;
-#endif
-                bool beginTag = tagID < ID_CLOSE_TAG;
-                if(!(pre || textarea || tagID == ID_PRE)) {
-                    // Ignore Space/LF's after a start tag
-                    // Don't ignore CR/LF's after a close tag
-                    discard = beginTag ? LFDiscard : NoneDiscard;
-                }
-                else
-                    discard = NoneDiscard;
-
-                if(!beginTag)
-                    tagID -= ID_CLOSE_TAG;
-
-                if ( beginTag && tagID == ID_SCRIPT ) {
-                    AttrImpl* a = 0;
-                    if(currToken.attrs) {
-                        a = currToken.attrs->getIdItem(ATTR_SRC);
-                        scriptSrc = a ? a->value().string() : QString("");
-                        a = currToken.attrs->getIdItem(ATTR_LANGUAGE);
-                    }
-                    javascript = true;
+                    if( currToken.attrs )
+                        a = currToken.attrs->getIdItem(ATTR_TYPE);
                     if( a ) {
                         QString lang = a->value().string();
                         lang = lang.lower();
                         if( !lang.contains("javascript") &&
                             !lang.contains("ecmascript") &&
                             !lang.contains("jscript") )
-                           javascript = false;
-                    } else {
-                        if( currToken.attrs )
-                            a = currToken.attrs->getIdItem(ATTR_TYPE);
-                        if( a ) {
-                            QString lang = a->value().string();
-                            lang = lang.lower();
-                            if( !lang.contains("javascript") &&
-                                !lang.contains("ecmascript") &&
-                                !lang.contains("jscript") )
-                                javascript = false;
-                        }
+                            javascript = false;
                     }
                 }
-
-                processToken();
-
-                // we have to take care to close the pre block in
-                // case we encounter an unallowed element....
-                if(pre && beginTag && !DOM::checkChild(ID_PRE, tagID)) {
-                    kdDebug(6036) << " not allowed in <pre> " << (int)tagID << endl;
-                    pre = false;
-                }
-
-                if ( tagID == ID_PRE )
-                {
-                    prePos = 0;
-                    pre = beginTag;
-                }
-                else if ( tagID == ID_TEXTAREA )
-                {
-                    if(beginTag) {
-                        listing = true;
-			textarea = true;
-                        searchCount = 0;
-                        searchFor = textareaEnd;
-                        parseListing(src);
-                    }
-                }
-                else if ( tagID == ID_SCRIPT )
-                {
-                    if (beginTag)
-                    {
-#ifdef TOKEN_DEBUG
-                        kdDebug( 6036 ) << "start of script, token->id = " << currToken.id << endl;
-#endif
-                        script = true;
-                        searchCount = 0;
-                        searchFor = scriptEnd;
-                        tquote = NoQuote;
-                        parseScript(src);
-#ifdef TOKEN_DEBUG
-                        kdDebug( 6036 ) << "end of script" << endl;
-#endif
-                    }
-                }
-                else if ( tagID == ID_STYLE )
-                {
-                    if (beginTag)
-                    {
-                        style = true;
-                        searchCount = 0;
-                        searchFor = styleEnd;
-                        parseStyle(src);
-                    }
-                }
-                else if ( tagID == ID_LISTING )
-                {
-                    if (beginTag)
-                    {
-                        listing = true;
-                        searchCount = 0;
-                        searchFor = listingEnd;
-                        parseListing(src);
-                    }
-                }
-                else if ( tagID == ID_SELECT )
-                {
-                    select = beginTag;
-                }
-                return; // Finished parsing tag!
             }
-            default:
+
+            processToken();
+
+            // we have to take care to close the pre block in
+            // case we encounter an unallowed element....
+            if(pre && beginTag && !DOM::checkChild(ID_PRE, tagID)) {
+                kdDebug(6036) << " not allowed in <pre> " << (int)tagID << endl;
+                pre = false;
+            }
+
+            if ( tagID == ID_PRE )
             {
-#ifdef TOKEN_DEBUG
-                kdDebug( 6036 ) << "error in parseTag! " << __LINE__ << endl;
-#endif
-                return;
+                prePos = 0;
+                pre = beginTag;
             }
-
-            } // end switch
+            else if ( tagID == ID_TEXTAREA )
+            {
+                if(beginTag) {
+                    listing = true;
+                    textarea = true;
+                    searchCount = 0;
+                    searchFor = textareaEnd;
+                    parseListing(src);
+                }
+            }
+            else if ( tagID == ID_SCRIPT )
+            {
+                if (beginTag)
+                {
+#ifdef TOKEN_DEBUG
+                    kdDebug( 6036 ) << "start of script, token->id = " << currToken.id << endl;
+#endif
+                    script = true;
+                    searchCount = 0;
+                    searchFor = scriptEnd;
+                    tquote = NoQuote;
+                    parseScript(src);
+#ifdef TOKEN_DEBUG
+                    kdDebug( 6036 ) << "end of script" << endl;
+#endif
+                }
+            }
+            else if ( tagID == ID_STYLE )
+            {
+                if (beginTag)
+                {
+                    style = true;
+                    searchCount = 0;
+                    searchFor = styleEnd;
+                    parseStyle(src);
+                }
+            }
+            else if ( tagID == ID_LISTING )
+            {
+                if (beginTag)
+                {
+                    listing = true;
+                    searchCount = 0;
+                    searchFor = listingEnd;
+                    parseListing(src);
+                }
+            }
+            else if ( tagID == ID_SELECT )
+            {
+                select = beginTag;
+            }
+            return; // Finished parsing tag!
         }
+        } // end switch
     }
     return;
 }
@@ -1192,12 +1208,12 @@ void HTMLTokenizer::setPlainText()
     }
 }
 
-void HTMLTokenizer::write( const QString &str )
+void HTMLTokenizer::write( const QString &str, bool appendData )
 {
     // we have to make this function reentrant. This is needed, because some
     // script code could call document.write(), which would add something here.
 #ifdef TOKEN_DEBUG
-    kdDebug( 6036 ) << "Tokenizer::write(\"" << str << "\")" << endl;
+    kdDebug( 6036 ) << "Tokenizer::write(\"" << str << "\"," << appendData << ")" << endl;
 #endif
 
     if ( str.isEmpty() || buffer == 0L )
@@ -1207,11 +1223,22 @@ void HTMLTokenizer::write( const QString &str )
     // we just insert the code at the tokenizers current position. Parsing will continue once
     // we return from the script stuff
     // (this won't happen if we're in the middle of loading an external script)
-    if(executingScript || onHold) {
+    if(!appendData || onHold) {
 #ifdef TOKEN_DEBUG
         kdDebug( 6036 ) << "adding to scriptOutput" << endl;
 #endif
         scriptOutput += str;
+        return;
+    }
+
+    // we received new data from the slave while executing
+    // a script. we need to append the new data at the end
+    // ### fix all those nasty deep string copying!!
+    if(appendData && m_executingScript) {
+        QString newStr = QString(src.current(), src.length());
+        newStr += str;
+        _src = newStr;
+        src = DOMStringIt(_src);
         return;
     }
 
@@ -1429,10 +1456,10 @@ void HTMLTokenizer::end()
     processToken();
 
     if(buffer)
-        QT_DELETE_QCHAR_VEC(buffer);
+        KHTML_DELETE_QCHAR_VEC(buffer);
 
     if(scriptCode)
-        QT_DELETE_QCHAR_VEC(scriptCode);
+        KHTML_DELETE_QCHAR_VEC(scriptCode);
 
     scriptCode = 0;
     scriptCodeSize = scriptCodeMaxSize = 0;
@@ -1451,17 +1478,17 @@ void HTMLTokenizer::finish()
         int pos = QConstString(scriptCode, scriptCodeSize).string().find('>');
         QString food;
         food.setUnicode(scriptCode+pos+1, scriptCodeSize-pos-1); // deep copy
-        QT_DELETE_QCHAR_VEC(scriptCode);
+        KHTML_DELETE_QCHAR_VEC(scriptCode);
         scriptCode = 0;
         scriptCodeSize = scriptCodeMaxSize = 0;
         script = style = listing = comment = textarea = false;
         scriptCodeSize = 0;
-        write(food);
+        write(food, true);
     }
     // this indicates we will not recieve any more data... but if we are waiting on
     // an external script to load, we can't finish parsing until that is done
     noMoreData = true;
-    if (!loadingExtScript && !executingScript && !onHold)
+    if (!loadingExtScript && !m_executingScript && !onHold)
         end(); // this actually causes us to be deleted
 }
 
@@ -1541,26 +1568,20 @@ HTMLTokenizer::~HTMLTokenizer()
 }
 
 
-void HTMLTokenizer::enlargeBuffer()
+void HTMLTokenizer::enlargeBuffer(int len)
 {
-    QChar *newbuf = QT_ALLOC_QCHAR_VEC( size*2 );
-    memcpy( newbuf, buffer, (dest - buffer + 1)*sizeof(QChar) );
-    dest = newbuf + ( dest - buffer );
-    QT_DELETE_QCHAR_VEC(buffer);
-    buffer = newbuf;
-    size *= 2;
+    int newsize = kMax(size*2, size+len);
+    int oldoffs = (dest - buffer);
+
+    buffer = (QChar*)realloc(buffer, newsize*sizeof(QChar));
+    dest = buffer + oldoffs;
+    size = newsize;
 }
 
-void HTMLTokenizer::enlargeScriptBuffer()
+void HTMLTokenizer::enlargeScriptBuffer(int len)
 {
-    int newsize = kMax(scriptCodeMaxSize*2, scriptCodeMaxSize+1024);
-    QChar *newbuf = QT_ALLOC_QCHAR_VEC( newsize );
-    if(scriptCodeSize)
-        memcpy( newbuf, scriptCode, scriptCodeSize*sizeof(QChar) );
-    // delete [] is unsafe!
-    if(scriptCode)
-        QT_DELETE_QCHAR_VEC(scriptCode);
-    scriptCode = newbuf;
+    int newsize = kMax(scriptCodeMaxSize*2, scriptCodeMaxSize+len);
+    scriptCode = (QChar*)realloc(scriptCode, newsize*sizeof(QChar));
     scriptCodeMaxSize = newsize;
 }
 
@@ -1577,9 +1598,9 @@ void HTMLTokenizer::notifyFinished(CachedObject *finishedObj)
 #endif
         cachedScript->deref(this);
         cachedScript = 0;
-        executingScript = true;
+        m_executingScript = true;
         view->part()->executeScript(scriptSource.string());
-        executingScript = false;
+        m_executingScript = false;
 
         // 'script' is true when we are called synchronously from
         // parseScript(). In that case parseScript() will take care
@@ -1588,7 +1609,7 @@ void HTMLTokenizer::notifyFinished(CachedObject *finishedObj)
         {
            QString rest = scriptOutput+pendingSrc;
            scriptOutput = pendingSrc = "";
-           write(rest);
+           write(rest, true);
         }
     }
 }
@@ -1596,7 +1617,7 @@ void HTMLTokenizer::notifyFinished(CachedObject *finishedObj)
 void HTMLTokenizer::addScriptOutput()
 {
     if ( !scriptOutput.isEmpty() ) {
-//      kdDebug( 6036 ) << "adding scriptOutput to parsed string" << endl;
+        //kdDebug( 6036 ) << "adding scriptOutput to parsed string" << endl;
         QString newStr = scriptOutput;
         newStr += QString(src.current(), src.length());
         _src = newStr;
@@ -1612,7 +1633,7 @@ void HTMLTokenizer::setOnHold(bool _onHold)
     if (!onHold) {
 	QString rest = scriptOutput+pendingSrc;
 	scriptOutput = pendingSrc = "";
-	write(rest);
+	write(rest, true);
     }
 }
 

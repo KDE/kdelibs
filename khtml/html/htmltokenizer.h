@@ -124,7 +124,9 @@ class Tokenizer : public QObject
     Q_OBJECT
 public:
     virtual void begin() = 0;
-    virtual void write( const QString &str ) = 0;
+    // script output must be prepended, while new data
+    // received during executing a script must be appended, hence the bool
+    virtual void write( const QString &str, bool appendData) = 0;
     virtual void end() = 0;
     virtual void finish() = 0;
     virtual void setOnHold(bool /*_onHold*/) {}
@@ -152,7 +154,7 @@ public:
 
     void begin();
     void setPlainText();
-    void write( const QString &str );
+    void write( const QString &str, bool appendData );
     void end();
     void finish();
     virtual void setOnHold(bool _onHold);
@@ -179,16 +181,16 @@ protected:
     inline void checkBuffer(int len = 10)
     {
         if ( (dest - buffer) > size-len )
-            enlargeBuffer();
+            enlargeBuffer(len);
     }
     inline void checkScriptBuffer(int len = 10)
     {
         if ( scriptCodeSize + len >= scriptCodeMaxSize )
-            enlargeScriptBuffer();
+            enlargeScriptBuffer(len);
     }
 
-    void enlargeBuffer();
-    void enlargeScriptBuffer();
+    void enlargeBuffer(int len);
+    void enlargeScriptBuffer(int len);
 
     // from CachedObjectClient
     void notifyFinished(khtml::CachedObject *finishedObj);
@@ -326,15 +328,15 @@ protected:
     QString pendingSrc;
     // true if we are executing a script while parsing a document. This causes the parsing of
     // the output of the script to be postponed until after the script has finished executing
-    bool executingScript;
+    bool m_executingScript;
     khtml::CachedScript *cachedScript;
     // you can pause the tokenizer if you need to display a dialog or something
     bool onHold;
 
     QString scriptOutput;
 
-#define CBUFLEN 15
-    char cBuffer[CBUFLEN+1];
+#define CBUFLEN 14
+    char cBuffer[CBUFLEN+2];
     unsigned int cBufferPos;
 
     QString _src;
