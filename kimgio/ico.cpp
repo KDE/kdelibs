@@ -105,6 +105,8 @@ namespace
 
 extern "C" void kimgio_ico_read( QImageIO* io )
 {
+    QIODevice::Offset offset = io->ioDevice()->at();
+
     QDataStream stream( io->ioDevice() );
     stream.setByteOrder( QDataStream::LittleEndian );
     IcoHeader header;
@@ -147,7 +149,7 @@ extern "C" void kimgio_ico_read( QImageIO* io )
 
     if ( io->ioDevice()->size() < ico.dibOffset + BMP_INFOHDR::Size ) return;
 
-    io->ioDevice()->at( ico.dibOffset );
+    io->ioDevice()->at( offset + ico.dibOffset );
     BMP_INFOHDR dibHeader;
     stream >> dibHeader;
     if ( dibHeader.biSize != BMP_INFOHDR::Size ||
