@@ -386,6 +386,7 @@ static KCmdLineOptions options[] =
     { "test <filename>", "Only run a single test. Multiple options allowed.", 0 } ,
     { "js",  "Only run .js tests", 0 },
     { "html", "Only run .html tests", 0},
+    { "noxvfb", "Do not use Xvfb", 0},
     { "o", 0, 0 },
     { "output <directory>", "Put output in <directory> instead of <base_dir>/output", 0 } ,
     { "+[base_dir]", "Directory containing tests,basedir and output directories. Only regarded if -b is not specified.", 0 } ,
@@ -441,14 +442,17 @@ int main(int argc, char *argv[])
     }
 
 
-    xvfb = fork();
-    if ( !xvfb ) {
-        char buffer[1000];
-        sprintf( buffer, "%s/resources,/usr/X11R6/lib/X11/fonts/75dpi:unscaled,/usr/X11R6/lib/X11/fonts/misc:unscaled,/usr/X11R6/lib/X11/fonts/Type1", (const char *)baseDir );
-        execl( "/usr/X11R6/bin/Xvfb", "/usr/X11R6/bin/Xvfb", "-screen", "0", "1024x768x16", "-fp", buffer, ":47", 0 );
-    }
+    if (args->isSet("xvfb"))
+    {
+        xvfb = fork();
+        if ( !xvfb ) {
+            char buffer[1000];
+            sprintf( buffer, "%s/resources,/usr/X11R6/lib/X11/fonts/75dpi:unscaled,/usr/X11R6/lib/X11/fonts/misc:unscaled,/usr/X11R6/lib/X11/fonts/Type1", (const char *)baseDir );
+            execl( "/usr/X11R6/bin/Xvfb", "/usr/X11R6/bin/Xvfb", "-screen", "0", "1024x768x16", "-fp", buffer, ":47", 0 );
+        }
 
-    setenv( "DISPLAY", ":47", 1 );
+        setenv( "DISPLAY", ":47", 1 );
+    }
 
     KApplication a;
     a.disableAutoDcopRegistration();
