@@ -407,6 +407,8 @@ public:
 	    { return false; } // Dummy
     virtual void print( QPainter *, int _tx, int _ty )
     	{ } // Dummy
+    virtual void recalcBaseSize( QPainter * ) 
+    	{ } // Dummy
     virtual bool selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,
 							 int _y1, int _x2, int _y2, int _tx, int _ty )
 		{ return false; } // Dummy
