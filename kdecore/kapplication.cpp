@@ -2213,37 +2213,32 @@ void KApplication::setTopWidget( QWidget *topWidget )
   {
 #ifdef Q_WS_X11 // FIXME(E): Implement for Qt/Embedded
     Window leader = topWidget->winId();
-#endif
-    QCString string_buffer = instanceName();
-
-    char * argv = string_buffer.data();
-#ifdef Q_WS_X11 // FIXME(E): Implement for Qt/Embedded
+    char* argv = const_cast< char* >( KCmdLineArgs::appName());
     XSetCommand(display, leader, &argv, 1);
+    // this hints thing may go after Qt always sets window_group
+    XWMHints *hints = XGetWMHints(display, topWidget->winId());
+    if (hints)
+    {
+        if (!(hints->flags & WindowGroupHint))
+        {
+            hints->window_group = leader;
+            hints->flags |= WindowGroupHint;
+        }
+        if (!(hints->flags & InputHint))
+        {
+            hints->input = True;
+            hints->flags |= InputHint;
+        }
+        XSetWMHints(display, topWidget->winId(), hints);
+        XFree(reinterpret_cast<char *>(hints));
+    }
 
-    XClassHint hint;
-    hint.res_name = string_buffer.data();
-    hint.res_class = string_buffer.data();
-    XSetClassHint(display, leader, &hint);
-
-    XWMHints *hints = XAllocWMHints();
-    hints->window_group = leader;
-    hints->input = True;
-    hints->flags = WindowGroupHint | InputHint;
-    XSetWMHints(display, leader, hints);
-    XFree(reinterpret_cast<char *>(hints));
-
-    NETWinInfo info(qt_xdisplay(), topWidget->winId(), qt_xrootwin(),
-        NET::WMName | NET::WMPid
-        );
-
-    // Set the _NET_WM_PID Atom to the pid of this process.
-    info.setPid(getpid());
 #endif
-
     // set the specified caption
     if ( !topWidget->inherits("KMainWindow") ) { // KMainWindow does this already for us
         topWidget->setCaption( caption() );
 #ifndef Q_WS_QWS // FIXME(E): Implement for Qt/Embedded
+        NETWinInfo info(qt_xdisplay(), topWidget->winId(), qt_xrootwin(), NET::WMName );
         info.setName( caption().utf8().data() );
 #endif
     }
