@@ -111,6 +111,11 @@ int ValueImp::toInt32(ExecState *exec) const
   double d = roundValue(exec, Value(const_cast<ValueImp*>(this)));
   double d32 = fmod(d, D32);
 
+  //Make sure we use the positive remainder. This matters since this may be
+  //less than MIN_INT (but still < 2^32), and we don't want the cast to clamp.
+  if (d32 < 0)
+    d32 += D32;
+
   if (d32 >= D32 / 2.0)
     d32 -= D32;
 
