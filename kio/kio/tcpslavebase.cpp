@@ -43,7 +43,6 @@
 #include <kdebug.h>
 #include <ksslall.h>
 #include <ksslcertdlg.h>
-#include <ksslsession.h>
 #include <kmessagebox.h>
 
 #include <klocale.h>
