@@ -255,5 +255,3 @@ AC_ARG_WITH(distribution,
 ], [kde_distribution_text='compiled sources'])
 AC_DEFINE_UNQUOTED(KDE_DISTRIBUTION_TEXT, "$kde_distribution_text", [Distribution Text to append to OS])
 AC_MSG_RESULT($kde_distribution_text)
-
-DO_NOT_COMPILE="$DO_NOT_COMPILE kstyles"
