@@ -1,6 +1,14 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.10  1997/05/15 20:33:19  wuebben
+// Bernd: Added signals:
+// kdisplayFontChanged()
+// kdisplayPaletteChanged()
+// kdisplayStyleChaned()
+// Some applications such as kedit need to know when the Font, Palette,
+// or Style ngeduy.
+//
 // Revision 1.9  1997/05/13 05:49:00  kalle
 // Kalle: Default arguments for KConfig::read*Entry()
 // app-specific config files don't start with a dot
@@ -129,6 +137,8 @@ void reaper(int)
 // Revision 1.57  1997/10/14 13:31:57  kulow
 // removed one more default value from the implementation
 //
+//
+// Revision 1.55  1997/10/13 11:00:04  ettrich
   init();
 // Matthias: fix to generation of SM command
 //
@@ -138,6 +148,8 @@ void reaper(int)
 // The change in kapp.h is only in the documentation and thus *-compatible.
 //
 // Revision 1.53  1997/10/11 22:39:27  ettrich
+//
+// Revision 1.52  1997/10/11 19:25:32  ettrich
   init();
 // Matthias: mainWidget -> topWidget for SM
 // Matthias: fixed an async reply problem with invokeHTMLHelp
@@ -242,6 +254,14 @@ void KApplication::init()
   KDEChangePalette = XInternAtom( display, "KDEChangePalette", False );
   KDEChangeGeneral = XInternAtom( display, "KDEChangeGeneral", False );
   KDEChangeStyle = XInternAtom( display, "KDEChangeStyle", False);
+
+  return pLocale;
+  for( int i = 0; i < argc; i++ )
+	if( !strcmp( argv[i], "-caption" ) )
+	  aCaption = argv[i+1];
+}  
+
+        aIconPixmap = QPixmap(argv[i+1]);
       else
         aIconPixmap = getIconLoader()->loadApplicationIcon( argv[i+1] );
 		  aMiniIconPixmap = aIconPixmap;
@@ -452,6 +472,16 @@ bool KApplication::x11EventFilter( XEvent *_event )
 		{
 	      if ( cme->message_type == DndProtocol )
 			{
+			  result->drop( (char*)Data, Size, (int)cme->data.l[0], p.x(), p.y() );
+			}
+	      else if ( cme->message_type == DndEnterProtocol )
+			{
+			  // If we entered another drop zone, tell the drop zone we left about it
+			  if ( lastEnteredDropZone != 0L && lastEnteredDropZone != result )
+		  return fullPath;
+		  
+			  // Notify the drop zone over which the pointer is right now.
+			  result->enter( (char*)Data, Size, (int)cme->data.l[0], p.x(), p.y() );
 			  lastEnteredDropZone = result;
 			}
 
@@ -639,13 +669,13 @@ void KApplication::appendSearchPath( const char *path )
 		else
   selectTextColor.setNamedColor( str );
 	// WARNING : QApplication::setPalette() produces inconsistent results.
-    							backgroundColor.light(),
+    							backgroundColor.light(150),
     							backgroundColor.dark(), 
 	// 2) You need different palettes to apply the same color scheme to
 	//		different widgets !!
 	// 3) Motif style needs a different palette to Windows style.
   str = config->readEntry( "Charset","iso-8859-1" );
-    							backgroundColor.light(),
+    							backgroundColor.light(150),
     							backgroundColor.dark(), 
 	highlightVal=100+(2*contrast+4)*16/10;
 	lowlightVal=100+(2*contrast+4)*10;
@@ -728,7 +758,7 @@ void KApplication::kdisplaySetPalette()
   if ( fork	() == 0 )	
 	QWidgetListIt it( *widgetList );
 	  if( filename.isEmpty() )
-		filename = aAppName + ".html";
+		filename = aAppName + '/' + aAppName + ".html";
       QString path = KApplication::kdedir();
       path.append("/doc/HTML/");
       path.append(filename);

@@ -107,7 +107,7 @@ ac_qt_libraries=$qt_libdir
 ac_cxxflags_safe=$CXXFLAGS
 ac_ldflags_safe=$LDFLAGS
 CXXFLAGS="$CXXFLAGS -I$qt_incdir"
-LDFLAGS="$LDFLAGS -lqt -L$qt_libdir"
+LDFLAGS="-lqt -L$qt_libdir $X_LDFLAGS -lX11 -lXext"
 
 AC_LANG_CPLUSPLUS
 cat > conftest.$ac_ext <<EOF

@@ -2,6 +2,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.5  1997/05/09 15:10:12  kulow
+ * Coolo: patched ltconfig for FreeBSD
+ * removed some stupid warnings
+ *
  * Revision 1.4  1997/05/02 19:33:49  kulow
  * Coolo: corrected some CVS related problems with Kalle's last commit
  * updated khtmlw to 0.5.4
@@ -260,9 +264,9 @@ bool KPanner::checkRange(int & value)
         if( percent < l_limit )
             percent = l_limit;
         else if( u_limit > 0 && percent > u_limit )
-            value = u_limit;
+            percent = u_limit;
         else if( u_limit <= 0 && percent > 100+u_limit )
-            value = 100+u_limit;
+            percent = 100+u_limit;
         else
             return FALSE;
         value = (int)(percent / 100.0 * max_value);

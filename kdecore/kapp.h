@@ -1,6 +1,14 @@
 // $Id$
 // Revision 1.41  1998/01/06 22:54:29  kulow
 // $Log$
+// Revision 1.8  1997/05/15 20:33:20  wuebben
+// Bernd: Added signals:
+// kdisplayFontChanged()
+// kdisplayPaletteChanged()
+// kdisplayStyleChaned()
+// Some applications such as kedit need to know when the Font, Palette,
+// or Style ngeduy.
+//
 // Revision 1.7  1997/05/13 05:49:00  kalle
 // Kalle: Default arguments for KConfig::read*Entry()
 // app-specific config files don't start with a dot
@@ -96,7 +104,12 @@
 // part of the colour scheme specification for some time
 /// KApplication: A base class for all KDE applications
 /** KApplication provides the application with KDE defaults such as
-  accelerators, common menu entries, a KCOnfig object etc. */
+  accelerators, common menu entries, a KConfig object
+  etc. KApplication installs a signal handler for the SIGCHLD signal
+  in order to avoid zombie children. If you want to catch this signal
+  yourself or don't want it to be catched at all, you have set a new
+  signal handler (or SIG_IGN) after KApplication's constructor has
+  run. */ 
 
 class KIconLoader;
   Q_OBJECT
@@ -177,6 +190,13 @@ class KIconLoader;
 	*/
 * Get the KDE font list.
 *
+* This method allows you to get the KDE font 
+  /// Return a text for the window caption
+  /** returns an argument that was given with "-caption"
+	  or (if undefined) the name of the application
+	  */
+	* This is usually $HOME/.kde/share/config
+/**
   //@Man: Drag 'n Drop stuff
   //@{
   /// An X11 atom used for IPC
@@ -243,10 +263,12 @@ private slots:
   QTextStream* pConfigStream; // stream of the application-specific config file
   QFile* pConfigFile; // application-specific config file
 	* X11 atoms used for IPC
+	*/
   Atom DndProtocol;
   Atom DndEnterProtocol;
  void appHelpActivated();
   void aboutKDE();
+  void aboutApp();
   void aboutQt();
 
 private:
