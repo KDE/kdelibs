@@ -23,6 +23,7 @@
 #include <assert.h>
 
 #include <qstringlist.h>
+#include <qvaluevector.h>
 
 #include "ksycocafactory.h"
 #include "kmimetype.h"
@@ -102,10 +103,15 @@ protected:
 
 private:
   static KServiceTypeFactory *_self;
+
 protected:
   int m_fastPatternOffset;
   int m_otherPatternOffset;
   QMap<QString,int> m_propertyTypeDict;
+
+private:
+  QStringList m_patterns;
+  QValueVector<Q_INT32> m_pattern_offsets;
 };
 
 #endif

@@ -118,9 +118,7 @@ KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename)
 
    Q_INT32 fastOffset =  str->device()->at( );
 
-   QString pattern;
-   Q_INT32 mimetypeOffset;
-   KServiceType * newServiceType = 0L;
+   Q_INT32 matchingOffset = 0;
 
    // Let's go for a binary search in the "fast" pattern index
    Q_INT32 left = 0;
@@ -128,11 +126,13 @@ KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename)
    Q_INT32 middle;
    // Extract extension
    int lastDot = _filename.findRev('.');
-   if (lastDot != -1) // if no '.', skip the extension lookup
+   int ext_len = _filename.length() - lastDot - 1;
+   if (lastDot != -1 && ext_len <= 4) // if no '.', skip the extension lookup
    {
-      QString extension = _filename.right( _filename.length() - _filename.findRev('.') - 1 );
+      QString extension = _filename.right( ext_len );
       extension = extension.leftJustify(4);
 
+      QString pattern;
       while (left <= right) {
          middle = (left + right) / 2;
          // read pattern at position "middle"
@@ -143,10 +143,7 @@ KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename)
             left = middle + 1;
          else if (cmp == 0) // found
          {
-            assert( newServiceType == 0L );
-            (*str) >> mimetypeOffset;
-            newServiceType = createEntry(mimetypeOffset);
-            assert (newServiceType && newServiceType->isType( KST_KMimeType ));
+            (*str) >> matchingOffset;
             // don't return newServiceType - there may be an "other" pattern that
             // matches best this file, like *.tar.bz
             break; // but get out of the fast patterns
@@ -157,23 +154,45 @@ KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename)
    }
 
    // Now try the "other" Pattern table
-   str->device()->at( m_otherPatternOffset );
+   if ( m_patterns.size() == 0 ) {
+      str->device()->at( m_otherPatternOffset );
 
-   while (true)
-   {
-      (*str) >> pattern;
-      if (pattern.isEmpty()) // end of list
-          return (KMimeType *) newServiceType; // return what we got (0L or real one)
-      (*str) >> mimetypeOffset;
-      if ( KStringHandler::matchFilename( _filename, pattern ) )
+      QString pattern;
+      Q_INT32 mimetypeOffset;
+
+      while (true)
       {
-         if (newServiceType) // we got one, but it's not good enough (like *.bz for a tar.bz file)
-             delete newServiceType;
-         newServiceType = createEntry(mimetypeOffset);
-         assert (newServiceType && newServiceType->isType( KST_KMimeType ));
-         return (KMimeType *) newServiceType;
+         (*str) >> pattern;
+         if (pattern.isEmpty()) // end of list
+            break;
+         (*str) >> mimetypeOffset;
+         m_patterns.push_back( pattern );
+         m_pattern_offsets.push_back( mimetypeOffset );
       }
    }
+
+   assert( m_patterns.size() == m_pattern_offsets.size() );
+
+   QStringList::const_iterator it = m_patterns.begin();
+   QStringList::const_iterator end = m_patterns.end();
+   QValueVector<Q_INT32>::const_iterator it_offset = m_pattern_offsets.begin();
+   
+  for ( ; it != end; ++it, ++it_offset )
+   {
+      if ( KStringHandler::matchFilename( _filename, *it ) )
+      {
+         matchingOffset = *it_offset;
+         break;
+      }
+   }
+
+   if ( matchingOffset ) {
+      KServiceType *newServiceType = createEntry( matchingOffset );
+      assert (newServiceType && newServiceType->isType( KST_KMimeType ));
+      return (KMimeType *) newServiceType;
+   }
+   else
+      return 0;
 }
 
 KMimeType::List KServiceTypeFactory::allMimeTypes()
@@ -258,3 +277,5 @@ KServiceType * KServiceTypeFactory::createEntry(int offset)
 }
 
 KServiceTypeFactory *KServiceTypeFactory::_self = 0;
+
+// vim: ts=3 sw=3 et
