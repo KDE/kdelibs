@@ -94,10 +94,12 @@ class KTMainWindowPrivate
 public:
   KTMainWindowPrivate()
   {
+    m_factory = 0L;
   }
   ~KTMainWindowPrivate()
   {
   }
+  KXMLGUIFactory *m_factory;
 };
 
 static KTLWSessionManaged* ksm = 0;
@@ -109,7 +111,6 @@ KTMainWindow::KTMainWindow( const char *name, WFlags f )
     : QWidget( 0L, name, f ), KXMLGUIBase()
 {
     d = new KTMainWindowPrivate();
-    m_factory = new KXMLGUIFactory( this );
 
     initing = TRUE;
 
@@ -187,8 +188,11 @@ KTMainWindow::~KTMainWindow()
   //if (!QApplication::closingDown())
     delete mHelpMenu;
 
+  if ( d->m_factory )
+    delete d->m_factory;
+
   delete d;
-  delete m_factory;
+
   debug ("KTM destructor: end");
 }
 
@@ -844,9 +848,11 @@ void KTMainWindow::showAboutApplication( void )
   // Just an empty virtual slot
 }
 
-KXMLGUIFactory *KTMainWindow::guiFactory() const
+KXMLGUIFactory *KTMainWindow::guiFactory()
 {
-  return m_factory;
+  if ( !d->m_factory )
+    d->m_factory = new KXMLGUIFactory( this );
+  return d->m_factory;
 }
 
 QWidget *KTMainWindow::createContainer( QWidget *parent, int index, const QDomElement &element, const QByteArray &containerStateBuffer, int &id )
@@ -992,7 +998,7 @@ void KTMainWindow::createGUI( const QString &xmlfile )
   else
     setXML( QString::null, true );
 
-  m_factory->addServant( this );
+  guiFactory()->addServant( this );
 
   updateRects();
 }
