@@ -45,6 +45,9 @@
 //-------------------------------------------------------------------------
 // $Id$
 // $Log$
+// Revision 1.64  1998/05/07 23:12:30  radej
+// Fix for optional highlighting of handle
+//
 // Revision 1.63  1998/05/05 16:53:31  radej
 // This damned opaque moving...
 //
@@ -1605,7 +1608,10 @@ QSize KToolBar::sizeHint ()
   int w=16;
   
   for (KToolBarItem *b = items.first(); b; b=items.next())
-    w+=b->isAuto()?MIN_AUTOSIZE:b->width();
+    {
+      w+=b->isAuto()?MIN_AUTOSIZE:b->width();
+      w+=3;
+    }
   szh.setWidth(w);
 
   return szh;
