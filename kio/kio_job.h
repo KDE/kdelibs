@@ -22,7 +22,7 @@ class KIOListProgressDlg;
 class QSocketNotifier;
 class QDialog;
 
-/** 
+/**
 * This is main class for doing IO operations.
 *
 * Use this class if you need to do any file transfer using various transfer protocols.
@@ -36,7 +36,7 @@ class QDialog;
 * @ref #sigError
 *
 * @short A main class for doing IO operations.
-*/ 
+*/
 class KIOJob : public QObject, public KIOJobBase {
 
   Q_OBJECT
@@ -45,7 +45,7 @@ public:
 
   KIOJob(const char *name = 0);
   virtual ~KIOJob();
-  
+
   int id() { return m_id; }
   QTime getRemainingTime() { return m_RemainingTime; }
 
@@ -64,7 +64,7 @@ public:
    * @return  pointer to a list progress dialog.
    */
   KIOListProgressDlg* listProgressDlg() { return m_pListProgressDlg; }
-  
+
   enum GUImode { NONE, SIMPLE, LIST, CUSTOM };
 
   /**
@@ -121,7 +121,7 @@ public:
 		            bool _resume, int _len );
 
   virtual bool mkdir( const char *_url, int _mode );
-  
+
   /**
    * Directory listing. Will emit @ref #sigListEntry and/or error signals
    * "." and ".." are listed as well.
@@ -135,7 +135,7 @@ public:
 
   virtual bool mount( bool _ro, const char *_fstype, const char* _dev, const char *_point );
   virtual bool unmount( const char *_point );
-  
+
   /**
    * Starts fetching '_url' and buffers _max_len characters or some more
    * if available. These are sent using @ref #sigPreData. If we know
@@ -152,7 +152,7 @@ public:
    * @ref #get. All buffered data is emitted using @ref #sigData now.
    */
   virtual void cont();
-  
+
   virtual void slotData( void *_p, int _len );
   virtual void slotError( int _errid, const char *_txt );
   virtual void slotReady();
@@ -161,7 +161,7 @@ public:
   virtual void slotIsFile();
   virtual void slotRenamed( const char *_new );
   virtual void slotCanResume( bool _resume );
-  
+
   virtual void slotTotalSize( unsigned long _bytes );
   virtual void slotTotalFiles( unsigned long _files );
   virtual void slotTotalDirs( unsigned long _dirs );
@@ -305,7 +305,7 @@ signals:
   void sigRedirection( int id, const char *url );
   void sigIsDirectory( int id );
   void sigIsFile( int id );
-  
+
   /**
    * Current speed of the transfer in bytes per second.
    *
@@ -391,7 +391,9 @@ protected slots:
    * Slave has died.
    */
   void slotSlaveDied( KProcess *);
-  
+
+  void slotListLocal();
+
 protected:
 
   /**
@@ -406,7 +408,7 @@ protected:
   /**
    * Creates a new slave if the @ref KIOSlavePool has no matching one.
    * @ref m_pSlave and @ref m_strSlaveProtocol are set accordingly on success.
-   * 
+   *
    * @param _error is the error code on failure and undefined else.
    * @param _error_text is the error text on failure and undefined else.
    *
@@ -417,7 +419,7 @@ protected:
   /**
    * Creates a new slave if the @ref KIOSlavePool has no matching one.
    * @ref m_pSlave and @ref m_strSlaveProtocol are set accordingly on success.
-   * 
+   *
    * @param _error is the error code on failure and undefined else.
    * @param _error_text is the error text on failure and undefined else.
    *
@@ -427,21 +429,24 @@ protected:
 			  const char *_pass, int& _error, QString& _error_text );
 
   QDialog* createDialog( const QString &_text );
-  
+
   void createGUI();
 
   static void initStatic();
 
+  KURL m_localListingURL;
+  QString m_localListingPath;
+
   bool m_bAutoDelete;
 
   bool m_bCacheToPool;
-  
+
   int m_iGUImode;
 
   KIOProgressBase* m_pProgressDlg;
 
   QDialog *m_pDialog;
-  
+
   KIOSlave* m_pSlave;
   QString m_strSlaveProtocol;
   QString m_strSlaveHost;
@@ -474,7 +479,7 @@ protected:
   int m_iPreGetBufferMaxSize;
   bool m_bPreGetFinished;
   QString m_strPreGetMimeType;
-  
+
   int m_id;
   static int s_id;
 
@@ -489,11 +494,11 @@ protected:
  */
 class KIOSlavePool : public QObject {
   Q_OBJECT
-  
+
 public:
 
   KIOSlavePool() { }
-  
+
   KIOSlave* slave( const char *_protocol );
   KIOSlave* slave( const char *_protocol, const char *_host,
 		   const char *_user, const char *_pass);
@@ -501,7 +506,7 @@ public:
   void addSlave( KIOSlave *_slave,
 		 const char *_protocol, const char *_host,
 		 const char *_user, const char *_pass );
-  
+
   static KIOSlavePool* self();
 
 protected slots:
@@ -509,7 +514,7 @@ protected slots:
   void slotSlaveDied( KProcess *);
 
 protected:
-  
+
   struct Entry
   {
     time_t m_time;
