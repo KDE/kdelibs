@@ -45,6 +45,7 @@ k_dcop:
                          int present, int level);
     
 	void reconfigure();
+	void setVolume( int volume );
 
 protected:
 	bool notifyBySound(const QString &sound);
@@ -52,11 +53,16 @@ protected:
 	bool notifyByLogfile(const QString &text, const QString &file);
 	bool notifyByStderr(const QString &text);
 	
+	void connectSoundServer();
+	
 public:
 	/**
 	 * checks if eventname is a global event (exists in config/eventsrc)
 	 **/
 	bool isGlobal(const QString &eventname);
+
+private slots:
+    void playTimeout();
     
 private:
     KNotifyPrivate* d;
