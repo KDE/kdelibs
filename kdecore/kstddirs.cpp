@@ -45,11 +45,9 @@
 #include <qstringlist.h>
 
 #include "kstddirs.h"
-#include "kglobal.h"
 #include "kconfig.h"
 #include "kdebug.h"
 #include "kinstance.h"
-#include "kglobalsettings.h"
 #include <sys/param.h>
 #include <unistd.h>
 
