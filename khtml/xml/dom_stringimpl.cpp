@@ -209,10 +209,10 @@ QList<Length> *DOMStringImpl::toLengthList() const
     int pos2;
 
     // web authors are so stupid. This is a workaround
-    // to fix lists like "1,2 3,4"
+    // to fix lists like "1,2  3,4"
     QChar space(' ');
     for(int i=0; i < l; i++) if(str[i].latin1() == ',') str[i] = space;
-    str.simplifyWhiteSpace();
+    str = str.simplifyWhiteSpace();
 
     QList<Length> *list = new QList<Length>;
     list->setAutoDelete(true);
