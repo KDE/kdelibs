@@ -259,6 +259,7 @@ private:
   void initDirs();
   
   void pushDocInfo(const QString &fileName, const QString &baseDir = QString::null);
+  void pushDocInfoParent(const QString &basePath, const QString &baseDir);
   void popDocInfo();
   
   QString absoluteDir(const QString &_dir, const QString &baseDir, bool keepRelativeToCfg=false);

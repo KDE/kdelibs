@@ -460,6 +460,17 @@ static void tagBaseDir(QDomDocument &doc, const QString &tag, const QString &dir
    }
 }
 
+static void tagBasePath(QDomDocument &doc, const QString &tag, const QString &path)
+{
+   QDomNodeList mergeFileList = doc.elementsByTagName(tag);
+   for(int i = 0; i < (int)mergeFileList.count(); i++)
+   {
+      QDomAttr attr = doc.createAttribute("__BasePath");
+      attr.setValue(path);
+      mergeFileList.item(i).toElement().setAttributeNode(attr);
+   }
+}
+
 QDomDocument
 VFolderMenu::loadDoc()
 {
@@ -485,6 +496,7 @@ VFolderMenu::loadDoc()
    file.close();
 
    tagBaseDir(doc, "MergeFile", m_docInfo.baseDir);
+   tagBasePath(doc, "MergeFile", m_docInfo.path);
    tagBaseDir(doc, "MergeDir", m_docInfo.baseDir);
    tagBaseDir(doc, "DirectoryDir", m_docInfo.baseDir);
    tagBaseDir(doc, "AppDir", m_docInfo.baseDir);
@@ -613,8 +625,13 @@ VFolderMenu::mergeMenus(QDomElement &docElem, QString &name)
          menuNodes.insert(name, e);
       }
       else if( e.tagName() == "MergeFile") {
-         pushDocInfo(e.text(), e.attribute("__BaseDir"));
-         mergeFile(docElem, n);
+         if ((e.attribute("type") == "parent"))
+            pushDocInfoParent(e.attribute("__BasePath"), e.attribute("__BaseDir"));
+         else
+            pushDocInfo(e.text(), e.attribute("__BaseDir"));
+
+         if (!m_docInfo.path.isEmpty())
+            mergeFile(docElem, n);
          popDocInfo();
 
          QDomNode last = n;
@@ -713,6 +730,30 @@ VFolderMenu::pushDocInfo(const QString &fileName, const QString &baseDir)
       m_docInfo.baseDir = QString::null;
       m_docInfo.baseName = baseName.left( baseName.length() - 5 );
    }
+}
+
+void
+VFolderMenu::pushDocInfoParent(const QString &basePath, const QString &baseDir)
+{
+    m_docInfoStack.push(m_docInfo);
+
+   m_docInfo.baseDir = baseDir;
+
+   QString fileName = basePath.mid(basePath.findRev('/')+1);
+   m_docInfo.baseName = fileName.left( fileName.length() - 5 );
+   QString baseName = QDir::cleanDirPath(m_docInfo.baseDir + fileName);
+
+   QStringList result = KGlobal::dirs()->findAllResources("xdgconf-menu", baseName);
+
+   while( !result.isEmpty() && (result[0] != basePath))
+      result.remove(result.begin());
+      
+   if (result.count() <= 1)
+   {
+      m_docInfo.path = QString::null; // No parent found
+      return;
+   }
+   m_docInfo.path = result[1];
 }
 
 void
