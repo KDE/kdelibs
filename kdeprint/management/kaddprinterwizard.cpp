@@ -6,6 +6,7 @@
 
 static KCmdLineOptions options[] =
 {
+	{ "config", I18N_NOOP("Configure KDE Print"), 0 },
 	{0, 0, 0}
 };
 
@@ -17,7 +18,12 @@ int main(int argc, char *argv[])
 	KCmdLineArgs::addCmdLineOptions(options);
 
 	KApplication app;
-	if (KMManager::self()->addPrinterWizard() == -1)
+	KCmdLineArgs	*args = KCmdLineArgs::parsedArgs();
+	bool	doConfig = args->isSet("config");
+
+	if (doConfig)
+		KMManager::self()->invokeOptionsDialog();
+	else if (KMManager::self()->addPrinterWizard() == -1)
 	{
 		KMessageBox::error(0, KMManager::self()->errorMsg().prepend("<qt>").append("</qt>"));
 	}
