@@ -55,7 +55,7 @@
 extern "C" {
 void kdebug( unsigned short level, unsigned short area, const char* fmt, ... );
 void kdebug_null (unsigned short level, unsigned short area, const char* fmt, ...);
-};
+}
 
 #ifdef kdebug
 #undef kdebug
