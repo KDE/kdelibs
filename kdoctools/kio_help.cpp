@@ -332,8 +332,6 @@ void HelpProtocol::get_file( const KURL& url )
 
     totalSize( buff.st_size );
     int processed_size = 0;
-    time_t t_start = time( 0L );
-    time_t t_last = t_start;
 
     char buffer[ MAX_IPC_SIZE ];
     QByteArray array;
@@ -357,13 +355,7 @@ void HelpProtocol::get_file( const KURL& url )
        array.resetRawData(buffer, n);
 
        processed_size += n;
-       time_t t = time( 0L );
-       if ( t - t_last >= 1 )
-       {
-          processedSize( processed_size );
-          speed( processed_size / ( t - t_start ) );
-          t_last = t;
-       }
+       processedSize( processed_size );
     }
 
     data( QByteArray() );
@@ -371,9 +363,6 @@ void HelpProtocol::get_file( const KURL& url )
     close( fd );
 
     processedSize( buff.st_size );
-    time_t t = time( 0L );
-    if ( t - t_start >= 1 )
-	speed( processed_size / ( t - t_start ) );
 
     finished();
 }
