@@ -11,6 +11,7 @@
 <!ENTITY Ctrl   "<keycap>Ctrl</keycap>">
 <!ENTITY dh     "<abbrev>d.h.</abbrev>">
 <!ENTITY dpi	'<acronym>dpi</acronym>'>
+<!ENTITY Enter	"<keycap>Enter</keycap>">
 <!ENTITY Esc    "<keycap>Esc</keycap>">
 <!ENTITY etc    "<abbrev>etc.</abbrev>">
 <!ENTITY FAQ	'<acronym>FAQ</acronym>'>
