@@ -156,7 +156,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
    m_browserextension (new KJavaAppletViewerBrowserExtension (this)),
    m_liveconnect (new KJavaAppletViewerLiveConnectExtension (this)),
    m_closed (true),
-   m_jssession (false)
+   m_jssession (0)
 {
     if (!serverMaintainer) {
         serverMaintainerDeleter.setObject (serverMaintainer,

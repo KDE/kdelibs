@@ -92,7 +92,7 @@ public:
     bool eventFilter (QObject *o, QEvent *e);
 
     bool appletAlive () const;
-    void setJSSession (bool b) { m_jssession = b; }
+    void setJSSession (bool b) { m_jssession += b ? 1 : -1; }
 public slots:
     virtual bool openURL (const KURL & url);
     virtual bool closeURL ();
@@ -108,7 +108,7 @@ private:
     KJavaAppletViewerLiveConnectExtension * m_liveconnect;
     QString baseurl;
     bool m_closed;
-    bool m_jssession;
+    int m_jssession;
 };
 
 class KJavaAppletViewerFactory : public KParts::Factory {
