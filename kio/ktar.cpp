@@ -13,6 +13,10 @@
 
 template class QDict<KTarEntry>;
 
+////////////////////////////////////////////////////////////////////////
+/////////////////////////// KTarBase ///////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
 KTarBase::KTarBase()
 {
   m_open = false;
@@ -24,15 +28,6 @@ KTarBase::~KTarBase()
   if ( m_open )
     close();
   delete m_dir;
-}
-
-KTarGz::KTarGz( const QString& filename )
-{
-  m_filename = filename;
-}
-
-KTarGz::~KTarGz()
-{
 }
 
 bool KTarBase::open( int mode )
@@ -179,71 +174,6 @@ bool KTarBase::open( int mode )
 }
 
 
-bool KTarGz::open( int mode )
-{
-  const char* m;
-  if ( mode == IO_ReadOnly )
-    m = "rb";
-  else if ( mode == IO_WriteOnly )
-    m = "wb";
-  else
-  {
-    qWarning("KTarBase::open: You can only pass IO_ReadOnly or IO_WriteOnly as mode\n");
-    return false;
-  }
-
-  m_f = gzopen( m_filename, m );
-  if ( !m_f )
-    return false;
-
-  return KTarBase::open( mode );
-}
-
-int KTarGz::read( char * buffer, int len )
-{
-  return gzread( m_f, buffer, len );
-}
-
-void KTarGz::write( const char * buffer, int len )
-{
-  gzwrite( m_f, (char *)buffer, len );
-}
-
-int KTarGz::position()
-{
-  return (int)gztell( m_f );
-}
-
-KTarData::KTarData( QDataStream * str )
-{
-  m_str = str;
-}
-
-KTarData::~KTarData()
-{
-}
-
-bool KTarData::open( int mode )
-{
-  return KTarBase::open( mode );
-}
-
-int KTarData::read( char * buffer, int len )
-{
-  return m_str->device()->readBlock( buffer, len );
-}
-
-void KTarData::write( const char * buffer, int len )
-{
-  m_str->device()->writeBlock( buffer, len );
-}
-
-int KTarData::position()
-{
-  return m_str->device()->at();
-}
-
-
 KTarDirectory * KTarBase::findOrCreate( const QString & path )
 {
   if ( path == "" || path == "/" ) // root dir => found
@@ -294,12 +224,6 @@ void KTarBase::close()
   delete m_dir;
   m_dir = 0;
   m_open = false;
-}
-
-void KTarGz::close()
-{
-  KTarBase::close();
-  gzclose( m_f );
 }
 
 const KTarDirectory* KTarBase::directory() const
@@ -520,7 +444,101 @@ void KTarBase::fillBuffer( char * buffer,
   strcpy( buffer + 0x94, s.latin1() );
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+/////////////////////////// KTarGz ///////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+
+KTarGz::KTarGz( const QString& filename )
+{
+  m_filename = filename;
+}
+
+KTarGz::~KTarGz()
+{
+}
+
+
+bool KTarGz::open( int mode )
+{
+  const char* m;
+  if ( mode == IO_ReadOnly )
+    m = "rb";
+  else if ( mode == IO_WriteOnly )
+    m = "wb";
+  else
+  {
+    qWarning("KTarBase::open: You can only pass IO_ReadOnly or IO_WriteOnly as mode\n");
+    return false;
+  }
+
+  m_f = gzopen( m_filename, m );
+  if ( !m_f )
+    return false;
+
+  return KTarBase::open( mode );
+}
+
+int KTarGz::read( char * buffer, int len )
+{
+  return gzread( m_f, buffer, len );
+}
+
+void KTarGz::write( const char * buffer, int len )
+{
+  gzwrite( m_f, (char *)buffer, len );
+}
+
+int KTarGz::position()
+{
+  return (int)gztell( m_f );
+}
+
+void KTarGz::close()
+{
+  KTarBase::close();
+  gzclose( m_f );
+}
+
+
+////////////////////////////////////////////////////////////////////////
+/////////////////////////// KTarData ///////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+
+KTarData::KTarData( QDataStream * str )
+{
+  m_str = str;
+}
+
+KTarData::~KTarData()
+{
+}
+
+bool KTarData::open( int mode )
+{
+  return KTarBase::open( mode );
+}
+
+int KTarData::read( char * buffer, int len )
+{
+  return m_str->device()->readBlock( buffer, len );
+}
+
+void KTarData::write( const char * buffer, int len )
+{
+  m_str->device()->writeBlock( buffer, len );
+}
+
+int KTarData::position()
+{
+  return m_str->device()->at();
+}
+
+////////////////////////////////////////////////////////////////////////
+/////////////////////////// KTarEntry //////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
 
 KTarEntry::KTarEntry( KTarBase* t, const QString& name, int access, int date,
 		      const QString& user, const QString& group, const
@@ -543,7 +561,9 @@ QDateTime KTarEntry::datetime() const
   return d;
 }
 
-///////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+/////////////////////////// KTarFile ///////////////////////////////////
+////////////////////////////////////////////////////////////////////////
 
 KTarFile::KTarFile( KTarBase* t, const QString& name, int access, int date,
 		    const QString& user, const QString& group,
@@ -571,7 +591,13 @@ QByteArray KTarFile::data() const
   return m_data;
 }
 
-KTarDirectory::KTarDirectory( KTarBase* t, const QString& name, int access, int date,
+////////////////////////////////////////////////////////////////////////
+//////////////////////// KTarDirectory /////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+
+KTarDirectory::KTarDirectory( KTarBase* t, const QString& name, int access,
+			      int date,
 			      const QString& user, const QString& group,
 			      const QString &symlink)
   : KTarEntry( t, name, access, date, user, group, symlink )
