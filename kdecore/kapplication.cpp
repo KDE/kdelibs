@@ -112,11 +112,11 @@
 #endif
 
 #ifdef Q_WS_X11
-#include <X11/Xlib.h> // schrode
-#include <X11/Xutil.h> // schrode
-#include <X11/Xatom.h> // schrode
-#include <X11/SM/SMlib.h> // schrode
-#include <fixx11h.h> // schrode
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <X11/Xatom.h>
+#include <X11/SM/SMlib.h>
+#include <fixx11h.h>
 #endif
 
 #ifndef Q_WS_WIN
