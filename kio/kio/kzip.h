@@ -161,6 +161,9 @@ public:
      */
     void setOrigFileName( const QCString & fileName );
 
+    // not needed for zip
+    virtual bool writeDir( const QString& name, const QString& user, 
+	    const QString& group ) {return true ; }
     virtual bool prepareWriting( const QString& name, const QString& user, const QString& group, uint size );
     virtual bool doneWriting( uint size );
 
