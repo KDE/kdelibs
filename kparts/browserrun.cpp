@@ -221,7 +221,7 @@ BrowserRun::AskSaveResult BrowserRun::askSave( const KURL & url, KService::Ptr o
     } else {
         question = offer ? i18n("Open '%1' (%2) using '%3'?").
                    arg( surl ).arg(suggestedFilename).arg(offer->name())
-                   : i18n("Open '%1' (%2) ?").arg( surl ).arg(suggestedFilename);
+                   : i18n("Open '%1' (%2)?").arg( surl ).arg(suggestedFilename);
     }
     int choice = KMessageBox::questionYesNoCancel(
         0L, question, QString::null,
