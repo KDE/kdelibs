@@ -439,7 +439,6 @@ RenderLineEdit::RenderLineEdit(HTMLInputElementImpl *element)
         if (completions.count()) {
             edit->completionObject()->setItems(completions);
             edit->setContextMenuEnabled(true);
-            edit->completionBox()->setTabHandling( false );
         }
     }
 
