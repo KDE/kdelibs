@@ -29,12 +29,28 @@ class QStrList;
 template<class T> class KStaticDeleter;
 class KInstance;
 
+/**
+ * @short Dispatch change notifications from the KCMs to the program.
+ *
+ * Since your program does not have direct control over the KCMs that get loaded
+ * into the KConfigureDialog you need a way to get notified. This is what you
+ * do:
+ * \code
+ * KCDDispatcher::self()->registerInstance( instance(), this, SLOT( readSettings() );
+ * \endcode
+ *
+ * @author Matthias Kretz <kretz@kde.org>
+ * @since 3.2
+ */
 class KCDDispatcher : public QObject
 {
 	friend class KStaticDeleter<KCDDispatcher>;
 
 	Q_OBJECT
 	public:
+		/**
+		 * Get a reference the the KCDDispatcher object.
+		 */
 		static KCDDispatcher * self();
 
 		/**
