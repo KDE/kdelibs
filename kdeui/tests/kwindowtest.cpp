@@ -12,7 +12,6 @@
 #include <kcombobox.h>
 #include <khelpmenu.h>
 #include <kcmdlineargs.h>
-#include <ktmainwindow.h>
 #include <kmenubar.h>
 #include <ktoolbarradiogroup.h>
 #include <kiconloader.h>

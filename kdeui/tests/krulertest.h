@@ -4,7 +4,7 @@
 #define krulertest_h
 
 #include <kapp.h>
-#include <ktmainwindow.h>
+#include <kmainwindow.h>
 #include <qwidget.h>
 #include <qcheckbox.h>
 #include <qradiobutton.h>
@@ -42,7 +42,7 @@ private:
 };
 
 
-class KRulerTest : public KTMainWindow
+class KRulerTest : public KMainWindow
 {
 Q_OBJECT
 public:

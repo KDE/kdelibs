@@ -80,14 +80,14 @@ static const char*folder[]={
 "...........####."};
 
 application::application( const char* name )
-: KTMainWindow( name )
+: KMainWindow( 0, name )
 {
   initMenuBar();
 
   lastTabDisabled = -1;
 
   tab = new KDockTabCtl(this);
-  setView(tab);
+  setCentralWidget(tab);
 
   edit  = new QMultiLineEdit(tab);
   edit->setText("QMultiLineEdit 1");
@@ -134,8 +134,6 @@ void application::initMenuBar()
 
   KMenuBar* menu_bar = new KMenuBar(this);
   menu_bar->insertItem("KDockTabCtl", file_menu);
-	
-  setMenu(menu_bar);
 }
 
 void application::slotAddTab()

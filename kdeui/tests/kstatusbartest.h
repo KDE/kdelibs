@@ -4,11 +4,11 @@
 #include <kmenubar.h>
 #include <qpopupmenu.h>
 #include <kstatusbar.h>
-#include <ktmainwindow.h>
+#include <kmainwindow.h>
 
 class QMultiLineEdit;
 
-class testWindow  : public KTMainWindow
+class testWindow  : public KMainWindow
 {
     Q_OBJECT
 

@@ -1,7 +1,6 @@
 #ifndef kledtest_h
 #define kledtest_h
 
-#include <ktmainwindow.h>
 #include <qwidget.h>
 #include <qtimer.h>
 #include <stdlib.h>

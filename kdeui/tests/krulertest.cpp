@@ -50,7 +50,7 @@ MouseWidget::resizeEvent( QResizeEvent *r )
 
 
 KRulerTest::KRulerTest( const char *name )
-  : KTMainWindow(name)
+  : KMainWindow(0, name)
 {
   mainframe = new QFrame(this);
 
@@ -213,7 +213,7 @@ KRulerTest::KRulerTest( const char *name )
   metricstyle->insert(mmetric, (int)KRuler::Metres);
   connect ( metricstyle, SIGNAL(clicked(int)), SLOT(slotSetMStyle(int)) );
 
-  setView (mainframe);
+  setCentralWidget(mainframe);
 
   slotUpdateShowMarks();
 }

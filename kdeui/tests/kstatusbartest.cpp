@@ -10,12 +10,12 @@
 
 #include "kstatusbar.h"
 #include <kapp.h>
-#include <ktmainwindow.h>
+#include <kmainwindow.h>
 #include <kmenubar.h>
 #include "kstatusbartest.h"
 
 testWindow::testWindow (QWidget *, const char *name)
-    : KTMainWindow (name)
+    : KMainWindow (0, name)
  {
     // Setup Menus
     menuBar = new KMenuBar (this);
@@ -38,11 +38,9 @@ testWindow::testWindow (QWidget *, const char *name)
 
     widget = new QMultiLineEdit (this);
 
-    setMenu (menuBar);
-    setStatusBar (statusbar);
-    setView (widget);
+    setCentralWidget(widget);
 
-	setCaption( KApplication::kApplication()->caption() );
+    setCaption( KApplication::kApplication()->caption() );
 
     smenu = new QPopupMenu;
   

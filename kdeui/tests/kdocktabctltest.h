@@ -16,12 +16,12 @@
 #define KDOCKTABCTLTEST_H
 
 #include <qstring.h>
-#include <ktmainwindow.h>
+#include <kmainwindow.h>
 #include <kdocktabctl.h>
 
 class QMultiLineEdit;
 
-class application : public KTMainWindow
+class application : public KMainWindow
 {Q_OBJECT
 public:
   application( const char* name );
