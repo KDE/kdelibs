@@ -680,13 +680,12 @@ void KToolBarButton::makeDefaultPixmap()
   if (d->m_isSeparator)
     return;
 
-  KIconEffect effect;
   if (!strcmp(d->m_parent->name(), "mainToolBar"))
-    defaultPixmap = effect.apply(activePixmap, KIcon::MainToolbar,
-	    KIcon::DefaultState);
+      defaultPixmap = d->m_instance->iconLoader()->iconEffect()->apply(
+          activePixmap, KIcon::MainToolbar, KIcon::DefaultState );
   else
-    defaultPixmap = effect.apply(activePixmap, KIcon::Toolbar,
-	    KIcon::DefaultState);
+      defaultPixmap = d->m_instance->iconLoader()->iconEffect()->apply(
+          activePixmap, KIcon::Toolbar, KIcon::DefaultState );
 }
 
 void KToolBarButton::makeDisabledPixmap()
@@ -694,13 +693,12 @@ void KToolBarButton::makeDisabledPixmap()
   if (d->m_isSeparator)
     return;             // No pixmaps for separators
 
-  KIconEffect effect;
   if (!strcmp(d->m_parent->name(), "mainToolBar"))
-    disabledPixmap = effect.apply(activePixmap, KIcon::MainToolbar,
-	    KIcon::DisabledState);
+      disabledPixmap = d->m_instance->iconLoader()->iconEffect()->apply(
+          activePixmap, KIcon::MainToolbar, KIcon::DisabledState );
   else
-    disabledPixmap = effect.apply(activePixmap, KIcon::Toolbar,
-	    KIcon::DisabledState);
+      disabledPixmap = d->m_instance->iconLoader()->iconEffect()->apply(
+          activePixmap, KIcon::Toolbar, KIcon::DisabledState );
 }
 
 void KToolBarButton::showMenu()
