@@ -8,6 +8,7 @@
 #include <qobject.h>
 #include <qstring.h>
 #include <qstrlist.h>
+#include <qdatetime.h>
 
 #include <map>
 #include <list>
@@ -221,7 +222,17 @@ public:
 
   static QString findDeviceMountPoint( const char *device, const char *file = "/etc/mtab" );
 
+  /**
+   * Convert size from bytes to the string representation.
+   *
+   * @param  _size  size in bytes
+   * @return  converted size as a string - e.g. 123.4 kB , 12 MB
+   */
+  static QString convertSize( int size );
+
+  friend KIOSimpleProgressDlg;
   friend KIOListProgressDlg;
+  friend KIOLittleProgressDlg;
 
 signals:
 
@@ -420,9 +431,16 @@ protected:
   unsigned long m_iTotalFiles;
   unsigned long m_iTotalDirs;
   unsigned long m_iProcessedSize;
+  unsigned long m_iProcessedFiles;
+  unsigned long m_iProcessedDirs;
+  unsigned long m_iSpeed;
+  QTime m_RemainingTime;
+  bool m_bStalled;
+
   bool m_bCanResume;
   QString m_strFrom;
   QString m_strTo;
+  QString m_strDir;
 
   /**
    * Used in @ref #preget
