@@ -1110,6 +1110,10 @@ signals:
    * Normally widgets will update their fonts automatically, but you should
    * connect to this to monitor global font changes, especially if you are
    * using explicit fonts.
+   *
+   * Note: If you derive from a QWidget-based class, a faster method is to 
+   *       reimplement @ref QWidget::fontChange(). This is the preferred way
+   *       to get informed about font updates.
    */
   void kdisplayFontChanged();
 
