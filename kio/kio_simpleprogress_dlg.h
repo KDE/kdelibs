@@ -37,6 +37,7 @@ protected slots:
 
 protected:
 
+  QLabel* progressLabel;
   QLabel* sourceLabel;
   QLabel* destLabel;
   QLabel* speedLabel;
@@ -48,6 +49,9 @@ protected:
   unsigned long m_iTotalSize;
   unsigned long m_iTotalFiles;
   unsigned long m_iTotalDirs;
+
+  unsigned long m_iProcessedDirs;
+  unsigned long m_iProcessedFiles;
 
   enum ModeType { Copy, Delete, Create, Scan, Fetch };
   ModeType mode;

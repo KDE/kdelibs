@@ -20,7 +20,7 @@ KIOSimpleProgressDlg::KIOSimpleProgressDlg()
 					    KDialog::spacingHint() );
   topLayout->addStrut( 360 );	// makes dlg at least that wide
 
-  QGridLayout *grid = new QGridLayout(2, 3);
+  QGridLayout *grid = new QGridLayout(3, 3);
   topLayout->addLayout(grid);
   grid->setColStretch(2, 1);
   grid->addColSpacing(1, KDialog::spacingHint());
@@ -36,6 +36,9 @@ KIOSimpleProgressDlg::KIOSimpleProgressDlg()
   grid->addWidget(destLabel, 1, 2);
   
   topLayout->addSpacing( 10 );
+
+  progressLabel = new QLabel(this);
+  grid->addWidget(progressLabel, 2, 2);
 
   m_pProgressBar = new KProgress(0, 100, 0, KProgress::Horizontal, this);
   topLayout->addWidget( m_pProgressBar );
@@ -120,13 +123,25 @@ void KIOSimpleProgressDlg::slotProcessedSize( int, unsigned long _bytes ) {
 
 void KIOSimpleProgressDlg::slotProcessedDirs( int, unsigned long _dirs ) 
 {
-  sourceLabel->setText( i18n("%1/%2 directories created").arg( _dirs ).arg( m_iTotalDirs ) );
+  m_iProcessedDirs = _dirs;
+
+  QString tmps;
+  tmps = i18n("%1 / %2 directories  ").arg( m_iProcessedDirs ).arg( m_iTotalDirs );
+  tmps += i18n("%1 / %2 files").arg( m_iProcessedFiles ).arg( m_iTotalFiles );
+  progressLabel->setText( tmps );
 }
 
 
 void KIOSimpleProgressDlg::slotProcessedFiles( int, unsigned long _files ) 
 {
-  sourceLabel->setText( i18n("%1/%2 files").arg( _files ).arg( m_iTotalFiles ) );
+  m_iProcessedFiles = _files;
+
+  QString tmps;
+  if ( m_iTotalDirs > 1 ) {
+    tmps = i18n("%1 / %2 directories  ").arg( m_iProcessedDirs ).arg( m_iTotalDirs );
+  }
+  tmps += i18n("%1 / %2 files").arg( m_iProcessedFiles ).arg( m_iTotalFiles );
+  progressLabel->setText( tmps );
 }
 
 
