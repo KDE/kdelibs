@@ -44,7 +44,7 @@ using namespace khtml;
  * parsed DOMString and have no child-nodes.
  */
 
-AttrImpl::AttrImpl() 
+AttrImpl::AttrImpl()
     : NodeImpl(0),
       _name( 0 ),
       _value( 0 ),
@@ -54,7 +54,7 @@ AttrImpl::AttrImpl()
 }
 
 
-AttrImpl::AttrImpl(DocumentImpl *doc, const DOMString &name) 
+AttrImpl::AttrImpl(DocumentImpl *doc, const DOMString &name)
     : NodeImpl(doc),
       _name( 0 ),
       _value( 0 ),
@@ -64,7 +64,7 @@ AttrImpl::AttrImpl(DocumentImpl *doc, const DOMString &name)
     setName(name);
 }
 
-AttrImpl::AttrImpl(DocumentImpl *doc, int id) 
+AttrImpl::AttrImpl(DocumentImpl *doc, int id)
     : NodeImpl(doc),
       _name( 0 ),
       _value( 0 ),
@@ -258,9 +258,9 @@ ElementImpl::~ElementImpl()
 {
     if (m_render)
         detach();
-    
+
     delete m_style;
-            
+
     namedAttrMap->detachFromElement();
     namedAttrMap->deref();
 }
@@ -415,6 +415,11 @@ NodeListImpl *ElementImpl::getElementsByTagName( const DOMString &name )
     return new TagNodeListImpl( this, name );
 }
 
+NodeListImpl *ElementImpl::getElementsByNameAttr( const DOMString &name )
+{
+    return new NameNodeListImpl( this, name);
+}
+
 void ElementImpl::normalize()
 {
     NodeImpl *child = _first;
@@ -429,7 +434,7 @@ void ElementImpl::normalize()
 	    removeChild(nextChild);
 	}
 	else
-	{	
+	{
 	    child = nextChild;
 	    if(child->isElementNode())
 	    {
@@ -460,8 +465,8 @@ void ElementImpl::attach(KHTMLView *w)
 }
 
 void ElementImpl::detach()
-{    
-    NodeBaseImpl::detach();    
+{
+    NodeBaseImpl::detach();
 }
 
 void ElementImpl::applyChanges(bool top, bool force)
@@ -538,7 +543,7 @@ void NamedAttrMapImpl::fromAttributeList(const AttributeList list)
     if (!element)
 	throw DOMException(DOMException::NOT_FOUND_ERR);
     element->checkReadOnly();
-	
+
     uint i;
     clearAttrs(); // should be empty, but just in case...
 
@@ -559,7 +564,7 @@ void NamedAttrMapImpl::fromNamedAttrMapImpl(const NamedAttrMapImpl *other)
     // clone all attributes in the other map, but attach to our element
     if (!element)
 	throw DOMException(DOMException::NOT_FOUND_ERR);
-	
+
     clearAttrs();
     len = other->len;
     attrs = new AttrImpl* [len];
@@ -732,7 +737,7 @@ NodeImpl *NamedAttrMapImpl::removeNamedItem ( const DOMString &name )
 	newAttrs[i] = attrs[i+1];
     delete attrs;
     attrs = newAttrs;
-	
+
     DOMString nullStr;
     AttrImpl a(name,nullStr,element->ownerDocument());
     element->parseAttribute(&a);
@@ -779,7 +784,7 @@ AttrImpl *NamedAttrMapImpl::removeIdItem ( int id )
 	newAttrs[i] = attrs[i+1];
     delete attrs;
     attrs = newAttrs;
-	
+
     DOMString nullStr;
     AttrImpl a(id,nullStr,element->ownerDocument());
     element->parseAttribute(&a);
@@ -823,7 +828,7 @@ AttrImpl *NamedAttrMapImpl::removeAttr( AttrImpl *oldAttr )
     for (i = 0; i < len; i++) {
 	if (attrs[i] == oldAttr) {
 	    AttrImpl *ret = attrs[i];
-	
+
 	    if (len == 1) {
 		delete attrs;
 		attrs = 0;
@@ -840,7 +845,7 @@ AttrImpl *NamedAttrMapImpl::removeAttr( AttrImpl *oldAttr )
 		delete attrs;
 		attrs = newAttrs;
 	    }
-	    	
+
 	    ret->_element = 0;
 	    AttrImpl a = oldAttr->attrId ? AttrImpl(oldAttr->attrId,"",element->ownerDocument()) :
 	                               AttrImpl(oldAttr->name(),"",element->ownerDocument());
@@ -851,7 +856,7 @@ AttrImpl *NamedAttrMapImpl::removeAttr( AttrImpl *oldAttr )
     }
     throw DOMException(DOMException::NOT_FOUND_ERR);
     return 0;
-	
+
 }
 
 void NamedAttrMapImpl::detachFromElement()

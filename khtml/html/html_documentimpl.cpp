@@ -238,7 +238,7 @@ ElementImpl *HTMLDocumentImpl::getElementById( const DOMString &elementId )
 
 NodeListImpl *HTMLDocumentImpl::getElementsByName( const DOMString &elementName )
 {
-    return new NameNodeListImpl( this, elementName );
+    return new NameNodeListImpl( documentElement(), elementName );
 }
 
 #ifdef __GNUC__
@@ -452,9 +452,9 @@ void HTMLDocumentImpl::applyChanges(bool,bool force)
         f.setFamily(settings->stdFontName());
         f.setPointSize(size);
 	KGlobal::charsets()->setQFont(f, settings->charset());
-	//kdDebug() << "HTMLDocumentImpl::applyChanges " << f.charSet() << f.family() << endl; 
+	//kdDebug() << "HTMLDocumentImpl::applyChanges " << f.charSet() << f.family() << endl;
 	QFontInfo fi(f);
-	//kdDebug() << "HTMLDocumentImpl::applyChanges " << fi.charSet() << fi.family() << endl; 
+	//kdDebug() << "HTMLDocumentImpl::applyChanges " << fi.charSet() << fi.family() << endl;
         m_style->setFont(f);
     }
 

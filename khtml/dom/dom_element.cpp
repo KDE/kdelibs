@@ -168,6 +168,12 @@ NodeList Element::getElementsByTagName( const DOMString &name )
   return 0;
 }
 
+NodeList Element::getElementsByNameAttr( const DOMString &name )
+{
+  if (impl) return ((ElementImpl *)impl)->getElementsByNameAttr(name);
+  return 0;
+}
+
 void Element::normalize()
 {
   if (impl) ((ElementImpl *)impl)->normalize();

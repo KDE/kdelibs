@@ -176,7 +176,7 @@ public:
     void setPressed(bool b=true) { m_pressed = b; }
     void setMouseInside(bool b=true) { m_mouseInside = b; }
     void setAttached(bool b=true) { m_attached = b; }
-    virtual void setChanged(bool b=true); 
+    virtual void setChanged(bool b=true);
 
     /**
      * attach to a KHTMLView. Additional info (like style information,
@@ -365,12 +365,12 @@ protected:
 
 
 /**
- * NodeList which lists all Nodes in a document with a given "name=" tag
+ * NodeList which lists all Nodes in a Element with a given "name=" tag
  */
 class NameNodeListImpl : public NodeListImpl
 {
 public:
-    NameNodeListImpl( DocumentImpl *doc, const DOMString &t );
+    NameNodeListImpl( NodeImpl *doc, const DOMString &t );
 
     virtual ~NameNodeListImpl();
 
@@ -381,7 +381,7 @@ public:
 protected:
     virtual bool nodeMatches( NodeImpl *testNode ) const;
 
-    DocumentImpl *refDoc;
+    NodeImpl *refNode;
     DOMString nodeName;
 };
 

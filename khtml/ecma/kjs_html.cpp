@@ -119,7 +119,7 @@ Completion KJS::HTMLDocFunction::tryExecute(const List &args)
     break;
 */
   case Write:
-  case WriteLn: {                      
+  case WriteLn: {
     // DOM only specifies single string argument, but NS & IE allow multiple
     UString str = v.toString().value();
     for (int i = 1; i < args.size(); i++)
@@ -168,9 +168,6 @@ KJSO KJS::HTMLDocument::tryGet(const UString &p) const
   else if (p == "body")
     return getDOMNode(doc.body());
   else if (p == "location")
-#ifdef __GNUC__
-      //    #warning "HACK HACK HACK HACK" // ###
-#endif
     return new Location( static_cast<DOM::DocumentImpl *>( doc.handle() )->view()->part() );
   else if (p == "images")
     return new HTMLDocFunction(doc, HTMLDocFunction::Images);
@@ -793,9 +790,27 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
     return getString(element.dir());
   else if (p == "className") // ### isn't this "class" in the HTML spec?
     return getString(element.className());
+  else if (p == "length")
+  {
+    DOM::Element parentNode = static_cast<DOM::Element>(element.parentNode());
+    DOM::NodeList nl = parentNode.getElementsByNameAttr(element.getAttribute("name"));
+    return Number(nl.length());
+  }
   // ### what about style? or is this used instead for DOM2 stylesheets?
   else
-    return DOMElement::tryGet(p);
+  {
+      // it might be a number, with other words an index
+      bool ok;
+      uint u = p.toULong(&ok);
+      if(ok)
+      {
+          // try to find the u'th sibling with the current name
+          DOM::Element parentNode = static_cast<DOM::Element>(element.parentNode());
+          DOM::NodeList nl = parentNode.getElementsByNameAttr(element.getAttribute("name"));
+          return getDOMNode(nl.item(u));
+      }
+      return DOMElement::tryGet(p);
+  }
 }
 
 Completion KJS::HTMLElementFunction::tryExecute(const List &args)

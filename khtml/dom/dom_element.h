@@ -344,6 +344,20 @@ public:
     NodeList getElementsByTagName ( const DOMString &name );
 
     /**
+     * Returns a <code> NodeList </code> of all descendant elements
+     * with a given name attribute, in the order in which they would be
+     * encountered in a preorder traversal of the <code> Element
+     * </code> tree.
+     *
+     * @param name The name of the tag to match on. The special value
+     * "*" matches all tags.
+     *
+     * @return A list of matching <code> Element </code> nodes.
+     *
+     */
+    NodeList getElementsByNameAttr ( const DOMString &name );
+
+    /**
      * Puts all <code> Text </code> nodes in the full depth of the
      * sub-tree underneath this <code> Element </code> into a "normal"
      * form where only markup (e.g., tags, comments, processing
@@ -365,7 +379,7 @@ public:
      * not part of the DOM
      */
     bool isHTMLElement() const;
-    
+
 protected:
 
     Element(ElementImpl *_impl);

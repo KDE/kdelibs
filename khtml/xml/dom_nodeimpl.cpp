@@ -479,7 +479,7 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild )
 	checkNoOwner(child);
 	if(!childAllowed(child))
 	    throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
-	    		
+
 	// if already in the tree, remove it first!
 	NodeImpl *newParent = child->parentNode();
 	if(newParent)
@@ -496,7 +496,7 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild )
 	child->setNextSibling(refChild);
 	if (attached())
 	    child->attach(document->view());
-	
+
 	prev = child;
 	child = nextChild;
     }
@@ -539,7 +539,7 @@ NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild )
 	checkNoOwner(child);
 	if(!childAllowed(child))
 	    throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
-	
+
 	// if already in the tree, remove it first!
 	NodeImpl *newParent = child->parentNode();
 	if(newParent)
@@ -613,12 +613,12 @@ NodeImpl *NodeBaseImpl::appendChild ( NodeImpl *newChild )
 	checkNoOwner(child);
 	if(!childAllowed(child))
 	    throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
-	
+
 	// if already in the tree, remove it first!
 	NodeImpl *newParent = child->parentNode();
 	if(newParent)
 	    newParent->removeChild( child );
-		
+
 	// lets append it
 	child->setParent(this);
 
@@ -634,7 +634,7 @@ NodeImpl *NodeBaseImpl::appendChild ( NodeImpl *newChild )
 	}
 	if (attached())
 		child->attach(document->view());
-		
+
 	child = nextChild;
     }
 
@@ -893,35 +893,31 @@ bool TagNodeListImpl::nodeMatches( NodeImpl *testNode ) const
 
 
 
-NameNodeListImpl::NameNodeListImpl(DocumentImpl *doc, const DOMString &t )
+NameNodeListImpl::NameNodeListImpl(NodeImpl *n, const DOMString &t )
   : nodeName(t)
 {
-    refDoc= doc;
-    refDoc->ref();
+    refNode= n;
+    refNode->ref();
 }
 
 NameNodeListImpl::~NameNodeListImpl()
 {
-    refDoc->deref();
+    refNode->deref();
 }
 
 unsigned long NameNodeListImpl::length() const
 {
-    return recursiveLength( refDoc->documentElement() );
+    return recursiveLength( refNode );
 }
 
 NodeImpl *NameNodeListImpl::item ( unsigned long index ) const
 {
-    return recursiveItem( refDoc->documentElement(), index );
+    return recursiveItem( refNode, index );
 }
 
 bool NameNodeListImpl::nodeMatches( NodeImpl *testNode ) const
 {
-    // assert(testNode->nodeType() == Node::ELEMENT_NODE)
-    // this function is only called by NodeListImpl::recursiveXXX if
-    // the node is an element
-    return static_cast<ElementImpl *>(testNode) ->
-      getAttribute("name") == nodeName;
+    return static_cast<ElementImpl *>(testNode)->getAttribute(ATTR_NAME) == nodeName;
 }
 
 // ---------------------------------------------------------------------------
