@@ -49,11 +49,14 @@ KCompletionBase::~KCompletionBase()
 void KCompletionBase::setDelegate( KCompletionBase *delegate )
 {
     m_delegate = delegate;
-    m_delegate->m_bAutoDelCompObj = m_bAutoDelCompObj;
-    m_delegate->m_bHandleSignals  = m_bHandleSignals;
-    m_delegate->m_bEmitSignals    = m_bEmitSignals;
-    m_delegate->m_iCompletionMode = m_iCompletionMode;
-    m_delegate->m_keyMap          = m_keyMap;
+
+    if ( m_delegate ) {
+        m_delegate->m_bAutoDelCompObj = m_bAutoDelCompObj;
+        m_delegate->m_bHandleSignals  = m_bHandleSignals;
+        m_delegate->m_bEmitSignals    = m_bEmitSignals;
+        m_delegate->m_iCompletionMode = m_iCompletionMode;
+        m_delegate->m_keyMap          = m_keyMap;
+    }
 }
 
 KCompletion* KCompletionBase::completionObject( bool hsig )
