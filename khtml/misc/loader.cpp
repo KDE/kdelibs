@@ -971,7 +971,7 @@ CachedImage *Cache::requestImage( const DOMString & url, const DOMString &baseUr
 
     CachedObject *o = 0;
     if (!reload)
-	cache->find(kurl.url());
+	o = cache->find(kurl.url());
     if(!o)
     {
 #ifdef CACHE_DEBUG

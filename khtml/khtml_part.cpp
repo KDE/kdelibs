@@ -806,7 +806,15 @@ void KHTMLPart::slotFinishedParsing()
     NodeImpl *node = imgColl.item( i );
     if ( node->id() != ID_IMG )
       continue;
-    KURL url( m_url, static_cast<DOM::ElementImpl *>( node )->getAttribute( ATTR_SRC ).string() );
+    
+    QString imgURL = static_cast<DOM::ElementImpl *>( node )->getAttribute( ATTR_SRC ).string();
+    KURL url;
+    
+    if ( KURL::isRelativeURL( imgURL ) )
+      url = completeURL( imgURL );
+    else
+      url = KURL( imgURL );
+    
     if ( !imageURLs.contains( url ) )
     {
       d->m_totalImageCount++;
