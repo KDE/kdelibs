@@ -737,16 +737,17 @@ void KDoubleNumInput::doLayout()
     QString s;
     int h = fm.height();
     s = KGlobal::locale()->formatNumber(m_value, m_precision);
-    int w = fm.width(m_prefix) + fm.width(s) + fm.width(m_suffix);
+    int w0 = fm.width( m_prefix ) + fm.width( m_suffix );
+    int w = w0 + fm.width(s);
     w = QMAX(w, fm.width(m_specialvalue));
     if(m_range) {
         s = KGlobal::locale()->formatNumber(m_lower, m_precision);
-        w = QMAX(w, fm.width(s));
+        w = QMAX(w, fm.width(s)+w0);
         s = KGlobal::locale()->formatNumber(m_upper, m_precision);
-        w = QMAX(w, fm.width(s));
+        w = QMAX(w, fm.width(s)+w0);
         // something inbetween
         s = KGlobal::locale()->formatNumber(m_lower + m_step, m_precision);
-        w = QMAX(w, fm.width(s));
+        w = QMAX(w, fm.width(s)+w0);
     }
 
     if ( edit->frame() ) {
