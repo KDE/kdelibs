@@ -210,7 +210,11 @@
     }
 
   protected:
-    void readImmutability(KConfig *);
+    /**
+     * sets mIsImmutable to true if mKey in config is immutable
+     * @param config KConfig to check if mKey is immutable in
+     */
+    void readImmutability(KConfig *config);
 
     QString mGroup;
     QString mKey;
