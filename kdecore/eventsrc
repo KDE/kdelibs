@@ -1,6 +1,6 @@
 [!Global!]
 appname=kde
-friendly=KDE System Notifications
+description=KDE System Notifications
 
 [KCompletion: rotation]
 friendly=KCompletion End of Matches
