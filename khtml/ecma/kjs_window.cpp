@@ -488,7 +488,7 @@ Value Window::get(ExecState *exec, const UString &p) const
     case PageYOffset:
       return Number(m_part->view()->contentsY());
     case Parent:
-      return Value(retrieve(m_part->parentPart() ? m_part->parentPart() : (KHTMLPart*)m_part));
+      return retrieve(m_part->parentPart() ? m_part->parentPart() : (KHTMLPart*)m_part);
     case Personalbar:
       return Undefined(); // ###
     case ScreenX: {
@@ -503,12 +503,12 @@ Value Window::get(ExecState *exec, const UString &p) const
       return Undefined(); // ###
     case Self:
     case _Window:
-      return Value(retrieve(m_part));
+      return retrieve(m_part);
     case Top: {
       KHTMLPart *p = m_part;
       while (p->parentPart())
         p = p->parentPart();
-      return Value(retrieve(p));
+      return retrieve(p);
     }
     case _Screen:
       return Value(screen ? screen :
@@ -661,7 +661,7 @@ Value Window::get(ExecState *exec, const UString &p) const
   }
   KHTMLPart *kp = m_part->findFrame( p.qstring() );
   if (kp)
-    return Value(retrieve(kp));
+    return retrieve(kp);
 
   // allow shortcuts like 'Image1' instead of document.images.Image1
   if (isSafeScript(exec) &&
