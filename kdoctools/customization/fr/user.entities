@@ -98,6 +98,9 @@
 <!ENTITY traducteurChristopheLefebvre  '<othercredit role="translator"><firstname>Christophe</firstname><surname>Lefebvre</surname><affiliation><address><email>clefebvre@netcourrier.com</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurChristopheLefebvre  '<othercredit role="reviewer"><firstname>Christophe</firstname><surname>Lefebvre</surname><affiliation><address><email>clefebvre@netcourrier.com</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
+<!ENTITY traducteurAnneMarieMahfouf   '<othercredit role="translator"><firstname>Anne-Marie</firstname><surname>Mahfouf</surname><affiliation><address><email>a-m.mahfouf@lineone.net</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY relecteurAnneMarieMahfouf   '<othercredit role="reviewer"><firstname>Anne-Marie</firstname><surname>Mahfouf</surname><affiliation><address><email>a-m.mahfouf@lineone.net</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+
 <!ENTITY traducteurPatrickMichelon   '<othercredit role="translator"><firstname>Patrick</firstname><surname>Michelon</surname><affiliation><address><email>patrick.michelon@free.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurPatrickMichelon   '<othercredit role="reviewer"><firstname>Patrick</firstname><surname>Michelon</surname><affiliation><address><email>patrick.michelon@free.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
