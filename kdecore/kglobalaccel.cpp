@@ -82,6 +82,12 @@ bool KGlobalAccel::readSettings( KConfigBase* pConfig )
 	{ d->readSettings( pConfig ); return true; }
 bool KGlobalAccel::writeSettings( KConfigBase* pConfig ) const
 	{ d->writeSettings( pConfig ); return true; }
+bool KGlobalAccel::writeSettings( KConfigBase* pConfig, bool bGlobal ) const
+{
+	d->setConfigGlobal( bGlobal ); 
+	d->writeSettings( pConfig ); 
+	return true; 
+}
 
 bool KGlobalAccel::useFourModifierKeys()
 	{ return KAccelAction::useFourModifierKeys(); }

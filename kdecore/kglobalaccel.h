@@ -118,6 +118,14 @@ class KGlobalAccel : public QObject
 	 * configuration file.
 	 */
 	bool writeSettings( KConfigBase* pConfig = 0 ) const;
+	// BCI: merge these two writeSettings methods in KDE 4.0
+	/**
+	 * Write the current shortcuts to @p pConfig,
+	 * or (if @p pConfig is zero) to the application's
+	 * configuration file.  Alternatively, if bGlobal is true, then write
+	 * to kdeglobals.
+	 */
+	bool writeSettings( KConfigBase* pConfig, bool bGlobal ) const;
 
 	/**
 	 * @internal -- this a wrapper function to
