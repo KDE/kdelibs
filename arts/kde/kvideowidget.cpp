@@ -74,8 +74,8 @@ bool KFullscreenVideoWidget::x11Event( XEvent *event )
 }
 
 KVideoWidget::KVideoWidget( KXMLGUIClient *clientParent, QWidget *parent, const char *name, WFlags f )
-    : QWidget( parent, name, f )
-    , KXMLGUIClient( clientParent )
+    : KXMLGUIClient( clientParent ),
+    QWidget( parent, name, f )
 {
 	init();
 	// ???
