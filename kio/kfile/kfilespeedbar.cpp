@@ -65,11 +65,6 @@ KFileSpeedBar::KFileSpeedBar( QWidget *parent, const char *name )
             insertItem( u, i18n("Devices"), false,
                                    KProtocolInfo::icon( "devices" ) );
 
-        QStringList tmpDirs = KGlobal::dirs()->resourceDirs( "tmp" );
-        u.setProtocol( "file" );
-        u.setPath( tmpDirs.isEmpty() ? QString("/tmp") : tmpDirs.first() );
-        insertItem( u, i18n("Temporary Files"), false,
-                               "file_temporary" );
         u = "lan:/";
         if ( KProtocolInfo::isKnownProtocol( u ) )
             insertItem( u, i18n("Network"), false,
