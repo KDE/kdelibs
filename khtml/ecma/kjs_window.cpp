@@ -438,6 +438,8 @@ bool Window::hasProperty(ExecState *exec, const Identifier &p) const
     for (int i = 0; i < 3; i++)
       if (tags[i].length > 0)
         return true;
+
+    return !doc.getElementById(p.string()).isNull();
   }
 
   return false;
@@ -744,6 +746,10 @@ Value Window::get(ExecState *exec, const Identifier &p) const
         // Get all the items with the same name
         return getDOMNodeList(exec, DOM::NodeList(new DOM::NamedTagNodeListImpl(doc.handle(), tags[i].id, p.string())));
     }
+
+    DOM::Element element = doc.getElementById(p.string() );
+    if ( !element.isNull() )
+      return getDOMNode(exec, element );
   }
 
   // This isn't necessarily a bug. Some code uses if(!window.blah) window.blah=1
