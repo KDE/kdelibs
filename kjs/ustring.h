@@ -193,6 +193,7 @@ namespace KJS {
   class UString {
     friend bool operator==(const UString&, const UString&);
     friend class UCharReference;
+    friend class Identifier;
     /**
      * @internal
      */
@@ -220,6 +221,8 @@ _hash; }
       int capacity;
       int rc;
       mutable int _hash;
+
+      enum { capacityForIdentifier = 0x10000000 };
 
       static Rep null;
       static Rep empty;
