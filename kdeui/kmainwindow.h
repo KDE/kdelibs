@@ -802,13 +802,14 @@ private:
 };
 
 #ifndef NDEBUG
+#include <kdebug.h>
 #define RESTORE(type) { int n = 1;\
     while (KMainWindow::canBeRestored(n)){\
       if( QString::fromLatin1( type::staticMetaObject()->className())\
           != KMainWindow::classNameOfToplevel( n ))\
       {\
         kdWarning() << "RESTORE() - unknown window class "\
-          << KMainWindow::classnameOfTopLevel( n ) << " in session saved data!";\
+          << KMainWindow::classNameOfTopLevel( n ) << " in session saved data!";\
       }\
       else\
         (new type)->restore(n);\
