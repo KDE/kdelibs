@@ -561,14 +561,15 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         }
         case CSSSelector::Hyphen:
         {
-            // ### still doesn't work. FIXME
             //kdDebug( 6080 ) << "checking for hyphen match" << endl;
             QString str = value.string();
-            if(str.find(sel->value.string(), 0, strictParsing) != 0) return false;
-            // ### could be "bla , sdfdsf" too. Parse out spaces
-            int pos = sel->value.length() + 1;
-            while(pos < (int)str.length() && sel->value[pos] == ' ') pos++;
-            if(pos < (int)str.length() && sel->value[pos] != ',') return false;
+            QString selStr = sel->value.string();
+            if(str.length() < selStr.length()) return false;
+            // Check if str begins with selStr:
+            if(str.find(selStr, 0, strictParsing) != 0) return false;
+            // It does. Check for exact match or following '-':
+            if(str.length() != selStr.length()
+                && str[selStr.length()] != '-') return false;
             break;
         }
         case CSSSelector::Pseudo:
