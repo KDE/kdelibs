@@ -151,7 +151,7 @@ KVMAllocator::free(Block *block_p)
    if (before != d->free_blocks.end())
    {
       Block &block_before = before.data();
-      if ((block_before.start + block_before.size) == block.start)
+      if ((block_before.start + off_t(block_before.size)) == block.start)
       {
          // Merge blocks.
          kdDebug(13020) << "VM merging: Block "<< (long)block_before.start<<
@@ -168,7 +168,7 @@ KVMAllocator::free(Block *block_p)
    if (after != d->free_blocks.end())
    {
       Block &block_after = after.data();
-      if ((block.start + block.size) == block_after.start)
+      if ((block.start + off_t(block.size)) == block_after.start)
       {
          // Merge blocks.
          kdDebug(13020) << "VM merging: Block "<< (long)block.start<<
