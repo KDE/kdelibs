@@ -29,65 +29,22 @@
 #include <kglobal.h>
 #include <kstandarddirs.h>
 
-KCModuleInfo::KCModuleInfo(const QString& desktopFile, const QString& baseGroup)
+KCModuleInfo::KCModuleInfo(const QString& desktopFile)
   : _fileName(desktopFile), d(0L)
 {
   _allLoaded = false;
 
   //kdDebug(1208) << "desktopFile = " << desktopFile << endl;
-  _service = KService::serviceByDesktopPath(desktopFile);
-  Q_ASSERT(_service != 0L);
-
-  // set the modules simple attributes
-  setName(_service->name());
-  setComment(_service->comment());
-  setIcon(_service->icon());
-
-  // library and factory
-  setLibrary(_service->library());
-
-  // get the keyword list
-  setKeywords(_service->keywords());
-
-  // try to find out the modules groups
-  QString group = desktopFile;
-
-  int pos = group.find(baseGroup);
-  if (pos >= 0)
-     group = group.mid(pos+baseGroup.length());
-  pos = group.findRev('/');
-  if (pos >= 0)
-     group = group.left(pos);
-  else
-     group = QString::null;
-
-  QStringList groups = QStringList::split('/', group);
-  setGroups(groups);
+  init( KService::serviceByDesktopPath(desktopFile) );
 }
 
 KCModuleInfo::KCModuleInfo( KService::Ptr moduleInfo )
-  : _fileName( KGlobal::dirs()->findResource( "services", moduleInfo->desktopEntryPath() ) )
+  : _fileName( moduleInfo->desktopEntryPath() )
 {
   kdDebug() << k_funcinfo << _fileName << endl;
   _allLoaded = false;
 
-  _service = moduleInfo;
-  Q_ASSERT(_service != 0L);
-
-  // set the modules simple attributes
-  setName(_service->name());
-  setComment(_service->comment());
-  setIcon(_service->icon());
-
-  // library and factory
-  setLibrary(_service->library());
-
-  // get the keyword list
-  setKeywords(_service->keywords());
-
-  // get the groups list
-  KDesktopFile desktop(_fileName);
-  setGroups( desktop.readListEntry( "X-KDE-Groups" ) );
+  init(moduleInfo);
 }
 
 KCModuleInfo::KCModuleInfo( const KCModuleInfo &rhs )
@@ -133,32 +90,51 @@ bool KCModuleInfo::operator!=( const KCModuleInfo & rhs ) const
 
 KCModuleInfo::~KCModuleInfo() { }
 
+void KCModuleInfo::init(KService::Ptr s)
+{
+  _service = s;
+  // set the modules simple attributes
+  setName(_service->name());
+  setComment(_service->comment());
+  setIcon(_service->icon());
+
+  // library and factory
+  setLibrary(_service->library());
+
+  // get the keyword list
+  setKeywords(_service->keywords());
+
+  setGroups( _service->property("X-KDE-Groups", QVariant::StringList).toStringList() );
+}
+
 void
 KCModuleInfo::loadAll() 
 {
   _allLoaded = true;
 
-  KDesktopFile desktop(_fileName);
-
   // library and factory
-  setHandle(_service->property("X-KDE-FactoryName").toString());
+  setHandle(_service->property("X-KDE-FactoryName", QVariant::String).toString());
 
   // KCD parent
   setParentComponents(
-      _service->property("X-KDE-ParentComponents").toStringList());
+      _service->property("X-KDE-ParentComponents", QVariant::StringList).toStringList());
 
   // read weight
-  setWeight( desktop.readNumEntry( "X-KDE-Weight", -1 ) );
+  QVariant v = _service->property( "X-KDE-Weight", QVariant::Int );
+  if (v.isValid())
+     setWeight( v.toInt() );
+  else
+     setWeight( -1 );
 
   // does the module need super user privileges?
-  setNeedsRootPrivileges(desktop.readBoolEntry("X-KDE-RootOnly", false));
+  setNeedsRootPrivileges( _service->property( "X-KDE-RootOnly", QVariant::Bool ).toBool() );
 
   // does the module need to be shown to root only?
   // Deprecated !
-  setIsHiddenByDefault(desktop.readBoolEntry("X-KDE-IsHiddenByDefault", false));
+  setIsHiddenByDefault( _service->property( "X-KDE-IsHiddenByDefault", QVariant::Bool ).toBool() );
 
   // get the documentation path
-  setDocPath(desktop.readPathEntry("DocPath"));
+  setDocPath( _service->property( "DocPath", QVariant::String ).toString() );
 }
 
 QStringList

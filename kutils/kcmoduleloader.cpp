@@ -118,7 +118,7 @@ KCModule* KCModuleLoader::loadModule(const QString &module, QWidget *parent,
         return 0;
     }
 
-    KCModuleInfo mod(serv->entryPath(), "");
+    KCModuleInfo mod(serv);
 
     return loadModule(mod, false, parent, name, args);
 }

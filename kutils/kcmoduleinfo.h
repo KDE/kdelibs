@@ -50,7 +50,7 @@ public:
    * Constructs a KCModuleInfo, note that you will have to take care about the deletion
    * yourself!
    */
-  KCModuleInfo(const QString& desktopFile, const QString& baseGroup /* = QString::fromLatin1("settings")*/);
+  KCModuleInfo(const QString& desktopFile);
 
   /**
    * Construct a KCModuleInfo from a KService object.
@@ -162,6 +162,9 @@ protected:
   { _isHiddenByDefault = isHiddenByDefault; };
   void setDocPath(const QString &p) { _doc = p; };
   void loadAll();
+
+private:
+  void init(KService::Ptr s);
 
 private:
 
