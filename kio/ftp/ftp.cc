@@ -905,7 +905,7 @@ void Ftp::stat( const QString & path )
   // Argument to the list command (defaults to the directory containing the file)
   // Let's use KURL's function (even if building it as a local one)
   KURL tempurl( path );
-  QString listarg = tempurl.directory();
+  QString listarg = tempurl.directory(false /*keep trailing slash*/);
   QString search = tempurl.filename();
   QString filename = tempurl.filename();
 
