@@ -81,7 +81,8 @@ bool KTarBase::open( int mode )
   if(0 == d->dev)
     return false; // Fail w/o segfaulting if the device is no good
 
-  d->dev->open( mode );
+  if ( !d->dev->open( mode ) )
+    return false;
 
   if ( m_open )
     close();
