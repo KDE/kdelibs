@@ -13,8 +13,8 @@
 
 #pragma implementation
 
+#include "configDB.h" 
 #include <qwidget.h>
-#include "configDB.h"
 #include "debug.h"
 #include <fstream.h>
 extern "C" {

@@ -11,12 +11,12 @@
  * $Revision$
  */
 
+#include "businesscard.h"
 #include <string>
 #include <qpainter.h>
 #include <qmessagebox.h>
 #include <qtooltip.h>
 #include <kurllabel.h>
-#include "businesscard.h"
 
 extern "C" {
 #include <stdio.h>

@@ -12,11 +12,11 @@
  * $Revision$
  */
 
+#include "kabapi.h"
 #include "editentry.h"
 #include <qpushbutton.h>
 #include <qframe.h>
 #include <qmessagebox.h>
-#include "kabapi.h"
 #include "debug.h"
 #include <klocale.h>
 

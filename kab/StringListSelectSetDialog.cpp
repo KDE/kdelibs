@@ -2,8 +2,8 @@
  * §Header§
  */
 
-#include <qwidget.h>
 #include "StringListSelectSetDialog.h"
+#include <qwidget.h>
 #include <qlistbox.h>
 #include <kapp.h>
 

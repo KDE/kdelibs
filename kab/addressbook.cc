@@ -11,8 +11,8 @@
  * $Revision$
  */
 
+#include "addressbook.h"    
 #include <qwidget.h>
-#include "addressbook.h"
 #ifdef KAB_DEBUG
 #include "debug.h"
 #endif

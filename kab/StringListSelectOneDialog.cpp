@@ -2,8 +2,8 @@
  * §Header§
  */
 
+#include "StringListSelectOneDialog.h" 
 #include <qwidget.h>
-#include "StringListSelectOneDialog.h"
 #include <qcombobox.h>
 #include <qlayout.h>
 #include <qlabel.h>

@@ -21,10 +21,10 @@ class QLabel;
 class QComboBox;
 class QTimer;
 
+#include "addressbook.h"  
 #include <qprinter.h>
 #include <qevent.h>
 #include <qwidget.h>
-#include "addressbook.h"
 class BusinessCard;
 class SearchResults;
 

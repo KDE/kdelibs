@@ -22,15 +22,15 @@
 #ifndef __KPREVIEW_H__
 #define __KPREVIEW_H__
 
+#include "kfileinfo.h"
+#include "kdir.h"
+#include "kfiledialog.h" 
+
 #include <qpixmap.h>
 #include <qgroupbox.h>
 #include <qlabel.h>
 #include <qmultilinedit.h>
 #include <qdict.h>
-
-#include "kfileinfo.h"
-#include "kdir.h"
-#include "kfiledialog.h"
 
 class KPreviewObject;
 /**

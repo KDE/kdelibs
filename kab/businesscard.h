@@ -14,9 +14,9 @@
 #ifndef ADDRESSBOOK_BUSINESSCARD_H
 #define ADDRESSBOOK_BUSINESSCARD_H
 
+#include "addressbook.h"
 #include <qwidget.h>
 #include <qpixmap.h>
-#include "addressbook.h"
 
 class KURLLabel;
 

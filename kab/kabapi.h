@@ -14,8 +14,8 @@
 #ifndef KABAPI_H
 #define KABAPI_H
 
-#include <qdialog.h>
 #include "kab.h"
+#include <qdialog.h>
 
 class QPushButton;
 class QFrame;

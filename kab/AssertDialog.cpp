@@ -15,11 +15,11 @@ extern "C" {
 #include <signal.h>
 #include <string.h>
 #include "bug_3d.xpm"
-	   }
+}
+#include "AssertDialog.h"
 #include <qmessagebox.h>
 #include <qradiobutton.h>
 #include <iostream.h>
-#include "AssertDialog.h"
 #include "kabapi.h"
 #include "debug.h"
 #include <klocale.h>

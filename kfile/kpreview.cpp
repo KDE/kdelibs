@@ -19,14 +19,14 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include "kpreview.h" 
+
 #include <qlayout.h>
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qpixmap.h>
 #include <qwmatrix.h>
 #include <qstring.h>
-
-#include "kpreview.h"
 
 #include "kdir.h"
 #include <kapp.h>

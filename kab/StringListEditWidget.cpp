@@ -2,10 +2,10 @@
  * §Header§
  */
 
+#include "StringListEditWidget.h" 
 #include <qsize.h>
 #include <qbitmap.h>
 #include <qtooltip.h>
-#include "StringListEditWidget.h"
 #include <kiconloader.h>
 #include "debug.h"
 #include <kapp.h>

@@ -4,11 +4,11 @@
 #ifndef STRINGLISTEDITDIALOG_H
 #define STRINGLISTEDITDIALOG_H
 
+#include "stl_headers.h"
 #include <qlist.h>
 #include <qsize.h>
 #include "DialogBase.h"
 #include <qstrlist.h>
-#include "stl_headers.h"
 
 class StringListEditWidget;
 

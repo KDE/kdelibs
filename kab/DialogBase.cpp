@@ -10,8 +10,8 @@
  *             Nana for debugging
  * $Revision$
  */
-#include <qwidget.h>
 #include "DialogBase.h"
+#include <qwidget.h>
 #include <qpixmap.h>
 // #include <qwhatsthis.h>
 #include <qtoolbutton.h>

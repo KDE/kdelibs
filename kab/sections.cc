@@ -12,8 +12,8 @@
 
 #pragma implementation
 
+#include "sections.h" 
 #include <qwidget.h>
-#include "sections.h"
 #include "debug.h"
 #include "functions.h"
 

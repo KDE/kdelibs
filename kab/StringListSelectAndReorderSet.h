@@ -20,8 +20,8 @@
 #ifndef StringListSelectAndReorderSet_included
 #define StringListSelectAndReorderSet_included
 
-#include "StringListSelectAndReorderSetData.h"
 #include "stl_headers.h"
+#include "StringListSelectAndReorderSetData.h"
 #include <qlist.h>
 #include <qsize.h>
 #include "DialogBase.h"

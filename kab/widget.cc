@@ -11,9 +11,9 @@
  * $Revision$
  */
 
+#include "stl_headers.h" 
 #include <fnmatch.h>
 #include <qprinter.h>
-#include "stl_headers.h"
 #include <qwidget.h>
 #include <qlabel.h>
 #include <qlineedit.h>

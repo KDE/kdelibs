@@ -4,9 +4,9 @@
 #ifndef StringListEditWidget_included
 #define StringListEditWidget_included
 
+#include "stl_headers.h"  
 #include "StringListEditWidgetData.h"
 #include <qstrlist.h>
-#include "stl_headers.h"
 
 class StringListEditWidget : public StringListEditWidgetData
 {

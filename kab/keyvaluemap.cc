@@ -10,8 +10,8 @@
 
 #pragma implementation
 
-#include <qwidget.h>
 #include "keyvaluemap.h"
+#include <qwidget.h>
 #include "debug.h"
 #include "functions.h"
 #include <iostream.h>

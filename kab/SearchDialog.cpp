@@ -10,8 +10,8 @@
  * $Revision$
  */
 
-#include <qwidget.h>
 #include "SearchDialog.h"
+#include <qwidget.h>  
 #include "SearchDialogMainWidget.h"
 #include "debug.h"
 #include <klocale.h>

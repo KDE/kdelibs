@@ -11,9 +11,9 @@
  * $Revision$
  */
 
+#include "debug.h"
 #include "SearchDialogMainWidget.h"
 #include <qtooltip.h>
-#include "debug.h"
 #include <klocale.h>
 #include <kapp.h> // includes kapp.h
 

@@ -12,8 +12,8 @@
 
 #pragma implementation
 
-#include <qwidget.h>
 #include "functions.h"
+#include <qwidget.h>
 #include "debug.h"
 #include <stdlib.h>
 

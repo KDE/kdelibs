@@ -14,8 +14,8 @@
 #ifndef PrintDialog_included
 #define PrintDialog_included
 
-#include "PrintDialogData.h"
 #include "stl_headers.h"
+#include "PrintDialogData.h"
 
 /* This dialog asks the user for the headline and footers when printing the 
  * database.
