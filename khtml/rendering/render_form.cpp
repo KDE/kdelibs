@@ -44,7 +44,6 @@
 #include "xml/dom_docimpl.h"
 
 #include <kdebug.h>
-#include <qpopupmenu.h>
 
 using namespace khtml;
 
@@ -348,37 +347,6 @@ LineEditWidget::LineEditWidget(QWidget *parent)
     setMouseTracking(true);
 }
 
-QPopupMenu *LineEditWidget::createPopupMenu()
-{
-    QPopupMenu *popup = KLineEdit::createPopupMenu();
-    if ( !popup )
-        return 0L;
-    connect( popup, SIGNAL( activated( int ) ),
-             this, SLOT( extendedMenuActivated( int ) ) );
-
-    popup->insertSeparator();
-    popup->insertItem( i18n("Clear History"), ClearHistory );
-    return popup;
-}
-
-void LineEditWidget::extendedMenuActivated( int id)
-{
-    switch ( id )
-    {
-    case ClearHistory:
-        clearMenuHistory();
-        break;
-    default:
-        break;
-    }
-}
-
-void LineEditWidget::clearMenuHistory()
-{
-    emit clearCompletionHistory();
-}
-
-
 bool LineEditWidget::event( QEvent *e )
 {
     if ( e->type() == QEvent::AccelAvailable && isReadOnly() ) {
@@ -414,7 +382,7 @@ RenderLineEdit::RenderLineEdit(HTMLInputElementImpl *element)
     connect(edit,SIGNAL(textChanged(const QString &)),this,SLOT(slotTextChanged(const QString &)));
     connect(edit,SIGNAL(pressed()), this, SLOT(slotPressed()));
     connect(edit,SIGNAL(released()), this, SLOT(slotReleased()));
-    connect(edit, SIGNAL(clearCompletionHistory()), this, SLOT( slotClearCompletionHistory()));
+
     if(element->inputType() == HTMLInputElementImpl::PASSWORD)
         edit->setEchoMode( QLineEdit::Password );
 
@@ -427,14 +395,6 @@ RenderLineEdit::RenderLineEdit(HTMLInputElementImpl *element)
     }
 
     setQWidget(edit);
-}
-
-void RenderLineEdit::slotClearCompletionHistory()
-{
-    if ( element()->autoComplete() ) {
-        view()->clearCompletionHistory(element()->name().string());
-        static_cast<LineEditWidget*>(m_widget)->completionObject()->clear();
-    }
 }
 
 void RenderLineEdit::slotReturnPressed()
