@@ -846,7 +846,8 @@ void Window::closeNow()
   if (!m_part.isNull())
   {
     //kdDebug(6070) << k_funcinfo << " -> closing window" << endl;
-    delete m_part;
+    m_part->deleteLater();
+    m_part = 0;
   }
 }
 
@@ -957,9 +958,11 @@ void Window::clear( ExecState *exec )
   deleteAllProperties( exec );
   // Really delete those properties, so that the DOM nodes get deref'ed
   KJS::Collector::collect();
+  if (!m_part.isNull()) {
   // Now recreate a working global object for the next URL that will use us
   KJS::Interpreter *interpreter = KJSProxy::proxy( m_part )->interpreter();
   interpreter->initGlobalObject();
+  }
 }
 
 void Window::setCurrentEvent( DOM::Event *evt )
