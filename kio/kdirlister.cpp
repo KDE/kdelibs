@@ -277,7 +277,7 @@ void KDirLister::slotUpdateResult( KIO::Job * job )
   {
     if ( (*kit)->url().directory( false /* keep trailing slash */, false ) == sPath )
     {
-      kdDebug(7003) << "slotUpdateFinished : unmarking " << (*kit)->url().url() << endl;
+      //kdDebug(7003) << "slotUpdateFinished : unmarking " << (*kit)->url().url() << endl;
       (*kit)->unmark();
     } else
       (*kit)->mark(); // keep the other items
@@ -325,7 +325,7 @@ void KDirLister::slotUpdateResult( KIO::Job * job )
 
       if ( !done )
       {
-        kdDebug(7003) << "slotUpdateFinished : inserting " << name << endl;
+        //kdDebug(7003) << "slotUpdateFinished : inserting " << name << endl;
         KFileItem* item = createFileItem( *it, m_url, m_bDelayedMimeTypes );
 
         if ( (m_bDirOnlyMode && !item->isDir()) || !matchesFilter( item ))
@@ -334,7 +334,7 @@ void KDirLister::slotUpdateResult( KIO::Job * job )
           continue;
         }
 
-        kdDebug(7003) << "slotUpdateFinished : URL= " << item->url().url() << endl;
+        //kdDebug(7003) << "slotUpdateFinished : URL= " << item->url().url() << endl;
         m_lstFileItems.append( item );
         lstNewItems.append( item );
         item->mark();
@@ -430,7 +430,7 @@ void KDirLister::forgetDirs()
   for ( KURL::List::Iterator it = m_lstDirs.begin(); it != m_lstDirs.end(); ++it ) {
     if ( (*it).isLocalFile() )
     {
-      kdDebug(7003) << "forgetting about " << (*it).path() << endl;
+      //kdDebug(7003) << "forgetting about " << (*it).path() << endl;
       kdirwatch->removeDir( (*it).path() );
     }
   }
