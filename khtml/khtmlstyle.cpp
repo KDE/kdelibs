@@ -134,6 +134,7 @@ CSSStyleSheet::newStyle(CSSStyle *parentStyle)
         newStyle->font.decoration = CSSStyleFont::decNormal;
         newStyle->font.color = settings->fontBaseColor;
         newStyle->font.family = settings->fontBaseFace;
+        newStyle->font.fixed = false;
         newStyle->font.style = CSSStyleFont::stNormal;
         newStyle->font.weight = CSSStyleFont::Normal;
         newStyle->font.size = settings->fontBaseSize;

@@ -565,7 +565,7 @@ HTMLCheckBox::HTMLCheckBox( QWidget *parent, const char *n, const char *v,
 		bool ch, const HTMLFont *f )
 	: HTMLInput( n, v, f )
 {
-    QWidget *w;
+    QCheckBox *w;
 	_defCheck = ch;
 
 //	w = new QCheckBox( parent );
@@ -573,9 +573,9 @@ HTMLCheckBox::HTMLCheckBox( QWidget *parent, const char *n, const char *v,
 	if( font )
 	    w->setFont( *font );
 
-	((QCheckBox *)w)->setChecked( ch );
+	w->setChecked( ch );
 
-	QSize size( 14, 14 );
+	QSize size( w->sizeHint() );
 
 	w->resize( size );
 
@@ -632,7 +632,7 @@ HTMLRadio::HTMLRadio( QWidget *parent, const char *n, const char *v,
 		bool ch, const HTMLFont *f )
 	: HTMLInput( n, v, f )
 {
-    QWidget *w;
+    QRadioButton *w;
 	_defCheck = ch;
 
 //	w = new QRadioButton( parent );
@@ -640,9 +640,9 @@ HTMLRadio::HTMLRadio( QWidget *parent, const char *n, const char *v,
 	if( font )
 	    w->setFont( *font );
 
-	((QRadioButton *)w)->setChecked( ch );
+	w->setChecked( ch );
 
-	QSize size( 14, 14 );
+	QSize size( w->sizeHint() );
 
 	w->resize( size );
 

@@ -2017,15 +2017,15 @@ KHTMLWidget::~KHTMLWidget()
 }
 
 void
-KHTMLWidget::setFontSizes(const int *newFontSizes)
+KHTMLWidget::setFontSizes(const int *newFontSizes, const int *newFixedFontSizes)
 {
-    defaultSettings->setFontSizes(newFontSizes);
+    defaultSettings->setFontSizes(newFontSizes, newFixedFontSizes);
 }
 
 void
-KHTMLWidget::getFontSizes(int *newFontSizes)
+KHTMLWidget::getFontSizes(int *newFontSizes, int *newFixedFontSizes)
 {
-    defaultSettings->getFontSizes(newFontSizes);
+    defaultSettings->getFontSizes(newFontSizes, newFixedFontSizes);
 }
 
 void

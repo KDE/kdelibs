@@ -334,7 +334,8 @@ void KHTMLParser::setFont(void)
     currentStyle->font.size = fontsize;
 
     HTMLFont f( currentStyle->font.family, 
-                fontsize, settings->fontSizes, 
+                fontsize, 
+                currentStyle->font.fixed ? settings->fixedFontSizes : settings->fontSizes,
                 currentStyle->font.weight / 10, 
                 (currentStyle->font.style != CSSStyleFont::stNormal), 
                 settings->charset );
@@ -1373,6 +1374,7 @@ void KHTMLParser::parseTagCode(void)
 {
     pushBlock(tagID, 1 );
     currentStyle->font.family = settings->fixedFontFace;
+    currentStyle->font.fixed = true;
     currentStyle->font.style = CSSStyleFont::stNormal;
     currentStyle->font.weight = CSSStyleFont::Normal;
     setFont();
@@ -2238,6 +2240,7 @@ void KHTMLParser::parseTagKbd(void)
 {
     pushBlock(tagID, 1 );
     currentStyle->font.family = settings->fixedFontFace;
+    currentStyle->font.fixed = true;
     currentStyle->font.style = CSSStyleFont::stNormal;
     currentStyle->font.weight = CSSStyleFont::Normal;
     setFont();
@@ -2582,6 +2585,7 @@ void KHTMLParser::parseTagPre(void)
     pushBlock(tagID, 2, &KHTMLParser::blockEndPre);
 
     currentStyle->font.family = settings->fixedFontFace;
+    currentStyle->font.fixed = true;
     currentStyle->font.style = CSSStyleFont::stNormal;
     currentStyle->font.weight = CSSStyleFont::Normal;
     setFont();    
@@ -2602,6 +2606,7 @@ void KHTMLParser::parseTagSamp(void)
 {
     pushBlock(tagID, 1 );
     currentStyle->font.family = settings->fixedFontFace;
+    currentStyle->font.fixed = true;
     currentStyle->font.style = CSSStyleFont::stNormal;
     currentStyle->font.weight = CSSStyleFont::Normal;
     setFont();    
@@ -3206,6 +3211,7 @@ void KHTMLParser::parseTagTT(void)
 {
     pushBlock(tagID, 1 );
     currentStyle->font.family = settings->fixedFontFace;
+    currentStyle->font.fixed = true;
     currentStyle->font.style = CSSStyleFont::stNormal;
     currentStyle->font.weight = CSSStyleFont::Normal;
     setFont();    

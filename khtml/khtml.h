@@ -445,7 +445,7 @@ public:
      *
      * Html-Font-Sizes range from 1 (smallest) to 7 (biggest).
      */
-    void setFontSizes(const int *newFontSizes);
+    void setFontSizes(const int *newFontSizes, const int *newFixedFontSizes=0);
 
     /**
      * Gets point sizes to be associated with the HTML-sizes used in
@@ -453,7 +453,7 @@ public:
      *
      * Html-Font-Sizes range from 1 (smallest) to 7 (biggest).
      */
-    void getFontSizes(int *newFontSizes);
+    void getFontSizes(int *newFontSizes, int *newFixedFontSizes=0);
 
     /**
      * Resets the point sizes to be associated with the HTML-sizes used in

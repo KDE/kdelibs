@@ -88,6 +88,7 @@ class CSSStyleFont
 public:
     QColor  color;
     QString family;
+    bool    fixed;
     enum stEnum { stNormal = 0, stItalic, stOblique };
     int     style;
     enum varEnum { varNormal = 0, varSmallCaps };

@@ -36,7 +36,7 @@
 HTMLFrameSet::HTMLFrameSet( QWidget *_parent, 
 			    const char *_cols, const char *_rows,
 			    int _frameBorder, bool _bAllowResize)
-    : QWidget( _parent )
+    : QWidget( _parent ), size(0)
 {
     lastPanner = 0L;
     
@@ -47,24 +47,37 @@ HTMLFrameSet::HTMLFrameSet( QWidget *_parent,
     
     widgetList.setAutoDelete( TRUE );
     
-    size = 0L;
     cFrames = 0;
     
-    if ( !cols.isEmpty() )
-	orientation = HTMLFramePanner::VERTICAL;
-    else
-	orientation = HTMLFramePanner::HORIZONTAL;
-
     // Calculate amount of frames
-    elements = 1;
-    const char *p = "";
+    int nrCols = 0;
+    
     if ( !cols.isEmpty() )
-	p = cols.data();
-    else if ( !rows.isEmpty() )
-	p = rows.data();
-    while ( ( p = strchr( p, ',' ) ) != 0 ) { p++; elements++; }
- 
-    size = new int[ elements ];   
+    {
+        nrCols++;
+	const char *p = cols.data();
+        while ( ( p = strchr( p, ',' ) ) != 0 ) { p++; nrCols++; }
+    }
+    int nrRows = 0;
+    
+    if ( !rows.isEmpty() )
+    {
+        nrRows++;
+	const char *p = rows.data();
+        while ( ( p = strchr( p, ',' ) ) != 0 ) { p++; nrRows++; }
+    }
+
+    if (nrCols > nrRows)
+    {
+        elements = nrCols;
+	orientation = HTMLFramePanner::VERTICAL;
+    }
+    else
+    {
+        elements = nrRows;
+	orientation = HTMLFramePanner::HORIZONTAL;
+    }
+    size.resize( elements );   
 }
 
 HTMLFrameSet::~HTMLFrameSet()
@@ -144,14 +157,17 @@ void HTMLFrameSet::resizeEvent( QResizeEvent* )
     if ( !isVisible() )
 	return;      
 
-    if ( !cols.isNull() )
+    if ( orientation == HTMLFramePanner::VERTICAL )
     {
-	elements = calcSize( cols.data(), size, width() );
+      printf("Calculating col widths...");
+      elements = calcSize( cols, width() );
     }
-    else if ( !rows.isNull() )
+    else
     {
-	elements = calcSize( rows.data(), size, height() );
+      printf("Calculating row heights...");
+      elements = calcSize( rows, height() );
     }
+     
 
     int j = 0;
     int i = 0;
@@ -198,21 +214,23 @@ void HTMLFrameSet::resizeEvent( QResizeEvent* )
     debug("Done Set");
 }
 
-int HTMLFrameSet::calcSize( const char *_str, int *size, int _max )
+int HTMLFrameSet::calcSize( QString s, int _max )
 {	
-    debug("Calculating size");
-  
-    int value[1024];
-    int mode[1024];
+    printf("Calculating size ( %s ) elements = %d", s.data(), elements );
+
+    QArray<int> value(elements);
+    QArray<int> mode(elements);
+
     int i = 0;
     
-    QString s = _str;
-    StringTokenizer st;
-    st.tokenize( s.ascii(), "," );
-    while ( st.hasMoreTokens() )
+    if (!s.isEmpty())
     {
-	if ( i == 1024 )
-	    return i;
+      StringTokenizer st;
+      st.tokenize( s.ascii(), "," );
+      while ( st.hasMoreTokens() )
+      {
+	if ( i == elements )
+	    break;
 	
 	const char* token = st.nextToken();
 	if ( token[0] != 0 )
@@ -235,21 +253,29 @@ int HTMLFrameSet::calcSize( const char *_str, int *size, int _max )
 	    
 	    i++;
 	}
+      }
     }
 
-    debug("*************** CALC SIZE elements = %i ******************",i);
-    
-    debug("max. width=%i   max. height=%i",width(),height() );
+    while (i < elements)
+    {
+       mode[i] = 2;
+       value[i] = 1;
+       i++;
+    }
 
-    bool joker = FALSE;
+    printf("*************** CALC SIZE elements = %i ******************",i);
+    
+    printf("max. width=%i   max. height=%i",width(),height() );
+
+    bool joker = false;
     
     int s1 = 0;
-    for ( int j = 0; j < i; j++ )
+    for ( int j = 0; j < elements; j++ )
     {
 	if ( mode[j] == 0 || mode[j] == 1 )
 	    s1 += value[j];
 	else if ( mode[j] == 2 )
-	    joker = TRUE;
+	    joker = true;
     }
     
     printf("s1 = %i\n", s1);
@@ -258,7 +284,7 @@ int HTMLFrameSet::calcSize( const char *_str, int *size, int _max )
     {
         if (!s1)
             s1 = 1;
-	for ( k = 0; k < i; k++ )
+	for ( k = 0; k < elements; k++ )
 	{
 	    size[k] = ( value[k] * _max ) / s1;
 	    printf("%i %i %i -> %i\n",value[k],_max,s1,size[k] );
@@ -266,19 +292,19 @@ int HTMLFrameSet::calcSize( const char *_str, int *size, int _max )
 
 	// Calculate the error
 	int s2 = 0;
-	for ( k = 0; k < i; k++ )
+	for ( k = 0; k < elements; k++ )
 	{
 	    s2 += size[k];
 	}
 	printf("Error is %i\n",_max - s2);
 	// Add the error to the last frame
-	size[ i - 1 ] += _max - s2;
+	size[ elements - 1 ] += _max - s2;
     }
     else if ( s1 <= _max && joker )
     {
 	int s2 = 0;
 	int s3 = 0;
-	for ( k = 0; k < i; k++ )
+	for ( k = 0; k < elements; k++ )
 	{
 	    if ( mode[k] == 0 || mode[k] == 1 )
 	    {
@@ -288,15 +314,27 @@ int HTMLFrameSet::calcSize( const char *_str, int *size, int _max )
 	    else
 		s3 += value[k];
 	}
-	for ( k = 0; k < i; k++ )
+	for ( k = 0; k < elements; k++ )
 	{
 	    if ( mode[k] == 2 )
-		size[k] = ( _max - s2 ) * value[k] / s3;
+	    {
+	        if (s3)
+	        {
+                    size[k] = ( _max - s2 ) * value[k] / s3;
+                    s2 += size[k];
+		    s3 -= value[k];
+                }
+                else
+                {
+                    debug("%s:%d s3==0 assertion failed!", __FILE__, __LINE__);
+                    size[k] = 40;
+                }
+	    }
 	}
     }
     else
     {
-	for ( k = 0; k < i; k++ )
+	for ( k = 0; k < elements; k++ )
 	{
 	    if ( mode[k] == 0 || mode[k] == 1 )
 	    {
@@ -308,18 +346,18 @@ int HTMLFrameSet::calcSize( const char *_str, int *size, int _max )
 
 	// Calculate the error
 	int s2 = 0;
-	for ( k = 0; k < i; k++ )
+	for ( k = 0; k < elements; k++ )
 	{
 	    if ( mode[k] == 0 || mode[k] == 1 )
 		s2 += size[k];
 	}
-	printf("Error is %i\n",_max - s2);
+	printf("Error is %i",_max - s2);
 	// Add the error to the last frame
-	size[ i - 1 ] += _max - s2;	
+	size[ elements - 1 ] += _max - s2;	
     }
 
-    for ( k = 0; k < i; k++ )
-	printf("SIZE=%i\n",size[k]);
+    for ( k = 0; k < elements; k++ )
+	printf("SIZE[%d]=%i\n", k, size[k]);
 	
     return i;
 }

@@ -86,7 +86,7 @@ public:
 
     virtual void parse();
   
-    virtual int calcSize( const char *s, int *size, int _max );
+    virtual int calcSize( QString s, int _max );
 
     KHTMLView* getSelectedFrame();
 
@@ -115,7 +115,7 @@ protected:
     /**
      * Array that holds the layout information for all embedded frames.
      */
-    int *size;
+    QArray<int> size;
     /**
      * Amount of frames as mentioned in the COLS or ROWS tag.
      */

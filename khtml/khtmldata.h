@@ -45,11 +45,12 @@ public:
 
     const HTMLSettings &operator=( const HTMLSettings & );
 
-    void setFontSizes(const int *newFontSizes);
-    void getFontSizes(int *newFontSizes);
+    void setFontSizes(const int *newFontSizes, const int *newFixedFontSizes);
+    void getFontSizes(int *newFontSizes, int *newFixedFontSizes);
     void resetFontSizes(void);
 
     int     fontSizes[MAXFONTSIZES];
+    int     fixedFontSizes[MAXFONTSIZES];
     QColor  fontBaseColor;
     QString fontBaseFace;
 

@@ -39,6 +39,7 @@ const int defaultFontSizes[MAXFONTSIZES] = { 6, 8, 10, 12, 14, 18, 24 };
 HTMLSettings::HTMLSettings()
 {
     memcpy( fontSizes, defaultFontSizes, sizeof(fontSizes) );
+    memcpy( fixedFontSizes, defaultFontSizes, sizeof(fixedFontSizes) );
     fontBaseColor = Qt::black;
     fontBaseFace  = "times";
 
@@ -54,24 +55,38 @@ HTMLSettings::HTMLSettings()
     underlineLinks = true;
 }
 
-void HTMLSettings::setFontSizes(const int *newFontSizes)
+void HTMLSettings::setFontSizes(const int *newFontSizes, const int *newFixedFontSizes)
 {
     memcpy( fontSizes, newFontSizes, sizeof(fontSizes) );
+    if (newFixedFontSizes)
+    {
+       memcpy( fixedFontSizes, newFixedFontSizes, sizeof(fixedFontSizes) );
+    }
+    else
+    {
+       memcpy( fixedFontSizes, newFontSizes, sizeof(fixedFontSizes) );
+    }    
 }                                    
 
-void HTMLSettings::getFontSizes(int *oldFontSizes)
+void HTMLSettings::getFontSizes(int *oldFontSizes, int *oldFixedFontSizes)
 {
     memcpy( oldFontSizes, fontSizes, sizeof(fontSizes) );
+    if (oldFixedFontSizes)
+    {
+       memcpy( oldFontSizes, fontSizes, sizeof(fontSizes) );
+    }
 }                                    
 
 void HTMLSettings::resetFontSizes(void)
 {
     memcpy( fontSizes, defaultFontSizes, sizeof(fontSizes) );
+    memcpy( fixedFontSizes, defaultFontSizes, sizeof(fixedFontSizes) );
 }                                    
 
 HTMLSettings::HTMLSettings( const HTMLSettings &s )
 {
     memcpy( fontSizes, s.fontSizes, sizeof(fontSizes) );
+    memcpy( fixedFontSizes, s.fixedFontSizes, sizeof(fixedFontSizes) );
     fontBaseColor = s.fontBaseColor;
     fontBaseFace  = s.fontBaseFace;
 
@@ -90,6 +105,7 @@ HTMLSettings::HTMLSettings( const HTMLSettings &s )
 const HTMLSettings &HTMLSettings::operator=( const HTMLSettings &s )
 {
     memcpy( fontSizes, s.fontSizes, sizeof(fontSizes) );
+    memcpy( fixedFontSizes, s.fixedFontSizes, sizeof(fixedFontSizes) );
     fontBaseColor = s.fontBaseColor;
     fontBaseFace  = s.fontBaseFace;
 
