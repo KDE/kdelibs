@@ -1058,7 +1058,7 @@ int KThemeStyle::popupMenuItemHeight(bool /*checkable*/, QMenuItem *mi,
         return(2);
     if(mi->isChecked())
         h = isPixmap(CheckMark) ? uncached(CheckMark)->height()+offset :
-            offset+12;
+            offset+16;
     if(mi->pixmap()){
         h2 = mi->pixmap()->height()+offset;
         h = h2 > h ? h2 : h;
@@ -1101,8 +1101,7 @@ void KThemeStyle::drawPopupMenuItem( QPainter* p, bool checkable, int maxpmw,
         : act ? *colorGroup(pal.active(), MenuItemDown)
         : *colorGroup(pal.normal(), MenuItem);
 
-    if (checkable)
-        maxpmw = QMAX( maxpmw, 12 );
+    maxpmw = QMAX( maxpmw, 20 );
     int checkcol = maxpmw;
 
     if ( mi && mi->isSeparator()){
