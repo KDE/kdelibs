@@ -134,10 +134,10 @@ public:
 
   void updateDirectory( const KURL &_dir );
 
-  KFileItemList* items( const KURL &_dir ) const;
+  KFileItemList* itemsForDir( const KURL &_dir ) const;
 
   KFileItem* findByName( const KDirLister *lister, const QString &_name ) const;
-  // if lister == 0 all items are searched
+  // if lister is set, it is checked that the url is held by the lister
   KFileItem* findByURL( const KDirLister *lister, const KURL &_url ) const;
 
   /**

@@ -551,16 +551,20 @@ void KDirListerCache::updateDirectory( const KURL& _dir )
     }
 }
 
-KFileItemList* KDirListerCache::items( const KURL &_dir ) const
+KFileItemList* KDirListerCache::itemsForDir( const KURL &_dir ) const
 {
-  return itemsInUse[_dir.url(-1)]->lstItems;
+  QString urlStr = _dir.url(-1);
+  DirItem *item = itemsInUse[ urlStr ];
+  if ( !item )
+    item = itemsCached[ urlStr ];
+  return item ? item->lstItems : 0;
 }
 
 KFileItem* KDirListerCache::findByName( const KDirLister *lister, const QString& _name ) const
 {
   Q_ASSERT( lister );
 
-  // TODO: make this faster
+  // TODO: make this faster - how?
   for ( KURL::List::Iterator it = lister->d->lstDirs.begin();
         it != lister->d->lstDirs.end(); ++it )
   {
@@ -573,49 +577,25 @@ KFileItem* KDirListerCache::findByName( const KDirLister *lister, const QString&
   return 0L;
 }
 
-// if lister == 0 all items are searched
 KFileItem* KDirListerCache::findByURL( const KDirLister *lister, const KURL& _u ) const
 {
-  KURL _url( _u.url(-1) );
+  QString _url = _u.url(-1);
 
-  // TODO: this code could be improved :)
+  KURL parentDir( _url );
+  parentDir.setPath( parentDir.directory() );
 
-  if ( lister )
+  // If lister is set, check that it contains this dir
+  if ( lister && !lister->d->lstDirs.contains( parentDir ) )
+      return 0L;
+
+  KFileItemList* itemList = itemsForDir( parentDir );
+  if ( itemList )
   {
-    for ( KURL::List::Iterator it = lister->d->lstDirs.begin();
-          it != lister->d->lstDirs.end(); ++it )
-    {
-      DirItem *item = itemsInUse[(*it).url()];
-      if ( item )
-      {
-        KFileItemListIterator kit( *item->lstItems );
-        for ( ; kit.current(); ++kit )
-          if ( (*kit)->url() == _url )
-            return (*kit);
-      }
-    }
+    KFileItemListIterator kit( *itemList );
+    for ( ; kit.current(); ++kit )
+      if ( (*kit)->url() == _url )
+        return (*kit);
   }
-  else
-  {
-    QDictIterator<DirItem> itu( itemsInUse );
-    for ( ; itu.current(); ++itu )
-    {
-      KFileItemListIterator kit( *itu.current()->lstItems );
-      for ( ; kit.current(); ++kit )
-        if ( (*kit)->url() == _url )
-          return (*kit);
-    }
-
-    QCacheIterator<DirItem> itc( itemsCached );
-    for ( ; itc.current(); ++itc )
-    {
-      KFileItemListIterator kit( *itc.current()->lstItems );
-      for ( ; kit.current(); ++kit )
-        if ( (*kit)->url() == _url )
-          return (*kit);
-    }
-  }
-
   return 0L;
 }
 
@@ -632,15 +612,28 @@ void KDirListerCache::FilesRemoved( const KURL::List &fileList )
   for ( ; it != fileList.end() ; ++it )
   {
     // emit the deleteItem signal if this file was shown in any view
-    KFileItem* fileitem = findByURL( 0, *it );
+    KFileItem* fileitem = 0L;
+    KURL parentDir( *it );
+    parentDir.setPath( parentDir.directory() );
+    KFileItemList* lstItems = itemsForDir( parentDir );
+    if ( lstItems )
+    {
+      KFileItem* fit = lstItems->first();
+      for ( ; fit; fit = lstItems->next() )
+        if ( fit->url() == *it ) {
+          fileitem = fit;
+          lstItems->take(); // remove fileitem from list
+          break;
+        }
+    }
+
     if ( fileitem )
     {
-      KURL parentDir( fileitem->url() );
-      parentDir.setPath( parentDir.directory() );
       QPtrList<KDirLister> *listers = urlsCurrentlyHeld[parentDir.url()];
       if ( listers )
         for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
           kdl->emitDeleteItem( fileitem );
+      delete fileitem;
     }
     // in case of a dir, check if we have any known children, there's much to do in that case
     // (stopping jobs, removing dirs from cache etc.)
@@ -1527,7 +1520,7 @@ void KDirLister::emitChanges()
   for ( KURL::List::Iterator it = d->lstDirs.begin();
         it != d->lstDirs.end(); ++it )
   {
-    KFileItemListIterator kit( *s_pCache->items( *it ) );
+    KFileItemListIterator kit( *s_pCache->itemsForDir( *it ) );
 
     if ( d->changes & DIR_ONLY_MODE )
     {
