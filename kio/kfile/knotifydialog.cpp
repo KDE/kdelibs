@@ -253,6 +253,8 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
     connect( m_buttonDisable, SIGNAL( clicked() ), SLOT( enableAll() ));
 
     showAdvanced( false );
+    
+    slotEventChanged( 0L ); // disable widgets by default
 }
 
 KNotifyWidget::~KNotifyWidget()
@@ -329,6 +331,7 @@ void KNotifyWidget::clearVisible()
 {
     m_visibleApps.clear();
     m_listview->clear();
+    slotEventChanged( 0L ); // disable widgets
 }
 
 void KNotifyWidget::showEvent( QShowEvent *e )
