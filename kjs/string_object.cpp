@@ -204,7 +204,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     }
     else
     { /*
-       *  ECMA 15.5.4.12 String.prototype.search (regexp) 
+       *  ECMA 15.5.4.12 String.prototype.search (regexp)
        *  If regexp is not an object whose [[Class]] property is "RegExp", it is
        *  replaced with the result of the expression new RegExp(regexp).
        */
@@ -236,11 +236,11 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
         global = true;
 
       RegExpObjectImp* regExpObj = static_cast<RegExpObjectImp*>(exec->interpreter()->builtinRegExp().imp());
-      int **ovector = regExpObj->registerRegexp( reg, u );
       int lastIndex = 0;
       u3 = a1.toString(exec); // replacement string
       // This is either a loop (if global is set) or a one-way (if not).
       do {
+        int **ovector = regExpObj->registerRegexp( reg, u );
         UString mstr = reg->match(u, lastIndex, &pos, ovector);
         len = mstr.size();
         UString rstr(u3);
