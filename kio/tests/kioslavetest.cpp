@@ -1,3 +1,14 @@
+ /*
+  This file is or will be part of KDE desktop environment
+
+  Copyright 1999 Matt Koss <koss@miesto.sk>
+
+  It is licensed under GPL version 2.
+
+  If it is part of KDE libraries than this file is licensed under
+  LGPL version 2.
+ */
+
 #include <qlayout.h>
 #include <qmessagebox.h>
 
@@ -7,11 +18,27 @@
 
 #include "kioslavetest.h"
 
-KioslaveTest::KioslaveTest() : QWidget(0, "") {
 
+KioslaveTest *kmain;
+
+void usage() {
+  qDebug( "\nkioslavetest - test for checking kioslave features\n");
+  qDebug( "usage: kioslavetest [-s source] [-d destination]");
+  qDebug( "\t[-o operation]\tValid types are : list, get, copy, move, del");
+  qDebug("\t\t\tDefault operation is copy.\n");
+  qDebug( "\t[-p progress]\tValid types are : none, simple, list, little");
+  qDebug("\t\t\tDefault progress type is simple.\n");
+  exit(0);
+}
+
+
+KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
+  : KTMainWindow("") {
+  
   job = 0L;
 
-  QBoxLayout *topLayout = new QVBoxLayout( this, 10, 5 );
+  main_widget = new QWidget( this, "");
+  QBoxLayout *topLayout = new QVBoxLayout( main_widget, 10, 5 );
 	
   QGridLayout *grid = new QGridLayout( 2, 2, 10 );
   topLayout->addLayout( grid );
@@ -22,24 +49,26 @@ KioslaveTest::KioslaveTest() : QWidget(0, "") {
   grid->setColStretch(0,1);
   grid->setColStretch(1,100);
 
-  lb_from = new QLabel( i18n("From :"), this );
+  lb_from = new QLabel( i18n("From :"), main_widget );
   grid->addWidget( lb_from, 0, 0 );
 
-  le_source = new QLineEdit( this );
+  le_source = new QLineEdit( main_widget );
   grid->addWidget( le_source, 0, 1 );
+  le_source->setText( src );
 
-  lb_to = new QLabel( i18n("To :"), this );
+  lb_to = new QLabel( i18n("To :"), main_widget );
   grid->addWidget( lb_to, 1, 0 );
 
-  le_dest = new QLineEdit( this );
+  le_dest = new QLineEdit( main_widget );
   grid->addWidget( le_dest, 1, 1 );
+  le_dest->setText( dest );
 
   // Operation groupbox & buttons
-  opButtons = new QButtonGroup( i18n("Operation"), this );
+  opButtons = new QButtonGroup( i18n("Operation"), main_widget );
   topLayout->addWidget( opButtons, 10 );
   connect( opButtons, SIGNAL(clicked(int)), SLOT(changeOperation(int)) );
 
-  QBoxLayout *hbLayout = new QHBoxLayout(opButtons, 15 );
+  QBoxLayout *hbLayout = new QHBoxLayout( opButtons, 15 );
 
   rbList = new QRadioButton( i18n("List"), opButtons );
   opButtons->insert( rbList, List );
@@ -61,11 +90,11 @@ KioslaveTest::KioslaveTest() : QWidget(0, "") {
   opButtons->insert( rbDelete, Delete );
   hbLayout->addWidget( rbDelete, 5 );
 
-  opButtons->setButton( Copy );
-  selectedOperation = Copy;
+  opButtons->setButton( op );
+  changeOperation( op );
 
   // Progress groupbox & buttons
-  progressButtons = new QButtonGroup( i18n("Progress dialog mode"), this );
+  progressButtons = new QButtonGroup( i18n("Progress dialog mode"), main_widget );
   topLayout->addWidget( progressButtons, 10 );
   connect( progressButtons, SIGNAL(clicked(int)), SLOT(changeProgressMode(int)) );
 
@@ -87,38 +116,44 @@ KioslaveTest::KioslaveTest() : QWidget(0, "") {
   progressButtons->insert( rbProgressLittle, ProgressLittle );
   hbLayout->addWidget( rbProgressLittle, 5 );
 
-  progressButtons->setButton( ProgressNone );
-  progressMode = ProgressNone;
+  progressButtons->setButton( pr );
+  progressMode = pr;
 
   // run & stop butons
   hbLayout = new QHBoxLayout( topLayout, 15 );
 
-  pbStart = new QPushButton( i18n("Start"), this );
+  pbStart = new QPushButton( i18n("Start"), main_widget );
   pbStart->setFixedSize( pbStart->sizeHint() );
   connect( pbStart, SIGNAL(clicked()), SLOT(startJob()) );
   hbLayout->addWidget( pbStart, 5 );
 
-  pbStop = new QPushButton( i18n("Stop"), this );
+  pbStop = new QPushButton( i18n("Stop"), main_widget );
   pbStop->setFixedSize( pbStop->sizeHint() );
   pbStop->setEnabled( false );
   connect( pbStop, SIGNAL(clicked()), SLOT(stopJob()) );
   hbLayout->addWidget( pbStop, 5 );
 
   // close button
-  close = new QPushButton( i18n("Close"), this );
+  close = new QPushButton( i18n("Close"), main_widget );
   close->setFixedSize( close->sizeHint() );
   connect(close, SIGNAL(clicked()), kapp, SLOT(quit()));
 
   topLayout->addWidget( close, 5 );
 
-  // my name is
-  setCaption(i18n("Kioslave test"));
+  setView( main_widget );
+
+  kmain = this;
 
   show();
 }
 
 
 KioslaveTest::~KioslaveTest() {
+}
+
+
+void KioslaveTest::closeEvent( QCloseEvent * ){
+  kapp->quit();
 }
 
 
@@ -237,12 +272,65 @@ void KioslaveTest::stopJob() {
 
 
 int main(int argc, char **argv) {
-  KApplication app( argc, argv, "kioslavetest" );
-  KioslaveTest test;
+  KApplication *app = new KApplication( argc, argv, "kioslavetest" );
 
-  app.setMainWidget(&test);
+  argc--;
+  argv++;
 
-  return app.exec();
+  QString src;
+  QString dest;
+  uint op = KioslaveTest::Copy;
+  uint pr = KioslaveTest::ProgressSimple;
+
+  QString tmps;
+  
+  for ( int i = 0; i < argc; i++ ) {
+    if (strcmp(argv[i],"--help")==0) {
+      usage();
+    } else if (strcmp(argv[i],"-s")==0){
+      if ( i < argc-1 )
+	src = argv[++i];
+    } else if (strcmp(argv[i],"-d")==0){
+      if ( i < argc-1 )
+	dest = argv[++i];
+    } else if (strcmp(argv[i],"-o")==0){
+      if ( i < argc-1 ) {
+	tmps = argv[++i];
+	if ( tmps == "list") {
+	  op = KioslaveTest::List;
+	} else if ( tmps == "get") {
+	  op = KioslaveTest::Get;
+	} else if ( tmps == "copy") {
+	  op = KioslaveTest::Copy;
+	} else if ( tmps == "move") {
+	  op = KioslaveTest::Move;
+	} else if ( tmps == "del") {
+	  op = KioslaveTest::Delete;
+	}
+      }
+    } else if (strcmp(argv[i],"-p")==0) {
+      if ( i < argc-1 ) {
+	tmps = argv[++i];
+	if ( tmps == "none") {
+	  op = KioslaveTest::ProgressNone;
+	} else if ( tmps == "simple") {
+	  op = KioslaveTest::ProgressSimple;
+	} else if ( tmps == "list") {
+	  op = KioslaveTest::ProgressList;
+	} else if ( tmps == "little") {
+	  op = KioslaveTest::ProgressLittle;
+	}
+      }
+    } else {
+      usage();
+    }
+  }
+
+  KioslaveTest test( src, dest, op, pr );
+
+  app->setMainWidget(kmain);
+  app->exec();
 }
+
 
 #include "kioslavetest.moc"

@@ -1,20 +1,33 @@
+ /*
+  This file is or will be part of KDE desktop environment
+
+  Copyright 1999 Matt Koss <koss@miesto.sk>
+
+  It is licensed under GPL version 2.
+
+  If it is part of KDE libraries than this file is licensed under
+  LGPL version 2.
+ */
+
 #ifndef _KIOSLAVETEST_H
 #define _KIOSLAVETEST_H
 
-#include <qwidget.h>
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qradiobutton.h>
 #include <qpushbutton.h>
 #include <qbuttongroup.h>
+#include <qwidget.h>
+
+#include <ktmainwindow.h>
 
 #include "kio_job.h"
 
-class KioslaveTest : public QWidget {
+class KioslaveTest : public KTMainWindow {
   Q_OBJECT
 
 public:
-  KioslaveTest();
+  KioslaveTest( QString src, QString dest, uint op, uint pr );
   ~KioslaveTest();
 
   enum Operations { List, Get, Copy, Move, Delete };
@@ -23,6 +36,8 @@ public:
 		       ProgressList, ProgressLittle };
 
 protected:
+
+  void closeEvent( QCloseEvent * );
 
   // info stuff
   QLabel *lb_from;
@@ -65,6 +80,7 @@ protected slots:
 
 private:
   KIOJob *job;
+  QWidget *main_widget;
 
   int selectedOperation;
   int progressMode;
