@@ -19,6 +19,7 @@
 #ifndef KWIN_H
 #define KWIN_H
 
+#include <sys/types.h>
 #include <qstring.h>
 #include <qapplication.h>
 #include <qpixmap.h>
