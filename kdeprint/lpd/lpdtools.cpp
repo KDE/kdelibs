@@ -73,6 +73,20 @@ bool PrintcapEntry::readLine(const QString& line)
 	return false;
 }
 
+void PrintcapEntry::writeEntry(QTextStream& t)
+{
+	t << "# Entry for printer " << m_name << endl;
+	t << m_name << ":";
+	for (QMap<QString,QString>::ConstIterator it=m_args.begin(); it!=m_args.end(); ++it)
+	{
+		t << "\\\n\t:" << it.key();
+		if (!it.data().isEmpty())
+			t << ((*it)[0] == '#' ? "" : "=") << *it;
+		t << ":";
+	}
+	t << endl << endl;
+}
+
 KMPrinter* PrintcapEntry::createPrinter()
 {
 	KMPrinter	*printer = new KMPrinter();
@@ -232,7 +246,7 @@ DrMain* PrinttoolEntry::createDriver()
 				if (it.current()->comment.isEmpty())
 					ch->set("text",it.current()->bpp);
 				else
-					ch->set("text",it.current()->comment);
+					ch->set("text",QString::fromLatin1("%1 - %2").arg(it.current()->bpp).arg(it.current()->comment));
 				lopt->addChoice(ch);
 			}
 			QString	defval = lopt->choices()->first()->name();

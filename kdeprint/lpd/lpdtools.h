@@ -33,6 +33,7 @@ class PrintcapEntry
 friend class KMLpdManager;
 public:
 	bool readLine(const QString& line);
+	void writeEntry(QTextStream&);
 	KMPrinter* createPrinter();
 	QString arg(const QString& key) const 	{ return m_args[key]; }
 private:

@@ -36,6 +36,8 @@ public:
 
 	bool completePrinterShort(KMPrinter*);
 	bool completePrinter(KMPrinter*);
+	bool createPrinter(KMPrinter*);
+	bool removePrinter(KMPrinter*);
 
 	// Driver DB functions
 	QString driverDbCreationProgram();
@@ -44,13 +46,18 @@ public:
 	// Driver loading functions
 	DrMain* loadDbDriver(KMDBEntry*);
 	DrMain* loadPrinterDriver(KMPrinter *p, bool config = false);
+	bool savePrinterDriver(KMPrinter*, DrMain*);
 
 protected:
 	void listPrinters();
 	void loadPrintcapFile(const QString& filename);
+	bool writePrintcapFile(const QString& filename);
 	void loadPrinttoolDb(const QString& filename);
 	QMap<QString,QString> loadPrinttoolCfgFile(const QString& filename);
+	bool savePrinttoolCfgFile(const QString& templatefile, const QString& dirname, const QMap<QString,QString>& options);
 	PrinttoolEntry* findGsDriver(const QString& gsdriver);
+	bool createSpooldir(PrintcapEntry*);
+	bool createPrinttoolEntry(KMPrinter*, PrintcapEntry*);
 
 private:
 	QDict<PrintcapEntry>	m_entries;
