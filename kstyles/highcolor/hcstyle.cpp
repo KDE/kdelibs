@@ -277,7 +277,7 @@ void HCStyle::polish(QWidget *w)
 
     if(w->inherits("KToolBar")){
         w->installEventFilter(this);
-        //w->setBackgroundMode(QWidget::NoBackground);
+        w->setBackgroundMode(QWidget::NoBackground);
         return;
     }
 }
