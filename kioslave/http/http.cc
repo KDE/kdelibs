@@ -3520,7 +3520,11 @@ int HTTPProtocol::readUnlimited()
   m_bufReceive.resize(4096);
 
   int result = read(m_bufReceive.data(), m_bufReceive.size());
-  return (result > 0) ? result : 0;
+  if (result > 0)
+     return result;
+     
+  m_bEOF = true;
+  return 0;   
 }
 
 void HTTPProtocol::slotData(const QByteArray &d)
