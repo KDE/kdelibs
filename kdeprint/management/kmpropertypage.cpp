@@ -58,7 +58,13 @@ void KMPropertyPage::addPropPage(KMPropWidget *w)
 		KMPropContainer	*ctn = new KMPropContainer(this,"Container");
 		ctn->setWidget(w);
 		connect(ctn,SIGNAL(enable(bool)),SLOT(slotEnable(bool)));
-		addPage(ctn,w->title(),w->header(),DesktopIcon(w->pixmap()));
+
+		QPixmap icon = KGlobal::instance()->iconLoader()->loadIcon(
+		                                                           w->pixmap(),
+		                                                           KIcon::NoGroup,
+		                                                           KIcon::SizeMedium
+ 		                                                          );
+		addPage(ctn,w->title(),w->header(),icon);
 	}
 }
 

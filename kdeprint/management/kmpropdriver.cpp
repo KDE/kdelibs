@@ -37,7 +37,7 @@ KMPropDriver::KMPropDriver(QWidget *parent, const char *name)
 
 	QLabel	*l1 = new QLabel(i18n("Manufacturer:"), this);
 	QLabel	*l2 = new QLabel(i18n("Printer model:"), this);
-	QLabel	*l3 = new QLabel(i18n("Driver Info:"), this);
+	QLabel	*l3 = new QLabel(i18n("Driver info:"), this);
 
 	// layout
 	QGridLayout	*main_ = new QGridLayout(this, 4, 2, 10, 7);

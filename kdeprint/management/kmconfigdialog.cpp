@@ -58,7 +58,13 @@ void KMConfigDialog::addConfigPage(KMConfigPage *page)
 {
 	if (page)
 	{
-		QFrame	*frame = addPage(page->pageName(),page->pageHeader(),DesktopIcon(page->pagePixmap()));
+		QPixmap icon = KGlobal::instance()->iconLoader()->loadIcon(
+		                                                           page->pagePixmap(),
+		                                                           KIcon::NoGroup,
+                        	                                           KIcon::SizeMedium
+		                                                          );
+
+		QFrame	*frame = addPage(page->pageName(),page->pageHeader(),icon);
 		page->reparent(frame,QPoint(0,0));
 		QVBoxLayout	*lay = new QVBoxLayout(frame, 0, 0);
 		lay->addWidget(page);
