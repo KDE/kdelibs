@@ -326,10 +326,10 @@ void KGlobalAccel::setItemEnabled( const QString& action, bool activate )
         return;
     }
 
-    KKeyEntry entry = aKeyMap[action];
-    bool old = entry.bEnabled;
+    KKeyEntry& entry = aKeyMap[action];
+    if( entry.bEnabled == activate )
+        return;
     aKeyMap[action].bEnabled = activate;
-    if ( entry.bEnabled == old ) return;
 
     if ( entry.aCurrentKeyCode == 0 ) return;
 	
