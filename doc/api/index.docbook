@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE book PUBLIC "-//KDE//DTD DocBook XML V4.1-Based Variant V1.0//EN" "dtd/kdex.dtd" [
-<!ENTITY inst SYSTEM "install-dep.entities">
+<!ENTITY % inst SYSTEM "install-dep.entities">
+%inst;
 ]>
 
 <book lang="&language;">
