@@ -40,19 +40,6 @@
 #include <kdatetbl.h>
 #include <kdialogbase.h>
 
-extern "C"
-{
-	QString select_command( QWidget* parent )
-	{
-		KDialogBase dlg( parent, 0, true, i18n( "Select Command" ), KDialogBase::Ok|KDialogBase::Cancel );
-		KXmlCommandSelector *xmlSel = new KXmlCommandSelector( false, &dlg, "CommandSelector", &dlg );
-		dlg.setMainWidget( xmlSel );
-		if ( dlg.exec() )
-			return xmlSel->command();
-		return QString::null;
-	}
-}
-
 KXmlCommandSelector::KXmlCommandSelector(bool canBeNull, QWidget *parent, const char *name, KDialogBase *dlg)
 : QWidget(parent, name)
 {
