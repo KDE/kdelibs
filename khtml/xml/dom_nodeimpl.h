@@ -26,6 +26,7 @@
 
 
 #include "dom/dom_misc.h"
+#include "dom/dom_node.h"
 #include <qstring.h>
 
 class QPainter;
@@ -51,7 +52,7 @@ enum ActivationState { ActivationOff,
 		       ActivationActive };
 
 // Skeleton of a node. No children and no parents are allowed.
-// We use this class as a basic Node Implementatin, and derive all other
+// We use this class as a basic Node Implementation, and derive all other
 // Node classes from it. This is done to reduce memory overhead.
 // Derived classes will only implement the functionality needed, and only
 // use as much storage as they really need; i.e. if a node has no children
@@ -211,12 +212,9 @@ public:
     // ### check if this function is still needed at all...
     virtual bool isInline() { return true; }
 
-    virtual DOMString toHTML(DOMString _string);
-    virtual DOMString innerHTML(DOMString _string);
-
     virtual QString toHTML();
-    virtual void recursive( QChar *htmlText, long &currentLength, long &offset, int stdInc );
-    virtual int increaseStringLength( QChar *htmlText, long &currentLength, long offset, int stdInc );
+    virtual void recursive( QChar *&htmlText, long &currentLength, long &offset, int stdInc );
+    virtual bool increaseStringLength( QChar *&htmlText, long &currentLength, long offset, int stdInc );
 
     virtual void applyChanges(bool top = true);
     virtual void getCursor(int offset, int &_x, int &_y, int &height);
@@ -227,6 +225,13 @@ protected:
     DocumentImpl *document;
     unsigned short flags;
     khtml::RenderObject *m_render;
+private:
+    static const QChar LESSTHAN;
+    static const QChar MORETHAN;
+    static const QChar SLASH;
+    static const QChar SPACE;
+    static const QChar EQUALS;
+    static const QChar QUOTE;
 };
 
 // this class implements nodes, which can have a parent but no children:

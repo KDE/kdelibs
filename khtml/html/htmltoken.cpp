@@ -259,17 +259,6 @@ void AttributeList::remove(uint index)
     _len--;
 }
 
-DOMString AttributeList::toHTML(DOMString _string)
-{
-    Attribute _attr;
-    for( unsigned int n=0; n<length(); n++ )
-    {
-        _attr = *(*this)[n];
-        _string = _string + " " + _attr.name().string() + "=\"" +  _attr.value().string() + "\"";
-    }
-    return _string;
-}
-
 // ---------------------------------------------------------------------------
 
 // contructor for a text token

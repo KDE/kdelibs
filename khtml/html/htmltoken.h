@@ -152,8 +152,6 @@ public:
     void remove(DOMString name);
     void remove(uint index);
 
-    virtual DOMString toHTML(DOMString _string);
-
 protected:
     Attribute *_list;
     uint _len;

@@ -390,18 +390,8 @@ void ElementImpl::applyChanges(bool top)
     }
 }
 
-DOMString ElementImpl::toHTML(DOMString _string)
+const AttributeList ElementImpl::getAttributes()
 {
-    _string = _string + "<" + nodeName();
-    _string = attributeMap.toHTML(_string);
-    if(!firstChild())
-    {
-         _string += " />";
-         return _string;
-    }
-    _string += ">";
-    _string = innerHTML(_string);
-    _string = _string +  "</" + nodeName() + ">";
-    return _string;
+    return attributeMap;
 }
 

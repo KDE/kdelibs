@@ -23,6 +23,7 @@
 #include "dom_nodeimpl.h"
 
 #include "dom_node.h"
+#include "dom_element.h"
 #include "dom_exception.h"
 #include "dom_string.h"
 
@@ -40,66 +41,73 @@
 using namespace DOM;
 using namespace khtml;
 
+const QChar NodeImpl::LESSTHAN = '<';
+const QChar NodeImpl::MORETHAN = '>';
+const QChar NodeImpl::SLASH = '/';
+const QChar NodeImpl::SPACE = ' ';
+const QChar NodeImpl::EQUALS = '=';
+const QChar NodeImpl::QUOTE = '"';
+
 NodeImpl::NodeImpl(DocumentImpl *doc)
 {
-    document = doc;
-    flags = 0;
-    m_render = 0;
+  document = doc;
+  flags = 0;
+  m_render = 0;
 }
 
 NodeImpl::~NodeImpl()
 {
-    if(m_render) m_render->deref();
+  if(m_render) m_render->deref();
 }
 
 DOMString NodeImpl::nodeValue() const
 {
-    return 0;
+  return 0;
 }
 
 void NodeImpl::setNodeValue( const DOMString & )
 {
-    throw DOMException(DOMException::NO_MODIFICATION_ALLOWED_ERR);
+  throw DOMException(DOMException::NO_MODIFICATION_ALLOWED_ERR);
 }
 
 const DOMString NodeImpl::nodeName() const
 {
-    return 0;
+  return 0;
 }
 
 unsigned short NodeImpl::nodeType() const
 {
-    return 0;
+  return 0;
 }
 
 NodeImpl *NodeImpl::parentNode() const
 {
-    return 0;
+  return 0;
 }
 
 NodeListImpl *NodeImpl::childNodes()
 {
-    return 0;
+  return 0;
 }
 
 NodeImpl *NodeImpl::firstChild() const
 {
-    return 0;
+  return 0;
 }
 
 NodeImpl *NodeImpl::lastChild() const
 {
-    return 0;
+  return 0;
 }
 
 NodeImpl *NodeImpl::previousSibling() const
 {
-    return 0;
+  return 0;
 }
 
 NodeImpl *NodeImpl::nextSibling() const
 {
-    return 0;
+  return 0;
 }
 
 void NodeImpl::setPreviousSibling(NodeImpl *)
@@ -112,33 +120,33 @@ void NodeImpl::setNextSibling(NodeImpl *)
 
 NodeImpl *NodeImpl::insertBefore( NodeImpl *, NodeImpl * )
 {
-    throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
+  throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
 }
 
 NodeImpl *NodeImpl::replaceChild( NodeImpl *, NodeImpl * )
 {
-    throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
+  throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
 }
 
 NodeImpl *NodeImpl::removeChild( NodeImpl * )
 {
-    throw DOMException(DOMException::NOT_FOUND_ERR);
+  throw DOMException(DOMException::NOT_FOUND_ERR);
 }
 
 NodeImpl *NodeImpl::appendChild( NodeImpl * )
 {
-    throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
+  throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
 }
 
 bool NodeImpl::hasChildNodes(  )
 {
-    return false;
+  return false;
 }
 
 NodeImpl *NodeImpl::cloneNode( bool )
 {
-    // we have no childs, so we just clone this Node
-    return new NodeImpl(document);
+  // we have no childs, so we just clone this Node
+  return new NodeImpl(document);
 }
 
 // helper functions not being part of the DOM
@@ -156,126 +164,92 @@ void NodeImpl::setLastChild(NodeImpl *)
 
 NodeImpl *NodeImpl::addChild(NodeImpl *)
 {
-    throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
-    return 0;
-}
-
-DOMString NodeImpl::toHTML(DOMString _string)
-{
-    _string = innerHTML(_string);
-    return _string;
-}
-
-DOMString NodeImpl::innerHTML(DOMString _string)
-{
-    NodeImpl *_current;
-    for(_current = firstChild(); _current != 0; _current = _current->nextSibling() )
-    {
-        _string = _current->toHTML(_string);
-    }
-    return _string;
+  throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
+  return 0;
 }
 
 QString NodeImpl::toHTML()
 {
     long offset = 0;
-    int stdInc = 5000;
+    const int stdInc = 10000;
     long currentLength = stdInc;
     QChar *htmlText = QT_ALLOC_QCHAR_VEC(stdInc);
-
+    
     recursive( htmlText, currentLength, offset, stdInc );
     QString finishedHtmlText( htmlText, offset );
     return finishedHtmlText;
 }
 
-void NodeImpl::recursive( QChar *htmlText, long &currentLength, long &offset, int stdInc )
+void NodeImpl::recursive( QChar *&htmlText, long &currentLength, long &offset, int stdInc )
 {
-    static const QChar LT = '<';
-    static const QChar MT = '>';
-    static const QChar SLASH = '/';
-    static const QChar SPACE = ' ';
-
-
-//kdDebug( 6020 ) << "\nOFFSET: " << offset << "\n" << endl;
-//kdDebug( 6020 ) << "\nSIZE: " << sizeof htmlText << "\n" << endl;
-//kdDebug( 6020 ) << "recursive 1: " << nodeName().string() << endl;
     DOMString me;
 
-    // Copy who I am into the htmlStext string
+    // Copy who I am into the htmlText string
     if ( nodeType() == Node::TEXT_NODE )
     {
-//kdDebug( 6020 ) << "recursive 2: " << nodeName().string() << endl;
         me = nodeValue();
         int i = me.length();
-        while( (currentLength - offset) <= i*2+4){
-//            kdDebug( 6020 ) << "\ni: " << i << endl;
+        while( (currentLength - offset) <= i*2+4)
             increaseStringLength( htmlText, currentLength, offset, stdInc);
-        }
-
+        
         memcpy(htmlText+offset, me.stringPtr(), i*2);
         offset += i;
     }
     else
-    {
-//kdDebug( 6020 ) << "recursive 3: " << nodeName().string() << endl;
+    {   // If I am an element, not a text
         me = nodeName();
         int i = me.length();
         while( (currentLength - offset) <= i*2+4)
-        {
-//            kdDebug( 6020 ) << "\ni: " << i << endl;
             increaseStringLength( htmlText, currentLength, offset, stdInc);
-        }
-        memcpy(htmlText+offset, &LT, 2);             // prints "<"
+        memcpy(htmlText+offset, &LESSTHAN, 2);              // prints <
         memcpy(htmlText+offset+1, me.stringPtr(), i*2);     // prints tagname
 
-        // insert attributes here
-        /*                  if( nodeType() == Node::ELEMENT_NODE )
-                            {
-                            NamedNodeMap nnm = n.attributes();
-                            Attr _attr;
-                            unsigned long lmap = nnm.length();
-                            //                kdDebug( 6020 ) << "Heffa: " << n.nodeName().string() << " " << lmap << endl;
-                            for( unsigned int j=0; j<lmap; j++ )
-                            {
-                            _attr = nnm.item(j);
-                            //                    kdDebug( 6020 ) << "Attr: " << _attr.name().string() << endl;
-                            unsigned long lname = _attr.name().length();
-                            unsigned long lvalue = _attr.value().length();
-                            int len = lname + lvalue + 4;
-                            htmlText[offset+i+1] = SPACE;
-                            memcpy(htmlText+offset+2, _attr.name().stringPtr(), lname*2);
-                            htmlText[offset+i+2] = '=';
-                            htmlText[offset+i+3] = '"';
-                            memcpy(htmlText+offset+3, _attr.value().stringPtr(), lvalue*2);
-                            htmlText[offset+i+4] = '"';
-                            i += len;
-                            }
-                            }*/
-        // end attr stuff
+        // print attributes
+        if( nodeType() == Node::ELEMENT_NODE )
+        {
+            int lattrs = 0;
+            ElementImpl *el = (ElementImpl*)this;
+            Attribute attr;
+            AttributeList attrs = el->getAttributes();
+            unsigned long lmap = attrs.length();
+            for( uint j=0; j<lmap; j++ )
+            {
+                attr = *attrs[j];
+                unsigned long lname = attr.name().length();
+                unsigned long lvalue = attr.value().length();
+                while( (currentLength - offset) <= (signed)(i*2+lattrs+lname+lvalue+4) )
+                    increaseStringLength( htmlText, currentLength, offset, stdInc);
+                memcpy(htmlText+offset+i+lattrs+1, &SPACE, 2);                 // prints a space
+                memcpy(htmlText+offset+i+lattrs+2, attr.name().stringPtr(), lname*2);
+                memcpy(htmlText+offset+i+lattrs+lname+2, &EQUALS, 2);          // prints =
+                memcpy(htmlText+offset+i+lattrs+lname+3, &QUOTE, 2);           // prints "
+                memcpy(htmlText+offset+i+lattrs+lname+4, attr.value().stringPtr(), lvalue*2);
+                memcpy(htmlText+offset+i+lattrs+lname+lvalue+4, &QUOTE, 2);    // prints "
+                lattrs += lname + lvalue + 4;
+            }
+            offset += lattrs;
+        }
 
+        // print ending bracket of start tag
         if( firstChild() == 0 )     // if element has no endtag
         {
-//kdDebug( 6020 ) << "recursive 4: " << nodeName().string() << endl;
-            memcpy(htmlText+offset+i+1, &SPACE, 2);     // prints " "
-            memcpy(htmlText+offset+i+2, &SLASH, 2);     // prints "/"
-            memcpy(htmlText+offset+i+3, &MT, 2);     // prints ">"
+            memcpy(htmlText+offset+i+1, &SPACE, 2);      // prints a space
+            memcpy(htmlText+offset+i+2, &SLASH, 2);      // prints /
+            memcpy(htmlText+offset+i+3, &MORETHAN, 2);   // prints >
             offset += i+4;
         }
-        else                  // if element has endtag
+        else                        // if element has endtag
         {
-//kdDebug( 6020 ) << "recursive 5: " << nodeName().string() << endl;
-            memcpy(htmlText+offset+i+1, &MT, 2);     // prints ">"
+            memcpy(htmlText+offset+i+1, &MORETHAN, 2);     // prints >
             offset += i+2;
         }
     }
-//kdDebug( 6020 ) << "recursive 5b: " << nodeName().string() << endl;
 
     if( firstChild() != 0 )
     {
-//kdDebug( 6020 ) << "recursive 6: " << nodeName().string() << endl;
         // print firstChild
         firstChild()->recursive( htmlText, currentLength, offset, stdInc);
-
+        
         // Print my ending tag
         if ( nodeType() != Node::TEXT_NODE )
         {
@@ -283,33 +257,26 @@ void NodeImpl::recursive( QChar *htmlText, long &currentLength, long &offset, in
             int i = me.length();
             while( (currentLength - offset) <= i*2+3)
                 increaseStringLength( htmlText, currentLength, offset, stdInc);
-            memcpy(htmlText+offset, &LT, 2);                   // prints "<"
-            memcpy(htmlText+offset+1, &SLASH, 2);              // prints "/"
+            memcpy(htmlText+offset, &LESSTHAN, 2);             // prints <
+            memcpy(htmlText+offset+1, &SLASH, 2);              // prints /
             memcpy(htmlText+offset+2, me.stringPtr(), i*2);    // prints tagname
-            memcpy(htmlText+offset+i+2, &MT, 2);               // prints ">"
+            memcpy(htmlText+offset+i+2, &MORETHAN, 2);         // prints >
             offset += i+3;
         }
     }
     // print next sibling
     if( nextSibling() )
         nextSibling()->recursive( htmlText, currentLength, offset, stdInc);
-//kdDebug( 6020 ) << "recursive 8: " << nodeName().string() << endl;
-//kdDebug( 6020 ) << "\nOFFSET2: " << offset << "\n" << endl;
 }
 
-int NodeImpl::increaseStringLength( QChar *htmlText, long &currentLength, long offset, int stdInc)
+bool NodeImpl::increaseStringLength( QChar *&htmlText, long &currentLength, long offset, int stdInc)
 {
-//kdDebug( 6020 ) << "Hei!" << endl;
     currentLength += stdInc;
-//kdDebug( 6020 ) << "1" << endl;
-    QChar *htmlTextTmp = QT_ALLOC_QCHAR_VEC(currentLength);
-//kdDebug( 6020 ) << "2" << endl;
-    memcpy(htmlTextTmp, htmlText, offset);
-//kdDebug( 6020 ) << "3" << endl;
-    QT_DELETE_QCHAR_VEC(htmlText);
-//kdDebug( 6020 ) << "4" << endl;
+    QChar *htmlTextTmp = QT_ALLOC_QCHAR_VEC( currentLength );
+    memcpy( htmlTextTmp, htmlText, offset*sizeof(QChar) );
+    QT_DELETE_QCHAR_VEC( htmlText );
     htmlText = htmlTextTmp;
-//kdDebug( 6020 ) << "Ha det!" << endl;
+    return true;       // should return false if not enough memory
 }
 
 void NodeImpl::applyChanges(bool)
