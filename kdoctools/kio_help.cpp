@@ -157,6 +157,9 @@ void HelpProtocol::get( const KURL& url )
     bool redirect;
     QString doc;
     doc = url.path();
+    if (doc.at(0) != '/')
+        doc = doc.prepend('/');
+
     if (doc.at(doc.length() - 1) == '/')
         doc += "index.html";
 
