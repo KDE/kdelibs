@@ -90,7 +90,8 @@ public:
    * local files, using KDirWatch, but it might be useful to force an
    * update manually.
    */
-  virtual void updateDirectory( const QString& _dir );
+  virtual void updateDirectory( const QString& _dir ); // remove ! BCI
+  /* virtual */ void updateDirectory( const KURL& dir ); // BCI
 
   /**
    * Changes the "is viewing dot files" setting.
@@ -103,7 +104,7 @@ public:
    * @param _url the item URL
    * @return the pointer to the KFileItem
    **/
-  KFileItem* find( const QString& _url );
+  KFileItem* find( const QString& _url ); // why not a KURL ?
 
   /**
    * @return the list of file items currently displayed
@@ -172,6 +173,8 @@ protected slots:
   void slotDirectoryDirty( const QString& _dir );
   void slotFileDirty( const QString& _file );
 
+  void slotURLDirty( const KURL& dir );
+
 protected:
 
   /**
@@ -196,7 +199,7 @@ protected:
    */
   virtual bool filterItem( const KFileItem * );
 
-  /** Unregister dirs from kdirwatch and clear m_lstDirs */
+  /** Unregister dirs from kdirwatch and clear list of dirs */
   void forgetDirs();
 
   /** The url that we used to list (can be different in case of redirect) */
@@ -214,7 +217,7 @@ protected:
    * But for a tree view, it contains all the dirs shown
    * (Used to unregister from kdirwatch)
    */
-  QStringList m_lstDirs;
+  QStringList m_lstDirs; // To be removed (BCI)
 
   bool m_isShowingDotFiles;
   bool m_bComplete;
@@ -222,7 +225,7 @@ protected:
   /** Keep entries found - used by slotUpdate* */
   QValueList<KIO::UDSEntry> m_buffer;
 
-  QStringList m_lstPendingUpdates;
+  QStringList m_lstPendingUpdates; // To be removed (BCI)
 
   /** List only directories */
   bool m_bDirOnlyMode;

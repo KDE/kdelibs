@@ -33,8 +33,17 @@
 #include <kurl.h>
 #include <kglobalsettings.h>
 
+class KDirLister::KDirListerPrivate
+{
+public:
+    KDirListerPrivate() { }
+    KURL::List lstDirs;
+    KURL::List lstPendingUpdates;
+};
+
 KDirLister::KDirLister( bool _delayedMimeTypes )
 {
+  d = new KDirListerPrivate;
   m_bComplete = true;
   m_job = 0L;
   m_lstFileItems.setAutoDelete( true );
@@ -50,6 +59,7 @@ KDirLister::~KDirLister()
   stop();
   delete m_rootFileItem;
   forgetDirs();
+  delete d;
 }
 
 void KDirLister::slotFileDirty( const QString& _file )
@@ -70,11 +80,18 @@ void KDirLister::slotDirectoryDirty( const QString& _dir )
 {
   // _dir does not contain a trailing slash
   kdDebug(1203) << "KDirLister::slotDirectoryDirty( " << _dir << " )" << endl;
-  // Check for _dir in m_lstDirs (which contains decoded paths)
-  for ( QStringList::Iterator it = m_lstDirs.begin(); it != m_lstDirs.end(); ++it )
-    if ( _dir == (*it) )
+  KURL url;
+  url.setPath( _dir );
+  slotURLDirty( url );
+}
+
+void KDirLister::slotURLDirty( const KURL & dir )
+{
+  // Check for dir in d->lstDirs
+  for ( KURL::List::Iterator it = d->lstDirs.begin(); it != d->lstDirs.end(); ++it )
+    if ( dir.cmp( (*it), true /* ignore trailing slash */ ) )
     {
-      updateDirectory( _dir );
+      updateDirectory( dir );
       break;
     }
 }
@@ -112,7 +129,7 @@ void KDirLister::openURL( const KURL& _url, bool _showDotFiles, bool _keep )
                this, SLOT( slotFileDirty( const QString& ) ) );
     }
   }
-  m_lstDirs.append( _url.path( -1 ) ); // store path without trailing slash
+  d->lstDirs.append( _url );
 
   m_bComplete = false;
 
@@ -217,12 +234,20 @@ void KDirLister::slotRedirection( KIO::Job *, const KURL & url )
   emit redirection( url );
 }
 
+// To be removed (BCI)
 void KDirLister::updateDirectory( const QString& _dir )
 {
-  kdDebug(1203) << "KDirLister::updateDirectory( " << _dir << " )" << endl;
+   KURL u;
+   u.setPath( _dir );
+   updateDirectory( u );
+}
+
+void KDirLister::updateDirectory( const KURL& _dir )
+{
+  kdDebug(1203) << "KDirLister::updateDirectory( " << _dir.url() << " )" << endl;
   if ( !m_bComplete )
   {
-    m_lstPendingUpdates.append( _dir );
+    d->lstPendingUpdates.append( _dir );
     return;
   }
 
@@ -232,8 +257,7 @@ void KDirLister::updateDirectory( const QString& _dir )
   m_bComplete = false;
   m_buffer.clear();
 
-  m_url = KURL();
-  m_url.setPath(_dir);
+  m_url = _dir;
   m_job = KIO::listDir( m_url, false /* no default GUI */ );
   connect( m_job, SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList&)),
            SLOT( slotUpdateEntries( KIO::Job*, const KIO::UDSEntryList&)));
@@ -258,9 +282,9 @@ void KDirLister::slotUpdateResult( KIO::Job * job )
   }
 
   KFileItemList lstNewItems;
-  QStringList::Iterator pendingIt = m_lstPendingUpdates.find( m_url.path( 0 ) );
-  if ( pendingIt != m_lstPendingUpdates.end() )
-    m_lstPendingUpdates.remove( pendingIt );
+  KURL::List::Iterator pendingIt = d->lstPendingUpdates.find( m_url );
+  if ( pendingIt != d->lstPendingUpdates.end() )
+    d->lstPendingUpdates.remove( pendingIt );
 
   // Unmark all items whose path is m_url
   QString sPath = m_url.path( 1 ); // with trailing slash
@@ -357,8 +381,8 @@ void KDirLister::slotUpdateResult( KIO::Job * job )
   // continue with pending updates
   // as this will result in a recursive loop it's sufficient to only
   // take the first entry
-  pendingIt = m_lstPendingUpdates.begin();
-  if ( pendingIt != m_lstPendingUpdates.end() )
+  pendingIt = d->lstPendingUpdates.begin();
+  if ( pendingIt != d->lstPendingUpdates.end() )
     updateDirectory( *pendingIt );
 }
 
@@ -376,7 +400,7 @@ void KDirLister::setShowingDotFiles( bool _showDotFiles )
   if ( m_isShowingDotFiles != _showDotFiles )
   {
     m_isShowingDotFiles = _showDotFiles;
-    for ( QStringList::Iterator it = m_lstDirs.begin(); it != m_lstDirs.end(); ++it )
+    for ( KURL::List::Iterator it = d->lstDirs.begin(); it != d->lstDirs.end(); ++it )
       updateDirectory( *it ); // update all directories
   }
 }
@@ -395,14 +419,14 @@ KFileItem* KDirLister::find( const QString& _url )
 
 void KDirLister::forgetDirs()
 {
-  for ( QStringList::Iterator it = m_lstDirs.begin(); it != m_lstDirs.end(); ++it ) {
-    if ( KURL( *it ).isLocalFile() )
+  for ( KURL::List::Iterator it = d->lstDirs.begin(); it != d->lstDirs.end(); ++it ) {
+    if ( (*it).isLocalFile() )
     {
-      kdDebug(1203) << "forgetting about " << (*it) << endl;
-      kdirwatch->removeDir( *it );
+      kdDebug(1203) << "forgetting about " << (*it).path() << endl;
+      kdirwatch->removeDir( (*it).path() );
     }
   }
-  m_lstDirs.clear();
+  d->lstDirs.clear();
   kdirwatch->disconnect( this );
 }
 
@@ -457,7 +481,7 @@ void KDirLister::setNameFilter(const QString& nameFilter)
         delete [] s;
     }
 
-    for ( QStringList::Iterator it = m_lstDirs.begin(); it != m_lstDirs.end(); ++it )
+    for ( KURL::List::Iterator it = d->lstDirs.begin(); it != d->lstDirs.end(); ++it )
 	updateDirectory( *it ); // update all directories
 }
 
