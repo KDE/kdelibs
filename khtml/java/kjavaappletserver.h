@@ -86,11 +86,12 @@ public:
      * name, class etc. are specified in the same way as in the HTML APPLET tag.
      */
     bool createApplet( int contextId, int appletId,
-                       const QString name, const QString clazzName,
-                       const QString baseURL, const QString codeBase,
-                       const QString jarFile, QSize size,
-                       const QMap<QString, QString>& params,
-                       const QString windowTitle );
+                       const QString & name, const QString & clazzName,
+                       const QString & baseURL, const QString & user,
+                       const QString & password, const QString & authname,
+                       const QString & codeBase, const QString & jarFile,
+                       QSize size, const QMap<QString, QString>& params,
+                       const QString & windowTitle );
 
     /**
      * This should be called by the KJavaAppletWidget

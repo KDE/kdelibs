@@ -32,6 +32,8 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include <kconfig.h>
+#include <kio/authinfo.h>
+#include <dcopclient.h>
 
 #include "kjavaappletwidget.h"
 #include "kjavaappletviewer.h"
@@ -212,13 +214,39 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
         else if (classname.isEmpty () && classid.startsWith ("java:"))
             classname = classid.mid(5);
     }
+    if (width > 0 && height > 0)
+        applet->setSize (QSize(width, height));
     applet->setBaseURL (baseurl);
     applet->setCodeBase (codebase);
     applet->setAppletClass (classname);
-    if (width > 0 && height > 0)
-        applet->setSize (QSize(width, height));
+
+    KIO::AuthInfo info;
+    QString errorMsg;
+    QCString replyType;
+    QByteArray params;
+    QByteArray reply;
+    KIO::AuthInfo authResult;
+
+    //(void) dcopClient(); // Make sure to have a dcop client.
+    info.url = baseurl;
+    info.verifyPath = true;
+
+    QDataStream stream(params, IO_WriteOnly);
+    stream << info << m_view->topLevelWidget()->winId();
+
+    if (!kapp->dcopClient ()->call( "kded", "kpasswdserver", "checkAuthInfo(KIO::AuthInfo, long int)", params, replyType, reply ) ) {
+        kdWarning() << "Can't communicate with kded_kpasswdserver!" << endl;
+    } else if ( replyType == "KIO::AuthInfo" ) {
+        QDataStream stream2( reply, IO_ReadOnly );
+        stream2 >> authResult;
+        applet->setUser (authResult.username);
+        applet->setPassword (authResult.password);
+        applet->setAuthName (authResult.realmValue);
+    }
+
     setInstance (KJavaAppletViewerFactory::instance ());
     KParts::Part::setWidget (m_view);
+
     connect (applet->getContext(), SIGNAL(appletLoaded()), this, SLOT(appletLoaded()));
     connect (applet->getContext(), SIGNAL(showDocument(const QString&, const QString&)), m_browserextension, SLOT(showDocument(const QString&, const QString&)));
     connect (applet->getContext(), SIGNAL(showStatus(const QString &)), this, SLOT(infoMessage(const QString &)));
@@ -245,7 +273,7 @@ bool KJavaAppletViewer::openURL (const KURL & url) {
         AppletParameterDialog (m_view).exec ();
         applet->setSize (m_view->sizeHint());
     }
-    // delay showApplet if size is unknown and if m_view already shown
+    // delay showApplet if size is unknown and m_view not shown
     if (applet->size().width() > 0 || m_view->isVisible())
         m_view->showApplet ();
     emit started (0L);
@@ -340,9 +368,12 @@ KJavaAppletViewerWidget::KJavaAppletViewerWidget(KJavaAppletContext* context,
 
 void KJavaAppletViewerWidget::showEvent (QShowEvent * e) {
     KJavaAppletWidget::showEvent(e);
-    if (!applet()->isCreated() && !applet()->appletClass().isEmpty())
+    if (!applet()->isCreated() && !applet()->appletClass().isEmpty()) {
         // delayed showApplet
+        if (applet()->size().width() <= 0)
+            applet()->setSize (sizeHint());
         showApplet();
+    }
 }
 
 #include "kjavaappletviewer.moc"

@@ -291,11 +291,12 @@ void KJavaAppletServer::destroyContext( int contextId )
 }
 
 bool KJavaAppletServer::createApplet( int contextId, int appletId,
-                                      const QString name, const QString clazzName,
-                                      const QString baseURL, const QString codeBase,
-                                      const QString jarFile, QSize size,
-                                      const QMap<QString,QString>& params,
-                                      const QString windowTitle )
+                             const QString & name, const QString & clazzName,
+                             const QString & baseURL, const QString & user,
+                             const QString & password, const QString & authname,
+                             const QString & codeBase, const QString & jarFile,
+                             QSize size, const QMap<QString,QString>& params,
+                             const QString & windowTitle )
 {
 //    kdDebug(6100) << "createApplet: contextId = " << contextId     << endl
 //              << "              appletId  = " << appletId      << endl
@@ -317,6 +318,9 @@ bool KJavaAppletServer::createApplet( int contextId, int appletId,
     args.append( name );
     args.append( clazzName );
     args.append( baseURL );
+    args.append( user );
+    args.append( password );
+    args.append( authname );
     args.append( codeBase );
     args.append( jarFile );
 

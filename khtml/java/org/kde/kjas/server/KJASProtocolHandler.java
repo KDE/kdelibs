@@ -144,6 +144,9 @@ public class KJASProtocolHandler
             final String appletName = getArg( command );
             final String className  = getArg( command );
             final String baseURL    = getArg( command );
+            final String username   = getArg( command );
+            final String password   = getArg( command );
+            final String authname   = getArg( command );
             final String codeBase   = getArg( command );
             final String archives   = getArg( command );
             final String width      = getArg( command );
@@ -177,7 +180,8 @@ public class KJASProtocolHandler
             if( context != null )
             {
                 context.createApplet( appletID, appletName, className,
-                                      baseURL, codeBase, archives,
+                                      baseURL, username, password, authname,
+                                      codeBase, archives,
                                       width, height, title, params );
             }
 

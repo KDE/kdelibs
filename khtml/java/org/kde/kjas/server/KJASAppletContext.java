@@ -10,6 +10,31 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import org.kde.javascript.JSObject;
 
+final class KJASAuthenticator extends Authenticator {
+    private Hashtable authentication;
+
+    KJASAuthenticator() {
+        authentication = new Hashtable();
+        setDefault(this);
+    }
+    final void addURL(URL url, String user, String password, String authname) {
+        String key = new String(url.getProtocol() + ":" + url.getHost() + ":" +
+                url.getPort() + "_" + authname);
+        String [] auths = { user, password };
+        authentication.put(key, auths);
+    }
+    final protected PasswordAuthentication getPasswordAuthentication() {
+        URL url;
+        String key = new String(getRequestingProtocol() + ":" + getRequestingHost() + ":" + getRequestingPort() + "_" + getRequestingPrompt());
+        String [] auths = (String []) authentication.get(key);
+        if (auths != null) {
+            char [] pw = new char[auths[1].length()];
+            auths[1].getChars(0, auths[1].length(), pw, 0);
+            return new PasswordAuthentication(auths[0], pw);
+        }
+        return null;
+    }
+}
 
 /**
  * The context in which applets live.
@@ -27,6 +52,7 @@ public class KJASAppletContext implements AppletContext
     private boolean active;
     // a mapping JS referenced Java objects
     private Hashtable jsReferencedObjects;
+    private final static KJASAuthenticator authenticator = new KJASAuthenticator();
     // keep this in sync with KParts::LiveConnectExtension::Type
     private final static int JError    = -1;
     private final static int JVoid     = 0;
@@ -85,6 +111,7 @@ public class KJASAppletContext implements AppletContext
     }
     public void createApplet( String appletID, String name,
                               String className, String docBase,
+                              String username, String password, String authname,
                               String codeBase, String archives,
                               String width, String height,
                               String windowName, Hashtable params )
@@ -127,6 +154,16 @@ public class KJASAppletContext implements AppletContext
         if( !params.containsKey( key ) )
             params.put( key, height );
 
+        if (username != null && !username.equals("")) {
+            try {
+                URL url = new URL(docBase);
+                int port = url.getPort();
+                if (port < 0)
+                    port = url.getDefaultPort();
+                authenticator.addURL(new URL(url.getProtocol(), url.getHost(), port, ""), username, password, authname);
+            } catch (MalformedURLException muex) {
+            }
+        }
         try
         {
             KJASAppletClassLoader loader =
