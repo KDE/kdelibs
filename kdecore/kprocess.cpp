@@ -94,7 +94,6 @@ public:
    bool addUtmp : 1;
    bool useShell : 1;
 
-   KUnixProcess *proc;  // could replace "runs" and "pid" in kde4
    KPty *pty;
    const char *user;
 
@@ -124,6 +123,7 @@ KProcess::KProcess( QObject* parent, const char *name )
     input_total(0)
 {
   KProcessController::ref();
+  KProcessController::theKProcessController->addKProcess(this);
 
   d = new KProcessPrivate;
 
@@ -148,6 +148,7 @@ KProcess::KProcess()
     input_total(0)
 {
   KProcessController::ref();
+  KProcessController::theKProcessController->addKProcess(this);
 
   d = new KProcessPrivate;
 
@@ -204,13 +205,14 @@ KProcess::~KProcess()
   delete d->pty;
   delete d;
 
+  KProcessController::theKProcessController->removeKProcess(this);
   KProcessController::deref();
 }
 
 void KProcess::detach()
 {
   if (runs) {
-    d->proc->kproc = 0; // make KProcessController forget about us
+    KProcessController::theKProcessController->addProcess(pid_);
     runs = false;
     pid_ = 0; // deny that the process has ever run
     // Clean up open fd's and socket notifiers.
@@ -412,23 +414,19 @@ bool KProcess::start(RunMode runmode, Communication comm)
   }
   close(fd[0]);
 
+  runs = true;
   switch (runmode)
   {
   case Block:
-    runs = true; // for commClose
     commClose();
     waitpid(pid_, &status, 0);
     processHasExited(status);
     break;
   case DontCare:
-    KProcessController::theKProcessController->registerProcess(pid_, 0);
-    pid_ = 0; // deny that the process has ever run
-    commClose();
+    detach();
     break;
   default: // NotifyOnExit
-    d->proc = KProcessController::theKProcessController->registerProcess(pid_, this);
     input_data = 0; // Discard any data for stdin that might still be there
-    runs = true;
     break;
   }
 

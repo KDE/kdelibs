@@ -24,11 +24,6 @@
 
 #include "kprocess.h"
 
-struct KUnixProcess {
-  int pid;
-  KProcess *kproc;
-};
-
 class QSocketNotifier;
 
 /**
@@ -86,10 +81,17 @@ public:
   bool waitForProcessExit(int timeout);
 
   /**
-   * Used by @see KProcess to register a newly started process.
    * @internal
    */
-  KUnixProcess *registerProcess( int pid, KProcess* prc );
+  void addKProcess( KProcess* );
+  /**
+   * @internal
+   */
+  void removeKProcess( KProcess* );
+  /**
+   * @internal
+   */
+  void addProcess( int pid );
 
 private slots:
   void slotDoHousekeeping();
@@ -99,7 +101,8 @@ private:
 
   int fd[2];
   QSocketNotifier *notifier;
-  QValueList<KUnixProcess*> processList;
+  QValueList<KProcess*> kProcessList;
+  QValueList<int> unixProcessList;
 
   static void setupHandlers();
   static void resetHandlers();

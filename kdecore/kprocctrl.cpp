@@ -143,24 +143,36 @@ void KProcessController::theSigCHLDHandler( int arg )
 
 void KProcessController::slotDoHousekeeping()
 {
-  char dummy[16]; // in case several are queued up
+  char dummy[16]; // somewhat bigger - just in case several have queued up
   ::read( fd[0], dummy, sizeof(dummy) );
 
   int status;
-  QValueList<KUnixProcess*>::Iterator it = processList.begin();
-  QValueList<KUnixProcess*>::Iterator eit = processList.end(); // so we don't crash even if processList was deleted by deref()
+ again:
+  QValueListIterator<KProcess*> it( kProcessList.begin() );
+  QValueListIterator<KProcess*> eit( kProcessList.end() );
   while( it != eit )
   {
-    KUnixProcess *prc = *it;
-    if( waitpid( prc->pid, &status, WNOHANG ) > 0 )
+    KProcess *prc = *it;
+    if( prc->runs && waitpid( prc->pid_, &status, WNOHANG ) > 0 )
     {
-      if( prc->kproc )
-        prc->kproc->processHasExited( status );
-      delete prc;
-      it = processList.remove( it );
-      deref(); // antipode to registerKProcess
+      prc->processHasExited( status );
+      // the callback can nuke the whole process list and even 'this'
+      if (!theKProcessController)
+        return;
+      goto again;
+    }
+    ++it;
+  }
+  QValueListIterator<int> uit( unixProcessList.begin() );
+  QValueListIterator<int> ueit( unixProcessList.end() );
+  while( uit != ueit )
+  {
+    if( waitpid( *uit, 0, WNOHANG ) > 0 )
+    {
+      uit = unixProcessList.remove( uit );
+      deref(); // counterpart to addProcess, can invalidate 'this'
     } else
-      ++it;
+      ++uit;
   }
 }
 
@@ -191,14 +203,20 @@ bool KProcessController::waitForProcessExit( int timeout )
   }
 }
 
-KUnixProcess *KProcessController::registerProcess( int pid, KProcess* p )
+void KProcessController::addKProcess( KProcess* p )
 {
-  KUnixProcess *proc = new KUnixProcess;
-  proc->pid = pid;
-  proc->kproc = p;
-  processList.append( proc );
-  ref(); // we already exist, obviously. make sure we still do when the kprocess detaches
-  return proc;
+  kProcessList.append( p );
+}
+
+void KProcessController::removeKProcess( KProcess* p )
+{
+  kProcessList.remove( p );
+}
+
+void KProcessController::addProcess( int pid )
+{
+  unixProcessList.append( pid );
+  ref(); // make sure we stay around when the KProcess goes away
 }
 
 #include "kprocctrl.moc"
