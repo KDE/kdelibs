@@ -1,3 +1,8 @@
+2004-01-29  David Faure  <faure@kde.org>
+
+	* ecma/kjs_window.cpp (get): update frame sizes before returning value for
+	innerWidth/innerHeight, in case the window was just resized (#73528, regtest ecma/window.js)
+
 2004-01-22  David Faure  <faure@kde.org>
 
 	* xml/dom_nodeimpl.cpp (setNodeValue): Don't throw NO_MODIFICATION_ALLOWED_ERR from

@@ -419,6 +419,8 @@ int main(int argc, char *argv[])
                                                         args->isSet("genoutput"));
     QObject::connect(part->browserExtension(), SIGNAL(openURLRequest(const KURL &, const KParts::URLArgs &)),
 		     regressionTest, SLOT(slotOpenURL(const KURL&, const KParts::URLArgs &)));
+    QObject::connect(part->browserExtension(), SIGNAL(resizeTopLevelWidget( int, int )),
+		     regressionTest, SLOT(resizeTopLevelWidget( int, int )));
 
     bool result;
     if (!args->getOption("test").isNull())
@@ -911,6 +913,13 @@ bool RegressionTest::cvsIgnored( const QString &filename )
     }
     ignoreFile.close();
     return false;
+}
+
+void RegressionTest::resizeTopLevelWidget( int w, int h )
+{
+    qApp->mainWidget()->resize( w, h );
+    // Since we're not visible, this doesn't have an immediate effect, QWidget posts the event
+    QApplication::sendPostedEvents( 0, QEvent::Resize );
 }
 
 #include "test_regression.moc"

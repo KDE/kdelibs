@@ -193,6 +193,10 @@ bool RenderWidget::event( QEvent *e )
     return true;
 }
 
+void RenderWidget::flushWidgetResizes() //static
+{
+    QApplication::sendPostedEvents( 0, QWidgetResizeEvent::Type );
+}
 
 void RenderWidget::setQWidget(QWidget *widget)
 {

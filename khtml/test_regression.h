@@ -160,6 +160,7 @@ private:
 
 private slots:
     void slotOpenURL(const KURL &url, const KParts::URLArgs &args);
+    void resizeTopLevelWidget( int, int );
 
 };
 
