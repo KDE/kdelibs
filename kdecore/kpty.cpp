@@ -1,7 +1,5 @@
 /*
 
-   $Id$
-
    This file is part of the KDE libraries
    Copyright (C) 1997-2002 The Konsole Developers
    Copyright (C) 2002 Waldo Bastian <bastian@kde.org>
@@ -263,25 +261,6 @@ bool KPty::open()
       } else {
 	  ::close(d->masterFd);
 	  d->masterFd = -1;
-      }
-    }
-#endif
-
-#if defined(_SCO_DS) || defined(__USLC__) // SCO OSr5 and UnixWare, might be obsolete
-    for (int idx = 0; idx < 256; idx++)
-    { 
-      ptyName.sprintf("/dev/ptyp%d", idx);
-      d->ttyName.sprintf("/dev/ttyp%d", idx);
-      if (access(d->ttyName.data(), F_OK) < 0) 
-        break; // no such device ...
-     
-      d->masterFd = ::open(ptyName.data(), O_RDWR);
-      if (d->masterFd >= 0)
-      {
-        if (geteuid() == 0 || access (d->ttyName.data(), R_OK|W_OK) == 0)
-          goto gotpty;
-        ::close(d->masterFd); 
-        d->masterFd = -1;
       }
     }
 #endif
