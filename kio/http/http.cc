@@ -350,13 +350,13 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, cons
 
   m_bUseProxy = false;
 
-  if ( KProtocolManager::self().useProxy() ) {
+  if ( KProtocolManager::useProxy() ) {
 
     // Use the appropriate proxy depending on the protocol
     KURL ur (
       protocol == "ftp"
-      ? KProtocolManager::self().ftpProxy()
-      : KProtocolManager::self().httpProxy() );
+      ? KProtocolManager::ftpProxy()
+      : KProtocolManager::httpProxy() );
 
     if (!ur.isEmpty())
     {
@@ -369,7 +369,7 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, cons
       m_strProxyUser = ur.user();
       m_strProxyPass = ur.pass();
 
-      m_strNoProxyFor = KProtocolManager::self().noProxyFor();
+      m_strNoProxyFor = KProtocolManager::noProxyFor();
     }
   }
 
@@ -693,12 +693,14 @@ HTTPProtocol::http_openConnection()
         if((errno != EINPROGRESS) && (errno != EWOULDBLOCK)) {
           // Error
           error(ERR_COULD_NOT_CONNECT, m_strProxyHost );
+          kdDebug(7103) << "Could not connect to PROXY (line:697)" << endl;
           return false;
         }
         // Wait for connection
         if (!waitForConnect(m_sock, PROXY_CONNECT_TIMEOUT))
         {
           error(ERR_COULD_NOT_CONNECT, m_strProxyHost );
+          kdDebug(7103) << "Timed out waiting to connect to PROXY (line:703)" << endl;
           return false;
         }
       }
@@ -792,7 +794,7 @@ bool HTTPProtocol::http_open()
   // Let's also clear out some things, so bogus values aren't used.
   m_sContentMD5 = "";
   m_HTTPrev = HTTP_Unknown;
-  m_qContentEncodings.clear();
+  m_qContentEncodings.clear(); // Unused should be removed BCI
   m_qTransferEncodings.clear();
   m_bChunked = false;
   m_iSize = 0;
@@ -1075,7 +1077,11 @@ bool HTTPProtocol::readHeader()
     // what type of data do we have?
     else if (strncasecmp(buffer, "Content-type:", 13) == 0) {
       // Jacek: We can't send mimeType signal now,
-      // because there may be another Content-Type to come
+      // because there may be another Content-Type. Or even
+      // worse the entity-body is encoded and there is a
+      // Content-Encoding specified which would then contain
+      // the true mime-type for the requested URI i.e. the content
+      // type is only applicable to the actual message-body!!
       m_strMimeType = trimLead(buffer + 13);
 
       //HACK to get the right mimetype of returns like "text/html; charset foo-blah"
@@ -1212,7 +1218,27 @@ bool HTTPProtocol::readHeader()
 
     // content?
     else if (strncasecmp(buffer, "Content-Encoding:", 17) == 0) {
-      addEncoding(trimLead(buffer + 17), &m_qContentEncodings);
+      // This is so wrong !!  No wonder kio_http is stripping the
+      // gzip encoding from downloaded files.  This solves multiple
+      // bug reports and caitoo's problem with downloads when such a
+      // header is encountered...
+
+      // A quote from RFC 2616:
+      // " When present, its (Content-Encoding) value indicates what additional
+      // content have been applied to the entity body, and thus what decoding
+      // mechanism must be applied to obtain the media-type referenced by the
+      // Content-Type header field.  Content-Encoding is primarily used to allow
+      // a document to be compressed without loosing the identity of its underlying
+      // media type.  Simply put if it is specified, this is the actual mime-type
+      // we should use when we pull the resource !!!
+      // addEncoding(trimLead(buffer + 17), &m_qContentEncodings);
+      m_strMimeType = trimLead(buffer + 17);
+      // Since we can have multiple encodings applied, pick the correct one, which
+      // would be the last one...
+      int loc = m_strMimeType.stripWhiteSpace().findRev( ' ' );
+      if( loc != -1 )
+      	m_strMimeType = m_strMimeType.mid( loc + 1 );
+
     }
 
     // continue only if we know that we're HTTP/1.1
@@ -1730,6 +1756,7 @@ void HTTPProtocol::mimetype( const QString& path, const QString& query )
 
   http_close();
   finished();
+
 }
 
 void HTTPProtocol::special( const QByteArray &data)
@@ -1959,7 +1986,7 @@ int HTTPProtocol::readUnlimited()
  * downloading the message (not the header) from the HTTP server.  It
  * is called either as a response to a client's KIOJob::dataEnd()
  * (meaning that the client is done sending data) or by 'http_open()'
- * (if we are in the process of a Get request).
+ * (if we are in the process of a PUT/POST request).
  */
 bool HTTPProtocol::readBody( )
 {
@@ -1967,8 +1994,7 @@ bool HTTPProtocol::readBody( )
 
   // Check if we need to decode the data.
   // If we are in copy mode the use only transfer decoding.
-  bool decode = !m_qTransferEncodings.isEmpty() ||
-                !m_qContentEncodings.isEmpty();
+  bool decode = !m_qTransferEncodings.isEmpty(); // || !m_qContentEncodings.isEmpty();
 
   bool useMD5 = !m_sContentMD5.isEmpty();
 
@@ -2103,15 +2129,17 @@ bool HTTPProtocol::readBody( )
 	       big_buffer.size());
 #endif
 		
-    // now decode all of the content encodings
-    while (!m_qContentEncodings.isEmpty()) {
+    // now decode all of the content encodings -- Why ?? We are not
+    // a proxy server, be a client side implementation!!  The applications
+    // are capable of determinig how to extract the encoded implementation.
+/*    while (!m_qContentEncodings.isEmpty()) {
       enc = m_qContentEncodings.pop();
       if (!enc)
 	break;
       if ( strstr(enc, "gzip") ) {
 	decodeGzip();
       }
-    }
+    } */
     sz = sendData();
   }
 
