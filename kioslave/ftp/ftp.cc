@@ -764,7 +764,7 @@ bool Ftp::ftpOpenEPSVDataConnection()
 
   char *start = strchr(rspbuf,'|');
   if ( !start ||
-       sscanf(rspbuf, "|||%d|", &portnum) != 1)
+       sscanf(start, "|||%d|", &portnum) != 1)
     {
       // invalid response?
       return false;
