@@ -116,7 +116,7 @@ public:
      * @param emailAddress The email address of the person.
      */
     KAboutTranslator(QString name=QString::null
-            , QString emailAddress=QString::null);
+            , const QString emailAddress=QString::null);
 
     /** 
      * The translator's name

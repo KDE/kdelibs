@@ -62,12 +62,12 @@ KAboutTranslator::KAboutTranslator(const QString name
     mEmail=emailAddress;
 }
 
-QString KAboutTranslator::KAboutTranslator::name() const
+QString KAboutTranslator::name() const
 {
     return mName;
 }
 
-QString KAboutTranslator::KAboutTranslator::emailAddress() const
+QString KAboutTranslator::emailAddress() const
 {
     return mEmail;
 }
