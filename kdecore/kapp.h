@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.48  1998/05/09 15:19:29  kulow
+// spanish updates by Boris
+//
 // Revision 1.47  1998/04/06 10:06:48  kulow
 // made kdedir() protected. I have to announce it after lunch ;)
 //
@@ -152,6 +155,7 @@
 #endif
 
 #define Icon(x) kapp->getIconLoader()->loadIcon(x)         
+#define ICON(x) kapp->getIconLoader()->loadIcon(x)
 
 class KIconLoader;
 class KCharsets;
