@@ -469,7 +469,7 @@ bool NodeImpl::dispatchEvent(EventImpl *evt, int &exceptioncode, bool tempEvent)
 
     // If tempEvent is true, this means that the DOM implementation will not be storing a reference to the event, i.e.
     // there is no way to retrieve it from javascript if a script does not already have a reference to it in a variable.
-    // So there is no need for the interpreter to keep the event in it's cache
+    // So there is no need for the interpreter to keep the event in its cache
     if (tempEvent && view && view->part()->jScript())
         view->part()->jScript()->finishedWithEvent(evt);
 
@@ -829,7 +829,7 @@ void NodeImpl::checkAddChild(NodeImpl *newChild, int &exceptioncode)
 
     // check node allowed
     if (newChild->nodeType() == Node::DOCUMENT_FRAGMENT_NODE) {
-        // newChild is a DocumentFragment... check all it's children instead of newChild itself
+        // newChild is a DocumentFragment... check all its children instead of newChild itself
         NodeImpl *child;
         for (child = newChild->firstChild(); child; child = child->nextSibling()) {
             if (!childAllowed(child)) {

@@ -454,7 +454,7 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
             while (n && i < m_endOffset) { // delete until m_endOffset
 		NodeImpl *next = n->nextSibling();
                 if (action == EXTRACT_CONTENTS)
-                    fragment->appendChild(n,exceptioncode); // will remove n from it's parent
+                    fragment->appendChild(n,exceptioncode); // will remove n from its parent
                 else if (action == CLONE_CONTENTS)
                     fragment->appendChild(n->cloneNode(true),exceptioncode);
                 else
@@ -578,7 +578,7 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
             for (; n; n = prev ) {
                 prev = n->previousSibling();
                 if (action == EXTRACT_CONTENTS)
-                    rightContents->insertBefore(n,rightContents->firstChild(),exceptioncode); // will remove n from it's parent
+                    rightContents->insertBefore(n,rightContents->firstChild(),exceptioncode); // will remove n from its parent
                 else if (action == CLONE_CONTENTS)
                     rightContents->insertBefore(n->cloneNode(true),rightContents->firstChild(),exceptioncode);
                 else
@@ -599,7 +599,7 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
             for (; n; n = prev ) {
                 prev = n->previousSibling();
                 if (action == EXTRACT_CONTENTS)
-                    rightContents->insertBefore(n,rightContents->firstChild(),exceptioncode); // will remove n from it's parent
+                    rightContents->insertBefore(n,rightContents->firstChild(),exceptioncode); // will remove n from its parent
                 else if (action == CLONE_CONTENTS)
                     rightContents->insertBefore(n->cloneNode(true),rightContents->firstChild(),exceptioncode);
                 else

@@ -303,7 +303,7 @@ public:
     // Methods for maintaining the state of the element between history navigation
 
     /**
-     * Indicates whether or not this type of node maintains it's state. If so, the state of the node will be stored when
+     * Indicates whether or not this type of node maintains its state. If so, the state of the node will be stored when
      * the user goes to a different page using the state() method, and restored using the restoreState() method if the
      * user returns (e.g. using the back button). This is used to ensure that user-changeable elements such as form
      * controls maintain their contents when the user returns to a previous page in the history.
@@ -350,8 +350,8 @@ public:
     virtual void removedFromDocument();
 
     /**
-     * Notifies the node that it's list of children have changed (either by adding or removing child nodes), or a child
-     * node that is of the type CDATA_SECTION_NODE, TEXT_NODE or COMMENT_NODE has changed it's value.
+     * Notifies the node that its list of children have changed (either by adding or removing child nodes), or a child
+     * node that is of the type CDATA_SECTION_NODE, TEXT_NODE or COMMENT_NODE has changed its value.
      */
     virtual void childrenChanged();
 

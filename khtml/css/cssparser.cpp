@@ -85,7 +85,7 @@ void StyleBaseImpl::checkLoaded()
 
 DOMString StyleBaseImpl::baseURL()
 {
-    // try to find the style sheet. If found look for it's url.
+    // try to find the style sheet. If found look for its url.
     // If it has none, look for the parentsheet, or the parentNode and
     // try to find out about their url
     StyleBaseImpl *b = this;

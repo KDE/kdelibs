@@ -120,12 +120,12 @@ public:
     QString& archives();
 
     /**
-     * Set the name the applet should be called in it's context
+     * Set the name the applet should be called in its context
      */
     void setAppletName( const QString& name );
 
     /**
-     * Get the name the applet should be called in it's context
+     * Get the name the applet should be called in its context
      */
     QString& appletName();
 

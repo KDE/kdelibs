@@ -201,7 +201,7 @@ void RenderFlow::printSpecialObjects( QPainter *p, int x, int y, int w, int h, i
     QPtrListIterator<SpecialObject> it(*specialObjects);
     for ( ; (r = it.current()); ++it ) {
         // A special object may be registered with several different objects... so we only print the
-        // object if we are it's containing block
+        // object if we are its containing block
        if (r->node->isPositioned() && r->node->containingBlock() == this) {
            r->node->print(p, x, y, w, h, tx , ty);
        } else if ( ( r->node->isFloating() && !r->noPaint ) ) {
@@ -1323,7 +1323,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
         else {
             // Trying to insert a block child into an anonymous block box which contains only
             // inline elements... move all of the anonymous box's inline children into other
-            // anonmous boxes which become children of this
+            // anonymous boxes which become children of this
 
             RenderObject *anonBox = beforeChild->parent();
             KHTMLAssert (anonBox->isFlow()); // ### RenderTableSection the only exception - should never happen here
@@ -1356,8 +1356,8 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
             setOverhangingContents();
     }
 
-    // RenderFlow has to either have all of it's children inline, or all of it's children as blocks.
-    // So, if our children are currently inline and block child has to be inserted, we move all our
+    // RenderFlow has to either have all of its children inline, or all of its children as blocks.
+    // So, if our children are currently inline and a block child has to be inserted, we move all our
     // inline children into anonymous block boxes
     if ( m_childrenInline && !newChild->isInline() && !newChild->isSpecial() )
     {
@@ -1424,7 +1424,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
     if(!newChild->isInline()) // block child
     {
         // If we are inline ourselves and have become block, we have to make sure our parent
-        // makes the necessary adjustments so that all of it's other children are moved into
+        // makes the necessary adjustments so that all of its other children are moved into
         // anonymous block boxes where necessary
         if (style()->display() == INLINE)
         {

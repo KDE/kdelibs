@@ -422,7 +422,7 @@ namespace khtml
 
 	/**
 	 * Ask the cache for some url. Will return a cachedObject, and
-	 * load the requested data in case it's not cahced
+	 * load the requested data in case it's not cached
          * if the DocLoader is zero, the url must be full-qualified.
          * Otherwise, it is automatically base-url expanded
 	 */
@@ -441,7 +441,7 @@ namespace khtml
 
 	/**
 	 * Ask the cache for some url. Will return a cachedObject, and
-	 * load the requested data in case it's not cahced
+	 * load the requested data in case it's not cached
 	 */
 	static CachedScript *requestScript( DocLoader* l, const DOM::DOMString &url, bool reload=false, time_t _expireDate=0, const QString& charset=QString::null);
 

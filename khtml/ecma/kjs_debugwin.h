@@ -99,7 +99,7 @@ class SourceFile : public DOM::DomShared {
  * @internal
  *
  * When kjs parses some code, it generates a source code fragment (or just "source").
- * This is referenced by it's source id in future calls to functions such as atLine()
+ * This is referenced by its source id in future calls to functions such as atLine()
  * and callEvent(). We keep a record of all source fragments parsed in order to display
  * then to the user.
  *

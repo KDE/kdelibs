@@ -127,7 +127,7 @@ protected:
 
     /*
      * the minimum width the element needs, to be able to render
-     * it's content without clipping
+     * its content without clipping
      */
     short m_minWidth;
     /* The maximum width the element can fill horizontally
