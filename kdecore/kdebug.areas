@@ -7,6 +7,7 @@
 750	kspell (kdelibs)
 1201	kfm (kdebase)
 1202    konqueror (kdebase)
+1203    libkonq (kdebase)
 1300	kfm (kioslave)
 1400	khelpcenter.bin (khelpcenter server)
 1401	khelpcenterclient (khelpcenter client)
