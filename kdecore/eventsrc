@@ -1351,14 +1351,18 @@ level=8
 
 [messageInformation]
 Name=Information message
+Name[pt_BR]=Mensagem de informações
 Comment=An information message is being shown
+Comment[pt_BR]=Uma mensagem de informação está sendo mostrada
 default_sound=KDE_Notify.wav
 default_presentation=65
 nopresentation=18
 
 [messageWarning]
 Name=Warning message
+Name[pt_BR]=Mensagem de Aviso
 Comment=A warning message is being shown
+Comment[pt_BR]=Uma mensagem de aviso está sendo mostrada
 default_sound=KDE_Error.wav
 default_presentation=65
 nopresentation=18
@@ -1366,7 +1370,9 @@ level=2
 
 [messageCritical]
 Name=Critical message
+Name[pt_BR]=Mensagem Crítica
 Comment=A critical message is being shown
+Comment[pt_BR]=Uma mensagem crítica está sendo mostrada
 default_sound=KDE_Critical_Error.wav
 default_presentation=65
 nopresentation=18
@@ -1374,7 +1380,9 @@ level=4
 
 [messageboxQuestion]
 Name=Question
+Name[pt_BR]=Questão
 Comment=A question is being asked
+Comment[pt_BR]=Uma pergunta está sendo feita
 default_sound=KDE_Beep_Ahem.wav
 default_presentation=65
 nopresentation=18
