@@ -1,0 +1,8 @@
+[Desktop Entry]
+Encoding=UTF-8
+Comment=Windows Media Video File
+Hidden=false
+Icon=video
+MimeType=video/x-ms-wmv
+Patterns=*.wmv
+Type=MimeType
