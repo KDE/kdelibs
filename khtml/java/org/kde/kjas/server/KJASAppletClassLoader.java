@@ -319,9 +319,9 @@ public final class KJASAppletClassLoader
     protected PermissionCollection getPermissions(CodeSource cs) {
         Main.debug(dbgID + " getPermissions(" + cs + ")");
         PermissionCollection permissions = super.getPermissions(cs);
-        Enumeration enum = permissions.elements();
-        while (enum.hasMoreElements()) {
-            Main.debug(this + " Permission: " + enum.nextElement());
+        Enumeration perms_enum = permissions.elements();
+        while (perms_enum.hasMoreElements()) {
+            Main.debug(this + " Permission: " + perms_enum.nextElement());
         }
         return permissions;
     }

@@ -147,7 +147,7 @@ public final class KJASAppletStub
         /**
          * Get the current state
          */
-        synchronized int getState() {
+        synchronized int getAppletState() {
             return current_state;
         }
         /**
@@ -425,7 +425,7 @@ public final class KJASAppletStub
     */
     Applet getApplet()
     {
-        if (runThread != null && runThread.getState() > CLASS_LOADED)
+        if (runThread != null && runThread.getAppletState() > CLASS_LOADED)
             return app;
         return null;
     }
@@ -457,7 +457,7 @@ public final class KJASAppletStub
     * @return true if the applet has been completely loaded.
     */
     boolean isLoaded() {
-        return runThread != null && runThread.getState() >= INSTANCIATED;
+        return runThread != null && runThread.getAppletState() >= INSTANCIATED;
     }
     
     public void appletResize( int width, int height )
