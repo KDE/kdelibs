@@ -40,7 +40,7 @@ dnl Checks for header files.
 KDE_CHECK_STL
 AC_HEADER_DIRENT
 AC_HEADER_STDC
-AC_CHECK_HEADERS(sys/mman.h sys/time.h sys/cdefs.h fnmatch.h sysent.h strings.h sys/stat.h sys/select.h sys/socket.h linux/socket.h socketbits.h sigaction.h paths.h malloc.h monetary.h limits.h sys/mnttab.h mntent.h fstab.h sys/soundcard.h)
+AC_CHECK_HEADERS(sys/mman.h sys/time.h sys/cdefs.h fnmatch.h sysent.h strings.h sys/stat.h sys/select.h sys/socket.h linux/socket.h socketbits.h sigaction.h paths.h malloc.h monetary.h limits.h sys/soundcard.h)
 
 DCOPIDL2CPP="compiled"
 DCOPIDL="compiled"
@@ -98,7 +98,7 @@ AC_CHECK_BOOL
 dnl AC_CHECK_GNU_EXTENSIONS
 
 dnl Checks for library functions.
-AC_CHECK_FUNCS(socket vsnprintf seteuid setegid random strfmon stpcpy mkstemp setmntent gettimeofday setenv unsetenv)
+AC_CHECK_FUNCS(socket vsnprintf seteuid setegid random strfmon stpcpy mkstemp gettimeofday setenv unsetenv)
 
 AC_LANG_SAVE
 AC_LANG_C

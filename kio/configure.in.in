@@ -20,3 +20,5 @@ dnl
 
 AC_FIND_ZLIB
 
+AC_CHECK_HEADERS(sys/mnttab.h mntent.h fstab.h sys/ucred.h sys/mount.h)
+AC_CHECK_FUNCS(setmntent getmntinfo)
