@@ -79,9 +79,7 @@ static KCmdLineOptions options[] =
     { "check", I18N_NOOP( "Check the document for validity" ), 0 },
     { "cache <file>", I18N_NOOP( "Create a cache file for the document" ), 0},
     { "srcdir <dir>", I18N_NOOP( "Set the srcdir, for kdelibs" ), 0},
-
-    // XXX Un-comment after KDE 3.4
-    { "param <key>=<value>", /*I18N_NOOP( "Parameters to pass to the stylesheet" )*/ 0, 0},
+    { "param <key>=<value>", I18N_NOOP( "Parameters to pass to the stylesheet" ), 0},
     { "+xml", I18N_NOOP("The file to transform"), 0},
     KCmdLineLastOption // End of options.
 };
