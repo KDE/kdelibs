@@ -224,8 +224,14 @@ SButtonPosition=BottomRight
 ShadeStyle=Motif
 Name=System-Series
 Name[da]=System-serier
+Name[eo]=Sistem-Serioj
+Name[no]=System-serier
+Name[no_NY]=System-serie
 Comment=System Style 001
 Comment[da]=System stil 001
+Comment[eo]=Sistemostilo 001
+Comment[no]=System-stil 001
+Comment[no_NY]=Systemstil 001
 ScrollBarExtent=14
 
 [General]
