@@ -68,6 +68,10 @@ static const char* const KDE_STARTUP_ID = "_KDE_STARTUP_ID";
 // KDE_STARTUP_ENV is used also in kinit/wrapper.c
 static const char* const KDE_STARTUP_ENV = "KDE_STARTUP_ENV";
 
+// TODO these two are for backward compatibility with KDE2.x
+static const char* const KDE_STARTUP_INFO_2 = "KDE_STARTUP_INFO";
+static const char* const KDE_STARTUP_ID_2 = "KDE_STARTUP_ID";
+
 static int get_num( const QString& item_P );
 static QString get_str( const QString& item_P );
 static QCString get_cstr( const QString& item_P );
@@ -90,8 +94,9 @@ struct KStartupInfoPrivate
         QMap< KStartupInfoId, KStartupInfo::Data > startups;
         KWinModule* wm_module;
         KXMessages msgs;
+        KXMessages msgs_2;
 	QTimer* cleanup;
-       KStartupInfoPrivate() : msgs( KDE_STARTUP_INFO ) {}
+       KStartupInfoPrivate() : msgs( KDE_STARTUP_INFO ), msgs_2( KDE_STARTUP_INFO_2 ) {}
     };
     
 KStartupInfo::KStartupInfo( bool clean_on_cantdetect_P, QObject* parent_P, const char* name_P )
@@ -106,6 +111,7 @@ KStartupInfo::KStartupInfo( bool clean_on_cantdetect_P, QObject* parent_P, const
     connect( d->wm_module, SIGNAL( windowAdded( WId )), SLOT( slot_window_added( WId )));
     connect( d->wm_module, SIGNAL( systemTrayWindowAdded( WId )), SLOT( slot_window_added( WId )));
     connect( &d->msgs, SIGNAL( gotMessage( const QString& )), SLOT( got_message( const QString& )));
+    connect( &d->msgs_2, SIGNAL( gotMessage( const QString& )), SLOT( got_message( const QString& )));
     d->cleanup = new QTimer( this );
     connect( d->cleanup, SIGNAL( timeout()), SLOT( startups_cleanup()));
     }
@@ -538,17 +544,29 @@ bool KStartupInfo::find_wclass( QCString res_name, QCString res_class,
     }
 
 static Atom kde_startup_atom = None;
+static Atom kde_startup_atom_2 = None;
 
 QCString KStartupInfo::windowStartupId( WId w_P )
     {
     if( kde_startup_atom == None )
         kde_startup_atom = XInternAtom( qt_xdisplay(), KDE_STARTUP_ID, False );
+    if( kde_startup_atom_2 == None )
+        kde_startup_atom_2 = XInternAtom( qt_xdisplay(), KDE_STARTUP_ID_2, False );
     unsigned char *name_ret;
     QCString ret;
     Atom type_ret;
     int format_ret;
     unsigned long nitems_ret = 0, after_ret = 0;
     if( XGetWindowProperty( qt_xdisplay(), w_P, kde_startup_atom, 0l, (long) BUFSIZE,
+            False, XA_STRING, &type_ret, &format_ret, &nitems_ret, &after_ret, &name_ret )
+	    == Success )
+        {
+	if( type_ret == XA_STRING && format_ret == 8 && name_ret != NULL )
+	    ret = reinterpret_cast< char* >( name_ret );
+        if ( name_ret != NULL )
+            XFree( name_ret );
+        }
+    if( ret.isNull() && XGetWindowProperty( qt_xdisplay(), w_P, kde_startup_atom_2, 0l, (long) BUFSIZE,
             False, XA_STRING, &type_ret, &format_ret, &nitems_ret, &after_ret, &name_ret )
 	    == Success )
         {
