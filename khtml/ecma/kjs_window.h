@@ -71,6 +71,7 @@ namespace KJS {
   private:
     QGuardedPtr<KHTMLPart> part;
     QGuardedPtr<KHTMLPart> opener;
+    Screen *screen;
     bool openedByJS;
     WindowQObject *winq;
   };

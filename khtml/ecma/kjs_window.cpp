@@ -130,6 +130,8 @@ static const struct HashTable2 ecmaScreenTable = { 2, 10, ecmaScreenTableEntries
 KJSO Screen::get(const UString &p) const
 {
   int token = Lookup::find(&ecmaScreenTable, p);
+  if (token < 0)
+    return ObjectImp::get(p);
 
   KWinModule info;
   QPaintDeviceMetrics m(QApplication::desktop());
@@ -151,12 +153,13 @@ KJSO Screen::get(const UString &p) const
   case availWidth:
     return Number(info.workArea().width());
   default:
+    assert(!"Screen::get: unhandled switch case");
     return Undefined();
   }
 }
 
 Window::Window(KHTMLPart *p)
-  : part(p), openedByJS(false), winq(0L)
+  : part(p), screen(0), openedByJS(false), winq(0L)
 {
 }
 
@@ -348,7 +351,8 @@ KJSO Window::get(const UString &p) const
     return KJSO(newWindow(p));
   }
   else if (p == "screen")
-    return KJSO(new Screen());
+    return KJSO(screen ? screen :
+		(const_cast<Window*>(this)->screen = new Screen()));
   else if (p == "Image")
     return KJSO(new ImageConstructor(Global::current(), part->document()));
   else if (p == "Option")
