@@ -49,6 +49,13 @@ enum {
 	MISTAKE=  3
 };
 
+class KSpell::KSpellPrivate
+{
+public:
+    bool endOfResponse;
+};
+
+
 //TODO
 //Parse stderr output
 //e.g. -- invalid dictionary name
@@ -76,6 +83,8 @@ KSpell::KSpell (QWidget *_parent, QString _caption,
 		QObject *obj, const char *slot, KSpellConfig *_ksc,
 		bool _progressbar, bool _modal)
 {
+  d=new KSpellPrivate;
+    
   autoDelete = false;
   modaldlg = _modal;
   progressbar = _progressbar;
@@ -647,7 +656,7 @@ void KSpell::checkList2 ()
     {
       kdDebug(750) << "KS::cklist2 " << lastpos << ": " << *wlIt << endl;
 
-      endOfResponse = FALSE;
+      d->endOfResponse = FALSE;
       bool put;
       lastpos++; offset=0;
       put = cleanFputsWord (*wlIt);
@@ -694,7 +703,7 @@ void KSpell::checkList3a (KProcIO *)
 
 
 	if (tempe == 0) {
-	  endOfResponse = TRUE;
+	  d->endOfResponse = TRUE;
 	  //kdDebug(750) << "checkList3a: end of resp" << endl;
 	} else if (tempe>0) {
 	  if ((e=parseOneResponse (line, word, &sugg))==MISTAKE ||
@@ -730,7 +739,7 @@ void KSpell::checkList3a (KProcIO *)
 
     // if we got an empty line, t.e. end of ispell/aspell response
     // and the dialog isn't waiting for user interaction, send next word
-    if (endOfResponse && !dlgon) {
+    if (d->endOfResponse && !dlgon) {
       //kdDebug(750) << "checkList3a: send next word" << endl;
       checkList2();
     }
@@ -781,7 +790,7 @@ void KSpell::checkList4 ()
     };
 
   // read more if there is more, otherwise send next word
-  if (!endOfResponse) {
+  if (!d->endOfResponse) {
     //kdDebug(750) << "checkList4: read more from response" << endl;
       checkList3a(NULL);
   } 
@@ -1042,6 +1051,8 @@ void KSpell::dialog2 (int result)
 
 KSpell:: ~KSpell ()
 {
+  if(d)
+      delete d;
 
   if (proc)
     {
