@@ -48,7 +48,7 @@ public:
   virtual void clear();
   virtual DOM::EventListener *createHTMLEventHandler(QString sourceUrl, QString code);
   virtual void finishedWithEvent(const DOM::Event &event);
-  virtual KJS::ScriptInterpreter *interpreter();
+  virtual KJS::Interpreter *interpreter();
 
   virtual void setDebugEnabled(bool enabled);
   virtual void showDebugWindow(bool show=true);
@@ -244,7 +244,7 @@ void KJSProxyImpl::finishedWithEvent(const DOM::Event &event)
   ScriptInterpreter::forgetDOMObject(event.handle());
 }
 
-KJS::ScriptInterpreter *KJSProxyImpl::interpreter()
+KJS::Interpreter *KJSProxyImpl::interpreter()
 {
   if (!m_script)
     initScript();
