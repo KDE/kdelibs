@@ -20,17 +20,20 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
  */
 
-#include <kmdcodec.h>
-#include <qpixmap.h>
+
+
+#include <qfile.h>
 #include <qimage.h>
 #include <qlabel.h>
-#include <qfile.h>
+#include <qpixmap.h>
+#include <qtextstream.h>
+#include <qurl.h>
 
-#include <kprotocolinfo.h>
-#include <kconfig.h>
 #include <kapplication.h>
-
+#include <kconfig.h>
 #include <kdebug.h>
+#include <kmdcodec.h>
+#include <kprotocolinfo.h>
 
 #include "ldapclient.h"
 
@@ -136,10 +139,15 @@ void LdapClient::startQuery( const QString& filter )
     mScope = "sub";
 
   QString auth;
+  QString encodedPassword;
   if ( !d->bindDN.isEmpty() ) {
     auth = d->bindDN;
-    if ( !d->pwdBindDN.isEmpty() )
-      auth += ":" + d->pwdBindDN;
+    QUrl::encode( auth );
+    if ( !d->pwdBindDN.isEmpty() ) {
+      encodedPassword = d->pwdBindDN;
+      QUrl::encode( encodedPassword );
+      auth += ":" + encodedPassword;
+    }
     auth += "@";
   }
 
@@ -150,10 +158,9 @@ void LdapClient::startQuery( const QString& filter )
   }
 
   if ( mAttrs.empty() ) {
-    query = QString("ldap://%1%2/%3?*?%4?(%5)").arg( auth ).arg( host ).arg( mBase ).arg( mScope ).arg( filter );
+    QTextOStream(&query) << "ldap://" << auth << host << "/" << mBase << "?*?" << mScope << "?(" << filter << ")";
   } else {
-    query = QString("ldap://%1%2/%3?%4?%5?(%6)").arg( auth ).arg( host ).arg( mBase )
-      .arg( mAttrs.join(",") ).arg( mScope ).arg( filter );
+    QTextOStream(&query) << "ldap://" << auth << host << "/" << mBase << "?" << mAttrs.join(",") << "?" << mScope << "?(" << filter << ")";
   }
   kdDebug(5700) << "Doing query " << query << endl;
 
