@@ -35,23 +35,16 @@ public:
 	~KPrintPreview();
 
 	void openFile(const QString& file);
-	bool status() const;
-	void exec(const QString& file = QString::null);
 	bool isValid() const;
 
-	static bool preview(const QString& file, bool previewOnly = false);
+	static bool preview(const QString& file, bool previewOnly = false, WId parentId = 0);
 
-protected slots:
-	void accept();
-	void reject();
-
-protected:
-	void done(bool st);
-	void closeEvent(QCloseEvent *e);
+signals:
+	void continuePrint();
+	void cancelPrint();
 
 private:
 	KParts::ReadOnlyPart	*gvpart_;
-	bool			status_;
 };
 
 class KPreviewProc : public KProcess
@@ -66,8 +59,5 @@ public:
 protected slots:
 	void slotProcessExited(KProcess*);
 };
-
-inline bool KPrintPreview::status() const
-{ return status_; }
 
 #endif

@@ -82,6 +82,7 @@ public:
 	KPrinterImpl	*m_impl;
 	bool		m_restore;
 	bool		m_previewonly;
+	WId		m_parentId;
 };
 
 //**************************************************************************************
@@ -117,6 +118,7 @@ void KPrinter::init(bool restore, QPrinter::PrinterMode m)
 	d->m_impl = KMFactory::self()->printerImplementation();
 	d->m_restore = restore;
 	d->m_previewonly = false;
+	d->m_parentId = 0;
 
 	// other initialization
 	m_tmpbuffer = d->m_impl->tempFile();
@@ -153,6 +155,8 @@ void KPrinter::saveSettings()
 
 bool KPrinter::setup(QWidget *parent, const QString& caption, bool forceExpand)
 {
+	if (parent)
+		d->m_parentId = parent->winId();
 	bool	state = KPrintDialog::printerSetup(this, parent, caption, forceExpand);
 	return state;
 }
@@ -256,7 +260,7 @@ bool KPrinter::printFiles(const QStringList& l, bool flag)
 		// Show preview if needed (only possible for a single file !), and stop
 		// if the user requested it. Force preview if preview-only mode has been set: it
 		// then use by default the first file in the list.
-		if (((files.count() != 1 || option("kde-preview") != "1") && !d->m_previewonly) || KPrintPreview::preview(files[0], d->m_previewonly))
+		if (((files.count() != 1 || option("kde-preview") != "1") && !d->m_previewonly) || KPrintPreview::preview(files[0], d->m_previewonly, d->m_parentId))
 		{
 			// check if printing has been prepared (it may be not prepared if the KPrinter object is not
 			// use as a QPaintDevice object)
