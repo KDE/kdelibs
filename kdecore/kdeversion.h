@@ -22,10 +22,10 @@
 #ifndef _KDE_VERSION_H_
 #define _KDE_VERSION_H_
 
-#define KDE_VERSION_STRING "3.2.1"
+#define KDE_VERSION_STRING "3.2.2"
 #define KDE_VERSION_MAJOR 3
 #define KDE_VERSION_MINOR 2
-#define KDE_VERSION_RELEASE 1
+#define KDE_VERSION_RELEASE 2
 #define KDE_MAKE_VERSION( a,b,c ) (((a) << 16) | ((b) << 8) | (c))
 
 #define KDE_VERSION \
