@@ -309,6 +309,8 @@ void RenderWidget::updateFromElement()
 
 void RenderWidget::slotWidgetDestructed()
 {
+    if (m_view)
+       m_view->setWidgetVisible(this, false);
     m_widget = 0;
 }
 
