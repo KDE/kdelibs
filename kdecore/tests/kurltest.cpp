@@ -188,6 +188,13 @@ int main(int argc, char *argv[])
   u2.setFileName( "" );
   check("KURL::setFileName()", u2.url(), "print:/specials/");
 
+  u2 = "file:/specials/Print";
+  printf("\n* URL is %s\n",u2.url().ascii());
+  check("KURL::path()", u2.path(), "/specials/Print");
+  check("KURL::fileName()", u2.fileName(), "Print");
+  u2.setFileName( "" );
+  check("KURL::setFileName()", u2.url(), "file:/specials/");
+
   const char * u3 = "ftp://host/dir1/dir2/myfile.txt";
   printf("\n* URL is %s\n",u3);
   check("KURL::hasSubURL()", KURL(u3).hasSubURL() ? "yes" : "no", "no");
