@@ -103,6 +103,9 @@ public:
      * The default implementation does nothing.
      */
     virtual void partLoadingErrorNotify();
+    
+    virtual short intrinsicWidth() const;
+    virtual int intrinsicHeight() const;
 };
 
 class RenderFrame : public khtml::RenderPart

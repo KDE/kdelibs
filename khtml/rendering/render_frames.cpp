@@ -608,6 +608,16 @@ void RenderPart::partLoadingErrorNotify()
 {
 }
 
+short RenderPart::intrinsicWidth() const
+{
+    return 300;
+}
+
+int RenderPart::intrinsicHeight() const
+{
+    return 200;
+}
+
 
 /***************************************************************************************/
 
