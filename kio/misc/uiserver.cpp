@@ -1054,7 +1054,7 @@ void UIServer::slotUpdate() {
   }
 
   int iTotalFiles = 0;
-  int iTotalSize = 0;
+  KIO::filesize_t iTotalSize = 0;
   int iTotalSpeed = 0;
   QTime totalRemTime;
 
