@@ -21,11 +21,14 @@ Send suggestions, comments, etc. to Frederik Fouvry
 <fouvry@sfs.nphil.uni-tuebingen.de>.
 --
 
+OVERRIDE YES
+SGMLDECL "kde.dcl"
+
 			    -- DocBook --
 
 PUBLIC "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN"
        "dtd/kde.dtd"
-PUBLIC "-//KDE//DTD DocBook V4.0-Based Variant V1.0//EN"
+PUBLIC "-//KDE//DTD DocBook V4.1-Based Variant V1.0//EN"
        "dtd/kde-next.dtd"
 PUBLIC "-//KDE//ELEMENTS DocBook Hierarchy Redeclarations 2 V1.0//EN"
        "dtd/kde-rdbhier2.elements"
