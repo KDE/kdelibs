@@ -1868,27 +1868,28 @@ void TransparencyHandler::rightShadow(QImage& dst)
 	register unsigned char* data = dst.bits();		// Skip alpha
 #endif
 	for(register int i = 0; i < 16; i++) {
-		*data++ = (unsigned char)((*data)*top_right_corner[i]);
-		*data++ = (unsigned char)((*data)*top_right_corner[i]);
-		*data++ = (unsigned char)((*data)*top_right_corner[i]);
+		*data = (unsigned char)((*data)*top_right_corner[i]); data++;
+		*data = (unsigned char)((*data)*top_right_corner[i]); data++;
+		*data = (unsigned char)((*data)*top_right_corner[i]); data++;
 		data++;	// skip alpha
 	}
 
 	pixels -= 32;	// tint right strip without rounded edges.
 	register int c = 0;
 	for(register int i = 0; i < pixels; i++) {
-		*data++ = (unsigned char)((*data)*shadow_strip[c]);
-		*data++ = (unsigned char)((*data)*shadow_strip[c]);
-		*data++ = (unsigned char)((*data)*shadow_strip[c]);
+		*data = (unsigned char)((*data)*shadow_strip[c]); data++;
+		*data = (unsigned char)((*data)*shadow_strip[c]); data++;
+		*data = (unsigned char)((*data)*shadow_strip[c]); data++;
 		data++; // skip alpha
-		c = ++c % 4;
+	        ++c;
+		c %= 4;
 	}
 
 	// tint bottom edge
 	for(register int i = 0; i < 16; i++) {
-		*data++ = (unsigned char)((*data)*bottom_right_corner[i]);
-		*data++ = (unsigned char)((*data)*bottom_right_corner[i]);
-		*data++ = (unsigned char)((*data)*bottom_right_corner[i]);
+		*data = (unsigned char)((*data)*bottom_right_corner[i]); data++;
+		*data = (unsigned char)((*data)*bottom_right_corner[i]); data++;
+		*data = (unsigned char)((*data)*bottom_right_corner[i]); data++;
 		data++;	// skip alpha
 	}
 }
@@ -1913,18 +1914,18 @@ void TransparencyHandler::bottomShadow(QImage& dst)
 	{
 		// Bottom-left Corner
 		for(register int x = 0; x < 4; x++) {
-			*data++ = (unsigned char)((*data)*(*corner));
-			*data++ = (unsigned char)((*data)*(*corner));
-			*data++ = (unsigned char)((*data)*(*corner));
+			*data = (unsigned char)((*data)*(*corner)); data++;
+			*data = (unsigned char)((*data)*(*corner)); data++;
+			*data = (unsigned char)((*data)*(*corner)); data++;
 			data++; // skip alpha
 			corner++;
 		}
 
 		// Scanline
 		for(register int x = 0; x < width; x++) {
-			*data++ = (unsigned char)((*data)*strip_data);
-			*data++ = (unsigned char)((*data)*strip_data);
-			*data++ = (unsigned char)((*data)*strip_data);
+			*data = (unsigned char)((*data)*strip_data); data++;
+			*data = (unsigned char)((*data)*strip_data); data++;
+			*data = (unsigned char)((*data)*strip_data); data++;
 			data++;
 		}
 
