@@ -513,6 +513,7 @@ void KHTMLPopupGUIClient::saveURL( const KURL &url, const KURL &destURL,
                 KIO::Job *job = KIO::copy( url, destURL );
                 job->setMetaData(metadata);
                 job->addMetaData("MaxCacheSize", "0"); // Don't store in http cache.
+                job->addMetaData("cache", "cache"); // Use entry from cache if available.
                 job->setAutoErrorHandlingEnabled( true );
             }
             delete cfg;
