@@ -47,8 +47,9 @@ void KCardReader::setCard(long ctx, QString name, long card, unsigned long proto
 bool KCardReader::isCardPresent() {
 long rc;
 unsigned long state;
+unsigned long x, y;
 
-	rc = SCardStatus(_card, NULL, NULL, &state, &_protocol, NULL, NULL);
+	rc = SCardStatus(_card, NULL, &x, &state, &_protocol, NULL, &y);
 	if (rc != SCARD_S_SUCCESS) {
 		return false;
 	}

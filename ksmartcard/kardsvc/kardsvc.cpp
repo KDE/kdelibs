@@ -60,6 +60,20 @@ return _pcsc->listReaders(NULL);
 }
 
 
+bool KardSvc::isCardPresent(QString slot) {
+KCardReader *_card = _pcsc->getReader(slot);
+
+   if (!_card) {
+	   return false;
+   }
+
+   bool rc = _card->isCardPresent();
+   delete _card;
+
+return rc;
+}
+
+
 
 #include "kardsvc.moc"
 

@@ -44,6 +44,7 @@ public:
 
 k_dcop:
   QStringList getSlotList();
+  bool isCardPresent(QString slot);
 
 private:
   KPCSC *_pcsc;
