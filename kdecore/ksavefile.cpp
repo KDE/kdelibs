@@ -41,32 +41,31 @@
 KSaveFile::KSaveFile(const QString &filename, int mode)
  : mTempFile(true)
 {
-   // follow symbolic link, if any, so it's not clobbered
-   const QString real_filename = QDir(filename).canonicalPath();
-
    // we only check here if the directory can be written to
    // the actual filename isn't written to, but replaced later
    // with the contents of our tempfile
-   if (real_filename.isNull() || !checkAccess(real_filename, W_OK))
+   if (!checkAccess(filename, W_OK))
    {
       mTempFile.setError(EACCES);
       return;
    }
 
-   if (mTempFile.create(real_filename, QString::fromLatin1(".new"), mode))
+   if (mTempFile.create(filename, QString::fromLatin1(".new"), mode))
    {
-      mFileName = real_filename; // Set filename upon success
+      mFileName = filename; // Set filename upon success
 
       // if we're overwriting an existing file, ensure temp file's
       // permissions are the same as existing file so the existing
       // file's permissions are preserved (and hope the existing file's
       // permissions aren't changed between now and when we rename
       // the temporary file)
+      QCString nme = QFile::encodeName(filename);
       struct stat stat_buf;
-      if (stat(QFile::encodeName(real_filename), &stat_buf)==0)
+      if (lstat(nme, &stat_buf)==0)
       {
-         fchmod(mTempFile.handle(), stat_buf.st_mode );
+         chmod(QFile::encodeName(mTempFile.name()), stat_buf.st_mode );
       }
+
    }
    return;
 }
