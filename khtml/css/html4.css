@@ -310,6 +310,10 @@ DL {
 DT {
 	display: block;
 }
+
+DL[compact] > DT {
+	display: compact;
+}
  
 /* for right to left */
       
