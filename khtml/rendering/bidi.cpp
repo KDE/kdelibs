@@ -212,7 +212,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
     runs.setAutoDelete(true);
 
     BidiContext *context = startEmbed;
-    context->ref();
+    //    context->ref();
 
     QChar::Direction dir = QChar::DirON;
 
@@ -805,6 +805,7 @@ void RenderFlow::layoutInlineChildren()
 	
 	BidiIterator start(this);
 	BidiIterator end(this);
+	BidiContext *embed = startEmbed;
 	
 	while( !end.atEnd() ) {
 	    start = end;
@@ -823,11 +824,12 @@ void RenderFlow::layoutInlineChildren()
 		// empty line, somthing like <br><br>
 		m_height += start.obj->style()->font().pointSize();
 	    } else
-		startEmbed = bidiReorderLine(status, start, end, startEmbed);
+		embed = bidiReorderLine(status, start, end, embed);
 	    newLine();
 	    ++end;
 	}
 	startEmbed->deref();
+	//embed->deref();
     }
     m_height += toAdd;
 
