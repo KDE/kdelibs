@@ -32,8 +32,8 @@
 
 namespace Arts {
 
-	class SoundServer_impl : public SimpleSoundServer_impl,
-							 public SoundServer_skel
+	class SoundServer_impl : virtual public SoundServer_skel,
+							 public SimpleSoundServer_impl
 	{
 		RealtimeStatus realtimeStatus();
 		long secondsUntilSuspend();

@@ -32,27 +32,26 @@
 #include "soundserver.h"
 
 namespace Arts {
-
-		class SoundServerV2_impl : public SoundServer_impl, public SoundServerV2_skel
-		{
-			long autoSuspendSeconds();
-			void autoSuspendSeconds(long newValue);
-			string audioMethod();
-			long samplingRate();
-			long channels();
-			long bits();
-			bool fullDuplex();
-			string audioDevice();
-			long fragments();
-			long fragmentSize();
-			long secondsUntilSuspend();
-			void notifyTime();
-			long _autoSuspendSeconds;
-			
-		  public:
-			SoundServerV2_impl();
-			static std::string _interfaceNameSkel();
-		};
+	class SoundServerV2_impl : virtual public SoundServerV2_skel,
+							   public SoundServer_impl
+	{
+		long autoSuspendSeconds();
+		void autoSuspendSeconds(long newValue);
+		string audioMethod();
+		long samplingRate();
+		long channels();
+		long bits();
+		bool fullDuplex();
+		string audioDevice();
+		long fragments();
+		long fragmentSize();
+		long secondsUntilSuspend();
+		void notifyTime();
+		long _autoSuspendSeconds;
+		
+	public:
+		SoundServerV2_impl();
+	};
 };
 
 #endif /* SOUNDSERVERV2_IMPL_H */

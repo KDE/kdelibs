@@ -94,57 +94,48 @@ long SoundServerV2_impl::secondsUntilSuspend() {
  */
 void SoundServerV2_impl:: notifyTime()
 {
-       static long lock = 0;
-       assert(!lock);          // paranoid reentrancy check (remove me later)
-       lock++;
-       /*
-        * Three times the same game: look if a certain object is still
-        * active - if yes, keep, if no, remove
-        */
+	static long lock = 0;
+	assert(!lock);          // paranoid reentrancy check (remove me later)
+	lock++;
+	/*
+     * Three times the same game: look if a certain object is still
+     * active - if yes, keep, if no, remove
+     */
 
-       /* look for jobs which may have terminated by now */
-       list<SoundServerJob *>::iterator i;
+    /* look for jobs which may have terminated by now */
+    list<SoundServerJob *>::iterator i;
 
-       i = jobs.begin();
-       while(i != jobs.end())
-       {
-               SoundServerJob *job = *i;
+	i = jobs.begin();
+	while(i != jobs.end())
+	{
+		SoundServerJob *job = *i;
 
-               if(job->done())
-               {
-                       delete job;
-                       jobs.erase(i);
-                       arts_debug("job finished");
-                       i = jobs.begin();
-               }
-               else i++;
-       }
+		if(job->done())
+		{
+			delete job;
+			jobs.erase(i);
+			arts_debug("job finished");
+			i = jobs.begin();
+		}
+		else i++;
+	}
 
 /*
  * AutoSuspend
  */
-       if(Dispatcher::the()->flowSystem()->suspendable() &&
-         !Dispatcher::the()->flowSystem()->suspended())
-       {
-               asCount++;
-               if(asCount > autoSuspendSeconds()*5)
-               {
-                       Dispatcher::the()->flowSystem()->suspend();
-                       arts_info("sound server suspended");
-               }
-       }
-       else
-               asCount = 0;
-       lock--;
-}
-
-/*
- * This method is implemented explicitly to resolve the ambiguity
- * between _interfaceNameSkel() in base classes SoundServerV2_skel and
- * SoundServer_skel
- */
-std::string SoundServerV2_impl::_interfaceNameSkel() {
-	return SoundServerV2_skel::_interfaceNameSkel();
+	if(Dispatcher::the()->flowSystem()->suspendable() &&
+	   !Dispatcher::the()->flowSystem()->suspended())
+	{
+		asCount++;
+		if(asCount > autoSuspendSeconds()*5)
+		{
+			Dispatcher::the()->flowSystem()->suspend();
+			arts_info("sound server suspended");
+		}
+	}
+	else
+		asCount = 0;
+	lock--;
 }
 
 #ifndef __SUNPRO_CC
