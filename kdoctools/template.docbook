@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE book PUBLIC "-//KDE//DTD DocBook XML V4.1-Based Variant V1.0//EN" "dtd/kdex.dtd" [
   <!ENTITY kappname "&kapp;"><!-- replace kapp here -->
+  <!ENTITY package "kde-module"><!-- kdebase, kdeadmin, etc -->
   <!ENTITY % addindex "IGNORE">
   <!ENTITY % English "INCLUDE"><!-- change language only here -->
   
@@ -10,7 +11,10 @@
 ]>
 <!-- kdoctemplate v0.8 October 1 1999 
      Minor update to "Credits and Licenses" section on August 24, 2000
-     Removed "Revision history" section on 22 January 2001   -->
+     Removed "Revision history" section on 22 January 2001
+     Changed to Installation/Help menu entities 18 October 2001
+     Other minor cleanup and changes 18 October 2001 -->
+
 
 <!--
 This template was designed by: David Rugge davidrugge@mindspring.com
@@ -40,7 +44,7 @@ thanks ;-).
 as Authors, publish date, the abstract, and Keywords -->
 
 <bookinfo>
-<title>The Kapp Handbook</title>
+<title>The &kapp; Handbook</title>
 
 <authorgroup>
 <author>
@@ -68,11 +72,11 @@ as Authors, publish date, the abstract, and Keywords -->
 <!-- Date and version information of the documentation
 Don't forget to include this last date and this last revision number, we
 need them for translation coordination !
-Please respect the format of the date (DD/MM/YYYY) and of the version
+Please respect the format of the date (YYYY-MM-DD) and of the version
 (V.MM.LL), it could be used by automation scripts.
 Do NOT change these in the translation. -->
 
-<date>03/04/1999</date>
+<date>2001-10-18</date>
 <releaseinfo>1.01.00</releaseinfo>
 
 <!-- Abstract about this handbook -->
@@ -117,12 +121,12 @@ revision history. (see installation appendix comment) -->
 
 <para>
 &kapp; is a program that lets you do absolutely nothing. Please report
-any problems or feature requests to the KDE mailing lists.
+any problems or feature requests to the &kde; mailing lists.
 </para>
 </chapter>
 
 <chapter id="using-kapp">
-<title>Using Kapp</title>
+<title>Using &kapp;</title>
 
 <!-- This chapter should tell the user how to use your app. You should use as
 many sections (Chapter, Sect1, Sect3, etc...) as is necessary to fully document
@@ -151,7 +155,7 @@ patent issues. -->
 
 
 <sect1 id="kapp-features">
-<title>More Kapp features</title>
+<title>More &kapp; features</title>
 
 <para>It slices! It dices! and it comes with a free toaster!</para>
 <para>
@@ -182,8 +186,7 @@ menus or toolbars. This may not be necessary for small apps or apps with no tool
 or menu bars. -->
 
 <sect1 id="kapp-mainwindow">
-<title>The main Kapp window</title>
-<para></para>
+<title>The main &kapp; window</title>
 
 <sect2>
 <title>The File Menu</title>
@@ -192,7 +195,7 @@ or menu bars. -->
 <varlistentry>
 <term><menuchoice>
 <shortcut>
-<keycombo><keycap>Ctrl</keycap><keycap>n</keycap></keycombo>
+<keycombo action="simul">&Ctrl;<keycap>N</keycap></keycombo>
 </shortcut>
 <guimenu>File</guimenu>
 <guimenuitem>New</guimenuitem>
@@ -202,7 +205,7 @@ or menu bars. -->
 <varlistentry>
 <term><menuchoice>
 <shortcut>
-<keycombo><keycap>Ctrl</keycap><keycap>s</keycap></keycombo>
+<keycombo action="simul">&Ctrl;<keycap>S</keycap></keycombo>
 </shortcut>
 <guimenu>File</guimenu>
 <guimenuitem>Save</guimenuitem>
@@ -212,7 +215,7 @@ or menu bars. -->
 <varlistentry>
 <term><menuchoice>
 <shortcut>
-<keycombo><keycap>Ctrl</keycap><keycap>q</keycap></keycombo>
+<keycombo action="simul">&Ctrl;<keycap>Q</keycap></keycombo>
 </shortcut>
 <guimenu>File</guimenu>
 <guimenuitem>Quit</guimenuitem>
@@ -224,11 +227,23 @@ or menu bars. -->
 
 </sect2>
 
+<sect2>
+<title>The <guimenu>Help</guimenu> Menu</title>
+
+<!-- Assuming you have a standard help menu (help, what's this, about -->
+<!-- &kapp;, about KDE) then the documentation is already written. -->
+<!-- The following entity is valid anywhere that a variablelist is -->
+<!-- valid.  -->
+
+&help.menu.documentation;
+
+</sect2>
+
 </sect1>
 </chapter>
 
 <chapter id="developers">
-<title>Developer's Guide to Kapp</title>
+<title>Developer's Guide to &kapp;</title>
 
 <!-- (OPTIONAL) A Programming/Scripting reference chapter should be
 used for apps that use plugins or that provide their own scripting hooks
@@ -251,10 +266,12 @@ taken from that reference and shortened a bit for readability. -->
 <refnamediv>
 <refname>XtUnmanageChildren
 </refname>
-<refpurpose>remove a list of children from a parent widget's managed list.
-</refpurpose>
+<refpurpose>remove a list of children from a parent widget's managed
+list.
 <indexterm id="ix-1007-unmanagechildren-1"><primary>widgets</primary><secondary>removing</secondary></indexterm>
-<indexterm id="ix-1007-unmanagechildren-2"><primary>XtUnmanageChildren</primary></indexterm>
+<indexterm id="ix-1007-unmanagechildren-2"><primary>XtUnmanageChildren</primary></indexterm> 
+</refpurpose>
+
 </refnamediv>
 <refsynopsisdiv>
 <refsynopsisdivinfo>
@@ -457,14 +474,13 @@ Documentation copyright 1999 George N. Ugnacious <email>gnu@kde.org</email>
 <title>Installation</title>
 
 <sect1 id="getting-kapp">
-<title>How to obtain Kapp</title>
+<title>How to obtain &kapp;</title>
+<!-- This first entity contains boiler plate for applications that are
+part of KDE CVS.  You should remove it if you are releasing your
+application --> 
 
-<para>
-&kapp; is part of the KDE project
-<ulink url="http://www.kde.org">http://www.kde.org</ulink>.
-&kapp; can be found in the kdeutils package on
-<ulink url="ftp://ftp.kde.org/pub/kde/">ftp://ftp.kde.org/pub/kde/</ulink>, the
-main ftp site of the KDE project. </para>
+&install.intro.documentation;
+
 </sect1>
 
 <sect1 id="requirements">
@@ -482,10 +498,10 @@ information here.
 -->
 
 <para>
-In order to successfully use &kapp;, you need KDE 1.1. Foobar.lib is required
-in order to support the advanced &kapp; features. &kapp; uses about 5 megs of
-memory to run, but this may vary depending on your platform and
-configuration.
+In order to successfully use &kapp;, you need &kde; 1.1. Foobar.lib is
+required in order to support the advanced &kapp; features. &kapp; uses
+about 5 megs of memory to run, but this may vary depending on your
+platform and configuration.
 </para>
 
 <para>
@@ -504,18 +520,11 @@ url="http://apps.kde.org/kapp">http://apps.kde.org/kapp</ulink>.
 <sect1 id="compilation">
 <title>Compilation and Installation</title>
 
-<para>
-In order to compile and install KApp on your system, type the following in the base
-directory of the Icon Editor distribution:
-<screen width="40">
-<prompt>%</prompt> <userinput>./configure</userinput>
-<prompt>%</prompt> <userinput>make</userinput>
-<prompt>%</prompt> <userinput>make install</userinput>
-</screen>
-</para>
+<!-- This entity contains the boilerplate text for standard -->
+<!-- compilation instructions.  If your application requires any -->
+<!-- special handling, remove it, and replace with your own text. -->
 
-<para>Since KApp uses autoconf and automake you should have not trouble compiling it.
-Should you run into problems please report them to the KDE mailing lists.</para>
+&install.compile.documentation;
 
 </sect1>
 
@@ -523,7 +532,7 @@ Should you run into problems please report them to the KDE mailing lists.</para>
 <title>Configuration</title>
 
 <para>Don't forget to tell your system to start the <filename>dtd</filename>
-dicer-toaster daemon first, or KApp won't work !</para>
+dicer-toaster daemon first, or &kapp; won't work !</para>
 
 </sect1>
 
@@ -531,6 +540,7 @@ dicer-toaster daemon first, or KApp won't work !</para>
 
 &documentation.index;
 </book>
+
 <!--
 Local Variables:
 mode: sgml
