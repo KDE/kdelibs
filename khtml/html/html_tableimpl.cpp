@@ -404,8 +404,11 @@ void HTMLTablePartElementImpl::recalcTable()
     NodeImpl *table = parentNode();
     while (table && !(table->isElementNode() && table->id() == ID_TABLE))
 	table = table->parentNode();
-    if (table)
-	table->setChanged(true);
+    if (table) {
+//	table->setChanged(true);
+	if (table->renderer())
+	    static_cast<RenderTable*>(table->renderer())->setCellsChanged(true);
+    }
 }
 
 NodeImpl *HTMLTablePartElementImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild )

@@ -173,6 +173,9 @@ public:
 	int 	percentage;
     };
 
+    void setCellsChanged(bool cellsChanged) { _cellsChanged = cellsChanged; }
+    bool cellsChanged() { return _cellsChanged; }
+
 protected:
     // This function calculates the actual widths of the columns
     void calcColWidth();
@@ -252,6 +255,8 @@ protected:
     short _htmlBorder;
 
     short _lastParentWidth;
+
+    bool _cellsChanged;
 
     RenderTableCol *_oldColElem;
     int _currentCol; // keeps track of current col for col/colgroup stuff

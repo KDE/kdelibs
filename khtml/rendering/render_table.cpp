@@ -77,6 +77,7 @@ RenderTable::RenderTable()
     firstBody = 0;
 
     _htmlBorder = 0;
+    _cellsChanged = true;
 
     incremental = false;
 
@@ -129,6 +130,7 @@ RenderTable::ColInfo::update()
 
 void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
 {
+    setCellsChanged(true);
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(Table)::addChild( " << child->renderName() << ", " <<
                        beforeChild ? beforeChild->renderName() : 0 << " )" << endl;
@@ -1428,6 +1430,7 @@ void RenderTable::updateSize()
 {
 //    kdDebug( 6040 ) << "RenderTable::updateSize()" << endl;
 
+    calcCells();
 //    setMinMaxKnown(false);
 //    setLayouted(false);
 //    parent()->updateSize();
@@ -1497,6 +1500,10 @@ void RenderTable::reset()
 
 void RenderTable::calcCells()
 {
+    if (!cellsChanged())
+	return;
+    setCellsChanged(false);
+
     // ### what about rows with no cells in them?
     QArray<RenderTableCell*> rowSpanCell(5);
     rowSpanCell.fill(0);
@@ -1603,6 +1610,7 @@ RenderTableSection::~RenderTableSection()
 
 void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild)
 {
+    table->setCellsChanged(true);
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(TableSection)::addChild( " << child->renderName()  << ", " <<
                        beforeChild ? beforeChild->renderName() : 0 << " )" << endl;
@@ -1640,6 +1648,7 @@ RenderTableRow::~RenderTableRow()
 
 void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
 {
+    table->setCellsChanged(true);
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(TableRow)::addChild( " << child->renderName() << " )"  << ", " <<
                        beforeChild ? beforeChild->renderName() : 0 << " )" << endl;
@@ -1710,6 +1719,7 @@ void RenderTableCell::calcWidth()
 
 void RenderTableCell::close()
 {
+    m_table->setCellsChanged(true);
     //kdDebug( 6040 ) << "renderFlow::close()" << endl;
     setParsing(false);
     if(haveAnonymousBox())
@@ -1840,6 +1850,7 @@ RenderTableCol::~RenderTableCol()
 
 void RenderTableCol::addChild(RenderObject *child, RenderObject *beforeChild)
 {
+    table->setCellsChanged(true);
 #ifdef DEBUG_LAYOUT
     //kdDebug( 6040 ) << renderName() << "(Table)::addChild( " << child->renderName() << " )"  << ", " <<
     //                   beforeChild ? beforeChild->renderName() : 0 << " )" << endl;
