@@ -3,7 +3,7 @@
 Comment=Block Device
 Comment[de]=Block-Orientiertes Gerät
 Comment[pl]=Urz±dzenie blokowe
-Icon=block_dev.xpm
+Icon=blockdevice.xpm
 Type=MimeType
 MimeType=inode/blockdevice
 Patterns=;
