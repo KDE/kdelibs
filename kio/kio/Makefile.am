@@ -26,7 +26,7 @@ noinst_LTLIBRARIES = libkiocore.la libksycoca.la
 
 libksycoca_la_SOURCES = \
 	kdirwatch.cpp \
-	kfileshare.cpp \
+	kfileshare.cpp ksambashare.cpp knfsshare.cpp \
 	ktrader.cpp ktraderparse.cpp ktraderparsetree.cpp \
         kservicetypefactory.cpp kservicetype.cpp \
 	kmimetype.cpp kservicegroup.cpp \
@@ -48,7 +48,8 @@ include_HEADERS = \
 	kservicetype.h kmimetype.h kmimemagic.h kservice.h \
 	krun.h kdirwatch.h kautomount.h kuserprofile.h \
 	kshred.h kar.h ktar.h kzip.h ktrader.h kurifilter.h kurlcompletion.h \
-	kshellcompletion.h kfileitem.h kfileshare.h kdirlister.h kservicegroup.h\
+	kshellcompletion.h kfileitem.h kfileshare.h ksambashare.h knfsshare.h \
+    kdirlister.h kservicegroup.h \
 	kimageio.h kdirnotify.h kdirnotify_stub.h \
 	kurlpixmapprovider.h kprotocolinfo.h kprotocolmanager.h \
 	kfilterbase.h kfilterdev.h kemailsettings.h kscan.h kdatatool.h \
