@@ -71,7 +71,7 @@ static KURL rootUrl(const KURL &url)
 {
     KURL root = url;
     root.setPath( "/" );
-    
+
     if (!kapp->authorizeURLAction("list", KURL(), root))
     {
         root = KURL::fromPathOrURL( QDir::homeDirPath() );
@@ -395,17 +395,17 @@ void KDirSelectDialog::slotContextMenu( KListView *, QListViewItem *, const QPoi
 void KDirSelectDialog::slotMkdir()
 {
     bool ok;
-    QString where = url().prettyURL( +1, KURL::StripFileProtocol );
+    QString where = url().pathOrURL();
     QString name = i18n( "New Folder" );
     if ( url().isLocalFile() && QFileInfo( url().path(+1) + name ).exists() )
         name = KIO::RenameDlg::suggestName( url(), name );
-   
+
     QString directory = KIO::encodeFileName( KInputDialog::getText( i18n( "New Folder" ),
                                          i18n( "Create new folder in:\n%1" ).arg( where ),
                                          name, &ok, this));
     if (!ok)
       return;
-      
+
     bool selectDirectory = true;
     bool writeOk = false;
     bool exists = false;

@@ -384,11 +384,11 @@ void KDirOperator::slotToggleIgnoreCase()
 void KDirOperator::mkdir()
 {
     bool ok;
-    QString where = url().prettyURL( +1, KURL::StripFileProtocol );
+    QString where = url().pathOrURL();
     QString name = i18n( "New Folder" );
     if ( url().isLocalFile() && QFileInfo( url().path(+1) + name ).exists() )
          name = KIO::RenameDlg::suggestName( url(), name );
-    
+
     QString dir = KInputDialog::getText( i18n( "New Folder" ),
                                          i18n( "Create new folder in:\n%1" ).arg( where ),
                                          name, &ok, this);
@@ -418,8 +418,7 @@ bool KDirOperator::mkdir( const QString& directory, bool enterDirectory )
 
     if ( exists ) // url was already existant
     {
-        QString which = url.isLocalFile() ? url.path() : url.prettyURL();
-        KMessageBox::sorry(viewWidget(), i18n("A file or folder named %1 already exists.").arg(which));
+        KMessageBox::sorry(viewWidget(), i18n("A file or folder named %1 already exists.").arg(url.pathOrURL()));
         enterDirectory = false;
     }
     else if ( !writeOk ) {
@@ -1373,7 +1372,7 @@ void KDirOperator::setupMenu(int whichActions)
     {
         actionMenu->insert( mkdirAction );
         actionMenu->insert( myActionCollection->action( "trash" ) );
-	
+
 	KConfig globalconfig("kdeglobals", true, false);
 	globalconfig.setGroup( "KDE" );
 	if ( globalconfig.readBoolEntry("ShowDeleteCommand", false) )

@@ -43,7 +43,7 @@ static KURL getNewFileName( const KURL &u, const QString& text )
   if ( dialogText.isEmpty() )
     dialogText = i18n( "Filename for clipboard content:" );
   QString file = KInputDialog::getText( QString::null, dialogText, QString::null, &ok );
-  if ( !ok ) 
+  if ( !ok )
      return KURL();
 
   KURL myurl(u);
@@ -58,8 +58,8 @@ static KURL getNewFileName( const KURL &u, const QString& text )
       // Ask confirmation about resuming previous transfer
       res = Observer::self()->open_RenameDlg(
                           0L, i18n("File Already Exists"),
-                          u.prettyURL(0, KURL::StripFileProtocol),
-                          myurl.prettyURL(0, KURL::StripFileProtocol),
+                          u.pathOrURL(),
+                          myurl.pathOrURL(),
                           (KIO::RenameDlg_Mode) (KIO::M_OVERWRITE | KIO::M_SINGLE), newPath);
 
       if ( res == KIO::R_RENAME )
@@ -157,10 +157,10 @@ KIO_EXPORT void KIO::pasteData( const KURL& u, const QByteArray& _data )
     KURL new_url = getNewFileName( u, QString::null );
     // We could use KIO::put here, but that would require a class
     // for the slotData call. With NetAccess, we can do a synchronous call.
-    
+
     if (new_url.isEmpty())
        return;
-    
+
     KTempFile tempFile;
     tempFile.setAutoDelete( true );
     tempFile.dataStream()->writeRawBytes( _data.data(), _data.size() );

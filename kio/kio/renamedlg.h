@@ -66,7 +66,7 @@ public:
    * @see RenameDlg_Mode
    */
   RenameDlg( QWidget *parent, const QString & caption,
-             // KDE4: make those KURLs, and use prettyURL(0, KURL::StripFileProtocol) internally.
+             // KDE4: make those KURLs, and use pathOrURL() internally.
              const QString & src, const QString & dest,
              RenameDlg_Mode mode,
              KIO::filesize_t sizeSrc = (KIO::filesize_t) -1,
@@ -136,7 +136,7 @@ private:
    * @return the result
    */
 KIO_EXPORT RenameDlg_Result open_RenameDlg( const QString & caption,
-                                 // KDE4: make those KURLs, and use prettyURL(0, KURL::StripFileProtocol) internally.
+                                 // KDE4: make those KURLs, and use pathOrURL() internally.
                                  const QString& src, const QString & dest,
                                  RenameDlg_Mode mode, QString& newDestPath,
                                  KIO::filesize_t sizeSrc = (KIO::filesize_t) -1,

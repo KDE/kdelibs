@@ -478,7 +478,7 @@ class KIO_EXPORT KDirOperator : public QWidget
      * to the user.
      * @returns true if the directory could be created.
      */
-	// ### KDE4: make virtual
+	// ### KDE4: make virtual and turn QString into KURL
     bool mkdir( const QString& directory, bool enterDirectory = true );
 
     /**
@@ -573,7 +573,7 @@ class KIO_EXPORT KDirOperator : public QWidget
      // ### KDE4: make virtual
     KIO::CopyJob * trash( const KFileItemList& items, QWidget *parent,
                        bool ask = true, bool showProgress = true );
-    
+
 protected:
     /**
      * A view factory for creating predefined fileviews. Called internally by setView
