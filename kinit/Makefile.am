@@ -23,8 +23,10 @@ bin_PROGRAMS = kdeinit kdeinit_wrapper
 
 kdeinit_SOURCES = kinit.cpp setproctitle.cpp
 
+# NOTE: We link against all common libraries even if we don't need them ourselves.
 kdeinit_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS)  $(KDE_RPATH)
-kdeinit_LDADD = $(LIB_DCOP) $(LIB_DMALLOC) $(LIB_KSYCOCA) $(LIB_KIMGIO) $(LIB_KDECORE) $(LIBUTIL)
+kdeinit_LDADD = $(LIB_DCOP) $(LIB_DMALLOC) $(LIB_KSYCOCA) $(LIB_KIMGIO) $(LIB_KDEUI) $(LIB_KIO) \
+		$(LIB_KDECORE) $(LIBUTIL)
 
 kdeinit_METASOURCES = AUTO
 

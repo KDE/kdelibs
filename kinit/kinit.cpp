@@ -127,9 +127,9 @@ static pid_t launch(int argc, const char *_name, const char *args)
 
   if (_name[0] != '/')
   {
-     /* Relative name without 'lib' and '.la' */
+     /* Relative name without '.la' */
      name = _name;
-     cmd = "lib" + name + ".la";
+     cmd = name + ".la";
   }
   else
   {
@@ -406,13 +406,13 @@ static void init_kdeinit_socket()
   options = fcntl(d.wrapper, F_GETFL);
   if (options == -1)
   {
-     perror("Aborting. Can't make scoket non-blocking: ");
+     perror("Aborting. Can't make socket non-blocking: ");
      exit(255);
   }
 
   if (fcntl(d.wrapper, F_SETFL, options | O_NONBLOCK) == -1)
   {
-     perror("Aborting. Can't make scoket non-blocking: ");
+     perror("Aborting. Can't make socket non-blocking: ");
      exit(255);
   }
 
