@@ -2,7 +2,7 @@
 <kpartgui name="KCertPart" version="1">
 <MenuBar>
   <Menu name="Certificate"><Text>&amp;Certificate</Text>
-  <Action>name="Import"/>
+  <Action name="Import"/>
 </Menu>
 </MenuBar>
 <StatusBar/>
