@@ -121,14 +121,14 @@ public:
      **/
     QRect workArea( int desktop = - 1 ) const;
 
-    
+
     /**
      * Returns the workarea for the specified desktop, or the current
      * work area if no desktop has been specified. Excludes struts of
      * clients in the exclude List.
      **/
     QRect workArea( const QValueList<WId>&, int desktop = -1) const;
-    
+
     /**
      * Returns the name of the specified desktop
      **/
@@ -197,6 +197,12 @@ signals:
    */
     void workAreaChanged();
 
+    /* 
+       Something changed with the struts, may or may not have changed
+     * the work area.
+   */
+    void strutChanged();
+    
     /**
      * The stacking order of the window changed. The new order
      * can be obtained with windowsSorted()
@@ -216,8 +222,7 @@ signals:
      * The window changed somehow.
      */
     void windowChanged(WId );
-
-
+    
 private:
     KWinModulePrivate* d;
 

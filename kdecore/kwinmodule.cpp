@@ -69,6 +69,8 @@ public:
     QValueList<WId> stackingOrder;
     QValueList<WId> systemTrayWindows;
 
+    QValueList<WId> strutWindows;
+    
     void addClient(Window);
     void removeClient(Window);
     void addSystemTrayWin(Window);
@@ -157,6 +159,8 @@ bool KWinModulePrivate::x11Event( XEvent * ev )
 		emit module->windowChanged( ev->xany.window );
 		emit module->windowChanged( ev->xany.window, dirty );
 	    }
+	    if ( dirty & NET::WMStrut )
+		emit module->strutChanged();
 	}
     }
 
@@ -175,16 +179,31 @@ void KWinModulePrivate::addClient(Window w)
 {
     if ( !QWidget::find( w ) )
 	XSelectInput( qt_xdisplay(), w, PropertyChangeMask );
+    bool emit_strutChanged = FALSE;
+    if ( module->receivers( "strutChanged" ) ) {
+	NETWinInfo info( qt_xdisplay(), w, qt_xrootwin(), NET::WMStrut );
+	NETStrut strut = info.strut();
+	if ( strut.left || strut.top || strut.right || strut.bottom ) {
+	    strutWindows.append( w );
+	    emit_strutChanged = TRUE;
+	}
+    }
     windows.append( w );
     for ( module = modules.first(); module; module = modules.next() )
 	emit module->windowAdded( w );
+    if ( emit_strutChanged )
+	emit module->strutChanged();
 }
 
 void KWinModulePrivate::removeClient(Window w)
 {
+    bool emit_strutChanged = strutWindows.contains( w );
+    strutWindows.remove( w );
     windows.remove( w );
     for ( module = modules.first(); module; module = modules.next() )
 	emit module->windowRemoved( w );
+    if ( emit_strutChanged )
+	emit module->strutChanged();
 }
 void KWinModulePrivate::addSystemTrayWin(Window w)
 {
