@@ -112,13 +112,13 @@ protected:
 	int capacity;
 	void ensureCapacity(int capacity);
 
-	DataPacket<T>(int capacity, GenericDataChannel *channel)
+	DataPacket(int capacity, GenericDataChannel *channel)
 		:GenericDataPacket(channel), capacity(capacity)
 	{
 		size = capacity;
 		contents = new T[capacity];
 	}
-	~DataPacket<T>();
+	~DataPacket();
 };
 
 /**
