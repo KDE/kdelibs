@@ -249,25 +249,30 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 
     //qDebug("applying properties, count=%d", propsToApply->count() );
 
-    if ( propsToApply->count() != 0 ) {
-	CSSOrderedProperty *ordprop = propsToApply->first();
-	while( ordprop ) {
-	    //qDebug("property %d has spec %x", ordprop->prop->m_id, ordprop->priority );
-	    applyRule( style, ordprop->prop, e );
-	    ordprop = propsToApply->next();
-	}
-    }
+    // we can't apply style rules without a view(). This
+    // tends to happen on delayed destruction of widget Renderobjects
+    KHTMLView* v = e->ownerDocument()->view();
+    if ( v && v->part() ) {
+        if ( propsToApply->count() != 0 ) {
+            CSSOrderedProperty *ordprop = propsToApply->first();
+            while( ordprop ) {
+                //qDebug("property %d has spec %x", ordprop->prop->m_id, ordprop->priority );
+                applyRule( style, ordprop->prop, e );
+                ordprop = propsToApply->next();
+            }
+        }
 
-    if ( pseudoProps->count() != 0 ) {
-	//qDebug("%d applying %d pseudo props", e->id(), pseudoProps->count() );
-	CSSOrderedProperty *ordprop = pseudoProps->first();
-	while( ordprop ) {
-	    RenderStyle *pseudoStyle;
-	    pseudoStyle = style->addPseudoStyle(ordprop->pseudoId);
-	    if ( pseudoStyle )
-		applyRule(pseudoStyle, ordprop->prop, e);
-	    ordprop = pseudoProps->next();
-	}
+        if ( pseudoProps->count() != 0 ) {
+            //qDebug("%d applying %d pseudo props", e->id(), pseudoProps->count() );
+            CSSOrderedProperty *ordprop = pseudoProps->first();
+            while( ordprop ) {
+                RenderStyle *pseudoStyle;
+                pseudoStyle = style->addPseudoStyle(ordprop->pseudoId);
+                if ( pseudoStyle )
+                    applyRule(pseudoStyle, ordprop->prop, e);
+                ordprop = pseudoProps->next();
+            }
+        }
     }
 
     if ( usedDynamicStates & StyleSelector::Hover )
@@ -522,7 +527,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 		n = n->nextSibling();
 	    if( n == e )
 		return true;
-	} else if ( value == "first-line" ) { 
+	} else if ( value == "first-line" ) {
 	    dynamicPseudo=RenderStyle::FIRST_LINE;
 	    return true;
 	} else if ( value == "first-letter" ) {
@@ -849,7 +854,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
                 style->setBackgroundAttachment(false);
                 DocumentImpl *doc = e->ownerDocument();
 		// only use slow repaints if we actually have a background pixmap
-                if(doc && doc->view() && style->backgroundImage() )
+                if( style->backgroundImage() )
                     doc->view()->useSlowRepaints();
                 break;
             }
@@ -1215,8 +1220,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         case CSS_VAL_FIXED:
             {
                 DocumentImpl *doc = e->ownerDocument();
-                if(doc && doc->view())
-                    doc->view()->useSlowRepaints();
+                doc->view()->useSlowRepaints();
                 p = FIXED;
                 break;
             }
@@ -1809,9 +1813,9 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         }
         if(!primitiveValue) return;
         if(primitiveValue->getIdent()) {
-	  
+
 	  khtml::EVerticalAlign align;
-	  
+
 	  switch(primitiveValue->getIdent())
 	    {
 		case CSS_VAL_TOP:
@@ -1824,7 +1828,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 		    align = BASELINE; break;
 		case CSS_VAL_TEXT_BOTTOM:
 		    align = TEXT_BOTTOM; break;
-		case CSS_VAL_TEXT_TOP: 
+		case CSS_VAL_TEXT_TOP:
 		    align = TEXT_TOP; break;
 		case CSS_VAL_SUB:
 		    align = SUB; break;
