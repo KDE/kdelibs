@@ -97,8 +97,6 @@ void KAppTreeListItem::init(const QPixmap& pixmap, bool parse, bool dir, QString
     directory = dir;
     path = _path; // relative path
     exec = _exec;
-    exec.simplifyWhiteSpace();
-    exec.truncate(exec.find(' '));
 }
 
 
@@ -143,9 +141,9 @@ KApplicationTree::KApplicationTree( QWidget *parent )
 
     addDesktopGroup( QString::null );
 
-    connect( this, SIGNAL( currentChanged(QListViewItem*) ), 
+    connect( this, SIGNAL( currentChanged(QListViewItem*) ),
             SLOT( slotItemHighlighted(QListViewItem*) ) );
-    connect( this, SIGNAL( selectionChanged(QListViewItem*) ), 
+    connect( this, SIGNAL( selectionChanged(QListViewItem*) ),
             SLOT( slotSelectionChanged(QListViewItem*) ) );
 }
 
@@ -374,7 +372,7 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
     edit = new KURLRequester( combo, this );
   }
   else
-  { 
+  {
     clearButton->hide();
     edit = new KURLRequester( this );
     edit->lineEdit()->setReadOnly(true);
@@ -509,15 +507,57 @@ void KOpenWithDlg::slotDbClick()
 
 void KOpenWithDlg::slotOK()
 {
+  QString fullExec(edit->url());
+
+  QString serviceName;
+  QString pathName;
   if (!m_pService) {
-    // no service was found, maybe they typed the name into the text field
-    m_pService = KService::serviceByDesktopName(edit->url());
-    if (m_pService)
+    // No service selected - check the command line
+
+    // Find out the name of the service from the command line, removing args and paths
+    serviceName = KRun::binaryName( fullExec, true );
+    if (serviceName.isEmpty())
     {
-      KService::Ptr pService = m_pService;
-      edit->setURL(m_pService->exec()); // calls slotTextChanged :(
-      m_pService = pService;
+      // TODO add a KMessageBox::error here after the end of the message freeze
+      return;
     }
+    QString initialServiceName = serviceName;
+    int i = 1; // We have app, app-2, app-3... Looks better for the user.
+    // Check if there's already a service by that name, with the same Exec line
+    do {
+        KService::Ptr serv = KService::serviceByDesktopName( serviceName );
+        bool ok = !serv; // ok if no such service yet
+        // also ok if we find the exact same service (well, "kwrite" == "kwrite %U"
+        if ( serv && (
+                 serv->exec() == fullExec ||
+                 serv->exec() == fullExec + " %u" ||
+                 serv->exec() == fullExec + " %U" ||
+                 serv->exec() == fullExec + " %f" ||
+                 serv->exec() == fullExec + " %F"
+                 ) )
+        {
+            ok = true;
+            m_pService = serv;
+        }
+        if (!ok) // service was found, but it was different -> keep looking
+        {
+            ++i;
+            serviceName = initialServiceName + "-" + QString::number(i);
+        }
+    }
+    while (!ok);
+    if ( !m_pService )
+    {
+        // Let's hide it to avoid cluttering the K menu.
+        pathName = ".hidden/";
+        pathName += serviceName;
+    }
+  }
+  if ( m_pService )
+  {
+    // Existing service selected
+    serviceName = m_pService->name();
+    pathName = m_pService->desktopEntryPath();
   }
 
   if (terminal->isChecked()) {
@@ -532,43 +572,16 @@ void KOpenWithDlg::slotOK()
   if ( m_pService && terminal->isChecked() != m_pService->terminal() )
       m_pService = 0L; // It's not exactly this service we're running
 
-  if (m_pService && !remember) {
+  if ( m_pService && ( !remember || !remember->isChecked() ) ) {
     accept();
     return;
   }
 
-  if (remember)
-    if (!remember->isChecked()) {
-      accept();
-      return;
-    }
   // if we got here, we can't seem to find a service for what they
   // wanted.  The other possibility is that they have asked for the
   // association to be remembered.  Create/update service.
-  QString keepExec(edit->url());
-  QString serviceName;
-  QString pathName;
-  if (!m_pService) {
-    if (keepExec.contains('/'))
-    {
-      serviceName = keepExec.mid(keepExec.findRev('/') + 1);
-      if (serviceName.isEmpty())
-      {
-        // Hmm, add a KMessageBox::error here after 2.0
-        return;
-      }
-      pathName = serviceName;
-    }
-    else
-    {
-      // Creating a new one. Let's hide it to avoid cluttering the K menu.
-      pathName = ".hidden/";
-      pathName += keepExec;
-      serviceName = keepExec;
-    }
-  } else
-    serviceName = pathName = m_pService->desktopEntryPath();
 
+  kdDebug(250) << "service pathName=" << pathName << endl;
   if (pathName.right(8) != QString::fromLatin1(".desktop"))
     pathName += QString::fromLatin1(".desktop");
   QString path(locateLocal("apps", pathName));
@@ -583,8 +596,8 @@ void KOpenWithDlg::slotOK()
 
   KDesktopFile desktop(path);
   desktop.writeEntry(QString::fromLatin1("Type"), QString::fromLatin1("Application"));
-  desktop.writeEntry(QString::fromLatin1("Name"), m_pService ? m_pService->name() : serviceName);
-  desktop.writeEntry(QString::fromLatin1("Exec"), keepExec);
+  desktop.writeEntry(QString::fromLatin1("Name"), serviceName);
+  desktop.writeEntry(QString::fromLatin1("Exec"), fullExec);
   desktop.writeEntry(QString::fromLatin1("InitialPreference"), maxPreference + 1);
   if (remember)
     if (remember->isChecked()) {
@@ -620,7 +633,7 @@ void KOpenWithDlg::slotOK()
   KApplication::kdeinitExecWait( "kbuildsycoca", args );
 
   // get the new service pointer
-  kdDebug(250) << pathName << endl;
+  kdDebug(250) << "kbuildsycoca finished, looking for service " << pathName << endl;
   // We need to read in the new database. It seems the databaseChanged()
   // signal hasn't been processed in this process yet, since we haven't been
   // to the event loop yet.
