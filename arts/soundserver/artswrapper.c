@@ -98,7 +98,7 @@ int main(int argc, char **argv)
 	   (due to realtime priority stuff) */
 	if (geteuid() != getuid()) 
 	{
-#ifdef HAVE_SETEUID
+#if defined (HAVE_SETEUID) && !defined (HAVE_SETEUID_FAKE) 
 		seteuid(getuid());
 #else
 		setreuid(-1, getuid());
