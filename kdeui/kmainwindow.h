@@ -637,6 +637,12 @@ public:
     // KDE4 to be removed
     QSize sizeForCentralWidgetSize(QSize size) KDE_DEPRECATED;
 
+    /**
+     * @internal
+     */
+    // KDE4 remove
+    virtual void setIcon( const QPixmap & );
+
 public slots:
     /**
      * Show a standard configure toolbar dialog.
