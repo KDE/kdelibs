@@ -30,6 +30,7 @@ namespace KABC {
 
 class Field;
 class SortField;
+class SortMode;
 
 /**
  * Each trait must implement one static function for equality, one for "less
