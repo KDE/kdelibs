@@ -349,7 +349,7 @@ void HTMLPreElement::setWidth( long _width )
     if(!impl) return;
 
     QString aStr;
-    aStr.sprintf("%d", _width);
+    aStr.sprintf("%ld", _width);
     DOMString value(aStr);
     ((ElementImpl *)impl)->setAttribute(ATTR_WIDTH, value);
 }
