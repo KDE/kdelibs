@@ -30,7 +30,6 @@
 #include <ksockaddr.h>
 #include <kextsock.h>
 #include <netsupp.h>
-#include <netdb.h>
 
 #include "ksslx509map.h"
 
@@ -72,8 +71,11 @@ bool KSSLPeerInfo::certMatchesAddress() {
      QRegExp cnre(cn, false, true);
      QString host, port;
 
-     if (KExtendedSocket::resolve(d->host, host, port, NI_NAMEREQD) != 0)
-        host = d->host->nodeName();
+     if (KExtendedSocket::resolve(d->host, host, port, NI_NAMEREQD) != 0) {
+         kdDebug(7029 ) << "resolving failure: " << d->host->nodeName() << endl;
+         host = d->host->nodeName();
+     }
+
 #if QT_VERSION < 300
      if (cnre.match(host) >= 0) return true;
 #else
