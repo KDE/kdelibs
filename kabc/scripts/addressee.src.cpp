@@ -792,20 +792,33 @@ void Addressee::parseEmailAddress( const QString &rawEmail, QString &fullName,
       // We have a start and end to the email address
 
       // Grab the name part
-      fullName = rawEmail.left(startPos).stripWhiteSpace();
-
+      QString left = rawEmail.left(startPos).stripWhiteSpace();
       // grab the email part
-      email = rawEmail.mid(startPos+1, endPos-startPos-1).stripWhiteSpace();
+      QString right = rawEmail.mid(startPos+1, endPos-startPos-1).stripWhiteSpace();
+
+      // Either "Name <email>" or "email (Name)"
+      if (endCh == '>')
+      {
+        fullName = left;
+        email = right;
+      }
+      else // endCh == ')'
+      {
+        fullName = right;
+        email = left;
+      }
 
       // Check that we do not have any extra characters on the end of the
       // strings
       len = fullName.length();
       if (fullName[0]=='"' && fullName[len-1]=='"')
         fullName = fullName.mid(1, len-2);
-      else if (fullName[0]=='<' && fullName[len-1]=='>')
-        fullName = fullName.mid(1, len-2);
       else if (fullName[0]=='(' && fullName[len-1]==')')
         fullName = fullName.mid(1, len-2);
+
+	  len = email.length();
+      if (email[0]=='<' && email[len-1]=='>')
+        email = email.mid(1, len-2);
     }
   }
 }
