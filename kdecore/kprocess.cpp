@@ -136,6 +136,7 @@ extern "C" {
 // private functions //
 ///////////////////////
 
+#ifndef KDE_USE_FINAL
 class KProcess_Utmp : public KProcess
 {
 public:
@@ -148,6 +149,7 @@ public:
    }
    int cmdFd;
 };
+#endif
 
 #define PTY_FILENO 3
 #define BASE_CHOWN "konsole_grantpty"
