@@ -69,4 +69,18 @@ void KActiveLabel::openLink(const QString & link)
 void KActiveLabel::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
+void KActiveLabel::focusInEvent( QFocusEvent* fe )
+{
+   QTextBrowser::focusInEvent(fe);
+   if(fe->reason() == QFocusEvent::Tab || fe->reason() == QFocusEvent::Backtab)
+      selectAll(true);
+}
+
+void KActiveLabel::focusOutEvent( QFocusEvent* fe )
+{
+   QTextBrowser::focusOutEvent(fe);
+   if(fe->reason() == QFocusEvent::Tab || fe->reason() == QFocusEvent::Backtab)
+      selectAll(false);
+}
+
 #include "kactivelabel.moc"
