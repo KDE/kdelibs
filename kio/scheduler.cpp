@@ -284,7 +284,7 @@ bool Scheduler::startJobScheduled(ProtocolInfo *protInfo)
        bool exact=false;
        SimpleJob *firstJob = 0;
        Slave *firstSlave = 0;
-       for(int i = 0; (i < protInfo->joblist.count()) && (i < 10); i++)
+       for(uint i = 0; (i < protInfo->joblist.count()) && (i < 10); i++)
        {
           job = protInfo->joblist.at(i);
           slave = findIdleSlave(protInfo, job, exact);
