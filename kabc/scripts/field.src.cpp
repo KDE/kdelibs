@@ -135,6 +135,26 @@ QString Field::value( const KABC::Addressee &a )
       return a.phoneNumber( PhoneNumber::Home | PhoneNumber::Fax ).number();
     case FieldImpl::BusinessFax:
       return a.phoneNumber( PhoneNumber::Work | PhoneNumber::Fax ).number();
+    case FieldImpl::HomeAddressStreet:
+      return a.address( Address::Home ).street();
+    case FieldImpl::HomeAddressLocality:
+      return a.address( Address::Home ).locality();
+    case FieldImpl::HomeAddressRegion:
+      return a.address( Address::Home ).region();
+    case FieldImpl::HomeAddressPostalCode:
+      return a.address( Address::Home ).postalCode();
+    case FieldImpl::HomeAddressCountry:
+      return a.address( Address::Home ).country();
+    case FieldImpl::BusinessAddressStreet:
+      return a.address( Address::Work ).street();
+    case FieldImpl::BusinessAddressLocality:
+      return a.address( Address::Work ).locality();
+    case FieldImpl::BusinessAddressRegion:
+      return a.address( Address::Work ).region();
+    case FieldImpl::BusinessAddressPostalCode:
+      return a.address( Address::Work ).postalCode();
+    case FieldImpl::BusinessAddressCountry:
+      return a.address( Address::Work ).country();
     case FieldImpl::CustomField:
       return a.custom( mImpl->app(), mImpl->key() );
     default:

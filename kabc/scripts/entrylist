@@ -1,3 +1,16 @@
+# This file describes the fields of an address book entry.
+#
+# The following comma-seperated fields are used:
+#
+#          Control: A generates accessor functions.
+#                   L generates a static function fpr returning a tranlsated label
+#                   F generates a Field id and object for generic field handling
+#      Field Name : A descriptive name which is shown to the user.
+#            Type : C++ type of field.
+#      Identifier : A string used in code as variable name etc.
+#  Field Category : Categories the field belongs to (see Field::FieldCategory).
+#  Output function: Function used to convert type to string for debug output (optional)
+
 AL,unique identifier,QString,uid
 AL,name,QString,name
 
@@ -9,18 +22,30 @@ ALF,additional names,QString,additionalName
 ALF,honorific prefixes,QString,prefix
 ALF,honorific suffixes,QString,suffix
 
-ALF,nick name,QString,nickName
+ALF,nick name,QString,nickName,Personal
 ,photo,QPixmap,photo
 
-ALF,birthday,QDateTime,birthday,,.toString()
+ALF,birthday,QDateTime,birthday,Personal,.toString()
 
 #Address address
+LF,home address street,QString,homeAddressStreet,Address|Personal
+LF,home address locality,QString,homeAddressLocality,Address|Personal
+LF,home address region,QString,homeAddressRegion,Address|Personal
+LF,home address postal code,QString,homeAddressPostalCode,Address|Personal
+LF,home address country,QString,homeAddressCountry,Address|Personal
+
+LF,business address street,QString,businessAddressStreet,Address|Organization
+LF,business address locality,QString,businessAddressLocality,Address|Organization
+LF,business address region,QString,businessAddressRegion,Address|Organization
+LF,business address postal code,QString,businessAddressPostalCode,Address|Organization
+LF,business address country,QString,businessAddressCountry,Address|Organization
+
 #QString label (part of Address)
 
 #phoneNumbers
-LF,home phone,QString,homePhone
-LF,business phone,QString,businessPhone
-LF,mobile phone,QString,mobilePhone
+LF,home phone,QString,homePhone,Personal|Frequent
+LF,business phone,QString,businessPhone,Organization|Frequent
+LF,mobile phone,QString,mobilePhone,Frequent
 LF,home fax,QString,homeFax
 LF,business fax,QString,businessFax
 
@@ -32,11 +57,11 @@ ALF,mail client,QString,mailer,Email
 AL,time zone,TimeZone,timeZone,,.asString()
 AL,geographic position,Geo,geo,,.asString()
 
-ALF,title,QString,title
-ALF,role,QString,role
+ALF,title,QString,title,Organization
+ALF,role,QString,role,Organization
 #QPixmap logo
 #Agent agent
-ALF,organization,QString,organization
+ALF,organization,QString,organization,Organization
 
 AL,note,QString,note
 

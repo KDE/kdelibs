@@ -292,6 +292,66 @@ QString Addressee::birthdayLabel()
 }
 
 
+QString Addressee::homeAddressStreetLabel()
+{
+  return i18n("Home Address Street");
+}
+
+
+QString Addressee::homeAddressLocalityLabel()
+{
+  return i18n("Home Address Locality");
+}
+
+
+QString Addressee::homeAddressRegionLabel()
+{
+  return i18n("Home Address Region");
+}
+
+
+QString Addressee::homeAddressPostalCodeLabel()
+{
+  return i18n("Home Address Postal Code");
+}
+
+
+QString Addressee::homeAddressCountryLabel()
+{
+  return i18n("Home Address Country");
+}
+
+
+QString Addressee::businessAddressStreetLabel()
+{
+  return i18n("Business Address Street");
+}
+
+
+QString Addressee::businessAddressLocalityLabel()
+{
+  return i18n("Business Address Locality");
+}
+
+
+QString Addressee::businessAddressRegionLabel()
+{
+  return i18n("Business Address Region");
+}
+
+
+QString Addressee::businessAddressPostalCodeLabel()
+{
+  return i18n("Business Address Postal Code");
+}
+
+
+QString Addressee::businessAddressCountryLabel()
+{
+  return i18n("Business Address Country");
+}
+
+
 QString Addressee::homePhoneLabel()
 {
   return i18n("Home Phone");

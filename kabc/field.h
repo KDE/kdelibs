@@ -32,7 +32,7 @@ namespace KABC {
 class Field
 {
     class FieldImpl;
-    friend FieldImpl;
+    friend class FieldImpl;
   public:
     typedef QValueList<Field *> List;
   

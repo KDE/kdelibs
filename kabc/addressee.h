@@ -197,6 +197,56 @@ class Addressee
     static QString birthdayLabel();
 
     /*
+      Return translated label for homeAddressStreet field.
+    */
+    static QString homeAddressStreetLabel();
+
+    /*
+      Return translated label for homeAddressLocality field.
+    */
+    static QString homeAddressLocalityLabel();
+
+    /*
+      Return translated label for homeAddressRegion field.
+    */
+    static QString homeAddressRegionLabel();
+
+    /*
+      Return translated label for homeAddressPostalCode field.
+    */
+    static QString homeAddressPostalCodeLabel();
+
+    /*
+      Return translated label for homeAddressCountry field.
+    */
+    static QString homeAddressCountryLabel();
+
+    /*
+      Return translated label for businessAddressStreet field.
+    */
+    static QString businessAddressStreetLabel();
+
+    /*
+      Return translated label for businessAddressLocality field.
+    */
+    static QString businessAddressLocalityLabel();
+
+    /*
+      Return translated label for businessAddressRegion field.
+    */
+    static QString businessAddressRegionLabel();
+
+    /*
+      Return translated label for businessAddressPostalCode field.
+    */
+    static QString businessAddressPostalCodeLabel();
+
+    /*
+      Return translated label for businessAddressCountry field.
+    */
+    static QString businessAddressCountryLabel();
+
+    /*
       Return translated label for homePhone field.
     */
     static QString homePhoneLabel();

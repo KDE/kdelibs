@@ -48,6 +48,16 @@ class Field::FieldImpl
       Suffix,
       NickName,
       Birthday,
+      HomeAddressStreet,
+      HomeAddressLocality,
+      HomeAddressRegion,
+      HomeAddressPostalCode,
+      HomeAddressCountry,
+      BusinessAddressStreet,
+      BusinessAddressLocality,
+      BusinessAddressRegion,
+      BusinessAddressPostalCode,
+      BusinessAddressCountry,
       HomePhone,
       BusinessPhone,
       MobilePhone,
@@ -112,6 +122,26 @@ QString Field::label()
       return Addressee::nickNameLabel();
     case FieldImpl::Birthday:
       return Addressee::birthdayLabel();
+    case FieldImpl::HomeAddressStreet:
+      return Addressee::homeAddressStreetLabel();
+    case FieldImpl::HomeAddressLocality:
+      return Addressee::homeAddressLocalityLabel();
+    case FieldImpl::HomeAddressRegion:
+      return Addressee::homeAddressRegionLabel();
+    case FieldImpl::HomeAddressPostalCode:
+      return Addressee::homeAddressPostalCodeLabel();
+    case FieldImpl::HomeAddressCountry:
+      return Addressee::homeAddressCountryLabel();
+    case FieldImpl::BusinessAddressStreet:
+      return Addressee::businessAddressStreetLabel();
+    case FieldImpl::BusinessAddressLocality:
+      return Addressee::businessAddressLocalityLabel();
+    case FieldImpl::BusinessAddressRegion:
+      return Addressee::businessAddressRegionLabel();
+    case FieldImpl::BusinessAddressPostalCode:
+      return Addressee::businessAddressPostalCodeLabel();
+    case FieldImpl::BusinessAddressCountry:
+      return Addressee::businessAddressCountryLabel();
     case FieldImpl::HomePhone:
       return Addressee::homePhoneLabel();
     case FieldImpl::BusinessPhone:
@@ -212,6 +242,26 @@ QString Field::value( const KABC::Addressee &a )
       return a.phoneNumber( PhoneNumber::Home | PhoneNumber::Fax ).number();
     case FieldImpl::BusinessFax:
       return a.phoneNumber( PhoneNumber::Work | PhoneNumber::Fax ).number();
+    case FieldImpl::HomeAddressStreet:
+      return a.address( Address::Home ).street();
+    case FieldImpl::HomeAddressLocality:
+      return a.address( Address::Home ).locality();
+    case FieldImpl::HomeAddressRegion:
+      return a.address( Address::Home ).region();
+    case FieldImpl::HomeAddressPostalCode:
+      return a.address( Address::Home ).postalCode();
+    case FieldImpl::HomeAddressCountry:
+      return a.address( Address::Home ).country();
+    case FieldImpl::BusinessAddressStreet:
+      return a.address( Address::Work ).street();
+    case FieldImpl::BusinessAddressLocality:
+      return a.address( Address::Work ).locality();
+    case FieldImpl::BusinessAddressRegion:
+      return a.address( Address::Work ).region();
+    case FieldImpl::BusinessAddressPostalCode:
+      return a.address( Address::Work ).postalCode();
+    case FieldImpl::BusinessAddressCountry:
+      return a.address( Address::Work ).country();
     case FieldImpl::CustomField:
       return a.custom( mImpl->app(), mImpl->key() );
     default:
@@ -276,18 +326,28 @@ Field::List Field::allFields()
     createField( FieldImpl::AdditionalName );
     createField( FieldImpl::Prefix );
     createField( FieldImpl::Suffix );
-    createField( FieldImpl::NickName );
-    createField( FieldImpl::Birthday );
-    createField( FieldImpl::HomePhone );
-    createField( FieldImpl::BusinessPhone );
-    createField( FieldImpl::MobilePhone );
+    createField( FieldImpl::NickName, Personal );
+    createField( FieldImpl::Birthday, Personal );
+    createField( FieldImpl::HomeAddressStreet, Address|Personal );
+    createField( FieldImpl::HomeAddressLocality, Address|Personal );
+    createField( FieldImpl::HomeAddressRegion, Address|Personal );
+    createField( FieldImpl::HomeAddressPostalCode, Address|Personal );
+    createField( FieldImpl::HomeAddressCountry, Address|Personal );
+    createField( FieldImpl::BusinessAddressStreet, Address|Organization );
+    createField( FieldImpl::BusinessAddressLocality, Address|Organization );
+    createField( FieldImpl::BusinessAddressRegion, Address|Organization );
+    createField( FieldImpl::BusinessAddressPostalCode, Address|Organization );
+    createField( FieldImpl::BusinessAddressCountry, Address|Organization );
+    createField( FieldImpl::HomePhone, Personal|Frequent );
+    createField( FieldImpl::BusinessPhone, Organization|Frequent );
+    createField( FieldImpl::MobilePhone, Frequent );
     createField( FieldImpl::HomeFax );
     createField( FieldImpl::BusinessFax );
     createField( FieldImpl::Email, Email|Frequent );
     createField( FieldImpl::Mailer, Email );
-    createField( FieldImpl::Title );
-    createField( FieldImpl::Role );
-    createField( FieldImpl::Organization );
+    createField( FieldImpl::Title, Organization );
+    createField( FieldImpl::Role, Organization );
+    createField( FieldImpl::Organization, Organization );
     createField( FieldImpl::Url );
   }
 
