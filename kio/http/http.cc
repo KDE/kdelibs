@@ -1129,6 +1129,15 @@ bool HTTPProtocol::readHeader()
      }
      if (eof())
      {
+        if (m_request.method == HTTP_HEAD)
+        {
+           // HACK
+           // Some web-servers fail to respond properly to a HEAD request.
+           // We compensate for their failure to properly implement the HTTP standard
+           // by assuming that they will be sending html.
+           mimeType(QString::fromLatin1("text/html"));
+           return true;
+        }
         error( ERR_CONNECTION_BROKEN, m_state.hostname );
         return false;
      }
