@@ -1,7 +1,7 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1997, 1998 Stephan Kulow (coolo@kde.org)
               (C) 1997, 1998 Mark Donohoe (donohoe@kde.org)
-              (C) 1997, 1998 Sven Radej (sven@lisa.exp.univie.ac.at)
+              (C) 1997, 1998 Sven Radej (radej@kde.org)
               (C) 1997, 1998 Matthias Ettrich (ettrich@kde.org)
               
     This library is free software; you can redistribute it and/or
@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.74  1998/08/06 15:39:01  radej
+// sven: fixed a bug - uninitialized toolbarHeight/Width - thanks to Harry Porten
+//
 // Revision 1.73  1998/07/29 12:48:29  ssk
 // Removed more warnings, possible portability problems and ANSI violations.
 //
@@ -121,6 +124,7 @@
 
 #include <qpainter.h>
 #include <qrect.h>
+//#include <qimage.h>
 #include <qpalette.h>
 #include <qbitmap.h>
 #include <qstring.h>
@@ -182,14 +186,14 @@ KToolBarButton::KToolBarButton( QWidget *parentWidget, const char *name )
 
 KToolBarButton::KToolBarButton( const QPixmap& pixmap, int _id,
                                 QWidget *_parent, const char *name,
-                                int, const char *txt,
+                                int item_size, const char *txt,
                                 bool _mb) : QButton( _parent, name )
 {
   sep=false;
   delayPopup = false;
   parentWidget = (KToolBar *) _parent;
   raised = false;
-  iconSet = 0L;
+//  iconSet = 0L;
   myPopup = 0L;
   
   toolBarButton = !_mb;
@@ -198,12 +202,16 @@ KToolBarButton::KToolBarButton( const QPixmap& pixmap, int _id,
   id = _id;
   if (txt)
     btext = txt;
-  iconSet = new QIconSet (pixmap, QIconSet::Small);
   if ( ! pixmap.isNull() )
-    setPixmap(pixmap);
+    enabledPixmap = pixmap;
   else
+  {
     warning(klocale->translate("KToolBarButton: pixmap is empty, perhaps some missing file"));
+    enabledPixmap.resize( item_size-4, item_size-4);
+  }
   modeChange ();
+  makeDisabledPixmap();
+  setPixmap(enabledPixmap);
 
   connect (parentWidget, SIGNAL( modechange() ), this, SLOT( modeChange() ));
   connect( this, SIGNAL( clicked() ), this, SLOT( ButtonClicked() ) );
@@ -247,10 +255,14 @@ void KToolBarButton::setText( const char *text)
 void KToolBarButton::setPixmap( const QPixmap &pixmap )
 {
   if ( ! pixmap.isNull() )
-    QButton::setPixmap(iconSet->pixmap(iconSize, QIconSet::Normal ));
-  else
+    enabledPixmap = pixmap;
+  else {
     warning(klocale->translate("KToolBarButton: pixmap is empty, perhaps some missing file"));
-}            
+    enabledPixmap.resize(width()-4, height()-4);
+  }
+  QButton::setPixmap( enabledPixmap );
+}
+
 
 void KToolBarButton::setPopup (QPopupMenu *p)
 {
@@ -268,10 +280,9 @@ void KToolBarButton::setDelayedPopup (QPopupMenu *p)
 
 void KToolBarButton::setEnabled( bool enabled )
 {
-  QButton::setPixmap((enabled ?
-                      iconSet->pixmap(iconSize, QIconSet::Normal)
-                      : iconSet->pixmap(iconSize, QIconSet::Disabled)));
+  QButton::setPixmap( (enabled ? enabledPixmap : disabledPixmap) );
   QButton::setEnabled( enabled );
+
 }
 
 
@@ -286,16 +297,16 @@ void KToolBarButton::leaveEvent(QEvent *)
   if (delayPopup)
     delayTimer->stop();
 
-  if (isEnabled())
-    setPixmap(iconSet->pixmap(iconSize, QIconSet::Normal));
+//  if (isEnabled())
+//    setPixmap(iconSet->pixmap(iconSize, QIconSet::Normal));
 }
 
 void KToolBarButton::enterEvent(QEvent *)
 {
   if (highlight == 1)
   {
-    if (isEnabled())
-      setPixmap(iconSet->pixmap(iconSize, QIconSet::Active));
+//    if (isEnabled())
+//      setPixmap(iconSet->pixmap(iconSize, QIconSet::Active));
     
     if (isToggleButton() == false)
       if (isEnabled())
@@ -458,14 +469,22 @@ void KToolBarButton::drawButton( QPainter *_painter )
   icontext=config->readNumEntry("IconText", 0);
 void KToolBarButton::paletteChange(const QPalette &)
 {
-  repaint(false); // no need to delete it first therefore only false
+  if(!ImASeparator())
+  {
+    makeDisabledPixmap();
+    if ( !isEnabled() )
+      QButton::setPixmap( disabledPixmap );
+    else
+      QButton::setPixmap( enabledPixmap );
+    repaint(false); // no need to delete it first therefore only false
+  }
 }
   bool doUpdate=false;
 void KToolBarButton::modeChange()
 {
   int myWidth;
   }
-  myWidth = pixmap()->width();
+  myWidth = enabledPixmap.width();
   }
   QFont fnt;
   
@@ -493,11 +512,20 @@ void KToolBarButton::modeChange()
   if (myWidth < _size)
     myWidth = _size;
 
-  if (_size > 38) // = 26*3/2 like QIconSet says
-    iconSize = QIconSet::Large;
-  else
-    iconSize = QIconSet::Small;
-
+// Nice but doesn't work
+/*
+  if (_size > 28)
+  {
+    double factor=_size/26;
+    QImage i;
+    i = enabledPixmap.convertToImage();
+    i = i.smoothScale(enabledPixmap.width()*factor,
+                      enabledPixmap.height()*factor);
+    enabledPixmap.resize (i.width(), i.height());
+    enabledPixmap.convertFromImage(i );
+  }
+*/
+  
   highlight=parentWidget->highlight;
   if (icontext > 0) //Calculate my size
   {
@@ -510,6 +538,41 @@ void KToolBarButton::modeChange()
     QToolTip::add(this, btext);
     resize (myWidth, _size-2);
   }
+}
+
+void KToolBarButton::makeDisabledPixmap()
+{
+  if (ImASeparator())
+    return;             // No pixmaps for separators
+  //debug ("KToolBar destructor");
+  QPalette pal = palette();
+  QColorGroup g = pal.disabled();
+}
+  // Prepare the disabledPixmap for drawing
+  
+  disabledPixmap.detach(); // prevent flicker
+  disabledPixmap.resize(enabledPixmap.width(), enabledPixmap.height());
+  disabledPixmap.fill( g.background() );
+  const QBitmap *mask = enabledPixmap.mask();
+  bool allocated = false;
+  if (!mask) {// This shouldn't occur anymore!
+    mask = new QBitmap(enabledPixmap.createHeuristicMask());
+    allocated = true;
+  } 
+  
+  QBitmap bitmap = *mask; // YES! make a DEEP copy before setting the mask!   
+  bitmap.setMask(*mask);
+  
+  QPainter p;
+  p.begin( &disabledPixmap );
+  p.setPen( g.light() );
+  p.drawPixmap(1, 1, bitmap);
+  p.setPen( g.mid() );
+  p.drawPixmap(0, 0, bitmap);
+  p.end();
+  
+  if (allocated) // This shouldn't occur anymore!
+    delete mask;
 }
   int rightOffset;
 void KToolBarButton::showMenu()

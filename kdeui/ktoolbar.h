@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1997, 1998 Stephan Kulow (coolo@kde.org)
-              (C) 1997, 1998 Sven Radej (sven@lisa.exp.univie.ac.at)
+              (C) 1997, 1998 Sven Radej (radej@kde.org)
               (C) 1997, 1998 Mark Donohoe (donohoe@kde.org)
               (C) 1997, 1998 Matthias Ettrich (ettrich@kde.org)
               
@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.37  1998/08/06 15:39:03  radej
+// sven: Popups & delayedPopups. Uses QIconSet. Needs Qt-1.4x
+//
 // Revision 1.36  1998/06/20 10:57:00  radej
 // sven: mispelled something...
 //
@@ -45,7 +48,7 @@
 #include <qbutton.h>
 #include <qfont.h>
 #include <qsize.h>
-#include <qiconset.h>
+//#include <qiconset.h>
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -142,6 +145,7 @@ class KToolBarButton : public QButton
    bool eventFilter (QObject *o, QEvent *e);
    void showMenu();
    //void setIconSet (const QPixmap &);
+   void makeDisabledPixmap();
    
  private:
    bool toolBarButton;
@@ -159,8 +163,8 @@ class KToolBarButton : public QButton
    QPopupMenu *myPopup;
    bool delayPopup;
    QTimer *delayTimer;
-   QIconSet *iconSet;
-   QIconSet::Size iconSize;
+//   QIconSet *iconSet;
+//   QIconSet::Size iconSize;
    
  protected slots:
      void ButtonClicked();
