@@ -172,7 +172,7 @@ private:
     KFileItemList* lstItems;
   };
 
-  static const unsigned short MAX_JOBS_PER_LISTER = 5;
+  static const unsigned short MAX_JOBS_PER_LISTER;
   QMap< KIO::ListJob *, KIO::UDSEntryList > jobs;
 
   // an item is a complete directory
@@ -188,6 +188,8 @@ private:
 
   static KDirListerCache* s_pSelf;
 };
+
+const unsigned short KDirListerCache::MAX_JOBS_PER_LISTER = 5;
 
 #define s_pCache KDirListerCache::self()
 
