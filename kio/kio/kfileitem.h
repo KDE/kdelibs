@@ -458,11 +458,36 @@ public:
    * Somewhat like an assignment operator, but more explicit.
    * Note: extra-data set with setExtraData() is not copied, so be careful
    * what you do!
-   *
-   * I.e. KDirLister uses it to update existing items from a fresh item.
+   * 
    * @param item the item to copy
    */
   void assign( const KFileItem & item );
+
+  /**
+   * Reinitialize KFileItem with a new UDSEntry.
+   * 
+   * Note: extra-data set with setExtraData() is not changed or deleted, so
+   * be careful what you do!
+   *
+   * KDirListerCache uses it to save new/delete calls by updating existing
+   * items that are otherwise not needed anymore.
+   * 
+   * @param entry the UDSEntry to assign to this KFileItem
+   * @param url the file url
+   * @param determineMimeTypeOnDemand specifies if the mimetype of the given
+   *        URL should be determined immediately or on demand
+   * @param urlIsDirectory specifies if the url is just the directory of the
+   *        fileitem and the filename from the UDSEntry should be used.
+   * @since 3.4.1
+   */
+  void setUDSEntry( const KIO::UDSEntry& entry, const KURL& url,
+                    bool determineMimeTypeOnDemand = false,
+                    bool urlIsDirectory = false );
+
+  /**
+   * Assignment operator, calls assign()
+   */
+  KFileItem& operator=( const KFileItem& );
 
   /**
    * Tries to give a local URL for this file item if possible.
@@ -478,6 +503,13 @@ protected:
    * Called by constructor, but can be called again later
    */
   void init( bool _determineMimeTypeOnDemand );
+
+  /**
+   * Extracts the data from the UDSEntry member and updates the KFileItem
+   * accordingly.
+   * @since 3.4.1
+   */
+  void readUDSEntry( bool _urlIsDirectory );
 
   /**
    * Parses the given permission set and provides it for access()

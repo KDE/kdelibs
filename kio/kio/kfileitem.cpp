@@ -62,63 +62,9 @@ KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
   m_bLink( false ),
   m_bIsLocalURL( _url.isLocalFile() ),
   m_bMimeTypeKnown( false ),
-  d(0L)
+  d(0)
 {
-  bool UDS_URL_seen = false;
-  // extract the mode and the filename from the KIO::UDS Entry
-  KIO::UDSEntry::ConstIterator it = m_entry.begin();
-  for( ; it != m_entry.end(); ++it ) {
-    switch ((*it).m_uds) {
-
-        case KIO::UDS_FILE_TYPE:
-          m_fileMode = (mode_t)((*it).m_long);
-          break;
-
-        case KIO::UDS_ACCESS:
-          m_permissions = (mode_t)((*it).m_long);
-          break;
-
-        case KIO::UDS_USER:
-          m_user = ((*it).m_str);
-          break;
-
-        case KIO::UDS_GROUP:
-          m_group = ((*it).m_str);
-          break;
-
-        case KIO::UDS_NAME:
-          m_strName = (*it).m_str;
-          m_strText = KIO::decodeFileName( m_strName );
-          break;
-
-        case KIO::UDS_URL:
-          UDS_URL_seen = true;
-          m_url = KURL((*it).m_str);
-          if (m_url.isLocalFile()) m_bIsLocalURL = true;
-          break;
-
-        case KIO::UDS_MIME_TYPE:
-          m_pMimeType = KMimeType::mimeType((*it).m_str);
-          m_bMimeTypeKnown = true;
-          break;
-
-        case KIO::UDS_GUESSED_MIME_TYPE:
-          m_guessedMimeType = (*it).m_str;
-          break;
-
-        case KIO::UDS_LINK_DEST:
-          m_bLink = !(*it).m_str.isEmpty(); // we don't store the link dest
-          break;
-        case KIO::UDS_ICON_NAME:
-	  d=new KFileItemPrivate();
-	  d->iconName=(*it).m_str;
-	  break;
-    }
-  }
-  // avoid creating these QStrings again and again
-  static const QString& dot = KGlobal::staticQString(".");
-  if ( _urlIsDirectory && !UDS_URL_seen && !m_strName.isEmpty() && m_strName != dot )
-    m_url.addPath( m_strName );
+  readUDSEntry( _urlIsDirectory );
   init( _determineMimeTypeOnDemand );
 }
 
@@ -134,7 +80,7 @@ KFileItem::KFileItem( mode_t _mode, mode_t _permissions, const KURL& _url, bool 
   m_bLink( false ),
   m_bIsLocalURL( _url.isLocalFile() ),
   m_bMimeTypeKnown( false ),
-  d(0L)
+  d(0)
 {
   init( _determineMimeTypeOnDemand );
 }
@@ -150,7 +96,7 @@ KFileItem::KFileItem( const KURL &url, const QString &mimeType, mode_t mode )
   m_bLink( false ),
   m_bIsLocalURL( url.isLocalFile() ),
   m_bMimeTypeKnown( !mimeType.isEmpty() ),
-  d(0L)
+  d(0)
 {
   if (m_bMimeTypeKnown)
     m_pMimeType = KMimeType::mimeType( mimeType );
@@ -159,9 +105,15 @@ KFileItem::KFileItem( const KURL &url, const QString &mimeType, mode_t mode )
 }
 
 KFileItem::KFileItem( const KFileItem & item ) :
-  d(0L)
+  d(0)
 {
     assign( item );
+}
+
+KFileItem& KFileItem::operator=( const KFileItem & item )
+{
+    assign( item );
+    return *this;
 }
 
 KFileItem::~KFileItem()
@@ -229,7 +181,70 @@ void KFileItem::init( bool _determineMimeTypeOnDemand )
       // otherwise, determineMimeType will be able to do better.
       m_bMimeTypeKnown = (!_determineMimeTypeOnDemand) || accurate;
   }
+}
 
+void KFileItem::readUDSEntry( bool _urlIsDirectory )
+{
+  // extract the mode and the filename from the KIO::UDS Entry
+  bool UDS_URL_seen = false;
+
+  KIO::UDSEntry::ConstIterator it = m_entry.begin();
+  for( ; it != m_entry.end(); ++it ) {
+    switch ((*it).m_uds) {
+
+      case KIO::UDS_FILE_TYPE:
+        m_fileMode = (mode_t)((*it).m_long);
+        break;
+
+      case KIO::UDS_ACCESS:
+        m_permissions = (mode_t)((*it).m_long);
+        break;
+
+      case KIO::UDS_USER:
+        m_user = ((*it).m_str);
+        break;
+
+      case KIO::UDS_GROUP:
+        m_group = ((*it).m_str);
+        break;
+
+      case KIO::UDS_NAME:
+        m_strName = (*it).m_str;
+        m_strText = KIO::decodeFileName( m_strName );
+        break;
+
+      case KIO::UDS_URL:
+        UDS_URL_seen = true;
+        m_url = KURL((*it).m_str);
+        if ( m_url.isLocalFile() )
+           m_bIsLocalURL = true;
+        break;
+
+      case KIO::UDS_MIME_TYPE:
+        m_pMimeType = KMimeType::mimeType((*it).m_str);
+        m_bMimeTypeKnown = true;
+        break;
+
+      case KIO::UDS_GUESSED_MIME_TYPE:
+        m_guessedMimeType = (*it).m_str;
+        break;
+
+      case KIO::UDS_LINK_DEST:
+        m_bLink = !(*it).m_str.isEmpty(); // we don't store the link dest
+        break;
+
+      case KIO::UDS_ICON_NAME:
+        if ( !d )
+          d = new KFileItemPrivate();
+        d->iconName = (*it).m_str;
+        break;
+    }
+  }
+
+  // avoid creating these QStrings again and again
+  static const QString& dot = KGlobal::staticQString(".");
+  if ( _urlIsDirectory && !UDS_URL_seen && !m_strName.isEmpty() && m_strName != dot )
+    m_url.addPath( m_strName );
 }
 
 void KFileItem::refresh()
@@ -239,11 +254,7 @@ void KFileItem::refresh()
   m_pMimeType = 0L;
   m_user = QString::null;
   m_group = QString::null;
-  m_access = QString::null;
-  m_size = (KIO::filesize_t) -1;
   m_metaInfo = KFileMetaInfo();
-  for ( int i = 0; i < NumFlags; i++ )
-      m_time[i] = (time_t) -1;
 
   // Basically, we can't trust any information we got while listing.
   // Everything could have changed...
@@ -797,13 +808,44 @@ void KFileItem::assign( const KFileItem & item )
     // note: m_extra is NOT copied, as we'd have no control over who is
     // deleting the data or not.
 
-    delete d; d = 0;
     // We had a mimetype previously (probably), so we need to re-determine it
     determineMimeType();
-    if (item.d) {
-	d=new KFileItemPrivate;
-	d->iconName=item.d->iconName;
+
+    if ( item.d ) {
+        if ( !d ) 
+            d = new KFileItemPrivate;
+        d->iconName = item.d->iconName;
+    } else {
+        delete d; 
+        d = 0;
     }
+}
+
+void KFileItem::setUDSEntry( const KIO::UDSEntry& _entry, const KURL& _url,
+    bool _determineMimeTypeOnDemand, bool _urlIsDirectory )
+{
+  m_entry = _entry;
+  m_url = _url;
+  m_strName = QString::null;
+  m_strText = QString::null;
+  m_user = QString::null;
+  m_group = QString::null;
+  m_strLowerCaseName = QString::null;
+  m_pMimeType = 0;
+  m_fileMode = KFileItem::Unknown;
+  m_permissions = KFileItem::Unknown;
+  m_bMarked = false;
+  m_bLink = false;
+  m_bIsLocalURL = _url.isLocalFile();
+  m_bMimeTypeKnown = false;
+  m_guessedMimeType = QString::null;
+  m_metaInfo = KFileMetaInfo();
+
+  if ( d )
+    d->iconName = QString::null;
+
+  readUDSEntry( _urlIsDirectory );
+  init( _determineMimeTypeOnDemand );
 }
 
 void KFileItem::setExtraData( const void *key, void *value )
