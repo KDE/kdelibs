@@ -105,6 +105,7 @@ const unsigned short DOM::tagPriority[] = {
     3, // ID_LI
     0, // ID_LINK
     1, // ID_MAP
+    3, // ID_MARQUEE
     4, // ID_MENU
     0, // ID_META
     1, // ID_NOBR
@@ -211,6 +212,7 @@ const tagStatus DOM::endTag[] = {
     OPTIONAL,  // ID_LI
     FORBIDDEN, // ID_LINK
     REQUIRED,  // ID_MAP
+    REQUIRED,  // ID_MARQUEE    
     REQUIRED,  // ID_MENU
     FORBIDDEN, // ID_META
     REQUIRED,  // ID_NOBR
@@ -382,6 +384,7 @@ static const ushort tag_list_1[] = {
     ID_DEL,
     ID_NOBR,
     ID_WBR,
+    ID_MARQUEE,    
     0
 };
 
@@ -421,6 +424,7 @@ static const ushort tag_list_3[] = {
     ID_LI,
     ID_XMP,
     ID__KONQBLOCK,
+    ID_MARQUEE,    
     0
 };
 
@@ -495,6 +499,7 @@ static const ushort tag_list_4[] = {
     ID_COMMENT,
     ID_LI,
     ID_XMP,
+    ID_MARQUEE,    
     0
 };
 
@@ -641,6 +646,7 @@ bool DOM::checkChild(ushort tagID, ushort childID)
     case ID_NOFRAMES:
     case ID_NOSCRIPT:
     case ID_CAPTION:
+    case ID_MARQUEE:
         // DIV: _1 *
         return check_array(childID, tag_list_1);
     case ID_A:

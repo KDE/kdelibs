@@ -1035,12 +1035,14 @@ NodeImpl *KHTMLParser::getElement(Token* t)
     case ID_NOSCRIPT:
         if(HTMLWidget && HTMLWidget->part()->jScriptEnabled())
             discard_until = ID_NOSCRIPT + ID_CLOSE_TAG;
-
         return 0;
     case ID_NOLAYER:
 //        discard_until = ID_NOLAYER + ID_CLOSE_TAG;
         return 0;
         break;
+    case ID_MARQUEE:
+        n = new HTMLGenericElementImpl(document, t->id);
+        break;        
 // text
     case ID_TEXT:
         n = new TextImpl(document, t->text);

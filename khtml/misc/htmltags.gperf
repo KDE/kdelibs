@@ -67,6 +67,7 @@ legend, ID_LEGEND
 li, ID_LI
 link, ID_LINK
 map, ID_MAP
+marquee, ID_MARQUEE
 menu, ID_MENU
 meta, ID_META
 nobr, ID_NOBR
