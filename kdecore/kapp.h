@@ -24,11 +24,11 @@
 #define _KAPP_H
 
 // Version macros. Never put this further down.
-#define KDE_VERSION 211
-#define KDE_VERSION_STRING "2.1.1"
+#define KDE_VERSION 212
+#define KDE_VERSION_STRING "2.1.2"
 #define KDE_VERSION_MAJOR 2
 #define KDE_VERSION_MINOR 1
-#define KDE_VERSION_RELEASE 1
+#define KDE_VERSION_RELEASE 2
 
 class KConfig;
 class KCharsets;
@@ -793,6 +793,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.210.2.3  2001/03/20 11:08:00  faure
+// Version 2.1.1
+//
 // Revision 1.210.2.2  2001/03/10 15:41:11  faure
 // Make kdeFonts always return false.
 //
