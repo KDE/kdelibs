@@ -1,3 +1,21 @@
+2005-02-07  Leo Savernik  <l.savernik@aon.at>
+
+	* rendering/render_image.cpp (paint): Regard inline offset when
+	painting outline.
+
+	* rendering/render_table.{cpp,h} (RenderTable::paint): Added missing painting of table outlines.
+	(firstTableRow): added
+	(nextTableRow): added
+	(RenderTableSection::paint): When painting the rows, also traverse
+	the according RenderTableRows, and call their paintRow routine.
+	Fixed overflow size of damage rectangle.
+	(RenderTableRow::paintRow): Added. Can't use paint() because
+	RenderTableRow is not a RenderBox, and hence doesn't store layout
+	information.
+	(RenderTableCell::paint): Added painting of the table cell's outline
+	herein instead in RenderBlock to encompass the extra table cell top
+	and bottom margins.
+
 2005-02-07  Germain Garand  <germain@ebooksfrance.org>
 
         * css/html4.css: the -around-floats flow mode can only be applied to elements defining a

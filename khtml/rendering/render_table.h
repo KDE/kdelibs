@@ -313,6 +313,8 @@ public:
 
     virtual void layout();
 
+    void paintRow( PaintInfo& i, int tx, int ty, int w, int h);
+
     RenderTable *table() const { return static_cast<RenderTable *>(parent()->parent()); }
     RenderTableSection *section() const { return static_cast<RenderTableSection *>(parent()); }
 

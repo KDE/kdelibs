@@ -209,7 +209,7 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
 void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
 {
     if (paintInfo.phase == PaintActionOutline && style()->outlineWidth() && style()->visibility() == VISIBLE)
-        paintOutline(paintInfo.p, _tx, _ty, width(), height(), style());
+        paintOutline(paintInfo.p, _tx + m_x, _ty + m_y, width(), height(), style());
 
     if (paintInfo.phase != PaintActionForeground && paintInfo.phase != PaintActionSelection)
         return;

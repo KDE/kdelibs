@@ -396,6 +396,9 @@ void RenderTable::paint( PaintInfo& pI, int _tx, int _ty)
     kdDebug( 6040 ) << "RenderTable::paint(2) " << _tx << "/" << _ty << " (" << _y << "/" << _h << ")" << endl;
 #endif
 
+    if (pI.phase == PaintActionOutline)
+        paintOutline(pI.p, _tx, _ty, width(), height(), style());
+
     if(( pI.phase == PaintActionElementBackground || pI.phase == PaintActionChildBackground )
        && shouldPaintBackgroundOrBorder() && style()->visibility() == VISIBLE)
 	paintBoxDecorations(pI, _tx, _ty);
@@ -1422,6 +1425,20 @@ int RenderTableSection::layoutRows( int toAdd )
     return m_height;
 }
 
+inline static RenderTableRow *firstTableRow(RenderObject *row)
+{
+    while (row && !row->isTableRow())
+        row = row->nextSibling();
+    return static_cast<RenderTableRow *>(row);
+}
+
+inline static RenderTableRow *nextTableRow(RenderObject *row)
+{
+    row = row ? row->nextSibling() : row;
+    while (row && !row->isTableRow())
+        row = row->nextSibling();
+    return static_cast<RenderTableRow *>(row);
+}
 
 void RenderTableSection::paint( PaintInfo& pI, int tx, int ty )
 {
@@ -1430,40 +1447,51 @@ void RenderTableSection::paint( PaintInfo& pI, int tx, int ty )
 
     tx += m_x;
     ty += m_y;
+    
+    if (pI.phase == PaintActionOutline)
+        paintOutline(pI.p, tx, ty, width(), height(), style());
 
     CollapsedBorderValue *cbs = table()->currentBorderStyle();
     int cbsw2 = cbs ? cbs->width()/2 : 0;
     int cbsw21 = cbs ? (cbs->width()+1)/2 : 0;
 
+    RenderTableRow *trow = firstTableRow(firstChild());
+    
     int x = pI.r.x(), y = pI.r.y(), w = pI.r.width(), h = pI.r.height();
     // check which rows and cols are visible and only paint these
     // ### fixme: could use a binary search here
     int os = 2*maximalOutlineSize(pI.phase);
     unsigned int startrow = 0;
     unsigned int endrow = totalRows;
-    for ( ; startrow < totalRows; startrow++ ) {
-	if ( ty + rowPos[startrow+1] + cbsw21 > y - os )
+    for ( ; startrow < totalRows; startrow++, trow = nextTableRow(trow) ) {
+	if ( ty + rowPos[startrow+1] + kMax(cbsw21, os) > y - os )
 	    break;
     }
     for ( ; endrow > 0; endrow-- ) {
-	if ( ty + rowPos[endrow-1] - cbsw2 < y + h + os )
+	if ( ty + rowPos[endrow-1] - kMax(cbsw2, os) < y + h + os )
 	    break;
     }
     unsigned int startcol = 0;
     unsigned int endcol = totalCols;
     if ( style()->direction() == LTR ) {
 	for ( ; startcol < totalCols; startcol++ ) {
-	    if ( tx + table()->columnPos[startcol+1] + cbsw21 > x - os )
+	    if ( tx + table()->columnPos[startcol+1] + kMax(cbsw21, os) > x - os )
 		break;
 	}
 	for ( ; endcol > 0; endcol-- ) {
-	    if ( tx + table()->columnPos[endcol-1] - cbsw2 < x + w + os )
+	    if ( tx + table()->columnPos[endcol-1] - kMax(cbsw2, os) < x + w + os )
 		break;
 	}
     }
     if ( startcol < endcol ) {
 	// draw the cells
-	for ( unsigned int r = startrow; r < endrow; r++ ) {
+	for ( unsigned int r = startrow; r < endrow; r++, trow = nextTableRow(trow) ) {
+	    // paint the row
+	    if (trow) {
+	        int height = rowPos[r+1] - rowPos[r] - table()->borderVSpacing();
+	        trow->paintRow(pI, tx, ty + rowPos[r], width(), height);
+	    }
+	
 	    unsigned int c = startcol;
 	    // since a cell can be -1 (indicating a colspan) we might have to search backwards to include it
 	    while ( c && cellAt( r, c ) == (RenderTableCell *)-1 )
@@ -1778,6 +1806,12 @@ void RenderTableRow::layout()
     }
     setMarkedForRepaint(false);
     setNeedsLayout(false);
+}
+
+void RenderTableRow::paintRow( PaintInfo& pI, int tx, int ty, int w, int h )
+{
+    if (pI.phase == PaintActionOutline)
+        paintOutline(pI.p, tx, ty, w, h, style());
 }
 
 // -------------------------------------------------------------------------
@@ -2249,6 +2283,11 @@ void RenderTableCell::paint(PaintInfo& pI, int _tx, int _ty)
     if (!overhangingContents() && ((_ty >= pI.r.y() + pI.r.height() + os)
          || (_ty + _topExtra + m_height + _bottomExtra <= pI.r.y() - os))) return;
 
+    if (pI.phase == PaintActionOutline) {
+        paintOutline( pI.p, _tx, _ty, width(), height() + borderTopExtra() + borderBottomExtra(), style());
+	return;
+    }
+    
     if (pI.phase == PaintActionCollapsedTableBorders && style()->visibility() == VISIBLE) {
         int w = width();
         int h = height() + borderTopExtra() + borderBottomExtra();
@@ -2256,15 +2295,6 @@ void RenderTableCell::paint(PaintInfo& pI, int _tx, int _ty)
     }
     else
         RenderBlock::paintObject(pI, _tx, _ty + _topExtra);
-
-#if 0
-    // check if we need to do anything at all...
-    int os = 2*maximalOutlineSize(pI.phase);
-    if(!overhangingContents() && ((_ty-_topExtra > pI.r.y() + pI.r.height() + os)
-        || (_ty + m_height + _bottomExtra < pI.r.y() - os))) return;
-
-    paintObject(pI, _tx, _ty);
-#endif
 
 #ifdef BOX_DEBUG
     ::outlineBox( p, _tx, _ty - _topExtra, width(), height() + borderTopExtra() + borderBottomExtra());
