@@ -206,11 +206,7 @@ bool LDIFConverter::LDIFToAddressee( const QString &str, AddresseeList &addrList
         if ( endldif ) 
           end = true;
         else {
-          QByteArray dummy( 3 );
-          dummy[ 0 ] = '\n';
-          dummy[ 1 ] = '\n';
-          dummy[ 2 ] = '\n';
-          ldif.setLDIF( dummy );
+          ldif.endLDIF();  
           endldif = true;
           break;
         }

@@ -250,11 +250,7 @@ void LdapConfigWidget::loadData( KIO::Job*, const QByteArray& d )
   if ( d.size() ) {
     mLdif.setLDIF( d );
   } else {
-    QByteArray dummy( 3 );
-    dummy[ 0 ] = '\n';
-    dummy[ 1 ] = '\n';
-    dummy[ 2 ] = '\n';
-    mLdif.setLDIF( dummy );
+    mLdif.endLDIF();
   }
   do {
     ret = mLdif.nextItem();
