@@ -56,6 +56,7 @@ public:
     QString m_highlightedAddress;
 public:
     KBookmarkBarPrivate() {
+        m_readOnly = false;
         m_filteredMgr = 0;
         m_sepToolBar = 0;
         m_sepIndex = -1;
