@@ -1,8 +1,9 @@
 kdelibs4 (3.0-0.beta1-1) unstable; urgency=low
 
-  * sync
+  * New upstream beta
+  * Update Build-Depends to match all that is needed
 
- -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 06 Dec 2001 19:02:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 07 Dec 2001 19:02:00 -0700
 
 kdelibs4 (3.0-0.alpha1-2) unstable; urgency=low
   
