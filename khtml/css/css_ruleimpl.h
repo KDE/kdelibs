@@ -188,17 +188,17 @@ public:
 
     virtual bool parseString( const DOMString &string, bool = false );
 
-    void setSelector( QList<CSSSelector> *selector);
+    void setSelector( QPtrList<CSSSelector> *selector);
     void setDeclaration( CSSStyleDeclarationImpl *style);
 
-    QList<CSSSelector> *selector() { return m_selector; }
+    QPtrList<CSSSelector> *selector() { return m_selector; }
     CSSStyleDeclarationImpl *declaration() { return m_style; }
 
     void setNonCSSHints();
     
 protected:
     CSSStyleDeclarationImpl *m_style;
-    QList<CSSSelector> *m_selector;
+    QPtrList<CSSSelector> *m_selector;
 };
 
 
@@ -228,7 +228,7 @@ public:
     void deleteRule ( unsigned long index );
     
 protected:
-    QList<CSSRuleImpl> m_lstCSSRules;
+    QPtrList<CSSRuleImpl> m_lstCSSRules;
 };
 
 }; // namespace

@@ -27,7 +27,7 @@
 #include "dom_string.h"
 #include "dom_misc.h"
 #include <qdatetime.h> 
-#include <qlist.h>
+#include <qptrlist.h>
 
 namespace DOM {
 
@@ -135,22 +135,22 @@ public:
 
 	CSSSelector *parseSelector2(const QChar *curP, const QChar *endP, CSSSelector::Relation relation);
 	CSSSelector *parseSelector1(const QChar *curP, const QChar *endP);
-	QList<CSSSelector> *parseSelector(const QChar *curP, const QChar *endP);
+	QPtrList<CSSSelector> *parseSelector(const QChar *curP, const QChar *endP);
 
 	void parseProperty(const QChar *curP, const QChar *endP);
-	QList<CSSProperty> *parseProperties(const QChar *curP, const QChar *endP);
+	QPtrList<CSSProperty> *parseProperties(const QChar *curP, const QChar *endP);
 
 	/* parses generic CSSValues, return true, if it found a valid value */
 	bool parseValue(const QChar *curP, const QChar *endP, int propId);	
 	bool parseValue(const QChar *curP, const QChar *endP, int propId, 
-			bool important, bool nonCSSHint, QList<CSSProperty> *propList);	
+			bool important, bool nonCSSHint, QPtrList<CSSProperty> *propList);	
 	bool parseFont(const QChar *curP, const QChar *endP);
 	bool parse4Values(const QChar *curP, const QChar *endP, const int *properties);
 	bool parseShortHand(const QChar *curP, const QChar *endP, const int *properties, int num);
 	void setParsedValue(int propId, const CSSValueImpl *parsedValue);
 	void setParsedValue(int propId, const CSSValueImpl *parsedValue,
-			    bool important, bool nonCSSHint, QList<CSSProperty> *propList);
-	QList<QChar> splitShorthandProperties(const QChar *curP, const QChar *endP);
+			    bool important, bool nonCSSHint, QPtrList<CSSProperty> *propList);
+	QPtrList<QChar> splitShorthandProperties(const QChar *curP, const QChar *endP);
 	bool parseBackgroundPosition(const QChar *curP, const QChar *&nextP, const QChar *endP);
 	
 	/* define CSS_AURAL in cssparser.cpp if you want to parse CSS2 Aural properties */
@@ -185,7 +185,7 @@ public:
 	void setStrictParsing( bool b ) { strictParsing = b; }
 
     private:
-        QList<CSSProperty> *m_propList;
+        QPtrList<CSSProperty> *m_propList;
     protected:
 	StyleBaseImpl *m_parent;
 	bool hasInlinedDecl : 1;
@@ -210,7 +210,7 @@ public:
 	void append(StyleBaseImpl *item) { m_lstChildren->append(item); }
 
     protected:
-	QList<StyleBaseImpl> *m_lstChildren;
+	QPtrList<StyleBaseImpl> *m_lstChildren;
     };
 
 

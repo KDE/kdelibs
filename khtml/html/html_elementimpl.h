@@ -24,7 +24,7 @@
 #ifndef HTML_ELEMENTIMPL_H
 #define HTML_ELEMENTIMPL_H
 
-#include "dom_elementimpl.h"
+#include "xml/dom_elementimpl.h"
 
 namespace DOM {
 

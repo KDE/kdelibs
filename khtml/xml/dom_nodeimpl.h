@@ -31,7 +31,7 @@
 // The namespace used for XHTML elements
 #define XHTML_NAMESPACE "http://www.w3.org/1999/xhtml"
 
-#include <qlist.h>
+#include <qptrlist.h>
 
 class QPainter;
 class KHTMLView;
@@ -566,7 +566,7 @@ public:
     void addNode(NodeImpl *n);
 
 protected:
-    QList<NodeImpl> *m_contents;
+    QPtrList<NodeImpl> *m_contents;
 };
 
 }; //namespace

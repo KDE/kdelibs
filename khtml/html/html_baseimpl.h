@@ -28,7 +28,7 @@
 
 #include "dtd.h"
 #include "html_elementimpl.h"
-#include "khtmllayout.h"
+#include "misc/khtmllayout.h"
 #include <qscrollview.h>
 
 class KHTMLView;
@@ -139,8 +139,8 @@ public:
     virtual void applyChanges(bool = true, bool = true);
 
 protected:
-    QList<khtml::Length> *m_rows;
-    QList<khtml::Length> *m_cols;
+    QPtrList<khtml::Length> *m_rows;
+    QPtrList<khtml::Length> *m_cols;
     KHTMLView *view;
 
     int m_totalRows;

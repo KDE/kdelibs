@@ -875,7 +875,10 @@ void DocumentImpl::recalcStyle()
 void DocumentImpl::updateRendering()
 {
     int o=changedNodes.count();
-    if (!o) return;
+    if (!o) {
+        setDocumentChanged(false);
+        return;
+    }
     kdDebug() << "UPDATERENDERING: "<<o<<endl;
 
     int a=0;
@@ -905,9 +908,17 @@ void DocumentImpl::updateDocumentsRendering()
 {
     if (!changedDocuments)
         return;
-    for (QListIterator<DocumentImpl> it(*changedDocuments); it.current(); )
-        if (it.current()->isDocumentChanged())
-            it.current()->updateRendering();
+    //for (QListIterator<DocumentImpl> it(*changedDocuments); it.current(); ++it )
+    //    if (it.current()->isDocumentChanged())
+    //     [dangerous approach]
+    while ( !changedDocuments->isEmpty() )
+    {
+        DocumentImpl* it = changedDocuments->first();
+        if (it->isDocumentChanged())
+            it->updateRendering(); // always removes 'it' from changedDocuments
+        else
+            changedDocuments->remove(it);
+    }
 }
 
 void DocumentImpl::attach(KHTMLView *w)

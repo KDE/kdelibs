@@ -178,8 +178,8 @@ public:
     TreeWalkerImpl *createTreeWalker(Node root, unsigned long whatToShow, NodeFilter filter,
                             bool entityReferenceExpansion);
 
-    QList<NodeImpl> changedNodes;
-    static QList<DocumentImpl> * changedDocuments;
+    QPtrList<NodeImpl> changedNodes;
+    static QPtrList<DocumentImpl> * changedDocuments;
     virtual void setChanged(bool b=true);
     virtual void recalcStyle();
     virtual void updateRendering();
@@ -323,7 +323,7 @@ private:
 protected:
     khtml::CSSStyleSelector *m_styleSelector;
     KHTMLView *m_view;
-    QList<ElementImpl> m_registeredElements;
+    QPtrList<ElementImpl> m_registeredElements;
     QStringList m_state;
 
     khtml::DocLoader *m_docLoader;
@@ -350,13 +350,13 @@ protected:
     unsigned short m_elementNameCount;
 
     ElementImpl *m_focusNode;
-    QList<NodeIteratorImpl> m_nodeIterators;
+    QPtrList<NodeIteratorImpl> m_nodeIterators;
     AbstractViewImpl *m_defaultView;
 
     unsigned short m_listenerTypes;
     StyleSheetListImpl* m_styleSheets;
     LocalStyleRefs m_localStyleRefs; // references to inlined style elements
-    QList<RegisteredEventListener> m_windowEventListeners;
+    QPtrList<RegisteredEventListener> m_windowEventListeners;
 
     bool m_loadingSheet;
     bool visuallyOrdered;

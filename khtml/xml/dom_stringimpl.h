@@ -25,7 +25,7 @@
 
 #include <qstring.h>
 #include <dom_misc.h>
-#include <khtmllayout.h>
+#include <misc/khtmllayout.h>
 #include <qlist.h>
 
 class QChar;
@@ -67,7 +67,7 @@ public:
         return QConstString(s,len).string().toInt(ok);
     };
 
-    QList<khtml::Length> *toLengthList() const;
+    QPtrList<khtml::Length> *toLengthList() const;
     bool isLower() const;
     DOMStringImpl *lower() const;
     DOMStringImpl *upper() const;
