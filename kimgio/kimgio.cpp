@@ -67,7 +67,7 @@ void kimgioRegister()
 	for (it = list.begin(); it != list.end(); it++) {
 	
 	    QString libname = *it;
-	    if (libname.isNull() || reg.match(libname) == -1)
+	    if (libname.isEmpty() || reg.match(libname) == -1)
 		continue;
 
 	    lt_dlhandle libhandle = lt_dlopen(libname.ascii());

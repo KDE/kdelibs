@@ -1,5 +1,4 @@
 
-LDFLAGS = $(all_libraries)
 
 lib_LTLIBRARIES= libkimgio.la kimg_eps.la kimg_xview.la kimg_krl.la \
 	$(JPEG_MODULE) $(TIFF_MODULE)
@@ -62,8 +61,8 @@ staticmodules: $(JPEG_MODULE) $(TIFF_MODULE)
 
 CLEANFILES = staticmodules kimgio-config.h
 
-libkimgio_la_LDFLAGS = -version-info 3:0 --export-dynamic
-libkimgio_la_LIBADD = `cat staticmodules` $(LIBQIMGIO) $(LIB_KDECORE) $(LIB_KIO)
+libkimgio_la_LDFLAGS = -version-info 3:0 --export-dynamic $(USER_LDFLAGS)
+libkimgio_la_LIBADD = `cat staticmodules` $(LIBQIMGIO) $(LIB_KIO)
 libkimgio_la_DEPENDENCIES = staticmodules 
 libkimgio_la_SOURCES = kimgio.cpp
 $(srcdir)/kimgio.cpp: kimgio-config.h
@@ -77,6 +76,6 @@ EXTRA_DIST = netpbm.cpp netpbm.h
 
 check_PROGRAMS = test
 test_SOURCES = test.cpp
-test_LDFLAGS = $(all_libraries) $(KDE_RPATH) 
-test_LDADD = libkimgio.la $(LIB_KDECORE)
+test_LDFLAGS = $(KDE_RPATH) 
+test_LDADD = libkimgio.la 
 

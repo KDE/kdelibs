@@ -165,6 +165,9 @@ KLibLoader::~KLibLoader()
 
 KLibrary* KLibLoader::library( const char *name )
 {
+    if (!name)
+	return 0;
+
     QCString libname( name );
     libname += ".la";
 
