@@ -43,12 +43,12 @@
 #include <assert.h>
 #include <kdebug.h>
 
+template class QList<KXMLGUIClient>;
+
 using namespace KParts;
 
 namespace KParts
 {
-
-template class QList<KXMLGUIClient>;
 
 class PartBasePrivate
 {
