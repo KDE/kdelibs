@@ -103,9 +103,8 @@ consistent documentation style across all KDE apps. -->
 <title>Introduction</title>
 
 <!-- The introduction chapter contains a brief introduction for the application
-that explains what it does, where to get new versions of the app, where to
-report problems, and a brief revision history of the app. Basically a long
-version of the abstract. -->
+that explains what it does, where to report problems, and a brief revision
+history of the app. Basically a long version of the abstract. -->
 
 <para>
 &kapp; is a program that lets you do absolutely nothing. Please report
