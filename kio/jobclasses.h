@@ -134,6 +134,38 @@ namespace KIO {
          */
         QWidget *window() const;
 
+        /**
+         * Set meta data to be sent to the slave.
+         */
+        void setMetaData( const KIO::MetaData &);
+
+        /**
+         * Add key/value pair to the meta data that is sent to the slave.
+         */
+        void addMetaData(const QString &key, const QString &value);
+
+        /**
+         * Add key/value pairs to the meta data that is sent to the slave.
+         */
+        void addMetaData(const QMap<QString,QString> &values);
+
+        /**
+         * @internal. For the scheduler. Do not use.
+         */
+        MetaData outgoingMetaData() const;
+
+        /**
+         * Get meta data received from the slave.
+         * (Valid when first data is received and/or slave is finished)
+         */
+        MetaData metaData() const;
+
+        /**
+         * Query meta data received from the slave.
+         * (Valid when first data is received and/or slave is finished)
+         */
+        QString queryMetaData(const QString &key);
+
     signals:
         /**
          * Emitted when the job is finished, in any case (completed, canceled,
@@ -252,6 +284,8 @@ namespace KIO {
         int m_progressId; // for uiserver
         QTimer *m_speedTimer;
         QGuardedPtr<QWidget> m_window;
+        MetaData m_outgoingMetaData;
+        MetaData m_incomingMetaData;
     };
 
     /**
@@ -350,6 +384,11 @@ namespace KIO {
          * Forward signal from the slave
          */
         void slotSpeed( unsigned long bytes_per_second );
+
+        /**
+         * MetaData from the slave is received.
+         */
+        virtual void slotMetaData( const KIO::MetaData &_metaData);
 
     public slots:
         /**
@@ -470,37 +509,6 @@ namespace KIO {
          */
 	bool isSuspended() const { return m_suspended; }
 
-        /**
-         * Set meta data to be sent to the slave.
-         */
-        void setMetaData( const KIO::MetaData &);
-
-        /**
-         * Add key/value pair to the meta data that is sent to the slave.
-         */
-        void addMetaData(const QString &key, const QString &value);
-
-        /**
-         * Add key/value pairs to the meta data that is sent to the slave.
-         */
-        void addMetaData(const QMap<QString,QString> &values);
-
-        /**
-         * @internal. For the scheduler. Do not use.
-         */
-        MetaData outgoingMetaData() const;
-
-        /**
-         * Get meta data received from the slave.
-         * (Valid when first data is received and/or slave is finished)
-         */
-        MetaData metaData() const;
-
-        /**
-         * Query meta data received from the slave.
-         * (Valid when first data is received and/or slave is finished)
-         */
-        QString queryMetaData(const QString &key);
 
         /**
          * @return true if we got an (HTML) error page from the server
@@ -555,7 +563,6 @@ namespace KIO {
         virtual void slotData( const QByteArray &data);
         virtual void slotDataReq();
         virtual void slotMimetype( const QString &mimetype );
-        virtual void slotMetaData( const KIO::MetaData &_metaData);
         virtual void slotNeedSubURLData();
         virtual void slotSubURLData(KIO::Job*, const QByteArray &);
         void slotErrorPage();
@@ -568,8 +575,6 @@ namespace KIO {
         KURL m_redirectionURL;
         KURL::List m_redirectionList;
         QString m_mimetype;
-        MetaData m_outgoingMetaData;
-        MetaData m_incomingMetaData;
         TransferJob *m_subJob;
     };
 
@@ -671,6 +676,7 @@ namespace KIO {
         KURL destURL() const { return m_dest; }
 
     public slots:
+        void slotStart();
         void slotData( KIO::Job *, const QByteArray &data);
         void slotDataReq( KIO::Job *, QByteArray &data);
 
@@ -848,6 +854,7 @@ namespace KIO {
         void skip( const KURL & sourceURL );
 
     protected slots:
+        void slotStart();
         void slotEntries( KIO::Job*, const KIO::UDSEntryList& list );
         virtual void slotResult( KIO::Job *job );
         /**
@@ -919,6 +926,7 @@ namespace KIO {
         void deleteNextDir();
 
     protected slots:
+        void slotStart();
         void slotEntries( KIO::Job*, const KIO::UDSEntryList& list );
         virtual void slotResult( KIO::Job *job );
 

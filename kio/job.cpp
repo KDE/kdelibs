@@ -114,6 +114,8 @@ void Job::addSubjob(Job *job)
 
     connect( job, SIGNAL(infoMessage( KIO::Job*, const QString & )),
              SLOT(slotInfoMessage(KIO::Job*, const QString &)) );
+
+    job->setMetaData(m_outgoingMetaData);
 }
 
 void Job::removeSubjob( Job *job )
@@ -237,6 +239,41 @@ QWidget *Job::window() const
   return m_window;
 }
 
+MetaData Job::metaData() const
+{
+    return m_incomingMetaData;
+}
+
+QString Job::queryMetaData(const QString &key)
+{
+    if (!m_incomingMetaData.contains(key))
+       return QString::null;
+    return m_incomingMetaData[key];
+}
+
+void Job::setMetaData( const KIO::MetaData &_metaData)
+{
+    m_outgoingMetaData = _metaData;
+}
+
+void Job::addMetaData( const QString &key, const QString &value)
+{
+    m_outgoingMetaData.insert(key, value);
+}
+
+void Job::addMetaData( const QMap<QString,QString> &values)
+{
+    QMapConstIterator<QString,QString> it = values.begin();
+    for(;it != values.end(); ++it)
+      m_outgoingMetaData.insert(it.key(), it.data());
+}
+
+MetaData Job::outgoingMetaData() const
+{
+    return m_outgoingMetaData;
+}
+
+
 SimpleJob::SimpleJob(const KURL& url, int command, const QByteArray &packedArgs,
                      bool showProgressInfo )
   : Job(showProgressInfo), m_slave(0), m_packedArgs(packedArgs),
@@ -327,6 +364,15 @@ void SimpleJob::start(Slave *slave)
 
     connect( slave, SIGNAL( needProgressId() ),
              SLOT( slotNeedProgressId() ) );
+
+    connect( slave, SIGNAL(metaData( const KIO::MetaData& ) ),
+             SLOT( slotMetaData( const KIO::MetaData& ) ) );
+
+    if (!m_outgoingMetaData.isEmpty())
+    {
+       KIO_ARGS << m_outgoingMetaData;
+       slave->connection()->send( CMD_META_DATA, packedArgs );
+    }
 
     if (!m_subUrl.isEmpty())
     {
@@ -433,6 +479,11 @@ void SimpleJob::slotSpeed( unsigned long bytes_per_second )
     emitSpeed( bytes_per_second );
 }
 
+void SimpleJob::slotMetaData( const KIO::MetaData &_metaData)
+{
+    m_incomingMetaData += _metaData;
+}
+
 SimpleJob *KIO::mkdir( const KURL& url, int permissions )
 {
     //kdDebug(7007) << "mkdir " << url.prettyURL() << endl;
@@ -504,11 +555,8 @@ StatJob::StatJob( const KURL& url, int command,
 
 void StatJob::start(Slave *slave)
 {
-    KIO::MetaData outgoingMetaData;
-    outgoingMetaData.insert( "statSide", m_bSource ? "source" : "dest" );
-    outgoingMetaData.insert( "details", QString::number(m_details) );
-    KIO_ARGS << outgoingMetaData;
-    slave->connection()->send( CMD_META_DATA, packedArgs );
+    m_outgoingMetaData.replace( "statSide", m_bSource ? "source" : "dest" );
+    m_outgoingMetaData.replace( "details", QString::number(m_details) );
 
     SimpleJob::start(slave);
 
@@ -710,44 +758,6 @@ void TransferJob::slotMimetype( const QString& type )
     emit mimetype( this, m_mimetype);
 }
 
-void TransferJob::slotMetaData( const KIO::MetaData &_metaData)
-{
-    m_incomingMetaData += _metaData;
-}
-
-MetaData TransferJob::metaData() const
-{
-    return m_incomingMetaData;
-}
-
-QString TransferJob::queryMetaData(const QString &key)
-{
-    if (!m_incomingMetaData.contains(key))
-       return QString::null;
-    return m_incomingMetaData[key];
-}
-
-void TransferJob::setMetaData( const KIO::MetaData &_metaData)
-{
-    m_outgoingMetaData = _metaData;
-}
-
-void TransferJob::addMetaData( const QString &key, const QString &value)
-{
-    m_outgoingMetaData.insert(key, value);
-}
-
-void TransferJob::addMetaData( const QMap<QString,QString> &values)
-{
-    QMapConstIterator<QString,QString> it = values.begin();
-    for(;it != values.end(); ++it)
-      m_outgoingMetaData.insert(it.key(), it.data());
-}
-
-MetaData TransferJob::outgoingMetaData() const
-{
-    return m_outgoingMetaData;
-}
 
 void TransferJob::suspend()
 {
@@ -778,9 +788,6 @@ void TransferJob::start(Slave *slave)
     connect( slave, SIGNAL(mimeType( const QString& ) ),
              SLOT( slotMimetype( const QString& ) ) );
 
-    connect( slave, SIGNAL(metaData( const KIO::MetaData& ) ),
-             SLOT( slotMetaData( const KIO::MetaData& ) ) );
-
     connect( slave, SIGNAL(errorPage() ),
              SLOT( slotErrorPage() ) );
 
@@ -803,11 +810,6 @@ void TransferJob::start(Slave *slave)
        addMetaData("window-id", id.setNum(m_window->winId()));
     }
 
-    if (!m_outgoingMetaData.isEmpty())
-    {
-       KIO_ARGS << m_outgoingMetaData;
-       slave->connection()->send( CMD_META_DATA, packedArgs );
-    }
 
     SimpleJob::start(slave);
     if (m_suspended)
@@ -1072,15 +1074,20 @@ FileCopyJob::FileCopyJob( const KURL& src, const KURL& dest, int permissions,
     d = new FileCopyJobPrivate;
     d->m_delJob = 0;
     d->m_sourceSize = (off_t) -1;
-    if ((src.protocol() == dest.protocol()) &&
-        (src.host() == dest.host()) &&
-        (src.port() == dest.port()) &&
-        (src.user() == dest.user()) &&
-        (src.pass() == dest.pass()))
+    QTimer::singleShot(0, this, SLOT(slotStart()));
+}
+
+void FileCopyJob::slotStart()
+{
+    if ((m_src.protocol() == m_dest.protocol()) &&
+        (m_src.host() == m_dest.host()) &&
+        (m_src.port() == m_dest.port()) &&
+        (m_src.user() == m_dest.user()) &&
+        (m_src.pass() == m_dest.pass()))
     {
        if (m_move)
        {
-          m_moveJob = KIO::rename( src, dest, m_overwrite );
+          m_moveJob = KIO::rename( m_src, m_dest, m_overwrite );
           addSubjob( m_moveJob );
           connectSubjob( m_moveJob );
        }
@@ -1092,16 +1099,16 @@ FileCopyJob::FileCopyJob( const KURL& src, const KURL& dest, int permissions,
     else
     {
        if (!m_move &&
-           (src.isLocalFile() && KProtocolInfo::canCopyFromFile(dest))
+           (m_src.isLocalFile() && KProtocolInfo::canCopyFromFile(m_dest))
           )
        {
-          startCopyJob(dest);
+          startCopyJob(m_dest);
        }
        else if (!m_move &&
-           (dest.isLocalFile() && KProtocolInfo::canCopyToFile(src))
+           (m_dest.isLocalFile() && KProtocolInfo::canCopyToFile(m_src))
           )
        {
-          startCopyJob(src);
+          startCopyJob(m_src);
        }
        else
        {
@@ -1561,7 +1568,11 @@ CopyJob::CopyJob( const KURL::List& src, const KURL& dest, CopyMode mode, bool a
         connect( this, SIGNAL( totalDirs( KIO::Job*, unsigned long ) ),
                  Observer::self(), SLOT( slotTotalDirs( KIO::Job*, unsigned long ) ) );
     }
+    QTimer::singleShot(0, this, SLOT(slotStart()));
+}
 
+void CopyJob::slotStart()
+{
     /**
        We call the functions directly instead of using signals.
        Calling a function via a signal takes approx. 65 times the time
@@ -2711,6 +2722,11 @@ DeleteJob::DeleteJob( const KURL::List& src, bool shred, bool showProgressInfo )
      m_reportTimer->start(REPORT_TIMEOUT,false);
   }
 
+  QTimer::singleShot(0, this, SLOT(slotStart()));
+}
+
+void DeleteJob::slotStart()
+{
   startNextJob();
 }
 
