@@ -470,9 +470,9 @@ Completion WindowFunc::tryExecute(const List &args)
     KConfig *config = new KConfig("konquerorrc");
     config->setGroup("Java/JavaScript Settings");
 
-    if ( config->readBoolEntry("DisableWindowOpen") == false )
-    {
-
+    if (config->readBoolEntry("DisableWindowOpen")) {
+      result = Undefined();
+    } else {
         KParts::WindowArgs winargs;
 
         // scan feature argument
