@@ -1269,28 +1269,27 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         }
 
     case CSS_PROP_VISIBILITY:
-        {
+    {
         if(value->valueType() == CSSValue::CSS_INHERIT) {
             if(!e->parentNode()) return;
             style->setVisiblity(e->parentNode()->style()->visiblity());
             return;
         }
 
-        int id = primitiveValue->getIdent();
-        if(!id) return;
-	EVisiblity v;
-	// can't use optimization here, as HIDDEN is not in the list.
-	if ( id == CSS_VAL_HIDDEN) {
-	    v = HIDDEN;
-	} else if ( id == CSS_VAL_VISIBLE ) {
-	    v = VISIBLE;
-	} else if ( id == CSS_VAL_COLLAPSE ) {
-	    v = COLLAPSE;
-	}
-        style->setVisiblity(v);
-        break;
+        switch( primitiveValue->getIdent() ) {
+        case CSS_VAL_HIDDEN:
+            style->setVisiblity( HIDDEN );
+            break;
+        case CSS_VAL_VISIBLE:
+            style->setVisiblity( VISIBLE );
+            break;
+        case CSS_VAL_COLLAPSE:
+            style->setVisiblity( COLLAPSE );
+        default:
+            break;
         }
-
+        break;
+    }
     case CSS_PROP_WHITE_SPACE:
         if(value->valueType() == CSSValue::CSS_INHERIT) {
             if(!e->parentNode()) return;
