@@ -286,28 +286,6 @@
 			</Include>
 		</Menu>
 	</Menu>
-        <!-- The following menus are hidden by default -->
-	<Menu>
-		<Name>Settings</Name>
-		<Directory>kde-settings.directory</Directory>
-                <MergeFile>kde-settings.menu</MergeFile>
-	</Menu>
-	<Menu>
-		<Name>Information</Name>
-		<Directory>kde-information.directory</Directory>
-                <MergeFile>kde-information.menu</MergeFile>
-	</Menu>
-        <Move>
-           <Old>Settings/Information</Old><New>Information</New>
-        </Move>
-	<Menu>
-		<Name>System</Name>
-		<Menu>
-			<Name>ScreenSavers</Name>
-			<Directory>kde-system-screensavers.directory</Directory>
-	                <MergeFile>kde-screensavers.menu</MergeFile>
-		</Menu>
-	</Menu>
 	<DefaultMergeDirs/>
 	<MergeFile>applications-kmenuedit.menu</MergeFile>
 </Menu>

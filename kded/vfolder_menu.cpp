@@ -576,23 +576,21 @@ VFolderMenu::mergeMenus(QDomElement &docElem, QString &name)
       else if( e.tagName() == "MergeDir") {
          QString dir = absoluteDir(e.text());
 
-         registerDirectory(dir);
-         // We look for a set of files.
-         DIR *dp = opendir( QFile::encodeName(dir));
-         if (dp)
+         QStringList dirs = KGlobal::dirs()->findDirs("xdgconf-menu", dir);
+         for(QStringList::ConstIterator it=dirs.begin();
+             it != dirs.end(); ++it)
          {
-            struct dirent *ep;
-            while( ( ep = readdir( dp ) ) != 0L )
-            {
-               QString fn( QFile::decodeName(ep->d_name));
-               if (!fn.endsWith(".menu"))
-                  continue;
+            registerDirectory(*it);
+         }
 
-               pushDocInfo(dir + fn);
-               mergeFile(docElem, n);
-               popDocInfo();
-            }
-            closedir( dp );
+         QStringList fileList = KGlobal::dirs()->findAllResources("xdgconf-menu", dir+"*.menu", false, false);
+
+         for(QStringList::ConstIterator it=fileList.begin();
+             it != fileList.end(); ++it)
+         {
+            pushDocInfo(*it);
+            mergeFile(docElem, n);
+            popDocInfo();
          }
          
          QDomNode last = n;
@@ -618,18 +616,6 @@ VFolderMenu::mergeMenus(QDomElement &docElem, QString &name)
    }
 }
 
-/*static QString locateFile(const QStringList &files)
-{
-   for(QStringList::ConstIterator it = files.begin();
-       it != files.end();
-       ++it)
-   {
-      if (KStandardDirs::exists(*it))
-         return (*it);
-   }
-   return QString::null;
-}*/
-
 void 
 VFolderMenu::pushDocInfo(const QString &fileName)
 {
@@ -639,8 +625,16 @@ VFolderMenu::pushDocInfo(const QString &fileName)
       registerFile(baseName);
    else
       baseName = m_docInfo.baseDir + baseName;
+
+   m_docInfo.path = locateMenuFile(fileName);
+   if (m_docInfo.path.isEmpty())
+   {
+      m_docInfo.absBaseDir = QString::null;
+      m_docInfo.baseName = QString::null;
+      kdDebug(7021) << "Menu " << fileName << " not found." << endl;
+      return;
+   }
    int i;
-   
    i = baseName.findRev('/');
    if (i > 0)
    {
@@ -651,15 +645,6 @@ VFolderMenu::pushDocInfo(const QString &fileName)
    {
       m_docInfo.baseDir = QString::null;
       m_docInfo.baseName = baseName.left( baseName.length() - 5 );
-   }
-
-   m_docInfo.path = locateMenuFile(fileName);
-   if (baseName.isEmpty())
-   {
-      m_docInfo.absBaseDir = QString::null;
-      m_docInfo.baseName = QString::null;
-      kdDebug(7021) << "Menu " << fileName << " not found." << endl;
-      return;
    }
    i = baseName.findRev('/');
    m_docInfo.absBaseDir = baseName.left(i+1);
@@ -735,7 +720,7 @@ VFolderMenu::loadMenu(const QString &fileName)
       return;
 
    pushDocInfo(fileName);
-   m_defaultMergeDirs = KGlobal::dirs()->findDirs("xdgconf-menus", m_docInfo.baseName+"-merged/");
+   m_defaultMergeDirs << m_docInfo.baseName+"-merged/";
    m_doc = loadDoc(m_docInfo.path);
    popDocInfo();
 

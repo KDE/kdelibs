@@ -68,7 +68,7 @@ protected:
    /**
     * Convert a VFolderMenu::SubMenu to KServiceGroups.
     */
-   void createMenu(QString name, VFolderMenu::SubMenu *menu);
+   void createMenu(QString caption, QString name, VFolderMenu::SubMenu *menu);
 
    /**
     * Build the whole system cache, from .desktop files

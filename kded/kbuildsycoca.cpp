@@ -378,7 +378,7 @@ bool KBuildSycoca::build()
 
      KServiceGroup *entry = g_bsgf->addNew("/", kdeMenu->directoryFile, 0, false);
      entry->setLayoutInfo(kdeMenu->layoutList);
-     createMenu(QString::null, kdeMenu);
+     createMenu(QString::null, QString::null, kdeMenu);
      
      (void) existingResourceDirs();
      *g_allResourceDirs += g_vfolder->allDirectories(); 
@@ -398,7 +398,7 @@ bool KBuildSycoca::build()
   return result;
 }
 
-void KBuildSycoca::createMenu(QString name, VFolderMenu::SubMenu *menu)
+void KBuildSycoca::createMenu(QString caption, QString name, VFolderMenu::SubMenu *menu)
 {
   for(VFolderMenu::SubMenu *subMenu = menu->subMenus.first(); subMenu; subMenu = menu->subMenus.next())
   {
@@ -430,15 +430,18 @@ void KBuildSycoca::createMenu(QString name, VFolderMenu::SubMenu *menu)
 
      entry = g_bsgf->addNew(subName, subMenu->directoryFile, entry, subMenu->isDeleted);
      entry->setLayoutInfo(subMenu->layoutList);
-     createMenu(subName, subMenu);
+     createMenu(caption + entry->caption() + "/", subName, subMenu);
   }
+  if (caption.isEmpty())
+     caption += "/";
   if (name.isEmpty())
-     name = "/";
+     name += "/";
   for(QDictIterator<KService> it(menu->items); it.current(); ++it)
   {
      if (bMenuTest)
      {
-        printf("%s\t%s\t%s\n", name.latin1(), it.current()->menuId().latin1(), locate("apps", it.current()->desktopEntryPath()).latin1());
+        if (!menu->isDeleted)
+          printf("%s\t%s\t%s\n", caption.latin1(), it.current()->menuId().latin1(), locate("apps", it.current()->desktopEntryPath()).latin1());
      }
      else
      {
