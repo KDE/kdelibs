@@ -411,7 +411,7 @@ void RenderLineEdit::slotReturnPressed()
 
     HTMLFormElementImpl* fe = element()->form();
     if ( fe )
-        fe->prepareSubmit();
+        fe->submitFromKeyboard();
 }
 
 void RenderLineEdit::handleFocusOut()
@@ -713,7 +713,7 @@ void RenderFileButton::updateFromElement()
 void RenderFileButton::slotReturnPressed()
 {
     if (element()->form())
-	element()->form()->prepareSubmit();
+	element()->form()->submitFromKeyboard();
 }
 
 void RenderFileButton::slotTextChanged(const QString &string)
