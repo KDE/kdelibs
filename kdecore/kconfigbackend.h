@@ -112,7 +112,7 @@ public:
   /**
    * @return the filename as passed to the constructor.
    */
-  QString filename() const { return fileName; }
+  QString fileName() const { return mfileName; }
 
   /**
    * @return the resource type as passed to the constructor.
@@ -121,10 +121,19 @@ public:
 
   void setLocaleString(const QCString &_localeString) { localeString = _localeString; }
 
+#ifdef KDE_NO_COMPAT
+private:
+#endif
+  /**
+   * @deprecated Use @see fileName() instead
+   */
+  QString filename() const { return mfileName; }
+
+
 protected:
   KConfigBase *pConfig;
 
-  QString fileName;
+  QString mfileName;
   QCString resType;
   bool useKDEGlobals : 1;
   bool bFileImmutable : 1;

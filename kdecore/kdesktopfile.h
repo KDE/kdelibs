@@ -152,7 +152,7 @@ public:
   /**
    * @return The filename as passed to the constructor.
    */
-  QString filename() const;
+  QString fileName() const;
 
   /**
    * @return The resource type as passed to the constructor.
@@ -160,6 +160,15 @@ public:
   QString resource() const;
 
   QStringList sortOrder() const;
+
+
+#ifdef KDE_NO_COMPAT
+private:
+#endif
+  /**
+   * @deprecated Use @see fileName() instead.
+   */
+    QString filename() const { return fileName(); };
 
 private:
 

@@ -157,15 +157,15 @@ void KConfigBackEnd::changeFileName(const QString &_fileName,
                                     const char * _resType,
                                     bool _useKDEGlobals)
 { 
-   fileName = _fileName; 
+   mfileName = _fileName; 
    resType = _resType;
    useKDEGlobals = _useKDEGlobals;
-   if (fileName.isEmpty())
+   if (mfileName.isEmpty())
       mLocalFileName = QString::null;
-   else if (fileName[0] == '/') 
-      mLocalFileName = fileName;
+   else if (mfileName[0] == '/') 
+      mLocalFileName = mfileName;
    else 
-      mLocalFileName = KGlobal::dirs()->saveLocation(resType) + fileName;
+      mLocalFileName = KGlobal::dirs()->saveLocation(resType) + mfileName;
 
    if (useKDEGlobals)
       mGlobalFileName = KGlobal::dirs()->saveLocation("config") +
@@ -218,10 +218,10 @@ bool KConfigINIBackEnd::parseConfigFiles()
     }
   }
 
-  if (!fileName.isEmpty()) {
+  if (!mfileName.isEmpty()) {
     bFileImmutable = false;
     QStringList list = KGlobal::dirs()->
-      findAllResources(resType, fileName);
+      findAllResources(resType, mfileName);
 
     QStringList::ConstIterator it;
 
@@ -490,7 +490,7 @@ void KConfigINIBackEnd::sync(bool bMerge)
   // find out the file to write to (most specific writable file)
   // try local app-specific file first
 
-  if (!fileName.isEmpty()) {
+  if (!mfileName.isEmpty()) {
     // Create the containing dir if needed
     if ((resType!="config") && mLocalFileName[0]=='/')
     {

@@ -213,7 +213,7 @@ bool KDesktopFile::tryExec() const
  * @return the filename as passed to the constructor.
  */
 QString
-KDesktopFile::filename() const { return backEnd->filename(); }
+KDesktopFile::fileName() const { return backEnd->fileName(); }
 
 /**
  * @return the resource type as passed to the constructor.
