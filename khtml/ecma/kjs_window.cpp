@@ -535,42 +535,57 @@ Completion WindowFunc::tryExecute(const List &args)
     if ( config->readBoolEntry("DisableWindowOpen") ) {
       result = Undefined();
     } else {
-        KParts::WindowArgs winargs;
+      KParts::WindowArgs winargs;
 
-        // scan feature argument
-        v = args[2];
-        QString features;
-        if (!v.isA(UndefinedType)) {
-            features = v.toString().value().qstring();
-            QStringList flist = QStringList::split(',', features);
-            QStringList::ConstIterator it = flist.begin();
-            while (it != flist.end()) {
-                int pos = (*it).find('=');
-                if (pos >= 0) {
-                    QString key = (*it).left(pos).stripWhiteSpace().lower();
-                    QString val = (*it).mid(pos + 1).stripWhiteSpace().lower();
-                    if (key == "left" || key == "screenx")
-                      winargs.x = val.toInt();
-                    else if (key == "top" || key == "screeny")
-                      winargs.y = val.toInt();
-                    else if (key == "height")
-                      winargs.height = val.toInt();
-                    else if (key == "width")
-                      winargs.width = val.toInt();
-                    else if (key == "menubar")
-                      winargs.menuBarVisible = (val == "1" || val == "yes");
-                    else if (key == "toolbar")
-                      winargs.toolBarsVisible = (val == "1" || val == "yes");
-                    else if (key == "status" || key == "statusbar")
-                      winargs.statusBarVisible = (val == "1" || val == "yes");
-                    else if (key == "resizable")
-                      winargs.resizable = (val == "1" || val == "yes");
-                    else if (key == "fullscreen")
-                      winargs.fullscreen = (val == "1" || val == "yes");
-                }
-                it++;
-            }
-        }
+      // scan feature argument
+      v = args[2];
+      QString features;
+      if (!v.isA(UndefinedType)) {
+	features = v.toString().value().qstring();
+	// specifying window params means false defaults
+	winargs.menuBarVisible = false;
+	winargs.toolBarsVisible = false;
+	winargs.statusBarVisible = false;
+	QStringList flist = QStringList::split(',', features);
+	QStringList::ConstIterator it = flist.begin();
+	while (it != flist.end()) {
+	  QString s = *it++;
+	  QString key, val;
+	  int pos = s.find('=');
+	  if (pos >= 0) {
+	    key = s.left(pos).stripWhiteSpace().lower();
+	    val = s.mid(pos + 1).stripWhiteSpace().lower();
+	    if (key == "left" || key == "screenx")
+	      winargs.x = val.toInt();
+	    else if (key == "top" || key == "screeny")
+	      winargs.y = val.toInt();
+	    else if (key == "height")
+	      winargs.height = val.toInt();
+	    else if (key == "width")
+	      winargs.width = val.toInt();
+	    else
+	      goto boolargs;
+	    continue;
+	  } else {
+	    // leaving away the value gives true
+	    key = s.stripWhiteSpace().lower();
+	    val = "1";
+	  }
+	boolargs:
+	  if (key == "menubar")
+	    winargs.menuBarVisible = (val == "1" || val == "yes");
+	  else if (key == "toolbar")
+	    winargs.toolBarsVisible = (val == "1" || val == "yes");
+	  else if (key == "location")	// ### missing in WindowArgs
+	    winargs.toolBarsVisible = (val == "1" || val == "yes");
+	  else if (key == "status" || key == "statusbar")
+	    winargs.statusBarVisible = (val == "1" || val == "yes");
+	  else if (key == "resizable")
+	    winargs.resizable = (val == "1" || val == "yes");
+	  else if (key == "fullscreen")
+	    winargs.fullscreen = (val == "1" || val == "yes");
+	}
+      }
 
         // prepare arguments
         KURL url;
