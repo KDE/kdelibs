@@ -409,8 +409,10 @@ KSocks::~KSocks() {
 
 
 void KSocks::die() {
-  if (_me == this) 
+  if (_me == this) {
+    _me = NULL;
     delete this;
+  }
 }
 
 void KSocks::stopSocks() {
