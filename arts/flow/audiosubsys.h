@@ -117,6 +117,8 @@ public:
 	void fullDuplex(bool newFullDuplex);
 	bool fullDuplex();
 
+	bool check();
+
 	int open();
 	const char *error();
 

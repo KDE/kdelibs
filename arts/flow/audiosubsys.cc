@@ -175,6 +175,15 @@ bool AudioSubSystem::fullDuplex()
 }
 
 
+bool AudioSubSystem::check()
+{
+	if(open() < 0)
+		return false;
+
+	close();
+	return true;
+}
+
 int AudioSubSystem::open()
 {
 #ifdef HAVE_SYS_SOUNDCARD_H

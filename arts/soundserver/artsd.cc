@@ -166,6 +166,12 @@ int main(int argc, char **argv)
 	if(cfgFragmentSize)  AudioSubSystem::the()->fragmentSize(cfgFragmentSize);
 	if(cfgFullDuplex)	 AudioSubSystem::the()->fullDuplex(cfgFullDuplex);
 
+	if(!AudioSubSystem::the()->check())
+	{
+		cerr << "Can't open sound device -> exit" << endl;
+		exit(1);
+	}
+
 	/* start sound server implementation */
 	SimpleSoundServer server;
 	AudioManager audioManager;
