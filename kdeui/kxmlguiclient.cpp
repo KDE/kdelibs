@@ -96,7 +96,8 @@ KAction *KXMLGUIClient::action( const char *name ) const
 KActionCollection *KXMLGUIClient::actionCollection() const
 {
   if ( !d->m_actionCollection )
-    d->m_actionCollection = new KActionCollection;
+    d->m_actionCollection = new KActionCollection( (QWidget*)0,
+      "KXMLGUILClient-KActionCollection" );
   return d->m_actionCollection;
 }
 
