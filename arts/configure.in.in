@@ -25,9 +25,14 @@ if test "x$ARTSCCONFIG" != "xno"; then
 	ARTS_HAVE_PREFIX=`$ARTSCCONFIG --arts-prefix`
 fi
 
+# And delete superflous '/' to make compares easier
+ARTS_HAVE_PREFIX=`echo "$ARTS_HAVE_PREFIX" | sed 's,//*,/,g' | sed -e 's,/$,,'`
+
 dnl don't look at the micro version
 if test "x`echo $ARTS_HAVE_VERSION | sed 's/\.[[0-9]]*$/.x/'`" = "x$ARTS_WANT_VERSION"; then
-	if test "x$ARTS_HAVE_PREFIX" = "x$prefix"; then
+        realartsprefix=`(cd $ARTS_HAVE_PREFIX; /bin/pwd)`
+        realprefix=`(cd $prefix; /bin/pwd)`
+	if test "x$realartsprefix" = "x$realprefix"; then
 		ARTS_OK=yes
 	else
 AC_MSG_ERROR([aRts $ARTS_WANT_VERSION not installed in the same prefix as KDE!
