@@ -397,6 +397,15 @@ bool KHTMLPart::openURL( const KURL &url )
       d->m_job = KIO::http_post( url, args.postData, false );
       d->m_job->addMetaData("content-type", args.contentType() );
   }
+#if 0
+  else if (args.reload && d->m_doPost && (url.protocol().startsWith("http")))
+  {
+    args.setDoPost(true);
+    args.postData = d->m_postData;
+    d->m_job = KIO::http_post( url, d->m_postData, false );
+    d->m_job->addMetaData("content-type", d->m_postContentType );
+  }
+#endif
   else
   {
       d->m_job = KIO::get( url, false, false );
@@ -416,6 +425,7 @@ bool KHTMLPart::openURL( const KURL &url )
 
   d->m_bComplete = false;
   d->m_bLoadEventEmitted = false;
+  d->m_doPost = false;
 
   // delete old status bar msg's from kjs (if it _was_ activated on last URL)
   if( d->m_bJScriptEnabled )
@@ -631,7 +641,8 @@ QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
   d->m_runningScripts--;
   if (!d->m_runningScripts && d->m_doc && !d->m_doc->parsing() && d->m_submitForm )
       submitFormAgain();
-    DocumentImpl::updateDocumentsRendering();
+
+  DocumentImpl::updateDocumentsRendering();
 
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "KHTMLPart::executeScript - done" << endl;
@@ -1618,7 +1629,8 @@ KURL KHTMLPart::completeURL( const QString &url )
 
 void KHTMLPart::scheduleRedirection( int delay, const QString &url, bool doLockHistory )
 {
-    kdDebug(6050) << "KHTMLPart::scheduleRedirection delay=" << delay << " url=" << url << endl;
+//    kdDebug(6050) << "KHTMLPart::scheduleRedirection delay=" << delay << " url=" << url << endl;
+
     if( d->m_redirectURL.isEmpty() || delay < d->m_delayRedirect )
     {
        d->m_delayRedirect = delay;
@@ -1974,7 +1986,7 @@ QString KHTMLPart::selectedText() const
     // Strip excessive trailing LFs
     while ((start < (end-1)) && (text[end-1] == '\n') && (text[end-2] == '\n'))
        end--;
-       
+
     return text.mid(start, end-start);
 }
 
@@ -2283,7 +2295,7 @@ void KHTMLPart::slotViewPageInfo()
 
   QString editStr = QString::null;
 
-  if (!d->m_pageServices.isEmpty()) 
+  if (!d->m_pageServices.isEmpty())
     editStr = i18n("   <a href=\"%1\">[Properties]</a>").arg(d->m_pageServices);
 
   dlg->_url->setText(QString("<a href=\"%1\">%2</a>%3").arg(url().url()).arg(url().prettyURL()).arg(editStr));
@@ -2854,57 +2866,63 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
 
   // Form security checks
   //
+  /*
+   * If these form security checks are still in this place in a month or two
+   * I'm going to simply delete them.
+   */
 
   /* This is separate for a reason.  It has to be _before_ all script, etc,
    * AND I don't want to break anything that uses checkLinkSecurity() in
    * other places.
    */
 
-  // This causes crashes... needs to be fixed.
-  if (u.protocol() != "https" && u.protocol() != "mailto") {
-	if (d->m_ssl_in_use) {    // Going from SSL -> nonSSL
-		int rc = KMessageBox::warningContinueCancel(NULL, i18n("Warning:  This is a secure form but it is attempting to send your data back unencrypted."
-					"\nA third party may be able to intercept and view this information."
-					"\nAre you sure you wish to continue?"),
-				i18n("SSL"));
-		if (rc == KMessageBox::Cancel)
-			return;
-	} else {                  // Going from nonSSL -> nonSSL
-		KSSLSettings kss(true);
-		if (kss.warnOnUnencrypted()) {
-			int rc = KMessageBox::warningContinueCancel(NULL,
-					i18n("Warning: Your data is about to be transmitted across the network unencrypted."
-					"\nAre you sure you wish to continue?"),
-					i18n("KDE"),
-                                                                    QString::null,
-					"WarnOnUnencryptedForm");
-			// Move this setting into KSSL instead
-			KConfig *config = kapp->config();
-			QString grpNotifMsgs = QString::fromLatin1("Notification Messages");
-			KConfigGroupSaver saver( config, grpNotifMsgs );
+  if (!d->m_submitForm) {
+    if (u.protocol() != "https" && u.protocol() != "mailto") {
+      if (d->m_ssl_in_use) {    // Going from SSL -> nonSSL
+        int rc = KMessageBox::warningContinueCancel(NULL, i18n("Warning:  This is a secure form but it is attempting to send your data back unencrypted."
+                                                               "\nA third party may be able to intercept and view this information."
+                                                               "\nAre you sure you wish to continue?"),
+                                                    i18n("SSL"));
+        if (rc == KMessageBox::Cancel)
+          return;
+      } else {                  // Going from nonSSL -> nonSSL
+        KSSLSettings kss(true);
+        if (kss.warnOnUnencrypted()) {
+          int rc = KMessageBox::warningContinueCancel(NULL,
+                                                      i18n("Warning: Your data is about to be transmitted across the network unencrypted."
+                                                           "\nAre you sure you wish to continue?"),
+                                                      i18n("KDE"),
+                                                      QString::null,
+                                                      "WarnOnUnencryptedForm");
+          // Move this setting into KSSL instead
+          KConfig *config = kapp->config();
+          QString grpNotifMsgs = QString::fromLatin1("Notification Messages");
+          KConfigGroupSaver saver( config, grpNotifMsgs );
 
-			if (!config->readBoolEntry("WarnOnUnencryptedForm", true)) {
-				config->deleteEntry("WarnOnUnencryptedForm");
-				config->sync();
-				kss.setWarnOnUnencrypted(false);
-				kss.save();
-        		}
-		        if (rc == KMessageBox::Cancel)
-		          return;
+          if (!config->readBoolEntry("WarnOnUnencryptedForm", true)) {
+            config->deleteEntry("WarnOnUnencryptedForm");
+            config->sync();
+            kss.setWarnOnUnencrypted(false);
+            kss.save();
+          }
+          if (rc == KMessageBox::Cancel)
+            return;
       	}
+      }
     }
-  }
 
-  if (u.protocol() == "mailto") {
-     int rc = KMessageBox::warningContinueCancel(NULL,
-                 i18n("This site is attempting to submit form data via email."),
-                 i18n("KDE"),
-                 QString::null,
-                 "WarnTriedEmailSubmit");
+    if (u.protocol() == "mailto") {
+      int rc = KMessageBox::warningContinueCancel(NULL,
+                                                  i18n("This site is attempting to submit form data via email.\n"
+                                                       "Do you want to continue?"),
+                                                  i18n("KDE"),
+                                                  QString::null,
+                                                  "WarnTriedEmailSubmit");
 
-     if (rc == KMessageBox::Cancel) {
-         return;
-     }
+      if (rc == KMessageBox::Cancel) {
+        return;
+      }
+    }
   }
 
   // End form security checks
@@ -2983,16 +3001,21 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
     if (u.protocol() != "mailto")
        u.setQuery( QString::fromLatin1( formData.data(), formData.size() ) );
     args.setDoPost( false );
+    d->m_doPost = false;
   }
   else {
     args.postData = formData;
     args.setDoPost( true );
+    d->m_doPost = true;
+    d->m_postData = formData;
 
     // construct some user headers if necessary
     if (contentType.isNull() || contentType == "application/x-www-form-urlencoded")
       args.setContentType( "Content-Type: application/x-www-form-urlencoded" );
     else // contentType must be "multipart/form-data"
       args.setContentType( "Content-Type: " + contentType + "; boundary=" + boundary );
+
+    d->m_postContentType = args.contentType();
   }
 
   if ( d->m_doc->parsing() || d->m_runningScripts > 0 ) {
@@ -3294,6 +3317,10 @@ void KHTMLPart::saveState( QDataStream &stream )
   }
   stream << d->m_encoding << d->m_sheetUsed << docState;
 
+  KParts::URLArgs args( d->m_extension->urlArgs() );
+
+  stream << d->m_doPost << d->m_postData << d->m_postContentType;
+
   stream << d->m_zoomFactor;
 
   stream << d->m_httpHeaders;
@@ -3368,6 +3395,9 @@ void KHTMLPart::restoreState( QDataStream &stream )
   stream >> d->m_cacheId;
 
   stream >> encoding >> sheetUsed >> docState;
+
+  stream >> d->m_doPost >> d->m_postData >> d->m_postContentType;
+
   d->m_encoding = encoding;
   d->m_sheetUsed = sheetUsed;
 
@@ -3451,7 +3481,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
     KParts::URLArgs args( d->m_extension->urlArgs() );
     args.xOffset = xOffset;
     args.yOffset = yOffset;
-    args.docState = docState; // WABA: How are we going to restore this??
+    args.docState = docState;
     d->m_extension->setURLArgs( args );
 
     d->m_view->resizeContents( wContents,  hContents);

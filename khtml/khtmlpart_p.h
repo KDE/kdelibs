@@ -126,6 +126,7 @@ public:
     m_frameNameId = 1;
 
     m_restored = false;
+    m_doPost = false;
 
     m_focusNodeNumber = -1;
     m_focusNodeRestored = false;
@@ -217,6 +218,7 @@ public:
   bool m_metaRefreshEnabled :1;
   bool m_bPluginsOverride :1;
   bool m_restored :1;
+  bool m_doPost;
   int m_frameNameId;
   int m_dcop_counter;
   DCOPObject *m_dcopobject;
@@ -316,6 +318,9 @@ public:
   long m_endOffset;
   QString m_overURL;
   QString m_overURLTarget;
+
+  QByteArray m_postData;
+  QString m_postContentType;
 
   bool m_startBeforeEnd:1;
   bool m_bDnd:1;
