@@ -431,9 +431,13 @@ void KThemeStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
     if(controls & QStyle::Slider){
         drawBaseButton(p, slider.x(), slider.y(), slider.width(),
                        slider.height(), g, false, ScrollBarSlider);
+        int spaceW = horizontal ? slider.width()-decoWidth(ScrollBarSlider)-4 :
+            slider.width();
+        int spaceH = horizontal ? slider.height() :
+            slider.height()-decoWidth(ScrollBarSlider)-4;
         if(isPixmap(ScrollDeco)){
-            if(slider.width() > uncached(ScrollDeco)->width() &&
-               slider.height() > uncached(ScrollDeco)->height()){
+            if(spaceW >= uncached(ScrollDeco)->width() &&
+               spaceH >= uncached(ScrollDeco)->height()){
                 p->drawPixmap(slider.x()+(slider.width() -
                                           uncached(ScrollDeco)->width())/2,
                               slider.y()+(slider.height() -
@@ -442,7 +446,6 @@ void KThemeStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
             }
         }
     }
-
 }
 
 void KThemeStyle::drawScrollBarGroove(QPainter *p, const QScrollBar *sb,
