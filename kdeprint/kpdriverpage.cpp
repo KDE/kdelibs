@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -48,7 +48,7 @@ bool KPDriverPage::isValid(QString& msg)
 	if (m_view->hasConflict())
 	{
 		msg = i18n("<nobr>Some options selected are in conflict. You must resolve those conflicts<br>"
- 			   "before continuing. See <b>Advanced</b> tab for detailed informations.</nobr>");
+ 			   "before continuing. See <b>Advanced</b> tab for detailed information.</nobr>");
 		return false;
 	}
 	return true;

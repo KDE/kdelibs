@@ -136,7 +136,7 @@ public:
 
 
 protected:
-	// mandotary informations
+	// mandantory information
 	QString		m_name;		// identification name
 	QString		m_printername;	// real printer name
 	QString		m_instancename;	// instance name (human-readable)
@@ -144,10 +144,10 @@ protected:
 	PrinterState	m_state;	// printer state
 	KURL		m_device;	// printer device
 
-	// class specific informations
+	// class specific information
 	QStringList	m_members;	// members of the class
 
-	// other useful informations that should be completed by manager on demand
+	// other useful information that should be completed by manager on demand
 	QString		m_description;	// short description, comment
 	QString		m_location;	// printer location
 	KURL		m_uri;		// URI printer identification

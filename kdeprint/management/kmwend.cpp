@@ -46,7 +46,7 @@ void KMWEnd::initPrinter(KMPrinter *p)
 	QString	s(QString::fromLatin1("<li><u>%1</u>: %2</li>"));
 	int	ID = p->option("kde-backend").toInt();
 
-	// general informations
+	// general information
 	txt.append(QString::fromLatin1("<b>%1</b><ul type=circle>").arg(i18n("General")));
 	txt.append(s.arg(i18n("Type")).arg(p->option("kde-backend-description")));
 	txt.append(s.arg(i18n("Name")).arg(p->name()));
@@ -66,7 +66,7 @@ void KMWEnd::initPrinter(KMPrinter *p)
 	}
 	else
 	{
-		// backend informations
+		// backend information
 		txt.append(QString::fromLatin1("<b>%1</b><ul type=circle>").arg(i18n("Backend")));
 		KURL	url = p->device();
 		switch (ID)
@@ -99,7 +99,7 @@ void KMWEnd::initPrinter(KMPrinter *p)
 
 		if (p->option("kde-driver") == "raw" || p->driver())
 		{
-			// driver informations
+			// driver information
 			txt.append(QString::fromLatin1("<b>%1</b><ul type=circle>").arg(i18n("Driver")));
 			if (p->option("kde-driver") == "raw")
 				txt.append(s.arg(i18n("Type")).arg(i18n("Raw printer")));

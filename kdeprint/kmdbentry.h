@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -29,11 +29,11 @@ struct KMDBEntry
 {
 	// the file location of the driver
 	QString	file;
-	// normal informations
+	// normal information
 	QString	manufacturer;
 	QString	model;
 	QString	modelname;
-	// informations used for auto-detection
+	// information used for auto-detection
 	QString	pnpmanufacturer;
 	QString	pnpmodel;
 	// short driver description (if any)

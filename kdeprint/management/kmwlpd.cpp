@@ -45,10 +45,10 @@ KMWLpd::KMWLpd(QWidget *parent, const char *name)
 : KMWInfoBase(2,parent,name)
 {
 	m_ID = KMWizard::LPD;
-	m_title = i18n("LPD queue informations");
+	m_title = i18n("LPD queue information");
 	m_nextpage = KMWizard::Driver;
 
-	setInfo(i18n("<p>Enter the informations concerning the remote LPD queue. "
+	setInfo(i18n("<p>Enter the information concerning the remote LPD queue. "
 		     "This wizard will check them before continuing.</p>"));
 	setLabel(0,i18n("Host:"));
 	setLabel(1,i18n("Queue:"));
@@ -58,7 +58,7 @@ bool KMWLpd::isValid(QString& msg)
 {
 	if (text(0).isEmpty() || text(1).isEmpty())
 	{
-		msg = i18n("Some informations are missing !");
+		msg = i18n("Some information is missing !");
 		return false;
 	}
 

@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -31,10 +31,10 @@ KMWName::KMWName(QWidget *parent, const char *name)
 : KMWInfoBase(3,parent,name)
 {
 	m_ID = KMWizard::Name;
-	m_title = i18n("General informations");
+	m_title = i18n("General information");
 	m_nextpage = KMWizard::End;
 
-	setInfo(i18n("<p>Enter the informations concerning your printer or class. <b>Name</b> is mandatory, "
+	setInfo(i18n("<p>Enter the information concerning your printer or class. <b>Name</b> is mandatory, "
 		     "<b>Location</b> and <b>Description</b> are not (they may even not be used on some systems).</p>"));
 	setLabel(0,i18n("Name:"));
 	setLabel(1,i18n("Location:"));

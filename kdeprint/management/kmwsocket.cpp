@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -38,7 +38,7 @@
 KMWSocket::KMWSocket(QWidget *parent, const char *name)
 : KMWizardPage(parent,name)
 {
-	m_title = i18n("Network printer informations");
+	m_title = i18n("Network printer information");
 	m_ID = KMWizard::TCP;
 	m_nextpage = KMWizard::Driver;
 
