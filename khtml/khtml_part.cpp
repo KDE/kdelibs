@@ -1523,6 +1523,9 @@ void KHTMLPart::findTextBegin()
 
 bool KHTMLPart::findTextNext( const QRegExp &exp, bool forward )
 {
+    if ( !d->m_doc )
+        return false;
+
     if(!d->m_findNode) {
         if (d->m_doc->isHTMLDocument())
             d->m_findNode = static_cast<HTMLDocumentImpl*>(d->m_doc)->body();
@@ -1588,6 +1591,9 @@ bool KHTMLPart::findTextNext( const QRegExp &exp, bool forward )
 
 bool KHTMLPart::findTextNext( const QString &str, bool forward, bool caseSensitive )
 {
+    if ( !d->m_doc )
+        return false;
+
     if(!d->m_findNode) {
         if (d->m_doc->isHTMLDocument())
             d->m_findNode = static_cast<HTMLDocumentImpl*>(d->m_doc)->body();
