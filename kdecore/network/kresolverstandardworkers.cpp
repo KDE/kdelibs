@@ -861,6 +861,8 @@ bool KGetAddrinfoWorker::wantThis(int family)
   return false;
 }
 
+#endif
+
 void KNetwork::Internal::initStandardWorkers()
 {
   // register the workers in the order we want them to be tried
@@ -870,5 +872,3 @@ void KNetwork::Internal::initStandardWorkers()
   KResolverWorkerFactoryBase::registerNewWorker(new KResolverWorkerFactory<KStandardWorker>);
   KResolverWorkerFactoryBase::registerNewWorker(new KResolverWorkerFactory<KGetAddrinfoWorker>);
 }
-
-#endif
