@@ -46,6 +46,7 @@ using namespace DOM;
 #include "rendering/render_frames.h"
 #include "css/cssstyleselector.h"
 #include "css/cssproperties.h"
+#include "misc/loader.h"
 #include <qframe.h>
 #include <qstring.h>
 #include <qscrollview.h>
@@ -79,8 +80,11 @@ void HTMLBodyElementImpl::parseAttribute(Attribute *attr)
     {
 
     case ATTR_BACKGROUND:
-        addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, attr->value(), false);
+    {
+	KURL u = khtml::Cache::completeURL(attr->value(), static_cast<HTMLDocumentImpl *>(document)->URL());
+        addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, u.url(), false);
 	break;
+    }
     case ATTR_MARGINWIDTH:
         addCSSProperty(CSS_PROP_MARGIN_LEFT, attr->value(), false);
         addCSSProperty(CSS_PROP_MARGIN_RIGHT, attr->value(), false);
