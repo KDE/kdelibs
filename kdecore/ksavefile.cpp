@@ -53,6 +53,19 @@ KSaveFile::KSaveFile(const QString &filename, int mode)
    if (mTempFile.create(filename, QString::fromLatin1(".new"), mode))
    {
       mFileName = filename; // Set filename upon success
+
+      // if we're overwriting an existing file, ensure temp file's
+      // permissions are the same as existing file so the existing
+      // file's permissions are preserved (and hope the existing file's
+      // permissions aren't changed between now and when we rename
+      // the temporary file)
+      QCString nme = QFile::encodeName(filename);
+      struct stat stat_buf;
+      if (lstat(nme, &stat_buf)==0)
+      {
+         chmod(QFile::encodeName(mTempFile.name()), stat_buf.st_mode );
+      }
+
    }
    return;
 }
