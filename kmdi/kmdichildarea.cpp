@@ -209,7 +209,7 @@ void KMdiChildArea::setTopChild( KMdiChildFrm* child, bool /* bSetFocus */ )
 		setMinimumSize( nChildAreaMinW, nChildAreaMinH );
 		setMaximumSize( nChildAreaMaxW, nChildAreaMaxH );
 		
-		if ( maximizedChild )
+		if ( topChildMaximized )
 		{   //maximize the new view and restore the old
 			child->setState( KMdiChildFrm::Maximized, false /*animate*/);
 			maximizedChild->setState( KMdiChildFrm::Normal, false /*animate*/ );
