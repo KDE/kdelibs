@@ -23,7 +23,7 @@
 #include "kdesktopfile.h"
 #include "kdesktopfile.moc"
 
-KDesktopFile::KDesktopFile(const QString& pFileName, bool bReadOnly = false )
+KDesktopFile::KDesktopFile(const QString& pFileName, bool bReadOnly)
   : KSimpleConfig(pFileName, bReadOnly)
 {
   setDesktopGroup();
