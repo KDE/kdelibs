@@ -76,6 +76,8 @@ static VFolderMenu *g_vfolder = 0;
 
 static const char *cSycocaPath = 0;
 
+static bool bGlobalDatabase = 0;
+
 void crashHandler(int)
 {
    // If we crash while reading sycoca, we delete the database
@@ -87,11 +89,19 @@ void crashHandler(int)
 static QString sycocaPath()
 {
   QString path;
-  QCString ksycoca_env = getenv("KDESYCOCA");
-  if (ksycoca_env.isEmpty())
-     path = KGlobal::dirs()->saveLocation("cache")+"ksycoca";
+  
+  if (bGlobalDatabase)
+  {
+     path = KGlobal::dirs()->saveLocation("services")+"ksycoca";
+  }
   else
-     path = QFile::decodeName(ksycoca_env);
+  {
+     QCString ksycoca_env = getenv("KDESYCOCA");
+     if (ksycoca_env.isEmpty())
+        path = KGlobal::dirs()->saveLocation("cache")+"ksycoca";
+     else
+        path = QFile::decodeName(ksycoca_env);
+  }
 
   return path;     
 }
@@ -423,27 +433,30 @@ void KBuildSycoca::recreate()
     kdDebug(7021) << "Database is up to date" << endl;
   }
 
-  // update the timestamp file
-  QString stamppath = path + "stamp";
-  QFile ksycocastamp(stamppath);
-  ksycocastamp.open( IO_WriteOnly );
-  QDataStream str( &ksycocastamp );
-  str << newTimestamp;
-  str << existingResourceDirs();
-  str << g_vfolder->allDirectories(); // Extra resource dirs
-
-  // Recreate compatibility symlink
-  QString oldPath = oldSycocaPath();
-  if (!oldPath.isEmpty())
+  if (!bGlobalDatabase)
   {
-     KTempFile tmp;
-     if (tmp.status() == 0)
-     {
-        QString tmpFile = tmp.name();
-        tmp.unlink();
-        symlink(QFile::encodeName(path), QFile::encodeName(tmpFile));
-        rename(QFile::encodeName(tmpFile), QFile::encodeName(oldPath));
-     }
+    // update the timestamp file
+    QString stamppath = path + "stamp";
+    QFile ksycocastamp(stamppath);
+    ksycocastamp.open( IO_WriteOnly );
+    QDataStream str( &ksycocastamp );
+    str << newTimestamp;
+    str << existingResourceDirs();
+    str << g_vfolder->allDirectories(); // Extra resource dirs
+
+    // Recreate compatibility symlink
+    QString oldPath = oldSycocaPath();
+    if (!oldPath.isEmpty())
+    {
+       KTempFile tmp;
+       if (tmp.status() == 0)
+       {
+          QString tmpFile = tmp.name();
+          tmp.unlink();
+          symlink(QFile::encodeName(path), QFile::encodeName(tmpFile));
+          rename(QFile::encodeName(tmpFile), QFile::encodeName(oldPath));
+       }
+    }
   }
 }
 
@@ -604,7 +617,8 @@ static KCmdLineOptions options[] = {
    { "nosignal", I18N_NOOP("Don't signal applications."), 0 },
    { "noincremental", I18N_NOOP("Incremental update."), 0 },
    { "checkstamps", I18N_NOOP("Check file timestamps."), 0 },
-   { 0, 0, 0 }
+   { "global", I18N_NOOP("Create global database."), 0 },
+   KCmdLineLastOption
 };
 
 static const char *appName = "kbuildsycoca";
@@ -628,6 +642,13 @@ int main(int argc, char **argv)
    KCmdLineArgs::init(argc, argv, &d);
    KCmdLineArgs::addCmdLineOptions(options);
    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+   bGlobalDatabase = args->isSet("global");
+
+   if (bGlobalDatabase)
+   {
+     setenv("KDEHOME", "-", 1);
+     setenv("KDEROOTHOME", "-", 1);
+   }
 
    KApplication::disableAutoDcopRegistration();
    KApplication k(false, false);
@@ -672,21 +693,16 @@ int main(int argc, char **argv)
    }
    fprintf(stderr, "%s running...\n", appName);
 
-   bool incremental = args->isSet("incremental");
+
+   bool incremental = !bGlobalDatabase && args->isSet("incremental");
    if (incremental)
    {
-     QString current_kfsstnd = KGlobal::dirs()->kfsstnd_prefixes();
-     QString ksycoca_kfsstnd = KSycoca::self()->kfsstnd_prefixes();
      QString current_language = KGlobal::locale()->language();
      QString ksycoca_language = KSycoca::self()->language();
      Q_UINT32 current_update_sig = KGlobal::dirs()->calcResourceHash("services", "update_ksycoca", true);
      Q_UINT32 ksycoca_update_sig = KSycoca::self()->updateSignature();
      
-
-     ksycoca_kfsstnd = current_kfsstnd;
-     
      if ((current_update_sig != ksycoca_update_sig) ||
-         (current_kfsstnd != ksycoca_kfsstnd) ||
          (current_language != ksycoca_language))
      {
         incremental = false;
@@ -701,7 +717,7 @@ int main(int argc, char **argv)
    QStringList oldresourcedirs;
    if( checkstamps && incremental )
    {
-       QString path = KGlobal::dirs()->saveLocation("cache")+"ksycocastamp";
+       QString path = sycocaPath()+"stamp";
        QFile ksycocastamp(path);
        if( ksycocastamp.open( IO_ReadOnly ))
        {

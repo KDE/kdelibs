@@ -101,9 +101,23 @@ bool KSycoca::openDatabase( bool openDummyIfNotFound )
       path = KGlobal::dirs()->saveLocation("cache") + "ksycoca";
    else
       path = QFile::decodeName(ksycoca_env);
-   //kdDebug(7011) << "Trying to open ksycoca from " << path << endl;
+
+   kdDebug(7011) << "Trying to open ksycoca from " << path << endl;
    QFile *database = new QFile(path);
-   if (database->open( IO_ReadOnly ))
+   bool bOpen = database->open( IO_ReadOnly );
+   if (!bOpen)
+   {
+     path = locate("services", "ksycoca");
+     if (!path.isEmpty())
+     {
+       kdDebug(7011) << "Trying to open global ksycoca from " << path << endl;
+       delete database;
+       database = new QFile(path);
+       bOpen = database->open( IO_ReadOnly );
+     }
+   }
+   
+   if (bOpen)
    {
      fcntl(database->handle(), F_SETFD, FD_CLOEXEC);
      m_sycoca_size = database->size();
@@ -133,6 +147,8 @@ bool KSycoca::openDatabase( bool openDummyIfNotFound )
    }
    else
    {
+     kdDebug(7011) << "Could not open ksycoca" << endl;
+
      // No database file
      delete database;
      database = 0;

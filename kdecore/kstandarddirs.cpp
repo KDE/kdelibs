@@ -1000,8 +1000,11 @@ void KStandardDirs::addKDEDefaults()
 
     }
 
-    fixHomeDir(localKdeDir);
-    addPrefix(localKdeDir);
+    if (localKdeDir != "-/")
+    {
+        fixHomeDir(localKdeDir);
+        addPrefix(localKdeDir);
+    }
 
     for (QStringList::ConstIterator it = kdedirList.begin();
 	 it != kdedirList.end(); it++)
