@@ -145,10 +145,11 @@
 		%ubiq.inclusion;>
 <!--end of kde.book.element-->]]>
 
+<![ %kde.compulsory.fpi; [
 <!ENTITY % book.attlist "IGNORE">
 <!ENTITY % kde.book.attlist "INCLUDE">
 <![ %kde.book.attlist; [
-<!-- FPI is made compulsory in KDE -->
+<!-- FPI is compulsory -->
 <!ATTLIST Book	
 		--
 		FPI: SGML formal public identifier
@@ -161,6 +162,7 @@
 		%local.book.attrib;
 >
 <!--end of kde.book.attlist-->]]>
+<!--end of kde.compulsory.fpi in book-->]]>
 <!--end of book.module-->]]>
 
 <!ENTITY % bookinfo.module "INCLUDE">

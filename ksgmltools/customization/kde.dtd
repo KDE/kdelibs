@@ -49,6 +49,7 @@
 
 <!ENTITY % kde.compulsory.id "INCLUDE"				     >
 <!ENTITY % kde.compulsory.datereleaseinfo "INCLUDE"		     >
+<!ENTITY % kde.compulsory.fpi "IGNORE"                               >
 <!-- Modifications in hierarchy
      %rdbhier2; is called in the DocBook DTD
  -->
