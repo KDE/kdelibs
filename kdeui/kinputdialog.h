@@ -1,0 +1,246 @@
+/*
+  Copyright (C) 2003 Nadeem Hasan <nhasan@kde.org>
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Library General Public
+  License as published by the Free Software Foundation; either
+  version 2 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Library General Public License for more details.
+
+  You should have received a copy of the GNU Library General Public License
+  along with this library; see the file COPYING.LIB.  If not, write to
+  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+  Boston, MA 02111-1307, USA.
+*/
+
+#ifndef KINPUTDIALOG_H
+#define KINPUTDIALOG_H
+
+class QValidator;
+
+class KLineEdit;
+class KIntSpinBox;
+class KDoubleSpinBox;
+class KComboBox;
+class KInputDialogPrivate;
+
+#include <kdialogbase.h>
+
+/**
+ * The KInputDialog class provides a simple dialog to get a single value
+ * from the user. The value can be a string, a number (either an integer or
+ * a float) or an item from a list. This class is designed to be source
+ * compatible with @ref QInputDialog.
+ *
+ * Four static convenience functions are provided: getText(), getInteger().
+ * getFloat() and getItem().
+ *
+ * @author Nadeem Hasan <nhasan@kde.org>
+ */
+class KInputDialog : public KDialogBase
+{
+  Q_OBJECT
+
+  private:
+
+    /**
+     * Constructor. This class is not designed to be instantiated except
+     * from the static member functions.
+     */
+    KInputDialog( const QString &caption, const QString &label,
+      const QString &value, QWidget *parent, const char *name,
+      QValidator *validator );
+    KInputDialog( const QString &caption, const QString &label, int value,
+      int minValue, int maxValue, int step, int base, QWidget *parent,
+      const char *name );
+    KInputDialog( const QString &caption, const QString &label, double value,
+      double minValue, double maxValue, double step, int decimals,
+      QWidget *parent, const char *name );
+    KInputDialog( const QString &caption, const QString &label,
+      const QStringList &list, int current, bool editable, QWidget *parent,
+      const char *name );
+    KInputDialog( const QString &caption, const QString &label,
+      const QStringList &list, const QStringList &select, bool editable,
+      QWidget *parent, const char *name );
+
+    ~KInputDialog();
+
+    KLineEdit *lineEdit() const;
+    KIntSpinBox *intSpinBox() const;
+    KDoubleSpinBox *doubleSpinBox() const;
+    KComboBox *comboBox() const;
+    KListBox *listBox() const;
+
+  private slots:
+
+    void slotEditTextChanged( const QString& );
+    void updateButtons( const QString& );
+
+  public:
+
+    /**
+     * Static convenience function to get a string from the user.
+     *
+     * caption is the text that is displayed in the title bar. label is the
+     * text that appears as a label for the line edit. value is the initial
+     * value of the 
+     * line edit. ok will be set to true if user pressed Ok and false if
+     * user pressed Cancel.
+     *
+     * If you provide a validator, the Ok button is disabled as long as
+     * the validator doesn't return Acceptable. If there is no validator,
+     * the Ok button is enabled whenever the line edit isn't empty. If you
+     * want to accept empty input, create a trivial @ref QValidator that
+     * always returns acceptable, e.g. @ref QRegExpValidator with a regexp
+     * of ".*".
+     *
+     * @param caption   Caption of the dialog
+     * @param label     Text of the label for the line edit
+     * @param value     Initial value of the line edit
+     * @param ok        This bool would be set to true if user pressed Ok
+     * @param parent    Parent of the dialog widget
+     * @param name      Name of the dialog widget
+     * @param validator Validator to be associated with the line edit
+     *
+     * @return String user entered if Ok was pressed, else a null string
+     */
+    static QString getText( const QString &caption, const QString &label,
+        const QString &value=QString::null, bool *ok=0, QWidget *parent=0,
+        const char *name=0, QValidator *validator=0 );
+
+    /**
+     * Static convenience function to get an integer from the user.
+     *
+     * caption is the text that is displayed in the title bar. label is the
+     * text that appears as the label for the spin box. value is the initial
+     * value for the spin box. minValue and maxValue are the minimum and
+     * maximum allowable values the user may choose. step is the amount by
+     * which the value will change as the user presses the increment and
+     * decrement buttons of the spin box. Base is the base of the number.
+     *
+     * @param caption  Caption of the dialog
+     * @param label    Text of the label for the spin box
+     * @param value    Initial value of the spin box
+     * @param minValue Minimum value user can input
+     * @param maxValue Maximum value user can input
+     * @param step     Amount by which value is incremented or decremented
+     * @param base     Base of the number
+     * @param ok       This bool would be set to true if user pressed Ok
+     * @param parent   Parent of the dialog widget
+     * @param name     Name of the dialog widget
+     *
+     * @return Number user entered if Ok was pressed, else 0
+     */
+
+    static int getInteger( const QString &caption, const QString &label,
+        int value=0, int minValue=-2147483647, int maxValue=2147483647,
+        int step=1, int base=10, bool *ok=0, QWidget *parent=0,
+        const char *name=0 );
+
+    /**
+     * This is an overloaded convenience function. It behaves exactly same as
+     * above except it assumes base to be 10, i.e. accepts decimal numbers.
+     */
+    static int getInteger( const QString &caption, const QString &label,
+        int value=0, int minValue=-2147483647, int maxValue=2147483647,
+        int step=1, bool *ok=0, QWidget *parent=0, const char *name=0 );
+
+    /**
+     * Static convenience function to get a floating point number from the user.
+     *
+     * caption is the text that is displayed in the title bar. label is the
+     * text that appears as the label for the spin box. value is the initial
+     * value for the spin box. minValue and maxValue are the minimum and
+     * maximum allowable values the user may choose. step is the amount by
+     * which the value will change as the user presses the increment and
+     * decrement buttons of the spin box.
+     *
+     * @param caption  Caption of the dialog
+     * @param label    Text of the label for the spin box
+     * @param value    Initial value of the spin box
+     * @param minValue Minimum value user can input
+     * @param maxValue Maximum value user can input
+     * @param step     Amount by which value is incremented or decremented
+     * @param ok       This bool would be set to true if user pressed Ok
+     * @param parent   Parent of the dialog widget
+     * @param name     Name of the dialog widget
+     *
+     * @return Number user entered if Ok was pressed, else 0
+     */
+    static double getDouble( const QString &caption, const QString &label,
+        double value=0, double minValue=-2147483647, 
+        double maxValue=2147483647, double step=0.1, int decimals=1,
+        bool *ok=0, QWidget *parent=0, const char *name=0 );
+
+    /**
+     * This is an overloaded convenience function. It behaves exctly like
+     * the above function.
+     */
+    static double getDouble( const QString &caption, const QString &label,
+        double value=0, double minValue=-2147483647, 
+        double maxValue=2147483647, int decimals=1, bool *ok=0,
+        QWidget *parent=0, const char *name=0 );
+
+    /**
+     * Static convenience function to let the user select an item from a
+     * combobox. caption is the text that is displayed in the title bar.
+     * label is the text that appears as the label for the combobox. list
+     * is the string list which is inserted into the combobox, and current
+     * is the number of the item which should be the selected item. If 
+     * editable is true, the user can enter their own text.
+     *
+     * @param caption  Caption of the dialog
+     * @param label    Text of the label for the spin box
+     * @param list     List of item for user to choose from
+     * @param current  Index of the selected item
+     * @param editable If true, user can enter the text in the combobox
+     * @param ok       This bool would be set to true if user pressed Ok
+     * @param parent   Parent of the dialog widget
+     * @param name     Name of the dialog widget
+     *
+     * @return Text of the current item, or if @p editable is true, the 
+     *         current text of the combobox.
+     */
+    static QString getItem( const QString &caption, const QString &label,
+        const QStringList &list, int current=0, bool editable=false,
+        bool *ok=0, QWidget *parent=0, const char *name=0 );
+
+    /**
+     * Static convenience function to let the user select one or more
+     * items from a listbox. caption is the text that is displayed in the
+     * title bar. label is the text that appears as the label for the listbox.
+     * list is the string list which is inserted into the listbox, select
+     * is the list of item(s) that should be the selected. If multiple is 
+     * true, the user can select multiple items.
+     *
+     * @param caption  Caption of the dialog
+     * @param label    Text of the label for the spin box
+     * @param list     List of item for user to choose from
+     * @param select   List of item(s) that should be selected
+     * @param multiple If true, user can select multiple items
+     * @param ok       This bool would be set to true if user pressed Ok
+     * @param parent   Parent of the dialog widget
+     * @param name     Name of the dialog widget
+     *
+     * @return List of selected items if multiple is true, else currently
+     *         selected item as a @ref QStringList
+     */
+    static QStringList getItemList( const QString &caption,
+        const QString &label, const QStringList &list=QStringList(),
+        const QStringList &select=0, bool multiple=false, bool *ok=0,
+        QWidget *parent=0, const char *name=0 );
+
+  private:
+
+    KInputDialogPrivate *d;
+    friend class KInputDialogPrivate;
+};
+
+#endif // KINPUTDIALOG_H
+
+/* vim: set ai et sw=2 ts=2
+*/
