@@ -32,6 +32,7 @@
 #include <qtoolbutton.h>
 #include <qcheckbox.h>
 #include <qtooltip.h>
+#include <qstyle.h>
 
 #include <kapp.h>
 #include <kbuttonbox.h>
