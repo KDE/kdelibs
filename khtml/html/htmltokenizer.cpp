@@ -252,7 +252,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
         }
 
         char ch = src[0].latin1();
-        if ( quot == NoQuote && ( ch == '>' ) && ( searchFor[ searchCount ] == '>'))
+        if ( (quot == NoQuote || comment) && ( ch == '>' ) && ( searchFor[ searchCount ] == '>'))
         {
             ++src;
             scriptCode[ scriptCodeSize ] = 0;
@@ -388,9 +388,9 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
 	    }
 	    else {
                 if(!comment && ch == '\"')
-                    quot = (quot == NoQuote) ? DoubleQuote : NoQuote;
-                else if(ch == '\r' || ch == '\n')
-                    quot = NoQuote; // quoted lines go never beyond end of line
+                    quot = (quot == NoQuote) ? DoubleQuote : (quot == SingleQuote) ? SingleQuote : NoQuote;
+                else if(!comment && ch == '\'')
+                    quot = (quot == NoQuote) ? SingleQuote : (quot == DoubleQuote) ? DoubleQuote : NoQuote;
 		scriptCode[ scriptCodeSize++ ] = src[0];
 		++src;
 	    }
