@@ -119,8 +119,9 @@ static void close_fds()
 static pid_t launch(int argc, const char *_name, const char *args)
 {
   int launcher = 0;
-  QCString cmd;
+  QCString lib;
   QCString name;
+  QCString exec;
 
   if (strcmp(_name, "klauncher") == 0) {
      /* klauncher is launched in a special way:
@@ -140,13 +141,15 @@ static pid_t launch(int argc, const char *_name, const char *args)
   {
      /* Relative name without '.la' */
      name = _name;
-     cmd = name + ".la";
+     lib = name + ".la";
+     exec = name;
   }
   else
   {
-     cmd = _name;
+     lib = _name;
      name = _name;
      name = name.mid( name.findRev('/') + 1);
+     exec = _name;
   }
   if (!args)
   {
@@ -183,7 +186,9 @@ static pid_t launch(int argc, const char *_name, const char *args)
      }
      d.argv[argc] = 0;
 
-     d.handle = lt_dlopen( cmd.data() );
+     d.handle = 0;
+     if (lib.right(3) == ".la")
+        d.handle = lt_dlopen( lib.data() );
      if (!d.handle )
      {
         fprintf(stderr, "Could not dlopen library: %s\n", lt_dlerror());
@@ -193,7 +198,7 @@ static pid_t launch(int argc, const char *_name, const char *args)
         // We set the close on exec flag.
         // Closing of d.fd[1] indicates that the execvp succeeded!
         fcntl(d.fd[1], F_SETFD, FD_CLOEXEC);
-        execvp(name.data(), d.argv);
+        execvp(exec.data(), d.argv);
         d.result = 1; // Error
         write(d.fd[1], &d.result, 1);
         close(d.fd[1]);
