@@ -911,3 +911,4 @@ void KSpell::moveDlg (int x, int y)
   pt2=parent->mapToGlobal (pt);
   ksdlg->move (pt2.x(),pt2.y());
 }
+#include "kspell.moc"

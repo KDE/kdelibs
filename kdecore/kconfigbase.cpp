@@ -19,6 +19,12 @@
 // $Id$
 //
 // $Log$
+// Revision 1.36  1999/01/15 09:30:34  kulow
+// it's official - kdelibs builds with srcdir != builddir. For this I
+// automocifized it, the generated rules are easier to maintain than
+// selfwritten rules. I have to fight with some bugs of this tool, but
+// generally it's better than keeping them updated by hand.
+//
 // Revision 1.35  1998/10/09 20:37:10  kalle
 // KPanel works again
 //
@@ -1115,3 +1121,6 @@ bool KConfigBase::isDollarExpansion() const
 {
 	return data()->bExpand;
 }
+
+#include "kconfigbase.moc"
+

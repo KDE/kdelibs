@@ -1098,3 +1098,5 @@ bool KKeyChooser::isKeyPresent()
 	
 	return FALSE;
 }
+#include "kkeydialog.moc"
+

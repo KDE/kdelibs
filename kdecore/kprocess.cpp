@@ -21,6 +21,12 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.28  1999/01/15 09:30:40  kulow
+   it's official - kdelibs builds with srcdir != builddir. For this I
+   automocifized it, the generated rules are easier to maintain than
+   selfwritten rules. I have to fight with some bugs of this tool, but
+   generally it's better than keeping them updated by hand.
+
    Revision 1.27  1998/10/28 19:00:15  ettrich
    small fix (thanks to Christian Stoeckl)
 
@@ -702,3 +708,5 @@ bool KShellProcess::isExecutable(const char *fname)
   // CC: we've passed all the tests...
   return TRUE;
 }
+#include "kprocess.moc"
+

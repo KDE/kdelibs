@@ -634,3 +634,6 @@ uint keyToXSym( uint keyCode )
 	//debug("Return %d", keysym);
 	return keysym;
 }
+
+#include "kglobalaccel.moc"
+

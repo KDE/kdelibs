@@ -371,3 +371,5 @@ void KDateTable::setFontSize(int size)
 /**********************************************************/
 
 
+#include "kdatetbl.moc"
+

@@ -1888,3 +1888,5 @@ void KNumCheckButton::paintEvent( QPaintEvent *event )
   painter.setFont(oldfont);
   painter.end();
 }
+
+#include "ktablistbox.moc"

@@ -823,3 +823,4 @@ void KURLLabel::paintEvent(QPaintEvent*)
 	drawContents(&paint);
 	paint.end();
 }
+#include "kurllabel.moc"

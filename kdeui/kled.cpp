@@ -296,3 +296,5 @@ KLed::paintsunken()
     x++; y++; w--;h--;
   }
 }
+#include "kled.moc"
+

@@ -95,4 +95,5 @@ KButton::~KButton()
 {
 }
 
-#include "kbutton.h"
+#include "kbutton.moc"
+

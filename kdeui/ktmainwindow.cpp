@@ -1043,4 +1043,4 @@ void KTMainWindow::toolbarKilled()
 //  else
     //debug ("KTM: ACK tb kill, dyer zero, NOT removed from list");
 }
-
+#include "ktmainwindow.moc"

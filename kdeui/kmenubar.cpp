@@ -41,6 +41,12 @@
 
 // $Id$
 // $Log$
+//
+// Revision 1.62  1999/01/18 10:56:49  kulow
+// .moc files are back in kdelibs. Built fine here using automake 1.3
+//
+// Revision 1.61  1999/01/15 09:31:08  kulow
+// it's official - kdelibs builds with srcdir != builddir. For this I
 // automocifized it, the generated rules are easier to maintain than
 // selfwritten rules. I have to fight with some bugs of this tool, but
 // generally it's better than keeping them updated by hand.
@@ -912,7 +918,7 @@ void KMenuBar::setFlat (bool flag)
     context->changeItem (i18n("Flat"), CONTEXT_FLAT);
     //debug ("Unflat");
     setMenuBarPos(lastPosition);
-
+    enableFloating(true);
     emit moved (position); // KTM will call this->updateRects
   }
 }

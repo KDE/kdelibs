@@ -79,3 +79,4 @@ void KRestrictedLine::setValidChars( const char *valid)
   qsValidChars = valid;
 }
 
+#include "krestrictedline.moc"

@@ -337,6 +337,6 @@ void BusinessCard::homeURLClicked(const char*)
 
 // #############################################################################
 // MOC OUTPUT FILES:
-#include "businesscard.h"
+#include "businesscard.moc"
 // #############################################################################
 

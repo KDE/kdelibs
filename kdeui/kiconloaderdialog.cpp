@@ -402,3 +402,5 @@ KIconLoaderButton::~KIconLoaderButton()
     if ( loaderDialog )
 	delete loaderDialog;
 }
+#include "kiconloaderdialog.moc"
+

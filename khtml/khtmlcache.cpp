@@ -527,4 +527,4 @@ KHTMLCache::statistics()
     printf("movies :   allocated space approx. %d kB\n", msize/1024);
     printf("--------------------------------------------------------------------\n");
 }
-
+#include "khtmlcache.moc"

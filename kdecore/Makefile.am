@@ -44,7 +44,10 @@ libkdecore_la_SOURCES = kconfig.cpp kconfigbase.cpp ksimpleconfig.cpp \
 libkdecore_la_LDFLAGS = -version-info 2:0
 # libkdecore_la_LIBADD = 
 
-libkdecore_la_METASOURCES = USE_AUTOMOC
+libkdecore_la_METASOURCES = drag.moc kapp.moc kclipboard.moc \
+	kconfig.moc kconfigbase.moc kdebugdialog.moc kglobalaccel.moc \
+	kiconloader.moc kprocctrl.moc kprocess.moc ksimpleconfig.moc \
+	ksock.moc 
 
 SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/kdecore
 

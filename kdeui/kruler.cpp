@@ -573,3 +573,4 @@ KRuler::drawContents(QPainter *p)
 #endif
   
 }
+#include "kruler.moc"

@@ -2101,3 +2101,4 @@ void HTMLAnchor::setMaxAscent( int _a )
 
 //-----------------------------------------------------------------------------
 
+#include "htmlobj.moc"

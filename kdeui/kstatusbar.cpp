@@ -24,6 +24,12 @@
 #include <kstatusbar.h>
 // $Id$
 // $Log$
+// Revision 1.18  1999/01/18 10:57:04  kulow
+// .moc files are back in kdelibs. Built fine here using automake 1.3
+//
+// Revision 1.17  1999/01/15 09:31:23  kulow
+// it's official - kdelibs builds with srcdir != builddir. For this I
+// automocifized it, the generated rules are easier to maintain than
 // selfwritten rules. I have to fight with some bugs of this tool, but
 // generally it's better than keeping them updated by hand.
 //
@@ -361,7 +367,7 @@ void KStatusBar::slotReleased(int _id)
 QSize KStatusBar::sizeHint()
 {
   return QSize(width(), height());
-#include <kstatusbar.h>
+}
 
 
 #include "kstatusbar.moc"

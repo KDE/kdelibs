@@ -345,5 +345,5 @@ void KPreview::previewFile(const KFileInfo *i)
     
 }
 
-#include "kpreview.h"
+#include "kpreview.moc"
 

@@ -20,6 +20,12 @@
 // $Id$
 //
 // $Log$
+// Revision 1.121  1999/01/15 09:30:30  kulow
+// it's official - kdelibs builds with srcdir != builddir. For this I
+// automocifized it, the generated rules are easier to maintain than
+// selfwritten rules. I have to fight with some bugs of this tool, but
+// generally it's better than keeping them updated by hand.
+//
 // Revision 1.120  1999/01/10 14:48:47  ettrich
 // fixed default widget style
 //
@@ -1760,3 +1766,5 @@ void KApplication::registerTopWidget()
 void KApplication::unregisterTopWidget()
 {
 }
+
+#include "kapp.moc"

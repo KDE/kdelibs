@@ -233,3 +233,6 @@ void KAudio::checkFinished()
     currentId = KeysChunk->sync_id;
   }
 }
+
+#include "kaudio.moc"
+

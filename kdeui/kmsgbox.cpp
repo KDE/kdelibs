@@ -20,6 +20,12 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.13  1999/01/15 09:31:09  kulow
+ * it's official - kdelibs builds with srcdir != builddir. For this I
+ * automocifized it, the generated rules are easier to maintain than
+ * selfwritten rules. I have to fight with some bugs of this tool, but
+ * generally it's better than keeping them updated by hand.
+ *
  * Revision 1.12  1998/08/03 15:24:22  ssk
  * Wrote documentation.
  * Eliminated dead and commented-out code.
@@ -318,4 +324,4 @@ int KMsgBox::yesNoCancel(QWidget *parent, const char *caption,
     delete mb;
     return retcode;
 }
-
+#include "kmsgbox.moc"

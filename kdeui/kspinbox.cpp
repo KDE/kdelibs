@@ -398,3 +398,4 @@ unsigned int KListSpinBox::getIndex()
 {
   return _index;
 }
+#include "kspinbox.moc"

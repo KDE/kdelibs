@@ -23,7 +23,10 @@ lib_LTLIBRARIES  = libkfile.la
 
 DISTCLEANFILES = $(libkfile_la_METASOURCES) 
 
-libkfile_la_METASOURCES = USE_AUTOMOC
+libkfile_la_METASOURCES = kcombiview.moc kdir.moc kdirlistbox.moc \
+	kfilebookmark.moc kfiledetaillist.moc kfiledialog.moc \
+	kfiledialogconf.moc kfilefilter.moc kfileinfocontents.moc \
+	kfilepreview.moc kfilesimpleview.moc kpreview.moc
 
 include_HEADERS = kfiledialog.h kfileinfo.h kfilebookmark.h  \
 	kremotefile.h kdir.h kdirlistbox.h kfileinfocontents.h \

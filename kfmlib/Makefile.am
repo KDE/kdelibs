@@ -19,7 +19,7 @@
 INCLUDES = -I$(top_srcdir)/kdecore $(QT_INCLUDES) $(X_INCLUDES) 
 DISTCLEANFILES = $(libkfm_la_METASOURCES)
 
-libkfm_la_METASOURCES = USE_AUTOMOC
+libkfm_la_METASOURCES = kfm.moc kfmclient_ipc.moc
 
 lib_LTLIBRARIES = libkfm.la
 libkfm_la_LDFLAGS = -version-info 2:0

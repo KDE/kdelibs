@@ -224,4 +224,4 @@ KFileDialogConfigure::saveConfiguration()
   c->setGroup(oldgroup);
 }
 
-#include "kfiledialogconf.h"
+#include "kfiledialogconf.moc"

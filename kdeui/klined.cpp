@@ -62,3 +62,5 @@ bool KLined::eventFilter (QObject *, QEvent *e)
     }
   return FALSE;
 }
+#include "klined.moc"
+

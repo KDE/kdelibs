@@ -347,3 +347,4 @@ int KDatePicker::headlineSize()
 // end of new methods from Aug 19 1998
 
 /**********************************************************/
+#include "kdatepik.moc"

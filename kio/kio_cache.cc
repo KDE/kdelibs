@@ -752,5 +752,5 @@ void CachedKIOJob::slotTimeout()
   cerr << "#### TIMER 4b" << endl;
 }
 
-#include "kio_cache.h"
+#include "kio_cache.moc"
 

@@ -348,3 +348,4 @@ void KSpellDlg::help()
   QString file ("kspell/ksdialog.html"), label ("");
   kapp->invokeHTMLHelp (file, label);
 }
+#include "kspelldlg.moc"

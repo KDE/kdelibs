@@ -58,5 +58,5 @@ QString KFileFilter::currentFilter()
 	return filter.left(tab);
 }
 
-#include "kfilefilter.h"
+#include "kfilefilter.moc"
 

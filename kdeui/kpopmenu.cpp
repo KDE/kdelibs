@@ -58,3 +58,4 @@ void KPopupMenu::paintCell(QPainter *p, int row, int col)
     }
 }
     
+#include "kpopmenu.moc"

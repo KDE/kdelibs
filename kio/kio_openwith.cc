@@ -373,3 +373,5 @@ void OpenWithDlg::slotOK()
   haveApp = false;
   accept();
 }
+#include "kio_openwith.moc"
+

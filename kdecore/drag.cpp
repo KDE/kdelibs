@@ -20,6 +20,12 @@
  * $Id$
  * 
  * $Log$
+ * Revision 1.23  1999/01/15 09:30:29  kulow
+ * it's official - kdelibs builds with srcdir != builddir. For this I
+ * automocifized it, the generated rules are easier to maintain than
+ * selfwritten rules. I have to fight with some bugs of this tool, but
+ * generally it's better than keeping them updated by hand.
+ *
  * Revision 1.22  1998/08/22 20:02:32  kulow
  * make kdecore have nicer output, when compiled with -Weffc++ :)
  *
@@ -564,13 +570,5 @@ KDNDIcon::~KDNDIcon()
 {
 }
 
-
-
-
-
-
-
-
-
-
+#include "drag.moc"
 

@@ -20,6 +20,12 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.8  1999/01/15 09:31:13  kulow
+ * it's official - kdelibs builds with srcdir != builddir. For this I
+ * automocifized it, the generated rules are easier to maintain than
+ * selfwritten rules. I have to fight with some bugs of this tool, but
+ * generally it's better than keeping them updated by hand.
+ *
  * Revision 1.7  1997/10/16 11:15:27  torben
  * Kalle: Copyright headers
  * kdoctoolbar removed
@@ -330,3 +336,4 @@ int KPanner::getAbsSeparator()
     else
         return pos;
 }
+#include "kpanner.moc"

@@ -131,4 +131,4 @@ void KfmIpc::parse( char *_data, int _len )
 	  { printf("Unknown command '%s'\n",name); }
     free(name);
 }
-
+#include "kfmclient_ipc.moc"

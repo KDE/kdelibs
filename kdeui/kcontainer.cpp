@@ -447,4 +447,5 @@ QSize KContainerLayout::sizeHint() const
     return _sizeHint;
 }
 
-#include "kcontainer.h"
+#include "kcontainer.moc"
+

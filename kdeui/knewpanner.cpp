@@ -342,5 +342,5 @@ bool KNewPanner::eventFilter(QObject *, QEvent *e)
     return handled;
 }
 
-
+#include "knewpanner.moc"
 

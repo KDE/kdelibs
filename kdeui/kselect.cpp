@@ -420,4 +420,5 @@ void KGradientSelector::drawContents( QPainter *painter )
 
 //-----------------------------------------------------------------------------
 
+#include "kselect.moc"
 

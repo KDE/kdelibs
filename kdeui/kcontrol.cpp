@@ -172,3 +172,4 @@ void KControlApplication::help()
 
   kapp->invokeHTMLHelp(QString("kcontrol/")+kapp->appName()+"/"+name, "");
 }
+#include "kcontrol.moc"

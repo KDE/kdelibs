@@ -204,5 +204,5 @@ void KCombiView::fileHighlighted(KFileInfo *i)
     highlight(i);
 }
 
-#include "kcombiview.h"
+#include "kcombiview.moc"
 

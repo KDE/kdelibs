@@ -283,4 +283,4 @@ QSize KButtonBox::buttonSizeHint(QPushButton *b) const {
   return s;
 }
 
-#include "kbuttonbox.h"
+#include "kbuttonbox.moc"

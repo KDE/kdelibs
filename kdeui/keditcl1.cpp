@@ -1861,3 +1861,4 @@ void  KEdit::setReduceWhiteOnJustify(bool reduce){
   reduce_white_on_justify = reduce;
 
 }
+#include "keditcl.moc"

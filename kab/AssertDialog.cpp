@@ -250,8 +250,8 @@ const string& AssertDialog::getMailAddress()
 
 // #############################################################################
 // MOC OUTPUT FILES:
-#include "AssertDialog.h"
-#include "AssertDialogData.h"
+#include "AssertDialog.moc"
+#include "AssertDialogData.moc"
 // #############################################################################
 
 

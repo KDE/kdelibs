@@ -81,4 +81,4 @@ void KColorButton::drawButtonLabel( QPainter *painter )
 		
 }
 
-
+#include "kcolorbtn.moc"

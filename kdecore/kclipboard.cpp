@@ -446,3 +446,5 @@ QByteArray KClipboard::octetStream()
   return ba;
 }
 
+#include "kclipboard.moc"
+

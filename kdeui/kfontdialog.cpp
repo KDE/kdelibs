@@ -23,6 +23,12 @@
     Boston, MA 02111-1307, USA.
   
     $Log$
+    Revision 1.28  1999/01/15 09:31:00  kulow
+    it's official - kdelibs builds with srcdir != builddir. For this I
+    automocifized it, the generated rules are easier to maintain than
+    selfwritten rules. I have to fight with some bugs of this tool, but
+    generally it's better than keeping them updated by hand.
+
     Revision 1.27  1998/11/30 19:31:32  lavikka
     Now kfontdialog uses QLayout instead of hardcoded widget coordinates.
     Command buttons are aligned correctly as well. Looks good and behaves well.
@@ -818,3 +824,4 @@ QString KFontDialog::getXLFD( const QFont& font )
 
   return xlfd;
 }
+#include "kfontdialog.moc"

@@ -244,6 +244,6 @@ int main (int argc, char **argv)
   return a.exec();
 }
 */
-#include "kdirwatch.h"
+#include "kdirwatch.moc"
 
 //sven

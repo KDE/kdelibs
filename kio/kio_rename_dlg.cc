@@ -303,4 +303,4 @@ RenameDlg_Result open_RenameDlg( const char* _src, const char *_dest, RenameDlg_
   return (RenameDlg_Result)i;
 }
 
-#include "kio_rename_dlg.h"
+#include "kio_rename_dlg.moc"

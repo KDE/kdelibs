@@ -230,4 +230,4 @@ void KIOCopyProgressDlg::gettingFile( const char *_url )
   m_pLine2->setText( _url );
 }
 
-#include "kio_progress_dlg.h"
+#include "kio_progress_dlg.moc"

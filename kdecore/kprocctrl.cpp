@@ -142,3 +142,4 @@ KProcessController::~KProcessController()
   delete processList;
   delete notifier;
 }
+#include "kprocctrl.moc"

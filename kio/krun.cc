@@ -566,4 +566,4 @@ void KRun::killJob()
   }
 }
 
-#include "krun.h"
+#include "krun.moc"

@@ -781,3 +781,4 @@ QSize KWizard::sizeHint()
 }
 
 
+#include "kwizard.moc"

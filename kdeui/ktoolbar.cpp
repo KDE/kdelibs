@@ -22,6 +22,12 @@
 
 // $Id$
 // $Log$
+// Revision 1.95  1999/01/15 09:31:30  kulow
+// it's official - kdelibs builds with srcdir != builddir. For this I
+// automocifized it, the generated rules are easier to maintain than
+// selfwritten rules. I have to fight with some bugs of this tool, but
+// generally it's better than keeping them updated by hand.
+// it's official - kdelibs builds with srcdir != builddir. For this I
 // Revision 1.94  1998/12/09 13:44:30  radej
 // sven: iconify() -> hide() even when floating. Commented out debug output.
 // generally it's better than keeping them updated by hand.
@@ -2373,11 +2379,8 @@ void KRadioGroup::slotToggled(int id)
   }
 }
     {
+#include "ktoolbar.moc"
         it.current()->on(false);
-
-
-// sven
-#include <ktoolbar.h>
       ++it;
     }
   }

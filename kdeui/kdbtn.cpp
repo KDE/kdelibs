@@ -285,3 +285,5 @@ void KTabButton::drawButton( QPainter *p)
 }
 
 
+#include "kdbtn.moc"
+

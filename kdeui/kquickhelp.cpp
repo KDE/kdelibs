@@ -629,7 +629,5 @@ void KQuickHelpWindow::paint(QPainter *p, int &w, int &h) {
   p->fillRect(0, h - Y_SHADOW, w, h, QBrush(QColor(black)));
   p->fillRect(w - X_SHADOW, 0, w, h, QBrush(QColor(black)));
 }
-
-
-
+#include "kquickhelp.moc"
 

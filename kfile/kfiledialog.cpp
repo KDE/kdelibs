@@ -1451,5 +1451,5 @@ void KFilePreviewDialog::registerPreviewModule( const char * format,
     KPreview::registerPreviewModule( format, readPreview, inType );
 }
 
-#include "kfiledialog.h"
+#include "kfiledialog.moc"
 

@@ -27,3 +27,5 @@ void KCombo::setText( const char *text)
     changeItem(text, 0);
 }
 
+#include "kcombo.moc"
+

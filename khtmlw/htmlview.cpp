@@ -788,5 +788,5 @@ void KHTMLView::restorePosition( int x, int y )
     view->restorePosition( x, y );
 }
 
-#include "htmlview.h"
+#include "htmlview.moc"
 

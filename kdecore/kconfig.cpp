@@ -19,6 +19,12 @@
 // $Id$
 //
 // $Log$
+// Revision 1.20  1999/01/15 09:30:33  kulow
+// it's official - kdelibs builds with srcdir != builddir. For this I
+// automocifized it, the generated rules are easier to maintain than
+// selfwritten rules. I have to fight with some bugs of this tool, but
+// generally it's better than keeping them updated by hand.
+//
 // Revision 1.19  1999/01/11 13:53:42  kulow
 // fixing bug 1311 - don't use data.sprintf("%s", data.data());
 // the meaning is undefined
@@ -483,3 +489,5 @@ void KConfig::sync()
   // no more dirty entries
   rollback();
 }
+#include "kconfig.moc"
+

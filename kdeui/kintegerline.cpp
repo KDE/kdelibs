@@ -191,3 +191,5 @@ void KIntegerLine::internalValueChanged()
 {
   emit valueChanged( value() );
 }
+#include "kintegerline.moc"
+

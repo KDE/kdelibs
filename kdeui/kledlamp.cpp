@@ -65,7 +65,5 @@ void KLedLamp::drawContents(QPainter *painter)
   }
 }
 
-
-
-
+#include "kledlamp.moc"
 

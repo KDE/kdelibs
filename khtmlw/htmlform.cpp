@@ -788,4 +788,4 @@ HTMLForm::~HTMLForm()
 	e->setForm( 0 );
     }
 }
-
+#include "htmlform.moc"

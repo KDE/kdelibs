@@ -283,4 +283,4 @@ void KProgress::drawContents(QPainter *p)
 		drawText(p);
 		
 }			
-
+#include "kprogress.moc"

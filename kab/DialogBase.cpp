@@ -375,8 +375,8 @@ void DialogBase::setDesc(const char*)
 
 // ##############################################################################
 // MOC OUTPUT FILES:
-#include "DialogBase.h"
-#include "DialogBaseData.h"
+#include "DialogBase.moc"
+#include "DialogBaseData.moc"
 // ##############################################################################
 
 

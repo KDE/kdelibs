@@ -1993,3 +1993,5 @@ void KTreeList::updateCellWidth()
   forEveryVisibleItem(&KTreeList::getMaxItemWidth, &maxW);
   setCellWidth(maxW);
 }
+#include "ktreelist.moc"
+

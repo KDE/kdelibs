@@ -858,3 +858,5 @@ void KColorCombo::addColors()
 			setCurrentItem( i + 1 );
 	}
 }
+#include "kcolordlg.moc"
+

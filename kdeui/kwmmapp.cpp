@@ -22,6 +22,12 @@
     Boston, MA 02111-1307, USA.
 
     $Log$
+    Revision 1.17  1999/01/15 09:31:37  kulow
+    it's official - kdelibs builds with srcdir != builddir. For this I
+    automocifized it, the generated rules are easier to maintain than
+    selfwritten rules. I have to fight with some bugs of this tool, but
+    generally it's better than keeping them updated by hand.
+
     Revision 1.16  1999/01/12 12:45:30  ettrich
     fixes for dialog handling
 
@@ -328,3 +334,5 @@ bool KWMModuleApplication::hasWindow(Window w){
   return wp != 0L;
 
 }
+#include "kwmmapp.moc"
+

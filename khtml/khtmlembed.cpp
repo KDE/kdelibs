@@ -6,4 +6,4 @@ KHTMLEmbededWidget::KHTMLEmbededWidget( QWidget *_parent, int _frameborder, bool
   bAllowResize = _allowresize;
 }
 
-#include "khtmlembed.h"
+#include "khtmlembed.moc"

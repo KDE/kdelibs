@@ -115,6 +115,6 @@ void SearchDialog::valueChanged(const char* value)
 
 // ##############################################################################
 // MOC OUTPUT FILES:
-#include "SearchDialog.h"
+#include "SearchDialog.moc"
 // ##############################################################################
 

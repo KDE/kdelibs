@@ -119,4 +119,4 @@ SkipDlg_Result open_SkipDlg( const char *_dest, bool _multi )
   return (SkipDlg_Result)i;
 }
 
-#include "kio_skip_dlg.h"
+#include "kio_skip_dlg.moc"

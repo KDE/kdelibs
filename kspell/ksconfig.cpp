@@ -614,4 +614,4 @@ QStrList KSpellConfig::ignoreList (void) const
   return ignorelist;
 }
 
-
+#include "ksconfig.moc"

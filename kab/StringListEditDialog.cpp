@@ -60,5 +60,5 @@ void StringListEditDialog::getStrings(QStrList& result)
 
 // #############################################################################
 // MOC OUTPUT FILES:
-#include "StringListEditDialog.h"
+#include "StringListEditDialog.moc"
 // #############################################################################

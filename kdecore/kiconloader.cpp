@@ -20,6 +20,12 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.25  1999/01/15 09:30:37  kulow
+   it's official - kdelibs builds with srcdir != builddir. For this I
+   automocifized it, the generated rules are easier to maintain than
+   selfwritten rules. I have to fight with some bugs of this tool, but
+   generally it's better than keeping them updated by hand.
+
    Revision 1.24  1998/11/02 10:08:34  ettrich
    new reload method for kiconloader (Rene Beutler)
 }
@@ -311,6 +317,9 @@ void KIconLoader::flush( const QString& name  )
      pixmap_list.remove( index );
   }
 
+void KIconLoader::flush( const QString& )
+{
+	// This is a NO-OP
 	warning( "KIconLoader::flush is deprecated." );
 }
 

@@ -19,6 +19,12 @@
 // $Id$
 //
 // $Log$
+// Revision 1.12  1999/01/15 09:30:41  kulow
+// it's official - kdelibs builds with srcdir != builddir. For this I
+// automocifized it, the generated rules are easier to maintain than
+// selfwritten rules. I have to fight with some bugs of this tool, but
+// generally it's better than keeping them updated by hand.
+//
 // Revision 1.11  1998/09/01 20:21:32  kulow
 // I renamed all old qt header files to the new versions. I think, this looks
 // nicer (and gives the change in configure a sense :)
@@ -267,3 +273,6 @@ void KSimpleConfig::sync()
   QFile aFile( data()->aGlobalAppFile );
   writeConfigFile( aFile, false );
 }
+
+#include "ksimpleconfig.moc"
+

@@ -59,7 +59,18 @@ libkab_la_LDFLAGS = -version-info 2:0 $(X_LDFLAGS) $(QT_LDFLAGS)
 libkab_la_LIBADD  = -lXext $(LIB_QT)
 
 # just to make sure, automake makes them 
-libkab_la_METASOURCES = USE_AUTOMOC cc
+libkab_la_METASOURCES = AssertDialog.moc AssertDialogData.moc DialogBase.moc \
+	DialogBaseData.moc PrintDialog.moc PrintDialogData.moc \
+	SearchDialog.moc SearchDialogMainWidget.moc \
+	SearchDialogMainWidgetData.moc StringListEditDialog.moc \
+	StringListEditWidget.moc StringListEditWidgetData.moc \
+	StringListSelectAndReorderSet.moc \
+	StringListSelectAndReorderSetData.moc \
+	StringListSelectOneDialog.moc \
+	StringListSelectOneDialogData.moc \
+	StringListSelectSetDialog.moc \
+	businesscard.moc datepickerdialog.moc editentry.moc \
+	kab.moc kabapi.moc searchresults.moc  
 
 DISTCLEANFILES = $(libkab_la_METASOURCES)
 

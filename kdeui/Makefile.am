@@ -51,7 +51,16 @@ libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp\
 		kdbtn.cpp knotebook.cpp ktabbar.cpp kwizard.cpp kcontainer.cpp \
 		kkeydialog.cpp kurllabel.cpp kruler.cpp kquickhelp.cpp kcursor.cpp
 
-libkdeui_la_METASOURCES = USE_AUTOMOC
+libkdeui_la_METASOURCES = kbutton.moc kbuttonbox.moc kcolorbtn.moc \
+	kcolordlg.moc kcombo.moc kcontainer.moc kcontrol.moc kdatepik.moc \
+	kdatetbl.moc kdbtn.moc keditcl.moc kfontdialog.moc \
+	kiconloaderdialog.moc kintegerline.moc kkeydialog.moc kled.moc \
+	kledlamp.moc klined.moc kmenubar.moc kmsgbox.moc knewpanner.moc \
+	knotebook.moc kpanner.moc kpopmenu.moc kprogress.moc \
+	kquickhelp.moc krestrictedline.moc kruler.moc kselect.moc \
+	kslider.moc kspinbox.moc kstatusbar.moc ktabbar.moc ktabctl.moc \
+	ktablistbox.moc ktmainwindow.moc ktoolbar.moc ktoolboxmgr.moc \
+	ktopwidget.moc ktreelist.moc kurllabel.moc kwizard.moc kwmmapp.moc
 
 data_DATA = error.xpm exclamation.xpm info.xpm stopsign.xpm question.xpm \
 	arrow_up.xbm arrow_down.xbm arrow_left.xbm arrow_right.xbm	

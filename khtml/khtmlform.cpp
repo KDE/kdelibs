@@ -943,4 +943,4 @@ void HTMLMultiLineEdit::focusOutEvent( QFocusEvent *ev )
   QWidget::focusOutEvent( ev );
 }
 
-#include "khtmlform.h"
+#include "khtmlform.moc"

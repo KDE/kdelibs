@@ -31,7 +31,10 @@ libkio_la_SOURCES = kio_connection.cc kio_base.cc kio_rename_dlg.cc \
 	kio_job.cc kregistry.cc kio_linedit_dlg.cc kio_paste.cc \
 	kio_openwith.cc
 
-libkio_la_METASOURCES = USE_AUTOMOC cc
+libkio_la_METASOURCES = kautomount.moc kdirwatch.moc kio_cache.moc \
+	kio_job.moc kio_linedit_dlg.moc kio_openwith.moc kio_pass_dlg.moc \
+	kio_progress_dlg.moc kio_rename_dlg.moc kio_skip_dlg.moc \
+	kregistry.moc krun.moc kurlcompletion.moc
 
 include_HEADERS = kio_connection.h kio_base.h kio_rename_dlg.h \
 	kio_filter.h kio_dlg.h kio_skip_dlg.h  kio_interface.h \

@@ -178,3 +178,5 @@ int KProcIO::readln (char *buffer, int max, bool autoAck)
   return -1;
     
 }
+#include "kprocio.moc"
+

@@ -53,6 +53,6 @@ void SearchDialogMainWidget::initializeGeometry()
 
 // ##############################################################################
 // MOC OUTPUT FILES:
-#include "SearchDialogMainWidget.h"
-#include "SearchDialogMainWidgetData.h"
+#include "SearchDialogMainWidget.moc"
+#include "SearchDialogMainWidgetData.moc"
 // ##############################################################################

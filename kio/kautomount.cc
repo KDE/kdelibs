@@ -71,4 +71,4 @@ void KAutoUnmount::slotError( int, int _errid, const char* _errortext )
   delete this;
 }
 
-#include "kautomount.h"
+#include "kautomount.moc"

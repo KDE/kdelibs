@@ -331,3 +331,5 @@ void KSlider::focusOutEvent( QFocusEvent * )
   paintSlider(&painter,rect);
   painter.end();
 }
+#include "kslider.moc"
+

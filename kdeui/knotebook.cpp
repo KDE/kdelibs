@@ -656,3 +656,5 @@ bool KNoteBook::eventFilter( QObject *obj, QEvent *e )
   return false;
 }
 */
+
+#include "knotebook.moc"

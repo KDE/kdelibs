@@ -21,6 +21,12 @@
 
  // $Id$
  // $Log$
+ // Revision 1.45  1999/01/15 09:31:32  kulow
+ // it's official - kdelibs builds with srcdir != builddir. For this I
+ // automocifized it, the generated rules are easier to maintain than
+ // selfwritten rules. I have to fight with some bugs of this tool, but
+ // generally it's better than keeping them updated by hand.
+ //
  // Revision 1.44  1998/08/02 09:31:22  radej
  // sven: added closeEvent to behave like old KTW
  //
@@ -93,3 +99,5 @@ void KTopLevelWidget::closeEvent (QCloseEvent *ev)
 {
   ev->accept();
 }
+#include "ktopwidget.moc"
+
