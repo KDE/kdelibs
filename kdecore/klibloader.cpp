@@ -153,18 +153,34 @@ KLibrary* KLibLoader::library( const char *name )
 	return 0;
 
     QCString libname( name );
-    libname += ".la";
+    
+    // only append ".la" if there is no extension
+    // this allows to load non-libtool libraries as well
+    // (mhk, 20000228)
+    int pos = libname.findRev('/');
+    if (pos < 0)
+      pos = 0;
+    if (libname.find('.', pos) < 0)
+      libname += ".la";
 
     KLibrary* lib = m_libs[ name ];
     if ( lib )
 	return lib;
 
-    QString libfile = KGlobal::dirs()->findResource( "lib", libname );
-    if ( libfile.isEmpty() )
-    {
-	qDebug("KLibLoader: library=%s: No file names %s found in paths.", name, libname.data() );
-	return 0;
-    }
+    // only look up the file if it is not an absolute filename
+    // (mhk, 20000228)
+    QString libfile;
+    if (libname[0] == '/')
+      libfile = libname;
+    else
+      {
+	libfile = KGlobal::dirs()->findResource( "lib", libname );
+	if ( libfile.isEmpty() )
+	  {
+	    qDebug("KLibLoader: library=%s: No file names %s found in paths.", name, libname.data() );
+	    return 0;
+	  }
+      }
 
     lt_dlhandle handle = lt_dlopen( libfile.latin1() );
     if ( !handle )

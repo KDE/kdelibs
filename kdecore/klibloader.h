@@ -189,6 +189,10 @@ public:
      *                 on other shared libs. Loading a "libfoo.so" could not solve the
      *                 dependencies problem.
      *
+     *                 You can, however, give a library name ending in ".so"
+     *                 (or whatever is used on your platform), and the library
+     *                 will be loaded without resolving dependencies. USE WITH CARE :)
+     *
      * @see #factory
      */
     virtual KLibrary* library( const char* libname );
