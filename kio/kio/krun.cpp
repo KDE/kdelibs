@@ -76,7 +76,13 @@ pid_t KRun::runURL( const KURL& u, const QString& _mimetype )
   }
   else if ( _mimetype == "application/x-executable"  ||
             _mimetype == "application/x-shellscript")
-   {
+  {
+    if (!kapp->authorize("shell access"))
+    {
+      KMessageBoxWrapper::error( 0L,
+            i18n("<qt>You do not have permission to run <b>%1</b>.</qt>").arg(u.htmlURL()) );
+      return 0;
+    }
     if ( u.isLocalFile() )
     {
       QString path = u.path();
