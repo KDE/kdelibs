@@ -2107,11 +2107,12 @@ void KApplication::invokeHelp( const QString& anchor,
    {
        if (startServiceByDesktopName("khelpcenter", url, &error, 0, 0, startup_id, false))
        {
-           QMessageBox::critical(kapp->mainWidget(), i18n("Could not Launch Help Center"),
-           i18n("Could not launch the KDE Help Center.\n\n"
-                "Please ensure that you have the kdebase\n"
-                "package installed correctly!"), i18n("&OK"));
-           return;
+           if (Tty != kapp->type())
+               QMessageBox::critical(kapp->mainWidget(), i18n("Could not Launch Help Center"),
+               i18n("Could not launch the KDE Help Center:\n\n%1").arg(error), i18n("&OK"));
+           else
+               kdWarning() << "Could not launch help:\n" << error << endl;
+	   return;
        }
    }
    else
@@ -2140,10 +2141,11 @@ void KApplication::invokeHTMLHelp( const QString& _filename, const QString& topi
    {
        if (startServiceByDesktopName("khelpcenter", url, &error, 0, 0, "", false))
        {
-           QMessageBox::critical(kapp->mainWidget(), i18n("Could not Launch Help Center"),
-           i18n("Could not launch the KDE Help Center.\n\n"
-                "Please ensure that you have the kdebase\n"
-                "package installed correctly!"), i18n("&OK"));
+           if (Tty != kapp->type())
+               QMessageBox::critical(kapp->mainWidget(), i18n("Could not Launch Help Center"),
+               i18n("Could not launch the KDE Help Center:\n\n%1").arg(error), i18n("&OK"));
+           else
+               kdWarning() << "Could not launch help:\n" << error << endl;
            return;
        }
    }
@@ -2270,8 +2272,11 @@ void KApplication::invokeMailer(const QString &to, const QString &cc, const QStr
    // TODO this should check if cmd has a .desktop file, and use data from it, together
    // with sending more ASN data
    if (kdeinitExec(cmd, cmdTokens, &error, NULL, startup_id ))
-     QMessageBox::critical(kapp->mainWidget(), i18n("Could not Launch Mail Client"),
-           i18n("Could not launch the mail client:\n\n%1").arg(error), i18n("&OK"));
+     if (Tty != kapp->type())
+       QMessageBox::critical(kapp->mainWidget(), i18n("Could not Launch Mail Client"),
+             i18n("Could not launch the mail client:\n\n%1").arg(error), i18n("&OK"));
+     else
+       kdWarning() << "Could not launch mail client:\n" << error << endl;
 }
 
 
@@ -2286,10 +2291,11 @@ void KApplication::invokeBrowser( const QString &url, const QCString& startup_id
 
    if (startServiceByDesktopName("kfmclient", url, &error, 0, 0, startup_id, false))
    {
-      QMessageBox::critical(kapp->mainWidget(), i18n("Could not Launch Browser"),
-           i18n("Could not launch the browser.\n\n"
-                "Please ensure that you have the kdebase\n"
-                "package installed correctly!"), i18n("&OK"));
+      if (Tty != kapp->type())
+          QMessageBox::critical(kapp->mainWidget(), i18n("Could not Launch Browser"),
+               i18n("Could not launch the browser:\n\n%1").arg(error), i18n("&OK"));
+      else
+          kdWarning() << "Could not launch browser:\n" << error << endl;
       return;
    }
 }
