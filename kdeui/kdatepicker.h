@@ -183,11 +183,32 @@ protected slots:
   void monthBackwardClicked();
   void yearForwardClicked();
   void yearBackwardClicked();
-  /// @since 3.1
+  /**
+   * @since 3.1
+   * @deprecated in 3.2
+   */
   void selectWeekClicked();
+  /**
+   * @since 3.1
+   */
   void selectMonthClicked();
+  /**
+   * @since 3.1
+   */
   void selectYearClicked();
+  /**
+   * @since 3.1
+   */
   void lineEnterPressed();
+  /**
+   * @since 3.2
+   */
+  void todayButtonClicked();
+  /**
+   * @since 3.2
+   */
+  void weekSelected(int);
+
 signals:
   /** This signal is emitted each time the selected date is changed.
    *  Usually, this does not mean that the date has been entered,
@@ -221,6 +242,7 @@ protected:
   virtual void virtual_hook( int id, void* data );
 private:
   void init( const QDate &dt );
+  void fillWeeksCombo(const QDate &date);
   class KDatePickerPrivate;
   KDatePickerPrivate *d;
 };
