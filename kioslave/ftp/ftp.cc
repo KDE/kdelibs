@@ -896,6 +896,7 @@ int Ftp::ftpOpenPASVDataConnection()
   // now connect the data socket ...
   m_data = new FtpSocket("PASV");
   m_data->setAddress(host, port);
+  kdDebug(7102) << "Connecting to " << host << " on port " << port << endl;
   return m_data->connectSocket(connectTimeout(), false);
 }
 
@@ -1003,40 +1004,45 @@ int Ftp::ftpOpenDataConnection()
   assert( m_bLoggedOn );
   ftpCloseDataConnection();
 
-  int  iErrCode = 0;      // ERR_INTERNAL : try another mode
+  int  iErrCode = 0;
+  int  iErrCodePASV = 0;  // Remember error code from PASV
 
   // First try passive (EPSV & PASV) modes
   if( !config()->readBoolEntry("DisablePassiveMode", false) )
   {
     iErrCode = ftpOpenPASVDataConnection();
-    if(iErrCode != ERR_INTERNAL)
-      return iErrCode;
+    if(iErrCode == 0)
+      return 0; // success
+    iErrCodePASV = iErrCode;
     ftpCloseDataConnection();
 
     if( !config()->readBoolEntry("DisableEPSV", false) )
     {
       iErrCode = ftpOpenEPSVDataConnection();
-      if(iErrCode != ERR_INTERNAL)
-        return iErrCode;
+      if(iErrCode == 0)
+        return 0; // success
       ftpCloseDataConnection();
     }
 
     // if we sent EPSV ALL already and it was accepted, then we can't
     // use active connections any more
     if (m_extControl & epsvAllSent)
-      return ERR_INTERNAL;
+      return iErrCodePASV ? iErrCodePASV : iErrCode;
   }
 
   iErrCode = ftpOpenEPRTDataConnection();
-  if(iErrCode != ERR_INTERNAL)
-    return iErrCode;
+  if(iErrCode == 0)
+    return 0; // success
   ftpCloseDataConnection();
 
   // fall back to port mode
   iErrCode = ftpOpenPortDataConnection();
-  if(iErrCode != 0)
-    ftpCloseDataConnection();
-  return iErrCode;
+  if(iErrCode == 0)
+    return 0; // success
+
+  ftpCloseDataConnection();
+  // prefer to return the error code from PASV if any, since that's what should have worked in the first place
+  return iErrCodePASV ? iErrCodePASV : iErrCode;
 }
 
 /*
@@ -1059,7 +1065,7 @@ int Ftp::ftpOpenPortDataConnection()
 
   // yes, we are sure this is a KInetSocketAddress
   const KInetSocketAddress* pAddr = static_cast<const KInetSocketAddress*>(m_control->localAddress());
-  m_data->setAddress(pAddr->nodeName(), pAddr->serviceName());
+  m_data->setAddress(pAddr->nodeName(), "0");
   m_data->setAddressReusable(true);
 
   if(m_data->listen(1) < 0)
