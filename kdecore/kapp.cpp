@@ -1985,32 +1985,11 @@ KApplication::kdeinitExecWait( const QString& name, const QStringList &args,
         name, args, error, 0, pid);
 }
 
-bool KApplication::kdeFonts(QStringList &fontlist) const
+// Old deprecated useless method
+bool KApplication::kdeFonts(QStringList &) const
 {
-  QString fontfilename = KGlobal::dirs()->saveLocation("config") + "kdefonts";
-  QFile fontfile(fontfilename);
-
-  if (!fontfile.exists())
     return false;
-
-  if(!fontfile.open(IO_ReadOnly)){
-    return false;
-  }
-
-  QTextStream t(&fontfile);
-
-
-  while ( !t.eof() ) {
-    QString s = t.readLine();
-    if(!s.isEmpty())
-      fontlist.append( s );
-  }
-
-  fontfile.close();
-
-  return true;
 }
-
 
 QString KApplication::tempSaveName( const QString& pFilename ) const
 {
