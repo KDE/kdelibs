@@ -69,7 +69,6 @@ KateCodeFoldingTree::KateCodeFoldingTree(QObject *par): QObject(par), KateCodeFo
 
 void KateCodeFoldingTree::clear()
 {
-  kdDebug()<<"KateCodeFoldingTree::clear()"<<endl;
   if (m_childnodes)
   {
 	m_childnodes->setAutoDelete(true);
@@ -515,7 +514,9 @@ bool KateCodeFoldingTree::correctEndings(signed char data, KateCodeFoldingNode *
       node->endLineValid = true;
       node->endLineRel = line - startLine;
       //moving
+#if JW_DEBUG
 	kdDebug(13000)<<"Move subnodes up, if needed"<<endl;
+#endif
 	moveSubNodesUp(node);
 
     }
@@ -1052,10 +1053,12 @@ void KateCodeFoldingTree::cleanupUnneededNodes(unsigned int line)
   for (int i=0; i<(int)markedForDeleting.count(); i++)
   {
     KateCodeFoldingNode *node = markedForDeleting.at(i);
+#if JW_DEBUG
     if (node->deleteOpening)
       kdDebug(13000)<<"DELETE OPENING SET"<<endl;
     if (node->deleteEnding)
       kdDebug(13000)<<"DELETE ENDING SET"<<endl;
+#endif
 
     if ((node->deleteOpening) && (node->deleteEnding))
     {
@@ -1122,7 +1125,9 @@ void KateCodeFoldingTree::toggleRegionVisibility(unsigned int line)
 {
   lineMapping.clear();
   hiddenLinesCountCacheValid = false;
+#if JW_DEBUG
   kdDebug(13000)<<QString("KateCodeFoldingTree::toggleRegionVisibility() %1").arg(line)<<endl;
+#endif
 
   findAllNodesOpenedOrClosedAt(line);
   for (int i=0; i<(int)nodesForLine.count(); i++)
