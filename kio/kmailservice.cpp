@@ -19,16 +19,7 @@ int main( int argc, char **argv )
     if ( args->count() != 1 )
         return 1;
 
-    KURL u = args->arg( 0 );
+    a.invokeMailer(KURL(args->arg(0)));
 
-    QString addr = u.path();
-    QString subj;
-
-    if (u.query().left(9) == "?subject=")
-    {
-       subj = KURL::decode_string( u.query().mid(9) );
-    }
-
-    a.invokeMailer( addr, subj );
     return 0;
 }
