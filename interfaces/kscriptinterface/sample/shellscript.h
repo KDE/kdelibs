@@ -7,13 +7,13 @@ class ShellScript : public KScriptInterface
 {
 	Q_OBJECT
 public:
-	ShellScript();
-	~ShellScript();
+	ShellScript(QObject *parent, const char *name, const QStringList &args);
+	virtual ~ShellScript();
 	/**
 		Return the current script code data
 		@returns QString containing the currenly runable code
 	**/
-	QString Script();
+	QString Script() const;
 	/**
 		Sets the parent object of the script to the passed in
 		QObject.  This is used to access public data members of
@@ -28,6 +28,7 @@ public:
 public slots:
 	void runScript();
 	void stopScript();
+	bool status();
 private slots:
 	void goodExit(KProcess *proc);
 private:

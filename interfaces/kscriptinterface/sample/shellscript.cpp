@@ -1,6 +1,10 @@
 #include "shellscript.h"
+#include <kgenericfactory.h>
 
-ShellScript::ShellScript()
+typedef KGenericFactory<ShellScript> ShellScriptFactory;
+K_EXPORT_COMPONENT_FACTORY( libshellscript, ShellScriptFactory( "shellscript" ) );
+
+ShellScript::ShellScript(QObject *parent, const char *name, const QStringList &args )
 {
 	m_script =  new KProcess();
 }
@@ -10,7 +14,7 @@ ShellScript::~ShellScript()
 
 }
 
-QString ShellScript::Script()
+QString ShellScript::Script() const
 {
 
 }
