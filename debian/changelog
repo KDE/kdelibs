@@ -1,3 +1,11 @@
+kdelibs (4:2.1-20001213-2) unstable; urgency=low
+
+  * new kdelibs-doc rules thanks to Gordon Sadler w/ tweaks to allow building
+    when kdelibs is not already installed... (Closes: #79583)
+  * more upstream bug fixes
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 14 Dec 2000 13:35:00 -0700
+
 kdelibs (4:2.1-20001213-1) unstable; urgency=low
  
   * New upstream beta

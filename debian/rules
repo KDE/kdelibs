@@ -4,7 +4,10 @@
 
 SHELL=/bin/sh
 
-BUILDDIR = ./build
+BUILDDIR = $(shell pwd)
+QTDOCDIR  = usr/share/doc/qt2.2-doc/doc/html
+KDEDOCDIR = usr/share/doc/kdelibs3-doc/html
+export KDB2HTML_UNINSTALLED=$(BUILDDIR)/ksgmltools/customization/
 
 build: build-stamp
 
@@ -43,16 +46,22 @@ binary-indep:	build
 	dh_testroot
 	dh_clean -i
 	if test -f /usr/bin/qt2kdoc; then \
-		(mkdir -p debian/kdelibs3-doc/usr/share/kdoc/index) ; \
-		(mkdir -p debian/kdelibs3-doc/usr/share/doc/kdelibs3-doc/html/kdoc-reference) ; \
-		qt2kdoc --url=/usr/share/doc/qt2.2-doc/doc/html \
-		--outdir=`pwd`/debian/kdelibs3-doc/usr/share/doc/kdelibs3-doc/html/kdoc-reference \
+		(mkdir -p debian/kdelibs3-doc/$(KDEDOCDIR)/kdoc-reference) ; \
+		qt2kdoc --url=/$(QTDOCDIR) \
+		--outdir=`pwd`/debian/kdelibs3-doc/$(KDEDOCDIR)/kdoc-reference \
 		--compress \
-		/usr/share/doc/qt2.2-doc/doc/html ; \
-		makekdedoc --libdir=`pwd`/debian/kdelibs3-doc/usr/share/doc/kdelibs3-doc/html/kdoc-reference \
+		/$(QTDOCDIR) ; \
+		makekdedoc --libdir=`pwd`/debian/kdelibs3-doc/$(KDEDOCDIR)/kdoc-reference \
 		--kdocopt='--skip-internal --compress' \
-		--outputdir=`pwd`/debian/kdelibs3-doc/usr/share/doc/kdelibs3-doc/html ; \
+		--url=/$(KDEDOCDIR) \
+		--outputdir=`pwd`/debian/kdelibs3-doc/$(KDEDOCDIR) ; \
 	fi
+	
+	cp doc/api/*.png `pwd`/debian/kdelibs3-doc/$(KDEDOCDIR)/kdeui
+	cp kio/DESKTOP_ENTRY_STANDARD `pwd`/debian/kdelibs3-doc/$(KDEDOCDIR)/kio
+	sed -e "s#_QTDOCDIR_#$(QTDOCDIR)#g" doc/api/index.docbook.in > doc/api/index.docbook
+	( cd doc/api && /bin/sh $(BUILDDIR)/ksgmltools/kdb2html `pwd`/index.docbook )
+	cp doc/api/HTML/* `pwd`/debian/kdelibs3-doc/$(KDEDOCDIR)                                                                                          
 	dh_installdocs -i
 	dh_installchangelogs -pkdelibs3-doc ChangeLog
 	dh_compress -i
