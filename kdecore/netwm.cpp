@@ -480,7 +480,7 @@ Z &NETRArray<Z>::operator[](int index) {
 	capacity = newcapacity;
     }
     if (index >= sz)            // at this point capacity>index
-        sz = index;
+        sz = index + 1;
 
     return d[index];
 }
