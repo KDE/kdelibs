@@ -1003,7 +1003,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 if ( beginTag && tagID == ID_SCRIPT ) {
                     AttrImpl* a = 0;
                     if(currToken.attrs) {
-                        currToken.attrs->getIdItem(ATTR_SRC);
+                        a = currToken.attrs->getIdItem(ATTR_SRC);
                         scriptSrc = a ? a->value().string() : QString("");
                         a = currToken.attrs->getIdItem(ATTR_LANGUAGE);
                     }
