@@ -423,6 +423,7 @@ class KAccelBase
 	                 int nIDMenu = 0, QPopupMenu *pMenu = 0,
 			 bool bConfigurable = true, bool bEnabled = true );
 	virtual bool removeAction( const QString& sAction );
+	bool setActionSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot );
 
 	//bool disconnectItem( const QString& sAction,
 	//                     const QObject* receiver, const char *member );

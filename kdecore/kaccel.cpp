@@ -29,7 +29,9 @@ public:
 
 	virtual void setEnabled( bool );
 
-	bool removeAction( const QString& sAction );
+	virtual bool removeAction( const QString& sAction );
+	// BCI: make virtual when KAccelBase::setActionSlot has been made virtual
+	bool setActionSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot );
 
 	virtual bool connectKey( KAccelAction&, KKeySequence );
 	virtual bool disconnectKey( KAccelAction&, KKeySequence );
@@ -49,6 +51,25 @@ bool KAccelPrivate::removeAction( const QString& sAction )
 		bool b = actions().removeAction( sAction );
 		m_pAccel->removeItem( nID );
 		return b;
+	} else
+		return false;
+}
+
+bool KAccelPrivate::setActionSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot )
+{
+	KAccelAction* pAction = m_rgActions.actionPtr( sAction );
+	if( pAction ) {
+		// Disconnect if connection might exist,
+		if( pAction->getID() && pAction->m_pObjSlot )
+			m_pAccel->disconnectItem( pAction->getID(), pAction->m_pObjSlot, pAction->m_psMethodSlot );
+
+		pAction->m_pObjSlot = pObjSlot;
+		pAction->m_psMethodSlot = psMethodSlot;
+
+		// Reconnect if ID has already be set.
+		if( pAction->getID() && pAction->m_pObjSlot )
+			m_pAccel->connectItem( pAction->getID(), pAction->m_pObjSlot, pAction->m_psMethodSlot );
+		return true;
 	} else
 		return false;
 }
@@ -175,6 +196,9 @@ bool KAccel::insertItem( const QString& sDesc, const QString& sAction,
 	updateConnections();
 	return b;
 }
+
+bool KAccel::connectItem( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot )
+	{ d->setActionSlot( sAction, pObjSlot, psMethodSlot ); }
 
 KAccelBase* KAccel::basePtr()
 	{ return d; }

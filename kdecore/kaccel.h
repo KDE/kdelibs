@@ -52,6 +52,7 @@ public:
 	virtual bool insertItem( const QString& sDesc, const QString& sAction,
 	                 KShortcuts rgCutDefaults3,
 	                 int nIDMenu = 0, QPopupMenu* pMenu = 0, bool bConfigurable = true );
+	bool connectItem( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot );
 
 private:
 	class KAccelPrivate* d;

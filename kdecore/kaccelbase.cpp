@@ -346,6 +346,13 @@ KShortcuts::KShortcuts( const QString& s )
 	d->init( s );
 }
 
+KShortcuts::KShortcuts( int qkey )
+{
+	KKeySequence key( qkey );
+	d = new KShortcutsPrivate();
+	d->init( key );
+}
+
 KShortcuts::KShortcuts( QKeySequence qkey )
 {
 	KKeySequence key( qkey );
@@ -852,6 +859,18 @@ bool KAccelBase::removeAction( const QString& sAction )
 	if( pAction && m_bAutoUpdate )
 		removeConnection( *pAction );
 	return m_rgActions.removeAction( sAction );
+}
+
+// BCI: make virtual ASAP, and then make changes to KAccel::connectItem()
+bool KAccelBase::setActionSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot )
+{
+	KAccelAction* pAction = m_rgActions.actionPtr( sAction );
+	if( pAction ) {
+		pAction->m_pObjSlot = pObjSlot;
+		pAction->m_psMethodSlot = psMethodSlot;
+		return true;
+	} else
+		return false;
 }
 
 /*bool KAccelBase::removeItem( const QString& sAction )

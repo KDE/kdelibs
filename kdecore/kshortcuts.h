@@ -14,6 +14,7 @@ class KShortcuts
 	KShortcuts();
 	KShortcuts( const KShortcuts& );
 	KShortcuts( const QString& s );
+	KShortcuts( int );
 	KShortcuts( QKeySequence );
 	KShortcuts( KKeySequence );
 	~KShortcuts();
