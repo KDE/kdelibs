@@ -17,6 +17,9 @@ for i in */*top ; do
         echo $i
       fi
       if ! find ../pics | grep $grepopt "\-$icon\.png" ; then
+       if [ $verbose = 0 ]; then
+         echo -n "$i : "
+       fi
        echo $icon NOT FOUND 
       fi 
     fi 
