@@ -29,7 +29,7 @@
 /**
  * only compile 'alsa' AudioIO class if configure things it is a good idea
  */
-#ifdef HAVE_ALSA
+#ifdef HAVE_LIBASOUND
 
 #include <sys/asoundlib.h>
 #include <sys/types.h>
