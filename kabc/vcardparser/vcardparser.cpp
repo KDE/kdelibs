@@ -128,9 +128,6 @@ QString VCardParser::createVCards( const VCard::List& list )
 
   // iterate over the cards
   for ( cardIt = list.begin(); cardIt != list.end(); ++cardIt ) {
-    // find version
-//    int version = (*cardIt).version();
-
     text.append( "BEGIN:VCARD\r\n" );
 
     QStringList idents = (*cardIt).identifiers();

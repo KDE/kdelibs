@@ -75,13 +75,13 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
     for ( Address::List::Iterator it = addresses.begin(); it != addresses.end(); ++it ) {
       QStringList address;
 
-      address.append( (*it).postOfficeBox() );
-      address.append( (*it).extended() );
-      address.append( (*it).street() );
-      address.append( (*it).locality() );
-      address.append( (*it).region() );
-      address.append( (*it).postalCode() );
-      address.append( (*it).country() );
+      address.append( (*it).postOfficeBox().replace( ';', "\\;" ) );
+      address.append( (*it).extended().replace( ';', "\\;" ) );
+      address.append( (*it).street().replace( ';', "\\;" ) );
+      address.append( (*it).locality().replace( ';', "\\;" ) );
+      address.append( (*it).region().replace( ';', "\\;" ) );
+      address.append( (*it).postalCode().replace( ';', "\\;" ) );
+      address.append( (*it).country().replace( ';', "\\;" ) );
 
       VCardLine adrLine( "adr", address.join( ";" ) );
       VCardLine labelLine( "label", (*it).label() );
@@ -108,13 +108,18 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
     card.addLine( VCardLine( "bday", createDateTime( (*addrIt).birthday() ) ) );
 
     // CATEGORIES
-    if ( version == VCard::v3_0 )
-      card.addLine( VCardLine( "categories", (*addrIt).categories().join( "," ) ) );
+    if ( version == VCard::v3_0 ) {
+      QStringList categories = (*addrIt).categories();
+      QStringList::Iterator catIt;
+      for ( catIt = categories.begin(); catIt != categories.end(); ++catIt )
+        (*catIt).replace( ',', "\\," );
+
+      card.addLine( VCardLine( "categories", categories.join( "," ) ) );
+    }
 
     // CLASS
     if ( version == VCard::v3_0 ) {
-      Secrecy s = (*addrIt).secrecy();
-      if ( s.isValid() ) card.addLine( createSecrecy( s ) );
+      card.addLine( createSecrecy( (*addrIt).secrecy() ) );
     }
     
     // EMAIL
@@ -154,15 +159,14 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
 
     // N
     QStringList name;
-    name.append( (*addrIt).familyName() );
-    name.append( (*addrIt).givenName() );
-    name.append( (*addrIt).additionalName() );
-    name.append( (*addrIt).prefix() );
-    name.append( (*addrIt).suffix() );
+    name.append( (*addrIt).familyName().replace( ';', "\\;" ) );
+    name.append( (*addrIt).givenName().replace( ';', "\\;" ) );
+    name.append( (*addrIt).additionalName().replace( ';', "\\;" ) );
+    name.append( (*addrIt).prefix().replace( ';', "\\;" ) );
+    name.append( (*addrIt).suffix().replace( ';', "\\;" ) );
 
-    if ( !name.join( "" ).isEmpty() ) {
+    if ( !name.join( "" ).isEmpty() )
       card.addLine( VCardLine( "n", name.join( ";" ) ) );
-    }
 
     // NICKNAME
     if ( version == VCard::v3_0 )
@@ -251,6 +255,16 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
       card.addLine( VCardLine( identifier, value ) );
     }
 
+    Messaging::List::ConstIterator imIt;
+    Messaging::List imList = (*addrIt).messagings();
+    for ( imIt = imList.begin(); imIt != imList.end(); ++imIt ) {
+      QString value = (*imIt).serviceType().replace( ';', "\\;" ) + ";" +
+                      (*imIt).accountId().replace( ';', "\\;" ) + ";" +
+                      (*imIt).senderAccountId().replace( ';', "\\;" );
+
+      card.addLine( VCardLine( "x-kabc-im", value ) );
+    }
+
     vCardList.append( card );
   }
 
@@ -259,6 +273,9 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
 
 Addressee::List VCardTool::parseVCards( const QString& vcard )
 {
+  QChar semicolonSep( ';' );
+  QChar commaSep( ',' );
+
   Addressee::List addrList;
   VCard::List vCardList = VCardParser::parseVCards( vcard );
   VCard::List::Iterator cardIt;
@@ -278,21 +295,21 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
         // ADR
         if ( (*lineIt).identifier() == "adr" ) {
           Address address;
-          QStringList addrParts = QStringList::split( ';', (*lineIt).value().asString(), true );
+          QStringList addrParts = splitString( semicolonSep, (*lineIt).value().asString() );
           if ( addrParts.count() > 0 )
-            address.setPostOfficeBox( addrParts[0] );
+            address.setPostOfficeBox( addrParts[ 0 ] );
           if ( addrParts.count() > 1 )
-            address.setExtended( addrParts[1] );
+            address.setExtended( addrParts[ 1 ] );
           if ( addrParts.count() > 2 )
-            address.setStreet( addrParts[2] );
+            address.setStreet( addrParts[ 2 ] );
           if ( addrParts.count() > 3 )
-            address.setLocality( addrParts[3] );
+            address.setLocality( addrParts[ 3 ] );
           if ( addrParts.count() > 4 )
-            address.setRegion( addrParts[4] );
+            address.setRegion( addrParts[ 4 ] );
           if ( addrParts.count() > 5 )
-            address.setPostalCode( addrParts[5] );
+            address.setPostalCode( addrParts[ 5 ] );
           if ( addrParts.count() > 6 )
-            address.setCountry( addrParts[6] );
+            address.setCountry( addrParts[ 6 ] );
 
           int type = 0;
 
@@ -317,7 +334,7 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
 
         // CATEGORIES
         if ( (*lineIt).identifier() == "categories" ) {
-          QStringList categories = QStringList::split( ',', (*lineIt).value().asString(), true );
+          QStringList categories = splitString( commaSep, (*lineIt).value().asString() );
           addr.setCategories( categories );
         }
 
@@ -340,8 +357,8 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
           Geo geo;
 
           QStringList geoParts = QStringList::split( ';', (*lineIt).value().asString(), true );
-          geo.setLatitude( geoParts[0].toFloat() );
-          geo.setLongitude( geoParts[1].toFloat() );
+          geo.setLatitude( geoParts[ 0 ].toFloat() );
+          geo.setLongitude( geoParts[ 1 ].toFloat() );
 
           addr.setGeo( geo );
         }
@@ -381,17 +398,17 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
 
         // N
         if ( (*lineIt).identifier() == "n" ) {
-          QStringList nameParts = QStringList::split( ';', (*lineIt).value().asString(), true );
+          QStringList nameParts = splitString( semicolonSep, (*lineIt).value().asString() );
           if ( nameParts.count() > 0 )
-            addr.setFamilyName( nameParts[0] );
+            addr.setFamilyName( nameParts[ 0 ] );
           if ( nameParts.count() > 1 )
-            addr.setGivenName( nameParts[1] );
+            addr.setGivenName( nameParts[ 1 ] );
           if ( nameParts.count() > 2 )
-            addr.setAdditionalName( nameParts[2] );
+            addr.setAdditionalName( nameParts[ 2 ] );
           if ( nameParts.count() > 3 )
-            addr.setPrefix( nameParts[3] );
+            addr.setPrefix( nameParts[ 3 ] );
           if ( nameParts.count() > 4 )
-            addr.setSuffix( nameParts[4] );
+            addr.setSuffix( nameParts[ 4 ] );
         }
 
         // NICKNAME
@@ -461,7 +478,7 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
           int hours = date.mid( 1, 2).toInt();
           int minutes = date.mid( 4, 2 ).toInt();
           int offset = ( hours * 60 ) + minutes;
-          offset = offset * ( date[0] == '+' ? 1 : -1 );
+          offset = offset * ( date[ 0 ] == '+' ? 1 : -1 );
 
           tz.setOffset( offset );
           addr.setTimeZone( tz );
@@ -477,11 +494,24 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
 
         // X-
         if ( (*lineIt).identifier().startsWith( "x-" ) ) {
+          if ( (*lineIt).identifier().startsWith( "x-kabc-im" ) ) {
+            QStringList ims = splitString( semicolonSep, (*lineIt).value().asString() );
+
+            if ( ims.count() != 3 )
+              continue;
+
+            Messaging im( ims[ 0 ] );
+            im.setAccountId( ims[ 1 ] );
+            im.setSenderAccountId( ims[ 2 ] );
+
+            addr.insertMessaging( im );
+            continue;
+          }
+
           QString key = (*lineIt).identifier().mid( 2 );
           int dash = key.find( "-" );
           addr.insertCustom( key.left( dash ), key.mid( dash + 1 ), (*lineIt).value().asString() );
         }
-
       }
     }
 
@@ -735,4 +765,39 @@ VCardLine VCardTool::createAgent( VCard::Version version, const Agent &agent )
   }
 
   return line;
+}
+
+QStringList VCardTool::splitString( const QChar &sep, const QString &str )
+{
+  QStringList list;
+  QString value( str );
+
+  int start = 0;
+  int pos = value.find( sep, start );
+
+  while ( pos != -1 ) {
+    if ( value[ pos - 1 ] != '\\' ) {
+      if ( pos > start && pos <= (int)value.length() )
+        list << value.mid( start, pos - start );
+      else
+        list << QString::null;
+
+      start = pos + 1;
+      pos = value.find( sep, start );
+    } else {
+      if ( pos != 0 ) {
+        value.replace( pos - 1, 2, sep );
+        pos = value.find( sep, pos );
+      } else    
+        pos = value.find( sep, pos + 1 );
+    }
+  }
+
+  int l = value.length() - 1;
+  if ( value.mid( start, l - start + 1 ).length() > 0 )
+    list << value.mid( start, l - start + 1 );
+  else
+    list << QString::null;
+
+  return list;
 }

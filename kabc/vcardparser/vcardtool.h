@@ -29,6 +29,7 @@ class QDateTime;
 namespace KABC {
 
 class Agent;
+class Messaging;
 class Key;
 class Picture;
 class Secrecy;
@@ -52,6 +53,12 @@ class VCardTool
     Addressee::List parseVCards( const QString& vcard );
 
   private:
+    /**
+      Split a string and replaces escaped separators on the fly with
+      unescaped ones.
+     */
+    QStringList splitString( const QChar &sep, const QString &value );
+    
     QDateTime parseDateTime( const QString &str );
     QString createDateTime( const QDateTime &dateTime );
 
