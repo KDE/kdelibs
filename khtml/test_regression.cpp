@@ -217,17 +217,23 @@ Value RegTestFunction::call(ExecState *exec, Object &/*thisObj*/, const List &ar
                 docimpl->view()->layout();
             }
             QString filename = args[0].toString(exec).qstring();
-	    filename = RegressionTest::curr->m_currentCategory+"/"+filename;
+            filename = RegressionTest::curr->m_currentCategory+"/"+filename;
+            int failures = RegressionTest::NoFailure;
             if ( m_regTest->m_genOutput ) {
-                m_regTest->reportResult( m_regTest->checkOutput(filename+"-dom"),
-                                         "Script-generated " + filename + "-dom");
-                m_regTest->reportResult( m_regTest->checkOutput(filename+"-render"),
-                                         "Script-generated " + filename + "-render");
+                if ( !m_regTest->reportResult( m_regTest->checkOutput(filename+"-dom"),
+                                               "Script-generated " + filename + "-dom") )
+                    failures |= RegressionTest::DomFailure;
+                if ( !m_regTest->reportResult( m_regTest->checkOutput(filename+"-render"),
+                                         "Script-generated " + filename + "-render") )
+                    failures |= RegressionTest::RenderFailure;
             } else {
                 // compare with output file
-                m_regTest->reportResult( m_regTest->checkOutput(filename+"-dom"), "DOM");
-                m_regTest->reportResult( m_regTest->checkOutput(filename+"-render"), "RENDER");
+                if ( !m_regTest->reportResult( m_regTest->checkOutput(filename+"-dom"), "DOM") )
+                    failures |= RegressionTest::DomFailure;
+                if ( !m_regTest->reportResult( m_regTest->checkOutput(filename+"-render"), "RENDER") )
+                    failures |= RegressionTest::RenderFailure;
             }
+            RegressionTest::curr->doFailureReport( filename, failures );
             break;
         }
         case Quit:
@@ -1170,11 +1176,14 @@ void RegressionTest::doFailureReport( const QString& test, int failures )
         cl += "<span id='b4' class='button' onclick='showRender();m(4)'>R-DIFF</span>&nbsp;\n";
     if ( domDiff.length() )
         cl += "<span id='b5' class='button' onclick='showDom();m(5);'>D-DIFF</span>&nbsp;\n";
-    cl += QString( "<a class=button href=\"%2\">HTML</a>&nbsp;"
-                   "<hr>"
+    // The test file always exists - except for checkOutput called from *.js files
+    if ( QFile::exists( m_baseDir + "/tests/"+ test ) )
+        cl += QString( "<a class=button href=\"%1\">HTML</a>&nbsp;" )
+              .arg( relpath+"/tests/"+test );
+
+    cl += QString( "<hr>"
                    "<img style='border: solid 5px gray' src=\"%1\" id='image'>" )
-          .arg( relpath+"/baseline/"+test+"-dump.png" )
-          .arg( relpath+"/tests/"+test );
+          .arg( relpath+"/baseline/"+test+"-dump.png" );
 
     cl += "<div id='render' class='diff'>" + renderDiff + "</div>";
     cl += "<div id='dom' class='diff'>" + domDiff + "</div>";
