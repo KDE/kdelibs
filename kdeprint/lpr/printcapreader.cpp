@@ -141,23 +141,32 @@ PrintcapEntry* PrintcapReader::nextEntry()
             l = QStringList::split(':', fields, false);
             for (QStringList::ConstIterator it=l.begin(); it!=l.end(); ++it)
             {
+                Field f;
                 int p = (*it).find('=');
                 if (p == -1)
-                    p = (*it).find('#');
-                QString key, value;
-                if (p != -1)
                 {
-                    key = (*it).left(p);
-                    value = (*it).right((*it).length()-p-1);
+                    p = (*it).find('#');
+                    if (p == -1)
+                    {
+                        f.type = Field::Boolean;
+                        f.name = (*it);
+                    }
+                    else
+                    {
+                        f.type = Field::Integer;
+                        f.name = (*it).left(p);
+                        f.value = (*it).mid(p+1);
+                    }
                 }
                 else
                 {
-                    key = *it;
-                    value = QString::null;
+                    f.type = Field::String;
+                    f.name = (*it).left(p);
+                    f.value = (*it).mid(p+1);
+                    if (f.value.startsWith("\""))
+                        f.value = f.value.mid(1, f.value.length()-2);
                 }
-                entry->fields[key] = value;
-                // kdDebug() << "  " << key << " = (" << value << ")" << endl;
-                // kdDebug() << "  (" << *it << ")" << endl;
+                entry->fields[f.name] = f;
             }
         }
         // kdDebug() << endl;

@@ -6,7 +6,7 @@ libkdeprint_lpr_la_SOURCES = printcapreader.cpp lprhandler.cpp \
 			     matichandler.cpp klprfactory.cpp kmlprmanager.cpp \
 			     kmlpruimanager.cpp lpchelper.cpp lpqhelper.cpp \
 			     kmlprjobmanager.cpp matichelper.cpp \
-			     klprprinterimpl.cpp
+			     klprprinterimpl.cpp printcapentry.cpp
 libkdeprint_lpr_la_LDFLAGS = $(all_libraries) -module -avoid-version -no-undefined
 libkdeprint_lpr_la_LIBADD = $(top_builddir)/kdeprint/management/libkdeprint_management.la $(LIB_KDEUI)
 libkdeprint_lpr_la_METASOURCES = AUTO

@@ -23,18 +23,38 @@
 #include <qstring.h>
 #include <qmap.h>
 #include <qstringlist.h>
+#include <qtextstream.h>
 
-class QFile;
+class Field
+{
+public:
+	enum Type { String, Integer, Boolean };
+	Field() : type(String) {}
+	Field(const Field &f) : type(f.type), name(f.name), value(f.value) {}
+	Field& operator= (const Field& f)
+	{
+		type = f.type;
+		name = f.name;
+		value = f.value;
+		return (*this);
+	}
+
+	Type	type;
+	QString	name;
+	QString	value;
+};
 
 class PrintcapEntry
 {
 public:
-    QString                 name;
-    QStringList             aliases;
-    QString                 comment;
-    QMap<QString,QString>   fields;
-    
-    QString field(const QString& f) const { return fields[f]; }
+	QString			name;
+	QStringList		aliases;
+	QString			comment;
+	QMap<QString,Field>	fields;
+
+	bool has(const QString& f) const	{ return fields.contains(f); }
+	QString field(const QString& f) const	{ return fields[f].value; }
+	bool writeEntry(QTextStream&);
 };
 
 #endif

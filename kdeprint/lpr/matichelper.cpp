@@ -150,7 +150,7 @@ QString maticFile(PrintcapEntry *entry)
 		{
 			int	p = s.findRev(' ');
 			if (p != -1)
-				s = s.right(s.length()-p-1);
+				s = s.mid(p+1);
 		}
 	}
 	return s;
