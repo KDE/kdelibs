@@ -5,6 +5,10 @@ extern "C" { // bug with some libc5 distributions
 #include <regex.h>
 }
 
+/**
+ * Used internally by @ref KRegExp.
+ * @internal
+ */
 class KRegExpPrivate
 {
 public:
