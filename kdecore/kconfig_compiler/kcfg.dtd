@@ -19,7 +19,9 @@
 <!ELEMENT include (#PCDATA)>
 
 <!ELEMENT kcfgfile (parameter*)>
-  <!ATTLIST kcfgfile name CDATA #IMPLIED>
+  <!ATTLIST kcfgfile
+                     name CDATA #IMPLIED
+                     arg  (true|false) #IMPLIED>
   
 <!ELEMENT group (entry*)>
   <!ATTLIST group name CDATA #REQUIRED>

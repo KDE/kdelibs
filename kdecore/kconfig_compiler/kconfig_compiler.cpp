@@ -768,6 +768,7 @@ int main( int argc, char **argv )
   }
 
   QString cfgFileName;
+  bool cfgFileNameArg = false;
   QStringList parameters;
   QStringList includes;
 
@@ -787,6 +788,7 @@ int main( int argc, char **argv )
 
     } else if ( tag == "kcfgfile" ) {
       cfgFileName = e.attribute( "name" );
+      cfgFileNameArg = e.attribute( "arg" ).lower() == "true";
       QDomNode n2;
       for( n2 = e.firstChild(); !n2.isNull(); n2 = n2.nextSibling() ) {
         QDomElement e2 = n2.toElement();
@@ -823,6 +825,18 @@ int main( int argc, char **argv )
 
   if ( singleton && !parameters.isEmpty() ) {
     kdError() << "Singleton class can not have parameters" << endl;
+    return 1;
+  }
+  
+  if ( singleton && cfgFileNameArg)
+  {
+    kdError() << "Singleton class can not use filename as argument." << endl;
+    return 1;
+  }
+
+  if ( !cfgFileName.isEmpty() && cfgFileNameArg)
+  {
+    kdError() << "Having both a fixed filename and a filename as argument is not possible." << endl;
     return 1;
   }
 
@@ -909,6 +923,8 @@ int main( int argc, char **argv )
   // Constructor or singleton accessor
   if ( !singleton ) {
     h << "    " << className << "(";
+    if (cfgFileNameArg)
+       h << " KSharedConfig::Ptr config" << (parameters.isEmpty() ? " " : ", ");
     for (QStringList::ConstIterator it = parameters.begin();
          it != parameters.end(); ++it)
     {
@@ -1102,6 +1118,8 @@ int main( int argc, char **argv )
 
   // Constructor
   cpp << className << "::" << className << "( ";
+  if (cfgFileNameArg)
+     cpp << " KSharedConfig::Ptr config" << (parameters.isEmpty() ? " " : ", ");
   for (QStringList::ConstIterator it = parameters.begin();
        it != parameters.end(); ++it)
   {
@@ -1113,6 +1131,7 @@ int main( int argc, char **argv )
 
   cpp << "  : " << inherits << "(";
   if ( !cfgFileName.isEmpty() ) cpp << " \"" << cfgFileName << "\" ";
+  if ( cfgFileNameArg ) cpp << " config ";
   cpp << ")" << endl;
 
   // Store parameters
