@@ -55,8 +55,6 @@ public:
     virtual bool isFlow() const { return true; }
     virtual bool childrenInline() const { return m_childrenInline; }
     virtual bool isRendered() const { return true; }
-    virtual void setBlockBidi() { m_blockBidi = true; }
-
     void makeChildrenNonInline(RenderObject *box2Start = 0);
 
     // overrides RenderObject
@@ -169,7 +167,6 @@ private:
     bool m_childrenInline : 1;
     bool m_pre            : 1;
     bool firstLine        : 1; // used in inline layouting
-    bool m_blockBidi : 1;
     EClear m_clearStatus  : 2; // used during layuting of paragraphs
 };
 

@@ -60,7 +60,7 @@ class HTMLOptionElementImpl;
 class HTMLFormElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLFormElementImpl(DocumentPtr *doc);
+    HTMLFormElementImpl(DocumentPtr *doc, bool implicit);
     virtual ~HTMLFormElementImpl();
 
     virtual Id id() const;
@@ -306,20 +306,15 @@ protected:
 
 // -------------------------------------------------------------------------
 
-class HTMLLabelElementImpl : public HTMLElementImpl
+class HTMLLabelElementImpl : public HTMLGenericFormElementImpl
 {
 public:
     HTMLLabelElementImpl(DocumentPtr *doc);
     virtual ~HTMLLabelElementImpl();
 
     virtual Id id() const;
-
     virtual void parseAttribute(AttributeImpl *attr);
 
-    /**
-     * the form element this label is associated to.
-     */
-    ElementImpl *formElement();
  private:
     DOMString m_formElementID;
 };

@@ -96,9 +96,6 @@ public:
 
     DocumentImpl* contentDocument() const;
 
-protected:
-    bool isURLAllowed() const;
-
     DOMString url;
     DOMString name;
 

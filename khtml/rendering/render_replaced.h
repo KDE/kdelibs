@@ -56,7 +56,7 @@ public:
 
     virtual void position(int x, int y, int from, int len, int width, bool reverse, bool firstLine, int);
 
-private:
+protected:
     short m_intrinsicWidth;
     short m_intrinsicHeight;
 };

@@ -34,25 +34,27 @@ class QScrollView;
 
 namespace khtml {
 
-    class RenderHtml : public RenderFlow
-    {
-    public:
-	RenderHtml(DOM::HTMLElementImpl* node);
-	virtual ~RenderHtml();
+class RenderHtml : public RenderFlow
+{
+public:
+    RenderHtml(DOM::HTMLElementImpl* node);
+    virtual ~RenderHtml();
 
-	virtual const char *renderName() const { return "RenderHtml"; }
+    virtual const char *renderName() const { return "RenderHtml"; }
 
-	virtual bool isHtml() const { return true; }
-	virtual void setStyle(RenderStyle *style);
-	virtual void paint( QPainter *, int x, int y, int w, int h, int tx, int ty);
-	virtual void repaint();
-	virtual void layout();
+    virtual bool isHtml() const { return true; }
+    virtual void setStyle(RenderStyle *style);
+    virtual void paint( QPainter *, int x, int y, int w, int h, int tx, int ty);
+    virtual void repaint();
+    virtual void layout();
     virtual short containingBlockWidth() const;
-    protected:
-	virtual void paintBoxDecorations(QPainter *p,int _x, int _y,
-					 int _w, int _h, int _tx, int _ty);
-    private:
+protected:
+    virtual void paintBoxDecorations(QPainter *p,int _x, int _y,
+                                    int _w, int _h, int _tx, int _ty);
+private:
         QScrollView* m_view;
-    };
 };
+
+}; // namespace khtml
+
 #endif

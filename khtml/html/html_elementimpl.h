@@ -60,6 +60,8 @@ public:
     virtual DOMString namespaceURI() const;
 
 protected:
+    bool isURLAllowed(const QString& url) const;
+
     // for IMG, OBJECT and APPLET
     void addHTMLAlignment( DOMString alignment );
 };

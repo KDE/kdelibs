@@ -36,11 +36,6 @@
 using namespace khtml;
 using namespace DOM;
 
-NodeImpl::Id HTMLDivElementImpl::id() const
-{
-    return ID_DIV;
-}
-
 void HTMLDivElementImpl::parseAttribute(AttributeImpl *attr)
 {
     switch(attr->id())

@@ -823,30 +823,15 @@ void RenderPartObject::slotPartLoadingErrorNotify()
             {
                 // Display vendor download page
                 ext->createNewWindow( pluginPageURL );
+                return;
             }
         }
     }
-}
 
-// duplication of RenderFormElement... FIX THIS!
-short RenderPartObject::calcReplacedWidth(bool*) const
-{
-    Length w = style()->width();
-    if ( w.isVariable() )
-        return intrinsicWidth();
-    else
-        return RenderReplaced::calcReplacedWidth();
+    // didn't work, render alternative content.
+    if ( element() && element()->id() == ID_OBJECT )
+        static_cast<HTMLObjectElementImpl*>( element() )->renderAlternative();
 }
-
-int RenderPartObject::calcReplacedHeight() const
-{
-    Length h = style()->height();
-    if ( h.isVariable() )
-        return intrinsicHeight();
-    else
-        return RenderReplaced::calcReplacedHeight();
-}
-// end duplication
 
 void RenderPartObject::layout( )
 {

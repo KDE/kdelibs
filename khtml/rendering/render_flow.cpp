@@ -75,7 +75,6 @@ RenderFlow::RenderFlow(DOM::NodeImpl* node)
     m_childrenInline = true;
     m_pre = false;
     firstLine = false;
-    m_blockBidi = false;
     m_clearStatus = CNONE;
 
     specialObjects = 0;
@@ -327,11 +326,8 @@ void RenderFlow::layout()
     m_clearStatus = CNONE;
 
 //    kdDebug( 6040 ) << "childrenInline()=" << childrenInline() << endl;
-    if(childrenInline()) {
-        // ### make bidi resumeable so that we can get rid of this ugly hack
-         if (!m_blockBidi)
-            layoutInlineChildren( relayoutChildren );
-    }
+    if(childrenInline())
+        layoutInlineChildren( relayoutChildren );
     else
         layoutBlockChildren( relayoutChildren );
 
@@ -1281,9 +1277,6 @@ void RenderFlow::calcMinMaxWidth()
 
 void RenderFlow::close()
 {
-    // ### get rid of me
-    m_blockBidi = false;
-
     if(lastChild() && lastChild()->isAnonymousBox()) {
         lastChild()->close();
     }
@@ -1301,12 +1294,6 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
     setLayouted( false );
 
     bool madeBoxesNonInline = FALSE;
-
-    if ( newChild->isPositioned() ) {
-	m_blockBidi = false;
-    }
-    if (m_blockBidi)
-	    newChild->setBlockBidi();
 
     RenderStyle* pseudoStyle=0;
     if ( !isInline() && ( !firstChild() || firstChild() == beforeChild )
@@ -1333,15 +1320,13 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
 			( (oldText->s+length)->isSpace() || (oldText->s+length)->isPunct() ) )
 		    length++;
 		length++;
-		//kdDebug( 6040 ) << "letter= '" << DOMString(oldText->substring(0,length)).string() << "'" << endl;
-		newTextChild->setText(oldText->substring(length,oldText->l-length));
-
 		RenderText* letter = new RenderText(0 /* anonymous object */, oldText->substring(0,length));
 		RenderStyle* newStyle = new RenderStyle();
 		newStyle->inheritFrom(pseudoStyle);
 		letter->setStyle(newStyle);
                 letter->setIsAnonymousBox(true);
 		firstLetter->addChild(letter);
+		newTextChild->setText(oldText->substring(length,oldText->l-length));
 	    }
 	    firstLetter->close();
 
@@ -1595,8 +1580,6 @@ bool RenderFlow::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
 void RenderFlow::printTree(int indent) const
 {
     RenderBox::printTree(indent);
-
-//     KHTMLAssert(!m_blockBidi);
 
     if(specialObjects)
     {

@@ -313,11 +313,8 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
 	// don't push elements without end tag on the stack
         if(tagPriority[id] != 0 && !flat) {
 #if SPEED_DEBUG < 2
-            if(!n->attached() && HTMLWidget ) {
+            if(!n->attached() && HTMLWidget )
                 n->attach();
-                if (n->renderer())
-                    n->renderer()->setBlockBidi();
-            }
 #endif
 	    if(n->isInline()) m_inline = true;
             pushBlock(id, tagPriority[id]);
@@ -800,7 +797,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
     case ID_FORM:
         // thou shall not nest <form> - NS/IE quirk
         if (form) break;
-        n = form = new HTMLFormElementImpl(document);
+        n = form = new HTMLFormElementImpl(document, false);
         break;
     case ID_BUTTON:
         n = new HTMLButtonElementImpl(document, form);
@@ -884,8 +881,9 @@ NodeImpl *KHTMLParser::getElement(Token* t)
     case ID_LAYER:
         n = new HTMLGenericElementImpl(document, t->id);
         break;
+    case ID_P:
     case ID_DIV:
-        n = new HTMLDivElementImpl(document);
+        n = new HTMLDivElementImpl(document, t->id);
         break;
     case ID_H1:
     case ID_H2:
@@ -897,9 +895,6 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         break;
     case ID_HR:
         n = new HTMLHRElementImpl(document);
-        break;
-    case ID_P:
-        n = new HTMLGenericElementImpl(document, t->id);
         break;
     case ID_PRE:
         ++inPre;
@@ -1242,10 +1237,10 @@ NodeImpl *KHTMLParser::handleIsindex( Token *t )
     NodeImpl *n;
     HTMLFormElementImpl *myform = form;
     if ( !myform ) {
-        myform = new HTMLFormElementImpl(document);
+        myform = new HTMLFormElementImpl(document, true);
         n = myform;
     } else
-        n = new HTMLDivElementImpl( document );
+        n = new HTMLDivElementImpl( document, ID_DIV );
     NodeImpl *child = new HTMLHRElementImpl( document );
     n->addChild( child );
     AttributeImpl* a = t->attrs ? t->attrs->getAttributeItem(ATTR_PROMPT) : 0;

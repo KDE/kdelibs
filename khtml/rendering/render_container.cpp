@@ -110,15 +110,15 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
             table = static_cast<RenderTable *>(last);
         } else {
 	    //kdDebug( 6040 ) << "creating anonymous table, before=" << beforeChild << endl;
-	    table = new RenderTable(0 /* is anonymous */);
-	    RenderStyle *newStyle = new RenderStyle();
-	    newStyle->inheritFrom(style());
+            table = new RenderTable(0 /* is anonymous */);
+            RenderStyle *newStyle = new RenderStyle();
+            newStyle->inheritFrom(style());
 	    newStyle->setDisplay( TABLE );
 	    newStyle->setFlowAroundFloats( true );
-	    table->setStyle(newStyle);
-	    table->setIsAnonymousBox(true);
-	    addChild(table, beforeChild);
-	}
+            table->setStyle(newStyle);
+            table->setIsAnonymousBox(true);
+            addChild(table, beforeChild);
+        }
         table->addChild(newChild);
     } else {
 	// just add it...
@@ -168,7 +168,7 @@ RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
     setLayouted( false );
     setMinMaxKnown( false );
 
-    if ( isAnonymousBox() && !m_first ) {
+    if ( isAnonymousBox() && !firstChild() ) {
 	// we are an empty anonymous box. There is no reason for us to continue living.
 	detach();
     }

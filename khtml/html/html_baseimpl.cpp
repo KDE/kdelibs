@@ -322,7 +322,7 @@ void HTMLFrameElementImpl::attach()
     // ignore display: none for this element!
     KHTMLView* w = getDocument()->view();
 
-    if (isURLAllowed())  {
+    if (isURLAllowed(url.string()))  {
         m_render = new RenderFrame(this);
         m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
         parentNode()->renderer()->addChild(m_render, nextRenderer());
@@ -338,7 +338,7 @@ void HTMLFrameElementImpl::attach()
       name = DOMString(w->part()->requestFrameName());
 
     // load the frame contents
-        w->part()->requestFrame( static_cast<RenderFrame*>(m_render), url.string(), name.string() );
+    w->part()->requestFrame( static_cast<RenderFrame*>(m_render), url.string(), name.string() );
 }
 
 void HTMLFrameElementImpl::setLocation( const DOMString& str )
@@ -560,33 +560,6 @@ NodeImpl::Id HTMLIFrameElementImpl::id() const
     return ID_IFRAME;
 }
 
-bool HTMLFrameElementImpl::isURLAllowed() const
-{
-    KHTMLView *w = getDocument()->view();
-
-    KURL newURL(getDocument()->completeURL(url.string()));
-    newURL.setRef(QString::null);
-
-    // Prohibit non-file URLs if we are asked to.
-    if (w->part()->onlyLocalReferences() && newURL.protocol() != "file")
-        return false;
-
-    // We allow one level of self-reference because some sites depend on that.
-    // But we don't allow more than one.
-    bool foundSelfReference = false;
-    for (KHTMLPart *part = w->part(); part; part = part->parentPart()) {
-        KURL partURL = part->url();
-        partURL.setRef(QString::null);
-        if (partURL == newURL) {
-            if (foundSelfReference)
-                return false;
-            foundSelfReference = true;
-        }
-    }
-
-    return true;
-}
-
 void HTMLIFrameElementImpl::parseAttribute(AttributeImpl *attr )
 {
   switch (  attr->id() )
@@ -612,22 +585,9 @@ void HTMLIFrameElementImpl::attach()
     assert(!m_render);
     assert(parentNode());
 
-    KHTMLView* w = getDocument()->view();
-    // avoid endless recursion
-    KURL u;
-    if (!url.isEmpty()) u = getDocument()->completeURL( url.string() );
-    bool selfreference = false;
-    for (KHTMLPart* part = w->part(); part; part = part->parentPart())
-        if (part->url() == u) {
-            selfreference = true;
-            break;
-        }
-
-    KHTMLPart *part = w->part();
-
     RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
     _style->ref();
-    if (isURLAllowed() &&
+    if (isURLAllowed(url.string()) &&
         parentNode()->renderer() && _style->display() != NONE) {
         m_render = new RenderPartObject(this);
         m_render->setStyle(_style);
