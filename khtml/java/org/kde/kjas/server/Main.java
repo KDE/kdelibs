@@ -16,7 +16,7 @@ public class Main {
    {
        int retries = 0;
        int LIMIT = 5;
-       
+
        if(System.getProperty("kjas.showConsole") != null)
            (new KJASConsole()).show();
 

@@ -38,16 +38,16 @@ KJavaProcess::KJavaProcess()
 	    this, SLOT( receivedData( KProcess *, char *, int ) ) );
 
    d->jvmPath = "java";
-   d->mainClass = "-help"; // This should always get overwritten
+   d->mainClass = "-help";
 }
 
 KJavaProcess::~KJavaProcess()
 {
   if ( d->ok && isRunning() )
     stopJava();
-
-   delete javaProcess;
-   delete d;
+ 
+  delete javaProcess;
+  delete d;
 }
 
 bool KJavaProcess::isOK()
@@ -148,30 +148,26 @@ void KJavaProcess::wroteData( )
 
 void KJavaProcess::invokeJVM()
 {
-   *javaProcess << d->jvmPath;
+    *javaProcess << d->jvmPath;
+        
+    if( d->extraArgs != QString::null ) 
+    {
+        // BUG HERE: if an argument contains space (-Dname="My name") 
+        // this parsing will fail. Need more sofisticated parsing
+        QStringList args = QStringList::split( " ", d->extraArgs );
+        for ( QStringList::Iterator it = args.begin(); it != args.end(); ++it )
+            *javaProcess << *it;
+    }
+    
+    *javaProcess << d->mainClass;
+    
+    if ( d->classArgs != QString::null )
+        *javaProcess << d->classArgs;
 
-   // For each system property
-   // arg = "-D" + name + "=" + value
-   PropsMap::Iterator it;
-   for ( it = systemProps.begin(); it != systemProps.end(); ++it ) {
-       QString s = "-D%1=%2";
-       QString t = s.arg( it.key() ).arg( it.data() );
-       *javaProcess << t;
-   }
-
-   if ( d->extraArgs != QString::null )
-       *javaProcess << d->extraArgs;
-   *javaProcess << d->mainClass;
-
-   // For each class arg
-   
-   if ( d->classArgs != QString::null )
-       *javaProcess << d->classArgs;
-
-   warning( "Invoking JVM now..." );
-
-   KProcess::Communication comms = ( KProcess::Communication ) (KProcess::Stdin | KProcess::Stdout);
-   javaProcess->start( KProcess::NotifyOnExit, comms );
+    warning( "Invoking JVM now..." );
+    
+    KProcess::Communication comms = ( KProcess::Communication ) (KProcess::Stdin | KProcess::Stdout);
+    javaProcess->start( KProcess::NotifyOnExit, comms );
 }
 
 void KJavaProcess::killJVM()

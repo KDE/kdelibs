@@ -52,6 +52,10 @@ class KWinModule;
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.5  2000/01/27 23:41:56  rogozin
+ * All applet parameters are passed to KJAS now
+ * Next step - make use of them.
+ *
  * Revision 1.4  1999/12/14 19:56:59  rich
  * Many fixes, see changelog
  *
@@ -176,8 +180,6 @@ protected slots:
 
 protected:
    void swallowWindow( WId w );
-   //   void sendClientMessage( Window w, Atom a, long x );
-   void focusInEvent( QFocusEvent * );
    void resizeEvent(QResizeEvent *);
    void closeEvent(QCloseEvent *);
    void uniqueTitle();

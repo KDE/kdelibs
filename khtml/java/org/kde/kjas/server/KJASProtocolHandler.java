@@ -10,6 +10,10 @@ import java.awt.*;
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.3  2000/03/08 01:04:56  rogozin
+ *
+ * Java console implemented
+ *
  * Revision 1.2  2000/01/27 23:41:57  rogozin
  * All applet parameters are passed to KJAS now
  * Next step - make use of them.
@@ -47,7 +51,7 @@ public KJASProtocolHandler( InputStream commands,
               System.out.println("KJAS: Processing command >" + line + "<"); 
           processCommand( line );
           if(Main.debug)
-              System.out.println("KJAS: Processing done");
+              System.out.println("KJAS: Processing done\n");
           line = commands.readLine();
       }
    }

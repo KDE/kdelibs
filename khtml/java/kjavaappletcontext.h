@@ -17,6 +17,9 @@ class KJavaApplet;
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.2  1999/12/14 19:56:59  rich
+ * Many fixes, see changelog
+ *
  * Revision 1.1.1.1  1999/07/22 17:28:07  rich
  * This is a current snapshot of my work on adding Java support
  * to KDE. Applets now work!
@@ -34,7 +37,7 @@ public:
    /**
     * If server is zero then the default server is used.
     */
-   KJavaAppletContext( KJavaAppletServer *server = 0 );
+   KJavaAppletContext();
    ~KJavaAppletContext();
 
    /**

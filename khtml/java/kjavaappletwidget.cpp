@@ -70,10 +70,6 @@ void KJavaAppletWidget::show()
 	if ( !applet->isCreated() )
 	    applet->create();
 
-// 	QTimer *t = new QTimer( this );
-// 	connect( t, SIGNAL( timeout() ),
-// 		 this, SLOT( showApplet() ) );
-// 	t->start(250, true);
 	showApplet();
 	shown = true;
     }
@@ -176,15 +172,11 @@ void KJavaAppletWidget::setWindow( WId w )
 
    if ( strcmp( swallowTitle.data(), (char *) titleProperty.value ) == 0 )
        {
-	   swallowWindow( w );
-         //setFocus(); //workaround (ettrich)
+         swallowWindow( w );
 	   
          // disconnect from KWM events
          disconnect( kwm, SIGNAL( windowAdd( WId ) ),
                      this, SLOT( setWindow( WId ) ) );
-         //QTimer *t = new QTimer(this);
-         //connect(t, SIGNAL(timeout()), SLOT(slotSave()));
-         //t->start(5000);
        }
 }
 
@@ -197,22 +189,6 @@ void KJavaAppletWidget::swallowWindow( WId w )
    XReparentWindow( qt_xdisplay(), w, winId(), 0, 0 );
    XMapRaised( qt_xdisplay(), w );
    XResizeWindow( qt_xdisplay(), window, width(), height() );
-}
-
-void KJavaAppletWidget::focusInEvent( QFocusEvent * )
-{
-   // workarund: put the focus onto the swallowed widget (ettrich)
-   // TODO: When we switch to a newer qt than qt-1.33 this hack should
-   // be replaced with my new kswallow widget!
-   if ( isActiveWindow() && isVisible() ) { // isActiveWindow is important here!
-      // verify wether the window still belongs to us
-      unsigned int nwins;
-      Window dw1, dw2, *wins;
-      XQueryTree( qt_xdisplay(), winId(), 
-                  &dw1, &dw2, &wins, &nwins );
-      if ( nwins )
-         XSetInputFocus( qt_xdisplay(), window, RevertToParent, CurrentTime );
-   }
 }
 
 void KJavaAppletWidget::resizeEvent( QResizeEvent * )

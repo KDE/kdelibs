@@ -26,6 +26,9 @@
 #include "render_replaced.h"
 
 #include <qwidget.h>
+#include <qmap.h>
+#include <html_objectimpl.h>
+
 class QScrollView;
 
 namespace khtml {
@@ -33,8 +36,8 @@ namespace khtml {
 class RenderApplet : public RenderWidget
 {
 public:
-    RenderApplet(RenderStyle *style, QScrollView *view, QSize size,
-                 KURL url, QStringList *args);
+  RenderApplet(RenderStyle *style, QScrollView *view,
+               QMap<QString, QString> args, HTMLElementImpl *node);
     virtual ~RenderApplet();
 
     virtual const char *renderName() const { return "RenderApplet"; }   
@@ -43,7 +46,27 @@ public:
 
     virtual bool isReplaced() const { return true; }
     
-    virtual void layout(bool) {};
+    virtual void layout(bool);
+    
+private:
+    void processArguments( QMap<QString, QString> args );
+    
+    HTMLElementImpl *m_applet;
+    bool m_layoutPerformed;
+};
+
+class RenderEmptyApplet : public RenderWidget
+{
+public: 
+  RenderEmptyApplet(RenderStyle *style, QScrollView *view, QSize sz);
+
+  virtual const char *renderName() const { return "RenderEmptyApplet"; }   
+    
+  virtual bool isInline() const { return true; }
+  
+  virtual bool isReplaced() const { return true; }
+  
+  virtual void layout(bool) {};
 };
 
 };

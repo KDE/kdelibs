@@ -12,7 +12,6 @@ struct KJavaAppletPrivate
    QString baseURL;
    QString codeBase;
    QSize size;  
-  
 };
 
 KJavaApplet::KJavaApplet( KJavaAppletContext *context )
@@ -136,22 +135,22 @@ void KJavaApplet::show( const QString &title )
 
 void KJavaApplet::start()
 {
-  context->start( this );
+    context->start( this );
 }
 
 void KJavaApplet::stop()
 {
-  context->stop( this );
+    context->stop( this );
 }
 
 int KJavaApplet::appletId()
 {
-   return id;
+    return id;
 }
 
 void KJavaApplet::setAppletId( int id )
 {
-   this->id = id;
+    this->id = id;
 }
 
 

@@ -5,29 +5,25 @@
 // For future expansion
 struct KJavaAppletContextPrivate
 {
-
 };
 
-KJavaAppletContext::KJavaAppletContext( KJavaAppletServer *server )
+KJavaAppletContext::KJavaAppletContext()
   : QObject()
 {
-   if ( server != 0 )
-      this->server = server;
-   else {
-      this->server = KJavaAppletServer::getDefaultServer();
-   }
-
+   server = KJavaAppletServer::allocateJavaServer();
+   
    static int contextIdSource = 0;
-
+   
    setContextId( contextIdSource );
-   this->server->createContext( contextIdSource );
-
+   server->createContext( contextIdSource );
+ 
    contextIdSource++;
 }
 
 KJavaAppletContext::~KJavaAppletContext()
 {
-    server->destroyContext( id );
+   server->destroyContext( id );
+   KJavaAppletServer::freeJavaServer();
 }
 
 KJavaAppletContext *KJavaAppletContext::getDefaultContext()

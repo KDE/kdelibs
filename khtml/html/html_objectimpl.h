@@ -60,10 +60,11 @@ protected:
     DOMStringImpl *name;
     DOMStringImpl *code;
     DOMStringImpl *archive;
+    int width;
+    int height;
     
     KHTMLView *view;
     khtml::VAlign valign;
-    int width, height;
 };
 
 // -------------------------------------------------------------------------
@@ -105,9 +106,12 @@ public:
 
     virtual void parseAttribute(Attribute *token);
 
+    const QString name() { return QString(m_name->s, m_name->l); }
+    const QString value() { return QString(m_value->s, m_value->l); }
+    
  protected:
-    DOMStringImpl *name;
-    DOMStringImpl *value;
+    DOMStringImpl *m_name;
+    DOMStringImpl *m_value;
 };
 
 };

@@ -30,14 +30,12 @@
 #include "htmlhashes.h"
 #include "khtmlview.h"
 #include <qstring.h>
+#include <qmap.h>
 
 #include "xml/dom_docimpl.h"
 #include "css/cssstyleselector.h"
 #include "css/cssproperties.h"
-
 #include "rendering/render_applet.h"
-
-#include <stdio.h>
 
 using namespace DOM;
 using namespace khtml;
@@ -51,7 +49,7 @@ HTMLAppletElementImpl::HTMLAppletElementImpl(DocumentImpl *doc)
     code = 0;
     name = 0;
     archive = 0;
-    width = height = 100;
+    width = height = 0;
 }
 
 HTMLAppletElementImpl::~HTMLAppletElementImpl()
@@ -138,21 +136,29 @@ void HTMLAppletElementImpl::attach(KHTMLView *_view)
   
   m_style = document->styleSelector()->styleForElement(this);
   view = _view;
+  RenderWidget *f;
   
-  QStringList args;
-  args.append( QString("code=%1").arg(QString(code->s, code->l)) );
-  if(codeBase)
-      args.append( QString("codeBase=%1").arg(QString(codeBase->s, codeBase->l)) );
-  if(name)
-      args.append( QString("name=%1").arg(QString(name->s, name->l)) );
-  if(archive)
-      args.append( QString("archive=%1").arg(QString(archive->s, archive->l)) );
+  if( view->part()->javaEnabled() ) 
+  {
+      QMap<QString, QString> args;
+    
+      args.insert( "code", QString(code->s, code->l));
+      if(codeBase)
+          args.insert( "codeBase", QString(codeBase->s, codeBase->l) );
+      if(name)
+          args.insert( "name", QString(name->s, name->l) );
+      if(archive)
+          args.insert( "archive", QString(archive->s, archive->l) );
+      
+      args.insert( "width", QString::number(width) );
+      args.insert( "height", QString::number(height) );
+      args.insert( "baseURL", view->part()->url().url() ); 
+      
+      f = new RenderApplet(m_style, view, args, this);
+  }
+  else
+      f = new RenderEmptyApplet(m_style, view, QSize(width, height));
 
-  args.append( QString("width=%1").arg(width) );
-  args.append( QString("height=%1").arg(height) );
-  
-  RenderApplet *f = new RenderApplet(m_style, view, QSize(width, height),
-                                     view->part()->url(), &args);
   if(f) 
   {
       m_render = f;
@@ -205,14 +211,14 @@ void HTMLObjectElementImpl::setTabIndex( long  )
 
 HTMLParamElementImpl::HTMLParamElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc)
 {
-    name = 0;
-    value = 0;
+    m_name = 0;
+    m_value = 0;
 }
 
 HTMLParamElementImpl::~HTMLParamElementImpl()
 {
-    if(name) delete name;
-    if(value) delete value;
+    if(m_name) delete m_name;
+    if(m_value) delete m_value;
 }
 
 const DOMString HTMLParamElementImpl::nodeName() const
@@ -230,12 +236,12 @@ void HTMLParamElementImpl::parseAttribute(Attribute *attr)
     switch( attr->id )
     {
     case ATTR_NAME:
-	name = attr->val();
-	name->ref();
+        m_name = attr->val();
+	m_name->ref();
 	break;
     case ATTR_VALUE:
-	value = attr->val();
-	value->ref();
+	m_value = attr->val();
+	m_value->ref();
 	break;
     }
 }

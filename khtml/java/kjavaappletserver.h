@@ -14,6 +14,10 @@
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.5  2000/01/27 23:41:56  rogozin
+ * All applet parameters are passed to KJAS now
+ * Next step - make use of them.
+ *
  * Revision 1.4  1999/12/14 19:56:59  rich
  * Many fixes, see changelog
  *
@@ -38,21 +42,12 @@ Q_OBJECT
 
 public:
     /**
-     * Create the applet server.
-     */
-    KJavaAppletServer();
-
-    /**
      * A factory method that returns the default server. This is the way this
      * class is usually instantiated.
      */
-    static KJavaAppletServer *getDefaultServer();
+    static KJavaAppletServer *allocateJavaServer();
+    static void               freeJavaServer();
     
-    /**
-     * Quits the default server and allows a new server to be created.
-     */
-    static void killDefaultServer();
-
     /**
      * Create an applet context with the specified id.
      */
@@ -109,6 +104,14 @@ public:
 protected:
     KJavaProcess *process;
     struct KJavaAppletServerPrivate *d;
+
+    /**
+     * Create the applet server.
+     */
+    KJavaAppletServer();
+    ~KJavaAppletServer();
+private:
+    void setupJava( KJavaProcess *p );
 };
 
 #endif // KJAVAAPPLETSERVER_H

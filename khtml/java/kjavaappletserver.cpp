@@ -1,37 +1,92 @@
+#include <stdlib.h>  
+
 #include <kjavaappletserver.moc>
 #include <kjavaprocess.h>
+#include <kconfig.h>
+#include <kstddirs.h>
 
 // For future expansion
 struct KJavaAppletServerPrivate
 {
-
+   int counter;
 };
 
-static KJavaAppletServer *server = 0;
+static KJavaAppletServer *self = 0;
 
 KJavaAppletServer::KJavaAppletServer()
 {
-  process = new KJavaProcess();
-  CHECK_PTR( process );
+   d = new KJavaAppletServerPrivate;
+   CHECK_PTR( d );
 
-  process->setMainClass( "org.kde.kjas.server.Main" );
-  process->startJava();
+   process = new KJavaProcess();
+   CHECK_PTR( process );
+   
+   setupJava( process );
+   
+   process->startJava();
 }
 
-KJavaAppletServer *KJavaAppletServer::getDefaultServer()
+KJavaAppletServer::~KJavaAppletServer()
 {
-  if ( server == 0 ) {
-    server = new KJavaAppletServer();
-    CHECK_PTR( server );
-  }
-
-  return server;
+   delete process;
 }
 
-void KJavaAppletServer::killDefaultServer()
+KJavaAppletServer* KJavaAppletServer::allocateJavaServer() 
 {
-    server->quit();
-    server = 0;
+   if( self == 0 ) {
+      self = new KJavaAppletServer();
+      self->d->counter = 0;
+   }
+   
+   self->d->counter++;
+   return self;
+}
+
+void KJavaAppletServer::freeJavaServer() 
+{
+   self->d->counter--;
+   
+   if( self->d->counter == 0 ) {   
+      self->quit();
+      delete self;
+      self = 0;
+   }
+}
+
+void KJavaAppletServer::setupJava( KJavaProcess *p ) 
+{
+    KConfig config ( "konquerorrc", true );
+    config.setGroup( "HTML Settings" );
+    
+    if( config.readBoolEntry( "JavaAutoDetect", true) ) 
+        p->setJVMPath( "java" );
+    else
+        p->setJVMPath( config.readEntry( "JavaPath", "/usr/lib/jdk" ) + "/java" );
+    
+    QString extraArgs = config.readEntry( "JavaArgs", "" );
+    
+    if( config.readBoolEntry( "ShowJavaConsole", false) )
+        extraArgs = "-Dkjas.showConsole " + extraArgs;
+      
+    p->setExtraArgs( extraArgs );
+    
+    p->setMainClass( "org.kde.kjas.server.Main" );
+    
+    // Prepare classpath
+    QString kjava_classes = locate("data", "kjava/kjava-classes.zip");
+    if( kjava_classes.isNull() ) // Should not happen
+        return;
+    
+    QString new_classpath = "CLASSPATH=" +  kjava_classes;
+    
+    char *classpath = getenv("CLASSPATH");
+    if(classpath) {
+        new_classpath += ":";
+        new_classpath += classpath;
+    }
+    
+    // Need strdup() to prevent freeing the memory we provide to putenv
+    putenv(strdup(new_classpath.latin1()));
 }
 
 void KJavaAppletServer::createContext( int contextId )
