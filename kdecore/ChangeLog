@@ -1,0 +1,5 @@
+Thu Mar 26 22:51:27 1998  Torben Weis  <weis@localhost>
+
+	* kurl.cpp: Fixed little bug. Copy constructor did
+	            not copy bNoPath.
+

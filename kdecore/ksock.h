@@ -21,6 +21,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.15  1998/01/24 11:13:58  kulow
+ * changed the order of the header files
+ *
  * Revision 1.14  1998/01/24 00:12:02  kulow
  * added sys/socket.h
  *
@@ -98,7 +101,7 @@
 #include <sys/types.h>
 #include <sys/socket.h> 
 #include <sys/un.h>
-#include <netinet/in.h> 
+#include <netinet/in.h>
 
 #include <qsocknot.h>
 

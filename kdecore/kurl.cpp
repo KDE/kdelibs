@@ -147,6 +147,7 @@ KURL::KURL( KURL & _base_url, const char * _rel_url )
     dir_part = _base_url.dir_part;
     user_part = _base_url.user_part;
     passwd_part = _base_url.passwd_part;
+    bNoPath = _base_url.bNoPath;
     detach();
     
     if ( strstr( _rel_url, ":/" ) == 0 )
