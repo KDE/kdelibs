@@ -959,6 +959,11 @@ InternalFunctionImp::InternalFunctionImp(FunctionPrototypeImp *funcProto)
 {
 }
 
+InternalFunctionImp::InternalFunctionImp(ExecState *exec)
+  : ObjectImp(static_cast<FunctionPrototypeImp*>(exec->interpreter()->builtinFunctionPrototype().imp()))
+{
+}
+
 bool InternalFunctionImp::implementsHasInstance() const
 {
   return true;

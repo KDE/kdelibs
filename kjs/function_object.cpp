@@ -38,7 +38,7 @@ using namespace KJS;
 // ------------------------------ FunctionPrototypeImp -------------------------
 
 FunctionPrototypeImp::FunctionPrototypeImp(ExecState *exec)
-  : InternalFunctionImp(0)
+  : InternalFunctionImp((FunctionPrototypeImp*)0)
 {
   Value protect(this);
   putDirect(toStringPropertyName,
