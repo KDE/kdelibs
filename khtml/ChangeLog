@@ -1,5 +1,13 @@
 2004-02-16  Germain Garand  <germain@ebooksfrance.org>
 
+        * css/cssstyleselector.cpp (styleForElement): pseudo-elements
+        use their subject's style as parentStyle -e.g: 'inherit' value.
+        (adjustRenderStyle): mutate pseudo style display to block if
+        needed (floating or ps. content) as allowed by recent CSS2.1
+        draft.
+
+2004-02-16  Germain Garand  <germain@ebooksfrance.org>
+
         * rendering/render_block.cpp (setStyle): skip pseudo
         styles when updating anonymous blocks'style (#73978).
         (addChildToFlow):don't crash when installing 
