@@ -212,57 +212,52 @@ void KApplicationTree::parseDesktopFile( QFileInfo *fi, KAppTreeListItem *item, 
 
 void KApplicationTree::parseDesktopDir( QString relPath, KAppTreeListItem *item)
 {
-  // for one relative path, like "Applications", there can be several real
-  // dirs (ex : a global one and a local one). Parse them both.
+    // for one relative path, like "Applications", there can be several real
+    // dirs (ex : a global one and a local one). Parse them both.
     QStringList list = KGlobal::dirs()->findDirs("apps", relPath);
-    for (QStringList::ConstIterator dirsit = list.begin(); dirsit != list.end(); dirsit++)
-    {
-      //debug(QString("(*dirsit): '%1'").arg((*dirsit))); 
-      QDir d( (*dirsit) );
-      if( d.exists() )
-      {
-        d.setSorting( SORT_SPEC );
-        QList <QString> item_list;
-	
-        const QFileInfoList *list = d.entryInfoList();
-        QFileInfoListIterator it( *list );
-        QFileInfo *fi;
-        
-        if( it.count() < 3 ) // empty dir
-          return;
-        
-        while( ( fi = it.current() ) ) {
-          if( fi->fileName() == "." || fi->fileName() == ".." ) {
-            ++it;
-            continue;
-          }
-          // check if item already in list (e.g. parsed from ~/.kde)
-          QListViewItem * pChild = item ? item->firstChild() : this->firstChild();
-          bool found = false;
-          while( pChild && !found ) {
-            found = ( ((KAppTreeListItem *)pChild)->path == relPath + fi->fileName() );
-            pChild = pChild->nextSibling();
-          }
-          if ( found )
-          {
-            //debug(QString("skipping %1 | %2").arg(*dirsit).arg(fi->fileName()));
-            ++it;
-            continue;
-          }
-          
-          if( fi->isDir() ) {
-            parseDesktopFile( fi, item, relPath );
-          }
-          else {
-            if( !isDesktopFile( fi->absFilePath() ) ) {
-              ++it;
-              continue;
+    for (QStringList::ConstIterator dirsit = list.begin(); dirsit != list.end(); dirsit++) {
+        //debug(QString("(*dirsit): '%1'").arg((*dirsit))); 
+        QDir d( (*dirsit) );
+        if( d.exists() ) {
+            debug("dirs exists");
+            d.setSorting( SORT_SPEC );
+            QList <QString> item_list;
+            
+            const QFileInfoList *list = d.entryInfoList();
+            QFileInfoListIterator it( *list );
+            QFileInfo *fi;
+            
+            while( ( fi = it.current() ) ) {
+                if( fi->fileName() == "." || fi->fileName() == ".." ) {
+                    ++it;
+                    continue;
+                }
+                // check if item already in list (e.g. parsed from ~/.kde)
+                QListViewItem * pChild = item ? item->firstChild() : this->firstChild();
+                bool found = false;
+                while( pChild && !found ) {
+                    found = ( ((KAppTreeListItem *)pChild)->path == relPath + fi->fileName() );
+                    pChild = pChild->nextSibling();
+                }
+                if ( found ) {
+                    debug(QString("skipping %1 | %2").arg(*dirsit).arg(fi->fileName()));
+                    ++it;
+                    continue;
+                }
+                
+                if( fi->isDir() ) {
+                    parseDesktopFile( fi, item, relPath );
+                }
+                else {
+                    if( !isDesktopFile( fi->absFilePath() ) ) {
+                        ++it;
+                        continue;
+                    }
+                    parseDesktopFile( fi, item, relPath );
+                }
+                ++it;
             }
-            parseDesktopFile( fi, item, relPath );
-          }
-          ++it;
         }
-      }
     }
 }
 
