@@ -137,38 +137,6 @@ static char * trimLead (char *orig_string)
   return orig_string;
 }
 
-/*
-    Domain suffix match. E.g. return true if host is "cuzco.inka.de" and
-    nplist is "inka.de,hadiko.de" or if host is "localhost" and nplist is
-    "localhost".
-*/
-bool revmatch(const char *host, const char *nplist)
-{
-  const char *hptr = host + strlen( host ) - 1;
-  const char *nptr = nplist + strlen( nplist ) - 1;
-  const char *shptr = hptr;
-
-  while ( nptr >= nplist )
-  {
-    if ( *hptr != *nptr )
-    {
-      hptr = shptr;
-      // Try to find another domain or host in the list
-      while(--nptr>=nplist && *nptr!=',' && *nptr!=' ') ;
-      // Strip out multiple spaces and commas
-      while(--nptr>=nplist && (*nptr==',' || *nptr==' ')) ;
-    }
-    else
-    {
-      if ( nptr==nplist || nptr[-1]==',' || nptr[-1]==' ')
-        return true;
-      hptr--; nptr--;
-    }
-  }
-
-  return false;
-}
-
 /************************************** HTTPProtocol **********************************************/
 
 HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, const QCString &app )
@@ -397,13 +365,6 @@ bool HTTPProtocol::http_isConnected()
 
 void HTTPProtocol::http_checkConnection()
 {
-  // Do we want to use a proxy ?
-  // If so, we had first better make sure that
-  // our host isn't on the "No Proxy List".
-  if (m_request.do_proxy && !m_strNoProxyFor.isEmpty())
-    m_request.do_proxy = !revmatch( m_request.hostname.lower().latin1(),
-                                    m_strNoProxyFor.lower().latin1() );
-
   if (m_sock)
   {
      bool closeDown = false;
@@ -2064,6 +2025,9 @@ void HTTPProtocol::setHost(const QString& host, int port, const QString& user, c
   if ( port == 0 )
      port = m_DefaultPort;
 
+  m_proxyURL = metaData("UseProxy");
+  kdDebug(7113) << "Proxy URL is now: " << m_proxyURL.url() << endl;
+  m_bUseProxy = m_proxyURL.isValid();
   m_request.port = port;
   m_request.user = user;
   m_request.passwd = pass;
@@ -2267,7 +2231,7 @@ bool HTTPProtocol::checkRequestURL( const KURL& u )
      return false;
   }
 
-  if ( m_request.url.protocol() != u.protocol() )
+  if ( m_protocol != u.protocol().latin1() )
   {
     short unsigned int oldDefaultPort = m_DefaultPort;
     m_protocol = u.protocol().latin1();
@@ -3700,33 +3664,11 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
 void HTTPProtocol::reparseConfiguration()
 {
   kdDebug(7103) << "(" << getpid() << ") Reparse Configuration!" << endl;
-  m_bUseProxy = false;
   m_strProxyRealm = QString::null;
   m_strProxyAuthorization = QString::null;
-  if ( KProtocolManager::useProxy() )
-  {
-    //
-    m_bAutoProxyCfg = KProtocolManager::hasProxyConfigScript();
-    if ( !m_bAutoProxyCfg )
-    {
-      m_proxyURL = KURL( KProtocolManager::proxyFor( m_protocol ) );
-      if (!m_proxyURL.isMalformed() )
-      {
-        m_bUseProxy = true;
-        m_strNoProxyFor = KProtocolManager::noProxyFor();
-        ProxyAuthentication = AUTH_None;
-        kdDebug(7103) << "(" << getpid() << ") Setting Proxy configuration:" << endl
-                      << "HOST= " << m_proxyURL.host() << endl
-                      << "PORT= " << m_proxyURL.port() << endl
-                      << "REALM= " << m_strProxyRealm << endl
-                      << "AUTH_STRING= " << m_strProxyAuthorization << endl
-                      << "No Proxy for= " << m_strNoProxyFor << endl;
-      }
-      else
-        kdDebug(7103) << "Proxy URL \"" << m_proxyURL.url() << "\" is either "
-                      << "MALFORMED or NOT SUPPORTED. IGNORING it!!" << endl;
-    }
-  }
+
+  ProxyAuthentication = AUTH_None;
+
   m_bSendUserAgent = KProtocolManager::sendUserAgent();
   m_bUseCache = KProtocolManager::useCache();
   if (m_bUseCache)
