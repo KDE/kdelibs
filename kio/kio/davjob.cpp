@@ -66,20 +66,32 @@ void DavJob::slotFinished()
 {
   // kdDebug() << "DavJob::slotFinished()" << endl;
   // kdDebug() << m_str_response << endl;
+	if (!m_redirectionURL.isEmpty() && !m_redirectionURL.isMalformed() && (m_command == CMD_SPECIAL)) {
+        QDataStream istream( m_packedArgs, IO_ReadOnly );
+		int s_cmd, s_method;
+		KURL s_url;
+		istream >> s_cmd;
+		istream >> s_url;
+		istream >> s_method;
+		// PROPFIND
+		if ( (s_cmd == 7) && (s_method == (int)KIO::DAV_PROPFIND) ) {
+			m_packedArgs.truncate(0);
+			QDataStream stream( m_packedArgs, IO_WriteOnly );
+			stream << (int)7 << m_redirectionURL << (int)KIO::DAV_PROPFIND;
+		}
+	} else if ( ! m_response.setContent( m_str_response, true ) ) {
+		// An error occurred parsing the XML response
+		QDomElement root = m_response.createElementNS( "DAV:", "error-report" );
+		m_response.appendChild( root );
 
-  if ( ! m_response.setContent( m_str_response, true ) ) {
-    // An error occurred parsing the XML response
-    QDomElement root = m_response.createElementNS( "DAV:", "error-report" );
-    m_response.appendChild( root );
+		QDomElement el = m_response.createElementNS( "DAV:", "offending-response" );
+		QDomText textnode = m_response.createTextNode( m_str_response );
+		el.appendChild( textnode );
+		root.appendChild( el );
+	}
 
-    QDomElement el = m_response.createElementNS( "DAV:", "offending-response" );
-    QDomText textnode = m_response.createTextNode( m_str_response );
-    el.appendChild( textnode );
-    root.appendChild( el );
-  }
-
-  // kdDebug() << m_response.toString() << endl;
-  TransferJob::slotFinished();
+	// kdDebug() << m_response.toString() << endl;
+	TransferJob::slotFinished();
 }
 
 /* Convenience methods */
