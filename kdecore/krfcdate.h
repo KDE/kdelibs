@@ -40,7 +40,8 @@ public:
     * date will not be confused with an improper date string.
     *
     * The date/time returned is converted to UTC.
-    *
+    * @param date the date to parse
+    * @return the date, or 0 if not possible
     */
    static time_t parseDate(const QString &date);
 
@@ -56,12 +57,14 @@ public:
     *
     * The date/time returned is converted to UTC.
     *
+    * @param date the date to parse
+    * @return the date, or 0 if not possible
     */
    static time_t parseDateISO8601(const QString &date);
 
   /**
    * Returns the local timezone offset to UTC in minutes
-   *
+   * @return the local timezone offset in minutes
    */
    static int localUTCOffset();
 
@@ -72,7 +75,7 @@ public:
    *
    * @param utcTime    a date and time in UTC
    * @param utcOffset  the offset to UTC in minutes
-   *
+   * @return the string representation of the date
    */
 
    static QCString rfc2822DateString(time_t utcTime, int utcOffset);
@@ -86,7 +89,7 @@ public:
    * rfc2822DateString(t, localUTCOffset()).
    *
    * @param utcTime    a date and time in UTC
-   *
+   * @return the string representation of the date
    */
 
    static QCString rfc2822DateString(time_t utcTime);

@@ -54,33 +54,45 @@ public:
     /**
      * Allocate a virtual memory block.
      * @param _size Size in bytes of the memory block.
+     * @return the allocated memory block
      */
     Block *allocate(size_t _size);
     
     /**
-     * Free a virtual memory block
+     * Free a virtual memory block.
+     * @param block the block to free
      */
     void free(Block *block);
     
     /**
      * Copy @p length bytes from @p _offset in the virtual memory block 
-     * @p src to normal memory at address *dest
+     * @p src to normal memory at address *dest.
+     * @param dest the destination of the data
+     * @param src the source block
+     * @param _offset the offset in the source block
+     * @param length the length of the data to copy
      */
     void copy(void *dest, Block *src, int _offset = 0, size_t length = 0);
      
     /**
      * Copy @p length bytes from normal memory at address @p src to 
      * @p _offset in the virtual memory block @p dest.
+     * @param dest the block to copy the data to
+     * @param src the source location of the data
+     * @param _offset the offset in the destination block
+     * @param length the length of the data to copy
      */
     void copy(Block *dest, void *src, int _offset = 0, size_t length = 0);  
 
     /**
      * Map a virtual memory block in memory
+     * @param block the block to map
      */
     void *map(Block *block);
     
     /**
      * Unmap a virtual memory block
+     * @param block the block to unmap
      */
     void unmap(Block *block);
     
