@@ -351,7 +351,7 @@ void KFileDialog::slotStatResult(KIO::Job* job) {
     if (dir) {
        setURL( d->statjob->url() );
        d->statjob = 0;
-        return;
+       return;
     }
 
     d->statjob = 0;
@@ -368,7 +368,7 @@ void KFileDialog::accept()
                                          false);
     saveConfig( c, ConfigGroup );
     delete c;
-
+    
     KDialogBase::accept();
 }
 
@@ -966,19 +966,23 @@ KURL::List KFileDialog::selectedURLs() const
 {
     KURL::List list;
     if ( result() == QDialog::Accepted ) {
-	QString name;
-	QString url = ops->url().url( +1 );
-	// FIXME: check for local files?
+	if ( (ops->mode() & KFile::Files) == KFile::Files ) {
+	    QString name;
+	    QString url = ops->url().url( +1 );
+	    // FIXME: check for local files?
 
-	static QRegExp r( QString::fromLatin1( "\"" ) );
-	static QString empty = QString::fromLatin1("");
-	QTextStream t( &(d->filenames), IO_ReadOnly );
-	while ( !t.eof() ) {
-	    t >> name;
-	    name.replace( r, empty );
-	    name.prepend( url );
-	    list.append( KURL( name ) );
+	    static QRegExp r( QString::fromLatin1( "\"" ) );
+	    static QString empty = QString::fromLatin1("");
+	    QTextStream t( &(d->filenames), IO_ReadOnly );
+	    while ( !t.eof() ) {
+		t >> name;
+		name.replace( r, empty );
+		name.prepend( url );
+		list.append( KURL( name ) );
+	    }
 	}
+	else
+	    list.append( d->url );
     }
     return list;
 }
