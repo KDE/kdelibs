@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -219,7 +219,7 @@ void KMVirtualManager::loadFile(const QString& filename)
 		QString		line;
 		QStringList	words;
 		QStringList	pair;
-		KMPrinter	*printer;
+		KMPrinter	*printer, *realprinter;
 
 		while (!t.eof())
 		{
@@ -227,21 +227,30 @@ void KMVirtualManager::loadFile(const QString& filename)
 			if (line.isEmpty()) continue;
 			words = QStringList::split(' ',line,false);
 			if (words.count() < 2) continue;
-			printer = new KMPrinter();
-			printer->setName(words[1]);
 			pair = QStringList::split('/',words[1],false);
-			printer->setPrinterName(pair[0]);
-			if (pair.count() > 1)
-				printer->setInstanceName(pair[1]);
-			checkPrinter(printer);
-			for (uint i=2; i<words.count(); i++)
-			{
-				pair = QStringList::split('=',words[i],false);
-				printer->setDefaultOption(pair[0],(pair.count() > 1 ? pair[1] : QString::null));
+			realprinter = KMFactory::self()->manager()->findPrinter(pair[0]);
+			if (realprinter && !realprinter->isDiscarded())
+			{ // keep only instances corresponding to an existing and
+			  // non discarded printer.
+			  	// "clone" the real printer and modify settings as needed
+				printer = new KMPrinter(*realprinter);
+				printer->setName(words[1]);
+				printer->setPrinterName(pair[0]);
+				if (pair.count() > 1)
+					printer->setInstanceName(pair[1]);
+				printer->addType(KMPrinter::Virtual);
+				// parse options
+				for (uint i=2; i<words.count(); i++)
+				{
+					pair = QStringList::split('=',words[i],false);
+					printer->setDefaultOption(pair[0],(pair.count() > 1 ? pair[1] : QString::null));
+				}
+				// add printer to the manager
+				addPrinter(printer);	// don't use "printer" after this point !!!
+				// check default state
+				if (words[0].lower() == "default")
+					setDefault(findPrinter(words[1]),false);
 			}
-			addPrinter(printer);	// don't use "printer" after this point !!!
-			if (words[0].lower() == "default")
-				setDefault(findPrinter(words[1]),false);
 		}
 	}
 }

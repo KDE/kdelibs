@@ -358,7 +358,12 @@ void KMMainView::slotAdd()
 	if (dlg.exec())
 	{
 		flag = true;
-		if (!m_manager->createPrinter(dlg.printer()))
+		// check if the printer already exists, and ask confirmation if needed.
+		if (m_manager->findPrinter(dlg.printer()->name()) != 0)
+			if (KMessageBox::warningYesNo(this,i18n("<nobr>The printer <b>%1</b> already exists. Continuing will<br>overwrite existing printer. Do you want to continue ?</nobr>").arg(dlg.printer()->name())) == KMessageBox::No)
+				flag = false;
+		// try to add printer only if flag is true.
+		if (flag && !m_manager->createPrinter(dlg.printer()))
 			showErrorMsg(i18n("Unable to create printer."));
 	}
 	KMTimer::releaseTimer(flag);

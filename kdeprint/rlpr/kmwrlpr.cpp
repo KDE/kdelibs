@@ -112,6 +112,15 @@ void KMWRlpr::updatePrinter(KMPrinter *p)
 	p->setOption("host",m_host->text());
 	p->setOption("queue",m_queue->text());
 	p->setOption("kde-backend-description",i18n("Remote LPD queue"));
+	// setting default name and description, but only if the "name()" is empty
+	// which is the case on first pass when adding a printer. This prevents from
+	// bad side-effects when simply modifying an existing printer.
+	if (p->name().isEmpty())
+	{
+		p->setName(m_queue->text());
+		p->setPrinterName(p->name());
+		p->setDescription(i18n("Remote queue %1 on %2").arg(m_queue->text()).arg(m_host->text()));
+	}
 }
 
 void KMWRlpr::initialize()

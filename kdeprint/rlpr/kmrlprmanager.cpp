@@ -101,7 +101,7 @@ void KMRlprManager::loadPrintersConf(const QString& filename)
 			line = t.readLine().stripWhiteSpace();
 			if (line.isEmpty() || line[0] == '#')
 				continue;
-			QStringList	w = QStringList::split('\t',line,false);
+			QStringList	w = QStringList::split('\t',line,true);
 			if (w.count() < 3)
 				continue;
 
@@ -116,7 +116,6 @@ void KMRlprManager::loadPrintersConf(const QString& filename)
 				printer->setDescription(w[3]);
 				if (w.count() > 4) printer->setLocation(w[4]);
 			}
-			else printer->setDescription(i18n("Remote queue %1 on %2").arg(w[2]).arg(w[1]));
 			printer->setState(KMPrinter::Idle);
 			printer->setDevice(KURL(QString::fromLatin1("lpd://%1/%2").arg(w[1]).arg(w[2])));
 
@@ -147,11 +146,7 @@ void KMRlprManager::savePrintersConf(const QString& filename)
 				if (!host.isEmpty() && !queue.isEmpty())
 				{
 					t << it.current()->name() << '\t' << host << '\t' << queue;
-					if (!it.current()->description().isEmpty())
-						t << '\t' << it.current()->description();
-					if (!it.current()->location().isEmpty())
-						t << '\t' << it.current()->location();
-					t << endl;
+					t << '\t' << it.current()->description() << '\t' << it.current()->location() << endl;
 				}
 			}
 		}
