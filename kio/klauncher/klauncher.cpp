@@ -178,7 +178,8 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
    }
    if ((fun == "start_service_by_name(QString,QStringList)") ||
        (fun == "start_service_by_desktop_path(QString,QStringList)")||
-       (fun == "start_service_by_desktop_name(QString,QStringList)"))
+       (fun == "start_service_by_desktop_name(QString,QStringList)")||
+       (fun == "kdeinit_exec(QString,QStringList)"))
    {
       QDataStream stream(data, IO_ReadOnly);
 
@@ -200,10 +201,15 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
          kdDebug(7016) << "KLauncher: Got start_service_by_desktop_path('" << serviceName << "', ...)" << endl;
          finished = start_service_by_desktop_path(serviceName, urls);
       }
-      else
+      else if (fun == "start_service_by_desktop_name(QString,QStringList)")
       {
          kdDebug(7016) << "KLauncher: Got start_service_by_desktop_name('" << serviceName << "', ...)" << endl;
          finished = start_service_by_desktop_name(serviceName, urls);
+      }
+      else
+      {
+         kdDebug(7016) << "KLauncher: Got kdeinit_exec('" << serviceName << "', ...)" << endl;
+         finished = kdeinit_exec(serviceName, urls);
       }
       if (!finished)
       {
@@ -597,6 +603,29 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls, bool b
    return true;
 }
 
+bool
+KLauncher::kdeinit_exec(const QString &app, const QStringList &args)
+{
+   KLaunchRequest *request = new KLaunchRequest;
+
+   for(QStringList::ConstIterator it = args.begin();
+       it != args.end();
+       it++)
+   {
+       QString arg = *it;
+       request->arg_list.append(arg.local8Bit());
+   }
+
+   request->name = app.local8Bit();
+
+   request->dcop_service_type = KService::DCOP_None;
+   request->dcop_name = 0;
+   request->pid = 0;
+   request->transaction = dcopClient()->beginTransaction();
+   queueRequest(request);
+   return true;
+}
+
 void
 KLauncher::queueRequest(KLaunchRequest *request)
 {
@@ -686,24 +715,24 @@ KLauncher::createArgs( KLaunchRequest *request, const KService::Ptr service ,
          {
             arg = arg.mid(1, arg.length()-2);
          }
-         request->arg_list.append(QCString(arg.ascii()));
+         request->arg_list.append(arg.local8Bit());
      }
   }
 
   // Service Name
-  replaceArg(request->arg_list, "%c", service->name().ascii());
+  replaceArg(request->arg_list, "%c", service->name().local8Bit());
 
   // Icon
   if (service->icon().isEmpty())
     removeArg(request->arg_list, "%i");
   else
-    replaceArg(request->arg_list, "%i", service->icon().ascii(), "-icon");
+    replaceArg(request->arg_list, "%i", service->icon().local8Bit(), "-icon");
 
   // Mini-icon
   if (service->icon().isEmpty())
     removeArg(request->arg_list, "%m");
   else
-    replaceArg(request->arg_list, "%m", service->icon().ascii(), "-miniicon");
+    replaceArg(request->arg_list, "%m", service->icon().local8Bit(), "-miniicon");
 
   // Desktop-file
   replaceArg(request->arg_list, "%k", QFile::encodeName(service->desktopEntryPath()));

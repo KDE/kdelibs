@@ -25,30 +25,16 @@
 #include <qvaluelist.h>
 #include <kservice.h>
 
-/*
-static void
-exec_blind( QCString name, const QValueList<QCString> &args)
-{
-   QByteArray params;
-   QDataStream stream(params, IO_WriteOnly);
-   stream << name << args;
-   if (!kapp->dcopClient()->send("klauncher", "klauncher", 
-	"exec_blind(QCString, QValueList<QCString>)", params))
-	printf("There was some error using DCOP!\n");
-}
-*/
 
 int main(int argc, char *argv[])
 {
+   KApplication::kdeinitExec("konsole");
+
    KApplication k(argc, argv, "klaunchertest");
  
    kapp->dcopClient()->registerAs( kapp->name()) ;
 
-   QValueList<QCString> args;
-
-//   exec_blind("konsole", args);
-
-
+#if 0
    QString error;
    QCString dcopService;
    int pid;
@@ -63,5 +49,6 @@ int main(int argc, char *argv[])
 
    printf("Result = %d, error = \"%s\", dcopService = \"%s\", pid = %d\n",
       result, error.ascii(), dcopService.data(), pid);
+#endif
 }
 

@@ -105,6 +105,7 @@ protected:
    bool start_service_by_name(const QString &serviceName, const QStringList &urls);
    bool start_service_by_desktop_path(const QString &serviceName, const QStringList &urls);
    bool start_service_by_desktop_name(const QString &serviceName, const QStringList &urls);
+   bool kdeinit_exec(const QString &app, const QStringList &args);
 
    bool allowMultipleFiles(const KService::Ptr service);
 
