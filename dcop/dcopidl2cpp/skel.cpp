@@ -46,6 +46,16 @@ static int const primes[] =
     547, 557, 563, 569, 571, 577, 587, 593, 599, 601,0
 };
 
+
+struct Function
+{
+    Function(){};
+    Function( const QString& t, const QString& n ) : type( t ), name( n ){}
+    QString type;
+    QString name;
+};
+
+
 /**
  * Writes the skeleton
  */
@@ -85,13 +95,13 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	    }
 	
 	    // get function table
-	    QStringList funcNames;
+	    QValueList<Function> functions;
 	    s = n.nextSibling().toElement();
 	    for( ; !s.isNull(); s = s.nextSibling().toElement() ) {
 		if ( s.tagName() == "FUNC" ) {
 		    QDomElement r = s.firstChild().toElement();
 		    ASSERT( r.tagName() == "TYPE" );
-		    QString result = r.firstChild().toText().data();
+		    QString funcType = r.firstChild().toText().data();
 		    r = r.nextSibling().toElement();
 		    ASSERT ( r.tagName() == "NAME" );
 		    QString funcName = r.firstChild().toText().data();
@@ -112,15 +122,15 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 			funcName += *it;
 		    }
 		    funcName += ")";
-		    funcNames.append( funcName );
+		    functions.append( Function( funcType, funcName ) );
 		}
 	    }
 
 	    // create static tables
 	
-	    int fhash = funcNames.count() + 1;
+	    int fhash = functions.count() + 1;
 	    for ( int i = 0; primes[i]; i++ ) {
-		if ( primes[i] > (int) funcNames.count() ) {
+		if ( primes[i] > (int) functions.count() ) {
 		    fhash = primes[i];
 		    break;
 		}
@@ -128,16 +138,16 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	
 	    str << "#include <kdatastream.h>" << endl;
 
-	    bool useHashing = funcNames.count() > 7;
+	    bool useHashing = functions.count() > 7;
 	    if ( useHashing ) {
 		str << "#include <qasciidict.h>" << endl;
 		str << "static const int " << className << "_fhash = " << fhash << ";" << endl;
 	    }
-	    str << "static const char* const " << className << "_ftable[ " << funcNames.count() + 1 << " ] = {" << endl;
-	    for( QStringList::Iterator it = funcNames.begin(); it != funcNames.end(); ++it ){
-		str << "    \"" << *it << "\"," << endl;
+	    str << "static const char* const " << className << "_ftable[" << functions.count() + 1 << "][2] = {" << endl;
+	    for( QValueList<Function>::Iterator it = functions.begin(); it != functions.end(); ++it ){
+		str << "    { \"" << (*it).type << "\", \"" << (*it).name << "\" }," << endl;
 	    }
-	    str << "    0" << endl;
+	    str << "    { 0, 0 }" << endl;
 	    str << "};" << endl;
 	
 	    str << endl;
@@ -152,8 +162,8 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	
 		str << "    if ( !fdict ) {" << endl;
 		str << "\tfdict = new QAsciiDict<int>( " << className << "_fhash, TRUE, FALSE );" << endl;
-		str << "\tfor ( int i = 0; " << className << "_ftable[i]; i++ )" << endl;
-		str << "\t    fdict->insert( " << className << "_ftable[i],  new int( i ) );" << endl;
+		str << "\tfor ( int i = 0; " << className << "_ftable[i][1]; i++ )" << endl;
+		str << "\t    fdict->insert( " << className << "_ftable[i][1],  new int( i ) );" << endl;
 		str << "    }" << endl;
 	
 		str << "    int* fp = fdict->find( fun );" << endl;
@@ -166,9 +176,9 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 		if ( s.tagName() == "FUNC" ) {
 		    QDomElement r = s.firstChild().toElement();
 		    ASSERT( r.tagName() == "TYPE" );
-		    QString result = r.firstChild().toText().data();
-		    if ( result == "ASYNC" )
-			result = "void";
+		    QString funcType = r.firstChild().toText().data();
+		    if ( funcType == "ASYNC" )
+			funcType = "void";
 		    r = r.nextSibling().toElement();
 		    ASSERT ( r.tagName() == "NAME" );
 		    QString funcName = r.firstChild().toText().data();
@@ -194,12 +204,12 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 		    funcName += ")";
 			
 		    if ( useHashing ) {
-			str << "    case " << fcount++ << ": { // " << funcName << endl;
+			str << "    case " << fcount << ": { // " << funcType << " " << funcName << endl;
 		    } else {
 			if ( firstFunc )
-			    str << "    if ( fun == " << className << "_ftable[" << fcount++ << "] ) {" << endl;
+			    str << "    if ( fun == " << className << "_ftable[" << fcount << "][1] ) { // " << funcType << " " << funcName << endl;
 			else
-			    str << " else if ( fun == " << className << "_ftable[" << fcount++ << "] ) {" << endl;
+			    str << " else if ( fun == " << className << "_ftable[" << fcount << "][1] ) { // " << funcType << " " << funcName << endl;
 			firstFunc = FALSE;
 		    }
 		    if ( !args.isEmpty() ) {
@@ -214,12 +224,12 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 			}
 		    }
 
-		    str << "\treplyType = \"" << result << "\";" << endl;
-		    if ( result == "void" ) {
+		    str << "\treplyType = " << className << "_ftable[" << fcount++ << "][0]; " << endl;
+		    if ( funcType == "void" ) {
 			str << "\t" << plainFuncName << "(";
 		    } else {
-			str << "\tQDataStream _reply_stream( replyData, IO_WriteOnly );"  << endl;
-			str << "\t_reply_stream << " << plainFuncName << "(";
+			str << "\tQDataStream _replyStream( replyData, IO_WriteOnly );"  << endl;
+			str << "\t_replyStream << " << plainFuncName << "(";
 		    }
 
 		    first = TRUE;
@@ -259,10 +269,12 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	    } else {
 		str << "    QCString s;" << endl;
 	    }
-	    str << "    for ( int i = 0; " << className << "_ftable[i]; i++ ) {" << endl;
-	    str << "\ts += " << className << "_ftable[i];" << endl;
+	    str << "    for ( int i = 0; " << className << "_ftable[i][1]; i++ ) {" << endl;
+	    str << "\ts += " << className << "_ftable[i][0];" << endl;
+	    str << "\ts += ' ';" << endl;
+	    str << "\ts += " << className << "_ftable[i][1];" << endl;
 	    str << "\ts += ';';" << endl;
-	    str << "    };" << endl;
+	    str << "    }" << endl;
 	    str << "    return s;" << endl;
 	    str << "}" << endl << endl;
 	}

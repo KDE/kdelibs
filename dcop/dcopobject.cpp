@@ -140,7 +140,7 @@ bool DCOPObject::processDynamic( const QCString&, const QByteArray&, QCString&, 
 
 QCString DCOPObject::functions()
 {
-    return "functions();";
+    return "QStringList functions();";
 }
 
 QList<DCOPObjectProxy>* DCOPObjectProxy::proxies = 0;
