@@ -1,3 +1,7 @@
+2005-03-30  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        * html/htmlparser.{h,cpp}: Merge WebCore handling of residual styles.
+
 2005-03-29  Germain Garand  <germain@ebooksfrance.org>
 
         Layer related fixes.

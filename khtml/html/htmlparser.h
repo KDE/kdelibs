@@ -5,6 +5,7 @@
               (C) 1997 Torben Weis (weis@kde.org)
               (C) 1998 Waldo Bastian (bastian@kde.org)
               (C) 1999 Lars Knoll (knoll@kde.org)
+              (C) 2003 Apple Computer, Inc.
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -121,12 +122,17 @@ private:
     void pushBlock( int _id, int _level);
 
     void popBlock( int _id );
-    void popOneBlock();
+    void popOneBlock(bool delBlock = true);
     void popInlineBlocks();
 
     void freeBlock( void);
 
     void createHead();
+
+    bool isResidualStyleTag(int _id);
+    bool isAffectedByResidualStyle(int _id);
+    void handleResidualStyleCloseTagAcrossBlocks(HTMLStackElem* elem);
+    void reopenResidualStyleTags(HTMLStackElem* elem, DOM::NodeImpl* malformedTableParent);
 
     ushort *forbiddenTag;
 
