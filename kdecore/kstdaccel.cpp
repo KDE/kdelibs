@@ -193,7 +193,9 @@ KShortcut shortcutDefault3( StdAccel id )
 	if( pInfo ) {
 		if( pInfo->cutDefault )
 			cut.init( pInfo->cutDefault );
-		if( !pInfo->cutDefault3B )
+		// FIXME: if there is no cutDefault, then this we be made the primary
+		//  instead of alternate shortcut.
+		if( pInfo->cutDefault3B )
 			cut.append( QKeySequence(pInfo->cutDefault3B) );
 	}
 
@@ -212,9 +214,9 @@ KShortcut shortcutDefault4( StdAccel id )
 		cut.init( (info.cutDefault4) ?
 			QKeySequence(info.cutDefault) : QKeySequence(info.cutDefault4) );
 
-		if( !info.cutDefault4B )
+		if( info.cutDefault4B )
 			key2.init( QKeySequence(info.cutDefault4B) );
-		else if( !info.cutDefault3B )
+		else if( info.cutDefault3B )
 			key2.init( QKeySequence(info.cutDefault3B) );
 
 		if( key2.count() )
@@ -341,7 +343,7 @@ bool ShortcutList::setOther( Other, uint, QVariant )
 
 bool ShortcutList::save() const
 {
-	return writeSettings( "Shortcuts", 0, false, true );
+	return writeSettings( QString::null, 0, false, true );
 }
 
 #ifndef KDE_NO_COMPAT
