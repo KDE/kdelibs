@@ -376,7 +376,8 @@ run_desktop_files
           * The default desktop includes the files under 
             $KDEDIR/share/kdesktop/Desktop but _NOT_ the files under
             $HOME/Desktop. 
-          * The KDE menu includes all files under $KDEDIR/share/applnk. 
+          * The KDE menu includes all files under $KDEDIR/share/applnk and
+            $XDGDIR/applications
           * Registered services includes all files under $KDEDIR/share/services. 
           * Autostarting services include all files under $KDEDIR/share/autostart 
             but _NOT_ the files under $KDEHOME/Autostart
@@ -384,7 +385,8 @@ run_desktop_files
           You probably also want to activate the following resource
           restictions:
           "appdata_kdesktop" - To restrict the default desktop.
-          "applnk" - To restrict the KDE menu.
+          "apps" - To restrict the KDE menu.
+          "xdgdata-apps" - To restrict the KDE menu.
           "services" - To restrict registered services.
           "autostart" - To restrict autostarting services.
           Otherwise users can still execute .desktop files by placing them
@@ -511,6 +513,7 @@ icon - share/icon
 config - share/config
 pixmap - share/pixmaps
 apps - share/applnk
+xdgdata-apps - share/applications
 sound - share/sounds
 locale - share/locale
 services - share/services

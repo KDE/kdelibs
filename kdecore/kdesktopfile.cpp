@@ -80,6 +80,8 @@ bool KDesktopFile::isAuthorizedDesktopFile(const QString& path)
   KStandardDirs *dirs = KGlobal::dirs();
   if (dirs->relativeLocation("applnk", path)[0] != '/')
      return true;
+  if (dirs->relativeLocation("xdgdata-apps", path)[0] != '/')
+     return true;
   if (dirs->relativeLocation("services", path)[0] != '/')
      return true;
   if (dirs->relativeLocation("data", path).startsWith("kdesktop/Desktop"))
