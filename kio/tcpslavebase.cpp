@@ -754,7 +754,7 @@ int TCPSlaveBase::verifyCertificate()
       if ( result == KMessageBox::Yes )
       {
          // Force sending of the metadata
-         sendMetaData();
+         // sendMetaData();  Do not call this function!!
          messageBox( SSLMessageBox, theurl );
       }
    }
@@ -791,7 +791,7 @@ int TCPSlaveBase::verifyCertificate()
    }   // if ssl_activate_warnings
 
 
-kdDebug(7029) << "SSL connection information follows:" << endl
+   kdDebug(7029) << "SSL connection information follows:" << endl
           << "+-----------------------------------------------" << endl
           << "| Cipher: " << d->kssl->connectionInfo().getCipher() << endl
           << "| Description: " << d->kssl->connectionInfo().getCipherDescription() << endl
@@ -807,8 +807,8 @@ kdDebug(7029) << "SSL connection information follows:" << endl
           << "+-----------------------------------------------"
           << endl;
 
-   sendMetaData();
-return rc;
+   // sendMetaData();  Do not call this function!!
+   return rc;
 }
 
 
