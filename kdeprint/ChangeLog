@@ -398,3 +398,11 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
 16/02/2002 Michael Goffioul <goffioul@imec.be>
   * CUPS: added direct Foomatic driver support (no need the all PPD package
     from foomatic anymore, driver are loaded directly from Foomatic)
+
+17/02/2002 Michael GOffioul <goffioul@imec.be>
+  * preview:
+  	. better algorithm to find a preview object
+	. more comprehensive error report
+	. possibility to cancel printing even with external PS viewers
+  * general: added the backend stuff for printer filtering, needs GUI
+    -> allows to only show a selected set of printers

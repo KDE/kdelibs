@@ -34,6 +34,7 @@ class KMVirtualManager;
 class KMSpecialManager;
 class QWidget;
 class KActionCollection;
+class PrinterFilter;
 
 class KMManager : public QObject
 {
@@ -97,6 +98,7 @@ public:
 	KMPrinter* findPrinter(const QString& name);
 	QPtrList<KMPrinter>* printerList(bool reload = true);
 	KMPrinter* defaultPrinter();
+	void enableFilter(bool on);
 
 	// driver DB functions
 	virtual QString driverDbCreationProgram();
@@ -153,6 +155,7 @@ protected:
 	int 			m_serveroperationmask;
 	KMSpecialManager	*m_specialmgr;
 	KMVirtualManager	*m_virtualmgr;
+	PrinterFilter	*m_printerfilter;
 };
 
 #endif

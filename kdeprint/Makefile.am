@@ -20,7 +20,7 @@ libkdeprint_la_SOURCES = kmfactory.cpp kmjob.cpp kmjobmanager.cpp kmmanager.cpp 
 			 kmthreadjob.cpp kpipeprocess.cpp kpfilterpage.cpp \
 			 kmspecialmanager.cpp kdeprintcheck.cpp plugincombobox.cpp kpreloadobject.cpp kfilelist.cpp \
 			 kprintaction.cpp kpfileselectpage.cpp treecombobox.cpp kmfactory.skel kxmlcommand.cpp \
-			 util.cpp
+			 util.cpp printerfilter.cpp
 libkdeprint_la_LDFLAGS = $(all_libraries) -version-info 4:0 -no-undefined
 libkdeprint_la_LIBADD = $(LIB_KPARTS) $(LIBZ) $(LIB_KFILE)
 libkdeprint_la_METASOURCES = AUTO
@@ -32,7 +32,7 @@ noinst_HEADERS = kmdbentry.h kmfactory.h kmjob.h kmjobmanager.h \
 		 kpqtpage.h kprintprocess.h kmthreadjob.h kpipeprocess.h kdeprintd.h \
 		 kpfilterpage.h kmspecialmanager.h kdeprintcheck.h plugincombobox.h \
 		 kfilelist.h kpfileselectpage.h treecombobox.h kxmlcommand.h \
-		 util.h driverparse.h
+		 util.h driverparse.h printerfilter.h
 
 include_HEADERS = kprinter.h kprintaction.h
 

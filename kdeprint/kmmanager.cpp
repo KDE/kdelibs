@@ -25,6 +25,7 @@
 #include "kmfactory.h"
 #include "kmvirtualmanager.h"
 #include "kmspecialmanager.h"
+#include "printerfilter.h"
 
 #include <zlib.h>
 #include <qfile.h>
@@ -43,6 +44,7 @@ KMManager::KMManager(QObject *parent, const char *name)
 	m_hasmanagement = false;
 	m_printeroperationmask = 0;
 	m_serveroperationmask = 0;
+	m_printerfilter = new PrinterFilter(this);
 
 	m_specialmgr = new KMSpecialManager(this);
 	Q_CHECK_PTR(m_specialmgr);
@@ -189,9 +191,12 @@ KMPrinter* KMManager::defaultPrinter()
 QPtrList<KMPrinter>* KMManager::printerList(bool reload)
 {
 	setErrorMsg(QString::null);
-	
+
 	if (reload || m_printers.count() == 0)
 	{
+		// reset filter
+		m_printerfilter->update();
+
 		// first discard all printers
 		discardAllPrinters(true);
 
@@ -237,7 +242,9 @@ void KMManager::addPrinter(KMPrinter *p)
 {
 	if (p)
 	{
-		if (p->name().isEmpty())
+		// filter out printers with empty name and
+		// those that doesn't fit into filter spec
+		if (p->name().isEmpty() || (!p->isSpecial() && !m_printerfilter->filter(p)))
 			// discard printer with empty name
 			delete p;
 		else
@@ -451,6 +458,11 @@ void KMManager::createPluginActions(KActionCollection*)
 
 void KMManager::validatePluginActions(KActionCollection*, KMPrinter*)
 {
+}
+
+void KMManager::enableFilter(bool on)
+{
+	m_printerfilter->setEnabled(on);
 }
 
 #include "kmmanager.moc"
