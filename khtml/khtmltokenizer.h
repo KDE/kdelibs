@@ -34,7 +34,6 @@
 //
 ///////////////////
 
-class JSEnvironment;
 class KCharsets;
 
 //
@@ -207,13 +206,6 @@ protected:
     int searchCount;
     // The string we are searching for
     const QChar *searchFor;
-    
-    /**
-     * This pointer is 0L until used. The @ref KHTMLWidget has an instance of
-     * this class for us. We ask for it when we see some JavaScript stuff for
-     * the first time.
-     */
-    JSEnvironment* jsEnvironment;
     
     QChar entityBuffer[10];
     uint entityPos;

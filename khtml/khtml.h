@@ -59,6 +59,49 @@ class KJSWorld;
 
 
 /**
+ * This class is meant for displaying html pages. It provides (will provide)
+ * full HTML4 support, support for embedding Java applets, and will at some 
+ * point (hopefully before KDE-2.0 provide support for cascading style sheets
+ * (CSS) and JavaScript.
+ *
+ * The easiest way to use this class (if you just want to display a HTML
+ * page at some URL) is the following:
+ * <code>
+ * QString url = "http://www.kde.org";
+ * KHTMLWIdget *w = new KHTMLWidget);
+ * w->openURL(url);
+ * w->resize(500, 400);
+ * w->show();
+ * </code>
+ *
+ * By default the Widget behaves as a full browser, so clicking on some link 
+ * on the page you just opened will lead yu to that page. This is inconvenient,
+ * if you want to use the widget to display for example formatted emails, but 
+ * don't want the widget to open the site in this window in case someone 
+ * clicks on an embedded link. In this case just use 
+ * @see #setFollowsLinks(false). You will then get a Signal @see #urlClicked()
+ * instead of KHTMLWidget following the links directly.
+ *
+ * By default Java and JavaScript support is disabled. You can enable it by
+ * using the @see #setEnableJava() and @see #setEnableJScript() methods.
+ * 
+ * Some apps want to write their HTML code directly into the widget instead of 
+ * it opening an url. You can also do that in the following way:
+ *
+ * <code>
+ * QString myHTMLCode = ...;
+ * KHTMLWidget *w = new KHTMLWidget();
+ * w->begin();
+ * w->write(myHTMLCode);
+ * ...
+ * w->end();
+ * </code>
+ *
+ * You can do as many calls to write as you want. But there are two write() 
+ * methods, one accepting a QString one accepting a char * argument. These
+ * should not get mixed, since the method usnig the char * argument does an 
+ * additional decoding step to convert the written data to Unicode.
+ *
  * If you derive from KHTMLWidget you must overload the method @ref #createFrame
  */
 class KHTMLWidget : public QScrollView
@@ -71,7 +114,15 @@ class KHTMLWidget : public QScrollView
     friend DOM::HTMLTitleElementImpl;
 
 public:
+
+    /**
+     * Constructs a KHTMLWidget
+     */
     KHTMLWidget( QWidget *parent=0, const char *name=0 );
+
+    /**
+     * This constructor is used internally to realize Frames
+     */
     KHTMLWidget( QWidget *parent, KHTMLWidget *parentWidget, QString name);
     virtual ~KHTMLWidget();
 
@@ -80,16 +131,28 @@ protected:
     void clear();
 public:
 
-    virtual void openURL( const QString &_url, bool _reload = false, int _xoffset = 0, int _yoffset = 0, const char* _post_data = 0L );
+    /**
+     * Tell the widget to display the HTML page referred to by _url.
+     * 
+     * @param xoffset, yoffset Show the page at the specified offset after
+     *        loading it. 
+     * @param _post_data used internally for HTML post request
+     */
+    virtual void openURL( const QString &_url, bool _reload = false, 
+		 int _xoffset = 0, int _yoffset = 0, const char* _post_data = 0L );
 
     /**
-     * should the widget follow links automatically, if you click on them? Default is true
+     * should the widget follow links automatically, if you click on them? 
+     * Default is true. 
      */
     void setFollowsLinks( bool follow );
+    /** does the widget follow links automatically?
+     */
     bool followsLinks();
 
     /**
-     * should images be loaded automatically? Default is true
+     * should images be loaded automatically? Default is true. 
+     * (not implemented at the moment)
      */
     void enableImages( bool enable );
     bool imagesEnabled() const;
@@ -98,23 +161,28 @@ public:
      * Enable disable Java. Default is disabled.
      */
     void enableJava( bool enable );
+    /**
+     * Is Java enabled?
+     */
     bool javaEnabled() const;
 
     /**
      * enable/disable JScript. Default is disabled.
      */
     void enableJScript( bool enable );
+    /**
+     * Is JScript enabled?
+     */
     bool jScriptEnabled() const;
 
     /**
      * @return the parent KHTMLWidget of this one or 0L is this is the top level
-     * browser.
-     *
+     * browser. Used for frames.
      */
     KHTMLWidget* parentFrame() { return _parent; }
 
     /**
-     * Never returns 0L.
+     * Returns the top level frame. Never returns 0L.
      */
     KHTMLWidget* topFrame();
 
@@ -128,7 +196,7 @@ public:
     KHTMLWidget* findFrame( const QString &_name );
 
     /**
-     * @return the name of this window.
+     * @return the name of this frame.
      *
      * @see #setName
      * @see #name
@@ -145,18 +213,17 @@ public:
     virtual KHTMLWidget* createFrame( QWidget *_parent, QString _name );
 
     /**
-     * This function is mainly used internally. It gets the frame with name _name, if it
-     * exists and is a child of this widget, otherwise return 0.
+     * This function is mainly used internally. It gets the frame with name _name,
+     *  if it exists and is a child of this widget, otherwise return 0.
      */
     KHTMLWidget *getFrame( QString _name);
     
     /**
-     * Clears the widget and prepares it for new content. If you display
-     * for example "file:/tmp/test.html", you can use the following code
-     * to get a value for '_url':
+     * Clears the widget and prepares it for new content. 
+     * If you want @see #url() to return 
+     * for example "file:/tmp/test.html", you can use the following code:
      * <PRE>
-     * KURL u( "file:/tmp/test.html" );
-     * view->begin( u.directoryURL() );
+     * view->begin( QString("file:/tmp/test.html" );
      * </PRE>
      *
      * @param _url is the url of the document to be displayed.  Even if you
@@ -167,9 +234,9 @@ public:
      * @param _dy is the initial vertical scrollbar value. Usually you don't
      * want to use this.
      *
-     * We want to clear our list of child frames here.
+     * All child frames and the old document are removed if you call this method.
      */	
-    virtual void begin( const QString &_url = 0L, int _x_offset = 0, int _y_offset = 0 );
+    virtual void begin( const QString &_url = 0L, int _dx = 0, int _dy = 0 );
 
     /**
      * Writes another part of the HTML code to the widget. You may call
@@ -198,6 +265,7 @@ public:
 
     /**
      * Print current HTML page layouted for the printer.
+     * (not implemented at the moment)
      */
     // ### add margins???
     void print(QPainter *, int pageHeight, int pageWidth);
@@ -214,11 +282,6 @@ public:
     virtual QString selectedText();
 
     /**
-     * Get all text in the HTML page.
-     */
-    //virtual QString text();
-
-    /**
      * Has the user selected any text?  Call @ref #selectedText to
      * retrieve the selected text.
      *
@@ -226,6 +289,11 @@ public:
      */
     bool isTextSelected() const
     {	return bIsTextSelected; }
+
+    /**
+     * Get all text in the HTML page.
+     */
+    //virtual QString text();
 
     /**
      * Initiate a text search.
@@ -265,21 +333,31 @@ public:
 
     /**
      * @return the base URL of this document
+     * 
+     * The base url is ususally set by an <base url=...> tag in the document head.
      */
     const QString &baseUrl();
+
+    /**
+     * Mainly used internally. Sets the document's base URL
+     */
     void setBaseUrl(const QString &base);
 
     /**
-     * the base target of this document
+     * @return the base target of this document
+     * The base target is ususally set by an <base target=...> 
+     * tag in the document head.
      */
     const QString &baseTarget() { return _baseTarget; }
+    /**
+     * Mainly used internally. Sets the document's base target.
+     */
     void setBaseTarget(const QString &target) { _baseTarget = target; }
 
     /**
      * Find the anchor named '_name'. If the anchor is found, the widget
      * scrolls to the closest position. Returns TRUE if the anchor has
-     * been found. If the anchor could not be found it is retried when a
-     * new part of the document arrives.
+     * been found.
      */
     virtual bool gotoAnchor( const QString &_name );
 
@@ -291,6 +369,8 @@ public:
      * @param _delay Time in milliseconds to wait before scrolling the
      * document again.
      * @param _dy The amount to scroll the document when _delay elapses.
+     *
+     * (not implemented)
      */
     void autoScrollY( int _delay, int _dy );
 
@@ -369,6 +449,8 @@ public:
      * Any <META ...> setting charsets overrides this setting
      * as long as override isn't true.
      * @return TRUE if successfull
+     *
+     * (not implemented at the moment)
      */
     bool setCharset(const QString &name, bool override = false);
 
@@ -401,9 +483,9 @@ public:
     const QCursor& urlCursor() { return linkCursor; }
 
     /*
-     * If a HTMLObject object needs a file from the web, it
+     * If an Element needs a file from the web, it
      * calls this function.
-     * if update is true, the htmlobj will be continously updated
+     * if update is true, the Element will be continously updated
      * as the file is loaded (via the data function)
      */
     void requestFile( HTMLURLRequester *_obj, const QString &_url,
@@ -415,22 +497,28 @@ public:
     void cancelRequestFile( HTMLURLRequester *_obj );
     void cancelRequestFile( const QString &_url );
 
+    /**
+     * cancels all file requests. Called from @see #slotCancel()
+     */
     void cancelAllRequests();
 
     /**
      * Function used to save the current html-page into the datastream
      * This does only work, if the page has a valid URL, pages
-     * filled with the write() method are not saveable
+     * filled with the write() method are not saveable, and might give
+     * unwanted results.
      */
     virtual void saveState( QDataStream &stream );
 
     /**
-     * restore a page previously saved with @ref saveYourself()
+     * restore a page previously saved with @ref saveState()
      */
     virtual void restoreState( QDataStream &stream );
 
     /**
      * hook to get the Document. Used eg by jscript to manipulate the document.
+     * See also the <a href="http://www.w3.org/TR/REC-DOM-Level-1/">
+     * DOM Level 1 recommodation</a> of the <a href=http://www.w3.org>W3C</a>.
      */
     DOM::HTMLDocument htmlDocument() const { return document; }
 
@@ -445,20 +533,39 @@ public:
      * set a margin in x direction
      */
     void setMarginWidth(int x) { _marginWidth = x; }
+    /**
+     * @return the margin With
+     */
     int marginWidth() { return _marginWidth; }
 
     /**
      * set a margin in y direction
      */
     void setMarginHeight(int y) { _marginHeight = y; }
+    /**
+     * @return the margin height
+     */
     int marginHeight() { return _marginHeight; }
 
     HTMLSettings *settings();
 
 public slots:
-    virtual void slotStop();
+    /**
+     * stops loading the current document
+     */
+    virtual void slotStop(); 
+    /**
+     * reload the current document. Will not reload frames contained in this
+     * document in case it is a frameset.
+     */
     virtual void slotReload();
+    /**
+     * reload the current document including all child frames.
+     */
     virtual void slotReloadFrames();
+    /**
+     * used internally to tell the widget, that a form has been submitted.
+     */
     void slotFormSubmitted( const QString &_method, const QString &_url,
 			    const char *_data, const QString &_target );
 
@@ -469,14 +576,28 @@ signals:
      */
     void error( int _err, const char* _text );
     /**
-     * Emitted if a link is pressed which has an invalid target, or the target <tt>_blank</tt>.
+     * Emitted if a link is pressed which has an invalid target, 
+     * or the target <tt>_blank</tt>.
      */
     void newWindow( const QString &_url );
 
+    /**
+     * emitted, after @see #begin() has been called.
+     */
     void started( const QString &_url );
+    /**
+     * emitted, when the page (including all children) has been completely loaded.
+     */
     void completed();
+    /**
+     * emitted, when the loading o the page has been canceled.
+     */
     void canceled();
 
+    /**
+     * this signal is only emitted, when @see followLinks() is set to false.
+     * In this case the app has to handle the request.
+     */
     void urlClicked( const QString &url , const QString &target, int button);
 
     /**
@@ -502,7 +623,7 @@ signals:
     void setTitle( const QString &);
 
     /**
-     * Called if the user presses the submit button.
+     * Emitted if the user presses the submit button.
      *
      * @param _url is the <form action=...> value
      * @param _method is the <form method=...> value

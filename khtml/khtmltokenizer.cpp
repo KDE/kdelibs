@@ -69,7 +69,6 @@ int getAttrID(const char *tagStr, int len)
 
 HTMLTokenizer::HTMLTokenizer(KHTMLParser *p)
 {
-    jsEnvironment = 0L;
     buffer = 0;
     scriptCode = 0;
     charsets = KGlobal::charsets();
