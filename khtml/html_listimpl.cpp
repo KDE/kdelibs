@@ -442,7 +442,7 @@ void HTMLLIElementImpl::printIcon(QPainter *p, int _tx, int _ty)
 	    item += ".";
 	    break;
 	case Num:
-	    item.sprintf( "%2d", val );
+	    item.sprintf( "%2ld", val );
 	    item += ".";
 	    break;
 	default:
