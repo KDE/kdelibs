@@ -198,8 +198,8 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
 
 void RenderImage::calcMinMaxWidth()
 {
-//    if(minMaxKnown())
-//        return;
+    if(minMaxKnown())
+        return;
 
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << "Image::calcMinMaxWidth() known=" << minMaxKnown() << endl;
@@ -219,7 +219,8 @@ void RenderImage::layout()
     if(layouted())
         return;
 
-    calcMinMaxWidth();
+    if(!minMaxKnown())
+        calcMinMaxWidth();
 
     int oldheight = m_height;
     calcHeight();
