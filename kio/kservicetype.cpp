@@ -102,7 +102,7 @@ KServiceType::KServiceType( const QString & _fullpath, const QString& _type,
   m_bValid = !m_strName.isEmpty();
 }
 
-KServiceType::KServiceType( QDataStream& _str, int offset ) 
+KServiceType::KServiceType( QDataStream& _str, int offset )
  : KSycocaEntry( _str, offset )
 {
   load( _str);
@@ -197,15 +197,31 @@ KServiceType::Ptr KServiceType::serviceType( const QString& _name )
 
 KService::List KServiceType::offers( const QString& _servicetype )
 {
+  KService::List lst;
+  // Support for services associated with "all"
+  KServiceType * servAll = KServiceTypeFactory::self()->findServiceTypeByName( "all/all" );
+  if ( servAll )
+    lst += KServiceFactory::self()->offers( servAll->offset() );
+  else
+    kdWarning(7009) << QString("KServiceType::offers : servicetype all/all not found") << endl;
+
+  // Support for services associated with "allfiles"
+  if ( _servicetype != "inode/directory" && _servicetype != "inode/directory-locked" )
+  {
+    KServiceType * servAllFiles = KServiceTypeFactory::self()->findServiceTypeByName( "all/allfiles" );
+    if ( servAllFiles )
+      lst += KServiceFactory::self()->offers( servAllFiles->offset() );
+    else
+      kdWarning(7009) << QString("KServiceType::offers : servicetype all/allfiles not found") << endl;
+  }
+
+  // Normal services associated with this servicetype
   KServiceType * serv = KServiceTypeFactory::self()->findServiceTypeByName( _servicetype );
   if ( serv )
-    return KServiceFactory::self()->offers( serv->offset() );
+    lst += KServiceFactory::self()->offers( serv->offset() );
   else
-  {
     kdWarning(7009) << QString("KServiceType::offers : servicetype %1 not found").arg( _servicetype ) << endl;
-    KService::List l;
-    return l;
-  }
+  return lst;
 }
 
 KServiceType::List KServiceType::allServiceTypes()

@@ -261,7 +261,6 @@ bool KService::hasServiceType( const QString& _servicetype ) const
 //  for( ; it != m_lstServiceTypes.end(); ++it )
 //    kdDebug(7012) << "    has " << (*it) << endl;
 
-  // TODO : what about "all", "allfiles" and "alldirs" ?
   return ( m_lstServiceTypes.find( _servicetype ) != m_lstServiceTypes.end() );
 }
 
