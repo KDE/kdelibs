@@ -6,13 +6,13 @@ data_DATA = x-dvi.desktop x-tex-gf.desktop gzip.desktop \
 	postscript.desktop octet-stream.desktop \
 	x-shellscript.desktop x-desktop.desktop \
 	x-executable.desktop x-ar.desktop x-lha.desktop \
-	x-tbz.desktop x-pn-realaudio.desktop x-awk.desktop \
+	x-tbz.desktop x-awk.desktop \
 	x-perl.desktop x-compress.desktop x-cpio.desktop \
 	x-rpm.desktop msword.desktop x-sharedlib.desktop \
 	wordperfect.desktop x-troff.desktop x-troff-man.desktop \
 	x-python.desktop x-python-bytecode.desktop \
 	x-bzip.desktop x-bzip2.desktop mspowerpoint.desktop \
-	msexcel.desktop
+	msexcel.desktop smil.desktop
 
 datadir = $(kde_mimedir)/application
 

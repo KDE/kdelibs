@@ -1,8 +1,8 @@
 [Desktop Entry]
 Type=MimeType
-MimeType=audio/x-pn-realaudio
+MimeType=audio/vnd.rn-realaudio
 Icon=mimetypes/sound
-Patterns=*.ra;*.ram;*.rm;*.smi;
+Patterns=
 Comment=RealAudio broadcast
 Comment[cs]=RealAudio vysílání
 Comment[de]=RealAudio-Sendung

@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=MimeType
+MimeType=application/smil
+Icon=mimetypes/sound
+Patterns=*.smil;*.smi;
+Comment=Synchronized Multimedia Integration Language
