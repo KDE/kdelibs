@@ -1,13 +1,13 @@
 #include <kapplication.h>
 #include <kcmdlineargs.h>
-#include <kjavaappletserver.h>
-#include <kjavaapplet.h>
-#include <kjavaappletwidget.h>
 #include <kdebug.h>
 #include <qstring.h>
 #include <stdio.h>
 #include <unistd.h>
 
+#include "java/kjavaappletserver.h"
+#include "java/kjavaapplet.h"
+#include "java/kjavaappletwidget.h"
 
 static KCmdLineOptions options[] =
 {
