@@ -53,7 +53,13 @@ public:
    */
   DefaultProgress( QWidget* parent, const char* name = 0 );
   ~DefaultProgress();
-    bool keepOpen() const;
+
+  bool keepOpen() const;
+
+  /// Shared with uiserver.cpp
+  static QString makePercentString( unsigned long percent,
+                                    KIO::filesize_t totalSize,
+                                    unsigned long totalFiles );
 
 public slots:
   virtual void slotTotalSize( KIO::Job*, KIO::filesize_t bytes );
