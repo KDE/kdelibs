@@ -241,7 +241,7 @@ void Job::showErrorDialog( QWidget * parent )
   if ( m_error != ERR_USER_CANCELED ) {
     //old plain error message
     kdDebug() << "Default language: " << KGlobal::locale()->defaultLanguage() << endl;
-    if ( 1 ) 
+    if ( 1 )
       KMessageBox::queuedMessageBox( parent, KMessageBox::Error, errorString() );
 #if 0
     } else {
@@ -1292,7 +1292,7 @@ void FileCopyJob::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
         {
             kdDebug(7007) << "Setting metadata for resume to " << (unsigned long) offset << endl;
             m_getJob->addMetaData( "resume", KIO::number(offset) );
-	   
+
             // Might or might not get emitted
             connect( m_getJob, SIGNAL(canResume(KIO::Job *, KIO::filesize_t)),
                      SLOT( slotCanResume(KIO::Job *, KIO::filesize_t)));
@@ -1312,7 +1312,7 @@ void FileCopyJob::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
         // Cool, the get job said ok, we can resume
         m_canResume = true;
         kdDebug(7007) << "FileCopyJob::slotCanResume from the GET job -> we can resume" << endl;
-	
+
 	m_getJob->slave()->setOffset( m_putJob->slave()->offset() );
     }
     else
@@ -1709,9 +1709,11 @@ void CopyJob::slotResultStating( Job *job )
     {
         if (job->error())
             destinationState = DEST_DOESNT_EXIST;
-        else
+        else {
             // Treat symlinks to dirs as dirs here, so no test on bLink
             destinationState = bDir ? DEST_IS_DIR : DEST_IS_FILE;
+            //kdDebug(7007) << "CopyJob::slotResultStating dest is dir:" << bDir << endl;
+        }
         subjobs.remove( job );
         assert ( subjobs.isEmpty() );
         statNextSrc();
@@ -1888,7 +1890,7 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
         }
         if (relName != ".." && relName != ".")
         {
-            //kdDebug(7007) << "CopyJob::slotEntries " << relName << endl;
+            //kdDebug(7007) << "CopyJob::slotEntries '" << relName << "'" << endl;
             info.uSource = ((SimpleJob *)job)->url();
             if ( m_bCurrentSrcIsDir ) // Only if src is a directory. Otherwise uSource is fine as is
                 info.uSource.addPath( relName );
@@ -1896,7 +1898,15 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
             //kdDebug(7007) << "uDest(1)=" << info.uDest.prettyURL() << endl;
             // Append filename or dirname to destination URL, if allowed
             if ( destinationState == DEST_IS_DIR && !m_asMethod )
-                info.uDest.addPath( relName );
+            {
+                // Here we _really_ have to add some filename to the dest.
+                // Otherwise, we end up with e.g. dest=..../Desktop/ itself.
+                // (This can happen when dropping a link to a webpage with no path)
+                if ( relName.isEmpty() )
+                    info.uDest.addPath( KIO::encodeFileName( info.uSource.prettyURL() ) );
+                else
+                    info.uDest.addPath( relName );
+            }
             //kdDebug(7007) << "uDest(2)=" << info.uDest.prettyURL() << endl;
             if ( info.linkDest.isEmpty() && (isDir /*S_ISDIR(info.type)*/) && m_mode != Link ) // Dir
             {
@@ -1904,8 +1914,9 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
                 if (m_mode == Move)
                     dirsToRemove.append( info.uSource );
             }
-            else
+            else {
                 files.append( info ); // Files and any symlinks
+            }
         }
     }
 }
@@ -2706,6 +2717,7 @@ void CopyJob::slotResult( Job *job )
 
 CopyJob *KIO::copy(const KURL& src, const KURL& dest, bool showProgressInfo )
 {
+    //kdDebug() << "KIO::copy src=" << src.url() << " dest=" << dest.url() << endl;
     KURL::List srcList;
     srcList.append( src );
     return new CopyJob( srcList, dest, CopyJob::Copy, false, showProgressInfo );
@@ -2713,6 +2725,7 @@ CopyJob *KIO::copy(const KURL& src, const KURL& dest, bool showProgressInfo )
 
 CopyJob *KIO::copyAs(const KURL& src, const KURL& dest, bool showProgressInfo )
 {
+    //kdDebug() << "KIO::copyAs src=" << src.url() << " dest=" << dest.url() << endl;
     KURL::List srcList;
     srcList.append( src );
     return new CopyJob( srcList, dest, CopyJob::Copy, true, showProgressInfo );
