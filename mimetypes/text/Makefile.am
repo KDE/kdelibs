@@ -1,7 +1,7 @@
 
 mimetypetextdata_DATA = x-c++src.desktop x-c++hdr.desktop x-csrc.desktop x-java.desktop \
 	x-makefile.desktop x-moc.desktop x-pascal.desktop \
-	x-tcl.desktop x-tex.desktop html.desktop plain.desktop x-chdr.desktop \
+	x-tcl.desktop x-tex.desktop html.desktop plain.desktop enriched.desktop x-chdr.desktop \
 	rtf.desktop sgml.desktop xml.desktop css.desktop x-vcard.desktop x-ldif.desktop \
 	x-vcalendar.desktop x-diff.desktop x-objcsrc.desktop x-log.desktop \
 	x-bibtex.desktop rdf.desktop rss.desktop calendar.desktop x-adasrc.desktop \

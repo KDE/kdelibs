@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+MimeType=text/enriched
+Comment=Lightly Enriched Text Document
+Icon=txt
+Type=MimeType
+Patterns=
+
+[Property::X-KDE-text]
+Type=bool
+Value=true
