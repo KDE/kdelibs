@@ -761,6 +761,13 @@ public:
   KConfigSkeleton(const QString & configname = QString::null);
 
   /**
+   * Constructor.
+   * 
+   * @param config configuration object to use.
+   */
+  KConfigSkeleton(KSharedConfig::Ptr config);
+
+  /**
    * Destructor
    */
     virtual ~ KConfigSkeleton();

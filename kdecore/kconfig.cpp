@@ -321,7 +321,7 @@ void KConfig::virtual_hook( int id, void* data )
 
 QValueList<KSharedConfig*> *KSharedConfig::s_list = 0;
 
-KSharedConfig::Ptr KSharedConfig::openConfig(const QString& fileName)
+KSharedConfig::Ptr KSharedConfig::openConfig(const QString& fileName, bool immutable)
 {
   if (s_list)
   {
@@ -332,11 +332,11 @@ KSharedConfig::Ptr KSharedConfig::openConfig(const QString& fileName)
            return (*it);
      }
   }
-  return new KSharedConfig(fileName);
+  return new KSharedConfig(fileName, immutable);
 }
 
-KSharedConfig::KSharedConfig( const QString& fileName )
- : KConfig(fileName)
+KSharedConfig::KSharedConfig( const QString& fileName, bool immutable )
+ : KConfig(fileName, immutable)
 {
   if (!s_list)
      s_list = new QValueList<KSharedConfig*>;

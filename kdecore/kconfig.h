@@ -261,11 +261,12 @@ public:
 public:  
   /**
    * Returns a ref-counted pointer to a shared read-write config object.
+   * @param immutable, if true, force the config object to be read-only.
    */
-  static KSharedConfig::Ptr openConfig(const QString& fileName);
+  static KSharedConfig::Ptr openConfig(const QString& fileName, bool immutable = false);
 
 private:
-  KSharedConfig( const QString& fileName );
+  KSharedConfig( const QString& fileName, bool immutable );
   ~KSharedConfig();
 
   static QValueList<KSharedConfig*> *s_list;

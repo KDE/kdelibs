@@ -847,7 +847,7 @@ QVariant KConfigSkeleton::ItemIntList::property() const
 KConfigSkeleton::KConfigSkeleton( const QString &configname )
   : mCurrentGroup( "No Group" ), mUseDefaults(false)
 {
-  kdDebug(177) << "Creating KConfigSkeleton (" << int(this) << ")" << endl;
+  kdDebug(177) << "Creating KConfigSkeleton (" << (void *)this << ")" << endl;
 
   if ( !configname.isEmpty() )
   {
@@ -858,6 +858,14 @@ KConfigSkeleton::KConfigSkeleton( const QString &configname )
     mConfig = KGlobal::sharedConfig();
   }
 }
+
+KConfigSkeleton::KConfigSkeleton(KSharedConfig::Ptr config)
+  : mCurrentGroup( "No Group" ), mUseDefaults(false)
+{
+  kdDebug(177) << "Creating KConfigSkeleton (" << (void *)this << ")" << endl;
+  mConfig = config;
+}
+
 
 KConfigSkeleton::~KConfigSkeleton()
 {
