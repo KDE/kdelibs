@@ -507,8 +507,10 @@ void KAction::insertKAccel( KAccel* kaccel )
 {
   //kdDebug(129) << "KAction::_plugAccel( " << kaccel << " ): this = " << this << endl;
   if ( !kaccel->actions().actionPtr( name() ) ) {
-    if( updateKAccelShortcut( kaccel ) )
+    if( updateKAccelShortcut( kaccel ) ) {
       d->m_kaccelList.append( kaccel );
+      connect( kaccel, SIGNAL(destroyed()), this, SLOT(slotDestroyed()) );
+    }
     else
       kdWarning(129) << "KAction::insertKAccel: KAccel::insert() failed." << endl;
   }
@@ -523,6 +525,7 @@ void KAction::removeKAccel( KAccel* kaccel )
     if( d->m_kaccelList[i] == kaccel ) {
       kaccel->remove( name() );
       d->m_kaccelList.remove( d->m_kaccelList.at( i ) );
+      disconnect( kaccel, SIGNAL(destroyed()), this, SLOT(slotDestroyed()) );
       break;
     }
   }
@@ -1102,7 +1105,7 @@ void KAction::slotActivated()
 
 void KAction::slotDestroyed()
 {
-  kdDebug(129) << "KAction::slotDestroyed(): sender = " << sender() << endl;
+  kdDebug(129) << "KAction::slotDestroyed(): this = " << this << ", name = \"" << name() << "\", sender = " << sender() << endl;
   const QObject* o = sender();
 
 #if KDE_VERSION < 400
@@ -1112,6 +1115,16 @@ void KAction::slotDestroyed()
     return;
   }
 #endif
+
+  for( uint i = 0; i < d->m_kaccelList.count(); i++ ) 
+  {
+    if ( o == d->m_kaccelList[i] ) 
+    {
+      disconnect( d->m_kaccelList[i], SIGNAL(destroyed()), this, SLOT(slotDestroyed()) );
+      d->m_kaccelList.remove( d->m_kaccelList.at( i ) );
+      return;
+    }
+  }
 
   int i;
   do
@@ -3019,7 +3032,8 @@ KActionCollection::KActionCollection( QObject *parent, const char *name,
                                       KInstance *instance )
   : QObject( parent, name )
 {
-  kdDebug(129) << "KActionCollection::KActionCollection( QObject *parent, const char *name, KInstance *instance )" << endl; //ellis
+  kdWarning(129) << "KActionCollection::KActionCollection( QObject *parent, const char *name, KInstance *instance )" << endl; //ellis
+  kdDebug(129) << kdBacktrace() << endl;
   d = new KActionCollectionPrivate;
   QWidget* w = dynamic_cast<QWidget*>( parent );
   if( w )
@@ -3039,7 +3053,7 @@ KActionCollection::KActionCollection( const KActionCollection &copy )
 
 KActionCollection::~KActionCollection()
 {
-  kdDebug(129) << "KActionCollection::~KActionCollection()" << endl;
+  kdDebug(129) << "KActionCollection::~KActionCollection(): this = " << this << endl;
   for ( QAsciiDictIterator<KAction> it( d->m_actionDict ); it.current(); ++it ) {
     KAction* pAction = it.current();
     if ( pAction->m_parentCollection == this )
@@ -3053,8 +3067,10 @@ KActionCollection::~KActionCollection()
 
 void KActionCollection::setWidget( QWidget* w )
 {
-  if ( d->m_actionDict.count() > 0 )
+  if ( d->m_actionDict.count() > 0 ) {
     kdError(129) << "KActionCollection::setWidget(): must be called before any actions are added to collection!" << endl;
+    kdDebug(129) << kdBacktrace() << endl;
+  }
   else if ( !d->m_widget ) {
     d->m_widget = w;
     d->m_kaccel = new KAccel( w, this, "KActionCollection-KAccel" );
@@ -3089,8 +3105,8 @@ void KActionCollection::beginXMLPlug( QWidget *widget )
 	
 	if( d->m_kaccel )
 		s_kaccelXML = d->m_kaccel;
-	else {
-		d->m_builderKAccel = new KAccel( widget, this, "KActionCollection-BuilderKAccel" );
+	else if( d->m_builderWidget ) {
+		d->m_builderKAccel = new KAccel( d->m_builderWidget, this, "KActionCollection-BuilderKAccel" );
 		s_kaccelXML = d->m_builderKAccel;
 	}
 }
