@@ -1925,12 +1925,12 @@ bool HTTPProtocol::httpOpen()
       break;
   case HTTP_PUT:
       header = "PUT ";
-      moreData = !isSSLTunnelEnabled();
+      moreData = !m_bNeedTunnel;
       m_request.bCachedWrite = false; // Do not put any result in the cache
       break;
   case HTTP_POST:
       header = "POST ";
-      moreData = !isSSLTunnelEnabled();
+      moreData = !m_bNeedTunnel;
       m_request.bCachedWrite = false; // Do not put any result in the cache
       break;
   case HTTP_HEAD:
