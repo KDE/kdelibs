@@ -304,7 +304,6 @@ void KLocale::insertCatalogue( const QString& catalogue )
 KLocale::~KLocale()
 {
     delete catalogues;
-    delete [] lang;
 }
 
 const QString KLocale::translate(const char* msgid)
