@@ -1,6 +1,11 @@
 2005-03-22  Allan Sandfeld Jensen <kde@carewolf.com>
 
-        * html/htmlblockimpl.cpp: When a NS-layer gets DIV layer children. The NS layer should let the DIV layer control position.
+        * html/htmltokenizer.cpp: Implement SGML attribute-value white-space parsing rules.
+
+2005-03-22  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        * html/htmlblockimpl.cpp: When a NS-layer gets DIV layer children. The NS layer should
+        let the DIV layer control position.
 
 2005-03-22  Allan Sandfeld Jensen <kde@carewolf.com>
 

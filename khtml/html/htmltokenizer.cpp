@@ -987,6 +987,15 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                         ++src;
                         break;
                     }
+                    else if (curchar == '\r') {
+                        ++src;
+                        continue;
+                    }
+                    else if (curchar == '\t' || curchar == '\n') {
+                        *dest++ = ' ';
+                        ++src;
+                        continue;
+                    }
                 }
                 *dest++ = *src;
                 ++src;
