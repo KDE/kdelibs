@@ -5,6 +5,8 @@
     Copyright (C) 1997 Sven Radej <sven.radej@iname.com>
     Copyright (c) 1999 Patrick Ward <PAT_WARD@HP-USA-om5.om.hp.com>
     Copyright (c) 1999 Preston Brown <pbrown@kde.org>
+
+    Re-designed with addional functionality:
     Copyright (c) 1999-2000 Dawit Alemayehu <adawit@earthlink.net>
 
     This library is free software; you can redistribute it and/or
@@ -65,26 +67,18 @@
  *
  * @sect A small example:
  *
- * To enable the basic completion feature :
+ * To enable a basic completion feature :
  *
  * <pre>
  * KLineEdit *edit = new KLineEdit( this,"mywidget" );
  * edit->enableCompletion();
  * KCompletion *comp = edit->completionObject();
- * // connect to the return pressed signal
- * connect( edit, SIGNAL( returnPressed() ), this, SLOT( slotReturnPressed() ) );
- * ...
- * ...
- * ...
- *
- * void slotReturnPressed()
- * {
- *   // Process the entry as you desire ...
- * }
+ * // connect to either of the returnPressed signals
+ * connect( edit, SIGNAL( returnPressed(const QString& ) ), comp, SLOT( addItem( const QString& ) ) );
  * </pre>
  *
  * To use a customized completion object such as KURLCompletion
- * use setCompletionObject instead :
+ * use setCompletionObject(...) instead :
  *
  * <pre>
  * KLineEdit *edit = new KLineEdit( this,"mywidget" );
@@ -92,7 +86,7 @@
  * edit->setCompletionObject( comp );
  * </pre>
  *
- * Of course setCompletionObject can also be used to assign the base
+ * Of course setCompletionObject(...) can also be used to assign the base
  * KCompletion class as the comepltion object.  This is specailly
  * important when you share a single completion object across multiple
  * widgets.
@@ -165,9 +159,11 @@ public:
     * when this object is destroyed.  If you want KLineEdit to handle the
     * deletion, make sure you set the the boolean parameter to true.  This
     * is done to allow you to share a single completion object across mulitple
-    * widgets.
+    * widgets.  Additionally, this method automatically sets this widget to handle
+    * the rotation signals.  If this is not desired, simply invokde @ref
+    * setHandleRotationSignals( false ) after calling this function.
     *
-    * @param @p obj A @ref KCompletion or a derived child object.
+    * @param @p obj a @ref KCompletion or a derived child object.
     * @param @p autoDelete if true, delete the completion object on destruction.
     */
     void setCompletionObject( KCompletion* obj, bool autoDelete = false );
@@ -175,9 +171,9 @@ public:
     /*
     * Returns a pointer to the current completion object.
     *
-    * @return the completion object or null (0) if one does not exist.
+    * @return the completion object or null if one does not exist.
     */
-    KCompletion* completionObject() const { return comp; }
+    KCompletion* completionObject() const { return m_pCompObj; }
 
     /*
     * Returns true if the completion object is deleted upon this widget's
@@ -187,10 +183,10 @@ public:
     *
     * @return true if the completion object is deleted
     */
-    bool delCompletionOnExit() const { return m_bAutoDelCompObj; }
+    bool isCompletionObjectDeleted() const { return m_bAutoDelCompObj; }
 
     /**
-    * Disable the completion feature of this widget. 
+    * Disables the completion feature of this widget.
     *
     * If you were using a custom completion object, you would need to set it
     * again after calling this method as the reference to the comepltion object
@@ -205,12 +201,31 @@ public:
     *
     * This is a convienence method that will automatically create a completion
     * object for you.  The completion object is an instance of the base class
-    * @ref KCompletion.  If you need to make use of a more specialized completion
-    * object, use @ref setCompletionObject.  See also @ref completionObject.
+    * @ref KCompletion.  To make use of a more specialized completion object,
+    * use @ref setCompletionObject.  Additionally, this method automatically
+    * sets this widget to handle the rotation signals.  If this is not desired,
+    * simply invokde @ref setHandleRotationSignals( false ) after calling this
+    * function.
     *
     * @param @p autoDelete if true, delete the completion object on destruction.
     */
     void enableCompletion( bool autoDelete = true );
+
+    /*
+    * Sets this widget to handle rotation signals internally.
+    *
+    * When this function is invoked with a default argument or the argument
+    * set to "true", KLineEdit will automatically handle rotation signals.
+    * This is the default action chosen whenever the completion feature is
+    * enabled through either @ref setCompletionObject or @ref enableCompletion
+    * member functions.  To stop KLineEdit from handling completion signals
+    * simply invoke this function with the argument set to "false".  Note that
+    * this does not hinder you from connecting and receiving the rotation signals
+    * externally.
+    *
+    * @param @p autoHandle if true, handle rotation signals.
+    */
+    void setHandleRotationSignals( bool autoHandle = true );
 
     /**
     * Set the type of completion to be used.
@@ -253,7 +268,7 @@ public:
     * CompletionMan and CompletionShell.
     *
     * This function expects the value of the modifier key(s) (Shift, Ctrl, Alt),
-    * if present, to be @bf summed up with actual key, ex: Qt::CTRL+Qt::Key_E.
+    * if present, to be @bf SUMMED up with actual key, ex: Qt::CTRL + Qt::Key_E.
     * If no value is supplied for @p ckey or it is set to 0, then the completion
     * key will be defaulted to the global setting.  This function returns true if
     * the supplied key-binding can be successfully assigned.
@@ -364,33 +379,40 @@ public:
     bool isModeChangerEnabled() const { return m_bShowModeChanger; }
 
     /**
-    * Shows or hides the popup (context) menu.
+    * Enables/disables the popup (context) menu.
     *
-    * This method also allows you to show/hide the context menu.  If visible the
-    * user can change the comepltion mode on the fly.  If this function is called
-    * without an argument, the context menu will be disabled.
+    * This method also allows you to enable/disable the context menu. If this
+    * method is invoked without an argument, the context menu will be disabled.
     *
     * @param @p showMenu if true, shows the context menu.
     */
-    virtual void showContextMenu( bool showMenu = false );
+    virtual void setEnabledContextMenu( bool showMenu = false );
 
     /**
-    * Shows or hides the completion mode changer in the context menu.
+    * Enables/disables the completion mode changer item in the context menu.
     *
-    * This function allows you to hide the completion mode changer as needed
-    * without completely disabling the popup menu.
+    * This function allows you to enable or disable the completion mode changer
+    * as needed without having to disable the popup menu.  If enabled the user
+    * can change the comepltion mode on the fly.
     *
     * @param <tt>showChanger</tt>if true, shows the mode changer.
     */
-    virtual void showModeChanger( bool showChanger = false );
+    virtual void setEnabledModeChanger( bool showChanger = false );
 
 signals:
+
+    /**
+    * This signal is emitted when the user presses the return key.  The
+    * argument is the current text.  Note that this signal is NOT emitted
+    * if the widget's EchoMode is set to QLineEdit::Password.
+    */
+    void returnPressed( const QString& );
 
     /**
     * Signal emitted when the completion key is pressed.
     *
     * Please note that this signal is NOT emitted if the completion
-    * mode is set to CompletionNone.
+    * mode is set to CompletionNone or EchoMode is NOT normal.
     */
     void completion( const QString& );
 
@@ -398,7 +420,7 @@ signals:
     * Signal emitted when the rotate up key is pressed.
     *
     * Please note that this signal is NOT emitted if the completion
-    * mode is set to CompletionNone.
+    * mode is set to CompletionNone or EchoMode is NOT normal.
     */
     void rotateUp();
 
@@ -406,43 +428,129 @@ signals:
     * Signal emitted when the rotate down key is pressed.
     *
     * Please note that this signal is NOT emitted if the completion
-    * mode is set to CompletionNone.
+    * mode is set to CompletionNone or EchoMode is NOT normal.
     */
     void rotateDown();
 
+public slots:
+
+    /*
+    * Iterates in the up (previous match) direction through the
+    * completion list if it is available.
+    *
+    * This slot is intended to make it easy to connect the rotate
+    * up signal in order to make the widget itself handle rotation
+    * events internally.  Note that no action is taken if there is
+    * no completion object or the completion object does not contain
+    * a next match.
+    */
+    virtual void iterateUpInList();
+
+    /*
+    * Iterates in the down (next match) direction through the
+    * completion list if it is available.
+    *
+    * This slot is intended to make it easy to connect the rotate
+    * down signal in order to make the widget itself handle rotation
+    * events internally.  Note that no action is taken if there is
+    * no completion object or the completion object does not contain
+    * a next match.
+    */
+    virtual void iterateDownInList();
+
 protected slots:
+
+    /**
+    * Copies the marked text to the clipboard, if there is any,
+    * and if echoMode() is Normal.  See also @ref QLineEdit::copy.
+    */
     virtual void slotCopy()       { copy(); }
+
+    /**
+    * Copies the marked text to the clipboard and deletes it
+    * if there is any.  See also @ref QLineEdit::cut.
+    */
     virtual void slotCut()        { cut(); }
+
+    /**
+    * Inserts the text in the clipboard at the current cursor position,
+    * deleting any previously marked text. See also @ref QLineEdit::paste.
+    */
     virtual void slotPaste()      { paste(); }
-    virtual void slotClear()      { clear(); }
-    virtual void slotSelect()     { selectAll(); }
-    virtual void slotUnselect()   { deselect(); }
 
-    virtual void slotModeNone()   { setCompletionMode( KGlobal::CompletionNone ); }
-    virtual void slotModeManual() { setCompletionMode( KGlobal::CompletionMan );  }
-    virtual void slotModeAuto()   { setCompletionMode( KGlobal::CompletionAuto ); }
-    virtual void slotModeShell()  { setCompletionMode( KGlobal::CompletionShell );}
+    /**
+    * Sets the comepltion mode to KGlobal::CompletionNone
+    */
+    virtual void modeNone()   { setCompletionMode( KGlobal::CompletionNone ); }
 
-    virtual void slotShowContextMenu();
-    virtual void slotShowSubMenu( int );
-    virtual void slotTextChanged( const QString& );
-    virtual void slotMakeCompletion( const QString& );
-    virtual void slotRotateUp();
-    virtual void slotRotateDown();
+    /**
+    * Sets the comepltion mode to KGlobal::CompletionManual
+    */
+    virtual void modeManual() { setCompletionMode( KGlobal::CompletionMan );  }
+
+    /**
+    * Sets the comepltion mode to KGlobal::CompletionAuto
+    */
+    virtual void modeAuto()   { setCompletionMode( KGlobal::CompletionAuto ); }
+
+    /**
+    * Sets the comepltion mode to KGlobal::CompletionShell
+    */
+    virtual void modeShell()  { setCompletionMode( KGlobal::CompletionShell );}
+
+    /**
+    * Populates the context menu before it is displayed.
+    */
+    virtual void aboutToShowMenu();
+
+    /**
+    * Populates the sub menu before it is displayed.
+    */
+    virtual void aboutToShowSubMenu( int );
+
+    /**
+    * Deals with text changes and auto completion in this
+    * widget.
+    */
+    virtual void entryChanged( const QString& );
+
+    /**
+    * Deals with the processing of all text completions.
+    */
+    virtual void makeCompletion( const QString& );
+
+    /*
+    * Re-emitts the returnPressed signal with the current
+    * text as its argument.
+    */
+    void slotReturnPressed();
 
 protected:
-    // Pointers for the context & sub menus.
-    QPopupMenu *contextMenu, *subMenu;
-    // Pointer to Completion object.
-    KCompletion *comp;
-    // Initialize method called from the constructors
+
+    /**
+    * Initializes variables.  Called from the constructors.
+    */
     virtual void initialize( bool , bool );
-    // Method re-implemented to filter key-events...
+
+    /*
+    * Re-implemented from QLineEdit to filter key-events.
+    */
     virtual void keyPressEvent( QKeyEvent * );
-    // Method re-implemented to filter key-events...
+
+    /*
+    * Re-implemented from QLineEdit to filter key-events.
+    */
     virtual void mousePressEvent( QMouseEvent * );
-    // Method to rotate the text on rotation events
+
+    /*
+    * Rotates the text on rotation events
+    */
     void rotateText( const QString& );
+
+    // Pointers to the context & sub menus.
+    QPopupMenu *m_pContextMenu, *m_pSubMenu;
+    // Pointer to the Completion object.
+    KCompletion *m_pCompObj;
 
 private :
     // Stores the completion key locally
@@ -453,24 +561,28 @@ private :
     int m_iRotateDnKey;
     // Holds the id of where the Mode switcher
     // item is inserted.
-    int subMenuID;
+    int m_iSubMenuId;
     // Holds the length of the entry.
-    int prevlen;
+    int m_iPrevlen;
     // Holds the current cursor position.
-    int prevpos;
+    int m_iPrevpos;
 
-    // Flag to indicate whether we show
-    // context menu or not
+    // Indicates whether the context menu is enabled
+    // or disabled
     bool m_bShowContextMenu;
-    // Flag to indicate whether a mode switcher
-    // item will be available in the popup menu.
+    // Indicates whether the mode switcher item will be
+    // available in the context (popup) menu.
     bool m_bShowModeChanger;
-    // Flag that determined whether the completion object
-    // should be deleted when this object is destroyed.
+    // Determines whether the completion object should be
+    // deleted when this widget is destroyed.
     bool m_bAutoDelCompObj;
+    // Determines whether this widget handles rotation signals
+    // internally or not
+    bool m_bHandleRotationSignals;
 
     // Stores the completion mode locally.
     KGlobal::Completion m_iCompletionMode;
+
 };
 
 #endif
