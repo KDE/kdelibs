@@ -62,7 +62,7 @@ public:
 	 * KONQSBC == konqy's classic sidebar style (unthemed), this one is disabled
 	 * 	at the moment, but will be renabled soon too
 	 */
-	enum KMultiTabBarStyle{VSNET=0, KDEV3=1, KONQSBC=2,STYLELAST=0xffff};
+	enum KMultiTabBarStyle{VSNET=0, KDEV3=1, KONQSBC=2, KDEV3ICON=3,STYLELAST=0xffff};
 
 	KMultiTabBar(KMultiTabBarMode bm,QWidget *parent=0,const char *name=0);
 	virtual ~KMultiTabBar();

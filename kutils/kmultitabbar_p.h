@@ -41,12 +41,14 @@ public:
         QPtrList<KMultiTabBarTab>* tabs(){return &m_tabs;}
 private:
         friend class KMultiTabBar;
-        QHBox *box;
+        QWidget *box;
+	QBoxLayout *mainLayout;
         QPtrList<KMultiTabBarTab> m_tabs;
         enum KMultiTabBar::KMultiTabBarPosition m_position;
         bool m_showActiveTabTexts;
         enum  KMultiTabBar::KMultiTabBarStyle m_style;
 	int m_expandedTabSize;
+	int m_lines;
 protected:
         virtual void drawContents ( QPainter *, int, int, int, int);
 
@@ -57,6 +59,7 @@ protected:
          */
         virtual void contentsMousePressEvent(QMouseEvent *);
         virtual void mousePressEvent(QMouseEvent *);
+	virtual void resizeEvent(QResizeEvent *);
 };
 #endif
 
