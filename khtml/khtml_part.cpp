@@ -2178,15 +2178,16 @@ void KHTMLPart::reparseConfiguration()
   KHTMLSettings *settings = KHTMLFactory::defaultHTMLSettings();
   settings->init();
 
-  // WABA: This needs some more synchronisation.
-  // We probably need to stop loading the current page and
-  // reload it from the cache.
   autoloadImages( settings->autoLoadImages() );
 
   d->m_bJScriptEnabled = settings->enableJavaScript();
   d->m_bJavaEnabled = settings->enableJava();
   delete d->m_settings;
   d->m_settings = new KHTMLSettings(*KHTMLFactory::defaultHTMLSettings());
+
+  QApplication::setOverrideCursor( waitCursor );
+  if(d->m_doc) d->m_doc->applyChanges();
+  QApplication::restoreOverrideCursor();
 }
 
 QStringList KHTMLPart::frameNames() const
