@@ -1291,6 +1291,18 @@ namespace KIO {
 	 */
         KURL destURL() const { return m_dest; }
 
+        /**
+         * By default the permissions of the copied files will be those of the source files.
+         *
+         * But when copying "template" files to "new" files, people prefer the umask
+         * to apply, rather than the template's permissions.
+         * For that case, call setDefaultPermissions(true)
+         *
+         * TODO KDE4: consider adding this as bool to copy/copyAs?
+         * @since 3.3
+         */
+        void setDefaultPermissions( bool b );
+
     signals:
 
         /**
