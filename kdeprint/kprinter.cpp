@@ -305,7 +305,11 @@ void KPrinter::translateQtOptions()
 	{
 		QRect r = d->m_drawablearea;
 		QSize ps = d->m_pagesize;
-		d->m_wrapper->setMargins( r.top(), r.left(), ps.height() - r.bottom(), ps.width() - r.right() );
+		int res = resolution();
+		d->m_wrapper->setMargins( ( r.top() * res + 71 ) / 72,
+				( r.left() * res + 71 ) / 72, 
+				( ( ps.height() - r.bottom() - 1 ) * res + 71 ) / 72,
+				( ( ps.width() - r.right() - 1 ) * res + 71 ) / 72 );
 	}
 	/*else
 	{

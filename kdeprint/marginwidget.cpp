@@ -224,10 +224,10 @@ void MarginWidget::setResolution(int dpi)
 void MarginWidget::setDefaultMargins(int t, int b, int l, int r)
 {
 	int	dpi = m_top->resolution();
-	m_default[0] = (t*dpi+36)/72;
-	m_default[1] = (b*dpi+36)/72;
-	m_default[2] = (l*dpi+36)/72;
-	m_default[3] = (r*dpi+36)/72;
+	m_default[0] = (t*dpi+71)/72;
+	m_default[1] = (b*dpi+71)/72;
+	m_default[2] = (l*dpi+71)/72;
+	m_default[3] = (r*dpi+71)/72;
 	if (!m_custom->isChecked())
 		resetDefault();
 }
