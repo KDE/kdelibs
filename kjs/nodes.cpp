@@ -41,7 +41,7 @@ using namespace KJS;
 #define KJS_ABORTPOINT if (abortStatement(script,context)) return Completion(Normal);
 
 int Node::s_nodeCount = 0;
-list<Node *> Node::s_nodes;
+std::list<Node *> Node::s_nodes;
 
 // ------------------------------ Node -----------------------------------------
 
@@ -70,7 +70,7 @@ void Node::finalCheck()
 {
   fprintf( stderr, "Node::finalCheck(): global node count: %d\n", s_nodeCount );
   fprintf( stderr, "Node::finalCheck(): list count       : %d\n", s_nodes.size() );
-  list<Node *>::iterator it = s_nodes.begin();
+  std::list<Node *>::iterator it = s_nodes.begin();
   for ( uint i = 0; it != s_nodes.end() ; ++it, ++i )
     fprintf( stderr, "[%d] Still having node %p (%s)\n", i, *it, typeid( **it ).name() );
   //assert( s_nodeCount == 0 );
@@ -118,12 +118,6 @@ bool StatementNode::abortStatement(KJScriptImp *script, Context */*context*/)
   */
 
   return false;
-}
-
-Completion StatementNode::execute(KJScriptImp */*script*/, Context */*context*/)
-{
-  // subclasses should always override execute9)
-  assert(false);
 }
 
 // ------------------------------ NullNode -------------------------------------

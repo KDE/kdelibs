@@ -95,7 +95,7 @@ namespace KJS {
     // they have all been deleted at the very end)
     static int s_nodeCount;
     // List of the remaining nodes, for debugging purposes. Don't remove!
-    static list<Node *> s_nodes;
+    static std::list<Node *> s_nodes;
 #endif
     // disallow assignment
     Node& operator=(const Node&);
@@ -112,7 +112,7 @@ namespace KJS {
     int sourceId() const { return sid; }
     bool hitStatement(KJScriptImp *script, Context *context);
     bool abortStatement(KJScriptImp *script, Context *context);
-    virtual Completion execute(KJScriptImp *script, Context *context);
+    virtual Completion execute(KJScriptImp *script, Context *context) = 0;
     void pushLabel(const UString *id) {
       if (id) ls.push(*id);
     }
