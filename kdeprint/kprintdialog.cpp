@@ -94,22 +94,23 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 : KDialog(parent,name,true)
 {
 	//WhatsThis strings.... (added by pfeifle@kde.org)
-	QString whatsThisLocationLabel = i18n(  " <qt> The <em>Location</em> may describe where the"
+	QString whatsThisLocationLabel = i18n(  " <qt><b>Printer Location:</b> The <em>Location</em> may describe where the"
 						" selected printer is located. The Location description is created"
 						" by the administrator of the print system (or may be"
 						" left empty)."
 						" </qt>" );
-	QString whatsThisPrinterType = i18n(    " <qt> The <em>Type</em> indicates your printer type."
+	QString whatsThisPrinterType = i18n(    " <qt><b>Printer Type:</b>  The <em>Type</em> indicates your printer type."
 						" </qt>" );
-	QString whatsThisPrinterState = i18n(   " <qt> The <em>State</em> indicates the state of the"
+	QString whatsThisPrinterState = i18n(   " <qt><b>Printer State:</b>  The <em>State</em> indicates the state of the"
 						" print queue on the print server (which could be your localhost). The"
 						" state may be 'Idle', 'Processing', 'Stopped', 'Paused' or similar."
 						" </qt>" );
-	QString whatsThisPrinterComment = i18n( " <qt> The <em>Comment</em> may describe the selected"
+	QString whatsThisPrinterComment = i18n( " <qt><b>Printer Comment:</b>  The <em>Comment</em> may describe the selected"
 						" printer. This comment is created by the administrator"
 						" of the print system (or may be left empty)."
 						" </qt>" );
-	QString whatsThisPrinterSelect = i18n(  " <qt>Use this combo box to select the printer to which you want to print."
+	QString whatsThisPrinterSelect = i18n(  " <qt><b>Printer Selection Menu:</b> "
+						" <p>Use this combo box to select the printer to which you want to print."
 						" If you only find the <em>KDE special printers</em> -- which save"
 						" jobs to disk (as PostScript- or PDF-files), or deliver jobs via"
 						" email (as a PDF"
@@ -125,30 +126,35 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 						" server.</li>"
 						" </ul>"
 						" </qt>" );
-	QString whatsThisPrintJobProperties = i18n( " <qt> This button takes you to where you can make decisions"
+	QString whatsThisPrintJobProperties = i18n( " <qt><b>Print Job Properties:</b> "
+						" <p>This button opens a dialog where you can make decisions"
 						" regarding all supported print job options."
 						" </qt>" );
-	QString whatsThisPrinterFilter = i18n(  " <qt><p> This button reduces the list of visible printers"
+	QString whatsThisPrinterFilter = i18n(  " <qt><b>Selective View on List of Printers:</b>"
+						" <p> This button reduces the list of visible printers"
 						" to a shorter, more convenient, pre-defined list.</p>"
 						" <p>This is particularly useful in enterprise environments"
 						" with lots of printers. The default is to show <b>all</b> printers.</p>"
-						" <p>To create a personal filter list, click on the"
+						" <p>To create a personal \"selective view list\", click on the"
 						" <em>\"System Options</em>\" button at the bottom of this dialog."
 						" Then, in the new dialog, select <em>\"Filter\"</em> (left column in the"
-						" <em>KDE Print Configuration</em> dialog).</p>"
+						" <em>KDE Print Configuration</em> dialog) and setup your selection..</p>"
 						" </qt>" );
-	QString whatsThisAddPrinterWizard = i18n( "<qt> This button starts the <em>KDE Add Printer Wizard</em>."
+	QString whatsThisAddPrinterWizard = i18n( "<qt><b>KDE Add Printer Wizard</b>"
+						" <p>This button starts the <em>KDE Add Printer Wizard</em>."
 						" (<b>NOT</b> if you use <em>\"Generic LPD</em>\""
 						" or <em>\"LPRng\"</em>, or <em>\"Print Through an External Program</em>\".)"
 						" Use the Wizard (with <em>\"CUPS\"</em> or <em>\"RLPR\"</em>) to add locally"
 						" defined printers to your system."
 						" </qt>" );
-	QString whatsThisExternalPrintCommand = i18n( " <qt> You can enter any command that"
-						" would also print for you in a <em>konsole</em> window. <br>"
+	QString whatsThisExternalPrintCommand = i18n( " <qt><b>External Print Command</b>"
+						" <p>Here you can enter any command that would also print for you in "
+						" a <em>konsole</em> window. <br>"
 						" <b>Example:</b> <pre>a2ps -P &lt;printername&gt; --medium=A3</pre>."
 						" </qt>" );
-	QString whatsThisOptions = i18n( " <qt>This button shows or hides additional printing options.</qt>" );
-	QString whatsThisSystemOptions = i18n(  " <qt> This button starts a new dialog where you can adjust various"
+	QString whatsThisOptions = i18n( " <qt><b>Additional Print Job Options</b>"
+						" <p>This button shows or hides additional printing options.</qt>" );
+	QString whatsThisSystemOptions = i18n(  " <qt><b>Location:</b>  This button starts a new dialog where you can adjust various"
   						" settings of your printing system. Amongst them:"
 						" <ul><li> Should KDE"
 						" applications embed all fonts into the PostScript they"
@@ -159,21 +165,22 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 						" </ul> and many more.... "
 					        " </qt>" );
 
-	QString whatsThisHelpButton = i18n(     " <qt> This button takes you to the complete <em>KDEPrint"
+	QString whatsThisHelpButton = i18n(     " <qt><b>Help:</b> This button takes you to the complete <em>KDEPrint"
 						" Manual</em>."
 					        " </qt>" );
 
-	QString whatsThisCancelButton = i18n(   " <qt> This button cancels your print job and quits the"
+	QString whatsThisCancelButton = i18n(   " <qt><b>Cancel:</b> This button cancels your print job and quits the"
 						" kprinter dialog."
 					        " </qt>" );
 
-	QString whatsThisPrintButton = i18n(    " <qt> This button sends the job to the printing process."
+	QString whatsThisPrintButton = i18n(    " <qt><b>Print:</b> This button sends the job to the printing process."
 						" If you are sending non-PostScript files, you may be"
 						" asked if you want KDE to convert the files into PostScript,"
 						" or if you want your print subsystem (like CUPS) to do this."
 					        " </qt>" );
 
-	QString whatsThisKeepDialogOpenCheckbox = i18n( " <qt><p>If you enable this checkbox, the printing dialog"
+	QString whatsThisKeepDialogOpenCheckbox = i18n( " <qt><b>Keep Printing Dialog Open</b>"
+						"<p>If you enable this checkbox, the printing dialog"
 						" stays open after you hit the <em>Print</em> button.</p>"
 						" <p> This is"
 						" especially useful, if you need to test various"
@@ -182,23 +189,27 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 						" the other) to have it finished more quickly.</p>"
 					        " </qt>" );
 
-	QString whatsThisOutputFileLabel = i18n(" <qt> The \"Output file:\" shows you where your file will be"
+	QString whatsThisOutputFileLabel = i18n(" <qt><b>Output File Name and Path:</b> The \"Output file:\" shows "
+						" you where your file will be"
 						" saved if you decide to \"Print to File\" your job, using one of the"
 						" KDE <em>Special Printers</em> named \"Print to File (PostScript)\""
 						" or \"Print to File (PDF)\". Choose a name and location that suits"
-						" you by using the button and/or editing the line on the right."
+						" your need by using the button and/or editing the line on the right."
 					        " </qt>" );
 
-	QString whatsThisOutputFileLineedit = i18n(" <qt> Edit this line to create a path and filename that suits"
-						" you. (Only available if you \"Print to File\")"
+	QString whatsThisOutputFileLineedit = i18n(" <qt<b>Output File Name and Path:</b>> Edit this line to create a "
+						" path and filename that suits"
+						" your needs.. (Only available if you \"Print to File\")"
 					        " </qt>" );
 
-	QString whatsThisOutputFileButton = i18n(" <qt> This button calls the \"File Open\" dialog to let you"
+	QString whatsThisOutputFileButton = i18n(" <qt><b>Browse Directories button:<b> This button calls "
+						" the \"File Open / Browsed Directories\" dialog to let you"
 						" choose a directory and file name where your \"Print-to-File\""
 						" job should be saved."
 					        " </qt>" );
 
-	QString whatsThisAddFileButton = i18n(  " <qt> This button calls the \"File Open\" dialog to allow you"
+	QString whatsThisAddFileButton = i18n(  " <qt><b>Add File to Job</b>"
+						" <p>This button calls the \"File Open / Browse Directories\" dialog to allow you"
 						" to select a file for printing. Note, that "
 						" <ul><li>you can select ASCII or International Text, PDF,"
 						" PostScript, JPEG, TIFF, PNG, GIF and many other graphical"
@@ -208,6 +219,8 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 						" system."
 						" </ul>"
 					        " </qt>" );
+
+/* Definitions are not used,,, weird. Temporarily commented out to find whats wrong with it.
 
 	QString whatsThisRemoveFileButton = i18n(" <qt> This button removes the highlighted file from the"
 						" list of files to be printed."
@@ -227,20 +240,29 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 						" of files to be printed. (In effect, this changes the order"
 						" of the files' printout.)"
 					        " </qt>" );
+*/
 
-	QString whatsThisPreviewCheckBox = i18n(" <qt> Enable this checkbox if you want to see a preview of"
+	QString whatsThisPreviewCheckBox = i18n(" <qt><b>Print Preview</b>"
+						" Enable this checkbox if you want to see a preview of"
 						" your printout. A preview lets you check if, for instance,"
  						" your intended \"poster\" or \"pamphlet\" layout"
-						" looks like you intended, without wasting paper first. It"
+						" looks like you expected, without wasting paper first. It"
 						" also lets you cancel the job if something looks wrong. "
+						" <p><b>Note:</b> The preview feature (and therefor this checkbox) "
+						" is only visible for printjobs created from inside KDE applications. "
+						" If you start kprinter from the commandline, or if you use kprinter "
+						" as a print command for non-KDE applications (like Acrobat Reader, "
+                                                " Firefox or OpenOffice), print preview is not available here. "
 					        " </qt>" );
 
-	QString whatsThisSetDefaultPrinter = i18n(" <qt> This button sets the current printer as the user's"
-						" default. (Button is only visible if the <em>System Options</em>"
+	QString whatsThisSetDefaultPrinter = i18n(" <qt><b>Set as Default Printer</b>"
+						" This button sets the current printer as the user's"
+						" default. "
+						" <p><b>Note:</b> (Button is only visible if the checkbox for "
+						" <em>System Options</em>"
 						" --> <em>General</em> --> <em>Miscellaneous</em>: <em>\"Defaults"
 						" to the last printer used in the application\"</em> is disabled.)"
 					        " </qt>" );
-
 	d = new KPrintDialogPrivate;
 
 	d->m_pages.setAutoDelete(false);
@@ -283,7 +305,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	d->m_filter->setMinimumSize(QSize(d->m_printers->minimumHeight(),d->m_printers->minimumHeight()));
 	d->m_filter->setToggleButton(true);
 	d->m_filter->setOn(KMManager::self()->isFilterEnabled());
-	QToolTip::add(d->m_filter, i18n("Toggle printer filtering"));
+	QToolTip::add(d->m_filter, i18n("Toggle selective view on printer list"));
 	QWhatsThis::add(d->m_filter, whatsThisPrinterFilter);
 	d->m_wizard = new QPushButton(m_pbox);
 	d->m_wizard->setPixmap(SmallIcon("wizard"));
