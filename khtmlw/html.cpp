@@ -2187,6 +2187,9 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
 		int l;
 		const char *str1;
 
+		if (!flow)
+		    newFlow(_clue);
+
 	    	const HTMLFont *fp = currentFont();
 		// Handling entities
 		char *buffer=new char[strlen(str)+2]; // buffer will never
