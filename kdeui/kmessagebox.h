@@ -20,6 +20,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.3  1999/08/15 14:03:00  porten
+ * capitalize "OK" in documentation as well.
+ *
  * Revision 1.2  1999/08/15 10:50:30  kulow
  * adding KMessageBox::about which uses the KDE icon instead of the Qt Information
  * icon - very cool! :)
@@ -150,8 +153,8 @@ public:
    * To be used for important things like "Sorry, I deleted your hard disk."
    * 
    * If your program detects the action specified by the user is somehow
-   * not allowed, this should never be reported as with error(). Use sorry()
-   * instead to explain to the user that is action is not allowed. 
+   * not allowed, this should never be reported with error(). Use sorry()
+   * instead to explain to the user that this action is not allowed. 
    *
    * The default button is "&OK". Pressing "Esc" selects the OK-button.
    *
