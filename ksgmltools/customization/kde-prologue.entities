@@ -81,11 +81,11 @@
 
 <!-- Licence links -->
 <!ENTITY license-links      SYSTEM
-  "common/license-links.docbook"                    -- level: para -->
+  "license-links.docbook"                    -- level: para -->
 
 <!-- Help menu -->
 <!ENTITY help-menu          SYSTEM
-  "common/help-menu.docbook"                           -- level: ? -->
+  "help-menu.docbook"                           -- level: ? -->
 
 <!-- FDL notice; -->
 <!ENTITY % FDLNotice        PUBLIC

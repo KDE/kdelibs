@@ -7,8 +7,8 @@ bin_SCRIPTS = kdb2html
 SUBDIRS = customization
 
 install-data-local:
-	-$(INSTALL_CATALOG) --add /etc/sgml/sgml-docbook-3.1.cat $(kde_datadir)/ksgmltools/catalog
+	-$(INSTALL_CATALOG) --add /etc/sgml/sgml-docbook-3.1.cat $(kde_datadir)/docbook/catalog
 
 uninstall-local:
-	-$(INSTALL_CATALOG) --remove /etc/sgml/sgml-docbook-3.1.cat $(kde_datadir)/ksgmltools/catalog
+	-$(INSTALL_CATALOG) --remove /etc/sgml/sgml-docbook-3.1.cat $(kde_datadir)/docbook/catalog
 
