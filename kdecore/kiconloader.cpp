@@ -186,10 +186,11 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
 
     // Check installed themes.
     d->mThemeList = KIconTheme::list();
-    if (!d->mThemeList.contains("hicolor"))
+    if (!d->mThemeList.contains(KIconTheme::defaultThemeName()))
     {
-        kdError(264) << "Error: standard icon theme "
-                     << "\"hicolor\" not found!\n";
+        kdError(264) << "Error: standard icon theme" 
+                     << " \"" << KIconTheme::defaultThemeName() << "\" "
+                     << " not found!" << endl;
         d->mpGroups=0L;
 
         return;
@@ -204,7 +205,7 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
     if (!def->isValid())
     {
 	delete def;
-	def = new KIconTheme(QString::fromLatin1("hicolor"), appname);
+	def = new KIconTheme(KIconTheme::defaultThemeName(), appname);
     }
     d->mpThemeRoot = new KIconThemeNode(def);
     d->mThemesInTree += KIconTheme::current();
@@ -271,7 +272,7 @@ void KIconLoader::addAppDir(const QString& appname)
 
 void KIconLoader::addAppThemes(const QString& appname)
 {
-    if ( KIconTheme::current() != "hicolor" )
+    if ( KIconTheme::current() != KIconTheme::defaultThemeName() )
     {
         KIconTheme *def = new KIconTheme(KIconTheme::current(), appname);
         if (def->isValid())
@@ -284,7 +285,7 @@ void KIconLoader::addAppThemes(const QString& appname)
             delete def;
     }
 
-    KIconTheme *def = new KIconTheme(QString::fromLatin1("hicolor"), appname);
+    KIconTheme *def = new KIconTheme(KIconTheme::defaultThemeName(), appname);
     KIconThemeNode* node = new KIconThemeNode(def);
     d->mpThemeRoot->links.append(node);
     addBaseThemes(node, appname);
