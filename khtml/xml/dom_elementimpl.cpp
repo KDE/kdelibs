@@ -978,7 +978,7 @@ NodeImpl *NamedAttrMapImpl::setNamedItem ( const Node &arg, int &exceptioncode )
     if (attrs) {
       for (i = 0; i < len; i++)
         newAttrs[i] = attrs[i];
-      delete attrs;
+      delete [] attrs;
     }
     attrs = newAttrs;
     attrs[len] = attr;
@@ -1022,7 +1022,7 @@ AttrImpl *NamedAttrMapImpl::setIdItem ( AttrImpl *attr, int &exceptioncode )
     if (attrs) {
       for (i = 0; i < len; i++)
         newAttrs[i] = attrs[i];
-      delete attrs;
+      delete [] attrs;
     }
     attrs = newAttrs;
     attrs[len] = attr;
@@ -1057,7 +1057,7 @@ NodeImpl *NamedAttrMapImpl::removeNamedItem ( const DOMString &name, int &except
     AttrImpl *ret = attrs[found];
     ret->_element = 0;
     if (len == 1) {
-	delete attrs;
+	delete [] attrs;
 	attrs = 0;
 	len = 0;
     } else {
@@ -1067,7 +1067,7 @@ NodeImpl *NamedAttrMapImpl::removeNamedItem ( const DOMString &name, int &except
 	len--;
 	for (; i < len; i++)
 	    newAttrs[i] = attrs[i+1];
-	delete attrs;
+	delete [] attrs;
 	attrs = newAttrs;
     }
     DOMString nullStr;
@@ -1095,7 +1095,7 @@ AttrImpl *NamedAttrMapImpl::removeIdItem ( int id )
     AttrImpl *ret = attrs[found];
     ret->_element = 0;
     if (len == 1) {
-	delete attrs;
+	delete [] attrs;
 	attrs = 0;
 	len = 0;
     } else {
@@ -1105,7 +1105,7 @@ AttrImpl *NamedAttrMapImpl::removeIdItem ( int id )
 	len--;
 	for (; i < len; i++)
 	    newAttrs[i] = attrs[i+1];
-	delete attrs;
+	delete [] attrs;
 	attrs = newAttrs;
     }
     DOMString nullStr;
@@ -1153,7 +1153,7 @@ AttrImpl *NamedAttrMapImpl::removeAttr( AttrImpl *oldAttr, int &exceptioncode )
 	    AttrImpl *ret = attrs[i];
 
 	    if (len == 1) {
-		delete attrs;
+		delete [] attrs;
 		attrs = 0;
 		len = 0;
 	    }
