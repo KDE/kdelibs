@@ -381,9 +381,9 @@ in HTML and Linuxdoc except that it must always have a closing
 <!DOCTYPE book PUBLIC  "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN" [
   <!ENTITY kapp "<application>Kapp</application>">
   <!ENTITY kappname "&kapp;" -- this only *seems* redundant -->
+  <!ENTITY % addindex "IGNORE">
   <!ENTITY % ents PUBLIC "-//KDE//ENTITIES Application-Variable Entities V1.0//EN">
   %ents;
-  <!ENTITY % addindex "IGNORE">
 ]>
 ]]>
 </screen>
@@ -404,18 +404,20 @@ a synonymous for the name of the "Kapp" application, marked up as
 <para>
 Then comes another "entity definition". <markup>&amp;kappname;</markup> is defined as
 the name of the application. This symbol is always provided, should the real name of
-the application be iobtained through <markup>&amp;kshisen;</markup>,
+the application be obtained through <markup>&amp;kshisen;</markup>,
 <markup>&amp;konqueror;</markup>, or <markup>&amp;kapp;</markup> like in our example.
 </para> 
 
 <para>
-Then other entities depending on this application name are included. For example,
-this makes <markup>&amp;FDL;</markup> available as a shortcut for the Free
-Documentation Licence notice.
+Then it is said that no index should be included, for instance, because none 
+has been generated.  The file <filename>kdedocindex.docbook</filename> must be 
+present if you set <markup>addindex</markup> to <markup>INCLUDE</markup>.
 </para>
 
 <para>
-Finally, it is said that, by default, no index is generated.
+Finally other entities depending on the application name are included. For example,
+this makes <markup>&amp;FDL;</markup> available as a shortcut for the Free
+Documentation Licence notice.
 </para>
 
 </sect1>
