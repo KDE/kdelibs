@@ -121,14 +121,14 @@ KHTMLWidget::~KHTMLWidget()
   {
       delete lstViews;
       lstViews = 0;
+      if(paintBuffer) delete paintBuffer;
+      paintBuffer = 0;
   }
   
   clear();
 
   if(cache) delete cache;
   if(defaultSettings) delete defaultSettings;
-  if(paintBuffer) delete paintBuffer;
-  paintBuffer = 0;
 }
 
 void KHTMLWidget::init()
