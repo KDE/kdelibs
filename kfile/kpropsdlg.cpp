@@ -395,8 +395,8 @@ void KPropertiesDialog::insertPages()
 
   QString query = QString::fromLatin1(
       "('KPropsDlg/Plugin' in ServiceTypes) and "
-      "((not exist X-KDE-Protocol) or "
-      " (X-KDE-Protocol == '%1'  )   )"          ).arg(item->url().protocol());
+      "((not exist [X-KDE-Protocol]) or "
+      " ([X-KDE-Protocol] == '%1'  )   )"          ).arg(item->url().protocol());
 
   kdDebug( 250 ) << "trader query: " << query << endl;
   KTrader::OfferList offers = KTrader::self()->query( mimetype, query );
