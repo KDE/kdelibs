@@ -515,7 +515,7 @@ KPropsDlgPlugin::~KPropsDlgPlugin()
 bool KPropsDlgPlugin::isDesktopFile( KFileItem * _item )
 {
   // only local files
-  if ( !_item->url().isLocalFile() )
+  if ( !_item->isLocalFile() )
     return false;
 
   // only regular files
