@@ -338,9 +338,9 @@ static void cleanpath(QString &path)
 	if ( pos > 0 )
 	    prev = path.findRev( "/", pos -1 );
         // don't remove the host, i.e. http://foo.org/../foo.html
-        if (prev > 3 && path.findRev("://", prev-1) == prev-2)
+        if (prev < 0 || (prev > 3 && path.findRev("://", prev-1) == prev-2))
             path.remove( pos, 3);
-        else if(prev >= 0)
+        else
             // matching directory found ?
             path.remove( prev, pos- prev + 3 );
     }
@@ -850,7 +850,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         return;
     }
     case CSS_PROP_DISPLAY:
-    {   
+    {
         if(value->valueType() == CSSValue::CSS_INHERIT)
         {
             if(!e->parentNode()) return;
@@ -905,7 +905,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 
         style->setDisplay(d);
         //kdDebug( 6080 ) << "setting display to " << d << endl;
-        
+
         break;
     }
 
@@ -1126,7 +1126,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         {
         case CSS_VAL_STATIC:
             p = STATIC; break;
-        case CSS_VAL_RELATIVE:            
+        case CSS_VAL_RELATIVE:
             p = RELATIVE; break;
         case CSS_VAL_ABSOLUTE:
             p = ABSOLUTE; break;
@@ -1135,7 +1135,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
                 DocumentImpl *doc = e->ownerDocument();
                 if(doc && doc->view())
                     doc->view()->useSlowRepaints();
-                p = FIXED; 
+                p = FIXED;
                 break;
             }
         default:
@@ -1521,7 +1521,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     case CSS_PROP_MAX_WIDTH:
         // +none +inherit
         if(primitiveValue && primitiveValue->getIdent() == CSS_VAL_NONE)
-            apply = true;    
+            apply = true;
     case CSS_PROP_TOP:
     case CSS_PROP_LEFT:
     case CSS_PROP_RIGHT:
@@ -1533,7 +1533,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
             //kdDebug( 6080 ) << "found value=static-position" << endl;
             l = Length ( 0, Static);
             apply = true;
-        }    
+        }
     case CSS_PROP_BOTTOM:
     case CSS_PROP_WIDTH:
     case CSS_PROP_MIN_WIDTH:
