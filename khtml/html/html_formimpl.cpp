@@ -1481,6 +1481,11 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
                 encoding += fixUpfromUnicode(codec, astr);
                 astr.setNum(KMAX( clickY(), 0 ) );
                 encoding += fixUpfromUnicode(codec, astr);
+		astr = value().string();
+		if(astr.length() > 0) {
+		    encoding += fixUpfromUnicode(codec, nme);
+		    encoding += fixUpfromUnicode(codec, astr);
+		}
 
                 return true;
             }
