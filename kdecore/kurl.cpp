@@ -469,6 +469,11 @@ KURL::KURL( const KURL& _u, const QString& _rel_url, int encoding_hint )
           m_strPath_encoded += '/';
        }
     }
+    else
+    {
+       if ( m_strPath.isEmpty() )
+          m_strPath = '/';
+    }
     KURL tmp( url() + rUrl, encoding_hint);
     *this = tmp;
     cleanPath(false);
