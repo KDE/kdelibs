@@ -192,4 +192,42 @@ private:
   static KFileManager * pFileManager;
 };
 
+/**
+ * This class handles the displayOpenWithDialog call, made by KRun
+ * when it has no idea what to do with a URL.
+ * The default implementation is to print a huge fat warning
+ * This behaviour is overriden by KFileOpenWithHandler, in libkfile,
+ * which displays the real open-with dialog box.
+ *
+ * If you use KRun you _need_ to create an instance of KFileOpenWithHandler
+ * (except if you can make sure you only use it for executables or
+ *  Type=Application desktop files)
+ *
+ * @see KFileOpenWithHandler
+ */
+class KOpenWithHandler
+{
+public:
+  KOpenWithHandler() { pOpenWithHandler = this; }
+  virtual ~KOpenWithHandler() { pOpenWithHandler = 0; }
+
+  /**
+   * Opens an open-with dialog box for @p urls
+   * @returns true if the operation succeeded
+   */
+  virtual bool displayOpenWithDialog( const KURL::List& urls );
+
+  /**
+   * Call this to get the (only) instance of KOpenWithHandler
+   */
+  static KOpenWithHandler * getOpenWithHandler() {
+    if (!pOpenWithHandler)
+      pOpenWithHandler = new KOpenWithHandler;
+    return pOpenWithHandler;
+  }
+
+private:
+  static KOpenWithHandler * pOpenWithHandler;
+};
+
 #endif
