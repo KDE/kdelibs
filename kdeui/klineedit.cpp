@@ -69,6 +69,8 @@ void KLineEdit::init()
 
     // Enable the context menu by default.
     setContextMenuEnabled( true );
+    KCursor::setAutoHideCursor( this, true, true );
+    installEventFilter( this );
 }
 
 void KLineEdit::setCompletionMode( KGlobalSettings::Completion mode )
@@ -325,6 +327,8 @@ void KLineEdit::mousePressEvent( QMouseEvent* e )
 bool KLineEdit::eventFilter( QObject* o, QEvent* ev )
 {
     if ( o == this ) {
+	KCursor::autoHideEventFilter( this, ev );
+	
 	if ( ev->type() == QEvent::KeyPress )
         {
 	    QKeyEvent *e = static_cast<QKeyEvent *>( ev );

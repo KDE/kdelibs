@@ -139,6 +139,10 @@ public:
      * When disabling auto-hide, mouseTracking will be disabled, so if you need
      * mouseTracking after disabling auto-hide, you have to reenable
      * mouseTracking.
+     *
+     * If you want to use auto-hiding for widgets that don't take focus, e.g.
+     * a QCanvasView, then you have to pass all key-events that should trigger
+     * auto-hiding to @ref autoHideEventFilter().
      */
     static void setAutoHideCursor( QWidget *w, bool enable );
 

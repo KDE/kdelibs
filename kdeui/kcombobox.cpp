@@ -47,6 +47,7 @@ KComboBox::KComboBox( QWidget *parent, const char *name )
           :QComboBox( parent, name )
 {
     m_trapReturnKey = false;
+    m_pEdit = lineEdit();
 
     init();
 }
@@ -55,12 +56,13 @@ KComboBox::KComboBox( bool rw, QWidget *parent, const char *name )
           :QComboBox( rw, parent, name )
 {
     m_trapReturnKey = false;
+    m_pEdit = lineEdit();
 
-    if ( rw )
-    {
-        m_pEdit = QComboBox::lineEdit();
+    if ( rw ) {
+	KCursor::setAutoHideCursor( lineEdit(), true, true );
 	m_pEdit->installEventFilter( this );
     }
+    
     init();
 }
 
@@ -316,6 +318,9 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
 
 bool KComboBox::eventFilter( QObject* o, QEvent* ev )
 {
+    if ( o == m_pEdit )
+	KCursor::autoHideEventFilter( m_pEdit, ev );
+
     if( o == m_pEdit && ev->type() == QEvent::MouseButtonPress )
     {
         QMouseEvent* e = (QMouseEvent*) ev;

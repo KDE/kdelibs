@@ -279,6 +279,7 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
 
     if ( t == QEvent::Leave || t == QEvent::FocusOut ) {
         autoHideTimer->stop();
+
         if ( isCursorHidden )
             unhideCursor( w );
 
@@ -287,10 +288,11 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
     }
 
     // don't process events not coming from the focus-widget
-    if ( w != qApp->focusWidget() ) {
-	hideWidget = 0L;
-	return false;
-    }
+// no, this prevents usage with widgets not taking focus (e.g. QCanvasView)
+//     if ( w != qApp->focusWidget() ) {
+// 	hideWidget = 0L;
+// 	return false;
+//     }
 
     else if ( t == QEvent::Enter ) {
         if ( isCursorHidden )
@@ -302,7 +304,7 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
     else { // other than enter/leave/focus events
         if ( isCursorHidden ) {
             if ( t == QEvent::MouseButtonPress ||
-                 t ==QEvent::MouseButtonRelease ||
+                 t == QEvent::MouseButtonRelease ||
                  t == QEvent::MouseButtonDblClick || t == QEvent::MouseMove ||
                  t == QEvent::Show || t == QEvent::Hide ) {
                 unhideCursor( w );
@@ -317,7 +319,12 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
                     autoHideTimer->stop();
 		}
             }
-            else {
+
+	    // restart the timer on user-input
+            else if ( (t >= QEvent::MouseButtonPress &&
+		       t <= QEvent::KeyRelease) ||
+		      t == QEvent::Wheel ) {
+
                 if ( insideWidget( QCursor::pos(), w ))
                     autoHideTimer->start( hideCursorDelay, true );
             }
@@ -328,7 +335,7 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
 
 void KCursorPrivate::slotHideCursor()
 {
-    if ( !isCursorHidden && hideWidget == kapp->focusWidget() )
+    if ( !isCursorHidden )
         hideCursor( hideWidget );
 }
 

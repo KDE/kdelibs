@@ -249,7 +249,7 @@ public:
     *
     * @return @p true if combo is editable.
     */
-    bool isEditable() const { return !m_pEdit.isNull() ; }
+    bool isEditable() const { return editable(); }
 
     /**
      * Convenience method which iterates over all items and checks if
