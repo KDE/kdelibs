@@ -261,11 +261,11 @@ void KBookmarkMenu::fillContextMenu( QPopupMenu* contextMenu, const QString & ad
   int id;
 
   if (bookmark.isGroup()) {
-    id = contextMenu->insertItem( i18n( "Add Bookmark Here" ), this, SLOT(slotRMBActionEditAt(int)) );
+    id = contextMenu->insertItem( i18n( "Add Bookmark Here" ), this, SLOT(slotRMBActionInsert(int)) );
     contextMenu->setItemParameter( id, val );
     id = contextMenu->insertItem( i18n( "Delete Folder" ), this, SLOT(slotRMBActionRemove(int)) );
     contextMenu->setItemParameter( id, val );
-    id = contextMenu->insertItem( i18n( "Open Folder in Bookmark Editor" ), this, SLOT(slotRMBActionInsert(int)) );
+    id = contextMenu->insertItem( i18n( "Open Folder in Bookmark Editor" ), this, SLOT(slotRMBActionEditAt(int)) );
     contextMenu->setItemParameter( id, val );
     // contextMenu->insertItem( i18n( "Properties" ), this, SLOT(slotRMBActionProperties(int)) );
     // contextMenu->setItemParameter( id, val );
