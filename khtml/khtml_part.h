@@ -529,6 +529,20 @@ public:
   bool gotoAnchor( const QString &name );
 
   /**
+   * Go to the next anchor 
+   *
+   * This is useful to navigate from outside the navigator
+   * @since 3.2
+   */
+  bool nextAnchor();
+  
+  /** 
+   * Go to previous anchor
+   * @since 3.2
+   */
+  bool prevAnchor();
+
+  /**
    * Sets the cursor to use when the cursor is on a link.
    */
   void setURLCursor( const QCursor &c );

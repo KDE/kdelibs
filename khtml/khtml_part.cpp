@@ -2023,6 +2023,24 @@ bool KHTMLPart::gotoAnchor( const QString &name )
   return true;
 }
 
+bool KHTMLPart::nextAnchor()
+{
+  if (!d->m_doc)
+    return false;
+  d->m_view->focusNextPrevNode ( true );
+
+  return true;
+}
+
+bool KHTMLPart::prevAnchor()
+{
+  if (!d->m_doc)
+    return false;
+  d->m_view->focusNextPrevNode ( false );
+
+  return true;
+}
+
 void KHTMLPart::setStandardFont( const QString &name )
 {
     d->m_settings->setStdFontName(name);

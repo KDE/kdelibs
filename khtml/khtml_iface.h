@@ -126,7 +126,7 @@ k_dcop:
     void setOnlyLocalReferences(bool enable);
 
     /**
-     * Returnd whether references should be loaded ( default false )
+     * Returns whether references should be loaded ( default false )
      **/
     bool onlyLocalReferences() const;
 
@@ -170,6 +170,20 @@ k_dcop:
      * been found.
      */
     bool gotoAnchor( const QString &name );
+
+    /**
+     * Go to next Anchor.
+     *
+     * This is useful to navigate from outside of the navigator.
+     * @since 3.2
+     */
+    bool nextAnchor();
+    
+    /**
+     * Go to previous Anchor.
+     * @since 3.2
+     */
+    bool prevAnchor();
 
     /**
      * Activate the node that currently has the focus

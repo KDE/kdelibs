@@ -108,9 +108,20 @@ void KHTMLPartIface::setFixedFont( const QString &name )
     part->setFixedFont(name);
 
 }
+
 bool KHTMLPartIface::gotoAnchor( const QString &name )
 {
     return part->gotoAnchor(name);
+}
+
+bool KHTMLPartIface::nextAnchor()
+{
+    return part->nextAnchor();
+}
+
+bool KHTMLPartIface::prevAnchor()
+{
+    return part->prevAnchor();
 }
 
 void KHTMLPartIface::activateNode()
