@@ -100,65 +100,67 @@ namespace {
 
 
 	void
-	jcbcr_to_rgb( int jcbcr[3], int* const ret )
+	ycbcr_to_rgb( int ycbcr[3], int* const ret )
 	{
 		int dummy[3] = {
-			(int)((1/1.772) * (jcbcr[0] + 1.402 * jcbcr[2])),
-			(int)((1/1.772) * (jcbcr[0] - 0.34413 * jcbcr[1] - 0.71414 * jcbcr[2])),
-			(int)((1/1.772) * (jcbcr[0] + 1.772 * jcbcr[1])) };
+			(int)((1/1.772) * (ycbcr[0] + 1.402 * ycbcr[2])),
+			(int)((1/1.772) * (ycbcr[0] - 0.34413 * ycbcr[1] - 0.71414 * ycbcr[2])),
+			(int)((1/1.772) * (ycbcr[0] + 1.772 * ycbcr[1])) };
 		for( int k = 0; k < 3; ++k ) ret[k] = dummy[k];
-	} // jcbcr_to_rgb
+	} // ycbcr_to_rgb
 
 
-	void draw_view( gs_t& gs, QImage& qti )
+	void
+	draw_view_gray( gs_t& gs, QImage& qti )
 	{
-		int numcmpts = 3;
-		bool color = true;
+		qti.create( jas_image_width( gs.image ), jas_image_height( gs.image ),
+			8, 256 );
+		for( int i = 0; i < 256; ++i )
+			qti.setColor( i, qRgb( i, i, i ) );
 
-		switch( jas_image_colorspace( gs.image ) ) {
-			case JAS_IMAGE_CS_RGB:
-			case JAS_IMAGE_CS_YCBCR:
-				color = true;
-				numcmpts = 3;
-				break;
-			case JAS_IMAGE_CS_GRAY:
-				color = false;
-				numcmpts = 1;
-				break;
-		} // switch
+		const int* cmptlut = gs.cmptlut;
 
+		const uint width = jas_image_width( gs.image );
+		const uint height = jas_image_height( gs.image );
+		for( uint y = 0; y < height; ++y ) {
+			uchar* sl = qti.scanLine( y );
+			for( uint x = 0; x < width; ++x ) {
+				*sl = jas_matrix_get( gs.cmpts[cmptlut[0]], y, x );
+				*sl <<= 8 - jas_image_cmptprec(gs.image, 0);
+				++sl;
+			} // for x
+		} // for y
+	} // draw_view_gray
 
-		int* cmptlut = gs.cmptlut;
+	void
+	draw_view_color( gs_t& gs, QImage& qti )
+	{
+		const int numcmpts = 3;
+		const bool ycbcr
+			= (jas_image_colorspace( gs.image ) == JAS_IMAGE_CS_YCBCR);
+		if( !qti.create( jas_image_width( gs.image ),
+					jas_image_height( gs.image ), 32 ) )
+				return;
+
+		const int* cmptlut = gs.cmptlut;
 		int v[3];
 
 		uint32_t* data = (uint32_t*)qti.bits();
 
-		uint width = jas_image_width( gs.image );
-		uint height = jas_image_height( gs.image );
+		const uint width = jas_image_width( gs.image );
+		const uint height = jas_image_height( gs.image );
 		for( uint y = 0; y < height; ++y ) {
 			for( uint x = 0; x < width; ++x ) {
-				if( color ) {
-					for( int k = 0; k < numcmpts; ++k ) {
-						v[k] = ( x < jas_image_cmptwidth(gs.image, cmptlut[k])
-								&& y < jas_image_cmptheight(gs.image, cmptlut[k]))
-							? jas_matrix_get(gs.cmpts[cmptlut[k]], y, x) : 0;
-						// if the precision of the component is too small, increase
-						// it to use the complete value range.
-						v[k] <<= 8 - jas_image_cmptprec(gs.image, cmptlut[k]);
-					} // for k
-					switch( jas_image_colorspace( gs.image ) ) {
-						case JAS_IMAGE_CS_RGB:
-							break;
-						case JAS_IMAGE_CS_YCBCR:
-							// the first argument is passed by value
-							jcbcr_to_rgb( v, v );
-							break;
-					} // switch
-				} else { // !color
-					v[0] = jas_matrix_get( gs.cmpts[cmptlut[0]], y, x );
-					v[0] <<= 8 - jas_image_cmptprec(gs.image, 0);
-					v[1] = v[2] = v[0];
-				} // else
+				for( int k = 0; k < numcmpts; ++k ) {
+					v[k] = ( x < jas_image_cmptwidth(gs.image, cmptlut[k])
+							&& y < jas_image_cmptheight(gs.image, cmptlut[k]))
+						? jas_matrix_get(gs.cmpts[cmptlut[k]], y, x) : 0;
+					// if the precision of the component is too small, increase
+					// it to use the complete value range.
+					v[k] <<= 8 - jas_image_cmptprec(gs.image, cmptlut[k]);
+				} // for k
+
+				if( ycbcr ) ycbcr_to_rgb( v, v );
 
 				for( int k = 0; k < 3; ++k ) {
 					if( v[k] < 0 ) v[k] = 0;
@@ -168,7 +170,24 @@ namespace {
 				*data++ = qRgb( v[0], v[1], v[2] );
 			} // for x
 		} // for y
+	} // draw_view_color
+
+	void
+	draw_view( gs_t& gs, QImage& qti )
+	{
+		switch( jas_image_colorspace( gs.image ) ) {
+			case JAS_IMAGE_CS_RGB:
+			case JAS_IMAGE_CS_YCBCR:
+				draw_view_color( gs, qti );
+				break;
+			case JAS_IMAGE_CS_GRAY:
+				draw_view_gray( gs, qti );
+				break;
+		} // switch
+
+		return;
 	} // draw_view
+
 } // namespace
 
 
@@ -183,8 +202,7 @@ kimgio_jp2_read( QImageIO* io )
 	if( !init_components( gs ) ) return;
 	init_cmptlut( gs );
 
-	QImage image( jas_image_width( gs.image ), jas_image_height( gs.image ),
-			32 );
+	QImage image;
 	draw_view( gs, image );
 
 	if( gs.image ) jas_image_destroy( gs.image );
