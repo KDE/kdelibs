@@ -977,9 +977,9 @@ void KSpell::check2( KProcIO * )
   QString line;
   static bool recursive = false;
   if (recursive &&
-      (!ksdlg || ksdlg->isHidden()))
+      !ksdlg )
   {
-    return;
+      return;
   }
   recursive = true;
 
@@ -1064,7 +1064,7 @@ void KSpell::check2( KProcIO * )
     lastpos = (lastlastline=lastline) + offset; //do we really want this?
     i = origbuffer.find('\n', lastline) + 1;
     qs = origbuffer.mid( lastline, i-lastline );
-    cleanFputs( qs,false );
+    cleanFputs( qs, false );
     lastline = i;
     recursive = false;
     return;
