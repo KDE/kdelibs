@@ -25,9 +25,12 @@
 
 #include "simplesoundserver_impl.h"
 #include "mcoputils.h"
-#include <signal.h>
+#include <csignal>
+#include <iostream>
 
-void stopServer(int)
+using namespace std;
+
+extern "C" void stopServer(int)
 {
 	Dispatcher::the()->terminate();
 }

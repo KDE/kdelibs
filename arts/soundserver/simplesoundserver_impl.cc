@@ -26,6 +26,9 @@
 #include "simplesoundserver_impl.h"
 #include "artsflow.h"
 #include <stdio.h>
+#include <iostream>
+
+using namespace std;
 
 SimpleSoundServer_impl::SimpleSoundServer_impl()
 {

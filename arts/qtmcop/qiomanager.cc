@@ -26,6 +26,9 @@
 #include "qiomanager.h"
 #include <qsocketnotifier.h>
 #include <qapplication.h>
+#include <cassert>
+
+using namespace std;
 
 QIOWatch::QIOWatch(int fd, int type, IONotify *notify,
 	QSocketNotifier::Type qtype)

@@ -35,14 +35,14 @@ class SimpleSoundServer_impl : virtual public SimpleSoundServer_skel,
 {
 protected:
 	Object_var play_obj, add_left, add_right;
-	list<Synth_PLAY_WAV *> activeWavs;
+	std::list<Synth_PLAY_WAV *> activeWavs;
 
 public:
 	SimpleSoundServer_impl();
 	~SimpleSoundServer_impl();
 
-	long play(const string& s);
-	PlayObject *createPlayObject(const string& filename);
+	long play(const std::string& s);
+	PlayObject *createPlayObject(const std::string& filename);
 
 	void notifyTime();
 };
