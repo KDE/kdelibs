@@ -94,7 +94,6 @@ RenderTable::RenderTable(RenderStyle *style)
 
     colInfos.setAutoDelete(true);
 
-    setBlocking();
     setParsing();
 
     _currentCol=0;
@@ -937,7 +936,6 @@ void RenderTable::calcColWidth(void)
     printf("total width = %d\n", m_width);
 #endif
 
-    setBlocking(false);
 }
 
 
@@ -1640,8 +1638,8 @@ void RenderTableCell::print(QPainter *p, int _x, int _y,
     printf("%s(RenderTableCell)::print() w/h = (%d/%d)\n", renderName(), width(), height());
 #endif
 
-    if (!layouted())
-  	return;
+//    if (!layouted())
+//  	return;
 
     _tx += m_x;
     _ty += m_y + cellTopExtra();

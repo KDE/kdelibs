@@ -86,10 +86,9 @@ RenderObject::RenderObject(RenderStyle* style)
     m_style = style;
 
     m_layouted = false;
-    m_blocking = false;
     m_parsing = false;
     m_minMaxKnown = false;
-
+    
     m_parent = 0;
     m_previous = 0;
     m_next = 0;
@@ -365,6 +364,13 @@ bool RenderObject::printSelection( QPainter *p, int tx, int ty, RenderObject *en
     }
     return true;
 }
+
+void RenderObject::selectionStartEnd(int& spos, int& epos)
+{
+    if (parent())
+    	parent()->selectionStartEnd(spos, epos);
+}
+
 
 void RenderObject::styleChanged(RenderStyle *newStyle)
 {

@@ -139,16 +139,21 @@ public:
     TextSlave *last() { return m_last; }
 
     virtual bool printSelection( QPainter *p, int _tx, int _ty, RenderObject *end, int endPos );
+    
+    virtual SelectionState selectionState() const {return m_selectionState;}
+    virtual void setSelectionState(SelectionState s) {m_selectionState = s; }
 
 protected:
     short m_minWidth;
     short m_maxWidth;
     short m_contentHeight;
+    
+    SelectionState m_selectionState : 2 ;
 
     QFontMetrics *fm;
     DOM::DOMStringImpl *str;
     TextSlave *m_first;
-    TextSlave *m_last;
+    TextSlave *m_last;   
 };
 
 

@@ -55,11 +55,19 @@ public:
     virtual void repaint();
     virtual void repaintRectangle(int x, int y, int w, int h);
     virtual void repaintObject(RenderObject *o, int x, int y);
-
+    
+    virtual void setSelection(RenderObject *s, int sp, RenderObject *e, int ep);
+        
 protected:
+
+    virtual void selectionStartEnd(int& spos, int& epos);
+
     KHTMLView *m_view;
     
     QTime updateTimer;
+    
+    int selectionStartPos;
+    int selectionEndPos;
 };
 
 };

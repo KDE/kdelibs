@@ -47,7 +47,7 @@ void TextSlave::print( QPainter *p, int _tx, int _ty)
 
     _ty += m_baseline;
 
-    //p->setPen(QColor("#000000"));
+//    p->setPen(QColor("#000000"));
     QConstString s(m_text , len);
     //printf("textSlave::printing(%s) at(%d/%d)\n", s.string().ascii(), x+_tx, y+_ty);
     p->drawText(x + _tx, y + _ty, s.string());
@@ -62,13 +62,14 @@ void TextSlave::printSelection(QPainter *p, int tx, int ty, int endPos)
     }
     QConstString s(m_text , _len);
 
-    if(_len != len)
-	_width = p->fontMetrics().width(s.string());
-
-    ty += m_baseline;
+    if (_len != len)
+    	_width = p->fontMetrics().width(s.string());
 
     QColor c("#001000");
-    p->fillRect(tx, ty, _width, m_height, c);
+    p->setPen( "#ffffff" );
+    p->fillRect(x + tx, y + ty, _width, m_height, c);
+
+    ty += m_baseline;
 
     //printf("textSlave::printing(%s) at(%d/%d)\n", s.string().ascii(), x+_tx, y+_ty);
     p->drawText(x + tx, y + ty, s.string());
@@ -184,6 +185,8 @@ RenderText::RenderText(RenderStyle *style, DOMStringImpl *_str)
     fm = new QFontMetrics(m_style->font());
     str = _str;
     if(str) str->ref();
+    
+    m_selectionState = SelectionNone;
 
 #ifdef DEBUG_LAYOUT
     QConstString cstr(str->s, str->l);
@@ -276,6 +279,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
     }	
 #endif
 
+
     p->setFont( m_style->font() );
 #if 0
     printf("charset used: %d mapper: %s\n", m_style->font().charSet(), fm->mapper()->name());
@@ -298,6 +302,29 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 	    if(s->checkVerticalPoint(y, ty, h))
 		s->printDecoration(p, tx, ty, d);
 	    s=s->next();
+	}
+    }
+    
+    
+    s = m_first;
+    if (selectionState() != SelectionNone)
+    {
+    	int endPos, startPos;
+	if (selectionState()==SelectionInside) 
+	{
+	    startPos=endPos=-1;
+	}
+	else
+	{
+	    selectionStartEnd(startPos,endPos);
+	}
+	
+	while(s && endPos)
+	{
+	    if(s->checkVerticalPoint(y, ty, h))
+	    	s->printSelection(p, tx, ty, endPos);
+	    endPos -= s->len;
+	    s=s->next();	    
 	}
     }
 

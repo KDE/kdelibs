@@ -101,15 +101,12 @@ public:
     bool isPositioned() const { return m_positioned; } // absolute or fixed positioning
     bool isRelPositioned() const { return m_relPositioned; } // relative positioning
     bool layouted() const   { return m_layouted; }
-    bool blocking() const   { return m_blocking;    }
     bool parsing() const    { return m_parsing;     }
     bool minMaxKnown() const{ return m_minMaxKnown; }
-
-    void setLayouted(bool b=true) { m_layouted = b; }
-    void setBlocking(bool b=true) { m_blocking = b; }
+        
+    void setLayouted(bool b=true) { m_layouted = b; }    
     void setParsing(bool b=true) { m_parsing = b; }
     void setMinMaxKnown(bool b=true) { m_minMaxKnown = b; }
-
 
     virtual short baselineOffset() const { return 0; }
     virtual short verticalPositionHint() const { return 0; }
@@ -266,21 +263,33 @@ public:
     virtual bool isHidden() const { return isFloating(); }
     virtual bool isSpecial() const;
 
+    enum SelectionState {
+    	SelectionNone,
+    	SelectionStart,
+	SelectionInside,
+    	SelectionEnd
+    };
+    
+    virtual SelectionState selectionState() const { return SelectionNone;}
+    virtual void setSelectionState(SelectionState) {}        
+
     virtual void styleChanged(RenderStyle *newStyle=0);
     
 protected:
+
+    virtual void selectionStartEnd(int& spos, int& epos);
+
     // assumes (_tx/_ty) point to the upper left corner of the box
     virtual void printBoxDecorations(QPainter */*p*/, int /*_tx*/, int /*_ty*/) {}
     virtual void setContainingBlock();
 
-    bool m_layouted       : 1;
-    bool m_blocking       : 1;
+    bool m_layouted       : 1;    
     bool m_parsing        : 1;
     bool m_minMaxKnown    : 1;
     bool m_floating       : 1;
     bool m_positioned     : 1;
     bool m_relPositioned  : 1;
-    bool m_printSpecial   : 1; // if the box has something special to print (background, border, etc)
+    bool m_printSpecial   : 1; // if the box has something special to print (background, border, etc)  
 
     RenderObject *m_containingBlock;
     RenderStyle *m_style;

@@ -35,7 +35,6 @@ RenderRoot::RenderRoot(RenderStyle *style, KHTMLView *view)
     m_width = m_minWidth;
     m_maxWidth = m_minWidth;
     setParsing();
-    m_view->setUpdatesEnabled(false);
 }
 
 
@@ -118,6 +117,45 @@ void RenderRoot::close()
     setParsing(false);    
     updateSize();
     repaint();
-//    m_view->setUpdatesEnabled(true);
 //    printTree();
+//    setSelection(this,-1,this,-1);
+}
+
+void RenderRoot::setSelection(RenderObject *s, int sp, RenderObject *e, int ep)
+{
+   selectionStartPos = sp;
+   selectionEndPos = ep;
+   while (s->firstChild())
+    	s = s->firstChild();
+   while (e->lastChild())
+    	e = e->lastChild();      
+	
+   RenderObject* o = s;
+   while (o && o!=e)
+   {
+    	if (o->selectionState()!=SelectionInside)
+	    o->repaint();
+    	o->setSelectionState(SelectionInside);	
+    	RenderObject* no;
+    	if ( !(no = o->firstChild()) )
+    	    if ( !(no = o->nextSibling()) )
+	    {
+	    	no = o->parent();
+		while (no && !no->nextSibling())
+		    no = no->parent();
+		if (no)
+		    no = no->nextSibling();
+	    }
+	o=no;    	
+   }
+   s->setSelectionState(SelectionStart);
+   e->setSelectionState(SelectionEnd);     
+   e->repaint();
+   
+}
+
+void RenderRoot::selectionStartEnd(int& spos, int& epos)
+{
+    spos = selectionStartPos;
+    epos = selectionEndPos;
 }
