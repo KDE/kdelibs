@@ -113,13 +113,13 @@ case 5:
 
 case 6:
   i = KMessageBox::warningContinueCancel(0, 
-                "You are about tp Print.\n"
+                "You are about to print.\n"
 		"Are you sure?",
                 "Print", QString::fromLatin1("&Print"));
   break;
 case 7:
   i = KMessageBox::warningContinueCancel(0, 
-                "You are about tp Print.\n"
+                "You are about to <Print>.\n"
 		"Are you sure?",
                 "Print", QString::fromLatin1("&Print"), "dontask", false);
   break;
