@@ -776,7 +776,7 @@ bool RenderLayer::nodeAtPoint(RenderObject::NodeInfo& info, int x, int y)
     // Now determine if the result is inside an anchor.
     DOM::NodeImpl* node = info.innerNode();
     while (node) {
-        if (node->hasAnchor())
+        if (node->hasAnchor() && !info.URLElement())
             info.setURLElement(node);
         node = node->parentNode();
     }
