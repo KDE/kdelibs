@@ -1227,16 +1227,21 @@ void KApplication::resizeAll()
 
 void KApplication::invokeHTMLHelp( QString filename, QString topic ) const
 {
-	    // filename = aAppName + '/' + aAppName + ".html";
   if ( fork() == 0 )	
+    {		
 	  if( filename.isEmpty() )
-	  path.append("/share/doc/HTML/default/");
-	  path.append(filename);
+	    filename = aAppName + "/index.html";
+
+	  QString path = KApplication::kdedir().copy();
+         path.append( "/share/doc/HTML/" );
+
+         // first try the locale setting
+         QString file = path + klocale->language() + '/' + filename;
          if( !QFileInfo( file ).exists() )
                // not found: use the default
                file = path + "default/" + filename;
-		  path.append( "#" );
-		  path.append(topic);
+
+	  if( !topic.isEmpty() )
 		{
                  file.append( "#" );
                  file.append(topic);
@@ -1248,8 +1253,8 @@ void KApplication::invokeHTMLHelp( QString filename, QString topic ) const
 	   */
 	  setuid( getuid() );
 	  setgid( getgid() );
-	  path.prepend("kdehelp ");
-	  execl(shell, shell, "-c", path.data(), 0L);
+	  char* shell = "/bin/sh";
+	  if (getenv("SHELL"))
 		shell = getenv("SHELL");
          file.prepend("kdehelp ");
          execl(shell, shell, "-c", file.data(), 0L);
