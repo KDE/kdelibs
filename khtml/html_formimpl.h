@@ -262,6 +262,7 @@ public:
     virtual void parseAttribute(Attribute *attr);
 
     virtual void attach(KHTMLWidget *w);
+    virtual void detach();
 
     virtual void layout( bool deep = false );
 

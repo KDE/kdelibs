@@ -114,6 +114,7 @@ void HTMLFormElementImpl::attach(KHTMLWidget *_view)
 void HTMLFormElementImpl::detach()
 {
     view = 0;
+    NodeBaseImpl::detach();
 }
 
 void HTMLFormElementImpl::slotSubmit()
@@ -379,6 +380,7 @@ void HTMLGenericFormElementImpl::detach()
     if(w) delete w;
     w = 0;
     view = 0;
+    NodeBaseImpl::detach();
 }
 
 short HTMLGenericFormElementImpl::getMinWidth() const
@@ -527,10 +529,10 @@ void HTMLButtonElementImpl::attach(KHTMLWidget *_view)
     if(w && _disabled) w->setEnabled(false);
 }
 
-void HTMLButtonElementImpl::layout( bool deep = false )
+void HTMLButtonElementImpl::layout( bool deep )
 {
     if(!w) return;
-    
+
     if(_first)
     {
 	// ### render contents into button
@@ -540,7 +542,7 @@ void HTMLButtonElementImpl::layout( bool deep = false )
     descent = 5;
     ascent = w->height() - 5;
     width = w->width();
-    
+
     setLayouted();
     setBlocking(false);
 }
@@ -548,7 +550,7 @@ void HTMLButtonElementImpl::layout( bool deep = false )
 QString HTMLButtonElementImpl::encoding()
 {
     QString _encoding;
-    
+
     if(!_disabled && (_type != SUBMIT || _clicked) )
     {
 	_encoding = encodeString( _name.string() );
@@ -561,7 +563,7 @@ QString HTMLButtonElementImpl::encoding()
 void HTMLButtonElementImpl::calcMinMaxWidth()
 {
     layout();
-    
+
     minWidth = width;
     maxWidth = width;
 }
@@ -871,6 +873,15 @@ void HTMLInputElementImpl::attach(KHTMLWidget *_view)
     }
     }
     if(w && _disabled) w->setEnabled(false);
+}
+
+void HTMLInputElementImpl::detach()
+{
+    if(_type == IMAGE)
+    {
+	KHTMLCache::free(_src, this);
+    }
+    HTMLGenericFormElementImpl::detach();
 }
 
 void HTMLInputElementImpl::layout( bool )
@@ -1523,9 +1534,6 @@ HTMLTextAreaElementImpl::HTMLTextAreaElementImpl(DocumentImpl *doc, HTMLFormElem
 
 HTMLTextAreaElementImpl::~HTMLTextAreaElementImpl()
 {
-    // funny... it somehow doesn't work without.
-    if(w) delete w;
-    w = 0;
 }
 
 const DOMString HTMLTextAreaElementImpl::nodeName() const

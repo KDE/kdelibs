@@ -577,6 +577,11 @@ public slots:
     void slotFormSubmitted( const QString &_method, const QString &_url,
 			    const char *_data, const QString &_target );
 
+    /**
+     * @internal
+     */
+    void slotPost( int );
+
 signals:
     /**
      * Emitted when cancel is emitted, but with more detailed error
@@ -649,7 +654,7 @@ protected slots:
     void data( HTMLURLRequestJob *job, const char *_data, int _len, bool _eof );
     void slotFinished( int _id );
     void slotError( int _id, int _err, const QString &_text );
-    void slotRedirection( int _id, const QString &_url );
+    void slotRedirection( int _id, const char *_url );
 
     //virtual void slotURLRequest( const QString & _url );
     //virtual void slotCancelURLRequest( const QString & _url );
@@ -885,6 +890,8 @@ private:
     // helpers for find functionality
     int findPos;
     DOM::NodeImpl *findNode;
+
+    QCString post_data;
 };
 
 /**

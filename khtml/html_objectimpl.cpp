@@ -132,6 +132,7 @@ void HTMLAppletElementImpl::detach()
     if(applet) delete applet;
     applet = 0;
     view = 0;
+    NodeBaseImpl::detach();
 }
 
 void HTMLAppletElementImpl::setXPos( int xPos )

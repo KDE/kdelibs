@@ -134,6 +134,7 @@ void KHTMLWidget::init()
     lstViews->append( this );
 
   m_lstURLRequestJobs.setAutoDelete( true );
+  //m_lstPendingURLRequests.setAutoDelete( true );
   m_lstChildren.setAutoDelete( true );
 
 //  setFocusPolicy( QWidget::StrongFocus );
@@ -355,22 +356,24 @@ void KHTMLWidget::begin( const QString &_url, int _x_offset, int _y_offset )
 
 void KHTMLWidget::slotStop()
 {
-  if ( !m_strWorkingURL.isEmpty() )
+  if ( m_jobId )
   {
-    m_strWorkingURL = "";
-
-    if ( m_bParsing )
-    {
-      end();
-      m_bParsing = false;
-    }
+    KIOJob* job = KIOJob::find( m_jobId );
+    if ( job )
+      job->kill();
+    m_jobId = 0;
   }
 
-  m_bComplete = true;
-  m_jobId = 0;
+  if ( m_bParsing )
+  {
+    end();
+    m_bParsing = false;
+  }
 
-  // ### cancel all file requests
+  if ( !m_strWorkingURL.isEmpty() )
+    m_strWorkingURL = "";
 
+  // cancel all file requests
   m_lstURLRequestJobs.clear();
   m_lstPendingURLRequests.clear();
 
@@ -380,6 +383,8 @@ void KHTMLWidget::slotStop()
       if ( _parent )
 	  _parent->childCompleted( this );
   }
+  m_bComplete = true;
+
 }
 void KHTMLWidget::slotReload()
 {
@@ -404,10 +409,11 @@ void KHTMLWidget::slotReloadFrames()
     slotReload();
 }
 
-void KHTMLWidget::openURL( const QString &_url, bool _reload, int _xoffset, int _yoffset, const char* /*_post_data*/ )
+// ### fix after krash: post_data -> QCString
+void KHTMLWidget::openURL( const QString &_url, bool _reload, int _xoffset, int _yoffset, const char* _post_data )
 {
 
-    printf("openURL this=%p\n", this);
+    printf("======================>>>>>>>> openURL this=%p, url=%s\n", this, _url.ascii());
   // Check URL
   if ( KURL::split( _url ).isEmpty() )
   {
@@ -415,23 +421,6 @@ void KHTMLWidget::openURL( const QString &_url, bool _reload, int _xoffset, int 
     return;
   }
 
-  if ( m_jobId )
-  {
-    KIOJob* job = KIOJob::find( m_jobId );
-    if ( job )
-      job->kill();
-    m_jobId = 0;
-  }
-
-  if ( m_bParsing )
-  {
-    end();
-    m_bParsing = false;
-  }
-
-  slotStop();
-
-  m_strWorkingURL = _url;
   m_iNextYOffset = _yoffset;
   m_iNextXOffset = _xoffset;
 
@@ -445,7 +434,7 @@ void KHTMLWidget::openURL( const QString &_url, bool _reload, int _xoffset, int 
       if(body && body->id() == ID_FRAMESET) frameset = true;
   }
 
-  if ( !m_bReload && !frameset && urlcmp( m_strWorkingURL, m_strURL, true, true ) )
+  if ( !m_bReload && !frameset && urlcmp( _url, m_strURL, true, true ) )
   {
     KURL u( m_strWorkingURL );
 
@@ -466,7 +455,10 @@ void KHTMLWidget::openURL( const QString &_url, bool _reload, int _xoffset, int 
     return;
   }
 
-  KIOCachedJob* job = new KIOCachedJob;
+  slotStop();
+
+  KIOCachedJob *job = new KIOCachedJob;
+  m_jobId = job->id();
 
   job->setGUImode( KIOJob::NONE );
 
@@ -476,16 +468,30 @@ void KHTMLWidget::openURL( const QString &_url, bool _reload, int _xoffset, int 
   connect( job, SIGNAL( sigData( int, const char*, int ) ), this, SLOT( slotData( int, const char*, int ) ) );
   // connect( job, SIGNAL( sigError( int, int, const char* ) ), this, SLOT( slotError( int, int, const char* ) ) );
 
-  m_jobId = job->id();
-  // TODO
-  /* if ( _post_data )
-    job->post( _url, _post_data );
-  else */
-  job->get( _url, _reload );
+  if ( _post_data )
+  {
+      post_data = _post_data;
+      connect( job, SIGNAL( sigReady( int ) ),
+	       this, SLOT( slotPost( int ) ) );
+      job->put( _url, -1, true, false, strlen(_post_data) );
+  }	
+  else
+  {
+      job->get( _url, _reload );
+      post_data = 0;
+  }
 
   m_bComplete = false;
+  m_strWorkingURL = _url;
 
   emit started( m_strWorkingURL );
+}
+
+void KHTMLWidget::slotPost( int id )
+{
+    KIOJob* job = KIOJob::find( id );
+    job->data((const char *)post_data, post_data.length());
+    job->dataEnd();
 }
 
 void KHTMLWidget::slotFinished( int /*_id*/ )
@@ -505,16 +511,18 @@ void KHTMLWidget::slotFinished( int /*_id*/ )
   m_bComplete = true;
 }
 
-void KHTMLWidget::slotRedirection( int /*_id*/, const QString &_url )
+void KHTMLWidget::slotRedirection( int /*_id*/, const char *_url )
 {
   // We get this only !before! we receive the first data
   assert( !m_strWorkingURL.isEmpty() );
   m_strWorkingURL = _url;
 }
 
-void KHTMLWidget::slotData( int /*_id*/, const char *_p, int _len )
+void KHTMLWidget::slotData( int _id, const char *_p, int _len )
 {
-  kdebug(0,1202,"SLOT_DATA %d", _len);
+    //if(_id != m_jobId) return; // the data is still from the previous page.
+    
+    kdebug(0,1202,"SLOT_DATA %d", _len);
 
   /** DEBUG **/
   assert( (int)strlen(_p ) <= _len );

@@ -205,7 +205,7 @@ void HTMLFrameElementImpl::attach(KHTMLWidget *w)
 
     // needed for restoring frames
     bool open = true;
-    
+
     parentWidget = w;
     if(w)
     {	
@@ -257,6 +257,7 @@ void HTMLFrameElementImpl::detach()
 {
     delete view;
     parentWidget = 0;
+    NodeBaseImpl::detach();
 }
 
 // -------------------------------------------------------------------------
