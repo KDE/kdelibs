@@ -54,8 +54,8 @@ void RenderBody::printBoxDecorations(QPainter *p,int, int _y,
     if( parent()->style()->backgroundColor().isValid() )
 	c =  style()->backgroundColor();
     CachedImage *bg = 0;
-    if( parent() ->backgroundImage() )
-	bg = backgroundImage();
+    if( parent()->style()->backgroundImage() )
+	bg = style()->backgroundImage();
 
     int w = width();
     int h = height() + borderTopExtra() + borderBottomExtra();

@@ -60,13 +60,13 @@ void RenderHtml::printBoxDecorations(QPainter *p,int, int _y,
     //kdDebug( 6040 ) << renderName() << "::printDecorations()" << _tx << "/" << _ty << endl;
 
     QColor c = style()->backgroundColor();
-    CachedImage *bg = backgroundImage();
+    CachedImage *bg = style()->backgroundImage();
 
     if( firstChild() ) {
 	if( !c.isValid() )
 	    c = firstChild()->style()->backgroundColor();
 	if( !bg )
-	    bg = firstChild()->backgroundImage();
+	    bg = firstChild()->style()->backgroundImage();
         if( !c.isValid() )
             c = m_view->palette().normal().color(QColorGroup::Base);
     }

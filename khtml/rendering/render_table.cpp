@@ -1873,11 +1873,11 @@ void RenderTableCell::printBoxDecorations(QPainter *p,int, int _y,
     // ### col is missing...
 
     // ### get offsets right in case the bgimage is inherited.
-    CachedImage *bg = backgroundImage();
+    CachedImage *bg = style()->backgroundImage();
     if ( !bg && parent() )
-        bg = parent()->backgroundImage();
+        bg = parent()->style()->backgroundImage();
     if ( !bg && parent() && parent()->parent() )
-        bg = parent()->parent()->backgroundImage();
+        bg = parent()->parent()->style()->backgroundImage();
 
     if ( bg || c.isValid() )
 	printBackground(p, c, bg, my, mh, _tx, _ty, w, h);

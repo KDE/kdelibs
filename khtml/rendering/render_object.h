@@ -429,8 +429,6 @@ public:
      * absolute rightmost position (highest x-value) the object covers
      */
     virtual int rightmostPosition() const {return 0;}
-
-    CachedImage *backgroundImage() const { return m_bgImage; }
     
     /*
         recursively invalidate current layout
@@ -460,8 +458,6 @@ private:
     RenderObject *m_parent;
     RenderObject *m_previous;
     RenderObject *m_next;    
-
-    CachedImage *m_bgImage;
 
     bool m_layouted       : 1;
     bool m_parsing        : 1;

@@ -33,6 +33,7 @@
 #include "render_list.h"
 #include "render_style.h"
 #include "render_root.h"
+#include "misc/loader.h"
 
 #include <kdebug.h>
 #include <qnamespace.h>
@@ -118,17 +119,12 @@ RenderObject::RenderObject()
     m_visible = true;
     m_containsWidget = false;
     m_containsOverhangingFloats = false;
-
-    m_bgImage = 0;
 }
 
 RenderObject::~RenderObject()
 {
-    if(m_bgImage) {
-        if(m_bgImage->url().string().contains(QString::fromLatin1("bgeconomia")))
-            qDebug("**** destrukting!");
-
-        m_bgImage->deref(this);
+    if(m_style->backgroundImage()) {
+        m_style->backgroundImage()->deref(this);
     }
 
     if (m_style)
@@ -563,22 +559,27 @@ void RenderObject::setStyle(RenderStyle *style)
 
     RenderStyle *oldStyle = m_style;
     m_style = style;
+  
+    CachedImage* ob = 0;
+    CachedImage* nb = 0;    
+        
     if (m_style)
+    {
 	m_style->ref();
+        nb = m_style->backgroundImage();
+    }
     if (oldStyle)
-	oldStyle->deref();
+    {
+        ob = oldStyle->backgroundImage();
+	oldStyle->deref();        
+    }   
 
-    if( m_bgImage != m_style->backgroundImage() ) {
-	if(m_bgImage) m_bgImage->deref(this);
-	m_bgImage = m_style->backgroundImage();
-	if(m_bgImage) {
-            if(m_bgImage->url().string().contains(QString::fromLatin1("bgeconomia")))
-                qDebug("**** refing!");
-            m_bgImage->ref(this);
-        }
+    if( ob != nb ) {
+	if(ob) ob->deref(this);
+	if(nb) nb->ref(this);
     }
 
-    if( m_style->backgroundColor().isValid() || m_style->hasBorder() || m_bgImage )
+    if( m_style->backgroundColor().isValid() || m_style->hasBorder() || nb )
         setSpecialObjects(true);
     else
         setSpecialObjects(false);

@@ -229,7 +229,7 @@ void RenderBox::printBoxDecorations(QPainter *p,int, int _y,
     else
         mh = QMIN(_h,h);
 
-    printBackground(p, style()->backgroundColor(), backgroundImage(), my, mh, _tx, _ty, w, h);
+    printBackground(p, style()->backgroundColor(), style()->backgroundImage(), my, mh, _tx, _ty, w, h);
 
     if(style()->hasBorder())
         printBorder(p, _tx, _ty, w, h, style());
@@ -250,7 +250,7 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
 
         //hacky stuff
         RenderStyle* sptr = style();
-        if ( isHtml() && firstChild() && !backgroundImage() )
+        if ( isHtml() && firstChild() && !style()->backgroundImage() )
             sptr = firstChild()->style();
 
 	int cw,ch;
