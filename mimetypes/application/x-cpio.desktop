@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=MimeType
+MimeType=application/x-cpio
+Icon=mimetypes/tgz
+Patterns=*.cpio;
+Comment=CPIO archive

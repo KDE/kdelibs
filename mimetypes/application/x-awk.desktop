@@ -1,0 +1,6 @@
+[Desktop Entry]
+Comment=AWK script
+Icon=terminal
+Type=MimeType
+MimeType=application/x-awk
+Patterns=

@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=MimeType
+MimeType=application/x-compress
+Icon=mimetypes/tgz
+Patterns=*.Z;
+Comment=UNIX compressed file

@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=MimeType
+Comment=AIFF/Amiga audio
+MimeType=audio/x-aiff
+Icon=mimetypes/sound
+Patterns=*.aiff;*.AIFF

@@ -1,0 +1,6 @@
+[Desktop Entry]
+Comment=PERL program
+Icon=terminal
+Type=MimeType
+MimeType=application/x-perl
+Patterns=*.pl;*.perl;

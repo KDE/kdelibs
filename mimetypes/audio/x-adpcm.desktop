@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=MimeType
+Comment=PCM audio
+MimeType=audio/x-adpcm
+Icon=mimetypes/sound
+Patterns=;

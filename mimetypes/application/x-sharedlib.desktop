@@ -1,0 +1,6 @@
+[Desktop Entry]
+Comment=Shared library
+Icon=exec
+Type=MimeType
+MimeType=application/x-sharedlib
+Patterns=

@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=MimeType
+MimeType=application/x-rpm
+Icon=mimetypes/tgz
+Patterns=*.rpm;
+Comment=RPM package file

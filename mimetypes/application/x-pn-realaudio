@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=MimeType
+MimeType=application/x-pn-realaudio
+Icon=mimetypes/audio
+Patterns=*.ra;*.RA;*.ram;*.RAM;
+Comment=RealAudio broadcast
