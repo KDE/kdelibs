@@ -405,7 +405,7 @@ bool KDirOperator::mkdir( const QString& directory, bool enterDirectory )
     for ( ; it != dirs.end(); ++it )
     {
         url.addPath( *it );
-        exists = KIO::NetAccess::exists( url, false );
+        exists = KIO::NetAccess::exists( url, false, 0 );
         writeOk = !exists && KIO::NetAccess::mkdir( url, kapp->mainWidget() );
     }
 
