@@ -290,10 +290,15 @@ static void complete_startup_info( KStartupInfoId& id, pid_t pid )
 {
     if( X11_startup_notify_display == NULL )
         return;
-    KStartupInfoData data;
-    data.addPid( pid );
-    data.setHostname();
-    KStartupInfo::sendChangeX( X11_startup_notify_display, id, data );
+    if( pid == 0 ) // failure
+        KStartupInfo::sendFinishX( X11_startup_notify_display, id );
+    else
+    {
+        KStartupInfoData data;
+        data.addPid( pid );
+        data.setHostname();
+        KStartupInfo::sendChangeX( X11_startup_notify_display, id, data );
+    }
     XCloseDisplay( X11_startup_notify_display );
     X11_startup_notify_display = NULL;
     X11_startup_notify_fd = -1;
@@ -383,18 +388,18 @@ static pid_t launch(int argc, const char *_name, const char *args,
     argc = 1;
   }
 
+  if (0 > pipe(d.fd))
+  {
+     perror("kdeinit: pipe() failed!\n");
+     exit(255);
+  }
+
 #ifdef Q_WS_X11
   KStartupInfoId startup_id;
   startup_id.initId( startup_id_str );
   if( !startup_id.none())
       init_startup_info( startup_id, name, envc, envs );
 #endif
-
-  if (0 > pipe(d.fd))
-  {
-     perror("kdeinit: pipe() failed!\n");
-     exit(255);
-  }
 
   d.errorMsg = 0;
   d.fork = fork();
@@ -637,7 +642,12 @@ static pid_t launch(int argc, const char *_name, const char *args,
   }
 #ifdef Q_WS_X11
   if( !startup_id.none())
-      complete_startup_info( startup_id, d.fork );
+  {
+     if( d.fork && d.result == 0 ) // launched succesfully    
+        complete_startup_info( startup_id, d.fork );
+     else // failure, cancel ASN
+        complete_startup_info( startup_id, 0 );
+  }
 #endif
   return d.fork;
 }
@@ -931,7 +941,7 @@ static void handle_launcher_request(int sock = -1)
       const char *envs = 0;
       const char *tty = 0;
       int avoid_loops = 0;
-      const char *startup_id = "0";
+      const char *startup_id_str = "0";
 
 #ifndef NDEBUG
      fprintf(stderr, "kdeinit: Got %s '%s' from %s.\n",
@@ -982,8 +992,8 @@ static void handle_launcher_request(int sock = -1)
      if( request_header.cmd == LAUNCHER_SHELL || request_header.cmd == LAUNCHER_KWRAPPER
          || request_header.cmd == LAUNCHER_EXT_EXEC )
      {
-         startup_id = arg_n;
-         arg_n += strlen( startup_id ) + 1;
+         startup_id_str = arg_n;
+         arg_n += strlen( startup_id_str ) + 1;
      }
 
      if ((arg_n - request_data) != request_header.arg_length)
@@ -1008,7 +1018,7 @@ static void handle_launcher_request(int sock = -1)
 
       pid = launch( argc, name, args, cwd, envc, envs,
           request_header.cmd == LAUNCHER_SHELL || request_header.cmd == LAUNCHER_KWRAPPER,
-          tty, avoid_loops, startup_id );
+          tty, avoid_loops, startup_id_str );
 
       if (reset_display) {
           unsetenv("KDE_DISPLAY");

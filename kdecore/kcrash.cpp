@@ -133,7 +133,7 @@ KCrash::defaultCrashHandler (int sig)
       if (pid <= 0) {
         // this code is leaking, but this should not hurt cause we will do a
         // exec() afterwards. exec() is supposed to clean up.
-        char * argv[16]; // don't forget to update this
+        char * argv[18]; // don't forget to update this
         int i = 0;
 
         // argument 0 has to be drkonqi
@@ -194,6 +194,11 @@ KCrash::defaultCrashHandler (int sig)
 	    argv[i++] = qstrdup(about->bugAddress().utf8());
 	  }
         }
+
+	if ( kapp && !kapp->startupId().isNull()) {
+	    argv[i++] = qstrdup("--startupid");
+	    argv[i++] = qstrdup(kapp->startupId());
+	}
 
         // NULL terminated list
         argv[i++] = NULL;
