@@ -55,7 +55,6 @@ public:
    * Construct a service and take all information from a config file.
    *
    * @param _fullpath Full path to the config file.
-   * @param _relpath Relative path wrt to $KDEDIRS/+resource.
    */
   KService( const QString & _fullpath );
 
