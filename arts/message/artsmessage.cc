@@ -29,6 +29,8 @@ Gnome, etc. and used instead.
 
 */
 
+#include <qregexp.h>
+
 #include <klocale.h>
 #include <kglobal.h>
 #include <kapplication.h>
@@ -79,7 +81,9 @@ int main(int argc, char **argv) {
 	if (args->isSet("w")) {
 		KMessageBox::sorry(0, msg, i18n("Warning"));
 	} else if (args->isSet("i")) {
-		KMessageBox::information(0, msg, i18n("Informational"), "ShowInfoMessages");
+		QString id = msg;
+		id.replace(QRegExp("[\\[\\]\\s=]"), "_");
+		KMessageBox::information(0, msg, i18n("Informational"), id);
 	} else {
 		KMessageBox::error(0, msg, i18n("Error"));
 	}
