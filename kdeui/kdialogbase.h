@@ -898,6 +898,7 @@ class KDialogBase : public KDialog
      * (that is, if no KGuiItem is given) KStdGuiItem::ok() is used.
      *
      * @param item KGuiItem.
+     * @since 3.2
      */
     void setButtonOK( const KGuiItem &item = KStdGuiItem::ok() );
 
@@ -927,6 +928,7 @@ class KDialogBase : public KDialog
      * (that is, if no KGuiItem is given) KStdGuiItem::apply() is used.
      *
      * @param item KGuiItem.
+     * @since 3.2
      */
     void setButtonApply( const KGuiItem &item = KStdGuiItem::apply() );
 
@@ -956,6 +958,7 @@ class KDialogBase : public KDialog
      * (that is, if no KGuiItem is given) KStdGuiItem::cancel() is used.
      *
      * @param item KGuiItem.
+     * @since 3.2
      */
     void setButtonCancel( const KGuiItem &item = KStdGuiItem::cancel() );
 
