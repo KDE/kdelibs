@@ -382,10 +382,12 @@ protected:
     void 	keyPressEvent 	 ( QKeyEvent *  );
 
     // DnD inteface
-
     void        dragMoveEvent(QDragMoveEvent* e);
     void        dragEnterEvent(QDragEnterEvent* e);
     void        dropEvent(QDropEvent* e);
+    void        contentsDragMoveEvent(QDragMoveEvent* e);
+    void        contentsDragEnterEvent(QDragEnterEvent* e);
+    void        contentsDropEvent(QDropEvent* e);
 
 private:
     QTimer* repaintTimer;
