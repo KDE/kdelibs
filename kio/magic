@@ -361,6 +361,7 @@
 0	string		\<!doctype\ HTML	text/html
 0	string		\<!DOCTYPE\ HTML	text/html
 0	string		\<!doctype\ html	text/html
+0	string		\<!DOCTYPE\ html	text/html
 
 # Extensible markup language (XML), a subset of SGML
 # from Marc Prud'hommeaux (marc@apocalypse.org)
