@@ -1,6 +1,6 @@
 /**************************************************************************
 
-    deviceman.cc  - The device manager, that hides the use of midiOut 
+    deviceman.cc  - The device manager, that hides the use of midiOut
     This file is part of LibKMid 0.9.5
     Copyright (C) 1997,98,99,2000  Antonio Larrosa Jimenez
     LibKMid's homepage : http://www.arrakis.es/~rlarrosa/libkmid.html
@@ -9,16 +9,16 @@
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
- 
+
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
- 
+
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-    Boston, MA 02111-1307, USA.                                                  
+    Boston, MA 02111-1307, USA.
 
     Send comments and bug fixes to Antonio Larrosa <larrosa@kde.org>
 
@@ -66,7 +66,7 @@ SEQ_DEFINEBUF (4096);
 
 #define CONTROLTIMER
 
-#ifdef GENERAL_DEBUG_MESSAGES 
+#ifdef GENERAL_DEBUG_MESSAGES
 void DEBUGPRINTF(const char *format)
 {
   printf(format);
@@ -106,27 +106,25 @@ DeviceManager::DeviceManager(int def)
     {
       mapper_tmp = new MidiMapper( mapurl.mid(mapurl.find(":")+1 ).local8Bit() );
     }
-    else 
+    else
       mapper_tmp = 0L;
-    
-    delete config;     
+
+    delete config;
     delete tmp_instance;
   }
   else
 #endif
-  {  
+  {
     default_dev = def;
     mapper_tmp = 0L;
   }
-  
+
   initialized=0;
   _ok=1;
   alsa=false;
   device = 0L;
-#ifdef HANDLETIMEINDEVICES
-  rate=100;
+  //rate=100;
   convertrate=10;
-#endif
   seqfd=-1;
   timerstarted=0;
   for (int i=0;i<16;i++) chn2dev[i]=default_dev;
@@ -153,7 +151,7 @@ int DeviceManager::ok(void)
 
 int DeviceManager::checkInit(void)
 {
-  if (initialized==0) 
+  if (initialized==0)
   {
     int r=initManager();
     if (default_dev>=n_total) default_dev=0;
@@ -170,8 +168,8 @@ void DeviceManager::checkAlsa(void)
   stat("/proc/asound", &buf);
   if ((stat("/proc/asound", &buf) == 0 ) && (S_ISDIR(buf.st_mode)))
     alsa=true;
-  else 
-    alsa=false;  
+  else
+    alsa=false;
 #else
 #warning "ALSA won't be found at runtime"
   alsa=false;
@@ -199,7 +197,7 @@ int DeviceManager::initManager(void)
     n_total=n_midi+n_synths;
 
 
-    if (n_midi==0) 
+    if (n_midi==0)
     {
       printf("ERROR: There's no midi port\n");
       /* This could be a problem if the user don't have a synth neither,
@@ -233,7 +231,7 @@ int DeviceManager::initManager(void)
       synthinfo[i].device=i;
       if (ioctl(seqfd,SNDCTL_SYNTH_INFO,&synthinfo[i])!=-1)
       {
-#ifdef GENERAL_DEBUG_MESSAGES  
+#ifdef GENERAL_DEBUG_MESSAGES
 	printf("----\n");
 	printf("Device : %d\n",i);
 	printf("Name : %s\n",synthinfo[i].name);
@@ -253,7 +251,7 @@ int DeviceManager::initManager(void)
 	  default : printf("default subtype\n");break;
 	}
 #endif
-	if (synthinfo[i].synth_type==SYNTH_TYPE_FM) 
+	if (synthinfo[i].synth_type==SYNTH_TYPE_FM)
 	  device[i+n_midi]=new FMOut(i,synthinfo[i].nr_voices);
 	else if ((synthinfo[i].synth_type==SYNTH_TYPE_SAMPLE)&&
 	    (synthinfo[i].synth_subtype==SAMPLE_TYPE_GUS))
@@ -310,7 +308,7 @@ int DeviceManager::initManager(void)
 	};
       }
     }
-    n_total=n_midi; 
+    n_total=n_midi;
 
     snd_seq_close(handle);
 #else
@@ -321,10 +319,10 @@ int DeviceManager::initManager(void)
     fprintf(stderr,"ALSA support but you're using ALSA . \n");
     fprintf(stderr,"Please compile KMid for yourself or tell the people\n");
     fprintf(stderr,"at your Linux distribution to compile it themselves\n");
-#endif  
+#endif
 
   }
-  
+
   if (mapper_tmp!=0L) setMidiMap(mapper_tmp);
 
   initialized=1;
@@ -334,7 +332,7 @@ int DeviceManager::initManager(void)
 
 void DeviceManager::openDev(void)
 {
-  if (checkInit()<0) 
+  if (checkInit()<0)
   {
     DEBUGPRINTF("DeviceManager::openDev : Not initialized\n");
     _ok = 0;
@@ -356,19 +354,12 @@ void DeviceManager::openDev(void)
     ioctl(seqfd,SNDCTL_SEQ_RESET);
     //ioctl(seqfd,SNDCTL_SEQ_PANIC);
 
-#ifndef HANDLETIMEINDEVICES
-    rate=0;
-    int r=ioctl(seqfd,SNDCTL_SEQ_CTRLRATE,&rate);
-    if ((r==-1)||(rate<=0)) rate=HZ;
-
-    convertrate=1000/rate;
-#endif
 #endif
   }
   else seqfd=0L; // ALSA
 
   DEBUGPRINTF("Opening devices : ");
-  for (int i=0;i<n_total;i++) 
+  for (int i=0;i<n_total;i++)
   {
     device[i]->openDev(seqfd);
     DEBUGPRINTF("%s ",device[i]->deviceName());
@@ -389,19 +380,16 @@ void DeviceManager::closeDev(void)
 {
   if (alsa)
   {
-   if (device!=NULL) for (int i=0;i<n_total;i++) 
+   if (device!=NULL) for (int i=0;i<n_total;i++)
        device[i]->closeDev();
    return;
   }
 
 #ifdef HAVE_OSS_SUPPORT
   if (seqfd==-1) return;
-#ifndef HANDLETIMEINDEVICES
-  tmrStop();
-#endif
   /*
      DEBUGPRINTF("Closing devices : ");
-     if (device!=NULL) for (int i=0;i<n_total;i++) 
+     if (device!=NULL) for (int i=0;i<n_total;i++)
      {
        device[i]->initDev();
        DEBUGPRINTF("%s ",device[i]->deviceName());
@@ -417,10 +405,10 @@ void DeviceManager::closeDev(void)
 
 void DeviceManager::initDev(void)
 {
-  if (device!=0L) 
+  if (device!=0L)
   {
     DEBUGPRINTF("Initializing devices :");
-    for (int i=0;i<n_total;i++) 
+    for (int i=0;i<n_total;i++)
     {
       device[i]->initDev();
       DEBUGPRINTF("%s ",device[i]->deviceName());
@@ -480,13 +468,7 @@ void DeviceManager::wait (double ticks)
   unsigned long int t=(unsigned long int)(ticks/convertrate);
   if (lastwaittime==t) return;
   lastwaittime=t;
-#ifdef HANDLETIMEINDEVICES
   device[default_dev]->wait(ticks);
-#else
-  //printf("%ld\n",t);
-  SEQ_WAIT_TIME(t);
-  SEQ_DUMPBUF();
-#endif
 #endif
 }
 
@@ -503,7 +485,7 @@ void DeviceManager::tmrSetTempo(int v)
 #endif
 }
 
-void DeviceManager::tmrStart(long int 
+void DeviceManager::tmrStart(long int
 #ifdef HAVE_ALSA_SUPPORT
 tpcn /*name the argument only if it is used*/
 #endif
@@ -514,22 +496,7 @@ tpcn /*name the argument only if it is used*/
 #endif
 
 #ifdef HAVE_OSS_SUPPORT
-#ifdef HANDLETIMEINDEVICES
   device[default_dev]->tmrStart();
-#else
-#ifdef CONTROLTIMER
-  if (!timerstarted)
-  {
-    SEQ_START_TIMER();
-    SEQ_DUMPBUF();
-    timerstarted=1;
-  }
-  lastwaittime=0;
-#else
-  SEQ_START_TIMER();
-  SEQ_DUMPBUF();
-#endif
-#endif
 #endif
 }
 
@@ -540,21 +507,7 @@ void DeviceManager::tmrStop(void)
 #endif
 
 #ifdef HAVE_OSS_SUPPORT
-#ifdef HANDLETIMEINDEVICES
   device[default_dev]->tmrStop();
-#else
-#ifdef CONTROLTIMER
-  if (timerstarted)
-  {
-    SEQ_STOP_TIMER();
-    SEQ_DUMPBUF();
-    timerstarted=0;
-  }
-#else
-  SEQ_STOP_TIMER();
-  SEQ_DUMPBUF();
-#endif
-#endif
 #endif
 }
 
@@ -565,20 +518,7 @@ void DeviceManager::tmrContinue(void)
 #endif
 
 #ifdef HAVE_OSS_SUPPORT
-#ifdef HANDLETIMEINDEVICES
   device[default_dev]->tmrContinue();
-#else
-#ifdef CONTROLTIMER
-  if (timerstarted)
-  {
-    SEQ_CONTINUE_TIMER();
-    SEQ_DUMPBUF();
-  }
-#else
-  SEQ_CONTINUE_TIMER();
-  SEQ_DUMPBUF();
-#endif
-#endif
 #endif
 }
 
@@ -589,26 +529,7 @@ void DeviceManager::sync(bool f)
 #endif
 
 #ifdef HAVE_OSS_SUPPORT
-#ifdef HANDLETIMEINDEVICES
   device[default_dev]->sync(f);
-#else
-#ifdef DEVICEMANDEBUG
-  printf("Sync %d\n",f);
-#endif
-  if (f) 
-  {    
-    seqbuf_clean();
-    /* If you have any problem, try removing the next 2 lines, 
-       I though they would be useful here but the may have side effects */
-    ioctl(seqfd,SNDCTL_SEQ_RESET);
-    ioctl(seqfd,SNDCTL_SEQ_PANIC);
-  }
-  else
-  {
-    seqbuf_dump();
-    ioctl(seqfd, SNDCTL_SEQ_SYNC);
-  };
-#endif
 #endif
 }
 
@@ -679,11 +600,11 @@ const char *DeviceManager::name(int i)
 
   if (alsa)
   {
-    if (i<n_midi) return device[i]->deviceName(); 
-  } 
+    if (i<n_midi) return device[i]->deviceName();
+  }
   else
   {
-    if (i<n_midi) return midiinfo[i].name; 
+    if (i<n_midi) return midiinfo[i].name;
     if (i<n_midi+n_synths) return synthinfo[i-n_midi].name;
   };
 #endif
@@ -701,11 +622,11 @@ const char *DeviceManager::type(int i)
   }
   else
   {
-    if (i<n_midi) 
+    if (i<n_midi)
     {
-      return "External Midi Port"; 
+      return "External Midi Port";
     }
-    if (i<n_midi+n_synths) 
+    if (i<n_midi+n_synths)
     {
       switch (synthinfo[i-n_midi].synth_subtype)
       {
@@ -727,7 +648,7 @@ int DeviceManager::defaultDevice(void)
 
 void DeviceManager::setDefaultDevice(int i)
 {
-  if (i>=n_total) return; 
+  if (i>=n_total) return;
   default_dev=i;
   for (int i=0;i<16;i++) chn2dev[i]=default_dev;
 }
@@ -735,7 +656,7 @@ void DeviceManager::setDefaultDevice(int i)
 char *DeviceManager::midiMapFilename(void)
 {
   if (device==0L) return (char *)"";
-  return (device[default_dev]!=NULL) ? 
+  return (device[default_dev]!=NULL) ?
     device[default_dev]->midiMapFilename() : (char *)"";
 }
 
@@ -744,7 +665,7 @@ void DeviceManager::setMidiMap(MidiMapper *map)
   if (map==NULL) return;
   mapper_tmp=map;
   if (default_dev>=n_total) {default_dev=0;return;};
-  if ((device==0L)||(device[default_dev]==NULL)) 
+  if ((device==0L)||(device[default_dev]==NULL))
     return;
   device[default_dev]->setMidiMapper(map);
 }
@@ -752,7 +673,7 @@ void DeviceManager::setMidiMap(MidiMapper *map)
 int DeviceManager::setPatchesToUse(int *patchesused)
 {
   if (checkInit()<0) return -1;
-  if ((device==0L)||(device[default_dev]==NULL)) 
+  if ((device==0L)||(device[default_dev]==NULL))
     return 0;
 
   if ((device[default_dev]->deviceType())==KMID_GUS)

@@ -114,11 +114,9 @@ GUSOut::GUSOut(int d,int total)
   seqfd = -1;
   devicetype=KMID_GUS;
   device= d;
-#ifdef HANDLETIMEINDEVICES
   count=0.0;
   lastcount=0.0;
-  rate=100;
-#endif
+  m_rate=100;
   _ok=1;
 
   use8bit=0;
@@ -150,19 +148,17 @@ void GUSOut::openDev (int sqfd)
   }
 
 #ifdef HAVE_OSS_SUPPORT
-#ifdef HANDLETIMEINDEVICES
   ioctl(seqfd,SNDCTL_SEQ_NRSYNTHS,&ndevs);
   ioctl(seqfd,SNDCTL_SEQ_NRMIDIS,&nmidiports);
 
-  rate=0;
-  int r=ioctl(seqfd,SNDCTL_SEQ_CTRLRATE,&rate);
-  if ((r==-1)||(rate<=0)) rate=HZ;
-  convertrate=1000/rate;
+  m_rate=0;
+  int r=ioctl(seqfd,SNDCTL_SEQ_CTRLRATE,&m_rate);
+  if ((r==-1)||(m_rate<=0)) m_rate=HZ;
+  convertrate=1000/m_rate;
 
   count=0.0;
   lastcount=0.0;
 
-#endif
   //seqbuf_clean();
   //ioctl(seqfd,SNDCTL_SEQ_RESET);
   //ioctl(seqfd,SNDCTL_SEQ_PANIC);
@@ -178,11 +174,9 @@ void GUSOut::openDev (int sqfd)
   ioctl(seqfd, SNDCTL_SYNTH_MEMAVL, &freememory);
 
   printfdebug("GUS Device %d opened (%d voices)\n",device,nvoices);
-#ifdef HANDLETIMEINDEVICES
   printfdebug("Number of synth devices : %d\n",ndevs);
   printfdebug("Number of midi ports : %d\n",nmidiports);
-  printfdebug("Rate : %d\n",rate);
-#endif
+  printfdebug("Rate : %d\n",m_rate);
 #endif
 
 
@@ -191,10 +185,8 @@ void GUSOut::openDev (int sqfd)
 void GUSOut::closeDev (void)
 {
   if (!ok()) return;
-#ifdef HANDLETIMEINDEVICES
   SEQ_STOP_TIMER();
   SEQ_DUMPBUF();
-#endif
   vm->clearLists();
   //if (seqfd>=0)
   //    close(seqfd);
@@ -206,10 +198,8 @@ void GUSOut::initDev (void)
 #ifdef HAVE_OSS_SUPPORT
   int chn;
   if (!ok()) return;
-#ifdef HANDLETIMEINDEVICES
   count=0.0;
   lastcount=0.0;
-#endif
   uchar gm_reset[5]={0x7e, 0x7f, 0x09, 0x01, 0xf7};
   sysex(gm_reset, sizeof(gm_reset));
   for (chn=0;chn<16;chn++)

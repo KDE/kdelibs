@@ -56,12 +56,12 @@ class AlsaOut : public MidiOut
  */
   int nmidiports;
 
-/*
   double count;
   double lastcount;
   double lasttime;
   double begintime;
-*/
+  int m_rate;
+
 /**
  * @internal
  * A "constant" used to convert from milliseconds to the computer rate
@@ -139,6 +139,11 @@ class AlsaOut : public MidiOut
   virtual const char * deviceName (void) const;
 
   /**
+   * @internal
+   */
+  int  rate    (void) { return m_rate; };
+
+  /**
    * See @ref DeviceManager::noteOn()
    */
   virtual void noteOn	( uchar chn, uchar note, uchar vel );
@@ -209,6 +214,18 @@ class AlsaOut : public MidiOut
   { if (seqfd<0) return 0;
     return (_ok>0);
   };
+
+  virtual void wait        (double ticks);
+  virtual void tmrSetTempo (int v);
+  virtual void tmrStart    (int tpcn=-1);
+  virtual void tmrStop     ();
+  virtual void tmrContinue ();
+  /**
+   * @internal
+   * If i==1 syncronizes by cleaning the buffer instead of sending it (in fact,
+   * this is what syncronizing really means :-) )
+   */
+  virtual void sync        (int i=0);
 
   class AlsaOutPrivate;
   AlsaOutPrivate *di;

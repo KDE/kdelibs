@@ -7,12 +7,12 @@
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
- 
+
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
- 
+
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -31,20 +31,20 @@
 
 /**
  * External MIDI port output class . This class is used to send midi
- * events to external midi devices. 
+ * events to external midi devices.
  *
  * MidiOut is inherited by other MIDI devices classes
  * (like @ref SynthOut or @ref FMOut) to support a common API.
  *
- * In general, you don't want to use MidiOut directly, but within a 
+ * In general, you don't want to use MidiOut directly, but within a
  * @ref DeviceManager object, which is the preferred way to generate music.
  *
  * If you want to add support for other devices (I don't think
  * there are any) you just have to create a class that inherits from MidiOut
- * and create one object of your new class in 
+ * and create one object of your new class in
  * @ref DeviceManager::initManager().
  *
- * @short Sends MIDI events to external MIDI devices 
+ * @short Sends MIDI events to external MIDI devices
  * @version 0.9.5 17/01/2000
  * @author Antonio Larrosa Jimenez <larrosa@kde.org>
  */
@@ -58,13 +58,12 @@ class MidiOut
 
   /**
    * @internal
-   * This is the /dev/sequencer file handler. 
+   * This is the /dev/sequencer file handler.
    * Remember _not_to_close_ it on MidiOut, but just on DeviceManager
    */
-  int seqfd; 
+  int seqfd;
 
   int device;
-#ifdef HANDLETIMEINDEVICES
 /**
  * @internal
  * Total number of devices.
@@ -82,15 +81,14 @@ class MidiOut
   double lasttime;
   double begintime;
 
-  int    rate;
+  int    m_rate;
 /**
  * @internal
  * A "constant" used to convert from milliseconds to the computer rate
  */
-  double convertrate; 
-#endif
+  double convertrate;
 
-  int devicetype; 
+  int devicetype;
 
   int volumepercentage;
 
@@ -148,7 +146,7 @@ class MidiOut
   virtual void initDev	();
 
   /**
-   * @return the device type of the object. This is to identify the 
+   * @return the device type of the object. This is to identify the
    * inherited class that a given object is polymorphed to.
    * The returned value is one of these :
    *
@@ -158,23 +156,21 @@ class MidiOut
    * @li KMID_GUS if it's a @ref GUSOut object
    *
    * which are defined in midispec.h
-   * 
+   *
    * @see #deviceName
    */
   int          deviceType () const { return devicetype; };
 
   /**
-   * Returns the name and type of this MIDI device. 
+   * Returns the name and type of this MIDI device.
    * @see #deviceType
    */
   const char * deviceName (void) const;
 
-#ifdef HANDLETIMEINDEVICES
   /**
    * @internal
    */
-  int  rate	(void) { return rate; };
-#endif
+  int  rate	(void) { return m_rate; };
 
   /**
    * Sets a @ref MidiMapper object to be used to modify the midi events before
@@ -220,7 +216,7 @@ class MidiOut
   /**
    * See @ref DeviceManager::chnController()
    */
-  virtual void chnController	( uchar chn, uchar ctl , uchar v ); 
+  virtual void chnController	( uchar chn, uchar ctl , uchar v );
 
   /**
    * See @ref DeviceManager::sysex()
@@ -243,26 +239,25 @@ class MidiOut
 
   /**
    * Change all channel volume events multiplying it by this percentage correction
-   * Instead of forcing a channel to a fixed volume, this method allows to 
+   * Instead of forcing a channel to a fixed volume, this method allows to
    * music to fade out even when it was being played softly.
    * @param volper is an integer value, where 0 is quiet, 100 is used to send
    * an unmodified value, 200 play music twice louder than it should, etc.
-   */ 
-  virtual void setVolumePercentage ( int volper ) 
+   */
+  virtual void setVolumePercentage ( int volper )
   { volumepercentage = volper; };
 
   /**
    * Returns true if everything's ok and false if there has been any problem
    */
-  int ok (void) 
+  int ok (void)
   { if (seqfd<0) return 0;
     return (_ok>0);
   };
 
-#ifdef HANDLETIMEINDEVICES
   virtual void wait        (double ticks);
   virtual void tmrSetTempo (int v);
-  virtual void tmrStart    (long int tpcn);
+  virtual void tmrStart    ();
   virtual void tmrStop     ();
   virtual void tmrContinue ();
   /**
@@ -270,8 +265,7 @@ class MidiOut
    * If i==1 syncronizes by cleaning the buffer instead of sending it (in fact,
    * this is what syncronizing really means :-) )
    */
-  virtual void sync        (int i=0);  
-#endif
+  virtual void sync        (int i=0);
 
   /**
    * Returns the path to the file where the current used @ref MidiMapper object

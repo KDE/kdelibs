@@ -3,18 +3,18 @@
     midiout.cc   - class midiOut which handles external midi devices
     This file is part of LibKMid 0.9.5
     Copyright (C) 1997,98,99,2000  Antonio Larrosa Jimenez
-    LibKMid's homepage : http://www.arrakis.es/~rlarrosa/libkmid.html            
+    LibKMid's homepage : http://www.arrakis.es/~rlarrosa/libkmid.html
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
- 
+
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
- 
+
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -38,9 +38,7 @@
 #include <config.h>
 #endif
 
-#ifdef HANDLETIMEINDEVICES
 #include <sys/ioctl.h>
-#endif
 
 SEQ_USE_EXTBUF();
 
@@ -49,12 +47,10 @@ MidiOut::MidiOut(int d)
   seqfd = -1;
   devicetype=KMID_EXTERNAL_MIDI;
   device= d;
-#ifdef HANDLETIMEINDEVICES
   count=0.0;
   lastcount=0.0;
-  rate=100;
+  m_rate=100;
   convertrate=10;
-#endif
   volumepercentage=100;
   map=new MidiMapper(NULL);
   if (map==NULL) { printfdebug("ERROR : midiOut : Map is NULL\n"); return; };
@@ -79,21 +75,20 @@ void MidiOut::openDev (int sqfd)
     return;
   }
 
-#ifdef HANDLETIMEINDEVICES
   ioctl(seqfd,SNDCTL_SEQ_NRSYNTHS,&ndevs);
   ioctl(seqfd,SNDCTL_SEQ_NRMIDIS,&nmidiports);
-  rate=0;
-  int r=ioctl(seqfd,SNDCTL_SEQ_CTRLRATE,&rate);
-  if ((r==-1)||(rate<=0)) rate=HZ;
+  m_rate=0;
+  int r=ioctl(seqfd,SNDCTL_SEQ_CTRLRATE,&m_rate);
+  if ((r==-1)||(m_rate<=0)) m_rate=HZ;
 
   midi_info midiinfo;
   midiinfo.device=device;
-  convertrate=1000/rate;
+  convertrate=1000/m_rate;
 
 #ifdef MIDIOUTDEBUG
   printfdebug("Number of synth devices : %d\n",ndevs);
   printfdebug("Number of midi ports : %d\n",nmidiports);
-  printfdebug("Rate : %d\n",rate);
+  printfdebug("Rate : %d\n",m_rate);
 
   int i;
   synth_info synthinfo;
@@ -146,17 +141,14 @@ void MidiOut::openDev (int sqfd)
     return;
   }
 #endif
-#endif
 
 }
 
 void MidiOut::closeDev (void)
 {
   if (!ok()) return;
-#ifdef HANDLETIMEINDEVICES
   SEQ_STOP_TIMER();
   SEQ_DUMPBUF();
-#endif
 //if (seqfd>=0) close(seqfd);
   seqfd=-1;
 }
@@ -166,10 +158,8 @@ void MidiOut::initDev (void)
 #ifdef HAVE_OSS_SUPPORT
   int chn;
   if (!ok()) return;
-#ifdef HANDLETIMEINDEVICES
   count=0.0;
   lastcount=0.0;
-#endif
   uchar gm_reset[5]={0x7e, 0x7f, 0x09, 0x01, 0xf7};
   sysex(gm_reset, sizeof(gm_reset));
   for (chn=0;chn<16;chn++)
@@ -265,7 +255,7 @@ void MidiOut::chnPitchBender(uchar chn,uchar lsb, uchar msb)
   chnbender[chn]=(msb << 8) | (lsb & 0xFF);
 }
 
-void MidiOut::chnController (uchar chn, uchar ctl, uchar v) 
+void MidiOut::chnController (uchar chn, uchar ctl, uchar v)
 {
   SEQ_MIDIOUT(device, MIDI_CTL_CHANGE + map->channel(chn));
 #ifdef AT_HOME
@@ -344,7 +334,6 @@ void MidiOut::seqbuf_clean(void)
 #endif
 }
 
-#ifdef HANDLETIMEINDEVICES
 void MidiOut::wait(double ticks)
 {
   SEQ_WAIT_TIME(((int)(ticks/convertrate)));
@@ -373,10 +362,10 @@ void MidiOut::sync(int i)
   printfdebug("Sync %d\n",i);
 #endif
 #ifdef HAVE_OSS_SUPPORT
-  if (i==1) 
-  {    
+  if (i==1)
+  {
     seqbuf_clean();
-    /* If you have any problem, try removing the next 2 lines, 
+    /* If you have any problem, try removing the next 2 lines,
        I though they would be useful here, but I don't know
        what they exactly do :-) */
     ioctl(seqfd,SNDCTL_SEQ_RESET);
@@ -403,8 +392,6 @@ void MidiOut::tmrContinue(void)
   SEQ_CONTINUE_TIMER();
   SEQ_DUMPBUF();
 }
-
-#endif
 
 char *MidiOut::midiMapFilename(void)
 {

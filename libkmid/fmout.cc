@@ -10,12 +10,12 @@
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
- 
+
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
- 
+
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -46,14 +46,12 @@ FMOut::FMOut( int d, int total )
   seqfd = -1;
   devicetype = KMID_FM;
   device = d;
-#ifdef HANDLETIMEINDEVICES
   count = 0.0;
   lastcount = 0.0;
-  rate = 100;
-#endif
+  m_rate = 100;
   _ok = 1;
   // Put opl=3 for opl/3 (better quality/ 6 voices)
-  //  or opl=2 for fm output (less quality/ 18 voices, which is better imho) : 
+  //  or opl=2 for fm output (less quality/ 18 voices, which is better imho) :
   opl = 2;
   // But be aware that opl=3 is not intended to be fully supported by now
 
@@ -65,7 +63,7 @@ FMOut::~FMOut()
 {
   delete map;
   closeDev();
-  if (deleteFMPatchesDirectory) 
+  if (deleteFMPatchesDirectory)
   {
     delete FMPatchesDirectory;
     deleteFMPatchesDirectory = 0;
@@ -84,19 +82,17 @@ void FMOut::openDev (int sqfd)
     printfdebug("ERROR: Could not open /dev/sequencer\n");
     return;
   }
-#ifdef HANDLETIMEINDEVICES
   ioctl( seqfd, SNDCTL_SEQ_NRSYNTHS, &ndevs);
   ioctl( seqfd, SNDCTL_SEQ_NRMIDIS, &nmidiports);
 
-  rate = 0;
-  int r = ioctl( seqfd, SNDCTL_SEQ_CTRLRATE, &rate);
-  if ( ( r == -1 ) || ( rate <= 0 ) ) rate = HZ;
-  convertrate = 1000/rate;
+  m_rate = 0;
+  int r = ioctl( seqfd, SNDCTL_SEQ_CTRLRATE, &m_rate);
+  if ( ( r == -1 ) || ( m_rate <= 0 ) ) m_rate = HZ;
+  convertrate = 1000/m_rate;
 
   count = 0.0;
   lastcount = 0.0;
 
-#endif
   //seqbufClean();
   //ioctl(seqfd,SNDCTL_SEQ_RESET);
   //ioctl(seqfd,SNDCTL_SEQ_PANIC);
@@ -109,10 +105,8 @@ void FMOut::openDev (int sqfd)
 void FMOut::closeDev (void)
 {
   if (!ok()) return;
-#ifdef HANDLETIMEINDEVICES
   SEQ_STOP_TIMER();
   SEQ_DUMPBUF();
-#endif
   vm->clearLists();
   //if (seqfd>=0) close(seqfd);
   seqfd = -1;
@@ -123,10 +117,8 @@ void FMOut::initDev (void)
 #ifdef HAVE_OSS_SUPPORT
   int chn;
   if (!ok()) return;
-#ifdef HANDLETIMEINDEVICES
   count=0.0;
   lastcount=0.0;
-#endif
   uchar gm_reset[5]={0x7e, 0x7f, 0x09, 0x01, 0xf7};
   sysex(gm_reset, sizeof(gm_reset));
   for (chn=0;chn<16;chn++)
@@ -262,7 +254,7 @@ void FMOut::noteOn  (uchar chn, uchar note, uchar vel)
     if (chn==PERCUSSION_CHANNEL)
       SEQ_SET_PATCH(device,v ,p=patch(note+128))
     else
-      SEQ_SET_PATCH(device,v ,p=map->patch(chn,chnpatch[chn])); 
+      SEQ_SET_PATCH(device,v ,p=map->patch(chn,chnpatch[chn]));
     SEQ_BENDER(device, v, chnbender[chn]);
 
     SEQ_START_NOTE(device, v, note, vel);
@@ -305,7 +297,7 @@ void FMOut::chnPatchChange (uchar chn, uchar patch)
   int i;
   vm->initSearch();
   while ((i=vm->search(chn))!=-1)
-    SEQ_SET_PATCH(device,i,map->patch(chn,patch)); 
+    SEQ_SET_PATCH(device,i,map->patch(chn,patch));
 
   chnpatch[chn]=patch;
 }
@@ -331,7 +323,7 @@ void FMOut::chnPitchBender(uchar chn,uchar lsb, uchar msb)
 
 }
 
-void FMOut::chnController (uchar chn, uchar ctl, uchar v) 
+void FMOut::chnController (uchar chn, uchar ctl, uchar v)
 {
   if ((ctl==11)||(ctl==7))
   {
@@ -369,7 +361,7 @@ void FMOut::setVolumePercentage    ( int i )
   int a=i*255/100;
   if (a>255) a=255;
   a=(a<<8) | a;
-  if (ioctl(fd,MIXER_WRITE(SOUND_MIXER_SYNTH),&a) == -1) 
+  if (ioctl(fd,MIXER_WRITE(SOUND_MIXER_SYNTH),&a) == -1)
     printfdebug("ERROR writing to mixer\n");
   close(fd);
 #endif

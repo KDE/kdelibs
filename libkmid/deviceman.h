@@ -1,17 +1,17 @@
-/*  deviceman.h  - The device manager, that hides the use of midiOut 
+/*  deviceman.h  - The device manager, that hides the use of midiOut
     This file is part of LibKMid 0.9.5
     Copyright (C) 1997,98,99,2000  Antonio Larrosa Jimenez
-    LibKMid's homepage : http://www.arrakis.es/~rlarrosa/libkmid.html                                         
+    LibKMid's homepage : http://www.arrakis.es/~rlarrosa/libkmid.html
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
- 
+
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
- 
+
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -38,9 +38,9 @@ class MidiMapper;
  * device to play MIDI events to and then use @ref defaultDevice() to set the
  * MIDI device to play.
  *
- * @short Manages all MIDI devices and redirects MIDI events to each one as 
- * configured. 
- * @version 0.9.5 17/01/2000 
+ * @short Manages all MIDI devices and redirects MIDI events to each one as
+ * configured.
+ * @version 0.9.5 17/01/2000
  * @author Antonio Larrosa Jimenez <larrosa@kde.org>
  */
 class DeviceManager
@@ -50,8 +50,8 @@ class DeviceManager
     /**
      * @internal
      * The midi devices objects
-     */ 
-    MidiOut **device; 
+     */
+    MidiOut **device;
 
     /**
      * @internal
@@ -63,12 +63,12 @@ class DeviceManager
      * @internal
      * Synth info
      */
-    struct synth_info *synthinfo; 
+    struct synth_info *synthinfo;
 
     /**
      * @internal
      * Stores the device thru which a channel will be sent
-     */ 
+     */
     int chn2dev[16];
 
     /**
@@ -81,7 +81,7 @@ class DeviceManager
      * @internal
      * Number of midi ports
      */
-    int n_midi; 
+    int n_midi;
 
     /**
      * @internal
@@ -89,31 +89,23 @@ class DeviceManager
      */
     int n_total;
 
-#ifndef HANDLETIMEINDEVICES
-
-    /**
-     * @internal
-     */
-    int	rate;
-
     /**
      * @internal
      * A "constant" used to convert from milliseconds to the computer rate.
-     */  
-    double convertrate; 
+     */
+    double convertrate;
 
-#endif
     /**
      * @internal
      * Newest kernels don't want me to stop a timer that hasn't been started :-)
      */
-    int timerstarted; 
+    int timerstarted;
 
     /**
      * @internal
-     * Last time waited for in wait(double) 
+     * Last time waited for in wait(double)
      */
-    double lastwaittime; 
+    double lastwaittime;
 
     /**
      * @internal
@@ -121,21 +113,21 @@ class DeviceManager
      * first called setMidiMap then, when they get initialized, they use the
      * proper mapper
      */
-    MidiMapper *mapper_tmp; 
+    MidiMapper *mapper_tmp;
 
     int initialized;
 
     /**
      * @internal
      * The real file handler for /dev/sequencer, that is opened and closed.
-     */ 
-    int seqfd;       
+     */
+    int seqfd;
 
     /**
      * @internal
      * The device to which timer events will be sent
-     */ 
-    int default_dev; 
+     */
+    int default_dev;
 
     /**
      * @internal
@@ -165,7 +157,7 @@ class DeviceManager
   public:
     /**
      * Constructor. It just initializes internal variables, before playing any
-     * music, you should call @ref #initManager(), @ref #setMidiMap() 
+     * music, you should call @ref #initManager(), @ref #setMidiMap()
      * (optional), @ref #openDev(), @ref #initDev(), @ref #setPatchesToUse()
      * (not required, unless you're playing to a GUS device, which must load
      * the patches), @ref #tmrStart(), and finally, play the music.
@@ -174,31 +166,31 @@ class DeviceManager
 
     /**
      * Destructor. It closes the device (calling @ref #closeDev() ) if it wasn't
-     * closed before. 
+     * closed before.
      */
     ~DeviceManager(void);
 
     /**
      * Initializes the MIDI Device Manager object.
-     * 
+     *
      * The /dev/sequencer and/or /dev/snd/seq files are opened, available
-     * devices are analyzed and *Out objects are created. Then, the 
+     * devices are analyzed and *Out objects are created. Then, the
      * device files are closed.
      *
      * @return 0 if everything was OK, or -1 if there was an error and it
-     * couldn't be initialized (for example, because it couldn't open the 
+     * couldn't be initialized (for example, because it couldn't open the
      * /dev/sequencer file)
      */
-    int initManager(void); 
+    int initManager(void);
 
     /**
      * Checks if the device manager has been initialized (with @initManager),
      * and in case it wasn't, initializes it.
-     * 
+     *
      * @return 0 if it was (or has just been) correctly initialized, and -1 if
      * there was an error.
      */
-    int checkInit(void); 
+    int checkInit(void);
 
     /**
      * It's possible to send different MIDI channels to different MIDI devices,
@@ -206,9 +198,9 @@ class DeviceManager
      * channel 2 to a FM device and channel 10 to an AWE synth.
      *
      * @return the device to which MIDI events goind to channel @p chn should
-     * be sent. 
+     * be sent.
      */
-    MidiOut *chntodev(int chn) 
+    MidiOut *chntodev(int chn)
 		{ return (device!=0L) ? device[chn2dev[chn]] : 0L ; };
 
     /**
@@ -222,15 +214,15 @@ class DeviceManager
      */
     int usingAlsa(void) { return alsa; };
 
-    // The following funtion are here to emulate a midi, so that the 
+    // The following funtion are here to emulate a midi, so that the
     // DeviceManager sends the events to the appropiate devices.
 
     /**
      * Open the devices. It first initializes the manager it that wasn't done
-     * yet (you should do it yourself, to be able to choose the MIDI output 
+     * yet (you should do it yourself, to be able to choose the MIDI output
      * device, as it will be set to an external synth by default, if available).
      *
-     * Then /dev/sequencer is opened and the MIDI devices are opened 
+     * Then /dev/sequencer is opened and the MIDI devices are opened
      * (calling @ref MidiOut::openDev() ).
      * @see #ok() to check if there was any problem
      * @see #closeDev()
@@ -239,7 +231,7 @@ class DeviceManager
     void openDev        (void);
 
     /**
-     * Closes the devices, and /dev/sequencer. 
+     * Closes the devices, and /dev/sequencer.
      *
      * @see #openDev()
      */
@@ -286,8 +278,8 @@ class DeviceManager
     void keyPressure    ( uchar chn, uchar note, uchar vel );
 
     /**
-     * Changes the patch (instrument) on a MIDI channel.  
-     * 
+     * Changes the patch (instrument) on a MIDI channel.
+     *
      * @see setPatchesToUse()
      *
      * @param chn the MIDI channel (0 to 15) .
@@ -297,8 +289,8 @@ class DeviceManager
 
     /**
      * Changes the Pressure (Aftertouch) on a MIDI channel. Keep in mind that
-     * some synthesizers don't like this events, and it's better not to send it. 
-     * 
+     * some synthesizers don't like this events, and it's better not to send it.
+     *
      * @param chn the MIDI channel (0 to 15) to change.
      * @param vel the velocity (0 to 127) to use on the channel chn.
      */
@@ -307,7 +299,7 @@ class DeviceManager
     /**
      * Changes the Pitch Bender value on a MIDI channel. This bends the tone of
      * each note played on this channel.
-     * 
+     *
      * @param chn the MIDI channel (0 to 15) to use.
      * @param lsb and @p msb the less significant byte and the most significant
      * byte (0 to 127 each) of the number by which notes will be bend. a 0x4000
@@ -334,11 +326,11 @@ class DeviceManager
      * Sends a SYStem EXclusive message to the default MIDI device (usually,
      * external MIDI synths, as most internal synths do not support sysex
      * messages)
-     * 
+     *
      * @param data the array of bytes that comform the system exclusive message.
      * Without the initial 0xF0 char, and including the final 0xF7 char (end of
      * exclusive message)
-     * @param size the size in bytes of the data to send 
+     * @param size the size in bytes of the data to send
      *
      * @see setDefaultDevice()
      */
@@ -352,8 +344,8 @@ class DeviceManager
     void wait (double ms);
 
     /**
-     * Sets the tempo which will be used to convert between ticks and 
-     * milliseconds.  
+     * Sets the tempo which will be used to convert between ticks and
+     * milliseconds.
      */
      void tmrSetTempo(int v);
 
@@ -378,20 +370,20 @@ class DeviceManager
      * Synchronizes with the MIDI buffer. Midi events are put into a buffer,
      * along with timer delays (see @ref #wait() ). sync returns when the buffer
      * is empty.
-     * 
+     *
      * @param f if false, it syncronizes by waiting for the buffer to be sent.
      * If true, it forces the synchronization by clearing the buffer
      * inmediately. The "force" method is, of course, not recommended, except
      * in rare situations.
-     */ 
-    void sync(bool f=0);  
+     */
+    void sync(bool f=0);
 
     /**
      * Changes the "master" volume of the played events by altering next volume
      * controller events. The parameter @p i should be in the range of 0
      * (nothing is heard) to 150 (music is played at a 150% of the original
      * volume).
-     * 
+     *
      * Keep in mind that as most MIDI files already play music at near the
      * maximum volume, an @p i value greater than 100 is very probably ignored
      * most of the times.
@@ -408,8 +400,8 @@ class DeviceManager
 
     /**
      * Sets the device to send the MIDI events to.
-     * 
-     * By using @ref #midiPorts(), @ref #synthDevices(), @ref #name() and 
+     *
+     * By using @ref #midiPorts(), @ref #synthDevices(), @ref #name() and
      * @ref #type(), you should choose which device to use (note that they are
      * numbered with midi ports being first and synth devices next)
      *
@@ -423,7 +415,7 @@ class DeviceManager
      * not a GUS device, it will be ignored.
      *
      * The parameter is an int [256] array, which contain the following:
-     * 
+     *
      * The first 0..127 integers, are the number of times each General MIDI patch
      * will be used, and -1 when the corresponding patch won't be used.
      *
@@ -438,10 +430,10 @@ class DeviceManager
      * In case you don't worry about such users, or you don't know "a priori"
      * the number of notes you're going to play, you can just use 1 for each
      * patch you want to load and -1 in the rest.
-     * 
+     *
      * @see GUSOut::setPatchesToUse()
      * @see GUSOut::loadPatch()
-     * 
+     *
      * @return 0 if ok, and -1 if there wasn't enough memory to load the patches
      * in the card's memory.
      */
@@ -490,7 +482,7 @@ class DeviceManager
     /**
      * Returns the name of the @p i-th device . In case the DeviceManager wasn't
      * yet initialized ( see @ref #checkInit() ), the return value is NULL, and
-     * in case the parameter has a value out of the valid range ( 0 to 
+     * in case the parameter has a value out of the valid range ( 0 to
      * @ref midiPorts() + @ref synthDevices() ) it returns an empty string.
      */
     const char *name(int i);

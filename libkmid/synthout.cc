@@ -5,18 +5,18 @@
     This file is part of LibKMid 0.9.5
     Copyright (C) 1997,98  Antonio Larrosa Jimenez and P.J.Leonard
                   1999,2000 Antonio Larrosa Jimenez
-    LibKMid's homepage : http://www.arrakis.es/~rlarrosa/libkmid.html 
+    LibKMid's homepage : http://www.arrakis.es/~rlarrosa/libkmid.html
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
- 
+
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
- 
+
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -48,11 +48,9 @@ SynthOut::SynthOut(int d)
   seqfd = -1;
   devicetype=KMID_SYNTH;
   device= d;
-#ifdef HANDLETIMEINDEVICES
   count=0.0;
   lastcount=0.0;
-  rate=100;
-#endif
+  m_rate=100;
   _ok=1;
 }
 
@@ -72,13 +70,12 @@ void SynthOut::openDev (int sqfd)
     return;
   }
 #ifdef HAVE_OSS_SUPPORT
-#ifdef HANDLETIMEINDEVICES
   ioctl(seqfd,SNDCTL_SEQ_NRSYNTHS,&ndevs);
   ioctl(seqfd,SNDCTL_SEQ_NRMIDIS,&nmidiports);
-  rate=0;
-  int r=ioctl(seqfd,SNDCTL_SEQ_CTRLRATE,&rate);
-  if ((r==-1)||(rate<=0)) rate=HZ;
-  convertrate=1000/rate;
+  m_rate=0;
+  int r=ioctl(seqfd,SNDCTL_SEQ_CTRLRATE,&m_rate);
+  if ((r==-1)||(m_rate<=0)) m_rate=HZ;
+  convertrate=1000/m_rate;
   /*
      int i=1;
      ioctl(seqfd,SNDCTL_SEQ_THRESHOLD,i);
@@ -87,14 +84,13 @@ void SynthOut::openDev (int sqfd)
 #ifdef SYNTHOUTDEBUG
   printfdebug("Number of synth devices : %d\n",ndevs);
   printfdebug("Number of midi ports : %d\n",nmidiports);
-  printfdebug("Rate : %d\n",rate);
+  printfdebug("Rate : %d\n",m_rate);
 #endif
 
   count=0.0;
   lastcount=0.0;
-#endif
 
-#ifdef HAVE_AWE32  
+#ifdef HAVE_AWE32
 
   struct synth_info info;
 
@@ -102,11 +98,11 @@ void SynthOut::openDev (int sqfd)
 
   info.device = device;
 
-  if (ioctl (seqfd, SNDCTL_SYNTH_INFO, &info) == -1) 
+  if (ioctl (seqfd, SNDCTL_SYNTH_INFO, &info) == -1)
     printfdebug(" ioctl  SNDCTL_SYNTH_INFO FAILED \n");
 
   if (info.synth_type == SYNTH_TYPE_SAMPLE
-      && info.synth_subtype == SAMPLE_TYPE_AWE32) 
+      && info.synth_subtype == SAMPLE_TYPE_AWE32)
   {
 
     // Enable layered patches ....
@@ -123,10 +119,8 @@ void SynthOut::openDev (int sqfd)
 void SynthOut::closeDev (void)
 {
   if (!ok()) return;
-#ifdef HANDLETIMEINDEVICES
   SEQ_STOP_TIMER();
   SEQ_DUMPBUF();
-#endif
   //if (seqfd>=0) close(seqfd);
   seqfd=-1;
 }
@@ -136,10 +130,8 @@ void SynthOut::initDev (void)
 #ifdef HAVE_OSS_SUPPORT
   int chn;
   if (!ok()) return;
-#ifdef HANDLETIMEINDEVICES
   count=0.0;
   lastcount=0.0;
-#endif
   uchar gm_reset[5]={0x7e, 0x7f, 0x09, 0x01, 0xf7};
   sysex(gm_reset, sizeof(gm_reset));
   for (chn=0;chn<16;chn++)
@@ -189,7 +181,7 @@ void SynthOut::keyPressure (uchar chn, uchar note, uchar vel)
 
 void SynthOut::chnPatchChange (uchar chn, uchar patch)
 {
-  SEQ_SET_PATCH(device,map->channel(chn),map->patch(chn,patch)); 
+  SEQ_SET_PATCH(device,map->channel(chn),map->patch(chn,patch));
   chnpatch[chn]=patch;
 }
 
@@ -205,7 +197,7 @@ void SynthOut::chnPitchBender(uchar chn,uchar lsb, uchar msb)
   SEQ_BENDER(device, map->channel(chn), chnbender[chn]);
 }
 
-void SynthOut::chnController (uchar chn, uchar ctl, uchar v) 
+void SynthOut::chnController (uchar chn, uchar ctl, uchar v)
 {
   if ((ctl==11)||(ctl==7))
   {
@@ -220,7 +212,7 @@ void SynthOut::chnController (uchar chn, uchar ctl, uchar v)
 void SynthOut::sysex(uchar *, ulong )
 {
   // AWE32 doesn't respond to sysex (AFAIK)
-/*  
+/*
 #ifndef HAVE_AWE32
   ulong i=0;
   SEQ_MIDIOUT(device, MIDI_SYSTEM_PREFIX);
