@@ -61,8 +61,9 @@ private:
   // The recycler array is sparse with the indices being multiples of 4,
   // i.e., 0, 4, 8, 12, 16, 20, ...
   void* m_recyclers[KHTML_MAX_RECYCLED_SIZE >> 2];
-#ifndef NDEBUG
-    int signature;
+//#ifndef NDEBUG
+#if 1
+  int signature;
 #endif
 };
 
