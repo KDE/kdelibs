@@ -835,6 +835,17 @@ public:
     void saveState();
 
   /**
+   * Save the toolbar settings to group @p configGroup in @p config.
+   */
+    void saveSettings(KConfig *config, const QString &configGroup);
+
+  /**
+   * Read the toolbar settings from group @p configGroup in @p config
+   * and apply them.
+   */
+    void applySettings(KConfig *config, const QString &configGroup);
+
+  /**
    * Tell the toolbar what XML-GUI resource file it should use to save
    * it's state.  The state of the toolbar (position, size, etc) is
    * saved in KConfig files if the application does not use XML-GUI..

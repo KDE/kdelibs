@@ -1056,18 +1056,37 @@ void KToolBar::saveState()
     }
 
     // if that didn't work, we save to the config file
-    QString grpToolbarStyle;
-    if (!strcmp(name(), "unnamed") || !strcmp(name(), "mainToolBar"))
-        grpToolbarStyle = "Toolbar style";
-    else
-        grpToolbarStyle = QString(name()) + " Toolbar style";
-
     KConfig *config = KGlobal::config();
-    KConfigGroupSaver saver(config, grpToolbarStyle);
+    saveSettings(config, QString::null);
+    config->sync();
+}
+
+void KToolBar::saveSettings(KConfig *config, const QString &_configGroup)
+{
+kdDebug() << "KToolBar::saveSettings\n";
+    QString configGroup = _configGroup;
+    if (configGroup.isEmpty())
+    {
+       if (!strcmp(name(), "unnamed") || !strcmp(name(), "mainToolBar"))
+           configGroup = "Toolbar style";
+       else
+           configGroup = QString(name()) + " Toolbar style";
+       if (parentWidget())
+       {
+           configGroup.prepend(" ");
+           configGroup.prepend(parentWidget()->name());
+       }
+    }
+
+    QString position, icontext, index, offset, newLine;
+    getAttributes( position, icontext, index, offset, newLine );
+
+    KConfigGroupSaver saver(config, configGroup);
 
     config->writeEntry("Position", position);
     config->writeEntry("IconText", icontext);
     config->writeEntry("IconSize", iconSize());
+    config->writeEntry("Hidden", isHidden());
 
     if ( !index.isEmpty() )
         config->writeEntry( "Index", index );
@@ -1075,8 +1094,6 @@ void KToolBar::saveState()
         config->writeEntry( "Offset", offset );
     if ( !newLine.isEmpty() )
         config->writeEntry( "NewLine", newLine );
-
-    config->sync();
 }
 
 
@@ -1410,8 +1427,28 @@ void KToolBar::slotIconChanged(int group)
 
 void KToolBar::slotReadConfig()
 {
-    // read in the global ('kdeglobals') config file
+    // Use global file.
     KConfig *config = KGlobal::config();
+    applySettings(config, QString::null); 
+}
+
+void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
+{
+    QString configGroup = _configGroup;
+    if (configGroup.isEmpty())
+    {
+       if (!strcmp(name(), "unnamed") || !strcmp(name(), "mainToolBar"))
+           configGroup = "Toolbar style";
+       else
+           configGroup = QString(name()) + " Toolbar style";
+       if (parentWidget())
+       {
+           configGroup.prepend(" ");
+           configGroup.prepend(parentWidget()->name());
+       }
+    }
+    // read in the global ('kdeglobals') config file
+    KConfig *gconfig = KGlobal::config();
 
     static QString grpKDE     = QString::fromLatin1("KDE");
 
@@ -1424,11 +1461,13 @@ void KToolBar::slotReadConfig()
     static QString attrIndex  = QString::fromLatin1("Index");
     static QString attrOffset  = QString::fromLatin1("Offset");
     static QString attrNewLine  = QString::fromLatin1("NewLine");
+    static QString attrHidden  = QString::fromLatin1("Hidden");
 
     // we actually do this in two steps.  first, we read in the global
     // styles [Toolbar style].  then, if the toolbar is NOT
     // 'mainToolBar', we will also try to read in [barname Toolbar style]
     bool highlight;
+    bool hidden;
     int transparent;
     QString icontext;
     int iconsize = 0;
@@ -1438,35 +1477,35 @@ void KToolBar::slotReadConfig()
     // this is the first iteration
     QString grpToolbar(QString::fromLatin1("Toolbar style"));
     { // start block for KConfigGroupSaver
-        KConfigGroupSaver saver(config, grpToolbar);
+        KConfigGroupSaver saver(gconfig, grpToolbar);
 
         // first, get the generic settings
-        highlight   = config->readBoolEntry(attrHighlight, true);
-        transparent = config->readBoolEntry(attrTrans, true);
+        highlight   = gconfig->readBoolEntry(attrHighlight, true);
+        transparent = gconfig->readBoolEntry(attrTrans, true);
+        hidden = gconfig->readBoolEntry(attrHidden, false);
 
         // we read in the IconText property *only* if we intend on actually
         // honoring it
         if (d->m_honorStyle)
-            icontext = config->readEntry(attrIconText, "IconOnly");
+            icontext = gconfig->readEntry(attrIconText, "IconOnly");
         else
             icontext = "IconOnly";
 
         // Use the default icon size for toolbar icons.
-        iconsize = config->readNumEntry(attrSize, 0);
+        iconsize = gconfig->readNumEntry(attrSize, 0);
 
-        position = config->readEntry(attrPosition, "Top");
-        index = config->readEntry(attrIndex, index );
-        offset = config->readEntry(attrOffset, offset );
-        nl = config->readEntry(attrNewLine, nl );
+        position = gconfig->readEntry(attrPosition, "Top");
+        index = gconfig->readEntry(attrIndex, index );
+        offset = gconfig->readEntry(attrOffset, offset );
+        nl = gconfig->readEntry(attrNewLine, nl );
 
-        // okay, that's done.  now we look for a toolbar specific entry
-        grpToolbar = name() + QString::fromLatin1(" Toolbar style");
-        if (config->hasGroup(grpToolbar)) {
-            config->setGroup(grpToolbar);
+        if (config->hasGroup(configGroup)) {
+            config->setGroup(configGroup);
 
                 // first, get the generic settings
             highlight   = config->readBoolEntry(attrHighlight, highlight);
             transparent = config->readBoolEntry(attrTrans, transparent);
+            hidden = config->readBoolEntry(attrHidden, hidden);
                 // now we always read in the IconText property
             icontext = config->readEntry(attrIconText, "icontext");
 
@@ -1541,6 +1580,11 @@ void KToolBar::slotReadConfig()
         pos = Floating;
     else if ( position == "Flat" )
         pos = Flat;
+
+    if (hidden)
+       hide();
+    else
+       show();
 
     if ( mw ) {
         mw->moveToolBar( this, (QMainWindow::ToolBarDock)pos, newLine, idx, offs );

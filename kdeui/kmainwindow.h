@@ -312,6 +312,24 @@ public:
 
     void setFrameBorderWidth( int ) {}
 
+    /**
+     * Read settings for statusbar, menubar and toolbar from their respective
+     * groups in the config file @p and apply them.
+     *
+     * @param config Config file to read the settings from.
+     * @param groupName For internal use only.
+     */
+    void applyMainWindowSettings(KConfig *config, const QString &groupName = QString::null);
+
+    /**
+     * Save settings for statusbar, menubar and toolbar to their respective
+     * groups in the config file @p config. 
+     *
+     * @param config Config file to save the settings to.
+     * @param groupName For internal use only.
+     */    
+    void saveMainWindowSettings(KConfig *config, const QString &groupName = QString::null);
+
 public slots:
     /**
      * Makes a KDE compliant caption.
@@ -503,7 +521,6 @@ private slots:
     * Called when the app is shutting down.
     */
     void shuttingDown();
-    void saveToolBars();
 
 private:
     QMenuBar *internalMenuBar();

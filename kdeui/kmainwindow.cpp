@@ -332,7 +332,6 @@ void KMainWindow::appHelpActivated( void )
 
 void KMainWindow::closeEvent ( QCloseEvent *e )
 {
-    saveToolBars();
     if (queryClose()) {
         e->accept();
 
@@ -386,14 +385,26 @@ void KMainWindow::showAboutApplication( void )
 
 void KMainWindow::savePropertiesInternal( KConfig *config, int number )
 {
-    QString entry;
-    QStrList entryList;
     // in order they are in toolbar list
 
     QString s;
     s.setNum(number);
     s.prepend(QString::fromLatin1("WindowProperties"));
+    saveMainWindowSettings(config, s); // Menubar, statusbar and Toolbar settings.
+
+    s.setNum(number);
     config->setGroup(s);
+    saveProperties(config);
+}
+
+void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configGroup)
+{
+kdDebug() << "KMainWindow::saveMainWindowSettings\n";
+    QString entry;
+    QStrList entryList;
+
+    if (!configGroup.isEmpty())
+       config->setGroup(configGroup);
 
     // store objectName, className, Width and Height  for later restorating
     config->writeEntry(QString::fromLatin1("ObjectName"), name());
@@ -401,22 +412,22 @@ void KMainWindow::savePropertiesInternal( KConfig *config, int number )
     config->writeEntry(QString::fromLatin1("Width"), width() );
     config->writeEntry(QString::fromLatin1("Height"), height() );
 
-    entryList.clear();
-
     if (internalStatusBar()) {
-        if ( !internalStatusBar()->isHidden() )
-            config->writeEntry(QString::fromLatin1("StatusBar"), QString::fromLatin1("Enabled"));
+        entryList.clear();
+        if ( internalStatusBar()->isHidden() )
+            entryList.append("Disabled");
         else
-            config->writeEntry(QString::fromLatin1("StatusBar"), QString::fromLatin1("Disabled"));
+            entryList.append("Enabled");
+        config->writeEntry(QString::fromLatin1("StatusBar"), entryList, ';');
     }
 
     if (internalMenuBar()) {
-        if ( !internalMenuBar()->isHidden() )
-            entryList.append("Enabled");
-        else
-            entryList.append("Disabled");
-        config->writeEntry(QString::fromLatin1("MenuBar"), entryList, ';');
         entryList.clear();
+        if ( internalMenuBar()->isHidden() )
+            entryList.append("Disabled");
+        else
+            entryList.append("Enabled");
+        config->writeEntry(QString::fromLatin1("MenuBar"), entryList, ';');
     }
 
     int n = 1; // Tolbar counter. toolbars are counted from 1,
@@ -425,47 +436,16 @@ void KMainWindow::savePropertiesInternal( KConfig *config, int number )
     QListIterator<KToolBar> it( toolBarIterator() );
     while ( ( toolbar = it.current() ) ) {
         ++it;
-        if ( !toolbar->isHidden() )
-            entryList.append("Enabled");
-        else
-            entryList.append("Disabled");
-        switch (toolbar->barPos()) {
-        case KToolBar::Flat:   //ignore
-        case KToolBar::Top:
-            entryList.append("Top");
-            break;
-        case KToolBar::Bottom:
-            entryList.append("Bottom");
-            break;
-        case KToolBar::Left:
-            entryList.append("Left");
-            break;
-        case KToolBar::Right:
-            entryList.append("Right");
-            break;
-        case KToolBar::Floating:
-            entryList.append("Floating");
-            break;
-        default:
-            break;
+        QString group;
+        if (!configGroup.isEmpty())
+        {
+           group.setNum(n);
+           group.prepend(" Toolbar");
+           group.prepend(configGroup);
         }
-        toolKey.setNum(n);
-        QMainWindow::ToolBarDock dock;
-        int index;
-        bool nl;
-        int offset;
-        getLocation( toolbar, dock, index, nl, offset );
-        entryList.append( QString::number( index ).latin1() );
-        entryList.append( nl ?  "true" : "false" );
-        entryList.append( QString::number( offset ).latin1() );
-        toolKey.prepend(QString::fromLatin1("ToolBar"));
-        config->writeEntry(toolKey, entryList, ';');
-        entryList.clear();
+        toolbar->saveSettings(config, group);
         n++;
     }
-    s.setNum(number);
-    config->setGroup(s);
-    saveProperties(config);
 }
 
 bool KMainWindow::readPropertiesInternal( KConfig *config, int number )
@@ -473,14 +453,27 @@ bool KMainWindow::readPropertiesInternal( KConfig *config, int number )
     if ( number == 1 )
         readGlobalProperties( config );
 
-    QString entry;
-    QStrList entryList;
     // in order they are in toolbar list
-    int i = 0; // Number of entries in list
     QString s;
     s.setNum(number);
     s.prepend(QString::fromLatin1("WindowProperties"));
+
+    applyMainWindowSettings(config, s); // Menubar, statusbar and toolbar settings.
+
+    s.setNum(number);
     config->setGroup(s);
+    readProperties(config);
+    return true;
+}
+
+void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &configGroup)
+{
+    QString entry;
+    QStrList entryList;
+    int i = 0; // Number of entries in list
+
+    if (!configGroup.isEmpty())
+       config->setGroup(configGroup);
 
     // restore the object name (window role )
     if ( config->hasKey(QString::fromLatin1("ObjectName" )) )
@@ -493,23 +486,22 @@ bool KMainWindow::readPropertiesInternal( KConfig *config, int number )
         resize( size );
 
     if (internalStatusBar()) {
-        entry = config->readEntry(QString::fromLatin1("StatusBar"));
-        if (entry == QString::fromLatin1("Enabled"))
+        entryList.clear();
+        i = config->readListEntry (QString::fromLatin1("StatusBar"), entryList, ';');
+        entry = entryList.first();
+        if (entry == QString::fromLatin1("Disabled"))
             internalStatusBar()->hide();
         else
             internalStatusBar()->show();
     }
 
     if (internalMenuBar()) {
-        i = config->readListEntry (QString::fromLatin1("MenuBar"), entryList, ';');
-        bool showmenubar = false;
-        entry = entryList.first();
-        if (entry==QString::fromLatin1("Enabled"))
-            showmenubar = true;
-        else
-            internalMenuBar()->hide();
         entryList.clear();
-        if (showmenubar)
+        i = config->readListEntry (QString::fromLatin1("MenuBar"), entryList, ';');
+        entry = entryList.first();
+        if (entry==QString::fromLatin1("Disabled"))
+            internalMenuBar()->hide();
+        else
             internalMenuBar()->show();
     }
 
@@ -520,56 +512,16 @@ bool KMainWindow::readPropertiesInternal( KConfig *config, int number )
 
     for ( ; it.current(); ++it) {
         toolbar= it.current();
-        toolKey.setNum(n);
-        toolKey.prepend(QString::fromLatin1("ToolBar"));
-
-        i = config->readListEntry(toolKey, entryList, ';');
-        if (i < 2) {
-            kdDebug(200) << "KMW: bad number of toolbar args." << endl;
-            return FALSE;
+        QString group;
+        if (!configGroup.isEmpty())
+        {
+           group.setNum(n);
+           group.prepend(" Toolbar");
+           group.prepend(configGroup);
         }
-
-        bool showtoolbar = false;
-        entry = entryList.first();
-        if (entry==QString::fromLatin1("Enabled"))
-            showtoolbar = true;
-        else
-            toolbar->enable(KToolBar::Hide);
-
-        QMainWindow::ToolBarDock dock = Top;
-        int index = 0, offset = -1;
-        bool nl = FALSE;
-
-        entry = entryList.next();
-        if (entry == QString::fromLatin1("Top"))
-            dock = Top;
-        else if (entry == QString::fromLatin1("Bottom"))
-            dock = Bottom;
-        else if (entry == QString::fromLatin1("Left"))
-            dock = Left;
-        else if (entry == QString::fromLatin1("Right"))
-            dock = Right;
-        else if (entry == QString::fromLatin1("Floating"))
-            dock = Top; // TornOff;
-        if (showtoolbar)
-            toolbar->enable(KToolBar::Show);
-
-        if ( entryList.count() > 2 ) {
-            entry = entryList.next();
-            index = entry.toInt();
-            nl = ( QString( entry ).lower() == QString::fromLatin1( "true" ) ) ? TRUE : FALSE;
-            offset = entry.toInt();
-            moveToolBar( toolbar, dock, nl, index, offset );
-        }
-        toolbar->setBarPos( (KToolBar::BarPosition)dock );
-        n++; // next toolbar
-        entryList.clear();
+        toolbar->applySettings(config, group);
+        n++;
     }
-
-    s.setNum(number);
-    config->setGroup(s);
-    readProperties(config);
-    return true;
 }
 
 KMenuBar *KMainWindow::menuBar()
@@ -588,7 +540,6 @@ KStatusBar *KMainWindow::statusBar()
 
 void KMainWindow::shuttingDown()
 {
-    saveToolBars();
     // call the virtual queryExit
     queryExit();
 }
@@ -631,7 +582,8 @@ KToolBar *KMainWindow::toolBar( const char * name )
     KToolBar *tb = (KToolBar*)child( name, "KToolBar" );
     if ( tb )
         return tb;
-    return new KToolBar(this, name);
+    bool honor_mode = (name == "mainToolBar");
+    return new KToolBar(this, name, honor_mode);
 }
 
 QListIterator<KToolBar> KMainWindow::toolBarIterator()
@@ -647,16 +599,6 @@ QListIterator<KToolBar> KMainWindow::toolBarIterator()
         }
     }
     return QListIterator<KToolBar>( toolbarList );
-}
-
-void KMainWindow::saveToolBars()
-{
-    QListIterator<KToolBar> it( toolBarIterator() );
-    KToolBar *toolbar = 0;
-    while ( ( toolbar = it.current() ) ) {
-        ++it;
-        toolbar->saveState();
-    }
 }
 
 void KMainWindow::paintEvent( QPaintEvent * )
