@@ -1,25 +1,186 @@
-kdelibs4 (3.0-0.beta1-1) unstable; urgency=low
+kdelibs (3.0.0-0rc2-1) unstable; urgency=low
 
-  * New upstream beta
-  * Update Build-Depends to match all that is needed
-  * Applied all customizations for Debian
+  * New upstream.
+  * rebuilt debian dir.
+  * can't use doxygen for docs due to graphviz being non-free
 
- -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 07 Dec 2001 19:02:00 -0700
+ -- Christopher L Cheney <ccheney@debian.org>  Fri,  8 Mar 2002 16:00:00 -0600
 
-kdelibs4 (3.0-0.alpha1-2) unstable; urgency=low
-  
-  * sync
-  * move modules into /usr/lib/kde3 instead of /usr/lib/kde2
-  * libarts-bin and libkmid-bin now exist to help with kde2/kde3 co-existance
+kdelibs (4:2.2.2-13) unstable; urgency=high
 
- -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 18 Oct 2001 10:18:00 -0700
+  * Fixed kdelibs-dev dependency should be libpng2-dev
 
-kdelibs4 (3.0-0.alpha1-1) unstable; urgency=low
+ -- Christopher L Cheney <ccheney@debian.org>  Fri,  1 Mar 2002 17:00:00 -0600
+
+kdelibs (4:2.2.2-12) unstable; urgency=high
+
+  * New maintainer.
+  * Remove Build-Depends on libglib1.3-dev since it has unstable ABI
+    (Closes: #133171, #134168)
+  * added suggests libjpeg-mmx-progs | libjpeg-progs, netpbm (Closes: #129094)
+
+ -- Christopher L Cheney <ccheney@debian.org>  Thu, 28 Feb 2002 13:00:00 -0600
+
+kdelibs (4:2.2.2-11) unstable; urgency=low
+
+  * Adopting orphaned package, thanks to Ivan for all the great work over the
+    years.
+
+ -- Daniel Stone <daniel@sfarc.net>  Fri,  4 Jan 2002 09:14:46 -0500
+
+kdelibs (4:2.2.2-10) unstable; urgency=low
+
+  * Fix Deps (Closes: #126232)
+  * Change nas-dev suggests to depends
+  * A Couple upstream fixes
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 27 Dec 2001 23:20:00 -0700
+
+kdelibs (4:2.2.2-9) unstable; urgency=low
+
+  * Move all non-module .la files from /usr/lib into -dev package.  We leave 
+    all the .la files out of /usr/lib/kde2 and those that may not be normal
+    libraries out of /usr/lib
+  * Fix spelling error (Closes: #124989)
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 17 Dec 2001 22:00:00 -0700
+
+kdelibs (4:2.2.2-8) unstable; urgency=low
+
+  * Depend on libfam-dev (Closes: #124264)
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 16 Dec 2001 17:21:00 -0700
+
+kdelibs (4:2.2.2-7) unstable; urgency=low
+
+  * Break out bin files from kdelibs3 so that we can interoperate with
+    kdelibs4 easily.
+  * Fix deviceman.cc (Closes: #124132)
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 14 Dec 2001 18:28:00 -0700
+
+kdelibs (4:2.2.2-6) unstable; urgency=low
+
+  * sync with upstream
+  * Add in Build-Depends we normally get through libqt-dev so we can better
+    follow policy
+  * Add libfam-dev to Build-Depends
+  * Version the libjpeg62-dev deps and add libjpeg to the depends for
+    kdelibs-dev since some older versions don't have the .la file
+  * Put bug reporting back to KDE so the users are happy and the developers
+    are not.
+  * Conflict (Closes: #123846)
+  * Update dh-make files
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 13 Dec 2001 00:57:00 -0700
+
+kdelibs (4:2.2.2-5) unstable; urgency=low
+
+  * sync with upstream
+  * Build with nas support by popular demand
+  * Update Build-Depends:  +nas-dev
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 05 Dec 2001 06:04:00 -0700
+
+kdelibs (4:2.2.2-4) unstable; urgency=low
+
+  * sync with upstream
+  * Build cleanup.  export CFLAGS/CXXFLAGS instead of the old method
+  * Build-Depends cleanup
+  * Dep cleanup.  Let's not conflict so much for the final release and lets
+    not Recommend everything for the final release. (Closes: #118952)
+  * Build with Xinerama support for i386 only (Closes: #116765)
+  * Add in bits in debian/rules to make it easier to build optimized binaries
+  * Remove old replaces/conflicts for keystone
+  * Cleanup documentation for freeze
+  * Cleanup dh-make files
+  * Default to Reject for cookie acceptions. (Closes: #121750)
+  * kio_https.* no longer exists and due to diversions we could end up 
+    with the files existing but not tied to any package..so let's make
+    sure to remove them.
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 30 Nov 2001 12:39:00 -0700
+
+kdelibs (4:2.2.2-3) unstable; urgency=low
+
+  * a couple upstream fixes
+  * debianrules cleanup
+  * More lintian cleanup
+  * Remove stupid debug messages (Closes: #120647)
+  * More work on BTS stuff.  Give 2 options for Help/Report Bug, one to
+    check current reports and one to report.
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 25 Nov 2001 20:11:00 -0700
+
+kdelibs (4:2.2.2-2) unstable; urgency=low
+
+  * Remove recommends for libssl as I'm breaking policy by recommending
+    something outside of main.  Will put this back once libssl goes into
+    main.
+  * libkmid | libkmid-alsa to help users out a bit
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 22 Nov 2001 20:14:00 -0700
+
+kdelibs (4:2.2.2-1) unstable; urgency=low
 
   * New upstream version
-  * Get rid of that damn epoch
+  * Provide replace/etc bits for easier migration to/from kde3
+  * Update python deps (Closes: #118208)
+  * Fix glib inclusion bits for gmcop stuff...however we are still
+    not going to build with it until someone has a need for it.
+  * Remove some other hacks
+  * Update deps for qt as qt 2.3.2 has a fix which breaks a piece of kdelibs
+    so let's make sure we match up across the board.
+  * Update shlibs for the same reason
+  * Use libasound2
+  * Fix printing to files with spaces in the name (Closes: #117962)
+  * Fix build with new libxml2 (Closes: #118638)
+  * Update build-depends
+  * Fix overwrite issues (Closes: #118802)
+  * Updates to take care of changes in Qt 2.3.2 (Closes: #118868)
+  * Do away with /etc/kderc and provide a link from /etc/kde2 to
+    /usr/share/kde2/config.  Hardcode the config dir to /usr/share/kde2/config
+    instead of /usr/share/config.  Can't hardcode it to /etc/kde2 since 
+    the /usr part of it all is pulled from the prefix.  This will work tho
+  * Move certain -dev binaries over to the -dev package
+  * Should fix socks autodetection (Closes: #118925)
 
- -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 12 Oct 2001 10:18:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 19 Nov 2001 23:17:00 -0700
+
+kdelibs (4:2.2.1-14) unstable; urgency=low
+
+  * Fix overwrite problem (Closes: #116773)
+  * Hopefully fix arts for bigendian (Closes: #115292)
+  * Sync with upstream
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 25 Oct 2001 09:39:00 -0700
+
+kdelibs (4:2.2.1-13) unstable; urgency=low
+
+  * Fix overwrite problem (Closes: #116568)
+  * Sync with upstream
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 21 Oct 2001 19:27:00 -0700
+
+kdelibs (4:2.2.1-12) unstable; urgency=low
+
+  * more js fixes
+  * more ssl fixes
+  * gernal sync with upstream
+  * Added missing build-conflict
+  * Get rid of automake hacks...hard code build-dep version for new automake
+    thank god kde3 builds with automake1.5...
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 19 Oct 2001 12:43:00 -0700
+
+kdelibs (4:2.2.1-11) unstable; urgency=low
+
+  * Several crash fixes
+  * js fixes
+  * ssl fixes
+  * Update shlibs. This should take care of a few problems
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 15 Oct 2001 00:15:00 -0700
 
 kdelibs (4:2.2.1-10) unstable; urgency=low
 
@@ -204,7 +365,7 @@ kdelibs (4:2.2.0-0beta1-1) unstable; urgency=low
   * 2.2 beta 1
   * Remove old .shlibs files
   * Moving to -cvs{date] format for entering into experimental
-  * This is a post alpha1 snapshot taken from the HEAD cvs branch.  The
+  * This is a post alpha1 snapshot taken from the HEAD cvs branch.  
     date listed in the version number states when the initial pull was made
     however updates may and most likely will have taken place since that
     date.  Look at it as a >= cvs{date}
@@ -724,7 +885,7 @@ kdelibs (4:2.0-20000829-0) unstable; urgency=low
  
   * More Upstream fixes
   * Committing most package updates to CVS tree
-  * No GPL/Qt conflictions
+  * No GPL/QT conflictions
 
  -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 29 Aug 2000 21:15:00 -0700
 
