@@ -147,6 +147,7 @@ bool HTMLWidgetElement::print( QPainter *_painter, int, int _y, int, int _height
 
 void HTMLWidgetElement::print( QPainter *_painter, int _tx, int _ty )
 {
+    return;
     printf("in print\n");
     if ( w == 0 || p == 0 || p->isNull() )
 	return;
