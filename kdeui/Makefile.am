@@ -135,6 +135,8 @@ rc_DATA = ui_standards.rc
 
 EXTRA_DIST = CHANGES.kdatepicker USERS.kdatepicker kpixmapio-perf.png dcolorreset.xpm kpartgui.dtd dcolorarrow.xbm colors
 
+.PHONY: kdepackages
+
 kdepackages:
 	-rm $(srcdir)/kdepackages.h
 	if test -f $(top_srcdir)/../bugs/Maintainers; then \
