@@ -97,7 +97,8 @@ HR  {
 	margin-bottom: 5px; 
         border-width: 1px;
         border-style: inset;
-        margin-left: auto; margin-right: auto; 
+        margin-left: 1px; /* will be overwritten by ALIGN */ 
+        margin-right: 1px; /* will be overwritten by ALIGN */
 } 
  
 PRE { 
