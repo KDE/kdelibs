@@ -1432,7 +1432,7 @@ void KHTMLView::dropEvent( QDropEvent *ev )
 
 void KHTMLView::focusOutEvent( QFocusEvent *e )
 {
-    m_part->stopAutoScroll();
+    if(m_part) m_part->stopAutoScroll();
     QScrollView::focusOutEvent( e );
 }
 
