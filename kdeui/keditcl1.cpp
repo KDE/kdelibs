@@ -44,6 +44,13 @@ KEdit::KEdit(KApplication *a, QWidget *parent, const char *name,
     rb_popup =  0L;
     modified = FALSE;
 
+
+    // fancy optimized refreshing (Matthias and Paul)
+#if QT_VERSION >= 142
+    repaintTimer = new QTimer(this);
+    connect(repaintTimer, SIGNAL(timeout()), this, SLOT(repaintAll()));
+#endif
+
     // set some defaults
 
     line_pos = col_pos = 0;
@@ -72,6 +79,10 @@ KEdit::KEdit(KApplication *a, QWidget *parent, const char *name,
 
 KEdit::~KEdit(){
 
+}
+
+void KEdit::repaintAll(){
+    repaint(FALSE);
 }
 
 
@@ -322,7 +333,8 @@ int KEdit::loadFile(QString name, int mode){
 #if QT_VERSION < 142
     repaint();
 #else
-    repaint( FALSE );
+    if (!repaintTimer->isActive())
+	repaintTimer->start(0,TRUE);
 #endif
 
     connect(this, SIGNAL(textChanged()), this, SLOT(setModified()));
@@ -717,7 +729,8 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
 #if QT_VERSION < 142
 	repaint();
 #else
-	repaint( FALSE );
+	if (!repaintTimer->isActive())
+	    repaintTimer->start(0,TRUE);
 #endif
 
 	computePosition();
@@ -826,7 +839,8 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
 
 	  repaint(0,y1,this->width(),y2);
 #else
-	  repaint( FALSE );
+	if (!repaintTimer->isActive())
+	    repaintTimer->start(0,TRUE);
 #endif
 	}
 
