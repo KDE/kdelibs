@@ -68,7 +68,7 @@ static QString encode( const QString& segment, bool encode_slash, int encoding_h
   int old_length = local.length();
 
   if ( !old_length )
-    return QString::null;
+    return segment.isNull() ? QString::null : ""; // differenciate null and empty
 
   // a worst case approximation
   QChar *new_segment = new QChar[ old_length * 3 + 1 ];
