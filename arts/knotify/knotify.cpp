@@ -3,6 +3,7 @@
                  2000 Charles Samuels (charles@kde.org)
                  2000 Stefan Schimanski (1Stein@gmx.de)
                  2000 Matthias Ettrich (ettrich@kde.org)
+                 2000 Waldo Bastian <bastian@kde.org>
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -52,7 +53,9 @@ class KNotifyPrivate
 {
 public:
     KConfig* globalEvents;
+    KConfig* globalConfig;
     QMap<QString, KConfig*> events;
+    QMap<QString, KConfig*> configs;
     QString externalPlayer;
     Arts::SimpleSoundServer soundServer;
     bool useExternal;
@@ -120,7 +123,8 @@ KNotify::KNotify()
 {
     d = new KNotifyPrivate;
     d->soundServer = Arts::SimpleSoundServer::null();
-    d->globalEvents = new KConfig(locate("config", "eventsrc"), true );
+    d->globalEvents = new KConfig("knotify/eventsrc", true, false, "data");
+    d->globalConfig = new KConfig("knotify.eventsrc", true, false);
     loadConfig();
 }
 
@@ -128,6 +132,7 @@ KNotify::~KNotify()
 {
     reconfigure();
     delete d->globalEvents;
+    delete d->globalConfig;
     delete d;
 }
 
@@ -158,10 +163,10 @@ void KNotify::reconfigure()
     loadConfig();
 
     // clear loaded config files
-    d->globalEvents->reparseConfiguration();
-    for ( QMapIterator<QString,KConfig*> it = d->events.begin(); it != d->events.end(); ++it )
+    d->globalConfig->reparseConfiguration();
+    for ( QMapIterator<QString,KConfig*> it = d->configs.begin(); it != d->configs.end(); ++it )
         delete it.data();
-    d->events.clear();
+    d->configs.clear();
 }
 
 
@@ -177,31 +182,39 @@ void KNotify::notify(const QString &event, const QString &fromApp,
 
         // get config file
         KConfig *eventsFile;
+        KConfig *configFile;
 	if ( d->events.contains( fromApp ) ) {
 	    eventsFile = d->events[fromApp];
+            configFile = d->configs[fromApp];
 	} else {
 	    eventsFile=new KConfig(locate("data", fromApp+"/eventsrc"),true,false);
 	    d->events.insert( fromApp, eventsFile );
+	    configFile=new KConfig(fromApp+".eventsrc",true,false);
+	    d->configs.insert( fromApp, configFile );
 	}
 
 	if ( !eventsFile->hasGroup( event ) && isGlobal(event) )
+        {
 	    eventsFile = d->globalEvents;
+            configFile = d->globalConfig;
+        }
 
         eventsFile->setGroup( event );
+        configFile->setGroup( event );
 
         // get event presentation
         if ( present==-1 )
-            present = eventsFile->readNumEntry( "presentation", -1 );
+            present = configFile->readNumEntry( "presentation", -1 );
         if ( present==-1 )
             present = eventsFile->readNumEntry( "default_presentation", 0 );
 
         // get sound file name
-        sound = eventsFile->readEntry( "soundfile" );
+        sound = configFile->readEntry( "soundfile" );
         if ( sound.length()==0 )
             sound = eventsFile->readEntry( "default_sound" );
 
         // get log file name
-        file = eventsFile->readEntry( "logfile" );
+        file = configFile->readEntry( "logfile" );
         if ( file.length()==0 )
             file = eventsFile->readEntry( "default_logfile" );
 
