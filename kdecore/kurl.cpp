@@ -161,10 +161,11 @@ void KURL::parse( const QString& _url )
   if ( !isalpha( (int)x ) )
     goto NodeErr;
   
-  // Node 2: Accept any amount of (alpha|digit|'+'|'-'|'.')
+  // Node 2: Accept any amount of (alpha|digit|'+'|'-')
+  // '.' is not currently accepted, because current KURL may be confused.
   // Proceed with :// :/ or :
   while( (isalpha((int)buf[pos]) || isdigit((int)buf[pos]) ||
-          buf[pos] == '+' || buf[pos] == '-' || buf[pos] == '.') &&
+          buf[pos] == '+' || buf[pos] == '-') &&
          pos < len ) pos++;
   if ( pos == len )
     goto NodeErr;
