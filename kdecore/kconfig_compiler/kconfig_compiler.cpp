@@ -1116,7 +1116,7 @@ int main( int argc, char **argv )
   if ( itemAccessors ) {
     for( e = entries.first(); e; e = entries.next() ) {
       h << "    Item" << itemType( e->type() ) << " *" << itemVar( e );
-      if (!e->param().isEmpty() ) h << QString("[%1]").arg( e->paramMax()+1 ) << "]";
+      if (!e->param().isEmpty() ) h << QString("[%1]").arg( e->paramMax()+1 );
       h << ";" << endl;
     }
   }
