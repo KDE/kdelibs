@@ -96,7 +96,7 @@ void HCAniMenu::scrollIn()
   int steps = QMIN(w, h) / 10;
 
   bgPix = QPixmap::grabWindow(QApplication::desktop()->winId(),
-				    mnu->x(), mnu->y(), w, h);
+                                    mnu->x(), mnu->y(), w, h);
 
   mnuPix.resize(w, h);
   mnuPix.fill(mnu->colorGroup().color(QColorGroup::Background));
@@ -105,7 +105,7 @@ void HCAniMenu::scrollIn()
   QPainter::redirect(mnu, 0);
   if(!widget)
     widget = new QWidget(0, 0, WStyle_Customize | WStyle_NoBorder |
-			 WStyle_Tool | WType_Popup );
+                         WStyle_Tool | WType_Popup );
   widget->setFocusPolicy(QWidget::StrongFocus);
   widget->move(mnu->x(), mnu->y());
   widget->resize(w, h);
@@ -135,7 +135,7 @@ void HCAniMenu::scrollOut()
 
   if(!widget)
     widget = new QWidget(0, 0, WStyle_Customize | WStyle_NoBorder |
-			 WStyle_Tool | WType_Popup );
+                         WStyle_Tool | WType_Popup );
   widget->move(mnu->x(), mnu->y());
   widget->resize(w, h);
   widget->setBackgroundMode(QWidget::NoBackground);
@@ -324,7 +324,7 @@ bool HCStyle::eventFilter(QObject *obj, QEvent *ev)
                 if(child->isWidgetType())
                     ((QWidget *)child)->repaint(false);
             }
-	    delete tbChildList;
+            delete tbChildList;
         }
     }
     else if(obj->inherits("QPushButton")){
@@ -405,47 +405,47 @@ void HCStyle::drawPushButton(QPushButton *btn, QPainter *p)
         kDrawBeButton(p, x, y, w, h, g, true,
                       &g.brush(QColorGroup::Mid));
     else {
-	if (btn != highlightWidget) {
-	    // -----
-	    if(vSmall){
-		int x2 = x+w-1;
-		int y2 = y+h-1;
-		p->setPen(g.dark());
-		p->drawLine(x+1, y, x2-1, y);
-		p->drawLine(x+1, y2, x2-1, y2);
-		p->drawLine(x, y+1, x, y2-1);
-		p->drawLine(x2, y+1, x2, y2-1);
+        if (btn != highlightWidget) {
+            // -----
+            if(vSmall){
+                int x2 = x+w-1;
+                int y2 = y+h-1;
+                p->setPen(g.dark());
+                p->drawLine(x+1, y, x2-1, y);
+                p->drawLine(x+1, y2, x2-1, y2);
+                p->drawLine(x, y+1, x, y2-1);
+                p->drawLine(x2, y+1, x2, y2-1);
 
-		if(!sunken){
-		    p->setPen(g.light());
-		    p->drawLine(x+2, y+2, x2-1, y+2);
-		    p->drawLine(x+2, y+3, x2-2, y+3);
-		    p->drawLine(x+2, y+4, x+2, y2-1);
-		    p->drawLine(x+3, y+4, x+3, y2-2);
-		}
-		else{
-		    p->setPen(g.mid());
-		    p->drawLine(x+2, y+2, x2-1, y+2);
-		    p->drawLine(x+2, y+3, x2-2, y+3);
-		    p->drawLine(x+2, y+4, x+2, y2-1);
-		    p->drawLine(x+3, y+4, x+3, y2-2);
-		}
-		p->setPen(sunken? g.light() : g.mid());
-		p->drawLine(x2-1, y+2, x2-1, y2-1);
-		p->drawLine(x+2, y2-1, x2-1, y2-1);
+                if(!sunken){
+                    p->setPen(g.light());
+                    p->drawLine(x+2, y+2, x2-1, y+2);
+                    p->drawLine(x+2, y+3, x2-2, y+3);
+                    p->drawLine(x+2, y+4, x+2, y2-1);
+                    p->drawLine(x+3, y+4, x+3, y2-2);
+                }
+                else{
+                    p->setPen(g.mid());
+                    p->drawLine(x+2, y+2, x2-1, y+2);
+                    p->drawLine(x+2, y+3, x2-2, y+3);
+                    p->drawLine(x+2, y+4, x+2, y2-1);
+                    p->drawLine(x+3, y+4, x+3, y2-2);
+                }
+                p->setPen(sunken? g.light() : g.mid());
+                p->drawLine(x2-1, y+2, x2-1, y2-1);
+                p->drawLine(x+2, y2-1, x2-1, y2-1);
 
-		p->setPen(g.mid());
-		p->drawLine(x+1, y+1, x2-1, y+1);
-		p->drawLine(x+1, y+2, x+1, y2-1);
-		p->drawLine(x2-2, y+3, x2-2, y2-2);
+                p->setPen(g.mid());
+                p->drawLine(x+1, y+1, x2-1, y+1);
+                p->drawLine(x+1, y+2, x+1, y2-1);
+                p->drawLine(x2-2, y+3, x2-2, y2-2);
 
-		drawVGradient(p, g.brush(QColorGroup::Mid), x+4, y+4, w-6, h-6, 0, 0, w-6, h-6);
-	    }
-	    else
-		drawButton(p, x, y, w, h, g, false);
-	}
-	else
-	    drawButton(p, x, y, w, h, g, false);
+                drawVGradient(p, g.brush(QColorGroup::Mid), x+4, y+4, w-6, h-6, 0, 0, w-6, h-6);
+            }
+            else
+                drawButton(p, x, y, w, h, g, false);
+        }
+        else
+            drawButton(p, x, y, w, h, g, false);
     }
 
     if(btn->isDefault()){
@@ -876,23 +876,23 @@ void HCStyle::scrollBarMetrics(const QScrollBar *sb, int &sliderMin,
     int extent = horiz ? sb->height() : sb->width();
 
     if ( length > ( extent - b*2 - 1 )*2 + b*2  )
-	buttonDim = extent - b*2;
+        buttonDim = extent - b*2;
     else
-	buttonDim = ( length - b*2 )/2 - 1;
+        buttonDim = ( length - b*2 )/2 - 1;
 
     sliderMin = b + buttonDim;
     maxLength  = length - b*2 - buttonDim*3;
 
     if ( sb->maxValue() == sb->minValue() ) {
-	sliderLength = maxLength;
+        sliderLength = maxLength;
     } else {
-	sliderLength = (sb->pageStep()*maxLength)/
-			(sb->maxValue()-sb->minValue()+sb->pageStep());
-	uint range = sb->maxValue()-sb->minValue();
-	if ( sliderLength < 9 || range > INT_MAX/2 )
-	    sliderLength = 9;
-	if ( sliderLength > maxLength )
-	    sliderLength = maxLength;
+        sliderLength = (sb->pageStep()*maxLength)/
+                        (sb->maxValue()-sb->minValue()+sb->pageStep());
+        uint range = sb->maxValue()-sb->minValue();
+        if ( sliderLength < 9 || range > INT_MAX/2 )
+            sliderLength = 9;
+        if ( sliderLength > maxLength )
+            sliderLength = maxLength;
     }
     sliderMax = sliderMin + maxLength - sliderLength;
 
@@ -908,9 +908,9 @@ QStyle::ScrollControl HCStyle::scrollBarPointOver(const QScrollBar *sb,
     scrollBarMetrics( sb, sliderMin, sliderMax, sliderLength, buttonDim );
     pos = (sb->orientation() == QScrollBar::Horizontal)? p.x() : p.y();
     if ( pos < sliderMin )
-	return SubLine;
+        return SubLine;
     if ( pos < sliderStart )
-	return SubPage;
+        return SubPage;
     if ( pos < sliderStart + sliderLength )
         return Slider;
     if ( pos < sliderMax + sliderLength)
@@ -981,10 +981,7 @@ void HCStyle::drawIndicator(QPainter *p, int x, int y, int w, int h,
 
     static const unsigned char x_bits[] = {0x63, 0x77, 0x3e, 0x1c, 0x3e, 0x77, 0x63};
     if (xBmp.isNull())
-    {
-        QBitmap xBmp = QBitmap(7, 7, x_bits, true);
-        xBmp.setMask(xBmp);
-    }
+        xBmp = QBitmap(7, 7, x_bits, true);
 
     p->setPen(g.mid());
     p->drawLine(x, y, x2, y);
