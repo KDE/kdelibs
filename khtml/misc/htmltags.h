@@ -7,7 +7,7 @@
 #include "dom/dom_string.h"
 #include <kglobal.h>
 
-DOM::DOMString KDE_NO_EXPORT getTagName(unsigned short id);
+const char* KDE_NO_EXPORT getTagName(unsigned short id);
 
 #define ID_A 1
 #define ID_ABBR 2

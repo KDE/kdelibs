@@ -1603,7 +1603,7 @@ NodeImpl *DocumentImpl::cloneNode ( bool /*deep*/ )
 }
 
 
-typedef DOM::DOMString (*NameLookupFunction)(unsigned short id);
+typedef const char* (*NameLookupFunction)(unsigned short id);
 typedef int (*IdLookupFunction)(const char *tagStr, int len);
 
 NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI, DOMStringImpl *_prefix,
@@ -1749,7 +1749,7 @@ DOMString DocumentImpl::getName( NodeImpl::IdType _type, NodeImpl::Id _id ) cons
     else if (lookup) {
         // ### put them in a cache
         if (hasNS)
-            return lookup(_id).lower();
+            return DOMString(lookup(_id)).lower();
         else
             return lookup(_id);
     } else

@@ -154,6 +154,6 @@ using namespace DOM;
 #define ATTR_WRAP 144
 #define ATTR_Z_INDEX 145
 #define ATTR_LAST_ATTR 145
-DOMString getAttrName(unsigned short id);
+const char* getAttrName(unsigned short id);
 
 #endif
