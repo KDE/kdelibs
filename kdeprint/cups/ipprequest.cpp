@@ -224,7 +224,7 @@ bool IppRequest::htmlReport(int group, QTextStream& output)
 {
 	if (!request_) return false;
 	// start table
-	output << "<table border=\"1\">" << endl;
+	output << "<table border=\"1\" cellspacing=\"0\" cellpadding=\"0\">" << endl;
 	output << "<tr><th bgcolor=\"dark blue\"><font color=\"white\">" << i18n("Attribute") << "</font></th>" << endl;
 	output << "<th bgcolor=\"dark blue\"><font color=\"white\">" << i18n("Values") << "</font></th></tr>" << endl;
 	// go to the first attribute of the specified group
@@ -235,9 +235,11 @@ bool IppRequest::htmlReport(int group, QTextStream& output)
 	ipp_uchar_t	*d;
 	QCString	dateStr;
 	QDateTime	dt;
+	bool	bg(false);
 	while (attr && attr->group_tag == group)
 	{
-		output << "  <tr>\n    <td><b>" << attr->name << "</b></td>\n    <td>" << endl;
+		output << "  <tr bgcolor=\"" << (bg ? "#ffffd9" : "#ffffff") << "\">\n    <td><b>" << attr->name << "</b></td>\n    <td>" << endl;
+		bg = !bg;
 		for (int i=0; i<attr->num_values; i++)
 		{
 			switch (attr->value_tag)
