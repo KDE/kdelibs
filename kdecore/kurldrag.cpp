@@ -174,7 +174,7 @@ QByteArray KURLDrag::encodedData( const char* mime ) const
         if( uris.count() > 1 )
             s.append( "\n" );
         a.resize( s.length());
-        memcpy( a.data(), s.data(), s.length());    
+        memcpy( a.data(), s.data(), s.length());
     }
     else if ( mimetype.lower() == "text/plain;charset=utf-8")
     {
@@ -186,8 +186,8 @@ QByteArray KURLDrag::encodedData( const char* mime ) const
         if( uris.count() > 1 )
             s.append( "\n" );
         a.resize( s.length());
-        memcpy( a.data(), s.data(), s.length());    
-    }    
+        memcpy( a.data(), s.data(), s.length());
+    }
     else if ( mimetype == "application/x-kio-metadata" )
     {
         if ( !m_metaData.isEmpty() )
@@ -212,7 +212,7 @@ KURL KURLDrag::stringToUrl(const QCString &s)
 {
     if (strncmp(s.data(), "file:", 5) == 0)
        return KURL(s, KGlobal::locale()->fileEncodingMib());
-    
+
     return KURL(s, 106); // 106 is mib enum for utf8 codec;
 }
 
@@ -237,6 +237,10 @@ QString KURLDrag::urlToString(const KURL &url)
             }
         }
 #endif
+    }
+
+    if ( url.protocol() == "mailto" ) {
+        return url.path();
     }
 
     return url.url(0, 106); // 106 is mib enum for utf8 codec
