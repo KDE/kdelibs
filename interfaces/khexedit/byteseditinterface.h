@@ -97,7 +97,7 @@ class BytesEditInterface
 
 /** tries to get the bytesedit interface of t */
 template<class T>
-BytesEditInterface *bytesEditInterface( T *t )
+inline BytesEditInterface *bytesEditInterface( T *t )
 {
   if( !t )
     return 0;
@@ -157,7 +157,7 @@ BytesEditInterface *bytesEditInterface( T *t )
   * @param Parent  parent widget
   * @param Name    identifier
   */
-QWidget *createBytesEditWidget( QWidget *Parent = 0, const char *Name = 0 )
+inline QWidget *createBytesEditWidget( QWidget *Parent = 0, const char *Name = 0 )
 {
   return KParts::ComponentFactory::createInstanceFromQuery<QWidget>
     ( "KHexEdit/KBytesEdit", QString::null, Parent, Name );
