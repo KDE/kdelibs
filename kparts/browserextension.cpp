@@ -437,6 +437,8 @@ void BrowserExtension::pasteRequest()
     KURIFilterData filterData;
     filterData.setData( url );
     filterData.setCheckForExecutables( false );
+    KParts::URLArgs args;
+    args.frameName = "_top";
     if ( KURIFilter::self()->filterURI( filterData, filters ) )
     {
         switch ( filterData.uriType() )
@@ -444,7 +446,7 @@ void BrowserExtension::pasteRequest()
 	    case KURIFilterData::LOCAL_FILE:
 	    case KURIFilterData::LOCAL_DIR:
 	    case KURIFilterData::NET_PROTOCOL:
-	        slotOpenURLRequest( filterData.uri(), KParts::URLArgs() );
+	        slotOpenURLRequest( filterData.uri(), args );
 		break;
 	    case KURIFilterData::ERROR:
 		KMessageBox::sorry( m_part->widget(), filterData.errorMsg() );
@@ -459,7 +461,7 @@ void BrowserExtension::pasteRequest()
 		    i18n( "<qt>Do you want to search the Internet for <b>%1</b>?" ).arg( QStyleSheet::escape(url) ),
 		    i18n( "Internet Search" ), i18n( "&Search" ),
 		    i18n( "&Cancel" ), "MiddleClickSearch" ) == KMessageBox::Yes)
-        slotOpenURLRequest( filterData.uri(), KParts::URLArgs() );
+          slotOpenURLRequest( filterData.uri(), args );
     }
 }
 
