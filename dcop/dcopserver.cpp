@@ -652,7 +652,7 @@ DCOPServer::DCOPServer()
 	listener.append( con );
 	connect( con, SIGNAL( activated(int) ), this, SLOT( newClient(int) ) );
     }
-    char c;
+    char c = 0;
     write(ready[1], &c, 1); // dcopserver is started
     close(ready[1]);
 }
@@ -979,7 +979,7 @@ int main( int argc, char* argv[] )
 	    nosid = true;
 	else {
 	    fprintf(stdout, ABOUT );
-	    exit(0);
+	    return 0;
 	}
     }
 
@@ -1003,7 +1003,7 @@ int main( int argc, char* argv[] )
 		      fName.data() );
 
 	    // lock file present, die silently.
-	    exit(0);
+	    return 0;
 	} else {
 	    // either we couldn't read the PID or kill returned an error.
 	    // remove lockfile and continue
@@ -1021,7 +1021,7 @@ int main( int argc, char* argv[] )
 		    close(ready[1]);
 		    read(ready[0], &c, 1); // Wait till dcopserver is started
 		    close(ready[0]);
-		    exit(0); // I am the parent
+		    return 0; // I am the parent
 		}
 	    close(ready[0]);
 
@@ -1029,7 +1029,7 @@ int main( int argc, char* argv[] )
 		setsid();
 
 	    if (fork() > 0)
-		exit(0); // get rid of controlling terminal
+		return 0; // get rid of controlling terminal
 	}
 
     signal(SIGHUP, sighandler);
