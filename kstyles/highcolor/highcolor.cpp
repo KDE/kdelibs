@@ -195,7 +195,7 @@ void HighColorStyle::polish(QWidget* widget)
 		widget->setBackgroundMode(QWidget::NoBackground);
 	} else if (type == HighColor && widget->inherits("QToolBarExtensionWidget")) {
 		widget->installEventFilter(this);
-	} else if (type == HighColor && !qstrcmp( widget->name(), kdeToolbarWidget) ) {
+	} else if ( !qstrcmp( widget->name(), kdeToolbarWidget) ) {
 		widget->setBackgroundMode( NoBackground );	// We paint the whole background.
 		widget->installEventFilter(this);
 	}
@@ -213,7 +213,7 @@ void HighColorStyle::unPolish(QWidget* widget)
 		widget->setBackgroundMode(QWidget::PaletteBackground);
 	} else if (type == HighColor && widget->inherits("QToolBarExtensionWidget")) {
 		widget->removeEventFilter(this);
-	} else if (type == HighColor && !qstrcmp( widget->name(), kdeToolbarWidget) ) {
+	} else if ( !qstrcmp( widget->name(), kdeToolbarWidget) ) {
 		widget->removeEventFilter(this);
 		widget->setBackgroundMode( PaletteBackground );
 	}
@@ -1914,7 +1914,7 @@ bool HighColorStyle::eventFilter( QObject *object, QEvent *event )
 			if (tb) horiz_grad = tb->orientation() == Qt::Vertical;
 
 			QPainter p( widget );
-			renderGradient(&p, r, parent->colorGroup().button(), horiz_grad,
+			renderGradient(&p, r, parent->colorGroup().mid(), horiz_grad,
 					x_offset, y_offset, pr.width(), pr.height());
 
 			return false;	// Now draw the contents
