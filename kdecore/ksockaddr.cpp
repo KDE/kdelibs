@@ -661,7 +661,9 @@ bool KInetSocketAddress::areEqualInet6(const KSocketAddress &s1, const KSocketAd
    else
      return (sin1->sin6_port == sin2->sin6_port) && 
             (sin1->sin6_flowinfo == sin2->sin6_flowinfo) && 
+#ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
             (sin1->sin6_scope_id == sin2->sin6_scope_id) && 
+#endif
             (memcmp(&sin1->sin6_addr, &sin2->sin6_addr, sizeof(struct in6_addr))  == 0);
 #else
    return false;
