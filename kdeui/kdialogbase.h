@@ -415,6 +415,14 @@ class KDialogBase : public KDialog
     ~KDialogBase();
 
     /**
+     * Destruct the Dialog delayed. You can call this function from
+     * slots like @ref closeClicked() and @ref hidden().
+     * You should not use the dialog any more after
+     * calling this function.
+     */
+    void delayedDestruct();
+
+    /**
      * Adjust the size of the dialog to fit the contents just before
      * @ref QDialog::exec() or @ref QDialog::show() is called.
      *
@@ -1085,10 +1093,15 @@ class KDialogBase : public KDialog
     /**
      * The dialog is about to be hidden.
      *
-     *  If you have stored a pointer to the 
+     * A dialog is hidden after a user clicks a button that ends
+     * the dialog or when the window manager hides the dialog.
+     * (E.g. switching to another desktop, minimizing dialog)
+     *
+     * If you have stored a pointer to the 
      * dialog do @bf not try to delete the pointer in the slot that is 
-     * connected to this signal. Instead you must start a timer and delete 
-     * the pointer when this timer expires.
+     * connected to this signal. 
+     * 
+     * You can use @ref delayedDestruct() instead.
      */
     void hidden();
 
@@ -1192,6 +1205,11 @@ class KDialogBase : public KDialog
      * Updates the margins and spacings. 
      */
     void updateGeometry();
+
+    /**
+     * Deletes the dialog.
+     */
+    void slotDelayedDestruct();
 
   private:
     /**

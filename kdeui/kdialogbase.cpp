@@ -30,6 +30,7 @@
 #include <qtooltip.h>
 #include <qvbox.h>
 #include <qwhatsthis.h>
+#include <qtimer.h>
 
 #include <kapp.h>
 #include <klocale.h>
@@ -129,6 +130,19 @@ KDialogBase::~KDialogBase()
 {
 }
 
+void
+KDialogBase::delayedDestruct()
+{
+   if (isVisible())
+      hide();
+   QTimer::singleShot( 0, this, SLOT(slotDelayedDestruct()));
+}
+
+void
+KDialogBase::slotDelayedDestruct()
+{
+   delete this;
+}
 
 void KDialogBase::setupLayout()
 {
