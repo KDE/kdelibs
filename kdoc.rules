@@ -58,4 +58,4 @@ libkmid_FILES = *.h
 libkmid_LIBS = -lqt
 
 interfaces_FILES = */*.h
-interfaces_LIBS = -lkparts -lkdeui -lqt
+interfaces_LIBS = -lkparts -lkdeui -lkdecore -ldcop -lqt
