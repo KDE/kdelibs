@@ -29,36 +29,14 @@ class TestApp : public KUniqueApplication
 {
 public:
    TestApp() : KUniqueApplication("TestApp") { }
-   virtual int newInstance( QValueList<QCString> params );
+   virtual int newInstance( );
 };
 
 
 int
-TestApp::newInstance( QValueList<QCString> params )
+TestApp::newInstance( )
 {
-   printf("%s PID = %d params = %d\n", name(), getpid(), params.count());
-   QValueList<QCString>::Iterator it = params.begin(); 
-   int i = 0;
-   for(;it != params.end(); it++, i++)
-   {
-      printf("arg %d: %s\n", i, (*it).data());
-   }
-   if ((params.count() != 2) || (params[1] == "--help"))
-   {
-       printf("Usage: %s [ --help | ok | exit ]\n", params[0].data());
-       return -1;
-   }
-   if (params[1] == "ok")
-   {
-       printf("OK\n");
-       return 1;
-   }
-   if (params[1] == "exit")
-   {
-       exit(0);
-       printf("Exiting\n");
-       return 1;
-   }
+   qWarning("NewInstance");
    return 0;
 }
 
@@ -71,14 +49,11 @@ main(int argc, char *argv[])
 
    if (!TestApp::start())
    {
-//      printf("Already running!\n");
       exit(0);
    }
    TestApp a;
 
    printf("Running.\n");
-   printf("singleClick? %s\n", KGlobalSettings::singleClick() ? "yes" : "no");
-   printf("completionMode: %d\n", (int) KGlobalSettings::completionMode());
-   kapp->exec();   
+   kapp->exec();
    printf("Terminating.\n");
 }
