@@ -182,7 +182,7 @@ private:
 
 /**
  * For compatibility with old naming
- * @deprecated
+ * May become the real name again at some point...
  */
 #define KTar KTarGz;
 

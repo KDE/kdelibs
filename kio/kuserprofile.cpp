@@ -126,7 +126,7 @@ int KServiceTypeProfile::preference( const QString& _service ) const
 bool KServiceTypeProfile::allowAsDefault( const QString& _service ) const
 {
   // Does the service itself not allow that ?
-  KService::Ptr s = KService::service( _service );
+  KService::Ptr s = KService::serviceByName( _service );
   if ( s && !s->allowAsDefault() )
     return false;
 
