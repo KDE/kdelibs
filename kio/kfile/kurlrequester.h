@@ -107,14 +107,14 @@ public:
      * so KFile::Files doesn't make much sense.
      * @see KFileDialog::setMode()
      */
-    void setMode( unsigned int m );
+    void setMode( uint m );
 
     /**
     * Returns the current mode
     * @see KFileDialog::mode()
     * @since 3.3
     */
-    unsigned int mode() const;
+    uint mode() const;
 
     /**
      * Sets the filter for the file dialog.
