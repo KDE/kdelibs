@@ -45,6 +45,11 @@
 #include <kmimetype.h>
 #include <krun.h>
 
+class KFileItem::KFileItemPrivate {
+	public:
+		QString iconName;
+};
+
 KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
                       bool _determineMimeTypeOnDemand, bool _urlIsDirectory ) :
   m_entry( _entry ),
@@ -58,6 +63,7 @@ KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
   m_bMimeTypeKnown( false ),
   d(0L)
 {
+
   bool UDS_URL_seen = false;
   // extract the mode and the filename from the KIO::UDS Entry
   KIO::UDSEntry::ConstIterator it = m_entry.begin();
@@ -102,6 +108,10 @@ KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
         case KIO::UDS_LINK_DEST:
           m_bLink = !(*it).m_str.isEmpty(); // we don't store the link dest
           break;
+        case KIO::UDS_ICON_NAME:
+	  d=new KFileItemPrivate();
+	  d->iconName=(*it).m_str;
+	  break;
     }
   }
   // avoid creating these QStrings again and again
@@ -152,6 +162,7 @@ KFileItem::KFileItem( const KFileItem & item ) :
 
 KFileItem::~KFileItem()
 {
+  delete d;
 }
 
 void KFileItem::init( bool _determineMimeTypeOnDemand )
@@ -404,6 +415,7 @@ QString KFileItem::mimeComment()
 
 QString KFileItem::iconName()
 {
+  if (d && (!d->iconName.isEmpty())) return d->iconName;
   return determineMimeType()->icon(m_url, m_bIsLocalURL);
 }
 
@@ -436,10 +448,14 @@ int KFileItem::overlays() const
 
 QPixmap KFileItem::pixmap( int _size, int _state ) const
 {
+  if (d && (!d->iconName.isEmpty())) 
+     return DesktopIcon(d->iconName,_size,_state);
+
   if ( !m_pMimeType )
   {
     static const QString & defaultFolderIcon =
        KGlobal::staticQString(KMimeType::mimeType( "inode/directory" )->KServiceType::icon());
+
     if ( S_ISDIR( m_fileMode ) )
      return DesktopIcon( defaultFolderIcon, _size, _state );
 
@@ -684,6 +700,10 @@ void KFileItem::assign( const KFileItem & item )
 
     // We had a mimetype previously (probably), so we need to re-determine it
     determineMimeType();
+    if (item.d) {
+	d=new KFileItemPrivate;
+	d->iconName=item.d->iconName;
+    }
 }
 
 void KFileItem::setExtraData( const void *key, void *value )

@@ -282,6 +282,10 @@ namespace KIO
     UDS_SIZE_LARGE = 32768 | UDS_LONG, // For internal use only
     /// User ID of the file owner
     UDS_USER = 16 | UDS_STRING,
+    /// Name of the icon, that should be used for displaying.
+    /// It overrides all other detection mechanisms
+    /// @since 3.2
+    UDS_ICON_NAME = 24 | UDS_STRING,
     /// Group ID of the file owner
     UDS_GROUP =	32 | UDS_STRING,
     /// Filename
