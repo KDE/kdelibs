@@ -10,7 +10,7 @@
   <Action name="goto_line"/>
  </Menu>
  <Menu name="tools"><Text>&amp;Tools</Text>
-  <Action name="set_highlighting" />
+  <Action name="highlight_select" />
   <Separator/>
   <Action name="spell_checking" />
  </Menu>
