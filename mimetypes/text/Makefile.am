@@ -6,7 +6,7 @@ mimetypetextdata_DATA = x-c++src.desktop x-c++hdr.desktop x-csrc.desktop x-java.
 	x-vcalendar.desktop x-diff.desktop x-objcsrc.desktop x-log.desktop \
 	x-bibtex.desktop rdf.desktop rss.desktop calendar.desktop x-adasrc.desktop \
 	x-csv.desktop x-latex.desktop x-xslfo.desktop x-xslt.desktop vnd.wap.wml.desktop x-katefilelist.desktop \
-	docbook.desktop x-mswinurl.desktop
+	docbook.desktop x-mswinurl.desktop x-hex.desktop
 
 mimetypetextdatadir = $(kde_mimedir)/text
 
