@@ -130,7 +130,13 @@ public:
      * @param group The icon group. This will specify the size of and effects to
      * be applied to the icon.
      * @param size If nonzero, this overrides the size specified by @p group.
+     * @param canReturnNull Can return a null iconset? If false, iconset
+     * containing the "unknown" pixmap is returned when no appropriate icon has
+     * been found.
      */
+    QIconSet loadIconSet(const QString& name, KIcon::Group group, int size,
+                         bool canReturnNull);
+    // KDE4 merge as (const QString&,KIcon::Group,int=0,bool=false);
     QIconSet loadIconSet(const QString& name, KIcon::Group group, int size=0);
 
     /**
