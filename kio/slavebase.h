@@ -325,7 +325,9 @@ public:
      * put, aka write.
      * @param path where to write the file (decoded)
      * @param permissions may be -1. In this case no special permission mode is set.
-     * @param overwrite if true, any existing file will be overwritten
+     * @param overwrite if true, any existing file will be overwritten.
+     * If the file indeed already exists, the slave should NOT apply the
+     * permissions change to it.
      * @param resume
      */
     virtual void put( const KURL& url, int permissions, bool overwrite, bool resume );
@@ -677,9 +679,9 @@ protected:
      * @param group     the authorization group-key matched or created
      */
     void sendAuthenticationKey( const QCString&, const QCString& );
-   
+
     /*
-     * @deprecated.  Added only for BC with KDE 2.0 
+     * @deprecated.  Added only for BC with KDE 2.0
      */
     void delCachedAuthentication( const QString& ) {};
 
