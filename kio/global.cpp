@@ -170,10 +170,10 @@ QString Job::errorString()
       result = i18n( "The file or directory\n%1\ndoes not exist" ).arg( m_errorText );
       break;
     case  KIO::ERR_FILE_ALREADY_EXIST:
-      result = i18n( "A file named\n%1\ndoes already exist" ).arg( m_errorText );
+      result = i18n( "A file named\n%1\nalready exists" ).arg( m_errorText );
       break;
     case  KIO::ERR_DIR_ALREADY_EXIST:
-      result = i18n( "A directory named\n%1\ndoes already exist" ).arg( m_errorText );
+      result = i18n( "A directory named\n%1\nalready exists" ).arg( m_errorText );
       break;
     case  KIO::ERR_UNKNOWN_HOST:
       result = i18n( "Unknown host\n%1" ).arg( m_errorText );
