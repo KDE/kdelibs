@@ -105,6 +105,7 @@ bool KConfigINIBackEnd::parseConfigFiles()
 
   // Parse the general config files
   if (useKDEGlobals) {
+
     QStringList kdercs = KGlobal::dirs()->
       findAllResources("config", QString::fromLatin1("kdeglobals"));
 
@@ -126,6 +127,10 @@ bool KConfigINIBackEnd::parseConfigFiles()
   }
 
   if (!fileName.isEmpty()) {
+
+// WABA: Why recursive?
+//    QStringList list = KGlobal::dirs()->
+//      findAllResources(resType, fileName, true);
     QStringList list = KGlobal::dirs()->
       findAllResources(resType.latin1(), fileName);
 
@@ -168,7 +173,8 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
 					   KEntryMap *pWriteBackMap,
 					   bool bGlobal)
 {
-  ASSERT(rFile.isOpen());
+  if (!rFile.isOpen()) // come back, if you have real work for us ;->
+    return;
 
   QString aCurrentLine;
   QString aCurrentGroup(QString::fromLatin1("<default>"));
@@ -190,9 +196,9 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
 	aCurrentLine.mid( 1, nRightBracket-1 );
 
       if (pWriteBackMap) {
-	  // add the special group key indicator
-	  KEntryKey groupKey(aCurrentGroup, QString::fromLatin1(""));
-	  pWriteBackMap->insert(groupKey, KEntry());
+	// add the special group key indicator
+	KEntryKey groupKey(aCurrentGroup, QString::fromLatin1(""));
+	pWriteBackMap->insert(groupKey, KEntry());
       }
       continue;
     };
