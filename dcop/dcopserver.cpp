@@ -644,7 +644,9 @@ void DCOPServer::processData( int /*socket*/ )
 
 
   if (s == IceProcessMessagesIOError) {
-    IceCloseConnection( conn->iceConn );
+    // WABA: Close connection if it is not on the "in use"-list
+    if (busy.findRef(conn->iceConn) == -1)
+       IceCloseConnection( conn->iceConn );
     return;
   }
   conn->status = IceConnectionStatus(  conn->iceConn );
@@ -656,11 +658,15 @@ void DCOPServer::newClient( int /*socket*/ )
   IceConn iceConn = IceAcceptConnection( ((DCOPListener*)sender())->listenObj, &status);
   IceSetShutdownNegotiation( iceConn, False );
 
-
+  // WABA: Put connection on "in use"-list
+  busy.append(iceConn);
   IceConnectStatus cstatus;
   while ((cstatus = IceConnectionStatus (iceConn))==IceConnectPending) {
     qApp->processOneEvent();
   }
+  // WABA: remove connection from "in use"-list
+  busy.removeRef(iceConn);
+
   if (cstatus == IceConnectAccepted) {
     char* connstr = IceConnectionString (iceConn);
     free (connstr);

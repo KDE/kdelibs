@@ -70,6 +70,7 @@ private slots:
  private:
   int majorOpcode;
   QList<DCOPListener> listener;
+  QList<_IceConn> busy;
   QDict<DCOPConnection> appIds;
   QPtrDict<DCOPConnection> clients;
 };
