@@ -62,7 +62,8 @@ void KMimeType::check()
   if ( !s_pDefaultType )
   {
     QStringList tmp;
-    s_pDefaultType = new KMimeType( "application/octet-stream", "unknown.xpm", "", tmp );
+    s_pDefaultType = new KMimeType( "application/octet-stream", "unknown.png", "", tmp );
+    assert(s_pDefaultType);
   }
 
   // No Mime-Types installed ?
@@ -102,13 +103,13 @@ void KMimeType::errorMissingMimeType( const QString& _type )
 
   KMimeType *e;
   if ( _type == "inode/directory" )
-    e = new KFolderType( _type, "unknown.xpm", "", dummy );
+    e = new KFolderType( _type, "unknown.png", "", dummy );
   else if ( _type == "application/x-desktop" )
-    e = new KDEDesktopMimeType( _type, "unknown.xpm", "", dummy);
+    e = new KDEDesktopMimeType( _type, "unknown.png", "", dummy);
   else if ( _type == "application/x-executable" || _type == "application/x-shellscript" )
-    e = new KExecMimeType( _type, "unknown.xpm", "", dummy );
+    e = new KExecMimeType( _type, "unknown.png", "", dummy );
   else
-    e = new KMimeType( _type, "unknown.xpm", "", dummy );
+    e = new KMimeType( _type, "unknown.png", "", dummy );
   */
 }
 
@@ -117,7 +118,10 @@ KMimeType::Ptr KMimeType::mimeType( const QString& _name )
   KServiceType * mime = KServiceTypeFactory::self()->findServiceTypeByName( _name );
     
   if ( !mime || !mime->isType( KST_KMimeType ) )
+  {
+    assert(s_pDefaultType);
     return s_pDefaultType;
+  }
 
   // We got a mimetype
   return KMimeType::Ptr((KMimeType *) mime);

@@ -111,26 +111,6 @@ KServiceType * KServiceTypeFactory::findServiceTypeByName(const QString &_name)
    return newServiceType;
 }
 
-// We can't use Qt's usctrcmp, declared 'static' in qstring.cpp :((
-// Submitted to qt-bugs@troll.no
-int ucstrcmp( const QString &as, const QString &bs )
-{
-    const QChar *a = as.unicode();
-    const QChar *b = bs.unicode();
-    if ( a == b )
-        return 0;
-    if ( a == 0 )
-        return 1;
-    if ( b == 0 )
-        return -1;
-    int l=QMIN(as.length(),bs.length());
-    while ( l-- && *a == *b )
-        a++,b++;
-    if ( l==-1 )
-        return ( as.length()-bs.length() );
-    return a->unicode() - b->unicode();
-}   
-
 bool KServiceTypeFactory::matchFilename( const QString& _filename, const QString& _pattern  ) const
 {
   //kdebug(KDEBUG_INFO, 7011, QString("matchFilename filename='%1' pattern='%2'")
@@ -199,7 +179,7 @@ KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename)
          str->device()->at( middle * entrySize + fastOffset );
          (*str) >> pattern;
          //kdebug(KDEBUG_INFO, 7011, QString("testing extension '%1'").arg(pattern));
-         int cmp = ucstrcmp( pattern, extension );
+         int cmp = pattern.compare( extension );
          if (cmp < 0)
             left = middle + 1;
          else if (cmp == 0) // found
