@@ -12,6 +12,7 @@
 #include <qpopupmenu.h>
 #include <qlineedit.h>
 #include <qmetaobject.h>
+#include <qregexp.h>
 #if QT_VERSION >= 300
 #include <private/qucomextra_p.h>
 #endif
@@ -340,7 +341,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
     d->m_paCopyImageLocation = new KAction( i18n( "Copy Image Location" ), 0, this, SLOT( slotCopyImageLocation() ),
                                             actionCollection(), "copyimagelocation" );
     QString name = KStringHandler::csqueeze(d->m_imageURL.fileName()+d->m_imageURL.query(), 25);
-    d->m_paViewImage = new KAction( i18n( "View Image (%1)" ).arg(name), 0, this, SLOT( slotViewImage() ),
+    d->m_paViewImage = new KAction( i18n( "View Image (%1)" ).arg(name.replace(QRegExp("&"), "&&")), 0, this, SLOT( slotViewImage() ),
                                             actionCollection(), "viewimage" );
   }
 
