@@ -138,7 +138,6 @@ int main(int argc, char *argv[])
     {
         demoWidget = new DemoWindow();
         demoWidget->setBackgroundMode(QWidget::NoBackground);
-        demoWidget->show();
         saveWin = demoWidget->winId();
         app.setMainWidget(demoWidget);
         app.processEvents();
@@ -147,7 +146,10 @@ int main(int argc, char *argv[])
     target = kss_create( saveWin );
 
     if ( demoWidget )
-	demoWidget->setFixedSize(600, 420);
+    {
+        demoWidget->setFixedSize( 600, 420 );
+        demoWidget->show();
+    }
 
     app.exec();
 
