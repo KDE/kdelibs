@@ -664,28 +664,28 @@ void KBookmarkMenu::slotAddBookmark()
   if (title.isEmpty())
     title = url;
 
-  KBookmarkGroup parentBookmark;
-
+  QString parentBookmarkAddress;
   if ( !KBookmarkSettings::self()->m_advanced ) 
   {
-    parentBookmark = m_pManager->findByAddress( m_parentAddress ).toGroup();
-    Q_ASSERT(!parentBookmark.isNull());
-
-    QString uniqueTitle = pickUnusedTitle( parentBookmark, title, url );
-    if ( !uniqueTitle.isNull() )
-      parentBookmark.addBookmark( m_pManager, uniqueTitle, url );
+    parentBookmarkAddress = m_parentAddress;
   } 
   else 
   {
     KBookmarkEditDialog dlg( title, url, m_pManager );
     if ( dlg.exec() != KDialogBase::Accepted )
       return;
-
-    parentBookmark = m_pManager->findByAddress( dlg.finalAddress() ).toGroup();
-    Q_ASSERT(!parentBookmark.isNull());
-
-    parentBookmark.addBookmark( m_pManager, dlg.finalTitle(), dlg.finalUrl() );
+    title = dlg.finalTitle();
+    url = dlg.finalUrl();
+    parentBookmarkAddress = dlg.finalAddress();
   }
+
+  KBookmarkGroup parentBookmark;
+  parentBookmark = m_pManager->findByAddress( parentBookmarkAddress ).toGroup();
+  Q_ASSERT(!parentBookmark.isNull());
+
+  QString uniqueTitle = pickUnusedTitle( parentBookmark, title, url );
+  if ( !uniqueTitle.isNull() )
+    parentBookmark.addBookmark( m_pManager, uniqueTitle, url );
 
   m_pManager->emitChanged( parentBookmark );
 }
