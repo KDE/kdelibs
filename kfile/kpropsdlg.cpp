@@ -991,11 +991,11 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 
     isMyFile = (geteuid() == buff.st_uid);
     if ( user != 0L )
-      strOwner = user->pw_name;
+      strOwner = QString::fromLocal8Bit(user->pw_name);
 
 
     if ( ge != 0L ) {
-      strGroup = ge->gr_name;
+      strGroup = QString::fromLocal8Bit(ge->gr_name);
       if (strGroup.isEmpty())
         strGroup.sprintf("%d",ge->gr_gid);
     } else
@@ -1147,7 +1147,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
         char * member;
         while ((member = *members) != 0L) {
           if (strUser == member) {
-            groupList += QString::fromLatin1(ge->gr_name);
+            groupList += QString::fromLocal8Bit(ge->gr_name);
             break;
           }
           ++members;
