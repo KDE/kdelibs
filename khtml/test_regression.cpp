@@ -89,6 +89,7 @@ using namespace DOM;
 using namespace KJS;
 
 bool visual = false;
+pid_t xvfb;
 
 // -------------------------------------------------------------------------
 
@@ -154,7 +155,7 @@ void PartMonitor::partCompleted()
     disconnect(m_part,SIGNAL(completed()),this,SLOT(partCompleted()));
 }
 
-void signal_handler( int x )
+void signal_handler( int )
 {
     printf( "timeout\n" );
     abort();
@@ -397,7 +398,7 @@ int main(int argc, char *argv[])
         fprintf(stderr, "dang, I don't even know who I am.\n");
         exit(1);
     }
-        
+
     QString kh("/var/tmp/%1_non_existant");
     kh = kh.arg( pw->pw_name );
     setenv( "KDEHOME", kh.latin1(), 1 );
@@ -409,6 +410,31 @@ int main(int argc, char *argv[])
     KCmdLineArgs::init(argc, argv, "testregression", "TestRegression",
                        "Regression tester for khtml", "1.0");
     KCmdLineArgs::addCmdLineOptions(options);
+
+    KCmdLineArgs *args = KCmdLineArgs::parsedArgs( );
+
+    if ( args->count() < 1 ) {
+	KCmdLineArgs::usage();
+	::exit( 1 );
+    }
+
+    const char *subdirs[] = {"tests", "baseline", "output", "resources"};
+    for ( int i = 0; i < 3; i++ ) {
+        QFileInfo sourceDir(QFile::encodeName( args->arg(0) ) + "/" + subdirs[i]);
+        if ( !sourceDir.exists() || !sourceDir.isDir() ) {
+            fprintf(stderr,"ERROR: Source directory \"%s/%s\": no such directory.\n",args->arg(0), subdirs[i]);
+            exit(1);
+        }
+    }
+
+    xvfb = fork();
+    if ( !xvfb ) {
+        char buffer[1000];
+        sprintf( buffer, "%s/resources,/usr/X11R6/lib/X11/fonts/75dpi:unscaled,/usr/X11R6/lib/X11/fonts/misc:unscaled,/usr/X11R6/lib/X11/fonts/Type1", args->arg( 0 ) );
+        execl( "/usr/X11R6/bin/Xvfb", "/usr/X11R6/bin/Xvfb", "-screen", "0", "1024x768x16", "-fp", buffer, ":47", 0 );
+    }
+
+    setenv( "DISPLAY", ":47", 1 );
 
     KApplication a;
     a.disableAutoDcopRegistration();
@@ -434,13 +460,7 @@ int main(int argc, char *argv[])
     cfg.writeEntry( "DefaultEncoding", "" );
     cfg.sync();
 
-    KCmdLineArgs *args = KCmdLineArgs::parsedArgs( );
     int rv = 1;
-
-    if ( args->count() < 1 ) {
-	KCmdLineArgs::usage();
-	::exit( 1 );
-    }
 
     if ( !args->isSet( "debug" ) ) {
         KSimpleConfig dc( "kdebugrc" );
@@ -456,15 +476,6 @@ int main(int argc, char *argv[])
         dc.sync();
 
         kdClearDebugConfig();
-    }
-
-    const char *subdirs[] = {"tests", "baseline", "output"};
-    for ( int i = 0; i < 3; i++ ) {
-        QFileInfo sourceDir(QFile::encodeName( args->arg(0) ) + "/" + subdirs[i]);
-        if ( !sourceDir.exists() || !sourceDir.isDir() ) {
-            fprintf(stderr,"ERROR: Source directory \"%s/%s\": no such directory.\n",args->arg(0), subdirs[i]);
-            exit(1);
-        }
     }
 
     // create widgets
@@ -565,6 +576,8 @@ int main(int argc, char *argv[])
     khtml::Cache::clear();
     khtml::CSSStyleSelector::clear();
     khtml::RenderStyle::cleanup();
+
+    kill( xvfb, SIGINT );
 
     return rv;
 }
