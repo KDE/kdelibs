@@ -6,7 +6,15 @@ dnl This is to be merged with configure.in.in soon
 
 dnl Don't check for getnameinfo and freeaddrinfo. If getaddrinfo is there,
 dnl so are those two
-AC_CHECK_FUNCS(inet_ntop inet_pton getaddrinfo getpeername getsockname getsockopt gethostbyname2_r gethostbyname_r gethostbyname2)
+AC_CHECK_FUNCS(inet_ntop inet_pton getpeername getsockname getsockopt gethostbyname2_r gethostbyname_r gethostbyname2)
+
+case $host in  dnl  it doesn't work even though it's there
+    *-*-freebsd-* )
+         ;;
+    *)
+        AC_CHECK_FUNC(getaddrinfo)
+	;;
+esac
 
 AC_SUBST(HAVE_SOCKADDR_SA_LEN)
 AC_MSG_CHECKING([if struct sockaddr has member sa_len])
