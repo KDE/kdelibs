@@ -2335,8 +2335,14 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             width = 5;
             break;
         case CSS_VAL_INVALID:
-            width = primitiveValue->computeLength(style, paintDeviceMetrics);
+        {
+            double widthd = primitiveValue->computeLengthFloat(style, paintDeviceMetrics);
+            width = (int)widthd;
+            // somewhat resemble Mozilla's granularity
+            // this makes border-width: 0.5pt borders visible
+            if (width == 0 && widthd >= 0.025) width++;
             break;
+        }
         default:
             return;
         }
