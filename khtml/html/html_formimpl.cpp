@@ -46,6 +46,8 @@
 #include <qfile.h>
 #include <qtextcodec.h>
 
+#include <assert.h>
+
 using namespace DOM;
 using namespace khtml;
 
