@@ -58,6 +58,7 @@ char* putSymbolInBrackets( char *_name )
   char *p = (char *)malloc( l );
 
   strncpy( p, _name+1, l-1 );
+  p[l-1] = 0;
 
   return p;
 }
