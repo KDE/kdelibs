@@ -246,7 +246,7 @@ void SimpleJob::slotProcessedSize( unsigned long size )
 
   if ( m_percent > ipercent ) {
     emit percent( this, m_percent );
-    kdDebug(7007) << "SimpleJob::slotProcessedSize - percent =  " << m_percent << endl;
+    kdDebug(7007) << "SimpleJob::slotProcessedSize - percent =  " << (unsigned int) m_percent << endl;
   }
 }
 
@@ -1266,7 +1266,7 @@ void CopyJob::slotResultStating( Job *job )
     {
         kdDebug(7007) << " Source is a file (or a symlink) " << endl;
 
-	kdDebug() << "totalSize: " << m_totalSize << endl;
+	kdDebug() << "totalSize: " << (unsigned int) m_totalSize << endl;
 	// emit all signals for total numbers
 	emit totalSize( this, m_totalSize );
 	emit totalFiles( this, 1 );
@@ -1745,7 +1745,7 @@ void CopyJob::slotProcessedSize( KIO::Job*, unsigned long data_size )
 {
   m_fileProcessedSize = data_size;
 
-  kdDebug(7007) << "CopyJob::slotProcessedSize " << m_processedSize + m_fileProcessedSize << endl;
+  kdDebug(7007) << "CopyJob::slotProcessedSize " << (unsigned int) (m_processedSize + m_fileProcessedSize) << endl;
   emit processedSize( this, m_processedSize + m_fileProcessedSize );
 
   // calculate percents
@@ -1758,13 +1758,13 @@ void CopyJob::slotProcessedSize( KIO::Job*, unsigned long data_size )
 
   if ( m_percent > ipercent ) {
     emit percent( this, m_percent );
-    kdDebug(7007) << "CopyJob::slotProcessedSize - percent =  " << m_percent << endl;
+    kdDebug(7007) << "CopyJob::slotProcessedSize - percent =  " << (unsigned int) m_percent << endl;
   }
 }
 
 void CopyJob::slotSpeed( KIO::Job*, unsigned long bytes_per_second )
 {
-  kdDebug(7007) << "CopyJob::slotSpeed " << bytes_per_second << endl;
+  kdDebug(7007) << "CopyJob::slotSpeed " << (unsigned int) bytes_per_second << endl;
   emit speed( this, bytes_per_second );
 }
 
@@ -1783,7 +1783,7 @@ void CopyJob::slotResultDeletingDirs( Job * job )
 
 void CopyJob::slotResult( Job *job )
 {
-    kdDebug() << "CopyJob::slotResult() state=" << state << endl;
+    kdDebug() << "CopyJob::slotResult() state=" << (int) state << endl;
     // In each case, what we have to do is :
     // 1 - check for errors and treat them
     // 2 - subjobs.remove(job);
@@ -1812,7 +1812,7 @@ void CopyJob::slotResult( Job *job )
         }
         break;
         case STATE_LISTING: // recursive listing finished
-	    kdDebug() << "totalSize: " << m_totalSize << " files: " << files.count() << " dirs: " << dirs.count() << endl;
+	    kdDebug() << "totalSize: " << (unsigned int) m_totalSize << " files: " << files.count() << " dirs: " << dirs.count() << endl;
             // Was there an error ?
             if (job->error())
             {
@@ -2028,7 +2028,7 @@ void DeleteJob::slotProcessedSize( KIO::Job*, unsigned long data_size )
 {
   m_fileProcessedSize = data_size;
 
-  kdDebug(7007) << "DeleteJob::slotProcessedSize " << m_processedSize + m_fileProcessedSize << endl;
+  kdDebug(7007) << "DeleteJob::slotProcessedSize " << (unsigned int) (m_processedSize + m_fileProcessedSize) << endl;
   emit processedSize( this, m_processedSize + m_fileProcessedSize );
 
   // calculate percents
@@ -2041,7 +2041,7 @@ void DeleteJob::slotProcessedSize( KIO::Job*, unsigned long data_size )
 
   if ( m_percent > ipercent ) {
     emit percent( this, m_percent );
-    kdDebug(7007) << "DeleteJob::slotProcessedSize - percent =  " << m_percent << endl;
+    kdDebug(7007) << "DeleteJob::slotProcessedSize - percent =  " << (unsigned int) m_percent << endl;
   }
 
 }
@@ -2133,7 +2133,7 @@ void DeleteJob::slotResult( Job *job )
             }
             subjobs.remove( job );
             assert( subjobs.isEmpty() );
-            kdDebug(7007) << "totalSize: " << m_totalSize << " files: " << files.count() << " dirs: " << dirs.count() << endl;
+            kdDebug(7007) << "totalSize: " << (unsigned int) m_totalSize << " files: " << files.count() << " dirs: " << dirs.count() << endl;
 
 	    // emit all signals for total numbers
 	    emit totalSize( this, m_totalSize );
