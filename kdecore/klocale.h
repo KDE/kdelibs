@@ -808,14 +808,21 @@ private:
    * one.
    */
   void initCatalogue( KCatalogue & catalogue );
+
   /**
    * @internal Read the language and format configuration form disk.
    */
   void doBindInit();
+
+  /**
+   * @internal Ensures that the format configuration is read.
+   */
+  void doFormatInit() const;
+
   /**
    * @internal Reads the format configuration from disk.
    */
-  void doFormatInit();
+  void initFormat();
 
   /**
    * @internal function used by the two translate versions
@@ -828,6 +835,18 @@ private:
    * @internal function used to determine if we are using the en_US translation
    */
   bool useDefaultLanguage() const;
+  
+  /**
+   * @internal Checks if the specified language is installed
+   */
+  bool isLanguageInstalled(const QString & language) const;
+
+  /**
+   * @internal Retrieves the file name of the catalogue, or QString::null
+   *           if not found.
+   */
+  static QString catalogueFileName(const QString & language,
+				   const KCatalogue & catalogue);
 
 private:
   // #### HPB: remove for KDE 3?
