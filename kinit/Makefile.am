@@ -62,6 +62,8 @@ klauncher_la_SOURCES = klauncher.cpp klauncher_main.cpp autostart.cpp
 kstartupconfig_SOURCES  = kstartupconfig.cpp
 kstartupconfig_LDADD  = $(top_builddir)/kdecore/libkdefakes.la
 kdostartupconfig_SOURCES = kdostartupconfig.cpp
+kdostartupconfig_LDFLAGS = $(KDE_MT_LDFLAGS) $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) \
+                           $(KDE_RPATH)
 kdostartupconfig_LDADD  = $(LIB_KDECORE)
 
 METASOURCES = AUTO
