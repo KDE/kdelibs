@@ -136,7 +136,7 @@ protected:
 	}
 
 	
-	
+	QWidget* hoverWidget;
 private:
 	bool kickerMode;
 	

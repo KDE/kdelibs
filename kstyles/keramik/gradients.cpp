@@ -79,8 +79,8 @@ namespace
 			mShare *= mShare;
 			
 			int diff = factor - 100;
-			int hd  = (int)(mShare*diff);
-			int delta  =  (int)((diff - hd)*7.55);
+			int hd  = int(mShare*diff);
+			int delta  =  int((diff - hd)*7.55);
 			
 			QColor wrk = in.light(100+hd);
 			
@@ -140,7 +140,7 @@ void GradientPainter::renderGradient( QPainter* p, const QRect& r, QColor c, boo
 		
 		if (menu)
 		{
-			QImage gr = KImageEffect::gradient(QSize(4,height), c.light(96), lighten(c,106), KImageEffect::VerticalGradient );
+			QImage gr = KImageEffect::gradient(QSize(4,height), c.light(93), lighten(c,109), KImageEffect::VerticalGradient );
 			QPixmap grT(gr);
 			QPainter p2(pix);
 			p2.drawTiledPixmap(0,0, 18, height, grT);
@@ -148,11 +148,11 @@ void GradientPainter::renderGradient( QPainter* p, const QRect& r, QColor c, boo
 		}
 		else
 		{
-			int h1 = 2 * height/3;
+			int h1 = 3 * height/4;
 			int h2 = height - h1;
 
-			QImage top = KImageEffect::gradient(QSize(4,h1),  lighten(c,107), c.light(96), KImageEffect::VerticalGradient );
-			QImage bot = KImageEffect::gradient(QSize(4,h2), c.light(96), lighten(c,106), KImageEffect::VerticalGradient );
+			QImage top = KImageEffect::gradient(QSize(4,h1),  lighten(c,110), c.light(94), KImageEffect::VerticalGradient );
+			QImage bot = KImageEffect::gradient(QSize(4,h2), c.light(94), lighten(c,109), KImageEffect::VerticalGradient );
 			
 			QPixmap topT(top);
 			QPixmap botT(bot);
@@ -170,11 +170,11 @@ void GradientPainter::renderGradient( QPainter* p, const QRect& r, QColor c, boo
 		QPixmap* pix = new QPixmap;
 		pix->resize(width, 18);
 		
-		int h1 = 2 * width/3;
+		int h1 = 3 * width/4;
 		int h2 = width - h1;
 		
-		QImage top = KImageEffect::gradient(QSize(h1,4), lighten(c,107), c.light(96), KImageEffect::HorizontalGradient );
-		QImage bot = KImageEffect::gradient(QSize(h2,4), c.light(96), lighten(c,106), KImageEffect::HorizontalGradient );
+		QImage top = KImageEffect::gradient(QSize(h1,4), lighten(c,110), c.light(94), KImageEffect::HorizontalGradient );
+		QImage bot = KImageEffect::gradient(QSize(h2,4), c.light(94), lighten(c,109), KImageEffect::HorizontalGradient );
 		
 		QPixmap topT(top);
 		QPixmap botT(bot);

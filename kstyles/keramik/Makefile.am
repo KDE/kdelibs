@@ -40,11 +40,11 @@ pixmaps.keramik: pics/checkbox-off.png pics/checkbox-on.png pics/combobox-list-b
 	 pics/pushbutton-small-pressed-tc.png pics/pushbutton-small-pressed-tl.png pics/pushbutton-small-pressed-tr.png\
 	 pics/pushbutton-small-tc.png pics/pushbutton-small-tl.png pics/pushbutton-small-tr.png pics/pushbutton-tc.png\
 	 pics/pushbutton-tl.png pics/pushbutton-tr.png pics/radiobutton-off.png pics/radiobutton-on.png pics/ripple.png\
-	 pics/scrollbar-hbar-arrow1-pressed.png pics/scrollbar-hbar-arrow1.png pics/scrollbar-hbar-arrow2-pressed.png\
+	  pics/scrollbar-hbar-arrow1.png \
 	 pics/scrollbar-hbar-arrow2.png pics/scrollbar-hbar-groove1.png pics/scrollbar-hbar-groove2.png\
 	 pics/scrollbar-hbar-slider1.png pics/scrollbar-hbar-slider2.png pics/scrollbar-hbar-slider3.png pics/scrollbar-hbar-slider4.png\
-	 pics/scrollbar-hbar-small-slider1.png pics/scrollbar-vbar-arrow1-pressed.png pics/scrollbar-vbar-arrow1.png\
-	 pics/scrollbar-vbar-arrow2-pressed.png pics/scrollbar-vbar-arrow2.png pics/scrollbar-vbar-groove1.png\
+	 pics/scrollbar-hbar-small-slider1.png pics/scrollbar-vbar-arrow1.png\
+	  pics/scrollbar-vbar-arrow2.png pics/scrollbar-vbar-groove1.png\
 	 pics/scrollbar-vbar-groove2.png pics/scrollbar-vbar-slider1.png pics/scrollbar-vbar-slider2.png\
 	 pics/menuitem-cl.png pics/menuitem-cc.png pics/menuitem-cr.png\
 	 pics/scrollbar-vbar-slider3.png pics/scrollbar-vbar-slider4.png pics/scrollbar-vbar-small-slider1.png pics/slider-hgroove-bc.png\
@@ -70,7 +70,10 @@ pixmaps.keramik: pics/checkbox-off.png pics/checkbox-on.png pics/combobox-list-b
 	 pics/tab-top-active-tr.png pics/tab-top-inactive-cc.png\
 	 pics/tab-top-inactive-cl.png pics/tab-top-inactive-cr.png\
 	 pics/tab-top-inactive-separator.png pics/tab-top-inactive-tc.png\
-	 pics/tab-top-inactive-tl.png pics/tab-top-inactive-tr.png pics/vslider.png
+	 pics/tab-top-inactive-tl.png pics/tab-top-inactive-tr.png pics/vslider.png\
+	 pics/pushbutton-hov-tl.png pics/pushbutton-hov-tc.png pics/pushbutton-hov-tr.png\
+	 pics/pushbutton-hov-cl.png pics/pushbutton-hov-cc.png pics/pushbutton-hov-cr.png\
+	 pics/pushbutton-hov-bl.png pics/pushbutton-hov-bc.png pics/pushbutton-hov-br.png
 
 pixmaps.keramik keramikrc.h: genembed
 	pics=`ls $(srcdir)/pics/*.png 2>/dev/null` ;\ 
