@@ -91,7 +91,7 @@ int PhoneNumber::type() const
 
 QString PhoneNumber::label() const
 {
-  return label( type() );
+  return typeLabel( type() );
 }
 
 PhoneNumber::TypeList PhoneNumber::typeList()

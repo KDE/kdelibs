@@ -117,7 +117,7 @@ class Address
     /**
      * Returns the translated label for post office box field.
      */
-    QString postOfficeBoxLabel() const;
+    static QString postOfficeBoxLabel();
 
     /**
      * Sets the extended address information.
@@ -132,7 +132,7 @@ class Address
     /**
      * Returns the translated label for extended field.
      */
-    QString extendedLabel() const;
+    static QString extendedLabel();
     
     /**
      * Sets the street (including number).
@@ -147,7 +147,7 @@ class Address
     /**
      * Returns the translated label for street field.
      */
-    QString streetLabel() const;
+    static QString streetLabel();
 
     /**
      * Sets the locality, e.g. city.
@@ -162,7 +162,7 @@ class Address
     /**
      * Returns the translated label for locality field.
      */
-    QString localityLabel() const;
+    static QString localityLabel();
 
     /**
      * Sets the region, e.g. state.
@@ -177,7 +177,7 @@ class Address
     /**
      * Returns the translated label for region field.
      */
-    QString regionLabel() const;
+    static QString regionLabel();
  
     /**
      * Sets the postal code.
@@ -192,7 +192,7 @@ class Address
     /**
      * Returns the translated label for postal code field.
      */
-    QString postalCodeLabel() const;
+    static QString postalCodeLabel();
 
     /**
      * Sets the country.
@@ -207,7 +207,7 @@ class Address
     /**
      * Returns the translated label for country field.
      */
-    QString countryLabel() const;
+    static QString countryLabel();
 
     /**
      * Sets the delivery label. This is the literal text to be used as label.
@@ -222,7 +222,7 @@ class Address
     /**
      * Returns the translated label for delivery label field.
      */
-    QString labelLabel() const;
+    static QString labelLabel();
 
     /**
      * Returns the list of available types.

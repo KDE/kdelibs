@@ -113,7 +113,7 @@ QString Address::postOfficeBox() const
   return mPostOfficeBox;
 }
 
-QString Address::postOfficeBoxLabel() const
+QString Address::postOfficeBoxLabel()
 {
   return i18n("Post Office Box");
 }
@@ -131,7 +131,7 @@ QString Address::extended() const
   return mExtended;
 }
 
-QString Address::extendedLabel() const
+QString Address::extendedLabel()
 {
   return i18n("Extended Address Information");
 }
@@ -149,7 +149,7 @@ QString Address::street() const
   return mStreet;
 }
 
-QString Address::streetLabel() const
+QString Address::streetLabel()
 {
   return i18n("Street");
 }
@@ -167,7 +167,7 @@ QString Address::locality() const
   return mLocality;
 }
 
-QString Address::localityLabel() const
+QString Address::localityLabel()
 {
   return i18n("Locality");
 }
@@ -185,7 +185,7 @@ QString Address::region() const
   return mRegion;
 }
 
-QString Address::regionLabel() const
+QString Address::regionLabel()
 {
   return i18n("Region");
 }
@@ -203,7 +203,7 @@ QString Address::postalCode() const
   return mPostalCode;
 }
 
-QString Address::postalCodeLabel() const
+QString Address::postalCodeLabel()
 {
   return i18n("Postal Code");
 }
@@ -221,7 +221,7 @@ QString Address::country() const
   return mCountry;
 }
 
-QString Address::countryLabel() const
+QString Address::countryLabel()
 {
   return i18n("Country");
 }
@@ -239,7 +239,7 @@ QString Address::label() const
   return mLabel;
 }
 
-QString Address::labelLabel() const
+QString Address::labelLabel()
 {
   return i18n("Delivery Label");
 }
