@@ -15,6 +15,7 @@ Comment[pt_BR]=Diretório inacessível
 Comment[ro]=Director inaccesibil
 Comment[ru]=úÁËÒÙÔÙÊ ËÁÔÁÌÏÇ
 Comment[sk]=Uzamknutı prieèinok
+Comment[sv]=Låst katalog
 Icon=lockedfolder.xpm
 Type=MimeType
 MimeType=inode/directory-locked

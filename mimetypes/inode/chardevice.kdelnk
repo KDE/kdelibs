@@ -15,6 +15,7 @@ Comment[pt_BR]=Dispositivo Caractere
 Comment[ro]=Dispozitiv de tip caracter
 Comment[ru]=Символьное устройство
 Comment[sk]=ZnakovИ zariadenie
+Comment[sv]=Enhet av teckentyp (t ex seriellport)
 Icon=chardevice.xpm
 Type=MimeType
 MimeType=inode/chardevice

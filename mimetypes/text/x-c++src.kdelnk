@@ -16,6 +16,7 @@ Comment[pt_BR]=Programa C++
 Comment[ro]=SursЦ C++
 Comment[ru]=Программа на языке C++
 Comment[sk]=ZdrojovЩ kСd v jazyku C++
+Comment[sv]=C++-kДllkod
 Icon=c_src.xpm
 Type=MimeType
 MimeType=text/x-c++src

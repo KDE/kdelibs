@@ -15,6 +15,7 @@ Comment[pt_BR]=Dispositivo Bloco
 Comment[ro]=Dispozitiv de tip bloc
 Comment[ru]=Блочное устройство
 Comment[sk]=BlokovИ zariadenie
+Comment[sv]=Enhet av blocktyp (t ex hЕrddisk)
 Icon=blockdevice.xpm
 Type=MimeType
 MimeType=inode/blockdevice

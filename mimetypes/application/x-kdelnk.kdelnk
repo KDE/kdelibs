@@ -15,6 +15,7 @@ Comment[pt_BR]=Arquivo de configuração KDE
 Comment[ro]=Fiºier de configurare KDE
 Comment[ru]=ëÏÎÆÉÇÕÒÁÃÉÏÎÎÙÊ ÆÁÊÌ KDE
 Comment[sk]=Konfiguraènı súbor KDE
+Comment[sv]=Inställningsfil i KDE:s format
 Icon=kmailion.xpm
 Type=MimeType
 MimeType=application/x-kdelnk

@@ -15,6 +15,7 @@ Comment[pt_BR]=Arquivos Zip
 Comment[ro]=Arhivã bzip
 Comment[ru]=áÒÈÉ× bzip
 Comment[sk]=Bzipované Tar archívy
+Comment[sv]=Filarkiv i tar-format komprimerat med bzip
 MimeType=application/x-tbz
 DefaultApp=ark
 Icon=tgz.xpm

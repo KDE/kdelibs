@@ -2,7 +2,9 @@
 [KDE Desktop Entry]
 MimeType=text/sgml
 Comment=SGML
+Comment[ro]=Fi∫ier SGML
 Comment[ru]=‰œÀ’Õ≈Œ‘ SGML
+Comment[sv]=Dokument i SGML-format
 DefaultApp=kwrite
 Icon=txt.xpm
 Type=MimeType
