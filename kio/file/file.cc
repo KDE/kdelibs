@@ -530,42 +530,11 @@ void FileProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename
       // Did we have an error ?
       if ( job.hasError() ) {
 	int currentError = job.errorId();
-
 	kdebug(KDEBUG_ERROR, 7101, "################# COULD NOT PUT %d", currentError);
-	// if ( /* m_bGUI && */ job.errorId() == ERR_WRITE_ACCESS_DENIED )
-	if ( /* m_bGUI && */ currentError != ERR_DOES_ALREADY_EXIST &&
-			     currentError != ERR_DOES_ALREADY_EXIST_FULL )
-	{
-	  // Should we skip automatically ?
-	  if ( auto_skip ) {
-	    job.clearError();
-	    skip_copying = true;
-	    continue;
-	  }
-	  QString tmp2 = ud.url();
-	  SkipDlg_Result r;
-	  r = open_SkipDlg( tmp2, ( files.count() > 1 ) );
-	  if ( r == S_CANCEL ) {
-	    error( ERR_USER_CANCELED, "" );
-	    m_cmd = CMD_NONE;
-	    return;
-	  } else if ( r == S_SKIP ) {
-	    // Clear the error => The current command is not repeated => skipped
-	    job.clearError();
-	    skip_copying = true;
-	    continue;
-	  } else if ( r == S_AUTO_SKIP ) {
-	    // Clear the error => The current command is not repeated => skipped
-	    job.clearError();
-	    skip_copying = true;
-	    continue;
-	  } else
-	    assert( 0 );
-	}
+
 	// Can we prompt the user and ask for a solution ?
-	else if ( /* m_bGUI && */ currentError == ERR_DOES_ALREADY_EXIST ||
-				  currentError == ERR_DOES_ALREADY_EXIST_FULL )
-	{
+	if ( currentError == ERR_DOES_ALREADY_EXIST ||
+	     currentError == ERR_DOES_ALREADY_EXIST_FULL ) {
 	  // Should we skip automatically ?
 	  if ( auto_skip ) {
 	    job.clearError();
@@ -585,50 +554,73 @@ void FileProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename
 					      m, sn, n );
 
 	  if ( r == R_CANCEL )
-	  {
+	    {
+	      error( ERR_USER_CANCELED, "" );
+	      m_cmd = CMD_NONE;
+	      return;
+	    }
+	  else if ( r == R_RENAME )
+	    {
+	      KURL u( n );
+	      // The Dialog should have checked this.
+	      if ( u.isMalformed() )
+		assert( 0 );
+	      renamed( u.path( -1 ) );
+	      // Change the destination name of the current file
+	      (*fit).m_strRelDest = u.path( -1 );
+	      // Dont clear error => we will repeat the current command
+	    } else if ( r == R_SKIP ) {
+	      // Clear the error => The current command is not repeated => skipped
+	      job.clearError();
+	    }
+	  else if ( r == R_AUTO_SKIP )
+	    {
+	      // Clear the error => The current command is not repeated => skipped
+	      job.clearError();
+	      auto_skip = true;
+	    }
+	  else if ( r == R_OVERWRITE )
+	    {
+	      overwrite = true;
+	      // Dont clear error => we will repeat the current command
+	    }
+	  else if ( r == R_OVERWRITE_ALL )
+	    {
+	      overwrite_all = true;
+	      // Dont clear error => we will repeat the current command
+	    }
+	  else {
+	    assert( 0 );
+	  }
+
+	} else {
+	  // Should we skip automatically ?
+	  if ( auto_skip ) {
+	    job.clearError();
+	    skip_copying = true;
+	    continue;
+	  }
+	  QString tmp2 = ud.url();
+	  SkipDlg_Result r;
+	  QString tmps = KIO::kioErrorString( job.errorId(), job.errorText() );
+	  r = open_SkipDlg( tmp2, ( files.count() > 1 ), tmps );
+	  if ( r == S_CANCEL ) {
 	    error( ERR_USER_CANCELED, "" );
 	    m_cmd = CMD_NONE;
 	    return;
-	  }
-	  else if ( r == R_RENAME )
-	  {
-	    KURL u( n );
-	    // The Dialog should have checked this.
-	    if ( u.isMalformed() )
-	      assert( 0 );
-	    renamed( u.path( -1 ) );
-	    // Change the destination name of the current file
-	    (*fit).m_strRelDest = u.path( -1 );
-	    // Dont clear error => we will repeat the current command
-	  } else if ( r == R_SKIP ) {
+	  } else if ( r == S_SKIP ) {
 	    // Clear the error => The current command is not repeated => skipped
 	    job.clearError();
-	  }
-	  else if ( r == R_AUTO_SKIP )
-	  {
+	    skip_copying = true;
+	    continue;
+	  } else if ( r == S_AUTO_SKIP ) {
 	    // Clear the error => The current command is not repeated => skipped
 	    job.clearError();
-	    auto_skip = true;
-	  }
-	  else if ( r == R_OVERWRITE )
-	  {
-	    overwrite = true;
-	    // Dont clear error => we will repeat the current command
-	  }
-	  else if ( r == R_OVERWRITE_ALL )
-	  {
-	    overwrite_all = true;
-	    // Dont clear error => we will repeat the current command
-	  }
-	  else
+	    skip_copying = true;
+	    continue;
+	  } else {
 	    assert( 0 );
-	}
-	// No need to ask the user, so raise an error
-	else
-	{
-	  error( currentError, job.errorText() );
-	  m_cmd = CMD_NONE;
-	  return;
+	  }
 	}
       }
     }
@@ -832,7 +824,7 @@ void FileProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _
   KURL udest_orig( url_orig );
   KURL udest_part( url_part );
 
-  bool m_bMarkPartial = KProtocolManager::self().markPartial();
+  bool bMarkPartial = KProtocolManager::self().markPartial();
 
   if ( udest_orig.isMalformed() ) {
     error( ERR_MALFORMED_URL, url_orig );
@@ -850,60 +842,81 @@ void FileProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _
 
   m_cmd = CMD_PUT;
 
-  struct stat buff;
-  if ( stat( udest_orig.path(), &buff ) != -1 ) { // original file exists
-    if ( buff.st_size == 0 ) {
-      remove( udest_orig.path() ); // delete files with zero size
-    } else if ( ! ( _overwrite || _resume ) ) {
-      if ( buff.st_size == _size ) {
-	error( ERR_DOES_ALREADY_EXIST_FULL, udest_orig.path() );
-      } else {
-	error( ERR_DOES_ALREADY_EXIST, udest_orig.path() );
-      }
-
+  struct stat buff_orig, buff_part;
+  bool orig_exists = ( stat( udest_orig.path(), &buff_orig ) != -1 );
+  bool part_exists = ( stat( udest_part.path(), &buff_part ) != -1 );
+  
+  // delete files with size < minimumKeepSize or
+  // files with full size ( when _overwrite is true )
+  if ( orig_exists &&
+       ( ( buff_orig.st_size < KProtocolManager::minimumKeepSize() ) ||
+	 ( buff_orig.st_size == _size && _overwrite ) )
+       ) {
+    kdebug( KDEBUG_INFO, 7101, "Deleting original file %s", udest_orig.path().ascii() );
+    if ( ! remove( udest_orig.path() ) ) {
+      orig_exists = false;
+    } else {
+      error( ERR_CANNOT_DELETE_ORIGINAL, udest_orig.path() );
       finished();
       m_cmd = CMD_NONE;
       return;
-    } else if ( m_bMarkPartial ) { // when using mark partial, append .part extension
-      rename ( udest_orig.path(), udest_part.path() );
     }
-  } else if ( stat( udest_part.path(), &buff ) != -1 ) { // file with extension .part exists
-    if ( buff.st_size == 0 ) {  // delete files with zero size
-      remove( udest_part.path() );
-    } else if ( !_overwrite && !_resume ) {
-      if ( buff.st_size == _size ) {
-	error( ERR_DOES_ALREADY_EXIST_FULL, udest_orig.path() );
-      } else {
-	error( ERR_DOES_ALREADY_EXIST, udest_orig.path() );
-      }
-
+  }
+  if ( part_exists &&
+       ( ( buff_part.st_size < KProtocolManager::minimumKeepSize() ) ||
+	 ( buff_part.st_size == _size && _overwrite ) )
+       ) {
+    kdebug( KDEBUG_INFO, 7101, "Deleting partial file %s", udest_part.path().ascii() );
+    if ( ! remove( udest_part.path() ) ) {
+      part_exists = false;
+    } else {
+      error( ERR_CANNOT_DELETE_PARTIAL, udest_part.path() );
       finished();
       m_cmd = CMD_NONE;
       return;
-    } else if ( ! m_bMarkPartial ) { // when using mark partial, remove .part extension
-      rename ( udest_part.path(), udest_orig.path() );
     }
+  }
+
+  // report existing files
+  if ( ! ( _overwrite || _resume ) ) {
+    if ( ( orig_exists && buff_orig.st_size == _size ) ||
+	 ( part_exists && buff_part.st_size == _size ) ) {
+      error( ERR_DOES_ALREADY_EXIST_FULL, udest_orig.path() );
+    } else {
+      error( ERR_DOES_ALREADY_EXIST, udest_orig.path() );
+    }
+      
+    finished();
+    m_cmd = CMD_NONE;
+    return;
   }
 
   KURL udest;
 
-  // if we are using marking of partial downloads -> add .part extension
-  if ( m_bMarkPartial ) {
-    kdebug( KDEBUG_INFO, 7101, "Adding .part extension to %s", udest_orig.path().ascii() );
+  // when using mark partial, append .part extension
+  if ( bMarkPartial ) {
+    kdebug( KDEBUG_INFO, 7101, "Appending .part extension to %s", udest_orig.path().ascii() );
     udest = udest_part;
-  } else
+    if ( orig_exists ) { // when file exists, rename it
+      if ( ! rename( udest_orig.path(), udest_part.path() ) ) {
+	error( ERR_CANNOT_RENAME_ORIGINAL, udest_orig.path() );
+	finished();
+	m_cmd = CMD_NONE;
+	return;
+      }
+    }
+  } else {
     udest = udest_orig;
-
-
-  /* if ( access( udest.path(), W_OK ) == -1 )
-  {
-    kdebug(KDEBUG_ERROR, 7101, "Write Access denied for '%s' %d",udest.path(),errno );
-
-    error( ERR_WRITE_ACCESS_DENIED, strdup(_url) );
-    finished();
-    m_cmd = CMD_NONE;
-    return;
-  } */
+    if ( part_exists ) { // when file exists, rename it
+      kdebug( KDEBUG_INFO, 7101, "Removing .part extension from %s", udest_part.path().ascii() );
+      if ( ! rename( udest_part.path(), udest_orig.path() ) ) {
+	error( ERR_CANNOT_RENAME_PARTIAL, udest_part.path() );
+	finished();
+	m_cmd = CMD_NONE;
+	return;
+      }
+    }
+  }
 
   if ( _resume ) {
     m_fPut = fopen( udest.path(), "ab" );  // append if resuming
@@ -918,6 +931,14 @@ void FileProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _
     } else {
       error( ERR_CANNOT_OPEN_FOR_WRITING, udest.path() );
     }
+
+    if ( _overwrite || _resume ) { // we had an error, so lets put the things as they were before
+      if ( bMarkPartial ) {
+	rename( udest_orig.path(), udest_part.path() );
+      } else {
+	rename( udest_part.path(), udest_orig.path() );
+      }
+    }
     m_cmd = CMD_NONE;
     finished();
     return;
@@ -931,33 +952,41 @@ void FileProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _
 
   fclose( m_fPut );
 
+  struct stat buff;
   if ( stat( udest.path(), &buff ) != -1 ) {
-
+    
     // If the given file size is 0 and the downloaded size is not 0,
     // then we assume we got the whole file.
     if ( buff.st_size == _size || ( buff.st_size && !_size ) ) {
-
+      
       // after full download rename the file back to original name
-      if ( m_bMarkPartial ) {
+      if ( bMarkPartial ) {
 	if ( rename( udest.path(), udest_orig.path() ) ) {
-	    error( ERR_CANNOT_RENAME, udest_orig.path() );
-	    m_cmd = CMD_NONE;
-	    finished();
-	    return;
-	  }
+	  error( ERR_CANNOT_RENAME_PARTIAL, udest_orig.path() );
+	  m_cmd = CMD_NONE;
+	  finished();
+	  return;
+	}
       }
-
+      
       // do chmod only after full download
       if ( _mode != -1 ) {
 	if ( chmod( udest_orig.path(), _mode ) == -1 ) {
-	    error( ERR_CANNOT_CHMOD, udest_orig.path() );
-	    m_cmd = CMD_NONE;
-	    finished();
-	    return;
-	  }
+	  error( ERR_CANNOT_CHMOD, udest_orig.path() );
+	  m_cmd = CMD_NONE;
+	  finished();
+	  return;
+	}
       }
     } else if ( buff.st_size < KProtocolManager::self().minimumKeepSize() ) {
-      remove( udest.path() ); // if the size is less then minimum -> delete the file
+      kdebug( KDEBUG_INFO, 7101, "Deleting small file %s", udest.path().ascii() );
+      // delete files with size < minimumKeepSize
+      if ( ! remove( udest.path() ) ) {
+	error( ERR_CANNOT_DELETE, udest.path() );
+	finished();
+	m_cmd = CMD_NONE;
+	return;
+      }
     }
   }
 
