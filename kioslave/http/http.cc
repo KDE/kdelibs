@@ -653,14 +653,21 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
     {
       entry.clear();
 
-      KURL thisURL = KURL::decode_string( href.text() );
-
-      // don't list the base dir of a listDir()
-      if ( !stat && thisURL.path(+1).length() == url.path(+1).length() )
-        continue;
+      KURL thisURL = href.text();
 
       atom.m_uds = KIO::UDS_NAME;
-      atom.m_str = thisURL.fileName();
+
+      if ( thisURL.isValid() ) {
+        // don't list the base dir of a listDir()
+        if ( !stat && thisURL.path(+1).length() == url.path(+1).length() )
+          continue;
+
+        atom.m_str = thisURL.fileName();
+      } else {
+        // This is a relative URL.
+        atom.m_str = href.text();
+      }
+      
       entry.append( atom );
 
       QDomNodeList propstats = thisResponse.elementsByTagName( "propstat" );
