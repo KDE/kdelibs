@@ -379,6 +379,7 @@ void TCPSlaveBase::closeDescriptor()
     }
     d->ip = "";
     d->host = "";
+    d->realHost = "";
 }
 
 bool TCPSlaveBase::initializeSSL()
