@@ -1108,7 +1108,7 @@ void KToolBar::saveSettings(KConfig *config, const QString &_configGroup)
     int index;
     getAttributes( position, icontext, index );
 
-    //kdDebug(220) << name() << "                position=" << position << " index=" << index << " offset=" << offset() << endl;
+    //kdDebug(220) << name() << "                position=" << position << " index=" << index << " offset=" << offset() << " newLine=" << newLine() << endl;
 
     KConfigGroupSaver saver(config, configGroup);
 
@@ -1925,6 +1925,7 @@ void KToolBar::getAttributes( QString &position, QString &icontext, int &index )
 
 void KToolBar::saveState( QDomElement &current )
 {
+    Q_ASSERT( !current.isNull() );
     QString position, icontext;
     int index = -1;
     getAttributes( position, icontext, index );
