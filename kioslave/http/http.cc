@@ -110,9 +110,6 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool,
              :TCPSlaveBase( 0, protocol , pool, app,
                             (protocol == "https" || protocol == "webdavs") )
 {
-  // Trap SIGPIPE's...
-  signal( SIGPIPE, sigpipeHandler );
-  
   m_requestQueue.setAutoDelete(true);
   
   m_bBusy = false;
@@ -5056,16 +5053,6 @@ QString HTTPProtocol::proxyAuthenticationHeader()
   }
 
   return header;
-}
-
-void HTTPProtocol::sigpipeHandler(int)
-{
-    kdDebug(7113) << "(" << getpid() << ") HTTPProtocol::sigpipeHandler: "
-                     "Communication Error (SIGPIPE)" << endl;
-
-    // Ignore communication error with network since it can
-    // be a closed.
-    signal(SIGPIPE,SIG_IGN);
 }
 
 /*

@@ -122,9 +122,6 @@ public:
     QCString entityBody;
   } DigestAuthInfo;
 
-  //-------------------- Signal Handlers -----------------------
-  static void sigpipeHandler(int);
-
 //---------------------- Re-implemented methods ----------------
   virtual void setHost(const QString& host, int port, const QString& user,
                        const QString& pass);
