@@ -292,14 +292,10 @@ private:
  * Anything that can open a URL, allow modifications, and save
  * (to the same URL or a different one).
  *
- * The part acts read-only by default, because a ReadWritePart could
- * be used as a ReadOnlyPart without knowing it.
- * Applications should call @ref setReadWrite to enable the part's
- * read-write mode.
- *
+ * A read-write part can be set to read-only mode, using @ref setReadWrite.
+ * 
  * Part writers :
- * You HAVE to call setReadWrite( false ) in the constructor.
- * And any part inheriting ReadWritePart should check @ref isReadWrite
+ * Any part inheriting ReadWritePart should check @ref isReadWrite
  * before allowing any action that modifies the part.
  * The part probably wants to reimplement @ref setReadWrite, disable those
  * actions. Don't forget to call the parent @ref setReadWrite.
@@ -310,8 +306,7 @@ class ReadWritePart : public ReadOnlyPart
 public:
   /**
    * Constructor
-   * In the inherited constructor, call setReadWrite( false ).
-   * See also @ref Part for the setXXX methods to call.
+   * See parent constructor for instructions.
    */
   ReadWritePart( QObject *parent = 0, const char *name = 0 );
   /**
@@ -330,8 +325,6 @@ public:
 
   /**
    * Changes the behaviour of this part to readonly or readwrite.
-   * Note that the initial behaviour of a ReadWritePart is _readonly_.
-   * This allows embedding a ReadWritePart as a ReadOnlyPart.
    * @param readwrite set to true to enable readwrite mode
    */
   virtual void setReadWrite ( bool readwrite = true );

@@ -26,8 +26,7 @@ NotepadPart::NotepadPart( QWidget * parent, const char * name )
 
   (void)new KAction( i18n( "Search and replace" ), 0, this, SLOT( slotSearchReplace() ), actionCollection(), "searchreplace" );
   setXMLFile( "notepadpart.rc" );
-
-  setReadWrite( false ); // as required by the framework
+  setReadWrite( true );
 }
 
 NotepadPart::~NotepadPart()
@@ -76,10 +75,9 @@ bool NotepadPart::saveFile()
     QTextStream t( &f );
     t << m_edit->text();
     f.close();
+    return true;
   } else
     return false;
-  // save() should always call saveToURL() in the end.
-  return saveToURL();
 }
 
 void NotepadPart::slotSearchReplace()
