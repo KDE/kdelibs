@@ -196,7 +196,7 @@ void Slave::setHost( const QString &host, int port,
 
 Slave* Slave::createSlave( const KURL& url, int& error, QString& error_text )
 {
-    kdDebug(7002) << "createSlave for " << url.url() << endl;
+    kdDebug(7002) << "createSlave for " << url.prettyURL() << endl;
 
     DCOPClient *client = kapp->dcopClient();
     if (!client->isAttached())
