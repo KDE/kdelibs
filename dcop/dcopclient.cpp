@@ -346,7 +346,10 @@ void DCOPClient::setServerAddress(const QCString &addr)
 
 bool DCOPClient::attach()
 {
-    return attachInternal( true );
+    if (!attachInternal( true ))
+       if (!attachInternal( true ))
+          return false; // Try two times!
+    return true;
 }
 
 void DCOPClient::bindToApp()
@@ -483,9 +486,9 @@ QCString DCOPClient::registerAs( QCString appId, bool addPID )
     }
 
     if ( !isAttached() ) {
-	if ( !attachInternal( FALSE ) ) {
-	    return result;
-	}
+        if (!attachInternal( false ))
+            if (!attachInternal( false ))
+                return result; // Try two times
     }
 
     if (addPID) {
