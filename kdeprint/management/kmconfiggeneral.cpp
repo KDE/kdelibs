@@ -64,8 +64,8 @@ KMConfigGeneral::KMConfigGeneral(QWidget *parent)
 	m_defaulttestpage->setCursor(KCursor::handCursor());
 
 	QGroupBox	*m_statusbox = new QGroupBox(0, Qt::Vertical, i18n("Miscellaneous"), this);
-	m_statusmsg = new QCheckBox(i18n("Show printing status message box"), m_statusbox);
-	m_uselast = new QCheckBox(i18n("Defaults to the last printer used in the application"), m_statusbox);
+	m_statusmsg = new QCheckBox(i18n("Sho&w printing status message box"), m_statusbox);
+	m_uselast = new QCheckBox(i18n("De&faults to the last printer used in the application"), m_statusbox);
 
 	//layout
 	QVBoxLayout	*lay0 = new QVBoxLayout(this, 5, 10);
