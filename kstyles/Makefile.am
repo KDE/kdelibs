@@ -1,3 +1,3 @@
 
-SUBDIRS=utils pics themes \
+SUBDIRS=utils themes \
 	basicplugin klegacy riscos
