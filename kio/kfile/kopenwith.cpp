@@ -290,7 +290,7 @@ KOpenWithDlg::KOpenWithDlg( const QString &serviceType, const QString& value,
     : QDialog( parent, 0L, true )
 {
   setCaption(i18n("Choose Application for %1").arg(serviceType));
-  QString text = i18n("<qt>Select the program to add for the file type: <b>%1</b>. "
+  QString text = i18n("<qt>Select the program for the file type: <b>%1</b>. "
                       "If the program is not listed, enter the name or click "
                       "the browse button.</qt>").arg(serviceType);
   qServiceType = serviceType;
