@@ -56,6 +56,7 @@
 Kded *Kded::_self = 0;
 
 static bool checkStamps = true;
+static bool delayedCheck = false;
 
 static void runBuildSycoca(QObject *callBackObj=0, const char *callBackSlot=0)
 {
@@ -63,7 +64,10 @@ static void runBuildSycoca(QObject *callBackObj=0, const char *callBackSlot=0)
    args.append("--incremental");
    if(checkStamps)
       args.append("--checkstamps");
-   checkStamps = false; // useful only during kded startup
+   if(delayedCheck)
+      args.append("--nocheckfiles");
+   else
+      checkStamps = false; // useful only during kded startup
    if (callBackObj)
    {
       QByteArray data;
@@ -94,7 +98,8 @@ static void runDontChangeHostname(const QCString &oldName, const QCString &newNa
 
 Kded::Kded(bool checkUpdates)
   : DCOPObject("kbuildsycoca"), DCOPObjectProxy(),
-    b_checkUpdates(checkUpdates)
+    b_checkUpdates(checkUpdates),
+    m_needDelayedCheck(false)
 {
   _self = this;
   QCString cPath;
@@ -339,6 +344,8 @@ void Kded::updateResourceList()
   delete KSycoca::self();
 
   if (!b_checkUpdates) return;
+  
+  if (delayedCheck) return;
 
   QStringList dirs = KSycoca::self()->allResourceDirs();
   // For each resource
@@ -373,25 +380,42 @@ void Kded::installCrashHandler()
 
 void Kded::recreate()
 {
-   recreate(true); // Async
+   recreate(false);
 }
 
-void Kded::recreate(bool async)
+void Kded::runDelayedCheck()
+{
+   if( m_needDelayedCheck )
+      recreate(false);
+   m_needDelayedCheck = false;
+}
+
+void Kded::recreate(bool initial)
 {
    m_recreateBusy = true;
    // Using KLauncher here is difficult since we might not have a
    // database
 
-   updateDirWatch(); // Update tree first, to be sure to miss nothing.
-
-   if (async)
+   if (!initial)
    {
+      updateDirWatch(); // Update tree first, to be sure to miss nothing.
       runBuildSycoca(this, SLOT(recreateDone()));
    }
    else
    {
+      if(!delayedCheck)
+         updateDirWatch(); // this would search all the directories
       runBuildSycoca();
       recreateDone();
+      if(delayedCheck)
+      {
+         // do a proper ksycoca check after a delay
+         QTimer::singleShot( 60000, this, SLOT( runDelayedCheck()));
+         m_needDelayedCheck = true;
+         delayedCheck = false;
+      }
+      else
+         m_needDelayedCheck = false;
    }
 }
 
@@ -811,6 +835,7 @@ extern "C" int kdemain(int argc, char *argv[])
      bool bCheckUpdates = config->readBoolEntry("CheckUpdates", true);
      bool bCheckHostname = config->readBoolEntry("CheckHostname", true);
      checkStamps = config->readBoolEntry("CheckFileStamps", true);
+     delayedCheck = config->readBoolEntry("DelayedCheck", false);
 
      Kded *kded = new Kded(bCheckSycoca); // Build data base
 
@@ -818,7 +843,7 @@ extern "C" int kdemain(int argc, char *argv[])
      signal(SIGHUP, sighandler);
      KDEDApplication k;
 
-     kded->recreate(false);
+     kded->recreate(true); // initial
 
      if (bCheckUpdates)
         (void) new KUpdateD; // Watch for updates

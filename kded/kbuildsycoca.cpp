@@ -695,6 +695,7 @@ static KCmdLineOptions options[] = {
    { "nosignal", I18N_NOOP("Do not signal applications to update"), 0 },
    { "noincremental", I18N_NOOP("Disable incremental update, re-read everything"), 0 },
    { "checkstamps", I18N_NOOP("Check file timestamps"), 0 },
+   { "nocheckfiles", I18N_NOOP("Disable checking files (dangerous)"), 0 },
    { "global", I18N_NOOP("Create global database"), 0 },
    { "menutest", I18N_NOOP("Perform menu generation test run only"), 0 },
    { "track <menu-id>", I18N_NOOP("Track menu id for debug purposes"), 0 },
@@ -797,9 +798,10 @@ extern "C" int kdemain(int argc, char **argv)
    }
    fprintf(stderr, "%s running...\n", appName);
 
+   bool checkfiles = bGlobalDatabase || args->isSet("checkfiles");
 
-   bool incremental = !bGlobalDatabase && args->isSet("incremental");
-   if (incremental)
+   bool incremental = !bGlobalDatabase && args->isSet("incremental") && checkfiles;
+   if (incremental || !checkfiles)
    {
      KSycoca::self()->disableAutoRebuild(); // Prevent deadlock
      QString current_language = KGlobal::locale()->language();
@@ -812,13 +814,14 @@ extern "C" int kdemain(int argc, char **argv)
          (KSycoca::self()->timeStamp() == 0))
      {
         incremental = false;
+        checkfiles = true;
         delete KSycoca::self();
      }
    }
    
    g_changeList = new QStringList;
 
-   bool checkstamps = incremental && args->isSet("checkstamps");
+   bool checkstamps = incremental && args->isSet("checkstamps") && checkfiles;
    Q_UINT32 filestamp = 0;
    QStringList oldresourcedirs;
    if( checkstamps && incremental )
@@ -858,7 +861,7 @@ extern "C" int kdemain(int argc, char **argv)
 
    newTimestamp = (Q_UINT32) time(0);
 
-   if( !checkstamps || !KBuildSycoca::checkTimestamps( filestamp, oldresourcedirs ))
+   if( checkfiles && ( !checkstamps || !KBuildSycoca::checkTimestamps( filestamp, oldresourcedirs )))
    {
       QCString qSycocaPath = QFile::encodeName(sycocaPath());
       cSycocaPath = qSycocaPath.data();

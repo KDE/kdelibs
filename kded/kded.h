@@ -71,7 +71,7 @@ public:
    bool isWindowRegistered(long windowId);
    void registerWindowId(long windowId);
    void unregisterWindowId(long windowId);
-   void recreate(bool async);
+   void recreate(bool initial);
    /**
     * Loads / unloads modules according to config.
     */
@@ -125,6 +125,8 @@ protected slots:
     * @internal Installs crash handler
     */
    void installCrashHandler();
+   
+   void runDelayedCheck();
 
 protected:
    /**
@@ -161,6 +163,7 @@ protected:
    QAsciiDict<QValueList<long> > m_windowIdList;
    QIntDict<long> m_globalWindowIdList;
    QStringList m_allResourceDirs;
+   bool m_needDelayedCheck;
      
    static Kded *_self;
 };
