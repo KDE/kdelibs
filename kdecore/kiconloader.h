@@ -20,6 +20,9 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.15  1998/11/02 10:08:35  ettrich
+   new reload method for kiconloader (Rene Beutler)
+
    Revision 1.14  1998/09/01 20:21:27  kulow
    I renamed all old qt header files to the new versions. I think, this looks
    nicer (and gives the change in configure a sense :)
@@ -174,6 +177,15 @@ public:
     return pixmap_dirs.insert( index, dir_name ); }
   QStrList* getDirList() { return &pixmap_dirs; }
 
+  /// Get the complete path for an icon filename
+  /**
+      Set always_valid to true if you want this function to return a valid
+      pixmap is your wishes cannot be satisfied (Be aware, that if unknown.xpm
+      is not found you will receive a null string)
+  */
+  QString KIconLoader::getIconPath( const QString &name, bool always_valid=false);
+
+
   /// Flush cache
   /**
       Remove an icon from the cache given it's name
@@ -188,7 +200,7 @@ protected:
   QPixmap loadInternal(const QString &name, int w = 0, int h = 0 );
 
 private:
-
+  void initPath();
   void addPath(QString path);
 
   // Disallow assignment and copy-construction

@@ -20,6 +20,10 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.26.4.1  1999/02/15 16:29:28  neerfeld
+   reordered the searchpath: icons in ~/.kde/icons don't
+   override application icons anymore
+
    Revision 1.26  1999/01/18 10:56:20  kulow
    .moc files are back in kdelibs. Built fine here using automake 1.3
 
@@ -69,6 +73,22 @@
 #include <klocale.h>
 #include <kapp.h>
 }
+void KIconLoader::initPath()
+{
+  // order is important! -- Bernd
+  // higher priority at the end
+
+  addPath( KApplication::kde_toolbardir() );
+  addPath( KApplication::kde_icondir() );
+
+  addPath( KApplication::localkdedir() + "/share/toolbar" ); 
+  addPath( KApplication::localkdedir() + "/share/icons" ); 
+
+  addPath( KApplication::kde_datadir() + "/" + kapp->appName() + "/toolbar" );
+  addPath( KApplication::localkdedir() + "/share/apps/" + kapp->appName() + "/toolbar" ); 
+  addPath( KApplication::kde_datadir() + "/" + kapp->appName() + "/pics" );
+  addPath( KApplication::localkdedir() + "/share/apps/" + kapp->appName() + "/pics" ); 
+}
 QPixmap KIconLoader::reloadIcon ( const QString& name, int w, int h ){
 KIconLoader::KIconLoader( KConfig *conf, 
 			  const QString &app_name, const QString &var_name ){
@@ -82,18 +102,7 @@ KIconLoader::KIconLoader( KConfig *conf,
   for (const char *it=list.first(); it; it = list.next())
     addPath(it);
 QPixmap KIconLoader::loadMiniIcon ( const QString& name, int w, int h ){
-  // order is important! -- Bernd
-
-  addPath( KApplication::kde_toolbardir() );
-  addPath( KApplication::kde_icondir() );
-
-  addPath(KApplication::localkdedir() + "/share/toolbar" ); 
-  addPath(KApplication::localkdedir() + "/share/icons" ); 
-
-  addPath( KApplication::kde_datadir() + "/" + kapp->appName() + "/toolbar" );
-  addPath(KApplication::localkdedir() + "/share/apps/" + kapp->appName() + "/toolbar" ); 
-  addPath( KApplication::kde_datadir() + "/" + kapp->appName() + "/pics" );
-  addPath(KApplication::localkdedir() + "/share/apps/" + kapp->appName() + "/pics" ); 
+  initPath();
 
   name_list.setAutoDelete(TRUE);
   pixmap_dirs.setAutoDelete(TRUE);
@@ -118,18 +127,7 @@ Stephan: See above
   for (const char *it=list.first(); it; it = list.next())
     addPath(it);
 
-  // order is important! -- Bernd
-
-  addPath( KApplication::kde_toolbardir() );
-  addPath( KApplication::kde_icondir() );
-
-  addPath(KApplication::localkdedir() + "/share/toolbar" ); 
-  addPath(KApplication::localkdedir() + "/share/icons" ); 
-
-  addPath( KApplication::kde_datadir() + "/" + kapp->appName() + "/toolbar" );
-  addPath(KApplication::localkdedir() + "/share/apps/" + kapp->appName() + "/toolbar" ); 
-  addPath( KApplication::kde_datadir() + "/" + kapp->appName() + "/pics" );
-  addPath(KApplication::localkdedir() + "/share/apps/" + kapp->appName() + "/pics" ); 
+  initPath();
 
   name_list.setAutoDelete(TRUE);
   pixmap_dirs.setAutoDelete(TRUE);
@@ -234,6 +232,34 @@ QPixmap KIconLoader::loadApplicationMiniIcon ( const QString &name, int w, int h
 
 }
 	pixmap_dirs.insert( pixmap_dirs.at(index), dir_name ); 
+QString KIconLoader::getIconPath( const QString &name, bool always_valid)
+{
+    QString full_path;
+    QFileInfo finfo;
+
+    if( name.left(1) == "/" ){
+      full_path = name;
+    }
+    else{
+      QStrListIterator it( pixmap_dirs );
+      while ( it.current() ){
+	
+	full_path = it.current();
+	full_path.detach();
+	full_path += '/';
+	full_path += name;
+	finfo.setFile( full_path );
+	if ( finfo.exists() )
+	      break;
+	++it;
+      }
+      if ( (always_valid) && (!it.current()) ){
+        // Let's be recursive (but just once at most)
+        full_path = getIconPath( "unknown.xpm" , false); 
+      }
+    }
+    return full_path;
+}
 
 QPixmap KIconLoader::loadInternal ( const QString &name, int w,  int h ){
 
@@ -243,28 +269,9 @@ QPixmap KIconLoader::loadInternal ( const QString &name, int w,  int h ){
   int index;
 
   if ( (index = name_list.find(name)) < 0){
-
-    QString full_path;
-    QFileInfo finfo;
     
     pix = new QPixmap;
-    if( name.left(1) == "/" ){
-      full_path = name;
-    }
-    else{
-      QStrListIterator it( pixmap_dirs );
-      while ( it.current() ){
-	
-	full_path = it.current();
-	full_path += '/';
-	full_path += name;
-	finfo.setFile( full_path );
-	if ( finfo.exists() )
-	      break;
-	++it;
-      }
-    }
-    new_xpm.load( full_path, 0, KPixmap::LowColor );
+    new_xpm.load( getIconPath(name), 0L, KPixmap::LowColor );
     *pix = new_xpm;
     
     if( !(pix->isNull()) ){
@@ -279,7 +286,6 @@ QPixmap KIconLoader::loadInternal ( const QString &name, int w,  int h ){
     }
   }
   else{
-
     pix = pixmap_list.at(index);
   }
   
