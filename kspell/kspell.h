@@ -23,6 +23,7 @@
  *  9/11/97 KSpell 0.1
  * @short a KDE programmer's interface to International ISpell 3.1  (GPL 1997)
  * @author David Sweet
+ * @version $Id$
  * @see KSpellConfig
  * 
  * KSpell offers easy access to International ISpell 3.1 as well as a 
@@ -39,33 +40,7 @@
 
 class KSpell : public QObject
 {
-  Q_OBJECT;
-
-
-  bool ok, personaldict;
-  
-  KProcIO *proc;
-  QString ispellID, caption;
-  QWidget *parent;
-  KSpellConfig *ksconfig;
-  KSpellDlg *ksdlg;
-  QStrList ignorelist, replacelist;
-  QStrList *wordlist, sugg;
-  QString orig;
-  bool usedialog, texmode;
-  QString buffer, newbuffer, cwword, dlgorigword;
-
-  QString dlgreplacement, dialog3slot;
-  int dlgresult, trystart, maxtrystart;
-  bool dlgon;
-  
-  unsigned lastpos, totalpos, lastline, posinline, lastlastline, offset;
-  unsigned progres, curprog;
-  char *temp;
-
-  int parseOneResponse (char *_buffer, char *word, QStrList *sugg);
-  char *funnyWord (char *word);
-  void dialog (char *word, QStrList *sugg, char *_slot);
+  Q_OBJECT
 
 public:
 
@@ -73,7 +48,6 @@ public:
    * KSpell emits ready() when it has verified that ispell is
    *  working properly.  Pass the name of a slot -- do not pass zero!
    */
-
   KSpell(QWidget *_parent, const char *caption,
 	 QObject *obj, char *slot, KSpellConfig *_kcs=0);
   /**
@@ -88,10 +62,10 @@ public:
    *   Delete it, reconfigure a KSpellConfig and try again (perhaps with
    *   the system defaults).
    **/
-  bool isOk (void) { return ok; }
+  inline bool isOk (void) { return ok; }
 
   /**
-   *  check() will spellcheck a buffer of many words in plaintext 
+   *  check() will spell check a buffer of many words in plain text 
    *  format
    * The _buffer is not modified.  The signal done(char *) will be
    *  sent when check() is finished and the argument will be a 
@@ -99,13 +73,13 @@ public:
    * The progress() signal is only sent when a misspelled word is found, so
    *  you may not get as fine a resolution as you requested; but you won't
    *  get a _finer_ resolution.
-   * The spellcheck may be stopped by the user before the entire buffer
+   * The spell check may be stopped by the user before the entire buffer
    *  has been checked.  You can check lastPosition() to see how far
    *  in _buffer check() reached before stopping.
    */
 
-  bool check (char *_buffer);
-  int lastPosition(void)
+  virtual bool check (char *_buffer);
+  inline int lastPosition(void)
     { return lastpos;}
 
   /**
@@ -113,11 +87,11 @@ public:
    *  of document (HTML, TeX, etc.) into a list of spell-checkable words
    *  and send the list to checkList().  Sending a marked-up document
    *  to check() would result in the mark-up tags being
-   *  spellchecked.
+   *  spell checked.
    * The progress() signals will be accurate here since words are
    *  checked one at a time.
    */
-  bool checkList (QStrList *_wordlist);
+  virtual bool checkList (QStrList *_wordlist);
 
   /**
    * checkWord() is the most flexible function.  Some apps might need this
@@ -129,47 +103,50 @@ public:
    * If usedialog is set to TRUE, KSpell will put up the standard
    *  dialog if the word is not found.  The dialog results can be queried
    *  by using  dlgResult() and replacement().  The possible dlgResult()
-   *  values are:  (from kspelldlg.h)
-   *     #define KS_CANCEL      0 
-   *     #define KS_REPLACE     1
-   *     #define KS_REPLACEALL  2
-   *     #define KS_IGNORE      3
-   *     #define KS_IGNOREALL   4
-   *     #define KS_ADD         5     
-   *     #define KS_STOP        7
+   *  values are (from kspelldlg.h):
+   *     KS_CANCEL      0 
+   *     KS_REPLACE     1
+   *     KS_REPLACEALL  2
+   *     KS_IGNORE      3
+   *     KS_IGNOREALL   4
+   *     KS_ADD         5     
+   *     KS_STOP        7
    *
    *  The signal corrected() is emitted when the check is complete.  You can
    *  look at suggestions() to see what the suggested replacements were.
-   *   If the dialogc box is not used, or the user chooses not to change
-   *   the word, then newword is just word. pos=0 always.
+   *   If the dialog box is not used, or the user chooses not to change
+   *   the word, then new word is just word. pos=0 always.
    */
-  bool checkWord (char *_buffer,  bool usedialog=FALSE);
+  virtual bool checkWord (char *_buffer,  bool usedialog=FALSE);
 
   /**
    * You can use this to manually hide the dialog box.  You only _need_ to
    *  do this when you are done with checkWord();
    */
   void hide (void)   { ksdlg->hide(); }
-    /**
-     * After calling checkWord (an in response to a misspelled() signal you can
-     *  use this to get the list of
-     *  suggestions (if any were available)
-     */
-  QStrList *suggestions (void)
-    { return &sugg; }
+
+  /**
+   * After calling checkWord (an in response to a misspelled() signal you can
+   *  use this to get the list of
+   *  suggestions (if any were available)
+   */
+  inline QStrList *suggestions (void)	{ return &sugg; }
+
   /**
    * After calling checkWord, you can use this to get the dialog box's
    *  result code.
    */
-  int dlgResult (void)
+  inline int dlgResult (void)
     { return dlgresult; }
+
   /**
    * Moves the dialog.  If the dialog is not currently visible, it will
    *   be placed at this position when it becomes visible.
    */
   void moveDlg (int x, int y);
-  int heightDlg (void) {return ksdlg->height();}
-  int widthDlg (void) {return ksdlg->width();}
+
+  inline int heightDlg (void) {return ksdlg->height();}
+  inline int widthDlg (void) {return ksdlg->width();}
 
   /**
    * You might want the full buffer in its partially-checked state.
@@ -181,12 +158,13 @@ public:
    *  ignore() returns FALSE if word is not a word or there was an error
    *  communicating with ispell.
    */
-  bool ignore (char *word);
+  virtual bool ignore (char *word);
+
   /**
    * Add a word to the user's personal dictionary.  Returns FALSE if word
    *  is not a word or there was an error communicating with ispell.
    */
-  bool addPersonal (char *word);
+  virtual bool addPersonal (char *word);
 
   /**
    * Returns the KSpellConfig object being used by this KSpell.
@@ -205,9 +183,10 @@ public:
    * The destructor instructs ispell to write out the personal
    *  dictionary and then terminates ispell.
    */ 
-  ~KSpell();
+  virtual ~KSpell();
 
 signals:
+
   /**
    * This is emitted whenever a misspelled word is found by check() or
    *   by checkWord().
@@ -221,9 +200,9 @@ signals:
    *   calling program's GUI may be updated. (e.g. the misspelled word may
    *   be highlighted).
    */
-
   void misspelling (char *originalword, QStrList *suggestions, 
 		    unsigned pos);
+
   /**
    * This is emitted after the dialog is closed, or if the word was 
    * corrected without calling the dialog (i.e., the user previously chose
@@ -232,7 +211,6 @@ signals:
    * (see notes for check() for more information).
    */
   void corrected (char *originalword, char *newword, unsigned pos);
-
 
   /**
    * This is emitted after KSpell has verified that ispell is running
@@ -246,14 +224,16 @@ signals:
   /**
    * i is between 1 and 100 -- emitted only during a check ()
    */
-  void progress (unsigned i);
+  void progress (unsigned int i);
+
   /**
    * emitted when check() is done
    * Copy the results of buffer if you need them.  You can only rely
-   *  on the contents of buffer for the life of the slot which was signalled
+   *  on the contents of buffer for the life of the slot which was signaled
    *  by done(char *).
    */
   void done (char *buffer);
+
   /**
    * emitted when checkList() is done.  If the argument is
    * <i>TRUE</i>, then you should update your text from the
@@ -262,12 +242,12 @@ signals:
   void done(bool);
 
   /**
-   * emitted on teminal errors
+   * emitted on terminal errors
    */
   void death(KSpell *);
 
 protected slots:
-    /* All of those signals from KProcIO get sent here. */
+  /* All of those signals from KProcIO get sent here. */
   void KSpell2 (KProcIO *);
   void checkWord2 (KProcIO *);
   void checkWord3 ();
@@ -288,11 +268,32 @@ signals:
   void eza ();
 
 protected:
-  char *replacement (void)
-    { return dlgreplacement.data(); }
-  bool dialogwillprocess;
 
-  void  emitProgress (void);
+  KProcIO *proc;
+  QWidget *parent;
+  KSpellConfig *ksconfig;
+  KSpellDlg *ksdlg;
+  QStrList *wordlist, ignorelist, replacelist, sugg;
+
+  char *temp;
+
+  bool usedialog, texmode, dlgon, ok, personaldict, dialogwillprocess;
+
+  QString ispellID, caption, orig;
+  QString buffer, newbuffer, cwword, dlgorigword;
+  QString dlgreplacement, dialog3slot;
+
+  int dlgresult, trystart, maxtrystart;
+  unsigned int lastpos, totalpos, lastline, posinline, lastlastline;
+  unsigned int offset, progres, curprog;
+
+  int parseOneResponse (char *_buffer, char *word, QStrList *sugg);
+  char *funnyWord (char *word);
+  void dialog (char *word, QStrList *sugg, char *_slot);
+  inline char *replacement (void)
+    { return dlgreplacement.data(); }
+
+  void emitProgress (void);
   bool cleanFputs (const char *s, bool appendCR=TRUE);
   bool cleanFputsWord (const char *s, bool appendCR=TRUE);
   void startIspell(void);

@@ -5,6 +5,10 @@
 #include <kprocess.h>
 
 /**
+ * @version $Id$
+ * @author David Sweet
+ * @short A slightly simpler interface to KProcess
+ *
  * KProcIO
  * By David Sweet (GPL 1997)
  *
@@ -24,7 +28,7 @@
 
 class KProcIO : public KProcess
 {
-  Q_OBJECT;
+  Q_OBJECT
 public:
   KProcIO (void);
   
@@ -37,18 +41,18 @@ public:
    * unless you specify FALSE as the second parameter.
    * FALSE is returned on an error, or else TRUE is.
    **/
+  virtual bool writeStdin(const char *buffer, bool AppendNewLine=TRUE);
 
-  bool writeStdin(const char *buffer, bool AppendNewLine=TRUE);
   //I like fputs better -- it's the same as writeStdin
-  bool fputs(const char *buffer, bool  AppendNewLine=TRUE)
-    { return writeStdin(buffer, AppendNewLine);}
+  bool fputs (const char *buffer, bool AppendNewLine=TRUE)
+    { return writeStdin(buffer, AppendNewLine); }
 
   /**
    * readln() reads up to '\n' (or max characters) and
    * returns the number of characters placed in buffer.  Zero is returned
    * if no more data is available.
    *
-   *Use readln() in response to a readReady() signal.
+   * Use readln() in response to a readReady() signal.
    * You may use it multiple times if more than one line of data is
    *  available.
    * Be sure to use ackRead() when you have finished processing the
@@ -59,15 +63,15 @@ public:
    *
    * autoAck==TRUE makes these functions call ackRead() for you.
    **/
+  virtual int readln (char *buffer, int max, bool autoAck=FALSE);
 
-  int readln (char *buffer, int max, bool autoAck=FALSE);
   int fgets (char *buffer, int max, bool autoAck=FALSE)
     { return readln (buffer, max, autoAck); }
 
   /**
    * Reset the class.  Doesn't kill the process.
    **/
-   void resetAll (void);
+   virtual void resetAll (void);
 
   /**
    * Call this after you have finished processing a readReady()
@@ -78,7 +82,7 @@ public:
    * data.  If this doesn't matter, then call ackRead() right away in
    * your readReady()-processing slot.
    **/
-  void ackRead (void);
+  virtual void ackRead (void);
 
   /**
    *  Turns readReady() signals on and off.
@@ -90,19 +94,17 @@ public:
 signals:
   void readReady(KProcIO *);
 
-private:
+protected:
   QStrList qlist;
   QString recvbuffer;
   int rbi;
   bool needreadsignal, readsignalon, writeready;
 
-
   void controlledEmission (void);
 
-private slots:
+protected slots:
   void received (KProcess *proc, char *buffer, int buflen);
   void sent (KProcess *);
 };
-
 
 #endif

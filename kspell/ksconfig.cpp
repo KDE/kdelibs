@@ -65,12 +65,9 @@ KSpellConfig::KSpellConfig (QWidget *parent, char *name,
       //From dlgedit
 
       layout = new QGridLayout (this, 9, 7, 10, 1);
-      const rdictlist = 3,
-	//	    rpersdict = 6,
-	    rencoding = 5,
-	    rhelp = 6;
+      //	    rpersdict = 6,
 
-      //rdictedit = 4,
+        //rdictedit = 4,
 	cb1 = new QCheckBox( this, "CheckBox_1" );
 	cb1->setGeometry( 30, 40, 320, 30 );
 	connect( cb1, SIGNAL(toggled(bool)), SLOT(sNoAff(bool)) );
@@ -437,8 +434,8 @@ void KSpellConfig::fillInDialog (void)
 }
 
 /*
-  Options setting routines.
-  */
+ * Options setting routines.
+ */
 void KSpellConfig::setNoRootAffix (bool b)
 {
   bnorootaffix=b;
@@ -451,7 +448,7 @@ void KSpellConfig::setRunTogether(bool b)
 
 void KSpellConfig::setDictionary (const char *s)
 {
-  qsdict=s;
+  qsdict=s.copy();
 
   if (qsdict.length()>4)
     if ((signed)qsdict.find(".aff")==(signed)qsdict.length()-4)
@@ -482,8 +479,7 @@ void KSpellConfig::setEncoding (int enctype)
 
 /*
   Options reading routines.
-  */
-
+ */
 bool KSpellConfig::noRootAffix (void) const
 {
   return bnorootaffix;

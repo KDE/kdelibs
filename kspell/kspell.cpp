@@ -26,10 +26,12 @@ inline void dsdebug (const char *, ...)  {}
 #define MAXLINELENGTH 150
 #define TEMPsz  3072
 
-#define GOOD      0
-#define IGNORE    1
-#define REPLACE   2
-#define MISTAKE   3
+enum {
+	GOOD=     0,
+	IGNORE=   1,
+	REPLACE=  2,
+	MISTAKE=  3
+};
 
 //TODO
 //Parse stderr output
@@ -65,7 +67,7 @@ KSpell::KSpell (QWidget *_parent, const char *_caption,
   else
     ksconfig = new KSpellConfig;
 
-  dsdebug ("now here\n");
+  dsdebug ("now here %s/%d\n", __FILE__, __LINE__);
 
   ok=texmode=dlgon=FALSE;
   progres=10;
@@ -81,7 +83,7 @@ KSpell::KSpell (QWidget *_parent, const char *_caption,
   personaldict=FALSE;
   dlgresult=-1;
 
-  caption = _caption;
+  caption=_caption;
 
   parent=_parent;
 

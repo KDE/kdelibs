@@ -14,7 +14,7 @@
 #include <klined.h>
 
 //Possible result codes
-enum {
+enum KS_RESULT {
   KS_CANCEL=     0,
   KS_REPLACE=    1,
   KS_REPLACEALL= 2,
@@ -33,23 +33,23 @@ class KSpellDlg : public QWidget
   KLined *editbox;
   QListBox *listbox;
   QStrList *sugg;
-  QString word;
-  QString newword;
   QPushButton *qpbrep, *qpbrepa;
   QLabel *wordlabel;
   QList<QWidget> *children;
   QGridLayout *layout;
+  QString word, newword;
 
 public:
   KSpellDlg (QWidget *parent, const char *name,
 			char *ID);
-  char *replacement (void)
+
+  inline char *replacement (void)
     { return newword.data(); }
 
   void init (char *_word, QStrList *_sugg);
   void standby (void);
 
-  ~KSpellDlg()
+  virtual ~KSpellDlg()
     {printf ("KSD killed\n");}
 
 protected:

@@ -12,6 +12,11 @@
 #include <klined.h>
 #include <qpushbutton.h>
 
+enum Encoding {
+	KS_E_LATIN1=0,
+	KS_E_ASCII=1
+};
+
 /**
  *  KSpellConfig v 0.2
  *
@@ -34,14 +39,12 @@
  *  @see KSpell
  */
 
-#define KS_E_LATIN1 0
-#define KS_E_ASCII  1
-
 class KSpellConfig : public QWidget
 {
 
   Q_OBJECT;
-  enum { sizehint_x=490, sizehint_y=317};
+  enum { sizehint_x=490, sizehint_y=317 };
+
 public:
   
   /**
@@ -66,8 +69,8 @@ public:
    *  this list with the document being edited to facilitate quicker
    *  future spellchecking.
    */
-  void setNoRootAffix (bool);
-  void setRunTogether(bool);
+  inline void setNoRootAffix (bool);
+  inline void setRunTogether(bool);
   void setDictionary (const char *);
   void setDictFromList (bool dfl);
   //  void setPersonalDict (const char *);
@@ -81,7 +84,7 @@ public:
   bool runTogether(void) const;
   char *dictionary (void) const;
   bool dictFromList (void) const;
- //  char *personalDict (void) const;
+  //char *personalDict (void) const;
   int encoding (void) const;
   QStrList ignoreList (void) const;
 
@@ -96,21 +99,21 @@ public:
    */
   /*  QSize sizeHint(void) const 
     {return QSize (sizehint_x, sizehint_y);}
-    */
+   */
 
 
-private:
+protected:
 
-//The options
-  int enc;   //1 ==> -Tlatin1			  
-  bool bnorootaffix;            // -m
-  bool bruntogether;            // -B
+  // The options
+  int enc;			//1 ==> -Tlatin1			  
+  bool bnorootaffix;		// -m
+  bool bruntogether;		// -B
   bool dictfromlist;				  
   bool nodialog;
-  QString qsdict;     // -d [dict]
-  QString qspdict;   // -p [dict]
+  QString qsdict;		// -d [dict]
+  QString qspdict;		// -p [dict]
   QStrList ignorelist;
-
+  enum {rdictlist=3, rencoding=4, rhelp=6};
   KConfig *kc;			 
 			  
   QCheckBox *cb1, *cb2;
@@ -141,15 +144,15 @@ private:
 protected slots:
   void sHelp();
   void sBrowseDict();
-//  void sBrowsePDict();
+  //void sBrowsePDict();
   void sNoAff(bool);
   void sRunTogether(bool);
   void sDictionary(bool);
   void sPathDictionary(bool);
   void sSetDictionary (int);
   void sChangeEncoding (int);
-//  void textChanged1 (const char *);
-//  void textChanged2 (const char *);
+  //void textChanged1 (const char *);
+  //void textChanged2 (const char *);
 
 };
 
