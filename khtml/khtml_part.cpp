@@ -3761,12 +3761,11 @@ void KHTMLPart::slotChildCompleted( bool pendingAction )
 {
   khtml::ChildFrame *child = frame( sender() );
 
-  assert( child );
-
-  child->m_bCompleted = true;
-  child->m_bPendingRedirection = pendingAction;
-  child->m_args = KParts::URLArgs();
-
+  if ( child ) {
+    child->m_bCompleted = true;
+    child->m_bPendingRedirection = pendingAction;
+    child->m_args = KParts::URLArgs();
+  }
   checkCompleted();
 }
 
