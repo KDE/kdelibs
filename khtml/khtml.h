@@ -1208,6 +1208,8 @@ protected:
     KHTMLCache *cache;
 
 public:
+	static void preloadImage( const char *_filename );
+
     KHTMLCache *imageCache() { return cache; }
 };
 

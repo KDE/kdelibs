@@ -172,6 +172,10 @@ void KHTMLWidget::requestImage( HTMLObject *obj, const char *_url )
     cache->requestImage( obj, _url); 
 }
 
+void KHTMLWidget::preloadImage( const char *_filename)
+{
+    KHTMLCache::preload( _filename, KHTMLCache::Persistent );
+}
 //
 // File handling
 //

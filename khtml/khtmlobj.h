@@ -592,8 +592,6 @@ public:
 
     void setOverlay( const char *ol );
 
-    static void cacheImage( const char * );
-
     virtual const char* getURL() const { return url; }
     virtual const char* getTarget() const { return target; }
 
@@ -639,13 +637,6 @@ protected:
     
     KHTMLWidget *htmlWidget;
     
-    /*
-     * Flag telling wether this image was found in the cache
-     * If this flag is set, you may not delete the pixmap since the pixmap
-     * belongs to the HTMLCachedImage.
-     */
-    bool cached;
-
     /*
      * If we knew the size of the image from the <img width=...> tag then this
      * flag is TRUE.

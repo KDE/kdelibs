@@ -1230,12 +1230,6 @@ void HTMLBullet::print( QPainter *_painter, int _tx, int _ty )
 
 //-----------------------------------------------------------------------------
 
-void HTMLImage::cacheImage( const char *_filename )
-{
-    // imitates old behavior
-    KHTMLCache::preload( _filename, KHTMLCache::Persistent );
-}
-
 HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
 	const char *_url, const char *_target,
 	int _max_width, int _width, int _height, int _percent, int bdr )
@@ -1251,7 +1245,6 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
     url = _url;
     target = _target;
     
-    cached = TRUE;
     imageURL = _filename;
 
     predefinedWidth = ( _width < 0 && !_percent ) ? false : true;
