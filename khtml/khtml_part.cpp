@@ -620,10 +620,10 @@ bool KHTMLPart::jScriptEnabled() const
 KJSProxy *KHTMLPart::jScript()
 {
   if ( d->m_bJScriptOverride && !d->m_bJScriptForce)
-    return 0;
+      return 0;
 
-  if ( !d->m_bJScriptEnabled )
-    return 0;
+  if ( !d->m_bJScriptEnabled && !d->m_bJScriptOverride )
+      return 0;
 
   if ( !d->m_jscript )
   {
