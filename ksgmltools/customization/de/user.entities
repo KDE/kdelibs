@@ -7,3 +7,4 @@
  -->
 
 <!ENTITY kontrollleiste "<application>Kontrollleiste</application>" -- kicker -->
+<!ENTITY Strg "<keycap>Strg</keycap>">
