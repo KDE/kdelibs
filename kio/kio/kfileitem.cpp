@@ -190,12 +190,12 @@ void KFileItem::init( bool _determineMimeTypeOnDemand )
         // While we're at it, store the times
         m_time[ Modification ] = buf.st_mtime;
         m_time[ Access ] = buf.st_atime;
+        if ( m_fileMode == KFileItem::Unknown )
+          m_fileMode = mode & S_IFMT; // extract file type
+        if ( m_permissions == KFileItem::Unknown )
+          m_permissions = mode & 07777; // extract permissions
       }
     }
-    if ( m_fileMode == KFileItem::Unknown )
-      m_fileMode = mode & S_IFMT; // extract file type
-    if ( m_permissions == KFileItem::Unknown )
-      m_permissions = mode & 07777; // extract permissions
   }
 
   // determine the mimetype
@@ -423,7 +423,7 @@ int KFileItem::overlays() const
   {
     if (KFileShare::isDirectoryShared( m_url.path() ))
     {
-      kdDebug()<<"KFileShare::isDirectoryShared : "<<m_url.path()<<endl;
+      //kdDebug()<<"KFileShare::isDirectoryShared : "<<m_url.path()<<endl;
       _state |= KIcon::ShareOverlay;
     }
   }
@@ -493,7 +493,7 @@ bool KFileItem::isReadable() const
 
 bool KFileItem::isDir() const
 {
-  if ( !m_bMimeTypeKnown && !m_guessedMimeType.isEmpty() )
+  if ( m_fileMode == KFileItem::Unknown )
   {
     kdDebug() << " KFileItem::isDir can't say -> false " << endl;
     return false; // can't say for sure, so no
