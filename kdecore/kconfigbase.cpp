@@ -204,35 +204,38 @@ int KConfigBase::readListEntry( const QString& pKey,
 {
   if( !hasKey( pKey ) )
     return 0;
+  
   QString str_list, value;
   str_list = readEntry( pKey );
-  if( str_list.isEmpty() )
-    return 0; 
+  if (str_list.isEmpty())
+    return 0;
+
   list.clear();
   int i;
   value = "";
   int len = str_list.length();
-  for( i = 0; i < len; i++ )
-    {
-      if( str_list[i] != sep && str_list[i] != '\\' )
-	{
-	  value += str_list[i];
-	  continue;
-	}
-      if( str_list[i] == '\\' )
-	{
-	  i++;
-	  value += str_list[i];
-	  continue;
-	}
-      list.append( value.ascii() );
-      value.truncate(0);
+
+  for (i = 0; i < len; i++) {
+    if (str_list[i] != sep && str_list[i] != '\\') {
+      value += str_list[i];
+      continue;
     }
-  if ( str_list[len-1] != sep )
+    if (str_list[i] == '\\') {
+      i++;
+      value += str_list[i];
+      continue;
+    }
+    // if we fell through to here, we are at a separator.  Append
+    // contents of value to the list
+    list.append( value.ascii() );
+    value.truncate(0);
+  }
+  
+  if ( str_list[len-1].latin1() != sep )
     list.append( value.ascii() );
   return list.count();
-}
-
+  }
+  
 QStringList KConfigBase::readListEntry( const QString& pKey, char sep ) const
 {
   QStringList list;
