@@ -79,7 +79,7 @@ namespace KJS {
     virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
-    virtual bool toBoolean() const { return true; }
+    virtual bool toBoolean(ExecState* ) const { return true; }
     static const ClassInfo info;
     DOM::StyleSheetList toStyleSheetList() const { return styleSheetList; }
     enum { Item, Length };
@@ -98,7 +98,7 @@ namespace KJS {
     virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
     virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
     virtual const ClassInfo* classInfo() const { return &info; }
-    virtual bool toBoolean() const { return true; }
+    virtual bool toBoolean(ExecState* ) const { return true; }
     static const ClassInfo info;
     enum { MediaText, Length,
            Item, DeleteMedium, AppendMedium };
