@@ -521,14 +521,18 @@ bool KAccelBase::removeConnection( KAccelAction& action )
 	//for( KKeyToActionMap::iterator it = m_mapKeyToAction.begin(); it != m_mapKeyToAction.end(); ++it )
 	//	kdDebug(125) << "\tKey: " << it.key().toString() << " => '" << (*it)->m_sName << "'" << " " << *it << endl;
 
+        // remove points to the item to remove - always done _after_ moving to the next item
+        KKeyToActionMap::iterator remove = m_mapKeyToAction.end();
 	for( KKeyToActionMap::iterator it = m_mapKeyToAction.begin(); it != m_mapKeyToAction.end(); ++it ) {
+		if (remove != m_mapKeyToAction.end()) {
+			m_mapKeyToAction.remove(remove);
+			remove = m_mapKeyToAction.end();
+		}
 		KKeyServer::Key key = it.key();
 		ActionInfo* pInfo = &(*it);
 
 		if( &action == pInfo->pAction ) {
-			KKeyToActionMap::iterator itRemove = it;
-			--it;
-			m_mapKeyToAction.remove( itRemove );
+			remove = it; // remember to remove that one
 			disconnectKey( action, key );
 			action.decConnections();
 		} /*else if( pInfo->pInfoNext ) {
@@ -544,6 +548,8 @@ bool KAccelBase::removeConnection( KAccelAction& action )
 				return updateConnections();
 		}
 	}
+	if (remove != m_mapKeyToAction.end())
+		m_mapKeyToAction.remove(remove);
 	return true;
 }
 
