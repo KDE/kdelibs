@@ -39,6 +39,7 @@
 #include <qtl.h>
 #include <qtooltip.h>
 #include <qvariant.h>
+#include <qtimer.h>
 #include <qwhatsthis.h>
 
 #include <kaccel.h>
@@ -1408,6 +1409,13 @@ void KSelectAction::setItems( const QStringList &lst )
 {
 	kdDebug(129) << "KAction::setItems()" << endl; // remove -- ellis
   d->m_list = lst;
+  // Delay this. Especially useful when this is called upon activation of a menuitem
+  // by the user, e.g. in the recent files action.
+  QTimer::singleShot( 0, this, SLOT( slotSetItemsDelayed() ) );
+}
+
+void KSelectAction::slotSetItemsDelayed()
+{
   d->m_current = -1;
 
   if ( d->m_menu )
@@ -1428,7 +1436,7 @@ void KSelectAction::setItems( const QStringList &lst )
     updateItems( i );
 
   // Disable if empty and not editable
-  setEnabled ( lst.count() > 0 || d->m_edit );
+  setEnabled ( d->m_list.count() > 0 || d->m_edit );
 }
 
 QStringList KSelectAction::items() const

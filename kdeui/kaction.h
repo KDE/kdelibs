@@ -982,6 +982,9 @@ protected slots:
     virtual void slotActivated( int id );
     virtual void slotActivated( const QString &text );
     virtual void slotActivated() { KAction::slotActivated(); }
+    
+private slots:
+    void slotSetItemsDelayed();
 
 signals:
     void activated( int index );
