@@ -89,6 +89,8 @@ KBookmarkManager::KBookmarkManager( const QString & bookmarksFile, bool bImportD
             importDesktopFiles();
         m_docIsLoaded = true;
     }
+    
+    connectDCOPSignal(0, objId(), "bookmarksChanged(QString)", "notifyChanged(QString)", false);
 }
 
 KBookmarkManager::~KBookmarkManager()
@@ -444,9 +446,12 @@ void KBookmarkManager::emitChanged( KBookmarkGroup & group )
 
     // Tell the other processes too
     // kdDebug(7043) << "KBookmarkManager::emitChanged : broadcasting change " << group.address() << endl;
-    QCString objId( "KBookmarkManager-" );
-    objId += m_bookmarksFile.utf8();
-    DCOPRef( "*", objId ).send( "notifyChanged", group.address() );
+
+    QByteArray data;
+    QDataStream ds( data, IO_WriteOnly );
+    ds << group.address();
+            
+    emitDCOPSignal("bookmarksChanged(QString)", data);
 
     // We do get our own broadcast, so no need for this anymore
     //emit changed( group );
@@ -474,8 +479,9 @@ void KBookmarkManager::notifyChanged( QString groupAddress ) // DCOP call
     if (!m_update) return;
 
     // Reparse (the whole file, no other choice)
-    // Of course, if we are the emitter this is a bit stupid....
-    parse();
+    // if someone else notified us
+    if (callingDcopClient()->senderId() != DCOPClient::mainClient()->appId())
+       parse();
 
     //kdDebug(7043) << "KBookmarkManager::notifyChanged " << groupAddress << endl;
     //KBookmarkGroup group = findByAddress( groupAddress ).toGroup();
