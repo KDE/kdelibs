@@ -429,7 +429,7 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *pa
 {
     d = 0;
     KHTMLFactory::registerPart( this );
-    setInstance( KHTMLFactory::instance() ); // doesn't work inside init() for derived classes
+    setInstance( KHTMLFactory::instance(), prof == BrowserViewGUI ); // doesn't work inside init() for derived classes
     // Why?? :-} (Simon)
     init( new KHTMLView( this, parentWidget, widgetname ), prof );
 }
@@ -439,7 +439,7 @@ KHTMLPart::KHTMLPart( KHTMLView *view, QObject *parent, const char *name, GUIPro
 {
     d = 0;
     KHTMLFactory::registerPart( this );
-    setInstance( KHTMLFactory::instance() );
+    setInstance( KHTMLFactory::instance(), prof == BrowserViewGUI );
     assert( view );
     init( view, prof );
 }
