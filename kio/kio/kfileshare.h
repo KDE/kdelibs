@@ -79,8 +79,8 @@ public:
      * Uses a suid perl script to share the given path 
      * with NFS and Samba
      * @param path the path to share
-     * @param wether the path should be shared or not
-     * @returns wether the perl script was successful
+     * @param shared whether the path should be shared or not
+     * @returns whether the perl script was successful
      */
     static bool setShared( const QString& path, bool shared );
     
@@ -94,14 +94,14 @@ public:
     enum ShareMode { Simple, Advanced };
     
     /**
-     * Returns wether sharing is enabled
+     * Returns whether sharing is enabled
      * If this is false, file sharing is disabled and
      * nobody can share files.
      */
     static bool sharingEnabled();
     
     /**
-     * Returns wether file sharing is restricted.
+     * Returns whether file sharing is restricted.
      * If it is not restricted every user can shar files.
      * If it is restricted only users in the configured
      * file share group can share files.
@@ -121,12 +121,12 @@ public:
     static ShareMode shareMode();
     
     /**
-     * Returns wether Samba is enabled
+     * Returns whether Samba is enabled
      */
     static bool sambaEnabled();
     
     /** 
-     * Returns wether NFS is enabled
+     * Returns whether NFS is enabled
      */
     static bool nfsEnabled();
 
