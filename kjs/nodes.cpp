@@ -3043,7 +3043,12 @@ Completion SourceElementsNode::execute(ExecState *exec)
   Completion c2 = element->execute(exec);
   KJS_CHECKEXCEPTION
 
-  return c2;
+  // The spec says to return c2 here, but it seems that mozilla returns c1 if
+  // c2 doesn't have a value
+  if (c2.value().isNull())
+    return c1;
+  else
+    return c2;
 }
 
 // ECMA 14
