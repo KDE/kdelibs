@@ -88,7 +88,9 @@ int KDEsuClient::connect()
     }
 
 #ifndef SO_PEERCRED
+#ifdef __GNUC__
 #warning "Using sloppy security checks"
+#endif
     // We check the owner of the socket after we have connected.
     // If the socket was somehow not ours an attacker will be able
     // to delete it after we connect but shouldn't be able to
