@@ -239,10 +239,19 @@ KTabListBox::KTabListBox(QWidget *parent, const char *name, int columns,
 //-----------------------------------------------------------------------------
 KTabListBox::~KTabListBox()
 {
-  if (colList)  delete[] colList;
-  if (itemList) delete[] itemList;
-  colList  = NULL;
-  itemList = NULL;
+    int i;
+    if (colList) {
+	for (i = 0; i < numColumns; i++)
+	    delete colList[i];
+	::free(colList);
+    }
+    if (itemList) {
+	for (i = 0; i < maxItems; i++)
+	    delete itemList[i];
+	::free(itemList);
+    }
+    colList  = NULL;
+    itemList = NULL;
 }
 
 
@@ -263,24 +272,32 @@ void KTabListBox::setTabWidth(int aTabWidth)
 //-----------------------------------------------------------------------------
 void KTabListBox::setNumCols(int aCols)
 {
-  maxItems = 0;
-
-  if (colList) delete[] colList;
-  if (itemList) delete[] itemList;
+  int i;
+  if (colList) {
+      for (i = 0; i < aCols; i++)
+	  delete colList[i];
+      ::free(colList);
+  }
+  if (itemList) {
+      for (i = 0; i < maxItems; i++)
+	  delete itemList[i];
+      ::free(itemList);
+  }
   colList  = NULL;
   itemList = NULL;
-
+  maxItems = 0;
+  
   if (aCols < 0) aCols = 0;
   lbox.setNumCols(aCols);
   numColumns = aCols;
   if (aCols <= 0) return;
   
-  colList  = new (KTabListBoxColumn*)[aCols];
-  int i;
+  colList  = (KTabListBoxColumn**)malloc(aCols * sizeof(KTabListBoxColumn*));
+  
   for (i = 0; i < aCols; i++)
       colList[i] = new KTabListBoxColumn(this);
   
-  itemList = new (KTabListBoxItem*)[INIT_MAX_ITEMS];
+  itemList = (KTabListBoxItem**)malloc(INIT_MAX_ITEMS * sizeof(KTabListBoxItem*));
   for (i = 0; i < aCols; i++)
       itemList[i] = new KTabListBoxItem(aCols);
 
@@ -587,7 +604,7 @@ void KTabListBox::resizeList(int newNumItems)
   if (newNumItems < 0) newNumItems =(maxItems << 1);
   if (newNumItems < INIT_MAX_ITEMS) newNumItems = INIT_MAX_ITEMS;
 
-  newItemList = new (KTabListBoxItem*)[newNumItems];
+  newItemList = (KTabListBoxItem**)malloc(newNumItems * sizeof(KTabListBoxItem*));
   int nc = numCols();
   for (i = 0; i < newNumItems; i++)
       newItemList[i] = new KTabListBoxItem[nc];
@@ -600,7 +617,7 @@ void KTabListBox::resizeList(int newNumItems)
 
   for (i = 0; i < maxItems; i++)
       delete itemList[i];
-  delete[] itemList;
+  free( itemList );
   itemList = newItemList;
   maxItems = newNumItems;
 
