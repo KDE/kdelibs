@@ -2331,15 +2331,13 @@ KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget, const char *
                                              QString &serviceName, QStringList &serviceTypes,
                                              const QStringList &params )
 {
-  QString constr = QString::fromLatin1( "('KParts/ReadOnlyPart' in ServiceTypes)" );
-
+  QString constr;
   if ( !serviceName.isEmpty() )
-    constr.append( QString::fromLatin1( "and ( Name == '%1' )" ).arg( serviceName ) );
+    constr.append( QString::fromLatin1( "Name == '%1'" ).arg( serviceName ) );
 
-  KTrader::OfferList offers = KTrader::self()->query( mimetype, constr );
+  KTrader::OfferList offers = KTrader::self()->query( mimetype, "KParts/ReadOnlyPart", constr, QString::null );
 
-  //  assert( offers.count() >= 1 );
-  if ( offers.count() == 0 )
+  if ( offers.isEmpty() )
     return 0L;
 
   KService::Ptr service = *offers.begin();
