@@ -351,6 +351,11 @@ void RenderFlow::layoutBlockChildren()
     }
     //kdDebug() << "RenderFlow::layoutBlockChildren " << prevMargin << endl; 
 
+    // take care in case we inherited floats
+    if (child && floatBottom() > m_height)
+	child->setLayouted(false);
+
+    
     //QTime t;
     //t.start();
 

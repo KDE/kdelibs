@@ -410,16 +410,21 @@ void RenderBox::updateHeight()
         int oldHeight = m_height;
         setLayouted(false);
 
-        if (hasOverhangingFloats())
-            if(cb != this) cb->updateHeight();
+	bool overhanging = hasOverhangingFloats();
 
         layout();
 
-        if(m_height != oldHeight) {
-            if(cb != this) cb->updateHeight();
-        } else {
-            cb->repaint();
-        }
+	overhanging |= hasOverhangingFloats();
+
+	if ( overhanging ) {
+	    if ( nextSibling() )
+		nextSibling()->setLayouted( false );
+	    if(cb != this) cb->updateHeight();
+	} else if(m_height != oldHeight) {
+	    if(cb != this) cb->updateHeight();
+	} else {
+	    cb->repaint();
+	}
     }
 }
 
