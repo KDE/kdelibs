@@ -239,7 +239,7 @@ void KCompletionBox::popup()
         clearSelection();
         if ( !isVisible() )
             show();
-        else if ( size().height() < sizeHint().height() )
+        else if ( size().height() != sizeHint().height() )
             resize( sizeHint() );
     }
 }
