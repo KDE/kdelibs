@@ -719,6 +719,8 @@ private slots:
     */
     void shuttingDown();
 
+    void saveAutoSaveSettings();
+
 private:
     KMenuBar *internalMenuBar();
     KStatusBar *internalStatusBar();
