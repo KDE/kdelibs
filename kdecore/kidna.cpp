@@ -90,11 +90,16 @@ QCString KIDNA::toAsciiCString(const QString &idna)
    }
    else 
    {
+      // Also handle names that start with "." even though libidn
+      // doesn't like those
+      bool bStartsWithDot = (idna[0] == '.');
       char *pOutput;
-      if ((*KIDNA_utf8_to_ace)(idna.utf8(), &pOutput) == IDNA_SUCCESS)
+      if ((*KIDNA_utf8_to_ace)(idna.utf8().data()+(bStartsWithDot ? 1: 0), &pOutput) == IDNA_SUCCESS)
       {
          QCString result = pOutput;
          free(pOutput);
+         if (bStartsWithDot)
+            return "."+result;
          return result;
       }
       else
@@ -131,11 +136,16 @@ QString KIDNA::toAscii(const QString &idna)
    }
    else 
    {
+      // Also handle names that start with "." even though libidn
+      // doesn't like those
+      bool bStartsWithDot = (idna[0] == '.');
       char *pOutput;
-      if ((*KIDNA_utf8_to_ace)(idna.utf8(), &pOutput) == IDNA_SUCCESS)
+      if ((*KIDNA_utf8_to_ace)(idna.utf8().data()+(bStartsWithDot ? 1: 0), &pOutput) == IDNA_SUCCESS)
       {
          QString result(pOutput);
          free(pOutput);
+         if (bStartsWithDot)
+            return "."+result;
          return result;
       }
       else
