@@ -49,10 +49,10 @@ int main(int argc, char *argv[])
 
     DOMTreeView * dtv = new DOMTreeView(0, doc, "DomTreeView");
     dtv->show();
-    dtv->setGeometry(5, 0, 200, 800);
+    dtv->setGeometry(0, 0, 360, 800);
 
     toplevel->setCentralWidget( doc->widget() );
-    toplevel->setGeometry(215, 0, 800, 800);
+    toplevel->setGeometry(366, 0, 640, 800);
 
     toplevel->guiFactory()->addClient( doc );
 

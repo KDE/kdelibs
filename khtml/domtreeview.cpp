@@ -33,74 +33,46 @@ DOMTreeView::~DOMTreeView()
 {
 }
 
-void DOMTreeView::setRootNode(const DOM::Node &pNode)
-{
-    document = pNode;
-}
-
-void DOMTreeView::selectNode(DOM::Node pNode)
-{
-    kdDebug() << "Node selected!" << endl;
-    QListViewItem *t_selItem = m_itemdict[&pNode];
-    setSelected(t_selItem,true);
-}
-
 void DOMTreeView::showTree(const DOM::Node &pNode)
 {
-    clear();
-    if (document.isNull() || document.handle()!=pNode.ownerDocument().handle())
+    if (pNode.isNull())
     {
+	kdDebug()<<"Null node selected!"<<endl;
+	return;
+    }
+    if (document != pNode.ownerDocument())
+    {
+	kdDebug()<<"document has changed! "<<endl;
+	kdDebug()<<"node at:"<<pNode.handle()<<endl;
+	clear();
 	m_itemdict.clear();
-	kdDebug()<<"starting new treeview.\n";
 	if (!pNode.ownerDocument().isNull())
-	    recursive(0, pNode.ownerDocument(), pNode);
+	    recursive(0, pNode.ownerDocument());
 	else
-	    recursive(0, pNode, 0);
+	    recursive(0, pNode);
     }
-    else
-    {
-	ensureItemVisible(m_itemdict[pNode.handle()]);
-	m_itemdict[pNode.handle()]->setSelected(true);
-    }
+    setCurrentItem(m_itemdict[pNode.handle()]);
+    ensureItemVisible(m_itemdict[pNode.handle()]);
 }
 
-void DOMTreeView::recursive(const DOM::Node &pNode, const DOM::Node &node, const DOM::Node &sNode)
+void DOMTreeView::recursive(const DOM::Node &pNode, const DOM::Node &node)
 {
-    kdDebug()<<"recursing into "<<node.nodeName().string()<<endl;
     QListViewItem *cur_item;
     if(node.ownerDocument().isNull())
     {
 	cur_item = new QListViewItem((QListView *) this, node.nodeName().string(), node.nodeValue().string());
-	document = pNode.ownerDocument();
+	document = node;
     }
     else
 	cur_item = new QListViewItem(m_itemdict[pNode.handle()], node.nodeName().string(), node.nodeValue().string());
-
-    if(node.childNodes().length() != 0)
-	cur_item->setExpandable(true);
 
     m_itemdict.insert(node.handle(), cur_item);
 
     DOM::Node cur_child = node.firstChild();
     while (!cur_child.isNull())
     {
-	recursive(node, cur_child, sNode);
+	recursive(node, cur_child);
 	cur_child = cur_child.nextSibling();
     }
-
-    cur_item->setOpen(true);
-    if (sNode.handle() == node.handle())
-	cur_item->setSelected(true);
 }
 
-void DOMTreeView::showPartTree()
-{
-    showTree(part->document());
-}
-
-void DOMTreeView::updateTree()
-{
-    clear();
-    m_itemdict.clear();
-    showTree(document);
-}

@@ -31,16 +31,10 @@ class DOMTreeView : public KListView
 	DOMTreeView(QWidget *parent, KHTMLPart *part, const char * name = 0);
 	~DOMTreeView();
 
-	void recursive(const DOM::Node &pNode, const DOM::Node &node, const DOM::Node &sNode);
-	void selectedRecursive(const DOM::Node &pNode);
-	void setRootNode(const DOM::Node &pNode);
+	void recursive(const DOM::Node &pNode, const DOM::Node &node);
 	
     public slots:
 	void showTree(const DOM::Node &pNode);
-	void selectNode(DOM::Node pNode);
-	void updateTree();
-
-	void showPartTree();
 
     private:
 	QPtrDict<QListViewItem> m_itemdict;
