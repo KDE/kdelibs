@@ -23,15 +23,8 @@
 //#define DEBUG_LAYOUT
 //#define BIDI_DEBUG
 
-#if 0
-// #### for debugging Qt
-#define private public
-#include <qfontmetrics.h>
-#undef private
-#include <qtextcodec.h>
-#endif
-
 #include "render_text.h"
+#include "break_lines.h"
 #include "render_style.h"
 
 #include "misc/loader.h"
@@ -584,7 +577,7 @@ void RenderText::calcMinMaxWidth()
         char c;
         do {
             wordlen++;
-        } while( !(isBreakable( str->s+i+wordlen )) && i+wordlen < len); // && c != '-'
+        } while( !(isBreakable( str->s, i+wordlen, str->l )) && i+wordlen < len); // && c != '-'
         if(i+wordlen < len) wordlen--;
         if (wordlen)
         {

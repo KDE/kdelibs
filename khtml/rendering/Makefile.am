@@ -24,7 +24,7 @@ AM_CPPFLAGS = -DQT_NO_CAST_ASCII -DQT_NO_ASCII_CAST
 
 noinst_LTLIBRARIES = libkhtmlrender.la
 libkhtmlrender_la_SOURCES = \
-	bidi.cpp \
+	bidi.cpp break_lines.cpp \
 	render_style.cpp render_object.cpp render_box.cpp \
 	render_flow.cpp render_text.cpp \
 	render_image.cpp render_table.cpp \
@@ -36,7 +36,9 @@ libkhtmlrender_la_METASOURCES = AUTO
 
 #include_HEADERS =
 
-noinst_HEADERS = render_style.h render_object.h render_box.h \
+noinst_HEADERS = \
+	bidi.h break_lines.h \
+	render_style.h render_object.h render_box.h \
 	render_flow.h render_text.h render_box.h render_replaced.h \
 	render_form.h render_list.h render_root.h render_frames.h \
 	render_br.h render_applet.h render_hr.h

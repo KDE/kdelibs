@@ -21,6 +21,7 @@
  * $Id$
  */
 #include "bidi.h"
+#include "break_lines.h"
 #include "render_flow.h"
 #include "render_text.h"
 using namespace khtml;
@@ -908,69 +909,36 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
             tmpW += o->width();
         } else if ( o->isText() ) {
             RenderText *t = static_cast<RenderText *>(o);
-            QChar *ch = t->text() + pos;
-            int len = t->length() - pos;
-#if 0
-            if(t->isFixedWidthFont()) {
+            QChar *str = t->text();
+	    int strlen = t->length();
+            int len = strlen - pos;
+	    // proportional font, needs a bit more work.
+	    int lastSpace = pos;
+	    while(len) {
+		if( isBreakable( str, pos, strlen ) ) {
+		    tmpW += t->width(lastSpace, pos - lastSpace);
 #ifdef DEBUG_LINEBREAKS
-                kdDebug(6041) << "using fixed algorithm" << endl;
+		    kdDebug(6041) << "found space adding " << tmpW << " new width = " << w <<" word='"<< QConstString(lastSpace, pos - lastSpace).string() << "'" << endl;
 #endif
-                int chWidth = fm->width(*ch);
-                while(len) {
-                    if( ch->direction() == QChar::DirWS || *ch == '\n' ) {
-#ifdef DEBUG_LINEBREAKS
-                        kdDebug(6041) << "found space tmpW = " << tmpW << " w = " << w << endl;
-#endif
-                        if ( w + tmpW > width )
-                            goto end;
-                        lBreak.obj = o;
-                        lBreak.pos = pos;
-                        if( *ch == '\n' ) {
-#ifdef DEBUG_LINEBREAKS
-                            kdDebug(6041) << "forced break sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w << endl;
-#endif
-                            return lBreak;
-                        }
-                        w += tmpW;
-                        tmpW = 0;
-                    }
-                    tmpW += chWidth;
-                    ch++;
-                    pos++;
-                    len--;
-                }
-            } else
-#endif
-            {
-                // proportional font, needs a bit more work.
-                int lastSpace = pos;
-                while(len) {
-                    if( isBreakable( ch ) ) {
-                        tmpW += t->width(lastSpace, pos - lastSpace);
-#ifdef DEBUG_LINEBREAKS
-                        kdDebug(6041) << "found space adding " << tmpW << " new width = " << w <<" word='"<< QConstString(lastSpace, ch - lastSpace).string() << "'" << endl;
-#endif
-                        if ( w + tmpW > width )
-                            goto end;
-                        lBreak.obj = o;
-                        lBreak.pos = pos;
+		    if ( w + tmpW > width )
+			goto end;
+		    lBreak.obj = o;
+		    lBreak.pos = pos;
 
-                        if( *ch == '\n' ) {
+		    if( *(str+pos) == '\n' ) {
 #ifdef DEBUG_LINEBREAKS
-                            kdDebug(6041) << "forced break sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w << endl;
+			kdDebug(6041) << "forced break sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w << endl;
 #endif
-                            return lBreak;
-                        }
-                        w += tmpW;
-                        tmpW = 0;
-                        lastSpace = pos;
-                    }
-                    ch++;
-                    pos++;
-                    len--;
-                }
-	tmpW += t->width(lastSpace, pos - lastSpace);
-            }
+			return lBreak;
+		    }
+		    w += tmpW;
+		    tmpW = 0;
+		    lastSpace = pos;
+		}
+		pos++;
+		len--;
+	    }
+	    tmpW += t->width(lastSpace, pos - lastSpace);
         } else
             assert( false );
 
