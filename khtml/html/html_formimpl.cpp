@@ -477,13 +477,15 @@ void HTMLGenericFormElementImpl::onChange()
 
 void HTMLGenericFormElementImpl::blur()
 {
-    static_cast<RenderFormElement*>(m_render)->blur();
+    if(m_render)
+        static_cast<RenderFormElement*>(m_render)->blur();
 //    onBlur(); // ### enable this - but kjs needs to support re-entry
 }
 
 void HTMLGenericFormElementImpl::focus()
 {
-    static_cast<RenderFormElement*>(m_render)->focus();
+    if(m_render)
+        static_cast<RenderFormElement*>(m_render)->focus();
 //    onFocus(); // ### enable this - but kjs needs to support re-entry
 }
 
@@ -717,6 +719,8 @@ void HTMLInputElementImpl::focus(  )
 
 void HTMLInputElementImpl::select(  )
 {
+    if(!m_render) return;
+
     if (_type == TEXT || _type == PASSWORD)
         static_cast<RenderLineEdit*>(m_render)->select();
     else if (_type == FILE)
