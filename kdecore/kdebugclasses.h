@@ -60,6 +60,7 @@ inline kndbgstream operator<<( kndbgstream str, const QSize & )  { return str; }
 inline kndbgstream operator<<( kndbgstream str, const QRect & )  { return str; }
 inline kndbgstream operator<<( kndbgstream str, const KURL & )  { return str; }
 inline kndbgstream operator<<( kndbgstream str, const QStringList & ) { return str; }
+inline kndbgstream operator<<( kndbgstream str, const QRegion & ) { return str; }
 
 #endif
 
