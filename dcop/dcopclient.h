@@ -89,6 +89,14 @@ class DCOPClient : public QObject
    *
    * Naturally, only attached application can use DCOP services.
    *
+   * If a QApplication oject exist the client registers itself as
+   * QApplication->name() + "-" + <pid>.
+   * If no QApplication object exists the client registers itself as
+   * "anonymous".
+   *
+   * If you want to register differently, you should use registerAs()
+   * instead. 
+   *
    * @return true if attaching was successful.
    */
   bool attach();
@@ -110,7 +118,6 @@ class DCOPClient : public QObject
    */
   bool isAttached() const;
 
-
   /**
    * Register at the DCOP server.  If the application was already registered,
    * the registration will be re-done with the new appId.
@@ -118,7 +125,8 @@ class DCOPClient : public QObject
    * @p appId is a UNIQUE application/program id that the server
    * will use to associate requests with. If there is already an application
    * registered with the same name, the server will add a number to the
-   * id to unify it.
+   * id to unify it. If addPID is true, the PID of the current process
+   * will be added to id.
    *
    * Registration is necessary if you want to allow other clients to talk
    * to you.  They can do so using your @p appId as first parameter
@@ -129,7 +137,7 @@ class DCOPClient : public QObject
    * @returns the actuall appId used for the registration or a null string
    * if the registration wasn't successfull.
    */
-  QCString registerAs( const QCString& appId );
+  QCString registerAs( QCString appId, bool addPID = true );
 
   /**
    * Query whether or not the client is registered at the server.

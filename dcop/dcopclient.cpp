@@ -307,7 +307,7 @@ void DCOPClient::setServerAddress(const QCString &addr)
 
 bool DCOPClient::attach()
 {
-    return attachInternal();
+    return attachInternal( true );
 }
 
 void DCOPClient::bindToApp()
@@ -402,7 +402,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
     bindToApp();
 
     if ( registerAsAnonymous )
-	registerAs( "anonymous" );
+	registerAs( "anonymous", true );
 
     return true;
 }
@@ -435,13 +435,27 @@ bool DCOPClient::isAttached() const
 }
 
 
-QCString DCOPClient::registerAs( const QCString& appId )
+QCString DCOPClient::registerAs( QCString appId, bool addPID )
 {
     QCString result;
+
+    // Detach before reregistering.
+    if ( isRegistered() )
+    {
+       detach();
+    }
+
     if ( !isAttached() ) {
 	if ( !attachInternal( FALSE ) ) {
 	    return result;
 	}
+    }
+
+    if (addPID)
+    {
+       QCString pid;
+       pid.sprintf("-%d", getpid());
+       appId = appId + pid;
     }
 	
     // register the application identifier with the server
