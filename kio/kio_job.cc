@@ -40,7 +40,9 @@ KIOJob::KIOJob(const char *name) : QObject(0, name), IOJob( 0L )
 {
   m_id = ++s_id;
 
-  assert( s_mapJobs );
+  if (!s_mapJobs) 
+    fatal("A KIOJob could't be created. \
+           Call KIOJob::initStatic() after your kapplication constructor !");
   (*s_mapJobs)[ m_id ] = this;
   
   m_bAutoDelete = true;
