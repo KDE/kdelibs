@@ -2,6 +2,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=kab2kabc
+Name[af]=kab-na-kabc
 Name[eo]=Konvertilo de "libkab" al "libkabc"
 Name[fr]=KAB2KABC
 Name[hu]=Kab2KabC
@@ -16,6 +17,7 @@ Exec=kab2kabc --disable-autostart
 Icon=misc
 Type=Application
 Comment=libkab to libkabc conversion tool.
+Comment[af]=libkab na libkabc omskakeling program.
 Comment[ar]=أداة تحويل libkab إلى libkabc.
 Comment[bs]=alat za pretvaranje libkab u libkabc.
 Comment[cs]=Převod dat z libkab do libkabc.
