@@ -20,6 +20,9 @@
    CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef DCOPGLOBAL_H
+#define DCOPGLOBAL_H "$Id$"
+
 #define DCOPVendorString "KDE"
 #define DCOPReleaseString "1.0"
 #define DCOPVersionMajor 1
@@ -48,3 +51,5 @@ struct DCOPMsg {
   CARD8 data[2];
   CARD32 length B32;
 };
+
+#endif

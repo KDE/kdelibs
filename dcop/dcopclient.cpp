@@ -22,15 +22,24 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ******************************************************************/
 
-#include <dcopclient.moc>
-#include <dcopclient.h>
-#include <ctype.h>
-
-#include <unistd.h>
-#include <stdlib.h>
+#include <sys/types.h>
 #include <sys/file.h>
 
-#define INT32 QINT32
+#include <ctype.h>
+#include <unistd.h>
+#include <stdlib.h>
+
+//#define INT32 QINT32
+
+
+#include <qtextstream.h>
+#include <qfile.h>
+#include <qsocketnotifier.h>
+
+#include <dcopserver.h>
+#include <dcopglobal.h>
+#include <dcopclient.h>
+#include <dcopobject.h>
 
 #include <X11/Xmd.h>
 extern "C" {
@@ -39,13 +48,6 @@ extern "C" {
 #include <X11/ICE/ICEmsg.h>
 #include <X11/ICE/ICEproto.h>
 }
-
-#include <qtextstream.h>
-#include <qfile.h>
-#include <qsocketnotifier.h>
-
-#include <dcopglobal.h>
-#include <dcopobject.h>
 
 class DCOPClientPrivate
 {
@@ -626,3 +628,6 @@ QCString DCOPClient::defaultObject() const
 {
     return d->defaultObject;
 }
+
+#include <dcopclient.moc>
+
