@@ -30,6 +30,7 @@
 #include <kprotocolmanager.h>
 #include <kprotocolinfo.h>
 #include <ktempfile.h>
+#include <kstddirs.h>
 
 #include "kio/global.h"
 #include "kio/connection.h"
@@ -126,7 +127,8 @@ KLauncher::KLauncher(int _kdeinitSocket)
    connect(dcopClient(), SIGNAL( applicationRegistered( const QCString &)),
            this, SLOT( slotAppRegistered( const QCString &)));
 
-   KTempFile domainname(QString::null, QString::fromLatin1(".slave-socket"));
+   QString prefix = locateLocal("socket", "klauncher");
+   KTempFile domainname(prefix, QString::fromLatin1(".slave-socket"));
    if (domainname.status() != 0)
    {
       // Sever error!

@@ -35,6 +35,8 @@
 #include <dcopclient.h>
 #include <kdebug.h>
 #include <klocale.h>
+#include <kglobal.h>
+#include <kstddirs.h>
 #include <kapp.h>
 #include <ktempfile.h>
 #include <ksock.h>
@@ -202,7 +204,8 @@ Slave* Slave::createSlave( const KURL& url, int& error, QString& error_text )
     if (!client->isAttached())
 	client->attach();
 
-    KTempFile socketfile(QString::null, QString::fromLatin1(".slave-socket"));
+    QString prefix = locateLocal("socket", KGlobal::instance()->instanceName());
+    KTempFile socketfile(prefix, QString::fromLatin1(".slave-socket"));
 
     KServerSocket *kss = new KServerSocket(QFile::encodeName(socketfile.name()));
 
