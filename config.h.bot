@@ -47,3 +47,13 @@ int gethostname (char *Name, int Namelen);
 #define inline __inline
 #endif
 #endif
+
+/*
+ * jpeg.h needs HAVE_BOOLEAN, when the system uses boolean in system
+ * headers and I'm too lazy to write a configure test as long as only
+ * unixware is related
+ */
+#ifdef _UNIXWARE
+#define HAVE_BOOLEAN
+#endif
+
