@@ -1,3 +1,8 @@
+1999-08-07  Bernhard Rosenkraenzer <bero@ms-windows-2000.com>
+
+	* Makefile.cvs: Work around an autoconf bug preventing from
+	  compiling with gcc 2.95 (inline detection)
+
 1998-12-05  Alex Zepeda  <garbanzo@hooked.net>
 
 	* README: Complete overhaul.
