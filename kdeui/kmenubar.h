@@ -20,6 +20,9 @@
 
 //$Id$
 //$Log$
+//Revision 1.28  1999/10/10 08:18:57  bero
+//Code cleanup ((void) stuff)
+//
 //Revision 1.27  1999/10/08 22:49:18  bero
 //- Replace KTopLevelWidget with KTMainWindow where it's still used
 //- Disable ktopwidget.h
@@ -79,10 +82,14 @@ class KStyleMenuBarInternal : public QMenuBar
 {
 public:
     KStyleMenuBarInternal(QWidget *parent=0, const char *name=0)
-        : QMenuBar(parent, name){;}
+        : QMenuBar(parent, name){mouseActive = false;}
     ~KStyleMenuBarInternal(){;}
 protected:
     void drawContents(QPainter *p);
+    void enterEvent(QEvent *ev);
+    void leaveEvent(QEvent *ev);
+
+    bool mouseActive;
 };
     
 

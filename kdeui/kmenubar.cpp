@@ -48,6 +48,10 @@
 
 // $Id$
 // $Log$
+// Revision 1.86  1999/10/28 12:29:16  mosfet
+// New KStyle drawing code. David: This should fix the active item repaint
+// problem. I finally started getting it too ;-)
+//
 // Revision 1.85  1999/10/09 09:48:44  kalle
 // more get killing
 // You need to cvs update your libc (joke!)
@@ -1107,6 +1111,7 @@ void KStyleMenuBarInternal::drawContents(QPainter *p)
         QMenuBar::drawContents(p);
     else{
         int i, x, y, nlitems;
+        bool popupshown;
         QFontMetrics fm = fontMetrics();
         stylePtr->drawKMenuBar(p, 0, 0, width(), height(), colorGroup(),
                                NULL);
@@ -1136,12 +1141,27 @@ void KStyleMenuBarInternal::drawContents(QPainter *p)
                     y += h + motifBarHMargin;
                 }
             }
+            popupshown = mi->popup() ? mi->popup()->isVisible() : false;
             stylePtr->drawKMenuItem(p, x, y, w, h, mi->isEnabled()  ?
                                     palette().normal() : palette().disabled(),
-                                    i == actItem, mi, NULL);
+                                    i == actItem && (hasFocus() || mouseActive
+                                                     || popupshown),
+                                    mi, NULL);
             x += w;
         }
     }
+}
+
+void KStyleMenuBarInternal::enterEvent(QEvent *ev)
+{
+    mouseActive = true;
+    QMenuBar::enterEvent(ev);
+}
+
+void KStyleMenuBarInternal::leaveEvent(QEvent *ev)
+{
+    mouseActive = false;
+    QMenuBar::leaveEvent(ev);
 }
 
 #include "kmenubar.moc"
