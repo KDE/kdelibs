@@ -51,6 +51,7 @@ MarginWidget::MarginWidget(QWidget *parent, const char* name, bool allowMetricUn
 	{
 		m_units->insertItem(i18n("Inches (in)"));
 		m_units->insertItem(i18n("Centimeters (cm)"));
+		m_units->insertItem( i18n( "Millimeters (mm)" ) );
 	}
 	m_units->setCurrentItem(0);
 	connect(m_units, SIGNAL(activated(int)), m_top, SLOT(setMode(int)));

@@ -52,6 +52,7 @@ int MarginValueWidget::toPixel(double value, int mode)
 		case Pixels: return (int)value;
 		case IN: return (int)(rint(value * m_dpi));
 		case CM: return (int)(rint(value * m_dpi / 2.54));
+		case MM: return (int)(rint(value * m_dpi / 25.4));
 	}
 }
 
@@ -66,10 +67,12 @@ double MarginValueWidget::toValue(int pix, int mode)
 			return (double(pix) / m_dpi);
 		case CM:
 			return (double(pix) * 2.54 / m_dpi);
+		case MM:
+			return ( double( pix ) * 25.4 / m_dpi );
 	}
 }
 
-void MarginValueWidget::slotValueChanged(double value)
+void MarginValueWidget::slotValueChanged(double)
 {
 	if (!m_block)
 		emit marginChanged(margin());
