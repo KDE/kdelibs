@@ -388,6 +388,18 @@ public slots:
     void addItem( const QString& );
 
     /**
+     * Adds an item to the list of available completions.
+     * Resets the current item-state (@ref previousMatch() and @ref nextMatch()
+     * won't work anymore).
+     *
+     * Sets the weighting of the item to @p weight or adds it to the current
+     * weighting if the item is already available. The weight has to be greater
+     * than 1 to take effect (default weight is 1).
+     */
+    void addItem( const QString&, uint weight );
+
+
+    /**
      * Removes an item from the list of available completions.
      * Resets the current item-state (@ref previousMatch() and @ref nextMatch()
      * won't work anymore).
@@ -449,7 +461,7 @@ protected:
     virtual void postProcessMatches( QStringList * /*matches*/ ) {}
 
 private:
-    void 		addItemInternal( const QString&, bool weighted=false );
+    void 		addWeightedItem( const QString& );
     QString 		findCompletion( const QString& string );
     const QStringList& 	findAllCompletions( const QString& );
     void 		extractStringsFromNode( const KCompTreeNode *,

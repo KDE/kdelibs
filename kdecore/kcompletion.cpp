@@ -55,8 +55,14 @@ void KCompletion::insertItems( const QStringList& items )
 {
     bool weighted = (myOrder == Weighted);
     QStringList::ConstIterator it;
-    for ( it = items.begin(); it != items.end(); ++it )
-        addItemInternal( *it, weighted );
+    if ( weighted ) { // determine weight
+	for ( it = items.begin(); it != items.end(); ++it )
+	    addWeightedItem( *it );
+    }
+    else {
+	for ( it = items.begin(); it != items.end(); ++it )
+	    addItem( *it, 0 );
+    }
 }
 
 
@@ -76,32 +82,20 @@ void KCompletion::addItem( const QString& item )
     myRotationIndex = 0;
     myLastString = QString::null;
 
-    addItemInternal( item );
+    addItem( item, 0 );
 }
 
-
-void KCompletion::addItemInternal( const QString& item, bool weighted )
+void KCompletion::addItem( const QString& item, uint weight )
 {
+    if ( item.isEmpty() )
+	return;
+    
     QChar ch;
     KCompTreeNode *node = myTreeRoot;
     uint len = item.length();
-    uint weight = 0;
-
-    // find out the weighting of this item (appended to the string as ":num")
-    if ( weighted ) {
-	int index = item.findRev(':');
-	if ( index > 0 ) {
-	    bool ok;
-	    weight = item.mid( index + 1 ).toUInt( &ok );
-	    if ( !ok )
-		weight = 0;
-
-	    len = index; // only insert until the ':'
-	}
-    }
 
     bool sorted = (myOrder == Sorted);
-    weighted = (weighted && weight > 1);
+    bool weighted = ((myOrder == Weighted) && weight > 1);
     // knowing the weight of an item, we simply add this weight to all of its
     // nodes.
 
@@ -116,6 +110,28 @@ void KCompletion::addItemInternal( const QString& item, bool weighted )
     node = node->insert( 0x0, true );
     if ( weighted )
 	node->confirm( weight -1 );
+}
+
+void KCompletion::addWeightedItem( const QString& item )
+{
+    if ( myOrder != Weighted )
+	return addItem( item, 0 );
+
+    uint len = item.length();
+    uint weight = 0;
+
+    // find out the weighting of this item (appended to the string as ":num")
+    int index = item.findRev(':');
+    if ( index > 0 ) {
+	bool ok;
+	weight = item.mid( index + 1 ).toUInt( &ok );
+	if ( !ok )
+	    weight = 0;
+
+	len = index; // only insert until the ':'
+    }
+
+    return addItem( item.left( len ), weight );
 }
 
 
