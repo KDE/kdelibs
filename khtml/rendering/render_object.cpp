@@ -1007,6 +1007,22 @@ void RenderObject::paintOutline(QPainter *p, int _tx, int _ty, int w, int h, con
 
     const QColor& oc = style->outlineColor();
     EBorderStyle os = style->outlineStyle();
+    int offset = style->outlineOffset();
+
+#ifdef APPLE_CHANGES
+    if (style->outlineStyleIsAuto()) {
+        p->initFocusRing(ow, offset, oc);
+        addFocusRingRects(p, _tx, _ty);
+        p->drawFocusRing();
+        p->clearFocusRing();
+        return;
+    }
+#endif
+
+    _tx -= offset;
+    _ty -= offset;
+    w += 2*offset;
+    h += 2*offset;
 
     drawBorder(p, _tx-ow, _ty-ow, _tx, _ty+h+ow, BSLeft,
                QColor(oc), style->color(),
