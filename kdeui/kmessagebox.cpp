@@ -39,6 +39,7 @@
 #include <klistbox.h>
 #include <klocale.h>
 #include <kmessagebox.h>
+#include <knotifyclient.h>
 #include <kstdguiitem.h>
 #include <kactivelabel.h>
 #include <kiconloader.h>
@@ -52,10 +53,6 @@
   *
   * @author Waldo Bastian (bastian@kde.org)
   */
-
-#ifdef __GNUC__
-#warning FIXME - Implement Notification
-#endif
 
 static bool KMessageBox_queue = false;
 
@@ -87,6 +84,39 @@ static QPixmap themedMessageBoxIcon(QMessageBox::Icon icon)
        return QMessageBox::standardIcon(icon);
    else
        return ret;
+}
+
+static void sendNotification( QString message, 
+                              const QStringList& strlist, 
+                              QMessageBox::Icon icon,
+                              QWidget *parent )
+{
+    // create the message for KNotify
+    QString messageType;
+    switch ( icon )
+    {
+        case QMessageBox::Warning:
+            messageType = "messageWarning";
+            break;
+        case QMessageBox::Critical:
+            messageType = "messageCritical";
+            break;
+        case QMessageBox::Question:
+            messageType = "messageQuestion";
+            break;
+        default:
+            messageType = "messageInformation";
+            break;
+    }
+
+    if ( !strlist.isEmpty() )
+    {
+        for ( QStringList::ConstIterator it = strlist.begin(); it != strlist.end(); ++it )
+            message += "\n" + *it;
+    }
+
+    if ( !message.isEmpty() )
+        KNotifyClient::event( parent->winId(), messageType, message );
 }
 
 static QString qrichtextify( const QString& text )
@@ -233,12 +263,14 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon,
 	    if( btn->isDefault())
 		btn->setFocus();
 
+    sendNotification( text, strlist, icon, dialog->topLevelWidget() );
+    
     if (KMessageBox_queue)
     {
        KDialogQueue::queueDialog(dialog);
        return KMessageBox::Cancel; // We have to return something.
     }
-
+    
     // We use a QGuardedPtr because the dialog may get deleted
     // during exec() if the parent of the dialog gets deleted.
     // In that case the guarded ptr will reset to 0.
