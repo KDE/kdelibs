@@ -125,7 +125,7 @@ int SuProcess::ConverseSU(const char *password)
 	    } 
 	    break;
 	case 1:
-	    if (line.isEmpty()) {
+	    if (line.stripWhiteSpace().isEmpty()) {
 		state++;
 		break;
 	    }
