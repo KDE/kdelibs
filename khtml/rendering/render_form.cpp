@@ -165,8 +165,9 @@ void RenderFormElement::layout()
     calcHeight();
 
     if ( m_widget )
-        m_widget->resize( m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
-                          m_height-borderLeft()-borderRight()-paddingLeft()-paddingRight());
+        resizeWidget(m_widget,
+                     m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
+                     m_height-borderLeft()-borderRight()-paddingLeft()-paddingRight());
 
     if ( !style()->width().isPercent() )
         setLayouted();
@@ -304,21 +305,21 @@ void RenderSubmitButton::calcMinMaxWidth()
     KHTMLAssert( !minMaxKnown() );
 
     QString raw = rawText();
-    static_cast<QPushButton*>(m_widget)->setText(raw);
-    static_cast<QPushButton*>(m_widget)->setFont(style()->font());
+    QPushButton* pb = static_cast<QPushButton*>(m_widget);
+    pb->setText(raw);
+    pb->setFont(style()->font());
 
-    // this is a QLineEdit/RenderLineEdit compatible sizehint
-    QFontMetrics fm = QFontMetrics( m_widget->font() );
-    m_widget->constPolish();
-    QSize ts = fm.size( ShowPrefix, raw );
-    int h = ts.height() + 8;
-    int w = ts.width() + 2*fm.width( ' ' );
-    if ( m_widget->style().styleHint(QStyle::SH_GUIStyle) == Qt::WindowsStyle && h < 26 )
-        h = 22;
-    QSize s = QSize( w + 8, h ).expandedTo( m_widget->minimumSizeHint()).expandedTo( QApplication::globalStrut() );
+    bool empty = raw.isEmpty();
+    if ( empty )
+        raw = QString::fromLatin1("XXXX");
+    QFontMetrics fm = pb->fontMetrics();
+    int margin = pb->style().pixelMetric( QStyle::PM_ButtonMargin, pb);
+    QSize s(pb->style().sizeFromContents(
+                QStyle::CT_PushButton, pb, fm.size( ShowPrefix, raw))
+            .expandedTo(QApplication::globalStrut()));
 
-    setIntrinsicWidth( s.width() );
-    setIntrinsicHeight( s.height() );
+    setIntrinsicWidth( s.width() - margin / 2 );
+    setIntrinsicHeight( s.height() - margin / 2);
 
     RenderButton::calcMinMaxWidth();
 }
@@ -463,22 +464,11 @@ void RenderLineEdit::calcMinMaxWidth()
 
     int size = element()->size();
 
-    int h = fm.height();
+    int h = fm.lineSpacing();
     int w = fm.width( 'x' ) * (size > 0 ? size : 17); // "some"
-    if ( widget()->frame() ) {
-        h += 8;
-        // ### this is not really portable between all styles.
-        // I think one should try to find a generic solution which
-        // works with all possible styles. Lars.
-        // ### well, it is. it's the 1:1 copy of QLineEdit::sizeHint()
-        // the only reason that made me including this thingie is
-        // that I cannot get a sizehint for a specific number of characters
-        // in the lineedit from it. It's not my fault, it's Qt's. Dirk
-        if ( m_widget->style().styleHint(QStyle::SH_GUIStyle) == Qt::WindowsStyle && h < 26 )
-            h = 22;
-        s = QSize( w + 8, h ).expandedTo( QApplication::globalStrut() );
-    } else
-	s = QSize( w + 4, h + 4 ).expandedTo( QApplication::globalStrut() );
+    s = QSize(w + 2 + 2*widget()->frameWidth(),
+              QMAX(h, 14) + 2 + 2*widget()->frameWidth())
+        .expandedTo(QApplication::globalStrut());
 
     setIntrinsicWidth( s.width() );
     setIntrinsicHeight( s.height() );
@@ -504,6 +494,7 @@ void RenderLineEdit::updateFromElement()
         widget()->setCursorPosition(pos);
         widget()->blockSignals(false);
     }
+    widget()->setReadOnly(element()->readOnly());
 
     RenderFormElement::updateFromElement();
 }
@@ -557,17 +548,12 @@ void RenderFileButton::calcMinMaxWidth()
     QSize s;
     int size = element()->size();
 
-    int h = fm.height();
-    int w = fm.width( 'x' ) * (size > 0 ? size : 17);
-    w += fm.width( m_button->text() ) + 2*fm.width( ' ' );
-
-    if ( m_edit->frame() ) {
-        h += 8;
-        if ( m_widget->style().styleHint(QStyle::SH_GUIStyle) == Qt::WindowsStyle && h < 26 )
-            h = 22;
-        s = QSize( w + 8, h );
-    } else
-        s = QSize( w + 4, h + 4 );
+    int h = fm.lineSpacing();
+    int w = fm.width( 'x' ) * (size > 0 ? size : 17); // "some"
+    w += 6 + fm.width( m_button->text() ) + 2*fm.width( ' ' );
+    s = QSize(w + 2 + 2*m_edit->frameWidth(),
+              QMAX(h, 14) + 2 + 2*m_edit->frameWidth())
+        .expandedTo(QApplication::globalStrut());
 
     setIntrinsicWidth( s.width() );
     setIntrinsicHeight( s.height() );
@@ -985,7 +971,7 @@ void RenderSelect::updateSelection()
     }
     else {
         bool found = false;
-        int firstOption = listItems.size();
+        unsigned firstOption = listItems.size();
         i = listItems.size();
         while (i--)
             if (listItems[i]->id() == ID_OPTION) {
@@ -1008,7 +994,7 @@ void RenderSelect::updateSelection()
 // -------------------------------------------------------------------------
 
 TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
-    : QTextEdit(parent)
+    : KTextEdit(parent)
 {
     if(wrap != DOM::HTMLTextAreaElementImpl::ta_NoWrap) {
         setWordWrap(QTextEdit::WidgetWidth);
@@ -1044,7 +1030,7 @@ bool TextAreaWidget::event( QEvent *e )
             }
         }
     }
-    return QTextEdit::event( e );
+    return KTextEdit::event( e );
 }
 
 // -------------------------------------------------------------------------

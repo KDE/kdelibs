@@ -44,6 +44,7 @@ class QListboxItem;
 #include <kcombobox.h>
 #include "dom/dom_misc.h"
 
+typedef class QTextEdit KTextEdit;
 class KHTMLPartBrowserExtension;
 
 namespace DOM {
@@ -370,7 +371,7 @@ protected slots:
 
 // -------------------------------------------------------------------------
 
-class TextAreaWidget : public QTextEdit
+class TextAreaWidget : public KTextEdit
 {
 public:
     TextAreaWidget(int wrap, QWidget* parent);
