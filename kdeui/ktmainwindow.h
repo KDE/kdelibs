@@ -28,8 +28,8 @@
  * KTMainWindow and - unlike old KTopLevelWidget - may, but do not
  * have to be deleted by you. KTMainWindow will handle that internaly.
  *
- * The behaviour of KTMainWidget has changed significantly compared to
- * earlier version. The widget now uses Qt geometry management. An
+ * The behaviour of KTMainWindow has changed significantly compared to
+ * earlier version. The widget now uses Qt-like geometry management. An
  * application programmer does not have to worry about calling or
  * overloading this function. The geometry management should be
  * transparent. The application must define it's minimum and maximum
@@ -40,8 +40,9 @@
  * KTMainWindow will take this into account. For fixed size windows set
  * your main widget to a fixed size.
  *
- * Fixed aspect ratios are not supported yet. This will require interaction
- * with the WM for smooth a operation. It is beeing investigated.
+ * Fixed aspect ratios (heightForWidth()) are and fixed width widgets
+ * not supported yet. This will require interaction with the WM for
+ * smooth a operation. It is beeing investigated.
  *
  * KTMainWindow will set icon, mini icon and caption, which it gets
  * from KApplication. It provides full session management, and will save

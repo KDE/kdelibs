@@ -36,6 +36,11 @@ KTMLayout::KTMLayout(QWidget *parent, int border, int space,
 void 
 KTMLayout::setGeometry(const QRect& rect)
 {
+	/* The main item is required so it makes no sense to do a layout without
+	 * it. */
+	if (!mainItem)
+		return;
+
 	QLayout::setGeometry(rect);
 
 	int currY = rect.y();
@@ -100,8 +105,25 @@ KTMLayout::sizeHint(void) const
 	 * appropriately. Note that this is not identical to the current
 	 * size since all calculations are based on the main items size
 	 * hint. */
-	int w = mainItem->sizeHint().width();
-	int h = mainItem->sizeHint().height();
+	int w, h;
+	if (mainItem->sizeHint().isValid())
+	{
+		/* If the main item has a valid size hint, we use it. */
+		w = mainItem->sizeHint().width();
+		h = mainItem->sizeHint().height();
+	}
+	else if (mainItem->minimumSize().isValid())
+	{
+		/* If not, if it has a valid minimum size, we use it. */
+		w = mainItem->minimumSize().width();
+		h = mainItem->minimumSize().height();
+	}
+	else
+	{
+		/* If no size hints are available, we keep the current size. */
+		w = mainItem->width();
+		h = mainItem->height();
+	}
 
 	w += toolBarWidth(h, leftToolBars) + toolBarWidth(h, rightToolBars);
 	h += toolBarHeight(w, topToolBars) + toolBarHeight(w, bottomToolBars);
@@ -129,35 +151,38 @@ KTMLayout::minimumSize(void) const
 	/* The minimum space needed by the main widget. */
 	int mainW = mainItem->minimumWidth();
 	int mainH = mainItem->minimumHeight();
+	int mainMaxH = mainItem->maximumHeight();
+
+	if (mainMaxH <= 0 || mainMaxH > mainItem->height())
+		mainMaxH = mainItem->height();
+
+	/* Find the largest minimum height of vertical bars and main widget */
+	QListIterator<KToolBar> qli(leftToolBars);
+	for (; *qli; ++qli)
+	{
+		if (mainH < (*qli)->minimumSizeHint().height())
+			mainH = (*qli)->minimumSizeHint().height();
+	}
+	
+	for (qli = rightToolBars; *qli; ++qli)
+		if (mainH < (*qli)->minimumSizeHint().height())
+			mainH = (*qli)->minimumSizeHint().height();
+
+	/* minimum width for main widget and vertical bars */
+	mainW += toolBarWidth(mainMaxH, leftToolBars) +
+		toolBarWidth(mainMaxH, rightToolBars);
 
 	/* Accumulate the space needed by all horizontal bars including the
 	 * flattened ones. The calculation is based on the current width. */
-	int currMargin = (topMenuBar ? topMenuBar->height() : 0) +
-		(bottomMenuBar ? bottomMenuBar->height() : 0) +
+	int currMargin =
+		(topMenuBar ?
+		 topMenuBar->heightForWidth(geometry().width()) : 0) +
+		(bottomMenuBar ?
+		 bottomMenuBar->heightForWidth(geometry().width()) : 0) +
 		flatBarHeight(geometry().width()) +
 		toolBarHeight(geometry().width(), topToolBars) +
 		toolBarHeight(geometry().width(), bottomToolBars) +
 		(statusBar ? statusBar->height() : 0);
-
-	/* The minimum space needed for the vertical toolbars. */
-	int mwl = 0;
-	int mwr = 0;
-	QListIterator<KToolBar> qli(leftToolBars);
-	for (; *qli; ++qli)
-	{
-		mwl += (*qli)->minimumSizeHint().width();
-		if ((*qli)->minimumSizeHint().height() > mainH)
-			mainH = (*qli)->minimumSizeHint().height();
-	}
-
-	for (qli = rightToolBars; *qli; ++qli)
-	{
-		mwr += (*qli)->minimumSizeHint().width();
-		if ((*qli)->minimumSizeHint().height() > mainH)
-			mainH = (*qli)->minimumSizeHint().height();
-	}
-	if (mwl + mwr > mainW)
-		mainW = mwl + mwr;
 
 	/* Find out if there is a horizontal bar that needs more space than the
 	 * have determinded so far. */
@@ -169,9 +194,7 @@ KTMLayout::minimumSize(void) const
 		if ((*qli)->minimumSizeHint().width() > mainW)
 			mainW = (*qli)->minimumSizeHint().width();
 
-	/* ATTENTION: We might want to include the menu and status bar as well
-	 * here! */
-
+	printf("KTMLayout::minimumSize(): %d, %d\n", mainW, currMargin + mainH);
 	return (QSize(mainW, currMargin + mainH));
 }
 
@@ -189,6 +212,7 @@ QLayoutIterator KTMLayout::iterator()
 void
 KTMLayout::mainLayout(const QRect& rect)
 {
+	/* This function layouts the vertical bars and the main widget. */
 	QLayout::setGeometry(rect);
 
 	int currX = rect.x();
@@ -281,6 +305,7 @@ void
 KTMLayout::hToolBarLayout(const QRect& rect, int& currY,
 						  const QList<KToolBar>& tbl)
 {
+	/* This function layouts the horizontal tool bars. */
 	QListIterator<KToolBar> li(tbl);
 	int currX = 0;
 	bool prevFullSize = false;
@@ -331,6 +356,8 @@ KTMLayout::hToolBarLayout(const QRect& rect, int& currY,
 int
 KTMLayout::toolBarHeight(int rectw, const QList<KToolBar>& tbl) const
 {
+	/* Calculates the height needed for given group of toolbars with the
+	 * width rectw. */
 	QListIterator<KToolBar> li(tbl);
 	int currX = 0;
 	int currY = 0;
@@ -382,6 +409,7 @@ void
 KTMLayout::vToolBarLayout(const QRect& rect, int& currX,
 						  const QList<KToolBar>& tbl)
 {
+	/* This function layouts the vertical tool bars. */
 	QListIterator<KToolBar> li(tbl);
 	int currY = 0;
 	bool prevFullSize = false;
@@ -433,6 +461,8 @@ KTMLayout::vToolBarLayout(const QRect& rect, int& currX,
 int
 KTMLayout::toolBarWidth(int recth, const QList<KToolBar>& tbl) const
 {
+	/* Calculates the width needed for given group of toolbars with the
+	 * height recth. */
 	QListIterator<KToolBar> li(tbl);
 	int currX = 0;
 	int currY = 0;

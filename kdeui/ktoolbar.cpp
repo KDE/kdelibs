@@ -23,6 +23,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.120  1999/06/12 21:43:58  knoll
+// kapp->xxxFont() -> KGlobal::xxxFont()
+//
 // Revision 1.119  1999/06/11 04:40:14  glenebob
 // printf -> debug (twice)
 //
@@ -1327,8 +1330,8 @@ int
 KToolBar::widthForHeight(int h) const
 {
 	/* This function only works for Top, Bottom or Floating tool
-	 * bars. For other positions it should never be called. To be save
-	 * on the save side the current minimum height is returned. */
+	 * bars. For other positions it should never be called. To be on
+	 * the save side the current minimum height is returned. */
 	if (position != Left && position != Right && position != Floating)
 		return (min_height);
 
@@ -1381,15 +1384,14 @@ KToolBar::updateRects(bool res)
 		break;
 
 	case Floating:
-		debug("updateRects(%d) %d, %d, %d, %d", res, x(), y(), width(), height());
+		/* We try to support horizontal and vertical floating bars with just
+		 * one attribute. If the bar is wider than tall it's a horizontal bar
+		 * otherwine it's vertical. This leads to some unexpected resize
+		 * behaviour! */
 		if (width() >= height())
-		{
 			layoutHorizontal(width());
-		}
 		else
-		{
 			layoutVertical(height());
-		}
 		break;
 
 	case Top:
@@ -1447,7 +1449,8 @@ KToolBar::sizeHint() const
 	switch (position)
 	{
 	case Floating:
-		debug("sizeHint()");
+		/* Floating bars are under direct control of the WM. sizeHint() is
+		 * ignored. */
 		break;
 
 	case Top:
@@ -1549,6 +1552,8 @@ KToolBar::sizePolicy() const
 	switch (position)
 	{
 	case Floating:
+		/* Floating bars are under direct control of the WM. sizePolicy() is
+		 * ignored. */
 		return QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
 	case Top:
@@ -2636,7 +2641,7 @@ void KToolBar::setBarPos(BarPosition bpos)
 			parentOffset = pos();
 			hide();
 			emit moved (bpos);  // this sets up KTW but not toolbar which floats
-//			updateRects(false); // we need this to set us up
+			updateRects(false); // we need this to set us up
 			recreate(0, 0, p, false);
 			XSetTransientForHint( qt_xdisplay(), winId(), Parent->topLevelWidget()->winId());
 			KWM::setDecoration(winId(), 2);

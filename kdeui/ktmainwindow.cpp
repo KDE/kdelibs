@@ -219,11 +219,7 @@ QRect KTMainWindow::mainViewGeometry() const
 
 void KTMainWindow::updateRects()
 {
-  if (layoutMgr)
-  {
-    delete layoutMgr;
-    layoutMgr = 0;
-  }
+	delete layoutMgr;
 
 	layoutMgr = new KTMLayout(this);
 	CHECK_PTR(layoutMgr);
@@ -286,6 +282,13 @@ void KTMainWindow::updateRects()
 		layoutMgr->addStatusBar(kstatusbar);
 
 	layoutMgr->activate();
+
+	/* Changing the layout can affect the size of the window if the
+	 * main widget has size constrains. So we call resize() with the
+	 * current size.  This does not hurt if there are no constraints
+	 * (I hope Qt is intelligent enough) and causes the size to change
+	 * to the correct size in case of any constraints. */
+	resize(size());
 }
 
 void KTMainWindow::saveData(KConfig*)

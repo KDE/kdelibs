@@ -27,15 +27,23 @@
 #include <ktoolbar.h>
 
 /**
- * KTMLayout is layout manager for KTMainWidget. It is customized
- * specifically for KTMainWidget's layout. You can use it for your own
+ * KTMLayout is layout manager for KTMainWindow. It is customized
+ * specifically for KTMainWindow's layout. You can use it for your own
  * widgets but there is probably little use for it. So this class can
  * be regarded as a kdeui internal class.
  *
+ * It currently supports main widget with fixed size, fixed height and
+ * widgets with no size requirements. heightForWidth() widgets and
+ * fixed width widgets are not yet supported. It is currently unclear
+ * whether the concept of widthForHeight() vertical bars can be used
+ * in a widthForHeight() dominated world.
+ *
+ * IMPORTANT: The layout functions and the corresponding size-calculation
+ * functions must always be kept 100% in sync!
+ *
  * @see KTMainWindow
- * @short Special layout manager for KTMainWidget.
- * @author Chris Schlaeger (cs@kde.org) 
- */
+ * @short Special layout manager for KTMainWindow.
+ * @author Chris Schlaeger (cs@kde.org) */
 
 class KTMLayout : public QLayout
 {
