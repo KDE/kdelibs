@@ -36,6 +36,7 @@
 #include <kfilterbase.h>
 
 #include "ktar.h"
+#include <kstandarddirs.h>
 
 ////////////////////////////////////////////////////////////////////////
 /////////////////////////// KTar ///////////////////////////////////
@@ -49,8 +50,8 @@ public:
     int tarEnd;
     KTempFile* tmpFile;
     QString mimetype;
-    
-    bool fillTempFile(const QString & filename);    
+
+    bool fillTempFile(const QString & filename);
     bool writeBackTempFile( const QString & filename );
 };
 
@@ -127,7 +128,7 @@ void KTar::prepareDevice( const QString & filename,
     // This is because the tar ioslave extracts one file after the other and normally
     // has to walk through the decompression filter each time.
     // Which is in fact nearly as slow as a complete decompression for each file.
-    d->tmpFile = new KTempFile("ktar-",".tar");
+    d->tmpFile = new KTempFile(locateLocal("tmp", "ktar-"),".tar");
     kdDebug( 7041 ) << "KTar::prepareDevice creating TempFile: " << d->tmpFile->name() << endl;
     d->tmpFile->setAutoDelete(true);
 
@@ -485,7 +486,7 @@ bool KTar::openArchive( int mode )
 bool KTar::KTarPrivate::writeBackTempFile( const QString & filename ) {
     if ( ! tmpFile )
         return true;
-        
+
     kdDebug(7041) << "Write temporary file to compressed file" << endl;
     kdDebug(7041) << filename << " " << mimetype << endl;
 
@@ -527,9 +528,9 @@ bool KTar::closeArchive()
     // If we are in write mode and had created
     // a temporary tar file, we have to write
     // back the changes to the original file
-    if( mode() == IO_WriteOnly) 
+    if( mode() == IO_WriteOnly)
         return d->writeBackTempFile( m_filename );
-        
+
     return true;
 }
 
