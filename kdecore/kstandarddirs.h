@@ -515,6 +515,7 @@ public:
 	KStandardDirsPrivate *d;
 
 	void checkConfig() const;
+	void createSpecialResource(const char*);
 };
 
 /**

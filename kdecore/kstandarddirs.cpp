@@ -482,71 +482,68 @@ static QString realPath(const QString &dirname)
     return dirname;
 }
 
+void KStandardDirs::createSpecialResource(const char *type)
+{
+   char hostname[256];
+   hostname[0] = 0;
+   gethostname(hostname, 255);
+   QString dir = QString("%1%2-%3").arg(localkdedir()).arg(type).arg(hostname);
+   char link[1024];
+   link[1023] = 0;
+   int result = readlink(QFile::encodeName(dir).data(), link, 1023);
+   bool relink = (result == -1) && (errno == ENOENT);
+   if ((result > 0) && (link[0] == '/'))
+   {
+      link[result] = 0;
+      struct stat stat_buf;
+      int res = lstat(link, &stat_buf);
+      if ((res == -1) && (errno == ENOENT))
+      {
+         relink = true;
+      }
+      else if ((res == -1) || (!S_ISDIR(stat_buf.st_mode)))
+      {
+         fprintf(stderr, "Error: \"%s\" is not a directory.\n", link);
+         relink = true;
+      }
+      else if (stat_buf.st_uid != getuid())
+      {
+         fprintf(stderr, "Error: \"%s\" is owned by uid %d instead of uid %d.\n", link, stat_buf.st_uid, getuid());
+         relink = true;
+      }
+   }
+   if (relink)
+   {
+      QString srv = findExe(QString::fromLatin1("lnusertemp"), KDEDIR+QString::fromLatin1("/bin"));
+      if (srv.isEmpty())
+         srv = findExe(QString::fromLatin1("lnusertemp"));
+      if (!srv.isEmpty())
+      {
+         system(QFile::encodeName(srv)+" "+type);
+         result = readlink(QFile::encodeName(dir).data(), link, 1023);
+      }
+   }
+   if (result > 0)
+   {
+      link[result] = 0;
+      if (link[0] == '/')
+         dir = QFile::decodeName(link);
+      else
+         dir = QDir::cleanDirPath(dir+QFile::decodeName(link));
+   }
+   addResourceDir(type, dir+'/');
+}
+
 QStringList KStandardDirs::resourceDirs(const char *type) const
 {
     QStringList *candidates = dircache.find(type);
 
     if (!candidates) { // filling cache
         if (strcmp(type, "socket") == 0)
-        {
-          char hostname[256];
-          hostname[0] = 0;
-          gethostname(hostname, 255);
-          QString dir = QString("%1socket-%2").arg(localkdedir()).arg(hostname);
-          char link[1024];
-          link[1023] = 0;
-          int result = readlink(QFile::encodeName(dir).data(), link, 1023);
-          if ((result == -1) && (errno == ENOENT))
-          {
-             QString srv = findExe(QString::fromLatin1("lnusertemp"), KDEDIR+QString::fromLatin1("/bin"));
-             if (srv.isEmpty())
-                srv = findExe(QString::fromLatin1("lnusertemp"));
-             if (!srv.isEmpty())
-             {
-                system(QFile::encodeName(srv)+" socket");
-                result = readlink(QFile::encodeName(dir).data(), link, 1023);
-             }
-          }
-          if (result > 0)
-          {
-             link[result] = 0;
-             if (link[0] == '/')
-                dir = QFile::decodeName(link);
-             else
-                dir = QDir::cleanDirPath(dir+QFile::decodeName(link));
-          }
-          const_cast<KStandardDirs *>(this)->addResourceDir("socket", dir+'/');
-        }
-        if (strcmp(type, "tmp") == 0)
-        {
-          char hostname[256];
-          hostname[0] = 0;
-          gethostname(hostname, 255);
-          QString dir = QString("%1tmp-%2").arg(localkdedir()).arg(hostname);
-          char link[1024];
-          link[1023] = 0;
-          int result = readlink(QFile::encodeName(dir).data(), link, 1023);
-          if ((result == -1) && (errno == ENOENT))
-          {
-             QString srv = findExe(QString::fromLatin1("lnusertemp"), KDEDIR+QString::fromLatin1("/bin"));
-             if (srv.isEmpty())
-                srv = findExe(QString::fromLatin1("lnusertemp"));
-             if (!srv.isEmpty())
-             {
-                system(QFile::encodeName(srv)+" tmp");
-                result = readlink(QFile::encodeName(dir).data(), link, 1023);
-             }
-          }
-          if (result > 0)
-          {
-             link[result] = 0;
-             if (link[0] == '/')
-                dir = QFile::decodeName(link);
-             else
-                dir = QDir::cleanDirPath(dir+QFile::decodeName(link));
-          }
-          const_cast<KStandardDirs *>(this)->addResourceDir("tmp", dir+'/');
-        }
+           const_cast<KStandardDirs *>(this)->createSpecialResource(type);
+        else if (strcmp(type, "tmp") == 0)
+           const_cast<KStandardDirs *>(this)->createSpecialResource(type);
+
         QDir testdir;
 
         candidates = new QStringList();
