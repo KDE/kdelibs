@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
     QWidget::connect(p, SIGNAL(pressed()), &a, SLOT(quit()));
     p->show();
 
-    a.exec();
+    int ret = a.exec();
 
 /*    Range r( doc->htmlDocument().createRange() );
       r.selectNode( r.getStartContainer().firstChild().lastChild().firstChild() );
@@ -96,5 +96,7 @@ int main(int argc, char *argv[])
 
     khtml::Cache::clear();
     //if(KBrowser::lstViews) delete KBrowser::lstViews;
+
+	return ret;
 }
 
