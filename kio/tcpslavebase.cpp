@@ -386,16 +386,13 @@ KSSLCertificateHome::KSSLAuthAction aa;
         switch(aa) {
         case KSSLCertificateHome::AuthSend:
           send = true; prompt = false;
-  messageBox(WarningYesNo, "Gen Send", "SSL");
          break;
         case KSSLCertificateHome::AuthDont:
           send = false; prompt = false;
           certname = "";
-  messageBox(WarningYesNo, "Gen Dont", "SSL");
          break;
         case KSSLCertificateHome::AuthPrompt:
           send = false; prompt = true;
-  messageBox(WarningYesNo, "Gen Prompt", "SSL");
          break;
         default:
          break;
@@ -410,17 +407,14 @@ KSSLCertificateHome::KSSLAuthAction aa;
         case KSSLCertificateHome::AuthSend:
           send = true; prompt = false;
           certname = tmpcn;
-  messageBox(WarningYesNo, "Host Send", "SSL");
          break;
         case KSSLCertificateHome::AuthDont:
           send = false; prompt = false;
           certname = "";
-  messageBox(WarningYesNo, "Host Dont", "SSL");
          break;
         case KSSLCertificateHome::AuthPrompt:
           send = false; prompt = true;
           certname = tmpcn;
-  messageBox(WarningYesNo, "Host Prompt", "SSL");
          break;
         default:
          break;
@@ -438,7 +432,6 @@ KSSLCertificateHome::KSSLAuthAction aa;
   }
 
   if (certname.isEmpty() && !prompt && !forcePrompt) return;
-  messageBox(WarningYesNo, "Checks are done", "SSL");
 
   // Ok, we're supposed to prompt the user....
   if (prompt || forcePrompt) {
@@ -482,7 +475,6 @@ KSSLCertificateHome::KSSLAuthAction aa;
             KSSLCertificateHome::setDefaultCertificate(certname, d->host,
                                                        false, false);
      }
-  messageBox(WarningYesNo, "Exit without sending", "SSL");
      return;
   }
 
