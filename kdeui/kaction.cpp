@@ -273,10 +273,8 @@ KAction::~KAction()
        unplugAccel();
 #endif
 
-    // parent() returns 0 when we are being destructed as part
-    // of our parents destructor. 
-    // Don't call back into our parent in that case.
-    if ( parent() && m_parentCollection) {
+    // If actionCollection hasn't already been destructed,
+    if ( m_parentCollection ) {
         m_parentCollection->take( this );
         for( uint i = 0; i < d->m_kaccelList.count(); i++ )
             d->m_kaccelList[i]->remove( name() );
@@ -3126,6 +3124,11 @@ KActionCollection::KActionCollection( const KActionCollection &copy )
 KActionCollection::~KActionCollection()
 {
   kdDebug(129) << "KActionCollection::~KActionCollection(): this = " << this << endl;
+  for ( QAsciiDictIterator<KAction> it( d->m_actionDict ); it.current(); ++it ) {
+    KAction* pAction = it.current();
+    if ( pAction->m_parentCollection == this )
+      pAction->m_parentCollection = 0L;
+  }
 
   delete d->m_kaccel;
   delete d->m_builderKAccel;
