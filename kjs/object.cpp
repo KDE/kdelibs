@@ -89,14 +89,14 @@ KJSO::KJSO(const KJSO &o)
 #ifdef KJS_DEBUG_MEM
   count++;
 #endif
-  rep = o.rep ? o.rep->ref() : 0L;
+  rep = o.rep /*? o.rep->ref() : 0L*/;
 }
 
 KJSO& KJSO::operator=(const KJSO &o)
 {
   //  if (rep && rep->deref())
   //    delete rep;
-  rep = o.rep ? o.rep->ref() : 0L;
+  rep = o.rep /*? o.rep->ref() : 0L*/;
 
   return *this;
 }
@@ -329,7 +329,7 @@ ErrorType KJSO::putValue(const KJSO& v)
 void KJSO::setPrototype(const KJSO& p)
 {
   assert(rep);
-  rep->proto = p.imp() ? p.imp()->ref() : 0L;
+  rep->proto = p.imp() /*? p.imp()->ref() : 0L*/;
   put("prototype", p, DontEnum | DontDelete | ReadOnly);
 }
 
@@ -800,7 +800,7 @@ void Imp::mark(Imp*)
 
 void Imp::setPrototype(const KJSO& p)
 {
-  proto = p.imp() ? p.imp()->ref() : 0L;
+  proto = p.imp() /*? p.imp()->ref() : 0L*/;
   put("prototype", p, DontEnum | DontDelete | ReadOnly);
 }
 
