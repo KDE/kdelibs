@@ -520,34 +520,34 @@ public:
     enum StandardWindowOptions
     {
         /**
-	 * adds action to show/hide the toolbar(s) and adds
+         * adds action to show/hide the toolbar(s) and adds
          * action to configure the toolbar(s).
          * @see setStandardToolBarMenuEnabled
          */
-	ToolBar = 1,
+        ToolBar = 1,
 
-	/**
-	 * adds action to show the key configure action.
-	 */
-	Keys = 2,
+        /**
+         * adds action to show the key configure action.
+         */
+        Keys = 2,
 
-	/**
-	 * adds action to show/hide the statusbar if the
+        /**
+         * adds action to show/hide the statusbar if the
          * statusbar exists.  @see createStandardStatusBarAction
-	 */
-	StatusBar = 4,
+         */
+        StatusBar = 4,
         
-	/**
-	 * calls createGUI() once all of the other options have been
+        /**
+         * auto-saves (and loads) the toolbar/menubar/statusbar settings and
+         * window size using the default name.  @see setAutoSaveSettings
+         */
+        Save = 8,
+        
+        /**
+         * calls createGUI() once ToolBar, Keys and Statusbar have been
          * taken care of.  @see createGUI
          */
-	Create = 16,
-	
-	/**
-	 * auto-saves (and loads) the toolbar/menubar/statusbar settings and
-         * window size using the default name.  @see setAutoSaveSettings
-	 */
-	Save = 8,
+        Create = 16,
     };
     
     /**

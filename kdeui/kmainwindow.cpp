@@ -428,7 +428,7 @@ int KMainWindow::configureToolbars()
     saveMainWindowSettings(KGlobal::config());
     KEditToolbar dlg(guiFactory(), this, "KEditToolbar");
     connect(&dlg, SIGNAL(newToolbarConfig()), SLOT(saveNewToolbarConfig()));
-    dlg.exec();
+    return dlg.exec();
 }
 
 void KMainWindow::saveNewToolbarConfig()
