@@ -114,8 +114,6 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool,
   m_bFirstRequest = false;
   
   m_iSize = -1;
-  m_maxCacheAge = 0;
-  m_maxCacheSize = 0;
   m_lineBufUnget = 0;
   
   m_protocol = protocol;    
@@ -468,7 +466,7 @@ void HTTPProtocol::stat(const KURL& url)
                 << endl;
 
   if ( !checkRequestURL( url ) )
-    return;
+      return;
 
   if ( m_protocol != "webdav" && m_protocol != "webdavs" )
   {
@@ -3331,9 +3329,12 @@ bool HTTPProtocol::readHeader()
         // Check...
         createCacheEntry(m_strMimeType, expireDate); // Create a cache entry
         if (!m_request.fcache)
-           m_request.bCachedWrite = false; // Error creating cache entry.
+	    {
+		m_request.bCachedWrite = false; // Error creating cache entry.
+		kdDebug(7113) << "(" << m_pid << ") Error creating cache entry for " << m_request.url.url()<<"!\n";
+	    }
         m_request.expireDate = expireDate;
-        m_maxCacheSize = config()->readNumEntry("MaxCacheSize", DEFAULT_MAX_CACHE_AGE) / 2;
+        m_maxCacheSize = config()->readNumEntry("MaxCacheSize", DEFAULT_MAX_CACHE_SIZE) / 2;
      }
   }
 
@@ -3696,6 +3697,7 @@ int HTTPProtocol::readUnlimited()
      return result;
      
   m_bEOF = true;
+  m_iBytesLeft = 0;
   return 0;   
 }
 
@@ -3795,7 +3797,6 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
     return true;
   }
   
-  kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::readBody: retreive data" << endl;
 
   if (m_iSize > -1)
     m_iBytesLeft = m_iSize - sz;
@@ -3804,6 +3805,8 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
 
   if (m_bChunked)
     m_iBytesLeft = -1;
+
+  kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::readBody: retreive data. "<<m_iBytesLeft<<" bytes left." << endl;
 
   // Main incoming loop...  Gather everything while we can...
   bool cpMimeBuffer = false;
@@ -3874,7 +3877,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
     // make sure that this wasn't an error, first
 //    kdDebug(7113) << "(" << m_pid << ") readBody: bytesReceived: " 
 //                  << bytesReceived << " m_iSize: " << m_iSize << " Chunked: " 
-//                  << m_bChunked << endl;
+//                  << m_bChunked << " BytesLeft: "<<m_iBytesLeft<<endl;
     
     if (bytesReceived == -1)
     {
@@ -3965,7 +3968,10 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
     }
     m_bufReceive.resize(0); // res
     if (m_iBytesLeft == 0)
-      break;
+	{
+            kdDebug(7113) << "("<<m_pid<<") EOD received!\n";
+            break;
+	}
   }
   chain.slotInput(QByteArray()); // Flush chain.
 
@@ -3985,7 +3991,9 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
   {
      if (m_request.bCachedWrite && m_request.fcache)
         closeCacheEntry();
+     else if (m_request.bCachedWrite) kdDebug(7113) << "(" << m_pid << ") no cache file!\n";
   }
+  else kdDebug(7113) << "(" << m_pid << ") still "<<m_iBytesLeft<<" bytes left! can't close cache entry!\n";
 
   if (!dataInternal)
     data( QByteArray() );
@@ -4070,7 +4078,7 @@ QString HTTPProtocol::findCookies( const QString &url)
 void HTTPProtocol::cacheUpdate( const KURL& url, bool no_cache, time_t expireDate)
 {
   if ( !checkRequestURL( url ) )
-    return;
+      return;
 
   m_request.path = url.path();
   m_request.query = url.query();
