@@ -189,6 +189,10 @@ declaration
 	  {
 	 	if ($4)
 			  printf("<CLASS>\n    <NAME>%s</NAME>\n%s%s</CLASS>\n", ( in_namespace + *$2 ).latin1(), $3->latin1(), $5->latin1() );
+		// default C++ visibility specifier is 'private'
+		dcop_area = 0;
+		dcop_signal_area = 0;
+
 	  }
 	| T_CLASS Identifier T_SEMICOLON
 	  {
