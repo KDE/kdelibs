@@ -23,7 +23,7 @@
 #ifndef _DOM_DOMString_h_
 #define _DOM_DOMString_h_
 
-#include "qstring.h"
+#include <qstring.h>
 #include <stdlib.h>
 
 namespace khtml {

@@ -27,9 +27,9 @@
 #include "dom_misc.h"
 #include "dom_nodeimpl.h"
 
-#include "qcolor.h"
-#include "qsize.h"
-#include "qrect.h"
+#include <qcolor.h>
+#include <qsize.h>
+#include <qrect.h>
 
 #include "render_style.h"
 

@@ -25,7 +25,7 @@
 #include "kwin.h"
 #include <X11/Xatom.h>
 #include "kapp.h"
-#include "qtl.h"
+#include <qtl.h>
 #include "netwm.h"
 
 extern Atom net_wm_context_help;

@@ -20,6 +20,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.10  1999/10/10 08:18:57  bero
+ * Code cleanup ((void) stuff)
+ *
  * Revision 1.9  1999/06/16 07:47:46  kulow
  * fixing some misc warnings
  * in trader.cc I had to change getFirst() -> first(). Don't know why
@@ -38,9 +41,9 @@
 #ifndef KTABCTL_H
 #define KTABCTL_H
 
-#include "qwidget.h"
-#include "qtabbar.h"
-#include "qarray.h"
+#include <qwidget.h>
+#include <qtabbar.h>
+#include <qarray.h>
 
 /** 
  * Tabbed dialog with extended features.

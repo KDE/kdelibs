@@ -3,7 +3,7 @@
 
 #include "decoder.h"
 #include "kapp.h"
-#include "qfile.h"
+#include <qfile.h>
 #include "html_document.h"
 #include "htmltokenizer.h"
 // to be able to delete a static protected member pointer in kbrowser...
@@ -12,7 +12,7 @@
 #include "khtmlview.h"
 #include "khtml_part.h"
 #undef protected
-#include "qpushbutton.h"
+#include <qpushbutton.h>
 #include "testkhtml.h"
 #include "testkhtml.moc"
 #include "misc/loader.h"

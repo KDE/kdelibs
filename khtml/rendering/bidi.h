@@ -8,7 +8,7 @@
 #ifndef BIDI_H
 #define BIDI_H
 
-#include "qstring.h"
+#include <qstring.h>
 
 /* structure describing one part of a stream of BiDi objects.
  */

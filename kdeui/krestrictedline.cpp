@@ -22,7 +22,7 @@
  *
  */
 
-#include "qkeycode.h"
+#include <qkeycode.h>
 
 #include "krestrictedline.h"
 

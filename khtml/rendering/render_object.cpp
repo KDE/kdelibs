@@ -30,10 +30,8 @@
 #include "render_table.h"
 #include "render_list.h"
 
-#include "qnamespace.h"
-#include "qpainter.h"
-
 #include <kdebug.h>
+#include <qnamespace.h>
 #include <qpainter.h>
 #include <qcolor.h>
 #include <qpen.h>

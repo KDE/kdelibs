@@ -14,7 +14,7 @@
 
 #include "kdockwidgettest.h"
 
-#include "qpushbutton.h"
+#include <qpushbutton.h>
 #include <kapp.h>
 #include <kiconloader.h>
 #include <kmenubar.h>

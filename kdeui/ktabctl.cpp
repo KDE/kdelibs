@@ -19,6 +19,10 @@
 /*
  *
  * $Log$
+ * Revision 1.24  2000/01/17 19:08:00  bieker
+ * Made it more QT_NO_CAST_ASCII and QT_NO_ASCII_CAST safe (this is not 100 %
+ * yet).
+ *
  * Revision 1.23  1999/11/23 11:15:30  dfaure
  * CVS_SILENT removing duplicate headers (with a script)
  *
@@ -138,10 +142,10 @@
  * However, this is based on the original QTabDialog.
  */
 
-#include "qtabbar.h"
-#include "qpushbutton.h"
-#include "qpainter.h"
-#include "qpixmap.h"
+#include <qtabbar.h>
+#include <qpushbutton.h>
+#include <qpainter.h>
+#include <qpixmap.h>
 
 #include "ktabctl.h"
 
