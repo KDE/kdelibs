@@ -231,10 +231,11 @@ namespace KJS {
     KJSO errObj;
   };
 
-  class DeclaredFunctionImp : public FunctionImp {
+  class DeclaredFunctionImp : public ConstructorImp {
   public:
     DeclaredFunctionImp(ParamList *p, StatementNode *b);
     Completion execute(const List &);
+    Object construct(const List &);
     CodeType codeType() const { return FunctionCode; }
   private:
     StatementNode *block;

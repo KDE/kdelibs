@@ -315,14 +315,33 @@ AnonymousFunction::AnonymousFunction()
 }
 
 DeclaredFunctionImp::DeclaredFunctionImp(ParamList *p, StatementNode *b)
-  : FunctionImp(p), block(b)
+  : block(b)
 {
+  param = p;
 }
 
 Completion DeclaredFunctionImp::execute(const List &)
 {
  /* TODO */
   return block->execute();
+}
+
+Object DeclaredFunctionImp::construct(const List &args)
+{
+  Object obj(ObjectClass);
+  KJSO p = get("prototype");
+  if (p.isObject())
+    obj.setPrototype(p);
+  else
+    obj.setPrototype(Global::current().objectPrototype());
+
+  KJSO res = executeCall(obj.imp(), &args);
+
+  Object v = Object::dynamicCast(res);
+  if (v.isNull())
+    return obj;
+  else
+    return v;
 }
 
 Completion AnonymousFunction::execute(const List &)
