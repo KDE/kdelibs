@@ -108,7 +108,7 @@ QString kioErrorString( int _errid, const char *_errortext )
       result = i18n( "Could not delete file %1" ).arg( _errortext );
       break;
     case  ERR_COULD_NOT_LOGIN:
-      ksprintf( &result, i18n( "Could not login into %s" ), _errortext );
+      result = i18n( "Could not login into %1" ).arg ( _errortext );
       break;
     default:
       result = i18n( "Unknown error code %1\n%2\n\nPlease send a full bugreport at http://bugs.kde.org" ).arg(_errid ).arg(_errortext);
