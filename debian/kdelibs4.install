@@ -98,7 +98,6 @@ debian/tmp/usr/lib/libkdeui.so.*
 debian/tmp/usr/lib/libkhtml.la
 debian/tmp/usr/lib/libkhtml.so.*
 debian/tmp/usr/lib/libkio.so.*
-debian/tmp/usr/lib/libkjava.so.*
 debian/tmp/usr/lib/libkjs.so.*
 debian/tmp/usr/lib/libkmediaplayer.la
 debian/tmp/usr/lib/libkmediaplayer.so.*
