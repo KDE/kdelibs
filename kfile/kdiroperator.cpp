@@ -848,7 +848,7 @@ void KDirOperator::setupActions()
     homeAction->setText(i18n("Home directory"));
     reloadAction =KStdAction::redisplay(this,SLOT(rereadDir()),this, "reload");
     actionSeparator = new KActionSeparator( this, "separator" );
-    mkdirAction = new KAction( i18n("New Folder..."), 0,
+    mkdirAction = new KAction( i18n("New Directory..."), 0,
                                  this, SLOT( mkdir() ), this, "mkdir");
     mkdirAction->setIcon( QString::fromLatin1("folder_new") );
     reloadAction->setText( i18n("Reload") );
