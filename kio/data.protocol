@@ -12,6 +12,7 @@ Description[pt]=Um 'kioslave' para URIs data (rfc2397)
 Description[pt_BR]=Um 'kioslave' para URIs data (rfc2397)
 Description[sv]=En I/O-slav för datawebbadresser (RFC 2397)
 Description[ta]=தரவு வலைமனைகளுக்கான ஒரு kioslave (rfc2397)
+Description[zh_CN]=data URI(rfc2397) 的 kioslave
 DocPath=kioslave/data.html
 URIMode=rawuri
 defaultMimetype=application/octet-stream

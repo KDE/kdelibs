@@ -19,6 +19,7 @@ Name[sv]=GIMP-bild
 Name[ta]=GIMP பிம்பம்
 Name[tr]=GIMP Resmi
 Name[xx]=xxGIMP Imagexx
+Name[zh_CN]=GIMP 图像
 Read=true
 Write=false
 Suffices=xcf,XCF

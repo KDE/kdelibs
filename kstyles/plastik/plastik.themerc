@@ -3,6 +3,7 @@ Name=Plastik
 Name[he]=פלסטיק
 Name[mk]=Пластик
 Name[ta]=ப்ளாஸ்டிக்
+Name[zh_CN]=白金
 ConfigPage=kstyle_plastik_config
 Comment=A simple and clean style
 Comment[bg]=Семпъл и изчистен стил
@@ -20,5 +21,6 @@ Comment[pt_BR]=Um estilo simples e limpo
 Comment[sv]=En enkel och ren stil
 Comment[ta]=ஒரு சுலபமானதும் தெளிவானதுமான பாணி
 Comment[tr]=Basit ve temiz stil
+Comment[zh_CN]=简洁清爽的样式
 [KDE]
 WidgetStyle=Plastik
