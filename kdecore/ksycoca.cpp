@@ -202,8 +202,6 @@ void KSycoca::notifyDatabaseChanged(const QStringList &changeList)
     // The next call to any public method will recreate
     // everything that's needed.
     closeDatabase();
-    // same for KUserProfile
-//    KServiceTypeProfile::clear(); FIXME!
 
     // Now notify applications
     emit databaseChanged();
