@@ -13,11 +13,6 @@
 #include "qtl.h"
 #include "qtooltip.h"
 #include "qobjectlist.h"
-#include "config.h"
-
-#ifdef HAVE_TEMPLATE_REPOSITORY
-template class QList<QAction>;
-#endif
 
 // NOT REVISED
 
@@ -98,11 +93,15 @@ int QActionSeparator::plug( QWidget* widget )
     if ( widget->inherits("QPopupMenu") )
     {
 	QPopupMenu* menu = (QPopupMenu*)widget;
+
+#ifndef QT_BUILDER	
+	menu->insertSeparator();
 	
-	// ##############
-	//int id = menu->insertSeparator();
-	// ##############
-	int id = 0;
+	int id = menu->idAt( menu->count() - 1 );
+#else
+	int id = menu->insertSeparator();
+#endif
+	
 	addContainer( menu, id );
 	connect( menu, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
 	
@@ -172,7 +171,6 @@ void QActionSeparator::unplug( QWidget* widget )
 QAction::QAction( QObject* parent, const char* name )
     : QObject( parent, name )
 {
-    m_count = 1;
     m_bIconSet = FALSE;
     m_enabled = TRUE;
     m_accel = 0;
@@ -185,7 +183,6 @@ QAction::QAction( QObject* parent, const char* name )
 QAction::QAction( const QString& text, int accel, QObject* parent, const char* name )
     : QObject( parent, name )
 {
-    m_count = 1;
     m_bIconSet = FALSE;
     m_enabled = TRUE;
     m_component = 0;
@@ -200,7 +197,6 @@ QAction::QAction( const QString& text, int accel, QObject* parent, const char* n
 QAction::QAction( const QString& text, const QIconSet& iconset, int accel, QObject* parent, const char* name )
     : QObject( parent, name )
 {
-    m_count = 1;
     m_bIconSet = FALSE;
     m_enabled = TRUE;
     m_component = 0;
@@ -217,7 +213,6 @@ QAction::QAction( const QString& text, const QIconSet& iconset, int accel,
 		  QObject* receiver, const char* slot, QObject* parent, const char* name )
     : QObject( parent, name )
 {
-    m_count = 1;
     m_bIconSet = FALSE;
     m_enabled = TRUE;
     m_component = 0;
@@ -236,7 +231,6 @@ QAction::QAction( const QString& text, int accel,
 		  QObject* receiver, const char* slot, QObject* parent, const char* name )
     : QObject( parent, name )
 {
-    m_count = 1;
     m_bIconSet = FALSE;
     m_enabled = TRUE;
     m_component = 0;
@@ -285,21 +279,6 @@ void QAction::update()
     // By default do nothing interesting
 }
 
-void QAction::incref()
-{
-    ++m_count;
-}
-
-bool QAction::decref()
-{
-    return ( !--m_count );
-}
-
-int QAction::count()
-{
-    return m_count;
-}
-
 void QAction::setAccel( int a )
 {
     m_accel = a;
@@ -307,15 +286,20 @@ void QAction::setAccel( int a )
     int len = containerCount();
     for( int i = 0; i < len; ++i )
     {
-	QWidget* w = container( i );
-	if ( w->inherits( "QPopupMenu" ) )
-        {
-	    qDebug("Setting ACCEL");
-	    ((QPopupMenu*)w)->setAccel( m_accel, menuId( i ) );
-	}
-	else if ( w->inherits( "QMenuBar" ) )
-	    ((QMenuBar*)w)->setAccel( m_accel, menuId( i ) );
+	setAccel( i, a );
     }
+}
+
+void QAction::setAccel( int i, int a )
+{
+    QWidget* w = container( i );
+    if ( w->inherits( "QPopupMenu" ) )
+    {
+	qDebug("Setting ACCEL");
+	((QPopupMenu*)w)->setAccel( a, menuId( i ) );
+    }
+    else if ( w->inherits( "QMenuBar" ) )
+	((QMenuBar*)w)->setAccel( a, menuId( i ) );
 }
 
 int QAction::accel() const
@@ -330,10 +314,16 @@ void QAction::setGroup( const QString& grp )
     int len = containerCount();
     for( int i = 0; i < len; ++i )
     {
-	QWidget* w = container( i );
-	if ( w->inherits( "QActionWidget" ) )
-	    ((QActionWidget*)w)->updateAction( this );
+	setGroup( i, grp );
     }
+}
+
+void QAction::setGroup( int i, const QString& )
+{
+    QWidget* w = container( i );
+    if ( w->inherits( "QActionWidget" ) )
+	((QActionWidget*)w)->updateAction( this );
+    // ###### Torben: Some stuff missing here
 }
 
 QString QAction::group() const
@@ -356,17 +346,22 @@ void QAction::setEnabled( bool e )
     int len = containerCount();
     for( int i = 0; i < len; ++i )
     {
-	QWidget* r = representative( i );
-	QWidget* c = container( i );
-	if ( r && c->inherits("QToolBar") )
-	    r->setEnabled( m_enabled );
-	else if ( c->inherits("QPopupMenu") )
-	    ((QPopupMenu*)c)->setItemEnabled( menuId( i ), m_enabled );
-	else if ( c->inherits("QMenuBar") )
-	    ((QMenuBar*)c)->setItemEnabled( menuId( i ), m_enabled );
+	setEnabled( i, e );
     }
 
     emit enabled( m_enabled );
+}
+
+void QAction::setEnabled( int i, bool e )
+{
+    QWidget* r = representative( i );
+    QWidget* c = container( i );
+    if ( r && c->inherits("QToolBar") )
+	r->setEnabled( e );
+    else if ( c->inherits("QPopupMenu") )
+	((QPopupMenu*)c)->setItemEnabled( menuId( i ), e );
+    else if ( c->inherits("QMenuBar") )
+	((QMenuBar*)c)->setItemEnabled( menuId( i ), e );
 }
 
 int QAction::plug( QWidget* widget )
@@ -469,13 +464,18 @@ void QAction::setToolTip( const QString& tt )
     int len = containerCount();
     for( int i = 0; i < len; ++i )
     {
-	QWidget* w = container( i );
-	QWidget* r = representative( i );
-	if ( w->inherits( "QToolBar" ) && r->inherits( "QToolButton" ) )
-	    QToolTip::add( w, m_toolTip );
-	else if ( w->inherits( "QActionWidget" ) )
-	    ((QActionWidget*)w)->updateAction( this );	
+	setToolTip( i, tt );
     }
+}
+
+void QAction::setToolTip( int i, const QString& tt )
+{ 
+    QWidget* w = container( i );
+    QWidget* r = representative( i );
+    if ( w->inherits( "QToolBar" ) && r->inherits( "QToolButton" ) )
+	QToolTip::add( w, tt );
+    else if ( w->inherits( "QActionWidget" ) )
+	((QActionWidget*)w)->updateAction( this );	
 }
 
 QString QAction::toolTip() const
@@ -490,17 +490,22 @@ void QAction::setText( const QString& text )
     int len = containerCount();
     for( int i = 0; i < len; ++i )
     {
-	QWidget* w = container( i );
-	QWidget* r = representative( i );
-	if ( w->inherits( "QToolBar" ) && r->inherits( "QToolButton" ) )
-	    ((QToolButton*)r)->setTextLabel( plainText() );
-	else if ( w->inherits( "QPopupMenu" ) )
-	    ((QPopupMenu*)w)->changeItem( menuId( i ), text );
-	else if ( w->inherits( "QMenuBar" ) )
-	    ((QMenuBar*)w)->changeItem( menuId( i ), text );	
-	else if ( w->inherits( "QActionWidget" ) )
-	    ((QActionWidget*)w)->updateAction( this );	
+	setText( i, text );
     }
+}
+
+void QAction::setText( int i, const QString& text )
+{
+    QWidget* w = container( i );
+    QWidget* r = representative( i );
+    if ( w->inherits( "QToolBar" ) && r->inherits( "QToolButton" ) )
+	((QToolButton*)r)->setTextLabel( plainText() );
+    else if ( w->inherits( "QPopupMenu" ) )
+	((QPopupMenu*)w)->changeItem( menuId( i ), text );
+    else if ( w->inherits( "QMenuBar" ) )
+	((QMenuBar*)w)->changeItem( menuId( i ), text );	
+    else if ( w->inherits( "QActionWidget" ) )
+	((QActionWidget*)w)->updateAction( this );	
 }
 
 QString QAction::text() const
@@ -532,18 +537,22 @@ void QAction::setIconSet( const QIconSet& iconset )
     int len = containerCount();
     for( int i = 0; i < len; ++i )
     {
-	QWidget* w = container( i );
-	QWidget* r = representative( i );
-	if ( w->inherits( "QToolBar" ) && r->inherits( "QToolButton" ) )	
-	    ((QToolButton*)r)->setIconSet( iconset );
-	else if ( w->inherits( "QPopupMenu" ) )
-	    ((QPopupMenu*)w)->changeItem( menuId( i ), iconset, m_text );
-	else if ( w->inherits( "QMenuBar" ) )
-	    ((QMenuBar*)w)->changeItem( menuId( i ), iconset, m_text );
-	else if ( w->inherits( "QActionWidget" ) )
-	    ((QActionWidget*)w)->updateAction( this );
-	
+	setIconSet( i, iconset );
     }
+}
+
+void QAction::setIconSet( int i, const QIconSet& iconset )
+{
+    QWidget* w = container( i );
+    QWidget* r = representative( i );
+    if ( w->inherits( "QToolBar" ) && r->inherits( "QToolButton" ) )	
+	((QToolButton*)r)->setIconSet( iconset );
+    else if ( w->inherits( "QPopupMenu" ) )
+	((QPopupMenu*)w)->changeItem( menuId( i ), iconset, m_text );
+    else if ( w->inherits( "QMenuBar" ) )
+	((QMenuBar*)w)->changeItem( menuId( i ), iconset, m_text );
+    else if ( w->inherits( "QActionWidget" ) )
+	((QActionWidget*)w)->updateAction( this );
 }
 
 QIconSet QAction::iconSet() const
@@ -563,16 +572,21 @@ void QAction::setWhatsThis( const QString& text )
     int len = containerCount();
     for( int i = 0; i < len; ++i )
     {
-	QToolBar* tb = toolBar( i );
-	QPopupMenu* pm = popupMenu( i );
-	if ( tb )
-        {
-	    QWhatsThis::remove( representative( i ) );
-	    QWhatsThis::add( representative( i ), text );	
-	}
-	else if ( pm )
-	    pm->setWhatsThis( menuId( i ), text );
+	setWhatsThis( i, text );
     }
+}
+
+void QAction::setWhatsThis( int i, const QString& text )
+{
+    QToolBar* tb = toolBar( i );
+    QPopupMenu* pm = popupMenu( i );
+    if ( tb )
+    {
+	QWhatsThis::remove( representative( i ) );
+	QWhatsThis::add( representative( i ), text );	
+    }
+    else if ( pm )
+	pm->setWhatsThis( menuId( i ), text );
 }
 
 QString QAction::whatsThis() const
@@ -687,7 +701,10 @@ void QAction::slotActivated()
 {
     emit activated();
 }
-// #################
+
+/*!
+ For Qt 3.0
+*/
 /*
 QDomElement QAction::configuration( QDomDocument& doc, bool properties ) const
 {
@@ -698,8 +715,6 @@ QDomElement QAction::configuration( QDomDocument& doc, bool properties ) const
     return e;
 }
 */
-// ################
-
 /******************************************************
  *
  * QActionMenu
@@ -838,7 +853,6 @@ void QActionMenu::unplug( QWidget* widget )
     else
 	QAction::unplug( widget );
 }
-// ################
 /*
 bool QActionMenu::setConfiguration( const QDomElement& element )
 {
@@ -882,7 +896,6 @@ bool QActionMenu::setConfiguration( const QDomElement& element )
     return QAction::setConfiguration( element );
 }
 */
-// ##############
 /******************************************************
  *
  * QActionCollection
@@ -1019,9 +1032,7 @@ QValueList<QAction*> QActionCollection::actions()
 
     return lst;
 }
-// ###############
 /*
-
 bool QActionCollection::setConfiguration( const QDomElement& element )
 {
     QDomElement it = element.firstChild().toElement();
@@ -1051,8 +1062,6 @@ QDomElement QActionCollection::configuration( QDomDocument& doc, bool properties
     return e;
 }
 */
-// ##############
-
 /******************************************************
  *
  * QActionWidget
@@ -1480,20 +1489,11 @@ void QToggleAction::setChecked( bool checked )
     int len = containerCount();
     for( int i = 0; i < len; ++i )
     {
-	QWidget* w = container( i );
-	QWidget* r = representative( i );
-	if ( w->inherits( "QToolBar" ) && r->inherits( "QToolButton" ) )
-	    ((QToolButton*)r)->setOn( checked );
-	else if ( w->inherits( "QPopupMenu" ) )
-	    ((QPopupMenu*)w)->setItemChecked( menuId( i ), checked );
-	else if ( w->inherits( "QMenuBar" ) )
-	    ((QMenuBar*)w)->setItemChecked( menuId( i ), checked );
-	else if ( w->inherits( "QActionWidget" ) )
-	    ((QActionWidget*)w)->updateAction( this );	
+	setChecked( i, checked );
     }
 
     // Uncheck all the other toggle actions in the same group
-    if ( parent() && !m_exclusiveGroup.isEmpty() )
+    if ( parent() && !m_exclusiveGroup.isEmpty() && checked )
     {
 	const QObjectList *list = parent()->children();
 	if ( list )
@@ -1502,7 +1502,8 @@ void QToggleAction::setChecked( bool checked )
 	    for( ; it.current(); ++it )
 	    {
 		if ( it.current()->inherits( "QToggleAction" ) &&
-		     ((QToggleAction*)it.current())->exclusiveGroup() == m_exclusiveGroup )
+		     ((QToggleAction*)it.current())->exclusiveGroup() == m_exclusiveGroup &&
+		     it.current() != this )
 		    ((QToggleAction*)it.current())->setChecked( FALSE );
 	    }
 	}
@@ -1512,6 +1513,20 @@ void QToggleAction::setChecked( bool checked )
 
     emit activated();
     emit toggled( m_checked );
+}
+
+void QToggleAction::setChecked( int i, bool checked )
+{
+    QWidget* w = container( i );
+    QWidget* r = representative( i );
+    if ( w->inherits( "QToolBar" ) && r->inherits( "QToolButton" ) )
+	((QToolButton*)r)->setOn( checked );
+    else if ( w->inherits( "QPopupMenu" ) )
+	((QPopupMenu*)w)->setItemChecked( menuId( i ), checked );
+    else if ( w->inherits( "QMenuBar" ) )
+	((QMenuBar*)w)->setItemChecked( menuId( i ), checked );
+    else if ( w->inherits( "QActionWidget" ) )
+	((QActionWidget*)w)->updateAction( this );	
 }
 
 bool QToggleAction::isChecked()
@@ -1619,20 +1634,25 @@ void QSelectAction::setCurrentItem( int id )
     int len = containerCount();
     for( int i = 0; i < len; ++i )
     {
-	QWidget* w = container( i );
-	QWidget* r = representative( i );
-	if ( w->inherits( "QToolBar" ) && r->inherits( "QComboBox" ) )
-        {
-	    QComboBox* b = (QComboBox*)r;
-	    b->setCurrentItem( m_current );
-	}
-	else if ( w->inherits( "QActionWidget" ) )
-	    ((QActionWidget*)w)->updateAction( this );	
+	setCurrentItem( i, id );
     }
 	
     emit QAction::activated();
     emit activated( currentItem() );
     emit activated( currentText() );
+}
+
+void QSelectAction::setCurrentItem( int i, int id )
+{
+    QWidget* w = container( i );
+    QWidget* r = representative( i );
+    if ( w->inherits( "QToolBar" ) && r->inherits( "QComboBox" ) )
+    {
+	QComboBox* b = (QComboBox*)r;
+	b->setCurrentItem( id );
+    }
+    else if ( w->inherits( "QActionWidget" ) )
+	((QActionWidget*)w)->updateAction( this );	
 }
 
 QPopupMenu* QSelectAction::popupMenu()
@@ -1647,6 +1667,53 @@ QPopupMenu* QSelectAction::popupMenu()
     }
 
     return m_menu;
+}
+
+/*!
+  Changes the item at position \e index to value \e text.
+  This automatically updates all representatives of this action.
+
+  If you want to inherit from QSelectAction to allow plugging it into
+  other container types then you have to overload this function.
+
+  \sa setItems()
+*/
+void QSelectAction::changeItem( int index, const QString& text )
+{
+    if ( index < 0 || index >= (int)m_list.count() )
+    {
+	qDebug("QSelectAction::changeItem Index out of scope");
+	return;
+    }
+
+//    int current = currentItem();
+
+    m_list[ index ] = text;
+
+    if ( m_menu )
+	m_menu->changeItem( index, text );
+
+    int len = containerCount();
+    for( int i = 0; i < len; ++i )
+    {
+	changeItem( i, index, text );
+    }
+
+//    if ( current >= 0 && current < (int)m_list.count() )
+//	setCurrentItem( current );
+}
+
+void QSelectAction::changeItem( int i, int index, const QString& text )
+{
+    QWidget* w = container( i );
+    QWidget* r = representative( i );
+    if ( w->inherits( "QToolBar" ) && r->inherits( "QComboBox" ) )
+    {
+	QComboBox* b = (QComboBox*)r;
+	b->changeItem( text, index );
+    }
+    else if ( w->inherits( "QActionWidget" ) )
+	((QActionWidget*)w)->updateAction( this );	
 }
 
 void QSelectAction::setItems( const QStringList& lst )
@@ -1666,19 +1733,24 @@ void QSelectAction::setItems( const QStringList& lst )
     int len = containerCount();
     for( int i = 0; i < len; ++i )
     {
-	QWidget* w = container( i );
-	QWidget* r = representative( i );
-	if ( w->inherits( "QToolBar" ) && r->inherits( "QComboBox" ) )
-        {
-	    QComboBox* b = (QComboBox*)r;
-	    b->clear();
-	    QStringList::ConstIterator it = m_list.begin();
-	    for( ; it != m_list.end(); ++it )
-		b->insertItem( *it );
-	}
-	else if ( w->inherits( "QActionWidget" ) )
-	    ((QActionWidget*)w)->updateAction( this );	
+	setItems( i, lst );
     }
+}
+
+void QSelectAction::setItems( int i, const QStringList& lst )
+{
+    QWidget* w = container( i );
+    QWidget* r = representative( i );
+    if ( w->inherits( "QToolBar" ) && r->inherits( "QComboBox" ) )
+    {
+	QComboBox* b = (QComboBox*)r;
+	b->clear();
+	QStringList::ConstIterator it = lst.begin();
+	for( ; it != lst.end(); ++it )
+	    b->insertItem( *it );
+    }
+    else if ( w->inherits( "QActionWidget" ) )
+	((QActionWidget*)w)->updateAction( this );	
 }
 
 QStringList QSelectAction::items()
@@ -1779,16 +1851,21 @@ void QSelectAction::clear()
     int len = containerCount();
     for( int i = 0; i < len; ++i )
     {
-	QWidget* w = container( i );
-	QWidget* r = representative( i );
-	if ( w->inherits( "QToolBar" ) && r->inherits( "QComboBox" ) )
-        {
-	    QComboBox* b = (QComboBox*)r;
-	    b->clear();
-	}
-	else if ( w->inherits( "QActionWidget" ) )
-	    ((QActionWidget*)w)->updateAction( this );	
+	clear( i );
     }
+}
+
+void QSelectAction::clear( int i )
+{
+    QWidget* w = container( i );
+    QWidget* r = representative( i );
+    if ( w->inherits( "QToolBar" ) && r->inherits( "QComboBox" ) )
+    {
+	QComboBox* b = (QComboBox*)r;
+	b->clear();
+    }
+    else if ( w->inherits( "QActionWidget" ) )
+	((QActionWidget*)w)->updateAction( this );	
 }
 
 void QSelectAction::setEditable( bool edit )

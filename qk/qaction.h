@@ -1,7 +1,7 @@
 #ifndef QACTION_H
 #define QACTION_H
 
-#include "qdom.h"
+#ifndef QT_H
 #include "qobject.h"
 #include "qiconset.h"
 #include "qpixmap.h"
@@ -11,6 +11,7 @@
 #include "qdialog.h"
 #include "qvaluelist.h"
 #include "qfontdatabase.h"
+#endif // QT_H
 
 class QToolBar;
 class QMenuBar;
@@ -38,16 +39,12 @@ public:
 
     virtual void update();
 
-    void incref();
-    bool decref();
-    int count();
-
     virtual int plug( QWidget* );
     virtual void unplug( QWidget* );
 
     virtual bool isPlugged() const;
 
-    //QDomElement configuration( QDomDocument& doc, bool properties ) const;
+//    QDomElement configuration( QDomDocument& doc, bool properties ) const;
 
     QWidget* container( int index );
     QWidget* representative( int index );
@@ -83,10 +80,11 @@ q_properties:
 
     virtual void setToolTip( const QString& );
     virtual QString toolTip() const;
-    
+
 protected slots:
     virtual void slotDestroyed();
-
+    virtual void slotActivated();
+    
 protected:
     QToolBar* toolBar( int index );
     QPopupMenu* popupMenu( int index );
@@ -97,16 +95,21 @@ protected:
     void addContainer( QWidget* parent, int id );
     void addContainer( QWidget* parent, QWidget* representative );
 
+    virtual void setAccel( int id, int accel );
+    virtual void setGroup( int id, const QString& grp );
+    virtual void setEnabled( int id, bool enable );
+    virtual void setToolTip( int id, const QString& tt );
+    virtual void setText( int id, const QString& text );
+    virtual void setIconSet( int id, const QIconSet& iconset );
+    virtual void setWhatsThis( int id, const QString& text );
+    
 signals:
     void activated();
     void enabled( bool );
 
-protected slots:
-    virtual void slotActivated();
-
 private:
     QObject* m_component;
-    int m_count;
+
     QString m_text;
     QString m_whatsThis;
     QString m_groupText;
@@ -116,7 +119,7 @@ private:
     QString m_group;
     int m_accel;
     QString m_toolTip;
-    
+
     struct Container
     {
 	Container() { m_container = 0; m_representative = 0; m_id = 0; }
@@ -162,7 +165,7 @@ public:
     QPopupMenu* popupMenu();
     void popup( const QPoint& global );
 
-    //virtual bool setConfiguration( const QDomElement& element );
+//    virtual bool setConfiguration( const QDomElement& element );
 
 private:
     QPopupMenu* m_popup;
@@ -188,6 +191,9 @@ public:
 
     virtual void setExclusiveGroup( const QString& name );
     virtual QString exclusiveGroup() const;
+
+protected:
+    virtual void setChecked( int id, bool checked );
     
 protected slots:
     void slotActivated();
@@ -219,14 +225,21 @@ public:
 
     int plug( QWidget* );
 
-    virtual void setItems( const QStringList& );
+    virtual void setItems( const QStringList& items );
     QStringList items();
+    virtual void changeItem( int index, const QString& text );
     QString currentText();
     int currentItem();
-    virtual void setCurrentItem( int id );
+    virtual void setCurrentItem( int index );
     virtual void clear();
 
     QPopupMenu* popupMenu();
+
+protected:
+    virtual void setCurrentItem( int id, int index );
+    virtual void changeItem( int id, int index, const QString& text );
+    virtual void setItems( int id, const QStringList& items );
+    virtual void clear( int id );
 
 protected slots:
     virtual void slotActivated( int );
@@ -311,8 +324,8 @@ public:
     virtual QValueList<QAction*> actions( const QString& group );
     virtual QValueList<QAction*> actions();
 
-    //bool setConfiguration( const QDomElement& element );
-    //QDomElement configuration( QDomDocument& doc, bool properties ) const;
+//    bool setConfiguration( const QDomElement& element );
+//    QDomElement configuration( QDomDocument& doc, bool properties ) const;
 
 signals:
     void inserted( QAction* );
