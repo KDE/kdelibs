@@ -1,3 +1,9 @@
+// $Id$
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <stdio.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -10,10 +16,6 @@
 #include "kspell.moc"
  
 //#define KSDEBUG
-
-#ifndef __GNUC__
-#define inline
-#endif
 
 #ifdef KSDEBUG
 #define dsdebug printf

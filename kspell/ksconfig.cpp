@@ -1,3 +1,9 @@
+// $Id$
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <qchkbox.h>
 #include <qpushbt.h>
 #include <qlabel.h>
@@ -9,10 +15,6 @@
 #include "ksconfig.moc"
 
 //#define KSDEBUG
-
-#ifndef __GNUC__
-#define inline
-#endif
 
 #ifdef KSDEBUG
 #define dsdebug printf

@@ -1,11 +1,13 @@
+// $Id$
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <stdio.h>
 #include "kprocio.moc"
 
 //#define __KPIODEBUG
-
-#ifndef __GNUC__
-#define inline
-#endif
 
 #ifdef __KPIODEBUG
 #define dsdebug printf
