@@ -211,14 +211,14 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     }
 
     if (!dirName.isEmpty())
-        *lastDirectory = KCmdLineArgs::makeURL( QFile::encodeName(dirName) );
-    else
+        d->url = KCmdLineArgs::makeURL( QFile::encodeName(dirName) );
+    else {
         if (lastDirectory->isEmpty())
             *lastDirectory = QDir::currentDirPath();
+        d->url = *lastDirectory;
+    }
 
-    d->url = *lastDirectory;
-
-    ops = new KDirOperator(*lastDirectory, d->mainWidget, "KFileDialog::ops");
+    ops = new KDirOperator(d->url, d->mainWidget, "KFileDialog::ops");
     ops->setOnlyDoubleClickSelectsFiles( true );
     connect(ops, SIGNAL(updateInformation(int, int)),
             SLOT(updateStatusLine(int, int)));
