@@ -382,7 +382,9 @@ namespace KJS {
     Rep *rep;
   };
 
-  bool operator==(const UChar &c1, const UChar &c2);
+  inline bool operator==(const UChar &c1, const UChar &c2) {
+    return (c1.uc == c2.uc);
+  }
   bool operator==(const UString& s1, const UString& s2);
   inline bool operator!=(const UString& s1, const UString& s2) {
     return !KJS::operator==(s1, s2);
@@ -392,7 +394,9 @@ namespace KJS {
   inline bool operator!=(const UString& s1, const char *s2) {
     return !KJS::operator==(s1, s2);
   }
-  bool operator==(const char *s1, const UString& s2);
+  inline bool operator==(const char *s1, const UString& s2) {
+    return operator==(s2, s1);
+  }
   inline bool operator!=(const char *s1, const UString& s2) {
     return !KJS::operator==(s1, s2);
   }

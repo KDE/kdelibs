@@ -492,11 +492,6 @@ void UString::release()
   }
 }
 
-bool KJS::operator==(const UChar &c1, const UChar &c2)
-{
-  return (c1.uc == c2.uc);
-}
-
 bool KJS::operator==(const UString& s1, const UString& s2)
 {
   if (s1.rep->len != s2.rep->len)
@@ -523,11 +518,6 @@ bool KJS::operator==(const UString& s1, const char *s2)
   }
 
   return true;
-}
-
-bool KJS::operator==(const char *s1, const UString& s2)
-{
-  return operator==(s2, s1);
 }
 
 bool KJS::operator<(const UString& s1, const UString& s2)
