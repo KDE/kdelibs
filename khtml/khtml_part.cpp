@@ -87,6 +87,7 @@ using namespace DOM;
 #include <qapplication.h>
 #include <qdragobject.h>
 #include <qmetaobject.h>
+#include <qtooltip.h>
 
 namespace khtml
 {
@@ -123,6 +124,18 @@ int kjs_lib_count = 0;
 
 typedef FrameList::ConstIterator ConstFrameIt;
 typedef FrameList::Iterator FrameIt;
+
+class KHTMLToolTip : public QToolTip
+{
+public:
+  KHTMLToolTip(KHTMLPart *part) : QToolTip(part->widget()), m_part(part) {};
+  
+protected:
+  virtual void maybeTip(const QPoint &);
+  
+private:
+  KHTMLPart *m_part;
+};
 
 class KHTMLPartPrivate
 {
@@ -383,6 +396,13 @@ static QString splitUrlTarget(const QString &url, QString *target=0)
    return result;
 }
 
+void KHTMLToolTip::maybeTip(const QPoint &)
+{
+    DOM::NodeImpl *node = m_part->nodeUnderMouse().handle();
+    if ( node && node->isElementNode() && node->hasTooltip() )
+        tip( node->getRect(), static_cast<DOM::ElementImpl *>( node )->getAttribute( ATTR_TITLE ).string() );
+}
+
 KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *parent, const char *name,
                       GUIProfile prof )
 : KParts::ReadOnlyPart( parent ? parent : parentWidget, name ? name : widgetname )
@@ -475,6 +495,8 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
   connect( &d->m_redirectionTimer, SIGNAL( timeout() ),
            this, SLOT( slotRedirect() ) );
+
+  new KHTMLToolTip( this );
 }
 
 KHTMLPart::~KHTMLPart()
