@@ -58,11 +58,14 @@ void RenderBody::paintBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty)
 {
     //kdDebug( 6040 ) << renderName() << "::paintDecorations()" << endl;
     QColor c;
-    if( parent()->style()->backgroundColor().isValid() )
-	c =  style()->backgroundColor();
     CachedImage *bg = 0;
-    if( parent()->style()->backgroundImage() )
+
+    if( parent()->style()->backgroundColor().isValid() || parent()->style()->backgroundImage() ) {
+        // the root element already has a non-transparent background of its own
+        // so we must fork our own. (CSS2.1 - 14.2 §4)
+	c =  style()->backgroundColor();
 	bg = style()->backgroundImage();
+    }
 
     int w = width();
     int h = height() + borderTopExtra() + borderBottomExtra();
