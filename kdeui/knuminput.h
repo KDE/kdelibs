@@ -870,7 +870,7 @@ public:
   **/
   virtual void setPrecision( int precision, bool force );
 
-  /** @return the cuurent value */
+  /** @return the current value */
   double value() const;
   /** @return the current lower bound */
   double minValue() const;
