@@ -660,9 +660,9 @@ static QString describeFont( const QFont &f)
 QString RenderStyle::createDiff( const RenderStyle &parent ) const
 {
     QString res;
-      if ( parent.color() != color() )
+      if ( color().isValid() && parent.color() != color() )
         res += " [color=" + color().name() + "]";
-    if ( parent.backgroundColor() != backgroundColor() )
+    if ( backgroundColor().isValid() && parent.backgroundColor() != backgroundColor() )
         res += " [bgcolor=" + backgroundColor().name() + "]";
     if ( parent.font() != font() )
         res += " [font=" + describeFont( font() ) + "]";
