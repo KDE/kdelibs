@@ -81,7 +81,7 @@ void KMediaPlayer::View::setVideoWidget(QWidget *videoWidget)
 	d->videoWidget = videoWidget;
 }
 
-QWidget * KMediaPlayer::View::videoWidget() const
+QWidget* KMediaPlayer::View::videoWidget()
 {
 	return d->videoWidget;
 }

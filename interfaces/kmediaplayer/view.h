@@ -59,7 +59,7 @@ public:
 
 	/** Return the QWidget in which video is displayed.
 		May Return 0L if there is none. */
-	QWidget *videoWidget() const;
+	QWidget *videoWidget();
 
 public slots:
 	/** Set which buttons to display. @see Button. */
