@@ -142,5 +142,5 @@ kiconloaderui.moc: kiconloaderui.h
 	$(MOC) kiconloaderui.h -o kiconloaderui.moc
 
 data_DATA = error.xpm exclamation.xpm info.xpm stopsign.xpm
-datadir = $(prefix)/share/icons
+datadir = $(prefix)/share/apps/kde/pics
 

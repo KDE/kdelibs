@@ -2,6 +2,9 @@
  * $Id$
  *
  * $Log$
+ *   version of Qt. The fix is clearly marked should it need to
+ *   be revoked.
+ *
  * Revision 1.7  1997/10/21 20:45:02  kulow
  * removed all NULLs and replaced it with 0L or "".
  * There are some left in mediatool, but this is not C++
@@ -50,7 +53,7 @@ KMsgBox::KMsgBox(QWidget *parent, const char *caption, const char *message, int 
 #include <kbuttonbox.h>
 
     
-    	QString ipath = kapp->kdedir() + "/share/icons/";
+#include "kmsgbox.h"
 #include "kmsgbox.moc"
 
     if(!icons_initialized) {
