@@ -81,14 +81,14 @@ void RenderRoot::calcMinMaxWidth()
 void RenderRoot::layout(bool deep)
 {
     //kdDebug(6040) << "RenderRoot::layout(" << deep << ")" << endl;
-    
+
     calcMinMaxWidth();
     calcWidth();
 
     // this fixes frameset resizing
     if(firstChild())
-	firstChild()->setLayouted(false);
-    
+    	firstChild()->setLayouted(false);
+
     if (deep)
     	RenderFlow::layout(true);
 	

@@ -166,13 +166,16 @@ void KHTMLView::resizeEvent ( QResizeEvent * event )
 
     QScrollView::resizeEvent(event);
 
+#if 0
     if(!m_part->parentPart()) {
 	   kdDebug( 0 ) << "top level resizeEvent" << endl;
 	   // ### this doesn't work for some strange reason
-	   //d->resizeTimer.start(100, true);
-	   layout();
+	   d->resizeTimer.start(100, true);
     } else
 	layout();
+#else
+    layout();
+#endif
 }
 
 void KHTMLView::triggerResize()
@@ -254,40 +257,31 @@ void KHTMLView::layout(bool force)
 
 
 	int w = visibleWidth();
-	int h = visibleHeight();
+	_height = visibleHeight();
 
-    	if (w != _width || h != _height || force)
-	{
+    	if (w != _width || force) {
 	    //kdDebug( 6000 ) << "layouting document" << endl;
 
     	    _width = w;
-	    _height = h;
 
 //	    QTime qt;
 //	    qt.start();
 
 	    root->layout(true);
-
-            int rw = root->width()+root->marginLeft()+root->marginRight();
-            int rh = root->height()+root->marginTop()+root->marginBottom();
+	    
+	    int rw = root->width()+root->marginLeft()+root->marginRight();
+	    int rh = root->height()+root->marginTop()+root->marginBottom();
 
 	    resizeContents(rw, rh);
 
 //	    kdDebug( 6000 ) << "TIME: layout() dt=" << qt.elapsed() << endl;
 
-	    viewport()->repaint(false);
-	}
-	else
-	{
+	} else {
 	    root->layout(false);
-	    viewport()->repaint(false);
 	}
-    }
-    else
-    {
+    } else {
 	_width = visibleWidth();
     }
-
 }
 
 void KHTMLView::paintElement( khtml::RenderObject *o, int xPos, int yPos )
