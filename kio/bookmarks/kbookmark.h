@@ -32,6 +32,10 @@ class KIO_EXPORT KBookmark
 {
     friend class KBookmarkGroup;
 public:
+    enum MetaDataOverwriteMode {
+        OverwriteMetaData, DontOverwriteMetaData
+    };
+
     KBookmark( ) {}
     KBookmark( QDomElement elem ) : element(elem) {}
 
@@ -151,6 +155,25 @@ public:
     static QString nextAddress( const QString & address )
     { return parentAddress(address) + '/' + QString::number(positionInParent(address)+1); }
 
+    /**
+     * Get the value of a specific metadata item.
+     * @param key Name of the metadata item
+     * @return Value of the metadata item. QString::null is returned in case
+     * the specified key does not exist.
+     * @since 3.4
+     */
+    QString metaDataItem( const QString &key ) const;
+
+    /**
+     * Change the value of a specific metadata item, or create the given item
+     * if it doesn't exist already.
+     * @param key Name of the metadata item to change
+     * @param value Value to use for the specified metadata item
+     * @param mode Whether to overwrite the item's value if it exists already or not.
+     * @since 3.4
+     */
+    void setMetaDataItem( const QString &key, const QString &value, MetaDataOverwriteMode mode = OverwriteMetaData );
+
 protected:
     QDomElement element;
     // Note: you can't add new member variables here.
@@ -215,6 +238,18 @@ public:
      * Create a new bookmark separator
      */
     KBookmark createNewSeparator();
+
+    /**
+     * Create a new bookmark, as the last child of this group
+     * Don't forget to use KBookmarkManager::self()->emitChanged( parentBookmark );
+     * if this bookmark was added interactively.
+     * @param mgr the manager of the bookmark
+     * @param bm the bookmark to add
+     * @param emitSignal if true emit KBookmarkNotifier signal
+     * @since 3.4
+     */
+    KBookmark addBookmark( KBookmarkManager* mgr, const KBookmark &bm, bool emitSignal = true );
+
     /**
      * Create a new bookmark, as the last child of this group
      * Don't forget to use KBookmarkManager::self()->emitChanged( parentBookmark );

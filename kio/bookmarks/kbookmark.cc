@@ -175,12 +175,23 @@ bool KBookmarkGroup::moveItem( const KBookmark & item, const KBookmark & after )
     return (!n.isNull());
 }
 
+KBookmark KBookmarkGroup::addBookmark( KBookmarkManager* mgr, const KBookmark &bm, bool emitSignal )
+{
+    element.appendChild( bm.internalElement() );
+
+    if (emitSignal)
+        emit mgr->notifier().addedBookmark(
+                                 mgr->path(), bm.url().url(),
+                                 bm.fullText(), bm.address(), bm.icon() );
+
+    return bm;
+}
+
 KBookmark KBookmarkGroup::addBookmark( KBookmarkManager* mgr, const QString & text, const KURL & url, const QString & icon, bool emitSignal )
 {
     //kdDebug(7043) << "KBookmarkGroup::addBookmark " << text << " into " << m_address << endl;
     QDomDocument doc = element.ownerDocument();
     QDomElement elem = doc.createElement( "bookmark" );
-    element.appendChild( elem );
     elem.setAttribute( "href", url.url( 0, 106 ) ); // write utf8 URL (106 is mib enum for utf8)
     QString _icon = icon;
     if ( _icon.isEmpty() )
@@ -191,14 +202,7 @@ KBookmark KBookmarkGroup::addBookmark( KBookmarkManager* mgr, const QString & te
     elem.appendChild( textElem );
     textElem.appendChild( doc.createTextNode( text ) );
 
-    KBookmark bk(elem);
-
-    if (emitSignal)
-        emit mgr->notifier().addedBookmark(
-                                 mgr->path(), url.url(),
-                                 text, bk.address(), icon );
-
-    return bk;
+    return addBookmark( mgr, KBookmark( elem ), emitSignal );
 }
 
 void KBookmarkGroup::deleteBookmark( KBookmark bk )
@@ -397,31 +401,49 @@ void KBookmark::updateAccessMetadata()
 {
     kdDebug(7043) << "KBookmark::updateAccessMetadata " << address() << " " << url().prettyURL() << endl;
 
-    QDomNode subnode = cd_or_create(internalElement(), "info");
-    subnode = findOrCreateMetadata(subnode);
+    const uint timet = QDateTime::currentDateTime().toTime_t();
+    setMetaDataItem( "time_added", QString::number( timet ), DontOverwriteMetaData );
+    setMetaDataItem( "time_visited", QString::number( timet ) );
 
-    uint timet = QDateTime::currentDateTime().toTime_t();
-
-    QDomNode item = cd_or_create(subnode, "time_added");
-    QDomText domtext = get_or_create_text(item);
-    if (domtext.data().isEmpty()) 
-        domtext.setData(QString::number(timet));
-
-    item = cd_or_create(subnode, "time_visited");
-    domtext = get_or_create_text(item);
-    domtext.setData(QString::number(timet));
-
-    item = cd_or_create(subnode, "visit_count"); // TODO use spec'ed name
-    domtext = get_or_create_text(item);
-    QString countStr = domtext.data();
+    QString countStr = metaDataItem( "visit_count" ); // TODO use spec'ed name
     bool ok;
     int currentCount = countStr.toInt(&ok);
     if (!ok)
         currentCount = 0;
     currentCount++;
-    domtext.setData(QString::number(currentCount));
+    setMetaDataItem( "visit_count", QString::number( currentCount ) );
 
     // TODO - for 4.0 - time_modified
+}
+
+QString KBookmark::metaDataItem( const QString &key ) const
+{
+    QDomNode infoNode = cd_or_create( internalElement(), "info" );
+    infoNode = findOrCreateMetadata( infoNode );
+    for ( QDomNode n = infoNode.firstChild(); !n.isNull(); n = n.nextSibling() ) {
+        if ( !n.isElement() ) {
+            continue;
+        }
+        const QDomElement e = n.toElement();
+        if ( e.tagName() == key ) {
+            return e.text();
+        }
+    }
+    return QString::null;
+}
+
+void KBookmark::setMetaDataItem( const QString &key, const QString &value, MetaDataOverwriteMode mode )
+{
+    QDomNode infoNode = cd_or_create( internalElement(), "info" );
+    infoNode = findOrCreateMetadata( infoNode );
+
+    QDomNode item = cd_or_create( infoNode, key );
+    QDomText text = get_or_create_text( item );
+    if ( mode == DontOverwriteMetaData && !text.data().isEmpty() ) {
+        return;
+    }
+
+    text.setData( value );
 }
 
 void KBookmarkGroupTraverser::traverse(const KBookmarkGroup &root)
