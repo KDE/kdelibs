@@ -168,6 +168,14 @@ void FileProtocol::mkdir( const KURL& url, int permissions )
 
 void FileProtocol::get( const KURL& url )
 {
+    if (!url.isLocalFile()) {
+        KURL redir(url);
+	redir.setProtocol(config()->readEntry("DefaultRemoteProtocol", "smb"));
+	redirection(redir);
+	finished();
+	return;
+    }
+
     QCString _path( QFile::encodeName(url.path()));
     KDE_struct_stat buff;
     if ( KDE_stat( _path.data(), &buff ) == -1 ) {
@@ -913,6 +921,15 @@ bool FileProtocol::createUDSEntry( const QString & filename, const QCString & pa
 
 void FileProtocol::stat( const KURL & url )
 {
+    if (!url.isLocalFile()) {
+        KURL redir(url);
+	redir.setProtocol(config()->readEntry("DefaultRemoteProtocol", "smb"));
+	redirection(redir);
+	kdDebug(7101) << "redirecting to " << redir.url() << endl;
+	finished();
+	return;
+    }
+
     /* directories may not have a slash at the end if
      * we want to stat() them; it requires that we
      * change into it .. which may not be allowed
@@ -973,8 +990,17 @@ void FileProtocol::stat( const KURL & url )
 
 void FileProtocol::listDir( const KURL& url)
 {
-    QCString _path( QFile::encodeName(url.path()));
     kdDebug(7101) << "========= LIST " << url.url() << " =========" << endl;
+    if (!url.isLocalFile()) {
+        KURL redir(url);
+	redir.setProtocol(config()->readEntry("DefaultRemoteProtocol", "smb"));
+	redirection(redir);
+	kdDebug(7101) << "redirecting to " << redir.url() << endl;
+	finished();
+	return;
+    }
+
+    QCString _path( QFile::encodeName(url.path()));
 
     KDE_struct_stat buff;
     if ( KDE_stat( _path.data(), &buff ) == -1 ) {
