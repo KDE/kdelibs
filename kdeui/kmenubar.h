@@ -95,7 +95,7 @@ private slots:
 private:
     void setTopLevelMenuInternal(bool top_level);
     void checkSize( int& w, int& h );
-    static bool block_resize;
+    static int block_resize;
 protected:
     virtual void virtual_hook( int id, void* data );
 private:

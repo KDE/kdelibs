@@ -328,13 +328,14 @@ void KMenuBar::selectionTimeout()
     }
 }
 
-// KDE4 remove
+int KMenuBar::block_resize = 0;
+
 void KMenuBar::resizeEvent( QResizeEvent *e )
 {
-    QMenuBar::resizeEvent(e);
+    ++block_resize; // do not respond with configure request to ConfigureNotify event
+    QMenuBar::resizeEvent(e); // to avoid possible infinite loop
+    --block_resize;
 }
-
-bool KMenuBar::block_resize = false;
 
 void KMenuBar::setGeometry( const QRect& r )
 {
@@ -343,9 +344,9 @@ void KMenuBar::setGeometry( const QRect& r )
 
 void KMenuBar::setGeometry( int x, int y, int w, int h )
 {
-    if( block_resize )
+    if( block_resize > 0 )
     {
-	QMenuBar::setGeometry( x, y, width(), height());
+	move( x, y );
 	return;
     }
     checkSize( w, h );
@@ -355,7 +356,7 @@ void KMenuBar::setGeometry( int x, int y, int w, int h )
 
 void KMenuBar::resize( int w, int h )
 {
-    if( block_resize )
+    if( block_resize > 0 )
 	return;
     checkSize( w, h );
     if( size() != QSize( w, h ))
@@ -374,11 +375,11 @@ void KMenuBar::checkSize( int& w, int& h )
       // mainwindow size. Resize to sizeHint() instead. Since
       // sizeHint() may indirectly call resize(), avoid infinite
       // recursion.
-	block_resize = true;
+	++block_resize;
 	QSize s = sizeHint();
 	w = s.width();
 	h = s.height();
-	block_resize = false;
+	++block_resize;
     }
     // This is not done as setMinimumSize(), becase that would set the minimum
     // size in WM_NORMAL_HINTS, and KWin would not allow changing to smaller size
