@@ -299,16 +299,20 @@ void KIntNumInput::setRange(int lower, int upper, int step, bool slider)
     m_spin->setLineStep(step);
 
     if(slider) {
-        delete m_slider;
-        m_slider = new QSlider(lower, upper, step, m_spin->value(),
-                               QSlider::Horizontal, this);
-        m_slider->setTickmarks(QSlider::Below);
+		if (m_slider)
+			m_slider->setRange(lower, upper);
+		else {
+			m_slider = new QSlider(lower, upper, step, m_spin->value(),
+								   QSlider::Horizontal, this);
+			m_slider->setTickmarks(QSlider::Below);
+			connect(m_slider, SIGNAL(valueChanged(int)),
+					m_spin, SLOT(setValue(int)));
+		}
 
         int major = (upper-lower)/10;
-		if ( major==0 ) major = step; // #### workaround Qt bug in 2.1-beta3
-        m_slider->setSteps( step, major );
+		if ( major==0 ) major = step; // #### workaround Qt bug in 2.1-beta4
+        m_slider->setSteps(step, major);
         m_slider->setTickInterval(major);
-        connect(m_slider, SIGNAL(valueChanged(int)), m_spin, SLOT(setValue(int)));
     }
     else {
         delete m_slider;
