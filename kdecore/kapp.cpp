@@ -593,7 +593,7 @@ static const KCmdLineOptions kde_options[] =
    { "icon <icon>",  		I18N_NOOP("Use 'icon' as the application icon"), 0},
    { "miniicon <icon>", 	I18N_NOOP("Use 'icon' as the icon in the titlebar"), 0},
    { "restore <number>", 	I18N_NOOP("Restore session and use 'number' for something"), 0},
-   { "dcopserver <server address>", I18N_NOOP("Use the DCOP Server specified by 'server address'"), 0},
+   { "dcopserver <server>",	I18N_NOOP("Use the DCOP Server specified by 'server'"), 0},
    { 0, 0, 0 }
 };
 

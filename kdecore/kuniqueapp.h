@@ -40,6 +40,7 @@ class KUniqueApplication : public KApplication, DCOPObject
   Q_OBJECT
 public:
   /**
+   * @depreciated
    * Constructor. Parses command-line arguments.
    * Parameters : See @ref KApplication constructor.
    */
@@ -48,6 +49,21 @@ public:
 		      bool allowStyles=true, 
 		      bool GUIenabled=true);
 
+  /**
+   * Constructor. Takes command line arguments from KCmdLineArgs
+   * Parameters : See @ref KApplication constructor.
+   */
+  KUniqueApplication( bool allowStyles=true, 
+		      bool GUIenabled=true);
+
+  /**
+   * Add command line options specific for KUniqueApplication
+   * 
+   * Should be called before calling KUniqueApplication constructor
+   * and / or start().
+   */
+  static void addCmdLineOptions();
+  
   /**
    * Fork and register with dcop.
    *
@@ -59,20 +75,30 @@ public:
    * Typically this is used like:
    * <pre>
    * int main(int argc, char **argv) {
-   *    if (!KUniqueApplication::start(argc, argv, "myAppName")) {
+   *    KAboutData about("myappname", "myAppName", .....);
+   *    KCmdLineArgs::init(argc, argv, &about);
+   *    KCmdLineArgs::addCmdLineOptions( myCmdOptions );
+   *    KUniqueApplication::addCmdLineOptions();
+   *
+   *    if (!KUniqueApplication::start()) {
    *       fprintf(stderr, "myAppName is already running!\n");
    *       exit(0);
    *    }
-   *    KUniqueApplication a(argc, argv, "myAppName");
+   *    KUniqueApplication a;
    *    a.exec();
    * }
    * </pre>
    * or
    * <pre>
    * int main(int argc, char **argv) {
-   *    if (!KUniqueApplication::start(argc, argv, "myAppName"))
+   *    KAboutData about("myappname", "myAppName", .....);
+   *    KCmdLineArgs::init(argc, argv, &about);
+   *    KCmdLineArgs::addCmdLineOptions( myCmdOptions );
+   *    KUniqueApplication::addCmdLineOptions();
+   *
+   *    if (!KUniqueApplication::start())
    *       exit(0);
-   *    KUniqueApplication a(argc, argv, "myAppName");
+   *    KUniqueApplication a;
    *    a.exec();
    * }
    * </pre>
@@ -82,6 +108,8 @@ public:
    * If you use @ref start() the @ref KApplication constructor will not be 
    * called if this isn't necessary.
    */
+  static bool start();
+
   static bool start(int& argc, char** argv, const QCString &rAppName);
    
   
@@ -110,13 +138,18 @@ public:
    * application asking for a new window to be created, possibly with
    * some data already loaded based on the arguments received.
    *
-   * @param params The bundled up command line parameters that were passed
-   *               on the command line when the application request was initiated,
-   *               @bf after being processed by Qt's @ref QApplication.
+   * Command line arguments have been passed to KCmdLineArgs before this
+   * function is called and can be checked in the usual way.
    *
    * @return An exit value. The calling process will exit with this value.
    */
+  virtual int newInstance();
+
+  /**
+   * @depreciated 
+   */
   virtual int newInstance(QValueList<QCString> params);
+
 private:
   static DCOPClient *s_DCOPClient;
 };

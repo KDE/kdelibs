@@ -28,16 +28,55 @@
 #include <stdlib.h>
 #include <qlist.h>
 #include <qasciidict.h>
+#include <qstrlist.h>
 
 template class QAsciiDict<char>;
 template class QList<KCmdLineArgs>;
 
-class KCmdLineParsedArgs : public QAsciiDict<char>
+class KCmdLineParsedOptions : public QAsciiDict<QCString>
+{
+public:
+   KCmdLineParsedOptions()
+     : QAsciiDict<QCString>( 7 ) { }
+
+   // WABA: Huh? 
+   // The compiler doesn't find KCmdLineParsedOptions::write(s) by itself ???
+   QDataStream& save( QDataStream &s) const
+   { return QGDict::write(s); } 
+
+   QDataStream& load( QDataStream &s) 
+   { return QGDict::read(s); } 
+
+protected:
+   virtual QDataStream& write( QDataStream &s, QCollection::Item data) const
+   {
+      QCString *str = (QCString *) data;
+      s << (*str);
+      return s;
+   }
+
+   virtual QDataStream& read( QDataStream &s, QCollection::Item &item) 
+   {
+      QCString *str = new QCString;
+      s >> (*str);
+      item = (void *)str;
+      return s;
+   }
+
+};
+
+class KCmdLineParsedArgs : public QStrList
 {
 public:
    KCmdLineParsedArgs()
-     : QAsciiDict<char>( 7, true, false) { }
+     : QStrList( true ) { }
+   QDataStream& save( QDataStream &s) const
+   { return QGList::write(s); } 
+
+   QDataStream& load( QDataStream &s) 
+   { return QGList::read(s); } 
 };
+
 
 class KCmdLineArgsList: public QList<KCmdLineArgs>
 {
@@ -79,25 +118,97 @@ KCmdLineArgs::init(int _argc, char **_argv, const KAboutData *_about, bool noKAp
 }
 
 void
-KCmdLineArgs::addCmdLineOptions( const KCmdLineOptions *options, const char *name, const char *id)
+KCmdLineArgs::addCmdLineOptions( const KCmdLineOptions *options, const char *name, 
+				 const char *id, const char *afterId)
 {
-   assert( parsed == false ); // You must add _ALL_ cmd line options
-                              // before accessing the arguments!
-
    if (!argsList)
       argsList = new KCmdLineArgsList();
 
-   KCmdLineArgs *args = new KCmdLineArgs(options, name, id);
-   argsList->append(args);
+   int pos = argsList->count();
+
+   if (pos && id && argsList->last() && !argsList->last()->name)
+      pos--; 
+
+   KCmdLineArgs *args;
+   int i = 0;
+   for(args = argsList->first(); args; args = argsList->next(), i++)
+   {
+      if (!id && !args->id)
+         return; // Options already present.
+  
+      if (id && args->id && (strcmp(id, args->id) == 0))
+	 return; // Options already present.
+
+      if (afterId && args->id && (strcmp(afterId, args->id) == 0))
+         pos = i+1;
+   }
+
+   assert( parsed == false ); // You must add _ALL_ cmd line options
+                              // before accessing the arguments!
+   args = new KCmdLineArgs(options, name, id);
+   argsList->insert(pos, args);
+}
+
+void
+KCmdLineArgs::saveAppArgs( QDataStream &ds)
+{
+   if (!parsed)
+      parseAllArgs();
+
+   // Remove Qt and KDE options.
+   removeArgs("qt");
+   removeArgs("kde");
+
+   uint count = argsList ? argsList->count() : 0;
+   ds << count;
+
+   if (!count) return;
+
+   KCmdLineArgs *args;
+   for(args = argsList->first(); args; args = argsList->next())
+   {
+      args->save(ds);
+   }
+}
+
+void
+KCmdLineArgs::loadAppArgs( QDataStream &ds)
+{
+   // Remove Qt and KDE options.
+   removeArgs("qt");
+   removeArgs("kde");
+
+   KCmdLineArgs *args;
+   if (argsList)
+   {
+      for(args = argsList->first(); args; args = argsList->next())
+      {
+         args->clear();
+      }
+   }
+
+   uint count;
+   ds >> count;
+
+   if (count == 0)
+      return;
+   
+   if (!argsList || (count != argsList->count()))
+   {
+      fprintf(stderr, "loadAppArgs:: Unexpected number of command line sets "
+                      "(%d instead of %d)\n", count, argsList ? argsList->count() : 0);
+      return; 
+   }
+
+   for(args = argsList->first(); args; args = argsList->next())
+   {
+      args->load(ds);
+   }
 }
 
 KCmdLineArgs *KCmdLineArgs::parsedArgs(const char *id)
 {
-   assert(argsList != 0); // It's an error to call parsedArgs(...) without
-                          // doing a corresponding addCmdLineOptions first!
-
-
-   KCmdLineArgs *args = argsList->first();
+   KCmdLineArgs *args = argsList ? argsList->first() : 0;
    while(args)
    {
       if (strcmp(args->id, id) == 0)
@@ -109,9 +220,34 @@ KCmdLineArgs *KCmdLineArgs::parsedArgs(const char *id)
       args = argsList->next();
    }
 
-   assert( args ); // It's an error to call parsedArgs(...) without
-                   // doing a corresponding addCmdLineOptions first!
+   if (!args)
+   {
+      fprintf(stderr, "\n\nFAILURE (KCmdLineArgs):\n");
+      fprintf(stderr, "Application requests for parsedArgs(\"%s\") witout a prior call\n", id);
+      fprintf(stderr, "to addCmdLineOptions( ..., \"%s\")\n\n", id);
+ 
+      assert( 0 ); 
+      exit(255);
+   }
    return args;
+}
+
+void KCmdLineArgs::removeArgs(const char *id)
+{
+   KCmdLineArgs *args = argsList ? argsList->first() : 0;
+   while(args)
+   {
+      if (strcmp(args->id, id) == 0)
+      {
+          if (!parsed)
+             parseAllArgs();
+          break;
+      }
+      args = argsList->next();
+   }
+
+   if (args)
+      delete args;
 }
 
 /*
@@ -126,10 +262,11 @@ static int
 findOption(const KCmdLineOptions *options, const char *opt, 
            const char *&opt_name, const char *&def)
 {
-   bool inverse = false;
+   bool inverse;
    int len = strlen(opt);
    while(options && options->name)
    {
+      inverse = false;
       opt_name = options->name;
       if ((opt_name[0] == 'n') && (opt_name[1] == 'o'))
       {
@@ -143,11 +280,24 @@ findOption(const KCmdLineOptions *options, const char *opt,
          {
             if (inverse) 
                return 2;
-            else 
-               return 1;
+            
+            if (!options->description)
+            {
+               options++;
+               if (!options->name)
+                  return 0;
+               QCString nextOption = options->name;
+               int p = nextOption.find(' ');
+               if (p > 0)
+                  nextOption = nextOption.left(p);
+               return findOption(options, nextOption.data(), opt_name, def);
+            }
+
+            return 1;
          }
          if (opt_name[0] == ' ')
          {
+            opt_name++;
             def = options->def;
             return 3;
          }
@@ -190,11 +340,10 @@ KCmdLineArgs::findOption(const char *opt, int &i, bool enabled)
                     .arg( "no").arg(opt));
       }
       i++;
-      opt_name++;
       if (i >= argc) 
       {
          enable_i18n();
-         usage( i18n("'%s' missing.\n").arg( opt_name));
+         usage( i18n("'%1' missing.\n").arg( opt_name));
       }
       args->setOption(opt, argv[i]);
    }   
@@ -294,9 +443,6 @@ KCmdLineArgs::parseAllArgs()
 int *
 KCmdLineArgs::qt_argc()
 {
-   assert(argsList != 0); // It's an error to call KApplication(...) without
-                          // doing a addCmdLineOptions first!
-
    return &argc;
 }
 
@@ -308,7 +454,6 @@ KCmdLineArgs::qt_argc()
 char ***
 KCmdLineArgs::qt_argv()
 {
-   assert(argsList);
    if (!argsList)
       KApplication::addCmdLineOptions(); // Lazy bastards!
 
@@ -344,9 +489,8 @@ KCmdLineArgs::usage(const char *id)
    assert(argsList != 0); // It's an error to call usage(...) without
                           // having done addCmdLineOptions first!
 
-   QString optionFormatString		= "  --%1 %2\n";
-   QString optionFormatStringDef	= "  --%1 %2 [%3]\n";
-   QString optionFormatStringArg	= "  %1 %2\n";
+   QString optionFormatString		= "  %1 %2\n";
+   QString optionFormatStringDef	= "  %1 %2 [%3]\n";
    QString optionHeaderString = i18n("\n%1-options:\n");
    QString tmp;
    QString usage;
@@ -386,24 +530,24 @@ KCmdLineArgs::usage(const char *id)
    printQ("\n"+about->shortDescription()+"\n");
 
    printQ(optionHeaderString.arg(i18n("Generic")));
-   printQ(optionFormatString.arg("help", -23).arg(i18n("Show help about options")));
+   printQ(optionFormatString.arg("--help", -25).arg(i18n("Show help about options")));
    
    args = argsList->first();
    while(args)
    {
       if (args->name && args->id)
       {
-         QString option = QString("help-%1").arg(args->id);
+         QString option = QString("--help-%1").arg(args->id);
          QString desc = QString("Show %1 specific options").arg(args->name);
          
-         printQ(optionFormatString.arg(option, -23).arg(desc));
+         printQ(optionFormatString.arg(option, -25).arg(desc));
       }
       args = argsList->next();
    }
    
-   printQ(optionFormatString.arg("help-all",-23).arg(i18n("Show all options")));
-   printQ(optionFormatStringArg.arg("-V, --version",-25).arg(i18n("Show version information")));
-   printQ(optionFormatString.arg( "", -23).arg(i18n("End of options")));
+   printQ(optionFormatString.arg("--help-all",-25).arg(i18n("Show all options")));
+   printQ(optionFormatString.arg("-V, --version",-25).arg(i18n("Show version information")));
+   printQ(optionFormatString.arg("--", -25).arg(i18n("End of options")));
 
    args = argsList->first(); // Sets current to 1st.
 
@@ -413,7 +557,7 @@ KCmdLineArgs::usage(const char *id)
    {   
      while(args)
      {
-       if (!id && !args->name) break;
+       if (!id && !args->id) break;
        if (id && (strcmp(args->id, id) == 0)) break;
        args = argsList->next();
      }
@@ -434,22 +578,46 @@ KCmdLineArgs::usage(const char *id)
      while (args)
      {
        const KCmdLineOptions *option = args->options;
+       QCString opt = "";
        while(option && option->name)
        {
-         if (option->name[0] == '+')
+         QCString name = option->name;
+         if (name[0] == '+')
          {
+            name = name.mid(1);
             if (!hasArgs)
                printQ(i18n("\nArguments:\n"));
             hasArgs = true;
-            printQ(optionFormatStringArg.arg(option->name+1, -25)
+            printQ(optionFormatString.arg(name, -25)
 		 .arg(i18n(option->description)));
          }
-         else if (!option->def || !option->description)
-            printQ(optionFormatString.arg(option->name, -23)
-		.arg(i18n(option->description ? option->description : "")));
-         else
-            printQ(optionFormatStringDef.arg(option->name, -23) 
-                 .arg(i18n(option->description)).arg(option->def));
+         else 
+         {
+            if ((name.length() == 1) || (name[1] == ' '))
+               name = "-"+name;
+            else 
+               name = "--"+name;
+            if (!option->description)
+            {
+               opt = name + ", ";
+                
+            }
+            else 
+            {
+               opt = opt + name;
+               if (!option->def)
+               {
+                  printQ(optionFormatString.arg(opt, -25)
+                         .arg(i18n(option->description)));
+               }
+               else
+               {
+                  printQ(optionFormatStringDef.arg(opt, -25) 
+                         .arg(i18n(option->description)).arg(option->def));
+               }
+               opt = "";
+            }
+         }
          
          option++;
        }
@@ -498,57 +666,112 @@ KCmdLineArgs::~KCmdLineArgs()
 }
 
 void
+KCmdLineArgs::clear()
+{
+   delete parsedArgList;
+   parsedArgList = 0;
+   delete parsedOptionList;
+   parsedOptionList = 0;
+}
+
+void
+KCmdLineArgs::save( QDataStream &ds) const
+{
+   uint count = 0;
+   if (parsedOptionList)
+      parsedOptionList->save( ds );
+   else
+      ds << count;
+
+   if (parsedArgList)
+      parsedArgList->save( ds );
+   else
+      ds << count;
+}
+
+void
+KCmdLineArgs::load( QDataStream &ds)
+{
+   if (!parsedOptionList) parsedOptionList = new KCmdLineParsedOptions;
+   if (!parsedArgList) parsedArgList = new KCmdLineParsedArgs;
+
+   parsedOptionList->load( ds );
+   parsedArgList->load( ds );
+
+   if (parsedOptionList->count() == 0)
+   {
+      delete parsedOptionList;
+      parsedOptionList = 0;
+   }   
+   if (parsedArgList->count() == 0)
+   {
+      delete parsedArgList;
+      parsedArgList = 0;
+   }   
+}
+
+void
 KCmdLineArgs::setOption(const char *opt, bool enabled)
 {
-   if (!parsedOptionList) parsedOptionList = new KCmdLineParsedArgs;
+   if (!parsedOptionList) parsedOptionList = new KCmdLineParsedOptions;
 
    if (enabled)
-      parsedOptionList->replace( opt, "t" );
+      parsedOptionList->replace( opt, new QCString("t") );
    else
-      parsedOptionList->replace( opt, "f" );
+      parsedOptionList->replace( opt, new QCString("f") );
 }
 
 void
 KCmdLineArgs::setOption(const char *opt, const char *value)
 {
-   if (!parsedOptionList) parsedOptionList = new KCmdLineParsedArgs;
+   if (!parsedOptionList) parsedOptionList = new KCmdLineParsedOptions;
 
-   parsedOptionList->replace( opt, value );
+   parsedOptionList->replace( opt, new QCString(value) );
 }
 
-const char *
+QCString
 KCmdLineArgs::getOption(const char *opt)
 {
-   const char *value = 0;
+   QCString *value = 0;
    if (parsedOptionList)
    {
       value = parsedOptionList->find(opt);
    }
 
-   if (!value)
-   {
-      // Look up the default.
-      const char *opt_name;
-      const char *def;
-      int result = ::findOption( options, opt, opt_name, def);
+   if (value)
+      return (*value);
 
-      assert(result == 3); // Make sure to add an option to 
-                          // the list of options before querying it!
-      return def;         
+   // Look up the default.
+   const char *opt_name;
+   const char *def;
+   int result = ::findOption( options, opt, opt_name, def);
+
+   assert(result == 3); // Make sure to add an option to 
+                        // the list of options before querying it!
+   if (result != 3)
+   {
+      fprintf(stderr, "\n\nFAILURE (KCmdLineArgs):\n");
+      fprintf(stderr, "Application requests for getOption(\"%s\") but the \"%s\" option\n", 
+                      opt, opt);
+      fprintf(stderr, "has never been specified via addCmdLineOptions( ... )\n\n");
+ 
+      assert( 0 ); 
+      exit(255);
    }
-   return value;
+   return QCString(def);         
 }
 
 bool
 KCmdLineArgs::isSet(const char *opt)
 {
-   const char *value = 0;
+   QCString *value = 0;
    if (parsedOptionList)
    {
       value = parsedOptionList->find(opt);
    }
+
    if (value)
-      return (value[0] == 't');
+      return ((*value)[0] == 't');
 
    // Look up the default.
    const char *opt_name;
@@ -587,7 +810,7 @@ void
 KCmdLineArgs::addArgument(const char *argument)
 {
    if (!parsedArgList)
-      parsedArgList = new QList<char>;
+      parsedArgList = new KCmdLineParsedArgs;
 
    parsedArgList->append(argument);
 }

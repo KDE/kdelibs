@@ -31,6 +31,8 @@ struct KCmdLineOptions
 
 class KCmdLineArgsList;
 class KApplication;
+class KUniqueApplication;
+class KCmdLineParsedOptions;
 class KCmdLineParsedArgs;
 class KAboutData;
 
@@ -50,6 +52,8 @@ class KAboutData;
 class KCmdLineArgs
 {
   friend KApplication;
+  friend KUniqueApplication;
+  friend QList<KCmdLineArgs>;
 public:
   // Static functions:
   
@@ -91,10 +95,52 @@ public:
    *
    * @param options A list of options which your code supplies.
    * @param id A name with which these options can be identified.
+   * @param afterId The options are inserted after this set of options.
    *          
+   * The list of options should look like this:
+   *
+   * static KCmdLineOptions options[] =
+   * {
+   *    { "option1 <argument>", I18N_NOOP("Description 1"), "default" },
+   *    { "o", 0, 0 },
+   *    { "option2", I18N_NOOP("Description 2"), 0 },
+   *    { "nooption3", I18N_NOOP("Description 3"), 0 },
+   *    { 0, 0, 0}
+   * }
+   *
+   * @li "option1" is an option which requires an additional argument
+   * @li "option2" is an option which can be turned on. The default is off.
+   * @li "option3" is an option which can be turned off. The default is on.
+   * @li "o" does not have a description. It is an alias for the option
+   *     which follows. In this case "option2".
+   * @li "+file" specifies an argument. The '+' is removed. If your program
+   *     doesn't specify that it can use arguments your program will abort
+   *     when an argument is passed to it.
+   *
+   * In BNF:
+   * cmd = myapp [options] file
+   * options = (option)*
+   * option = --option1 <argument> | 
+   *          (-o | --option2 | --nooption2) |
+   *          ( --option3 | --nooption3 )
+   *
+   * Instead of "--option3" one may also use "-option3"
+   *
+   * Usage examples:
+   *
+   * @li "myapp --option1 test"
+   * @li "myapp" (same as "myapp --option1 default")
+   * @li "myapp --option2"
+   * @li "myapp --nooption2" (same as "myapp")
+   * @li "myapp -o" (same as "myapp --option2")
+   * @li "myapp --nooption3"
+   * @li "myapp --option3 (same as "myapp")
+   * @li "myapp --option2 --nooption2" (same as "myapp")
+   * @li "myapp /tmp/file"
    */
   static void addCmdLineOptions( const KCmdLineOptions *options, 
-				 const char *name=0, const char *id = 0);
+				 const char *name=0, const char *id = 0,
+				 const char *afterId=0);
 
   /**
    * Access parsed arguments.
@@ -130,11 +176,6 @@ public:
 
   // Member functions:
 
-  /**
-   *  Destructor.
-   */
-  ~KCmdLineArgs();
-  
 
   /**
    *  Read out a string option.
@@ -144,7 +185,7 @@ public:
    *  @return The value of the option. If the option was not
    *          present on the command line the default is returned.
    */
-  const char *getOption(const char *option);
+  QCString getOption(const char *option);
 
   /**
    *  Read out a boolean option or check for the presence of string option.
@@ -153,12 +194,12 @@ public:
    *
    *  @return The value of the option. If the option was not
    *          present on the cmdline the default is returned.
-   *          If the option is listed as '-no<option>' the
-   *          default is @p true.
-   *          If the option is listed as '-<option>' the
-   *          default is @p false.
+   *          If the option is listed as 'no<option>' the
+   *          default is true.
+   *          If the option is listed as '<option>' the
+   *          default is false.
    *
-   *          If the option is listed as '-<option> <arg>'
+   *          If the option is listed as '<option> <arg>'
    *          this function returns @p true if the option was present
    *          and @p false otherwise.
    *
@@ -183,6 +224,12 @@ public:
    */
   const char *arg(int n);
 
+  /**
+   *  Clear all options and arguments.
+   */
+  void clear();
+
+
 protected:   
   /**
    * @internal
@@ -190,6 +237,15 @@ protected:
    */
   KCmdLineArgs( const KCmdLineOptions *_options, const char *_id,
 		const char *_name);
+
+  /**
+   *  @internal use only. 
+   *
+   *  Use @ref clear() if you want to free up some memory.
+   *
+   *  Destructor.
+   */
+  ~KCmdLineArgs();
 
   /**
    * @internal
@@ -222,6 +278,30 @@ protected:
   static char ***qt_argv();
 
   /**
+   * @internal
+   *
+   * Remove named options.
+   *
+   * @param id The name of the options to be removed.
+   */
+  static void removeArgs(const char *id);
+
+
+  /**
+   * @internal for KUniqueApplication only:
+   *
+   * Save all but the Qt and KDE arguments to a stream.
+   */
+  static void saveAppArgs( QDataStream &);
+
+  /**
+   * @internal for KUniqueApplication only:
+   *
+   * Load arguments from a stream.
+   */
+  static void loadAppArgs( QDataStream &);
+
+  /**
    * @internal 
    *
    *  Set a boolean option
@@ -242,13 +322,28 @@ protected:
    */
   void addArgument(const char *argument);
 
+  /**
+   * @internal
+   *
+   * Save to a stream.
+   */
+  void save( QDataStream &) const;
+
+  /**
+   * @internal
+   *
+   * Restore from a stream.
+   */
+  void load( QDataStream &);
+
+
   static void printQ(const QString &msg);
   
   const KCmdLineOptions *options;
   const char *name;
   const char *id;
-  KCmdLineParsedArgs *parsedOptionList;
-  QList<char> *parsedArgList;
+  KCmdLineParsedOptions *parsedOptionList;
+  KCmdLineParsedArgs *parsedArgList;
 
   static KCmdLineArgsList *argsList; // All options.
   static const KAboutData *about;
