@@ -9,7 +9,7 @@
   </target>
 
   <target name="compile" depends="init">
-    <javac srcdir="." destdir="${build}" includes="${includes}" excludes="${excludes}" deprecation="true" debug="${debug}" debuglevel="${debuglevel}"/>
+    <javac srcdir="${src}" destdir="${build}" includes="${includes}" excludes="${excludes}" deprecation="true" debug="${debug}" debuglevel="${debuglevel}" source="1.3" target="1.2"/>
   </target>
 
   <target name="images" depends="init">
@@ -39,7 +39,7 @@
   </target>
 
   <target name="test" depends="test-init" description="Build the test applets">
-    <javac srcdir="tests" destdir="tests/classes" debug="true" deprecation="true" />
+    <javac srcdir="tests" destdir="tests/classes" debug="true" deprecation="true" source="1.3" target="1.2"/>
   </target>
 
   <target name="test-clean" depends="">

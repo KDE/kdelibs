@@ -214,7 +214,7 @@ public final class KJASAppletStub
                         for (int i = 0; l != null && i < l.length; i++)
                             frame.removeWindowListener(l[i]);
                     }
-                    frame.hide();
+                    frame.setVisible(false);
                     break;
                 case DESTROYED:
                     app.destroy();
