@@ -285,6 +285,13 @@ KDateTable::setFontSize(int size)
 }
 
 void
+KDateTable::wheelEvent ( QWheelEvent * e )
+{
+    setDate(date.addMonths( -(int)(e->delta()/120)) );
+    e->accept();
+}
+
+void
 KDateTable::contentsMousePressEvent(QMouseEvent *e)
 {
   if(e->type()!=QEvent::MouseButtonPress)

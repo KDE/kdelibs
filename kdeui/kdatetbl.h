@@ -257,6 +257,7 @@ protected:
      * React on mouse clicks that select a date.
      */
     virtual void contentsMousePressEvent(QMouseEvent *);
+    virtual void wheelEvent( QWheelEvent * e );
     virtual void keyPressEvent( QKeyEvent *e );
     virtual void focusInEvent( QFocusEvent *e );
     virtual void focusOutEvent( QFocusEvent *e );
