@@ -932,7 +932,7 @@ void KDirListerCache::slotResult( KIO::Job* j )
   Q_ASSERT( listers );
 
   // move the directory to the held directories, do it before emitting
-  // the signals to make sure it exists in KDirListerCache in case someone 
+  // the signals to make sure it exists in KDirListerCache in case someone
   // calls listDir during the signal emission
   Q_ASSERT( !urlsCurrentlyHeld[jobUrlStr] );
   urlsCurrentlyHeld.insert( jobUrlStr, listers );
@@ -1005,7 +1005,7 @@ void KDirListerCache::slotRedirection( KIO::Job *job, const KURL &url )
 
   for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
   {
-    if ( kdl->d->url.cmp( oldUrl, true ) )
+    if ( kdl->d->url.equals( oldUrl, true ) )
     {
       kdl->d->rootFileItem = 0;
       kdl->d->url = newUrl;
@@ -1116,7 +1116,7 @@ void KDirListerCache::emitRedirections( const KURL &oldUrl, const KURL &url )
        kdl->jobDone(job);
        emit kdl->canceled( oldUrl );
     }
-        
+
     urlsCurrentlyListed.insert( urlStr, listers );
   }
 
@@ -1131,11 +1131,11 @@ void KDirListerCache::emitRedirections( const KURL &oldUrl, const KURL &url )
     }
     urlsCurrentlyHeld.insert( urlStr, holders );
   }
-  
+
   if (listers)
   {
     updateDirectory( url );
-    
+
     // Tell the world about the new url
     for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
     {
@@ -1913,7 +1913,7 @@ bool KDirLister::doMimeExcludeFilter( const QString& mime, const QStringList& fi
 
 bool KDirLister::validURL( const KURL& _url ) const
 {
-  if ( _url.isMalformed() )
+  if ( !_url.isValid() )
   {
     if ( d->autoErrorHandling )
     {
@@ -2130,7 +2130,7 @@ void KDirLister::jobStarted(KIO::ListJob *job)
   jobData.percent = 0;
   jobData.processedSize = 0;
   jobData.totalSize = 0;
-  
+
   d->jobData.insert(job, jobData);
 }
 
