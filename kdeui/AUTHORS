@@ -91,3 +91,6 @@ created the Dockwidget class set
 
 Falk Brettschneider <gigafalk@yahoo.com>
 contributes for the Dockwidget class set
+
+Holger Freyther <freyther@yahoo.com>
+added KMessageBox::questionYesNoCancel( )

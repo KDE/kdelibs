@@ -1,3 +1,8 @@
+2001-10-32 Holger Freyther <freyther@yahoo.com>
+	* kmessagebox.*: Added questionYesNoCancel and messageBox with a 
+	new argument for the canceltext
+        
+
 2000-03-20  Matthias Hoelzer-Kluepfel <mhk@caldera.de>
 
         * panelmenu: Added functions to add sub menus to client menus
