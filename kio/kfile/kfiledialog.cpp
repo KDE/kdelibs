@@ -1240,8 +1240,12 @@ void KFileDialog::setSelection(const QString& url)
         QString filename = u.url();
         int sep = filename.findRev('/');
         if (sep >= 0) { // there is a / in it
-            if ( KProtocolInfo::supportsListing( u ))
-                setURL(KURL( u.directory(), true) );
+            if ( KProtocolInfo::supportsListing( u )) {
+                KURL dir(u);
+                dir.setQuery( QString::null );
+                dir.setFileName( QString::null );
+                setURL(dir, true );
+            }
 
             // filename must be decoded, or "name with space" would become
             // "name%20with%20space", so we use KURL::fileName()
