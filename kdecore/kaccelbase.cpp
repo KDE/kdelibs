@@ -581,15 +581,18 @@ void KAccelActions::updateShortcuts( KAccelActions& actions2 )
 	bool bChanged = false;
 
 	for( KAccelActions::iterator it = begin(); it != end(); ++it ) {
-		KAccelAction* pAction2 = actions2.actionPtr( (*it).m_sName );
-		if( pAction2 ) {
-			QString sOld( (*it).m_rgShortcuts.toString() );
-			(*it).m_rgShortcuts = pAction2->m_rgShortcuts;
-			kdDebug(125) << "\t" << (*it).m_sName
-				<< " found: " << sOld
-				<< " => " << pAction2->m_rgShortcuts.toString()
-				<< " = " << (*it).m_rgShortcuts.toString() << endl;
-			bChanged = true;
+		KAccelAction& action = *it;
+		if( action.m_bConfigurable ) {
+			KAccelAction* pAction2 = actions2.actionPtr( (*it).m_sName );
+			if( pAction2 ) {
+				QString sOld( action.m_rgShortcuts.toString() );
+				action.m_rgShortcuts = pAction2->m_rgShortcuts;
+				kdDebug(125) << "\t" << action.m_sName
+					<< " found: " << sOld
+					<< " => " << pAction2->m_rgShortcuts.toString()
+					<< " = " << action.m_rgShortcuts.toString() << endl;
+				bChanged = true;
+			}
 		}
 	}
 
@@ -630,9 +633,7 @@ bool KAccelActions::insertLabel( const QString& sName, const QString& sDesc )
 	if( actionPtr( sName ) )
 		return false;
 
-	kdDebug(125) << "KAccelActions::insertLabel() A" << endl;
 	resize( size() + 1 );
-	kdDebug(125) << "KAccelActions::insertLabel() B" << endl;
 	KAccelAction& action = back();
 	action.m_sName = sName;
 	action.m_sDesc = sDesc;
