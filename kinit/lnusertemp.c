@@ -111,6 +111,7 @@ int build_link(const char *tmp_prefix, const char *kde_prefix)
   }
 
   strncpy(user_tmp_dir, tmp_prefix, PATH_MAX);
+  user_tmp_dir[ PATH_MAX ] = '\0';
   strncat(user_tmp_dir, pw_ent->pw_name, PATH_MAX - strlen(tmp_prefix));
 
   if (!kde_home || !kde_home[0])
@@ -136,6 +137,7 @@ int build_link(const char *tmp_prefix, const char *kde_prefix)
      }
      kde_home++;
      strncpy(kde_tmp_dir, home_dir, PATH_MAX);
+     kde_tmp_dir[ PATH_MAX ] = '\0';
   }
   strncat(kde_tmp_dir, kde_home, PATH_MAX - strlen(kde_tmp_dir));
 
