@@ -28,20 +28,20 @@ using namespace KDB;
 Field::Field(const QString &name, QObject *parent)
     : Object ( parent, name.utf8() )
 {
-    kdDebug(20000) << "Field::Field" << endl;
+    //kdDebug(20000) << "Field::Field" << endl;
 }
 
 Field::Field(HandlerPtr h,  const QString &name, QObject *parent )
     : Object ( parent, name.utf8() ), m_handler( h )
 {
-    kdDebug(20000) << "Field::Field <2>" << endl;
+    //kdDebug(20000) << "Field::Field <2>" << endl;
     m_type = m_handler->kdbDataType(name);
     m_native = m_handler->nativeType(name);
 }
 
 Field::~Field()
 {
-    kdDebug(20000) << "Field::~Field" << endl;
+    //kdDebug(20000) << "Field::~Field" << endl;
 }
 
 DataType

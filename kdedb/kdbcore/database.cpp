@@ -49,7 +49,7 @@ Database::Database(Connector *conn, QObject *parent, const char *name )
 
 Database::~Database()
 {
-    kdDebug(20000) << "Database::~Database" << endl;
+    //kdDebug(20000) << "Database::~Database" << endl;
     delete connector;
 }
 
@@ -57,7 +57,7 @@ Database::~Database()
 TablePtr
 Database::getTable(const QString &name)
 {
-    kdDebug(20000) << "Database::getTable" << " name=" << name << endl;
+    //kdDebug(20000) << "Database::getTable" << " name=" << name << endl;
     QStringList::Iterator it = m_tables.find(name);
 
     if (it == m_tables.end() ) {
@@ -71,7 +71,7 @@ Database::getTable(const QString &name)
 TableList
 Database::tables(bool system)
 {
-    kdDebug(20000) << "Database::tables" << " system=" << (system ? "true" : "false" ) << endl;
+    //kdDebug(20000) << "Database::tables" << " system=" << (system ? "true" : "false" ) << endl;
     // we don't keep table pointers, so build the Table list on the fly.
     // table reference are deleted automatically
     TableList lst;
@@ -99,7 +99,7 @@ Database::tableNames(bool system)
         QStringList::Iterator it;
 
         for( it = m_tables.begin() ; it != m_tables.end() ; ++it ) {
-            kdDebug(20000) << *it << endl;
+            //kdDebug(20000) << *it << endl;
             if( (*it).startsWith("__") ) {
                 result.remove( it );
 	    }
@@ -225,7 +225,7 @@ Database::openRecordset(const QString &SQL)
 KDB_ULONG
 Database::execute(const QString &SQL) 
 {
-    kdDebug(20000) << "Database::execute" << " SQL=" << SQL << endl;
+    //kdDebug(20000) << "Database::execute" << " SQL=" << SQL << endl;
     return connector->execute(SQL);
 }
 

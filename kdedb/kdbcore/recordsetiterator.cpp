@@ -68,7 +68,7 @@ RecordsetIterator::initFields()
 void
 RecordsetIterator::recordsetChanged()
 {
-    kdDebug(20000) << "RecordsetIterator::recordsetChanged" << endl;
+    //kdDebug(20000) << "RecordsetIterator::recordsetChanged" << endl;
     m_handler = 0L;
 }
 
@@ -192,7 +192,7 @@ RecordsetIterator::operator --()
 RecordPtr
 RecordsetIterator::findFirst(const QString &field, const QString &val)
 {
-    kdDebug(20000) << "RecordsetIterator::findFirst" << " field=" << field << " val=" << val << endl;
+    //kdDebug(20000) << "RecordsetIterator::findFirst" << " field=" << field << " val=" << val << endl;
     moveFirst();    
     RecordPtr p = current();
     do {
@@ -207,7 +207,7 @@ RecordsetIterator::findFirst(const QString &field, const QString &val)
 RecordPtr
 RecordsetIterator::findNext(const QString &field, const QString &val)
 {
-    kdDebug(20000) << "RecordsetIterator::findNext" << " field=" << field << " val=" << val << endl;
+    //kdDebug(20000) << "RecordsetIterator::findNext" << " field=" << field << " val=" << val << endl;
     RecordPtr p;
     while (p = operator++()) {
         if (val == p->field(field)->asString()) {
@@ -222,7 +222,7 @@ RecordsetIterator::findNext(const QString &field, const QString &val)
 RecordPtr
 RecordsetIterator::findPrevious(const QString &field, const QString &val)
 {
-    kdDebug(20000) << "RecordsetIterator::findPrevious" << " field=" << field << " val=" << val << endl;
+    //kdDebug(20000) << "RecordsetIterator::findPrevious" << " field=" << field << " val=" << val << endl;
     RecordPtr p;
     while (p = operator--()) {
         if (val == p->field(field)->asString()) {
@@ -237,7 +237,7 @@ RecordsetIterator::findPrevious(const QString &field, const QString &val)
 RecordPtr
 RecordsetIterator::findLast(const QString &field, const QString &val)
 {
-    kdDebug(20000) << "RecordsetIterator::findLast" << " field=" << field << " val=" << val << endl;
+    //kdDebug(20000) << "RecordsetIterator::findLast" << " field=" << field << " val=" << val << endl;
     moveLast();    
     RecordPtr p = current();
     do {

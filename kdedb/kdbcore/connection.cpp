@@ -35,7 +35,7 @@ using namespace KDB;
 Connection::Connection( const QString &plugin, const QString &host, int port, QObject *parent )
     :Object( parent, "" ), connector(0), m_plugin( plugin ), m_host(host), m_port(port), m_savePwd(false)
 {
-    kdDebug(20000) << "Connection::Connection " << plugin << " " << host << " " << port << endl;
+    //kdDebug(20000) << "Connection::Connection " << plugin << " " << host << " " << port << endl;
     m_databases.setAutoDelete(true);
 }
 
@@ -128,7 +128,7 @@ Connection::open()
     }
     
     //load all databases (can we simply load names?)
-    kdDebug(20000) << "loading all databases" << endl;
+    //kdDebug(20000) << "loading all databases" << endl;
     QStringList dbs = connector->databases();
     for ( QStringList::Iterator it = dbs.begin(); it != dbs.end(); ++it ) {
         Database * base = new Database(connector, this, (*it).utf8());
@@ -217,7 +217,7 @@ Connection::begin()
 void
 Connection::close(bool destructive)
 {
-    kdDebug(20000) << k_funcinfo << endl;
+    //kdDebug(20000) << k_funcinfo << endl;
  
     if (connector) {
         // close all databases.
@@ -313,7 +313,7 @@ Connection::dropDatabase(const QString &name)
 void
 Connection::slotDeleteYourself()
 {
-    kdDebug(20000) << "Connection::slotDeleteYourself" <<  endl;
+    //kdDebug(20000) << "Connection::slotDeleteYourself" <<  endl;
     delete this;
 }
 

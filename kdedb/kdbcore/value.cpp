@@ -78,14 +78,14 @@ Value::Value (const QDateTime& dt )
 
 Value::Value ( long l )
 {
-    kdDebug(20000) << k_funcinfo << l << endl;
+    //kdDebug(20000) << k_funcinfo << l << endl;
     t = Long;
     ptr = new long(l);
 }
 
 Value::Value (KDB_ULONG l)
 {
-    kdDebug(20000) << k_funcinfo << l << endl;
+    //kdDebug(20000) << k_funcinfo << l << endl;
     t = ULong;
     ptr = new KDB_ULONG(l);
 }
@@ -252,7 +252,7 @@ Value::toTime() const
 const QString 
 Value::toString() const
 {
-    kdDebug(20000) << k_funcinfo << typeToName(type()) << endl;
+    //kdDebug(20000) << k_funcinfo << typeToName(type()) << endl;
     if ( type() == DateTime ) {
         QString d = KLocale().formatDate(((QDateTime*)ptr)->date(),true);
         QString t = KLocale().formatTime(((QDateTime*)ptr)->time());
@@ -284,7 +284,7 @@ Value::toDateTime() const
 const long 
 Value::toLong() const
 {
-    kdDebug(20000) << k_funcinfo << typeToName(type()) << endl;
+    //kdDebug(20000) << k_funcinfo << typeToName(type()) << endl;
 
     if (type() == String)
         return toString().toLong();

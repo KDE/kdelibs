@@ -84,7 +84,7 @@ Table::Table(Connector *conn, QObject *parent, const char *name, bool design )
 
 Table::~Table()
 {
-    kdDebug(20000) << "Table::~Table" << endl;
+    //kdDebug(20000) << "Table::~Table" << endl;
     delete connector;
 }
 

@@ -30,7 +30,7 @@ using namespace KDB;
 Plugin::Plugin(QObject *parent, const char *name)
     :Object( parent, name )
 {
-    kdDebug(20012) << "Plugin::Plugin" << endl;
+    //kdDebug(20012) << "Plugin::Plugin" << endl;
 }
 
 Plugin::~Plugin()
@@ -63,7 +63,7 @@ Plugin::openConnection (const QString &host,
                         const QString &user ,
                         const QString &password )
 {
-    kdDebug(20012) << "Plugin::openConnection" << " host=" << host << " port=" << port << " user=" << user << " password=" << password << endl;
+    //kdDebug(20012) << "Plugin::openConnection" << " host=" << host << " port=" << port << " user=" << user << " password=" << password << endl;
     
     Connection * conn = findConnection(host, user);
 
@@ -84,7 +84,7 @@ Plugin::addConnection(const QString &host,
                       const QString &user ,
                       const QString &password )
 {
-    kdDebug(20012) << "Plugin::addConnection" << " host=" << host << " port=" << port << " user=" << user << " password=" << password << endl;
+    //kdDebug(20012) << "Plugin::addConnection" << " host=" << host << " port=" << port << " user=" << user << " password=" << password << endl;
     
     Connection * conn = DBENGINE->addConnection(name(), host, port);
 
@@ -99,19 +99,19 @@ Plugin::addConnection(const QString &host,
 void
 Plugin::remove(Connection * conn)
 {
-    kdDebug(20012) << "Plugin::remove" << " conn=" << conn << endl;
+    //kdDebug(20012) << "Plugin::remove" << " conn=" << conn << endl;
     DBENGINE->remove(conn);
 }
 
 Connection *
 Plugin::findConnection(const QString& host, const QString &user)
 {
-    kdDebug(20012) << "Plugin::findConnection" << " host=" << host << " user=" << user << endl;
+    //kdDebug(20012) << "Plugin::findConnection" << " host=" << host << " user=" << user << endl;
     ConnectionIterator it = begin();
 
     while ( it.current() ) {
         if (it.current()->host() == host && it.current()->user() == user) {
-            kdDebug(20012) << "found host " << it.current()->host() << endl;
+            //kdDebug(20012) << "found host " << it.current()->host() << endl;
             break;
         }
         ++it;
@@ -123,7 +123,7 @@ Plugin::findConnection(const QString& host, const QString &user)
 ConnectionIterator
 Plugin::begin()
 {
-    kdDebug(20012) << "Plugin::begin" << endl;
+    //kdDebug(20012) << "Plugin::begin" << endl;
     ConnectionIterator it(m_connections);
     return it;
 }
@@ -131,7 +131,7 @@ Plugin::begin()
 void
 Plugin::registerConnection(Connection *conn)
 {
-    kdDebug(20012) << "Plugin::registerConnection" << " conn=" << conn << endl;
+    //kdDebug(20012) << "Plugin::registerConnection" << " conn=" << conn << endl;
     if (m_connections.containsRef(conn))
         return;
     m_connections.append(conn);

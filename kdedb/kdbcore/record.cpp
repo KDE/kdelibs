@@ -31,7 +31,7 @@ using namespace KDB;
 Record::Record(Recordset *r, FieldList fields, Row values )
     : DataObject( r, "Record"), m_fields(fields)
 {
-    kdDebug(20000) << "Record::Record" << endl;
+    //kdDebug(20000) << "Record::Record" << endl;
     FieldIterator it = begin();
     Row::Iterator itv = values.begin();
 
@@ -45,7 +45,7 @@ Record::Record(Recordset *r, FieldList fields, Row values )
 
 Record::~Record()
 {
-    kdDebug(20000) << "Record::~Record" << endl;
+    //kdDebug(20000) << "Record::~Record" << endl;
 }
 
 FieldIterator 

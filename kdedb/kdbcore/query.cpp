@@ -32,7 +32,7 @@ using namespace KDB;
 Query::Query( Connector * conn, QObject *parent, const char *name, const QString &sql )
     :DataObject( parent, name ), m_SQL(sql), connector(conn->clone())
 {
-    kdDebug(20000) << "Query::Query" << endl;
+    //kdDebug(20000) << "Query::Query" << endl;
     Database * base = static_cast<Database *>(parent);
     TablePtr tab = base->getTable(QUERYTABLE);
     if (tab) {
@@ -48,7 +48,7 @@ Query::Query( Connector * conn, QObject *parent, const char *name, const QString
 
 Query::~Query()
 {
-    kdDebug(20000) << "Query::~Query" << endl;
+    //kdDebug(20000) << "Query::~Query" << endl;
 }
 
 
@@ -98,7 +98,7 @@ Query::SQL()
 bool 
 Query::isDesign()
 {
-    kdDebug(20000) << "Query::isDesign" << endl;
+    //kdDebug(20000) << "Query::isDesign" << endl;
     return m_SQL.isNull();
 }
 
@@ -163,7 +163,7 @@ Query::buildSQL()
 RecordsetPtr
 Query::openRecordset()
 {
-    kdDebug(20000) << "Query::openRecordset" << endl;
+    //kdDebug(20000) << "Query::openRecordset" << endl;
     RecordsetPtr r = new Recordset(connector, SQL(), this);
     if (error())
         return 0L;

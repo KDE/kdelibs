@@ -45,7 +45,7 @@ DBEngine *DBEngine::m_engine = 0L;
 DBEngine::DBEngine()
     :Object(0L,"DBEngine")
 {
-    kdDebug(20010) << "DBEngine::DBEngine" << endl;
+    //kdDebug(20010) << "DBEngine::DBEngine" << endl;
 
     // get offered plugins
     m_pluginData = KTrader::self()->query( "KDB/DBPlugin" );
@@ -89,7 +89,7 @@ DBEngine::beginPlugins()
 Plugin *
 DBEngine::findPlugin(const QString& name)
 {
-    kdDebug(20010) << "DBEngine::findPlugin" << " name=" << name << endl;
+    //kdDebug(20010) << "DBEngine::findPlugin" << " name=" << name << endl;
     loadPlugin(name);
 	
     PluginIterator it = beginPlugins();
@@ -141,7 +141,7 @@ DBEngine::openConnection(const QString &pluginName,
                          const QString &user,
                          const QString &password)
 {
-    kdDebug(20010) << "DBEngine::openConnection" << " pluginName=" << pluginName << " host=" << host << " port=" << port << " user=" << user << " password=" << password << endl;
+    //kdDebug(20010) << "DBEngine::openConnection" << " pluginName=" << pluginName << " host=" << host << " port=" << port << " user=" << user << " password=" << password << endl;
     Connection * conn = findConnection(pluginName, host, port, user);
     
     if ( !conn ) {
@@ -167,7 +167,7 @@ DBEngine::addConnection(const QString &plugin,
                         const QString &user ,
                         const QString &password )
 {
-    kdDebug(20010) << "DBEngine::addConnection" << " plugin=" << plugin << " host=" << host << " port=" << port << " user=" << user << " password=" << password << endl;
+    //kdDebug(20010) << "DBEngine::addConnection" << " plugin=" << plugin << " host=" << host << " port=" << port << " user=" << user << " password=" << password << endl;
     Connection *conn = findConnection(plugin, host, port, user);
 
     // we do not need that until the connection is opened
@@ -203,12 +203,12 @@ DBEngine::remove(Connection * conn)
 Connection *
 DBEngine::findConnection(const QString & name)
 {
-    kdDebug(20010) << "DBEngine::findConnection" << " name=" << name << endl;
+    //kdDebug(20010) << "DBEngine::findConnection" << " name=" << name << endl;
     ConnectionIterator it = beginConnections();
 
     while ( it.current() ) {
         if ( it.current()->name() == name ) {
-            kdDebug(20010) << "found connection " << it.current()->name() << endl;
+            //kdDebug(20010) << "found connection " << it.current()->name() << endl;
             break;
         }
         ++it;
@@ -228,7 +228,7 @@ DBEngine::findConnection(const QString & plugin,
 			 const int port,
                          const QString &user)
 {
-    kdDebug(20010) << "DBEngine::findConnection" << " plugin=" << plugin << " host=" << host << " port=" << port << " user=" << user << endl;
+    //kdDebug(20010) << "DBEngine::findConnection" << " plugin=" << plugin << " host=" << host << " port=" << port << " user=" << user << endl;
     ConnectionIterator it = beginConnections();
 
     while ( it.current() ) {
@@ -236,7 +236,7 @@ DBEngine::findConnection(const QString & plugin,
              it.current()->host() == host &&
 	     it.current()->port() == port &&
              it.current()->user() == user ) {
-            kdDebug(20010) << "found host " << it.current()->host() << endl;
+            //kdDebug(20010) << "found host " << it.current()->host() << endl;
             break;
         }
         ++it;
@@ -255,7 +255,7 @@ DBEngine::beginConnections()
 void
 DBEngine::loadConnections(KConfigBase *config)
 {
-    kdDebug(20010) <<  locateLocal( "config", "kdbrc" ) << endl;
+    //kdDebug(20010) <<  locateLocal( "config", "kdbrc" ) << endl;
 
     bool clean = false;
     if( !config ) {
@@ -265,15 +265,15 @@ DBEngine::loadConnections(KConfigBase *config)
 
     KConfigGroupSaver saver( config, "KDB connections" );
 
-    kdDebug(20010) << config->group() << endl;
+    //kdDebug(20010) << config->group() << endl;
 
     unsigned int maxConn = config->readUnsignedNumEntry( "NumberOfConnections", 0 );
 
-    kdDebug(20010) << "Number of connections: " << maxConn << endl;
+    //kdDebug(20010) << "Number of connections: " << maxConn << endl;
     
     for( unsigned int count = 0; count < maxConn; count++ )
         {
-            kdDebug(20010) << "Loading connection number  " << count << endl;
+            //kdDebug(20010) << "Loading connection number  " << count << endl;
 
             QString prefix, plugin, host, user, password, name;
             int port;
@@ -290,7 +290,7 @@ DBEngine::loadConnections(KConfigBase *config)
             Connection * conn = addConnection(plugin, host, port, user, password);
             conn->setName(name.utf8());
         
-            kdDebug(20010) << "Loaded connection: "<< conn->prettyPrint() << endl;
+            //kdDebug(20010) << "Loaded connection: "<< conn->prettyPrint() << endl;
         }
 
     if (clean)
@@ -303,7 +303,7 @@ DBEngine::saveConnections(KConfigBase *config)
     unsigned int count = 0;
     bool clean = false;
     
-    kdDebug(20010) <<  locateLocal( "config", "kdbrc" ) << endl;
+    //kdDebug(20010) <<  locateLocal( "config", "kdbrc" ) << endl;
 
     if( !config ) {
         clean = true;
@@ -315,7 +315,7 @@ DBEngine::saveConnections(KConfigBase *config)
     // ??? seems that the above call does not set it correctly ???
     config->setGroup( "KDB connections" );
 
-    kdDebug(20010) << config->group() << endl;
+    //kdDebug(20010) << config->group() << endl;
     
     for( ConnectionIterator it = beginConnections(); it != 0L ; ++it )
         {
@@ -337,7 +337,7 @@ DBEngine::openDatabase(const QString &pluginName,
                        const QString &password,
                        const QString &databaseName)
 {
-    kdDebug(20010) << "DBEngine::openDatabase" << " pluginName=" << pluginName << " host=" << host << " port=" << port << " user=" << user << " password=" << password << " databaseName=" << databaseName << endl;
+    //kdDebug(20010) << "DBEngine::openDatabase" << " pluginName=" << pluginName << " host=" << host << " port=" << port << " user=" << user << " password=" << password << " databaseName=" << databaseName << endl;
     Connection * conn = openConnection(pluginName, host, port, user, password);
     Database * db = 0L;
 
@@ -351,7 +351,7 @@ DBEngine::openDatabase(const QString &pluginName,
 bool
 DBEngine::loadPlugin(const QString& name)
 {
-    kdDebug(20010) << "DBEngine::loadPlugin" << " name=" << name << endl;
+    //kdDebug(20010) << "DBEngine::loadPlugin" << " name=" << name << endl;
     Plugin * plugin;
      
     // test if plugin is already loaded
