@@ -28,7 +28,7 @@
 (define (et-xref-strings)
   (list (list (normalize "appendix")    (if %chapter-autolabel%
 					    "&Appendix; %n"
-					    "the &appendix; called %t"))
+					    "&appendix; nimega %t"))
 	(list (normalize "article")     (string-append %gentext-et-start-quote%
 						       "%t"
 						       %gentext-et-end-quote%))
@@ -36,7 +36,7 @@
 	(list (normalize "book")        "%t")
 	(list (normalize "chapter")     (if %chapter-autolabel%
 					    "&Chapter; %n"
-					    "the &chapter; called %t"))
+					    "&chapter; nimega %t"))
 	(list (normalize "equation")    "&Equation; %n")
 	(list (normalize "example")     "&Example; %n")
 	(list (normalize "figure")      "&Figure; %n")
@@ -49,26 +49,26 @@
 	(list (normalize "reference")   "&Reference; %n, %t")
 	(list (normalize "section")     (if %section-autolabel%
 					    "&Section; %n"
-					    "the &section; called %t"))
+					    "&section; nimega %t"))
 	(list (normalize "sect1")       (if %section-autolabel%
 					    "&Section; %n"
-					    "the &section; called %t"))
+					    "&section; nimega %t"))
 	(list (normalize "sect2")       (if %section-autolabel%
 					    "&Section; %n"
-					    "the &section; called %t"))
+					    "&section; nimega %t"))
 	(list (normalize "sect3")       (if %section-autolabel%
 					    "&Section; %n"
-					    "the &section; called %t"))
+					    "&section; nimega %t"))
 	(list (normalize "sect4")       (if %section-autolabel%
 					    "&Section; %n"
-					    "the &section; called %t"))
+					    "&section; nimega %t"))
 	(list (normalize "sect5")       (if %section-autolabel%
 					    "&Section; %n"
-					    "the &section; called %t"))
+					    "&section; nimega %t"))
 	(list (normalize "simplesect")  (if %section-autolabel%
 					    "&Section; %n"
-					    "the &section; called %t"))
-	(list (normalize "sidebar")     "the &sidebar; %t")
+					    "&section; nimega %t"))
+	(list (normalize "sidebar")     "&sidebar; %t")
 	(list (normalize "step")        "&step; %n")
 	(list (normalize "table")       "&Table; %n")))
 
@@ -388,3 +388,4 @@
 </style-specification-body>
 </style-specification>
 </style-sheet>
+
