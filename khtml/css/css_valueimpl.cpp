@@ -812,13 +812,23 @@ FontFamilyValueImpl::FontFamilyValueImpl( const QString &string)
     const QString &available = KHTMLSettings::availableFamilies();
 
     QString face = string.lower();
-    // a languge tag is often added in braces at the end. Remove it.
+    // a language tag is often added in braces at the end. Remove it.
     face = face.replace(parenReg, "");
     // remove [Xft] qualifiers
     face = face.replace(braceReg, "");
     //kdDebug(0) << "searching for face '" << face << "'" << endl;
 
-    int pos = available.find( face, 0, false );
+    // first look for an exact match so that we don't find "Adobe Courier"
+    // although we are looking for "Courier"
+    int pos = available.find( ',' + face + ',', 0, false );
+
+    if( pos != -1 )
+        ++pos; // point pos to the begin of the family name
+    else {
+        // no exact match => look for a substring match
+        pos = available.find( face, 0, false );
+    }
+
     if( pos == -1 ) {
 	QString str = face;
 	int p = face.find(' ');
@@ -836,8 +846,6 @@ FontFamilyValueImpl::FontFamilyValueImpl( const QString &string)
     if ( pos != -1 ) {
 	int pos1 = available.findRev( ',', pos ) + 1;
 	pos = available.find( ',', pos );
-	if ( pos == -1 )
-	    pos = available.length();
 	parsedFontName = available.mid( pos1, pos - pos1 );
     }
 #endif // !APPLE_CHANGES
