@@ -76,7 +76,6 @@ void KGzipFilter::init( int mode )
     if ( mode == IO_ReadOnly )
     {
         int result = inflateInit2(&d->zStream, -MAX_WBITS); // windowBits is passed < 0 to suppress zlib header
-        //int result = inflateInit(&d->zStream); // doesn't work, no idea why
         kdDebug() << "inflateInit returned " << result << endl;
         // No idea what to do with result :)
     } else if ( mode == IO_WriteOnly )
@@ -118,7 +117,7 @@ void KGzipFilter::reset()
 
 bool KGzipFilter::readHeader()
 {
-    kdDebug() << "KGzipFilter::readHeader" << endl;
+    //kdDebug() << "KGzipFilter::readHeader" << endl;
     // Assume not compressed until we successfully decode the header
     d->bCompressed = false;
     // Assume the first block of data contains the whole header.
@@ -211,9 +210,9 @@ void KGzipFilter::writeFooter()
 {
     Bytef *p = d->zStream.next_out;
     int i = d->zStream.avail_out;
-    kdDebug() << "KGzipFilter::writeFooter writing CRC= " << QString::number( m_crc, 16 ) << endl;
+    //kdDebug() << "KGzipFilter::writeFooter writing CRC= " << QString::number( m_crc, 16 ) << endl;
     put_long( m_crc );
-    kdDebug() << "KGzipFilter::writing writing totalin= " << d->zStream.total_in << endl;
+    //kdDebug() << "KGzipFilter::writing writing totalin= " << d->zStream.total_in << endl;
     put_long( d->zStream.total_in );
     i -= p - d->zStream.next_out;
     d->zStream.next_out = p;
@@ -261,9 +260,10 @@ KGzipFilter::Result KGzipFilter::uncompress()
     ASSERT ( m_mode == IO_ReadOnly );
     if ( d->bCompressed )
     {
-        kdDebug() << "Calling inflate with avail_in=" << inBufferAvailable() << " avail_out=" << outBufferAvailable() << endl;
+        //kdDebug() << "Calling inflate with avail_in=" << inBufferAvailable() << " avail_out=" << outBufferAvailable() << endl;
         int result = inflate(&d->zStream, Z_SYNC_FLUSH);
-        kdDebug() << "inflate returned " << result << endl;
+        if ( result != Z_OK )
+            kdDebug() << "inflate returned " << result << endl;
         return ( result == Z_OK ? OK : ( result == Z_STREAM_END ? END : ERROR ) );
     } else
         return uncompress_noop();
@@ -278,12 +278,13 @@ KGzipFilter::Result KGzipFilter::compress( bool finish )
     ulong len = d->zStream.avail_in;
     //kdDebug() << "  calling deflate with avail_in=" << inBufferAvailable() << " avail_out=" << outBufferAvailable() << endl;
     int result = deflate(&d->zStream, finish ? Z_FINISH : Z_SYNC_FLUSH);
-    //kdDebug() << "  deflate returned " << result << endl;
-    kdDebug() << "Computing CRC for the next " << len - d->zStream.avail_in << " bytes" << endl;
+    if ( result != Z_OK )
+        kdDebug() << "  deflate returned " << result << endl;
+    //kdDebug() << "Computing CRC for the next " << len - d->zStream.avail_in << " bytes" << endl;
     m_crc = crc32(m_crc, p, len - d->zStream.avail_in);
     if ( result == Z_STREAM_END )
     {
-        kdDebug() << "KGzipFilter::compress finished, write footer" << endl;
+        //kdDebug() << "KGzipFilter::compress finished, write footer" << endl;
         writeFooter();
     }
     return ( result == Z_OK ? OK : ( result == Z_STREAM_END ? END : ERROR ) );
