@@ -133,6 +133,12 @@ void KJScript::clear()
   }
 }
 
+void KJScript::enableDebug()
+{
+  KJScriptLock lock(this);
+  global()->put("debug", zeroRef(new DebugPrint()));
+}
+
 void KJScript::init()
 {
   if (!initialized) {

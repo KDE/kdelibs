@@ -21,8 +21,6 @@
 #include <stdio.h>
 
 #include "kjs.h"
-#include "object.h"
-#include "function.h"
 
 int main(int argc, char **argv)
 {
@@ -50,7 +48,7 @@ int main(int argc, char **argv)
   KJScript *kjs = new KJScript();
 
   // add debug() function
-  kjs->global()->put("debug", zeroRef(new KJS::DebugPrint()));
+  kjs->enableDebug();
 
   // run
   kjs->evaluate(code);

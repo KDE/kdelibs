@@ -87,6 +87,13 @@ public:
   void clear();
   int errorType() const { return errType; }
   const char *errorMsg() const { return errMsg; }
+  /**
+   * Adds a debug() function to the set of pre-defined properties.
+   * debug(arg) tries to convert 'arg' to a string and prints the result
+   * to stderr. If you want to debug self defined Host Objects this way
+   * you should provide them with a toString() method that returns a string.
+   */
+  void enableDebug();
 private:
   /**
    * Initialize global object and context. For internal use only.
