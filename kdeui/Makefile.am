@@ -80,8 +80,7 @@ libkdeui_la_METASOURCES = kbutton.moc kbuttonbox.moc kcolorbtn.moc \
 	qxembed.moc knumlineedit.moc kdialog.moc \
 	dialogbase.moc kaboutdialog.moc
 
-data_DATA = error.xpm exclamation.xpm info.xpm stopsign.xpm question.xpm \
-	arrow_up.xbm arrow_down.xbm arrow_left.xbm arrow_right.xbm	
+data_DATA = arrow_up.xbm arrow_down.xbm arrow_left.xbm arrow_right.xbm	
 datadir = $(kde_datadir)/kde/pics
 
 
