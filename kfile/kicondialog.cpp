@@ -224,7 +224,7 @@ void KIconDialog::init()
     grid->addWidget(mpBrowseBut, 2, 1);
 
     mpCanvas = new KIconCanvas(main);
-    connect(mpCanvas, SIGNAL(executed(QIconViewItem *)), SLOT(accept()));
+    connect(mpCanvas, SIGNAL(executed(QIconViewItem *)), SLOT(slotAcceptIcons()));
     mpCanvas->setMinimumSize(400, 125);
     top->addWidget(mpCanvas);
 
@@ -254,6 +254,12 @@ void KIconDialog::init()
 KIconDialog::~KIconDialog()
 {
     delete d;
+}
+
+void KIconDialog::slotAcceptIcons()
+{
+  d->custom=QString::null;
+  accept();
 }
 
 void KIconDialog::showIcons()

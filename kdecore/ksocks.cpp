@@ -204,7 +204,7 @@ KSocks *KSocks::self() {
 bool KSocks::activated() { return (_me != NULL); }
 
 
-KSocks::KSocks() : _socksLib(NULL), _st(NULL) {
+KSocks::KSocks() : _socksLib(NULL), _st(NULL), cfg(0) {
 
    if (_disabled) {
       _hasSocks = _useSocks = false;

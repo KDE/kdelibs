@@ -65,6 +65,9 @@ KIO::Job *KIO::pasteClipboard( const KURL& dest_url, bool move )
     else
       res = KIO::copy( urls, dest_url );
 
+    // If moving, erase the clipboard contents, the original files don't exist anymore
+    if ( move )
+      QApplication::clipboard()->clear();
     return res;
   }
 

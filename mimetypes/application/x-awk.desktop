@@ -1,6 +1,5 @@
 [Desktop Entry]
 Comment=AWK script
-Comment[af]=AWK SKRIP
 Comment[az]=AWK əmr köməsi
 Comment[bg]=Скрипт на awk
 Comment[br]=Urzhiaoueg awk
@@ -43,8 +42,8 @@ Comment[sv]=AWK-skript
 Comment[ta]=AWK ¸¢ÚÅø
 Comment[tr]=AWK komut kümesi
 Comment[uk]=Скрипт AWK
+Comment[xh]=ushicilelo phantsi lwe AWK
 Comment[zh_CN.GB2312]=AWK 脚本
-Comment[zh_TW.Big5]=AWK 命令稿
 Icon=shellscript
 Type=MimeType
 MimeType=application/x-awk

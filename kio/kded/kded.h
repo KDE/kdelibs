@@ -40,7 +40,7 @@ class Kded : public QObject, public DCOPObject, public DCOPObjectProxy
 {
   Q_OBJECT
 public:
-   Kded(int pollInterval, int NFSPollInterval);
+   Kded(bool checkUpdates, int pollInterval, int NFSPollInterval);
    virtual ~Kded();
 
    /**
@@ -93,12 +93,19 @@ protected slots:
     */
    void update (const QString& dir );
 
+   /**
+    * @internal Installs crash handler
+    */
+   void installCrashHandler();
+
 protected:
 
    /**
     * Scans dir for new files and new subdirectories.
     */
    void readDirectory(const QString& dir, KDirWatch *dirWatch );
+
+   static void crashHandler(int);
    
 protected:
 
@@ -112,6 +119,7 @@ protected:
     */
    KDirWatch* m_pDirWatchNfs;
 
+   bool b_checkUpdates;
    int m_PollInterval;
    int m_NFSPollInterval;
 

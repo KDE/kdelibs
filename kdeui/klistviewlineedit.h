@@ -47,6 +47,10 @@ protected:
 	QListViewItem *item;
 	int col;
 	KListView *p;
+
+protected slots:
+	void slotSelectionChanged();
+
 };
 
 #endif

@@ -267,7 +267,7 @@ bool KMainWindow::canBeRestored( int number )
     if ( !config )
         return FALSE;
     config->setGroup( QString::fromLatin1("Number") );
-    int n = config->readNumEntry( QString::fromLatin1("NumberOfWindows") , 0 );
+    int n = config->readNumEntry( QString::fromLatin1("NumberOfWindows") , 1 );
     return number >= 1 && number <= n;
 }
 

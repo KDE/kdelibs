@@ -138,6 +138,8 @@ void KSystemTray::toggleMinimizeRestore()
 	return;
     if ( !parentWidget()->isVisible() ) {
 	parentWidget()->hide(); // KWin::setOnDesktop( parentWidget()->winId(), KWin::currentDesktop() );
+	KWin::Info info = KWin::info( parentWidget()->winId() );
+	parentWidget()->move( info.geometry.topLeft() );
 	parentWidget()->show();
 	KWin::setActiveWindow( parentWidget()->winId() );
     } else {

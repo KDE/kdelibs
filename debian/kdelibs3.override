@@ -3,7 +3,6 @@
 kdelibs3: extra-license-file usr/share/doc/kde/HTML/en/common/fdl-license
 kdelibs3: extra-license-file usr/share/doc/kde/HTML/en/common/gpl-license
 kdelibs3: extra-license-file usr/share/doc/kde/HTML/en/common/lgpl-license
-kdelibs3: non-dev-pkg-with-shlib-symlink usr/lib/libkscreensaver.so.1.0.0 usr/lib/libkscreensaver.so
 kdelibs3: shlib-missing-in-control-file kimg_xview.so usr/lib/kde2/kimg_xview.so
 kdelibs3: shlib-missing-in-control-file kded.so usr/lib/kded.so
 kdelibs3: shlib-missing-in-control-file libkdeprint_ext.so usr/lib/kde2/libkdeprint_ext.so
@@ -129,4 +128,5 @@ kdelibs3: shlib-missing-in-control-file kio_https.so usr/lib/kde2/kio_https.so
 kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/no-NY/entities/underArtisticLicense.docbook
 kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/no-NY/entities/underBSDLicense.docbook
 kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/no-NY/entities/underX11License.docbook
+kdelibs3: shlib-missing-in-control-file libkded_kssld.so usr/lib/libkded_kssld.so
 

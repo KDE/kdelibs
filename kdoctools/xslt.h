@@ -1,5 +1,5 @@
-#ifndef _XSLT_H_
-#define _XSLT_H_
+#ifndef _MEIN_XSLT_H_
+#define _MEIN_XSLT_H_
 
 #include <libxml/parser.h>
 

@@ -1,14 +1,13 @@
 [KDE Print Filter Entry]
 Name=enscript
-Name[af]=GRAVERING
 Name[az]=enskript
 Name[de]=Enscript
 Name[eo]=Enskripto
 Name[fr]=Enscript
 Name[lv]=enskript
+Name[xh]=okushicilelwe phantsi kuyo
 Require=exec:/enscript
 Comment=Enscript text filter
-Comment[af]=GRAVERING TEKS FILTER
 Comment[az]=Enskript mətn süzgəci
 Comment[bg]=Текстови филтри Enscript
 Comment[cs]=Textový filtr Enscript
@@ -35,8 +34,10 @@ Comment[pt]=Filtro de texto enscript
 Comment[ru]=Фильтр текста Enscript
 Comment[sk]=Textový filter Enscript
 Comment[sl]=Besedilni filter enscript
+Comment[sr]=Enscript filter za tekst
 Comment[sv]=Enscript textfilter
 Comment[ta]=Enscript ¯¨Ã ÅÊ¸ðÊ
 Comment[tr]=Enscript metin süzgeci
 Comment[uk]=Текстовий фільтр enscript
 Comment[vi]=BềElọc văn bản Enscript 
+Comment[xh]=Icebo lokucoca ulwelo lokubhaliweyo kwashicilelwa phantsi

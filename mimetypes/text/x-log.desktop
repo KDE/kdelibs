@@ -1,7 +1,6 @@
 [Desktop Entry]
 MimeType=text/x-log
 Comment=Application log file
-Comment[af]=AANSOEK LOG LêER
 Comment[az]=Proqram qeyd faylı
 Comment[bg]=Журнален файл на приложение
 Comment[cs]=Soubor se záznamem aplikace
@@ -37,8 +36,8 @@ Comment[ta]=¿¢Ãü ÌÈ¢ì§¸¡ôÒ
 Comment[tr]=Uygulama kayıt dosyası
 Comment[uk]=Файл журналу програми
 Comment[vi]=file log của chương trình 
+Comment[xh]=Ifayile yesicelo sesigodo
 Comment[zh_CN.GB2312]=应用日志文件
-Comment[zh_TW.Big5]=應用程式記錄檔
 Type=MimeType
 Patterns=*.log;
 Icon=log

@@ -1,6 +1,5 @@
 [Desktop Entry]
 Comment=Character Device
-Comment[af]=KARAKTER TOESTEL
 Comment[az]=Karakter Avadanlığı
 Comment[bg]=Символно устройство
 Comment[br]=Trobarzhell arouezenn
@@ -43,8 +42,8 @@ Comment[ta]=¯Õî º¡¾Éõ
 Comment[tr]=Karakter Aygıtı
 Comment[uk]=Символьний пристрій
 Comment[vi]=Thiết bềEđặc tính(character device) 
+Comment[xh]=Icebo lomsebenzi
 Comment[zh_CN.GB2312]=字符设备
-Comment[zh_TW.Big5]=字元設備
 Icon=chardevice
 Type=MimeType
 MimeType=inode/chardevice

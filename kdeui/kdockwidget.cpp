@@ -33,6 +33,7 @@
 #include <ktoolbar.h>
 #include <kpopupmenu.h>
 #include <kwin.h>
+#include <kdebug.h>
 #else
 #include <qapplication.h>
 #include <qtoolbar.h>
@@ -830,7 +831,8 @@ void KDockWidget::undock()
 /*********************************************************************************************/
   }
   manager->blockSignals(false);
-  emit manager->change();
+  if (!d->blockHasUndockedSignal)
+    emit manager->change();
   manager->undockProcess = false;
 
   if (!d->blockHasUndockedSignal)
@@ -1074,12 +1076,12 @@ void KDockManager::activate()
 
 bool KDockManager::eventFilter( QObject *obj, QEvent *event )
 {
-  if ( obj == main && event->type() == QEvent::Resize && main->children() ){
+/*  if ( obj == main && event->type() == QEvent::Resize && main->children() ){
     QWidget* fc = (QWidget*)main->children()->getFirst();
     if ( fc )
       fc->setGeometry( QRect(QPoint(0,0), main->geometry().size()) );
   }
-
+*/
   if ( obj->inherits("KDockWidgetAbstractHeaderDrag") ){
     KDockWidget* pDockWdgAtCursor = 0L;
     KDockWidget* curdw = ((KDockWidgetAbstractHeaderDrag*)obj)->dockWidget();
@@ -2180,6 +2182,40 @@ void KDockArea::slotDockWidgetUndocked()
   emit dockWidgetHasUndocked( pDW);
 }
 
+void KDockArea::resizeEvent(QResizeEvent *rsize)
+{
+  QWidget::resizeEvent(rsize);
+  if (children()){
+#ifndef NO_KDE2
+    kdDebug()<<"KDockArea::resize"<<endl;
+#endif
+    KDockSplitter *split;
+    QObjectList *list=queryList("QWidget",0,false);
+
+    QObjectListIt it( *list ); // iterate over the buttons
+    QObject *obj;
+
+    while ( (obj = it.current()) != 0 ) {
+        // for each found object...
+        ((QWidget*)obj)->setGeometry(QRect(QPoint(0,0),size()));
+	break;
+    }
+    delete list;
+#if 0
+//    for (unsigned int i=0;i<children()->count();i++)
+    {
+//    	QPtrList<QObject> list(children());
+//       QObject *obj=((QPtrList<QObject*>)children())->at(i);
+	QObject *obj=children()->getFirst();
+       if (split=dynamic_cast<KDockSplitter*>(obj))
+       {
+          split->setGeometry( QRect(QPoint(0,0), size() ));
+//	  break;
+       }
+    }
+#endif
+   }
+}
 
 #ifndef NO_KDE2
 void KDockArea::writeDockConfig( KConfig* c, QString group )

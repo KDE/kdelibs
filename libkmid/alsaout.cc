@@ -39,9 +39,20 @@
 #include <config.h>
 #endif
 
+#ifdef HAVE_ALSA_ASOUNDLIB_H
+#include <alsa/asoundlib.h>
+#elif defined(HAVE_SYS_ASOUNDLIB_H)
+#include <sys/asoundlib.h>
+#endif
+
+#ifdef HAVE_LIBASOUND2
+#define HAVE_ALSA_SEQ 1
+#define snd_seq_flush_output(x)	snd_seq_drain_output(x)
+#endif
+
 #ifdef HAVE_LIBASOUND
 #include <linux/asequencer.h>
-#include <sys/asoundlib.h>
+#define HAVE_ALSA_SEQ 1
 #endif
 
 
@@ -50,7 +61,7 @@ SEQ_USE_EXTBUF();
 class AlsaOut::AlsaOutPrivate
 {
 public:
-#ifdef HAVE_LIBASOUND
+#ifdef HAVE_ALSA_SEQ
   AlsaOutPrivate(int _client, int _port, const char *cname,const char *pname)
     {
       handle=0L;
@@ -74,13 +85,13 @@ public:
 
   ~AlsaOutPrivate()
     {
-#ifdef HAVE_LIBASOUND
+#ifdef HAVE_ALSA_SEQ
       delete ev;
       delete tgtname;
 #endif
     }
 
-#ifdef HAVE_LIBASOUND
+#ifdef HAVE_ALSA_SEQ
   snd_seq_t *handle;
   int  client;
   int  queue;
@@ -107,7 +118,7 @@ AlsaOut::AlsaOut(int d,int _client, int _port, const char *cname,const char *pna
   device= d;
 
   volumepercentage=100;
-#ifdef HAVE_LIBASOUND
+#ifdef HAVE_ALSA_SEQ
 //  printf("%d %d %d (%s)\n",device, di->tgtclient, di->tgtport, di->tgtname);
 #endif
 
@@ -122,12 +133,17 @@ AlsaOut::~AlsaOut()
 
 void AlsaOut::openDev (int)
 {
-#ifndef HAVE_LIBASOUND
+#ifndef HAVE_ALSA_SEQ
   return;
 #else
   _ok=1;
+#ifdef HAVE_LIBASOUND2
+  if (snd_seq_open(&di->handle, "hw", SND_SEQ_OPEN_DUPLEX, 0) < 0)
+                fprintf(stderr, "Couldn't open sequencer: %s", snd_strerror(errno));
+#else
   if (snd_seq_open(&di->handle, SND_SEQ_OPEN) < 0)
                 fprintf(stderr, "Couldn't open sequencer: %s", snd_strerror(errno));
+#endif
 
   di->queue = snd_seq_alloc_queue(di->handle);
   if (di->queue < 0) {fprintf(stderr, "Couldn't allocate queue"); return; };
@@ -167,7 +183,7 @@ void AlsaOut::openDev (int)
 void AlsaOut::closeDev (void)
 {
   if (!ok()) return;
-#ifdef HAVE_LIBASOUND
+#ifdef HAVE_ALSA_SEQ
   if (di->handle)
   {
     if (di->src) 
@@ -189,7 +205,7 @@ void AlsaOut::closeDev (void)
 
 void AlsaOut::initDev (void)
 {
-#ifdef HAVE_LIBASOUND
+#ifdef HAVE_ALSA_SEQ
   int chn;
   if (!ok()) return;
   uchar gm_reset[5]={0x7e, 0x7f, 0x09, 0x01, 0xf7};
@@ -208,7 +224,7 @@ void AlsaOut::initDev (void)
 #endif
 }
 
-#ifdef HAVE_LIBASOUND
+#ifdef HAVE_ALSA_SEQ
 void AlsaOut::eventInit(snd_seq_event_t *ev)
 {
   snd_seq_ev_clear(ev);
@@ -271,9 +287,9 @@ void AlsaOut::timerEventSend(int type)
 
 }
 
-#endif // HAVE_LIBASOUND
+#endif // HAVE_ALSA_SEQ
 
-#ifndef HAVE_LIBASOUND
+#ifndef HAVE_ALSA_SEQ
 void AlsaOut::noteOn  (uchar , uchar , uchar )
 {
 #else
@@ -295,7 +311,7 @@ void AlsaOut::noteOn  (uchar chn, uchar note, uchar vel)
 #endif
 }
 
-#ifndef HAVE_LIBASOUND
+#ifndef HAVE_ALSA_SEQ
 void AlsaOut::noteOff (uchar , uchar , uchar )
 {
 #else
@@ -310,7 +326,7 @@ void AlsaOut::noteOff (uchar chn, uchar note, uchar vel)
 #endif
 }
 
-#ifndef HAVE_LIBASOUND
+#ifndef HAVE_ALSA_SEQ
 void AlsaOut::keyPressure (uchar , uchar , uchar )
 {
 #else
@@ -322,7 +338,7 @@ void AlsaOut::keyPressure (uchar chn, uchar note, uchar vel)
 #endif
 }
 
-#ifndef HAVE_LIBASOUND
+#ifndef HAVE_ALSA_SEQ
 void AlsaOut::chnPatchChange (uchar , uchar )
 {
 #else
@@ -339,7 +355,7 @@ void AlsaOut::chnPatchChange (uchar chn, uchar patch)
 #endif
 }
 
-#ifndef HAVE_LIBASOUND
+#ifndef HAVE_ALSA_SEQ
 void AlsaOut::chnPressure (uchar , uchar )
 {
 #else
@@ -353,7 +369,7 @@ void AlsaOut::chnPressure (uchar chn, uchar vel)
 #endif
 }
 
-#ifndef HAVE_LIBASOUND
+#ifndef HAVE_ALSA_SEQ
 void AlsaOut::chnPitchBender(uchar ,uchar , uchar )
 {
 #else
@@ -369,7 +385,7 @@ void AlsaOut::chnPitchBender(uchar chn,uchar lsb, uchar msb)
 #endif
 }
 
-#ifndef HAVE_LIBASOUND
+#ifndef HAVE_ALSA_SEQ
 void AlsaOut::chnController (uchar , uchar , uchar )
 {
 #else
@@ -390,7 +406,7 @@ void AlsaOut::chnController (uchar chn, uchar ctl, uchar v)
 #endif
 }
 
-#ifndef HAVE_LIBASOUND
+#ifndef HAVE_ALSA_SEQ
 void AlsaOut::sysex(uchar *, ulong )
 {
 #else
@@ -406,7 +422,7 @@ void AlsaOut::sysex(uchar *data, ulong size)
 #endif
 }
 
-#ifndef HAVE_LIBASOUND
+#ifndef HAVE_ALSA_SEQ
 void AlsaOut::channelSilence (uchar )
 {
 #else
@@ -420,7 +436,7 @@ void AlsaOut::channelSilence (uchar chn)
 #endif
 }
 
-#ifndef HAVE_LIBASOUND
+#ifndef HAVE_ALSA_SEQ
 void AlsaOut::channelMute(uchar , int )
 {
 #else
@@ -459,33 +475,27 @@ void AlsaOut::wait(double ticks)
 #endif
 }
 
-#ifndef HAVE_LIBASOUND
+#ifndef HAVE_ALSA_SEQ
 void AlsaOut::tmrSetTempo(int )
 {
 #else
 void AlsaOut::tmrSetTempo(int v)
 {
-/*  eventInit(ev);
-  ev->type = SND_SEQ_EVENT_TEMPO;
-  ev->data.queue.queue = queue;
-  ev->data.queue.param.value = v;
-printf("tempo _ : _ : _ : %d\n",v);
-  ev->dest.client = SND_SEQ_CLIENT_SYSTEM;
-  ev->dest.port = SND_SEQ_PORT_SYSTEM_TIMER;
-  eventSend(ev);
-*/
+  eventInit(di->ev);
+  di->ev->type = SND_SEQ_EVENT_TEMPO;
+  snd_seq_ev_set_direct(di->ev);
+  di->ev->data.queue.queue = di->queue;
+  di->ev->data.queue.param.value = v;
+  di->ev->dest.client = SND_SEQ_CLIENT_SYSTEM;
+  di->ev->dest.port = SND_SEQ_PORT_SYSTEM_TIMER;
+  snd_seq_event_output_direct(di->handle, di->ev);
 #ifdef MIDIOUTDEBUG
   printfdebug("SETTEMPO  >\t tempo: %d\n",v);
 #endif
-  snd_seq_queue_tempo_t ev;
-  ev.queue=di->queue;
-  ev.tempo=v;
-  ev.ppq=di->tPCN;
-  snd_seq_set_queue_tempo(di->handle,di->queue,&ev);
 #endif
 }
 
-#ifndef HAVE_LIBASOUND
+#ifndef HAVE_ALSA_SEQ
 void AlsaOut::sync(int )
 {
 #else
@@ -494,7 +504,6 @@ void AlsaOut::sync(int i)
   if (i==1)
   {
     snd_seq_flush_output(di->handle);
-    snd_seq_drain_output(di->handle);
   }
 
   if (di->timerStarted) 
@@ -509,23 +518,30 @@ void AlsaOut::sync(int i)
 #endif
 }
 
-#ifndef HAVE_LIBASOUND
+#ifndef HAVE_ALSA_SEQ
 void AlsaOut::tmrStart(int )
 {
 #else
 void AlsaOut::tmrStart(int tpcn)
 {
-  snd_seq_queue_tempo_t queuetempo;
   int  ret;
   di->timerStarted=true;
+  di->tPCN=tpcn;
 
+#ifdef HAVE_LIBASOUND2
+  snd_seq_queue_tempo_t *queuetempo;
+  snd_seq_queue_tempo_alloca(&queuetempo);
+  snd_seq_queue_tempo_set_ppq(queuetempo, tpcn);
+  snd_seq_queue_tempo_set_tempo(queuetempo, 60*1000000/120);
+  ret = snd_seq_set_queue_tempo(di->handle, di->queue, queuetempo);
+#else
+  snd_seq_queue_tempo_t queuetempo;
   memset(&queuetempo, 0, sizeof(queuetempo));
   queuetempo.queue = di->queue;
   queuetempo.ppq = tpcn;
-  di->tPCN=tpcn;
   queuetempo.tempo = 60*1000000/120;
-
   ret = snd_seq_set_queue_tempo(di->handle, di->queue, &queuetempo);
+#endif
 
   timerEventSend(SND_SEQ_EVENT_START);
   snd_seq_start_queue(di->handle,di->queue,NULL);

@@ -21,6 +21,16 @@
     Boston, MA 02111-1307, USA.
 */
 
+// somehow msg_handler is undeclared when QT_NO_COMPAT is defined
+#ifdef QT_NO_COMPAT
+#undef QT_NO_COMPAT
+#include <qglobal.h>
+#define QT_NO_COMPAT
+#else
+#include <qglobal.h>
+#endif
+
+
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -92,7 +102,9 @@
 enum Buttons { HOTLIST_BUTTON,
                PATH_COMBO, CONFIGURE_BUTTON };
 
-const int idStart = 1;
+static void silenceQToolBar(QtMsgType, const char *)
+{
+}
 
 template class QList<KIO::StatJob>;
 
@@ -180,7 +192,9 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     d->completionLock = false;
     d->myStatusLine = 0;
 
+    msg_handler oldHandler = qInstallMsgHandler( silenceQToolBar ); 
     toolbar= new KToolBar( d->mainWidget, "KFileDialog::toolbar", true);
+    qInstallMsgHandler( oldHandler );
 
     KURLComboBox *combo = new KURLComboBox( KURLComboBox::Directories, true,
                                             toolbar, "path combo" );
@@ -258,8 +272,10 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
             KURL home;
             home.setPath( QDir::homeDirPath() );
             // if there is no docpath set (== home dir), we prefer the current
-            // directory over it.
-            if ( lastDirectory->path(+1) == home.path(+1) )
+            // directory over it. We also prefer the homedir when our CWD is
+            // different from our homedirectory
+            if ( lastDirectory->path(+1) == home.path(+1) ||
+                 QDir::currentDirPath() != QDir::homeDirPath() )
                 *lastDirectory = QDir::currentDirPath();
         }
         d->url = *lastDirectory;
@@ -347,7 +363,6 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     locationEdit->setHandleSignals( true );
     (void) locationEdit->completionBox();
 
-    locationEdit->setInsertionPolicy(QComboBox::NoInsertion);
     locationEdit->setFocus();
     locationEdit->setCompletionObject( ops->completionObject(), false );
 
@@ -630,7 +645,6 @@ void KFileDialog::slotOk()
 	    if ( locationEdit->currentText().stripWhiteSpace().isEmpty() ) {
 		QFileInfo info( d->url.path() );
 		if ( info.isDir() ) {
-		    locationEdit->insertItem( d->url.path(+1), 1 );
 		    d->filenames = QString::null;
 		    d->urlList.clear();
 		    d->urlList.append( d->url );
@@ -643,7 +657,6 @@ void KFileDialog::slotOk()
 			return;
 
 		    else {
-			locationEdit->insertItem( d->url.prettyURL(+1), 1 );
 			accept();
 		    }
 		}
@@ -741,7 +754,6 @@ void KFileDialog::slotStatResult(KIO::Job* job)
     }
 
     kdDebug(kfile_area) << "filename " << sJob->url().url() << endl;
-    locationEdit->insertItem( sJob->url().prettyURL(), 1 );
 
     if ( count == 0 )
         accept();
@@ -750,9 +762,33 @@ void KFileDialog::slotStatResult(KIO::Job* job)
 
 void KFileDialog::accept()
 {
+    setResult( QDialog::Accepted ); // parseSelectedURLs() checks that
+
     *lastDirectory = ops->url();
     if (!d->fileClass.isEmpty())
        KRecentDirs::add(d->fileClass, ops->url().url());
+
+    // clear the topmost item, we insert it as full path later on as item 1
+    locationEdit->changeItem( QString::null, 0 );
+    
+    KURL::List list = selectedURLs();
+    QValueListConstIterator<KURL> it = list.begin();
+    for ( ; it != list.end(); ++it ) {
+        const KURL& url = *it;
+        // we strip the last slash (-1) because KURLComboBox does that as well
+        // when operating in file-mode. If we wouldn't , dupe-finding wouldn't
+        // work.
+        QString file = url.isLocalFile() ? url.path(-1) : url.prettyURL(-1);
+
+        // remove dupes
+        for ( int i = 1; i < locationEdit->count(); i++ ) {
+            if ( locationEdit->text( i ) == file ) {
+                locationEdit->removeItem( i-- );
+                break;
+            }
+        }
+        locationEdit->insertItem( file, 1 );
+    }
 
     KSimpleConfig *c = new KSimpleConfig(QString::fromLatin1("kdeglobals"),
                                          false);
@@ -1140,17 +1176,20 @@ void KFileDialog::setSelection(const QString& url)
      */
     KFileViewItem i((unsigned) -1, (unsigned)-1, u, true );
     //    KFileViewItem i(u.path());
-    if ( i.isDir() && u.isLocalFile() && QFile::exists( u.path() ) )
+    if ( i.isDir() && u.isLocalFile() && QFile::exists( u.path() ) ) {
         // trust isDir() only if the file is
         // local (we cannot stat non-local urls) and if it exists!
         // (as KFileItem does not check if the file exists or not
         // -> the statbuffer is undefined -> isDir() is unreliable) (Simon)
         setURL(u, true);
+    }
     else {
         QString filename = u.url();
         int sep = filename.findRev('/');
         if (sep >= 0) { // there is a / in it
-            setURL(filename.left(sep), true);
+            if ( KProtocolInfo::supportsListing( u.protocol() ))
+                setURL(filename.left(sep), true);
+
             // filename must be decoded, or "name with space" would become
             // "name%20with%20space", so we use KURL::fileName()
             filename = u.fileName();
@@ -1227,7 +1266,7 @@ void KFileDialog::fileCompletion( const QString& file )
     else
         if (locationEdit->completionMode() == KGlobalSettings::CompletionPopup)
             locationEdit->completionBox()->hide();
-    
+
     d->completionLock = false;
 }
 
@@ -1482,7 +1521,11 @@ QString KFileDialog::getSaveFileName(const QString& dir, const QString& filter,
                                      QWidget *parent,
                                      const QString& caption)
 {
-    KFileDialog dlg(dir, filter, parent, "filedialog", true);
+    bool specialDir = dir.at(0) == ':';
+    KFileDialog dlg( specialDir ? dir : QString::null, filter, parent, "filedialog", true);
+    if ( !specialDir )
+        dlg.setSelection( dir ); // may also be a filename
+
     dlg.setOperationMode( Saving );
     dlg.setCaption(caption.isNull() ? i18n("Save As") : caption);
 
@@ -1498,7 +1541,11 @@ QString KFileDialog::getSaveFileName(const QString& dir, const QString& filter,
 KURL KFileDialog::getSaveURL(const QString& dir, const QString& filter,
                              QWidget *parent, const QString& caption)
 {
-    KFileDialog dlg(dir, filter, parent, "filedialog", true);
+    bool specialDir = dir.at(0) == ':';
+    KFileDialog dlg(specialDir ? dir : QString::null, filter, parent, "filedialog", true);
+    if ( !specialDir )
+        dlg.setSelection( dir ); // may also be a filename
+
     dlg.setCaption(caption.isNull() ? i18n("Save As") : caption);
     dlg.setOperationMode( Saving );
 
@@ -1616,7 +1663,8 @@ void KFileDialog::readRecentFiles( KConfig *kc )
 
     locationEdit->setMaxItems( kc->readNumEntry( RecentFilesNumber,
                                                  DefaultRecentURLsNumber ) );
-    locationEdit->setURLs( kc->readListEntry( RecentFiles ) );
+    locationEdit->setURLs( kc->readListEntry( RecentFiles ),
+                           KURLComboBox::RemoveBottom );
     locationEdit->insertItem( QString::null, 0 ); // dummy item without pixmap
     locationEdit->setCurrentItem( 0 );
 

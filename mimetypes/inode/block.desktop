@@ -1,6 +1,5 @@
 [Desktop Entry]
 Comment=Block Device
-Comment[af]=BLOK TOESTEL
 Comment[az]=Blok Avadanlığı
 Comment[bg]=Блоково устройство
 Comment[br]=Trobarzhell vloc'h
@@ -43,8 +42,8 @@ Comment[ta]=Ðñ¼î º¡¾Éõ
 Comment[tr]=Blok Aygıtı
 Comment[uk]=Блокові пристрої
 Comment[vi]=Thiết bềEkhối(block device) 
+Comment[xh]=Icebo leceba eliqinileyo lelitye okanye isikhuni
 Comment[zh_CN.GB2312]=块设备
-Comment[zh_TW.Big5]=區塊設備
 Icon=blockdevice
 Type=MimeType
 MimeType=inode/blockdevice

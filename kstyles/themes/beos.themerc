@@ -1,8 +1,6 @@
 [Misc]
 Name=BeOS
-Name[af]=BEOS
 Comment=Unthemed Beos-like style
-Comment[af]=ONGETEMADE BEOS-TIPE STYL
 Comment[az]=Beos oxşarı örtüsüz tərz
 Comment[bg]=Стил без тема, приличащ на Beos, 
 Comment[br]=Giz BeOS anwisket
@@ -23,7 +21,6 @@ Comment[hu]=BeOS-szerű kinézet téma nélkül
 Comment[is]=Stíll í anda BeOS stýrikerfisins (án þema)
 Comment[it]=Stile Beos (senza tema)
 Comment[ja]=Beosスタイル
-Comment[ko]=BeOS와 비슷한 꼴을 가진 테마
 Comment[lt]=Betemis Beos tipo stilius
 Comment[lv]=Beztēmas Beos-līdzīgs stils
 Comment[mk]=Beos стил (без тема)
@@ -44,7 +41,7 @@ Comment[ta]=¯Õ¸ÕÅ¢øÄ¡ Beos-§À¡ýÈ À¡ó¾õ
 Comment[tr]=Beos benzeri temasız stil
 Comment[uk]=Стиль BeOS (без теми)
 Comment[vi]=Kiểu Beos chưa có theme 
+Comment[xh]=iBeos engenamxholo wakuxoxwa-njengo hlobo
 Comment[zh_CN.GB2312]=没有主题的类似 Beos 的风格
-Comment[zh_TW.Big5]=非主題式的類 Beos 風格
 [KDE]
 widgetStyle=beosstyle.la

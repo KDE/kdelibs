@@ -107,6 +107,19 @@ int main(int argc, char *argv[])
        }
    }
 
+   arg1 = "http://e2.swirve.com/browser.cgi";
+   printf("URL: %s\n", arg1.latin1());
+   arg2 = "Set-Cookie: EarthID=MJEHEWPOIA; path=/; expires=Fri, 31-Dec-2002 00:00:00 GMT\n";
+   arg2 += "Set-Cookie: TESTNAME=Earth; path=/";
+   addCookies(arg1, arg2);
+   
+   arg1 = "http://e2.swirve.com";
+   printf("Looking up cookies for %s \n", arg1.latin1());
+   result = findCookies(arg1);
+   printf("EXPECTED: %s\n", "Cookie: TESTNAME=Earth; EarthID=MJEHEWPOIA" );
+   printf("RESULT: %s\n\n", result.latin1() ? result.latin1() : "<NULL>");
+
+/*
    // Add cookies...
    arg1 = "http://w.y.z/";
    printf("Set-Cookie request for: %s\n", arg1.latin1());
@@ -127,20 +140,20 @@ int main(int argc, char *argv[])
    printf("Requesting to set cookie for %s\n", arg1.latin1());
    arg2 = "Set-Cookie: some_value=value4; expires=Fri, 04-May-2002 01:00:00 GMT";
    addCookies(arg1, arg2);
-   
+
    arg1 = "http://www.acme.com";
    printf("Requesting to set cookie for %s\n", arg1.latin1());
    arg2 = "Set-Cookie: some_value=value5; expires=Fri, 04-May-2002 01:00:00 GMT";
    addCookies(arg1, arg2);
-   
+
    arg1 = "http://acme.com";
    printf("Requesting to set cookie for %s\n", arg1.latin1());
    arg2 = "Set-Cookie: some_value=value6; expires=Fri, 04-May-2002 01:00:00 GMT";
    addCookies(arg1, arg2);
-   
-   
-   
-   // Find cookies...   
+
+
+
+   // Find cookies...
    arg1 = "http://w.y.z/";
    printf("Looking up cookies for %s \n", arg1.latin1());
    result = findCookies(arg1);
@@ -170,7 +183,7 @@ int main(int argc, char *argv[])
    printf("Looking up cookies for %s \n", arg1.latin1());
    result = findCookies(arg1);
    printf("RESULT: %s\n\n", result.latin1() );
-   
+
    /********************************************************* Space in the value test
    arg1 = "http://x.y.z/";
    printf("Requesting to set cookie for %s\n", arg1.latin1());

@@ -8,7 +8,7 @@
 #include <libxml/HTMLtree.h>
 #include <libxml/xmlIO.h>
 #include <libxml/parserInternals.h>
-#include <libxslt/xslt.h>
+#include <libxslt/xsltconfig.h>
 #include <libxslt/xsltInternals.h>
 #include <libxslt/transform.h>
 #include <libxslt/xsltutils.h>

@@ -1,6 +1,5 @@
 [Desktop Entry]
 Comment=Unknown
-Comment[af]=ONBEKENDE
 Comment[az]=Namə'lum
 Comment[bg]=Неизвестен
 Comment[br]=Dianav
@@ -46,8 +45,8 @@ Comment[tr]=Bilinmeyen
 Comment[uk]=Невідомий
 Comment[vi]=Không biết 
 Comment[wa]=Nén cnoxhou
+Comment[xh]=Ayaziwa
 Comment[zh_CN.GB2312]=未知
-Comment[zh_TW.Big5]=未知
 Type=MimeType
 MimeType=application/octet-stream
 Patterns=

@@ -80,12 +80,12 @@ const unsigned short DOM::tagPriority[] = {
     3, // ID_FORM
     0, // ID_FRAME
     9, // ID_FRAMESET
-    3, // ID_H1
-    3, // ID_H2
-    3, // ID_H3
-    3, // ID_H4
-    3, // ID_H5
-    3, // ID_H6
+    5, // ID_H1
+    5, // ID_H2
+    5, // ID_H3
+    5, // ID_H4
+    5, // ID_H5
+    5, // ID_H6
     9, // ID_HEAD
     0, // ID_HR
     10, // ID_HTML

@@ -2,7 +2,6 @@
 Type=ServiceType
 X-KDE-ServiceType=KPart
 Comment=KDE Component
-Comment[af]=KDE KOMPONENT
 Comment[az]=KDE Komponenti
 Comment[bg]=Компонент на KDE
 Comment[br]=ParzhioÃ¹ KDE
@@ -46,5 +45,5 @@ Comment[ta]=KDE ÜÚ
 Comment[tr]=KDE Bileşeni
 Comment[uk]=Компонент KDE
 Comment[vi]=KDE Component 
+Comment[xh]=Inxenye ye KDE
 Comment[zh_CN.GB2312]=KDE 部件
-Comment[zh_TW.Big5]=KDE 元件

@@ -1208,7 +1208,7 @@ int KExtendedSocket::connect()
 	  if (KSocks::self()->connect(sockfd, p->ai_addr, p->ai_addrlen) == -1)
 	    {
 	      // this could be EWOULDBLOCK
-	      if (errno != EWOULDBLOCK && errno != EINPROGRESS)
+	      if (errno != EWOULDBLOCK && errno != EINPROGRESS && error != ENOENT && errno != 0)
 		{
 		  kdDebug(170) << "Socket " << sockfd << " did not connect: " << perror << endl;
 		  setError(IO_ConnectError, errno);
@@ -2094,21 +2094,8 @@ QList<KAddressInfo> KExtendedSocket::lookup(const QString& host, const QString& 
   for (p = res->data; p; p = p->ai_next)
     if (valid_family(p, flags))
       {
-	KAddressInfo *ai = new KAddressInfo;
-	if (ai == NULL)
-	  return l;
+	KAddressInfo *ai = new KAddressInfo(p);
 
-	ai->ai = new addrinfo;
-	if (ai->ai == NULL)
-	  {
-	    delete ai;
-	    return l;
-	  }
-
-	memcpy(ai->ai, p, sizeof(*p));
-	ai->ai->ai_next = NULL;
-	ai->addr = KSocketAddress::newAddress(p->ai_addr, p->ai_addrlen);
-	ai->ai->ai_addr = const_cast<sockaddr*>(ai->addr->address());
 //	kdDebug(170) << "Using socket " << pretty_sock(p) << endl;
 	l.append(ai);
       }
@@ -2226,28 +2213,42 @@ QString KExtendedSocket::strError(int code, int syserr)
  * class KAddressInfo
  */
 
+KAddressInfo::KAddressInfo(addrinfo *p)
+{
+   ai = (addrinfo *) malloc(sizeof(addrinfo));
+   memcpy(ai, p, sizeof(addrinfo));
+   ai->ai_next = NULL;
+   if (p->ai_canonname)
+   {
+      ai->ai_canonname = (char *) malloc(strlen(p->ai_canonname)+1);
+      strcpy(ai->ai_canonname, p->ai_canonname);
+   }
+   if (p->ai_addr && p->ai_addrlen)
+   {
+      ai->ai_addr = (struct sockaddr *) malloc(p->ai_addrlen);
+      memcpy(ai->ai_addr, p->ai_addr, p->ai_addrlen);
+   }
+   else
+   {
+      ai->ai_addr = 0;
+      ai->ai_addrlen = 0;
+   }
+
+   addr = KSocketAddress::newAddress(ai->ai_addr, ai->ai_addrlen);
+}
+
 KAddressInfo::~KAddressInfo()
 {
+  if (ai && ai->ai_canonname)
+    free(ai->ai_canonname);
+
+  if (ai && ai->ai_addr)
+    free(ai->ai_addr);  
+
   if (ai)
-    delete ai;
-  if (addr)
-    delete addr;
+    free(ai);
+  delete addr;
 }
-
-#if 0 /* Why would this be wanted? */
-KAddressInfo& KAddressInfo::operator=(const KAddressInfo& src)
-{
-  if (!ai)
-    ai = new addrinfo;
-  memcpy(ai, src.ai, sizeof(*ai));
-  ai->ai_addr = NULL;
-
-  if (src.addr)
-    addr = KSocketAddress::newAddress(src.addr->address(), src.addr->size());
-
-  return *this;
-}
-#endif
 
 int KAddressInfo::flags() const
 {

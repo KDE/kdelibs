@@ -1,0 +1,46 @@
+The following is a list of items that are currently missing or partially implemented
+in kio_http:
+
+- HTTP/1.1 Persistant Connections:
+The header often specifies the timeout value used for connections.
+Close the connection ourselves when the timeout has expired. That way
+we don't loose time sending stuff to an already closed connection.
+
+- HTTP/1.1 Pipelining support
+This more of an optimization of the http io-slave that is intended to make it
+faster while using as few resources as possible.  Work on this is currently
+being done to add this support for KDE 3.x version.
+
+- WebDAV support:
+This is one of the most sought after feature that is currently missing.  I plan to start
+the seeds to implement this feature for KDE 3.x version.  Note that the support that
+needs to be built is very basic and nominal.  The majority of the work such as parsing
+the XML information and GUI integration into konqueror will have to be done as a
+konqueror part.
+
+- Rating(s) support.  http://www.w3.org/PICS:
+This might involve an external program to parse the labels, and something to
+configure access accordingly.  There is only some basic things that need to be
+added to kio_http to support this.  The majority of the work has to be done at the
+application level.  A khtml plugin in kdeaddons to do this might be a nice idea.
+
+- P3P support:
+This can also be implemented as a plugin to konqueror and does
+not need any speical support in HTTP except perhaps sending a
+flag that indicates that the web page provides some P3P information.
+This is something that can be added as a plugin to kdeaddons.
+
+
+Things that do not require programming
+============================
+
+- "Friendly" error message html page.
+We currently support the sending of error messages, but this is only done if the server
+sends back nicely formatted error messages.  We do not have fall back HTML pages that
+describe these error messages in a non-technical manner!  This of course also means that
+we will certainly need to have these files translated.
+
+
+Maintainers
+Waldo Bastian <bastian@kde.org>
+Dawit Alemayehu <adawit@kde.org>

@@ -1,7 +1,6 @@
 [KDE Print Entry]
 PrintSystem=ext
 Comment=Print through an external program (generic)
-Comment[af]=DRUK DEUR 'N EKSTERNE PROGRAM (GENERIES)
 Comment[az]=Xarici proqram üstündən çap et (generik)
 Comment[bg]=Печат посредством външна програма
 Comment[cs]=Tisk pomocí externího programu (obecné)
@@ -22,15 +21,18 @@ Comment[lt]=Spausdinti naudojant įšorinę programą (bendra)
 Comment[lv]=Drukāt caur ārēju programmu (vispārēji)
 Comment[mt]=Printja permezz ta' programm estern (ġeneriku)
 Comment[nl]=Print met behulp van een extern programma (algemeen)
+Comment[no]=Skriv ut gjennom et eksternt program (generisk)
 Comment[no_NY]=Skriv ut gjennom eit eksternt program (generelt)
 Comment[pl]=Drukuj używając zewnętrznego programu
-Comment[pt_BR]=Imprimir através dum programa externo (genérico)
+Comment[pt_BR]=Imprimir através de um programa externo (genérico)
 Comment[pt]=Imprimir através dum programa externo (genérico)
 Comment[ru]=печать посредством внешней программы
 Comment[sk]=Tlač pomocou externého programu (generické)
 Comment[sl]=Tiskanje skozi zunanji program (splošno)
+Comment[sr]=Štampaj kroz eksterni program (generički)
 Comment[sv]=Skriv ut genom ett externt program (generellt)
 Comment[tr]=Dışarıdan bir program kullanarak yazdır (genel)
 Comment[uk]=Друк через зовнішню програму (загальна)
 Comment[vi]=In thông qua nội bềEcủa một chương trình(chung) 
+Comment[xh]=Shicilela ngapha kodweliso lwenkqubo olungaphandle (ngokubanzi)
 Comment[zh_CN.GB2312]=通过外部程序打印(通用)

@@ -190,11 +190,13 @@ void KHTMLParser::parseToken(Token *t)
       kdDebug( 6035 ) << "Unknown tag!! tagID = " << t->id << endl;
       return;
     }
-    if(discard_until)
-    {
+    if(discard_until) {
         if(t->id == discard_until)
             discard_until = 0;
-        return;
+
+        // do not skip </iframe>
+        if ( discard_until || current->id() + ID_CLOSE_TAG != t->id )
+            return;
     }
 
 #ifdef PARSER_DEBUG
@@ -552,12 +554,14 @@ bool KHTMLParser::insertNode(NodeImpl *n)
 
                 NodeImpl *parentparent = parent->parentNode();
 
-                if(node->id() == ID_TR &&
+                if(( node->id() == ID_TR &&
                    ( parent->id() == ID_THEAD ||
                      parent->id() == ID_TBODY ||
-                     parent->id() == ID_TFOOT ) && parentparent->id() == ID_TABLE )
+                     parent->id() == ID_TFOOT ) && parentparent->id() == ID_TABLE ) ||
+                   ( !checkChild( ID_TR, id ) && ( node->id() == ID_THEAD || node->id() == ID_TBODY || node->id() == ID_TFOOT ) &&
+                     parent->id() == ID_TABLE ) )
                 {
-                    node = parentparent;
+                    node = ( node->id() == ID_TR ) ? parentparent : parent;
                     NodeImpl *parent = node->parentNode();
                     int exceptioncode = 0;
                     NodeImpl *container = new HTMLGenericElementImpl( document, ID__KONQBLOCK );
@@ -744,6 +748,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         // a bit a special case, since the frame is inlined...
     case ID_IFRAME:
         n = new HTMLIFrameElementImpl(document);
+        discard_until = ID_IFRAME+ID_CLOSE_TAG;
         break;
 
 // form elements
@@ -874,7 +879,6 @@ NodeImpl *KHTMLParser::getElement(Token* t)
 
 // anchor
     case ID_A:
-        popBlock(ID_A);
         n = new HTMLAnchorElementImpl(document);
         break;
 

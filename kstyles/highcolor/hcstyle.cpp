@@ -2,6 +2,7 @@
  * HCStyle (C) 2000 Daniel M. Duley  <mosfet@kde.org>
  *         (C) 2000 Dirk Mueller     <mueller@kde.org>
  *         (C) 2001 Martijn Klingens <mklingens@yahoo.com>
+ *         (C) 2001 Roberto Teixeira <maragato@kde.org>
  *
  * Animated menu code based on code by Mario Weilguni <mweilguni@kde.org>
  *
@@ -280,7 +281,9 @@ void HCStyle::polish(QPalette &)
 
 void HCStyle::polish(QWidget *w)
 {
-    if(w->isTopLevel())
+    if(qstrcmp(w->name(), "qt_viewport") == 0 ||
+       w->testWFlags(WType_Popup) || w->inherits("KDesktop")
+       || w->inherits("PanelButtonBase") || w->isTopLevel())
         return;
 
     if(w->inherits("QPushButton"))
@@ -309,8 +312,12 @@ void HCStyle::polish(QWidget *w)
 
 void HCStyle::unPolish(QWidget *w)
 {
-    if (w->isTopLevel())
+
+    if(qstrcmp(w->name(), "qt_viewport") == 0 ||
+       w->testWFlags(WType_Popup) || w->inherits("KDesktop")
+       || w->inherits("PanelButtonBase") || w->isTopLevel())
         return;
+
     w->setBackgroundMode(QWidget::PaletteBackground);
 
     if(w->inherits("QPushButton")){
@@ -447,7 +454,7 @@ void HCStyle::drawPushButton(QPushButton *btn, QPainter *p)
 		    p->drawLine(x+2, y+3, x2-2, y+3);
 		    p->drawLine(x+2, y+4, x+2, y2-1);
 		    p->drawLine(x+3, y+4, x+3, y2-2);
-		}                  
+		}
 		else{
 		    p->setPen(g.mid());
 		    p->drawLine(x+2, y+2, x2-1, y+2);
@@ -539,7 +546,7 @@ void HCStyle::drawPushButtonLabel(QPushButton *btn, QPainter *p)
 	x1 += pixw + 8;
 	w -= pixw + 8;
     }
-    
+
     if(act || btn->isDefault()){
         QFont font = btn->font();
         font.setBold(true);
@@ -690,7 +697,7 @@ void HCStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
         sliderStart = sliderMax;
 
     bool	horiz = sb->orientation() == QScrollBar::Horizontal;
-    
+
     QColorGroup	g = sb->colorGroup();
     QRect	addB, subHC, subB;
     QRect       addPageR, subPageR, sliderR;
@@ -702,7 +709,7 @@ void HCStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
     {
 	len    = sb->width();
 	extent = sb->height();
-	
+
         subY = addY = ( extent - buttonDim ) / 2;
         subX = 0;
         addX = len - buttonDim;
@@ -711,7 +718,7 @@ void HCStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
     {
 	len    = sb->height();
 	extent = sb->width();
-	
+
         subX = addX = ( extent - buttonDim ) / 2;
         subY = 0;
         addY = len - buttonDim;
@@ -759,18 +766,18 @@ void HCStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
                    false, addB.x()+4, addB.y()+4,
                    addB.width()-8, addB.height()-8, g, !maxed);
     }
-    
+
     if ( controls & SubLine )
     {
 	// Draw scroll up buttons
 	bool isSubLine = activeControl == SubLine;
 	Qt::ArrowType arrowType = horiz ? LeftArrow : UpArrow;
-	
+
         drawSBButton(p, subB, g, isSubLine);
         drawArrow( p, arrowType,
                    false, subB.x() + 4, subB.y() + 4,
                    subB.width() - 8, subB.height() - 8, g, !maxed );
-		   
+
 	if( numButtons == 3 )
 	{
             drawSBButton( p, subHC, g, isSubLine );
@@ -1638,8 +1645,8 @@ static const int windowsRightBorder     = 12;
             int m = motifItemVMargin;
             const int text_flags = AlignVCenter|ShowPrefix | DontClip | SingleLine;
             if (t >= 0) {
-                p->drawText(x+w-tab-windowsRightBorder-motifItemHMargin-motifItemFrame+1,
-                            y+m+1, tab, h-2*m, text_flags, s.mid( t+1 ));
+                p->drawText(x+w-tab-windowsRightBorder-motifItemHMargin-motifItemFrame,
+                            y+m, tab, h-2*m, text_flags, s.mid( t+1 ));
             }
             p->drawText(x+xm, y+m, w-xm-tab+1, h-2*m, text_flags, s, t);
         } else if (mi->pixmap()) {

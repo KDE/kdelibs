@@ -1,6 +1,5 @@
 [Desktop Entry]
 Comment=Generic Font files
-Comment[af]=GENERIES SKRIF TIPE LêERS
 Comment[az]=Ümumi yazı növü faylı
 Comment[bg]=Стандартни шрифтове
 Comment[br]=RestroÃ¹ font rummel
@@ -45,8 +44,8 @@ Comment[ta]=¦À¡Ð ±ØòÐÕì §¸¡ôÒì¸û
 Comment[tr]=Genel yazıtipi dosyası
 Comment[uk]=Загальні файли шрифтів
 Comment[vi]=File phông nói chung 
+Comment[xh]=Iifayile zemigca ngokubanzi
 Comment[zh_CN.GB2312]=一般字体文件
-Comment[zh_TW.Big5]=一般字型檔案
 Icon=gf
 Type=MimeType
 MimeType=application/x-tex-gf

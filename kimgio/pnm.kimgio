@@ -2,7 +2,6 @@
 Type=PNM
 Header=
 Name=PNM-Pictures
-Name[af]=PNM-PRENTE
 Name[az]=PNM-Rəsmləri
 Name[bg]=PNM Картинки
 Name[br]=SkeudennoÃ¹ PNM
@@ -45,8 +44,8 @@ Name[ta]=PNM-À¼í¸û
 Name[tr]=PNM-Resimleri
 Name[uk]=Малюнки PNM
 Name[vi]=Ảnh PNM 
+Name[xh]=Imifanekiso-PNM
 Name[zh_CN.GB2312]=PNM 图片
-Name[zh_TW.Big5]=PNM-影像
 Read=true
 Write=true
 Suffices=pnm,PNM,pbm,PBM,pgm,PGM,ppm,PPM,pbmraw,PBMRAW,pgmraw,PGMRAW,ppmraw,PPMRAW

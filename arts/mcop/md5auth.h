@@ -90,8 +90,10 @@ void md5_auth_init_seed(const char *seedname);
  * use this routine to set the "secret cookie" - you can pass a newly
  * generated random cookie here, or the secret cookie you got from
  * elsewhere (to communicate with others)
+ *
+ * returns true if success (good cookie), false if setting the cookie failed
  */
-void md5_auth_set_cookie(const char *cookie);
+bool md5_auth_set_cookie(const char *cookie);
 
 /*
  * returns "secret cookie"

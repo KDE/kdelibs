@@ -874,9 +874,104 @@ TransferJob *KIO::get( const KURL& url, bool reload, bool showProgressInfo )
     return job;
 }
 
+class ErrorJob : public TransferJob
+{
+public:
+
+  ErrorJob(QString url, const QByteArray &packedArgs, const QByteArray &postData, bool showProgressInfo) : TransferJob("", CMD_SPECIAL, packedArgs, postData, showProgressInfo)
+  {
+    m_error = ERR_ACCESS_DENIED;
+    m_errorText = url;
+  }
+
+};
+
 TransferJob *KIO::http_post( const KURL& url, const QByteArray &postData, bool showProgressInfo )
 {
-    assert( (url.protocol() == "http") || (url.protocol() == "https" ));
+    bool valid = true;
+
+    // filter out non https? protocols
+    if ((url.protocol() != "http") && (url.protocol() != "https" ))
+        valid = false;
+
+    // filter out some malicious ports
+    int bad_ports[] = {
+        1,   // tcpmux
+        7,   // echo
+        9,   // discard
+        11,   // systat
+        13,   // daytime
+        15,   // netstat
+        17,   // qotd
+        19,   // chargen
+        20,   // ftp-data
+        21,   // ftp-cntl
+        22,   // ssh
+        23,   // telnet
+        25,   // smtp
+        37,   // time
+        42,   // name
+        43,   // nicname
+        53,   // domain
+        77,   // priv-rjs
+        79,   // finger
+        87,   // ttylink
+        95,   // supdup
+        101,  // hostriame
+        102,  // iso-tsap
+        103,  // gppitnp
+        104,  // acr-nema
+        109,  // pop2
+        110,  // pop3
+        111,  // sunrpc
+        113,  // auth
+        115,  // sftp
+        117,  // uucp-path
+        119,  // nntp
+        123,  // NTP
+        135,  // loc-srv / epmap
+        139,  // netbios
+        143,  // imap2
+        179,  // BGP
+        389,  // ldap
+        512,  // print / exec
+        513,  // login
+        514,  // shell
+        515,  // printer
+        526,  // tempo
+        530,  // courier
+        531,  // Chat
+        532,  // netnews
+        540,  // uucp
+        556,  // remotefs
+        587,  // sendmail
+        601,  //
+	989,  // ftps data
+	990,  // ftps
+	992,  // telnets
+	993,  // imap/SSL
+	995,  // pop3/SSL
+        1080, // SOCKS
+        2049, // nfs
+        4045, // lockd
+        6000, // x11
+	6667, // irc
+        0};
+    for (int cnt=0; bad_ports[cnt]; ++cnt)
+        if (url.port() == bad_ports[cnt])
+        {
+            valid = false;
+            break;
+        }
+
+    // if request is not valid, return an invalid transfer job
+    if (!valid)
+    {
+        KIO_ARGS << (int)1 << url;
+        TransferJob * job = new ErrorJob(url.url(), packedArgs, postData, showProgressInfo);
+        return job;
+    }
+
     // Send http post command (1), decoded path and encoded query
     KIO_ARGS << (int)1 << url;
     TransferJob * job = new TransferJob( url, CMD_SPECIAL,
@@ -903,13 +998,22 @@ MimetypeJob::MimetypeJob( const KURL& url, int command,
 void MimetypeJob::start(Slave *slave)
 {
     TransferJob::start(slave);
-
 }
 
 
 void MimetypeJob::slotFinished( )
 {
     kdDebug(7007) << "MimetypeJob::slotFinished()" << endl;
+    if ( m_error == KIO::ERR_IS_DIRECTORY )
+    {
+        // It is in fact a directory. This happens when HTTP redirects to FTP.
+        // Due to the "protocol doesn't support listing" code in KRun, we
+        // assumed it was a file.
+        kdDebug(7007) << "It is in fact a directory!" << endl;
+        m_mimetype = QString::fromLatin1("inode/directory");
+        emit TransferJob::mimetype( this, m_mimetype );
+        m_error = 0;
+    }
     if ( m_redirectionURL.isEmpty() || m_redirectionURL.isMalformed() || m_error )
     {
         // Return slave to the scheduler

@@ -430,6 +430,20 @@ int operator==(KSSLCertificate &x, KSSLCertificate &y) {
 }
 
 
+KSSLCertificate::KSSLCertificate(const KSSLCertificate& x) {
+  d = new KSSLCertificatePrivate;
+  d->m_stateCached = false;
+  KGlobal::dirs()->addResourceType("kssl", "share/apps/kssl");
+#ifdef HAVE_SSL
+  d->m_cert = NULL;
+  setCert(KOSSL::self()->X509_dup(const_cast<KSSLCertificate&>(x).getCert()));
+  KSSLCertChain *c = x.d->_chain.replicate();
+  setChain(c->rawChain());
+  delete c;
+#endif
+}
+
+
 KSSLCertificate *KSSLCertificate::replicate() {
   // The new certificate doesn't have the cached value.  It's probably
   // better this way.  We can't anticipate every reason for doing this.
@@ -506,10 +520,13 @@ const char *footer = "-----END CERTIFICATE-----\n";
 
    // We just do base64 on the ASN1
    //  64 character lines  (unpadded)
-   for (unsigned int i = 0; i < (thecert.length()-1)/64; i++) {
+   unsigned int xx = thecert.length()-1;
+   for (unsigned int i = 0; i < xx/64; i++) {
       thecert.insert(64*(i+1)+i, '\n');
    }
    thecert.prepend(header);
+   if (thecert[thecert.length()-1] != '\n')
+      thecert += "\n";
    thecert.append(footer);
 
    qba.duplicate(thecert.local8Bit(), thecert.length());
@@ -571,5 +588,53 @@ KTempFile ktf;
 #endif
 return text;
 }
+
+
+
+bool KSSLCertificate::setCert(QString& cert) {
+#ifdef HAVE_SSL
+    QByteArray qba, qbb = cert.local8Bit().copy();
+    KCodecs::base64Decode(qbb, qba);
+    unsigned char *qbap = reinterpret_cast<unsigned char *>(qba.data());
+    X509 *x5c = KOSSL::self()->d2i_X509(NULL, &qbap, qba.size());
+    if (x5c) {
+       setCert(x5c);
+       return true;
+    }
+#endif
+return false;
+}
+
+
+QDataStream& operator<<(QDataStream& s, const KSSLCertificate& r) {
+QStringList qsl;
+QList<KSSLCertificate> cl = const_cast<KSSLCertificate&>(r).chain().getChain();
+
+      for (KSSLCertificate *c = cl.first(); c != 0; c = cl.next()) {
+         //kdDebug() << "Certificate in chain: " <<  c->toString() << endl;
+         qsl << c->toString();
+      }
+
+      cl.setAutoDelete(true);
+
+s << const_cast<KSSLCertificate&>(r).toString() << qsl;
+
+return s;
+}
+
+
+QDataStream& operator>>(QDataStream& s, KSSLCertificate& r) {
+QStringList qsl;
+QString cert;
+
+s >> cert >> qsl;
+
+       if (r.setCert(cert) && !qsl.isEmpty())
+          r.chain().setChain(qsl);
+
+return s;
+}
+
+
 
 

@@ -27,13 +27,13 @@
 #include <kcharsets.h>
 #include <dcopclient.h>
 #include <kprotocolmanager.h>
-
 #include <kdesu/client.h>
-#include <kio/slaveconfig.h>
-#include <kio/http_slave_defaults.h>
+
+#include "kio/authinfo.h"
+#include "kio/slaveconfig.h"
+#include "kio/http_slave_defaults.h"
 
 #include "sessiondata.h"
-
 
 
 using namespace KIO;
@@ -191,6 +191,7 @@ public:
     QString language;
     QString cacheDir;
     QString userAgent;
+    KURL requestURL;
 };
 
 SessionData::SessionData()
@@ -208,19 +209,47 @@ SessionData::~SessionData()
     authData = 0L;
 }
 
+void KIO::SessionData::setRequestURL( const KURL& url )
+{
+    d->requestURL = url;
+}
+
 void KIO::SessionData::configDataFor( SlaveConfig* cfg, const QString& proto,
                                       const QString& host )
 {
+    QString autoLogin = cfg->configData(proto, host, "EnableAutoLogin").lower();
+    if ( autoLogin == "true" )
+    {
+        NetRC::AutoLogin l;
+        l.login = d->requestURL.user();
+        bool usern = (proto == "ftp");
+        if ( NetRC::self()->lookup( d->requestURL, l, usern) )
+        {
+            cfg->setConfigData( proto, host, "autoLoginUser", l.login );
+            cfg->setConfigData( proto, host, "autoLoginPass", l.password );
+            if ( usern )
+            {
+                QString macdef;
+                QMap<QString, QStringList>::ConstIterator it = l.macdef.begin();
+                for ( ; it != l.macdef.end(); ++it )
+                    macdef += it.key() + '\\' + it.data().join( "\\" ) + '\n';
+                cfg->setConfigData( proto, host, "autoLoginMacro", macdef );
+            }
+        }
+    }
+
     if ( cfg && proto.find("http", 0, false) == 0 )
     {
-        cfg->setConfigData( proto, host, "Languages", d->language );
-        cfg->setConfigData( proto, host, "Charsets", d->charsets );
         cfg->setConfigData( proto, host, "Cookies",
                             d->useCookie ? "true":"false" );
 
         // These might have already been set so check first
         // to make sure that we do not trumpt settings sent
         // by apps or end-user.
+        if ( cfg->configData(proto,host)["Languages"].isEmpty() )
+            cfg->setConfigData( proto, host, "Languages", d->language );
+        if ( cfg->configData(proto,host)["Charsets"].isEmpty() )
+            cfg->setConfigData( proto, host, "Charsets", d->charsets );
         if ( cfg->configData(proto,host)["UseCache"].isEmpty() )
             cfg->setConfigData( proto, host, "UseCache",
                                 d->useCache ? "true":"false" );
@@ -245,12 +274,15 @@ void KIO::SessionData::configDataFor( SlaveConfig* cfg, const QString& proto,
 
 void KIO::SessionData::reset()
 {
+    // Reload the password file...
+    NetRC::self()->reload();
+    
     // Get Cookie settings...
     KConfig* cfg = new KConfig("kcookiejarrc", false, false);
     cfg->setGroup( "Cookie Policy" );
     d->useCookie = cfg->readBoolEntry( "Cookies", true );
     delete cfg;
-
+    
     // Get language settings...
     QStringList languageList = KGlobal::locale()->languageList();
     QStringList::Iterator it = languageList.find( QString::fromLatin1("C") );

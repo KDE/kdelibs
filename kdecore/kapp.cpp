@@ -565,6 +565,9 @@ KApplication::KApplication( int& argc, char** argv, const QCString& rAppName,
     ASSERT (!rAppName.isEmpty());
     setName(rAppName);
 
+    // Trigger creation of locale.
+    (void) KGlobal::locale();
+
     KCmdLineArgs::initIgnore(argc, argv, rAppName.data());
     parseCommandLine( );
     init(GUIenabled);
@@ -582,6 +585,9 @@ KApplication::KApplication( bool allowStyles, bool GUIenabled ) :
        allowStyles = false;
     useStyles = allowStyles;
     setName( instanceName() );
+
+    // Trigger creation of locale.
+    (void) KGlobal::locale();
 
     parseCommandLine( );
     init(GUIenabled);
@@ -669,9 +675,6 @@ void KApplication::init(bool GUIenabled)
                   (1 << KIPC::FontChanged) | (1 << KIPC::BackgroundChanged) |
                   (1 << KIPC::ToolbarStyleChanged);
 
-  // Trigger creation of locale.
-  (void) KGlobal::locale();
-
   if (GUIenabled)
   {
     // this is important since we fork() to launch the help (Matthias)
@@ -732,8 +735,8 @@ static int my_system (const char *command) {
    if (pid == -1)
       return -1;
    if (pid == 0) {
-      setuid( getuid() ); // Make sure a set-user-id prog. is not root anymore
       setgid( getgid() );
+      setuid( getuid() ); // Make sure a set-user-id prog. is not root anymore
       const char* shell = "/bin/sh";
       execl(shell, shell, "-c", command, 0L);
       ::exit(127);

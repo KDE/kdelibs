@@ -1,3 +1,6 @@
+- Huge bug: KSimpleConfig doesn't sync up for the certificate cache.  This
+  means that stuff randomly disappears from it.  Also I suspect there is a
+  small GUI bug still.
 
 - KHTML needs a dialog to warn on an insecure post (unencrypted)
   if the user has selected to do so in kcmcrypto

@@ -58,10 +58,11 @@
 using namespace khtml;
 
 static const QChar commentStart [] = { '<','!','-','-', QChar::null };
-static const QChar scriptEnd [] = { '<','/','s','c','r','i','p','t','>', QChar::null };
-static const QChar styleEnd [] = { '<','/','s','t','y','l','e','>', QChar::null };
-static const QChar listingEnd [] = { '<','/','l','i','s','t','i','n','g','>', QChar::null };
-static const QChar textareaEnd [] = { '<','/','t','e','x','t','a','r','e','a','>', QChar::null };
+
+static const char scriptEnd [] = "</script";
+static const char listingEnd [] = "</listing";
+static const char styleEnd [] =  "</style";
+static const char textareaEnd [] = "</textarea";
 
 #define KHTML_ALLOC_QCHAR_VEC( N ) (QChar*) malloc( sizeof(QChar)*( N ) )
 #define KHTML_REALLOC_QCHAR_VEC(P, N ) (QChar*) P = realloc(p, sizeof(QChar)*( N ))
@@ -102,7 +103,7 @@ HTMLTokenizer::HTMLTokenizer(DOM::DocumentPtr *_doc, KHTMLView *_view)
     view = _view;
     buffer = 0;
     scriptCode = 0;
-    scriptCodeSize = scriptCodeMaxSize = 0;
+    scriptCodeSize = scriptCodeMaxSize = scriptCodeResync = 0;
     charsets = KGlobal::charsets();
     parser = new KHTMLParser(_view, _doc);
     cachedScript = 0;
@@ -118,7 +119,7 @@ HTMLTokenizer::HTMLTokenizer(DOM::DocumentPtr *_doc, DOM::DocumentFragmentImpl *
     view = 0;
     buffer = 0;
     scriptCode = 0;
-    scriptCodeSize = scriptCodeMaxSize = 0;
+    scriptCodeSize = scriptCodeMaxSize = scriptCodeResync = 0;
     charsets = KGlobal::charsets();
     parser = new KHTMLParser( i, _doc );
     cachedScript = 0;
@@ -146,7 +147,7 @@ void HTMLTokenizer::reset()
     if ( scriptCode )
         KHTML_DELETE_QCHAR_VEC(scriptCode);
     scriptCode = 0;
-    scriptCodeSize = scriptCodeMaxSize = 0;
+    scriptCodeSize = scriptCodeMaxSize = scriptCodeResync = 0;
 
     currToken.reset();
 }
@@ -186,7 +187,7 @@ void HTMLTokenizer::begin()
     brokenComments = false;
 }
 
-void HTMLTokenizer::addListing(DOMStringIt list)
+void HTMLTokenizer::processListing(DOMStringIt list)
 {
     bool old_pre = pre;
     // This function adds the listing 'list' as
@@ -254,240 +255,184 @@ void HTMLTokenizer::addListing(DOMStringIt list)
     }
 
     if ((pending == SpacePending) || (pending == TabPending))
-    {
         addPending();
-    }
     pending = NonePending;
 
-    processToken();
     prePos = 0;
 
     pre = old_pre;
 }
 
-void HTMLTokenizer::parseListing( DOMStringIt &src)
+void HTMLTokenizer::parseSpecial(DOMStringIt &src, bool begin)
 {
-    // Famous last words: I'm 99.9% sure.
-    assert( !Entity );
+    assert( textarea || !Entity );
+    assert( !tag );
+    assert( listing+textarea+style+script == 1 );
 
-    // We are inside a <script>, <style>, <textarea> . Look for the end tag
-    // which is either </script>, </style> , </textarea> or -->
-    // otherwise print out every received character
+    if ( begin ) {
+        if ( script )        { searchStopper = scriptEnd;   }
+        else if ( style )    { searchStopper = styleEnd;    }
+        else if ( textarea ) { searchStopper = textareaEnd; }
+        else if ( listing )  { searchStopper = listingEnd;  }
+        searchStopperLen = strlen( searchStopper );
+    }
+    if ( comment ) parseComment( src );
 
-#ifdef TOKEN_DEBUG
-    kdDebug( 6036 ) << "HTMLTokenizer::parseListing()" << endl;
-#endif
-
-    bool doScriptExec = false;
-    while ( src.length() )
-    {
-        // do we need to enlarge the buffer?
-        checkBuffer();
-
-        // Allocate memory to store the script. We will write maximal
-        // 10 characers.
+    while ( src.length() ) {
         checkScriptBuffer();
-
-        char ch = src->latin1();
-
-        if ( !escaped && !src.escaped() ) {
-            if(script && ch == '\"')
+        unsigned char ch = src->latin1();
+        if ( !scriptCodeResync && ch == '-' && scriptCodeSize >= 3 && !src.escaped() && QConstString( scriptCode+scriptCodeSize-3, 3 ).string() == "<!-" ) {
+            comment = true;
+            parseComment( src );
+            continue;
+        }
+        if ( scriptCodeResync && !tquote && ( ch == '>' ) ) {
+            ++src;
+            scriptCodeSize = scriptCodeResync-1;
+            scriptCodeResync = 0;
+            scriptCode[ scriptCodeSize ] = scriptCode[ scriptCodeSize + 1 ] = 0;
+            if ( script )
+                scriptHandler();
+            else {
+                processListing(DOMStringIt(scriptCode, scriptCodeSize));
+                processToken();
+                if ( style )         { currToken.id = ID_STYLE + ID_CLOSE_TAG; }
+                else if ( textarea ) { currToken.id = ID_TEXTAREA + ID_CLOSE_TAG; }
+                else if ( listing )  { currToken.id = ID_LISTING + ID_CLOSE_TAG; }
+                processToken();
+                style = script = style = textarea = listing = false;
+                scriptCodeSize = scriptCodeResync = 0;
+            }
+            return;
+        }
+        // possible end of tagname, lets check.
+        if ( !scriptCodeResync && !escaped && !src.escaped() && ( ch == '>' || ch == '/' || ch <= ' ' ) && ch &&
+             scriptCodeSize >= searchStopperLen &&
+             !QConstString( scriptCode+scriptCodeSize-searchStopperLen, searchStopperLen+1 ).string().find( searchStopper, 0, false )) {
+            scriptCodeResync = scriptCodeSize-searchStopperLen+1;
+            tquote = NoQuote;
+            continue;
+        }
+        if ( scriptCodeResync && !escaped ) {
+            if(ch == '\"')
                 tquote = (tquote == NoQuote) ? DoubleQuote : ((tquote == SingleQuote) ? SingleQuote : NoQuote);
-            else if(script && ch == '\'')
+            else if(ch == '\'')
                 tquote = (tquote == NoQuote) ? SingleQuote : (tquote == DoubleQuote) ? DoubleQuote : NoQuote;
-            else if (script && tquote != NoQuote && (ch == '\r' || ch == '\n'))
+            else if (tquote != NoQuote && (ch == '\r' || ch == '\n'))
                 tquote = NoQuote;
         }
-
-        if ( (!script || tquote == NoQuote) && !escaped && !src.escaped() && ( ch == '>' ) && ( searchFor[ searchCount ] == '>'))
-        {
+        escaped = ( !escaped && ch == '\\' );
+        if (!scriptCodeResync && textarea && !src.escaped() && ch == '&') {
+            QChar *scriptCodeDest = scriptCode+scriptCodeSize;
             ++src;
-            searchCount = 0;
-            scriptCode[ scriptCodeSize ] = 0;
-            scriptCode[ scriptCodeSize + 1 ] = 0;
-            if (script) {
-                if (!scriptSrc.isEmpty()) {
-                    // forget what we just got; load from src url instead
-                    cachedScript = parser->doc()->docLoader()->requestScript(scriptSrc, parser->doc()->baseURL(), scriptSrcCharset);
-                    scriptSrc="";
-                }
-                else {
-#ifdef TOKEN_DEBUG
-                    kdDebug( 6036 ) << "---START SCRIPT---" << endl;
-                    kdDebug( 6036 ) << QString(scriptCode, scriptCodeSize) << endl;
-                    kdDebug( 6036 ) << "---END SCRIPT---" << endl;
-#endif
-                    // Parse scriptCode containing <script> info
-                    doScriptExec = true;
-                }
-            }
-            else if (style)
-            {
-#ifdef TOKEN_DEBUG
-                kdDebug( 6036 ) << "---START STYLE---" << endl;
-                kdDebug( 6036 ) << QString(scriptCode, scriptCodeSize) << endl;
-                kdDebug( 6036 ) << "---END STYLE---" << endl;
-#endif
-            }
-            addListing(DOMStringIt(scriptCode, scriptCodeSize));
-
-            if(script)
-                currToken.id = ID_SCRIPT + ID_CLOSE_TAG;
-            else if(style)
-                currToken.id = ID_STYLE + ID_CLOSE_TAG;
-            else if (textarea)
-                currToken.id = ID_TEXTAREA + ID_CLOSE_TAG;
-            else
-                currToken.id = ID_LISTING + ID_CLOSE_TAG;
-            processToken();
-            QString prependingSrc;
-
-            if (cachedScript) {
-//                 qDebug( "cachedscript extern!" );
-//                 qDebug( "src: *%s*", QString( src.current(), src.length() ).latin1() );
-//                 qDebug( "pending: *%s*", pendingSrc.latin1() );
-                pendingSrc.prepend( QString(src.current(), src.length() ) );
-                _src = QString::null;
-                src = DOMStringIt(_src);
-                scriptCodeSize = 0;
-                cachedScript->ref(this);
-                // will be 0 if script was already loaded and ref() executed it
-                if (cachedScript)
-                    loadingExtScript = true;
-            }
-            else if (view && doScriptExec && javascript && !parser->skipMode()) {
-                if ( !m_executingScript )
-                    pendingSrc.prepend( QString( src.current(), src.length() ) ); // deep copy - again
-                else
-                    prependingSrc = QString( src.current(), src.length() ); // deep copy
-
-                _src = QString::null;
-                src = DOMStringIt( _src );
-                m_executingScript++;
-                script = false;
-                QString exScript( scriptCode, scriptCodeSize ); // deep copy
-                scriptCodeSize = 0;
-		view->part()->executeScript(exScript);
-                script = true;
-                m_executingScript--;
-            }
-            script = style = listing = textarea = false;
-            scriptCodeSize = 0;
-            if ( !m_executingScript && !loadingExtScript )
-                addPendingSource();
-            else if ( !prependingSrc.isEmpty() )
-                write( prependingSrc, false );
-
-
-            return; // Finished parsing script/style/listing
+            parseEntity(src,scriptCodeDest,true);
+            scriptCodeSize = scriptCodeDest-scriptCode;
         }
-        // Find out wether we see an end tag without looking at
-        // any other then the current character, since further characters
-        // may still be on their way thru the web!
-        else if ( searchCount > 0 )
-        {
-            const QChar& cmp = *src;
-            if (( !script || tquote == NoQuote ) && !escaped && !src.escaped() &&
-                searchFor[searchCount] != QChar::null && cmp.lower() == searchFor[ searchCount ] )
-            {
-                searchBuffer[ searchCount++ ] = cmp;
-                ++src;
-            }
-            // be tolerant: skip garbage before the ">", i.e "</script foo>"
-            // ### handle quotes!
-            else if ( ( !script || ( tquote == NoQuote && cmp != '>' ) || ( tquote != NoQuote ) ) &&
-                      searchFor[searchCount].latin1() == '>')
-            {
-                ++src;
-            }
-            // We were wrong => print all buffered characters and the current one;
-            else
-            {
-                searchBuffer[ searchCount ] = 0;
-                DOMStringIt pit(searchBuffer,searchCount);
-                while (pit.length()) {
-                    if (textarea && *pit == '&') {
-                        QChar *scriptCodeDest = scriptCode+scriptCodeSize;
-                        ++pit;
-                        parseEntity(pit,scriptCodeDest,true);
-                        scriptCodeSize = scriptCodeDest-scriptCode;
-                    }
-                    else {
-                        scriptCode[ scriptCodeSize++ ] = *pit;
-                        ++pit;
-                    }
-                }
-                searchCount = 0;
-            }
-        }
-        // Is this perhaps the start of the </script> or </style> tag?
-        else if ( !escaped && !src.escaped() && ( ch == '<' || ch == '-' ) )
-        {
-            searchCount = 1;
-            searchBuffer[ 0 ] = *src;
+        else {
+            scriptCode[ scriptCodeSize++ ] = *src;
             ++src;
-        }
-        else
-        {
-            if (textarea && !escaped && !src.escaped() && ch == '&') {
-                QChar *scriptCodeDest = scriptCode+scriptCodeSize;
-                ++src;
-                parseEntity(src,scriptCodeDest,true);
-                scriptCodeSize = scriptCodeDest-scriptCode;
-            }
-            else {
-                scriptCode[ scriptCodeSize++ ] = *src;
-                if ( script && !escaped && ch == '\\' )
-                    escaped = true;
-                else
-                    escaped = false;
-
-                ++src;
-            }
         }
     }
 }
 
-void HTMLTokenizer::parseScript(DOMStringIt &src)
+void HTMLTokenizer::scriptHandler()
 {
-    parseListing(src);
+    // We are inside a <script>
+    bool doScriptExec = false;
+    if (!scriptSrc.isEmpty()) {
+        // forget what we just got; load from src url instead
+        if ( !parser->skipMode() )
+            cachedScript = parser->doc()->docLoader()->requestScript(scriptSrc, parser->doc()->baseURL(), scriptSrcCharset);
+        scriptSrc="";
+    }
+    else {
+#ifdef TOKEN_DEBUG
+        kdDebug( 6036 ) << "---START SCRIPT---" << endl;
+        kdDebug( 6036 ) << QString(scriptCode, scriptCodeSize) << endl;
+        kdDebug( 6036 ) << "---END SCRIPT---" << endl;
+#endif
+        // Parse scriptCode containing <script> info
+        doScriptExec = true;
+    }
+    processListing(DOMStringIt(scriptCode, scriptCodeSize));
+    QString exScript( buffer, dest-buffer );
+    processToken();
+    currToken.id = ID_SCRIPT + ID_CLOSE_TAG;
+    processToken();
+
+    QString prependingSrc;
+    if ( !parser->skipMode() ) {
+        if (cachedScript) {
+//                 qDebug( "cachedscript extern!" );
+//                 qDebug( "src: *%s*", QString( src.current(), src.length() ).latin1() );
+//                 qDebug( "pending: *%s*", pendingSrc.latin1() );
+            pendingSrc.prepend( QString(src.current(), src.length() ) );
+            _src = QString::null;
+            src = DOMStringIt(_src);
+            scriptCodeSize = scriptCodeResync = 0;
+            cachedScript->ref(this);
+            // will be 0 if script was already loaded and ref() executed it
+            if (cachedScript)
+                loadingExtScript = true;
+        }
+        else if (view && doScriptExec && javascript && !parser->skipMode()) {
+            if ( !m_executingScript )
+                pendingSrc.prepend( QString( src.current(), src.length() ) ); // deep copy - again
+            else
+                prependingSrc = QString( src.current(), src.length() ); // deep copy
+
+            _src = QString::null;
+            src = DOMStringIt( _src );
+            scriptCodeSize = scriptCodeResync = 0;
+            scriptExecution( exScript );
+        }
+    }
+    script = false;
+    scriptCodeSize = scriptCodeResync = 0;
+    if ( !parser->skipMode() ) {
+        if ( !m_executingScript && !loadingExtScript )
+            addPendingSource();
+        else if ( !prependingSrc.isEmpty() )
+            write( prependingSrc, false );
+    }
 }
-void HTMLTokenizer::parseStyle(DOMStringIt &src)
+
+void HTMLTokenizer::scriptExecution( const QString& str )
 {
-    parseListing(src);
+    bool oldscript = script;
+    m_executingScript++;
+    script = false;
+    view->part()->executeScript(str);
+    m_executingScript--;
+    script = oldscript;
 }
 
 void HTMLTokenizer::parseComment(DOMStringIt &src)
 {
-#ifdef TOKEN_DEBUG
-    kdDebug( 6036 ) << "HTMLTokenizer::parseComment()" << endl;
-#endif
-
     checkScriptBuffer(src.length());
-    while ( src.length() )
-    {
+    while ( src.length() ) {
+        scriptCode[ scriptCodeSize++ ] = *src;
         if (src->unicode() == '>' &&
-            ( brokenComments ||
-              ( scriptCodeSize >= 2 && scriptCode[scriptCodeSize-2] == '-' &&
-                scriptCode[scriptCodeSize-1] == '-' ) ) )
-        {
+            ( ( brokenComments && !( script || style || textarea || listing ) ) ||
+              ( scriptCodeSize > 2 && scriptCode[scriptCodeSize-3] == '-' &&
+                scriptCode[scriptCodeSize-2] == '-' ) ) ) {
             ++src;
+            if ( !( script || listing || textarea || style) ) {
 #ifdef COMMENTS_IN_DOM
-            checkScriptBuffer();
-            scriptCode[ scriptCodeSize ] = 0;
-            scriptCode[ scriptCodeSize + 1 ] = 0;
-            currToken.id = ID_COMMENT;
-            addListing(DOMStringIt(scriptCode, scriptCodeSize - 2));
-            processToken();
-            currToken.id = ID_COMMENT + ID_CLOSE_TAG;
-            processToken();
+                checkScriptBuffer();
+                scriptCode[ scriptCodeSize ] = 0;
+                scriptCode[ scriptCodeSize + 1 ] = 0;
+                currToken.id = ID_COMMENT;
+                processListing(DOMStringIt(scriptCode, scriptCodeSize - 2));
+                processToken();
+                currToken.id = ID_COMMENT + ID_CLOSE_TAG;
+                processToken();
 #endif
+                scriptCodeSize = 0;
+            }
             comment = false;
-            scriptCodeSize = 0;
             return; // Finished parsing comment
         }
-
-        scriptCode[ scriptCodeSize++ ] = *src;
         ++src;
     }
 }
@@ -497,7 +442,7 @@ void HTMLTokenizer::parseProcessingInstruction(DOMStringIt &src)
     char oldchar = 0;
     while ( src.length() )
     {
-        char chbegin = src->latin1();
+        unsigned char chbegin = src->latin1();
         if(chbegin == '\'') {
             tquote = tquote == SingleQuote ? NoQuote : SingleQuote;
         }
@@ -528,7 +473,7 @@ void HTMLTokenizer::parseText(DOMStringIt &src)
         checkBuffer();
 
         // ascii is okay because we only do ascii comparisons
-        char chbegin = src->latin1();
+        unsigned char chbegin = src->latin1();
 
         if (skipLF && ( chbegin != '\n' ))
         {
@@ -758,7 +703,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             unsigned int ll = kMin(src.length(), CBUFLEN-cBufferPos);
             while(ll--) {
                 ushort curchar = *src;
-                if(curchar <= ' ' || curchar == '>') {
+                if(curchar <= ' ' || curchar == '>' ) {
                     finish = true;
                     break;
                 }
@@ -822,7 +767,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             while(src.length()) {
                 curchar = *src;
                 if(curchar > ' ') {
-                    if(curchar == '>')
+                    if(curchar == '>' || curchar == '/')
                         tag = SearchEnd;
                     else if(atespace && (curchar == '\'' || curchar == '"'))
                     {
@@ -889,6 +834,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 qDebug("SearchEqual");
 #endif
             ushort curchar;
+            bool atespace = false;
             while(src.length()) {
                 curchar = src->unicode();
                 if(curchar > ' ') {
@@ -898,6 +844,12 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 #endif
                         tag = SearchValue;
                         ++src;
+                    }
+                    else if(atespace && (curchar == '\'' || curchar == '"'))
+                    {
+                        tag = SearchValue;
+                        *dest++ = 0;
+                        attrName = QString::null;
                     }
                     else {
                         AttrImpl* a = 0;
@@ -916,6 +868,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     }
                     break;
                 }
+                atespace = true;
                 ++src;
             }
             break;
@@ -1011,7 +964,8 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         parseEntity(src, dest, true);
                         break;
                     }
-                    if ( curchar <= ' ' || curchar == '>')
+                    // '/' does not delimit in IE!
+                    if ( curchar <= ' ' || curchar == '>' )
                     {
                         // no quotes. Every space means end of value
                         AttrImpl* a;
@@ -1068,9 +1022,11 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 scriptSrc = scriptSrcCharset = "";
                 if ( currToken.attrs && !parser->doc()->view()->part()->onlyLocalReferences()) {
                     if ( ( a = currToken.attrs->getIdItem( ATTR_SRC ) ) )
-                        scriptSrc = khtml::parseURL( a->value() ).string();
+                        scriptSrc = parser->doc()->view()->part()->completeURL(khtml::parseURL( a->value() ).string() ).url();
                     if ( ( a = currToken.attrs->getIdItem( ATTR_CHARSET ) ) )
                         scriptSrcCharset = a->value().string().stripWhiteSpace();
+                    if ( scriptSrcCharset.isEmpty() )
+                        scriptSrcCharset = parser->doc()->view()->part()->encoding();
                     a = currToken.attrs->getIdItem( ATTR_LANGUAGE );
                 }
                 javascript = true;
@@ -1112,44 +1068,20 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 pre = beginTag;
                 break;
             case ID_TEXTAREA:
-                if(beginTag) {
-                    listing = true;
-                    textarea = true;
-                    searchCount = 0;
-                    searchFor = textareaEnd;
-                    parseListing(src);
-                }
+                if(beginTag)
+                    parseSpecial(src, textarea = true );
                 break;
             case ID_SCRIPT:
-                if (beginTag) {
-#if defined(TOKEN_DEBUG) && TOKEN_DEBUG > 1
-                    kdDebug( 6036 ) << "start of script, token->id = " << currToken.id << endl;
-#endif
-                    script = true;
-                    searchCount = 0;
-                    searchFor = scriptEnd;
-                    tquote = NoQuote;
-                    parseScript(src);
-#if defined(TOKEN_DEBUG) && TOKEN_DEBUG > 1
-                    kdDebug( 6036 ) << "end of script" << endl;
-#endif
-                }
+                if (beginTag)
+                    parseSpecial(src, script = true);
                 break;
             case ID_STYLE:
-                if (beginTag) {
-                    style = true;
-                    searchCount = 0;
-                    searchFor = styleEnd;
-                    parseStyle(src);
-                }
+                if (beginTag)
+                    parseSpecial(src, style = true);
                 break;
             case ID_LISTING:
-                if (beginTag) {
-                    listing = true;
-                    searchCount = 0;
-                    searchFor = listingEnd;
-                    parseListing(src);
-                }
+                if (beginTag)
+                    parseSpecial(src, listing = true);
                 break;
             case ID_SELECT:
                 select = beginTag;
@@ -1230,7 +1162,8 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
     if ( !buffer )
         return;
 
-    if ( loadingExtScript || ( m_executingScript && appendData ) ) {
+    if ( ( m_executingScript && appendData ) ||
+         ( !m_executingScript && loadingExtScript ) ) {
         // don't parse; we will do this later
         pendingSrc += str;
         return;
@@ -1253,14 +1186,16 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
     if ( src.length() ) {
         if (plaintext)
             parseText(src);
+        else if (script)
+            parseSpecial(src, false);
+        else if (style)
+            parseSpecial(src, false);
+        else if (listing)
+            parseSpecial(src, false);
+        else if (textarea)
+            parseSpecial(src, false);
         else if (comment)
             parseComment(src);
-        else if (script)
-            parseScript(src);
-        else if (style)
-            parseStyle(src);
-        else if (listing)
-            parseListing(src);
         else if (processingInstruction)
             parseProcessingInstruction(src);
         else if (tag)
@@ -1280,6 +1215,9 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
         if (skipLF) {
             skipLF = false;
             ++src;
+        }
+        else if ( Entity ) {
+            parseEntity( src, dest );
         }
         else if ( plaintext ) {
             parseText( src );
@@ -1459,7 +1397,9 @@ void HTMLTokenizer::end()
         return;
     }
 
-    processToken();
+    // parseTag is using the buffer for different matters
+    if ( !tag )
+        processToken();
 
     if(buffer)
         KHTML_DELETE_QCHAR_VEC(buffer);
@@ -1468,7 +1408,7 @@ void HTMLTokenizer::end()
         KHTML_DELETE_QCHAR_VEC(scriptCode);
 
     scriptCode = 0;
-    scriptCodeSize = scriptCodeMaxSize = 0;
+    scriptCodeSize = scriptCodeMaxSize = scriptCodeResync = 0;
     buffer = 0;
     emit finishedParsing();
 }
@@ -1483,15 +1423,23 @@ void HTMLTokenizer::finish()
         checkScriptBuffer();
         scriptCode[ scriptCodeSize ] = 0;
         scriptCode[ scriptCodeSize + 1 ] = 0;
-        int pos = QConstString(scriptCode, scriptCodeSize).string().find('>');
+        int pos;
         QString food;
-        food.setUnicode(scriptCode+pos+1, scriptCodeSize-pos-1); // deep copy
+        if ( script || style || textarea || listing ) {
+            pos = QConstString( scriptCode, scriptCodeSize ).string().find( searchStopper, 0, false );
+            if ( pos >= 0 )
+                food.setUnicode( scriptCode+pos, scriptCodeSize-pos ); // deep copy
+        }
+        else {
+            pos = QConstString(scriptCode, scriptCodeSize).string().find('>');
+            food.setUnicode(scriptCode+pos+1, scriptCodeSize-pos-1); // deep copy
+        }
         KHTML_DELETE_QCHAR_VEC(scriptCode);
         scriptCode = 0;
-        scriptCodeSize = scriptCodeMaxSize = 0;
-        script = style = listing = comment = textarea = false;
-        scriptCodeSize = 0;
-        write(food, true);
+        scriptCodeSize = scriptCodeMaxSize = scriptCodeResync = 0;
+        comment = false;
+        if ( !food.isEmpty() )
+            write(food, true);
     }
     // this indicates we will not recieve any more data... but if we are waiting on
     // an external script to load, we can't finish parsing until that is done
@@ -1505,8 +1453,11 @@ void HTMLTokenizer::processToken()
     if ( dest > buffer )
     {
 #ifdef TOKEN_DEBUG
-        if(currToken.id && currToken.id != ID_COMMENT)
+        if(currToken.id && currToken.id != ID_COMMENT) {
+            qDebug( "unexpected token id: %d, str: *%s*", currToken.id,QConstString( buffer,dest-buffer ).string().latin1() );
             assert(0);
+        }
+
 #endif
         if ( currToken.complexText ) {
             // ### we do too much QString copying here, but better here than in RenderText...
@@ -1601,12 +1552,7 @@ void HTMLTokenizer::notifyFinished(CachedObject *finishedObj)
 //         pendingSrc.prepend( QString( src.current(), src.length() ) ); // deep copy - again
         _src = QString::null;
         src = DOMStringIt( _src );
-        bool oldscript = script;
-        script = false;
-        m_executingScript++;
-        view->part()->executeScript(scriptSource.string());
-        m_executingScript--;
-        script = oldscript;
+        scriptExecution( scriptSource.string() );
         // 'script' is true when we are called synchronously from
         // parseScript(). In that case parseScript() will take care
         // of 'scriptOutput'.

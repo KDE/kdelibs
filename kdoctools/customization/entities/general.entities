@@ -28,7 +28,7 @@
       "-//KDE//ENTITIES DocBook XML General Entity Declarations V1.0//EN"
 
     This file contains what dbgenent.mod should contain and is read
-    after all other files just like dbgenent.mod.
+    after all other files just like dbgenent.mod should be.
 
 -->
 
@@ -88,6 +88,13 @@
 <!ENTITY % FDLFCT "IGNORE">
 <!ENTITY % FDLBCT "IGNORE">
 
+<!-- KDE web addresses
+     should probably go below, but they are not meant to be marked up
+     at all, so I put them separately -->
+<!ENTITY kde-http "http://www.kde.org/">
+<!ENTITY kde-ftp "ftp://ftp.kde.org/pub/kde/">
+
+
 <!-- These are the language-independent entities.  They can be (more
      or less) freely extended.  Keep this list sorted and sensible.  
      Make sure you always add full markup to the text.
@@ -106,7 +113,6 @@
 
 <!ENTITY AIX	"<trademark>AIX</trademark>">
 <!ENTITY aktion	"<application>aKtion</application>">
-<!ENTITY Alt	"<keycap>Alt</keycap>">
 <!ENTITY amor	"<application>AMOR</application>">
 <!ENTITY ark    "<application>Ark</application>">
 <!ENTITY arts	"<application>aRts</application>">
@@ -118,18 +124,17 @@
 <!ENTITY artsshell "<application>artsshell</application>">
 <!ENTITY artswrapper "<application>artswrapper</application>">
 <!ENTITY ATAPI	"<acronym>ATAPI</acronym>">
-<!ENTITY Backspace	"<keycap>Backspace</keycap>">
 <!ENTITY brahms "<application>Brahms</application>">
 <!ENTITY CD	"<acronym>CD</acronym>">
 <!ENTITY CDE	"<acronym>CDE</acronym>">
 <!ENTITY CD-ROM	"<acronym>CD-ROM</acronym>">
+<!ENTITY cervisia	"<application>Cervisia</application>">
 <!ENTITY CSS	"<trademark>CSS</trademark>">
-<!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
 <!ENTITY drkonqi	"<application>DrKonqi</application>">
+<!ENTITY DCOP	"<acronym>DCOP</acronym>">
 <!ENTITY DVI	"<acronym>DVI</acronym>">
 <!ENTITY ELF	"<acronym>ELF</acronym>">
 <!ENTITY Emacs	"<application>Emacs</application>">
-<!ENTITY Esc	"<keycap>Esc</keycap>">
 <!ENTITY FTP	"<acronym>FTP</acronym>">
 <!ENTITY gcc	"<command>gcc</command>">
 <!ENTITY GIF	"<acronym>GIF</acronym>">
@@ -148,7 +153,11 @@
 <!ENTITY Jini	"<trademark>Jini</trademark>">
 <!ENTITY kab2	"<application>Kab2</application>">
 <!ENTITY kabalone	"<application>KAbalone</application>">
+<!ENTITY kaboodle	"<application>Kaboodle</application>">
 <!ENTITY kaddressbook "<application>KAddressBook</application>">
+<!ENTITY kalarm	"<application>KAlarm</application>">
+<!ENTITY kalarmd "<application>KAlarmd</application>">
+<!ENTITY kandy        "<application>Kandy</application>">
 <!ENTITY kappfinder	"<application>Kappfinder</application>">
 <!ENTITY karm	"<application>KArm</application>">
 <!ENTITY kasteroids	"<application>KAsteroids</application>">
@@ -163,6 +172,7 @@
 <!ENTITY kchart "<application>KChart</application>">
 <!ENTITY kcontrol "<application>KControl</application>">
 <!ENTITY kcron	"<application>Kcron</application>">
+<!ENTITY kdat	"<application>Kdat</application>">
 <!ENTITY kde	"<acronym>KDE</acronym>">
 <!ENTITY kdebugdialog	"<application>KDebugDialog</application>">
 <!ENTITY kdepasswd	"<application>kdepasswd</application>">
@@ -174,6 +184,7 @@
 <!ENTITY kdm	"<application>kdm</application>">
 <!ENTITY kdvi	"<application>kdvi</application>">
 <!ENTITY kedit	"<application>KEdit</application>">
+<!ENTITY keduca "<application>KEduca</application>">
 <!ENTITY keystone	"<application>Keystone</application>">
 <!ENTITY kfax	"<application>kfax</application>">
 <!ENTITY kfaxview "<application>Kfaxview</application>">
@@ -182,6 +193,8 @@
 <!ENTITY kformula "<application>KFormula</application>">
 <!ENTITY kfouleggs "<application>KFoulEggs</application>">
 <!ENTITY kfract	"<application>KFract</application>">
+<!ENTITY khangman "<application>KHangMan</application>">
+<!ENTITY kgeo	"<application>KGeo</application>">
 <!ENTITY kghostview	"<application>Kghostview</application>">
 <!ENTITY khelpcenter	"<application>KHelpcenter</application>">
 <!ENTITY khexedit	"<application>KHexEdit</application>">
@@ -194,6 +207,8 @@
 <!ENTITY kjots	"<application>KJots</application>">
 <!ENTITY kjumpingcube	"<application>KJumpingCube</application>">
 <!ENTITY klaptopdaemon	"<application>klaptopdaemon</application>">
+<!ENTITY klatin		"<application>KLatin</application>">
+<!ENTITY klettres	"<application>KLettres</application>">
 <!ENTITY klines "<application>Kolor Lines</application>">
 <!ENTITY klipper	"<application>Klipper</application>">
 <!ENTITY kljettool	"<application>KLjettool</application>">
@@ -202,6 +217,7 @@
 <!ENTITY kmahjongg	"<application>KMahjongg</application>">
 <!ENTITY kmail	"<application>KMail</application>">
 <!ENTITY kmenuedit	"<application>kmenuedit</application>">
+<!ENTITY kmessedwords	"<application>KMessedWords</application>">
 <!ENTITY kmid	"<application>kmid</application>">
 <!ENTITY kmidi	"<application>KMidi</application>">
 <!ENTITY kmines	"<application>KMines</application>">
@@ -212,6 +228,8 @@
 <!ENTITY knotes	"<application>KNotes</application>">
 <!ENTITY kodo	"<application>KOdometer</application>">
 <!ENTITY koffice	"<application>KOffice</application>">
+<!ENTITY kompare	"<application>Kompare</application>">
+<!ENTITY koncd	"<application>KOnCD</application>">
 <!ENTITY konqueror	"<application>Konqueror</application>">
 <!ENTITY konquest	"<application>Konquest</application>">
 <!ENTITY konsole	"<application>Konsole</application>">
@@ -249,6 +267,7 @@
 <!ENTITY kspaceduel	"<application>KSpaceDuel</application>">
 <!ENTITY kspell	"<application>KSpell</application>">
 <!ENTITY kspread "<application>KSpread</application>">
+<!ENTITY kstars  "<application>KStars</application>">
 <!ENTITY kstart	"<application>kstart</application>">
 <!ENTITY ksysctrl	"<application>KSysctrl</application>">
 <!ENTITY ksysguard	"<application>KSysguard</application>">
@@ -258,13 +277,14 @@
 <!ENTITY kteatime "<application>KTeaTime</application>">
 <!ENTITY ktimemon "<application>KTimemon</application>">
 <!ENTITY ktip	"<application>Ktip</application>">
+<!ENTITY ktouch "<application>KTouch</application>">
 <!ENTITY ktron	"<application>KTron</application>">
 <!ENTITY ktuberling	"<application>KTuberling</application>">
 <!ENTITY kugar "<application>Kugar</application>">
 <!ENTITY kuser	"<application>Kuser</application>">
 <!ENTITY kview	"<application>KView</application>">
 <!ENTITY kviewshell "<application>KViewshell</application>">
-<!ENTITY kvt	"<application>kvt</application>">
+<!ENTITY kvoctrain	"<application>kvoctrain</application>">
 <!ENTITY kworldclock	"<application>KWorldClock</application>">
 <!ENTITY kword "<application>KWord</application>">
 <!ENTITY kwin	"<application>KWin</application>">
@@ -272,6 +292,7 @@
 <!ENTITY kwrite	"<application>KWrite</application>">
 <!ENTITY kwuftpd	"<application>kwuftpd</application>">
 <!ENTITY LaserJet	'<trademark class="registered">LaserJet</trademark>'>
+<!ENTITY lisa	"<application>Lisa</application>">
 <!ENTITY Linux	'<trademark class="registered">Linux</trademark>'>
 <!ENTITY Linux-Mandrake	"<trademark>Linux-Mandrake</trademark>">
 <!ENTITY LinuxPPC	"<trademark>LinuxPPC</trademark>">
@@ -284,27 +305,30 @@
 <!ENTITY Motif	'<trademark class="registered">Motif</trademark>'>
 <!ENTITY MRU	"<acronym>MRU</acronym>">
 <!ENTITY MTU	"<acronym>MTU</acronym>">
+<!ENTITY MusiXTeX	"<application>MusiXTeX</application>">
 <!ENTITY Netscape	'<trademark class="registered">Netscape</trademark>'>
 <!ENTITY NeXTSTEP	"<trademark>NeXTSTEP</trademark>">
 <!ENTITY noatun "<application>Noatun</application>">
-<!ENTITY pixie	"<application>Pixie</application>">
 <!ENTITY PalmOS	'<trademark class="registered">Palm OS</trademark>'>
 <!ENTITY PalmPilot      "<productname><trademark>PalmPilot</trademark></productname>">
+<!ENTITY PMX	"<application>PMX</application>"><!-- acronym too? -->
 <!ENTITY PostScript	'<trademark class="registered">PostScript</trademark>'>
 <!ENTITY PPP	"<acronym>PPP</acronym>">
 <!ENTITY quanta	"<application>Quanta</application>">
 <!ENTITY quantaplus	"<application>Quanta Plus</application>">
 <!ENTITY Qt	"<trademark>Qt</trademark>">
 <!ENTITY RedHat	'<trademark class="registered">Red Hat</trademark>'>
+<!ENTITY reslisa "<application>ResLisa</application>">
 <!ENTITY Sendmail	'<application><trademark class="registered">sendmail</trademark></application>'>
-<!ENTITY Shift	"<keycap>Shift</keycap>">
-<!ENTITY SMTP	"<acronym>SMTP<acronym>">
+<!ENTITY SMTP	"<acronym>SMTP</acronym>">
 <!ENTITY SGI	"<trademark>SGI</trademark>">
 <!ENTITY Solaris	"<trademark>Solaris</trademark>">
 <!ENTITY ThreeCom	'<trademark class="registered">3Com</trademark>'>
+<!ENTITY tkmidi	"<application>tkmidi</application>">
 <!ENTITY TrueType	'<trademark class="registered">TrueType</trademark>'>
 <!ENTITY UNIX	'<trademark class="registered">UNIX</trademark>'>
 <!ENTITY URL	"<acronym>URL</acronym>">
+<!ENTITY URI	"<acronym>URI</acronym>">
 <!ENTITY Visor	"<trademark>Visor</trademark>">
 <!ENTITY windowmaker	"<application>Window Maker</application>">
 <!ENTITY Windows	'<trademark class="registered">Windows</trademark>'>
@@ -317,11 +341,20 @@
 
 <!-- Obsolete entities -->
 <!ENTITY kab	"<application>Kab</application>">
-<!ENTITY kdat	"<application>Kdat</application>">
 <!ENTITY kfm	"<application>KFM</application>">
 <!ENTITY killustrator "<application>Kontour</application>">
 <!ENTITY ktop	"<application>KTop</application>">
+<!ENTITY kvt	"<application>KVT</application>">
 <!ENTITY kwm	"<application>kwm</application>">
 <!ENTITY kwmpager	"<application>kwmpager</application>">
 <!ENTITY kworldwatch  "<application>KWorldClock</application>">
+<!ENTITY pixie	"<application>Pixie</application>">
 <!ENTITY X-Windows	'<trademark class="registered">X Window System</trademark>'> 
+
+<!-- to be localised -->
+<!-- do NOT remove these without a version number change in the fpi! -->
+<!ENTITY Alt	"<keycap>Alt</keycap>">
+<!ENTITY Backspace	"<keycap>Backspace</keycap>">
+<!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
+<!ENTITY Esc	"<keycap>Esc</keycap>">
+<!ENTITY Shift	"<keycap>Shift</keycap>">

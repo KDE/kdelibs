@@ -220,7 +220,9 @@ void KDirOperator::setPreviewWidget(const QWidget *w)
     delete myPreview;
     myPreview = w;
 
-    myActionCollection->action( "preview" )->setEnabled( w != 0L );
+    KToggleAction *preview = static_cast<KToggleAction*>(myActionCollection->action("preview"));
+    preview->setEnabled( w != 0L );
+    preview->setChecked( w != 0L );
     setView( static_cast<KFile::FileView>(viewKind) );
 }
 
@@ -982,6 +984,7 @@ void KDirOperator::insertNewFiles(const KFileItemList &newone)
     fileView->addItemList( newone );
     emit updateInformation(fileView->numDirs(), fileView->numFiles());
 
+    
     KFileItem *item;
     KFileItemListIterator it( newone );
     while ( (item = it.current()) ) {
@@ -999,6 +1002,7 @@ void KDirOperator::insertNewFiles(const KFileItemList &newone)
 
     if ( !pendingMimeTypes.isEmpty() )
         QTimer::singleShot(0, this, SLOT(readNextMimeType()));
+
     QTimer::singleShot(200, this, SLOT(resetCursor()));
 }
 

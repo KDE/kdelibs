@@ -24,6 +24,7 @@
 #include <qapplication.h>
 #include <qwmatrix.h>
 #include <qtooltip.h>
+#include <qstyle.h>
 
 #ifndef NO_KDE2
  #include <kdebug.h>
@@ -883,13 +884,21 @@ const QColor& KDockTabCtl::tabTextColor( QWidget* widget )
 
 KDockTabBar::KDockTabBar( QWidget * parent, const char * name )
 :QWidget( parent, name )
+  ,up_xpm(0L)
+  ,down_xpm(0L)
+  ,left_xpm(0L)
+  ,right_xpm(0L)
 {
   /* Set up bitmaps */
   left_xpm = new QPixmap( 16, 16 );
   QPainter paint;
   paint.begin(left_xpm);
   paint.fillRect (0,0,16,16, QBrush (backgroundColor()));
+#if QT_VERSION < 300
   style().drawArrow(&paint, LeftArrow, false, 0 , 0 ,16, 16, colorGroup(), true);
+#else
+  style().drawPrimitive(QStyle::PE_ArrowLeft, &paint, QRect(0, 0, 16, 16), colorGroup());
+#endif
   paint.end();
 
   QWMatrix m;
@@ -932,6 +941,10 @@ KDockTabBar::KDockTabBar( QWidget * parent, const char * name )
 KDockTabBar::~KDockTabBar()
 {
   delete mainData;
+  delete left_xpm;
+  delete right_xpm;
+  delete down_xpm;
+  delete up_xpm;
 }
 
 void KDockTabBar::paintEvent(QPaintEvent *)

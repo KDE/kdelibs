@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Service
+X-KDE-ModuleType=Library
+X-KDE-Library=kssld
+X-KDE-FactoryName=kssld
+Name=KSSL Daemon Module
+Comment=KSSL Daemon Module for KDED

@@ -720,16 +720,24 @@ short RenderObject::getVerticalPosition( bool firstLine ) const
 	} else if ( parent() && parent()->childrenInline() ) {
 	    vpos = parent()->verticalPositionHint( firstLine );
 	    // don't allow elements nested inside text-top to have a different valignment.
-	    if ( va == BASELINE || vpos == PositionTop || vpos == PositionBottom )
+	    if ( va == BASELINE || vpos == PositionBottom )
 		return vpos;
 
+            if ( vpos == PositionTop )
+                vpos = 0;
+
 	    QFont f = parent()->font( firstLine );
+            int fontheight = parent()->lineHeight( firstLine );
+            int fontsize = f.pixelSize();
+            int halfleading = ( fontheight - fontsize ) / 2;
+
 	    if ( va == SUB )
-		vpos += f.pixelSize()/5 + 1;
+		vpos += fontsize/5 + 1;
 	    else if ( va == SUPER )
-		vpos -= f.pixelSize()/3 + 1;
+		vpos -= fontsize/3 + 1;
 	    else if ( va == TEXT_TOP ) {
-		vpos += -QFontMetrics(f).ascent() + baselinePosition( firstLine );
+                vpos += baselinePosition( firstLine ) - parent()->baselinePosition( firstLine ) +
+                        halfleading;
 	    } else if ( va == MIDDLE ) {
 		QRect b = QFontMetrics(f).boundingRect('x');
 		vpos += -b.height()/2 - lineHeight( firstLine )/2 + baselinePosition( firstLine );
@@ -746,16 +754,30 @@ short RenderObject::getVerticalPosition( bool firstLine ) const
 
 int RenderObject::lineHeight( bool firstLine ) const
 {
-    // is this method ever called?
-    //assert( 0 );
+    Length lh;
+    if( firstLine && hasFirstLine() ) {
+	RenderStyle *pseudoStyle  = style()->getPseudoStyle(RenderStyle::FIRST_LINE);
+	if ( pseudoStyle )
+            lh = pseudoStyle->lineHeight();
+    }
+    else
+        lh = style()->lineHeight();
 
-    // ### optimise and don't ignore :first-line
-    return style()->lineHeight().width( QFontMetrics( font( firstLine ) ).height() );
+    // its "unset", choose nice default
+    if ( lh.value < 0 )
+        return QFontMetrics( style()->font() ).height();
+
+    if ( lh.isPercent() )
+        return lh.minWidth( style()->font().pixelSize() );
+
+    // its fixed
+    return lh.value;
 }
 
 short RenderObject::baselinePosition( bool firstLine ) const
 {
-    return isInline() ? QFontMetrics(font(firstLine)).ascent() : contentHeight();
+    QFont f = font( firstLine );
+    return QFontMetrics( f ).ascent() + ( lineHeight( firstLine ) - QFontMetrics( f ).height() ) / 2;
 }
 
 QFont RenderObject::font(bool firstLine) const

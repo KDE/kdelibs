@@ -12,6 +12,7 @@
 <!ENTITY cad     "c'est-à-dire">
 <!ENTITY cdrom	'<hardware>lecteur de CD-ROM</hardware>'>
 <!ENTITY dpi	'<acronym>dpi</acronym>'>
+<!ENTITY Esc  '<keycap>Échap</keycap>'>
 <!ENTITY etc    "<abbrev>etc.</abbrev>">
 <!ENTITY FAQ	'<acronym>FAQ</acronym>'>
 <!ENTITY kcontrol	'<application>Centre de Configuration de &kde;</application>'>
@@ -19,3 +20,4 @@
 <!ENTITY khelpcenter	'<application>Aide centralisée de &kde;</application>'>
 <!ENTITY pex    "par exemple">
 <!ENTITY SE     "système d'exploitation"> <!-- <acronym>SE</acronym> -->
+<!ENTITY Shift  '<keycap>Maj</keycap>'>

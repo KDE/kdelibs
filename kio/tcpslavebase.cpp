@@ -58,6 +58,8 @@ using namespace KIO;
 class TCPSlaveBase::TcpSlaveBasePrivate
 {
 public:
+  TcpSlaveBasePrivate() : militantSSL(false) {}
+  ~TcpSlaveBasePrivate() {}
   KSSL *kssl;
   bool usingTLS;
   KSSLCertificateCache *cc;
@@ -71,6 +73,8 @@ public:
     bool block;
     bool useSSLTunneling;
     bool needSSLHandShake;
+
+  bool militantSSL;
 };
 
 
@@ -314,11 +318,18 @@ bool TCPSlaveBase::InitializeSSL()
 
 void TCPSlaveBase::CleanSSL()
 {
-    delete d->cc;
-
-    if (m_bIsSSL) {
-        delete d->kssl;
+    if (d->cc) {
+        delete d->cc;
+        d->cc = NULL;
     }
+
+    if (m_bIsSSL || d->usingTLS) {
+        delete d->kssl;
+	d->kssl = NULL;
+        d->usingTLS = false;
+        setMetaData("ssl_in_use", "FALSE");
+    }
+    d->militantSSL = false;
 }
 
 bool TCPSlaveBase::AtEOF()
@@ -334,6 +345,7 @@ int TCPSlaveBase::startTLS()
     d->kssl = new KSSL(false);
     if (!d->kssl->TLSInit()) {
         delete d->kssl;
+	d->kssl = NULL;
         return -1;
     }
 
@@ -342,6 +354,7 @@ int TCPSlaveBase::startTLS()
     int rc = d->kssl->connect(m_iSock);
     if (rc < 0) {
         delete d->kssl;
+	d->kssl = NULL;
         return -2;
     }
 
@@ -352,6 +365,7 @@ int TCPSlaveBase::startTLS()
         setMetaData("ssl_in_use", "FALSE");
         d->usingTLS = false;
         delete d->kssl;
+	d->kssl = NULL;
         return -3;
     }
 
@@ -361,8 +375,14 @@ int TCPSlaveBase::startTLS()
 
 void TCPSlaveBase::stopTLS()
 {
+    if (d->cc) {
+       delete d->cc;
+       d->cc = NULL;
+    }
+
     if (d->usingTLS) {
         delete d->kssl;
+	d->kssl = NULL;
         d->usingTLS = false;
         setMetaData("ssl_in_use", "FALSE");
     }
@@ -499,7 +519,7 @@ KSSLCertificateHome::KSSLAuthAction aa;
 
   // We're almost committed.  If we can read the cert, we'll send it now.
   KSSLPKCS12 *pkcs = KSSLCertificateHome::getCertificateByName(certname);
-  if (!pkcs) {           // We need the password
+  if (!pkcs && KSSLCertificateHome::hasCertificateByName(certname)) {           // We need the password
      do {
         QString pass;
         QByteArray authdata, authval;
@@ -512,6 +532,15 @@ KSSLCertificateHome::KSSLAuthAction aa;
         ai.username = certname;
         ai.keepPassword = false;
         qds << ai;
+
+        if (!d->dcc) {
+           d->dcc = new DCOPClient;
+           d->dcc->attach();
+           if (!d->dcc->isApplicationRegistered("kio_uiserver")) {
+              KApplication::startServiceByDesktopPath("kio_uiserver.desktop",
+                                                      QStringList() );
+           }
+        }
 
         bool rc = d->dcc->call("kio_uiserver", "UIServer",
                                    "openPassDlg(KIO::AuthInfo)",
@@ -577,6 +606,12 @@ int TCPSlaveBase::verifyCertificate()
     QString theurl = QString(m_sServiceName)+"://"+d->host+":"+QString::number(m_iPort);
     bool _IPmatchesCN = false;
 
+
+    if (!hasMetaData("ssl_militant") || metaData("ssl_militant") == "FALSE")
+		d->militantSSL = false;
+    else if (metaData("ssl_militant") == "TRUE")
+		d->militantSSL = true;
+
     if (!d->cc) d->cc = new KSSLCertificateCache;
 
     KSSLCertificate& pc = d->kssl->peerInfo().getPeerCertificate();
@@ -607,7 +642,7 @@ int TCPSlaveBase::verifyCertificate()
 
    _IPmatchesCN = d->kssl->peerInfo().certMatchesAddress();
 
-   kdDebug(7029) << "SSL HTTP frame the parent? " << metaData("main_frame_request") << endl;
+   //kdDebug(7029) << "SSL HTTP frame the parent? " << metaData("main_frame_request") << endl;
    if (!hasMetaData("main_frame_request") || metaData("main_frame_request") == "TRUE") {
       // Since we're the parent, we need to teach the child.
       setMetaData("ssl_parent_ip", d->ip);
@@ -618,6 +653,8 @@ int TCPSlaveBase::verifyCertificate()
 
       //  - validation code
       if (ksv != KSSLCertificate::Ok || !_IPmatchesCN) {
+         if (d->militantSSL)
+		return -1;
          if (cp == KSSLCertificateCache::Unknown || 
              cp == KSSLCertificateCache::Ambiguous) {
             cp = KSSLCertificateCache::Prompt;
@@ -699,19 +736,17 @@ int TCPSlaveBase::verifyCertificate()
             }
          default:
           kdDebug(7029) << "TCPSlaveBase/SSL error in cert code."
-                              << "Please report this to kfm-devel@kde.org."
-                              << endl;
+                        << "Please report this to kfm-devel@kde.org."
+                        << endl;
           break;
          }
       }
 
-
       //  - cache the results
       d->cc->addCertificate(pc, cp, permacache);
-      d->cc->saveToDisk();    // So that other slaves can get at it.
-      // FIXME: we should be able to notify other slaves of this here.
     } else {    // Child frame
       //  - Read from cache and see if there is a policy for this
+      int result;
       KSSLCertificateCache::KSSLCertificatePolicy cp =
                                              d->cc->getPolicyByCertificate(pc);
       isChild = true;
@@ -724,25 +759,92 @@ int TCPSlaveBase::verifyCertificate()
       if (ksv == KSSLCertificate::Ok && _IPmatchesCN) {
         if (certAndIPTheSame) {       // success
           rc = 1;
+          setMetaData("ssl_action", "accept");
         } else {
-          if (true) {     // success   FIXME: prompt to continue
+         if (d->militantSSL)
+		return -1;
+          result = messageBox(WarningYesNo,
+                              i18n("The certificate is valid but does not appear to have been assigned to this server.  Do you wish to continue loading?"),
+                              i18n("Server Authentication"));
+          if (result == KMessageBox::Yes) {     // success
             rc = 1;
+            setMetaData("ssl_action", "accept");
           } else {    // fail
             rc = -1;
+            setMetaData("ssl_action", "reject");
           }
         }
       } else {
+        if (d->militantSSL)
+		return -1;
         if (cp == KSSLCertificateCache::Accept) {
            if (certAndIPTheSame) {    // success
              rc = 1;
+             setMetaData("ssl_action", "accept");
            } else {   // fail
-             rc = -1;
+             result = messageBox(WarningYesNo,
+                                 i18n("You have indicated that you wish to accept this certificate, but it is not issued to the server who is presenting it.  Do you wish to continue loading?"),
+                                 i18n("Server Authentication"));
+	     if (result == KMessageBox::Yes) {
+	       rc = 1;
+               setMetaData("ssl_action", "accept");
+	     } else {
+               rc = -1;
+               setMetaData("ssl_action", "reject");
+	     }
            }
-        } else {      // fail
-          rc = -1;
+        } else if (cp == KSSLCertificateCache::Reject) {      // fail
+	  messageBox(Information, i18n("SSL certificate is being rejected as requested.  You can disable this in the KDE control center."),
+			          i18n("Server Authentication"));
+	  rc = -1;
+          setMetaData("ssl_action", "reject");
+	} else {
+          do {
+             QString msg = i18n("The server certificate failed the "
+                                "authenticity test (%1).");
+             result = messageBox(WarningYesNoCancel,
+                                 msg.arg(d->host),
+                                 i18n("Server Authentication"),
+                                 i18n("&Details..."),
+                                 i18n("Co&ntinue"));
+                if (result == KMessageBox::Yes) {
+                   if (!d->dcc) {
+                      d->dcc = new DCOPClient;
+                      d->dcc->attach();
+                   }
+                   QByteArray data, ignore;
+                   QCString ignoretype;
+                   QDataStream arg(data, IO_WriteOnly);
+                   arg << theurl << mOutgoingMetaData;
+                        d->dcc->call("kio_uiserver", "UIServer",
+                                "showSSLInfoDialog(QString,KIO::MetaData)",
+                                data, ignoretype, ignore);
+                }
+	  } while (result == KMessageBox::Yes);
+
+          if (result == KMessageBox::No) {
+             setMetaData("ssl_action", "accept");
+             rc = 1;
+             cp = KSSLCertificateCache::Accept;
+                result = messageBox( WarningYesNo,
+                               i18n("Would you like to accept this "
+                                    "certificate forever without "
+                                    "being prompted?"),
+                               i18n("Server Authentication"),
+                               i18n("&Forever"),
+                               i18n("&Current Sessions Only"));
+                if (result == KMessageBox::Yes)
+                   permacache = true;
+                else
+                   permacache = false;
+          } else {
+             setMetaData("ssl_action", "reject");
+             rc = -1;
+             cp = KSSLCertificateCache::Prompt;
+          }
+          d->cc->addCertificate(pc, cp, permacache);
         }
       }
-      // FIXME: failure message boxes are needed
     }
 
 
@@ -790,7 +892,7 @@ int TCPSlaveBase::verifyCertificate()
       } while (result != KMessageBox::No);
    }
 
-   #if 0
+#if 0
    // This will probably go to khtml_part
    //  - mixed SSL/nonSSL
         // I assert that if any two portions of a loaded document are of
@@ -803,7 +905,7 @@ int TCPSlaveBase::verifyCertificate()
         metaData("ssl_was_in_use") != "TRUE") {
       // FIXME: do something!
    }
-   #endif
+#endif
    }   // if ssl_activate_warnings
 
 
@@ -859,6 +961,15 @@ bool TCPSlaveBase::isConnectionValid()
 
 bool TCPSlaveBase::waitForResponse( int t )
 {
+if (0 /*m_bIsSSL || d->usingTLS*/) {
+    if (t < 0) t *= -1;
+    t *= 10;
+    while (t--) {
+	if (d->kssl->pending()) return true;
+	usleep(100000);    // a tenth of a second
+    }
+    return false;
+} else {
     fd_set rd, wr;
     struct timeval timeout;
 
@@ -878,6 +989,7 @@ bool TCPSlaveBase::waitForResponse( int t )
             return true;
     }
     return false; // Timed out!
+}
 }
 
 int TCPSlaveBase::connectResult()

@@ -2,16 +2,6 @@
 
 #include <config.h>
 
-#ifdef __linux__
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif
-#ifndef _FILE_OFFSET_BITS
-#define _FILE_OFFSET_BITS 64
-#endif
-#include <features.h>
-#endif
-
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
@@ -56,6 +46,32 @@
 
 #include <kio/ioslave_defaults.h>
 #include <kglobal.h>
+
+#ifdef _LFS64_LARGEFILE
+#define KDE_stat		::stat64
+#define KDE_lstat		::lstat64
+#define KDE_fstat		::fstat64
+#define KDE_open		::open64
+#define KDE_lseek		::lseek64
+#define KDE_readdir		::readdir64
+#define KDE_struct_stat 	struct stat64
+#define KDE_struct_dirent	struct dirent64
+#else
+#define KDE_stat		::stat
+#define KDE_lstat		::lstat
+#define KDE_fstat		::fstat
+#define KDE_open		::open
+#define KDE_lseek		::lseek
+#define KDE_readdir		::readdir
+#define KDE_struct_stat 	struct stat
+#define KDE_struct_dirent	struct dirent
+#endif
+
+#ifdef _LFS64_STDIO
+#define KDE_fopen		fopen64
+#else
+#define KDE_fopen		fopen
+#endif
 
 using namespace KIO;
 
@@ -105,8 +121,8 @@ void FileProtocol::chmod( const KURL& url, int permissions )
 void FileProtocol::mkdir( const KURL& url, int permissions )
 {
     QCString _path( QFile::encodeName(url.path()));
-    struct stat buff;
-    if ( ::stat( _path.data(), &buff ) == -1 ) {
+    KDE_struct_stat buff;
+    if ( KDE_stat( _path.data(), &buff ) == -1 ) {
 	if ( ::mkdir( _path.data(), 0777 /*umask will be applied*/ ) != 0 ) {
 	    if ( errno == EACCES ) {
 		error( KIO::ERR_ACCESS_DENIED, url.path() );
@@ -136,8 +152,8 @@ void FileProtocol::mkdir( const KURL& url, int permissions )
 void FileProtocol::get( const KURL& url )
 {
     QCString _path( QFile::encodeName(url.path()));
-    struct stat buff;
-    if ( ::stat( _path.data(), &buff ) == -1 ) {
+    KDE_struct_stat buff;
+    if ( KDE_stat( _path.data(), &buff ) == -1 ) {
         if ( errno == EACCES )
            error( KIO::ERR_ACCESS_DENIED, url.path() );
         else
@@ -154,7 +170,7 @@ void FileProtocol::get( const KURL& url )
 	return;
     }
 
-    int fd = open( _path.data(), O_RDONLY);
+    int fd = KDE_open( _path.data(), O_RDONLY);
     if ( fd < 0 ) {
 	error( KIO::ERR_CANNOT_OPEN_FOR_READING, url.path() );
 	return;
@@ -237,8 +253,8 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
 
     bool bMarkPartial = config()->readBoolEntry("MarkPartial", true);
 
-    struct stat buff_orig;
-    bool orig_exists = ( ::stat( _dest_orig.data(), &buff_orig ) != -1 );
+    KDE_struct_stat buff_orig;
+    bool orig_exists = ( KDE_stat( _dest_orig.data(), &buff_orig ) != -1 );
     if ( orig_exists &&  !_overwrite && !_resume)
     {
         if (S_ISDIR(buff_orig.st_mode))
@@ -254,8 +270,8 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
         kdDebug(7101) << "Appending .part extension to " << dest_orig << endl;
         dest = dest_part;
 
-        struct stat buff_part;
-        bool part_exists = ( ::stat( _dest_part.data(), &buff_part ) != -1 );
+        KDE_struct_stat buff_part;
+        bool part_exists = ( KDE_stat( _dest_part.data(), &buff_part ) != -1 );
         if ( part_exists && !_resume && buff_part.st_size > 0 )
         {
             kdDebug() << "FileProtocol::put : calling canResume with " << (unsigned long)buff_part.st_size << endl;
@@ -293,8 +309,8 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
     int fd;
 
     if ( _resume ) {
-        fd = open( _dest.data(), O_RDWR );  // append if resuming
-        lseek(fd, 0, SEEK_END); // Seek to end
+        fd = KDE_open( _dest.data(), O_RDWR );  // append if resuming
+        KDE_lseek(fd, 0, SEEK_END); // Seek to end
     } else {
         // WABA: Make sure that we keep writing permissions ourselves,
         // otherwise we can be in for a surprise on NFS.
@@ -304,7 +320,7 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
         else
            initialMode = 0666;
 
-        fd = open(_dest.data(), O_CREAT | O_TRUNC | O_WRONLY, initialMode);
+        fd = KDE_open(_dest.data(), O_CREAT | O_TRUNC | O_WRONLY, initialMode);
     }
 
     if ( fd < 0 ) {
@@ -354,8 +370,8 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
 	   remove(_dest.data());
         } else if (bMarkPartial)
         {
-           struct stat buff;
-           if (( ::stat( _dest.data(), &buff ) == -1 ) ||
+           KDE_struct_stat buff;
+           if (( KDE_stat( _dest.data(), &buff ) == -1 ) ||
                ( buff.st_size < config()->readNumEntry("MinimumKeepSize", DEFAULT_MINIMUM_KEEP_SIZE) ))
            {
 	       remove(_dest.data());
@@ -400,8 +416,8 @@ void FileProtocol::copy( const KURL &src, const KURL &dest,
 {
     QCString _src( QFile::encodeName(src.path()));
     QCString _dest( QFile::encodeName(dest.path()));
-    struct stat buff_src;
-    if ( ::stat( _src.data(), &buff_src ) == -1 ) {
+    KDE_struct_stat buff_src;
+    if ( KDE_stat( _src.data(), &buff_src ) == -1 ) {
         if ( errno == EACCES )
            error( KIO::ERR_ACCESS_DENIED, src.path() );
         else
@@ -418,8 +434,8 @@ void FileProtocol::copy( const KURL &src, const KURL &dest,
 	return;
     }
 
-    struct stat buff_dest;
-    bool dest_exists = ( ::stat( _dest.data(), &buff_dest ) != -1 );
+    KDE_struct_stat buff_dest;
+    bool dest_exists = ( KDE_stat( _dest.data(), &buff_dest ) != -1 );
     if ( dest_exists )
     {
         if (S_ISDIR(buff_dest.st_mode))
@@ -435,7 +451,7 @@ void FileProtocol::copy( const KURL &src, const KURL &dest,
         }
     }
 
-    int src_fd = open( _src.data(), O_RDONLY);
+    int src_fd = KDE_open( _src.data(), O_RDONLY);
     if ( src_fd < 0 ) {
 	error( KIO::ERR_CANNOT_OPEN_FOR_READING, src.path() );
 	return;
@@ -449,7 +465,7 @@ void FileProtocol::copy( const KURL &src, const KURL &dest,
     else
        initialMode = 0666;
 
-    int dest_fd = open(_dest.data(), O_CREAT | O_TRUNC | O_WRONLY, initialMode);
+    int dest_fd = KDE_open(_dest.data(), O_CREAT | O_TRUNC | O_WRONLY, initialMode);
     if ( dest_fd < 0 ) {
 	kdDebug(7101) << "###### COULD NOT WRITE " << dest.url() << endl;
         if ( errno == EACCES ) {
@@ -547,8 +563,8 @@ void FileProtocol::rename( const KURL &src, const KURL &dest,
 {
     QCString _src( QFile::encodeName(src.path()));
     QCString _dest( QFile::encodeName(dest.path()));
-    struct stat buff_src;
-    if ( ::stat( _src.data(), &buff_src ) == -1 ) {
+    KDE_struct_stat buff_src;
+    if ( KDE_stat( _src.data(), &buff_src ) == -1 ) {
         if ( errno == EACCES )
            error( KIO::ERR_ACCESS_DENIED, src.path() );
         else
@@ -556,8 +572,8 @@ void FileProtocol::rename( const KURL &src, const KURL &dest,
 	return;
     }
 
-    struct stat buff_dest;
-    bool dest_exists = ( ::stat( _dest.data(), &buff_dest ) != -1 );
+    KDE_struct_stat buff_dest;
+    bool dest_exists = ( KDE_stat( _dest.data(), &buff_dest ) != -1 );
     if ( dest_exists )
     {
         if (S_ISDIR(buff_dest.st_mode))
@@ -614,8 +630,8 @@ void FileProtocol::symlink( const QString &target, const KURL &dest, bool overwr
             }
             else
             {
-                struct stat buff_dest;
-                ::lstat( QFile::encodeName( dest.path() ), &buff_dest );
+                KDE_struct_stat buff_dest;
+                KDE_lstat( QFile::encodeName( dest.path() ), &buff_dest );
                 if (S_ISDIR(buff_dest.st_mode))
                     error( KIO::ERR_DIR_ALREADY_EXIST, dest.path() );
                 else
@@ -686,9 +702,9 @@ bool FileProtocol::createUDSEntry( const QString & filename, const QCString & pa
 
     mode_t type;
     mode_t access;
-    struct stat buff;
+    KDE_struct_stat buff;
 
-	if ( lstat( path.data(), &buff ) == 0 )  {
+	if ( KDE_lstat( path.data(), &buff ) == 0 )  {
 
 	    if (S_ISLNK(buff.st_mode)) {
 
@@ -703,7 +719,7 @@ bool FileProtocol::createUDSEntry( const QString & filename, const QCString & pa
 		entry.append( atom );
 
 		// A link poiting to nowhere ?
-		if ( ::stat( path.data(), &buff ) == -1 ) {
+		if ( KDE_stat( path.data(), &buff ) == -1 ) {
 		    // It is a link pointing to nowhere
 		    type = S_IFMT - 1;
 		    access = S_IRWXU | S_IRWXG | S_IRWXO;
@@ -803,8 +819,8 @@ void FileProtocol::stat( const KURL & url )
      * This is the reason for the -1
      */
     QCString _path( QFile::encodeName(url.path(-1)));
-    struct stat buff;
-    if ( ::lstat( _path.data(), &buff ) == -1 ) {
+    KDE_struct_stat buff;
+    if ( KDE_lstat( _path.data(), &buff ) == -1 ) {
 	error( KIO::ERR_DOES_NOT_EXIST, url.path(-1) );
 	return;
     }
@@ -860,8 +876,8 @@ void FileProtocol::listDir( const KURL& url)
     QCString _path( QFile::encodeName(url.path()));
     kdDebug(7101) << "========= LIST " << url.url() << " =========" << endl;
 
-    struct stat buff;
-    if ( ::stat( _path.data(), &buff ) == -1 ) {
+    KDE_struct_stat buff;
+    if ( KDE_stat( _path.data(), &buff ) == -1 ) {
 	error( KIO::ERR_DOES_NOT_EXIST, url.path() );
 	return;
     }
@@ -872,7 +888,7 @@ void FileProtocol::listDir( const KURL& url)
     }
 
     DIR *dp = 0L;
-    struct dirent *ep;
+    KDE_struct_dirent *ep;
 
     dp = opendir( _path.data() );
     if ( dp == 0 ) {
@@ -885,7 +901,7 @@ void FileProtocol::listDir( const KURL& url)
     // files where QFile::encodeName(QFile::decodeName(a)) != a.
     QStrList entryNames;
 
-    while ( ( ep = readdir( dp ) ) != 0L )
+    while ( ( ep = KDE_readdir( dp ) ) != 0L )
 	entryNames.append( ep->d_name );
 
     closedir( dp );
@@ -927,8 +943,8 @@ void FileProtocol::listDir( const KURL& url)
 void FileProtocol::testDir( const QString& path )
 {
     QCString _path( QFile::encodeName(path));
-    struct stat buff;
-    if ( ::stat( _path.data(), &buff ) == -1 ) {
+    KDE_struct_stat buff;
+    if ( KDE_stat( _path.data(), &buff ) == -1 ) {
 	error( KIO::ERR_DOES_NOT_EXIST, path );
 	return;
     }
@@ -987,7 +1003,7 @@ void FileProtocol::special( const QByteArray &data)
       break;
     }
     default:
-      assert(0);
+      break;
     }
 }
 
@@ -1148,7 +1164,7 @@ void FileProtocol::unmount( const QString& _point )
 		kdDebug(7101) << "VOLMGT: looking for "
 			<< _point.local8Bit() << endl;
 
-		if( (mnttab = fopen( MNTTAB, "r" )) == NULL ) {
+		if( (mnttab = KDE_fopen( MNTTAB, "r" )) == NULL ) {
 			err = "couldn't open mnttab";
 			kdDebug(7101) << "VOLMGT: " << err << endl;
 			error( KIO::ERR_COULD_NOT_UNMOUNT, err );
@@ -1236,18 +1252,18 @@ void FileProtocol::unmount( const QString& _point )
 QString testLogFile( const char *_filename )
 {
     char buffer[ 1024 ];
-    struct stat buff;
+    KDE_struct_stat buff;
 
     QString result;
 
-    stat( _filename, &buff );
+    KDE_stat( _filename, &buff );
     int size = buff.st_size;
     if ( size == 0 ) {
 	unlink( _filename );
 	return result;
     }
 
-    FILE * f = fopen( _filename, "rb" );
+    FILE * f = KDE_fopen( _filename, "rb" );
     if ( f == 0L ) {
 	unlink( _filename );
 	result = i18n("Could not read %1").arg(QFile::decodeName(_filename));

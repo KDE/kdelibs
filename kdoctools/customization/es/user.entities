@@ -5,11 +5,14 @@
      Please keep the entities sorted on the name: it will avoid duplicate
      names (which if they occur will cost you a _lot_ of time)
  -->
-<!ENTITY eg     "<abbrev>p.ej.</abbrev>" ><!-- eg -->
+<!ENTITY ie     "<abbrev>es decir</abbrev>" ><!-- ie -->
+<!ENTITY pej     "<abbrev>p. ej.</abbrev>" ><!-- pej -->
+<!ENTITY eg     "<abbrev>p. ej.</abbrev>" ><!-- eg -->
 <!ENTITY kcc "<application>Centro de control de KDE</application>" ><!-- kcc -->
 <!ENTITY khelpcenter "<application>Centro de ayuda</application>" >
 <!ENTITY kde "KDE" ><!-- kde -->
 <!ENTITY kcontrolcenter "<application>Centro de control de &kde;</application>">
 <!ENTITY dpi    '<acronym>ppp</acronym>'>
 <!ENTITY etc    "<abbrev>etc.</abbrev>">
+<!ENTITY X-Windows      '<trademark class="registered">Sistema de ventanas X</trademark>'>
 <!ENTITY FAQ    '<acronym>FAQ</acronym>'>

@@ -2,7 +2,6 @@
 	needs=x11\
 	section=Apps/System\
 	hints="KDE"\
-	kderemove="y"\
 	title="cupsdconf"\
 	command="/usr/bin/kdesu /usr/bin/cupsdconf"
 

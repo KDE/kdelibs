@@ -1,6 +1,5 @@
 [Desktop Entry]
 Comment=shell script
-Comment[af]=TOLK SKRIP
 Comment[az]=qabıq əmr köməsi
 Comment[bg]=Cкрипт на shell
 Comment[bs]=shell skript
@@ -42,8 +41,8 @@ Comment[ta]=µðÎì ¸¢ÚÅø
 Comment[tr]=kabuk komut kümesi
 Comment[uk]=Скрипт Shell
 Comment[vi]=Shell Script 
+Comment[xh]=ushicilelo phantsi lweqokobhe
 Comment[zh_CN.GB2312]=shell 脚本
-Comment[zh_TW.Big5]=shell 命令稿
 Icon=shellscript
 Type=MimeType
 MimeType=application/x-shellscript

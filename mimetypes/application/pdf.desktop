@@ -4,7 +4,6 @@ MimeType=application/pdf
 Icon=pdf
 Patterns=*.pdf;*.PDF;
 Comment=Pdf Document
-Comment[af]=PDF DOKUMENT
 Comment[az]=Pdf Sənədi
 Comment[bg]=Документ на PDF
 Comment[br]=Teul PDF
@@ -50,6 +49,6 @@ Comment[tr]=Pdf Belgesi
 Comment[uk]=Документ PDF
 Comment[vi]=Tài liệu Pdf 
 Comment[wa]=Documint PDF
+Comment[xh]=Uxwebhu lwe Pdf
 Comment[zh_CN.GB2312]=Pdf 文档
-Comment[zh_TW.Big5]=Pdf 文件
 

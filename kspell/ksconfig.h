@@ -39,13 +39,13 @@ enum Encoding {
   KS_E_LATIN7=6,
   KS_E_LATIN8=7,
   KS_E_LATIN9=8,
-  KS_E_LATIN15=9,
-  KS_E_UTF8=10,
-  KS_E_KOI8R=11,
-  KS_E_KOI8U=12 
+  KS_E_LATIN13=9,
+  KS_E_LATIN15=10,
+  KS_E_UTF8=11,
+  KS_E_KOI8R=12,
+  KS_E_KOI8U=13, 
 #if QT_VERSION >= 224
-		,
-  KS_E_CP1251=13
+  KS_E_CP1251=14
 #endif
 };
 

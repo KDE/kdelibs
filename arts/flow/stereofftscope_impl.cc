@@ -124,6 +124,8 @@ public:
 	}
 };
 
+const unsigned long StereoFFTScope_impl::SAMPLES;
+
 REGISTER_IMPLEMENTATION(StereoFFTScope_impl);
 
 };

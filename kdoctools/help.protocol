@@ -1,7 +1,0 @@
-[Protocol]
-exec=kio_help
-protocol=help
-input=none
-output=filesystem
-reading=true
-defaultMimetype=text/html

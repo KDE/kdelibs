@@ -1,6 +1,5 @@
 [Misc]
 Name=Qt Motif Plus
-Name[af]=QT MOTIF PLUS
 Name[az]=Qt Motif +
 Name[br]=Qt Motif Mui
 Name[de]=Qt-Motif-Plus
@@ -12,8 +11,8 @@ Name[ko]=Qt 모티프 +
 Name[mk]=Qt Motif плус
 Name[no_NY]=Qt-Motif pluss
 Name[tr]=Qt Motif +
+Name[xh]=Qt Uyilo olulawulayo kunye
 Comment=Built-in enhanced Motif style
-Comment[af]=INGEBOUDE VERBETERDE MOTIF STYL
 Comment[az]=Yerləşmiş, örtüsüz Motif tərzi
 Comment[bg]=Вграден в Qt подобрен стил на Motif
 Comment[br]=Giz Motif enframmet gwellaet
@@ -55,7 +54,7 @@ Comment[ta]=¯ûÇ¨Áó¾ §ÁõÀÎò¾¢Â Motif À¡ó¾õ
 Comment[tr]=Yerleşik, temasız Motif stili
 Comment[uk]=Вбудований покращений стиль Motif
 Comment[vi]=Kiểu Motif cao cấp có sẵn 
+Comment[xh]=Yakhelwe-kuhlobo loyilo olulawulayo olomeleleyo
 Comment[zh_CN.GB2312]=内建的增强的 Motif 风格
-Comment[zh_TW.Big5]=內建的加強式 Motif 風格
 [KDE]
 widgetStyle=MotifPlus

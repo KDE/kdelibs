@@ -63,8 +63,6 @@ public:
     void printBoxDecorations(QPainter *p, RenderStyle* style, RenderText *parent, int _tx, int _ty, bool begin, bool end);
     void printSelection(QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos);
 
-    bool checkPoint(int _x, int _y, int _tx, int _ty, int height);
-
     // Return before, after (offset set to max), or inside the text, at @p offset
     FindSelectionResult checkSelectionPoint(int _x, int _y, int _tx, int _ty, QFontMetrics * fm, int & offset, int lineheight);
 
@@ -137,7 +135,7 @@ public:
 
     virtual void layout() {assert(false);}
 
-    bool checkPoint(int _x, int _y, int _tx, int _ty);
+    virtual bool containsPoint(int _x, int _y, int _tx, int _ty);
 
     // Return before, after (offset set to max), or inside the text, at @p offset
     virtual FindSelectionResult checkSelectionPoint( int _x, int _y, int _tx, int _ty, int & offset );
@@ -186,16 +184,17 @@ public:
     virtual short marginRight() const { return style()->marginRight().minWidth(0); }
 
     virtual void repaint();
-    
+
     bool hasBreakableChar() const { return m_hasBreakableChar; }
     QFontMetrics metrics(bool firstLine) const;
-    
+
 protected:
     TextSlave * findTextSlave( int offset, int &pos );
     TextSlaveArray m_lines;
     QFontMetrics *fm;
     DOM::DOMStringImpl *str; //
 
+    friend class TextSlave;
     int m_lineHeight;
     short m_minWidth;
     short m_maxWidth;

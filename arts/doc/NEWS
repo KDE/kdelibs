@@ -1,3 +1,10 @@
+aRts-0.6.1:
+- new artsdsp -s (single threaded) option for compatibility to more programs
+  (for instance netscape)
+- ALSA-0.9.0 support
+- bugfixes: artsdsp/artsc rpath fix, alsa crash without soundcard fixed, md5
+  cookie loading, oss driver endianess issue, compile fixes
+
 aRts-0.6.0:
 - new interfaces (Arts::InputStream, Arts::StreamPlayObject) for decoding
   streams of data with PlayObjects (rather than just files)

@@ -278,6 +278,7 @@ QRect NodeImpl::getRect() const
     int _x, _y;
     if(m_render && m_render->absolutePosition(_x, _y))
         return QRect( _x, _y, m_render->width(), m_render->height() );
+
     return QRect();
 }
 
@@ -408,10 +409,11 @@ void NodeImpl::removeEventListener(int id, EventListener *listener, bool useCapt
         }
 }
 
+
 void NodeImpl::removeEventListener(const DOMString &type, EventListener *listener,
-                                     bool useCapture,int &exceptioncode)
+                                   bool useCapture,int &/*exceptioncode*/)
 {
-    removeEventListener(EventImpl::typeToId(type),listener,useCapture,exceptioncode);
+    removeEventListener(EventImpl::typeToId(type),listener,useCapture);
 }
 
 void NodeImpl::removeHTMLEventListener(int id)
@@ -498,10 +500,10 @@ bool NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
     evt->setCurrentTarget(0);
     evt->setEventPhase(0); // I guess this is correct, the spec does not seem to say
 
-    if (!evt->defaultPrevented() && evt->bubbles()) {
+    if (evt->bubbles()) {
         // now we call all default event handlers (this is not part of DOM - it is internal to khtml)
         it.toLast();
-        for (; it.current() && !evt->propagationStopped(); --it)
+        for (; it.current() && !evt->propagationStopped() && !evt->defaultPrevented() && !evt->defaultHandled(); --it)
             it.current()->defaultEventHandler(evt);
     }
 
@@ -644,7 +646,7 @@ bool NodeImpl::dispatchSubtreeModifiedEvent()
 	return false;
     int exceptioncode;
     return dispatchEvent(new MutationEventImpl(EventImpl::DOMSUBTREEMODIFIED_EVENT,
-			 true,false,0,0,0,0,0),exceptioncode);
+			 true,false,0,DOMString(),DOMString(),DOMString(),0),exceptioncode);
 }
 
 void NodeImpl::handleLocalEvents(EventImpl *evt, bool useCapture)
@@ -787,6 +789,74 @@ RenderObject * NodeWParentImpl::nextRenderer()
     return 0;
 }
 
+bool NodeWParentImpl::prepareMouseEvent( int _x, int _y,
+                                     int _tx, int _ty,
+                                     MouseEvent *ev)
+{
+#ifdef EVENT_DEBUG
+    kdDebug( 6030 ) << nodeName().string() << "::prepareMouseEvent" << endl;
+#endif
+    bool inside = false;
+
+    if(!m_render) return false;
+
+    int origTx = _tx;
+    int origTy = _ty;
+
+    RenderObject *p = m_render->parent();
+    while( p && p->isAnonymousBox() ) {
+//      kdDebug( 6030 ) << "parent is anonymous!" << endl;
+        // we need to add the offset of the anonymous box
+        _tx += p->xPos();
+        _ty += p->yPos();
+        p = p->parent();
+    }
+
+    bool positioned = m_render->isPositioned();
+    int oldZIndex = ev->currentZIndex;
+
+    // Positioned element -> store current zIndex, for children to use
+    if ( positioned ) {
+        ev->currentZIndex = m_render->style()->zIndex();
+        //kdDebug() << "ElementImpl::prepareMouseEvent storing currentZIndex=" << ev->currentZIndex << endl;
+    }
+
+    if(!m_render->isInline() || m_render->isReplaced() || m_render->isText()/*|| m_render->isFloating()*/ ) {
+        bool known = m_render->absolutePosition(_tx, _ty);
+	if (known && m_render->containsPoint(_x,_y,_tx,_ty)) {
+            if  ( m_render->style() && !m_render->style()->visiblity() == HIDDEN ) {
+                //if ( positioned )
+                //    kdDebug(6030) << " currentZIndex=" << ev->currentZIndex << " ev->zIndex=" << ev->zIndex << endl;
+                if ( ev->currentZIndex >= ev->zIndex ) {
+                    //kdDebug(6030) << nodeName().string() << " SETTING innerNode " << endl;
+                    ev->innerNode = Node(this);
+                    ev->nodeAbsX = origTx;
+                    ev->nodeAbsY = origTy;
+                    ev->zIndex = ev->currentZIndex;
+                    inside = true;
+                }
+            }
+        }
+    }
+
+    NodeImpl *child = firstChild();
+    while(child != 0) {
+        if(child->prepareMouseEvent(_x, _y, _tx, _ty, ev))
+            inside = true;
+        child = child->nextSibling();
+    }
+
+#ifdef EVENT_DEBUG
+    if(inside) kdDebug( 6030 ) << nodeName().string() << "    --> inside" << endl;
+#endif
+
+    // reset previous z index
+    if ( positioned )
+        ev->currentZIndex = oldZIndex;
+
+    return inside;
+}
+
 //-------------------------------------------------------------------------
 
 NodeBaseImpl::NodeBaseImpl(DocumentPtr *doc) : NodeWParentImpl(doc)
@@ -803,12 +873,12 @@ NodeBaseImpl::~NodeBaseImpl()
     NodeImpl *n;
     NodeImpl *next;
 
-    for( n = _first; n != 0; n = next )
-    {
+    for( n = _first; n != 0; n = next ) {
         next = n->nextSibling();
         n->setPreviousSibling(0);
         n->setNextSibling(0);
         n->setParent(0);
+
         if(n->deleteMe())
             delete n;
     }
@@ -992,7 +1062,7 @@ NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
     getDocument()->notifyBeforeNodeRemoval(oldChild); // ### use events instead
     if (getDocument()->hasListenerType(DocumentImpl::DOMNODEREMOVED_LISTENER)) {
 	oldChild->dispatchEvent(new MutationEventImpl(EventImpl::DOMNODEREMOVED_EVENT,
-			     true,false,this,0,0,0,0),exceptioncode);
+			     true,false,this,DOMString(),DOMString(),DOMString(),0),exceptioncode);
 	if (exceptioncode)
 	    return 0;
     }
@@ -1006,7 +1076,7 @@ NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
 	    NodeImpl *c;
 	    for (c = oldChild; c; c = c->traverseNextNode(oldChild)) {
 		c->dispatchEvent(new MutationEventImpl(EventImpl::DOMNODEREMOVEDFROMDOCUMENT_EVENT,
-				 false,false,0,0,0,0,0),exceptioncode);
+				 false,false,0,DOMString(),DOMString(),DOMString(),0),exceptioncode);
 		if (exceptioncode)
 		    return 0;
 	    }
@@ -1050,7 +1120,6 @@ void NodeBaseImpl::removeChildren()
             delete n;
     }
     _first = _last = 0;
-
 }
 
 
@@ -1230,8 +1299,8 @@ void NodeBaseImpl::applyChanges(bool top, bool force)
 
     if ( !m_render )
         return;
-    
-    m_render->calcMinMaxWidth();    
+
+    m_render->calcMinMaxWidth();
 
     if ( top ) {
         if ( force ) {
@@ -1254,6 +1323,32 @@ void NodeBaseImpl::applyChanges(bool top, bool force)
     }
 
     setChanged(false);
+}
+
+bool NodeBaseImpl::prepareMouseEvent( int _x, int _y,
+                                     int _tx, int _ty,
+                                     MouseEvent *ev)
+{
+    bool oldinside=mouseInside();
+    bool inside = NodeWParentImpl::prepareMouseEvent( _x, _y, _tx, _ty, ev );
+
+    setMouseInside(inside);
+
+    bool oldactive = active();
+    if ( inside ) {
+	if ( ev->type == MousePress )
+	    m_active = true;
+	else if ( ev->type == MouseRelease )
+	    m_active = false;
+    } else if ( m_active ) {
+	m_active = false;
+    }
+
+    if ( (oldinside != inside && m_style->hasHover()) ||
+	 ( oldactive != m_active && m_style->hasActive() ) )
+        applyChanges(true, false);
+
+    return inside;
 }
 
 void NodeBaseImpl::attach()
@@ -1297,8 +1392,7 @@ bool NodeBaseImpl::getUpperLeftCorner(int &xPos, int &yPos) const
         return false;
     RenderObject *o = m_render;
     xPos = yPos = 0;
-    if ( !isInline() )
-    {
+    if ( !o->isInline() || o->isReplaced() ) {
         o->absolutePosition( xPos, yPos );
         return true;
     }
@@ -1338,7 +1432,7 @@ bool NodeBaseImpl::getLowerRightCorner(int &xPos, int &yPos) const
 
     RenderObject *o = m_render;
     xPos = yPos = 0;
-    if (!isInline())
+    if (!o->isInline() || o->isReplaced())
     {
         o->absolutePosition( xPos, yPos );
         xPos += o->width();
@@ -1396,6 +1490,9 @@ QRect NodeBaseImpl::getRect() const
         if (yPos==0)
             yPos = yEnd;
     }
+    if ( xEnd <= xPos || yEnd <= yPos )
+        return QRect( QPoint( xPos, yPos ), QSize() );
+
     return QRect(xPos, yPos, xEnd - xPos, yEnd - yPos);
 }
 
@@ -1445,7 +1542,7 @@ void NodeBaseImpl::dispatchChildInsertedEvents( NodeImpl *child, int &exceptionc
 {
     if (getDocument()->hasListenerType(DocumentImpl::DOMNODEINSERTED_LISTENER)) {
 	child->dispatchEvent(new MutationEventImpl(EventImpl::DOMNODEINSERTED_EVENT,
-			     true,false,this,0,0,0,0),exceptioncode);
+			     true,false,this,DOMString(),DOMString(),DOMString(),0),exceptioncode);
 	if (exceptioncode)
 	    return;
     }
@@ -1459,7 +1556,7 @@ void NodeBaseImpl::dispatchChildInsertedEvents( NodeImpl *child, int &exceptionc
 	    NodeImpl *c;
 	    for (c = child; c; c = c->traverseNextNode(child)) {
 		c->dispatchEvent(new MutationEventImpl(EventImpl::DOMNODEINSERTEDINTODOCUMENT_EVENT,
-				 false,false,0,0,0,0,0),exceptioncode);
+				 false,false,0,DOMString(),DOMString(),DOMString(),0),exceptioncode);
 		if (exceptioncode)
 		    return;
 	    }
@@ -1687,4 +1784,4 @@ void GenericRONamedNodeMapImpl::addNode(NodeImpl *n)
     n->ref();
     m_contents->append(n);
 }
-
+// vim:ts=4:sw=4

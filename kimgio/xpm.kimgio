@@ -2,7 +2,6 @@
 Type=XPM
 Header=
 Name=XWindow Pixmaps
-Name[af]=XWINDOW PIX-KAARTE
 Name[az]=XWindow Rəsmləri
 Name[br]=PiksmapoÃ¹ XWindow
 Name[bs]=XWindow Piksmape
@@ -42,6 +41,7 @@ Name[sv]=Xwindow-pixmappar
 Name[ta]=XWindow À¼òÐÏìÌ Å¨Ã¸û
 Name[tr]=XWindow Resimleri
 Name[vi]=Ảnh Pixmaps của XWindows 
+Name[xh]=XWindow iimaphu zepix
 Name[zh_CN.GB2312]=XWindow 点图
 Read=true
 Write=true

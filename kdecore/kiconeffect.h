@@ -5,10 +5,10 @@
  * This file is part of the KDE project, module kdecore.
  * Copyright (C) 2000 Geert Jansen <jansen@kde.org>
  * with minor additions and based on ideas from
- * Torsten Rahn <torsten@kde.org>                                                                 
+ * Torsten Rahn <torsten@kde.org>
  *
- * This is free software; it comes under the GNU Library General 
- * Public License, version 2. See the file "COPYING.LIB" for the 
+ * This is free software; it comes under the GNU Library General
+ * Public License, version 2. See the file "COPYING.LIB" for the
  * exact licensing terms.
  */
 
@@ -40,10 +40,16 @@ public:
      */
     void init();
 
-    /** 
-     * Returns a fingerprint for the effect selected by 
+    /**
+     * @returns true if an effect is configured for the given @p group
+     * in @p state, otherwise false.
+     */
+    bool hasEffect(int group, int state) const;
+    
+    /**
+     * Returns a fingerprint for the effect selected by
      * [@p group, @p state]. This is usefull for caching.
-     */ 
+     */
      QString fingerprint(int group, int state);
 
     /**
@@ -62,7 +68,7 @@ public:
      * @param effect The effect to apply, one of @ref #KIconEffect::Effects.
      * @param value Strength of the effect. 0 <= @p value <= 1.
      * @param color Color parameter for effects that need one.
-     * @param trans Add Transparency if trans = true.                             
+     * @param trans Add Transparency if trans = true.
      * @return An image with the effect applied.
      */
     QImage apply(QImage src, int effect, float value, const QColor rgb, bool trans);

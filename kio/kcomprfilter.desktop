@@ -2,7 +2,6 @@
 Type=ServiceType
 X-KDE-ServiceType=KDECompressionFilter
 Name=KDE Compression Filter
-Name[af]=KDE SAAMPERSING FILTER
 Name[az]=KDE Sıxışdırma Süzgəci
 Name[bg]=Комресиращ филтър на KDE
 Name[cs]=Kompresní filtr KDE
@@ -38,5 +37,5 @@ Name[ta]=KDE ¦¿Õì¸ ÅÊ¸ðÊ
 Name[tr]=KDE Sıkıştırma Filtresi
 Name[uk]=Фільтр стискання KDE
 Name[vi]=Trình lọc nén của KDE 
+Name[xh]=Indlela yokucoca ulwelo edityniswe kunye ye KDE
 Name[zh_CN.GB2312]=KDE 压缩过滤
-Name[zh_TW.Big5]=KDE 壓縮過濾器

@@ -32,6 +32,7 @@ Author: Ralph Mor, X Consortium
 #include "KDE-ICE/ICElibint.h"
 #include "KDE-ICE/Xtrans.h"
 #include <stdio.h>
+#include <time.h>
 
 
 Status
@@ -46,12 +47,21 @@ char		*errorStringRet;
     struct _IceListenObj	*listenObjs;
     char			*networkId;
     int				transCount, partial, i, j;
+    int                         result = -1;
+    int                         count = 0;
     Status			status = 1;
     XtransConnInfo		*transConns = NULL;
 
+    while ((result < 0) && (count < 5)) 
+    {
+       char buf[128];
+       sprintf(buf, "dcop%d-%d", getpid(), time(NULL)+count);
+       result = _KDE_IceTransMakeAllCOTSServerListeners (buf, &partial,
+                                              &transCount, &transConns);
+       count++;
+    }
 
-    if ((_KDE_IceTransMakeAllCOTSServerListeners (NULL, &partial,
-	&transCount, &transConns) < 0) || (transCount < 1))
+    if ((result < 0) || (transCount < 1))
     {
 	*listenObjsRet = NULL;
 	*countRet = 0;

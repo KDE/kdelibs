@@ -188,12 +188,13 @@ void md5_auth_init_seed(const char *seedname)
 	}
 }
 
-void md5_auth_set_cookie(const char *cookie)
+bool md5_auth_set_cookie(const char *cookie)
 {
 	if(strlen(cookie) != MD5_COOKIE_LEN)
-		arts_fatal("bad md5 cookie");
+		return false;
 
 	strncpy(md5_cookie,cookie,MD5_COOKIE_LEN);
 	md5_cookie[MD5_COOKIE_LEN] = 0;
 	md5_init = 1;
+	return true;
 }

@@ -414,6 +414,9 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP,
 #endif
                     cs->match = CSSSelector::Set;
                     endVal = closebracket + 1;
+                    // ### fixme we ignore everything after [..]
+                    if( endVal == endP )
+                        endVal = 0;
                 }
                 else
                 {
@@ -1280,7 +1283,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 	{
 	  if (cssval) {
             int id = cssval->id;
-            if ((id >= CSS_VAL_CIRCLE && id <= CSS_VAL_KATAKANA_IROHA) || id == CSS_VAL_NONE) {
+            if ((id >= CSS_VAL_DISC && id <= CSS_VAL_KATAKANA_IROHA) || id == CSS_VAL_NONE) {
 	      parsedValue = new CSSPrimitiveValueImpl(id);
             }
 	  }

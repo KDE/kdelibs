@@ -1,3 +1,164 @@
+kdelibs (4:2.2.2-1) unstable; urgency=low
+
+  * New upstream version
+  * Provide replace/etc bits for easier migration to/from kde3
+  * Update python deps (Closes: #118208)
+  * Fix glib inclusion bits for gmcop stuff...however we are still
+    not going to build with it until someone has a need for it.
+  * Remove some other hacks
+  * Update deps for qt as qt 2.3.2 has a fix which breaks a piece of kdelibs
+    so let's make sure we match up across the board.
+  * Update shlibs for the same reason
+  * Use libasound2
+  * Fix printing to files with spaces in the name (Closes: #117962)
+  * Fix build with new libxml2 (Closes: #118638)
+  * Include SSL support in main package
+  * Update build-depends
+  * Fix overwrite issues (Closes: #118802)
+  * Updates to take care of changes in Qt 2.3.2 (Closes: #118868)
+  * Do away with /etc/kderc and provide a link from /etc/kde2 to
+    /usr/share/kde2/config.  Hardcode the config dir to /usr/share/kde2/config
+    instead of /usr/share/config.  Can't hardcode it to /etc/kde2 since 
+    the /usr part of it all is pulled from the prefix.  This will work tho
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 09 Nov 2001 10:39:00 -0700
+
+kdelibs (4:2.2.1-14) unstable; urgency=low
+
+  * Fix overwrite problem (Closes: #116773)
+  * Hopefully fix arts for bigendian (Closes: #115292)
+  * Sync with upstream
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 25 Oct 2001 09:39:00 -0700
+
+kdelibs (4:2.2.1-13) unstable; urgency=low
+
+  * Fix overwrite problem (Closes: #116568)
+  * Sync with upstream
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 21 Oct 2001 19:27:00 -0700
+
+kdelibs (4:2.2.1-12) unstable; urgency=low
+
+  * more js fixes
+  * more ssl fixes
+  * gernal sync with upstream
+  * Added missing build-conflict
+  * Get rid of automake hacks...hard code build-dep version for new automake
+    thank god kde3 builds with automake1.5...
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 19 Oct 2001 12:43:00 -0700
+
+kdelibs (4:2.2.1-11) unstable; urgency=low
+
+  * Several crash fixes
+  * js fixes
+  * ssl fixes
+  * Update shlibs. This should take care of a few problems
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 15 Oct 2001 00:15:00 -0700
+
+kdelibs (4:2.2.1-10) unstable; urgency=low
+
+  * Hopefully fix both the AA problem and the kicker crash problem
+  * Clean up lintian overrides
+  * Sync with upstream
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 12 Oct 2001 10:18:00 -0700
+
+kdelibs (4:2.2.1-9) unstable; urgency=low
+
+  * Fix deps (Closes: #115064)
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 08 Sep 2001 09:55:00 -0700
+
+kdelibs (4:2.2.1-8) unstable; urgency=low
+
+  * Remove build-depends for auto* since we are doing that locally to
+    get around the automake 1.5 issues
+  * Remove configure checks for automake/autoheader.  On some archs it seems
+    to track this info down and attempt to run auto* which just hoses things
+  * More upstream fixes
+  * Update standards version
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 08 Sep 2001 09:55:00 -0700
+
+kdelibs (4:2.2.1-7) unstable; urgency=low
+
+  * Not sure what happened but let's chmod 755 configure just to make
+    sure it's got the proper perms before we execute it (Closes: #114552)
+  * Various other upstream fixes
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 05 Sep 2001 09:48:00 -0700
+
+kdelibs (4:2.2.1-6) unstable; urgency=low
+
+  * let this puppy build with automake 1.5
+  * Various other upstream fixes
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 02 Sep 2001 01:00:00 -0700
+
+kdelibs (4:2.2.1-5) unstable; urgency=low
+
+  * arts updates ... this should fix some of the arts related problems
+  * crash fix for css
+  * Various other upstream fixes
+  * fix shlibs
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 30 Sep 2001 01:00:00 -0700
+
+kdelibs (4:2.2.1-4) unstable; urgency=low
+
+  * Build-Conflict for nas-lib so that we can build properly
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 24 Sep 2001 19:25:00 -0700
+
+kdelibs (4:2.2.1-3) unstable; urgency=low
+
+  * Post 2.2.1 quick fixes from upstream
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 23 Sep 2001 18:42:00 -0700
+
+kdelibs (4:2.2.1-2) unstable; urgency=low
+
+  * Grrrr build on alpha!
+  * Fix replaces (Closes: #112902)
+  * Fix replacement (Closes: #112901)
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 19 Sep 2001 16:27:00 -0700
+
+kdelibs (4:2.2.1-1) unstable; urgency=low
+ 
+  * New upstream version
+  * Move artsc-config into -dev package (Closes: #109973)
+  * Priority set to extra for -alsa packages
+  * Do NOT build with Xinerama support due to the library being static
+    and that whole PIC/non-PIC so thing. 
+  * Fix ctrl+s (Closes: #110694)
+  * Don't need to build with gcc3 for alpha anymore, however we still
+    need to build with -O0
+  * Provide undocumented links (Closes: #94280)
+  * Fixes printing (Closes: #108301, #111388, #109930)
+  * Fix shlibs for alsa packages (Closes: #111640, #110159)
+  * Don't use objprelink anymore
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 07 Sep 2001 12:10:00 -0700
+
+kdelibs (4:2.2.0-final-3) unstable; urgency=low
+ 
+  * Sync with upstream
+  * Fix a couple more deps/build-deps
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 22 Aug 2001 10:59:00 -0700
+
+kdelibs (4:2.2.0-final-2) unstable; urgency=low
+ 
+  * update build-depends for i386
+  * Updated translation bits
+  * sync with upstream
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 19 Aug 2001 00:01:00 -0700
+
 kdelibs (4:2.2.0-final-1) unstable; urgency=low
  
   * New upstream version 2.2
@@ -80,7 +241,7 @@ kdelibs (4:2.2.0-0beta1-1) unstable; urgency=low
   * 2.2 beta 1
   * Remove old .shlibs files
   * Moving to -cvs{date] format for entering into experimental
-  * This is a post alpha1 snapshot taken from the HEAD cvs branch.  The
+  * This is a post alpha1 snapshot taken from the HEAD cvs branch.  
     date listed in the version number states when the initial pull was made
     however updates may and most likely will have taken place since that
     date.  Look at it as a >= cvs{date}
@@ -1153,7 +1314,3 @@ kdelibs (970920-1) unstable; urgency=low
 
  -- Andreas Jellinghaus <aj@debian.org>  Sat, 20 Sep 1997 09:59:48 +0200
 
-Local variables:
-mode: debian-changelog
-add-log-mailing-address: "aj@debian.org"
-End:

@@ -18,7 +18,6 @@ usr/bin/artsd
 usr/bin/artsplay
 usr/bin/artscat
 usr/bin/artswrapper
-usr/bin/artsc-config
 usr/bin/artsdsp
 usr/bin/artsshell
 usr/share/doc/kde/HTML/arts*

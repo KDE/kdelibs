@@ -31,7 +31,12 @@
  */
 #ifdef HAVE_LIBASOUND
 
+#ifdef HAVE_ALSA_ASOUNDLIB_H
+#include <alsa/asoundlib.h>
+#elif defined(HAVE_SYS_ASOUNDLIB_H)
 #include <sys/asoundlib.h>
+#endif
+
 #include <sys/types.h>
 #include <sys/ioctl.h>
 #include <sys/time.h>
@@ -112,15 +117,17 @@ AudioIOALSA::AudioIOALSA()
     m_bufferMode = block;  //block/stream (stream mode doesn't work yet)
 
 	if(m_card >= 0) {
-    	char* cardname;
-    	snd_card_get_name(m_card, &cardname);
+    	char* cardname = 0;
 
-		//!! thats not what devicename is intended to do
-		//!! devicename is an input information into
-		//!! the "driver", to select which card to use
-		//!! not an output information
-    	paramStr(deviceName) = cardname;
-    	free(cardname);
+    	if(snd_card_get_name(m_card, &cardname) == 0 && cardname != 0)
+		{
+			//!! thats not what devicename is intended to do
+			//!! devicename is an input information into
+			//!! the "driver", to select which card to use
+			//!! not an output information
+    		paramStr(deviceName) = cardname;
+    		free(cardname);
+		}
 	}
 }
 

@@ -1,6 +1,5 @@
 [Desktop Entry]
 Comment=Message Catalog
-Comment[af]=BOODSKAP KATALOGUS
 Comment[az]=İsmarıc Kataloqu
 Comment[bg]=Каталог на съобщениия
 Comment[bs]=Katalog poruka
@@ -43,8 +42,8 @@ Comment[ta]=¦ºö¾¢ ¾¢ÃðÎ
 Comment[tr]=İleti Kataloğu
 Comment[uk]=Каталог повідомлень
 Comment[vi]=Calalog các thông điệp 
+Comment[xh]=Umyalezo womfanekiso osencwadini
 Comment[zh_CN.GB2312]=消息目录
-Comment[zh_TW.Big5]=訊息分類
 Type=MimeType
 MimeType=application/x-linguist
 Patterns=*.ts;

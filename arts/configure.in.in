@@ -263,27 +263,85 @@ KDE_CHECK_COMPILER_FLAG(ftemplate-depth-99,
 [
   CXXFLAGS="$CXXFLAGS -ftemplate-depth-99"
 ])
- 
+
+dnl check for ALSA audio support
 arts_with_alsa=yes
 AC_ARG_WITH(alsa, [  --with-alsa             enable aRts ALSA support],
 [arts_with_alsa=$withval])
 
 if test "$arts_with_alsa" = "yes"; then
-AC_DEFUN(AC_CHECK_LIBASOUND,
+AC_DEFUN([AC_CHECK_LIBASOUND],
 [
   ac_ldflags_save="$LDFLAGS"
   LDFLAGS="$all_libraries $LDFLAGS"
-  AC_CHECK_HEADER(sys/asoundlib.h,
+  kde_has_asoundlib=no
+
+  AC_CHECK_HEADERS([ sys/asoundlib.h alsa/asoundlib.h ],
   [
-    AC_CHECK_LIB(asound,snd_seq_create_simple_port,[
-      alsa=true
-      LIBASOUND="-lasound"
-      AC_DEFINE(HAVE_LIBASOUND, 1,
-        [Define if you have libasound (required for alsa support)])
-    ], [
-      alsa=false
-    ])
+    kde_has_asoundlib=yes
   ])
+
+  dnl trial and error version check for ALSA 0.5.x / ALSA 0.9.x
+  AC_LANG_SAVE
+  AC_LANG_C
+  if test "x$kde_has_asoundlib" = "xyes"; then
+    AC_TRY_COMPILE([
+      #include "confdefs.h"
+      #ifdef HAVE_SYS_ASOUNDLIB_H
+      #include <sys/asoundlib.h>
+      #endif
+      #ifdef HAVE_ALSA_ASOUNDLIB_H
+      #include <alsa/asoundlib.h>
+      #endif
+    ],[
+      #if (SND_LIB_MAJOR == 0) && (SND_LIB_MINOR == 9)
+        /* we have ALSA 0.9.x */
+      #else
+        #error not ALSA 0.9.x
+      #endif
+    ],
+    kde_has_alsa_0_9=yes,
+    kde_has_alsa_0_9=no)
+  fi
+
+  if test "x$kde_has_asoundlib" = "xyes"; then
+    AC_TRY_COMPILE([
+      #include "confdefs.h"
+      #ifdef HAVE_SYS_ASOUNDLIB_H
+      #include <sys/asoundlib.h>
+      #endif
+      #ifdef HAVE_ALSA_ASOUNDLIB_H
+      #include <alsa/asoundlib.h>
+      #endif
+    ],[
+    #if (SND_LIB_MAJOR == 0) && (SND_LIB_MINOR == 5)
+      /* we have ALSA 0.5.x */
+    #else
+      #error not ALSA 0.5.x
+    #endif
+    ],
+    kde_has_alsa_0_5=yes,
+    kde_has_alsa_0_5=no)
+  fi
+  AC_LANG_RESTORE
+
+  if test "x$kde_has_asoundlib" = "xyes"; then
+    AC_CHECK_LIB(asound,snd_seq_create_simple_port,[
+      if test "x$kde_has_alsa_0_5" = "xyes"; then
+        LIBASOUND="-lasound"
+        AC_DEFINE(HAVE_LIBASOUND, 1,
+        [Define if you have libasound.so.1 (required for ALSA 0.5.x support)])
+      fi
+      if test "x$kde_has_alsa_0_9" = "xyes"; then
+        LIBASOUND="-lasound"
+        AC_DEFINE(HAVE_LIBASOUND2, 1,
+          [Define if you have libasound.so.2 (required for ALSA 0.9.x support)])
+        AC_CHECK_LIB(asound,snd_pcm_resume,[
+          AC_DEFINE(HAVE_SND_PCM_RESUME, 1,
+            [Define if libasound has snd_pcm_resume()])])
+      fi
+    ])
+  fi
   AC_SUBST(LIBASOUND)
   LDFLAGS="$ac_ldflags_save"
 ])
@@ -357,7 +415,7 @@ AC_SUBST(MCOPIDL)
 dnl Version (we /might/ want to use libtool versioning, too)
 ARTS_MAJOR_VERSION=0
 ARTS_MINOR_VERSION=6
-ARTS_MICRO_VERSION=0
+ARTS_MICRO_VERSION=1
 ARTS_VERSION=$ARTS_MAJOR_VERSION.$ARTS_MINOR_VERSION.$ARTS_MICRO_VERSION
 AC_SUBST(ARTS_MAJOR_VERSION)
 AC_SUBST(ARTS_MINOR_VERSION)

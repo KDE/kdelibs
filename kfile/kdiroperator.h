@@ -162,7 +162,7 @@ class KDirOperator : public QWidget
      */
     void setMimeFilter( const QStringList& mimetypes );
 
-    QStringList mimeFilter() const { return dir->mimeFilter(); }
+    QStringList mimeFilter() const { return dir->mimeFilters(); }
 
     /**
      * Clears both the namefilter and mimetype filter, so that all files and
@@ -446,6 +446,15 @@ class KDirOperator : public QWidget
      */
     bool dirHighlighting() const;
 
+    /**
+     * @returns true if we are in directory-only mode, that is, no files are
+     * shown.
+     */
+    bool dirOnlyMode() const {
+        return ( (myMode & KFile::Directory) &&
+                 (myMode & (KFile::File | KFile::Files)) == 0 );
+    }
+
 protected:
     /**
      * Sets a custom KFileReader to list directories.
@@ -636,15 +645,6 @@ protected slots:
      * Toggles case sensitive / case insensitive sorting
      */
     void toggleIgnoreCase() 	{ caseInsensitiveAction->setChecked( !caseInsensitiveAction->isChecked() ); }
-
-    /**
-     * @returns true if we are in directory-only mode, that is, no files are
-     * shown.
-     */
-    bool dirOnlyMode() const {
-        return ( (myMode & KFile::Directory) &&
-                 (myMode & (KFile::File | KFile::Files)) == 0 );
-    }
 
     /**
      * @p internal

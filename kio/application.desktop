@@ -2,7 +2,6 @@
 Type=ServiceType
 X-KDE-ServiceType=Application
 Name=Application
-Name[af]=AANSOEK
 Name[az]=Proqram
 Name[bg]=Приложение
 Name[br]=Arload
@@ -47,8 +46,8 @@ Name[tr]=Uygulama
 Name[uk]=Програма
 Name[vi]=Chương trình 
 Name[wa]=Programe
+Name[xh]=Isicelo
 Name[zh_CN.GB2312]=应用程序
-Name[zh_TW.Big5]=應用程式
 
 [PropertyDef::NoDisplay]
 Type=bool

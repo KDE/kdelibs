@@ -1,3 +1,4 @@
+#include <libxslt/xsltconfig.h>
 #include <libxslt/xsltInternals.h>
 #include <libxslt/transform.h>
 #include <libxslt/xsltutils.h>
@@ -5,6 +6,7 @@
 #include <libxml/parserInternals.h>
 #include <kdebug.h>
 #include <kstddirs.h>
+#include <qregexp.h>
 #include <qdir.h>
 #include <xslt.h>
 #include <kinstance.h>
@@ -184,13 +186,13 @@ xmlParserInputPtr meinExternalEntityLoader(const char *URL, const char *ID,
                     "failed to load external entity \"%s\"\n", ID);
         return(NULL);
     }
-    if (!strcmp(ID, "-//OASIS//DTD DocBook XML V4.1.2//EN"))
+    if (ID && !strcmp(ID, "-//OASIS//DTD DocBook XML V4.1.2//EN"))
         URL = "docbook/xml-dtd-4.1.2/docbookx.dtd";
-    if (!strcmp(ID, "-//OASIS//DTD XML DocBook V4.1.2//EN"))
-	URL = "docbook/xml-dtd-4.1.2/docbookx.dtd";
-    if (!strcmp(ID, "-//KDE//DTD DocBook XML V4.1-Based Variant V1.0//EN"))
+    if (ID && !strcmp(ID, "-//OASIS//DTD XML DocBook V4.1.2//EN"))
+        URL = "docbook/xml-dtd-4.1.2/docbookx.dtd";
+    if (ID && !strcmp(ID, "-//KDE//DTD DocBook XML V4.1-Based Variant V1.0//EN"))
         URL = "customization/dtd/kdex.dtd";
-    if (!strcmp(ID, "-//KDE//DTD DocBook XML V4.1.2-Based Variant V1.0//EN"))
+    if (ID && !strcmp(ID, "-//KDE//DTD DocBook XML V4.1.2-Based Variant V1.0//EN"))
         URL = "customization/dtd/kdex.dtd";
 
     QString file;

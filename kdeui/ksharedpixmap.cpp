@@ -26,6 +26,7 @@
 #include <ksharedpixmap.h>
 #include <kdebug.h>
 
+#include <stdlib.h>
 #include <X11/Xlib.h>
 
 // Make sure to include all this X-based shit before we clean up the mess.
@@ -173,16 +174,34 @@ bool KSharedPixmap::x11Event(XEvent *event)
 
     // Do some more processing here: Generate a tile that can be used as a
     // background tile for the rectangle "rect".
-	
+
+    //Check for origin off screen
+    QPoint origin(0, 0);
+    if(  d->rect.topLeft().x() < 0 ||  d->rect.topLeft().y() < 0 ) {
+        //Save the offset and relocate the rect corners
+        QPoint tl = d->rect.topLeft();
+        QPoint br = d->rect.bottomRight();
+        if( tl.x() < 0 ) {
+            origin.setX( abs( tl.x() ) );
+            tl.setX( 0 );
+        }
+        if( tl.y() < 0 ) {
+            origin.setY( abs( tl.y() ) );
+            tl.setY( 0 );
+        }
+        QRect adjustedRect( tl, br );
+        d->rect = adjustedRect;
+    }
+
     unsigned w = d->rect.width(), h = d->rect.height();
     unsigned tw = QMIN(width, w), th = QMIN(height, h);
     unsigned xa = d->rect.x() % width, ya = d->rect.y() % height;
     unsigned t1w = QMIN(width-xa,tw), t1h = QMIN(height-ya,th);
 
-    QPixmap::resize(tw, th);
+    QPixmap::resize( tw+origin.x(), th+origin.y() );
 
     XCopyArea(qt_xdisplay(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(),
-	    xa, ya, t1w, t1h, 0, 0);
+	    xa, ya, t1w+origin.x(), t1h+origin.y(), origin.x(), origin.y() );
     XCopyArea(qt_xdisplay(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(),
 	    0, ya, tw-t1w, t1h, t1w, 0);
     XCopyArea(qt_xdisplay(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(),

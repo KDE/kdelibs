@@ -25,6 +25,9 @@
 
 class QString;
 class KSSLCertificate;
+#include <qcstring.h>
+#include <qdatetime.h>
+
 
 class KSSLCertificateCache {
 public:
@@ -65,6 +68,18 @@ enum KSSLCertificatePolicy { Unknown, Reject, Accept, Prompt, Ambiguous };
 
   bool isPermanent(KSSLCertificate& cert);
 
+  bool modifyByCN(QString& cn,
+                  KSSLCertificateCache::KSSLCertificatePolicy policy,
+                  bool permanent,
+                  QDateTime& expires);
+
+  bool modifyByCertificate(KSSLCertificate& cert,
+                           KSSLCertificateCache::KSSLCertificatePolicy policy,
+                           bool permanent,
+                           QDateTime& expires);
+
+  void reload();
+
   // You shouldn't need to call this but in some weird circumstances
   // it might be necessary.
   void saveToDisk();
@@ -79,6 +94,7 @@ private:
 };
 
 
-
+QDataStream& operator<<(QDataStream& s, const KSSLCertificateCache::KSSLCertificatePolicy& p);
+QDataStream& operator>>(QDataStream& s, KSSLCertificateCache::KSSLCertificatePolicy& p);
 
 #endif

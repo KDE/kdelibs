@@ -171,7 +171,7 @@
 0       string          #!\ /bin/awk            application/x-awk
 0       string          #!/usr/bin/awk          application/x-awk
 0       string          #!\ /usr/bin/awk        application/x-awk
-0       string          BEGIN                   application/x-awk
+#0       string          BEGIN                   application/x-awk
 
 # For Larry Wall's perl language.  The ``eval'' line recognizes an
 # outrageously clever hack for USG systems.
@@ -219,6 +219,7 @@
 >>18	string		application/x-kchart\004\006	application/x-kchart
 >>18	string		application/x-kformula\004\006	application/x-kformula
 >>18	string		application/x-killustrator\004\006	application/x-killustrator
+>>18	string		application/x-kontour\004\006	application/x-kontour
 >>18	string		application/x-kpresenter\004\006	application/x-kpresenter
 >>18	string		application/x-kspread\004\006	application/x-kspread
 >>18	string		application/x-kword\004\006	application/x-kword

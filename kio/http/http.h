@@ -45,8 +45,7 @@ namespace KIO {
 class HTTPProtocol : public KIO::TCPSlaveBase
 {
 public:
-  HTTPProtocol( const QCString &protocol, const QCString &pool,
-                const QCString &app );
+  HTTPProtocol( const QCString &protocol, const QCString &pool, const QCString &app );
   virtual ~HTTPProtocol();
 
   /** HTTP version **/
@@ -165,6 +164,8 @@ protected:
 
   char *gets (char *str, int size);
 
+  void ungets(char *str, int size);
+
   /**
     * Add an encoding on to the appropiate stack this
     * is nececesary because transfer encodings and
@@ -196,6 +197,12 @@ protected:
    * Look for cookies in the cookiejar
    */
   QString findCookies( const QString &url);
+
+  /**
+   * Initializes the cookiejar if it is not running already and returns true
+   * if successful, i.e. the cookiejar started okay or is currently running.
+   */
+  bool initCookieJar() const;
 
   /**
    * Do a cache lookup for the current url. (m_state.url)
@@ -240,12 +247,14 @@ protected:
   void cleanCache();
 
   /**
-   * Performs a GET HTTP request.
+   * This function retreives the HEADER as well as the requested content
+   * from an HTTP server.
    */
   void retrieveContent();
 
   /**
-   * Performs a HEAD HTTP request.
+   * This function retrieves and parses the HEADER from the
+   * the requested HTTP server.
    */
   bool retrieveHeader(bool close_connection = true);
 
@@ -296,6 +305,7 @@ protected:
   void promptInfo( KIO::AuthInfo& info );
 
 protected:
+
   HTTPState m_state;
   HTTPRequest m_request;
 
@@ -310,6 +320,9 @@ protected:
   char m_lineBuf[1024];
   char *m_linePtr;
   size_t m_lineCount;
+  char *m_lineBufUnget;
+  char *m_linePtrUnget;
+  size_t m_lineCountUnget;
 
   // Holds the POST data so it won't get lost on if we
   // happend to get a 401/407 response when submitting,
@@ -342,6 +355,7 @@ protected:
 
   // Proxy related members
   bool m_bUseProxy;
+  bool m_bIsTunneled;
   int m_iProxyPort;
   KURL m_proxyURL;
   QString m_strProxyRealm;

@@ -2,7 +2,6 @@
 Type=BMP
 Header=
 Name=MSWindows Pixmaps
-Name[af]=MSWINDOWS PIX-KAARTE
 Name[az]=MSWindows Rəsmləri
 Name[bg]=MS Windows Pixmaps
 Name[br]=PiksmapoÃ¹ MSWindows
@@ -44,6 +43,7 @@ Name[sv]=Pixmappar för MS Windows
 Name[ta]=MSWindows À¼òÐÏìÌ Å¨Ã¸û
 Name[tr]=MSWindows Resimleri
 Name[vi]=Ảnh Pixmaps của MSWindows 
+Name[xh]=MSWindows iimaphu ze Pix
 Name[zh_CN.GB2312]=MSWindows 点图
 Read=true
 Write=true

@@ -1229,11 +1229,13 @@ void HTMLInputElementImpl::setChecked(bool _checked)
 
 DOMString HTMLInputElementImpl::value() const
 {
+    // Readonly support for type=file
+    if ( m_type == FILE )
+        return m_filename;
+
     if(m_value.isNull())
         return DOMString(""); // some JS sites obviously need this
-
-    // Readonly support for type=file
-    return m_type == FILE ? m_filename : m_value;
+    return m_value;
 }
 
 
@@ -1274,6 +1276,7 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
             dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT,2);
         else
             dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT,1);
+	me->setDefaultHandled();
     }
 
     if ((evt->id() == EventImpl::DOMACTIVATE_EVENT) &&
@@ -1715,10 +1718,11 @@ void HTMLSelectElementImpl::reset()
             HTMLOptionElementImpl *option = static_cast<HTMLOptionElementImpl*>(m_listItems[i]);
             bool selected = (!option->getAttribute(ATTR_SELECTED).isNull());
             option->setSelected(selected);
-            if (!m_multiple && selected)
-                return;
         }
     }
+    if ( m_render ) 
+        static_cast<RenderSelect*>(m_render)->setSelectionChanged(true);
+    setChanged( true );
 }
 
 void HTMLSelectElementImpl::notifyOptionSelected(HTMLOptionElementImpl *selectedOption, bool selected)

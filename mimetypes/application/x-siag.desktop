@@ -1,7 +1,6 @@
 [Desktop Entry]
 MimeType=application/x-siag
 Comment=Siag Spreadsheet
-Comment[af]=SIAG SPREIBLAD
 Comment[az]=Siag Hesab Cədvəli
 Comment[bg]=Таблица на Siag
 Comment[cs]=Tabulkový procesor Siag
@@ -36,8 +35,8 @@ Comment[sv]=Siag kalkylark
 Comment[ta]=Siag Å¢Ã¢¾¡û
 Comment[tr]=Siag Hesap Çizelgesi
 Comment[uk]=Електронна таблиця Siag
+Comment[xh]=Ikhasi lolwando lwe Siag
 Comment[zh_CN.GB2312]=Siag 电子表格
-Comment[zh_TW.Big5]=Siag 試算表
 Icon=
 Type=MimeType
 Patterns=*.siag;*.csv;*.wk1;

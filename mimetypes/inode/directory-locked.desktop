@@ -1,6 +1,5 @@
 [Desktop Entry]
 Comment=Locked Directory
-Comment[af]=GESLOTE GIDS
 Comment[az]=Qıfıllı Cərgə
 Comment[bg]=Заключена директория
 Comment[br]=Renkell prennet
@@ -45,8 +44,8 @@ Comment[ta]=âðÊÂ «¨¼×
 Comment[tr]=Kilitli Dizin
 Comment[uk]=Закритий каталог
 Comment[vi]=Thư mục bềEkhoá 
+Comment[xh]=Ulawulo olutshixiweyo
 Comment[zh_CN.GB2312]=锁住的目录
-Comment[zh_TW.Big5]=上鎖目錄
 Icon=folder_locked
 Type=MimeType
 MimeType=inode/directory-locked

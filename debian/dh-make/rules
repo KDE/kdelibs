@@ -9,7 +9,7 @@
 export DH_COMPAT=3
 ARCH = $(shell dpkg-architecture -qDEB_BUILD_ARCH)
 ifeq ($(ARCH),alpha)
-  COMPILER_FLAGS=CXX=g++-3.0 CC=gcc-3.0 CFLAGS=-mieee CXXFLAGS=-mieee
+  COMPILER_FLAGS=CFLAGS="-O0 -mieee" CXXFLAGS="-O0 -mieee"
 else
   COMPILER_FLAGS=CXX=g++ CC=gcc
 endif
@@ -83,7 +83,7 @@ binary-arch: build install
 	dh_installchangelogs #CHANGELOGS#
 	dh_link
 	dh_strip
-	dh_compress -X.docbook -X.css
+	dh_compress -X.docbook -X.css -X-license -X.dcl -X.bz2
 	dh_fixperms
 #	dh_makeshlibs
 	dh_installdeb

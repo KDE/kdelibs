@@ -510,7 +510,7 @@ void KAccel::writeKeyMap( const KKeyEntryMap &map, const QString &group, KConfig
             {
                 QString keyStr = (*it).aConfigKeyCode ?
                                   KAccel::keyToString( (*it).aConfigKeyCode, false ) :
-                                  "none";
+                                  QString::fromLatin1("none");
                 pConfig->writeEntry( it.key(), keyStr, true, global );
             }
             else

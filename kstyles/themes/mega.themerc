@@ -1,6 +1,5 @@
 [Misc]
 Name=MegaGradient highcolor style
-Name[af]=MEGAGRADIËNT HOë-KLEUR STYL
 Name[az]=MegaGradient yüksək rəng tərzi
 Name[bg]=Градиентен стил highcolor
 Name[cs]=Highcolor styl MegaGradient
@@ -19,17 +18,20 @@ Name[lt]=MegaGradient daugelio spalvų stilius
 Name[lv]=MegaGradient augstkrāsu stils
 Name[mt]=Stil MegaGradient
 Name[nl]=MegaGradient hogekleuren stijl
+Name[no]=MegaGradient høyoppløsning
 Name[no_NY]=MegaGradient-stil med mange fargar
 Name[pl]=Styl wielokolorowy MegaGradient
-Name[pt_BR]=Estilo MegaGradient com muitas cores
+Name[pt_BR]=Estilo MegaGradient highcolor
 Name[pt]=Estilo MegaGradient com muitas cores
 Name[ru]=Градиентный стиль highcolor
 Name[sk]=MegaGradient štýl veľa farieb
 Name[sl]=Raznobarvni slog MegaGradient
+Name[sr]=MegaGradient highcolor stil
 Name[sv]=Megagradient färgrik stil
 Name[tr]=Yüksek renkli stil
 Name[uk]=Багатокольоровий стиль 'Мега-градієнт'
 Name[vi]=Kiểu màu sáng Megagradient 
+Name[xh]=Amaxesha amaninzi endlela yohlobo lombala ophezulu
 Name[zh_CN.GB2312]=MegaGradient 高色彩风格
 [KDE]
 widgetStyle=mega.la

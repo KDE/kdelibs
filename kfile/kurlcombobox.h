@@ -45,6 +45,14 @@ class KURLComboBox : public KComboBox
 
 public:
     enum Mode { Files = -1, Directories = 1, Both = 0 };
+    /**
+     * This Enumeration is used in @ref setURL() to determine which items
+     * will be removed when the given list is larger than @ref maxItems().
+     *
+     * @li RemoveTop means that items will be removed from top
+     * @li RemoveBottom means, that items will be removed from the bottom
+     */
+    enum OverLoadResolving { RemoveTop, RemoveBottom };
 
     /**
      * Constructs a KURLComboBox.
@@ -77,8 +85,23 @@ public:
      */
     void setURL( const KURL& url );
 
-
+    /**
+     * Inserts @p urls into the combobox below the "default urls" (see
+     * @ref addDefaultURL).
+     *
+     * If the list of urls contains more items than maxItems, the first items
+     * will be stripped.
+     */
     void setURLs( QStringList urls );
+
+    /**
+     * Inserts @p urls into the combobox below the "default urls" (see
+     * @ref addDefaultURL).
+     *
+     * If the list of urls contains more items than maxItems, the @p remove
+     * parameter determines whether the first or last items will be stripped.
+     */
+    void setURLs( QStringList urls, OverLoadResolving remove );
 
     /**
      * @returns a list of all urls currently handled. The list contains at most

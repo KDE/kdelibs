@@ -2,31 +2,14 @@
 # don't use it yet
 HELP_SUBDIR=kdoctools
 
-LIBXSLT_MAJOR_VERSION=0
-LIBXSLT_MINOR_VERSION=13
-LIBXSLT_MICRO_VERSION=0
-PACKAGE=libxslt
- 
-LIBXSLT_VERSION=$LIBXSLT_MAJOR_VERSION.$LIBXSLT_MINOR_VERSION.$LIBXSLT_MICRO_VERSION
-LIBXSLT_VERSION_INFO=`expr $LIBXSLT_MAJOR_VERSION + $LIBXSLT_MINOR_VERSION`:$LIBXSLT_MICRO_VERSION:$LIBXSLT_MINOR_VERSION
- 
-LIBXSLT_VERSION_NUMBER=`expr $LIBXSLT_MAJOR_VERSION \* 10000 + $LIBXSLT_MINOR_VERSION \* 100 + $LIBXSLT_MICRO_VERSION`
- 
-AC_SUBST(LIBXSLT_MAJOR_VERSION)
-AC_SUBST(LIBXSLT_MINOR_VERSION)
-AC_SUBST(LIBXSLT_MICRO_VERSION)
-AC_SUBST(LIBXSLT_VERSION)
-AC_SUBST(LIBXSLT_VERSION_INFO)
-AC_SUBST(LIBXSLT_VERSION_NUMBER)
-
 KDE_FIND_PATH(xml2-config, XML_CONFIG, [${prefix}/bin ${exec_prefix}/bin /usr/local/bin /opt/local/bin], [
-  AC_MSG_WARN([Could not find libxml2 anywhere, check ftp://xmlsoft.org/ for libxml >= 2.3.13. (we also keep a version of it in kdesupport for convience)])
+  AC_MSG_WARN([Could not find libxml2 anywhere, check ftp://xmlsoft.org/ for libxml >= 2.4.8. (we also keep a version of it in kdesupport for CVS users' convience)])
   HELP_SUBDIR=
 ])
 
 if test -n "$XML_CONFIG"; then
   vers=`$XML_CONFIG --version 2>/dev/null | sed -e 's/libxml //' | awk 'BEGIN { FS = "."; } { printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
-  if test -n "$vers" && test "$vers" -ge 2003013
+  if test -n "$vers" && test "$vers" -ge 2004008
   then
      LIBXML_LIBS="`$XML_CONFIG --libs`"
      LIBXML_RPATH=
@@ -43,12 +26,41 @@ if test -n "$XML_CONFIG"; then
      KDE_FIND_PATH(xmllint, XMLLINT, [${prefix}/bin ${exec_prefix}/bin /usr/local/bin /opt/local/bin], [XMLLINT=""])
      AC_DEFINE_UNQUOTED(XMLLINT, "$XMLLINT", [Defines the executable of xmllint])
   else
-     AC_MSG_WARN([You need at least libxml 2.3.13])
+     AC_MSG_WARN([You need at least libxml 2.4.8])
      HELP_SUBDIR=
   fi
 fi
 
 if test -n "$HELP_SUBDIR"; then
+
+  KDE_FIND_PATH(xslt-config, XSLT_CONFIG, [${prefix}/bin ${exec_prefix}/bin /usr/local/bin /opt/local/bin], [
+    AC_MSG_WARN([Could not find libxslt anywhere, check ftp://xmlsoft.org/ for libxslt >= 1.0.6. (we also keep a version of it in kdesupport for CVS users' convience)])
+    HELP_SUBDIR=
+  ])
+
+  if test -n "$XSLT_CONFIG"; then
+     vers=`$XSLT_CONFIG --version 2>/dev/null | awk 'BEGIN { FS = "."; } { printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
+     if test -n "$vers" && test "$vers" -ge 1000006; then
+       LIBXSLT_LIBS="`$XSLT_CONFIG --libs`"
+       LIBXSLT_RPATH=
+       for args in $LIBXSLT_LIBS; do
+	  case $args in
+	    -L*)
+  	       LIBXSLT_RPATH="$LIBXSLT_RPATH $args"
+ 	       ;;
+          esac
+       done
+       LIBXSLT_RPATH=`echo $LIBXSLT_RPATH | sed -e "s/-L/-R/"`
+       LIBXSLT_CFLAGS="`$XSLT_CONFIG --cflags`"
+
+     else
+       AC_MSG_WARN([You need at least libxslt 1.0.6])
+       HELP_SUBDIR=
+     fi
+  fi
+fi
+
+if test -n "$HELP_SUBDIR"; then  
   MEINPROC='KDELIBS_UNINSTALLED=yes $(top_builddir)/kdoctools/meinproc'
   KDE_XSL_STYLESHEET='$(top_srcdir)/kdoctools/customization/kde-chunk.xsl'
 else
@@ -57,6 +69,11 @@ else
   DO_NOT_COMPILE="$DO_NOT_COMPILE kdoctools"
 fi
 
+
+AC_SUBST(LIBXSLT_LIBS)
+AC_SUBST(LIBXSLT_CFLAGS)
+AC_SUBST(LIBXSLT_RPATH)
+
 AC_SUBST(LIBXML_LIBS)
 AC_SUBST(LIBXML_CFLAGS)
 AC_SUBST(LIBXML_RPATH)
@@ -64,29 +81,5 @@ AC_SUBST(HELP_SUBDIR)
 AC_SUBST(MEINPROC) 
 AC_SUBST(KDE_XSL_STYLESHEET)
 
-WITH_MEM_DEBUG=0
-AC_SUBST(WITH_MEM_DEBUG)
-WITH_XSLT_DEBUG=0
-AC_SUBST(WITH_XSLT_DEBUG)
-
-AC_CHECK_HEADERS(ctype.h sys/types.h ieeefp.h nan.h math.h fp_class.h float.h ansidecl.h)
-AC_CHECK_FUNC(isnan, , AC_CHECK_LIB(m, isnan,
-  [M_LIBS="-lm"; AC_DEFINE(HAVE_ISNAN, 1, [Define if you have isnan])]))
- 
-AC_CHECK_FUNC(isinf, , AC_CHECK_LIB(m, isinf,
-  [M_LIBS="-lm"; AC_DEFINE(HAVE_ISINF, 1, [Define if you have isinf])]))
- 
-AC_CHECK_FUNC(pow, , AC_CHECK_LIB(m, pow,
-  [M_LIBS="-lm"; AC_DEFINE(HAVE_POW, 1, [Define if you have pow])]))
- 
-AC_CHECK_FUNC(floor, , AC_CHECK_LIB(m, floor,
-  [M_LIBS="-lm"; AC_DEFINE(HAVE_FLOOR, 1, [Define if you have floor])]))
- 
-AC_CHECK_FUNC(fabs, , AC_CHECK_LIB(m, fabs,
-  [M_LIBS="-lm"; AC_DEFINE(HAVE_FABS, 1, [Define if you have fabs])]))
-
-AC_SUBST(M_LIBS)
-
-dnl AC_OUTPUT(kdoctools/libxslt/xsltconfig.h kdoctools/libxslt/xsltwin32config.h)
 dnl AC_OUTPUT(kdoctools/checkXML)
 

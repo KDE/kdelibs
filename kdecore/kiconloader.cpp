@@ -147,8 +147,8 @@ struct KIconLoaderPrivate
     QIntDict<QImage> imgCache;
     QImage lastImage; // last loaded image without effect applied
     QString lastImageKey; // key for icon without effect
-    bool lastIconType; // see KIcon::type
-    bool lastIconThreshold; // see KIcon::threshold
+    int lastIconType; // see KIcon::type
+    int lastIconThreshold; // see KIcon::threshold
 };
 
 /*** KIconLoader: the icon loader ***/
@@ -342,7 +342,9 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
     QString name = _name;
     QString ext = name.right(4);
 
-    if ((ext == ".png") || (ext == ".xpm"))
+    static const QString &png_ext = KGlobal::staticQString(".png");
+    static const QString &xpm_ext = KGlobal::staticQString(".xpm");
+    if (ext == png_ext || ext == xpm_ext)
     {
 #ifndef NDEBUG
 	kdDebug(264) << "Application " << KGlobal::instance()->instanceName()
@@ -354,9 +356,9 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
     QString path;
     if (group_or_size == KIcon::User)
     {
-	path = d->mpDirs->findResource("appicon", name + ".png");
+	path = d->mpDirs->findResource("appicon", name + png_ext);
 	if (path.isEmpty())
-	     path = d->mpDirs->findResource("appicon", name + ".xpm");
+	     path = d->mpDirs->findResource("appicon", name + xpm_ext);
 	return path;
     }
     if (group_or_size >= KIcon::LastGroup)
@@ -406,6 +408,8 @@ QPixmap KIconLoader::loadIcon(const QString& _name, int group, int size,
     // Special case for absolute path icons.
     if (name.at(0) == '/') absolutePath=true;
 
+    static const QString &str_unknown = KGlobal::staticQString("unknown");
+
     // Special case for "User" icons.
     if (group == KIcon::User)
     {
@@ -422,7 +426,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, int group, int size,
 	    if (canReturnNull)
 		return pix;
 	    // We don't know the desired size: use small
-	    path = iconPath("unknown", KIcon::Small, true);
+	    path = iconPath(str_unknown, KIcon::Small, true);
 	    if (path.isEmpty())
 	    {
 		kdDebug(264) << "Warning: Cannot find \"unknown\" icon.\n";
@@ -461,17 +465,25 @@ QPixmap KIconLoader::loadIcon(const QString& _name, int group, int size,
 	group = 0;
     }
 
+        static const QString &png_ext = KGlobal::staticQString(".png");
+        static const QString &xpm_ext = KGlobal::staticQString(".xpm");
     if (!absolutePath)
     {
-	QString ext = name.right(4);
-	if ((ext == ".png") || (ext == ".xpm"))
-	{
+
+        if (!canReturnNull && name.isEmpty())
+            name = str_unknown;
+        else
+        {
+	    QString ext = name.right(4);
+	    if (ext == png_ext || ext == xpm_ext)
+	    {
 #ifndef NDEBUG
-	    kdDebug(264) << "Application "
-		<< KGlobal::instance()->instanceName()
-		<< " loads icon " << name << " with extension.\n";
+	        kdDebug(264) << "Application "
+		    << KGlobal::instance()->instanceName()
+		    << " loads icon " << name << " with extension.\n";
 #endif
-	    name = name.left(name.length() - 4);
+	        name = name.left(name.length() - 4);
+            }
 	}
     }
 
@@ -531,7 +543,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, int group, int size,
                 if (!pix.isNull() || canReturnNull)
                     return pix;
 
-                icon = findMatchingIcon("unknown", size);
+                icon = findMatchingIcon(str_unknown, size);
                 if (!icon.isValid())
                 {
                     kdDebug(264)
@@ -547,7 +559,9 @@ QPixmap KIconLoader::loadIcon(const QString& _name, int group, int size,
         if (inCache)
             return pix;
 
-        img=new QImage(icon.path);
+        // Use the extension as the format. Works for XPM and PNG, which is all we support.
+        QString ext = icon.path.right(3).upper();
+        img = new QImage(icon.path, ext.latin1());
         if (img->isNull())
             return pix;
 

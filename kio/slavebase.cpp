@@ -41,13 +41,13 @@
 #include <ksock.h>
 #include <kcrash.h>
 #include <kdesu/client.h>
-#include <kprotocolmanager.h>
 
 #include "slavebase.h"
 
 #include "kio/slavebase.h"
 #include "kio/slaveinterface.h"
 #include "kio/connection.h"
+#include "kio/ioslave_defaults.h"
 
 using namespace KIO;
 
@@ -115,6 +115,18 @@ public:
 
 };
 
+SlaveBase *globalSlave=0;
+
+void genericsig_handler(int sigNumber)
+{
+   signal(sigNumber,SIG_IGN);
+   //I don't think we can have the same problem here as in the sigsegv handler
+   kdDebug()<<"kioslave : exiting due to signal "<<sigNumber<<endl;
+   if (globalSlave!=0)
+      globalSlave->~SlaveBase();
+   exit(2);
+};
+
 //////////////
 
 SlaveBase::SlaveBase( const QCString &protocol,
@@ -127,6 +139,32 @@ SlaveBase::SlaveBase( const QCString &protocol,
     if (!getenv("KDE_DEBUG"))
         KCrash::setCrashHandler( sigsegv_handler );
     signal( SIGPIPE, sigpipe_handler );
+
+   signal(SIGINT,&genericsig_handler);
+	signal(SIGQUIT,&genericsig_handler);
+	signal(SIGILL,&genericsig_handler);
+	signal(SIGTRAP,&genericsig_handler);
+	signal(SIGABRT,&genericsig_handler);
+	signal(SIGBUS,&genericsig_handler);
+	signal(SIGALRM,&genericsig_handler);
+	signal(SIGTERM,&genericsig_handler);
+	signal(SIGFPE,&genericsig_handler);
+#ifdef SIGPOLL
+   signal(SIGPOLL, &genericsig_handler);
+#endif
+#ifdef SIGSYS
+   signal(SIGSYS, &genericsig_handler);
+#endif
+#ifdef SIGVTALRM
+   signal(SIGVTALRM, &genericsig_handler);
+#endif
+#ifdef SIGXCPU
+   signal(SIGXCPU, &genericsig_handler);
+#endif
+#ifdef SIGXFSZ
+   signal(SIGXFSZ, &genericsig_handler);
+#endif
+   globalSlave=this;
 
     appconn = new Connection();
     listEntryCurrentSize = 0;
@@ -205,7 +243,7 @@ void SlaveBase::dispatchLoop()
           }
           else
           {
-            exit(0);
+            return;
           }
         }
       }
@@ -215,7 +253,7 @@ void SlaveBase::dispatchLoop()
       kdDebug(7019) << "dispatchLoop(): select returned error "
                     << (errno==EBADF?"EBADF":errno==EINTR?"EINTR":errno==EINVAL?"EINVAL":errno==ENOMEM?"ENOMEM":"unknown")
                     << " (" << errno << ")" << endl;
-       exit(0);
+       return;
     }
   }
 }
@@ -385,6 +423,7 @@ void SlaveBase::mimeType( const QString &_type)
        cmd = 0;
        if ( m_pConnection->read( &cmd, data ) == -1 ) {
            kdDebug(7019) << "SlaveBase: mimetype: read error" << endl;
+           this->~SlaveBase();
            ::exit(255);
        }
        if ( isSubCommand(cmd) )
@@ -512,6 +551,7 @@ void SlaveBase::delCachedAuthentication( const QString& key )
 
 void SlaveBase::sigsegv_handler (int)
 {
+    signal(SIGSEGV,SIG_IGN);
     // Debug and printf should be avoided because they might
     // call malloc.. and get in a nice recursive malloc loop
     write(2, "kioslave : ###############SEG FAULT#############\n", 49);
@@ -520,12 +560,14 @@ void SlaveBase::sigsegv_handler (int)
 
 void SlaveBase::sigpipe_handler (int)
 {
+    signal(SIGPIPE,SIG_IGN);
     // We ignore a SIGPIPE in slaves.
     // A SIGPIPE can happen in two cases:
     // 1) Communication error with application.
     // 2) Communication error with network.
 
     kdDebug(7019) << "SIGPIPE" << endl;
+    signal(SIGPIPE,&sigpipe_handler);
 }
 
 void SlaveBase::setHost(QString const &, int, QString const &, QString const &)
@@ -562,6 +604,38 @@ void SlaveBase::chmod(KURL const &, int)
 { error(  ERR_UNSUPPORTED_ACTION, "chmod" ); }
 void SlaveBase::setSubURL(KURL const &)
 { error(  ERR_UNSUPPORTED_ACTION, "suburl" ); }
+
+/*void SlaveBase::openConnection(void)
+{ error(  ERR_UNSUPPORTED_ACTION, i18n("Sorry, opening connections is not supported with the protocol %1" ).arg(mProtocol)); }
+
+void SlaveBase::closeConnection(void)
+{ } // No response!
+void SlaveBase::stat(KURL const &)
+{ error(  ERR_UNSUPPORTED_ACTION, i18n("Sorry, accessing files is not supported with the protocol %1").arg(mProtocol) ); }
+void SlaveBase::put(KURL const &, int, bool, bool)
+{ error(  ERR_UNSUPPORTED_ACTION, i18n("Sorry, writing to %1 is not supported").arg(mProtocol) ); }
+void SlaveBase::special(QArray<char> const &)
+{ error(  ERR_UNSUPPORTED_ACTION, i18n("There are no special actions available for protocol %1").arg(mProtocol) ); }
+void SlaveBase::listDir(KURL const &)
+{ error(  ERR_UNSUPPORTED_ACTION, i18n("Sorry, listing directories is not supported for protocol %1").arg(mProtocol) ); }
+void SlaveBase::get(KURL const & )
+{ error(  ERR_UNSUPPORTED_ACTION, i18n("Sorry, retrieving data from %1 is not supported").arg(mProtocol) ); }
+void SlaveBase::mimetype(KURL const &url)
+{ get(url); }
+void SlaveBase::rename(KURL const &, KURL const &, bool)
+{ error(  ERR_UNSUPPORTED_ACTION, i18n("Sorry, renaming or moving files within %1 is not supported").arg(mProtocol) ); }
+void SlaveBase::symlink(QString const &, KURL const &, bool)
+{ error(  ERR_UNSUPPORTED_ACTION, i18n("Sorry, creating symlinks is not supported with protocol %1").arg(mProtocol) ); }
+void SlaveBase::copy(KURL const &, KURL const &, int, bool)
+{ error(  ERR_UNSUPPORTED_ACTION, i18n("Sorry, copying files within %1 is not supported").arg(mProtocol) ); }
+void SlaveBase::del(KURL const &, bool)
+{ error(  ERR_UNSUPPORTED_ACTION, i18n("Sorry, deleting files from %1 is not supported").arg(mProtocol) ); }
+void SlaveBase::mkdir(KURL const &, int)
+{ error(  ERR_UNSUPPORTED_ACTION, i18n("Sorry, creating directories is not supported with protocol %1").arg(mProtocol) ); }
+void SlaveBase::chmod(KURL const &, int)
+{ error(  ERR_UNSUPPORTED_ACTION, i18n("Sorry, changing the attributes of files is not supported with protocol %1").arg(mProtocol) ); }
+void SlaveBase::setSubURL(KURL const &)
+{ error(  ERR_UNSUPPORTED_ACTION, i18n("Sorry, using suburls with %1 is not supported").arg(mProtocol) ); }*/
 
 void SlaveBase::slave_status()
 { slaveStatus( QString::null, false ); }
@@ -718,7 +792,6 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         slave_status();
         break;
     case CMD_REPARSECONFIGURATION:
-        KProtocolManager::reparseConfiguration();
         reparseConfiguration();
         break;
     case CMD_CONFIG:
@@ -810,7 +883,9 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         fprintf(stderr, "Got unexpected CMD_NONE!\n");
         break;
     default:
-        assert( 0 );
+        // Some command we don't understand.
+        // Just ignore it, it may come from some future version of KDE.
+        break;
     }
 }
 
@@ -1194,7 +1269,7 @@ int SlaveBase::connectTimeout()
     int result = tmp.toInt(&ok);
     if (ok)
        return result;
-    return KProtocolManager::defaultConnectTimeout();
+    return DEFAULT_CONNECT_TIMEOUT;
 }
 
 int SlaveBase::proxyConnectTimeout()
@@ -1204,9 +1279,8 @@ int SlaveBase::proxyConnectTimeout()
     int result = tmp.toInt(&ok);
     if (ok)
        return result;
-    return KProtocolManager::defaultProxyConnectTimeout();
+    return DEFAULT_PROXY_CONNECT_TIMEOUT;
 }
-
 
 int SlaveBase::responseTimeout()
 {
@@ -1215,9 +1289,8 @@ int SlaveBase::responseTimeout()
     int result = tmp.toInt(&ok);
     if (ok)
        return result;
-    return KProtocolManager::defaultResponseTimeout();
+    return DEFAULT_RESPONSE_TIMEOUT;
 }
-
 
 int SlaveBase::readTimeout()
 {
@@ -1226,5 +1299,5 @@ int SlaveBase::readTimeout()
     int result = tmp.toInt(&ok);
     if (ok)
        return result;
-    return KProtocolManager::defaultReadTimeout();
+    return DEFAULT_READ_TIMEOUT;
 }

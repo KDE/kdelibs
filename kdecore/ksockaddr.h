@@ -391,8 +391,11 @@ public:
   virtual ksocklen_t size() const; // should be socklen_t
 
   /* comparation */
+  static bool areEqualInet(const KSocketAddress &s1, const KSocketAddress &s2, bool coreOnly);
+  static bool areEqualInet6(const KSocketAddress &s1, const KSocketAddress &s2, bool coreOnly);
 
   /**
+   * @obsolete KDE 3.0: To be removed
    * This kind of socket supports core comparation. This will
    * compare the IP part of the sockets only.
    * @param other	the other socket
@@ -533,6 +536,8 @@ public:
    */
   operator const sockaddr_un*() const
   { return address(); }
+
+  static bool areEqualUnix(const KSocketAddress &s1, const KSocketAddress &s2, bool coreOnly);
 
 private:
   void init();

@@ -538,6 +538,9 @@ bool KGlobalAccel::x11EventFilter( const XEvent *event_ ) {
 	}
     }
 
+    if ( sConfigKey.isNull() )
+	return false;
+    
     if ( !QWidget::keyboardGrabber() ) {
 	kdDebug(125) << "received action " << sConfigKey << endl;
 	if ( !d->rawModeList || !d->rawModeList->contains( sConfigKey ) ) {

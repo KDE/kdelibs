@@ -1,7 +1,6 @@
 [Desktop Entry]
 Type=Service
 Name=BZip2 Filter
-Name[af]=BZIP2 FILTER
 Name[az]=BZip2 Süzgəci
 Name[bg]=bzip2 филтър
 Name[cs]=Filtr BZip2
@@ -37,7 +36,7 @@ Name[ta]=BZip2 ÅÊ¸ðÊ
 Name[tr]=BZip2 Filtresi
 Name[uk]=Фільтр BZip2
 Name[vi]=Trình lọc BZip2 
+Name[xh]=BZip2 Icebo lokucoca ulwelo
 Name[zh_CN.GB2312]=BZip2 过滤
-Name[zh_TW.Big5]=BZip2 過濾器
 X-KDE-Library=kbzip2filter
 ServiceTypes=KDECompressionFilter,application/x-bzip2,application/x-tbz

@@ -120,7 +120,7 @@ namespace KJS {
 
   class OptionConstructor : public ConstructorImp {
   public:
-    OptionConstructor(const DOM::Document &d);
+    OptionConstructor(const Global &global, const DOM::Document &d);
     Object construct(const List &);
   private:
     Global global;

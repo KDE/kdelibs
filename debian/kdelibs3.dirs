@@ -1,3 +1,7 @@
 etc/pam.d/
 etc/kde2
+etc/kde2/colors
+etc/kde2/ui
+etc/kde2/protocols
+usr/share/kde2
 usr/share/lintian/overrides

@@ -1,7 +1,6 @@
 [Desktop Entry]
 MimeType=text/x-makefile
 Comment=Makefile
-Comment[af]=MAAKLEêR
 Comment[da]=Makefil
 Comment[eo]=Muntdosiero
 Comment[es]=Script Makefile
@@ -13,6 +12,7 @@ Comment[ko]=Make 파일
 Comment[mk]=Makefile датотека
 Comment[no_NY]=Make-fil
 Comment[uk]=Файл Makefile
+Comment[xh]=Yenza ifayile
 Type=MimeType
 Patterns=Makefile*;makefile*;
 Icon=make

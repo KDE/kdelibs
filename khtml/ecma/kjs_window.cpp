@@ -460,7 +460,7 @@ KJSO Window::get(const UString &p) const
   else if (p == "Image")
     return KJSO(new ImageConstructor(Global::current(), m_part->document()));
   else if (p == "Option")
-    return KJSO(new OptionConstructor(m_part->document()));
+    return KJSO(new OptionConstructor(Global::current(), m_part->document()));
   else if (p == "alert")
     return Function(new WindowFunc(this, WindowFunc::Alert));
   else if (p == "confirm")
@@ -1071,7 +1071,7 @@ Completion WindowFunc::tryExecute(const List &args)
     (const_cast<Window*>(window))->clearTimeout(v.toInt32());
     break;
   case Focus:
-    if (widget) 
+    if (widget)
       widget->setActiveWindow();
     result = Undefined();
     break;
@@ -1215,7 +1215,7 @@ KJSO Location::get(const UString &p) const
   QString str;
 
   if (p == "hash")
-    str = "#"+url.ref();
+    str = url.ref().isNull() ? QString("") : "#" + url.ref();
   else if (p == "host") {
     str = url.host();
     if (url.port())
@@ -1305,8 +1305,12 @@ Completion LocationFunc::tryExecute(const List &args)
   if (part) {
     switch (id) {
     case Replace:
-      part->scheduleRedirection(0, args[0].toString().value().qstring().prepend( "target://_self/#" ));
+    {
+      QString str = args[0].toString().value().qstring();
+      part->scheduleRedirection(0, Window::retrieveActive()->part()->
+                              completeURL(str).url().prepend( "target://_self/#" ));
       break;
+    }
     case Reload:
       part->scheduleRedirection(0, part->url().url().prepend( "target://_self/#" ) );
       break;

@@ -2,7 +2,6 @@
 Type=PNG
 Header=
 Name=PNG-Pictures
-Name[af]=PNG-PRENTE
 Name[az]=PNG-Rəsmləri
 Name[bg]=PNG Картинки
 Name[br]=SkeudennoÃ¹ PNG
@@ -46,8 +45,8 @@ Name[ta]=PNG-À¼í¸û
 Name[tr]=PNG-Resimleri
 Name[uk]=Малюнки PNG
 Name[vi]=Ảnh PNG 
+Name[xh]=Imifanekiso-PNG
 Name[zh_CN.GB2312]=PNG 图片
-Name[zh_TW.Big5]=PNG-影像
 Read=true
 Write=true
 Suffices=png,PNG

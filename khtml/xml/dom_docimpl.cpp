@@ -692,12 +692,16 @@ void DocumentImpl::attach(KHTMLView *w)
 
 void DocumentImpl::detach()
 {
+    RenderObject* render = m_render;
+
+    // start destruction mode
+    m_render = 0;
+
     NodeBaseImpl::detach();
 
-    if ( m_render )
-        m_render->detach();
+    if ( render )
+        render->detach();
 
-    m_render = 0;
     m_view = 0;
 }
 
@@ -836,6 +840,14 @@ void DocumentImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString
     m_loadingSheet = false;
 
     createSelector();
+}
+
+void DocumentImpl::setUserStyleSheet( const QString& sheet )
+{
+    if ( m_usersheet != sheet ) {
+        m_usersheet = sheet;
+        applyChanges();
+    }
 }
 
 CSSStyleSheetImpl* DocumentImpl::elementSheet()
@@ -1102,7 +1114,7 @@ int DocumentImpl::findHighestTabIndex()
 
 ElementImpl *DocumentImpl::findNextLink(ElementImpl *cur, bool forward)
 {
-    int curTabIndex = (cur?cur->tabIndex():(forward?-1:0));
+    int curTabIndex = (cur?cur->tabIndex():(forward?1:-1));
 
     switch(curTabIndex)
     {
@@ -1143,8 +1155,9 @@ ElementImpl *DocumentImpl::notabindex(ElementImpl *cur, bool forward)
         return cur;
 
     if (forward)
-        return intabindex(cur, forward);
-    return 0;
+        return 0;
+    else
+        return tabindexzero(cur, forward);
 }
 
 ElementImpl *DocumentImpl::intabindex(ElementImpl *cur, bool forward)
@@ -1164,10 +1177,11 @@ ElementImpl *DocumentImpl::intabindex(ElementImpl *cur, bool forward)
             return cur;
         tmptabindex+=increment;
     }
+
     if (forward)
         return tabindexzero(cur, forward);
     else
-        return notabindex(cur, forward) ;
+        return 0;
 }
 
 ElementImpl *DocumentImpl::tabindexzero(ElementImpl *cur, bool forward)
@@ -1175,9 +1189,11 @@ ElementImpl *DocumentImpl::tabindexzero(ElementImpl *cur, bool forward)
     //REQ: tabindex of result must be 0 and it must be after the current node ;
     if ((cur = findLink(cur, forward, 0)))
         return cur;
-    if (!forward)
+
+    if (forward)
+        return notabindex(cur, forward);
+    else
         return intabindex(cur, forward);
-    return 0;
 }
 
 bool DocumentImpl::prepareMouseEvent( int _x, int _y,
@@ -1270,6 +1286,8 @@ StyleSheetListImpl* DocumentImpl::styleSheets()
 
 void DocumentImpl::createSelector()
 {
+    if ( !m_render || !attached() ) return;
+
     QList<StyleSheetImpl> oldStyleSheets = m_styleSheets->styleSheets;
     m_styleSheets->styleSheets.clear();
     NodeImpl *n;

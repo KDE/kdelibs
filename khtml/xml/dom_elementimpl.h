@@ -129,7 +129,7 @@ public:
     virtual void parseAttribute(AttrImpl *) {}
 
     // not part of the DOM
-    DOMString getAttribute ( int id );
+    DOMString getAttribute ( int id ) const;
     AttrImpl *getAttributeNode ( int index ) const;
     int getAttributeCount() const;
     void setAttribute ( int id, const DOMString &value );
@@ -142,9 +142,6 @@ public:
     virtual void detach();
     virtual void recalcStyle();
 
-    virtual bool prepareMouseEvent( int x, int y,
-                                    int _tx, int _ty,
-                                    MouseEvent *ev);
     virtual void setFocus(bool = true);
     virtual void setActive(bool = true);
     virtual void mouseEventHandler( MouseEvent */*ev*/, bool /*inside*/ ) {};

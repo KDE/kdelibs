@@ -12,6 +12,7 @@
 <!ENTITY Floris.Lambrechts '<othercredit role="translator"><firstname>Floris</firstname><surname>Lambrechts</surname><affiliation><address><email>floris.lambrechts@linuxfocus.org</email></address></affiliation><contrib>Vertaling van het handboek</contrib></othercredit>'>
 <!ENTITY Michel.Fontes '<othercredit role="translator"><firstname>Michel</firstname><surname>Fontes</surname><affiliation><address><email>michelfontes@hotmail.com</email></address></affiliation><contrib>Vertaling van het handboek</contrib></othercredit>'>
 <!ENTITY Jogchum.Reitsma '<othercredit role="translator"><firstname>Jogchum</firstname><surname>Reitsma</surname><affiliation><address><email>j.reitsma@hcc.net</email></address></affiliation><contrib>Vertaling van het handboek</contrib></othercredit>'>
+<!ENTITY Otto.Bruggeman '<othercredit role="translator"><firstname>Otto</firstname><surname>Bruggeman</surname><affiliation><address><email>otto.bruggeman@home.nl</email></address></affiliation><contrib>Vertaling van het handboek</contrib></othercredit>'>
 
 <!ENTITY kde.nl.groep "<email>i18n@kde.nl</email>">
 

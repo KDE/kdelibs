@@ -14,17 +14,9 @@ KDEDOCDIR = usr/share/doc/kdelibs3-doc/html
 export KDB2HTML_UNINSTALLED=$(BUILDDIR)/ksgmltools/customization/
 ARCH = $(shell dpkg-architecture -qDEB_BUILD_ARCH)
 ifeq ($(ARCH),alpha)
-  COMPILER_FLAGS=CXX=g++-3.0 CC=gcc-3.0 CFLAGS=-mieee CXXFLAGS=-mieee
+  COMPILER_FLAGS=CFLAGS="-O0 -mieee" CXXFLAGS="-O0 -mieee"
 else
   COMPILER_FLAGS=CXX=g++ CC=gcc
-endif
-ifeq ($(ARCH),hppa)
-  XINERAMA=
-else
-  XINERAMA=--with-xinerama
-endif
-ifeq ($(ARCH),i386)
-  OBJPRELINK=--enable-objprelink
 endif
 
 tmp = $(shell pwd)/debian/kdelibs3
@@ -42,11 +34,12 @@ build-stamp:
 	if test ! -f configure; then \
 	  $(MAKE) -f admin/Makefile.common ;\
 	fi
+	-chmod 755 configure
 	version=`head -1 debian/changelog | sed -e "s#.*(\([^)]*\)).*#Debian Package \1#"` ;\
 	$(COMPILER_FLAGS) \
 	./configure $(configkde) --with-distribution="$$version (`cat /etc/debian_version`)" \
-	--includedir=/usr/include/kde --without-ssl --without-alsa \
-	--disable-cups $(XINERAMA) $(OBJPRELINK)
+	--includedir=/usr/include/kde --without-alsa \
+	--disable-cups
 
 	$(MAKE)
 	$(MAKE) DESTDIR=`pwd`/debian/install-tmp/ install
@@ -56,10 +49,11 @@ build-stamp:
 alsa-stamp:
 	dh_testdir
 	-$(MAKE) -C arts/ clean
+	-rm -f `find arts -name "*.mcoptype"`
 	-$(MAKE) -C libkmid/ clean
 	-$(MAKE) -C kdeprint/cups clean
 	$(COMPILER_FLAGS) \
-	./configure $(configkde) --with-alsa --without-ssl --enable-cups \
+	./configure $(configkde) --with-alsa --enable-cups \
 		--includedir=/usr/include/kde
 	$(MAKE) -C libkmid/ 
 	$(MAKE) -C arts/ 
@@ -156,7 +150,7 @@ binary-arch:  build install
 	dh_installman -a
 	dh_installmenu -a
 	dh_installdebconf -a
-	# music chairs
+	# musical chairs
 	dh_movefiles -plibarts --sourcedir=debian/kdelibs3
 	dh_movefiles -plibarts-dev --sourcedir=debian/kdelibs3
 	dh_movefiles -plibkmid --sourcedir=debian/kdelibs3
@@ -165,14 +159,12 @@ binary-arch:  build install
 	dh_movefiles -pkdelibs3-cups --sourcedir=debian/kdelibs3
 	dh_movefiles -plibarts-alsa --sourcedir=debian/alsa-tmp
 	dh_movefiles -plibkmid-alsa --sourcedir=debian/alsa-tmp
-	# ssl cleanup
-	-rm -rf debian/kdelibs3/usr/share/apps/kssl
 	dh_installchangelogs -a 
 	dh_strip -a
-	for i in `find debian/ -type l -name "common"`; do \
-		rm $$i; \
-		ln -s ../common $$i ;\
-	done
+	#for i in `find debian/ -type l -name "common"`; do \
+	#	rm $$i; \
+	#	ln -s ../common $$i ;\
+	#done
 	dh_perl -a
 	dh_link -a
 	dh_compress -a -X.docbook -X.css -X-license -X.dcl
@@ -186,9 +178,9 @@ binary-arch:  build install
 	dh_installdeb -a
 	dh_shlibdeps -a -l`pwd`/debian/kdelibs3/usr/lib:`pwd`/debian/libarts/usr/lib:`pwd`/debian/libkmid/usr/lib:`pwd`/debian/kdelibs3-cups/usr/lib
 	echo -n `cat debian/libarts.substvars ` > debian/libarts-alsa.substvars
-	echo ", libasound2 (>= 0.9.0beta4-1)" >> debian/libarts-alsa.substvars
+	echo ", libasound2 (>= 0.9.0beta7-1)" >> debian/libarts-alsa.substvars
 	echo -n `cat debian/libkmid.substvars` > debian/libkmid-alsa.substvars
-	echo ", libasound2 (>= 0.9.0beta4-1)" >> debian/libkmid-alsa.substvars
+	echo ", libasound2 (>= 0.9.0beta7-1)" >> debian/libkmid-alsa.substvars
 	dh_gencontrol 
 	dh_md5sums 
 	dh_builddeb -a

@@ -1,7 +1,6 @@
 [Desktop Entry]
 MimeType=application/x-lzop
 Comment=Lzopped File
-Comment[af]=LZOP GEKOMPAKTEERDE LêER
 Comment[az]=Lzop'lanmış fayl
 Comment[bg]=Lzop файл
 Comment[br]=Restr Lzoppet
@@ -24,7 +23,7 @@ Comment[is]=Þjöppuð skrá (lzop)
 Comment[it]=File Lzoppato
 Comment[ja]=Lzopされたファイル
 Comment[ko]=Lzop으로 압축된 파일
-Comment[lt]=Byla, suglaudinta su LZO
+Comment[lt]=Byla, suspausta su LZO
 Comment[lv]=Lzopped Fails
 Comment[mi]=Konae Lzop
 Comment[mk]=Lzopped датотека
@@ -45,8 +44,8 @@ Comment[ta]=Lzopped §¸¡ôÒ
 Comment[tr]=Lzop'lanmış dosya
 Comment[uk]=Файл Lzopp
 Comment[vi]=File Lzopped 
+Comment[xh]=Ifayile ye Lzopped
 Comment[zh_CN.GB2312]=Lzopped 文件
-Comment[zh_TW.Big5]=Lzopped 檔案
 Icon=tgz
 Type=MimeType
 Patterns=*.lzo

@@ -39,12 +39,14 @@
 #include <qfile.h>
 #include <limits.h>
 #include <qtextcodec.h>
+#include <qregexp.h>
 
 #include "kio_help.h"
+#include <libxslt/xsltconfig.h>
 #include <libxslt/xsltInternals.h>
 #include <libxslt/transform.h>
 #include <libxslt/xsltutils.h>
-#include <xslt.h>
+#include "xslt.h"
 
 using namespace KIO;
 

@@ -34,14 +34,26 @@ if test -z "$LIBPCRE"; then
   all_tests=bad
 fi
 
-if test -z "$HELP_SUBDIR"; then
+if test -z "$LIBXML_CFLAGS"; then
   echo ""
-  echo "You're missing libxml2 2.3.13 or later."
+  echo "You're missing libxml2 2.4.8 or later."
   echo "KDE won't be able to provide a help ioslave (help://) without it,"
   echo "so if you want helpfiles you should consider installing it."
   echo "Have a look at ftp://xmlsoft.org/ for sources, or find a binary"
   echo "package for your platform."
-  echo "You can find a copy of libxml2 in the kdesupport module."
+  echo "You can find a copy of libxml2 in the kdesupport module if you're using CVS."
+  echo ""
+  all_tests=bad
+fi
+
+if test -z "$LIBXSLT_CFLAGS"; then
+  echo ""
+  echo "You're missing libxslt 1.0.6 or later."
+  echo "KDE won't be able to provide a help ioslave (help://) without it,"
+  echo "so if you want helpfiles you should consider installing it."
+  echo "Have a look at ftp://xmlsoft.org/ for sources, or find a binary"
+  echo "package for your platform."
+  echo "You can find a copy of libxslt in the kdesupport module if you're using CVS."
   echo ""
   all_tests=bad
 fi
@@ -66,7 +78,7 @@ fi
 
 if test "$all_tests" = "bad"; then
   echo ""
-  echo "Please remove the file config.cache after installing any libraries"
-  echo "so that configure will find them next time."
+  echo "Please remove the file config.cache and/or config.status after"
+  echo "installing any libraries so that configure will find them next time."
   echo ""
 fi

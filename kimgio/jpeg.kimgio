@@ -2,7 +2,6 @@
 Type=JPEG
 Header=
 Name=JPEG-Pictures
-Name[af]=JPEG-PRENTE
 Name[az]=JPEG-Rəsmləri
 Name[bg]=JPEG Картинки
 Name[br]=SkeudennoÃ¹ JPEG
@@ -46,8 +45,8 @@ Name[ta]=JPEG-À¼í¸û
 Name[tr]=JPEG-Resimleri
 Name[uk]=Малюнки JPEG
 Name[vi]=Ảnh JPEG 
+Name[xh]=Imifanekiso-JPEG
 Name[zh_CN.GB2312]=JPEG 图片
-Name[zh_TW.Big5]=JPEG-影像
 Read=true
 Write=true
 Suffices=jpg,JPG,jpeg,JPEG 

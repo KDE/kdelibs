@@ -109,6 +109,11 @@ void KIconEffect::init()
     }
 }
 
+bool KIconEffect::hasEffect(int group, int state) const
+{
+    return mEffect[group][state] != NoEffect;
+}
+
 QString KIconEffect::fingerprint(int group, int state)
 {
     QString s, tmp;

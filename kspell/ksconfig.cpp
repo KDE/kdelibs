@@ -115,6 +115,7 @@ KSpellConfig::KSpellConfig( QWidget *parent, const char *name,
   encodingcombo->insertItem ("ISO 8859-7");
   encodingcombo->insertItem ("ISO 8859-8");
   encodingcombo->insertItem ("ISO 8859-9");
+  encodingcombo->insertItem ("ISO 8859-13");
   encodingcombo->insertItem ("ISO 8859-15");
   encodingcombo->insertItem ("UTF-8");
   encodingcombo->insertItem ("KOI8-R");
@@ -259,8 +260,11 @@ KSpellConfig::interpret (QString &fname, QString &lname,
   else if (fname=="russian") {
     lname="ru"; hname=i18n("Russian");
   }
-  else if (fname=="slovensko") {
+  else if (fname=="slovak") {
     lname="sk"; hname=i18n("Slovak"); sChangeEncoding(KS_E_LATIN2);
+  }
+  else if (fname=="slovensko") {
+    lname="sl"; hname=i18n("Slovenian"); sChangeEncoding(KS_E_LATIN2);
   }
   else if (fname=="czech") {
     lname="cs"; hname=i18n("Czech"); sChangeEncoding(KS_E_LATIN2);
@@ -274,11 +278,14 @@ KSpellConfig::interpret (QString &fname, QString &lname,
   else if (fname=="ukrainian") {
     lname="uk"; hname=i18n("Ukrainian");
   }
+  else if (fname=="lietuviu" || fname=="lithuanian") {
+     lname="lt"; hname=i18n("Lithuanian");
+  }
   else if (fname=="francais" || fname=="french") {
     lname="fr"; hname=i18n("French");
-//  } 
-//  else if (fname=="belarusian") {  // waiting for post 2.2 to not dissapoint translators
-//    lname="be"; hname=i18n("Belarusian");
+  }
+  else if (fname=="belarusian") {  // waiting for post 2.2 to not dissapoint translators
+    lname="be"; hname=i18n("Belarusian");
   }
   else {
     lname=""; hname=i18n("Unknown ispell dictionary", "Unknown");
@@ -351,6 +358,8 @@ void KSpellConfig::getAvailDictsIspell () {
   if (!dir.exists() || !dir.isDir())
     dir.setFile ("/usr/local/lib/ispell");
   if (!dir.exists() || !dir.isDir())
+    dir.setFile ("/usr/local/share/ispell");
+  if (!dir.exists() || !dir.isDir())
     dir.setFile ("/usr/share/ispell");
   if (!dir.exists() || !dir.isDir()) return;
 
@@ -408,6 +417,8 @@ void KSpellConfig::getAvailDictsAspell () {
     dir.setFile ("/usr/local/lib/aspell");
     if (!dir.exists() || !dir.isDir())
     dir.setFile ("/usr/share/aspell");
+  if (!dir.exists() || !dir.isDir())
+    dir.setFile ("/usr/local/share/aspell");
   if (!dir.exists() || !dir.isDir()) return;
 
   kdDebug(750) << "KSpellConfig::getAvailDictsAspell "

@@ -352,7 +352,7 @@ void KBugReport::slotSetFrom()
   delete m_process;
   m_process = 0;
   m_configureEmail->setEnabled(true);
- 
+
   // ### KDE3: why oh why is KEmailSettings in kio?
   KConfig emailConf( QString::fromLatin1("emaildefaults") );
 
@@ -379,7 +379,7 @@ void KBugReport::slotSetFrom()
 void KBugReport::slotUrlClicked(const QString &urlText)
 {
   kapp->invokeBrowser( urlText );
-	
+
   // When using the web form, a click can also close the window, as there's
 	// not much to do. It also gives the user a direct response to his click:
   KDialogBase::slotCancel();
@@ -388,6 +388,9 @@ void KBugReport::slotUrlClicked(const QString &urlText)
 
 void KBugReport::slotOk( void )
 {
+    if ( d->webFormLabel)
+        return;
+
     if( m_lineedit->text().isEmpty() == true ||
         m_subject->text().isEmpty() == true )
     {

@@ -90,8 +90,6 @@ public:
     int leftRelOffset(int y, int fixedOffset, int *heightRemaining = 0) const;
     int leftOffset(int y) const { return leftRelOffset(y, leftOffset()); }
 
-    virtual bool containsPoint(int _x, int _y, int _tx, int _ty);
-
     virtual void printTree(int indent=0) const;
 
 protected:
