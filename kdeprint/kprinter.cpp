@@ -674,7 +674,7 @@ void KPrinter::setOutputToFile(bool on)
 	if (on)
 	{
 		setOption("kde-special-command",QString::null);
-		setOption("kde-isspecial",QString::null);
+		setOption("kde-isspecial","1");
 	}
 }
 
