@@ -377,7 +377,7 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
 	    m_height = QMAX( m_height, floatBottom() );
 	    prevMargin = 0;
 	}
-	
+
 //         kdDebug( 6040 ) << "   " << child->renderName() << " loop " << child << ", " << child->isInline() << ", " << child->layouted() << endl;
 //         kdDebug( 6040 ) << t.elapsed() << endl;
         // ### might be some layouts are done two times... FIX that.
@@ -1220,15 +1220,8 @@ void RenderFlow::calcMinMaxWidth()
     if (style()->width().isFixed())
         m_maxWidth = KMAX(m_minWidth,short(style()->width().value));
 
-    switch(style()->whiteSpace() ) {
-    case NORMAL: break;
-    case PRE:
-        m_maxWidth = m_minWidth;
-        break;
-    case NOWRAP:
+    if ( style()->whiteSpace() == NOWRAP )
         m_minWidth = m_maxWidth;
-        break;
-    }
 
     int toAdd = 0;
     if(style()->hasBorder())
@@ -1265,7 +1258,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
     kdDebug( 6040 ) << "current height = " << m_height << endl;
 #endif
     setLayouted( false );
-    
+
     bool madeBoxesNonInline = FALSE;
 
     if ( newChild->isPositioned() ) {
@@ -1456,7 +1449,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
     newChild->setLayouted( false );
     newChild->setMinMaxKnown( false );
     insertPseudoChild(RenderStyle::AFTER, newChild, beforeChild);
-    
+
     if ( madeBoxesNonInline )
 	removeLeftoverAnonymousBoxes();
 }
@@ -1519,8 +1512,8 @@ void RenderFlow::makeChildrenNonInline(RenderObject *box2Start)
             KHTMLAssert(parent()->childrenInline());
 	    static_cast<RenderFlow *>(parent())->makeChildrenNonInline();
         }
-    } 
-    
+    }
+
     setLayouted(false);
 }
 
