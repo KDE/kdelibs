@@ -41,8 +41,9 @@
 
 #include <khtmllayout.h>
 
+// rikkus: workaround for gcc 2.95.3 (!= for bitfield is broken)
 #define SET_VAR(group,variable,value) \
-    if (group->variable != value) \
+    if (!(group->variable == value)) \
         group.access()->variable = value;
 
 namespace khtml {
@@ -195,7 +196,11 @@ public:
     unsigned short width : 12;
     EBorderStyle style : 4;
 
-    bool nonZero() const { return width!=0 && style!=BNONE; }
+    bool nonZero() const
+    {
+      // rikkus: workaround for gcc 2.95.3
+      return width!=0 && !(style==BNONE);
+    }
 
     bool operator==(const BorderValue& o) const
     {
