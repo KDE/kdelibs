@@ -26,57 +26,40 @@
 #include "math_object.h"
 #include "lookup.h"
 
-#include "math_object.lut.h"
-
 using namespace KJS;
 
-KJSO Math::get(const UString &p) const
+Math::Math(const Object &objProto) : ObjectImp(BooleanClass)
 {
-  int token = Lookup::find(&mathTable, p);
+  // ECMA 15.8
+  setPrototype(objProto);
 
-  if (token < 0)
-    return Imp::get(p);
+  put("E",       Number(exp(1.0)),             DontEnum|DontDelete|ReadOnly);
+  put("LN10",    Number(log(10.0)),            DontEnum|DontDelete|ReadOnly);
+  put("LN2",     Number(log(2.0)),             DontEnum|DontDelete|ReadOnly);
+  put("LOG2E",   Number(1.0/log(2.0)),         DontEnum|DontDelete|ReadOnly);
+  put("LOG10E",  Number(1.0/log(10.0)),        DontEnum|DontDelete|ReadOnly);
+  put("PI",      Number(2.0 * asin(1.0)),      DontEnum|DontDelete|ReadOnly);
+  put("SQRT1_2", Number(sqrt(0.5)),            DontEnum|DontDelete|ReadOnly);
+  put("SQRT2",   Number(sqrt(2.0)),            DontEnum|DontDelete|ReadOnly);
 
-  double d;
-  int len = 1;
-  switch (token) {
-  case Math::Euler:
-    d = exp(1.0);
-    break;
-  case Math::Ln2:
-    d = log(2.0);
-    break;
-  case Math::Ln10:
-    d = log(10.0);
-    break;
-  case Math::Log2E:
-    d = 1.0/log(2.0);
-    break;
-  case Math::Log10E:
-    d = 1.0/log(10.0);
-    break;
-  case Math::Pi:
-    d = 2.0 * asin(1.0);
-    break;
-  case Math::Sqrt1_2:
-    d = sqrt(0.5);
-    break;
-  case Math::Sqrt2:
-    d = sqrt(2.0);
-    break;
-  default:
-    if (token == Math::Min || token == Math::Max || token == Math::Pow)
-      len = 2;
-    return Function(new MathFunc(token, len));
-  };
-
-  return Number(d);
-}
-
-bool Math::hasProperty(const UString &p, bool recursive) const
-{
-  return (Lookup::find(&mathTable, p) >= 0 ||
-	  (recursive && Imp::hasProperty(p, recursive)));
+  put("abs",     new MathFunc(Math::Abs,1),    DontEnum|DontDelete|ReadOnly);
+  put("acos",    new MathFunc(Math::ACos,1),   DontEnum|DontDelete|ReadOnly);
+  put("asin",    new MathFunc(Math::ASin,1),   DontEnum|DontDelete|ReadOnly);
+  put("atan",    new MathFunc(Math::ATan,1),   DontEnum|DontDelete|ReadOnly);
+  put("atan2",   new MathFunc(Math::ATan2,2),  DontEnum|DontDelete|ReadOnly);
+  put("ceil",    new MathFunc(Math::Ceil,1),   DontEnum|DontDelete|ReadOnly);
+  put("cos",     new MathFunc(Math::Cos,1),    DontEnum|DontDelete|ReadOnly);
+  put("exp",     new MathFunc(Math::Exp,1),    DontEnum|DontDelete|ReadOnly);
+  put("floor",   new MathFunc(Math::Floor,1),  DontEnum|DontDelete|ReadOnly);
+  put("log",     new MathFunc(Math::Log,1),    DontEnum|DontDelete|ReadOnly);
+  put("max",     new MathFunc(Math::Max,2),    DontEnum|DontDelete|ReadOnly);
+  put("min",     new MathFunc(Math::Min,2),    DontEnum|DontDelete|ReadOnly);
+  put("pow",     new MathFunc(Math::Pow,2),    DontEnum|DontDelete|ReadOnly);
+  put("random",  new MathFunc(Math::Random,0), DontEnum|DontDelete|ReadOnly);
+  put("round",   new MathFunc(Math::Round,1),  DontEnum|DontDelete|ReadOnly);
+  put("sin",     new MathFunc(Math::Sin,1),    DontEnum|DontDelete|ReadOnly);
+  put("sqrt",    new MathFunc(Math::Sqrt,1),   DontEnum|DontDelete|ReadOnly);
+  put("tan",     new MathFunc(Math::Tan,1),    DontEnum|DontDelete|ReadOnly);
 }
 
 Completion MathFunc::execute(const List &args)
@@ -121,14 +104,34 @@ Completion MathFunc::execute(const List &args)
   case Math::Log:
     result = ::log(arg);
     break;
-  case Math::Max:
+  case Math::Max: // ### variable args
     result = ( arg > arg2 ) ? arg : arg2;
     break;
-  case Math::Min:
+  case Math::Min: // ### variable args
     result = ( arg < arg2 ) ? arg : arg2;
     break;
   case Math::Pow:
-    result = ::pow(arg, arg2);
+    // ECMA 15.8.2.1.13 (::pow takes care of most of the critera)
+    if (KJS::isNaN(arg2))
+      result = NaN;
+    else if (arg2 == 0)
+      result = 1;
+    else if (KJS::isNaN(arg) && arg2 != 0)
+      result = NaN;
+    else if (::fabs(arg) > 1 && KJS::isPosInf(arg2))
+      result = Inf;
+    else if (::fabs(arg) > 1 && KJS::isNegInf(arg2))
+      result = +0;
+    else if (::fabs(arg) == 1 && KJS::isPosInf(arg2))
+      result = NaN;
+    else if (::fabs(arg) == 1 && KJS::isNegInf(arg2))
+      result = NaN;
+    else if (::fabs(arg) < 1 && KJS::isPosInf(arg2))
+      result = +0;
+    else if (::fabs(arg) < 1 && KJS::isNegInf(arg2))
+      result = Inf;
+    else
+      result = ::pow(arg, arg2);
     break;
   case Math::Random:
     result = ::rand();

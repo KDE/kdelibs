@@ -644,6 +644,14 @@ PropList* Imp::propList(PropList *first, PropList *last, bool recursive) const
 
 KJSO Imp::get(const UString &p) const
 {
+  // supported by netscape (but not in spec?)
+  if (p == "__proto__") {
+    if (proto)
+      return proto;
+    else
+      return Null();
+  }
+
   Property *pr = prop;
   while (pr) {
     if (pr->name == p) {
@@ -673,6 +681,12 @@ void Imp::put(const UString &p, const KJSO& v, int attr)
   // and let it override the canPut() check.
   if (attr == None && !canPut(p))
     return;
+
+  // supported by netscape (but not in spec?)
+  if (p == "__proto__") {
+    setPrototype(v);
+    return;
+  }
 
   Property *pr;
 

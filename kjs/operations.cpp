@@ -71,6 +71,32 @@ bool KJS::isInf(double d)
 #endif
 }
 
+bool KJS::isPosInf(double d)
+{
+#if defined(HAVE_FUNC_ISINF)
+  return (isinf(d) == 1);
+#elif HAVE_FUNC_FINITE
+  return finite(d) == 0 && d == d; // ### can we distinguish between + and - ?
+#elif HAVE_FUNC__FINITE
+  return _finite(d) == 0 && d == d; // ###
+#else
+  return false;
+#endif
+}
+
+bool KJS::isNegInf(double d)
+{
+#if defined(HAVE_FUNC_ISINF)
+  return (isinf(d) == -1);
+#elif HAVE_FUNC_FINITE
+  return finite(d) == 0 && d == d; // ###
+#elif HAVE_FUNC__FINITE
+  return _finite(d) == 0 && d == d; // ###
+#else
+  return false;
+#endif
+}
+
 // ECMA 11.9.3
 bool KJS::equal(const KJSO& v1, const KJSO& v2)
 {

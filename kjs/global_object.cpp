@@ -213,7 +213,8 @@ void GlobalImp::init()
   Imp::put("unescape", Function(new GlobalFunc(GlobalFunc::UnEscape)));
 
   // other properties
-  Imp::put("Math", Object(new Math()), DontEnum);
+  Object objProto = static_cast<Object>(get("[[Object.prototype]]").imp());
+  Imp::put("Math", Object(new Math(objProto)), DontEnum);
 }
 
 GlobalImp::~GlobalImp() { }

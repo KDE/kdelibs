@@ -33,6 +33,8 @@ namespace KJS {
    * @return True if d is infinite (platform support required).
    */
   bool isInf(double d);
+  bool isPosInf(double d);
+  bool isNegInf(double d);
   bool equal(const KJSO& v1, const KJSO& v2);
   bool strictEqual(const KJSO &v1, const KJSO &v2);
   /**
