@@ -214,6 +214,7 @@ protected:
     void calcFinalColMax(int c, ColInfo* col);
     void spreadSpanMinMax(int col, int span, int min, int max, khtml::LengthType type);
     int distributeWidth(int distrib, khtml::LengthType type, int typeCols );
+    int distributePercentWidth(int distrib);
     int distributeMinWidth(int distrib, khtml::LengthType distType,
             khtml::LengthType toType, int start, int span, bool minlimit );
     int distributeMaxWidth(int distrib, LengthType distType,
