@@ -655,21 +655,18 @@ void KDirOperator::clearFilter()
     dir->setNameFilter( QString::null );
     dir->clearMimeFilter();
     checkPreviewSupport();
-    dir->emitChanges();
 }
 
 void KDirOperator::setNameFilter(const QString& filter)
 {
     dir->setNameFilter(filter);
     checkPreviewSupport();
-    dir->emitChanges();
 }
 
 void KDirOperator::setMimeFilter( const QStringList& mimetypes )
 {
     dir->setMimeFilter( mimetypes );
     checkPreviewSupport();
-    dir->emitChanges();
 }
 
 bool KDirOperator::checkPreviewSupport()

@@ -158,6 +158,7 @@ class KDirOperator : public QWidget
      * </pre>
      *
      * Node: Without the mimetype inode/directory, only files would be shown.
+     * Call @ref updateDir() to apply it.
      *
      * @see KDirLister::setMimeFilter
      * @see #mimeFilter
@@ -171,7 +172,7 @@ class KDirOperator : public QWidget
 
     /**
      * Clears both the namefilter and mimetype filter, so that all files and
-     * directories will be shown.
+     * directories will be shown. Call @ref updateDir() to apply it.
      *
      * @see #setMimeFilter
      * @see #setNameFilter
