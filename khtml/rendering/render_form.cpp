@@ -477,14 +477,16 @@ void RenderLineEdit::updateFromElement()
     widget()->blockSignals(true);
     int pos = widget()->cursorPosition();
     widget()->setText(element()->value().string());
-    widget()->setCursorPosition(pos);
-    widget()->blockSignals(false);
 
     int ml = element()->maxLength();
     if ( ml < 0 || ml > 1024 )
         ml = 1024;
-    widget()->setMaxLength( ml );
+    if ( widget()->maxLength() != ml )
+        widget()->setMaxLength( ml );
     widget()->setEdited( false );
+
+    widget()->setCursorPosition(pos);
+    widget()->blockSignals(false);
 
     RenderFormElement::updateFromElement();
 }
