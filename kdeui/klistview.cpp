@@ -22,6 +22,7 @@
 #include <qtimer.h>
 #include <qheader.h>
 #include <qcursor.h>
+#include <qstack.h>
 #include <qtooltip.h>
 
 #include <kglobalsettings.h>
@@ -1655,7 +1656,8 @@ void KListView::setAlternateBackground(const QColor &c)
 
 struct KListViewItem::KListViewItemPrivate
 {
-  bool odd;
+  bool odd : 1;
+  bool known : 1;
 };
 
 KListViewItem::KListViewItem(QListView *parent)
@@ -1722,6 +1724,7 @@ KListViewItem::~KListViewItem()
 void KListViewItem::init()
 {
   d = new KListViewItemPrivate;
+  d->known = false;
 }
 
 const QColor &KListViewItem::backgroundColor()
@@ -1729,8 +1732,21 @@ const QColor &KListViewItem::backgroundColor()
   KListView *lv = dynamic_cast<KListView *>(listView());
   if (lv && lv->alternateBackground().isValid())
   {
-    KListViewItem *above = dynamic_cast<KListViewItem *>(itemAbove());
-    d->odd = above ? !above->d->odd : false;
+    KListViewItem *above = 0;
+    QStack<KListViewItem> items;
+    for (KListViewItem *item = this; item; item = above)
+    {
+      items.push(item);
+      above = dynamic_cast<KListViewItem *>(item->itemAbove());
+      if (!above || above->d->known)
+        break;
+    }
+    while (items.top())
+    {
+      items.top()->d->odd = above ? !above->d->odd : false;
+      items.top()->d->known = true;
+      above = items.pop();
+    }
     if (d->odd)
       return lv->alternateBackground();
   }
