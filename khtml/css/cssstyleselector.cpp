@@ -270,17 +270,36 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
             CSSStyleSelector::style = style;
             for (CSSOrderedProperty *ordprop = propsToApply->first();
                  ordprop;
-                 ordprop = propsToApply->next())
+                 ordprop = propsToApply->next()) {
+		if ( fontDirty && ordprop->priority >= (1 << 30) ) {
+		    // we are past the font properties, time to update to the
+		    // correct font
+		    CSSStyleSelector::style->htmlFont().update( paintDeviceMetrics );
+		    fontDirty = false;
+		}
                 applyRule( ordprop->prop );
+	    }
         }
 
         if ( pseudoProps->count() != 0 ) {
+	    fontDirty = false;
             //qDebug("%d applying %d pseudo props", e->cssTagId(), pseudoProps->count() );
             CSSOrderedProperty *ordprop = pseudoProps->first();
             while( ordprop ) {
+		if ( fontDirty && ordprop->priority >= (1 << 30) ) {
+		    // we are past the font properties, time to update to the
+		    // correct font
+		    //We have to do this for all pseudo styles
+		    RenderStyle *pseudoStyle = CSSStyleSelector::style->pseudoStyle;
+		    while ( pseudoStyle ) {
+			pseudoStyle->htmlFont().update( paintDeviceMetrics );
+			pseudoStyle = pseudoStyle->pseudoStyle;
+		    }
+		    fontDirty = false;
+		}
+
                 RenderStyle *pseudoStyle;
                 pseudoStyle = style->getPseudoStyle(ordprop->pseudoId);
-
                 if (!pseudoStyle)
                 {
                     pseudoStyle = style->addPseudoStyle(ordprop->pseudoId);
@@ -297,8 +316,6 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
                 ordprop = pseudoProps->next();
             }
         }
-        if ( fontDirty )
-            CSSStyleSelector::style->htmlFont().update( paintDeviceMetrics );
     }
 
     if ( usedDynamicStates & StyleSelector::Hover )
@@ -335,7 +352,10 @@ void CSSStyleSelector::addInlineDeclarations(DOM::CSSStyleDeclarationImpl *decl,
         // give special priority to font-xxx, color properties
         switch(prop->m_id)
         {
+	case CSS_PROP_FONT_STYLE:
         case CSS_PROP_FONT_SIZE:
+	case CSS_PROP_FONT_WEIGHT:
+	case CSS_PROP_FONT_FAMILY:
         case CSS_PROP_FONT:
         case CSS_PROP_COLOR:
         case CSS_PROP_BACKGROUND_IMAGE:
@@ -936,7 +956,10 @@ void CSSOrderedPropertyList::append(DOM::CSSStyleDeclarationImpl *decl, uint sel
         // give special priority to font-xxx, color properties
         switch(prop->m_id)
         {
+	case CSS_PROP_FONT_STYLE:
         case CSS_PROP_FONT_SIZE:
+	case CSS_PROP_FONT_WEIGHT:
+	case CSS_PROP_FONT_FAMILY:
         case CSS_PROP_FONT:
         case CSS_PROP_COLOR:
         case CSS_PROP_BACKGROUND_IMAGE:
