@@ -174,14 +174,14 @@ public:
    * @see hide()
    */ 
   virtual void show( bool track=true );
-  
+
   /**
    * Hides the dialog.  An application shouldn't normally need to use
    * this function.
    * @see show()
    */ 
-  inline void hide(){ kdialogbase->hide(); };
-  
+  void hide(){ kdialogbase->hide(); };
+
   /**
    * KAutoConfigDialog automatically gives the dialog a common KDE
    * configuration caption. This function is provided for dialogs other
@@ -210,7 +210,7 @@ protected:
    * slots and connects both settingsChanged() signals and widgetModified()
    * signal to the dialog.
    */ 
-  virtual void connectKAutoConfig( KAutoConfig *kautoconfig_object );
+  virtual void connectKAutoConfig( KAutoConfig const* kautoconfig_object );
   
   // Pointer to the KAutoConfig object.
   KAutoConfig *kautoconfig;
