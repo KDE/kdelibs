@@ -191,4 +191,4 @@ Keywords[zh_CN]=Crypto,Krypto,Cryptography,encryption,SSL,https,certificates,cip
 Keywords[zh_TW]=Crypto,Krypto,Cryptography,encryption,SSL,https,certificates,ciphers,TLS,secure,security,加密,加密學,証書,密碼,安全
 Keywords[zu]=Crypto,Krypto,Ukuqaqa umbhalo ongaqondakali,SSL,https, izitifiketi,imibhalo yekhodi,TLS,vikela,ukuvikela
 
-Categories=Qt;KDE;X-KDE-settings-security
+Categories=Qt;KDE;X-KDE-settings-security;
