@@ -219,7 +219,7 @@ void KIconDialog::init()
     grid->addWidget(mpCombo, 1, 1);
     mpRb2 = new QRadioButton(i18n("Other icons:"), bgroup);
     grid->addWidget(mpRb2, 2, 0);
-    mpBrowseBut = new QPushButton(i18n("Browse"), bgroup);
+    mpBrowseBut = new QPushButton(i18n("&Browse..."), bgroup);
     grid->addWidget(mpBrowseBut, 2, 1);
 
     mpCanvas = new KIconCanvas(main);
@@ -333,7 +333,7 @@ void KIconDialog::slotButtonClicked(int id)
 
     case 2:
 	file = KFileDialog::getOpenFileName(QString::null,
-		QString::fromLatin1("*.png *.xpm"), this);
+		i18n("*.png *.xpm|Icon Files (*.png *.xpm)"), this);
 	if (!file.isEmpty())
 	{
 	    mFileList += file;
