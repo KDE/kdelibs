@@ -68,13 +68,13 @@ void kwin_net_create_atoms() {
 	const char* names[max];
 	Atom atoms_return[max];
 	int n = 0;
-	
+
 	atoms[n] = &net_wm_context_help;
 	names[n++] = "_NET_WM_CONTEXT_HELP";
 
 	atoms[n] = &kde_wm_change_state;
 	names[n++] = "_KDE_WM_CHANGE_STATE";
-	
+
 	// we need a const_cast for the shitty X API
 	XInternAtoms( qt_xdisplay(), const_cast<char**>(names), n, FALSE, atoms_return );
 	for (int i = 0; i < n; i++ )
@@ -158,7 +158,7 @@ public:
 		XQueryPointer( qt_xdisplay(), w, &root, &child,
 			       &root_x, &root_y, &lx, &ly, &state );
 	    } while  ( child != None && child != w );
-	
+
 	    ::sendClientMessage(w, qt_wm_protocols, net_wm_context_help);
 	    XEvent e = *ev;
 	    e.xbutton.window = w;
@@ -283,7 +283,7 @@ QPixmap KWin::icon( WId win, int width, int height, bool scale )
 			  0, 0, w, h, 0, 0);
 		pm.setMask(bm);
 	    }
-	    if ( scale && width > 0 && height > 0 && !pm.isNull() && 
+	    if ( scale && width > 0 && height > 0 && !pm.isNull() &&
 		 ( (int) w != width || (int) h != height) ){
 		result.convertFromImage( pm.convertToImage().smoothScale( width, height ) );
 	    } else {
@@ -291,12 +291,12 @@ QPixmap KWin::icon( WId win, int width, int height, bool scale )
 	    }
 	}
     }
-	
+
     // Try to load the icon from the classhint if the app didn't specify
     // its own:
     if( result.isNull() ) {
 	int iconWidth;
-			
+
 	    // Since width can be any arbitrary size, but the icons cannot,
 	    // take the nearest value for best results (ignoring 22 pixel
 	    // icons as they don't exist for apps):
@@ -306,7 +306,7 @@ QPixmap KWin::icon( WId win, int width, int height, bool scale )
 	    iconWidth = 32;
 	else
 	    iconWidth = 48;
-			
+
 	XClassHint	hint;
 	if( XGetClassHint( qt_xdisplay(), win, &hint ) ) {
 	    QString className = hint.res_class;
@@ -318,6 +318,8 @@ QPixmap KWin::icon( WId win, int width, int height, bool scale )
 	    else
 		result = pm;
 
+	    XFree( hint.res_name );
+	    XFree( hint.res_class );
 	}
 
 	// If the icon is still a null pixmap, load the 'xapp' icon
