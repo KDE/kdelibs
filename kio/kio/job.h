@@ -193,7 +193,8 @@ namespace KIO {
      * @param url Where to write data.
      * @param permissions May be -1. In this case no special permission mode is set.
      * @param overwrite If true, any existing file will be overwritten.
-     * @param resume true to resume, false otherwise
+     * @param resume true to resume an operation. Warning, setting this to true means
+     *               that the data will be appended to @p dest if @p dest exists.
      * @param showProgressInfo true to show progress information
      * @return the job handling the operation.
      * @see multi_get()
@@ -252,7 +253,8 @@ namespace KIO {
      * @param url Where to write data.
      * @param permissions May be -1. In this case no special permission mode is set.
      * @param overwrite If true, any existing file will be overwritten.
-     * @param resume true to resume, false otherwise
+     * @param resume true to resume an operation. Warning, setting this to true means
+     *               that the data will be appended to @p dest if @p dest exists.
      * @param showProgressInfo true to show progress information
      * @return the job handling the operation.
      * @since 3.3
@@ -289,7 +291,10 @@ namespace KIO {
      * @param dest Where to put the file.
      * @param permissions May be -1. In this case no special permission mode is set.
      * @param overwrite If true, any existing file will be overwritten.
-     * @param resume true to resume an operation
+     * @param resume true to resume an operation. Warning, setting this to true means
+     *               that @p src will be appended to @p dest if @p dest exists.
+     *               You probably don't want that, so leave it to false :)
+     *
      * @param showProgressInfo true to show progress information
      * @return the job handling the operation.
      */
@@ -306,7 +311,9 @@ namespace KIO {
      * @param dest Where to put the file.
      * @param permissions May be -1. In this case no special permission mode is set.
      * @param overwrite If @p true, any existing file will be overwritten.
-     * @param resume true to resume an operation
+     * @param resume true to resume an operation. Warning, setting this to true means
+     *               that @p src will be appended to @p dest if @p dest exists.
+     *               You probably don't want that, so leave it to false :)
      * @param showProgressInfo true to show progress information
      * @return the job handling the operation.
      */
