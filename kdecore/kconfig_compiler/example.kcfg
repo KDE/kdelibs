@@ -40,6 +40,9 @@
     <entry name="MyStringList" type="QStringList">
       <default>up,down</default>
     </entry>
+    <entry name="MyStringListHidden" hidden="true" type="QStringList">
+      <default>up,down</default>
+    </entry>
     <entry name="MyNumber" type="int" key="List-$(transport)-$(folder)">
       <label>List Number</label>
       <default>1</default>

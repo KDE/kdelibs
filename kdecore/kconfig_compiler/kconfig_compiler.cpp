@@ -182,10 +182,10 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
   QString type = element.attribute( "type" );
   QString name = element.attribute( "name" );
   QString key = element.attribute( "key" );
+  QString hidden = element.attribute( "hidden" );
   QString label;
   QString defaultValue;
   QString code;
-  QString hidden;
   QString param;
   QString paramType;
   QStringList values;
@@ -199,7 +199,6 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
     QString tag = e.tagName();
     if ( tag == "label" ) label = e.text();
     else if ( tag == "code" ) code = e.text();
-    else if ( tag == "hidden" ) hidden = e.text(); //We could as well just skip all the rest of parsing and just return 0; here
     else if ( tag == "parameter" )
     {
       param = e.attribute( "name" );
