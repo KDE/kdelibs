@@ -324,6 +324,7 @@ HTMLAreaElementImpl::HTMLAreaElementImpl(DocumentImpl *doc)
     target = 0;
     shape = Unknown;
     has_tabindex=false;
+    lasth = lastw = -1;
 
      DOMString indexstring=((HTMLElementImpl*)this)->getAttribute(ATTR_TABINDEX);
      if (indexstring.length()) {
