@@ -1690,6 +1690,11 @@ if (x) {
   case KSSLCertificateHome::AuthDont:
     hostCertBG->setButton(hostCertBG->id(hostDont));
    break;
+  default:
+    hostSend->setChecked(false);
+    hostPrompt->setChecked(false);
+    hostDont->setChecked(false);
+   break;
   }
 
   ___lehack = true;

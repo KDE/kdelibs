@@ -154,6 +154,8 @@ public:
                                case KSSLCertificateHome::AuthPrompt:
                                  setText(2, i18n("Prompt"));
                                 break;
+                               default:
+                                break;
                                }
     }
     KSSLCertificateHome::KSSLAuthAction getAction() const { return _aa; }
