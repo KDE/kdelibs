@@ -1,8 +1,8 @@
+#include "kdebug.h"
 #include <qwidget.h>
 #include <kinstance.h>
 #include <iostream>
 #include <qapplication.h>
-#include <kdebug.h>
 
 class TestWidget : public QWidget
 {
