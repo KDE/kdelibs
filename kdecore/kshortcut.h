@@ -673,7 +673,7 @@ class KShortcut
 	 * Returns the @p i'th key sequence of this shortcut.
 	 * @param i the number of the key sequence to retrieve
 	 * @return the @p i'th sequence or @ref KKeySequence::null() if
-	 *         there are less than @i key sequences
+	 *         there are less than @p i key sequences
 	 * @ref MAX_SEQUENCES
 	 */
 	const KKeySequence& seq( uint i ) const;

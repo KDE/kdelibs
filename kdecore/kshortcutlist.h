@@ -185,7 +185,7 @@ class KAccelActions;
 class KGlobalAccel;
 
 /**
- * @ref KShortcutList implementation to access @ref KAccel, @KGlobalAccel 
+ * @ref KShortcutList implementation to access @ref KAccel, @ref KGlobalAccel 
  * and @ref KAccelActions lists.
  */
 class KAccelShortcutList : public KShortcutList
