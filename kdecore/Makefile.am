@@ -29,7 +29,9 @@ endif
 
 SUBDIRS = malloc network $(SVGICONS) . kconfig_compiler tests
 
-AM_LDFLAGS = $(LDFLAGS_AS_NEEDED)
+# For the future: examine if condensing the tons of *_LDFLAGS variables
+# into $(all_libraries) isn't better
+AM_LDFLAGS = $(LDFLAGS_AS_NEEDED) $(LDFLAGS_NEW_DTAGS)
 
 lib_LTLIBRARIES = libkdefakes.la libkdecore.la
 lib_LIBRARIES = libkdefakes_nonpic.a

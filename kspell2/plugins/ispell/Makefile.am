@@ -2,7 +2,9 @@ METASOURCES = AUTO
 
 AM_CPPFLAGS = -I$(top_srcdir)/kspell2 -I$(top_srcdir) $(all_includes)
 
-AM_LDFLAGS = $(LDFLAGS_AS_NEEDED)
+# For the future: examine if condensing the tons of *_LDFLAGS variables
+# into $(all_libraries) isn't better
+AM_LDFLAGS = $(LDFLAGS_AS_NEEDED) $(LDFLAGS_NEW_DTAGS)
 
 kde_module_LTLIBRARIES = kspell_ispell.la
 

@@ -1,7 +1,9 @@
 
 INCLUDES =  -I$(srcdir)/.. $(all_includes)
 
-AM_LDFLAGS = $(LDFLAGS_AS_NEEDED)
+# For the future: examine if condensing the tons of *_LDFLAGS variables
+# into $(all_libraries) isn't better
+AM_LDFLAGS = $(LDFLAGS_AS_NEEDED) $(LDFLAGS_NEW_DTAGS)
 
 libkmidincludedir = $(includedir)/libkmid
 libkmidinclude_HEADERS = midiout.h player.h track.h midimapper.h \
