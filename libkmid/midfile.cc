@@ -52,7 +52,7 @@ int uncompressFile(const char *gzname, char *tmpname)
   // Returns 0 if OK, 1 if error (tmpname not set)
 {
   char *cmd=new char[20+strlen(gzname)];
-  sprintf(cmd, "gzip -dc \"%s\"",gzname);
+  sprintf(cmd, "gzip -dc '%s'",gzname);
   FILE *infile = popen( cmd, "r");
   if (infile==NULL)
   {
