@@ -157,7 +157,7 @@ class KSpellConfig : public QWidget
      * global, default settings.
      */
     bool writeGlobalSettings ();
-
+    
   protected:
     void fillInDialog();
     bool readGlobalSettings();
@@ -222,6 +222,9 @@ class KSpellConfig : public QWidget
     QComboBox *dictcombo, *encodingcombo, *clientcombo;
     //QPushButton *browsebutton1;
     QStringList langfnames;
+
+signals:
+    void configChanged();
 
   private:
     class KSpellConfigPrivate;

@@ -45,7 +45,7 @@ KSpellConfig::KSpellConfig (const KSpellConfig &_ksc)
   , dictcombo(0)
   , encodingcombo(0)
   , clientcombo(0)
-{  
+{
   setNoRootAffix (_ksc.noRootAffix());
   setRunTogether (_ksc.runTogether());
   setDictionary  (_ksc.dictionary());
@@ -58,7 +58,7 @@ KSpellConfig::KSpellConfig (const KSpellConfig &_ksc)
 
 
 KSpellConfig::KSpellConfig( QWidget *parent, const char *name,
-			    KSpellConfig *_ksc, bool addHelpButton ) 
+			    KSpellConfig *_ksc, bool addHelpButton )
   : QWidget (parent, name), nodialog(false)
   , kc(0)
   , cb1(0)
@@ -95,7 +95,7 @@ KSpellConfig::KSpellConfig( QWidget *parent, const char *name,
 			    " as spelling errors"), this );
   connect( cb2, SIGNAL(toggled(bool)), SLOT(sRunTogether(bool)) );
   glay->addMultiCellWidget( cb2, 1, 1, 0, 2 );
-  
+
   dictcombo = new QComboBox( this );
   dictcombo->setInsertionPolicy (QComboBox::NoInsertion);
   connect (dictcombo, SIGNAL (activated (int)),
@@ -117,8 +117,8 @@ KSpellConfig::KSpellConfig( QWidget *parent, const char *name,
   encodingcombo->insertItem ("ISO 8859-9");
   encodingcombo->insertItem ("ISO 8859-15");
   encodingcombo->insertItem ("UTF-8");
-  encodingcombo->insertItem ("KOI8-R"); 
-  encodingcombo->insertItem ("KOI8-U"); 
+  encodingcombo->insertItem ("KOI8-R");
+  encodingcombo->insertItem ("KOI8-U");
 
   connect (encodingcombo, SIGNAL (activated(int)), this,
 	   SLOT (sChangeEncoding(int)));
@@ -127,25 +127,25 @@ KSpellConfig::KSpellConfig( QWidget *parent, const char *name,
   QLabel *tmpQLabel = new QLabel( encodingcombo, i18n("Encoding:"), this);
   glay->addWidget( tmpQLabel, 3, 0 );
 
-  
+
   clientcombo = new QComboBox( this );
   clientcombo->insertItem (i18n("International Ispell"));
   clientcombo->insertItem (i18n("Aspell"));
   connect (clientcombo, SIGNAL (activated(int)), this,
 	   SLOT (sChangeClient(int)));
   glay->addMultiCellWidget( clientcombo, 4, 4, 1, 2 );
-  
+
   tmpQLabel = new QLabel( clientcombo, i18n("Client:"), this );
   glay->addWidget( tmpQLabel, 4, 0 );
-  
+
   if( addHelpButton == true )
   {
     QPushButton *pushButton = new QPushButton( i18n("&Help"), this );
     connect( pushButton, SIGNAL(clicked()), this, SLOT(sHelp()) );
     glay->addWidget(pushButton, 5, 2);
   }
-  
-  fillInDialog();	
+
+  fillInDialog();
 }
 
 KSpellConfig::~KSpellConfig ()
@@ -195,6 +195,7 @@ KSpellConfig::sChangeEncoding(int i)
 {
     kdDebug(750) << "KSpellConfig::sChangeEncoding(" << i << ")" << endl;
   setEncoding (i);
+  emit configChanged();
 }
 
 void
@@ -209,6 +210,7 @@ KSpellConfig::sChangeClient (int i)
     else
       getAvailDictsAspell();
   }
+  emit configChanged();
 }
 
 bool
@@ -277,11 +279,11 @@ KSpellConfig::interpret (QString &fname, QString &lname,
   }
 
   //We have explicitly chosen English as the default here.
-  if ( (KGlobal::locale()->language()==QString::fromLatin1("C") && 
+  if ( (KGlobal::locale()->language()==QString::fromLatin1("C") &&
 	lname==QString::fromLatin1("en")) ||
        KGlobal::locale()->language()==lname)
     return TRUE;
-    
+
   return FALSE;
 }
 
@@ -299,7 +301,7 @@ KSpellConfig::fillInDialog ()
   clientcombo->setCurrentItem (client());
 
   // get list of available dictionaries
-  if (iclient == KS_CLIENT_ISPELL) 
+  if (iclient == KS_CLIENT_ISPELL)
     getAvailDictsIspell();
   else
     getAvailDictsAspell();
@@ -352,7 +354,7 @@ void KSpellConfig::getAvailDictsIspell () {
   QDir thedir (dir.filePath(),"*.aff");
 
   kdDebug(750) << "KSpellConfig" << thedir.path() << "\n" << endl;
-  kdDebug(750) << "entryList().count()=" 
+  kdDebug(750) << "entryList().count()="
 	       << thedir.entryList().count() << endl;
 
   for (unsigned int i=0;i<thedir.entryList().count();i++)
@@ -456,7 +458,7 @@ void
 KSpellConfig::setClient (int c)
 {
   iclient = c;
-  
+
   if (clientcombo)
 	  clientcombo->setCurrentItem(c);
 }
@@ -578,12 +580,14 @@ void
 KSpellConfig::sRunTogether(bool)
 {
   setRunTogether (cb2->isChecked());
+  emit configChanged();
 }
 
 void
 KSpellConfig::sNoAff(bool)
 {
   setNoRootAffix (cb1->isChecked());
+  emit configChanged();
 }
 
 /*
@@ -607,7 +611,7 @@ void KSpellConfig::sBrowsePDict()
   if ( !qs.isNull() )
       kle2->setText (qs);
 
-  
+
 }
 */
 
@@ -616,6 +620,7 @@ KSpellConfig::sSetDictionary (int i)
 {
   setDictionary (langfnames[i]);
   setDictFromList (TRUE);
+  emit configChanged();
 }
 
 void
@@ -631,6 +636,7 @@ KSpellConfig::sDictionary(bool on)
     {
       dictcombo->setEnabled (FALSE);
     }
+  emit configChanged();
 }
 
 void
@@ -651,6 +657,7 @@ KSpellConfig::sPathDictionary(bool on)
       //kle1->setEnabled (FALSE);
       //browsebutton1->setEnabled (FALSE);
     }
+  emit configChanged();
 }
 
 
