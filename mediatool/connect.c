@@ -256,6 +256,8 @@ void MdConnectNew(MediaCon *mcon)
   EventCounterReset(&(KeysChunk.exit));
   EventCounterReset(&(KeysChunk.eject));
   EventCounterReset(&(KeysChunk.play));
+  EventCounterReset(&(KeysChunk.posnew));
+  KeysChunk.pos_new =0;
 
   /* 3b) Write keys chunk */
   if (! WriteChunk(tmpadr, "KEYS", (char*)(&KeysChunk), sizeof(MdCh_KEYS) ))

@@ -187,6 +187,8 @@ typedef struct
    */
   int8    	pause;		/* Status: Pause key			*/
   uint8		sync_id;	/* This is for helping with KAudio->snyc() */
+  EventCounter	posnew;		/* Event counter: Notification of pos_new change */
+  uint32	pos_new;	/* Wished play position */
 } MdCh_KEYS;
 
 
