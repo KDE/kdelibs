@@ -823,8 +823,6 @@ static void fillQtObjects( QCStringList& l, QObject* o, QCString path )
 	    ++it;
  	    QCString n = obj->name();
  	    if ( n == "unnamed" || n.isEmpty() )
- 		n.sprintf("unnamed%d(%s)", ++unnamed, obj->className(), obj );
- 	    if ( n == "unnamed" || n.isEmpty() )
  		n.sprintf("unnamed%d(%s, %p)", ++unnamed, obj->className(), obj );
  	    QCString fn = path + n;
  	    l.append( fn );
