@@ -77,7 +77,8 @@ KBookmarkManager::KBookmarkManager( const QString & bookmarksFile, bool bImportD
 
 KBookmarkManager::~KBookmarkManager()
 {
-    s_pSelf->removeRef( this );
+    if ( s_pSelf )
+        s_pSelf->removeRef( this );
 }
 
 void KBookmarkManager::setUpdate(bool update)
