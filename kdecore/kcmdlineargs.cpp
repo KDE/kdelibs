@@ -847,7 +847,10 @@ KCmdLineArgs::setOption(const QCString &opt, bool enabled)
       addArgument(arg);
       return;
    }
-   if (!parsedOptionList) parsedOptionList = new KCmdLineParsedOptions;
+   if (!parsedOptionList) {
+ 	parsedOptionList = new KCmdLineParsedOptions;
+	parsedOptionList->setAutoDelete(true);
+   }
 
    if (enabled)
       parsedOptionList->replace( opt, new QCString("t") );
@@ -867,7 +870,10 @@ KCmdLineArgs::setOption(const QCString &opt, const char *value)
       addArgument(value);
       return;
    }
-   if (!parsedOptionList) parsedOptionList = new KCmdLineParsedOptions;
+   if (!parsedOptionList) {
+	parsedOptionList = new KCmdLineParsedOptions;
+	parsedOptionList->setAutoDelete(true);
+   }
 
    parsedOptionList->replace( opt, new QCString(value) );
 }
