@@ -386,19 +386,21 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2, int w
     if(style == DOUBLE && width < 3)
         style = SOLID;
 
-    if(!c.isValid())
+    if(!c.isValid()) {
         if(invalidisInvert)
         {
             p->setRasterOp(Qt::XorROP);
             c = Qt::white;
         }
         else {
-            if(style == INSET || style == OUTSET)
+            if(style == INSET || style == OUTSET || style == RIDGE || style ==
+	    GROOVE)
                 c.setRgb(238, 238, 238);
             else
                 c = textcolor;
         }
-
+    }
+    
     int half = width/2;
     switch(style)
     {
@@ -461,7 +463,7 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2, int w
 
         break;
     }
-    case GROOVE:
+    case RIDGE:
         // could be more efficient. but maybe current code is already faster than
         // drawing two small rectangles?
         // disadvantage is that current edges doesn't look right because of reverse
@@ -469,7 +471,7 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2, int w
         drawBorder(p, x1, y1, x2, y2, width, s, c, textcolor, INSET, true, true, adjbw1, adjbw2);
         drawBorder(p, x1, y1, x2, y2, half, s, c, textcolor, OUTSET, true, true, adjbw1/2, adjbw2/2);
         break;
-    case RIDGE:
+    case GROOVE:
         drawBorder(p, x1, y1, x2, y2, width, s, c, textcolor, OUTSET, true, true, adjbw1, adjbw2);
         drawBorder(p, x1, y1, x2, y2, half, s, c, textcolor, INSET, true, true, adjbw1/2, adjbw2/2);
         break;
