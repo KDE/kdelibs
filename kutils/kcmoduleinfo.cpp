@@ -37,6 +37,8 @@ class KCModuleInfo::KCModuleInfoPrivate
     KCModuleInfoPrivate() :
       testModule( false )
     {};
+    ~KCModuleInfoPrivate()
+    { };
 
     QString factoryName;
     bool testModule;
@@ -44,20 +46,11 @@ class KCModuleInfo::KCModuleInfoPrivate
 };
 
 KCModuleInfo::KCModuleInfo(const QString& desktopFile)
-  : _fileName(desktopFile)
 {
-  KService::Ptr sptr = KService::serviceByStorageId(desktopFile);
-  if ( !sptr )
-  {
-    kdDebug(712) << "Could not find the service " << desktopFile << 
-      ". This will crash." << endl;
-    return;
-  }
-  init( sptr );
+  init( KService::serviceByStorageId(desktopFile) );
 }
 
 KCModuleInfo::KCModuleInfo( KService::Ptr moduleInfo )
-  : _fileName( moduleInfo->desktopEntryPath() )
 {
   init(moduleInfo);
 }
@@ -114,22 +107,29 @@ bool KCModuleInfo::operator!=( const KCModuleInfo & rhs ) const
 }
 
 KCModuleInfo::~KCModuleInfo()
-{ delete d; }
+{ 
+  delete d;
+}
 
 void KCModuleInfo::init(KService::Ptr s)
 {
   _allLoaded = false;
-
   d = new KCModuleInfoPrivate;
 
-  if ( !s )
+  if ( s )
+    _service = s;
+  else
+  {
+    kdDebug(712) << "Could not find the service." << endl;
     return;
+  }
 
-  _service = s;
   // set the modules simple attributes
   setName(_service->name());
   setComment(_service->comment());
   setIcon(_service->icon());
+
+  _fileName = ( _service->desktopEntryPath() );
 
   // library and factory
   setLibrary(_service->library());
