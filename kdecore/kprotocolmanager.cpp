@@ -244,66 +244,77 @@ KProtocolManager::Type KProtocolManager::outputType( const QString& _protocol ) 
 int KProtocolManager::readTimeout() const
 {
   KConfig config("kioslaverc", true, false);
+  config.setGroup( QString::null );
   return config.readNumEntry( "ReadTimeout", 15 ); // 15 seconds
 }
 
 bool KProtocolManager::markPartial() const
 {
   KConfig config("kioslaverc", true, false);
+  config.setGroup( QString::null );
   return config.readBoolEntry( "MarkPartial", true );
 }
 
 int KProtocolManager::minimumKeepSize() const
 {
   KConfig config("kioslaverc", true, false);
+  config.setGroup( QString::null );
   return config.readNumEntry( "MinimumKeepSize", 5000 ); // 5000 bytey
 }
 
 bool KProtocolManager::autoResume() const
 {
   KConfig config("kioslaverc", true, false);
+  config.setGroup( QString::null );
   return config.readBoolEntry( "AutoResume", false );
 }
 
 bool KProtocolManager::persistentConnections() const
 {
   KConfig config("kioslaverc", true, false);
+  config.setGroup( QString::null );
   return config.readBoolEntry( "PersistentConnections", true );
 }
 
 bool KProtocolManager::useProxy() const
 {
   KConfig config("kioslaverc", true, false);
+  config.setGroup( QString::null );
   return config.readBoolEntry( "UseProxy", false );
 }
 
 QString KProtocolManager::ftpProxy() const
 {
   KConfig config("kioslaverc", true, false);
+  config.setGroup( QString::null );
   return config.readEntry( "FtpProxy" );
 }
 
 QString KProtocolManager::httpProxy() const
 {
   KConfig config("kioslaverc", true, false);
+  config.setGroup( QString::null );
   return config.readEntry( "HttpProxy" );
 }
 
 QString KProtocolManager::noProxyFor() const
 {
   KConfig config("kioslaverc", true, false);
+  config.setGroup( QString::null );
   return config.readEntry( "NoProxyFor" );
 }
 
 QString KProtocolManager::remoteFileProtocol() const
 {
   KConfig config("kioslaverc", true, false);
+  config.setGroup( QString::null );
   return config.readEntry( "RemoteFileProtocol" );
 }
 
 void KProtocolManager::setReadTimeout( int _timeout )
 {
   KConfig config("kioslaverc", false, false);
+  config.setGroup( QString::null );
   config.writeEntry( "ReadTimeout", _timeout );
   config.sync();
 }
@@ -312,6 +323,7 @@ void KProtocolManager::setReadTimeout( int _timeout )
 void KProtocolManager::setMarkPartial( bool _mode )
 {
   KConfig config("kioslaverc", false, false);
+  config.setGroup( QString::null );
   config.writeEntry( "MarkPartial", _mode );
   config.sync();
 }
@@ -320,6 +332,7 @@ void KProtocolManager::setMarkPartial( bool _mode )
 void KProtocolManager::setMinimumKeepSize( int _size )
 {
   KConfig config("kioslaverc", false, false);
+  config.setGroup( QString::null );
   config.writeEntry( "MinimumKeepSize", _size );
   config.sync();
 }
@@ -328,6 +341,7 @@ void KProtocolManager::setMinimumKeepSize( int _size )
 void KProtocolManager::setAutoResume( bool _mode )
 {
   KConfig config("kioslaverc", false, false);
+  config.setGroup( QString::null );
   config.writeEntry( "AutoResume", _mode );
   config.sync();
 }
@@ -336,6 +350,7 @@ void KProtocolManager::setAutoResume( bool _mode )
 void KProtocolManager::setPersistentConnections( bool _mode )
 {
   KConfig config("kioslaverc", false, false);
+  config.setGroup( QString::null );
   config.writeEntry( "PersistentConnections", _mode );
   config.sync();
 }
@@ -344,6 +359,7 @@ void KProtocolManager::setPersistentConnections( bool _mode )
 void KProtocolManager::setUseProxy( bool _mode )
 {
   KConfig config("kioslaverc", false, false);
+  config.setGroup( QString::null );
   config.writeEntry( "UseProxy", _mode );
   config.sync();
 }
@@ -352,6 +368,7 @@ void KProtocolManager::setUseProxy( bool _mode )
 void KProtocolManager::setFtpProxy( const QString& _proxy )
 {
   KConfig config("kioslaverc", false, false);
+  config.setGroup( QString::null );
   config.writeEntry( "FtpProxy", _proxy );
   config.sync();
 }
@@ -360,6 +377,7 @@ void KProtocolManager::setFtpProxy( const QString& _proxy )
 void KProtocolManager::setHttpProxy( const QString& _proxy )
 {
   KConfig config("kioslaverc", false, false);
+  config.setGroup( QString::null );
   config.writeEntry( "HttpProxy", _proxy );
   config.sync();
 }
@@ -368,6 +386,7 @@ void KProtocolManager::setHttpProxy( const QString& _proxy )
 void KProtocolManager::setNoProxyFor( const QString& _noproxy )
 {
   KConfig config("kioslaverc", false, false);
+  config.setGroup( QString::null );
   config.writeEntry( "NoProxyFor", _noproxy );
   config.sync();
 }
@@ -375,6 +394,7 @@ void KProtocolManager::setNoProxyFor( const QString& _noproxy )
 void KProtocolManager::setRemoteFileProtocol(const QString &remoteFileProtocol)
 {
   KConfig config("kioslaverc", false, false);
+  config.setGroup( QString::null );
   config.writeEntry( "RemoteFileProtocol", remoteFileProtocol );
   config.sync();
 }
