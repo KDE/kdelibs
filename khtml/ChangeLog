@@ -1,3 +1,11 @@
+2004-08-19  Germain Garand  <germain@ebooksfrance.org>
+
+        * rendering/render_body.cpp (setStyle): only disallow fixed positioning
+        on body, not relative/absolute (#77048, #76982).
+
+        * rendering/render_box.cpp (paintBackgroundExtended): make sure backgrounds paint
+        in the border box and not just in the padding box (WC merge - meyerweb.com/unsorted/bg-position.html).
+
 2004-08-18  Leo Savernik  <l.savernik@aon.at>
 
 	* rendering/render_block.cpp (layoutBlock, layoutBlockChildren,
