@@ -527,9 +527,10 @@ void track::changeTempo(ulong t)
     ticks_from_previous_tempochange=ticks;
     
 }
-
+/*
 double track::absMsOfNextEvent (void) 
 {
     //printf("%d : %g\n",id,time_at_next_event);
     return time_at_next_event;
 }
+*/
