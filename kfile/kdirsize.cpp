@@ -20,13 +20,48 @@
 #include "kdirsize.h"
 #include <kdebug.h>
 #include <qapplication.h>
+#include <qtimer.h>
 
 KDirSize::KDirSize( const KURL & directory )
-    : KIO::Job(false /*No GUI*/)
+    : KIO::Job(false /*No GUI*/), m_bAsync(true), m_totalSize(0L)
 {
-    m_bAsync = true;
-    m_totalSize = 0L;
-    KIO::ListJob * listJob = KIO::listRecursive( directory, false /* no GUI */ );
+    startNextJob( directory );
+}
+
+KDirSize::KDirSize( const KFileItemList & lstItems )
+    : KIO::Job(false /*No GUI*/), m_bAsync(true), m_totalSize(0L), m_lstItems(lstItems)
+{
+    QTimer::singleShot( 0, this, SLOT(processList()) );
+}
+
+void KDirSize::processList()
+{
+    while (!m_lstItems.isEmpty())
+    {
+        KFileItem * item = m_lstItems.first();
+        m_lstItems.removeFirst();
+        if ( item->isDir() && !item->isLink() )
+        {
+            kdDebug() << "KDirSize::processList dir -> listing" << endl;
+            KURL url = item->url();
+            startNextJob( url );
+            return; // we'll come back later, when this one's finished
+        }
+        else
+        {
+            m_totalSize += (unsigned long)item->size();
+            kdDebug() << "KDirSize::processList file -> " << m_totalSize << endl;
+        }
+    }
+    kdDebug() << "KDirSize::processList finished" << endl;
+    if ( !m_bAsync )
+        qApp->exit_loop();
+    emitResult();
+}
+
+void KDirSize::startNextJob( const KURL & url )
+{
+    KIO::ListJob * listJob = KIO::listRecursive( url, false /* no GUI */ );
     connect( listJob, SIGNAL(entries( KIO::Job *,
                                       const KIO::UDSEntryList& )),
              SLOT( slotEntries( KIO::Job*,
@@ -40,17 +75,17 @@ void KDirSize::slotEntries( KIO::Job*, const KIO::UDSEntryList & list )
     KIO::UDSEntryListConstIterator end = list.end();
     for (; it != end; ++it) {
         KIO::UDSEntry::ConstIterator it2 = (*it).begin();
-        int size = 0L;
-        //bool isDir = false;
+        unsigned long size = 0L;
+        bool isLink = false;
         QString name;
         for( ; it2 != (*it).end(); it2++ ) {
           switch( (*it2).m_uds ) {
             case KIO::UDS_NAME:
               name = (*it2).m_str;
               break;
-            //case KIO::UDS_FILE_TYPE:
-            //  isDir = S_ISDIR((*it2).m_long);
-            //  break;
+            case KIO::UDS_LINK_DEST:
+              isLink = !(*it2).m_str.isEmpty();
+              break;
             case KIO::UDS_SIZE:
               size = ((*it2).m_long);
               break;
@@ -58,8 +93,7 @@ void KDirSize::slotEntries( KIO::Job*, const KIO::UDSEntryList & list )
               break;
           }
         }
-        //if ( !isDir ) // they take space too
-        if ( name != QString::fromLatin1("..") )
+        if ( !isLink && name != QString::fromLatin1("..") )
         {
             m_totalSize += size;
             //kdDebug() << name << ":" << size << endl;
@@ -74,6 +108,12 @@ KDirSize * KDirSize::dirSizeJob( const KURL & directory )
 }
 
 //static
+KDirSize * KDirSize::dirSizeJob( const KFileItemList & lstItems )
+{
+    return new KDirSize( lstItems );
+}
+
+//static
 unsigned long KDirSize::dirSize( const KURL & directory )
 {
     KDirSize * dirSize = dirSizeJob( directory );
@@ -85,10 +125,18 @@ unsigned long KDirSize::dirSize( const KURL & directory )
 
 void KDirSize::slotResult( KIO::Job * job )
 {
-    kdDebug() << " KDirSize::slotResult( KIO::Job * job ) " << endl;
-    if ( !m_bAsync )
-        qApp->exit_loop();
-    KIO::Job::slotResult( job );
+    kdDebug() << " KDirSize::slotResult( KIO::Job * job ) m_lstItems:" << m_lstItems.count() << endl;
+    if ( !m_lstItems.isEmpty() )
+    {
+        subjobs.remove(job); // Remove job, but don't kill this job.
+        processList();
+    }
+    else
+    {
+        if ( !m_bAsync )
+            qApp->exit_loop();
+        KIO::Job::slotResult( job );
+    }
 }
 
 #include "kdirsize.moc"

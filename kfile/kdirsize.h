@@ -21,6 +21,7 @@
 #define __KDIRSIZE_H
 
 #include <kio/job.h>
+#include <kfileitem.h>
 
 /**
  * Compute directory size (similar to "du", but doesn't give the same results
@@ -31,6 +32,7 @@ class KDirSize : public KIO::Job
   Q_OBJECT
 protected:
   KDirSize( const KURL & directory );
+  KDirSize( const KFileItemList & lstItems );
   ~KDirSize() {}
 
 public:
@@ -41,8 +43,18 @@ public:
 
   /**
    * Asynchronous method. Connect to the result signal.
+   * This one lists a single directory.
    */
   static KDirSize * dirSizeJob( const KURL & directory );
+
+  /**
+   * Asynchronous method. Connect to the result signal.
+   * This one lists the items from @p lstItems.
+   * The reason we asks for items instead of just urls, is so that
+   * we directly know if the item is a file or a directory,
+   * and in case of a file, we already have its size.
+   */
+  static KDirSize * dirSizeJob( const KFileItemList & lstItems );
 
   /**
    * Synchronous method - you get the result as soon as
@@ -56,14 +68,18 @@ protected:
    */
   void setSync() { m_bAsync = false; }
 
+  void startNextJob( const KURL & url );
+
 protected slots:
 
- virtual void slotResult( KIO::Job *job );
- void slotEntries( KIO::Job * , const KIO::UDSEntryList & );
+  virtual void slotResult( KIO::Job *job );
+  void slotEntries( KIO::Job * , const KIO::UDSEntryList & );
+  void processList();
 
 private:
   bool m_bAsync;
   unsigned long m_totalSize;
+  KFileItemList m_lstItems;
 };
 
 #endif
