@@ -36,6 +36,7 @@ class QWidget;
 
 class KAccelBasePrivate;
 /**
+ * @internal
  * Handle keyboard accelerators.
  *
  * Allow an user to configure
