@@ -688,8 +688,8 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
         // we have a match!
         ToolbarItem *act = new ToolbarItem(m_activeList, action->name());
         act->setText(1, action->plainText());
-        if (!action->iconName().isNull())
-          act->setPixmap(0, BarIcon(action->iconName(), 16));
+        if (!action->icon().isEmpty())
+          act->setPixmap(0, BarIcon(action->icon(), 16));
 
         active_list.insert(action->name(), true);
         break;
@@ -709,12 +709,12 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
     // insert this into the inactive list
     // for now, only deal with buttons with icons.. later, we'll need
     // to look into actions a LOT more carefully
-    if ( action->iconName().isNull() )
+    if ( action->icon().isEmpty() )
       continue;
 
     ToolbarItem *act = new ToolbarItem(m_inactiveList, action->name());
     act->setText(1, action->plainText());
-    act->setPixmap(0, BarIcon(action->iconName(), 16));
+    act->setPixmap(0, BarIcon(action->icon(), 16));
   }
 
   // finally, add a default separator to the inactive list

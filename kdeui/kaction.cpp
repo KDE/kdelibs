@@ -390,7 +390,7 @@ int KAction::plug( QWidget *w, int index )
     KToolBar *bar = static_cast<KToolBar *>( w );
 
     int id_ = getToolButtonID();
-    if ( iconName().isEmpty() && d->m_bIconSet )
+    if ( icon().isEmpty() && d->m_bIconSet )
     {
       bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this,
                          SLOT( slotActivated() ),
@@ -405,7 +405,7 @@ int KAction::plug( QWidget *w, int index )
       else
         instance = KGlobal::instance();
 
-      bar->insertButton( iconName(), id_, SIGNAL( clicked() ), this,
+      bar->insertButton( icon(), id_, SIGNAL( clicked() ), this,
                          SLOT( slotActivated() ), isEnabled(), plainText(),
                          index, instance );
     }
