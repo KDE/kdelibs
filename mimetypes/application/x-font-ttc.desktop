@@ -1,6 +1,16 @@
 [Desktop Entry]
 Encoding=UTF-8
-Comment=Truetype Font Collection
+Comment=TrueType Font Collection
+Comment[ca]=Col·lecció de fonts Truetype
+Comment[cs]=Kolekce Truetype písem
+Comment[es]=Colección de fuentes TrueType
+Comment[fa]=کلکسیون قلم‌های Truetype
+Comment[pt_BR]=Coleção de Fontes TrueType
+Comment[sk]=Kolekcia písma Truetype
+Comment[sr]=Колекција TrueType фонтова
+Comment[sv]=Truetype-teckensnittssamling
+Comment[wa]=Ramexhnêye di fontes TrueType
+Comment[xx]=xxTruetype Font Collectionxx
 Icon=font_truetype
 Type=MimeType
 MimeType=application/x-font-ttc
