@@ -43,7 +43,7 @@ include_HEADERS = kledlamp.h kprogress.h kcolordlg.h kselect.h \
 		kthemestyle.h kcharselect.h kcolordrag.h \
 		qxembed.h knumvalidator.h kdialog.h dialogbase.h kaboutdialog.h \
 		kpixmapeffect.h kauthicon.h kmessagebox.h kdualcolorbtn.h \
-		kpalette.h ktoolbarbutton.h
+		kpalette.h ktoolbarbutton.h ktoolbarradiogroup.h
 
 # the order of the sources isn't randomly (at least not completly).
 # the order is predictated by the use of X11 header files
