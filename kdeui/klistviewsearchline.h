@@ -30,6 +30,8 @@ class QListViewItem;
  *
  * No changes to the application other than instantiating this class with an
  * appropriate KListView should be needed.
+ *
+ * @since 3.3
  */
 
 class KListViewSearchLine : public KLineEdit
@@ -162,13 +164,17 @@ protected slots:
 private:
 
     /**
-     * This is used recursively to evalute matching items.  It makes a recusive
-     * call to each sibling and also to all children.  In the case of an item
-     * with children it first places the current item on the "parent stack" before
-     * the recursive calls and pops it off after the call returns to build a stack
-     * of parents for each matched item.
+     * This is used in case parent items of matching items shouldn't be
+     * visible.  It hides all items that don't match the search string.
      */
-    void checkItem(QListViewItem *item);
+    void checkItemParentsNotVisible();
+
+    /**
+     * This is used in case parent items of matching items should be visible.
+     * It makes a recursive call to all children.  It returns true if at least
+     * one item in the subtree with the given root item is visible.
+     */
+    bool checkItemParentsVisible(QListViewItem *item);
 
 private slots:
     void itemAdded(QListViewItem *item) const;

@@ -32,7 +32,7 @@ public:
         activeSearch(false),
         keepParentsVisible(true),
         queuedSearches(0) {}
-    
+
     KListView *listView;
     bool caseSensitive;
     bool activeSearch;
@@ -40,7 +40,6 @@ public:
     QString search;
     int queuedSearches;
     QValueList<int> searchColumns;
-    QValueList<QListViewItem *> parents;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -129,7 +128,10 @@ void KListViewSearchLine::updateSearch(const QString &s)
     }
     }
 
-    checkItem(d->listView->firstChild());
+    if(d->keepParentsVisible)
+        checkItemParentsVisible(d->listView->firstChild());
+    else
+        checkItemParentsNotVisible();
 
     if(currentItem)
         d->listView->ensureItemVisible(currentItem);
@@ -186,13 +188,11 @@ bool KListViewSearchLine::itemMatches(const QListViewItem *item, const QString &
     // specifified.  If it is empty default to searching all of the columns.
 
     if(!d->searchColumns.isEmpty()) {
-        QValueList<int>::ConstIterator it = d->searchColumns.begin(); 
+        QValueList<int>::ConstIterator it = d->searchColumns.begin();
         for(; it != d->searchColumns.end(); ++it) {
             if(*it < item->listView()->columns() &&
                item->text(*it).find(s, 0, d->caseSensitive) >= 0)
-            {
                 return true;
-            }
         }
     }
     else {
@@ -243,29 +243,33 @@ void KListViewSearchLine::listViewDeleted()
 // private methods
 ////////////////////////////////////////////////////////////////////////////////
 
-void KListViewSearchLine::checkItem(QListViewItem *item)
+void KListViewSearchLine::checkItemParentsNotVisible()
 {
-    while(item)
+    QListViewItemIterator it(d->listView);
+    for(; it.current(); ++it)
     {
-        if(itemMatches(item, d->search)) {
-            if(d->keepParentsVisible) {
-                QValueList<QListViewItem *>::Iterator it = d->parents.begin();
-                for(; it != d->parents.end(); ++it)
-                    (*it)->setVisible(true);
-            }
+        QListViewItem *item = it.current();
+        if(itemMatches(item, d->search))
             item->setVisible(true);
+        else
+            item->setVisible(false);
+    }
+}
+
+bool KListViewSearchLine::checkItemParentsVisible(QListViewItem *item)
+{
+    bool visible = false;
+    for(; item; item = item->nextSibling()) {
+        if((item->firstChild() && checkItemParentsVisible(item->firstChild())) ||
+           itemMatches(item, d->search))
+        {
+            item->setVisible( true );
+            visible = true;
         }
         else
             item->setVisible(false);
-    
-        if(item->firstChild()) {
-            d->parents.append(item);
-            checkItem(item->firstChild());
-            d->parents.remove(d->parents.fromLast());
-        }
-
-        item = item->nextSibling();
     }
+    return visible;
 }
 
 #include "klistviewsearchline.moc"
