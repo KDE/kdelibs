@@ -1132,12 +1132,14 @@ void KJS::printInfo(ExecState *exec, const char *s, const Value &o, int lineno)
     default:
       break;
     }
+    UString vString = v.toString(exec);
+    if ( vString.size() > 50 )
+      vString = vString.substr( 0, 50 ) + "...";
     // Can't use two UString::ascii() in the same fprintf call
-    char * vString = strdup( v.toString(exec).ascii() );
+    CString tempString( vString.cstring() );
 
     fprintf(stderr, "KJS: %s: %s : %s (%p)",
-            s, vString, name.ascii(), (void*)v.imp());
-    free(vString);
+            s, tempString.c_str(), name.ascii(), (void*)v.imp());
 
     if (lineno >= 0)
       fprintf(stderr, ", line %d\n",lineno);
