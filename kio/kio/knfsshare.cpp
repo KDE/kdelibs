@@ -46,10 +46,10 @@ KNFSSharePrivate::KNFSSharePrivate()
 }  
 
 /**
- * Try to find the samba config file path
+ * Try to find the nfs config file path
  * First tries the kconfig, then checks
  * several well-known paths
- * @return wether a smb.conf was found.
+ * @return wether an 'exports' file was found.
  **/
 bool KNFSSharePrivate::findExportsFile() {
   KConfig config("knfsshare");
