@@ -546,7 +546,7 @@ void HTMLGenericFormElementImpl::onChange()
 void HTMLGenericFormElementImpl::setFocus(bool received)
 {
     if (received)
-    {   
+    {
 	if(m_render)
 	    static_cast<RenderFormElement*>(m_render)->focus();
 	onFocus();
@@ -1292,6 +1292,23 @@ void HTMLSelectElementImpl::remove( long index )
     removeChild(m_listItems[listIndex], exceptioncode);
     if( !exceptioncode )
 	recalcListItems();
+}
+
+DOMString HTMLSelectElementImpl::value( )
+{
+    uint i;
+    for (i = 0; i < m_listItems.size(); i++) {
+        if (m_listItems[i]->id() == ID_OPTION
+            && static_cast<HTMLOptionElementImpl*>(m_listItems[i])->selected())
+            return static_cast<HTMLOptionElementImpl*>(m_listItems[i])->value();
+    }
+    return 0;
+}
+
+void HTMLSelectElementImpl::setValue(DOMStringImpl* value)
+{
+    // ### find the option with value() matching the given parameter
+    // and make it the current selection.
 }
 
 QString HTMLSelectElementImpl::state( )

@@ -369,6 +369,9 @@ public:
     void add ( const HTMLElement &element, const HTMLElement &before );
     void remove ( long index );
 
+    DOMString value();
+    void setValue(DOMStringImpl* value);
+
     virtual QString state();
     virtual void restoreState(const QString &);
 

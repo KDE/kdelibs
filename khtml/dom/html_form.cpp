@@ -798,12 +798,13 @@ void HTMLSelectElement::setSelectedIndex( long _selectedIndex )
 DOMString HTMLSelectElement::value() const
 {
     if(!impl) return 0;
-    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_VALUE);
+    return static_cast<HTMLSelectElementImpl*>(impl)->value();
 }
 
 void HTMLSelectElement::setValue( const DOMString &value )
 {
-    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_VALUE, value);
+    if(!impl || value.isNull()) return;
+    static_cast<HTMLSelectElementImpl*>(impl)->setValue(value.implementation());
 }
 
 long HTMLSelectElement::length() const
