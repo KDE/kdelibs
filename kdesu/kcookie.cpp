@@ -163,9 +163,9 @@ void KCookie::getICECookie()
         if (strncmp((*it).data(), m_dcopTransport.data(), m_dcopTransport.length()) != 0)
             continue;
         m_DCOPSrv = *it;
-	QString cmd = "iceauth list netid="+KProcess::quote(m_DCOPSrv);
+	QCString cmd = DCOPClient::iceauthPath()+" list netid="+QFile::encodeName(KProcess::quote(m_DCOPSrv));
 	blockSigChild();
-	if (!(f = popen(QFile::encodeName(cmd), "r"))) 
+	if (!(f = popen(cmd, "r")))
 	{
 	    kdError(900) << k_lineinfo << "popen(): " << perror << "\n";
 	    unblockSigChild();
