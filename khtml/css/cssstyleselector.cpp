@@ -67,12 +67,12 @@ using namespace DOM;
 
 namespace khtml {
 
-CSSStyleSelectorList *CSSStyleSelector::defaultStyle = 0;
-CSSStyleSelectorList *CSSStyleSelector::defaultQuirksStyle = 0;
-CSSStyleSelectorList *CSSStyleSelector::defaultPrintStyle = 0;
-CSSStyleSheetImpl *CSSStyleSelector::defaultSheet = 0;
-RenderStyle* CSSStyleSelector::styleNotYetAvailable = 0;
-CSSStyleSheetImpl *CSSStyleSelector::quirksSheet = 0;
+CSSStyleSelectorList *CSSStyleSelector::s_defaultStyle;
+CSSStyleSelectorList *CSSStyleSelector::s_defaultQuirksStyle;
+CSSStyleSelectorList *CSSStyleSelector::s_defaultPrintStyle;
+CSSStyleSheetImpl *CSSStyleSelector::s_defaultSheet;
+RenderStyle* CSSStyleSelector::styleNotYetAvailable;
+CSSStyleSheetImpl *CSSStyleSelector::s_quirksSheet;
 
 enum PseudoState { PseudoUnknown, PseudoNone, PseudoLink, PseudoVisited};
 static PseudoState pseudoState;
@@ -81,12 +81,11 @@ static PseudoState pseudoState;
 CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, StyleSheetListImpl *styleSheets,
                                     const KURL &url, bool _strictParsing )
 {
-    init();
-
     KHTMLView* view = doc->view();
+
+    init(view ? view->part()->settings() : 0);
+
     strictParsing = _strictParsing;
-    settings = view ? view->part()->settings() : 0;
-    if(!defaultStyle) loadDefaultStyle(settings);
     m_medium = view ? view->mediaType() : QString("all");
 
     selectors = 0;
@@ -96,8 +95,8 @@ CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, S
     userSheet = 0;
     paintDeviceMetrics = doc->paintDeviceMetrics();
 
-	if(paintDeviceMetrics) // this may be null, not everyone uses khtmlview (Niko)
-	    computeFontSizes(paintDeviceMetrics, view ? view->part()->zoomFactor() : 100);
+    if(paintDeviceMetrics) // this may be null, not everyone uses khtmlview (Niko)
+        computeFontSizes(paintDeviceMetrics, view ? view->part()->zoomFactor() : 100);
 
     if ( !userStyleSheet.isEmpty() ) {
         userSheet = new DOM::CSSStyleSheetImpl(doc);
@@ -142,9 +141,8 @@ CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, S
 
 CSSStyleSelector::CSSStyleSelector( CSSStyleSheetImpl *sheet )
 {
-    init();
+    init(0L);
 
-    if(!defaultStyle) loadDefaultStyle();
     KHTMLView *view = sheet->doc()->view();
     m_medium = view ? view->mediaType() : "screen";
 
@@ -152,15 +150,20 @@ CSSStyleSelector::CSSStyleSelector( CSSStyleSheetImpl *sheet )
     authorStyle->append( sheet, m_medium );
 }
 
-void CSSStyleSelector::init()
+void CSSStyleSelector::init(const KHTMLSettings* _settings)
 {
     element = 0;
-    settings = 0;
+    settings = _settings;
     paintDeviceMetrics = 0;
     propsToApply = (CSSOrderedProperty **)malloc(128*sizeof(CSSOrderedProperty *));
     pseudoProps = (CSSOrderedProperty **)malloc(128*sizeof(CSSOrderedProperty *));
     propsToApplySize = 128;
     pseudoPropsSize = 128;
+    if(!s_defaultStyle) loadDefaultStyle(settings);
+
+    defaultStyle = s_defaultStyle;
+    defaultPrintStyle = s_defaultPrintStyle;
+    defaultQuirksStyle = s_defaultQuirksStyle;
 }
 
 CSSStyleSelector::~CSSStyleSelector()
@@ -182,7 +185,7 @@ void CSSStyleSelector::addSheet( CSSStyleSheetImpl *sheet )
 
 void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s)
 {
-    if(defaultStyle) return;
+    if(s_defaultStyle) return;
 
     {
 	QFile f(locate( "data", "khtml/css/html4.css" ) );
@@ -199,15 +202,15 @@ void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s)
 	    style += s->settingsToCSS();
 	DOMString str(style);
 
-	defaultSheet = new DOM::CSSStyleSheetImpl((DOM::CSSStyleSheetImpl * ) 0);
-	defaultSheet->parseString( str );
+	s_defaultSheet = new DOM::CSSStyleSheetImpl((DOM::CSSStyleSheetImpl * ) 0);
+	s_defaultSheet->parseString( str );
 
 	// Collect only strict-mode rules.
-	defaultStyle = new CSSStyleSelectorList();
-	defaultStyle->append( defaultSheet, "screen" );
+	s_defaultStyle = new CSSStyleSelectorList();
+	s_defaultStyle->append( s_defaultSheet, "screen" );
 
-	defaultPrintStyle = new CSSStyleSelectorList();
-	defaultPrintStyle->append( defaultSheet, "print" );
+	s_defaultPrintStyle = new CSSStyleSelectorList();
+	s_defaultPrintStyle->append( s_defaultSheet, "print" );
     }
     {
 	QFile f(locate( "data", "khtml/css/quirks.css" ) );
@@ -222,12 +225,12 @@ void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s)
 	QString style = QString::fromLatin1( file.data() );
 	DOMString str(style);
 
-	quirksSheet = new DOM::CSSStyleSheetImpl((DOM::CSSStyleSheetImpl * ) 0);
-	quirksSheet->parseString( str );
+	s_quirksSheet = new DOM::CSSStyleSheetImpl((DOM::CSSStyleSheetImpl * ) 0);
+	s_quirksSheet->parseString( str );
 
 	// Collect only quirks-mode rules.
-	defaultQuirksStyle = new CSSStyleSelectorList();
-	defaultQuirksStyle->append( quirksSheet, "screen" );
+	s_defaultQuirksStyle = new CSSStyleSelectorList();
+	s_defaultQuirksStyle->append( s_quirksSheet, "screen" );
     }
 
     //kdDebug() << "CSSStyleSelector: default style has " << defaultStyle->count() << " elements"<< endl;
@@ -235,16 +238,25 @@ void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s)
 
 void CSSStyleSelector::clear()
 {
-    delete defaultStyle;
-    delete defaultQuirksStyle;
-    delete defaultPrintStyle;
-    delete defaultSheet;
+    delete s_defaultStyle;
+    delete s_defaultQuirksStyle;
+    delete s_defaultPrintStyle;
+    delete s_defaultSheet;
     delete styleNotYetAvailable;
-    defaultStyle = 0;
-    defaultQuirksStyle = 0;
-    defaultPrintStyle = 0;
-    defaultSheet = 0;
+    s_defaultStyle = 0;
+    s_defaultQuirksStyle = 0;
+    s_defaultPrintStyle = 0;
+    s_defaultSheet = 0;
     styleNotYetAvailable = 0;
+}
+
+void CSSStyleSelector::reparseConfiguration()
+{
+    // nice leak, but best we can do right now. hopefully its only rare.
+    s_defaultStyle = 0;
+    s_defaultQuirksStyle = 0;
+    s_defaultPrintStyle = 0;
+    s_defaultSheet = 0;
 }
 
 #define MAXFONTSIZES 15

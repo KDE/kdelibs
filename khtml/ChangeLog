@@ -1,3 +1,10 @@
+2004-01-02  Dirk Mueller  <mueller@kde.org>
+
+	* css/cssstyleselector.cpp (reparseConfiguration): implement.
+
+	* khtml_part.cpp (reparseConfiguration): call CSSStyleSelector::reparseConfiguration
+	instead of ::clear(). much less crashy. (#68141)
+
 2003-12-27  Simon Perreault  <nomis80@nomis80.org>
 
 	* khtml_part.cpp: Remove unused zoom actions. Assign CTRL + Key_Plus to

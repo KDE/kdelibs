@@ -31,6 +31,7 @@
 class KHTMLSettings;
 class KHTMLView;
 class KHTMLPart;
+class KHTMLFactory;
 class KURL;
 
 namespace DOM {
@@ -121,9 +122,10 @@ namespace khtml
 	~CSSStyleSelector();
 
 	void addSheet( DOM::CSSStyleSheetImpl *sheet );
+        static void clear();
+        static void reparseConfiguration();
 
 	static void loadDefaultStyle(const KHTMLSettings *s = 0);
-	static void clear();
 
 	RenderStyle *styleForElement(DOM::ElementImpl *e);
 
@@ -163,20 +165,25 @@ namespace khtml
         unsigned int addInlineDeclarations(DOM::ElementImpl* e, DOM::CSSStyleDeclarationImpl *decl,
 				   unsigned int numProps);
 
-	static DOM::CSSStyleSheetImpl *defaultSheet;
-	static DOM::CSSStyleSheetImpl *quirksSheet;
-	static CSSStyleSelectorList *defaultStyle;
-	static CSSStyleSelectorList *defaultQuirksStyle;
-	static CSSStyleSelectorList *defaultPrintStyle;
+	static DOM::CSSStyleSheetImpl *s_defaultSheet;
+	static DOM::CSSStyleSheetImpl *s_quirksSheet;
+	static CSSStyleSelectorList *s_defaultStyle;
+	static CSSStyleSelectorList *s_defaultQuirksStyle;
+	static CSSStyleSelectorList *s_defaultPrintStyle;
+        static RenderStyle* styleNotYetAvailable;
+
+	CSSStyleSelectorList *defaultStyle;
+	CSSStyleSelectorList *defaultQuirksStyle;
+	CSSStyleSelectorList *defaultPrintStyle;
+
 	CSSStyleSelectorList *authorStyle;
         CSSStyleSelectorList *userStyle;
         DOM::CSSStyleSheetImpl *userSheet;
 
 public:
-	static RenderStyle* styleNotYetAvailable;
 
     private:
-        void init();
+        void init(const KHTMLSettings* settings);
 
     public: // we need to make the enum public for SelectorCache
 	enum SelectorState {
