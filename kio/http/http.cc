@@ -631,13 +631,15 @@ bool HTTPProtocol::http_open()
   m_bCachedWrite = false;
   if (m_bUseCache)
   {
+     m_fcache = checkCacheEntry( m_state.cef );
 #ifdef DO_SSL
-     if (!m_request.reload && !m_bUseSSL)
+     if (m_request.reload || m_bUseSSL)
 #else
-     if (!m_request.reload)
+     if (m_request.reload && m_fcache)
 #endif
      {
-        m_fcache = checkCacheEntry( m_state.cef );
+        fclose(m_fcache);
+        m_fcache = 0;
      }
      m_bCachedWrite = true;
 
@@ -992,9 +994,13 @@ bool HTTPProtocol::readHeader()
          QString cacheControl = (*it).stripWhiteSpace();
  kdDebug(7103) << "Cache-Control =!" << cacheControl << "!" << endl;
          if (strncasecmp(cacheControl.ascii(), "no-cache", 8) == 0)
+         {
             m_bCachedWrite = false; // Don't put in cache
+         }
          else if (strncasecmp(cacheControl.ascii(), "no-store", 8) == 0)
+         {
             m_bCachedWrite = false; // Don't put in cache
+         }
       }
     }
     // oh no.. i think we're about to get a page not found
@@ -2165,7 +2171,10 @@ HTTPProtocol::createCacheEntry( const QString &mimetype, time_t expireDate)
 
    m_fcache = fopen( filename.ascii(), "w");
    if (!m_fcache)
+   {
+      kdWarning(7103) << "createCacheEntry: opening " << filename << " failed." << endl;
       return; // Error.
+   }
 
    fputs(CACHE_REVISION, m_fcache);    // Revision
 
