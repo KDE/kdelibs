@@ -790,16 +790,13 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 				p->drawLine(x2, r.y(), x2, y2);
 
 				// ### Qt should specify Style_Horizontal where appropriate
-				renderGradient( p, QRect(r.x()+1, r.y()+1, x2-1, y2-1),
-					cg.button(), (r.width() < r.height()) &&
-								 (pe != PE_PanelMenuBar) );
+				renderGradient( p, QRect(r.x()+1, r.y()+1, r.width()-2, r.height()-2),
+								cg.button(), 
+								(r.width() < r.height()) && (pe != PE_PanelMenuBar) );
 			}
 			else
-			{
-				renderGradient( p, QRect(r.x(), r.y(), x2, y2),
-					cg.button(), (r.width() < r.height()) &&
-								 (pe != PE_PanelMenuBar) );
-			}
+				renderGradient( p, r, cg.button(), 
+								(r.width() < r.height()) && (pe != PE_PanelMenuBar) );
 
 			break;
 		}
