@@ -834,7 +834,11 @@ void KHTMLPart::slotLoaderRequestDone( const DOM::DOMString &baseURL, khtml::Cac
   {
     d->m_loadedImages++;
 
-    emit d->m_extension->infoMessage( i18n( "%1 of %2 Images loaded" ).arg( d->m_loadedImages ).arg( d->m_totalImageCount ) );
+    // in case we have more images than we originally found, then they are most likely loaded by some
+    // javascript code. as we can't find out the exact number anyway we skip displaying any further image
+    // loading info message :P
+    if ( d->m_loadedImages <= d->m_totalImageCount )
+      emit d->m_extension->infoMessage( i18n( "%1 of %2 Images loaded" ).arg( d->m_loadedImages ).arg( d->m_totalImageCount ) );
   }
 
   checkCompleted();
