@@ -35,7 +35,7 @@ saxon_SOURCES = saxon.cpp xslt.cpp kio_help.cpp
 checkXML_SOURCES = checkXML.cpp xslt.cpp kio_help.cpp
 checkXML_LDADD = $(LIB_KSYCOCA) libxslt/libxslt.la
 
-bin_SCRIPTS = xmlizer
+bin_SCRIPTS = xmlizer kdb2html
 
 METASOURCES = AUTO
 
