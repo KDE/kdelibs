@@ -11,6 +11,8 @@ char* KTraderParse_putSymbol( char *_name );
 char *KTraderParse_putSymbolInBrackets( char *_name );
 char* KTraderParse_putString( char *_name );
 int yywrap();
+int kiotraderlex(void);
+void KTraderParse_initFlex( const char *_code );
 
 %}
 

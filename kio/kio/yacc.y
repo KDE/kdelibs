@@ -1,8 +1,9 @@
 %{
 #include <stdlib.h>
+#include <stdio.h>
 #include "ktraderparse.h"
 
-void yyerror(char *s);
+void yyerror(const char *s);
 int yylex();
 void KTraderParse_initFlex( const char *s );
 
@@ -113,7 +114,7 @@ factor: '(' bool_or ')' { $$ = KTraderParse_newBRACKETS( $<ptr>2 ); }
 
 %%
 
-void yyerror ( char *s )  /* Called by yyparse on error */
+void yyerror ( const char *s )  /* Called by yyparse on error */
 {
     printf ("ERROR: %s\n", s);
 }

@@ -440,8 +440,10 @@ char* KTraderParse_putSymbol( char *_name );
 char *KTraderParse_putSymbolInBrackets( char *_name );
 char* KTraderParse_putString( char *_name );
 int yywrap();
+int kiotraderlex(void);
+void KTraderParse_initFlex( const char *_code );
 
-#line 445 "lex.c"
+#line 447 "lex.c"
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -589,13 +591,13 @@ YY_MALLOC_DECL
 YY_DECL
 	{
 	register yy_state_type yy_current_state;
-	register char *yy_cp = NULL, *yy_bp = NULL;
+	register char *yy_cp, *yy_bp;
 	register int yy_act;
 
-#line 19 "lex.l"
+#line 21 "lex.l"
 
 
-#line 599 "lex.c"
+#line 601 "lex.c"
 
 	if ( yy_init )
 		{
@@ -680,130 +682,130 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 21 "lex.l"
+#line 23 "lex.l"
 { return EQ; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 22 "lex.l"
+#line 24 "lex.l"
 { return NEQ; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 23 "lex.l"
+#line 25 "lex.l"
 { return LE; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 24 "lex.l"
+#line 26 "lex.l"
 { return GR; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 25 "lex.l"
+#line 27 "lex.l"
 { return LEQ; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 26 "lex.l"
+#line 28 "lex.l"
 { return GEQ; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 27 "lex.l"
+#line 29 "lex.l"
 { return NOT; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 28 "lex.l"
+#line 30 "lex.l"
 { return AND; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 29 "lex.l"
+#line 31 "lex.l"
 { return OR; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 30 "lex.l"
+#line 32 "lex.l"
 { return IN; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 31 "lex.l"
+#line 33 "lex.l"
 { return EXIST; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 32 "lex.l"
+#line 34 "lex.l"
 { return MAX; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 33 "lex.l"
+#line 35 "lex.l"
 { return MIN; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 35 "lex.l"
+#line 37 "lex.l"
 { yylval.name = 0L; return (int)(*yytext); }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 37 "lex.l"
+#line 39 "lex.l"
 { yylval.valb = 1; return BOOL; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 38 "lex.l"
+#line 40 "lex.l"
 { yylval.valb = 0; return BOOL; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 40 "lex.l"
+#line 42 "lex.l"
 { yylval.name = KTraderParse_putString( yytext ); return STRING; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 42 "lex.l"
+#line 44 "lex.l"
 { yylval.vali = atoi( yytext ); return NUM; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 43 "lex.l"
+#line 45 "lex.l"
 { yylval.vali = atoi( yytext ); return NUM; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 45 "lex.l"
+#line 47 "lex.l"
 { yylval.vald = atof( yytext ); return FLOAT; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 47 "lex.l"
+#line 49 "lex.l"
 { yylval.name = KTraderParse_putSymbolInBrackets( yytext ); return ID; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 49 "lex.l"
+#line 51 "lex.l"
 { yylval.name = KTraderParse_putSymbol( yytext ); return ID; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 51 "lex.l"
+#line 53 "lex.l"
 /* eat up whitespace */
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 53 "lex.l"
+#line 55 "lex.l"
 { printf( "Unrecognized character: %s\n", yytext ); }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 55 "lex.l"
+#line 57 "lex.l"
 ECHO;
 	YY_BREAK
-#line 807 "lex.c"
+#line 809 "lex.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1369,7 +1371,7 @@ YY_BUFFER_STATE b;
 
 #ifndef YY_ALWAYS_INTERACTIVE
 #ifndef YY_NEVER_INTERACTIVE
-extern int isatty YY_PROTO(( int ));
+#include<unistd.h>
 #endif
 #endif
 
@@ -1689,16 +1691,18 @@ int main()
 	return 0;
 	}
 #endif
-#line 55 "lex.l"
+#line 57 "lex.l"
 
 
 char* KTraderParse_putSymbolInBrackets( char *_name )
 {
   int l = strlen( _name )-1;
   char *p = (char *)malloc( l );
-
-  strncpy( p, _name+1, l-1 );
-  p[l-1] = 0;
+  if (p != NULL)
+  {
+    strncpy( p, _name+1, l-1 );
+    p[l-1] = 0;
+  }
 
   return p;
 }
@@ -1706,7 +1710,10 @@ char* KTraderParse_putSymbolInBrackets( char *_name )
 char *KTraderParse_putSymbol( char *_name )
 {
   char *p = (char*)malloc( strlen( _name ) + 1 );
-  strcpy( p, _name );
+  if (p != NULL)
+  {
+      strcpy( p, _name );
+  }
   return p;
 }
 
@@ -1716,6 +1723,10 @@ char* KTraderParse_putString( char *_str )
   char *p = (char*)malloc( l );
   char *s = _str + 1;
   char *d = p;
+
+  if (p == NULL)
+    return NULL;
+
   while ( s != _str + l - 1 )
   {
      if ( *s != '\\' )
