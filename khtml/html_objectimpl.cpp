@@ -110,9 +110,15 @@ void HTMLAppletElementImpl::attach(KHTMLWidget *_view)
 
     printf("resizing applet to %d/%d\n", width, getHeight());
     applet->resize(width, getHeight());
+    applet->show();
     QString tmp;
     if(base)
-	tmp = QConstString(base->s, base->l).string();
+    {
+	tmp = QString(base->s, base->l);
+	KURL u(view->url());
+	KURL url(u, tmp);
+	tmp = url.url();
+    }
     else
 	tmp = view->url();
     applet->setBaseURL(tmp);
