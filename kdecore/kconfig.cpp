@@ -19,6 +19,14 @@
 // $Id$
 //
 // $Log$
+// Revision 1.18  1998/11/08 19:06:46  esken
+// Several security fixes by adding checkAccess() tests before the creation
+// of files and directorys. This is neccesary for SUID programs. Added
+// checkAccess(), which checks if the user may write a file.
+//
+// checkAccess() is a global function, perhaps it should be moved to some
+// KTools class as static member funtion later.
+//
 // Revision 1.17  1998/09/01 20:21:19  kulow
 // I renamed all old qt header files to the new versions. I think, this looks
 // nicer (and gives the change in configure a sense :)
@@ -220,7 +228,8 @@ void KConfig::parseConfigFiles()
 	  // we can already be sure that this file exists
  	  /* Actually, we can't: CHange by Alex */
  	  if (!aConfigFile.open( IO_ReadOnly)) {
-		data()->aLocalAppFile.sprintf("%s/share/config/%s",KApplication::localkdedir().data(),data()->aLocalAppFile.data());
+		QString tmp = data()->aLocalAppFile.copy();
+		data()->aLocalAppFile.sprintf("%s/share/config/%s",KApplication::localkdedir().data(),tmp.data());
  		aConfigFile.close();
  		aConfigFile.setName(data()->aLocalAppFile.data());
  		aConfigFile.open(IO_ReadOnly);
