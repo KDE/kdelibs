@@ -85,13 +85,28 @@ SourceDisplay::SourceDisplay(KJSDebugWin *debugWin, QWidget *parent, const char 
 
 SourceDisplay::~SourceDisplay()
 {
+  if (m_sourceFile) {
+    m_sourceFile->deref();
+    m_sourceFile = 0L;
+  }
 }
 
 void SourceDisplay::setSource(SourceFile *sourceFile)
 {
-  m_sourceFile = sourceFile;
-  if (!m_sourceFile || !m_debugWin->isVisible())
+  if (m_sourceFile != sourceFile) {
+    if (m_sourceFile) {
+      m_sourceFile->deref();
+    }
+    m_sourceFile = sourceFile;
+    if (m_sourceFile) {
+      m_sourceFile->ref();
+    }
+  }
+
+  if (!m_sourceFile || !m_debugWin->isVisible()) {
     return;
+  }
+
   QString code = sourceFile->getCode();
   const QChar *chars = code.unicode();
   uint len = code.length();
@@ -267,6 +282,7 @@ SourceFragment::SourceFragment(int sid, int bl, int el, SourceFile *sf)
 SourceFragment::~SourceFragment()
 {
   sourceFile->deref();
+  sourceFile = 0L;
 }
 
 //-------------------------------------------------------------------------
