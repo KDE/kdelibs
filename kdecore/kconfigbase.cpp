@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.42  1999/03/10 20:27:44  reiher
+// Return the default string instead of nothing if we have a key like "Icon="
+//
 // Revision 1.41  1999/03/09 23:38:16  kulow
 // moved the QString wrapper to the header file as inline function
 //
@@ -366,7 +369,7 @@ const QString KConfigBase::readEntry( const QString& pKey,
       }
   // const_cast<KConfigBase*>(this)->setLocale();
 
-  QString aValue;
+  QString aValue = QString::null;
   // retrieve the current group dictionary
   KEntryDict* pCurrentGroupDict = data()->aGroupDict[ data()->aGroup.data() ];
   
@@ -387,13 +390,11 @@ const QString KConfigBase::readEntry( const QString& pKey,
 	  
       if( pEntryData )
 	aValue = pEntryData->aValue;
-      else if( pDefault )
-		{
-		  aValue = pDefault;
-		}
+      else
+        aValue = pDefault;
     }
-  else if( pDefault )
-	aValue = pDefault;
+  else
+    aValue = pDefault;
 
 
   // only do dollar expansion if so desired
@@ -430,7 +431,7 @@ const QString KConfigBase::readEntry( const QString& pKey,
 		  };
   }
 
-  if( !aValue )
+  if( aValue.isNull() )
     aValue = pDefault;
 
   return aValue;

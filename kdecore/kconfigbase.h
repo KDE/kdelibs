@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.17  1999/03/09 23:38:17  kulow
+// moved the QString wrapper to the header file as inline function
+//
 // Revision 1.16  1999/03/08 16:05:17  rbeutler
 // added writeEntry( const QString &, const char *, ... ) method to fix the problem with the implicitely conversion to bool
 //
@@ -236,7 +239,7 @@ public:
 	*
 	* @param pKey	The key to search for.
 	* @param pDefault A default value returned if the key was not found.
-	* @return The value for this key or an empty string if no value
+	* @return The value for this key or a null string if no value
 	*	  was found.
 	*/
   const QString readEntry( const QString& pKey,
