@@ -296,6 +296,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
   setInstance( khtml->instance() );
 
   actionCollection()->insert( khtml->actionCollection()->action( "selectAll" ) );
+  actionCollection()->insert( khtml->actionCollection()->action( "security" ) );
   actionCollection()->insert( khtml->actionCollection()->action( "viewDocumentSource" ) );
 
   // frameset? -> add "Reload Frame" etc.
