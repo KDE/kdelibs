@@ -721,20 +721,12 @@ QWidget* KAction::container( int index ) const
 
 KToolBar* KAction::toolBar( int index ) const
 {
-  QWidget* w = d->m_containers[ index ].m_container;
-  if ( !w || !w->inherits( "KToolBar" ) )
-    return 0;
-
-  return static_cast<KToolBar*>( w );
+    return dynamic_cast<KToolBar *>( d->m_containers[ index ].m_container );
 }
 
 QPopupMenu* KAction::popupMenu( int index ) const
 {
-  QWidget* w = d->m_containers[ index ].m_container;
-  if ( !w || !w->inherits( "QPopupMenu" ) )
-    return 0;
-
-  return static_cast<QPopupMenu*>( w );
+    return dynamic_cast<QPopupMenu *>( d->m_containers[ index ].m_container );
 }
 
 QWidget* KAction::representative( int index ) const
@@ -835,15 +827,7 @@ void KAction::slotKeycodeChanged()
 
 KActionCollection *KAction::parentCollection() const
 {
-  QObject *p = parent();
-
-  if ( !p )
-    return 0;
-
-  if ( !p->inherits( "KActionCollection" ) )
-    return 0;
-
-  return static_cast<KActionCollection *>( p );
+    return dynamic_cast<KActionCollection *>( parent() );
 }
 
 void KAction::unplugAll()
