@@ -238,6 +238,10 @@ void XMLGUIFactory::removeServant( XMLGUIServant *servant )
 
 void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerNode *parentNode )
 {
+  static QString tagAction = QString::fromLatin1( "Action" );
+  static QString tagMerge = QString::fromLatin1( "Merge" );
+  static QString attrName = QString::fromLatin1( "name" );
+ 
   /*
    * This list contains references to all the containers we created on the current level.
    * We use it as "exclude" list, in order to avoid container matches of already created containers having
@@ -268,9 +272,9 @@ void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerN
      * The "Merge" tag specifies that all containers and actions from *other* servants should be
      * inserted/plugged in at the current index, and not at the "end" .
      */
-    if ( e.tagName() == "Merge" )
+    if ( e.tagName() == tagMerge )
     {
-      QString mergingName = e.attribute( "name" );
+      QString mergingName = e.attribute( attrName );
       if ( mergingName.isEmpty() )
         mergingName = d->m_defaultMergingName;
 
@@ -282,7 +286,7 @@ void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerN
 
       ignoreMergingIndex = true;
     }
-    else if ( e.tagName() == "Action" )
+    else if ( e.tagName() == tagAction )
     {
       QAction *action = m_servant->action( e );
 
@@ -349,7 +353,7 @@ void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerN
 
 	// although it looks like these iterator variables could be just initialized once at the beginning
 	// of the function (faster) I consider it to be safer to initialize them each time, as the index map
-	// we use changes as soon as we find a <Merge> tag. QMap iterators however aren't updated upon map 
+	// we use changes as soon as we find a <Merge> tag. QMap iterators however aren't updated upon map
 	// changes. That's why they might point to undefined/wrong data.
 	// BUT: I might be wrong here!
 	// One possible optimization however would be to initialize them once at the beginning of the function
@@ -369,7 +373,7 @@ void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerN
 
         // query the servant for possible container state information (like toolbar positions for example)
 	// (the array might be empty in case there's no info available)
-	QByteArray stateBuffer = m_servant->takeContainerStateBuffer( e.tagName() + e.attribute( "name" ) );
+	QByteArray stateBuffer = m_servant->takeContainerStateBuffer( e.tagName() + e.attribute( attrName ) );
 	
 	/*
 	 * let the builder create the container (note that a container might also be a QAction (that's why
@@ -386,7 +390,7 @@ void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerN
 	
 	containerList.append( container );
 	
-        XMLGUIContainerNode *containerNode = new XMLGUIContainerNode( container, e.tagName(), e.attribute( "name" ), parentNode, m_servant, merged );
+        XMLGUIContainerNode *containerNode = new XMLGUIContainerNode( container, e.tagName(), e.attribute( attrName ), parentNode, m_servant, merged );
 	
         buildRecursive( e, containerNode );
       }
@@ -396,19 +400,19 @@ void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerN
 }
 
 bool XMLGUIFactory::removeRecursive( XMLGUIContainerNode *node )
-{ 
+{
   QMap<QString,int>::Iterator defaultMergingIt = node->mergingIndices.find( d->m_defaultMergingName );
   QMap<QString,int>::Iterator mergingIt = node->mergingIndices.find( d->m_servantName );
   QMap<QString,int>::Iterator mergingEnd = node->mergingIndices.end();
 
   int *mergingIdx = 0L;
-  
+
   if ( defaultMergingIt != mergingEnd )
     mergingIdx = & defaultMergingIt.data();
 
   if ( mergingIt != mergingEnd )
     mergingIdx = & mergingIt.data();
-  
+
   QListIterator<XMLGUIContainerNode> childIt( node->children );
   while ( childIt.current() )
     // removeRecursive returns true in case the container really got deleted
@@ -464,11 +468,11 @@ bool XMLGUIFactory::removeRecursive( XMLGUIContainerNode *node )
       parentContainer = (QWidget *)node->parent->container;
 
       XMLGUIContainerNode *p = node->parent;
-      
+
       defaultMergingIt = p->mergingIndices.find( d->m_defaultMergingName );
       mergingIt = p->mergingIndices.find( d->m_servantName );
       mergingEnd = p->mergingIndices.end();
-      
+
       if ( node->mergedContainer )
       {
         if ( mergingIt != mergingEnd )
