@@ -68,7 +68,7 @@ dist-hook:
 
 cvs-local:
 	@echo "*** preparing libtool library"
-	cd  libltdl && \
+	@cd  libltdl && \
 	rm -f acinclude.m4 && \
 	cat ../admin/libtool.m4.in > acinclude.m4 && \
 	cat ltdl.m4 >> acinclude.m4 && \
