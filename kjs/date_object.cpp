@@ -304,6 +304,8 @@ KJSO DatePrototype::get(const UString &p) const
     id = DateProtoFunc::SetMonth;
   else if (p == "setFullYear" || p == "setUTCFullYear")
     id = DateProtoFunc::SetFullYear;
+  else if (p == "setYear" )
+    id = DateProtoFunc::SetYear;
   // non-normative
   else if (p == "getYear")
     id = DateProtoFunc::GetYear;
@@ -443,6 +445,9 @@ Completion DateProtoFunc::execute(const List &args)
     break;
   case SetFullYear:
     t->tm_year = args[0].toInt32() - 1900;
+    break;
+  case SetYear:
+    t->tm_year = args[0].toInt32() >= 1900 ? args[0].toInt32() - 1900 : args[0].toInt32();
     break;
   }
 
