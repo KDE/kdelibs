@@ -171,6 +171,8 @@ bool KWin::isDockWindow( WId dockWin, WId *forWin = 0 )
     unsigned long length, after;
     unsigned char *data;
     bool result = FALSE;
+    if ( forWin )
+	*forWin = 0;
     if ( XGetWindowProperty( qt_xdisplay(), dockWin, net_kde_docking_window_for, 0, 1,
 			     FALSE, XA_WINDOW, &type, &format,
 			     &length, &after, &data ) == Success ) {
