@@ -77,7 +77,13 @@ ac_cpp=$ac_cpp_safe
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_TIME
+
+AC_LANG_SAVE
+AC_LANG_C
+dnl AC_C_BIGENDIAN has a bug (one of its tests uses "main()" instead of
+dnl "int main()") so C++ compilers would break. Thats why we switch languages
 AC_C_BIGENDIAN
+AC_LANG_RESTORE
 
 dnl check if the compiler has bool
 AC_CHECK_BOOL
