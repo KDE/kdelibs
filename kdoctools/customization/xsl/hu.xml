@@ -8,10 +8,10 @@
     value for the character (e.g. \U-00F3).
  -->
 <gentext key="Default" text="Alap\U-00E9;rtelmez\U-00E9;s"/>
-<gentext key="Documentation.by" text="Documentation by"/>
+<gentext key="Documentation.by" text="A dokument\U-00E1;ci\U-00F3;t k\U-00E9;sz\U-00ED;tette"/>
 <gentext key="Hungarian" text="Magyar"/>
 <gentext key="LastUpdated" text="Utols\U-00F3; friss\U-00ED;t\U-00E9;s"/>
-<gentext key="Version" text="Verzi\U-00F3;"/>
+<gentext key="Version" text="Verzi\U-00F3;sz\U-00E1;m:"/>
 <gentext key="home-url" text="http://www.kde.org/"/>
-<gentext key="logo-alt" text="The K Desktop Environment Logo"/>
+<gentext key="logo-alt" text="A KDE grafikus k\U-00F6;rnyezet embl\U-00E9;m\U-00E1;ja"/>
 </localization>
