@@ -25,7 +25,7 @@ EXTRA_DIST = $(data_DATA) CHANGES.kdatepicker USERS.kdatepicker
 lib_LTLIBRARIES = libkdeui.la
 libkdeui_la_LDFLAGS = -no-undefined $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 3:0  
 # we should get this to work when libtool 1.3 is released
-libkdeui_la_LIBADD = ../kdecore/libkdecore.la $(LIB_QT)
+libkdeui_la_LIBADD = ../kdecore/libkdecore.la 
 
 include_HEADERS = kledlamp.h kprogress.h kpanner.h kcolordlg.h kselect.h \
 		kdatepik.h kdatetbl.h \

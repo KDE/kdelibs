@@ -358,9 +358,9 @@ void KSpellConfig::fillInDialog (void)
       QDir thedir (dir.filePath(),"*.aff");
       kdebug(KDEBUG_INFO, 750, "KSpellConfig%s\n",thedir.path().ascii());
 
-      kdebug(KDEBUG_INFO, 750, "entryList().count()=%d", thedir.entryList()->count());
+      kdebug(KDEBUG_INFO, 750, "entryList().count()=%d", thedir.entryList().count());
 
-      for (unsigned i=0;i<thedir.entryList()->count();i++)
+      for (unsigned i=0;i<thedir.entryList().count();i++)
 	{
 	  QString fname, lname, hname;
 

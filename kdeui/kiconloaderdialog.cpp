@@ -72,7 +72,7 @@ void KIconLoaderCanvas::loadDir( QString dirname, QString filter )
     }
   if( d.exists() )
     {
-      file_list = *d.entryList( QDir::Files | QDir::Readable, QDir::Name );
+      file_list = d.entryList( QDir::Files | QDir::Readable, QDir::Name );
       QApplication::setOverrideCursor( waitCursor );
       curr_indx = 0;
       sel_id = 0;

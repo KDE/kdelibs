@@ -26,14 +26,10 @@ void KProtocolManager::scanConfig( const QString& _dir, bool _islocal )
   QDir dir( _dir );
   if (!dir.exists())
     return;
-  const QStringList* p = dir.entryList();
-  if ( !p )
-    return;
+  QStringList p = dir.entryList();
     
-  // QStringList lst( *p );
-  
-  QStringList::ConstIterator e;
-  for( e = p->begin(); e != p->end(); e++ )
+  QStringList::Iterator e;
+  for( e = p.begin(); e != p.end(); e++ )
   {
     if ( *e == "." || *e == ".." )
       continue;
