@@ -23,6 +23,7 @@
 #include "lpchelper.h"
 #include "matichandler.h"
 #include "lprsettings.h"
+#include "driver.h"
 
 #include <qfileinfo.h>
 #include <qlist.h>
@@ -40,7 +41,7 @@ KMLprManager::KMLprManager(QObject *parent, const char *name)
 	m_lpchelper = new LpcHelper(this);
 
 	setHasManagement(/*getuid() == 0*/true);
-	setPrinterOperationMask(KMManager::PrinterEnabling|KMManager::PrinterConfigure|KMManager::PrinterTesting);
+	setPrinterOperationMask(KMManager::PrinterEnabling|KMManager::PrinterConfigure|KMManager::PrinterTesting|KMManager::PrinterCreation);
 
 	initHandlers();
 }
@@ -164,7 +165,12 @@ DrMain* KMLprManager::loadPrinterDriver(KMPrinter *prt, bool)
 	LprHandler	*handler = findHandler(prt);
 	PrintcapEntry	*entry = findEntry(prt);
 	if (handler && entry)
-		return handler->loadDriver(prt, entry);
+	{
+		DrMain	*driver = handler->loadDriver(prt, entry);
+		if (driver)
+			driver->set("handler", handler->name());
+		return driver;
+	}
 	return NULL;
 }
 
@@ -174,7 +180,12 @@ DrMain* KMLprManager::loadFileDriver(const QString& filename)
 	QString	handler_str = (p != -1 ? filename.left(p) : QString::fromLatin1("default"));
 	LprHandler	*handler = m_handlers.find(handler_str);
 	if (handler)
-		return handler->loadDbDriver(filename);
+	{
+		DrMain	*driver = handler->loadDbDriver(filename);
+		if (driver)
+			driver->set("handler", handler->name());
+		return driver;
+	}
 	return NULL;
 }
 
@@ -243,8 +254,19 @@ bool KMLprManager::createPrinter(KMPrinter *prt)
 	LprHandler	*handler = findHandler(prt);
 	if (!handler)
 	{
-		setErrorMsg(i18n("Unrecognized entry."));
-		return false;
+		// this may happen if it's a new printer. In that case,
+		// the "kde-lpr-handler" option is empty. However the
+		// handler may be retrieve from the driver if there's
+		// one, or simply fall back to the default handler.
+		if (prt->driver())
+			handler = m_handlers.find(prt->driver()->get("handler"));
+		else
+			handler = m_handlers.find("default");
+		if (!handler)
+		{
+			setErrorMsg(i18n("Internal error: no handler defined."));
+			return false;
+		}
 	}
 	QString	sd = LprSettings::self()->baseSpoolDir();
 	if (sd.isEmpty())

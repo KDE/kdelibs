@@ -30,7 +30,7 @@ public:
 
 	void setupPropertyPages(KMPropertyPage*);
 	void setupPrinterPropertyDialog(KPrinterPropertyDialog*);
-	//void setupWizard(KMWizard*);
+	void setupWizard(KMWizard*);
 };
 
 #endif

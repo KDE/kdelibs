@@ -24,6 +24,8 @@
 
 #include "kmpropdriver.h"
 #include "kmpropbackend.h"
+#include "kmwizard.h"
+#include "kmwbackend.h"
 
 #include <klocale.h>
 
@@ -45,4 +47,14 @@ void KMLprUiManager::setupPropertyPages(KMPropertyPage *pages)
 void KMLprUiManager::setupPrinterPropertyDialog(KPrinterPropertyDialog *dlg)
 {
 	dlg->addPage(new KPQtPage(dlg->driver(), dlg, "QtPage"));
+}
+
+void KMLprUiManager::setupWizard(KMWizard *wizard)
+{
+	KMWBackend	*backend = wizard->backendPage();
+	
+	backend->addBackend(KMWizard::Local, i18n("&Local printer (parallel, serial, USB)"), true);
+	backend->addBackend(KMWizard::LPD, i18n("&Remote LPD queue"), true);
+	backend->addBackend(KMWizard::TCP, i18n("&Network printer (TCP)"), true);
+	backend->addBackend(KMWizard::SMB, i18n("&SMB shared printer (Windows)"), true);
 }
