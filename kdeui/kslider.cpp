@@ -216,7 +216,7 @@ void KSlider::drawTickMarks(QPainter *painter)
 }
 
 // This function is obsolete: I will delete it after Beta-3
-void KSlider::drawTicks ( QPainter * p, int d, int w, int i )
+void KSlider::drawTicks ( QPainter * p, int , int , int )
 {
   drawTickMarks(p);
 }
