@@ -1,3 +1,9 @@
+2004-10-24  David Faure  <faure@kde.org>
+
+        * html/html_formimpl.cpp (value): Fixed m_value vs ATTR_VALUE problem
+        which didn't allow sending mail on gmail.google.com. Testcases:
+        forms/form_setattribute.html, mozilla/dom/dom-html/{hfor009.html,hinp017.html}
+
 2004-10-22  Stephan Kulow  <coolo@kde.org>
 
         * ecma/kjs_window.cpp (tryCall): merging handling of event handlers

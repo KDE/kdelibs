@@ -24,7 +24,7 @@
  */
 
 #undef FORMS_DEBUG
-//#define FORMS_DEBUG
+#define FORMS_DEBUG
 
 #include "html/html_formimpl.h"
 
@@ -248,7 +248,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
 
         if (!current->disabled() && current->encoding(codec, lst, m_multipart))
         {
-            //kdDebug(6030) << "adding name " << current->name().string() << endl;
+            kdDebug(6030) << "adding name '" << current->name().string() << "'" << endl;
             khtml::encodingList::Iterator it;
             for( it = lst.begin(); it != lst.end(); ++it )
             {
@@ -1435,7 +1435,7 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
 
 void HTMLInputElementImpl::reset()
 {
-    setValue(DOMString());
+    setValue(getAttribute(ATTR_VALUE));
     setChecked(getAttribute(ATTR_CHECKED) != 0);
 }
 
@@ -1452,9 +1452,17 @@ void HTMLInputElementImpl::setChecked(bool _checked)
 
 DOMString HTMLInputElementImpl::value() const
 {
-    if ( m_type == CHECKBOX || m_type == RADIO ) {
-        if ( m_value.isNull() )
-            return DOMString("on");
+    if (m_type == CHECKBOX || m_type == RADIO) {
+        DOMString val = getAttribute(ATTR_VALUE);
+        // If no attribute exists, then just use "on" or "" based off the checked() state
+        // of the control.
+        if (val.isNull()) {
+            if (checked())
+                return DOMString("on");
+            else
+                return DOMString("");
+        }
+        return val;
     }
 
     // It's important *not* to fall back to the value attribute for file inputs,
@@ -1462,7 +1470,6 @@ DOMString HTMLInputElementImpl::value() const
     // value attribute in markup.
     if (m_value.isNull() && m_type != FILE)
         return getAttribute(ATTR_VALUE);
-
     return m_value;
 }
 
