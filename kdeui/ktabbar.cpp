@@ -18,8 +18,10 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include <qapplication.h>
 #include <qpainter.h>
 #include <qstyle.h>
+#include <qtimer.h>
 #include <qtoolbutton.h>
 
 #include <kglobalsettings.h>
@@ -36,6 +38,9 @@ KTabBar::KTabBar( QWidget *parent, const char *name )
     setAcceptDrops( true );
     setMouseTracking( true );
 
+    mShowCloseButtonTimer = new QTimer( this );
+    connect( mShowCloseButtonTimer, SIGNAL( timeout() ), SLOT( showCloseButton() ) );
+
 #if QT_VERSION >= 0x030200
     connect(this, SIGNAL(layoutChanged()), SLOT(onLayoutChange()));
 #endif
@@ -43,7 +48,7 @@ KTabBar::KTabBar( QWidget *parent, const char *name )
 
 KTabBar::~KTabBar()
 {
-    //For the futur
+    //For the future
     //delete d;
 }
 
@@ -59,8 +64,10 @@ void KTabBar::mouseDoubleClickEvent( QMouseEvent *e )
 
 void KTabBar::mousePressEvent( QMouseEvent *e )
 {
-    if( e->button() == LeftButton || e->button() == LeftButton )
+    if( e->button() == LeftButton ) {
+        mShowCloseButtonTimer->stop();
         mDragStart = e->pos();
+    }
     else if( e->button() == RightButton ) {
         QTab *tab = selectTab( e->pos() );
         if( tab!= 0L ) {
@@ -142,25 +149,32 @@ void KTabBar::mouseMoveEvent( QMouseEvent *e )
                 if ( mHoverCloseButton ) {
                     if ( mHoverCloseButtonTab == t )
                         return;
+                    mShowCloseButtonTimer->stop();
                     delete mHoverCloseButton;
                 }
 
                 mHoverCloseButton = new QToolButton( this );
                 mHoverCloseButton->setIconSet( SmallIcon( "fileclose" ) );
                 mHoverCloseButton->setGeometry( rect );
-                mHoverCloseButton->show();
+                mShowCloseButtonTimer->start( QApplication::doubleClickInterval(), true );
                 mHoverCloseButtonTab = t;
                 connect( mHoverCloseButton, SIGNAL( clicked() ), SLOT( closeButtonClicked() ) );
                 return;
             }
         }
         if ( mHoverCloseButton ) {
+            mShowCloseButtonTimer->stop();
             delete mHoverCloseButton;
             mHoverCloseButton = 0;
         }
     }
 
     QTabBar::mouseMoveEvent( e );
+}
+
+void KTabBar::showCloseButton()
+{
+    mHoverCloseButton->show();
 }
 
 void KTabBar::mouseReleaseEvent( QMouseEvent *e )
@@ -295,6 +309,7 @@ bool KTabBar::hoverCloseButton() const
 
 void KTabBar::onLayoutChange()
 {
+    mShowCloseButtonTimer->stop();
     delete mHoverCloseButton;
     mHoverCloseButton = 0;
     mHoverCloseButtonTab = 0;

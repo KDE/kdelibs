@@ -23,6 +23,7 @@
 
 #include <qtabbar.h>
 
+class QTimer;
 class QToolButton;
 class KTabBarPrivate;
 
@@ -70,6 +71,7 @@ protected:
 protected slots:
     virtual void closeButtonClicked();
     virtual void onLayoutChange();
+    virtual void showCloseButton();
 
 private:
     QPoint mDragStart;
@@ -78,6 +80,7 @@ private:
     QMap<int, QColor> mTabColors;
     QTab *mHoverCloseButtonTab;
     QToolButton *mHoverCloseButton;
+    QTimer* mShowCloseButtonTimer;
 
     bool mHoverCloseButtonEnabled;
     bool mTabReorderingEnabled;
