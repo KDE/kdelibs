@@ -800,7 +800,7 @@ QString KURLCompletion::listDirectories()
                         if ( listURL ) {
                             //kdDebug() "listDirectories() -- dir = " << m_current_url->url() << endl;
 
-                            m_list_job = KIO::listDir( (*m_current_url) );
+                            m_list_job = KIO::listDir( (*m_current_url), false );
 
                             assert( m_list_job );
 
