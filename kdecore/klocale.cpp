@@ -7,6 +7,8 @@
 #include <locale.h>
 #endif
 
+#include <stdlib.h>
+
 #include <qdir.h>
 /**
   * Stephan: I don't want to put this in an extra header file, since
