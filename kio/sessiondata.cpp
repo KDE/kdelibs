@@ -19,6 +19,7 @@
 */
 
 #include <qlist.h>
+#include <qtextcodec.h>
 
 #include <kdebug.h>
 #include <kconfig.h>
@@ -271,7 +272,7 @@ void KIO::SessionData::reset()
     // to be simplified when it gets fixed in QT/kdecore.
     d->charsets = KGlobal::charsets()->name(KGlobal::charsets()->xNameToID(KGlobal::locale()->charset()));
 #else
-#warning FIXME: need to iterate over available textcodecs or something, said Lars ;-)
+    d->charsets = QTextCodec::codecForLocale()->mimeName(); // that's the right solution, said Lars
 #endif
 
     // Get cache settings...
