@@ -295,11 +295,11 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paIncZoomFactor = new KHTMLZoomFactorAction( this, true, i18n( "Increase Font Sizes" ), "viewmag+", this, SLOT( slotIncZoom() ), actionCollection(), "incFontSizes" );
   d->m_paIncZoomFactor->setWhatsThis( i18n( "Increase Font Size<p>"
                                             "Make the font in this window bigger. "
-					    "Hold the mouse button for a menu with all available font sizes." ) );
+					    "Click and hold down the mouse button for a menu with all available font sizes." ) );
   d->m_paDecZoomFactor = new KHTMLZoomFactorAction( this, false, i18n( "Decrease Font Sizes" ), "viewmag-", this, SLOT( slotDecZoom() ), actionCollection(), "decFontSizes" );
   d->m_paDecZoomFactor->setWhatsThis( i18n( "Decrease Font Size<p>"
                                             "Make the font in this window smaller. "
-					    "Hold the mouse button for a menu with all available font sizes." ) );
+					    "Click and hold down the mouse button for a menu with all available font sizes." ) );
   /*KAction *incZoomFactorFast = */new KAction(i18n("Zoom In Fast"),
 				0, this, SLOT(slotIncZoomFast()),
 				actionCollection(), "incZoomFast");
