@@ -21,3 +21,6 @@ BZIP2DIR=bzip2
 endif
 
 SUBDIRS = file http ftp gzip $(BZIP2DIR) metainfo
+
+messages: # they get into kio.pot
+
