@@ -332,9 +332,14 @@ int KMenuBar::block_resize = 0;
 
 void KMenuBar::resizeEvent( QResizeEvent *e )
 {
-    ++block_resize; // do not respond with configure request to ConfigureNotify event
-    QMenuBar::resizeEvent(e); // to avoid possible infinite loop
-    --block_resize;
+    if( e->spontaneous() && d->topLevel && !d->fallback_mode )
+        {
+        ++block_resize; // do not respond with configure request to ConfigureNotify event
+        QMenuBar::resizeEvent(e); // to avoid possible infinite loop
+        --block_resize;
+        }
+    else
+        QMenuBar::resizeEvent(e);
 }
 
 void KMenuBar::setGeometry( const QRect& r )
@@ -367,7 +372,7 @@ void KMenuBar::resize( int w, int h )
 void KMenuBar::checkSize( int& w, int& h )
 {
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-    if( !d->topLevel || d->selection->owner() == None )
+    if( !d->topLevel || d->fallback_mode )
 	return;
 #endif
     if( parentWidget() && parentWidget()->width() == w )
