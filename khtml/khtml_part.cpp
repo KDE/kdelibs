@@ -889,7 +889,7 @@ QVariant KHTMLPart::crossFrameExecuteScript(const QString& target,  const QStrin
 }
 
 //Enable this to see all JS scripts being executed
-#define KJS_VERBOSE
+//#define KJS_VERBOSE
 
 KJSErrorDlg *KHTMLPart::jsErrorExtension() {
   if (!d->m_settings->jsErrorsEnabled()) {
