@@ -31,6 +31,7 @@
 #include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <netinet/in.h>
+#include <netinet/tcp.h>
 
 #include <stdio.h>
 #include <unistd.h>
@@ -104,6 +105,13 @@ bool TCPServer::initSocket()
 			return false;
 		}
 	}
+
+	// enable TCP sending without nagle algorithm - this sends out requests
+	// faster, because  they are not queued in the hope that more data will
+	// need to be sent soon
+	int on = 1;
+	if(setsockopt(theSocket, SOL_TCP, TCP_NODELAY, &on, sizeof(on)) == -1)
+		arts_debug("couldn't set TCP_NODELAY on socket %d\n", theSocket);
 
     socket_addr.sin_family = AF_INET;
     socket_addr.sin_port = htons( TCPServerPort );	// 0 = choose port freely

@@ -29,6 +29,7 @@
 #include <netdb.h>
 #undef queue
 #include <netinet/in.h>
+#include <netinet/tcp.h>
 #include <sys/un.h>
 #include <errno.h>
 #include "debug.h"
@@ -110,6 +111,13 @@ static int tcp_connect(const char *url)
 		close(my_socket);
         return -1;
     }
+
+	// enable TCP sending without nagle algorithm - this sends out requests
+	// faster, because  they are not queued in the hope that more data will
+	// need to be sent soon
+	int on = 1;
+	if(setsockopt(my_socket, SOL_TCP, TCP_NODELAY, &on, sizeof(on)) == -1)
+		arts_debug("couldn't set TCP_NODELAY on socket %d\n", my_socket);
 
 	int rc;
 	rc=connect(my_socket,(struct sockaddr *)remote_addr, sizeof(*remote_addr));
