@@ -70,6 +70,17 @@ public:
      */
     void setFonts(const QStringList &fonts);
     /**
+     * Sets the currently selected font.
+     *
+     * @param family Font to select.
+     */ 
+    void setCurrentFont(const QString &family);
+    /**
+     * @return the currently selected font.
+     */
+    QString currentFont() const;
+    
+    /**
      * Sets the listed fonts to bold or normal.
      *
      * @param bold Set to true to display fonts in bold
@@ -137,6 +148,8 @@ public:
      * @return True if the respective fonts are used for painting
      */
     static bool displayFonts();
+
+    virtual void setCurrentItem(int i);
 
 protected:
     /**

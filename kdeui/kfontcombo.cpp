@@ -47,8 +47,10 @@ struct KFontComboPrivate
     bool underline : 1;
     bool strikeOut : 1;
     bool displayFonts : 1;
+    bool modified : 1;
     int size;
     int lineSpacing;
+    QString defaultFamily;
 };
 
 class KFontListItem : public QListBoxItem
@@ -179,6 +181,60 @@ void KFontCombo::setFonts(const QStringList &fonts)
     clear();
     for (QStringList::ConstIterator it = fonts.begin(); it != fonts.end(); ++it)
         new KFontListItem(*it, this);
+}
+
+void KFontCombo::setCurrentFont(const QString &family)
+{
+    d->defaultFamily = family;
+    QString lowerName = family.lower();
+    int c = count();
+    for(int i = 0; i < c; i++)
+    {
+       if (text(i).lower() == lowerName)
+       {
+          setCurrentItem(i);
+          d->modified = false;
+          return;
+       }
+    }
+    i = lowerName.find(" [");
+    if (i>-1)
+    {
+       lowerName = lowerName.left(i);
+       for(int i = 0; i < c; i++)
+       {
+          if (text(i).lower() == lowerName)
+          {
+             setCurrentItem(i);
+             d->modified = false;
+             return;
+          }
+       }
+    }    
+
+    lowerName += " [";
+    for(int i = 0; i < c; i++)
+    {
+       if (text(i).lower().startsWith(lowerName))
+       {
+          setCurrentItem(i);
+          d->modified = false;
+          return;
+       }
+    }
+}
+
+QString KFontCombo::currentFont() const 
+{ 
+   if (d->modified)
+      return currentText(); 
+   return d->defaultFamily;
+}
+
+void KFontCombo::setCurrentItem(int i)
+{
+    d->modified = true;
+    QComboBox::setCurrentItem(i);
 }
 
 void KFontCombo::init()
