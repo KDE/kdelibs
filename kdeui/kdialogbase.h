@@ -366,16 +366,6 @@ class KDialogBase : public KDialog
     ~KDialogBase();
 
     /**
-     * Destruct the Dialog delayed.
-     *
-     * You can call this function from
-     * slots like @ref closeClicked() and @ref hidden().
-     * You should not use the dialog any more after
-     * calling this function.
-     */
-    void delayedDestruct();
-
-    /**
      * Sets the orientation of the button box.
      *
      * It can be @p Vertical or @p Horizontal. If @p Horizontal
@@ -1098,6 +1088,16 @@ class KDialogBase : public KDialog
     void enableLinkedHelp( bool state );
 
     /**
+     * Destruct the Dialog delayed.
+     *
+     * You can call this function from
+     * slots like @ref closeClicked() and @ref hidden().
+     * You should not use the dialog any more after
+     * calling this function.
+     */
+    void delayedDestruct();
+
+    /**
      * Sets the text that is shown as the linked text.
      *
      * If text is empty,
@@ -1372,6 +1372,9 @@ class KDialogBase : public KDialog
     /**
      * Deletes the dialog immediately. If you want to delete the dialog
      * delayed use delayedDestruct() or QObject::deleteLater().
+     *
+     * Attention: Do no use connect this slot to signals from user
+     * actions!
      */
     void slotDelayedDestruct();
 
