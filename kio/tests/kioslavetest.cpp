@@ -401,8 +401,10 @@ void KioslaveTest::slotData(KIO::Job*, const QByteArray &data)
     }
     else
     {
-       QCString c_string(data.data(), data.size()); // Make it 0-terminated!
-       kdDebug(0) << "Data: \"" << c_string.data() << "\"" << endl;
+       QByteArray myArray(data);
+       myArray.resize(myArray.size() + 1);
+       myArray.at(myArray.size() - 1) = '\0';
+       kdDebug(0) << "Data: \"" << QCString(myArray) << "\"" << endl;
     }
 }
 
