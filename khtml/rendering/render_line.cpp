@@ -584,9 +584,6 @@ void InlineFlowBox::paintDecorations(RenderObject::PaintInfo& pI, int _tx, int _
 {
     // Now paint our text decorations. We only do this if we aren't in quirks mode (i.e., in
     // almost-strict mode or strict mode).
-    
-    // ### disabled for now
-    return;
 
     _tx += m_x;
     _ty += m_y;
@@ -596,23 +593,26 @@ void InlineFlowBox::paintDecorations(RenderObject::PaintInfo& pI, int _tx, int _
         // We must have child boxes and have decorations defined.
         _tx += borderLeft() + paddingLeft();
         int w = m_width - (borderLeft() + paddingLeft() + borderRight() + paddingRight());
+//    kdDebug() << k_funcinfo << "w: " << w << " deco: " << deco << endl;
         if ( !w )
             return;
+        const QFontMetrics &fm = object()->fontMetrics( m_firstLine );
+        int thickness = fm.lineWidth();
         QColor underline, overline, linethrough;
         underline = overline = linethrough = styleToUse->color();
         if (!parent())
             object()->getTextDecorationColors(deco, underline, overline, linethrough);
         if (deco & UNDERLINE) {
-            pI.p->setPen(underline);
-            pI.p->drawLine(_tx, _ty+m_baseline, _tx+w, _ty+m_baseline );
+            int underlineOffset = ( fm.height() + m_baseline ) / 2;
+            if (underlineOffset <= m_baseline) underlineOffset = m_baseline+1;
+
+            pI.p->fillRect(_tx, _ty + underlineOffset, w, thickness, underline );
         }
         if (deco & OVERLINE) {
-            pI.p->setPen(overline);
-            pI.p->drawLine(_tx, _ty, _tx+w, _ty );
+            pI.p->fillRect(_tx, _ty, w, thickness, overline );
         }
         if (deco & LINE_THROUGH) {
-            pI.p->setPen(linethrough);
-            pI.p->drawLine(_tx, _ty+2*m_baseline/3, _tx+w, _ty+2*m_baseline/3 );
+            pI.p->fillRect(_tx, _ty + 2*m_baseline/3, w, thickness, linethrough );
         }
     }
 }

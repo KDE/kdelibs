@@ -1,5 +1,21 @@
 2004-05-09  Leo Savernik  <l.savernik@aon.at>
 
+	* rendering/font.cpp: (drawDecoration) Honored line thickness.
+	Used fillRect instead of drawLine.
+
+	* rendering/render_layer.cpp: (paintLayer) Added invokation of
+	PaintActionSelection phase when there is a selection.
+
+	* rendering/render_line.cpp: (InlineFlowBox::paintDecorations)
+	Honored line thickness. Used fillRect instead of drawLine.
+	Actually use it.
+
+	* rendering/render_text.cpp: (paint) Stopped drawing text in PaintActionSelection.
+	Stopped drawing selection in any other phase.
+	Make it draw text-decorations only in quirks mode.
+
+2004-05-09  Leo Savernik  <l.savernik@aon.at>
+
 	* rendering/render_block.cpp: (paint, paintObject, paintFloat)
 	Introduced maximalOutlineSize, PaintActionOutline phase.
 

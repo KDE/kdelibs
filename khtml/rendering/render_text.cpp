@@ -832,7 +832,11 @@ short RenderText::rightmostPosition() const
 
 void RenderText::paint( PaintInfo& pI, int tx, int ty)
 {
-    if (pI.phase != PaintActionForeground || style()->visibility() != VISIBLE)
+    if (pI.phase == PaintActionSelection && selectionState() == SelectionNone)
+        // When only painting the selection, don't bother to paint if there is none.
+        return;
+    if (pI.phase != PaintActionForeground && pI.phase != PaintActionSelection
+        || style()->visibility() != VISIBLE)
         return;
 
     int s = m_lines.count() - 1;
@@ -848,6 +852,8 @@ void RenderText::paint( PaintInfo& pI, int tx, int ty)
     int si = m_lines.findFirstMatching(&f);
     // something matching found, find the first one to paint
     bool isPrinting = (pI.p->device()->devType() == QInternal::Printer);
+    if (isPrinting && pI.phase == PaintActionSelection) return;
+
     if(si >= 0)
     {
         // Move up until out of area to be painted
@@ -876,6 +882,9 @@ void RenderText::paint( PaintInfo& pI, int tx, int ty)
 	const Font *font = &style()->htmlFont();
 
         bool haveSelection = !isPrinting && selectionState() != SelectionNone && startPos != endPos;
+        if (!haveSelection && pI.phase == PaintActionSelection)
+            // When only painting the selection, don't bother to paint if there
+            return;
 
         // run until we find one that is outside the range, then we
         // know we can stop
@@ -913,7 +922,7 @@ void RenderText::paint( PaintInfo& pI, int tx, int ty)
             if(_style->color() != pI.p->pen().color())
                 pI.p->setPen(_style->color());
 
-	    if (s->m_len > 0) {
+	    if (s->m_len > 0 && pI.phase != PaintActionSelection) {
 	        if (!haveSelection) {
 	            //kdDebug( 6040 ) << "RenderObject::paintObject(" << QConstString(str->s + s->m_start, s->m_len).string() << ") at(" << s->m_x+tx << "/" << s->m_y+ty << ")" << endl;
 		    font->drawText(pI.p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s, str->l, s->m_start, s->m_len,
@@ -956,12 +965,13 @@ void RenderText::paint( PaintInfo& pI, int tx, int ty)
                 }
 	    }
 
-            if (d != TDNONE && pI.phase == PaintActionForeground) {
+            if (d != TDNONE && pI.phase == PaintActionForeground
+                && style()->htmlHacks()) {
                 pI.p->setPen(_style->color());
                 s->paintDecoration(pI.p, font, tx, ty, d);
             }
 
-            if (haveSelection) {
+            if (haveSelection && pI.phase == PaintActionSelection) {
 		int offset = s->m_start;
 		int sPos = kMax( startPos - offset, 0 );
 		int ePos = kMin( endPos - offset, int( s->m_len ) );

@@ -396,17 +396,19 @@ void Font::update( QPaintDeviceMetrics* devMetrics ) const
 void Font::drawDecoration(QPainter *pt, int _tx, int _ty, int baseline, int width, int height, int deco) const
 {
     Q_UNUSED(height);
+    int thickness = fm.lineWidth();
+    QBrush brush = pt->pen().color();
     if (deco & UNDERLINE) {
         int underlineOffset = ( fm.height() + baseline ) / 2;
         if (underlineOffset <= baseline) underlineOffset = baseline+1;
 
-        pt->drawLine(_tx, _ty + underlineOffset, _tx + width, _ty + underlineOffset );
+        pt->fillRect(_tx, _ty + underlineOffset, width, thickness, brush );
     }
     if (deco & OVERLINE) {
-        pt->drawLine(_tx, _ty, _tx + width, _ty );
+        pt->fillRect(_tx, _ty, width, thickness, brush );
     }
-    if(deco & LINE_THROUGH) {
-        pt->drawLine(_tx, _ty + 2*baseline/3, _tx + width, _ty + 2*baseline/3 );
+    if (deco & LINE_THROUGH) {
+        pt->fillRect(_tx, _ty + 2*baseline/3, width, thickness, brush );
     }
 }
 

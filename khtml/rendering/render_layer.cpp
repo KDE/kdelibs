@@ -721,6 +721,11 @@ void RenderLayer::paintLayer(RenderLayer* rootLayer, QPainter *p,
             renderer()->paint(paintInfo, x - renderer()->xPos(), y - renderer()->yPos());
             paintInfo.phase = PaintActionOutline;
             renderer()->paint(paintInfo, x - renderer()->xPos(), y - renderer()->yPos());
+            RenderCanvas *rc = static_cast<RenderCanvas*>(renderer()->document()->renderer());
+            if (rc->selectionStart() && rc->selectionEnd()) {
+                paintInfo.phase = PaintActionSelection;
+                renderer()->paint(paintInfo, x - renderer()->xPos(), y - renderer()->yPos());
+            }
         }
 
         // Now restore our clip.
