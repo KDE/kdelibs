@@ -92,9 +92,9 @@ void KRecentDocument::add(const KURL& url)
         // see if it points to the same file and application
         KSimpleConfig tmp(ddesktop);
         tmp.setDesktopGroup();
-        if(tmp.readEntry(QString::fromLatin1("Exec"), QString::fromLatin1(""))
+        if(tmp.readEntry(QString::fromLatin1("Exec"))
 	   == QString::fromLatin1(kapp->argv()[0]) +
-	   QString::fromLatin1(" ") + openStr)
+	   QString::fromLatin1(" \"") + openStr + '"')
 	{
             utime(QFile::encodeName(ddesktop), NULL);
             return;
