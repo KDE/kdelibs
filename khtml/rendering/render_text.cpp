@@ -710,7 +710,7 @@ void RenderText::setText(DOMStringImpl *text, bool force)
     if(str) str->deref();
     str = text;
 
-    if ( style() ) {
+    if ( str && style() ) {
         if ( style()->fontVariant() == SMALL_CAPS )
             str = str->upper();
         else

@@ -979,6 +979,17 @@ void RenderFlow::layoutInlineChildren()
             if( start.atEnd() ) break;
 	    bidiReorderLine(start, end);
 
+	    // eliminate spaces at end of line
+	    if(!m_pre) {
+		while(!end.atEnd() && !end.obj->isBR() && 
+#ifndef QT_NO_UNICODETABLES
+		      ( end.direction() == QChar::DirWS )
+#else
+		      ( end.current() == ' ' )
+#endif
+		    )
+		    ++end;
+	    }
             if( end == start || (end.obj && end.obj->isBR() && !start.obj->isBR() ) ) {
 		adjustEmbeddding = true;
                 ++end;
