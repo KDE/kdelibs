@@ -127,7 +127,7 @@ template<class T>
 inline const T& kMin (const T& a, const T& b) { return a < b ? a : b; }
 
 template<class T>
-inline const T& kMax (const T& a, const T& b) { return a > b ? a : b; }
+inline const T& kMax (const T& a, const T& b) { return b < a ? a : b; }
 
 /**
  * @libdoc The KDE Core Functionality Library
