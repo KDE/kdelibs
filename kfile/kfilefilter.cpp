@@ -58,9 +58,9 @@ void KFileFilter::setFilter(const QString& filter)
     }
 }
 
-const QString KFileFilter::currentFilter() const
+QString KFileFilter::currentFilter() const
 {
-    f = currentText();
+    QString f = currentText();
     if (f == text(currentItem()))
 	f = *filters.at(currentItem());
 

@@ -33,11 +33,10 @@ class KFileFilter : public KComboBox
     ~KFileFilter();
 
     void setFilter(const QString& filter);
-    const QString currentFilter() const;
+    QString currentFilter() const;
 
  protected:
     QStringList filters;
-    mutable QString f;
 
  signals:
     void filterChanged();
