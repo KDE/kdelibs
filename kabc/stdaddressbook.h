@@ -40,7 +40,7 @@ class StdAddressBook : public AddressBook
     /**
       Get the standard addressbook object.
     */
-    static AddressBook *self( bool onlyFastResource = false );
+    static AddressBook *self();
     /**
       Save the standard address book to disk.
     */
@@ -49,7 +49,7 @@ class StdAddressBook : public AddressBook
     static QString fileName();
 
   protected:
-    StdAddressBook( bool onlyFastResource = false );
+    StdAddressBook();
     ~StdAddressBook();
     
   private:
