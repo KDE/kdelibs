@@ -132,6 +132,7 @@ KSpellConfig::KSpellConfig( QWidget *parent, const char *name,
   encodingcombo->insertItem( "KOI8-R" );
   encodingcombo->insertItem( "KOI8-U" );
   encodingcombo->insertItem( "CP1251" );
+  encodingcombo->insertItem( "CP1255" );
 
   connect( encodingcombo, SIGNAL(activated(int)), this,
 	   SLOT(sChangeEncoding(int)) );
@@ -229,7 +230,7 @@ KSpellConfig::sChangeClient( int i )
       langfnames.clear();
       dictcombo->clear();
       dictcombo->insertItem( i18n("Hebrew") );
-      sChangeEncoding( KS_E_LATIN8 );
+      sChangeEncoding( KS_E_CP1255 );
     }
     else
       getAvailDictsAspell();
@@ -609,7 +610,7 @@ KSpellConfig::fillDicts( QComboBox* box )
     } else if ( iclient == KS_CLIENT_HSPELL ) {
       box->clear();
       box->insertItem( i18n("Hebrew") );
-      sChangeEncoding( KS_E_LATIN8 );
+      sChangeEncoding( KS_E_CP1255 );
     }
     else {
       box->clear();

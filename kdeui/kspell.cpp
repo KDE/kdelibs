@@ -1388,6 +1388,9 @@ void KSpell::initialize( QWidget *_parent, const QString &_caption,
   case KS_E_CP1251:
       codec = QTextCodec::codecForName("CP1251");
       break;
+  case KS_E_CP1255:
+      codec = QTextCodec::codecForName("CP1255");
+      break;
   default:
      break;
   }
