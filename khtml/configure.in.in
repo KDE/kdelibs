@@ -1,2 +1,2 @@
-AM_CONDITIONAL(DOJAVA, "x$kde_use_qt_emb" = "xyes")
+AM_CONDITIONAL(DOJAVA, test "x$kde_use_qt_emb" = "xyes")
 
