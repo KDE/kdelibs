@@ -75,8 +75,8 @@ public:
     virtual ~HTMLCollectionImpl();
     unsigned long length() const;
     // Only when iterating forward, it will use caching, ie. making it O(1).
-    NodeImpl *item ( unsigned long index ) const;
-    // obsolete and not domtree changes save, virtual too.
+    virtual NodeImpl *item ( unsigned long index ) const;
+    // obsolete and not domtree changes save
     virtual NodeImpl *firstItem() const;
     virtual NodeImpl *nextItem() const;
 
@@ -126,6 +126,7 @@ public:
     {}
     ~HTMLFormCollectionImpl() { }
 
+    virtual NodeImpl *item ( unsigned long index ) const;
     virtual NodeImpl *firstItem() const;
     virtual NodeImpl *nextItem() const;
 protected:

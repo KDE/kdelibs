@@ -523,6 +523,12 @@ NodeImpl *HTMLCollectionImpl::nextNamedItemInternal( const DOMString &name ) con
 
 // -----------------------------------------------------------------------------
 
+NodeImpl *HTMLFormCollectionImpl::item( unsigned long index ) const
+{
+    int dummy;
+    return getItem(0L, index, dummy);
+}
+
 unsigned long HTMLFormCollectionImpl::calcLength(NodeImpl*) const
 {
     QPtrList<HTMLGenericFormElementImpl> l = static_cast<HTMLFormElementImpl*>( base )->formElements;
