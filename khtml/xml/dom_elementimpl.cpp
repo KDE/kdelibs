@@ -275,6 +275,11 @@ bool ElementImpl::isInline() const
     return (m_style->display() == khtml::INLINE);
 }
 
+bool ElementImpl::isXMLElementNode() const
+{
+    return true;
+}
+
 unsigned short ElementImpl::nodeType() const
 {
     return Node::ELEMENT_NODE;

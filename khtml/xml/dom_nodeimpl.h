@@ -80,6 +80,7 @@ public:
     virtual bool isAttributeNode() const { return false; }
     virtual bool isTextNode() const { return false; }
     virtual bool isDocumentNode() const { return false; }
+    virtual bool isXMLElementNode() const { return false; }
 
     virtual NodeImpl *parentNode() const;
 

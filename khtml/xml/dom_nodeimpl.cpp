@@ -1012,7 +1012,7 @@ NodeImpl *NodeBaseImpl::addChild(NodeImpl *newChild)
     // do not add applyChanges here! This function is only used during parsing
 
     // short check for consistency with DTD
-    if(!childAllowed(newChild))
+    if(!isXMLElementNode() && !newChild->isXMLElementNode() && !childAllowed(newChild))
     {
         //kdDebug( 6020 ) << "AddChild failed! id=" << id() << ", child->id=" << newChild->id() << endl;
 	return 0;

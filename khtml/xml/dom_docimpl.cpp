@@ -1289,12 +1289,14 @@ QList<StyleSheetImpl> DocumentImpl::htmlAuthorStyleSheets()
     NodeImpl *n = this;
     while (n) {
 	StyleSheetImpl *sheet = 0;
-	if (n->id() == ID_LINK)
-	    sheet = static_cast<HTMLLinkElementImpl*>(n)->sheet();
-	else if (n->id() == ID_STYLE)
-	    sheet = static_cast<HTMLStyleElementImpl*>(n)->sheet();
-	else if (n->id() == ID_BODY && static_cast<HTMLBodyElementImpl*>(n)->sheet())
-	    sheet = static_cast<HTMLBodyElementImpl*>(n)->sheet();
+	if (n->isElementNode() && static_cast<ElementImpl*>(n)->isHTMLElement()) {
+	    if (n->id() == ID_LINK)
+		sheet = static_cast<HTMLLinkElementImpl*>(n)->sheet();
+	    else if (n->id() == ID_STYLE)
+		sheet = static_cast<HTMLStyleElementImpl*>(n)->sheet();
+	    else if (n->id() == ID_BODY && static_cast<HTMLBodyElementImpl*>(n)->sheet())
+		sheet = static_cast<HTMLBodyElementImpl*>(n)->sheet();
+	}
 
 	if ( sheet )
 	    list.append( sheet );

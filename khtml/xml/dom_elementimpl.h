@@ -98,6 +98,7 @@ public:
     ~ElementImpl();
 
     virtual bool isInline() const;
+    virtual bool isXMLElementNode() const;
 
     virtual unsigned short nodeType() const;
     virtual bool isElementNode() const { return true; }
