@@ -36,6 +36,9 @@ KDESasl::KDESasl(const QString &aUser, const QString &aPass)
   mFirst = TRUE;
 }
 
+KDESasl::~KDESasl() {
+}
+
 QCString KDESasl::chooseMethod(const QStrIList aMethods)
 {
   if (aMethods.contains("CRAM-MD5")) mMethod = "CRAM-MD5";
