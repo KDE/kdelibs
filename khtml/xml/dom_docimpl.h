@@ -302,7 +302,7 @@ public:
     bool inTransitionalMode() const { return pMode == Transitional; }
     bool inStrictMode() const { return pMode == Strict; }
 
-    void setHTMLMode( HTMLMode m ) { hMode = m; }
+    //void setHTMLMode( HTMLMode m ) { hMode = m; }
     HTMLMode htmlMode() const { return hMode; }
 
     void setParsing(bool b) { m_bParsing = b; }
