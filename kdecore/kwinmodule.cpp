@@ -125,6 +125,8 @@ void KWinModule::init(int what)
         delete static_d;
         static_d = new KWinModulePrivate(what);
         static_d->modules = modules;
+        for ( QPtrListIterator<KWinModule> mit( modules ); mit.current(); ++mit )
+            (*mit)->d = static_d;
     }
     
     d = static_d;
