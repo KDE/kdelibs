@@ -58,6 +58,7 @@ public:
     }
 
     KActionCollection* actionCollection;
+    bool on_all_desktops; // valid only when the parent widget was hidden
 };
 
 KSystemTray::KSystemTray( QWidget* parent, const char* name )
@@ -85,10 +86,13 @@ KSystemTray::KSystemTray( QWidget* parent, const char* name )
         new KAction(i18n("Minimize"), KShortcut(),
                     this, SLOT( minimizeRestoreAction() ),
                     d->actionCollection, "minimizeRestore");
+	KWin::Info info = KWin::info( parentWidget()->winId());
+	d->on_all_desktops = info.onAllDesktops;
     }
     else
     {
         connect(quitAction, SIGNAL(activated()), qApp, SLOT(closeAllWindows()));
+	d->on_all_desktops = false;
     }
 }
 
@@ -200,18 +204,17 @@ void KSystemTray::activateOrHide()
 	return;
 
     KWin::Info info = KWin::info( pw->winId() );
-    bool visible = (info.mappingState == NET::Visible);
-    // hack for KWin's non-compliant WM_STATE handling
-    visible = visible && ( info.desktop == KWin::currentDesktop());
+    // mapped = not hidden by calling hide()
+    bool mapped = (info.mappingState != NET::Withdrawn);
     // SELI using !pw->isActiveWindow() should be enough here,
     // but it doesn't work - e.g. with kscd, the "active" window
     // is the widget docked in Kicker
-    if ( visible && ( KWinModule().activeWindow() != pw->winId() )) // visible not active -> activate
+    if ( mapped && ( KWinModule().activeWindow() != pw->winId() )) // visible not active -> activate
     {
         KWin::setActiveWindow( pw->winId() );
         return;
     }
-    minimizeRestore( !visible );
+    minimizeRestore( !mapped );
 }
 
 void KSystemTray::minimizeRestore( bool restore )
@@ -219,17 +222,20 @@ void KSystemTray::minimizeRestore( bool restore )
     QWidget* pw = parentWidget();
     if( !pw )
 	return;
+    KWin::Info info = KWin::info( pw->winId() );
     if ( restore )
     {
 #ifndef Q_WS_QWS //FIXME
-	// TODO what to do with OnAllDesktops windows? (#32783)
-	KWin::setOnDesktop( pw->winId(), KWin::currentDesktop());
-	KWin::Info info = KWin::info( pw->winId() );
+	if( d->on_all_desktops )
+	    KWin::setOnAllDesktops( pw->winId(), true );
+	else
+	    KWin::setOnDesktop( pw->winId(), KWin::currentDesktop());
         pw->move( info.geometry.topLeft() ); // avoid placement policies
         pw->show();
 	KWin::setActiveWindow( pw->winId() );
 #endif
     } else {
+	d->on_all_desktops = info.onAllDesktops;
 	pw->hide();
     }
 }
