@@ -244,7 +244,7 @@ void RenderWidget::updateFromElement()
             if (backgroundColor.isValid()) {
                 if (strcmp(widget()->name(), "__khtml"))
                     widget()->setEraseColor(backgroundColor );
-                for ( int i = 0; i < QPalette::NColorGroups; i++ ) {
+                for ( int i = 0; i < QPalette::NColorGroups; ++i ) {
                     pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Background, backgroundColor );
                     pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Light, backgroundColor.light(highlightVal) );
                     pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Dark, backgroundColor.dark(lowlightVal) );
@@ -474,7 +474,7 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
         // build region
         QObjectListIterator it = *widget->children();
         for (; it.current(); ++it) {
-            QWidget *w = ::qt_cast<QWidget *>(it.current());
+            QWidget* const w = ::qt_cast<QWidget *>(it.current());
 	    if ( w && !w->isTopLevel() && !w->isHidden()) {
 	        QRect r2 = w->geometry();
 	        blit.subtract( r2 );
@@ -487,20 +487,20 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
     }
     QMemArray<QRect> br = blit.rects();
 
-    int cnt = br.size();
-    bool external = p->device()->isExtDev();    
-    QPixmap *pm = PaintBuffer::grab( widget->size() );
+    const int cnt = br.size();
+    const bool external = p->device()->isExtDev();    
+    QPixmap* const pm = PaintBuffer::grab( widget->size() );
     
     // fill background
     if ( external || ::qt_cast<QFrame *>(widget)) {
 	// even hackier!
         QPainter pt( pm );
-        QColor c = widget->colorGroup().base();
-        for (int i = 0; i < cnt; i++)
+        const QColor c = widget->colorGroup().base();
+        for (int i = 0; i < cnt; ++i)
             pt.fillRect( br[i], c );
     } else {
         QRect dr;
-        for (int i = 0; i < cnt; i++ ) {
+        for (int i = 0; i < cnt; ++i ) {
             dr = br[i];
 	    dr.moveBy( tx, ty );
 	    dr = p->xForm( dr );
@@ -516,30 +516,31 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
     
     // transfer result
     if ( external )
-        for ( int i = 0; i < cnt; i++ )
+        for ( int i = 0; i < cnt; ++i )
             p->drawPixmap(QPoint(tx+br[i].x(), ty+br[i].y()), *pm, br[i]);
     else
-        for ( int i = 0; i < cnt; i++ )
+        for ( int i = 0; i < cnt; ++i )
             bitBlt(p->device(), p->xForm( QPoint(tx, ty) + br[i].topLeft() ), pm, br[i]);        
 
     // cleanup and recurse     
     PaintBuffer::release();
     QValueVector<QWidget*>::iterator cwit = cw.begin();
+    QValueVector<QWidget*>::iterator cwitEnd = cw.end();
     QValueVector<QRect>::const_iterator crit = cr.begin();
-    for (; cwit != cw.end(); ++cwit, ++crit)
+    for (; cwit != cwitEnd; ++cwit, ++crit)
         copyWidget(*crit, p, *cwit, tx+(*cwit)->x(), ty+(*cwit)->y());
 }
 
 void RenderWidget::paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty)
 {
-    QPainter* p = pI.p;
+    QPainter* const p = pI.p;
     allowWidgetPaintEvents = true;
 
-    bool dsbld = QSharedDoubleBuffer::isDisabled();
+    const bool dsbld = QSharedDoubleBuffer::isDisabled();
     QSharedDoubleBuffer::setDisabled(true);
     QRect rr = pI.r;
     rr.moveBy(-tx, -ty);
-    QRect r = widget->rect().intersect( rr );
+    const QRect r = widget->rect().intersect( rr );
     copyWidget(r, p, widget, tx, ty);
     QSharedDoubleBuffer::setDisabled(dsbld);
 
@@ -641,14 +642,14 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
     case EventImpl::MOUSEUP_EVENT:
     case EventImpl::MOUSEMOVE_EVENT: {
         const MouseEventImpl &me = static_cast<const MouseEventImpl &>(ev);
-        QMouseEvent *qme = me.qEvent();
+        QMouseEvent* const qme = me.qEvent();
 
         int absx = 0;
         int absy = 0;
 
         absolutePosition(absx, absy);
 
-        QPoint p(me.clientX() - absx + m_view->contentsX(),
+        const QPoint p(me.clientX() - absx + m_view->contentsX(),
                  me.clientY() - absy + m_view->contentsY());
         QMouseEvent::Type type;
         int button = 0;
@@ -703,7 +704,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
     }
     case EventImpl::KEYDOWN_EVENT:
     case EventImpl::KEYUP_EVENT: {
-        QKeyEvent *ke = static_cast<const TextEventImpl &>(ev).qKeyEvent;
+        QKeyEvent* const ke = static_cast<const TextEventImpl &>(ev).qKeyEvent;
         if (ke)
             static_cast<EventPropagator *>(m_widget)->sendEvent(ke);
         break;
@@ -720,7 +721,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
         //  DOM:   Down     Press   |       Press                             |     Up
         //  Qt:    Press  (nothing) | Release(autorepeat) + Press(autorepeat) |   Release
 
-        QKeyEvent *ke = static_cast<const TextEventImpl &>(ev).qKeyEvent;
+        QKeyEvent* const ke = static_cast<const TextEventImpl &>(ev).qKeyEvent;
         if (ke && ke->isAutoRepeat()) {
             QKeyEvent releaseEv( QEvent::KeyRelease, ke->key(), ke->ascii(), ke->state(),
                                ke->text(), ke->isAutoRepeat(), ke->count() );

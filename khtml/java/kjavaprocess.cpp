@@ -127,12 +127,12 @@ void KJavaProcess::setClassArgs( const QString& args )
 QByteArray* KJavaProcess::addArgs( char cmd_code, const QStringList& args )
 {
     //the buffer to store stuff, etc.
-    QByteArray* buff = new QByteArray();
+    QByteArray* const buff = new QByteArray();
     QTextOStream output( *buff );
-    char sep = 0;
+    const char sep = 0;
 
     //make space for the command size: 8 characters...
-    QCString space( "        " );
+    const QCString space( "        " );
     output << space;
 
     //write command code
@@ -145,8 +145,9 @@ QByteArray* KJavaProcess::addArgs( char cmd_code, const QStringList& args )
     }
     else
     {
-        for( QStringList::ConstIterator it = args.begin();
-             it != args.end(); ++it )
+        QStringList::ConstIterator it = args.begin();
+        const QStringList::ConstIterator itEnd = args.end();
+        for( ; it != itEnd; ++it )
         {
             if( !(*it).isEmpty() )
             {
@@ -161,12 +162,12 @@ QByteArray* KJavaProcess::addArgs( char cmd_code, const QStringList& args )
 
 void KJavaProcess::storeSize( QByteArray* buff )
 {
-    int size = buff->size() - 8;  //subtract out the length of the size_str
-    QString size_str = QString("%1").arg( size, 8 );
+    const int size = buff->size() - 8;  //subtract out the length of the size_str
+    const QString size_str = QString("%1").arg( size, 8 );
     kdDebug(6100) << "KJavaProcess::storeSize, size = " << size_str << endl;
 
     const char* size_ptr = size_str.latin1();
-    for( int i = 0; i < 8; i++ )
+    for( int i = 0; i < 8; ++i )
         buff->at(i) = size_ptr[i];
 }
 
@@ -183,7 +184,7 @@ void KJavaProcess::send( char cmd_code, const QStringList& args )
 {
     if( isRunning() )
     {
-        QByteArray* buff = addArgs( cmd_code, args );
+        QByteArray* const buff = addArgs( cmd_code, args );
         storeSize( buff );
         kdDebug(6100) << "<KJavaProcess::send " << (int)cmd_code << endl;
         sendBuffer( buff );
@@ -197,9 +198,9 @@ void KJavaProcess::send( char cmd_code, const QStringList& args,
     {
         kdDebug(6100) << "KJavaProcess::send, qbytearray is size = " << data.size() << endl;
 
-        QByteArray* buff = addArgs( cmd_code, args );
-        int cur_size = buff->size();
-        int data_size = data.size();
+        QByteArray* const buff = addArgs( cmd_code, args );
+        const int cur_size = buff->size();
+        const int data_size = data.size();
         buff->resize( cur_size + data_size );
         memcpy( buff->data() + cur_size, data.data(), data_size );
 
@@ -210,7 +211,7 @@ void KJavaProcess::send( char cmd_code, const QStringList& args,
 
 void KJavaProcess::popBuffer()
 {
-    QByteArray* buf = d->BufferList.first();
+    QByteArray* const buf = d->BufferList.first();
     if( buf )
     {
 //        DEBUG stuff...
@@ -260,8 +261,10 @@ bool KJavaProcess::invokeJVM()
     }
 
     //set the system properties, iterate through the qmap of system properties
-    for( QMap<QString,QString>::Iterator it = d->systemProps.begin();
-         it != d->systemProps.end(); ++it )
+    QMap<QString,QString>::ConstIterator it = d->systemProps.begin();
+    const QMap<QString,QString>::ConstIterator itEnd = d->systemProps.end();
+
+    for( ; it != itEnd; ++it )
     {
         QString currarg;
 
@@ -281,8 +284,10 @@ bool KJavaProcess::invokeJVM()
     {
         // BUG HERE: if an argument contains space (-Dname="My name")
         // this parsing will fail. Need more sophisticated parsing -- use KShell?
-        QStringList args = QStringList::split( " ", d->extraArgs );
-        for ( QStringList::Iterator it = args.begin(); it != args.end(); ++it )
+        const QStringList args = QStringList::split( " ", d->extraArgs );
+        QStringList::ConstIterator it = args.begin();
+        const QStringList::ConstIterator itEnd = args.end();
+        for ( ; it != itEnd; ++it )
             *javaProcess << *it;
     }
 
@@ -294,7 +299,7 @@ bool KJavaProcess::invokeJVM()
     kdDebug(6100) << "Invoking JVM now...with arguments = " << endl;
     QString argStr;
     QTextOStream stream( &argStr );
-    QValueList<QCString> args = javaProcess->args();
+    const QValueList<QCString> args = javaProcess->args();
     qCopy( args.begin(), args.end(), QTextOStreamIterator<QCString>( stream, " " ) );
     kdDebug(6100) << argStr << endl;
 
@@ -302,7 +307,7 @@ bool KJavaProcess::invokeJVM()
                                      (KProcess::Stdin | KProcess::Stdout |
                                       KProcess::NoRead);
 
-    bool rval = javaProcess->start( KProcess::NotifyOnExit, flags );
+    const bool rval = javaProcess->start( KProcess::NotifyOnExit, flags );
     if( rval )
         javaProcess->resume(); //start processing stdout on the java process
     else
@@ -333,7 +338,7 @@ void KJavaProcess::slotReceivedData( int fd, int& len )
     //read out the length of the message,
     //read the message and send it to the applet server
     char length[9] = { 0 };
-    int num_bytes = ::read( fd, length, 8 );
+    const int num_bytes = ::read( fd, length, 8 );
     if( !num_bytes )
     {
         len = 0;
@@ -346,9 +351,9 @@ void KJavaProcess::slotReceivedData( int fd, int& len )
         return;
     }
 
-    QString lengthstr( length );
+    const QString lengthstr( length );
     bool ok;
-    int num_len = lengthstr.toInt( &ok );
+    const int num_len = lengthstr.toInt( &ok );
     if( !ok )
     {
         kdError(6100) << "could not parse length out of: " << lengthstr << endl;
@@ -357,8 +362,8 @@ void KJavaProcess::slotReceivedData( int fd, int& len )
     }
 
     //now parse out the rest of the message.
-    char* msg = new char[num_len];
-    int num_bytes_msg = ::read( fd, msg, num_len );
+    char* const msg = new char[num_len];
+    const int num_bytes_msg = ::read( fd, msg, num_len );
     if( num_bytes_msg == -1 || num_bytes_msg != num_len )
     {
         kdError(6100) << "could not read the msg, num_bytes_msg = " << num_bytes_msg << endl;

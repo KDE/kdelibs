@@ -112,12 +112,12 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 
 	int numSpaces = 0;
 	if ( toAdd ) {
-	    for( int i = 0; i < len; i++ )
+	    for( int i = 0; i < len; ++i )
 		if ( str[i+pos].category() == QChar::Separator_Space )
-		    numSpaces++;
+		    ++numSpaces;
 	}  
 
-	int totWidth = width( str, slen, pos, len );
+	const int totWidth = width( str, slen, pos, len );
 	if ( d == QPainter::RTL ) {
 	    x += totWidth + toAdd;
 	}
@@ -145,11 +145,11 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 	if (mode == Whole) {	// most likely variant is treated extra
 
 	    if (to < 0) to = len;
-	    QConstString cstr(str + pos, len);
-	    QConstString segStr(str + pos + from, to - from);
-	    int preSegmentWidth = fm.width(cstr.string(), from);
-	    int segmentWidth = fm.width(segStr.string());
-	    int eff_x = d == QPainter::RTL ? x - preSegmentWidth - segmentWidth
+	    const QConstString cstr(str + pos, len);
+	    const QConstString segStr(str + pos + from, to - from);
+	    const int preSegmentWidth = fm.width(cstr.string(), from);
+	    const int segmentWidth = fm.width(segStr.string());
+	    const int eff_x = d == QPainter::RTL ? x - preSegmentWidth - segmentWidth
 					: x + preSegmentWidth;
 
 	    // draw whole string segment, with optional background
@@ -167,18 +167,18 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 	// For each letter in the text box, save the width of the character.
 	// When word-wise, only the first letter contains the width, but of the
 	// whole word.
-        short *widthList = (short *)alloca(to*sizeof(short));
+        short* const widthList = (short *)alloca(to*sizeof(short));
 
 	// First pass: gather widths
 	int preSegmentWidth = 0;
 	int segmentWidth = 0;
         int lastWordBegin = 0;
 	bool onSegment = from == 0;
-	for( int i = 0; i < to; i++ ) {
+	for( int i = 0; i < to; ++i ) {
 	    if (i == from) {
                 // Also close words on visibility boundary
 	        if (mode == WordWise) {
-	            int width = closeWordAndGetWidth(fm, str, pos, lastWordBegin, i);
+	            const int width = closeWordAndGetWidth(fm, str, pos, lastWordBegin, i);
 
 		    if (lastWordBegin < i) {
 		        widthList[lastWordBegin] = (short)width;
@@ -189,7 +189,7 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 		onSegment = true;
 	    }
 
-	    QChar ch = str[pos+i];
+	    const QChar ch = str[pos+i];
 	    bool lowercase = (ch.category() == QChar::Letter_Lowercase);
 	    bool is_space = (ch.category() == QChar::Separator_Space);
 	    int chw = 0;
@@ -197,20 +197,20 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 		chw += letterSpacing;
 	    if ( (wordSpacing || toAdd) && is_space ) {
 	        if (mode == WordWise) {
-		    int width = closeWordAndGetWidth(fm, str, pos, lastWordBegin, i);
+		    const int width = closeWordAndGetWidth(fm, str, pos, lastWordBegin, i);
 		    if (lastWordBegin < i) {
 		        widthList[lastWordBegin] = (short)width;
 			lastWordBegin = i;
 		        (onSegment ? segmentWidth : preSegmentWidth) += width;
 		    }
-		    lastWordBegin++;		// ignore this space
+		    ++lastWordBegin;		// ignore this space
 		}
 		chw += wordSpacing;
 		if ( numSpaces ) {
-		    int a = toAdd/numSpaces;
+		    const int a = toAdd/numSpaces;
 		    chw += a;
 		    toAdd -= a;
-		    numSpaces--;
+		    --numSpaces;
 		}
 	    }
 	    if (is_space || mode == CharacterWise) {
@@ -231,7 +231,7 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
         if (d == QPainter::RTL) x -= preSegmentWidth;
 	else x += preSegmentWidth;
 
-        int startx = d == QPainter::RTL ? x-segmentWidth : x;
+        const int startx = d == QPainter::RTL ? x-segmentWidth : x;
         
 	// optionally draw background
 	if ( bg.isValid() )
@@ -239,18 +239,18 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 
 	// second pass: do the actual drawing
         lastWordBegin = from;
-	for( int i = from; i < to; i++ ) {
-	    QChar ch = str[pos+i];
+	for( int i = from; i < to; ++i ) {
+	    const QChar ch = str[pos+i];
 	    bool lowercase = (ch.category() == QChar::Letter_Lowercase);
 	    bool is_space = ch.category() == QChar::Separator_Space;
 	    if ( is_space ) {
 	        if (mode == WordWise) {
 		    closeAndDrawWord(p, d, x, y, widthList, str, pos, lastWordBegin, i);
-		    lastWordBegin++;	// jump over space
+		    ++lastWordBegin;	// jump over space
 		}
 	    }
 	    if (is_space || mode == CharacterWise) {
-	        int chw = widthList[i];
+	        const int chw = widthList[i];
 	        if (d == QPainter::RTL)
 		    x -= chw;
 
@@ -280,15 +280,15 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 
 int Font::width( QChar *chs, int, int pos, int len ) const
 {
-    QConstString cstr(chs+pos, len);
+    const QConstString cstr(chs+pos, len);
     int w = 0;
 
-    QString qstr = cstr.string();
+    const QString qstr = cstr.string();
     if ( scFont ) {
-	QString upper = qstr.upper();
+	const QString upper = qstr.upper();
 	const QChar *uc = qstr.unicode();
-	QFontMetrics sc_fm( *scFont );
-	for ( int i = 0; i < len; i++ ) {
+	const QFontMetrics sc_fm( *scFont );
+	for ( int i = 0; i < len; ++i ) {
 	    if ( (uc+i)->category() == QChar::Letter_Lowercase )
 		w += sc_fm.charWidth( upper, i );
 	    else
@@ -304,7 +304,7 @@ int Font::width( QChar *chs, int, int pos, int len ) const
 
     if ( wordSpacing )
 	// add amount
-	for( int i = 0; i < len; i++ ) {
+	for( int i = 0; i < len; ++i ) {
 	    if( chs[i+pos].category() == QChar::Separator_Space )
 		w += wordSpacing;
 	}
@@ -320,7 +320,7 @@ int Font::width( QChar *chs, int slen, int pos ) const
 	    str[pos] = chs[pos].upper();
 	    w = QFontMetrics( *scFont ).charWidth( str, pos );
 	} else {
-	    QConstString cstr( chs, slen );
+	    const QConstString cstr( chs, slen );
 	    w = fm.charWidth( cstr.string(), pos );
 	}
     if ( letterSpacing )
@@ -341,21 +341,25 @@ void Font::update( QPaintDeviceMetrics* devMetrics ) const
     QFontDatabase db;
 
     int size = fontDef.size;
-    int lDpiY = kMax(devMetrics->logicalDpiY(), 96);
+    const int lDpiY = kMax(devMetrics->logicalDpiY(), 96);
 
     // ok, now some magic to get a nice unscaled font
     // all other font properties should be set before this one!!!!
     if( !db.isSmoothlyScalable(f.family(), db.styleString(f)) )
     {
-        QValueList<int> pointSizes = db.smoothSizes(f.family(), db.styleString(f));
+        const QValueList<int> pointSizes = db.smoothSizes(f.family(), db.styleString(f));
         // lets see if we find a nice looking font, which is not too far away
         // from the requested one.
         // kdDebug(6080) << "khtml::setFontSize family = " << f.family() << " size requested=" << size << endl;
 
-        QValueList<int>::Iterator it;
+
         float diff = 1; // ### 100% deviation
         float bestSize = 0;
-        for( it = pointSizes.begin(); it != pointSizes.end(); ++it )
+
+        QValueList<int>::ConstIterator it = pointSizes.begin();
+        const QValueList<int>::ConstIterator itEnd = pointSizes.end();
+
+        for( ; it != itEnd; ++it )
         {
             float newDiff = ((*it)*(lDpiY/72.) - float(size))/float(size);
             //kdDebug( 6080 ) << "smooth font size: " << *it << " diff=" << newDiff << endl;
@@ -397,8 +401,8 @@ void Font::drawDecoration(QPainter *pt, int _tx, int _ty, int baseline, int widt
 {
     Q_UNUSED(height);
     // thick lines on small fonts look ugly
-    int thickness = fm.height() > 20 ? fm.lineWidth() : 1;
-    QBrush brush = pt->pen().color();
+    const int thickness = fm.height() > 20 ? fm.lineWidth() : 1;
+    const QBrush brush = pt->pen().color();
     if (deco & UNDERLINE) {
         int underlineOffset = ( fm.height() + baseline ) / 2;
         if (underlineOffset <= baseline) underlineOffset = baseline+1;
