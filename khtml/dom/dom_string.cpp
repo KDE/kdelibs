@@ -115,6 +115,7 @@ DOMString &DOMString::operator += (const DOMString &str)
 {
     if(!impl)
     {
+	// FIXME!!!
 	impl = str.impl;
 	impl->ref();
 	return *this;

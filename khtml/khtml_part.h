@@ -251,6 +251,14 @@ protected:
 
   virtual KParts::ReadOnlyPart *createFrame( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, const QString &mimetype, QStringList &serviceTypes );
 
+    virtual bool keyPressHook(QKeyEvent *) { return false; }
+
+    virtual bool mousePressHook( QMouseEvent * ){ return false; }
+    virtual bool mouseDoubleClickHook( QMouseEvent * ){ return false; }
+    virtual bool mouseMoveHook(QMouseEvent *){ return false; }
+    virtual bool mouseReleaseHook(QMouseEvent *){ return false; }
+
+    
 protected slots:
   void slotData( KIO::Job*, const QByteArray &data );
   void slotFinished( KIO::Job* );

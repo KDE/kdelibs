@@ -107,9 +107,9 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
 
     // initialize QScrollview
 
-//*** DISABLED because of clipper bugs in QTbeta2    
-//    enableClipper(true);    
-    enableClipper(false);
+//*** DISABLED because of clipper bugs in QTbeta2
+    //enableClipper(true);
+        enableClipper(false);
     viewport()->setMouseTracking(true);
     viewport()->setBackgroundMode(NoBackground);
 
@@ -1097,6 +1097,8 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
 {
     if(!m_part->docImpl()) return;
 
+    if(m_part->mousePressHook(_mouse)) return;
+
     int xm, ym;
     viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
 
@@ -1158,6 +1160,7 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
 void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
 {
     if(!m_part->docImpl()) return;
+    if(m_part->mouseDoubleClickHook(_mouse)) return;
 
     int xm, ym;
     viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
@@ -1177,6 +1180,7 @@ void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
 void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 {
     if(!m_part->docImpl()) return;
+    if(m_part->mouseMoveHook(_mouse)) return;
 
     // drag of URL
 
@@ -1235,6 +1239,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 {
     if ( !m_part->docImpl() ) return;
+    if(m_part->mouseReleaseHook(_mouse)) return;
 
     if ( pressed )
     {
@@ -1279,6 +1284,9 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 
 void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 {
+    if(m_part->keyPressHook(_ke)) return;
+
+    
     int offs = (clipper()->height() < 30) ? clipper()->height() : 30;
     switch ( _ke->key() )
     {
@@ -1564,7 +1572,7 @@ bool KHTMLView::focusNextPrevChild( bool next )
 //    return true;    // ### temporary fix for qscrollview focus bug
     	    	    // as a side effect, disables tabbing between form elements
 		    // -antti
-    
+
     return QScrollView::focusNextPrevChild( next );
 }
 

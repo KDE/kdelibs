@@ -204,6 +204,9 @@ public:
     virtual void detach() {}
 
     bool isInline();
+    
+    virtual DOMString* toHTML(DOMString *_string);
+    virtual DOMString* innerHTML(DOMString *_string);
 
 protected:
     DocumentImpl *document;

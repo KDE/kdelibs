@@ -81,7 +81,7 @@ public:
     virtual bool mouseEvent( int _x, int _y, int, MouseEventType,
 			     int _tx, int _ty, DOMString &,
                              NodeImpl *& innerNode, long &offset);
-
+    virtual DOMString *toHTML(DOMString *_string);
 };
 
 }; //namespace

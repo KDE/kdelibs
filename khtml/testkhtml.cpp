@@ -18,7 +18,7 @@
 #include "misc/loader.h"
 #include <qcursor.h>
 #include <qcolor.h>
-
+#include <dom_string.h>
 
 int main(int argc, char *argv[])
 {
@@ -52,7 +52,11 @@ int main(int argc, char *argv[])
     QWidget::connect(p, SIGNAL(pressed()), &a, SLOT(quit()));
     p->show();
     a.exec();
-
+    //DOMString htmlContent;
+    //doc->htmlDocument().toHTML(&htmlContent);
+    //printf("%s", htmlContent.string().ascii());
+    
+    
     delete p;
     delete doc;
 

@@ -1314,7 +1314,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	    for( it = pointSizes.begin(); it != pointSizes.end(); ++it )
 	    {
 		float newDiff = ((*it) - size)/size;
-		printf("smooth font size: %d diff=%f\n", *it, newDiff);
+		//printf("smooth font size: %d diff=%f\n", *it, newDiff);
 		if(newDiff < 0) newDiff = -newDiff;
 		if(newDiff < diff)
 		{
@@ -1322,7 +1322,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 		    bestSize = *it;
 		}
 	    }
-	    printf("best smooth font size: %d diff=%f\n", bestSize, diff);
+	    //printf("best smooth font size: %d diff=%f\n", bestSize, diff);
 	    if(diff < .15) // 15% deviation, otherwise we use a scaled font...
 		size = bestSize;
 	}	

@@ -245,7 +245,7 @@ static int getIndent(RenderObject *child)
     {
 	if(marginRight.type == Variable)
 	    diff /= 2;
-	printf("indenting margin by %d\n", diff);
+	//printf("indenting margin by %d\n", diff);
 	return diff;
     }
     else
@@ -403,7 +403,7 @@ RenderFlow::insertFloat(RenderObject *o)
     specialObjects->append(f);
 //    printf("inserting node %p number of specialobject = %d\n", o,
 //	   specialObjects->count());
-	   
+	
     positionNewFloats();
 }
 
@@ -418,15 +418,15 @@ void RenderFlow::positionNewFloats()
 	if(!aFloat || aFloat->startY != -1) {
 	    specialObjects->next();
 	    break;
-	}	 
+	}	
 	f = aFloat;
     }
-    
+
     int y;
     if(m_childrenInline)
         y = currentY();
     else
-        y = m_height;    
+        y = m_height;
 
     while(f)
     {
@@ -443,7 +443,7 @@ void RenderFlow::positionNewFloats()
 	    }
 	    f->left = fx;
 //	    printf("positioning left aligned float at (%d/%d)\n",	
-//		   fx + o->marginLeft() , y + o->marginTop());	        
+//		   fx + o->marginLeft() , y + o->marginTop());	
 	    o->setXPos(fx + o->marginLeft());			
 	    o->setYPos(y + o->marginTop());
 	}
@@ -514,7 +514,7 @@ RenderFlow::leftMargin(int y) const
     QListIterator<SpecialObject> it(*specialObjects);
     for ( ; (r = it.current()); ++it )
     {
-//    	printf("left: sy, ey, x, w %d,%d,%d,%d \n", 
+//    	printf("left: sy, ey, x, w %d,%d,%d,%d \n",
 //	    r->startY, r->endY, r->left, r->width);
 	if (r->startY <= y && r->endY > y &&
 	    r->type == SpecialObject::FloatLeft &&
@@ -541,7 +541,7 @@ RenderFlow::rightMargin(int y) const
     QListIterator<SpecialObject> it(*specialObjects);
     for ( ; (r = it.current()); ++it )
     {
-//    	printf("right: sy, ey, x, w %d,%d,%d,%d \n", 
+//    	printf("right: sy, ey, x, w %d,%d,%d,%d \n",
 //	    r->startY, r->endY, r->left, r->width);
 	if (r->startY <= y && r->endY > y &&
 	    r->type == SpecialObject::FloatRight &&
@@ -625,20 +625,20 @@ RenderFlow::clearFloats()
     if (specialObjects)
     {
 #if 0
-	printf("clearFloats num specialobject = %d\n",
+	//printf("clearFloats num specialobject = %d\n",
 	       specialObjects->count());
 	SpecialObject* r;	
 	QListIterator<SpecialObject> it(*specialObjects);
 	it.toFirst();
 	while ( (r = it.current()) )
 	{
-	    printf("testing %p\n", r);
+	    //printf("testing %p\n", r);
 	    if (r->type == SpecialObject::FloatRight ||
 		r->type == SpecialObject::FloatLeft)
 		specialObjects->remove(r);
 	    ++it;
 	}
-	printf("after clear num specialobject = %d\n",
+	//printf("after clear num specialobject = %d\n",
 	       specialObjects->count());
 #endif
 	specialObjects->clear();
@@ -709,7 +709,7 @@ short RenderFlow::baselineOffset() const
 	int r = 0;
 	if (firstChild())
 	    r = firstChild()->yPos() + firstChild()->baselineOffset();
-	printf("aligned to baseline %d\n", r);
+//printf("aligned to baseline %d\n", r);
 	return r;
 	}	
     case SUB:
@@ -945,7 +945,7 @@ void RenderFlow::addChild(RenderObject *newChild)
 	    //printf("adding inline child to anonymous box\n");
 	    if(!haveAnonymousBox())
 	    {
-		printf("creating anonymous box\n");
+		//printf("creating anonymous box\n");
 		RenderStyle *newStyle = new RenderStyle(m_style);
 		newStyle->setDisplay(BLOCK);
 		RenderFlow *newBox = new RenderFlow(newStyle);
@@ -1064,7 +1064,7 @@ void RenderFlow::specialHandler(BiDiObject *special)
 	EClear clear = o->style()->clear();
 	if(clear != CNONE)
 	{
-	    printf("setting clear to %d\n", clear);
+	    //printf("setting clear to %d\n", clear);
 	    m_clearStatus = (EClear) (m_clearStatus | clear);
 	}	
     }
