@@ -152,11 +152,11 @@ void HTMLBodyElementImpl::attach(KHTMLView *w)
 	addCSSProperty(CSS_PROP_MARGIN_TOP, str);
         addCSSProperty(CSS_PROP_MARGIN_BOTTOM, str);
     }
-        
-    document->createSelector();        
-    
+
+    document->createSelector();
+
     setStyle(document->styleSelector()->styleForElement( this ));
-    
+
     khtml::RenderObject *r = _parent->renderer();
 
     if ( !r )
@@ -165,7 +165,7 @@ void HTMLBodyElementImpl::attach(KHTMLView *w)
     m_render = new khtml::RenderBody();
     m_render->setStyle(m_style);
     r->addChild( m_render, _next ? _next->renderer() : 0 );
-    
+
     NodeBaseImpl::attach( w );
 
 }
@@ -598,7 +598,7 @@ void HTMLIFrameElementImpl::attach(KHTMLView *w)
 void HTMLIFrameElementImpl::applyChanges(bool top, bool force)
 {
     if (needWidgetUpdate) {
-	static_cast<RenderPartObject*>(m_render)->updateWidget();
+        if(m_render)  static_cast<RenderPartObject*>(m_render)->updateWidget();
 	needWidgetUpdate = false;
     }
     HTMLElementImpl::applyChanges(top,force);
