@@ -863,6 +863,12 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     d->m_lined->setText(filename);
     nameArea = d->m_lined;
     d->m_lined->setFocus();
+    
+    // Enhanced rename: Don't highlight the file extension.
+    int firstDot = filename.find('.');
+    if (firstDot > 0)
+      d->m_lined->setSelection(0, firstDot);
+    
     connect( d->m_lined, SIGNAL( textChanged( const QString & ) ),
              this, SLOT( nameFileChanged(const QString & ) ) );
   }
