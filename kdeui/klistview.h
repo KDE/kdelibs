@@ -20,7 +20,7 @@
 
 #include <qcursor.h>
 #include <qlistview.h>
-
+#include <qlist.h>
 
 class QDragObject;
 /**
@@ -54,6 +54,9 @@ public:
    * other cases including the case that it is over the viewport.
    */
   virtual bool isExecuteArea( const QPoint& point );
+
+  QList<QListViewItem> selectedItems() const;
+  void moveItem(QListViewItem *item, QListViewItem *after);
 
 
   QListViewItem *lastItem() const;
@@ -110,7 +113,7 @@ signals:
    */
   void doubleClicked( QListViewItem *item, const QPoint &pos, int c );
 
-  void dropped(QDropEvent * e);
+  void dropped(QDropEvent * e, QListViewItem *after);
   void moved();
   void itemRenamed(QListViewItem * item, const QString &str, int row);
   void itemRenamed(QListViewItem * item);
@@ -143,7 +146,6 @@ protected:
    **/
   virtual void dropEvent(QDropEvent *event, QListView *parent, QListViewItem *after);
 
-  virtual void dragEnterEvent(QDragEnterEvent *event);
   virtual void dropEvent(QDropEvent* event);
   /**
    * Draw a line when you drag it somewhere nice.
@@ -153,6 +155,8 @@ protected:
   virtual void dragLeaveEvent(QDragLeaveEvent *event);
 	
   virtual void contentsMouseReleaseEvent(QMouseEvent*);
+  virtual void dragEnterEvent(QDragEnterEvent *);
+
 
   virtual QDragObject *dragObject() const;
 	
@@ -181,10 +185,6 @@ private:
    **/
   QListViewItem* findDrop(const QPoint &p);
   void startDrag();
-
-  QRect *invalidateRect;
-  QPoint *pressPos;
-
 
 private:
   class KListViewPrivate;
