@@ -146,68 +146,6 @@ namespace KJS {
     double val;
   };
 
-  // ---------------------------------------------------------------------------
-  //                            Internal type impls
-  // ---------------------------------------------------------------------------
-
-  /**
-   * @internal
-   */
-  class ListNode {
-    friend class List;
-    friend class ListImp;
-    friend class ListIterator;
-    ListNode(Value val, ListNode *p, ListNode *n)
-      : member(val.imp()), prev(p), next(n) {};
-    ValueImp *member;
-    ListNode *prev, *next;
-  };
-
-  class ListImp : public ValueImp {
-    friend class ListIterator;
-    friend class List;
-    friend class InterpreterImp;
-  public:
-    ListImp();
-    ~ListImp();
-
-    Type type() const { return ListType; }
-
-    virtual void mark();
-
-    Value toPrimitive(ExecState *exec, Type preferred = UnspecifiedType) const;
-    bool toBoolean(ExecState *exec) const;
-    double toNumber(ExecState *exec) const;
-    UString toString(ExecState *exec) const;
-    Object toObject(ExecState *exec) const;
-
-    void append(const Value& val);
-    void prepend(const Value& val);
-    void appendList(const List& lst);
-    void prependList(const List& lst);
-    void removeFirst();
-    void removeLast();
-    void remove(const Value &val);
-    void clear();
-    ListImp *copy() const;
-    ListIterator begin() const { return ListIterator(hook->next); }
-    ListIterator end() const { return ListIterator(hook); }
-    //    bool isEmpty() const { return (hook->prev == hook); }
-    bool isEmpty() const;
-    int size() const;
-    Value at(int i) const;
-    Value operator[](int i) const { return at(i); }
-    static ListImp* empty();
-
-#ifdef KJS_DEBUG_MEM
-    static int count;
-#endif
-  private:
-    void erase(ListNode *n);
-    ListNode *hook;
-    static ListImp *emptyList;
-  };
-
   /**
    * @short The "label set" in Ecma-262 spec
    */
@@ -246,58 +184,6 @@ namespace KJS {
   // ---------------------------------------------------------------------------
   //                            Parsing & evaluateion
   // ---------------------------------------------------------------------------
-
-  /**
-   * @short Execution context.
-   */
-  class ContextImp {
-    friend class Context;
-    friend class StatementNode;
-  public:
-    // TODO: remove glob parameter. deducable from exec.
-    ContextImp(Object &glob, ExecState *exec, Object &thisV, int _sourceId, CodeType type = GlobalCode,
-               ContextImp *_callingContext = 0L, FunctionImp *func = 0L, const List &_args = List());
-    virtual ~ContextImp();
-
-    const ScopeChain &scopeChain() const { return scope; }
-    Object variableObject() const { return variable; }
-    void setVariableObject(const Object &v) { variable = v; }
-    Object thisValue() const { return thisVal; }
-    ContextImp *callingContext() { return callingCon; }
-    Object activationObject() { return activation; }
-
-    void pushScope(const Object &s) { scope.push(s.imp()); }
-    void popScope() { scope.pop(); }
-    LabelStack *seenLabels() { return &ls; }
-
-    void mark();
-
-    void pushTryCatch() { tryCatch++; };
-    void popTryCatch() { tryCatch--; };
-    bool inTryCatch() const;
-
-    void setLines(int l0, int l1) { line0 = l0; line1 = l1; }
-
-  private:
-
-    ScopeChain scope;
-    Object activation;
-    Object variable;
-    Object thisVal;
-
-    ContextImp *callingCon;
-
-    LabelStack ls;
-    CodeType codeType;
-    int tryCatch;
-
-    int sourceId;
-    int line0;
-    int line1;
-    Object function;
-    UString functionName;
-    List args;
-  };
 
   class SourceCode {
   public:
@@ -341,7 +227,7 @@ namespace KJS {
     InterpreterImp(Interpreter *interp, const Object &glob);
     ~InterpreterImp();
 
-    Object globalObject() const { return global; }
+    Object &globalObject() const { return const_cast<Object &>(global); }
     Interpreter* interpreter() const { return m_interpreter; }
 
     void initGlobalObject();
@@ -398,6 +284,8 @@ namespace KJS {
 
     void addSourceCode(SourceCode *code);
     void removeSourceCode(SourceCode *code);
+    
+    void setContext(ContextImp *c) { _context = c; }
 
   private:
     void clear();
@@ -449,6 +337,8 @@ namespace KJS {
     // Chained list of interpreters (ring) - for collector
     static InterpreterImp* s_hook;
     InterpreterImp *next, *prev;
+    
+    ContextImp *_context;
 
     int recursion;
     SourceCode *sources;

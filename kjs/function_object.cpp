@@ -161,9 +161,7 @@ Value FunctionProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &a
     else
       callThis = thisArg.toObject(exec);
 
-    List callArgs = args.copy();
-    callArgs.removeFirst();
-    result = func.call(exec,callThis,callArgs);
+    result = func.call(exec,callThis,args.copyTail());
     }
     break;
   }
@@ -285,15 +283,12 @@ Object FunctionObjectImp::construct(ExecState *exec, const List &args)
       return err;
   }
 
-  fimp->put(exec,lengthPropertyName, Number(params),ReadOnly|DontDelete|DontEnum);
   List consArgs;
 
   Object objCons = exec->interpreter()->builtinObject();
   Object prototype = objCons.construct(exec,List::empty());
-  prototype.put(exec, constructorPropertyName,
-		Object(fimp), DontEnum|DontDelete|ReadOnly);
-  fimp->put(exec,prototypePropertyName,prototype,DontEnum|DontDelete|ReadOnly);
-  fimp->put(exec,argumentsPropertyName,Null(),DontEnum|DontDelete|ReadOnly);
+  prototype.put(exec, constructorPropertyName, Value(fimp), DontEnum|DontDelete|ReadOnly);
+  fimp->put(exec, prototypePropertyName, prototype, DontEnum|DontDelete|ReadOnly);
   return ret;
 }
 

@@ -36,6 +36,7 @@ using namespace std;
 #endif
 
 #include "collector.h"
+#include "context.h"
 #include "debugger.h"
 #include "function_object.h"
 #include "internal.h"

@@ -28,7 +28,7 @@ libkjs_la_SOURCES =  ustring.cpp internal.cpp collector.cpp nodes.cpp \
 		     bool_object.cpp number_object.cpp date_object.cpp \
 		     array_object.cpp math_object.cpp object_object.cpp \
 		     regexp_object.cpp error_object.cpp function.cpp \
-		     debugger.cpp value.cpp types.cpp object.cpp \
+		     debugger.cpp value.cpp list.cpp object.cpp \
 		     interpreter.cpp property_map.cpp nodes2string.cpp \
 		     identifier.cpp reference.cpp reference_list.cpp \
 		     scope_chain.cpp
@@ -36,13 +36,14 @@ libkjs_la_SOURCES =  ustring.cpp internal.cpp collector.cpp nodes.cpp \
 kjsincludedir = $(includedir)/kjs
 kjsinclude_HEADERS = value.h types.h object.h interpreter.h operations.h \
 		     ustring.h lookup.h global.h identifier.h property_map.h \
-		     reference.h reference_list.h completion.h
+		     reference.h reference_list.h completion.h scope_chain.h \
+		     list.h
 
 noinst_HEADERS = internal.h collector.h nodes.h lexer.h lexer.lut.h \
 		 grammar.h regexp.cpp function_object.h string_object.h \
 		 bool_object.h number_object.h date_object.h array_object.h \
 		 math_object.h object_object.h regexp_object.h error_object.h \
-		 function.h debugger.h array_instance.h scope_chain.h
+		 function.h debugger.h array_instance.h context.h
 
 if include_VERSION_SCRIPT
 VSCRIPT = -Wl,--version-script=$(srcdir)/libkjs.map

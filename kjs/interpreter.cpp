@@ -36,6 +36,7 @@
 #include "error_object.h"
 #include "debugger.h"
 #include "nodes.h"
+#include "context.h"
 
 using namespace KJS;
 
@@ -99,7 +100,7 @@ int Context::curStmtLastLine() const
 
 Object Context::function() const
 {
-  return rep->function;
+  return Object(rep->function());
 }
 
 UString Context::functionName() const
@@ -140,7 +141,7 @@ Interpreter::~Interpreter()
   delete rep;
 }
 
-Object Interpreter::globalObject() const
+Object &Interpreter::globalObject() const
 {
   return rep->globalObject();
 }
@@ -346,11 +347,9 @@ void Interpreter::finalCheck()
   while( Collector::collect() )
     ;
 
-  fprintf(stderr,"ListImp::count = %d\n", KJS::ListImp::count);
   Node::finalCheck();
   Collector::finalCheck();
   Lexer::globalClear();
-  List::globalClear();
   UString::globalClear();
 }
 #endif

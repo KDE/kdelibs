@@ -32,6 +32,7 @@
 #include "array_object.h"
 #include "bool_object.h"
 #include "collector.h"
+#include "context.h"
 #include "date_object.h"
 #include "debugger.h"
 #include "error_object.h"
@@ -305,241 +306,30 @@ void LabelStack::clear()
   }
 }
 
-// ------------------------------ ListImp --------------------------------------
-
-#ifdef KJS_DEBUG_MEM
-int ListImp::count = 0;
-#endif
-
-Value ListImp::toPrimitive(ExecState* /*exec*/, Type /*preferredType*/) const
-{
-  // invalid for List
-  assert(false);
-  return Value();
-}
-
-bool ListImp::toBoolean(ExecState* /*exec*/) const
-{
-  // invalid for List
-  assert(false);
-  return false;
-}
-
-double ListImp::toNumber(ExecState* /*exec*/) const
-{
-  // invalid for List
-  assert(false);
-  return 0;
-}
-
-UString ListImp::toString(ExecState* /*exec*/) const
-{
-  // invalid for List
-  assert(false);
-  return UString::null;
-}
-
-Object ListImp::toObject(ExecState* /*exec*/) const
-{
-  // invalid for List
-  assert(false);
-  return Object();
-}
-
-ListImp::ListImp()
-{
-#ifdef KJS_DEBUG_MEM
-  count++;
-#endif
-
-  hook = new ListNode(Null(), 0L, 0L);
-  hook->next = hook;
-  hook->prev = hook;
-  //fprintf(stderr,"ListImp::ListImp %p hook=%p\n",this,hook);
-}
-
-ListImp::~ListImp()
-{
-  //fprintf(stderr,"ListImp::~ListImp %p\n",this);
-#ifdef KJS_DEBUG_MEM
-  count--;
-#endif
-
-  clear();
-  delete hook;
-
-  if ( emptyList == this )
-    emptyList = 0L;
-}
-
-void ListImp::mark()
-{
-  ListNode *n = hook->next;
-  while (n != hook) {
-    if (!n->member->marked())
-      n->member->mark();
-    n = n->next;
-  }
-  ValueImp::mark();
-}
-
-void ListImp::append(const Value& obj)
-{
-  ListNode *n = new ListNode(obj, hook->prev, hook);
-  hook->prev->next = n;
-  hook->prev = n;
-}
-
-void ListImp::prepend(const Value& obj)
-{
-  ListNode *n = new ListNode(obj, hook, hook->next);
-  hook->next->prev = n;
-  hook->next = n;
-}
-
-void ListImp::appendList(const List& lst)
-{
-  ListIterator it = lst.begin();
-  ListIterator e = lst.end();
-  while(it != e) {
-    append(*it);
-    ++it;
-  }
-}
-
-void ListImp::prependList(const List& lst)
-{
-  ListIterator it = lst.end();
-  ListIterator e = lst.begin();
-  while(it != e) {
-    --it;
-    prepend(*it);
-  }
-}
-
-void ListImp::removeFirst()
-{
-  erase(hook->next);
-}
-
-void ListImp::removeLast()
-{
-  erase(hook->prev);
-}
-
-void ListImp::remove(const Value &obj)
-{
-  if (!obj.isValid())
-    return;
-  ListNode *n = hook->next;
-  while (n != hook) {
-    if (n->member == obj.imp()) {
-      erase(n);
-      return;
-    }
-    n = n->next;
-  }
-}
-
-void ListImp::clear()
-{
-  ListNode *n = hook->next;
-  while (n != hook) {
-    n = n->next;
-    delete n->prev;
-  }
-
-  hook->next = hook;
-  hook->prev = hook;
-}
-
-ListImp *ListImp::copy() const
-{
-  ListImp* newList = new ListImp;
-
-  ListIterator e = end();
-  ListIterator it = begin();
-
-  while(it != e) {
-    newList->append(*it);
-    ++it;
-  }
-
-  //fprintf( stderr, "ListImp::copy returning newList=%p\n", newList );
-  return newList;
-}
-
-void ListImp::erase(ListNode *n)
-{
-  if (n != hook) {
-    n->next->prev = n->prev;
-    n->prev->next = n->next;
-    delete n;
-  }
-}
-
-bool ListImp::isEmpty() const
-{
-  return (hook->prev == hook);
-}
-
-int ListImp::size() const
-{
-  int s = 0;
-  ListNode *node = hook;
-  while ((node = node->next) != hook)
-    s++;
-
-  return s;
-}
-
-Value ListImp::at(int i) const
-{
-  if (i < 0 || i >= size())
-    return Undefined();
-
-  ListIterator it = begin();
-  int j = 0;
-  while ((j++ < i))
-    it++;
-
-  return *it;
-}
-
-ListImp *ListImp::emptyList = 0L;
-
-ListImp *ListImp::empty()
-{
-  if (!emptyList)
-    emptyList = new ListImp();
-  return emptyList;
-}
-
 // ------------------------------ ContextImp -----------------------------------
 
 
 // ECMA 10.2
-ContextImp::ContextImp(Object &glob, ExecState *exec, Object &thisV, int _sourceId, CodeType type,
-                       ContextImp *_callingContext, FunctionImp *func, const List &_args)
+ContextImp::ContextImp(Object &glob, InterpreterImp *interpreter, Object &thisV, int _sourceId, CodeType type,
+                       ContextImp *callingCon, FunctionImp *func, const List *args)
+  : _interpreter(interpreter), _function(func), _arguments(args)
 {
   codeType = type;
-  callingCon = _callingContext;
+  _callingContext = callingCon;
   tryCatch = 0;
 
   sourceId = _sourceId;
   line0 = 1;
   line1 = 1;
-  function = Object(func);
 
   if (func && func->inherits(&DeclaredFunctionImp::info))
     functionName = static_cast<DeclaredFunctionImp*>(func)->name();
   else
     functionName = UString();
-  args = _args;
 
   // create and initialize activation object (ECMA 10.1.6)
   if (type == FunctionCode) {
-    activation = Object(new ActivationImp(exec,func,_args));
+    activation = Object(new ActivationImp(func,*args));
     variable = activation;
   } else {
     activation = Object();
@@ -549,14 +339,14 @@ ContextImp::ContextImp(Object &glob, ExecState *exec, Object &thisV, int _source
   // ECMA 10.2
   switch(type) {
     case EvalCode:
-      if (callingCon) {
+      if (_callingContext) {
 	scope = _callingContext->scopeChain();
 #ifndef KJS_PURE_ECMA
 	if (thisV.imp() != glob.imp())
 	  scope.push(thisV.imp()); // for deprecated Object.prototype.eval()
 #endif
-	variable = callingCon->variableObject();
-	thisVal = callingCon->thisValue();
+	variable = _callingContext->variableObject();
+	thisVal = _callingContext->thisValue();
 	break;
       } // else same as GlobalCode
     case GlobalCode:
@@ -577,15 +367,17 @@ ContextImp::ContextImp(Object &glob, ExecState *exec, Object &thisV, int _source
       break;
     }
 
+  _interpreter->setContext(this);
 }
 
 ContextImp::~ContextImp()
 {
+  _interpreter->setContext(_callingContext);
 }
 
 void ContextImp::mark()
 {
-  for (ContextImp *context = this; context; context = context->callingCon) {
+  for (ContextImp *context = this; context; context = context->_callingContext) {
     context->scope.mark();
   }
 }
@@ -594,7 +386,7 @@ bool ContextImp::inTryCatch() const
 {
   const ContextImp *c = this;
   while (c && !c->tryCatch)
-    c = c->callingCon;
+    c = c->_callingContext;
   return (c && c->tryCatch);
 }
 
@@ -700,6 +492,7 @@ InterpreterImp::InterpreterImp(Interpreter *interp, const Object &glob)
     global(glob),
     dbg(0),
     m_compatMode(Interpreter::NativeMode),
+    _context(0),
     recursion(0),
     sources(0)
 {
@@ -881,8 +674,6 @@ void InterpreterImp::mark()
     BooleanImp::staticTrue->mark();
   if (BooleanImp::staticFalse && !BooleanImp::staticFalse->marked())
     BooleanImp::staticFalse->mark();
-  if (ListImp::emptyList && !ListImp::emptyList->marked())
-    ListImp::emptyList->mark();
   //fprintf( stderr, "InterpreterImp::mark this=%p global.imp()=%p\n", this, global.imp() );
   if (global.imp())
     global.imp()->mark();
@@ -944,7 +735,7 @@ Completion InterpreterImp::evaluate(const UString &code, const Value &thisV)
   recursion++;
   progNode->ref();
 
-  Object globalObj = globalObject();
+  Object &globalObj = globalObject();
   Object thisObj = globalObject();
 
   if (thisV.isValid()) {
@@ -964,8 +755,7 @@ Completion InterpreterImp::evaluate(const UString &code, const Value &thisV)
   }
   else {
     // execute the code
-    ExecState *exec1 = 0;
-    ContextImp ctx(globalObj, exec1, thisObj, source->sid);
+    ContextImp ctx(globalObj, this, thisObj, source->sid);
     ExecState newExec(m_interpreter,&ctx);
 
     // create variables (initialized to undefined until var statements

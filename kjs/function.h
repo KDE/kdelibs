@@ -41,7 +41,10 @@ namespace KJS {
     FunctionImp(ExecState *exec, const UString &n = UString::null);
     virtual ~FunctionImp();
 
-    virtual void mark();
+    virtual Value get(ExecState *exec, const Identifier &propertyName) const;
+    virtual void put(ExecState *exec, const Identifier &propertyName, const Value &value, int attr = None);
+    virtual bool hasProperty(ExecState *exec, const Identifier &propertyName) const;
+    virtual bool deleteProperty(ExecState *exec, const Identifier &propertyName);
 
     virtual bool implementsCall() const;
     virtual Value call(ExecState *exec, Object &thisObj, const List &args);
@@ -73,10 +76,6 @@ namespace KJS {
   private:
     void processParameters(ExecState *exec, const List &);
     virtual void processVarDecls(ExecState *exec);
-
-    void pushArgs(ExecState *exec, const Object &args);
-    void popArgs(ExecState *exec);
-    ListImp *argStack;
   };
 
   class DeclaredFunctionImp : public FunctionImp {
@@ -98,9 +97,6 @@ namespace KJS {
     virtual void processVarDecls(ExecState *exec);
   };
 
-
-
-
   class ArgumentsImp : public ObjectImp {
   public:
     ArgumentsImp(ExecState *exec, FunctionImp *func, const List &args);
@@ -111,15 +107,23 @@ namespace KJS {
 
   class ActivationImp : public ObjectImp {
   public:
-    ActivationImp(ExecState *exec, FunctionImp *f, const List &args);
-    ~ActivationImp();
+    ActivationImp(FunctionImp *function, const List &arguments);
 
-    Object argumentsObject() { return Object(arguments); }
+    virtual Value get(ExecState *exec, const Identifier &propertyName) const;
+    virtual bool hasProperty(ExecState *exec, const Identifier &propertyName) const;
+    virtual bool deleteProperty(ExecState *exec, const Identifier &propertyName);
 
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
+    
+    virtual void mark();
+
   private:
-    ObjectImp* arguments;
+    void createArgumentsObject(ExecState *exec) const;
+    
+    FunctionImp *_function;
+    List _arguments;
+    mutable ArgumentsImp *_argumentsObject;
   };
 
   class GlobalFuncImp : public InternalFunctionImp {

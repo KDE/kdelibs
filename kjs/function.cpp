@@ -30,6 +30,7 @@
 #include "nodes.h"
 #include "operations.h"
 #include "debugger.h"
+#include "context.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -58,31 +59,14 @@ namespace KJS {
 FunctionImp::FunctionImp(ExecState *exec, const UString &n)
   : InternalFunctionImp(
       static_cast<FunctionPrototypeImp*>(exec->interpreter()->builtinFunctionPrototype().imp())
-      ), param(0L), ident(n), line0(-1), line1(-1), sid(-1), argStack(0)
+      ), param(0L), ident(n), line0(-1), line1(-1), sid(-1)
 {
-  Value protect(this);
-  argStack = new ListImp();
-  Value protectArgStack( argStack ); // this also calls setGcAllowed on argStack
-  //fprintf(stderr,"FunctionImp::FunctionImp this=%p argStack=%p\n");
-  put(exec,argumentsPropertyName,Null(),ReadOnly|DontDelete|DontEnum);
+  //fprintf(stderr,"FunctionImp::FunctionImp this=%p\n");
 }
 
 FunctionImp::~FunctionImp()
 {
-  // The function shouldn't be deleted while it is still executed; argStack
-  // should be set to 0 by the last call to popArgs()
-  //assert(argStack->isEmpty());
-  // Accessing argStack from here is a problem though.
-  // When the function isn't used anymore, it's not marked, and neither is the
-  // argStack, so both can be deleted - in any order!
   delete param;
-}
-
-void FunctionImp::mark()
-{
-  InternalFunctionImp::mark();
-  if (argStack && !argStack->marked())
-    argStack->mark();
 }
 
 bool FunctionImp::implementsCall() const
@@ -92,24 +76,13 @@ bool FunctionImp::implementsCall() const
 
 Value FunctionImp::call(ExecState *exec, Object &thisObj, const List &args)
 {
-  Object globalObj = exec->interpreter()->globalObject();
+  Object &globalObj = exec->interpreter()->globalObject();
 
   // enter a new execution context
-  ContextImp ctx(globalObj, exec, thisObj, sid, codeType(),
-                 exec->context().imp(), this, args);
+  ContextImp ctx(globalObj, exec->interpreter()->imp(), thisObj, sid, codeType(),
+                 exec->context().imp(), this, &args);
   ExecState newExec(exec->interpreter(), &ctx);
   newExec.rep->exception = exec->exception(); // could be null
-
-  // In order to maintain our "arguments" property, we maintain a list of arguments
-  // properties from earlier in the execution stack. Upon return, we restore the
-  // previous arguments object using popArgs().
-  // Note: this does not appear to be part of the spec
-  if (codeType() == FunctionCode) {
-    assert(ctx.activationObject().inherits(&ActivationImp::info));
-    Object argsObj = static_cast<ActivationImp*>(ctx.activationObject().imp())->argumentsObject();
-    put(&newExec, argumentsPropertyName, argsObj, DontDelete|DontEnum|ReadOnly);
-    pushArgs(&newExec, argsObj);
-  }
 
   // assign user supplied arguments to parameters
   processParameters(&newExec, args);
@@ -143,8 +116,6 @@ Value FunctionImp::call(ExecState *exec, Object &thisObj, const List &args)
   // if an exception occured, propogate it back to the previous execution object
   if (newExec.hadException())
     exec->rep->exception = newExec.exception();
-  if (codeType() == FunctionCode)
-    popArgs(&newExec);
 
 #ifdef KJS_VERBOSE
   CString n = ident.isEmpty() ? CString("(internal)") : ident.cstring();
@@ -231,20 +202,56 @@ void FunctionImp::processVarDecls(ExecState */*exec*/)
 {
 }
 
-void FunctionImp::pushArgs(ExecState *exec, const Object &args)
+Value FunctionImp::get(ExecState *exec, const Identifier &propertyName) const
 {
-  argStack->append(args);
-  put(exec,argumentsPropertyName,args,ReadOnly|DontDelete|DontEnum);
+    // Find the arguments from the closest context.
+    if (propertyName == argumentsPropertyName) {
+// delme
+        ContextImp *context = exec->context().imp();
+// fixme
+//         ContextImp *context = exec->_context;
+        while (context) {
+            if (context->function() == this)
+                return static_cast<ActivationImp *>
+                    (context->activationObject())->get(exec, propertyName);
+            context = context->callingContext();
+        }
+        return Null();
+    }
+    
+    // Compute length of parameters.
+    if (propertyName == lengthPropertyName) {
+        const Parameter * p = param;
+        int count = 0;
+        while (p) {
+            ++count;
+            p = p->next;
+        }
+        return Number(count);
+    }
+    
+    return InternalFunctionImp::get(exec, propertyName);
 }
 
-void FunctionImp::popArgs(ExecState *exec)
+void FunctionImp::put(ExecState *exec, const Identifier &propertyName, const Value &value, int attr)
 {
-  argStack->removeLast();
-  if (argStack->isEmpty()) {
-    put(exec,argumentsPropertyName,Null(),ReadOnly|DontDelete|DontEnum);
-  }
-  else
-    put(exec,argumentsPropertyName,argStack->at(argStack->size()-1),ReadOnly|DontDelete|DontEnum);
+    if (propertyName == argumentsPropertyName || propertyName == lengthPropertyName)
+        return;
+    InternalFunctionImp::put(exec, propertyName, value, attr);
+}
+
+bool FunctionImp::hasProperty(ExecState *exec, const Identifier &propertyName) const
+{
+    if (propertyName == argumentsPropertyName || propertyName == lengthPropertyName)
+        return true;
+    return InternalFunctionImp::hasProperty(exec, propertyName);
+}
+
+bool FunctionImp::deleteProperty(ExecState *exec, const Identifier &propertyName)
+{
+    if (propertyName == argumentsPropertyName || propertyName == lengthPropertyName)
+        return false;
+    return InternalFunctionImp::deleteProperty(exec, propertyName);
 }
 
 // ------------------------------ DeclaredFunctionImp --------------------------
@@ -333,17 +340,54 @@ ArgumentsImp::ArgumentsImp(ExecState *exec, FunctionImp *func, const List &args)
 const ClassInfo ActivationImp::info = {"Activation", 0, 0, 0};
 
 // ECMA 10.1.6
-ActivationImp::ActivationImp(ExecState *exec, FunctionImp *f, const List &args)
-  : ObjectImp()
+ActivationImp::ActivationImp(FunctionImp *function, const List &arguments)
+    : _function(function), _arguments(true), _argumentsObject(0)
 {
-  Value protect(this);
-  arguments = new ArgumentsImp(exec,f, args);
-  put(exec, argumentsPropertyName, Object(arguments), Internal|DontDelete);
+  _arguments = arguments.copy();
+  // FIXME: Do we need to support enumerating the arguments property?
 }
 
-ActivationImp::~ActivationImp()
+Value ActivationImp::get(ExecState *exec, const Identifier &propertyName) const
 {
-  arguments->setGcAllowed();
+  if (propertyName == argumentsPropertyName) {
+    ValueImp *imp = getDirect(propertyName);
+    if (imp)
+      return Value(imp);
+
+    if (!_argumentsObject)
+      createArgumentsObject(exec);
+    return Value(_argumentsObject);
+  }
+  return ObjectImp::get(exec, propertyName);
+}
+
+bool ActivationImp::hasProperty(ExecState *exec, const Identifier &propertyName) const
+{
+    if (propertyName == argumentsPropertyName)
+        return true;
+    return ObjectImp::hasProperty(exec, propertyName);
+}
+
+bool ActivationImp::deleteProperty(ExecState *exec, const Identifier &propertyName)
+{
+    if (propertyName == argumentsPropertyName)
+        return false;
+    return ObjectImp::deleteProperty(exec, propertyName);
+}
+
+void ActivationImp::mark()
+{
+    if (_function && !_function->marked()) 
+        _function->mark();
+    _arguments.mark();
+    if (_argumentsObject && !_argumentsObject->marked())
+        _argumentsObject->mark();
+    ObjectImp::mark();
+}
+
+void ActivationImp::createArgumentsObject(ExecState *exec) const
+{
+  _argumentsObject = new ArgumentsImp(exec, _function, _arguments);
 }
 
 // ------------------------------ GlobalFunc -----------------------------------
@@ -418,8 +462,13 @@ Value GlobalFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
       progNode->ref();
 
       // enter a new execution context
-      Object glob(exec->interpreter()->globalObject());
-      ContextImp ctx(glob, exec, thisObj, source->sid, EvalCode, exec->context().imp());
+      ContextImp ctx(exec->interpreter()->globalObject(),
+                     exec->interpreter()->imp(),
+                     thisObj,
+                     source->sid,
+                     EvalCode,
+                     exec->context().imp());
+
       ExecState newExec(exec->interpreter(), &ctx);
       newExec.setException(exec->exception()); // could be null
 
