@@ -525,6 +525,12 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MousePress );
     m_part->xmlDocImpl()->prepareMouseEvent( false, xm, ym, &mev );
 
+    // Qt bug: sometimes Qt sends us events that should be sent
+    // to the widget instead
+    if (  mev.innerNode.handle() && mev.innerNode.handle()->renderer() &&
+         mev.innerNode.handle()->renderer()->isWidget() )
+        return;
+
     if (d->clickCount > 0 &&
         QPoint(d->clickX-xm,d->clickY-ym).manhattanLength() <= QApplication::startDragDistance())
 	d->clickCount++;
@@ -560,6 +566,12 @@ void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
 
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseDblClick );
     m_part->xmlDocImpl()->prepareMouseEvent( false, xm, ym, &mev );
+
+    // Qt bug: sometimes Qt sends us events that should be sent
+    // to the widget instead
+    if (  mev.innerNode.handle() && mev.innerNode.handle()->renderer() &&
+         mev.innerNode.handle()->renderer()->isWidget() )
+        return;
 
     // We do the same thing as viewportMousePressEvent() here, since the DOM does not treat
     // single and double-click events as separate (only the detail, i.e. number of clicks differs)
@@ -602,6 +614,13 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseMove );
     m_part->xmlDocImpl()->prepareMouseEvent( false, xm, ym, &mev );
+
+    // Qt bug: sometimes Qt sends us events that should be sent
+    // to the widget instead
+    if (  mev.innerNode.handle() && mev.innerNode.handle()->renderer() &&
+         mev.innerNode.handle()->renderer()->isWidget() )
+        return;
+
     bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEMOVE_EVENT,mev.innerNode.handle(),false,
                                            0,_mouse,true,DOM::NodeImpl::MouseMove);
 
@@ -695,6 +714,12 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseRelease );
     m_part->xmlDocImpl()->prepareMouseEvent( false, xm, ym, &mev );
+
+    // Qt bug: sometimes Qt sends us events that should be sent
+    // to the widget instead
+    if (  mev.innerNode.handle() && mev.innerNode.handle()->renderer() &&
+         mev.innerNode.handle()->renderer()->isWidget() )
+        return;
 
     bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEUP_EVENT,mev.innerNode.handle(),true,
                                            d->clickCount,_mouse,false,DOM::NodeImpl::MouseRelease);
