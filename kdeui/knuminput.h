@@ -112,7 +112,7 @@ protected:
 
     /**
      * You need to overwrite this method and implement your layout
-     * calculations there. 
+     * calculations there.
      *
      * See @ref KIntNumInput / @ref KDoubleNumInput implementation
      * for details.
@@ -340,7 +340,7 @@ class KDoubleLine;
  * The slider is created only when the user specifies a range
  * for the control using the setRange function with the slider
  * parameter set to "true".
- *     
+ *
  * A special feature of KDoubleNumInput, designed specifically for
  * the situation when there are several KDoubleNumInputs in a column,
  * is that you can specify what portion of the control is taken by the
@@ -509,8 +509,8 @@ protected:
 private:
     void init(double value);
     QString  m_specialvalue, m_prefix, m_suffix;
-    char     *m_format; // ####: HPB: Remove in next BCI change
     double   m_value;
+    short    m_precision;
 
     class KDoubleNumInputPrivate;
     KDoubleNumInputPrivate *d;
@@ -563,12 +563,7 @@ public:
     /**
      *  Destructor.
      */
-    virtual ~KIntSpinBox() {};
-
-     /**
-     *  Reimplemented for internal reasons; the API is not affected. 
-     */
-    int value () const;
+    virtual ~KIntSpinBox();
 
     /**
      * Sets the base in which the numbers in the spin box are represented.
@@ -587,19 +582,16 @@ public:
 protected:
 
     /**
-     *  Overloaded to make use of the base given in the constructor.
+     *  Overloaded the method in QSpinBox
+     *  to make use of the base given in the constructor.
      */
-    virtual QString mapValueToText(int) const;
+    virtual QString mapValueToText(int);
 
     /**
-     *  Overloaded to make use of the base given in the constructor.
+     *  Overloaded the method in QSpinBox
+     *  to make use of the base given in the constructor.
      */
-    virtual int mapTextToValue(bool*) const;
-
-    /**
-     * @reimplemented
-     */
-    virtual void focusInEvent(QFocusEvent*);
+    virtual int mapTextToValue(bool*);
 
 private:
     int val_base;

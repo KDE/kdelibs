@@ -214,6 +214,9 @@ KIntSpinBox::KIntSpinBox(QWidget *parent, const char *name)
     setValue(0);
 }
 
+KIntSpinBox::~KIntSpinBox()
+{
+}
 
 KIntSpinBox::KIntSpinBox(int lower, int upper, int step, int value, int base,
                          QWidget* parent, const char* name)
@@ -223,18 +226,6 @@ KIntSpinBox::KIntSpinBox(int lower, int upper, int step, int value, int base,
     val_base = base;
     setValue(value);
 }
-
-
-int KIntSpinBox::value() const
-{
-    #ifdef __GNUC__
-    #warning workaround for a bug of QSpinBox in >= Qt 2.2.0
-    #endif
-    if ( editor()->edited() )
-        const_cast<KIntSpinBox*>(this)->interpretText();
-    return QSpinBox::value();
-}
-
 
 void KIntSpinBox::setBase(int base)
 {
@@ -250,7 +241,7 @@ int KIntSpinBox::base() const
 
 // -----------------------------------------------------------------------------
 
-QString KIntSpinBox::mapValueToText(int v) const
+QString KIntSpinBox::mapValueToText(int v)
 {
     return QString::number(v, val_base);
 }
@@ -258,7 +249,7 @@ QString KIntSpinBox::mapValueToText(int v) const
 
 // -----------------------------------------------------------------------------
 
-int KIntSpinBox::mapTextToValue(bool* ok) const
+int KIntSpinBox::mapTextToValue(bool* ok)
 {
     return cleanText().toInt(ok, val_base);
 }
@@ -271,14 +262,6 @@ void KIntSpinBox::setEditFocus(bool mark)
     editor()->setFocus();
     if(mark)
         editor()->selectAll();
-}
-
-
-// -----------------------------------------------------------------------------
-
-void KIntSpinBox::focusInEvent(QFocusEvent* e)
-{
-    QSpinBox::focusInEvent(e);
 }
 
 
@@ -597,14 +580,6 @@ void KDoubleLine::interpretText()
 
 // -----------------------------------------------------------------------------
 
-class KDoubleNumInput::KDoubleNumInputPrivate
-{
-public:
-  int precision;
-};
-
-// -----------------------------------------------------------------------------
-
 KDoubleNumInput::KDoubleNumInput(QWidget *parent, const char *name)
     : KNumInput(parent, name)
 {
@@ -633,7 +608,6 @@ KDoubleNumInput::KDoubleNumInput(KNumInput* below, double value, QWidget* parent
 
 KDoubleNumInput::~KDoubleNumInput()
 {
-    delete d;
 }
 
 
@@ -641,10 +615,8 @@ KDoubleNumInput::~KDoubleNumInput()
 
 void KDoubleNumInput::init(double value)
 {
-    d = new KDoubleNumInputPrivate;
-
     m_value = value;
-    d->precision = 2;
+    m_precision = 2;
     m_range = false;
 
     edit = new KDoubleLine(this, "KDoubleNumInput::QLineEdit");
@@ -737,28 +709,23 @@ void KDoubleNumInput::doLayout()
     QFontMetrics fm( edit->font() );
     QString s;
     int h = fm.height();
-    s = KGlobal::locale()->formatNumber(m_value, d->precision);
+    s = KGlobal::locale()->formatNumber(m_value, m_precision);
     int w = fm.width(m_prefix) + fm.width(s) + fm.width(m_suffix);
     w = QMAX(w, fm.width(m_specialvalue));
     if(m_range) {
-        s = KGlobal::locale()->formatNumber(m_lower, d->precision);
+        s = KGlobal::locale()->formatNumber(m_lower, m_precision);
         w = QMAX(w, fm.width(s));
-        s = KGlobal::locale()->formatNumber(m_upper, d->precision);
+        s = KGlobal::locale()->formatNumber(m_upper, m_precision);
         w = QMAX(w, fm.width(s));
         // something inbetween
-        s = KGlobal::locale()->formatNumber(m_lower + m_step, d->precision);
+        s = KGlobal::locale()->formatNumber(m_lower + m_step, m_precision);
         w = QMAX(w, fm.width(s));
     }
 
     if ( edit->frame() ) {
         h += 8;
-#if QT_VERSION < 300
-        if ( edit->style().guiStyle() == WindowsStyle && h < 26 )
-            h = 22;
-#else
         if ( edit->style().styleHint( QStyle::SH_GUIStyle ) == WindowsStyle && h < 26 )
             h = 22;
-#endif
         m_sizeEdit.setWidth(w + 8);
         m_sizeEdit.setHeight(h);
     } else {
@@ -780,9 +747,11 @@ void KDoubleNumInput::setValue(double val)
     if(m_upper < m_value) m_value = m_upper;
 
     if(m_slider) {
-        int slvalue = (int)(m_slider->maxValue()
-                                                        * (m_value - m_lower)/(m_upper - m_lower));
+        int slvalue = int(m_slider->maxValue()
+                            * (m_value - m_lower)/(m_upper - m_lower));
+        m_slider->blockSignals(true);
         m_slider->setValue(slvalue);
+        m_slider->blockSignals(true);
     }
 
     resetEditBox();
@@ -808,19 +777,19 @@ void KDoubleNumInput::setRange(double lower, double upper, double step,
     m_value = floor(( m_value+.5*m_step ) / m_step) * m_step;
 
     if(slider) {
-                int slmax = QMIN(INT_MAX, (int)((m_upper - m_lower)/m_step));
+        int slmax = QMIN(INT_MAX, (int)((m_upper - m_lower)/m_step));
         int slvalue = (int)(slmax * (m_value - m_lower) / (m_upper - m_lower));
-                if (m_slider) {
-                        m_slider->setRange(0, slmax);
-                        m_slider->setValue(slvalue);
-                } else {
-                        m_slider = new QSlider(0, slmax, 1, slvalue,
-                                                                   QSlider::Horizontal, this);
-                        m_slider->setTickmarks(QSlider::Below);
-                        connect(m_slider, SIGNAL(valueChanged(int)),
-                                        SLOT(sliderMoved(int)));
-                }
-                m_slider->setTickInterval(slmax / 10);
+        if (m_slider) {
+            m_slider->setRange(0, slmax);
+            m_slider->setValue(slvalue);
+        } else {
+            m_slider = new QSlider(0, slmax, 1, slvalue,
+                                   QSlider::Horizontal, this);
+            m_slider->setTickmarks(QSlider::Below);
+            connect(m_slider, SIGNAL(valueChanged(int)),
+                    SLOT(sliderMoved(int)));
+        }
+        m_slider->setTickInterval(slmax / 10);
     } else {
         delete m_slider;
         m_slider = 0;
@@ -878,7 +847,7 @@ void KDoubleNumInput::setPrefix(const QString &prefix)
 
 void KDoubleNumInput::setPrecision(int precision)
 {
-    d->precision = precision;
+    m_precision = precision;
 
     resetEditBox();
     layout(true);
@@ -886,7 +855,7 @@ void KDoubleNumInput::setPrecision(int precision)
 
 int KDoubleNumInput::precision() const
 {
-    return d->precision;
+    return m_precision;
 }
 
 // -----------------------------------------------------------------------------
@@ -899,7 +868,7 @@ void KDoubleNumInput::resetEditBox()
     }
     else {
         QString s;
-        s = KGlobal::locale()->formatNumber(m_value, d->precision);
+        s = KGlobal::locale()->formatNumber(m_value, m_precision);
         edit->setText(m_prefix + s + m_suffix);
         edit->home( false );
     }
