@@ -176,22 +176,17 @@ void RenderRoot::printObject(QPainter *p, int _x, int _y,
 
 void RenderRoot::repaintRectangle(int x, int y, int w, int h)
 {
-    x += m_x;
-    y += m_y;
     //kdDebug( 6040 ) << "updating views contents (" << x << "/" << y << ") (" << w << "/" << h << ")" << endl;
     if (m_view) m_view->updateContents(x, y, w, h);
 }
 
 void RenderRoot::repaint()
 {
-    if (m_view) m_view->updateContents(0, 0, m_width, m_height);
+    if (m_view) m_view->updateContents(0, 0, docWidth(), docHeight());
 }
 
 void RenderRoot::repaintObject(RenderObject *o, int x, int y)
 {
-    x += m_x;
-    y += m_y;
-
     if (m_view) m_view->paintElement(o, x, y);
 }
 
@@ -230,15 +225,14 @@ void RenderRoot::updateHeight()
 	updateTimer.start();
 
     int h = docHeight();
-    if( h < m_view->visibleHeight() )
-	h = m_view->visibleHeight();
-    if(docHeight() != oldHeight || docHeight() < m_view->visibleHeight())
+    int w = docWidth();
+    if(h != oldHeight || h < m_view->visibleHeight())
     {
-//    	kdDebug( 6040 ) << "resizing " << m_width << "," << m_height << endl;
+	if( h < m_view->visibleHeight() )
+	    h = m_view->visibleHeight();
     	m_view->resizeContents(docWidth(), h);    	
-    } else {
-	m_view->repaintContents(0,0,1000000,1000000, FALSE);	//sync repaint!
     }
+    m_view->repaintContents( 0, 0, w, h, FALSE );	//sync repaint!
 }
 
 void RenderRoot::close()
