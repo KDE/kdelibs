@@ -99,6 +99,8 @@ public:
   void setOnlyClean( bool onlyClean ) { m_bOnlyClean = onlyClean; }
   bool onlyClean() const { return m_bOnlyClean; }
 
+  void finished();
+
 public slots:
   /**
    * This method should be called for correct cancelation of IO operation

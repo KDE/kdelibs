@@ -20,6 +20,7 @@
 #include <qlayout.h>
 #include <qtooltip.h>
 #include <qdatetime.h>
+#include <qcheckbox.h>
 
 #include <kapplication.h>
 #include <kdebug.h>
@@ -28,7 +29,9 @@
 #include <kglobal.h>
 #include <klocale.h>
 #include <kiconloader.h>
+#include <kprocess.h>
 #include <kpushbutton.h>
+#include <kstandarddirs.h>
 #include <kstdguiitem.h>
 #include <kwin.h>
 
@@ -40,7 +43,13 @@ namespace KIO {
 class DefaultProgress::DefaultProgressPrivate
 {
 public:
+  bool keepOpenChecked;
   bool noCaptionYet;
+  KPushButton *cancelClose;
+  KPushButton *openFile;
+  KPushButton *openLocation;
+  QCheckBox   *keepOpen;
+  KURL        location;
 };
 
 DefaultProgress::DefaultProgress( bool showNow )
@@ -123,18 +132,35 @@ void DefaultProgress::init()
   line->setFrameShadow( QFrame::Sunken );
   topLayout->addWidget( line );
 
+  d->keepOpen = new QCheckBox( i18n("&Keep this window open after the operation is complete."), this);
+  connect( d->keepOpen, SIGNAL( toggled(bool) ), SLOT( slotKeepOpenToggled(bool) ) );
+  topLayout->addWidget(d->keepOpen);
+  d->keepOpen->hide();
+
   hBox = new QHBoxLayout();
   topLayout->addLayout(hBox);
 
+  d->openFile = new KPushButton( i18n("Open &File"), this );
+  connect( d->openFile, SIGNAL( clicked() ), SLOT( slotOpenFile() ) );
+  hBox->addWidget( d->openFile );
+  d->openFile->setEnabled(false);
+  d->openFile->hide();
+
+  d->openLocation = new KPushButton( i18n("Open &Location"), this );
+  connect( d->openLocation, SIGNAL( clicked() ), SLOT( slotOpenLocation() ) );
+  hBox->addWidget( d->openLocation );
+  d->openLocation->hide();
+
   hBox->addStretch(1);
 
-  KPushButton *pb = new KPushButton( KStdGuiItem::cancel(), this );
-  connect( pb, SIGNAL( clicked() ), SLOT( slotStop() ) );
-  hBox->addWidget( pb );
+  d->cancelClose = new KPushButton( KStdGuiItem::cancel(), this );
+  connect( d->cancelClose, SIGNAL( clicked() ), SLOT( slotStop() ) );
+  hBox->addWidget( d->cancelClose );
 
   resize( sizeHint() );
   setMaximumHeight(sizeHint().height());
 
+  d->keepOpenChecked = false;
   d->noCaptionYet = true;
   setCaption(i18n("Progress Dialog")); // show something better than kio_uiserver
 }
@@ -265,6 +291,7 @@ void DefaultProgress::slotCopying( KIO::Job*, const KURL& from, const KURL& to )
   mode = Copy;
   sourceLabel->setText(from.prettyURL());
   setDestVisible( true );
+  checkDestination( to );
   destLabel->setText(to.prettyURL());
 }
 
@@ -278,6 +305,7 @@ void DefaultProgress::slotMoving( KIO::Job*, const KURL& from, const KURL& to )
   mode = Move;
   sourceLabel->setText(from.prettyURL());
   setDestVisible( true );
+  checkDestination( to );
   destLabel->setText(to.prettyURL());
 }
 
@@ -358,6 +386,48 @@ void DefaultProgress::setDestVisible( bool visible )
     destInvite->setText( QString::null );
     destLabel->setText( QString::null );
   }
+}
+
+void DefaultProgress::slotClean() {
+  if (d->keepOpenChecked) {
+    slotPercent(0, 100.0);
+    d->cancelClose->setText( KStdGuiItem::close().text() );
+    d->openFile->setEnabled(true);
+    setOnlyClean(false);
+  }
+  else
+    hide();
+}
+
+void DefaultProgress::slotKeepOpenToggled(bool keepopen)
+{
+  d->keepOpenChecked=keepopen;
+}
+
+void DefaultProgress::checkDestination(const KURL& dest) {
+  KStandardDirs kstddirs;
+  QString test=kstddirs.findResource("tmp",dest.fileName());
+  if (test.isEmpty()) {
+    d->openFile->show();
+    d->openLocation->show();
+    d->keepOpen->show();
+    d->location=dest;
+  }
+}
+
+void DefaultProgress::slotOpenFile()
+{
+  KProcess proc;
+  proc << "konqueror" << d->location.prettyURL();
+  proc.start(KProcess::DontCare);
+}
+
+void DefaultProgress::slotOpenLocation()
+{
+  KProcess proc;
+  d->location.setFileName("");
+  proc << "konqueror" << d->location.prettyURL();
+  proc.start(KProcess::DontCare);
 }
 
 void DefaultProgress::virtual_hook( int id, void* data )

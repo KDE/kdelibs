@@ -65,10 +65,13 @@ public slots:
   virtual void slotUnmounting( KIO::Job*, const QString & point );
   virtual void slotCanResume( KIO::Job*, KIO::filesize_t );
 
+  void slotClean();
+
 protected:
   void init();
   void showTotals();
   void setDestVisible( bool visible );
+  void checkDestination( const KURL& dest);
 
   KSqueezedTextLabel* sourceLabel;
   KSqueezedTextLabel* destLabel;
@@ -96,6 +99,10 @@ protected:
 private:
   class DefaultProgressPrivate;
   DefaultProgressPrivate* d;
+private slots:
+  void slotKeepOpenToggled(bool);
+  void slotOpenFile();
+  void slotOpenLocation();
 };
 
 } /* namespace */

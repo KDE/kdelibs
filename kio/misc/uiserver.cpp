@@ -106,7 +106,10 @@ ProgressItem::ProgressItem( ListProgress* view, QListViewItem *after, QCString a
 
 
 ProgressItem::~ProgressItem() {
-  delete defaultProgress;
+  if (defaultProgress->onlyClean())
+    defaultProgress->finished();
+  else
+    delete defaultProgress;
 }
 
 

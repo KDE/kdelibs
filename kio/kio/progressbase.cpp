@@ -141,14 +141,17 @@ void ProgressBase::closeEvent( QCloseEvent* ) {
   }
 }
 
-
-void ProgressBase::slotFinished( KIO::Job* ) {
+void ProgressBase::finished() {
   // clean or delete dialog
   if ( m_bOnlyClean ) {
     slotClean();
   } else {
     delete this;
   }
+}
+
+void ProgressBase::slotFinished( KIO::Job* ) {
+  finished();
 }
 
 
