@@ -159,6 +159,10 @@ public:
 
   virtual bool mkdir( const char *_url, int _mode );
   
+  /**
+   * Directory listing. Will emit @ref #sigListEntry and/or error signals
+   * "." and ".." are listed as well.
+   */
   virtual bool listDir( const char *_url );
   /**
    * Tests whether _url is a directory.
@@ -260,7 +264,13 @@ signals:
    */
   void sigCanceled( int id );
 
+  /**
+   * A new entry has been found by @ref #listDir
+   * @param  id  id number of this KIOJob.
+   * @param entry information on this entry
+   */
   void sigListEntry( int id, const KUDSEntry& entry );
+
   void sigMimeType( int id, const char *mimetype );
 
   /**
