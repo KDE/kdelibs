@@ -32,6 +32,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <config.h>
 
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <sys/file.h>
 
 #include <ctype.h>
@@ -132,6 +133,9 @@ public:
     QSocketNotifier *notifier;
     bool non_blocking_call_lock;
     bool registered;
+    bool foreign_server;
+    bool accept_calls;
+    bool accept_calls_override; // If true, user has specified policy.
 
     QCString senderId;
     QCString objId;
@@ -348,13 +352,35 @@ void DCOPClient::processPostedMessagesInternal()
  */
 void DCOPProcessInternal( DCOPClientPrivate *d, int opcode, CARD32 key, const QByteArray& dataReceived, bool canPost  )
 {
+    if (!d->accept_calls && (opcode == DCOPFind))
+        return;
+
     IceConn iceConn = d->iceConn;
     DCOPMsg *pMsg = 0;
     DCOPClient *c = d->parent;
     QDataStream ds( dataReceived, IO_ReadOnly );
-    QCString fromApp, app, objId, fun;
+
+    QCString fromApp;
+    ds >> fromApp;
+
+    if (!d->accept_calls)
+    {
+        QByteArray reply;
+        QDataStream replyStream( reply, IO_WriteOnly );
+	// Call rejected.
+	replyStream << d->appId << fromApp;
+	IceGetHeader( iceConn, d->majorOpcode, DCOPReplyFailed,
+		      sizeof(DCOPMsg), DCOPMsg, pMsg );
+	int datalen = reply.size();
+	pMsg->key = key;
+	pMsg->length += datalen;
+	IceSendData( iceConn, datalen, const_cast<char *>(reply.data()));
+	return;
+    }
+
+    QCString app, objId, fun;
     QByteArray data;
-    ds >> fromApp >> app >> objId >> fun >> data;
+    ds >> app >> objId >> fun >> data;
     d->senderId = fromApp;
     d->objId = objId;
     d->function = fun;
@@ -468,6 +494,9 @@ DCOPClient::DCOPClient()
     d->notifier = 0L;
     d->non_blocking_call_lock = false;
     d->registered = false;
+    d->accept_calls = true;
+    d->accept_calls_override = false;
+    d->foreign_server = true;
     d->transactionList = 0L;
     d->transactionId = 0;
     connect( &d->postMessageTimer, SIGNAL( timeout() ), this, SLOT( processPostedMessagesInternal() ) );
@@ -534,6 +563,36 @@ void DCOPClient::resume()
   assert(d->notifier); // Should never happen
   d->notifier->setEnabled(true);
 }
+
+#ifdef SO_PEERCRED
+// Check whether the remote end is owned by the same user.
+static bool peerIsUs(int sockfd)
+{
+    struct ucred cred;
+    socklen_t siz = sizeof(cred);
+    if (getsockopt(sockfd, SOL_SOCKET, SO_PEERCRED, &cred, &siz) != 0)
+       return false;
+    return (cred.uid == getuid());
+}
+#else
+// Check whether the socket is owned by the same user.
+static bool isServerSocketOwnedByUser(const char*server)
+{
+   if (strncmp(server, "local/", 6) != 0)
+      return false; // Not a local socket -> foreign.
+   const char *path = index(server, ':');
+   if (!path)
+      return false;
+   path++;
+   
+   struct stat stat_buf;
+   if (stat(path, &stat_buf) != 0)
+      return false;
+   
+   return (stat_buf.st_uid == getuid());
+}
+#endif    
+
 
 bool DCOPClient::attachInternal( bool registerAsAnonymous )
 {
@@ -657,6 +716,14 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
 	return false;
     }
 
+#ifdef SO_PEERCRED
+    d->foreign_server = !peerIsUs(socket());
+#else
+    d->foreign_server = !isServerSocketOwnedByUser(d->serverAddr);
+#endif
+    if (!d->accept_calls_override)
+       d->accept_calls = !d->foreign_server;
+
     bindToApp();
 
     if ( registerAsAnonymous )
@@ -685,6 +752,7 @@ bool DCOPClient::detach()
     delete d->notifier;
     d->notifier = 0L;
     d->registered = false;
+    d->foreign_server = true;
     return true;
 }
 
@@ -696,6 +764,21 @@ bool DCOPClient::isAttached() const
     return (IceConnectionStatus(d->iceConn) == IceConnectAccepted);
 }
 
+bool DCOPClient::isAttachedToForeignServer() const
+{
+    return isAttached() && d->foreign_server;
+}
+
+bool DCOPClient::acceptCalls() const
+{
+    return isAttached() && d->accept_calls;
+}
+
+void DCOPClient::setAcceptCalls(bool b)
+{
+    d->accept_calls = b;
+    d->accept_calls_override = true;
+}
 
 QCString DCOPClient::registerAs( const QCString &appId, bool addPID )
 {

@@ -125,6 +125,24 @@ class DCOPClient : public QObject
   bool isAttached() const;
 
   /**
+   * Returns whether the client is attached to a server owned by
+   * another user.
+   */
+  bool isAttachedToForeignServer() const;
+  
+  /**
+   * Returns whether the client handles incoming calls.
+   */
+  bool acceptCalls() const;
+  
+  /**
+   * Specify whether the client should accept incoming calls.
+   * By default clients accept incoming calls, but not when connected
+   * to a foreign server.
+   */
+  void setAcceptCalls(bool b);
+
+  /**
    * Registers at the DCOP server.
    *
    * If the application was already registered,
