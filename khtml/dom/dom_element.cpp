@@ -180,7 +180,9 @@ void Element::removeAttribute( const DOMString &name )
     int exceptioncode = 0;
     NamedNodeMapImpl *attributes = static_cast<ElementImpl*>(impl)->attributes(false);
     attributes->removeNamedItem(id, DOMString(), DOMString(), exceptioncode);
-    // ignore exceptioncode, it's allowed to remove attributes that don't exist.
+    // it's allowed to remove attributes that don't exist.
+    if ( exceptioncode && exceptioncode != DOMException::NOT_FOUND_ERR )
+        throw DOMException( exceptioncode );
 }
 
 Attr Element::getAttributeNode( const DOMString &name )
