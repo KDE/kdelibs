@@ -1020,6 +1020,19 @@ class KDialogBase : public KDialog
     void addButtonBelowList( const QString & text, QObject * recv, const char * slot );
 
     /**
+     * The same as the above function, but with a KGuiItem providing the text
+     * and icon for the button at the bottom of the TreeList/IconList.
+     *
+     * @param guiitem  The text and icon on the PushButton.
+     * @param recv     The object that is to receive the signal when the button
+     *                 is clicked.
+     * @param slot     The slot to connect to the clicked signal of the button.
+     *
+     * @since 3.2
+     */
+    void addButtonBelowList( const KGuiItem & guiitem, QObject * recv, const char * slot );
+
+    /**
      * This function has only effect in IconList mode.
      *
      * Defines how the icon list widget is displayed. By default it is

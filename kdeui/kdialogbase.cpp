@@ -1035,9 +1035,13 @@ void KDialogBase::unfoldTreeList( bool persist )
 void KDialogBase::addButtonBelowList( const QString & text, QObject * recv, const char * slot )
 {
   if( mJanus != 0 )
-  {
     mJanus->addButtonBelowList( text, recv, slot );
-  }
+}
+
+void KDialogBase::addButtonBelowList( const KGuiItem & item, QObject * recv, const char * slot )
+{
+  if( mJanus != 0 )
+    mJanus->addButtonBelowList( item, recv, slot );
 }
 
 void KDialogBase::setIconListAllVisible( bool state )

@@ -42,7 +42,8 @@
 #include <kdebug.h>
 #include "kjanuswidget.h"
 #include <klistview.h>
-#include <qpushbutton.h>
+#include "kpushbutton.h"
+#include "kguiitem.h"
 
 class KJanusWidget::IconListItem : public QListBoxItem
 {
@@ -856,6 +857,15 @@ void KJanusWidget::addButtonBelowList( const QString & text, QObject * recv, con
   if( ( mFace == TreeList || mFace == IconList ) && d->mListFrame )
   {
     QPushButton * button = new QPushButton( text, d->mListFrame );
+    connect( button, SIGNAL( clicked() ), recv, slot );
+  }
+}
+
+void KJanusWidget::addButtonBelowList( const KGuiItem & item, QObject * recv, const char * slot )
+{
+  if( ( mFace == TreeList || mFace == IconList ) && d->mListFrame )
+  {
+    KPushButton * button = new KPushButton( item, d->mListFrame );
     connect( button, SIGNAL( clicked() ), recv, slot );
   }
 }
