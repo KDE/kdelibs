@@ -873,10 +873,11 @@ void KPrinter::setPrintProgram(const QString& prg)
 	}
 	else
 	{
-		setOption("kde-isspecial", "1");
 		QString	s(prg);
 		if (s.find("%in") == -1)
 			s.append(" %in");
+		setOutputToFile( s.find( "%out" ) != -1 );
+		setOption("kde-isspecial", "1");
 		setOption("kde-special-command", s);
 	}
 }
