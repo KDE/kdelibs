@@ -31,14 +31,20 @@ KButton::KButton( QWidget *_parent, const char *name )
 
 void KButton::enterEvent( QEvent* )
 {
-  raised = TRUE;
-  repaint(FALSE);
+  if ( isEnabled() )
+    {
+      raised = TRUE;
+      repaint(FALSE);
+    }
 }
 
 void KButton::leaveEvent( QEvent * )
 {
-  raised = FALSE;
-  repaint();
+  if( raised != FALSE )
+    {
+      raised = FALSE;
+      repaint();
+    }
 }
     
 void KButton::drawButton( QPainter *_painter )
