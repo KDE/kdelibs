@@ -73,6 +73,8 @@ public:
     HTMLMapElementImpl* getMap(const DOMString& url_);
     virtual void determineParseMode( const QString &str );
 
+    virtual void close();
+
 protected:
     HTMLElementImpl *bodyElement;
     HTMLElementImpl *htmlElement;

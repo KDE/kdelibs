@@ -67,12 +67,12 @@ Value KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &thisObj, const List
   switch (id) {
   case HTMLDocument::Open:
     // this is just a dummy function,  has no purpose anymore
-    //doc.open();
+    doc.open();
     return Undefined();
   case HTMLDocument::Close:
     // this is just a dummy function,  has no purpose
     // see khtmltests/ecma/tokenizer-script-recursion.html
-    // doc.close();
+    doc.close();
     return Undefined();
   case HTMLDocument::Write:
   case HTMLDocument::WriteLn: {

@@ -208,6 +208,16 @@ static bool isTransitional(const QString &spec, int start)
     return false;
 }
 
+void HTMLDocumentImpl::close()
+{
+    DocumentImpl::close();
+
+    if (body()) {
+        body()->dispatchWindowEvent(EventImpl::LOAD_EVENT, false, false);
+        updateRendering();
+    }
+}
+
 enum HTMLMode {
     Html3 = 0,
     Html4 = 1,

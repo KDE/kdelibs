@@ -81,9 +81,9 @@ public:
 
     // DOM methods & attributes for DOMImplementation
     bool hasFeature ( const DOMString &feature, const DOMString &version );
-    DocumentTypeImpl *createDocumentType( const DOMString &qualifiedName, const DOMString &publicId, 
+    DocumentTypeImpl *createDocumentType( const DOMString &qualifiedName, const DOMString &publicId,
                                           const DOMString &systemId, int &exceptioncode );
-    DocumentImpl *createDocument( const DOMString &namespaceURI, const DOMString &qualifiedName, 
+    DocumentImpl *createDocument( const DOMString &namespaceURI, const DOMString &qualifiedName,
                                   const DocumentType &doctype, int &exceptioncode );
 
     // From the DOMImplementationCSS interface
@@ -111,7 +111,7 @@ class DocumentImpl : public QObject, public NodeBaseImpl
 {
     Q_OBJECT
 public:
-    DocumentImpl(DOMImplementationImpl *_implementation, DocumentTypeImpl *_doctype, KHTMLView *v=0);
+    DocumentImpl(DOMImplementationImpl *_implementation, DocumentTypeImpl *_doctype, KHTMLView *v);
     ~DocumentImpl();
 
     // DOM methods & attributes for Document
@@ -194,7 +194,7 @@ public:
     void clearSelection();
 
     void open (  );
-    void close (  );
+    virtual void close (  );
     void write ( const DOMString &text );
     void write ( const QString &text );
     void writeln ( const DOMString &text );
@@ -234,6 +234,9 @@ public:
     virtual void determineParseMode( const QString &str );
     void setParseMode( ParseMode m ) { pMode = m; }
     ParseMode parseMode() const { return pMode; }
+
+    void setParsing(bool b) { m_bParsing = b; }
+    bool parsing() const { return m_bParsing; }
 
     void setTextColor( DOMString color ) { m_textColor = color; }
     DOMString textColor() const { return m_textColor; }
@@ -320,7 +323,6 @@ protected:
     QStringList m_state;
 
     khtml::DocLoader *m_docLoader;
-    bool visuallyOrdered;
     Tokenizer *m_tokenizer;
     QString m_url;
     QString m_baseURL;
@@ -331,7 +333,6 @@ protected:
 
     StyleSheetImpl *m_sheet;
     QString m_usersheet;
-    bool m_loadingSheet;
 
     CSSStyleSheetImpl *m_elemSheet;
 
@@ -353,6 +354,9 @@ protected:
     LocalStyleRefs m_localStyleRefs; // references to inlined style elements
     QList<RegisteredEventListener> m_windowEventListeners;
 
+    bool m_loadingSheet;
+    bool visuallyOrdered;
+    bool m_bParsing;
 };
 
 class DocumentFragmentImpl : public NodeBaseImpl

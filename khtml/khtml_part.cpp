@@ -154,7 +154,6 @@ public:
     m_job = 0L;
     m_bComplete = true;
     m_bLoadEventEmitted = true;
-    m_bParsing = false;
     m_bReloading = false;
     m_manager = 0L;
     m_settings = new KHTMLSettings(*KHTMLFactory::defaultHTMLSettings());
@@ -285,7 +284,6 @@ public:
 
   bool m_bComplete:1;
   bool m_bLoadEventEmitted:1;
-  bool m_bParsing:1;
   bool m_bReloading:1;
   bool m_haveEncoding:1;
   bool m_bHTTPRefresh:1;
@@ -647,10 +645,7 @@ bool KHTMLPart::openURL( const KURL &url )
     gotoAnchor( url.encodedHtmlRef() );
 
     d->m_bComplete = true;
-    d->m_bParsing = false;
-
-    if (!d->m_bLoadEventEmitted )
-      emitLoadEvent();
+    d->m_doc->setParsing(false);
 
     kdDebug( 6050 ) << "completed..." << endl;
     emit completed();
@@ -748,11 +743,11 @@ bool KHTMLPart::closeURL()
   d->m_bReloading = false;
 
   KHTMLPageCache::self()->cancelFetch(this);
-  if ( d->m_bParsing )
+  if ( d->m_doc && d->m_doc->parsing() )
   {
     kdDebug( 6050 ) << " was still parsing... calling end " << endl;
     slotFinishedParsing();
-    d->m_bParsing = false;
+    d->m_doc->setParsing(false);
   }
 
   if ( !d->m_workingURL.isEmpty() )
@@ -877,7 +872,7 @@ QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
   d->m_runningScripts++;
   QVariant ret = proxy->evaluate( "(unknown file)", 0, script, n );
   d->m_runningScripts--;
-  if (!d->m_runningScripts && !d->m_bParsing && d->m_submitForm )
+  if (!d->m_runningScripts && d->m_doc && !d->m_doc->parsing() && d->m_submitForm )
       submitFormAgain();
   if ( d->m_doc )
     d->m_doc->updateRendering();
@@ -1055,11 +1050,7 @@ void KHTMLPart::setAutoloadImages( bool enable )
     d->m_paLoadImages = new KAction( i18n( "Display Images on Page" ), "images_display", 0, this, SLOT( slotLoadImages() ), actionCollection(), "loadImages" );
 
   if ( d->m_paLoadImages ) {
-#if QT_VERSION < 300
-    QList<KAction> lst;
-#else
     QPtrList<KAction> lst;
-#endif
     lst.append( d->m_paLoadImages );
     plugActionList( "loadImages", lst );
   }
@@ -1210,7 +1201,6 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
   if ( !d->m_workingURL.isEmpty() )
   {
       //kdDebug( 6050 ) << "begin!" << endl;
-    d->m_bParsing = true;
 
     begin( d->m_workingURL, d->m_extension->urlArgs().xOffset, d->m_extension->urlArgs().yOffset );
 
@@ -1326,18 +1316,16 @@ void KHTMLPart::slotRestoreData(const QByteArray &data )
   {
       //kdDebug( 6050 ) << "slotRestoreData: <<end of data>>" << endl;
      // End of data.
-     if ( d->m_bParsing )
-     {
+    if (d->m_doc && d->m_doc->parsing())
         end(); //will emit completed()
-     }
   }
 }
 
 void KHTMLPart::showError( KIO::Job* job )
 {
-  kdDebug() << "KHTMLPart::showError d->m_bParsing=" << d->m_bParsing << " d->m_bComplete=" << d->m_bComplete
+  kdDebug() << "KHTMLPart::showError d->m_bParsing=" << (d->m_doc && d->m_doc->parsing()) << " d->m_bComplete=" << d->m_bComplete
             << " d->m_bCleared=" << d->m_bCleared << endl;
-  if ( d->m_bParsing || d->m_workingURL.isEmpty() ) // if we got any data already
+  if ( (d->m_doc && d->m_doc->parsing()) || d->m_workingURL.isEmpty() ) // if we got any data already
     job->showErrorDialog( /*d->m_view*/ );
   else
   {
@@ -1384,7 +1372,7 @@ void KHTMLPart::slotFinished( KIO::Job * job )
   d->m_workingURL = KURL();
   d->m_job = 0L;
 
-  if ( d->m_bParsing )
+  if (d->m_doc->parsing())
     end(); //will emit completed()
 }
 
@@ -1457,7 +1445,7 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
 
   emit d->m_extension->enableAction( "print", true );
 
-  d->m_bParsing = true;
+  d->m_doc->setParsing(true);
 }
 
 void KHTMLPart::write( const char *str, int len )
@@ -1516,10 +1504,10 @@ void KHTMLPart::write( const QString &str )
 
 void KHTMLPart::end()
 {
-  d->m_bParsing = false;
-
-  checkEmitLoadEvent();
-  // we will finish parsing when the load event finshed
+    // make sure nothing's left in there...
+    if(d->m_decoder)
+        write(d->m_decoder->flush());
+    d->m_doc->finishParsing();
 }
 
 void KHTMLPart::paint(QPainter *p, const QRect &rc, int yOff, bool *more)
@@ -1544,9 +1532,8 @@ void KHTMLPart::stopAnimations()
 
 void KHTMLPart::slotFinishedParsing()
 {
-  d->m_bParsing = false;
-  d->m_doc->close();
-  assert(d->m_bLoadEventEmitted);
+  d->m_doc->setParsing(false);
+  checkEmitLoadEvent();
   disconnect(d->m_doc,SIGNAL(finishedParsing()),this,SLOT(slotFinishedParsing()));
 
   if (!d->m_view)
@@ -1625,7 +1612,7 @@ void KHTMLPart::checkCompleted()
   //kdDebug( 6050 ) << "                           complete: " << d->m_bComplete << endl;
 
   // restore the cursor position
-  if (d->m_doc && !d->m_bParsing && !d->m_focusNodeRestored)
+  if (d->m_doc && !d->m_doc->parsing() && !d->m_focusNodeRestored)
   {
       int focusNodeNumber;
       if ((focusNodeNumber = d->m_focusNodeNumber))
@@ -1654,7 +1641,7 @@ void KHTMLPart::checkCompleted()
       return;
 
   // Are we still parsing - or have we done the completed stuff already ?
-  if ( d->m_bParsing || d->m_bComplete )
+  if ( d->m_bComplete || (d->m_doc && d->m_doc->parsing()) )
     return;
 
   // Still waiting for images/scripts from the loader ?
@@ -1723,7 +1710,7 @@ void KHTMLPart::checkCompleted()
 
 void KHTMLPart::checkEmitLoadEvent()
 {
-  if ( d->m_bLoadEventEmitted || d->m_bParsing ) return;
+  if ( d->m_bLoadEventEmitted || !d->m_doc || d->m_doc->parsing() ) return;
 
   ConstFrameIt it = d->m_frames.begin();
   ConstFrameIt end = d->m_frames.end();
@@ -1731,29 +1718,9 @@ void KHTMLPart::checkEmitLoadEvent()
     if ( (*it).m_run ) // still got a frame running -> too early
       return;
 
-  emitLoadEvent();
-}
-
-void KHTMLPart::emitLoadEvent()
-{
   d->m_bLoadEventEmitted = true;
-
-  // make sure nothing's left in there...
-  if(d->m_decoder)
-    write(d->m_decoder->flush());
-
-  if ( d->m_doc && d->m_doc->isHTMLDocument() ) {
-    HTMLDocumentImpl* hdoc = static_cast<HTMLDocumentImpl*>( d->m_doc );
-
-    if ( hdoc->body() ) {
-      hdoc->body()->dispatchWindowEvent( EventImpl::LOAD_EVENT, false, false );
-      if ( d->m_doc )
-        d->m_doc->updateRendering();
-    }
-  }
-
-  if ( d->m_doc )
-    d->m_doc->finishParsing();
+  if (d->m_doc)
+    d->m_doc->close();
 }
 
 const KHTMLSettings *KHTMLPart::settings() const
@@ -1829,15 +1796,6 @@ bool KHTMLPart::setEncoding( const QString &name, bool override )
 {
     d->m_encoding = name;
     d->m_haveEncoding = override;
-
-//    setCharset( name, override );
-#if QT_VERSION < 300
-     d->m_charset = KGlobal::charsets()->charsetForEncoding(name);
-     d->m_settings->setCharset( d->m_charset );
-     // the script should not be unicode. We need to know the document is eg. arabic to be
-     // able to choose a unicode font that contains arabic glyphs.
-     d->m_settings->setScript( KGlobal::charsets()->charsetForEncoding( name, true ) );
-#endif
 
     if( !m_url.isEmpty() ) {
         // reload document
@@ -2901,7 +2859,7 @@ KParts::PartManager *KHTMLPart::partManager()
 
 void KHTMLPart::submitFormAgain()
 {
-  if( !d->m_bParsing && d->m_submitForm)
+  if( d->m_doc && !d->m_doc->parsing() && d->m_submitForm)
     KHTMLPart::submitForm( d->m_submitForm->submitAction, d->m_submitForm->submitUrl, d->m_submitForm->submitFormData, d->m_submitForm->target, d->m_submitForm->submitContentType, d->m_submitForm->submitBoundary );
 
   delete d->m_submitForm;
@@ -3005,7 +2963,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
       args.setContentType( "Content-Type: " + contentType + "; boundary=" + boundary );
   }
 
-  if ( d->m_bParsing || d->m_runningScripts > 0 ) {
+  if ( d->m_doc->parsing() || d->m_runningScripts > 0 ) {
     if( d->m_submitForm ) {
       kdDebug(6000) << "KHTMLPart::submitForm ABORTING!" << endl;
       return;
@@ -3307,11 +3265,7 @@ void KHTMLPart::saveState( QDataStream &stream )
   {
      docState = d->m_doc->state();
   }
-#if QT_VERSION < 300
-  stream << (Q_UINT32) d->m_settings->charset() << d->m_encoding << docState;
-#else
   stream << (Q_UINT32) 0 << d->m_encoding << docState;
-#endif
 
   // Save font data
   stream << fontSizes() << d->m_fontBase;
@@ -3385,13 +3339,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
   stream >> d->m_cacheId;
 
   stream >> charset >> encoding >> docState;
-#if QT_VERSION < 300
-  d->m_charset = (QFont::CharSet) charset;
-#endif
   d->m_encoding = encoding;
-#if QT_VERSION < 300
-  if ( d->m_settings ) d->m_settings->setCharset( d->m_charset );
-#endif
   kdDebug(6050)<<"restoring charset to:"<< charset << endl;
 
   stream >> fSizes >> d->m_fontBase;
@@ -3485,13 +3433,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
     // frames.
     d->m_bCleared = false;
     clear();
-#if QT_VERSION < 300
-    d->m_charset = (QFont::CharSet) charset;
-#endif
     d->m_encoding = encoding;
-#if QT_VERSION < 300
-    if ( d->m_settings ) d->m_settings->setCharset( (QFont::CharSet)charset );
-#endif
 
     QStringList::ConstIterator fNameIt = frameNames.begin();
     QStringList::ConstIterator fNameEnd = frameNames.end();
@@ -3665,12 +3607,6 @@ void KHTMLPart::reparseConfiguration()
   KHTMLSettings *settings = KHTMLFactory::defaultHTMLSettings();
   settings->init();
 
-#if QT_VERSION < 300
-  // Keep original charset setting.
-  settings->setCharset(d->m_settings->charset());
-  settings->setScript(d->m_settings->script());
-#endif
-
   setAutoloadImages( settings->autoLoadImages() );
 
   d->m_bJScriptEnabled = settings->isJavaScriptEnabled(m_url.host());
@@ -3697,15 +3633,9 @@ QStringList KHTMLPart::frameNames() const
   return res;
 }
 
-#if QT_VERSION < 300
-QList<KParts::ReadOnlyPart> KHTMLPart::frames() const
-{
-  QList<KParts::ReadOnlyPart> res;
-#else
 QPtrList<KParts::ReadOnlyPart> KHTMLPart::frames() const
 {
   QPtrList<KParts::ReadOnlyPart> res;
-#endif
 
   ConstFrameIt it = d->m_frames.begin();
   ConstFrameIt end = d->m_frames.end();
@@ -3741,45 +3671,6 @@ bool KHTMLPart::dndEnabled() const
   return d->m_bDnd;
 }
 
-#if QT_VERSION < 300
-bool KHTMLPart::event( QEvent *event )
-{
-  if ( KParts::ReadOnlyPart::event( event ) )
-   return true;
-
-  if ( khtml::MousePressEvent::test( event ) )
-  {
-    khtmlMousePressEvent( static_cast<khtml::MousePressEvent *>( event ) );
-    return true;
-  }
-
-  if ( khtml::MouseDoubleClickEvent::test( event ) )
-  {
-    khtmlMouseDoubleClickEvent( static_cast<khtml::MouseDoubleClickEvent *>( event ) );
-    return true;
-  }
-
-  if ( khtml::MouseMoveEvent::test( event ) )
-  {
-    khtmlMouseMoveEvent( static_cast<khtml::MouseMoveEvent *>( event ) );
-    return true;
-  }
-
-  if ( khtml::MouseReleaseEvent::test( event ) )
-  {
-    khtmlMouseReleaseEvent( static_cast<khtml::MouseReleaseEvent *>( event ) );
-    return true;
-  }
-
-  if ( khtml::DrawContentsEvent::test( event ) )
-  {
-    khtmlDrawContentsEvent( static_cast<khtml::DrawContentsEvent *>( event ) );
-    return true;
-  }
-
-  return false;
-}
-#else
 void KHTMLPart::customEvent( QCustomEvent *event )
 {
   if ( khtml::MousePressEvent::test( event ) )
@@ -3814,7 +3705,6 @@ void KHTMLPart::customEvent( QCustomEvent *event )
 
   KParts::ReadOnlyPart::customEvent( event );
 }
-#endif
 
 void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
 {
@@ -4152,13 +4042,9 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
     QString text = selectedText();
     text.replace(QRegExp(QChar(0xa0)), " ");
     QClipboard *cb = QApplication::clipboard();
-#if QT_VERSION >= 300
     cb->setSelectionMode( true );
-#endif
     cb->setText(text);
-#if QT_VERSION >= 300
     cb->setSelectionMode( false );
-#endif
 #endif
     //kdDebug( 6000 ) << "selectedText = " << text << endl;
     emitSelectionChanged();
@@ -4180,11 +4066,7 @@ void KHTMLPart::guiActivateEvent( KParts::GUIActivateEvent *event )
 
     if ( !d->m_settings->autoLoadImages() && d->m_paLoadImages )
     {
-#if QT_VERSION < 300
-        QList<KAction> lst;
-#else
         QPtrList<KAction> lst;
-#endif
         lst.append( d->m_paLoadImages );
         plugActionList( "loadImages", lst );
     }
@@ -4264,11 +4146,6 @@ void KHTMLPart::slotPrintFrame()
   if ( !ext )
     return;
 
-#if QT_VERSION < 300
-  QMetaData *mdata = ext->metaObject()->slot( "print()" );
-  if ( mdata )
-    (ext->*(mdata->ptr))();
-#else
   QMetaObject *mo = ext->metaObject();
 
   int idx = mo->findSlot( "print()", TRUE );
@@ -4276,7 +4153,6 @@ void KHTMLPart::slotPrintFrame()
     QUObject o[ 1 ];
     ext->qt_invoke( idx, o );
   }
-#endif
 }
 
 void KHTMLPart::slotSelectAll()
@@ -4357,13 +4233,8 @@ void KHTMLPart::selectAll()
 
   if ( !first || !last )
     return;
-#if QT_VERSION < 300
-  ASSERT(first->renderer());
-  ASSERT(last->renderer());
-#else
   Q_ASSERT(first->renderer());
   Q_ASSERT(last->renderer());
-#endif
   d->m_selectionStart = first;
   d->m_startOffset = 0;
   d->m_selectionEnd = last;

@@ -174,7 +174,8 @@ DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceU
         return 0;
     }
 
-    DocumentImpl *doc = new DocumentImpl(this,dtype);
+    // ### this is completely broken.. without a view it will not work (Dirk)
+    DocumentImpl *doc = new DocumentImpl(this, dtype, 0);
 
     ElementImpl *element = doc->createElementNS(namespaceURI,qualifiedName);
     doc->appendChild(element,exceptioncode);
@@ -245,6 +246,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, DocumentTypeI
 
     visuallyOrdered = false;
     m_loadingSheet = false;
+    m_bParsing = false;
     m_sheet = 0;
     m_elemSheet = 0;
     m_tokenizer = 0;
@@ -940,17 +942,25 @@ void DocumentImpl::setPaintDevice( QPaintDevice *dev )
 
 void DocumentImpl::open(  )
 {
+    if (parsing()) return;
+
+    if (m_tokenizer) {
+        close();
+    }
+
     clear();
     m_tokenizer = createTokenizer();
     connect(m_tokenizer,SIGNAL(finishedParsing()),this,SIGNAL(finishedParsing()));
     m_tokenizer->begin();
 
-    if (m_view->part()->jScript())
+    if (m_view && m_view->part()->jScript())
         m_view->part()->jScript()->setSourceFile(m_url,"");
 }
 
 void DocumentImpl::close(  )
 {
+    if (parsing()) return;
+
     for ( RenderObject* o = m_render; o; o = o->lastChild() )
         o->setParsing( false );
 
@@ -959,6 +969,9 @@ void DocumentImpl::close(  )
 
     delete m_tokenizer;
     m_tokenizer = 0;
+
+    if (m_view)
+        m_view->part()->checkEmitLoadEvent();
 }
 
 void DocumentImpl::write( const DOMString &text )
@@ -968,29 +981,15 @@ void DocumentImpl::write( const DOMString &text )
 
 void DocumentImpl::write( const QString &text )
 {
-    if ( m_tokenizer ) {
-        if(m_tokenizer)
-            m_tokenizer->write(text, false);
+    if (!m_tokenizer) {
+        open();
+        write(QString::fromLatin1("<html>"));
+    }
 
-        if (m_view && m_view->part()->jScript())
-            m_view->part()->jScript()->appendSourceFile(m_url,text);
-    }
-    else {
-        NodeImpl* n = firstChild();
-        // ### create it if nonexistant?
-        if ( n &&  n->id() == ID_HTML ) {
-            for ( n = n->firstChild(); n; n = n->nextSibling() ) {
-                if ( n->id() == ID_BODY ) {
-                    HTMLElementImpl* e = static_cast<HTMLElementImpl*>( n );
-                    e->setInnerHTML( text );
-                    // ###
-                    if (m_view->part()->jScript())
-                        m_view->part()->jScript()->appendSourceFile(m_url,text);
-                    break;
-                }
-            }
-        }
-    }
+    m_tokenizer->write(text, false);
+
+    if (m_view && m_view->part()->jScript())
+        m_view->part()->jScript()->appendSourceFile(m_url,text);
 }
 
 void DocumentImpl::writeln( const DOMString &text )
