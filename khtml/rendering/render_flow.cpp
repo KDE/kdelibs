@@ -249,7 +249,7 @@ static int getIndent(RenderObject *child)
     
     // ### hack to make <td align=> work. maybe it should be done with
     //	   css class selectors or something?
-    if (child->style()->htmlHacks() && child->containingBlock()->isTableCell()) 
+/*    if (child->style()->htmlHacks() && child->containingBlock()->isTableCell()) 
     {
     	if (child->containingBlock()->style()->textAlign()==RIGHT)
     	{
@@ -260,7 +260,7 @@ static int getIndent(RenderObject *child)
 	    marginLeft.type=Variable;
 	    marginRight.type=Variable;
 	}
-    }
+    }*/
     if(marginLeft.type == Variable)
     {
 	if(marginRight.type == Variable)
