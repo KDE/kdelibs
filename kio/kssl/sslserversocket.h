@@ -51,23 +51,25 @@ extern "C" {
     Anyway, see QServerSocket to get the idea what this class does.
 */
 
-class SSLServerSocket : public QObject
+namespace KDESSL {
+
+class ServerSocket : public QObject
 {
   Q_OBJECT
 public:
-  /** Construct a SSLServerSocket. So far, the auxilliary OpenSSL
+  /** Construct a ServerSocket. So far, the auxilliary OpenSSL
   structs (SSL_METHOD and SSL_CTX) have not been encapsulated in C++
   objects. If these will become more widely used, I might change
   that.
   @arg meth needs to be initialized, so does @arg ctx. The other
   arguments do not diffe from QServerSocket.
   */
-  SSLServerSocket(SSL_METHOD *meth_, SSL_CTX *ctx_,
-		  int port, int backlog=1, QObject *parent=0,
-		  const char *name=0);
+  ServerSocket(SSL_METHOD *meth_, SSL_CTX *ctx_,
+		int port, int backlog=1, QObject *parent=0,
+		const char *name=0);
   /** The dtor.
    */
-  ~SSLServerSocket();
+  ~ServerSocket();
   /** Initialize the SSL method and context used. This method does NOT
       initialize the SSL library, as we cannot expect to be the only SSL
       user in the programs context. So make sure to call
@@ -122,4 +124,5 @@ protected slots:
   void incomingConnection(int socket);
 };
 
+}
 #endif // SSLSERVERSOCKET_H

@@ -17,4 +17,5 @@
 
 - <keygen> is not working.
 
+- Namespace it all to KDESSL:: in KDE4
 

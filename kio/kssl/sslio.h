@@ -39,7 +39,9 @@ class QSocketNotifier;
 class QMutex;
 class QDns;
 
-class SSLIODevice : public QObject, public QIODevice
+namespace KDESSL {
+
+class IODevice : public QObject, public QIODevice
 {
     Q_OBJECT
 public:
@@ -111,8 +113,8 @@ public:
         Party defines wether this SSLIO object acts as a server or
         client part of the SSL protocol.
     */
-    SSLIODevice(SSL_CTX *ctx_, Party p=Client);
-    ~SSLIODevice();
+    IODevice(SSL_CTX *ctx_, Party p=Client);
+    ~IODevice();
     /** Get the connection state. */
     State state();
     /** Establish a connection using the given file descriptor (that is
@@ -160,7 +162,7 @@ public:
         an object that bears a connection you want to handle in this
         object in future.
     */
-    bool takeOver(SSLIODevice* theother);
+    bool takeOver(IODevice* theother);
 protected:
     /** Define if we act as client or server. The SSL protocol
         requires us to act differently depending on wether we
@@ -284,7 +286,7 @@ signals:
         Aware 3: do not delete the object on shutdown, you are inside
         a method of this object!
     */
-    void shutdown(SSLIODevice*);
+    void shutdown(IODevice*);
     /** Announce error conditions on the SSL connection. See @see
         ErrorCode for  the different values. */
     void error(ErrorCode);
@@ -307,12 +309,12 @@ signals:
         and listening to the error() signal, but here you get all in
         one signal and a message on success, too.
     */
-    void connectResult(SSLIODevice::ErrorCode);
+    void connectResult(IODevice::ErrorCode);
     /** The connection on the socket used has been closed (after the
         SSL_shutdown has been performed. */
-    void disconnected(SSLIODevice*);
+    void disconnected(IODevice*);
     /** Connection state changed. */
-    void stateChanged(SSLIODevice::State);
+    void stateChanged(IODevice::State);
 protected slots:
     /** Catch signals emitted by the read notifier.  */
     virtual void slotReadNotification(int socket);
@@ -323,5 +325,7 @@ protected slots:
     /** Try to write data to the write buffer. */
     virtual void writeToSocket();
 };
+
+}
 
 #endif // defined SSLIO_H

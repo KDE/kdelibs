@@ -46,8 +46,10 @@ extern "C" {
 #include <arpa/inet.h>
 };
 
-const int RBufDefaultSize=16*1024;
-const int WBufDefaultSize=RBufDefaultSize;
+using namespace KDESSL;
+
+const int RBufDefaultSize = 16*1024;
+const int WBufDefaultSize = RBufDefaultSize;
 /** We do not set the buffers to start at zero because of the
     following effect:
     If some data arrives and fills the buffer so that is is rearranged
@@ -57,9 +59,9 @@ const int WBufDefaultSize=RBufDefaultSize;
     See how QTextStream looks two bytes ahead, for example, to see why
     this is necessary.
 */
-const int DefaultBufferOffset=8;
+const int DefaultBufferOffset = 8;
 
-SSLIODevice::SSLIODevice(SSL_CTX *ctx_, Party p)
+IODevice::IODevice(SSL_CTX *ctx_, Party p)
     : QIODevice(),
       party(p),
       m_fd(0),
@@ -81,7 +83,7 @@ SSLIODevice::SSLIODevice(SSL_CTX *ctx_, Party p)
 {
 }
 
-SSLIODevice::~SSLIODevice()
+IODevice::~IODevice()
 {
     mutex->lock();
     if(m_fd!=0) close();
@@ -90,10 +92,10 @@ SSLIODevice::~SSLIODevice()
     delete mutex;
 }
 
-SSLIODevice::ErrorCode SSLIODevice::setFd(int fd_)
+IODevice::ErrorCode IODevice::setFd(int fd_)
 {
     int err;
-    SSLIODevice::ErrorCode rc;
+    IODevice::ErrorCode rc;
     // -----
     mutex->lock();
     m_ssl=SSL_new(ctx);
@@ -139,10 +141,10 @@ SSLIODevice::ErrorCode SSLIODevice::setFd(int fd_)
     return rc;
 }
 
-SSLIODevice::ErrorCode SSLIODevice::setBlocking(bool yes)
+IODevice::ErrorCode IODevice::setBlocking(bool yes)
 {
     int state;
-    SSLIODevice::ErrorCode rc;
+    IODevice::ErrorCode rc;
     // -----
     mutex->lock();
     if((state=::fcntl(m_fd, F_GETFL, 0)))
@@ -180,7 +182,7 @@ SSLIODevice::ErrorCode SSLIODevice::setBlocking(bool yes)
     return rc;
 }
 
-bool SSLIODevice::blocking()
+bool IODevice::blocking()
 {
     bool rc;
     mutex->lock();
@@ -195,7 +197,7 @@ bool SSLIODevice::blocking()
     return rc;
 }
 
-void SSLIODevice::close()
+void IODevice::close()
 {
     // WORK_TO_DO: handle close when there is data to be written
 
@@ -230,7 +232,7 @@ void SSLIODevice::close()
     }
 }
 
-bool SSLIODevice::open(int m)
+bool IODevice::open(int m)
 {
     bool rc;
     mutex->lock();
@@ -246,12 +248,12 @@ bool SSLIODevice::open(int m)
     return rc;
 }
 
-void SSLIODevice::flush()
+void IODevice::flush()
 {
     writeToSocket();
 }
 
-QIODevice::Offset SSLIODevice::size() const
+QIODevice::Offset IODevice::size() const
 { // we do not read first since the application is expected to fill
     // the read buffer on read notifications
     QIODevice::Offset temp;
@@ -261,7 +263,7 @@ QIODevice::Offset SSLIODevice::size() const
     return temp;
 }
 
-Q_LONG SSLIODevice::readBlock(char *data, Q_ULONG maxlen)
+Q_LONG IODevice::readBlock(char *data, Q_ULONG maxlen)
 {
     Q_LONG rc;
     unsigned num;
@@ -284,7 +286,7 @@ Q_LONG SSLIODevice::readBlock(char *data, Q_ULONG maxlen)
     return rc;
 }
 
-Q_LONG SSLIODevice::writeBlock(const char* data, Q_ULONG len)
+Q_LONG IODevice::writeBlock(const char* data, Q_ULONG len)
 {
     Q_LONG rc;
     unsigned num;
@@ -312,7 +314,7 @@ Q_LONG SSLIODevice::writeBlock(const char* data, Q_ULONG len)
     return rc;
 }
 
-void SSLIODevice::writeToSocket()
+void IODevice::writeToSocket()
 { // try to write the data available in the write buffer
     int sslerror, rc=0;
     bool syserror=false;
@@ -357,7 +359,7 @@ void SSLIODevice::writeToSocket()
     if(rc>0) emit(bytesWritten(rc));
 }
 
-int SSLIODevice::getch()
+int IODevice::getch()
 {
     int rc;
     char r;
@@ -377,14 +379,14 @@ int SSLIODevice::getch()
     return rc;
 }
 
-int SSLIODevice::putch(int c)
+int IODevice::putch(int c)
 { // no need to be thread safe here, writeBlock(..) is
     char data[2];
     data[0]=c; data[1]=0;
     return writeBlock(data, 2);
 }
 
-int SSLIODevice::ungetch(int i)
+int IODevice::ungetch(int i)
 {
     char c=(char)i;
     mutex->lock();
@@ -402,7 +404,7 @@ int SSLIODevice::ungetch(int i)
     return i;
 }
 
-int SSLIODevice::readLine(char *data, uint len)
+int IODevice::readLine(char *data, uint len)
 {
     unsigned nl=0;
     int count, rc;
@@ -441,17 +443,17 @@ int SSLIODevice::readLine(char *data, uint len)
     return rc;
 }
 
-void SSLIODevice::slotReadNotification(int /* socket */)
+void IODevice::slotReadNotification(int /* socket */)
 {
     fillReadBuffer();
 }
 
-void SSLIODevice::slotWriteNotification(int /* socket */)
+void IODevice::slotWriteNotification(int /* socket */)
 {
     writeToSocket();
 }
 
-SSLIODevice::ErrorCode SSLIODevice::fillReadBuffer()
+IODevice::ErrorCode IODevice::fillReadBuffer()
 {
     int r;
     char* data; // current data pointer
@@ -513,7 +515,7 @@ SSLIODevice::ErrorCode SSLIODevice::fillReadBuffer()
 // most of the code in connectToHost and tryConnecting is a 1-on-1
 // copy of qsocket.cpp:
 
-void SSLIODevice::connectToHost(const QString& host_, unsigned port_)
+void IODevice::connectToHost(const QString& host_, unsigned port_)
 {
     mutex->lock();
     // ----- immidiately close any open connection:
@@ -541,7 +543,7 @@ void SSLIODevice::connectToHost(const QString& host_, unsigned port_)
     mutex->unlock();
 }
 
-void SSLIODevice::tryConnecting()
+void IODevice::tryConnecting()
 {
     static QValueList<QHostAddress> l;
     int err;
@@ -653,16 +655,16 @@ void SSLIODevice::tryConnecting()
     mutex->unlock();
 }
 
-SSLIODevice::State SSLIODevice::state()
+IODevice::State IODevice::state()
 {
-    SSLIODevice::State rc;
+    IODevice::State rc;
     mutex->lock();
     rc=m_state;
     mutex->unlock();
     return rc;
 }
 
-void SSLIODevice::setState(State s)
+void IODevice::setState(State s)
 {
     bool change=false;
     mutex->lock();
@@ -675,7 +677,7 @@ void SSLIODevice::setState(State s)
     if(change) emit(stateChanged(s));
 }
 
-void SSLIODevice::cleanupRBufOffset()
+void IODevice::cleanupRBufOffset()
 {
     mutex->lock();
     rbuf=cleanupBufOffset(rbuf, rbufSize, rbufUsed, rbufOffset);
@@ -683,7 +685,7 @@ void SSLIODevice::cleanupRBufOffset()
     mutex->unlock();
 }
 
-void SSLIODevice::cleanupWBufOffset()
+void IODevice::cleanupWBufOffset()
 {
     mutex->lock();
     wbuf=cleanupBufOffset(wbuf, wbufSize, wbufUsed, wbufOffset);
@@ -691,7 +693,7 @@ void SSLIODevice::cleanupWBufOffset()
     mutex->unlock();
 }
 
-char* SSLIODevice::cleanupBufOffset(char* buffer, int size, int used, int offset)
+char* IODevice::cleanupBufOffset(char* buffer, int size, int used, int offset)
 {
     char *buf=new char[size];
     // all buffers begin with an offset of DefaultBufferOffset, so
@@ -702,22 +704,22 @@ char* SSLIODevice::cleanupBufOffset(char* buffer, int size, int used, int offset
     return buf;
 }
 
-int SSLIODevice::fd()
+int IODevice::fd()
 {
     return m_fd;
 }
 
-SSL_CTX *SSLIODevice::sslCtx() const
+SSL_CTX *IODevice::sslCtx() const
 {
     return ctx;
 }
 
-SSL *SSLIODevice::ssl() const
+SSL *IODevice::ssl() const
 {
     return m_ssl;
 }
 
-bool SSLIODevice::takeOver(SSLIODevice *other)
+bool IODevice::takeOver(IODevice *other)
 {
     bool rnEnable, wnEnable, rc=true;
     mutex->lock();

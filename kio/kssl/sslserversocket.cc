@@ -36,9 +36,11 @@ extern "C" {
 
 #include "sslserversocket.h"
 
-bool SSLServerSocket::Initialized=false;
+using namespace KDESSL;
 
-SSLServerSocket::SSLServerSocket(SSL_METHOD *meth_, SSL_CTX *ctx_,
+bool ServerSocket::Initialized=false;
+
+ServerSocket::ServerSocket(SSL_METHOD *meth_, SSL_CTX *ctx_,
 				 int port, int backlog,
 				 QObject *parent, const char *name)
     : QObject(parent, name),
@@ -66,12 +68,12 @@ SSLServerSocket::SSLServerSocket(SSL_METHOD *meth_, SSL_CTX *ctx_,
     }
 }
 
-SSLServerSocket::~SSLServerSocket()
+ServerSocket::~ServerSocket()
 {
     if(sd!=0) delete sd;
 }
 
-bool SSLServerSocket::Init()
+bool ServerSocket::Init()
 { // maybe this is obsolete since I decided not to initialize the SSL library in here
     if(Initialized)
     {
@@ -87,12 +89,12 @@ bool SSLServerSocket::Init()
     }
 }
 
-bool SSLServerSocket::ok() const
+bool ServerSocket::ok() const
 {
     return !!sd;
 }
 
-void SSLServerSocket::incomingConnection(int)
+void ServerSocket::incomingConnection(int)
 {
     int fd;
     // -----
@@ -103,7 +105,7 @@ void SSLServerSocket::incomingConnection(int)
     }
 }
 
-int SSLServerSocket::port() const
+int ServerSocket::port() const
 {
     if(sd==0)
     {
@@ -113,7 +115,7 @@ int SSLServerSocket::port() const
     }
 }
 
-int SSLServerSocket::socket() const
+int ServerSocket::socket() const
 {
     if(sd==0)
     {
@@ -123,7 +125,7 @@ int SSLServerSocket::socket() const
     }
 }
 
-QHostAddress SSLServerSocket::address() const
+QHostAddress ServerSocket::address() const
 {
     if(sd==0)
     {
@@ -133,7 +135,7 @@ QHostAddress SSLServerSocket::address() const
     }
 }
 
-void SSLServerSocket::setSocket(int sock)
+void ServerSocket::setSocket(int sock)
 {
     if(sd!=0) { delete sd; sd=0; }
     if(sn!=0) { delete sn; sn=0; }
@@ -144,7 +146,7 @@ void SSLServerSocket::setSocket(int sock)
     connect(sn, SIGNAL(activated(int)), SLOT(incomingConnection(int)));
 }
 
-QSocketDevice *SSLServerSocket::socketDevice()
+QSocketDevice *ServerSocket::socketDevice()
 {
     return sd; // might be zero!
 }
