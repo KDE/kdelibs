@@ -18,7 +18,6 @@
 #ifndef KLISTBOX_H
 #define KLISTBOX_H
 
-#include <qcursor.h>
 #include <qlistbox.h>
 
 /**
@@ -121,7 +120,6 @@ protected:
    */
   virtual void contentsMouseDoubleClickEvent ( QMouseEvent *e );
 
-  QCursor oldCursor;
   bool m_bUseSingle;
   bool m_bChangeCursorOverItem;
 

@@ -55,7 +55,6 @@ KIconView::KIconView( QWidget *parent, const char *name, WFlags f )
 {
     d = new KIconViewPrivate;
 
-    oldCursor = viewport()->cursor();
     connect( this, SIGNAL( onViewport() ),
              this, SLOT( slotOnViewport() ) );
     connect( this, SIGNAL( onItem( QIconViewItem * ) ),
@@ -102,7 +101,7 @@ void KIconView::slotOnItem( QIconViewItem *item )
 void KIconView::slotOnViewport()
 {
     if ( m_bChangeCursorOverItem )
-        viewport()->setCursor( oldCursor );
+        viewport()->unsetCursor();
 
     m_pAutoSelect->stop();
     m_pCurrentItem = 0L;
@@ -141,7 +140,7 @@ void KIconView::slotSettingsChanged(int category)
     m_autoSelectDelay = m_bUseSingle ? KGlobalSettings::autoSelectDelay() : -1;
 
     if( !m_bUseSingle || !m_bChangeCursorOverItem )
-        viewport()->setCursor( oldCursor );
+        viewport()->unsetCursor();
 }
 
 void KIconView::slotAutoSelect()

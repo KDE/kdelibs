@@ -32,7 +32,6 @@
 KListBox::KListBox( QWidget *parent, const char *name, WFlags f )
     : QListBox( parent, name, f )
 {
-    oldCursor = viewport()->cursor();
     connect( this, SIGNAL( onViewport() ),
 	     this, SLOT( slotOnViewport() ) );
     connect( this, SIGNAL( onItem( QListBoxItem * ) ),
@@ -65,7 +64,7 @@ void KListBox::slotOnItem( QListBoxItem *item )
 void KListBox::slotOnViewport()
 {
     if ( m_bChangeCursorOverItem )
-        viewport()->setCursor( oldCursor );
+        viewport()->unsetCursor();
 
     m_pAutoSelect->stop();
     m_pCurrentItem = 0L;
@@ -106,7 +105,7 @@ void KListBox::slotSettingsChanged(int category)
     m_autoSelectDelay = KGlobalSettings::autoSelectDelay();
 
     if( !m_bUseSingle || !m_bChangeCursorOverItem )
-	viewport()->setCursor( oldCursor );
+        viewport()->unsetCursor();
 }
 
 void KListBox::slotAutoSelect()

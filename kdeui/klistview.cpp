@@ -76,7 +76,6 @@ class KListView::KListViewPrivate
 public:
   KListViewPrivate (KListView* listview)
     : pCurrentItem (0L),
-      oldCursor (listview->viewport()->cursor()),
       dragDelay (KGlobalSettings::dndEventDelay()),
       editor (new KListViewLineEdit (listview)),
       itemsMovable (true),
@@ -113,8 +112,6 @@ public:
 
   QTimer autoSelect;
   int autoSelectDelay;
-
-  QCursor oldCursor;
 
   QPoint startDragPos;
   int dragDelay;
@@ -350,7 +347,7 @@ void KListView::slotOnItem( QListViewItem *item )
 void KListView::slotOnViewport()
 {
   if ( d->bChangeCursorOverItem )
-    viewport()->setCursor( d->oldCursor );
+    viewport()->unsetCursor();
 
   d->autoSelect.stop();
   d->pCurrentItem = 0L;
@@ -375,7 +372,7 @@ void KListView::slotSettingsChanged(int category)
     d->autoSelectDelay = KGlobalSettings::autoSelectDelay();
 
     if( !d->bUseSingle || !d->bChangeCursorOverItem )
-       viewport()->setCursor( d->oldCursor );
+       viewport()->unsetCursor();
 
     break;
 
@@ -652,7 +649,7 @@ void KListView::contentsMouseMoveEvent( QMouseEvent *e )
           if( d->cursorInExecuteArea ) //cursor moved in execute area
             viewport()->setCursor( KCursor::handCursor() );
           else //cursor moved out of execute area
-            viewport()->setCursor( d->oldCursor );
+            viewport()->unsetCursor();
         }
     }
 

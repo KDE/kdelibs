@@ -134,7 +134,6 @@ protected:
   virtual void contentsMouseDoubleClickEvent ( QMouseEvent * e );
   virtual void contentsMouseReleaseEvent( QMouseEvent *e );
 
-  QCursor oldCursor;
   bool m_bUseSingle;
   bool m_bChangeCursorOverItem;
 
