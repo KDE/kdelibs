@@ -866,7 +866,7 @@ public:
     bool matchNameFamily( QString *ffamily )
     {
 	bool matched = false;
-	if ( yyTok == Tok_Symbol || ( yyTok = Tok_String && !strictParsing ) ) {
+	if ( yyTok == Tok_Symbol || ( yyTok == Tok_String && !strictParsing ) ) {
 	    // accept quoted "serif" only in non strict mode.
 	    *ffamily = yyStr;
 	    // unquoted courier new should return courier new
