@@ -39,29 +39,24 @@
 class KIconThemeNode
 {
 public:
-    KIconThemeNode(KIconTheme *theme) {
+
+    KIconThemeNode(KIconTheme *_theme) {
       links.setAutoDelete(true);
-      myTheme = theme;
+      theme = _theme;
     }
+    KIconTheme *theme;
 
     void queryIcons(QStringList *lst, int size, int context) const;
-    void addIconTheme();
     KIcon findIcon(const QString& name, int size, int match) const;
     void printThemeTree(QString& dbgString) const;
-    KIconTheme *theme() const { return myTheme; }
-    void appendNode(KIconThemeNode *node) {
-	links.append(node);
-    }
 
-private:
-    KIconTheme *myTheme;
     QList<KIconThemeNode> links;
 };
 
 void KIconThemeNode::printThemeTree(QString& dbgString) const
 {
     dbgString += "(";
-    dbgString += myTheme->name();
+    dbgString += theme->name();
     bool first;
     QListIterator<KIconThemeNode> it(links);
     for (first=true ; it.current(); ++it, first=false)
@@ -76,33 +71,17 @@ void KIconThemeNode::printThemeTree(QString& dbgString) const
 void KIconThemeNode::queryIcons(QStringList *result, int size, int context) const
 {
     // add the icons of this theme to it
-    *result += myTheme->queryIcons(size, context);
+    *result += theme->queryIcons(size, context);
     QListIterator<KIconThemeNode> it(links);
     for (; it.current(); ++it) // recursivly going down
 	it.current()->queryIcons(result, size, context);
-}
-
-void KIconThemeNode::addIconTheme()
-{
-    QStringList lst = myTheme->inherits();
-    QStringList::ConstIterator it;
-    static QStringList mThemeList = KIconTheme::list();
-    for (it=lst.begin(); it!=lst.end(); it++)
-    {
-      if (!mThemeList.contains(*it)) // || mThemesInTree->contains(*it))
-	    continue;
-        KIconThemeNode *n = new KIconThemeNode(new KIconTheme(*it));
-	// mThemesInTree->append(*it);
-	n->addIconTheme();
-	links.append(n);
-    }
 }
 
 KIcon KIconThemeNode::findIcon(const QString& name, int size,
 			       int match) const
 {
     KIcon icon;
-    icon = myTheme->iconPath(name, size, match);
+    icon = theme->iconPath(name, size, match);
     if (icon.isValid())
       return icon;
     QListIterator <KIconThemeNode> it(links);
@@ -129,7 +108,7 @@ struct KIconGroup
  */
 struct KIconLoaderPrivate
 {
-    QStringList mThemeList;
+    QStringList mThemeList, mThemesInTree;
     KIconGroup *mpGroups;
     KIconThemeNode *mpThemeRoot;
     KStandardDirs *mpDirs;
@@ -159,7 +138,7 @@ KIconLoader::KIconLoader(const QString& _appname)
     d->mpThemeRoot = new KIconThemeNode(new KIconTheme(KIconTheme::current()));
 
     // Add global themes to the theme tree.
-    d->mpThemeRoot->addIconTheme();
+    addIconTheme(d->mpThemeRoot);
 
     // this are the (absolute) dirs we're going to look at when we get an unthemed icon
     // we're looking into everything else first though
@@ -193,7 +172,7 @@ KIconLoader::KIconLoader(const QString& _appname)
 	}
       }
       if (!d->mpGroups[i].size) // no config set
-	  d->mpGroups[i].size = d->mpThemeRoot->theme()->defaultSize(i);
+	  d->mpGroups[i].size = d->mpThemeRoot->theme->defaultSize(i);
 
     }
 
@@ -253,14 +232,30 @@ void KIconLoader::addAppThemes(const QString& appname)
     } else
 	if (node) {
 	    KIconThemeNode *tmp = new KIconThemeNode(theme);
-	    node->appendNode(tmp);
+	    node->links.append(tmp);
 	} else {
 	  node = new KIconThemeNode(theme);
 	}
 
     if (node) {
-      node->appendNode(d->mpThemeRoot);
+      node->links.append(d->mpThemeRoot);
       d->mpThemeRoot = node;
+    }
+}
+
+void KIconLoader::addIconTheme(KIconThemeNode *node)
+{
+    QStringList lst = node->theme->inherits();
+    QStringList::ConstIterator it;
+    static QStringList mThemeList = KIconTheme::list();
+    for (it=lst.begin(); it!=lst.end(); it++)
+    {
+      if (!mThemeList.contains(*it) || d->mThemesInTree.contains(*it))
+	    continue;
+        KIconThemeNode *n = new KIconThemeNode(new KIconTheme(*it));
+	d->mThemesInTree.append(*it);
+	addIconTheme(n);
+	node->links.append(n);
     }
 }
 
@@ -530,7 +525,7 @@ QStringList KIconLoader::loadAnimated(const QString& name, int group, int size) 
 
 KIconTheme *KIconLoader::theme()
 {
-    return d->mpThemeRoot->theme();
+    return d->mpThemeRoot->theme;
 }
 
 int KIconLoader::currentSize(int group)

@@ -146,9 +146,27 @@ public:
      */
     KIconTheme *theme();
 
-private:
+ private:
+    /**
+     * @internal
+     * tries to find an icon with the name. It tries some extension and
+     * match strategies
+     */
     KIcon findMatchingIcon(const QString& name, int size) const;
+
+    /**
+     * @internal
+     * adds themes installed in the application's directory. Only locolor
+     * and hicolor are currently supported to be installed in kde_datadir
+     **/
     void addAppThemes(const QString& appname);
+
+    /**
+     * adds all themes that are part of this node and the themes
+     * below (the fallbacks of the theme) in the tree.
+     * @internal
+     */
+    void addIconTheme(KIconThemeNode *node);
 
     // @internal the data object
     KIconLoaderPrivate *d;
