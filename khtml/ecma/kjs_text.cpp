@@ -35,7 +35,7 @@ KJSO DOMCharacterData::tryGet(const UString &p) const
 {
   DOM::CharacterData data = static_cast<DOM::CharacterData>(node);
   if (p == "data")
-    return getString(data.data());
+    return String(data.data());
   else if (p == "length")
     return Number(data.length());
   else if (p == "substringData")

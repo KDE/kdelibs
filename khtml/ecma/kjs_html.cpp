@@ -71,6 +71,9 @@ KJSO KJS::HTMLDocFunction::tryGet(const UString &p) const
   case Anchors:
     coll = doc.anchors();
     break;
+  case All:  // IE specific, not part of the DOM
+    coll = doc.all();
+    break;
   default:
     return Undefined();
   }
@@ -177,6 +180,8 @@ KJSO KJS::HTMLDocument::tryGet(const UString &p) const
     return new HTMLDocFunction(doc, HTMLDocFunction::Forms);
   else if (p == "anchors")
     return new HTMLDocFunction(doc, HTMLDocFunction::Anchors);
+  else if (p == "all")
+    return new HTMLDocFunction(doc, HTMLDocFunction::All);
   else if (p == "cookie")
     return getString(doc.cookie());
   else if (p == "open")

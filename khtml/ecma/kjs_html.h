@@ -40,7 +40,7 @@ namespace KJS {
     HTMLDocFunction(DOM::HTMLDocument d, int i) : doc(d), id(i) { };
     virtual KJSO tryGet(const UString &p) const;
     Completion tryExecute(const List &);
-    enum { Images, Applets, Links, Forms, Anchors, Open, Close,
+    enum { Images, Applets, Links, Forms, Anchors, All, Open, Close,
 	   Write, WriteLn, GetElementById, GetElementsByName };
   private:
     DOM::HTMLDocument doc;
