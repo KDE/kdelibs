@@ -129,6 +129,9 @@ namespace khtml {
 
             delete this;
         }
+        virtual void error( int, const QString& ) {
+          delete this;
+        }
         QGuardedPtr<KHTMLPart> m_part;
         khtml::CachedCSSStyleSheet *m_cachedSheet;
     };
@@ -864,7 +867,7 @@ QVariant KHTMLPart::crossFrameExecuteScript(const QString& target,  const QStrin
 
   // easy way out?
   if (destpart == this)
-    return executeScript(script);
+    return executeScript(DOM::Node(), script);
 
 
   // now compare the domains
@@ -874,12 +877,12 @@ QVariant KHTMLPart::crossFrameExecuteScript(const QString& target,  const QStrin
     DOM::DOMString destDomain = destpart->htmlDocument().domain();
 
     if (actDomain == destDomain)
-      return destpart->executeScript(script);
+      return destpart->executeScript(DOM::Node(), script);
   }
 
 
   // eww, something went wrong. better execute it in our frame
-  return executeScript(script);
+  return executeScript(DOM::Node(), script);
 }
 
 //Enable this to see all JS scripts being executed
@@ -1942,7 +1945,7 @@ void KHTMLPart::slotRedirect()
   {
     QString script = KURL::decode_string( u.right( u.length() - 11 ) );
     kdDebug( 6050 ) << "KHTMLPart::slotRedirect script=" << script << endl;
-    QVariant res = executeScript( script );
+    QVariant res = executeScript( DOM::Node(), script );
     if ( res.type() == QVariant::String ) {
       begin( url() );
       write( res.asString() );
@@ -4109,7 +4112,7 @@ void KHTMLPart::slotChildURLRequest( const KURL &url, const KParts::URLArgs &arg
   QString urlStr = url.url();
   if ( urlStr.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 ) {
       QString script = KURL::decode_string( urlStr.right( urlStr.length() - 11 ) );
-      executeScript( script );
+      executeScript( DOM::Node(), script );
       return;
   }
 
