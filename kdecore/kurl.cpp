@@ -1134,9 +1134,12 @@ QString KURL::url( int _trailing, int encoding_hint ) const
   }
 
   QString u = m_strProtocol;
+  if (!u.isEmpty())
+     u += ":";
+
   if ( hasHost() )
   {
-    u += "://";
+    u += "//";
     if ( hasUser() )
     {
       u += encode(m_strUser, true, encoding_hint);
@@ -1158,8 +1161,6 @@ QString KURL::url( int _trailing, int encoding_hint ) const
       u += buffer;
     }
   }
-  else
-    u += ":";
 
   u += encodedPathAndQuery( _trailing, false, encoding_hint );
 
@@ -1183,9 +1184,12 @@ QString KURL::prettyURL( int _trailing ) const
   }
 
   QString u = m_strProtocol;
+  if (!u.isEmpty())
+     u += ":";
+
   if ( hasHost() )
   {
-    u += "://";
+    u += "//";
     if ( hasUser() )
     {
       u += lazy_encode(m_strUser);
@@ -1202,10 +1206,6 @@ QString KURL::prettyURL( int _trailing ) const
       buffer.sprintf( ":%u", m_iPort );
       u += buffer;
     }
-  }
-  else
-  {
-    u += ":";
   }
 
   u += trailingSlash( _trailing, lazy_encode( m_strPath ) );
