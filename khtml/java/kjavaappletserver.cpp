@@ -43,7 +43,7 @@ KJavaAppletServer::KJavaAppletServer()
    process = new KJavaProcess();
    CHECK_PTR( process );
    connect( process, SIGNAL(received(const QByteArray&)),
-            this, SLOT(received(const QByteArray&)) );
+            this,    SLOT(received(const QByteArray&)) );
 
    setupJava( process );
 
@@ -52,6 +52,8 @@ KJavaAppletServer::KJavaAppletServer()
 
 KJavaAppletServer::~KJavaAppletServer()
 {
+    kdDebug() << "KJavaAppletServer::~KJavaAppletServer" << endl;
+
     self->quit();
 
     delete process;
@@ -79,7 +81,13 @@ void KJavaAppletServer::freeJavaServer()
         //instead of immediately quitting here, set a timer to kill us
         //if there are still no servers- give us one minute
         //this is to prevent repeated loading and unloading of the jvm
-        QTimer::singleShot( 60*1000, self, SLOT( checkShutdown() ) );
+//        QTimer::singleShot( 10*1000, self, SLOT( checkShutdown() ) );
+
+
+        //the shutdown timer introduces problems with some jre's- find
+        //a better solution
+        delete self;
+        self = 0;
     }
 }
 
