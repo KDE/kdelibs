@@ -61,6 +61,7 @@ enum BoxType {
   MORE = '>',
   LESS = '<',
   ABS = '|',
+  BRACKET = '[',
   SLASH = '/',
   MATRIX = 'm' + UNUSED_OFFSET,
   SEPARATOR = '&' + UNUSED_OFFSET, // separator for matrices

@@ -70,7 +70,10 @@ KFormulaEdit::KFormulaEdit(QWidget * parent, const char *name,
   textSelected = 0;
   undo.setAutoDelete(TRUE); //delete strings as soon as we're done with 'em
   redo.setAutoDelete(TRUE);
-  setFont(QFont("charter", DEFAULT_FONT_SIZE)); //just default
+
+  QFont f("charter", DEFAULT_FONT_SIZE);
+
+  setFont(f); //just default
   clipText.sprintf("");
 
   formText.sprintf("");
@@ -1183,8 +1186,8 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
   //remove the selection and insert what the user types and
   //perhaps some curly braces
   if(!(e->state() & (ControlButton | AltButton))  && e->ascii() >= 32 &&
-     !strchr("{})#", e->ascii())) {
-    // the {})# are chars that can't be typed
+     !strchr("{})]#", e->ascii())) {
+    // the {}])# are chars that can't be typed
 
     insertChar(QChar(e->ascii()));
 

@@ -52,6 +52,7 @@ void KFormula::initStrings(void)
   *SPECIAL += (QChar(POWER));
   *SPECIAL += (QChar(SQRT));
   *SPECIAL += (QChar(ABS));
+  *SPECIAL += (QChar(BRACKET));
   *SPECIAL += (QChar(SUB));
   *SPECIAL += (QChar(LSUB));
   *SPECIAL += (QChar(LSUP));
@@ -85,6 +86,7 @@ void KFormula::initStrings(void)
 
   *DELIM += (QChar(ABS));
   *DELIM += (QChar(PAREN));
+  *DELIM += (QChar(BRACKET));
 
   *BIGOP += (QChar(INTEGRAL));
   *BIGOP += (QChar(SUM));

@@ -350,18 +350,6 @@ void box::calculate(QPainter &p, int setFontsize)
 
       break;      
 
-      //just like power only upside down
-      /*    case SUB:
-      b1->calculate(p, fontsize);
-      b2->calculate(p, fontsize * 3 / 4);
-      rect = b1->getRect();
-      tmp1 = b2->getRect();
-      b2x += -tmp1.left() + rect.right() + SPACE;
-      b2y += rect.bottom() - tmp1.top() - QMIN(SPACE, rect.height() / 3);
-      tmp1.moveBy(b2x, b2y);
-      rect = rect.unite(tmp1);
-      break;      */
-
     case ABOVE: // the smaller one above the normal one
       b1->calculate(p, fontsize);
       b2->calculate(p, fontsize * 3 / 4);
@@ -421,6 +409,24 @@ void box::calculate(QPainter &p, int setFontsize)
     case ABS:
       b2->calculate(p, fontsize);
       rect = b2->getRect();
+      rect.setRect(rect.x(), QMIN(rect.top(), -rect.bottom()),
+		   rect.width(), QMAX(-rect.top(), rect.bottom()) * 2);
+      b2x += SPACE + 2;
+      rect.setRect(rect.x(), rect.y() - b2x,
+		   rect.width() + b2x * 2, rect.height() + b2x * 2);
+
+      break;
+
+    case BRACKET:
+      b2->calculate(p, fontsize);
+      rect = b2->getRect();
+      if(rect.width() < SPACE * 2 + 2) {
+	QPoint c = rect.center();
+
+	rect.setWidth(SPACE * 2 + 2);
+	rect.moveCenter(c);
+      }
+	
       rect.setRect(rect.x(), QMIN(rect.top(), -rect.bottom()),
 		   rect.width(), QMAX(-rect.top(), rect.bottom()) * 2);
       b2x += SPACE + 2;
@@ -614,6 +620,33 @@ void box::draw(QPainter &p, int x, int y)
 
     p.drawLine(rect.right() + x - 2, rect.top() + y,
 	       rect.right() + x - 2, rect.bottom() + y);
+
+    p.setPen(QPen());
+    break;
+
+  case BRACKET:
+    if(fontsize >= (DEFAULT_FONT_SIZE + MIN_FONT_SIZE) / 2)
+      { p.setPen(QPen(Qt::black, 2)); i = 1; }
+    else
+      { p.setPen(QPen(Qt::black, 1)); i = 0; }
+
+    //i is whether to offset the top line one pixel lower
+
+    p.drawLine(rect.left() + x + 2, rect.top() + y,
+	       rect.left() + x + 2, rect.bottom() + y);
+
+    p.drawLine(rect.left() + x + 2 + SPACE + 1, rect.top() + y + i,
+	       rect.left() + x + 2, rect.top() + y + i);
+    p.drawLine(rect.left() + x + 2 + SPACE + 1, rect.bottom() + y - 1,
+	       rect.left() + x + 2, rect.bottom() + y - 1);
+
+    p.drawLine(rect.right() + x - 2, rect.top() + y,
+	       rect.right() + x - 2, rect.bottom() + y);
+
+    p.drawLine(rect.right() + x - 2 - SPACE - 1, rect.top() + y + i,
+	       rect.right() + x - 2, rect.top() + y + i);
+    p.drawLine(rect.right() + x - 2 - SPACE - 1, rect.bottom() + y - 1,
+	       rect.right() + x - 2, rect.bottom() + y - 1);
 
     p.setPen(QPen());
     break;
