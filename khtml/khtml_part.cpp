@@ -409,7 +409,8 @@ bool KHTMLPart::openURL( const KURL &url )
            SLOT( slotFinished( KIO::Job * ) ) );
   connect( d->m_job, SIGNAL( data( KIO::Job*, const QByteArray &)),
            SLOT( slotData( KIO::Job*, const QByteArray &)));
-
+  connect ( d->m_job, SIGNAL( infoMessage( KIO::Job*,  const QString& ) ),
+            SLOT( slotInfoMessage(KIO::Job*, const QString& ) ) );
   connect( d->m_job, SIGNAL(redirection(KIO::Job*, const KURL&) ),
            SLOT( slotRedirection(KIO::Job*,const KURL&) ) );
 
@@ -418,10 +419,7 @@ bool KHTMLPart::openURL( const KURL &url )
 
   // delete old status bar msg's from kjs (if it _was_ activated on last URL)
   if( d->m_bJScriptEnabled )
-  {
-     d->m_kjsStatusBarText = QString::null;
-     d->m_kjsDefaultStatusBarText = QString::null;
-  }
+    d->m_statusBarText[BarOverrideText] = d->m_statusBarText[BarDefaultText] = QString::null;
 
   // set the javascript flags according to the current url
   d->m_bJScriptEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptEnabled(url.host());
@@ -448,6 +446,7 @@ bool KHTMLPart::openURL( const KURL &url )
   connect( d->m_job, SIGNAL( percent( KIO::Job*, unsigned long ) ),
            this, SLOT( slotJobPercent( KIO::Job*, unsigned long ) ) );
 
+  d->m_jobspeed = 0;
   emit started( 0L );
 
   return true;
@@ -949,10 +948,13 @@ DOM::DocumentImpl *KHTMLPart::xmlDocImpl() const
     return 0;
 }
 
-/*bool KHTMLPart::isSSLInUse() const
+void KHTMLPart::slotInfoMessage(KIO::Job* kio_job, const QString& msg)
 {
-  return d->m_ssl_in_use;
-}*/
+  assert(d->m_job == kio_job);
+
+  if (!parentPart())
+    setStatusBarText(msg, BarDefaultText);
+}
 
 void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
 {
@@ -1206,10 +1208,12 @@ void KHTMLPart::htmlError( int errorCode, const QString& text, const KURL& reqUr
 
 void KHTMLPart::slotFinished( KIO::Job * job )
 {
+  d->m_job = 0L;
+  d->m_jobspeed = 0L;
+
   if (job->error())
   {
     KHTMLPageCache::self()->cancelEntry(d->m_cacheId);
-    d->m_job = 0L;
     emit canceled( job->errorString() );
     // TODO: what else ?
     checkCompleted();
@@ -1224,7 +1228,6 @@ void KHTMLPart::slotFinished( KIO::Job * job )
       KIO::http_update_cache(m_url, false, d->m_doc->docLoader()->expireDate());
 
   d->m_workingURL = KURL();
-  d->m_job = 0L;
 
   if (d->m_doc->parsing())
     end(); //will emit completed()
@@ -1457,14 +1460,16 @@ void KHTMLPart::slotProgressUpdate()
     percent = d->m_jobPercent;
 
   if ( d->m_loadedObjects < d->m_totalObjectCount && percent >= 75 )
-    emit d->m_extension->infoMessage( i18n( "%1 of 1 Image loaded", "%1 of %n Images loaded", d->m_totalObjectCount ).arg( d->m_loadedObjects ) );
+    emit d->m_extension->infoMessage( i18n( "%1 of 1 Image loaded.", "%1 of %n Images loaded...", d->m_totalObjectCount ).arg( d->m_loadedObjects ) );
 
   emit d->m_extension->loadingProgress( percent );
 }
 
 void KHTMLPart::slotJobSpeed( KIO::Job* /*job*/, unsigned long speed )
 {
-  emit d->m_extension->speedProgress( speed );
+  d->m_jobspeed = speed;
+  if (!parentPart())
+    setStatusBarText(jsStatusBarText(), BarOverrideText);
 }
 
 void KHTMLPart::slotJobPercent( KIO::Job* /*job*/, unsigned long percent )
@@ -1548,8 +1553,7 @@ void KHTMLPart::checkCompleted()
   if (!sheets.isEmpty())
     d->m_paUseStylesheet->setCurrentItem(kMax(sheets.findIndex(d->m_sheetUsed), 0));
 
-  if (!parentPart())
-      emit setStatusBarText(i18n("Done."));
+  setJSDefaultStatusBarText(QString::null);
 
 #ifdef SPEED_DEBUG
   kdDebug(6050) << "DONE: " <<d->m_parsetime.elapsed() << endl;
@@ -1947,24 +1951,15 @@ void KHTMLPart::slotClearSelection()
 
 void KHTMLPart::overURL( const QString &url, const QString &target, bool shiftPressed )
 {
-  if ( !d->m_kjsStatusBarText.isEmpty() && !shiftPressed ) {
-    emit onURL( url );
-    emit setStatusBarText( d->m_kjsStatusBarText );
-    d->m_kjsStatusBarText = QString::null;
-    return;
-  }
-
   emit onURL( url );
 
-  if ( url.isEmpty() )
-  {
-    emit setStatusBarText(url);
+  if ( url.isEmpty() ) {
+    setStatusBarText(completeURL(url).prettyURL(), BarHoverText);
     return;
   }
 
-  if (url.find( QString::fromLatin1( "javascript:" ),0, false ) != -1 )
-  {
-    emit setStatusBarText( url.mid( url.find( "javascript:", 0, false ) ) );
+  if (url.find( QString::fromLatin1( "javascript:" ),0, false ) != -1 ) {
+    setStatusBarText( url.mid( url.find( "javascript:", 0, false ) ), BarHoverText );
     return;
   }
 
@@ -1981,9 +1976,8 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool shiftPr
   if ( typ )
     com = typ->comment( u, false );
 
-  if ( u.isMalformed() )
-  {
-    emit setStatusBarText(u.prettyURL());
+  if ( u.isMalformed() ) {
+    setStatusBarText(u.prettyURL(), BarHoverText);
     return;
   }
 
@@ -2016,7 +2010,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool shiftPr
       {
         text2 += "  ";
         text2 += tmp;
-        emit setStatusBarText(text2);
+        setStatusBarText(text2, BarHoverText);
         return;
       }
       buff_two[n] = 0;
@@ -2047,7 +2041,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool shiftPr
       text += "  ";
       text += com;
     }
-    emit setStatusBarText(text);
+    setStatusBarText(text, BarHoverText);
   }
   else
   {
@@ -2075,7 +2069,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool shiftPr
           mailtoMsg += i18n(" - CC: ") + KURL::decode_string((*it).mid(3));
         else if ((*it).startsWith(QString::fromLatin1("bcc=")))
           mailtoMsg += i18n(" - BCC: ") + KURL::decode_string((*it).mid(4));
-      emit setStatusBarText(mailtoMsg.replace(QRegExp("([\n\r\t]|[ ]{10})"), ""));
+      setStatusBarText(mailtoMsg.replace(QRegExp("([\n\r\t]|[ ]{10})"), ""), BarHoverText);
 			return;
     }
    // Is this check neccessary at all? (Frerich)
@@ -2101,7 +2095,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool shiftPr
         }
       }
 #endif
-    emit setStatusBarText(u.prettyURL() + extra);
+    setStatusBarText(u.prettyURL() + extra, BarHoverText);
   }
 }
 
@@ -2816,10 +2810,10 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
   }
 
   if (u.protocol() == "mailto") {
-     int rc = KMessageBox::warningContinueCancel(NULL, 
+     int rc = KMessageBox::warningContinueCancel(NULL,
                  i18n("This site is attempting to submit form data via email."),
-                 i18n("KDE"), 
-                 QString::null, 
+                 i18n("KDE"),
+                 QString::null,
                  "WarnTriedEmailSubmit");
 
      if (rc == KMessageBox::Cancel) {
@@ -2879,25 +2873,25 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
       QString bodyEnc;
       if (contentType.lower() == "multipart/form-data") {
          // FIXME: is this correct?  I suspect not
-         bodyEnc = KURL::encode_string(QString::fromLatin1(formData.data(), 
+         bodyEnc = KURL::encode_string(QString::fromLatin1(formData.data(),
                                                            formData.size()));
       } else if (contentType.lower() == "text/plain") {
          // Convention seems to be to decode, and s/&/\n/
-         QString tmpbody = QString::fromLatin1(formData.data(), 
+         QString tmpbody = QString::fromLatin1(formData.data(),
                                                formData.size());
          tmpbody.replace(QRegExp("[&]"), "\n");
          tmpbody.replace(QRegExp("[+]"), " ");
          tmpbody = KURL::decode_string(tmpbody);  // Decode the rest of it
          bodyEnc = KURL::encode_string(tmpbody);  // Recode for the URL
       } else {
-         bodyEnc = KURL::encode_string(QString::fromLatin1(formData.data(), 
+         bodyEnc = KURL::encode_string(QString::fromLatin1(formData.data(),
                                                            formData.size()));
       }
 
       nvps.append(QString("body=%1").arg(bodyEnc));
       q = nvps.join("&");
       u.setQuery(q);
-  } 
+  }
 
   if ( strcmp( action, "get" ) == 0 ) {
     if (u.protocol() != "mailto")
@@ -3531,26 +3525,44 @@ void KHTMLPart::setZoomFactor (int percent)
   d->m_paIncZoomFactor->setEnabled( d->m_zoomFactor < maxZoom );
 }
 
+void KHTMLPart::setStatusBarText( const QString& text, StatusBarPriority p)
+{
+  d->m_statusBarText[p] = text;
+
+  // shift handling ?
+  QString tobe = d->m_statusBarText[BarHoverText];
+  if (tobe.isEmpty())
+    tobe = d->m_statusBarText[BarOverrideText];
+  if (tobe.isEmpty()) {
+    tobe = d->m_statusBarText[BarDefaultText];
+    if (!tobe.isEmpty() && d->m_jobspeed)
+      tobe += " ";
+    if (d->m_jobspeed)
+      tobe += i18n( "(%1/s)" ).arg( KIO::convertSize( d->m_jobspeed ) );
+  }
+
+  emit ReadOnlyPart::setStatusBarText(tobe);
+}
+
+
 void KHTMLPart::setJSStatusBarText( const QString &text )
 {
-   d->m_kjsStatusBarText = text;
-   emit setStatusBarText( d->m_kjsStatusBarText );
+  setStatusBarText(text, BarOverrideText);
 }
 
 void KHTMLPart::setJSDefaultStatusBarText( const QString &text )
 {
-   d->m_kjsDefaultStatusBarText = text;
-   emit setStatusBarText( d->m_kjsDefaultStatusBarText );
+  setStatusBarText(text, BarDefaultText);
 }
 
 QString KHTMLPart::jsStatusBarText() const
 {
-    return d->m_kjsStatusBarText;
+    return d->m_statusBarText[BarOverrideText];
 }
 
 QString KHTMLPart::jsDefaultStatusBarText() const
 {
-   return d->m_kjsDefaultStatusBarText;
+   return d->m_statusBarText[BarDefaultText];
 }
 
 QString KHTMLPart::referrer() const
@@ -3842,8 +3854,8 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
       {
         d->m_overURL = d->m_overURLTarget = QString::null;
         emit onURL( QString::null );
-        // Default statusbar text can be set from javascript. Otherwise it's empty.
-        emit setStatusBarText( d->m_kjsDefaultStatusBarText );
+        // revert to default statusbar text
+        setStatusBarText(QString::null, BarHoverText);
       }
     }
   }
@@ -3918,8 +3930,10 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
   DOM::Node innerNode = event->innerNode();
   d->m_mousePressNode = DOM::Node();
 
-  if ( d->m_bMousePressed )
+  if ( d->m_bMousePressed ) {
+    setStatusBarText(QString::null, BarHoverText);
     stopAutoScroll();
+  }
 
   // Used to prevent mouseMoveEvent from initiating a drag before
   // the mouse is pressed again.

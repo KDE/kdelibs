@@ -171,6 +171,7 @@ public:
     m_openedByJS = false;
     m_newJSInterpreterExists = false;
     m_dcopobject = 0;
+    m_jobspeed = 0;
     m_dcop_counter = ++khtml_part_dcop_counter;
   }
   ~KHTMLPartPrivate()
@@ -227,8 +228,8 @@ public:
 
   KIO::TransferJob * m_job;
 
-  QString m_kjsStatusBarText;
-  QString m_kjsDefaultStatusBarText;
+  QString m_statusBarText[3];
+  unsigned long m_jobspeed;
   QString m_lastModified;
   QString m_httpHeaders;
 

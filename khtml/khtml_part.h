@@ -830,6 +830,10 @@ private slots:
    */
   void slotData( KIO::Job*, const QByteArray &data );
   /**
+  * @internal
+  */
+  void slotInfoMessage( KIO::Job*, const QString& msg );
+  /**
    * @internal
    */
   void slotRestoreData( const QByteArray &data );
@@ -982,6 +986,8 @@ private slots:
 
 private:
 
+  enum StatusBarPriority { BarDefaultText, BarHoverText, BarOverrideText };
+  void setStatusBarText( const QString& text, StatusBarPriority p);
 
   /**
    * @internal
