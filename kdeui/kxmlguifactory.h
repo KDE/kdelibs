@@ -171,11 +171,6 @@ class KXMLGUIFactory : public QObject
   void configureAction( KAction *action, const QDomNamedNodeMap &attributes );
   void configureAction( KAction *action, const QDomAttr &attribute );
 
-//  KXMLGUIClient *m_client;
-//  KXMLGUIBuilder *m_builder;
-  void *dummy1; // remove next Friday
-  void *dummy2; 
-
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
