@@ -333,11 +333,11 @@ public:
      * @param saveWindowSize set it to true to include the window size
      * when saving.
      *
-     * Typically, you will call setAutoSaveSettings( QString::null, true );
-     * in your KMainWindow-inherited class constructor, and it will take care
+     * Typically, you will call setAutoSaveSettings() in your
+     * KMainWindow-inherited class constructor, and it will take care
      * of restoring and saving automatically.
      */
-    void setAutoSaveSettings( const QString & groupName, bool saveWindowSize );
+    void setAutoSaveSettings( const QString & groupName = QString::null, bool saveWindowSize = true );
 
     /**
      * Disable the auto-save-settings feature.
