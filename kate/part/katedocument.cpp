@@ -240,6 +240,12 @@ KateDocument::KateDocument ( bool bSingleViewMode, bool bBrowserView,
 //
 KateDocument::~KateDocument()
 {
+  //
+  // remove file from dirwatch
+  //
+  if (m_url.isLocalFile() && !m_file.isEmpty())
+    KateFactory::self()->dirWatch ()->removeFile (m_file);
+
   if (!singleViewMode())
   {
     // clean up remaining views
@@ -2601,7 +2607,7 @@ bool KateDocument::closeURL()
   //
   if (!KParts::ReadWritePart::closeURL ())
     return false;
-
+  
   //
   // remove file from dirwatch
   //
@@ -4040,11 +4046,20 @@ void KateDocument::reloadFile()
       else if (m_modOnHdReason == 3)
         str = i18n("The file %1 was changed (deleted) on disc by another program!\n\n").arg(url().fileName());
 
-      if (!(KMessageBox::warningYesNo(0,
-               str + i18n("Do you really want to reload the modified file? Data loss may occur.")) == KMessageBox::Yes))
+      int i = KMessageBox::warningYesNoCancel
+                (0, str + i18n("Do you really want to reload the modified file? Data loss may occur."));
+      if ( i != KMessageBox::Yes)
+      {
+        if (i == KMessageBox::No)     
+        {
+          m_modOnHd = false;
+          m_modOnHdReason = 0;
+          emit modifiedOnDisc (this, m_modOnHd, 0);
+        }
+        
         return;
+      }
     }
-
     QValueList<KateDocumentTmpMark> tmp;
 
     for( QIntDictIterator<KTextEditor::Mark> it( m_marks ); it.current(); ++it )
