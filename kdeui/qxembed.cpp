@@ -399,7 +399,7 @@ QXEmbed::QXEmbed(QWidget *parent, const char *name, WFlags f)
 {
     d = new QXEmbedData;
     d->focusProxy = new QWidget( this, "xembed_focus" );
-    d->focusProxy->setGeometry( 0, 0, 1, 1 );
+    d->focusProxy->setGeometry( -1, -1, 1, 1 );
     initialize();
     window = 0;
     setFocusPolicy(StrongFocus);
