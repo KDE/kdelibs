@@ -2580,16 +2580,6 @@ unsigned int CSSSelector::specificity()
     return s & 0xffffff;
 }
 
-int CSSSelector::sortId() const
-{
-    CSSSelector *history = this;
-    while ( history ) {
-	if ( history->match == Pseudo )
-	    return -1;
-    }
-    return tag;
-}
-
 // ----------------------------------------------------------------------------
 
 CSSProperty::~CSSProperty()
