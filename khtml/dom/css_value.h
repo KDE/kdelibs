@@ -605,6 +605,10 @@ public:
      */
     CSSPrimitiveValue blue() const;
 
+    /**
+     * @internal
+     */
+    QRgb color() const { return m_color; }
 protected:
     QRgb m_color;
 };
