@@ -24,6 +24,8 @@
 #ifndef HTMLOBJ_H
 #define HTMLOBJ_H
 
+#include <stdio.h>
+
 #include <qpainter.h>
 #include <qlist.h>
 #include <qstrlist.h>

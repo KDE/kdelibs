@@ -33,6 +33,7 @@
 #include <string.h>
 #include <strings.h>
 
+#include <qfile.h>
 #include <qimage.h>
 #include <qdrawutl.h>
 #include <qmovie.h>
