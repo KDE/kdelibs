@@ -23,8 +23,6 @@
 #include <qpixmap.h>
 
 #include <assert.h>
-#include <kconfig.h>
-#include <kglobal.h>
 #include <kiconloader.h>
 #include <kdebug.h>
 
@@ -155,8 +153,7 @@ QString KGuiItem::plainText() const {
 
 QIconSet KGuiItem::iconSet() const
 {
-    //KConfigGroup cg ( KGlobal::config(), "KDE" );
-    if( d->m_hasIcon /*&& cg.readBoolEntry( "showIcons", true )*/ )
+    if( d->m_hasIcon )
     {
         if( !d->m_iconLoaded )
         {
