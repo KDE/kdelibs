@@ -96,14 +96,15 @@ int PTY::getpt()
     return ptyfd;
 
 #elif defined(HAVE_OPENPTY)
-
     // 2: BSD interface
+    // More prefered than the linux hacks
+    char name[10];
     int master_fd, slave_fd;
-    if (openpty(&master_fd, &slave_fd, 0L, 0L, 0L) != -1) 
-    {
-	ptyname = ::ttyname(master_fd);
-	ttyname = ::ttyname(slave_fd);
-	close(slave_fd); // We don't need this yet
+    if (openpty(&master_fd, &slave_fd, name, 0L, 0L) != -1)  {
+	ttyname = name;
+	name[5]='p';
+	ptyname = name;
+	//close(slave_fd); // We don't need this yet // Yes, we do.
 	ptyfd = master_fd;
 	return ptyfd;
     }
@@ -114,16 +115,14 @@ int PTY::getpt()
     // 3.1: Try /dev/ptmx first. (Linux w/ Unix98 PTYs, Solaris)
 
     ptyfd = open("/dev/ptmx", O_RDWR);
-    if (ptyfd >= 0)
-    {
+    if (ptyfd >= 0) {
 	ptyname = "/dev/ptmx";
 #ifdef HAVE_PTSNAME
 	ttyname = ::ptsname(ptyfd);
 	return ptyfd;
 #elif defined (TIOCGPTN)
 	int ptyno;
-	if (ioctl(ptyfd, TIOCGPTN, &ptyno) == 0)
-	{
+	if (ioctl(ptyfd, TIOCGPTN, &ptyno) == 0) {
 	    ttyname.sprintf("/dev/pts/%d", ptyno);
 	    return ptyfd;
 	}
