@@ -30,6 +30,8 @@ KFileSimpleView::KFileSimpleView(bool s, QDir::SortSpec sorting,
     : QTableView(parent, name), KFileInfoContents(s,sorting), cellWidths(0)
 {
     QWidget::setFocusPolicy(QWidget::StrongFocus);
+    setLineWidth( 2 );
+    setFrameStyle( Panel | Sunken );
     setNumCols(1);
     setNumRows(1);
     rowsVisible = 1;
