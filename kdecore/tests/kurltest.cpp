@@ -514,6 +514,12 @@ int main(int argc, char *argv[])
   check("queryItem (invalid item)", theKow.queryItem("InterstellarCounselor"), QString::null);
   check("queryItem (empty item)", theKow.queryItem("empty"), "");
 
+  KURL umlaut1("http://www.clever-tanken.de/liste.asp?ort=N%FCrnberg&typ=Diesel");
+  check("umlaut1.url()", umlaut1.url(), "http://www.clever-tanken.de/liste.asp?ort=N%FCrnberg&typ=Diesel");
+
+  KURL umlaut2("http://www.clever-tanken.de/liste.asp?ort=N%FCrnberg&typ=Diesel", 106);
+  check("umlaut2.url()", umlaut2.url(), "http://www.clever-tanken.de/liste.asp?ort=N%FCrnberg&typ=Diesel");
+
   printf("\nTest OK !\n");
 }
 
