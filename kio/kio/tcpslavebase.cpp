@@ -343,7 +343,10 @@ bool TCPSlaveBase::connectToHost( const QString &host,
 
     // store the IP for later
     const KSocketAddress *sa = ks.peerAddress();
-    d->ip = sa->nodeName();
+    if (sa)
+      d->ip = sa->nodeName();
+    else
+      d->ip = "";
 
     ks.release(); // KExtendedSocket no longer applicable
 
