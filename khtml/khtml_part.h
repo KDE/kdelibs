@@ -42,6 +42,7 @@ namespace DOM
   class HTMLDocument;
   class HTMLDocumentImpl;
   class HTMLTitleElementImpl;
+  class HTMLElementImpl;
   class HTMLFrameElementImpl;
   class HTMLIFrameElementImpl;
   class HTMLObjectElementImpl;
@@ -122,6 +123,7 @@ class KHTMLPart : public KParts::ReadOnlyPart
   friend class DOM::HTMLFrameElementImpl;
   friend class DOM::HTMLIFrameElementImpl;
   friend class DOM::HTMLObjectElementImpl;
+  friend class DOM::HTMLElementImpl;
   friend class KHTMLRun;
   friend class DOM::HTMLFormElementImpl;
   friend class khtml::RenderPartObject;
@@ -713,6 +715,9 @@ private:
 
   void clear();
 
+    bool scheduleScript( const QString &script );
+    bool executeScheduledScript();
+    
   /**
    * @internal
    */

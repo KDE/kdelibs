@@ -351,6 +351,9 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     long offset=0;
     m_part->docImpl()->mouseEvent( xm, ym, _mouse->stateAfter(), DOM::NodeImpl::MouseMove, 0, 0, url, innerNode, offset );
 
+    // execute the scheduled script. This is to make sure the mouseover events come after the mouseout events
+    m_part->executeScheduledScript();
+    
     d->underMouse = innerNode;
 
     QCursor c = KCursor::arrowCursor();

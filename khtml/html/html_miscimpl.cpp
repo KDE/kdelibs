@@ -347,10 +347,11 @@ NodeImpl *HTMLCollectionImpl::getNamedItem( NodeImpl *current, int attr_id,
 		break;
 	    default:
 		kdDebug( 6030 ) << "Error in HTMLCollection, wrong tagId!" << endl;
+		break;
 	    }
 	    if(check && e->getAttribute(attr_id) == name)
 	    {
-		kdDebug( 6030 ) << "found node: " << e << " " << current << " " << e->id() << endl;
+		//kdDebug( 6030 ) << "found node: " << e << " " << current << " " << e->id() << endl;
 		return current;
 	    }
 	    NodeImpl *retval = 0;
@@ -358,7 +359,7 @@ NodeImpl *HTMLCollectionImpl::getNamedItem( NodeImpl *current, int attr_id,
 		retval = getNamedItem(current->firstChild(), attr_id, name);
 	    if(retval)
 	    {	
-		kdDebug( 6030 ) << "got a return value " << retval << endl;
+		//kdDebug( 6030 ) << "got a return value " << retval << endl;
 		return retval;
 	    }
 	}

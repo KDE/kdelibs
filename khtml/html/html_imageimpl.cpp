@@ -255,11 +255,7 @@ HTMLMapElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
 	    //cout << "area found " << endl;
 	    HTMLAreaElementImpl* area=static_cast<HTMLAreaElementImpl*>(current);
 	    if (area->mapMouseEvent(x_,y_,width_,height_,button_,type_,url_))
-	    {
 	    	inside = true;
-		if (!area->isDefault())
-	    	    break;
-	    }
 	}
 	NodeImpl *child = current->firstChild();
 	if(child)

@@ -80,8 +80,8 @@ bool HTMLElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType typ
 	_ty += m_render->yPos();
 
 	inside = true;
-        if( (_y < _ty ) || (_y > _ty + m_render->height() ) ||
-	    (_x < _tx ) || (_x > _tx + m_render->width() ) )
+        if( (_y < _ty ) || (_y >= _ty + m_render->height() ) ||
+	    (_x < _tx ) || (_x >= _tx + m_render->width() ) )
         {
             inside = false;
 	    //kdDebug( 6030 ) << "not inside the block element!" << endl;
@@ -149,7 +149,7 @@ void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bo
 	DOMString script = getAttribute(id);
 	if(script.length())
 	{
-	    kdDebug( 6030 ) << "emit executeScript( " << script.string() << " )" << endl;
+	    //kdDebug( 6030 ) << "emit executeScript( " << script.string() << " )" << endl;
 	    view->part()->executeScript( script.string() );
 	}
     }
@@ -159,7 +159,7 @@ void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bo
 	DOMString script = getAttribute(ATTR_ONCLICK);
 	if(script.length())
 	{
-	    kdDebug( 6030 ) << "(click) emit executeScript( " << script.string() << " )" << endl;
+	    //kdDebug( 6030 ) << "(click) emit executeScript( " << script.string() << " )" << endl;
 	    view->part()->executeScript( script.string() );
 	}
     }
@@ -173,8 +173,11 @@ void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bo
 	DOMString script = getAttribute(id);
 	if(script.length())
 	{
-	    kdDebug( 6030 ) << "emit executeScript( " << script.string() << " )" << endl;
-	    view->part()->executeScript( script.string() );
+	    //kdDebug( 6030 ) << "emit executeScript( " << script.string() << " )" << endl;
+	    if( id == ATTR_ONMOUSEOVER )
+		view->part()->scheduleScript( script.string() );
+	    else
+		view->part()->executeScript( script.string() );
 	}
     }
     setMouseInside(inside);

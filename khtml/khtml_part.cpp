@@ -153,7 +153,8 @@ public:
   khtml::Decoder *m_decoder;
   QString m_encoding;
   QStringList m_cachedHtml;  
-
+    QString scheduledScript;
+    
   KJSProxy *m_jscript;
   KLibrary *m_kjs_lib;
   bool m_bJScriptEnabled;
@@ -578,6 +579,9 @@ bool KHTMLPart::executeScript( const QString &script )
   if (!proxy)
     return false;
 
+  //kdDebug() << "executing " << script << endl;
+  
+
   bool ret = proxy->evaluate( script.unicode(), script.length(), Node() );
   d->m_doc->updateRendering();
   return ret;
@@ -590,10 +594,36 @@ bool KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
   if (!proxy)
     return false;
 
-  bool ret = proxy->evaluate( script.unicode(), script.length(), n );
+   bool ret = proxy->evaluate( script.unicode(), script.length(), n );
   d->m_doc->updateRendering();
   return ret;
 }
+
+bool KHTMLPart::scheduleScript( const QString &script )
+{
+    //kdDebug() << "KHTMLPart::scheduleScript "<< script << endl; 
+    d->scheduledScript = script;
+    return true;
+}
+
+bool KHTMLPart::executeScheduledScript()
+{
+    if(d->scheduledScript.isEmpty() || d->scheduledScript.isNull() )
+	return false;
+    
+    KJSProxy *proxy = jScript();
+
+  if (!proxy)
+    return false;
+
+  //kdDebug() << "executing delayed " << d->scheduledScript << endl;
+
+  bool ret = proxy->evaluate( d->scheduledScript.unicode(), d->scheduledScript.length(), Node() );
+  d->scheduledScript = QString();
+  d->m_doc->updateRendering();
+  return ret;
+}
+
 
 void KHTMLPart::enableJava( bool enable )
 {
