@@ -330,7 +330,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
 
     m_view = v;
     m_renderArena = 0;
-                   
+
     if ( v ) {
         m_docLoader = new DocLoader(v->part(), this );
         setPaintDevice( m_view );
@@ -610,6 +610,8 @@ ElementImpl *DocumentImpl::getElementById( const DOMString &elementId ) const
 
 void DocumentImpl::setTitle(DOMString _title)
 {
+    if (_title == m_title) return;
+
     m_title = _title;
 
     QString titleStr = m_title.string();
@@ -1178,6 +1180,17 @@ void DocumentImpl::close(  )
 
     delete m_tokenizer;
     m_tokenizer = 0;
+
+    // set the title once if not already set
+    for (NodeImpl *n = this; n; n = n->traverseNextNode()) {
+        if (!title().isEmpty())
+            break;
+        if (n->id() == ID_TITLE)
+            setTitle(static_cast<HTMLTitleElementImpl*>(n)->text());
+        else if (n->id() == ID_BODY ||
+                 n->id() == ID_FRAMESET)
+            break;
+    }
 
     if (m_view)
         m_view->part()->checkEmitLoadEvent();
@@ -1778,6 +1791,7 @@ void DocumentImpl::recalcStyleSelector()
                 // are treated as style declarations)
                 sheet = static_cast<HTMLBodyElementImpl*>(n)->sheet();
             }
+
             if (sheet) {
                 sheet->ref();
                 m_styleSheets->styleSheets.append(sheet);

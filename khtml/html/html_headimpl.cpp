@@ -437,20 +437,6 @@ NodeImpl::Id HTMLTitleElementImpl::id() const
     return ID_TITLE;
 }
 
-void HTMLTitleElementImpl::insertedIntoDocument()
-{
-    HTMLElementImpl::insertedIntoDocument();
-    getDocument()->setTitle(m_title);
-}
-
-void HTMLTitleElementImpl::removedFromDocument()
-{
-    HTMLElementImpl::removedFromDocument();
-    // Title element removed, so we have no title... we ignore the case of multiple title elements, as it's invalid
-    // anyway (?)
-    getDocument()->setTitle(DOMString());
-}
-
 void HTMLTitleElementImpl::childrenChanged()
 {
     HTMLElementImpl::childrenChanged();
@@ -460,8 +446,6 @@ void HTMLTitleElementImpl::childrenChanged()
 	if ((c->nodeType() == Node::TEXT_NODE) || (c->nodeType() == Node::CDATA_SECTION_NODE))
 	    m_title += c->nodeValue();
     }
-    if (inDocument())
-	getDocument()->setTitle(m_title);
 }
 
 DOMString HTMLTitleElementImpl::text()

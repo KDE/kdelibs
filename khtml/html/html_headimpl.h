@@ -189,8 +189,6 @@ public:
 
     virtual Id id() const;
 
-    virtual void insertedIntoDocument();
-    virtual void removedFromDocument();
     virtual void childrenChanged();
 
 protected:
