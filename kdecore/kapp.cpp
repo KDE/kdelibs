@@ -166,13 +166,16 @@ static int kde_x_errhandler( Display *dpy, XErrorEvent *err )
 		<< "\n  Major opcode:  " << err->request_code << endl;
     return 0;
 }
+}
 #endif
 
+extern "C" {
 static void kde_ice_ioerrorhandler( IceConn conn )
 {
     if(kapp)
         kapp->iceIOErrorHandler( conn );
     // else ignore the error for now
+}
 }
 
 class KCheckAccelerators : public QObject
