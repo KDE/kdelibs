@@ -287,6 +287,7 @@ void HTMLTokenizer::processListing(DOMStringIt list)
                 pending = SpacePending;
             else
                 pending = TabPending;
+
             ++list;
         }
         else
@@ -1184,10 +1185,13 @@ void HTMLTokenizer::addPending()
     }
     else if ( textarea )
     {
-        if (pending == LFPending)
-            *dest++ = '\n';
-        else
-            *dest++ = ' ';
+        switch(pending) {
+        case LFPending:  *dest++ = '\n'; prePos = 0; break;
+        case SpacePending: *dest++ = ' '; ++prePos; break;
+        case TabPending: *dest++ = '\t'; prePos += TAB_SIZE - (prePos % TAB_SIZE); break;
+        case NonePending:
+            assert(0);
+        }
     }
     else if ( pre )
     {
@@ -1209,6 +1213,8 @@ void HTMLTokenizer::addPending()
 
         case TabPending:
             p = TAB_SIZE - ( prePos % TAB_SIZE );
+            qDebug("tab pending, prePos: %d, toadd: %d", prePos, p);
+
             for ( int x = 0; x < p; x++ )
             {
                 *dest = QChar(' ');
@@ -1217,10 +1223,8 @@ void HTMLTokenizer::addPending()
             prePos += p;
             break;
 
-        default:
-#if defined(TOKEN_DEBUG) && TOKEN_DEBUG > 1
-            kdDebug( 6036 ) << "Assertion failed: pending = " << (int) pending << endl;
-#endif
+        case NonePending:
+            assert(0);
             break;
         }
     }
