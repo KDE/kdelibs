@@ -25,7 +25,7 @@
 // KDE HTML Widget -- HTML Parser
 // $Id$
 
-#define PARSER_DEBUG
+//#define PARSER_DEBUG
 //#define COMMENTS_IN_DOM
 
 #include "htmlparser.h"
@@ -1011,6 +1011,7 @@ NodeImpl *KHTMLParser::getElement(Token *t)
 // block:
     case ID_ADDRESS:
     case ID_CENTER:
+	case ID_LISTING:
         n = new HTMLGenericElementImpl(document, t->id);
         break;
 // inline
