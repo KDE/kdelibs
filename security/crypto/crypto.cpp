@@ -50,7 +50,7 @@
 #include <klineedit.h>
 #include <kconfig.h>
 #include <kglobal.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <klocale.h>
 #include <kdialog.h>
 #include <kmessagebox.h>
