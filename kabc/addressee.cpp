@@ -27,6 +27,38 @@
 
 using namespace KABC;
 
+struct Addressee::AddresseeData : public KShared
+{
+  QString uid;
+  QString name;
+  QString formattedName;
+  QString familyName;
+  QString givenName;
+  QString additionalName;
+  QString prefix;
+  QString suffix;
+  QString nickName;
+  QDateTime birthday;
+  QString mailer;
+  TimeZone timeZone;
+  Geo geo;
+  QString title;
+  QString role;
+  QString organization;
+  QString note;
+  QString productId;
+  QDateTime revision;
+  QString sortString;
+  KURL url;
+
+  PhoneNumber::List phoneNumbers;
+  Address::List addresses;
+  QStringList emails;
+  QStringList categories;
+  QStringList custom;
+
+  bool empty;
+};
 
 Addressee::Addressee()
 {
