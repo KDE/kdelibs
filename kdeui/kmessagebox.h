@@ -66,6 +66,16 @@ public:
    Error = 8,
    QuestionYesNoCancel = 9
  };
+ 
+ /**
+  * @li Notify Emit a KNotifyClient event (Not yet implemented)
+  * @li AllowLink The message may contain links.
+  */
+ enum OptionsType
+ {
+   Notify = 1,
+   AllowLink = 2
+ };
                                             
  /**
   * Display a simple "question" dialog.
@@ -84,7 +94,7 @@ public:
   *                further confirmation can be turned off.
   *                The string is used to lookup and store the setting
   *                in the applications config file.
-  * @param notify  Emit a @ref KNotifyClient event.
+  * @param options  @see OptionsType
   *
   * @return  'Yes' is returned if the Yes-button is pressed. 'No' is returned
   *          if the No-button is pressed.
@@ -100,7 +110,7 @@ public:
                           const KGuiItem &buttonYes = KStdGuiItem::yes(),
                           const KGuiItem &buttonNo =  KStdGuiItem::no(),
                           const QString &dontAskAgainName = QString::null,
-                          bool notify=true);
+                          int options = Notify);
  /**
   * Display a simple "question" dialog.
   *
@@ -118,7 +128,7 @@ public:
   *                further confirmation can be turned off.
   *                The string is used to lookup and store the setting
   *                in the applications config file.
-  * @param notify  Emit a @ref KNotifyClient event.
+  * @param options  @see OptionsType
   *
   * @return  'Yes' is returned if the Yes-button is pressed. 'No' is returned
   *          if the No-button is pressed.
@@ -136,7 +146,7 @@ public:
                           const KGuiItem &buttonYes = KStdGuiItem::yes(),
                           const KGuiItem &buttonNo  = KStdGuiItem::no(),
                           const QString &dontAskAgainName = QString::null,
-                          bool notify=true);
+                          int options = Notify);
 
  /**
   * Display a "question" dialog with a listbox to show information to the user
@@ -157,7 +167,7 @@ public:
   *                further confirmation can be turned off.
   *                The string is used to lookup and store the setting
   *                in the applications config file.
-  * @param notify  Emit a @ref KNotifyClient event.
+  * @param options  @see OptionsType
   *
   * @return  'Yes' is returned if the Yes-button is pressed. 'No' is returned
   *          if the No-button is pressed.
@@ -176,7 +186,7 @@ public:
                           const KGuiItem &buttonYes = KStdGuiItem::yes(),
                           const KGuiItem &buttonNo = KStdGuiItem::no(),
                           const QString &dontAskAgainName = QString::null,
-                          bool notify=true);
+                          int options = Notify);
  /**
   * Display a "warning" dialog.
   *
@@ -194,7 +204,7 @@ public:
   *                further confirmation can be turned off.
   *                The string is used to lookup and store the setting
   *                in the applications config file.
-  * @param notify  Emit a @ref KNotifyClient event.
+  * @param options  @see OptionsType
   *
   * @return  @p Yes is returned if the Yes-button is pressed. @p No is returned
   *          if the No-button is pressed.
@@ -210,7 +220,7 @@ public:
                          const KGuiItem &buttonYes = KStdGuiItem::yes(),  
                          const KGuiItem &buttonNo = KStdGuiItem::no(), 
                          const QString &dontAskAgainName = QString::null,
-                         bool notify=true);
+                         int options = Notify);
 
  /**
   * Display a "warning" dialog.
@@ -226,7 +236,7 @@ public:
   *                further confirmation can be turned off.
   *                The string is used to lookup and store the setting
   *                in the applications config file.
-  * @param notify  Emit a @ref KNotifyClient event.
+  * @param options  @see OptionsType
   *
   * The second button always has the text "Cancel".
   *
@@ -243,7 +253,7 @@ public:
                          const QString &caption = QString::null,
                          const KGuiItem &buttonContinue = KStdGuiItem::cont(),
                          const QString &dontAskAgainName = QString::null,
-                         bool notify=true );
+                         int options = Notify);
 
 
  /**
@@ -265,7 +275,7 @@ public:
   *                in the applications config file.
   *                The setting is stored in the "Notification Messages" group.
   *                   
-  * @param notify  Emit a @ref KNotifyClient event.
+  * @param options  @see OptionsType
   *
   * The second button always has the text "Cancel".
   *
@@ -283,7 +293,7 @@ public:
                          const QString &caption = QString::null,
                          const KGuiItem &buttonContinue = QString::null,
                          const QString &dontAskAgainName = QString::null,
-                         bool notify=true);
+                         int options = Notify);
 
 
  /**
@@ -305,7 +315,7 @@ public:
   *                last answer (either Yes or No).
   *                The string is used to lookup and store the setting
   *                in the applications config file.
-  * @param notify  Emit a @ref KNotifyClient event.
+  * @param options  @see OptionsType
   *
   * @return  @p Yes is returned if the Yes-button is pressed. @p No is returned
   *          if the No-button is pressed. @p Cancel is retunred if the Cancel-
@@ -325,7 +335,7 @@ public:
                                 const KGuiItem &buttonYes = KStdGuiItem::yes(),
                                 const KGuiItem &buttonNo = KStdGuiItem::no(),
                                 const QString &dontAskAgainName = QString::null,
-                                bool notify=true);
+                                int options = Notify);
 
  /**
   * Display an "Error" dialog.
@@ -336,7 +346,7 @@ public:
   * @param text    Message string.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Error").
-  * @param notify  Emit a @ref KNotifyClient event.
+  * @param options  @see OptionsType
   *
   * Your program messed up and now it's time to inform the user.
   * To be used for important things like "Sorry, I deleted your hard disk."
@@ -352,7 +362,8 @@ public:
   
   static void error(QWidget *parent, 
                     const QString &text,
-                    const QString &caption = QString::null, bool notify=true);
+                    const QString &caption = QString::null, 
+                    int options = Notify);
 
  /**
   * Displays an "Error" dialog with a "Details >>" button.
@@ -364,7 +375,7 @@ public:
   * @param details Detailed message string.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Error").
-  * @param notify  Emit a @ref KNotifyClient event.
+  * @param options  @see OptionsType
   *
   * Your program messed up and now it's time to inform the user.
   * To be used for important things like "Sorry, I deleted your hard disk."
@@ -383,7 +394,8 @@ public:
   static void detailedError(QWidget *parent,
                     const QString &text,
                     const QString &details,
-                    const QString &caption = QString::null, bool notify=true);
+                    const QString &caption = QString::null, 
+                    int options = Notify);
 
   /**
    * Like @ref detailedError
@@ -409,7 +421,7 @@ public:
   * @param text    Message string.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Sorry").
-  * @param notify  Emit a @ref KNotifyClient event.
+  * @param options  @see OptionsType
   *
   * Either your program messed up and asks for understanding
   * or your user did something stupid.
@@ -424,7 +436,8 @@ public:
 
   static void sorry(QWidget *parent,
                     const QString &text,
-                    const QString &caption = QString::null, bool notify=true);
+                    const QString &caption = QString::null,
+                    int options = Notify);
 
  /**
   * Displays a "Sorry" dialog with a "Details >>" button.
@@ -436,7 +449,7 @@ public:
   * @param details Detailed message string.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Sorry").
-  * @param notify  Emit a @ref KNotifyClient event.
+  * @param options  @see OptionsType
   *
   * Either your program messed up and asks for understanding
   * or your user did something stupid.
@@ -457,7 +470,8 @@ public:
   static void detailedSorry(QWidget *parent, 
                     const QString &text,
                     const QString &details,
-                    const QString &caption = QString::null, bool notify=true);
+                    const QString &caption = QString::null, 
+                    int options = Notify);
 
  /**
   * Display an "Information" dialog.
@@ -473,7 +487,7 @@ public:
   *                The string is used to lookup and store the setting
   *                in the applications config file.
   *                The setting is stored in the "Notification Messages" group.
-  * @param notify  Emit a @ref KNotifyClient event.
+  * @param options  @see OptionsType
   *
   *
   * Your program wants to tell the user something.
@@ -489,7 +503,7 @@ public:
                           const QString &text, 
                           const QString &caption = QString::null,
                           const QString &dontShowAgainName = QString::null, 
-                          bool notify=true);
+                          int options = Notify);
 
   /**
    * Enable all messages which have been turned off with the
@@ -506,7 +520,7 @@ public:
    * @param text    Message string.
    * @param caption Message box title. The application name is added to
    *                the title. The default title is i18n("About <appname>").
-   * @param notify  Emit a @ref KNotifyClient event.
+   * @param options  @see OptionsType
    *
    *
    * Your program wants to show some general information about the application
@@ -518,7 +532,8 @@ public:
    */
   static void about(QWidget *parent,
 		    const QString& text,
-		    const QString& caption = QString::null, bool notify=true);
+		    const QString& caption = QString::null, 
+                    int options = Notify);
 
     /**
      * Alternate method to show a messagebox:
@@ -533,6 +548,7 @@ public:
      *                  The default is i18n("&Yes").
      * @param buttonNo  The text for the second button.
      *                  The default is i18n("&No").
+     * @param options  @see OptionsType
      * Note: for ContinueCancel, buttonYes is the continue button and buttonNo is unused.
      *       and for Information, none is used.
      * @return a button code, as defined in KMessageBox, or 0 on communication error.
@@ -540,7 +556,8 @@ public:
     static int messageBox( QWidget *parent, DialogType type, const QString &text,
                     const QString &caption = QString::null,
                     const KGuiItem &buttonYes = KStdGuiItem::yes(),
-                    const KGuiItem &buttonNo = KStdGuiItem::no() );
+                    const KGuiItem &buttonNo = KStdGuiItem::no(),
+                    int options = Notify);
 
     /*
      * Like @ref messageBox
