@@ -291,9 +291,8 @@ class KDialogBase : public KDialog
 		 const KGuiItem &user3=KGuiItem() );
 
     /**
-     * @depriciated see next function which now has WFlags
-     * remove this in KDE4 and give default values for parent, name model and f
-     * in next function.  Also add WFlag to rest of the constructors.
+     * In KDE4 a WFlag paramater should be added after modal and next
+     * function can be removed.
      *
      * Constructor for the predefined layout mode where you specify the
      * kind of layout (face).
@@ -334,30 +333,31 @@ class KDialogBase : public KDialog
      *        IconList.
      * @param caption The dialog caption. Do not specify the application name
      *        here. The class will take care of that.
-     * @param buttonMask Specifies which buttons will be visible. If zero
-     *        (0) no button box will be made.
-     * @param defaultButton Specifies which button will be marked as
-     *        the default.
      * @param parent Parent of the dialog.
      * @param name Dialog name (for internal use only).
      * @param modal Controls dialog modality. If @p false, the rest of the
      *        program interface (example: other dialogs) is accessible while
      *        the dialog is open.
-     * @param f widget flags, by default just set to WStyle_DialogBorder.
+     * @param f widget flags, by default it is just set to WStyle_DialogBorder.
+     * @param buttonMask Specifies which buttons will be visible. If zero
+     *        (0) no button box will be made.
+     * @param defaultButton Specifies which button will be marked as
+     *        the default.
      * @param separator If @p true, a separator line is drawn between the
      *        action buttons and the main widget.
      * @param user1 User button1 text item.
      * @param user2 User button2 text item.
      * @param user3 User button3 text item.
      */
+    
     KDialogBase( int dialogFace, const QString &caption,
-		 int buttonMask, ButtonCode defaultButton,
-		 QWidget *parent, const char *name, bool modal, WFlags f,
+		 QWidget *parent=0, const char *name=0, bool modal=true, WFlags f=WStyle_DialogBorder,
+		 int buttonMask=Ok|Apply|Cancel, ButtonCode defaultButton=Ok,
 		 bool separator=false, 
 		 const KGuiItem &user1=KGuiItem(),
 		 const KGuiItem &user2=KGuiItem(),
 		 const KGuiItem &user3=KGuiItem() );
-
+    
 
     /**
      * Constructor for a message box mode where the @p buttonMask can only

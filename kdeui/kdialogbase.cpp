@@ -148,8 +148,8 @@ KDialogBase::KDialogBase( int dialogFace, const QString &caption,
 }
 
 KDialogBase::KDialogBase( int dialogFace, const QString &caption,
-			  int buttonMask, ButtonCode defaultButton,
 			  QWidget *parent, const char *name, bool modal, WFlags f,
+			  int buttonMask, ButtonCode defaultButton,
 			  bool separator, const KGuiItem &user1,
 			  const KGuiItem &user2, const KGuiItem &user3 )
   :KDialog( parent, name, modal, f ),
