@@ -17,11 +17,15 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include <stdlib.h>
-#include <qstrlist.h>
+#include "kdesasl.h"
+
 #include <kmdcodec.h>
 #include <kurl.h>
-#include "kdesasl.h"
+
+#include <qstrlist.h>
+
+#include <stdlib.h>
+#include <string.h>
 
 KDESasl::KDESasl(const KURL &aUrl)
 {
@@ -47,8 +51,8 @@ QCString KDESasl::chooseMethod(const QStrIList aMethods)
 {
   if (aMethods.contains("DIGEST-MD5")) mMethod = "DIGEST-MD5";
   else if (aMethods.contains("CRAM-MD5")) mMethod = "CRAM-MD5";
-  else if (aMethods.contains("LOGIN")) mMethod = "LOGIN";
   else if (aMethods.contains("PLAIN")) mMethod = "PLAIN";
+  else if (aMethods.contains("LOGIN")) mMethod = "LOGIN";
   else mMethod = QCString();
   return mMethod;
 }
@@ -64,9 +68,15 @@ QByteArray KDESasl::getPlainResponse()
   QCString pass = mPass.utf8();
   int userlen = user.length();
   int passlen = pass.length();
+  // result = $user\0$user\0$pass (no trailing \0)
   QByteArray result(2 * userlen + passlen + 2);
-  for (int i = 0; i <= userlen; i++) result[i+userlen+1] = result[i] = user[i];
-  for (int i = 0; i < passlen; i++) result[i+2*userlen+2] = pass[i];
+  if ( userlen ) {
+    memcpy( result.data(), user.data(), userlen );
+    memcpy( result.data() + userlen + 1, user.data(), userlen );
+  }
+  if ( passlen )
+    memcpy( result.data() + 2 * userlen + 2, pass.data(), passlen );
+  result[userlen] = result[2*userlen+1] = '\0';
   return result;
 }
 
