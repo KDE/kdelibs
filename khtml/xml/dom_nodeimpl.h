@@ -34,6 +34,7 @@ class QPainter;
 class KHTMLView;
 class QRect;
 class QMouseEvent;
+class QKeyEvent;
 
 namespace khtml {
     class RenderStyle;
@@ -274,11 +275,15 @@ public:
     bool dispatchMouseEvent(QMouseEvent *e, int overrideId = 0, int overrideDetail = 0);
     bool dispatchUIEvent(int _id, int detail = 0);
     bool dispatchSubtreeModifiedEvent();
+    bool dispatchKeyEvent(QKeyEvent *key);
+
     void handleLocalEvents(EventImpl *evt, bool useCapture);
+
     /**
      * Perform the default action for an event e.g. submitting a form
      */
     virtual void defaultEventHandler(EventImpl *evt);
+
     virtual bool isReadOnly() { return false; }
     virtual bool childTypeAllowed( unsigned short /*type*/ ) { return false; }
     virtual unsigned long childNodeCount();

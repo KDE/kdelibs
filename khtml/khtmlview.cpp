@@ -562,9 +562,18 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 
 void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 {
-//    if(m_part->keyPressHook(_ke)) return;
-
     int offs = (clipper()->height() < 30) ? clipper()->height() : 30;
+    if (m_part->xmlDocImpl())
+    {
+        ElementImpl *e = m_part->xmlDocImpl()->focusNode();
+        if (e && e->dispatchKeyEvent(_ke))
+	  {
+	    kdDebug(6010)<<"KHTMLView: key press event accepted."<<endl;
+	    _ke->accept();
+	    return;
+	  }
+    }
+
     if (_ke->state()&ShiftButton)
       switch(_ke->key())
         {
@@ -651,6 +660,12 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
             return;
         }
     _ke->accept();
+}
+
+void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
+{
+  if (m_part->xmlDocImpl() && m_part->xmlDocImpl()->focusNode() && m_part->xmlDocImpl()->focusNode()->dispatchKeyEvent(_ke))
+      _ke->accept();
 }
 
 bool KHTMLView::focusNextPrevChild( bool next )

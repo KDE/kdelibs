@@ -91,16 +91,28 @@ bool HTMLAnchorElementImpl::prepareMouseEvent( int _x, int _y,
 void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
 {
     if ( ( evt->id() == EventImpl::KHTML_CLICK_EVENT ||
-           evt->id() == EventImpl::DOMACTIVATE_EVENT ) && href ) {
+           evt->id() == EventImpl::DOMACTIVATE_EVENT ||
+         ( evt->id() == EventImpl::KHTML_KEYUP_EVENT && m_focused)) && href ) {
 
-        MouseEventImpl* e = 0;
+        MouseEventImpl *e = 0;
         if ( evt->id() == EventImpl::KHTML_CLICK_EVENT )
             e = static_cast<MouseEventImpl*>( evt );
+
+	KeyEventImpl *k = 0;
+	if (evt->id() == EventImpl::KHTML_KEYUP_EVENT)
+	    k = static_cast<KeyEventImpl *>( evt );
 
         QString utarget;
         QString url;
 
         if ( e && e->button() == 2 ) return;
+
+
+	if ( k )
+	{
+	    if (k->virtKeyVal() != KeyEventImpl::DOM_VK_ENTER) return;
+	    if (k->qKeyEvent) k->qKeyEvent->accept();
+	}
 
         url = QConstString( href->s, href->l ).string();
 
@@ -147,6 +159,15 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
                 else if ( e->button() == 2 )
                     button = Qt::RightButton;
             }
+	    else if ( k )
+	    {
+	      if ( k->checkModifier(Qt::ShiftButton) )
+                state |= Qt::ShiftButton;
+	      if ( k->checkModifier(Qt::AltButton) )
+                state |= Qt::AltButton;
+	      if ( k->checkModifier(Qt::ControlButton) )
+                state |= Qt::ControlButton;
+	    }
 
             ownerDocument()->view()->part()->
                 urlSelected( url, button, state, utarget );

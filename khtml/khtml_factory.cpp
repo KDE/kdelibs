@@ -175,7 +175,7 @@ KInstance *KHTMLFactory::instance()
 
   if ( !s_instance )
   {
-    s_about = new KAboutData( "khtml", I18N_NOOP( "KHTML" ), "3.0",
+    s_about = new KAboutData( "khtml", I18N_NOOP( "KHTML" ), "4.0",
                               I18N_NOOP( "Embeddable HTML component" ),
                               KAboutData::License_LGPL );
     s_about->addAuthor( "Lars Knoll", 0, "knoll@kde.org" );
@@ -184,6 +184,7 @@ KInstance *KHTMLFactory::instance()
     s_about->addAuthor( "Torben Weis", 0, "weis@kde.org" );
     s_about->addAuthor( "Martin Jones", 0, "mjones@kde.org" );
     s_about->addAuthor( "Simon Hausmann", 0, "hausmann@kde.org" );
+    s_about->addAuthor( "Tobias Anton", 0, "anton@stud.fbi.fh-darmstadt.de" );
 
     s_instance = new KInstance( s_about );
   }

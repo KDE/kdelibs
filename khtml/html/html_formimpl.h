@@ -163,8 +163,10 @@ public:
      */
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool) { return false; }
 
-    virtual void setFocus(bool);
+    virtual void setFocus(bool=true);
     virtual void setParent(NodeImpl *parent);
+
+    virtual void defaultEventHandler(EventImpl *evt);
 
 protected:
     HTMLFormElementImpl *getForm() const;

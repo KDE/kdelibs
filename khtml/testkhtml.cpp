@@ -65,13 +65,14 @@ int main(int argc, char *argv[])
 		      dummy, SLOT( slotOpenURL( const KURL&, const KParts::URLArgs & ) ) );
 
     doc->openURL( args->url(0) );
-    //DOMTreeView * dtv = new DOMTreeView(0, doc, "DomTreeView");
-    //dtv->show();
-    //dtv->setGeometry(0, 0, 360, 800);
+    DOMTreeView * dtv = new DOMTreeView(0, doc, "DomTreeView");
+    dtv->show();
 
     toplevel->setCentralWidget( doc->widget() );
     toplevel->resize( 640, 800);
     
+    dtv->resize(toplevel->width()/2, toplevel->height());
+
     QDomDocument d = doc->domDocument();
     QDomElement viewMenu = d.documentElement().firstChild().childNodes().item( 2 ).toElement();
     QDomElement e = d.createElement( "action" );

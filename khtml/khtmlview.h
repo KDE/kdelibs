@@ -187,6 +187,7 @@ protected:
     virtual void viewportWheelEvent(QWheelEvent*);
 
     void keyPressEvent( QKeyEvent *_ke );
+    void keyReleaseEvent ( QKeyEvent *_ke );
 
     /**
      * Scroll the view

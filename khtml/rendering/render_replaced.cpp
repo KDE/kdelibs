@@ -242,7 +242,7 @@ void RenderWidget::setQWidget(QWidget *widget)
             delete m_widget;
             m_widget = 0;
         }
-	widget->setFocusPolicy(QWidget::ClickFocus);
+	widget->setFocusPolicy(QWidget::NoFocus);
         m_widget = widget;
         connect( m_widget, SIGNAL( destroyed()),
                  this, SLOT( slotWidgetDestructed()));

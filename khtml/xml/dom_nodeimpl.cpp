@@ -488,6 +488,16 @@ bool NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
 
     // ok, now bubble up again (only non-capturing event handlers will be called)
     // ### recalculate the node chain here? (e.g. if target node moved in document by previous event handlers)
+    // no. the DOM specs says:
+    // The chain of EventTargets from the event target to the top of the tree
+    // is determined before the initial dispatch of the event.
+    // If modifications occur to the tree during event processing,
+    // event flow will proceed based on the initial state of the tree.
+    // 
+    // since the initial dispatch is before the capturing phase,
+    // there's no need to recalculate the node chain.
+    // (tobias)
+
     if (evt->bubbles()) {
         evt->setEventPhase(Event::BUBBLING_PHASE);
         for (; it.current() && !evt->propagationStopped(); --it) {
@@ -498,7 +508,7 @@ bool NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
 
     evt->setCurrentTarget(0);
     evt->setEventPhase(0); // I guess this is correct, the spec does not seem to say
-
+                           // anything about the default event handler phase.
     if (evt->bubbles()) {
         // now we call all default event handlers (this is not part of DOM - it is internal to khtml)
         it.toLast();
@@ -646,6 +656,21 @@ bool NodeImpl::dispatchSubtreeModifiedEvent()
     int exceptioncode;
     return dispatchEvent(new MutationEventImpl(EventImpl::DOMSUBTREEMODIFIED_EVENT,
 			 true,false,0,0,0,0,0),exceptioncode);
+}
+
+bool NodeImpl::dispatchKeyEvent(QKeyEvent *key)
+{
+    int exceptioncode;
+    kdDebug(6010) << "DOM::NodeImpl: dispatching keyboard event" << endl;
+    KeyEventImpl *keyEventImpl = new KeyEventImpl(key, getDocument()->defaultView());
+    keyEventImpl->ref();
+    bool r = dispatchEvent(keyEventImpl, exceptioncode);
+    // the default event handler should accept() the internal QKeyEvent
+    // to prevent the view from further evaluating it.
+    if (!keyEventImpl->defaultPrevented() && !keyEventImpl->qKeyEvent->isAccepted())
+      r = false;
+    keyEventImpl->deref();
+    return r;
 }
 
 void NodeImpl::handleLocalEvents(EventImpl *evt, bool useCapture)

@@ -622,6 +622,30 @@ bool HTMLGenericFormElementImpl::isSelectable() const
     return renderer()!=0;
 }
 
+void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
+{
+  kdDebug(6010)<<"default form event handler reached"<<endl;
+  if (evt->target()==this)
+    { 
+      if (evt->id()==EventImpl::KHTML_KEYDOWN_EVENT || evt->id()==EventImpl::CLICK_EVENT)
+	{
+	  setFocus();
+	  setActive();
+	}
+      else if (evt->id()==EventImpl::KHTML_KEYUP_EVENT)
+	{
+	  setActive(false);
+	}
+      if (evt->id()==EventImpl::KHTML_KEYDOWN_EVENT ||
+	  evt->id()==EventImpl::KHTML_KEYUP_EVENT)
+	{
+	  KeyEventImpl * k = static_cast<KeyEventImpl *>(evt);
+	  if (k->keyVal() == QChar('\n').unicode() && m_render && m_render->isWidget() && k->qKeyEvent)
+	    QApplication::sendEvent(static_cast<RenderWidget *>(m_render)->m_widget, k->qKeyEvent);
+	}
+    }
+}
+
 // -------------------------------------------------------------------------
 
 HTMLButtonElementImpl::HTMLButtonElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f)
