@@ -35,7 +35,8 @@ class QIODevice;
  *
  * This class declares the base methods to interface with an I/O buffer.
  * Most applications will not need to access this class directly, since
- * it is all handled by @ref KBufferedSocket and other buffering classes.
+ * it is all handled by @ref KNetwork::KBufferedSocket and other buffering
+ * classes.
  *
  * @author Thiago Macieira <thiago.macieira@kdemail.net>
  */
