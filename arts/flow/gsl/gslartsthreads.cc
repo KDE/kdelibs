@@ -107,7 +107,10 @@ public:
    other strange reasons force the whole function to go into C++ linkage.
    It's enough, when this typedef is local to this file.  (matz)  */
    
-extern "C" typedef gpointer (*t_func)(gpointer data2);
+#if defined(__KCC)
+extern "C" 
+#endif
+typedef gpointer (*t_func)(gpointer data2);
 
 gpointer
 gsl_arts_thread_create (t_func func,
