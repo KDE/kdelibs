@@ -161,7 +161,6 @@ void KBookmarkManager::parse() const
         if ( n.isProcessingInstruction() )
         {
             QDomProcessingInstruction pi = n.toProcessingInstruction();
-            kdDebug() << pi.parentNode().isNull() << endl;
             pi.parentNode().removeChild(pi);
         }
 
