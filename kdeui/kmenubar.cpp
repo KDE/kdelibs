@@ -42,6 +42,9 @@
 // $Id$
 // $Log$
 //
+// Revision 1.54  1998/12/02 16:22:21  radej
+// sven: Flat menubar looks like flat toolbars in Motif style
+//
 // Revision 1.53  1998/11/23 18:32:04  radej
 // sven: MACmode: runtime change works,
 //
@@ -549,7 +552,8 @@ bool KMenuBar::eventFilter(QObject *ob, QEvent *ev){
       }
 
       if (style() == MotifStyle) //Motif style handle
-                           g , FALSE, 1, &b );
+      {
+        if (position == Flat)
         {
           qDrawShadePanel( &paint, 0, 0, w, 9,
 			   g , FALSE, 1, &b );
@@ -562,7 +566,8 @@ bool KMenuBar::eventFilter(QObject *ob, QEvent *ev){
           }
           paint.setPen( g.dark() );
           stipple_height = 4;
-          }
+          while ( stipple_height < w-4 ) {
+            paint.drawPoint( stipple_height+1, 2 );
             paint.drawPoint( stipple_height, 5);
             stipple_height+=3;
 	  }
