@@ -82,6 +82,7 @@
 
 <!-- Algemene afkortingen -->
 <!ENTITY Alt     "<keycap>Alt</keycap>">
+<!ENTITY Tab     "<keycap>Tab</keycap>">
 <!ENTITY bijv    "<abbrev>bijv.</abbrev>">
 <!ENTITY Bijv    "<abbrev>Bijv.</abbrev>">
 <!ENTITY Ctrl    "<keycap>Ctrl</keycap>">
