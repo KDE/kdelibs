@@ -58,7 +58,7 @@ k_dcop:
 	QCString startupId();
 	QCString caption();
 	
-	void exit();
+	void quit();
 
 	
 	

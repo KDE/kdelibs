@@ -5,6 +5,7 @@
 
 class KActiveLabel : public QFrame
 {
+	class KActiveToolTip;
 	friend class KActiveToolTip;
 	Q_OBJECT
 public:

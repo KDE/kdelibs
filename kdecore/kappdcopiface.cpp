@@ -23,7 +23,7 @@
 
 
 KAppDCOPInterface::KAppDCOPInterface(KApplication * theKApp)
-	: DCOPObject( "MainApplication_Interface")
+	: DCOPObject( "MainApplication-Interface")
 {
 	m_KApplication = theKApp;
 }
@@ -47,7 +47,7 @@ QCString KAppDCOPInterface::caption()
 
 }
 
-void KAppDCOPInterface::exit()
+void KAppDCOPInterface::quit()
 {
-
+	m_KApplication->quit();
 }

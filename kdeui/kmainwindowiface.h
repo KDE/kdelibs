@@ -25,6 +25,8 @@
 #include <qcstring.h>
 #include <dcopref.h>
 
+
+
 class KDCOPActionProxy;
 class KDCOPPropertyProxy;
 class KMainWindow;
