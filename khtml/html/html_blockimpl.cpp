@@ -294,8 +294,8 @@ void HTMLPreElementImpl::setWidth( long /*w*/ )
 HTMLLayerElementImpl::HTMLLayerElementImpl(DocumentPtr *doc)
     : HTMLDivElementImpl( doc )
 {
-    addCSSProperty(CSS_PROP_POSITION, "absolute" );
-    fixed = false;
+//    addCSSProperty(CSS_PROP_POSITION, "absolute" );
+//    fixed = false;
 }
 
 HTMLLayerElementImpl::~HTMLLayerElementImpl()
@@ -315,7 +315,10 @@ ushort HTMLLayerElementImpl::id() const
 
 void HTMLLayerElementImpl::parseAttribute(AttrImpl *attr)
 {
-    int cssprop;
+    HTMLElementImpl::parseAttribute(attr);
+    
+    // layers are evil
+/*    int cssprop;
     bool page = false;
     switch(attr->attrId) {
         case ATTR_PAGEX:
@@ -348,6 +351,6 @@ void HTMLLayerElementImpl::parseAttribute(AttrImpl *attr)
     if ( !fixed && page ) {
         addCSSProperty(CSS_PROP_POSITION, "fixed");
         fixed = true;
-    }
+    }*/
 }
 

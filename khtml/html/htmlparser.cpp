@@ -1196,7 +1196,7 @@ NodeImpl *KHTMLParser::getElement(Token *t)
             discard_until = ID_NOSCRIPT + ID_CLOSE_TAG;
         return 0;
     case ID_NOLAYER:
-        discard_until = ID_NOLAYER + ID_CLOSE_TAG;
+//        discard_until = ID_NOLAYER + ID_CLOSE_TAG;
         return 0;
         // Waldo's plaintext stuff
     case ID_PLAIN:
