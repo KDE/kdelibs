@@ -63,7 +63,7 @@ protected:
 class KCrashBookmarkImporterImpl : public KBookmarkImporterBase
 {
 public:
-    KCrashBookmarkImporterImpl() { }
+    KCrashBookmarkImporterImpl() : m_shouldDelete(false) { }
     void setShouldDelete(bool);
     virtual void parse();
     virtual QString findDefaultLocation(bool forSaving = false) const;
