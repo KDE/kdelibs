@@ -29,6 +29,7 @@ $(BUILDDIR)/build-stamp:
 	fi
 	test -d $(BUILDDIR) || mkdir $(BUILDDIR) ;\
 	cd $(BUILDDIR) ;\
+	INSTALL_DATA='install -p -c -m 644' \
 	CFLAGS="-O2 -Wall -Wno-uninitialized -g -pipe" \
 	CXXFLAGS="-O2 -Wall -Wno-uninitialized -g -pipe" \
 	../configure --prefix=/opt/kde2pre --enable-debug \

@@ -1,3 +1,9 @@
+kdelibs (4:2.0-19990312-cvs-3) experimental; urgency=low
+
+  * use INSTALL_DATA with -p
+
+ -- Stephan Kulow <coolo@kde.org>  Sat, 13 Mar 1999 23:13:09 +0100
+
 kdelibs (4:2.0-19990312-cvs-2) experimental; urgency=low
 
   * use DESTDIR
