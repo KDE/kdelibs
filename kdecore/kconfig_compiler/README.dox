@@ -1,5 +1,5 @@
-kconfig_compiler - The Configuration Compiler
----------------------------------
+/**
+\page kconfig_compiler The KDE Configuration Compiler
 
 kconfig_compiler generates C++ source code from an XML file containing 
 information about configuration options (.kcfg) and a file that provides 
@@ -9,18 +9,18 @@ configuration data.
 
 The structure of the .kcfg file is described by its DTD kcfg.dtd.
 
-The <kcfgfile> tag contains the name of the configuration file described.
+The \<kcfgfile\> tag contains the name of the configuration file described.
 
-The <include> tags are optional and may contain C++ header files that
+The \<include\> tags are optional and may contain C++ header files that
 are needed to compile the code needed to compute default values.
 
-The remaining entries in the XML file are grouped by the tag <group> 
+The remaining entries in the XML file are grouped by the tag \<group\> 
 which describes the corresponding group in the configuration file.
 
 The individual entries must have at least a name or a key. The name is used to
 create accessor and modifier functions. It's also used as the key in the config
-file. If <key> is given, but not <name>, the name is constructed by removing
-all spaces from <key>.
+file. If \<key\> is given, but not \<name\>, the name is constructed by removing
+all spaces from \<key\>.
 
 An entry must also have a type. The list of allowable types is
 specified in the DTD and loosely follows the list of types supported
@@ -33,7 +33,7 @@ type the following special types are supported:
   when being stored in the configuration file.
   
 - Enum  This indicates an enumeration. The possible enum values should
-  be provided via the <choices> tag. Enum values are accessed as integers
+  be provided via the \<choices\> tag. Enum values are accessed as integers
   by the application but stored as string in the configuration file. This
   makes it possible to add more values at a later date without breaking
   compatibility.
@@ -45,25 +45,24 @@ type the following special types are supported:
 An entry can optionally have a default value which is used as default when
 the value isn't specified in any config file. Default values are interpreted
 as literal constant values. If a default value needs to be computed
-or if it needs to be obtained from a function call, the <default> tag
-should contain the code="true" attribute. The contents of the <default>
+or if it needs to be obtained from a function call, the \<default\> tag
+should contain the code="true" attribute. The contents of the \<default\>
 tag is then considered to be a C++ expression.
 
 Additional code for computing default values can be provided via
-the <code> tag. The contents of the <code> tag is inserted as-is. A
+the \<code\> tag. The contents of the \<code\> tag is inserted as-is. A
 typical use for this is to compute a common default value which can
 then be referenced by multiple entries that follow.
 
-Advanced options
-----------------
+<h2>Advanced options</h2>
 
 There are several possibilities to parameterize entries.
 
 - Parameterized entries
 
 An entry can be parameterized using a fixed range parameter specified with
-the <parameter> tag. Such parameter can either be an Enum or an int. An Enum
-parameter should specify the possible enumeration values with the <choices>
+the \<parameter\> tag. Such parameter can either be an Enum or an int. An Enum
+parameter should specify the possible enumeration values with the \<choices\>
 tag. An int parameter should specify its maximum value. Its minimum value
 is always 0.
 
@@ -77,11 +76,12 @@ the numeric value of the parameter.
 
 Parameterized entries all share the same default value unless different
 default values have been specified for specific parameter values.
-This can be done with the param= attribute of the <default>. When a
+This can be done with the param= attribute of the \<default\>. When a
 param attribute is specified the default value only applies to that
 particular parameter value.
 
 Example 1:
+\verbatim
   <entry name="Color$(ColorIndex)" type="Color" key="color_$(ColorIndex)">
     <parameter name="ColorIndex" type="Int" max="3"/>
     <default param="0">#ff0000</default>
@@ -89,6 +89,7 @@ Example 1:
     <default param="2">#0000ff</default>
     <default param="3">#ffff00</default>
   </entry>
+\endverbatim
 
 The above describes 4 color configuration entries with the following defaults:
 
@@ -102,6 +103,7 @@ a QColor color(int ColorIndex) and a
 void setColor(int ColorIndex, const QColor &v) function.
 
 Example 2:
+\verbatim
   <entry name="Sound$(SoundEvent)" type="String" key="sound_$(SoundEvent)">
     <parameter name="SoundEvent" type="Enum">
       <values>
@@ -114,6 +116,7 @@ Example 2:
     <default param="Crash">crash.wav</default>
     <default param="Missile">missile.wav</default>
   </entry>
+\endverbatim
 
 The above describes 3 string configuration entries with the following defaults:
 
@@ -135,3 +138,4 @@ void setSound(int SoundEvent, const QString &v) function.
 
 If you have questions or comments please contact Cornelius Schumacher
 <schumacher@kde.org> or Waldo Bastian <bastian@kde.org>
+*/
