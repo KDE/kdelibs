@@ -26,6 +26,7 @@
 
 #include <qapp.h>
 #include <qlist.h>
+#include <qpixmap.h>
 #include <qstrlist.h>
 #include <qstring.h>
 #include <qtablevw.h>
@@ -35,7 +36,6 @@
 #include <qpushbt.h>
 
 #include <kapp.h>
-#include <kpixmap.h>
 
 
 class KIconLoaderCanvas : public QTableView
@@ -56,8 +56,8 @@ protected:
   virtual void resizeEvent( QResizeEvent *e );
 
   void paintCell( QPainter *p, int r, int c );
-  void enterEvent( QEvent *e ) { setMouseTracking(TRUE); }
-  void leaveEvent( QEvent *e ) { setMouseTracking(FALSE); }
+  void enterEvent( QEvent * ) { setMouseTracking(TRUE); }
+  void leaveEvent( QEvent * ) { setMouseTracking(FALSE); }
   void mouseMoveEvent( QMouseEvent *e );
   void mousePressEvent( QMouseEvent *e );
   void mouseDoubleClickEvent( QMouseEvent *e );

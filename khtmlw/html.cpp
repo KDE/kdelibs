@@ -24,7 +24,7 @@
 #include "jpeg.h"
 #endif
 
-HTMLFontManager fontManager;
+HTMLFontManager* pFontManager;
 
 // Array of mark parser functions, e.g:
 // <img ...  is processed by KHTMLWidget::parseI()
@@ -100,6 +100,8 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char *_pix_pa
     connect( &timer, SIGNAL( timeout() ), SLOT( slotTimeout() ) );
     
     setMouseTracking( TRUE );    
+
+   pFontManager = new HTMLFontManager();
 }
 
 void KHTMLWidget::requestImage( HTMLImage *_image, const char *_url )
@@ -576,7 +578,7 @@ void KHTMLWidget::selectFont( const char *_fontfamily, int _fontsize, int _weigh
 	f.setTextColor( textColor );
 	f.setLinkColor( linkColor );
 	f.setVLinkColor( vLinkColor );
-	const HTMLFont *fp = fontManager.getFont( f );
+	const HTMLFont *fp = pFontManager->getFont( f );
 
     font_stack.push( fp );
     painter->setFont( *(font_stack.top()) );
@@ -605,7 +607,7 @@ void KHTMLWidget::selectFont( int _relative_font_size )
 	f.setLinkColor( linkColor );
 	f.setVLinkColor( vLinkColor );
 
-	const HTMLFont *fp = fontManager.getFont( f );
+	const HTMLFont *fp = pFontManager->getFont( f );
 
     font_stack.push( fp );
     painter->setFont( *(font_stack.top()) );
@@ -617,7 +619,7 @@ void KHTMLWidget::popFont()
     if ( font_stack.isEmpty() )
 	{
 		HTMLFont f( standardFont, fontBase );
-		const HTMLFont *fp = fontManager.getFont( f );
+		const HTMLFont *fp = pFontManager->getFont( f );
 		font_stack.push( fp );
 	}
     painter->setFont( *(font_stack.top()) );
@@ -674,7 +676,7 @@ void KHTMLWidget::parse()
 	f.setTextColor( textColor );
 	f.setLinkColor( linkColor );
 	f.setVLinkColor( vLinkColor );
-	const HTMLFont *fp = fontManager.getFont( f );
+	const HTMLFont *fp = pFontManager->getFont( f );
     font_stack.push( fp );
 
 	formList.clear();
@@ -2815,6 +2817,8 @@ KHTMLWidget::~KHTMLWidget()
 	if (text)
 		delete [] text;
 	font_stack.clear();
+
+	delete pFontManager;
 }
 
 #include "html.moc"

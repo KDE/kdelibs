@@ -2,6 +2,9 @@
  * $Id$
  *
  * $Log$
+ * KPixmap gone for good
+ * Eliminated static objects from KApplication and HTML-Widget
+ *
  * Revision 1.1.1.1  1997/04/13 14:42:42  cvsuser
  * Source imported
  *
@@ -34,8 +37,7 @@
 
 #include <qobjdefs.h>
 #include <qdialog.h>
-
-#include <kpixmap.h>
+#include <qpushbt.h>
 #include <qlabel.h>
 #include <qframe.h>
 #include <qpixmap.h>
@@ -111,7 +113,7 @@ private:
     int         w, h, h1, text_offset;
     void        calcOptimalSize();
     void        resizeEvent(QResizeEvent *);
-                       const KPixmap & icon = 0);
+                       const QPixmap & icon = 0);
     void        initMe(const char *caption, const char *message, const char *b1text,
                        const char *b2text, const char *b3text, const char *b4text,
                        const QPixmap & icon = QPixmap());

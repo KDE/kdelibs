@@ -25,7 +25,6 @@ class HTMLClueFlow;
 class HTMLClueAligned;
 class KHTMLWidget;
 
-#include "kpixmap.h"
 #include "htmlfont.h"
 
 // Every tag as deliverd by HTMLTokenizer starts with TAG_ESCAPE. This way
@@ -495,11 +494,11 @@ public:
     HTMLCachedImage( const char * );
 	virtual ~HTMLCachedImage() { }
 
-    KPixmap* getPixmap() { return pixmap; }
+    QPixmap* getPixmap() { return pixmap; }
     const char *getFileName() { return filename.data(); }
 
 protected:
-    KPixmap *pixmap;
+    QPixmap *pixmap;
     QString filename;
 };
 
@@ -519,7 +518,7 @@ public:
     virtual void print( QPainter *, int _tx, int _ty );
 
     static void cacheImage( const char * );
-    static KPixmap* findImage( const char * );
+    static QPixmap* findImage( const char * );
 
     const char* getImageURL() { return imageURL.data(); }
     /// Tells the object the the requested image is available
@@ -543,7 +542,7 @@ protected:
       for some strange reason or that the image is waiting to be downloaded from
       the internet for example.
       */
-    KPixmap *pixmap;
+    QPixmap *pixmap;
 
     // The URL of this image.
     /**
@@ -554,7 +553,7 @@ protected:
     
     KHTMLWidget *htmlWidget;
     
-    static QList<HTMLCachedImage> cache;
+    static QList<HTMLCachedImage>* pCache;
 
     /// Flag telling wether this image was found in the cache
     /**

@@ -4,6 +4,7 @@
 #include <ktopwidget.h>
 #include <qdrawutl.h>
 #include <qpalette.h>
+#include <qbitmap.h>
 #include <qpalette.h>
 #include "kbutton.h"
 
@@ -37,7 +38,7 @@ void KToolBarItem::makeDisabledPixmap()
 	
 	// Find the outline of the colored portion of the normal pixmap
 	
-	QPixmap pmm( *enabledPixmap.mask() );
+	QBitmap pmm( *enabledPixmap.mask() );
 	pmm.setMask( *((QBitmap *) &pmm) );
 	QPixmap pm = pmm;
 	
@@ -231,7 +232,7 @@ void KToolBar::updateRects( bool res )
     	}
 }
 
-int KToolBar::insertItem( KPixmap& pixmap, int id, bool enabled, 
+int KToolBar::insertItem( QPixmap& pixmap, int id, bool enabled, 
 		char *tooltiptext, int index )
 {
 	KToolBarItem *button = new KToolBarItem( pixmap, id, this );
@@ -252,7 +253,7 @@ int KToolBar::insertItem( KPixmap& pixmap, int id, bool enabled,
 	return buttons.at();
 }
 
-int KToolBar::insertItem( KPixmap& pixmap, int id, const char *signal,
+int KToolBar::insertItem( QPixmap& pixmap, int id, const char *signal,
 		const QObject *receiver, const char *slot, bool enabled,
 		char *tooltiptext, int index )
 {
@@ -268,7 +269,7 @@ int KToolBar::insertItem( KPixmap& pixmap, int id, const char *signal,
 	connect( button, signal, receiver, slot );
 	button->enable( enabled );
 	updateRects( TRUE );
-	printf("insertItem %d\n",buttons.at());
+	/*	printf("insertItem %d\n",buttons.at()); */
 	return buttons.at();
 }
 

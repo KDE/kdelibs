@@ -2,6 +2,9 @@
  * $Id$
  * 
  * $Log$
+ * Coolo: patched ltconfig for FreeBSD
+ * removed some stupid warnings
+ *
  * Revision 1.6  1997/05/09 08:23:40  kulow
  * Coolo: included X11 headers again in drag.cpp (my fault)
  *
@@ -413,7 +416,7 @@ void KDNDWidget::rootDropEvent()
 	free( dndData );
   dndIcon = 0L;
   
-KDNDIcon::KDNDIcon( KPixmap &_pixmap, int _x, int _y ) :
+  if ( dndData != 0L )
 	delete [] dndData;
   dndData = 0L;
 }

@@ -240,7 +240,8 @@ dnl slightly changed version of AC_CHECK_FUNC(setenv)
 AC_DEFUN(AC_CHECK_SETENV,
 [AC_MSG_CHECKING([for setenv])
 AC_CACHE_VAL(ac_cv_func_setenv,
-[AC_TRY_LINK(
+[AC_LANG_C
+AC_TRY_LINK(
 dnl Don't include <ctype.h> because on OSF/1 3.0 it includes <sys/types.h>
 dnl which includes <sys/select.h> which contains a prototype for
 dnl select.  Similarly for bzero.
@@ -262,8 +263,10 @@ choke me
 setenv("TEST", "alle", 1);
 #endif
 ], eval "ac_cv_func_setenv=yes", eval "ac_cv_func_setenv=no")])
-if eval "test \"`echo '$ac_cv_func_setenv\" = yes"; then
+
+if test "$ac_cv_func_setenv" = "yes"; then
   AC_MSG_RESULT(yes)
+  AC_DEFINE_UNQUOTED(HAVE_FUNC_SETENV)
 else
   AC_MSG_RESULT(no)
   MISCOBJS="$MISCOBJS setenv.lo"
@@ -340,7 +343,7 @@ AC_DEFUN(AC_SET_DEBUG,
 [
  test "$CFLAGS" = "" && CFLAGS="-g -Wall" 
  test "$CXXFLAGS" = "" && CXXFLAGS="-g -Wall"
- LDFLAGS=""
+ test "$LDFLAGS" = "" && LDFLAGS="" dnl looks stupid
 ])
 
 AC_DEFUN(AC_SET_NODEBUG,
@@ -352,7 +355,7 @@ AC_DEFUN(AC_SET_NODEBUG,
 
 AC_DEFUN(AC_CHECK_DEBUG,
 [AC_ARG_ENABLE(debug,[ --enable-debug 	creates debugging code [default=no]],
-[ if [ $enableval = "no"]; then AC_SET_NODEBUG
+[ if test $enableval = "no"; then AC_SET_NODEBUG
 else AC_SET_DEBUG 
 fi
 ],

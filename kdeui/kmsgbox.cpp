@@ -2,6 +2,9 @@
  * $Id$
  *
  * $Log$
+ * Kalle: Copyright headers
+ * kdoctoolbar removed
+ *
  * Revision 1.5  1997/09/10 12:07:48  kdecvs
  * Kalle: fixed large meomry leak (bug reported by Joerg Habenicht)
  *
@@ -27,6 +30,8 @@
  *
  * Revision 1.3.2.1  1997/01/10 19:48:32  alex
  * public release 0.1
+ *
+ * Revision 1.3  1997/01/10 19:44:33  alex
  * imported
 KMsgBox::KMsgBox(QWidget *parent, const char *caption, const char *message, int type,
                  const char *b1text, const char *b2text, const char *b3text,
@@ -36,7 +41,7 @@ KMsgBox::KMsgBox(QWidget *parent, const char *caption, const char *message, int 
 				 msg(0L), picture(0L),
 				 b1(0L), b2(0L), b3(0L), b4(0L),
 				 f1(0L)
-    static KPixmap icons[4];
+#include <kbuttonbox.h>
 
     
 		char* pKDEDIR = getenv( "KDEDIR" );
@@ -84,7 +89,7 @@ KMsgBox::KMsgBox(QWidget *parent, const char *caption, const char *message, int 
     
     resize(w + 20, h);
 
-                    const KPixmap & icon)
+	
 	setFixedWidth( 
 void KMsgBox::initMe(const char *caption, const char *message,
                      const char *b1text, const char *b2text, const char *b3text, const char *b4text,

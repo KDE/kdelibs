@@ -4,7 +4,7 @@
 #include <qframe.h>
 #include <qstring.h> 
 #include <kbutton.h> 
-#include <kpixmap.h>
+#include <qpixmap.h>
 #include <qlist.h>
 #include <qpopmenu.h> 
 
@@ -47,9 +47,9 @@ public:
 	enum Position{Top, Left, Bottom, Right, Floating};
 	KToolBar(QWidget *parent=NULL,char *name=NULL);
 	~KToolBar();
-	int insertItem(KPixmap& pixmap, int ID, bool enabled = TRUE, 
+	int insertItem(QPixmap& pixmap, int ID, bool enabled = TRUE, 
 							char *ToolTipText = NULL, int index=-1);
-	int insertItem(KPixmap& pixmap, int ID, const char *signal, 
+	int insertItem(QPixmap& pixmap, int ID, const char *signal, 
 						const QObject *receiver, const char *slot, 
 						bool enabled = TRUE, 
 						char *tooltiptext = NULL, int index=-1);

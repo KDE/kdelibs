@@ -1,7 +1,7 @@
 #ifndef KBUTTON_H
 #define KBUTTON_H
 
-#include <kpixmap.h>
+#include <qpixmap.h>
 #include <qbutton.h>
 
 class KButton : public QButton

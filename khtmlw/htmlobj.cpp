@@ -17,7 +17,7 @@
 #include <qimage.h>
 #include <qdrawutl.h>
 
-QList<HTMLCachedImage> HTMLImage::cache;
+QList<HTMLCachedImage>* HTMLImage::pCache = NULL;
 int HTMLObject::objCount = 0;
 
 //-----------------------------------------------------------------------------
@@ -294,15 +294,24 @@ void HTMLBullet::print( QPainter *_painter, int _tx, int _ty )
 
 HTMLCachedImage::HTMLCachedImage( const char *_filename )
 {
-    pixmap = new KPixmap();
+    pixmap = new QPixmap();
     pixmap->load( _filename );
     filename = _filename;
 }
 
-KPixmap* HTMLImage::findImage( const char *_filename )
+QPixmap* HTMLImage::findImage( const char *_filename )
 {
+  // Since this method is static, it is possible that pCache has not
+  // yet been initialized. Better be careful.
+  if( !pCache )
+	{
+	  debug( "Calling HTMLImage::cacheImage without existing HTMLImage
+object!" );
+	  pCache = new QList<HTMLCachedImage>;
+	}
+
     HTMLCachedImage *img;
-    for ( img = cache.first(); img != 0L; img = cache.next() )
+    for ( img = pCache->first(); img != 0L; img = pCache->next() )
     {
 	if ( strcmp( _filename, img->getFileName() ) == 0 )
 	    return img->getPixmap();
@@ -313,12 +322,23 @@ KPixmap* HTMLImage::findImage( const char *_filename )
 
 void HTMLImage::cacheImage( const char *_filename )
 {
-    cache.append( new HTMLCachedImage( _filename ) );
+  // Since this method is static, it is possible that pCache has not
+  // yet been initialized. Better be careful.
+  if( !pCache )
+	{
+	  debug( "Calling HTMLImage::cacheImage without existing HTMLImage
+object!" );
+	  pCache = new QList<HTMLCachedImage>;
+	}
+
+    pCache->append( new HTMLCachedImage( _filename ) );
 }
 
 HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename, const char* _url, int _max_width,
 		      int _width, int _height, int _percent )
 {
+	pCache = new QList<HTMLCachedImage>;
+
     pixmap = 0L;
 
     htmlWidget = widget;
@@ -348,7 +368,7 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename, const char* _u
 	    pixmap = HTMLImage::findImage( kurl.path() );
 	    if ( pixmap == 0L )
 	    {
-		pixmap = new KPixmap();
+		pixmap = new QPixmap();
 		pixmap->load( kurl.path() );	    
 		cached = false;
 	    }
@@ -383,7 +403,7 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename, const char* _u
 	pixmap = HTMLImage::findImage( _filename );
 	if ( pixmap == 0L )
 	{
-	    pixmap = new KPixmap();
+	    pixmap = new QPixmap();
 	    pixmap->load( _filename );
 	    cached = false;
 	}
@@ -418,7 +438,7 @@ void HTMLImage::init()
 
 void HTMLImage::imageLoaded( const char *_filename )
 {
-    pixmap = new KPixmap();
+    pixmap = new QPixmap();
     pixmap->load( _filename );	    
     cached = false;
 
@@ -494,6 +514,8 @@ HTMLImage::~HTMLImage()
 {
     if ( pixmap && !cached )
 	delete pixmap;
+
+	delete pCache;
 }
 
 //-----------------------------------------------------------------------------

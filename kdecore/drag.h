@@ -1,6 +1,9 @@
 /* $Id$
  *
  * $Log$
+ * Kalle: Copyright headers
+ * kdoctoolbar removed
+ *
  * Revision 1.8  1997/09/18 12:16:04  kulow
  * corrected some header dependencies. Removed most of them in drag.h and put
  * them in drag.cpp. Now it should compile even under SunOS 4.4.1 ;)
@@ -56,8 +59,6 @@
 #include <qbitmap.h>
  * formatting
 
-#include "kpixmap.h"
-
 #include<X11/X.h>
  *
 // From Offix
@@ -110,7 +111,7 @@
    Creates an Icon with the specified pixma. _x and _y are the upper
    left corner in global coordinates.
    p*/
-  KDNDIcon( KPixmap &pixmap , int _x, int _y );
+
 /**
   /// Destructor
   /** Destructor */
@@ -121,7 +122,7 @@
 class KDNDIcon : public QWidget
 {
   /// The pixmap displayed.
-  KPixmap pixmap;
+/**
 * Creates an Icon with the specified pixmap. _x and _y are the upper
 * left corner in global coordinates.
 /// Drop zone for KDE Drag 'n Drop
@@ -330,7 +331,7 @@ signals:
     {
         QString data = "Transfer me";
 	QPoint p = mapToGlobal( _mouse->pos() );
-	KPixmap pixmap = typ->getPixmap( filename );
+	QPixmap pixmap = typ->getPixmap( filename );
 	int dx = - pixmap.width() / 2;
 	int dy = - pixmap.height() / 2;
 

@@ -23,6 +23,7 @@
 
 #include <qapp.h>
 #include <qdir.h>
+#include <qpainter.h>
 
 #include "kiconloader.h"
 #include "kiconloader.moc"
@@ -65,11 +66,11 @@ void KIconLoaderCanvas::loadDir( QString dir_name, QString filter )
   QStrListIterator it(*file_list);
   QString current;
 
-  KPixmap *new_xpm;
+  QPixmap *new_xpm;
   it.toFirst();
   for( ; it.current(); ++it )
     {
-      new_xpm = new KPixmap;
+      new_xpm = new QPixmap;
       current = it.current();
       new_xpm->load( dir_name + '/' + current );
       if( new_xpm->isNull() )
@@ -140,12 +141,12 @@ void KIconLoaderCanvas::mousePressEvent( QMouseEvent *e)
   updateCell( findRow(e->pos().y()), findCol(e->pos().x()) );
 }
 
-void KIconLoaderCanvas::mouseDoubleClickEvent( QMouseEvent *e)
+void KIconLoaderCanvas::mouseDoubleClickEvent( QMouseEvent * )
 {
   emit doubleClicked();
 }
 
-void KIconLoaderCanvas::resizeEvent( QResizeEvent *e )
+void KIconLoaderCanvas::resizeEvent( QResizeEvent * )
 {
   if( !isVisible() )
     return;
@@ -213,7 +214,7 @@ int KIconLoaderDialog::exec(QString filter)
   return result();
 }
 
-void KIconLoaderDialog::resizeEvent( QResizeEvent *e )
+void KIconLoaderDialog::resizeEvent( QResizeEvent * )
 {
   int w = width();
   int h = height();
@@ -255,7 +256,7 @@ KIconLoader::~KIconLoader()
 QPixmap KIconLoader::loadIcon ( const QString &name )
 {
   QPixmap *pix;
-  KPixmap new_xpm;
+  QPixmap new_xpm;
   int index;
   if ( (index = name_list.find(name)) < 0)
     {  

@@ -1,6 +1,13 @@
 // $Id$
 // Revision 1.41  1998/01/06 22:54:29  kulow
 // $Log$
+// Revision 1.5  1997/05/02 16:46:34  kalle
+// Kalle: You may now override how KApplication reacts to external changes
+// KButton uses the widget default palette
+// new kfontdialog version 0,5
+// new kpanner by Paul Kendall
+// new: KIconLoader
+//
 // Revision 1.4  1997/04/28 06:57:45  kalle
 // Various widgets moved from apps to libs
 // Added KSeparator
@@ -226,7 +233,7 @@ private slots:
   QFile* pConfigFile; // application-specific config file
 	* X11 atoms used for IPC
   Atom DndProtocol;
-  static QStrList searchPaths;
+  Atom DndEnterProtocol;
  void appHelpActivated();
   void aboutKDE();
   void aboutQt();

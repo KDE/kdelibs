@@ -2,6 +2,16 @@
  * $Id$
  * Revision 1.1.1.3  1997/12/11 07:19:13  jacek
  * $Log$
+ * Revision 1.1.1.1  1997/12/09 22:02:46  jacek
+ * Imported sorces fromkde
+ *
+ * Revision 1.4  1997/10/16 11:14:36  torben
+ * Kalle: Copyright headers
+ * kdoctoolbar removed
+ *
+ * Revision 1.3  1997/05/08 22:53:17  kalle
+ * Kalle:
+ * KPixmap gone for good
  * Eliminated static objects from KApplication and HTML-Widget
  *
  * Revision 1.2  1997/04/28 06:57:45  kalle
@@ -27,52 +37,9 @@
  * autoconf and documentation
  *
  * Revision 1.2  1996/12/07 22:08:40  kalle
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-#include <stdio.h>
-#ifdef STDC_HEADERS
-#include <stdlib.h>
-#else
-#error Declare functions needed from stdlib.h
-#endif
-
-#undef TrueColor
  * RCS header
-#include <qfile.h>
-#include <qtstream.h>
-#include <qapp.h>
-#include <qbitmap.h>
-#include <qcolor.h>
-#include <qpainter.h>
-
-/// QPixmap that may be loaded from an .xpm file.
-/** QPixmap that may be loaded from an .xpm file. */
-class KPixmap : public QPixmap
-{
-public:
-  /// Default constructor.
-  /** Default constructor. */
-  KPixmap();
-
-  /// Constructor with filename. 
-  /** Constructor with filename. Loads a pixmap from the specified
-	.xpm file */
-  KPixmap( const char * );
-  
-  /// Destructor.
-  /** Destructor. */
-  virtual ~KPixmap() { }
-    
-  /// Load a pixmap from an .xpm file
-  /** Load a pixmap from an .xpm file */
-  virtual bool load( const char * );
-  virtual bool loadXVPICS( const char *);
  *
-protected:
-  QBitmap bitmap;
-};
+ *
  * KPixmap - taken from kfm
  *
  * Author: Torben Weis

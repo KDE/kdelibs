@@ -1,6 +1,13 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.6  1997/05/02 16:46:34  kalle
+// Kalle: You may now override how KApplication reacts to external changes
+// KButton uses the widget default palette
+// new kfontdialog version 0,5
+// new kpanner by Paul Kendall
+// new: KIconLoader
+//
 // Revision 1.5  1997/04/28 06:57:44  kalle
 // Various widgets moved from apps to libs
 // Added KSeparator
@@ -75,6 +82,7 @@
 //       for the miniicon if "-miniicon" is not defined.
 #endif
 
+//   PseudoSessionManagement (this is the default when session management
 #include <stdlib.h> // getenv()
 //   Now KApplication should work as promised in kapp.h :-)
 // Revision 1.66  1997/10/25 22:27:40  kalle
@@ -88,7 +96,7 @@
 // compiler bug. I know - I should upgrade gcc, but for all the
 // poor folks that still have the old one ;-)
 // Matthias: registerTopWidget/unregisterTopWidget are obsolete and empty now.
-QStrList KApplication::searchPaths;
+//           Introduced new registration model
 
 // prevents children from going zombie
 void reaper(int) 
@@ -203,6 +211,7 @@ void KApplication::init()
   
   pIconLoader = 0L;
 
+  // create the config directory
   QString configPath = QDir::homeDirPath () + "/.kde";
   // We should check if  mkdir() succeeds, but since we cannot do much anyway...
   mkdir (configPath.data(), 0755); // make it public(?)
@@ -221,6 +230,9 @@ void KApplication::init()
       else
         aIconPixmap = getIconLoader()->loadApplicationIcon( argv[i+1] );
 		  aMiniIconPixmap = aIconPixmap;
+      aDummyString2 += argv[i+1];
+      aDummyString2 += " ";
+      break;
     case miniicon:
   if( pConfigStream )
 	delete pConfigStream;
@@ -408,7 +420,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
 				result = dz;
 			}
 	      
-  QStrListIterator it( searchPaths );
+	      if ( result == 0L )
 			w = w->parentWidget();
 		}
 
@@ -473,7 +485,7 @@ QString KApplication::findFile( const char *file )
 
   while ( it.current() )
     {
-  QStrListIterator it( searchPaths );
+	  fullPath = it.current();
 	  fullPath += '/';
 	  fullPath += file;
 	  if ( !access( fullPath, 0 ) )
@@ -483,7 +495,7 @@ QString KApplication::findFile( const char *file )
 
   fullPath.resize( 0 );
 
-  searchPaths.append( path );
+ appendSearchPath( kdedir().data() );
 }
 
 

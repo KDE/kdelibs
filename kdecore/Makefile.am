@@ -13,10 +13,10 @@ SUFFIXES = .moc
 CXXFLAGS = @CXXFLAGS@ -DKDEDIR=\"@KDEDIR@\"
 
 include_HEADERS = Kconfig.h Kconfigdata.h kcolorgroup.h kapp.h\
-	kurl.h ksock.h drag.h kpixmap.h kkeyconf.h kkeydata.h ckey.h kmisc.h
+	kurl.h ksock.h drag.h kkeyconf.h kkeydata.h ckey.h kmisc.h
 
 libkdecore_la_SOURCES = Kconfig.cpp kcolorgroup.cpp kapp.cpp kurl.cpp \
-	ksock.cpp drag.cpp kpixmap.cpp kkeyconf.cpp
+	ksock.cpp drag.cpp kkeyconf.cpp
 
 libkdecore_la_LIBADD = @MISCOBJS@
 libkdecore_la_DEPENDENCIES = @MISCOBJS@ 

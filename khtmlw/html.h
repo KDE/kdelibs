@@ -12,7 +12,6 @@
 
 class KHTMLWidget;
 
-#include "kpixmap.h"
 #include "drag.h"
 #include "htmlobj.h"
 #include "htmlform.h"
@@ -523,7 +522,7 @@ protected:
      * If the user drags a URL out of the widget, by default this pixmap
      * is used for the dragged icon. The pixmap is loaded in the constructor.
      */
-    KPixmap dndDefaultPixmap;
+    QPixmap dndDefaultPixmap;
 
     /*********************************************************
      * This is the URL which is visible on the screen. This URL
@@ -593,7 +592,7 @@ protected:
 	 */
 	QStrList tempStrings;
 
-	KPixmap bgPixmap;
+	QPixmap bgPixmap;
 
 	/*********************************************************
 	 * This is the cusor to use when over a link
