@@ -92,6 +92,7 @@ using namespace DOM;
 
 #include <qclipboard.h>
 #include <qfile.h>
+#include <qtooltip.h>
 #include <qmetaobject.h>
 #include <private/qucomextra_p.h>
 
@@ -1133,6 +1134,12 @@ void KHTMLPart::setPageSecurity( PageSecurity sec )
     d->m_statusBarExtension->addStatusBarItem( d->m_statusBarIconLabel, 0, false );
     connect( d->m_statusBarIconLabel, SIGNAL( leftClickedURL() ), SLOT( slotSecurity() ) );
   }
+
+  QToolTip::remove(d->m_statusBarIconLabel);
+  if (d->m_ssl_in_use)
+    QToolTip::add(d->m_statusBarIconLabel, i18n("SSL is in use, %1 bit %2.").arg(d->m_ssl_cipher_bits).arg(d->m_ssl_cipher));
+  else QToolTip::add(d->m_statusBarIconLabel, i18n("SSL is not in use."));
+
   QString iconName;
   switch (sec)  {
   case NotCrypted:
@@ -1207,6 +1214,15 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
     d->m_ssl_cipher_used_bits = d->m_job->queryMetaData("ssl_cipher_used_bits");
     d->m_ssl_cipher_bits = d->m_job->queryMetaData("ssl_cipher_bits");
     d->m_ssl_cert_state = d->m_job->queryMetaData("ssl_cert_state");
+
+    if (d->m_statusBarIconLabel) {
+      QToolTip::remove(d->m_statusBarIconLabel);
+      if (d->m_ssl_in_use) {
+        QToolTip::add(d->m_statusBarIconLabel, i18n("SSL is in use, %1 bit %2.").arg(d->m_ssl_cipher_bits).arg(d->m_ssl_cipher));
+      } else {
+        QToolTip::add(d->m_statusBarIconLabel, i18n("SSL is not in use."));
+      }
+    }
 
     // Check for charset meta-data
     QString qData = d->m_job->queryMetaData("charset");
