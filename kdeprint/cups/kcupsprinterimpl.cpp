@@ -144,7 +144,12 @@ static void mapToCupsOptions(const QMap<QString,QString>& opts, QString& cmd)
 		// only encode those options that doesn't start with "kde-" or "app-".
 		if (!it.key().startsWith("kde-") && !it.key().startsWith("app-") && !it.key().startsWith("_kde"))
 		{
-			optstr.append(" ").append(it.key());
+			QString key = it.key();
+			if (key.startsWith("KDEPrint-"))
+				/* Those are keys added by the "Additional Tags" page. *
+				 * Strip the prefix to build valid a CUPS option.      */
+				key = key.mid(9);
+			optstr.append(" ").append(key);
 			if (!it.data().isEmpty())
 				optstr.append("=").append(it.data());
 		}
