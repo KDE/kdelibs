@@ -108,4 +108,37 @@
 # define KDE_DEPRECATED
 #endif
 
+/**
+ * The KDE_ISLIKELY macro tags a boolean expression as likely to evaluate to
+ * 'true'. When used in an if ( ) statement, it gives a hint to the compiler
+ * that the following codeblock is likely to get executed. Providing this
+ * information helps the compiler to optimize the code for better performance.
+ * Using the macro has an insignificant code size or runtime memory footprint impact.
+ * The code semantics is not affected.
+ *
+ * \note
+ * Providing wrong information ( like marking a condition that almost never
+ * passes as 'likely' ) will cause a significant runtime slowdown. Therefore only
+ * use it for cases where you can be sure about the odds of the expression to pass
+ * in all cases ( independent from e.g. user configuration ).
+ *
+ * \par
+ * The KDE_ISUNLIKELY macro tags an expression as unlikely evaluating to 'true'. 
+ *
+ * \note
+ * Do NOT use ( !KDE_ISLIKELY(foo) ) as an replacement for KDE_ISUNLIKELY !
+ *
+ * \code
+ * if ( KDE_ISUNLIKELY( testsomething() ) )
+ *     abort();     // assume its unlikely that the application aborts
+ * \endcode
+ */
+#if __GNUC__ - 0 >= 3
+# define KDE_ISLIKELY( x )    __builtin_expect(!!(x),1)
+# define KDE_ISUNLIKELY( x )  __builtin_expect(!!(x),0)
+#else
+# define KDE_ISLIKELY( x )   ( x )
+# define KDE_ISUNLIKELY( x )  ( x )
+#endif
+
 #endif // _KDE_MACROS_H_
