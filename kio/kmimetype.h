@@ -246,10 +246,12 @@ public:
 		     
   struct Service
   {
+    Service() { m_display = true; }
     QString m_strName;
     QString m_strIcon;
     QString m_strExec;
     ServiceType m_type;
+    bool m_display;
   };
   
 //  KDEDesktopMimeType( const QString & _fullpath, const QString& _type, const QString& _icon, 

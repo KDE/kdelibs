@@ -701,6 +701,7 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices(
         s.m_strIcon = cfg.readEntry( "Icon" );
         s.m_strExec = cfg.readEntry( "Exec" );
 	s.m_type = ST_USER_DEFINED;
+        s.m_display = !cfg.readBoolEntry( "NoDisplay" );
 	result.append( s );
       }
     }
