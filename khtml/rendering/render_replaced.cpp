@@ -34,7 +34,6 @@
 #include "xml/dom2_eventsimpl.h"
 #include "khtml_part.h"
 #include "xml/dom_docimpl.h" // ### remove dependency
-#include <iostream.h>
 
 using namespace khtml;
 using namespace DOM;
@@ -323,7 +322,6 @@ void RenderWidget::printObject(QPainter *p, int, int, int, int, int _tx, int _ty
 
 bool RenderWidget::eventFilter(QObject *o, QEvent *e)
 {
-    cerr << "RenderWidget::eventFilter(): event type is " << e->type() << endl;
 /*
 //    if (e->type() == QEvent::ShowWindowRequest)
 //	return true;
