@@ -228,6 +228,9 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                     return;
                 }
             }
+
+	    else if ( d->completionBox )
+		d->completionBox->hide();
 	}
 	
 	
@@ -461,7 +464,8 @@ void KLineEdit::slotCancelled()
 // FIXME: make pure virtual in KCompletionBase!
 void KLineEdit::setCompletedItems( const QStringList& items )
 {
-    if ( completionMode() == KGlobalSettings::CompletionPopup )
+    if ( completionMode() == KGlobalSettings::CompletionPopup ||
+	 completionMode() == KGlobalSettings::CompletionShell )
     {
         if ( !d->completionBox )
             makeCompletionBox();
@@ -487,4 +491,18 @@ KCompletionBox * KLineEdit::completionBox()
 {
     makeCompletionBox();
     return d->completionBox;
+}
+
+void KLineEdit::setCompletionObject( KCompletion* comp, bool hsig )
+{
+    KCompletion *oldComp = completionObject( false, false ); // don't create!
+    if ( oldComp && handleSignals() )
+	disconnect( oldComp, SIGNAL( matches( const QStringList& )),
+		    this, SLOT( setCompletedItems( const QStringList& )));
+    
+    if ( comp && hsig )
+	connect( comp, SIGNAL( matches( const QStringList& )),
+		 this, SLOT( setCompletedItems( const QStringList& )));
+	
+    KCompletionBase::setCompletionObject( comp, hsig );
 }

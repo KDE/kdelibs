@@ -581,6 +581,9 @@ public:
     * to be handled by an internal implementation, be sure to
     * set the bool argument to false.
     *
+    * This method is also called when a completion-object is created
+    * automatically, when completionObject() is called the first time.
+    * 
     * @param compObj a @ref KCompletion() or a derived child object.
     * @param hsig if true, handles signals internally.
     */

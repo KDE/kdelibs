@@ -177,9 +177,15 @@ QString KCompletion::makeCompletion( const QString& string )
 	// Don't use myMatches since calling postProcessMatches()
 	// on myMatches here would interfere with call to
 	// postProcessMatch() during rotation
+	
 	QStringList l = findAllCompletions( string );
 	postProcessMatches( &l );
 	emit matches( l );
+
+	if ( l.isEmpty() )
+	    doBeep( NoMatch );
+	    
+	return QString::null;
     }
 
     QString completion = findCompletion( string );

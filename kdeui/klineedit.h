@@ -223,11 +223,11 @@ public:
 
     /**
      * Returns @p true when decoded URL drops are enabled
-     * 
+     *
      * @return @p true if decoded URL drops are enabled
      */
     bool isURLDropsEnabled() const;
-    
+
     /**
      * By default, @ref KComboBox recognizes @p Key_Return and @p Key_Enter and emits
      * the @ref returnPressed() signals, but it also lets the event pass,
@@ -265,6 +265,11 @@ public:
      */
     KCompletionBox * completionBox();
 
+    /**
+     * Reimplemented for internal reasons, the API is not affected.
+     */
+    virtual void setCompletionObject( KCompletion *, bool hsig = true );
+    
 signals:
 
     /**

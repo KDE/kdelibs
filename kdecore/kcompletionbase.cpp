@@ -18,6 +18,7 @@
    Boston, MA 02111-1307, USA.
 */
 
+#include <qobject.h>
 #include <qpopupmenu.h>
 
 #include <kstdaccel.h>
@@ -51,10 +52,8 @@ KCompletion* KCompletionBase::completionObject( bool hsig )
 {
     if ( !m_pCompObj )
     {
-        m_pCompObj = new KCompletion();
-        // We emit rotation and completion
-        // signals by default.
-        setup( true, hsig, true );
+        setCompletionObject( new KCompletion(), hsig );
+	m_bAutoDelCompObj = true;
     }
     return m_pCompObj;
 }
@@ -72,7 +71,7 @@ void KCompletionBase::setCompletionObject( KCompletion* compObj, bool hsig )
     if ( m_bAutoDelCompObj && compObj != m_pCompObj )
         delete m_pCompObj;
 
-   m_pCompObj = compObj;
+    m_pCompObj = compObj;
 
     // We emit rotation and completion signals
     // if completion object is not NULL.

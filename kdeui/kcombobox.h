@@ -261,7 +261,7 @@ public:
 
     /**
      * Returns @p true when decoded URL drops are enabled
-     * 
+     *
      * @return @p true if decoded URL drops are enabled
      */
     bool isURLDropsEnabled() const;
@@ -327,6 +327,11 @@ public:
      * @ref makeCompletionBox, if none is there, yet.
      */
     KCompletionBox * completionBox();
+
+    /**
+     * Reimplemented for internal reasons, the API is not affected.
+     */
+    virtual void setCompletionObject( KCompletion *, bool hsig = true );
 
 signals:
     /**
@@ -712,7 +717,7 @@ private slots:
      * resets the iterate index to -1
      */
     void slotReset();
-    
+
 private:
     void init( bool useCompletion );
 
