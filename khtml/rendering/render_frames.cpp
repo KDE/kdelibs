@@ -502,10 +502,8 @@ void RenderPartObject::close()
 {
   QString url;
   QString serviceType;
-
-  QStringList params;
-
-  if(m_obj->id() == ID_OBJECT) {
+  
+  if(m_obj->id() == ID_OBJECT) {     
      // check for embed child object
      HTMLObjectElementImpl *o = static_cast<HTMLObjectElementImpl *>(m_obj);
      HTMLEmbedElementImpl *embed = 0;
@@ -547,6 +545,7 @@ void RenderPartObject::close()
 	}
 
 	// add all <param>'s to the QStringList argument of the part
+	QStringList params;
 	NodeImpl *child = o->firstChild();
 	while ( child ) {
 	   if ( child->id() == ID_PARAM ) {
@@ -588,7 +587,7 @@ void RenderPartObject::close()
 	return; //ooops (-:
 
      kdDebug() << "<embed> - part()->requestObject( " << url << " )" << endl;
-     static_cast<KHTMLView *>(m_view)->part()->requestObject( this, url, serviceType, params );
+     static_cast<KHTMLView *>(m_view)->part()->requestObject( this, url, serviceType, o->param );
   } else {
       assert(m_obj->id() == ID_IFRAME);
       HTMLIFrameElementImpl *o = static_cast<HTMLIFrameElementImpl *>(m_obj);

@@ -40,7 +40,9 @@ color, ATTR_COLOR
 cols, ATTR_COLS
 colspan, ATTR_COLSPAN
 compact, ATTR_COMPACT
+console, ATTR_CONSOLE
 content, ATTR_CONTENT
+controls, ATTR_CONTROLS
 coords, ATTR_COORDS
 data, ATTR_DATA
 datetime, ATTR_DATETIME
