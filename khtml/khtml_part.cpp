@@ -512,8 +512,6 @@ bool KHTMLPart::openURL( const KURL &url )
   if ( (args.postData.size() > 0) && (url.protocol().startsWith("http")) )
   {
       d->m_job = KIO::http_post( url, args.postData, false );
-      // DA: Send the content-type as a meta-data instead...
-//    d->m_job = KIO::http_post( url, args.postData, d->m_userHeaders, false );
       d->m_job->addMetaData("content-type", d->m_userHeaders );
   }
   else
@@ -1108,9 +1106,9 @@ void KHTMLPart::slotFinishedParsing()
 
   // check if the scrollbars are really needed for the content
   // if not, remove them, relayout, and repaint
-  
+
   d->m_view->restoreScrollBar();
-  
+
   if ( !m_url.htmlRef().isEmpty() )
     gotoAnchor( m_url.htmlRef() );
   else if (d->m_view->contentsY()==0) // check that the view has not been moved by the use
@@ -2144,6 +2142,8 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
       d->m_userHeaders = "Content-Type: application/x-www-form-urlencoded";
     else // contentType must be "multipart/form-data"
       d->m_userHeaders = "Content-Type: " + contentType + "; boundary=" + boundary;
+
+    args.setContentType( d->m_userHeaders );
   }
 
   // ### bail out if a submit() call from JS occured while parsing
