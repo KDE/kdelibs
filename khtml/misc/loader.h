@@ -161,7 +161,7 @@ namespace khtml
 
     protected:
         QList<CachedObjectClient> m_clients;
-        
+
 	DOM::DOMString m_url;
         QString m_accept;
         Request *m_request;
@@ -223,6 +223,8 @@ namespace khtml
 
 	void checkNotify();
 
+        bool isLoaded() const { return !loading; }
+
     protected:
 	DOM::DOMString m_script;
 	bool loading;
@@ -257,7 +259,7 @@ namespace khtml
         bool isErrorImage() const { return errorOccured; }
 
         void setShowAnimations( bool );
-        
+
         virtual bool schedule() const { return true; }
 
     protected:
@@ -300,7 +302,7 @@ namespace khtml
      *
      * Manages the loading of scripts/images/stylesheets for a particular document
      */
-    class DocLoader 
+    class DocLoader
     {
     public:
  	DocLoader(KHTMLPart*, DOM::DocumentImpl*);
@@ -321,11 +323,11 @@ namespace khtml
         void setReloading( bool );
         void setShowAnimations( bool );
         void removeCachedObject( CachedObject*) const;
-        
+
     private:
         friend class Cache;
         friend class DOM::DocumentImpl;
-        
+
         QStringList m_reloadedURLs;
         mutable QList<CachedObject> m_docObjects;
 	int m_expireDate;
@@ -356,11 +358,11 @@ namespace khtml
     class Loader : public QObject
     {
 	Q_OBJECT
-            
-    public:     
+
+    public:
 	Loader();
 	~Loader();
-        
+
 	void load(DocLoader* dl, CachedObject *object, bool incremental = true);
 
         int numRequests( DocLoader* dl ) const;

@@ -47,6 +47,7 @@ class HTMLTokenizer;
 
 #include <qstring.h>
 #include <qobject.h>
+#include <qptrqueue.h>
 
 #include "stringit.h"
 #include "loader_client.h"
@@ -344,7 +345,7 @@ protected:
     // true if we are executing a script while parsing a document. This causes the parsing of
     // the output of the script to be postponed until after the script has finished executing
     int m_executingScript;
-    khtml::CachedScript *cachedScript;
+    QPtrQueue<khtml::CachedScript> cachedScript;
     // you can pause the tokenizer if you need to display a dialog or something
     bool onHold;
 

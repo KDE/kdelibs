@@ -123,7 +123,6 @@ HTMLTokenizer::HTMLTokenizer(DOM::DocumentPtr *_doc, KHTMLView *_view)
     scriptCodeSize = scriptCodeMaxSize = scriptCodeResync = 0;
     charsets = KGlobal::charsets();
     parser = new KHTMLParser(_view, _doc);
-    cachedScript = 0;
     m_executingScript = 0;
     loadingExtScript = false;
     onHold = false;
@@ -139,7 +138,6 @@ HTMLTokenizer::HTMLTokenizer(DOM::DocumentPtr *_doc, DOM::DocumentFragmentImpl *
     scriptCodeSize = scriptCodeMaxSize = scriptCodeResync = 0;
     charsets = KGlobal::charsets();
     parser = new KHTMLParser( i, _doc );
-    cachedScript = 0;
     m_executingScript = 0;
     loadingExtScript = false;
     onHold = false;
@@ -152,9 +150,8 @@ void HTMLTokenizer::reset()
     assert(m_executingScript == 0);
     assert(onHold == false);
 
-    if (cachedScript)
-        cachedScript->deref(this);
-    cachedScript = 0;
+    while (!cachedScript.isEmpty())
+        cachedScript.dequeue()->deref(this);
 
     if ( buffer )
         KHTML_DELETE_QCHAR_VEC(buffer);
@@ -363,10 +360,12 @@ void HTMLTokenizer::scriptHandler()
 {
     // We are inside a <script>
     bool doScriptExec = false;
+    CachedScript* cs = 0;
     if (!scriptSrc.isEmpty()) {
         // forget what we just got; load from src url instead
         if ( !parser->skipMode() ) {
-            cachedScript = parser->doc()->docLoader()->requestScript(scriptSrc, scriptSrcCharset);
+            if ( (cs = parser->doc()->docLoader()->requestScript(scriptSrc, scriptSrcCharset) ))
+                cachedScript.enqueue(cs);
         }
         scriptSrc=QString::null;
     }
@@ -387,16 +386,16 @@ void HTMLTokenizer::scriptHandler()
 
     QString prependingSrc;
     if ( !parser->skipMode() ) {
-        if (cachedScript ) {
+        if (cs) {
              //qDebug( "cachedscript extern!" );
              //qDebug( "src: *%s*", QString( src.current(), src.length() ).latin1() );
              //qDebug( "pending: *%s*", pendingSrc.latin1() );
             pendingSrc.prepend( QString(src.current(), src.length() ) );
             setSrc(QString::null);
             scriptCodeSize = scriptCodeResync = 0;
-            cachedScript->ref(this);
+            cs->ref(this);
             // will be 0 if script was already loaded and ref() executed it
-            if (cachedScript)
+            if (!cachedScript.isEmpty())
                 loadingExtScript = true;
         }
         else if (view && doScriptExec && javascript ) {
@@ -1608,12 +1607,14 @@ void HTMLTokenizer::enlargeScriptBuffer(int len)
 
 void HTMLTokenizer::notifyFinished(CachedObject *finishedObj)
 {
-    if (view && finishedObj == cachedScript) {
+    assert(!cachedScript.isEmpty());
+    while (!cachedScript.isEmpty() && cachedScript.head()->isLoaded()) {
 #ifdef TOKEN_DEBUG
         kdDebug( 6036 ) << "Finished loading an external script" << endl;
 #endif
-        loadingExtScript = false;
-        DOMString scriptSource = cachedScript->script();
+        CachedScript* cs = cachedScript.dequeue();
+        loadingExtScript = !cachedScript.isEmpty();
+        DOMString scriptSource = cs->script();
 #ifdef TOKEN_DEBUG
         kdDebug( 6036 ) << "External script is:" << endl << scriptSource.string() << endl;
 #endif
@@ -1622,9 +1623,8 @@ void HTMLTokenizer::notifyFinished(CachedObject *finishedObj)
 
         // make sure we forget about the script before we execute the new one
         // infinite recursion might happen otherwise
-        QString cachedScriptUrl( cachedScript->url().string() );
-        cachedScript->deref(this);
-        cachedScript = 0;
+        QString cachedScriptUrl( cs->url().string() );
+        cs->deref(this);
 
 	scriptExecution( scriptSource.string(), cachedScriptUrl );
 
