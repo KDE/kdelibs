@@ -368,15 +368,15 @@ char * KSpell::funnyWord (char *word)
 		 word [j]!='-';j++)
 	    shorty+=word [j];
 	  i=j-1;
-	  
-	  if ((k=qs.find (shorty.data()))==0 ||
-	      k==(signed)(qs.length()-shorty.length()) && k!=-1)
-	    qs.remove (j,shorty.length());
+
+	  if ((k=qs.findRev (shorty.data()))==0
+	//	 || k==(signed)(qs.length()-shorty.length())
+		|| k!=-1)
+	    qs.remove (k,shorty.length());
 	  else
 	    {
               qs+='-';
-              qs+=shorty;
-              i+=j-1; //it was a hyphen, not a '-' from ispell
+              qs+=shorty;  //it was a hyphen, not a '-' from ispell
             }         
 	}
       else
