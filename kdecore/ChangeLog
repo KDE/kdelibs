@@ -1,3 +1,7 @@
+1999-04-07  Harri Porten  <porten@kde.org>
+
+	* kprocess.cpp: restore default SIGPIPE handler in forked child process 
+
 1999-03-22  Harri Porten  <porten@kde.org>
 
 	* kcharsets*.cpp: fixed memory leaks.
