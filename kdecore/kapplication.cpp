@@ -20,8 +20,6 @@
 
 // $Id$
 
-#define INCLUDE_MENUITEM_DEF
-
 #include "config.h"
 
 #undef QT_NO_TRANSLATION
@@ -36,18 +34,14 @@
 #include <qmessagebox.h>
 #include <qtextstream.h>
 #include <qregexp.h>
-#include <qkeycode.h>
 #include <qlineedit.h>
 #include <qtextedit.h>
-#include <qpopupmenu.h>
-#include <qmenubar.h>
 #include <qsessionmanager.h>
 #include <qptrlist.h>
 #include <qtimer.h>
 #include <qstylesheet.h>
 #include <qpixmapcache.h>
 #include <qtooltip.h>
-#include <qpushbutton.h>
 #include <qstylefactory.h>
 #ifndef QT_NO_SQL
 #include <qsqlpropertymap.h>
@@ -73,13 +67,8 @@
 #include <kmimesourcefactory.h>
 #include <kstdaccel.h>
 #include <kaccel.h>
-#include <kshortcut.h>
-#include <qobjectlist.h>
-#include <qmetaobject.h>
+#include <kcheckaccelerators.h>
 #include <qptrdict.h>
-#include <qlayout.h>
-#include <qtextview.h>
-#include <qtabbar.h>
 
 #include <kstartupinfo.h>
 
@@ -181,248 +170,6 @@ static void kde_ice_ioerrorhandler( IceConn conn )
     // else ignore the error for now
 }
 }
-
-class KCheckAccelerators : public QObject
-{
-public:
-    KCheckAccelerators( QObject* parent, QKeySequence k )
-	: QObject( parent, "kapp_accel_filter" ), key( k ), block( false ) {
-	 strictMenuCheck = TRUE;
-	parent->installEventFilter( this );
-    }
-    bool eventFilter( QObject * , QEvent * e) {
-	if ( block )
-	    return false;
-	if ( e->type() == QEvent::Accel ) {
-	    if ( ( static_cast<QKeyEvent *>(e) )->key() == key ) {
-		block = true;
-		checkAccelerators();
-		block = false;
-		( static_cast<QKeyEvent *>(e) )->accept();
-		return true;
-	    }
-	}
-	return false;
-    }
-
-    struct AccelInfo {
-	QString item;
-	QString string;
-    };
-
-    typedef QValueList<AccelInfo> AccelInfoList;
-
-    void findAccel( const QString& item, const QString &txt, QMap<QChar, AccelInfoList > &accels ) {
-	int i = txt.find( "&" );
-	if ( i == -1 )
-	    return;
-	QChar c = txt[ i + 1 ];
-	if ( c.isNull() || c == '&' )
-	    return;
-	c = c.lower();
-	QMap<QChar, AccelInfoList>::Iterator it = accels.find( c );
-	AccelInfo info;
-	info.item  = item;
-	info.string = txt;
-	if ( it == accels.end() ) {
-	    AccelInfoList list;
-	    list.append( info );
-	    accels.insert( c, list );
-	} else {
-	    AccelInfoList &list = it.data();
-	    list.append( info );
-	}
-    }
-
-
-    void checkMenuData( const QString& prefix, QMenuData* m, QMap<QChar, AccelInfoList > accels  ) {
-	QMenuItem* mi;
-	int i;
-	QString s;
-	for ( i = 0; i < (int) m->count(); i++ ) {
-	    mi = m->findItem( m->idAt( i ) );
-	    s = mi->text();
-	    if ( s.contains( '\t' ) )
-		s = s.left( s.find( '\t' ) );
-	    findAccel( prefix + s, s, accels );
-	}
-
-	for ( QMap<QChar,AccelInfoList>::Iterator it = accels.begin(); it != accels.end(); ++it  ) {
-	    QChar c = it.key();
-	    AccelInfoList list = it.data();
-  	    if ( list.count() <= 1 )
-  		continue;
-	    QMap<QChar, AccelInfoList>::Iterator menuIt = menuAccels.find( c );
-	    if ( menuIt == menuAccels.end() ) {
-		menuAccels.insert( c, list );
-	    } else {
-		AccelInfoList &olist = menuIt.data();
-		for ( AccelInfoList::Iterator ait = list.begin(); ait != list.end(); ++ait )
-		    olist.append( *ait );
-	    }
-	}
-
-	for ( i = 0; i < (int) m->count(); i++ ) {
-	    mi = m->findItem( m->idAt( i ) );
-	    if ( mi->popup() ) {
-		s = mi->text();
-		if ( s.contains( '\t' ) )
-		    s = s.left( s.find( '\t' ) );
-		if ( !strictMenuCheck )
-		    accels.clear();
-		checkMenuData( prefix + s + "/", mi->popup(), accels );
-	    }
-	}
-    }
-
-    void checkMenuData( QMenuData* m ) {
-	QMap<QChar, AccelInfoList > accels;
-	checkMenuData( "", m, accels );
-    }
-
-    void checkAccelerators() {
-	QWidget* actWin = qApp->activeWindow();
-	if ( !actWin )
-	    return;
-	QMap<QChar, AccelInfoList > accels;
-	QObjectList *l = actWin->queryList( "QWidget" );
-	if ( !l )
-	    return;
-	QMenuBar* mbar = 0;
-	for ( QObject *o = l->first(); o; o = l->next() ) {
-	    if ( ( static_cast<QWidget *>(o) )->isVisibleTo( actWin ) ) {
-		QWidget *w = static_cast<QWidget *>(o);
-		if ( w->inherits( "QMenuBar" ) )
-		    mbar = static_cast<QMenuBar *>(w);
-		QMetaObject *mo = w->metaObject();
-		const QMetaProperty* text = mo->property( mo->findProperty( "text", TRUE ), TRUE );
-		const QMetaProperty* title = mo->property( mo->findProperty( "title", TRUE ), TRUE );
-		if ( text )
-		    findAccel( w->className(), w->property( "text" ).toString(), accels );
-		if ( title )
-		    findAccel( w->className(), w->property( "title" ).toString(), accels );
-
-		if ( w->inherits( "QTabBar" ) ) {
-		    QTabBar *tbar = static_cast<QTabBar *>(w);
-		    for ( int i = 0; i < tbar->count(); i++ )
-			findAccel( tbar->className(), tbar->tab( i )->text(), accels );
-		}
-	    }
-	}
-	delete l;
-
-	QString s;
-
-	int num_clashes = 0;
-	for ( QMap<QChar,AccelInfoList>::Iterator it = accels.begin(); it != accels.end(); ++it  ) {
-	    AccelInfoList list = it.data();
-  	    if ( list.count() <= 1 )
-  		continue;
-
-	    if ( ++num_clashes == 1 ) {
-		s += "<table border>";
-		s += "<tr><th>Accel</th><th>String</th><th>Widget</th></tr>";
-	    }
-	    AccelInfoList::Iterator ait = list.begin();
-	    s += "<tr><td rowspan=" + QString::number( list.count() ) + "><large><b>" + it.key() + "</b></large></td>";
-	    s += "<td>";
-	    s += (*ait).string;
-	    s += "</td><td>";
-	    s += (*ait).item;
-	    s += "</td></tr>";
-
-	    for ( ait++; ait != list.end(); ++ait ) {
-		s += "<tr><td>";
-		s += (*ait).string;
-		s += "</td><td>";
-		s += (*ait).item;
-		s += "</td></tr>";
-	    }
-	}
-	if ( num_clashes  ) {
-	    s += "</table>";
-	    if ( num_clashes == 1 )
-		s.prepend( "<h3>One clash detected</h3>" );
-	    else
-		s.prepend(  QString("<h3>" ) + QString::number( num_clashes ) + " clashes detected</h3>" );
-	} else {
-	    s += "<h3>No clashes detected</h3>";
-	}
-
-	if ( mbar ) {
-	    QString m;
-	    num_clashes = 0;
-	    checkMenuData( mbar );
-	    for ( QMap<QChar,AccelInfoList>::Iterator it = menuAccels.begin(); it != menuAccels.end(); ++it  ) {
-		AccelInfoList list = it.data();
-		AccelInfoList::Iterator ait;
-		QStringList unique;
-		for ( ait = list.begin(); ait != list.end(); ++ait ) {
-		    if ( !unique.contains( (*ait).item ) )
-			unique += (*ait).item;
-		}
-		if ( unique.count() <= 1 )
-		    continue;
-
-		if ( ++num_clashes == 1 ) {
-		    m += "<table border>";
-		    m += "<tr><th>Accel</th><th>Menu Item</th></tr>";
-		}
-		ait = list.begin();
-		m += "<tr><td rowspan=" + QString::number( unique.count() ) + "><large><b>" + it.key() + "</b></large></td>";
-		unique.clear();
-		m += "<td>";
-		m += (*ait).item;
-		unique += (*ait).item;
-		m += "</td></tr>";
-
-		for ( ait++; ait != list.end(); ++ait ) {
-		    if ( unique.contains( (*ait).item ) )
-			continue;
-		    m += "<tr><td>";
-		    m += (*ait).item;
-		    unique += (*ait).item;
-		    m += "</td></tr>";
-		}
-	    }
-	    if ( num_clashes  ) {
-		m += "</table>";
-		if ( num_clashes == 1 )
-		    m.prepend( "<h3>One clash detected</h3>" );
-		else
-		    m.prepend(  QString("<h3>" ) + QString::number( num_clashes ) + " clashes detected</h3>" );
-	    } else {
-		m += "<h3>No clashes detected</h3>";
-	    }
-
-	    m.prepend( "<h2>Menubar</h2>" );
-	    m += "<h2>Other control elements</h2>";
-	    s.prepend( m );
-	}
-
-	s.prepend( QString("<h2><em>") + actWin->caption() + "<em></h2>" );
-
-	QDialog* dlg = new QDialog( actWin, "kapp_accel_check_dlg",  true, WDestructiveClose );
-	dlg->setCaption( "Dr. Klash' Accelerator Diagnosis" );
-	dlg->resize( 500, 460 );
-	QVBoxLayout* layout = new QVBoxLayout( dlg, 11, 6 );
-	layout->setAutoAdd( TRUE );
-	QTextView* view = new QTextView( dlg );
-	QPushButton* btnClose = new QPushButton( "&Close", dlg );
-	connect( btnClose, SIGNAL( clicked() ), dlg, SLOT( close() ) );
-	view->setText( s );
-	view->setFocus();
-	dlg->exec();
-    }
-
-    bool strictMenuCheck;
-
-private:
-    QKeySequence key;
-    bool block;
-    QMap<QChar, AccelInfoList > menuAccels;
-
-};
 
 /*
   Private data to make keeping binary compatibility easier
@@ -802,14 +549,8 @@ void KApplication::init(bool GUIenabled)
     QMimeSourceFactory::setDefaultFactory (mimeSourceFactory());
 
     KConfigGroupSaver saver( config, "Development" );
-    QString sKey = config->readEntry( "CheckAccelerators" ).stripWhiteSpace();
-    if( !sKey.isEmpty() ) {
-      KShortcut cuts( sKey );
-      if( cuts.count() > 0 ) {
-        d->checkAccelerators = new KCheckAccelerators( this, cuts.seq(0).qt() );
-        d->checkAccelerators->strictMenuCheck = config->readBoolEntry( "StrictMenuCheck", false );
-      }
-    }
+    if( config->hasKey( "CheckAccelerators" ) || config->hasKey( "AutoCheckAccelerators" ))
+        d->checkAccelerators = new KCheckAccelerators( this );
   }
 
   // save and restore the RTL setting, as installTranslator calls qt_detectRTLLanguage,

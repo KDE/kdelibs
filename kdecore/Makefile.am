@@ -59,7 +59,8 @@ libkdefakes_la_LDFLAGS = -version-info 5:0:1
 noinst_HEADERS = kaccelaction.h kaccelbase.h kaccelprivate.h kckey.h \
 	kcompletion_private.h \
 	kextsocklookup.h kglobalaccel_x11.h kkeyserver_x11.h \
-	kregpriv.h ksycocadict.h ksycocafactory.h netsupp.h
+	kregpriv.h ksycocadict.h ksycocafactory.h netsupp.h \
+	kcheckaccelerators.h
 
 libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kdebug.cpp netwm.cpp  \
 	kconfigbase.cpp kconfig.cpp  ksimpleconfig.cpp kconfigbackend.cpp  \
@@ -83,7 +84,8 @@ libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kdebug.cpp netwm.cpp  \
 	kmdcodec.cpp ksocks.cpp fakes.c vsnprintf.c \
 	ksycoca.cpp ksycocadict.cpp ksycocafactory.cpp ksycoca.skel \
 	kxmessages.cpp kstartupinfo.cpp kcatalogue.cpp kasyncio.cpp \
-	kmultipledrag.cpp kstaticdeleter.cpp kappdcopiface.cpp kappdcopiface.skel kclipboard.cpp
+	kmultipledrag.cpp kstaticdeleter.cpp kappdcopiface.cpp \
+	kappdcopiface.skel kclipboard.cpp kcheckaccelerators.cpp
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(KDE_RPATH) $(KDE_MT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 5:0:1 -no-undefined
 libkdecore_la_LIBADD = malloc/libklmalloc.la ../dcop/libDCOP.la ../libltdl/libltdlc.la $(LIB_XEXT) $(LIBRESOLV) $(LIBXINERAMA) $(LIB_DMALLOC) $(LIBART_LIBS) $(SVGICON_LIB)
