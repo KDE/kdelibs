@@ -16,7 +16,7 @@ libmcop_la_SOURCES = buffer.cc connection.cc core.cc dispatcher.cc \
 	 tmpglobalcomm.cc mcopconfig.cc connect.cc reference.cc type.cc \
 	 trader_impl.cc dynamicrequest.cc anyref.cc loopback.cc
 
-libmcop_la_LIBADD = $(LIBSOCKET) $(LIBPTHREAD) \
+libmcop_la_LIBADD = $(LIBSOCKET) $(LIBPTHREAD) $(USE_THREADS) \
      $(top_builddir)/libltdl/libltdlc.la
 libmcop_la_LDFLAGS = -no-undefined 
 
