@@ -496,6 +496,8 @@ void KSpellConfig::getAvailDictsAspell () {
   // FIXME: use "aspell dump config" to find out the dict-dir
   QFileInfo dir ("/usr/lib/aspell");
   if (!dir.exists() || !dir.isDir())
+    dir.setFile ("/usr/lib/aspell-0.60");
+  if (!dir.exists() || !dir.isDir())
     dir.setFile ("/usr/local/lib/aspell");
   if (!dir.exists() || !dir.isDir())
     dir.setFile ("/usr/share/aspell");
@@ -524,11 +526,11 @@ void KSpellConfig::getAvailDictsAspell () {
     // consider only simple dicts without '-' in the name
     // FIXME: may be this is wrong an the list should contain
     // all *.multi files too, to allow using special dictionaries
-    
+
     // Well, KSpell2 has a better way to do this, but this code has to be
-    // cleaned up somehow: since aspell 0.6 we have quite a lot of files in the 
+    // cleaned up somehow: since aspell 0.6 we have quite a lot of files in the
     // aspell dictionary that are not dictionaries. These must not be presented as "languages"
-    // We only keep 
+    // We only keep
     // *.rws: dictionary
     // *.multi: definition file to load several subdictionaries
     if ( !( fname.endsWith(".rws") || fname.endsWith(".multi") ) ) {
