@@ -147,6 +147,17 @@ struct KIconLoaderPrivate
 
 KIconLoader::KIconLoader(const QString& _appname, KStandardDirs *_dirs)
 {
+    init( _appname, _dirs );
+}
+
+void KIconLoader::reconfigure( const QString& _appname, KStandardDirs *_dirs )
+{
+    delete d;
+    init( _appname, _dirs );
+}
+
+void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
+{
     d = new KIconLoaderPrivate;
     d->imgDict.setAutoDelete( true );
 
@@ -329,7 +340,7 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
     if ((ext == ".png") || (ext == ".xpm"))
     {
 	kdDebug(264) << "Application " << KGlobal::instance()->instanceName()
-		<< " loads icon with extension.\n";
+                     << " loads icon " << name << " with extension.\n";
 	name = name.left(name.length() - 4);
     }
 
@@ -451,7 +462,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, int group, int size,
 	{
 	    kdDebug(264) << "Application "
 		<< KGlobal::instance()->instanceName()
-		<< " loads icon with extension.\n";
+		<< " loads icon " << name << " with extension.\n";
 	    name = name.left(name.length() - 4);
 	}
     }

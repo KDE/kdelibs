@@ -140,9 +140,8 @@ KIconLoader *KInstance::iconLoader() const
 
 void KInstance::newIconLoader() const
 {
-    delete _iconLoader;
     KIconTheme::reconfigure();
-    _iconLoader = 0;
+    _iconLoader->reconfigure( _name, dirs() );
 }
 
 const KAboutData * KInstance::aboutData() const

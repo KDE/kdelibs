@@ -166,7 +166,17 @@ public:
      */
     KIconEffect *iconEffect();
 
+    /**
+     * Called by KInstance::newIconLoader to reconfigure the icon loader
+     */
+    void reconfigure( const QString& _appname, KStandardDirs *_dirs );
+
  private:
+    /**
+     * @internal
+     */
+    void init( const QString& _appname, KStandardDirs *_dirs );
+
     /**
      * @internal
      * tries to find an icon with the name. It tries some extension and
