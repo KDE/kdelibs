@@ -937,7 +937,7 @@ void RenderTable::calcColMinMax()
         m_width = percentWidest;
         m_width += (totalCols+1)*spacing+1;
         int tot = QMIN(99,totalPercent);
-        m_width = QMAX(m_width, (minVar + minRel)*100/(100-tot) );
+        m_width = QMAX(availableWidth, (minVar + minRel)*100/(100-tot) );
         m_width = QMIN(m_width, availableWidth);
         totalPercent = QMAX(totalPercent,100);
     }
