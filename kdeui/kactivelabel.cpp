@@ -17,10 +17,13 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include "kactivelabel.h"
+
 #include <kapplication.h>
+#include <qregexp.h>
+#include <qwhatsthis.h>
 #include <qsimplerichtext.h>
 
-#include "kactivelabel.h"
 
 KActiveLabel::KActiveLabel(QWidget * parent, const char * name)
  : QTextBrowser(parent, name)
@@ -62,6 +65,12 @@ void KActiveLabel::paletteChanged()
 
 void KActiveLabel::openLink(const QString & link)
 {
+   QRegExp whatsthis("whatsthis:/*([^/].*)");
+   if (whatsthis.exactMatch(link)) {
+      QWhatsThis::display(whatsthis.cap(1));
+      return;
+   }
+
    QStringList args;
    args << "exec" << link;
    kapp->kdeinitExec("kfmclient", args);
