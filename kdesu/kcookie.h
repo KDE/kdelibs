@@ -37,31 +37,40 @@ public:
     QCString displayAuth() { return m_DisplayAuth; }
 #endif
 
-    /** Returns a list of netid's where a dcopserver is running */
-    QCStringList dcopServer() { return m_DCOPSrv; }
+    /** Select the DCOP transport to look for. Default: "local" **/
+    void setDcopTransport(const QCString &dcopTransport);
+
+    /** Returns the netid where the dcopserver is running */
+    QCString dcopServer();
 
     /** 
      * Returns a list of magic cookies for DCOP protocol authentication. 
      * The order is the same as in dcopServer().
      */
-    QCStringList dcopAuth() { return m_DCOPAuth; }
+    QCString dcopAuth();
 
     /** Returns a list of magic cookies for the ICE protocol. */
-    QCStringList iceAuth() { return m_ICEAuth; }
+    QCString iceAuth();
 
 private:
     void getXCookie();
     void getICECookie();
-    QCStringList split(QCString line, char ch);
+    QCStringList split(const QCString &line, char ch);
 
     void blockSigChild();
     void unblockSigChild();
+
+    bool m_bHaveDCOPCookies;
+    bool m_bHaveICECookies;
 
     QCString m_Display;
 #ifdef Q_WS_X11
     QCString m_DisplayAuth;
 #endif
-    QCStringList m_DCOPSrv, m_DCOPAuth, m_ICEAuth;
+    QCString m_DCOPSrv;
+    QCString m_DCOPAuth;
+    QCString m_ICEAuth;
+    QCString m_dcopTransport;
 
     class KCookiePrivate;
     KCookiePrivate *d;

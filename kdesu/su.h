@@ -24,7 +24,7 @@
 class SuProcess: public StubProcess
 {
 public:
-    SuProcess(QCString user=0, QCString command=0);
+    SuProcess(const QCString &user=0, const QCString &command=0);
     ~SuProcess();
 
     enum Errors { SuNotFound=1, SuNotAllowed, SuIncorrectPassword };
@@ -42,9 +42,6 @@ public:
      * Checks if a password is needed.
      */
     int checkNeedPassword();
-
-protected:
-    virtual QCStringList dcopServer();
 
 private:
     int ConverseSU(const char *password);

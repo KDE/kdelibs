@@ -39,26 +39,24 @@
 #include "kcookie.h"
 
 
-SshProcess::SshProcess(QCString host, QCString user, QCString command)
+SshProcess::SshProcess(const QCString &host, const QCString &user, const QCString &command)
 {
-    d = new SshProcessPrivate;
     m_Host = host;
     m_User = user;
     m_Command = command;
-    d->m_Stub = "kdesu_stub";
+    m_Stub = "kdesu_stub";
     srand(time(0L));
 }
 
 
 SshProcess::~SshProcess()
 {
-    delete d;
 }
 
 
-void SshProcess::setStub(QCString stub)
+void SshProcess::setStub(const QCString &stub)
 {
-    d->m_Stub = stub;
+    m_Stub = stub;
 }
 
 
@@ -82,7 +80,7 @@ int SshProcess::exec(const char *password, int check)
     QCStringList args;
     args += "-l"; args += m_User;
     args += "-o"; args += "StrictHostKeyChecking no";
-    args += m_Host; args += d->m_Stub;
+    args += m_Host; args += m_Stub;
 
     if (StubProcess::exec("ssh", args) < 0)
     {
@@ -151,28 +149,27 @@ int SshProcess::exec(const char *password, int check)
 
 QCString SshProcess::dcopForward()
 {
+    QCString result;
+
+    setDcopTransport("tcp");
+
+    QCString srv = StubProcess::dcopServer();
+    if (srv.isEmpty())
+       return result;
+ 
+    int i = srv.find('/');
+    if (i == -1)
+       return result;
+    if (srv.left(i) != "tcp")
+       return result;
+    int j = srv.find(':', ++i);
+    if (j == -1)
+       return result;
+    QCString host = srv.mid(i, j-i);
     bool ok;
-    int i, j, port=0;
-    QCString result, host;
-    QCStringList srv = StubProcess::dcopServer();
-    QCStringList::Iterator it;
-    for (m_dcopSrv=0,it=srv.begin(); it!=srv.end(); m_dcopSrv++, it++) 
-    {
-	i = (*it).find('/');
-	if (i == -1)
-	    continue;
-	if ((*it).left(i) != "tcp")
-	    continue;
-	j = (*it).find(':', ++i);
-	if (j == -1)
-	    continue;
-	host = (*it).mid(i, j-i);
-	port = (*it).mid(++j).toInt(&ok);
-	if (ok)
-	    break;
-    }
-    if (it == srv.end())
-	return result;
+    int port = srv.mid(++j).toInt(&ok);
+    if (!ok)
+       return result;
 
     m_dcopPort = 10000 + (int) ((40000.0 * rand()) / (1.0 + RAND_MAX));
     result.sprintf("%d:%s:%d", m_dcopPort, host.data(), port);
@@ -241,7 +238,7 @@ int SshProcess::ConverseSsh(const char *password, int check)
 	    }
 
 	    // Warning/error message.
-	    d->m_Error += line; d->m_Error += "\n";
+	    m_Error += line; m_Error += "\n";
 	    if (m_bTerminal)
 		fprintf(stderr, "ssh: %s\n", line.data());
 	    break;
@@ -274,30 +271,9 @@ QCString SshProcess::displayAuth()
 
 
 // Return the remote end of the forwarded connection.
-QCStringList SshProcess::dcopServer()
+QCString SshProcess::dcopServer()
 {
-    QCStringList lst;
-    if (m_bXOnly)
-	lst += "no";
-    else
-	lst += QCString().sprintf("tcp/localhost:%d", m_dcopPort);
-    return lst;
+    return QCString().sprintf("tcp/localhost:%d", m_dcopPort);
 }
 
-
-// Return the right cookie.
-QCStringList SshProcess::dcopAuth()
-{
-    QCStringList lst;
-    lst += StubProcess::dcopAuth()[m_dcopSrv];
-    return lst;
-}
-
-
-QCStringList SshProcess::iceAuth()
-{
-    QCStringList lst;
-    lst += StubProcess::iceAuth()[m_dcopSrv];
-    return lst;
-}
 

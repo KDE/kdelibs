@@ -35,6 +35,7 @@ StubProcess::StubProcess()
     m_Priority = 50;
     m_pCookie = new KCookie;
     m_bXOnly = true;
+    m_bDCOPForwarding = false;
 }
 
 
@@ -100,11 +101,20 @@ int StubProcess::ConverseStub(int check)
 	    writeLine("");
 #endif
 	} else if (line == "dcopserver") {
-	    writeLine("no");
+	    if (m_bDCOPForwarding)
+	       writeLine(dcopServer());
+	    else
+	       writeLine("no");
 	} else if (line == "dcop_auth") {
-	    writeLine("no");
+	    if (m_bDCOPForwarding)
+	       writeLine(dcopAuth());
+	    else
+	       writeLine("no");
 	} else if (line == "ice_auth") {
-	    writeLine("no");
+	    if (m_bDCOPForwarding)
+	       writeLine(iceAuth());
+	    else
+	       writeLine("no");
 	} else if (line == "command") {
 	    writeLine(m_Command);
 	} else if (line == "path") {
@@ -137,7 +147,7 @@ int StubProcess::ConverseStub(int check)
 }
 
 
-void StubProcess::notifyTaskbar(QString suffix)
+void StubProcess::notifyTaskbar(const QString &suffix)
 {
     QString exec, icon;
     int sp = m_Command.find(" ");

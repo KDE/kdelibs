@@ -149,7 +149,7 @@ int KDEsuClient::connect()
     return 0;
 }
 
-QCString KDEsuClient::escape(QCString str)
+QCString KDEsuClient::escape(const QCString &str)
 {
     QCString copy = str;
     int n = 0;
@@ -169,7 +169,7 @@ QCString KDEsuClient::escape(QCString str)
     return copy;
 }
 
-int KDEsuClient::command(QCString cmd, QCString *result)
+int KDEsuClient::command(const QCString &cmd, QCString *result)
 {
     if (sockfd < 0)
 	return -1;
@@ -205,37 +205,29 @@ int KDEsuClient::setPass(const char *pass, int timeout)
     return command(cmd);
 }
 
-int KDEsuClient::exec(QCString prog, QCString user)
+int KDEsuClient::exec(const QCString &prog, const QCString &user, const QCString &options, const QCStringList &env)
 {
     QCString cmd;
     cmd = "EXEC ";
     cmd += escape(prog);
     cmd += " ";
     cmd += escape(user);
-    cmd += "\n";
-    return command(cmd);
-}
-
-int KDEsuClient::exec(QCString prog, QCString user, QCString options, QCStringList env)
-{
-    QCString cmd;
-    cmd = "EXEC ";
-    cmd += escape(prog);
-    cmd += " ";
-    cmd += escape(user);
-    cmd += " ";
-    cmd += escape(options);
-    for(QCStringList::ConstIterator it = env.begin(); 
-        it != env.end(); ++it)
+    if (!options.isEmpty())
     {
-        cmd += " ";
-        cmd += escape(*it);
+       cmd += " ";
+       cmd += escape(options);
+       for(QCStringList::ConstIterator it = env.begin(); 
+          it != env.end(); ++it)
+       {
+          cmd += " ";
+          cmd += escape(*it);
+       }
     }
     cmd += "\n";
     return command(cmd);
 }
 
-int KDEsuClient::setHost(QCString host)
+int KDEsuClient::setHost(const QCString &host)
 {
     QCString cmd = "HOST ";
     cmd += escape(host);
@@ -257,7 +249,7 @@ int KDEsuClient::setScheduler(int sched)
     return command(cmd);
 }
 
-int KDEsuClient::delCommand(QCString key, QCString user)
+int KDEsuClient::delCommand(const QCString &key, const QCString &user)
 {
     QCString cmd = "DEL ";
     cmd += escape(key);
@@ -266,8 +258,8 @@ int KDEsuClient::delCommand(QCString key, QCString user)
     cmd += "\n";
     return command(cmd);
 }
-int KDEsuClient::setVar(QCString key, QCString value, int timeout,
-                        QCString group)
+int KDEsuClient::setVar(const QCString &key, const QCString &value, int timeout,
+                        const QCString &group)
 {
     QCString cmd = "SET ";
     cmd += escape(key);
@@ -281,7 +273,7 @@ int KDEsuClient::setVar(QCString key, QCString value, int timeout,
     return command(cmd);
 }
 
-QCString KDEsuClient::getVar(QCString key)
+QCString KDEsuClient::getVar(const QCString &key)
 {
     QCString cmd = "GET ";
     cmd += escape(key);
@@ -291,7 +283,7 @@ QCString KDEsuClient::getVar(QCString key)
     return reply;
 }
 
-QValueList<QCString> KDEsuClient::getKeys(QCString group)
+QValueList<QCString> KDEsuClient::getKeys(const QCString &group)
 {
     QCString cmd = "GETK ";
     cmd += escape(group);
@@ -324,7 +316,7 @@ QValueList<QCString> KDEsuClient::getKeys(QCString group)
     return list;
 }
 
-bool KDEsuClient::findGroup(QCString group)
+bool KDEsuClient::findGroup(const QCString &group)
 {
     QCString cmd = "CHKG ";
     cmd += escape(group);
@@ -334,7 +326,7 @@ bool KDEsuClient::findGroup(QCString group)
     return true;
 }
 
-int KDEsuClient::delVar(QCString key)
+int KDEsuClient::delVar(const QCString &key)
 {
     QCString cmd = "DELV ";
     cmd += escape(key);
@@ -342,7 +334,7 @@ int KDEsuClient::delVar(QCString key)
     return command(cmd);
 }
 
-int KDEsuClient::delGroup(QCString group)
+int KDEsuClient::delGroup(const QCString &group)
 {
     QCString cmd = "DELG ";
     cmd += escape(group);
@@ -350,7 +342,7 @@ int KDEsuClient::delGroup(QCString group)
     return command(cmd);
 }
 
-int KDEsuClient::delVars(QCString special_key)
+int KDEsuClient::delVars(const QCString &special_key)
 {
     QCString cmd = "DELS ";
     cmd += escape(special_key);

@@ -42,7 +42,7 @@ public:
      * @param command The command to execute.
      * @param args The arguments to the command.
      */
-    int exec(QCString command, QCStringList args);
+    int exec(const QCString &command, const QCStringList &args);
 
     /**
      * Reads a line from the program's standard out. Depending on the @em block 
@@ -57,20 +57,20 @@ public:
      * @param line The text to write.
      * @param addNewline Adds a '\n' to the line.
      */
-    void writeLine(QCString line, bool addNewline=true);
+    void writeLine(const QCString &line, bool addNewline=true);
 
     /**
      * Puts back a line of input.
      * @param line The line to put back.
      * @param addNewline Adds a '\n' to the line.
      */
-    void unreadLine(QCString line, bool addNewline=true);
+    void unreadLine(const QCString &line, bool addNewline=true);
 
     /**
      * Sets the exit string. If a line of program output matches this,
      * @ref #waitForChild() will terminate the program and return.
      */
-    void setExitString(QCString exit) { m_Exit = exit; }
+    void setExitString(const QCString &exit) { m_Exit = exit; }
 
     /**
      * Waits for the child to exit. See also @ref #setExitString.

@@ -33,17 +33,25 @@ public:
     StubProcess();
     ~StubProcess();
 
+    /** Specify dcop transport **/
+    void setDcopTransport(const QCString &dcopTransport) 
+       { m_pCookie->setDcopTransport(dcopTransport); }
+
     /** Set the command. */
-    void setCommand(QCString command) { m_Command = command; }
+    void setCommand(const QCString &command) { m_Command = command; }
 
     /** Set the target user.  */
-    void setUser(QCString user) { m_User = user; }
+    void setUser(const QCString &user) { m_User = user; }
 
     /**
-     * Set to "X only mode": DCOP is not forwarded, the sycoca is not
-     * built and kdeinit is not launched.
+     * Set to "X only mode": Sycoca is not built and kdeinit is not launched.
      */
     void setXOnly(bool xonly) { m_bXOnly = xonly; }
+
+    /**
+     * Enable DCOP forwarding.
+     */
+    void setDCOPForwarding(bool dcopForwarding) { m_bDCOPForwarding = dcopForwarding; }
 
     /**
      * Set the priority of the process. The priority value must be between 0
@@ -69,7 +77,7 @@ protected:
     int ConverseStub(int check);
 
     /** Notify the taskbar that a new application has been started. */
-    void notifyTaskbar(QString suffix);
+    void notifyTaskbar(const QString &suffix);
 
     /** 
      * This virtual function can be overloaded when special behaviour is
@@ -81,15 +89,19 @@ protected:
     virtual QCString displayAuth() { return m_pCookie->displayAuth(); }
 #endif
     /** See @ref #display. */
-    virtual QCStringList dcopServer() { return m_pCookie->dcopServer(); }
+    virtual QCString dcopServer() { return m_pCookie->dcopServer(); }
     /** See @ref #display. */
-    virtual QCStringList dcopAuth() { return m_pCookie->dcopAuth(); }
+    virtual QCString dcopAuth() { return m_pCookie->dcopAuth(); }
     /** See @ref #display. */
-    virtual QCStringList iceAuth() { return m_pCookie->iceAuth(); }
+    virtual QCString iceAuth() { return m_pCookie->iceAuth(); }
 
     bool m_bXOnly;
-    int m_Priority, m_Scheduler;
-    QCString m_Command, m_User;
+    bool m_bDCOPForwarding;
+    int m_Priority;
+    int  m_Scheduler;
+    QCString m_dcopTransport;
+    QCString m_Command;
+    QCString m_User;
     KCookie *m_pCookie;
     
 private:

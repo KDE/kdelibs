@@ -177,7 +177,7 @@ QCString PtyProcess::readLine(bool block)
 }
 
 
-void PtyProcess::writeLine(QCString line, bool addnl)
+void PtyProcess::writeLine(const QCString &line, bool addnl)
 {
     if (!line.isEmpty())
 	write(m_Fd, line, line.length());
@@ -186,19 +186,20 @@ void PtyProcess::writeLine(QCString line, bool addnl)
 }
 
 
-void PtyProcess::unreadLine(QCString line, bool addnl)
+void PtyProcess::unreadLine(const QCString &line, bool addnl)
 {
+    QCString tmp = line;
     if (addnl)
-	line += '\n';
-    if (!line.isEmpty())
-	m_Inbuf.prepend(line);
+	tmp += '\n';
+    if (!tmp.isEmpty())
+	m_Inbuf.prepend(tmp);
 }
 
 /*
  * Fork and execute the command. This returns in the parent.
  */
 
-int PtyProcess::exec(QCString command, QCStringList args)
+int PtyProcess::exec(const QCString &command, const QCStringList &args)
 {
     if (init() < 0)
 	return -1;
@@ -253,7 +254,7 @@ int PtyProcess::exec(QCString command, QCStringList args)
     int i;
     const char * argp[32];
     argp[0] = path;
-    QCStringList::Iterator it;
+    QCStringList::ConstIterator it;
     for (i=1, it=args.begin(); it!=args.end() && i<31; it++)
 	argp[i++] = *it;
     argp[i] = 0L;

@@ -34,11 +34,20 @@ KCookie::KCookie()
 #ifdef Q_WS_X11
     getXCookie();
 #endif
-    //getICECookie(); not needed anymore
+    setDcopTransport("local");
 }
 
+void KCookie::setDcopTransport(const QCString &dcopTransport)
+{
+    m_dcopTransport = dcopTransport;
+    m_bHaveDCOPCookies = false;
+    m_bHaveICECookies = false;
+    m_DCOPSrv = "";
+    m_DCOPAuth = "";
+    m_ICEAuth = "";
+}    
 
-QCStringList KCookie::split(QCString line, char ch)
+QCStringList KCookie::split(const QCString &line, char ch)
 {
     QCStringList result;
 
@@ -137,16 +146,19 @@ void KCookie::getICECookie()
 	dcopsrv = dcopsrv.stripWhiteSpace();
 	fclose(f);
     }
-    m_DCOPSrv = split(dcopsrv, ',');
-    if (m_DCOPSrv.count() == 0) 
+    QCStringList dcopServerList = split(dcopsrv, ',');
+    if (dcopServerList.count() == 0) 
     {
 	kdError(900) << k_lineinfo << "No DCOP servers found.\n";
 	return;
     }
 
     QCStringList::Iterator it;
-    for (it=m_DCOPSrv.begin(); it != m_DCOPSrv.end(); it++) 
+    for (it=dcopServerList.begin(); it != dcopServerList.end(); it++) 
     {
+        if (strncmp((*it).data(), m_dcopTransport.data(), m_dcopTransport.length()) != 0)
+            continue;
+        m_DCOPSrv = *it;
 	QCString cmd;
 	cmd.sprintf("iceauth list netid=%s", (*it).data());
 	blockSigChild();
@@ -176,12 +188,35 @@ void KCookie::getICECookie()
 		break;
 	    }
 	    if (lst[0] == "DCOP")
-		m_DCOPAuth += (lst[3] + ' ' + lst[4]);
+		m_DCOPAuth = (lst[3] + ' ' + lst[4]);
 	    else if (lst[0] == "ICE")
-		m_ICEAuth += (lst[3] + ' ' + lst[4]);
+		m_ICEAuth = (lst[3] + ' ' + lst[4]);
 	    else 
 		kdError(900) << k_lineinfo << "unknown protocol: " << lst[0] << "\n";
 	}
+	break;
     }
+    m_bHaveDCOPCookies = true;
+    m_bHaveICECookies = true;
 }
 
+QCString KCookie::dcopServer() 
+{ 
+   if (!m_bHaveDCOPCookies)
+      getICECookie();
+   return m_DCOPSrv; 
+}
+
+QCString KCookie::dcopAuth() 
+{ 
+   if (!m_bHaveDCOPCookies)
+      getICECookie();
+   return m_DCOPAuth; 
+}
+
+QCString KCookie::iceAuth() 
+{ 
+   if (!m_bHaveICECookies)
+      getICECookie(); 
+   return m_ICEAuth; 
+}

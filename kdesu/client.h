@@ -57,9 +57,7 @@ public:
      * @param env Extra environment variables.
      * @return Zero on success, -1 on failure.
      */
-    // KDE 3.0: TODO merge and use default arguments.     
-    int exec(QCString command, QCString user, QCString options, QCStringList env);
-    int exec(QCString command, QCString user);
+    int exec(const QCString &command, const QCString &user, const QCString &options=0, const QCStringList &env=QCStringList());
 
     /**
      * Set root's password, lasts one session.
@@ -73,7 +71,7 @@ public:
     /**
      * Set the target host (optional).
      */
-    int setHost(QCString host);
+    int setHost(const QCString &host);
 
     /**
      * Set the desired priority (optional), see @ref #StubProcess.
@@ -91,7 +89,7 @@ public:
      * @param user The user.
      * @return zero on success, -1 on an error
      */
-    int delCommand(QCString command, QCString user);
+    int delCommand(const QCString &command, const QCString &user);
 
     /**
      * Set a persistent variable.
@@ -102,21 +100,21 @@ public:
      * @param group Make the key part of a group. See @ref #delGroup.
      * @return zero on success, -1 on failure.
      */
-    int setVar(QCString key, QCString value, int timeout=0, QCString group=0);
+    int setVar(const QCString &key, const QCString &value, int timeout=0, const QCString &group=0);
 
     /**
      * Get a persistent variable.
      * @param key The name of the variable.
      * @return Its value.
      */
-    QCString getVar(QCString key);
+    QCString getVar(const QCString &key);
 
     /**
      * Gets all the keys that are membes of the given group.
      * @param group the group name of the variables.
      * @return a list of the keys in the group.
      */
-    QValueList<QCString> getKeys(QCString group);
+    QValueList<QCString> getKeys(const QCString &group);
 
     /**
      * Returns true if the specified group exists is
@@ -125,14 +123,14 @@ public:
      * @param grpkey the group key
      * @return true if the group is found
      */
-    bool findGroup(QCString group);
+    bool findGroup(const QCString &group);
 
     /**
      * Delete a persistent variable.
      * @param key The name of the variable.
      * @return zero on success, -1 on failure.
      */
-    int delVar(QCString key);
+    int delVar(const QCString &key);
 
     /**
      * Delete all persistent variables with the given key.
@@ -149,7 +147,7 @@ public:
      * @param special_key the name of the variable.
      * @return zero on success, -1 on failure.
      */
-    int delVars(QCString special_key);
+    int delVars(const QCString &special_key);
 
     /**
      * Delete all persistent variables in a group.
@@ -157,7 +155,7 @@ public:
      * @param group the group name. See @ref #setVar.
      * @return
      */
-    int delGroup(QCString group);
+    int delGroup(const QCString &group);
 
     /**
      * Ping kdesud. This can be used for diagnostics.
@@ -183,8 +181,8 @@ private:
     int sockfd;
     QCString sock;
 
-    int command(QCString cmd, QCString *result=0L);
-    QCString escape(QCString str);
+    int command(const QCString &cmd, QCString *result=0L);
+    QCString escape(const QCString &str);
 
 };
 

@@ -43,7 +43,7 @@
 #endif
 
 
-SuProcess::SuProcess(QCString user, QCString command)
+SuProcess::SuProcess(const QCString &user, const QCString &command)
 {
     m_User = user;
     m_Command = command;
@@ -203,14 +203,4 @@ int SuProcess::ConverseSU(const char *password)
     return 0;
 }
 
-
-QCStringList SuProcess::dcopServer()
-{
-    if (!m_bXOnly) 
-	return StubProcess::dcopServer();
-
-    QCStringList lst;
-    lst += "no";
-    return lst;
-}
 
