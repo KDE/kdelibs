@@ -51,6 +51,7 @@ KFilterDev::~KFilterDev()
     delete d;
 }
 
+#ifndef KDE_NO_COMPAT
 //this one is static
 // Cumbersome API. To be removed in KDE 3.0.
 QIODevice* KFilterDev::createFilterDevice(KFilterBase* base, QFile* file)
@@ -65,6 +66,7 @@ QIODevice* KFilterDev::createFilterDevice(KFilterBase* base, QFile* file)
    base->setDevice(file);
    return new KFilterDev(base);
 };
+#endif
 
 //static
 QIODevice * KFilterDev::deviceForFile( const QString & fileName, const QString & mimetype,

@@ -300,12 +300,10 @@ static KFilterBase *findFilterByFileName( const QString &filename )
 
 bool saveToCache( const QString &contents, const QString &filename )
 {
-    QFile raw(filename);
-    KFilterBase *f = ::findFilterByFileName(filename);
-    if ( !f )
-        return false;
-
-    QIODevice *fd= KFilterDev::createFilterDevice(f, &raw);
+    QIODevice *fd= KFilterDev::deviceForFile(filename, QString::null, true);
+    
+    if (!fd)
+	return false;
 
     if (!fd->open(IO_WriteOnly))
     {
@@ -329,9 +327,7 @@ static bool readCache( const QString &filename,
         return false;
 
     kdDebug( 7119 ) << "create filter" << endl;
-    QFile raw(cache);
-    KFilterBase *f = ::findFilterByFileName(cache);
-    QIODevice *fd= KFilterDev::createFilterDevice(f, &raw);
+    QIODevice *fd= KFilterDev::deviceForFile(cache);
 
     if (!fd->open(IO_ReadOnly))
     {

@@ -75,6 +75,7 @@ public:
     virtual int putch( int );
     virtual int ungetch( int );
 
+#ifndef KDE_NO_COMPAT
     /**
      * Call this to create the appropriate filter device for @p base
      * working on @p file . The returned QIODevice has to be deleted
@@ -83,7 +84,7 @@ public:
      * To be removed in KDE 3.0
      */
     static QIODevice* createFilterDevice(KFilterBase* base, QFile* file);
-
+#endif
 
     /**
      * Creates an i/o device that is able to read from @p fileName,
