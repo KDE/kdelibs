@@ -220,4 +220,13 @@ QRect KWinModule::workArea( int desktop ) const
 }
 
 
+QString KWinModule::desktopName( int desktop ) const
+{
+    const char* name = d->desktopName( (desktop > 0 && desktop <= (int) d->numberOfDesktops() ) ? desktop : currentDesktop() );
+    if ( name )
+	return QString::fromUtf8( name );
+    return QString("Desktop " ) + QString::number( desktop );
+}
+
+
 #include "kwinmodule.moc"

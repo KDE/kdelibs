@@ -121,6 +121,11 @@ public:
      **/
     QRect workArea( int desktop = - 1 ) const;
 
+    /**
+     * Returns the name of the specified desktop
+     **/
+    QString desktopName( int desktop ) const;
+
 
 signals:
 

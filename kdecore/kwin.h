@@ -131,7 +131,8 @@ public:
      * Sets the type of window @p win to @p windowType.
      *
      * Possible values are NET::Normal, NET::Desktop, NET::Dock,
-     * NET::Toolbar, NET::Menu, NET::Dialog.
+     * NET::Tool, NET::Menu, NET::Dialog or NET::Override (== no
+     * decoration frame)
      */
     static void setType( WId win, NET::WindowType windowType );
 
