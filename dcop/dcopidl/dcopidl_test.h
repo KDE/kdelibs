@@ -63,7 +63,7 @@ class Test2 : public DCOPObject
     K_DCOP
 public:
 k_dcop_signals:
-    static void fooSignal();
+    static void fooSignal(int arg);
 };
 
 class Test3 : public DCOPObject
