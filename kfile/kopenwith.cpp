@@ -371,7 +371,7 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
 
   if (!qServiceType.isNull())
   {
-    remember = new QCheckBox(i18n("Remember application association for this file"), this);
+    remember = new QCheckBox(i18n("Remember application association for this type of file"), this);
     //    remember->setChecked(true);
     topLayout->addWidget(remember);
   }
