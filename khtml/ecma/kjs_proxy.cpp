@@ -207,6 +207,11 @@ void KJSProxyImpl::clear() {
       if ( !win->part().isNull() )
         applyUserAgent();
     }
+
+    // Really delete everything that can be, so that the DOM nodes get deref'ed
+    //kdDebug() << k_funcinfo << "all done -> collecting" << endl;
+    while (KJS::Interpreter::collect())
+        ;
   }
 }
 

@@ -1028,9 +1028,6 @@ void Window::clear( ExecState *exec )
   // Forget about the listeners (the DOM::NodeImpls will delete them)
   jsEventListeners.clear();
 
-  // Really delete those properties, so that the DOM nodes get deref'ed
-  while(KJS::Interpreter::collect())
-      ;
   if (!m_part.isNull()) {
     KJSProxy* proxy = KJSProxy::proxy( m_part );
     if (proxy) // i.e. JS not disabled
