@@ -404,13 +404,13 @@ void LightStyleV3::drawPrimitive( PrimitiveElement pe,
 	    p->setPen( cg.background().light( 115 ) );
 	    p->drawArc( br, 235*16, 180*16 );
 
-	    p->setPen( cg.text() );
+	    p->setPen( cg.dark() );
 	    p->drawArc( lr, 0, 16*360 );
 
 	    if ( flags & Style_On ) {
 		p->setPen( flags & Style_Down ? cg.mid() :
 			   ( flags & Style_Enabled ? cg.base() : cg.background() ) );
-		p->setBrush( cg.foreground() );
+		p->setBrush( cg.text() );
 		p->drawEllipse( ir );
 	    }
 
