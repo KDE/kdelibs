@@ -88,7 +88,7 @@ public:
      * depending on the requested @p classname. For example a koffice
      * library may usually return a pointer to @ref KoDocument.  But
      * if asked for a "QWidget", it could create a wrapper widget,
-     * that encapsulates the Koffice specific features.  
+     * that encapsulates the Koffice specific features.
      **/
 
     virtual QObject* create( QObject* parent = 0, const char* name = 0, const char* classname = "QObject", const QStringList &args = QStringList() ) = 0;
@@ -136,7 +136,7 @@ private slots:
     void slotObjectCreated( QObject *obj );
     void slotObjectDestroyed();
     void slotTimeout();
-    
+
 private:
     QString m_libname;
     QString m_filename;
@@ -176,7 +176,7 @@ public:
      * @see #library
      */
     KLibFactory* factory( const char* libname );
-    
+
     /**
      * Loads and initializes a library. Loading a library multiple times is
      * handled gracefully.
@@ -196,9 +196,9 @@ public:
      * @see #factory
      */
     virtual KLibrary* library( const char* libname );
-  
+
     virtual void unloadLibrary( const char *libname );
-  
+
     /**
      * @return a pointer to the loader. If no loader exists until now
      *         then one is created.
@@ -208,6 +208,8 @@ public:
 protected:
     KLibLoader( QObject* parent = 0, const char* name = 0 );
 
+private slots:
+    void slotLibraryDestroyed();
 private:
     QAsciiDict<KLibrary> m_libs;
 

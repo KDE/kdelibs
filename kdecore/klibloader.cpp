@@ -162,6 +162,13 @@ KLibLoader::KLibLoader( QObject* parent, const char* name )
 KLibLoader::~KLibLoader()
 {
     m_libs.setAutoDelete( TRUE );
+    
+    QAsciiDictIterator<KLibrary> it( m_libs );
+    for (; it.current(); ++it )
+      disconnect( it.current(), SIGNAL( destroyed() ),
+	 	  this, SLOT( slotLibraryDestroyed() ) );
+      
+    
 }
 
 KLibrary* KLibLoader::library( const char *name )
@@ -170,7 +177,7 @@ KLibrary* KLibLoader::library( const char *name )
 	return 0;
 
     QCString libname( name );
-    
+
     // only append ".la" if there is no extension
     // this allows to load non-libtool libraries as well
     // (mhk, 20000228)
@@ -209,6 +216,9 @@ KLibrary* KLibLoader::library( const char *name )
     lib = new KLibrary( name, libfile, handle );
     m_libs.insert( name, lib );
 
+    connect( lib, SIGNAL( destroyed() ),
+	     this, SLOT( slotLibraryDestroyed() ) );
+    
     return lib;
 }
 
@@ -222,6 +232,10 @@ void KLibLoader::unloadLibrary( const char *libname )
   qDebug( "closing library %s", libname );
 
   m_libs.remove( libname );
+  
+  disconnect( lib, SIGNAL( destroyed() ),
+	      this, SLOT( slotLibraryDestroyed() ) );
+  
   delete lib;
 }
 
@@ -233,5 +247,18 @@ KLibFactory* KLibLoader::factory( const char* name )
 
     return lib->factory();
 }
+
+void KLibLoader::slotLibraryDestroyed()
+{
+  const KLibrary *lib = static_cast<const KLibrary *>( sender() );
+  
+  QAsciiDictIterator<KLibrary> it( m_libs );
+  for (; it.current(); ++it )
+    if ( it.current() == lib )
+    {
+      m_libs.remove( it.currentKey() );
+      return;
+    }
+} 
 
 #include "klibloader.moc"
