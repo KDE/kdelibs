@@ -291,12 +291,12 @@ public:
 	Max = MaxVert | MaxHoriz,
 	Shaded       = 1<<4,
 	SkipTaskbar  = 1<<5,
-	StaysOnTop   = 1<<6,	// NOT STANDARD
+	Above        = 1<<6,
+	StaysOnTop = Above,	// NOT STANDARD
 	SkipPager    = 1<<7,
 	Hidden       = 1<<8,
 	FullScreen   = 1<<9,
-	Above        = 1<<10,
-	Below        = 1<<11
+	Below        = 1<<10
     };
 
     /**
