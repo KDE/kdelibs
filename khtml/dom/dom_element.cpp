@@ -24,6 +24,7 @@
 #include "dom/dom_exception.h"
 #include "xml/dom_docimpl.h"
 #include "xml/dom_elementimpl.h"
+#include "html/html_formimpl.h"
 
 using namespace DOM;
 
