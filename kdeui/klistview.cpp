@@ -1839,7 +1839,14 @@ const QColor &KListViewItem::backgroundColor()
   KListView *lv = dynamic_cast<KListView *>(listView());
   if (lv && lv->alternateBackground().isValid())
   {
-    if (!m_known)
+    KListViewItem *above = 0;
+    above = dynamic_cast<KListViewItem *>(itemAbove());
+    m_known = above ? above->m_known : true;
+    if (m_known)
+    {
+       m_odd = above ? !above->m_odd : false;
+    }
+    else
     {
        KListViewItem *item;
        bool previous = true;
