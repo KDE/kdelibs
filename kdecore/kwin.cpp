@@ -63,6 +63,9 @@ static void createAtoms() {
     }
 }
 
+/*
+  Sends a client message to the ROOT window.
+ */
 static void sendClientMessage(Window w, Atom a, long x){
   XEvent ev;
   long mask;
@@ -74,10 +77,8 @@ static void sendClientMessage(Window w, Atom a, long x){
   ev.xclient.format = 32;
   ev.xclient.data.l[0] = x;
   ev.xclient.data.l[1] = CurrentTime;
-  mask = 0L;
-  if (w == qt_xrootwin())
-    mask = SubstructureRedirectMask;
-  XSendEvent(qt_xdisplay(), w, False, mask, &ev);
+  mask = SubstructureRedirectMask;
+  XSendEvent(qt_xdisplay(), qt_xrootwin(), False, mask, &ev);
 }
 
 
@@ -156,7 +157,7 @@ WId KWin::activeWindow()
 void KWin::setActiveWindow( WId win)
 {
     createAtoms();
-    sendClientMessage( qt_xrootwin(), net_active_window, win);
+    sendClientMessage( win, net_active_window, 0);
 }
 
 
