@@ -41,6 +41,8 @@
 
 #include "kcombobox.h"
 
+#include <stdlib.h> // getenv
+
 class KComboBox::KComboBoxPrivate
 {
 public:
