@@ -294,6 +294,8 @@ KeramikStyle::KeramikStyle()
 		timer->start(50, false);
 		connect(timer, SIGNAL(timeout()), this, SLOT(updateProgressPos()));
 	}
+	
+	firstComboPopupRelease = false;
 }
 
 void KeramikStyle::updateProgressPos()
@@ -2682,16 +2684,17 @@ QRect KeramikStyle::querySubControlMetrics( ComplexControl control,
 
 #include <config.h>
 
+#if !defined Q_WS_X11 || defined K_WS_QTONLY
+#undef HAVE_X11_EXTENSIONS_SHAPE_H
+#endif 
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 #ifdef HAVE_X11_EXTENSIONS_SHAPE_H
 //Xlib headers are a mess -> include them down here (any way to ensure that we go second in enable-final order?)
-#include  <X11/Xlib.h> // schroder
-#include <X11/extensions/shape.h> // schroder
+#include <X11/Xlib.h> 
+#include <X11/extensions/shape.h> 
+#undef   KeyPress
+#undef   KeyRelease
 #endif
-#else
-#undef HAVE_X11_EXTENSIONS_SHAPE_H
-#endif //QTONLY
 
 bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 {
@@ -2702,27 +2705,26 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 
 	//Clear hover highlight when needed
 	if ( (event->type() == QEvent::Leave) && (object == hoverWidget) )
-		{
-			QWidget* button = static_cast<QWidget*>(object);
+	{
+		QWidget* button = static_cast<QWidget*>(object);
 		hoverWidget = 0;
-			button->repaint( false );
+		button->repaint( false );
 		return false;
-		}
+	}
 
 	//Hover highlight on buttons, toolbuttons and combos
-	if ( object->inherits("QPushButton") || object->inherits("QComboBox") || object->inherits("QToolButton") )
-		{
+	if ( ::qt_cast<QPushButton*>(object) || ::qt_cast<QComboBox*>(object) || ::qt_cast<QToolButton*>(object) )
+	{
 		if (event->type() == QEvent::Enter && static_cast<QWidget*>(object)->isEnabled() )
 		{
 			hoverWidget = static_cast<QWidget*>(object);
 			hoverWidget->repaint( false );
-
 		}
 		return false;
 	}
 
 	//Combo line edits get special frames
-	if ( event->type() == QEvent::Paint && object->inherits( "QLineEdit" ) )
+	if ( event->type() == QEvent::Paint && ::qt_cast<QLineEdit*>(object) )
 	{
 		static bool recursion = false;
 		if (recursion )
@@ -2738,50 +2740,100 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 		recursion = false;
 		return true;
 	}
-#ifdef HAVE_X11_EXTENSIONS_SHAPE_H
-	//Combo dropdowns are shaped
-	else if ( event->type() == QEvent::Resize && object->inherits("QListBox") )
+	else if ( ::qt_cast<QListBox*>(object) ) 
 	{
-		QListBox* listbox = static_cast<QListBox*>(object);
-		QResizeEvent* resize = static_cast<QResizeEvent*>(event);
-		if (resize->size().height() < 6)
-			return false;
-
-		//CHECKME: Not sure the rects are perfect..
-		XRectangle rects[5] = {
-			{0, 0, resize->size().width()-2, resize->size().height()-6},
-			{0, resize->size().height()-6, resize->size().width()-2, 1},
-			{1, resize->size().height()-5, resize->size().width()-3, 1},
-			{2, resize->size().height()-4, resize->size().width()-5, 1},
-			{3, resize->size().height()-3, resize->size().width()-7, 1}
-		};
-
-		XShapeCombineRectangles(qt_xdisplay(), listbox->handle(), ShapeBounding, 0, 0,
-			  rects, 5, ShapeSet, YXSorted);
-	}
-#endif
-	//Combo dropdowns get fancy borders
-	else if ( event->type() == QEvent::Paint && object->inherits("QListBox") )
-	{
-		static bool recursion = false;
-		if (recursion )
-			return false;
-		QListBox* listbox = (QListBox*) object;
-		QPaintEvent* paint = (QPaintEvent*) event;
-
-
-		if ( !listbox->contentsRect().contains( paint->rect() ) )
+		//Handle combobox drop downs
+		switch (event->type())
 		{
-			QPainter p( listbox );
-			Keramik::RectTilePainter( keramik_combobox_list, false, false ).draw( &p, 0, 0, listbox->width(), listbox->height(),
-					listbox->palette().color( QPalette::Normal, QColorGroup::Button ),
-					listbox->palette().color( QPalette::Normal, QColorGroup::Background ) );
+#ifdef HAVE_X11_EXTENSIONS_SHAPE_H
+			//Combo dropdowns are shaped	
+			case QEvent::Resize:
+			{
+				QListBox* listbox = static_cast<QListBox*>(object);
+				QResizeEvent* resize = static_cast<QResizeEvent*>(event);
+				if (resize->size().height() < 6)
+					return false;
+		
+				//CHECKME: Not sure the rects are perfect..
+				XRectangle rects[5] = {
+					{0, 0, resize->size().width()-2, resize->size().height()-6},
+					{0, resize->size().height()-6, resize->size().width()-2, 1},
+					{1, resize->size().height()-5, resize->size().width()-3, 1},
+					{2, resize->size().height()-4, resize->size().width()-5, 1},
+					{3, resize->size().height()-3, resize->size().width()-7, 1}
+				};
+		
+				XShapeCombineRectangles(qt_xdisplay(), listbox->handle(), ShapeBounding, 0, 0,
+					rects, 5, ShapeSet, YXSorted);
+			}
+			break;
+#endif
+			//Combo dropdowns get fancy borders
+			case QEvent::Paint:
+			{
+				static bool recursion = false;
+				if (recursion )
+					return false;
+				QListBox* listbox = (QListBox*) object;
+				QPaintEvent* paint = (QPaintEvent*) event;
+		
+		
+				if ( !listbox->contentsRect().contains( paint->rect() ) )
+				{
+					QPainter p( listbox );
+					Keramik::RectTilePainter( keramik_combobox_list, false, false ).draw( &p, 0, 0, listbox->width(), listbox->height(),
+							listbox->palette().color( QPalette::Normal, QColorGroup::Button ),
+							listbox->palette().color( QPalette::Normal, QColorGroup::Background ) );
+		
+					QPaintEvent newpaint( paint->region().intersect( listbox->contentsRect() ), paint->erased() );
+					recursion = true;
+					object->event( &newpaint );
+					recursion = false;
+					return true;
+				}
+			}
+			break;
+			
+			/**
+			 Since our popup is shown a bit overlapping the combo body, a mouse click at the bottom of the
+			 widget will result in the release going to the popup, which will cause it to close (#56435). 
+			 We solve it by filtering out the first release, if it's in the right area. To do this, we notices shows,
+			 move ourselves to front of event filter list, and then capture the first release event, and if it's
+			 in the overlap area, filter it out.
+			 */
+			case QEvent::Show:
+				//Prioritize ourselves to see the mouse events first
+				object->removeEventFilter(this);
+				object->installEventFilter(this);
+				firstComboPopupRelease = true;
+				break;
+			
+			//We need to filter some clicks out.
+			case QEvent::MouseButtonRelease:
+				if (firstComboPopupRelease)
+				{
+					firstComboPopupRelease = false;
 
-			QPaintEvent newpaint( paint->region().intersect( listbox->contentsRect() ), paint->erased() );
-			recursion = true;
-			object->event( &newpaint );
-			recursion = false;
-			return true;
+					QMouseEvent* mev = static_cast<QMouseEvent*>(event);
+					QListBox*    box = static_cast<QListBox*>   (object);
+					
+					QWidget* parent = box->parentWidget();
+					if (!parent)
+						return false;
+					
+					QPoint inParCoords = parent->mapFromGlobal(mev->globalPos());
+					if (parent->rect().contains(inParCoords))
+						return true;
+				}
+				break;
+			case QEvent::MouseButtonPress:
+			case QEvent::MouseButtonDblClick:
+			case QEvent::Wheel:
+			case QEvent::KeyPress:
+			case QEvent::KeyRelease:
+				firstComboPopupRelease = false;
+			default:
+				return false;
 		}
 	}
 	//Toolbar background gradient handling
@@ -2794,7 +2846,7 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 
 		return false;	// Now draw the contents
 	}
-	else if (event->type() == QEvent::Paint  &&  object->parent() && object->parent()->inherits("QToolBar"))
+	else if (event->type() == QEvent::Paint  &&  object->parent() && ::qt_cast<QToolBar*>(object->parent()))
 	{
 		// We need to override the paint event to draw a
 		// gradient on a QToolBarExtensionWidget.

@@ -151,6 +151,8 @@ private:
 	// on a flat button.
 
 	mutable bool customScrollMode; //Set when drawing scrollbars with custom colors.
+	
+	bool firstComboPopupRelease;
 
 	//Animation support.
 	QMap<QWidget*, bool> progAnimWidgets;
