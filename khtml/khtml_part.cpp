@@ -1761,6 +1761,8 @@ void KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, cons
                               const QStringList &params )
 {
   kdDebug( 6050 ) << "childRequest( ..., " << url << ", " << frameName << " )" << endl;
+  if (url.isEmpty())
+    return;
   FrameIt it = d->m_frames.find( frameName );
 
   if ( it == d->m_frames.end() )
@@ -1780,6 +1782,8 @@ void KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, cons
 void KHTMLPart::requestObject( khtml::RenderPart *frame, const QString &url, const QString &serviceType,
                                const QStringList &params )
 {
+  if (url.isEmpty())
+    return;
   khtml::ChildFrame child;
   QValueList<khtml::ChildFrame>::Iterator it = d->m_objects.append( child );
   (*it).m_frame = frame;
