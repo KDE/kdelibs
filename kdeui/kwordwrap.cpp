@@ -18,6 +18,7 @@
 
 #include "kwordwrap.h"
 #include <kdebug.h>
+#include <kstringhandler.h>
 #include <qpainter.h>
 
 class KWordWrapPrivate {
@@ -198,22 +199,8 @@ void KWordWrap::drawFadeoutText(QPainter *p, int x, int y, int maxW,
 
 void KWordWrap::drawTruncateText(QPainter *p, int x, int y, int maxW,
                                  const QString &t) {
-    QFontMetrics fm = p->fontMetrics();
-    
-    // partially copied from QIconView::calcTmpText()
-    QString tmpText;
-    if ( fm.width( t ) <= maxW )
-        tmpText = t;
-    else {
-        tmpText = "...";
-        int i = 0;
-        while ( fm.width( tmpText + t[ i ] ) < maxW )
-            tmpText += t[ i++ ];
-        tmpText.remove( 0, 3 );
-        tmpText += "...";
-    }
-
-    p->drawText( x, y, tmpText );
+    QString tmpText = KStringHandler::rPixelSqueeze( t, p->fontMetrics(), maxW );
+    p->drawText( x, y, tmpText, maxW );
 }
 
 void KWordWrap::drawText( QPainter *painter, int textX, int textY, int flags ) const
