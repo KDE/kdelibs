@@ -153,7 +153,7 @@ signals:
 	 * connect to this to monitor the font as it as selected if you are
 	 * not running modal.
 	 */
-
+	void fontSelected( const QFont &font );
 
 private slots:
 
@@ -172,22 +172,25 @@ private:
    
     QGroupBox	 *box1;
     QGroupBox	 *box2;
+    
     // pointer to an optinally supplied list of fonts to 
     // inserted into the fontdialog font-family combo-box
     QStrList     *fontlist; 
 
     QLabel	 *family_label;
+    QLabel	 *size_label;
+    QLabel       *weight_label;
     QLabel       *style_label;
     QLabel	 *charset_label;
 
     QLabel	 *actual_family_label;
     QLabel	 *actual_size_label;
-
+    QLabel       *actual_weight_label;
     QLabel       *actual_style_label;
     QLabel	 *actual_charset_label;
 
 
-    
+    QLabel	 *actual_family_label_data;
     QLabel	 *actual_size_label_data;
     QLabel       *actual_weight_label_data;
     QLabel       *actual_style_label_data;

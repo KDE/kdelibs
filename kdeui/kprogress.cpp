@@ -9,6 +9,7 @@
 #include <qpainter.h>
 #include <qstring.h>
 #include <qpixmap.h>
+#include <qapp.h>
 
 KProgress::KProgress(QWidget *parent, const char *name)
 	: QFrame(parent, name),
@@ -51,9 +52,9 @@ void KProgress::initialize()
 	setMidLineWidth(2);
 	bar_pixmap = 0;
 	bar_style = Solid;
-	bar_color = blue;
+	bar_color = QApplication::winStyleHighlightColor();
 	setBackgroundColor(white);
-	setFont(QFont("helvetica", 12, QFont::Bold));
+	setFont(QFont("helvetica", 12, QFont::Normal));
 	text_enabled = TRUE;
 	adjustStyle();
 }
