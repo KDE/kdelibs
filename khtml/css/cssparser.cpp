@@ -21,8 +21,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-//#define CSS_DEBUG
-//#define TOKEN_DEBUG
+// #define CSS_DEBUG
+// #define TOKEN_DEBUG
 #define YYDEBUG 0
 
 #include <kdebug.h>
@@ -381,8 +381,7 @@ bool CSSParser::parseValue( int propId, bool important )
 	return false;
 
     int id = 0;
-    if ( value->unit == CSSPrimitiveValue::CSS_IDENT )
-	id = value->iValue;
+    id = value->id;
 
     if ( id == CSS_VAL_INHERIT ) {
 	addProperty( propId, new CSSInheritedValueImpl(), important );
@@ -605,10 +604,7 @@ bool CSSParser::parseValue( int propId, bool important )
 	    if ( invalid )
 		break;
 	    value = valueList->next();
-	    if ( value && value->unit == CSSPrimitiveValue::CSS_IDENT )
-		id = value->iValue;
-	    else
-		id = 0;
+	    id = value->id;
 	    switch( id ) {
 	    case CSS_VAL_TOP:
 		if ( pos[0] != -1 )
@@ -702,18 +698,44 @@ bool CSSParser::parseValue( int propId, bool important )
     case CSS_PROP_BORDER_LEFT_COLOR:    // <color> | inherit
     case CSS_PROP_TEXT_DECORATION_COLOR: {
 	QString color;
+	QRgb c = khtml::invalidColor;
 	if ( value->unit == CSSPrimitiveValue::CSS_RGBCOLOR )
 	    color = "#" + qString( value->string );
-	else if ( value->unit == Value::IdentString )
-	    color = qString( value->string );
 	else if ( value->unit == CSSPrimitiveValue::CSS_IDENT )
-	    color = getValueName( id ).string();
-	if ( !color.isEmpty() ) {
-	    QRgb c = khtml::parseColor( color, !nonCSSHint);
-	    if ( c != khtml::invalidColor ) {
-		parsedValue = new CSSPrimitiveValueImpl(c);
-		valueList->next();
-	    }
+	    color = qString( value->string );
+	else if ( value->unit == Value::Function &&
+		  value->function->args->numValues == 5 /* rgb + two commas */ &&
+		  qString( value->function->name ).lower() == "rgb(" ) {
+	    ValueList *args = value->function->args;
+	    Value *v = args->current();
+	    if ( !validUnit( v, FInteger|FPercent, true ) )
+		break;
+	    int r = (int) ( v->fValue * (v->unit == CSSPrimitiveValue::CSS_PERCENTAGE ? 256./100. : 1.) );
+	    v = args->next();
+	    if ( v->unit != Value::Operator && v->iValue != ',' )
+		break;
+	    v = args->next();
+	    if ( !validUnit( v, FInteger|FPercent, true ) )
+		break;
+	    int g = (int) ( v->fValue * (v->unit == CSSPrimitiveValue::CSS_PERCENTAGE ? 256./100. : 1.) );
+	    v = args->next();
+	    if ( v->unit != Value::Operator && v->iValue != ',' )
+		break;
+	    v = args->next();
+	    if ( !validUnit( v, FInteger|FPercent, true ) )
+		break;
+	    int b = (int) ( v->fValue * (v->unit == CSSPrimitiveValue::CSS_PERCENTAGE ? 256./100. : 1.) );
+	    r = QMAX( 0, QMIN( 255, r ) );
+	    g = QMAX( 0, QMIN( 255, g ) );
+	    b = QMAX( 0, QMIN( 255, b ) );
+	    c = qRgb( r, g, b );
+	}
+
+	if ( !color.isEmpty() )
+	    c = khtml::parseColor( color, !nonCSSHint);
+	if ( c != khtml::invalidColor ) {
+	    parsedValue = new CSSPrimitiveValueImpl(c);
+	    valueList->next();
 	    //qDebug("color is: %8x", c );
 	}
     break;
@@ -918,19 +940,15 @@ bool CSSParser::parseValue( int propId, bool important )
 	    CSSValueListImpl *list = new CSSValueListImpl;
 	    bool is_valid = true;
 	    while( is_valid && value ) {
-		if ( value->unit == CSSPrimitiveValue::CSS_IDENT ) {
-		    switch ( value->iValue ) {
-		    case CSS_VAL_BLINK:
-			break;
-		    case CSS_VAL_UNDERLINE:
-		    case CSS_VAL_OVERLINE:
-		    case CSS_VAL_LINE_THROUGH:
-			list->append( new CSSPrimitiveValueImpl( value->iValue ) );
-			break;
-		    default:
-			is_valid = false;
-		    }
-		} else {
+		switch ( value->id ) {
+		case CSS_VAL_BLINK:
+		    break;
+		case CSS_VAL_UNDERLINE:
+		case CSS_VAL_OVERLINE:
+		case CSS_VAL_LINE_THROUGH:
+		    list->append( new CSSPrimitiveValueImpl( value->id ) );
+		    break;
+		default:
 		    is_valid = false;
 		}
 		value = valueList->next();
@@ -1053,8 +1071,7 @@ bool CSSParser::parseValue( int propId, bool important )
     case CSS_PROP_FONT:
     	// [ [ 'font-style' || 'font-variant' || 'font-weight' ]? 'font-size' [ / 'line-height' ]?
 	// 'font-family' ] | caption | icon | menu | message-box | small-caption | status-bar | inherit
-	if ( value->unit == CSSPrimitiveValue::CSS_IDENT &&
-	     value->iValue >= CSS_VAL_CAPTION && value->iValue <= CSS_VAL_STATUS_BAR )
+	if ( id >= CSS_VAL_CAPTION && id <= CSS_VAL_STATUS_BAR )
 	    valid_primitive = true;
 	else
 	    return parseFont(important);
@@ -1297,8 +1314,8 @@ bool CSSParser::parseFont( bool important )
 // 			<< " / " << (value->unit == CSSPrimitiveValue::CSS_STRING ||
 // 				   value->unit == Value::IdentString ? qString( value->string ) : QString::null )
 // 			<< endl;
-	if ( value->unit == CSSPrimitiveValue::CSS_IDENT ) {
-	    int id = value->iValue;
+	int id = value->id;
+	if ( id ) {
 	    if ( id == CSS_VAL_NORMAL ) {
 		// do nothing, it's the inital value for all three
 	    }
@@ -1372,9 +1389,8 @@ bool CSSParser::parseFont( bool important )
 
     // now a font size _must_ come
     // <absolute-size> | <relative-size> | <length> | <percentage> | inherit
-    if ( value->unit == CSSPrimitiveValue::CSS_IDENT &&
-	 id >= CSS_VAL_XX_SMALL && id <= CSS_VAL_LARGER )
-	font->size = new CSSPrimitiveValueImpl( id );
+    if ( value->id >= CSS_VAL_XX_SMALL && value->id <= CSS_VAL_LARGER )
+	font->size = new CSSPrimitiveValueImpl( value->id );
     else if ( validUnit( value, FLength|FPercent, strict ) ) {
 	font->size = new CSSPrimitiveValueImpl( value->fValue, (CSSPrimitiveValue::UnitTypes) value->unit );
     }
@@ -1389,7 +1405,7 @@ bool CSSParser::parseFont( bool important )
 	value = valueList->next();
 	if ( !value )
 	    goto invalid;
-	if ( value->unit == CSSPrimitiveValue::CSS_IDENT && value->iValue == CSS_VAL_NORMAL ) {
+	if ( value->id == CSS_VAL_NORMAL ) {
 	    // default value, nothing to do
 	} else if ( validUnit( value, FNumber|FLength|FPercent, strict ) ) {
 	    font->lineHeight = new CSSPrimitiveValueImpl( value->fValue, (CSSPrimitiveValue::UnitTypes) value->unit );
@@ -1426,18 +1442,15 @@ CSSValueListImpl *CSSParser::parseFontFamily()
     CSSValueListImpl *list = new CSSValueListImpl;
     Value *value = valueList->current();
     while ( value ) {
-// 	kdDebug( 6080 ) << "got value " << (value->unit == CSSPrimitiveValue::CSS_IDENT ? getValueName( value->iValue ).string() : "")
+// 	kdDebug( 6080 ) << "got value " << (value->id ? getValueName( value->id ).string() : "")
 // 			<< " / " << (value->unit == CSSPrimitiveValue::CSS_STRING ||
 // 				   value->unit == Value::IdentString ? qString( value->string ) : QString::null )
 // 			<< endl;
-	if ( value->unit == CSSPrimitiveValue::CSS_IDENT ) {
-	    id = value->iValue;
-	    if ( id >= CSS_VAL_SERIF && id <= CSS_VAL__KONQ_BODY )
-		list->append( new CSSPrimitiveValueImpl( id ) );
-	    else
-		break;
-	} else if ( value->unit == CSSPrimitiveValue::CSS_STRING ||
-		    value->unit == Value::IdentString )
+	int id = value->id;
+	if ( id >= CSS_VAL_SERIF && id <= CSS_VAL__KONQ_BODY )
+	    list->append( new CSSPrimitiveValueImpl( id ) );
+	else if ( value->unit == CSSPrimitiveValue::CSS_STRING ||
+		  value->unit == CSSPrimitiveValue::CSS_IDENT )
 	    list->append( new FontFamilyValueImpl( qString( value->string ) ) );
 	else {
 // 	    kdDebug( 6080 ) << "invalid family part" << endl;

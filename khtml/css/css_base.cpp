@@ -128,8 +128,6 @@ void CSSSelector::print(void)
     kdDebug( 6080 ) << "    specificity = " << specificity() << endl;
 }
 
-// ###### this still needs fixing. #foo gets sepcificity 0x10000, while
-// [id=foo] only gets 0x100. See CSS 2.1 specs.
 unsigned int CSSSelector::specificity()
 {
     if ( nonCSSHint )
@@ -138,12 +136,10 @@ unsigned int CSSSelector::specificity()
     int s = ((tag == -1) ? 0 : 1);
     switch(match)
     {
+    case Id:
+	s += 0x10000;
+	break;
     case Exact:
-        if(attr == ATTR_ID)
-        {
-            s += 0x10000;
-            break;
-        }
     case Set:
     case List:
     case Hyphen:

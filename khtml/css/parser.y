@@ -101,6 +101,8 @@ static inline int getValueID(const char *tagStr, int len)
 static inline int cssyyerror(const char *x ) {
 #ifdef CSS_DEBUG
     qDebug( x );
+#else
+    Q_UNUSED( x );
 #endif
     return 1;
 }
@@ -548,12 +550,12 @@ element_name:
 specifier_list:
     specifier {
 	$$ = $1;
-	$1->nonCSSHint = static_cast<CSSParser *>(parser)->nonCSSHint;
+	$$->nonCSSHint = static_cast<CSSParser *>(parser)->nonCSSHint;
     }
     | specifier_list specifier {
 	$$ = $1;
-	$1->nonCSSHint = static_cast<CSSParser *>(parser)->nonCSSHint;
-	$1->relation = CSSSelector::SubSelector;
+	$$->nonCSSHint = static_cast<CSSParser *>(parser)->nonCSSHint;
+	$$->relation = CSSSelector::SubSelector;
 	$$->tagHistory = $2;
     }
 ;
@@ -561,7 +563,7 @@ specifier_list:
 specifier:
     HASH {
 	$$ = new CSSSelector();
-	$$->match = CSSSelector::Exact;
+	$$->match = CSSSelector::Id;
 	$$->attr = ATTR_ID;
 	$$->value = domString($1);
     }
@@ -637,7 +639,10 @@ pseudo:
 	$$->value = domString($2);
     }
     | ':' FUNCTION maybe_space IDENT maybe_space ')' {
-	$$ = 0;
+	$$ = new CSSSelector();
+	$$->match = CSSSelector::Pseudo;
+	$$->_pseudoType = CSSSelector::PseudoFunction;
+	$$->value = domString($4);
     }
   ;
 
@@ -653,7 +658,7 @@ declaration_list:
     | decl_list {
 	$$ = $1;
     }
-    | error {
+    | error invalid_block {
 	$$ = false;
 #ifdef CSS_DEBUG
 	kdDebug( 6080 ) << "skipping bogus declaration" << endl;
@@ -710,7 +715,7 @@ declaration:
 property:
     IDENT maybe_space {
 	QString str = qString($1);
-	$$ = getPropertyID( str.latin1(), str.length() );
+	$$ = getPropertyID( str.lower().latin1(), str.length() );
     }
   ;
 
@@ -728,6 +733,7 @@ expr:
 	$$ = $1;
 	if ( $2 ) {
 	    Value v;
+	    v.id = 0;
 	    v.unit = Value::Operator;
 	    v.iValue = $2;
 	    $$->addValue( v );
@@ -751,19 +757,16 @@ operator:
 term:
   unary_term { $$ = $1; }
    | unary_operator unary_term { $$ = $2; $$.fValue *= $1; }
-  | STRING maybe_space { $$.string = $1; $$.unit = CSSPrimitiveValue::CSS_STRING; }
+  | STRING maybe_space { $$.id = 0; $$.string = $1; $$.unit = CSSPrimitiveValue::CSS_STRING; }
   | IDENT maybe_space {
       QString str = qString( $1 );
-      $$.iValue = getValueID( str.lower().latin1(), str.length() );
+      $$.id = getValueID( str.lower().latin1(), str.length() );
       $$.unit = CSSPrimitiveValue::CSS_IDENT;
-      if ( !$$.iValue ) {
-	  $$.string = $1;
-	  $$.unit = Value::IdentString;
-      }
+      $$.string = $1;
   }
-  | URI maybe_space { $$.string = $1; $$.unit = CSSPrimitiveValue::CSS_URI; }
-  | UNICODERANGE maybe_space { $$.iValue = 0; $$.unit = CSSPrimitiveValue::CSS_UNKNOWN;/* ### */ }
-  | hexcolor { $$.string = $1; $$.unit = CSSPrimitiveValue::CSS_RGBCOLOR; }
+  | URI maybe_space { $$.id = 0; $$.string = $1; $$.unit = CSSPrimitiveValue::CSS_URI; }
+  | UNICODERANGE maybe_space { $$.id = 0; $$.iValue = 0; $$.unit = CSSPrimitiveValue::CSS_UNKNOWN;/* ### */ }
+  | hexcolor { $$.id = 0; $$.string = $1; $$.unit = CSSPrimitiveValue::CSS_RGBCOLOR; }
 /* ### according to the specs a function can have a unary_operator in front. I know no case where this makes sense */
   | function {
       $$ = $1;
@@ -771,23 +774,23 @@ term:
   ;
 
 unary_term:
-  NUMBER maybe_space { $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_NUMBER; }
-  | PERCENTAGE maybe_space { $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_PERCENTAGE; }
-  | PXS maybe_space { $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_PX; }
-  | CMS maybe_space { $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_CM; }
-  | MMS maybe_space { $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_MM; }
-  | INS maybe_space { $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_IN; }
-  | PTS maybe_space { $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_PT; }
-  | PCS maybe_space { $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_PC; }
-  | DEGS maybe_space { $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_DEG; }
-  | RADS maybe_space { $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_RAD; }
-  | GRADS maybe_space { $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_GRAD; }
-  | MSECS maybe_space { $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_MS; }
-  | SECS maybe_space { $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_S; }
-  | HERZ maybe_space { $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_HZ; }
-  | KHERZ maybe_space { $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_KHZ; }
-  | EMS maybe_space { $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_EMS; }
-  | EXS maybe_space { $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_EXS; }
+  NUMBER maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_NUMBER; }
+  | PERCENTAGE maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_PERCENTAGE; }
+  | PXS maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_PX; }
+  | CMS maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_CM; }
+  | MMS maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_MM; }
+  | INS maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_IN; }
+  | PTS maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_PT; }
+  | PCS maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_PC; }
+  | DEGS maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_DEG; }
+  | RADS maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_RAD; }
+  | GRADS maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_GRAD; }
+  | MSECS maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_MS; }
+  | SECS maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_S; }
+  | HERZ maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_HZ; }
+  | KHERZ maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_KHZ; }
+  | EMS maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_EMS; }
+  | EXS maybe_space { $$.id = 0; $$.fValue = $1; $$.unit = CSSPrimitiveValue::CSS_EXS; }
     ;
 
 
@@ -796,6 +799,7 @@ function:
       Function *f = new Function;
       f->name = $1;
       f->args = $3;
+      $$.id = 0;
       $$.unit = Value::Function;
       $$.function = f;
   }

@@ -79,6 +79,7 @@ namespace DOM {
 	enum Match
 	{
 	    None = 0,
+	    Id,
 	    Exact,
 	    Set,
 	    List,
@@ -111,7 +112,8 @@ namespace DOM {
 	    PseudoFocus,
 	    PseudoActive,
 	    PseudoBefore,
-	    PseudoAfter
+	    PseudoAfter,
+	    PseudoFunction
 	};
 
 	inline PseudoType pseudoType() const
@@ -130,8 +132,7 @@ namespace DOM {
 	Match 	 match         : 4;
 	bool	nonCSSHint : 1;
 	unsigned int pseudoId : 3;
-
-	mutable PseudoType _pseudoType;
+	mutable PseudoType _pseudoType : 4;
 
     private:
 	void extractPseudoType() const;

@@ -53,6 +53,7 @@ namespace DOM {
     };
 
     struct Value {
+	int id;
 	union {
 	    float fValue;
 	    int iValue;
@@ -61,8 +62,7 @@ namespace DOM {
 	};
 	enum {
 	    Operator = 0x100000,
-	    Function = 0x100001,
-	    IdentString = 0x100003
+	    Function = 0x100001
 	};
 
 	int unit;

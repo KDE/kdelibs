@@ -711,6 +711,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         switch(sel->match)
         {
         case CSSSelector::Exact:
+        case CSSSelector::Id:
 	    if( (strictParsing && strcmp(sel->value, value) ) ||
                 (!strictParsing && strcasecmp(sel->value, value)))
                 return false;
@@ -865,6 +866,8 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 	case CSSSelector::PseudoNotParsed:
 	    assert(false);
 	    break;
+	case CSSSelector::PseudoFunction:
+	    /* not supported for now */
 	case CSSSelector::PseudoOther:
 	    break;
 	}
