@@ -270,7 +270,7 @@ bool LpcHelper::removeJob(KMJob *job, QString& msg)
 {
 	if (m_lprmpath.isEmpty())
 	{
-		msg = i18n("The executable %1 couldn't be find in your PATH.").arg("lprm");
+		msg = i18n("The executable %1 couldn't be found in your PATH.").arg("lprm");
 		return false;
 	}
 	QString	result = execute(m_lprmpath + " -P " + KProcess::quote(job->printer()) + " " + QString::number(job->id()));
@@ -288,7 +288,7 @@ bool LpcHelper::changeJobState(KMJob *job, int state, QString& msg)
 {
 	if (m_lprmpath.isEmpty())
 	{
-		msg = i18n("The executable %1 couldn't be find in your PATH.").arg("lpc");
+		msg = i18n("The executable %1 couldn't be found in your PATH.").arg("lpc");
 		return false;
 	}
 	QString	result = execute(m_exepath + (state == KMJob::Held ? " hold " : " release ") + KProcess::quote(job->printer()) + " " + QString::number(job->id()));
@@ -311,7 +311,7 @@ bool LpcHelper::restart(QString& msg)
 		s = "checkpc";
 	if (!s.isEmpty())
 	{
-		msg = i18n("The executable %1 couldn't be find in your PATH.").arg(s);
+		msg = i18n("The executable %1 couldn't be found in your PATH.").arg(s);
 		return false;
 	}
 	::system(QFile::encodeName(m_exepath + " reread"));
