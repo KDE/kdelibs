@@ -25,7 +25,7 @@
 
 #ifdef Q_WS_WIN
 #include <kdelibs_win.h>
-#else //Q_OS_UNIX
+#else /* Q_OS_UNIX */
 
 /* export statements are not required for unix */
 #define _KDE_EXPORT_
