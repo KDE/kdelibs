@@ -84,7 +84,7 @@ void KPushButton::init( const KGuiItem &item )
     d = new KPushButtonPrivate;
     d->item = item;
 
-    // ca;l QPushButton's implementation since we don't need to 
+    // call QPushButton's implementation since we don't need to 
     // set the GUI items text or check the state of the icon set
     QPushButton::setText( d->item.text() );
 
@@ -117,7 +117,7 @@ void KPushButton::setGuiItem( const KGuiItem& item )
 {
     d->item = item;
 
-    // ca;l QPushButton's implementation since we don't need to 
+    // call QPushButton's implementation since we don't need to 
     // set the GUI items text or check the state of the icon set
     QPushButton::setText( d->item.text() );
     setIconSet( d->item.iconSet() );
