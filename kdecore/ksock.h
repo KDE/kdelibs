@@ -230,8 +230,10 @@ private:
  * @short Monitors a port for incoming TCP/IP connections.
  *
  * @deprecated
- * This class is deprecated and will be removed in the future. For new
- * programs, please use KExtendedSocket class.
+ * This class is deprecated and will be removed in the future.
+ * Please use the classes in KNetwork for new programs. 
+ * In special, this class is replaced by KNetwork::KStreamSocket
+ * and KNetwork::KServerSocket. 
  *
  * You can use a KServerSocket to listen on a port for incoming
  * connections. When a connection arrived in the port, a KSocket
