@@ -786,7 +786,7 @@ int main(int argc, char* argv[]) {
                                                 QString::fromLatin1("DockWidget Demo"), "dialog1" );
   QStringList::Iterator it = s.begin();
   for ( ; it != s.end(); ++it ){
-    qDebug( (*it).local8Bit().data() );
+    qDebug( "%s", (*it).local8Bit().data() );
   }
 #endif
   return 0;
