@@ -45,8 +45,8 @@ include_HEADERS = ksycoca.h ksycocaentry.h ksycocatype.h \
         krun.h kdirwatch.h kautomount.h kuserprofile.h kuserpaths.h \
 	kshred.h ktar.h ktrader.h kopenwith.h
 
-libkio_la_LDFLAGS = -version-info 3:0 -no-undefined
-libkio_la_LIBADD = ../kdeui/libkdeui.la
+libkio_la_LDFLAGS = -version-info 3:0 -no-undefined $(all_libraries)
+libkio_la_LIBADD = ../kdeui/libkdeui.la $(LIBZ)
 
 libkio_la_SOURCES = \
 	kshred.cpp ktar.cpp \
