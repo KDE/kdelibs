@@ -201,10 +201,12 @@ int KWalletBackend::unlock(QByteArray& password) {
 	for (int i = 0; i < 20; i++) {
 		if (testhash[i] != encrypted[sz-20+i]) {
 			encrypted.fill(0);
+			sha.reset();
 			return -8;         // hash error.
 		}
 	}
 	
+	sha.reset();
 	// get rid of the trailing data
 	encrypted.truncate(fsize+blksz+4);
 	
@@ -221,6 +223,44 @@ int KWalletBackend::unlock(QByteArray& password) {
 
 	
 int KWalletBackend::lock(QByteArray& password) {
+	QString path = KGlobal::dirs()->saveLocation("kwallet") + 
+		       "/"+_name+".kwl";
+
+	QFile qf(path);
+
+	if (!qf.open(IO_WriteOnly))
+		return -1;		// error opening file
+
+	qf.writeBlock(KWMAGIC, KWMAGIC_LEN);
+
+	QByteArray decrypted;
+
+	// populate decrypted
+
+
+	// calculate the hash of the file
+	SHA1 sha;
+
+	sha.process(decrypted.data(), decrypted.size());
+
+	// prepend and append the random data
+	
+
+	// append the hash
+	
+	
+	// hash the passphrase
+	QByteArray passhash;
+	password2hash(password, passhash);
+	
+	// encrypt the data
+	
+
+	// write the file
+
+
+	passhash.fill(0);
+
 	return -1;
 }
 
