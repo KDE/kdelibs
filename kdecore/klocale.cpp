@@ -100,8 +100,25 @@ QString KLocale::country() const
     return _country;
 }
 
-QString KLocale::MonthName(int i) const
+QString KLocale::monthName(int i, bool _short) const
 {
+  if ( _short )
+    switch ( i )
+    {
+      case 1:   return translate("January", "Jan");
+      case 2:   return translate("February", "Feb");
+      case 3:   return translate("March", "Mar");
+      case 4:   return translate("April", "Apr");
+      case 5:   return translate("May long", "May");
+      case 6:   return translate("June", "Jun");
+      case 7:   return translate("July", "Jul");
+      case 8:   return translate("August", "Aug");
+      case 9:   return translate("September", "Sep");
+      case 10:  return translate("October", "Oct");
+      case 11:  return translate("November", "Nov");
+      case 12:  return translate("December", "Dec");
+    }
+  else
     switch (i)
     {
       case 1:   return translate("January");
@@ -118,12 +135,24 @@ QString KLocale::MonthName(int i) const
       case 12:  return translate("December");
     }
 
-    return QString::null;
+  return QString::null;
 }
 
-QString KLocale::WeekDayName (int i) const
+QString KLocale::weekDayName (int i, bool _short) const
 {
-    switch (i )
+  if ( _short )
+    switch ( i )
+    {
+      case 1:  return translate("Monday", "Mon");
+      case 2:  return translate("Tuesday", "Tue");
+      case 3:  return translate("Wednesday", "Wed");
+      case 4:  return translate("Thursday", "Thu");
+      case 5:  return translate("Friday", "Fri");
+      case 6:  return translate("Saturday", "Sat");
+      case 7:  return translate("Sunday", "Sun");
+    }
+  else
+    switch ( i )
     {
       case 1:  return translate("Monday");
       case 2:  return translate("Tuesday");
@@ -134,7 +163,7 @@ QString KLocale::WeekDayName (int i) const
       case 7:  return translate("Sunday");
     }
 
-    return QString::null;
+  return QString::null;
 }
 
 #ifdef ENABLE_NLS
@@ -573,10 +602,10 @@ QString KLocale::formatDate(const QDate &pDate, bool shortfmt) const
                 rst.replace(i, 2, QString().sprintf("%02d", pDate.month()));
 		continue;
 	case 'b':
-                rst.replace(i, 2, MonthName(pDate.month()).left(3));
+                rst.replace(i, 2, monthName(pDate.month(), true));
 		continue;
 	case 'B':
-                rst.replace(i, 2, MonthName(pDate.month()));
+                rst.replace(i, 2, monthName(pDate.month(), false));
 		continue;
 	case 'd':
                 rst.replace(i, 2, QString().sprintf("%02d", pDate.day() ));
@@ -585,10 +614,10 @@ QString KLocale::formatDate(const QDate &pDate, bool shortfmt) const
                 rst.replace(i, 2, QString().sprintf("%2d", pDate.day() ));
 		continue;
 	case 'a':
-                rst.replace(i, 2, WeekDayName(pDate.dayOfWeek()).left(3));
+                rst.replace(i, 2, weekDayName(pDate.dayOfWeek(), true));
 		continue;
 	case 'A':
-                rst.replace(i, 2, WeekDayName(pDate.dayOfWeek()));
+                rst.replace(i, 2, weekDayName(pDate.dayOfWeek(), false));
 		continue;
 	default:
                 rst.remove(i, 1);
@@ -707,8 +736,7 @@ QDate KLocale::readDate(const QString &intstr) const
 		case 'A':
 			// this will just be ignored
 			for (int j = 1; j < 8; j++) {
-				QString s = WeekDayName(j).lower();
-				if (c == 'a') s = s.left(3);
+				QString s = weekDayName(j, c == 'a').lower();
 				int len = s.length();
 				if (str.mid(strpos, len) == s)
 					strpos += len;
@@ -717,8 +745,7 @@ QDate KLocale::readDate(const QString &intstr) const
 		case 'b':
 		case 'B':
 			for (int j = 1; j < 13; j++) {
-				QString s = MonthName(j).lower();
-				if (c == 'b') s = s.left(3);
+				QString s = monthName(j, c == 'b').lower();
 				int len = s.length();
 				if (str.mid(strpos, len) == s) {
 					month = j;

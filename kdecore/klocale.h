@@ -331,19 +331,21 @@ public:
      * Return a string containing the name of the month name.
      *
      * @param i the month number of the year starting at 1/January.
+     * @param _short we will return the short versoin of the string.
      *
      * @return The name of the month
      */
-    QString MonthName(int i) const;
+    QString monthName(int i, bool _short = false) const;
 
     /**
      * Return a string containing the name of the week day.
      *
      * @param i the day number of the week starting at 1/Monday.
+     * @param _short we will return the short versoin of the string.
      *
      * @return The name of the week
      */
-    QString WeekDayName(int i) const;
+    QString weekDayName(int i, bool _short = false) const;
 
     /**
      * Return a string formated to the current locale's conventions
