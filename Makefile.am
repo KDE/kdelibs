@@ -46,7 +46,7 @@ messages:
 	$(XGETTEXT) common_texts.cpp -o kde.pot
 	rm -f rc.cpp
 
-EXTRA_DIST = admin bsd-port debian kdelibs.spec.in kde.pot
+EXTRA_DIST = admin bsd-port debian kdelibs.spec.in kde.pot kde-config.in kde-config
 
 dist-hook:
 	cd $(top_distdir) && perl $(top_srcdir)/admin/am_edit -padmin
@@ -61,4 +61,6 @@ cvs-local:
 	autoheader && \
 	automake --gnits --add-missing && \
 	autoconf
+
+kde_conf_DATA = kde-config
 
