@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
    Copyright (C) 1997 David Sweet <dsweet@kde.org>
    Copyright (C) 2000 Rik Hemsley <rik@kde.org>
+   Copyright (C) 2000-2001 Wolfram Diestel <wolfram@steloj.de>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -39,7 +40,8 @@ KSpellDlg::KSpellDlg(
   bool _modal
 )
   : KDialogBase(
-      parent, name, _modal, i18n("Check spelling"), Help|Cancel, Cancel, true
+      parent, name, _modal, i18n("Check spelling"), Help|Cancel|User1, 
+      Cancel, true, i18n("&Stop")
     ),
     progressbar(_progressbar)
 {
@@ -84,8 +86,7 @@ KSpellDlg::KSpellDlg(
   b = buttonBox->addButton(i18n("A&dd"), this, SLOT(add()));
   connect(this, SIGNAL(ready(bool)), b, SLOT(setEnabled(bool)));
 
-  b = buttonBox->addButton(i18n("&Stop"), this, SLOT(stop()));
-  connect(this, SIGNAL(ready(bool)), b, SLOT(setEnabled(bool)));
+  connect(this, SIGNAL(user1Clicked()), this, SLOT(stop()));
 
   buttonBox->layout();
 
