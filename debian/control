@@ -1,5 +1,5 @@
 Source: kdelibs
-Build-Depends: gcc, automake, debhelper, libjpeg62-dev, mico-2.3.1-dev, libqt2.1-dev, libpng2-dev, libc6-dev, libtiff3g-dev, zlib1g-dev, xlib6g-dev, libasound0.4-dev, libaudiofile-dev, kdoc, qt2.1-doc, kde-qt-addon-dev, jade, sgml-base, docbook, libssl09-dev, mesag-dev
+Build-Depends: gcc, automake, debhelper, libjpeg62-dev, libqt2.1-dev, libpng2-dev, libc6-dev, libtiff3g-dev, zlib1g-dev, xlib6g-dev, libasound0.4-dev, libaudiofile-dev, kdoc, qt2.1-doc, kde-qt-addon-dev, jade, sgml-base, docbook, libssl09-dev, mesag-dev
 Section: libs
 Priority: optional
 Maintainer: Stephan Kulow <coolo@kde.org>
@@ -8,7 +8,7 @@ Standards-Version: 3.1.1
 Package: kdelibs3
 Architecture: any
 Section: libs
-Depends: ${shlibs:Depends}, mico-2.3.1 (>= 2.3.1)
+Depends: ${shlibs:Depends}
 Replaces: kdelibs3-cvs
 Conflicts: kdelibs3-cvs
 Provides: kdelibs3-cvs
@@ -31,7 +31,7 @@ Package: kdelibs3-dev
 Architecture: any
 Section: devel
 Replaces: kdelibs-dev, kdelibs2g-dev
-Depends: kdelibs3 (= ${Source-Version}), libqt2.1-dev, libjpeg62-dev, xlib6g-dev, mico-2.3.1-dev (>= 2.3.1), kde-qt-addon-dev
+Depends: kdelibs3 (= ${Source-Version}), libqt2.1-dev, libjpeg62-dev, xlib6g-dev, kde-qt-addon-dev
 Suggests: kdelibs-doc
 Replaces: kdelibs3-dev-cvs
 Conflicts: kdelibs0-dev, kdelibs2g-dev, kdelibs3-dev-cvs
