@@ -243,6 +243,7 @@ AC_OUTPUT(Makefile \
 	kstyles/themes/Makefile \
 	kstyles/pics/Makefile \
 	kparts/Makefile \
+	kparts/tests/Makefile \
 	interfaces/Makefile \
 	pics/Makefile \
 	pics/filesys/Makefile \
