@@ -51,7 +51,7 @@ public:
   /**
    * Copy constructor. Does nothing here.
    */
-  KIOBufferBase(const KIOBufferBase& other)
+  KIOBufferBase(const KIOBufferBase& )
   { }
 
   /**
@@ -63,7 +63,7 @@ public:
   /**
    * Assignment operator. Does nothing.
    */
-  KIOBufferBase& operator=(const KIOBufferBase& other)
+  KIOBufferBase& operator=(const KIOBufferBase& )
   { return *this; }
 
   /**

@@ -24,6 +24,7 @@
 
 #include <config.h>
 
+#include <assert.h>
 #include <string.h>
 
 #include "ksocketbase.h"
@@ -181,6 +182,7 @@ Q_LONG KSocketBuffer::feedBuffer(const char *data, Q_LONG len)
   a.duplicate(data, len);
   m_list.append(a);
 
+  m_length += len;
   return len;
 }
 
@@ -229,6 +231,8 @@ Q_LONG KSocketBuffer::consumeBuffer(char *destbuffer, Q_LONG maxlen, bool discar
   if (discard)
     m_offset = offset;
 
+  m_length -= copied;
+  assert(m_length >= 0);
   return copied;
 }
 
@@ -288,6 +292,7 @@ Q_LONG KSocketBuffer::sendTo(KActiveSocketBase* dev, Q_LONG len)
     }
 
   // discard data that has been written
+  // this updates m_length too
   if (written)
     consumeBuffer(0L, written);
 
@@ -301,17 +306,17 @@ Q_LONG KSocketBuffer::receiveFrom(KActiveSocketBase* dev, Q_LONG len)
 
   QMutexLocker locker(&m_mutex);
 
-  // see if we can read that much
-  if (m_size != -1 && (len == -1 || len > (m_size - m_length)))
-    len = m_size - m_length;
-
-  // if len == -1 here, then the buffer is unlimited in size
-  // otherwise, it contains just as many bytes as we're supposed to read
   if (len == -1)
     len = dev->bytesAvailable();
-  if (len == -1)
-    // error
-    return -1;
+  if (len <= 0)
+    // error or closing socket
+    return len;
+
+  // see if we can read that much
+  if (m_size != -1 && len > (m_size - m_length))
+    len = m_size - m_length;
+
+  // here, len contains just as many bytes as we're supposed to read
 
   // now do the reading
   QByteArray a(len);
@@ -325,5 +330,6 @@ Q_LONG KSocketBuffer::receiveFrom(KActiveSocketBase* dev, Q_LONG len)
   // resize the buffer and add it
   a.truncate(len);
   m_list.append(a);
+  m_length += len;
   return len;
 }

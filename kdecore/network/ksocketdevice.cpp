@@ -656,7 +656,7 @@ QSocketNotifier* KSocketDevice::exceptionNotifier() const
 }
 
 bool KSocketDevice::poll(bool *input, bool *output, bool *exception,
-		       int timeout, bool* timedout)
+			 int timeout, bool* timedout)
 {
   if (m_sockfd == -1)
     {
