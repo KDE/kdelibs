@@ -87,11 +87,11 @@ void RenderListItem::setStyle(RenderStyle *style)
            newStyle->setFloating(FLEFT);
        else
            newStyle->setFloating(FRIGHT);
-       if(!m_marker) {
+       if(!m_marker && m_style->listStyleType() != LNONE) {
         m_marker = new RenderListMarker();
         m_marker->setStyle(newStyle);
         addChild(m_marker);
-    } else {
+    } else if ( m_marker ) {
         m_marker->setStyle(newStyle);
     }
 }
@@ -102,6 +102,8 @@ RenderListItem::~RenderListItem()
 
 void RenderListItem::calcListValue()
 {
+    if( !m_marker ) return;
+    
     if(predefVal != -1)
         m_marker->val = predefVal;
     else if(!m_previous)
@@ -128,7 +130,8 @@ void RenderListItem::layout( )
         return;
     }
     calcListValue();
-    m_marker->layout();
+    if ( m_marker )
+	m_marker->layout();
     RenderFlow::layout();
 }
 
