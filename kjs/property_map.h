@@ -33,14 +33,25 @@ namespace KJS {
   class PropertyMapNode {
   public:
     PropertyMapNode(UString &n, ValueImp *v, PropertyMapNode *p)
-      : name(n), value(v), left(0), right(0), parent(p), height(0) {}
+      : name(n), value(v), left(0), right(0), parent(p), height(1) {}
     UString name;
     ValueImp *value;
+
+    void setLeft(PropertyMapNode *newLeft);
+    void setRight(PropertyMapNode *newRight);
+    void replace(PropertyMapNode *other);
+    PropertyMapNode *findMax();
+    PropertyMapNode *findMin();
+
+    void remove(PropertyMapNode *node);
 
     PropertyMapNode *left;
     PropertyMapNode *right;
     PropertyMapNode *parent;
     int height;
+
+  private:
+    void setParent(PropertyMapNode *newParent);
   };
 
   /**
@@ -64,10 +75,12 @@ namespace KJS {
 
     void put(UString name,ValueImp *value);
     void remove(UString name);
+    PropertyMapNode *remove(PropertyMapNode *node);
     ValueImp *get(UString name);
     void mark();
 
     void dump(PropertyMapNode *node = 0, int indent = 0);
+    void checkTree(PropertyMapNode *node = 0);
 
   private:
     PropertyMapNode *getNode(const UString &name);
@@ -75,10 +88,10 @@ namespace KJS {
     void balance(PropertyMapNode* node);
     void updateHeight(PropertyMapNode* &node);
 
-    void singleRotateLeft(PropertyMapNode* &node);
-    void singleRotateRight(PropertyMapNode* &node);
-    void doubleRotateLeft(PropertyMapNode* &node);
-    void doubleRotateRight(PropertyMapNode* &node);
+    void rotateRR(PropertyMapNode* &node);
+    void rotateLL(PropertyMapNode* &node);
+    void rotateRL(PropertyMapNode* &node);
+    void rotateLR(PropertyMapNode* &node);
 
     PropertyMapNode *root;
   };

@@ -21,7 +21,6 @@
  *  $Id$
  */
 
-// ------------------------------ PropertyMap ----------------------------------
 
 #include "property_map.h"
 
@@ -30,6 +29,66 @@
 #include <stdio.h>
 
 using namespace KJS;
+
+// ------------------------------ PropertyMapNode ------------------------------
+
+void PropertyMapNode::setLeft(PropertyMapNode *newLeft)
+{
+  if (left)
+    left->setParent(0);
+  left = newLeft;
+  if (left)
+    left->setParent(this);
+}
+
+void PropertyMapNode::setRight(PropertyMapNode *newRight)
+{
+  if (right)
+    right->setParent(0);
+  right = newRight;
+  if (right)
+    right->setParent(this);
+}
+
+void PropertyMapNode::replace(PropertyMapNode */*other*/)
+{
+  // ###
+}
+
+void PropertyMapNode::setParent(PropertyMapNode *newParent)
+{
+  if (parent) {
+    //assert(this == parent->left || this == parent->right);
+    if (this == parent->left)
+      parent->left = 0;
+    else
+      parent->right = 0;
+  }
+  parent = newParent;
+}
+
+PropertyMapNode *PropertyMapNode::findMax()
+{
+  PropertyMapNode *max = this;
+  while (max->right)
+    max = max->right;
+  return max;
+}
+
+PropertyMapNode *PropertyMapNode::findMin()
+{
+  PropertyMapNode *min = this;
+  while (min->left)
+    min = min->left;
+  return min;
+}
+
+void PropertyMapNode::remove(PropertyMapNode */*node*/)
+{
+  // ###
+}
+
+// ------------------------------ PropertyMap ----------------------------------
 
 int uscompare(const UString &s1, const UString &s2)
 {
@@ -85,25 +144,21 @@ void PropertyMap2::put(UString name, ValueImp *value)
     else {
       // a node with this name already exists; just replace the value
       parent->value = value;
-      printf("dbg: existing value, replacing\n");
+      //printf("dbg: existing value, replacing\n");
       return;
     }
   }
 
   // we found the parent
-  assert(parent);
+  //assert(parent);
 
   if (isLeft) {
-    assert(!parent->left);
+    //assert(!parent->left);
     parent->left = new PropertyMapNode(name,value,parent);
-    //if (!parent->right || parent->right->height == 0)
-    //  parent->height = 1;
   }
   else {
-    assert(!parent->right);
+    //assert(!parent->right);
     parent->right = new PropertyMapNode(name,value,parent);
-    //if (!parent->left || parent->left->height == 0)
-    //  parent->height = 1;
   }
   updateHeight(parent);
 
@@ -112,82 +167,88 @@ void PropertyMap2::put(UString name, ValueImp *value)
   while (node) {
     PropertyMapNode *p = node->parent;
     balance(node); // may change node
-    //    if (!p) {
-      //      printf("dbg: setting root to %s\n",node->name.ascii());
-      //      root = node; // in case node changed
-    //    }
     node = p;
   }
-
-
-  /*
-
-  ###
-
-  // update height in ancestors & balance the tree
-  PropertyMapNode *node = parent;
-  int height = 1;
-  while (node) {
-    if (height > node->height) {
-      node->height = height;
-    }
-
-    if (node->left && node->right) {
-      if (node->left->height > node->right->height+1) {
-        // node's tree is "left heavy"
-        //        rotateLL(node);
-      }
-      if (node->right->height > node->left->height+1) {
-        // node's tree is "right heavy"
-        //        rotateRR(node);
-      }
-    }
-
-    height++;
-    node = node->parent;
-  }
-  */
 }
 
 void PropertyMap2::remove(UString name)
 {
   PropertyMapNode *node = getNode(name);
-  if (!node) // name not in tree
+  if (!node) { // name not in tree
+    printf("dbg: couldn't find name %s\n",name.ascii());
     return;
+  }
+  PropertyMapNode *removed = remove(node);
+  if (removed)
+    delete node;
+}
 
-  PropertyMapNode *replace;
+PropertyMapNode * PropertyMap2::remove(PropertyMapNode *node)
+{
+  PropertyMapNode *parent = node->parent;
+  //assert(!parent || (node == parent->left || node == parent->right));
+  bool isLeft = (parent && node == parent->left);
 
-  if (!node->right) {
-    // no right node; replace with the left node
+  PropertyMapNode *replace = 0;
+  if (node->left && node->right) {
+    PropertyMapNode *maxLeft = node->left->findMax();
+    if (maxLeft == node->left) {
+      maxLeft->setRight(node->right);
+      replace = maxLeft;
+    }
+    else {
+      remove(maxLeft);
+
+      maxLeft->setLeft(node->left);
+      maxLeft->setRight(node->right);
+      replace = maxLeft;
+    }
+    // removing maxLeft could have re-balanced the tree, so recalculate
+    // parent again
+    parent = node->parent;
+    //assert(!parent || (node == parent->left || node == parent->right));
+    isLeft = (parent && node == parent->left);
+  }
+  else if (node->left) {
     replace = node->left;
   }
-  else if (!node->left) {
-    // no left node; replace with the right node
+  else if (node->right) {
     replace = node->right;
   }
   else {
-    // replace with the highest node, or left
-    if (node->right->height > node->left->height)
-      replace = node->right;
-    else
-      replace = node->left;
+    replace = 0;
   }
 
-  if (!node->parent) {
-    root = replace;
+  if (parent) {
+    if (isLeft)
+      parent->setLeft(replace);
+    else
+      parent->setRight(replace);
   }
   else {
-    assert(node == node->parent->left || node == node->parent->right);
-    if (node == node->parent->left) // node is left of parent
-      node->parent->left = replace;
-    else // node is right of parent
-      node->parent->right = replace;
+    root = replace;
+    //    fprintf(stderr,"replace = %p\n",replace);
     if (replace)
-      replace->parent = node->parent;
+      replace->parent = 0;
   }
-  delete node;
 
-  // ### balance the tree
+  if (replace)
+    updateHeight(replace); // will also update parent's height
+  else if (parent)
+    updateHeight(parent);
+  else if (root)
+    updateHeight(root);
+    
+
+  // balance the tree
+  PropertyMapNode *bal = parent;
+  while (bal) {
+    PropertyMapNode *p = bal->parent;
+    balance(bal); // may change bal
+    bal = p;
+  }
+
+  return node;
 }
 
 ValueImp *PropertyMap2::get(UString name)
@@ -207,13 +268,45 @@ void PropertyMap2::dump(PropertyMapNode *node, int indent)
     return;
   if (!node)
     node = root;
+  if (!node)
+    return;
 
+  assert(!node->right || node->right->parent == node);
   dump(node->right,indent+1);
   for (int i = 0; i < indent; i++) {
     printf("    ");
   }
   printf("[%d] %s\n",node->height,node->name.ascii());
+  assert(!node->left || node->left->parent == node);
   dump(node->left,indent+1);
+}
+
+void PropertyMap2::checkTree(PropertyMapNode *node)
+{
+  if (!root)
+    return;
+  if (node == 0)
+    node = root;
+  if (node == root) {
+    assert(!node->parent);
+  }
+  assert(!node->right || node->right->parent == node);
+  assert(!node->left || node->left->parent == node);
+  assert(node->left != node);
+  assert(node->right != node);
+  if (node->left && node->right)
+    assert(node->left != node->right);
+
+  PropertyMapNode *n = node->parent;
+  while (n) {
+    assert(n != node);
+    n = n->parent;
+  }
+
+  if (node->right)
+    checkTree(node->right);
+  if (node->left)
+    checkTree(node->left);
 }
 
 PropertyMapNode *PropertyMap2::getNode(const UString &name)
@@ -224,7 +317,7 @@ PropertyMapNode *PropertyMap2::getNode(const UString &name)
     if (!node)
       return 0;
 
-    int cmp = uscompare(node->name,name);
+    int cmp = uscompare(name,node->name);
     if (cmp < 0)
       node = node->left;
     else if (cmp > 0)
@@ -236,40 +329,38 @@ PropertyMapNode *PropertyMap2::getNode(const UString &name)
 
 void PropertyMap2::balance(PropertyMapNode* node)
 {
-    printf("dbg: before balance, node = %s\n",node->name.ascii());
-  bool rotated = false;
-  bool isroot = (node == root);
+  //printf("dbg: before balance, node = %s\n",node->name.ascii());
   int lheight = node->left ? node->left->height : 0;
   int rheight = node->right ? node->right->height : 0;
-  if (lheight > rheight+1) {
-    assert(node->left);
+
+  int bal = rheight-lheight;
+
+  if (bal < -1) {
+    //assert(node->left);
     int llheight = node->left->left ? node->left->left->height : 0;
     int lrheight = node->left->right ? node->left->right->height : 0;
-    if (llheight >= lrheight) {
-      singleRotateRight(node->left);
+    int lbal = lrheight - llheight;
+
+    if (lbal < 0) {
+      rotateLL(node); // LL rotation
     }
     else {
-      // llheight < lrheight
-      doubleRotateRight(node);
+      // lbal >= 0
+      rotateLR(node);
     }
-    rotated = true;
   }
-  else if (rheight > lheight+1) {
+  else if (bal > 1) {
     int rlheight = node->right->left ? node->right->left->height : 0;
     int rrheight = node->right->right ? node->right->right->height : 0;
-    if (rrheight >= rlheight) {
-      singleRotateLeft(node->right);
+    int rbal = rrheight - rlheight;
+    if (rbal < 0) {
+      rotateRL(node);
     }
     else {
-      // rrheight < rlheight
-      doubleRotateLeft(node);
+      // rbal >= 0
+      rotateRR(node); // RR rotateion
     }
-    rotated = true;
   }
-
-    printf("dbg: after balance, node = %s\n",node->name.ascii());
-  if (rotated && isroot)
-    root = node;
 }
 
 void PropertyMap2::updateHeight(PropertyMapNode* &node)
@@ -280,60 +371,47 @@ void PropertyMap2::updateHeight(PropertyMapNode* &node)
     node->height = lheight+1;
   else
     node->height = rheight+1;
-  assert(node->parent != node);
+  //assert(node->parent != node);
   if (node->parent)
     updateHeight(node->parent);
 }
 
-void PropertyMap2::singleRotateLeft(PropertyMapNode* &node)
+void PropertyMap2::rotateRR(PropertyMapNode* &node)
 {
   /*
-    Perform a "single left" rotation, e.g.
+    Perform a RR ("single left") rotation, e.g.
 
       a                b
      / \              / \
-    c   b     -->    a   e
+    X   b     -->    a   Z
        / \          / \
-      d   e        c   d
+      Y   Z        X   Y
   */
 
-  // set up node variables
-  PropertyMapNode *parent = node->parent;
-  assert(!parent || (node == parent->left || node == parent->right));
-  bool isLeft = (parent && node == parent->left);
+  // Here, node is initially a, will be replaced with b
+
   PropertyMapNode *a = node;
-  PropertyMapNode *c = a->left;
-  PropertyMapNode *b = a->right;
-  PropertyMapNode *d = b->left;
-  PropertyMapNode *e = b->right;
+  PropertyMapNode *b = node->right;
 
-  assert(a);
-  assert(b);
+  PropertyMapNode *parent = a->parent;
+  //assert(!parent || (a == parent->left || a == parent->right));
+  bool isLeft = (parent && a == parent->left);
 
-  // perform rotation
-  b->left = a;
-  a->parent = b;
+  // do the rotation
+  a->setRight(b->left);
+  b->setLeft(a);
 
-  b->right = e;
-  if (e)
-    e->parent = b;
-
-  a->left = c;
-  if (c)
-    c->parent = a;
-
-  a->right = d;
-  if (d)
-    d->parent = a;
-
-  // set node's parent correctly
+  // now node is b
   node = b;
-  node->parent = parent;
   if (parent) {
     if (isLeft)
-      parent->left = node;
+      parent->setLeft(b);
     else
-      parent->right = node;
+      parent->setRight(b);
+  }
+  else {
+    // a was the root node
+    root = b;
   }
 
   updateHeight(a);
@@ -341,197 +419,99 @@ void PropertyMap2::singleRotateLeft(PropertyMapNode* &node)
 }
 
 
-void PropertyMap2::singleRotateRight(PropertyMapNode* &node)
+void PropertyMap2::rotateLL(PropertyMapNode* &node)
 {
   /*
-    Perform a "single right" rotation, e.g.
+    Perform a LL ("single right") rotation, e.g.
+    
 
-        b              a
+        a              b
        / \            / \
-      a   e   -->    c   b
+      b   Z   -->    X   a
      / \                / \
-    c   d              d   e
+    X   Y              Y   Z
   */
 
-  // set up node variables
-  PropertyMapNode *parent = node->parent;
-  assert(!parent || (node == parent->left || node == parent->right));
-  bool isLeft = (parent && node == parent->left);
-  PropertyMapNode *b = node;
-  PropertyMapNode *a = b->left;
-  PropertyMapNode *e = b->right;
-  PropertyMapNode *c = a->left;
-  PropertyMapNode *d = a->right;
-
-  assert(b);
-  assert(a);
-
-  // perform rotation
-  a->left = c;
-  if (c)
-    c->parent = a;
-
-  a->right = b;
-  b->parent = a;
-
-  b->left = d;
-  if (d)
-    d->parent = b;
-
-  b->right = e;
-  if (e)
-    e->parent = b;
-
-  // set node's parent correctly
-  node = a;
-  node->parent = parent;
-  if (parent) {
-    if (isLeft)
-      parent->left = node;
-    else
-      parent->right = node;
-  }
-
-  updateHeight(b);
-  updateHeight(a);
-}
-
-void PropertyMap2::doubleRotateLeft(PropertyMapNode* &node)
-{
-  /*
-    Perform a "double left" rotation, e.g.
-
-        a                      b
-      /   \                  /   \
-    d       c      -->     a       c
-           / \            / \     / \
-          b   g          d   e   f   g
-         / \
-        e   f
-
-  */
-
-  // set up node variables
-  PropertyMapNode *parent = node->parent;
-  assert(!parent || (node == parent->left || node == parent->right));
-  bool isLeft = (parent && node == parent->left);
+  // Here, node is initially a, will be replaced with b
 
   PropertyMapNode *a = node;
-  PropertyMapNode *d = a->left;
-  PropertyMapNode *c = a->right;
-  PropertyMapNode *b = c->left;
-  PropertyMapNode *g = c->right;
-  PropertyMapNode *e = b->left;
-  PropertyMapNode *f = b->right;
+  PropertyMapNode *b = node->left;
 
-  assert(a);
-  assert(b);
-  assert(c);
+  PropertyMapNode *parent = a->parent;
+  //assert(!parent || (a == parent->left || a == parent->right));
+  bool isLeft = (parent && a == parent->left);
 
-  // perform rotation
-  b->left = a;
-  a->parent = b;
-
-  b->right = c;
-  c->parent = b;
-
-  a->left = d;
-  if (d)
-    d->parent = a;
-
-  a->right = e;
-  if (e)
-    e->parent = a;
-
-  c->left = f;
-  if (f)
-    f->parent = c;
-
-  c->right = g;
-  if (g)
-    g->parent = c;
-
-
-  // set node's parent correctly
+  // do the rotation
+  a->setLeft(b->right);
+  b->setRight(a);
+  
+  // now node is b
   node = b;
-  node->parent = parent;
   if (parent) {
     if (isLeft)
-      parent->left = node;
+      parent->setLeft(b);
     else
-      parent->right = node;
+      parent->setRight(b);
   }
+  else {
+    // a was the root node
+    root = b;
+  }
+
+  updateHeight(a);
+  updateHeight(b);
+}
+
+void PropertyMap2::rotateRL(PropertyMapNode* &node)
+{
+  /*
+    Perform a RL ("double left") rotation, e.g.
+
+        a                   a                          b
+      /   \      LL on c  /   \          RR on b     /   \
+     W      c      -->   W      b          -->     a       c
+           / \                 / \                / \     / \
+          b   Z               X   c              W   X   Y   Z
+         / \                     / \       
+        X   Y                   Y   Z      
+
+  */
+
+  PropertyMapNode *a = node;
+  PropertyMapNode *c = node->right;
+  PropertyMapNode *b = node->right->left;
+
+  rotateLL(c);
+  rotateRR(b);
 
   updateHeight(a);
   updateHeight(c);
   updateHeight(b);
 }
 
-void PropertyMap2::doubleRotateRight(PropertyMapNode* &node)
+void PropertyMap2::rotateLR(PropertyMapNode* &node)
 {
   /*
-    Perform a "double right" rotation, e.g.
+    Perform a LR ("double right") rotation, e.g.
   
-          c                   b
-        /   \               /   \
-      a       g   -->     a       c
-     / \                 / \     / \
-    d   b               d   e   f   g
-       / \
-      e   f
+          a                         a                      b
+        /   \    RR on c          /   \     LL on a      /   \
+      c       Z    -->          b       Z     -->      c       a
+     / \                       / \                    / \     / \
+    W   b                     c   Y                  W   X   Y   Z 
+       / \                   / \              
+      X   Y                 W   X         
   */
 
-  // set up node variables
-  PropertyMapNode *parent = node->parent;
-  assert(!parent || (node == parent->left || node == parent->right));
-  bool isLeft = (parent && node == parent->left);
-  PropertyMapNode *c = node;
-  PropertyMapNode *a = c->left;
-  PropertyMapNode *d = a->left;
-  PropertyMapNode *b = a->right;
-  PropertyMapNode *e = b->left;
-  PropertyMapNode *f = b->right;
-  PropertyMapNode *g = c->right;
+  PropertyMapNode *a = node;
+  PropertyMapNode *c = node->left;
+  PropertyMapNode *b = node->left->right;
 
-  assert(a);
-  assert(b);
-  assert(c);
+  rotateRR(c);
+  rotateLL(a);
 
-  // perform rotation
-  b->left = a;
-  a->parent = b;
-
-  b->right = c;
-  c->parent = b;
-
-  a->left = d;
-  if (d)
-    d->parent = a;
-
-  a->right = e;
-  if (e)
-    e->parent = a;
-
-  c->left = f;
-  if (f)
-    f->parent = c;
-
-  c->right = g;
-  if (g)
-    g->parent = c;
-
-  // set node's parent correctly
-  node = b;
-  node->parent = parent;
-  if (parent) {
-    if (isLeft)
-      parent->left = node;
-    else
-      parent->right = node;
-  }
-
-  updateHeight(a);
   updateHeight(c);
+  updateHeight(a);
   updateHeight(b);
 }
 

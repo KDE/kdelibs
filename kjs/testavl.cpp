@@ -23,48 +23,112 @@
 
 #include "value.h"
 #include "property_map.h"
+#include "internal.h"
 #include "ustring.h"
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <assert.h>
 
 using namespace KJS;
 
-int main() {
+bool testInsertDelete(int numInsert, int numDelete, int delOffset, int randSeed) {
 
+  srand(randSeed);
+  char str[20];
+  bool result = true;
 
-  Value val = Number(1);
-  ValueImp *v = val.imp();
-
+  assert(numDelete >= 0 && numDelete < numInsert);
+  assert(delOffset >= 0 && delOffset+numDelete <= numInsert);
   PropertyMap2 map;
 
-  /*
-  map.put("0032",v);
-  map.put("0016",v);
-  map.put("0048",v);
-  map.put("0008",v);
-  map.put("0004",v);
-  map.put("0020",v);
-  map.put("0019",v);
-  */
+  // add some random numbers
+  int *nums = (int*)malloc(numInsert*sizeof(int));
+  int i;
+  for (i = 0; i < numInsert; i++) {
+    nums[i] = int(1000.0*rand()/RAND_MAX);
 
-  /*
-  map.put("0032",v);
-  map.put("0016",v);
-  map.put("0048",v);
-  map.put("0056",v);
-  map.put("0052",v);
-  */
+    Value val = Number(nums[i]);
+    ValueImp *v = val.imp();
+    v->ref();
 
-  for (int i = 12; i >= 0; i--) {
-    char str[5];
-    sprintf(str,"%04d",i);
+    sprintf(str,"%05d-%05d",nums[i],i); // ensure uniqueness
     map.put(str,v);
+    map.checkTree();
   }
 
-  //  map.put("0013",v);
-  map.dump();
+  // check to ensure they're all there
+  for (i = 0; i < numInsert; i++) {
+    sprintf(str,"%05d-%05d",nums[i],i);
+    ValueImp *v = map.get(str);
+    if (v == 0 || v->type() != NumberType ||
+        static_cast<NumberImp*>(v)->value() != nums[i]) {
+      result = false;
+    }
+    map.checkTree();
+  }
 
-  printf("done\n");
+  // delete some
+  for (i = delOffset; i < delOffset+numDelete; i++) {
+    sprintf(str,"%05d-%05d",nums[i],i);
+    map.remove(str);
+    map.checkTree();
+  }
+
+  // make sure the deletes ones aren't there any more, and the others are
+  for (i = 0; i < numInsert; i++) {
+    sprintf(str,"%05d-%05d",nums[i],i);
+    ValueImp *v = map.get(str);
+
+    if (i >= delOffset && i < delOffset+numDelete) {
+      // should have been deleted
+      if (v)
+        result = false;
+    }
+    else {
+      // should not have been deleted
+      if (v == 0 || v->type() != NumberType ||
+          static_cast<NumberImp*>(v)->value() != nums[i]) {
+        result = false;
+      }
+    }
+    map.checkTree();
+  }
+
+  if (result)
+    printf("PASS: Insert %d, delete %d-%d, seed %d\n",numInsert,delOffset,
+           delOffset+numDelete-1,randSeed);
+  else
+    printf("FAIL: Insert %d, delete %d-%d, seed %d\n",numInsert,delOffset,
+           delOffset+numDelete-1,randSeed);
+
+  return result;
+}
+
+int main()
+{
+  PropertyMap2 map;
+
+  int randomSeed = 4;
+  int numTests = 100;
+
+  srand(randomSeed);
+
+  int *numInserts = (int*)malloc(numTests*sizeof(int));
+  int *numDeletes = (int*)malloc(numTests*sizeof(int));
+  int *delOffsets = (int*)malloc(numTests*sizeof(int));
+  int i;
+  for (i = 0; i < numTests; i++) {
+    numInserts[i] = int(1000.0*rand()/RAND_MAX);
+    numDeletes[i] = int(float(numInserts[i])*rand()/RAND_MAX);
+    delOffsets[i] = int(float(numInserts[i]-numDeletes[i])*rand()/RAND_MAX);
+  }
+
+  for (i = 0; i < numTests; i++) {
+    testInsertDelete(numInserts[i],numDeletes[i],delOffsets[i],4);
+  }
+
 
 
   return 0;
