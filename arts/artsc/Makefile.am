@@ -14,7 +14,7 @@ libartsdsp_la_LIBADD = libartsc.la
 
 libartsc_la_SOURCES = artsc.c
 libartsc_la_LDFLAGS = -no-undefined
-libartsc_la_LIBADD = $(top_builddir)/libltdl/libltdlc.la
+libartsc_la_LIBADD = $(top_builddir)/libltdl/libltdlc.la $(LIBPTHREAD) $(USE_THREADS)
 
 libartscbackend_la_SOURCES = artscbackend.cc
 libartscbackend_la_LDFLAGS = -no-undefined -module
