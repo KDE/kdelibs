@@ -75,3 +75,5 @@ void KBookmarkDomBuilder::newSeparator() {
 void KBookmarkDomBuilder::endFolder() {
    m_stack.pop();
 }
+
+#include "kbookmarkdombuilder.moc"
