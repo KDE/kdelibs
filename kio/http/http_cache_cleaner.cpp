@@ -30,6 +30,8 @@
 #include <qlist.h>
 
 #include <kinstance.h>
+#include <klocale.h>
+#include <kcmdlineargs.h>
 #include <kglobal.h>
 #include <kstddirs.h>
 #include <dcopclient.h>
@@ -42,6 +44,16 @@ int m_maxCacheAge;
 int m_maxCacheSize;
 
 static const char *appName = "kio_http_cache_cleaner";
+
+static const char *description = I18N_NOOP("KDE HTTP cache maintenance tool");
+
+static const char *version = "0.0.2";
+
+static const KCmdLineOptions options[] =
+{
+   {"clear-all", I18N_NOOP("Empty the cache."), 0},
+   {0,0,0}
+};
 
 struct FileInfo {
    QString name;
@@ -147,21 +159,35 @@ void scanDirectory(FileInfoList &fileEntries, const QString &name, const QString
    }
 }
 
-int main(int, char **)
+int main(int argc, char **argv)
 {
+   KCmdLineArgs::init( argc, argv, appName, description, version, true);
+
+   KCmdLineArgs::addCmdLineOptions( options );
+
+   KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+
+   bool deleteAll = args->isSet("clear-all");
+
    KInstance ins( appName );
 
-   DCOPClient *dcop = new DCOPClient();
-
-   if (dcop->registerAs(appName, false) != appName)
+   if (!deleteAll)
    {
-      fprintf(stderr, "%s: Already running!\n", appName);
-      exit(0);
+      DCOPClient *dcop = new DCOPClient();
+      QCString name = dcop->registerAs(appName, false);
+      if (!name.isEmpty() && (name != appName))
+      {
+         fprintf(stderr, "%s: Already running! (%s)\n", appName, name.data());
+         exit(0);
+      }
    }
 
    currentDate = time(0);
    m_maxCacheAge = KProtocolManager::maxCacheAge();
    m_maxCacheSize = KProtocolManager::maxCacheSize();
+
+   if (deleteAll)
+      m_maxCacheSize = -1;
 
    QString strCacheDir = KGlobal::dirs()->saveLocation("data", "kio_http/cache");
 
