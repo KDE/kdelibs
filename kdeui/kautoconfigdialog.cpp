@@ -33,8 +33,9 @@ QAsciiDict<QObject> KAutoConfigDialog::openDialogs;
 class KAutoConfigDialog::KAutoConfigDialogPrivate {
 
 public:
-  KAutoConfigDialogPrivate(KDialogBase::DialogType t) : shown(false), type(t){ }
+  KAutoConfigDialogPrivate(KDialogBase::DialogType t) : track(true), shown(false), type(t){ }
 
+  bool track;
   bool shown;
   KDialogBase::DialogType type;
 };
@@ -136,8 +137,10 @@ bool KAutoConfigDialog::showDialog(const char* name){
 }
 
 void KAutoConfigDialog::settingModified(){
-  kdialogbase->enableButton(KDialogBase::Apply, kautoconfig->hasChanged());
-  kdialogbase->enableButton(KDialogBase::Default, !kautoconfig->isDefault());
+  if(d->track){
+    kdialogbase->enableButton(KDialogBase::Apply, kautoconfig->hasChanged());
+    kdialogbase->enableButton(KDialogBase::Default, !kautoconfig->isDefault());
+  }
 }
 
 void KAutoConfigDialog::settingsChangedSlot(){
@@ -159,6 +162,7 @@ void KAutoConfigDialog::show(bool track){
       kdialogbase->enableButton(KDialogBase::Default, true);
     }
   }
+  d->track = track;
   kdialogbase->show();
 }
 
