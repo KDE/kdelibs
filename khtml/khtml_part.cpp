@@ -292,8 +292,6 @@ public:
   KAction *m_paSelectAll;
   KAction *m_paDebugDOMTree;
   KAction *m_paDebugRenderTree;
-  KAction *m_paSendURL;
-  KAction *m_paSendPage;
 
   KParts::PartManager *m_manager;
 
@@ -464,8 +462,6 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_bMousePressed = false;
   d->m_paViewDocument = new KAction( i18n( "View Document Source" ), 0, this, SLOT( slotViewDocumentSource() ), actionCollection(), "viewDocumentSource" );
   d->m_paViewFrame = new KAction( i18n( "View Frame Source" ), 0, this, SLOT( slotViewFrameSource() ), actionCollection(), "viewFrameSource" );
-  d->m_paSendURL = new KAction( i18n( "Send &Link" ), "mail_generic", CTRL+Key_L, this, SLOT( slotSendURL() ), actionCollection(), "sendURL" );
-  d->m_paSendPage = new KAction( i18n( "Send Page" ), "mail_generic", 0, this, SLOT( slotSendPage() ), actionCollection(), "sendPage" );
   d->m_paSaveBackground = new KAction( i18n( "Save &Background Image As..." ), 0, this, SLOT( slotSaveBackground() ), actionCollection(), "saveBackground" );  
   d->m_paSaveDocument = new KAction( i18n( "&Save As..." ), CTRL+Key_S, this, SLOT( slotSaveDocument() ), actionCollection(), "saveDocument" );
   d->m_paSaveFrame = new KAction( i18n( "Save &Frame As..." ), 0, this, SLOT( slotSaveFrame() ), actionCollection(), "saveFrame" );
@@ -2291,18 +2287,6 @@ void KHTMLPart::slotViewFrameSource()
   KParts::ReadOnlyPart *frame = static_cast<KParts::ReadOnlyPart *>( partManager()->activePart() );
   if ( frame )
     (void) KRun::runURL( frame->url(), QString::fromLatin1("text/plain") );
-}
-
-void KHTMLPart::slotSendURL()
-{
-  KURL srcURL( m_url );
-  kapp->invokeMailer("mailto:?body=" + srcURL.url());
-}
-
-void KHTMLPart::slotSendPage()
-{
-  KURL srcURL( m_url );
-  kapp->invokeMailer("mailto:?attach=" + srcURL.url());
 }
 
 void KHTMLPart::slotSaveBackground()

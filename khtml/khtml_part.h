@@ -886,14 +886,6 @@ private slots:
   /**
    * @internal
    */
-  virtual void slotSendURL();
-  /**
-   * @internal
-   */
-  virtual void slotSendPage();
-  /**
-   * @internal
-   */
   virtual void slotSaveBackground();
   /**
    * @internal
