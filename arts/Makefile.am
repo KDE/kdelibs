@@ -1,1 +1,1 @@
-SUBDIRS = mcop mcopidl flow examples
+SUBDIRS = mcop mcopidl flow soundserver qtmcop examples
