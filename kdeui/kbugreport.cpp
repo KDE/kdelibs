@@ -211,6 +211,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
   // The multiline-edit
   m_lineedit = new QMultiLineEdit( parent, "QMultiLineEdit" );
   m_lineedit->setMinimumHeight( 180 ); // make it big
+  m_lineedit->setWordWrap(QMultiLineEdit::WidgetWidth);
   lay->addWidget( m_lineedit, 10 /*stretch*/ );
 
 
