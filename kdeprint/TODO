@@ -24,5 +24,3 @@
   dialog: should use then default printer with default settings.
 
 - add the possibility to view a printjob file (if possible)
-
-- implement the missing pages in kprinter (text, image, HPGL-2)

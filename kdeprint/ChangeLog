@@ -68,3 +68,10 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
   * CUPS plugin: make use of GET/PUT request to handle configuration
     file. Possibility to admin a remote CUPS server (if allowed)
   * CUPS plugin: added "/jobs" in the available resources list
+
+09/10/2001 Michael Goffioul <goffioul@imec.be>
+  * CUPS plugin: added 2 missing pages in stand-alone mode, "Image"
+    and "Text".
+
+10/10/2001 Michael Goffioul <goffioul@imec.be>
+  * CUPS plugin: "HP-GL/2" page added
