@@ -345,6 +345,8 @@ int KSSL::read(void *buf, int len) {
     kdDebug(7029) << "SSL READ ERROR: " << err << endl;
     if (err != SSL_ERROR_NONE && err != SSL_ERROR_ZERO_RETURN && err != SSL_ERROR_SYSCALL)
       rc = -1;      // OpenSSL returns 0 on error too
+//    else if (err == SSL_ERROR_ZERO_RETURN)
+//      rc = 0;
   }
   return rc;
 #else
