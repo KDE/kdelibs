@@ -10,6 +10,7 @@
 <!ENTITY % l10n-fi "INCLUDE">
 <!ENTITY % l10n-fr "INCLUDE">
 <!ENTITY % l10n-hu "INCLUDE">
+<!ENTITY % l10n-id "INCLUDE">
 <!ENTITY % l10n-it "INCLUDE">
 <!ENTITY % l10n-ja "INCLUDE">
 <!ENTITY % l10n-nl "INCLUDE">
@@ -93,7 +94,7 @@
          "../common/dbl1et.dsl" CDATA DSSSL>
 ]]>
 <!ENTITY dbl1et
-  PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Null Localization//EN"
+  PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Null Localization//ET"
          "../common/dbl1null.dsl" CDATA DSSSL>
 
 <![%l10n-fi;[
@@ -120,7 +121,16 @@
          "../common/dbl1hu.dsl" CDATA DSSSL>
 ]]>
 <!ENTITY dbl1hu
-  PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Null Localization//EN"
+  PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Null Localization//HU"
+         "../common/dbl1null.dsl" CDATA DSSSL>
+
+<![%l10n-id;[
+<!ENTITY dbl1id
+  PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Localization//ID"
+         "../common/dbl1id.dsl" CDATA DSSSL>
+]]>
+<!ENTITY dbl1in
+  PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Null Localization//IN"
          "../common/dbl1null.dsl" CDATA DSSSL>
 
 <![%l10n-it;[
@@ -219,7 +229,7 @@
          "../common/dbl1sl.dsl" CDATA DSSSL>
 ]]>
 <!ENTITY dbl1sl
-  PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Null Localization//EN"
+  PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Null Localization//SL"
          "../common/dbl1null.dsl" CDATA DSSSL>
 
 <![%l10n-sv;[
@@ -287,8 +297,9 @@
 ]>
 
 <style-sheet>
-<style-specification id="docbook" 
-   use="ca cs da de el en es et fi fr it ja nl no pl pt pt-BR ro ru sk sl sv zh-CN param dblib">
+<style-specification id="docbook"
+   use="ca cs da de el en es et fi fr hu id it ja nl no pl pt pt-BR ro ru sk sl sv zh-CN param dblib">
+
 <style-specification-body>
 
 ;; $Id$
@@ -398,6 +409,8 @@
 <external-specification id="et" document="dbl1et">
 <external-specification id="fi" document="dbl1fi">
 <external-specification id="fr" document="dbl1fr">
+<external-specification id="hu" document="dbl1hu">
+<external-specification id="id" document="dbl1id">
 <external-specification id="it" document="dbl1it">
 <external-specification id="ja" document="dbl1ja">
 <external-specification id="nl" document="dbl1nl">
