@@ -1379,10 +1379,20 @@ OtherCertItem *x = static_cast<OtherCertItem *>(otherSSLBox->selectedItem());
 
   cert->chain().setChain(policies->readListEntry("Chain"));
 
-  if (cert->isValid()) {
+  KSSLCertificate::KSSLValidation v = cert->revalidate(KSSLCertificate::SSLServer);
+
+  /*
+   *  Don't enable this until we keep this info in the cache
+  if (v != KSSLCerticiate::Ok)
+	  v = cert->revalidate(KSSLCertificate::SMIMESign);
+  if (v != KSSLCerticiate::Ok)
+	  v = cert->revalidate(KSSLCertificate::SMIMEEncrypt);
+  */
+
+  if (v == KSSLCertificate::Ok) {
      KMessageBox::information(this, i18n("This certificate passed the verification tests successfully."), i18n("SSL"));
   } else {
-     KMessageBox::detailedError(this, i18n("This certificate has failed the tests and should be considered invalid."), KSSLCertificate::verifyText(cert->validate()), i18n("SSL"));
+     KMessageBox::detailedError(this, i18n("This certificate has failed the tests and should be considered invalid."), KSSLCertificate::verifyText(v), i18n("SSL"));
   }
 
   delete cert;
@@ -1654,10 +1664,16 @@ QString iss;
       slotYourUnlock();
    }
 
-  if (pkcs->isValid()) {
+  KSSLCertificate::KSSLValidation v = pkcs->revalidate(KSSLCertificate::SSLClient);
+  if (v != KSSLCertificate::Ok)
+	  v = pkcs->revalidate(KSSLCertificate::SMIMEEncrypt);
+  if (v != KSSLCertificate::Ok)
+	  v = pkcs->revalidate(KSSLCertificate::SMIMESign);
+
+  if (v == KSSLCertificate::Ok) {
      KMessageBox::information(this, i18n("This certificate passed the verification tests successfully."), i18n("SSL"));
   } else {
-     KMessageBox::detailedError(this, i18n("This certificate has failed the tests and should be considered invalid."), KSSLCertificate::verifyText(pkcs->validate()), i18n("SSL"));
+     KMessageBox::detailedError(this, i18n("This certificate has failed the tests and should be considered invalid."), KSSLCertificate::verifyText(v), i18n("SSL"));
   }
 
   delete pkcs;
