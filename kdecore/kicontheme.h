@@ -42,8 +42,8 @@ public:
     enum MatchType { MatchExact, MatchBest };
     // if you add a group here, make sure to change the config reading in
     // KIconLoader too
-    enum Group { NoGroup=-1, Desktop=0, Toolbar, MainToolbar, Small, 
-	         LastGroup, User };
+    enum Group { NoGroup=-1, Desktop=0, Toolbar, MainToolbar, Small,
+	         Panel, LastGroup, User };
     enum StdSizes { SizeSmall=16, SizeMedium=32, SizeLarge=48 };
     enum States { DefaultState, ActiveState, DisabledState, LastState };
     enum Overlays { LockOverlay=0x100, ZipOverlay=0x200, LinkOverlay=0x400,
