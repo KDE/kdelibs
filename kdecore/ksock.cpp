@@ -331,7 +331,19 @@ bool KSocket::initSockaddr (ksockaddr_in *server_name, const char *hostname, uns
   struct hostent *hostinfo;
   hostinfo = gethostbyname( hostname );
 
-  if ( hostinfo == 0L )
+  if ( hostinfo == 0 )
+  {
+    res_init();
+#ifdef INET6
+    // Setup the resolver to look for IPv6 addresses and then
+    // as a fall back, look for IPv4.  This means we don't need further
+    // ifdefs to use gethostbyname2. (Taken from rfc2133)
+    _res.options |= RES_USE_INET6;
+#endif
+    hostinfo = gethostbyname( hostname );
+  }
+
+  if ( hostinfo == 0 )
     return false;
 
 #ifdef INET6
