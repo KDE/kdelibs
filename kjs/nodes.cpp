@@ -1,7 +1,7 @@
 // -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
- *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
+ *  Copyright (C) 1999-2002 Harri Porten (porten@kde.org)
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
  *
  *  This library is free software; you can redistribute it and/or
@@ -750,6 +750,16 @@ Value FunctionCallNode::evaluate(ExecState *exec)
     return throwError(exec, TypeError, "Expression does not allow calls.");
   }
 
+#if KJS_MAX_STACK > 0
+  static int depth = 0; // sum of all concurrent interpreters
+  if (++depth > KJS_MAX_STACK) {
+#ifndef NDEBUG
+    printInfo(exec, "Exceeded maximum function call depth", v, line);
+#endif
+    return throwError(exec, RangeError, "Exceeded maximum call stack size.");
+  }
+#endif
+
   Value thisVal;
   if (e.type() == ReferenceType)
     thisVal = e.getBase(exec);
@@ -773,6 +783,10 @@ Value FunctionCallNode::evaluate(ExecState *exec)
 
   Object thisObj = Object::dynamicCast(thisVal);
   Value result = func.call(exec,thisObj, argList);
+
+#if KJS_MAX_STACK > 0
+  --depth;
+#endif
 
   return result;
 }

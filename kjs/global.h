@@ -23,6 +23,10 @@
 #ifndef KJS_GLOBAL_H
 #define KJS_GLOBAL_H
 
+// maximum global call stack size. Protects against accidental or
+// malicious infinite recursions. Define to -1 if you want no limit.
+#define KJS_MAX_STACK 1000
+
 #ifndef NDEBUG // protection against problems if committing with KJS_VERBOSE on
 
 // Uncomment this to enable very verbose output from KJS

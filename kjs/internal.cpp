@@ -823,7 +823,7 @@ void InterpreterImp::initGlobalObject()
   b_Boolean = Object(new BooleanObjectImp(globExec, funcProto, booleanProto));
   b_Number = Object(new NumberObjectImp(globExec, funcProto, numberProto));
   b_Date = Object(new DateObjectImp(globExec,funcProto,dateProto));
-  b_RegExp = Object(new RegExpObjectImp(globExec, regexpProto, funcProto));
+  b_RegExp = Object(new RegExpObjectImp(globExec, funcProto, regexpProto));
   b_Error = Object(new ErrorObjectImp(globExec, funcProto, errorProto));
 
   // Error object prototypes
@@ -980,7 +980,7 @@ Completion InterpreterImp::evaluate(const UString &code, const Value &thisV)
       return Completion(Break);
   }
 
-  // no program node means a syntax occurred
+  // no program node means a syntax error occurred
   if (!progNode) {
     Object err = Error::create(globExec,SyntaxError,errMsg.ascii(),errLine);
     err.put(globExec,"sid",Number(sid));
