@@ -108,6 +108,16 @@ public:
   void setXonXoff(bool useXonXoff);
 
   /**
+   * Set the pty in utf8 mode on systems that support it.
+   * 
+   * See the man page of "stty iutf8" for more info.
+   *
+   * @since 3.4
+   */
+  void setUtf8Mode(bool useUtf8);
+
+
+  /**
    * @return the name of the slave pty device.
    *
    * This function should be called only while the pty is open.
