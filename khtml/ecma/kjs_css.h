@@ -172,6 +172,7 @@ namespace KJS {
   class DOMCSSValue : public DOMObject {
   public:
     DOMCSSValue(ExecState *, DOM::CSSValue v) : cssValue(v) { }
+    DOMCSSValue(Object proto, DOM::CSSValue v) : DOMObject(proto), cssValue(v) { }
     virtual ~DOMCSSValue();
     virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
     virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
@@ -205,19 +206,9 @@ namespace KJS {
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
-  };
-
-  class DOMCSSPrimitiveValueFunc : public DOMFunction {
-    friend class DOMNode;
-  public:
-    DOMCSSPrimitiveValueFunc(DOM::CSSPrimitiveValue v, int i)
-        : DOMFunction(), val(v), id(i) { }
-    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
-    enum { SetFloatValue, GetFloatValue, SetStringValue, GetStringValue,
+    DOM::CSSPrimitiveValue toCSSPrimitiveValue() const { return static_cast<DOM::CSSPrimitiveValue>(cssValue); }
+    enum { PrimitiveType, SetFloatValue, GetFloatValue, SetStringValue, GetStringValue,
            GetCounterValue, GetRectValue, GetRGBColorValue };
-  private:
-    DOM::CSSPrimitiveValue val;
-    int id;
   };
 
   // Constructor for CSSPrimitiveValue - currently only used for some global values
@@ -225,6 +216,7 @@ namespace KJS {
   public:
     CSSPrimitiveValueConstructor(ExecState *exec) : CSSValueConstructor(exec) { }
     virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
+    Value getValue(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -239,17 +231,8 @@ namespace KJS {
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
-  };
-
-  class DOMCSSValueListFunc : public DOMFunction {
-  public:
-    DOMCSSValueListFunc(DOM::CSSValueList vl, int i)
-        : DOMFunction(), valueList(vl), id(i) { }
-    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
-    enum { Item };
-  private:
-    DOM::CSSValueList valueList;
-    int id;
+    enum { Item, Length };
+    DOM::CSSValueList toValueList() const { return static_cast<DOM::CSSValueList>(cssValue); }
   };
 
   class DOMRGBColor : public DOMObject {
@@ -260,6 +243,7 @@ namespace KJS {
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
+    enum { Red, Green, Blue };
   protected:
     DOM::RGBColor rgbColor;
   };
@@ -274,6 +258,7 @@ namespace KJS {
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
+    enum { Top, Right, Bottom, Left };
   protected:
     DOM::Rect rect;
   };
@@ -288,6 +273,7 @@ namespace KJS {
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
+    enum { Identifier, ListStyle, Separator };
   protected:
     DOM::Counter counter;
   };

@@ -164,3 +164,125 @@ const struct HashEntry CSSValueConstructorTableEntries[] = {
 const struct HashTable CSSValueConstructorTable = { 2, 5, CSSValueConstructorTableEntries, 5 };
 
 }; // namespace
+
+namespace KJS {
+
+const struct HashEntry DOMCSSPrimitiveValueTableEntries[] = {
+   { "primitiveType", DOMCSSPrimitiveValue::PrimitiveType, DontDelete|ReadOnly, 0, 0 }
+};
+
+const struct HashTable DOMCSSPrimitiveValueTable = { 2, 1, DOMCSSPrimitiveValueTableEntries, 1 };
+
+}; // namespace
+
+namespace KJS {
+
+const struct HashEntry DOMCSSPrimitiveValueProtoTableEntries[] = {
+   { "getRectValue", DOMCSSPrimitiveValue::GetRectValue, DontDelete|Function, 0, 0 },
+   { 0, 0, 0, 0, 0 },
+   { "setFloatValue", DOMCSSPrimitiveValue::SetFloatValue, DontDelete|Function, 2, &DOMCSSPrimitiveValueProtoTableEntries[3] },
+   { "getFloatValue", DOMCSSPrimitiveValue::GetFloatValue, DontDelete|Function, 1, &DOMCSSPrimitiveValueProtoTableEntries[4] },
+   { "setStringValue", DOMCSSPrimitiveValue::SetStringValue, DontDelete|Function, 2, &DOMCSSPrimitiveValueProtoTableEntries[5] },
+   { "getStringValue", DOMCSSPrimitiveValue::GetStringValue, DontDelete|Function, 0, &DOMCSSPrimitiveValueProtoTableEntries[6] },
+   { "getCounterValue", DOMCSSPrimitiveValue::GetCounterValue, DontDelete|Function, 0, &DOMCSSPrimitiveValueProtoTableEntries[7] },
+   { "getRGBColorValue", DOMCSSPrimitiveValue::GetRGBColorValue, DontDelete|Function, 0, 0 }
+};
+
+const struct HashTable DOMCSSPrimitiveValueProtoTable = { 2, 8, DOMCSSPrimitiveValueProtoTableEntries, 3 };
+
+}; // namespace
+
+namespace KJS {
+
+const struct HashEntry CSSPrimitiveValueConstructorTableEntries[] = {
+   { 0, 0, 0, 0, 0 },
+   { "CSS_EXS", DOM::CSSPrimitiveValue::CSS_EXS, DontDelete|ReadOnly, 0, &CSSPrimitiveValueConstructorTableEntries[32] },
+   { "CSS_NUMBER", DOM::CSSPrimitiveValue::CSS_NUMBER, DontDelete|ReadOnly, 0, &CSSPrimitiveValueConstructorTableEntries[29] },
+   { "CSS_RAD", DOM::CSSPrimitiveValue::CSS_RAD, DontDelete|ReadOnly, 0, 0 },
+   { "CSS_HZ", DOM::CSSPrimitiveValue::CSS_HZ, DontDelete|ReadOnly, 0, 0 },
+   { 0, 0, 0, 0, 0 },
+   { "CSS_PT", DOM::CSSPrimitiveValue::CSS_PT, DontDelete|ReadOnly, 0, &CSSPrimitiveValueConstructorTableEntries[30] },
+   { "CSS_DIMENSION", DOM::CSSPrimitiveValue::CSS_DIMENSION, DontDelete|ReadOnly, 0, 0 },
+   { "CSS_COUNTER", DOM::CSSPrimitiveValue::CSS_COUNTER, DontDelete|ReadOnly, 0, 0 },
+   { "CSS_PERCENTAGE", DOM::CSSPrimitiveValue::CSS_PERCENTAGE, DontDelete|ReadOnly, 0, &CSSPrimitiveValueConstructorTableEntries[34] },
+   { "CSS_PX", DOM::CSSPrimitiveValue::CSS_PX, DontDelete|ReadOnly, 0, 0 },
+   { 0, 0, 0, 0, 0 },
+   { "CSS_RGBCOLOR", DOM::CSSPrimitiveValue::CSS_RGBCOLOR, DontDelete|ReadOnly, 0, 0 },
+   { "CSS_CM", DOM::CSSPrimitiveValue::CSS_CM, DontDelete|ReadOnly, 0, 0 },
+   { 0, 0, 0, 0, 0 },
+   { 0, 0, 0, 0, 0 },
+   { "CSS_PC", DOM::CSSPrimitiveValue::CSS_PC, DontDelete|ReadOnly, 0, &CSSPrimitiveValueConstructorTableEntries[31] },
+   { "CSS_EMS", DOM::CSSPrimitiveValue::CSS_EMS, DontDelete|ReadOnly, 0, 0 },
+   { 0, 0, 0, 0, 0 },
+   { 0, 0, 0, 0, 0 },
+   { "CSS_IN", DOM::CSSPrimitiveValue::CSS_IN, DontDelete|ReadOnly, 0, &CSSPrimitiveValueConstructorTableEntries[28] },
+   { 0, 0, 0, 0, 0 },
+   { "CSS_ATTR", DOM::CSSPrimitiveValue::CSS_ATTR, DontDelete|ReadOnly, 0, 0 },
+   { "CSS_MM", DOM::CSSPrimitiveValue::CSS_MM, DontDelete|ReadOnly, 0, &CSSPrimitiveValueConstructorTableEntries[27] },
+   { "CSS_UNKNOWN", DOM::CSSPrimitiveValue::CSS_UNKNOWN, DontDelete|ReadOnly, 0, 0 },
+   { "CSS_KHZ", DOM::CSSPrimitiveValue::CSS_KHZ, DontDelete|ReadOnly, 0, &CSSPrimitiveValueConstructorTableEntries[33] },
+   { 0, 0, 0, 0, 0 },
+   { "CSS_DEG", DOM::CSSPrimitiveValue::CSS_DEG, DontDelete|ReadOnly, 0, 0 },
+   { "CSS_GRAD", DOM::CSSPrimitiveValue::CSS_GRAD, DontDelete|ReadOnly, 0, 0 },
+   { "CSS_MS", DOM::CSSPrimitiveValue::CSS_MS, DontDelete|ReadOnly, 0, 0 },
+   { "CSS_S", DOM::CSSPrimitiveValue::CSS_S, DontDelete|ReadOnly, 0, 0 },
+   { "CSS_STRING", DOM::CSSPrimitiveValue::CSS_STRING, DontDelete|ReadOnly, 0, 0 },
+   { "CSS_URI", DOM::CSSPrimitiveValue::CSS_URI, DontDelete|ReadOnly, 0, 0 },
+   { "CSS_IDENT", DOM::CSSPrimitiveValue::CSS_IDENT, DontDelete|ReadOnly, 0, 0 },
+   { "CSS_RECT", DOM::CSSPrimitiveValue::CSS_RECT, DontDelete|ReadOnly, 0, 0 }
+};
+
+const struct HashTable CSSPrimitiveValueConstructorTable = { 2, 35, CSSPrimitiveValueConstructorTableEntries, 27 };
+
+}; // namespace
+
+namespace KJS {
+
+const struct HashEntry DOMCSSValueListTableEntries[] = {
+   { "length", DOMCSSValueList::Length, DontDelete|ReadOnly, 0, 0 },
+   { 0, 0, 0, 0, 0 },
+   { "item", DOMCSSValueList::Item, DontDelete|Function, 1, 0 }
+};
+
+const struct HashTable DOMCSSValueListTable = { 2, 3, DOMCSSValueListTableEntries, 3 };
+
+}; // namespace
+
+namespace KJS {
+
+const struct HashEntry DOMRGBColorTableEntries[] = {
+   { "red", DOMRGBColor::Red, DontDelete|ReadOnly, 0, 0 },
+   { "green", DOMRGBColor::Green, DontDelete|ReadOnly, 0, &DOMRGBColorTableEntries[3] },
+   { 0, 0, 0, 0, 0 },
+   { "blue", DOMRGBColor::Blue, DontDelete|ReadOnly, 0, 0 }
+};
+
+const struct HashTable DOMRGBColorTable = { 2, 4, DOMRGBColorTableEntries, 3 };
+
+}; // namespace
+
+namespace KJS {
+
+const struct HashEntry DOMRectTableEntries[] = {
+   { 0, 0, 0, 0, 0 },
+   { "bottom", DOMRect::Bottom, DontDelete|ReadOnly, 0, 0 },
+   { "right", DOMRect::Right, DontDelete|ReadOnly, 0, 0 },
+   { "top", DOMRect::Top, DontDelete|ReadOnly, 0, &DOMRectTableEntries[4] },
+   { "left", DOMRect::Left, DontDelete|ReadOnly, 0, 0 }
+};
+
+const struct HashTable DOMRectTable = { 2, 5, DOMRectTableEntries, 4 };
+
+}; // namespace
+
+namespace KJS {
+
+const struct HashEntry DOMCounterTableEntries[] = {
+   { "identifier", DOMCounter::Identifier, DontDelete|ReadOnly, 0, 0 },
+   { "listStyle", DOMCounter::ListStyle, DontDelete|ReadOnly, 0, 0 },
+   { "separator", DOMCounter::Separator, DontDelete|ReadOnly, 0, 0 }
+};
+
+const struct HashTable DOMCounterTable = { 2, 3, DOMCounterTableEntries, 3 };
+
+}; // namespace

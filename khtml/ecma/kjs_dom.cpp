@@ -1261,18 +1261,18 @@ Value KJS::getDOMDOMImplementation(ExecState *exec, DOM::DOMImplementation i)
 const ClassInfo NodeConstructor::info = { "NodeConstructor", 0, &NodeConstructorTable, 0 };
 /* Source for NodeConstructorTable. Use "make hashtables" to regenerate.
 @begin NodeConstructorTable 11
-  ELEMENT_NODE		NodeConstructor::ELEMENT_NODE		DontDelete|ReadOnly
-  ATTRIBUTE_NODE	NodeConstructor::ATTRIBUTE_NODE		DontDelete|ReadOnly
-  TEXT_NODE		NodeConstructor::TEXT_NODE		DontDelete|ReadOnly
-  CDATA_SECTION_NODE	NodeConstructor::CDATA_SECTION_NODE	DontDelete|ReadOnly
-  ENTITY_REFERENCE_NODE	NodeConstructor::ENTITY_REFERENCE_NODE	DontDelete|ReadOnly
-  ENTITY_NODE		NodeConstructor::ENTITY_NODE		DontDelete|ReadOnly
-  PROCESSING_INSTRUCTION_NODE NodeConstructor::PROCESSING_INSTRUCTION_NODE DontDelete|ReadOnly
-  COMMENT_NODE		NodeConstructor::COMMENT_NODE		DontDelete|ReadOnly
-  DOCUMENT_NODE		NodeConstructor::DOCUMENT_NODE		DontDelete|ReadOnly
-  DOCUMENT_TYPE_NODE	NodeConstructor::DOCUMENT_TYPE_NODE	DontDelete|ReadOnly
-  DOCUMENT_FRAGMENT_NODE NodeConstructor::DOCUMENT_FRAGMENT_NODE	DontDelete|ReadOnly
-  NOTATION_NODE		NodeConstructor::NOTATION_NODE		DontDelete|ReadOnly
+  ELEMENT_NODE		DOM::Node::ELEMENT_NODE		DontDelete|ReadOnly
+  ATTRIBUTE_NODE	DOM::Node::ATTRIBUTE_NODE		DontDelete|ReadOnly
+  TEXT_NODE		DOM::Node::TEXT_NODE		DontDelete|ReadOnly
+  CDATA_SECTION_NODE	DOM::Node::CDATA_SECTION_NODE	DontDelete|ReadOnly
+  ENTITY_REFERENCE_NODE	DOM::Node::ENTITY_REFERENCE_NODE	DontDelete|ReadOnly
+  ENTITY_NODE		DOM::Node::ENTITY_NODE		DontDelete|ReadOnly
+  PROCESSING_INSTRUCTION_NODE DOM::Node::PROCESSING_INSTRUCTION_NODE DontDelete|ReadOnly
+  COMMENT_NODE		DOM::Node::COMMENT_NODE		DontDelete|ReadOnly
+  DOCUMENT_NODE		DOM::Node::DOCUMENT_NODE		DontDelete|ReadOnly
+  DOCUMENT_TYPE_NODE	DOM::Node::DOCUMENT_TYPE_NODE	DontDelete|ReadOnly
+  DOCUMENT_FRAGMENT_NODE DOM::Node::DOCUMENT_FRAGMENT_NODE	DontDelete|ReadOnly
+  NOTATION_NODE		DOM::Node::NOTATION_NODE		DontDelete|ReadOnly
 @end
 */
 Value NodeConstructor::tryGet(ExecState *exec, const UString &propertyName) const
@@ -1282,6 +1282,9 @@ Value NodeConstructor::tryGet(ExecState *exec, const UString &propertyName) cons
 
 Value NodeConstructor::getValue(ExecState *, int token) const
 {
+  // We use the token as the value to return directly
+  return Number((unsigned int)token);
+#if 0
   switch (token) {
   case ELEMENT_NODE:
     return Number((unsigned int)DOM::Node::ELEMENT_NODE);
@@ -1311,6 +1314,7 @@ Value NodeConstructor::getValue(ExecState *, int token) const
     kdWarning() << "NodeConstructor::getValue unhandled token " << token << endl;
     return Value();
   }
+#endif
 }
 
 Object KJS::getNodeConstructor(ExecState *exec)
@@ -1324,21 +1328,21 @@ const ClassInfo DOMExceptionConstructor::info = { "DOMExceptionConstructor", 0, 
 
 /* Source for DOMExceptionConstructorTable. Use "make hashtables" to regenerate.
 @begin DOMExceptionConstructorTable 15
-  INDEX_SIZE_ERR		DOMExceptionConstructor::INDEX_SIZE_ERR		DontDelete|ReadOnly
-  DOMSTRING_SIZE_ERR		DOMExceptionConstructor::DOMSTRING_SIZE_ERR	DontDelete|ReadOnly
-  HIERARCHY_REQUEST_ERR		DOMExceptionConstructor::HIERARCHY_REQUEST_ERR	DontDelete|ReadOnly
-  WRONG_DOCUMENT_ERR		DOMExceptionConstructor::WRONG_DOCUMENT_ERR	DontDelete|ReadOnly
-  INVALID_CHARACTER_ERR		DOMExceptionConstructor::INVALID_CHARACTER_ERR	DontDelete|ReadOnly
-  NO_DATA_ALLOWED_ERR		DOMExceptionConstructor::NO_DATA_ALLOWED_ERR	DontDelete|ReadOnly
-  NO_MODIFICATION_ALLOWED_ERR	DOMExceptionConstructor::NO_MODIFICATION_ALLOWED_ERR	DontDelete|ReadOnly
-  NOT_FOUND_ERR			DOMExceptionConstructor::NOT_FOUND_ERR		DontDelete|ReadOnly
-  NOT_SUPPORTED_ERR		DOMExceptionConstructor::NOT_SUPPORTED_ERR	DontDelete|ReadOnly
-  INUSE_ATTRIBUTE_ERR		DOMExceptionConstructor::INUSE_ATTRIBUTE_ERR	DontDelete|ReadOnly
-  INVALID_STATE_ERR		DOMExceptionConstructor::INVALID_STATE_ERR	DontDelete|ReadOnly
-  SYNTAX_ERR			DOMExceptionConstructor::SYNTAX_ERR		DontDelete|ReadOnly
-  INVALID_MODIFICATION_ERR	DOMExceptionConstructor::INVALID_MODIFICATION_ERR	DontDelete|ReadOnly
-  NAMESPACE_ERR			DOMExceptionConstructor::NAMESPACE_ERR		DontDelete|ReadOnly
-  INVALID_ACCESS_ERR		DOMExceptionConstructor::INVALID_ACCESS_ERR	DontDelete|ReadOnly
+  INDEX_SIZE_ERR		DOM::DOMException::INDEX_SIZE_ERR		DontDelete|ReadOnly
+  DOMSTRING_SIZE_ERR		DOM::DOMException::DOMSTRING_SIZE_ERR	DontDelete|ReadOnly
+  HIERARCHY_REQUEST_ERR		DOM::DOMException::HIERARCHY_REQUEST_ERR	DontDelete|ReadOnly
+  WRONG_DOCUMENT_ERR		DOM::DOMException::WRONG_DOCUMENT_ERR	DontDelete|ReadOnly
+  INVALID_CHARACTER_ERR		DOM::DOMException::INVALID_CHARACTER_ERR	DontDelete|ReadOnly
+  NO_DATA_ALLOWED_ERR		DOM::DOMException::NO_DATA_ALLOWED_ERR	DontDelete|ReadOnly
+  NO_MODIFICATION_ALLOWED_ERR	DOM::DOMException::NO_MODIFICATION_ALLOWED_ERR	DontDelete|ReadOnly
+  NOT_FOUND_ERR			DOM::DOMException::NOT_FOUND_ERR		DontDelete|ReadOnly
+  NOT_SUPPORTED_ERR		DOM::DOMException::NOT_SUPPORTED_ERR	DontDelete|ReadOnly
+  INUSE_ATTRIBUTE_ERR		DOM::DOMException::INUSE_ATTRIBUTE_ERR	DontDelete|ReadOnly
+  INVALID_STATE_ERR		DOM::DOMException::INVALID_STATE_ERR	DontDelete|ReadOnly
+  SYNTAX_ERR			DOM::DOMException::SYNTAX_ERR		DontDelete|ReadOnly
+  INVALID_MODIFICATION_ERR	DOM::DOMException::INVALID_MODIFICATION_ERR	DontDelete|ReadOnly
+  NAMESPACE_ERR			DOM::DOMException::NAMESPACE_ERR		DontDelete|ReadOnly
+  INVALID_ACCESS_ERR		DOM::DOMException::INVALID_ACCESS_ERR	DontDelete|ReadOnly
 @end
 */
 
@@ -1349,6 +1353,9 @@ Value DOMExceptionConstructor::tryGet(ExecState *exec, const UString &propertyNa
 
 Value DOMExceptionConstructor::getValue(ExecState *, int token) const
 {
+  // We use the token as the value to return directly
+  return Number((unsigned int)token);
+#if 0
   switch (token) {
   case INDEX_SIZE_ERR:
     return Number((unsigned int)DOM::DOMException::INDEX_SIZE_ERR);
@@ -1384,6 +1391,7 @@ Value DOMExceptionConstructor::getValue(ExecState *, int token) const
     kdWarning() << "DOMExceptionConstructor::getValue unhandled token " << token << endl;
     return Value();
   }
+#endif
 }
 
 Object KJS::getDOMExceptionConstructor(ExecState *exec)

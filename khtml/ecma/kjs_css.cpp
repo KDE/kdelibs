@@ -817,105 +817,104 @@ Value KJS::getCSSValueConstructor(ExecState *exec)
 
 // -------------------------------------------------------------------------
 
-const ClassInfo DOMCSSPrimitiveValue::info = { "CSSPrimitiveValue", 0, 0, 0 };
+const ClassInfo DOMCSSPrimitiveValue::info = { "CSSPrimitiveValue", 0, &DOMCSSPrimitiveValueTable, 0 };
+/*
+@begin DOMCSSPrimitiveValueTable 1
+  primitiveType		DOMCSSPrimitiveValue::PrimitiveType	DontDelete|ReadOnly
+@end
+@begin DOMCSSPrimitiveValueProtoTable 3
+  setFloatValue		DOMCSSPrimitiveValue::SetFloatValue	DontDelete|Function 2
+  getFloatValue		DOMCSSPrimitiveValue::GetFloatValue	DontDelete|Function 1
+  setStringValue	DOMCSSPrimitiveValue::SetStringValue	DontDelete|Function 2
+  getStringValue	DOMCSSPrimitiveValue::GetStringValue	DontDelete|Function 0
+  getCounterValue	DOMCSSPrimitiveValue::GetCounterValue	DontDelete|Function 0
+  getRectValue		DOMCSSPrimitiveValue::GetRectValue	DontDelete|Function 0
+  getRGBColorValue	DOMCSSPrimitiveValue::GetRGBColorValue	DontDelete|Function 0
+@end
+*/
+DEFINE_PROTOTYPE("DOMCSSPrimitiveValue",DOMCSSPrimitiveValueProto)
+IMPLEMENT_PROTOFUNC(DOMCSSPrimitiveValueProtoFunc)
+IMPLEMENT_PROTOTYPE(DOMCSSPrimitiveValueProto,DOMCSSPrimitiveValueProtoFunc)
 
 DOMCSSPrimitiveValue::DOMCSSPrimitiveValue(ExecState *exec, DOM::CSSPrimitiveValue v)
-  : DOMCSSValue(exec, v) { }
+  : DOMCSSValue(DOMCSSPrimitiveValueProto::self(exec), v) { }
 
 Value DOMCSSPrimitiveValue::tryGet(ExecState *exec, const UString &p) const
 {
-  Value result;
-  DOM::CSSPrimitiveValue val = static_cast<DOM::CSSPrimitiveValue>(cssValue);
-
-  if (p == "primitiveType")
-    return Number(val.primitiveType());
-  if (p == "setFloatValue")
-    return new DOMCSSPrimitiveValueFunc(val,DOMCSSPrimitiveValueFunc::SetFloatValue);
-  if (p == "getFloatValue")
-    return new DOMCSSPrimitiveValueFunc(val,DOMCSSPrimitiveValueFunc::GetFloatValue);
-  if (p == "setStringValue")
-    return new DOMCSSPrimitiveValueFunc(val,DOMCSSPrimitiveValueFunc::SetStringValue);
-  if (p == "getStringValue")
-    return new DOMCSSPrimitiveValueFunc(val,DOMCSSPrimitiveValueFunc::GetStringValue);
-  if (p == "getCounterValue")
-    return new DOMCSSPrimitiveValueFunc(val,DOMCSSPrimitiveValueFunc::GetCounterValue);
-  if (p == "getRectValue")
-    return new DOMCSSPrimitiveValueFunc(val,DOMCSSPrimitiveValueFunc::GetRectValue);
-  if (p == "getRGBColorValue")
-    return new DOMCSSPrimitiveValueFunc(val,DOMCSSPrimitiveValueFunc::GetRGBColorValue);
-
+  if (p=="primitiveType")
+    return Number(static_cast<DOM::CSSPrimitiveValue>(cssValue).primitiveType());
   return DOMObject::tryGet(exec,p);
 }
 
-Value DOMCSSPrimitiveValueFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+Value DOMCSSPrimitiveValueProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  Value result;
-
+  DOM::CSSPrimitiveValue val = static_cast<DOMCSSPrimitiveValue *>(thisObj.imp())->toCSSPrimitiveValue();
   switch (id) {
-    case SetFloatValue:
+    case DOMCSSPrimitiveValue::SetFloatValue:
       val.setFloatValue(args[0].toInteger(exec),args[1].toNumber(exec));
-      result = Undefined();
-      break;
-    case GetFloatValue:
-      result = Number(val.getFloatValue(args[0].toInteger(exec)));
-      break;
-    case SetStringValue:
+      return Undefined();
+    case DOMCSSPrimitiveValue::GetFloatValue:
+      return Number(val.getFloatValue(args[0].toInteger(exec)));
+    case DOMCSSPrimitiveValue::SetStringValue:
       val.setStringValue(args[0].toInteger(exec),args[1].toString(exec).string());
-      result = Undefined();
-      break;
-    case GetStringValue:
-      result = getString(val.getStringValue());
-      break;
-    case GetCounterValue:
-      result = getDOMCounter(exec,val.getCounterValue());
-      break;
-    case GetRectValue:
-      result = getDOMRect(exec,val.getRectValue());
-      break;
-    case GetRGBColorValue:
-      result = getDOMRGBColor(exec,val.getRGBColorValue());
-      break;
+      return Undefined();
+    case DOMCSSPrimitiveValue::GetStringValue:
+      return getString(val.getStringValue());
+    case DOMCSSPrimitiveValue::GetCounterValue:
+      return getDOMCounter(exec,val.getCounterValue());
+    case DOMCSSPrimitiveValue::GetRectValue:
+      return getDOMRect(exec,val.getRectValue());
+    case DOMCSSPrimitiveValue::GetRGBColorValue:
+      return getDOMRGBColor(exec,val.getRGBColorValue());
     default:
-      result = Undefined();
+      return Undefined();
   }
-
-  return result;
 }
 
 // -------------------------------------------------------------------------
 
-const ClassInfo CSSPrimitiveValueConstructor::info = { "CSSPrimitiveValueConstructor", 0, 0, 0 };
+const ClassInfo CSSPrimitiveValueConstructor::info = { "CSSPrimitiveValueConstructor", 0, &CSSPrimitiveValueConstructorTable, 0 };
+
+/*
+@begin CSSPrimitiveValueConstructorTable 27
+  CSS_UNKNOWN   	DOM::CSSPrimitiveValue::CSS_UNKNOWN	DontDelete|ReadOnly
+  CSS_NUMBER    	DOM::CSSPrimitiveValue::CSS_NUMBER	DontDelete|ReadOnly
+  CSS_PERCENTAGE	DOM::CSSPrimitiveValue::CSS_PERCENTAGE	DontDelete|ReadOnly
+  CSS_EMS       	DOM::CSSPrimitiveValue::CSS_EMS		DontDelete|ReadOnly
+  CSS_EXS       	DOM::CSSPrimitiveValue::CSS_EXS		DontDelete|ReadOnly
+  CSS_PX        	DOM::CSSPrimitiveValue::CSS_PX		DontDelete|ReadOnly
+  CSS_CM        	DOM::CSSPrimitiveValue::CSS_CM		DontDelete|ReadOnly
+  CSS_MM        	DOM::CSSPrimitiveValue::CSS_MM		DontDelete|ReadOnly
+  CSS_IN        	DOM::CSSPrimitiveValue::CSS_IN		DontDelete|ReadOnly
+  CSS_PT        	DOM::CSSPrimitiveValue::CSS_PT		DontDelete|ReadOnly
+  CSS_PC        	DOM::CSSPrimitiveValue::CSS_PC		DontDelete|ReadOnly
+  CSS_DEG       	DOM::CSSPrimitiveValue::CSS_DEG		DontDelete|ReadOnly
+  CSS_RAD       	DOM::CSSPrimitiveValue::CSS_RAD		DontDelete|ReadOnly
+  CSS_GRAD      	DOM::CSSPrimitiveValue::CSS_GRAD	DontDelete|ReadOnly
+  CSS_MS        	DOM::CSSPrimitiveValue::CSS_MS		DontDelete|ReadOnly
+  CSS_S			DOM::CSSPrimitiveValue::CSS_S		DontDelete|ReadOnly
+  CSS_HZ        	DOM::CSSPrimitiveValue::CSS_HZ		DontDelete|ReadOnly
+  CSS_KHZ       	DOM::CSSPrimitiveValue::CSS_KHZ		DontDelete|ReadOnly
+  CSS_DIMENSION 	DOM::CSSPrimitiveValue::CSS_DIMENSION	DontDelete|ReadOnly
+  CSS_STRING    	DOM::CSSPrimitiveValue::CSS_STRING	DontDelete|ReadOnly
+  CSS_URI       	DOM::CSSPrimitiveValue::CSS_URI		DontDelete|ReadOnly
+  CSS_IDENT     	DOM::CSSPrimitiveValue::CSS_IDENT	DontDelete|ReadOnly
+  CSS_ATTR      	DOM::CSSPrimitiveValue::CSS_ATTR	DontDelete|ReadOnly
+  CSS_COUNTER   	DOM::CSSPrimitiveValue::CSS_COUNTER	DontDelete|ReadOnly
+  CSS_RECT      	DOM::CSSPrimitiveValue::CSS_RECT	DontDelete|ReadOnly
+  CSS_RGBCOLOR  	DOM::CSSPrimitiveValue::CSS_RGBCOLOR	DontDelete|ReadOnly
+@end
+*/
 
 Value CSSPrimitiveValueConstructor::tryGet(ExecState *exec, const UString &p) const
 {
-// also prototype of CSSPrimitiveValue objects?
-  if (p == "CSS_UNKNOWN")    return Number(DOM::CSSPrimitiveValue::CSS_UNKNOWN);
-  if (p == "CSS_NUMBER")     return Number(DOM::CSSPrimitiveValue::CSS_NUMBER);
-  if (p == "CSS_PERCENTAGE") return Number(DOM::CSSPrimitiveValue::CSS_PERCENTAGE);
-  if (p == "CSS_EMS")        return Number(DOM::CSSPrimitiveValue::CSS_EMS);
-  if (p == "CSS_EXS")        return Number(DOM::CSSPrimitiveValue::CSS_EXS);
-  if (p == "CSS_PX")         return Number(DOM::CSSPrimitiveValue::CSS_PX);
-  if (p == "CSS_CM")         return Number(DOM::CSSPrimitiveValue::CSS_CM);
-  if (p == "CSS_MM")         return Number(DOM::CSSPrimitiveValue::CSS_MM);
-  if (p == "CSS_IN")         return Number(DOM::CSSPrimitiveValue::CSS_IN);
-  if (p == "CSS_PT")         return Number(DOM::CSSPrimitiveValue::CSS_PT);
-  if (p == "CSS_PC")         return Number(DOM::CSSPrimitiveValue::CSS_PC);
-  if (p == "CSS_DEG")        return Number(DOM::CSSPrimitiveValue::CSS_DEG);
-  if (p == "CSS_RAD")        return Number(DOM::CSSPrimitiveValue::CSS_RAD);
-  if (p == "CSS_GRAD")       return Number(DOM::CSSPrimitiveValue::CSS_GRAD);
-  if (p == "CSS_MS")         return Number(DOM::CSSPrimitiveValue::CSS_MS);
-  if (p == "CSS_S")          return Number(DOM::CSSPrimitiveValue::CSS_S);
-  if (p == "CSS_HZ")         return Number(DOM::CSSPrimitiveValue::CSS_HZ);
-  if (p == "CSS_KHZ")        return Number(DOM::CSSPrimitiveValue::CSS_KHZ);
-  if (p == "CSS_DIMENSION")  return Number(DOM::CSSPrimitiveValue::CSS_DIMENSION);
-  if (p == "CSS_STRING")     return Number(DOM::CSSPrimitiveValue::CSS_STRING);
-  if (p == "CSS_URI")        return Number(DOM::CSSPrimitiveValue::CSS_URI);
-  if (p == "CSS_IDENT")      return Number(DOM::CSSPrimitiveValue::CSS_IDENT);
-  if (p == "CSS_ATTR")       return Number(DOM::CSSPrimitiveValue::CSS_ATTR);
-  if (p == "CSS_COUNTER")    return Number(DOM::CSSPrimitiveValue::CSS_COUNTER);
-  if (p == "CSS_RECT")       return Number(DOM::CSSPrimitiveValue::CSS_RECT);
-  if (p == "CSS_RGBCOLOR")   return Number(DOM::CSSPrimitiveValue::CSS_RGBCOLOR);
-  return CSSValueConstructor::tryGet(exec,p);
+  return DOMObjectLookupGetValue<CSSPrimitiveValueConstructor,CSSValueConstructor>(exec,p,&CSSPrimitiveValueConstructorTable,this);
+}
+
+Value CSSPrimitiveValueConstructor::getValue(ExecState *, int token) const
+{
+  // We use the token as the value to return directly
+  return Number(token);
 }
 
 Value KJS::getCSSPrimitiveValueConstructor(ExecState *exec)
@@ -925,7 +924,15 @@ Value KJS::getCSSPrimitiveValueConstructor(ExecState *exec)
 
 // -------------------------------------------------------------------------
 
-const ClassInfo DOMCSSValueList::info = { "CSSValueList", 0, 0, 0 };
+const ClassInfo DOMCSSValueList::info = { "CSSValueList", 0, &DOMCSSValueListTable, 0 };
+
+/*
+@begin DOMCSSValueListTable 3
+  length		DOMCSSValueList::Length		DontDelete|ReadOnly
+  item			DOMCSSValueList::Item		DontDelete|Function 1
+@end
+*/
+IMPLEMENT_PROTOFUNC(DOMCSSValueListFunc) // not really a proto, but doesn't matter
 
 DOMCSSValueList::DOMCSSValueList(ExecState *exec, DOM::CSSValueList v)
   : DOMCSSValue(exec, v) { }
@@ -938,7 +945,7 @@ Value DOMCSSValueList::tryGet(ExecState *exec, const UString &p) const
   if (p == "length")
     return Number(valueList.length());
   else if (p == "item")
-    return new DOMCSSValueListFunc(valueList,DOMCSSValueListFunc::Item);
+    return lookupOrCreateFunction<DOMCSSValueListFunc>(exec,p,this,DOMCSSValueList::Item,1,DontDelete|Function);
 
   bool ok;
   long unsigned int u = p.toULong(&ok);
@@ -950,24 +957,26 @@ Value DOMCSSValueList::tryGet(ExecState *exec, const UString &p) const
 
 Value DOMCSSValueListFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  Value result;
-
+  DOM::CSSValueList valueList = static_cast<DOMCSSValueList *>(thisObj.imp())->toValueList();
   switch (id) {
-    case Item:
-      result = getDOMCSSValue(exec,valueList.item(args[0].toInteger(exec)));
-      break;
+    case DOMCSSValueList::Item:
+      return getDOMCSSValue(exec,valueList.item(args[0].toInteger(exec)));
     default:
-      result = Undefined();
-      break;
+      return Undefined();
   }
-
-  return result;
 }
 
 // -------------------------------------------------------------------------
 
-const ClassInfo DOMRGBColor::info = { "RGBColor", 0, 0, 0 };
+const ClassInfo DOMRGBColor::info = { "RGBColor", 0, &DOMRGBColorTable, 0 };
 
+/*
+@begin DOMRGBColorTable 3
+  red	DOMRGBColor::Red	DontDelete|ReadOnly
+  green	DOMRGBColor::Green	DontDelete|ReadOnly
+  blue	DOMRGBColor::Blue	DontDelete|ReadOnly
+@end
+*/
 DOMRGBColor::~DOMRGBColor()
 {
   //rgbColors.remove(rgbColor.handle());
@@ -981,11 +990,10 @@ Value DOMRGBColor::tryGet(ExecState *exec, const UString &p) const
     return getDOMCSSValue(exec,rgbColor.green());
   if (p == "blue")
     return getDOMCSSValue(exec,rgbColor.blue());
-
   return DOMObject::tryGet(exec,p);
 }
 
-Value KJS::getDOMRGBColor(ExecState *exec, DOM::RGBColor c)
+Value KJS::getDOMRGBColor(ExecState *, DOM::RGBColor c)
 {
   // ### implement equals for RGBColor since they're not refcounted objects
   return new DOMRGBColor(c);
@@ -993,8 +1001,15 @@ Value KJS::getDOMRGBColor(ExecState *exec, DOM::RGBColor c)
 
 // -------------------------------------------------------------------------
 
-const ClassInfo DOMRect::info = { "Rect", 0, 0, 0 };
-
+const ClassInfo DOMRect::info = { "Rect", 0, &DOMRectTable, 0 };
+/*
+@begin DOMRectTable 4
+  top	DOMRect::Top	DontDelete|ReadOnly
+  right	DOMRect::Right	DontDelete|ReadOnly
+  bottom DOMRect::Bottom DontDelete|ReadOnly
+  left	DOMRect::Left	DontDelete|ReadOnly
+@end
+*/
 DOMRect::~DOMRect()
 {
   rects.remove(rect.handle());
@@ -1010,11 +1025,10 @@ Value DOMRect::tryGet(ExecState *exec, const UString &p) const
     return getDOMCSSValue(exec,rect.bottom());
   if (p == "left")
     return getDOMCSSValue(exec,rect.left());
-
   return DOMObject::tryGet(exec,p);
 }
 
-Value KJS::getDOMRect(ExecState *exec, DOM::Rect r)
+Value KJS::getDOMRect(ExecState *, DOM::Rect r)
 {
   DOMRect *ret;
   if (r.isNull())
@@ -1030,8 +1044,14 @@ Value KJS::getDOMRect(ExecState *exec, DOM::Rect r)
 
 // -------------------------------------------------------------------------
 
-const ClassInfo DOMCounter::info = { "Counter", 0, 0, 0 };
-
+const ClassInfo DOMCounter::info = { "Counter", 0, &DOMCounterTable, 0 };
+/*
+@begin DOMCounterTable 3
+  identifier	DOMCounter::Identifier	DontDelete|ReadOnly
+  listStyle	DOMCounter::ListStyle	DontDelete|ReadOnly
+  separator	DOMCounter::Separator	DontDelete|ReadOnly
+@end
+*/
 DOMCounter::~DOMCounter()
 {
   counters.remove(counter.handle());
@@ -1049,7 +1069,7 @@ Value DOMCounter::tryGet(ExecState *exec, const UString &p) const
   return DOMObject::tryGet(exec,p);
 }
 
-Value KJS::getDOMCounter(ExecState *exec, DOM::Counter c)
+Value KJS::getDOMCounter(ExecState *, DOM::Counter c)
 {
   DOMCounter *ret;
   if (c.isNull())
