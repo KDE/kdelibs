@@ -354,6 +354,7 @@ bool KPrinter::printFiles(const QStringList& l, bool flag, bool startviewer)
 bool KPrinter::doPreview(const QString& file)
 {
 	d->m_impl->statusMessage(i18n("Previewing..."), this);
+	d->m_impl->statusMessage(QString::null, this);
 	return KPrintPreview::preview(file, d->m_previewonly, d->m_parentId);
 }
 
