@@ -27,7 +27,7 @@ using namespace KABC;
 Resource::Resource( AddressBook *ab ) 
     : mAddressBook( ab )
 {
-  mReadOnly = true;
+  mReadOnly = false;
   mFastResource = true;
 }
 
