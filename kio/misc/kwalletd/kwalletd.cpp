@@ -137,9 +137,9 @@ bool brandNew = false;
 			QDataStream ds(data, IO_WriteOnly);
 			ds << wallet;
 			if (brandNew) {
-				emitDCOPSignal("walletCreated(const QString&)", data);
+				emitDCOPSignal("walletCreated(QString)", data);
 			}
-			emitDCOPSignal("walletOpened(const QString&)", data);
+			emitDCOPSignal("walletOpened(QString)", data);
 			if (_wallets.count() == 1) {
 				KApplication::startServiceByDesktopName("kwalletmanager");
 			}
@@ -162,7 +162,7 @@ int KWalletD::deleteWallet(const QString& wallet) {
 		QByteArray data;
 		QDataStream ds(data, IO_WriteOnly);
 		ds << wallet;
-		emitDCOPSignal("walletDeleted(const QString&)", data);
+		emitDCOPSignal("walletDeleted(QString)", data);
 		return 0;
 	}
 
@@ -308,7 +308,7 @@ KWallet::Backend *b;
 		QByteArray data;
 		QDataStream ds(data, IO_WriteOnly);
 		ds << b->walletName();
-		emitDCOPSignal("folderListUpdated(const QString&)", data);
+		emitDCOPSignal("folderListUpdated(QString)", data);
 		return rc;
 	}
 
@@ -324,7 +324,7 @@ KWallet::Backend *b;
 		QByteArray data;
 		QDataStream ds(data, IO_WriteOnly);
 		ds << b->walletName();
-		emitDCOPSignal("folderListUpdated(const QString&)", data);
+		emitDCOPSignal("folderListUpdated(QString)", data);
 		return rc;
 	}
 
@@ -537,7 +537,7 @@ void KWalletD::doCloseSignals(int handle, const QString& wallet) {
 	QByteArray data2;
 	QDataStream ds2(data2, IO_WriteOnly);
 	ds2 << wallet;
-	emitDCOPSignal("walletClosed(const QString&)", data2);
+	emitDCOPSignal("walletClosed(QString)", data2);
 
 	if (_wallets.isEmpty()) {
 		emitDCOPSignal("allWalletsClosed()", QByteArray());
@@ -564,7 +564,7 @@ void KWalletD::emitFolderUpdated(const QString& wallet, const QString& folder) {
 	QDataStream ds(data, IO_WriteOnly);
 	ds << wallet;
 	ds << folder;
-	emitDCOPSignal("folderUpdated(const QString&, const QString&)", data);
+	emitDCOPSignal("folderUpdated(QString, QString)", data);
 }
 
 #include "kwalletd.moc"
