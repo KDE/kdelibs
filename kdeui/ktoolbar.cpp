@@ -1082,7 +1082,7 @@ void KToolBar::saveState()
 
 void KToolBar::saveSettings(KConfig *config, const QString &_configGroup)
 {
-    kdDebug(220) << "KToolBar::saveSettings" << endl;;
+    //kdDebug(220) << "KToolBar::saveSettings" << endl;;
     QString configGroup = _configGroup;
     if (configGroup.isEmpty())
     {
@@ -1668,8 +1668,12 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
         show();
 
     if ( mw ) {
+
+        //kdDebug(220) << "KToolBar::applySettings updating ToolbarInfo" << endl;
+        d->toolBarInfo = KToolBarPrivate::ToolBarInfo( (QMainWindow::ToolBarDock)pos, idx, newLine, offs );
+
         mw->moveToolBar( this, (QMainWindow::ToolBarDock)pos, newLine, idx, offs );
-        //kdDebug() << "KToolBar::applySettings " << name() << " moveToolBar with newLine=" << newLine << " idx=" << idx << " offs=" << offs << endl;
+        //kdDebug(220) << "KToolBar::applySettings " << name() << " moveToolBar with pos=" << pos << " newLine=" << newLine << " idx=" << idx << " offs=" << offs << endl;
         // Yeah, we just did it... I guess it's for saving the "realpos" again ?
         // Hmm, in that case we could simply do the hide/show after the moveToolBar, no ? (David)
         if ( testWState( WState_ForceHide ) )
@@ -1740,6 +1744,7 @@ void KToolBar::loadState( const QDomElement &element )
     int index = 0xffffff /*append by default*/, offset = -1;
     bool nl = FALSE;
 
+    //kdDebug(220) << "KToolBar::loadState attrPosition=" << attrPosition << endl;
     if ( !attrPosition.isEmpty() ) {
         if ( attrPosition == "top" )
             dock = QMainWindow::Top;
@@ -1762,11 +1767,12 @@ void KToolBar::loadState( const QDomElement &element )
     if ( !attrNewLine.isEmpty() )
         nl = attrNewLine == "true" ? TRUE : FALSE;
 
+    //kdDebug(220) << "KToolBar::loadState creating ToolBarInfo with dock=" << dock << endl;
     d->toolBarInfo = KToolBarPrivate::ToolBarInfo( dock, index, nl, offset );
     if ( mw )
     {
        mw->moveToolBar( this, dock, nl, index, offset );
-       //kdDebug(220) << "moveToolBar in loadState for " << name() << " nl=" << nl << " offset=" << offset << endl;
+       //kdDebug(220) << "moveToolBar in loadState for " << name() << " dock=" << dock << " nl=" << nl << " offset=" << offset << endl;
     }
 
     if ( !attrIconText.isEmpty() ) {
@@ -1884,7 +1890,7 @@ void KToolBar::positionYourself()
         //kdDebug(220) << "KToolBar::positionYourself d->positioned=true  ALREADY DONE" << endl;
         return;
     }
-    //kdDebug(220) << "positionYourself " << name() << " newLine=" << d->toolBarInfo.newline << " offset=" << d->toolBarInfo.offset << endl;
+    //kdDebug(220) << "positionYourself " << name() << " dock=" << d->toolBarInfo.dock << " newLine=" << d->toolBarInfo.newline << " offset=" << d->toolBarInfo.offset << endl;
     ( (QMainWindow*)parentWidget() )->moveToolBar( this, d->toolBarInfo.dock,
                                                    d->toolBarInfo.newline,
                                                    d->toolBarInfo.index,
