@@ -54,7 +54,7 @@ public:
   ~KProcessController(); 
   //CC: WARNING! Destructor Not virtual (but you don't derive classes from this anyhow...)
 
-  QList<KProcess> *processList;
+  QPtrList<KProcess> *processList;
 
  public slots:
 

@@ -19,7 +19,6 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qlist.h>
 #include <qvaluelist.h>
 #include <qmap.h>
 #include <qpixmap.h>
@@ -221,7 +220,7 @@ QStringList KIconTheme::queryIcons(int size, int context) const
 {
     int delta = 1000, dw;
 
-    QListIterator<KIconThemeDir> dirs(mDirs);
+    QPtrListIterator<KIconThemeDir> dirs(mDirs);
     KIconThemeDir *dir;
 
     // Try to find exact match
@@ -261,7 +260,7 @@ QStringList KIconTheme::queryIcons(int size, int context) const
 
 QStringList KIconTheme::queryIconsByContext(int size, int context) const
 {
-    QListIterator<KIconThemeDir> dirs(mDirs);
+    QPtrListIterator<KIconThemeDir> dirs(mDirs);
     int dw;
     KIconThemeDir *dir;
 
@@ -295,7 +294,7 @@ KIcon KIconTheme::iconPath(const QString& name, int size, int match) const
     KIconThemeDir *dir;
 
     dw = 1000; // shut up, gcc
-    QListIterator<KIconThemeDir> dirs(mDirs);
+    QPtrListIterator<KIconThemeDir> dirs(mDirs);
     for ( ; dirs.current(); ++dirs)
     {
         dir = dirs.current();

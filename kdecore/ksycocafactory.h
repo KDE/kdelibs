@@ -23,7 +23,7 @@
 #include "ksycocaentry.h"
 
 #include <qdict.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qstring.h>
 class KSycoca;
 class QStringList;
@@ -124,7 +124,7 @@ protected:
 };
 
 // This, instead of a typedef, allows to declare "class ..." in header files
-class KSycocaFactoryList : public QList<KSycocaFactory>
+class KSycocaFactoryList : public QPtrList<KSycocaFactory>
 {
 public:
    KSycocaFactoryList() { }

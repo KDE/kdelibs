@@ -17,7 +17,7 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qlist.h>
+#include <qptrlist.h>
 
 class KConfig;
 class KIconThemeDir;
@@ -157,7 +157,7 @@ private:
     int mDepth;
     QString mDir, mName, mDesc;
     QStringList mInherits;
-    QList<KIconThemeDir> mDirs;
+    QPtrList<KIconThemeDir> mDirs;
     KIconThemePrivate *d;
 
     static QString *_theme;

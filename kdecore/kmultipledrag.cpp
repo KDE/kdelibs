@@ -41,7 +41,7 @@ QByteArray KMultipleDrag::encodedData( const char *mime ) const
 {
     //kdDebug() << "KMultipleDrag::encodedData " << mime << endl;
     // Iterate over the drag objects, and find the format in the right one
-    QListIterator<QDragObject> it( m_dragObjects );
+    QPtrListIterator<QDragObject> it( m_dragObjects );
     for ( ; it.current(); ++it )
     {
         for ( int i = 0; it.current()->format( i ); ++i )
@@ -64,7 +64,7 @@ const char* KMultipleDrag::format( int i ) const
     // etc.
     QValueList<int>::ConstIterator nit = m_numberFormats.begin();
     QValueList<int>::ConstIterator nend = m_numberFormats.end();
-    QListIterator<QDragObject> it( m_dragObjects );
+    QPtrListIterator<QDragObject> it( m_dragObjects );
     for ( ; nit != nend && i >= *nit ; ++nit, ++it )
         i -= *nit;
     if ( it.current() )

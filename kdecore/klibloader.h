@@ -22,7 +22,7 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qasciidict.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <kglobal.h>
 
 #include <stdlib.h> // For backwards compatibility
@@ -186,7 +186,7 @@ private:
     QString m_filename;
     KLibFactory* m_factory;
     void * m_handle;
-    QList<QObject> m_objs;
+    QPtrList<QObject> m_objs;
     QTimer *m_timer;
     KLibraryPrivate *d;
 };

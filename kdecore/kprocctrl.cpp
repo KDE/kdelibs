@@ -39,7 +39,7 @@
 #include "kprocess.h"
 #include "kprocctrl.h"
 
-template class QList<KProcess>;
+template class QPtrList<KProcess>;
 
 KProcessController *KProcessController::theKProcessController = 0;
 
@@ -48,7 +48,7 @@ KProcessController::KProcessController()
   struct sigaction act;
 
   // initialize theKProcessList
-  processList = new QList<KProcess>();
+  processList = new QPtrList<KProcess>();
   Q_CHECK_PTR(processList);
 
   if (0 > pipe(fd))

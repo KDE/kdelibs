@@ -21,7 +21,7 @@
 
 #include <kurl.h>
 
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qstring.h>
 #include <qvaluelist.h>
 
@@ -184,7 +184,7 @@ class KCmdLineArgs
 {
   friend class KApplication;
   friend class KUniqueApplication;
-  friend class QList<KCmdLineArgs>;
+  friend class QPtrList<KCmdLineArgs>;
 public:
   // Static functions:
   

@@ -30,7 +30,6 @@
 #include <limits.h>
 #endif
 
-#include <qlist.h>
 #include <qfile.h>
 #include <qasciidict.h>
 #include <qstrlist.h>
@@ -50,7 +49,7 @@
 #endif
 
 template class QAsciiDict<QCString>;
-template class QList<KCmdLineArgs>;
+template class QPtrList<KCmdLineArgs>;
 
 class KCmdLineParsedOptions : public QAsciiDict<QCString>
 {
@@ -100,7 +99,7 @@ public:
 };
 
 
-class KCmdLineArgsList: public QList<KCmdLineArgs>
+class KCmdLineArgsList: public QPtrList<KCmdLineArgs>
 {
 public:
    KCmdLineArgsList() { }

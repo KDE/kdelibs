@@ -118,7 +118,7 @@ KLibrary::~KLibrary()
     // If any object is remaining, delete
     if ( m_objs.count() > 0 )
 	{
-	    QListIterator<QObject> it( m_objs );
+	    QPtrListIterator<QObject> it( m_objs );
 	    for ( ; it.current() ; ++it )
 		{
 		    kdDebug(150) << "Factory still has object " << it.current() << " " << it.current()->name () << " Library = " << m_libname << endl;
@@ -274,8 +274,8 @@ KLibWrapPrivate::KLibWrapPrivate(KLibrary *l, lt_dlhandle h)
 class KLibLoaderPrivate
 {
 public:
-    QList<KLibWrapPrivate> loaded_stack;
-    QList<KLibWrapPrivate> pending_close;
+    QPtrList<KLibWrapPrivate> loaded_stack;
+    QPtrList<KLibWrapPrivate> pending_close;
     enum {UNKNOWN, UNLOAD, DONT_UNLOAD} unload_mode;
 
     QString errorMessage;
@@ -401,7 +401,7 @@ KLibrary* KLibLoader::library( const char *name )
 
     /* Test if this library was loaded at some time, but got
        unloaded meanwhile, whithout being dlclose()'ed.  */
-    QListIterator<KLibWrapPrivate> it(d->loaded_stack);
+    QPtrListIterator<KLibWrapPrivate> it(d->loaded_stack);
     for (; it.current(); ++it) {
       if (it.current()->name == name)
         wrap = it.current();
@@ -499,7 +499,7 @@ void KLibLoader::close_pending(KLibWrapPrivate *wrap)
 
   /* First delete all KLibrary objects in pending_close, but _don't_ unload
      the DSO behind it.  */
-  QListIterator<KLibWrapPrivate> it(d->pending_close);
+  QPtrListIterator<KLibWrapPrivate> it(d->pending_close);
   for (; it.current(); ++it) {
     wrap = it.current();
     if (wrap->lib) {

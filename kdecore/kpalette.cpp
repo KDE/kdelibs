@@ -28,7 +28,7 @@
 #include <ksavefile.h>
 #include <kstringhandler.h>
 
-template class QList<KPalette::kolor>;
+template class QPtrList<KPalette::kolor>;
 
 QStringList
 KPalette::getPaletteList()
@@ -115,7 +115,8 @@ KPalette::KPalette(const KPalette &p)
    mKolorList.setAutoDelete(true);
    // Make a deep copy of the color list
    // We can't iterate a const list :(
-   QList<kolor> *nonConstList = (QList<kolor> *) &p.mKolorList;
+   // DF: yes you can - use the proper iterator, not first/next
+   QPtrList<kolor> *nonConstList = (QPtrList<kolor> *) &p.mKolorList;
    for(kolor *node = nonConstList->first(); node; node = nonConstList->next())
    {
        mKolorList.append(new kolor(*node));
@@ -142,7 +143,8 @@ KPalette::save()
    (*str) << "KDE RGB Palette\n";   
    (*str) << description << "\n";
    // We can't iterate a const list :(
-   QList<kolor> *nonConstList = (QList<kolor> *) (&mKolorList);
+   // DF: yes you can - use the proper iterator, not first/next
+   QPtrList<kolor> *nonConstList = (QPtrList<kolor> *) (&mKolorList);
    for(kolor *node = nonConstList->first(); node; node = nonConstList->next())
    {
        int r,g,b;
@@ -160,7 +162,8 @@ KPalette::operator=( const KPalette &p)
   mKolorList.clear();
   // Make a deep copy of the color list
   // We can't iterate a const list :(
-  QList<kolor> *nonConstList = (QList<kolor> *) &p.mKolorList;
+   // DF: yes you can - use the proper iterator, not first/next
+  QPtrList<kolor> *nonConstList = (QPtrList<kolor> *) &p.mKolorList;
   for(kolor *node = nonConstList->first(); node; node = nonConstList->next())
   {
      mKolorList.append(new kolor(*node));
@@ -188,7 +191,7 @@ int
 KPalette::findColor(const QColor &color) const
 {
   int index;
-  QListIterator<kolor> it( mKolorList );
+  QPtrListIterator<kolor> it( mKolorList );
   for (index = 0; it.current(); ++it, ++index)
   {
      if (it.current()->color == color)

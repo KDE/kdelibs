@@ -27,7 +27,7 @@
 #define KALLOCATOR_H
 
 #include <stdio.h>
-#include <qlist.h>
+#include <qptrlist.h>
 
 class KZoneAllocatorPrivate;
 
@@ -61,7 +61,7 @@ public:
                 
 protected:    
     long blockSize;
-    QList<char> memoryBlocks;
+    QPtrList<char> memoryBlocks;
     char *currentBlock;
     long blockOffset;
 private:

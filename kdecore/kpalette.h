@@ -23,7 +23,7 @@
 #define __KPALETTE_H__
 
 #include <qcolor.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qstring.h>
 #include <qstringlist.h>
 
@@ -192,7 +192,7 @@ public:
 
 private:   
    typedef struct { QColor color; QString name; } kolor;
-   QList<kolor> mKolorList;
+   QPtrList<kolor> mKolorList;
    
    QString mName;
    QString mDesc;

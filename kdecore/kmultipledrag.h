@@ -61,7 +61,7 @@ protected:
     virtual QByteArray encodedData( const char *mime ) const;
     virtual const char* format( int i ) const;
 
-    QList<QDragObject> m_dragObjects;
+    QPtrList<QDragObject> m_dragObjects;
     QValueList<int> m_numberFormats;
 };
 
