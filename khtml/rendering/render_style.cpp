@@ -255,6 +255,10 @@ RenderStyle::~RenderStyle()
     while (ps) {
         prev = ps;
         ps = ps->pseudoStyle;
+	// to prevent a double deletion. 
+	// this works only because the styles below aren't really shared
+	// Dirk said we need another construct as soon as these are shared
+	prev->pseudoStyle = 0;
         prev->deref();
     }
 }
