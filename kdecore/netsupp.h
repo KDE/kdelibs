@@ -39,14 +39,23 @@
 #define kde_sockaddr_in6	sockaddr_in6
 #endif
 
-/*
+/*** IPv6 structures that might be missing from some implementations ***/
+
+/**
+ * An IPv6 address.
  * This is taken from RFC 2553
+ * @internal
  */
 struct kde_in6_addr
 {
   unsigned char __u6_addr[16];
 };
 
+/**
+ * An IPv6 socket address
+ * This is taken from RFC 2553.
+ * @internal
+ */
 struct kde_sockaddr_in6
 {
 #ifdef HAVE_SOCKADDR_SA_LEN
@@ -58,6 +67,8 @@ struct kde_sockaddr_in6
   struct kde_in6_addr	sin6_addr;
   Q_UINT32		sin6_scope_id;
 };
+
+/*** IPv6 test macros that could be missing from some implementations ***/
 
 #define KDE_IN6_IS_ADDR_UNSPECIFIED(a) \
 	(((Q_UINT32 *) (a))[0] == 0 && ((Q_UINT32 *) (a))[1] == 0 && \
@@ -105,7 +116,6 @@ struct kde_sockaddr_in6
 	(IN6_IS_ADDR_MULTICAST(a) && ((((Q_UINT8 *) (a))[1] & 0xf) == 0xe))
 
 #ifdef NEED_IN6_TESTS
-
 # define IN6_IS_ADDR_UNSPECIFIED	KDE_IN6_IS_ADDR_UNSPECIFIED
 # define IN6_IS_ADDR_LOOPBACK		KDE_IN6_IS_ADDR_LOOPBACK
 # define IN6_IS_ADDR_MULTICAST		KDE_IN6_IS_ADDR_MULTICAST
@@ -119,16 +129,36 @@ struct kde_sockaddr_in6
 # define IN6_IS_ADDR_MC_SITELOCAL	KDE_IN6_IS_ADDR_MC_SITELOCAL
 # define IN6_IS_ADDR_MC_ORGLOCAL	KDE_IN6_IS_ADDR_MC_ORGLOCAL
 # define IN6_IS_ADDR_MC_GLOBAL		KDE_IN6_IS_ADDR_MC_GLOBAL
-
 #endif
 
-#if defined(HAVE_GETADDRINFO) && !defined(HAVE_BROKEN_GETADDRINFO)
+/*** Special internal structure ***/
+
+#define KAI_SYSTEM		0	/* data is all-system */
+#define KAI_LOCALUNIX		1	/* data contains a Unix addrinfo allocated by us */
+#define KAI_QDNS		2	/* data contains data derived from QDns */
+
+struct addrinfo;		/* forward declaration; this could be needed */
+
+/**
+ * @internal
+ * Special purpose structure, to return data from kde_getaddrinfo to the
+ * library functions. This defines an extra field to let us know how to
+ * process this better.
+ *
+ * Currently, we use it to determine how to deallocate this stuff
+ */
+struct kde_addrinfo
+{
+  struct addrinfo *data;
+  int origin;
+};
 
 extern int kde_getaddrinfo(const char *name, const char *service,
-			   struct addrinfo* hint,
-			   struct addrinfo** result);
+			   const struct addrinfo* hint,
+			   struct kde_addrinfo** result);
+extern void kde_freeaddrinfo(struct kde_addrinfo *p);
 
-#else  /* !defined(HAVE_GETADDRINFO) || defined(HAVE_BROKEN_GETADDRINFO) */
+#if !defined(HAVE_GETADDRINFO) || defined(HAVE_BROKEN_GETADDRINFO)
 
 # ifndef HAVE_STRUCT_ADDRINFO
 struct addrinfo
@@ -218,7 +248,6 @@ namespace KDE
 			 int flags);
 }
 
-# define kde_getaddrinfo	getaddrinfo
 # define getaddrinfo	KDE::getaddrinfo
 # define freeaddrinfo	KDE::freeaddrinfo
 # define gai_strerror	KDE::gai_strerror

@@ -33,6 +33,7 @@
 
 /* External reference to netdb.h */
 struct addrinfo;
+struct kde_addrinfo;
 class KAddressInfo;		/* our abstraction of it */
 
 /*
@@ -710,9 +711,10 @@ protected:
 
   /**
    * This is actually a wrapper around getaddrinfo()
+   * @internal
    */
   static int doLookup(const QString& host, const QString& serv, addrinfo& hint,
-		      addrinfo** result);
+		      kde_addrinfo** result);
 
 public:
   /**

@@ -37,9 +37,7 @@
 #include <errno.h>
 #include <fcntl.h>
 
-#ifdef HAVE_GETADDRINFO
-# include <netdb.h>
-#endif
+#include <netdb.h>
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -54,9 +52,15 @@
 #include "kextsock.h"
 #include "ksockaddr.h"
 #include "ksocks.h"
-#include "kextsocklookup.h"
 
+#ifndef HAVE_SOCKADDR_IN6
+// The system doesn't have sockaddr_in6
+// But we can tell netsupp.h to define it for us, according to the RFC
+#define CLOBBER_IN6
+#endif
 #include "netsupp.h"
+
+#include "kextsocklookup.h"
 
 //
 // Workarounds
@@ -89,8 +93,8 @@ public:
   QString service;		// requested service
   QString localhost;		// requested bind host or local hostname
   QString localservice;		// requested bind service or local port
-  addrinfo *resolution;		// the resolved addresses
-  addrinfo *bindres;		// binding resolution
+  kde_addrinfo *resolution;	// the resolved addresses
+  kde_addrinfo *bindres;	// binding resolution
   addrinfo *current;		// used by asynchronous connection
 
   KSocketAddress *local;	// local socket address
@@ -242,14 +246,31 @@ static int skipData(int fd, unsigned len)
   return skipped;
 }
 
+// calls the correct deallocation routine
+// also uses by-reference parameter to simplify caller routines, because
+// we set the parameter to NULL after deallocation
+void local_freeaddrinfo(kde_addrinfo *&p)
+{
+  if (p == NULL)
+    return;
+
+  if (p->origin == KAI_QDNS)
+    KExtendedSocketLookup::freeresults(p);
+  else
+    kde_freeaddrinfo(p);
+
+  p = NULL;
+}
+
 /*
  * class KExtendedSocketLookup (internal use)
  */
-addrinfo* KExtendedSocketLookup::results()
+kde_addrinfo* KExtendedSocketLookup::results()
 {
   QValueList<QHostAddress> v4 = dnsIpv4.addresses(),
     v6 = dnsIpv6.addresses();
   addrinfo *p = NULL;
+  kde_addrinfo *res = new kde_addrinfo;
   QValueList<QHostAddress>::Iterator it;
   char *canonname;
   unsigned short port;
@@ -333,9 +354,27 @@ addrinfo* KExtendedSocketLookup::results()
       p = q;
     }
 
-  return p;
+  res->data = p;
+  return res;
 }
 
+void KExtendedSocketLookup::freeresults(kde_addrinfo *res)
+{
+  addrinfo *ai = res->data;
+  if (ai->ai_canonname)
+    free(ai->ai_canonname);
+  while (ai)
+    {
+      struct addrinfo *ai2 = ai;
+
+      if (ai->ai_addr != NULL)
+	delete ai->ai_addr;
+
+      ai = ai->ai_next;
+      delete ai2;
+    }
+  delete res;
+}
 
 /*
  * class KExtendedSocket
@@ -371,11 +410,8 @@ KExtendedSocket::~KExtendedSocket()
 {
   closeNow();
 
-  if (d->resolution != NULL)
-    freeaddrinfo(d->resolution);
-  if (d->bindres != NULL)
-    freeaddrinfo(d->bindres);
-  d->resolution = d->bindres = NULL;
+  local_freeaddrinfo(d->resolution);
+  local_freeaddrinfo(d->bindres);
 
   if (d->local != NULL)
     delete d->local;
@@ -668,7 +704,7 @@ bool KExtendedSocket::addressReusable()
     return false;
 
   int on;
-  ksocklen_t onsiz = sizeof(on);
+  socklen_t onsiz = sizeof(on);
   if (getsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, (char*)&on, &onsiz) == -1)
     {
       setError(IO_UnspecifiedError, errno);
@@ -940,17 +976,8 @@ void KExtendedSocket::cancelAsyncLookup()
       d->dnsLocal = 0;
     }
 
-  if (d->resolution)
-    {
-      freeaddrinfo(d->resolution);
-      d->resolution = NULL;
-    }
-
-  if (d->bindres)
-    {
-      freeaddrinfo(d->bindres);
-      d->bindres = NULL;
-    }
+  local_freeaddrinfo(d->resolution);
+  local_freeaddrinfo(d->bindres);
 }
 
 int KExtendedSocket::listen(int N)
@@ -965,7 +992,7 @@ int KExtendedSocket::listen(int N)
   addrinfo *p;
 
   // doing the loop:
-  for (p = d->resolution; p; p = p->ai_next)
+  for (p = d->resolution->data; p; p = p->ai_next)
     {
       // check for family restriction
       if (!valid_family(p, m_flags))
@@ -1113,7 +1140,11 @@ int KExtendedSocket::connect()
 		     d->timeout.tv_sec, d->timeout.tv_usec, end.tv_sec, end.tv_usec);
     }
 
-  for (p = d->resolution, q = d->bindres; p; p = p->ai_next)
+  if (d->bindres)
+    q = d->bindres->data;
+  else
+    q = NULL;
+  for (p = d->resolution->data; p; p = p->ai_next)
     {
       // check for family restriction
       if (!valid_family(p, m_flags))
@@ -1125,7 +1156,7 @@ int KExtendedSocket::connect()
 	  kdDebug(170) << "Searching bind socket for family " << p->ai_family << endl;
 	  if (q->ai_family != p->ai_family)
 	    // differing families, scan bindres for a matching family
-	    for (q = d->bindres; q; q = q->ai_next)
+	    for (q = d->bindres->data; q; q = q->ai_next)
 	      if (q->ai_family == p->ai_family)
 		break;
 
@@ -1133,7 +1164,7 @@ int KExtendedSocket::connect()
 	    {
 	      // no matching families for this
 	      kdDebug(170) << "No matching family for bind socket\n";
-	      q = d->bindres;
+	      q = d->bindres->data;
 	      continue;
 	    }
 
@@ -1341,6 +1372,8 @@ bool KExtendedSocket::open(int mode)
     return listen() == 0;
   else if (m_status < connecting)
     return connect() == 0;
+  else
+    return false;
 }
 
 void KExtendedSocket::close()
@@ -1416,11 +1449,8 @@ void KExtendedSocket::release()
   m_status = done;
 
   // also do some garbage collecting
-  if (d->resolution != NULL)
-    freeaddrinfo(d->resolution);
-  if (d->bindres != NULL)
-    freeaddrinfo(d->bindres);
-  d->resolution = d->bindres = NULL;
+  local_freeaddrinfo(d->resolution);
+  local_freeaddrinfo(d->bindres);
 
   d->host = d->service = d->localhost = d->localservice = (const char *)0;
 
@@ -1673,7 +1703,7 @@ void KExtendedSocket::setError(int errorcode, int syserror)
 }
 
 int KExtendedSocket::doLookup(const QString &host, const QString &serv, addrinfo &hint,
-			      addrinfo** res)
+			      kde_addrinfo** res)
 {
   int err;
 
@@ -1861,7 +1891,7 @@ void KExtendedSocket::connectionEvent()
       // our socket has activity
       // find out what it was
       int retval;
-      ksocklen_t len = sizeof(errcode);
+      socklen_t len = sizeof(errcode);
       retval = getsockopt(sockfd, SOL_SOCKET, SO_ERROR, (char*)&errcode, &len);
 
       if (retval == -1 || errcode != 0)
@@ -1898,24 +1928,24 @@ void KExtendedSocket::connectionEvent()
   // and sockfd == -1
   addrinfo *p, *q;
   if (d->current == 0)
-    p = d->current = d->resolution;
+    p = d->current = d->resolution->data;
   else
     p = d->current->ai_next;
-  for (q = d->bindres; p; p = p->ai_next)
+  for (q = d->bindres->data; p; p = p->ai_next)
     {
       // same code as in connect()
       if (q != NULL)
 	{
 	  if (q->ai_family != d->current->ai_family)
 	    // differing families, scan bindres for a matching family
-	    for (q = d->bindres; q; q = q->ai_next)
+	    for (q = d->bindres->data; q; q = q->ai_next)
 	      if (q->ai_family == p->ai_family)
 		break;
 
 	  if (q == NULL || q->ai_family != p->ai_family)
 	    {
 	      // no matching families for this
-	      q = d->bindres;
+	      q = d->bindres->data;
 	      continue;
 	    }
 
@@ -2009,9 +2039,9 @@ void KExtendedSocket::dnsResultsReady()
   // count how many results we have
   int n = 0;
   addrinfo *p;
-  for (p = d->resolution; p; p = p->ai_next)
+  for (p = d->resolution->data; p; p = p->ai_next)
     n++;
-  for (p = d->bindres; p; p = p->ai_next)
+  for (p = d->bindres->data; p; p = p->ai_next)
     n++;
   m_status = lookupDone;
   emit lookupFinished(n);
@@ -2049,7 +2079,8 @@ QList<KAddressInfo> KExtendedSocket::lookup(const QString& host, const QString& 
 					    int flags, int *error)
 {
   int err;
-  addrinfo hint, *res, *p;
+  addrinfo hint, *p;
+  kde_addrinfo *res;
   QList<KAddressInfo> l;
 
   memset(&hint, 0, sizeof(hint));
@@ -2069,7 +2100,7 @@ QList<KAddressInfo> KExtendedSocket::lookup(const QString& host, const QString& 
       return l;
     }
 
-  for (p = res; p; p = p->ai_next)
+  for (p = res->data; p; p = p->ai_next)
     if (valid_family(p, flags))
       {
 	KAddressInfo *ai = new KAddressInfo;
@@ -2091,7 +2122,7 @@ QList<KAddressInfo> KExtendedSocket::lookup(const QString& host, const QString& 
 	l.append(ai);
       }
 
-  freeaddrinfo(res);
+  kde_freeaddrinfo(res);	// this one we know where it came from
   return l;
 }
 

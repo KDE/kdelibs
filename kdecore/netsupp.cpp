@@ -77,6 +77,49 @@
 #define KRF_CAN_RESOLVE_IPV4		0x200	/* if present, the resolver can resolve to IPv4 */
 #define KRF_CAN_RESOLVE_IPV6		0x400	/* if present, the resolver can resolve to IPv6 */
 
+
+static void dofreeaddrinfo(struct addrinfo *ai)
+{
+  while (ai)
+    {
+      struct addrinfo *ai2 = ai;
+      if (ai->ai_canonname != NULL)
+	free(ai->ai_canonname);
+
+      if (ai->ai_addr != NULL)
+	free(ai->ai_addr);
+
+      ai = ai->ai_next;
+      free(ai2);
+    }
+}
+
+void kde_freeaddrinfo(struct kde_addrinfo *ai)
+{
+  if (ai->origin == KAI_LOCALUNIX)
+    {
+      struct addrinfo *p, *last = NULL;
+      for (p = ai->data; p; p = p->ai_next)
+	{
+	  if (p->ai_family == AF_UNIX)
+	    {
+	      if (last)
+		{
+		  last->ai_next = NULL;
+		  freeaddrinfo(ai->data);
+		}
+	      dofreeaddrinfo(p);
+	      break;
+	    }
+	  last = p;
+	}
+    }
+  else
+    freeaddrinfo(ai->data);
+
+  free(ai);
+}
+
 static struct addrinfo*
 make_unix(const char *name, const char *serv)
 {
@@ -127,8 +170,13 @@ make_unix(const char *name, const char *serv)
   return p;
 }
 
-#if KDE_IPV6_LOOKUP_MODE == 1
+// Ugh. I hate #ifdefs
+// Anyways, here's what this does:
+// KDE_IPV6_LOOKUP_MODE != 1, this function doesn't exist
+// AF_INET6 not defined, we say there is no IPv6 stack
+// otherwise, we try to create a socket.
 // returns: 1 for IPv6 stack available, 2 for not available
+#if KDE_IPV6_LOOKUP_MODE == 1
 static int check_ipv6_stack()
 {
 # ifndef AF_INET6
@@ -176,12 +224,21 @@ static int check_ipv6_stack()
  */
 
 int kde_getaddrinfo(const char *name, const char *service,
-		    struct addrinfo* hint,
-		    struct addrinfo** result)
+		    const struct addrinfo* hint,
+		    struct kde_addrinfo** result)
 {
-#if KDE_IPV6_LOOKUP_MODE != 0
-  bool changing_family = false;
+  struct kde_addrinfo* res;
+  struct addrinfo* p, *last;
+  int err;
 
+  // allocate memory for results
+  res = (kde_addrinfo*)malloc(sizeof(*res));
+  if (res == NULL)
+    return EAI_MEMORY;
+  res->data = NULL;
+  res->origin = KAI_SYSTEM;	// at first, it'll be only system data
+
+#if KDE_IPV6_LOOKUP_MODE != 0
 # if KDE_IPV6_LOOKUP_MODE == 1
   // mode 1: do a check on whether we have an IPv6 stack
   static int ipv6_stack = 0;	// 0: unknown, 1: yes, 2: no
@@ -193,60 +250,93 @@ int kde_getaddrinfo(const char *name, const char *service,
 # endif
       // here we have modes 1 and 2 (no lookups)
       // this is shared code
-      if (hint && hint->ai_family == AF_UNSPEC)
+      struct addrinfo our_hint;
+      if (hint != NULL)
 	{
-	  changing_family = true;
-	  const_cast<struct addrinfo *>(hint)->ai_family = AF_INET;
+	  memcpy(&our_hint, hint, sizeof(our_hint));
+	  if (our_hint.ai_family == AF_UNSPEC)
+	    our_hint.ai_family = AF_INET;
 	}
+      else
+	{
+	  memset(&our_hint, 0, sizeof(our_hint));
+	  our_hint.ai_family = AF_INET;
+	}
+
+      // do the actual resolution
+      err = getaddrinfo(name, service, &our_hint, &res->data);
 # if KDE_IPV6_LOOKUP_MODE == 1
     }
 # endif
+#else  // KDE_IPV6_LOOKUP_MODE == 0
+
+  // do the actual resolution
+  err = getaddrinfo(name, service, hint, &res->data);
+
 #endif
 
-  // do it fast!
-  register int err = getaddrinfo(name, service, hint, result);
-
-#if KDE_IPV6_LOOKUP_MODE != 0
-  // We have to set it back the way it was because the calling function
-  // may want this to keep being the same
-  if (changing_family)		// changing_family is only true if hint is non-null
-    const_cast<struct addrinfo *>(hint)->ai_family = AF_UNSPEC;
-#endif
-
-  if (err == 0)
-    return err;
-
-  // an error? Could it be that the user wanted Unix sockets and this
-  // implementation doesn't return it?
+  // Now we have to check whether the user could want a Unix socket
 
   if (service == NULL || *service == '\0')
-    return err;			// can't be Unix if no service was requested
+    goto out;			// can't be Unix if no service was requested
 
   // Unix sockets must be localhost
   // That is, either name is NULL or, if it's not, it must be empty, 
   // "*" or "localhost"
   if (name != NULL && !(name[0] == '\0' || (name[0] == '*' && name[1] == '\0') ||
 			strcmp("localhost", name) == 0))
-    return err;			// isn't localhost
+    goto out;			// isn't localhost
 
   // Unix sockets can only be returned if the user asked for a PF_UNSPEC
-  // or PF_UNIX socket type
+  // or PF_UNIX socket type or gave us a NULL hint
   if (hint != NULL && (hint->ai_family != PF_UNSPEC && hint->ai_family != PF_UNIX))
-    return err;			// user doesn't want Unix
+    goto out;			// user doesn't want Unix
 
   // If we got here, then it means that the user might be expecting Unix
   // sockets. The user wants a local socket, with a non-null service and
   // has told us that they accept PF_UNIX sockets
+
+  // Check whether the system implementation returned Unix
+  if (err == 0)
+    for (p = res->data; p; p = p->ai_next)
+      {
+	last = p;			// we have to find out which one is last anyways
+	if (p->ai_family == AF_UNIX)
+	  // there is an Unix node
+	  goto out;
+      }
+  else
+    last = NULL;
+
   // So, give the user a PF_UNIX socket
-  register struct addrinfo *p = make_unix(NULL, service);
+  p = make_unix(NULL, service);
   if (p == NULL)
-    return EAI_MEMORY;
+    {
+      err = EAI_MEMORY;
+      goto out;
+    }
   if (hint != NULL)
     p->ai_socktype = hint->ai_socktype;
   if (p->ai_socktype == 0)
     p->ai_socktype = SOCK_STREAM; // default
-  *result = p;
+
+  if (last)
+    last->ai_next = p;
+  else
+    res->data = p;
+  res->origin = KAI_LOCALUNIX;
   return 0;
+
+ out:
+  // Normal exit of the function
+  if (err == 0)
+    *result = res;
+  else
+    {
+      freeaddrinfo(res->data);
+      free(res);
+    }
+  return err;
 }
 
 #else  // !defined(HAVE_GETADDRINFO) || defined(HAVE_BROKEN_GETADDRINFO)
@@ -764,20 +854,9 @@ int getaddrinfo(const char *name, const char *serv,
   return make_inet(name, portnum, protonum, p, hint, result);
 }
 
-void freeaddrinfo(struct addrinfo *ai)
+void freeaddrinfo(struct addrinfo *p)
 {
-  while (ai)
-    {
-      struct addrinfo *ai2 = ai;
-      if (ai->ai_canonname != NULL)
-	free(ai->ai_canonname);
-
-      if (ai->ai_addr != NULL)
-	free(ai->ai_addr);
-
-      ai = ai->ai_next;
-      free(ai2);
-    }
+  dofreeaddrinfo(p);
 }
 
 char *gai_strerror(int errorcode)

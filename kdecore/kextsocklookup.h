@@ -52,8 +52,8 @@ public:
   inline bool isWorking() const
   { return workingCount; }
 
-  addrinfo *results();
-  static void freeresults(addrinfo* res);
+  kde_addrinfo *results();
+  static void freeresults(kde_addrinfo* res);
 
 public slots:
   void slotResultsReady()
