@@ -61,7 +61,7 @@ KFM::~KFM()
 
 bool KFM::download(const QString & src, QString & target){
   KURL u (src);
-  if (u.isLocalFile() && !u.hasSubProtocol()){
+  if (u.isLocalFile()){
     // file protocol. We do not need the network
     target = u.path();
     return true;
