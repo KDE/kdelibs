@@ -10,6 +10,6 @@
 <!ENTITY LGM "<acronym>LGM</acronym>">
 <!ENTITY npr "<abbrev>npr.</abbrev>">
 <!ENTITY itd "<abbrev>itd.</abbrev>">
-<!ENTITY slShift "<keycap>slovenianShiftKey</keycap>"> <!-- please adapt both name and contents to Slovenian language!!! -->
-<!ENTITY slCtrl "<keycap>slovenianCtrlKey</keycap>">
-<!ENTITY slAlt "<keycap>slovenianAltKey</keycap>">
+<!ENTITY Shift "<keycap>Shift</keycap>"> <!-- please adapt both name and contents to Slovenian language!!! -->
+<!ENTITY Ctrl "<keycap>Ctrl</keycap>">
+<!ENTITY Alt "<keycap>Alt</keycap>">
