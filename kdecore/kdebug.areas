@@ -111,6 +111,8 @@
 5221        kitchensync (overviewpart)
 5222        kitchensync (organizerpart)
 5223        kitchensync (fileviewpart)
+5300        libkdepim
+5400        calendarsystem
 5500        knotes
 5510        kpilot
 5511        kpilotdaemon
