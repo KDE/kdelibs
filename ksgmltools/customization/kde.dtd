@@ -29,7 +29,7 @@
 
     For instance:
 
-      <!DOCTYPE Book PUBLIC "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN">
+      <!DOCTYPE book PUBLIC "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN">
 
     and use kde.cat as the catalogue file.
 -->
