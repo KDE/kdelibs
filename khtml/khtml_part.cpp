@@ -142,6 +142,8 @@ public:
     m_activeFrame = 0L;
     keepCharset = false;
     m_findDialog = 0;
+    m_ssl_in_use = false;
+    m_last_page_ssl = false;
   }
   ~KHTMLPartPrivate()
   {
@@ -178,6 +180,7 @@ public:
 
   // QStrings for SSL metadata
   bool m_ssl_in_use;
+  bool m_last_page_ssl;
   QString m_ssl_peer_cert_subject,
           m_ssl_peer_cert_issuer,
           m_ssl_peer_ip,
@@ -829,6 +832,19 @@ void KHTMLPart::slotRestoreData(const QByteArray &data )
 
 void KHTMLPart::slotFinished( KIO::Job * job )
 {
+  if (job->error())
+  {
+    KHTMLPageCache::self()->cancelEntry(d->m_cacheId);
+    job->showErrorDialog();
+    d->m_job = 0L;
+    emit canceled( job->errorString() );
+    // TODO: what else ?
+    return;
+  }
+  kdDebug( 6050 ) << "slotFinished" << endl;
+
+  // GS - moved these down here.  we shouldn't change if there was an error,
+  //      should we?
   d->m_ssl_in_use = (d->m_job->queryMetaData("ssl_in_use") == "TRUE");
   d->m_paSecurity->setIcon( d->m_ssl_in_use ? "lock" : "unlock" );
   d->m_ssl_peer_cert_subject = d->m_job->queryMetaData("ssl_peer_cert_subject");
@@ -840,16 +856,7 @@ void KHTMLPart::slotFinished( KIO::Job * job )
   d->m_ssl_cipher_used_bits = d->m_job->queryMetaData("ssl_cipher_used_bits");
   d->m_ssl_cipher_bits = d->m_job->queryMetaData("ssl_cipher_bits");
 
-  if (job->error())
-  {
-    KHTMLPageCache::self()->cancelEntry(d->m_cacheId);
-    job->showErrorDialog();
-    d->m_job = 0L;
-    emit canceled( job->errorString() );
-    // TODO: what else ?
-    return;
-  }
-  kdDebug( 6050 ) << "slotFinished" << endl;
+  d->m_last_page_ssl = d->m_ssl_in_use;
 
   KHTMLPageCache::self()->endData(d->m_cacheId);
 
