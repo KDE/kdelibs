@@ -108,12 +108,16 @@ QPixmap PixmapLoader::pixmap( const QCString& name, const QColor& color, bool di
 	QImage* img = m_cache[ cacheName ];
 	if ( !img ) {
 		img = new QImage( qembed_findImage( name ) );
+		if (img->isNull())
+			return result;
+
 		if ( disabled )
 			makeDisabled( *img, color );
 		else
 			colorize( *img, color );
 		m_cache.insert( cacheName, img );
 	}
+
 	result.convertFromImage( *img );
 	QPixmapCache::insert( cacheName, result );
 	return result;
