@@ -221,7 +221,6 @@ public:
    * Binds the socket to the addresses previously set with @ref setAddress.
    * @overload
    *
-   * @param service	the service
    */
   virtual bool bind();
 
