@@ -7,6 +7,7 @@
 #include "dom/html_form.h"
 #include "dom/html_image.h"
 #include <qclipboard.h>
+#include <qfileinfo.h>
 #include <qpopupmenu.h>
 #include <qmetaobject.h>
 #include <private/qucomextra_p.h>
@@ -423,26 +424,27 @@ void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption,
                                    const QString &filter, long cacheId,
                                    const QString & suggestedFilename )
 {
-  KFileDialog *dlg = new KFileDialog( QString::null, filter, parent, "filedia", true );
-
-  dlg->setKeepLocation( true );
-
-  dlg->setCaption( caption );
-
-  if (!suggestedFilename.isEmpty())
-    dlg->setSelection( suggestedFilename );
-  else if (!url.fileName().isEmpty())
-    dlg->setSelection( url.fileName() );
-  else
-    dlg->setSelection( QString::fromLatin1("index.html") );
-
-  if ( dlg->exec() )
-  {
-    KURL destURL( dlg->selectedURL() );
+  QString name = QString::fromLatin1( "index.html" );
+  if ( !suggestedFilename.isEmpty() )
+    name = suggestedFilename;
+  else if ( !url.fileName().isEmpty() )
+    name = url.fileName();
+  
+  KURL destURL;
+  int query;
+  do {
+    query = KMessageBox::Yes;
+    destURL = KFileDialog::getSaveURL( name, filter, parent, caption );
+      if( destURL.isLocalFile() )
+      {
+        QFileInfo info( destURL.path() );
+        if( info.exists() )
+          query = KMessageBox::warningContinueCancel( parent, i18n( "A file named \"%1\" already exists. " "Are you sure you want to overwrite it?" ).arg( info.fileName() ), i18n( "Overwrite File?" ), i18n( "Overwrite" ) );
+       }
+   } while ( query == KMessageBox::Cancel );
+  
+  if ( !destURL.isMalformed() )
     saveURL(url, destURL, metadata, cacheId);
-  }
-
-  delete dlg;
 }
 
 void KHTMLPopupGUIClient::saveURL( const KURL &url, const KURL &destURL,
