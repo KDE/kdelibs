@@ -420,23 +420,30 @@ int KPrinter::metric(int m) const
 
 	int	val(0);
 	bool	land = (orientation() == KPrinter::Landscape);
+	int	res(m_wrapper->resolution());
 	switch ( m )
 	{
 		case QPaintDeviceMetrics::PdmWidth:
 			val = (land ? m_pagesize.height() : m_pagesize.width());
-			if ( !fullPage() ) val -= 2*margins().width();
+			if ( res != 72 )
+				val = (val * res + 36) / 72;
+			if ( !fullPage() )
+				val -= 2*margins().width();
 			break;
 		case QPaintDeviceMetrics::PdmHeight:
 			val = (land ? m_pagesize.width() : m_pagesize.height());
-			if ( !fullPage() ) val -= 2*margins().height();
+			if ( res != 72 )
+				val = (val * res + 36) / 72;
+			if ( !fullPage() )
+				val -= 2*margins().height();
 			break;
 		case QPaintDeviceMetrics::PdmWidthMM:
 			val = metric( QPaintDeviceMetrics::PdmWidth );
-			val = (val * 254 + 360) / 720; // +360 to get the right rounding
+			val = (val * 254 + 5*res) / (10*res); // +360 to get the right rounding
 			break;
 		case QPaintDeviceMetrics::PdmHeightMM:
 			val = metric( QPaintDeviceMetrics::PdmHeight );
-			val = (val * 254 + 360) / 720;
+			val = (val * 254 + 5*res) / (10*res);
 			break;
 		default:
 			val = m_wrapper->qprinterMetric(m);
