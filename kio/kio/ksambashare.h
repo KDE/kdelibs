@@ -59,6 +59,18 @@ public:
    */ 
   virtual ~KSambaShare();
   
+  /**
+   * Returns the path to the used smb.conf file
+   * or null if no file was found
+   */
+  QString smbConfPath();
+  
+signals:
+  /**
+   * Emitted when the /etc/exports file has changed
+   */
+  void changed();  
+  
 private:
   KSambaShare();
   static KSambaShare* _instance;

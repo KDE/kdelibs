@@ -79,6 +79,7 @@ bool KSambaSharePrivate::findSmbConf() {
   return true;
 }
 
+
 /**
  * Reads all path= entries from the smb.conf file
  * and fills the sharedPaths dict with the values
@@ -174,6 +175,9 @@ KSambaShare::~KSambaShare() {
   delete d;
 }
 
+QString KSambaShare::smbConfPath() {
+  return d->smbConf;
+}
 
 bool KSambaShare::isDirectoryShared( const QString & path ) {
   QString fixedPath = path;
@@ -195,6 +199,8 @@ QStringList KSambaShare::sharedDirectories() {
 void KSambaShare::slotFileChange( const QString & path ) {
   if (path == d->smbConf)
      d->readSmbConf();
+     
+  emit changed();     
 }
 
 KSambaShare* KSambaShare::_instance = 0L; 
