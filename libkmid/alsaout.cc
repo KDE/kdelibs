@@ -179,7 +179,7 @@ void AlsaOut::initDev (void)
   for (chn=0;chn<16;chn++)
   {
     chnmute[chn]=0;
-    chnPatchChange(chn,0);
+    if (chn!=9) chnPatchChange(chn,0);
     chnPressure(chn,64);
     chnPitchBender(chn, 0x00, 0x40);
     chnController(chn, CTL_MAIN_VOLUME,110*volumepercentage);
