@@ -37,3 +37,22 @@ dnl openpty stuff
 AC_CHECK_HEADERS(libutil.h util.h pty.h)
 AC_CHECK_LIB(util, openpty, [AC_DEFINE_UNQUOTED(HAVE_OPENPTY, 1, [Define if you have openpty in -lutil])])
 AC_CHECK_FUNCS(openpty initgroups setgroups getgroups grantpt setpriority getpt unlockpt ptsname )
+
+
+AC_MSG_CHECKING([for struct ucred])
+AC_CACHE_VAL(kde_cv_have_struct_ucred,
+[
+  AC_TRY_COMPILE(
+  [
+    #include <sys/socket.h>
+  ],
+  [
+    struct ucred cred;
+  ], kde_cv_have_struct_ucred=yes,
+  kde_cv_have_struct_ucred=no)
+])
+
+AC_MSG_RESULT($kde_cv_have_struct_ucred)
+if test "$kde_cv_have_struct_ucred" = yes; then
+   AC_DEFINE(HAVE_STRUCT_UCRED,1, [Define if struct ucred is present from sys/socket.h])
+fi

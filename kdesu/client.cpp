@@ -87,7 +87,7 @@ int KDEsuClient::connect()
 	return -1;
     }
 
-#ifndef SO_PEERCRED
+#if !defined(SO_PEERCRED) || !defined(HAVE_STRUCT_UCRED)
 #ifdef __GNUC__
 #warning "Using sloppy security checks"
 #endif
