@@ -1,16 +1,22 @@
-#include <kapp.h>
-#include <klocale.h>
-#include <kcmdlineargs.h>
-#include <kaboutdata.h>
-#include <kdebug.h>
-#include <qtextstream.h>
-#include <smtp.h>
-#include <kconfig.h>
-#include <unistd.h>
+// $Id$
+
 #include <sys/types.h>
 #include <main.h>
 #include <pwd.h>
 #include <stdlib.h>
+#include <unistd.h>
+
+#include <qtextstream.h>
+
+#include <kapp.h>
+#include <kemailsettings.h>
+#include <klocale.h>
+#include <kcmdlineargs.h>
+#include <kaboutdata.h>
+#include <kdebug.h>
+#include <kconfig.h>
+
+#include <smtp.h>
 
 static KCmdLineOptions options[] = {
     { "subject <argument>", I18N_NOOP("Subject line"), 0 },
@@ -80,10 +86,16 @@ int main(int argc, char **argv) {
     }
     kdDebug() << text << endl;
 
-    KConfig emailConf( QString::fromLatin1("emaildefaults") );
-    emailConf.setGroup( QString::fromLatin1("UserInfo") );
-    QString fromaddr = emailConf.readEntry( QString::fromLatin1("EmailAddress") );
-    if (fromaddr.isEmpty()) {
+    KEMailSettings emailConfig;
+    emailConfig.setProfile(emailConfig.defaultProfileName());
+    QString fromaddr = emailConfig.getSetting(KEMailSettings::EmailAddress);
+    if (!fromaddr.isEmpty()) {
+        if (!emailConfig.getSetting(KEMailSettings::RealName).isEmpty()) {
+            fromaddr.append(" <");
+            fromaddr.append(emailConfig.getSetting(KEMailSettings::RealName));
+            fromaddr.append(">");
+        }
+    } else {
         struct passwd *p;
         p = getpwuid(getuid());
         fromaddr = QString::fromLatin1(p->pw_name);
@@ -91,14 +103,11 @@ int main(int argc, char **argv) {
         char buffer[200];
         gethostname(buffer, 200);
         fromaddr += buffer;
-    } else {
-        QString name = emailConf.readEntry( QString::fromLatin1("FullName"));
-        if (!name.isEmpty())
-            fromaddr = name + QString::fromLatin1(" <") + fromaddr + QString::fromLatin1(">");
     }
 
-    emailConf.setGroup( QString::fromLatin1("ServerInfo") );
-    QString  server = emailConf.readEntry(QString::fromLatin1("Outgoing"), "bugs.kde.org");
+    QString  server = emailConfig.getSetting(KEMailSettings::OutServer);
+    if (server.isEmpty())
+        server=QString::fromLatin1("bugs.kde.org");
 
     SMTP sm;
     BugMailer bm(&sm);

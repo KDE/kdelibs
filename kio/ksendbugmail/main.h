@@ -1,7 +1,8 @@
 #ifndef BUG_MAILER_H
-#define BUG_MAILER_H
+#define BUG_MAILER_H "$Id$"
 
 #include <qobject.h>
+
 class SMTP;
 
 class BugMailer : public QObject {
