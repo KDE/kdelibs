@@ -189,6 +189,24 @@ void KCMultiDialog::addModule(const KCModuleInfo& moduleinfo, bool withfallback)
     }
 }
 
+void KCMultiDialog::removeModule( const KCModuleInfo& moduleinfo )
+{
+    kdDebug( 1208 ) << k_funcinfo << moduleinfo.moduleName() << endl;
+    QPtrDictIterator<LoadInfo> it( moduleDict );
+    for( ; it.current(); ++it )
+    {
+        if( it.current()->info == moduleinfo )
+        {
+            kdDebug( 1208 ) << "found module to remove" << endl;
+            QWidget * page = ( QWidget* )it.currentKey();
+            delete it.current();
+            moduleDict.remove( page );
+            delete page;
+            break;
+        }
+    }
+}
+
 void KCMultiDialog::slotAboutToShow(QWidget *page)
 {
     LoadInfo *loadInfo = moduleDict[page];

@@ -100,6 +100,11 @@ public:
      **/
     void addModule(const KCModuleInfo& moduleinfo, bool withfallback=false);
 
+    /**
+     * Remove a module from the dialog.
+     */
+    void removeModule( const KCModuleInfo& moduleinfo );
+
 signals:
     void configCommitted( const QCString & instanceName );
 
