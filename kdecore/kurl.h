@@ -162,7 +162,7 @@ public:
 
   /**
    * @return true if the url is malformed. This function does NOT test
-   *         wether suburls are wellformed, too.
+   *         whether suburls are wellformed, too.
    */
   bool isMalformed() const  { return m_bIsMalformed; }
 
@@ -175,9 +175,9 @@ public:
    * @return true if the file has at least one sub URL.
    *         Use @ref split to get the sub URLs.
    *
-   * The function test wether the protocol is a filter protocol and wether
+   * The function test whether the protocol is a filter protocol and whether
    * the reference is not empty. For performance reasons it does NOT test
-   * wether the reference is in turn a well formed URL.
+   * whether the reference is in turn a well formed URL.
    *
    * @see #isFilterProtocol
    */
@@ -272,7 +272,7 @@ public:
    * One more example: tar:/#gzip:/decompress#tar:/dir/x.tgz#gzip:/decompress#http://www/my.tgz
    * will be returned as tar:/dir#gzip:/decompress#http://www/my.tgz.
    *
-   * @param _zapRef tells wether the HTML style reference should be stripped
+   * @param _zapRef tells whether the HTML style reference should be stripped
    */
   KURL upURL( bool _zapRef = TRUE ) const;
   
