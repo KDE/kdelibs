@@ -134,6 +134,16 @@ class kdbgstream {
         QString tmp; tmp.setNum(i); output += tmp;
         return *this;
     }                                                                             
+    kdbgstream &operator<<(long i) {
+        if (!print) return *this;
+        QString tmp; tmp.setNum(i); output += tmp;
+        return *this;
+    }                                                                             
+    kdbgstream &operator<<(unsigned long i) {
+        if (!print) return *this;
+        QString tmp; tmp.setNum(i); output += tmp;
+        return *this;
+    }                                                                             
     void flush();
     kdbgstream &operator<<(const QString& string) {
 	if (!print) return *this;
@@ -191,6 +201,8 @@ class kndbgstream {
     kndbgstream &operator<<(const char *) { return *this; }
     kndbgstream& operator<<(void *) { return *this; }
     kndbgstream& operator<<(double) { return *this; }
+    kndbgstream& operator<<(long) { return *this; }
+    kndbgstream& operator<<(unsigned long) { return *this; }
     kndbgstream& operator<<(KNDBGFUNC) { return *this; }
     kndbgstream& operator << (QWidget*) { return *this; }
     kndbgstream &form(const char *, ...) { return *this; }
