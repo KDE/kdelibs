@@ -767,7 +767,6 @@ void MidiPlayer::play(bool calloutput,void output(void))
 #ifdef PLAYERDEBUG
   printf("Syncronizing ...\n");
 #endif
-  midi->allNotesOff();
   if (halt) 
     midi->sync(1);
   else 
@@ -775,6 +774,7 @@ void MidiPlayer::play(bool calloutput,void output(void))
 #ifdef PLAYERDEBUG
   printf("Closing device ...\n");
 #endif
+  midi->allNotesOff();
   midi->closeDev();
   ctl->playing=0;
 #ifdef PLAYERDEBUG
