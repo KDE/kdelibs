@@ -45,6 +45,9 @@
 //-------------------------------------------------------------------------
 // $Id$
 // $Log$
+// Revision 1.63  1998/05/05 16:53:31  radej
+// This damned opaque moving...
+//
 // Revision 1.62  1998/05/04 16:38:19  radej
 // Revision 1.64  1998/05/07 23:12:30  radej
 // Fix for optional highlighting of handle
@@ -904,7 +907,7 @@ void KToolBar::paintEvent(QPaintEvent *)
   {
     // Took higlighting handle from kmenubar - sven 040198
     QBrush b;
-    if (mouseEntered)
+    if (mouseEntered && highlight)
       b = kapp->selectColor; // this is much more logical then
                             // the hardwired value used before!!
     else
