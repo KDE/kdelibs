@@ -27,7 +27,7 @@
 #include <qlist.h>
 #include <kurl.h>
 #include <qmap.h>
-#include "kmobject.h"
+#include <kdeprint/kmobject.h>
 
 class KMDBEntry;
 class DrMain;
