@@ -2769,7 +2769,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
   if ( child->m_extension )
     child->m_extension->setURLArgs( child->m_args );
 
-  if(url.protocol() == "javascript") {
+  if(url.protocol() == "javascript" || url.url() == "about:blank") {
       if (!child->m_part->inherits("KHTMLPart"))
           return false;
 
@@ -2777,20 +2777,10 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
 
       p->begin();
       p->m_url = url;
-      p->write(url.path());
-      p->end();
-      return true;
-  }
-  else if ( url.url() == "about:blank" )
-  {
-      if (!child->m_part->inherits("KHTMLPart"))
-          return false;
-
-      KHTMLPart* p = static_cast<KHTMLPart*>(static_cast<KParts::ReadOnlyPart *>(child->m_part));
-
-      p->begin();
-      p->m_url = "";
-      p->write(""); // Tried <HTML></HTML> too, still no luck
+      if (!url.url().startsWith("about:"))
+        p->write(url.path());
+      if (d->m_doc && p->d->m_doc)
+        p->d->m_doc->setBaseURL(d->m_doc->baseURL());
       p->end();
       return true;
   }
@@ -2904,7 +2894,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
 					i18n("Warning: Your data is about to be transmitted across the network unencrypted."
 					"\nAre you sure you wish to continue?"),
 					i18n("KDE"),
-					QString::null,
+                                                                    QString::null,
 					"WarnOnUnencryptedForm");
 			// Move this setting into KSSL instead
 			KConfig *config = kapp->config();
