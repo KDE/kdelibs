@@ -8,6 +8,7 @@
 
 #include "kinstance.h"
 #include "classpreviews.h"
+#include "kactivelabel.h"
 #include "kcmodule.h"
 #include "kcharselect.h"
 #include "kcolorbutton.h"
@@ -95,6 +96,14 @@ private:
 KDEWidgetsPlugin::KDEWidgetsPlugin()
 {
 	WidgetInfo widget;
+
+	widget.group = "Display (KDE)";
+	widget.iconSet = "kactivelabel.png";
+	widget.includeFile = "kactivelabel.h";
+	widget.toolTip = "Active Label (KDE)";
+	widget.whatsThis = "KActiveLabel";
+	widget.isContainer = false;
+	m_widgets.insert("KActiveLabel", widget);
 
 	widget.group = "Container (KDE)";
 	widget.iconSet = "kcmodule.png";
@@ -337,6 +346,8 @@ KDEWidgetsPlugin::~KDEWidgetsPlugin()
 
 QWidget *KDEWidgetsPlugin::create(const QString &key, QWidget *parent, const char *name)
 {
+	if (key == "KActiveLabel")
+		return new KActiveLabel(parent, name);
 	if (key == "KCModule")
 		return new KCModule(parent, name);
 	if (key == "KCharSelect")
