@@ -1,3 +1,11 @@
+kdelibs (4:2.2-cvs20010628-1) unstable; urgency=low
+
+  * more upstream fixes
+  * Fix mips build (Closes: #102007)
+  * Fix postinst stuff
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 28 Jun 2001 15:30:00 -0700
+
 kdelibs (4:2.2-cvs20010622-1) unstable; urgency=low
 
   * New upstream CVS pull (post alpha2)

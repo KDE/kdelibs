@@ -14,12 +14,14 @@ case "$1" in
 		/usr/sbin/update-alternatives --install /usr/lib/libkssl.so.2.0.2 libkssl.so.2.0.2 /usr/lib/libkssl-nossl.so.2.0.2 40
 	fi
       if [ -e /usr/share/doc/kde/HTML/default -a ! -L /usr/share/doc/kde/HTML/default ]; then
-        mv /usr/share/doc/kde/HTML/default/* /usr/share/doc/kde/HTML/en >/dev/null 2>&1
-        rm -rf /usr/share/doc/kde/HTML/default > /dev/null 2>&1
-        ln -s /usr/share/doc/kde/HTML/en /usr/share/doc/kde/HTML/default > /dev/null 2>&1
+        mv /usr/share/doc/kde/HTML/default/* /usr/share/doc/kde/HTML/en 
+        rm -rf /usr/share/doc/kde/HTML/default 
+        ln -s /usr/share/doc/kde/HTML/en /usr/share/doc/kde/HTML/default 
       fi
       if [ ! -e /usr/share/doc/kde/HTML/default ]; then
-         ln -s /usr/share/doc/kde/HTML/en /usr/share/doc/kde/HTML/default > /dev/null 2>&1
+         if [ -e /usr/share/doc/kde/HTML/en ]; then
+           ln -s /usr/share/doc/kde/HTML/en /usr/share/doc/kde/HTML/default 
+         fi
       fi
     ;;
 
