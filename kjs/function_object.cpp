@@ -23,8 +23,6 @@
 #include "nodes.h"
 #include "error_object.h"
 
-extern int kjsyyparse();
-
 using namespace KJS;
 
 FunctionObject::FunctionObject(const Object& funcProto)
@@ -57,14 +55,8 @@ Object FunctionObject::construct(const List &args)
     body = args[argsSize-1].toString().value();
   }
 
-  Lexer::curr()->setCode(body.data(), body.size());
-
-  KJScriptImp::current()->pushStack();
-  int yp = kjsyyparse();
-  ProgramNode *progNode = KJScriptImp::current()->progNode();
-  KJScriptImp::current()->popStack();
-  if (yp) {
-    /* TODO: free nodes */
+  ProgramNode *progNode = Parser::parse(body.data(), body.size());
+  if (!progNode) {
     return ErrorObject::create(SyntaxError,
 			       I18N_NOOP("Syntax error in function body"), -1);
   }

@@ -189,6 +189,9 @@ namespace KJS {
     LabelStack(): tos(0L) {}
     ~LabelStack();
 
+    LabelStack(const LabelStack &other);
+    LabelStack &operator=(const LabelStack &other);
+
     /**
      * If id is not empty and is not in the stack already, puts it on top of
      * the stack and returns true, otherwise returns false
@@ -203,12 +206,13 @@ namespace KJS {
      */
     void pop();
   private:
-    struct StackElm {
+    struct StackElem {
       UString id;
-      StackElm *prev;
+      StackElem *prev;
     };
 
-    StackElm *tos;
+    StackElem *tos;
+    void clear();
   };
 
   /**
@@ -278,16 +282,11 @@ namespace KJS {
     FunctionImp *func;
   };
 
-  class ExecutionStack {
+  class Parser {
   public:
-    ExecutionStack();
-    ExecutionStack *push();
-    ExecutionStack *pop();
-
-    ProgramNode *progNode;
-    Node *firstNode;
-  private:
-    ExecutionStack *prev;
+    static ProgramNode *parse(const UChar *code, unsigned int length,
+			      int *errType = 0, int *errLine = 0, UString *errMsg = 0);
+    static ProgramNode *progNode;
   };
 
   class KJScriptImp {
@@ -343,15 +342,8 @@ namespace KJS {
 	      const List &args, const List &extraScope);
 
   public:
-    ProgramNode *progNode() const { return stack->progNode; }
-    void setProgNode(ProgramNode *p) { stack->progNode = p; }
-    Node *firstNode() const { return stack->firstNode; }
-    void setFirstNode(Node *n) { stack->firstNode = n; }
-    void pushStack();
-    void popStack();
     KJScriptImp *next, *prev;
     KJScript *scr;
-    ExecutionStack *stack;
 
     static void initGlobal(Imp *global);
     KJSO globalObject() { return glob; }
@@ -360,9 +352,6 @@ namespace KJS {
     KJSO functionPrototype() const;
 
   private:
-    ProgramNode *progN;
-    Node *firstN;
-
     static KJScriptImp *curr, *hook;
     static int instances; // total number of instances
     static int running;	// total number running

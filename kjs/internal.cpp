@@ -61,6 +61,8 @@ const TypeInfo CompletionImp::info = { "Completion", CompletionType, 0, 0, 0 };
 const TypeInfo ReferenceImp::info = { "Reference", ReferenceType, 0, 0, 0 };
 const TypeInfo ArgumentsImp::info = { "Arguments", ArgumentsType, &ObjectImp::info, 0, 0 };
 
+// ------------------------------ UndefinedImp ---------------------------------
+
 UndefinedImp *UndefinedImp::staticUndefined = 0;
 
 UndefinedImp::UndefinedImp()
@@ -91,6 +93,8 @@ Object UndefinedImp::toObject() const
 {
   return Error::createObject(TypeError, I18N_NOOP("Undefined value"));
 }
+
+// ------------------------------ NullImp --------------------------------------
 
 NullImp *NullImp::staticNull = 0;
 
@@ -123,6 +127,8 @@ Object NullImp::toObject() const
   return Error::createObject(TypeError, I18N_NOOP("Null value"));
 }
 
+// ------------------------------ BooleanImp -----------------------------------
+
 BooleanImp* BooleanImp::staticTrue = 0;
 BooleanImp* BooleanImp::staticFalse = 0;
 
@@ -150,6 +156,8 @@ Object BooleanImp::toObject() const
 {
   return Object::create(BooleanClass, Boolean((BooleanImp*)this));
 }
+
+// ------------------------------ NumberImp ------------------------------------
 
 NumberImp::NumberImp(double v)
   : val(v)
@@ -183,6 +191,8 @@ Object NumberImp::toObject() const
   return Object::create(NumberClass, Number((NumberImp*)this));
 }
 
+// ------------------------------ StringImp ------------------------------------
+
 StringImp::StringImp(const UString& v)
   : val(v)
 {
@@ -213,6 +223,8 @@ Object StringImp::toObject() const
   return Object::create(StringClass, String((StringImp*)this));
 }
 
+// ------------------------------ ReferenceImp ---------------------------------
+
 ReferenceImp::ReferenceImp(const KJSO& b, const UString& p)
   : base(b), prop(p)
 {
@@ -225,6 +237,8 @@ void ReferenceImp::mark(Imp*)
   if (im && !im->marked())
     im->mark();
 }
+
+// ------------------------------ CompletionImp --------------------------------
 
 CompletionImp::CompletionImp(Compl c, const KJSO& v, const UString& t)
   : comp(c), val(v), tar(t)
@@ -239,6 +253,8 @@ void CompletionImp::mark(Imp*)
     im->mark();
 }
 
+// ------------------------------ RegExpImp ------------------------------------
+
 RegExpImp::RegExpImp()
   : ObjectImp(RegExpClass), reg(0L)
 {
@@ -248,6 +264,96 @@ RegExpImp::~RegExpImp()
 {
   delete reg;
 }
+
+// ------------------------------ Reference ------------------------------------
+
+Reference::Reference(const KJSO& b, const UString &p)
+  : KJSO(new ReferenceImp(b, p))
+{
+}
+
+Reference::~Reference()
+{
+}
+
+// ------------------------------ LabelStack -----------------------------------
+
+LabelStack::LabelStack(const LabelStack &other)
+{
+  tos = 0;
+  *this = other;
+}
+
+LabelStack &LabelStack::operator=(const LabelStack &other)
+{
+  clear();
+  tos = 0;
+  StackElem *cur = 0;
+  StackElem *se = other.tos;
+  while (se) {
+    StackElem *newPrev = new StackElem;
+    newPrev->prev = 0;
+    newPrev->id = se->id;
+    if (cur)
+      cur->prev = newPrev;
+    else
+      tos = newPrev;
+    cur = newPrev;
+    se = se->prev;
+  }
+  return *this;
+}
+
+bool LabelStack::push(const UString &id)
+{
+  if (id.isEmpty() || contains(id))
+    return false;
+
+  StackElem *newtos = new StackElem;
+  newtos->id = id;
+  newtos->prev = tos;
+  tos = newtos;
+  return true;
+}
+
+bool LabelStack::contains(const UString &id) const
+{
+  if (id.isEmpty())
+    return true;
+
+  for (StackElem *curr = tos; curr; curr = curr->prev)
+    if (curr->id == id)
+      return true;
+
+  return false;
+}
+
+void LabelStack::pop()
+{
+  if (tos) {
+    StackElem *prev = tos->prev;
+    delete tos;
+    tos = prev;
+  }
+}
+
+LabelStack::~LabelStack()
+{
+  clear();
+}
+
+void LabelStack::clear()
+{
+  StackElem *prev;
+
+  while (tos) {
+    prev = tos->prev;
+    delete tos;
+    tos = prev;
+  }
+}
+
+// ------------------------------ Context --------------------------------------
 
 // ECMA 10.2
 Context::Context(CodeType type, Context *callingContext,
@@ -346,12 +452,7 @@ List* Context::copyOfChain()
   return scopeChain->copy();
 }
 
-
-AnonymousFunction::AnonymousFunction()
-  : Function(0L)
-{
-  /* TODO */
-}
+// ------------------------------ DeclaredFunctionImp --------------------------
 
 DeclaredFunctionImp::DeclaredFunctionImp(const UString &n,
 					 FunctionBodyNode *b, const List *sc)
@@ -362,6 +463,7 @@ DeclaredFunctionImp::DeclaredFunctionImp(const UString &n,
 DeclaredFunctionImp::~DeclaredFunctionImp()
 {
   delete scopes;
+  delete body;
 }
 
 // step 2 of ECMA 13.2.1. rest in FunctionImp::executeCall()
@@ -378,7 +480,8 @@ Completion DeclaredFunctionImp::execute(const List &)
   }
 #endif
 
-  Completion result = body->execute();
+  // ### use correct script & context
+  Completion result = body->execute(KJScriptImp::current(),Context::current());
 
 #ifdef KJS_DEBUGGER
   if (dbg) {
@@ -412,7 +515,16 @@ Object DeclaredFunctionImp::construct(const List &args)
 
 void DeclaredFunctionImp::processVarDecls()
 {
-  body->processVarDecls();
+  // ### use given script & context
+  body->processVarDecls(KJScriptImp::current(),Context::current());
+}
+
+// ------------------------------ AnonymousFunction ----------------------------
+
+AnonymousFunction::AnonymousFunction()
+  : Function(0L)
+{
+  /* TODO */
 }
 
 Completion AnonymousFunction::execute(const List &)
@@ -435,6 +547,8 @@ ArgumentsImp::ArgumentsImp(FunctionImp *func, const List *args)
     }
   }
 }
+
+// ------------------------------ ActivationImp --------------------------------
 
 const TypeInfo ActivationImp::info = { "Activation", ActivationType, 0, 0, 0 };
 
@@ -459,26 +573,45 @@ void ActivationImp::cleanup()
     func->popArgs();
 }
 
-ExecutionStack::ExecutionStack()
-  : progNode(0L), firstNode(0L), prev(0)
+// ------------------------------ Parser ---------------------------------------
+
+ProgramNode *Parser::progNode = 0;
+
+ProgramNode *Parser::parse(const UChar *code, unsigned int length,
+			   int *errType, int *errLine, UString *errMsg)
 {
+
+  assert(Lexer::curr());
+  Lexer::curr()->setCode(code, length);
+  progNode = 0;
+  int parseError = kjsyyparse();
+  ProgramNode *prog = progNode;
+  progNode = 0;
+
+  //  Node::setFirstNode(firstNode());
+  //  setFirstNode(Node::firstNode());
+
+  if (parseError) {
+    // ###
+    int eline = Lexer::curr()->lineNo();
+    if (errType)
+      *errType = 99; /* TODO */
+    if (errLine)
+      *errLine = eline;
+    if (errMsg)
+      *errMsg = "Parse error at line " + UString::from(eline);
+#ifndef NDEBUG
+    fprintf(stderr, "KJS: JavaScript parse error at line %d.\n", eline);
+#endif
+    if (prog)
+      delete prog;
+    return 0;
+  }
+
+  return prog;
 }
 
-ExecutionStack* ExecutionStack::push()
-{
-  ExecutionStack *s = new ExecutionStack();
-  s->prev = this;
-
-  return s;
-}
-
-ExecutionStack* ExecutionStack::pop()
-{
-  ExecutionStack *s = prev;
-  delete this;
-
-  return s;
-}
+// ------------------------------ KJScriptImp ----------------------------------
 
 KJScriptImp* KJScriptImp::curr = 0L;
 KJScriptImp* KJScriptImp::hook = 0L;
@@ -500,7 +633,6 @@ KJScriptImp::KJScriptImp(KJScript *s, KJSO global)
   if (instances == 1)
     globalInit();
   glob = global;
-  stack = new ExecutionStack();
   clearException();
   lex = new Lexer();
 }
@@ -517,9 +649,6 @@ KJScriptImp::~KJScriptImp()
 
   delete lex;
   lex = 0L;
-
-  delete stack;
-  stack = 0L;
 
   KJScriptImp::curr = 0L;
   // are we the last of our kind ? Free global stuff.
@@ -587,8 +716,6 @@ void KJScriptImp::init()
       glob = new GlobalImp();
     initGlobal(glob.imp());
     con = new Context();
-    firstN = 0L;
-    progN = 0L;
     recursion = 0;
     errMsg = "";
     initialized = true;
@@ -609,11 +736,6 @@ void KJScriptImp::clear()
   KJScriptImp *old = curr;
   if (initialized) {
     KJScriptImp::curr = this;
-
-    Node::setFirstNode(firstNode());
-    Node::deleteAllNodes();
-    setFirstNode(0L);
-    setProgNode(0L);
 
     clearException();
     retVal = 0L;
@@ -656,30 +778,15 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, const KJSO &t
 #ifndef NDEBUG
     fprintf(stderr, "KJS: entering recursion level %d\n", recursion);
 #endif
-    pushStack();
   }
 
-  assert(Lexer::curr());
-  Lexer::curr()->setCode(code, length);
-  Node::setFirstNode(firstNode());
-  int parseError = kjsyyparse();
-  setFirstNode(Node::firstNode());
 
-  if (parseError) {
-    errType = 99; /* TODO */
-    errLine = Lexer::curr()->lineNo();
-    errMsg = "Parse error at line " + UString::from(errLine);
-#ifndef NDEBUG
-    fprintf(stderr, "KJS: JavaScript parse error at line %d.\n", errLine);
-#endif
-    /* TODO: either clear everything or keep previously
-       parsed function definitions */
-    //    Node::deleteAllNodes();
+  ProgramNode *progNode = Parser::parse(code,length,&errType,&errLine,&errMsg);
+  if (!progNode)
     return false;
-  }
 
   if (onlyCheckSyntax)
-      return true;
+    return true;
 
   clearException();
 
@@ -693,8 +800,8 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, const KJSO &t
 
   running++;
   recursion++;
-  assert(progNode());
-  Completion res = progNode()->execute();
+  // ### use correct script & context
+  Completion res = progNode->execute(this,Context::current());
   recursion--;
   running--;
 
@@ -725,25 +832,9 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, const KJSO &t
     context()->setVariableObject(oldVar);
   }
 
-  if (progNode())
-    progNode()->deleteGlobalStatements();
-
-  if (recursion > 0) {
-    popStack();
-  }
+  delete progNode;
 
   return !errType;
-}
-
-void KJScriptImp::pushStack()
-{
-    stack = stack->push();
-}
-
-void KJScriptImp::popStack()
-{
-    stack = stack->pop();
-    assert(stack);
 }
 
 bool KJScriptImp::call(const KJSO &scope, const UString &func, const List &args)
@@ -933,6 +1024,8 @@ bool KJScriptImp::setBreakpoint(int id, int line, bool set)
 
 #endif
 
+// ------------------------------ PropList -------------------------------------
+
 bool PropList::contains(const UString &name)
 {
   PropList *p = this;
@@ -944,49 +1037,7 @@ bool PropList::contains(const UString &name)
   return false;
 }
 
-bool LabelStack::push(const UString &id)
-{
-  if (id.isEmpty() || contains(id))
-    return false;
-
-  StackElm *newtos = new StackElm;
-  newtos->id = id;
-  newtos->prev = tos;
-  tos = newtos;
-  return true;
-}
-
-bool LabelStack::contains(const UString &id) const
-{
-  if (id.isEmpty())
-    return true;
-
-  for (StackElm *curr = tos; curr; curr = curr->prev)
-    if (curr->id == id)
-      return true;
-
-  return false;
-}
-
-void LabelStack::pop()
-{
-  if (tos) {
-    StackElm *prev = tos->prev;
-    delete tos;
-    tos = prev;
-  }
-}
-
-LabelStack::~LabelStack()
-{
-  StackElm *prev;
-
-  while (tos) {
-    prev = tos->prev;
-    delete tos;
-    tos = prev;
-  }
-}
+// -----------------------------------------------------------------------------
 
 // ECMA 15.3.5.3 [[HasInstance]]
 // see comment in header file

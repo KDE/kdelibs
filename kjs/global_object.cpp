@@ -35,8 +35,6 @@
 #include "object_object.h"
 #include "function_object.h"
 
-extern int kjsyyparse();
-
 using namespace KJS;
 
 const TypeInfo GlobalImp::info = { "global", GlobalType, &ObjectImp::info, 0, 0 };
@@ -173,17 +171,14 @@ Completion GlobalFunc::execute(const List &args)
       return Completion(ReturnValue, x);
     else {
       UString s = x.toString().value();
-      Lexer::curr()->setCode(s.data(), s.size());
-      Node::setFirstNode(KJScriptImp::current()->firstNode());      
-      int yp = kjsyyparse();
-      KJScriptImp::current()->setFirstNode(Node::firstNode());
-      if (yp) {
-	// TODO: stop this from growing (will be deleted at end of global eval)
-	//	KJS::Node::deleteAllNodes();
-	return Completion(ReturnValue, Error::create(SyntaxError));
-      }
 
-      Completion c = KJScriptImp::current()->progNode()->execute();
+      ProgramNode *progNode = Parser::parse(s.data(),s.size());
+      if (!progNode)
+	return Completion(ReturnValue, Error::create(SyntaxError));
+
+      // ### use correct script & context
+      Completion c = progNode->execute(KJScriptImp::current(),Context::current());
+      delete progNode;
       if (c.complType() == ReturnValue)
 	  return c;
       else if (c.complType() == Normal) {
@@ -193,9 +188,6 @@ Completion GlobalFunc::execute(const List &args)
 	      return Completion(ReturnValue, Undefined());
       } else
 	  return c;
-
-      //      if (KJS::Node::progNode())
-      //	KJS::Node::progNode()->deleteStatements();
     }
   } else if (id == ParseInt) {
     String str = args[0].toString();

@@ -106,15 +106,6 @@ UString String::value() const
   return ((StringImp*)rep)->value();
 }
 
-Reference::Reference(const KJSO& b, const UString &p)
-  : KJSO(new ReferenceImp(b, p))
-{
-}
-
-Reference::~Reference()
-{
-}
-
 Completion::Completion(Imp *d) : KJSO(d) { }
 
 Completion::Completion(Compl c)
