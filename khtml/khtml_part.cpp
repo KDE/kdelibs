@@ -1591,7 +1591,7 @@ void KHTMLPart::slotFinished( KIO::Job * job )
 
   d->m_workingURL = KURL();
 
-  if (d->m_doc->parsing())
+  if ( d->m_doc && d->m_doc->parsing())
     end(); //will emit completed()
 }
 
