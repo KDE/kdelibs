@@ -267,24 +267,36 @@ public:
     virtual int containingBlockHeight() const;
 
     // the size of the content area
+    // ### DOCUMENT ME:
+    // - absolute or relative coordinates?
+    // - how affect paddings, margins and borders the result of these funcs?
+    // - are there objects that return illegal values?
     virtual QSize contentSize() const;
     virtual short contentWidth() const { return 0; }
     virtual int contentHeight() const { return 0; }
 
     // Intrinsic size of replaced element
+    // DOCUMENT ME:
+    // - what does intrinsic mean?
+    // - what's the difference to the regular width() function?
+    // - when are these values set/changed? (resize, dhtml...)
     virtual short intrinsicWidth() const { return 0; }
     virtual int intrinsicHeight() const { return 0; }
 
 
     // the offset of the contents relative to the box borders (basically border+padding)
+    // DOCUMENT ME:
+    // - is box border == containing block border?
     virtual QSize contentOffset() const;
     // the size of the content + padding
     virtual QSize paddingSize() const;
     // the size of the box (including padding and border)
     virtual QSize size() const;
 
-    virtual void setPos( int /*xPos*/, int /*yPos*/ ) { }
 
+    // DOCUMENT ME:
+    // relative to what?
+    virtual void setPos( int /*xPos*/, int /*yPos*/ ) { }
     virtual void setSize( int /*width*/, int /*height*/ ) { }
     virtual void setWidth( int /*width*/ ) { }
     virtual void setHeight( int /*height*/ ) { }
@@ -299,6 +311,8 @@ public:
      */
     virtual int yPos() const { return 0; }
    
+    // ### DOCUMENT ME:
+    // - what does the bool fixed mean?
     virtual bool absolutePosition(int &/*xPos*/, int &/*yPos*/, bool fixed = false);
 
     // width and height are without margins but include paddings and borders
@@ -352,7 +366,12 @@ public:
     virtual bool containsSpecial() { return false; }
     virtual bool hasOverhangingFloats() { return false; }
 
+    // ### DOCUMENT ME:
+    // - difference between height() and bidiHeight()
+    // - behaviour on floats
     virtual int bidiHeight() const { return 0; }
+    // ### DOCUMENT ME:
+    // - what at all?
     virtual void position(int, int, int, int, int, bool, bool) {}
 
     enum SelectionState {
@@ -366,10 +385,24 @@ public:
     virtual SelectionState selectionState() const { return SelectionNone;}
     virtual void setSelectionState(SelectionState) {}
 
+    // ### DOCUMENT ME:
+    // - relative to what?
+    // - parameter meanings
     virtual void cursorPos(int /*offset*/, int &/*_x*/, int &/*_y*/, int &/*height*/);
 
+    /**
+     * called by the dom node. affects rendering so that the next call
+     * to print() adds an activation. ActivationPassive indicates that
+     * the keyboard cursor is over the associated dom node, while
+     * DOM::ActivationActive means that the activating key is
+     * currently pressed.
+     */
     virtual void setKeyboardFocus(DOM::ActivationState b=DOM::ActivationPassive);// { hasKeyboardFocus=b; };
 
+
+    // DOCUMENT ME: 
+    // - lowest value or highest value?
+    // - relative or absolute?
     virtual int lowestPosition() const {return 0;}
 
     CachedImage *backgroundImage() const { return m_bgImage; }
@@ -377,9 +410,14 @@ public:
 protected:
     virtual void selectionStartEnd(int& spos, int& epos);
 
+    // ## DOCUMENT ME:
+    // - where is it called from ?
+    // meaning of parameters
     virtual void printBoxDecorations(QPainter* /*p*/, int /*_x*/, int /*_y*/,
                                      int /*_w*/, int /*_h*/, int /*_tx*/, int /*_ty*/) {}
 
+    // relative or absolute?
+    // behaviour of floated objects?
     virtual QRect viewRect() const;
 
 private:
