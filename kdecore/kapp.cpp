@@ -400,7 +400,8 @@ bool KApplication::requestShutDown()
     // open a temporary connection, if possible
 
     propagateSessionManager();
-    if (!::getenv("SESSION_MANAGER") )
+    QCString smEnv = ::getenv("SESSION_MANAGER");
+    if (smEnv.isEmpty())
 	return FALSE;
 
     char cerror[256];
@@ -426,7 +427,8 @@ void KApplication::propagateSessionManager()
 {
     QCString fName = ::getenv("HOME");
     fName += "/.KSMserver";
-    bool check = !::getenv("SESSION_MANAGER");
+    QCString smEnv = ::getenv("SESSION_MANAGER");
+    bool check = smEnv.isEmpty();
     if ( !check && smModificationTime ) {
 	 QFileInfo info( fName );
 	 QTime current = info.lastModified().time();
