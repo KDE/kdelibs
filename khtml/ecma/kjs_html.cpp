@@ -488,8 +488,21 @@ KJSO *KJS::HTMLCollection::get(const CString &p) const
     result = new HTMLCollectionFunc(collection, HTMLCollectionFunc::Item);
   else if (p == "namedItem")
     result = new HTMLCollectionFunc(collection, HTMLCollectionFunc::NamedItem);
-  else
-    result = new KJSUndefined();
+  else {
+    DOM::Node node;
+    DOM::HTMLElement element;
+    unsigned long u;
+
+    // name or index ?
+    int ret = sscanf(p.ascii(), "%lu", &u);
+    if (ret)
+      node = collection.item(u);
+    else
+      node = collection.namedItem(DOM::DOMString(p.ascii()));
+
+    element = node;
+    result = new HTMLElement(element);
+  }
 
   return result;
 }
