@@ -59,7 +59,7 @@
 #include <kio/slaveconfig.h>
 
 #define FTP_LOGIN QString::fromLatin1("anonymous")
-#define FTP_PASSWD QString::fromLatin1("kde-user@kde.org")
+#define FTP_PASSWD QString::fromLatin1("anonymous@")
 
 
 using namespace KIO;
