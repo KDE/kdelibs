@@ -127,6 +127,8 @@ public:
     	_htmlBorder=w;
     }
     short htmlBorder() { return _htmlBorder; }
+    
+    virtual void calcWidth();
 
 
 public:

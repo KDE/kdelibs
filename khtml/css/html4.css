@@ -22,8 +22,6 @@
       LI              { display: list-item }
       HEAD            { display: none }
       TABLE           { display: table;
-      	    	    	margin-left: 0;
-			margin-right: auto;
       	    	    	border-collapse: separate;
 			vertical-align: middle;
                         text-align: justify;
@@ -57,6 +55,8 @@
       	    	    	    text-align: inherit;
                             background-color: inherit; /* ### hack */
 			 }
+#     TD[align="center"] > * { margin-left: auto; margin-right: auto; text-align: justify; }
+      TD[align="right"] > * { margin-left: auto; margin-right: 0px; text-align: right; }
       CAPTION         { display: table-caption;  }
       TH              { font-weight: bolder; text-align: center }
       CAPTION         { text-align: center }

@@ -54,6 +54,7 @@ RenderImage::~RenderImage()
 
 void RenderImage::setPixmap( const QPixmap &p, CachedObject *o, bool *manualUpdate )
 {
+
     if(o != image) {
 	RenderReplaced::setPixmap(p, o);
 	return;
@@ -61,28 +62,28 @@ void RenderImage::setPixmap( const QPixmap &p, CachedObject *o, bool *manualUpda
 
     if (manualUpdate && *manualUpdate)
     {
-    	kdDebug( 6040 ) << "Image: manualUpdate" << endl;
-        containingBlock()->updateSize();	
-	repaintRectangle(0, 0, m_width, m_height); //should not be needed!
+//    	kdDebug( 6040 ) << "Image: manualUpdate" << endl;
+        updateSize();	
+//	repaintRectangle(0, 0, m_width, m_height); //should not be needed!
         return;
     }
 
     // Image dimensions have been changed, recalculate layout
-    kdDebug( 6040 ) << "Image: setPixmap" << endl;
+//    kdDebug( 6040 ) << "Image: setPixmap" << endl;
     if(p.width() != pixmap.width() || p.height() != pixmap.height())
     {	
-    	kdDebug( 6040 ) << "Image: newSize " << p.width() << "/" << p.height() << endl;
+//    	kdDebug( 6040 ) << "Image: newSize " << p.width() << "/" << p.height() << endl;
 	pixmap = p;
 	setLayouted(false);
 	setMinMaxKnown(false);
-	layout();
-    	kdDebug( 6040 ) << "Image: size " << m_width << "/" << m_height << endl;
+//    	kdDebug( 6040 ) << "Image: size " << m_width << "/" << m_height << endl;
 	// the updateSize() call should trigger a repaint too
         if (manualUpdate) {
            *manualUpdate = true;
-        } else {
-	    containingBlock()->updateSize();	
-	    repaintRectangle(0, 0, m_width, m_height); //should not be needed!
+        }
+        else
+        {
+	    updateSize();	
         }
     }
     else
@@ -101,38 +102,21 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
 
     //kdDebug( 6040 ) << "Image::printObject (" << width() << "/" << height() << ")" << endl;
 
-    int contentWidth = m_width;
-    int contentHeight = m_height;
-    int leftBorder = 0;
-    int rightBorder = 0;
-    int topBorder = 0;
-    int bottomBorder = 0;
-    if(m_style->hasBorder())
-    {
-	leftBorder = borderLeft();
-	rightBorder = borderRight();
-	topBorder =  borderTop();
-	bottomBorder = borderBottom();
-    }
-    if(m_style->hasPadding())
-    {
-	leftBorder += paddingLeft();
-	rightBorder += paddingRight();
-	topBorder +=  paddingTop();
-	bottomBorder += paddingBottom();
-    }
-    contentWidth -= leftBorder + rightBorder;
-    contentHeight -= topBorder + bottomBorder;
+    int cWidth = contentWidth();
+    int cHeight = contentHeight();
+    int leftBorder = borderLeft();
+    int topBorder = borderTop();
+
 
     //kdDebug( 6040 ) << "    contents (" << contentWidth << "/" << contentHeight << ") border=" << borderLeft() << " padding=" << paddingLeft() << endl;
 
-    QRect rect( 0, 0, contentWidth, contentHeight );
+    QRect rect( 0, 0, cWidth, cHeight );
 
     if ( pixmap.isNull() )
     {
 	QColorGroup colorGrp( Qt::black, Qt::lightGray, Qt::white, Qt::darkGray, Qt::gray,
 			      Qt::black, Qt::white );
-	qDrawShadePanel( p, _tx + leftBorder, _ty + topBorder, contentWidth, contentHeight,
+	qDrawShadePanel( p, _tx + leftBorder, _ty + topBorder, cWidth, cHeight,
 			 colorGrp, true, 1 );
 	if(!alt.isEmpty())
 	{
@@ -141,8 +125,8 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
 	    p->setPen( style()->color() );
 	    int ax = _tx + leftBorder + 5;
 	    int ay = _ty + topBorder + 5;
-	    int ah = contentHeight - 10;
-	    int aw = contentWidth - 10;
+	    int ah = cHeight - 10;
+	    int aw = cWidth - 10;
 	    QFontMetrics fm(style()->font());
 	    if (aw>15 && ah>fm.height())
     	    	p->drawText(ax, ay, aw, ah , Qt::WordBreak, text );
@@ -150,16 +134,16 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
     }
     else
     {
-	if ( (contentWidth != pixmap.width() ||
-	    contentHeight != pixmap.height() ) &&
+	if ( (cWidth != pixmap.width() ||
+	    cHeight != pixmap.height() ) &&
 	    pixmap.width() && pixmap.height() )
 	{
 	  //kdDebug( 6040 ) << "have to scale: width:" << //   width - border*2 << "<-->" << pixmap.width() << " height " << //   getHeight() - border << "<-->" << pixmap.height() << endl;
 	    if (resizeCache.isNull())
 	    {
 		QWMatrix matrix;
-		matrix.scale( (float)(contentWidth)/pixmap.width(),
-			(float)(contentHeight)/pixmap.height() );
+		matrix.scale( (float)(cWidth)/pixmap.width(),
+			(float)(cHeight)/pixmap.height() );
 		resizeCache = pixmap.xForm( matrix );
 	    }
 	    p->drawPixmap( QPoint( _tx + leftBorder, _ty + topBorder ), resizeCache, rect );
@@ -174,8 +158,8 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
 	  p->setPen(QColor("green"));
 	else
 	  p->setPen(QColor("blue"));
-	p->drawRect( _tx + leftBorder, _ty + topBorder, contentWidth, contentHeight);
-	p->drawRect( _tx + leftBorder+1, _ty + topBorder+1, contentWidth-2, contentHeight-2);
+	p->drawRect( _tx + leftBorder, _ty + topBorder, cWidth, cHeight);
+	p->drawRect( _tx + leftBorder+1, _ty + topBorder+1, cWidth-2, cHeight-2);
       }
 }
 
@@ -188,55 +172,16 @@ void RenderImage::calcMinMaxWidth()
 //    setMinMaxKnown();
 
     // contentWidth
+    
+    short oldwidth = m_width;
+    
+    calcWidth();
 
+    if (oldwidth != m_width)
+    	resizeCache.resize(0,0);		
+    
+    m_maxWidth = m_minWidth = m_width;
 
-    Length w = m_style->width();
-
-    switch(w.type)
-    {
-    case Fixed:
-	m_width = w.value;
-	m_minWidth = m_width;
-	break;
-    case Percent:
-    	{
-	    int nwidth = w.value*containingBlockWidth()/100;
-	    if (nwidth != m_width)
-		resizeCache.resize(0,0);
-	    m_width = nwidth;
-	    m_minWidth = 1;
-	}
-	break;
-    default:
-	// we still don't know the width...
-	if(pixmap.isNull())
-	{
-	    m_width = 32;
-	    setMinMaxKnown(false);
-	}
-	else if (m_width != pixmap.width())
-	{
-	    m_width = pixmap.width();
-	    setLayouted(false);
-	    // if it doesn't fit... make it fit
-	    // NO! Images don't scale unless told to. Ever.  -AKo
-	    //if(availableWidth < width) width = availableWidth;
-	    m_minWidth = m_width;
-	    // kdDebug( 6040 ) << "IMG Width changed, width=" << m_width << endl;
-	}
-	else
-	    m_minWidth = m_width;
-    }
-    m_maxWidth = m_minWidth;
-
-    int toAdd = 0;
-    if(m_style->hasBorder())
-	toAdd = borderLeft() + borderRight();
-    if(m_style->hasPadding())
-	toAdd += paddingLeft() + paddingRight();
-    m_width += toAdd;
-    m_minWidth += toAdd;
-    m_maxWidth += toAdd;
 }
 
 void RenderImage::layout(bool)
@@ -246,53 +191,9 @@ void RenderImage::layout(bool)
     kdDebug( 6040 ) << "Image::layout(?) width=" << m_width << ", layouted=" << layouted() << endl;
 #endif
 
-    if (isPositioned())
-    {
-    	calcAbsoluteVertical();
-    	calcAbsoluteHorizontal();
-	return;
-    }
-
-    calcMinMaxWidth(); // ### just to be sure here...
-
-    Length h = m_style->height();
-
-    switch(h.type)
-    {
-    case Fixed:
-	m_height = h.value;
-	break;
-    case Percent:
-	{
-	int hh = m_height;
-	hh = h.value*containingBlock()->width()/100;	
-	if (m_height != hh)
-	{
-	    resizeCache.resize(0,0);
-	    m_height = hh;	
-	}
-	}
-	break;
-    default:
-	// we still don't know the height...
-	if(pixmap.isNull())
-	    m_height = 32;
-	else
-	{
-	    if(m_width == pixmap.width())
-		m_height = pixmap.height();
-	    else
-		m_height = pixmap.height()*m_width/pixmap.width();
-	}
-    }
-
-    int toAdd = 0;
-    if(m_style->hasBorder())
-	toAdd = borderTop() + borderBottom();
-    if(m_style->hasPadding())
-	toAdd += paddingTop() + paddingBottom();
-    m_height += toAdd;
-
+    calcMinMaxWidth();
+    calcHeight();
+    
     setLayouted();
 }
 
@@ -332,4 +233,15 @@ short RenderImage::baselineOffset() const
 int RenderImage::bidiHeight() const
 {
     return height();
+}
+
+
+short RenderImage::intrinsicWidth() const
+{
+    return pixmap.width();
+}
+
+int RenderImage::intrinsicHeight() const
+{
+     return pixmap.height();
 }

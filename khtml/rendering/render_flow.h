@@ -71,7 +71,6 @@ public:
     virtual void printObject( QPainter *, int x, int y, int w, int h,
 			int tx, int ty);
 
-    virtual void calcWidth();
 
     virtual void layout( bool deep = false );
 

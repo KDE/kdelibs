@@ -216,7 +216,7 @@ void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
 	if ( beforeChild && beforeChild->isAnonymousBox() )
 	    o = beforeChild;
 	else {
-	    kdDebug( 6040 ) << "creating anonymous table section" << endl;
+//	    kdDebug( 6040 ) << "creating anonymous table section" << endl;
 	    o = new RenderTableSection();
 	    RenderStyle *newStyle = new RenderStyle(m_style);
 	    newStyle->setDisplay(TABLE_ROW_GROUP);
@@ -664,8 +664,22 @@ void RenderTable::calcColMinMax()
     colMinWidth.fill(0);
     colMaxWidth.fill(0);		
 
-    int availableWidth = containingBlockWidth() - marginLeft() - marginRight(); ;
+    int availableWidth = containingBlockWidth();
+    Length ml = style()->marginLeft();
+    Length mr = style()->marginLeft();
+    if (ml.type==Fixed && mr.type==Fixed)
+    {
+        if (style()->direction()==LTR)
+            availableWidth -= marginLeft(); 
+        else
+            availableWidth -= marginRight();  
+    }
+    else if (ml.type == Fixed)
+        availableWidth -= marginLeft();            
+    else if (mr.type == Fixed)
+        availableWidth -= marginRight();
 
+    
     // PHASE 2, calculate simple minimums and maximums
 
     for ( unsigned int s=0;  (int)s<maxColSpan ; ++s)
@@ -794,8 +808,6 @@ void RenderTable::calcColMinMax()
 
     m_width = MAX (m_width, m_minWidth);
     	
-//    kdDebug( 6040 ) << "TABLE width " << m_width << endl;
-
 
     // PHASE 4, calculate maximums for percent and relative columns
 
@@ -837,8 +849,22 @@ void RenderTable::calcColMinMax()
     m_maxWidth += borderLeft() + borderRight();
     m_width += borderLeft() + borderRight();
 
-    setMinMaxKnown(true);
+/*    kdDebug( 6040 ) << "TABLE width=" << m_width << 
+                " TABLE m_minWidth=" << m_minWidth <<
+                " TABLE m_maxWidth=" << m_maxWidth << endl;*/
+      
 
+//    setMinMaxKnown(true);
+
+}
+
+void RenderTable::calcWidth()
+{
+    Length ml = m_style->marginLeft();
+    Length mr = m_style->marginRight();
+    int cw = containingBlockWidth();    
+    m_marginLeft = ml.minWidth(cw);
+    m_marginRight = mr.minWidth(cw);    
 }
 
 void RenderTable::calcColWidth(void)
@@ -860,6 +886,51 @@ void RenderTable::calcColWidth(void)
 
     calcColMinMax();
 
+    Length ml = m_style->marginLeft();
+    Length mr = m_style->marginRight();
+
+    
+    // ### HACK, implement anonymous table box
+    // ### copied from renderbox    
+    int cw = containingBlockWidth();
+    
+    m_marginRight=0;
+    m_marginLeft=0;
+    
+    if (cw>m_width && !isFloating())
+    {
+        if (ml.type == Variable && mr.type == Variable )
+        {
+	    m_marginRight = (cw - m_width)/2;		
+	    m_marginLeft = cw - m_width - m_marginRight; 
+        }
+        else if (mr.type == Variable)
+        {
+	    m_marginLeft = ml.width(cw);
+	    m_marginRight = cw - m_width - m_marginLeft;
+        }
+        else if (ml.type == Variable)
+        {	    	
+	    m_marginRight = mr.width(cw);		
+	    m_marginLeft = cw - m_width - m_marginRight;
+        }
+        else
+        {
+	    m_marginLeft = ml.minWidth(cw);
+	    m_marginRight = mr.minWidth(cw);
+        }
+    }    
+    
+    if (cw != m_width + m_marginLeft + m_marginRight && !isFloating())
+    {
+    	if (style()->direction()==LTR)
+	    m_marginRight = cw - m_width - m_marginLeft;
+	else
+	    m_marginLeft = cw - m_width - m_marginRight;
+
+    }
+    
+    
     /*
      * Set actColWidth[] to column minimums, it will
      * grow from there.
@@ -1178,6 +1249,7 @@ void RenderTable::calcRowHeight(int r)
 
 void RenderTable::layout(bool deep)
 {
+//kdDebug( 6040 ) << renderName() << "(Table)"<< this << " ::layout0(" << deep << ") width=" << width() << ", layouted=" << layouted() << endl;
     if (layouted() && !containsPositioned() && _lastParentWidth == containingBlockWidth())
    	return;
 
@@ -1220,6 +1292,8 @@ void RenderTable::layout(bool deep)
 
     m_height += rowHeights[totalRows];
     m_height += borderBottom();
+    
+    calcHeight();
 
     setLayouted();
 
@@ -1429,10 +1503,9 @@ void RenderTable::calcMinMaxWidth()
 
 void RenderTable::close()
 {
+//    kdDebug( 6040 ) << "RenderTable::close()" << endl;
     setParsing(false);
-    calcMinMaxWidth();
     setLayouted(false);
-    if(!containingBlockWidth()) return;
     updateSize();
 }
 
@@ -1473,7 +1546,7 @@ void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild
 	if( beforeChild && beforeChild->isAnonymousBox() )
 	    row = beforeChild;
 	else {
-	    kdDebug( 6040 ) << "creating anonymous table row" << endl;
+//	    kdDebug( 6040 ) << "creating anonymous table row" << endl;
 	    row = new RenderTableRow();
 	    RenderStyle *newStyle = new RenderStyle(m_style);
 	    newStyle->setDisplay(TABLE_ROW);
@@ -1529,7 +1602,7 @@ void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
 	if( beforeChild && beforeChild->isAnonymousBox() && beforeChild->isTableCell() )
 	    cell = static_cast<RenderTableCell *>(beforeChild);
 	else {
-	    kdDebug( 6040 ) << "creating anonymous table cell" << endl;
+//	    kdDebug( 6040 ) << "creating anonymous table cell" << endl;
 	    cell = new RenderTableCell();
 	    RenderStyle *newStyle = new RenderStyle(m_style);
 	    newStyle->setDisplay(TABLE_CELL);
@@ -1579,7 +1652,7 @@ void RenderTableCell::calcMinMaxWidth()
     int oldMin = m_minWidth;
     int oldMax = m_maxWidth;
 
-    RenderFlow::calcMinMaxWidth();
+    RenderFlow::calcMinMaxWidth();    
 
     if(nWrap && m_style->width().type!=Fixed) m_minWidth = m_maxWidth;
 

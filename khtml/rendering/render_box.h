@@ -74,7 +74,7 @@ public:
 
     virtual short contentWidth() const;
     virtual int contentHeight() const;
-
+   
     virtual void absolutePosition(int &xPos, int &yPos);
 
     virtual void setPos( int xPos, int yPos ) { m_x = xPos, m_y = yPos; }
@@ -85,11 +85,16 @@ public:
     virtual int yPos() const { return m_y; }
     virtual short width() const;
     virtual int height() const;
+    
+    virtual short marginTop() const { return m_marginTop; }
+    virtual short marginBottom() const { return m_marginBottom; }
+    virtual short marginLeft() const { return m_marginLeft; }
+    virtual short marginRight() const { return m_marginRight; }    
 
     virtual void setSize( int width, int height ) { m_width = width; m_height = height; }
     virtual void setWidth( int width ) { m_width = width; }
     virtual void setHeight( int height ) { m_height = height; }
-
+    
     // for table cells
     virtual short baselineOffset() const;
 
@@ -109,6 +114,9 @@ public:
     virtual void setPixmap(const QPixmap &, CachedObject *, bool *manualUpdate=0);
 
     virtual short containingBlockWidth() const;
+    
+    virtual void calcWidth();
+    virtual void calcHeight();
 
 protected:
     virtual void printBoxDecorations(QPainter *p,int _x, int _y,
@@ -134,6 +142,11 @@ protected:
 
     short m_x;
     int m_y;
+    
+    short m_marginTop;
+    short m_marginBottom;
+    short m_marginLeft;
+    short m_marginRight;
 
     // the actual width of the contents + borders + padding
     short m_width;

@@ -197,7 +197,7 @@ void RenderObject::addChild(RenderObject *newChild, RenderObject *beforeChild)
 	if( beforeChild && beforeChild->isAnonymousBox() && beforeChild->isTable() )
 	    table = static_cast<RenderTable *>(beforeChild);
 	else {
-	    kdDebug( 6040 ) << "creating anonymous table" << endl;
+//	    kdDebug( 6040 ) << "creating anonymous table" << endl;
 	    table = new RenderTable();
 	    RenderStyle *newStyle = new RenderStyle(m_style);
 	    newStyle->setDisplay(TABLE);
@@ -283,6 +283,7 @@ RenderObject *RenderObject::containingBlock() const
     if(!o) {
 	if(!isRoot())
 	    kdDebug( 6040 ) << renderName() << "(RenderObject): No containingBlock!" << endl;
+
 	return const_cast<RenderObject *>(this);
     } else
 	return o;

@@ -120,5 +120,23 @@ short RenderWidget::verticalPositionHint() const
     }
     return 0;
 }
+
+short RenderWidget::intrinsicWidth() const
+{
+    if (m_widget) 
+	return m_widget->width();
+    else 
+	return 0;
+}
+
+int RenderWidget::intrinsicHeight() const
+{
+    if (m_widget) 
+	return m_widget->height();
+    else 
+	return 0;
+}
+
+
 #include "render_replaced.moc"
 

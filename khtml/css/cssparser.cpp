@@ -763,8 +763,13 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
     case CSS_PROP_VOICE_FAMILY:
     case CSS_PROP_VOLUME:
     case CSS_PROP_WHITE_SPACE:
-    case CSS_PROP_WORD_SPACING:
+    case CSS_PROP_WORD_SPACING:    
     case CSS_PROP_Z_INDEX:
+    case CSS_PROP_WIDTH:
+    case CSS_PROP_LEFT:
+    case CSS_PROP_RIGHT:
+    case CSS_PROP_TOP:
+    case CSS_PROP_BOTTOM:
     {
 	//kdDebug( 6080 ) << "parseValue: value = " << val << endl;
 	const struct css_value *cssval = findValue(val, value.length());

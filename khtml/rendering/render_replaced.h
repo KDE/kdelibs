@@ -73,6 +73,9 @@ public:
     void setEnabled(bool enabled) { if(m_widget) m_widget->setEnabled(enabled); }
     virtual short verticalPositionHint() const;
 
+    virtual short intrinsicWidth() const;
+    virtual int intrinsicHeight() const;
+
 public slots:
     void slotWidgetDestructed();
 

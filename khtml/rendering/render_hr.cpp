@@ -92,21 +92,27 @@ void RenderHR::calcMinMaxWidth()
 {
     // contentWidth
     Length w = m_style->width();
+    
+    calcWidth();
 
     switch(w.type)
     {
     case Fixed:
-	m_width = w.value;
 	m_minWidth = m_width;
 	break;
     case Percent:
-    	{
-	    m_width = w.value*containingBlockWidth()/100;
-	    m_minWidth = m_width;
-	    m_minWidth = 1;
-	}
+	m_minWidth = 1;
     default:
-    	m_width = containingBlockWidth();
 	m_maxWidth = m_width;
     }
+}
+
+short RenderHR::intrinsicWidth() const
+{
+    return containingBlockWidth();
+}
+
+int RenderHR::intrinsicHeight() const
+{
+    return size+2;
 }

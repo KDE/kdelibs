@@ -217,33 +217,6 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
 
 }
 
-void RenderFlow::calcWidth()
-{
-    if (isPositioned())
-    {
-    	calcAbsoluteHorizontal();
-    }
-    else
-    {
-	Length w = m_style->width();
-	if (w.type == Variable)
-    	    m_width = containingBlockWidth() - marginLeft() - marginRight();
-	else
-	{
-    	    m_width = w.width(containingBlockWidth());
-	    m_width += paddingLeft() + paddingRight() + borderLeft() + borderRight();
-	}
-    }
-
-    if(m_width < m_minWidth) m_width = m_minWidth;
-
-
-#ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << "RenderFlow::calcWidth(): m_width=" << m_width << " containingBlockWidth()=" << containingBlockWidth() << endl;
-#endif
-}
-
-
 void RenderFlow::setPos( int xPos, int yPos )
 {
     m_y = yPos;
@@ -258,16 +231,15 @@ void RenderFlow::setXPos( int xPos )
 
 void RenderFlow::layout( bool deep )
 {
-    //kdDebug( 6040 ) << renderName() << " " << this << "::layout() start" << endl;
+//    kdDebug( 6040 ) << renderName() << " " << this << "::layout() start" << endl;
     //QTime t;
     //t.start();
 
     assert(!isInline());
 
     int oldWidth = m_width;
+    
     calcWidth();
-    // ### does not give correct results for fixed width paragraphs with
-    // floats for some reason
 
     if (specialObjects==0)
     	if (oldWidth == m_width && layouted() && !isAnonymousBox()
@@ -286,6 +258,8 @@ void RenderFlow::layout( bool deep )
 	setLayouted();
 	return;
     }
+    
+
     clearFloats();
 
     // Block elements usually just have descent.
@@ -299,22 +273,7 @@ void RenderFlow::layout( bool deep )
     else
 	layoutBlockChildren(deep);
 
-    if (isPositioned())
-    	calcAbsoluteVertical();
-    else
-    {
-	Length h = style()->height();
-	if (h.isFixed())
-    	    m_height = MAX (h.value + borderTop() + paddingTop()
-		+ borderBottom() + paddingBottom() , m_height);
-	else if (h.isPercent())
-	{
-    	    Length ch = containingBlock()->style()->height();
-	    if (ch.isFixed())
-    		m_height = MAX (h.width(ch.value) + borderTop() + paddingTop()
-	    	    + borderBottom() + paddingBottom(), m_height);
-	}
-    }
+    calcHeight();
 
     if(floatBottom() > m_height)	
     {
@@ -349,7 +308,8 @@ void RenderFlow::layout( bool deep )
 
 static int getIndent(RenderObject *child)
 {
-    int diff = child->containingBlockWidth() - child->width();
+    return child->marginLeft();
+    /*int diff = child->containingBlockWidth() - child->width();
     if(diff <= 0) return 0;
 
     Length marginLeft = child->style()->marginLeft();
@@ -377,7 +337,7 @@ static int getIndent(RenderObject *child)
 	return diff;
     }
     else
-	return child->marginLeft();
+	return child->marginLeft();*/
 }
 
 
@@ -413,7 +373,7 @@ void RenderFlow::layoutBlockChildren(bool deep)
 	
     while( child != 0 )
     {
-//    	kdDebug( 6040 ) << "loop " << child << ", " << child->isInline() << ", " << child->layouted() << endl;
+//    	kdDebug( 6040 ) << child->renderName() << " loop " << child << ", " << child->isInline() << ", " << child->layouted() << endl;
 
     	if (child->isPositioned())
 	{
@@ -550,6 +510,8 @@ RenderFlow::insertPositioned(RenderObject *o)
 void
 RenderFlow::insertFloat(RenderObject *o)
 {
+//    kdDebug( 6040 ) << renderName() << " " << this << "::insertFloat()" << endl;
+    
     // a floating element
     if(!specialObjects) {
 	specialObjects = new QSortedList<SpecialObject>;
@@ -560,15 +522,18 @@ RenderFlow::insertFloat(RenderObject *o)
     QListIterator<SpecialObject> it(*specialObjects);
     SpecialObject* f;	
     while ( (f = it.current()) ) {
-	if (f->node == o) return;
+	if (f->node == o) 
+        {  
+            f->width = o->width() + o->marginLeft() + o->marginRight();
+            f->startY = -1;
+            f->endY = -1;            
+            positionNewFloats();
+            return;
+        }
 	++it;
     }
 
-
-    if(!o->layouted())
-    {
-	o->layout(true);
-    }
+    o->layout(true);
 
     if(!f) f = new SpecialObject;
 
@@ -576,6 +541,7 @@ RenderFlow::insertFloat(RenderObject *o)
     f->startY = -1;
     f->endY = -1;
     f->width = o->width() + o->marginLeft() + o->marginRight();
+    
     if(o->style()->floating() == FLEFT)
 	f->type = SpecialObject::FloatLeft;
     else
@@ -743,7 +709,7 @@ RenderFlow::leftMargin(int y) const
     QListIterator<SpecialObject> it(*specialObjects);
     for ( ; (r = it.current()); ++it )
     {
-//    	kdDebug( 6040 ) << "left: sy, ey, x, w " << //	    r->startY << "," << r->endY << "," << r->left << "," << r->width << " " << endl;
+//    	kdDebug( 6040 ) << "left: sy, ey, x, w " << r->startY << "," << r->endY << "," << r->left << "," << r->width << " " << endl;
 	if (r->startY <= y && r->endY > y &&
 	    r->type == SpecialObject::FloatLeft &&
 	    r->left + r->width > left)
@@ -957,7 +923,7 @@ void RenderFlow::calcMinMaxWidth()
     // non breaking space
     const QChar nbsp = 0xa0;
 
-    if(minMaxKnown()) return;
+//    if(minMaxKnown()) return;
 
     m_minWidth = 0;
     m_maxWidth = 0;
@@ -1043,9 +1009,17 @@ void RenderFlow::calcMinMaxWidth()
 	{
 	    if(!child->minMaxKnown())
 		child->calcMinMaxWidth();
-	    int margin = child->marginLeft() + child->marginRight();
+	    
+            int margin=0;            
+            //  auto margins don't affect minwidth          
+            if (child->style()->marginLeft().type == Fixed)
+                margin += child->marginLeft();            
+            if (child->style()->marginRight().type == Fixed)
+                margin += child->marginRight();
+            
 	    int w = child->minWidth() + margin;
-	    if(m_minWidth < w) m_minWidth = w;
+
+            	    if(m_minWidth < w) m_minWidth = w;
 	    w = child->maxWidth() + margin;
 	    if(m_maxWidth < w) m_maxWidth = w;
 	    child = child->nextSibling();
@@ -1075,6 +1049,10 @@ void RenderFlow::close()
 	//kdDebug( 6040 ) << "RenderFlow::close(): closing anonymous box" << endl;
 	setHaveAnonymousBox(false);
     }
+    
+    calcWidth();
+    calcHeight();
+    
     if(!isInline() && m_childrenInline)
     {
 	layout();
@@ -1083,6 +1061,7 @@ void RenderFlow::close()
     {
 	calcMinMaxWidth();
     }
+    
     if(containingBlockWidth() < m_minWidth && m_parent)
     	containingBlock()->updateSize();
     else

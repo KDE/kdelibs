@@ -27,6 +27,63 @@ using namespace khtml;
 
 const QColor RenderStyle::undefinedColor;
 
+StyleSurroundData::StyleSurroundData()
+{
+    margin.left = Length(0,Fixed);
+    margin.right = Length(0,Fixed);
+    margin.top = Length(0,Fixed);
+    margin.bottom = Length(0,Fixed);
+    padding.left = Length(0,Fixed);
+    padding.right = Length(0,Fixed);
+    padding.top = Length(0,Fixed);
+    padding.bottom = Length(0,Fixed);    
+}
+
+StyleSurroundData::StyleSurroundData(const StyleSurroundData& o ) 
+        : SharedData()
+{ 
+    offset = o.offset;
+    margin = o.margin;
+    padding = o.padding;
+    border = o.border;	
+}
+
+bool StyleSurroundData::operator==(const StyleSurroundData& o) const
+{
+    return offset==o.offset && margin==o.margin &&
+	padding==o.padding && border==o.border;
+}
+
+StyleBoxData::StyleBoxData()
+{
+}
+
+StyleBoxData::StyleBoxData(const StyleBoxData& o ) 
+        : SharedData()
+{
+    width = o.width;
+    height = o.height;
+    min_width = o.min_width;
+    max_width = o.max_width;
+    min_height = o.min_height;
+    max_height = o.max_height;	
+    z_index = o.z_index;
+}
+
+bool StyleBoxData::operator==(const StyleBoxData& o) const
+{
+    return
+	    width == o.width &&
+	    height == o.height &&
+	    min_width == o.min_width &&
+	    max_width == o.max_width &&
+	    min_height == o.min_height &&
+	    max_height == o.max_height &&
+	    z_index == o.z_index;
+}
+
+
+
 void
 RenderStyle::setBitDefaults()
 {

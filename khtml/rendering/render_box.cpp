@@ -64,6 +64,10 @@ RenderBox::RenderBox()
     m_width = m_height = 0;
     m_x = 0;
     m_y = 0;
+    m_marginTop = 0;
+    m_marginBottom = 0;
+    m_marginLeft = 0;
+    m_marginRight = 0;
 }
 
 void RenderBox::setStyle(RenderStyle *style)
@@ -84,6 +88,7 @@ void RenderBox::setStyle(RenderStyle *style)
 		m_relPositioned = true;
 	}
     }
+   
 }
 
 RenderBox::~RenderBox()
@@ -279,6 +284,8 @@ void RenderBox::outlineBox(QPainter *p, int _tx, int _ty, const char *color)
 void RenderBox::close()
 {
     setParsing(false);
+    calcWidth();
+    calcHeight();    
     calcMinMaxWidth();
     if(containingBlockWidth() < m_minWidth && m_parent)
     	containingBlock()->updateSize();
@@ -309,7 +316,11 @@ void RenderBox::absolutePosition(int &xPos, int &yPos)
 
 void RenderBox::updateSize()
 {
-    //kdDebug( 6040 ) << renderName() << "(RenderBox) " << this << " ::updateSize()" << endl;
+
+#ifdef DEBUG_LAYOUT
+    kdDebug( 6040 ) << renderName() << "(RenderBox) " << this << " ::updateSize()" << endl;
+#endif
+    
 
     int oldMin = m_minWidth;
     int oldMax = m_maxWidth;
@@ -321,7 +332,7 @@ void RenderBox::updateSize()
     	parent()->updateSize();
 	return;
     }
-
+    
     if(m_minWidth > containingBlockWidth() || m_minWidth != oldMin ||
     	m_maxWidth != oldMax || isReplaced())
     {    	
@@ -334,7 +345,10 @@ void RenderBox::updateSize()
 
 void RenderBox::updateHeight()
 {
-    //kdDebug( 6040 ) << renderName() << "(RenderBox) " << this << " ::updateHeight()" << endl;
+
+#ifdef DEBUG_LAYOUT    
+    kdDebug( 6040 ) << renderName() << "(RenderBox) " << this << " ::updateHeight()" << endl;
+#endif
 
     if (parsing())
     {
@@ -447,7 +461,7 @@ void RenderBox::repaintObject(RenderObject *o, int x, int y)
 void RenderBox::relativePositionOffset(int &tx, int &ty)
 {
     if(!m_style->left().isVariable())
-	tx += m_style->left().width(containingBlockWidth());
+	tx += m_style->left().width(containingBlockWidth()); 
     else if(!m_style->right().isVariable())
 	tx -= m_style->right().width(containingBlockWidth());
     if(!m_style->top().isVariable())
@@ -461,6 +475,138 @@ void RenderBox::relativePositionOffset(int &tx, int &ty)
     	if (!m_style->bottom().isPercent()
 	    	|| containingBlock()->style()->height().isFixed())
 	    ty -= m_style->bottom().width(containingBlockHeight());
+    }
+}
+
+void RenderBox::calcWidth()
+{
+#ifdef DEBUG_LAYOUT
+    kdDebug( 6040 ) << "RenderBox("<<renderName()<<")::calcWidth()" << endl;
+#endif    
+    if (isPositioned())
+    {
+    	calcAbsoluteHorizontal();
+    }
+    else
+    {
+
+        Length w = m_style->width();        
+        if (isReplaced() && w.type==Variable)
+            w = Length(intrinsicWidth(), Fixed);
+        
+    	Length ml = m_style->marginLeft();
+	Length mr = m_style->marginRight();
+        
+	int cw = containingBlockWidth();
+	
+	m_marginLeft = 0;
+	m_marginRight = 0;
+	
+	if (w.type == Variable)
+	{
+//	    kdDebug( 6040 ) << "variable" << endl;
+	    m_marginLeft = ml.minWidth(cw);
+	    m_marginRight = mr.minWidth(cw);
+    	    m_width = cw - m_marginLeft - m_marginRight;
+//	    kdDebug( 6040 ) <<  m_width <<"," <<  
+//	    	m_marginLeft <<"," <<  m_marginRight << endl;
+		
+	    if(m_width < m_minWidth) m_width = m_minWidth;
+	}
+	else
+	{	
+//	    kdDebug( 6040 ) << "non-variable " << w.type << ","<< w.value << endl;    
+    	    m_width = w.width(cw);
+	    m_width += paddingLeft() + paddingRight() + borderLeft() + borderRight();
+	    
+	    if(m_width < m_minWidth) m_width = m_minWidth;
+	    
+            if (isFloating())
+            {
+ 	    	m_marginLeft = ml.minWidth(cw);
+		m_marginRight = mr.minWidth(cw);               
+            }
+            else
+            {
+	        if (ml.type == Variable && mr.type == Variable )
+	        {
+	    	    m_marginRight = (cw - m_width)/2;		
+	    	    m_marginLeft = cw - m_width - m_marginRight; 
+	        }
+	        else if (mr.type == Variable)
+	        {
+	    	    m_marginLeft = ml.width(cw);
+		    m_marginRight = cw - m_width - m_marginLeft;
+	        }
+	        else if (ml.type == Variable)
+	        {	    	
+	    	    m_marginRight = mr.width(cw);		
+		    m_marginLeft = cw - m_width - m_marginRight;
+	        }
+	        else
+	        {
+	    	    m_marginLeft = ml.minWidth(cw);
+		    m_marginRight = mr.minWidth(cw);
+	        }
+            }
+	}
+	if (cw != m_width + m_marginLeft + m_marginRight && !isFloating())
+	{
+    	    if (style()->direction()==LTR)
+		m_marginRight = cw - m_width - m_marginLeft;
+	    else
+		m_marginLeft = cw - m_width - m_marginRight;
+
+	}
+    }    
+    
+
+#ifdef DEBUG_LAYOUT
+    kdDebug( 6040 ) << "RenderBox::calcWidth(): m_width=" << m_width << " containingBlockWidth()=" << containingBlockWidth() << endl;
+    kdDebug( 6040 ) << "m_marginLeft=" << m_marginLeft << " m_marginRight=" << m_marginRight << endl;
+#endif
+}
+
+void RenderBox::calcHeight()
+{
+
+#ifdef DEBUG_LAYOUT
+    kdDebug( 6040 ) << "RenderBox::calcHeight()" << endl;
+#endif
+
+    if (isPositioned())
+    	calcAbsoluteVertical();
+    else
+    {
+        
+        Length h = m_style->height();
+        
+        if (isReplaced() && h.type == Variable)
+            h = Length(intrinsicHeight(), Fixed);
+                
+	Length tm = style()->marginTop();
+	Length bm = style()->marginBottom();
+	Length ch = containingBlock()->style()->height();
+	
+	if (!tm.isPercent() || ch.isFixed())
+	    m_marginTop = tm.minWidth(ch.value);		
+	else
+	    m_marginTop = 0;
+	    
+	if (!bm.isPercent() || ch.isFixed())
+	    m_marginBottom = bm.minWidth(ch.value);		
+	else
+	    m_marginBottom = 0;
+	    
+	if (h.isFixed())
+    	    m_height = MAX (h.value + borderTop() + paddingTop()
+		+ borderBottom() + paddingBottom() , m_height);
+	else if (h.isPercent())
+	{    	    
+	    if (ch.isFixed())
+    		m_height = MAX (h.width(ch.value) + borderTop() + paddingTop()
+	    	    + borderBottom() + paddingBottom(), m_height);
+	}
     }
 }
 
@@ -562,8 +708,6 @@ void RenderBox::calcAbsoluteVertical()
 
     if (m_height<h)
     	m_height = h;
-
-
 
     m_y = t + marginTop() +
     	containingBlock()->paddingTop() + containingBlock()->borderTop();

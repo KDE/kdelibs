@@ -220,31 +220,20 @@ public:
 class StyleSurroundData : public SharedData
 {
 public:
-    StyleSurroundData()
-    {
-    }
+    StyleSurroundData();
+
     virtual ~StyleSurroundData()
     {
     }
 
-    StyleSurroundData(const StyleSurroundData& o ) : SharedData()
-    {
-    	offset = o.offset;
-	margin = o.margin;
-	padding = o.padding;
-	border = o.border;	
-    }
+    StyleSurroundData(const StyleSurroundData& o );
+    bool operator==(const StyleSurroundData& o) const;    
 
     LengthBox offset;
     LengthBox margin;
     LengthBox padding;
     BorderData border;
 
-    bool operator==(const StyleSurroundData& o) const
-    {
-    	return offset==o.offset && margin==o.margin &&
-	    padding==o.padding && border==o.border;
-    }
 };
 
 
@@ -257,23 +246,9 @@ const int ZAUTO=0;
 class StyleBoxData : public SharedData
 {
 public:
-    StyleBoxData()
-    {
-    }
-    virtual ~StyleBoxData()
-    {
-    }
+    StyleBoxData();
 
-    StyleBoxData(const StyleBoxData& o ) : SharedData()
-    {
-    	width = o.width;
-	height = o.height;
-	min_width = o.min_width;
-	max_width = o.max_width;
-	min_height = o.min_height;
-	max_height = o.max_height;	
-	z_index = o.z_index;
-    }
+    StyleBoxData(const StyleBoxData& o );
 
 
     // copy and assignment
@@ -285,17 +260,7 @@ public:
     	z_index = ZAUTO;
     }
 
-    bool operator==(const StyleBoxData& o) const
-    {
-    	return
-	    	width == o.width &&
-		height == o.height &&
-		min_width == o.min_width &&
-		max_width == o.max_width &&
-		min_height == o.min_height &&
-		max_height == o.max_height &&
-		z_index == o.z_index;
-    }
+    bool operator==(const StyleBoxData& o) const;
 
     Length width;
     Length height;

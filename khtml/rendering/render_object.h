@@ -236,10 +236,15 @@ public:
     virtual short containingBlockWidth() const;
     virtual int containingBlockHeight() const;
 
-    // the size of the contents
+    // the size of the content area
     virtual QSize contentSize() const;
     virtual short contentWidth() const { return 0; }
     virtual int contentHeight() const { return 0; }
+    
+    // Intrinsic size of replaced element
+    virtual short intrinsicWidth() const { return 0; }
+    virtual int intrinsicHeight() const { return 0; }
+    
 
     // the offset of the contents relative to the box borders (basically border+padding)
     virtual QSize contentOffset() const;
@@ -273,10 +278,10 @@ public:
     virtual int height() const { return 0; }
 
     // these are just for convinience
-    int marginTop() const { return m_style->marginTop().minWidth(containingBlock()->contentWidth()); }
-    int marginBottom() const { return m_style->marginBottom().minWidth(containingBlock()->contentWidth()); }
-    int marginLeft() const { return m_style->marginLeft().minWidth(containingBlock()->contentWidth()); }
-    int marginRight() const { return m_style->marginRight().minWidth(containingBlock()->contentWidth()); }
+    virtual short marginTop() const { return 0; }
+    virtual short marginBottom() const { return 0; }
+    virtual short marginLeft() const { return 0; }
+    virtual short marginRight() const { return 0; }
 
     int paddingTop() const { return m_style->paddingTop().minWidth(containingBlock()->contentWidth()); }
     int paddingBottom() const { return m_style->paddingBottom().minWidth(containingBlock()->contentWidth()); }

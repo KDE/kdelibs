@@ -44,7 +44,7 @@ public:
 
     virtual const char *renderName() const { return "RenderImage"; }
 
-    virtual bool isInline() const { return !isFloating(); }
+    virtual bool isInline() const { return m_style->display()==INLINE; }
     virtual bool isRendered() const { return true; }
     virtual bool isReplaced() const { return true; }
 
@@ -62,6 +62,9 @@ public:
     virtual short baselineOffset() const;
 
     virtual int bidiHeight() const;
+    
+    virtual short intrinsicWidth() const;
+    virtual int intrinsicHeight() const;    
 
 protected:
     /*
