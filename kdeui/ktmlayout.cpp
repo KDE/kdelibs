@@ -53,10 +53,10 @@ KTMLayout::setGeometry(const QRect& rect)
 {
     /* The main item is required so it makes no sense to do a layout without
      * it. */
-//WABA: Bullshit. Now it looks like crap when a mainwindow hasn't been set 
-//yet. 
+//WABA: Bullshit. Now it looks like crap when a mainwindow hasn't been set
+//yet.
 //While i'm ranting, which moron puts these ridiculous tabs in this file?
-    
+
 //    if (!mainItem)
 //        return;
 
@@ -69,12 +69,9 @@ KTMLayout::setGeometry(const QRect& rect)
     if (indicatorWidget && !topMenuBar && !statusBar)
         indicatorWidget->hide();
 
-    static QString grpKDE = QString::fromLatin1("KDE");
-    static QString keyMac = QString::fromLatin1("macStyle");
-
     KConfig *config = KGlobal::config();
-    KConfigGroupSaver saver( config, grpKDE );
-    bool mac_mode = config->readBoolEntry( keyMac, false );
+    KConfigGroupSaver saver( config, "KDE" );
+    bool mac_mode = config->readBoolEntry( "macStyle", false );
     mac_mode = FALSE; // disabled until somebody implements it
     // correctly. If you have questions about thxis, write to
     // ettrich@kde.org, subject "macMode".
