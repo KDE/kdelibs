@@ -1,3 +1,9 @@
+kdelibs (4:1.1-19990217-1) unstable; urgency=low
+
+  * new upstream version
+
+ -- Stephan Kulow <coolo@kde.org>  Wed, 17 Feb 1999 19:09:42 +0100
+
 kdelibs (4:1.1-19990207-2) unstable; urgency=low
 
   * fixed a bug with the jpeglib version
