@@ -6,7 +6,7 @@
 #
 # $Id$
 
-kde_MODULES = dcop kdecore kdeui kimgio kio kfile kparts khtml kjs kdejava kformula kspell kab libkmid
+kde_MODULES = dcop kdecore kdeui kimgio kio kfile kparts khtml kjs kdejava kformula kspell kab libkmid interfaces
 
 dcop_FILES = *.h
 dcop_LIBS = -lkde-qt-addon -lqt
@@ -50,3 +50,6 @@ kparts_LIBS = -lkdeui -lkdecore -lqt
 
 libkmid_FILES = *.h
 libkmid_LIBS = -lqt
+
+interfaces_FILES = *.h
+interfaces_LIBS = -lkpart -lqt
