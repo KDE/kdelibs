@@ -167,12 +167,12 @@ char **xstrsep(char *str)
  * The main program
  */
 
-int main(int, char **)
+int main()
 {
     char buf[1024];
     char command[200], xauthority[200], iceauthority[200];
     char **host, **auth, *fname, *home;
-    int i, res, sycoca, prio;
+    int i/*, res, sycoca*/, prio;
     pid_t pid;
     FILE *fout;
     struct passwd *pw;
