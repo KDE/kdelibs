@@ -90,6 +90,8 @@ static const QChar textareaEnd [] = { '<','/','t','e','x','t','a','r','e','a','>
                 case 0xb7: (x) = '*'; break; \
                 case 0x2014: (x) = '-'; break; \
                 case 0x2019: (x) = '\''; break; \
+                case 0x201c: (x) = '"'; break; \
+                case 0x201d: (x) = '"'; break; \
                 default: break; \
                 } \
             }
