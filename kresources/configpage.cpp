@@ -167,6 +167,8 @@ void ConfigPage::load()
   kdDebug(5650) << "ConfigPage::load()" << endl;
 
   mListView->clear();
+  mFamilyMap.clear();
+  mInfoMap.clear();
 
   KTrader::OfferList plugins = KTrader::self()->query( "KResources/Plugin" );
   KTrader::OfferList::ConstIterator it;
@@ -192,6 +194,7 @@ void ConfigPage::load()
   }
   mCurrentManager = 0;
 
+  mFamilyCombo->clear();
   mFamilyCombo->insertStringList( mFamilyMap );
 
   int currentFamily = mConfig->readNumEntry( "CurrentFamily", 0 );
