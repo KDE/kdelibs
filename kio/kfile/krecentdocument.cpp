@@ -49,7 +49,7 @@ QString KRecentDocument::recentDocumentDirectory()
 
 QStringList KRecentDocument::recentDocuments()
 {
-    QDir d(recentDocumentDirectory(), "*.desktop", QDir::Time | QDir::Reversed,
+    QDir d(recentDocumentDirectory(), "*.desktop", QDir::Time,
            QDir::Files | QDir::Readable | QDir::Hidden);
 
     if (!d.exists())
