@@ -158,8 +158,8 @@ unsigned short ValueImp::toUInt16(ExecState *exec) const
   double d16 = fmod(d, D16);
 
   // look at toUInt32 to see why this is necesary
-  short t_short = static_cast<short>(d16);
-  return static_cast<unsigned short>(t_short);
+  int t_int = static_cast<int>(d16);
+  return static_cast<unsigned short>(t_int);
 }
 
 // Dispatchers for virtual functions, to special-case simple numbers which
