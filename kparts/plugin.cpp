@@ -175,6 +175,7 @@ QPtrList<KParts::Plugin> Plugin::pluginObjects( QObject *parent )
 void Plugin::setInstance( KInstance *instance )
 {
     KGlobal::locale()->insertCatalogue( instance->instanceName() );
+    KXMLGUIClient::setInstance( instance );
 }
 
 
