@@ -157,9 +157,8 @@ void KWin::setActiveWindow( WId win)
 
 void KWin::setDockWindow(WId dockWin, WId forWin ){
     createAtoms();
-    long data = forWin;
     XChangeProperty(qt_xdisplay(), dockWin, net_kde_docking_window_for, XA_WINDOW, 32,
-		    PropModeReplace, (unsigned char *)&data, 1);
+		    PropModeReplace, (unsigned char *)&forWin, 1);
 }
 
 
