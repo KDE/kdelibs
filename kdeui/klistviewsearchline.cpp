@@ -20,8 +20,12 @@
 
 #include <klistview.h>
 #include <kdebug.h>
+#include <klocale.h>
 
 #include <qtimer.h>
+#include <qpopupmenu.h>
+
+#define KLISTVIEWSEARCHLINE_ALLCOLUMNS_ID 2004
 
 class KListViewSearchLine::KListViewSearchLinePrivate
 {
@@ -205,6 +209,36 @@ bool KListViewSearchLine::itemMatches(const QListViewItem *item, const QString &
     return false;
 }
 
+QPopupMenu *KListViewSearchLine::createPopupMenu()
+{
+    QPopupMenu *popup = KLineEdit::createPopupMenu();
+
+    QPopupMenu *subMenu = new QPopupMenu( popup );
+    connect( subMenu, SIGNAL( activated(int) ), this, SLOT( searchColumnsMenuActivated(int) ) );
+
+    popup->insertSeparator();
+    popup->insertItem( i18n("Search Columns"), subMenu );
+    
+    subMenu->insertItem(i18n("All Columns"), KLISTVIEWSEARCHLINE_ALLCOLUMNS_ID);
+    subMenu->insertSeparator();    
+    
+    bool allColumnsAreSearchColumns = true;
+    for(int i = 0; i < d->listView->columns(); i++) {
+        subMenu->insertItem(d->listView->columnText(i), i);
+        if (d->searchColumns.isEmpty() || d->searchColumns.find(i) != d->searchColumns.end())
+            subMenu->setItemChecked(i, true);
+        else
+            allColumnsAreSearchColumns = false;
+    }
+    subMenu->setItemChecked(KLISTVIEWSEARCHLINE_ALLCOLUMNS_ID, allColumnsAreSearchColumns);
+    
+    // searchColumnsMenuActivated() relies on one possible "all" representation
+    if (allColumnsAreSearchColumns && !d->searchColumns.isEmpty())
+      d->searchColumns.clear();
+    
+    return popup;   
+}    
+
 ////////////////////////////////////////////////////////////////////////////////
 // protected slots
 ////////////////////////////////////////////////////////////////////////////////
@@ -237,6 +271,30 @@ void KListViewSearchLine::listViewDeleted()
 {
     d->listView = 0;
     setEnabled(false);
+}
+
+void KListViewSearchLine::searchColumnsMenuActivated(int id)
+{
+    if (id==KLISTVIEWSEARCHLINE_ALLCOLUMNS_ID) {
+      if (d->searchColumns.isEmpty())
+          d->searchColumns.append(0);
+      else
+          d->searchColumns.clear();
+    }
+    else {
+      if (d->searchColumns.find(id) != d->searchColumns.end())
+          d->searchColumns.remove(id);
+      else {
+          if (d->searchColumns.isEmpty())
+             for(int i = 0; i < d->listView->columns(); i++) {
+                 if (i!=id)
+                     d->searchColumns.append(i);
+             }
+          else
+              d->searchColumns.append(id);
+      }
+    }
+    updateSearch();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

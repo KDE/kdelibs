@@ -135,6 +135,13 @@ protected:
      */
     virtual bool itemMatches(const QListViewItem *item, const QString &s) const;
 
+    /**
+    * Re-implemented for internal reasons.  API not affected.
+    *
+    * See QLineEdit::mousePressEvent().
+    */
+    virtual QPopupMenu *createPopupMenu();
+
 protected slots:
     /**
      * When keys are pressed a new search string is created and a timer is
@@ -179,6 +186,7 @@ private:
 private slots:
     void itemAdded(QListViewItem *item) const;
     void listViewDeleted();
+    void searchColumnsMenuActivated(int);
 
 private:
     class KListViewSearchLinePrivate;
