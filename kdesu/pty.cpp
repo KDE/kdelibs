@@ -59,10 +59,9 @@ extern "C" char * ptsname(int fd);
 extern "C" int unlockpt(int fd);
 #endif
 
-#ifdef HAVE_OPENPTY
-	#warning hack.. use proper autoconf tests
-	#include <termios.h>
-	#include <libutil.h>
+#include <termios.h>
+#ifdef HAVE_LIBUTIL_H
+#include <libutil.h>
 #endif
 
 PTY::PTY()
