@@ -111,7 +111,7 @@ public:
     // KDE4 merge with above with time = 0 ???
     // this method is not really deprecated, but in most cases it should
     // be replaced with activateWindow()
-    static void setActiveWindow( WId win ) KDE_DEPRECATED;
+    static void setActiveWindow( WId win );
 
     /**
      * When application finishes some operation and wants to notify
