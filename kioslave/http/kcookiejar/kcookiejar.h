@@ -28,6 +28,7 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qdict.h>
+#include <qlist.h>
 #include <time.h>
 
 class KCookieJar;
