@@ -3,6 +3,7 @@ Type=TGA
 Header=^\x01\x01[\x02|\x0a]\x01\x01\x01\x01\x01\x01\x01\x01\x01
 Name=Truevision Targa image
 Name[be]=Малюнак Truevision Targa
+Name[da]=Truevision Targa-billede
 Name[es]=Imagen de visión verdadera Targa
 Name[ga]=Íomhá Truevision Targa
 Read=true

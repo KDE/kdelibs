@@ -1,11 +1,13 @@
 [Misc]
 Name=KDE Classic
 Name[be]=Клясычны KDE
+Name[da]=KDE Klassisk
 Name[es]=KDE clásico
 Name[ga]=KDE Claisaiceach
 Name[sv]=KDE klassisk
 Comment=Classic KDE style
 Comment[be]=Клясычны стыль KDE
+Comment[da]=Klassisk KDE-stil
 Comment[es]=Estilo KDE clásico
 Comment[ga]=Stíl Chlaisaiceach KDE
 Comment[hu]=A KDE korábbi stílusa
