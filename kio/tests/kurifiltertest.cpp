@@ -218,7 +218,8 @@ int main(int argc, char **argv)
     // Local domain filter - If you uncomment these test, make sure you
     // you adjust it based on the localhost entry in your /etc/hosts file.
     // filter( "localhost:3128", "http://localhost.localdomain:3128", KURIFilterData::NET_PROTOCOL );
-    // filter( "localhost", "http://localhost", KURIFilterData::NET_PROTOCOL );
+    // filter( "localhost", "http://localhost.localdomain", KURIFilterData::NET_PROTOCOL );
+    // filter( "localhost/~blah", "http://localhost.localdomain/~blah", KURIFilterData::NET_PROTOCOL );
 
     filter( "/", "/", KURIFilterData::LOCAL_DIR );
     filter( "/", "/", KURIFilterData::LOCAL_DIR, "kshorturifilter" );
