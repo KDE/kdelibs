@@ -134,8 +134,8 @@ bool KURIFilter::filterURI( KURIFilterData& data, const QStringList& filters )
 {
     bool filtered = false;
     KURIFilterPluginList plugins = m_lstPlugins;
-    // If we have a filter list, only include
-    // those specifically requested.
+    // If we have a filter list, only include those that were
+    // specifically requested.
     if( filters.count() > 0 )
     {
         for( KURIFilterPlugin* it = plugins.first(); it != 0; it = plugins.next() )
@@ -149,7 +149,12 @@ bool KURIFilter::filterURI( KURIFilterData& data, const QStringList& filters )
         }
     }
     QListIterator<KURIFilterPlugin> it( plugins );
-    for (; it.current(); ++it) filtered |= it.current()->filterURI( data );
+    for (; it.current(); ++it)
+    {
+        filtered = it.current()->filterURI( data );
+        if( it.count() > 1 && filtered )
+            break;  // If already filtered and have more than one filter plugin why continue ?? (DA)
+    }
     return filtered;
 }
 
