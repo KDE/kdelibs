@@ -1107,17 +1107,19 @@ void RenderBlock::layoutPositionedObjects(bool relayoutChildren)
         //kdDebug( 6040 ) << renderName() << " " << this << "::layoutPositionedObjects() start" << endl;
         RenderObject* r;
         QPtrListIterator<RenderObject> it(*m_positionedObjects);
+        bool adjOverflow = !(style()->position() == FIXED) && style()->hidesOverflow();
         for ( ; (r = it.current()); ++it ) {
             //kdDebug(6040) << "   have a positioned object" << endl;
             if ( relayoutChildren )
                 r->setLayouted( false );
             if ( !r->layouted() )
                 r->layout();
-            if (r->xPos() + r->effectiveWidth() > m_overflowWidth)
-               m_overflowWidth = r->xPos() + r->effectiveWidth();
-            if (r->yPos() + r->effectiveHeight() > m_overflowHeight)
-               m_overflowHeight = r->yPos() + r->effectiveHeight();
-
+            if (adjOverflow && r->style()->position() == ABSOLUTE) {
+                if (r->xPos() + r->effectiveWidth() > m_overflowWidth)
+                    m_overflowWidth = r->xPos() + r->effectiveWidth();
+                if (r->yPos() + r->effectiveHeight() > m_overflowHeight)
+                    m_overflowHeight = r->yPos() + r->effectiveHeight();
+            }
         }
     }
 }
