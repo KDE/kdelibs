@@ -211,7 +211,14 @@ void KCMultiDialog::clientChanged(bool state)
 
 void KCMultiDialog::addModule(const QString& path, bool withfallback)
 {
-    addModule(KCModuleInfo( path ), QStringList(), withfallback);
+    QString complete = path;
+
+    if( !path.endsWith( ".desktop" ))
+        complete += ".desktop";
+
+    KService::Ptr service = KService::serviceByStorageId( complete );
+
+    addModule( KCModuleInfo( service ), QStringList(), withfallback);
 }
 
 void KCMultiDialog::addModule(const KCModuleInfo& moduleinfo,
@@ -219,6 +226,9 @@ void KCMultiDialog::addModule(const KCModuleInfo& moduleinfo,
 {
     kdDebug(710) << "KCMultiDialog::addModule " 
         << moduleinfo.moduleName() << endl;
+
+    if( !moduleinfo.service() )
+        return;
 
     if ( !kapp->authorizeControlModule( moduleinfo.service()->menuId() ))
             return;
