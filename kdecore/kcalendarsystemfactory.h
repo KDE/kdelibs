@@ -50,7 +50,7 @@ public:
    * 0 is specified.
    * @return a KCalendarSystem object
    */
-  static KCalendarSystem *create (const QString & calType = "gregorian",
+  static KCalendarSystem *create (const QString & calType = QString::fromLatin1("gregorian"),
                                   const KLocale * locale = 0);
 
   /**

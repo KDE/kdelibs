@@ -70,7 +70,7 @@ public:
    * Sets the property in which keys will be searched.
    * @param rProp the property that will be searched
    **/	
-   void setProp(const QString& rProp="");
+   void setProp(const QString& rProp=QString());
    /**
     * Returns the name of the property under which keys are searched.
     * @return the property that will be searched

@@ -20,9 +20,13 @@
 #ifndef __KSHORTCUTLIST_H
 #define __KSHORTCUTLIST_H
 
-class QString;
+#include <qglobal.h>	// For uint
+#include <qstring.h>
+
 class QVariant;
+class KConfigBase;
 class KInstance;
+class KKeySequence;
 class KShortcut;
 
 /**********************************************************************

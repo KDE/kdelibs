@@ -1,7 +1,9 @@
 
 INCLUDES= -I$(top_srcdir) -I$(top_srcdir)/kioslave -I$(top_srcdir)/kioslave/bzip2 $(all_includes) $(LIBXML_CFLAGS) $(LIBXSLT_CFLAGS)
+
+
 AM_LDFLAGS = $(KDE_RPATH) $(LIBXML_RPATH) $(LIBXSLT_RPATH) $(all_libraries)
-AM_CPPFLAGS = -DSRCDIR="\"$(shell (cd $(top_srcdir)/kdoctools && pwd))\"" 
+AM_CPPFLAGS = -DSRCDIR="\"@abs_top_srcdir@/kdoctools\""
 
 noinst_LTLIBRARIES = libkbzipfilter_dummy.la
 

@@ -23,7 +23,7 @@ class QTimer;
 
 class KFileDialog;
 class KFileItem;
-namespace KIO { class PreviewJob; }
+namespace KIO { class Job; class PreviewJob; }
 
 /**
  * Image preview widget for the file dialog.

@@ -26,6 +26,8 @@
 #include <bzip2/kbzip2filter.h>
 #include <klibloader.h>
 
+#include <iostream>
+
 #if !defined( SIMPLE_XSLT )
 extern HelpProtocol *slave;
 #define INFO( x ) if (slave) slave->infoMessage(x);
@@ -280,6 +282,8 @@ void fillInstance(KInstance &ins) {
         ins.dirs()->addResourceDir("dtd", SRCDIR);
     }
 
+	cerr << catalogs.latin1() << endl;
+
     xmlLoadCatalogs(catalogs.latin1());
 }
 
@@ -385,7 +389,7 @@ bool compareTimeStamps( const QString &older, const QString &newer )
     assert( _older.exists() );
     if ( !_newer.exists() )
         return false;
-    return ( _newer.lastModified() > _older.lastModified() );
+    return ( _newer.lastModified() >= _older.lastModified() );
 }
 
 QCString fromUnicode( const QString &data )

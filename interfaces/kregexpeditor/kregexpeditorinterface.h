@@ -1,6 +1,9 @@
 #ifndef __kregexpeditorinterface_h__
 #define __kregexpeditorinterface_h__
 
+#include <qobject.h>
+#include <qstring.h>
+
 /**
  *  A graphical editor for regular expressions.
  * 

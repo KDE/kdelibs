@@ -121,12 +121,14 @@ class KPluginInfo
 		/**
 		 * @return The user visible name of the plugin.
 		 */
-		const QString & name() const { return m_propertymap[ "Name" ]; }
+		const QString & name() const 
+			{ return m_propertymap[ QString::fromLatin1("Name") ]; }
 
 		/**
 		 * @return A comment describing the plugin.
 		 */
-		const QString & comment() const { return m_propertymap[ "Comment" ]; }
+		const QString & comment() const 
+			{ return m_propertymap[ QString::fromLatin1("Comment") ]; }
 
 		/**
 		 * @return The file containing the information about the plugin.
@@ -136,38 +138,46 @@ class KPluginInfo
 		/**
 		 * @return The author of this plugin.
 		 */
-		const QString & author() const { return m_propertymap[ "Author" ]; }
+		const QString & author() const 
+			{ return m_propertymap[ QString::fromLatin1("Author") ]; }
 
 		/**
 		 * @return The email address of the author.
 		 */
-		const QString & email() const { return m_propertymap[ "Email" ]; }
+		const QString & email() const 
+			{ return m_propertymap[ QString::fromLatin1("Email") ]; }
 		
 		/**
 		 * @return The type of this plugin (e.g. playlist/skin).
 		 */
-		const QString & type() const { return m_propertymap[ "Type" ]; }
+		const QString & type() const 
+			{ return m_propertymap[ QString::fromLatin1("Type") ]; }
 
 		/**
 		 * @return The internal name of the plugin (for KParts Plugins this is
 		 * the same name as set in the .rc file).
 		 */
-		const QString & pluginname() const { return m_propertymap[ "PluginName" ]; }
+		const QString & pluginname() const 
+			{ return m_propertymap[ QString::fromLatin1("PluginName") ]; }
 
 		/**
 		 * @return The version of the plugin.
 		 */
-		const QString & version() const { return m_propertymap[ "Version" ]; }
+		const QString & version() const 
+			{ return m_propertymap[ QString::fromLatin1("Version") ]; }
 
 		/**
 		 * @return The website of the plugin/author.
 		 */
-		const QString & website() const { return m_propertymap[ "Website" ]; }
-		
+		const QString & website() const 
+			{ return m_propertymap[ QString::fromLatin1("Website") ]; }
+
+
 		/**
 		 * @return The license of this plugin.
 		 */
-		const QString & license() const { return m_propertymap[ "License" ]; }
+		const QString & license() const 
+			{ return m_propertymap[ QString::fromLatin1("License") ]; }
 
 		/**
 		 * @return A list of plugins required for this plugin to be enabled. Use

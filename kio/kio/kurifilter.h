@@ -23,13 +23,13 @@
 
 #include <qptrlist.h>
 #include <qobject.h>
+#include <qstringlist.h>
 
 #include <kurl.h>
 
 class KURIFilterPrivate;
 class KURIFilterDataPrivate;
 
-class QStringList;
 class KCModule;
 
 /**
