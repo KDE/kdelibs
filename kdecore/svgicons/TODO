@@ -3,6 +3,7 @@
 - smaller art_render_new areas, if needed
 - make gradients work for boundingbox as well
 - patterns
+- handle <svg> nested inside <svg>
 
 Things doubtful of supporting
 
