@@ -137,7 +137,7 @@ bool KConfigINIBackEnd::parseConfigFiles()
     QStringList::ConstIterator it;
     
     for (it = list.fromLast(); it != list.end(); it--) {
-      
+
       QFile aConfigFile( *it );
       // we can already be sure that this file exists
       aConfigFile.open( IO_ReadOnly );

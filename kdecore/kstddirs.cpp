@@ -276,8 +276,6 @@ KStandardDirs::findAllResources( const QString& type,
 			         bool uniq,
                                  QStringList &relList) const
 {    
-debug("findAllResources( %s, %s )", type.ascii(), filter.ascii());
-
     QStringList list;
     if (filter.at(0) == '/') // absolute paths we return
     {
