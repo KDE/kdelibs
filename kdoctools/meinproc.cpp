@@ -265,7 +265,7 @@ int main(int argc, char **argv) {
                 file.open(IO_WriteOnly);
                 filedata.replace( QRegExp( "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">" ),
                                   QString( "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=%1\">" ).arg(  QTextCodec::codecForLocale()->name() ) );
-                QCString data = filedata.local8Bit();
+                QCString data = fromUnicode( filedata );
                 file.writeBlock(data.data(), data.length());
                 file.close();
 

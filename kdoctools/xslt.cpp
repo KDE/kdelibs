@@ -18,6 +18,7 @@
 #include <config.h>
 #include <stdarg.h>
 #include <klibloader.h>
+#include <kcharsets.h>
 #include <gzip/kgzipfilter.h>
 #include <bzip2/kbzip2filter.h>
 
@@ -373,4 +374,45 @@ bool compareTimeStamps( const QString &older, const QString &newer )
     if ( !_newer.exists() )
         return false;
     return ( _newer.lastModified() > _older.lastModified() );
+}
+
+QCString fromUnicode( const QString &data )
+{
+    QTextCodec *locale = QTextCodec::codecForLocale();
+    QCString result;
+    char buffer[30000];
+    uint buffer_len = 0;
+    uint len = 0;
+    uint offset = 0;
+
+    QString part;
+
+    while ( offset < data.length() )
+    {
+        part = data.mid( offset, 5000 );
+        QCString test = locale->fromUnicode( part );
+        if ( locale->toUnicode( test ) == part ) {
+            result += test;
+            offset += 5000;
+            continue;
+        }
+        len = part.length();
+        buffer_len = 0;
+        for ( uint i = 0; i < len; i++ ) {
+            QCString test = locale->fromUnicode( part.mid( i, 1 ) );
+            if ( locale->toUnicode( test ) == part.mid( i, 1 ) ) {
+                strcpy( buffer + buffer_len, test.data() );
+                buffer_len += test.length();
+            } else {
+                QString res;
+                res.sprintf( "&#%d;", part.at( i ).unicode() );
+                test = locale->fromUnicode( res );
+                strcpy( buffer + buffer_len, test.data() );
+                buffer_len += test.length();
+            }
+        }
+        result += QCString( buffer, buffer_len );
+        offset += 5000;
+    }
+    return result;
 }

@@ -11,6 +11,7 @@ QString splitOut(const QString &parsed, int index);
 void fillInstance(KInstance &ins);
 bool saveToCache( const QString &contents, const QString &filename );
 QString lookForCache( const QString &filename );
+QCString fromUnicode( const QString &data );
 
 extern bool warnings_exist;
 
