@@ -108,8 +108,10 @@ void KIEBookmarkImporter::parseIEBookmarks( )
 
 QString KIEBookmarkImporter::IEBookmarksDir()
 {
-   static KIEBookmarkImporterImpl importer;
-   return importer.findDefaultLocation();
+   static KIEBookmarkImporterImpl* p = 0;
+   if (!p) 
+       p = new KIEBookmarkImporterImpl;
+   return p->findDefaultLocation();
 }
 
 void KIEBookmarkImporterImpl::parse() {
