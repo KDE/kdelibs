@@ -57,10 +57,18 @@ class QWidget;
  * anything to a widget.  Note that KAutoConfig doesn't  require a database,
  * it simply uses the functionality that is built into the QSqlPropertyMap
  * class.  New widgets can be added to the map using  
- * QSqlPropertyMap::installDefaultMap(). 
+ * QSqlPropertyMap::installDefaultMap().  Note that you can't just add any
+ * class.  The class must have a matching Q_PROPERTY(...) macro defined.
  * 
- * For example (note that KColorButton is already added and it doesn't need to  
+ * For example (note that KColorButton is already added and it doesn't need to 
  * manually added):
+ *
+ * kcolorbutton.h defines the following property:
+ * \code
+ * Q_PROPERTY( QColor color READ color WRITE setColor )
+ * \endcode
+ *
+ * To add KColorButton the following code would be inserted in the main.
  * 
  * \code
  * QSqlPropertyMap *map = QSqlPropertyMap::defaultMap();
@@ -70,6 +78,8 @@ class QWidget;
  *
  * If you add a new widget to the QSqlPropertyMap and wish to be notified when
  * it is modified you should add its signal using addWidgetChangedSignal().
+ * If the Apply and Default buttons and enabled/disabled by KAutoConfigDialog
+ * automaticly than this must be done.
  *
  * @see KAutoConfigDialog
  * @since 3.2

@@ -33,7 +33,7 @@ class KAutoConfig::KAutoConfigPrivate {
 public:
   KAutoConfigPrivate() : changed(false)
 #ifndef NDEBUG
-	  , retrievedSettings(false)
+    , retrievedSettings(false)
 #endif
   { init(); }
 
@@ -77,12 +77,12 @@ public:
 };
 
 KAutoConfig::KAutoConfig(KConfig *kconfig, QObject *parent,
-	const char *name) : QObject(parent, name), config(kconfig) {
+    const char *name) : QObject(parent, name), config(kconfig) {
   d = new KAutoConfigPrivate();
 }
 
 KAutoConfig::KAutoConfig(QObject *parent, const char *name) :
-	QObject(parent, name), config(KGlobal::config()) {
+    QObject(parent, name), config(KGlobal::config()) {
   d = new KAutoConfigPrivate();
 }
 
@@ -173,8 +173,8 @@ bool KAutoConfig::saveSettings() {
 #ifndef NDEBUG
   if(!d->retrievedSettings){
       kdDebug(180) << "KAutoConfig::saveSettings() called before "
-	      "KAutoConfig::retrieveSettings().  This should NEVER happen.  "
-	      "Please Fix." << endl;
+      "KAutoConfig::retrieveSettings().  This should NEVER happen.  "
+      "Please Fix." << endl;
     return false;
   }
 #endif
@@ -227,8 +227,8 @@ bool KAutoConfig::hasChanged() const {
 #ifndef NDEBUG
   if(!d->retrievedSettings){
     kdDebug(180) << "KAutoConfig::hasChanged() called before "
-	      "KAutoConfig::retrieveSettings().  This should NEVER happen.  "
-	      "Please Fix." << endl;
+      "KAutoConfig::retrieveSettings().  This should NEVER happen.  "
+      "Please Fix." << endl;
     return false;
   }
 #endif
@@ -248,7 +248,7 @@ bool KAutoConfig::hasChanged() const {
       QVariant defaultValue = d->defaultValues[groupWidget];
       QVariant currentValue = propertyMap->property(groupWidget);
       QVariant savedValue = config->readPropertyEntry(groupWidget->name(),
-		      defaultValue);
+      defaultValue);
 
       if((currentValue == defaultValue && savedValue != currentValue) ||
          (savedValue != currentValue))
@@ -262,8 +262,8 @@ bool KAutoConfig::isDefault() const {
 #ifndef NDEBUG
   if(!d->retrievedSettings){
     kdDebug(180) << "KAutoConfig::isDefault() called before "
-	      "KAutoConfig::retrieveSettings().  This should NEVER happen.  "
-	      "Please Fix." << endl;
+      "KAutoConfig::retrieveSettings().  This should NEVER happen.  "
+      "Please Fix." << endl;
     return false;
   }
 #endif
@@ -295,8 +295,8 @@ void KAutoConfig::resetSettings(){
 #ifndef NDEBUG
   if(!d->retrievedSettings){
     kdDebug(180) << "KAutoConfig::resetSettings() called before "
-	      "KAutoConfig::retrieveSettings().  This should NEVER happen.  "
-	      "Please Fix." << endl;
+      "KAutoConfig::retrieveSettings().  This should NEVER happen.  "
+      "Please Fix." << endl;
     return;
   }
 #endif
@@ -324,7 +324,7 @@ void KAutoConfig::resetSettings(){
 }
 
 bool KAutoConfig::parseChildren(const QWidget *widget,
-	QPtrList<QWidget>& currentGroup, bool trackChanges){
+    QPtrList<QWidget>& currentGroup, bool trackChanges){
   bool valueChanged = false;
   const QPtrList<QObject> *listOfChildren = widget->children();
   if(!listOfChildren)
@@ -333,49 +333,70 @@ bool KAutoConfig::parseChildren(const QWidget *widget,
   QSqlPropertyMap *propertyMap = QSqlPropertyMap::defaultMap();
   QPtrListIterator<QObject> it( *listOfChildren );
   QObject *object;
-  while ( (object = it.current()) != 0 ) {
+  while ( (object = it.current()) != 0 )
+  {
     ++it;
-    if(!object->isWidgetType())
+    if(!object->isWidgetType()){
       continue;
+    }
     QWidget *childWidget = (QWidget *)object;
-    if(d->ignore.containsRef(childWidget))
+    if(d->ignore.containsRef(childWidget)){
       continue;
+    }
 
     bool parseTheChildren = true;
     if( d->ignoreTheseWidgets[childWidget->className()] == 0 &&  
-	childWidget->name(0) != NULL ){
+      childWidget->name(0) != NULL )
+    {
       QVariant defaultSetting = propertyMap->property(childWidget);
-      if(defaultSetting.isValid()){
+      if(defaultSetting.isValid())
+      {
         parseTheChildren = false;
-	if(config->entryIsImmutable( childWidget->name()))
-	  childWidget->setEnabled(false);
-        else{
+        // Disable the widget if it is immutable?
+        if(config->entryIsImmutable( childWidget->name()))
+          childWidget->setEnabled(false);
+        else
+        {
+          // FOR THOSE WHO ARE LOOKING
+          // Here is the code were the widget is actually marked to watch.
+          //qDebug("KAutoConfig: Adding widget(%s)",childWidget->name()); 
           currentGroup.append(childWidget);
-	  d->defaultValues.insert(childWidget, defaultSetting);
+          d->defaultValues.insert(childWidget, defaultSetting);
         }
+        // Get/Set settings and connect up the changed signal
         QVariant setting =
-	  config->readPropertyEntry(childWidget->name(), defaultSetting);
-	if(setting != defaultSetting){
-	  propertyMap->setProperty(childWidget, setting);
-	  valueChanged = true;
+         config->readPropertyEntry(childWidget->name(), defaultSetting);
+        if(setting != defaultSetting)
+        {
+          propertyMap->setProperty(childWidget, setting);
+          valueChanged = true;
         }
-
-	if(trackChanges && changedMap.find(childWidget->className()) != changedMap.end())
-	  connect(childWidget, changedMap[childWidget->className()], SIGNAL(widgetModified()));
+        if(trackChanges && changedMap.find(childWidget->className()) !=
+            changedMap.end())
+        {
+          connect(childWidget, changedMap[childWidget->className()],
+                  this, SIGNAL(widgetModified()));
+        }
 #ifndef NDEBUG
-	else if(trackChanges && changedMap.find(childWidget->className()) == changedMap.end())
-            kdDebug(180) << "KAutoConfig::retrieveSettings, Unknown changed "
-		    "signal for widget:" << childWidget->className() << endl;
+        else if(trackChanges &&
+          changedMap.find(childWidget->className()) == changedMap.end())
+        {
+          kdDebug(180) << "KAutoConfig::retrieveSettings, Unknown changed "
+           "signal for widget:" << childWidget->className() << endl;
+        }
 #endif
 
       }
 #ifndef NDEBUG
       else
+      { 
           kdDebug(180) << "KAutoConfig::retrieveSettings, Unknown widget:" 
-		  << childWidget->className() << endl;
+           << childWidget->className() << endl;
+      }
 #endif
     }
-    if(parseTheChildren){
+    if(parseTheChildren)
+    {
       // this widget is not known as something we can store.
       // Maybe we can store one of its children.
       valueChanged |= parseChildren(childWidget, currentGroup, trackChanges);
