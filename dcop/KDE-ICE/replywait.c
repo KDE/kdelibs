@@ -84,6 +84,8 @@ int	majorOpcode;
     /*
      * Return the first replyWait in the list with the given majorOpcode
      */
+    _IceSavedReplyWait	*savedReplyWait = iceConn->saved_reply_waits;
+     
 
     /* first translate the opcode from the other end to our major */
     if (majorOpcode != 0) /* major 0 (ICE) is always the same*/
@@ -93,7 +95,6 @@ int	majorOpcode;
 	majorOpcode = iceConn->process_msg_info[majorOpcode - iceConn->his_min_opcode].my_opcode;
     }
     
-    _IceSavedReplyWait	*savedReplyWait = iceConn->saved_reply_waits;
 
     while (savedReplyWait)
     {
