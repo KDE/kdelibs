@@ -20,7 +20,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 #ifndef HTML_FORMIMPL_H
 #define HTML_FORMIMPL_H
@@ -302,7 +301,7 @@ public:
     void activate();
 
     void setUnsubmittedFormChange(bool unsubmitted) { m_unsubmittedFormChange = unsubmitted; }
-    
+
 protected:
 
     DOMString m_value;

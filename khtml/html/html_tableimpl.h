@@ -22,7 +22,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 #ifndef HTML_TABLEIMPL_H
 #define HTML_TABLEIMPL_H
@@ -188,7 +187,7 @@ public:
 
     int colSpan() const { return cSpan; }
     int rowSpan() const { return rSpan; }
-    
+
     virtual Id id() const { return _id; }
     virtual void parseAttribute(AttributeImpl *attr);
     virtual void attach();

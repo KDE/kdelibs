@@ -20,7 +20,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 #ifndef RENDER_FORM_H
 #define RENDER_FORM_H
@@ -290,7 +289,7 @@ class RenderFieldset : public RenderBlock
 {
 public:
     RenderFieldset(DOM::HTMLGenericFormElementImpl *element);
-    
+
     virtual const char *renderName() const { return "RenderFieldSet"; }
     virtual RenderObject* layoutLegend(bool relayoutChildren);
     virtual void setStyle(RenderStyle* _style);

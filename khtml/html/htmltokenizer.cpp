@@ -27,7 +27,6 @@
 //----------------------------------------------------------------------------
 //
 // KDE HTML Widget - Tokenizers
-// $Id$
 
 //#define TOKEN_DEBUG 1
 //#define TOKEN_DEBUG 2

@@ -20,7 +20,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 #ifndef RENDERTEXT_H
 #define RENDERTEXT_H
@@ -309,16 +308,16 @@ public:
                        int startOffset, int endOffset);
     RenderTextFragment(DOM::NodeImpl* _node, DOM::DOMStringImpl* _str);
     ~RenderTextFragment();
-    
+
     virtual bool isTextFragment() const;
     virtual const char *renderName() const { return "RenderTextFragment"; }
-    
+
     uint start() const { return m_start; }
     uint end() const { return m_end; }
-    
+
     DOM::DOMStringImpl* contentString() const { return m_generatedContentStr; }
     virtual DOM::DOMStringImpl* originalString() const;
-    
+
 private:
     uint m_start;
     uint m_end;

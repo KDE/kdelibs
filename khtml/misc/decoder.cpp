@@ -23,7 +23,6 @@
 //----------------------------------------------------------------------------
 //
 // KDE HTML Widget -- decoder for input stream
-// $Id$
 
 #undef DECODE_DEBUG
 //#define DECODE_DEBUG
