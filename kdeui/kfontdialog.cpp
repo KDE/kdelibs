@@ -39,7 +39,6 @@
 #include <qlayout.h>
 #include <qscrollbar.h>
 #include <qstringlist.h>
-#include <qtextstream.h>
 
 #include <kapp.h>
 #include <kcharsets.h>
@@ -533,6 +532,9 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.52  2000/06/03 01:18:17  gehrmab
+* KGlobal <-> KGlobalSettings <-> KApplication cleanup
+*
 * Revision 1.51  2000/05/03 19:25:41  jsixt
 * Use KConfigGroupSaver instead of a simple setGroup() to change
 * the group in config files and to revert it back again automatically.
