@@ -19,6 +19,13 @@
 /* $Id$
  *
  * $Log$
+ * Revision 1.29  1999/05/07 15:42:26  kulow
+ * making some changes to the code and partly to the API to make it
+ * -DQT_NO_ASCII_CAST compatible.
+ * The job is quite boring, but triggers some abuses of QString. BTW:
+ * I added some TODOs to the code where I was too lazy to continue.
+ * Someone should start a grep for TODO in the code on a regular base ;)
+ *
  * Revision 1.28  1999/05/03 07:21:27  kulow
  * some more warnings removed. Wouldn't it be cool to compile KDE
  * with -ansi -pedantic -Werror? I put that into my egcs's spec file
@@ -153,6 +160,10 @@
 
 #ifndef DRAG_H
 #define DRAG_H
+
+#ifndef _KAPP_H
+#warning KDNDWidget, KDNDDropZone & KDNDIcon are obsolete and will disappear soon. Use Qt DnD instead.
+#endif
 
 #include <qwidget.h>
 #include <qpixmap.h>
