@@ -37,8 +37,10 @@
 using namespace DOM;
 using namespace khtml;
 
+#ifndef KDE_USE_FINAL
 #define QT_ALLOC_QCHAR_VEC( N ) (QChar*) new char[ sizeof(QChar)*( N ) ]
 #define QT_DELETE_QCHAR_VEC( P ) delete[] ((char*)( P ))
+#endif
 
 template class QList<Length>;
 
