@@ -24,18 +24,21 @@
  */
 // -------------------------------------------------------------------------
 #include "html_inlineimpl.h"
-
+#include "html_imageimpl.h"
 #include "html_documentimpl.h"
 using namespace DOM;
 
 #include <kdebug.h>
 
 #include "htmlhashes.h"
+#include "khtmlview.h"
+#include "khtml_part.h"
 #include "css/csshelper.h"
 #include "css/cssproperties.h"
 #include "css/cssstyleselector.h"
-
+#include "xml/dom2_eventsimpl.h"
 #include "rendering/render_br.h"
+#include "rendering/render_image.h"
 
 using namespace khtml;
 
@@ -68,6 +71,7 @@ bool HTMLAnchorElementImpl::prepareMouseEvent( int _x, int _y,
 {
     bool inside = HTMLElementImpl::prepareMouseEvent( _x, _y, _tx, _ty, ev);
 
+    // ### ev->noHref obsolete now ? ( Dirk )
     if ( inside && ev->url==0 && !ev->noHref
          && (!(m_render && m_render->style() && m_render->style()->visiblity() == HIDDEN)) )
     {
@@ -81,6 +85,45 @@ bool HTMLAnchorElementImpl::prepareMouseEvent( int _x, int _y,
 
     return inside;
 }
+
+
+void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
+{
+    // ### KHTML_CLICK_EVENT??? why that?
+    // port to DOMACTIVATE
+    if ( evt->id() ==  EventImpl::KHTML_CLICK_EVENT && evt->isMouseEvent()) {
+        MouseEventImpl* e = static_cast<MouseEventImpl*>( evt );
+        QString utarget;
+        QString url;
+
+        if ( href )
+            url = QConstString( href->s, href->l ).string();
+
+        if ( target )
+            utarget = QConstString( target->s, target->l ).string();
+
+        if ( e->target()->id() == ID_IMG ) {
+            HTMLImageElementImpl* img = static_cast<HTMLImageElementImpl*>( e->target() );
+            if ( img && img->isServerMap() )
+            {
+                khtml::RenderImage *r = static_cast<khtml::RenderImage *>(img->renderer());
+                if(r)
+                {
+                    int absx, absy, vx, vy;
+                    r->absolutePosition(absx, absy);
+                    ownerDocument()->view()->contentsToViewport( absx, absy, vx, vy );
+
+                    int x(e->clientX()), y(e->clientY());
+                    url += QString("?%1,%2").arg( x ).arg( y );
+                }
+            }
+        }
+        if ( !evt->defaultPrevented() )
+            ownerDocument()->view()->part()->
+                urlSelected( url, e->button(), 0, utarget );
+    }
+}
+
 
 void HTMLAnchorElementImpl::parseAttribute(AttrImpl *attr)
 {

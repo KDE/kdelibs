@@ -50,6 +50,7 @@ namespace DOM
   class HTMLIFrameElementImpl;
   class HTMLObjectElementImpl;
   class HTMLFormElementImpl;
+  class HTMLAnchorElementImpl;
   class Node;
 };
 
@@ -130,6 +131,7 @@ class KHTMLPart : public KParts::ReadOnlyPart
   friend class DOM::HTMLIFrameElementImpl;
   friend class DOM::HTMLObjectElementImpl;
   friend class DOM::HTMLElementImpl;
+  friend class DOM::HTMLAnchorElementImpl;
   friend class KHTMLRun;
   friend class DOM::HTMLFormElementImpl;
   friend class khtml::RenderPartObject;

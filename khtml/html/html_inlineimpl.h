@@ -53,6 +53,7 @@ public:
     virtual bool prepareMouseEvent( int x, int y,
                                     int _tx, int _ty,
                                     MouseEvent *ev);
+    virtual void defaultEventHandler(EventImpl *evt);
 protected:
     DOMStringImpl *href;
     DOMStringImpl *target;

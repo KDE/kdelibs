@@ -2254,12 +2254,6 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   if ( !d->m_bComplete && !hasTarget )
     closeURL();
 
-  if (m_url == cURL)
-  {
-     // We don't really want to reload, we just want to verify our
-     // cached images, but the khtml image cache can't handle that yet.
-     args.reload = true;
-  }
   if (!m_url.url().isEmpty())
       args.metaData()["referrer"]=m_url.url();
   emit d->m_extension->openURLRequest( cURL, args );
@@ -3688,133 +3682,69 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
   d->m_mousePressNode = DOM::Node();
 
   if ( d->m_bMousePressed )
-  {
-    // in case we started an autoscroll in MouseMove event
-    // ###
     stopAutoScroll();
-    //disconnect( this, SLOT( slotUpdateSelectText(int) ) );
-  }
 
   // Used to prevent mouseMoveEvent from initiating a drag before
   // the mouse is pressed again.
   d->m_bMousePressed = false;
 
-  if ( !d->m_strSelectedURL.isEmpty() && _mouse->button() != RightButton &&
-       event->isURLHandlingEnabled() )
+  if (_mouse->button() == MidButton)
   {
-     QString target;
-     QString url;
-     if( _mouse->button() == LeftButton ) {
-       url = splitUrlTarget(d->m_strSelectedURL, &target);
-     } else {
-       url = splitUrlTarget(d->m_strSelectedURL);
-       target = "_blank";
-     }
-//     kdDebug( 6000 ) << "m_strSelectedURL='" << url << "' target=" << target << endl;
+    QClipboard *cb = QApplication::clipboard();
+    QCString plain("plain");
+    QString url = cb->text(plain);
+    KURL u(url);
+    if (u.isValid())
+      urlSelected(url, 0,0, "_top");
+  }
 
-     // Visual action effect, over text links
-     if ( !innerNode.isNull() &&
-          (innerNode.nodeType() == DOM::Node::TEXT_NODE || innerNode.nodeType() == DOM::Node::ELEMENT_NODE))
-     {
-       khtml::RenderObject* o = static_cast<khtml::RenderObject*>(innerNode.handle()->renderer());
-       if(o) {
-           int x, y;
-           o->absolutePosition( x, y );
-           int vx, vy;
-           view()->contentsToViewport( x, y, vx, vy );
-           // ### fix pseudostyle :active !
-           if(o->style()) {
-               QPainter p(view()->viewport());
-               p.setPen( QPen(o->style()->color(), 0, DotLine));
-               p.drawRect(vx-1,vy-1, o->width()+2,o->height()+2);
-               QTimer::singleShot(100, d->m_view->viewport(), SLOT(update()));
-           }
-       }
-     }
-     if ( !innerNode.isNull() && innerNode.elementId() == ID_IMG ) {
-       HTMLImageElementImpl *i = static_cast<HTMLImageElementImpl *>(innerNode.handle());
-       if ( i && i->isServerMap() )
-       {
-         khtml::RenderImage *r = static_cast<khtml::RenderImage *>(i->renderer());
-         if(r)
-         {
-           int absx, absy, vx, vy;
-           r->absolutePosition(absx, absy);
-           view()->contentsToViewport( absx, absy, vx, vy );
-
-           int x(_mouse->x() - vx), y(_mouse->y() - vy);
-           url += QString("?%1,%2").arg(x).arg(y);
-         }
-       }
-     }
-
-     urlSelected( url, _mouse->button(), _mouse->state(), target );
-   }
-   else if (_mouse->button() == MidButton)
-   {
-     QClipboard *cb = QApplication::clipboard();
-     QCString plain("plain");
-     QString url = cb->text(plain);
-     KURL u(url);
-     if (u.isValid())
-        urlSelected(url, 0,0, "_top");
-   }
-
-#if 0 // We shouldn't need this, we had to move here anyway
-  if(!innerNode.isNull() && innerNode.nodeType() == DOM::Node::TEXT_NODE) {
-  //    kdDebug( 6000 ) << "final range of selection to " << d->selectionStart << "/" << d->startOffset << " --> " << innerNode << "/" << offset << endl;
-        d->m_selectionEnd = innerNode;
-        d->m_endOffset = event->offset();
-    }
-#endif
-
-    // delete selection in case start and end position are at the same point
-    if(d->m_selectionStart == d->m_selectionEnd && d->m_startOffset == d->m_endOffset) {
-        d->m_selectionStart = 0;
-        d->m_selectionEnd = 0;
-        d->m_startOffset = 0;
-        d->m_endOffset = 0;
-        emitSelectionChanged();
+  // delete selection in case start and end position are at the same point
+  if(d->m_selectionStart == d->m_selectionEnd && d->m_startOffset == d->m_endOffset) {
+    d->m_selectionStart = 0;
+    d->m_selectionEnd = 0;
+    d->m_startOffset = 0;
+    d->m_endOffset = 0;
+    emitSelectionChanged();
+  } else {
+    // we have to get to know if end is before start or not...
+    DOM::Node n = d->m_selectionStart;
+    d->m_startBeforeEnd = false;
+    if( d->m_selectionStart == d->m_selectionEnd ) {
+      if( d->m_startOffset < d->m_endOffset )
+        d->m_startBeforeEnd = true;
     } else {
-        // we have to get to know if end is before start or not...
-        DOM::Node n = d->m_selectionStart;
-        d->m_startBeforeEnd = false;
-        if( d->m_selectionStart == d->m_selectionEnd ) {
-            if( d->m_startOffset < d->m_endOffset )
-                d->m_startBeforeEnd = true;
-        } else {
-        while(!n.isNull()) {
-            if(n == d->m_selectionEnd) {
-                d->m_startBeforeEnd = true;
-                break;
-            }
-            DOM::Node next = n.firstChild();
-            if(next.isNull()) next = n.nextSibling();
-            while( next.isNull() && !n.parentNode().isNull() ) {
-                n = n.parentNode();
-                next = n.nextSibling();
-            }
-            n = next;
+      while(!n.isNull()) {
+        if(n == d->m_selectionEnd) {
+          d->m_startBeforeEnd = true;
+          break;
         }
+        DOM::Node next = n.firstChild();
+        if(next.isNull()) next = n.nextSibling();
+        while( next.isNull() && !n.parentNode().isNull() ) {
+          n = n.parentNode();
+          next = n.nextSibling();
         }
-        if(!d->m_startBeforeEnd)
-        {
-            DOM::Node tmpNode = d->m_selectionStart;
-            int tmpOffset = d->m_startOffset;
-            d->m_selectionStart = d->m_selectionEnd;
-            d->m_startOffset = d->m_endOffset;
-            d->m_selectionEnd = tmpNode;
-            d->m_endOffset = tmpOffset;
-            d->m_startBeforeEnd = true;
-        }
-        // get selected text and paste to the clipboard
-        QString text = selectedText();
-        text.replace(QRegExp(QChar(0xa0)), " ");
-        QClipboard *cb = QApplication::clipboard();
-        cb->setText(text);
-        //kdDebug( 6000 ) << "selectedText = " << text << endl;
-        emitSelectionChanged();
+        n = next;
+      }
     }
+    if(!d->m_startBeforeEnd)
+    {
+      DOM::Node tmpNode = d->m_selectionStart;
+      int tmpOffset = d->m_startOffset;
+      d->m_selectionStart = d->m_selectionEnd;
+      d->m_startOffset = d->m_endOffset;
+      d->m_selectionEnd = tmpNode;
+      d->m_endOffset = tmpOffset;
+      d->m_startBeforeEnd = true;
+    }
+    // get selected text and paste to the clipboard
+    QString text = selectedText();
+    text.replace(QRegExp(QChar(0xa0)), " ");
+    QClipboard *cb = QApplication::clipboard();
+    cb->setText(text);
+    //kdDebug( 6000 ) << "selectedText = " << text << endl;
+    emitSelectionChanged();
+  }
 }
 
 void KHTMLPart::khtmlDrawContentsEvent( khtml::DrawContentsEvent * )
