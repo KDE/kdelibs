@@ -96,5 +96,11 @@ Object FunctionObject::construct(const List &args)
 				 -1);
   }
 
+  fimp->setPrototype(Global::current().functionPrototype());
   return Object(fimp);
+}
+
+FunctionPrototype::FunctionPrototype(const Object &p)
+    : ObjectImp(FunctionClass, Null(), p)
+{
 }

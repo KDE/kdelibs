@@ -36,7 +36,7 @@ const TypeInfo FunctionImp::info = { "Function", FunctionType,
 const TypeInfo InternalFunctionImp::info = { "InternalFunction",
 					      InternalFunctionType,
 					      &FunctionImp::info, 0, 0 };
-const TypeInfo ConstructorImp::info = { "Constructor", ConstructorType,
+const TypeInfo ConstructorImp::info = { "Function", ConstructorType,
 					 &InternalFunctionImp::info, 0, 0 };
 
 namespace KJS {

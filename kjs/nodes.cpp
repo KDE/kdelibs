@@ -1338,6 +1338,7 @@ KJSO FunctionBodyNode::evaluate()
 void FuncDeclNode::processFuncDecl()
 {
   const List *sc = Context::current()->pScopeChain();
+  /* TODO: let this be an object with [[Class]] property "Function" */
   FunctionImp *fimp = new DeclaredFunctionImp(ident, body, sc);
 
   int plen = 0;
