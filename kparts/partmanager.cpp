@@ -163,13 +163,13 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
     if ( w && ( ( w->testWFlags( WStyle_Dialog ) && w->isModal() ) ||
                 w->testWFlags( WType_Popup ) || w->testWFlags( WStyle_Tool ) ) )
     {
-      kDebugInfo( 1000, QString("No part made active although %1/%2 got event - loop aborted").arg(obj->name()).arg(obj->className()) );
+      //kDebugInfo( 1000, QString("No part made active although %1/%2 got event - loop aborted").arg(obj->name()).arg(obj->className()) );
       return false;
     }
 
   }
 
-  kDebugInfo( 1000, QString("No part made active although %1/%2 got event").arg(obj->name()).arg(obj->className()) );
+  //kDebugInfo( 1000, QString("No part made active although %1/%2 got event").arg(obj->name()).arg(obj->className()) );
   return false;
 }
 
