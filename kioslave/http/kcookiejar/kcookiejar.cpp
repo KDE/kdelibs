@@ -59,6 +59,9 @@
 
 #define READ_BUFFER_SIZE 8192
 
+template class QList<KCookie>;
+template class QDict<KCookieList>;
+
 // KCookie
 ///////////////////////////////////////////////////////////////////////////
 
@@ -429,7 +432,7 @@ static time_t parseExpire(const QString &_expireDate)
      }
      monthStr[3] = '\0';
      
-     newPosStr = strstr(haystack, monthStr);
+     newPosStr = (char*)strstr(haystack, monthStr);
 
      if (!newPosStr)
      	return result;  // Invalid expire date

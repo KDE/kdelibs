@@ -19,7 +19,6 @@
 #include <sys/wait.h>
 
 #include <assert.h>
-#include <list.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -63,6 +62,8 @@
 #define MAX_CHUNK_SIZE (1024*256)
 
 #define MAX_IPC_SIZE (1024*32)
+
+template class QStack<char>;
 
 bool open_CriticalDlg( const char *_titel, const char *_message, const char *_but1, const char *_but2 = 0L );
 bool open_PassDlg( const QString& _head, QString& _user, QString& _pass );

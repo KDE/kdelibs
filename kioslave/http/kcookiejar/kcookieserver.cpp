@@ -43,6 +43,8 @@ public:
    QString url;
 };
 
+template class  QList<CookieRequest>; 
+
 class RequestList : public QList<CookieRequest>
 {
 public:

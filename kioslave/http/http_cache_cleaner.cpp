@@ -49,6 +49,8 @@ struct FileInfo {
    int age; 
 };
 
+template class QList<FileInfo>; 
+
 class FileInfoList : public QList<FileInfo>
 {
 public:

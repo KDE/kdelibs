@@ -8,6 +8,7 @@
 
 #include <errno.h>
 #include <assert.h>
+#include <string.h>
 
 #include <kio_interface.h>
 #include <kprotocolmanager.h>
@@ -402,7 +403,7 @@ bool Ftp::ftpLogin( const char *_user, const char *_pass, QString& _redirect )
   while ( *p == ' ' || *p == '\t' ) p++;
   if ( *p != '"' )
     return true;
-  char *p2 = strchr( p + 1, '"' );
+  char *p2 = (char*)strchr( p + 1, '"' );
   if ( p2 == 0L )
     return true;
   *p2 = 0;
@@ -1125,7 +1126,7 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
 
                       // and p_date_3 contains probably a time
                       char * semicolon;
-                      if ( ( semicolon = strchr( p_date_3, ':' ) ) )
+                      if ( ( semicolon = (char*)strchr( p_date_3, ':' ) ) )
                       {
                         *semicolon = '\0';
                         tmptr->tm_min = atoi( semicolon + 1 );
