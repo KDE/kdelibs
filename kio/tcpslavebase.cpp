@@ -39,6 +39,9 @@
 #include <kssl.h>
 #include <ksslcertificate.h>
 #include <ksslcertificatecache.h>
+#include <ksslcertificatehome.h>
+#include <ksslcertdlg.h>
+#include <ksslpkcs12.h>
 #include <kmessagebox.h>
 
 #include <klocale.h>
@@ -46,9 +49,6 @@
 #include <qcstring.h>
 #include <qdatastream.h>
 
-#include <ksslcertificatehome.h>
-#include <ksslcertdlg.h>
-#include <ksslpkcs12.h>
 #include <kapp.h>
 
 #include "kio/tcpslavebase.h"
@@ -589,9 +589,12 @@ bool _IPmatchesCN = false;
    }
 
    if (!hasMetaData("parent_frame") || metaData("parent_frame") == "TRUE") {
+      // Since we're the parent, we need to teach the child.
+      setMetaData("ssl_parent_ip", d->ip);
+      setMetaData("ssl_parent_cert", pc.toString());
       //  - Read from cache and see if there is a policy for this
-        KSSLCertificateCache::KSSLCertificatePolicy cp =
-        d->cc->getPolicyByCertificate(pc);
+      KSSLCertificateCache::KSSLCertificatePolicy cp =
+                                         d->cc->getPolicyByCertificate(pc);
 
       _IPmatchesCN = d->kssl->peerInfo().certMatchesAddress();
 
@@ -600,8 +603,7 @@ bool _IPmatchesCN = false;
          if (cp == KSSLCertificateCache::Unknown || 
              cp == KSSLCertificateCache::Ambiguous) {
             cp = KSSLCertificateCache::Prompt;
-            }
-            else {
+         } else {
             // A policy was already set so let's honour that.
             permacache = d->cc->isPermanent(pc);
          }
@@ -629,8 +631,7 @@ bool _IPmatchesCN = false;
                               i18n("Server Authentication"),
                               i18n("&Details..."),
                               i18n("Co&ntinue") );
-                    }
-                    else {
+                } else {
                    QString msg = i18n("The server certificate failed the "
                                       "authenticity test (%1).");
                    result = messageBox( WarningYesNoCancel,
@@ -670,8 +671,7 @@ bool _IPmatchesCN = false;
                         permacache = true;
                     else
                         permacache = false;
-                }
-                else {
+             } else {
                 setMetaData("ssl_action", "reject");
                 rc = -1;
                 cp = KSSLCertificateCache::Prompt;
@@ -691,15 +691,42 @@ bool _IPmatchesCN = false;
       d->cc->addCertificate(pc, cp, permacache);
       d->cc->saveToDisk();    // So that other slaves can get at it.
       // FIXME: we should be able to notify other slaves of this here.
-    }
-    else {
-        // Child frame
+    } else {    // Child frame
       //  - Read from cache and see if there is a policy for this
       KSSLCertificateCache::KSSLCertificatePolicy cp =
                                              d->cc->getPolicyByCertificate(pc);
       isChild = true;
-      // FIXME - finish this!
-   }
+
+      _IPmatchesCN = d->kssl->peerInfo().certMatchesAddress();
+
+      // Check the cert and IP to make sure they're the same
+      // as the parent frame
+      bool certAndIPTheSame = (d->ip == metaData("ssl_parent_ip") &&
+                               pc.toString() == metaData("ssl_parent_cert"));
+
+      if (ksv == KSSLCertificate::Ok && _IPmatchesCN) {
+        if (certAndIPTheSame) {       // success
+          rc = 1;
+        } else {
+          if (true) {     // success   FIXME: prompt to continue
+            rc = 1;
+          } else {    // fail
+            rc = -1;
+          }
+        }
+      } else {
+        if (cp == KSSLCertificateCache::Accept) {
+           if (certAndIPTheSame) {    // success
+             rc = 1;
+           } else {   // fail
+             rc = -1;
+           }
+        } else {      // fail
+          rc = -1;
+        }
+      }
+      // FIXME: failure message boxes are needed
+    }
 
 
    if (rc == -1) return rc;
