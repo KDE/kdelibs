@@ -30,16 +30,16 @@
 #include "klineedit.moc"
 
 
-KLineEdit::KLineEdit( const QString &string, QWidget *parent, const char *name )
+KLineEdit::KLineEdit( const QString &string, QWidget *parent, const char *name, bool hsig )
           : QLineEdit( string, parent, name )
 {
-    initialize();
+    init( hsig );
 }
 
-KLineEdit::KLineEdit( QWidget *parent, const char *name )
+KLineEdit::KLineEdit( QWidget *parent, const char *name, bool hsig )
           : QLineEdit( parent, name )
 {
-    initialize();
+    init( hsig );
 }
 
 KLineEdit::~KLineEdit ()
@@ -70,15 +70,15 @@ void KLineEdit::setHandleCompletion( bool complete )
     if( m_pCompObj == 0 && complete )
         setCompletionObject ( new KCompletion(), true );
 
-    if( complete && !m_bHandleCompletionSignal )
+    if( complete && !m_bHandleCompletion )
     {
         connect( this, SIGNAL( completion( const QString& ) ), this, SLOT( makeCompletion( const QString& ) ) );
-        m_bHandleCompletionSignal = complete;
+        m_bHandleCompletion = complete;
     }
-    else if( !complete && m_bHandleCompletionSignal )
+    else if( !complete && m_bHandleCompletion )
     {
         disconnect( this, SIGNAL( completion( const QString& ) ), this, SLOT( makeCompletion( const QString& ) ) );
-        m_bHandleCompletionSignal = complete;
+        m_bHandleCompletion = complete;
     }
 }
 
@@ -87,17 +87,17 @@ void KLineEdit::setHandleRotation( bool rotate )
     if( m_pCompObj == 0 && rotate )
         setCompletionObject ( new KCompletion(), true );
 
-    if( rotate && !m_bHandleRotationSignal )
+    if( rotate && !m_bHandleRotation )
     {
         connect( this, SIGNAL( rotateUp() ), this, SLOT( iterateUpInList() ) );
         connect( this, SIGNAL( rotateDown() ), this, SLOT( iterateDownInList() ) );
-        m_bHandleRotationSignal = true;
+        m_bHandleRotation = rotate;
     }
-    else if( !rotate && m_bHandleRotationSignal )
+    else if( !rotate && m_bHandleRotation )
     {
         disconnect( this, SIGNAL( rotateUp() ), this, SLOT( iterateUpInList() ) );
         disconnect( this, SIGNAL( rotateDown() ), this, SLOT( iterateDownInList() ) );
-        m_bHandleRotationSignal = false;
+        m_bHandleRotation = rotate;
     }
 }
 
@@ -140,7 +140,7 @@ void KLineEdit::setEnableContextMenu( bool showMenu )
             m_pContextMenu = 0;
         }
     }
-    m_bShowContextMenu = showMenu;
+    m_bEnableMenu = showMenu;
 }
 
 void KLineEdit::useGlobalSettings()
@@ -317,16 +317,11 @@ void KLineEdit::makeCompletion( const QString& text )
     }
 }
 
-void KLineEdit::initialize()
+void KLineEdit::init( bool hsig )
 {
     // Determines whether the completion object should
     // be deleted or not.
     m_bAutoDelCompObj = false;
-
-    // By default emit completion signal
-    m_bEmitCompletion = true;
-    // By default emit rotation signals
-    m_bEmitRotation = true;
 
     // Initialize all key-bindings to 0 by default so that
     // the event filter will use the global settings.
@@ -345,8 +340,6 @@ void KLineEdit::initialize()
     // menu as well as the mode switching entry are enabled.
     m_pContextMenu = 0;
     m_pSubMenu = 0;
-    setEnableContextMenu( true ); // enable context menu by default
-    setEnableModeChanger( true ); // enable mode changer by default
 
     // Assign the default completion type to use.
     m_iCompletionMode = KGlobal::completionMode();
@@ -354,6 +347,21 @@ void KLineEdit::initialize()
     // Initialize the pointer to the completion object.
     m_pCompObj = 0;
 
+    // By default emit completion signal
+    m_bEmitCompletion = true;
+    // By default emit rotation signals
+    m_bEmitRotation = true;
+
+    // Do not handle rotation & completion unless
+    // specifically requested.
+    m_bHandleCompletion = false;
+    m_bHandleRotation = false;
+    if( hsig )
+    {
+        // Handle rotation & completion signals by default.
+        setHandleCompletion( true );
+        setHandleRotation( true );
+    }
     // Connect the signals and slots.
     connect( this, SIGNAL( textChanged( const QString& ) ), this, SLOT( entryChanged( const QString& ) ) );
     connect( this, SIGNAL( returnPressed() ), this, SLOT( slotReturnPressed() ) );
@@ -375,8 +383,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *ev )
     {
         // Handles completion.
         int len = text().length();
-        int key = ( m_iCompletionKey == 0 ) ? KStdAccel::key(KStdAccel::TextCompletion)
-			: m_iCompletionKey;
+        int key = ( m_iCompletionKey == 0 ) ? KStdAccel::key(KStdAccel::TextCompletion)	: m_iCompletionKey;
         if( KStdAccel::isEqual( ev, key ) && m_bEmitCompletion &&
             ( m_iCompletionMode == KGlobal::CompletionMan ||
             (m_iCompletionMode == KGlobal::CompletionShell &&
@@ -390,8 +397,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *ev )
             return;
         }
         // Handles rotateUp.
-		key = ( m_iRotateUpKey == 0 ) ? KStdAccel::key(KStdAccel::RotateUp)
-			: m_iRotateUpKey;
+		key = ( m_iRotateUpKey == 0 ) ? KStdAccel::key(KStdAccel::RotateUp)	: m_iRotateUpKey;
         if( KStdAccel::isEqual( ev, key ) && m_bEmitRotation )
         {
             emit rotateUp ();
@@ -399,8 +405,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *ev )
             return;
         }
         // Handles rotateDown.
-		key = ( m_iRotateDnKey == 0 ) ? KStdAccel::key(KStdAccel::RotateDown)
-			: m_iRotateDnKey;
+		key = ( m_iRotateDnKey == 0 ) ? KStdAccel::key(KStdAccel::RotateDown) : m_iRotateDnKey;
         if( KStdAccel::isEqual( ev, key ) && m_bEmitRotation)
         {
             emit rotateDown();
@@ -425,8 +430,8 @@ void KLineEdit::mousePressEvent( QMouseEvent *ev )
 {
     if( ev->button() == Qt::RightButton )
     {
-        if( m_bShowContextMenu )
-            m_pContextMenu->popup ( QCursor::pos() );
+        if( m_bEnableMenu )
+            m_pContextMenu->popup( QCursor::pos() );
         return;
     }
     QLineEdit::mousePressEvent( ev );
