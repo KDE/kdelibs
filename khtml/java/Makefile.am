@@ -12,7 +12,7 @@ libkjava_la_LIBADD = $(LIB_KDECORE) $(LIB_KDEUI) $(LIB_KIO)
 
 INCLUDES = $(all_includes) -I$(top_srcdir)/kio/
 
-data_DATA = kjava-classes.zip KJAS_GRAMMAR.txt kjava.policy
+data_DATA = kjava-classes.zip KJAS_GRAMMAR.txt ##### missing : kjava.policy
 datadir = $(kde_datadir)/kjava/
 
 SUBDIRS = 
