@@ -283,6 +283,7 @@ KCharsetConversionResult& KCharsetConversionResult::operator =(
   cCharset=kccr.cCharset;
   cText=kccr.cText;
   cText.detach();
+  return *this;
 }
 
 const KCharsetConversionResult & KCharsetConverter::convert(const char *str){
