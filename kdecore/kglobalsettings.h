@@ -140,11 +140,6 @@ class KGlobalSettings
     static QString desktopPath() { initStatic(); return *s_desktopPath; }
 
     /**
-     * The path to the templates directory of the current user.
-     */
-    static QString templatesPath() { initStatic(); return *s_templatesPath; }
-
-    /**
      * The path to the autostart directory of the current user.
      */
     static QString autostartPath() { initStatic(); return *s_autostartPath; }
@@ -167,7 +162,6 @@ private:
     static void initStatic();
 
     static QString* s_desktopPath;
-    static QString* s_templatesPath;
     static QString* s_autostartPath;
     static QString* s_trashPath;
 

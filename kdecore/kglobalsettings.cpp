@@ -32,7 +32,6 @@
 #include <kstddirs.h>
 
 QString* KGlobalSettings::s_desktopPath = 0;
-QString* KGlobalSettings::s_templatesPath = 0;
 QString* KGlobalSettings::s_autostartPath = 0;
 QString* KGlobalSettings::s_trashPath = 0;
 
@@ -98,7 +97,6 @@ void KGlobalSettings::initStatic()
 	return;
 
     s_desktopPath = new QString();
-    s_templatesPath = new QString();
     s_autostartPath = new QString();
     s_trashPath = new QString();
 
@@ -118,13 +116,6 @@ void KGlobalSettings::initStatic()
     *s_trashPath = QDir::cleanDirPath( *s_trashPath );
     if ( s_trashPath->right(1) != "/")
 	*s_trashPath += "/";
-
-    // Templates Path
-    *s_templatesPath = KGlobal::dirs()->localkdedir() + "Templates/";
-    *s_templatesPath = config->readEntry( "Templates" , *s_templatesPath);
-    *s_templatesPath = QDir::cleanDirPath( *s_templatesPath );
-    if ( s_templatesPath->right(1) != "/")
-	*s_templatesPath += "/";
 
     // Autostart Path
     *s_autostartPath = KGlobal::dirs()->localkdedir() + "Autostart/";
