@@ -23,7 +23,7 @@
 
 // kdebase/kcontrol/input/mousedefaults.h
 #define DEFAULT_SINGLECLICK true
-#define DEFAULT_AUTOSELECTDELAY 700
+#define DEFAULT_AUTOSELECTDELAY -1
 #define DEFAULT_CHANGECURSOR true
 
 int KGlobalSettings::dndEventDelay()
