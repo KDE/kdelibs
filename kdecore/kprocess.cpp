@@ -47,6 +47,7 @@
 #endif
 
 #include <qfile.h>
+#include <qregexp.h>
 
 #include <sys/time.h>
 #include <sys/types.h>
@@ -751,6 +752,15 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
 	}
   }
   return true;
+}
+
+QString KShellProcess::quote(const QString &arg)
+{
+    QString res = arg;
+    res.replace(QRegExp("'"), "'\"'\"'");
+    res.prepend("'");
+    res.append("'");
+    return res;
 }
 
 QCString KShellProcess::searchShell()

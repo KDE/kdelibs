@@ -671,6 +671,14 @@ public:
   virtual bool start(RunMode  runmode = NotifyOnExit, 
 		  Communication comm = NoCommunication);
 
+  /**
+   * This function can be used to quote an argument string such that
+   * the shell processes it properly. This is e. g. necessary for
+   * user-provided file names which may contain spaces or quotes.
+   * It also prevents expansion of wildcards and environment variables.
+   */
+  static QString quote(const QString &arg);
+
 private:
 
   /** 

@@ -327,6 +327,10 @@ public:
    *                                     If the flag is set to false, then everything behind the last '/'
    *                                     is considered to be the filename.
    */
+  QString fileName( bool _ignore_trailing_slash_in_path = true ) const;
+  /**
+   * For backward compatiblity only.
+   */
   QString filename( bool _ignore_trailing_slash_in_path = true ) const;
 
   /**

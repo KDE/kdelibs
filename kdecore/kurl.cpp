@@ -956,7 +956,13 @@ QString KURL::join( const KURL::List & lst )
   return dest;
 }
 
-QString KURL::filename( bool _strip_trailing_slash ) const
+QString KURL::filename( bool _ignore_trailing_slash_in_path ) const
+{
+    qDebug("KURL::filename() is obsolete, use KURL::fileName() instead");
+    return fileName(_ignore_trailing_slash_in_path);
+}
+
+QString KURL::fileName( bool _strip_trailing_slash ) const
 {
   QString fname;
 
