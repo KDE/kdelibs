@@ -38,6 +38,12 @@ void KClipboard::setData( QMimeSource *data, uint mode, bool honorConfiguration 
     setClipboard( QString::null, data, mode, honorConfiguration );
 }
 
+void KClipboard::clear( uint mode, bool honorConfiguration )
+{
+    // clip->setText( QString::null ) is equal to clip->clear()
+    setClipboard( QString::null, 0L, mode, honorConfiguration );
+}
+
 void KClipboard::setClipboard( const QString& text, QMimeSource *data,
                                uint mode, bool honorConfiguration )
 {

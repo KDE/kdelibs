@@ -32,6 +32,7 @@ public:
                          bool honorConfiguration = true );
     static void setData( QMimeSource *data, uint mode = Clipboard,
                          bool honorConfiguration = true );
+    static void clear( uint mode = Clipboard, bool honorConfiguration = true );
 
     static void setSynchronizing( bool sync )
     {
