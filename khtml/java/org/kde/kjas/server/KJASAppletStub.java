@@ -6,7 +6,12 @@ import java.net.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.JFrame;
-
+import java.security.PrivilegedAction;
+import java.security.AccessController;
+import java.security.AccessControlContext;
+import java.security.ProtectionDomain;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
  * The stub used by Applets to communicate with their environment.
@@ -28,6 +33,10 @@ public final class KJASAppletStub
     private Class             appletClass;
     private JFrame            frame;
 
+    /**
+    * out of bounds applet state :-), perform an action
+    */
+    public static final int ACTION = -1;
     /**
     * applet state unknown
     */
@@ -66,14 +75,34 @@ public final class KJASAppletStub
     private static final int FAILED = 8;
    
     
-    private KJASAppletClassLoader loader;
+    //private KJASAppletClassLoader loader;
+    KJASAppletClassLoader loader;
     private KJASAppletPanel       panel;
     private Applet                app;
     KJASAppletStub                me;
 
+    /**
+     * Interface for so called LiveConnect actions, put-, get- and callMember
+     */
+    // keep this in sync with KParts::LiveConnectExtension::Type
+    private final static int JError    = -1;
+    private final static int JVoid     = 0;
+    private final static int JBoolean  = 1;
+    private final static int JFunction = 2;
+    private final static int JNumber   = 3;
+    private final static int JObject   = 4;
+    final static int         JString   = 5;
+
+    interface AppletAction {
+        void apply();
+        void fail();
+    }
+
     private class RunThread extends Thread {
         private int request_state = CLASS_LOADED;
         private int current_state = UNKNOWN;
+        private Vector actions = new Vector();
+        private AccessControlContext acc = null;
 
         RunThread() {
             super("KJAS-AppletStub-" + appletID + "-" + appletName);
@@ -88,14 +117,27 @@ public final class KJASAppletStub
                 notifyAll();
             }
         }
+        synchronized void requestAction(AppletAction action) {
+            actions.add(action);
+            notifyAll();
+        }
         /**
          * Get the asked state
          */
         synchronized private int getRequestState() {
             while (request_state == current_state) {
-                try {
-                    wait ();
-                } catch(InterruptedException ie) {
+                if (!actions.isEmpty()) {
+                    if (current_state >= INITIALIZED && current_state < STOPPED)
+                        return ACTION;
+                    else {
+                        AppletAction action = (AppletAction) actions.remove(0);
+                        action.fail();
+                    }
+                } else {
+                    try {
+                        wait ();
+                    } catch(InterruptedException ie) {
+                    }
                 }
             }
             return request_state;
@@ -137,6 +179,7 @@ public final class KJASAppletStub
                         } else
                             throw e;
                     }
+                    acc = new AccessControlContext(new ProtectionDomain[] {app.getClass().getProtectionDomain()});
                     requestState(INITIALIZED);
                     break;
                 }
@@ -175,7 +218,6 @@ public final class KJASAppletStub
                     app.destroy();
                     frame.dispose();
                     app = null;
-                    loader = null;
                     requestState(TERMINATE);
                     break;
                 default:
@@ -190,22 +232,39 @@ public final class KJASAppletStub
                 int nstate = getRequestState();
                 if (nstate >= TERMINATE)
                     return;
-                try {
-                    doState(nstate);
-                } catch (Exception ex) {
-                    Main.kjas_err("Error during state " + nstate, ex);
-                    if (nstate < INITIALIZED) {
+                if (nstate == ACTION) {
+                    AccessController.doPrivileged(
+                            new PrivilegedAction() {
+                                public Object run() {
+                                    AppletAction action = (AppletAction) actions.remove(0);
+                                    try {
+                                        action.apply();
+                                    } catch (Exception ex) {
+                                        Main.debug("Error during action " + ex);
+                                        action.fail();
+                                    }
+                                    return null;
+                                }
+                            },
+                            acc);
+                } else { // move to nstate
+                    try {
+                        doState(nstate);
+                    } catch (Exception ex) {
+                        Main.kjas_err("Error during state " + nstate, ex);
+                        if (nstate < INITIALIZED) {
+                            setState(FAILED);
+                            setFailed(ex.toString());
+                            return;
+                        }
+                    } catch (Throwable tr) {
                         setState(FAILED);
-                        setFailed(ex.toString());
+                        setFailed(tr.toString());
                         return;
                     }
-                } catch (Throwable tr) {
-                    setState(FAILED);
-                    setFailed(tr.toString());
-                    return;
+                    setState(nstate);
+                    stateChange(nstate);
                 }
-                setState(nstate);
-                stateChange(nstate);
             }
         }
     }
@@ -413,6 +472,284 @@ public final class KJASAppletStub
         }
     }
 
+    /**
+    * converts Object <b>arg</b> into an object of class <b>cl</b>.
+    * @param arg Object to convert
+    * @param cl Destination class
+    * @return An Object of the specified class with the value specified
+    *  in <b>arg</b>
+    */
+    private static final Object cast(Object arg, Class cl) throws NumberFormatException {
+        Object ret = arg;
+        if (arg == null) {
+            ret = null;
+        }
+        else if (cl.isAssignableFrom(arg.getClass())) {
+            return arg;
+        }
+        else if (arg instanceof String) {
+            String s = (String)arg;
+            Main.debug("Argument String: \"" + s + "\"");
+            if (cl == Boolean.TYPE || cl == Boolean.class) {
+                ret = new Boolean(s);
+            } else if (cl == Integer.TYPE || cl == Integer.class) {
+                ret = new Integer(s);
+            } else if (cl == Long.TYPE || cl == Long.class) {
+                ret = new Long(s);
+            } else if (cl == Float.TYPE || cl == Float.class) {
+                ret = new Float(s);
+            } else if (cl == Double.TYPE || cl == Double.class) {
+                ret = new Double(s);
+            } else if (cl == Short.TYPE || cl == Short.class) {
+                ret = new Short(s);
+            } else if (cl  == Byte.TYPE || cl == Byte.class) {
+                ret = new Byte(s);
+            } else if (cl == Character.TYPE || cl == Character.class) {
+                ret = new Character(s.charAt(0));
+            }
+        }
+        return ret;
+    }
+    private Method findMethod(Class c, String name, Class [] argcls) {
+        try {
+            Method[] methods = c.getMethods();
+            for (int i = 0; i < methods.length; i++) {
+                Method m = methods[i];
+                if (m.getName().equals(name)) {
+                    Main.debug("Candidate: " + m);
+                    Class [] parameterTypes = m.getParameterTypes();
+                    if (argcls == null) {
+                        if (parameterTypes.length == 0) {
+                           return m;
+                        } 
+                    } else {
+                        if (argcls.length == parameterTypes.length) {
+                          for (int j = 0; j < argcls.length; j++) {
+                            // Main.debug("Parameter " + j + " " + parameterTypes[j]);
+                            argcls[j] = parameterTypes[j];
+                          }
+                          return m;                        
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    private int[] getJSTypeValue(Hashtable jsRefs, Object obj, int objid, StringBuffer value) {
+        String val = obj.toString();
+        int[] rettype = { JError, objid };
+        String type = obj.getClass().getName();
+        if (type.equals("boolean") || type.equals("java.lang.Boolean"))
+            rettype[0] = JBoolean;
+        else if (type.equals("int") || type.equals("long") || 
+                type.equals("float") || type.equals("double") ||
+                type.equals("byte") || obj instanceof java.lang.Number)
+            rettype[0] = JNumber;
+        else if (type.equals("java.lang.String"))
+            rettype[0] = JString;
+        else if (!type.startsWith("org.kde.kjas.server") &&
+                 !(obj instanceof java.lang.Class &&
+                   ((Class)obj).getName().startsWith("org.kde.kjas.server"))) {
+            rettype[0] = JObject;
+            rettype[1] = obj.hashCode();
+            jsRefs.put(new Integer(rettype[1]), obj);
+        }
+        value.insert(0, val);
+        return rettype;
+    }
+    private class PutAction implements AppletAction {
+        int call_id;
+        int objid;
+        String name;
+        String value;
+        PutAction(int cid, int oid, String n, String v) {
+            call_id = cid;
+            objid = oid;
+            name = n;
+            value = v;
+        }
+        public void apply() {
+            Hashtable jsRefs = loader.getJSReferencedObjects();
+            Object o = objid==0 ? getApplet() : jsRefs.get(new Integer(objid));
+            if (o == null) {
+                Main.debug("Error in putValue: object " + objid + " not found");
+                fail();
+                return;
+            }
+            Field f;
+            try {
+                f = o.getClass().getField(name);
+            } catch (Exception e) {
+                fail();
+                return;
+            }
+            if (f == null) {
+                Main.debug("Error in putValue: " + name + " not found");
+                fail();
+                return;
+            }
+            try {
+                String type = f.getType().getName();
+                Main.debug("putValue: (" + type + ")" + name + "=" + value);
+                if (type.equals("boolean"))
+                    f.setBoolean(o, Boolean.getBoolean(value));
+                else if (type.equals("java.lang.Boolean"))
+                    f.set(o, Boolean.valueOf(value));
+                else if (type.equals("int"))
+                    f.setInt(o, Integer.parseInt(value));
+                else if (type.equals("java.lang.Integer"))
+                    f.set(o, Integer.valueOf(value));
+                else if (type.equals("byte"))
+                    f.setByte(o, Byte.parseByte(value));
+                else if (type.equals("java.lang.Byte"))
+                    f.set(o, Byte.valueOf(value));
+                else if (type.equals("char"))
+                    f.setChar(o, value.charAt(0));
+                else if (type.equals("java.lang.Character"))
+                    f.set(o, new Character(value.charAt(0)));
+                else if (type.equals("double"))
+                    f.setDouble(o, Double.parseDouble(value));
+                else if (type.equals("java.lang.Double"))
+                    f.set(o, Double.valueOf(value));
+                else if (type.equals("float"))
+                    f.setFloat(o, Float.parseFloat(value));
+                else if (type.equals("java.lang.Float"))
+                    f.set(o, Float.valueOf(value));
+                else if (type.equals("long"))
+                    f.setLong(o, Long.parseLong(value));
+                else if (type.equals("java.lang.Long"))
+                    f.set(o, Long.valueOf(value));
+                else if (type.equals("short"))
+                    f.setShort(o, Short.parseShort(value));
+                else if (type.equals("java.lang.Short"))
+                    f.set(o, Short.valueOf(value));
+                else if (type.equals("java.lang.String"))
+                    f.set(o, value);
+                else {
+                    Main.debug("Error putValue: unsupported type: " + type);
+                    fail();
+                    return;
+                }
+            } catch (Exception e) {
+                Main.debug("Exception in putValue: " + e.getMessage());
+                fail();
+                return;
+            }
+            Main.protocol.sendPutMember( context.getID(), call_id, true ); 
+        }
+        public void fail() {
+            Main.protocol.sendPutMember( context.getID(), call_id, false ); 
+        }
+    }
+    private class GetAction implements AppletAction {
+        int call_id;
+        int objid;
+        String name;
+        GetAction(int cid, int oid, String n) {
+            call_id = cid;
+            objid = oid;
+            name = n;
+        }
+        public void apply() {
+            Main.debug("getMember: " + name);
+            StringBuffer value = new StringBuffer();
+            int ret[] = { JError, objid };
+            Hashtable jsRefs = loader.getJSReferencedObjects();
+            Object o = objid==0 ? getApplet() : jsRefs.get(new Integer(objid));
+            if (o == null) {
+                fail();
+                return;
+            }
+            Class c = o.getClass();
+            try {
+                Field field = c.getField(name);
+                ret = getJSTypeValue(jsRefs, field.get(o), objid, value);
+            } catch (Exception ex) {
+                Method [] m = c.getMethods();
+                for (int i = 0; i < m.length; i++)
+                    if (m[i].getName().equals(name)) {
+                        ret[0] = JFunction;
+                        break;
+                    }
+            }
+            Main.protocol.sendMemberValue(context.getID(), KJASProtocolHandler.GetMember, call_id, ret[0], ret[1], value.toString()); 
+        }
+        public void fail() {
+            Main.protocol.sendMemberValue(context.getID(), KJASProtocolHandler.GetMember, call_id, -1, 0, ""); 
+        }
+    }
+    private class CallAction implements AppletAction {
+        int call_id;
+        int objid;
+        String name;
+        java.util.List args;
+        CallAction(int cid, int oid, String n, java.util.List a) {
+            call_id = cid;
+            objid = oid;
+            name = n;
+            args = a;
+        }
+        public void apply() {
+            StringBuffer value = new StringBuffer();
+            Hashtable jsRefs = loader.getJSReferencedObjects();
+            int [] ret = { JError, objid };
+            Object o = objid==0 ? getApplet() : jsRefs.get(new Integer(objid));
+            if (o == null) {
+                fail();
+                return;
+            }
+
+            try {
+                Main.debug("callMember: " + name);
+                Object obj;
+                Class c = o.getClass();
+                String type;
+                Class [] argcls = new Class[args.size()];
+                for (int i = 0; i < args.size(); i++)
+                    argcls[i] = name.getClass(); // String for now, will be updated by findMethod
+                Method m = findMethod(c, (String) name, argcls);
+                Main.debug("Found Method: " + m);
+                if (m != null) {
+                    Object [] argobj = new Object[args.size()];
+                    for (int i = 0; i < args.size(); i++) {
+                        argobj[i] = cast(args.get(i), argcls[i]);
+                    }
+                    Object retval =  m.invoke(o, argobj);
+                    if (retval == null)
+                        ret[0] = JVoid;
+                    else
+                        ret = getJSTypeValue(jsRefs, retval, objid, value);
+                }
+            } catch (Exception e) {
+                Main.debug("callMember threw exception: " + e.toString());
+            }
+            Main.protocol.sendMemberValue(context.getID(), KJASProtocolHandler.CallMember, call_id, ret[0], ret[1], value.toString()); 
+        }
+        public void fail() {
+            Main.protocol.sendMemberValue(context.getID(), KJASProtocolHandler.CallMember, call_id, -1, 0, ""); 
+        }
+    }
+    boolean putMember(int callid, int objid, String name, String val) {
+        if (runThread == null)
+            return false;
+        runThread.requestAction( new PutAction( callid, objid, name, val) );
+        return true;
+    }
+    boolean getMember(int cid, int oid, String name) {
+        if (runThread == null)
+            return false;
+        runThread.requestAction( new GetAction( cid, oid, name) );
+        return true;
+    }
+    boolean callMember(int cid, int oid, String name, java.util.List args) {
+        if (runThread == null)
+            return false;
+        runThread.requestAction( new CallAction( cid, oid, name, args) );
+        return true;
+    }
     /*************************************************************************
      ********************** AppletStub Interface *****************************
      *************************************************************************/

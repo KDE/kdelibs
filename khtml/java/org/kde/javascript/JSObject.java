@@ -1,7 +1,8 @@
 package org.kde.javascript;
 
 import java.applet.Applet;
-import org.kde.kjas.server.*;
+import org.kde.kjas.server.KJASAppletContext;
+import org.kde.kjas.server.Main;
 
 public class JSObject extends netscape.javascript.JSObject {
     public String returnvalue = null;
@@ -122,7 +123,7 @@ public class JSObject extends netscape.javascript.JSObject {
             int p1 = value.indexOf("ref=");
             int p2 = value.indexOf(']', p1+4);
             int objecthashcode = Integer.parseInt(value.substring(p1+4, p2));
-            return kc.getJSReferencedObject(objecthashcode);
+            return kc.getJSReferencedObject(applet, objecthashcode);
         }
         /* Ok, make it a JSObject */
         return new JSObject(applet, value, Integer.parseInt(type));
