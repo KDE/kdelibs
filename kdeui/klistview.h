@@ -48,8 +48,6 @@ class KLineEdit;
  * KListView is drag-enabled, too: to benefit from that you've got derive from it.
  * Reimplement @ref dragObject() and (possibly) @ref startDrag(),
  * and @ref setDragEnabled(true).
- *
- * @version $Id$
  */
 class KListView : public QListView
 {
