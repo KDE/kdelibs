@@ -216,7 +216,7 @@ void KFileBaseDialog::init()
 	filterLabel->adjustSize();
 	filterLabel->setMinimumWidth(filterLabel->width());
 	filterLabel->resize(locationLabel->width(), filterLabel->height());
-	
+
 	filterWidget = new KFileFilter(wrapper, "filterwidget");
 	filterWidget->setFilter(filterString.ascii());
 	filterLabel->setBuddy(filterWidget);
@@ -232,7 +232,7 @@ void KFileBaseDialog::init()
 	hiddenToggle->setMinimumSize(hiddenToggle->size());
 	connect(hiddenToggle, SIGNAL(toggled(bool)),
 		SLOT(setHiddenToggle(bool)));
-	
+
     }
 
     // Add the status line
@@ -513,7 +513,7 @@ void KFileBaseDialog::setDir(const QString& _pathstr, bool clearforward)
 	    return;
 	}
     }
-	
+
 
     QString backup = dir->url();
     dir->setPath(pathstr);
@@ -534,7 +534,7 @@ void KFileBaseDialog::setDir(const QString& _pathstr, bool clearforward)
 	pathChanged();
     }
 
-    toolbar->setItemEnabled(PARENT_BUTTON, !dir->isRoot()); 
+    toolbar->setItemEnabled(PARENT_BUTTON, !dir->isRoot());
 }
 
 void KFileBaseDialog::rereadDir()
@@ -637,7 +637,7 @@ void KFileBaseDialog::pathChanged()
 	    back();
     } else {
 	QString url;
-	
+
 	if (acceptUrls)
 	    url = dir->url();
 	else
@@ -647,7 +647,7 @@ void KFileBaseDialog::pathChanged()
 	    url += "/";
 	if (visitedDirs->find(url.ascii()) == -1)
 	    visitedDirs->inSort(url.ascii());
-	
+
 	locationEdit->clear();
 	locationEdit->insertStrList(visitedDirs);
 	locationEdit->setCurrentItem(visitedDirs->at());
@@ -822,7 +822,7 @@ void KFileBaseDialog::toolbarCallback(int i) // SLOT
     case FIND_BUTTON: {
 	KShellProcess proc;
 	proc << c->readEntry("FindCommandPath", DefaultFindCommand);
- 
+
  	QString strURL( dirPath() );
         // KURL::decodeURL( strURL ); should be decoded already
  	KURL url( strURL );
@@ -832,7 +832,7 @@ void KFileBaseDialog::toolbarCallback(int i) // SLOT
  	  proc << c->readEntry(QString("FindSearchPathParameter"), "");
  	  proc << url.directory();
  	}
-         
+
 	proc.start(KShellProcess::DontCare);
 	break;
     }
@@ -979,7 +979,7 @@ void KFileBaseDialog::toolbarPressedCallback(int i)
 			 QCursor::pos(), LeftButton, LeftButton);
 	QApplication::sendEvent(btn, &ev);
 	QApplication::sendEvent(btn, &mev);
-	
+
 	if (choice == 0) {
 	    // add current to bookmarks
 	  addToBookmarks();
@@ -992,13 +992,13 @@ void KFileBaseDialog::toolbarPressedCallback(int i)
 	  for (KFileBookmark *b= root->getChildren().first();
 	       b != 0; b= root->getChildren().next()) {
 	    if (i == choice) {
-	      fprintf(stderr, "opening bookmark to %s\n", b->getURL());
+	      fprintf(stderr, "opening bookmark to %s\n", b->getURL().ascii());
 	      setDir(b->getURL(), true);
 	    }
 	    i++;
 	  }
 	}
-	
+
 	delete bookmarksMenu;
 	bookmarksMenu= 0;
     }
@@ -1043,7 +1043,7 @@ void KFileBaseDialog::fileHighlighted(KFileInfo *item)
 
     const QString& highlighted = item->fileName();
 
-    KURL tmp ( dir->url() ); 
+    KURL tmp ( dir->url() );
     tmp.setFileName(highlighted);
 
     if (acceptUrls)
@@ -1059,7 +1059,7 @@ KFileInfoContents *KFileDialog::initFileList( QWidget *parent )
 {
 
     bool mixDirsAndFiles =
-	kapp->getConfig()->readBoolEntry("MixDirsAndFiles", 
+	kapp->getConfig()->readBoolEntry("MixDirsAndFiles",
 					 DefaultMixDirsAndFiles);
 
     bool showDetails =
@@ -1072,14 +1072,14 @@ KFileInfoContents *KFileDialog::initFileList( QWidget *parent )
     QDir::SortSpec sort = static_cast<QDir::SortSpec>(dir->sorting() &
                                                       QDir::SortByMask);
 
-    if (kapp->getConfig()->readBoolEntry("KeepDirsFirst", 
+    if (kapp->getConfig()->readBoolEntry("KeepDirsFirst",
 					 DefaultKeepDirsFirst))
         sort = static_cast<QDir::SortSpec>(sort | QDir::DirsFirst);
-    
+
     dir->setSorting(sort);
 
     if (!mixDirsAndFiles)
-	
+
 	return new KCombiView(KCombiView::DirList,
 				  showDetails ? KCombiView::DetailView
 				  : KCombiView::SimpleView,
@@ -1087,7 +1087,7 @@ KFileInfoContents *KFileDialog::initFileList( QWidget *parent )
 				  parent, "_combi");
 
     else
-	
+
 	if (showDetails)
 	    return new KFileDetailList(useSingleClick, dir->sorting(), parent, "_details");
 	else
@@ -1158,7 +1158,7 @@ void KFileBaseDialog::completion() // SLOT
 	QString complete =
 	    fileList->findCompletion(text.right(text.length() -
 						base.length()).ascii());
-	
+
 	if (!complete.isNull()) {
 	    debugC("Complete %s", complete.ascii());
 	    if ( complete != "../" ) {
@@ -1349,7 +1349,7 @@ KFileInfoContents *KFilePreviewDialog::initFileList( QWidget *parent )
     QDir::SortSpec sort = static_cast<QDir::SortSpec>(dir->sorting() &
                                                       QDir::SortByMask);
 
-    if (kapp->getConfig()->readBoolEntry("KeepDirsFirst", 
+    if (kapp->getConfig()->readBoolEntry("KeepDirsFirst",
 					 DefaultKeepDirsFirst))
         sort = static_cast<QDir::SortSpec>(sort | QDir::DirsFirst);
 
@@ -1433,7 +1433,7 @@ bool KFilePreviewDialog::getShowFilter()
     return kapp->getConfig()->readBoolEntry("ShowFilter", DefaultShowFilter);
 }
 
-void KFilePreviewDialog::registerPreviewModule( const char * format, 
+void KFilePreviewDialog::registerPreviewModule( const char * format,
 						PreviewHandler readPreview,
                                                 PreviewType inType)
 {
