@@ -21,6 +21,7 @@
 #include <qobject.h>
 #include <qmap.h>
 #include <qwidget.h>
+#include <kdelibs_export.h>
 
 class KMDI_EXPORT KMdiFocusList: public QObject {
 	Q_OBJECT
