@@ -208,6 +208,10 @@ action/openwith
 action/openintab
 action/openintabfront
 
+Kicker related: // RMB menu
+action/kicker_rmb
+action/menuedit
+
 KWin related:
 action/kwin_rmb // RMB window context menu
 
