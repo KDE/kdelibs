@@ -321,6 +321,18 @@ protected slots:
     */
     virtual void makeCompletion( const QString& );
 
+    /**
+     * Stores the current text whenever the completion box is
+     * displayed for the first time.
+     */
+    void slotAboutToShow();
+
+    /**
+     * Re-stores the current text if the completion box is
+     * cancelled by the user.
+     */
+    void slotCancelled();
+
 protected:
 
     /**

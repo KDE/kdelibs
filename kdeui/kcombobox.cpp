@@ -43,7 +43,7 @@ class KComboBox::KComboBoxPrivate
 {
 public:
     KCompletionBox *completionBox;
-
+    QString origText;
 };
 
 KComboBox::KComboBox( QWidget *parent, const char *name )
@@ -91,11 +91,8 @@ void KComboBox::init()
     // Enable context menu by default if widget
     // is editable.
     setContextMenuEnabled( true );
-
-    // Connect the signals and slots.
-    connect( listBox(), SIGNAL( returnPressed( QListBoxItem* ) ), SLOT( itemSelected( QListBoxItem* ) ) );
-    connect( listBox(), SIGNAL( clicked( QListBoxItem* ) ), SLOT( itemSelected( QListBoxItem* ) ) );
 }
+
 
 bool KComboBox::contains( const QString& _text ) const
 {
@@ -109,10 +106,10 @@ bool KComboBox::contains( const QString& _text ) const
     return false;
 }
 
-
 void KComboBox::setAutoCompletion( bool autocomplete )
 {
-    setCompletionMode( autocomplete ? KGlobalSettings::CompletionAuto : KGlobalSettings::completionMode() );
+    setCompletionMode( autocomplete ? KGlobalSettings::CompletionAuto:
+                                      KGlobalSettings::completionMode() );
 }
 
 void KComboBox::setCompletionMode( KGlobalSettings::Completion mode )
@@ -233,92 +230,96 @@ void KComboBox::rotateText( KCompletionBase::KeyBindingType type )
     }
 }
 
-void KComboBox::itemSelected( QListBoxItem* item )
-{
-    if( item != 0 && m_pEdit )
-    {
-       m_pEdit->setSelection( 0, currentText().length() );
-    }
-}
-
 void KComboBox::keyPressEvent ( QKeyEvent * e )
 {
-    if( m_pEdit && m_pEdit->hasFocus() )
+    if ( m_pEdit && m_pEdit->hasFocus() )
     {
         KGlobalSettings::Completion mode = completionMode();
 
-        // if( mode == KGlobalSettings::CompletionAuto )
-        if( mode == KGlobalSettings::CompletionAuto ||
-            mode == KGlobalSettings::CompletionPopup )
+        if ( mode == KGlobalSettings::CompletionAuto )
         {
             QString keycode = e->text();
-            if( !keycode.isNull() && keycode.unicode()->isPrint() )
+            if ( !keycode.isNull() && keycode.unicode()->isPrint() )
             {
                 QComboBox::keyPressEvent ( e );
                 QString txt = currentText();
-                if( !m_pEdit->hasMarkedText() && txt.length() &&
-                    cursorPosition() == (int) txt.length() )
+                int len = txt.length();
+                if (!m_pEdit->hasMarkedText() && len && cursorPosition() == len)
                 {
-                    if( emitSignals() )
+                    if ( emitSignals() )
                         emit completion( txt ); // emit when requested...
-                    if( handleSignals() )
+                    if ( handleSignals() )
                         makeCompletion( txt );  // handle when requested...
                 }
                 return;
             }
         }
-        if( mode != KGlobalSettings::CompletionNone )
+        else if ( mode == KGlobalSettings::CompletionPopup )
+        {
+            if ( m_pEdit->edited() )
+            {
+                QString txt = currentText();
+                if ( emitSignals() )
+                    emit completion( txt ); // emit when requested...
+                if ( handleSignals() )
+                    makeCompletion( txt );  // handle when requested...
+                m_pEdit->setEdited( false );
+                e->accept();
+                return;
+            }
+        }
+        else if ( mode != KGlobalSettings::CompletionNone )
         {
             KeyBindingMap keys = getKeyBindings();
             int key = ( keys[TextCompletion] == 0 ) ? KStdAccel::key(KStdAccel::TextCompletion) : keys[TextCompletion];
-            if( KStdAccel::isEqual( e, key ) )
+            if ( KStdAccel::isEqual( e, key ) )
             {
                 // Emit completion if the completion mode is completionShell or
                 // CompletionMan, there is a completion object present, the
                 // current text is not the same as the previous and the cursor
                 // is at the end of the string.
                 QString txt = currentText();
-                if( (mode == KGlobalSettings::CompletionMan ||
+                if ( (mode == KGlobalSettings::CompletionMan ||
                      mode == KGlobalSettings::CompletionShell) &&
                     m_pEdit->cursorPosition() == (int) txt.length() )
                 {
-                    if( emitSignals() )
+                    if ( emitSignals() )
                         emit completion( txt ); // emit when requested...
-                    if( handleSignals() )
+                    if ( handleSignals() )
                         makeCompletion( txt );  // handle when requested...
                     return;
                 }
             }
             // Handles previousMatch.
             key = ( keys[PrevCompletionMatch] == 0 ) ? KStdAccel::key(KStdAccel::PrevCompletion) : keys[PrevCompletionMatch];
-            if( KStdAccel::isEqual( e, key ) )
+            if ( KStdAccel::isEqual( e, key ) )
             {
-                if( emitSignals() )
+                if ( emitSignals() )
                     emit textRotation( KCompletionBase::PrevCompletionMatch );
-                if( handleSignals() )
+                if ( handleSignals() )
                     rotateText( KCompletionBase::PrevCompletionMatch );
                 return;
             }
 
             // Handles nextMatch.
             key = ( keys[NextCompletionMatch] == 0 ) ? KStdAccel::key(KStdAccel::NextCompletion) : keys[NextCompletionMatch];
-            if( KStdAccel::isEqual( e, key ) )
+            if ( KStdAccel::isEqual( e, key ) )
             {
-                if( emitSignals() )
+                if ( emitSignals() )
                     emit textRotation( KCompletionBase::NextCompletionMatch );
-                if( handleSignals() )
+                if ( handleSignals() )
                     rotateText( KCompletionBase::PrevCompletionMatch );
                 return;
             }
         }
     }
-    else if( !m_pEdit )
+    else if ( !m_pEdit )
     {
         QString keycode = e->text();
         if ( !keycode.isNull() && keycode.unicode()->isPrint() )
         {
             emit completion ( keycode );
-            if( handleSignals() )
+            if ( handleSignals() )
                 makeCompletion( keycode );
             return;
         }
@@ -329,105 +330,14 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
 bool KComboBox::eventFilter( QObject* o, QEvent* ev )
 {
     if ( o == m_pEdit )
-        KCursor::autoHideEventFilter( m_pEdit, ev );
-
-    if( o == m_pEdit && ev->type() == QEvent::MouseButtonPress )
     {
-        QMouseEvent* e = (QMouseEvent*) ev;
-        if( e->button() == Qt::RightButton )
+        KCursor::autoHideEventFilter( m_pEdit, ev );
+        int type = ev->type();
+        if (  type == QEvent::KeyPress )
         {
-            if( !m_bEnableMenu )
-                return true;
-
-            KPopupMenu *popup = new KPopupMenu( this );
-            popup->insertItem( SmallIconSet("editcut"), i18n( "Cut" ), Cut );
-            popup->insertItem( SmallIconSet("editcopy"), i18n( "Copy" ), Copy );
-            popup->insertItem( SmallIconSet("editpaste"), i18n( "Paste" ), Paste );
-            popup->insertItem( SmallIconSet("editclear"), i18n( "Clear" ), Clear );
-            // Create and insert the completion sub-menu iff
-            // a completion object is present.
-            if( compObj() )
-            {
-                KPopupMenu* subMenu = new KPopupMenu( popup );
-                KGlobalSettings::Completion mode = completionMode();
-                subMenu->insertItem( i18n("None"), NoCompletion );
-                subMenu->setItemChecked( NoCompletion, mode == KGlobalSettings::CompletionNone );
-                subMenu->insertItem( i18n("Manual"), ShellCompletion );
-                subMenu->setItemChecked( ShellCompletion, mode == KGlobalSettings::CompletionShell );
-                subMenu->insertItem( i18n("Popup"), PopupCompletion );
-                subMenu->setItemChecked( PopupCompletion, mode == KGlobalSettings::CompletionPopup );
-                subMenu->insertItem( i18n("Automatic"), AutoCompletion );
-                subMenu->setItemChecked( AutoCompletion, mode == KGlobalSettings::CompletionAuto );
-                subMenu->insertItem( i18n("Semi-Automatic"), SemiAutoCompletion );
-                subMenu->setItemChecked( SemiAutoCompletion, mode == KGlobalSettings::CompletionMan );
-                if( mode != KGlobalSettings::completionMode() )
-                {
-                    subMenu->insertSeparator();
-                    subMenu->insertItem( i18n("Default"), Default );
-                }
-                popup->insertSeparator();
-                popup->insertItem( SmallIconSet("completion"), i18n("Completion"), subMenu );
-            }
-            popup->insertSeparator();
-            popup->insertItem( i18n( "Unselect" ), Unselect );
-            popup->insertItem( i18n( "Select All" ), SelectAll );
-
-            bool flag = ( m_pEdit->echoMode()==QLineEdit::Normal && !m_pEdit->isReadOnly() );
-            bool allMarked = ( m_pEdit->markedText().length() == currentText().length() );
-            popup->setItemEnabled( Cut, flag && m_pEdit->hasMarkedText() );
-            popup->setItemEnabled( Copy, flag && m_pEdit->hasMarkedText() );
-            popup->setItemEnabled( Paste, flag && (bool)QApplication::clipboard()->text().length() );
-            popup->setItemEnabled( Clear, flag && ( currentText().length() > 0) );
-            popup->setItemEnabled( Unselect, m_pEdit->hasMarkedText() );
-            popup->setItemEnabled( SelectAll, flag && !allMarked );
-
-            KGlobalSettings::Completion oldMode = completionMode();
-            int result = popup->exec( e->globalPos() );
-            delete popup;
-
-            if( result == Cut )
-                m_pEdit->cut();
-            else if( result == Copy )
-                m_pEdit->copy();
-            else if( result == Paste )
-                m_pEdit->paste();
-            else if( result == Clear )
-                m_pEdit->clear();
-            else if( result == Unselect )
-                m_pEdit->deselect();
-            else if( result == SelectAll )
-                m_pEdit->selectAll();
-            else if( result == Default )
-                setCompletionMode( KGlobalSettings::completionMode() );
-            else if( result == NoCompletion )
-                setCompletionMode( KGlobalSettings::CompletionNone );
-            else if( result == AutoCompletion )
-                setCompletionMode( KGlobalSettings::CompletionAuto );
-            else if( result == SemiAutoCompletion )
-                setCompletionMode( KGlobalSettings::CompletionMan );
-            else if( result == ShellCompletion )
-                setCompletionMode( KGlobalSettings::CompletionShell );
-            else if( result == PopupCompletion )
-                setCompletionMode( KGlobalSettings::CompletionPopup );
-
-            if ( oldMode != completionMode() ) {
-                if ( oldMode == KGlobalSettings::CompletionPopup &&
-                     d->completionBox )
-                    d->completionBox->hide();
-
-                emit completionModeChanged( completionMode() );
-            }
-
-            return true;
-        }
-    }
-
-    else if (o == this || o == m_pEdit) {
-        if (  ev->type() == QEvent::KeyPress ) {
             QKeyEvent *e = static_cast<QKeyEvent *>( ev );
-
-            if ( e->key() == Key_Return || e->key() == Key_Enter) {
-
+            if ( e->key() == Key_Return || e->key() == Key_Enter)
+            {
                 if ( d->completionBox )
                     d->completionBox->hide();
 
@@ -435,16 +345,99 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
                 // returnPressed(const QString&) and returnPressed() signals
                 emit returnPressed();
                 emit returnPressed( currentText() );
-
                 return m_trapReturnKey;
             }
-        } else
-            if ( ev->type()==QEvent::FocusOut ) {
-                if ( d->completionBox && kapp->focusWidget()!=d->completionBox )
-                    d->completionBox->hide();
-            }
-    }
+        }
+        else if ( type == QEvent::MouseButtonPress )
+        {
+            QMouseEvent* e = (QMouseEvent*) ev;
+            if ( e->button() == Qt::RightButton )
+            {
+                if( !m_bEnableMenu )
+                    return true;
 
+                KPopupMenu *popup = new KPopupMenu( this );
+                popup->insertItem( SmallIconSet("editcut"), i18n( "Cut" ), Cut );
+                popup->insertItem( SmallIconSet("editcopy"), i18n( "Copy" ), Copy );
+                popup->insertItem( SmallIconSet("editpaste"), i18n( "Paste" ), Paste );
+                popup->insertItem( SmallIconSet("editclear"), i18n( "Clear" ), Clear );
+                // Create and insert the completion sub-menu iff
+                // a completion object is present.
+                if ( compObj() )
+                {
+                    KPopupMenu* subMenu = new KPopupMenu( popup );
+                    KGlobalSettings::Completion mode = completionMode();
+                    subMenu->insertItem( i18n("None"), NoCompletion );
+                    subMenu->setItemChecked( NoCompletion, mode == KGlobalSettings::CompletionNone );
+                    subMenu->insertItem( i18n("Manual"), ShellCompletion );
+                    subMenu->setItemChecked( ShellCompletion, mode == KGlobalSettings::CompletionShell );
+                    subMenu->insertItem( i18n("Popup"), PopupCompletion );
+                    subMenu->setItemChecked( PopupCompletion, mode == KGlobalSettings::CompletionPopup );
+                    subMenu->insertItem( i18n("Automatic"), AutoCompletion );
+                    subMenu->setItemChecked( AutoCompletion, mode == KGlobalSettings::CompletionAuto );
+                    subMenu->insertItem( i18n("Semi-Automatic"), SemiAutoCompletion );
+                    subMenu->setItemChecked( SemiAutoCompletion, mode == KGlobalSettings::CompletionMan );
+                    if ( mode != KGlobalSettings::completionMode() )
+                    {
+                        subMenu->insertSeparator();
+                        subMenu->insertItem( i18n("Default"), Default );
+                    }
+                    popup->insertSeparator();
+                    popup->insertItem( SmallIconSet("completion"), i18n("Completion"), subMenu );
+                }
+                popup->insertSeparator();
+                popup->insertItem( i18n( "Unselect" ), Unselect );
+                popup->insertItem( i18n( "Select All" ), SelectAll );
+
+                bool flag = ( m_pEdit->echoMode()==QLineEdit::Normal && !m_pEdit->isReadOnly() );
+                bool allMarked = ( m_pEdit->markedText().length() == currentText().length() );
+                popup->setItemEnabled( Cut, flag && m_pEdit->hasMarkedText() );
+                popup->setItemEnabled( Copy, flag && m_pEdit->hasMarkedText() );
+                popup->setItemEnabled( Paste, flag && (bool)QApplication::clipboard()->text().length() );
+                popup->setItemEnabled( Clear, flag && ( currentText().length() > 0) );
+                popup->setItemEnabled( Unselect, m_pEdit->hasMarkedText() );
+                popup->setItemEnabled( SelectAll, flag && !allMarked );
+
+                KGlobalSettings::Completion oldMode = completionMode();
+                int result = popup->exec( e->globalPos() );
+                delete popup;
+
+                if ( result == Cut )
+                    m_pEdit->cut();
+                else if ( result == Copy )
+                    m_pEdit->copy();
+                else if ( result == Paste )
+                m_pEdit->paste();
+                else if ( result == Clear )
+                    m_pEdit->clear();
+                else if ( result == Unselect )
+                    m_pEdit->deselect();
+                else if ( result == SelectAll )
+                    m_pEdit->selectAll();
+                else if ( result == Default )
+                    setCompletionMode( KGlobalSettings::completionMode() );
+                else if ( result == NoCompletion )
+                    setCompletionMode( KGlobalSettings::CompletionNone );
+                else if ( result == AutoCompletion )
+                    setCompletionMode( KGlobalSettings::CompletionAuto );
+                else if ( result == SemiAutoCompletion )
+                    setCompletionMode( KGlobalSettings::CompletionMan );
+                else if ( result == ShellCompletion )
+                    setCompletionMode( KGlobalSettings::CompletionShell );
+                else if ( result == PopupCompletion )
+                    setCompletionMode( KGlobalSettings::CompletionPopup );
+
+                if ( oldMode != completionMode() )
+                {
+                    if ( oldMode == KGlobalSettings::CompletionPopup &&
+                         d->completionBox )
+                        d->completionBox->hide();
+                    emit completionModeChanged( completionMode() );
+                }
+                return true;
+            }
+        }
+    }
     return QComboBox::eventFilter( o, ev );
 }
 
@@ -495,18 +488,37 @@ void KComboBox::makeCompletionBox()
              SLOT( setEditText( const QString& )));
     connect( d->completionBox, SIGNAL( activated( const QString& )),
              SIGNAL( activated( const QString & )));
+/*
+    connect( d->completionBox, SIGNAL( aboutToShow() ),
+             SLOT( slotAboutToShow() ) );
+    connect( d->completionBox, SIGNAL( cancelled() ),
+             SLOT( slotCancelled() ) );
+*/
+}
+
+void KComboBox::slotAboutToShow()
+{
+    d->origText = currentText();
+}
+
+void KComboBox::slotCancelled()
+{
+    setEditText( d->origText );
+    d->origText = QString::null;
 }
 
 // FIXME: make pure virtual in KCompletionBase!
 void KComboBox::setCompletedItems( const QStringList& items )
 {
-    if ( completionMode() == KGlobalSettings::CompletionPopup ) {
+    if ( completionMode() == KGlobalSettings::CompletionPopup )
+    {
         if ( !d->completionBox )
             makeCompletionBox();
 
         d->completionBox->clear();
 
-        if ( !items.isEmpty() ) {
+        if ( !items.isEmpty() )
+        {
             d->completionBox->insertStringList( items );
             d->completionBox->popup();
             setFocus(); // let the user keep on typing
@@ -514,8 +526,8 @@ void KComboBox::setCompletedItems( const QStringList& items )
         else
             d->completionBox->hide();
     }
-
-    else {
+    else
+    {
         if ( !items.isEmpty() ) // fallback
             setCompletedText( items.first() );
     }

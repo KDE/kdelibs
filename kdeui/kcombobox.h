@@ -405,10 +405,9 @@ public slots:
 protected slots:
 
     /**
-    * Deals with highlighting the seleted item when
-    * return is pressed in the list box (editable-mode only).
+    * @deprecated.
     */
-    virtual void itemSelected( QListBoxItem* );
+    virtual void itemSelected( QListBoxItem* ) {};
 
     /**
     * Completes text according to the completion mode.
@@ -423,8 +422,19 @@ protected slots:
     */
     virtual void makeCompletion( const QString& );
 
-protected:
+    /**
+     * Stores the current text whenever the completion box is
+     * displayed for the first time.
+     */
+    void slotAboutToShow();
 
+    /**
+     * Re-stores the current text if the completion box is
+     * cancelled by the user.
+     */
+    void slotCancelled();
+
+protected:
     /**
     * @reimplemented
     */
