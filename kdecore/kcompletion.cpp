@@ -377,12 +377,12 @@ void KCompletion::doBeep( BeepMode mode )
     switch ( mode ) {
     case Rotation:
 	event = QString::fromLatin1("KCompletion: rotation");
-	text = i18n("You reached the end of the list\nof matching items\n");
+	text = i18n("You reached the end of the list\nof matching items.\n");
 	break;
     case PartialMatch:
 	if ( myCompletionMode == KGlobalSettings::CompletionShell ) {
 	    event = QString::fromLatin1("KCompletion: partial match");
-	    text = i18n("The completion is ambiguous, more than one\n match is available.\n");
+	    text = i18n("The completion is ambiguous, more than one\nmatch is available.\n");
 	}
 	break;
     case NoMatch:
