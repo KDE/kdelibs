@@ -22,11 +22,11 @@
 #include <stdlib.h>
 
 #include <kaction.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <kdebug.h>
 #include <kglobal.h>
 #include <klocale.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 
 #include "config-kfile.h"
 #include "kfileview.h"

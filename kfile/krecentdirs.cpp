@@ -27,7 +27,7 @@
  */
 #include <krecentdirs.h>
 #include <ksimpleconfig.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kglobalsettings.h>
 
 #define MAX_DIR_HISTORY 3

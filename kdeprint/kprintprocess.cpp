@@ -18,7 +18,7 @@
  **/
 
 #include "kprintprocess.h"
-#include <kapp.h>
+#include <kapplication.h>
 
 KPrintProcess::KPrintProcess()
 : KShellProcess()

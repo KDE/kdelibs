@@ -21,7 +21,7 @@
 
 #include "qxembed.h"
 #include <qapplication.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qptrdict.h>
 #include <qguardedptr.h>
 #include <qwhatsthis.h>

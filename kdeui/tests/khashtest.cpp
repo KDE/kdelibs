@@ -1,5 +1,5 @@
 #include "khashtest.h"
-#include <kapp.h>
+#include <kapplication.h>
 #include <kpixmapeffect.h>
 #include <kimageeffect.h>
 #include <qpainter.h>

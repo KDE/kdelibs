@@ -46,7 +46,7 @@
  */
 
 #include "kbuttonbox.moc"
-#include <qlist.h>
+#include <qptrlist.h>
 #include <assert.h>
 
 #define minButtonWidth 50

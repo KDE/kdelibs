@@ -1,4 +1,4 @@
-#include <kapp.h>
+#include <kapplication.h>
 #include <qwidget.h>
 #include <qstringlist.h>
 #include <qdir.h>

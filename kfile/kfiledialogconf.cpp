@@ -33,7 +33,7 @@
 #include <qlineedit.h>
 #include <qradiobutton.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <kconfig.h>
 #include <kglobal.h>
 #include <klocale.h>

@@ -29,8 +29,8 @@
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qfileinfo.h>
-#include <kstddirs.h>
-#include <kapp.h>
+#include <kstandarddirs.h>
+#include <kapplication.h>
 #include <kmessagebox.h>
 
 KMDriverDB* KMDriverDB::m_self = 0;

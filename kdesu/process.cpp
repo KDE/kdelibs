@@ -48,7 +48,7 @@
 #include <qfile.h>
 
 #include <kdebug.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 
 #include "process.h"
 #include "kdesu_pty.h"

@@ -31,7 +31,7 @@
 #include <kaboutdata.h>
 #include <kaboutkde.h>
 #include <kaction.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <kbugreport.h>
 #include <kdialogbase.h>
 #include <khelpmenu.h>

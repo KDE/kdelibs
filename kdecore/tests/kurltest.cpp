@@ -1,6 +1,6 @@
 #include <kurl.h>
 #include <stdio.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <stdlib.h>
 #include <kdebug.h>
 #include <kglobal.h>

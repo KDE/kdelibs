@@ -19,7 +19,7 @@
 
 #include <kglobalsettings.h>
 #include <kcursor.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <kipc.h>
 #include <kdebug.h>
 

@@ -29,7 +29,7 @@
 #define QT_NO_TRANSLATION
 #undef Unsorted
 #include <qdir.h>
-#include <qcollection.h>
+#include <qptrcollection.h>
 #include <qwidgetlist.h>
 #include <qstrlist.h>
 #include <qfile.h>
@@ -42,7 +42,7 @@
 #include <qpopupmenu.h>
 #include <qmenubar.h>
 #include <qsessionmanager.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qtimer.h>
 #include <qstylesheet.h>
 #include <qpixmapcache.h>

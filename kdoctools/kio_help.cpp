@@ -34,10 +34,9 @@
 #include <kurl.h>
 #include <kglobal.h>
 #include <klocale.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kprotocolmanager.h>
 #include <kinstance.h>
-#include <qfile.h>
 #include <limits.h>
 #include <qtextcodec.h>
 

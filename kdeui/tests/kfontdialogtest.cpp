@@ -24,7 +24,7 @@
 */
 
 
-#include <kapp.h>
+#include <kapplication.h>
 #include "kfontdialog.h"
 #include <kconfig.h>
 

@@ -20,7 +20,7 @@
 #include <qpainter.h>
 
 #include <kconfig.h>
-#include <kapp.h>
+#include <kapplication.h>
 //#include <kimgio.h>
 #include <stdlib.h>
 

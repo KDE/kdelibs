@@ -18,7 +18,7 @@
 #include <qtooltip.h>
 #include <qwhatsthis.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <klineedit.h>
 #include <kcombobox.h>
 /*

@@ -22,13 +22,13 @@
 
 #include <kconfig.h>
 #include <kdebug.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <kipc.h>
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 
 KPopupTitle::KPopupTitle(QWidget *parent, const char *name)
     : QWidget(parent, name)

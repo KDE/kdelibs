@@ -16,7 +16,7 @@
 #include <qcheckbox.h>
 #include <qlabel.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <kglobal.h>
 #include <kconfig.h>
 #include <kiconview.h>

@@ -14,12 +14,13 @@
 
 #include "kdocktabctltest.h"
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <ktoolbar.h>
 #include <kmenubar.h>
 
-#include <qobjcoll.h>
-#include <qmultilinedit.h>
+#include <<qobjectlist.h>
+#include <qobjectdict.h>>
+#include <qmultilineedit.h>
 #include <qimage.h>
 #include <qbitmap.h>
 #include <qcolor.h>

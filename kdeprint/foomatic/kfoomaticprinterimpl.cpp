@@ -20,7 +20,7 @@
 #include "kfoomaticprinterimpl.h"
 #include "kprinter.h"
 
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <klocale.h>
 
 KFoomaticPrinterImpl::KFoomaticPrinterImpl(QObject *parent, const char *name)

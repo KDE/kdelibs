@@ -15,7 +15,7 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qintdict.h>
 #include <qpixmap.h>
 #include <qpixmapcache.h>

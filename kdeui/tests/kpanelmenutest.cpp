@@ -1,6 +1,6 @@
 #include "kpanelmenutest.h"
-#include <kapp.h>
-#include <kstddirs.h>
+#include <kapplication.h>
+#include <kstandarddirs.h>
 #include <dcopclient.h>
 
 TestWidget::TestWidget(QWidget *parent, const char *name)

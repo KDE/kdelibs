@@ -20,7 +20,7 @@
 #include "kmainwindowiface.h"
 
 #include <dcopclient.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <kdcopactionproxy.h>
 #include <kmainwindow.h>
 #include <kaction.h>

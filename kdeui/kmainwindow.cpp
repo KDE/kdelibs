@@ -27,7 +27,7 @@
 #include <qobjectlist.h>
 
 #include <kaccel.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <kconfig.h>
 #include <kdebug.h>
 #include <khelpmenu.h>
@@ -36,7 +36,7 @@
 #include <qlayout.h>
 
 #include <klocale.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kstaticdeleter.h>
 #ifndef Q_WS_QWS
 #include <netwm.h>

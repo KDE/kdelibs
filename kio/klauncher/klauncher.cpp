@@ -30,7 +30,7 @@
 #include <kprotocolmanager.h>
 #include <kprotocolinfo.h>
 #include <ktempfile.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kstartupinfo.h>
 
 #include "kio/global.h"

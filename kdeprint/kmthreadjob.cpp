@@ -24,7 +24,7 @@
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qstringlist.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 
 #include <errno.h>
 #include <sys/types.h>

@@ -35,10 +35,10 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qstring.h>
 
-#include <kuniqueapp.h>
+#include <kuniqueapplication.h>
 #include <ksocks.h>
 #include <ksockaddr.h>
 #include <kextsock.h>

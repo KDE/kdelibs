@@ -1,12 +1,12 @@
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <kmainwindow.h>
 #include <kxmlgui.h>
 #include <kxmlguiclient.h>
 #include <kxmlguibuilder.h>
 #include <kaction.h>
 #include <kstdaction.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 
 class Client : public KXMLGUIClient
 {

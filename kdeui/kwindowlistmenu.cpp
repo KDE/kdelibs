@@ -31,7 +31,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef Q_WS_QWS //FIXME
 #include <netwm.h>
 #endif
-#include <kapp.h>
+#include <kapplication.h>
 #include <dcopclient.h>
 
 #undef Bool

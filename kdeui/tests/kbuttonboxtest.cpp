@@ -16,7 +16,7 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
-#include <kapp.h>
+#include <kapplication.h>
 #include "kbuttonbox.h"
 #include <qlayout.h>
 #include <qlabel.h>

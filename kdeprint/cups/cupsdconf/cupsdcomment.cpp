@@ -21,7 +21,7 @@
 
 #include <qfile.h>
 #include <qregexp.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 
 QString Comment::comment()
 {

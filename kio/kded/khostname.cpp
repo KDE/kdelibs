@@ -29,11 +29,11 @@
 #include <dcopclient.h>
 
 #include <kcmdlineargs.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <klocale.h>
 #include <kaboutdata.h>
 #include <kglobal.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 
 static KCmdLineOptions options[] = {
    { "+old", I18N_NOOP("Old hostname."), 0 },

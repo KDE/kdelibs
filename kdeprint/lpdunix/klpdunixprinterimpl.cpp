@@ -23,7 +23,7 @@
 #include "kprinter.h"
 
 #include <qfile.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <klocale.h>
 
 KLpdUnixPrinterImpl::KLpdUnixPrinterImpl(QObject *parent, const char *name)

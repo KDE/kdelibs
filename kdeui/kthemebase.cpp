@@ -17,13 +17,13 @@
 */
 #include <kthemebase.h>
 #include <kpixmapeffect.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <kdebug.h>
 #include <klocale.h>
 #include <ksimpleconfig.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qdir.h>

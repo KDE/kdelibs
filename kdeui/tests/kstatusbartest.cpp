@@ -10,7 +10,7 @@
 #include <stdlib.h>
 
 #include "kstatusbar.h"
-#include <kapp.h>
+#include <kapplication.h>
 #include <kmainwindow.h>
 #include <kmenubar.h>
 #include "kstatusbartest.h"

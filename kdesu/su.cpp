@@ -32,7 +32,7 @@
 
 #include <kdebug.h>
 #include <klocale.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 
 #include "su.h"
 #include "kcookie.h"

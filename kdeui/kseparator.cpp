@@ -20,7 +20,7 @@
 #include <qstyle.h>
 
 #include <kdebug.h>
-#include <kapp.h>
+#include <kapplication.h>
 
 #include "kseparator.moc"
 

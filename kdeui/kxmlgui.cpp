@@ -35,7 +35,7 @@
 #include <kaccel.h>
 #include <kinstance.h>
 #include <kglobal.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 
 /*
  * TODO:     - make more use of QValueList instead of QPtrList

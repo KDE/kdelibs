@@ -17,8 +17,8 @@
 */
 
 #include "ktempfile.h"
-#include "kapp.h"
-#include "kstddirs.h"
+#include "kapplication.h"
+#include "kstandarddirs.h"
 #include <qstring.h>
 
 #include <unistd.h>

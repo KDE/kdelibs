@@ -41,7 +41,7 @@
 #include <qfile.h>
 #include <qsortedlist.h>
 #include <kglobal.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kdebug.h>
 #include <qdatetime.h>
 

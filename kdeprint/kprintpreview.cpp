@@ -24,8 +24,8 @@
 
 #include <klibloader.h>
 #include <ktrader.h>
-#include <kapp.h>
-#include <kstddirs.h>
+#include <kapplication.h>
+#include <kstandarddirs.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kdebug.h>

@@ -29,7 +29,7 @@
 #include <qvbox.h>
 #include <qvgroupbox.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kdialogbase.h>

@@ -22,7 +22,7 @@
 #include <qfile.h>
 #include <klocale.h>
 #include <kcmdlineargs.h>
-#include <kapp.h>
+#include <kapplication.h>
 
 static KCmdLineOptions options[] =
 {

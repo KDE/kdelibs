@@ -15,10 +15,10 @@
 #include <qwhatsthis.h>
 #include <qtimer.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <kconfig.h>
 #include <kglobal.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kdebug.h>
 #include <klocale.h>
 #include <kfiledialog.h>

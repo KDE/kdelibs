@@ -1,5 +1,5 @@
 #include "kunbalancedgrdtest.h"
-#include <kapp.h>
+#include <kapplication.h>
 #include <kpixmapeffect.h>
 #include <qpainter.h>
 #include <qstring.h>

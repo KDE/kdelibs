@@ -30,7 +30,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <qdir.h>
 #include <qstring.h>
-#include <qlist.h>
+#include <qptrlist.h>
 
 #include <kinstance.h>
 #include <klocale.h>

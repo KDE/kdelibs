@@ -32,7 +32,7 @@
 #include <kfileiconview.h>
 #include <kmessagebox.h>
 #include <kconfig.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <kurl.h>
 #include <kdiroperator.h>
 #include <kfile.h>

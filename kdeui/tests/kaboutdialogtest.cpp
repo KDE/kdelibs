@@ -11,7 +11,7 @@
 #include "kaboutdialog.h"
 // #include <kimgio.h>
 #include <qimage.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <klocale.h>
 
 int main(int argc, char** argv)

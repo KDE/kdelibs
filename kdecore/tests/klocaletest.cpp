@@ -14,7 +14,7 @@
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include "klocale.h"
-#include <kapp.h>
+#include <kapplication.h>
 #include <kcharsets.h>
 #include <kdebug.h>
 

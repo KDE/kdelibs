@@ -51,11 +51,11 @@
 #include <qtextstream.h>
 #include <qregexp.h>
 #include <kinstance.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kglobal.h>
 #include <kconfig.h>
 #include <klibloader.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <klocale.h>
 #include <kstartupinfo.h>
 

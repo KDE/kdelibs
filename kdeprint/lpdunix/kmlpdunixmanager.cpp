@@ -29,7 +29,7 @@
 #include <qtextstream.h>
 #include <qregexp.h>
 #include <klocale.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kdebug.h>
 
 #include <stdlib.h>

@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 #include <kstatusbar.h>
-#include <kapp.h>
+#include <kapplication.h>
 
 #include <kglobal.h>
 

@@ -4,7 +4,7 @@
 
 #include <qmenudata.h>
 #include "kstep.h"
-#include <kapp.h>
+#include <kapplication.h>
 #include <kdrawutil.h>
 #include <qpalette.h>
 #include <qbitmap.h>

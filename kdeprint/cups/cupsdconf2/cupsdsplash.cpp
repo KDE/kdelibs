@@ -23,7 +23,7 @@
 #include <qpixmap.h>
 #include <qlayout.h>
 #include <klocale.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 
 CupsdSplash::CupsdSplash(QWidget *parent, const char *name)
 	: CupsdPage(parent, name)

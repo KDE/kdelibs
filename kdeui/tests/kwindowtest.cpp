@@ -9,7 +9,7 @@
 #include <stdlib.h>
 
 #include <kstatusbar.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <kcombobox.h>
 #include <khelpmenu.h>
 #include <kcmdlineargs.h>

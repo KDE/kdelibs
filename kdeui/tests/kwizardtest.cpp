@@ -20,7 +20,7 @@
 
 #include <qlabel.h>
 #include <qlayout.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <kwizard.h>
 
 int main(int argc, char **argv)

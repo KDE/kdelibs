@@ -52,7 +52,7 @@
 #include <kkey_x11.h>
 #include "kkeybutton.h"
 
-#include <kapp.h>
+#include <kapplication.h>
 #ifdef Q_WS_X11
 #define XK_XKB_KEYS
 #define XK_MISCELLANY

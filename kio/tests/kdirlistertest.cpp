@@ -8,7 +8,7 @@
 #include <qlayout.h>
 #include <qpushbutton.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <kdirlister.h>
 #include <kdebug.h>
 

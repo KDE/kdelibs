@@ -24,7 +24,7 @@
 
 #include <qglobal.h>
 #include <qdict.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include "kglobal.h"
 
 #include <kapplication.h>

@@ -36,7 +36,7 @@
 #include <qcursor.h>
 #include <qpainter.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kstyle.h>

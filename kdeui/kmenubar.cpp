@@ -33,7 +33,7 @@
 #include <kglobalsettings.h>
 #include <kmenubar.h>
 #include <kstyle.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <kwin.h>
 #include <kwinmodule.h>
 #include <kglobal.h>

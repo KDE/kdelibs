@@ -35,7 +35,7 @@
 #include <kaction.h>
 #include <kstdaction.h>
 #include <kiconloader.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <kcursor.h>
 
 #undef m_manager

@@ -3,7 +3,7 @@
 #include <qlayout.h>
 #include <qpushbutton.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <kdebug.h>
 #include <klineedit.h>
 

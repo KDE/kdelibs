@@ -28,7 +28,7 @@
 #include <qlabel.h>
 #include <qvaluelist.h>
 
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <klocale.h>
 #include <kicontheme.h>
 #include <kiconloader.h>

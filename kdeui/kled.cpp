@@ -21,6 +21,15 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2001/08/08 14:35:12  hausmann
+ * - removed empty KActionCollection::childEvent
+ * - added sizeHint() and minimumSizeHint() methods to KLed, as advised by
+ *   Rik in the comment in kled.h
+ * - removed unused mousePressEvent, mouseMoveEvent and mouseReleaseEvent
+ *   handlers from KPassDlg
+ * - merged KToolBar::insertSeparator() and KToolBar::insertLineSeparator()
+ *   with their overloaded variants
+ *
  * Revision 1.18  2001/04/16 22:08:43  pfeiffer
  * don't assume that the first item of an enum is 0
  *
@@ -93,7 +102,7 @@
 
 #include <qpainter.h>
 #include <qcolor.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <kpixmapeffect.h>
 #include "kled.h"
 

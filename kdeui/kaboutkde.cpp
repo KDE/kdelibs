@@ -21,9 +21,9 @@
 
 // I (espen) prefer that header files are included alphabetically
 #include <kaboutkde.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <klocale.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 
 
 KAboutKDE::KAboutKDE( QWidget *parent, const char *name, bool modal )

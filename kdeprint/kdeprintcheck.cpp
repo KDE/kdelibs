@@ -38,7 +38,7 @@
 
 #include "kdeprintcheck.h"
 
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kextsock.h>
 
 static char* config_stddirs[] = {

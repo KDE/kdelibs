@@ -33,7 +33,7 @@
 #include <klocale.h>
 #include <kcmdlineargs.h>
 #include <kglobal.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kaboutdata.h>
 #include <kinstance.h>
 #include <ktempfile.h>

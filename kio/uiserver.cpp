@@ -24,7 +24,7 @@
 
 #include <kconfig.h>
 #include <kstandarddirs.h>
-#include <kuniqueapp.h>
+#include <kuniqueapplication.h>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <kglobal.h>

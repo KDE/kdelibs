@@ -1,4 +1,4 @@
-#include <kapp.h>
+#include <kapplication.h>
 #include <kscan.h>
 
 int main( int argc, char **argv )

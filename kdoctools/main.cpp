@@ -12,7 +12,7 @@
 #include <libxslt/transform.h>
 #include <libxslt/xsltutils.h>
 #include <qstring.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kinstance.h>
 #include <kdebug.h>
 #include <stdlib.h>

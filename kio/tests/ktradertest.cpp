@@ -1,7 +1,7 @@
 
 #include <kcmdlineargs.h>
 #include <ktrader.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <stdio.h>
 
 static KCmdLineOptions options[] =

@@ -4,7 +4,7 @@
 #include <libxml/xmlIO.h>
 #include <libxml/parserInternals.h>
 #include <kdebug.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <qdir.h>
 #include <qregexp.h>
 #include <xslt.h>

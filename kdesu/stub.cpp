@@ -20,7 +20,7 @@
 #include <qcstring.h>
 #include <kdatastream.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <kdebug.h>
 #include <dcopclient.h>
 

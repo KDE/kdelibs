@@ -8,8 +8,8 @@
 #include <qdir.h>
 
 #include <kiconloader.h>
-#include <kstddirs.h>
-#include <kapp.h>
+#include <kstandarddirs.h>
+#include <kapplication.h>
 #include <kmessagebox.h>
 #include <kaction.h>
 #include <klocale.h>

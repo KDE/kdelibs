@@ -74,7 +74,7 @@ extern "C" {
 #include <klocale.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kio/job.h>
 #include <kio/chmodjob.h>
 #include <kio/renamedlg.h>

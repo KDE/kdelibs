@@ -35,7 +35,7 @@
 #include <ktempfile.h>
 #include <kmessagebox.h>
 #include <kio/job.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kfiledialog.h>
 
 #include <stdio.h>

@@ -27,7 +27,7 @@
 
 #include <qbitmap.h>
 #include <qbuttongroup.h>
-#include <qcollection.h>
+#include <qptrcollection.h>
 #include <qcolor.h>
 #include <qcombobox.h>
 #include <qlabel.h>
@@ -38,7 +38,7 @@
 #include <qpixmap.h>
 #include <qpopupmenu.h>
 #include <qpushbutton.h>
-#include <qstack.h>
+#include <qptrstack.h>
 #include <qstrlist.h>
 #include <qtabdialog.h>
 #include <qtextstream.h>
@@ -46,7 +46,7 @@
 #include <qtimer.h>
 #include <qdockarea.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <kaction.h>
 #include <kcmdlineargs.h>
 #include <kcompletionbox.h>
@@ -66,7 +66,7 @@
 #include <kprocess.h>
 #include <kprotocolinfo.h>
 #include <krecentdirs.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <ktoolbar.h>
 #include <ktoolbarbutton.h>
 #include <kurl.h>

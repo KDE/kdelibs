@@ -34,7 +34,7 @@
 
 #include <kglobal.h>
 #include <kglobalsettings.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <klocale.h>
 #include <kdebug.h>
 #include <knotifyclient.h>

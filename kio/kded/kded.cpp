@@ -37,7 +37,7 @@
 
 #include <dcopclient.h>
 
-#include <kuniqueapp.h>
+#include <kuniqueapplication.h>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
 #include <klocale.h>
@@ -45,7 +45,7 @@
 #include <kprocess.h>
 #include <kdebug.h>
 #include <kdirwatch.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <klibloader.h>
 #include <kio/global.h>
 

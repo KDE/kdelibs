@@ -34,7 +34,7 @@
 
 #include <qmenudata.h>
 #include "mega.h"
-#include <kapp.h>
+#include <kapplication.h>
 #include <kglobal.h>
 #include <kconfig.h>
 #include <kdrawutil.h>

@@ -19,7 +19,7 @@
 
 	*/
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <kdebug.h>
 #include <kio/job.h>
 #include <kio/kmimetype.h>

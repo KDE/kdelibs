@@ -17,7 +17,7 @@
 */
 
 #include <kdebug.h>
-#include <kuniqueapp.h>
+#include <kuniqueapplication.h>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <klocale.h>

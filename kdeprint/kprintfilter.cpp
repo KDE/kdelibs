@@ -24,7 +24,7 @@
 #include <qxml.h>
 #include <qptrstack.h>
 #include <qregexp.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kdialogbase.h>
 #include <ksimpleconfig.h>
 

@@ -1,6 +1,6 @@
 #include "KIDLTest.h"
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <dcopclient.h>
 
 KIDLTest::KIDLTest( const QCString& id )

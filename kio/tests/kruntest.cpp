@@ -2,7 +2,7 @@
 // Let's test KRun
 
 #include <qpushbutton.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include "kruntest.h"
 #include <kdebug.h>
 

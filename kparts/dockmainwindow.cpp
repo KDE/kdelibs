@@ -25,7 +25,7 @@
 #include <kparts/plugin.h>
 #include <kinstance.h>
 #include <khelpmenu.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <qapplication.h>
 
 #include <kdebug.h>

@@ -1,5 +1,5 @@
 #include "kgradienttest.h"
-#include <kapp.h>
+#include <kapplication.h>
 #include <kpixmapeffect.h>
 #include <qpainter.h>
 #include <qdatetime.h>

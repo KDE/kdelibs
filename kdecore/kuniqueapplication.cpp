@@ -30,7 +30,7 @@
 #include <unistd.h>
 
 #include <qfile.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qtimer.h>
 
 #include <dcopclient.h>
@@ -41,7 +41,7 @@
 #include <kstartupinfo.h>
 #include <kconfig.h>
 #include "kdebug.h"
-#include "kuniqueapp.h"
+#include "kuniqueapplication.h"
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
 #define DISPLAY "DISPLAY"

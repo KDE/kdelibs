@@ -10,7 +10,7 @@
 #include <qprinter.h>
 #include <qpaintdevicemetrics.h>
 #include <qstring.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <ktempfile.h>
 
 #include "eps.h"

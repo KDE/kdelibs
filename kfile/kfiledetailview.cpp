@@ -24,7 +24,7 @@
 #include <qpainter.h>
 #include <qpixmap.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <kfileviewitem.h>
 #include <kglobalsettings.h>
 #include <klocale.h>

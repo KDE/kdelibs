@@ -20,7 +20,7 @@
 
 #include <qfile.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <kio/job.h>
 
 #include "kpac_downloader.moc"

@@ -19,7 +19,7 @@
 */
 
 #include <qstring.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <dcopclient.h>
 #include <stdio.h>
 #include <qvaluelist.h>

@@ -41,7 +41,7 @@
 #include <kglobal.h>
 #include <kdebug.h>
 #include <kdirwatch.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <ksavefile.h>
 #include <klocale.h>
 #include <kaboutdata.h>

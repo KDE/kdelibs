@@ -3,12 +3,12 @@
 #include <kservice.h>
 #include <kmimetype.h>
 #include <assert.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kservicegroup.h>
 #include <kimageio.h>
 #include <kprotocolinfo.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 
 #include <stdio.h>
 

@@ -29,13 +29,13 @@
 #include <qcheckbox.h>
 
 #include <kglobal.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kmessagebox.h>
 #include <kaboutdialog.h>
 #include <kconfig.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 
 #include <sys/time.h>
 #include <sys/resource.h>

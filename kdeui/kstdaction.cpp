@@ -24,7 +24,7 @@
 #include <kaction.h>
 #include <kaboutdata.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <qwhatsthis.h>
 #include <qtoolbutton.h>
 

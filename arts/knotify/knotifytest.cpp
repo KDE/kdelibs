@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <stdio.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <knotifyclient.h>
 
 int main(int argc, char **argv)

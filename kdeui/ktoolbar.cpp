@@ -45,7 +45,7 @@
 #include "klineedit.h"
 #include "kseparator.h"
 #include <klocale.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <kaction.h>
 #include <kstdaction.h>
 #include <kglobal.h>

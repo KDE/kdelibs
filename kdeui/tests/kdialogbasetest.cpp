@@ -1,4 +1,4 @@
-#include <kapp.h>
+#include <kapplication.h>
 #include <kdialogbase.h>
 
 #include <qstring.h>

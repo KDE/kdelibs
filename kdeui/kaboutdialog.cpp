@@ -30,7 +30,7 @@
 #include <qrect.h>
 #include <qtabwidget.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include <klocale.h>

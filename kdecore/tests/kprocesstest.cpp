@@ -12,7 +12,7 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <kapp.h>
+#include <kapplication.h>
 
 #include <signal.h>
 

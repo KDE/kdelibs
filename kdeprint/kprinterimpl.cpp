@@ -33,8 +33,8 @@
 #include <qregexp.h>
 #include <klocale.h>
 #include <dcopclient.h>
-#include <kapp.h>
-#include <kstddirs.h>
+#include <kapplication.h>
+#include <kstandarddirs.h>
 #include <kdatastream.h>
 #include <kdebug.h>
 #include <kmimemagic.h>

@@ -26,7 +26,7 @@
 #include <qtimer.h>
 #include <netwm.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <kdialog.h>
 #include <kstaticdeleter.h>
 

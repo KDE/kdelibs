@@ -1,4 +1,4 @@
-#include <kapp.h>
+#include <kapplication.h>
 #include <kio/defaultprogress.h>
 #include <kurl.h>
 #include <kdebug.h>

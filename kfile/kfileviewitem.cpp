@@ -29,7 +29,7 @@
 #include <qpixmap.h>
 #include <qregexp.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <kdebug.h>
 #include <kglobal.h>
 #include <klocale.h>

@@ -36,7 +36,7 @@
 #include <kaction.h>
 #include <klocale.h>
 #include <kiconloader.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 
 KMInstancePage::KMInstancePage(QWidget *parent, const char *name)
 : QWidget(parent,name)

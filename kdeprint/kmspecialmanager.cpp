@@ -22,7 +22,7 @@
 #include "kmprinter.h"
 #include "kdeprintcheck.h"
 
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <ksimpleconfig.h>
 
 KMSpecialManager::KMSpecialManager(KMManager *parent, const char *name)

@@ -51,7 +51,7 @@
 
 #include <qstring.h>
 #include <qstrlist.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qdict.h>
 
 #include <kurl.h>

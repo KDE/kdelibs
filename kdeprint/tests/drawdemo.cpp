@@ -14,7 +14,7 @@
 #include <qpushbutton.h>
 #include <qradiobutton.h>
 #include <qbuttongroup.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <qapplication.h>
 #include <math.h>
 

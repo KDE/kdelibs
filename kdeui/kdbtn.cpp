@@ -17,7 +17,7 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <qbutton.h>
 #include <qpainter.h>
 #include <qpen.h>

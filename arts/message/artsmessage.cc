@@ -30,7 +30,7 @@ Gnome, etc. and used instead.
 */
 
 #include <klocale.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <kaboutdata.h>
 #include <kmessagebox.h>
 #include <kcmdlineargs.h>

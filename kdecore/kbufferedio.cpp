@@ -24,7 +24,7 @@
 
 #include <string.h>
 
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qcstring.h>
 #include "kbufferedio.h"
 

@@ -8,7 +8,7 @@
 
 #include <qtextstream.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <kemailsettings.h>
 #include <klocale.h>
 #include <kcmdlineargs.h>

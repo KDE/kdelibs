@@ -42,7 +42,7 @@
 #include <qcstring.h>
 
 #include <kdebug.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include "kdesu_pty.h"
 
 // stdlib.h is meant to declare the prototypes but doesn't :(

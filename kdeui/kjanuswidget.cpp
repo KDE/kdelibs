@@ -33,7 +33,7 @@
 #include <qtimer.h>
 #include <qstyle.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <kdialog.h> // Access to some static members
 #include <klocale.h>
 #include <kglobal.h>

@@ -27,8 +27,8 @@
 #include <qfileinfo.h>
 #include <qdir.h>
 #include <klocale.h>
-#include <kapp.h>
-#include <kstddirs.h>
+#include <kapplication.h>
+#include <kstandarddirs.h>
 
 KMDBCreator::KMDBCreator(QObject *parent, const char *name)
 : QObject(parent,name)

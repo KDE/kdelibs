@@ -27,7 +27,7 @@
 
 #include <unistd.h>
 #include <stdlib.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <qdialog.h>
 #include <qfile.h>
 #include <qfileinfo.h>

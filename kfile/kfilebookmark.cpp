@@ -30,7 +30,7 @@
 #include "kfilebookmark.h"
 
 #include <klocale.h>
-#include <kapp.h>
+#include <kapplication.h>
 
 /* FIXME 
  * kfilebookmarks should be rewritten to use Qt, and not things like

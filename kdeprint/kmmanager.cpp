@@ -28,11 +28,11 @@
 
 #include <zlib.h>
 #include <qfile.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kconfig.h>
 #include <klocale.h>
 #include <kdebug.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <klibloader.h>
 #include <unistd.h>
 

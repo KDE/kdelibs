@@ -21,6 +21,9 @@
 ****************************************************************************
 *
 * $Log$
+* Revision 1.8  2000/06/01 09:36:12  gehrmab
+* We like orthogonal APIs
+*
 * Revision 1.7  2000/05/26 04:20:33  granroth
 * Use the KCursor::handCursor instead of the Qt hand cursor with
 * KTextBrowser.  This is for consistency.
@@ -43,7 +46,7 @@
 */
 
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <ktextbrowser.h>
 #include <kcursor.h>
 

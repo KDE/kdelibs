@@ -1,5 +1,5 @@
 #include <ksystemtray.h>
-#include <kapp.h>
+#include <kapplication.h>
 
 int main(int argc, char **argv)
 {

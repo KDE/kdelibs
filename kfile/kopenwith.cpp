@@ -34,7 +34,7 @@
 #include <qtooltip.h>
 #include <qstyle.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <kbuttonbox.h>
 #include <kcombobox.h>
 #include <kdesktopfile.h>
@@ -45,7 +45,7 @@
 #include <kiconloader.h>
 #include <kmimemagic.h>
 #include <krun.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kuserprofile.h>
 #include <kurlcompletion.h>
 #include <kurlrequester.h>

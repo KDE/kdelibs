@@ -31,7 +31,7 @@
 #include <qvbox.h>
 
 #include <kaction.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <kdebug.h>
 #include <kdialog.h>
 #include <kdialogbase.h>

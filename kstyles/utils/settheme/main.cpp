@@ -2,7 +2,7 @@
 #include <kthemebase.h>
 #include <qfileinfo.h>
 #include <qdir.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <klocale.h>
 #include <kipc.h>

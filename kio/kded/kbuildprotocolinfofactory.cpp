@@ -22,7 +22,7 @@
 #include "kresourcelist.h"
 
 #include <kglobal.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kmessageboxwrapper.h>
 #include <kdebug.h>
 #include <klocale.h>

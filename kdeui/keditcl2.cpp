@@ -28,7 +28,7 @@
 #include <qbuttongroup.h>
 #include <qcheckbox.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <kcombobox.h>
 #include <knuminput.h>
 #include <kmessagebox.h>

@@ -37,7 +37,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <kstandarddirs.h>
 #include <qtimer.h>
 #include <unistd.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qfile.h>
 
 #include <dcopclient.h>

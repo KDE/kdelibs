@@ -60,7 +60,7 @@
 #include <qlayout.h>
 #include <qlcdnumber.h>
 #include <qlineedit.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qlistbox.h>
 #include <qlistview.h>
 #include <qmainwindow.h>

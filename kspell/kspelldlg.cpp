@@ -23,7 +23,7 @@
 #include <qlabel.h>
 #include <qlayout.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <klocale.h>
 #include <klistbox.h>
 #include <klineedit.h>

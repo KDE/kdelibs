@@ -32,7 +32,7 @@
 #include <qdir.h>
 #include <klibloader.h>
 #include <kconfig.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kiconloader.h>
 #include <kdebug.h>
 #include <kmessagebox.h>

@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 #include <kaboutdata.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <kdebug.h>
 #include <kcmdlineargs.h>
 

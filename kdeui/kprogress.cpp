@@ -26,7 +26,7 @@
 
 #include "kprogress.h"
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <kstyle.h>
 
 KProgress::KProgress(QWidget *parent, const char *name)

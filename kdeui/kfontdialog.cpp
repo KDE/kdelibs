@@ -39,7 +39,7 @@
 #include <qstringlist.h>
 #include <qfontdatabase.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <kcharsets.h>
 #include <kconfig.h>
 #include <kdialog.h>
@@ -48,7 +48,7 @@
 #include <qlineedit.h>
 #include <klistbox.h>
 #include <klocale.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kdebug.h>
 
 #ifdef Q_WS_X11
@@ -605,6 +605,11 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.70  2001/10/06 11:40:22  adrian
+* According to bug #22745 Bold _and_ Italic fonts did not get a right preview.
+* This depends on the language which is used. (I think these i18n() statements
+* are not very clean).
+*
 * Revision 1.69  2001/09/22 19:53:57  mueller
 * fixes for QT_NO_COMPAT
 *

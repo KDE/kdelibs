@@ -11,7 +11,7 @@
 #include <qlayout.h>
 #include <qvgroupbox.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <knuminput.h>
 
 #include "knuminputtest.h"

@@ -28,7 +28,7 @@
 #include <qtooltip.h>
 
 #include <kaction.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <klocale.h>
 #include <kfileviewitem.h>
 #include <kglobalsettings.h>

@@ -16,7 +16,7 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include "kuniqueapp.h"
+#include "kuniqueapplication.h"
 #include "kglobalsettings.h"
 
 #include <unistd.h>

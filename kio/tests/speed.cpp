@@ -1,5 +1,5 @@
 #include <kdebug.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <time.h>
 #include "speed.h"
 #include <kio/job.h>

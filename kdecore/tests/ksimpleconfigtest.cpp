@@ -1,6 +1,10 @@
 /* $Id$
 
  * $Log$
+ * Revision 1.2  1999/10/23 17:43:03  kulow
+ * before Torben and Simon come to Luebeck to beat the hell out of me I better
+ * fix it :)
+ *
  * Revision 1.1.1.1  1999/10/09 17:40:52  kulow
  * moving tests
  *
@@ -27,7 +31,7 @@
 // demonstrates use of KSimpleConfig class
 
 #include <ksimpleconfig.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <unistd.h>
 #include <stdio.h>
 

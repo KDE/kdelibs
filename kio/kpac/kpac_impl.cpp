@@ -26,7 +26,7 @@
 #include <kdebug.h>
 #include <kurl.h>
 #include <ksimpleconfig.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kprocess.h>
 #include <kjs/kjs.h>
 #include <kjs/object.h>

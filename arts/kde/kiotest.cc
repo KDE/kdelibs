@@ -3,7 +3,7 @@
 #include <kcmdlineargs.h>
 #include <connect.h>
 #include <klocale.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <kaboutdata.h>
 #include "qiomanager.h"
 #include "artskde.h"

@@ -36,7 +36,7 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include <kdialog.h>
-#include <kapp.h>
+#include <kapplication.h>
 
 QFontDatabase * KCharSelect::fontDataBase = 0;
 

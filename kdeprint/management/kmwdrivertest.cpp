@@ -31,7 +31,7 @@
 #include <qpushbutton.h>
 #include <qlayout.h>
 #include <klocale.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <kmessagebox.h>
 
 KMWDriverTest::KMWDriverTest(QWidget *parent, const char *name)

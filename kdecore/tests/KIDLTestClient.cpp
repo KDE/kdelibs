@@ -1,4 +1,4 @@
-#include <kapp.h>
+#include <kapplication.h>
 #include <dcopclient.h>
 
 #include "KIDLTest_stub.h"

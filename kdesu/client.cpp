@@ -31,8 +31,8 @@
 #include <qregexp.h>
 
 #include <kdebug.h>
-#include <kstddirs.h>
-#include <kapp.h>
+#include <kstandarddirs.h>
+#include <kapplication.h>
 
 #include "client.h"
 

@@ -6,14 +6,14 @@
 #include <qsplitter.h>
 #include <qfile.h>
 #include <qtextstream.h>
-#include <qmultilinedit.h>
+#include <qmultilineedit.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <kdebug.h>
 #include <kaction.h>
 #include <klocale.h>
 #include <kstatusbar.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 
 NotepadPart::NotepadPart( QWidget * parent, const char * name )
  : KParts::ReadWritePart( parent, name )

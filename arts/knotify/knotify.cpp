@@ -28,8 +28,8 @@
 
 #include <kdebug.h>
 #include <kmessagebox.h>
-#include <kstddirs.h>
-#include <kuniqueapp.h>
+#include <kstandarddirs.h>
+#include <kuniqueapplication.h>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <kglobal.h>

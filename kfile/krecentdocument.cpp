@@ -27,8 +27,8 @@
  */
 #include <krecentdocument.h>
 #include <ksimpleconfig.h>
-#include <kstddirs.h>
-#include <kapp.h>
+#include <kstandarddirs.h>
+#include <kapplication.h>
 #include <kurl.h>
 #include <kdebug.h>
 #include <kmimetype.h>

@@ -31,7 +31,7 @@
 #include <qwhatsthis.h>
 #include <qtimer.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <klocale.h>
 #include <kglobal.h>
 #include <kseparator.h>

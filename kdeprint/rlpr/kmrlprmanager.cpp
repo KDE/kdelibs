@@ -26,7 +26,7 @@
 #include <qtextstream.h>
 #include <qmap.h>
 
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <klocale.h>
 
 KMRlprManager::KMRlprManager(QObject *parent, const char *name)

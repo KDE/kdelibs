@@ -29,7 +29,7 @@
 #include <kdialog.h>
 #include <klineedit.h>
 #include <klocale.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <knotifyclient.h>
 
 #include "keditlistbox.h"

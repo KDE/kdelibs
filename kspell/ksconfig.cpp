@@ -26,7 +26,7 @@
 #include <qlayout.h>
 #include <qpushbutton.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kdialog.h>

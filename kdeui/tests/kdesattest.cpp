@@ -1,5 +1,5 @@
 #include "kdesattest.h"
-#include <kapp.h>
+#include <kapplication.h>
 #include <kimageeffect.h>
 #include <qpainter.h>
 #include <qdatetime.h>

@@ -7,12 +7,12 @@
 #include <qfile.h>
 #include <qdir.h>
 #include <qtextstream.h>
-#include <qmultilinedit.h>
+#include <qmultilineedit.h>
 #include <qlineedit.h>
 #include <qvbox.h>
 
 #include <kiconloader.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <kdebug.h>
 #include <kmessagebox.h>
 #include <kaction.h>

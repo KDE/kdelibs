@@ -28,7 +28,7 @@
 
 #include <klibloader.h>
 #include <kinstance.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kdebug.h>
 
 using namespace KParts;

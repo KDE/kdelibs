@@ -29,7 +29,7 @@
 #undef kdDebug
 #endif
 
-#include "kapp.h"
+#include "kapplication.h"
 #include "kglobal.h"
 #include "kinstance.h"
 #include "kstandarddirs.h"

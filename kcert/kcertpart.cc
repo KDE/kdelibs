@@ -38,7 +38,7 @@
 #include <kprocess.h>
 #include <qtabwidget.h>
 #include <kseparator.h>
-#include <qmultilinedit.h>
+#include <qmultilineedit.h>
 
 KDE_EXPORT_COMPONENT_FACTORY( libkcertpart, KParts::GenericFactory<KCertPart> )
 

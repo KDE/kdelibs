@@ -34,10 +34,10 @@
 #include <qfile.h>
 #include <qtextstream.h>
 #include <kdebug.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <klocale.h>
 #include <kconfig.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <klibloader.h>
 #include <cups/cups.h>
 #include <cups/ppd.h>

@@ -19,7 +19,7 @@
 
 #include "config.h"
 
-#include "kapp.h"
+#include "kapplication.h"
 #include "klauncher.h"
 #include "kcmdlineargs.h"
 #include "kcrash.h"

@@ -25,7 +25,7 @@
 #include <kconfig.h>
 #include <kdesktopfile.h>
 #include <kglobal.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 
 class AutoStartItem
 {

@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>

@@ -1,4 +1,4 @@
-#include <kapp.h>
+#include <kapplication.h>
 #include <keditcl.h>
 #include <qpopupmenu.h>
 

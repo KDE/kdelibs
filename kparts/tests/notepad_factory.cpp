@@ -1,7 +1,7 @@
 #include "notepad_factory.h"
 
 #include <klocale.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kinstance.h>
 #include <kdebug.h>
 #include <kaboutdata.h>

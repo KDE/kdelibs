@@ -27,7 +27,7 @@
 #include <qtextstream.h>
 
 #include <kinstance.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kdebug.h>
 #include <kaction.h>
 #include <kregexp.h>
