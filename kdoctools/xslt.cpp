@@ -95,7 +95,9 @@ QString transform( const QString &pat, const QString& tss)
     /* if (contents.left(5) != "<?xml") {
         fprintf(stderr, "xmlizer\n");
         INFO(i18n("XMLize document"));
-        FILE *p = popen(QString::fromLatin1("xmlizer %1").arg(pat).latin1(), "r");
+        QString cmd = "xmlizer ";
+        cmd += KProcess::quote(pat);
+        FILE *p = popen(QFile::encodeName(cmd), "r");
         xmlFile.open(IO_ReadOnly, p);
         char buffer[5001];
         contents.truncate(0);
