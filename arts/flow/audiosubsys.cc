@@ -308,6 +308,7 @@ bool AudioSubSystem::running()
 
 void AudioSubSystem::handleIO(int type)
 {
+#ifdef HAVE_SYS_SOUNDCARD_H
 	if(type & ioRead)
 	{
 		int len = ::read(audio_fd,fragment_buffer,fragment_size);
@@ -361,6 +362,7 @@ void AudioSubSystem::handleIO(int type)
 	}
 
 	assert((type & ioExcept) == 0);
+#endif
 }
 
 void AudioSubSystem::read(void *buffer, int size)
