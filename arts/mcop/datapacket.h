@@ -181,7 +181,7 @@ protected:
 	{
 		if(newCapacity > capacity)
 		{
-			delete contents;
+			delete[] contents;
 			capacity = newCapacity;
 			contents = new T[capacity];
 		}
@@ -194,7 +194,7 @@ protected:
 	}
 	~RawDataPacket()
 	{
-		delete contents;
+		delete[] contents;
 	}
 };
 
