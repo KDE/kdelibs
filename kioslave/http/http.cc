@@ -432,235 +432,204 @@ bool HTTPProtocol::eof()
 bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
                              unsigned long _offset )
 {
-	// let's store our current state
-	m_state.url    = _url;
-	m_state.reload = _reload;
-	m_state.offset = _offset;
-	m_state.postDataSize = _post_data_size;
+  // let's store our current state
+  m_state.url    = _url;
+  m_state.reload = _reload;
+  m_state.offset = _offset;
+  m_state.postDataSize = _post_data_size;
 
-	// try to ensure that the port is something reasonable
-	unsigned short int port = _url.port();
-	if ( port == 0 ) {
+  // try to ensure that the port is something reasonable
+  unsigned short int port = _url.port();
+  if ( port == 0 ) {
 #ifdef DO_SSL
-		if (_url.protocol()=="https")
-			port = DEFAULT_HTTPS_PORT;
-		else
+    if (_url.protocol()=="https")
+      port = DEFAULT_HTTPS_PORT;
+    else
 #endif
-			if ( (_url.protocol()=="http") || (_url.protocol() == "httpf") )
-				port = DEFAULT_HTTP_PORT;
-			else
-			{
-				fprintf(stderr, "Got a weird protocol (%s), assuming port is 80\n", _url.protocol().ascii()); fflush(stderr);
-				port = 80;
-			}
-	}
+      if ( (_url.protocol()=="http") || (_url.protocol() == "httpf") )
+	port = DEFAULT_HTTP_PORT;
+      else {
+	fprintf(stderr, "Got a weird protocol (%s), assuming port is 80\n", _url.protocol().ascii()); fflush(stderr);
+	port = 80;
+      }
+  }
 
-	// make sure that we can support what we are asking for
-	if (_url.protocol() == "https") {
+  // make sure that we can support what we are asking for
+  if (_url.protocol() == "https") {
 #ifdef DO_SSL
-		m_bUseSSL=true;
+    m_bUseSSL=true;
 #else
-		error(ERR_UNSUPPORTED_PROTOCOL, i18n("You do not have OpenSSL/SSLeay installed, or you have not compiled kio_http with SSL support"));
+    error(ERR_UNSUPPORTED_PROTOCOL, i18n("You do not have OpenSSL/SSLeay installed, or you have not compiled kio_http with SSL support"));
 #endif
-	}
+  }
 
-	// okay, we know now that our URL is at least half-way decent.  let's
-	// try to open up our socket
-	m_sock = ::socket(PF_INET,SOCK_STREAM,0);
-	if (m_sock < 0) {
-		error( ERR_COULD_NOT_CREATE_SOCKET, _url.url() );
-		return false;
-	}
+  // okay, we know now that our URL is at least half-way decent.  let's
+  // try to open up our socket
+  m_sock = ::socket(PF_INET,SOCK_STREAM,0);
+  if (m_sock < 0) {
+    error( ERR_COULD_NOT_CREATE_SOCKET, _url.url() );
+    return false;
+  }
 
-	// do we want to use a proxy?
-	bool do_proxy = m_bUseProxy;
+  // do we want to use a proxy?
+  bool do_proxy = m_bUseProxy;
 
-	// if so, we had first better make sure that our host isn't on the
-	// No Proxy list
-	if (do_proxy && !m_strNoProxyFor.isEmpty()) 
-		do_proxy = !revmatch(_url.host(), m_strNoProxyFor);    
+  // if so, we had first better make sure that our host isn't on the
+  // No Proxy list
+  if (do_proxy && !m_strNoProxyFor.isEmpty()) 
+    do_proxy = !revmatch(_url.host(), m_strNoProxyFor);    
+  
+  // do we still want a proxy after all that?
+  if( do_proxy ) {
+    qDebug( "http_open 0");
+    // yep... open up a connection to the proxy instead of our host
+    if(!KSocket::initSockaddr(&m_proxySockaddr, m_strProxyHost, m_strProxyPort)) {
+      error(ERR_UNKNOWN_PROXY_HOST, m_strProxyHost);
+      return false;
+    }
 
-	// do we still want a proxy after all that?
-	if( do_proxy )
-	{
-		debug( "http_open 0");
-		// yep... open up a connection to the proxy instead of our host
-		if(!KSocket::initSockaddr(&m_proxySockaddr, m_strProxyHost,
-					               m_strProxyPort))
-		{
-			error(ERR_UNKNOWN_PROXY_HOST, m_strProxyHost);
-			return false;
-		}
+    if(::connect(m_sock, (struct sockaddr*)(&m_proxySockaddr), sizeof(m_proxySockaddr))) {
+      error( ERR_COULD_NOT_CONNECT, m_strProxyHost );
+      return false;
+    }
+  } else { 
+    // apparently we don't want a proxy.  let's just connect directly
+    struct sockaddr_in server_name;
 
-		if(::connect(m_sock, (struct sockaddr*)(&m_proxySockaddr),
-					 sizeof(m_proxySockaddr)))
-		{
-			error( ERR_COULD_NOT_CONNECT, m_strProxyHost );
-			return false;
-		}
-	}
-	else
-	{
-		// apparently we don't want a proxy.  let's just connect directly
-		struct sockaddr_in server_name;
+    if(!KSocket::initSockaddr(&server_name, _url.host(), port)) {
+      error( ERR_UNKNOWN_HOST, _url.host() );
+      return false;
+    }
 
-		if(!KSocket::initSockaddr(&server_name, _url.host(), port))
-		{
-			error( ERR_UNKNOWN_HOST, _url.host() );
-			return false;
-		}
+    if(::connect(m_sock, (struct sockaddr*)( &server_name ), sizeof(server_name))) {
+      error(ERR_COULD_NOT_CONNECT, _url.host());
+      return false;
+    }
+  }
 
-		if(::connect(m_sock, (struct sockaddr*)( &server_name ),
-		             sizeof(server_name)))
-		{
-			error(ERR_COULD_NOT_CONNECT, _url.host());
-			return false;
-		}
-	}
+  // Placeholder
+  if (!openStream())
+    error( ERR_COULD_NOT_CONNECT, _url.host() );
 
-	// Placeholder
-	if (!openStream())
-		error( ERR_COULD_NOT_CONNECT, _url.host() );
+  // this will be the entire header
+  QString header;
 
-	// this will be the entire header
-	QString header;
+  // determine if this is a POST or GET method
+  if (_post_data_size > 0) {
+    _reload = true;     /* no caching allowed */
+    header = "POST ";
+  } else
+    header = "GET ";
 
-	// determine if this is a POST or GET method
-	if (_post_data_size > 0)
-	{
-		_reload = true;     /* no caching allowed */
-		header = "POST ";
-	}
-	else
-		header = "GET ";
+  // format the URI
+  char c_buffer[64];
+  memset(c_buffer, 0, 64);
+  if(do_proxy) {
+    sprintf(c_buffer, ":%u", port);
+    header += "http://";
+    header += _url.host();
+    header += c_buffer;
+  }
 
-	// format the URI
-	char c_buffer[64];
-	memset(c_buffer, 0, 64);
-	if(do_proxy)
-	{
-		sprintf(c_buffer, ":%u", port);
-		header += "http://";
-		header += _url.host();
-		header += c_buffer;
-	}
+  // Let the path be "/" if it is empty ( => true )
+  header += _url.encodedPathAndQuery(0, true);
 
-	// Let the path be "/" if it is empty ( => true )
-	header += _url.encodedPathAndQuery(0, true);
+  header += " HTTP/1.1\r\n"; /* start header */
+  header += "Connection: Close\r\n"; // Duh, we don't want keep-alive stuff quite yet.
+  header += "User-Agent: "; /* User agent */
+  header += getUserAgentString();
+  header += "\r\n";
 
-	header += " HTTP/1.1\r\n"; /* start header */
-	header += "Connection: Close\r\n"; // Duh, we don't want keep-alive stuff quite yet.
-	header += "User-Agent: "; /* User agent */
-	header += getUserAgentString();
-	header += "\r\n";
+  if ( _offset > 0 ) {
+    sprintf(c_buffer, "Range: bytes=%li-\r\n", _offset);
+    header += c_buffer;
+    qDebug( "kio_http : Range = %s", c_buffer);
+  }
 
-	if ( _offset > 0 )
-	{
-		sprintf(c_buffer, "Range: bytes=%li-\r\n", _offset);
-		header += c_buffer;
-		debug( "kio_http : Range = %s", c_buffer);
-	}
-
-	if ( _reload ) /* No caching for reload */
-	{
-		header += "Pragma: no-cache\r\n"; /* for HTTP/1.0 caches */
-		header += "Cache-control: no-cache\r\n"; /* for HTTP >=1.1 caches */
-	}
+  if ( _reload ) { /* No caching for reload */
+    header += "Pragma: no-cache\r\n"; /* for HTTP/1.0 caches */
+    header += "Cache-control: no-cache\r\n"; /* for HTTP >=1.1 caches */
+  }
 
 #ifdef DO_GZIP
-	// Content negotiation
-	header += "Accept-Encoding: x-gzip; q=1.0, x-deflate, gzip; q=1.0, deflate, identity\r\n";
+  // Content negotiation
+  header += "Accept-Encoding: x-gzip; q=1.0, x-deflate, gzip; q=1.0, deflate, identity\r\n";
 #endif
 
-	// Charset negotiation:
-	if ( !m_strCharsets.isEmpty() )
-		header += "Accept-Charset: " + m_strCharsets + "\r\n";
+  // Charset negotiation:
+  if ( !m_strCharsets.isEmpty() )
+    header += "Accept-Charset: " + m_strCharsets + "\r\n";
 
-	// Language negotiation:
-	if ( !m_strLanguages.isEmpty() )
-		header += "Accept-Language: " + m_strLanguages + "\r\n";
+  // Language negotiation:
+  if ( !m_strLanguages.isEmpty() )
+    header += "Accept-Language: " + m_strLanguages + "\r\n";
+  
+  header += "Host: "; /* support for virtual hosts and required by HTTP 1.1 */
+  header += _url.host();
+  if (_url.port() != 0) {
+    memset(c_buffer, 0, 64);
+    sprintf(c_buffer, ":%u", port);
+    header += c_buffer;
+  }
+  header += "\r\n";
 
-	header += "Host: "; /* support for virtual hosts and required by HTTP 1.1 */
-	header += _url.host();
-	if (_url.port() != 0)
-	{
-		memset(c_buffer, 0, 64);
-		sprintf(c_buffer, ":%u", port);
-		header += c_buffer;
+  if (_post_data_size > 0 ) {
+    header += "Content-Type: application/x-www-form-urlencoded\r\nContent-Length: ";
+    memset(c_buffer, 0, 64);
+    sprintf(c_buffer, "%i\r\n", _post_data_size);
+    header += c_buffer;
+  }
+
+  // check if we need to login
+  if (_url.pass() ||_url.user()) {
+    if (Authentication == AUTH_Basic) {
+      header += create_basic_auth("Authorization", _url.user(),_url.pass());
+    } else if (Authentication == AUTH_Digest) {
+      header+= create_digest_auth("Authorization", _url.user(),
+				  _url.pass(), m_strAuthString);
+    }
+    header+="\r\n";
+  }
+
+  // the proxy might need authorization of it's own. do that now
+  if( do_proxy ) {
+    qDebug( "http_open 3");
+    if( m_strProxyUser != "" && m_strProxyPass != "" ) {
+      if (ProxyAuthentication == AUTH_None || ProxyAuthentication == AUTH_Basic) {
+	header += create_basic_auth("Proxy-authorization", m_strProxyUser, m_strProxyPass);
+      } else {
+	if (ProxyAuthentication == AUTH_Digest) {
+	  header += create_digest_auth("Proxy-Authorization",
+				       m_strProxyUser,
+				       m_strProxyPass,
+				       m_strProxyAuthString);
 	}
-	header += "\r\n";
+      }
+    }
+  }
+  header += "\r\n";  /* end header */
 
-	if (_post_data_size > 0 )
-	{
-		header += "Content-Type: application/x-www-form-urlencoded\r\nContent-Length: ";
-		memset(c_buffer, 0, 64);
-		sprintf(c_buffer, "%i\r\n", _post_data_size);
-		header += c_buffer;
-	}
-
-	// check if we need to login
-	if (_url.pass() ||_url.user())
-	{
-		if (Authentication == AUTH_Basic)
-		{
-			header += create_basic_auth("Authorization", _url.user(),
-			                             _url.pass());
-		}
-		else if (Authentication == AUTH_Digest)
-		{
-			header+= create_digest_auth("Authorization", _url.user(),
-			                             _url.pass(), m_strAuthString);
-		}
-		header+="\r\n";
-	}
-
-	// the proxy might need authorization of it's own. do that now
-	if( do_proxy )
-	{
-		debug( "http_open 3");
-		if( m_strProxyUser != "" && m_strProxyPass != "" )
-		{
-			if (ProxyAuthentication == AUTH_None ||
-			    ProxyAuthentication == AUTH_Basic)
-			{
-				header += create_basic_auth("Proxy-authorization",
-				                             m_strProxyUser, m_strProxyPass);
-			}
-			else
-			{
-				if (ProxyAuthentication == AUTH_Digest)
-				{
-					header += create_digest_auth("Proxy-Authorization",
-							m_strProxyUser,
-							m_strProxyPass,
-							m_strProxyAuthString);
-				}
-			}
-		}
-	}
-  	header += "\r\n";  /* end header */
-
-	// now that we have our formatted header, let's send it!
-	if (write(header, header.length()) == -1) {
-		error( ERR_CONNECTION_BROKEN, _url.host() );
-		return false;
-	}
+  // now that we have our formatted header, let's send it!
+  if (write(header, header.length()) == -1) {
+    error( ERR_CONNECTION_BROKEN, _url.host() );
+    return false;
+  }
 	
-	// okay.. now things get tricky.  if we are in a GET method, then we are
-	// done sending things.  what we want to do now is just go to a method
-	// that will get us the response from the remote server.  however, if we
-	// are in a POST method, then we (and the server) will be expecting more
-	// data.  the client is responsible for sending this data to us with the
-	// KIOJob::data(..) command.  we are responsible for letting the client
-	// know that we are ready to receive the data, though
-	// in any event, we didn't receive the header yet...
-	m_bHaveHeader = false;
-	if (_post_data_size > 0)
-		ready();
-	else
-		slotDataEnd();
+  // okay.. now things get tricky.  if we are in a GET method, then we are
+  // done sending things.  what we want to do now is just go to a method
+  // that will get us the response from the remote server.  however, if we
+  // are in a POST method, then we (and the server) will be expecting more
+  // data.  the client is responsible for sending this data to us with the
+  // KIOJob::data(..) command.  we are responsible for letting the client
+  // know that we are ready to receive the data, though
+  // in any event, we didn't receive the header yet...
+  m_bHaveHeader = false;
+  if (_post_data_size > 0)
+    ready();
+  else
+    slotDataEnd();
 
-	return true;
+  return true;
 }
 
 /**
@@ -674,189 +643,159 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
  */
 bool HTTPProtocol::readHeader()
 {
-	// to get rid of those "Open with" dialogs...
-	// however at least extensions should be checked
-	m_strMimeType = "text/html";
+  // to get rid of those "Open with" dialogs...
+  // however at least extensions should be checked
+  m_strMimeType = "text/html";
 
-	// read in 1024 bytes at a time
-	int len = 1;
-	char buffer[1024];
-	bool unauthorized = false;
-	while(len && (gets(buffer, 1024)))
-	{ 
-		// strip off \r and \n if we have them
-		len = strlen(buffer);
-		while(len && (buffer[len-1] == '\n' || buffer[len-1] == '\r'))
-			buffer[--len] = 0;
+  // read in 1024 bytes at a time
+  int len = 1;
+  char buffer[1024];
+  bool unauthorized = false;
+  while(len && (gets(buffer, sizeof(buffer)))) { 
+    // strip off \r and \n if we have them
+    len = strlen(buffer);
+    while(len && (buffer[len-1] == '\n' || buffer[len-1] == '\r'))
+      buffer[--len] = 0;
+    
+    // are we allowd to resume?  this will tell us
+    if (strncasecmp(buffer, "Accept-Ranges:", 14) == 0) {
+      if (strncasecmp(trimLead(buffer + 14), "none", 4) == 0)
+	m_bCanResume = false;
+    }    
 
-		debug( "kio_http : Header: %s", buffer );
+    // get the size of our data
+    else if (strncasecmp(buffer, "Content-length:", 15) == 0) {
+      m_iSize = atol(trimLead(buffer + 15));
+    }
 
-		// are we allowd to resume?  this will tell us
-		if (strncasecmp(buffer, "Accept-Ranges:", 14) == 0)
-		{
-			if (strncasecmp(trimLead(buffer + 14), "none", 4) == 0)
-				m_bCanResume = false;
-		}    
-
-		// get the size of our data
-		else if (strncasecmp(buffer, "Content-length:", 15) == 0)
-		{
-			m_iSize = atol(trimLead(buffer + 15));
-		}
-
-		// what type of data do we have?
-		else if (strncasecmp(buffer, "Content-Type:", 13) == 0)
-		{
-			// Jacek: We can't send mimeType signal now,
-			// because there may be another Content-Type to come
-			m_strMimeType = trimLead(buffer + 13);
-		}
+    // what type of data do we have?
+    else if (strncasecmp(buffer, "Content-Type:", 13) == 0) {
+      // Jacek: We can't send mimeType signal now,
+      // because there may be another Content-Type to come
+      m_strMimeType = trimLead(buffer + 13);
+    }
 		
-		// whoops.. we received a warning
-		else if (strncasecmp(buffer, "Warning:", 8) == 0)
-		{
-			error(ERR_WARNING, trimLead(buffer + 8));
-		}
+    // whoops.. we received a warning
+    else if (strncasecmp(buffer, "Warning:", 8) == 0) {
+      error(ERR_WARNING, trimLead(buffer + 8));
+    }
 		
-		// oh no.. i think we're about to get a page not found
-		else if (strncasecmp(buffer, "HTTP/1.0 ", 9) == 0)
-		{
-			m_HTTPrev = HTTP_10;
+    // oh no.. i think we're about to get a page not found
+    else if (strncasecmp(buffer, "HTTP/1.0 ", 9) == 0) {
+      m_HTTPrev = HTTP_10;
 
-			// unauthorized access
-			if (strncmp(buffer + 9, "401", 3) == 0)
-			{
-				unauthorized = true;
-			}
-			else if (buffer[9] == '4' || buffer[9] == '5')
-			{
-				// Let's first send an error message
-				// this will be moved to slotErrorPage(), when it will be written
-				http_close();
-				error(ERR_ACCESS_DENIED, m_state.url.url());
+      // unauthorized access
+      if (strncmp(buffer + 9, "401", 3) == 0) {
+	unauthorized = true;
+      } else if (buffer[9] == '4' || buffer[9] == '5') {
+	// Let's first send an error message
+	// this will be moved to slotErrorPage(), when it will be written
+	http_close();
+	error(ERR_ACCESS_DENIED, m_state.url.url());
 
-				// Tell that we will only get an error page here.
-				errorPage();
+	// Tell that we will only get an error page here.
+	errorPage();
 
-				return false;
-			}
-		}
+	return false;
+      }
+    }
 		
-		// this is probably not a good sign either... sigh
-		else if (strncasecmp(buffer, "HTTP/1.1 ", 9) == 0)
-		{
-			m_HTTPrev = HTTP_11;
-			Authentication = AUTH_None;
+    // this is probably not a good sign either... sigh
+    else if (strncasecmp(buffer, "HTTP/1.1 ", 9) == 0) {
+      m_HTTPrev = HTTP_11;
+      Authentication = AUTH_None;
 
-			// Unauthorized access
-			if ((strncmp(buffer + 9, "401", 3) == 0) ||
-			    (strncmp(buffer + 9, "407", 3) == 0))
-			{
-				unauthorized = true;
-			}
-			else if (buffer[9] == '4' || buffer[9] == '5')
-			{
-				// Tell that we will only get an error page here.
-				errorPage();
-			}
-		}
+      // Unauthorized access
+      if ((strncmp(buffer + 9, "401", 3) == 0) || (strncmp(buffer + 9, "407", 3) == 0)) {
+	  unauthorized = true;
+      }
+      else if (buffer[9] == '4' || buffer[9] == '5') {
+	// Tell that we will only get an error page here.
+	errorPage();
+      }
+    }
 
-		// In fact we should do redirection only if we got redirection code
-		else if (strncmp(buffer, "Location:", 9) == 0 )
-		{
-			http_close();
-			KURL u(m_state.url, trimLead(buffer + 9));
-			redirection(u.url());
+    // In fact we should do redirection only if we got redirection code
+    else if (strncmp(buffer, "Location:", 9) == 0 ) {
+      http_close();
+      KURL u(m_state.url, trimLead(buffer + 9));
+      redirection(u.url());
 
-			return http_open(u, m_state.postDataSize, m_state.reload,
-			                 m_state.offset);
-		}
-
-		// check for direct authentication
-		else if (strncasecmp(buffer, "WWW-Authenticate:", 17) == 0)
-		{
-			configAuth(trimLead(buffer + 17), false);
-		}
+      return http_open(u, m_state.postDataSize, m_state.reload, m_state.offset);
+    }
+    
+    // check for direct authentication
+    else if (strncasecmp(buffer, "WWW-Authenticate:", 17) == 0) {
+      configAuth(trimLead(buffer + 17), false);
+    }
 		
-		// check for proxy-based authentication
-		else if (strncasecmp(buffer, "Proxy-Authenticate:", 19) == 0)
-		{
-			configAuth(trimLead(buffer + 19), true);
-		}
+    // check for proxy-based authentication
+    else if (strncasecmp(buffer, "Proxy-Authenticate:", 19) == 0) {
+      configAuth(trimLead(buffer + 19), true);
+    }
 
-		// continue only if we know that we're HTTP/1.1
-		else if (m_HTTPrev == HTTP_11)
-		{
-			// let them tell us if we should stay alive or not
-			if (strncasecmp(buffer, "Connection:", 11) == 0)
-			{
-				if (strncasecmp(trimLead(buffer + 11), "Close", 5) == 0)
-				{
-					/*m_bPersistant=false*/;
-				}
-				else if (strncasecmp(trimLead(buffer + 11), "Keep-Alive", 10)==0)
-				{
-					/*m_bPersistant=true*/;
-				}
-
-			}
-			
-			// what kind of encoding do we have?  transfer?
-			else if (strncasecmp(buffer, "Transfer-Encoding:", 18) == 0)
-			{
-				// If multiple encodings have been applied to an entity, the
-				// transfer-codings MUST be listed in the order in which they
-				// were applied.
-				addEncoding(trimLead(buffer + 18), &m_qTransferEncodings);
-			}
-			
-			// content?
-			else if (strncasecmp(buffer, "Content-Encoding:", 17) == 0)
-			{
-				addEncoding(trimLead(buffer + 17), &m_qContentEncodings);
-			}
-			
-			// md5?
-			else if (strncasecmp(buffer, "Content-MD5:", 12) == 0)
-			{
-				m_sContentMD5 = strdup(trimLead(buffer + 12));
-			}
-		}
-
-		// clear out our buffer for further use
-		memset(buffer, 0, 1024);
+    // continue only if we know that we're HTTP/1.1
+    else if (m_HTTPrev == HTTP_11) {
+      // let them tell us if we should stay alive or not
+      if (strncasecmp(buffer, "Connection:", 11) == 0) {
+	if (strncasecmp(trimLead(buffer + 11), "Close", 5) == 0) {
+	  /*m_bPersistant=false*/;
+	} else if (strncasecmp(trimLead(buffer + 11), "Keep-Alive", 10)==0) {
+	  /*m_bPersistant=true*/;
 	}
+	
+      }
+      
+      // what kind of encoding do we have?  transfer?
+      else if (strncasecmp(buffer, "Transfer-Encoding:", 18) == 0) {
+	// If multiple encodings have been applied to an entity, the
+	// transfer-codings MUST be listed in the order in which they
+	// were applied.
+	addEncoding(trimLead(buffer + 18), &m_qTransferEncodings);
+      }
+      
+      // content?
+      else if (strncasecmp(buffer, "Content-Encoding:", 17) == 0) {
+	addEncoding(trimLead(buffer + 17), &m_qContentEncodings);
+      }
+			
+      // md5 signature
+      else if (strncasecmp(buffer, "Content-MD5:", 12) == 0) {
+	m_sContentMD5 = strdup(trimLead(buffer + 12));
+      }
+    }
 
-	// DONE receiving the header!
+    // clear out our buffer for further use
+    memset(buffer, 0, 1024);
+  }
 
-	// we need to try to login again if we failed earlier
-	if (unauthorized)
-	{
-		http_close();
-		QString user = m_state.url.user();
-		QString pass = m_state.url.pass();
-		if (m_strRealm.isEmpty())
-			m_strRealm = m_state.url.host();
+  // DONE receiving the header!
 
-		if (!open_PassDlg(m_strRealm, user, pass))
-		{
-			error(ERR_ACCESS_DENIED, m_state.url.url());
-			return false;
-		}
+  // we need to try to login again if we failed earlier
+  if (unauthorized) {
+    http_close();
+    QString user = m_state.url.user();
+    QString pass = m_state.url.pass();
+    if (m_strRealm.isEmpty())
+      m_strRealm = m_state.url.host();
+    
+    if (!open_PassDlg(m_strRealm, user, pass)) {
+      error(ERR_ACCESS_DENIED, m_state.url.url());
+      return false;
+    }
 
-		KURL u(m_state.url);
-		u.setUser(user);
-		u.setPass(pass);
-		return http_open(u, m_state.postDataSize, m_state.reload,
-		                 m_state.offset);
-	}
+    KURL u(m_state.url);
+    u.setUser(user);
+    u.setPass(pass);
+    return http_open(u, m_state.postDataSize, m_state.reload, m_state.offset);
+  }
+  
+  // FINALLY, let the world know what kind of data we are getting
+  // and that we do indeed have a header
+  mimeType(m_strMimeType);
+  m_bHaveHeader = true;
 
-	// FINALLY, let the world know what kind of data we are getting
-	// and that we do indeed have a header
-	mimeType(m_strMimeType);
-	m_bHaveHeader = true;
-
-	return true;
+  return true;
 }
 
 void HTTPProtocol::addEncoding(QString encoding, QStack<char> *encs)
@@ -955,29 +894,26 @@ void HTTPProtocol::http_close()
 
 void HTTPProtocol::slotGetSize(const char *_url)
 {
-	KURL usrc(_url);
-	if (usrc.isMalformed())
-	{
-		error(ERR_MALFORMED_URL, _url);
-		m_cmd = CMD_NONE;
-		return;
-	}
+  KURL usrc(_url);
+  if (usrc.isMalformed()) {
+    error(ERR_MALFORMED_URL, _url);
+    m_cmd = CMD_NONE;
+    return;
+  }
 
-	if (!isValidProtocol(&usrc))
-	{
-		error(ERR_INTERNAL, "kio_http got non http/https/httpf url");
-		m_cmd = CMD_NONE;
-		return;
-	}
+  if (!isValidProtocol(&usrc)) {
+    error(ERR_INTERNAL, "kio_http got non http/https/httpf url");
+    m_cmd = CMD_NONE;
+    return;
+  }
 
-	m_cmd = CMD_GET_SIZE;
-
-	m_bIgnoreErrors = false;  
-	if (!http_open(usrc, 0, false))
-	{
-		m_cmd = CMD_NONE;
-		return;
-	}
+  m_cmd = CMD_GET_SIZE;
+  
+  m_bIgnoreErrors = false;  
+  if (!http_open(usrc, 0, false)) {
+    m_cmd = CMD_NONE;
+    return;
+  }
 }
 
 
@@ -1015,32 +951,29 @@ const char *HTTPProtocol::getUserAgentString ()
  */
 void HTTPProtocol::slotGet( const char *_url )
 {
-	// transform this URL into a KURL for easy manipulating
-	KURL usrc(_url);
+  // transform this URL into a KURL for easy manipulating
+  KURL usrc(_url);
+  
+  // make sure it is a "good" URL in more ways than one
+  if (usrc.isMalformed()) {
+    error(ERR_MALFORMED_URL, strdup(_url));
+    m_cmd = CMD_NONE;
+    return;
+  }
 
-	// make sure it is a "good" URL in more ways than one
-	if (usrc.isMalformed())
-	{
-		error(ERR_MALFORMED_URL, strdup(_url));
-		m_cmd = CMD_NONE;
-		return;
-	}
+  if (!isValidProtocol(&usrc)) {
+    error(ERR_INTERNAL, "kio_http got non http/https/httpf url");
+    m_cmd = CMD_NONE;
+    return;
+  }
 
-	if (!isValidProtocol(&usrc))
-	{
-		error(ERR_INTERNAL, "kio_http got non http/https/httpf url");
-		m_cmd = CMD_NONE;
-		return;
-	}
-
-	m_cmd = CMD_GET;
-
-	m_bIgnoreErrors = false;  
-	if (!http_open(usrc, 0, false))
-	{
-		m_cmd = CMD_NONE;
-		return;
-	}
+  m_cmd = CMD_GET;
+  
+  m_bIgnoreErrors = false;  
+  if (!http_open(usrc, 0, false)) {
+    m_cmd = CMD_NONE;
+    return;
+  }
 }
 
 /**
@@ -1063,34 +996,31 @@ void HTTPProtocol::slotPut(const char *_url, int /*_mode*/,
 			   bool /*_overwrite*/,
                            bool /*_resume*/, int _len)
 {
-	// transform this URL into a KURL for easy manipulating
-	KURL usrc(_url);
+  // transform this URL into a KURL for easy manipulating
+  KURL usrc(_url);
 
-	// make sure it is a "good" URL in more ways than one
-	if (usrc.isMalformed())
-	{
-		error(ERR_MALFORMED_URL, strdup(_url));
-		m_cmd = CMD_NONE;
-		return;
-	}
+  // make sure it is a "good" URL in more ways than one
+  if (usrc.isMalformed()) {
+    error(ERR_MALFORMED_URL, strdup(_url));
+    m_cmd = CMD_NONE;
+    return;
+  }
 
-	if (!isValidProtocol(&usrc))
-	{
-		error(ERR_INTERNAL, "kio_http got non http/https/httpf url");
-		m_cmd = CMD_NONE;
-		return;
-	}
+  if (!isValidProtocol(&usrc)) {
+    error(ERR_INTERNAL, "kio_http got non http/https/httpf url");
+    m_cmd = CMD_NONE;
+    return;
+  }
 
-	// let's not be shy about our intentions... besides, we'll
-	// need this later
-	m_cmd = CMD_PUT;
+  // let's not be shy about our intentions... besides, we'll
+  // need this later
+  m_cmd = CMD_PUT;
 
-	m_bIgnoreErrors = false;  
-	if (!http_open(usrc, _len, false))
-	{
-		m_cmd = CMD_NONE;
-		return;
-	}
+  m_bIgnoreErrors = false;  
+  if (!http_open(usrc, _len, false)) {
+    m_cmd = CMD_NONE;
+    return;
+  }
 }
 
 void HTTPProtocol::decodeChunked()
@@ -1206,12 +1136,13 @@ size_t HTTPProtocol::sendData()
   // chunks much larger than 2048.
 
   size_t sent=0;
+  size_t bufferSize = 2048;
   size_t sz = big_buffer.size();
   processedSize(sz);
   totalSize(sz);
-  while (sent+2048 < sz) {
-    data(big_buffer.data()+sent, 2048);
-    sent+=2048;
+  while (sent+bufferSize < sz) {
+    data(big_buffer.data()+sent, bufferSize);
+    sent+=bufferSize;
   }
   if (sent < sz)
     data(big_buffer.data()+sent, (sz-sent));
@@ -1332,9 +1263,9 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
       job.clearError();
 
       m_bIgnoreErrors = true;
-      debug( "slotCopy 0");
+      qDebug( "slotCopy 0");
       if ( !http_open( u1, 0, false, offset ) ) {
-	debug( "slotCopy 1");
+	qDebug( "slotCopy 1");
 	m_bIgnoreErrors = false;
 	/* if ( !m_bGUI )
 	{
@@ -1350,9 +1281,9 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 	list<string>::iterator tmpit = fit;
 	tmpit++;
 	if( tmpit == files.end() ) {
-	  debug( "slotCopy 12");
+	  qDebug( "slotCopy 12");
 	  open_CriticalDlg( "Error", tmp.c_str(), "Cancel" );
-	  debug( "slotCopy 13");
+	  qDebug( "slotCopy 13");
 	  http_close();
 	  clearError();
 	  error( ERR_USER_CANCELED, "" );
@@ -1360,7 +1291,7 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 	  return;
 	}
 	
-	debug( "slotCopy 2");
+	qDebug( "slotCopy 2");
 	if ( !open_CriticalDlg( "Error", tmp.c_str(), "Continue", "Cancel" ) ) {
 	  http_close();
 	  clearError();
@@ -1376,7 +1307,7 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
       else
 	m_bIgnoreErrors = false;
 
-      debug( "slotCopy 3");
+      qDebug( "slotCopy 3");
       // This is a hack, since total size should be the size of all files together
       // while we transmit only the size of the current file here.
       totalSize( m_iSize + offset);
@@ -1395,7 +1326,7 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
       if ( job.hasError() ) {
 	int currentError = job.errorId();
 
-	debug( "kio_http : ################# COULD NOT PUT %d",currentError);
+	qDebug( "kio_http : ################# COULD NOT PUT %d",currentError);
 	if ( /* m_bGUI && */ currentError == ERR_WRITE_ACCESS_DENIED ) {
 	  // Should we skip automatically ?
 	  if ( auto_skip ) {
@@ -1521,7 +1452,7 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
     if ( offset > 0 ) {
       // set offset
       processed_size += offset;
-      debug( "kio_http : Offset = %ld", offset );
+      qDebug( "kio_http : Offset = %ld", offset );
     }
 
     /**
@@ -1574,7 +1505,7 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
     processedFiles( ++processed_files );
   }
   
-  debug( "kio_http : Copied files %s", _dest );
+  qDebug( "kio_http : Copied files %s", _dest );
 
   finished();
 
