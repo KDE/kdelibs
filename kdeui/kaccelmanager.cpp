@@ -29,7 +29,8 @@
 #include <qlabel.h>
 #include <qlist.h>
 
-
+#include <kstdaction.h>
+#include <kstaticdeleter.h>
 #include <kdebug.h>
 
 
@@ -75,6 +76,7 @@ public:
 
     static void manage(QWidget *widget);
     static bool programmers_mode;
+    static bool standardName(const QString &str);
 
 private:
   class Item;
@@ -87,7 +89,6 @@ private:
   static void manageWidgetStack(QWidgetStack *stack, Item *item);
 
   static void calculateAccelerators(Item *item, QString &used);
-
 
   class Item
   {
@@ -106,7 +107,17 @@ private:
   };
 };
 
+
 bool KAcceleratorManagerPrivate::programmers_mode = false;
+static QStringList *kaccmp_sns = 0;
+static KStaticDeleter<QStringList> kaccmp_sns_d;
+
+bool KAcceleratorManagerPrivate::standardName(const QString &str)
+{
+    if (!kaccmp_sns)
+        kaccmp_sns =  kaccmp_sns_d.setObject(new QStringList(KStdAction::stdNames()));
+    return kaccmp_sns->contains(str);
+}
 
 KAcceleratorManagerPrivate::Item::~Item()
 {
@@ -371,7 +382,6 @@ KAccelString::KAccelString(const QString &input, int initialWeight)
     if (accel)
         orig_accel = m_accel;
 
-    kdDebug() << "strip " << m_pureText << " " << orig_accel << " " << m_accel << endl;
     if (initialWeight == -1)
         initialWeight = KAccelManagerAlgorithm::DEFAULT_WEIGHT;
 
@@ -667,6 +677,9 @@ void KPopupAccelManager::findMenuEntries(KAccelStringList &list)
     int weight = 50;
     if (s.contains('\t'))
       weight = 0;
+
+    if (KAcceleratorManagerPrivate::standardName(s))
+        weight += 300;
 
     list.append(KAccelString(s, weight));
   }

@@ -125,6 +125,16 @@ static const KStdActionInfo* infoPtr( StdAction id )
 	return 0;
 }
 
+QStringList stdNames()
+{
+    QStringList result;
+
+    for( uint i = 0; g_rgActionInfo[i].id != ActionNone; i++ )
+        if (g_rgActionInfo[i].psLabel)
+            result.append(i18n(g_rgActionInfo[i].psLabel));
+    return result;
+}
+
 KAction* create( StdAction id, const char *name, const QObject *recvr, const char *slot, KActionCollection* parent )
 {
 	KAction* pAction = 0;

@@ -26,6 +26,8 @@ class KRecentFilesAction;
 class KToggleAction;
 class KToggleToolBarAction;
 
+#include <qstringlist.h>
+
 /**
  * Convenience methods to access all standard KDE actions.
  *
@@ -178,6 +180,12 @@ namespace KStdAction
 
         /// @obsolete. Use #name
 	inline const char* stdName(StdAction act_enum) { return name( act_enum ); }
+
+       /**
+         * Returns a list of all standard names. Used by @ref KAccelManager
+         * to give those heigher weight.
+        */
+        QStringList stdNames();
 
 	/**
 	 * Create a new document or window.
