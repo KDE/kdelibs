@@ -44,6 +44,7 @@
 #include <ktoolbar.h>
 #include <ktoolbarbutton.h>
 #include <kurl.h>
+#include <kstandarddirs.h>
 
 static QFontDatabase *fontDataBase = 0;
 
@@ -1058,6 +1059,8 @@ void KRecentFilesAction::setMaxItems( uint maxItems )
 void KRecentFilesAction::addURL( const KURL& url )
 {
     QString     file = url.prettyURL();
+    if ( url.isLocalFile() && !KGlobal::dirs()->relativeLocation("tmp", url.path()).startsWith("/"))
+       return;
     QStringList lst = items();
 
     // remove file if already in list
