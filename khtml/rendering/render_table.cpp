@@ -429,7 +429,7 @@ void RenderTable::addColInfo(int _startCol, int _colSpan,
         addColumns(totalCols - _startCol + _colSpan);
 
     ColInfo* col = colInfos[_colSpan-1]->at(_startCol);
-    
+
     if (!col)
     {
         col = new ColInfo;
@@ -1370,10 +1370,10 @@ void RenderTable::layout()
     calcHeight();
 
     //kdDebug(0) << "table height: " << m_height << endl;
-    
+
     // table can be containing block of positioned elements.
     layoutSpecialObjects();
-    
+
     setLayouted();
 
 }
@@ -1529,9 +1529,9 @@ void RenderTable::print( QPainter *p, int _x, int _y,
     }
     END_FOR_EACH
 
-    if ( specialObjects ) 
+    if ( specialObjects )
 	printSpecialObjects( p, _x, _y, _w, _h, _tx, _ty);
-	
+
 #ifdef BOX_DEBUG
     outlineBox(p, _tx, _ty, "blue");
 #endif
@@ -1792,8 +1792,8 @@ void RenderTableCell::repaintObject(RenderObject *o, int x, int y)
 
 bool RenderTableCell::absolutePosition(int &xPos, int &yPos, bool f)
 {
-    bool ret=RenderFlow::absolutePosition(xPos, yPos, f);
-    if (yPos != -1)
+    bool ret = RenderFlow::absolutePosition(xPos, yPos, f);
+    if (ret)
       yPos += _topExtra;
     return ret;
 }
