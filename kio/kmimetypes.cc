@@ -339,37 +339,7 @@ QString KFolderType::icon( const QString& _url, bool _is_local ) const
   if ( !_is_local || _url.isEmpty() )
     return KMimeType::icon( _url, _is_local );
 
-  KURL u( _url );
-  u.addPath( ".directory" );
-  
-  KSimpleConfig cfg( u.path(), true );
-  cfg.setGroup( "KDE Desktop Entry" );
-  QString icon = cfg.readEntry( "Icon" );
-  QString empty_icon = cfg.readEntry( "EmptyIcon" );
-
-  if ( !empty_icon.isEmpty() )
-  {
-    bool isempty = true;
-    DIR *dp = 0L;
-    struct dirent *ep;
-    dp = opendir( u.path() );
-    if ( dp )
-    {
-      ep=readdir( dp );
-      ep=readdir( dp );      // ignore '.' and '..' dirent
-      if ( readdir( dp ) == 0L ) // third file is NULL entry -> empty directory
-	isempty = false;
-      closedir( dp );
-    }
-    
-    if ( isempty )
-      return empty_icon;
-  }
-
-  if ( icon.isEmpty() )
-    return KMimeType::icon( _url, _is_local );
-
-  return icon;
+  return KFolderType::icon( KURL(_url), _is_local );
 }
 
 QString KFolderType::icon( const KURL& _url, bool _is_local ) const
@@ -383,6 +353,30 @@ QString KFolderType::icon( const KURL& _url, bool _is_local ) const
   KSimpleConfig cfg( u.path(), true );
   cfg.setGroup( "KDE Desktop Entry" );
   QString icon = cfg.readEntry( "Icon" );
+  QString empty_icon = cfg.readEntry( "EmptyIcon" );
+
+  if ( !empty_icon.isEmpty() )
+  {
+    bool isempty = false;
+    DIR *dp = 0L;
+    struct dirent *ep;
+    dp = opendir( u.path() );
+    if ( dp )
+    {
+      ep=readdir( dp );
+      ep=readdir( dp );      // ignore '.' and '..' dirent
+      if ( readdir( dp ) == 0L ) // third file is NULL entry -> empty directory
+	isempty = true;
+      // if third file is .directory and no fourth file -> empty directory
+      if (!isempty && !strcmp(ep->d_name, ".directory"))
+        isempty = (readdir(dp) == 0L);
+      closedir( dp );
+    }
+    
+    if ( isempty )
+      return empty_icon;
+  }
+
   if ( icon.isEmpty() )
     return KMimeType::icon( _url, _is_local );
 
@@ -394,16 +388,7 @@ QString KFolderType::comment( const QString& _url, bool _is_local ) const
   if ( !_is_local || _url.isEmpty() )
     return KMimeType::comment( _url, _is_local );
 
-  KURL u( _url );
-  u.addPath( ".directory" );
-
-  KSimpleConfig cfg( u.path(), true );
-  cfg.setGroup( "KDE Desktop Entry" );
-  QString comment = cfg.readEntry( "Comment" );
-  if ( comment.isEmpty() )
-    return KMimeType::comment( _url, _is_local );
-
-  return comment;
+  return KFolderType::comment( KURL(_url), _is_local );
 }
 
 QString KFolderType::comment( const KURL& _url, bool _is_local ) const
