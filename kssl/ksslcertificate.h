@@ -72,6 +72,8 @@ friend class KSSLD;
 public:
   ~KSSLCertificate();
   static KSSLCertificate *fromString(QCString cert);
+  // This one duplicates the X509 object for itself.
+  static KSSLCertificate *fromX509(X509 *x5);
 
   // We need a static method to generate one of these, given a filename that
   // points to a PEM encoded certificate file.  It will return NULL on failure.

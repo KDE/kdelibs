@@ -626,6 +626,13 @@ public:
     */
    PKCS7 *PKCS7_dup(PKCS7 *p7);
 
+   /*
+    * Load a CA list file.
+    */
+   STACK_OF(X509_NAME) *SSL_load_client_CA_file(const char *file);
+
+
+
 #endif
 
 private:

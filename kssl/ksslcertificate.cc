@@ -126,6 +126,18 @@ KSSLCertChain& KSSLCertificate::chain() {
 }
 
 
+KSSLCertificate *KSSLCertificate::fromX509(X509 *x5) {
+KSSLCertificate *n = NULL;
+#ifdef HAVE_SSL
+	if (x5) {
+		n = new KSSLCertificate;
+		n->setCert(KOSSL::self()->X509_dup(x5));
+	}
+#endif
+return n;
+}
+
+
 KSSLCertificate *KSSLCertificate::fromString(QCString cert) {
 KSSLCertificate *n = NULL;
 #ifdef HAVE_SSL

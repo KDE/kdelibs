@@ -128,7 +128,7 @@ static PKCS7 *(*K_d2i_PKCS7)(PKCS7**, unsigned char**,long) = NULL;
 static int (*K_i2d_PKCS7_fp)(FILE*,PKCS7*) = NULL;
 static PKCS7* (*K_d2i_PKCS7_fp)(FILE*,PKCS7**) = NULL;
 static PKCS7* (*K_PKCS7_dup)(PKCS7*) = NULL;
-
+static STACK_OF(X509_NAME) *(*K_SSL_load_client_CA_file)(const char*) = NULL;
 #endif
 };
 
@@ -393,6 +393,7 @@ KConfig *cfg;
       K_SSL_CTX_use_certificate = (int (*)(SSL_CTX*, X509*)) _sslLib->symbol("SSL_CTX_use_certificate");
       K_SSL_get_error = (int (*)(SSL*, int)) _sslLib->symbol("SSL_get_error");
       K_SSL_get_peer_cert_chain = (STACK_OF(X509)* (*)(SSL*)) _sslLib->symbol("SSL_get_peer_cert_chain");
+      K_SSL_load_client_CA_file = (STACK_OF(X509_NAME)* (*)(const char *)) _sslLib->symbol("SSL_load_client_CA_file");
 #endif
 
 
@@ -1013,6 +1014,10 @@ PKCS7 *KOpenSSLProxy::PKCS7_dup(PKCS7 *p7) {
 }
 
 
+STACK_OF(X509_NAME) *KOpenSSLProxy::SSL_load_client_CA_file(const char *file) {
+   if (K_SSL_load_client_CA_file) return (K_SSL_load_client_CA_file)(file);
+   else return NULL;
+}
 
 #endif
 
