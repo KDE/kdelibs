@@ -105,7 +105,7 @@ void MainWindow::createGUI( Part * part )
 
   if ( !d->m_bShellGUIActivated )
   {
-    Plugin::loadPlugins( this, this, KGlobal::instance(), true );
+    loadPlugins( this, this, KGlobal::instance() );
     createShellGUI();
     d->m_bShellGUIActivated = true;
   }

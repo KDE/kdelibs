@@ -99,6 +99,12 @@ protected:
     LoadPlugins = 1,         // load new plugins automatically
     LoadPluginsIfEnabled = 2 // new plugins are disabled by default
   };
+
+  /**
+   * Load the Plugins honoring the PluginLoadingMode.
+   */
+  void loadPlugins( QObject *parent, KXMLGUIClient *parentGUIClient, KInstance *instance );
+
   /**
    * For a KParts::Part: call this before setInstance.
    * For a KParts::MainWindow: call this before createGUI.

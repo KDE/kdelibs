@@ -112,9 +112,14 @@ void PartBase::setInstance( KInstance *inst, bool bLoadPlugins )
   KGlobal::dirs()->addResourceType( inst->instanceName() + "data",
                                     KStandardDirs::kde_default( "data" )
                                     + QString::fromLatin1( inst->instanceName() ) + '/' );
-  if ( bLoadPlugins && d->m_pluginLoadingMode != DoNotLoadPlugins ) {
-    Plugin::loadPlugins( m_obj, this, instance(), d->m_pluginLoadingMode == LoadPlugins );
-  }
+  if ( bLoadPlugins )
+    loadPlugins( m_obj, this, instance() );
+}
+
+void PartBase::loadPlugins( QObject *parent, KXMLGUIClient *parentGUIClient, KInstance *instance )
+{
+  if( d->m_pluginLoadingMode != DoNotLoadPlugins )
+    Plugin::loadPlugins( parent, parentGUIClient, instance, d->m_pluginLoadingMode == LoadPlugins );
 }
 
 void PartBase::setPluginLoadingMode( PluginLoadingMode loadingMode )
