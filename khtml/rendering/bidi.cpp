@@ -48,6 +48,13 @@ inline kdbgstream &operator<<(kdbgstream &stream, QChar::Direction d) {
 
 #endif
 
+inline BidiIterator::BidiIterator()
+{
+    par = 0;
+    obj = 0;
+    pos = 0;
+}
+
 static BidiIterator sor;
 static BidiIterator eor;
 static BidiIterator last;
@@ -161,13 +168,6 @@ static RenderObject *first( RenderObject *par )
         o = Bidinext( par, o );
 
     return o;
-}
-
-inline BidiIterator::BidiIterator()
-{
-    par = 0;
-    obj = 0;
-    pos = 0;
 }
 
 BidiIterator::BidiIterator(RenderFlow *_par)

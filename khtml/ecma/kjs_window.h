@@ -119,9 +119,14 @@ namespace KJS {
            Onmouseout, Onmouseover, Onmouseup, Onmove, Onreset, Onresize,
            Onselect, Onsubmit, Onunload };
   protected:
+    enum DelayedActionId { NullAction, DelayedClose, DelayedGoHistory };
+
     Value getListener(ExecState *exec, int eventId) const;
     void setListener(ExecState *exec, int eventId, Value func);
   private:
+    struct DelayedAction;
+    friend struct DelayedAction;
+
     QGuardedPtr<KHTMLPart> m_part;
     Screen *screen;
     History *history;
@@ -130,7 +135,6 @@ namespace KJS {
     WindowQObject *winq;
     DOM::Event *m_evt;
 
-    enum DelayedActionId { NullAction, DelayedClose, DelayedGoHistory };
     struct DelayedAction {
       DelayedAction() : actionId(NullAction) {} // for QValueList
       DelayedAction( DelayedActionId id, QVariant p = QVariant() ) : actionId(id), param(p) {}
