@@ -195,20 +195,33 @@ void HTTPProtocol::resetSessionSettings()
   m_maxCacheAge = config()->readNumEntry("MaxCacheAge", DEFAULT_MAX_CACHE_AGE);
   m_request.window = config()->readEntry("window-id");
 
-  bool sendReferrer = config()->readBoolEntry("SendReferrer", true);
-  if ( sendReferrer )
-     m_request.referrer = metaData("referrer");
-  else
-     m_request.referrer = QString::null;
-     
-  if (!m_request.referrer.startsWith("http"))
-  {
-     if (m_request.referrer.startsWith("webdav"))
-        m_request.referrer.replace(0, 6, "http");
-     else
-        m_request.referrer = QString::null;
-  }
 
+  m_request.referrer = QString::null;
+  if ( config()->readBoolEntry("SendReferrer", true) )
+  {
+     KURL referrerURL = metaData("referrer");
+     if (referrerURL.isValid())
+     {
+        // Sanitize
+        QString protocol = referrerURL.protocol();
+        if (protocol.startsWith("webdav"))
+        {
+           protocol.replace(0, 6, "http");
+           referrerURL.setProtocol(protocol);
+        }
+        
+        if ((protocol == "http") || 
+            ((protocol == "https") && ((m_protocol == "https") || (m_protocol == "webdavs")))
+           )
+        {
+           referrerURL.setRef(QString::null);
+           referrerURL.setUser(QString::null);
+           referrerURL.setPass(QString::null);
+           m_request.referrer = referrerURL.url();
+        }
+     }
+  }
+  
   if ( config()->readBoolEntry("SendLanguageSettings", true) )
   {
       m_request.charsets = config()->readEntry( "Charsets", "iso-8859-1" );
