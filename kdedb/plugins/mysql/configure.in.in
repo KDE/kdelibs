@@ -32,7 +32,7 @@ if test "x$mysql_plugin" != "xyes"; then
 fi
 
 dnl check header files
-mysql_incdirs="$ac_mysql_incdir /usr/include /usr/include/mysql /usr/local/include"
+mysql_incdirs="$ac_mysql_incdir /usr/include /usr/include/mysql /usr/local/include/mysql /usr/local/include"
 AC_FIND_FILE(mysql.h, $mysql_incdirs, mysql_incdir)
 if test ! -r $mysql_incdir/mysql.h; then
   compile_mysql_plugin="no"
@@ -42,10 +42,16 @@ else
 fi
 
 dnl check libraries
-mysql_libdirs="$ac_mysql_libdir /usr/lib /usr/lib/mysql /usr/local/lib"
+mysql_libdirs="$ac_mysql_libdir /usr/lib /usr/lib/mysql /usr/local/lib/mysql /usr/local/lib"
 AC_FIND_FILE(libmysqlclient.la, $mysql_libdirs, mysql_libdir)
 if test ! -r $mysql_libdir/libmysqlclient.la; then
-  compile_mysql_plugin="no"
+    AC_FIND_FILE(libmysqlclient.so, $mysql_libdirs, mysql_libdir)
+    if test ! -r $mysql_libdir/libmysqlclient.so; then
+        compile_mysql_plugin="no"
+    else
+        MYSQL_LIBDIR=$mysql_libdir
+        AC_SUBST(MYSQL_LIBDIR)
+    fi
 else
   MYSQL_LIBDIR=$mysql_libdir
   AC_SUBST(MYSQL_LIBDIR)
