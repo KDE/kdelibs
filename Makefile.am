@@ -18,9 +18,9 @@
 #    Boston, MA 02111-1307, USA.
 
 
-SUBDIRS = dcop libltdl kdecore kdeui kformula mimetypes \
-	kspell kio kimgio kinit kfile kab kparts kjs khtml kstyles \
-	kwrite libkmid arts kdesu ksgmltools doc pics
+COMPILE_FIRST = dcop libltdl kdecore kdeui kio kimgio kfile kparts kjs libkmid ksgmltools 
+
+SUBDIRS = $(COMPILE_FIRST) $(TOPSUBDIRS)
 
 $(top_srcdir)/acinclude.m4: $(top_srcdir)/admin/acinclude.m4.in $(top_srcdir)/admin/libtool.m4.in
 	@cd $(top_srcdir) && cat admin/acinclude.m4.in admin/libtool.m4.in > acinclude.m4
