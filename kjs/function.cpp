@@ -590,6 +590,8 @@ void DeclaredFunctionImp::processVarDecls(ExecState *exec)
 
 // ------------------------------- ShadowImp -----------------------------------
 
+namespace KJS {
+
 // Acts as a placeholder value to indicate that the actual value is kept
 // in the activation object
 class ShadowImp : public ObjectImp {
@@ -604,13 +606,15 @@ public:
   Identifier prop;
 };
 
-const ClassInfo ShadowImp::info = {"Shadow", 0, 0, 0};
+/*KDE_NOEXPORT*/ const ClassInfo ShadowImp::info = {"Shadow", 0, 0, 0};
 
 void ShadowImp::mark()
 {
   ObjectImp::mark();
   if (!obj->marked())
     obj->mark();
+}
+
 }
 
 // ------------------------------ ArgumentsImp ---------------------------------
