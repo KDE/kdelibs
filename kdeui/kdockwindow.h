@@ -23,7 +23,9 @@
 
 #ifndef KDE_NO_COMPAT
 /**
- * @deprecated 
+ * \brief Obsolete system tray support
+ *
+ * @deprecated
  * This class is obsolete, it is provided for compatibility only.
  * Use KSystemTray instead.
  */
