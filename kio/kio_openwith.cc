@@ -258,19 +258,19 @@ OpenWithDlg::OpenWithDlg( const QString&_text, const QString& _value, QWidget *p
   edit->setGeometry( 10, 35, 350, 25 );
   connect( edit, SIGNAL(returnPressed()), SLOT(accept()) );
   
-  ok = new QPushButton( klocale->translate("OK"), this );
+  ok = new QPushButton( i18n("OK"), this );
   ok->setGeometry( 10,70, 80,25 );
   connect( ok, SIGNAL(clicked()), SLOT(slotOK()) );
   
-  browse = new QPushButton( klocale->translate("&Browser"), this );
+  browse = new QPushButton( i18n("&Browser"), this );
   browse->setGeometry( 100, 70, 80, 25 );
   connect( browse, SIGNAL(clicked()), SLOT(slotBrowse()) );
   
-  clear = new QPushButton( klocale->translate("Clear"), this );
+  clear = new QPushButton( i18n("Clear"), this );
   clear->setGeometry( 190, 70, 80, 25 );
   connect( clear, SIGNAL(clicked()), SLOT(slotClear()) );
   
-  cancel = new QPushButton( klocale->translate("Cancel"), this );
+  cancel = new QPushButton( i18n("Cancel"), this );
   cancel->setGeometry( 280, 70, 80, 25 );
   connect( cancel, SIGNAL(clicked()), SLOT(reject()) );
   
