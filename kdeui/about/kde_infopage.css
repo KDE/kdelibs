@@ -4,7 +4,7 @@
  */
 
 img {margin: 0px; padding: 0px}
-body {margin: 0px; padding: 0px; background-color: #7ea0cb;}
+body {margin: 0px; padding: 0px; background-color: #418ade;}
 .bar_text a {color: #008;}
 
 #subtext {
@@ -74,7 +74,7 @@ body {margin: 0px; padding: 0px; background-color: #7ea0cb;}
 
 #bar {
   width: 100%;
-  background-color: #7693BA;
+  background-color: #5babe5;
   padding-top: 0.5ex;
   border-bottom: 1px solid black;
   padding-bottom: 0.5ex;
@@ -90,7 +90,7 @@ body {margin: 0px; padding: 0px; background-color: #7ea0cb;}
 #barCenter a.selected, #barCenter a.selected:hover {
   color: #282828;
   text-decoration: none;
-  text-shadow: #c8c8c8 0px 0px 5px;
+  text-shadow: #fff 0px 0px 5px;
 }
 
 
