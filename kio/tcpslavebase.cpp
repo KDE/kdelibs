@@ -74,18 +74,20 @@ ssize_t TCPSlaveBase::Read(void *data, ssize_t len)
 
 ssize_t TCPSlaveBase::ReadLine(char *data, ssize_t len)
 {
+        // let's not segfault!
+        if (!data) return -1;
+
         if (m_bIsSSL || d->usingTLS) {
            // ugliness alert!!  calling read() so many times can't be good...
            int clen=0;
            char *buf=data;
            while (clen < len) {
-              d->kssl->read(buf, 1);
+              int rc = d->kssl->read(buf, 1);
+              if (rc < 0) return -1;
               clen++;
-              if (*buf == '\n')
+              if (*buf++ == '\n')
                  break;
-              buf++;
            }
-           buf++;
            *buf=0; 
            return clen;
         }
