@@ -118,7 +118,7 @@ Value FunctionImp::call(ExecState *exec, Object &thisObj, const List &args)
     exec->_exception = newExec.exception();
 
 #ifdef KJS_VERBOSE
-  CString n = ident.isEmpty() ? CString("(internal)") : ident.cstring();
+  CString n = ident.isEmpty() ? CString("(internal)") : ident.ustring().cstring();
   if (comp.complType() == Throw) {
     n += " throws";
     printInfo(exec, n.c_str(), comp.value());
