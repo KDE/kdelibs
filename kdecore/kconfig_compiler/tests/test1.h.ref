@@ -22,7 +22,7 @@ class Test1 : public KConfigSkeleton
     */
     void setOneOption( bool v )
     {
-      if (!isImmutable( "OneOption" ))
+      if (!isImmutable( QString::fromLatin1( "OneOption" ) ))
         mOneOption = v;
     }
 
@@ -39,7 +39,7 @@ class Test1 : public KConfigSkeleton
     */
     void setAnotherOption( int v )
     {
-      if (!isImmutable( "AnotherOption" ))
+      if (!isImmutable( QString::fromLatin1( "AnotherOption" ) ))
         mAnotherOption = v;
     }
 
@@ -56,7 +56,7 @@ class Test1 : public KConfigSkeleton
     */
     void setListOption( int v )
     {
-      if (!isImmutable( "ListOption" ))
+      if (!isImmutable( QString::fromLatin1( "ListOption" ) ))
         mListOption = v;
     }
 
@@ -73,7 +73,7 @@ class Test1 : public KConfigSkeleton
     */
     void setMyString( const QString & v )
     {
-      if (!isImmutable( "MyString" ))
+      if (!isImmutable( QString::fromLatin1( "MyString" ) ))
         mMyString = v;
     }
 
@@ -90,7 +90,7 @@ class Test1 : public KConfigSkeleton
     */
     void setMyPath( const QString & v )
     {
-      if (!isImmutable( "MyPath" ))
+      if (!isImmutable( QString::fromLatin1( "MyPath" ) ))
         mMyPath = v;
     }
 
@@ -107,7 +107,7 @@ class Test1 : public KConfigSkeleton
     */
     void setAnotherOption2( int v )
     {
-      if (!isImmutable( "AnotherOption2" ))
+      if (!isImmutable( QString::fromLatin1( "AnotherOption2" ) ))
         mAnotherOption2 = v;
     }
 
@@ -124,7 +124,7 @@ class Test1 : public KConfigSkeleton
     */
     void setMyStringList( const QStringList & v )
     {
-      if (!isImmutable( "MyStringList" ))
+      if (!isImmutable( QString::fromLatin1( "MyStringList" ) ))
         mMyStringList = v;
     }
 
@@ -141,7 +141,7 @@ class Test1 : public KConfigSkeleton
     */
     void setMyStringListHidden( const QStringList & v )
     {
-      if (!isImmutable( "MyStringListHidden" ))
+      if (!isImmutable( QString::fromLatin1( "MyStringListHidden" ) ))
         mMyStringListHidden = v;
     }
 
@@ -158,7 +158,7 @@ class Test1 : public KConfigSkeleton
     */
     void setMyNumber( int v )
     {
-      if (!isImmutable( "MyNumber" ))
+      if (!isImmutable( QString::fromLatin1( "MyNumber" ) ))
         mMyNumber = v;
     }
 
@@ -191,3 +191,4 @@ class Test1 : public KConfigSkeleton
 };
 
 #endif
+

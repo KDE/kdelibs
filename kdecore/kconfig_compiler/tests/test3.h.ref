@@ -19,7 +19,7 @@ class Test3 : public KConfigSkeleton
     */
     void setAutoSave( bool v )
     {
-      if (!isImmutable( "AutoSave" ))
+      if (!isImmutable( QString::fromLatin1( "AutoSave" ) ))
         mAutoSave = v;
     }
 
@@ -44,7 +44,7 @@ class Test3 : public KConfigSkeleton
     */
     void setBlubb( int v )
     {
-      if (!isImmutable( "Blubb" ))
+      if (!isImmutable( QString::fromLatin1( "Blubb" ) ))
         mBlubb = v;
     }
 
@@ -69,7 +69,7 @@ class Test3 : public KConfigSkeleton
     */
     void setBlahBlah( const QString & v )
     {
-      if (!isImmutable( "BlahBlah" ))
+      if (!isImmutable( QString::fromLatin1( "BlahBlah" ) ))
         mBlahBlah = v;
     }
 
@@ -94,7 +94,7 @@ class Test3 : public KConfigSkeleton
     */
     void setMyPassword( const QString & v )
     {
-      if (!isImmutable( "MyPassword" ))
+      if (!isImmutable( QString::fromLatin1( "MyPassword" ) ))
         mMyPassword = v;
     }
 
@@ -134,3 +134,4 @@ class Test3 : public KConfigSkeleton
 }
 
 #endif
+

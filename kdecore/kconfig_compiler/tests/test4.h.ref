@@ -28,7 +28,7 @@ class Test4 : public KConfigSkeleton
     static
     void setColor( int i, const QColor & v )
     {
-      if (!self()->isImmutable( "Color" ))
+      if (!self()->isImmutable( QString::fromLatin1( "Color" ) ))
         self()->mColor[i] = v;
     }
 
@@ -47,7 +47,7 @@ class Test4 : public KConfigSkeleton
     static
     void setMouseAction( int i, int v )
     {
-      if (!self()->isImmutable( "MouseAction" ))
+      if (!self()->isImmutable( QString::fromLatin1( "MouseAction" ) ))
         self()->mMouseAction[i] = v;
     }
 
@@ -66,7 +66,7 @@ class Test4 : public KConfigSkeleton
     static
     void setFooBar( const QString & v )
     {
-      if (!self()->isImmutable( "FooBar" ))
+      if (!self()->isImmutable( QString::fromLatin1( "FooBar" ) ))
         self()->mFooBar = v;
     }
 
@@ -85,7 +85,7 @@ class Test4 : public KConfigSkeleton
     static
     void setAge( int v )
     {
-      if (!self()->isImmutable( "Age" ))
+      if (!self()->isImmutable( QString::fromLatin1( "Age" ) ))
         self()->mAge = v;
     }
 
@@ -118,3 +118,4 @@ class Test4 : public KConfigSkeleton
 };
 
 #endif
+

@@ -20,7 +20,7 @@ class Test2 : public MyPrefs
     */
     void setAutoSave( bool v )
     {
-      if (!isImmutable( "AutoSave" ))
+      if (!isImmutable( QString::fromLatin1( "AutoSave" ) ))
         mAutoSave = v;
     }
 
@@ -45,7 +45,7 @@ class Test2 : public MyPrefs
     */
     void setAutoSaveInterval( int v )
     {
-      if (!isImmutable( "AutoSaveInterval" ))
+      if (!isImmutable( QString::fromLatin1( "AutoSaveInterval" ) ))
         mAutoSaveInterval = v;
     }
 
@@ -70,7 +70,7 @@ class Test2 : public MyPrefs
     */
     void setConfirm( bool v )
     {
-      if (!isImmutable( "Confirm" ))
+      if (!isImmutable( QString::fromLatin1( "Confirm" ) ))
         mConfirm = v;
     }
 
@@ -95,7 +95,7 @@ class Test2 : public MyPrefs
     */
     void setArchiveFile( const QString & v )
     {
-      if (!isImmutable( "ArchiveFile" ))
+      if (!isImmutable( QString::fromLatin1( "ArchiveFile" ) ))
         mArchiveFile = v;
     }
 
@@ -120,7 +120,7 @@ class Test2 : public MyPrefs
     */
     void setDestination( int v )
     {
-      if (!isImmutable( "Destination" ))
+      if (!isImmutable( QString::fromLatin1( "Destination" ) ))
         mDestination = v;
     }
 
@@ -145,7 +145,7 @@ class Test2 : public MyPrefs
     */
     void setHourSize( int v )
     {
-      if (!isImmutable( "HourSize" ))
+      if (!isImmutable( QString::fromLatin1( "HourSize" ) ))
         mHourSize = v;
     }
 
@@ -170,7 +170,7 @@ class Test2 : public MyPrefs
     */
     void setSelectionStartsEditor( bool v )
     {
-      if (!isImmutable( "SelectionStartsEditor" ))
+      if (!isImmutable( QString::fromLatin1( "SelectionStartsEditor" ) ))
         mSelectionStartsEditor = v;
     }
 
@@ -195,7 +195,7 @@ class Test2 : public MyPrefs
     */
     void setSelectedPlugins( const QStringList & v )
     {
-      if (!isImmutable( "SelectedPlugins" ))
+      if (!isImmutable( QString::fromLatin1( "SelectedPlugins" ) ))
         mSelectedPlugins = v;
     }
 
@@ -220,7 +220,7 @@ class Test2 : public MyPrefs
     */
     void setHighlightColor( const QColor & v )
     {
-      if (!isImmutable( "HighlightColor" ))
+      if (!isImmutable( QString::fromLatin1( "HighlightColor" ) ))
         mHighlightColor = v;
     }
 
@@ -245,7 +245,7 @@ class Test2 : public MyPrefs
     */
     void setAgendaBgColor( const QColor & v )
     {
-      if (!isImmutable( "AgendaBgColor" ))
+      if (!isImmutable( QString::fromLatin1( "AgendaBgColor" ) ))
         mAgendaBgColor = v;
     }
 
@@ -270,7 +270,7 @@ class Test2 : public MyPrefs
     */
     void setTimeBarFont( const QFont & v )
     {
-      if (!isImmutable( "TimeBarFont" ))
+      if (!isImmutable( QString::fromLatin1( "TimeBarFont" ) ))
         mTimeBarFont = v;
     }
 
@@ -329,3 +329,4 @@ class Test2 : public MyPrefs
 };
 
 #endif
+
