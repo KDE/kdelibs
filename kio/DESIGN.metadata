@@ -9,10 +9,13 @@ of two strings: a "key" and a "value".
 The following keys are currently in use:
 
 Key		Value(s)
-referrer	URL. The URL from which the request originates. (http only)
-accept		List of mimetypes to accept, seperated with ", ". (http only)
-cache		"cacheonly" do not do any remote lookups, fail if not in cache.
+
+referrer	URL. The URL from which the request originates. (read by http)
+accept		List of mimetypes to accept, seperated with ", ". (read by http)
+cache		"cacheonly" do not do any remote lookups, fail if not in cache. (ready by http)
                 "cache", use entry from cache if available.
                 "verify", use entry from after verifying with remote server
                 "reload", do not do any cache lookups.
 
+
+modified	The modification date of the document (set by http)

@@ -72,6 +72,7 @@
 #include <kdebug.h>
 #include <dcopclient.h>
 #include <kservice.h>
+#include <krfcdate.h>
 
 using namespace KIO;
 
@@ -744,6 +745,7 @@ bool HTTPProtocol::http_open()
   m_fcache = 0;
   m_bCachedRead = false;
   m_bCachedWrite = false;
+  m_bMustRevalidate = false;
   if (m_bUseCache)
   {
      m_fcache = checkCacheEntry( m_state.cef );
@@ -759,11 +761,21 @@ bool HTTPProtocol::http_open()
      }
      m_bCachedWrite = true;
 
-     if (m_fcache)
+     if (m_fcache && !m_bMustRevalidate)
      {
-        m_bCachedRead = true;
+        // Cache entry is OK.
+        m_bCachedRead = true; // Cache hit.
         return true;
      }
+     else if (!m_fcache)
+     {
+        m_bMustRevalidate = false; // Cache miss
+     }
+     else
+     {
+        // Conditional cache hit. (Validate)
+     }
+
      if (m_request.cache == CC_CacheOnly)
      {
         error( ERR_DOES_NOT_EXIST, m_request.url.url() );
@@ -866,6 +878,13 @@ bool HTTPProtocol::http_open()
   if ( m_request.cache == CC_Reload ) { /* No caching for reload */
     header += "Pragma: no-cache\r\n"; /* for HTTP/1.0 caches */
     header += "Cache-control: no-cache\r\n"; /* for HTTP >=1.1 caches */
+  }
+  
+  if (m_bMustRevalidate) { /* conditional get */
+    if (!m_etag.isEmpty())
+       header += "If-None-Match: "+m_etag+"\r\n";
+    if (!m_lastModified.isEmpty())
+       header += "If-Modified-Since: "+m_lastModified+"\r\n";
   }
 
 #ifdef DO_GZIP
@@ -1037,6 +1056,13 @@ bool HTTPProtocol::readHeader()
   // to get rid of those "Open with" dialogs...
   // however at least extensions should be checked
   m_strMimeType = "text/html";
+  m_etag = QString::null;
+  m_lastModified = QString::null;
+
+  time_t dateHeader = 0;
+  time_t expireDate = 0; // 0 = no info, 1 = already expired, > 1 = actual date
+  int currentAge = 0;
+  int maxAge = -1; // -1 = no max age, 0 already expired, > 0 = actual time
 
   QCString locationStr; // In case we get a redirect.
   QCString cookieStr; // In case we get a cookie.
@@ -1047,7 +1073,7 @@ bool HTTPProtocol::readHeader()
   bool unauthorized = false;
   bool cont = false;
   bool noRedirect = false; // No automatic redirection
-  time_t cacheExpireDate = 0;
+  bool cacheValidated = false; // Revalidation was successfull
 
   if (!waitForHeader(m_sock, RESPONSE_TIMEOUT))
   {
@@ -1102,40 +1128,6 @@ bool HTTPProtocol::readHeader()
 	m_bCanResume = false;
     }
 
-    // get the size of our data
-    else if (strncasecmp(buffer, "Content-length:", 15) == 0) {
-      m_iSize = atol(trimLead(buffer + 15));
-    }
-
-
-    // what type of data do we have?
-    else if (strncasecmp(buffer, "Content-type:", 13) == 0) {
-      // Jacek: We can't send mimeType signal now,
-      // because there may be another Content-Type. Or even
-      // worse the entity-body is encoded and there is a
-      // Content-Encoding specified which would then contain
-      // the true mime-type for the requested URI i.e. the content
-      // type is only applicable to the actual message-body!!
-      m_strMimeType = trimLead(buffer + 13);
-
-      //HACK to get the right mimetype of returns like "text/html; charset foo-blah"
-      int semicolonPos = m_strMimeType.find( ';' );
-      if ( semicolonPos != -1 )
-        m_strMimeType = m_strMimeType.left( semicolonPos );
-    }
-		
-    // whoops.. we received a warning
-    else if (strncasecmp(buffer, "Warning:", 8) == 0) {
-      warning(trimLead(buffer + 8));
-    }
-    else if (strncasecmp(buffer, "Pragma: no-cache", 16) == 0) {
-      m_bCachedWrite = false; // Don't put in cache
-    }
-    else if (strncasecmp(buffer, "Expires:", 8) == 0) {
-      const char *expire = trimLead( buffer+8);
-//WABA
- kdDebug(7103) << "Expires =!" << expire << "!" << endl;
-    }
     else if (strncasecmp(buffer, "Cache-Control:", 14) == 0) {
       QStringList cacheControls = QStringList::split(',',
                                      QString::fromLatin1(trimLead(buffer+14)));
@@ -1153,7 +1145,66 @@ bool HTTPProtocol::readHeader()
          {
             m_bCachedWrite = false; // Don't put in cache
          }
+         else if (strncasecmp(cacheControl.latin1(), "max-age=", 8) == 0)
+         {
+            maxAge = atol(trimLead(buffer + 8));
+         }
       }
+    }
+
+    // get the size of our data
+    else if (strncasecmp(buffer, "Content-length:", 15) == 0) {
+      m_iSize = atol(trimLead(buffer + 15));
+    }
+
+    // what type of data do we have?
+    else if (strncasecmp(buffer, "Content-type:", 13) == 0) {
+      // Jacek: We can't send mimeType signal now,
+      // because there may be another Content-Type. Or even
+      // worse the entity-body is encoded and there is a
+      // Content-Encoding specified which would then contain
+      // the true mime-type for the requested URI i.e. the content
+      // type is only applicable to the actual message-body!!
+      m_strMimeType = trimLead(buffer + 13);
+
+      //HACK to get the right mimetype of returns like "text/html; charset foo-blah"
+      int semicolonPos = m_strMimeType.find( ';' );
+      if ( semicolonPos != -1 )
+        m_strMimeType = m_strMimeType.left( semicolonPos );
+    }
+
+    // 
+    else if (strncasecmp(buffer, "Date:", 5) == 0) {
+      dateHeader = KRFCDate::parseDate(trimLead(buffer+5));
+    }
+
+    // Cache management
+    else if (strncasecmp(buffer, "ETag:", 5) == 0) {
+      m_etag = trimLead(buffer+5);
+    }
+
+    // Cache management
+    else if (strncasecmp(buffer, "Expires:", 8) == 0) {
+      expireDate = KRFCDate::parseDate(trimLead(buffer+8));
+      if (!expireDate)
+        expireDate = 1; // Already expired
+    }
+
+    // Cache management
+    else if (strncasecmp(buffer, "Last-Modified:", 14) == 0) {
+      m_lastModified = trimLead(buffer+14);
+//WABA
+ kdDebug(7103) << "Last-Modified =!" << m_lastModified << "!" << endl;
+    }
+
+    // whoops.. we received a warning
+    else if (strncasecmp(buffer, "Warning:", 8) == 0) {
+      warning(trimLead(buffer + 8));
+    }
+    
+    // Cache management (HTTP 1.0)
+    else if (strncasecmp(buffer, "Pragma: no-cache", 16) == 0) {
+      m_bCachedWrite = false; // Don't put in cache
     }
     // We got the header
     else if (strncasecmp(buffer, "HTTP/", 5) == 0) {
@@ -1206,6 +1257,12 @@ bool HTTPProtocol::readHeader()
       {
 	// We got 'Continue' - ignore it
         cont = true;
+      }
+      else if (code == 304)
+      {
+	// 304 Not Modified
+	// The value in our cache is still valid.
+        cacheValidated = true;
       }
       else if ((code == 301) || (code == 307))
       {
@@ -1307,11 +1364,47 @@ bool HTTPProtocol::readHeader()
   }
   while(len && (gets(buffer, sizeof(buffer)-1)));
 
+  // Fixup expire date for clock drift.
+  if (expireDate <= dateHeader)
+     expireDate = 1; // Already expired.
+
+  // Convert max-age into expireDate (overriding previous set expireDate)
+  if (maxAge == 0)
+     expireDate = 1; // Already expired.
+  else if (maxAge > 0)
+  {
+     if (currentAge)
+        maxAge -= currentAge;
+     if (maxAge <=0)
+        maxAge = 0;
+     expireDate = time(0) + maxAge;
+  }
+  
   // DONE receiving the header!
   if (!cookieStr.isEmpty())
   {
      // Give cookies to the cookiejar.
      addCookies( m_request.url.url(), cookieStr );
+  }
+
+  if (m_bMustRevalidate)
+  {
+     m_bMustRevalidate = false; // Reset just in case.
+     if (cacheValidated)
+     {
+       // Yippie, we can use the cached version.
+       // TODO: Update the cache with new "Expire" headers.
+       // If we don't, we need to revalidate each and every time
+       // after this request.
+       m_bCachedRead = true;
+       return readHeader(); // Read header again, but now from cache.
+     }
+     else
+     {
+       // Validation failed. Close cache.
+       fclose(m_fcache);
+       m_fcache = 0;
+     }
   }
 
   // we need to reread the header if we got a '100 Continue'
@@ -1404,11 +1497,14 @@ bool HTTPProtocol::readHeader()
   if (m_request.method == HTTP_HEAD)
      return true;
 
+  if (!m_lastModified.isEmpty())
+     setMetaData("modified", m_lastModified);
+
   // Do we want to cache this request?
   if (m_bCachedWrite)
   {
      // Check...
-     createCacheEntry(m_strMimeType, cacheExpireDate); // Create a cache entry
+     createCacheEntry(m_strMimeType, expireDate); // Create a cache entry
      if (!m_fcache)
         m_bCachedWrite = false; // Error creating cache entry.
   }
@@ -1710,17 +1806,21 @@ void HTTPProtocol::buildURL()
 
 static HTTPProtocol::CacheControl parseCacheControl(const QString &cacheControl)
 {
+  HTTPProtocol::CacheControl _default = HTTPProtocol::CC_Verify;
   if (cacheControl.isEmpty()) 
-     return HTTPProtocol::CC_Cache; // Default
+     return _default;
   
   QString tmp = cacheControl.lower();   
   if (tmp == "cacheonly")
      return HTTPProtocol::CC_CacheOnly;
+  if (tmp == "cache")
+     return HTTPProtocol::CC_Cache;
   if (tmp == "verify")
      return HTTPProtocol::CC_Verify;
   if (tmp == "reload")
      return HTTPProtocol::CC_Reload;
-  return HTTPProtocol::CC_Cache; // "cache" and Default
+     
+  return _default; 
 }
 
 // Returns only the file size, that's all kio_http can guess.
@@ -2454,7 +2554,7 @@ HTTPProtocol::findCookies( const QString &url)
 // The following code should be kept in sync
 // with the code in http_cache_cleaner.cpp
 
-#define CACHE_REVISION "3\n"
+#define CACHE_REVISION "4\n"
 
 FILE *
 HTTPProtocol::checkCacheEntry( QString &CEF)
@@ -2549,11 +2649,33 @@ HTTPProtocol::checkCacheEntry( QString &CEF)
       ok = false;
    if (ok)
    {
-      date = (time_t) strtoul(buffer, 0, 10);
-      if (date && (date < currentDate))
-         ok = false; // Expired
+      if (m_request.cache == CC_Verify)
+      {
+         date = (time_t) strtoul(buffer, 0, 10);
+         // After the expire date we need to revalidate.
+//         if (date && (difftime(currentDate, date) >= 0))
+           if (!date || difftime(currentDate, date) >= 0)
+            m_bMustRevalidate = true;
+      }
    }
 
+   // ETag
+   if (ok && (!fgets(buffer, 400, fs)))
+      ok = false;
+   if (ok)
+   {
+      m_etag = QString(buffer).stripWhiteSpace();
+ kdDebug(7103) << "Cached ETag = !" << m_etag << "!" << endl;
+   }
+
+   // Last-Modified
+   if (ok && (!fgets(buffer, 400, fs)))
+      ok = false;
+   if (ok)
+   {
+      m_lastModified = QString(buffer).stripWhiteSpace();
+ kdDebug(7103) << "Cached Last Modified  = !" << m_lastModified << "!" << endl;
+   }
 
    if (ok)
       return fs;
@@ -2595,6 +2717,18 @@ HTTPProtocol::createCacheEntry( const QString &mimetype, time_t expireDate)
 
    date.setNum( expireDate );
    fputs(date.latin1(), m_fcache);      // Expire date
+   fputc('\n', m_fcache);
+
+   if (m_etag.isEmpty())
+      fputc('\n', m_fcache);
+   else
+      fputs(m_etag.latin1(), m_fcache);    //ETag
+   fputc('\n', m_fcache);
+
+   if (m_lastModified.isEmpty())
+      fputc('\n', m_fcache);
+   else
+      fputs(m_lastModified.latin1(), m_fcache);    // Last modified
    fputc('\n', m_fcache);
 
    fputs(mimetype.latin1(), m_fcache);  // Mimetype

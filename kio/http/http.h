@@ -257,6 +257,9 @@ protected: // Members
   int m_maxCacheAge; // Maximum age of a cache entry.
   FILE* m_fcache; // File stream of a cache entry
   QString m_strCacheDir; // Location of the cache.
+  QString m_etag; // ETag header.
+  QString m_lastModified; // Last modified.
+  bool m_bMustRevalidate; // Cache entry is expired.
 
   // Language/Encoding
   QStringList m_qTransferEncodings, m_qContentEncodings;

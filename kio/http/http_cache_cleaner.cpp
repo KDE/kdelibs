@@ -76,7 +76,7 @@ public:
 
 // !START OF SYNC!
 // Keep the following in sync with the cache code in http.cc
-#define CACHE_REVISION "3\n"
+#define CACHE_REVISION "4\n"
 
 FileInfo *readEntry( const QString &filename)
 {
@@ -120,10 +120,30 @@ FileInfo *readEntry( const QString &filename)
       ok = false;  
    if (ok)
    {
+//WABA: It seems I slightly misunderstood the meaning of "Expire:" header.
+#if 0
       expireDate = (time_t) strtoul(buffer, 0, 10);
       if (expireDate && (expireDate < currentDate))
          ok = false; // Expired
+#endif
    }
+
+   // ETag
+   if (ok && (!fgets(buffer, 400, fs)))
+      ok = false;
+   if (ok)
+   {
+      // Ignore ETag
+   }
+
+   // Last-Modified
+   if (ok && (!fgets(buffer, 400, fs)))
+      ok = false;
+   if (ok)
+   {
+      // Ignore Last-Modified
+   }
+
  
    fclose(fs);
    if (ok)
