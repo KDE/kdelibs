@@ -244,7 +244,7 @@ void HCStyle::polish(QWidget *w)
     if(w->isTopLevel())
         return;
 
-    if(w->inherits("QMenu") || w->inherits("KToolBarButton")){
+    if(w->inherits("QMenuBar") || w->inherits("KToolBarButton")){
         w->setBackgroundMode(QWidget::NoBackground);
         return;
     }
@@ -269,7 +269,7 @@ void HCStyle::unPolish(QWidget *w)
     if (w->isTopLevel())
         return;
 
-    if(w->inherits("QMenu") || w->inherits("KToolBarButton")){
+    if(w->inherits("QMenuBar") || w->inherits("KToolBarButton")){
         w->setBackgroundMode(QWidget::PaletteBackground);
         return;
     }
