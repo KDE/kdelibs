@@ -20,6 +20,8 @@
 #ifndef KMULTIPLEDRAG_H
 #define KMULTIPLEDRAG_H
 
+#ifndef QT_NO_DRAGANDDROP
+
 #include <qdragobject.h>
 #include <qvaluelist.h>
 
@@ -64,5 +66,7 @@ protected:
     QPtrList<QDragObject> m_dragObjects;
     QValueList<int> m_numberFormats;
 };
+
+#endif // QT_NO_DRAGANDDROP
 
 #endif // KMULTIPLEDRAG_H

@@ -20,6 +20,8 @@
 #include "kmultipledrag.h"
 #include "kdebug.h"
 
+#ifndef QT_NO_DRAGANDDROP
+
 KMultipleDrag::KMultipleDrag( QWidget *dragSource, const char *name )
     : QDragObject( dragSource, name )
 {
@@ -73,3 +75,5 @@ const char* KMultipleDrag::format( int i ) const
 }
 
 #include "kmultipledrag.moc"
+
+#endif
