@@ -70,3 +70,13 @@
 <!ENTITY % FDLNotice        PUBLIC
   "-//KDE//ENTITIES GNU FDL 1.1 Notice Entities//EN"                 >
  -->
+
+<!-- KDE olink specification -->
+<!ENTITY kde-modespec
+	'<modespec id="kde-doc-modespec" xreflabel="see &percnt;t">/path/to/documentation</modespec>'>
+
+<!-- KDE index generation
+     To use: set addindex to INCLUDE
+     Scripts should generate the index in docindex.docbook in the same directory
+ -->
+<!ENTITY kdedocindex SYSTEM "docindex.docbook">

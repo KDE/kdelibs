@@ -72,6 +72,9 @@
 <!-- ============================================================= -->
 
 <!ENTITY kappname "this application" -- a vaguely sensible default -->
+<!ENTITY % addindex "IGNORE"
+  -- set to INCLUDE on the command line when the file is there;
+     retain also in the prologue (explicit and robust)             -->
 
 <!-- The following entities should only use &kappname; in their 
      text                                                          -->
