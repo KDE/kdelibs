@@ -529,6 +529,8 @@ void KURL::parse( const QString& _url, int encoding_hint )
   start = pos;
 
   // Node 4: Accept any amount of characters.
+  if (buf[pos] == '[')     // An IPv6 host follows.
+      goto Node8;  
   // Terminate or / or @
   while( buf[pos] != ':' && buf[pos] != '@' && buf[pos] != '/' && pos < len ) pos++;
   if ( pos == len )
@@ -595,17 +597,35 @@ void KURL::parse( const QString& _url, int encoding_hint )
  Node7:
   if ( pos == len )
     goto NodeErr;
-  start = pos++;
 
-  // Node 8: Read everything until / : or terminate
-  while( buf[pos] != '/' && buf[pos] != ':' && pos < len ) pos++;
-  if ( pos == len )
+ Node8:
+  if (buf[pos] == '[')
+  {
+    // IPv6 address
+    start = ++pos; // Skip '['
+
+    // Node 8b: Read everything until ] or terminate
+    while( buf[pos] != ']' && pos < len ) pos++;
+    m_strHost = decode(QString( buf + start, pos - start ), 0, encoding_hint);
+    if (pos < len) pos++; // Skip ']'
+    if (pos == len)
+       goto NodeOk;
+  } 
+  else 
+  {
+    // Non IPv6 address
+    start = pos++;
+
+    // Node 8b: Read everything until / : or terminate
+    while( buf[pos] != '/' && buf[pos] != ':' && pos < len ) pos++;
+    if ( pos == len )
     {
-      m_strHost = decode(QString( buf + start, pos - start ), 0, encoding_hint);
-      goto NodeOk;
-    }
+       m_strHost = decode(QString( buf + start, pos - start ), 0, encoding_hint);
+       goto NodeOk;
+    } 
+    m_strHost = decode(QString( buf + start, pos - start ), 0, encoding_hint);
+  }
   x = buf[pos];
-  m_strHost = decode(QString( buf + start, pos - start ), 0, encoding_hint);
   if ( x == '/' )
     {
       start = pos++;
@@ -1005,7 +1025,11 @@ QString KURL::url( int _trailing, int encoding_hint ) const
       }
       u += "@";
     }
-    u += encode(m_strHost, true, encoding_hint);
+    bool IPv6 = (m_strHost.find(':') != -1);
+    if (IPv6) 
+       u += '[' + m_strHost + ']';
+    else
+       u += encode(m_strHost, true, encoding_hint);
     if ( m_iPort != 0 ) {
       QString buffer;
       buffer.sprintf( ":%u", m_iPort );

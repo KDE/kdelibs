@@ -247,6 +247,29 @@ int main(int argc, char *argv[])
   check("http: URL with empty reference string", waba1.url(),
         "http://www.kde.org/cgi/test.cgi");
 
+  // IPV6
+  waba1 = "http://[::FFFF:129.144.52.38]:81/index.html";
+  check("http: IPV6 host", waba1.host(),
+        "::FFFF:129.144.52.38");
+  check("http: IPV6 port", QString("%1").arg(waba1.port()),
+        "81");
+
+  // IPV6
+  waba1 = "http://waba:pass@[::FFFF:129.144.52.38]:81/index.html";
+  check("http: IPV6 host", waba1.host(),
+        "::FFFF:129.144.52.38");
+  check("http: IPV6 host", waba1.user(),
+        "waba");
+  check("http: IPV6 host", waba1.pass(),
+        "pass");
+  check("http: IPV6 port", QString("%1").arg(waba1.port()),
+        "81");
+
+  // IPV6
+  waba1 = "http://www.kde.org/cgi/test.cgi#";
+  waba1.setHost("::FFFF:129.144.52.38");
+  check("http: IPV6 host", waba1.url(),
+        "http://[::FFFF:129.144.52.38]/cgi/test.cgi");
 
   // UNC like names
   KURL unc1("FILE://localhost/home/root");
