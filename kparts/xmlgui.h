@@ -61,7 +61,7 @@ class XMLGUIBuilder
    * @param containerStateBuffer a buffer which possibibly contains previously saved container state
    *        information, return via @ref removeContainer .
    */
-  virtual QObject *createContainer( QWidget *parent, int index, const QDomElement &element, const QByteArray &containerStateBuffer, int &id ) = 0;
+  virtual QWidget *createContainer( QWidget *parent, int index, const QDomElement &element, const QByteArray &containerStateBuffer, int &id ) = 0;
 
   /**
    * Remove the given (and previously via @ref createContainer ) created container.
@@ -69,7 +69,7 @@ class XMLGUIBuilder
    *         a toolbar container for example) . The buffer is passed again to @ref createContainer when
    *         the same container is about to be created again later.
    */
-  virtual QByteArray removeContainer( QObject *container, QWidget *parent, int id ) = 0;
+  virtual QByteArray removeContainer( QWidget *container, QWidget *parent, int id ) = 0;
 
   virtual int insertSeparator( QWidget *parent, int index ) = 0;
   virtual void removeSeparator( QWidget *parent, int id ) = 0;
@@ -149,9 +149,9 @@ class XMLGUIFactory
 
   void pruneContainers( XMLGUIContainerNode *node );
 
-  XMLGUIContainerNode *findContainer( XMLGUIContainerNode *node, const QDomElement &element, const QList<QObject> *excludeList );
+  XMLGUIContainerNode *findContainer( XMLGUIContainerNode *node, const QDomElement &element, const QList<QWidget> *excludeList );
 
-  XMLGUIContainerNode *findContainerNode( XMLGUIContainerNode *parentNode, QObject *container );
+  XMLGUIContainerNode *findContainerNode( XMLGUIContainerNode *parentNode, QWidget *container );
 
   XMLGUIServant *m_servant;
   XMLGUIBuilder *m_builder;

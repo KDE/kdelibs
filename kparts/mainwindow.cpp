@@ -115,7 +115,7 @@ void MainWindow::setXML( const QString &document )
   */
 }
 
-QObject *MainWindow::createContainer( QWidget *parent, int index, const QDomElement &element, const QByteArray &containerStateBuffer, int &id )
+QWidget *MainWindow::createContainer( QWidget *parent, int index, const QDomElement &element, const QByteArray &containerStateBuffer, int &id )
 {
   kDebugArea( 1001, "MainWindow::createContainer()" );
   kDebugInfo( 1001, "tagName() : %s", element.tagName().ascii() );
@@ -148,13 +148,6 @@ QObject *MainWindow::createContainer( QWidget *parent, int index, const QDomElem
       id = ((QPopupMenu *)parent)->insertItem( text, popup, -1, index );
 
     return popup;
-  }
-
-  if ( element.tagName().lower() == "separator" && parent )
-  {
-    KActionSeparator *separator = new KActionSeparator;
-    separator->plug( parent, index );
-    return separator;
   }
 
   if ( element.tagName().lower() == "toolbar" )
@@ -211,21 +204,12 @@ QObject *MainWindow::createContainer( QWidget *parent, int index, const QDomElem
   return 0L;
 }
 
-QByteArray MainWindow::removeContainer( QObject *container, QWidget *parent, int id )
+QByteArray MainWindow::removeContainer( QWidget *container, QWidget *parent, int id )
 {
   // Warning parent can be 0L
   QByteArray stateBuff;
 
-  if ( !container->isWidgetType() )
-  {
-    if ( !container->inherits( "QAction" ) )
-      return stateBuff;
-
-    kDebugInfo( 1002, "MainWindow::removeContainer : unplugging %s from %s", container->name(), parent ? parent->name() : 0L );
-    if (parent) ((QAction *)container)->unplug( parent );
-    delete container;
-  }
-  else if ( container->inherits( "QPopupMenu" ) )
+  if ( container->inherits( "QPopupMenu" ) )
   {
     if ( parent->inherits( "KMenuBar" ) )
       ((KMenuBar *)parent)->removeItem( id );

@@ -73,11 +73,11 @@ template class QList<XMLGUIContainerNode>;
  */
 struct XMLGUIContainerNode
 {
-  XMLGUIContainerNode( QObject *_container, const QString &_tagName, const QString &_name, XMLGUIContainerNode *_parent = 0L, XMLGUIServant *_servant = 0L, bool _merged = false, int id = -1 );
+  XMLGUIContainerNode( QWidget *_container, const QString &_tagName, const QString &_name, XMLGUIContainerNode *_parent = 0L, XMLGUIServant *_servant = 0L, bool _merged = false, int id = -1 );
 
   XMLGUIContainerNode *parent;
   XMLGUIServant *servant;
-  QObject *container;
+  QWidget *container;
   int containerId;
 
   QString tagName;
@@ -160,7 +160,7 @@ XMLGUIFactory *XMLGUIServant::factory() const
   return d->m_factory;
 }
 
-XMLGUIContainerNode::XMLGUIContainerNode( QObject *_container, const QString &_tagName, const QString &_name, XMLGUIContainerNode *_parent, XMLGUIServant *_servant, bool _merged, int id )
+XMLGUIContainerNode::XMLGUIContainerNode( QWidget *_container, const QString &_tagName, const QString &_name, XMLGUIContainerNode *_parent, XMLGUIServant *_servant, bool _merged, int id )
 {
   container = _container;
   containerId = id;
@@ -261,7 +261,7 @@ void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerN
    * We use it as "exclude" list, in order to avoid container matches of already created containers having
    * no proper name attribute to distinct them (like with Separator tags).
    */
-  QList<QObject> containerList;
+  QList<QWidget> containerList;
 
   XMLGUIContainerClient *containerClient = 0L;
 
@@ -302,7 +302,7 @@ void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerN
     }
     else if ( e.tagName().lower() == tagAction || e.tagName().lower() == tagSeparator )
     {
-      if ( !parentNode->container || !parentNode->container->isWidgetType() )
+      if ( !parentNode->container )
         continue;
 
       QMap<QString,int>::Iterator it;
@@ -364,12 +364,6 @@ void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerN
         buildRecursive( e, matchingContainer );
       else
       {	
-        if ( parentNode->container && !parentNode->container->isWidgetType() )
-        {
-          kDebugWarning( 1000,"cannot create container widget with non-widget as parent!" );
-    	  continue;
-        }
-
 	QMap<QString,int>::Iterator it;
 	
         int idx = parentNode->index;
@@ -385,13 +379,12 @@ void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerN
 	QByteArray stateBuffer = m_servant->takeContainerStateBuffer( e.tagName() + e.attribute( attrName ) );
 	
 	/*
-	 * let the builder create the container (note that a container might also be a QAction (that's why
-	 * we use QObject as container type), like with separators for example.
+	 * let the builder create the container
 	 */
 	
 	int id;
 	
-        QObject *container = m_builder->createContainer( (QWidget *)parentNode->container, idx, e, stateBuffer, id );
+        QWidget *container = m_builder->createContainer( parentNode->container, idx, e, stateBuffer, id );
 	
 	// no container? (probably some <text> tag or so ;-)
 	if ( !container )
@@ -431,7 +424,7 @@ bool XMLGUIFactory::removeRecursive( XMLGUIContainerNode *node )
 
   QListIterator<XMLGUIContainerClient> clientIt( node->clients );
 
-  if ( node->container && node->container->isWidgetType() )
+  if ( node->container )
     while ( clientIt.current() )
       //only unplug the actions of the servant we want to remove, as the container might be owned
       //by a different servant
@@ -549,7 +542,7 @@ void XMLGUIFactory::adjustMergingIndices( XMLGUIContainerNode *node, int idx, in
   node->index += val;
 }
 
-XMLGUIContainerNode *XMLGUIFactory::findContainer( XMLGUIContainerNode *node, const QDomElement &element, const QList<QObject> *excludeList )
+XMLGUIContainerNode *XMLGUIFactory::findContainer( XMLGUIContainerNode *node, const QDomElement &element, const QList<QWidget> *excludeList )
 {
   XMLGUIContainerNode *res = 0L;
   QListIterator<XMLGUIContainerNode> nIt( node->children );
@@ -584,7 +577,7 @@ XMLGUIContainerNode *XMLGUIFactory::findContainer( XMLGUIContainerNode *node, co
   return res;
 }
 
-XMLGUIContainerNode *XMLGUIFactory::findContainerNode( XMLGUIContainerNode *parentNode, QObject *container )
+XMLGUIContainerNode *XMLGUIFactory::findContainerNode( XMLGUIContainerNode *parentNode, QWidget *container )
 {
   QListIterator<XMLGUIContainerNode> it( parentNode->children );
 
