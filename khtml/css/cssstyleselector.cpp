@@ -631,7 +631,7 @@ void CSSStyleSelector::buildLists()
                         newprops[i] = selectorCache[sel].props[i];
                     newprops[selectorCache[sel].props_size] = offset;
                     newprops[selectorCache[sel].props_size+1] = len;
-                    delete selectorCache[sel].props;
+                    delete [] selectorCache[sel].props;
                     selectorCache[sel].props = newprops;
                     selectorCache[sel].props_size += 2;
                     matches = false;
