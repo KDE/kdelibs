@@ -199,6 +199,19 @@ public:
     virtual void setViewMode( ViewMode vm );
     virtual ViewMode viewMode() const;
 
+    /**
+     * @returns the localized name of the view, which could be displayed
+     * somewhere, e.g. in a menu, where the user can choose between views.
+     * @see #setViewName
+     */
+    QString viewName() { return viewname; }
+    
+    /**
+     * Sets the name of the view, which could be displayed somewhere.
+     * E.g. "Image Preview".
+     */
+    void setViewName( const QString& name ) { viewname = name; }
+
     virtual void setOperator(QObject *ops);
 
     /**
@@ -273,6 +286,7 @@ private:
     QDir::SortSpec mySorting;
     static QDir::SortSpec defaultSortSpec;
     enum SortMode mySortMode;
+    QString viewname;
 
     /**
      * counters

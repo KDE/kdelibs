@@ -57,6 +57,7 @@ void KCombiView::setRight(KFileView *view)
 {
     right = view;
     right->KFileView::setViewMode( Files );
+    setViewName( right->viewName() );
 
     QValueList<int> lst;
     lst << left->gridX() + 2 * left->spacing();

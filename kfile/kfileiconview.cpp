@@ -24,6 +24,7 @@
 #include "qkeycode.h"
 #include <qpainter.h>
 #include <kapp.h>
+#include <klocale.h>
 #include "config-kfile.h"
 #include <kfileviewitem.h>
 #include <qlabel.h>
@@ -39,6 +40,8 @@ KFileIconViewItem::~KFileIconViewItem()
 KFileIconView::KFileIconView(QWidget *parent, const char *name)
     : KIconView(parent, name), KFileView()
 {
+    setViewName( i18n("Icon View") );
+    
     toolTip = 0;
     setResizeMode( Adjust );
     setArrangement( TopToBottom );

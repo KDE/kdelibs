@@ -24,6 +24,7 @@
 #include "config-kfile.h"
 #include <stdlib.h>
 #include <kdebug.h>
+#include <klocale.h>
 #include <kstddirs.h>
 #include <kglobal.h>
 #include <assert.h>
@@ -50,6 +51,7 @@ KFileView::KFileView()
 
     view_mode = All;
     selection_mode = Single;
+    viewname = i18n("Unknown View");
 }
 
 KFileView::~KFileView()
@@ -164,7 +166,7 @@ void KFileView::insertSorted(KFileViewItem *tfirst, uint counter)
     }
     if ( counter >= 2 ) // terminate last item
 	tlast->setNext(0);
-    
+
     delete [] sortedArray;
 
     kDebugInfo(kfile_area, "inserting %ld %p", time(0), first);
@@ -240,7 +242,7 @@ void KFileView::setSorting(QDir::SortSpec new_sort)
 
     if ( count() > 1 ) {
 	KFileViewItem *firstItem = first;
-	first = 0L; // sideeffect - insertSorted would merge 
+	first = 0L; // sideeffect - insertSorted would merge
 	            // firstItem and first, which are actually the same
 	insertSorted(firstItem, count());
     }
@@ -252,7 +254,7 @@ void KFileView::sortReversed()
 
     if ( count() > 1 ) {
 	KFileViewItem *firstItem = first;
-	first = 0L; // sideeffect - insertSorted would merge 
+	first = 0L; // sideeffect - insertSorted would merge
 	            // firstItem and first, which are actually the same
 	insertSorted(firstItem, count());
     }
@@ -332,7 +334,7 @@ int KFileView::compareItems(const KFileViewItem *fi1, const KFileViewItem *fi2) 
     if (fi1 == fi2)
 	return 0;
 
-    bool dirsFirst = ((mySorting & QDir::DirsFirst) == QDir::DirsFirst); 
+    bool dirsFirst = ((mySorting & QDir::DirsFirst) == QDir::DirsFirst);
     if ( fi1->isDir() != fi2->isDir() && dirsFirst ) {
 	bigger = fi2->isDir();
 	keepFirst = true;

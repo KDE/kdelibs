@@ -192,10 +192,10 @@ void KDirOperator::activatedMenu( const KFileViewItem *item )
 	    QPopupMenu *views = new QPopupMenu(p);
 	    id = views->insertItem(i18n("Short View"),
 				   this, SLOT(simpleView()));
-	    views->setItemChecked(id,fileList->widget()->isA("KFileIconView"));
+	    views->setItemChecked(id, (fileList->viewName() == i18n("Short View")));
 	    id = views->insertItem(i18n("Detailed View"),
 			      this, SLOT(detailedView()));
-	    views->setItemChecked(id,fileList->widget()->isA("KFileDetailView"));
+	    views->setItemChecked(id, (fileList->viewName() == i18n("Detailed View")));
 	    views->insertSeparator();
 	    id = views->insertItem(i18n("Show Hidden Files"),
 			       this, SLOT(toggleHidden()));
@@ -643,14 +643,19 @@ void KDirOperator::setView(FileView view, bool separateDirs)
 
     if (separateDirs) {
         KCombiView *combi = new KCombiView(this, "combi view");
-        if (view == Simple)
-            combi->setRight(new KFileIconView( combi, "simple view" ));
+        if (view == Simple) {
+	    KFileIconView *view = new KFileIconView( combi, "simple view" );
+	    view->setViewName( i18n("Short View") );
+            combi->setRight( view );
+	}
         else
             combi->setRight(new KFileDetailView( combi, "detail view" ));
         myFileView = combi;
     } else {
-        if (view == Simple && (mode() & KFileDialog::Preview)==0)
+        if (view == Simple && (mode() & KFileDialog::Preview)==0) {
             myFileView = new KFileIconView( this, "simple view" );
+	    myFileView->setViewName( i18n("Short View") );
+	}
         else if (view == Detail && (mode() & KFileDialog::Preview)==0)
             myFileView = new KFileDetailView( this, "detail view" );
         else {

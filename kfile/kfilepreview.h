@@ -61,7 +61,7 @@ public:
     virtual void clearSelection();
 
     void setPreviewWidget(const QWidget *w, const KURL &u);
-
+    
 signals:
     void showPreview(const KURL &);
 
@@ -79,5 +79,6 @@ private:
     bool deleted, previewMode;
     KFileView *left;
     QWidget *preview;
+    QString viewname;
 };
 #endif

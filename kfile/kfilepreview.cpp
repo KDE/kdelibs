@@ -40,6 +40,7 @@ KFilePreview::KFilePreview(QWidget *parent, const char *name) :
     setResizeMode(preview, QSplitter::KeepSize);
     deleted=false;
     previewMode=false;
+    setViewName( i18n("Preview") );
 }
 
 KFilePreview::~KFilePreview() {

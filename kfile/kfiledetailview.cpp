@@ -31,6 +31,8 @@
 KFileDetailView::KFileDetailView(QWidget *parent, const char *name)
     : KListView(parent, name), KFileView()
 {
+    setViewName( i18n("Detailed View") );
+    
     addColumn( i18n( "Name" ) );
     addColumn( i18n( "Size" ) );
     addColumn( i18n( "Permissions" ) );

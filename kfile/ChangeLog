@@ -1,3 +1,10 @@
+Sun Jan 30 16:49:12 2000  Carsten Pfeiffer  <pfeiffer@kde.org>
+
+	* kfileview.h + all views:
+	A view can now have a name (setViewName() and viewName())
+	This is usefull to differentiate views and to display the names in a
+	popupmenu for switching between views.
+
 Sun Jan 30 12:41:04 2000  Werner Trobin  <wtrobin@carinthia.com>
 	The preview mode works again. It's very similar to the Qt-2.1 QFD
 	preview mode - but it's not totally the same. There are some rough

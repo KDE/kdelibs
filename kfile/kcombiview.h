@@ -24,6 +24,7 @@
 
 #include "kfileview.h"
 #include <qsplitter.h>
+#include <klocale.h>
 
 class KFileIconView;
 class QIconViewItem;
