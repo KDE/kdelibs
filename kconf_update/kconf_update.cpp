@@ -765,8 +765,8 @@ void KonfUpdate::gotScript(const QString &_script)
             if (oldConfig2->deleteGroup(group, true)) { // Delete group
 #ifndef NDEBUG
                qDebug("Removing group %s (FORCED)", group.isEmpty() ? "<empty>" : group.latin1());
-	    }
 #endif
+	    }
           }
        }
      }
