@@ -53,7 +53,6 @@ CollectorBlock::CollectorBlock(int s)
     next(0L)
 {
   mem = new ValueImp*[size];
-  memset(mem, 0, size * sizeof(ValueImp*));
 }
 
 CollectorBlock::~CollectorBlock()
@@ -134,11 +133,8 @@ void* Collector::allocate(size_t s)
     block = tmp;
   }
   currentBlock = block;
-  // look for a free spot in the block
-  ValueImp **r = block->mem;
-  while (*r)
-    r++;
-  *r = m;
+  // fill free spot in the block
+  *(block->mem + block->filled) = m;
   filled++;
   block->filled++;
 
@@ -164,10 +160,8 @@ bool Collector::collect()
   while (block) {
     ValueImp **r = block->mem;
     assert(r);
-    for (int i = 0; i < block->size; i++, r++)
-      if (*r) {
-        (*r)->_flags &= ~ValueImp::VI_MARKED;
-      }
+    for (int i = 0; i < block->filled; i++, r++)
+      (*r)->_flags &= ~ValueImp::VI_MARKED;
     block = block->next;
   }
 
@@ -187,12 +181,11 @@ bool Collector::collect()
   while (block) {
     ValueImp **r = block->mem;
     assert(r);
-    for (int i = 0; i < block->size; i++, r++)
+    for (int i = 0; i < block->filled; i++, r++)
     {
       ValueImp *imp = (*r);
       // Check for created=true, marked=false and (gcallowed=false or refcount>0)
-      if (imp &&
-          (imp->_flags & (ValueImp::VI_CREATED|ValueImp::VI_MARKED)) == ValueImp::VI_CREATED &&
+      if ((imp->_flags & (ValueImp::VI_CREATED|ValueImp::VI_MARKED)) == ValueImp::VI_CREATED &&
           ( (imp->_flags & ValueImp::VI_GCALLOWED) == 0 || imp->refcount ) ) {
         //fprintf( stderr, "Collector marking imp=%p\n",(void*)imp);
         imp->mark();
@@ -206,11 +199,10 @@ bool Collector::collect()
   block = root;
   while (block) {
     ValueImp **r = block->mem;
-    for (int i = 0; i < block->size; i++, r++) {
+    for (int i = 0; i < block->filled; i++, r++) {
       ValueImp *imp = (*r);
       // Can delete if marked==false
-      if (imp &&
-          (imp->_flags & (ValueImp::VI_CREATED|ValueImp::VI_MARKED)) == ValueImp::VI_CREATED ) {
+      if ((imp->_flags & (ValueImp::VI_CREATED|ValueImp::VI_MARKED)) == ValueImp::VI_CREATED ) {
         // emulate destructing part of 'operator delete()'
         //fprintf( stderr, "Collector::deleting ValueImp %p (%s)\n", (void*)imp, typeid(*imp).name());
         imp->~ValueImp();
@@ -223,17 +215,26 @@ bool Collector::collect()
   block = root;
   while (block) {
     ValueImp **r = block->mem;
+    int freespot = block->filled;
+    bool firstfreeset = false;
     int del = 0;
-    for (int i = 0; i < block->size; i++, r++) {
+    for (int i = 0; i < block->filled; i++, r++) {
       ValueImp *imp = (*r);
-      if (imp && (imp->_flags & ValueImp::VI_DESTRUCTED) != 0) {
-	free(imp);
-        *r = 0L;
+      if ((imp->_flags & ValueImp::VI_DESTRUCTED) != 0) {
+        free(imp);
         del++;
+        if (!firstfreeset) {
+          firstfreeset = true;
+          freespot = r - block->mem;
+        }
+      } else if (firstfreeset) {
+         *(block->mem + freespot) = imp;
+         freespot++;
       }
     }
     filled -= del;
     block->filled -= del;
+    assert(freespot == block->filled);
     block = block->next;
     if (del)
       deleted = true;
@@ -241,6 +242,8 @@ bool Collector::collect()
 
   // delete the empty containers
   block = root;
+  currentBlock = 0L;
+  CollectorBlock *last = root;
   while (block) {
     CollectorBlock *next = block->next;
     if (block->filled == 0) {
@@ -250,13 +253,18 @@ bool Collector::collect()
         root = next;
       if (next)
         next->prev = block->prev;
-      if (block == currentBlock) // we don't want a dangling pointer
-        currentBlock = 0L;
       assert(block != root);
       delete block;
+    } else if (!currentBlock) {
+        if (block->filled < block->size)
+          currentBlock = block;
+        else
+          last = block;
     }
     block = next;
   }
+  if (!currentBlock)
+    currentBlock = last;
 #if 0
   // This is useful to track down memory leaks
   static int s_count = 0;
