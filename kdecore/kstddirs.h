@@ -47,7 +47,9 @@ class KStandardDirsPrivate;
 * (e.g. icon) and a filename (e.g. khexdit.xpm). In an ideal world
 * the application would make no assumption where this file is and
 * leave it up to @ref KStandardDirs::findResource("apps", "Home.desktop")
-* to apply this knowledge.
+* to apply this knowledge to return /opt/kde/share/applnk/Home.desktop
+* or locate("data", "kgame/background.jpg") to return
+* /opt/kde/share/apps/kgame/background.jpg
 *
 * The main idea behind @ref KStandardDirs is that there are several
 * toplevel prefixes below which the files lie. One of these prefixes is
@@ -398,7 +400,7 @@ public:
 	/**
 	 * This returns a default relative path for the standard KDE
          * resource types. Below is a list of them so you get an idea
-         * of what this is all about
+         * of what this is all about.
          *
          * @li data - share/apps
          * @li html - share/doc/HTML
@@ -415,7 +417,7 @@ public:
          * @li templates - share/templates
          * @li exe - bin
          * @li lib - lib
-
+         *
 	 * @returns Static default for the specified resource.  You
 	 *          should probably be using @ref locate() or @ref locateLocal()
 	 *          instead.
