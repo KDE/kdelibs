@@ -430,7 +430,7 @@ QString KIconTheme::current()
         return *_theme;
 
     _theme = new QString();
-    KKSimpleConfig *config = new KSimpleConfig("kdeglobals", false);
+    KSimpleConfig *config = new KSimpleConfig("kdeglobals", false);
     config->setGroup("Icons");
     *_theme = config->readEntry("Theme",defaultThemeName());
     delete config;
