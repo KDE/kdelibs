@@ -366,7 +366,7 @@
  * @section talkers Talkers, Talker Codes, and Plugins
  *
  * Many of the methods permit you to specify a desired "talker".  At this time, this
- * should be a language code, such as "en" for English, "sp" for Spanish, etc.
+ * should be a language code, such as "en" for English, "es" for Spanish, etc.
  * Code as NULL to use the default configured talker.
  *
  * In the future, you will be able to configure more than one talker for each language,
@@ -403,7 +403,10 @@
  * The attributes may be specified in any order.
  * The attributes that make up a talker code are:
  *
- * - @e lang.         Language code.  Examples: en, sp, en-GB.
+ * - @e lang.         Language code and optional country code.
+ *                    Examples: en, es, en_US, en_GB. Codes
+ *                    are case in-sensitive and hyphen (-) or underscore (_) may be
+ *                    used to separate the country code from the language code.
  * - @e synthesizer.  The name of the synthesizer (plugin) used to produce the speech.
  * - @e codec.        May be any of the text encoding names returned by QTextCodec::names().
  * - @e gender.       May be either "male", "female", or "neutral".
@@ -433,11 +436,11 @@
  * If the talker code is not in XML attribute format, it assumed to be a @e lang 
  * attribute.  So the talker code
  *
- *   en-US
+ *   en
  *
  * is interpreted as
  *
- *   lang="en-US"
+ *   lang="en"
  *
  * When a program requests a talker code in calls to @ref setText, @ref appendText,
  * @ref sayMessage, @ref sayWarning, and @ref sayScreenReaderOutput,
@@ -517,7 +520,7 @@
   synthesizer="Festival Int"      2         #2 with two matches wins over #3 with
   gender="female" volume="soft"             only one match.
                                             
-  lang="sp" synthesizer="Epos"    1         None of the talkers match at all. KTTSD
+  lang="es" synthesizer="Epos"    1         None of the talkers match at all. KTTSD
                                             attempted to configure a Spanish plugin
                                             but none were found.  User preference chosen.
                                             
@@ -541,34 +544,33 @@
  * overrides all other attributes, i.e, it is treated as an automatic "top priority"
  * attribute.
  *
- * Language codes actually consist of two parts, a primary language and a
- * secondary language.  For example, en-GB is Welsh English.  (en by itself is
- * assumed to be American English.)  The primary language code is treated as
- * a priority attribute, but the secondary language (if specified) is treated
+ * Language codes actually consist of two parts, a language code and an optional
+ * country code.  For example, en_GB is English Britain.  The language code is
+ * treated as a priority attribute, but the country code (if specified) is treated
  * as preferred.  So for example, if an application requests the following
  * talker code
  *
- *   lang="en-GB" gender="male" volume="medium"
+ *   lang="en_GB" gender="male" volume="medium"
  *
  * then a talker configured as lang="en" gender="male" volume="medium" would be
- * picked over one configured as lang="en-GB" gender="female" volume="soft",
+ * picked over one configured as lang="en_GB" gender="female" volume="soft",
  * since the former matches on two preferred attributes and the latter only on the
  * preferred attribute GB. An application can override this and make the secondary
  * language attribute priority with an asterisk.  For example,
  *
- *   lang="*en-GB" gender="male" volume="medium"
+ *   lang="*en_GB" gender="male" volume="medium"
  *
  * To specify that American English is priority, put an asterisk in front of
- * en, like this.
+ * en_US, like this.
  *
- *   lang="*en" gender="male" volume="medium"
+ *   lang="*en_US" gender="male" volume="medium"
  *
  * Here the application is indicating that a talker that speaks American English
  * has priorty over one that speaks a different form of English.
  *
  * If a language code is specified, and no plugin is currently configured
- * with a matching primary language code, %KTTSD will attempt to automatically
- * load and configure a plugin to support the requested primary language.  If
+ * with a matching language code, %KTTSD will attempt to automatically
+ * load and configure a plugin to support the requested language.  If
  * there is no such plugin, or there is a plugin but it cannot automatically
  * configure itself, %KTTSD will pick one of the configured plugins using the
  * algorithm given above.
