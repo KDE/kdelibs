@@ -173,7 +173,7 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
   m_stepButton = new QPushButton(i18n("&Step"), this);
   m_continueButton = new QPushButton(i18n("&Continue"), this);
   m_stopButton = new QPushButton(i18n("St&op"), this);
-  m_breakButton = new QPushButton(i18n("&Break at next statement"), this);
+  m_breakButton = new QPushButton(i18n("&Break at next Statement"), this);
   m_breakpointButton = new QPushButton(i18n("&Toggle Breakpoint"), this);
   hl2->addWidget(m_nextButton);
   hl2->addWidget(m_stepButton);
