@@ -1,3 +1,21 @@
+2005-02-18  Germain Garand  <germain@ebooksfrance.org>
+
+        scope: table percentage height, replaced element height calculation.
+
+        * rendering/render_body.cpp (layout): pre-calculate our margins in
+        quirk mode, to be able to compute calcPercentageHeight in a const way.
+
+        * rendering/render_box.{h,cpp}
+        (calcPercentageHeight): make const.  Fix calculation of percentage
+        height within table cells to match other engines. 
+        Do not subtract PB for table elements.
+        (calcReplacedHeightUsing): use calcPercentageHeight for Percent.
+        Looking for available height is an IE quirk and is thusly only done in quirk mode now.
+        When it is not computable, it behaves like 'auto', so use the intrinsicHeight (cf.10.6.2).
+
+        * rendering/render_table.cpp (layoutRows): fix vertical alignment within
+        percentage driven cells. Subtract the cell's PB from cellPercentageHeight.
+
 2005-02-18  Leo Savernik  <l.savernik@aon.at>
 
 	* rendering/render_layer.cpp (updateHoverActiveState): Also mark

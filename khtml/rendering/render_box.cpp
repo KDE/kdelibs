@@ -953,7 +953,7 @@ int RenderBox::calcHeightUsing(const Length& h)
     return m_height;
 }
 
-int RenderBox::calcPercentageHeight(const Length& height)
+int RenderBox::calcPercentageHeight(const Length& height, bool treatAsReplaced) const
 {
     int result = -1;
     RenderBlock* cb = containingBlock();
@@ -961,16 +961,22 @@ int RenderBox::calcPercentageHeight(const Length& height)
     // don't care if the cell specified a height or not.  We just always make ourselves
     // be a percentage of the cell's current content height.
     if (cb->isTableCell()) {
-        result = static_cast<RenderTableCell*>(cb)->cellPercentageHeight();
-        if (result == 0)
-            return -1;
+        // Only use the percentage if the cell has some kind of specified height
+        // WinIE would check every cell in the row. We'll follow Mozilla/Opera here
+        // and only check the containing block chain
+        if (cb->style()->height().isFixed() || cb->style()->height().isPercent() || 
+              cb->calcPercentageHeight(cb->style()->height(), treatAsReplaced) != -1) {
+            result = static_cast<RenderTableCell*>(cb)->cellPercentageHeight();
+            if (result == 0)
+                return -1;
 
-        // It is necessary to use the border-box to match WinIE's broken
-        // box model.  This is essential for sizing inside
-        // table cells using percentage heights.
-        if (style()->boxSizing() != BORDER_BOX) {
-            result -= (borderTop() + paddingTop() + borderBottom() + paddingBottom());
-            result = kMax(0, result);
+            // It is necessary to use the border-box to match WinIE's broken
+            // box model.  This is essential for sizing inside
+            // table cells using percentage heights.
+            if (!isTable() && style()->boxSizing() != BORDER_BOX) {
+                result -= (borderTop() + paddingTop() + borderBottom() + paddingBottom());
+                result = kMax(0, result);
+            }
         }
     }
 
@@ -980,25 +986,24 @@ int RenderBox::calcPercentageHeight(const Length& height)
         result = cb->style()->height().value();
     else if (cb->style()->height().isPercent())
         // We need to recur and compute the percentage height for our containing block.
-        result = cb->calcPercentageHeight(cb->style()->height());
-    else if (cb->isCanvas() || ( cb->isBody() && style()->htmlHacks() && 
-                                 cb->style()->height().isVariable() && !cb->isFloatingOrPositioned())) {
-        // Don't allow this to affect the block' m_height member variable, since this
-        // can get called while the block is still laying out its kids.
-        int oldHeight = cb->height();
-        cb->calcHeight();
-        result = cb->contentHeight();
-        cb->setHeight(oldHeight);
-        if (cb->isBody()) {
-            // In quirk mode, percentages of body apply at least to the canvas's visible height (minus pbm)
-            int margins = cb->collapsedMarginTop() + cb->collapsedMarginBottom();
-            int visHeight = canvas()->view()->visibleHeight();
-            RenderObject* p = cb->parent();
-            result = kMax(result, visHeight - 
-                        (margins + p->marginTop() + p->marginBottom() + 
-                         p->borderTop() + p->borderBottom() +
-                         p->paddingTop() + p->paddingBottom()));
-        }
+        result = cb->calcPercentageHeight(cb->style()->height(), treatAsReplaced);
+    else if (cb->isCanvas()) {
+        result = static_cast<RenderCanvas*>(cb)->viewportHeight();
+        result -= cb->style()->borderTopWidth() - cb->style()->borderBottomWidth();
+        result -= cb->paddingTop() + cb->paddingBottom();
+    } 
+    else if (cb->isBody() && style()->htmlHacks() &&
+                             cb->style()->height().isVariable() && !cb->isFloatingOrPositioned()) {
+        int margins = cb->collapsedMarginTop() + cb->collapsedMarginBottom();
+        int visHeight = canvas()->viewportHeight();
+        RenderObject* p = cb->parent();
+        result = visHeight - (margins + p->marginTop() + p->marginBottom() + 
+                              p->borderTop() + p->borderBottom() +
+                              p->paddingTop() + p->paddingBottom());
+    }
+    else if (treatAsReplaced && style()->htmlHacks()) {
+        // IE quirk.
+        result = cb->calcPercentageHeight(cb->style()->height(), treatAsReplaced);
     }
     if (result != -1) {
         result = height.width(result);
@@ -1073,10 +1078,15 @@ int RenderBox::calcReplacedHeightUsing(HeightType heightType) const
     else
         h = style()->maxHeight();
     switch( h.type() ) {
-    case Percent:
-        return availableHeightUsing(h);
     case Fixed:
         return h.value();
+    case Percent: 
+      {
+        int th = calcPercentageHeight(h, true);
+        if (th != -1)
+            return th;
+        // fall through
+      }
     default:
         return intrinsicHeight();
     };

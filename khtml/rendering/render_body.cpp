@@ -90,6 +90,10 @@ void RenderBody::repaint(bool immediate)
 
 void RenderBody::layout()
 {
+    // in quirk mode, we'll need to have our margins determined
+    // for percentage height calculations
+    if (style()->htmlHacks())
+        calcHeight();
     RenderBlock::layout();
 
     if (!scrollbarsStyled)

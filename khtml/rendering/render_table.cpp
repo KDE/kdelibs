@@ -1366,15 +1366,13 @@ int RenderTableSection::layoutRows( int toAdd )
                 o = o->nextSibling();
             }
             if (cellChildrenFlex) {
-                cell->setCellPercentageHeight(rHeight);
+                cell->setCellPercentageHeight(kMax(0,
+                                                   rHeight - cell->borderTop() - cell->paddingTop() -
+                                                   cell->borderBottom() - cell->paddingBottom()));
                 cell->layoutIfNeeded();
 
-                // Alignment within a cell is based off the calculated
-                // height, which becomes irrelevant once the cell has
-                // been resized based off its percentage. -dwh
-                cell->setCellTopExtra(0);
-                cell->setCellBottomExtra(0);
-            } else {
+            } 
+            {
 #ifdef DEBUG_LAYOUT
 		kdDebug( 6040 ) << "setting position " << r << "/" << c << ": "
 				<< table()->columnPos[c] /*+ padding */ << "/" << rowPos[rindx] << " height=" << rHeight<< endl;
