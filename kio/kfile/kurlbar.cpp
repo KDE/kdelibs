@@ -240,7 +240,7 @@ KURLBar::KURLBar( bool useGlobalItems, QWidget *parent, const char *name, WFlags
                                 isVertical() ?
                                 QSizePolicy::Preferred :
                                 QSizePolicy::Maximum ));
-    QWhatsThis::add(this, i18n("<qt>The <b>Quick Access</b> bar provides easy access to commonly used file locations.<p>"
+    QWhatsThis::add(this, i18n("<qt>The <b>Quick Access</b> panel provides easy access to commonly used file locations.<p>"
                                "Clicking on one of the shortcut entries will take you to that location.<p>"
                                "By right clicking on an entry you can add, edit and remove shortcuts.</qt>"));
 }
@@ -755,7 +755,7 @@ KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KURL& url,
     QGrid *grid = new QGrid( 2, box );
     grid->setSpacing( spacingHint() );
     
-    QString whatsThisText = i18n("<qt>This is the text that will appear in the Quick Access bar.<p>"
+    QString whatsThisText = i18n("<qt>This is the text that will appear in the Quick Access panel.<p>"
                                  "The description should consist of one or two words "
                                  "that will help you remember what this entry refers to.</qt>");
     label = new QLabel( i18n("&Description:"), grid );
@@ -766,8 +766,8 @@ KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KURL& url,
     QWhatsThis::add( m_edit, whatsThisText );
     
     whatsThisText = i18n("<qt>This is the location associated with the entry. Any valid URL may be used. For example:<p>"
-                         "%1<br>http://kde.org<br>ftp://ftp.kde.org/pub/kde/stable<p>"
-                         "By clicking on the button next to the text edit box you can browse for an "
+                         "%1<br>http://www.kde.org<br>ftp://ftp.kde.org/pub/kde/stable<p>"
+                         "By clicking on the button next to the text edit box you can browse to an "
                          "appropriate URL.</qt>").arg(QDir::homeDirPath());
     label = new QLabel( i18n("&URL:"), grid );
     m_urlEdit = new KURLRequester( url.prettyURL(), grid );
@@ -776,7 +776,7 @@ KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KURL& url,
     QWhatsThis::add( label, whatsThisText );
     QWhatsThis::add( m_urlEdit, whatsThisText );
     
-    whatsThisText = i18n("<qt>This is the icon that will apear in the Quick Access bar.<p>"
+    whatsThisText = i18n("<qt>This is the icon that will apear in the Quick Access panel.<p>"
                          "Click on the button to select a different icon.</qt>");
     label = new QLabel( i18n("Choose an &icon:"), grid );
     m_iconButton = new KIconButton( grid, "icon button" );
@@ -800,7 +800,7 @@ KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KURL& url,
         QWhatsThis::add( m_appLocal,
                          i18n("<qt>Select this setting if you want this "
                               "entry to show only when using the current application (%1).<p>"
-                              "If this setting is not selected the entry will be available in all "
+                              "If this setting is not selected, the entry will be available in all "
                               "applications.</qt>")
                               .arg(appName));
     }

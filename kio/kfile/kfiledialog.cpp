@@ -698,15 +698,15 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     toolbar->setFlat(true);
     qInstallMsgHandler( oldHandler );
 
-    QString autocompletionWhatsThisText = i18n("<p>While typing in the text area you may be presented "
+    QString autocompletionWhatsThisText = i18n("<p>While typing in the text area, you may be presented "
                                                "with possible matches. "
                                                "This feature can be controlled by clicking with the right mouse button "
-                                               "and selecting a prefered mode from the <b>Text Completion</b> menu.") + "</qt>";
+                                               "and selecting a preferred mode from the <b>Text Completion</b> menu.") + "</qt>";
     d->pathCombo = new KURLComboBox( KURLComboBox::Directories, true,
                                      toolbar, "path combo" );
     QToolTip::add( d->pathCombo, i18n("Often used directories") );
     QWhatsThis::add( d->pathCombo, i18n("<qt>Commonly used locations are listed here. "
-                                        "This includes standard locations such as your home directory as well as "
+                                        "This includes standard locations, such as your home directory, as well as "
                                         "locations that have been visited recently.") + autocompletionWhatsThisText);
     
     KURL u;
@@ -793,7 +793,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     // plug nav items into the toolbar
     coll->action( "up" )->plug( toolbar );
     coll->action( "up" )->setWhatsThis(i18n("<qt>Click this button to enter the parent directory.<p>"
-                                            "For instance if the current location is file:/home/%1 clicking this "
+                                            "For instance, if the current location is file:/home/%1 clicking this "
                                             " button will take you to file:/home.</qt>").arg(getlogin()));
     coll->action( "back" )->plug( toolbar );
     coll->action( "back" )->setWhatsThis(i18n("Click this button to move backwards one step in the browsing history."));
@@ -815,25 +815,25 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
                     i18n("<qt>This button allows you to bookmark specific locations. "
                          "Click on this button to open the bookmark menu where you may add, "
                          "edit or select a bookmark.<p>"
-                         "These bookmarks are specific to the file dialog but otherwise operate "
+                         "These bookmarks are specific to the file dialog, but otherwise operate "
                          "like bookmarks elsewhere in KDE.</qt>"));
     connect( d->bookmarkHandler, SIGNAL( openURL( const QString& )),
              SLOT( enterURL( const QString& )));
     
     KToggleAction *showSidebarAction =
-        new KToggleAction(i18n("Show Quick Access Sidebar"), Key_F9, coll,"toggleSpeedbar");
+        new KToggleAction(i18n("Show Quick Access Navigation Panel"), Key_F9, coll,"toggleSpeedbar");
     connect( showSidebarAction, SIGNAL( toggled( bool ) ),
              SLOT( toggleSpeedbar( bool )) );
 
     KActionMenu *menu = new KActionMenu( i18n("Configure"), "configure", this, "extra menu" );
     menu->setWhatsThis(i18n("<qt>This is the configuration menu for the file dialog. "
-                            "Various option can be accessed from this menu including: <ul>" 
+                            "Various options can be accessed from this menu including: <ul>" 
                             "<li>how files are sorted in the list</li>"
-                            "<li>types of views, including icon and list</li>"
+                            "<li>types of view, including icon and list</li>"
                             "<li>showing of hidden files</li>"
-                            "<li>the Quick Access sidebar</li>"
+                            "<li>the Quick Access navigation panel</li>"
                             "<li>file previews</li>"
-                            "<li>seperating directories from files</li></ul></qt>"));
+                            "<li>separating directories from files</li></ul></qt>"));
     menu->insert( coll->action( "sorting menu" ));
     menu->insert( coll->action( "separator" ));
     coll->action( "short view" )->setShortcut(Key_F6);
@@ -894,7 +894,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     {
         whatsThisText = i18n("<qt>This is the list of files to open. More than "
                              "one file can be specified by listing several "
-                             "files seperated by spaces.") +
+                             "files, separated by spaces.") +
                         autocompletionWhatsThisText;    
     }
     else
@@ -930,9 +930,9 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
 
     // the Filter label/edit
     whatsThisText = i18n("<qt>This is the filter to apply to the file list. "
-                         "File names that do not match the filter will not be shown<p>"
+                         "File names that do not match the filter will not be shown.<p>"
                          "You may select from one of the preset filters in the "
-                         "drop down menu or you may enter a custom filter "
+                         "drop down menu, or you may enter a custom filter "
                          "directly into the text area.<p>"
                          "Wildcards such as * and ? are allowed.</qt>");
     d->filterLabel = new QLabel(i18n("&Filter:"), d->mainWidget);
