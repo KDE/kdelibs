@@ -43,6 +43,7 @@
 * @li icon - icons
 * @li locale - translation files for KLocale
 * @li mime - mime types
+* @li services - services
 * @li toolbar - toolbar pictures
 * @li wallpaper - wallpapers
 * @li sound - application sounds
