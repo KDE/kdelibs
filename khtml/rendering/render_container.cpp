@@ -99,7 +99,7 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
                 needsTable = true;
             break;
         case NONE:
-            kdDebug( 6000 ) << "error in RenderObject::addChild()!!!!" << endl;
+            KHTMLAssert(false);
             break;
         }
     }
@@ -280,7 +280,8 @@ void RenderContainer::removeLeftoverAnonymousBoxes()
     while( child ) {
 	RenderObject *next = child->nextSibling();
 
-	if ( child->isFlow() && child->isAnonymousBox() && !child->childrenInline() ) {
+	if ( child->isFlow() && child->isAnonymousBox() &&
+             !child->childrenInline() && !child->isTableCell() ) {
 	    RenderObject *firstAnChild = child->firstChild();
 	    RenderObject *lastAnChild = child->lastChild();
 	    if ( firstAnChild ) {
