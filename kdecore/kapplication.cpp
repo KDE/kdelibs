@@ -1589,11 +1589,11 @@ QString KApplication::makeStdCaption( const QString &userCaption,
   return s;
 }
 
-void KApplication::kdisplaySetPalette()
+
+QPalette KApplication::createApplicationPalette()
 {
     int contrast_ = KGlobalSettings::contrast();
 
-    // the following is temporary and will soon dissappear (Matthias, 3.August 1999 )
     KConfigBase* config = KGlobal::config();
     KConfigGroupSaver saver( config, "General" );
 
@@ -1614,17 +1614,6 @@ void KApplication::kdisplaySetPalette()
     QColor baseText = config->readColorEntry( "windowForeground", &black );
     QColor link = config->readColorEntry( "linkColor", &blue );
     QColor visitedLink = config->readColorEntry( "visitedLinkColor", &magenta );
-
-
-    /*
-     * WARNING WARNING WARNING
-     *
-     * For reasons I do not understand the code below is duplicated in
-     * kdebase/kcontrol/krdb/krdb.cpp
-     *
-     * If you change it here, change it there as well
-     */
-
 
     int highlightVal, lowlightVal;
     highlightVal = 100 + (2*contrast_+4)*16/10;
@@ -1687,26 +1676,17 @@ void KApplication::kdisplaySetPalette()
     disabledgrp.setColor(QColorGroup::Link, link);
     disabledgrp.setColor(QColorGroup::LinkVisited, visitedLink);
 
-    QPalette newPal(colgrp, disabledgrp, colgrp);
-/*
-    if(QPixmap::defaultDepth() > 8){
-        QColorGroup iGrp(colgrp);
-        iGrp.setColor(QColorGroup::Button, colgrp.button().light(115));
-        iGrp.setColor(QColorGroup::ButtonText, colgrp.buttonText().light(115));
-        iGrp.setColor(QColorGroup::Text, colgrp.text().light(115));
-        iGrp.setColor(QColorGroup::Dark, colgrp.dark().light(115));
-        iGrp.setColor(QColorGroup::Mid, colgrp.mid().light(115));
-        iGrp.setColor(QColorGroup::Midlight, colgrp.midlight().light(115));
-        iGrp.setColor(QColorGroup::Light, colgrp.light().light(115));
-        newPal.setInactive(iGrp);
-    }
-*/
-    QApplication::setPalette(newPal, true);
+    return QPalette(colgrp, disabledgrp, colgrp);
+}
 
-    //style().polish(newPal);
+
+void KApplication::kdisplaySetPalette()
+{
+    QApplication::setPalette( createApplicationPalette(), true);
     emit kdisplayPaletteChanged();
     emit appearanceChanged();
 }
+
 
 void KApplication::kdisplaySetFont()
 {

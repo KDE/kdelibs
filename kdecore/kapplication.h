@@ -945,6 +945,14 @@ public:
   enum SettingsCategory { SETTINGS_MOUSE, SETTINGS_COMPLETION, SETTINGS_PATHS,
          SETTINGS_POPUPMENU, SETTINGS_QT, SETTINGS_SHORTCUTS };
 
+  /**
+   * Used to obtain the QPalette that will be used to set the application palette.
+   * 
+   * This is only useful for configuration modules such as krdb and should not be
+   * used in normal circumstances.
+   */
+  static QPalette createApplicationPalette();
+	  
 signals:
   /**
    * Emitted when KApplication has changed its palette due to a KControl request.
