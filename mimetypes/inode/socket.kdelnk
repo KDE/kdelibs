@@ -8,6 +8,7 @@ Comment[pl]=Gniazdko
 Comment[fi]=Pistoke
 Comment[fr]=Socket (canal de communication)
 Comment[pt]=Socket
+Comment[pt_BR]=Socket
 Comment[it]=Socket
 Comment[sk]=Socket (kanál pre komunikáciu)
 Icon=socket.xpm
