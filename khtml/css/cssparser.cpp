@@ -1463,13 +1463,10 @@ static QRgb parseColor(const QString &name, bool strictParsing)
 	}
     }
 
-    if ( !strictParsing ) {
-	// try a little harder
-	QColor tc;
-	tc.setNamedColor(name.lower());
-	if (tc.isValid()) return tc.rgb();
-
-    }
+    // try a little harder
+    QColor tc;
+    tc.setNamedColor(name.lower());
+    if (tc.isValid()) return tc.rgb();
 
     return khtml::invalidColor;
 }
@@ -1479,10 +1476,10 @@ CSSPrimitiveValueImpl *CSSParser::parseColor()
 {
     QRgb c = khtml::invalidColor;
     Value *value = valueList->current();
-    if ( value->unit == CSSPrimitiveValue::CSS_RGBCOLOR ) {
-	QString color = qString( value->string );
-	c = ::parseColor( color, !nonCSSHint);
-    } else if ( value->unit == Value::Function &&
+    if ( value->unit == CSSPrimitiveValue::CSS_RGBCOLOR ||
+         value->unit == CSSPrimitiveValue::CSS_IDENT )
+	c = ::parseColor( qString( value->string ), !nonCSSHint);
+    else if ( value->unit == Value::Function &&
 		value->function->args->numValues == 5 /* rgb + two commas */ &&
 		qString( value->function->name ).lower() == "rgb(" ) {
 	ValueList *args = value->function->args;
