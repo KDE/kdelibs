@@ -56,7 +56,7 @@ public:
     return *this;
   }
 
-  QString toString();
+  QString toString() const;
 
   void clear();
 

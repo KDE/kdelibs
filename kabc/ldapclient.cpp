@@ -34,12 +34,12 @@
 
 using namespace KABC;
 
-QString LdapObject::toString()
+QString LdapObject::toString() const
 {
   QString result = QString::fromLatin1("\ndn: %1\n").arg( dn );
-  for( LdapAttrMap::Iterator it = attrs.begin(); it != attrs.end(); ++it ) {
+  for( LdapAttrMap::ConstIterator it = attrs.begin(); it != attrs.end(); ++it ) {
     QString attr = it.key();
-    for( LdapAttrValue::Iterator it2 = (*it).begin(); it2 != (*it).end(); ++it2 ) {      
+    for( LdapAttrValue::ConstIterator it2 = (*it).begin(); it2 != (*it).end(); ++it2 ) {      
       if( attr == "jpegPhoto" ) {
 	QByteArray buf = *it2;
 #if 0
