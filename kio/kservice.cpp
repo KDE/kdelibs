@@ -238,7 +238,7 @@ void KService::save( QDataStream& s )
   Q_INT8 def = m_bAllowAsDefault, initpref = m_initialPreference;
   Q_INT8 term = m_bTerminal;
   Q_INT8 dst = (Q_INT8) m_DCOPServiceType;
-  Q_INT8 dummy1, dummy2; // see ::load
+  Q_INT8 dummy1 = 0, dummy2 = 0; // see ::load
   QString dummyStr1, dummyStr2;
 
   // !! This data structure should remain binary compatible at all times !!
