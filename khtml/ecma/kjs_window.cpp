@@ -649,11 +649,13 @@ Completion WindowFunc::tryExecute(const List &args)
         special case for one-off windows that need to open other windows and
         then dispose of themselves.
         */
-    if (window->opener.isNull())
+    if (window->opener.isNull()) // ## if the opener window gets deleted, this will incorrectly be null by the GC !
     {
-        // To conform to the SPEC, we should only ask if the window
-        // has more than one entry in the history (NS does that too). Bah.
-        if ( KMessageBox::questionYesNo( window->part->widget(), i18n("Close window ?"), i18n("Confirmation required") ) == KMessageBox::Yes )
+        // To conform to the SPEC, we only ask if the window
+        // has more than one entry in the history (NS does that too).
+        History history(part);
+        if ( history.get( "length" ).toInt32() <= 1 ||
+             KMessageBox::questionYesNo( window->part->widget(), i18n("Close window ?"), i18n("Confirmation required") ) == KMessageBox::Yes )
             (const_cast<Window*>(window))->scheduleClose();
     }
     else
