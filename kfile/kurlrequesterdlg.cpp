@@ -41,8 +41,8 @@
 
 KURLRequesterDlg::KURLRequesterDlg( const QString& urlName, QWidget *parent,
         const char *name, bool modal )
-    :   KDialogBase( Plain, QString::null, Ok|Cancel, Ok, parent, name,
-                modal, true )
+    :   KDialogBase( Plain, QString::null, Ok|Cancel|User1, Ok, parent, name,
+                modal, true, i18n("Clear") )
 {
     QVBoxLayout * topLayout = new QVBoxLayout( plainPage(), 0,
             spacingHint() );
@@ -61,6 +61,7 @@ KURLRequesterDlg::KURLRequesterDlg( const QString& urlName, QWidget *parent,
             KFile::ExistingOnly );
 	urlRequester_->fileDialog()->setMode( mode );
     */
+    connect( this, SIGNAL( user1Clicked() ), SLOT( slotClear() ) );
 }
 
 
@@ -68,13 +69,17 @@ KURLRequesterDlg::~KURLRequesterDlg()
 {
 }
 
+void KURLRequesterDlg::slotClear()
+{
+    urlRequester_->lineEdit()->clear();
+}
 
 KURL KURLRequesterDlg::selectedURL() const
 {
     if ( result() == QDialog::Accepted )
-	return urlRequester_->url();
+        return urlRequester_->url();
     else
-	return KURL();
+        return KURL();
 }
 
 

@@ -71,6 +71,9 @@ public:
     static KURL getURL(const QString& url = QString::null,
             QWidget *parent= 0, const QString& caption = QString::null);
 
+protected slots:
+    void slotClear();
+
 protected:
 
     KURLCompletion *    urlCompletion_;
