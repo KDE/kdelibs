@@ -1,7 +1,7 @@
 /*
    This file is part of the KDE libraries
 
-   Copyright (c) 2001 George Staikos <staikos@kde.org>
+   Copyright (c) 2001-2003 George Staikos <staikos@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -234,6 +234,8 @@ KSSLCNode *node;
 	n->cert = cert.replicate();
 	n->policy = policy;
 	n->permanent = permanent;
+	// remove the old one
+	cacheRemoveByCN(KSSLX509Map(n->cert->getSubject()).getValue("CN"));
 	certList.prepend(n); 
 
 	if (!permanent) {

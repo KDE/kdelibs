@@ -1014,30 +1014,30 @@ int TCPSlaveBase::verifyCertificate()
              setMetaData("ssl_action", "accept");
              rc = 1;
              cp = KSSLCertificateCache::Accept;
+             result = messageBox(WarningYesNo,
+                                 i18n("Would you like to accept this "
+                                      "certificate forever without "
+                                      "being prompted?"),
+                                 i18n("Server Authentication"),
+                                 i18n("&Forever"),
+                                 i18n("&Current Sessions Only"));
+             permacache = (result == KMessageBox::Yes);
+             d->cc->addCertificate(pc, cp, permacache);
              d->cc->addHost(pc, ourHost);
-                result = messageBox( WarningYesNo,
-                               i18n("Would you like to accept this "
-                                    "certificate forever without "
-                                    "being prompted?"),
-                               i18n("Server Authentication"),
-                               i18n("&Forever"),
-                               i18n("&Current Sessions Only"));
-                if (result == KMessageBox::Yes)
-                   permacache = true;
-                else
-                   permacache = false;
           } else {
              setMetaData("ssl_action", "reject");
              rc = -1;
              cp = KSSLCertificateCache::Prompt;
+             d->cc->addCertificate(pc, cp, permacache);
           }
-          d->cc->addCertificate(pc, cp, permacache);
         }
       }
     }
 
 
-   if (rc == -1) return rc;
+   if (rc == -1) {
+      return rc;
+   }
 
    if (metaData("ssl_activate_warnings") == "TRUE") {
    //  - entering SSL
