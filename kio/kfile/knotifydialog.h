@@ -41,7 +41,14 @@ namespace KNotify
  * Rather than requiring the user to wade through the entire list of
  * applications' events in KControl, your application can make the list
  * of its own notifications available here.
+ *
+ * Typical usage is calling the static @ref configure() method:
+ * <pre>
+ * (void) KNotifyDialog::configure( someParentWidget );
+ * </pre>
+ *
  * @since 3.1
+ * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
 class KNotifyDialog : public KDialogBase
 {
@@ -49,25 +56,64 @@ class KNotifyDialog : public KDialogBase
 
 public:
     /**
-     * Set aboutData to 0L, if you want to add all events yourself with
-     * @ref addApplicationEvents().
+     * If you want a non-modal dialog, you need to instantiate KNotifyDialog
+     * yourself instead of using the @ref configure() method.
+     *
+     * @param parent The parent widget for the dialog
+     * @param name The widget name
+     * @param modal If true, this will be a modal dialog, otherwise non-modal.
+     * @param aboutData A pointer to a KAboutData object. @ref KAboutData::appName()
+     *                  will be used to find the KNotify events (in the eventsrc file).
+     *                  Set this to 0L if you want to add all events yourself with
+     *                  @ref addApplicationEvents().
      */
     KNotifyDialog( QWidget *parent = 0, const char *name = 0,
                    bool modal = true,
                    const KAboutData *aboutData =
                    KGlobal::instance()->aboutData() );
+    /**
+     * Destroys the KNotifyDialog
+     */
     virtual ~KNotifyDialog();
 
     /**
-     * Execute a KNotifyDialog.
+     * Convenience method to create @ref exec() a modal KNotifyDialog.
      *
+     * @param parent The parent widget for the dialog
+     * @param name The widget name
+     * @param aboutData A pointer to a KAboutData object. @ref KAboutData::appName()
+     *                  will be used to find the KNotify events (in the eventsrc file).
      * @see exec for the return values.
      */
     static int configure( QWidget *parent = 0, const char *name = 0,
                           const KAboutData *aboutData = KGlobal::instance()->aboutData() );
 
-    virtual void addApplicationEvents( const char *appName, bool show = true );
-    virtual void addApplicationEvents( const QString& path, bool show = true );
+    /**
+     * With this method, you can add the KNotify events of one eventsrc 
+     * files to the view.
+     * KNotifyDialog can handle events for multiple applications (i.e. eventsrc files).
+     * Successive calls with a different @p appName will add them.
+     * @param appName The application's name, i.e. the name passed to the @ref 
+     *                KApplication constructor or @ref KAboutData.
+     * @see clearApplicationEvents()
+     */
+    virtual void addApplicationEvents( const char *appName );
+
+    /**
+     * With this method, you can add the KNotify events of one eventsrc 
+     * files to the view.
+     * KNotifyDialog can handle events for multiple applications (i.e. eventsrc files).
+     * Successive calls with a different @p path will add them.
+     * @param path The absolute or relative path to the eventsrc file to be configured.
+     *             A relative path would be e.g. "kwin/eventsrc". 
+     * @see clearApplicationEvents()
+     */
+    virtual void addApplicationEvents( const QString& path );
+
+    /**
+     * Removes all the events added with @ref addApplicationEvents()
+     * @see addApplicationEvents()
+     */
     virtual void clearApplicationEvents();
 
 private slots:
@@ -173,7 +219,7 @@ namespace KNotify
         /**
          * Clears only the view and the visible Application events.
          * E.g. useful if you want to set new visible events with
-         * @ref #addVisibleApp()
+         * @ref addVisibleApp()
          */
         virtual void clearVisible();
         virtual void save();

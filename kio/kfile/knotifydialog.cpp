@@ -124,16 +124,16 @@ KNotifyDialog::~KNotifyDialog()
 {
 }
 
-void KNotifyDialog::addApplicationEvents( const char *appName, bool show )
+void KNotifyDialog::addApplicationEvents( const char *appName )
 {
     addApplicationEvents( QString::fromUtf8( appName ) +
-                          QString::fromLatin1( "/eventsrc" ), show );
+                          QString::fromLatin1( "/eventsrc" ) );
 }
 
-void KNotifyDialog::addApplicationEvents( const QString& path, bool show )
+void KNotifyDialog::addApplicationEvents( const QString& path )
 {
     Application *app = m_notifyWidget->addApplicationEvents( path );
-    if ( app && show )
+    if ( app )
     {
         m_notifyWidget->addVisibleApp( app );
         m_notifyWidget->sort();
