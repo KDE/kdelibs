@@ -111,9 +111,15 @@
 <!ENTITY ark    "<application>Ark</application>">
 <!ENTITY arts	"<application>aRts</application>">
 <!ENTITY artsbuilder "<application>aRts-builder</application>">
+<!ENTITY artscontrol "<application>artscontrol</application>">
 <!ENTITY artsd	"<application>artsd</application>">
+<!ENTITY artsdsp "<application>artsdsp</application>">
+<!ENTITY artsserver "<application>artsserver</application>">
+<!ENTITY artsshell "<application>artsshell</application>">
+<!ENTITY artswrapper "<application>artswrapper</application>">
 <!ENTITY ATAPI	"<acronym>ATAPI</acronym>">
 <!ENTITY Backspace	"<keycap>Backspace</keycap>">
+<!ENTITY brahms "<application>Brahms</application>">
 <!ENTITY CD	"<acronym>CD</acronym>">
 <!ENTITY CDE	"<acronym>CDE</acronym>">
 <!ENTITY CD-ROM	"<acronym>CD-ROM</acronym>">
