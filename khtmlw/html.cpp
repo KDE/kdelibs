@@ -1422,7 +1422,7 @@ void KHTMLWidget::timerEvent( QTimerEvent * )
 	    s->setGeometry( 0, 0, width(), height() );
     }
     else
-	startTimer( TIMER_INTERVAL );
+	timerId = startTimer( TIMER_INTERVAL );
 }
 
 void KHTMLWidget::calcSize()
