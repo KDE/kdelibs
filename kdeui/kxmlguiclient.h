@@ -63,14 +63,14 @@ public:
    * This method is provided for convenience, as it uses @ref actionCollection
    * to get the action object.
    */
-  KAction* action( const char* name );
+  KAction* action( const char* name ) const;
 
   /**
    * Retrieve an action for a given @ref QDomElement. The default
    * implementation uses the "name" attribute to query the action
    * object via the other @ref action method.
    */
-  virtual KAction *action( const QDomElement &element );
+  virtual KAction *action( const QDomElement &element ) const;
 
   /**
    * Retrieve the entire action collection for the GUI client

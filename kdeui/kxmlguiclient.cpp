@@ -76,18 +76,19 @@ KXMLGUIClient::~KXMLGUIClient()
 {
   if ( d->m_parent )
     d->m_parent->removeChildClient( this );
-  /*
+
   QListIterator<KXMLGUIClient> childIt( d->m_children );
   for (; childIt.current(); ++childIt )
     childIt.current()->d->m_parent = 0L;
 
+  /*
   d->m_children.setAutoDelete( true );
   d->m_children.clear();
   */
   delete d;
 }
 
-KAction *KXMLGUIClient::action( const char *name )
+KAction *KXMLGUIClient::action( const char *name ) const
 {
   return actionCollection()->action( name );
 }
@@ -97,7 +98,7 @@ KActionCollection *KXMLGUIClient::actionCollection() const
   return &d->m_actionCollection;
 }
 
-KAction *KXMLGUIClient::action( const QDomElement &element )
+KAction *KXMLGUIClient::action( const QDomElement &element ) const
 {
   static QString attrName = QString::fromLatin1( "name" );
   return action( element.attribute( attrName ).latin1() );
@@ -163,11 +164,11 @@ void KXMLGUIClient::setDocument( const QDomDocument &document, bool merge )
 
     // merge our original (global) xml with our new one
     mergeXML(base, document.documentElement(), actionCollection());
-    
+
     // reassign our pointer as mergeXML might have done something
     // strange to it
     base = d->m_doc.documentElement();
-    
+
     dump_xml(base.toElement());
 
     // we want some sort of failsafe.. just in case
