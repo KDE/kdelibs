@@ -334,7 +334,19 @@ int AudioSubSystem::open()
 		return -1;
 	}
 
-	// FIXME: check here if frag_arg changed
+	/*
+	 * now see what we really got as cards aren't required to supply what
+	 * we asked for
+	 */
+	audio_buf_info info;
+	if(ioctl(audio_fd,SNDCTL_DSP_GETOSPACE, &info) == -1)
+	{
+		_error = "can't retrieve fragment settings";
+		close();
+		return -1;
+	}
+	fragmentSize(info.fragsize);
+	fragmentCount(info.fragstotal);
 
 	/*
 	 * Workaround for broken kernel drivers: usually filling up the audio
