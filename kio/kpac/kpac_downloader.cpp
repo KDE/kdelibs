@@ -18,6 +18,8 @@
 
 // $Id$
 
+#include <qfile.h>
+
 #include <kapp.h>
 #include <kio/job.h>
 
@@ -32,6 +34,14 @@ KPACDownloader::KPACDownloader()
 bool KPACDownloader::download(const KURL &url)
 {
     m_data = 0;
+    if (url.isLocalFile())
+    {
+        QFile f(url.path());
+        if (!f.open(IO_ReadOnly))
+            return false;
+        m_data = f.readAll();
+        return true;
+    }
     m_working = true;
     KIO::TransferJob *job = KIO::get(url, false /* no reload */, false /* no GUI */);
     connect(job, SIGNAL(data(KIO::Job *, const QByteArray &)), SLOT(slotData(KIO::Job *, const QByteArray &)));
