@@ -52,3 +52,5 @@ void KAudioPlayer::play()
 	KNotifyClient::userEvent("KAudioPlayer event",
 							KNotifyClient::Sound,d->filename);
 }
+
+#include "kaudioplayer.moc"
