@@ -223,7 +223,7 @@ void FileProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename
     kdebug( KDEBUG_INFO, 0, "Parsed URL" );
     // Did an error occur ?
     int s;
-    if ( ( s = listRecursive( usrc.path(), files, dirs, _rename, false ) ) == -1 ) {
+    if ( ( s = listRecursive( usrc.path(), files, dirs, _rename ) ) == -1 ) {
       // Error message is already sent
       m_cmd = CMD_NONE;
       return;
@@ -985,7 +985,7 @@ void FileProtocol::slotDel( QStringList& _source )
     kdebug( KDEBUG_INFO, 0, "Checking %s", (*source_it).ascii() );
     KURL victim( (*source_it) );
     int s;
-    if ( ( s = listRecursive( victim.path(), fs, ds, false, false ) ) == -1 ) {
+    if ( ( s = listRecursive( victim.path(), fs, ds, false ) ) == -1 ) {
       // Error message is already sent
       m_cmd = CMD_NONE;
       return;
@@ -1099,7 +1099,7 @@ void FileProtocol::slotListDir( const char *_url )
   KUDSAtom atom;
   while ( ( ep = readdir( dp ) ) != 0L ) {
 
-    //kdebug( KDEBUG_INFO, 0, "Listing %s", ep->d_name );
+    kdebug( KDEBUG_INFO, 0, "Listing %s", ep->d_name );
 
     entry.clear();
 
@@ -1334,7 +1334,7 @@ void FileProtocol::slotDataEnd()
 }
 
 long FileProtocol::listRecursive( const char *_path, QValueList<Copy>&
-				_files, QValueList<CopyDir>& _dirs, bool _rename, bool _dotdirs )
+				_files, QValueList<CopyDir>& _dirs, bool _rename )
 {
   struct stat buff;
 
@@ -1360,7 +1360,7 @@ long FileProtocol::listRecursive( const char *_path, QValueList<Copy>&
     c.m_mode = buff.st_mode;
     _dirs.append( c );
 
-    return listRecursive2( "/", c.m_strRelDest, _files, _dirs, _dotdirs );
+    return listRecursive2( "/", c.m_strRelDest, _files, _dirs );
   }
 
   QString p( _path );
@@ -1419,11 +1419,11 @@ long FileProtocol::listRecursive( const char *_path, QValueList<Copy>&
   _dirs.append( c );
   kdebug( KDEBUG_INFO, 0, "########### STARTING RECURSION with %s and %s",tmp1.ascii(), tmp2.ascii() );
 
-  return listRecursive2( tmp1, tmp2, _files, _dirs, _dotdirs );
+  return listRecursive2( tmp1, tmp2, _files, _dirs );
 }
 
 long FileProtocol::listRecursive2( const char *_abs_path, const char *_rel_path,
-				   QValueList<Copy>& _files, QValueList<CopyDir>& _dirs, bool _dotdirs )
+				   QValueList<Copy>& _files, QValueList<CopyDir>& _dirs )
 {
   long size = 0;
 
@@ -1444,10 +1444,8 @@ long FileProtocol::listRecursive2( const char *_abs_path, const char *_rel_path,
 
   while ( ( ep = readdir( dp ) ) != 0L )
   {
-    if ( ( strcmp( ep->d_name, "." ) == 0 || strcmp( ep->d_name, ".." ) == 0 )
-         && !_dotdirs )
+    if ( strcmp( ep->d_name, "." ) == 0 || strcmp( ep->d_name, ".." ) == 0 )
       continue;
-    // . and .. are returned if _dotdirs is true
 
     QString p2 = p;
     p2 += "/";
@@ -1468,7 +1466,6 @@ long FileProtocol::listRecursive2( const char *_abs_path, const char *_rel_path,
 
     if ( !S_ISDIR( buff.st_mode ) )
     {
-      // A file : append to _files
       Copy c;
       c.m_strAbsSource = p2;
       c.m_strRelDest = tmp;
@@ -1477,20 +1474,14 @@ long FileProtocol::listRecursive2( const char *_abs_path, const char *_rel_path,
       _files.append( c );
       size += buff.st_size;
     } else {
-      // A dir
-      // . or .. ?
-      bool dotdir = ( strcmp( ep->d_name, "." ) == 0 || strcmp( ep->d_name, ".." ) == 0 );
-      if ( !dotdir )
-      {
-        // Did we scan this directory already ?
-        // This may happen because a link goes backward in the directory tree
-        QValueList<CopyDir>::Iterator it = _dirs.begin();
-        for( ; it != _dirs.end(); it++ )
-          if ( (*it).m_ino == buff.st_ino ) {
-            error( ERR_CYCLIC_LINK, p2 );
-            return -1;
-          }
-      }
+      // Did we scan this directory already ?
+      // This may happen because a link goes backward in the directory tree
+      QValueList<CopyDir>::Iterator it = _dirs.begin();
+      for( ; it != _dirs.end(); it++ )
+	if ( (*it).m_ino == buff.st_ino ) {
+	  error( ERR_CYCLIC_LINK, p2 );
+	  return -1;
+	}
 
       CopyDir c;
       c.m_strAbsSource = p2;
@@ -1499,14 +1490,10 @@ long FileProtocol::listRecursive2( const char *_abs_path, const char *_rel_path,
       c.m_ino = buff.st_ino;
       _dirs.append( c );
 
-      // List the dir recursively (if not . or ..)
-      if ( !dotdir )
-      {
-        long s;
-        if ( ( s = listRecursive2( _abs_path, tmp, _files, _dirs, _dotdirs ) ) == -1 )
-          return -1;
-        size += s;
-      }
+      long s;
+      if ( ( s = listRecursive2( _abs_path, tmp, _files, _dirs ) ) == -1 )
+	return -1;
+      size += s;
     }
   }
 

@@ -77,20 +77,15 @@ protected:
   void doCopy( QStringList& _source, const char *_dest, bool _rename, bool _move = false );
 
   /**
-   * Entry point for listing recursively
-   * _path
-   * _files (OUT) list of dirs
-   * _dirs (OUT) list of files
-   * _rename
-   * _dotdirs if true, include "." and ".." in the list
+   * Main entry point for listing recursively
    */
   long listRecursive( const char *_path, QValueList<Copy>& _files,
-		      QValueList<CopyDir>& _dirs, bool _rename, bool _dotdirs );
+		      QValueList<CopyDir>& _dirs, bool _rename );
   /**
    * Internally called by listRecursive
    */
   long listRecursive2( const char *_abs_path, const char *_rel_path,
-		      QValueList<Copy>& _files, QValueList<CopyDir>& _dirs, bool _dotdirs );
+		      QValueList<Copy>& _files, QValueList<CopyDir>& _dirs );
 
   int m_cmd;
   bool m_bIgnoreJobErrors;
