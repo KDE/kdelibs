@@ -32,6 +32,8 @@
 #include <kicontheme.h>
 #include "kiconeffect.h"
 
+extern bool qt_use_xrender;
+
 KIconEffect::KIconEffect()
 {
     init();
@@ -325,16 +327,25 @@ void KIconEffect::toGamma(QImage &img, float value)
 void KIconEffect::semiTransparent(QImage &img)
 {
     img.setAlphaBuffer(true);
-
+    
     int x, y;
-    if (img.depth() == 32)
+    if (img.depth() == 32) 
     {
-	for (y=0; y<img.height(); y++)
-	{
+	if (qt_use_xrender)
+	  for (y=0; y<img.height(); y++)
+	  {
+	    QRgb *line = (QRgb *) img.scanLine(y);
+	    for (x=0; x<img.width(); x++)
+		line[x] &= 0x4fffffff;
+	  }
+	else
+	  for (y=0; y<img.height(); y++)
+	  {
 	    QRgb *line = (QRgb *) img.scanLine(y);
 	    for (x=(y%2); x<img.width(); x+=2)
 		line[x] &= 0x00ffffff;
-	}
+	  }
+
     } else
     {
 	// Insert transparent pixel into the clut.
@@ -379,6 +390,14 @@ void KIconEffect::semiTransparent(QImage &img)
 
 void KIconEffect::semiTransparent(QPixmap &pix)
 {
+    if ( qt_use_xrender )
+    {
+	QImage img=pix.convertToImage();
+	semiTransparent(img);
+	pix.convertFromImage(img);
+	return;
+    }
+      
     QImage img;
     if (pix.mask() != 0L)
 	img = pix.mask()->convertToImage();
