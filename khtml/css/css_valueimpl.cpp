@@ -266,6 +266,9 @@ void CSSStyleDeclarationImpl::setChanged()
 
 void CSSStyleDeclarationImpl::removeCSSHints()
 {
+    if (!m_lstValues)
+	return;
+
     for (int i = (int)m_lstValues->count()-1; i >= 0; i--) {
 	if (!m_lstValues->at(i)->nonCSSHint)
 	    m_lstValues->remove(i);
