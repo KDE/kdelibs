@@ -1230,6 +1230,17 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
     // When the first data arrives, the metadata has just been made available
     d->m_ssl_in_use = (d->m_job->queryMetaData("ssl_in_use") == "TRUE");
     kdDebug(6050) << "SSL in use? " << d->m_job->queryMetaData("ssl_in_use") << endl;
+
+    {
+    KHTMLPart *p = parentPart();
+    if (p && p->d->m_ssl_in_use != d->m_ssl_in_use) {
+	while (p->parentPart()) p = p->parentPart();
+	
+	p->d->m_paSecurity->setIcon( "halflock" );
+	kdDebug(6050) << "parent setIcon half done." << endl;
+    }
+    }
+
     d->m_paSecurity->setIcon( d->m_ssl_in_use ? "lock" : "unlock" );
     kdDebug(6050) << "setIcon " << ( d->m_ssl_in_use ? "lock" : "unlock" ) << " done." << endl;
 
