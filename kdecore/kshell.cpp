@@ -244,71 +244,110 @@ QStringList KShell::splitArgs( const QString &args, int flags, int *err )
    return QStringList();
 }
 
+inline static bool isSpecial( uint c )
+{
+    static const uchar iqm[] = {
+        0xff, 0xff, 0xff, 0xff, 0xdd, 0x07, 0x00, 0xd8,
+        0x00, 0x00, 0x00, 0x10, 0x01, 0x00, 0x00, 0x38
+    }; // 0-32 \'"$`<>|;&(){}*?#
+    
+    return (c < sizeof(iqm) * 8) && (iqm[c / 8] & (1 << (c & 7)));
+}
+
 QString KShell::joinArgs( const QStringList &args )
 {
-    if (args.isEmpty())
-        return QString::null; // well, QString::empty, in fact. qt sucks ;)
     QChar q( '\'' );
-    QString ret( q );
-#if 0 // this could pay off if join() would be cleverer and the strings were long
-    QStringList rst( args );
-    for (QStringList::Iterator it = rst.begin(); it != rst.end(); ++it)
-        (*it).replace( q, "'\\''" );
-    ret += rst.join( "' '" );
-#else
+    QString ret;
     for (QStringList::ConstIterator it = args.begin(); it != args.end(); ++it) {
-        if (it != args.begin())
-            ret += "' '";
-        ret += QString( *it ).replace( q, "'\\''" );
+        if (!ret.isEmpty())
+            ret += ' ';
+        if (!(*it).length())
+            ret.append( q ).append( q );
+        else {
+            for (uint i = 0; i < (*it).length(); i++)
+                if (isSpecial((*it).unicode()[i])) {
+                    QString tmp(*it);
+                    tmp.replace( q, "'\\''" );
+                    ret += q;
+                    tmp += q;
+                    ret += tmp;
+                    goto ex;
+                }
+            ret += *it;
+          ex: ;
+        }
     }
-#endif
-    ret += q;
     return ret;
 }
 
 QString KShell::joinArgs( const char * const *args, int nargs )
 {
-    if (!args || !*args || !nargs)
+    if (!args)
         return QString::null; // well, QString::empty, in fact. qt sucks ;)
     QChar q( '\'' );
-    QString ret( q );
+    QString ret;
     for (const char * const *argp = args; nargs && *argp; argp++, nargs--) {
-        if (argp != args)
-            ret += "' '";
-        ret += QFile::decodeName( *argp ).replace( q, "'\\''" );
+        if (!ret.isEmpty())
+            ret += ' ';
+        if (!**argp)
+            ret.append( q ).append( q );
+        else {
+            QString tmp( QFile::decodeName( *argp ) );
+            for (uint i = 0; i < tmp.length(); i++)
+                if (isSpecial(tmp.unicode()[i])) {
+                    tmp.replace( q, "'\\''" );
+                    ret += q;
+                    tmp += q;
+                    ret += tmp;
+                    goto ex;
+                }
+            ret += tmp;
+          ex: ;
+       }
     }
-    ret += q;
     return ret;
 }
 
 QString KShell::joinArgsDQ( const QStringList &args )
 {
-    QString ret("");
-
+    QChar q( '\'' ), sp( ' ' ), bs( '\\' );
+    QString ret;
     for (QStringList::ConstIterator it = args.begin(); it != args.end(); ++it) {
-        ret += ret.isEmpty() ? "$'" : " $'";
-        for (uint pos = 0; pos < (*it).length(); pos++) {
-            int c = (*it).unicode()[pos];
-            if (c < 32) {
-                ret += '\\';
-                switch (c) {
-                case '\a': ret += 'a'; break;
-                case '\b': ret += 'b'; break;
-                case '\033': ret += 'e'; break;
-                case '\f': ret += 'f'; break;
-                case '\n': ret += 'n'; break;
-                case '\r': ret += 'r'; break;
-                case '\t': ret += 't'; break;
-                case '\034': ret += "c|"; break;
-                default: ret += 'c'; ret += c + '@'; break;
+        if (!ret.isEmpty())
+            ret += sp;
+        if (!(*it).length())
+            ret.append( q ).append( q );
+        else {
+            for (uint i = 0; i < (*it).length(); i++)
+                if (isSpecial((*it).unicode()[i])) {
+                    ret.append( '$' ).append( q );
+                    for (uint pos = 0; pos < (*it).length(); pos++) {
+                        int c = (*it).unicode()[pos];
+                        if (c < 32) {
+                            ret += bs;
+                            switch (c) {
+                            case '\a': ret += 'a'; break;
+                            case '\b': ret += 'b'; break;
+                            case '\033': ret += 'e'; break;
+                            case '\f': ret += 'f'; break;
+                            case '\n': ret += 'n'; break;
+                            case '\r': ret += 'r'; break;
+                            case '\t': ret += 't'; break;
+                            case '\034': ret += 'c'; ret += '|'; break;
+                            default: ret += 'c'; ret += c + '@'; break;
+                            }
+                        } else {
+                            if (c == '\'' || c == '\\')
+                                ret += bs;
+                            ret += c;
+                        }
+                    }
+                    ret.append( q );
+                    goto ex;
                 }
-            } else {
-                if (c == '\'' || c == '\\')
-                    ret += '\\';
-                ret += c;
-            }
+            ret += *it;
+          ex: ;
         }
-        ret += '\'';
     }
     return ret;
 }
