@@ -96,7 +96,11 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
   rbDelete = new QRadioButton( "Delete", opButtons );
   opButtons->insert( rbDelete, Delete );
   hbLayout->addWidget( rbDelete, 5 );
-
+  
+  rbShred = new QRadioButton( "Shred", opButtons );
+  opButtons->insert( rbShred, Shred );
+  hbLayout->addWidget( rbShred, 5 );
+  
   rbMkdir = new QRadioButton( "Mkdir", opButtons );
   opButtons->insert( rbMkdir, Mkdir );
   hbLayout->addWidget( rbMkdir, 5 );
@@ -280,6 +284,10 @@ void KioslaveTest::startJob() {
   case Delete:
     job = KIO::del( src );
     break;
+    
+  case Shred:
+    job = KIO::del(src, true);
+    break;
 
   case Mkdir:
     job = KIO::mkdir( src );
@@ -409,7 +417,7 @@ static KCmdLineOptions options[] =
  { "d", 0, 0 },
  { "dest <dest>", "Destination URL", "" },
  { "o", 0, 0 },
- { "operation <operation>", "Operation (list,listrecursive,stat,get,copy,move,del,mkdir)", "copy" },
+ { "operation <operation>", "Operation (list,listrecursive,stat,get,copy,move,del,shred,mkdir)", "copy" },
  { "p", 0, 0 },
  { "progress <progress>", "Progress Type (none,simple,list,little)", "simple" }
 };
@@ -444,6 +452,8 @@ int main(int argc, char **argv) {
     op = KioslaveTest::Move;
   } else if ( tmps == "del") {
     op = KioslaveTest::Delete;
+  } else if ( tmps == "shred") {
+    op = KioslaveTest::Shred;
   } else if ( tmps == "mkdir") {
     op = KioslaveTest::Mkdir;
   } else KCmdLineArgs::usage("unknown operation");

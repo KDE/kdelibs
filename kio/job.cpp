@@ -22,6 +22,7 @@
 #include <config.h>
 #endif
 
+#include <iostream.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
@@ -59,7 +60,6 @@
 #include "kio/job.h"
 #include "scheduler.h"
 #include "kmimemagic.h"
-#include "kshred.h"
 
 #include "kio/renamedlg.h"
 #include "kio/skipdlg.h"
@@ -1460,7 +1460,7 @@ void DeleteJob::startNextJob()
     {
         // Stat first
         KIO::Job * job = KIO::stat( *it );
-        kDebugInfo(7007,"KIO::stat %s", (*it).url().ascii() );
+        kDebugInfo(7007,"KIO::stat (DeleteJob) %s", (*it).url().ascii() );
         state = STATE_STATING;
         addSubjob(job);
         m_srcList.remove(it);
@@ -1480,19 +1480,15 @@ void DeleteJob::deleteNextFile()
         // Use shredding ?
         if ( m_shred && (*it).isLocalFile() )
         {
-            for ( ; it != files.end() ; ++it )
-                if (!KShred::shred( (*it).path() ))
-                {
-                    m_error = ERR_CANNOT_DELETE;
-                    m_errorText = (*it).path();
-                    emit result(this);
-                    delete this;
-                    return;
-                }
-            files.clear();
-            state = STATE_DELETING_DIRS;
-            deleteNextDir();
-        } else
+            // KShred your KTie
+            KIO_ARGS << int(3) << (*it).path();
+            kDebugError("Trying to shred");
+
+            SimpleJob *job = KIO::special(KURL("file:/"), packedArgs);
+            files.remove(it);
+            addSubjob(job);
+        
+        } else 
         {
             // Normal deletion
             SimpleJob *job = KIO::file_delete( *it );
@@ -1572,9 +1568,22 @@ void DeleteJob::slotResult( Job *job )
 
                 kDebugInfo(7007," Target is a file ");
                 // Remove it
-                state = STATE_DELETING_FILES;
-                SimpleJob *job = KIO::file_delete( url );
-                addSubjob( job );
+
+                state = STATE_DELETING_FILES;                
+                if ( m_shred && url.isLocalFile() )
+                {
+                    // KShred your KTie
+                    KIO_ARGS << int(3) << url.path();
+                    kDebugError("Trying to shred");
+                    SimpleJob *job = KIO::special(KURL("file:/"), packedArgs);
+                    addSubjob(job);
+                }
+                else 
+                {
+                   // Normal deletion
+                   SimpleJob *job = KIO::file_delete(url);
+                   addSubjob( job );
+                }
             }
         }
         break;

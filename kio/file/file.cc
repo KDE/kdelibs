@@ -26,6 +26,7 @@
 
 #include <qvaluelist.h>
 
+#include <kshred.h>
 #include <kdebug.h>
 #include <kurl.h>
 #include <kprotocolmanager.h>
@@ -486,6 +487,15 @@ void FileProtocol::del( const QString& path, bool isfile)
 	}
     } else {
 	
+	/*****
+	 * Delete empty directory
+	 *****/
+	
+	kDebugInfo( 7101, "Deleting directory %s", debugString(path) );
+
+	// TODO deletingFile( source );
+	
+
       /*****
        * Delete empty directory
        *****/
@@ -769,6 +779,16 @@ void FileProtocol::special( const QByteArray &data)
 	mount( ro, fstype, dev, point );
       }
       break;
+      
+    case 3:
+    {
+      QString filename;
+      stream >> filename;
+      if (!KShred::shred(filename))
+        error( KIO::ERR_CANNOT_DELETE, filename );
+      finished();
+      break;
+    }
     default:
       assert(0);
     }

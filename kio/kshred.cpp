@@ -139,6 +139,8 @@ KShred::fillrandom()
 bool
 KShred::shred(QString fileName)
 {
+
+  kDebugError( "KShred: shredding '%s'\n", fileName.local8Bit().data() );
   if (fileName.isEmpty())
     return false;
 
