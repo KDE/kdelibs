@@ -131,7 +131,8 @@ void KFileList::addFiles(const QStringList& files)
 		for (QStringList::ConstIterator it=files.begin(); it!=files.end(); ++it)
 			if (KIO::NetAccess::download(KURL(*it), downloaded))
 			{
-				KURL	url(downloaded);
+				KURL	url;
+				url.setPath(downloaded);
 				KMimeType::Ptr	mime = KMimeType::findByURL(url, 0, true, false);
 				item = new QListViewItem(m_files, item, url.fileName(), mime->comment(), downloaded);
 				item->setPixmap(0, mime->pixmap(url, KIcon::Small));
@@ -162,7 +163,7 @@ QStringList KFileList::fileList() const
 	QListViewItem	*item = m_files->firstChild();
 	while (item)
 	{
-		l << item->text(2);
+		l << KURL::encode_string( item->text(2) );
 		item = item->nextSibling();
 	}
 	return l;
