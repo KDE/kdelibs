@@ -80,8 +80,8 @@ public:
   QString uglyForm() const;
   void setUglyForm(QString ugly); // try to convert an ugly form to be less so. 
 
-  QSize sizeHint();
-  QSizePolicy sizePolicy();
+  virtual QSize sizeHint() const;
+  virtual QSizePolicy sizePolicy() const;
 
   /**
    * By default this is turned off for performance reasons.

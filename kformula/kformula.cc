@@ -28,6 +28,8 @@
 #include <kglobal.h>
 #include <kstddirs.h>
 
+template class QArray<box*>;
+
 //initialize the static members:
 QString *KFormula::SPECIAL = NULL;
 QString *KFormula::DELIM = NULL;

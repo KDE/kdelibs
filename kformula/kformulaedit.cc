@@ -27,6 +27,9 @@
 #include <ctype.h>
 #include <qregexp.h>
 
+template class QArray<charinfo>;
+template class QArray<_cursorInfo>;
+
 //initialize the static clipboard
 QString KFormulaEdit::clipText;
 
@@ -120,7 +123,7 @@ KFormulaEdit::~KFormulaEdit()
 }
 
 //---------------------------SIZE HINT--------------------------
-QSize KFormulaEdit::sizeHint()
+QSize KFormulaEdit::sizeHint() const
 {
   return QSize(
 	       QMAX(form->size().width(), 350),
@@ -130,7 +133,7 @@ QSize KFormulaEdit::sizeHint()
 }
 
 //---------------------------SIZE POLICY--------------------------
-QSizePolicy KFormulaEdit::sizePolicy()
+QSizePolicy KFormulaEdit::sizePolicy() const
 { // the widget is willing to grow.
   return QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 }
