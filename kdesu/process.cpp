@@ -55,20 +55,16 @@
 #include "kdesu_pty.h"
 #include "kcookie.h"
 
-/*
-** Wait @p ms miliseconds (ie. 1/10th of a second is 100ms),
-** using @p fd as a filedescriptor to wait on. Returns
-** select(2)'s result, which is -1 on error, 0 on timeout,
-** or positive if there is data on one of the selected fd's
-** (which shouldn't happen at all).
-*/
 int PtyProcess::waitMS(int fd,int ms)
 {
 	struct timeval tv;
-	// sleep 1/10 sec
-	tv.tv_sec = 0; tv.tv_usec = 1000*ms;
-	// not actually a select on only fd, but hey
-	return select(fd, 0L, 0L, 0L, &tv);
+	tv.tv_sec = 0; 
+	tv.tv_usec = 1000*ms;
+
+	fd_set fds;
+	FD_ZERO(&fds);
+	FD_SET(fd,&fds);
+	return select(fd+1, &fds, 0L, 0L, &tv);
 }
 
 /*
@@ -264,6 +260,8 @@ void PtyProcess::unreadLine(const QCString &line, bool addnl)
 
 int PtyProcess::exec(const QCString &command, const QCStringList &args)
 {
+    kdDebug(900) << k_lineinfo << "Running `" << command << "'\n";
+
     if (init() < 0)
         return -1;
 
@@ -349,6 +347,8 @@ int PtyProcess::WaitSlave()
         return -1;
     }
 
+    kdDebug(900) << k_lineinfo << "Child pid " << m_Pid << endl;
+    
     struct termios tio;
     while (1) 
     {

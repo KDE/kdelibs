@@ -129,8 +129,10 @@ public /* static */:
     ** Wait @p ms miliseconds (ie. 1/10th of a second is 100ms),
     ** using @p fd as a filedescriptor to wait on. Returns
     ** select(2)'s result, which is -1 on error, 0 on timeout,
-    ** or positive if there is data on one of the selected fd's
-    ** (which shouldn't happen at all).
+    ** or positive if there is data on one of the selected fd's.
+    **
+    ** @p ms must be in the range 0..999 (ie. the maximum wait
+    ** duration is 999ms, almost one second).
     */
     static int waitMS(int fd,int ms);
 
