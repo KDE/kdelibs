@@ -446,7 +446,7 @@ QXEmbed::~QXEmbed()
             XUnmapWindow( qt_xdisplay(), window );
 
         XReparentWindow(qt_xdisplay(), window, qt_xrootwin(), 0, 0);
-        XFlush( qt_xdisplay() );
+        XSync(qt_xdisplay(), FALSE);
 
         if ( autoDelete() ) {
             XEvent ev;
