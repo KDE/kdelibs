@@ -366,7 +366,6 @@ void KToolBarButton::setDisabledPixmap( const QPixmap &pixmap )
 void KToolBarButton::setPopup(QPopupMenu *p)
 {
   d->m_popup = p;
-  d->m_popup->setFont(KGlobalSettings::toolBarFont());
   p->installEventFilter(this);
 }
 
