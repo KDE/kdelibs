@@ -14,10 +14,9 @@ that we would like to make for the next binary incompatible release.
   Also free the client from the requirement to inherit from KShared.
 
 - Remove all KSocket, KServerSocket, KSocks and KExtendedSocket references
-  throughout KDE in favour of libqt-addon's socket implementations.
-  (note: if all goes well, libqt-addon will be part of Qt by then)
+  throughout KDE in favour of KNetwork's socket implementations.
+  Also, revise the namespace usage.
 	thiago.macieira@kdemail.net
-  => Won't be, what now?
 
 - Remove all methods marked 'deprecated' in KDE 3.x.
 
