@@ -230,6 +230,11 @@ namespace
 	res = 0;
 	my_h_errno = HOST_NOT_FOUND;
 
+	// check blacklist
+	if (m_af != AF_INET && 
+	    KBlacklistWorker::isBlacklisted(QString::fromLatin1(m_hostname)))
+	  break;
+
 # ifdef USE_GETHOSTBYNAME2_R
 	buf = new char[buflen];
 	res = gethostbyname2_r(m_hostname, m_af, &my_results, buf, buflen,
@@ -377,6 +382,15 @@ namespace
 
   bool GetAddrInfoThread::run()
   {
+    // check blacklist
+    if ((m_af != AF_INET && m_af != AF_UNSPEC) && 
+	KBlacklistWorker::isBlacklisted(QString::fromLatin1(m_node)))
+      {
+	results.setError(KResolver::NoName);
+	finished();
+	return false;		// failed
+      }
+
     do
       {
 	ResolverLocker resLock( this );
@@ -987,7 +1001,7 @@ void KNetwork::Internal::initStandardWorkers()
 {
   KBlacklistWorker::init();
 
-  KResolverWorkerFactoryBase::registerNewWorker(new KResolverWorkerFactory<KBlacklistWorker>);
+  //KResolverWorkerFactoryBase::registerNewWorker(new KResolverWorkerFactory<KBlacklistWorker>);
   KResolverWorkerFactoryBase::registerNewWorker(new KResolverWorkerFactory<KStandardWorker>);
 
 #ifdef HAVE_GETADDRINFO
