@@ -32,6 +32,7 @@
 
 #include <qfile.h>
 #include <qregexp.h>
+#include <qinputdialog.h>
 #include <klocale.h>
 #include <dcopclient.h>
 #include <kapplication.h>
@@ -277,12 +278,55 @@ int KPrinterImpl::doFilterFiles(KPrinter *printer, QStringList& files, const QSt
 		QString	mime = KMimeMagic::self()->findFileType(*it)->mimeType();
 		if (inputMimeTypes.find(mime) == inputMimeTypes.end())
 		{
-			printer->setErrorMessage(i18n("Cannot filter the file <tt>%1</tt>. The mime type <b>%2</b> "
-			                              "is not supported as input. This may happen with non CUPS "
-			                              "spoolers when you want to perform page selection with non PostScript "
-			                              "file. See also the <b>Filters</b> tab in the printer properties "
-						      "dialog.").arg(*it).arg(mime));
-			return -1;
+			if (KMessageBox::warningContinueCancel(0,
+				i18n("The mime type <b>%1</b> is not supported as input of the filter chain "
+				     "(this may happen with non CUPS spoolers when performing page selection "
+				     "on non PostScript file). Do you want KDE to convert the file to a supported "
+				     "format?").arg(mime),
+				QString::null, i18n("Convert")) == KMessageBox::Continue)
+			{
+				QStringList	ff;
+				int	done(0);
+
+				ff << *it;
+				while (done == 0)
+				{
+					bool	ok(false);
+					QString	targetMime = QInputDialog::getItem(
+						i18n("Select Mime Type"),
+						i18n("Select the target format for the conversion:"),
+						inputMimeTypes, 0, false, &ok);
+					if (!ok)
+					{
+						printer->setErrorMessage(i18n("Operation aborted."));
+						return -1;
+					}
+					QStringList	filters = KXmlCommandManager::self()->autoConvert(mime, targetMime);
+					if (filters.count() == 0)
+					{
+						KMessageBox::error(0, i18n("No appropriate filter found. Select another target format."));
+					}
+					else
+					{
+						int	result = doFilterFiles(printer, ff, filters, QMap<QString,QString>(), flag);
+						if (result == 1)
+						{
+							*it = ff[0];
+							done = 1;
+						}
+						else
+						{
+							KMessageBox::error(0,
+								i18n("Operation failed with message:<br>%1<br>Select another target format.").arg(printer->errorMessage()));
+						}
+					}
+				}
+			}
+			else
+			{
+				printer->setErrorMessage(i18n("Operation aborted."));
+				return -1;
+			}
 		}
 
 		QString	tmpfile = tempFile();
