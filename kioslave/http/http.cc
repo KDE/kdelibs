@@ -604,7 +604,7 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
   }
 
   QDomDocument multiResponse;
-  multiResponse.setContent( m_intData, true );
+  multiResponse.setContent( m_bufWebDavData, true );
 
   QDomElement thisResponse = multiResponse.documentElement().firstChild().toElement();
   if (thisResponse.isNull()) {
@@ -1294,7 +1294,7 @@ void HTTPProtocol::davLock( const KURL& url, const QString& scope,
   if ( m_responseCode == 200 ) {
     // success
     QDomDocument multiResponse;
-    multiResponse.setContent( m_intData, true );
+    multiResponse.setContent( m_bufWebDavData, true );
 
     QDomElement prop = multiResponse.documentElement().namedItem( "prop" ).toElement();
 
@@ -1421,7 +1421,7 @@ QString HTTPProtocol::davError( int code /* = -1 */, QString url )
       QStringList errors;
       QDomDocument multiResponse;
 
-      multiResponse.setContent( m_intData, true );
+      multiResponse.setContent( m_bufWebDavData, true );
 
       QDomElement multistatus = multiResponse.documentElement().namedItem( "multistatus" ).toElement();
 
@@ -3833,13 +3833,10 @@ void HTTPProtocol::slotData(const QByteArray &d)
    }
    else
    {
-      // bugfix from Eugene Onischenko - #51720 - Make sure that the buffer
-      // is null terminated when we append to a string since Qt doesn't look
-      // at m_bufReceive.size() in QString::operator+=(const QByteArray&)
-                // I'm not sure if this is always very efficient unfortunately.
-      m_bufReceive.resize(m_bufReceive.size()+1);
-      m_bufReceive.data()[m_bufReceive.size()-1] = 0;
-      m_intData += m_bufReceive;
+      uint old_size = m_bufWebDavData.size();
+      m_bufWebDavData.resize (old_size + m_bufReceive.size());
+      memcpy (m_bufWebDavData.data() + old_size, m_bufReceive.data(),
+              m_bufReceive.size());
    }
 }
 
@@ -3850,7 +3847,7 @@ void HTTPProtocol::slotData(const QByteArray &d)
  * (meaning that the client is done sending data) or by 'httpOpen()'
  * (if we are in the process of a PUT/POST request). It can also be
  * called by a webDAV function, to recieve stat/list/property/etc.
- * data; in this case the data is stored in m_intData.
+ * data; in this case the data is stored in m_bufWebDavData.
  */
 bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
 {
@@ -3859,13 +3856,13 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
 
   m_bEOD = false;
   // Note that when dataInternal is true, we are going to:
-  // 1) save the body data to a member variable, m_intData
+  // 1) save the body data to a member variable, m_bufWebDavData
   // 2) _not_ advertise the data, speed, size, etc., through the
   //    corresponding functions.
   // This is used for returning data to WebDAV.
   m_dataInternal = dataInternal;
   if ( dataInternal )
-    m_intData = QString::null;
+    m_bufWebDavData.resize (0);
 
   // Check if we need to decode the data.
   // If we are in copy mode, then use only transfer decoding.
