@@ -6,7 +6,7 @@
      names (which if they occur will cost you a _lot_ of time)
  -->
 
-<!-- ENTITY Alt         	"<keycap>Alt</keycap>" -->
+<!ENTITY Alt			"<keycap>Alt</keycap>">
 <!ENTITY Correction     	"<keycap>Correction</keycap>">                            <!-- English: &Backspace; -->	
 <!ENTITY BGS            	"bouton <mousebutton>gauche</mousebutton> de la souris">  <!-- English: &LMB; -->
 <!ENTITY BCS            	"bouton <mousebutton>central</mousebutton> de la souris"> <!-- English: &MMB; -->
