@@ -1,3 +1,10 @@
+2005-03-03  Germain Garand  <germain@ebooksfrance.org>
+
+        * ecma/kjs_dom.cpp (getValueProperty/putValueProperty):
+        Mozilla/IE strict compatibility: document.documentElement.scroll{Top,Left}
+        concern the canvas, not the root block. 
+        Cf. http://www.quirksmode.org/viewport/compatibility.html
+
 2005-03-01  Allan Sandfeld Jensen <kde@carewolf.com>
 
         * html/html_formimpl.cpp: Report content position rather than viewport position in "image" forms

@@ -292,9 +292,19 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
     case ScrollHeight:
       return rend ? static_cast<Value>( Number(rend->scrollHeight()) ) : Undefined();
     case ScrollLeft:
-      return Number( rend && rend->layer() ? rend->layer()->scrollXOffset() : 0 );
+      if (rend && rend->layer()) {
+          if (rend->isRoot() && !rend->style()->hidesOverflow())
+              return Number( node.ownerDocument().view() ? node.ownerDocument().view()->contentsX() : 0);
+          return Number( rend->layer()->scrollXOffset() );
+      }
+      return Number( 0 );
     case ScrollTop:
-      return Number( rend && rend->layer() ? rend->layer()->scrollYOffset() : 0 );
+      if (rend && rend->layer()) {
+          if (rend->isRoot() && !rend->style()->hidesOverflow())
+              return Number( node.ownerDocument().view() ? node.ownerDocument().view()->contentsY() : 0);
+          return Number( rend->layer()->scrollYOffset() );
+      }
+      return Number( 0 );
     default:
       kdDebug(6070) << "WARNING: Unhandled token in DOMNode::getValueProperty : " << token << endl;
       break;
@@ -393,14 +403,28 @@ void DOMNode::putValueProperty(ExecState *exec, int token, const Value& value, i
     break;
   case ScrollTop: {
     khtml::RenderObject *rend = node.handle() ? node.handle()->renderer() : 0L;
-    if (rend && rend->layer() && rend->style()->hidesOverflow())
-        rend->layer()->scrollToYOffset(value.toInt32(exec));
+    if (rend && rend->layer()) {
+        if (rend->style()->hidesOverflow())
+            rend->layer()->scrollToYOffset(value.toInt32(exec));
+        else if (rend->isRoot()) {
+            QScrollView* sview = node.ownerDocument().view();
+            if (sview)
+                sview->setContentsPos(sview->contentsX(), value.toInt32(exec));
+        }
+    }       
     break;
   }
   case ScrollLeft: {
     khtml::RenderObject *rend = node.handle() ? node.handle()->renderer() : 0L;
-    if (rend && rend->layer() && rend->style()->hidesOverflow())
-      rend->layer()->scrollToXOffset(value.toInt32(exec));
+    if (rend && rend->layer()) {
+        if (rend->style()->hidesOverflow())
+            rend->layer()->scrollToXOffset(value.toInt32(exec));
+        else if (rend->isRoot()) {
+            QScrollView* sview = node.ownerDocument().view();
+            if (sview)
+                sview->setContentsPos(value.toInt32(exec), sview->contentsY());
+        }
+    }
     break;
   }
   default:
