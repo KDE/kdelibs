@@ -713,6 +713,21 @@ QByteArray UIServer::open_RenameDlg( int id,
   return data;
 }
 
+int UIServer::open_SkipDlg( int id,
+                            int /*bool*/ multi,
+                            const QString & error_text )
+{
+  // Hide existing dialog box if any
+  ProgressItem *item = findItem( id );
+  if ( item )
+      item->setVisible( false );
+  kdDebug(7024) << "Calling KIO::open_SkipDlg" << endl;
+  KIO::SkipDlg_Result result = KIO::open_SkipDlg( (bool)multi, error_text );
+  if ( item )
+      item->setVisible( true );
+  return (KIO::SkipDlg_Result) result;
+}
+
 
 void UIServer::readSettings() {
   KConfig config("uiserverrc");

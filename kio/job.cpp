@@ -55,7 +55,7 @@
 #include "kmimemagic.h"
 
 // #include "kio/renamedlg.h"
-#include "kio/skipdlg.h"
+// #include "kio/skipdlg.h"
 #include "kio/observer.h"
 
 using namespace KIO;
@@ -1585,7 +1585,7 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
     }
     else
     {
-        SkipDlg_Result skipResult = open_SkipDlg( files.count() > 0,
+        SkipDlg_Result skipResult = Observer::self()->open_SkipDlg( this, files.count() > 0,
                                                   job->errorString() );
 
         // Convert the return code from SkipDlg into a RenameDlg code

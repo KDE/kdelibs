@@ -25,6 +25,7 @@
 
 #include "kio/global.h"
 #include "kio/job.h"
+#include "kio/skipdlg.h"
 #include "kio/renamedlg.h"
 
 class UIServer_stub;
@@ -105,6 +106,13 @@ public:
                                         time_t mtimeSrc = (time_t) -1,
                                         time_t mtimeDest = (time_t) -1
                                         );
+
+  /**
+   * See skipdlg.h
+   */
+  KIO::SkipDlg_Result open_SkipDlg( KIO::Job * job,
+                                    bool multi,
+                                    const QString & error_text );
 
 k_dcop:
   /**

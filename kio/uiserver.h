@@ -24,6 +24,7 @@
 #include <dcopobject.h>
 #include <kio/global.h>
 #include <kio/renamedlg.h>
+#include <kio/skipdlg.h>
 #include <kurl.h>
 #include <ktmainwindow.h>
 
@@ -240,6 +241,12 @@ k_dcop:
                              unsigned long /* time_t */ mtimeDest
                              );
 
+  /**
+   * See skiplg.h
+   */
+  int open_SkipDlg( int id,
+                    int /*bool*/ multi,
+                    const QString & error_text );
 
 protected slots:
 

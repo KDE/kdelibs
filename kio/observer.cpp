@@ -203,7 +203,6 @@ RenameDlg_Result Observer::open_RenameDlg( KIO::Job * job,
                                                       sizeSrc, sizeDest,
                                                       (unsigned long) ctimeSrc, (unsigned long) ctimeDest,
                                                       (unsigned long) mtimeSrc, (unsigned long) mtimeDest );
-  kdDebug(7007) << "open_RenameDlg call returned" << endl;
   if ( m_uiserver->ok() )
   {
     QDataStream stream( resultArgs, IO_ReadOnly );
@@ -212,7 +211,23 @@ RenameDlg_Result Observer::open_RenameDlg( KIO::Job * job,
     kdDebug(7007) << "UIServer::open_RenameDlg returned " << result << "," << newDest << endl;
     return (RenameDlg_Result) result;
   }
+  kdDebug(7007) << "open_RenameDlg call failed" << endl;
   return R_CANCEL;
+}
+
+SkipDlg_Result Observer::open_SkipDlg( KIO::Job * job,
+                                       bool _multi,
+                                       const QString& _error_text )
+{
+  kdDebug(7007) << "Observer::open_SkipDlg" << endl;
+  int result = m_uiserver->open_SkipDlg( job ? job->progressId() : 0, (int)_multi, _error_text );
+  if ( m_uiserver->ok() )
+  {
+    kdDebug(7007) << "UIServer::open_SkipDlg returned " << result << endl;
+    return (SkipDlg_Result) result;
+  }
+  kdDebug(7007) << "open_SkipDlg call failed" << endl;
+  return S_CANCEL;
 }
 
 
