@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
+ *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -18,6 +18,8 @@
  *  Boston, MA 02111-1307, USA.
  */
 
+#include "nodes.h"
+
 #include <assert.h>
 #include <stdio.h>
 #include <math.h>
@@ -25,7 +27,6 @@
 #include "kjs.h"
 #include "ustring.h"
 #include "lexer.h"
-#include "nodes.h"
 #include "types.h"
 #include "internal.h"
 #include "operations.h"
@@ -882,7 +883,7 @@ KJSO VarDeclNode::evaluate()
       val = tmp.getValue();
   } else
       val = Undefined();
-  variable.put(ident, val);
+  variable.put(ident, val, DontDelete);
 
   // spec wants to return ident. But what for ? Will be ignored above.
   return KJSO();

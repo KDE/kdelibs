@@ -315,25 +315,8 @@ KJSO KJSO::getValue()
   }
   KJSO o = getBase();
   if (o.isNull() || o.isA(NullType)) {
-    // Match behaviour of IE5 when using
-    // if (!foo)
-    //     var foo = true;
-    // the _standard_ construct is
-    // var foo;
-    // if (!foo)
-    //     foo = true;
-    // but IE lets that _incomplete_ construct work
-    // (as like as all other browsers)
-
-    // DF: But I think we should initialise unknown variables to "undefined"
-    // Too late for doing that though. We'll see.
-#ifndef NDEBUG
-    fprintf(stderr, "Can't find variable: %s. Initialising to null.\n", getPropertyName().ascii());
-#endif
-    return o;
-
-//    UString m = I18N_NOOP("Can't find variable: ") + getPropertyName();
-//    return Error::create(ReferenceError, m.ascii());
+    UString m = I18N_NOOP("Can't find variable: ") + getPropertyName();
+    return Error::create(ReferenceError, m.ascii());
   }
 
   return o.get(getPropertyName());

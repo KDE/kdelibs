@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
+ *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -583,6 +583,20 @@ namespace KJS {
      * @deprecated
      */
     KJSO filter() const;
+    /**
+     * Returns the extra user data set for this global object. Null by default.
+     * Typical usage if you need to query any info related to the currently
+     * running interpreter:
+     *
+     *    MyMainWindow *m = (MyMainWindow*)Global::current().extra();
+     */
+    void *extra() const;
+    /**
+     * Set the extra user data for this global object. It's not used by the
+     * interpreter itself and can therefore be used to bind arbitrary data
+     * to each interpreter instance.
+     */
+    void setExtra(void *e);
   private:
     Global(void *);
     void init();

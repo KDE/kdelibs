@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
+ *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -55,6 +55,7 @@ namespace KJS {
     virtual void put(const UString &p, const KJSO& v);
     virtual bool hasProperty(const UString &p, bool recursive = true) const;
     Imp *filter;
+    void *extraData;
   private:
     class GlobalInternal;
     GlobalInternal *internal;
@@ -130,9 +131,20 @@ KJSO Global::filter() const
   return f ? KJSO(f) : KJSO(Null());
 }
 
+void *Global::extra() const
+{
+  return static_cast<GlobalImp*>(rep)->extraData;
+}
+
+void Global::setExtra(void *e)
+{
+  static_cast<GlobalImp*>(rep)->extraData = e;
+}
+
 GlobalImp::GlobalImp()
   : ObjectImp(ObjectClass),
-    filter(0L)
+    filter(0L),
+    extraData(0L)
 {
   // constructor properties. prototypes as Global's member variables first.
   Object objProto(new ObjectPrototype());
@@ -224,10 +236,19 @@ KJSO GlobalImp::get(const UString &p) const
 
 void GlobalImp::put(const UString &p, const KJSO& v)
 {
+  // if we already have this property (added by init() or a variable
+  // declaration) overwrite it. Otherwise pass it to the prototype.
+  // Needed to get something like a browser's window object working.
+  if (!prototype() || hasProperty(p, false) || Imp::hasProperty(p, false))
+    Imp::put(p, v);
+  else
+    prototype()->put(p, v);
+#if 0    
   if (filter)
     filter->put(p, v);   /* TODO: remove in next version */
   else
     Imp::put(p, v);
+#endif  
 }
 
 bool GlobalImp::hasProperty(const UString &p, bool recursive) const
