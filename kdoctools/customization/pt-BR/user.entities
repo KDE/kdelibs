@@ -11,6 +11,7 @@
 <!ENTITY Backspace "<keycap>Esc</keycap>">
 <!ENTITY cdrom  "<hardware>CD-ROM</hardware>">
 <!ENTITY Ctrl   "<keycap>Ctrl</keycap>">
+<!ENTITY dpi   "DPI">
 <!ENTITY eg     "<abbrev>por ex.</abbrev>">
 <!ENTITY Esc   "<keycap>Esc</keycap>">
 <!ENTITY etc     "<abbrev>etc.</abbrev>">
@@ -20,8 +21,10 @@
 <!ENTITY kcontrol       "<application>Centro de Controle do &kde;</application>">
 <!ENTITY kcontrolcenter "<application>Centro de Controle do &kde;</application>">
 <!ENTITY khelpcenter    "<application>Centro de Informações do &kde;</application>">
+<!ENTITY kicon    "<application>KIcon</application>">
 <!ENTITY kmenu    "Menu <guimenu>K</guimenu>">
 <!ENTITY LMB    "botão <mousebutton>esquerdo</mousebutton> do mouse">
 <!ENTITY MMB    "botão do <mousebutton>meio</mousebutton> do mouse">
 <!ENTITY RMB    "botão <mousebutton>direto</mousebutton> do mouse">
 <!ENTITY Shift   "<keycap>Shift</keycap>">
+<!ENTITY wordnet   "Word Net">
