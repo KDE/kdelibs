@@ -23,6 +23,13 @@
     Boston, MA 02111-1307, USA.
   
     $Log$
+    Revision 1.33  1999/05/07 15:42:46  kulow
+    making some changes to the code and partly to the API to make it
+    -DQT_NO_ASCII_CAST compatible.
+    The job is quite boring, but triggers some abuses of QString. BTW:
+    I added some TODOs to the code where I was too lazy to continue.
+    Someone should start a grep for TODO in the code on a regular base ;)
+
     Revision 1.32  1999/05/07 15:36:10  bieker
     use KApp::localconfigdir() instead of just KApp:localkdedir() + "/share/config"
 
@@ -499,9 +506,9 @@ void KFontDialog::weight_chosen_slot(const QString& weight){
 
   QString weight_string = weight;
 
-  if ( weight_string == QString(i18n("normal")))
+  if ( weight_string == i18n("normal"))
     selFont.setBold(false);
-  if ( weight_string == QString(i18n("bold")))
+  if ( weight_string == i18n("bold"))
        selFont.setBold(true);
   // display_example();
   emit fontSelected(selFont);
@@ -512,9 +519,9 @@ void KFontDialog::style_chosen_slot(const QString& style){
 
   QString style_string = style;
 
-  if ( style_string == QString(i18n("roman")))
+  if ( style_string == i18n("roman"))
     selFont.setItalic(false);
-  if ( style_string == QString(i18n("italic")))
+  if ( style_string == i18n("italic"))
     selFont.setItalic(true);
   //  display_example();
   emit fontSelected(selFont);
