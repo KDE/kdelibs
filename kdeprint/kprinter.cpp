@@ -668,16 +668,17 @@ void reportError(KPrinter *p)
 		kdDebug(500) << "could not send notify event" << endl;
 }
 
-KPrinter::PageSize pageNameToPageSize(const QString& name)
+KPrinter::PageSize pageNameToPageSize(const QString& _name)
 {
-	if (name == "Letter") return KPrinter::Letter;
-	else if (name == "Legal") return KPrinter::Legal;
+	QString name = _name.upper();
+	if (name == "LETTER") return KPrinter::Letter;
+	else if (name == "LEGAL") return KPrinter::Legal;
 	else if (name == "A4") return KPrinter::A4;
 	else if (name == "A3") return KPrinter::A3;
-	else if (name == "Executive") return KPrinter::Executive;
-	else if (name == "Ledger") return KPrinter::Ledger;
-	else if (name == "Tabloid") return KPrinter::Tabloid;
-	else if (name == "Folio") return KPrinter::Folio;
+	else if (name == "EXECUTIVE") return KPrinter::Executive;
+	else if (name == "LEDGER") return KPrinter::Ledger;
+	else if (name == "TABLOID") return KPrinter::Tabloid;
+	else if (name == "FOLIO") return KPrinter::Folio;
 	else if (name == "A5") return KPrinter::A5;
 	else if (name == "A6") return KPrinter::A6;
 	else if (name == "A7") return KPrinter::A7;
@@ -697,9 +698,9 @@ KPrinter::PageSize pageNameToPageSize(const QString& name)
 	else if (name == "B8" || name == "B8ISO") return KPrinter::B8;
 	else if (name == "B9" || name == "B9ISO") return KPrinter::B9;
 	else if (name == "B10" || name == "B10ISO") return KPrinter::B10;
-	else if (name == "C5" || name == "C5E" || name == "EnvC5") return KPrinter::C5E;
-	else if (name == "DL" || name == "DLE" || name == "EnvDL") return KPrinter::DLE;
-	else if (name == "Comm10" || name == "COM10" || name == "Env10") return KPrinter::Comm10E;
+	else if (name == "C5" || name == "C5E" || name == "ENVC5") return KPrinter::C5E;
+	else if (name == "DL" || name == "DLE" || name == "ENVDL") return KPrinter::DLE;
+	else if (name == "COMM10" || name == "COM10" || name == "ENV10") return KPrinter::Comm10E;
 	else return KPrinter::A4;
 }
 
