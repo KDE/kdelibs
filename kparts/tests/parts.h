@@ -6,7 +6,7 @@
 
 class QMultiLineEdit;
 namespace KParts {
-class PartActivateEvent;
+class GUIActivateEvent;
 };
 
 class Part1 : public KParts::ReadOnlyPart
@@ -36,7 +36,7 @@ protected:
   // part caption when the part is used in a multi-part environment
   // (i.e. in a part manager)
   // There is a default impl for ReadOnlyPart...
-  virtual void partActivateEvent( KParts::PartActivateEvent * );
+  virtual void guiActivateEvent( KParts::GUIActivateEvent * );
   KInstance *m_instance;
 };
 

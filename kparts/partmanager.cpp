@@ -1,4 +1,4 @@
-
+#include <kparts/event.h>
 #include <kparts/partmanager.h>
 #include <kparts/part.h>
 #include <kdebug.h>

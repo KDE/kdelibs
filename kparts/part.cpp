@@ -1,4 +1,5 @@
 #include <kparts/part.h>
+#include <kparts/event.h>
 #include <kparts/plugin.h>
 #include <kparts/mainwindow.h>
 #include <kparts/partmanager.h>
@@ -273,6 +274,7 @@ bool ReadOnlyPart::openURL( const KURL &url )
   if ( !closeURL() )
     return false;
   m_url = url;
+  emit setWindowCaption( m_url.decodedURL() );
   if ( m_url.isLocalFile() )
   {
     emit started( 0 );
@@ -341,10 +343,13 @@ void ReadOnlyPart::slotJobError( int, int, const char * text )
 
 void ReadOnlyPart::guiActivateEvent( GUIActivateEvent * event )
 {
-  if (event->activated() && !m_url.isEmpty())
+  if (event->activated())
   {
-    kDebugInfo( 1000, "ReadOnlyPart::guiActivateEvent -> %s", m_url.decodedURL().ascii() );
-    emit setWindowCaption( m_url.decodedURL() );
+    if (!m_url.isEmpty())
+    {
+      kDebugInfo( 1000, "ReadOnlyPart::guiActivateEvent -> %s", m_url.decodedURL().ascii() );
+      emit setWindowCaption( m_url.decodedURL() );
+    } else emit setWindowCaption( "" );
   }
 }
 

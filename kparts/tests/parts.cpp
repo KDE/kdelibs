@@ -1,5 +1,5 @@
 
-#include <kparts/partmanager.h>
+#include <kparts/event.h>
 
 #include "parts.h"
 
@@ -51,7 +51,6 @@ bool Part1::openFile()
     return false;
   m_edit->setText(s);
 
-  emit setWindowCaption( m_url.decodedURL() );
   emit setStatusBarText( m_url.decodedURL() );
 
   return true;
@@ -82,7 +81,7 @@ Part2::~Part2()
   delete m_instance;
 }
 
-void Part2::partActivateEvent( KParts::PartActivateEvent * event )
+void Part2::guiActivateEvent( KParts::GUIActivateEvent * event )
 {
   if (event->activated())
     emit setWindowCaption("[part2 activated]");

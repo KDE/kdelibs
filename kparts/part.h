@@ -189,6 +189,11 @@ class ReadOnlyPartPrivate;
  * (e.g. asynchronously), override openURL().
  *
  * KParts Application can use the signals to show feedback while the URL is being loaded.
+ *
+ * ReadOnlyPart handles the window caption by setting it to the current URL
+ * (set in @ref openURL, and each time the part is activated).
+ * If you want another caption, set it in @ref openFile and
+ * (if the part might ever be used with a part manager) in @ref guiActivateEvent
  */
 class ReadOnlyPart : public Part
 {
@@ -207,7 +212,10 @@ public:
   /**
    * Only reimplement openURL if you don't want synchronous network transparency
    * Otherwise, reimplement @ref openFile() only .
-   **/
+   *
+   * If you reimplement it, don't forget to set the caption, usually with
+   * emit setWindowCaption( url.decodedURL() );
+   */
   virtual bool openURL( const KURL &url );
   virtual const KURL & url() const { return m_url; }
 

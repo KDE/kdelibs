@@ -8,26 +8,11 @@
 
 #include <kparts/xmlgui.h>
 #include <kparts/part.h>
-#include <kparts/event.h>
 
 class QString;
 
 namespace KParts
 {
-
-class GUIActivateEvent : public Event
-{
-public:
-  GUIActivateEvent( bool activated ) : Event( s_strGUIActivateEvent ), m_bActivated( activated ) {}
-
-  bool activated() const { return m_bActivated; }
-
-  static bool test( const QEvent *event ) { return Event::test( event, s_strGUIActivateEvent ); }
-
-private:
-  static const char *s_strGUIActivateEvent;
-  bool m_bActivated;
-};
 
 class MainWindowPrivate;
 
