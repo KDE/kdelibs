@@ -1771,9 +1771,11 @@ void KFileDialog::toggleSpeedbar( bool show )
             
         // check to see if they have a home item defined, if not show the home button
         KURLBarItem *urlItem = static_cast<KURLBarItem*>( d->urlBar->listBox()->firstItem() );
+        KURL homeURL;
+        homeURL.setPath( QDir::homeDirPath() );
         while ( urlItem )
         {
-            if ( urlItem->url().path(-1) == QDir::homeDirPath() )
+            if ( homeURL.equals( urlItem->url(), true ) )
             {
                 ops->actionCollection()->action( "home" )->unplug( toolbar );
                 break;
