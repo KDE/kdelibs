@@ -105,3 +105,5 @@ KHTMLSettings *KHTMLFactory::defaultHTMLSettings()
 
   return s_settings;
 }
+
+#include "khtml_factory.moc"

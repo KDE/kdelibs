@@ -37,3 +37,5 @@ void KHTMLRun::foundMimeType( const QString &mimetype )
   m_bFinished = true;
   m_timer.start( 0, true );
 }
+
+#include "khtml_run.moc"
