@@ -2,6 +2,7 @@
 [KDE Desktop Entry]
 Comment=TeX file
 Comment[de]=TeX Dokument
+Comment[nl]=TeX document
 Icon=tex.xpm
 Type=MimeType
 MimeType=text/x-tex

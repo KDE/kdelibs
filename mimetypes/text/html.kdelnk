@@ -2,6 +2,7 @@
 [KDE Desktop Entry]
 Comment=HTML Page
 Comment[de]=HTML Seite
+Comment[nl]=HTML pagina
 DefaultApp=KDE Browser
 Icon=html.xpm
 Type=MimeType

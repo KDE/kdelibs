@@ -6,3 +6,4 @@ Icon=tgz.xpm
 Patterns=*.gz;
 Comment=Gzip file
 Comment[de]=GZip Datei
+Comment[nl]=GZip bestand

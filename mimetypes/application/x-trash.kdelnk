@@ -6,3 +6,4 @@ Icon=trash.xpm
 Patterns=*~;*%;*.bak;*.old;*.sik;
 Comment=Trash file
 Comment[de]=zu löschende Datei
+Comment[nl]=Vuilnisbak bestand

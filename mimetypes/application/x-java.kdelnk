@@ -6,3 +6,4 @@ Icon=binary.xpm
 Patterns=*.class;
 Comment=Java Class
 Comment[de]=Java Klasse
+Comment[nl]=Java class bestand

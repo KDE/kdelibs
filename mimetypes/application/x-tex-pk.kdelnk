@@ -2,6 +2,7 @@
 [KDE Desktop Entry]
 Comment=Packed Font file
 Comment[de]=Komprimierte Fontdatei
+Comment[nl]=Gecomprimeerd lettertypebestand
 Icon=pk.xpm
 Type=MimeType
 MimeType=application/x-tex-pk

@@ -6,3 +6,4 @@ Icon=image.xpm
 Patterns=*.gif;*.GIF;
 Comment=Gif images
 Comment[de]=GIF Dokument
+Comment[nl]=Gif afbeelding

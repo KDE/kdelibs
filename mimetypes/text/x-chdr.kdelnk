@@ -2,6 +2,7 @@
 [KDE Desktop Entry]
 Comment=C headers
 Comment[de]=C Header
+Comment[nl]=C Header
 DefaultApp=
 Icon=h_src.xpm
 Type=MimeType

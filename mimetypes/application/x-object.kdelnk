@@ -6,3 +6,4 @@ Icon=binary.xpm
 Patterns=*.o;
 Comment=Object Code
 Comment[de]=Objektcode
+Comment[nl]=Objectcode

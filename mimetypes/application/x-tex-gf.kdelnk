@@ -2,6 +2,7 @@
 [KDE Desktop Entry]
 Comment=Generic Font files
 Comment[de]=Allgemeine Fontdateien
+Comment[nl]=Algemeen-lettertype bestand
 Icon=gf.xpm
 Type=MimeType
 Mimetype=application/x-tex-gf

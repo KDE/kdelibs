@@ -6,3 +6,4 @@ Icon=image.xpm
 Patterns=*.xbm;*.XBM;
 Comment=X bitmap
 Comment[de]=X Bitmap
+Comment[nl]=X-Bitmap afbeelding

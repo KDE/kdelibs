@@ -6,3 +6,4 @@ Icon=image.xpm
 Patterns=*.jpeg;*.jpg;*.JPG;
 Comment=Jpeg images
 Comment[de]=Jpeg Bild
+Comment[nl]=Jpeg afbeelding
