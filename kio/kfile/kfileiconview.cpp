@@ -704,9 +704,6 @@ bool KFileIconView::eventFilter( QObject *o, QEvent *e )
 void KFileIconView::showEvent( QShowEvent *e )
 {
     KIconView::showEvent( e );
-#if QT_VERSION <= 302
-    sort( !isReversed() );
-#endif
 }
 
 
