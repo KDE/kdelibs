@@ -1,21 +1,35 @@
+kdelibs (4:2.0-20000918-0) unstable; urgency=low
+ 
+  * More upstream fixes (-beta5)
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 18 Sep 2000 17:00:00 -0700
+                                                                                
 kdelibs (4:2.0-20000910-0) unstable; urgency=low
 
   * More upstream fixes
-  * More dependency work
 
- -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 10 Sep 2000 23:30:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 10 Sep 2000 23:00:00 -0700
 
 kdelibs (4:2.0-20000909-0) unstable; urgency=low
-
+  
+  * More package cleanup
   * More upstream fixes
-  * Breaking out binary-indep portions in rules
+  * All lintian errors are bogus currently.  k*.so files are modules and
+    I can only assume that lintian just doesn't know how to handle them.
+    the extra license's are needed for KDE and specially setup for KDE
 
- -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 09 Sep 2000 20:00:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 09 Sep 2000 02:00:00 -0700
 
-kdelibs (4:2.0-20000907-0) unstable; urgency=low
+kdelibs (4:2.0-20000907-0.1) unstable; urgency=low
+ 
+  * Fixing issue with requiring -dev package
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 07 Sep 2000 21:00:00 -0700
+
+kdelibs-nossl (4:2.0-20000907-0) unstable; urgency=low
 
   * More Upstream fixes
-  * Built against new qt2.2
+  * Initial Debian upload
 
  -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 07 Sep 2000 01:00:00 -0700
 
@@ -55,7 +69,6 @@ kdelibs (4:2.0-20000825-0) experimental; urgency=low
 kdelibs (4:2.0-20000824-1.0) experimental; urgency=low
  
   * KDE 2.0 beta 4
-  * Initian Debian upload 
 
  -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 24 Aug 2000 18:30:00 -0700
                                                                                 

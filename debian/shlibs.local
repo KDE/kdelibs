@@ -1,26 +1,26 @@
-libDCOP 1 kdelibs3
-libkdecore 3 kdelibs3
-libkdeui 3 kdelibs3
-libkdesu 1 kdelibs3
-libkssl 2 kdelibs3
-libkio 3 kdelibs3
-libksycoca 3 kdelibs3
-libkfile 3 kdelibs3
-libkparts 1 kdelibs3
-libkjs 1 kdelibs3
-libkmid 0 kdelibs3
-libmcop 0 kdelibs3
-libartsflow_idl 0 kdelibs3
-libartsflow 0 kdelibs3
-libsoundserver_idl 0 kdelibs3
-libkmedia2_idl 0 kdelibs3
-libx11globalcomm 0 kdelibs3
-libqtmcop 0 kdelibs3
-libartsc 0 kdelibs3
-libartscbackend 0 kdelibs3
-libartsdsp 0 kdelibs3
-libktexteditor 0 kdelibs3
-libkab 3 kdelibs3
-libkjava 1 kdelibs3
-libkhtml 3 kdelibs3
-libkspell 3 kdelibs3
+libDCOP 1 
+libkdecore 3 
+libkdeui 3 
+libkdesu 1 
+libkssl 2 
+libkio 3 
+libksycoca 3 
+libkfile 3 
+libkparts 1 
+libkjs 1 
+libkmid 0 
+libmcop 0 
+libartsflow_idl 0 
+libartsflow 0 
+libsoundserver_idl 0 
+libkmedia2_idl 0 
+libx11globalcomm 0 
+libqtmcop 0 
+libartsc 0 
+libartscbackend 0 
+libartsdsp 0 
+libktexteditor 0 
+libkab 3 
+libkjava 1 
+libkhtml 3 
+libkspell 3 

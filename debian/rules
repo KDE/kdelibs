@@ -90,7 +90,6 @@ binary-arch:  build
 	done
 	dh_installdocs
 # libraries not starting with lib are modules
-
 	list=`cd debian/tmp && find ./ -type l -name "lib*.so" | sed -e 's#^./##'` ;\
 	dh_movefiles -pkdelibs3-dev $$list $(kde_includedir) $(kde_libdir)/lib*.a
 	dh_installchangelogs
