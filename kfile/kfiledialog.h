@@ -115,6 +115,14 @@ public:
     void setURL(const QString& name, bool clearforward = true);
 
     /**
+     * Sets the directory to view
+     * @param name URL to show
+     * @param clearforward indicate, if the forward queue
+     * should be cleared
+     */
+    void setURL(const KURL &url, bool clearforward = true);
+
+    /**
      * Sets the filename to preselect.
      * It takes absolute and relative file names
      */

@@ -453,6 +453,11 @@ void KFileDialog::setURL(const QString& _pathstr, bool clearforward)
     ops->setURL(_pathstr, clearforward);
 }
 
+void KFileDialog::setURL(const KURL& url, bool clearforward)
+{
+    ops->setURL( url, clearforward);
+}
+
 // Protected
 void KFileDialog::urlEntered(const KURL& url)
 {
@@ -657,7 +662,7 @@ void KFileDialog::setSelection(const QString& name)
     KFileViewItem i(QString::fromLatin1("file:"), u.path());
     //    KFileViewItem i(u.path());
     if (i.isDir())
-	setURL(u.url(), true);
+	setURL(u, true);
     else {
 	QString filename = u.url();
 	int sep = filename.findRev('/');
@@ -776,6 +781,11 @@ KURL KFileDialog::selectedURL() const
 	return KURL( d->filename_ );
     else
 	return KURL();
+}
+
+KURL KFileDialog::baseURL() const
+{
+    return ops->url();
 }
 
 QString KFileDialog::selectedFile() const
