@@ -5,7 +5,7 @@ artsdpath = $(bindir)/artsd
 
 INCLUDES = -I$(top_srcdir)/arts/mcop -I$(top_srcdir)/arts/flow \
    -I$(top_builddir)/arts/flow -DEXECUTE=\"$(artsdpath)\" $(all_includes)
-MCOPINC   = -I$(srcdir) -I$(top_srcdir)/arts/flow
+MCOPINC   = -I$(srcdir) -I$(top_srcdir)/arts/flow -I$(top_srcdir)/arts/mcop
 FLOWLIBS  = $(top_builddir)/arts/flow/libartsflow.la
 
 ####### install idl files

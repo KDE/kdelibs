@@ -1,6 +1,6 @@
 #include "artsflow.idl"
 #include "kmedia2.idl"
-#include "../mcop/core.idl"
+#include "core.idl"
 
 module Arts {
 
