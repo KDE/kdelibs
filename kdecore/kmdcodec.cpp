@@ -290,13 +290,17 @@ QByteArray KCodecs::quotedPrintableDecode(const QCString & in)
 
 QCString KCodecs::base64Encode( const QCString& str, bool insertLFs )
 {
+    if ( str.isEmpty() )
+        return "";
+
     QByteArray in;
     in.resize( str.length() );
     memcpy( in.data(), str.data(), str.length() );
     return base64Encode( in, insertLFs );
 }
 
-QCString KCodecs::base64Encode( const QCString& str ) {
+QCString KCodecs::base64Encode( const QCString& str )
+{
     return base64Encode(str,false);
 }
 
@@ -383,6 +387,9 @@ void KBase64::base64Encode( const QByteArray& in, QByteArray& out )
 
 QCString KBase64::base64Decode( const QCString& str )
 {
+    if ( str.isEmpty() )
+        return "";
+
     QByteArray in;
     in.resize( str.length() );
     memcpy( in.data(), str.data(), str.length() );
@@ -470,6 +477,9 @@ void KBase64::base64Decode( const QByteArray& in, QByteArray& out )
 
 QCString KCodecs::uuencode( const QCString& str )
 {
+    if ( str.isEmpty() )
+        return "";
+    
     QByteArray in;
     in.resize( str.length() );
     memcpy( in.data(), str.data(), str.length() );
@@ -564,6 +574,9 @@ void KCodecs::uuencode( const QByteArray& in, QByteArray& out )
 
 QCString KCodecs::uudecode( const QCString& str )
 {
+    if ( str.isEmpty() )
+        return "";
+    
     QByteArray in;
     in.resize( str.length() );
     memcpy( in.data(), str.data(), str.length() );
@@ -661,6 +674,8 @@ void KCodecs::uudecode( const QByteArray& in, QByteArray& out )
 /**** Functions provided for backwards compatibility ****/
 QString KCodecs::base64Encode( const QString& str )
 {
+    if ( str.isEmpty() )
+        return QString::fromLatin1("");
     QByteArray in, out;
     const unsigned int len = str.length();
     in.resize( len );
@@ -671,6 +686,9 @@ QString KCodecs::base64Encode( const QString& str )
 
 QString KCodecs::base64Decode( const QString& str )
 {
+    if ( str.isEmpty() )
+        return QString::fromLatin1("");
+
     QByteArray in, out;
     const unsigned int len = str.length();
     in.resize( str.length() );
@@ -681,6 +699,9 @@ QString KCodecs::base64Decode( const QString& str )
 
 QString KCodecs::uuencode( const QString& str )
 {
+    if ( str.isEmpty() )
+        return QString::fromLatin1("");
+
     QByteArray in, out;
     const unsigned int len = str.length();
     in.resize( len );
@@ -691,6 +712,9 @@ QString KCodecs::uuencode( const QString& str )
 
 QString KCodecs::uudecode( const QString& str )
 {
+    if ( str.isEmpty() )
+        return QString::fromLatin1("");
+
     QByteArray in, out;
     const unsigned int len = str.length();
     in.resize( len );
