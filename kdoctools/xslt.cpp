@@ -193,14 +193,13 @@ xmlParserInputPtr meinExternalEntityLoader(const char *URL, const char *ID,
     if (!strcmp(ID, "-//KDE//DTD DocBook XML V4.1.2-Based Variant V1.0//EN"))
         URL = "customization/dtd/kdex.dtd";
 
-    QString file = locate("dtd", URL);
-    if (!file.isEmpty())
-        ret = xmlNewInputFromFile(ctxt, file.latin1());
-    else {
-        if (KStandardDirs::exists( QDir::currentDirPath() + "/" + URL ) )
-            file = QDir::currentDirPath() + "/" + URL;
-        ret = xmlNewInputFromFile(ctxt, file.latin1());
-    }
+    QString file;
+    if (KStandardDirs::exists( QDir::currentDirPath() + "/" + URL ) )
+        file = QDir::currentDirPath() + "/" + URL;
+    else
+        file = locate("dtd", URL);
+
+    ret = xmlNewInputFromFile(ctxt, file.latin1());
     if (ret == NULL) {
         if ((ctxt->sax != NULL) && (ctxt->sax->warning != NULL))
             ctxt->sax->warning(ctxt,
