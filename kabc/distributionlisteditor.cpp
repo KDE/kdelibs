@@ -1,6 +1,5 @@
-/*                                                                      
+/*
     This file is part of libkabc.
-    Copyright (c) 2002 Mike Pilone <mpilone@slac.com>                   
     Copyright (c) 2001 Cornelius Schumacher <schumacher@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -19,265 +18,308 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include <qlistview.h>
 #include <qlayout.h>
-#include <qgroupbox.h>
-#include <qtooltip.h>
-#include <qtoolbutton.h>
-#include <qlabel.h>
+#include <qpushbutton.h>
+#include <qcombobox.h>
+#include <qinputdialog.h>
+#include <qbuttongroup.h>
+#include <qradiobutton.h>
 
 #include <klocale.h>
-#include <kiconloader.h>
-#include <klistbox.h>
-#include <klineedit.h>
+#include <kdebug.h>
 
 #include "addressbook.h"
+#include "addresseedialog.h"
 #include "distributionlist.h"
-#include "distributionlisteditorwidget.h"
+
 #include "distributionlisteditor.h"
+#include "distributionlisteditor.moc"
 
-namespace KABC {
+using namespace KABC;
 
-/////////////////////////////////
-// NameEditDialog
+EmailSelectDialog::EmailSelectDialog( const QStringList &emails, const QString &current,
+                                      QWidget *parent ) :
+  KDialogBase( KDialogBase::Plain, i18n("Select Email Address"), Ok, Ok,
+               parent )
+{
+  QFrame *topFrame = plainPage();
+  QBoxLayout *topLayout = new QVBoxLayout( topFrame );
 
-/** Internal class that has a line edit. This should probably
-* be generalized into a simple dialog in kdelibs/kdeui
-*/
-class NameDialog : public KDialogBase
+  mButtonGroup = new QButtonGroup( 1, Horizontal, i18n("Email Addresses"),
+                                   topFrame );
+  topLayout->addWidget( mButtonGroup );
+
+  QStringList::ConstIterator it;
+  for( it = emails.begin(); it != emails.end(); ++it ) {
+    QRadioButton *button = new QRadioButton( *it, mButtonGroup );
+    if ( (*it) == current ) {
+      button->setDown( true );
+    }
+  }
+}
+
+QString EmailSelectDialog::selected()
+{
+  QButton *button = mButtonGroup->selected();
+  if ( button ) return button->text();
+  return QString::null;
+}
+
+QString EmailSelectDialog::getEmail( const QStringList &emails, const QString &current,
+                                     QWidget *parent )
+{
+  EmailSelectDialog *dlg = new EmailSelectDialog( emails, current, parent );
+  dlg->exec();
+
+  QString result = dlg->selected();
+
+  delete dlg;
+
+  return result;
+}
+
+class EntryItem : public QListViewItem
 {
   public:
-    NameDialog(QWidget *parent) 
-      : KDialogBase(Plain, i18n("Distribution List Name"), Ok | Cancel, 
-                    Ok, parent)
-      {
-        QWidget *page = plainPage();
-        QVBoxLayout *layout = new QVBoxLayout(page);
-        layout->setMargin(marginHint());
-        layout->setSpacing(spacingHint());
-        layout->setAutoAdd(true);
-        
-        (void) new QLabel(i18n("Please enter a name for the list:"), page);
-        mNameEdit = new KLineEdit(page, "mNameEdit");
-        mNameEdit->setFocus();
-      }
-      
-    QString name() const { return mNameEdit->text(); }
-    void setName(const QString &name)
+    EntryItem( QListView *parent, const Addressee &addressee,
+               const QString &email=QString::null ) :
+      QListViewItem( parent ),
+      mAddressee( addressee ),
+      mEmail( email )
     {
-      mNameEdit->setText(name);
-      mNameEdit->home(false);
-      mNameEdit->end(true); // select all
+      setText( 0, addressee.realName() );
+      if( email.isEmpty() ) {
+        setText( 1, addressee.preferredEmail() );
+        setText( 2, i18n("Yes") );
+      } else {
+        setText( 1, email );
+        setText( 2, i18n("No") );
+      }
     }
-  
+
+    Addressee addressee() const
+    {
+      return mAddressee;
+    }
+
+    QString email() const
+    {
+      return mEmail;
+    }
+
   private:
-   KLineEdit *mNameEdit;
+    Addressee mAddressee;
+    QString mEmail;
 };
 
-  
-/////////////////////////////////
-// DistributionListEditor
-  
-class DistributionListEditorPrivate
+DistributionListEditor::DistributionListEditor( AddressBook *addressBook, QWidget *parent) :
+  QWidget( parent ),
+  mAddressBook( addressBook )
 {
-  public:
-    DistributionListEditorPrivate() {}
-    ~DistributionListEditorPrivate() {}
-    
-    AddressBook *mAddressBook;
-    DistributionListManager *mManager;
-    int mIndex;
-    
-    // GUI
-    QToolButton *mRemoveButton;
-    QToolButton *mRenameButton;
-    KListBox *mDistListBox;
-    DistributionListEditorWidget *mEditorWidget;
-}; 
+  kdDebug() << "DistributionListEditor()" << endl;
 
-DistributionListEditor::DistributionListEditor(AddressBook *book,
-                                               QWidget *parent,
-                                               const char *name)
-  : KDialogBase(Plain, i18n("Distribution List Editor"),
-                Ok | Apply | Cancel, Ok, parent, name)
-{
-  d = new DistributionListEditorPrivate();
-  d->mAddressBook = book;
-  d->mIndex = -1;
-  
-  initGUI();
-  
-  // Fill in the values
-  d->mManager = new DistributionListManager(book);
-  d->mManager->load();
-  
-  d->mDistListBox->insertStringList(d->mManager->listNames());
-  
-  itemSelected(-1);
-  
-  enableButton(Apply, false);
+  QBoxLayout *topLayout = new QVBoxLayout( this );
+  topLayout->setMargin( KDialog::marginHint() );
+  topLayout->setSpacing( KDialog::spacingHint() );
+
+  QBoxLayout *nameLayout = new QHBoxLayout( topLayout) ;
+
+  mNameCombo = new QComboBox( this );
+  nameLayout->addWidget( mNameCombo );
+  connect( mNameCombo, SIGNAL( activated( int ) ), SLOT( updateEntryView() ) );
+
+  newButton = new QPushButton( i18n("New List"), this );
+  nameLayout->addWidget( newButton );
+  connect( newButton, SIGNAL( clicked() ), SLOT( newList() ) );
+
+  removeButton = new QPushButton( i18n("Remove List"), this );
+  nameLayout->addWidget( removeButton );
+  connect( removeButton, SIGNAL( clicked() ), SLOT( removeList() ) );
+
+  QGridLayout *gridLayout = new QGridLayout( topLayout, 3, 2 );
+  gridLayout->setColStretch(1, 1);
+
+  mAddresseeView = new QListView( this );
+  mAddresseeView->addColumn( i18n("Name") );
+  mAddresseeView->addColumn( i18n("Preferred Email") );
+  gridLayout->addWidget( mAddresseeView, 0, 0 );
+  connect(mAddresseeView,SIGNAL(selectionChanged ()),this, SLOT(slotSelectionAddresseeViewChanged()));
+
+  addEntryButton = new QPushButton( i18n("Add Entry"), this );
+  addEntryButton->setEnabled(false);
+  gridLayout->addWidget( addEntryButton, 1, 0 );
+  connect( addEntryButton, SIGNAL( clicked() ), SLOT( addEntry() ) );
+
+  mEntryView = new QListView( this );
+  mEntryView->addColumn( i18n("Name") );
+  mEntryView->addColumn( i18n("Email") );
+  mEntryView->addColumn( i18n("Use preferred") );
+  mEntryView->setEnabled(false);
+  gridLayout->addMultiCellWidget( mEntryView, 0, 0, 1, 2 );
+  connect(mEntryView,SIGNAL(selectionChanged ()),this, SLOT(slotSelectionEntryViewChanged()));
+
+  changeEmailButton = new QPushButton( i18n("Change Email"), this );
+  gridLayout->addWidget( changeEmailButton, 1, 1 );
+  connect( changeEmailButton, SIGNAL( clicked() ), SLOT( changeEmail() ) );
+
+  removeEntryButton = new QPushButton( i18n("Remove Entry"), this );
+  gridLayout->addWidget( removeEntryButton, 1, 2 );
+  connect( removeEntryButton, SIGNAL( clicked() ), SLOT( removeEntry() ) );
+
+  mManager = new DistributionListManager( mAddressBook );
+  mManager->load();
+
+  updateAddresseeView();
+  updateNameCombo();
 }
 
 DistributionListEditor::~DistributionListEditor()
 {
-  delete d;
+  kdDebug() << "~DistributionListEditor()" << endl;
+
+  mManager->save();
+  delete mManager;
 }
 
-void DistributionListEditor::initGUI()
+void DistributionListEditor::slotSelectionEntryViewChanged()
 {
-  QWidget *page = plainPage();
-  
-  QBoxLayout *topLayout = new QHBoxLayout(page);
-  topLayout->setSpacing( spacingHint() );
-  topLayout->setMargin( marginHint() );
-  
-  QGroupBox *gb = new QGroupBox(i18n("Available Lists"), page);
-  topLayout->addWidget(gb);
-  topLayout->setStretchFactor(gb, 1);
-  
-  QBoxLayout *listLayout = new QVBoxLayout(gb);
-  listLayout->setSpacing( spacingHint() );
-  listLayout->setMargin( 15 );
-  
-  d->mDistListBox = new KListBox(gb, "mDistListBox");
-  connect(d->mDistListBox, SIGNAL(highlighted(int)), SLOT(itemSelected(int)));
-  listLayout->addWidget(d->mDistListBox);
-  
-  QBoxLayout *buttonLayout = new QHBoxLayout();
-  buttonLayout->setSpacing( spacingHint() );
-  listLayout->addLayout(buttonLayout);
-  
-  QToolButton *addButton = new QToolButton(gb);
-  addButton->setIconSet(SmallIconSet("filenew"));
-  QToolTip::add(addButton, i18n("Add a new distribution list"));
-  connect(addButton, SIGNAL(clicked()), SLOT(add()));
-  buttonLayout->addWidget(addButton);
-  
-  d->mRemoveButton = new QToolButton(gb, "mRemoveButton");
-  d->mRemoveButton->setIconSet(SmallIconSet("remove"));
-  QToolTip::add(d->mRemoveButton, i18n("Remove the selected distribution list"));
-  connect(d->mRemoveButton, SIGNAL(clicked()), SLOT(remove()));
-  buttonLayout->addWidget(d->mRemoveButton);
-  
-  d->mRenameButton = new QToolButton(gb, "mRenameButton");
-  d->mRenameButton->setIconSet(SmallIconSet("edit"));
-  QToolTip::add(d->mRenameButton, i18n("Rename the selected distribution list"));
-  connect(d->mRenameButton, SIGNAL(clicked()), SLOT(rename()));
-  buttonLayout->addWidget(d->mRenameButton);
-  
-  d->mEditorWidget = new DistributionListEditorWidget(d->mAddressBook,
-                                                      page, "mEditorWidget");
-  d->mEditorWidget->setMinimumWidth(300);
-  connect(d->mEditorWidget, SIGNAL(modified()), SLOT(modified()));
-  topLayout->addWidget(d->mEditorWidget);
-  topLayout->setStretchFactor(d->mEditorWidget, 3);
+    EntryItem *entryItem =dynamic_cast<EntryItem *>( mEntryView->selectedItem() );
+    bool state=entryItem;
+
+    changeEmailButton->setEnabled(state);
+    removeEntryButton->setEnabled(state);
 }
 
-void DistributionListEditor::add()
+void DistributionListEditor::newList()
 {
-  NameDialog dialog(this);
-  if (dialog.exec())
-  {
-    (void) new DistributionList(d->mManager, dialog.name());
-    d->mDistListBox->insertItem(dialog.name());
-    d->mDistListBox->setCurrentItem(d->mDistListBox->count()-1);
-    d->mDistListBox->ensureCurrentVisible();
-    
-    modified();
+  bool ok = false;
+  QString name = QInputDialog::getText( i18n("New Distribution List"),
+                                        i18n("Please enter name."),
+                                        QLineEdit::Normal, QString::null, &ok,
+                                        this );
+  if ( !ok || name.isEmpty() ) return;
+
+  new DistributionList( mManager, name );
+
+  mNameCombo->clear();
+  mNameCombo->insertStringList( mManager->listNames() );
+  mNameCombo->setCurrentItem( mNameCombo->count() );
+
+  updateEntryView();
+  slotSelectionAddresseeViewChanged();
+}
+
+void DistributionListEditor::removeList()
+{
+  delete mManager->list( mNameCombo->currentText() );
+  mNameCombo->removeItem( mNameCombo->currentItem() );
+
+  updateEntryView();
+  slotSelectionAddresseeViewChanged();
+}
+
+void DistributionListEditor::addEntry()
+{
+  AddresseeItem *addresseeItem =
+      dynamic_cast<AddresseeItem *>( mAddresseeView->selectedItem() );
+
+  if( !addresseeItem ) {
+    kdDebug() << "DLE::addEntry(): No addressee selected." << endl;
+    return;
+  }
+
+  DistributionList *list = mManager->list( mNameCombo->currentText() );
+  if ( !list ) {
+    kdDebug() << "DLE::addEntry(): No dist list '" << mNameCombo->currentText() << "'" << endl;
+    return;
+  }
+
+  list->insertEntry( addresseeItem->addressee() );
+  updateEntryView();
+  slotSelectionAddresseeViewChanged();
+}
+
+void DistributionListEditor::removeEntry()
+{
+  DistributionList *list = mManager->list( mNameCombo->currentText() );
+  if ( !list ) return;
+
+  EntryItem *entryItem =
+      dynamic_cast<EntryItem *>( mEntryView->selectedItem() );
+  if ( !entryItem ) return;
+
+  list->removeEntry( entryItem->addressee(), entryItem->email() );
+  delete entryItem;
+}
+
+void DistributionListEditor::changeEmail()
+{
+  DistributionList *list = mManager->list( mNameCombo->currentText() );
+  if ( !list ) return;
+
+  EntryItem *entryItem =
+      dynamic_cast<EntryItem *>( mEntryView->selectedItem() );
+  if ( !entryItem ) return;
+
+  QString email = EmailSelectDialog::getEmail( entryItem->addressee().emails(),
+                                               entryItem->email(), this );
+  list->removeEntry( entryItem->addressee(), entryItem->email() );
+  list->insertEntry( entryItem->addressee(), email );
+
+  updateEntryView();
+}
+
+void DistributionListEditor::updateEntryView()
+{
+  mEntryView->clear();
+
+  DistributionList *list = mManager->list( mNameCombo->currentText() );
+  if ( !list ) {
+    removeButton->setEnabled(false);
+    changeEmailButton->setEnabled(false);
+    removeEntryButton->setEnabled(false);
+    mEntryView->setEnabled(false);
+    return;
+  } else {
+    removeButton->setEnabled(true);
+    mEntryView->setEnabled(true);
+  }
+
+  DistributionList::Entry::List entries = list->entries();
+  DistributionList::Entry::List::ConstIterator it;
+  for( it = entries.begin(); it != entries.end(); ++it ) {
+    new EntryItem( mEntryView, (*it).addressee, (*it).email );
+  }
+
+  EntryItem *entryItem =dynamic_cast<EntryItem *>( mEntryView->selectedItem() );
+  bool state=entryItem;
+
+  changeEmailButton->setEnabled(state);
+  removeEntryButton->setEnabled(state);
+}
+
+void DistributionListEditor::updateAddresseeView()
+{
+  mAddresseeView->clear();
+
+  AddressBook::Iterator it;
+  for( it = mAddressBook->begin(); it != mAddressBook->end(); ++it ) {
+    new AddresseeItem( mAddresseeView, *it );
   }
 }
 
-void DistributionListEditor::remove()
+void DistributionListEditor::updateNameCombo()
 {
-  QString name = d->mDistListBox->currentText();
-  int index = d->mDistListBox->currentItem();
-  DistributionList *list = d->mManager->list(name);
-  
-  // Remove it from the list view so current changes
-  d->mDistListBox->removeItem(index);
-  
-  // If we have a valid list, remove it as well
-  if (list)
-  {
-    d->mManager->remove(list);
-    delete list;
-    
-    modified();
-  }
+  mNameCombo->insertStringList( mManager->listNames() );
+
+  updateEntryView();
 }
 
-void DistributionListEditor::rename()
+void DistributionListEditor::slotSelectionAddresseeViewChanged()
 {
-  NameDialog dialog(this);
-  QString name = d->mDistListBox->currentText();
-  
-  dialog.setName(name);
-  if (dialog.exec())
-  {
-    DistributionList *list = d->mManager->list(name);
-    if (list)
-    {
-      d->mManager->remove(list);
-      list->setName(dialog.name());
-      d->mManager->insert(list); 
-    }
-    
-    d->mDistListBox->changeItem(dialog.name(), d->mDistListBox->currentItem());
-    
-    modified();
-  }
+    AddresseeItem *addresseeItem =
+        dynamic_cast<AddresseeItem *>( mAddresseeView->selectedItem() );
+    bool state=addresseeItem;
+    addEntryButton->setEnabled( state && !mNameCombo->currentText().isEmpty());
 }
-
-void DistributionListEditor::itemSelected(int id)
-{
-  bool e = id >= 0;
-  
-  d->mRemoveButton->setEnabled(e);
-  d->mRenameButton->setEnabled(e);
-  d->mEditorWidget->setEnabled(e);
-  
-  // save the current one if there is one
-  if (d->mIndex >= 0)
-    (void) d->mEditorWidget->distributionList();
-  
-  // Now update the new one
-  if (e)
-  {
-    d->mIndex = id;
-    QString name = d->mDistListBox->currentText();
-    d->mEditorWidget->setDistributionList(d->mManager->list(name));
-  }
-  else
-  {
-    d->mEditorWidget->clear();
-  }
-}
-    
-void DistributionListEditor::slotOk()
-{
-  slotApply();
-  
-  KDialogBase::slotOk();
-}
-
-void DistributionListEditor::slotApply()
-{
-  // Save the current one if there is one
-  if (d->mIndex >= 0)
-    (void) d->mEditorWidget->distributionList();
-    
-  // Save the entire dist list
-  d->mManager->save();  
-  
-  enableButton(Apply, false);
-  
-  KDialogBase::slotApply();
-}
-
-void DistributionListEditor::modified()
-{
-  enableButton(Apply, true);
-}
-
-} // end namespace KABC
-
-#include "distributionlisteditor.moc"

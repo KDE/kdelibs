@@ -1,9 +1,5 @@
-#ifndef DISTRIBUTIONLISTEDITOR_H
-#define DISTRIBUTIONLISTEDITOR_H
-
 /*
     This file is part of libkabc.
-    Copyright (c) 2002 Mike Pilone <mpilone@slac.com>
     Copyright (c) 2001 Cornelius Schumacher <schumacher@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -21,39 +17,66 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
+#ifndef KABC_DISTRIBUTIONLISTEDITOR_H
+#define KABC_DISTRIBUTIONLISTEDITOR_H
+
+#include <qwidget.h>
 
 #include <kdialogbase.h>
 
-class QWidget;
+class QListView;
+class QComboBox;
+class QButtonGroup;
 
 namespace KABC {
 
 class AddressBook;
-class DistributionListEditorPrivate;
-  
-class DistributionListEditor : public KDialogBase
+class DistributionListManager;
+
+class EmailSelectDialog : public KDialogBase
 {
-  Q_OBJECT
-  
   public:
-    DistributionListEditor(AddressBook *book, QWidget *parent, 
-                           const char *name = 0);
-    virtual ~DistributionListEditor();
+    EmailSelectDialog( const QStringList &emails, const QString &current,
+                       QWidget *parent );
     
-  protected slots:
-    void add();
-    void remove();
-    void rename();
-    void itemSelected(int id);
-    void modified();
-    
-    virtual void slotApply();
-    virtual void slotOk();
-    
+    QString selected();
+
+    static QString getEmail( const QStringList &emails, const QString &current,
+                             QWidget *parent );
+
   private:
-    void initGUI();
-    
-    DistributionListEditorPrivate *d;
+    QButtonGroup *mButtonGroup;
+};
+
+
+class DistributionListEditor : public QWidget
+{
+    Q_OBJECT
+  public:
+    DistributionListEditor( AddressBook *, QWidget *parent );
+    virtual ~DistributionListEditor();
+
+  private slots:
+    void newList();
+    void removeList();
+    void addEntry();
+    void removeEntry();
+    void changeEmail();
+    void updateEntryView();
+    void updateAddresseeView();
+    void updateNameCombo();
+    void slotSelectionEntryViewChanged();
+    void slotSelectionAddresseeViewChanged();
+
+  private:
+    QComboBox *mNameCombo;  
+    QListView *mEntryView;
+    QListView *mAddresseeView;
+
+    AddressBook *mAddressBook;
+    DistributionListManager *mManager;
+    QPushButton *newButton, *removeButton;
+    QPushButton *changeEmailButton,*removeEntryButton,*addEntryButton;
 };
 
 }
