@@ -149,6 +149,7 @@ private:
 
   // when adding members, don't forget to take care about them in the assignment
   // operator
+  // KDE4 These needs to be moved to KCModuleInfoPrivate
   QStringList _keywords;
   QString     _name, _icon, _lib, _handle, _fileName, _doc, _comment;
   bool        _needsRootPrivileges : 1; 

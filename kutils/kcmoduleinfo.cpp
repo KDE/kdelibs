@@ -28,6 +28,7 @@
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
+#include <klocale.h>
 
 KCModuleInfo::KCModuleInfo(const QString& desktopFile)
   : _fileName(desktopFile), d(0L)
@@ -35,7 +36,13 @@ KCModuleInfo::KCModuleInfo(const QString& desktopFile)
   _allLoaded = false;
 
   //kdDebug(1208) << "desktopFile = " << desktopFile << endl;
-  init( KService::serviceByStorageId(desktopFile) );
+  KService::Ptr sptr = KService::serviceByStorageId(desktopFile);
+  if ( !sptr )
+  {
+    kdWarning() << i18n("Could not find the service '%1'").arg( desktopFile ) << endl;
+    return;
+  }
+  init( sptr );
 }
 
 KCModuleInfo::KCModuleInfo( KService::Ptr moduleInfo )
@@ -90,6 +97,9 @@ KCModuleInfo::~KCModuleInfo() { }
 
 void KCModuleInfo::init(KService::Ptr s)
 {
+  if ( !s )
+    return;
+
   _service = s;
   // set the modules simple attributes
   setName(_service->name());
