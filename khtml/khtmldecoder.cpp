@@ -77,7 +77,9 @@ QString KHTMLDecoder::decode(const char *data)
 	    while(*ptr != '\0')
 	    {
 		if(*ptr == '<') {
+		    bool end = false;
 		    ptr++;
+		    if(*ptr == '/') ptr++, end=true;
 		    char tmp[20];
 		    int len = 0;
 		    while (  
@@ -91,6 +93,7 @@ QString KHTMLDecoder::decode(const char *data)
 			len++;
 		    }
 		    int id = getTagID(tmp, len);
+		    if(end) id += ID_CLOSE_TAG;
 		    
 		    switch( id ) {
 		    case ID_META:
@@ -99,8 +102,7 @@ QString KHTMLDecoder::decode(const char *data)
 			//ptr += 5;
 			const char * end = ptr;
 			while(*end != '>' && *end != '\0') end++;
-			if ( *end == '\0' ) break;
-			QCString str( ptr, (end-ptr));
+			if ( *end == '\0' ) break;			QCString str( ptr, (end-ptr));
 			str = str.lower();
 			int pos = 0;
 			if( (pos = str.find("http-equiv", pos)) == -1) break;
@@ -119,7 +121,6 @@ QString KHTMLDecoder::decode(const char *data)
 			    endpos++;
 			
 			enc = str.mid(pos, endpos-pos);
-			enc = enc.lower();
 			printf("KHTMLDecoder: found charset: %s\n", enc.data());
 			codec = QTextCodec::codecForName(enc);
 			goto found;
