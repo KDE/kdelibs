@@ -25,6 +25,7 @@
 #define HTML_FORMIMPL_H
 
 #include "html/html_elementimpl.h"
+#include "html/html_imageimpl.h"
 #include "dom/html_element.h"
 
 #include <qvaluelist.h>
@@ -77,11 +78,10 @@ public:
 
     void radioClicked( HTMLGenericFormElementImpl *caller );
 
-    void registerFormElement(khtml::RenderFormElement *);
-    void removeFormElement(khtml::RenderFormElement *);
-
     void registerFormElement(HTMLGenericFormElementImpl *);
     void removeFormElement(HTMLGenericFormElementImpl *);
+    void registerImgElement(HTMLImageElementImpl *);
+    void removeImgElement(HTMLImageElementImpl *);
 
     void submitFromKeyboard();
     bool prepareSubmit();
@@ -93,6 +93,7 @@ public:
 
 private:
     QPtrList<HTMLGenericFormElementImpl> formElements;
+    QPtrList<HTMLImageElementImpl> imgElements;
     DOMString m_target;
     DOMString m_enctype;
     QString m_boundary;

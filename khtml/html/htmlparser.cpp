@@ -927,7 +927,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
 
 // images
     case ID_IMG:
-        n = new HTMLImageElementImpl(document);
+        n = new HTMLImageElementImpl(document, form);
         break;
     case ID_MAP:
         map = new HTMLMapElementImpl(document);
