@@ -3,7 +3,7 @@ SGML_CATALOGS=
 
 AC_DEFUN(KDE_FIND_CAT, 
 [
-   dtd_paths="/usr/lib/sgml/jade /etc /usr/lib/sgml/docbook-dtd /usr/lib/sgml/iso-entities-8879.1986 /usr/lib/sgml/docbook-stylesheets /usr/lib/sgml/ /usr/lib/sgml/docbook-3.1"
+   dtd_paths="/usr/lib/sgml/jade /etc /usr/lib/sgml/docbook-dtd /usr/lib/sgml/iso-entities-8879.1986 /usr/lib/sgml/docbook-stylesheets /usr/lib/sgml/ /usr/lib/sgml/docbook-3.1 /usr/local/share/sgml"
    AC_FIND_FILE($1, $dtd_paths, CAT)
    if test ! "x$CAT" = "xNO"; then
      test -n "$SGML_CATALOGS" && SGML_CATALOGS="$SGML_CATALOGS:"
@@ -17,6 +17,10 @@ KDE_FIND_CAT(nwalsh-modular.cat)
 KDE_FIND_CAT(dsssl.cat)
 KDE_FIND_CAT(sgml.catalog)
 KDE_FIND_CAT(stylesheets.cat)
+dnl These three lines were added for the FreeBSD setup together with /usr/local/share/sgml
+KDE_FIND_CAT(docbook/3.1/catalog)
+KDE_FIND_CAT(jade/catalog)
+KDE_FIND_CAT(docbook/dsssl/modular/catalog)
 
 AC_SUBST(SGML_CATALOGS)
 
