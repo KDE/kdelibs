@@ -881,13 +881,27 @@ QString KIconLoader::moviePath(const QString& name, KIcon::Group group, int size
 	    size = d->mpGroups[group].size;
 
         KIcon icon;
-        icon = d->mpThemeRoot->findIcon(file, size, KIcon::MatchExact);
-        if (!icon.isValid())
-        {
-           icon = d->mpThemeRoot->findIcon(file, size, KIcon::MatchBest);
-        }
+	
+	for ( KIconThemeNode *themeNode = d->links.first() ; themeNode ;
+		themeNode = d->links.next() )
+	{
+	    icon = themeNode->theme->iconPath(file, size, KIcon::MatchExact);
+	    if (icon.isValid())
+		break;
+	}
+	
+	if ( !icon.isValid() )
+	{
+	    for ( KIconThemeNode *themeNode = d->links.first() ; themeNode ;
+		    themeNode = d->links.next() )
+	    {
+		icon = themeNode->theme->iconPath(file, size, KIcon::MatchBest);
+		if (icon.isValid())
+		    break;
+	    }
+	}
+	
 	file = icon.isValid() ? icon.path : QString::null;
-
     }
     return file;
 }
