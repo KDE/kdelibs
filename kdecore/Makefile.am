@@ -29,7 +29,7 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kdesktopfile.h \
 	kconfigbackend.h kapp.h kuniqueapp.h kcharsets.h \
 	kurl.h ksock.h \
-	kprocess.h kprocctrl.h klocale.h kiconloader.h kdebug.h	\
+	kprocess.h kprocctrl.h klocale.h kiconloader.h kdebug.h	kdebug2.h \
 	kstdaccel.h kwinmodule.h kwm.h kwin.h krootprop.h kpixmap.h dither.h \
 	kaccel.h kglobalaccel.h  \
 	kprotocolmanager.h kregexp.h kstyle.h \
