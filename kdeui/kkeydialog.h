@@ -238,10 +238,18 @@ class KKeyDialog : public KDialogBase
 	void commitChanges();
 
 	/**
-	 * Pops up a modal dialog for configuring key settings. The dialog is initialized
-	 * from a @ref KAccelBase object, and the modifications are written to that object
-	 * when the dialog is closed.
+	 * Pops up a modal dialog for configuring key settings. The new
+	 * shortcut settings will be active if the user presses OK.  If
+	 * @p bSaveSettings is true, the settings will also be saved back to
+	 * the *uirc file which they were intially read from.
 	 * @return Accept if the dialog was closed with OK, Reject otherwise.
+	 */
+	static int configure( KActionCollection* coll, QWidget* parent = 0, bool bSaveSettings = true );
+
+	/**
+	 * This is an overloaded member function, provided for convenience.
+	 * It behaves essentially like the above function, except that settings
+	 * are saved to a *.rc file using KConfig.
 	 */
 	static int configure( KAccel* keys, QWidget* parent = 0, bool bSaveSettings = true );
 
@@ -250,15 +258,6 @@ class KKeyDialog : public KDialogBase
 	 * It behaves essentially like the above function.
 	 */
 	static int configure( KGlobalAccel* keys, QWidget* parent = 0, bool bSaveSettings = true );
-
-	/**
-	 * This is an overloaded member function, provided for convenience.
-	 * It behaves essentially like the above function.
-	 * The dialog is initialized
-	 * from an action collection (for XMLGUI based applications).
-	 */
-	static int configure( KActionCollection* coll,
-		QWidget* parent = 0, bool bSaveSettings = true );
 
 	/**
 	 * @deprecated Obsolete.
