@@ -203,10 +203,10 @@ QIconViewItemLineEdit::QIconViewItemLineEdit( const QString &text, QWidget *pare
     : QMultiLineEdit( parent, name ), item( theItem ), startText( text )
 {
     setWordWrap( QMultiLineEdit::FixedPixelWidth );
-    setWrapPolicy( QMultiLineEdit::Anywhere );
     setWrapColumnOrWidth( item->iconView()->maxItemWidth() -
 			  ( item->iconView()->itemTextPos() == QIconView::Bottom ?
 			    0 : item->iconRect().width() ) );
+    setWrapPolicy( QMultiLineEdit::Anywhere );
     setMaxLength( item->iconView()->maxItemTextLength() );
     setAlignment( Qt::AlignCenter );
     setText( text );
@@ -2078,8 +2078,10 @@ QIconView::QIconView( QWidget *parent, const char *name, WFlags f )
 QIconView::~QIconView()
 {
     QIconViewItem *tmp, *item = d->firstItem;
+    d->clearing = TRUE;
     while ( item ) {
 	tmp = item->next;
+	item->view = 0;
 	delete item;
 	item = tmp;
     }
@@ -2537,13 +2539,14 @@ void QIconView::drawContents( QPainter *p, int cx, int cy, int cw, int ch )
     if ( !d->firstItem )
 	return;
 
+    r = QRect( cx, cy, cw, ch );
     QIconViewItem *item = d->firstItem;
     for ( ; item; item = item->next )
-	if ( item->rect().intersects( QRect( cx, cy, cw, ch ) ) && !item->dirty )
+	if ( item->rect().intersects( r ) && !item->dirty )
 	    item->paintItem( p );
 
     if ( ( hasFocus() || viewport()->hasFocus() ) && d->currentItem &&
-	 d->currentItem->rect().intersects( QRect( cx, cy, cw, ch ) ) )
+	 d->currentItem->rect().intersects( r ) )
 	d->currentItem->paintFocus( p );
 }
 
@@ -2857,9 +2860,9 @@ QIconViewItem *QIconView::findItem( const QString &text ) const
     if ( !d->firstItem )
 	return 0;
 
-    QIconViewItem *item = d->firstItem;
+    QIconViewItem *item = d->currentItem;
     for ( ; item; item = item->next )
-	if ( item->text().left( text.length() ) == text )
+	if ( item->text().lower().left( text.length() ) == text )
 	    return item;
 
     return 0;
@@ -4034,7 +4037,10 @@ void QIconView::keyPressEvent( QKeyEvent *e )
 	    findItemByName( e->text() );
     }
 
-    ensureItemVisible( d->currentItem );
+    if ( e->key() != Key_Shift &&
+	 e->key() != Key_Control &&
+	 e->key() != Key_Alt )
+	ensureItemVisible( d->currentItem );
 }
 
 /*!
@@ -4432,7 +4438,7 @@ void QIconView::clearInputString()
   it the current one
 */
 
-void QIconView::findItemByName( const QString text )
+void QIconView::findItemByName( const QString &text )
 {
     if ( d->inputTimer->isActive() )
 	d->inputTimer->stop();
