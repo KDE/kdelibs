@@ -250,7 +250,7 @@ void KConfigINIBackEnd::sync(bool bMerge)
     if (fileName[0] == '/') {
        aLocalFileName = fileName;
     } else {
-       aLocalFileName = KGlobal::dirs()->saveLocation("config") + fileName;
+       aLocalFileName = KGlobal::dirs()->saveLocation(resType.latin1()) + fileName;
     }
 
     // Can we allow the write? We can, if the program
