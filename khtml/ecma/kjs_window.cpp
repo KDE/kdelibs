@@ -361,19 +361,12 @@ Value Window::get(ExecState *exec, const UString &p) const
       if (isSafeScript(exec))
       {
         if (m_part->document().isNull()) {
+          kdDebug(6070) << "Document.write: adding <HTML> to create document" << endl;
           m_part->begin();
           m_part->write("<HTML>");
           m_part->end();
         }
         Value val = getDOMNode(exec,m_part->document());
-#if 0 // not needed anymore
-        // Cache the value. This also prevents the GC from deleting the document
-        // while the window exists (important if the users sets properties on it).
-        const_cast<Window*>(this)->ObjectImp::put( exec, UString("document"), val, Internal );
-        // ## This is a hack. The whole cache should be in here, or in ScriptInterpreter,
-        // so that dynamic properties are remembered. But then, which cache to clear up
-        // in the object dtor will be a headache.
-#endif
         return val;
       }
       else
