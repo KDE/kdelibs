@@ -71,7 +71,7 @@ const unsigned short DOM::tagPriority[] = {
     1, // ID_DEL
     1, // ID_DFN
     4, // ID_DIR
-    3, // ID_DIV
+    4, // ID_DIV
     4, // ID_DL
     3, // ID_DT
     1, // ID_EM
