@@ -97,12 +97,12 @@ KSpellConfig::KSpellConfig( QWidget *parent, const char *name,
   }
 
   QGridLayout *glay = new QGridLayout( this, 6, 3, 0, KDialog::spacingHint() );
-  cb1 = new QCheckBox( i18n("Create root/affix combinations"
+  cb1 = new QCheckBox( i18n("Create &root/affix combinations"
                             " not in dictionary"), this, "NoRootAffix" );
   connect( cb1, SIGNAL(toggled(bool)), SLOT(sNoAff(bool)) );
   glay->addMultiCellWidget( cb1, 0, 0, 0, 2 );
 
-  cb2 = new QCheckBox( i18n("Consider run-together words"
+  cb2 = new QCheckBox( i18n("Consider run-together &words"
 			    " as spelling errors"), this, "RunTogether" );
   connect( cb2, SIGNAL(toggled(bool)), SLOT(sRunTogether(bool)) );
   glay->addMultiCellWidget( cb2, 1, 1, 0, 2 );
@@ -113,7 +113,7 @@ KSpellConfig::KSpellConfig( QWidget *parent, const char *name,
 	   this, SLOT (sSetDictionary(int)) );
   glay->addMultiCellWidget( dictcombo, 2, 2, 1, 2 );
 
-  dictlist = new QLabel( dictcombo, i18n("Dictionary:"), this );
+  dictlist = new QLabel( dictcombo, i18n("&Dictionary:"), this );
   glay->addWidget( dictlist, 2 ,0 );
 
   encodingcombo = new QComboBox( this, "Encoding" );
@@ -138,7 +138,7 @@ KSpellConfig::KSpellConfig( QWidget *parent, const char *name,
 	   SLOT(sChangeEncoding(int)) );
   glay->addMultiCellWidget( encodingcombo, 3, 3, 1, 2 );
 
-  QLabel *tmpQLabel = new QLabel( encodingcombo, i18n("Encoding:"), this);
+  QLabel *tmpQLabel = new QLabel( encodingcombo, i18n("&Encoding:"), this);
   glay->addWidget( tmpQLabel, 3, 0 );
 
 
@@ -150,7 +150,7 @@ KSpellConfig::KSpellConfig( QWidget *parent, const char *name,
 	   SLOT (sChangeClient(int)) );
   glay->addMultiCellWidget( clientcombo, 4, 4, 1, 2 );
 
-  tmpQLabel = new QLabel( clientcombo, i18n("Client:"), this );
+  tmpQLabel = new QLabel( clientcombo, i18n("&Client:"), this );
   glay->addWidget( tmpQLabel, 4, 0 );
 
   if( addHelpButton == true )
