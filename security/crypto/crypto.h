@@ -44,6 +44,8 @@ class QGridLayout;
 class KSSLCertBox;
 class QVButtonGroup;
 class QComboBox;
+class KSSLSigners;
+
 
 class CipherItem : public QCheckListItem
 {
@@ -146,6 +148,8 @@ public:
     inline void setSite(bool x) { _site = x; }
     inline void setEmail(bool x) { _email = x; }
     inline void setCode(bool x) { _code = x; }
+
+    bool isNew, modified;
 
 protected:
     virtual void stateChange( bool );
@@ -340,6 +344,7 @@ private:
   KSSLCertBox *caSubject, *caIssuer;
   QPushButton *caSSLImport, *caSSLRemove;
   QCheckBox *caSite, *caEmail, *caCode;
+  KSSLSigners *_signers;
 
   KConfig *config;
   KSimpleConfig *policies, *pcerts, *authcfg;

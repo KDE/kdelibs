@@ -79,6 +79,7 @@
 
 #include <ksslall.h>
 #include <kopenssl.h>
+#include <ksslsigners.h>
 
 #include "crypto.h"
 #include "certexport.h"
@@ -181,6 +182,8 @@ QString tmp;
     _site = site;
     _email = email;
     _code = code;
+    isNew = false;
+    modified = false;
 }
 
 void CAItem::stateChange( bool )
@@ -217,6 +220,8 @@ QString whatstr;
   yourCertDelList.setAutoDelete(true);
   authDelList.setAutoDelete(true);
   caDelList.setAutoDelete(true);
+
+  _signers = new KSSLSigners;
 
   ///////////////////////////////////////////////////////////////////////////
   // Create the GUI here - there are currently a total of 6 tabs.
@@ -286,7 +291,6 @@ QString whatstr;
   policies = new KSimpleConfig("ksslpolicies", false);
   pcerts = new KSimpleConfig("ksslcertificates", false);
   authcfg = new KSimpleConfig("ksslauthmap", false);
-  cacfg = new KConfig("ksslcalist", false, false);
 
 #ifdef HAVE_SSL
   SSLv3Box = new QListView(tabSSL, "v3ciphers");
@@ -802,7 +806,7 @@ KCryptoConfig::~KCryptoConfig()
     delete policies;
     delete pcerts;
     delete authcfg;
-    delete cacfg;
+    delete _signers;
 }
 
 void KCryptoConfig::configChanged()
@@ -940,20 +944,22 @@ void KCryptoConfig::load()
     j->setOriginalName(*i);
   }
 
-  groups = cacfg->groupList();
- 
+  groups = _signers->list();
+  KConfig sigcfg("ksslcalist", true, false); 
   caList->clear();
   for (QStringList::Iterator i = groups.begin();
                              i != groups.end();
                              ++i) {
     if ((*i).isEmpty() || *i == "<default>") continue;
-    cacfg->setGroup(*i);
+    if (!sigcfg.hasGroup(*i)) continue;
+    sigcfg.setGroup(*i);
+    if (!sigcfg.hasKey("x509")) continue;
                 new CAItem(caList,
                      (*i),
-                     cacfg->readEntry("x509", ""), 
-                     cacfg->readBoolEntry("site", false),
-                     cacfg->readBoolEntry("email", false),
-                     cacfg->readBoolEntry("code", false),
+                     sigcfg.readEntry("x509", ""), 
+                     sigcfg.readBoolEntry("site", false), 
+                     sigcfg.readBoolEntry("email", false), 
+                     sigcfg.readBoolEntry("code", false), 
                      this );
   }
   
@@ -1081,23 +1087,37 @@ void KCryptoConfig::save()
      pcerts->writeEntry("Password", x->getPass());
   }
 
+  bool doGen = false;
 
   // CA certificates code
   for (CAItem *x = caDelList.first(); x != 0; x = caDelList.next()) {
-     cacfg->deleteGroup(x->configName());
+     _signers->remove(x->configName());
      caDelList.remove(x);
+     doGen = true;
   }
+
   // Go through the non-deleted ones and save them
   for (CAItem *x = static_cast<CAItem *>(caList->firstChild()); x;
                x = static_cast<CAItem *>(x->nextSibling())) {
-     cacfg->setGroup(x->configName());
-     cacfg->writeEntry("x509", x->getCert());
-     cacfg->writeEntry("site", x->getSite());
-     cacfg->writeEntry("email", x->getEmail());
-     cacfg->writeEntry("code", x->getCode());
+     if (!x->modified) continue;
+     if (x->isNew) {
+        x->isNew = false;
+        _signers->addCA(x->getCert(),
+                        x->getSite(),
+                        x->getEmail(),
+                        x->getCode());
+     } else {
+        _signers->setUse(x->configName(),
+                         x->getSite(),
+                         x->getEmail(),
+                         x->getCode());
+     }
+     x->modified = false;
+     doGen = true;
   }
 
-  genCAList();
+  if (doGen) genCAList();
+
 
   config->setGroup("Auth");
   QString whichAuth = config->readEntry("AuthMethod", "none");
@@ -1141,7 +1161,6 @@ void KCryptoConfig::save()
   policies->sync();
   pcerts->sync();
   authcfg->sync();
-  cacfg->sync();
 
   // insure proper permissions -- contains sensitive data
   QString cfgName(KGlobal::dirs()->findResource("config", "cryptodefaults"));
@@ -1216,13 +1235,7 @@ const KAboutData* KCryptoConfig::aboutData() const {
 
 void KCryptoConfig::genCAList() {
 
-  for (CAItem *x = static_cast<CAItem *>(caList->firstChild()); x;
-               x = static_cast<CAItem *>(x->nextSibling())) {
-     if (x->getCode() || x->getEmail() || x->getSite()) {
-     //   cacfg->setGroup(x->configName());
-     //   cacfg->writeEntry("x509", x->getCert());
-     }
-  }
+   _signers->regenerate();
 
 }
 
@@ -1823,7 +1836,7 @@ QString certtext;
 			 }
 	}
 
-	new CAItem(caList, name, x->toString(), true, true, true, this);
+	(new CAItem(caList, name, x->toString(), true, true, true, this))->isNew = true;
 
 	delete x;
 	configChanged();
@@ -1853,10 +1866,13 @@ CAItem *x = static_cast<CAItem *>(caList->selectedItem());
     caEmail->setChecked(x->getEmail());
     caCode->setChecked(x->getCode());
     caSubject->setValues(x ? x->getName() : QString(""));
-    cacfg->setGroup(x->getName());
-    KSSLCertificate *cert = KSSLCertificate::fromString(cacfg->readEntry("x509", "").local8Bit());
-    caIssuer->setValues(cert->getIssuer());
-    delete cert;
+    KSSLCertificate *cert = KSSLCertificate::fromString(x->getCert().local8Bit());
+    if (!cert) {
+       caIssuer->setValues(QString(""));
+    } else {
+       caIssuer->setValues(cert->getIssuer());
+       delete cert;
+    }
  } else {
     caSSLRemove->setEnabled(false);
     caSite->setEnabled(false);
@@ -1874,6 +1890,7 @@ CAItem *x = static_cast<CAItem *>(caList->selectedItem());
    x->setSite(caSite->isChecked());
    x->setEmail(caEmail->isChecked());
    x->setCode(caCode->isChecked());
+   x->modified = true;
    configChanged();
  }
 }
