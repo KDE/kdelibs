@@ -157,9 +157,10 @@ public:
 	 * @param type the type of resource to locate directories for.
 	 * @param recursive specifies if the function should decend
 	 *        into subdirectories.
-	 * @param only accept filenames that fit to filter. Currently
-	 *        only full match is implemented, but it may be extended
-	 *        for regular expressions
+	 * @param only accept filenames that fit to filter. The filter
+	 *        may consist of an optional directory and a QRexExp 
+	 *        wildcard expression. E.g. "images/*.jpg"
+	 *        
 	 * @return a list of directories matching the resource specified.
 	 */
 	QStringList findAllResources( const QString& type, 

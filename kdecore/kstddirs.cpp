@@ -15,7 +15,10 @@
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
+#include <sys/types.h>
+#include <dirent.h>
 
+#include <qregexp.h>
 #include <qdict.h>
 #include <qdir.h>
 #include <qfileinfo.h>
@@ -134,13 +137,21 @@ QString KStandardDirs::findResourceDir( const QString& type,
 	return QString::null;
     }
 
+printf("start search: type = %s filename = %s\n", 
+	type.ascii(), filename.ascii());
+
     QStringList candidates = getResourceDirs(type);
     QFileInfo testfile;
     for (QStringList::ConstIterator it = candidates.begin();
 	 it != candidates.end(); it++) {
 	testfile.setFile(*it + filename);
+printf("test: filename = %s\n", 
+	testfile.filePath().ascii());
 	if (testfile.isFile())
+        {
+	    printf("Found!\n");
 	    return *it;
+	}
     }
     
     debug("KStdDirs::findResDir(): can't find \"%s\" in type \"%s\".",
@@ -153,6 +164,8 @@ QStringList KStandardDirs::findAllResources( const QString& type,
 					     const QString& filter, 
 					     bool recursive) const
 {
+    QString filterPath;
+    QString filterFile;
     assert(!recursive);
     
     if (filter.at(0) == '/') // absolute paths we return
@@ -160,35 +173,65 @@ QStringList KStandardDirs::findAllResources( const QString& type,
 
     QStringList list;
 
-    QStringList candidates = getResourceDirs(type);
-    QDir testdir;
 
-    enum { Empty, PathName, RegExp } filterType;
-    if (filter.isEmpty())
-	filterType = Empty;
-    else {
-	// TODO: RegExp
-	filterType = PathName;
+    if (filter.length())
+    {
+       int slash = filter.findRev('/');
+       if (!slash)
+       {
+           filterFile = filter;
+       }
+       else 
+       {
+           filterPath = filter.left(slash);
+           filterFile = filter.mid(slash+1);
+       }
     }
+    QRegExp regExp(filterFile, true, true);
+    QString path;
+    DIR *dp = 0L;
+    struct dirent *ep;
+    struct stat buff;
+    QStringList dirs;
+    {
+       QStringList candidates( getResourceDirs(type));
+       for (QStringList::ConstIterator it = candidates.begin();
+            it != candidates.end(); it++) 
+       {
+          dirs.append( *it + filterPath);
+       }
+    }    
+    for (QStringList::ConstIterator it = dirs.begin();
+	 it != dirs.end(); it++) 
+    {
+       path = *it;
+       dp = opendir( QFile::encodeName(path));
+       if (!dp)
+          continue; // directory doesn't exist          	
 
-    QStringList entries;
-    for (QStringList::ConstIterator it = candidates.begin();
-	 it != candidates.end(); it++) {
-	testdir.setPath(*it);
-	entries = testdir.entryList( QDir::Files | QDir::Readable, QDir::Unsorted);
-	switch (filterType) {
-	case Empty:
-	    for (QStringList::ConstIterator it2 = entries.begin();
-		 it2 != entries.end(); it2++)
-		list.append(*it + *it2);
-	    break;
-	case PathName:
-	    if (!access(*it + filter, F_OK|R_OK))
-		list.append(*it + filter);
-	    break;
-	default:
-	    break;
-	}
+       while( ( ep = readdir( dp ) ) != 0L )
+       {
+         QString fn( QFile::decodeName(ep->d_name));
+         if (!recursive && !filterFile.isEmpty() && regExp.match(fn))
+             continue; // No match
+         fn = path+"/"+fn;
+         if ( stat( fn, &buff ) != 0 )
+         {
+             printf("Error statting %s:", fn.ascii());
+             perror("");
+             continue; // Couldn't stat (Why not?)
+         }
+         if ( recursive )
+         {
+             if ( S_ISDIR( buff.st_mode ))
+                dirs.append(fn);
+             if (!filterFile.isEmpty() && regExp.match(fn))
+                continue; // No match
+         }
+         if ( S_ISREG( buff.st_mode))
+             list.append( fn );	
+      }
+      closedir( dp );
     }
     return list;
 }
