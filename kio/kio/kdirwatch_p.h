@@ -87,7 +87,7 @@ public:
 
   // Memory management - delete when last KDirWatch gets deleted
   void ref() { m_ref++; }
-  void deref() { if ( --m_ref == 0 ) delete this; }
+  bool deref() { return ( --m_ref == 0 ); }
 
 public slots:
   void slotRescan();

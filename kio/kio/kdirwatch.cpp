@@ -1165,7 +1165,12 @@ KDirWatch::KDirWatch (QObject* parent, const char* name)
 KDirWatch::~KDirWatch()
 {
   if (d) d->removeEntries(this);
-  d->deref(); // will delete it if it's the last one
+  if ( d->deref() )
+  {
+    // delete it if it's the last one
+    delete d;
+    dwp_self = 0L;
+  }
 }
 
 
