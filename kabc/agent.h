@@ -65,7 +65,8 @@ public:
 
   bool operator==( const Agent & ) const;
   bool operator!=( const Agent & ) const;
-
+  Agent &operator=(  const Agent & );
+  
   /**
    * Sets a URL for the location of the agent file. When using this
    * function, @ref isIntern() will return 'false' until you use

@@ -25,7 +25,7 @@
 using namespace KABC;
 
 Agent::Agent()
-  : mAddressee( 0 ), mIntern( true )
+  : mAddressee( 0 ), mIntern( false )
 {
 }
 
@@ -41,6 +41,8 @@ Agent::Agent( Addressee *addressee )
 
 Agent::~Agent()
 {
+  delete mAddressee;
+  mAddressee = 0;
 }
 
 bool Agent::operator==( const Agent &a ) const
@@ -64,6 +66,22 @@ bool Agent::operator==( const Agent &a ) const
 bool Agent::operator!=( const Agent &a ) const
 {
   return !( a == *this );
+}
+
+Agent &Agent::operator=(  const Agent &addr )
+{
+  if ( addr.mIntern && addr.mAddressee ) {
+    if ( mAddressee )
+      delete mAddressee;
+
+    mAddressee = new Addressee;
+    *mAddressee = *(addr.mAddressee);
+  }
+
+  mUrl = addr.mUrl;
+  mIntern = addr.mIntern;
+
+  return *this;
 }
 
 void Agent::setUrl( const QString &url )
