@@ -123,6 +123,8 @@ public:
 
 SlaveBase *globalSlave=0;
 
+static volatile bool slaveWriteError = false;
+
 void sigalarm_handler(int sigNumber)
 {
    signal(sigNumber,SIG_IGN);
@@ -287,8 +289,7 @@ void SlaveBase::connectSlave(const QString& path)
     if (!appconn->inited())
     {
         kdDebug(7019) << "SlaveBase: failed to connect to " << path << endl;
-        this->~SlaveBase();
-        ::exit(255);
+        exit();
     }
 
     setConnection(appconn);
@@ -331,27 +332,31 @@ void SlaveBase::sendMetaData()
 {
    KIO_DATA << mOutgoingMetaData;
 
+   slaveWriteError = false;
    m_pConnection->send( INF_META_DATA, data );
+   if (slaveWriteError) exit();
    mOutgoingMetaData.clear(); // Clear
 }
 
 
 void SlaveBase::data( const QByteArray &data )
 {
-    if (!mOutgoingMetaData.isEmpty())
-       sendMetaData();
-    m_pConnection->send( MSG_DATA, data );
+   if (!mOutgoingMetaData.isEmpty())
+      sendMetaData();
+   slaveWriteError = false;
+   m_pConnection->send( MSG_DATA, data );
+   if (slaveWriteError) exit();
 }
 
 void SlaveBase::dataReq( )
 {
 /*
-    if (!mOutgoingMetaData.isEmpty())
-       sendMetaData();
+   if (!mOutgoingMetaData.isEmpty())
+      sendMetaData();
 */
-    if (d->needSendCanResume)
-        canResume(0);
-    m_pConnection->send( MSG_DATA_REQ );
+   if (d->needSendCanResume)
+      canResume(0);
+   m_pConnection->send( MSG_DATA_REQ );
 }
 
 void SlaveBase::error( int _errid, const QString &_text )
@@ -369,7 +374,9 @@ void SlaveBase::error( int _errid, const QString &_text )
 
 void SlaveBase::connected()
 {
+    slaveWriteError = false;
     m_pConnection->send( MSG_CONNECTED );
+    if (slaveWriteError) exit();
 }
 
 void SlaveBase::finished()
@@ -408,7 +415,10 @@ void SlaveBase::canResume()
 void SlaveBase::totalSize( KIO::filesize_t _bytes )
 {
     KIO_DATA << KIO_FILESIZE_T(_bytes);
+    slaveWriteError = false;
     m_pConnection->send( INF_TOTAL_SIZE, data );
+    if (slaveWriteError) exit();
+
     //this one is usually called before the first item is listed in listDir()
     struct timeval tp;
     gettimeofday(&tp, 0);
@@ -435,7 +445,9 @@ void SlaveBase::processedSize( KIO::filesize_t _bytes )
 	}
 	if ( msecdiff >= 100 ) { // emit size 10 times a second
 	    KIO_DATA << KIO_FILESIZE_T(_bytes);
+	    slaveWriteError = false;
 	    m_pConnection->send( INF_PROCESSED_SIZE, data );
+            if (slaveWriteError) exit();
 	    d->last_tv.tv_sec = tv.tv_sec;
 	    d->last_tv.tv_usec = tv.tv_usec;
 	}
@@ -452,7 +464,9 @@ void SlaveBase::processedPercent( float /* percent */ )
 void SlaveBase::speed( unsigned long _bytes_per_second )
 {
     KIO_DATA << _bytes_per_second;
+    slaveWriteError = false;
     m_pConnection->send( INF_SPEED, data );
+    if (slaveWriteError) exit();
 }
 
 void SlaveBase::redirection( const KURL& _url )
@@ -498,8 +512,7 @@ void SlaveBase::mimeType( const QString &_type)
        cmd = 0;
        if ( m_pConnection->read( &cmd, data ) == -1 ) {
            kdDebug(7019) << "SlaveBase: mimetype: read error" << endl;
-           this->~SlaveBase();
-           ::exit(255);
+           exit();
        }
        // kdDebug(7019) << "(" << getpid() << ") Slavebase: mimetype got " << cmd << endl;
        if ( cmd == CMD_HOST) // Ignore.
@@ -514,6 +527,12 @@ void SlaveBase::mimeType( const QString &_type)
   }
   while (cmd != CMD_NONE);
   mOutgoingMetaData.clear();
+}
+
+void SlaveBase::exit()
+{
+    this->~SlaveBase();
+    ::exit(255);
 }
 
 void SlaveBase::warning( const QString &_msg)
@@ -552,7 +571,9 @@ void SlaveBase::dropNetwork(const QString& host)
 void SlaveBase::statEntry( const UDSEntry& entry )
 {
     KIO_DATA << entry;
+    slaveWriteError = false;
     m_pConnection->send( MSG_STAT_ENTRY, data );
+    if (slaveWriteError) exit();
 }
 
 void SlaveBase::listEntry( const UDSEntry& entry, bool _ready )
@@ -604,7 +625,9 @@ void SlaveBase::listEntries( const UDSEntryList& list )
     UDSEntryListConstIterator end = list.end();
     for (; it != end; ++it)
       stream << *it;
+    slaveWriteError = false;
     m_pConnection->send( MSG_LIST_ENTRIES, data);
+    if (slaveWriteError) exit();
     d->sentListEntries+=(uint)list.count();
 }
 
@@ -628,7 +651,7 @@ void SlaveBase::sigsegv_handler (int)
     // Debug and printf should be avoided because they might
     // call malloc.. and get in a nice recursive malloc loop
     write(2, "kioslave : ###############SEG FAULT#############\n", 49);
-    exit(1);
+    ::exit(1);
 }
 
 void SlaveBase::sigpipe_handler (int)
@@ -639,8 +662,8 @@ void SlaveBase::sigpipe_handler (int)
     // 1) Communication error with application.
     // 2) Communication error with network.
     kdDebug(7019) << "SIGPIPE" << endl;
-    exit(0);
-    // signal(SIGPIPE,&sigpipe_handler);
+    signal(SIGPIPE,&sigpipe_handler);
+    slaveWriteError = true;
 }
 
 void SlaveBase::setHost(QString const &, int, QString const &, QString const &)

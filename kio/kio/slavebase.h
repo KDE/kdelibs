@@ -49,6 +49,12 @@ public:
 
     /**
      * @internal
+     * Terminate the slave by calling the destructor and then ::exit()
+     */
+    void exit();
+
+    /**
+     * @internal
      */
     void dispatchLoop();
 
