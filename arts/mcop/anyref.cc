@@ -96,6 +96,7 @@ string AnyRefBase::type() const
 		case repAny:		return ((Any *)data)->type;
 	}
 	assert(false);
+	return tVoid; // silence compiler
 }
 
 void AnyRefBase::_write(Buffer *b) const
