@@ -32,6 +32,8 @@
 #include <kdelibs_export.h>
 
 class KLanguageButtonPrivate;
+class QIconSet;
+class QPopupMenu;
 
 /**
  * KLanguageButton provides a combobox with a 2-D dataset. It also supports icons.
