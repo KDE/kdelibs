@@ -244,15 +244,17 @@ public:
 
     virtual void addEventListener(int id, EventListener *listener,
 				  const bool useCapture, int &exceptioncode);
-    virtual void removeEventListener(int id, EventListener *listener,
-				     bool useCapture, int &exceptioncode);
     virtual void addEventListener(const DOMString &type, EventListener *listener,
 				  const bool useCapture, int &exceptioncode);
+    virtual void removeEventListener(int id, EventListener *listener,
+				     bool useCapture, int &exceptioncode);
     virtual void removeEventListener(const DOMString &type, EventListener *listener,
 				     bool useCapture,int &exceptioncode);
+    virtual void removeHTMLEventListener(int id);
 
     virtual bool dispatchEvent(EventImpl *evt,
 			       int &exceptioncode);
+    virtual void handleLocalEvents(EventImpl *evt, bool useCapture);
 	
 protected:
     DocumentImpl *document;

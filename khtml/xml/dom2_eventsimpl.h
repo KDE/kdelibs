@@ -28,6 +28,8 @@
 #include "dom2_viewsimpl.h"
 #include "dom/dom_misc.h"
 
+class KHTMLPart;
+
 namespace DOM {
 
 class EventImpl : public DomShared
@@ -247,6 +249,17 @@ public:
     bool useCapture;
 };
 
+
+class HTMLEventListener : public EventListener {
+public:
+    HTMLEventListener(KHTMLPart *_part, QString _scriptCode);
+    virtual ~HTMLEventListener();
+    virtual void handleEvent(const Event &evt);
+    virtual DOMString eventListenerType();
+protected:
+    QString m_scriptCode;
+    KHTMLPart *m_part;
+};
 
 }; //namespace
 #endif

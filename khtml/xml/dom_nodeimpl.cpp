@@ -356,6 +356,12 @@ void NodeImpl::addEventListener(int id, EventListener *listener,
     listener->ref();
 }
 
+void NodeImpl::addEventListener(const DOMString &type, EventListener *listener,
+				  const bool useCapture, int &exceptioncode)
+{
+    addEventListener(EventImpl::typeToId(type),listener,useCapture,exceptioncode);
+}
+
 void NodeImpl::removeEventListener(int id, EventListener *listener,
 				   bool useCapture, int &/*exceptioncode*/)
 {
@@ -376,34 +382,71 @@ void NodeImpl::removeEventListener(int id, EventListener *listener,
     return;
 }
 
-void NodeImpl::addEventListener(const DOMString &type, EventListener *listener,
-				  const bool useCapture, int &exceptioncode)
-{
-    addEventListener(EventImpl::typeToId(type),listener,useCapture,exceptioncode);
-}
-
 void NodeImpl::removeEventListener(const DOMString &type, EventListener *listener,
 				     bool useCapture,int &exceptioncode)
 {
     removeEventListener(EventImpl::typeToId(type),listener,useCapture,exceptioncode);
 }
 
+void NodeImpl::removeHTMLEventListener(int id)
+{
+    if (!m_regdListeners) // nothing to remove
+        return;
+
+    QListIterator<RegisteredEventListener> it(*m_regdListeners);
+    for (; it.current(); ++it)
+        if (it.current()->id == id &&
+            it.current()->listener->eventListenerType() == "HTMLEventListener") {
+            m_regdListeners->removeRef(it.current());
+            return;
+        }
+}
+
 bool NodeImpl::dispatchEvent(EventImpl *evt,
 			     int &/*exceptioncode*/)
 {
+    // work out what nodes to send event to
+    QList<NodeImpl> nodeChain;
+    NodeImpl *n;
+    for (n = this; n; n = n->parentNode()) {
+	n->ref();
+	nodeChain.insert(0,n);
+    }
+
+    // trigger any capturing event handlers on our way down
+    QListIterator<NodeImpl> it(nodeChain);
+    for (; it.current() && it.current() != this && !evt->propagationStopped(); ++it) {
+	it.current()->handleLocalEvents(evt,true);
+    }
+
+    // ok, now bubble up again (only non-capturing event handlers will be called)
+    // ### recalculate the node chain here? (e.g. if target node moved in document by previous event handlers)
+    it.toLast();
+    if (evt->bubbles()) {
+	for (; it.current() && !evt->propagationStopped(); --it) {
+	    it.current()->handleLocalEvents(evt,false);
+	}
+    }
+
+    // deref all nodes in chain
+    it.toFirst();
+    for (; it.current(); ++it)
+	it.current()->deref(); // this may delete us
+
+    return !evt->defaultPrevented(); // ### what if defaultPrevented was called before dispatchEvent?
+}
+
+void NodeImpl::handleLocalEvents(EventImpl *evt, bool useCapture)
+{
     if (!m_regdListeners)
-	return false;
+	return;
 
     QListIterator<RegisteredEventListener> it(*m_regdListeners);
     bool found = false;
     for (; it.current() && !found; ++it)
-	if (it.current()->id == evt->id())
+	if (it.current()->id == evt->id() && it.current()->useCapture == useCapture)
 	    it.current()->listener->handleEvent(evt);
-
-    return false; // ### return whether or not preventDefault was called
 }
-
-
 
 //--------------------------------------------------------------------
 

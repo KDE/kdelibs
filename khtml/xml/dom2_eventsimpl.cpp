@@ -27,6 +27,7 @@
 #include "dom2_viewsimpl.h"
 #include "dom_string.h"
 #include "dom_stringimpl.h"
+#include "khtml_part.h"
 
 using namespace DOM;
 
@@ -543,3 +544,26 @@ bool RegisteredEventListener::operator==(const RegisteredEventListener &other)
 	    useCapture == other.useCapture);
 }
 
+// -----------------------------------------------------------------------------
+
+HTMLEventListener::HTMLEventListener(KHTMLPart *_part, QString _scriptCode)
+{
+    m_part = _part;
+    m_scriptCode = _scriptCode;
+}
+
+HTMLEventListener::~HTMLEventListener()
+{
+}
+
+void HTMLEventListener::handleEvent(const Event &/*evt*/)
+{
+    // ### make event information available to script somehow?
+    // See DOM2 Events section 1.3.2
+    m_part->executeScript(m_scriptCode);
+}
+
+DOMString HTMLEventListener::eventListenerType()
+{
+    return "HTMLEventListener";
+}
