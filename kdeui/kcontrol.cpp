@@ -90,13 +90,21 @@ KControlApplication::KControlApplication(int &argc, char **argv, const char *nam
   // set dialog as main widget
   setMainWidget(dialog);
 
+  // detect, if swallowing
+  int start=1;
+  if (argc >= 3 && strcmp(argv[1],"-swallow") == 0)
+    {
+      swallowCaption = argv[2];
+      start = 3;
+    }
+
   // parse the command line parameters, if any
-  if (argc > 1)
+  if (argc > start)
     {
       pages = new QStrList();
       if (pages)
 	{
-	  for (int i=1; i<argc; i++)
+	  for (int i=start; i<argc; i++)
 	    pages->append(argv[i]);
 	}
     }
@@ -108,8 +116,11 @@ KControlApplication::KControlApplication(int &argc, char **argv, const char *nam
 
 void KControlApplication::setTitle(const char *title)
 {
-    if (dialog)
-	dialog->setCaption(title);
+  if (dialog)
+    if (swallowCaption.isEmpty())
+      dialog->setCaption(title);
+    else
+      dialog->setCaption(swallowCaption);
 }
 
 KControlApplication::~KControlApplication()

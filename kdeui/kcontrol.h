@@ -190,8 +190,11 @@ protected:
   KControlDialog *dialog;
   QStrList       *pages;
   QStrList       helpNames;
-  bool     justInit;
-  
+  bool           justInit;
+
+private:
+
+  QString        swallowCaption;
 };
 
 
