@@ -2,7 +2,7 @@
 
 	* object.h: renamed virtual get(), put(), hasProperty() and
 	deleteProperty() overloads accepting an int property to
-	getIntegerProperty() etc. Not only cleaner C++ that makes
+	getPropertyByIndex() etc. Not only cleaner C++ that makes
 	compilers happier but also helps to make the code more
 	understandable and safer.
 

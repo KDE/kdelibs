@@ -479,7 +479,7 @@ namespace KJS {
      */
     // [[Get]] - must be implemented by all Objects
     virtual Value get(ExecState *exec, const Identifier &propertyName) const;
-    virtual Value getIntegerProperty(ExecState *exec,
+    virtual Value getPropertyByIndex(ExecState *exec,
 				     unsigned propertyName) const;
 
     /**
@@ -490,7 +490,7 @@ namespace KJS {
      */
     virtual void put(ExecState *exec, const Identifier &propertyName,
 		     const Value &value, int attr = None);
-    virtual void putIntegerProperty(ExecState *exec, unsigned propertyName,
+    virtual void putPropertyByIndex(ExecState *exec, unsigned propertyName,
 				    const Value &value, int attr = None);
 
     /**
@@ -509,7 +509,7 @@ namespace KJS {
      */
     virtual bool hasProperty(ExecState *exec,
 			     const Identifier &propertyName) const;
-    virtual bool hasIntegerProperty(ExecState *exec, unsigned propertyName) const;
+    virtual bool hasPropertyByIndex(ExecState *exec, unsigned propertyName) const;
 
     /**
      * Implementation of the [[Delete]] internal property (implemented by all
@@ -519,7 +519,7 @@ namespace KJS {
      */
     virtual bool deleteProperty(ExecState *exec,
 				const Identifier &propertyName);
-    virtual bool deleteIntegerProperty(ExecState *exec, unsigned propertyName);
+    virtual bool deletePropertyByIndex(ExecState *exec, unsigned propertyName);
 
     /**
      * Remove all properties from this object.
@@ -663,13 +663,13 @@ namespace KJS {
     { return imp()->get(exec,propertyName); }
 
   inline Value Object::get(ExecState *exec, unsigned propertyName) const
-    { return imp()->getIntegerProperty(exec, propertyName); }
+    { return imp()->getPropertyByIndex(exec, propertyName); }
 
   inline void Object::put(ExecState *exec, const Identifier &propertyName, const Value &value, int attr)
     { imp()->put(exec,propertyName,value,attr); }
 
   inline void Object::put(ExecState *exec, unsigned propertyName, const Value &value, int attr)
-    { imp()->putIntegerProperty(exec, propertyName, value, attr); }
+    { imp()->putPropertyByIndex(exec, propertyName, value, attr); }
 
   inline bool Object::canPut(ExecState *exec, const Identifier &propertyName) const
     { return imp()->canPut(exec,propertyName); }
@@ -678,13 +678,13 @@ namespace KJS {
     { return imp()->hasProperty(exec, propertyName); }
 
   inline bool Object::hasProperty(ExecState *exec, unsigned propertyName) const
-    { return imp()->hasIntegerProperty(exec, propertyName); }
+    { return imp()->hasPropertyByIndex(exec, propertyName); }
 
   inline bool Object::deleteProperty(ExecState *exec, const Identifier &propertyName)
     { return imp()->deleteProperty(exec,propertyName); }
 
   inline bool Object::deleteProperty(ExecState *exec, unsigned propertyName)
-    { return imp()->deleteIntegerProperty(exec, propertyName); }
+    { return imp()->deletePropertyByIndex(exec, propertyName); }
 
   inline Value Object::defaultValue(ExecState *exec, Type hint) const
     { return imp()->defaultValue(exec,hint); }

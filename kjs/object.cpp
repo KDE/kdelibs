@@ -182,7 +182,7 @@ Value ObjectImp::get(ExecState *exec, const Identifier &propertyName) const
   return proto.get(exec,propertyName);
 }
 
-Value ObjectImp::getIntegerProperty(ExecState *exec,
+Value ObjectImp::getPropertyByIndex(ExecState *exec,
 				    unsigned propertyName) const
 {
   return get(exec, Identifier::from(propertyName));
@@ -216,7 +216,7 @@ void ObjectImp::put(ExecState *exec, const Identifier &propertyName,
 }
 
 // delme
-void ObjectImp::putIntegerProperty(ExecState *exec, unsigned propertyName,
+void ObjectImp::putPropertyByIndex(ExecState *exec, unsigned propertyName,
                      const Value &value, int attr)
 {
   put(exec, Identifier::from(propertyName), value, attr);
@@ -259,7 +259,7 @@ bool ObjectImp::hasProperty(ExecState *exec, const Identifier &propertyName) con
   return !proto.isNull() && proto.hasProperty(exec,propertyName);
 }
 
-bool ObjectImp::hasIntegerProperty(ExecState *exec, unsigned propertyName) const
+bool ObjectImp::hasPropertyByIndex(ExecState *exec, unsigned propertyName) const
 {
   return hasProperty(exec, Identifier::from(propertyName));
 }
@@ -283,7 +283,7 @@ bool ObjectImp::deleteProperty(ExecState */*exec*/, const Identifier &propertyNa
   return true;
 }
 
-bool ObjectImp::deleteIntegerProperty(ExecState *exec, unsigned propertyName)
+bool ObjectImp::deletePropertyByIndex(ExecState *exec, unsigned propertyName)
 {
   return deleteProperty(exec, Identifier::from(propertyName));
 }

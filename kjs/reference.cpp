@@ -139,7 +139,7 @@ Value Reference::getValue(ExecState *exec) const
 
   ObjectImp *oimp = static_cast<ObjectImp*>(o.imp());
   if (propertyNameIsNumber)
-    return oimp->getIntegerProperty(exec, propertyNameAsNumber);
+    return oimp->getPropertyByIndex(exec, propertyNameAsNumber);
   return oimp->get(exec, prop);
 }
 
@@ -160,7 +160,7 @@ void Reference::putValue(ExecState *exec, const Value &w)
 
   ObjectImp *oimp = static_cast<ObjectImp*>(o.imp());
   if (propertyNameIsNumber)
-    oimp->putIntegerProperty(exec, propertyNameAsNumber, w);
+    oimp->putPropertyByIndex(exec, propertyNameAsNumber, w);
   else
     oimp->put(exec, prop, w);
 }
@@ -183,7 +183,7 @@ bool Reference::deleteValue(ExecState *exec)
 
   ObjectImp *bimp = static_cast<ObjectImp*>(b.imp());
   if (propertyNameIsNumber)
-    return bimp->deleteIntegerProperty(exec, propertyNameAsNumber);
+    return bimp->deletePropertyByIndex(exec, propertyNameAsNumber);
   return bimp->deleteProperty(exec, prop);
 }
 
