@@ -68,11 +68,9 @@ namespace KJS {
     virtual ~Node();
     virtual KJSO evaluate() = 0;
     int lineNo() const { return line; }
-    static ProgramNode *progNode() { return prog; }
-    static void deleteAllNodes();
+    static void deleteAllNodes(Node **first, ProgramNode **prog);
   protected:
     KJSO throwError(ErrorType e, const char *msg);
-    static ProgramNode *prog;
   private:
     // disallow assignment and copy-construction
     Node(const Node &);
@@ -80,7 +78,6 @@ namespace KJS {
     int line;
     static  int nodeCount;
     Node *next, *prev;
-    static Node *firstNode;
   };
 
   class StatementNode : public Node {
@@ -731,7 +728,7 @@ namespace KJS {
 
   class ProgramNode : public Node {
   public:
-    ProgramNode(SourceElementsNode *s) : source(s) { Node::prog = this; }
+    ProgramNode(SourceElementsNode *s);
     KJSO evaluate();
     void deleteStatements();
   private:

@@ -34,8 +34,6 @@
 using namespace KJS;
 
 int   Node::nodeCount = 0;
-ProgramNode *Node::prog = 0L;
-Node *Node::firstNode = 0L;
 
 Node::Node()
 {
@@ -46,11 +44,12 @@ Node::Node()
 
   // create a list of allocated objects. Makes
   // deleting (even after a parse error) quite easy
-  next = firstNode;
+  Node **first  = &KJScriptImp::current()->firstNode;
+  next = *first;
   prev = 0L;
-  if (firstNode)
-    firstNode->prev = this;
-  firstNode = this;
+  if (*first)
+    (*first)->prev = this;
+  *first = this;
 }
 
 Node::~Node()
@@ -63,17 +62,17 @@ Node::~Node()
   nodeCount--;
 }
 
-void Node::deleteAllNodes()
+void Node::deleteAllNodes(Node **first, ProgramNode **prog)
 {
-  Node *tmp, *n = firstNode;
+  Node *tmp, *n = *first;
 
   while ((tmp = n)) {
     n = n->next;
     delete tmp;
   }
-  firstNode = 0L;
-  prog = 0L;
-  assert(nodeCount == 0);
+  *first = 0L;
+  *prog = 0L;
+  //  assert(nodeCount == 0);
 }
 
 KJSO Node::throwError(ErrorType e, const char *msg)
@@ -1134,6 +1133,12 @@ ParameterNode* ParameterNode::append(const UString *i)
 KJSO ParameterNode::evaluate()
 {
   return Undefined();
+}
+
+ProgramNode::ProgramNode(SourceElementsNode *s)
+  : source(s)
+{
+  KJScriptImp::current()->progNode = this;
 }
 
 // ECMA 14

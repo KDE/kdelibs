@@ -33,6 +33,8 @@ namespace KJS {
   class Object;
   class RegExp;
   class Collector;
+  class Node;
+  class ProgramNode;
 
   class UndefinedImp : public Imp {
   public:
@@ -248,6 +250,9 @@ namespace KJS {
     void init();
     void clear();
     bool evaluate(const QChar *code, unsigned int length, Imp *thisV = 0);
+  public:
+    ProgramNode *progNode;
+    Node *firstNode;
   private:
     static KJScriptImp *curr;
     bool initialized;

@@ -419,6 +419,8 @@ void KJScriptImp::init()
     collector = Collector::init();
     glob.init();
     con = new Context();
+    firstNode = 0L;
+    progNode = 0L;
     initialized = true;
   } else
     Collector::attach(collector);
@@ -429,7 +431,7 @@ void KJScriptImp::clear()
   if (initialized) {
     KJScriptImp::curr = this;
 
-    Node::deleteAllNodes();
+    Node::deleteAllNodes(&firstNode, &progNode);
 
     exVal = 0L;
 
@@ -461,7 +463,8 @@ bool KJScriptImp::evaluate(const QChar *code, unsigned int length, Imp *thisV)
   if (thisV)
     Context::current()->setThisValue(thisV);
 
-  KJSO res = Node::progNode()->evaluate();
+  assert(progNode);
+  KJSO res = progNode->evaluate();
 
   if (context->hadError()) {
     /* TODO */
@@ -473,8 +476,8 @@ bool KJScriptImp::evaluate(const QChar *code, unsigned int length, Imp *thisV)
     errMsg = "";
   }
 
-  if (Node::progNode())
-    KJS::Node::progNode()->deleteStatements();
+  if (progNode)
+    progNode->deleteStatements();
 
   return (errType == 0);
 }

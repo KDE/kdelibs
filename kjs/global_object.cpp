@@ -177,7 +177,7 @@ Completion GlobalFunc::execute(const List &args)
 	return Completion(Normal, Error::create(SyntaxError));
       }
 
-      res = KJS::Node::progNode()->evaluate();
+      res = KJScriptImp::current()->progNode->evaluate();
       if (!res.isA(CompletionType))
 	res = Undefined();
       else {
