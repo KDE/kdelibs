@@ -31,7 +31,7 @@
 #include <unistd.h>
 
 #include "kbookmarkmenu.h"
-#include "kbookmarktree.h"
+#include "kbookmarkmenu_p.h"
 #include "kbookmarkimporter.h"
 
 #include <qstring.h>
@@ -57,6 +57,7 @@
 #include <kconfig.h>
 
 #include <qlistview.h>
+#include <qheader.h>
 
 #include <kiconloader.h>
 
@@ -429,9 +430,12 @@ void KBookmarkMenu::fillBookmarkMenu()
       else
       {
         // kdDebug(7043) << "Creating URL bookmark menu item for " << bm.text() << endl;
-        KAction * action = new KAction( text, bm.icon(), 0,
-                                        this, SLOT( slotBookmarkSelected() ),
-                                        m_actionCollection, bm.address().utf8() );
+        KAction * action = new KBookmarkAction( text, bm.icon(), 0,
+                                                this, SLOT( slotBookmarkSelected() ),
+                                                m_actionCollection, 0 );
+
+        action->setProperty( "url", bm.url().url() );
+        action->setProperty( "address", bm.address() );
 
         action->setToolTip( bm.url().prettyURL() );
 
@@ -545,21 +549,10 @@ void KBookmarkMenu::slotBookmarkSelected()
 {
   //kdDebug(7043) << "KBookmarkMenu::slotBookmarkSelected()" << endl;
   if ( !m_pOwner ) return; // this view doesn't handle bookmarks...
-
-  KBookmark bookmark = m_pManager->findByAddress( QString::fromUtf8(sender()->name()) );
-  Q_ASSERT(!bookmark.isNull());
-  Q_ASSERT(!bookmark.isGroup());
-
-  m_pOwner->openBookmarkURL( bookmark.url().url() );
+  m_pOwner->openBookmarkURL( sender()->property("url").toString() );
 }
 
 // -----------------------------------------------------------------------------
-
-void KBookmarkMenu::slotNSBookmarkSelected()
-{
-  QString link(sender()->name()+8);
-  m_pOwner->openBookmarkURL( link );
-}
 
 void KBookmarkMenu::slotNSLoad()
 {
@@ -584,11 +577,12 @@ void KBookmarkMenuNSImporter::openNSBookmarks()
 
 void KBookmarkMenuNSImporter::newBookmark( const QString & text, const QCString & url, const QString & )
 {
-  QCString actionLink = "bookmark" + url;
   QString _text = text;
   _text.replace( QRegExp( "&" ), "&&" );
-  KAction * action = new KAction( _text, "html", 0, m_menu, SLOT( slotNSBookmarkSelected() ),
-                                  m_actionCollection, actionLink.data());
+  KAction * action = new KBookmarkAction(_text, "html", 0, 
+                                         m_menu, SLOT( slotBookmarkSelected() ),
+                                         m_actionCollection, 0);
+  action->setProperty( "url", url );
   action->setToolTip( url );
   action->plug( mstack.top()->m_parentMenu );
   mstack.top()->m_actions.append( action );
@@ -618,6 +612,8 @@ void KBookmarkMenuNSImporter::endFolder()
 {
   mstack.pop();
 }
+
+// -----------------------------------------------------------------------------
 
 BookmarkEditDialog::BookmarkEditDialog(const QString& title, const QString& url, KBookmarkManager * mgr,
                                        QWidget * parent, const char * name, const QString& caption)
@@ -676,4 +672,89 @@ void BookmarkEditDialog::slotInsertFolder()
   KBookmarkFolderTree::recreateTree( m_folderTree, m_mgr );
 }
 
+// -----------------------------------------------------------------------------
+
+static void fillGroup( KBookmarkFolderTreeItem * parentItem, KBookmarkGroup group )
+{
+  bool noSubGroups = true;
+  KBookmarkFolderTreeItem * lastItem = 0L;
+  for ( KBookmark bk = group.first() ; !bk.isNull() ; bk = group.next(bk) )
+  {
+    if ( bk.isGroup() )
+    {
+      KBookmarkGroup grp = bk.toGroup();
+      KBookmarkFolderTreeItem * item = new KBookmarkFolderTreeItem( parentItem, lastItem, grp );
+      fillGroup( item, grp );
+      if ( grp.isOpen() )
+        item->setOpen( true );
+      lastItem = item;
+      noSubGroups = false;
+    }
+  }
+  if ( noSubGroups ) {
+     parentItem->setOpen( true );
+  }
+}
+
+QListView* KBookmarkFolderTree::createTree( 
+  KBookmarkManager* mgr, QWidget* parent, const char* name 
+) {
+  QListView *listview = new QListView( parent, name );
+
+  listview->setRootIsDecorated( false );
+  listview->header()->hide();
+  listview->addColumn( i18n("Bookmark"), 200 );
+  listview->setSorting( -1, false );
+  listview->setSelectionMode( QListView::Single );
+  listview->setAllColumnsShowFocus( true );
+  listview->setResizeMode( QListView::AllColumns );
+  listview->setMinimumSize( 60, 100 );
+
+  recreateTree( listview, mgr );
+
+  return listview;
+}
+
+void KBookmarkFolderTree::recreateTree( 
+  QListView *listview, KBookmarkManager* mgr
+) {
+  listview->clear();
+
+  KBookmarkGroup root = mgr->root();
+  KBookmarkFolderTreeItem * rootItem = new KBookmarkFolderTreeItem( listview, root );
+  fillGroup( rootItem, root );
+  rootItem->setOpen( true );
+
+  listview->setFocus();
+  listview->setCurrentItem( rootItem );
+  listview->firstChild()->setSelected( true );
+}
+
+QString KBookmarkFolderTree::selectedAddress( QListView *listview )
+{
+  KBookmarkFolderTreeItem *item = static_cast<KBookmarkFolderTreeItem*>(listview->currentItem());
+  return item ? item->m_bookmark.address() : QString::null;
+}
+
+// -----------------------------------------------------------------------------
+
+// toplevel item
+KBookmarkFolderTreeItem::KBookmarkFolderTreeItem( QListView *parent, const KBookmark & gp )
+   : QListViewItem(parent, i18n("Bookmarks")), m_bookmark(gp)
+{
+  setPixmap(0, SmallIcon("bookmark"));
+  setExpandable(true);
+}
+
+// group
+KBookmarkFolderTreeItem::KBookmarkFolderTreeItem( KBookmarkFolderTreeItem *parent, QListViewItem *after, const KBookmarkGroup & gp )
+   : QListViewItem(parent, after, gp.fullText()), m_bookmark(gp)
+{
+  setPixmap(0, SmallIcon( gp.icon() ) );
+  setExpandable(true);
+}
+
+// -----------------------------------------------------------------------------
+
 #include "kbookmarkmenu.moc"
+#include "kbookmarkmenu_p.moc"

@@ -30,5 +30,5 @@ include_HEADERS = \
 	kbookmarkimporter.h kbookmarkmanager.h kbookmarkmenu.h kbookmarknotifier.h
 libkbookmarks_la_SOURCES = \
 	kbookmark.cc kbookmarkbar.cc kbookmarkdrag.cc kbookmarkexporter.cc \
-	kbookmarkimporter.cc kbookmarkmanager.cc kbookmarktree.cc kbookmarkmenu.cc \
+	kbookmarkimporter.cc kbookmarkmanager.cc kbookmarkmenu.cc \
 	kbookmarkmanager.skel kbookmarknotifier.skel 

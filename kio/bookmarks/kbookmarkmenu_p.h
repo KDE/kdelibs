@@ -1,5 +1,5 @@
 /* This file is part of the KDE project
-   Copyright (C) 2003 Alexander Kellett <lypanov@kde.org>
+   Copyright (C) 1998, 1999 Torben Weis <weis@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -17,8 +17,8 @@
    Boston, MA 02111-1307, USA.
 */
 
-#ifndef __kbookmarktree_h__
-#define __kbookmarktree_h__
+#ifndef __kbookmarkmenu_p_h__
+#define __kbookmarkmenu_p_h__
 
 #include <sys/types.h>
 
@@ -28,12 +28,16 @@
 #include <qlistview.h>
 
 #include <kdialogbase.h>
+#include <klocale.h>
+#include <kaction.h>
 
 #include "kbookmark.h"
 #include "kbookmarkmanager.h"
 
 class QString;
-class QGridLayout;
+class QPopupMenu;
+class QPushButton;
+class QListView;
 class KLineEdit;
 class KBookmark;
 class KBookmarkGroup;
@@ -43,11 +47,57 @@ class KActionCollection;
 class KBookmarkOwner;
 class KBookmarkMenu;
 class KPopupMenu;
-class QPopupMenu;
-class QListView;
+
+class KBookmarkAction : public KAction {
+  Q_OBJECT
+  Q_PROPERTY( QString url READ getUrl WRITE setUrl )
+  Q_PROPERTY( QString address READ getAddress WRITE setAddress )
+public:
+  KBookmarkAction(
+    const QString& text, const QString& sIconName, const KShortcut& cut,
+    const QObject* receiver, const char* slot,
+    KActionCollection* parent, const char* name)
+  : KAction(text, sIconName, cut, receiver, slot, parent, name) {
+    ;
+  }
+  const QString getUrl() const { return m_url; }
+  void setUrl(const QString &url) { m_url = url; }
+  const QString getAddress() const { return m_address; }
+  void setAddress(const QString &address) { m_address = address; }
+private:
+  QString m_url;
+  QString m_address;
+};
+
+// RENAME!
+
+class BookmarkEditDialog : public KDialogBase
+{
+  Q_OBJECT
+
+public:
+  BookmarkEditDialog( const QString& title, const QString& url, KBookmarkManager *, QWidget * = 0, const char * = 0, const QString& caption = i18n( "Add Bookmark" ) );
+  QString finalUrl();
+  QString finalTitle();
+  QString finalAddress();
+
+protected slots:
+  void slotOk();
+  void slotCancel();
+  void slotInsertFolder();
+
+private:
+  QWidget * m_main;
+  QListView * m_folderTree;
+  KLineEdit * m_url;
+  KLineEdit * m_title;
+  QPushButton * m_button;
+  KBookmarkManager * m_mgr;
+};
 
 class KBookmarkFolderTreeItem : public QListViewItem
 {
+  // make this an accessor
   friend class KBookmarkFolderTree;
 public:
   KBookmarkFolderTreeItem( QListView *, const KBookmark & );

@@ -130,7 +130,6 @@ protected slots:
   void slotBookmarkSelected();
   void slotAddBookmark();
   void slotNewFolder();
-  void slotNSBookmarkSelected();
   /**
    * load Netscape's bookmarks
    */
@@ -198,30 +197,6 @@ protected:
   KBookmarkMenu * m_menu;
   KActionCollection * m_actionCollection;
   KBookmarkManager* m_pManager;
-};
-
-class BookmarkEditDialog : public KDialogBase
-{
-  Q_OBJECT
-
-public:
-  BookmarkEditDialog( const QString& title, const QString& url, KBookmarkManager *, QWidget * = 0, const char * = 0, const QString& caption = i18n( "Add Bookmark" ) );
-  QString finalUrl();
-  QString finalTitle();
-  QString finalAddress();
-
-protected slots:
-  void slotOk();
-  void slotCancel();
-  void slotInsertFolder();
-
-private:
-  QWidget * m_main;
-  QListView * m_folderTree;
-  KLineEdit * m_url;
-  KLineEdit * m_title;
-  QPushButton * m_button;
-  KBookmarkManager * m_mgr;
 };
 
 #endif
