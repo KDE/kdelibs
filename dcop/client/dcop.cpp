@@ -407,6 +407,7 @@ QStringList dcopSessionList( const QString &user, const QString &home )
 void runDCOP( QCStringList args, UserList users, Session session,
               const QString sessionName, bool readStdin )
 {
+    bool DCOPrefmode=false;
     QCString app;
     QCString objid;
     QCString function;
@@ -414,10 +415,6 @@ void runDCOP( QCStringList args, UserList users, Session session,
     DCOPClient *client = 0L;
     if ( !args.isEmpty() && args[ 0 ].find( "DCOPRef(" ) == 0 )
     {
-	// WARNING: This part (until the closing '}') could very
-	// well be broken now. As I don't know how to trigger and test
-	// dcoprefs this code is *not* tested. It compiles and it looks
-	// ok to me, but that's all I can say - Martijn (2001/12/24)
 	int delimPos = args[ 0 ].findRev( ',' );
 	if( delimPos == -1 )
         {
@@ -425,11 +422,9 @@ void runDCOP( QCStringList args, UserList users, Session session,
 		 << "' is not a valid DCOP reference." << endl;
 	    exit( -1 );
         }
-        args[ 0 ][ delimPos ] = 0;
-        app = args[ 0 ].mid( 8 );
+        app = args[ 0 ].mid( 8, delimPos-8 );
         delimPos++;
-        args[ 0 ][ args[ 0 ].length() - 1 ] = 0;
-        objid = args[ 0 ].mid( delimPos );
+        objid = args[ 0 ].mid( delimPos, args[ 0 ].length()-delimPos-1 );
         if( args.count() > 1 )
 	    function = args[ 1 ];
 	if( args.count() > 2 )
@@ -438,6 +433,7 @@ void runDCOP( QCStringList args, UserList users, Session session,
 	    params.remove( params.begin() );
 	    params.remove( params.begin() );
 	}
+	DCOPrefmode=true;
     }
     else
     {
@@ -632,7 +628,10 @@ void runDCOP( QCStringList args, UserList users, Session session,
 	    }
 	    dcop = client;
 
-	    switch ( args.count() )
+	    int argscount = args.count();
+	    if ( DCOPrefmode )
+	      argscount++;
+	    switch ( argscount )
 	    {
 	    case 0:
 		queryApplications("");
