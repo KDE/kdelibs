@@ -10,6 +10,7 @@ kdelibs (4:2.2.1-1) unstable; urgency=low
     need to build with -O0
   * Provide undocumented links (Closes: #94280)
   * Fixes printing (Closes: #108301, #111388, #109930)
+  * Fix shlibs for alsa packages (Closes: #111640)
  
  -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 07 Sep 2001 12:10:00 -0700
 
