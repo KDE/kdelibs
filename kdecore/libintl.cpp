@@ -83,10 +83,6 @@ extern "C" {
 #endif // _ARGZ_H_WORKAROUND_
 #endif // HAVE_ARGZ_H
 
-#ifdef HAVE_MALLOC_H
-# include <malloc.h>
-#endif
-
 #if defined HAVE_STRING_H
 # include <string.h>
 #else
