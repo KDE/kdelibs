@@ -4631,6 +4631,8 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
 #ifndef KHTML_NO_SELECTION
     if ( _mouse->button() == LeftButton )
     {
+      if ( !d->m_strSelectedURL.isNull() )
+	  return;
       if ( !innerNode.isNull()  && innerNode.handle()->renderer()) {
           int offset = 0;
           DOM::NodeImpl* node = 0;
@@ -4788,9 +4790,9 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
   }
 #ifndef QT_NO_DRAGANDDROP
   if( d->m_bDnd && d->m_bMousePressed &&
-      (!d->m_strSelectedURL.isEmpty() || (!d->m_mousePressNode.isNull() && d->m_mousePressNode.elementId() == ID_IMG) ) &&
-      ( d->m_dragStartPos - _mouse->pos() ).manhattanLength() > KGlobalSettings::dndEventDelay()) {
-
+      (!d->m_strSelectedURL.isEmpty() || (!d->m_mousePressNode.isNull() && d->m_mousePressNode.elementId() == ID_IMG) ) ) {
+      if ( ( d->m_dragStartPos - _mouse->pos() ).manhattanLength() <= KGlobalSettings::dndEventDelay() ) 
+        return;
       QPixmap p;
       QDragObject *drag = 0;
       if( !d->m_strSelectedURL.isEmpty() ) {
