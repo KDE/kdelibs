@@ -279,26 +279,20 @@ void HTMLFrameElementImpl::parseAttribute(AttributeImpl *attr)
             scrolling = QScrollView::AlwaysOff;
         // when attached, has no effect
         break;
+    case ATTR_ONLOAD:
+        static_cast<HTMLDocumentImpl*>( getDocument() )->body()
+              ->setHTMLEventListener(EventImpl::LOAD_EVENT,
+            getDocument()->createHTMLEventListener(attr->value().string(),"onload"));
+        break;
+    case ATTR_ONUNLOAD:
+        static_cast<HTMLDocumentImpl*>( getDocument() )->body()
+              ->setHTMLEventListener(EventImpl::UNLOAD_EVENT,
+            getDocument()->createHTMLEventListener(attr->value().string(),"onunload"));
+        break;
+
     default:
         HTMLElementImpl::parseAttribute(attr);
     }
-}
-
-void HTMLFrameElementImpl::insertedIntoDocument()
-{
-    HTMLElementImpl *body = static_cast<HTMLDocumentImpl*>( getDocument() )->body();
-
-    DOMString onLoad = getAttribute(ATTR_ONLOAD);
-    if (!onLoad.isNull())
-        body->setHTMLEventListener(EventImpl::LOAD_EVENT,
-            getDocument()->createHTMLEventListener(onLoad.string(),"onload"));
-
-    DOMString onUnLoad = getAttribute(ATTR_ONUNLOAD);
-    if (!onUnLoad.isNull())
-        body->setHTMLEventListener(EventImpl::UNLOAD_EVENT,
-            getDocument()->createHTMLEventListener(onUnLoad.string(),"onunload"));
-
-    HTMLElementImpl::insertedIntoDocument();
 }
 
 void HTMLFrameElementImpl::attach()
