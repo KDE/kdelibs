@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Free Software Foundation, Inc.
-# Hasso C. Tepper <heathcliff@iname.com>, 1999.
+# Copyright (C) 1999 Free Software Foundation, Inc.
+# Hasso Tepper <hasso@ewsound.estnet.ee>, 1999.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "POT-Creation-Date: 1999-04-24 01:02+0200\n"
-"PO-Revision-Date: 1999-02-05 19:46+0200\n"
-"Last-Translator: Hasso C. Tepper <heathcliff@iname.com>\n"
-"Language-Team: Estonian <heathcliff@iname.com>\n"
+"PO-Revision-Date: 1999-06-25 19:46+0200\n"
+"Last-Translator: Hasso Tepper <hasso@ewsound.estnet.ee>\n"
+"Language-Team: Estonian <linux-ee@eenet.ee>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=iso-8859-1\n"
 "Content-Transfer-Encoding: ENCODING\n"
@@ -55,7 +55,7 @@ msgstr "OK"
 
 #: kab/AssertDialog.cpp:140
 msgid "The following condition failed:\n"
-msgstr "Järgnev tingimuse täitmine ebaõnnestus:\n"
+msgstr "Järgneva tingimuse täitmine ebaõnnestus:\n"
 
 #: kab/AssertDialog.cpp:141
 msgid "In file "
@@ -75,7 +75,7 @@ msgstr "Teadet ei ole võimalik saata."
 
 #: kab/AssertDialog.cpp:218
 msgid "The author did not publish an email address."
-msgstr "Autor ei ole teinud avalikuks oma e-maili aadressi."
+msgstr "Autor ei ole avalikustanud oma e-maili aadressi."
 
 #: kab/DialogBase.cpp:36
 msgid ""
@@ -377,11 +377,12 @@ msgid ""
 msgstr ""
 "\n"
 "KDE töölaua keskkond on loodud KDE meeskonna, ülemaailmse\n"
-"programeerijate ühenduse, kes on sidunud ennast vaba tarkvara loomisega,\n"
-"poolt.\n"
+"programeerijate ühenduse, kes on sidunud ennast vaba tarkvara\n"
+"loomisega,poolt.\n"
 "\n"
 "Kui soovite saada rohkem informatsiooni KDE kohta, külastage\n"
-"http://www.kde.org. Palun kaaluge projekti toetamist või sellega ühinemist.\n"
+"http://www.kde.org. Palun kaaluge projekti toetamist või sellega\n"
+"ühinemist.\n"
 "\n"
 "Vigade avastamisel palun teatage nendest aadressil\n"
 "http://bugs.kde.org.\n"
@@ -571,7 +572,7 @@ msgid ""
 "Could not save the document.\n"
 "Open a new document anyways?"
 msgstr ""
-"Dokumenti ei saa salvestada.\n"
+"Dokumenti pole võimalik salvestada.\n"
 "Kas avada vaatamata sellele uus dokument?"
 
 #: kdeui/keditcl1.cpp:462
@@ -583,7 +584,7 @@ msgid ""
 "Could not save the document.\n"
 "Create a new document anyways?"
 msgstr ""
-"Dokumenti ei saa salvestada.\n"
+"Dokumenti pole võimalik salvestada.\n"
 "Kas luua vaatamata sellele uus dokument?"
 
 #: kdeui/keditcl1.cpp:547 kdeui/keditcl1.cpp:1700 kdeui/kpopmenu.cpp:10
@@ -593,7 +594,7 @@ msgstr "Nimetu"
 
 #: kdeui/keditcl1.cpp:1560
 msgid "Could not save the document\n"
-msgstr "Dokumenti ei saa salvestada\n"
+msgstr "Dokumenti pole võimalik salvestada\n"
 
 #: kdeui/keditcl1.cpp:1630
 msgid "Save Document As"
@@ -1013,7 +1014,7 @@ msgstr ""
 
 #: kfile/kfiledialog.cpp:520 kfile/kfiledialog.cpp:625
 msgid "Error: Cannot Open Directory"
-msgstr "Viga: Kataloogi ei saa avada"
+msgstr "Viga: Kataloogi pole võimalik avada"
 
 #: kfile/kfiledialog.cpp:521
 msgid ""
@@ -1049,7 +1050,7 @@ msgstr "Uus kataloog"
 
 #: kfile/kfiledialog.cpp:962
 msgid "Add to bookmarks"
-msgstr "Lisa viitadesse"
+msgstr "Lisa järjehoidjatesse"
 
 #: kfile/kfiledialog.cpp:1253
 msgid "Choose Directory"
@@ -1253,7 +1254,7 @@ msgid ""
 "Could not do Authorization"
 msgstr ""
 "Sul ei ole faili nimega %s\n"
-"Ei suuda autoriseerida"
+"Autoriseerida pole võimalik"
 
 #: kfmlib/kfm.cpp:200 kfmlib/kfm.cpp:210
 msgid "KFM Error"
@@ -1266,11 +1267,11 @@ msgid ""
 "Could not do Authorization"
 msgstr ""
 "Fail nimega %s on kahjustatud\n"
-"Ei suuda autoriseerida."
+"Autoriseerimine pole võimalik."
 
 #: kspell/ksconfig.cpp:66
 msgid "Create Root/Affix combinations not in the dictionary"
-msgstr "Loo juure ja lisandi kombinatsioonid, mida ei leidu sõnaraamatus"
+msgstr "Loo juure/lisandi kombinatsioonid, mida ei leidu sõnaraamatus"
 
 #: kspell/ksconfig.cpp:75
 msgid "Consider run-together words as spelling errors"
@@ -1395,11 +1396,11 @@ msgstr "&Fail"
 
 #: po/texts.cpp:46
 msgid "Edit"
-msgstr "Redigeeri"
+msgstr "Redigeerimine"
 
 #: po/texts.cpp:47
 msgid "&Edit"
-msgstr "&Redigeeri"
+msgstr "&Redigeerimine"
 
 #: po/texts.cpp:48
 msgid "&Options"
@@ -1729,7 +1730,7 @@ msgstr "Varukoopiat ei ole võimalik luua"
 
 #: kab/addressbook.cc:263
 msgid "Unable to insert \""
-msgstr "Ei suuda lisada \""
+msgstr "Pole võimalik lisada \""
 
 #: kab/addressbook.cc:264
 msgid "\" into configuration section (ignored)."
@@ -2064,7 +2065,7 @@ msgstr "Viga failikäsitlusel."
 
 #: kab/widget.cc:249
 msgid "Unable to open database file r/w."
-msgstr "Ei suuda avada andmebaasi faili kirjutamiseks"
+msgstr "Andmebaasi faili pole võimalik kirjutamiseks avada."
 
 #: kab/widget.cc:257
 msgid "Email storage conversion"
@@ -2076,8 +2077,8 @@ msgid ""
 "the new style supporting unlimited numbers\n"
 "of email addresses per entry."
 msgstr ""
-"Kab liigutab kõik sinu e-maili aadressid uude\n"
-"formaati, mis toetab piiramatut arvu e-maili aadresse\n"
+"Kab teisendab kõik sinu e-maili aadressid uude\n"
+"stiili, mis toetab piiramatut arvu e-maili aadresse\n"
 "kirje kohta."
 
 #: kab/widget.cc:291
@@ -2105,11 +2106,11 @@ msgstr ""
 
 #: kab/widget.cc:315
 msgid "Could not save database after update."
-msgstr "Ei suuda salvestada andmebaasi pärast uuendamist."
+msgstr "Andmebaasi pole võimalik pärast uuendamist salvestada."
 
 #: kab/widget.cc:323
 msgid "Unable to reopen database file r/o."
-msgstr "Ei ole võimalik avada andmebaasi uuesti ainult lugemiseks."
+msgstr "Andmebaasi uuesti avamine ainult lugemiseks pole võiamlik."
 
 #: kab/widget.cc:482
 msgid "first entry"
@@ -2349,7 +2350,7 @@ msgstr "E-maili link"
 
 #: kab/widget.cc:1952
 msgid "Could not find the users home directory."
-msgstr "Ei suuda leida kasutajate kodukataloogi."
+msgstr "Kasutajate kodukataloogi pole võimalik leida."
 
 #: kab/widget.cc:1953
 msgid "Intern error!"
@@ -2357,7 +2358,7 @@ msgstr "Sisemine viga!"
 
 #: kab/widget.cc:1973
 msgid "Could not open the file to create the HTML table."
-msgstr "Ei suuda avada HTML tabeli loomiseks vajalikku faili."
+msgstr "HTML tabeli loomiseks vajalikku faili pole võimalik avada."
 
 #: kab/widget.cc:2009
 msgid "Printing cancelled."
@@ -2427,498 +2428,3 @@ msgstr ""
 msgid "Mail program started."
 msgstr "Meiliprogramm käivitus."
 
-#~ msgid "KIO Cache"
-#~ msgstr "KIO Vahemälu"
-
-#~ msgid "Contents of the cache"
-#~ msgstr "Vahemälu sisu"
-
-#~ msgid ""
-#~ "Use the icons for drag and drop actions, since they refer to the cache files "
-#~ "on your hard disk, while you should use the textual links for browsing"
-#~ msgstr ""
-#~ "Kasuta ikoone pukseerimistegevuseks, kuna nad tähistavad vahemälu faile "
-#~ "sinu\n"
-#~ "kõvakettal, kuigi sa peaks kasutama tekstilinke lehitsemiseks"
-
-#~ msgid "Creation Date"
-#~ msgstr "Loomise kuupäev"
-
-#~ msgid "Expiration Date"
-#~ msgstr "Aegumise kuupäev"
-
-#~ msgid "Never"
-#~ msgstr "Iialgi"
-
-#~ msgid ""
-#~ "Could not read\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Ei suutnud lugeda\n"
-#~ "%s"
-
-#~ msgid ""
-#~ "Could not write to\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Ei suutnud kirjutada\n"
-#~ "%s"
-
-#~ msgid ""
-#~ "Could not start process\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Ei suutnusd alustada protsessi\n"
-#~ "%s"
-
-#~ msgid ""
-#~ "Internal Error\n"
-#~ "Please send a full bugreport to kde-bugs@kde.org\n"
-#~ "\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Sisemine viga\n"
-#~ "Palun saada täielik veaaruanne aadressil kde-bugs@kde.org\n"
-#~ "\n"
-#~ "%s"
-
-#~ msgid ""
-#~ "Malformed URL\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Vigane URL\n"
-#~ "%s"
-
-#~ msgid ""
-#~ "The protocol %s\n"
-#~ " is not supported"
-#~ msgstr ""
-#~ "%s protokoll\n"
-#~ " ei ole toetatud"
-
-#~ msgid ""
-#~ "The protocol %s\n"
-#~ "is only a filter protocol.\n"
-#~ msgstr ""
-#~ "%s protokoll\n"
-#~ "on ainult filterprotokoll.\n"
-
-#~ msgid ""
-#~ "Unsupported action\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Toetuseta tegevus\n"
-#~ "%s"
-
-#~ msgid ""
-#~ "The file or directory\n"
-#~ "%s\n"
-#~ "does not exist"
-#~ msgstr ""
-#~ "Faili või kataloogi\n"
-#~ "%s\n"
-#~ "ei eksisteeri."
-
-#~ msgid ""
-#~ "%s\n"
-#~ " is a directory,\n"
-#~ "but a file was expected"
-#~ msgstr ""
-#~ "%s\n"
-#~ " on kataloog,\n"
-#~ "kuid oodati faili"
-
-#~ msgid ""
-#~ "Could not make directory\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Kataloogi pole võimalik luua\n"
-#~ "%s"
-
-#~ msgid ""
-#~ "The file or directory\n"
-#~ "%s\n"
-#~ "does already exist"
-#~ msgstr ""
-#~ "Fail või kataloog nimega\n"
-#~ "%s\n"
-#~ "eksisteerib juba"
-
-#~ msgid ""
-#~ "%s\n"
-#~ "Access denied"
-#~ msgstr ""
-#~ "%s\n"
-#~ "Ligipääs keelatud"
-
-#~ msgid ""
-#~ "Could not enter directory\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Kataloogi pole võimalik siseneda\n"
-#~ "%s"
-
-#~ msgid ""
-#~ "The protocol %s\n"
-#~ "does not implement a directory service"
-#~ msgstr ""
-#~ "%s protokoll\n"
-#~ "ei suuda teostada kataloogi teenust"
-
-#~ msgid ""
-#~ "Found a cyclic link in\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Leitud perioodiline link\n"
-#~ "%s"
-
-#~ msgid ""
-#~ "Could not change permissions for\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Ei suuda muuta õigusi\n"
-#~ "%s jaoks"
-
-#~ msgid ""
-#~ "Access denied\n"
-#~ "Could not write to\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Juurdepääs keelatud\n"
-#~ "Ei suuda kirjutada\n"
-#~ "%s"
-
-#~ msgid ""
-#~ "Action has been\n"
-#~ "canceled by the user"
-#~ msgstr ""
-#~ "Tegevus on katkestatud\n"
-#~ "kasutaja poolt"
-
-#~ msgid ""
-#~ "Found a cyclic link while copying\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Kopeerides %s\n"
-#~ "leitud perioodiline link"
-
-#~ msgid ""
-#~ "Could not create socket for accessing\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Ei suuda luua pesa ligipääsuks\n"
-#~ "%s -le"
-
-#~ msgid ""
-#~ "Could not connect to host\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Ei suuda luua ühendust hosti\n"
-#~ "%s"
-
-#~ msgid ""
-#~ "Unknown host\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Tundmatu host\n"
-#~ "%s"
-
-#~ msgid ""
-#~ "Connection to host\n"
-#~ "%s\n"
-#~ "is broken"
-#~ msgstr ""
-#~ "Ühendus hostiga\n"
-#~ "%s\n"
-#~ "on katkenud"
-
-#~ msgid ""
-#~ "The protocol %s\n"
-#~ "is not a filter protocol"
-#~ msgstr ""
-#~ "Protokoll %s\n"
-#~ "ei ole filterprotokoll"
-
-#~ msgid ""
-#~ "%s\n"
-#~ "is a file,\n"
-#~ "but a directory was expected"
-#~ msgstr ""
-#~ "%s\n"
-#~ "on fail, kuid oodati kataloogi"
-
-#~ msgid ""
-#~ "Could not mount device.\n"
-#~ "The reported error was:\n"
-#~ "\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Ei suuda ühendada seadet.\n"
-#~ "Tagastatud viga oli:\n"
-#~ "\n"
-#~ "%s"
-
-#~ msgid ""
-#~ "Could not unmount device.\n"
-#~ "The reported error was:\n"
-#~ "\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Ei suuda seadet lahti ühendada.\n"
-#~ "Tagastatud viga oli:\n"
-#~ "\n"
-#~ "%s"
-
-#~ msgid ""
-#~ "The process for the\n"
-#~ "%s protocol\n"
-#~ "died unexpectedly"
-#~ msgstr ""
-#~ "Protokolli %s\n"
-#~ "jaoks vajalik protsess\n"
-#~ "suri ootamatult"
-
-#~ msgid ""
-#~ "Could not access\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Ei suuda tagada ligipääsu\n"
-#~ "%s"
-
-#~ msgid ""
-#~ "Unknown error code %i\n"
-#~ "%s\n"
-#~ "\n"
-#~ "Please send a full bugreport to kde-bugs@kde.org"
-#~ msgstr ""
-#~ "Tundmatu veakood %i\n"
-#~ "%s\n"
-#~ "\n"
-#~ "Palun saada täielik veaaruanne aadressil kde-bugs@kde.org"
-
-#~ msgid "Ok"
-#~ msgstr "Ok"
-
-#~ msgid "Mounting %s ..."
-#~ msgstr "%s ühendamine ..."
-
-#~ msgid "Unmounting %s ..."
-#~ msgstr "%s lahti ühendamine ..."
-
-#~ msgid "This group is empty!"
-#~ msgstr "See grupp on tühi!"
-
-#~ msgid "&Browser"
-#~ msgstr "&Brauser"
-
-#~ msgid "User"
-#~ msgstr "Kasutaja"
-
-#~ msgid "Password"
-#~ msgstr "Parool"
-
-#~ msgid "The clipboard is empty"
-#~ msgstr "Lõikepuver on tühi"
-
-#~ msgid ""
-#~ "Pasting clipboard data is only supported on the local hard disk currently"
-#~ msgstr ""
-#~ "Lõikepuhvri andmete asetamine on praegu toetatud ainult lokaalsel kettal"
-
-#~ msgid "Filename for clipboard content:"
-#~ msgstr "Faili nimi lõikepuhvri sisu jaoks:"
-
-#~ msgid "You did not enter a filename"
-#~ msgstr "Sa ei sisestanud faili nime"
-
-#~ msgid "The file %s does already exist. Do you really want to overwrite it ?"
-#~ msgstr ""
-#~ "Fail nimega %s eksisteerib juba. Soovid sa tõesti selle üle kirjutada?"
-
-#, fuzzy
-#~ msgid "Bytes"
-#~ msgstr " Baiti"
-
-#, fuzzy
-#~ msgid "Kb"
-#~ msgstr " Kb"
-
-#, fuzzy
-#~ msgid "Mb"
-#~ msgstr " Mb"
-
-#~ msgid "Stalled"
-#~ msgstr "Peatunud"
-
-#~ msgid " Bytes/s"
-#~ msgstr " Baiti/s"
-
-#~ msgid " Kb/s"
-#~ msgstr " Kb/s"
-
-#~ msgid " Mb/s"
-#~ msgstr " Mb/s"
-
-#~ msgid "%i seconds"
-#~ msgstr "%i sekundit"
-
-#~ msgid "%i:%i"
-#~ msgstr "%i:%i"
-
-#~ msgid "%i:%i:%i"
-#~ msgstr "%i:%i:%i"
-
-#~ msgid "%i%s  Remaining time: %s"
-#~ msgstr "%i%s  Järelejäänud aeg: %s"
-
-#~ msgid "Scanning "
-#~ msgstr "Läbivaatus "
-
-#~ msgid "Creating dir "
-#~ msgstr "Kataloogi loomine "
-
-#~ msgid "Fetching file"
-#~ msgstr "Faili võtmine"
-
-#~ msgid "Rename"
-#~ msgstr "Nimeta ümber"
-
-#~ msgid "Skip"
-#~ msgstr "Jäta vahele"
-
-#~ msgid "Auto Skip"
-#~ msgstr "Automaatne vahelejätt"
-
-#~ msgid "Overwrite"
-#~ msgstr "Kirjuta üle"
-
-#~ msgid "Overwrite All"
-#~ msgstr "Kirjuta kõik üle"
-
-#~ msgid "Resume"
-#~ msgstr "Jätka"
-
-#~ msgid "Resume All"
-#~ msgstr "Jätka kõike"
-
-#~ msgid "You try to overwrite"
-#~ msgstr "Sa proovid üle kirjutada"
-
-#~ msgid "already exists. Overwrite with"
-#~ msgstr "juba eksisteerib. Kirjuta üle"
-
-#~ msgid "Or rename to"
-#~ msgstr "Või nimeta ümber"
-
-#~ msgid "already exists."
-#~ msgstr "juba eksisteerib."
-
-#~ msgid "Do you want to rename it ?"
-#~ msgstr "Soovid sa selle ümber nimetada?"
-
-#~ msgid "Malformed URL\n"
-#~ msgstr "Vigane URL\n"
-
-#~ msgid "You must not change the protocol"
-#~ msgstr "Sa ei tohi vahetada protokolli"
-
-#~ msgid "Can not write"
-#~ msgstr "Ei suuda kirjutada"
-
-#~ msgid "Permission denied!"
-#~ msgstr "Juurdepääs keelatud!"
-
-#~ msgid "No mime types installed!"
-#~ msgstr "Ühtegi mime tüüpi ei ole installeeritud!"
-
-#~ msgid "Could not find mime type\n"
-#~ msgstr "Ei suuda leida mime tüüpi\n"
-
-#~ msgid "The mime type config file "
-#~ msgstr "Mime tüübi seadistusfail"
-
-#~ msgid "does not conatain a MimeType=... entry"
-#~ msgstr "ei sisalda kirjet MimeType=..."
-
-#~ msgid ""
-#~ "The kdelnk file\n"
-#~ "%s\n"
-#~ "has no Type=... entry"
-#~ msgstr ""
-#~ "Kdelnk fail\n"
-#~ "%s\n"
-#~ "ei sisalda kirjet Type=..."
-
-#~ msgid ""
-#~ "The kdelnk type\n"
-#~ "%s\n"
-#~ "is unknown"
-#~ msgstr ""
-#~ "Kdelnk tüüp\n"
-#~ "%s\n"
-#~ "on tundamatu"
-
-#~ msgid ""
-#~ "The kdelnk file\n"
-#~ "%s\n"
-#~ "is of type FSDevice but has no Dev=... entry"
-#~ msgstr ""
-#~ "Kdelnk fail\n"
-#~ "%s\n"
-#~ "on FSDevice tüüpi, kuid ei sialda kirjet Dev=..."
-
-#~ msgid ""
-#~ "The kdelnk file\n"
-#~ "%s\n"
-#~ "is of type Link but has no URL=... entry"
-#~ msgstr ""
-#~ "Kdelnk fail\n"
-#~ "%s\n"
-#~ "on Link tüüpi, kuid ei sisalda kirjet URL=..."
-
-#~ msgid "Mount"
-#~ msgstr "Ühenda"
-
-#~ msgid "Unmount"
-#~ msgstr "Ühenda lahti"
-
-#~ msgid ""
-#~ "The kdelnk file\n"
-#~ "%s\n"
-#~ " has an invalid menu entry\n"
-#~ "%s"
-#~ msgstr ""
-#~ "kdelnk fail%s\n"
-#~ "sisaldab vigast menüü kirjet\n"
-#~ "%s"
-
-#~ msgid "The mime type _cfg file "
-#~ msgstr "Mime tüübi _cfg fail"
-
-#~ msgid ""
-#~ "Can not enter\n"
-#~ "%s\n"
-#~ "Access denied"
-#~ msgstr ""
-#~ "Ei suuda siseneda\n"
-#~ "%s\n"
-#~ "Juurdepääs keelatud"
-
-#~ msgid "The application config file\n"
-#~ msgstr "Rakenduse konfiguratsioonifail\n"
-
-#~ msgid ""
-#~ "\n"
-#~ "does not conatain a Name=... entry"
-#~ msgstr ""
-#~ "\n"
-#~ "ei sialda kirjet Name=..."
-
-#~ msgid "Org Unit:"
-#~ msgstr "Osakond:"
-
-#~ msgid "Org Subunit:"
-#~ msgstr "Filiaal:"
-
-#~ msgid "Comment:"
-#~ msgstr "Kommentaar:"
