@@ -83,7 +83,7 @@ void PipeBuffer::clear()
 
 void *PipeBuffer::peek(long size)
 {
-	while(segments.size() != 0)
+	while(!segments.empty())
 	{
 		PipeSegment *first = *segments.begin();
 		if(size <= first->remaining())
@@ -94,7 +94,7 @@ void *PipeBuffer::peek(long size)
 
 void PipeBuffer::skip(long size)
 {
-	while(segments.size() != 0 && size > 0)
+	while(!segments.empty() && size > 0)
 	{
 		PipeSegment *first = *segments.begin();
 
@@ -125,7 +125,7 @@ long PipeBuffer::read(long size, void *buffer)
 	long readbytes = 0;
 	char *bptr = (char *)buffer;
 
-	while(segments.size() != 0 && size > 0)
+	while(!segments.empty() && size > 0)
 	{
 		PipeSegment *first = *segments.begin();
 		long readCnt = size;
