@@ -35,6 +35,8 @@
 #include <string.h>
 #include <assert.h>
 
+#define MAX_INDEX 4294967294U // 2^32-2
+
 using namespace KJS;
 
 // ------------------------------ ArrayInstanceImp -----------------------------
@@ -78,7 +80,8 @@ Value ArrayInstanceImp::get(ExecState *exec, const Identifier &propertyName) con
 
   bool ok;
   unsigned index = propertyName.toULong(&ok);
-  if (ok && UString::from(index) == propertyName.ustring() && index < length && index < storageLength) {
+  if (ok && index <= MAX_INDEX && UString::from(index) == propertyName.ustring() &&
+      index < length && index < storageLength) {
     ValueImp *v = storage[index];
     return v ? Value(v) : Undefined();
   }
@@ -88,6 +91,8 @@ Value ArrayInstanceImp::get(ExecState *exec, const Identifier &propertyName) con
 
 Value ArrayInstanceImp::get(ExecState *exec, unsigned index) const
 {
+  if (index > MAX_INDEX)
+    return ObjectImp::get(exec, Identifier::from(index));
   if (index >= length)
     return Undefined();
   if (index < storageLength) {
@@ -114,7 +119,7 @@ void ArrayInstanceImp::put(ExecState *exec, const Identifier &propertyName, cons
   
   bool ok;
   unsigned index = propertyName.toULong(&ok);
-  if (ok && UString::from(index) == propertyName.ustring()) {
+  if (ok && index <= MAX_INDEX && UString::from(index) == propertyName.ustring()) {
     put(exec, index, value, attr);
     return;
   }
@@ -128,7 +133,7 @@ void ArrayInstanceImp::put(ExecState *exec, unsigned index, const Value &value, 
     resizeStorage(index + 1);
   }
 
-  if (index >= length) {
+  if (index >= length && index <= MAX_INDEX) {
     length = index + 1;
   }
 
@@ -148,7 +153,7 @@ bool ArrayInstanceImp::hasProperty(ExecState *exec, const Identifier &propertyNa
   
   bool ok;
   unsigned index = propertyName.toULong(&ok);
-  if (ok && UString::from(index) == propertyName.ustring()) {
+  if (ok && index <= MAX_INDEX && UString::from(index) == propertyName.ustring()) {
     if (index >= length)
       return false;
     if (index < storageLength) {
@@ -162,6 +167,8 @@ bool ArrayInstanceImp::hasProperty(ExecState *exec, const Identifier &propertyNa
 
 bool ArrayInstanceImp::hasProperty(ExecState *exec, unsigned index) const
 {
+  if (index > MAX_INDEX)
+    return ObjectImp::hasProperty(exec, Identifier::from(index));
   if (index >= length)
     return false;
   if (index < storageLength) {
@@ -179,7 +186,7 @@ bool ArrayInstanceImp::deleteProperty(ExecState *exec, const Identifier &propert
   
   bool ok;
   unsigned index = propertyName.toULong(&ok);
-  if (ok && UString::from(index) == propertyName.ustring()) {
+  if (ok && index <= MAX_INDEX && UString::from(index) == propertyName.ustring()) {
     if (index >= length)
       return true;
     if (index < storageLength) {
@@ -193,6 +200,8 @@ bool ArrayInstanceImp::deleteProperty(ExecState *exec, const Identifier &propert
 
 bool ArrayInstanceImp::deleteProperty(ExecState *exec, unsigned index)
 {
+  if (index > MAX_INDEX)
+    return ObjectImp::deleteProperty(exec, Identifier::from(index));
   if (index >= length)
     return true;
   if (index < storageLength) {

@@ -27,6 +27,8 @@
 #include <math.h>
 #include <string.h>
 
+#define IS_NEGATIVE_ZERO(num) (num == 0.0 && !memcmp(&num,&SimpleNumber::negZero,sizeof(double)))
+
 namespace KJS {
     class ValueImp;
 
@@ -42,7 +44,7 @@ namespace KJS {
 	static inline bool fits(long i) { return i <= max && i >= min; }
 	static inline bool fits(unsigned long i) { return i <= (unsigned)max; }
 	static inline bool fits(double d) { return d <= max && d >= min && d == (double)(int)d &&
-					    (d != 0.0 || memcmp(&d,&negZero,sizeof(double))); }
+					    !IS_NEGATIVE_ZERO(d); }
 	static inline ValueImp *make(int i) { return (ValueImp *)((i << shift) | tag); }
 
 	static double negZero;

@@ -46,6 +46,7 @@ FunctionPrototypeImp::FunctionPrototypeImp(ExecState *exec)
   putDirect(applyPropertyName,    new FunctionProtoFuncImp(exec, this, FunctionProtoFuncImp::Apply,    2), DontEnum);
   static const Identifier callPropertyName("call");
   putDirect(callPropertyName,     new FunctionProtoFuncImp(exec, this, FunctionProtoFuncImp::Call,     1), DontEnum);
+  putDirect(lengthPropertyName, 0, DontDelete|ReadOnly|DontEnum);
 }
 
 FunctionPrototypeImp::~FunctionPrototypeImp()

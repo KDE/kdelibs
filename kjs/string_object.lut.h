@@ -15,7 +15,7 @@ static const struct HashEntry stringTableEntries[] = {
    { "match", StringProtoFuncImp::Match, DontEnum|Function, 1, &stringTableEntries[27] },
    { "search", StringProtoFuncImp::Search, DontEnum|Function, 1, &stringTableEntries[34] },
    { 0, 0, 0, 0, 0 },
-   { "concat", StringProtoFuncImp::Concat, DontEnum|Function, 1, &stringTableEntries[26] },
+   { "concat", StringProtoFuncImp::Concat, DontEnum|Function, 0, &stringTableEntries[26] },
    { 0, 0, 0, 0, 0 },
    { "split", StringProtoFuncImp::Split, DontEnum|Function, 2, &stringTableEntries[28] },
    { "anchor", StringProtoFuncImp::Anchor, DontEnum|Function, 1, 0 },
