@@ -19,7 +19,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-//#define CSS_DEBUG
+#define CSS_DEBUG
 //#define TOKEN_DEBUG
 #define YYDEBUG 0
 
@@ -39,6 +39,14 @@ using namespace DOM;
 
 #include <stdlib.h>
 #include <assert.h>
+
+// used to promote background: left to left center
+#define BACKGROUND_SKIP_CENTER( num ) \
+    if ( !pos_ok[ num ] && expected != 1 ) {    \
+        pos_ok[num] = true; \
+        pos[num] = 0; \
+        skip_next = false; \
+    }
 
 ValueList::ValueList()
 {
@@ -650,22 +658,27 @@ bool CSSParser::parseValue( int propId, bool important, int expected )
             pos[0] = parseBackgroundPositionXY( CSS_PROP_BACKGROUND_POSITION_X, true, pos_ok[0] );
             if ( pos[0] && pos_ok[0] && pos[0]->primitiveType() != CSSPrimitiveValue::CSS_IDENT )
                 pos_ok[0] = false; // after top only key words are allowed
+            BACKGROUND_SKIP_CENTER( 0 )
             pos[1] = new CSSPrimitiveValueImpl( 0, CSSPrimitiveValue::CSS_PERCENTAGE );
             break;
         case CSS_VAL_BOTTOM:
             pos[0] = parseBackgroundPositionXY( CSS_PROP_BACKGROUND_POSITION_X, true, pos_ok[0] );
+            kdDebug() << "pos[0] " << pos[0] << " " << pos_ok[0] << endl;
             if ( pos[0] && pos_ok[0] && pos[0]->primitiveType() != CSSPrimitiveValue::CSS_IDENT )
                 pos_ok[0] = false; // after bottom only key words are allowed
+            BACKGROUND_SKIP_CENTER( 0 )
             pos[1] = new CSSPrimitiveValueImpl( 100, CSSPrimitiveValue::CSS_PERCENTAGE );
             break;
         case CSS_VAL_LEFT:
             pos[0] = new CSSPrimitiveValueImpl( 0, CSSPrimitiveValue::CSS_PERCENTAGE );
             pos[1] = parseBackgroundPositionXY( CSS_PROP_BACKGROUND_POSITION_Y, true, pos_ok[1] );
+            BACKGROUND_SKIP_CENTER( 1 )
             // after left everything is allowed
             break;
         case CSS_VAL_RIGHT:
             pos[0] = new CSSPrimitiveValueImpl( 100, CSSPrimitiveValue::CSS_PERCENTAGE );
             pos[1] = parseBackgroundPositionXY( CSS_PROP_BACKGROUND_POSITION_Y, true, pos_ok[1] );
+            BACKGROUND_SKIP_CENTER( 1 )
             // after right everything is allowed
             break;
         case CSS_VAL_CENTER:
@@ -680,11 +693,7 @@ bool CSSParser::parseValue( int propId, bool important, int expected )
                 if ( !ok ) {
                     assert( !possibly_x );
                     pos[0] = parseBackgroundPositionXY( CSS_PROP_BACKGROUND_POSITION_X, false, pos_ok[0] );
-                    if ( !pos_ok[0] && expected != 1 ) {
-                        pos_ok[0] = true;
-                        pos[0] = 0;
-                        skip_next = false;
-                    }
+                    BACKGROUND_SKIP_CENTER( 0 )
                     pos[1] = 0;
                 } else {
                     pos[0] = 0;

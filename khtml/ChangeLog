@@ -1,3 +1,8 @@
+2004-12-24  Stephan Kulow  <coolo@kde.org>
+
+        * css/cssparser.cpp: fixing keyword background-positions that have an implicit center for the
+        other cordinate
+
 2004-12-19  Allan Sandfeld Jensen <kde@carewolf.com>
 
         * xml/dom_nodeimpl.{h,cpp}: Merge createRendererIfNeeded() and friends from WebCore
