@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=MimeType
+MimeType=application/pgp-signature
+Icon=signature
+Patterns=
+Comment=Detached OpenPGP signature
