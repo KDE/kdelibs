@@ -27,6 +27,8 @@
 #include <qapp.h>
 
 #include "kfm.h"
+#include <kapp.h>
+#include <kstring.h>
 
 QString displayName()
 {
@@ -110,8 +112,7 @@ bool KFM::downloadInternal(const QString & src, QString & target){
 
 void KFM::init()
 {
-    QString file = QDir::homeDirPath();
-    file += "/.kde/share/apps/kfm/pid";
+    QString file = KApplication::localkdedir() + "/share/apps/kfm/pid";
     file += displayName();
     
     // Try to open the pid file
@@ -130,7 +131,7 @@ void KFM::init()
 	    return;
 	}
 	
-	warning("ERROR: KFM is not running\n");
+	warning("ERROR: KFM is not running");
 	return;
     }
     
@@ -141,7 +142,7 @@ void KFM::init()
     int pid = atoi( buffer );
     if ( pid <= 0 )
     {
-	warning("ERROR: Invalid PID\n");
+	warning("ERROR: Invalid PID");
 	fclose( f );
 	return;
     }
@@ -161,7 +162,7 @@ void KFM::init()
 	    return;
 	}
 
-	warning("ERROR: KFM crashed\n");
+	warning("ERROR: KFM crashed");
 	fclose( f );
 	return;
     }
@@ -173,7 +174,7 @@ void KFM::init()
     char * slot = strdup( buffer );
     if ( slot == (void *) 0 )
     {
-	warning("ERROR: Invalid Slot\n");
+	warning("ERROR: Invalid Slot");
 	return;
     }
     
@@ -188,21 +189,24 @@ void KFM::init()
 	     this, SLOT( slotDirEntry( const char*, const char*, const char*, const char*, const char*, int ) ) );
 
     // Read the password
-    QString fn = getenv( "HOME" );
-    fn += "/.kde/share/apps/kfm/magic";
+    QString fn = KApplication::localkdedir() + "/share/apps/kfm/magic";
     f = fopen( fn.data(), "rb" );
     if ( f == 0L )
     {
-	QMessageBox::message( "KFM Error",
-			      "You dont have the file ~/.kde/share/apps/kfm/magic\n\rCould not do Authorization" );
+	QString ErrorMessage;
+	ksprintf(ErrorMessage, i18n("You dont have the file %s\n"
+				    "Could not do Authorization"), fn.data());
+	
+	QMessageBox::message( i18n("KFM Error"), ErrorMessage );
 	return;
     }
     char *p = fgets( buffer, 1023, f );
     fclose( f );
     if ( p == 0L )
     {
-	QMessageBox::message( "KFM Error",
-			      "The file ~/.kde/share/apps/kfm/magic is corrupted\n\rCould not do Authorization" );
+	ksprintf(ErrorMessage, i18n("The file %s is corrupted\n"
+				    "Could not do Authorization"), fn.data());
+	QMessageBox::message( i18n("KFM Error"), ErrorMessage );
 	return;
     }
 
@@ -309,10 +313,10 @@ void KFM::moveClient( const char *_src, const char *_dest )
 
 void KFM::selectRootIcons( int _x, int _y, int _w, int _h, bool _add )
 {
-    warning( "KFM call: selectRootIcons\n");
+    warning( "KFM call: selectRootIcons");
     if ( !test() )
 	return;
-    warning( "KFM doing call\n");
+    warning( "KFM doing call");
     
     ipc->selectRootIcons( _x, _y, _w, _h, _add );
 }
@@ -331,7 +335,7 @@ bool KFM::test()
 {
     if ( ( ipc == 0L || !ipc->isConnected() ) && allowRestart )
     {
-	warning( "*********** KFM crashed **************\n" );
+	warning( "*********** KFM crashed **************" );
 	if ( ipc )
 	    delete ipc;
 	
@@ -339,13 +343,13 @@ bool KFM::test()
 	flag = 0;
 	ok = FALSE;
 
-	warning( "KFM recovery\n" );
+	warning( "KFM recovery" );
 	init();
-	warning( "KFM recovery done\n" );
+	warning( "KFM recovery done" );
     }
 
     if ( ipc == 0L )
-	warning( "KFM NOT READY\n");
+	warning( "KFM NOT READY");
     
     return ( ipc==0L?false:true );
 }
@@ -395,11 +399,11 @@ DlgLocation::DlgLocation( const char *_text, const char* _value, QWidget *parent
 
     QPushButton *ok;
     QPushButton *cancel;
-    ok = new QPushButton( "Ok", this );
+    ok = new QPushButton( i18n("Ok"), this );
     ok->setGeometry( 10,70, 50,30 );
     connect( ok, SIGNAL(clicked()), SLOT(accept()) );
 
-    cancel = new QPushButton( "Cancel", this );
+    cancel = new QPushButton( i18n("Cancel"), this );
     cancel->setGeometry( 140, 70, 50, 30 );
     connect( cancel, SIGNAL(clicked()), SLOT(reject()) );
 

@@ -20,6 +20,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.102  1998/05/28 21:43:52  kulow
+// removed TESTDIR. Since kdedir() is protected, it shouldn't happen anymore :)
+//
 // Revision 1.101  1998/04/12 08:52:36  jacek
 //
 // * Updtated KCharset class documentation.
@@ -315,7 +318,7 @@ void KApplication::init()
   pIconLoader = 0L;
 
   // create the config directory
-  QString configPath = QDir::homeDirPath () + "/.kde";
+  QString configPath = KApplication::localkdedir();
   // We should check if  mkdir() succeeds, but since we cannot do much anyway...
   mkdir (configPath.data(), 0755); // make it public(?)
   configPath += "/share";
@@ -335,13 +338,8 @@ void KApplication::init()
 
   
   // now for the local app config file
-  QString aConfigName;
-  char* pHome;
-  if( (pHome = getenv( "HOME" )) )
-	aConfigName = pHome;
-  else
-	aConfigName = "."; // use current dir if $HOME is not set
-  aConfigName += "/.kde/share/config/";
+  QString aConfigName = KApplication::localkdedir();
+  aConfigName += "/share/config/";
   aConfigName += aAppName;
   aConfigName += "rc";
 
@@ -430,13 +428,8 @@ KConfig* KApplication::getSessionConfig() {
   if (pSessionConfig)
     return pSessionConfig;
   // create a instance specific config object
-  QString aConfigName;
-  char* pHome;
-  if( (pHome = getenv( "HOME" )) )
-    aConfigName = pHome;
-  else
-    aConfigName = "."; // use current dir if $HOME is not set
-  aConfigName += "/.kde/share/config/";
+  QString aConfigName = KApplication::localkdedir();
+  aConfigName += "/share/config/";
   aConfigName += aAppName;
   aConfigName += "rc";
 
@@ -689,12 +682,8 @@ void KApplication::parseCommandLine( int& argc, char** argv )
 		if (argv[i+1][0] == '/')
 		  aSessionConfigName = argv[i+1];
 		else {
-		  char* pHome;
-		  if( (pHome = getenv( "HOME" )) )
-			aSessionConfigName = pHome;
-		  else
-			aSessionConfigName = "."; // use current dir if $HOME is not set
-		  aSessionConfigName += "/.kde/share/config/";
+		  aSessionConfigName = KApplication::localkdedir();
+		  aSessionConfigName += "/share/config/";
 		  aSessionConfigName += argv[i+1];
 		}
 		if (QFile::exists(aSessionConfigName)){
@@ -1024,8 +1013,7 @@ void KApplication::buildSearchPaths()
 {
   // Torben
   // We want to search the local files with highest priority
-  QString tmp( getenv( "HOME" ) );
-  tmp += "/.kde";
+  QString tmp = KApplication::localkdedir();
   appendSearchPath( tmp );
     
   // add paths from "[KDE Setup]:Path=" config file entry
@@ -1486,13 +1474,13 @@ bool KApplication::getKDEFonts(QStrList *fontlist)
   if(fontlist == 0L)
     return false;
 
-  fontfilename =  getenv("HOME");
+  fontfilename = KApplication::localkdedir();
 
   if(fontfilename.isEmpty()){
     return false;
   }
     
-  fontfilename = fontfilename + "/.kde/share/config/kdefonts";
+  fontfilename = fontfilename + "/share/config/kdefonts";
 
   QFile fontfile(fontfilename);
 

@@ -23,6 +23,11 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
   
     $Log$
+    Revision 1.22  1998/06/10 18:23:37  schreter
+    New klocale code had a little bug - it tried to find if there is "charsets"
+    file in a locale dir instead of "charset" file, but then opened "charset"
+    file. So I've fixed it. I've also fixed font dialog label sizes.
+
     Revision 1.21  1998/06/01 09:13:34  kalle
     Added static getFontAndText()
 
@@ -576,8 +581,7 @@ bool KFontDialog::loadKDEInstalledFonts(){
 
   //TODO replace by QDir::homePath();
 
-  fontfilename =  getenv("HOME");
-  fontfilename = fontfilename + "/.kde/share/config/kdefonts";
+  fontfilename = KApplication::localkdedir() + "/share/config/kdefonts";
 
   QFile fontfile(fontfilename);
 

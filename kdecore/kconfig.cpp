@@ -19,6 +19,12 @@
 // $Id$
 //
 // $Log$
+// Revision 1.13  1998/05/26 14:14:56  kalle
+// Two bugfixes in KConfig:
+//
+// - security hole when saving to symlinks in SUID mode
+// - trailing comma was needed in string list
+//
 // Revision 1.12  1998/05/04 20:08:12  ettrich
 // Matthias: \n, \t, \r are stored as \\n, \\t and \\r now.
 //
@@ -65,6 +71,8 @@
 #include "kconfig.moc"
 #include <qfileinf.h>
 #include <stdlib.h>
+
+#include "kapp.h"
 
 #include "config.h"
 
@@ -186,7 +194,7 @@ void KConfig::parseConfigFiles()
 	  // we can already be sure that this file exists
  	  /* Actually, we can't: CHange by Alex */
  	  if (!aConfigFile.open( IO_ReadOnly)) {
- 		data()->aLocalAppFile.sprintf("%s/.kde/share/config/%s",getenv("HOME"),data()->aLocalAppFile.data());
+		data()->aLocalAppFile.sprintf("%s/share/config/%s",KApplication::localkdedir().data(),data()->aLocalAppFile.data());
  		aConfigFile.close();
  		aConfigFile.setName(data()->aLocalAppFile.data());
  		aConfigFile.open(IO_ReadOnly);
