@@ -114,3 +114,12 @@ COOKIE REJECT http://d.b.c/ Set-Cookie: some_value=value9; Path="/"; expires=%NE
 COOKIE REJECT http://d.b.c/ Set-Cookie2: some_value=value10; Version=1; Path="/"; max-age="600"
 COOKIE ACCEPT http://d.b.c/ Set-Cookie: some_value=value11; Path="/"
 COOKIE ACCEPT http://d.b.c/ Set-Cookie2: some_value=value12; Version=1; Path="/"
+## Check domain policies that contain port numbers
+CONFIG AcceptSessionCookies true
+CONFIG CookieGlobalAdvice Reject
+CONFIG CookieDomainAdvice .8080:localhost:Accept
+COOKIE ACCEPT http://localhost:8080/systems Set-Cookie: some_value=value100; Path="/"
+COOKIE ACCEPT http://localhost:3128/ Set-Cookie: some_value=value200; Path="/"
+CONFIG AcceptSessionCookies false
+COOKIE ACCEPT http://localhost:8080/systems Set-Cookie: some_value=value100; Path="/"
+COOKIE REJECT http://localhost:3128/ Set-Cookie: some_value=value200; Path="/"
