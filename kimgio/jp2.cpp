@@ -353,10 +353,7 @@ kimgio_jp2_write( QImageIO* io )
 	QTextStream ts( &rate, IO_WriteOnly );
 	ts << "rate="
 		<< ( (io->quality() < 0) ? DEFAULT_RATE : io->quality() / 100.0F );
-	// optstr is a char*, not a const char*
-	char* options = qstrdup( rate.ascii() );
-	int i = jp2_encode( ji, stream, options );
-	delete[] options;
+	int i = jp2_encode( ji, stream, rate.utf8().data() );
 
 	jas_image_destroy( ji );
 	jas_stream_close( stream );
