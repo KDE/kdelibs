@@ -1429,8 +1429,6 @@ void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
     QListViewItem* item = currentItem();
     if (item==0) return;
 
-    setUpdatesEnabled(false);
-
     QListViewItem* repaintItem1 = item;
     QListViewItem* repaintItem2 = 0L;
     QListViewItem* visItem = 0L;
@@ -1640,7 +1638,6 @@ void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
                 nextItem->setSelected(!nextItem->isSelected());
              if (d->selectedBySimpleMove)
                 nextItem->setSelected(true);
-             setUpdatesEnabled(true);
              ensureItemVisible(nextItem);
              setCurrentItem(nextItem);
              update();
@@ -1675,7 +1672,6 @@ void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
           {
              if (d->selectedBySimpleMove)
                 nextItem->setSelected(true);
-             setUpdatesEnabled(true);
              ensureItemVisible(nextItem);
              setCurrentItem(nextItem);
              update();
@@ -1720,7 +1716,6 @@ void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
        break;
     }
 
-    setUpdatesEnabled(true);
     if (visItem)
        ensureItemVisible(visItem);
 
