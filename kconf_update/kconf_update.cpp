@@ -188,7 +188,7 @@ KonfUpdate::log()
 {
    if (!m_textStream)
    {
-      QString file = locateLocal("data", "kconf_update/update.log");
+      QString file = locateLocal("data", "kconf_update/log/update.log");
       m_file = new QFile(file);
       if (m_file->open(IO_WriteOnly | IO_Append))
       {
