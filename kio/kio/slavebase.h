@@ -319,7 +319,8 @@ public:
      * connection-oriented mode.
      * When a connection gets lost while the slave operates in
      * connection oriented mode, the slave should report
-     * ERR_CONNECTION_BROKEN instead of reconnecting.
+     * ERR_CONNECTION_BROKEN instead of reconnecting. The user is
+     * expected to disconnect the slave in the error handler.
      */
     virtual void openConnection();
 

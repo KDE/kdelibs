@@ -96,6 +96,14 @@ namespace KIO {
      *
      *    KIO::Scheduler::disconnectSlave(slave);
      * \endcode
+     *
+     * Note that you need to explicitly disconnect the slave when the 
+     * connection goes down, so your error handler should contain:
+     * \code
+     *    if (error == KIO::ERR_CONNECTION_BROKEN)
+     *        KIO::Scheduler::disconectSlave(slave);
+     * \endcode
+     *
      * @see KIO::Slave
      * @see KIO::Job
      **/
