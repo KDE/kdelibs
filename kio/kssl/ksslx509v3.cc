@@ -42,8 +42,8 @@ KSSLX509V3::~KSSLX509V3() {
 
 bool KSSLX509V3::certTypeCA() {
 #ifdef KSSL_HAVE_SSL
-	// 65407 == 0xffff xor 64    so we don't include Any Purpose CA
-	return (flags & (65471L << 16)) ? true : false;
+	// First try CA without X509_PURPOSE_ANY CA, then just try SSLCA
+	return (flags & (65471L << 16)) ? true : certTypeSSLCA();
 #endif
 	return false;
 }
