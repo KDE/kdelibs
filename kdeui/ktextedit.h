@@ -22,24 +22,68 @@
 
 #include <qtextedit.h>
 
+/**
+ * This is just a little subclass of QTextEdit, implementing
+ * some standard KDE features, like Cursor auto-hiding, configurable
+ * wheelscrolling (fast-scroll or zoom) and deleting of entire
+ * words with Ctrl-Backspace or Ctrl-Delete.
+ *
+ * Basic rule: whenever you want to use QTextEdit, use KTextEdit!
+ *
+ * @see QTextEdit
+ * @short A KDE'ified QTextEdit
+ * @author Carsten Pfeiffer <pfeiffer@kde.org>
+ */
 class KTextEdit : public QTextEdit
 {
     Q_OBJECT
     
 public:
+    /**
+     * Constructs a KTextEdit object. See @ref QTextEdit::QTextEdit
+     * for details.
+     */
     KTextEdit( const QString& text,
                const QString& context = QString::null, 
                QWidget * parent = 0, const char *name = 0 );
+    /**
+     * Constructs a KTextEdit object. See @ref QTextEdit::QTextEdit
+     * for details.
+     */
+
     KTextEdit( QWidget *parent = 0L, const char *name = 0 );
+    /**
+     * Destroys the KTextEdit object.
+     */
     ~KTextEdit();
     
+    /**
+     * Reimplemented to set a proper "deactivated" background color.
+     */
     virtual void setReadOnly (bool readOnly);
 
 protected:
+    /**
+     * Reimplemented to catch "delete word" key events.
+     */
     virtual void keyPressEvent( QKeyEvent * );
+
+    /**
+     * Reimplemented to allow fast-wheelscrolling with Ctrl-Wheel
+     * or zoom.
+     */
     virtual void contentsWheelEvent( QWheelEvent * );
 
+    /**
+     * Deletes a word backwards from the current cursor position,
+     * if available.
+     */
     virtual void deleteWordBack();
+
+    /**
+     * Deletes a word forwards from the current cursor position,
+     * if available.
+     */
     virtual void deleteWordForward();
     
 protected:
