@@ -327,7 +327,6 @@ void ElementImpl::recalcStyle( StyleChange change )
 {
     // ### should go away and be done in renderobject
     RenderStyle* _style = m_render ? m_render->style() : 0;
-    bool needsUpdate = false;
     const char* debug;
     switch(change) {
     case NoChange: debug = "NoChange";
@@ -361,12 +360,10 @@ void ElementImpl::recalcStyle( StyleChange change )
                 if (attached()) detach();
                 // ### uuhm, suboptimal. style gets calculated again
                 attach();
-                needsUpdate = true;
             }
             if( m_render && newStyle ) {
                 //qDebug("--> setting style on render element bgcolor=%s", newStyle->backgroundColor().name().latin1());
                 m_render->setStyle(newStyle);
-                needsUpdate = true;
             }
         }
         newStyle->deref();
@@ -383,18 +380,6 @@ void ElementImpl::recalcStyle( StyleChange change )
             n->recalcStyle( change );
     }
 
-    // ### should go away and be done by the renderobjects in
-    // a more intelligent way
-    if ( needsUpdate && m_render && !parentNode()->changed() ) {
-        RenderObject *r = m_render;
-        if ( !m_render->layouted() ) {
-            if ( m_render->isInline() )
-                r = m_render->containingBlock();
-            r->setMinMaxKnown( false );
-            r->setLayouted( false );
-        }
-        r->repaint();
-    }
     setChanged( false );
     setHasChangedChild( false );
 }
