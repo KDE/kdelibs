@@ -32,6 +32,9 @@
 
  // $Id$
  // $Log$
+ // Revision 1.6  1998/05/05 16:52:45  radej
+ // Bugs...
+ //
  // Revision 1.5  1998/05/05 10:03:50  radej
  // Improvement for opaque moving (steeling releaseEvent from widget)
  //
@@ -158,9 +161,9 @@ void KToolBoxManager::doMoveInternal()
   
   if (buttons != active_button)
   {
-    stop();
-    XMaskEvent(qt_xdisplay(), ButtonPressMask|ButtonReleaseMask|
-	       PointerMotionMask, &ev);
+    /*bool b = */ XCheckMaskEvent(qt_xdisplay(), ButtonReleaseMask, &ev);
+    // if (b) debug ("KTBmgr: Got and removed mouseRelease");
+    stop();  
     return;
   }
   
@@ -290,6 +293,8 @@ void KToolBoxManager::doResizeInternal ()
   
   if (buttons != active_button)
   {
+    /*bool b = */ XCheckMaskEvent(qt_xdisplay(), ButtonReleaseMask, &ev);
+    // if (b) debug ("KTBmgr: Got and removed mouseRelease");
     stop();
     return;
   }
