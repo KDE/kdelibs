@@ -68,6 +68,7 @@ void KURLRequester::init()
     myEdit = new KLineEdit( this, "line edit" );
     myButton = new QToolButton( this, "kfile button" );
     myButton->setPixmap(BarIcon(QString::fromLatin1("folder")));
+    myButton->setAutoRaise( true );
 
     setSpacing( KDialog::spacingHint() );
     myButton->setFixedSize( myButton->sizeHint().width(),
@@ -97,7 +98,7 @@ void KURLRequester::init()
 void KURLRequester::setURL( const QString& url )
 {
     bool hasLocalPrefix = (url.left(5) == QString::fromLatin1("file:"));
-    
+
     if ( !myShowLocalProt && hasLocalPrefix )
 	myEdit->setText( url.mid( 5, url.length()-5 ));
     else
@@ -116,6 +117,13 @@ void KURLRequester::slotOpenDialog()
 {
     KFileDialog *dlg = fileDialog();
     if ( !myEdit->text().isEmpty() ) {
+	/*
+	// if local, check if we have a directory
+	QString text = url();
+	if ( text == QString::fromLatin1("file:") ) {
+	    text = 
+	}
+	*/  
 	const KURL u( url() );
 	dlg->setURL( u );
     }

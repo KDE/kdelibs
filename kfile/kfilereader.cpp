@@ -123,7 +123,6 @@ void KFileReader::setURL(const KURL& url)
 {
     KURL oldurl = *this;
     KURL::operator=(url);
-    kdDebug() << "" << endl;
 
     if (isLocalFile()) { // we can check, if the file is there
 	struct stat buf;

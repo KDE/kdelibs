@@ -112,7 +112,6 @@ void KDirOperator::setSorting( QDir::SortSpec spec )
 void KDirOperator::readNextMimeType()
 {
     if (pendingMimeTypes.isEmpty()) {
-	kdDebug() << "" << endl;
 	return;
     }
 
@@ -128,7 +127,6 @@ void KDirOperator::readNextMimeType()
 
 void KDirOperator::slotKIOError(int, const QString& )
 {
-    kdDebug() << "" << endl;
     resetCursor();
 }
 
@@ -139,7 +137,6 @@ void KDirOperator::resetCursor()
     finished = false;
     if (progress)
 	progress->hide();
-    kdDebug() << "" << endl;
 }
 
 void KDirOperator::activatedMenu( const KFileViewItem *item )
@@ -333,6 +330,7 @@ void KDirOperator::close()
     resetCursor();
     pendingMimeTypes.clear();
     myCompletion.clear();
+    myDirCompletion.clear();
 }
 
 void KDirOperator::checkPath(const QString &, bool /*takeFiles*/) // SLOT
@@ -388,7 +386,7 @@ void KDirOperator::checkPath(const QString &, bool /*takeFiles*/) // SLOT
 	accept();
     }
 #endif
-    kdDebug() << "" << endl;
+    kdDebug() << "TODO KDirOperator::checkPath()" << endl;
 }
 
 void KDirOperator::setURL(const KURL& _newurl, bool clearforward)
@@ -438,15 +436,29 @@ void KDirOperator::setURL(const KURL& _newurl, bool clearforward)
     KURL backup(*dir);
     dir->setURL(newurl);
 
+    bool ok = false;
     if (!dir->isReadable()) {
-	KMessageBox::error(0,
-			   i18n("The specified directory does not exist\n"
-				"or was not readable."));
-	dir->setURL(backup);
-	backStack.pop();
-    } else {
-
+	// maybe newurl is a file? check its parent directory
+	newurl.cd(QString::fromLatin1(".."));
+	dir->setURL(newurl);
+	
+	if ( !dir->isReadable() ) {
+	    KMessageBox::error(0,
+			       i18n("The specified directory does not exist\n"
+				    "or was not readable."));
+	    dir->setURL(backup);
+	    backStack.pop();
+	}
+	else
+	    // don't reread when the url stayed the same
+	    ok = ((*dir).url(-1) != newurl.url(-1));
+    }
+    else 
+	ok = true;
+    
+    if ( ok ) {
         myCompletion.clear();
+	myDirCompletion.clear();
 	emit urlEntered(*dir);
 	pathChanged();
     }
@@ -471,10 +483,9 @@ void KDirOperator::pathChanged()
     if (!fileView)
 	return;
 
-    kdDebug() << "" << endl;
-
     fileView->clear();
     myCompletion.clear();
+    myDirCompletion.clear();
 
     // it may be, that we weren't ready at this time
     if (!finished)
@@ -704,7 +715,6 @@ void KDirOperator::insertNewFiles(const KFileViewItemList &newone, bool ready)
     if (newone.isEmpty() && !ready)
 	return;
 
-    kdDebug() << "" << endl;
     myCompleteListDirty = true;
 
     bool isLocal = dir->isLocalFile();
@@ -782,6 +792,7 @@ void KDirOperator::filterChanged()
 {
     fileView->clear();
     myCompletion.clear();
+    myDirCompletion.clear();
     dir->listContents();
     emit updateInformation(fileView->numDirs(), fileView->numFiles());
 }
@@ -806,18 +817,36 @@ QString KDirOperator::makeCompletion(const QString& string)
         return QString::null;
     }
 
+    prepareCompletionObjects();
+    return myCompletion.makeCompletion( string );
+}
+
+QString KDirOperator::makeDirCompletion(const QString& string)
+{
+    if ( string.isEmpty() ) {
+        fileView->clearSelection();
+        return QString::null;
+    }
+
+    prepareCompletionObjects();
+    return myDirCompletion.makeCompletion( string );
+}
+
+void KDirOperator::prepareCompletionObjects()
+{
     if ( myCompleteListDirty ) { // create the list of all possible completions
         KFileViewItemListIterator it( dir->currentContents());
 	for( ; it.current(); ++it ) {
             KFileViewItem *item = it.current();
 
-	    if ( !item->isHidden() )
+	    if ( !item->isHidden() ) {
 	        myCompletion.addItem( item->name() );
+		if ( item->isDir() )
+		    myDirCompletion.addItem( item->name() );
+	    }
 	}
 	myCompleteListDirty = false;
     }
-
-    return myCompletion.makeCompletion( string );
 }
 
 void KDirOperator::slotCompletionMatch(const QString& match)

@@ -143,8 +143,6 @@ void qt_qstring_stats();
 
 void KFileView::insertSorted(KFileViewItem *tfirst, uint counter)
 {
-    kdDebug() << "" << endl;
-
     KFileViewItem **sortedArray = new KFileViewItem*[counter];
     KFileViewItem *it;
     uint index;
@@ -168,7 +166,6 @@ void KFileView::insertSorted(KFileViewItem *tfirst, uint counter)
 
     delete [] sortedArray;
 
-    kdDebug() << "" << endl;
     clearView();
     if ( myFirstItem == tfirst ) // we're probably just resorting, not adding atims
 	myFirstItem = 0L;
@@ -379,10 +376,8 @@ int KFileView::compareItems(const KFileViewItem *fi1, const KFileViewItem *fi2) 
 void KFileView::select( const KFileViewItem *item )
 {
     assert(item);
-    kdDebug() << "" << endl;
 
     if ( item->isDir() ) {
-	kdDebug() << "" << endl;
 	sig->activateDir(item);
     } else {
 	sig->activateFile(item);
@@ -397,7 +392,6 @@ void  KFileView::updateView(bool f)
 
 void KFileView::updateView(const KFileViewItem *)
 {
-    kdDebug() << "" << endl;
 }
 
 void KFileView::setCurrentItem(const QString &item,

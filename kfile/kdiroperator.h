@@ -96,14 +96,28 @@ class KDirOperator : public QWidget {
     int numFiles() const;
 
     /**
-     * @returns a KCompletion object, containing all filenames of the current
-     * directory/URL.
+     * @returns a KCompletion object, containing all filenames and
+     * directories of the current directory/URL.
      * You can use it to insert it into a @ref KLineEdit or @ref KComboBox
+     * Note: it will only contain files, after @ref prepareCompletionObjects()
+     * has been called. It will be implicitly called from @ref makeCompletion()
+     * or @ref makeDirCompletion()
      */
     KCompletion * completionObject() const {
 	return const_cast<KCompletion *>( &myCompletion );
     }
 
+    /**
+     * @returns a KCompletion object, containing only all directories of the
+     * current directory/URL.
+     * You can use it to insert it into a @ref KLineEdit or @ref KComboBox
+     * Note: it will only contain directories, after
+     * @ref prepareCompletionObjects() has been called. It will be implicitly
+     * called from @ref makeCompletion() or @ref makeDirCompletion()
+     */
+    KCompletion *dirCompletionObject() const {
+	return const_cast<KCompletion *>( &myDirCompletion );
+    }
     /**
      * an accessor to a collection of all available Actions. The actions
      * are static, they will be there all the time (no need to connect to
@@ -162,6 +176,7 @@ class KDirOperator : public QWidget {
     void updateSortActions();
     void updateViewActions();
     void setupMenu();
+    void prepareCompletionObjects();
 
 
  private:
@@ -180,6 +195,7 @@ class KDirOperator : public QWidget {
     KFileReader *dir;
 
     KCompletion myCompletion;
+    KCompletion myDirCompletion;
     bool myCompleteListDirty;
     QDir::SortSpec mySorting;
 
@@ -243,6 +259,7 @@ class KDirOperator : public QWidget {
     void rereadDir();
     void mkdir();
     QString makeCompletion(const QString&);
+    QString makeDirCompletion(const QString&);
 
   protected slots:
     void resetCursor();

@@ -93,8 +93,6 @@ KFileViewItem::KFileViewItem(const QString& baseURL, const KIO::UDSEntry &e)
 	case KIO::UDS_ACCESS_TIME:
 	case KIO::UDS_CREATION_TIME:
 	    break;
-	default:
-	    kdDebug() << "" << endl;
 	};
     }
 
@@ -180,7 +178,6 @@ void KFileViewItem::stat(bool alreadyindir)
 
     } else {
 	// default
-	kdDebug() << "" << endl;
 	myName.insert(0, '?');
 	mySize = 0;
 	myIsFile = false;
@@ -434,7 +431,7 @@ QPixmap KFileViewItem::pixmap( KIconLoader::Size size ) const
 	if ( myPixmapSize != size || !myPixmap ) {
 	    delete myPixmap;
 	    if ( !myMimeType )
-		myPixmap = new QPixmap( KGlobal::iconLoader()->loadIcon(defaultIcon(), 
+		myPixmap = new QPixmap( KGlobal::iconLoader()->loadIcon(defaultIcon(),
 			KIcon::NoGroup, size, KIcon::DefaultState, 0L, false));
 	    else
 		myPixmap = new QPixmap( myMimeType->pixmap( url(), size ));

@@ -36,7 +36,6 @@
 #include <kapp.h>
 #include <kurl.h>
 #include <kdiroperator.h>
-#include <kfilewidget.h>
 #include <kfile.h>
 #include <kdebug.h>
 
@@ -57,6 +56,7 @@ int main(int argc, char **argv)
 	a.exec();
     } else if (argv1 == QString::fromLatin1("preselect")) {
         name1 = KFileDialog::getOpenURL(QString::fromLatin1("/etc/passwd")).url();
+/*
     } else if (argv1 == QString::fromLatin1("widget")) {
 	KFileWidget *widget = new KFileWidget(KFileWidget::Simple);
 	// widget->setURL(QString::fromLatin1("ftp://localhost"));
@@ -65,6 +65,7 @@ int main(int argc, char **argv)
 	widget->show();
 	a.setMainWidget(widget);
 	a.exec();
+*/
     } else if (argv1 == QString::fromLatin1("dirs"))
 	name1 = KFileDialog::getExistingDirectory();
     else if (argv1 == QString::fromLatin1("heap")) {

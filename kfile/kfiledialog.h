@@ -449,19 +449,19 @@ protected slots:
     void toolbarCallback(int);
     void toolbarPressedCallback(int);
     void slotFilterChanged();
-    void locationChanged(const QString&, KComboBox *);
-    void locationComboChanged( const QString& );
     void pathComboChanged( const QString& );
     void fileHighlighted(const KFileViewItem *i);
     void fileSelected(const KFileViewItem *i);
     void slotStatResult(KIO::Job* job);
     void slotLoadingFinished();
 
+    void dirCompletion( const QString& );
+    void fileCompletion( const QString& );
+
     virtual void updateStatusLine(int dirs, int files);
     virtual void slotOk();
     virtual void accept();
 
-    void completion();
 
     /**
       * Add the current location to the global bookmarks list
