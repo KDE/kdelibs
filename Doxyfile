@@ -53,9 +53,9 @@ INPUT                  = dcop \
                          kdecore \
                          kdefx \
                          kdeui \
-                         kfile \
-                         kio \
-                         kio/kded \
+                         kio/kfile \
+                         kio/kio \
+                         kio/kssl \
                          kparts \
                          kjs \
                          interfaces \
@@ -64,7 +64,10 @@ INPUT                  = dcop \
                          kspell
 FILE_PATTERNS          = *.h
 RECURSIVE              = YES
-EXCLUDE                = 
+EXCLUDE                = \
+arts/tests     kdeprint/tests  khtml/java/tests  kio/kfile/tests  kioslave/http/kcookiejar/tests  kwallet/backend/tests \
+kdecore/tests  kdeui/tests     kinit/tests       kio/tests        kparts/tests                    libkmid/tests
+# */tests doesn't seem to work :(
 
 # If the value of the INPUT tag contains directories, you can use the 
 # EXCLUDE_PATTERNS tag to specify one or more wildcard patterns to exclude 
