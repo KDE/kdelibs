@@ -155,6 +155,20 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
   }
 }
 
+// Implementation of the debug() function
+class TestFunctionImp : public ObjectImp {
+public:
+  TestFunctionImp() : ObjectImp() {}
+  virtual bool implementsCall() const { return true; }
+  virtual Value call(ExecState *exec, Object &thisObj, const List &args);
+};
+
+Value TestFunctionImp::call(ExecState *exec, Object &/*thisObj*/, const List &args)
+{
+  fprintf(stderr,"--> %s\n",args[0].toString(exec).ascii());
+  return Undefined();
+}
+
 void KJSProxyImpl::clear() {
   // clear resources allocated by the interpreter, and make it ready to be used by another page
   // We have to keep it, so that the Window object for the part remains the same.
@@ -168,8 +182,12 @@ void KJSProxyImpl::clear() {
     //}
 #endif
     Window *win = Window::retrieveWindow(m_part);
-    if (win)
+    if (win) {
         win->clear( m_script->globalExec() );
+        // re-add "debug", clear() removed it
+        m_script->globalObject().put(m_script->globalExec(),
+                                     "debug", Value(new TestFunctionImp()), Internal);
+    }
 
     applyUserAgent();
   }
@@ -262,20 +280,6 @@ void KJSProxyImpl::appendSourceFile(QString url, QString code)
   Q_UNUSED(url);
   Q_UNUSED(code);
 #endif
-}
-
-// Implementation of the debug() function
-class TestFunctionImp : public ObjectImp {
-public:
-  TestFunctionImp() : ObjectImp() {}
-  virtual bool implementsCall() const { return true; }
-  virtual Value call(ExecState *exec, Object &thisObj, const List &args);
-};
-
-Value TestFunctionImp::call(ExecState *exec, Object &/*thisObj*/, const List &args)
-{
-  fprintf(stderr,"--> %s\n",args[0].toString(exec).ascii());
-  return Undefined();
 }
 
 void KJSProxyImpl::initScript()
