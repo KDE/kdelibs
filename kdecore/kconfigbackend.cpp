@@ -93,11 +93,11 @@ static QString stringToPrintable(const QString& s){
   return result;
 }
 
-KConfigBackEnd::KConfigBackEnd(KConfigBase *_config, 
-			       const QString &_fileName, 
+KConfigBackEnd::KConfigBackEnd(KConfigBase *_config,
+			       const QString &_fileName,
 			       const QString &_resType,
 			       bool _useKDEGlobals)
-  : pConfig(_config), fileName(_fileName), 
+  : pConfig(_config), fileName(_fileName),
     resType(_resType), useKDEGlobals(_useKDEGlobals)
 {
 }
@@ -105,37 +105,37 @@ KConfigBackEnd::KConfigBackEnd(KConfigBase *_config,
 bool KConfigINIBackEnd::parseConfigFiles()
 {
   // Parse all desired files from the least to the most specific.
-  
+
   // Parse the general config files
   if (useKDEGlobals) {
-    
+
     QStringList kdercs = KGlobal::dirs()->
       findAllResources("config", "kdeglobals");
-    
-    if (!access("/etc/kderc", R_OK)) 
+
+    if (!access("/etc/kderc", R_OK))
       kdercs += "/etc/kderc";
-    
+
     kdercs += KGlobal::dirs()->
       findAllResources("config", "system.kdeglobals");
-    
+
     QStringList::ConstIterator it;
-    
+
     for (it = kdercs.fromLast(); it != kdercs.end(); it--) {
-      
+
       QFile aConfigFile( *it );
       aConfigFile.open( IO_ReadOnly );
       parseSingleConfigFile( aConfigFile, 0L, true );
       aConfigFile.close();
     }
   }
-  
+
   if (!fileName.isEmpty()) {
-    
+
     QStringList list = KGlobal::dirs()->
       findAllResources(resType, fileName, true);
-    
+
     QStringList::ConstIterator it;
-    
+
     for (it = list.fromLast(); it != list.end(); it--) {
 
       QFile aConfigFile( *it );
@@ -145,7 +145,7 @@ bool KConfigINIBackEnd::parseConfigFiles()
       aConfigFile.close();
     }
   }
-  
+
   return true;
 }
 
@@ -154,7 +154,7 @@ KConfigBase::ConfigState KConfigINIBackEnd::getConfigState() const
     if (fileName.isEmpty())
 	return KConfigBase::NoAccess;
 
-    QString aLocalFileName = KGlobal::dirs()->getSaveLocation("config") + 
+    QString aLocalFileName = KGlobal::dirs()->getSaveLocation("config") +
       fileName;
     // Can we allow the write? We can, if the program
     // doesn't run SUID. But if it runs SUID, we must
@@ -162,10 +162,10 @@ KConfigBase::ConfigState KConfigINIBackEnd::getConfigState() const
     // it wasn't SUID.
     if (checkAccess(aLocalFileName, W_OK|R_OK))
 	return KConfigBase::ReadWrite;
-    else 
+    else
 	if (checkAccess(aLocalFileName, R_OK))
 	    return KConfigBase::ReadOnly;
-    
+
     return KConfigBase::NoAccess;
 }
 
@@ -242,10 +242,10 @@ void KConfigINIBackEnd::sync(bool bMerge)
   bool bEntriesLeft = true;
   bool bLocalGood = false;
 
-  
+
   // find out the file to write to (most specific writable file)
   // try local app-specific file first
-  
+
   if (!fileName.isEmpty()) {
     QString aLocalFileName;
     if (fileName[0] == '/') {
@@ -275,10 +275,10 @@ void KConfigINIBackEnd::sync(bool bMerge)
   // the useKDEGlobals flag is set.
   if (bEntriesLeft && useKDEGlobals) {
 
-    QString aFileName = KGlobal::dirs()->getSaveLocation("config") + 
+    QString aFileName = KGlobal::dirs()->getSaveLocation("config") +
       "kdeglobals";
     QFile aConfigFile( aFileName );
-    
+
     // can we allow the write? (see above)
     if (checkAccess ( aFileName, W_OK )) {
       aConfigFile.open( IO_ReadWrite );
@@ -288,7 +288,7 @@ void KConfigINIBackEnd::sync(bool bMerge)
       aConfigFile.close();
     }
   }
-  
+
 }
 
 bool KConfigINIBackEnd::writeConfigFile(QFile &rConfigFile, bool bGlobal,
@@ -366,38 +366,39 @@ bool KConfigINIBackEnd::writeConfigFile(QFile &rConfigFile, bool bGlobal,
 
   pStream = new QTextStream( &rConfigFile );
 
+  
   // write back -- start with the default group
-  KEntryKey groupKey = { "<default>", QString() };
-  KEntryMapIterator aWriteIt = aTempMap.find(groupKey);
+  KEntryMapConstIterator aWriteIt;
+  for (aWriteIt = aTempMap.begin(); aWriteIt != aTempMap.end(); ++aWriteIt) {
 
-  for (; aWriteIt.key().group == "<default>" && aWriteIt != aTempMap.end();
-       ++aWriteIt) {
-    if (aWriteIt.key().key.isNull())
-      // if group had no entries we may well now be pointing at another group,
-      // we need to skip over the special group entry
-      continue;
-    if ( (*aWriteIt).bNLS &&
-	aWriteIt.key().key.right(1) != "]")
-      // not yet localized, but should be
-      *pStream << aWriteIt.key().key << '['
-	       << pConfig->locale() << ']' << "="
-	       << stringToPrintable( (*aWriteIt).aValue) << '\n';
-    else
-      // need not be localized or already is
-      *pStream << aWriteIt.key().key << "="
-	       << stringToPrintable( (*aWriteIt).aValue) << '\n';
-
+      if ( aWriteIt.key().group == "<default>" && !aWriteIt.key().key.isNull() ) {
+	  if ( (*aWriteIt).bNLS &&
+	       aWriteIt.key().key.right(1) != "]")
+	      // not yet localized, but should be
+	      *pStream << aWriteIt.key().key << '['
+		       << pConfig->locale() << ']' << "="
+		       << stringToPrintable( (*aWriteIt).aValue) << '\n';
+	  else
+	      // need not be localized or already is
+	      *pStream << aWriteIt.key().key << "="
+		       << stringToPrintable( (*aWriteIt).aValue) << '\n';
+      }
   } // for loop
 
   // now write out all other groups.
+  QString currentGroup;
   for (aWriteIt = aTempMap.begin(); aWriteIt != aTempMap.end(); ++aWriteIt) {
     // check if it's not the default group (which has already been written)
     if (aWriteIt.key().group == "<default>")
       continue;
+    
+    if ( currentGroup != aWriteIt.key().group ) {
+	currentGroup = aWriteIt.key().group;
+	*pStream << '[' << aWriteIt.key().group << ']' << '\n';
+    }
 
     if (aWriteIt.key().key.isNull()) {
-      // we found a special group key, write it as such
-      *pStream << '[' << aWriteIt.key().group << ']' << '\n';
+      // we found a special group key, ignore it 
     } else {
       // it is data for a group
       if ( (*aWriteIt).bNLS &&

@@ -33,6 +33,7 @@ KConfigBase::KConfigBase()
   : backEnd(0L), bDirty(false), bLocaleInitialized(false),
     bReadOnly(false), bExpand(true)
 {
+    aGroup = "<default>";
 }
 
 KConfigBase::~KConfigBase()

@@ -222,7 +222,7 @@ void KConfig::putData(const KEntryKey &_key, const KEntry &_data)
   else
     aEntryMap.insert(_key, _data);
 }
-  
+
 KEntry KConfig::lookupData(const KEntryKey &_key) const
 {
   //  cacheCheck();
