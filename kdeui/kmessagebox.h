@@ -81,8 +81,8 @@ public:
    Notify = 1,
    AllowLink = 2,
    Dangerous = 4,
-   PlainCaption = 8,
-   NoExec = 16
+   PlainCaption = 8,  ///< @since 3.4
+   NoExec = 16        ///< @since 3.4
  };
 
  /**
