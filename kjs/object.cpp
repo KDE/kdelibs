@@ -111,6 +111,11 @@ KJSO::~KJSO()
 //     delete rep;
 }
 
+bool KJSO::isDefined() const
+{
+  return !isA(UndefinedType);
+}
+
 bool KJSO::isNull() const
 {
   return !rep;

@@ -163,6 +163,10 @@ namespace KJS {
      */
     bool isNull() const;
     /**
+     * @return True if this objects is of any other value than Undefined.
+     */
+    bool isDefined() const;
+    /**
      * @return the type of the object. One of the @ref KJS::Type enums.
      */
     Type type() const;
