@@ -54,6 +54,8 @@
 #include <qcstring.h>
 #include <kdebug.h>
 
+
+
 class KSSLCertificatePrivate {
 public:
   KSSLCertificatePrivate() {
@@ -496,7 +498,27 @@ return qba;
 
 QByteArray KSSLCertificate::toPem() {
 QByteArray qba;
+#ifdef xxHAVE_SSL
+      // Look at the hell that OpenSSL has created for us:
+      int fds[2];
+      int rc = pipe(fds);
+      if (rc < 0) return qba;
+      FILE *fp = fdopen(fds[1], w);
 
+      if (!fp) {
+         close(fds[0]);
+         close(fds[1]);
+      }
+      
+      // i=PEM_write_bio_X509(out,x);
+      int i = PEM_ASN1_write(, PEM_STRING_X509, fp, x, NULL, NULL, 0, NULL, NULL);
+ 
+      // copy the stream into the QByteArray
+
+      fclose(fp);
+      close(fds[0]);
+
+#endif
 return qba;
 }
 
@@ -504,7 +526,20 @@ return qba;
 
 QByteArray KSSLCertificate::toNetscape() {
 QByteArray qba;
+#ifdef HAVE_SSL
+      //        ASN1_HEADER ah;
+      //        ASN1_OCTET_STRING os;
+ 
+      //        os.data=(unsigned char *)NETSCAPE_CERT_HDR;
+      //        os.length=strlen(NETSCAPE_CERT_HDR);
+      //        ah.header= &os;
+      //        ah.data=(char *)x;
+      //        ah.meth=X509_asn1_meth();
+ 
+      //        /* no macro for this one yet */
+      //        i=ASN1_i2d_bio(i2d_ASN1_HEADER,out,(unsigned char *)&ah);
 
+#endif
 return qba;
 }
 
