@@ -1,2 +1,3 @@
 Buildable=true
 Interface=Arts::Synth_BUS_UPLINK,Arts::SynthModule,Arts::Object
+Language=C++

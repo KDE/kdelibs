@@ -1,2 +1,3 @@
 Buildable=true
 Interface=Arts::Synth_ADD,Arts::SynthModule,Arts::Object
+Language=C++
