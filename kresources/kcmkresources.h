@@ -24,8 +24,6 @@
 
 #include <kcmodule.h>
 
-class KAboutData;
-
 class KCMKResources : public KCModule
 {
   Q_OBJECT
