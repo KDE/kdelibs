@@ -406,7 +406,6 @@ KJSO Window::get(const UString &p) const
 		(const_cast<Window*>(this)->history = new History(m_part)));
 
   else if (p == "event") {
-    assert( m_evt );
     if (m_evt)
       return getDOMEvent(*m_evt);
     else
