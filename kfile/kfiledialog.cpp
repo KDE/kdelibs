@@ -337,44 +337,48 @@ void KFileDialog::slotOk()
 {
     kdDebug(kfile_area) << "slotOK\n";
 
+    if ( (mode() & KFile::Directory) != KFile::Directory )
+	if ( locationEdit->currentText().stripWhiteSpace().isEmpty() )
+	    return;
+
+    KURL selectedURL;
+
+
+    if ( (mode() & KFile::Files) == KFile::Files ) // multiselection mode
+	selectedURL = ops->url();
+
+    else {
+	QString url = locationEdit->currentText();
+	if ( url.at(1) == QChar('/') ) { // absolute path
+            selectedURL = d->url;
+	    selectedURL.setPath( url );
+        }
+	else if ( url.find(QString::fromLatin1(":/")) != -1 ) { // full URL
+	    KURL u( ops->url(), url );
+	    selectedURL = u;
+	}
+	else {
+	    url.prepend( ops->url().url(+1) );
+	    selectedURL = url;
+	}
+    }
+
+    if ( selectedURL.isMalformed() ) {
+       KMessageBox::sorry( d->mainWidget, i18n("Sorry,\n%1\ndoesn't look like a valid URL\nto me.").arg(d->url.url()), i18n("Invalid URL") );
+       return;
+    }
+
     if ( (mode() & KFile::LocalOnly) == KFile::LocalOnly &&
-	 !ops->url().isLocalFile() ) {
+	 !selectedURL.isLocalFile() ) {
 	KMessageBox::sorry( d->mainWidget,
 			    i18n("You can only select local files."),
 			    i18n("Remote files not accepted") );
 	return;
     }
-	
 
-    if ( (mode() & KFile::Directory) != KFile::Directory )
-	if ( locationEdit->currentText().stripWhiteSpace().isEmpty() )
-	    return;
-
-
-    if ( (mode() & KFile::Files) == KFile::Files ) // multiselection mode
-	d->url = ops->url();
-
-    else {
-	QString url = locationEdit->currentText();
-	if ( url.at(1) == QChar('/') ) // absolute path
-	    d->url.setPath( url );
-	else if ( url.contains('/') ) { // relative path
-	    url.prepend( ops->url().url(+1) );
-	    d->url = url;
-	}
-	else {
-	    KURL u( ops->url(), url );
-	    d->url = u;
-	}
-
-	if ( d->url.isMalformed() ) {
-	    KMessageBox::sorry( d->mainWidget, i18n("Sorry,\n%1\ndoesn't look like a valid URL\nto me.").arg(d->url.url()), i18n("Invalid URL") );
-	}
-    }
-
+    d->url = selectedURL;
 
     // d->url is a correct URL now
-
 
     if ( (mode() & KFile::Directory) == KFile::Directory ) {
 	kdDebug(kfile_area) << "Directory\n";
