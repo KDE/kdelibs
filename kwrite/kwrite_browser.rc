@@ -1,0 +1,18 @@
+<!DOCTYPE kpartgui>
+<kpartgui name="KWriteBrowserView">
+<MenuBar>
+ <Menu name="edit"><Text>&amp;Edit</Text>
+  <Action name="find" />
+  <Action name="find_again" />
+  <Separator/>
+  <Action name="select_all"/>
+  <Separator/>
+  <Action name="goto_line"/>
+ </Menu>
+ <Menu name="tools"><Text>&amp;Tools</Text>
+  <Action name="set_highlighting" />
+  <Separator/>
+  <Action name="spell_checking" />
+ </Menu>
+</MenuBar>
+</kpartgui>

@@ -1,0 +1,57 @@
+<!DOCTYPE kpartgui>
+<kpartgui name="KWriteShell">
+<MenuBar>
+  <Menu name="File"><text>&amp;File</text>
+   <Action name="file_new"/>
+   <Action name="file_open"/>
+   <Action name="file_insert"/>
+   <Action name="file_open_recent"/>
+   <Separator/>
+   <Action name="file_save"/>
+   <Action name="file_save_as"/>
+   <Action name="file_revert"/>
+   <Separator/>
+   <Action name="file_print"/>
+   <Separator/>
+   <Action name="file_new_window"/>
+   <Action name="file_new_view"/>
+   <Separator/>
+   <Action name="shell_close"/>
+   <Action name="shell_quit"/>
+  </Menu>
+  <Merge/>
+  <Menu name="Settings"><text>&amp;Settings</text>
+   <Action name="show_menubar"/>
+   <Action name="show_toolbar"/>
+   <Action name="show_statusbar"/>
+   <Action name="show_path"/>
+   <Separator/>
+   <Action name="vertical_selections"/>
+   <Action name="end_of_line"/>
+   <Action name="save_options"/>
+   <Separator/>
+   <Action name="configure_toolbars"/>
+   <Action name="configure"/>
+  </Menu>
+  <Menu name="Help"><text>&amp;Help</text>
+   <Action name="contents"/>
+   <Action name="whats_this"/>
+   <Separator/>
+   <Action name="report_bug"/>
+   <Separator/>
+   <Action name="about_kwrite"/>
+   <Action name="about_kde"/>
+  </Menu>
+</MenuBar>
+<ToolBar name="mainToolBar">
+ <Action name="file_new"/>
+ <Action name="file_open"/>
+ <Action name="file_save"/>
+ <Separator/>
+ <Merge/>
+ <Separator/>
+ <Action name="file_print"/>
+ <Separator/>
+ <Action name="whats_this"/>
+</ToolBar>
+</kpartgui>
