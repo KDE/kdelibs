@@ -89,13 +89,15 @@ void RenderFrameSet::close()
 {
     RenderBox::close();
 
+    if(m_frameset->verifyLayout())
+        setLayouted(false);
+
     m_frameset->dispatchHTMLEvent(EventImpl::LOAD_EVENT,false,false);
 }
 
 
 void RenderFrameSet::layout( )
 {
-
     if ( strcmp( parent()->renderName(), "RenderFrameSet" ) != 0 )
     {
         m_width = m_view->visibleWidth();

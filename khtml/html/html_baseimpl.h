@@ -110,6 +110,7 @@ protected:
 
 class HTMLFrameSetElementImpl : public HTMLElementImpl
 {
+    friend class RenderFrameSet;
 public:
     HTMLFrameSetElementImpl(DocumentImpl *doc);
 
@@ -140,6 +141,10 @@ public:
     virtual void detach();
 
 protected:
+
+    // returns true if layout needs to be redone
+    bool verifyLayout();
+    
     QList<khtml::Length> *m_rows;
     QList<khtml::Length> *m_cols;
 

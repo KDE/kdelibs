@@ -29,7 +29,10 @@
 #ifndef HTMLPARSER_H
 #define HTMLPARSER_H
 
-//#define SPEED_DEBUG
+// 0 all
+// 1 all but renderer->close()
+// 2 all without renderer->attach && renderer->close()
+#define SPEED_DEBUG 0
 
 #ifdef SPEED_DEBUG
 #include <qdatetime.h>
@@ -143,11 +146,6 @@ protected:
      */
     void startBody();
 
-    /*
-     * removes the body element with it's contents. Needed for broken stuff as <html><center><frameset>
-     */
-    void removeBody();
-
     bool inBody;
     // in case we haven't found an explicit body element up to now, this is true.
     // needed for broken HTML as: <center><frameset>... as the center element creates an implicit body
@@ -163,7 +161,7 @@ protected:
 
     bool headLoaded;
 
-#ifdef SPEED_DEBUG
+#if SPEED_DEBUG > 0
     QTime qt;
 #endif
 };

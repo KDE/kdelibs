@@ -41,6 +41,7 @@ namespace khtml
 
 class RenderFrameSet : public RenderBox
 {
+    friend class DOM::HTMLFrameSetElementImpl;
 public:
   RenderFrameSet( DOM::HTMLFrameSetElementImpl *frameSet, KHTMLView *view,
                   QList<khtml::Length> *rows, QList<khtml::Length> *cols );

@@ -229,7 +229,7 @@ public:
 KHTMLParser::KHTMLParser( KHTMLView *_parent, HTMLDocumentImpl *doc)
 {
     //kdDebug( 6035 ) << "parser constructor" << endl;
-#ifdef SPEED_DEBUG
+#if SPEED_DEBUG > 0
     qt.start();
 #endif
 
@@ -259,7 +259,7 @@ KHTMLParser::KHTMLParser( DOM::DocumentFragmentImpl *i, HTMLDocumentImpl *doc )
 
 KHTMLParser::~KHTMLParser()
 {
-#ifdef SPEED_DEBUG
+#if SPEED_DEBUG > 0
     kdDebug( ) << "TIME: parsing time was = " << qt.elapsed() << endl;
 #endif
 
@@ -308,8 +308,9 @@ void KHTMLParser::parseToken(Token *t)
     }
 
 #ifdef PARSER_DEBUG
-    kdDebug( 6035 ) << "\n\n==> parser: processing token " << t->id << " current = " << current->id() << endl;
-    kdDebug(6035) << "inline=" << _inline << " inBody=" << inBody << endl;
+    kdDebug( 6035 ) << "\n\n==> parser: processing token " << getTagName(t->id).string() << "(" << t->id << ")"
+                    << " current = " << getTagName(current->id()).string() << "(" << current->id() << ")" << endl;
+    kdDebug(6035) << "inline=" << _inline << " inBody=" << inBody << " noRealBody=" << noRealBody << " haveFrameSet=" << haveFrameSet << endl;
 #endif
 
     // holy shit. apparently some sites use </br> instead of <br>
@@ -327,7 +328,7 @@ void KHTMLParser::parseToken(Token *t)
     if( t->id == ID_TEXT ) {
 #ifdef PARSER_DEBUG
         if(t->text)
-            kdDebug(6035) << "length="<< t->text->l << "text='" << QConstString(t->text->s, t->text->l).string() << "'" << endl;
+            kdDebug(6035) << "length="<< t->text->l << " text='" << QConstString(t->text->s, t->text->l).string() << "'" << endl;
 #endif
 	if (!_inline  || !inBody || current->id() == ID_OPTION)  {
 	    if(t->text && t->text->l == 1 && (*t->text->s).latin1() == ' ')
@@ -400,19 +401,19 @@ bool KHTMLParser::insertNode(NodeImpl *n)
         {
             pushBlock(id, tagPriority[id]);
             current = newNode;
-#ifndef SPEED_DEBUG
+#if SPEED_DEBUG < 2
             if(!n->attached() && HTMLWidget )  n->attach(HTMLWidget);
 #endif
             if(current->isInline()) _inline = true;
         }
         else {
-#ifndef SPEED_DEBUG
+#if SPEED_DEBUG < 2
             if(!n->attached() && HTMLWidget)  n->attach(HTMLWidget);
 #endif
 	    flat = false;
 	}
 
-#ifndef SPEED_DEBUG
+#if SPEED_DEBUG < 1
         if(tagPriority[id] == 0 && n->renderer()) {
             n->renderer()->calcMinMaxWidth();
             if (n->id() == ID_EMBED) n->renderer()->close();
@@ -458,8 +459,10 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                     pushBlock(id, tagPriority[id]);
                     current = n;
                 }
-#ifndef SPEED_DEBUG
+#if SPEED_DEBUG < 2
                 if(!n->attached() && HTMLWidget)  n->attach(HTMLWidget);
+#endif
+#if SPEED_DEBUG < 1
                 if(tagPriority[id] == 0 && n->renderer())
                     n->renderer()->close();
 #endif
@@ -485,7 +488,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 createHead();
             if( head ) {
                 head->addChild(n);
-#ifndef SPEED_DEBUG
+#if SPEED_DEBUG < 2
                 if(!n->attached() && HTMLWidget)
                     n->attach(HTMLWidget);
 #endif
@@ -501,12 +504,11 @@ bool KHTMLParser::insertNode(NodeImpl *n)
             if ( !head )
                 createHead();
             if ( head ) {
-
                 DOM::NodeImpl *newNode = head->addChild(n);
                 if ( newNode ) {
                     pushBlock(id, tagPriority[id]);
                     current = newNode;
-#ifndef SPEED_DEBUG
+#if SPEED_DEBUG < 2
                     if(!n->attached() && HTMLWidget)
                         n->attach(HTMLWidget);
 #endif
@@ -605,8 +607,10 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                     pushBlock(id, tagPriority[id]);
                     current = n;
                 }
-#ifndef SPEED_DEBUG
+#if SPEED_DEBUG < 2
                 if(!n->attached() && HTMLWidget)  n->attach(HTMLWidget);
+#endif
+#if SPEED_DEBUG < 1
                 if(tagPriority[id] == 0 && n->renderer())
                     n->renderer()->close();
 #endif
@@ -626,7 +630,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
             if(map)
             {
                 map->addChild(n);
-#ifndef SPEED_DEBUG
+#if SPEED_DEBUG < 2
                 if(!n->attached() && HTMLWidget)  n->attach(HTMLWidget);
 #endif
                 handled = true;
@@ -677,6 +681,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 if( haveFrameSet ) break;
                 e = new HTMLFrameSetElementImpl(document);
                 inBody = true;
+                noRealBody = false;
                 haveFrameSet = true;
                 insertNode(e);
                 handled = true;
@@ -918,8 +923,12 @@ NodeImpl *KHTMLParser::getElement(Token *t)
         break;
     case ID_FRAMESET:
         popBlock(ID_HEAD);
-	if ( inBody && noRealBody )
-	    removeBody();
+ 	if ( inBody && noRealBody && !haveFrameSet) {
+            popBlock( ID_BODY );
+            document->setBody( 0 );
+            inBody = false;
+            noRealBody = true;
+        }
         if ( haveFrameSet && current->id() == ID_HTML )
             break;
         n = new HTMLFrameSetElementImpl(document);
@@ -1262,6 +1271,15 @@ void KHTMLParser::popBlock( int _id )
     HTMLStackElem *Elem = blockStack;
     int maxLevel = 0;
 
+#ifdef PARSER_DEBUG
+    kdDebug( 6035 ) << "popBlock(" << getTagName(_id).string() << ")" << endl;
+    while(Elem) {
+        kdDebug( 6035) << "   > " << getTagName(Elem->id).string() << endl;
+        Elem = Elem->next;
+    }
+    Elem = blockStack;
+#endif
+
     while( Elem && (Elem->id != _id))
     {
         if (maxLevel < Elem->level)
@@ -1298,10 +1316,10 @@ void KHTMLParser::popOneBlock()
 #ifndef PARSER_DEBUG
     if(!Elem) return;
 #else
-    kdDebug( 6035 ) << "popping block: " << Elem->id << endl;
+    kdDebug( 6035 ) << "popping block: " << getTagName(Elem->id).string() << "(" << Elem->id << ")" << endl;
 #endif
 
-#ifndef SPEED_DEBUG
+#if SPEED_DEBUG < 1
     if(Elem->node != current)
         if(current->renderer()) current->renderer()->close();
 #endif
@@ -1391,12 +1409,4 @@ void KHTMLParser::startBody()
 	insertNode( isindex );
 	isindex = 0;
     }
-}
-
-void KHTMLParser::removeBody()
-{
-    popBlock( ID_BODY );
-    document->setBody( 0 );
-    inBody = false;
-    noRealBody = true;
 }
