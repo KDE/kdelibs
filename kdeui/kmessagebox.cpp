@@ -142,6 +142,15 @@ int KMessageBox::createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon,
                              const QString &ask, bool *checkboxReturn,
                              int options, const QString &details)
 {
+    return createKMessageBox(dialog, themedMessageBoxIcon(icon), text, strlist,
+                      ask, checkboxReturn, options, details, icon);
+}
+
+int KMessageBox::createKMessageBox(KDialogBase *dialog, QPixmap icon,
+                             const QString &text, const QStringList &strlist,
+                             const QString &ask, bool *checkboxReturn, int options,
+                             const QString &details, QMessageBox::Icon notifyType)
+{
     QVBox *topcontents = new QVBox (dialog);
     topcontents->setSpacing(KDialog::spacingHint()*2);
     topcontents->setMargin(KDialog::marginHint());
@@ -152,8 +161,8 @@ int KMessageBox::createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon,
 
     QLabel *label1 = new QLabel( contents);
 
-    if (icon != QMessageBox::NoIcon)
-        label1->setPixmap(themedMessageBoxIcon(icon));
+    if (!icon.isNull())
+       label1->setPixmap(icon);
 
     lay->addWidget( label1, 0, Qt::AlignCenter );
     lay->addSpacing(KDialog::spacingHint());
@@ -271,7 +280,7 @@ int KMessageBox::createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon,
 		btn->setFocus();
 
     if ( (options & KMessageBox::Notify) != 0 )
-        sendNotification( text, strlist, icon, dialog->topLevelWidget()->winId());
+        sendNotification( text, strlist, notifyType, dialog->topLevelWidget()->winId());
 
     if (KMessageBox_queue)
     {
@@ -892,25 +901,26 @@ KMessageBox::enableMessage(const QString &dontShowAgainName)
 
 void
 KMessageBox::about(QWidget *parent, const QString &text,
-                   const QString &caption, int /* options */)
+                   const QString &caption, int options)
 {
     QString _caption = caption;
     if (_caption.isEmpty())
         _caption = i18n("About %1").arg(kapp->caption());
 
-    QMessageBox *box = new QMessageBox( _caption, text,
-              QMessageBox::Information,
-              QMessageBox::Ok | QMessageBox::Default | QMessageBox::Escape,
-              0, 0,
-              parent, "about" );
+    KDialogBase *dialog = new KDialogBase(
+                                caption,
+                                KDialogBase::Yes,
+                                KDialogBase::Yes, KDialogBase::Yes,
+                                parent, "about", true, true,
+                                KStdGuiItem::ok() );
+    
+    QPixmap ret = KApplication::kApplication()->icon();
+    if (ret.isNull())
+        ret = QMessageBox::standardIcon(QMessageBox::Information);
+    dialog->setIcon(ret);
 
-    box->setButtonText(QMessageBox::Ok, i18n("&OK"));
-    box->setIconPixmap(kapp->icon());
-    box->adjustSize();
-    box->setFixedSize(box->size());
-
-    box->exec();
-    delete box;
+    createKMessageBox(dialog, ret, text, QStringList(), QString::null, 0, options);
+    
     return;
 }
 

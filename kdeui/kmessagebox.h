@@ -1071,6 +1071,30 @@ public:
                              const QString &ask, bool *checkboxReturn,
                              int options, const QString &details=QString::null);
 
+    /**
+     * Create content and layout of a standard dialog
+     *
+     * @param dialog  The parent dialog base
+     * @param icon    A QPixmap containing the icon to be displayed in the
+     *                dialog next to the text.
+     * @param text    Message string.
+     * @param strlist List of strings to be written in the listbox.
+     *                If the list is empty, it doesn't show any listbox
+     * @param ask     The text of the checkbox. If empty none will be shown.
+     * @param checkboxReturn The result of the checkbox. If it's initially
+     *                true then the checkbox will be checked by default.
+     * @param options  see OptionsType
+     * @param details Detailed message string.
+     * @param notifyType The type of notification to send when this message
+     *                is presentend.
+     * @since 3.3
+     */
+    static int createKMessageBox(KDialogBase *dialog, QPixmap icon,
+                             const QString &text, const QStringList &strlist,
+                             const QString &ask, bool *checkboxReturn,
+                             int options, const QString &details=QString::null,
+                             QMessageBox::Icon notifyType=QMessageBox::Information);
+
 private:
     static KConfig* againConfig;
 };
