@@ -1,5 +1,5 @@
 /* This file is part of the KDE project
-   Copyright (C) 2000 Dawit Alemayehu <adawit@kde.org
+   Copyright (C) 2000 Dawit Alemayehu <adawit@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -146,7 +146,7 @@ void KIO::SessionData::AuthDataList::registerAuthData( KIO::SessionData::AuthDat
 
 void KIO::SessionData::AuthDataList::unregisterAuthData( KIO::SessionData::AuthData* d )
 {
-    if ( !d  && !d->persist )
+    if ( !d  || d->persist )
         return;
 
     bool ok;
@@ -164,7 +164,10 @@ void KIO::SessionData::AuthDataList::unregisterAuthData( KIO::SessionData::AuthD
             client.setVar( ref_key, val, 0, d->group );
         }
         else
+        {
             client.delVars(d->key);
+            kdDebug() << "Deleting: " << d->key << endl;
+        }
     }
 }
 
