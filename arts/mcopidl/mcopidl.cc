@@ -1296,15 +1296,7 @@ void doInterfacesHeader(FILE *header)
 		}
 		fprintf(header,"\n");
 	
-		/*
-		inherits = buildInheritanceList(*d,"");
-		bool hasParent = (inherits != "");
-
-		if (hasParent) inherits = ": " + inherits;
-		else inherits = ": virtual public SmartWrapper";
-		*/
 		inherits = ": public SmartWrapper";
-		bool hasParent = false;
 
 		fprintf(header,"class %s %s {\n",d->name.c_str(),inherits.c_str());
 		fprintf(header,"private:\n");
@@ -1531,7 +1523,7 @@ bool lookupParentPort(InterfaceDef& iface, string port, vector<std::string>& por
 {
 	list<InterfaceDef *>::iterator interIt;
 	vector<AttributeDef *>::iterator ai;
-	vector<std::string>::iterator si, di;
+	vector<std::string>::iterator si;
 	// For all inherited interfaces
 	for (si = iface.inheritedInterfaces.begin(); si != iface.inheritedInterfaces.end(); si++)
 	{
@@ -1970,7 +1962,6 @@ void append_string_to_vector(const char *string, vector<char>& v)
 
 void preprocess(vector<char>& input, vector<char>& output)
 {
-	bool performInclude = false;
 	string filename;
 	enum { lineStart, idlCode, commentC, filenameFind,
 	            filenameIn1, filenameIn2 } state = lineStart;
@@ -1979,70 +1970,88 @@ void preprocess(vector<char>& input, vector<char>& output)
 
 	while(i != input.end())
 	{
-		int skip = 1;
-
-		if(match(i,"/*")) // check if that is a comment for some reason
+		if(state != commentC && match(i,"/*")) // check if here starts a comment
 		{
 			state = commentC;
+			i += 2;
 		}
-		else if(state == commentC) // leave comment state?
+		else if(state == commentC)
 		{
-			if(match(i,"*/")) state = idlCode;
+			if(match(i,"*/")) // leave comment state?
+			{
+				state = idlCode;
+				i += 2;
+			}
+			else // skip comments
+			{
+				if(*i == '\n') output.push_back(*i); // keep line numbering
+				i++;
+			}
 		}
 		else if(state == filenameFind)
 		{
-			if(*i != ' ' && *i != '\t')
+			switch(*i++)
 			{
-				if(*i == '"')
-				{
-					state = filenameIn1;
-				}
-				else if(*i == '<')
-				{
-					state = filenameIn2;
-				}
-				else
-				{
-					cout << *i << endl;
-					assert(0); // error handling!
-				}
+				case ' ':	// skip whitespaces
+				case '\t':
+					break;
+
+				case '"':	state = filenameIn1;
+					break;
+				case '<':	state = filenameIn2;
+					break;
+				default:	cerr << "bad char after #include statement" << endl;
+							assert(0); // error handling!
 			}
 		}
-		else if((state == filenameIn1 && *i == '"') || (state == filenameIn2 && *i == '>'))
+		else if((state == filenameIn1 && *i == '"')
+			 || (state == filenameIn2 && *i == '>'))
 		{
-			performInclude = true;
+			append_string_to_vector("#startinclude <",output);
+			append_string_to_vector(filename.c_str(),output);
+			append_string_to_vector(">\n",output);
+
+			if(!haveIncluded(filename))
+			{
+				::includes.push_back(filename);
+
+				// load include, preprocess
+				vector<char> file,filepp;
+
+				string location = searchFile(filename.c_str(),includePath);
+				append_file_to_vector(location.c_str(),file);
+				preprocess(file,filepp);
+
+				// append preprocessed file
+				output.insert(output.end(),filepp.begin(),filepp.end());
+			}
+
+			append_string_to_vector("#endinclude",output);
 			state = idlCode;
+			i++;
 		}
 		else if(state == filenameIn1 || state == filenameIn2)
 		{
-			filename += *i;
+			filename += *i++;
 		}
 		else if(state == lineStart) // check if we're on lineStart
 		{
 			if(match(i,"#include"))
 			{
-				skip = 8;
+				i += 8;
 				state = filenameFind;
 				filename = "";
 			}
-			else if(*i != ' ' && *i != '\t') state = idlCode;
-		}
-		if(*i == '\n' && state != commentC) state = lineStart; // newline handling
-		while(skip--) {
-			output.push_back(*i);
-			i++;
-		}
-		if((state == lineStart) && performInclude)
-		{
-			if(!haveIncluded(filename))
+			else
 			{
-				::includes.push_back(filename);
-
-				string location = searchFile(filename.c_str(),includePath);
-				append_file_to_vector(location.c_str(),output);
+				if(*i != ' ' && *i != '\t' && *i != '\n') state = idlCode;
+				output.push_back(*i++);
 			}
-			append_string_to_vector("#endinclude\n",output);
-			performInclude = false;
+		}
+		else
+		{
+		 	if(*i == '\n') state = lineStart;	// newline handling
+			output.push_back(*i++);
 		}
 	}
 }
@@ -2097,19 +2106,17 @@ int main(int argc, char **argv)
 	idl_in_include = 0;
 	idl_filename = inputfile;
 
-	vector<char> contents;
+	vector<char> contents,contentspp;
 	append_file_to_vector(inputfile,contents);
 
 	// trailing zero byte (mcopidlParse wants a C-style string as argument)
 	contents.push_back(0);
 
-	// preprocess (throws includes into contents)
-	vector<char> contentspp;
+	// preprocess (throws includes into contents, removes C-style comments)
 	preprocess(contents,contentspp);
-	contents = contentspp;
 
 	// call lex&yacc parser
-	mcopidlParse(&contents[0]);
+	mcopidlParse(&contentspp[0]);
 
 	// generate code for C++ header file
 	FILE *header = startHeader(prefix);

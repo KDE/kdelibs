@@ -161,7 +161,7 @@ Kidl_Identifier	[_a-zA-Z][a-zA-Z0-9_]*
 
 "//"[^\n]*		;
 
-"#include"[^\n]*    { startInclude(yytext); }
+"#startinclude"[^\n]*    { startInclude(yytext); }
 "#endinclude"[^\n]* { endInclude(); }
 
 
