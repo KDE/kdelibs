@@ -16,4 +16,4 @@
 <!ENTITY Chinese "\U-4E2D\U-6587" --GB2312 "ÖÐÎÄ"-->
 <!ENTITY Version "Version">
 <!ENTITY LastUpdated "Last updated">
-<!ENTITY By "By">
+<!--ENTITY By "By"-->
