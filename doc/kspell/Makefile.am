@@ -1,5 +1,5 @@
 
 KDE_LANG = en
 KDE_DOCS = AUTO
-KDE_DOCS_DEPENDENCIES = $(top_builddir)/kdoctools/meinproc
+KDE_DOCS_DEPS = $(top_builddir)/kdoctools/meinproc
 
