@@ -1,3 +1,5 @@
+#include <config.h>
+
 #include <qnamespace.h>
 #include <qwindowdefs.h>
 
@@ -18,6 +20,11 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/keysymdef.h>
+
+#ifdef HAVE_X11_XF86KEYSYM_H
+#include <X11/XF86keysym.h>
+#endif
+
 #undef NONE
 
 #ifndef KeyPress // for --enable-final
@@ -181,6 +188,46 @@ static const TransKey g_rgQtToSymX[] =
 	{ '-',                XK_KP_Subtract },
 	{ '+',                XK_KP_Add },
 	{ Qt::Key_Return,     XK_KP_Enter }
+#ifdef HAVE_X11_XF86KEYSYM_H
+#if QT_VERSION >= 0x030100
+        ,
+	{ Qt::Key_Standby,    XF86XK_Standby },
+	{ Qt::Key_VolumeDown, XF86XK_AudioLowerVolume },
+	{ Qt::Key_VolumeMute, XF86XK_AudioMute },
+	{ Qt::Key_VolumeUp,   XF86XK_AudioRaiseVolume },
+	{ Qt::Key_MediaPlay,  XF86XK_AudioPlay },
+	{ Qt::Key_MediaStop,  XF86XK_AudioStop },
+	{ Qt::Key_MediaPrev,  XF86XK_AudioPrev },
+	{ Qt::Key_MediaNext,  XF86XK_AudioNext },
+	{ Qt::Key_HomePage,   XF86XK_HomePage },
+	{ Qt::Key_LaunchMail, XF86XK_Mail },
+	{ Qt::Key_Search,     XF86XK_Search },
+	{ Qt::Key_MediaRecord, XF86XK_AudioRecord },
+	{ Qt::Key_LaunchMedia, XF86XK_AudioMedia },
+	{ Qt::Key_Launch1,    XF86XK_Calculator },
+	{ Qt::Key_Back,       XF86XK_Back },
+	{ Qt::Key_Forward,    XF86XK_Forward },
+	{ Qt::Key_Stop,       XF86XK_Stop },
+	{ Qt::Key_Refresh,    XF86XK_Refresh },
+	{ Qt::Key_Favorites,  XF86XK_Favorites },
+	{ Qt::Key_Launch0,    XF86XK_MyComputer },
+	{ Qt::Key_OpenUrl,    XF86XK_OpenURL },
+	{ Qt::Key_Launch2,    XF86XK_Launch0 },
+	{ Qt::Key_Launch3,    XF86XK_Launch1 },
+	{ Qt::Key_Launch4,    XF86XK_Launch2 },
+	{ Qt::Key_Launch5,    XF86XK_Launch3 },
+	{ Qt::Key_Launch6,    XF86XK_Launch4 },
+	{ Qt::Key_Launch7,    XF86XK_Launch5 },
+	{ Qt::Key_Launch8,    XF86XK_Launch6 },
+	{ Qt::Key_Launch9,    XF86XK_Launch7 },
+	{ Qt::Key_LaunchA,    XF86XK_Launch8 },
+	{ Qt::Key_LaunchB,    XF86XK_Launch9 },
+	{ Qt::Key_LaunchC,    XF86XK_LaunchA },
+	{ Qt::Key_LaunchD,    XF86XK_LaunchB },
+	{ Qt::Key_LaunchE,    XF86XK_LaunchC },
+	{ Qt::Key_LaunchF,    XF86XK_LaunchD },
+#endif
+#endif
 };
 
 //---------------------------------------------------------------------
