@@ -314,8 +314,15 @@ signals:
 
   /**
    * Signal to clear all items.
+   * It must always be connected!
    */
   void clear();
+
+  /**
+   * Signal to clear all the items with parent _url.
+   * It should always be conntected!
+   */
+  void clear( const KURL& _url );
 
   /**
    * Signal new items, @p complete is true when the directory loading has
