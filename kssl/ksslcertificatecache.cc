@@ -127,7 +127,7 @@ KSSLCertificateCache::KSSLCertificateCache() {
   d = new KSSLCertificateCachePrivate;
   d->cfg = new KSimpleConfig("ksslpolicies", false);
   if (!KGlobal::dirs()->addResourceType("kssl", "share/apps/kssl")) {
-    kdDebug(7029) << "Error adding (kssl, share/apps/kssl)" << endl;
+     //    kdDebug(7029) << "Error adding (kssl, share/apps/kssl)" << endl;
   }
   loadDefaultPolicies();
 }

@@ -53,7 +53,8 @@
                       name(_name), keylen(_keylen) {}
         QString name;
         int keylen;
-        inline int operator==(CipherNode &x) { return x.keylen == keylen; }
+        inline int operator==(CipherNode &x) 
+                     { return ((x.keylen == keylen) && (x.name == name)); }
         inline int operator< (CipherNode &x) { return keylen < x.keylen;  }
         inline int operator<=(CipherNode &x) { return keylen <= x.keylen; }
         inline int operator> (CipherNode &x) { return keylen > x.keylen;  }
@@ -88,7 +89,7 @@ KSSLSettings::KSSLSettings(bool readConfig) {
   m_cfg = new KConfig("cryptodefaults", false, false);
 
   if (!KGlobal::dirs()->addResourceType("kssl", "share/apps/kssl")) {
-    kdDebug(7029) << "Error adding (kssl, share/apps/kssl)" << endl;
+    //kdDebug(7029) << "Error adding (kssl, share/apps/kssl)" << endl;
   }
 
   if (readConfig) load();
@@ -169,12 +170,42 @@ QString clist = "";
         int bits = d->kossl->SSL_CIPHER_get_bits(sc, NULL);
  
         if (m_cfg->readBoolEntry(tcipher, bits >= 56)) {
-          cipherSort.inSort(new CipherNode(sc->name,bits));
+          CipherNode *xx = new CipherNode(sc->name,bits);
+          if (!cipherSort.contains(xx))
+             cipherSort.inSort(xx);
+          else delete xx;
         } // if
       } // for  i
 
     } // for    k
 
+    // Hack time
+    // ---------
+    //    A lot of these webservers suck.  So in order to get around their
+    // sucking, we take the most common ciphers and make them the first ones
+    // we offer.  This seems to make it work better.
+    //
+
+    // Put least preferred first, most preferred last.
+    CipherNode tnode("", 0);
+
+#define AdjustCipher(X, Y)    tnode.name = X;  tnode.keylen = Y;             \
+    if (cipherSort.find(&tnode) != -1) {                                     \
+       cipherSort.remove();                                                  \
+       cipherSort.append(new CipherNode(tnode.name.latin1(), tnode.keylen)); \
+    }
+
+    AdjustCipher("IDEA-CBC-MD5", 128);
+    AdjustCipher("DES-CBC3-MD5", 168);
+    AdjustCipher("RC2-CBC-MD5", 128);
+    AdjustCipher("DES-CBC3-SHA", 168);
+    AdjustCipher("IDEA-CBC-SHA", 128);
+    AdjustCipher("RC4-SHA", 128);
+    AdjustCipher("RC4-MD5", 128);
+#undef AdjustCipher
+
+
+    // now assemble the list  cipher1:cipher2:cipher3:...:ciphern
     while (!cipherSort.isEmpty()) {
       if (firstcipher)
         firstcipher = false;
