@@ -65,6 +65,13 @@ public:
 		   bool _determineMimeTypeOnDemand );
 
     /**
+     * Copy constructor. Note: you can't have an item twice in a view.
+     * This constructor does <em>not</em> copy any set @ref viewItem() and
+     * neither does it copy the reference to the @ref next() item.
+     */
+    KFileViewItem( const KFileViewItem& );
+
+    /**
       * Destroy the KFileViewItem object.
       */
     ~KFileViewItem();
@@ -108,7 +115,7 @@ public:
     /**
      * Return true if the file is readable
      */
-    //    bool isReadable() const;
+    bool isReadable() const;
 
     void setViewItem( const KFileView *view, const void *item );
     const void *viewItem( const KFileView *view ) const;
@@ -117,6 +124,12 @@ public:
 
     KFileViewItem *next() const { return myNext; }
     void setNext(KFileViewItem *n) { myNext = n; }
+
+    /**
+     * Assigns an item to this item. Does not copy the @ref viewItem() and the 
+     * @ref next() item.
+     */
+    KFileViewItem& operator=( const KFileViewItem& );
 
 protected:
     QString parsePermissions(mode_t perm) const;

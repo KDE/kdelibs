@@ -85,6 +85,16 @@ public:
     virtual void addItemList(const KFileViewItemList &list);
 
     /**
+     * Inserts a list of items. Use this method <b>only</b> if you are sure
+     * that the list really contains KFileViewItems or items  subclassing
+     * KFileViewItem. You can use KDirLister to create a KFileItemList with
+     * any item, subclassing KFileItem. E.g. KFileReader creates KFileViewItems
+     *
+     * @see KDirLister::createFileItem
+     */
+    void addItemList( const KFileItemList& list );
+    
+    /**
       * a pure virtual function to get a QWidget, that can be added to
       * other widgets. This function is needed to make it possible for
       * derived classes to derive from other widgets.
@@ -125,7 +135,7 @@ public:
      * Call KFileView::removeItem( item ) after removing it.
      */
     virtual void removeItem(const KFileViewItem *item);
-    
+
     /**
       * specifies the sorting of the internal list. Newly added files
       * are added through this sorting.

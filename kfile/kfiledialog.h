@@ -146,6 +146,23 @@ public:
     void setSelection(const QString& name);
 
     /**
+     * Sets whether the filename/url should be kept when changing directories.
+     * This is for example useful when having a predefined filename where
+     * the full path for that file is searched.
+     *
+     * getSaveFileName() and getSaveURL() set this to true by default, so that
+     * you can type in the filename and change the directory without having
+     * to type the name again.
+     */
+    void setKeepLocation( bool keep );
+
+    /**
+     * @returns whether the contents of the location edit are kept when
+     * changing directories.
+     */
+    bool keepsLocation() const;
+
+    /**
      * Set the filter to be used to @p filter.
      *
      * You can set more
@@ -172,8 +189,6 @@ public:
      * Retrieve the current filter as entered by the user or one of the
      * predefined set via @ref setFilter().
      *
-     * WARNING: There is no parameter filter... so what is this doing here ?
-     *
      * @param filter Contains the new filter (only the extension part,
      * not the explanation), for example, "*.cpp" or "*.cpp *.cc".
      *
@@ -192,7 +207,7 @@ public:
      * Do not use in conjunction with @ref setFilter()
      */
     void setFilterMimeType(const QString &label, const KMimeType::List &types, const KMimeType::Ptr &defaultType);
-    
+
     /**
      * The mimetype for the desired output format.
      *
@@ -428,11 +443,6 @@ signals:
     void selectionChanged();
 
     /**
-      * Emitted when the allowable history operations change.
-      */
-    void historyUpdate(bool, bool);
-
-    /**
      * Emitted when the filter changed, i.e. the user entered an own filter
      * or chose one of the predefined set via @ref setFilter().
      *
@@ -450,12 +460,12 @@ protected:
     static KURL *lastDirectory;
 
     QPopupMenu *bookmarksMenu;
-    KFileComboBox *locationEdit;
+    KURLComboBox *locationEdit;
 
     KFileFilter *filterWidget;
 
     KFileBookmarkManager *bookmarks;
-    QStringList history;
+    QStringList history; // FIXME: remove it, this is not used at all
 
     /**
      * adds a entry of the current directory. If disableUpdating is set
@@ -468,14 +478,6 @@ protected:
       *
       */
     virtual void initGUI();
-
-    /**
-      * takes action on the new location. If it's a directory, change
-      * into it, if it's a file, correct the name, etc.
-      * @param takeFiles if set to true, if will close the dialog, if
-      * txt is a file name
-      */
-    void checkPath(const QString& txt, bool takeFiles = false);
 
     /**
      * called when an item is highlighted/selected in multiselection mode.
@@ -541,9 +543,6 @@ protected slots:
     void fillBookmarkMenu( KFileBookmark *parent, QPopupMenu *menu, int &id );
 
 private:
-
-    // cleanup the static variables
-    static void cleanup();
     KFileDialog(const KFileDialog&);
     KFileDialog operator=(const KFileDialog&);
 
@@ -554,19 +553,6 @@ protected:
     bool autoDirectoryFollowing;
 
     KURL::List& parseSelectedURLs() const;
-
-};
-
-
-class KFileComboBox : public KURLComboBox
-{
-  Q_OBJECT
-
-public:
-  KFileComboBox( bool rw, QWidget *parent=0, const char *name=0 )
-      : KURLComboBox ( KURLComboBox::Files, rw, parent, name ) {}
-
-  void setCompletion( const QString& );
 
 };
 

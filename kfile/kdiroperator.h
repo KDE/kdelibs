@@ -46,6 +46,10 @@ class KDirOperator : public QWidget {
     Q_OBJECT
 	
  public:
+    /**
+     * You need to call listDirectory() to actually load the directory,
+     * this constructor only initializes and doesn't start loading.
+     */
     KDirOperator(const KURL& urlName = KURL(),
 		 QWidget *parent = 0, const char* name = 0);
     virtual ~KDirOperator();
@@ -64,7 +68,7 @@ class KDirOperator : public QWidget {
      * @returns the current namefilter.
      */
     const QString& nameFilter() const { return dir->nameFilter(); }
-    
+
     /**
      * local URLs (i.e. directories) always have file: prepended.
      */
@@ -217,7 +221,6 @@ protected:
     void updateViewActions();
     void setupMenu();
     void prepareCompletionObjects();
-    void insertIntoView(const KFileItemList& items);
 
  private:
     /**
@@ -312,7 +315,11 @@ protected:
     void selectDir(const KFileViewItem*);
     void selectFile(const KFileViewItem*);
     void highlightFile(const KFileViewItem* i) { emit fileHighlighted( i ); }
-    void activatedMenu( const KFileViewItem * );
+
+    /**
+     * Called upon right-click to activate the popupmenu.
+     */
+    virtual void activatedMenu( const KFileViewItem * );
 
     void sortByName() 		{ byNameAction->setChecked( true ); }
     void sortBySize() 		{ bySizeAction->setChecked( true ); }
@@ -337,7 +344,11 @@ private slots:
     void slotToggleDirsFirst();
     void slotToggleIgnoreCase();
 
+    void slotStarted();
+    void slotProgress( KIO::Job *, unsigned long );
+    void slotShowProgress();
     void slotIOFinished();
+    void slotRedirected( const KURL& );
 
 signals:
     void urlEntered(const KURL& );

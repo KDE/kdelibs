@@ -36,7 +36,15 @@ class KFileReader : public KDirLister
     Q_OBJECT
 
 public:
+    /**
+     * Sets the current working directory as URL, but does not start loading
+     * it.
+     */
     KFileReader();
+
+    /**
+     * Only sets the URL, does not start loading it.
+     */
     KFileReader(const KURL& url, const QString& nameFilter= QString::null);
     ~KFileReader();
 

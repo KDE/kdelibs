@@ -37,6 +37,7 @@
 #include <kmessagebox.h>
 #include <kprogress.h>
 #include <kstdaction.h>
+#include <jobclasses.h>
 
 #include "config-kfile.h"
 #include "kcombiview.h"
@@ -58,6 +59,7 @@ class KDirOperator::KDirOperatorPrivate
 {
 public:
     bool onlyDoubleClickSelectsFiles;
+    QTimer *progressDelayTimer;
 };
 
 KDirOperator::KDirOperator(const KURL& url,
@@ -87,15 +89,27 @@ KDirOperator::KDirOperator(const KURL& url,
     dir = new KFileReader(*lastDirectory);
     dir->setAutoUpdate( true );
 
+    connect(dir, SIGNAL(started( const QString& )), SLOT(slotStarted()));
     connect(dir, SIGNAL(newItems(const KFileItemList &)),
             SLOT(insertNewFiles(const KFileItemList &)));
     connect(dir, SIGNAL(completed()), SLOT(slotIOFinished()));
     connect(dir, SIGNAL(canceled()), SLOT(resetCursor()));
     connect(dir, SIGNAL(deleteItem(KFileItem *)),
             SLOT(itemDeleted(KFileItem *)));
+    connect(dir, SIGNAL(redirection( const KURL& )), 
+	    SLOT( slotRedirected( const KURL& )));
 
     connect(&myCompletion, SIGNAL(match(const QString&)),
             SLOT(slotCompletionMatch(const QString&)));
+
+    progress = new KProgress(this, "progress");
+    progress->adjustSize();
+    progress->setRange(0, 100);
+    progress->move(2, height() - progress->height() -2);
+
+    d->progressDelayTimer = new QTimer( this, "progress delay timer" );
+    connect( d->progressDelayTimer, SIGNAL( timeout() ),
+	     SLOT( slotShowProgress() ));
 
     finished = true;
     myCompleteListDirty = false;
@@ -115,6 +129,7 @@ KDirOperator::~KDirOperator()
     resetCursor();
     delete fileView;
     delete dir;
+    delete d->progressDelayTimer;
     delete d;
 }
 
@@ -148,8 +163,7 @@ void KDirOperator::resetCursor()
     if (!finished)
         QApplication::restoreOverrideCursor();
     finished = false;
-    if (progress)
-        progress->hide();
+    progress->hide();
 }
 
 void KDirOperator::activatedMenu( const KFileViewItem * )
@@ -514,6 +528,15 @@ void KDirOperator::pathChanged()
     dir->listDirectory();
 }
 
+void KDirOperator::slotRedirected( const KURL& newURL )
+{
+    pendingMimeTypes.clear();
+    myCompletion.clear();
+    myDirCompletion.clear();
+    myCompleteListDirty = true;
+    emit urlEntered( newURL );
+}
+
 // Code pinched from kfm then hacked
 void KDirOperator::back()
 {
@@ -720,34 +743,24 @@ void KDirOperator::setFileReader( KFileReader *reader )
     dir = reader;
 }
 
-// files from a remote url will be added immediately, but won't get any
-// mimetype-detection
-// for local files, we will wait until the entire loading is finished and
-// then dump them into the view in one chunk
+// files from a remote url won't get any mimetype-detection
 void KDirOperator::insertNewFiles(const KFileItemList &newone)
 {
     if (newone.isEmpty())
         return;
 
     myCompleteListDirty = true;
-    bool isLocal = dir->url().isLocalFile();
-    if ( !isLocal )
-        insertIntoView(newone);
+    fileView->addItemList( newone );
+    emit updateInformation(fileView->numDirs(), fileView->numFiles());
 
-    if (!dir->isFinished()) {
-        if (!progress) {
-            progress = new KProgress(this, "progress");
-            progress->adjustSize();
-            progress->setRange(0, 100);
-            progress->move(2, height() - progress->height() -2);
-        }
-
-        progress->setValue(ulong(dir->items().count() * 100)/ dir->items().count());
-        progress->raise();
-        progress->show();
-
-        // we have to redraw this in as fast as possible
-        QApplication::flushX();
+    if ( dir->url().isLocalFile() ) { // look up icons for local items
+	KFileItemListIterator it( newone );
+	while ( it.current() ) {
+	    pendingMimeTypes.append(static_cast<KFileViewItem*>(it.current()));
+	    ++it;
+	}
+	QTimer::singleShot(0, this, SLOT(readNextMimeType()));
+	QTimer::singleShot(200, this, SLOT(resetCursor()));
     }
 }
 
@@ -1099,8 +1112,7 @@ void KDirOperator::resizeEvent( QResizeEvent * )
 {
     if (fileView)
         fileView->widget()->resize( size() );
-    if ( progress )
-        progress->move(2, height() - progress->height() -2);
+    progress->move(2, height() - progress->height() -2);
 }
 
 void KDirOperator::setOnlyDoubleClickSelectsFiles( bool enable )
@@ -1113,38 +1125,45 @@ bool KDirOperator::onlyDoubleClickSelectsFiles() const
     return d->onlyDoubleClickSelectsFiles;
 }
 
-void KDirOperator::insertIntoView(const KFileItemList& items)
+void KDirOperator::slotStarted()
 {
-    if ( items.isEmpty() )
-        return;
+    if ( !dir->job() )
+	return;
+	
+    progress->setValue( 0 );
+    // delay showing the progressbar for one second
+    d->progressDelayTimer->start( 1000, true );
 
-    pendingMimeTypes.clear();
-    KFileViewItemList list;
-    KFileItemListIterator it( items );
-    register bool isLocal = dir->url().isLocalFile();
-    while ( it.current() ) {
-        list.append( static_cast<KFileViewItem *>( it.current() ));
-        if ( isLocal )
-            pendingMimeTypes.append(static_cast<KFileViewItem*>(it.current()));
-        ++it;
-    }
-    fileView->addItemList( list );
-    emit updateInformation(fileView->numDirs(), fileView->numFiles());
+    connect( dir->job(), SIGNAL( percent( KIO::Job *, unsigned long )),
+	     this, SLOT( slotProgress( KIO::Job *, unsigned long ) ));
+}
+
+void KDirOperator::slotShowProgress()
+{
+    progress->raise();
+    progress->show();
+    QApplication::flushX();
+}
+
+void KDirOperator::slotProgress( KIO::Job * job, unsigned long percent )
+{
+    if ( dir->job() != job )
+	return;
+
+    progress->setValue( percent );
+    // we have to redraw this in as fast as possible
+    if ( progress->isVisible() )
+	QApplication::flushX();
 }
 
 // local files will be inserted in one big chunk
 void KDirOperator::slotIOFinished()
 {
-    // this sucks currently, as this slot is also called by KDirLister after
-    // an update, where we don't want to clear the list -- FIXME
-    if ( dir->url().isLocalFile() ) {
-        fileView->clear();
-        insertIntoView( dir->items() );
-    }
-
-    QTimer::singleShot(0, this, SLOT(readNextMimeType()));
-    QTimer::singleShot(200, this, SLOT(resetCursor()));
+    d->progressDelayTimer->stop();
+    slotProgress( dir->job(), 100 );
+    progress->hide();
     emit finishedLoading();
+    resetCursor();
 }
 
 #include "kdiroperator.moc"

@@ -48,7 +48,7 @@ public:
     QString date;
     int pixmapSize;
     bool isReadable;
-
+    // if you add more, be sure to update KFileViewItem::operator= !
 };
 
 KFileViewItem::KFileViewItem(const KURL& baseURL, const KIO::UDSEntry &e)
@@ -60,7 +60,9 @@ KFileViewItem::KFileViewItem(const KURL& baseURL, const KIO::UDSEntry &e)
     init();
 }
 
-KFileViewItem::KFileViewItem(mode_t _mode, mode_t _permissions, const KURL& _url, bool _determineMimeTypeOnDemand )
+KFileViewItem::KFileViewItem(mode_t _mode, mode_t _permissions,
+			     const KURL& _url,
+			     bool _determineMimeTypeOnDemand )
     : KFileItem( _mode, _permissions, _url, _determineMimeTypeOnDemand )
 {
     d = new KFileViewItemPrivate();
@@ -68,6 +70,32 @@ KFileViewItem::KFileViewItem(mode_t _mode, mode_t _permissions, const KURL& _url
 
     init();
 }
+
+KFileViewItem::KFileViewItem( const KFileViewItem& item )
+    : KFileItem( item )
+{
+    d = new KFileViewItemPrivate( *item.d );
+    myURLString = item.myURLString;
+    myNext = 0L; // we can't guarantee that this one is being copied as well
+    // we don't copy the viewMap, as the view doesn't have a reference to us
+    // and can get destroyed anytime without us noticing.
+}
+
+KFileViewItem&  KFileViewItem::operator=( const KFileViewItem& item )
+{
+    d->access = item.d->access;
+    d->date = item.d->date;
+    d->pixmapSize = item.d->pixmapSize;
+    d->isReadable = item.d->isReadable;
+
+    myURLString = item.myURLString;
+    myNext = 0L; // we can't guarantee that this one is being copied as well
+    // we don't copy the viewMap, as the view doesn't have a reference to us
+    // and can get destroyed anytime without us noticing.
+
+    return *this;
+}
+
 
 KFileViewItem::~KFileViewItem()
 {

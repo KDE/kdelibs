@@ -43,6 +43,7 @@ int main(int argc, char **argv)
 {
     KApplication a(argc, argv, "kfstest");
     QString name1;
+    QStringList names;
 
     QString argv1;
     if (argc > 1)
@@ -55,7 +56,12 @@ int main(int argc, char **argv)
 	a.setMainWidget(op);
 	a.exec();
     } else if (argv1 == QString::fromLatin1("preselect")) {
-        name1 = KFileDialog::getOpenURL(QString::fromLatin1("/etc/passwd")).url();
+        names = KFileDialog::getOpenFileNames(QString::fromLatin1("/etc/passwd"));
+        QStringList::Iterator it = names.begin();
+        while ( it != names.end() ) {
+            qDebug("selected file: %s", (*it).latin1());
+            ++it;
+        }
 /*
     } else if (argv1 == QString::fromLatin1("widget")) {
 	KFileWidget *widget = new KFileWidget(KFileWidget::Simple);

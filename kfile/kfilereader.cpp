@@ -56,7 +56,8 @@ KFileReader::KFileReader()
     : KDirLister(true)
 {
     init();
-    openURL(QDir::currentDirPath(), showingDotFiles());
+    setURL( QDir::currentDirPath() );
+    // openURL(QDir::currentDirPath(), showingDotFiles());
 }
 
 KFileReader::KFileReader(const KURL& url, const QString& nameFilter)
@@ -65,7 +66,8 @@ KFileReader::KFileReader(const KURL& url, const QString& nameFilter)
     init();
     if (!nameFilter.isNull())
 	setNameFilter(nameFilter);
-    openURL(url, showingDotFiles());
+    //    openURL(url, showingDotFiles());
+    setURL( url );
 }
 
 void KFileReader::init()

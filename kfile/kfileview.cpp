@@ -140,6 +140,39 @@ void KFileView::addItemList(const KFileViewItemList &list)
     insertSorted(tfirst, counter);
 }
 
+// small hack: we get a QList<KFileItem> here, but we assume it is a
+// QList<KFileViewItem>, because that's what we get from KDirLister. We make
+// sure that KDirLister only puts KFileViewItems into the list of course
+// (by overriding KDirLister::createFileItem()).
+// NOTE: this is copy & paste of the other addItemList method!
+void KFileView::addItemList(const KFileItemList& list)
+{
+    if ( list.isEmpty() )
+	return;
+
+    KFileViewItem *tmp, *tfirst = 0;
+    int counter = 0;
+
+    for (KFileItemListIterator it(list); 
+	 (tmp = static_cast<KFileViewItem*>(it.current())); ++it) {
+
+	if (!updateNumbers(tmp))
+	    continue;
+
+	counter++;
+
+	if (!tfirst) {
+	    tfirst = tmp;
+	    tfirst->setNext(0);
+	    continue;
+	}
+	tmp->setNext(tfirst);
+	tfirst = tmp;
+    }
+
+    insertSorted(tfirst, counter);
+}
+
 void qt_qstring_stats();
 
 void KFileView::insertSorted(KFileViewItem *tfirst, uint counter)
@@ -490,11 +523,11 @@ void KFileView::removeItem( const KFileViewItem *item )
 {
     if ( !item )
 	return;
-    
+
     KFileViewItem *it = myFirstItem;
     if ( it == item )
 	myFirstItem = it->next();
-    
+
     else {
 	while (it) {
 	    if (it->next() == item)

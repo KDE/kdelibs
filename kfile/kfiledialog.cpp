@@ -128,6 +128,10 @@ struct KFileDialogPrivate
 
     KMimeType::Ptr defaultType; // the default mimetype to save as
     KMimeType::List mimetypes; //the list of possible mimetypes to save as
+
+    // indicates if the location edit should be kept or cleared when changing
+    // directories
+    bool keepLocation;
 };
 
 KURL *KFileDialog::lastDirectory; // to set the start path
@@ -140,6 +144,7 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
 {
     d = new KFileDialogPrivate();
     d->boxLayout = 0;
+    d->keepLocation = false;
     d->mainWidget = new QWidget( this, "KFileDialog::mainWidget");
     setMainWidget( d->mainWidget );
     d->okButton = new QPushButton( i18n("&OK"), d->mainWidget );
@@ -263,7 +268,9 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     toolbar->enableMoving(false);
     toolbar->adjustSize();
 
-    locationEdit = new KFileComboBox(true, d->mainWidget, "LocationEdit");
+    locationEdit = new KURLComboBox(KURLComboBox::Files, true,
+				    d->mainWidget, "LocationEdit");
+    // locationEdit = new KFileComboBox(true, d->mainWidget, "LocationEdit");
     locationEdit->setInsertionPolicy(QComboBox::NoInsertion);
     locationEdit->setFocus();
     locationEdit->setCompletionObject( ops->completionObject(), false );
@@ -386,9 +393,19 @@ void KFileDialog::slotOk()
 
     KURL selectedURL;
 
+    if ( (mode() & KFile::Files) == KFile::Files ) {// multiselection mode
+	if ( locationEdit->currentText().contains( '/' )) {
 
-    if ( (mode() & KFile::Files) == KFile::Files ) // multiselection mode
-        selectedURL = ops->url();
+	    // relative path? -> prepend the current directory
+	    KURL u( ops->url(), locationEdit->currentText() );
+	    if ( !u.isMalformed() )
+		selectedURL = u;
+	    else
+		selectedURL = ops->url();
+	}
+	else // simple filename -> just use the current URL
+	    selectedURL = ops->url();
+    }
 
     else {
         QString url = locationEdit->currentText();
@@ -415,30 +432,37 @@ void KFileDialog::slotOk()
 
     if ( (mode() & KFile::Directory) == KFile::Directory ) {
         kdDebug(kfile_area) << "Directory\n";
-        if ( d->url.isLocalFile() )
+        if ( d->url.isLocalFile() ) {
             if ( QFileInfo(d->url.path()).isDir() ) { // FIXME QFileInfo == local!
                 locationEdit->insertItem( d->url.path(+1), 1 );
                 accept();
             }
-            else // FIXME: !exists() -> create dir
+            else {// FIXME: !exists() -> create dir
                 if ( (mode() & KFile::File) != KFile::File ) {
-                    KMessageBox::error( d->mainWidget,
-                                        i18n("You have to select a directory!"),
-                                        i18n("Not a directory") );
+                    KMessageBox::error(d->mainWidget,
+                                       i18n("You have to select a directory!"),
+				       i18n("Not a directory") );
                 }
-        else
-        {
-                locationEdit->insertItem( d->url.prettyURL(+1), 1 );
-                accept();
-        }
-        return;
+		else {
+		    locationEdit->insertItem( d->url.prettyURL(+1), 1 );
+		    accept();
+		}
+	    }
+	}
+
+	else { // remote directory, should we allow that?
+	
+	}
+	
+	return;
     }
 
     KIO::StatJob *job = 0L;
     d->statJobs.clear();
 
 
-    if ( (mode() & KFile::Files) == KFile::Files ) {
+    if ( (mode() & KFile::Files) == KFile::Files && 
+	 !locationEdit->currentText().contains( '/' )) {
         kdDebug(kfile_area) << "Files\n";
         d->filenames = locationEdit->currentText();
         KURL::List list = parseSelectedURLs();
@@ -659,6 +683,7 @@ void KFileDialog::pathComboChanged( const QString& txt )
     if ( d->completionLock )
         return;
 
+    static const QString& localRoot = KGlobal::staticQString("file:/");
     KURLComboBox *combo = d->pathCombo;
     QString text = txt;
     QString newText = text.left(combo->cursorPosition() -1);
@@ -669,12 +694,9 @@ void KFileDialog::pathComboChanged( const QString& txt )
         url = text;
 
     // don't mess with malformed urls or remote urls without directory or host
-    if ( url.isMalformed()
-          // Why this ? ftp://ftp.kde.org, without directory, is valid! (David)
-          /* ||
-         ( text.find(QString::fromLatin1("file:/")) != 0 &&
-           ( url.directory().isNull() || url.host().isNull()) ) 
-          */ ) {
+    if ( url.isMalformed() ||
+         ( !url.url().startsWith( localRoot ) &&
+           ( url.directory().isNull() || url.host().isNull()) )) {
         d->completionHack = newText;
         return;
     }
@@ -686,8 +708,9 @@ void KFileDialog::pathComboChanged( const QString& txt )
         return;
     }
 
+
     // the user is backspacing -> don't annoy him with completions
-    if ( autoDirectoryFollowing && d->completionHack.find( newText ) == 0 ) {
+    if ( autoDirectoryFollowing && d->completionHack.startsWith( newText ) ) {
         // but we can follow the directories, if configured so
 
         // find out the current directory according to combobox and cd into
@@ -736,7 +759,8 @@ void KFileDialog::urlEntered(const KURL& url)
 
     locationEdit->blockSignals( true );
     locationEdit->setCurrentItem( 0 );
-    locationEdit->setEditText( filename );
+    if ( d->keepLocation )
+	locationEdit->setEditText( filename );
 
     locationEdit->blockSignals( false );
 }
@@ -927,24 +951,27 @@ void KFileDialog::dirCompletion( const QString& dir ) // SLOT
     // if someone uses completion, he doesn't like the current selection
     d->selection = QString::null;
 
-    QString text = dir;
     KURL url;
-    if ( text.at( 0 ) == '/' )
-        url.setPath( text );
+    if ( dir.at( 0 ) == '/' )
+        url.setPath( dir );
     else
-        url = text;
+        url = dir;
 
     if ( url.isMalformed() )
         return; // invalid entry in path combo
 
     d->completionLock = true;
 
-    if (text.left(base.length()) == base) {
+    if (url.url().startsWith( base )) {
         QString complete =
-            ops->makeDirCompletion( text.right(text.length() - base.length()));
+            ops->makeDirCompletion( url.fileName(false) );
 
         if (!complete.isNull()) {
-            QString newText = base + complete;
+	    QString newText = base + complete;
+	    QString fileProt = QString::fromLatin1( "file:" );
+	    if ( dir.startsWith( fileProt ) != newText.startsWith( fileProt ))
+		newText = newText.mid( 5 ); // remove file:
+
             d->pathCombo->setCompletedText( newText );
             d->url = newText;
         }
@@ -958,7 +985,7 @@ void KFileDialog::fileCompletion( const QString& file )
     d->completionLock = true;
     QString text = ops->makeCompletion( file );
     if ( !text.isEmpty() )
-        locationEdit->setCompletion( text );
+        locationEdit->setCompletedText( text );
     d->completionLock = false;
 }
 
@@ -1200,7 +1227,7 @@ QStringList KFileDialog::selectedFiles() const
 		list.append( d->url.path() );
         }
     }
-    
+
     return list;
 }
 
@@ -1214,8 +1241,8 @@ QString KFileDialog::getSaveFileName(const QString& dir, const QString& filter,
                                      const QString& caption)
 {
     KFileDialog dlg(dir, filter, parent, "filedialog", true);
-
     dlg.setCaption(caption.isNull() ? i18n("Save As") : caption);
+    dlg.setKeepLocation( true );
 
     dlg.exec();
 
@@ -1231,8 +1258,8 @@ KURL KFileDialog::getSaveURL(const QString& dir, const QString& filter,
                                      const QString& caption)
 {
     KFileDialog dlg(dir, filter, parent, "filedialog", true);
-
     dlg.setCaption(caption.isNull() ? i18n("Save As") : caption);
+    dlg.setKeepLocation( true );
 
     dlg.exec();
 
@@ -1321,10 +1348,6 @@ void KFileDialog::readRecentFiles( KConfig *kc )
     QString oldGroup = kc->group();
     kc->setGroup( ConfigGroup );
 
-#ifdef __GNUC__
-#warning Still the KConfig-bug (reparseConfiguration() needed)
-#endif
-    kc->reparseConfiguration();
     locationEdit->setMaxItems( kc->readNumEntry( RecentFilesNumber,
                                                  DefaultRecentURLsNumber ) );
     locationEdit->setURLs( kc->readListEntry( RecentFiles ) );
@@ -1355,27 +1378,14 @@ QPushButton * KFileDialog::cancelButton() const
     return d->cancelButton;
 }
 
-///////////////////
-
-
-void KFileComboBox::setCompletion(const QString& completion)
+void KFileDialog::setKeepLocation( bool keep )
 {
-    int pos = cursorPosition();
-
-    if ( currentText() != completion ) {
-        //      edit->blockSignals( true ); // FIXME, to be determined
-        setEditText( completion );
-        //      edit->blockSignals( false );
-    }
-
-    if (KGlobalSettings::completionMode() == KGlobalSettings::CompletionAuto ||
-        KGlobalSettings::completionMode() == KGlobalSettings::CompletionMan ) {
-        lineEdit()->setSelection( pos, currentText().length() );
-        lineEdit()->setCursorPosition( pos );
-    }
-    else
-        lineEdit()->setCursorPosition( completion.length() );
+    d->keepLocation = keep;
 }
 
+bool KFileDialog::keepsLocation() const
+{
+    return d->keepLocation;
+}
 
 #include "kfiledialog.moc"
