@@ -87,7 +87,7 @@ class ResourceManager : private ManagerImplListener
 
     T* standardResource()
     {
-      return dynamic_cast<T *>( mManager->standardResource() );
+      return static_cast<T *>( mManager->standardResource() );
     }
 
     void setStandardResource( const T* resource )
