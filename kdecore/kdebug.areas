@@ -204,8 +204,10 @@
 11111        kpat
 12000        KPoker
 12001        KPoker (Server)
+12002        kvoctrain (application)
+12003        kvoctrain (core library)
 
-# Kate/Kant/KWrite 
+# Kate/Kant/KWrite
 13000   Kate
 13010   Kate (XML/Syntax)
 13020   Kate (Document)
