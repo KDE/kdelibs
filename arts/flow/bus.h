@@ -41,9 +41,7 @@ namespace Arts {
 class BusClient
 {
 public:
-	virtual void configureBus(const std::vector<Arts::Synth_MULTI_ADD>&
-				channels) = 0;
-	virtual Arts::SynthModule module() = 0;
+	virtual Arts::ScheduleNode *snode() = 0;
 };
 
 
@@ -55,19 +53,18 @@ protected:
 		std::string name;
 		std::list<BusClient *> clients;
 		std::list<BusClient *> servers;
-		std::vector<Arts::Synth_MULTI_ADD> channels;
+		Arts::Synth_MULTI_ADD left, right;
 	};
 	std::list<Bus *> _busList;
 
 	BusManager();
 
 public:
-	Bus* findBus(std::string name);
-	void reBuild(Bus *bus);
-	void erase(BusClient *busclient);
-	void addClient(std::string busname, BusClient *client);
+	Bus* findBus(const std::string& name);
+
+	void addClient(const std::string& busname, BusClient *client);
 	void removeClient(BusClient *client);
-	void addServer(std::string busname, BusClient *server);
+	void addServer(const std::string& busname, BusClient *server);
 	void removeServer(BusClient *server);
 
 	std::vector<std::string> *busList();

@@ -93,7 +93,6 @@
 
 ## Optimization (this section contains various optimization ideas)
 
-- optimize bus rebuilding in bus.cc
 - use no floats for adressing the fractional part in resampling but integers
   (that will be MUCH faster)
 - use short int for i16le resampling, instead of using a long and adding

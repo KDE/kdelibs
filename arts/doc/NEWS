@@ -1,4 +1,5 @@
 aRts-0.5.3:
+- performance improvement for aRts midi instruments (bus code rewritten)
 - structures designed by artsbuilder can be used modules in structures again
   (and elsewhere), via generic Arts::Loader's
 
