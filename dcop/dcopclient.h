@@ -308,7 +308,7 @@ class DCOPClient : public QObject
   bool call(const QCString &remApp, const QCString &remObj,
 	    const QCString &remFun, const QByteArray &data,
 	    QCString& replyType, QByteArray &replyData,
-	    bool useEventLoop=false) KDE_DEPRECATED;
+	    bool useEventLoop=false);
 
   /**
    * Performs a asynchronous send with receive callback.
@@ -390,7 +390,7 @@ class DCOPClient : public QObject
   bool findObject(const QCString &remApp, const QCString &remObj,
 	    const QCString &remFun, const QByteArray &data,
 	    QCString &foundApp, QCString &foundObj,
-	    bool useEventLoop=false) KDE_DEPRECATED;
+	    bool useEventLoop=false);
 
 
   /**
