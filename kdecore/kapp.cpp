@@ -1426,13 +1426,14 @@ void KApplication::setTopWidget( QWidget *topWidget )
   if( topWidget != 0 )
   {
     Window leader = topWidget->winId();
+    QCString string_buffer = instanceName().data(); // copies it
 
-    char * argv = strdup(static_cast<const char *>(instanceName()));
+    char * argv = string_buffer.data();
 
     XSetCommand(display, leader, &argv, 1);
 
     XClassHint hint;
-    hint.res_name = strdup(instanceName());
+    hint.res_name = string_buffer.data();
     hint.res_class = const_cast<char*>("toplevel");
     XSetClassHint(display, leader, &hint);
 
@@ -1440,6 +1441,7 @@ void KApplication::setTopWidget( QWidget *topWidget )
     hints->window_group = leader;
     hints->flags = WindowGroupHint;
     XSetWMHints(display, leader, hints);
+    XFree( (char*)hints);
 
     // set the specified caption
     topWidget->setCaption( caption() );
