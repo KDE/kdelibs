@@ -809,7 +809,7 @@ bool KHTMLView::gotoLink(bool forward)
             if (d->scrollBarMoved)
             {
                 ElementImpl *candidate = 0;
-                while (candidate = m_part->xmlDocImpl()->findNextLink(candidate, forward))
+                while ((candidate = m_part->xmlDocImpl()->findNextLink(candidate, forward)))
                 {
                     QRect candrect = candidate->getRect();
                     if (candrect.left() > contentsX() && candrect.top() > contentsY() &&
