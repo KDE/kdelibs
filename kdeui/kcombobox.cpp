@@ -258,130 +258,137 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
             // ### this will most probably need fixing when Qt3 is used.
             // QCombBox in Qt2 is buggy, so here are some hacks that might
             // break with Qt3.
-        KGlobalSettings::Completion mode = completionMode();
-        KeyBindingMap keys = getKeyBindings();
+            KGlobalSettings::Completion mode = completionMode();
+            KeyBindingMap keys = getKeyBindings();
             bool noModifier = (e->state() == NoButton ||
                                e->state() == ShiftButton);
-        if ( (mode == KGlobalSettings::CompletionAuto ||
-              mode == KGlobalSettings::CompletionMan) && noModifier )
-        {
-            QString keycode = e->text();
-            if ( !keycode.isNull() && keycode.unicode()->isPrint() )
+            if ( (mode == KGlobalSettings::CompletionAuto ||
+                  mode == KGlobalSettings::CompletionMan) && noModifier )
             {
+                QString keycode = e->text();
+                if ( !keycode.isNull() && keycode.unicode()->isPrint() )
+                {
                     // This is completely useless since all
                     // QComboBox::keyPressEvent does is simply call
                     // e->ignore()!!  For now we differ this to the last call,
                     // but this needs to be re-addressed if the Troll's fix
                     // QComboBox in Qt 3.x..
                     // QComboBox::keyPressEvent ( e );
-                QString txt = currentText();
-                int len = txt.length();
+                    QString txt = currentText();
+                    int len = txt.length();
                     if ( !edit->hasMarkedText() &&
-                         len && cursorPosition() ==len )
-                {
-                    kdDebug(292) << "Automatic Completion" << endl;
-                    if ( emitSignals() )
+                         len && cursorPosition() == len )
+                    {
+                        kdDebug(292) << "Automatic Completion" << endl;
+                        if ( emitSignals() )
                             emit completion( txt );
-                    if ( handleSignals() )
+                        if ( handleSignals() )
                             makeCompletion( txt );
-                }
+                    }
                     // return;
+                }
             }
-        }
-        else if ( mode == KGlobalSettings::CompletionPopup && noModifier )
-        {
+            else if ( mode == KGlobalSettings::CompletionPopup && noModifier )
+            {
                 // This is completely useless since all
                 // QComboBox::keyPressEvent does is simply call e->ignore()!!
                 // For now we differ this to the last call, but this needs to
                 // be re-addressed if the Troll's fix QComboBox in Qt 3.x.
                 // QComboBox::keyPressEvent( e );
                 QString keycode = e->text();
-            QString txt = currentText();
+                QString txt = currentText();
                 int len = txt.length();
-            int key = e->key();
+                int key = e->key();
                 if ( len && ((!keycode.isNull() &&
-                     keycode.unicode()->isPrint()) ||
-                     key == Qt::Key_BackSpace || key == Qt::Key_Delete) )
-            {
-                kdDebug(292) << "Popup Completion" << endl;
-                if ( emitSignals() )
+                              keycode.unicode()->isPrint()) ||
+                             key == Key_BackSpace || key == Key_Delete) )
+                {
+                    kdDebug(292) << "Popup Completion" << endl;
+                    if ( emitSignals() )
                         emit completion( txt );
-                if ( handleSignals() )
+                    if ( handleSignals() )
                         makeCompletion( txt );
-            }
+                }
                 else
                 {
-                    if ( !len && d->completionBox &&
+                    if ( !len && d->completionBox && 
                          d->completionBox->isVisible() )
                         d->completionBox->hide();
-        }
+                }
                 // return;
             }
-        else if ( mode == KGlobalSettings::CompletionShell )
-        {
-                int key = ( keys[TextCompletion] == 0 ) ?
-                          KStdAccel::key(KStdAccel::TextCompletion):keys[TextCompletion];
-            if ( KStdAccel::isEqual( e, key ) )
+            else if ( mode == KGlobalSettings::CompletionShell )
             {
+                int key = ( keys[TextCompletion] == 0 ) ?
+                          KStdAccel::key(KStdAccel::TextCompletion) : 
+                          keys[TextCompletion];
+                if ( KStdAccel::isEqual( e, key ) )
+                {
                     // Emit completion if there is a completion object
                     // present, the current text is not the same as the
                     // previous and the cursor is at the end of the string.
-                QString txt = currentText();
-                int len = txt.length();
-                if ( edit->cursorPosition() == len && len != 0 )
-                {
-                    kdDebug(292) << "Shell Completion" << endl;
-                    if ( emitSignals() )
+                    QString txt = currentText();
+                    int len = txt.length();
+                    if ( edit->cursorPosition() == len && len != 0 )
+                    {
+                        kdDebug(292) << "Shell Completion" << endl;
+                        if ( emitSignals() )
                             emit completion( txt );
-                    if ( handleSignals() )
+                        if ( handleSignals() )
                             makeCompletion( txt );
+                        return;
+                    }
+                }
+                else if ( d->completionBox )
+                    d->completionBox->hide();
+            }
+
+            // handle rotation
+            if ( mode != KGlobalSettings::CompletionNone )
+            {
+                // Handles previousMatch.
+                int key = ( keys[PrevCompletionMatch] == 0 ) ? 
+                          KStdAccel::key(KStdAccel::PrevCompletion) : 
+                          keys[PrevCompletionMatch];
+                if ( KStdAccel::isEqual( e, key ) )
+                {
+                    if ( emitSignals() )
+                        emit textRotation( KCompletionBase::PrevCompletionMatch );
+                    if ( handleSignals() )
+                        rotateText( KCompletionBase::PrevCompletionMatch );
                     return;
-               }
-            }
-            else if ( d->completionBox )
-                d->completionBox->hide();
-        }
+                }
 
-        // handle rotation
-        if ( mode != KGlobalSettings::CompletionNone )
-        {
-            // Handles previousMatch.
-            int key = ( keys[PrevCompletionMatch] == 0 ) ? KStdAccel::key(KStdAccel::PrevCompletion) : keys[PrevCompletionMatch];
-            if ( KStdAccel::isEqual( e, key ) )
-            {
-                if ( emitSignals() )
-                    emit textRotation( KCompletionBase::PrevCompletionMatch );
-                if ( handleSignals() )
-                    rotateText( KCompletionBase::PrevCompletionMatch );
-                return;
-            }
-
-            // Handles nextMatch.
-            key = ( keys[NextCompletionMatch] == 0 ) ? KStdAccel::key(KStdAccel::NextCompletion) : keys[NextCompletionMatch];
-            if ( KStdAccel::isEqual( e, key ) )
-            {
-                if ( emitSignals() )
-                    emit textRotation( KCompletionBase::NextCompletionMatch );
-                if ( handleSignals() )
-                    rotateText( KCompletionBase::NextCompletionMatch );
-                return;
+                // Handles nextMatch.
+                key = ( keys[NextCompletionMatch] == 0 ) ? 
+                      KStdAccel::key(KStdAccel::NextCompletion) : 
+                      keys[NextCompletionMatch];
+                if ( KStdAccel::isEqual( e, key ) )
+                {
+                    if ( emitSignals() )
+                        emit textRotation( KCompletionBase::NextCompletionMatch );
+                    if ( handleSignals() )
+                        rotateText( KCompletionBase::NextCompletionMatch );
+                    return;
+                }
             }
         }
-    }
         d->ignoreDoubleKeyEvents = !d->ignoreDoubleKeyEvents;
     }
-    // read-only combobox
-    else if ( !edit )
-    {
-        QString keycode = e->text();
-        if ( !keycode.isNull() && keycode.unicode()->isPrint() )
-        {
-            emit completion ( keycode );
-            if ( handleSignals() )
-                makeCompletion( keycode );
-            return;
-        }
-    }
+    
+//     // read-only combobox
+//     else if ( !edit )
+//     {
+//         QString keycode = e->text();
+//         if ( !keycode.isNull() && keycode.unicode()->isPrint() )
+//         {
+//             emit completion ( keycode );
+//             if ( handleSignals() )
+//                 makeCompletion( keycode );
+//             return;
+//         }
+//     }
+    
     QComboBox::keyPressEvent( e );
 }
 
