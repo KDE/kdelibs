@@ -50,6 +50,7 @@ KSycocaFactory::KSycocaFactory(KSycocaFactoryId factory_id)
 
       // m_pathList will be filled in by inherited constructors
    }
+   KSycoca::self()->addFactory(this);
 }
 
 KSycocaFactory::~KSycocaFactory()

@@ -57,12 +57,6 @@ KBuildSycoca::~KBuildSycoca()
   delete m_pDirWatch;
 }
 
-void KBuildSycoca::addFactory( KSycocaFactory *factory)
-{
-   assert(m_lstFactories);
-   m_lstFactories->append(factory);
-}
-
 void KBuildSycoca::clear()
 {
   // For each factory
@@ -97,10 +91,9 @@ void KBuildSycoca::recreate()
   debug("KBuildSycoca::recreate()");
      
   // It is very important to build the servicetype one first
-  KBuildServiceTypeFactory *factory = new KBuildServiceTypeFactory;
-  addFactory(factory);
-  KServiceFactory *sfactory = new KServiceFactory;
-  addFactory(sfactory);
+  // Both a registered in KSycoca, no need to keep the pointers
+  (void) new KBuildServiceTypeFactory;
+  (void) new KServiceFactory;
   
   build(); // Parse dirs
   save(); // Save database

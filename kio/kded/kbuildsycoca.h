@@ -41,12 +41,6 @@ protected slots:
 protected:
 
    /**
-    * Add a factory for building, triggers directory parsing
-    * (unlike KSycoca::registerFactory which is for read-only factories)
-    */
-   void addFactory( KSycocaFactory *);
-
-   /**
     * Build the whole system cache, from .desktop files
     */
    void build();

@@ -83,6 +83,11 @@ public:
    QDataStream *findHeader();
     
    /**
+    * @internal - add a factory
+    */
+   void addFactory( KSycocaFactory * );
+
+   /**
     * @internal
     * @return true if building (i.e. if a KBuildSycoca);
     */

@@ -98,6 +98,12 @@ KSycoca::~KSycoca()
    _self = 0L;
 }
 
+void KSycoca::addFactory( KSycocaFactory *factory )
+{
+   assert(m_lstFactories);
+   m_lstFactories->append(factory);
+}
+
 bool KSycoca::process(const QCString &fun, const QByteArray &/*data*/,
                       QCString &replyType, QByteArray &/*replyData*/)
 {
