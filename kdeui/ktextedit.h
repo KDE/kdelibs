@@ -84,7 +84,8 @@ public:
 
 public slots:
     /**
-     * Start the spell checker on this text edit.
+     * Create a modal dialog to check the spelling.  This slot will not return
+     * until spell checking has been completed.
      */
     void checkSpelling();
 
