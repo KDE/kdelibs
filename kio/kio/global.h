@@ -68,7 +68,7 @@ namespace KIO
    *
    * @param  totalSize      total size in bytes
    * @param  processedSize  processed size in bytes
-   * @param  speed          speed in bytes pre second
+   * @param  speed          speed in bytes per second
    * @return calculated remaining time
    */
   QTime calculateRemaining( KIO::filesize_t totalSize, KIO::filesize_t processedSize, KIO::filesize_t speed );
