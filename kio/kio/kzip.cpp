@@ -133,10 +133,10 @@ bool KZip::openArchive( int mode )
     KArchiveEntry* e;
     KArchiveDirectory* tdir;
 
-    uint size=0;
-    uint esize=0;
-    uint csize=0;
-    uint offset=0;
+    uint size=0; // size of archive
+    uint esize=0;// uncompressed size of file
+    uint csize=0;// compressed size of file
+    uint offset=0; // begin of central header
     uint eoffset=0;
     char buffer[0x201];
     bool b=false;
@@ -177,13 +177,14 @@ bool KZip::openArchive( int mode )
 
 	    QString str( QString::fromLocal8Bit(buffer) );
 	    QString name( buffer + 46);
-	    int namelen = buffer[29] * 256 + buffer[28];
-	    int extralen = buffer[31] * 256 + buffer[30];
-	    int commlen = buffer[33] * 256 + buffer[32];
-	    int cmethod = buffer[11] * 256 + buffer[10];
+	    int namelen = (uchar)buffer[29] * 256 + (uchar)buffer[28];
+	    // only in central header ! see below.	
+    	    int extralen = (uchar)buffer[31] * 256 + (uchar)buffer[30];
+	    int commlen = (uchar)buffer[33] * 256 + (uchar)buffer[32];
+	    int cmethod = (uchar)buffer[11] * 256 + (uchar)buffer[10];
 
 	    kdDebug(7040) << "cmethod: " << cmethod << endl;
-//	    kdDebug(7040) << "buf1[1]: " << (uchar)buffer[25] << endl;
+	    kdDebug(7040) << "extralen: " << extralen << endl;
 //	    kdDebug(7040) << "buf1[2]: " << (uchar)buffer[26] << endl;
 //	    kdDebug(7040) << "buf1[3]: " << (uchar)buffer[27] << endl;
 
@@ -197,7 +198,18 @@ bool KZip::openArchive( int mode )
 	    eoffset = (uchar)buffer[45]*256*256*256 +(uchar)buffer[44]*256*256
 		    +(uchar)buffer[43]*256 + (uchar)buffer[42];
 
-	    eoffset = eoffset + 30 + extralen + namelen; //comment only in central header
+	    // some clever people use different extra field lengths
+	    // in the central header and in the local header... funny.
+	    char localbuf[10];
+	    int save_at = dev->at();
+	    dev->at( eoffset + 28 );
+	    dev->readBlock( localbuf, 4);
+	    int localextralen = (uchar)localbuf[1] * 256 + (uchar)localbuf[0];
+	    dev->at(save_at);
+
+	    kdDebug(7040) << "localextralen: " << localextralen << endl;
+
+	    eoffset = eoffset + 30 + localextralen + namelen; //comment only in central header
 
 	    kdDebug(7040) << "esize: " << esize << endl;
 	    kdDebug(7040) << "eoffset: " << eoffset << endl;
