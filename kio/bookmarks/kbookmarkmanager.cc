@@ -41,7 +41,8 @@
 
 class KBookmarkManagerPrivate : public dPtrTemplate<KBookmarkManager, KBookmarkManagerPrivate> {
 public:
-    QString m_caption;
+    QString m_editorCaption;
+    bool m_browserEditor;
 };
 QPtrDict<KBookmarkManagerPrivate>* dPtrTemplate<KBookmarkManager, KBookmarkManagerPrivate>::d_ptr = 0;
 
@@ -409,17 +410,20 @@ void KBookmarkManager::setShowNSBookmarks( bool show )
     KBookmarkMenu::setDynamicBookmarks("netscape", info);
 }
 
-void KBookmarkManager::setCaption(QString caption)
+void KBookmarkManager::setEditorOptions( const QString& caption, bool browser )
 {
-    dptr()->m_caption = caption;
+    dptr()->m_editorCaption = caption;
+    dptr()->m_browserEditor = browser;
 }
 
 void KBookmarkManager::slotEditBookmarks()
 {
     KProcess proc;
     proc << QString::fromLatin1("keditbookmarks");
-    if (!dptr()->m_caption.isNull())
-       proc << QString::fromLatin1("--caption") << dptr()->m_caption;
+    if (!dptr()->m_editorCaption.isNull())
+       proc << QString::fromLatin1("--caption") << dptr()->m_editorCaption;
+    if (!dptr()->m_browserEditor)
+       proc << QString::fromLatin1("--nobrowser");
     proc << m_bookmarksFile;
     proc.start(KProcess::DontCare);
 }

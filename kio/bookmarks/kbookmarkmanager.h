@@ -160,13 +160,15 @@ public:
     void setShowNSBookmarks( bool show );
     
     /**
-     * Set a caption which slotEditBookmarks passes on to keditbookmarks
+     * Set options with which slotEditBookmarks called keditbookmarks
      * this can be used to change the appearance of the keditbookmarks
      * in order to provide a slightly differing outer shell depending
      * on the bookmarks file / app which calls it.
-     * @param caption the caption string, for instance "Konsole"
+     * @param caption the --caption string, for instance "Konsole"
+     * @param browser iff false display no browser specific
+     *            menu items in keditbookmarks :: --nobrowser
      */
-    void setCaption( QString caption );
+    void setEditorOptions( const QString& caption, bool browser );
     
     /**
      * This static function will return an instance of the
