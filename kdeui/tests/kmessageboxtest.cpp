@@ -48,7 +48,7 @@ case 2:
 case 3:
   i = KMessageBox::questionYesNo(0,
                 "Does your printer support color or only black and white?",
-                "Printer setup", "&Color", "&Black & White");
+                "Printer setup", QString::fromLatin1("&Color"), QString::fromLatin1("&Black & White"));
   break;
 
 case 4:
@@ -67,13 +67,13 @@ case 6:
   i = KMessageBox::warningContinueCancel(0, 
                 "You are about tp Print.\n"
 		"Are you sure?",
-                "Print", "&Print");
+                "Print", QString::fromLatin1("&Print"));
   break;
 case 7:
   i = KMessageBox::warningContinueCancel(0, 
                 "You are about tp Print.\n"
 		"Are you sure?",
-                "Print", "&Print", "dontask", false);
+                "Print", QString::fromLatin1("&Print"), "dontask", false);
   break;
 
 case 8:
@@ -86,14 +86,14 @@ case 9:
   i = KMessageBox::warningYesNoCancel(0,
                 "Your document contains unsaved changes.\n"
                 "Do you want to save your changes?\n",
-                "Close");
+                QString::fromLatin1("Close"));
   break;
 
 case 10:
   i = KMessageBox::warningYesNoCancel(0,
                 "Your document contains unsaved changes.\n"
                 "Do you want to save or discard your changes?\n",
-                "Close", "&Save", "&Discard" );
+                "Close", QString::fromLatin1("&Save"), QString::fromLatin1("&Discard") );
   break;
 
 case 11:
