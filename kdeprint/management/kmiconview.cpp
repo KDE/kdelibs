@@ -166,7 +166,7 @@ void KMIconView::setViewMode(ViewMode m)
 
 	setArrangement((big ? QIconView::LeftToRight : QIconView::TopToBottom));
 	setItemTextPos((QIconView::ItemTextPos)mode);
-	setGridX((big ? 60 : -1));
+	//setGridX((big ? 60 : -1));
 	setWordWrapIconText(big);
 }
 
