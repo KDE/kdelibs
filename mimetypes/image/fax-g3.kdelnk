@@ -1,0 +1,9 @@
+# KDE Config File
+[KDE Desktop Entry]
+Type=MimeType
+MimeType=image/fax-g3
+Icon=image.xpm
+Patterns=*.g3;*.G3;
+Comment=CCITT g3 fax
+Comment[de]=CCITT g3 fax
+Comment[nl]=CCITT g3 fax
