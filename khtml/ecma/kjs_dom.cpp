@@ -478,26 +478,14 @@ Value DOMNodeProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &ar
     }
     case DOMNode::DispatchEvent:
       return Boolean(node.dispatchEvent(toEvent(args[0])));
-    case DOMNode::AppendChild: {
-      Node myNode = toNode(args[0]);
-      Value gdNode = getDOMNode(exec,node.appendChild(myNode));
-      if (myNode.handle() && !myNode.handle()->closed()) myNode.handle()->close();
-      return gdNode;
-    }
+    case DOMNode::AppendChild:
+      return getDOMNode(exec,node.appendChild(toNode(args[0])));
     case DOMNode::RemoveChild:
       return getDOMNode(exec,node.removeChild(toNode(args[0])));
-    case DOMNode::InsertBefore: {
-      Node myNode = toNode(args[0]);
-      Value gdNode = getDOMNode(exec,node.insertBefore(myNode, toNode(args[1])));
-      if (myNode.handle() && !myNode.handle()->closed()) myNode.handle()->close();
-      return gdNode;
-    }
-    case DOMNode::ReplaceChild: {
-      Node myNode = toNode(args[0]);
-      Value gdNode = getDOMNode(exec,node.replaceChild(myNode, toNode(args[1])));
-      if (myNode.handle() && !myNode.handle()->closed()) myNode.handle()->close();
-      return gdNode;
-    }
+    case DOMNode::InsertBefore:
+      return getDOMNode(exec,node.insertBefore(toNode(args[0]), toNode(args[1])));
+    case DOMNode::ReplaceChild:
+      return getDOMNode(exec,node.replaceChild(toNode(args[0]), toNode(args[1])));
     case DOMNode::Contains:
     {
 	DOM::Node other = toNode(args[0]);

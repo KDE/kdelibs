@@ -91,6 +91,8 @@ public:
     virtual NodeListImpl *childNodes();
     virtual NodeImpl *firstChild() const;
     virtual NodeImpl *lastChild() const;
+    // insertBefore, replaceChild and appendChild also close newChild
+    // unlike the speed optimized addChild (which is used by the parser)
     virtual NodeImpl *insertBefore ( NodeImpl *newChild, NodeImpl *refChild, int &exceptioncode );
     virtual NodeImpl *replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode );
     virtual NodeImpl *removeChild ( NodeImpl *oldChild, int &exceptioncode );

@@ -1092,6 +1092,7 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild, i
     // ### set style in case it's attached
     setChanged(true);
     dispatchSubtreeModifiedEvent();
+    if (!newChild->closed()) newChild->close();
     return newChild;
 }
 
@@ -1165,6 +1166,7 @@ NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, i
     // ### set style in case it's attached
     setChanged(true);
     dispatchSubtreeModifiedEvent();
+    if (!newChild->closed()) newChild->close();
     return oldChild;
 }
 
@@ -1305,6 +1307,7 @@ NodeImpl *NodeBaseImpl::appendChild ( NodeImpl *newChild, int &exceptioncode )
     setChanged(true);
     // ### set style in case it's attached
     dispatchSubtreeModifiedEvent();
+    if (!newChild->closed()) newChild->close();
     return newChild;
 }
 
