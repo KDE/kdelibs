@@ -754,7 +754,7 @@ void KDirOperator::selectDir(const KFileViewItem *item)
 
 void KDirOperator::itemDeleted(KFileItem *item)
 {
-    fileView->updateView( static_cast<KFileViewItem *>( item ));
+    fileView->removeItem( static_cast<KFileViewItem *>( item ));
     emit updateInformation(fileView->numDirs(), fileView->numFiles());
 }
 
@@ -1127,6 +1127,8 @@ void KDirOperator::insertIntoView(const KFileItemList& items)
 // local files will be inserted in one big chunk
 void KDirOperator::slotIOFinished()
 {
+    // this sucks currently, as this slot is also called by KDirLister after
+    // after an update, where we don't want to clear the list -- FIXME
     if ( dir->url().isLocalFile() ) {
 	fileView->clear();
 	insertIntoView( dir->items() );

@@ -275,6 +275,13 @@ void KFileIconView::updateView( const KFileViewItem *i )
       item->setPixmap( i->pixmap( myIconSize ) );
 }
 
+void KFileIconView::removeItem( const KFileViewItem *i )
+{
+    if ( !i )
+	return;
+    delete (KFileIconViewItem*)i->viewItem( this );
+}
+
 void KFileIconView::setIconSize( int size )
 {
     myIconSize = size;

@@ -75,6 +75,7 @@ public:
 
     virtual void updateView( bool );
     virtual void updateView(const KFileViewItem*);
+    virtual void removeItem( const KFileViewItem *);
 
     virtual void setSelected(const KFileViewItem *, bool);
     virtual bool isSelected(const KFileViewItem *i) const;

@@ -117,7 +117,7 @@ void KFileView::addItemList(const KFileViewItemList &list)
 {
     if ( list.isEmpty() )
 	return;
-    
+
     KFileViewItem *tmp, *tfirst = 0;
     int counter = 0;
 
@@ -484,6 +484,25 @@ KFile::SelectionMode KFileView::selectionMode() const
 void KFileView::setViewMode( ViewMode vm )
 {
     view_mode = vm;
+}
+
+void KFileView::removeItem( const KFileViewItem *item )
+{
+    if ( !item )
+	return;
+    
+    KFileViewItem *it = myFirstItem;
+    if ( it == item )
+	myFirstItem = it->next();
+    
+    else {
+	while (it) {
+	    if (it->next() == item)
+		it->setNext( it->next()->next() );
+
+	    it = it->next();
+	}
+    }
 }
 
 #include "kfileview.moc"

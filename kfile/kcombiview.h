@@ -52,7 +52,8 @@ public:
 
     virtual void updateView( bool );
     virtual void updateView(const KFileViewItem*);
-
+    virtual void removeItem( const KFileViewItem * );
+    
     void setRight(KFileView *view);
 
     virtual void setSelectionMode( KFile::SelectionMode sm );
@@ -69,7 +70,7 @@ public:
     virtual void sortReversed();
 
     void ensureItemVisible( const KFileViewItem * );
-    
+
 private:
     KFileIconView *left;
 

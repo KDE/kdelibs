@@ -121,6 +121,12 @@ public:
     virtual void updateView(const KFileViewItem*);
 
     /**
+     * Remove an item from the list; has to be implemented by the view.
+     * Call KFileView::removeItem( item ) after removing it.
+     */
+    virtual void removeItem(const KFileViewItem *item);
+    
+    /**
       * specifies the sorting of the internal list. Newly added files
       * are added through this sorting.
       *

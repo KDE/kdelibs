@@ -275,6 +275,14 @@ void KFileDetailView::updateView( const KFileViewItem *i )
 }
 
 
+void KFileDetailView::removeItem( const KFileViewItem *i )
+{
+    if ( !i )
+	return;
+
+    delete (KFileListViewItem*) i->viewItem( this );
+}
+
 void KFileDetailView::slotSortingChanged( int col )
 {
     KListView::setSorting( -1 );

@@ -131,8 +131,6 @@ public:
 
     static QString dateTime(time_t secsSince1Jan1970UTC);
 
-    void setDeleted();
-
     KFileViewItem *next() const { return myNext; }
     void setNext(KFileViewItem *n) { myNext = n; }
 

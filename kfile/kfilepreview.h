@@ -54,7 +54,8 @@ public:
 
     virtual void updateView( bool );
     virtual void updateView(const KFileViewItem*);
-
+    virtual void removeItem(const KFileViewItem*);
+    
     virtual void setSelectionMode( KFile::SelectionMode sm );
 
     virtual void clearSelection();
@@ -67,7 +68,7 @@ public:
     void setPreviewWidget(const QWidget *w, const KURL &u);
 
     void ensureItemVisible(const KFileViewItem *);
-    
+
 signals:
     void showPreview(const KURL &);
 

@@ -68,6 +68,7 @@ public:
 
     virtual void updateView( bool );
     virtual void updateView(const KFileViewItem*);
+    virtual void removeItem(const KFileViewItem*);
 
     virtual void insertItem( KFileViewItem *i );
     virtual void setSelectionMode( KFile::SelectionMode sm );

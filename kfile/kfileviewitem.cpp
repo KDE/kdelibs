@@ -137,12 +137,6 @@ QString KFileViewItem::urlString() const
     return myURLString;
 }
 
-void KFileViewItem::setDeleted()
-{
-    d->isReadable = false;
-    d->access = "**********";
-}
-
 
 // FIXME: what should happen with those items in copy constructor and
 // assignment operator???
