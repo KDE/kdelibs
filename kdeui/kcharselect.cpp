@@ -389,7 +389,7 @@ KCharSelect::KCharSelect( QWidget *parent, const char *name, const QString &_fon
 
     connect( tableSpinBox, SIGNAL( valueChanged( int ) ), this, SLOT( tableChanged( int ) ) );
 
-    QLabel *lUnicode = new QLabel( i18n( "&UTF code:" ), bar );
+    QLabel *lUnicode = new QLabel( i18n( "&Unicode code:" ), bar );
     lUnicode->resize( lUnicode->sizeHint() );
     lUnicode->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
     lUnicode->setMaximumWidth( lUnicode->sizeHint().width() );
