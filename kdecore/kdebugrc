@@ -17,7 +17,7 @@
 #   4 = off
 #
 # For file output you can give a filename by *Filename=<file>
-# otherwise kdebug.dbg in the current directory ist used.
+# otherwise kdebug.dbg in the current directory is used.
 #
 # ekzample:
 #
@@ -62,6 +62,10 @@ InfoOutput=4
 
 # kio_http_debug debug info off
 [7113]
+InfoOutput=4
+
+# kio_nntp debug info off
+[7114]
 InfoOutput=4
 
 # KRun debug info off
