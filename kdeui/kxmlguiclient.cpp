@@ -631,8 +631,8 @@ QString KXMLGUIClient::findMostRecentXMLFile( const QStringList &files, QString 
   }
   else if ( files.count() > 0 )
   {
-    doc = QString::null;
-    return *files.begin();
+    doc = (*allDocuments.begin()).data;
+    return (*allDocuments.begin()).file;
   }
 
   return QString::null;
