@@ -52,6 +52,7 @@
 #include <kprocess.h>
 #include <cups/cups.h>
 #include <cups/ppd.h>
+#include <math.h>
 
 #define ppdi18n(s)	i18n(QString::fromLocal8Bit(s).utf8())
 
@@ -633,8 +634,8 @@ DrMain* KMCupsManager::loadDriverFile(const QString& fname)
 				ppd_size_t	*sz = ppd->sizes+i;
 				//kdDebug( 500 ) << "PageSize " << sz->name << ", " << sz->width << ", " << sz->length << ", " << sz->left << ", "
 				//	<< sz->bottom << ", " << sz->right << ", " << sz->top << endl;
-				driver->addPageSize(new DrPageSize(QString::fromLatin1(sz->name),(int)sz->width,(int)sz->length,(int)( sz->left + 0.5 ),(int)( sz->bottom + 0.5 ),
-							(int)( sz->width - sz->right + 0.5 ),(int)( sz->length - sz->top + 0.5 )));
+				driver->addPageSize(new DrPageSize(QString::fromLatin1(sz->name),(int)sz->width,(int)sz->length,(int)ceil( sz->left ),(int)ceil( sz->bottom ),
+							(int)ceil( sz->width - sz->right ),(int)ceil( sz->length - sz->top )));
 			}
 
 			ppdClose(ppd);
