@@ -254,8 +254,6 @@ HTMLMapElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
 {
     //cout << "map:mapMouseEvent " << endl;
     //cout << x_ << " " << y_ <<" "<< width_ <<" "<< height_ << endl;
-    bool inside = false;
-
     QStack<NodeImpl> nodeStack;
 
     NodeImpl *current = firstChild();
@@ -273,7 +271,7 @@ HTMLMapElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
 	    //cout << "area found " << endl;
 	    HTMLAreaElementImpl* area=static_cast<HTMLAreaElementImpl*>(current);
 	    if (area->mapMouseEvent(x_,y_,width_,height_,ev))
-			inside = true;
+                return true;
 	}
 	NodeImpl *child = current->firstChild();
 	if(child)
@@ -287,7 +285,7 @@ HTMLMapElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
 	}
     }
 
-    return inside;
+    return false;
 }
 
 void HTMLMapElementImpl::parseAttribute(AttrImpl *attr)
