@@ -91,7 +91,7 @@ QStringList KShell::splitArgs( const QString &args, int flags, int *err )
                 if ((flags & AbortOnMeta) && isMeta( c ))
                     goto metaerr;
             }
-            QString ccret = getHome( QConstString( args.unicode() + opos, pos - opos ).string() );
+            QString ccret = homeDir( QConstString( args.unicode() + opos, pos - opos ).string() );
             if (ccret.isEmpty()) {
                 pos = opos;
                 c = '~';
@@ -304,8 +304,8 @@ QString KShell::tildeExpand( const QString &fname )
     if (fname[0] == '~') {
         int pos = fname.find( '/' );
         if (pos < 0)
-            return getHome( QConstString( fname.unicode() + 1, fname.length() - 1 ).string() );
-        QString ret = getHome( QConstString( fname.unicode() + 1, pos - 1 ).string() );
+            return homeDir( QConstString( fname.unicode() + 1, fname.length() - 1 ).string() );
+        QString ret = homeDir( QConstString( fname.unicode() + 1, pos - 1 ).string() );
         if (!ret.isNull())
             ret += QConstString( fname.unicode() + pos, fname.length() - pos ).string();
         return ret;
@@ -313,7 +313,7 @@ QString KShell::tildeExpand( const QString &fname )
     return fname;
 }
 
-QString KShell::getHome( const QString &user )
+QString KShell::homeDir( const QString &user )
 {
     if (user.isEmpty())
         return QFile::decodeName( getenv( "HOME" ) );

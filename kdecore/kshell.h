@@ -123,7 +123,7 @@ namespace KShell {
      *  An empty string denotes the current user.
      * @return The user's home directory.
      */
-    QString getHome( const QString &user );
+    QString homeDir( const QString &user );
 
 }
 
