@@ -389,7 +389,7 @@ static QPixmap copyWidget(int tx, int ty, QPainter *p, QWidget *widget)
     QPixmap pm = QPixmap(widget->width(), widget->height());
     if ( p->device()->isExtDev() || ::qt_cast<QLineEdit *>(widget) ) {
 	// even hackier!
-	pm.fill(widget->colorGroup().background());
+	pm.fill(widget->colorGroup().base());
     } else {
 	QPoint pt(tx, ty);
 	pt = p->xForm(pt);
