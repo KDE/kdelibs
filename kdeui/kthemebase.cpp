@@ -520,6 +520,7 @@ void KThemeBase::readConfig(Qt::GUIStyle /*style*/)
         shading = Windows;
     defaultFrame = config.readNumEntry("FrameWidth", 2);
     cacheSize = config. readNumEntry("Cache", 1024);
+    sbExtent = config.readNumEntry("ScrollBarExtent", 16);
 
     // Handle preblend items
     for(i=0; i < PREBLEND_ITEMS; ++i){

@@ -25,6 +25,7 @@
 #include <qmenudata.h>
 #include <qpopupmenu.h>
 #include <qtabbar.h>
+#include <qglobal.h>
 
 #include <limits.h>
 
@@ -50,11 +51,19 @@ void KThemeStyle::polish(QApplication *app)
                             bgBrush);
         app->setPalette(newPalette, true);
     }
+#if QT_VERSION ==  210
+#warning Using Qt2.1.0 CVS scrollbar extents (mosfet).
+    setScrollBarExtent(getSBExtent());
+#endif
 }
 
 void KThemeStyle::unPolish(QApplication *app)
 {
     app->setPalette(oldPalette, true);
+#if QT_VERSION ==  210
+#warning Using Qt2.1.0 CVS scrollbar extents (mosfet).
+    setScrollBarExtent(16);
+#endif
 }
 
 void KThemeStyle::polish(QWidget *w)

@@ -332,6 +332,7 @@ public:
      * The border plus highlight width of the widget.
      */
     int decoWidth(WidgetType widget) const;
+    int getSBExtent() const;
     /**
      * The scrollbar button layout.
      */
@@ -470,6 +471,7 @@ private:
     int sliderLen;
     int splitterWidth;
     int focus3DOffset;
+    int sbExtent;
     bool smallGroove;
     bool roundedButton, roundedCombo, roundedSlider;
     bool aTabLine, iTabLine;
@@ -702,6 +704,11 @@ inline bool KThemeBase::activeTabLine() const
 inline bool KThemeBase::inactiveTabLine() const
 {
     return(iTabLine);
+}
+
+inline int KThemeBase::getSBExtent() const
+{
+    return(sbExtent);
 }
 
 inline KThemePixmap* KThemeBase::borderPixmap(WidgetType widget)
