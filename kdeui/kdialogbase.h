@@ -75,7 +75,7 @@ class KDialogBaseTile;
  * KDE. The button order can be changed, but this ability is only available
  * for a central KDE control tool. The following buttons are available:
  * OK, Cancel/Close, Apply/Try, Default, Help and three user definable
- * buttons: User1, User1 and User3. You must specify the text of the UserN
+ * buttons: User1, User2 and User3. You must specify the text of the UserN
  * buttons. Each button has a virtual slot so you can overload the method
  * when required. The default slots emit a signal as well, so you can choose
  * to connect a signal instead of overriding the slot.
