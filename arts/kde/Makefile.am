@@ -22,7 +22,9 @@ artskde.mcopclass: artskde.h
 artskde.h: $(top_srcdir)/arts/kde/artskde.idl $(MCOPIDL)
 	    $(MCOPIDL) -I$(top_srcdir)/arts/flow -I$(top_srcdir)/arts/soundserver -t $(MCOPINC) $(top_srcdir)/arts/kde/artskde.idl
 
-check_PROGRAMS = kiotest
-kiotest_SOURCES = kiotest.cc 
+check_PROGRAMS = kiotest kiotestslow
+kiotest_SOURCES = kiotest.cc
+kiotestslow_SOURCES = kiotestslow.cc
 
 kiotest_LDADD	= libartskde.la -lqt -lqtmcop $(top_builddir)/arts/soundserver/libkmedia2.la $(top_builddir)/arts/soundserver/libsoundserver_idl.la
+kiotestslow_LDADD	= $(kiotest_LDADD)

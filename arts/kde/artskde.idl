@@ -16,4 +16,13 @@ interface KIOInputStream : InputStream {
 	boolean openURL(string url);
 };
 
+/*
+ * TESTING ONLY
+ */
+
+interface KIOTestSlow : SynthModule {
+	async in byte stream data;
+
+	attribute InputStream inputStream;
+};
 };
