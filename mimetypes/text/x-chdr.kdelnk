@@ -6,6 +6,7 @@ Comment[nl]=C Header
 Comment[pl]=Nag³ówek C
 Comment[fi]=C otsikot
 Comment[fr]=En-tête C
+Comment[it]=Header C
 DefaultApp=
 Icon=h_src.xpm
 Type=MimeType

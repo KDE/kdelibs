@@ -6,6 +6,7 @@ Comment[nl]=Java bronbestand
 Comment[pl]=¬ród³o Javy
 Comment[fi]=Java lähdekoodi
 Comment[fr]=Source Java
+Comment[it]=Sorgente Java
 Icon=java_src.xpm
 Type=MimeType
 MimeType=text/x-java

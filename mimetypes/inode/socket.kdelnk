@@ -6,6 +6,7 @@ Comment[pl]=Gniazdko
 Comment[fi]=Pistoke
 Comment[fr]=Prise (socket)
 Comment[pt]=Socket
+Comment[it]=Socket
 Icon=socket.xpm
 Type=MimeType
 MimeType=inode/socket

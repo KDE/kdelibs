@@ -6,6 +6,7 @@ Comment[pl]=Kolejka
 Comment[fi]=Putki
 Comment[fr]=Tuyau
 Comment[pt]=Pipe
+Comment[it]=Pipe
 Icon=pipe.xpm
 Type=MimeType
 MimeType=inode/fifo

@@ -6,6 +6,7 @@ Comment[pl]=Katalog
 Comment[fi]=Hakemisto
 Comment[fr]=Répertoire
 Comment[pt]=Directoria
+Comment[it]=Cartella (Directory)
 Icon=folder.xpm
 Type=MimeType
 MimeType=inode/directory

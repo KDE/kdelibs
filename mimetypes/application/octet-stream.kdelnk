@@ -6,6 +6,7 @@ Comment[pl]=Nieznany
 Comment[fi]=Tuntematon
 Comment[fr]=Inconnu
 Comment[pt]=Desconhecido
+Comment[it]=Sconosciuto
 Icon=unknown.xpm
 Type=MimeType
 MimeType=application/octet-stream

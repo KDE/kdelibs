@@ -6,6 +6,7 @@ Comment[nl]=C++ bronbestand
 Comment[pl]=¬ród³o C++
 Comment[fi]=C++ lähdekoodi
 Comment[fr]=Source C++
+Comment[it]=Sorgenti C++
 Icon=c_src.xpm
 Type=MimeType
 MimeType=text/x-c++src

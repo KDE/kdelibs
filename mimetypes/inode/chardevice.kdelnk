@@ -6,6 +6,7 @@ Comment[pl]=Urz±dzenie znakowe
 Comment[fi]=Tekstilaite
 Comment[fr]=Périphérique caractère
 Comment[pt]=Dispositivo Caracter
+Comment[it]=Dispositivo caratteri
 Icon=chardevice.xpm
 Type=MimeType
 MimeType=inode/chardevice

@@ -3,6 +3,7 @@
 MimeType=application/x-gzip
 Comment=Gzip file
 Comment[fr]=Fichier compressé GZIP
+Comment[it]=File Compresso Gzip
 DefaultApp=
 Comment[nl]=GZip bestand
 Icon=tgz.xpm

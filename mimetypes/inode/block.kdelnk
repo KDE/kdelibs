@@ -6,6 +6,7 @@ Comment[pl]=Urz±dzenie blokowe
 Comment[fi]=Blokkilaite
 Comment[fr]=Périphérique bloc
 Comment[pt]=Dispositivo Bloco
+Comment[it]=Dispositivo Blocco
 Icon=blockdevice.xpm
 Type=MimeType
 MimeType=inode/blockdevice
