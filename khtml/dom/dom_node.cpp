@@ -63,7 +63,7 @@ NamedNodeMap::~NamedNodeMap()
     if(impl) impl->deref();
 }
 
-Node NamedNodeMap::getNamedItem( const DOMString &name )
+Node NamedNodeMap::getNamedItem( const DOMString &name ) const
 {
     if (impl) return impl->getNamedItem(name);
     return 0;
@@ -81,7 +81,7 @@ Node NamedNodeMap::removeNamedItem( const DOMString &name )
     return 0;
 }
 
-Node NamedNodeMap::item( unsigned long index )
+Node NamedNodeMap::item( unsigned long index ) const
 {
     if (impl) return impl->item(index);
     return 0;

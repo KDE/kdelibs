@@ -73,7 +73,7 @@ public:
      * identify any node in the map.
      *
      */
-    Node getNamedItem ( const DOMString &name );
+    Node getNamedItem ( const DOMString &name ) const;
 
     /**
      * Adds a node using its <code> nodeName </code> attribute.
@@ -138,7 +138,7 @@ public:
      * not a valid index.
      *
      */
-    Node item ( unsigned long index );
+    Node item ( unsigned long index ) const;
 
     /**
      * @internal
