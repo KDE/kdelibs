@@ -664,108 +664,56 @@ static int heb2num(const QString& str, int & iLength) {
   QChar c;
   QString s = str;
   int result = 0;
-  s.remove("\'");
-  s.remove("\"");
+  iLength = 0;
+  int decadeValues[14] = {10, 20, 20, 30, 40, 40, 50,
+                          50, 60, 70, 80, 80, 90, 90};
 
-  uint i;
-  for (i = 0 ; i < s.length() ; i++)
+  uint pos;
+  for (pos = 0 ; pos < s.length() ; pos++)
   {
-    c = s[i];
-    if (c == QChar(0x05D0) || c == QChar(0x05D1) || c == QChar(0x05D2) ||
-        c == QChar(0x05D3) || c == QChar(0x05D4) || c == QChar(0x05D5) ||
-	c == QChar(0x05D6) || c == QChar(0x05D7))
+    c = s[pos];
+    if (s.length() > pos && (s[pos + 1] == QChar('\'') ||
+                             s[pos + 1] == QChar('\"')))
     {
-      if (s.length() > i && s[i + 1] >= QChar(0x05D0) && s[i + 1] <= QChar(0x05EA))
-	result += (c.unicode() - 0x05D0 + 1) * 1000;
+      iLength++;
+      s.remove(pos + 1, 1);
+    }
+
+    if (c >= QChar(0x05D0) && c <= QChar(0x05D7))
+    {
+      if (s.length() > pos && s[pos + 1] >= QChar(0x05D0) &&
+          s[pos + 1] <= QChar(0x05EA))
+        result += (c.unicode() - 0x05D0 + 1) * 1000;
       else
-	result += c.unicode() - 0x05D0 + 1;
+        result += c.unicode() - 0x05D0 + 1;
     }
     else if (c == QChar(0x05D8))
     {
-      if (s.length() > i && s[i + 1] == QChar(0x05D5))
-        result += 15;
-      else if (s.length() > i && s[i + 1] == QChar(0x05D6))
-        result += 16;
-      else if (s.length() > i && s[i + 1] >= QChar(0x05D0) && s[i + 1] <= QChar(0x05EA))
-	result += 9000;
+      if (s.length() > pos && s[pos + 1] >= QChar(0x05D0) &&
+          s[pos + 1] <= QChar(0x05EA) && s[pos + 1] != QChar(0x05D5) &&
+          s[pos + 1] != QChar(0x05D6))
+        result += 9000;
       else
-	result += 9;
+        result += 9;
     }
-    else if (c == QChar(0x05D9))
+    else if (c >= QChar(0x05D9) && c <= QChar(0x05E6))
     {
-      if (s.length() > i && s[i + 1] >= QChar(0x05D9))
+      if (s.length() > pos && s[pos + 1] >= QChar(0x05D9))
         return -1;
       else
-        result += 10;
+        result += decadeValues[c.unicode() - 0x05D9];
     }
-    else if (c == QChar(0x05DA) || c == QChar(0x05DB))
+    else if (c >= QChar(0x05E7) && c <= QChar(0x05EA))
     {
-      if (s.length() > i && s[i + 1] >= QChar(0x05D9))
-        return -1;
-      else
-        result += 20;
+      result += (c.unicode() - 0x05E7 + 1) * 100;
     }
-    else if (c == QChar(0x05DC))
+    else
     {
-      if (s.length() > i && s[i + 1] >= QChar(0x05D9))
-        return -1;
-      else
-        result += 30;
+      break;
     }
-    else if (c == QChar(0x05DD) || c == QChar(0x05DE))
-    {
-      if (s.length() > i && s[i + 1] >= QChar(0x05D9))
-        return -1;
-      else
-        result += 40;
-    }
-    else if (c == QChar(0x05DF) || c == QChar(0x05E0))
-    {
-      if (s.length() > i && s[i + 1] >= QChar(0x05D9))
-        return -1;
-      else
-        result += 50;
-    }
-    else if (c == QChar(0x05E1))
-    {
-      if (s.length() > i && s[i + 1] >= QChar(0x05D9))
-        return -1;
-      else
-        result += 60;
-    }
-    else if (c == QChar(0x05E2))
-    {
-      if (s.length() > i && s[i + 1] >= QChar(0x05D9))
-        return -1;
-      else
-        result += 70;
-    }
-    else if (c == QChar(0x05E3) || c == QChar(0x05E4))
-    {
-      if (s.length() > i && s[i + 1] >= QChar(0x05D9))
-        return -1;
-      else
-        result += 80;
-    }
-    else if (c == QChar(0x05E5) || c == QChar(0x05E6))
-    {
-      if (s.length() > i && s[i + 1] >= QChar(0x05D9))
-        return -1;
-      else
-        result += 90;
-    }
-    else if (c == QChar(0x05E7) || c == QChar(0x05E8) ||
-             c == QChar(0x05E9) || c == QChar(0x05EA))
-   {
-	result += (c.unicode() - 0x05E7 + 1) * 100;
-   }
-   else
-   {
-     break;
-   }
   }
 
-  iLength = i;
+  iLength += pos;
 
   return result;
 }
@@ -777,8 +725,6 @@ int KCalendarSystemHebrew::dayStringToInteger(const QString & sNum, int & iLengt
     iResult= heb2num(sNum, iLength);
   else
     iResult = KCalendarSystem::yearStringToInteger(sNum, iLength);
-
-  kdDebug() << "KCalendarSystemHebrew::dayStringToInteger: Not implemnted" << endl;
 
   return iResult;
 }
@@ -793,8 +739,6 @@ int KCalendarSystemHebrew::yearStringToInteger(const QString & sNum, int & iLeng
   
   if (iResult < 1000)
     iResult += 5000; // assume we're in the 6th millenium (y6k bug)
-
-  kdDebug() << "KCalendarSystemHebrew::yearStringToInteger: Not implemnted" << endl;
 
   return iResult;
 }
