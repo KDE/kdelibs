@@ -253,9 +253,11 @@ signals:
      */
     void changed( const QString & groupAddress, const QString & caller );
 
-protected:
+public:
     // consts added to avoid a copy-and-paste of internalDocument
     void parse() const;
+
+protected:
     void importDesktopFiles();
     static void convertToXBEL( QDomElement & group );
     static void convertAttribute( QDomElement elem, const QString & oldName, const QString & newName );
