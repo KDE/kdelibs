@@ -206,11 +206,16 @@ int KProtocolManager::maxCacheSize()
 
 QString KProtocolManager::noProxyFor()
 {
+  KProtocolManager::ProxyType type = proxyType();
+
+  if ( (type != ManualProxy) && (type != EnvVarProxy) )
+    return QString::null;
+
   KConfig *cfg = config();
   cfg->setGroup( "Proxy Settings" );
 
   QString noProxy = cfg->readEntry( "NoProxyFor" );
-  if (proxyType() == EnvVarProxy)
+  if (type == EnvVarProxy)
     noProxy = QString::fromLocal8Bit(getenv(noProxy.local8Bit()));
 
   return noProxy;
