@@ -77,8 +77,8 @@ libkhtml_la_LIBADD = ./java/libkjava.la ./kjs/libkjs.la ../kimgio/libkimgio.la .
 data_DATA = khtml_dnd.png
 datadir = $(kde_datadir)/khtml/pics
 
-INCLUDES = -I$(top_srcdir)/khtml/kjs -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio \
-	-I$(top_srcdir)/khtml/java $(all_includes) -I$(top_srcdir)/dcop
+INCLUDES = -I$(srcdir)/kjs -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio \
+	-I$(srcdir)/java -I$(top_srcdir)/dcop  $(all_includes) 
 
 SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/khtml
 
