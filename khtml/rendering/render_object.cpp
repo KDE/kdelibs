@@ -560,19 +560,18 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
     case DOTTED:
         if ( width == 1 ) {
             // workaround Qt brokenness
-            p->setPen( QPen( Qt::NoPen ) );
-            p->setBrush( QBrush( c, Qt::Dense4Pattern ) );
-
+            p->setPen(QPen(c, width, Qt::SolidLine));
             switch(s) {
             case BSBottom:
             case BSTop:
-                p->drawRect(x1,y1,x2-x1,y2-y1);
+                for ( ; x1 < x2; x1 += 2 )
+                    p->drawPoint( x1, y1 );
                 break;
             case BSRight:
             case BSLeft:
-                p->drawRect(x1,y1,x2-x1,y2-y1);
+                for ( ; y1 < y2; y1 += 2 )
+                    p->drawPoint( x1, y1 );
             }
-
             break;
         }
 
