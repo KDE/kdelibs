@@ -50,7 +50,8 @@ public:
 
     enum Mode { Clipboard = 1, Selection = 2 };
     /**
-     * @returns the KClipboard singleton object.
+     * Returns the KClipboard singleton object.
+     * @return the KClipboard singleton object.
      */
     static KClipboard *self();
 
@@ -67,6 +68,7 @@ public:
     }
 
     /**
+     * Checks whether Clipboard and Selection will be synchronized upon changes.
      * @returns whether Clipboard and Selection will be synchronized upon
      * changes.
      * @see #setSynchronizing
@@ -80,6 +82,8 @@ public:
      * Configures KClipboard to copy the Clipboard buffer to the Selection
      * buffer whenever the Clipboard changes.
      *
+     * 
+     * @param enable true to enable implicit selection, false otherwise.
      * Default is true.
      * @see #implicitSelection
      */
@@ -89,6 +93,8 @@ public:
     }
 
     /**
+     * Checks whether the  Clipboard buffer will be copied to the Selection
+     * buffer upon changes.
      * @returns whether the Clipboard buffer will be copied to the Selection
      * buffer upon changes.
      * @see #setImplicitSelection
