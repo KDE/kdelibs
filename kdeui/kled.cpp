@@ -21,6 +21,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2000/05/07 09:49:57  habenich
+ * provided method to set the factor to dark the LED
+ * precalculated the dark color, is just retrieved at paint events
+ *
  * Revision 1.11  2000/04/09 16:08:33  habenich
  * fixed nasty bug #70 disappearing led
  * reenabled flat and raised led painting
@@ -90,12 +94,13 @@ KLed::KLed(const QColor& col, QWidget *parent, const char *name)
     led_state(On),
     led_look(Raised),
     led_shape(Circular)
-{
-  setColor(col);
-  //setShape(Circular);
+{  
   d = new KLed::KLedPrivate;
   d->dark_factor = 300;
   d->offcolor = col.dark(300);
+
+  setColor(col);
+  //setShape(Circular);
 }
 
 KLed::KLed(const QColor& col, KLed::State state, 
@@ -104,12 +109,13 @@ KLed::KLed(const QColor& col, KLed::State state,
     led_state(state),
     led_look(look),
     led_shape(shape)
-{
-  //setShape(shape);
-  setColor(col);
+{  
   d = new KLed::KLedPrivate;
   d->dark_factor = 300;
   d->offcolor = col.dark(300);
+
+  //setShape(shape);
+  setColor(col);
 }
 
 
