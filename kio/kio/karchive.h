@@ -211,6 +211,7 @@ public:
      * @return true if this entry is a file
      */
     virtual bool isFile() const { return false; }
+
     /**
      * @return true if this entry is a directory
      */
@@ -281,6 +282,8 @@ public:
      */
     virtual bool isFile() const { return true; }
 
+    void copyTo(const QDir& dest);
+
 private:
     int m_pos; // TODO use Q_LONG in KDE-4.0
     int m_size; // TODO use Q_LONG in KDE-4.0
@@ -327,6 +330,8 @@ public:
      * @return true, since this entry is a directory
      */
     virtual bool isDirectory() const { return true; }
+
+    void copyTo(const QDir& dest, bool recursive = true);
 
 private:
     QDict<KArchiveEntry> m_entries;

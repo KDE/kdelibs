@@ -275,6 +275,14 @@ QIODevice *KArchiveFile::device() const
     return new KLimitedIODevice( archive()->device(), m_pos, m_size );
 }
 
+void KArchiveFile::copyTo(const QDir& dest)
+{
+  QFile f( dest.absPath() + "/"  + name() );
+  f.open( IO_ReadWrite | IO_Truncate );
+  f.writeBlock( data() );
+  f.close();
+}
+
 ////////////////////////////////////////////////////////////////////////
 //////////////////////// KArchiveDirectory /////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
@@ -347,6 +355,25 @@ void KArchiveDirectory::addEntry( KArchiveEntry* entry )
   Q_ASSERT( !entry->name().isEmpty() );
   m_entries.insert( entry->name(), entry );
 }
+
+void KArchiveDirectory::copyTo(const QDir& dest, bool recursiveCopy )
+{
+  KArchiveEntry* cur;
+  QDictIterator<KArchiveEntry> it( m_entries );
+
+  dest.mkdir(dest.absPath());
+  for ( ; it.current(); ++it ) {
+    cur = it.current();
+    if ( cur->isFile() )
+      dynamic_cast<KArchiveFile*>( cur )->copyTo( dest );
+
+    if ( cur->isDirectory() )
+      if ( recursiveCopy )
+        dynamic_cast<KArchiveDirectory*>( cur )
+            ->copyTo(QDir(dest.absPath().append("/").append(it.currentKey())));
+  }
+}
+
 
 void KArchive::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
