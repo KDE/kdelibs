@@ -67,6 +67,7 @@ SGIImage::SGIImage(QImageIO *io) :
 {
 	m_dev = io->ioDevice();
 	m_stream.setDevice(m_dev);
+	m_rlelist.setAutoDelete(true);
 }
 
 
@@ -245,8 +246,7 @@ bool SGIImage::readImage(QImage& img)
 
 	if (m_zsize == 2 || m_zsize == 4)
 		img.setAlphaBuffer(true);
-
-	if (m_zsize > 4)
+	else if (m_zsize > 4)
 		kdDebug(399) << "using first 4 of " << m_zsize << " channels" << endl;
 
 	if (m_rle) {
