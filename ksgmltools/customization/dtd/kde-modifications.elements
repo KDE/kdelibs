@@ -1,5 +1,5 @@
 <!-- ONLY to supply declarations that were switched off earlier 
-     Take _all_ care to make it only _more_ restrictive.  -->
+     Take care to make it only _more_ restrictive.  -->
 
 <!-- One modification: BookInfo is compulsory, because
      it contains ReleaseInfo, which is compulsory -->
@@ -63,10 +63,11 @@
 		%local.sect1.attrib;
 >
 
-<!-- value of Type changed from IMPLIED CDATA -->
+<!-- value of Type changed from IMPLIED CDATA
+     default value of LinkMode set from #IMPLIED to kdems-default -->
 <!ATTLIST OLink
 		TargetDocEnt	ENTITY 		#IMPLIED
-		LinkMode	IDREF		#IMPLIED
+		LinkMode	IDREF		kdems-default
 		LocalInfo 	CDATA		#IMPLIED
 		Type		(Href|Other)	Href
 		%common.attrib;
