@@ -250,6 +250,7 @@ public:
   bool m_haveEncoding:1;
   bool m_bHTTPRefresh:1;
   bool m_onlyLocalReferences :1;
+  bool m_redirectLockHistory:1;
 
   KURL m_workingURL;
 

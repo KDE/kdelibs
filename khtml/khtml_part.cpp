@@ -902,6 +902,7 @@ void KHTMLPart::clear()
 
   d->m_delayRedirect = 0;
   d->m_redirectURL = QString::null;
+  d->m_redirectLockHistory = true;
   d->m_bHTTPRefresh = false;
   d->m_bClearing = false;
   d->m_frameNameId = 1;
@@ -1597,15 +1598,14 @@ KURL KHTMLPart::completeURL( const QString &url )
   return KURL( d->m_doc->completeURL( url ) );
 }
 
-// ### implement lockhistory being optional (sometimes javascript wants
-// to do redirection that end up in the history!)
-void KHTMLPart::scheduleRedirection( int delay, const QString &url, bool /* doLockHistory*/ )
+void KHTMLPart::scheduleRedirection( int delay, const QString &url, bool doLockHistory )
 {
-  //kdDebug(6050) << "KHTMLPart::scheduleRedirection delay=" << delay << " url=" << url << endl;
+    kdDebug(6050) << "KHTMLPart::scheduleRedirection delay=" << delay << " url=" << url << endl;
     if( d->m_redirectURL.isEmpty() || delay < d->m_delayRedirect )
     {
        d->m_delayRedirect = delay;
        d->m_redirectURL = url;
+       d->m_redirectLockHistory = doLockHistory;
        if ( d->m_bComplete ) {
          d->m_redirectionTimer.stop();
          d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
@@ -1634,7 +1634,7 @@ void KHTMLPart::slotRedirect()
   if ( urlcmp( u, m_url.url(), true, true ) )
     args.reload = true;
 
-  args.setLockHistory( true );
+  args.setLockHistory( d->m_redirectLockHistory );
   urlSelected( u, 0, 0, QString::null, args );
 }
 
