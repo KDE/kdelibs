@@ -12,6 +12,7 @@
 #include <qpixmap.h>
 #include <qobjcoll.h>
 #include <qmessagebox.h>
+#include <qlineedit.h>
 #include <qlistbox.h>
 #include <qlist.h>
 #include <qlayout.h>
