@@ -129,7 +129,7 @@ class ResInitUsage
     
     if (mTime < st.st_mtime)
       {
-	qDebug("ResInitUsage: /etc/resolv.conf updated");
+	//qDebug("ResInitUsage: /etc/resolv.conf updated");
 	return true;
       }
     return false;
@@ -137,7 +137,7 @@ class ResInitUsage
 
   void reResInit()
   {
-    qDebug("ResInitUsage: calling res_init()");
+    //qDebug("ResInitUsage: calling res_init()");
     res_init();
     
     struct stat st;
@@ -175,7 +175,7 @@ public:
 	  {
 	    // other threads are already using the API, so wait till
 	    // it's all clear
-	    qDebug("ResInitUsage: waiting for libresolv to be clear");
+	    //qDebug("ResInitUsage: waiting for libresolv to be clear");
 	    cond.wait(&mutex);
 	  }
 	reResInit();
@@ -220,7 +220,7 @@ void QResolverThread::run()
   // initialisation
   // enter the loop already
 
-  qDebug("QResolverThread(thread %u/%p): started", pid, (void*)QThread::currentThread());
+  //qDebug("QResolverThread(thread %u/%p): started", pid, (void*)QThread::currentThread());
   QResolverManager::manager()->registerThread(this);
   while (true)
     {
@@ -248,7 +248,7 @@ void QResolverThread::run()
     }
 
   QResolverManager::manager()->unregisterThread(this);
-  qDebug("QResolverThread(thread %u/%p): exiting", pid, (void*)QThread::currentThread());
+  //qDebug("QResolverThread(thread %u/%p): exiting", pid, (void*)QThread::currentThread());
 }
 
 static QResolverManager *globalManager;
@@ -356,8 +356,8 @@ void QResolverManager::releaseData(QResolverThread *, RequestData* data)
 
   resInit--;
 
-  qDebug("QResolverManager::releaseData(%u/%p): %p has been released", pid, 
-	 (void*)QThread::currentThread(), (void*)data);
+  //qDebug("QResolverManager::releaseData(%u/%p): %p has been released", pid, 
+//	 (void*)QThread::currentThread(), (void*)data);
 
   if (data->obj)
     {
@@ -407,7 +407,7 @@ void QResolverManager::handleFinished()
       curr = currentRequests.prev();
     }
       
-  qDebug("QResolverManager::handleFinished(%u): %d requests to notify", pid, doneRequests.count());
+  //qDebug("QResolverManager::handleFinished(%u): %d requests to notify", pid, doneRequests.count());
   while (RequestData *d = doneRequests.dequeue())
     doNotifying(d);
 
@@ -415,8 +415,8 @@ void QResolverManager::handleFinished()
 
   if (redo)
     {
-      qDebug("QResolverManager::handleFinished(%u): restarting processing to catch requestor",
-	     pid);
+      //qDebug("QResolverManager::handleFinished(%u): restarting processing to catch requestor",
+	//     pid);
       handleFinished();
     }
 }
@@ -437,8 +437,8 @@ bool QResolverManager::handleFinishedItem(RequestData* curr)
       if (curr->requestor)
 	--curr->requestor->nRequests;
 
-      qDebug("QResolverManager::handleFinishedItem(%u): removing %p since it's done",
-	     pid, (void*)curr);
+      //qDebug("QResolverManager::handleFinishedItem(%u): removing %p since it's done",
+	//     pid, (void*)curr);
       return true;
     }
   return false;
@@ -542,8 +542,8 @@ void QResolverManager::doNotifying(RequestData *p)
 	  // reset address
 	  r.setAddress(p->input->node, p->input->service);
 
-	  qDebug("QResolverManager::doNotifying(%u/%p): for %p whose status is %d and has %d results", 
-		 pid, (void*)QThread::currentThread(), (void*)p, p->obj->status, r.count());
+	  //qDebug("QResolverManager::doNotifying(%u/%p): for %p whose status is %d and has %d results", 
+		 //pid, (void*)QThread::currentThread(), (void*)p, p->obj->status, r.count());
 
 	  if (p->obj->status != QResolver::Canceled)
 	    {
