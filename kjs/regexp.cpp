@@ -120,7 +120,6 @@ UString RegExp::match(const UString &s, int i, int *pos, int **ovector)
       // We set m_notEmpty ourselves, to look for a non-empty match
       // (see man pcretest or pcretest.c for details).
       // So we don't stop here, we want to try again at i+1.
-      fprintf(stderr, "No match after m_notEmpty. +1 and keep going.\n");
       m_notEmpty = 0;
       if (pcre_exec(pcregex, NULL, buffer.c_str(), bufferSize, i+1, 0,
                     ovector ? *ovector : 0L, ovecsize) == PCRE_ERROR_NOMATCH)
