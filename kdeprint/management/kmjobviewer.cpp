@@ -43,6 +43,7 @@
 #include <kdebug.h>
 #include <kwin.h>
 #include <qtimer.h>
+#include <qlayout.h>
 
 #undef m_manager
 #define	m_manager	KMFactory::self()->jobManager()
@@ -242,6 +243,8 @@ void KMJobViewer::initActions()
 
 		createGUI();
 	}
+
+	//static_cast<QWidget*>(toolBar())->layout()->setMargin(1);
 
 	loadPluginActions();
 	slotSelectionChanged();

@@ -90,6 +90,7 @@ KMMainView::KMMainView(QWidget *parent, const char *name, KActionCollection *col
 	m_pop = new QPopupMenu(this);
 	m_toolbar = new KToolBar(this, "ToolBar");
 	m_toolbar->setMovingEnabled(false);
+	//static_cast<QWidget*>(m_toolbar)->layout()->setMargin(1);
 	m_plugin = new PluginComboBox(this, "Plugin");
 	QLabel	*l1 = new QLabel(i18n("Print system currently used:"), this);
 	l1->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
@@ -174,16 +175,16 @@ void KMMainView::initActions()
 	vact->setCurrentItem(0);
 	connect(vact,SIGNAL(activated(int)),SLOT(slotChangeView(int)));
 
-	new KAction(i18n("&Enable"),"run",0,this,SLOT(slotEnable()),m_actions,"printer_enable");
-	new KAction(i18n("&Disable"),"stop",0,this,SLOT(slotDisable()),m_actions,"printer_disable");
+	new KAction(i18n("&Enable"),"kdeprint_enableprinter",0,this,SLOT(slotEnable()),m_actions,"printer_enable");
+	new KAction(i18n("&Disable"),"kdeprint_stopprinter",0,this,SLOT(slotDisable()),m_actions,"printer_disable");
 	new KAction(i18n("&Remove"),"edittrash",0,this,SLOT(slotRemove()),m_actions,"printer_remove");
 	new KAction(i18n("&Configure"),"configure",0,this,SLOT(slotConfigure()),m_actions,"printer_configure");
-	new KAction(i18n("Add &printer/class..."),"wizard",0,this,SLOT(slotAdd()),m_actions,"printer_add");
-	new KAction(i18n("Add &special (pseudo) printer..."),"filequickprint",0,this,SLOT(slotAddSpecial()),m_actions,"printer_add_special");
-	new KAction(i18n("Set as &local default"),"kdeprint_printer",0,this,SLOT(slotHardDefault()),m_actions,"printer_hard_default");
-	new KAction(i18n("Set as &user default"),"exec",0,this,SLOT(slotSoftDefault()),m_actions,"printer_soft_default");
-	new KAction(i18n("&Test printer"),"fileprint",0,this,SLOT(slotTest()),m_actions,"printer_test");
-	new KAction(i18n("Configure &manager"),"configure",0,this,SLOT(slotManagerConfigure()),m_actions,"manager_configure");
+	new KAction(i18n("Add &printer/class..."),"kdeprint_addprinter",0,this,SLOT(slotAdd()),m_actions,"printer_add");
+	new KAction(i18n("Add &special (pseudo) printer..."),"kdeprint_addpseudo",0,this,SLOT(slotAddSpecial()),m_actions,"printer_add_special");
+	new KAction(i18n("Set as &local default"),"kdeprint_defaulthard",0,this,SLOT(slotHardDefault()),m_actions,"printer_hard_default");
+	new KAction(i18n("Set as &user default"),"kdeprint_defaultsoft",0,this,SLOT(slotSoftDefault()),m_actions,"printer_soft_default");
+	new KAction(i18n("&Test printer"),"kdeprint_testprinter",0,this,SLOT(slotTest()),m_actions,"printer_test");
+	new KAction(i18n("Configure &manager"),"kdeprint_configmgr",0,this,SLOT(slotManagerConfigure()),m_actions,"manager_configure");
 	new KAction(i18n("Refresh &view"),"reload",0,this,SLOT(slotRefresh()),m_actions,"view_refresh");
 
 	KIconSelectAction	*dact = new KIconSelectAction(i18n("&Orientation"),0,m_actions,"orientation_change");
@@ -193,8 +194,8 @@ void KMMainView::initActions()
 	dact->setCurrentItem(0);
 	connect(dact,SIGNAL(activated(int)),SLOT(slotChangeDirection(int)));
 
-	new KAction(i18n("R&estart server"),"gear",0,this,SLOT(slotServerRestart()),m_actions,"server_restart");
-	new KAction(i18n("Configure &server"),"configure",0,this,SLOT(slotServerConfigure()),m_actions,"server_configure");
+	new KAction(i18n("R&estart server"),"kdeprint_restartsrv",0,this,SLOT(slotServerRestart()),m_actions,"server_restart");
+	new KAction(i18n("Configure &server"),"kdeprint_configsrv",0,this,SLOT(slotServerConfigure()),m_actions,"server_configure");
 
 	KToggleAction	*tact = new KToggleAction(i18n("View &Toolbar"),0,m_actions,"view_toolbar");
 	connect(tact,SIGNAL(toggled(bool)),SLOT(slotToggleToolBar(bool)));
