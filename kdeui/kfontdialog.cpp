@@ -193,7 +193,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   QString fontFamilyWhatsThisText =
     i18n("Here you can choose the font family to be used." );
   QWhatsThis::add( familyListBox, fontFamilyWhatsThisText );
-  QWhatsThis::add( diff?familyCheckbox:familyLabel,   fontFamilyWhatsThisText );
+  QWhatsThis::add(diff?(QWidget *) familyCheckbox:(QWidget *) familyLabel, fontFamilyWhatsThisText );
   connect(familyListBox, SIGNAL(highlighted(const QString &)),
 	  SLOT(family_chosen_slot(const QString &)));
   if(fontList.count() != 0)
@@ -215,7 +215,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   QString fontStyleWhatsThisText =
     i18n("Here you can choose the font style to be used." );
   QWhatsThis::add( styleListBox, fontStyleWhatsThisText );
-  QWhatsThis::add( diff?styleCheckbox:styleLabel,   fontFamilyWhatsThisText );
+  QWhatsThis::add(diff?(QWidget *)styleCheckbox:(QWidget *)styleLabel, fontFamilyWhatsThisText );
   styleListBox->insertItem(i18n("Regular"));
   styleListBox->insertItem(i18n("Italic"));
   styleListBox->insertItem(i18n("Bold"));
@@ -258,7 +258,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   QString fontSizeWhatsThisText =
     i18n("Here you can choose the font size to be used." );
   QWhatsThis::add( sizeListBox, fontSizeWhatsThisText );
-  QWhatsThis::add( diff?sizeCheckbox:sizeLabel,   fontSizeWhatsThisText );
+  QWhatsThis::add( diff?(QWidget *)sizeCheckbox:(QWidget *)sizeLabel, fontSizeWhatsThisText );
 
   static const int c[] =
   {
@@ -760,6 +760,9 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.79  2001/12/18 22:07:01  zander
+* Slight change of layout
+*
 * Revision 1.78  2001/12/18 14:08:37  khz
 * minor bugfix: "relative" checkbox is a tristate box _only_ if dialog is in "diff" mode, note however that there is no difference from a programmers point of view: you still will specify a *QButton::ToggleState as parameter, no matter whether you are seeing a tristate box or not (the alternative would be having all respective functions duplicate in the KFontDialog class - something I am not sure we really want to have)
 *
