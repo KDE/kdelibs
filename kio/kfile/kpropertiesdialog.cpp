@@ -1883,7 +1883,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
 			   "be executed with the permissions of the group.");
   QWhatsThis::add(l, setGidWhatsThis);
 
-  l = new QLabel(i18n("File permission, sets user or group ID on execution", "Sticky"), gb);
+  l = new QLabel(i18n("File permission", "Sticky"), gb);
   gl->addWidget(l, 4, 5);
   QString stickyWhatsThis;
   if (isDir)
