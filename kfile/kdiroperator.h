@@ -316,7 +316,7 @@ private:
     KFile::Mode myMode;
     KProgress *progress;
 
-    QWidget *myPreview;    // temporary pointer for the preview widget
+    const QWidget *myPreview;    // temporary pointer for the preview widget
 
     // actions for the popupmenus
     KActionMenu *actionMenu;

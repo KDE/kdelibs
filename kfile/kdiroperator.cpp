@@ -199,7 +199,7 @@ void KDirOperator::setPreviewWidget(const QWidget *w) {
         viewKind = (viewKind | KFile::PreviewContents & ~KFile::SeparateDirs);
     else
         viewKind = (viewKind & ~KFile::PreviewContents);
-    myPreview=const_cast<QWidget*>(w);
+    myPreview = w;
     setView( static_cast<KFile::FileView>(viewKind) );
 }
 
