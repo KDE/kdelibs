@@ -25,12 +25,12 @@
 
 class KStatusBar;
 class KMainWindow;
+class QEvent;
 
 namespace KParts
 {
 
   class ReadOnlyPart;
-  class GUIActivateEvent;
 
   // Defined in impl
   class StatusBarItem;
@@ -85,7 +85,7 @@ namespace KParts
       KStatusBar* statusBar() const;
 
       /** @internal */
-      void eventFilter( KParts::ReadOnlyPart *watched, GUIActivateEvent* ev );
+      virtual bool eventFilter( QObject *watched, QEvent* ev );
 
     private:
      QValueList<StatusBarItem> m_statusBarItems; // Our statusbar items

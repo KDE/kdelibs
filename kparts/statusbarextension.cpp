@@ -85,14 +85,17 @@ StatusBarExtension::~StatusBarExtension()
 }
 
 
-void StatusBarExtension::eventFilter(KParts::ReadOnlyPart * /*watched*/, GUIActivateEvent* ev)
+bool StatusBarExtension::eventFilter(QObject * watched, QEvent* ev)
 {
+
+  if (!watched->inherits("KParts::ReadOnlyPart") || !statusBar())
+      return QObject::eventFilter(watched, ev);
+
   KStatusBar * sb = statusBar();
-  //kdDebug() << "StatusBarExtension::guiActivateEvent activated=" << ev->activated()
-  //          << " sb=" << (void*)sb << endl;
-  if ( !sb )
-    return;
-  if ( ev->activated() )
+
+  GUIActivateEvent *gae = static_cast<GUIActivateEvent*>(ev);
+  
+  if ( gae->activated() )
   {
     QValueListIterator<StatusBarItem> it = m_statusBarItems.begin();
     for ( ; it != m_statusBarItems.end() ; ++it )
@@ -104,6 +107,8 @@ void StatusBarExtension::eventFilter(KParts::ReadOnlyPart * /*watched*/, GUIActi
     for ( ; it != m_statusBarItems.end() ; ++it )
       (*it).ensureItemHidden( sb );
   }
+
+  return true;
 
 }
 
