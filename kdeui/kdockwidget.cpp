@@ -239,9 +239,9 @@ void KDockMainWindow::setView( QWidget *view )
   updateRects();
 }
 
-KDockWidget* KDockMainWindow::createDockWidget( const QString& name, const QPixmap &pixmap, QWidget* parent, const QString& strCaption)
+KDockWidget* KDockMainWindow::createDockWidget( const QString& name, const QPixmap &pixmap, QWidget* parent, const QString& strCaption, const QString& strTabPageLabel)
 {
-  return new KDockWidget( dockManager, name.latin1(), pixmap, parent, strCaption );
+  return new KDockWidget( dockManager, name.latin1(), pixmap, parent, strCaption, strTabPageLabel );
 }
 
 void KDockMainWindow::slotDockChange()
@@ -626,7 +626,7 @@ void KDockWidgetHeader::loadConfig( KConfig* c )
   slotStayClicked();
 }
 /*************************************************************************/
-KDockWidget::KDockWidget( KDockManager* dockManager, const char* name, const QPixmap &pixmap, QWidget* parent, const QString& strCaption)
+KDockWidget::KDockWidget( KDockManager* dockManager, const char* name, const QPixmap &pixmap, QWidget* parent, const QString& strCaption, const QString& strTabPageLabel)
 : QWidget( parent, name )
 	,formerBrotherDockWidget(0L)
   ,currentDockPos(DockNone)
@@ -645,6 +645,11 @@ KDockWidget::KDockWidget( KDockManager* dockManager, const char* name, const QPi
     setCaption( name );
   else
     setCaption( strCaption);
+
+  if( strTabPageLabel == " ")
+    setTabPageLabel( caption());
+  else
+    setTabPageLabel( strTabPageLabel);
 
   eDocking = DockFullDocking;
   sDocking = DockFullSite;
@@ -767,7 +772,7 @@ bool KDockWidget::event( QEvent *event )
         }
         if ( parentTabGroup() ){
           setDockTabName( parentTabGroup() );
-          parentTabGroup()->setPageCaption( this, caption() );
+          parentTabGroup()->setPageCaption( this, tabPageLabel() );
         }
       }
       break;
@@ -829,7 +834,7 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
   if ( parentTab ){
     // add to existing TabGroup
     applyToWidget( parentTab );
-    parentTab->insertPage( this, caption() );
+    parentTab->insertPage( this, tabPageLabel() );
     parentTab->setPixmap( this, *pix );
     setDockTabName( parentTab );
     if( !toolTipStr.isEmpty())
@@ -880,12 +885,12 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
     applyToWidget( tab );
 
 
-    tab->insertPage( target, target->caption() );
+    tab->insertPage( target, target->tabPageLabel() );
     tab->setPixmap( target, *(target->pix) );
     if( !target->toolTipString().isEmpty())
       tab->setToolTip( target, target->toolTipString());
 
-    tab->insertPage( this, caption() );
+    tab->insertPage( this, tabPageLabel() );
     tab->setPixmap( this, *pix );
     if( !toolTipString().isEmpty())
       tab->setToolTip( this, toolTipString());

@@ -313,10 +313,11 @@ public:
    * @param name        object instance name
    * @param pixmap      an icon (for instance shown when docked centered)
    * @param parent      parent widget
-   * @param strCaption  title of the dockwidget window and title of the tab page (when in tab page mode)
+   * @param strCaption  title of the dockwidget window (shown when toplevel)
+   * @param strTabPageLabel the title of the tab page (shown when in tab page mode), if it is "", only the icon will be shown, if it is 0L, the label is set to strCaption
    */
   KDockWidget( KDockManager* dockManager, const char* name,
-               const QPixmap &pixmap, QWidget* parent = 0L, const QString& strCaption = 0L);
+               const QPixmap &pixmap, QWidget* parent = 0L, const QString& strCaption = 0L, const QString& strTabPageLabel = " ");
 
   /**
    * Destructs a dockwidget.
@@ -453,6 +454,16 @@ public:
   /** @return true, if a dockback is possible, otherwise false. */
   bool isDockBackPossible();
 
+  /** Sets a string that is used for the label of the tab page when in tab page mode 
+   * @param label the new tab page label
+   */
+  void setTabPageLabel( const QString& label) { tabPageTitle = label; }; 
+
+  /** 
+   * @return a string that is used for the label of the tab page when in tab page mode 
+   */
+  const QString& tabPageLabel() { return tabPageTitle; }; 
+
   /**
    * Catches and processes some QWidget events that are interesting for dockwidgets.
    */
@@ -542,7 +553,9 @@ protected:
   DockPosition formerDockPos;
   /** a string used as tooltip for the tab page header when in dock-centered mode. */
   QString toolTipStr;
-
+  /** a string used as title of the tab page when in tab page mode */
+  QString tabPageTitle;
+  
 private:
   /** 
    * Sets the caption (window title) of the given tab widget.
@@ -963,10 +976,11 @@ public:
    * @param name   QObject name (default dockwidget caption)
    * @param pixmap window icon (for instance shown when docked as tabwidget entry)
    * @param parent parent widget for the new dockwidget
-   * @param strCaption  window title and title of the tab page (visible when in tab page mode)
+   * @param strCaption  window title (shown when toplevel)
+   * @param strTabPageLabel title of the tab page (visible when in tab page mode), if it is "", only the icon will be shown; if it is 0L, the label is set to strCaption
    * @return    a pointer to the new created dockwidget
    */
-  KDockWidget* createDockWidget( const QString& name, const QPixmap &pixmap, QWidget* parent = 0L, const QString& strCaption = 0L);
+  KDockWidget* createDockWidget( const QString& name, const QPixmap &pixmap, QWidget* parent = 0L, const QString& strCaption = 0L, const QString& strTabPageLabel = " ");
 
   /** 
    * It writes the current dock state in the given section of KConfig.
