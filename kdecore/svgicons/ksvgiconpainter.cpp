@@ -2652,8 +2652,7 @@ double KSVGIconPainter::toPixel(const QString &s, bool hmode)
 
 	if(!ok)
 	{
-		QRegExp reg("[0-9 .-]");
-		check.replace(reg, "");
+		check.replace(QRegExp("[0-9 .-]"), QString::null);
 
 		if(check.compare("px") == 0)
 			ret = value;
