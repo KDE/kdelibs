@@ -178,6 +178,8 @@ public:
     *         member function of this class.
     */
    /* long SSL_set_options(SSL *ssl, long options); */
+   /*   Returns 0 if not reused, 1 if session id is reused */
+   /*   int SSL_session_reused(SSL *ssl); */
    long    SSL_ctrl(SSL *ssl,int cmd, long larg, char *parg);
 
    /*
@@ -769,6 +771,9 @@ public:
 
    /* Frees a pointer to the SSL session id (reference decremented if needed) */
    void SSL_SESSION_free(SSL_SESSION *session);
+
+   /* Set the SSL session to reuse. */
+   int SSL_set_session(SSL *ssl, SSL_SESSION *session);
 
 #endif
 

@@ -161,6 +161,7 @@ static void (*K_ERR_print_errors_fp)(FILE*) = 0L;
 static int (*K_PKCS7_verify)(PKCS7*,STACK_OF(X509)*,X509_STORE*,BIO*,BIO*,int) = 0L;
 static SSL_SESSION* (*K_SSL_get1_session)(SSL*) = 0L;
 static void (*K_SSL_SESSION_free)(SSL_SESSION*) = 0L;
+static int (*K_SSL_set_session)(SSL*,SSL_SESSION*) = 0L;
 #endif
 };
 
@@ -484,6 +485,7 @@ KConfig *cfg;
       K_SSL_peek = (int (*)(SSL*,void*,int)) _sslLib->symbol("SSL_peek");
       K_SSL_get1_session = (SSL_SESSION* (*)(SSL*)) _sslLib->symbol("SSL_get1_session");
       K_SSL_SESSION_free = (void (*)(SSL_SESSION*)) _sslLib->symbol("SSL_SESSION_free");
+      K_SSL_set_session = (int (*)(SSL*,SSL_SESSION*)) _sslLib->symbol("SSL_set_session");
 #endif
 
 
@@ -1258,6 +1260,11 @@ void KOpenSSLProxy::SSL_SESSION_free(SSL_SESSION *session) {
    if (K_SSL_SESSION_free) (K_SSL_SESSION_free)(session);
 }
 
+
+int KOpenSSLProxy::SSL_set_session(SSL *ssl, SSL_SESSION *session) {
+   if (K_SSL_set_session) return (K_SSL_set_session)(ssl, session);
+   else return -1;
+}
 
 #endif
 

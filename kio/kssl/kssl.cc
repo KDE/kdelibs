@@ -17,6 +17,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -202,6 +203,21 @@ return false;
 }
 
 
+bool KSSL::setSession(const KSSLSession *session) {
+	if (!session) {
+		delete d->session;
+		d->session = 0L;
+		return true;
+	}
+
+	// Obtain a reference by incrementing the reference count.  Yuck.
+	static_cast<SSL_SESSION*>(session->_session)->references++;
+
+	d->session = new KSSLSession;
+	d->session->_session = session->_session;
+
+	return true;
+}
 
 
 void KSSL::close() {
@@ -261,6 +277,17 @@ int rc;
 	if (!d->m_ssl)
 		return -1;
 
+	if (d->session) {
+		if (1 == d->kossl->SSL_set_session(d->m_ssl,
+			static_cast<SSL_SESSION*>(d->session->_session))) {
+			kdDebug(7029) << "Session ID is being reused." << endl;
+		} else {
+			kdDebug(7029) << "Error attempting to reuse session." << endl;
+			delete d->session;
+			d->session = 0;
+		}
+	}
+
 /*
 	if (!setVerificationLogic())
 		return -1;
@@ -278,12 +305,6 @@ int rc;
 	if (rc == 1) {
 		setConnectionInfo();
 		setPeerInfo();
-		SSL_SESSION *sess = d->kossl->SSL_get1_session(d->m_ssl);
-		if (sess) {
-			delete d->session;
-			d->session = new KSSLSession;
-			d->session->_session = sess;
-		}
 		kdDebug(7029) << "KSSL connected OK" << endl;
 	} else {
 		kdDebug(7029) << "KSSL accept failed - rc = " << rc << endl;
@@ -291,6 +312,23 @@ int rc;
 			      << d->kossl->SSL_get_error(d->m_ssl, rc) << endl;
 		return -1;
 	}
+
+	if (!d->kossl->SSL_session_reused(d->m_ssl)) {
+		if (d->session) {
+			kdDebug(7029) << "Session reuse failed.  New session used instead." << endl;
+			delete d->session;
+			d->session = 0L;
+		}
+	}
+
+	if (!d->session) {
+		SSL_SESSION *sess = d->kossl->SSL_get1_session(d->m_ssl);
+		if (sess) {
+			d->session = new KSSLSession;
+			d->session->_session = sess;
+		}
+	}
+
 return rc;
 #else
 return -1;
@@ -307,6 +345,17 @@ int rc;
 	d->m_ssl = d->kossl->SSL_new(d->m_ctx);
 	if (!d->m_ssl)
 		return -1;
+
+	if (d->session) {
+		if (1 == d->kossl->SSL_set_session(d->m_ssl,
+			static_cast<SSL_SESSION*>(d->session->_session))) {
+			kdDebug(7029) << "Session ID is being reused." << endl;
+		} else {
+			kdDebug(7029) << "Error attempting to reuse session." << endl;
+			delete d->session;
+			d->session = 0;
+		}
+	}
 
 /*
 	if (!setVerificationLogic())
@@ -325,12 +374,6 @@ int rc;
 	if (rc == 1) {
 		setConnectionInfo();
 		setPeerInfo();
-		SSL_SESSION *sess = d->kossl->SSL_get1_session(d->m_ssl);
-		if (sess) {
-			delete d->session;
-			d->session = new KSSLSession;
-			d->session->_session = sess;
-		}
 		kdDebug(7029) << "KSSL connected OK" << endl;
 	} else {
 		kdDebug(7029) << "KSSL connect failed - rc = " << rc << endl;
@@ -339,6 +382,23 @@ int rc;
 		d->kossl->ERR_print_errors_fp(stderr);
 		return -1;
 	}
+
+	if (!d->kossl->SSL_session_reused(d->m_ssl)) {
+		if (d->session) {
+			kdDebug(7029) << "Session reuse failed.  New session used instead." << endl;
+			delete d->session;
+			d->session = 0L;
+		}
+	}
+
+	if (!d->session) {
+		SSL_SESSION *sess = d->kossl->SSL_get1_session(d->m_ssl);
+		if (sess) {
+			d->session = new KSSLSession;
+			d->session->_session = sess;
+		}
+	}
+
 return rc;
 #else
 return -1;
