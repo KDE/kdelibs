@@ -44,6 +44,11 @@ DOMNode::~DOMNode()
   nodes.remove(node.handle());
 }
 
+Boolean DOMNode::toBoolean() const
+{
+    return Boolean(!node.isNull());
+}
+
 KJSO DOMNode::tryGet(const UString &p) const
 {
   KJSO result;

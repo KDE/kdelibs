@@ -36,6 +36,7 @@ namespace KJS {
   public:
     DOMNode(DOM::Node n) : node(n) { }
     ~DOMNode();
+    virtual Boolean toBoolean() const;
     virtual KJSO tryGet(const UString &p) const;
     virtual void tryPut(const UString &p, const KJSO& v);
     virtual DOM::Node toNode() const { return node; }

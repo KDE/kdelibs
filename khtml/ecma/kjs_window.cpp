@@ -83,6 +83,12 @@ KJSO Window::get(const UString &p) const
   else if (p == "clearTimeout")
     return Function(new WindowFunc(this, WindowFunc::ClearTimeout));
 
+  // allow shortcuts like 'Image1' instead of document.images.Image1
+  DOM::HTMLCollection coll = part->htmlDocument().all();
+  DOM::HTMLElement element = coll.namedItem(p.string());
+  if (!element.isNull())
+      return getDOMNode(element);
+  
   return Imp::get(p);
 }
 
