@@ -191,13 +191,13 @@ void HTMLImageElementImpl::attach(KHTMLView *)
     }
 }
 
-void HTMLImageElementImpl::applyChanges()
+void HTMLImageElementImpl::applyChanges(bool top)
 {
     if(m_render) {
 	static_cast<RenderImage *>(m_render)
 	    ->setImageUrl(imageURL, static_cast<HTMLDocumentImpl *>(document)->baseURL());
     }
-    HTMLElementImpl::applyChanges();
+    HTMLElementImpl::applyChanges(top);
 }
 
 // -------------------------------------------------------------------------

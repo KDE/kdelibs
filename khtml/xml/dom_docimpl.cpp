@@ -392,14 +392,14 @@ QStringList DocumentImpl::state()
    return s;
 }
 
-void DocumentImpl::applyChanges()
+void DocumentImpl::applyChanges(bool)
 {
     createSelector();
     if(!m_render) return;
-    
+
     m_render->setStyle(m_style);
 
-    // a style change can influence the children, so we just go 
+    // a style change can influence the children, so we just go
     // through them and trigger an appplyChanges there too
     NodeImpl *n = _first;
     while(n) {

@@ -85,8 +85,8 @@ public:
     virtual ushort id() const;
 
     virtual void attach(KHTMLView *);
-    virtual void applyChanges();
-    
+    virtual void applyChanges(bool top=true);
+
     virtual bool mouseEvent( int _x, int _y, int, MouseEventType,
 			     int _tx, int _ty, DOMString &,
                              NodeImpl *& innerNode, long &offset);

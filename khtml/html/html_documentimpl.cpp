@@ -338,7 +338,7 @@ void HTMLDocumentImpl::createSelector()
 
 // ### this function should not be needed in the long run. The one in
 // DocumentImpl should be enough.
-void HTMLDocumentImpl::applyChanges()
+void HTMLDocumentImpl::applyChanges(bool)
 {
     if(m_styleSelector) delete m_styleSelector;
     m_styleSelector = new CSSStyleSelector(this);

@@ -85,7 +85,7 @@ public:
     ~ElementImpl();
 
     virtual bool isInline();
-    
+
     virtual unsigned short nodeType() const;
     virtual bool isElementNode() { return true; }
 
@@ -109,7 +109,7 @@ public:
 
     void normalize (  );
 
-    virtual void applyChanges();
+    virtual void applyChanges(bool = true);
 
     virtual void setStyle(khtml::RenderStyle *style) { m_style = style; }
     virtual khtml::RenderStyle *style() { return m_style; }

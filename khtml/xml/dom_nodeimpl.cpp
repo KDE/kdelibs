@@ -311,7 +311,7 @@ int NodeImpl::increaseStringLength( QChar *htmlText, long &currentLength, long o
 //kdDebug( 6020 ) << "Ha det!" << endl;
 }
 
-void NodeImpl::applyChanges()
+void NodeImpl::applyChanges(bool)
 {
 }
 

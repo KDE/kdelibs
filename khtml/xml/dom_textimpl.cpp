@@ -152,7 +152,7 @@ void TextImpl::attach(KHTMLView *)
 }
 
 
-void TextImpl::applyChanges()
+void TextImpl::applyChanges(bool)
 {
     m_style = parentNode()->style();
     if(m_render) m_render->setStyle(m_style);

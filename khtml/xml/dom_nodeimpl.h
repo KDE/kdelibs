@@ -212,7 +212,7 @@ public:
     virtual void recursive( QChar *htmlText, long &currentLength, long &offset, int stdInc );
     virtual int increaseStringLength( QChar *htmlText, long &currentLength, long offset, int stdInc );
 
-    virtual void applyChanges();
+    virtual void applyChanges(bool top = true);
     virtual void getCursor(int offset, int &_x, int &_y, int &height);
 
 protected:

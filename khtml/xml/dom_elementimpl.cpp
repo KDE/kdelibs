@@ -352,28 +352,30 @@ void ElementImpl::attach(KHTMLView *w)
     }
 }
 
-void ElementImpl::applyChanges()
+void ElementImpl::applyChanges(bool top)
 {
     delete m_style;
     m_style = document->styleSelector()->styleForElement(this);
     if(!m_render) return;
-    
+
     m_render->setStyle(m_style);
 
-    // a style change can influence the children, so we just go 
+    // a style change can influence the children, so we just go
     // through them and trigger an appplyChanges there too
     NodeImpl *n = _first;
     while(n) {
-	n->applyChanges();
+	n->applyChanges(false);
 	n = n->nextSibling();
     }
 
-    // force a relayout of this part of the document
-    m_render->updateSize();
-    // force a repaint of this part.
-    // ### if updateSize() changes any size, it will already force a
-    // repaint, so we might do double work here...
-    m_render->repaint();
+    if(top) {
+	// force a relayout of this part of the document
+	m_render->updateSize();
+	// force a repaint of this part.
+	// ### if updateSize() changes any size, it will already force a
+	// repaint, so we might do double work here...
+	m_render->repaint();
+    }
 }
 
 DOMString ElementImpl::toHTML(DOMString _string)
