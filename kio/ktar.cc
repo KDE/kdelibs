@@ -407,38 +407,26 @@ void KTar::fillBuffer( char * buffer,
   // mode (as in stat())
   assert( strlen(mode) == 6 );
   strcpy( buffer+0x64, mode );
-  buffer[ 0x6a ] = 0x20; // space-terminate (then 0 in 0x6b)
+  buffer[ 0x6a ] = ' ';
+  buffer[ 0x6b ] = '\0';
 
   // dummy uid
-  buffer[ 0x6c ] = 0x20;
-  buffer[ 0x6d ] = 0x20;
-  buffer[ 0x6e ] = 0x20;
-  buffer[ 0x6f ] = 0x37;
-  buffer[ 0x70 ] = 0x36;
-  buffer[ 0x71 ] = 0x35;
-  buffer[ 0x72 ] = 0x20;
-
+  strcpy( buffer + 0x6c, "   765 ");
   // dummy gid
-  buffer[ 0x74 ] = 0x20;
-  buffer[ 0x75 ] = 0x20;
-  buffer[ 0x76 ] = 0x20;
-  buffer[ 0x77 ] = 0x31;
-  buffer[ 0x78 ] = 0x34;
-  buffer[ 0x79 ] = 0x34;
-  buffer[ 0x7a ] = 0x20;
+  strcpy( buffer + 0x74, "   144 ");
 
   // size
   QString s;
   s.setNum( size, 8 );
   s = s.rightJustify( 11, ' ' );
   strcpy( buffer + 0x7c, s.latin1() );
-  buffer[ 0x87 ] = 0x20; // space-terminate (no null after)
+  buffer[ 0x87 ] = ' '; // space-terminate (no null after)
 
   // Dummy time
   s.setNum( time( 0 ), 8 );
   s = s.rightJustify( 11, ' ' );
   strcpy( buffer + 0x88, s.latin1() );
-  buffer[ 0x93 ] = 0x20; // space-terminate (no null after)
+  buffer[ 0x93 ] = ' '; // space-terminate (no null after)
 
   // spaces, replaced by the check sum later
   buffer[ 0x94 ] = 0x20;
@@ -453,8 +441,8 @@ void KTar::fillBuffer( char * buffer,
      other fields: it has [6] digits, a null, then a space -- rather than
      digits, a space, then a null. */
 
-  // 0x9a remains null, as expected
-  buffer[ 0x9b ] = 0x20;
+  buffer[ 0x9a ] = '\0';
+  buffer[ 0x9b ] = ' ';
 
   // type flag (dir, file, link)
   buffer[ 0x9c ] = typeflag;
