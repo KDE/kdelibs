@@ -263,7 +263,12 @@ bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
     {
         if( parentWidget() && obj == parentWidget()->topLevelWidget())
         {
-            if( ev->type() == QEvent::ShowNormal )
+#if QT_VERSION >= 0x030300
+            if( ev->type() == QEvent::WindowStateChange
+#else
+            if( ( ev->type() == QEvent::ShowNormal || ev->type() == QEvent::ShowMaximized )
+#endif
+                && !parentWidget()->topLevelWidget()->isFullScreen() )
                 setTopLevelMenuInternal( d->wasTopLevel );
         }
     }
