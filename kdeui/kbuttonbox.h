@@ -106,7 +106,8 @@ public:
     * for vertical) whereas Help will be right-aligned (or
     * bottom-aligned for vertical).
     *
-    * @see QBoxLayout */
+    * @see QBoxLayout
+    */
   void addStretch(int scale = 1);
 
   /**
