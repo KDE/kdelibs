@@ -188,6 +188,7 @@ public:
 	virtual void checkLoaded();
 
 	void setStrictParsing( bool b ) { strictParsing = b; }
+	bool useStrictParsing() const { return strictParsing; }
 
     private:
         QPtrList<CSSProperty> *m_propList;

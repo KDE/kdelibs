@@ -154,7 +154,7 @@ void CSSImportRuleImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMS
 
     m_styleSheet = new CSSStyleSheetImpl(this, url);
     m_styleSheet->ref();
-    m_styleSheet->parseString(sheet);
+    m_styleSheet->parseString( sheet, parentStyleSheet() ? parentStyleSheet()->useStrictParsing() : true );
     m_loading = false;
 
     checkLoaded();

@@ -341,7 +341,7 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP,
         cs->match = CSSSelector::Exact;
         cs->value = getValue( curP+1, endP, endVal);
     }
-    else if (*curP == '.' && (curP < endP && !((*(curP+1)).isDigit())))
+    else if (*curP == '.' && curP < endP && ( !strictParsing || !(*(curP+1)).isDigit() ) )
     {
         cs->tag = -1;
         cs->attr = ATTR_CLASS;
@@ -370,7 +370,7 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP,
                 cs->value = getValue(curP+1, endP, endVal);
                 break;
             }
-            else if (*curP == '.' && (curP < endP && !((*(curP+1)).isDigit())))
+            else if (*curP == '.' && curP < endP && ( !strictParsing || !(*(curP+1)).isDigit() ) )
             {
                 tag = QString( startP, curP - startP );
                 cs->attr = ATTR_CLASS;
