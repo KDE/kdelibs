@@ -42,9 +42,69 @@ typedef void *arts_stream_t;
 
 #define ARTS_E_NOSERVER     ( -1 )
 #define ARTS_E_NOBACKEND    ( -2 )
-#define ARTS_E_NOSTREAM		( -3 )
-#define ARTS_E_NOINIT		( -4 )
-#define ARTS_E_NOIMPL		( -5 )
+#define ARTS_E_NOSTREAM     ( -3 )
+#define ARTS_E_NOINIT       ( -4 )
+#define ARTS_E_NOIMPL       ( -5 )
+
+/**
+ * the values for stream parameters
+ *
+ * @see arts_parameter_t
+ */
+enum arts_parameter_t_enum {
+    ARTS_P_BUFFER_SIZE = 1,
+    ARTS_P_BUFFER_TIME = 2,
+    ARTS_P_BUFFER_SPACE = 3,
+    ARTS_P_SERVER_LATENCY = 4,
+    ARTS_P_TOTAL_LATENCY = 5,
+    ARTS_P_BLOCKING = 6
+};
+
+/**
+ * parameters for streams
+ * 
+ * @li ARTS_P_BUFFER_SIZE (rw)
+ *   The size of the internal buffers used for streaming to the server - this
+ *   directly affects the latency that will occur. If you never set it
+ *   explicitely, this value defaults to at least 65536 (64kb). Generally,
+ *   it is important to know that the server itself gives some constraints
+ *   which makes buffer sizes below a certain value impossible. So setting
+ *   this parameter will always result in either getting what you wanted,
+ *   or a larger streaming buffer due to server limitations.
+ *
+ * @li ARTS_P_BUFFER_TIME (rw)
+ *   The time the buffer used for streaming to the server takes to play in
+ *   milliseconds. This is just a more human readable method to set the buffer
+ *   size, so setting ARTS_P_BUFFER_SIZE affects this parameter and the other
+ *   way round. As aRts chooses reasonable buffer sizes for streaming (rather
+ *   3*16kb than 40234 bytes), setting this parameter will often end up with
+ *   a slightly larger value than you requested.
+ *
+ * @li ARTS_P_BUFFER_SPACE (r)
+ *   The amount of bytes that can be read/written without blocking (depending
+ *   whether this is a record or play stream). As requesting this parameter
+ *   does a few system calls (but no remote invocation) to verify that it is
+ *   up-to-date, don't overuse it.
+ *
+ * @li ARTS_P_SERVER_LATENCY (r)
+ *   The amount of latency the server creates (due to hardware buffering)
+ *   in milliseconds.
+ *
+ * @li ARTS_P_TOTAL_LATENCY (r)
+ *   The overall latency in milliseconds it takes (at most), from the time
+ *   when you write a byte into a stream, until it gets played on the
+ *   soundcard. This is simply a shortcut to the sum of ARTS_P_BUFFER_TIME
+ *   and ARTS_P_SERVER_LATENCY.
+ *
+ * @li ARTS_P_BLOCKING (rw)
+ *   If this parameter is 1 (the default), arts_read/arts_write will block
+ *   when not all data can be read/written successfully, and wait until it
+ *   works. If this parameter is 0, arts_read/arts_write will return
+ *   the number of successfully read/written bytes immediately.
+ */
+typedef enum arts_parameter_t_enum arts_parameter_t;
+
+/*typedef arts_parameter_t_enum arts_parameter_t;*/
 
 /**
  * initializes the aRts C API, and connects to the sound server
@@ -119,5 +179,27 @@ int arts_read(arts_stream_t stream, void *buffer, int count);
  * @returns number of written bytes on success or error code
  */
 int arts_write(arts_stream_t stream, void *buffer, int count);
+
+/**
+ * configure a parameter of a stream
+ *
+ * @param stream an opened record or play stream
+ * @param parameter the parameter you want to modify
+ * @param value the new value
+ *
+ * @returns the new value of the parameter (which may or may not be the value
+ *          you wanted to have), or an error code if something went wrong
+ */
+int arts_stream_set(arts_stream_t stream, arts_parameter_t param, int value);
+
+/**
+ * query a parameter of a stream
+ *
+ * @param stream an opened record or play stream
+ * @param parameter the parameter you want to query
+ *
+ * @returns the value of the parameter, or an error code
+ */
+int arts_stream_get(arts_stream_t stream, arts_parameter_t param);
 
 #endif /* ARTSC_H */

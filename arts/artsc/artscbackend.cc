@@ -43,6 +43,7 @@ class Sender :	public ByteSoundProducer_skel,
 				public StdSynthModule
 {
 	SimpleSoundServer server;
+	float serverBufferTime;
 
 	/*
 	 * FIXME: bsWrapper is a more or less ugly trick to be able to use
@@ -54,12 +55,125 @@ class Sender :	public ByteSoundProducer_skel,
 	int _samplingRate, _bits, _channels, pos;
 	string _name;
 	queue< DataPacket<mcopbyte>* > outqueue;
+
+	int packetCount, packetCapacity;
+	int blockingIO;
+
+protected:
+	/**
+	 * returns the amount of bytes that will be played in a given amount of
+	 * time in milliseconds
+	 */
+	int timeToBytes(float time)
+	{
+    	float playSpeed = channels() * samplingRate() * bits() / 8;
+		return (int)(playSpeed * (time / 1000.0));
+	}
+
+	/**
+	 * returns the time in milliseconds it takes with the current parameters
+	 * to play a given amount of bytes
+	 */
+	float bytesToTime(int size)
+	{
+    	float playSpeed = channels() * samplingRate() * bits() / 8;
+		return (1000.0 * ((float)size) / playSpeed);
+	}
+
+	int bufferSize() {
+		return packetCount * packetCapacity;
+	}
+
+	float bufferTime() {
+		return bytesToTime(bufferSize());
+	}
+
+	int bufferSpace() {
+		int space = 0;
+
+		attach();
+
+		/* make sure that our information is up-to-date */
+		Dispatcher::the()->ioManager()->processOneEvent(false);
+
+		if(!outqueue.empty())
+		{
+			space += packetCapacity - pos;  /* the first, half filled packet */
+
+			if(outqueue.size() > 1)			/* and the other, empty packets */
+				space += (outqueue.size()-1)*packetCapacity;
+		}
+		return space;
+	}
+
+	int setBufferSize(int size)
+	{
+		/* don't change sizes when already streaming */
+		if(isAttached)
+			return ARTS_E_NOIMPL;
+
+		/*
+		 * these parameters are usually a bad idea ;-) however we have to start
+		 * somewhere, and maybe in two years, with a highly optimized kernel
+		 * this is possible - for now, don't request the impossible or don't
+		 * complain if it doesn't work
+		 */
+		packetCount = 3;
+		packetCapacity = 128;
+
+		/*
+		 * - do not configure stream buffers smaller than the server
+		 *   recommended value
+		 * - try to get more or less close to the value the application
+		 *   wants
+		 */
+		int needSize = max(size, timeToBytes(server.minStreamBufferTime()));
+
+		while(bufferSize() < needSize)
+		{
+			packetCount++;
+			if(packetCount == 8)
+			{
+				packetCount /= 2;
+				packetCapacity *= 2;
+			}
+		}
+
+		return bufferSize();
+	}
+
+	void attach()
+	{
+		if(!isAttached)
+		{
+			isAttached = true;
+
+			server.attach(bsWrapper);
+			start();
+
+            /*
+             * TODO: this processOneEvent looks a bit strange here... it is
+             * there since StdIOManager does block 5 seconds on the first
+             * arts_write if it isn't - although notifications are pending
+             *
+             * Probably the real solution is to rewrite the
+             * StdIOManager::processOneEvent function. (And maybe drop the
+             * assumption that aRts will not block when an infinite amount
+             * of notifications is pending - I mean: will it ever happen?)
+             */
+            Dispatcher::the()->ioManager()->processOneEvent(false);             
+		}
+	}
+
 public:
 	Sender(SimpleSoundServer server, int rate, int bits, int channels,
 		string name) : server(server), _finished(false), isAttached(false),
 		_samplingRate(rate), _bits(bits), _channels(channels), pos(0),
 		_name(name)
 	{
+		serverBufferTime = server.serverBufferTime();
+		stream_set(ARTS_P_BUFFER_SIZE,64*1024);
+		stream_set(ARTS_P_BLOCKING,1);
 		bsWrapper = this;
 	}
 	~Sender()
@@ -71,7 +185,61 @@ public:
 	long bits()         { return _bits; }
 	bool finished()     { return _finished; }
 
-	static const int packetCount = 10, packetCapacity = 4096;
+	int stream_set(arts_parameter_t param, int value)
+	{
+		int result;
+
+		switch(param) {
+			case ARTS_P_BUFFER_SIZE:
+				return setBufferSize(value);
+			
+			case ARTS_P_BUFFER_TIME:
+				result = setBufferSize(timeToBytes(value));
+				if(result < 0) return result;
+				return (int)bufferTime();
+
+			case ARTS_P_BLOCKING:
+				if(value != 0 && value != 1) return ARTS_E_NOIMPL;
+
+				blockingIO = value;
+				return blockingIO;
+			/*
+			 * maybe ARTS_P_TOTAL_LATENCY _could_ be made writeable, the
+			 * others are of course useless
+			 */
+			case ARTS_P_BUFFER_SPACE:
+			case ARTS_P_SERVER_LATENCY:
+			case ARTS_P_TOTAL_LATENCY:
+				return ARTS_E_NOIMPL;
+		}
+		return ARTS_E_NOIMPL;
+	}
+
+	int stream_get(arts_parameter_t param)
+	{
+		switch(param) {
+			case ARTS_P_BUFFER_SIZE:
+				return bufferSize();
+
+			case ARTS_P_BUFFER_TIME:
+				return (int)bufferTime();
+			
+			case ARTS_P_BUFFER_SPACE:
+				return bufferSpace();
+
+			case ARTS_P_SERVER_LATENCY:
+				return (int)serverBufferTime;
+
+			case ARTS_P_TOTAL_LATENCY:
+				return stream_get(ARTS_P_SERVER_LATENCY)
+				     + stream_get(ARTS_P_BUFFER_TIME);
+
+			case ARTS_P_BLOCKING:
+				return blockingIO;
+		}
+		return ARTS_E_NOIMPL;
+	}
+
 	void streamStart()
 	{
 		/*
@@ -104,22 +272,27 @@ public:
 
 	int write(mcopbyte *data, int size)
 	{
-		if(!isAttached)
-		{
-			isAttached = true;
-
-			server.attach(bsWrapper);
-			start();
-			// no blocking yet
-			Dispatcher::the()->ioManager()->processOneEvent(false);
-		}
+		attach();
 
 		int remaining = size;
 		while(remaining)
 		{
-			/* C API blocking style write */
-			while(outqueue.empty())
-				Dispatcher::the()->ioManager()->processOneEvent(true);
+			if(blockingIO)
+			{
+				/* C API blocking style write */
+				while(outqueue.empty())
+					Dispatcher::the()->ioManager()->processOneEvent(true);
+			}
+			else
+			{
+				/* non blocking I/O */
+				if(outqueue.empty())
+					Dispatcher::the()->ioManager()->processOneEvent(false);
+
+				/* still no more space to write? */
+				if(outqueue.empty())
+					return size - remaining;
+			}
 
 			/* get a packet */
 			DataPacket<mcopbyte> *packet = outqueue.front();
@@ -141,26 +314,6 @@ public:
 			}
 		}
 
-#if 0
-		/* could certainly be optimized with memcpy and such */
-		mcopbyte *enddata = data+size;
-		while(data != enddata)
-		{
-			/* C API blocking style write */
-			while(outqueue.empty())
-				Dispatcher::the()->ioManager()->processOneEvent(true);
-
-			DataPacket<mcopbyte> *packet = outqueue.front();
-			packet->contents[pos++] = *data++;
-			if(pos == packetCapacity)
-			{
-				packet->size = packetCapacity;
-				packet->send();
-				outqueue.pop();
-				pos = 0;
-			}
-		}
-#endif
 		/* no possible error conditions */
 		return size;
 	}
@@ -221,6 +374,30 @@ public:
 
 		Sender *sender = (Sender *)stream;
 		return sender->write((mcopbyte *)data,size);
+	}
+
+	int stream_set(arts_stream_t stream, arts_parameter_t param, int value)
+	{
+		if(server.isNull())
+			return ARTS_E_NOSERVER;
+
+		if(!stream)
+			return ARTS_E_NOSTREAM;
+
+		Sender *sender = (Sender *)stream;
+		return sender->stream_set(param,value);
+	}
+
+	int stream_get(arts_stream_t stream, arts_parameter_t param)
+	{
+		if(server.isNull())
+			return ARTS_E_NOSERVER;
+
+		if(!stream)
+			return ARTS_E_NOSTREAM;
+
+		Sender *sender = (Sender *)stream;
+		return sender->stream_get(param);
 	}
 
 // allocation and freeing of the class
@@ -310,4 +487,22 @@ extern "C" int arts_backend_write(arts_stream_t stream, void *buffer, int count)
 
 	arts_backend_debug("arts_backend_write");
 	return ArtsCApi::the()->write(stream,buffer,count);
+}
+
+extern "C" int arts_backend_stream_set(arts_stream_t stream,
+						arts_parameter_t param, int value)
+{
+	if(!ArtsCApi::the()) return ARTS_E_NOINIT;
+
+	arts_backend_debug("arts_stream_set");
+	return ArtsCApi::the()->stream_set(stream,param,value);
+}
+
+extern "C" int arts_backend_stream_get(arts_stream_t stream,
+						arts_parameter_t param)
+{
+	if(!ArtsCApi::the()) return ARTS_E_NOINIT;
+
+	arts_backend_debug("arts_stream_get");
+	return ArtsCApi::the()->stream_get(stream,param);
 }

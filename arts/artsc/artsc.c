@@ -36,7 +36,9 @@ static struct arts_backend {
 	void (*close_stream)(arts_stream_t);
 	int (*read)(arts_stream_t,void*,int);
 	int (*write)(arts_stream_t,void *,int);
-} backend = { 0,0,0,0,0,0,0,0,0,0 };
+	int (*stream_set)(arts_stream_t, arts_parameter_t, int);
+	int (*stream_get)(arts_stream_t, arts_parameter_t);
+} backend = { 0,0,0,0,0,0,0,0,0,0,0 };
 
 static void arts_backend_ref()
 {
@@ -61,11 +63,15 @@ static void arts_backend_ref()
 				lt_dlsym(backend.handle, "arts_backend_write");
 			backend.read =
 				lt_dlsym(backend.handle, "arts_backend_read");
+			backend.stream_set =
+				lt_dlsym(backend.handle, "arts_backend_stream_set");
+			backend.stream_get =
+				lt_dlsym(backend.handle, "arts_backend_stream_get");
 		}
 
 		if(backend.handle && backend.init && backend.free && backend.play_stream
 			&& backend.record_stream && backend.close_stream && backend.write
-			&& backend.read)
+			&& backend.read && backend.stream_set && backend.stream_get)
 			backend.available = 1;
 		else
 			backend.available = 0;
@@ -145,6 +151,22 @@ int arts_write(arts_stream_t stream, void *buffer, int count)
 	int rc = ARTS_E_NOBACKEND;
 
 	if(backend.available) rc = backend.write(stream,buffer,count);
+	return rc;
+}
+
+int arts_stream_set(arts_stream_t stream, arts_parameter_t param, int value)
+{
+	int rc = ARTS_E_NOBACKEND;
+
+	if(backend.available) rc = backend.stream_set(stream,param,value);
+	return rc;
+}
+
+int arts_stream_get(arts_stream_t stream, arts_parameter_t param)
+{
+	int rc = ARTS_E_NOBACKEND;
+
+	if(backend.available) rc = backend.stream_get(stream,param);
 	return rc;
 }
 
