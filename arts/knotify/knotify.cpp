@@ -269,6 +269,8 @@ bool KNotify::notifyBySound( const QString &sound )
 
         Arts::PlayObject player =
             d->playObjectFactory.createPlayObject( QFile::encodeName(soundFile).data() );
+		if (player.isNull())
+			return false;
 
         if ( d->volume != 100 )
         {
