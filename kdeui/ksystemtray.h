@@ -26,14 +26,14 @@ class KPopupMenu;
 class KSystemTrayPrivate;
 
 /**
- *  KDE System Tray Window class
+ * \brief %KDE System Tray Window class
  *
  * This class implements system tray windows.
  *
  * A tray window is a small window (typically 24x24 pixel) that docks
  * into the system tray in the desktop panel. It usually displays an
- * icon or an animated icon there. The icon serves as representative
- * for the application, similar to a taskbar button, but consumes less
+ * icon or an animated icon there. The icon represents
+ * the application, similar to a taskbar button, but consumes less
  * screen space.
  *
  * When the user clicks with the left mouse button on the icon, the
@@ -59,7 +59,6 @@ class KSystemTrayPrivate;
  * the network status.
  *
  * @author Matthias Ettrich <ettrich@kde.org>
- * @short KDE System Tray Window class
  **/
 class KDEUI_EXPORT KSystemTray : public QLabel
 {
