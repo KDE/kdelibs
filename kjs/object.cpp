@@ -900,10 +900,7 @@ String ObjectImp::toString() const
   KJSO tmp;
   String res;
 
-  if (hasProperty("toString")) {
-    tmp = get("toString");
-    // TODO: check for implementsCall() ?
-    assert(tmp.implementsCall());
+  if (hasProperty("toString") && (tmp = get("toString")).implementsCall()) {
     // TODO live w/o hack
     res = tmp.executeCall(KJSO(const_cast<ObjectImp*>(this)), 0L).toString();
   } else {

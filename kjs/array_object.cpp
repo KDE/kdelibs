@@ -141,7 +141,35 @@ Completion ArrayProtoFunc::execute(const List &args)
     }
     result = String(str);
     break;
-  // TODO Concat
+  case Concat: {
+    result = Object::create(ArrayClass);
+    int n = 0;
+    obj = thisObj;
+    ListIterator it = args.begin();
+    for (;;) {
+      if (obj.isA(ObjectType) &&
+	  static_cast<Object&>(obj).getClass() == ArrayClass) {
+	unsigned int k = 0;
+	if (n > 0)
+	  length = obj.get("length").toUInt32();
+	while (k < length) {
+	  UString p = UString::from(k);
+	  if (obj.hasProperty(p))
+	    result.put(UString::from(n), obj.get(p));
+	  n++;
+	  k++;
+	}
+      } else {
+	result.put(UString::from(n), obj);
+	n++;      
+      }
+      if (it == args.end())
+	break;
+      obj = it++;
+    }
+    result.put("length", Number(n), DontEnum | DontDelete);
+  }
+    break;
   case Pop:
     if (length == 0) {
       thisObj.put("length", Number(length), DontEnum | DontDelete);
@@ -309,5 +337,5 @@ Completion ArrayProtoFunc::execute(const List &args)
     result = Undefined();
   }
 
-  return Completion(ReturnValue,result);
+  return Completion(ReturnValue, result);
 }
