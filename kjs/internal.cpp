@@ -1109,7 +1109,7 @@ void KJS::printInfo(ExecState *exec, const char *s, const Value &o, int lineno)
     UString name;
     switch ( v.type() ) {
     case UnspecifiedType:
-      name = "Unspecified value";
+      name = "Unspecified";
       break;
     case UndefinedType:
       name = "Undefined";
@@ -1118,13 +1118,13 @@ void KJS::printInfo(ExecState *exec, const char *s, const Value &o, int lineno)
       name = "Null";
       break;
     case BooleanType:
-      name = "Boolean value";
+      name = "Boolean";
       break;
     case StringType:
-      name = "String value";
+      name = "String";
       break;
     case NumberType:
-      name = "Number value";
+      name = "Number";
       break;
     case ObjectType:
       name = Object::dynamicCast(v).getClass();
@@ -1135,10 +1135,10 @@ void KJS::printInfo(ExecState *exec, const char *s, const Value &o, int lineno)
       name = "Reference";
       break;
     case ListType:
-      name = "List value";
+      name = "List";
       break;
     case CompletionType:
-      name = "Completion value";
+      name = "Completion";
       break;
     default:
       break;
