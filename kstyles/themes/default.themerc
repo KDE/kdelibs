@@ -1,6 +1,6 @@
 [Misc]
 Name=KDE default
-Name[ca]=Omissió KDE
+Name[ca]=Omissi� KDE
 Name[cs]=Implicitní pro KDE
 Name[da]=KDE Standard
 Name[de]=KDE-Standard
@@ -28,7 +28,7 @@ Name[sv]=KDE förinställd
 Name[ta]=KDE ெகாடாநிைல
 Name[tr]=KDE öntanımlı
 Comment=Default KDE style
-Comment[ca]=Estil KDE per omissió
+Comment[ca]=Estil KDE per omissi�
 Comment[cs]=Implicitní styl pro KDE
 Comment[da]=Indbygget CDE stil
 Comment[de]=KDE-Standardstil
