@@ -262,16 +262,16 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
 
                     // if the current type is FILE, then we also need to
                     // include the filename
-                    if (current->nodeType() == Node::ELEMENT_NODE && current->id() == ID_INPUT &&
-                        static_cast<HTMLInputElementImpl*>(current)->inputType() == HTMLInputElementImpl::FILE)
+                    if (current->id() == ID_INPUT &&
+                        static_cast<HTMLInputElementImpl*>(current)->inputType() == HTMLInputElementImpl::FILE &&
+                        current->renderer())
                     {
-                        QString path = static_cast<HTMLInputElementImpl*>(current)->value().string();
-                        if (path.length()) fileUploads << path;
-                        QString onlyfilename = path.mid(path.findRev('/')+1);
+                        KURL path ( static_cast<HTMLInputElementImpl*>(current)->value().string());
 
-                        hstr += fixUpfromUnicode(codec, "; filename=\"" + onlyfilename + "\"");
-                        if(!static_cast<HTMLInputElementImpl*>(current)->value().isEmpty()) {
-                            KMimeType::Ptr ptr = KMimeType::findByURL(KURL(path));
+                        hstr += fixUpfromUnicode(codec, "; filename=\"" + path.fileName() + "\"");
+                        if(path.isValid()) {
+                            fileUploads << path.prettyURL(0, KURL::StripFileProtocol);
+                            KMimeType::Ptr ptr = KMimeType::findByURL(path);
                             if (!ptr->name().isEmpty()) {
                                 hstr += "\r\nContent-Type: ";
                                 hstr += ptr->name().ascii();
@@ -284,7 +284,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
 
                     // append body
                     unsigned int old_size = form_data.size();
-                    form_data.resize( old_size + hstr.length() + (*it).size() + 1);
+                    form_data.resize( old_size + hstr.length() + (*it).size() + 2);
                     memcpy(form_data.data() + old_size, hstr.data(), hstr.length());
                     memcpy(form_data.data() + old_size + hstr.length(), *it, (*it).size());
                     form_data[form_data.size()-2] = '\r';
@@ -1356,31 +1356,30 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
                 return false;
 
             QString local;
-            QCString dummy("");
-
             KURL fileurl(value().string());
             KIO::UDSEntry filestat;
 
             // can't submit file in www-url-form encoded
             QWidget* toplevel = static_cast<RenderSubmitButton*>(m_render)->widget()->topLevelWidget();
-            if (multipart && KIO::NetAccess::stat(fileurl, filestat, toplevel)) {
+            if (multipart) {
+                QCString filearray;
+                if ( KIO::NetAccess::stat(fileurl, filestat, toplevel)) {
                 KFileItem fileitem(filestat, fileurl, true, false);
-
-                if ( fileitem.isFile() && KIO::NetAccess::download(KURL(value().string()), local, toplevel) ) {
+                    if ( fileitem.isFile() &&
+                         KIO::NetAccess::download(KURL(value().string()), local, toplevel) ) {
                     QFile file(local);
-                    if (file.open(IO_ReadOnly)) {
-                        QCString filearray(file.size()+1);
+                        filearray.resize(file.size()+1);
+                        if ( file.open( IO_ReadOnly ) ) {
                         int readbytes = file.readBlock( filearray.data(), file.size());
                         if ( readbytes >= 0 )
                             filearray[readbytes] = '\0';
                         file.close();
-
-                        encoding += filearray;
+                        }
                         KIO::NetAccess::removeTempFile( local );
-
-                        return true;
                     }
                 }
+                encoding += filearray;
+                return true;
             }
             // else fall through
         }
