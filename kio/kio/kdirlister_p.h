@@ -59,9 +59,9 @@ public:
     lstRemoveItems = 0;
 
     changes = NONE;
-    
+
     window = 0;
-    
+
     lstFilters.setAutoDelete( true );
     oldFilters.setAutoDelete( true );
   }
@@ -97,10 +97,10 @@ public:
   KFileItem *rootFileItem;
 
   KFileItemList *lstNewItems, *lstRefreshItems, *lstMimeFilteredItems,
-	*lstRemoveItems;
+    *lstRemoveItems;
 
   int changes;
- 
+
   QWidget *window; // Main window ths lister is associated with
 
   QString nameFilter;
@@ -181,7 +181,7 @@ private slots:
   void slotFileDirty( const QString &_file );
   void slotFileCreated( const QString &_file );
   void slotFileDeleted( const QString &_file );
-  
+
   void slotFileDirtyDelayed();
 
   void slotEntries( KIO::Job *job, const KIO::UDSEntryList &entries );
@@ -236,21 +236,35 @@ private:
       delete lstItems;
     }
 
+    void redirect( const KURL& newUrl )
+    {
+      if ( autoUpdates )
+      {
+        if ( url.isLocalFile() )
+          kdirwatch->removeDir( url.path() );
+
+        if ( newUrl.isLocalFile() )
+          kdirwatch->addDir( newUrl.path() );
+      }
+
+      url = newUrl;
+
+      if ( rootItem )
+        rootItem->setURL( newUrl );
+    }
+
     void incAutoUpdate()
     {
-      if ( url.isLocalFile() && autoUpdates++ == 0 )
+      if ( autoUpdates++ == 0 && url.isLocalFile() )
         kdirwatch->addDir( url.path() );
     }
 
     void decAutoUpdate()
     {
-      if ( url.isLocalFile() )
-      {
-        if ( --autoUpdates == 0 )
-          kdirwatch->removeDir( url.path() );
-        else if ( autoUpdates < 0 )
-          autoUpdates = 0;
-      }
+      if ( --autoUpdates == 0 && url.isLocalFile() )
+        kdirwatch->removeDir( url.path() );
+      else if ( autoUpdates < 0 )
+        autoUpdates = 0;
     }
 
     // number of KDirListers using autoUpdate for this dir
@@ -293,7 +307,7 @@ private:
 
   // running timers for the delayed update
   QDict<QTimer> pendingUpdates;
-  
+
   static KDirListerCache* s_pSelf;
 };
 

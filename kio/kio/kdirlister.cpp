@@ -1,7 +1,7 @@
 /* This file is part of the KDE project
    Copyright (C) 1998, 1999 Torben Weis <weis@kde.org>
                  2000 Carsten Pfeiffer <pfeiffer@kde.org>
-                 2001, 2002 Michael Brade <brade@kde.org>
+                 2001-2004 Michael Brade <brade@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -1036,6 +1036,7 @@ void KDirListerCache::slotRedirection( KIO::Job *job, const KURL &url )
   delete dir->rootItem;
   dir->rootItem = 0;
   dir->lstItems->clear();
+  dir->redirect( newUrl );
   itemsInUse.insert( newUrl.url(), dir );
   urlsCurrentlyListed.insert( newUrl.url(), listers );
 }
@@ -1069,10 +1070,8 @@ void KDirListerCache::renameDir( const KURL &oldUrl, const KURL &newUrl )
         newDirUrl.addPath( relPath ); // add unchanged relative path
       //kdDebug(7004) << "KDirListerCache::renameDir new url=" << newDirUrl.prettyURL() << endl;
 
-      // Update URL in root item and in itemsInUse
-      if ( dir->rootItem )
-        dir->rootItem->setURL( newDirUrl );
-      dir->url = newDirUrl;
+      // Update URL in dir item and in itemsInUse
+      dir->redirect( newDirUrl );
       itemsInUse.remove( itu.currentKey() ); // implies ++itu
       itemsInUse.insert( newDirUrl.url(-1), dir );
       goNext = false; // because of the implied ++itu above
@@ -1380,7 +1379,7 @@ KIO::ListJob *KDirListerCache::jobForUrl(const QString& _url)
   return 0;
 }
 
-void KDirListerCache::killJob( KIO::ListJob *job)
+void KDirListerCache::killJob( KIO::ListJob *job )
 {
   jobs.remove( job );
   job->disconnect( this );
