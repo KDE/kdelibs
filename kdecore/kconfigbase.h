@@ -22,6 +22,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.26  1999/05/30 13:22:27  porten
+// switched back to old list delimiter ','
+//
 // Revision 1.25  1999/05/25 20:38:26  kulow
 // sorted some headers - no need to include kconfigbackend in kconfig.h.
 // Just makes parsing slower
@@ -178,7 +181,7 @@ public:
    * @param sep  The list separator (default ";")
    * @return The list.
    */
-  QStringList readListEntry( const QString& pKey, char sep = ';' ) const;
+  QStringList readListEntry( const QString& pKey, char sep = ',' ) const;
  
   /**
    * Read a numerical value.
