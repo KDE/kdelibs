@@ -611,7 +611,7 @@ void KKeyChooser::toChange( QListViewItem *item )
 		d->bChange->setText(str); //eKey->setText(str);
 		//d->bChange->setEnabled( true ); //bDefault->setEnabled( true );
 		
-		if ( isKeyPresent(kSCode) ) {
+		if ( isKeyPresent(kCode, false) ) {
 			d->lInfo->setText(i18n("Attention : key already used") );
 		}
 		
@@ -901,10 +901,12 @@ void KKeyChooser::editEnd()
     setKey(kCode);
 }
 
-bool KKeyChooser::isKeyPresent( int kcode)
+bool KKeyChooser::isKeyPresent( int kcode, bool warnuser )
 {
     if (!kcode)
         return false;
+
+    kdDebug(125) << "isKeyPresent " << KAccel::keyToString(kcode) << endl;
 
     // Search the global key codes to find if this keyCode is already used
     //  elsewhere
@@ -915,7 +917,11 @@ bool KKeyChooser::isKeyPresent( int kcode)
     while ( gIt.current() ) {
         kdDebug(125) << "current " << gIt.currentKey() << ":" << *gIt.current() << " code " << kcode << endl;
         if ( (*gIt.current()) == kcode && *gIt.current() != 0 ) {
-            QString actionName( gIt.currentKey() );
+
+            if (!warnuser)
+                return true;
+
+            QString actionName( (*d->map)[gIt.currentKey()].descr );
             actionName.stripWhiteSpace();
 
             QString keyName = KAccel::keyToString( *gIt.current() );
@@ -942,8 +948,8 @@ bool KKeyChooser::isKeyPresent( int kcode)
     sIt.toFirst();
     while ( sIt.current() ) {
         kdDebug(125) << "current " << sIt.currentKey() << ":" << *sIt.current() << " code " << kcode << endl;
-        if ( (*sIt.current()) == kcode && *sIt.current() != 0 ) {
-            QString actionName( sIt.currentKey() );
+        if ( *sIt.current() == kcode && *sIt.current() != 0 ) {
+            QString actionName( (*d->map)[sIt.currentKey()].descr );
             actionName.stripWhiteSpace();
 
             QString keyName = KAccel::keyToString( *sIt.current() );
@@ -969,7 +975,7 @@ bool KKeyChooser::isKeyPresent( int kcode)
          it != d->map->end(); ++it) {
         if ( it != d->actionMap[d->wList->currentItem()]
              && (*it).aConfigKeyCode == kcode ) {
-            QString actionName( it.key() );
+            QString actionName( (*it).descr );
             actionName.stripWhiteSpace();
 
             QString keyName = KAccel::keyToString( kcode );

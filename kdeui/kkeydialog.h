@@ -108,7 +108,7 @@ protected:
 
 protected:
 
-    bool isKeyPresent(int kcode );
+    bool isKeyPresent(int kcode, bool warnuser = true );
     void setKey( int kCode );
 
     KKeyChooserPrivate *d;
