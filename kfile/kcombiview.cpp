@@ -123,7 +123,6 @@ void KCombiView::setSorting( QDir::SortSpec sort )
 
 void KCombiView::sortReversed()
 {
-    KFileView::sortReversed();
     right->sortReversed();
 }
 
