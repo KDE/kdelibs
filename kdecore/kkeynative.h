@@ -22,10 +22,12 @@
 
 #include <kshortcut.h>
 
+#ifdef Q_WS_X11
 typedef union _XEvent XEvent;
+#endif
 
 class KKeyNativePrivate;
-/** 
+/**
  * Representation of a key in the format native of the windowing system (eg. X11).
  * @see KKey
  */
@@ -40,11 +42,13 @@ class KKeyNative
 	 */
 	KKeyNative();
 
+#ifdef Q_WS_X11
 	/**
 	 * Extracts a new native key from the given xevent.
 	 * @param xevent the XEvent that contains the key
 	 */
 	KKeyNative( const XEvent* xevent );
+#endif
 
 	/**
 	 * Creates a new native key for the given KKey code.
@@ -95,7 +99,7 @@ class KKeyNative
 	 * Copies the given key into this key.
 	 * @param key the key to copy
 	 * @return this key
-	 */	
+	 */
 	KKeyNative& operator =( const KKeyNative& key )
 		{ init( key ); return *this; }
 
@@ -104,7 +108,7 @@ class KKeyNative
 	 * @return the qt key code or 0 if there is no key set.
 	 * @see Qt::Key
 	 */
-	
+
 	int keyCodeQt() const;
 
 	/**
@@ -148,14 +152,14 @@ class KKeyNative
 	bool isNull() const;
 
 	/**
-	 * Compares this key with the given KKeyNative object. Returns a 
-	 * negative number if the given KKeyNative is larger, 0 if they 
-	 * are equal and a positive number this KKeyNative is larger. The 
+	 * Compares this key with the given KKeyNative object. Returns a
+	 * negative number if the given KKeyNative is larger, 0 if they
+	 * are equal and a positive number this KKeyNative is larger. The
 	 * returned value is the difference between the symbol, modifier
 	 * or code, whatever is non-zero first.
 	 *
 	 * @param key the key to compare with this key
-	 * @return a negative number if the given KKeyNative is larger, 0 if 
+	 * @return a negative number if the given KKeyNative is larger, 0 if
 	 * they are equal and a positive number this KKeyNative is larger
 	 */
 	int compare( const KKeyNative& key ) const;
