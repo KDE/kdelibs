@@ -1,0 +1,6 @@
+[Desktop Entry]
+Comment=GIMP native image format
+Icon=image
+MimeType=image/x-xcf-gimp
+Patterns=*.xcf
+Type=MimeType
