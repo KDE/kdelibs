@@ -904,7 +904,7 @@ Completion KJS::HTMLElementFunction::tryExecute(const List &args)
 void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
 {
   DOM::DOMString str = v.toString().value().string();
-  DOM::Node n = DOMNode(KJS::toNode(v)).toNode();
+  DOM::Node n = (new DOMNode(KJS::toNode(v)))->toNode();
 
   switch (element.elementId()) {
     case ID_HTML: {

@@ -61,7 +61,7 @@ extern "C" {
     DOM::HTMLDocument doc;
     doc = khtml->htmlDocument();
     global.put("document", KJSO(new KJS::HTMLDocument(doc)));
-    //    global.put("window", KJSO(new KJS::Window(khtml->view())));
+    global.put("window", KJSO(new KJS::Window(khtml->view())));
     global.put("navigator", KJSO(new Navigator()));
     global.put("Image", KJSO(new ImageObject(global)));
 

@@ -33,22 +33,20 @@ class KHTMLPart;
 namespace KJS {
 
   class WindowFunc;
+  class WindowQObject;
 
-  class Window : public QObject, public DOMObject {
-    Q_OBJECT
+  class Window : public DOMObject {
     friend class WindowFunc;
+    friend class WindowQObject;
   public:
-    Window(KHTMLView *w) : widget(w), timer(0L) { }
+    Window(KHTMLView *w);
     ~Window();
     virtual KJSO tryGet(const UString &p) const;
     virtual void tryPut(const UString &p, const KJSO& v);
     void installTimeout(const UString &handler, int t);
-  public slots:
-    void timeout();
   private:
     KHTMLView *widget;
-    QTimer *timer;
-    UString timeoutHandler;
+    WindowQObject *winq;
   };
 
   class WindowFunc : public DOMFunction {
@@ -60,6 +58,20 @@ namespace KJS {
   private:
     const Window *window;
     int id;
+  };
+
+  class WindowQObject : public QObject {
+    Q_OBJECT
+  public:
+    WindowQObject(Window *w);
+    ~WindowQObject();
+    void installTimeout(const UString &handler, int t);
+  public slots:
+    void timeout();
+  private:
+    Window *parent;
+    QTimer *timer;
+    UString timeoutHandler;
   };
 
 }; // namespace

@@ -34,9 +34,14 @@
 
 using namespace KJS;
 
+Window::Window(KHTMLView *w)
+  : widget(w), winq(0L)
+{
+}
+
 Window::~Window()
 {
-  delete timer;
+  delete winq;
 }
 
 KJSO Window::tryGet(const UString &p) const
@@ -68,19 +73,12 @@ void Window::tryPut(const UString &p, const KJSO &v)
   }
 }
 
-void Window::timeout()
-{
-  widget->part()->executeScript(timeoutHandler.qstring());
-}
-
 void Window::installTimeout(const UString &handler, int t)
 {
-  if (!timer) {
-    timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), SLOT(timeout()));
-  }
-  timeoutHandler = handler;
-  timer->start(t, true);
+  if (!winq)
+    winq = new WindowQObject(this);
+
+  winq->installTimeout(handler, t);
 }
 
 Completion WindowFunc::tryExecute(const List &args)
@@ -137,6 +135,31 @@ Completion WindowFunc::tryExecute(const List &args)
 void WindowFunc::setStatusBarText(KHTMLPart *p, const QString &s)
 {
   p->setStatusBarText(s);
+}
+
+WindowQObject::WindowQObject(Window *w)
+  : parent(w), timer(0L)
+{
+}
+
+WindowQObject::~WindowQObject()
+{
+  delete timer;
+}
+
+void WindowQObject::installTimeout(const UString &handler, int t)
+{
+  if (!timer) {
+    timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), SLOT(timeout()));
+  }
+  timeoutHandler = handler;
+  timer->start(t, true);
+}
+
+void WindowQObject::timeout()
+{
+  parent->widget->part()->executeScript(timeoutHandler.qstring());
 }
 
 #include "kjs_window.moc"
