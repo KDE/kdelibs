@@ -67,71 +67,71 @@ HTMLButtonElement::~HTMLButtonElement()
 HTMLFormElement HTMLButtonElement::form() const
 {
     if(!impl) return 0;
-    return ((HTMLButtonElementImpl *)impl)->form();
+    return static_cast<HTMLButtonElementImpl*>(impl)->form();
 }
 
 DOMString HTMLButtonElement::accessKey() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute(ATTR_ACCESSKEY);
+    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_ACCESSKEY);
 }
 
 void HTMLButtonElement::setAccessKey( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_ACCESSKEY, value);
+    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_ACCESSKEY, value);
 }
 
 bool HTMLButtonElement::disabled() const
 {
     if(!impl) return 0;
-    return !((ElementImpl *)impl)->getAttribute(ATTR_DISABLED).isNull();
+    return !static_cast<ElementImpl*>(impl)->getAttribute(ATTR_DISABLED).isNull();
 }
 
 void HTMLButtonElement::setDisabled( bool _disabled )
 {
-    if (impl) ((ElementImpl *)impl)->setAttribute(ATTR_DISABLED, _disabled ? "" : 0);
+    if (impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_DISABLED, _disabled ? "" : 0);
 }
 
 DOMString HTMLButtonElement::name() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute(ATTR_NAME);
+    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_NAME);
 }
 
 void HTMLButtonElement::setName( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_NAME, value);
+    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_NAME, value);
 }
 
 long HTMLButtonElement::tabIndex() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute(ATTR_TABINDEX).toInt();
+    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_TABINDEX).toInt();
 }
 
 void HTMLButtonElement::setTabIndex( long _tabIndex )
 {
     if (!impl) {
 	DOMString value(QString::number(_tabIndex));
-	((ElementImpl *)impl)->setAttribute(ATTR_TABINDEX, value);
+	static_cast<ElementImpl*>(impl)->setAttribute(ATTR_TABINDEX, value);
     }
 }
 
 DOMString HTMLButtonElement::type() const
 {
     if(!impl) return 0;
-    return ((HTMLButtonElementImpl *)impl)->type();
+    return static_cast<HTMLButtonElementImpl*>(impl)->type();
 }
 
 DOMString HTMLButtonElement::value() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute(ATTR_VALUE);
+    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_VALUE);
 }
 
 void HTMLButtonElement::setValue( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_VALUE, value);
+    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_VALUE, value);
 }
 
 // --------------------------------------------------------------------------
@@ -219,85 +219,83 @@ HTMLCollection HTMLFormElement::elements() const
 long HTMLFormElement::length() const
 {
     if(!impl) return 0;
-    return ((HTMLFormElementImpl *)impl)->length();
+    return static_cast<HTMLFormElementImpl*>(impl)->length();
 }
 
 DOMString HTMLFormElement::name() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute(ATTR_NAME);
+    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_NAME);
 }
 
 void HTMLFormElement::setName( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_NAME, value);
+    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_NAME, value);
 }
 
 DOMString HTMLFormElement::acceptCharset() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute(ATTR_ACCEPT_CHARSET);
+    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_ACCEPT_CHARSET);
 }
 
 void HTMLFormElement::setAcceptCharset( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_ACCEPT_CHARSET, value);
+    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_ACCEPT_CHARSET, value);
 }
 
 DOMString HTMLFormElement::action() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute(ATTR_ACTION);
+    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_ACTION);
 }
 
 void HTMLFormElement::setAction( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_ACTION, value);
+    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_ACTION, value);
 }
 
 DOMString HTMLFormElement::enctype() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute(ATTR_ENCTYPE);
+    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_ENCTYPE);
 }
 
 void HTMLFormElement::setEnctype( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_ENCTYPE, value);
+    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_ENCTYPE, value);
 }
 
 DOMString HTMLFormElement::method() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute(ATTR_METHOD);
+    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_METHOD);
 }
 
 void HTMLFormElement::setMethod( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_METHOD, value);
+    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_METHOD, value);
 }
 
 DOMString HTMLFormElement::target() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute(ATTR_TARGET);
+    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_TARGET);
 }
 
 void HTMLFormElement::setTarget( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_TARGET, value);
+    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_TARGET, value);
 }
 
 void HTMLFormElement::submit(  )
 {
-    if(impl)
-        ((HTMLFormElementImpl *)impl)->submit(  );
+    if(impl) static_cast<HTMLFormElementImpl*>(impl)->submit(  );
 }
 
 void HTMLFormElement::reset(  )
 {
-    if(impl)
-        ((HTMLFormElementImpl *)impl)->reset(  );
+    if(impl) static_cast<HTMLFormElementImpl*>(impl)->reset(  );
 }
 
 // --------------------------------------------------------------------------
@@ -453,46 +451,46 @@ void HTMLInputElement::setMaxLength( long _maxLength )
 DOMString HTMLInputElement::name() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute(ATTR_NAME);
+    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_NAME);
 }
 
 void HTMLInputElement::setName( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_NAME, value);
+    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_NAME, value);
 }
 
 bool HTMLInputElement::readOnly() const
 {
     if(!impl) return 0;
-    return !((ElementImpl *)impl)->getAttribute(ATTR_READONLY).isNull();
+    return !static_cast<ElementImpl*>(impl)->getAttribute(ATTR_READONLY).isNull();
 }
 
 void HTMLInputElement::setReadOnly( bool _readOnly )
 {
     if(impl)
-	((ElementImpl *)impl)->setAttribute(ATTR_READONLY, _readOnly ? "" : 0);
+	static_cast<ElementImpl*>(impl)->setAttribute(ATTR_READONLY, _readOnly ? "" : 0);
 }
 
 DOMString HTMLInputElement::size() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute(ATTR_SIZE);
+    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_SIZE);
 }
 
 void HTMLInputElement::setSize( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_SIZE, value);
+    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_SIZE, value);
 }
 
 DOMString HTMLInputElement::src() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute(ATTR_SRC);
+    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_SRC);
 }
 
 void HTMLInputElement::setSrc( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_SRC, value);
+    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_SRC, value);
 }
 
 long HTMLInputElement::tabIndex() const
@@ -506,7 +504,7 @@ void HTMLInputElement::setTabIndex( long _tabIndex )
 
     if(impl) {
 	DOMString value(QString::number(_tabIndex));
-        ((ElementImpl *)impl)->setAttribute(ATTR_TABINDEX,value);
+        static_cast<ElementImpl*>(impl)->setAttribute(ATTR_TABINDEX,value);
     }
 }
 
@@ -519,12 +517,12 @@ DOMString HTMLInputElement::type() const
 DOMString HTMLInputElement::useMap() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute(ATTR_USEMAP);
+    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_USEMAP);
 }
 
 void HTMLInputElement::setUseMap( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_USEMAP, value);
+    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_USEMAP, value);
 }
 
 DOMString HTMLInputElement::value() const
@@ -608,23 +606,23 @@ HTMLFormElement HTMLLabelElement::form() const
 DOMString HTMLLabelElement::accessKey() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute(ATTR_ACCESSKEY);
+    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_ACCESSKEY);
 }
 
 void HTMLLabelElement::setAccessKey( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_ACCESSKEY, value);
+    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_ACCESSKEY, value);
 }
 
 DOMString HTMLLabelElement::htmlFor() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute(ATTR_FOR);
+    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_FOR);
 }
 
 void HTMLLabelElement::setHtmlFor( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_FOR, value);
+    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_FOR, value);
 }
 
 // --------------------------------------------------------------------------
@@ -671,23 +669,23 @@ HTMLFormElement HTMLLegendElement::form() const
 DOMString HTMLLegendElement::accessKey() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute(ATTR_ACCESSKEY);
+    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_ACCESSKEY);
 }
 
 void HTMLLegendElement::setAccessKey( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_ACCESSKEY, value);
+    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_ACCESSKEY, value);
 }
 
 DOMString HTMLLegendElement::align() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute(ATTR_ALIGN);
+    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_ALIGN);
 }
 
 void HTMLLegendElement::setAlign( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_ALIGN, value);
+    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_ALIGN, value);
 }
 
 // --------------------------------------------------------------------------
@@ -728,24 +726,24 @@ HTMLOptGroupElement::~HTMLOptGroupElement()
 bool HTMLOptGroupElement::disabled() const
 {
     if(!impl) return 0;
-    return !((ElementImpl *)impl)->getAttribute(ATTR_DISABLED).isNull();
+    return !static_cast<ElementImpl*>(impl)->getAttribute(ATTR_DISABLED).isNull();
 }
 
 void HTMLOptGroupElement::setDisabled( bool _disabled )
 {
     if(impl)
-	((ElementImpl *)impl)->setAttribute(ATTR_DISABLED, _disabled ? "" : 0);
+	static_cast<ElementImpl*>(impl)->setAttribute(ATTR_DISABLED, _disabled ? "" : 0);
 }
 
 DOMString HTMLOptGroupElement::label() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute(ATTR_LABEL);
+    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_LABEL);
 }
 
 void HTMLOptGroupElement::setLabel( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_LABEL, value);
+    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_LABEL, value);
 }
 
 // --------------------------------------------------------------------------
@@ -804,12 +802,12 @@ void HTMLSelectElement::setSelectedIndex( long _selectedIndex )
 DOMString HTMLSelectElement::value() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute(ATTR_VALUE);
+    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_VALUE);
 }
 
 void HTMLSelectElement::setValue( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_VALUE, value);
+    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_VALUE, value);
 }
 
 long HTMLSelectElement::length() const
@@ -833,35 +831,35 @@ HTMLCollection HTMLSelectElement::options() const
 bool HTMLSelectElement::disabled() const
 {
     if(!impl) return 0;
-    return !((ElementImpl *)impl)->getAttribute(ATTR_DISABLED).isNull();
+    return !static_cast<ElementImpl*>(impl)->getAttribute(ATTR_DISABLED).isNull();
 }
 
 void HTMLSelectElement::setDisabled( bool _disabled )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_DISABLED, _disabled ? "" : 0);
+    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_DISABLED, _disabled ? "" : 0);
 }
 
 
 bool HTMLSelectElement::multiple() const
 {
     if(!impl) return 0;
-    return !((ElementImpl *)impl)->getAttribute(ATTR_MULTIPLE).isNull();
+    return !static_cast<ElementImpl*>(impl)->getAttribute(ATTR_MULTIPLE).isNull();
 }
 
 void HTMLSelectElement::setMultiple( bool _multiple )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_MULTIPLE, _multiple ? "" : 0);
+    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_MULTIPLE, _multiple ? "" : 0);
 }
 
 DOMString HTMLSelectElement::name() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute(ATTR_NAME);
+    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_NAME);
 }
 
 void HTMLSelectElement::setName( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_NAME, value);
+    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_NAME, value);
 }
 
 long HTMLSelectElement::size() const
@@ -875,7 +873,7 @@ void HTMLSelectElement::setSize( long _size )
 
     if(impl) {
 	DOMString value(QString::number(_size));
-        ((ElementImpl *)impl)->setAttribute(ATTR_SIZE,value);
+        static_cast<ElementImpl*>(impl)->setAttribute(ATTR_SIZE,value);
     }
 }
 
@@ -887,35 +885,30 @@ long HTMLSelectElement::tabIndex() const
 
 void HTMLSelectElement::setTabIndex( long _tabIndex )
 {
-
     if(impl) {
 	DOMString value(QString::number(_tabIndex));
-        ((ElementImpl *)impl)->setAttribute(ATTR_TABINDEX,value);
+        static_cast<ElementImpl*>(impl)->setAttribute(ATTR_TABINDEX,value);
     }
 }
 
 void HTMLSelectElement::add( const HTMLElement &element, const HTMLElement &before )
 {
-    if(impl)
-        ((HTMLSelectElementImpl *)impl)->add( element, before );
+    if(impl) static_cast<HTMLSelectElementImpl*>(impl)->add( element, before );
 }
 
 void HTMLSelectElement::remove( long index )
 {
-    if(impl)
-        ((HTMLSelectElementImpl *)impl)->remove( index );
+    if(impl) static_cast<HTMLSelectElementImpl*>(impl)->remove( index );
 }
 
 void HTMLSelectElement::blur(  )
 {
-    if(impl)
-        ((HTMLSelectElementImpl *)impl)->blur(  );
+    if(impl) static_cast<HTMLSelectElementImpl*>(impl)->blur(  );
 }
 
 void HTMLSelectElement::focus(  )
 {
-    if(impl)
-        ((HTMLSelectElementImpl *)impl)->focus(  );
+    if(impl) static_cast<HTMLSelectElementImpl*>(impl)->focus(  );
 }
 
 // --------------------------------------------------------------------------
@@ -973,12 +966,12 @@ HTMLFormElement HTMLTextAreaElement::form() const
 DOMString HTMLTextAreaElement::accessKey() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute(ATTR_ACCESSKEY);
+    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_ACCESSKEY);
 }
 
 void HTMLTextAreaElement::setAccessKey( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_ACCESSKEY, value);
+    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_ACCESSKEY, value);
 }
 
 long HTMLTextAreaElement::cols() const
@@ -992,41 +985,41 @@ void HTMLTextAreaElement::setCols( long _cols )
 
     if(impl) {
 	DOMString value(QString::number(_cols));
-        ((ElementImpl *)impl)->setAttribute(ATTR_COLS,value);
+        static_cast<ElementImpl*>(impl)->setAttribute(ATTR_COLS,value);
     }
 }
 
 bool HTMLTextAreaElement::disabled() const
 {
     if(!impl) return 0;
-    return !((ElementImpl *)impl)->getAttribute(ATTR_DISABLED).isNull();
+    return !static_cast<ElementImpl*>(impl)->getAttribute(ATTR_DISABLED).isNull();
 }
 
 void HTMLTextAreaElement::setDisabled( bool _disabled )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_DISABLED, _disabled ? "" : 0);
+    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_DISABLED, _disabled ? "" : 0);
 }
 
 DOMString HTMLTextAreaElement::name() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute(ATTR_NAME);
+    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_NAME);
 }
 
 void HTMLTextAreaElement::setName( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_NAME, value);
+    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_NAME, value);
 }
 
 bool HTMLTextAreaElement::readOnly() const
 {
     if(!impl) return 0;
-    return !((ElementImpl *)impl)->getAttribute(ATTR_READONLY).isNull();
+    return !static_cast<ElementImpl*>(impl)->getAttribute(ATTR_READONLY).isNull();
 }
 
 void HTMLTextAreaElement::setReadOnly( bool _readOnly )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_READONLY, _readOnly ? "" : 0);
+    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_READONLY, _readOnly ? "" : 0);
 }
 
 long HTMLTextAreaElement::rows() const
@@ -1040,7 +1033,7 @@ void HTMLTextAreaElement::setRows( long _rows )
 
     if(impl) {
 	DOMString value(QString::number(_rows));
-        ((ElementImpl *)impl)->setAttribute(ATTR_ROWS,value);
+        static_cast<ElementImpl*>(impl)->setAttribute(ATTR_ROWS,value);
     }
 }
 
@@ -1055,7 +1048,7 @@ void HTMLTextAreaElement::setTabIndex( long _tabIndex )
 
     if(impl) {
 	DOMString value(QString::number(_tabIndex));
-        ((ElementImpl *)impl)->setAttribute(ATTR_TABINDEX,value);
+        static_cast<ElementImpl*>(impl)->setAttribute(ATTR_TABINDEX,value);
     }
 }
 
@@ -1138,12 +1131,12 @@ HTMLFormElement HTMLOptionElement::form() const
 bool HTMLOptionElement::defaultSelected() const
 {
     if(!impl) return 0;
-    return !((ElementImpl *)impl)->getAttribute(ATTR_SELECTED).isNull();
+    return !static_cast<ElementImpl*>(impl)->getAttribute(ATTR_SELECTED).isNull();
 }
 
 void HTMLOptionElement::setDefaultSelected( bool _defaultSelected )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_SELECTED, _defaultSelected ? "" : 0);
+    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_SELECTED, _defaultSelected ? "" : 0);
 }
 
 DOMString HTMLOptionElement::text() const
@@ -1166,23 +1159,23 @@ void HTMLOptionElement::setIndex( long /*_index*/ )
 bool HTMLOptionElement::disabled() const
 {
     if(!impl) return 0;
-    return !((ElementImpl *)impl)->getAttribute(ATTR_DISABLED).isNull();
+    return !static_cast<ElementImpl*>(impl)->getAttribute(ATTR_DISABLED).isNull();
 }
 
 void HTMLOptionElement::setDisabled( bool _disabled )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_DISABLED, _disabled ? "" : 0);
+    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_DISABLED, _disabled ? "" : 0);
 }
 
 DOMString HTMLOptionElement::label() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute(ATTR_LABEL);
+    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_LABEL);
 }
 
 void HTMLOptionElement::setLabel( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_LABEL, value);
+    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_LABEL, value);
 }
 
 bool HTMLOptionElement::selected() const
@@ -1199,12 +1192,12 @@ void HTMLOptionElement::setSelected(bool _selected) {
 DOMString HTMLOptionElement::value() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute(ATTR_VALUE);
+    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_VALUE);
 }
 
 void HTMLOptionElement::setValue( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_VALUE, value);
+    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_VALUE, value);
 }
 
 // -----------------------------------------------------------------------------
@@ -1251,10 +1244,10 @@ HTMLFormElement HTMLIsIndexElement::form() const
 DOMString HTMLIsIndexElement::prompt() const
 {
     if(!impl) return 0;
-    return ((ElementImpl *)impl)->getAttribute(ATTR_PROMPT);
+    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_PROMPT);
 }
 
 void HTMLIsIndexElement::setPrompt( const DOMString &value )
 {
-    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_PROMPT, value);
+    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_PROMPT, value);
 }

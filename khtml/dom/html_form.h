@@ -948,8 +948,8 @@ public:
      *
      * @param element The element to add.
      *
-     * @param before The element to insert before, or NULL for the
-     * head of the list.
+     * @param before The element to insert before, or 0 for the
+     * tail of the list.
      *
      */
     void add ( const HTMLElement &element, const HTMLElement &before );
