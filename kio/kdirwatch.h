@@ -12,12 +12,20 @@
 #ifndef _KDIRWATCH_H
 #define _KDIRWATCH_H
 
+#include <config.h>
+
 #include <sys/stat.h>
 #include <unistd.h>
 #include <time.h>
 
 #include <qtimer.h>
 #include <qmap.h>
+
+#ifdef HAVE_FAM_H
+#define USE_FAM
+#include <fam.h>
+class QSocketNotifier;
+#endif
 
 #define kdirwatch KDirWatch::self()
 
@@ -140,12 +148,16 @@ class KDirWatch : public QObject
    
  protected slots:
    void slotRescan();
+   void famEventReceived();
    
  private:
   struct Entry
   {
     time_t m_ctime;
-    int m_clients;
+    int m_clients;    
+#ifdef USE_FAM
+    FAMRequest fr;
+#endif
   };
   
   QTimer *timer;
@@ -155,6 +167,14 @@ class KDirWatch : public QObject
   struct stat statbuff;
 
   static KDirWatch* s_pSelf;
+
+#ifdef USE_FAM
+  QSocketNotifier *sn;
+  FAMConnection fc;
+  FAMEvent fe;
+  int use_fam;
+  bool emitEvents;
+#endif
 };
 
 #endif
