@@ -872,7 +872,7 @@ void DCOPServer::removeConnection( void* data )
 #ifndef NDEBUG
 	qDebug("DCOP:  unregister '%s'", conn->appId.data() );
 #endif
-        if ( conn->appId.left(9) != "klauncher" && conn->appId != "kded" && conn->appId != "knotify" )
+        if ( conn->appId.left(9) != "klauncher" && conn->appId != "kded" && conn->appId != "knotify" && conn->appId != "kio_uiserver" )
         {
             currentClientNumber--;
 #ifndef NDEBUG
@@ -949,7 +949,7 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
 
 		if ( conn->appId.isNull() )
                 {
-                    if ( app2.left(9) != "klauncher" && app2 != "kded" && app2 != "knotify" )
+                    if ( app2.left(9) != "klauncher" && app2 != "kded" && app2 != "knotify" && app2 != "kio_uiserver" )
                     {
                         currentClientNumber++;
                         m_timer->stop(); // abort termination if we were planning one
