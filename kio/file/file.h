@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#include <qobject.h>
 #include <qintdict.h>
 #include <qstring.h>
 #include <qvaluelist.h>
