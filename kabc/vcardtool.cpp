@@ -622,9 +622,11 @@ Picture VCardTool::parsePicture( const VCardLine &line )
   Picture pic;
 
   QStringList params = line.parameterList();
-  if ( params.findIndex( "encoding" ) != -1 )
-    pic.setData( line.value().asByteArray() );
-  else if ( params.findIndex( "value" ) != -1 ) {
+  if ( params.findIndex( "encoding" ) != -1 ) {
+    QImage img;
+    img.loadFromData( line.value().asByteArray() );
+    pic.setData( img );
+  } else if ( params.findIndex( "value" ) != -1 ) {
     if ( line.parameter( "value" ).lower() == "uri" )
       pic.setUrl( line.value().asString() );
   }
