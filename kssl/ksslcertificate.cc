@@ -385,7 +385,7 @@ void KSSLCertificate::setCert(X509 *c) {
 		int id = d->kossl->X509_PURPOSE_get_id(ptmp);
 		for (int ca = 0; ca < 2; ca++) {
 			int idret = d->kossl->X509_check_purpose(c, id, ca);
-			if (idret == 1) {   // have it
+			if (idret == 1 || idret == 2) {   // have it
 //				kdDebug() << "PURPOSE: " << id << (ca?" CA":"") << endl;
 				if (!ca)
 					d->_extensions.flags |= (1L <<(id-1));
