@@ -4001,14 +4001,21 @@ void QIconView::selectByRubber( QRect oldRubber )
     int minx = contentsWidth(), miny = contentsHeight();
     int maxx = 0, maxy = 0;
     int selected = 0;
-
+    bool changed = FALSE;
+    
+    bool block = signalsBlocked();
+    blockSignals( TRUE );
     QIconViewItem *item = d->firstItem;
     for ( ; item; item = item->next ) {
 	if ( item->intersects( oldRubber ) &&
-	     !item->intersects( d->rubber->normalize() ) )
+	     !item->intersects( d->rubber->normalize() ) ) {
+	    if ( !changed )
+		changed = item->isSelected();
 	    item->setSelected( FALSE );
-	else if ( item->intersects( d->rubber->normalize() ) ) {
+	} else if ( item->intersects( d->rubber->normalize() ) ) {
 	    item->setSelected( TRUE, TRUE );
+	    if ( !changed )
+		changed = !item->isSelected();
 	    ++selected;
 	    minx = QMIN( minx, item->x() - 1 );
 	    miny = QMIN( miny, item->y() - 1 );
@@ -4016,10 +4023,14 @@ void QIconView::selectByRubber( QRect oldRubber )
 	    maxy = QMAX( maxy, item->y() + item->height() + 1 );
 	}
     }
-    emit selectionChanged();
-    emit selectionChanged( selected );
-    if ( d->selectionMode == Single )
-	emit selectionChanged( d->currentItem );
+    blockSignals( block );
+    
+    if ( changed ) {
+	emit selectionChanged();
+	emit selectionChanged( selected );
+	if ( d->selectionMode == Single )
+	    emit selectionChanged( d->currentItem );
+    }
 }
 
 /*!
