@@ -816,7 +816,7 @@ void KURL::addPath( const QString& _txt )
     m_strPath += "/";
 
   // No double '/' characters
-  int i = 0;
+  i = 0;
   if ( len != 0 && m_strPath[ len - 1 ] == '/' )
   {
     while( _txt[i] == '/' )
