@@ -289,16 +289,41 @@ Ticket *AddressBook::requestSaveTicket( Resource *resource )
 
 void AddressBook::insertAddressee( const Addressee &a )
 {
+
+  Resource *resource = 0;
+  if ( a.resource() == 0 ) {
+    // since this addressee does not belong to a resource we have
+    // to find one for it :)
+    for ( Resource *res = d->mResources.first(); res; res = d->mResources.next() ) {
+      if ( res->standard() && !res->readOnly() ) {
+        resource = res;
+        break;
+      }
+    }
+
+    if ( !resource ) {
+      // there is no standard resource, we will use the first writeable
+      for ( Resource *res = d->mResources.first(); res; res = d->mResources.next() ) {
+        if ( !res->readOnly() ) {
+          resource = res;
+          break;
+        }
+      }
+    }
+  }
+
   Addressee::List::Iterator it;
   for ( it = d->mAddressees.begin(); it != d->mAddressees.end(); ++it ) {
     if ( a.uid() == (*it).uid() ) {
       bool changed = false;
       Addressee addr = a;
-      if ( addr != (*it) ) {
-        kdDebug() << "insertAddressee: changed=true" << endl;
+      if ( addr != (*it) )
         changed = true;
-      }
+
       (*it) = a;
+      if ( (*it).resource() == 0 )
+        (*it).setResource( resource );
+
       if ( changed ) {
         (*it).setRevision( QDateTime::currentDateTime() );
         (*it).setChanged( true ); 
@@ -308,6 +333,8 @@ void AddressBook::insertAddressee( const Addressee &a )
   }
   d->mAddressees.append( a );
   Addressee& addr = lastAddressee();
+  if ( addr.resource() == 0 )
+    addr.setResource( resource );
   addr.setChanged( true );
 }
 

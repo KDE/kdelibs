@@ -88,6 +88,7 @@ void StdAddressBook::init( bool onlyFastResources )
   config.setGroup( "General" );
 
   QStringList keys = config.readListEntry( "ResourceKeys" );
+  QString stdKey = config.readEntry( "Standard" );
   for ( QStringList::Iterator it = keys.begin(); it != keys.end(); ++it ) {
     config.setGroup( "Resource_" + (*it) );
     QString type = config.readEntry( "ResourceType" );
@@ -103,6 +104,9 @@ void StdAddressBook::init( bool onlyFastResources )
     resource->setReadOnly( config.readBoolEntry( "ResourceIsReadOnly" ) );
     resource->setFastResource( config.readBoolEntry( "ResourceIsFast" ) );
     resource->setName( config.readEntry( "ResourceName" ).latin1() );
+
+    if ( stdKey == (*it) )
+      resource->setStandard( true );
 
     if ( !addResource( resource ) ) delete resource;
   }

@@ -46,6 +46,7 @@ public slots:
   void slotRemove();
   void slotEdit();
   void slotConvert();
+  void slotStandard();
   void slotSelectionChanged();
 
 signals:
@@ -59,6 +60,7 @@ private:
   QPushButton* mRemoveButton;
   QPushButton* mEditButton;
   QPushButton* mConvertButton;
+  QPushButton* mStandardButton;
 
   QListViewItem* mLastItem;
 };

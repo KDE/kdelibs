@@ -74,6 +74,16 @@ void Resource::removeAddressee( const Addressee& )
   // do nothing
 }
 
+void Resource::setStandard( bool value )
+{
+  mStandard = value;
+}
+
+bool Resource::standard() const
+{
+  return mStandard;
+}
+
 void Resource::setReadOnly( bool value )
 {
   mReadOnly = value;

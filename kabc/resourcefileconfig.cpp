@@ -80,11 +80,15 @@ void ResourceFileConfig::saveSettings( KConfig *config )
 
 void ResourceFileConfig::checkFilePermissions( const QString& fileName )
 {
+/**
+  we need some clever code here to check access
+
   QFile file( fileName );
   if ( !file.open( IO_Append ) )
     emit setReadOnly( true );
 
   file.close();
+*/
 }
 
 #include "resourcefileconfig.moc"

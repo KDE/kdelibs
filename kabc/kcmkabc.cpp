@@ -27,6 +27,7 @@
 #include <kcombobox.h>
 #include <kdebug.h>
 #include <klocale.h>
+#include <kmessagebox.h>
 #include <ksimpleconfig.h>
 #include <kstandarddirs.h>
 #include <kurlrequester.h>
@@ -44,12 +45,27 @@ public:
   ConfigViewItem( QListView *parent, QString name, QString type,
       QString identifier = QString::null );
 
+  void setStandard( bool value )
+  {
+    if ( value )
+      setText( 2, i18n( "yes" ) );
+    else
+      setText( 2, "" );
+
+    isStandard = value;
+  }
+
+  bool standard() { return isStandard; }
+
   QString key;
   QString type;
+
+private:
+  bool isStandard;
 };
 
 ConfigViewItem::ConfigViewItem( QListView *parent, QString name,
-    QString type, QString identifier )
+    QString type, QString identifier)
   : QListViewItem( parent, name, type, identifier )
 {
 }
@@ -71,6 +87,7 @@ ConfigPage::ConfigPage( QWidget *parent, const char *name )
   mListView->setAllColumnsShowFocus( true );
   mListView->addColumn( i18n( "Name" ) );
   mListView->addColumn( i18n( "Type" ) );
+  mListView->addColumn( i18n( "Standard" ) );
   mListView->addColumn( i18n( "Location" ) );
 
   groupBoxLayout->addWidget( mListView );
@@ -83,6 +100,8 @@ ConfigPage::ConfigPage( QWidget *parent, const char *name )
   mEditButton->setEnabled( false );
   mConvertButton = buttonBox->addButton( i18n( "&Convert..." ), this, SLOT(slotConvert()) );
   mConvertButton->setEnabled( false );
+  mStandardButton = buttonBox->addButton( i18n( "&Use as Standard..." ), this, SLOT(slotStandard()) );
+  mStandardButton->setEnabled( false );
   buttonBox->layout();
 
   groupBoxLayout->addWidget( buttonBox );
@@ -107,6 +126,7 @@ void ConfigPage::load()
 
   config->setGroup( "General" );
   keys = config->readListEntry( "ResourceKeys" );
+  QString stdKey = config->readEntry( "Standard" );
 
   mListView->clear();
 
@@ -118,6 +138,8 @@ void ConfigPage::load()
 
     item->key = (*it);
     item->type = config->readEntry( "ResourceType" );
+    if ( stdKey == (*it) )
+      item->setStandard( true );
   }
 
   if ( mListView->childCount() == 0 ) {
@@ -131,14 +153,17 @@ void ConfigPage::save()
 {
   QStringList keys;
 
+  config->setGroup( "General" );
+
   QListViewItem *item = mListView->firstChild();
   while ( item != 0 ) {
     ConfigViewItem *configItem = dynamic_cast<ConfigViewItem*>( item );
+    if ( configItem->standard() )
+      config->writeEntry( "Standard", configItem->key );
     keys.append( configItem->key );
     item = item->itemBelow();
   }
 
-  config->setGroup( "General" );
   config->writeEntry( "ResourceKeys", keys );
 
   config->sync();
@@ -175,6 +200,7 @@ void ConfigPage::defaults()
   ConfigViewItem *item = new ConfigViewItem( mListView, "Default", type );
   item->key = key;
   item->type = type;
+  item->setStandard(true);
 
   mLastItem = item;
 
@@ -270,6 +296,8 @@ void ConfigPage::slotConvert()
   if ( !oldConfigItem )
     return;
 
+  bool isStandard = oldConfigItem->standard();
+
   KABC::ResourceFactory *factory = KABC::ResourceFactory::self();
   KABC::AddressBook ab;
 
@@ -285,11 +313,20 @@ void ConfigPage::slotConvert()
 
   config->setGroup( "Resource_" + oldKey );
   KABC::Resource *oldResource = factory->resource( oldType, &ab, config );
-  if ( !oldResource )
+  if ( !oldResource ) {
+    KMessageBox::error( this, i18n( "Unable to create resource from type '%1'." ).arg( oldType ) );
+    mListView->takeItem( mLastItem );
+    delete mLastItem;
+    mLastItem = 0;
     return;
+  }
 
   if ( !ab.addResource( oldResource ) ) {
+    KMessageBox::error( this, i18n( "Unable to add resource '%1' to address book." ).arg( oldResource->name() ) );
     delete oldResource;
+    mListView->takeItem( mLastItem );
+    delete mLastItem;
+    mLastItem = 0;
     return;
   }
 
@@ -303,16 +340,26 @@ void ConfigPage::slotConvert()
   QString newKey, newType;
 
   ConfigViewItem *newConfigItem = dynamic_cast<ConfigViewItem*>( mLastItem );
+  newConfigItem->setStandard( isStandard );
   newType = newConfigItem->type;
   newKey = newConfigItem->key;
 
   config->setGroup( "Resource_" + newKey );
   KABC::Resource *newResource = factory->resource( newType, &ab, config );
-  if ( !newResource )
+  if ( !newResource ) {
+    KMessageBox::error( this, i18n( "Unable to create resource from type '%1'." ).arg( newType ) );
+    mListView->takeItem( mLastItem );
+    delete mLastItem;
+    mLastItem = 0;
     return;
+  }
 
   if ( !ab.addResource( newResource ) ) {
+    KMessageBox::error( this, i18n( "Unable to add resource '%1' to address book." ).arg( newResource->name() ) );
     delete newResource;
+    mListView->takeItem( mLastItem );
+    delete mLastItem;
+    mLastItem = 0;
     return;
   }
 
@@ -331,6 +378,24 @@ void ConfigPage::slotConvert()
   delete oldItem;
 
   emit changed( true );
+  return;
+}
+
+void ConfigPage::slotStandard()
+{
+  ConfigViewItem *item = dynamic_cast<ConfigViewItem*>( mListView->currentItem() );
+  if ( !item )
+    return;
+
+  QListViewItem *it = mListView->firstChild();
+  while ( it != 0 ) {
+    ConfigViewItem *configItem = dynamic_cast<ConfigViewItem*>( it );
+    if ( configItem->standard() )
+      configItem->setStandard( false );
+    it = it->itemBelow();
+  }
+
+  item->setStandard( true );
 }
 
 void ConfigPage::slotSelectionChanged()
@@ -340,6 +405,7 @@ void ConfigPage::slotSelectionChanged()
   mRemoveButton->setEnabled( state );
   mEditButton->setEnabled( state );
   mConvertButton->setEnabled( state );
+  mStandardButton->setEnabled( state );
 }
 
 KCMkabc::KCMkabc( QWidget *parent, const char *name )
