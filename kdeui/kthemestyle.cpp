@@ -170,13 +170,13 @@ void KThemeStyle::drawButton(QPainter *p, int x, int y, int w, int h,
 
 void KThemeStyle::drawPushButton(QPushButton* btn, QPainter *p)
 {
-    int x1, y1, x2, y2;
     bool sunken = btn->isOn() || btn->isDown();
-    btn->rect().coords(&x1, &y1, &x2, &y2);
-    drawBaseButton(p, x1, y1, btn->width(), btn->height(),
+    int diw = buttonDefaultIndicatorWidth();
+    drawBaseButton(p, diw, diw, btn->width()-2*diw, btn->height()-2*diw,
                    *colorGroup(btn->colorGroup(), sunken ? PushButtonDown :
                                PushButton), sunken, roundButton(),
                    sunken ? PushButtonDown : PushButton, NULL);
+    // TODO if diw, draw fancy default button indicator
 }
 
 void KThemeStyle::drawBaseMask(QPainter *p, int x, int y, int w, int h,
@@ -396,7 +396,7 @@ QRect KThemeStyle::buttonRect(int x, int y, int w, int h)
 {
     int spacing = decoWidth(PushButton) > decoWidth(PushButtonDown) ?
         decoWidth(PushButton) : decoWidth(PushButtonDown);
-    return(QRect(x+spacing+4, y+spacing+4, w-(spacing*2)-4, h-(spacing*2)-4));
+    return(QRect(x+spacing, y+spacing, w-(spacing*2), h-(spacing*2)));
 }
 
 void KThemeStyle::drawComboButton(QPainter *p, int x, int y, int w, int h,
