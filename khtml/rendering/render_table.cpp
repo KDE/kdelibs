@@ -25,7 +25,7 @@
  * $Id$
  */
 
-#define TABLE_DEBUG
+//#define TABLE_DEBUG
 //#define DEBUG_LAYOUT
 //#define BOX_DEBUG
 

@@ -459,13 +459,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paDebugDOMTree = new KAction( "print DOM tree to stdout", 0, this, SLOT( slotDebugDOMTree() ), actionCollection(), "debugDOMTree" );
 
   d->m_paSetEncoding = new KSelectAction( i18n( "Set &Encoding" ), 0, this, SLOT( slotSetEncoding() ), actionCollection(), "setEncoding" );
-  QStringList encodings = KGlobal::charsets()->availableEncodingNames();
-  QStringList::Iterator it;
-  for( it = encodings.begin(); it != encodings.end(); ++it ) {
-      QString lang = KGlobal::charsets()->languageForEncoding( *it );
-      *it = lang + " ( " + *it + " )";
-  }
-  encodings.sort();
+  QStringList encodings = KGlobal::charsets()->descriptiveEncodingNames();
   encodings.prepend( i18n( "Auto" ) );
   d->m_paSetEncoding->setItems( encodings );
   d->m_paSetEncoding->setCurrentItem(0);
@@ -2204,9 +2198,7 @@ void KHTMLPart::slotSetEncoding()
         setEncoding(QString::null, false);
     else {
 	// strip of the language to get the raw encoding again.
-	QString enc = d->m_paSetEncoding->currentText();
-	enc = enc.replace( QRegExp( "*( ", false, true ), "");
-	enc = enc.replace( QRegExp( " )*", false, true ), "");
+	QString enc = KGlobal::charsets()->encodingForName(d->m_paSetEncoding->currentText());
 	setEncoding(enc, true);
     }
 }
