@@ -369,9 +369,12 @@ bool KStandardDirs::makeDir(const QString& dir, int mode)
         int pos = target.find('/', i);
         base += target.mid(i, pos - i + 1);
         // bail out if we encountered a problem
-        if (stat(base.ascii(), &st) != 0 && !(S_ISDIR(st.st_mode)) &&
-            mkdir(base.ascii(), (mode_t) mode) != 0)
-            return false;
+        if (stat(base.ascii(), &st) != 0)
+        {
+           // Directory does not exist....
+           if ( mkdir(base.ascii(), (mode_t) mode) != 0)
+             return false; // Couldn't create it :-(
+        }
         i = pos + 1;
     }
     return true;
