@@ -32,7 +32,7 @@ KDE_CXXFLAGS = $(USE_EXCEPTIONS)
 # gprof -l -y
 # AM_CXXFLAGS += -pg
 
-SUBDIRS = misc dom css xml html java kjs
+SUBDIRS = misc dom css xml html java kjs . ecma
 
 lib_LTLIBRARIES = libkhtml.la
 libkhtml_la_SOURCES = khtml.cpp       khtmlstyle.cpp  khtmltext.cpp 
@@ -45,12 +45,12 @@ noinst_HEADERS = \
 	design.h       khtmlstyle.h   khtmltext.h
 
 libkhtml_la_LDFLAGS = -version-info 3:0
-libkhtml_la_LIBADD = ./misc/libkhtmlmisc.la ./dom/libkhtmldom.la ./css/libkhtmlcss.la ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la ./java/libkjava.la ./kjs/libkjs.la ../kimgio/libkimgio.la ../kio/libkio.la 
+libkhtml_la_LIBADD = ./misc/libkhtmlmisc.la ./dom/libkhtmldom.la ./css/libkhtmlcss.la ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la ./java/libkjava.la ../kimgio/libkimgio.la ../kio/libkio.la
 
 INCLUDES = -I$(srcdir)/kjs -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio \
 	-I$(srcdir)/java -I$(top_srcdir)/dcop  -I$(srcdir)/misc \
 	-I$(srcdir)/dom -I$(srcdir)/xml -I$(srcdir)/html -I$(srcdir)/css \
-        $(all_includes)
+        -I$(top_srcdir)/libltdl $(all_includes)
 
 SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/khtml
 
@@ -77,8 +77,8 @@ check_PROGRAMS 	= testkhtml testcss
 #testkhtml_SOURCES = testkhtml.cpp $(libkhtml_la_SOURCES)
 #testkhtml_LDADD = -ldmalloc $(LIB_KDEUI) $(libkhtml_la_LIBADD)
 testkhtml_SOURCES = testkhtml.cpp
-testkhtml_LDADD = $(LIB_KHTML) kjs/libkjs.la $(LIB_QT)
+testkhtml_LDADD = $(LIB_KHTML) $(LIB_QT)
 testkhtml_LDADD = $(LIB_KHTML)
 testcss_SOURCES = testcss.cpp
-testcss_LDADD = $(LIB_KDEUI) kjs/libkjs.la $(LIB_KHTML) $(libkhtml_la_LIBADD)
+testcss_LDADD = $(LIB_KDEUI) $(LIB_KHTML) $(libkhtml_la_LIBADD)
 

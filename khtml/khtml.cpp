@@ -25,6 +25,7 @@
 #include <qstack.h>
 #include <qdragobject.h>
 
+#include <ltdl.h>
 #include <kapp.h>
 #include <kmimetype.h>
 
@@ -146,6 +147,8 @@ KHTMLWidget::~KHTMLWidget()
 
   if(cache) delete cache;
   if(defaultSettings) delete defaultSettings;
+
+  if(lt_dl_initialized) lt_dlexit();
 }
 
 void KHTMLWidget::init()
@@ -161,6 +164,7 @@ void KHTMLWidget::init()
   _javaEnabled = false;
   _jScriptEnabled = false;
   _followLinks = true;
+  lt_dl_initialized = false;
   _jscript = 0;
 
     if ( lstViews == 0L )
@@ -203,8 +207,13 @@ void KHTMLWidget::clear()
     document = 0;
     if(decoder) delete decoder;
     decoder = 0;
-    delete _jscript;
-    _jscript = 0;
+
+    if ( _jscript )
+    {
+      delete _jscript;
+      _jscript = 0;
+    }
+
     if ( _settings ) delete _settings;
     _settings = 0;
 
@@ -277,7 +286,7 @@ bool KHTMLWidget::jScriptEnabled() const
 void KHTMLWidget::executeScript(const QString &c)
 {
     if(!_jScriptEnabled) return;
-    jScript()->evaluate((KJS::UnicodeChar*)c.unicode(), c.length());
+    jScript()->evaluate(c.unicode(), c.length());
 }
 
 
@@ -1623,17 +1632,43 @@ void KHTMLWidget::setBaseUrl(const QString &base)
   _baseURL = base;
 }
 
-KJScript *KHTMLWidget::jScript()
+KJSProxy *KHTMLWidget::jScript()
 {
     if(!_jScriptEnabled) return 0;
     if(!_jscript)
     {
-	_jscript = new KJScript();
-	QString module = KGlobal::dirs()->findResource("lib", "kjs_html.la");
-	if(!module.isNull())
-	    _jscript->useModule(module.ascii(), this);
-	// TODO: handle errors
+      if(!lt_dl_initialized)
+      {
+	lt_dlinit();
+	lt_dl_initialized = true;
+      }
+      // locate module
+      QString module = KGlobal::dirs()->findResource("lib", "kjs_html.la");
+      if(module.isNull())
+      {
+	fprintf(stderr, "didn't find kjs module\n");
+	return 0;
+      }
+      // try to obtain a handle on the module
+      lt_dlhandle handle = lt_dlopen(module.ascii());
+      if(!handle)
+      {
+	fprintf(stderr, "error loading kjs module: %s\n", lt_dlerror());
+	return 0;
+      }
+      // look for plain C init function
+      lt_ptr_t sym = lt_dlsym(handle, "kjs_html_init");
+      if (lt_dlerror() != 0L)
+      {
+	fprintf(stderr, "error finding init symbol: %s\n", lt_dlerror());
+	return 0;
+      }
+
+      typedef KJSProxy* (*initFunction)(HTMLDocument);
+      initFunction initSym = (initFunction) sym;
+      _jscript = (*initSym)(htmlDocument());
     }
+
     return _jscript;
 }
 

@@ -59,7 +59,7 @@ namespace khtml {
 };
 
 // JScript class
-class KJScript;
+class KJSProxy;
 
 
 /**
@@ -584,7 +584,7 @@ public:
     /**
      * @return The JavaScript engine, or 0 if JScript is disabled.
      */
-    KJScript *jScript();
+    KJSProxy *jScript();
 
     /**
      * @return The job id of the @ref KIOJob responsible for loading the current
@@ -959,7 +959,8 @@ private:
     bool _javaEnabled;
     bool _jScriptEnabled;
 
-    KJScript *_jscript;
+    bool lt_dl_initialized;
+    KJSProxy *_jscript;
 
     int _marginWidth;
     int _marginHeight;
