@@ -2,7 +2,7 @@
 #define __kprotocolmanager_h__
 
 #include <qstring.h>
-#include <qvaluelist.h>
+#include <qstringlist.h>
 #include <qmap.h>
 
 class KProtocolManager
@@ -27,16 +27,16 @@ public:
 
   QStringList protocols() const;
   
-  int getReadTimeout() const;
-  bool getMarkPartial() const;
-  int getMinimumKeepSize() const;
-  bool getAutoResume() const;
-  bool getPersistent() const;
+  int readTimeout() const;
+  bool markPartial() const;
+  int minimumKeepSize() const;
+  bool autoResume() const;
+  bool persistentConnections() const;
 
-  bool getUseProxy() const;
-  QString getFtpProxy() const;
-  QString getHttpProxy() const;
-  QString getNoProxyFor() const;
+  bool useProxy() const;
+  QString ftpProxy() const;
+  QString httpProxy() const;
+  QString noProxyFor() const;
 
   /**
    * Sets timeout for read operations. This applies to ftp and http connections.
@@ -84,7 +84,7 @@ public:
    * Default value is true - keep persistent connections
    *
    */
-  void setPersistent( bool _mode );
+  void setPersistentConnections( bool _mode );
 
   /**
    * Set this flag if you want use proxies

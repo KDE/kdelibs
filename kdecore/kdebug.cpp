@@ -48,7 +48,7 @@ public:
 static QList<KDebugEntry> *KDebugCache;
 #define MAX_CACHE 20
 
-QString getDescrFromNum(unsigned short _num)
+static QString getDescrFromNum(unsigned short _num)
 {
   QString data, filename(KApplication::kde_configdir()+"/kdebug.areas");
   QFile file(filename);
@@ -122,12 +122,12 @@ QString getDescrFromNum(unsigned short _num)
 }
 
 void kdebug_null( ushort nLevel, ushort nArea, 
-                         const char* pFormat, ... )
+		  const char* pFormat, ... )
 {
-	return;
+  return;
 }
 
-int getNum (const char *key, int _default)
+static int getNum (const char *key, int _default)
 {
   if (kapp)
     return kapp->getConfig()->readNumEntry(key, _default);
@@ -135,7 +135,7 @@ int getNum (const char *key, int _default)
     return _default;
 }
 
-char * getString (const char *key, char * _default)
+static QString getString (const char *key, char * _default)
 {
   if (kapp)
     return kapp->getConfig()->readEntry(key, _default);
@@ -144,7 +144,7 @@ char * getString (const char *key, char * _default)
 }
 
 void kdebug( ushort nLevel, ushort nArea, 
-                         const char* pFormat, ... )
+	     const char* pFormat, ... )
 {
   // Save old grou
   QString aOldGroup;
@@ -160,10 +160,10 @@ void kdebug( ushort nLevel, ushort nArea,
   short nOutput = 0;
   int nPriority = 0; // for syslog
   QString aCaption;
-  QString aAppName = getDescrFromNum(nArea).copy();
+  QString aAppName = getDescrFromNum(nArea);
   if (aAppName.isEmpty() || aAppName.isNull()) {
     if (kapp)
-      aAppName=kapp->appName().copy();
+      aAppName=kapp->appName();
     else
       aAppName=strdup("unknown");
   }
@@ -171,24 +171,24 @@ void kdebug( ushort nLevel, ushort nArea,
         {
         case KDEBUG_INFO:
           nOutput = getNum( "InfoOutput", 2 );
-          aCaption = "Info (" + aAppName.copy() + ")";
+          aCaption = "Info (" + aAppName + ")";
           nPriority = LOG_INFO;
           break;
         case KDEBUG_WARN:
           nOutput = getNum( "WarnOutput", 2 );
-          aCaption = "Warning (" + aAppName.copy() + ")";
+          aCaption = "Warning (" + aAppName + ")";
           nPriority = LOG_WARNING;
           break;
         case KDEBUG_FATAL:
           nOutput = getNum( "FatalOutput", 2 );
-          aCaption = "Fatal Error (" + aAppName.copy() + ")";
+          aCaption = "Fatal Error (" + aAppName + ")";
           nPriority = LOG_CRIT;
           break;
         case KDEBUG_ERROR:
         default:
           /* Programmer error, use "Error" as default */
           nOutput = getNum( "ErrorOutput", 2 );
-          aCaption = "Error (" + aAppName.copy() + ")";
+          aCaption = "Error (" + aAppName + ")";
           nPriority = LOG_ERR;
           break;
         };

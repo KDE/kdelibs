@@ -1,6 +1,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.12  1999/03/01 23:33:23  kulow
+// CVS_SILENT ported to Qt 2.0
+//
 // Revision 1.11.2.2  1999/02/14 02:05:45  granroth
 // Converted a lot of 'const char*' to 'QString'.  This compiles... but
 // it's entirely possible that nothing will run linked to it :-P
@@ -45,7 +48,7 @@
 // new KConfig
 //
 //
-// (C) 1996-1998 by Matthias Kalle Dalheimer
+// (C) 1996-1999 by Matthias Kalle Dalheimer
 
 #ifndef _KCONFIGDATA_H
 #define _KCONFIGDATA_H
@@ -54,9 +57,9 @@
 #include <qtextstream.h> // QTextStream
 
 /**
-* Entry-dictionary entry.
-* @internal
-*/
+ * Entry-dictionary entry.
+ * @internal
+ */
 struct KEntryDictEntry
 {
   QString aValue;
@@ -71,17 +74,17 @@ typedef QDictIterator<KEntryDict> KGroupIterator;
 typedef QDictIterator<KEntryDictEntry> KEntryIterator;
 
 /**
-* Configuration data manager, used internally by KConfig.
-* @short Configuration data manager, used internally by KConfig.
-* @version $Id$
-* @author Matthias Kalle Dalheimer (kalle@kde.org)
-* @internal
-*/
+ * Configuration data manager, used internally by KConfig.
+ * @short Configuration data manager, used internally by KConfig.
+ * @version $Id$
+ * @author Matthias Kalle Dalheimer (kalle@kde.org)
+ * @internal
+ */
 class KConfigBaseData
 {
-friend class KConfig;
-friend class KConfigBase;
-friend class KSimpleConfig;
+  friend class KConfig;
+  friend class KConfigBase;
+  friend class KSimpleConfig;
 private:
   QCString aLocalAppFile;
   QCString aGlobalAppFile;
@@ -90,7 +93,7 @@ private:
   bool bDirty; // is there any entry that has to be written back to disk?
   bool bLocaleInitialized;
   bool bReadOnly; // currently only used by KSimpleConfig
-	bool bExpand; // whether dollar expansion is used
+  bool bExpand; // whether dollar expansion is used
 
   QDict<KEntryDict> aGroupDict;
 
@@ -106,9 +109,9 @@ public:
 };
 
 inline KConfigBaseData::KConfigBaseData() :
-    aGroup("<default>"), bDirty(false),
-    bLocaleInitialized(false), bReadOnly(false), bExpand( true ),
-	aGroupDict( 37, false )
+  aGroup("<default>"), bDirty(false),
+  bLocaleInitialized(false), bReadOnly(false), bExpand( true ),
+  aGroupDict( 37, false )
 {
   aGroupDict.setAutoDelete( true );
 }
@@ -118,8 +121,6 @@ inline KConfigBaseData::KConfigBaseData( const QString& pGlobalAppFile,
   aLocalAppFile(pLocalAppFile), aGlobalAppFile(pGlobalAppFile), 
   aGroup("<default>"), bDirty(false), 
   bLocaleInitialized(false), bReadOnly(false), aGroupDict( 37, false )
-#ifndef NDEBUG
-#endif
 {
   aGroupDict.setAutoDelete( true );
 }

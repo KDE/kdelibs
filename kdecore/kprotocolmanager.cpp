@@ -240,7 +240,7 @@ KProtocolManager::Type KProtocolManager::outputType( const QString& _protocol ) 
   return it.data().outputType;
 }
 
-int KProtocolManager::getReadTimeout() const
+int KProtocolManager::readTimeout() const
 {
   KConfig config(KApplication::kde_configdir() + "/kioslaverc",
 		 KApplication::localconfigdir() + "/kioslaverc" );
@@ -248,7 +248,7 @@ int KProtocolManager::getReadTimeout() const
   return config.readNumEntry( "ReadTimeout", 15 ); // 15 seconds
 }
 
-bool KProtocolManager::getMarkPartial() const
+bool KProtocolManager::markPartial() const
 {
   KConfig config(KApplication::kde_configdir() + "/kioslaverc",
 		 KApplication::localconfigdir() + "/kioslaverc" );
@@ -256,7 +256,7 @@ bool KProtocolManager::getMarkPartial() const
   return config.readBoolEntry( "MarkPartial", TRUE );
 }
 
-int KProtocolManager::getMinimumKeepSize() const
+int KProtocolManager::minimumKeepSize() const
 {
   KConfig config(KApplication::kde_configdir() + "/kioslaverc",
 		 KApplication::localconfigdir() + "/kioslaverc" );
@@ -264,7 +264,7 @@ int KProtocolManager::getMinimumKeepSize() const
   return config.readNumEntry( "MinimumKeepSize", 5000 ); // 5000 bytes
 }
 
-bool KProtocolManager::getAutoResume() const
+bool KProtocolManager::autoResume() const
 {
   KConfig config(KApplication::kde_configdir() + "/kioslaverc",
 		 KApplication::localconfigdir() + "/kioslaverc" );
@@ -272,7 +272,7 @@ bool KProtocolManager::getAutoResume() const
   return config.readBoolEntry( "AutoResume", FALSE );
 }
 
-bool KProtocolManager::getPersistent() const
+bool KProtocolManager::persistentConnections() const
 {
   KConfig config(KApplication::kde_configdir() + "/kioslaverc",
 		 KApplication::localconfigdir() + "/kioslaverc" );
@@ -280,7 +280,7 @@ bool KProtocolManager::getPersistent() const
   return config.readBoolEntry( "PersistentConnections", TRUE );
 }
 
-bool KProtocolManager::getUseProxy() const
+bool KProtocolManager::useProxy() const
 {
   KConfig config(KApplication::kde_configdir() + "/kioslaverc",
 		 KApplication::localconfigdir() + "/kioslaverc" );
@@ -288,7 +288,7 @@ bool KProtocolManager::getUseProxy() const
   return config.readBoolEntry( "UseProxy", false );
 }
 
-QString KProtocolManager::getFtpProxy() const
+QString KProtocolManager::ftpProxy() const
 {
   KConfig config(KApplication::kde_configdir() + "/kioslaverc",
 		 KApplication::localconfigdir() + "/kioslaverc" );
@@ -296,7 +296,7 @@ QString KProtocolManager::getFtpProxy() const
   return config.readEntry( "FtpProxy" );
 }
 
-QString KProtocolManager::getHttpProxy() const
+QString KProtocolManager::httpProxy() const
 {
   KConfig config(KApplication::kde_configdir() + "/kioslaverc",
 		  KApplication::localconfigdir() + "/kioslaverc" );
@@ -304,7 +304,7 @@ QString KProtocolManager::getHttpProxy() const
   return config.readEntry( "HttpProxy" );
 }
 
-QString KProtocolManager::getNoProxyFor() const
+QString KProtocolManager::noProxyFor() const
 {
   KConfig config(KApplication::kde_configdir() + "/kioslaverc",
 		  KApplication::localconfigdir() + "/kioslaverc" );
@@ -356,7 +356,7 @@ void KProtocolManager::setAutoResume( bool _mode )
 }
 
 
-void KProtocolManager::setPersistent( bool _mode )
+void KProtocolManager::setPersistentConnections( bool _mode )
 {
   KConfig config(KApplication::kde_configdir() + "/kioslaverc",
 		 KApplication::localconfigdir() + "/kioslaverc" );

@@ -600,7 +600,7 @@ QString KURL::join( const KURL::List & lst )
   return dest;
 }
 
-QString KURL::filename( bool _strip_trailing_slash )
+QString KURL::filename( bool _strip_trailing_slash ) const
 {
   QString fname;
 
@@ -652,7 +652,8 @@ void KURL::addPath( const QString& _txt )
   m_strPath += _txt.mid( i );
 }
 
-QString KURL::directory( bool _strip_trailing_slash_from_result, bool _ignore_trailing_slash_in_path )
+QString KURL::directory( bool _strip_trailing_slash_from_result,
+			 bool _ignore_trailing_slash_in_path ) const
 {
   QString result;
   if ( _ignore_trailing_slash_in_path )

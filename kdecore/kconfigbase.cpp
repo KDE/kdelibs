@@ -19,6 +19,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.43  1999/04/04 16:14:15  dfaure
+// Small fix for non-existent values in config file.
+// Testing if (!aValue) when aValue is a QString doesn't make much sense...
+//
 // Revision 1.42  1999/03/10 20:27:44  reiher
 // Return the default string instead of nothing if we have a key like "Icon="
 //
@@ -349,7 +353,7 @@ void KConfigBase::setGroup( const QString& pGroup )
 }
 
 
-const QString KConfigBase::group() const
+QString KConfigBase::group() const
 {
   static QString aEmptyStr = "";
   if( data()->aGroup == "<default>" )
@@ -359,8 +363,8 @@ const QString KConfigBase::group() const
 }
 
 
-const QString KConfigBase::readEntry( const QString& pKey, 
-				      const QString& pDefault ) const
+QString KConfigBase::readEntry( const QString& pKey, 
+				const QString& pDefault ) const
 {
   if( !data()->bLocaleInitialized && kapp && kapp->localeConstructed() ) 
       {
@@ -827,10 +831,10 @@ QColor KConfigBase::readColorEntry( const QString& pKey,
 }
 
 
-const QString KConfigBase::writeEntry( const QString& pKey, const QString& value,
-				     bool bPersistent, 
-				     bool bGlobal,
-				     bool bNLS )
+QString KConfigBase::writeEntry( const QString& pKey, const QString& value,
+				 bool bPersistent, 
+				 bool bGlobal,
+				 bool bNLS )
 {
   if( !data()->bLocaleInitialized && kapp && kapp->localeConstructed() )
     {
@@ -921,9 +925,9 @@ void KConfigBase::writeEntry ( const QString& pKey, QStrList &list,
 }
 
 
-const QString KConfigBase::writeEntry( const QString& pKey, int nValue,
-									 bool bPersistent, bool bGlobal,
-									 bool bNLS )
+QString KConfigBase::writeEntry( const QString& pKey, int nValue,
+				 bool bPersistent, bool bGlobal,
+				 bool bNLS )
 {
   QString aValue;
 
@@ -933,9 +937,9 @@ const QString KConfigBase::writeEntry( const QString& pKey, int nValue,
 }
 
 
-const QString KConfigBase::writeEntry( const QString& pKey, unsigned int nValue,
-									 bool bPersistent, bool bGlobal,
-									 bool bNLS )
+QString KConfigBase::writeEntry( const QString& pKey, unsigned int nValue,
+				 bool bPersistent, bool bGlobal,
+				 bool bNLS )
 {
   QString aValue;
 
@@ -945,9 +949,9 @@ const QString KConfigBase::writeEntry( const QString& pKey, unsigned int nValue,
 }
 
 
-const QString KConfigBase::writeEntry( const QString& pKey, long nValue,
-									 bool bPersistent, bool bGlobal,
-									 bool bNLS )
+QString KConfigBase::writeEntry( const QString& pKey, long nValue,
+				 bool bPersistent, bool bGlobal,
+				 bool bNLS )
 {
   QString aValue;
 
@@ -957,9 +961,9 @@ const QString KConfigBase::writeEntry( const QString& pKey, long nValue,
 }
 
 
-const QString KConfigBase::writeEntry( const QString& pKey, unsigned long nValue,
-									 bool bPersistent, bool bGlobal,
-									 bool bNLS )
+QString KConfigBase::writeEntry( const QString& pKey, unsigned long nValue,
+				 bool bPersistent, bool bGlobal,
+				 bool bNLS )
 {
   QString aValue;
 
@@ -969,9 +973,9 @@ const QString KConfigBase::writeEntry( const QString& pKey, unsigned long nValue
 }
 
 
-const QString KConfigBase::writeEntry( const QString& pKey, double nValue,
-									 bool bPersistent, bool bGlobal,
-									 bool bNLS )
+QString KConfigBase::writeEntry( const QString& pKey, double nValue,
+				 bool bPersistent, bool bGlobal,
+				 bool bNLS )
 {
   QString aValue;
 
@@ -981,10 +985,10 @@ const QString KConfigBase::writeEntry( const QString& pKey, double nValue,
 }
 
 
-const QString KConfigBase::writeEntry( const QString& pKey, bool bValue,
-									 bool bPersistent, 
-									 bool bGlobal,
-									 bool bNLS )
+QString KConfigBase::writeEntry( const QString& pKey, bool bValue,
+				 bool bPersistent, 
+				 bool bGlobal,
+				 bool bNLS )
 {
   QString aValue;
 
@@ -997,9 +1001,9 @@ const QString KConfigBase::writeEntry( const QString& pKey, bool bValue,
 }
 
 
-const QString KConfigBase::writeEntry( const QString& pKey, const QFont& rFont, 
-									 bool bPersistent, bool bGlobal,
-									 bool bNLS )
+QString KConfigBase::writeEntry( const QString& pKey, const QFont& rFont, 
+				 bool bPersistent, bool bGlobal,
+				 bool bNLS )
 {
   QString aValue;
   QString aCharset;

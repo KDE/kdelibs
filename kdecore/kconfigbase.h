@@ -19,6 +19,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.18  1999/04/04 16:14:17  dfaure
+// Small fix for non-existent values in config file.
+// Testing if (!aValue) when aValue is a QString doesn't make much sense...
+//
 // Revision 1.17  1999/03/09 23:38:17  kulow
 // moved the QString wrapper to the header file as inline function
 //
@@ -148,188 +152,190 @@ private:
 
 protected:
   /**
-	* Access to the configuration data.
-	*
-	* @return a pointer to the configuration base data
-	*/
+   * Access to the configuration data.
+   *
+   * @return a pointer to the configuration base data
+   */
   KConfigBaseData* data() const { return pData; }
 
   /**
-	* Read the locale and put in the configuration data struct.
-	* Note: This should be done in the constructor, but this is not
-	* possible due to some mutual dependencies in KApplication::init()
-	*/
+   * Read the locale and put in the configuration data struct.
+   * Note: This should be done in the constructor, but this is not
+   * possible due to some mutual dependencies in KApplication::init()
+   */
   void setLocale();
 
-  /** Parse all configuration files for a configuration object.
-	*
-	* This method must be reimplemented by the derived classes. It
-	*  should go through the list of appropriate files for a
-	* configuration object, open the files and call
-	* parseOneConfigFile() for each one of them.
-	*/
+  /**
+   * Parse all configuration files for a configuration object.
+   *
+   * This method must be reimplemented by the derived classes. It
+   *  should go through the list of appropriate files for a
+   * configuration object, open the files and call
+   * parseOneConfigFile() for each one of them.
+   */
   virtual void parseConfigFiles() = 0;
 
-  /** Parse one configuration file.
-	*
-	* This method contains the actual configuration file parser. It
-	* can overridden by derived classes for specific parsing
-	* needs. For normal use, this should not be necessary.
-	*	
-	* @param rFile The configuration file to parse
-	* @param pGroup
-	* @param bGlobal
-	*/
+  /**
+   * Parse one configuration file.
+   *
+   * This method contains the actual configuration file parser. It
+   * can overridden by derived classes for specific parsing
+   * needs. For normal use, this should not be necessary.
+   *	
+   * @param rFile The configuration file to parse
+   * @param pGroup
+   * @param bGlobal
+   */
   virtual void parseOneConfigFile( QFile& rFile,
-								   KGroupDict* pGroup = 0L,
-								   bool bGlobal = false );
-
-  /** Write configuration file back.
-	*
-	* This method must be reimplemented by derived classes. It should
-	* dump the data of the configuration object to the appropriate
-	* files.
-	*
-	* @param rFile The file to write
-	* @param bGlobal Should the data be saved to a global file
-	* @return Whether some entries are left to be written to other
-	*  files.
-	*/
+				   KGroupDict* pGroup = 0L,
+				   bool bGlobal = false );
+  
+  /**
+   * Write configuration file back.
+   *
+   * This method must be reimplemented by derived classes. It should
+   * dump the data of the configuration object to the appropriate
+   * files.
+   *
+   * @param rFile The file to write
+   * @param bGlobal Should the data be saved to a global file
+   * @return Whether some entries are left to be written to other
+   *  files.
+   */
   virtual bool writeConfigFile( QFile& rFile, bool bGlobal = false ) = 0;
 
 public:
   /**
-	* Construct a KConfigBase object.
-	*/
+   * Construct a KConfigBase object.
+   */
   KConfigBase();
 
   /**
-	* Destructor.
-	*
-	* Writes back any dirty configuration entries.
-	*/
+   * Destructor.
+   *
+   * Writes back any dirty configuration entries.
+   */
   virtual ~KConfigBase();
 
   /**
-	* Specify the group in which keys will be searched.
-	*
-	* Switch back to the default group by passing an empty string.
-	*  @param pGroup The name of the new group.
-	*/
+   * Specify the group in which keys will be searched.
+   *
+   * Switch back to the default group by passing an empty string.
+   *  @param pGroup The name of the new group.
+   */
   void setGroup( const QString& pGroup );
 
   /**
-	* Retrieve the group where keys are currently searched in.
-	*
-	* @return The current group
-	*/
-  const QString group() const;
+   * Retrieve the group where keys are currently searched in.
+   *
+   * @return The current group
+   */
+  QString group() const;
 
   /**
-	* Retrieve the group where keys are currently searched in. Note:
-	* this method is deprecated; use KConfigBase::group() instead.
-	*
-	* @return The current group
-	*/
-  const QString getGroup() const { debug( "KConfigBase::getGroup() is deprecated, use KConfigBase::group() instead" );
+   * Retrieve the group where keys are currently searched in. Note:
+   * this method is deprecated; use KConfigBase::group() instead.
+   *
+   * @return The current group
+   */
+  QString getGroup() const { debug( "KConfigBase::getGroup() is deprecated, use KConfigBase::group() instead" );
   return group(); }
 
   /**
-	* Read the value of an entry specified by rKey in the current group
-	*
-	* @param pKey	The key to search for.
-	* @param pDefault A default value returned if the key was not found.
-	* @return The value for this key or a null string if no value
-	*	  was found.
-	*/
-  const QString readEntry( const QString& pKey,
-						 const QString& pDefault = QString::null ) const;
+   * Read the value of an entry specified by rKey in the current group
+   *
+   * @param pKey	The key to search for.
+   * @param pDefault A default value returned if the key was not found.
+   * @return The value for this key or a null string if no value
+   *	  was found.
+   */
+  QString readEntry( const QString& pKey,
+		     const QString& pDefault = QString::null ) const;
 
   /**
-	* Read a list of strings.
-	*
-	* @param pKey The key to search for
-	* @param list In this object, the read list will be returned.
-	* @param sep  The list separator (default ",")
-	* @return The number of entries in the list.
-	*/
+   * Read a list of strings.
+   *
+   * @param pKey The key to search for
+   * @param list In this object, the read list will be returned.
+   * @param sep  The list separator (default ",")
+   * @return The number of entries in the list.
+   */
   int readListEntry( const QString& pKey, QStrList &list,
-					 char sep = ',' ) const;
+		     char sep = ',' ) const;
 
   /**
-	* Read a numerical value.
-	*
-	* Read the value of an entry specified by rKey in the current group
-	* and interpret it numerically.
-	*
-	* @param pKey The key to search for.
-	* @param nDefault A default value returned if the key was not found.
-	* @return The value for this key or 0 if no value was found.
-	*/
+   * Read a numerical value.
+   *
+   * Read the value of an entry specified by rKey in the current group
+   * and interpret it numerically.
+   *
+   * @param pKey The key to search for.
+   * @param nDefault A default value returned if the key was not found.
+   * @return The value for this key or 0 if no value was found.
+   */
   int readNumEntry( const QString& pKey, int nDefault = 0 ) const;
 
   /**
-	* Read a numerical value.
-	*
-	* Read the value of an entry specified by rKey in the current group
-	* and interpret it numerically.
-	*
-	* @param pKey The key to search for.
-	* @param nDefault A default value returned if the key was not found.
-	* @return The value for this key or 0 if no value was found.
-	*/
+   * Read a numerical value.
+   *
+   * Read the value of an entry specified by rKey in the current group
+   * and interpret it numerically.
+   *
+   * @param pKey The key to search for.
+   * @param nDefault A default value returned if the key was not found.
+   * @return The value for this key or 0 if no value was found.
+   */
   unsigned int readUnsignedNumEntry( const QString& pKey,
-									 unsigned int nDefault = 0 ) const;
+				     unsigned int nDefault = 0 ) const;
   /**
-	* Read a numerical value.
-	*
-	* Read the value of an entry specified by rKey in the current group
-	* and interpret it numerically.
-	*
-	* @param pKey The key to search for.
-	* @param nDefault A default value returned if the key was not found.
-	* @return The value for this key or 0 if no value was found.
-	*/
+   * Read a numerical value.
+   *
+   * Read the value of an entry specified by rKey in the current group
+   * and interpret it numerically.
+   *
+   * @param pKey The key to search for.
+   * @param nDefault A default value returned if the key was not found.
+   * @return The value for this key or 0 if no value was found.
+   */
   long readLongNumEntry( const QString& pKey, long nDefault = 0 ) const;
 
   /**
-	* Read a numerical value.
-	*
-	* Read the value of an entry specified by rKey in the current group
-	* and interpret it numerically.
-	*
-	* @param pKey The key to search for.
-	* @param nDefault A default value returned if the key was not found.
-	* @return The value for this key or 0 if no value was found.
-	*/
+   * Read a numerical value.
+   *
+   * Read the value of an entry specified by rKey in the current group
+   * and interpret it numerically.
+   *
+   * @param pKey The key to search for.
+   * @param nDefault A default value returned if the key was not found.
+   * @return The value for this key or 0 if no value was found.
+   */
   unsigned long readUnsignedLongNumEntry( const QString& pKey,
-										  unsigned long nDefault = 0 ) const;
-
+					  unsigned long nDefault = 0 ) const;
 
   /**
-	* Read a numerical value.
-	*
-	* Read the value of an entry specified by rKey in the current group
-	* and interpret it numerically.
-	*
-	* @param pKey The key to search for.
-	* @param nDefault A default value returned if the key was not found.
-	* @return The value for this key or 0 if no value was found.
-	*/
+   * Read a numerical value.
+   *
+   * Read the value of an entry specified by rKey in the current group
+   * and interpret it numerically.
+   *
+   * @param pKey The key to search for.
+   * @param nDefault A default value returned if the key was not found.
+   * @return The value for this key or 0 if no value was found.
+   */
   double readDoubleNumEntry( const QString& pKey, double nDefault = 0.0 ) const;
 
   /**
-	* Read a QFont.
-	*
-	* Read the value of an entry specified by rKey in the current group
-	* and interpret it as a font object.
-	*
-	* @param pKey		The key to search for.
-	* @param pDefault	A default value returned if the key was not found.
-	* @return The value for this key or a default font if no value was found.
-	*/
+   * Read a QFont.
+   *
+   * Read the value of an entry specified by rKey in the current group
+   * and interpret it as a font object.
+   *
+   * @param pKey		The key to search for.
+   * @param pDefault	A default value returned if the key was not found.
+   * @return The value for this key or a default font if no value was found.
+   */
   QFont readFontEntry( const QString& pKey,
-					   const QFont* pDefault = 0L ) const;
+		       const QFont* pDefault = 0L ) const;
 
   /**
    * Read a boolean entry.
@@ -393,338 +399,355 @@ public:
 
 
   /**
-	* Read a QColor.
-	*
-	* Read the value of an entry specified by rKey in the current group
-	* and interpret it as a color.
-	*
-	* @param pKey		The key to search for.
-	* @param pDefault	A default value returned if the key was not found.
-	* @return The value for this key or a default color if no value
-	* was found.
-	*/
+   * Read a QColor.
+   *
+   * Read the value of an entry specified by rKey in the current group
+   * and interpret it as a color.
+   *
+   * @param pKey		The key to search for.
+   * @param pDefault	A default value returned if the key was not found.
+   * @return The value for this key or a default color if no value
+   * was found.
+   */
   QColor readColorEntry( const QString& pKey,
-						 const QColor* pDefault = 0L ) const;
-
-  /** Write the key/value pair.
-	*
-	* This is stored to the most specific config file when destroying the
-	* config object or when calling sync().
-	*
-	*  @param pKey		The key to write.
-	*  @param pValue	The value to write.
-	*  @param bPersistent	If bPersistent is false, the entry's dirty
-	*			flag will not be set and thus the entry will
-	*			not be written to disk at deletion time.
-	*  @param bGlobal	If bGlobal is true, the pair is not saved to the
-	*   application specific config file, but to the global ~/.kderc
-	*  @param bNLS	If bNLS is true, the locale tag is added to the key
-	*   when writing it back.
-	*  @return The old value for this key. If this key did not
-	*   exist, a null string is returned.	
-*/
-  const QString writeEntry( const QString& pKey, const QString& pValue,
-			  bool bPersistent = true, bool bGlobal = false,
-			  bool bNLS = false );
+			 const QColor* pDefault = 0L ) const;
 
   /**
-	* writeEntry() overriden to accept a list of strings.
-	*
-	* Note: Unlike the other writeEntry() functions, the old value is
-	* _not_ returned here!
-	*
-	* @param pKey		The key to write
-	* @param list		The list to write
-	* @param sep		The list separator
-	* @param bPersistent	If bPersistent is false, the entry's dirty flag
-	*			will not be set and thus the entry will not be
-	*			written to disk at deletion time.
-	* @param bGlobal	If bGlobal is true, the pair is not saved to the
-	*  application specific config file, but to the global ~/.kderc
-	* @param bNLS	If bNLS is true, the locale tag is added to the key
-	*  when writing it back.
-	*
-	* @see #writeEntry
-	*/
+   * Write the key/value pair.
+   *
+   * This is stored to the most specific config file when destroying the
+   * config object or when calling sync().
+   *
+   *  @param pKey		The key to write.
+   *  @param pValue	The value to write.
+   *  @param bPersistent	If bPersistent is false, the entry's dirty
+   *			flag will not be set and thus the entry will
+   *			not be written to disk at deletion time.
+   *  @param bGlobal	If bGlobal is true, the pair is not saved to the
+   *   application specific config file, but to the global ~/.kderc
+   *  @param bNLS	If bNLS is true, the locale tag is added to the key
+   *   when writing it back.
+   *  @return The old value for this key. If this key did not
+   *   exist, a null string is returned.	
+   */
+  QString writeEntry( const QString& pKey, const QString& pValue,
+		      bool bPersistent = true, bool bGlobal = false,
+		      bool bNLS = false );
+
+  /**
+   * writeEntry() overriden to accept a list of strings.
+   *
+   * Note: Unlike the other writeEntry() functions, the old value is
+   * _not_ returned here!
+   *
+   * @param pKey		The key to write
+   * @param list		The list to write
+   * @param sep		The list separator
+   * @param bPersistent	If bPersistent is false, the entry's dirty flag
+   *			will not be set and thus the entry will not be
+   *			written to disk at deletion time.
+   * @param bGlobal	If bGlobal is true, the pair is not saved to the
+   *  application specific config file, but to the global ~/.kderc
+   * @param bNLS	If bNLS is true, the locale tag is added to the key
+   *  when writing it back.
+   *
+   * @see #writeEntry
+   */
   void writeEntry ( const QString& pKey, QStrList &list, char sep = ',',
-					bool bPersistent = true, bool bGlobal = false,
-					bool bNLS = false );
+		    bool bPersistent = true, bool bGlobal = false,
+		    bool bNLS = false );
+  
+  /**
+   * Write the key/value pair.
+   *
+   * This is stored to the most specific config file when destroying the
+   * config object or when calling sync().
+   *
+   *  @param pKey		The key to write.
+   *  @param pValue	The value to write.
+   *  @param bPersistent	If bPersistent is false, the entry's dirty
+   *			flag will not be set and thus the entry will
+   *			not be written to disk at deletion time.
+   *  @param bGlobal	If bGlobal is true, the pair is not saved to the
+   *   application specific config file, but to the global ~/.kderc
+   *  @param bNLS	If bNLS is true, the locale tag is added to the key
+   *   when writing it back.
+   *  @return The old value for this key. If this key did not
+   *   exist, a null string is returned.	
+   */
+  QString writeEntry( const QString& pKey, const char *pValue,
+		      bool bPersistent = true, bool bGlobal = false,
+		      bool bNLS = false );
+  
+  /**
+   * Write the key value pair.
+   * Same as above, but write a numerical value.
+   * @param pKey The key to write.
+   * @param nValue The value to write.
+   * @param bPersistent If bPersistent is false, the entry's dirty
+   * flag will not be set and thus the entry will not be written to
+   * disk at deletion time.
+   * @param bGlobal	If bGlobal is true, the pair is not saved to the
+   *  application specific config file, but to the global ~/.kderc
+   * @param bNLS	If bNLS is true, the locale tag is added to the key
+   *  when writing it back.
+   * @return The old value for this key. If this key did not
+   * exist, a null string is returned.	
+   */
+  QString writeEntry( const QString& pKey, int nValue,
+		      bool bPersistent = true, bool bGlobal = false,
+		      bool bNLS = false );
+  
+  /**
+   * Write the key value pair.
+   * Same as above, but write an unsigned numerical value.
+   * @param pKey The key to write.
+   * @param nValue The value to write.
+   * @param bPersistent If bPersistent is false, the entry's dirty
+   * flag will not be set and thus the entry will not be written to
+   * disk at deletion time.
+   * @param bGlobal	If bGlobal is true, the pair is not saved to the
+   *  application specific config file, but to the global ~/.kderc
+   * @param bNLS	If bNLS is true, the locale tag is added to the key
+   *  when writing it back.
+   * @return The old value for this key. If this key did not
+   * exist, a null string is returned.	
+   */
+  QString writeEntry( const QString& pKey, unsigned int nValue,
+		      bool bPersistent = true, bool bGlobal = false,
+		      bool bNLS = false );
 
-  /** Write the key/value pair.
-	*
-	* This is stored to the most specific config file when destroying the
-	* config object or when calling sync().
-	*
-	*  @param pKey		The key to write.
-	*  @param pValue	The value to write.
-	*  @param bPersistent	If bPersistent is false, the entry's dirty
-	*			flag will not be set and thus the entry will
-	*			not be written to disk at deletion time.
-	*  @param bGlobal	If bGlobal is true, the pair is not saved to the
-	*   application specific config file, but to the global ~/.kderc
-	*  @param bNLS	If bNLS is true, the locale tag is added to the key
-	*   when writing it back.
-	*  @return The old value for this key. If this key did not
-	*   exist, a null string is returned.	
-        */
-  const QString writeEntry( const QString& pKey, const char *pValue,
-                                                 bool bPersistent = true, bool bGlobal = false,
-                                                 bool bNLS = false );
+  /**
+   * Write the key value pair.
+   * Same as above, but write a long numerical value.
+   * @param pKey The key to write.
+   * @param nValue The value to write.
+   * @param bPersistent If bPersistent is false, the entry's dirty
+   * flag will not be set and thus the entry will not be written to
+   * disk at deletion time.
+   * @param bGlobal	If bGlobal is true, the pair is not saved to the
+   *  application specific config file, but to the global ~/.kderc
+   * @param bNLS	If bNLS is true, the locale tag is added to the key
+   *  when writing it back.
+   * @return The old value for this key. If this key did not
+   * exist, a null string is returned.	
+   */
+  QString writeEntry( const QString& pKey, long nValue,
+		      bool bPersistent = true, bool bGlobal = false,
+		      bool bNLS = false );
 
+  /**
+   * Write the key value pair.
+   * Same as above, but write an unsigned long numerical value.
+   * @param pKey The key to write.
+   * @param nValue The value to write.
+   * @param bPersistent If bPersistent is false, the entry's dirty
+   * flag will not be set and thus the entry will not be written to
+   * disk at deletion time.
+   * @param bGlobal	If bGlobal is true, the pair is not saved to the
+   *  application specific config file, but to the global ~/.kderc
+   * @param bNLS	If bNLS is true, the locale tag is added to the key
+   *  when writing it back.
+   * @return The old value for this key. If this key did not
+   * exist, a null string is returned.	
+   */
+  QString writeEntry( const QString& pKey, unsigned long nValue,
+		      bool bPersistent = true, bool bGlobal = false,
+		      bool bNLS = false );
 
-      /** Write the key value pair.
-	* Same as above, but write a numerical value.
-	* @param pKey The key to write.
-	* @param nValue The value to write.
-	* @param bPersistent If bPersistent is false, the entry's dirty
-	* flag will not be set and thus the entry will not be written to
-	* disk at deletion time.
-	* @param bGlobal	If bGlobal is true, the pair is not saved to the
-	*  application specific config file, but to the global ~/.kderc
-	* @param bNLS	If bNLS is true, the locale tag is added to the key
-	*  when writing it back.
-	* @return The old value for this key. If this key did not
-	* exist, a null string is returned.	
-	*/
-  const QString writeEntry( const QString& pKey, int nValue,
-						  bool bPersistent = true, bool bGlobal = false,
-						  bool bNLS = false );
+  /**
+   * Write the key value pair.
+   * Same as above, but write a floating-point value.
+   * @param pKey The key to write.
+   * @param nValue The value to write.
+   * @param bPersistent If bPersistent is false, the entry's dirty
+   * flag will not be set and thus the entry will not be written to
+   * disk at deletion time.
+   * @param bGlobal	If bGlobal is true, the pair is not saved to the
+   *  application specific config file, but to the global ~/.kderc
+   * @param bNLS	If bNLS is true, the locale tag is added to the key
+   *  when writing it back.
+   * @return The old value for this key. If this key did not
+   * exist, a null string is returned.	
+   */
+  QString writeEntry( const QString& pKey, double nValue,
+		      bool bPersistent = true, bool bGlobal = false,
+		      bool bNLS = false );
 
-  /** Write the key value pair.
-	* Same as above, but write an unsigned numerical value.
-	* @param pKey The key to write.
-	* @param nValue The value to write.
-	* @param bPersistent If bPersistent is false, the entry's dirty
-	* flag will not be set and thus the entry will not be written to
-	* disk at deletion time.
-	* @param bGlobal	If bGlobal is true, the pair is not saved to the
-	*  application specific config file, but to the global ~/.kderc
-	* @param bNLS	If bNLS is true, the locale tag is added to the key
-	*  when writing it back.
-	* @return The old value for this key. If this key did not
-	* exist, a null string is returned.	
-	*/
-  const QString writeEntry( const QString& pKey, unsigned int nValue,
-						  bool bPersistent = true, bool bGlobal = false,
-						  bool bNLS = false );
+  /**
+   * Write the key value pair.
+   * Same as above, but write a boolean value.
+   * @param pKey The key to write.
+   * @param bValue The value to write.
+   * @param bPersistent If bPersistent is false, the entry's dirty
+   * flag will not be set and thus the entry will not be written to
+   * disk at deletion time.
+   * @param bGlobal	If bGlobal is true, the pair is not saved to the
+   *  application specific config file, but to the global ~/.kderc
+   * @param bNLS	If bNLS is true, the locale tag is added to the key
+   *  when writing it back.
+   * @return The old value for this key. If this key did not
+   * exist, a null string is returned.	
+   */
+  QString writeEntry( const QString& pKey, bool bValue,
+		      bool bPersistent = true, bool bGlobal = false,
+		      bool bNLS = false );
 
-  /** Write the key value pair.
-	* Same as above, but write a long numerical value.
-	* @param pKey The key to write.
-	* @param nValue The value to write.
-	* @param bPersistent If bPersistent is false, the entry's dirty
-	* flag will not be set and thus the entry will not be written to
-	* disk at deletion time.
-	* @param bGlobal	If bGlobal is true, the pair is not saved to the
-	*  application specific config file, but to the global ~/.kderc
-	* @param bNLS	If bNLS is true, the locale tag is added to the key
-	*  when writing it back.
-	* @return The old value for this key. If this key did not
-	* exist, a null string is returned.	
-	*/
-  const QString writeEntry( const QString& pKey, long nValue,
-						  bool bPersistent = true, bool bGlobal = false,
-						  bool bNLS = false );
+  /**
+   * Write the key value pair.
+   * Same as above, but write a font
+   * @param pKey The key to write.
+   * @param rFont The font value to write.
+   * @param bPersistent If bPersistent is false, the entry's dirty
+   * flag will not be set and thus the entry will not be written to
+   * disk at deletion time.
+   * @param bGlobal	If bGlobal is true, the pair is not saved to the
+   *  application specific config file, but to the global ~/.kderc
+   * @param bNLS	If bNLS is true, the locale tag is added to the key
+   *  when writing it back.
+   * @return The old value for this key. If this key did not
+   * exist, a null string is returned.	
+   */
+  QString writeEntry( const QString& pKey, const QFont& rFont,
+		      bool bPersistent = true, bool bGlobal = false,
+		      bool bNLS = false );
 
-  /** Write the key value pair.
-	* Same as above, but write an unsigned long numerical value.
-	* @param pKey The key to write.
-	* @param nValue The value to write.
-	* @param bPersistent If bPersistent is false, the entry's dirty
-	* flag will not be set and thus the entry will not be written to
-	* disk at deletion time.
-	* @param bGlobal	If bGlobal is true, the pair is not saved to the
-	*  application specific config file, but to the global ~/.kderc
-	* @param bNLS	If bNLS is true, the locale tag is added to the key
-	*  when writing it back.
-	* @return The old value for this key. If this key did not
-	* exist, a null string is returned.	
-	*/
-  const QString writeEntry( const QString& pKey, unsigned long nValue,
-						  bool bPersistent = true, bool bGlobal = false,
-						  bool bNLS = false );
-
-  /** Write the key value pair.
-	* Same as above, but write a floating-point value.
-	* @param pKey The key to write.
-	* @param nValue The value to write.
-	* @param bPersistent If bPersistent is false, the entry's dirty
-	* flag will not be set and thus the entry will not be written to
-	* disk at deletion time.
-	* @param bGlobal	If bGlobal is true, the pair is not saved to the
-	*  application specific config file, but to the global ~/.kderc
-	* @param bNLS	If bNLS is true, the locale tag is added to the key
-	*  when writing it back.
-	* @return The old value for this key. If this key did not
-	* exist, a null string is returned.	
-	*/
-  const QString writeEntry( const QString& pKey, double nValue,
-						  bool bPersistent = true, bool bGlobal = false,
-						  bool bNLS = false );
-
-  /** Write the key value pair.
-	* Same as above, but write a boolean value.
-	* @param pKey The key to write.
-	* @param bValue The value to write.
-	* @param bPersistent If bPersistent is false, the entry's dirty
-	* flag will not be set and thus the entry will not be written to
-	* disk at deletion time.
-	* @param bGlobal	If bGlobal is true, the pair is not saved to the
-	*  application specific config file, but to the global ~/.kderc
-	* @param bNLS	If bNLS is true, the locale tag is added to the key
-	*  when writing it back.
-	* @return The old value for this key. If this key did not
-	* exist, a null string is returned.	
-	*/
-  const QString writeEntry( const QString& pKey, bool bValue,
-						  bool bPersistent = true, bool bGlobal = false,
-						  bool bNLS = false );
-
-  /** Write the key value pair.
-	* Same as above, but write a font
-	* @param pKey The key to write.
-	* @param rFont The font value to write.
-	* @param bPersistent If bPersistent is false, the entry's dirty
-	* flag will not be set and thus the entry will not be written to
-	* disk at deletion time.
-	* @param bGlobal	If bGlobal is true, the pair is not saved to the
-	*  application specific config file, but to the global ~/.kderc
-	* @param bNLS	If bNLS is true, the locale tag is added to the key
-	*  when writing it back.
-	* @return The old value for this key. If this key did not
-	* exist, a null string is returned.	
-	*/
-  const QString writeEntry( const QString& pKey, const QFont& rFont,
-						  bool bPersistent = true, bool bGlobal = false,
-						  bool bNLS = false );
-
-  /** Write the key value pair.
-	* Same as above, but write a color
-	* @param pKey The key to write.
-	* @param rValue The color value to write.
-	* @param bPersistent If bPersistent is false, the entry's dirty
-	* flag will not be set and thus the entry will not be written to
-	* disk at deletion time.
-	* @param bGlobal	If bGlobal is true, the pair is not saved to the
-	*  application specific config file, but to the global ~/.kderc
-	* @param bNLS	If bNLS is true, the locale tag is added to the key
-	*  when writing it back.
-	* @return The old value for this key. If this key did not
-	*  exist, a null string is returned.	
-	*/
+  /**
+   * Write the key value pair.
+   * Same as above, but write a color
+   * @param pKey The key to write.
+   * @param rValue The color value to write.
+   * @param bPersistent If bPersistent is false, the entry's dirty
+   * flag will not be set and thus the entry will not be written to
+   * disk at deletion time.
+   * @param bGlobal	If bGlobal is true, the pair is not saved to the
+   *  application specific config file, but to the global ~/.kderc
+   * @param bNLS	If bNLS is true, the locale tag is added to the key
+   *  when writing it back.
+   * @return The old value for this key. If this key did not
+   *  exist, a null string is returned.	
+   */
   void writeEntry( const QString& pKey, const QColor& rColor,
-				   bool bPersistent = true, bool bGlobal = false,
-				   bool bNLS = false );
+		   bool bPersistent = true, bool bGlobal = false,
+		   bool bNLS = false );
 
-  /** Write the key value pair.
-	* Same as above, but write a rectangle
-	* @param pKey The key to write.
-	* @param rValue The rectangle value to write.
-	* @param bPersistent If bPersistent is false, the entry's dirty
-	* flag will not be set and thus the entry will not be written to
-	* disk at deletion time.
-	* @param bGlobal	If bGlobal is true, the pair is not saved to the
-	*  application specific config file, but to the global ~/.kderc
-	* @param bNLS	If bNLS is true, the locale tag is added to the key
-	*  when writing it back.
-	* @return The old value for this key. If this key did not
-	*  exist, a null string is returned.	
-	*/
+  /**
+   * Write the key value pair.
+   * Same as above, but write a rectangle
+   * @param pKey The key to write.
+   * @param rValue The rectangle value to write.
+   * @param bPersistent If bPersistent is false, the entry's dirty
+   * flag will not be set and thus the entry will not be written to
+   * disk at deletion time.
+   * @param bGlobal	If bGlobal is true, the pair is not saved to the
+   *  application specific config file, but to the global ~/.kderc
+   * @param bNLS	If bNLS is true, the locale tag is added to the key
+   *  when writing it back.
+   * @return The old value for this key. If this key did not
+   *  exist, a null string is returned.	
+   */
   void writeEntry( const QString& pKey, const QRect& rColor,
-				   bool bPersistent = true, bool bGlobal = false,
-				   bool bNLS = false );
+		   bool bPersistent = true, bool bGlobal = false,
+		   bool bNLS = false );
 
-  /** Write the key value pair.
-	* Same as above, but write a point
-	* @param pKey The key to write.
-	* @param rValue The point value to write.
-	* @param bPersistent If bPersistent is false, the entry's dirty
-	* flag will not be set and thus the entry will not be written to
-	* disk at deletion time.
-	* @param bGlobal	If bGlobal is true, the pair is not saved to the
-	*  application specific config file, but to the global ~/.kderc
-	* @param bNLS	If bNLS is true, the locale tag is added to the key
-	*  when writing it back.
-	* @return The old value for this key. If this key did not
-	*  exist, a null string is returned.	
-	*/
+  /**
+   * Write the key value pair.
+   * Same as above, but write a point
+   * @param pKey The key to write.
+   * @param rValue The point value to write.
+   * @param bPersistent If bPersistent is false, the entry's dirty
+   * flag will not be set and thus the entry will not be written to
+   * disk at deletion time.
+   * @param bGlobal	If bGlobal is true, the pair is not saved to the
+   *  application specific config file, but to the global ~/.kderc
+   * @param bNLS	If bNLS is true, the locale tag is added to the key
+   *  when writing it back.
+   * @return The old value for this key. If this key did not
+   *  exist, a null string is returned.	
+   */
   void writeEntry( const QString& pKey, const QPoint& rColor,
-						  bool bPersistent = true, bool bGlobal = false,
-						  bool bNLS = false );
+		   bool bPersistent = true, bool bGlobal = false,
+		   bool bNLS = false );
 
-  /** Write the key value pair.
-	* Same as above, but write a size
-	* @param pKey The key to write.
-	* @param rValue The size value to write.
-	* @param bPersistent If bPersistent is false, the entry's dirty
-	* flag will not be set and thus the entry will not be written to
-	* disk at deletion time.
-	* @param bGlobal	If bGlobal is true, the pair is not saved to the
-	*  application specific config file, but to the global ~/.kderc
-	* @param bNLS	If bNLS is true, the locale tag is added to the key
-	*  when writing it back.
-	* @return The old value for this key. If this key did not
-	*  exist, a null string is returned.	
-	*/
+  /**
+   * Write the key value pair.
+   * Same as above, but write a size
+   * @param pKey The key to write.
+   * @param rValue The size value to write.
+   * @param bPersistent If bPersistent is false, the entry's dirty
+   * flag will not be set and thus the entry will not be written to
+   * disk at deletion time.
+   * @param bGlobal	If bGlobal is true, the pair is not saved to the
+   *  application specific config file, but to the global ~/.kderc
+   * @param bNLS	If bNLS is true, the locale tag is added to the key
+   *  when writing it back.
+   * @return The old value for this key. If this key did not
+   *  exist, a null string is returned.	
+   */
   void writeEntry( const QString& pKey, const QSize& rColor,
-						  bool bPersistent = true, bool bGlobal = false,
-						  bool bNLS = false );
-  //}
+		   bool bPersistent = true, bool bGlobal = false,
+		   bool bNLS = false );
 
-
-	/** Turns on or off "dollar expansion" when reading config entries.
-	 *	@param bExpand if true, dollar expansion is turned on.
-	 */
-	void setDollarExpansion( bool bExpand = true );
-
-	/** Returns whether dollar expansion is on or off.
-	 *	@return true if dollar expansion is on.
-	 */
-	bool isDollarExpansion() const;
-
-  /** Don't write dirty entries at destruction time. If bDeep is
-	* false, only the global dirty flag of the KConfig object gets
-	* cleared. If you then call writeEntry again, the global dirty flag
-	* is set again and all dirty entries will be written.
-	* @param bDeep if
-	* true, the dirty flags of all entries are cleared, as well as the
-	* global dirty flag.
-	*/
+  /** Turns on or off "dollar expansion" when reading config entries.
+   *	@param bExpand if true, dollar expansion is turned on.
+   */
+  void setDollarExpansion( bool bExpand = true );
+  
+  /** Returns whether dollar expansion is on or off.
+   *	@return true if dollar expansion is on.
+   */
+  bool isDollarExpansion() const;
+  
+  /**
+   * Don't write dirty entries at destruction time. If bDeep is
+   * false, only the global dirty flag of the KConfig object gets
+   * cleared. If you then call writeEntry again, the global dirty flag
+   * is set again and all dirty entries will be written.
+   * @param bDeep if
+   * true, the dirty flags of all entries are cleared, as well as the
+   * global dirty flag.
+   */
   virtual void rollback( bool bDeep = true );
 
-  /** Flush the entry cache. Write back dirty configuration entries to
-	* the most specific file. This is called automatically from the
-	* destructor.
-	* This method must be implemented by the derived classes.
+  /**
+   * Flush the entry cache. Write back dirty configuration entries to
+   * the most specific file. This is called automatically from the
+   * destructor.
+   * This method must be implemented by the derived classes.
    */
   virtual void sync() = 0;
 
-  /** Check if the key has an entry in the specified group
-	  Use this to determine if a key is not specified for the current
-	  group (HasKey returns false) or is specified but has no value
-	  ("key =EOL"; Has Key returns true, ReadEntry returns an empty
-	  string)
-	  @param pKey The key to search for.
-	  @return if true, the key is available
+  /**
+   * Check if the key has an entry in the specified group
+   * Use this to determine if a key is not specified for the current
+   * group (HasKey returns false) or is specified but has no value
+   * ("key =EOL"; Has Key returns true, ReadEntry returns an empty
+   * string)
+   * @param pKey The key to search for.
+   * @return if true, the key is available
    */
   bool hasKey( const QString& pKey ) const;
 
-  /** Returns an iterator on the list of groups
-	  @return The group iterator. The caller is reponsable for
-	  deleting the iterator after using it.
-  */
+  /**
+   * Returns an iterator on the list of groups
+   * @return The group iterator. The caller is reponsable for
+   * deleting the iterator after using it.
+   */
   KGroupIterator* groupIterator(void) { return pData->groupIterator(); }
 
-  /** Returns an iterator on the entries in the current group
-	  @param pGroup the group to provide an iterator for
-	  @return The iterator for the group or 0, if the group does not
-	  exist. The caller is responsible for deleting the iterator after
-	  using it.
-	  */
+  /**
+   * Returns an iterator on the entries in the current group
+   *
+   * @param pGroup the group to provide an iterator for
+   * @return The iterator for the group or 0, if the group does not
+   * exist. The caller is responsible for deleting the iterator after
+   * using it.
+   */
   KEntryIterator* entryIterator( const QString& pGroup );
 
-  /** Reparses all configuration files. This is useful for programms
-	  which use standalone graphical configuration tools.
+  /**
+   * Reparses all configuration files. This is useful for programms
+   * which use standalone graphical configuration tools.
    */
   virtual void reparseConfiguration();
 };
@@ -763,14 +786,15 @@ public:
 class KConfigGroupSaver
 {
 public:
-  /** Constructor. You pass a pointer to the KConfig/KSimpleConfig
-	* object you want to work with and a string indicating the _new_
-	* group.
-	* @param config the KConfig/KSimpleConfig object this
-	* KConfigGroupSaver works on
-	* @param group the new group that the KConfig/KSimpleConfig object
-	* should switch to
-	*/
+  /**
+   * Constructor. You pass a pointer to the KConfig/KSimpleConfig
+   * object you want to work with and a string indicating the _new_
+   * group.
+   * @param config the KConfig/KSimpleConfig object this
+   * KConfigGroupSaver works on
+   * @param group the new group that the KConfig/KSimpleConfig object
+   * should switch to
+   */
   KConfigGroupSaver( KConfigBase* config, QString group )
       : _config(config), _oldgroup(config->group())
 	{
@@ -792,7 +816,7 @@ private:
   KConfigGroupSaver& operator=(const KConfigGroupSaver&);
 };
 
-inline const QString KConfigBase::writeEntry( const QString &pKey, 
+inline QString KConfigBase::writeEntry( const QString &pKey, 
                                         const char *pValue,
                                         bool bPersistent, bool bGlobal, 
 					bool bNLS ) {

@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.7  1999/03/01 23:33:43  kulow
+// CVS_SILENT ported to Qt 2.0
+//
 // Revision 1.6.4.1  1999/02/14 02:06:06  granroth
 // Converted a lot of 'const char*' to 'QString'.  This compiles... but
 // it's entirely possible that nothing will run linked to it :-P
@@ -72,40 +75,41 @@ class KSimpleConfig : public KConfigBase
   KSimpleConfig& operator= ( const KSimpleConfig& rConfig );
 
 protected:
-  /** Open all appropriate configuration files and pass them on to
-	* parseOneConfigFile()
-	*/
+  /**
+   * Open all appropriate configuration files and pass them on to
+   * parseOneConfigFile()
+   */
   virtual void parseConfigFiles();
 
 public:
   /** 
-	* Construct a read-write KSimpleConfig object. 
-	*
-	* @param pfile The file used for saving the config data.
-	*/
+   * Construct a read-write KSimpleConfig object. 
+   *
+   * @param pfile The file used for saving the config data.
+   */
   KSimpleConfig( const QString& pFile );
 
   /**
-	* Construct a KSimpleConfig object and make it either read-write
-	* or read-only.  
-	*
-	* @param pFile The file uses for saving the config data.
-	*        bReadOnly Whether the object should be read-only.
-	*/
+   * Construct a KSimpleConfig object and make it either read-write
+   * or read-only.  
+   *
+   * @param pFile The file uses for saving the config data.
+   *        bReadOnly Whether the object should be read-only.
+   */
   KSimpleConfig( const QString& pFile, bool bReadOnly );
 
   /** 
-	* Destructor. 
-	*
-	* Writes back any dirty configuration entries.
-	*/
+   * Destructor. 
+   *
+   * Writes back any dirty configuration entries.
+   */
   virtual ~KSimpleConfig();
 
   
   /**
-	* Returns true if the object is read-only
-	*
-	*/
+   * Returns true if the object is read-only
+   *
+   */
   bool isReadOnly() const { return data()->bReadOnly; }
 
   /**
@@ -114,38 +118,43 @@ public:
    */
   virtual void sync();
 
-  /** Write back the configuration data.
-	*/
+  /**
+   * Write back the configuration data.
+   */
   bool writeConfigFile( QFile& rFile, bool bGlobal = false );
 
   /**
-	* Delete a configuration entry.
-	*
-	* @param pKey The key of the entry to delete
-	* @param bLocalized Whether the localized or the non-localized key should
-	*                    be deleted
-	* @return The old value of that key.
-	*/
+   * Delete a configuration entry.
+   *
+   * @param pKey The key of the entry to delete
+   * @param bLocalized Whether the localized or the non-localized key should
+   *                    be deleted
+   * @return The old value of that key.
+   */
   const QString deleteEntry( const QString& pKey, bool bLocalized );
 
   /**
-	* Delete a configuration entry group
-	*
-	* If the group is not empty and bDeep is false, nothing gets
-	* deleted and false is returned.
-	* If this group is the current group and it is deleted, the
-	* current group is undefined and should be set with setGroup()
-	* before the next operation on the configuration object.
-	*
-	* @param pGroup The name of the group
-	* @param bDeep Whether non-empty groups should be completely
-	* deleted (including their entries)
-	* @return If the group does not exist or is not empty and bDeep is
-	* false, deleteGroup returns false.
-	*/
+   * Delete a configuration entry group
+   *
+   * If the group is not empty and bDeep is false, nothing gets
+   * deleted and false is returned.
+   * If this group is the current group and it is deleted, the
+   * current group is undefined and should be set with setGroup()
+   * before the next operation on the configuration object.
+   *
+   * @param pGroup The name of the group
+   * @param bDeep Whether non-empty groups should be completely
+   * deleted (including their entries)
+   * @return If the group does not exist or is not empty and bDeep is
+   * false, deleteGroup returns false.
+   */
   bool deleteGroup( const QString& pGroup, bool bDeep = true );
 };
   
 
  
 #endif
+
+
+
+

@@ -213,7 +213,7 @@ public:
    *                                     If the flag is set to false, then everything behind the last '/'
    *                                     is considered to be the filename.
    */
-  QString filename( bool _ignore_trailing_slash_in_path = TRUE );
+  QString filename( bool _ignore_trailing_slash_in_path = TRUE ) const;
   /**
    * @return the directory part of the current path. Everything between the last and the second last '/'
    *         is returned. For example <tt>file:/hallo/torben/</tt> would return "/hallo/torben/" while
@@ -226,7 +226,7 @@ public:
    *                                       or <tt>/hallo</tt> depending on the other flag
    */
   QString directory( bool _strip_trailing_slash_from_result = TRUE,
-		     bool _ignore_trailing_slash_in_path = TRUE );
+		     bool _ignore_trailing_slash_in_path = TRUE ) const;
 
   /**
    * Changes directory by descending into the given directory.

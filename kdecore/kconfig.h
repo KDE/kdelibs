@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.8  1999/03/01 23:33:19  kulow
+// CVS_SILENT ported to Qt 2.0
+//
 // Revision 1.7.4.1  1999/02/14 02:05:41  granroth
 // Converted a lot of 'const char*' to 'QString'.  This compiles... but
 // it's entirely possible that nothing will run linked to it :-P
@@ -69,44 +72,50 @@
 class KConfig : public KConfigBase
 {
   Q_OBJECT
-
-  // copy-construction and assignment are not allowed
-  KConfig( const KConfig& );
-  KConfig& operator= ( const KConfig& rConfig );
-
-protected:
-  /** Open all appropriate configuration files and pass them on to
-	* parseOneConfigFile()
-	*/
-  virtual void parseConfigFiles();
-
-  /** Write back the configuration data.
-	*/
-  bool writeConfigFile( QFile& rFile, bool bGlobal = false );
-
 public:
   /** 
-	* Construct a KConfig object. 
-	*
-	* @param pGlobalAppFile A file to parse in addition to the
-	*  normally parsed files.  
-	* @param pLocalAppFile Another file to parse in addition to the
-	* normally parsed files (has priority over pGlobalAppFile 
-	*/
+   * Construct a KConfig object. 
+   *
+   * @param pGlobalAppFile A file to parse in addition to the
+   *  normally parsed files.  
+   * @param pLocalAppFile Another file to parse in addition to the
+   * normally parsed files (has priority over pGlobalAppFile 
+   */
   KConfig( const QString& pGlobalAppFile = QString::null, 
-		   const QString& pLocalAppFile = QString::null );
+	   const QString& pLocalAppFile = QString::null );
 
   /** 
-	* Destructor. 
-	*
-	* Writes back any dirty configuration entries.
-	*/
+   * Destructor. 
+   *
+   * Writes back any dirty configuration entries.
+   */
   virtual ~KConfig();
 
   /**
-	* Write back the config cache.
-	*/
+   * Write back the config cache.
+   */
   virtual void sync();
+
+protected:
+  /**
+   * copy-construction and assignment are not allowed
+   */
+  KConfig( const KConfig& );
+  /**
+   * copy-construction and assignment are not allowed
+   */
+  KConfig& operator= ( const KConfig& rConfig );
+
+  /**
+   * Open all appropriate configuration files and pass them on to
+   * parseOneConfigFile()
+   */
+  virtual void parseConfigFiles();
+
+  /**
+   * Write back the configuration data.
+   */
+  bool writeConfigFile( QFile& rFile, bool bGlobal = false );
 };
   
 
