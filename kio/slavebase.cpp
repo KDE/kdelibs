@@ -142,6 +142,7 @@ SlaveBase::SlaveBase( const QCString &protocol,
     d->slaveid += QString::number(getpid());
     d->resume = false;
     d->needSendCanResume = false;
+    d->multipleAuthCaching = false;
     d->config = new SlaveBaseConfig(this);
 }
 
