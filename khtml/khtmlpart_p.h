@@ -217,6 +217,7 @@ public:
     m_frameNameId = 1;
 
     m_restored = false;
+    m_restoreScrollPosition = false;
 
     m_focusNodeNumber = -1;
     m_focusNodeRestored = false;
@@ -326,6 +327,7 @@ public:
   bool m_metaRefreshEnabled :1;
   bool m_bPluginsOverride :1;
   bool m_restored :1;
+  bool m_restoreScrollPosition :1;
   bool m_statusMessagesEnabled :1;
   bool m_bWalletOpened :1;
   int m_frameNameId;

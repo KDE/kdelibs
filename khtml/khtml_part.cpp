@@ -520,6 +520,10 @@ bool KHTMLPart::restoreURL( const KURL &url )
   d->m_bPluginsEnabled = KHTMLFactory::defaultHTMLSettings()->isPluginsEnabled(url.host());
 
   m_url = url;
+  
+  d->m_restoreScrollPosition = true;
+  disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));
+  connect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));
 
   KHTMLPageCache::self()->fetchData( d->m_cacheId, this, SLOT(slotRestoreData(const QByteArray &)));
 
@@ -627,24 +631,21 @@ bool KHTMLPart::openURL( const KURL &url )
         return true;
     }
   }
-
-  //jump to the anchor AFTER layouting is done, otherwise the position of the
-  //anchor is not known and we have no clue to which coordinates to jump
-  disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(gotoAnchor()));
-  connect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(gotoAnchor()));
-
+  
   // Save offset of viewport when page is reloaded to be compliant
   // to every other capable browser out there.
   if (args.reload) {
     args.xOffset = d->m_view->contentsX();
     args.yOffset = d->m_view->contentsY();
     d->m_extension->setURLArgs(args);
-    disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(gotoAnchor()));
-    connect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));
-  }
+  } 
 
   if (!d->m_restored)
     closeURL();
+
+  d->m_restoreScrollPosition = d->m_restored;
+  disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));      
+  connect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));
 
   // initializing m_url to the new url breaks relative links when opening such a link after this call and _before_ begin() is called (when the first
   // data arrives) (Simon)
@@ -1564,15 +1565,11 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
     if (!baseURL.isEmpty())
       d->m_doc->setBaseURL(KURL( d->m_doc->completeURL(baseURL) ));
 
-
     if ( !m_url.isLocalFile() ) {
         // Support for http last-modified
         d->m_lastModified = d->m_job->queryMetaData("modified");
     } else
         d->m_lastModified = QString::null; // done on-demand by lastModified()
-
-    // Reset contents position
-    connect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));
   }
 
   KHTMLPageCache::self()->addData(d->m_cacheId, data);
@@ -2153,12 +2150,6 @@ void KHTMLPart::checkCompleted()
 
   checkEmitLoadEvent(); // if we didn't do it before
 
-  // check that the view has not been moved by the user
-
-  if ( m_url.encodedHtmlRef().isEmpty() && d->m_view->contentsY() == 0 )
-      d->m_view->setContentsPos( d->m_extension->urlArgs().xOffset,
-                                 d->m_extension->urlArgs().yOffset );
-
   bool pendingAction = false;
 
   if ( !d->m_redirectURL.isEmpty() )
@@ -2395,17 +2386,6 @@ void KHTMLPart::setUserStyleSheet(const QString &styleSheet)
 {
   if ( d->m_doc )
     d->m_doc->setUserStyleSheet( styleSheet );
-}
-
-void KHTMLPart::gotoAnchor()
-{
-  if ( !d->m_doc || !d->m_doc->parsing() ) {
-    disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(gotoAnchor()));
-  }
-
-  if ( m_url.hasRef() )
-    if ( !gotoAnchor(m_url.encodedHtmlRef()) )
-      gotoAnchor(m_url.htmlRef());
 }
 
 bool KHTMLPart::gotoAnchor( const QString &name )
@@ -5202,8 +5182,6 @@ void KHTMLPart::restoreState( QDataStream &stream )
     args.yOffset = yOffset;
     args.docState = docState;
 
-    connect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));
-
     d->m_extension->setURLArgs( args );
     if (!KHTMLPageCache::self()->isComplete(d->m_cacheId))
     {
@@ -6660,6 +6638,14 @@ void KHTMLPart::restoreScrollPosition()
 {
   KParts::URLArgs args = d->m_extension->urlArgs();
 
+  if ( m_url.hasRef() && !d->m_restoreScrollPosition && !args.reload) {
+    if ( !d->m_doc || !d->m_doc->parsing() )
+      disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));
+    if ( !gotoAnchor(m_url.encodedHtmlRef()) )
+      gotoAnchor(m_url.htmlRef());
+    return;
+  }
+  
   // Check whether the viewport has become large enough to encompass the stored
   // offsets. If the document has been fully loaded, force the new coordinates,
   // even if the canvas is too short (can happen when user resizes the window
@@ -6668,7 +6654,7 @@ void KHTMLPart::restoreScrollPosition()
       || d->m_bComplete) {
     d->m_view->setContentsPos(args.xOffset, args.yOffset);
     disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));
-  }
+  }  
 }
 
 

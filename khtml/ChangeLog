@@ -1,3 +1,17 @@
+2004-12-12  Germain Garand  <germain@ebooksfrance.org>
+
+        sanitize anchor-jumping code. Merge restoreScrollPosition/gotoAnchor
+        slots to avoid undeterministic calling order and redundant
+        connections(#94783, 3.3.2 regression of #57360).
+
+        * khtml_part.cpp (restoreURL/openURL/slotData/restoreState): ditto.
+        (checkCompleted): don't setContentsPos here
+
+        * khtml_part.h: remove private gotoAnchor slot
+
+        * khtmlpart_p.h: add boolean to record whether we need to restore a
+        stored scroll offset or honour an anchor
+
 2004-12-29  Allan Sandfeld Jensen <kde@carewolf.com>
 
         Add :enabled and :disabled pseudo-classes
