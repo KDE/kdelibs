@@ -1441,7 +1441,7 @@ QSize KDialogBase::calculateSize(int w, int h) const
 
 QString KDialogBase::helpLinkText() const
 {
-  return( mHelpLinkText==QString::null ? i18n("Get help...") : mHelpLinkText );
+  return( mHelpLinkText.isNull() ? i18n("Get help...") : mHelpLinkText );
 }
 
 

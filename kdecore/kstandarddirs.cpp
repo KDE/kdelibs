@@ -671,7 +671,7 @@ QString KStandardDirs::findExe( const QString& appname,
     QStringList tokens;
     p = pstr;
 
-    if( p == QString::null ) {
+    if( p.isNull() ) {
 	p = getenv( "PATH" );
     }
 
@@ -722,7 +722,7 @@ int KStandardDirs::findAllExe( QStringList& list, const QString& appname,
     QFileInfo info;
     QStringList tokens;
 
-    if( p == QString::null ) {
+    if( p.isNull() ) {
 	p = getenv( "PATH" );
     }
 
