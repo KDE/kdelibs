@@ -5,7 +5,7 @@
  Copyright (C) 1999 Daniel M. Duley <mosfet@kde.org>
 
  KDE3 port (C) 2001-2002 Maksim Orlovich <mo002j@mail.rochester.edu>
-Port version 0.9.3
+Port version 0.9.4
 
  Includes code portions from the dotNET style, and the KDE HighColor style.
 
@@ -95,6 +95,8 @@ static const int rightBorder = 12;
 
 /*
 BUGS:
+
+Crashes on 8bpp displays with Marble -- well, when one re-enables running on them.
 Spin widget for system++
 
 Vertical sliders flash a bit -- anything else?
@@ -308,18 +310,9 @@ int KThemeStyle::pixelMetric ( PixelMetric metric, const QWidget * widget ) cons
     int m;
     switch ( metric )
     {
+        case PM_MenuBarFrameWidth:
         case PM_DefaultFrameWidth:
             return ( frameWidth() );
-        case PM_MenuBarFrameWidth:
-            {
-                int fw = frameWidth();
-                int bw = borderWidth( MenuBarItem ) / 2;
-                return ( fw > bw ) ? fw : bw;
-            }
-
-
-            //case PM_MenuBarFrameWidth:
-            //  return 1;
 
         case PM_ButtonMargin:
             return decoWidth( PushButton ) > decoWidth( PushButtonDown ) ?
@@ -377,7 +370,7 @@ int KThemeStyle::pixelMetric ( PixelMetric metric, const QWidget * widget ) cons
 
 
 KThemeStyle::KThemeStyle( const QString& configDir, const QString &configFile )
-        : KThemeBase( configDir, configFile ), paletteSaved( false ), polishLock( false ), vsliderCache( 0L ), vsliderBackCache( 0L )
+        : KThemeBase( configDir, configFile ), paletteSaved( false ), polishLock( false ), vsliderCache( 0 ), menuCache( 0 )
 {
     mtfstyle = QStyleFactory::create( "Motif" );
     if ( !mtfstyle )
@@ -387,7 +380,8 @@ KThemeStyle::KThemeStyle( const QString& configDir, const QString &configFile )
 KThemeStyle::~KThemeStyle()
 {
     delete vsliderCache;
-    delete vsliderBackCache;
+    delete menuCache;
+
 }
 
 
@@ -635,7 +629,6 @@ void KThemeStyle::drawBaseButton( QPainter *p, int x, int y, int w, int h,
     p->setPen( oldPen );
 }
 
-
 void KThemeStyle::drawPrimitive ( PrimitiveElement pe, QPainter * p, const QRect & r, const QColorGroup & g_base,
                                   SFlags flags, const QStyleOption & opt ) const
 {
@@ -654,40 +647,6 @@ void KThemeStyle::drawPrimitive ( PrimitiveElement pe, QPainter * p, const QRect
 
     switch ( pe )
     {
-            // ### TODO: Proper implementation
-
-            /* case PE_PanelPopup:
-              {
-              int lw = opt.isDefault() ? pixelMetric(PM_DefaultFrameWidth)
-                      : opt.lineWidth();
-             
-                QPen oldPen = p->pen();
-                int x,y,w,h;
-                r.rect(&x, &y, &w, &h);
-                int x2 = x+w-1;
-                int y2 = y+h-1;
-                p->fillRect(r, g.brush(QColorGroup::Background));
-                p->setPen(sunken ? g.light() : g.dark());
-                p->drawLine(x, y2, x2, y2);
-                p->drawLine(x2, y, x2, y2);
-                p->setPen(sunken ? g.mid() : g.light());
-                p->drawLine(x, y, x2, y);
-                p->drawLine(x, y, x, y2);
-                p->setPen(sunken ? g.midlight() : g.mid());
-                p->drawLine(x+1, y2-1, x2-1, y2-1);
-                p->drawLine(x2-1, y+1, x2-1, y2-1);
-                p->setPen(sunken ? g.dark() : g.midlight());
-                p->drawLine(x+1, y+1, x2-1, y+1);
-                p->drawLine(x+1, y+1, x+1, y2-1);
-                p->setPen(oldPen);
-             
-              //  drawShade( p, x, y, w, h, *colorGroup( g, MenuItem ), false, false,
-                //                       frameWidth(), 0,
-              //                         Windows );
-               handled = true;
-               break;
-              }
-            */
         case PE_SpinWidgetUp:
             {
                 QCOORD points[ 8 ];
@@ -1011,8 +970,8 @@ void KThemeStyle::drawPrimitive ( PrimitiveElement pe, QPainter * p, const QRect
             }
         case PE_PanelMenuBar:
             {
-                drawBaseButton( p, x, y, w, h, *colorGroup( g, MenuBar ), false, false,
-                                MenuBar );
+                QPixmap* cache = makeMenuBarCache(w, h);
+                p->drawPixmap( x, y, *cache);
                 handled = true;
                 break;
             }
@@ -1078,19 +1037,22 @@ void KThemeStyle::drawPrimitive ( PrimitiveElement pe, QPainter * p, const QRect
             {
                 bool active = ( flags & Style_Active ) || ( flags & Style_Down ); //activeControl == QStyle::AddLine;
                 bool horizontal = ( flags & Style_Horizontal );
+                int offsetH = horizontal ? 0: decoWidth(VScrollGroove) ;
+                int offsetV = horizontal ? decoWidth(HScrollGroove):0;
 
                 WidgetType widget = horizontal ?
                                 active ? HScrollBarSliderDown : HScrollBarSlider :
                                     active ? VScrollBarSliderDown : VScrollBarSlider;
-                drawBaseButton( p, r.x(), r.y(), r.width(),
-                                r.height(), *colorGroup( g, widget ), active, false,
+                drawBaseButton( p, r.x()+offsetH, r.y()+offsetV, r.width()-2*offsetH,
+                                r.height()-2*offsetV, *colorGroup( g, widget ), active, false,
                                 widget );
 
                 int spaceW = horizontal ? r.width() - decoWidth( widget ) - 4 :
                              r.width();
                 int spaceH = horizontal ? r.height() :
                              r.height() - decoWidth( widget ) - 4;
-            widget = active ? horizontal ? HScrollDecoDown : VScrollDecoDown :
+
+                widget = active ? horizontal ? HScrollDecoDown : VScrollDecoDown :
                          horizontal ? HScrollDeco : VScrollDeco;
                 if ( isPixmap( widget ) )
                 {
@@ -1116,6 +1078,28 @@ void KThemeStyle::drawPrimitive ( PrimitiveElement pe, QPainter * p, const QRect
                                     flags, opt );
 }
 
+
+
+QPixmap* KThemeStyle::makeMenuBarCache(int w, int h) const
+{
+    if (menuCache)
+    {
+        if (menuCache->width() != w || menuCache->height() != h )
+        {
+            delete menuCache;
+        }
+        else
+            return menuCache;
+    }
+
+    const QColorGroup *g = colorGroup( QApplication::palette().active(), MenuBar);
+
+    menuCache = new QPixmap ( w, h );
+    QPainter p(menuCache);
+    drawBaseButton( &p, 0, 0, w, h, *g, false, false, MenuBar );
+    p.end();
+    return menuCache;
+}
 
 
 void KThemeStyle::drawControl( ControlElement element,
@@ -1390,6 +1374,7 @@ void KThemeStyle::drawControl( ControlElement element,
             }
         case CE_MenuBarItem:
             {
+
                 r.rect( &x, &y, &w, &h );
                 QMenuItem *mi = opt.menuItem();
                 QMenuBar *mb = ( QMenuBar* ) widget;
@@ -1399,34 +1384,29 @@ void KThemeStyle::drawControl( ControlElement element,
                 const QColorGroup *g = colorGroup( cg, active ? MenuBarItem : MenuBar );
                 QColor btext = g->buttonText();
 
-                //TODO:Optimize
-                QPixmap buf( pr.width(), pr.height() );
+                QPixmap* cache = makeMenuBarCache(pr.width(), pr.height());
+
+
+                QPixmap buf( w, pr.height() );
+
+                bitBlt(&buf, 0, 0, cache, x, y, w, pr.height());
                 QPainter p2( &buf );
-                drawBaseButton( &p2, 0, 0, pr.width(), pr.height(), *g, false, false,
-                                MenuBar );
-
-
 
                 if ( active )
                 {
-                    //A workaround for the menubar/bg getting apinted over us..
-                    int offset = borderWidth( MenuBarItem ) / 2 - 1;
-                    if ( offset < 0 )
-                        offset = 0;
-                    if ( offset > 0 )  //Any better way of doing this?
-                        offset += 1;
-
-                    drawBaseButton( &p2, x, y + offset, w, h, *g, false, false, MenuBarItem );
+                    drawBaseButton( &p2, 0,  0, w, h, *g, false, false, MenuBarItem );
                 }
 
-                p2.end();
-                p->drawPixmap( x, y, buf, x, y, w, h );
-
-
-
-                drawItem( p, r, AlignCenter | ShowPrefix | DontClip | SingleLine,
+                drawItem( &p2, QRect(0,0,w,h), AlignCenter | ShowPrefix | DontClip | SingleLine,
                           *g, mi->isEnabled(), mi->pixmap(), mi->text(),
                           -1, &btext );
+
+
+
+                p2.end();
+                p->drawPixmap( x, y, buf, 0, 0, w, h );
+
+
                 handled = true;
                 break;
             }
@@ -2005,7 +1985,7 @@ void KThemeStyle::drawComplexControl ( ComplexControl control, QPainter * p, con
             {
                 if ( controls & SC_ComboBoxFrame )
                 {
-                    //TODO: Anyway of detecting when the poup is there -- would look nicer if sunken then to
+                    //TODO: Anyway of detecting when the popup is there -- would look nicer if sunken then too..
                     bool sunken = ( active == SC_ComboBoxArrow );
                     //No frame, edit box and button for now?
                     WidgetType widget = sunken ? ComboBoxDown : ComboBox;

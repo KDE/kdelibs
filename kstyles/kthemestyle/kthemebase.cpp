@@ -5,7 +5,7 @@
  Copyright (C) 1999 Daniel M. Duley <mosfet@kde.org>
 
  KDE3 port (C) 2001-2002 Maksim Orlovich <mo002j@mail.rochester.edu>
- Port version 0.9.2
+ Port version 0.9.4
 
  Palette setup code is from KApplication,
 		Copyright (C) 1997 Matthias Kalle Dalheimer (kalle@kde.org)
@@ -1569,6 +1569,10 @@ QPalette KThemeBase::overridePalette( const QPalette& pal )
 
     QColor buttonText = foreground;
 
+    int highlightVal, lowlightVal;
+    highlightVal = 100 + ( 2 * d->contrast + 4 ) * 16 / 10;
+    lowlightVal = 100 + ( 2 * d->contrast + 4 ) * 10;
+
 
     if ( isPixmap( Background ) || isColor( Background ) )
     {
@@ -1581,15 +1585,16 @@ QPalette KThemeBase::overridePalette( const QPalette& pal )
         {
             background = d->pixmapAveColor( uncached( Background ) );
         }
-        buttonText = colorGroup( pal.active(), PushButton ) ->foreground();
+
+
+        QColorGroup pre( foreground, button, background.light( highlightVal ),
+                            background.dark( lowlightVal ), background.dark( 120 ),
+                            baseText, buttonText /*CHECKME: BrightText*/, base, background );
+
+        buttonText = colorGroup( pre, PushButton ) ->foreground();
     }
 
-    int highlightVal, lowlightVal;
-    highlightVal = 100 + ( 2 * d->contrast + 4 ) * 16 / 10;
-    lowlightVal = 100 + ( 2 * d->contrast + 4 ) * 10;
-
     QColor disfg = foreground;
-
     int h, s, v;
     disfg.hsv( &h, &s, &v );
     if ( v > 128 )
@@ -1601,6 +1606,7 @@ QPalette KThemeBase::overridePalette( const QPalette& pal )
     else
         // black fg - use darkgrey disabled fg
         disfg = Qt::darkGray;
+
 
     QColorGroup disabledgrp( disfg, background,   //TODO:Convert this to the new ctor.
                              background.light( highlightVal ),
@@ -1619,6 +1625,7 @@ QPalette KThemeBase::overridePalette( const QPalette& pal )
     colgrp.setColor( QColorGroup::HighlightedText, highlightedText );
     colgrp.setColor( QColorGroup::ButtonText, buttonText );
     colgrp.setColor( QColorGroup::Midlight, button.light( 110 ) );
+
 
     disabledgrp.setColor( QColorGroup::Base, base );
     disabledgrp.setColor( QColorGroup::Button, button );

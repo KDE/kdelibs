@@ -196,7 +196,9 @@ protected:
     bool polishLock;
     QStyle *mtfstyle;
 
-    mutable QPixmap* vsliderBackCache;
+    QPixmap* makeMenuBarCache(int w, int h) const;
+
+    mutable QPixmap* menuCache;
     mutable QPixmap* vsliderCache;
 
 protected slots:
