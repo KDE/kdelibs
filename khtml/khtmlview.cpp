@@ -28,7 +28,11 @@
 #include "html/html_inlineimpl.h"
 #include "rendering/render_object.h"
 #include "rendering/render_root.h"
+#include "rendering/render_style.h"
 #include "misc/htmlhashes.h"
+#include "khtml_settings.h"
+
+#include <kcursor.h>
 
 #include <qpixmap.h>
 #include <qstring.h>
@@ -52,6 +56,7 @@ template class QList<KHTMLView>;
 QList<KHTMLView> *KHTMLView::lstViews = 0L;
 
 using namespace DOM;
+using namespace khtml;
 
 QPixmap* KHTMLView::paintBuffer = 0L;
 
@@ -407,7 +412,53 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     m_part->docImpl()->mouseEvent( xm, ym, _mouse->stateAfter(), DOM::NodeImpl::MouseMove, 0, 0, url, innerNode, offset );
 
     d->underMouse = innerNode;
-	
+
+    QCursor c = KCursor::arrowCursor();
+    if ( innerNode ) {
+	switch( innerNode->style()->cursor() ) {
+	case CURSOR_AUTO:
+	    if ( url.length() && const_cast<KHTMLSettings *>(m_part->settings())->changeCursor() )
+		c = m_part->urlCursor();
+	    break;
+	case CURSOR_CROSS:
+	    c = KCursor::crossCursor();
+	    break;
+	case CURSOR_POINTER:
+	    c = m_part->urlCursor();
+	    break;
+	case CURSOR_MOVE:
+	    c = KCursor::sizeAllCursor();
+	    break;
+	case CURSOR_E_RESIZE:
+	case CURSOR_W_RESIZE:
+	    c = KCursor::sizeHorCursor();
+	    break;
+	case CURSOR_N_RESIZE:
+	case CURSOR_S_RESIZE:
+	    c = KCursor::sizeVerCursor();
+	    break;
+	case CURSOR_NE_RESIZE:
+	case CURSOR_SW_RESIZE:
+	    c = KCursor::sizeBDiagCursor();
+	    break;
+	case CURSOR_NW_RESIZE:
+	case CURSOR_SE_RESIZE:
+	    c = KCursor::sizeFDiagCursor();
+	    break;
+	case CURSOR_TEXT:
+	    c = KCursor::ibeamCursor();
+	    break;
+	case CURSOR_WAIT:
+	    c = KCursor::waitCursor();
+	    break;
+	case CURSOR_HELP:
+	case CURSOR_DEFAULT:
+	    break;
+	}
+    }
+    setCursor( c );
+
+    
     khtml::MouseMoveEvent event( _mouse, xm, ym, url, Node(innerNode), offset );
     QApplication::sendEvent( m_part, &event );
 }
@@ -850,5 +901,4 @@ void KHTMLView::useSlowRepaints()
     setStaticBackground(true);
 #endif
 }
-
 

@@ -227,7 +227,7 @@ public:
     }
 
     StyleSurroundData(const StyleSurroundData& o );
-    bool operator==(const StyleSurroundData& o) const;    
+    bool operator==(const StyleSurroundData& o) const;
 
     LengthBox offset;
     LengthBox margin;
@@ -478,7 +478,11 @@ enum EListStylePosition { OUTSIDE, INSIDE };
     	
 enum EVisiblity { VISIBLE, HIDDEN, COLLAPSE };
 
-
+enum ECursor { 
+    CURSOR_AUTO, CURSOR_DEFAULT, CURSOR_CROSS, CURSOR_POINTER, CURSOR_MOVE,
+    CURSOR_E_RESIZE, CURSOR_NE_RESIZE, CURSOR_NW_RESIZE, CURSOR_N_RESIZE, CURSOR_SE_RESIZE, CURSOR_SW_RESIZE, 
+    CURSOR_S_RESIZE, CURSOR_W_RESIZE, CURSOR_TEXT, CURSOR_WAIT, CURSOR_HELP
+};
 
 //------------------------------------------------
 
@@ -510,7 +514,8 @@ protected:
     EWhiteSpace _white_space : 2;
     int _text_decoration : 4;
     bool _visuallyOrdered : 1;
-
+    ECursor _cursor : 4;
+    
     bool _htmlHacks :1;
 
 // don't inherit
@@ -560,113 +565,113 @@ public:
      */
     RenderStyle* inheritFrom(RenderStyle* inherit);
 
-    bool        isFloating() { return (_floating == FLEFT || _floating == FRIGHT); }
-    bool        hasMargin() { return surround->margin.nonZero(); }
-    bool        hasPadding() { return surround->padding.nonZero(); }
-    bool        hasBorder() { return surround->border.hasBorder(); }
-    bool        hasOffset() { return surround->offset.nonZero(); }
+    bool        isFloating() const { return (_floating == FLEFT || _floating == FRIGHT); }
+    bool        hasMargin() const { return surround->margin.nonZero(); }
+    bool        hasPadding() const { return surround->padding.nonZero(); }
+    bool        hasBorder() const { return surround->border.hasBorder(); }
+    bool        hasOffset() const { return surround->offset.nonZero(); }
 
-    bool visuallyOrdered() { return _visuallyOrdered; }
+    bool visuallyOrdered() const { return _visuallyOrdered; }
     void setVisuallyOrdered(bool b) { _visuallyOrdered = b; }
 
 // attribute getter methods
 
-    EDisplay 	display() { return _display; }
+    EDisplay 	display() const { return _display; }
 
-    Length  	left() {  return surround->offset.left; }
-    Length  	right() {  return surround->offset.right; }
-    Length  	top() {  return surround->offset.top; }
-    Length  	bottom() {  return surround->offset.bottom; }
+    Length  	left() const {  return surround->offset.left; }
+    Length  	right() const {  return surround->offset.right; }
+    Length  	top() const {  return surround->offset.top; }
+    Length  	bottom() const {  return surround->offset.bottom; }
 
-    EPosition 	position() { return _position; }
-    EFloat  	floating() { return _floating; }
+    EPosition 	position() const { return _position; }
+    EFloat  	floating() const { return _floating; }
 
-    Length  	width() { return box->width; }
-    Length  	height() { return box->height; }
-    Length  	minWidth() { return box->min_width; }
-    Length  	maxWidth() { return box->max_width; }
-    Length  	minHeight() { return box->min_height; }
-    Length  	maxHeight() { return box->max_height; }
+    Length  	width() const { return box->width; }
+    Length  	height() const { return box->height; }
+    Length  	minWidth() const { return box->min_width; }
+    Length  	maxWidth() const { return box->max_width; }
+    Length  	minHeight() const { return box->min_height; }
+    Length  	maxHeight() const { return box->max_height; }
 
-    unsigned short  borderLeftWidth()
+    unsigned short  borderLeftWidth() const
     { if( surround->border.left.style == BNONE) return 0; return surround->border.left.width; }
-    EBorderStyle    borderLeftStyle() { return surround->border.left.style; }
-    const QColor &  borderLeftColor() { return surround->border.left.color; }
-    unsigned short  borderRightWidth()
+    EBorderStyle    borderLeftStyle() const { return surround->border.left.style; }
+    const QColor &  borderLeftColor() const { return surround->border.left.color; }
+    unsigned short  borderRightWidth() const
     { if (surround->border.right.style == BNONE) return 0; return surround->border.right.width; }
-    EBorderStyle    borderRightStyle() {  return surround->border.right.style; }
-    const QColor &  	    borderRightColor() {  return surround->border.right.color; }
-    unsigned short  borderTopWidth()
+    EBorderStyle    borderRightStyle() const {  return surround->border.right.style; }
+    const QColor &  	    borderRightColor() const {  return surround->border.right.color; }
+    unsigned short  borderTopWidth() const 
     { if(surround->border.top.style == BNONE) return 0; return surround->border.top.width; }
-    EBorderStyle    borderTopStyle() {return surround->border.top.style; }
-    const QColor &  borderTopColor() {  return surround->border.top.color; }
-    unsigned short  borderBottomWidth()
+    EBorderStyle    borderTopStyle() const {return surround->border.top.style; }
+    const QColor &  borderTopColor() const {  return surround->border.top.color; }
+    unsigned short  borderBottomWidth() const
     { if(surround->border.bottom.style == BNONE) return 0; return surround->border.bottom.width; }
-    EBorderStyle    borderBottomStyle() {  return surround->border.bottom.style; }
-    const QColor &  	    borderBottomColor() {  return surround->border.bottom.color; }
+    EBorderStyle    borderBottomStyle() const {  return surround->border.bottom.style; }
+    const QColor &  	    borderBottomColor() const {  return surround->border.bottom.color; }
 
-    EOverflow overflow() { return _overflow; }
-    EVisiblity visiblity() { return _visiblity; }
-    EVerticalAlign verticalAlign() { return _vertical_align; }
+    EOverflow overflow() const { return _overflow; }
+    EVisiblity visiblity() const { return _visiblity; }
+    EVerticalAlign verticalAlign() const { return _vertical_align; }
 
-    Length clipLeft() { return visual->clip.left; }
-    Length clipRight() { return visual->clip.right; }
-    Length clipTop() { return visual->clip.top; }
-    Length clipBottom() { return visual->clip.bottom; }
-    EClear clear() { return _clear; }
-    ETableLayout inheritedLayout() { return _table_layout; }
+    Length clipLeft() const { return visual->clip.left; }
+    Length clipRight() const { return visual->clip.right; }
+    Length clipTop() const { return visual->clip.top; }
+    Length clipBottom() const { return visual->clip.bottom; }
+    EClear clear() const { return _clear; }
+    ETableLayout inheritedLayout() const { return _table_layout; }
 
-    short colSpan() { return visual->colspan; }
+    short colSpan() const { return visual->colspan; }
 
-    const QFont & font() { return inherited->font; }
+    const QFont & font() const { return inherited->font; }
 
-    const QColor & color() { return inherited->color; }
-    Length textIndent() { return inherited->indent; }
-    ETextAlign textAlign() { return _text_align; }
-    int textDecoration() { return _text_decoration; }
-    const QColor &textDecorationColor() { return inherited->decoration_color; }
-///////////  patched by S.G. Hwang ////////////////////////////////////
-    int wordSpacing() { return inherited->word_spacing; }
-    int letterSpacing() { return inherited->letter_spacing; }
-///////////  end of patched ///////////////////////////////////////////
+    const QColor & color() const { return inherited->color; }
+    Length textIndent() const { return inherited->indent; }
+    ETextAlign textAlign() const { return _text_align; }
+    int textDecoration() const { return _text_decoration; }
+    const QColor &textDecorationColor() const { return inherited->decoration_color; }
+    int wordSpacing() const { return inherited->word_spacing; }
+    int letterSpacing() const { return inherited->letter_spacing; }
 
-    EDirection direction() { return _direction; }
-    Length lineHeight() { return inherited->line_height; }
+    EDirection direction() const { return _direction; }
+    Length lineHeight() const { return inherited->line_height; }
 
-    EWhiteSpace whiteSpace() { return _white_space; }
+    EWhiteSpace whiteSpace() const { return _white_space; }
 
 
-    const QColor & backgroundColor() { return background->color; }
-    CachedImage *backgroundImage() { return background->image; }
-    EBackgroundRepeat backgroundRepeat() { return _bg_repeat; }
+    const QColor & backgroundColor() const { return background->color; }
+    CachedImage *backgroundImage() const { return background->image; }
+    EBackgroundRepeat backgroundRepeat() const { return _bg_repeat; }
     // backgroundAttachment returns true for scrolling (regular) attachment, false for fixed
-    bool backgroundAttachment() { return _bg_attachment; }
-    Length backgroundXPosition() { return background->x_position; }
-    Length backgroundYPosition() { return background->y_position; }
+    bool backgroundAttachment() const { return _bg_attachment; }
+    Length backgroundXPosition() const { return background->x_position; }
+    Length backgroundYPosition() const { return background->y_position; }
 
     // returns true for collapsing borders, false for separate borders
-    bool borderCollapse() { return _border_collapse; }
-    short borderSpacing() { return inherited->border_spacing; }
-    EEmptyCell emptyCells() { return _empty_cells; }
-    ECaptionSide captionSide() { return _caption_side; }
+    bool borderCollapse() const { return _border_collapse; }
+    short borderSpacing() const { return inherited->border_spacing; }
+    EEmptyCell emptyCells() const { return _empty_cells; }
+    ECaptionSide captionSide() const { return _caption_side; }
 
-    short counterIncrement() { return visual->counter_increment; }
-    short counterReset() { return visual->counter_reset; }
+    short counterIncrement() const { return visual->counter_increment; }
+    short counterReset() const { return visual->counter_reset; }
 
-    EListStyleType listStyleType() { return _list_style_type; }
-    CachedImage *listStyleImage() { return inherited->style_image; }
-    EListStylePosition listStylePosition() { return _list_style_position; }
+    EListStyleType listStyleType() const { return _list_style_type; }
+    CachedImage *listStyleImage() const { return inherited->style_image; }
+    EListStylePosition listStylePosition() const { return _list_style_position; }
 
-    Length marginTop() { return surround->margin.top; }
-    Length marginBottom() {  return surround->margin.bottom; }
-    Length marginLeft() {  return surround->margin.left; }
-    Length marginRight() {  return surround->margin.right; }
+    Length marginTop() const { return surround->margin.top; }
+    Length marginBottom() const {  return surround->margin.bottom; }
+    Length marginLeft() const {  return surround->margin.left; }
+    Length marginRight() const {  return surround->margin.right; }
 
-    Length paddingTop() {  return surround->padding.top; }
-    Length paddingBottom() {  return surround->padding.bottom; }
-    Length paddingLeft() { return surround->padding.left; }
-    Length paddingRight() {  return surround->padding.right; }
+    Length paddingTop() const {  return surround->padding.top; }
+    Length paddingBottom() const {  return surround->padding.bottom; }
+    Length paddingLeft() const { return surround->padding.left; }
+    Length paddingRight() const {  return surround->padding.right; }
 
+    ECursor cursor() const { return _cursor; }
+    
 // attribute setter methods
 
     void setDisplay(EDisplay v) { _display = v; }
@@ -787,6 +792,8 @@ public:
     void setPaddingLeft(Length v) {  surround.set()->padding.left = v; }
     void setPaddingRight(Length v) {  surround.set()->padding.right = v; }
 
+    void setCursor( ECursor c ) { _cursor = c; }
+    
     bool htmlHacks() const { return _htmlHacks; }
     void setHtmlHacks(bool b=true) { _htmlHacks = b; }
 

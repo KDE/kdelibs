@@ -2414,7 +2414,6 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
     QString surl = splitUrlTarget(url.string(), &target);
     if ( d->m_overURL.isEmpty() )
     {
-      d->m_view->setCursor( d->m_linkCursor );
       d->m_overURL = surl;
       overURL( d->m_overURL, target );
     }
@@ -2427,7 +2426,6 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
   }
   else if( d->m_overURL.length() && !url.length() )
   {
-    d->m_view->setCursor( arrowCursor );
     overURL( QString::null, QString::null );
     d->m_overURL = "";
   }

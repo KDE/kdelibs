@@ -36,12 +36,12 @@ StyleSurroundData::StyleSurroundData()
     padding.left = Length(0,Fixed);
     padding.right = Length(0,Fixed);
     padding.top = Length(0,Fixed);
-    padding.bottom = Length(0,Fixed);    
+    padding.bottom = Length(0,Fixed);
 }
 
-StyleSurroundData::StyleSurroundData(const StyleSurroundData& o ) 
+StyleSurroundData::StyleSurroundData(const StyleSurroundData& o )
         : SharedData()
-{ 
+{
     offset = o.offset;
     margin = o.margin;
     padding = o.padding;
@@ -58,7 +58,7 @@ StyleBoxData::StyleBoxData()
 {
 }
 
-StyleBoxData::StyleBoxData(const StyleBoxData& o ) 
+StyleBoxData::StyleBoxData(const StyleBoxData& o )
         : SharedData()
 {
     width = o.width;
@@ -109,7 +109,8 @@ RenderStyle::setBitDefaults()
 
     _visuallyOrdered = false;
     _direction = LTR;
-
+    _cursor = CURSOR_AUTO;
+    
     _htmlHacks=false;
     _flowAroundFloats=false;
 }
@@ -206,7 +207,8 @@ RenderStyle::RenderStyle(const RenderStyle* inheritParent)
     _text_decoration = inheritParent->_text_decoration;
     _white_space = inheritParent->_white_space;
     _visuallyOrdered = inheritParent->_visuallyOrdered;
-
+    _cursor = inheritParent->_cursor;
+    
     _htmlHacks = inheritParent->_htmlHacks;
 
     _display = INLINE;

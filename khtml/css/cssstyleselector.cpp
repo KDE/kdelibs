@@ -1049,6 +1049,53 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	// CSS2BorderSpacing
     case CSS_PROP_CURSOR:
 	// CSS2Cursor
+	if(value->valueType() == CSSValue::CSS_INHERIT) {
+	    if(!e->parentNode()) return;
+	    style->setCursor(e->parentNode()->style()->cursor());
+	    return;
+	}
+
+	if(!primitiveValue->getIdent()) return;
+	{
+	    ECursor c = CURSOR_AUTO;
+	    switch(primitiveValue->getIdent()) {
+	    case CSS_VAL_AUTO:
+		break;
+	    case CSS_VAL_DEFAULT:
+		c = CURSOR_DEFAULT; break;
+		// ### shouldn't that be crosshair????
+	    case CSS_VAL_CROSS:
+		c = CURSOR_CROSS; break;
+	    case CSS_VAL_POINTER:
+		c = CURSOR_POINTER; break;
+	    case CSS_VAL_MOVE:
+		c = CURSOR_MOVE; break;
+	    case CSS_VAL_E_RESIZE:
+		c = CURSOR_E_RESIZE; break;
+	    case CSS_VAL_NE_RESIZE:
+		c = CURSOR_NE_RESIZE; break;
+	    case CSS_VAL_NW_RESIZE:
+		c = CURSOR_NW_RESIZE; break;
+	    case CSS_VAL_N_RESIZE:
+		c = CURSOR_N_RESIZE; break;
+	    case CSS_VAL_SE_RESIZE:
+		c = CURSOR_SE_RESIZE; break;
+	    case CSS_VAL_SW_RESIZE:
+		c = CURSOR_SW_RESIZE; break;
+	    case CSS_VAL_S_RESIZE:
+		c = CURSOR_S_RESIZE; break;
+	    case CSS_VAL_W_RESIZE:
+		c = CURSOR_W_RESIZE; break;
+	    case CSS_VAL_TEXT:
+		c = CURSOR_TEXT; break;
+	    case CSS_VAL_WAIT:
+		c = CURSOR_WAIT; break;
+	    case CSS_VAL_HELP:
+		c = CURSOR_HELP; break;
+	    }
+	    style->setCursor(c);
+	}
+	break;
     case CSS_PROP_PLAY_DURING:
 	// CSS2PlayDuring
     case CSS_PROP_TEXT_SHADOW:

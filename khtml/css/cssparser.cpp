@@ -836,6 +836,8 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
 	// CSS2BackgroundPosition
     case CSS_PROP_CURSOR:
 	// CSS2Cursor
+	// ### should also support URI, but let's ignore that for now.
+	break;
     case CSS_PROP_PLAY_DURING:
 	// CSS2PlayDuring
     case CSS_PROP_TEXT_SHADOW:
@@ -1640,9 +1642,9 @@ void CSSSelector::print(void)
 
 int CSSSelector::specificity()
 {
-    if ( nonCSSHint ) 
+    if ( nonCSSHint )
 	return 0;
-    
+
     int s = 0;
     if(tag != -1) s = 1;
     switch(match)
