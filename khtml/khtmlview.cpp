@@ -979,7 +979,7 @@ void KHTMLView::print()
     if(printer->setup(this)) {
         viewport()->setCursor( waitCursor ); // only viewport(), no QApplication::, otherwise we get the busy cursor in kdeprint's dialogs
         // set up KPrinter
-        printer->setFullPage(true);
+        printer->setFullPage(false);
         printer->setCreator("KDE 3.0 HTML Library");
         QString docname = m_part->xmlDocImpl()->URL();
         if ( !docname.isEmpty() )
