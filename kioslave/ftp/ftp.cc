@@ -492,9 +492,9 @@ bool Ftp::ftpOpenPASVDataConnection()
   }
 
   if ( setsockopt(sDatal, SOL_SOCKET,SO_KEEPALIVE, (char *) &on, (int) sizeof(on)) < 0 )
-    kDebugArea(7102, "Keepalive not allowed");
+    kDebugStringArea(7102, "Keepalive not allowed");
   if ( setsockopt(sDatal, SOL_SOCKET,SO_LINGER, (char *) &lng,(int) sizeof (lng)) < 0 )
-    kDebugArea(7102, "Linger mode was not allowed.");
+    kDebugStringArea(7102, "Linger mode was not allowed.");
   return 1;
 }
 
