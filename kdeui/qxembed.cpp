@@ -104,7 +104,8 @@ extern QX11EventFilter qt_set_x11_event_filter (QX11EventFilter filter);
 static QX11EventFilter oldFilter = 0;
 
 
-static void send_xembed_message( WId window, int message, int detail = 0 )
+static void send_xembed_message( WId window, long message, long detail = 0,
+				 long data1 = 0, long data2 = 0)
 {
     XEvent ev;
     memset(&ev, 0, sizeof(ev));
@@ -115,6 +116,8 @@ static void send_xembed_message( WId window, int message, int detail = 0 )
     ev.xclient.data.l[0] = qt_x_time;
     ev.xclient.data.l[1] = message;
     ev.xclient.data.l[2] = detail;
+    ev.xclient.data.l[3] = data1;
+    ev.xclient.data.l[4] = data2;
     XSendEvent(qt_xdisplay(), window, FALSE, NoEventMask, &ev);
 }
 
@@ -198,8 +201,8 @@ static int qxembed_x11_event_filter( XEvent* e)
     case ClientMessage:
 	if ( e->xclient.message_type == xembed ) {
 	    Time msgtime = (Time) e->xclient.data.l[0];
-	    int message = e->xclient.data.l[1];
-	    int detail = e->xclient.data.l[2];
+	    long message = e->xclient.data.l[1];
+	    long detail = e->xclient.data.l[2];
 	    if ( msgtime > qt_x_time )
 		qt_x_time = msgtime;
 	    QWidget* w = QWidget::find( e->xclient.window );
@@ -543,7 +546,7 @@ void QXEmbed::embed(WId w)
 	QApplication::postEvent( parent(), layoutHint );
     }
     windowChanged( window );
-    send_xembed_message( window, XEMBED_EMBEDDED_NOTIFY );
+    send_xembed_message( window, XEMBED_EMBEDDED_NOTIFY, 0, (long) winId() );
     send_xembed_message( window, isActiveWindow() ? XEMBED_WINDOW_ACTIVATE : XEMBED_WINDOW_DEACTIVATE );
     if ( hasFocus() )
 	send_xembed_message( window, XEMBED_FOCUS_IN );
@@ -601,8 +604,8 @@ bool QXEmbed::x11Event( XEvent* e)
 	break;
     case ClientMessage:
 	if ( e->xclient.format == 32 && e->xclient.message_type == xembed ) {
-	    int message = e->xclient.data.l[1];
-// 	    int detail = e->xclient.data.l[2];
+	    long message = e->xclient.data.l[1];
+// 	    long detail = e->xclient.data.l[2];
 	    switch ( message ) {
 	    case XEMBED_FOCUS_NEXT:
 		QWidget::focusNextPrevChild( TRUE );
@@ -611,7 +614,9 @@ bool QXEmbed::x11Event( XEvent* e)
 		QWidget::focusNextPrevChild( FALSE );
 		break;
 	    case XEMBED_REQUEST_FOCUS:
-		setFocus();
+	        QFocusEvent::setReason( QFocusEvent::Mouse );
+	        setFocus();
+		QFocusEvent::resetReason();
 		break;
 	    default:
 		break;
@@ -721,7 +726,7 @@ QSize QXEmbed::sizeHint() const
 */
 
 /*!
-  Returns a size sufficient for one character, and scroll bars.
+  Returns the minimum size specified by the embedded window.
 */
 
 QSize QXEmbed::minimumSizeHint() const
