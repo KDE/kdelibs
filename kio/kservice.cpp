@@ -65,7 +65,7 @@ KService::init( KDesktopFile *config )
 
   config->setDesktopGroup();
   config->setDollarExpansion( true ); // mainly for Exec and Path
-  if(access(entryPath(), R_OK))
+  if(access(entryPath().latin1(), R_OK))
   {
     m_bValid=false;
     return;
