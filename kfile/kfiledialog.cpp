@@ -181,12 +181,10 @@ void KFileBaseDialog::init()
 			 this, SLOT(comboActivated(int)),
 			 true, "Current Path");
 
-    toolbar->setFullWidth(true);
     toolbar->setItemAutoSized (PATH_COMBO);
     toolbar->setBarPos(KToolBar::Top);
     toolbar->enableMoving(false);
     toolbar->adjustSize();
-    setMinimumWidth(toolbar->width());
 
     if ( c->readBoolEntry("KeepDirsFirst", DefaultKeepDirsFirst) )
         dir->setSorting( QDir::Name | QDir::DirsFirst);
