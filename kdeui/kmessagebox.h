@@ -139,6 +139,10 @@ public:
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Warning").
   * @param buttonContinue The text for the first button. 
+  * @param dontAskAgainName If provided, a checkbox is added with which
+  *                further confirmation can be turned off.
+  *                The string is used to lookup and store the setting
+  *                in the applications config file.
   * @param notify  Emit a KNotify event.
   *
   * The second button always has the text "Cancel".
@@ -154,7 +158,57 @@ public:
  static int warningContinueCancel(QWidget *parent, 
                          const QString &text,
                          const QString &caption,
+                         const QString &buttonContinue, 
+                         const QString &dontAskAgainName,
+                         bool notify);
+
+ /**
+  * Provided for binary compatibility
+  */
+ static int warningContinueCancel(QWidget *parent, 
+                         const QString &text,
+                         const QString &caption,
                          const QString &buttonContinue, bool notify=true);
+
+ /**
+  * Display a "warning" dialog with a listbox to show information to the user. 
+  *
+  * @param parent  If @p parent is 0, then the message box becomes an 
+  *                application-global modal dialog box. If @p parent is a
+  *                widget, the message box becomes modal relative to parent.
+  * @param text    Message string. May contain newlines.
+  * @param strlist List of strings to be written in the listbox. If the 
+  *                list is empty, it doesn't show any listbox, working 
+  *                as warningContinueCancel.
+  * @param caption Message box title. The application name is added to
+  *                the title. The default title is i18n("Warning").
+  * @param buttonContinue The text for the first button. 
+  * @param dontAskAgainName If provided, a checkbox is added with which
+  *                further confirmation can be turned off.
+  *                The string is used to lookup and store the setting
+  *                in the applications config file.
+  *                The setting is stored in the "Notification Messages" group.
+  *                   
+  * @param notify  Emit a KNotify event.
+  *
+  * The second button always has the text "Cancel".
+  *
+  * @return  @p Continue is returned if the Continue-button is pressed. 
+  *          @p Cancel is returned if the Cancel-button is pressed.
+  *
+  * To be used for questions like "You are about to Print. Are you sure?"
+  * the continueButton should then be labeled "Print".
+  *
+  * The default button is buttonContinue. Pressing "Esc" selects "Cancel".
+  */
+ static int warningContinueCancelList(QWidget *parent, 
+                         const QString &text,
+                         const QStringList &strlist,
+                         const QString &caption,
+                         const QString &buttonContinue, 
+                         const QString &dontAskAgainName=QString::null,
+                         bool notify=true);
+
 
  /**
   * Display a Yes/No/Cancel "warning" dialog. 
@@ -255,6 +309,7 @@ public:
   *                further notifications can be turned off.
   *                The string is used to lookup and store the setting
   *                in the applications config file.
+  *                The setting is stored in the "Notification Messages" group.
   * @param notify  Emit a KNotify event.
   *
   *

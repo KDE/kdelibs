@@ -51,6 +51,49 @@
 #warning FIXME - Implement Notification
 #endif
 
+static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const QString &text, const QStringList &strlist, const QString &ask, bool *checkboxReturn)
+{
+    QVBox *topcontents = new QVBox (dialog);
+    topcontents->setSpacing(KDialog::spacingHint()*2);
+    topcontents->setMargin(KDialog::marginHint()*2);
+
+    QWidget *contents = new QWidget(topcontents);
+    QHBoxLayout * lay = new QHBoxLayout(contents);
+    lay->setSpacing(KDialog::spacingHint()*2);
+
+    lay->addStretch(1);
+    QLabel *label1 = new QLabel( contents);
+    label1->setPixmap(QMessageBox::standardIcon(icon, kapp->style().guiStyle()));
+    lay->add( label1 );
+    QLabel *label2 = new QLabel( text, contents);
+    label2->setMinimumSize(label2->sizeHint());
+    lay->add( label2 );
+    lay->addStretch(1);
+
+    QSize extraSize = QSize(50,30);
+    if (!strlist.isEmpty())
+    {
+       KListBox *listbox=new KListBox( topcontents );
+       listbox->insertStringList( strlist );
+    }
+
+    QCheckBox *checkbox = 0;
+    if (!ask.isEmpty())
+    {
+       checkbox = new QCheckBox(ask, topcontents);
+       extraSize = QSize(50,0);
+    }
+
+    dialog->setMainWidget(topcontents);
+    dialog->enableButtonSeparator(false);
+    dialog->incInitialSize( extraSize );
+
+    int result = dialog->exec();
+    if (checkbox && checkboxReturn)
+       *checkboxReturn = checkbox->isChecked();
+    return result;
+}
+
 int
 KMessageBox::questionYesNo(QWidget *parent, const QString &text,
                            const QString &caption,
@@ -74,30 +117,7 @@ KMessageBox::questionYesNoList(QWidget *parent, const QString &text,
                        parent, "questionYesNo", true, true,
                        buttonYes, buttonNo);
 
-    QVBox *topcontents = new QVBox (&dialog);
-    topcontents->setSpacing(KDialog::spacingHint()*2);
-    topcontents->setMargin(KDialog::marginHint()*2);
-    QWidget *contents = new QWidget(topcontents);
-    QHBoxLayout * lay = new QHBoxLayout(contents);
-    lay->setSpacing(KDialog::spacingHint()*2);
-
-    lay->addStretch(1);
-    QLabel *label1 = new QLabel( contents );
-    label1->setPixmap(QMessageBox::standardIcon(QMessageBox::Information, kapp->style().guiStyle()));
-    lay->add( label1 );
-    lay->add( new QLabel( text, contents ) );
-    lay->addStretch(1);
-
-    if (!strlist.isEmpty())
-    {
-      KListBox *listbox=new KListBox( topcontents );
-      listbox->insertStringList( strlist );
-    }
-    dialog.setMainWidget(topcontents);
-    dialog.enableButtonSeparator(false);
-    dialog.incInitialSize( QSize( 50, 30 ) );
-
-    int result = dialog.exec();
+    int result = createKMessageBox(&dialog, QMessageBox::Information, text, strlist, QString::null, 0);
 
     switch( result )
     {
@@ -126,22 +146,7 @@ KMessageBox::warningYesNo(QWidget *parent, const QString &text,
                        parent, "warningYesNo", true, true,
                        buttonYes, buttonNo);
 
-    QWidget *contents = new QWidget(&dialog);
-    QHBoxLayout * lay = new QHBoxLayout(contents);
-    lay->setSpacing(KDialog::spacingHint()*2);
-    lay->setMargin(KDialog::marginHint()*2);
-
-    lay->addStretch(1);
-    QLabel *label1 = new QLabel( contents);
-    label1->setPixmap(QMessageBox::standardIcon(QMessageBox::Warning, kapp->style().guiStyle()));
-    lay->add( label1 );
-    lay->add( new QLabel(text, contents) );
-    lay->addStretch(1);
-
-    dialog.setMainWidget(contents);
-    dialog.enableButtonSeparator(false);
-
-    int result = dialog.exec();
+    int result = createKMessageBox(&dialog, QMessageBox::Warning, text, QStringList(), QString::null, 0);
 
     switch( result )
     {
@@ -159,38 +164,79 @@ KMessageBox::warningYesNo(QWidget *parent, const QString &text,
 }
 
 int
-KMessageBox::warningContinueCancel(QWidget *parent, const QString &text,
-                          const QString &caption,
-                                   const QString &buttonContinue, bool /*notify*/)
+KMessageBox::warningContinueCancel(QWidget *parent, 
+                                   const QString &text,
+                                   const QString &caption,
+                                   const QString &buttonContinue, 
+                                   bool notify)
 {
+   return warningContinueCancelList(parent, text, QStringList(), caption,
+                                buttonContinue, QString::null, notify);
+}
+
+int
+KMessageBox::warningContinueCancel(QWidget *parent, 
+                                   const QString &text,
+                                   const QString &caption,
+                                   const QString &buttonContinue, 
+                                   const QString &dontAskAgainName,
+                                   bool notify)
+{
+   return warningContinueCancelList(parent, text, QStringList(), caption,
+                                buttonContinue, dontAskAgainName, notify);
+}
+
+int
+KMessageBox::warningContinueCancelList(QWidget *parent, const QString &text,
+                             const QStringList &strlist,
+                             const QString &caption,
+                             const QString &buttonContinue, 
+                             const QString &dontAskAgainName,
+                             bool /*notify*/)
+{
+    KConfig *config = 0;
+    QString grpNotifMsgs = QString::fromLatin1("Notification Messages");
+    bool showMsg = true;
+
+    if (!dontAskAgainName.isEmpty())
+    {
+       config = kapp->config();
+       KConfigGroupSaver saver( config, grpNotifMsgs );
+       showMsg = config->readBoolEntry( dontAskAgainName, true);
+       if (!showMsg)
+       {
+          return Continue;
+       }
+    }
+
     KDialogBase dialog(caption.isEmpty() ? i18n("Warning") : caption,
                        KDialogBase::Yes | KDialogBase::No,
                        KDialogBase::Yes, KDialogBase::No,
                        parent, "warningYesNo", true, true,
                        buttonContinue, i18n("&Cancel"));
 
-    QWidget *contents = new QWidget(&dialog);
-    QHBoxLayout * lay = new QHBoxLayout(contents);
-    lay->setSpacing(KDialog::spacingHint()*2);
-    lay->setMargin(KDialog::marginHint()*2);
-
-    lay->addStretch(1);
-    QLabel *label1 = new QLabel( contents);
-    label1->setPixmap(QMessageBox::standardIcon(QMessageBox::Warning, kapp->style().guiStyle()));
-    lay->add( label1 );
-    lay->add( new QLabel(text, contents) );
-    lay->addStretch(1);
-
-    dialog.setMainWidget(contents);
-    dialog.enableButtonSeparator(false);
-
-    int result = dialog.exec();
+    bool checkboxResult;
+    int result = createKMessageBox(&dialog, QMessageBox::Warning, text, strlist, 
+                       dontAskAgainName.isEmpty() ? QString::null : i18n("Do not ask again"),
+                       &checkboxResult);
 
     switch( result )
     {
       case KDialogBase::Yes:
+      {
+         if (!dontAskAgainName.isEmpty())
+         {
+            showMsg = !checkboxResult;
+            if (!showMsg)
+            {
+               KConfigGroupSaver saver( config, grpNotifMsgs );
+               config->writeEntry( dontAskAgainName, showMsg);
+            }
+            config->sync();
+         }
          return Continue;
-
+      }
+   
       case KDialogBase::No:
          return Cancel;
 
@@ -214,22 +260,7 @@ KMessageBox::warningYesNoCancel(QWidget *parent, const QString &text,
                        parent, "warningYesNoCancel", true, true,
                        buttonYes, buttonNo);
 
-    QWidget *contents = new QWidget(&dialog);
-    QHBoxLayout * lay = new QHBoxLayout(contents);
-    lay->setSpacing(KDialog::spacingHint()*2);
-    lay->setMargin(KDialog::marginHint()*2);
-
-    lay->addStretch(1);
-    QLabel *label1 = new QLabel( contents);
-    label1->setPixmap(QMessageBox::standardIcon(QMessageBox::Warning, kapp->style().guiStyle()));
-    lay->add( label1 );
-    lay->add( new QLabel(text, contents) );
-    lay->addStretch(1);
-
-    dialog.setMainWidget(contents);
-    dialog.enableButtonSeparator(false);
-
-    int result = dialog.exec();
+    int result = createKMessageBox(&dialog, QMessageBox::Warning, text, QStringList(), QString::null, 0);
 
     switch( result )
     {
@@ -259,22 +290,7 @@ KMessageBox::error(QWidget *parent,  const QString &text,
                        parent, "error", true, true,
                        i18n("&OK"));
 
-    QWidget *contents = new QWidget(&dialog);
-    QHBoxLayout * lay = new QHBoxLayout(contents);
-    lay->setSpacing(KDialog::spacingHint()*2);
-    lay->setMargin(KDialog::marginHint()*2);
-
-    lay->addStretch(1);
-    QLabel *label1 = new QLabel( contents);
-    label1->setPixmap(QMessageBox::standardIcon(QMessageBox::Critical, kapp->style().guiStyle()));
-    lay->add( label1 );
-    lay->add( new QLabel(text, contents) );
-    lay->addStretch(1);
-
-    dialog.setMainWidget(contents);
-    dialog.enableButtonSeparator(false);
-
-    dialog.exec();
+    createKMessageBox(&dialog, QMessageBox::Critical, text, QStringList(), QString::null, 0);
 }
 
 void
@@ -287,22 +303,7 @@ KMessageBox::sorry(QWidget *parent, const QString &text,
                        parent, "sorry", true, true,
                        i18n("&OK"));
 
-    QWidget *contents = new QWidget(&dialog);
-    QHBoxLayout * lay = new QHBoxLayout(contents);
-    lay->setSpacing(KDialog::spacingHint()*2);
-    lay->setMargin(KDialog::marginHint()*2);
-
-    lay->addStretch(1);
-    QLabel *label1 = new QLabel( contents);
-    label1->setPixmap(QMessageBox::standardIcon(QMessageBox::Warning, kapp->style().guiStyle()));
-    lay->add( label1 );
-    lay->add( new QLabel(text, contents) );
-    lay->addStretch(1);
-
-    dialog.setMainWidget(contents);
-    dialog.enableButtonSeparator(false);
-
-    dialog.exec();
+    createKMessageBox(&dialog, QMessageBox::Warning, text, QStringList(), QString::null, 0);
 }
 
 void
@@ -312,7 +313,6 @@ KMessageBox::information(QWidget *parent,const QString &text,
     KConfig *config = 0;
     QString grpNotifMsgs = QString::fromLatin1("Notification Messages");
     bool showMsg = true;
-    QCheckBox *checkbox = 0;
 
     if (!dontShowAgainName.isEmpty())
     {
@@ -331,35 +331,15 @@ KMessageBox::information(QWidget *parent,const QString &text,
                        parent, "information", true, true,
                        i18n("&OK"));
 
-    QVBox *contents = new QVBox(&dialog);
-    contents->setSpacing(KDialog::spacingHint()*2);
-    contents->setMargin(KDialog::marginHint()*2);
+    bool checkboxResult;
 
-    QWidget *info = new QWidget(contents);
-    QHBoxLayout * lay = new QHBoxLayout(info);
-    lay->setSpacing(KDialog::spacingHint()*2);
-    lay->setMargin(0);
-
-    lay->addStretch(1);
-    QLabel *label1 = new QLabel( info);
-    label1->setPixmap(QMessageBox::standardIcon(QMessageBox::Information, kapp->style().guiStyle()));
-    lay->add( label1 );
-    lay->add( new QLabel(text, info) );
-    lay->addStretch(1);
+    createKMessageBox(&dialog, QMessageBox::Information, text, QStringList(), 
+		dontShowAgainName.isEmpty() ? QString::null : i18n("Do not show this message again"), 
+                &checkboxResult);
 
     if (!dontShowAgainName.isEmpty())
     {
-       checkbox = new QCheckBox(i18n("Do not show this message again"), contents);
-    }
-
-    dialog.setMainWidget(contents);
-    dialog.enableButtonSeparator(false);
-
-    dialog.exec();
-
-    if (!dontShowAgainName.isEmpty())
-    {
-       showMsg = !checkbox->isChecked();
+       showMsg = !checkboxResult;
        if (!showMsg)
        {
           KConfigGroupSaver saver( config, grpNotifMsgs );
