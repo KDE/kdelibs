@@ -188,7 +188,8 @@ bool KLibrary::hasSymbol( const char* symname ) const
 
 void KLibrary::unload() const
 {
-   KLibLoader::self()->unloadLibrary(QFile::encodeName(name()));
+   if (KLibLoader::s_self)
+      KLibLoader::s_self->unloadLibrary(QFile::encodeName(name()));
 }
 
 void KLibrary::slotObjectCreated( QObject *obj )
