@@ -37,7 +37,6 @@
 #include <kdebug.h>
 #include <kglobalaccel.h>
 #include <kkey_x11.h>
-#include <klistview.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kxmlguifactory.h>
@@ -73,7 +72,7 @@ public:
     KAccelActions *map;
     KAccelActions actionsNew;
 
-    //QMap<QListViewItem*, KAccelActions::Iterator> actionMap;
+    //QMap<KListViewItem*, KAccelActions::Iterator> actionMap;
 
     bool bAllowMetaKey;
     // If this is set, then shortcuts require a modifier:
@@ -137,6 +136,11 @@ int KKeyDialog::configureKeys( KAccelBase *keys, bool save_settings, QWidget *pa
 }
 
 int KKeyDialog::configureKeys( KAccel *keys, bool save_settings, QWidget *parent )
+{
+	return configureKeys( keys->basePtr(), save_settings, parent );
+}
+
+int KKeyDialog::configureKeys( KGlobalAccel *keys, bool save_settings, QWidget *parent )
 {
 	return configureKeys( keys->basePtr(), save_settings, parent );
 }
@@ -289,6 +293,7 @@ void KKeyChooser::init( KAccelActions& actions,
   // and fill up the split list box with the action/key pairs.
   //
   d->pList = new KListView( this );
+  d->pList->setAlternateBackground( QColor(0xb0, 0xb0, 0xff) );
   d->pList->setFocus();
 
   stackLayout->addMultiCellWidget( d->pList, 1, 1, 0, 1 );
@@ -410,9 +415,9 @@ void KKeyChooser::buildListView()
 	d->pList->setSorting( -1 );
 	// HACK to avoid alphabetic ording.  I'll re-write this in the
 	//  next development phase where API changes are not so sensitive. -- ellis
-	QListViewItem *pProgramItem, *pGroupItem = 0, *pParentItem, *pItem;
+	KListViewItem *pProgramItem, *pGroupItem = 0, *pParentItem, *pItem;
 
-	pParentItem = pProgramItem = pItem = new QListViewItem( d->pList, "Shortcuts" );
+	pParentItem = pProgramItem = pItem = new KListViewItem( d->pList, "Shortcuts" );
 	pParentItem->setExpandable( true );
 	pParentItem->setOpen( true );
 	pParentItem->setSelectable( false );
@@ -420,7 +425,7 @@ void KKeyChooser::buildListView()
 		KAccelAction& action = *it;
 		kdDebug(125) << "Key: " << action.m_sName << endl;
 		if( action.m_sName.startsWith( "Program:" ) ) {
-			pItem = new QListViewItem( d->pList, pProgramItem, action.m_sDesc );
+			pItem = new KListViewItem( d->pList, pProgramItem, action.m_sDesc );
 			pItem->setSelectable( false );
 			pItem->setExpandable( true );
 			pItem->setOpen( true );
@@ -428,7 +433,7 @@ void KKeyChooser::buildListView()
 				delete pProgramItem;
 			pProgramItem = pParentItem = pItem;
 		} else if( action.m_sName.startsWith( "Group:" ) ) {
-			pItem = new QListViewItem( pProgramItem, pParentItem, action.m_sDesc );
+			pItem = new KListViewItem( pProgramItem, pParentItem, action.m_sDesc );
 			pItem->setSelectable( false );
 			pItem->setExpandable( true );
 			pItem->setOpen( true );
@@ -615,10 +620,10 @@ void KKeyChooser::allDefault( bool useFourModifierKeys )
 	}
 
 	/*
-	for( QMap<QListViewItem*, KAccelActions::Iterator>::Iterator itit = d->mapItemToInfo.begin();
+	for( QMap<KListViewItem*, KAccelActions::Iterator>::Iterator itit = d->mapItemToInfo.begin();
 		itit != d->mapItemToInfo.end(); ++itit ) {
 		KAccelActions::Iterator it = *itit;
-		QListViewItem *at = itit.key();
+		KListViewItem *at = itit.key();
 		//kdDebug(125) << QString( "allDefault: %1 3:%2 4:%3\n" ).arg(it.key()).arg((*it).aDefaultKeyCode).arg((*it).aDefaultKeyCode4);
 		if ( (*it).bConfigurable ) {
 			(*it).aCurrentKeyCode = (*it).aConfigKeyCode =
@@ -672,7 +677,7 @@ void KKeyChooser::setKey( KAccelShortcut cut )
 		toChange( pItem );
 		//emit keyChange();
 	}
-/*   QListViewItem *item = d->pList->currentItem();
+/*   KListViewItem *item = d->pList->currentItem();
    if (!item || !d->mapItemToInfo.contains( item ))
       return;
 
@@ -807,14 +812,14 @@ bool KKeyChooser::isKeyPresent( KAccelShortcut cut, bool bWarnUser )
 }
 
 //---------------------------------------------------
-KKeyChooserItem::KKeyChooserItem( QListView* parent, QListViewItem* after, KAccelAction& action )
-:	QListViewItem( parent, after )
+KKeyChooserItem::KKeyChooserItem( KListView* parent, QListViewItem* after, KAccelAction& action )
+:	KListViewItem( parent, after )
 {
 	m_pAction = &action;
 }
 
 KKeyChooserItem::KKeyChooserItem( QListViewItem* parent, QListViewItem* after, KAccelAction& action )
-:	QListViewItem( parent, after )
+:	KListViewItem( parent, after )
 {
 	m_pAction = &action;
 }

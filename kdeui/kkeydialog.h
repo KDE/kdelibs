@@ -21,9 +21,9 @@
 #define __KKEYDIALOG_H__
 
 #include <qdict.h>
-#include <qlistview.h>
-#include <kdialogbase.h>
 #include <kaccelbase.h> // for KAccelActions
+#include <kdialogbase.h>
+#include <klistview.h>
 
 class QButtonGroup;
 class QCheckBox;
@@ -33,17 +33,18 @@ class QLineEdit;
 class KAccel;
 class KAccelBase;
 class KActionCollection;
+class KGlobalAccel;
 
 class KKeyDialogPrivate;
 class KKeyChooserPrivate;
 class KKeyChooserItemPrivate;
 
-class KKeyChooserItem : public QListViewItem
+class KKeyChooserItem : public KListViewItem
 {
  public:
-	//KKeyChooserItem( QListView* parent, QListViewItem* after, KKeyChooserItemPrivate* pInfo );
-	//KKeyChooserItem( QListViewItem* parent, QListViewItem* after, KKeyChooserItemPrivate* pInfo );
-	KKeyChooserItem( QListView* parent, QListViewItem* after, KAccelAction& action );
+	//KKeyChooserItem( KListView* parent, KListViewItem* after, KKeyChooserItemPrivate* pInfo );
+	//KKeyChooserItem( KListViewItem* parent, KListViewItem* after, KKeyChooserItemPrivate* pInfo );
+	KKeyChooserItem( KListView* parent, QListViewItem* after, KAccelAction& action );
 	KKeyChooserItem( QListViewItem* parent, QListViewItem* after, KAccelAction& action );
 
 	virtual QString text( int iCol ) const;
@@ -223,6 +224,8 @@ public:
   static int configureKeys( KAccelBase *keys, bool save_settings = true,
                             QWidget *parent = 0  );
   static int configureKeys( KAccel *keys, bool save_settings = true,
+                            QWidget *parent = 0  );
+  static int configureKeys( KGlobalAccel *keys, bool save_settings = true,
                             QWidget *parent = 0  );
   /**
    * Pops up a modal dialog for configuring key settings. The dialog is initialized
