@@ -94,7 +94,7 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
 
         // we have an alt and the user meant it (its not a text we invented)
         if ( !alt.isEmpty() && !element()->getAttribute( ATTR_ALT ).isNull()) {
-            QFontMetrics fm = fontMetrics( style()->font() );
+            const QFontMetrics &fm = style()->fontMetrics();
             QRect br = fm.boundingRect (  0, 0, 1024, 256, Qt::AlignAuto|Qt::WordBreak, alt.string() );
             if ( br.width() > iw )
                 iw = br.width();
@@ -208,7 +208,7 @@ void RenderImage::printObject(QPainter *p, int /*_x*/, int /*_y*/, int /*_w*/, i
                 p->setPen( style()->color() );
                 int ax = _tx + leftBorder + leftPad + 2;
                 int ay = _ty + topBorder + topPad + 2;
-                QFontMetrics fm = fontMetrics(style()->font());
+                const QFontMetrics &fm = style()->fontMetrics();
                 if (cWidth>5 && cHeight>=fm.height())
                     p->drawText(ax, ay+1, cWidth - 4, cHeight - 4, Qt::WordBreak, text );
             }

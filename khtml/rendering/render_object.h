@@ -312,6 +312,15 @@ public:
     virtual short maxWidth() const { return 0; }
 
     RenderStyle* style() const { return m_style; }
+    RenderStyle* style( bool firstLine ) const { 
+	RenderStyle *s = m_style;
+	if( firstLine && hasFirstLine() ) {
+	    RenderStyle *pseudoStyle  = style()->getPseudoStyle(RenderStyle::FIRST_LINE);
+	    if ( pseudoStyle )
+		s = pseudoStyle;
+	}
+	return s;
+    }
 
     enum BorderSide {
         BSTop, BSBottom, BSLeft, BSRight
@@ -365,7 +374,13 @@ public:
 
     virtual bool containsPoint(int _x, int _y, int _tx, int _ty);
 
-    QFont font(bool firstLine) const;
+    const QFont &font(bool firstLine) const {
+	return style( firstLine )->font();
+    }
+    
+    const QFontMetrics &fontMetrics(bool firstLine) const {
+	return style( firstLine )->fontMetrics();
+    }
 
     virtual void handleDOMEvent(DOM::EventImpl */*evt*/) {}
 
@@ -387,8 +402,8 @@ protected:
     void invalidateVerticalPositions();
     short getVerticalPosition( bool firstLine ) const;
 
-private:
     RenderStyle* m_style;
+private:
     DOM::NodeImpl* m_node;
     RenderObject *m_parent;
     RenderObject *m_previous;

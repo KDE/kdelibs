@@ -89,31 +89,33 @@ RenderObject *RenderObject::createObject(DOM::NodeImpl* node,  RenderStyle* styl
 
 
 RenderObject::RenderObject(DOM::NodeImpl* node)
-    : CachedObjectClient(), m_node(node)
+    : CachedObjectClient(),
+m_style( 0 ),
+m_node( node ),
+m_parent( 0 ),
+m_previous( 0 ),
+m_next( 0 ),
+m_verticalPosition( PositionUndefined ),
+m_layouted( false ),
+m_unused( false ),
+m_minMaxKnown( false ),
+m_floating( false ),
+
+m_positioned( false ),
+m_overhangingContents( false ),
+m_relPositioned( false ),
+m_printSpecial( false ),
+
+m_isAnonymous( false ),
+m_recalcMinMax( false ),
+m_isText( false ),
+m_inline( true ),
+
+m_replaced( false ),
+m_containsOverhangingFloats( false ),
+m_hasFirstLine( false ),
+m_isSelectionBorder( false )
 {
-    m_style = 0;
-
-    m_layouted = false;
-    m_minMaxKnown = false;
-    m_recalcMinMax = true;
-
-    m_parent = 0;
-    m_previous = 0;
-    m_next = 0;
-
-    m_floating = false;
-    m_positioned = false;
-    m_relPositioned = false;
-    m_printSpecial = false;
-    m_overhangingContents = false;
-    m_isAnonymous = false;
-    m_isText = false;
-    m_inline = true;
-    m_replaced = false;
-    m_containsOverhangingFloats = false;
-    m_hasFirstLine = false;
-    m_verticalPosition = PositionUndefined;
-    m_isSelectionBorder = false;
 }
 
 RenderObject::~RenderObject()
@@ -829,7 +831,7 @@ short RenderObject::getVerticalPosition( bool firstLine ) const
         //     if ( vpos == PositionTop )
 //                 vpos = 0;
 
-	    QFont f = parent()->font( firstLine );
+	    const QFont &f = parent()->font( firstLine );
             int fontheight = parent()->lineHeight( firstLine );
             int fontsize = f.pixelSize();
             int halfleading = ( fontheight - fontsize ) / 2;
@@ -852,7 +854,7 @@ short RenderObject::getVerticalPosition( bool firstLine ) const
 	    } else if ( va == TEXT_BOTTOM ) {
 		vpos += QFontMetrics(f).descent();
 		if ( !isReplaced() )
-		    vpos -= QFontMetrics(font(firstLine)).descent();
+		    vpos -= fontMetrics(firstLine).descent();
 	    } else if ( va == BASELINE_MIDDLE )
 		vpos += - lineHeight( firstLine )/2 + baselinePosition( firstLine );
 	}
@@ -873,7 +875,7 @@ short RenderObject::lineHeight( bool firstLine ) const
 
     // its "unset", choose nice default
     if ( lh.value < 0 )
-        return QFontMetrics( style()->font() ).height();
+        return style()->fontMetrics().height();
 
     if ( lh.isPercent() )
         return lh.minWidth( style()->font().pixelSize() );
@@ -884,18 +886,8 @@ short RenderObject::lineHeight( bool firstLine ) const
 
 short RenderObject::baselinePosition( bool firstLine ) const
 {
-    QFont f = font( firstLine );
-    return QFontMetrics( f ).ascent() + ( lineHeight( firstLine ) - QFontMetrics( f ).height() ) / 2;
-}
-
-QFont RenderObject::font(bool firstLine) const
-{
-    if( firstLine && hasFirstLine() ) {
-	RenderStyle *pseudoStyle  = style()->getPseudoStyle(RenderStyle::FIRST_LINE);
-	if ( pseudoStyle )
-	    return pseudoStyle->font();
-    }
-    return style()->font();
+    const QFontMetrics &fm = fontMetrics( firstLine );
+    return fm.ascent() + ( lineHeight( firstLine ) - fm.height() ) / 2;
 }
 
 void RenderObject::invalidateVerticalPositions()

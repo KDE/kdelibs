@@ -262,12 +262,3 @@ void khtml::setPrintPainter( QPainter *printer )
 {
     printpainter = printer;
 }
-
-QFontMetrics khtml::fontMetrics( const QFont &f )
-{
-    if(printpainter) {
-        printpainter->setFont( f );
-        return printpainter->fontMetrics();
-    }
-    return QFontMetrics( f );
-}

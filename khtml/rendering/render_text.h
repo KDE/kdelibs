@@ -63,7 +63,7 @@ public:
     void printSelection(QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos);
 
     // Return before, after (offset set to max), or inside the text, at @p offset
-    FindSelectionResult checkSelectionPoint(int _x, int _y, int _tx, int _ty, QFontMetrics * fm, int & offset, short lineheight);
+    FindSelectionResult checkSelectionPoint(int _x, int _y, int _tx, int _ty, const QFontMetrics * fm, int & offset, short lineheight);
 
     /**
      * if this textslave was rendered @ref _ty pixels below the upper edge
@@ -145,7 +145,7 @@ public:
     QChar *text() const { return str->s; }
     virtual void position(int x, int y, int from, int len, int width, bool reverse, bool firstLine);
 
-    virtual unsigned int width(unsigned int from, unsigned int len, QFontMetrics *fm) const;
+    virtual unsigned int width(unsigned int from, unsigned int len, const QFontMetrics *fm) const;
     virtual unsigned int width(unsigned int from, unsigned int len, bool firstLine = false) const;
     virtual short width() const;
     virtual int height() const;
@@ -189,7 +189,7 @@ public:
     virtual void repaint();
 
     bool hasBreakableChar() const { return m_hasBreakableChar; }
-    QFontMetrics metrics(bool firstLine) const;
+    const QFontMetrics &metrics(bool firstLine) const;
 
 protected:
     void printTextOutline(QPainter *p, int tx, int ty, const QRect &prevLine, const QRect &thisLine, const QRect &nextLine);
@@ -198,7 +198,6 @@ protected:
 
 protected: // members
     TextSlaveArray m_lines;
-    QFontMetrics *fm;
     DOM::DOMStringImpl *str; //
 
     short m_lineHeight;

@@ -65,7 +65,7 @@ float khtml::computeLengthFloat(DOM::CSSPrimitiveValueImpl *val, RenderStyle *st
 		break;
     case CSSPrimitiveValue::CSS_EXS:
 	{
-        QFontMetrics fm = khtml::fontMetrics(style->font());
+        QFontMetrics fm = style->fontMetrics();
         QRect b = fm.boundingRect('x');
         factor = b.height();
         break;

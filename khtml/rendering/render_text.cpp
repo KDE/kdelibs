@@ -149,7 +149,7 @@ void TextSlave::printBoxDecorations(QPainter *pt, RenderStyle* style, RenderText
         p->printBorder(pt, _tx, _ty, width, height, style, begin, end);
 }
 
-FindSelectionResult TextSlave::checkSelectionPoint(int _x, int _y, int _tx, int _ty, QFontMetrics * fm, int & offset, short lineHeight)
+FindSelectionResult TextSlave::checkSelectionPoint(int _x, int _y, int _tx, int _ty, const QFontMetrics * fm, int & offset, short lineHeight)
 {
     //kdDebug(6040) << "TextSlave::checkSelectionPoint " << this << " _x=" << _x << " _y=" << _y
     //              << " _tx+m_x=" << _tx+m_x << " _ty+m_y=" << _ty+m_y << endl;
@@ -251,7 +251,6 @@ RenderText::RenderText(DOM::NodeImpl* node, DOMStringImpl *_str)
 {
     // init RenderObject attributes
     setRenderText();   // our object inherits from RenderText
-    setInline(true);   // our object is Inline
 
     m_minWidth = -1;
     m_maxWidth = -1;
@@ -261,7 +260,6 @@ RenderText::RenderText(DOM::NodeImpl* node, DOMStringImpl *_str)
 
     m_selectionState = SelectionNone;
     m_hasReturn = true;
-    fm = 0;
 
 #ifdef DEBUG_LAYOUT
     QConstString cstr(str->s, str->l);
@@ -271,25 +269,21 @@ RenderText::RenderText(DOM::NodeImpl* node, DOMStringImpl *_str)
 
 void RenderText::setStyle(RenderStyle *_style)
 {
-    bool fontchanged = ( !style() || style()->font() != _style->font() );
-    RenderObject::setStyle(_style);
-    if ( !fm || fontchanged ) {
-        delete fm;
-        fm = new QFontMetrics( style()->font() );
-    }
+    if ( m_style != _style ) {
+	m_style = _style;
+	m_lineHeight = RenderObject::lineHeight(false);
 
-    m_lineHeight = RenderObject::lineHeight(false);
-
-    if ( style()->fontVariant() == SMALL_CAPS ) {
-	setText( str->upper() );
-    } else {
-	// ### does not work if texttransform is set to None again!
-	switch(style()->textTransform()) {
-	    case CAPITALIZE:  setText(str->capitalize());  break;
-	    case UPPERCASE:   setText(str->upper());       break;
-	    case LOWERCASE:   setText(str->lower());       break;
-	    case NONE:
-	    default:;
+	if ( style()->fontVariant() == SMALL_CAPS ) {
+	    setText( str->upper() );
+	} else {
+	    // ### does not work if texttransform is set to None again!
+	    switch(style()->textTransform()) {
+		case CAPITALIZE:  setText(str->capitalize());  break;
+		case UPPERCASE:   setText(str->upper());       break;
+		case LOWERCASE:   setText(str->lower());       break;
+		case NONE:
+		default:;
+	    }
 	}
     }
 }
@@ -298,7 +292,6 @@ RenderText::~RenderText()
 {
     deleteSlaves();
     if(str) str->deref();
-    delete fm;
 }
 
 void RenderText::deleteSlaves()
@@ -367,7 +360,7 @@ FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int
         if ( s->m_reversed )
             return SelectionPointBefore; // abort if RTL (TODO)
         int result;
-        QFontMetrics fm = metrics(si == 0);
+        const QFontMetrics &fm = metrics(si == 0);
         result = s->checkSelectionPoint(_x, _y, _tx, _ty, &fm, offset, m_lineHeight);
 
         //kdDebug(6040) << "RenderText::checkSelectionPoint " << this << " line " << si << " result=" << result << " offset=" << offset << endl;
@@ -412,7 +405,7 @@ void RenderText::cursorPos(int offset, int &_x, int &_y, int &height)
   _y = s->m_y;
   height = m_lineHeight; // ### firstLine!!! s->m_height;
 
-  QFontMetrics fm = metrics( false ); // #### wrong for first-line!
+  const QFontMetrics &fm = metrics( false ); // #### wrong for first-line!
   QString tekst(s->m_text, s->m_len);
   _x = s->m_x + (fm.boundingRect(tekst, pos)).right();
   if(pos)
@@ -654,7 +647,7 @@ void RenderText::calcMinMaxWidth()
     m_hasBreakableChar = false;
 
     // ### not 100% correct for first-line
-    QFontMetrics _fm = metrics( false );
+    const QFontMetrics &_fm = metrics( false );
     int len = str->l;
     if ( len == 1 && str->s->latin1() == '\n' )
 	m_hasReturn = true;
@@ -736,7 +729,7 @@ int RenderText::yPos() const
 
 const QFont &RenderText::font()
 {
-    return parent()->style()->font();
+    return m_style->font();
 }
 
 void RenderText::setText(DOMStringImpl *text)
@@ -781,8 +774,9 @@ short RenderText::lineHeight( bool firstLine ) const
 
 short RenderText::baselinePosition( bool firstLine ) const
 {
-    return metrics( firstLine ).ascent() +
-        ( lineHeight( firstLine ) - metrics( firstLine ).height() ) / 2;
+    const QFontMetrics &fm = metrics( firstLine );
+    return fm.ascent() +
+        ( lineHeight( firstLine ) - fm.height() ) / 2;
 }
 
 void RenderText::position(int x, int y, int from, int len, int width, bool reverse, bool firstLine)
@@ -824,17 +818,17 @@ unsigned int RenderText::width(unsigned int from, unsigned int len, bool firstLi
     if(!str->s || from > str->l ) return 0;
     if ( from + len > str->l ) len = str->l - from;
 
-    QFontMetrics fm = metrics(firstLine);
+    const QFontMetrics &fm = metrics(firstLine);
     return width( from, len, &fm);
 }
 
-unsigned int RenderText::width(unsigned int from, unsigned int len, QFontMetrics *_fm) const
+unsigned int RenderText::width(unsigned int from, unsigned int len, const QFontMetrics *_fm) const
 {
     if(!str->s || from > str->l ) return 0;
     if ( from + len > str->l ) len = str->l - from;
 
     int w;
-    if ( _fm == fm && from == 0 && len == str->l )
+    if ( _fm == &m_style->fontMetrics() && from == 0 && len == str->l )
  	 w = m_maxWidth;
     if( len == 1)
         w = _fm->width( *(str->s+from) );
@@ -900,16 +894,14 @@ short RenderText::verticalPositionHint( bool firstLine ) const
     return parent()->verticalPositionHint( firstLine );
 }
 
-QFontMetrics RenderText::metrics(bool firstLine) const
+const QFontMetrics &RenderText::metrics(bool firstLine) const
 {
     if( firstLine && hasFirstLine() ) {
 	RenderStyle *pseudoStyle  = style()->getPseudoStyle(RenderStyle::FIRST_LINE);
 	if ( pseudoStyle )
-	    return fontMetrics( pseudoStyle->font() );
+	    return pseudoStyle->fontMetrics();
     }
-    if ( khtml::printpainter )
-	return fontMetrics(style()->font());
-    return *fm;
+    return style()->fontMetrics();
 }
 
 void RenderText::printTextOutline(QPainter *p, int tx, int ty, const QRect &lastline, const QRect &thisline, const QRect &nextline)

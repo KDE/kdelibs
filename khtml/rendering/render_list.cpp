@@ -395,7 +395,7 @@ void RenderListMarker::calcMinMaxWidth()
         static_cast<RenderListItem*>(p)->calcListValue();
     }
 
-    QFontMetrics fm = fontMetrics(style()->font());
+    const QFontMetrics &fm = style()->fontMetrics();
     m_height = fm.ascent();
 
     switch(style()->listStyleType())

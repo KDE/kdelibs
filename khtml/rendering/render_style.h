@@ -34,6 +34,7 @@
 
 #include <qcolor.h>
 #include <qfont.h>
+#include <qfontmetrics.h>
 #include <qlist.h>
 #include <qpalette.h>
 #include <qapplication.h>
@@ -439,10 +440,10 @@ public:
 	cursor_image = 0;
     }
 
-    StyleInheritedData() { setDefaultValues(); }
+    StyleInheritedData() : SharedData(), font(), fontMetrics( font ) { setDefaultValues(); }
     virtual ~StyleInheritedData() { }
 
-    StyleInheritedData(const StyleInheritedData& o ) : SharedData()
+    StyleInheritedData(const StyleInheritedData& o ) : SharedData(), font(), fontMetrics( font )
     {
 	indent = o.indent;
 	line_height = o.line_height;
@@ -451,6 +452,7 @@ public:
 	style_image = o.style_image;
 	cursor_image = o.cursor_image;
 	font = o.font;
+	fontMetrics = o.fontMetrics;
 	color = o.color;
 	decoration_color = o.decoration_color;
 	letter_spacing = 0;
@@ -487,6 +489,7 @@ public:
     CachedImage *cursor_image;
 
     QFont font;
+    QFontMetrics fontMetrics;
     QColor color;
     QColor decoration_color;
 
@@ -719,6 +722,7 @@ public:
     short colSpan() const { return visual->colspan; }
 
     const QFont & font() const { return inherited->font; }
+    const QFontMetrics & fontMetrics() const { return inherited->fontMetrics; }
 
     const QColor & color() const { return inherited->color; }
     Length textIndent() const { return inherited->indent; }
@@ -820,7 +824,12 @@ public:
     void setTableLayout(ETableLayout v) {  noninherited_flags._table_layout = v; }
     void ssetColSpan(short v) { SET_VAR(visual,colspan,v) }
 
-    void setFont(const QFont & v) { SET_VAR(inherited,font,v) }
+    void setFont(const QFont & v) { 
+	if (!(inherited->font == v)) {
+	    inherited.access()->font = v;
+	    inherited.access()->fontMetrics = v;
+	}
+    }
 
     void setColor(const QColor & v) { SET_VAR(inherited,color,v) }
     void setTextIndent(Length v) { SET_VAR(inherited,indent,v) }

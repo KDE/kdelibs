@@ -306,7 +306,7 @@ void RenderSubmitButton::calcMinMaxWidth()
     static_cast<QPushButton*>(m_widget)->setFont(style()->font());
 
     // this is a QLineEdit/RenderLineEdit compatible sizehint
-    QFontMetrics fm = fontMetrics( m_widget->font() );
+    QFontMetrics fm = QFontMetrics( m_widget->font() );
     m_widget->constPolish();
     QSize ts = fm.size( ShowPrefix, raw );
     int h = ts.height() + 8;
@@ -444,7 +444,7 @@ void RenderLineEdit::calcMinMaxWidth()
 {
     KHTMLAssert( !minMaxKnown() );
 
-    QFontMetrics fm = fontMetrics( style()->font() );
+    const QFontMetrics &fm = style()->fontMetrics();
     QSize s;
 
     int size = element()->size();
@@ -534,7 +534,7 @@ void RenderFileButton::calcMinMaxWidth()
 {
     KHTMLAssert( !minMaxKnown() );
 
-    QFontMetrics fm = fontMetrics( style()->font() );
+    const QFontMetrics &fm = style()->fontMetrics();
     QSize s;
     int size = element()->size();
 
@@ -1062,7 +1062,7 @@ void RenderTextArea::calcMinMaxWidth()
     KHTMLAssert( !minMaxKnown() );
 
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
-    QFontMetrics m = fontMetrics(style()->font());
+    const QFontMetrics &m = style()->fontMetrics();
     qDebug("scrollbar sizehint: %d", w->verticalScrollBar()->sizeHint().width());
 
     QSize size( QMAX(element()->cols(), 1)*m.width('x') + w->frameWidth() +

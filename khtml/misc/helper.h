@@ -34,7 +34,6 @@ namespace khtml
 
     extern QPainter *printpainter;
     void setPrintPainter( QPainter *printer );
-    QFontMetrics fontMetrics( const QFont &f );
 
     //enumerator for findSelectionNode
     enum FindSelectionResult { SelectionPointBefore,
