@@ -209,7 +209,8 @@ bool Collector::collect()
     for (int i = 0; i < block->size; i++, r++) {
       ValueImp *imp = (*r);
       // Can delete if marked==false
-      if (imp && (imp->_flags & ValueImp::VI_MARKED) == 0) {
+      if (imp &&
+          (imp->_flags & (ValueImp::VI_CREATED|ValueImp::VI_MARKED)) == ValueImp::VI_CREATED ) {
         // emulate destructing part of 'operator delete()'
         //fprintf( stderr, "Collector::deleting ValueImp %p (%s)\n", (void*)imp, typeid(*imp).name());
         imp->~ValueImp();
