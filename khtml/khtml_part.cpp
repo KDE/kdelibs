@@ -1704,7 +1704,8 @@ void KHTMLPart::slotSecurity()
                d->m_ssl_cipher_desc,
                d->m_ssl_cipher_version,
                d->m_ssl_cipher_used_bits.toInt(),
-               d->m_ssl_cipher_bits.toInt());
+               d->m_ssl_cipher_bits.toInt(), 
+               (KSSLCertificate::KSSLValidation) 1, QString(""), QString(""));
   }
   kid->show();
 }
