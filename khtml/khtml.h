@@ -1,9 +1,10 @@
 /* This file is part of the KDE project
 
    Copyright (C) 1997 Martin Jones (mjones@kde.org)
-              (C) 1998 Waldo Bastian (bastian@kde.org)
-              (C) 1998, 1999 Torben Weis (weis@kde.org)
-              (C) 1999 Lars Knoll (knoll@kde.org)
+             (C) 1998 Waldo Bastian (bastian@kde.org)
+             (C) 1998, 1999 Torben Weis (weis@kde.org)
+             (C) 1999 Lars Knoll (knoll@kde.org)
+	     (C) 1999 Antti Koivisto (koivisto@kde.org)
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
