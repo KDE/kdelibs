@@ -457,14 +457,14 @@ void KListView::leaveEvent( QEvent *e )
 void KListView::contentsMousePressEvent( QMouseEvent *e )
 {
   if( (selectionModeExt() == Extended) && (e->state() & ShiftButton) && !(e->state() & ControlButton) )
-    {
-      bool block = signalsBlocked();
-      blockSignals( true );
+  {
+    bool block = signalsBlocked();
+    blockSignals( true );
 
-      clearSelection();
+    clearSelection();
 
-      blockSignals( block );
-    }
+    blockSignals( block );
+  }
 
   QPoint p( contentsToViewport( e->pos() ) );
   QListViewItem *at = itemAt (p);
@@ -475,26 +475,29 @@ void KListView::contentsMousePressEvent( QMouseEvent *e )
                 treeStepSize() * ( at->depth() + ( rootIsDecorated() ? 1 : 0) ) + itemMargin() )
            && ( p.x() >= header()->cellPos( header()->mapToActual( 0 ) ) );
 
-  bool renameStarted = false;
-
-  // If the row was already selected, create an editor widget.
-  if (at && at->isSelected() && itemsRenameable() && !rootDecoClicked)
+  if (e->button() == LeftButton && !rootDecoClicked)
   {
-    int col = header()->mapToLogical( header()->cellAt( p.x() ) );
-    if ( d->renameable.contains(col) )
+    bool renameStarted = false;
+
+    // If the row was already selected, create an editor widget.
+    if (at && at->isSelected() && itemsRenameable())
     {
+      int col = header()->mapToLogical( header()->cellAt( p.x() ) );
+      if ( d->renameable.contains(col) )
+      {
         rename(at, col);
         renameStarted = true;
+      }
     }
-  }
 
-  //Start a drag, if we didn't just start a rename
-  if (e->button() == LeftButton && !renameStarted && !rootDecoClicked)
-  {
-    d->startDragPos = e->pos();
+    //Start a drag, if we didn't just start a rename
+    if (!renameStarted)
+    {
+      d->startDragPos = e->pos();
 
-    if (at)
-      d->validDrag = true;
+      if (at)
+        d->validDrag = true;
+    }
   }
 
   QListView::contentsMousePressEvent( e );
