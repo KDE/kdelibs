@@ -98,10 +98,8 @@ if test "$have_ssl" = yes; then
 #ifndef OPENSSL_VERSION_NUMBER
       printf("ssl_version=\\"error\\"\n");
 #else
-      if (OPENSSL_VERSION_NUMBER < 0x00905000)
+      if (OPENSSL_VERSION_NUMBER < 0x00906000)
         printf("ssl_version=\\"old\\"\n");
-      else if (OPENSSL_VERSION_NUMBER < 0x00906000)
-        printf("ssl_version=\\"0.9.5\\"\n");
       else
         printf("ssl_version=\\"ok\\"\n");
 #endif
@@ -117,7 +115,7 @@ EOF
           AC_MSG_ERROR([$ssl_incdir/openssl/opensslv.h doesn't define OPENSSL_VERSION_NUMBER !])
         else
           if test $ssl_version = old; then
-            AC_MSG_WARN([OpenSSL version too old. Upgrade to 0.9.5a at least, see http://www.openssl.org. SSL support disabled.])
+            AC_MSG_WARN([OpenSSL version too old. Upgrade to 0.9.6 at least, see http://www.openssl.org. SSL support disabled.])
             have_ssl=no
           fi
         fi
