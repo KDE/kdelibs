@@ -79,16 +79,16 @@ QCString StubProcess::commaSeparatedList(QCStringList lst)
 
 int StubProcess::ConverseStub(bool check_only)
 {
-    // This makes parsing a lot easier.
-    enableLocalEcho(false);
-
     QCString line, tmp;
     while (1) 
     {
 	line = readLine();
 	if (line.isNull())
 	    return -1;
-	if (line == "kdesu_stub") {
+	if (line == "kdesu_stub") 
+	{
+	    // This makes parsing a lot easier.
+	    enableLocalEcho(false);
 	    if (check_only) writeLine("stop");
 	    else writeLine("ok");
 	} else if (line == "display") {
