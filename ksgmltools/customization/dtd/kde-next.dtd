@@ -1,7 +1,7 @@
 <!--
     Document Type Definition for DocBook as used in the KDE documentation
     
-    Copyright (C) 1999-2000 Frederik Fouvry
+    Copyright (C) 1999-2001 Frederik Fouvry
      
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -18,7 +18,7 @@
     Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
     
     Send suggestions, comments, etc. to Frederik Fouvry
-    <fouvry@sfs.nphil.uni-tuebingen.de>.
+    <fouvry@coli.uni-sb.de>.
 
 
     USAGE
@@ -56,6 +56,12 @@
 <!ENTITY % rdbhier2	    PUBLIC
   "-//KDE//ELEMENTS DocBook Hierarchy Redeclarations 2 V2.0//EN"     >
 <!ENTITY % dbhier.redecl2.module "INCLUDE"			     >
+
+<!-- For Java-style refentries	   
+     Based on DocBook 4.0.                                         -->
+<!--ENTITY % jrefentry      PUBLIC
+  "-//Norman Walsh//DTD JRefEntry V1.0//EN"                          >
+%jrefentry; -->
 
 <!-- Temporary solution -->
 <!ENTITY copy  "(c)"--=copyright sign-->
