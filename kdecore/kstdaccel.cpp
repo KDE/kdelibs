@@ -368,16 +368,16 @@ bool ShortcutList::save() const
 	return writeSettings( QString::null, 0, false, true );
 }
 
-QString action(StdAccel id)
+KDECORE_EXPORT QString action(StdAccel id)
 	{ return name(id); }
-QString description(StdAccel id)
+KDECORE_EXPORT QString description(StdAccel id)
 	{ return label(id); }
-int key(StdAccel id)
+KDECORE_EXPORT int key(StdAccel id)
 	{ return shortcut(id).keyCodeQt(); }
-int defaultKey(StdAccel id)
+KDECORE_EXPORT int defaultKey(StdAccel id)
 	{ return shortcutDefault(id).keyCodeQt(); }
 
-bool isEqual(const QKeyEvent* ev, int keyQt)
+KDECORE_EXPORT bool isEqual(const QKeyEvent* ev, int keyQt)
 {
 	KKey key1( ev ), key2( keyQt );
 	return key1 == key2;
