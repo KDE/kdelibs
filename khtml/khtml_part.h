@@ -686,7 +686,14 @@ private slots:
    * @internal
    */
   void slotRedirection(KIO::Job*, const KURL&);
-
+  /**
+   * @internal
+   */
+  void slotDebugDOMTree();
+  /**
+   * @internal
+   */
+  void slotDebugRenderTree();
   /**
    * @internal
    */

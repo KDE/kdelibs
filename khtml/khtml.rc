@@ -1,10 +1,13 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="khtmlpart" version="1">
+<kpartgui name="khtmlpart" version="2">
 <MenuBar>
  <Menu name="edit">
   <Action name="selectAll" />
   <Separator />
   <Action name="find" />
+  <Separator />
+  <Action name="debugRenderTree" />
+  <Action name="debugDOMTree" /> 
  </Menu>
 </MenuBar>
 </kpartgui>

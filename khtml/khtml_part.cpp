@@ -258,6 +258,8 @@ public:
   KAction *m_paFind;
   KAction *m_paPrintFrame;
   KAction *m_paSelectAll;
+  KAction *m_paDebugDOMTree;
+  KAction *m_paDebugRenderTree;
 
   KParts::PartManager *m_manager;
 
@@ -412,6 +414,8 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paSaveDocument = new KAction( i18n( "&Save As..." ), CTRL+Key_S, this, SLOT( slotSaveDocument() ), actionCollection(), "saveDocument" );
   d->m_paSaveFrame = new KAction( i18n( "Save &Frame As..." ), 0, this, SLOT( slotSaveFrame() ), actionCollection(), "saveFrame" );
   d->m_paSecurity = new KAction( i18n( "Security..." ), "unlock", 0, this, SLOT( slotSecurity() ), actionCollection(), "security" );
+  d->m_paDebugRenderTree = new KAction( "print RenderingTree to stdout", CTRL+Key_D, this, SLOT( slotDebugRenderTree() ), actionCollection(), "debugRenderTree" );
+  d->m_paDebugDOMTree = new KAction( "print DOM Tree to stdout", 0, this, SLOT( slotDebugDOMTree() ), actionCollection(), "debugDOMTree" );
 
   d->m_paSetEncoding = new KSelectAction( i18n( "Set &Encoding" ), 0, this, SLOT( slotSetEncoding() ), actionCollection(), "setEncoding" );
   QStringList encodings = KGlobal::charsets()->availableEncodingNames();
@@ -836,6 +840,17 @@ void KHTMLPart::slotShowDocument( const QString &url, const QString &target )
       emit d->m_extension->openURLRequest( KURL(url), newArgs );
   }
 }
+
+void KHTMLPart::slotDebugDOMTree()
+{
+    qDebug("slotDebugDOMTree");
+}
+
+void KHTMLPart::slotDebugRenderTree()
+{
+    qDebug("slotDebugRenderTree");
+}
+
 
 void KHTMLPart::autoloadImages( bool enable )
 {
