@@ -25,6 +25,7 @@
 #include "kwin.h"
 #include <X11/Xatom.h>
 #include "kapp.h"
+#include "kdebug.h"
 #include <qtl.h>
 #include <qlist.h>
 #include <klocale.h>
@@ -154,12 +155,18 @@ bool KWinModulePrivate::x11Event( XEvent * ev )
 	unsigned int dirty = ni.event( ev );
 	if ( !dirty && ev->type ==PropertyNotify && ev->xproperty.atom == XA_WM_HINTS )
 	    dirty |= NET::WMIcon; // support for old icons
+	if ( (dirty & NET::WMStrut) != 0 ) {
+	    if ( !strutWindows.contains( ev->xany.window )  )
+		strutWindows.append( ev->xany.window );
+	}
 	if ( dirty ) {
 	    for ( module = modules.first(); module; module = modules.next() ) {
 		emit module->windowChanged( ev->xany.window );
 		emit module->windowChanged( ev->xany.window, dirty );
-		if ( (dirty & NET::WMStrut) != 0 )
+		if ( (dirty & NET::WMStrut) != 0 ) {
+		    kdDebug() << "KWINMODULE: strutChanged()" << endl;
 		    emit module->strutChanged();
+		}
 	    }
 	}
     }
@@ -194,8 +201,10 @@ void KWinModulePrivate::addClient(Window w)
     windows.append( w );
     for ( module = modules.first(); module; module = modules.next() ) {
 	emit module->windowAdded( w );
-	if ( emit_strutChanged )
+	if ( emit_strutChanged ) {
 	    emit module->strutChanged();
+	    kdDebug() << "KWINMODULE: strutChanged()" << endl;
+	}
     }
 }
 
@@ -206,8 +215,10 @@ void KWinModulePrivate::removeClient(Window w)
     windows.remove( w );
     for ( module = modules.first(); module; module = modules.next() ) {
 	emit module->windowRemoved( w );
-	if ( emit_strutChanged )
+	if ( emit_strutChanged ) {
 	    emit module->strutChanged();
+	    kdDebug() << "KWINMODULE: strutChanged()" << endl;
+	}
     }
 }
 
