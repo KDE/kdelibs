@@ -1128,7 +1128,7 @@ bool KWM::isDockWindow(Window w){
 }
 
 int KWM::getWindowState(Window w){
-  static a = 0;
+  static Atom a = 0;
   if (!a)
     a = XInternAtom(qt_xdisplay(), "WM_STATE", False);
   long result = WithdrawnState;
