@@ -18,7 +18,7 @@
 
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/kio -I$(top_srcdir)/khtml -I$(top_srcdir)/khtml/java $(all_includes)
 
-KDE_CXXFLAGS = $(USE_EXCEPTIONS) $(WOVERLOADED_VIRTUAL)
+KDE_CXXFLAGS = $(USE_EXCEPTIONS)
 
 noinst_LTLIBRARIES = libkjs_html.la
 
