@@ -255,10 +255,10 @@ QByteArray HTMLFormElementImpl::formData()
                         QString path = static_cast<HTMLInputElementImpl*>(current)->filename().string();
                         QString onlyfilename = path.mid(path.findRev('/')+1);
 
-                        hstr += ("; filename=\"" + onlyfilename + "\"\r\n").ascii();
+                        hstr += ("; filename=\"" + onlyfilename + "\"").ascii();
                         if(!static_cast<HTMLInputElementImpl*>(current)->filename().isEmpty())
                         {
-                            hstr += "Content-Type: ";
+                            hstr += "\r\nContent-Type: ";
                             KMimeType::Ptr ptr = KMimeType::findByURL(KURL(path));
                             hstr += ptr->name().ascii();
                         }
