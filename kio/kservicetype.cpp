@@ -233,12 +233,7 @@ KService::List KServiceType::offers( const QString& _servicetype )
   // Normal services associated with this servicetype
   KServiceType * serv = KServiceTypeFactory::self()->findServiceTypeByName( _servicetype );
   if ( serv )
-  {
     lst += KServiceFactory::self()->offers( serv->offset() );
-    // Derived service type -> look for offers relating to parent
-    if ( serv->isDerived() )
-        lst += KServiceType::offers( serv->parentServiceType() );
-  }
   else
     kdWarning(7009) << QString("KServiceType::offers : servicetype %1 not found").arg( _servicetype ) << endl;
   delete serv;

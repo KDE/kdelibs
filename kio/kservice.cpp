@@ -274,21 +274,27 @@ bool KService::hasServiceType( const QString& _servicetype ) const
 {
   if (!m_bValid) return false; // safety test
 
-//  kdDebug(7012) << "Testing " << m_strName << endl;
+  //kdDebug(7012) << "Testing " << m_strDesktopEntryName << " for " << _servicetype << endl;
 
-//  QStringList::ConstIterator it = m_lstServiceTypes.begin();
-//  for( ; it != m_lstServiceTypes.end(); ++it )
-//    kdDebug(7012) << "    has " << (*it) << endl;
-
-  QString servicetype( _servicetype );
-  bool found = true;
-  while ( !m_lstServiceTypes.contains( servicetype ) )
+  // For each service type we are associated with, if it doesn't
+  // match then we try its parent service types.
+  QStringList::ConstIterator it = m_lstServiceTypes.begin();
+  for( ; it != m_lstServiceTypes.end(); ++it )
   {
-      KServiceType::Ptr ptr = KServiceType::serviceType( servicetype );
-      if (!ptr || !ptr->isDerived() ) { found = false; break; }
-      servicetype = ptr->parentServiceType();
+      //kdDebug(7012) << "    has " << (*it) << endl;
+      QString servicetype( *it );
+      bool found = true; // we are optimistic to start with :)
+      while ( servicetype != _servicetype )
+      {
+          KServiceType::Ptr ptr = KServiceType::serviceType( servicetype );
+          if (!ptr || !ptr->isDerived() ) { found = false; break; }
+          servicetype = ptr->parentServiceType();
+          //kdDebug(7012) << "up to " << servicetype << endl;
+      }
+      if (found)
+          return true;
   }
-  return found;
+  return false;
 }
 
 QVariant KService::property( const QString& _name ) const
