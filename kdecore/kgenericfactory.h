@@ -25,6 +25,7 @@
 #include <kgenericfactory.tcc>
 #include <kglobal.h>
 #include <klocale.h>
+#include <kdebug.h>
 
 /* @internal */
 template <class T>
@@ -50,8 +51,10 @@ public:
 protected:
     virtual KInstance *createInstance()
     {
-        if ( !m_instanceName )
-            return 0; // ### assert
+        if ( !m_instanceName ) {
+            kdWarning() << "KGenericFactory: instance requested but no instance name passed to the constructor!" << endl;
+            return 0;
+        }
         return new KInstance( m_instanceName );
     }
 
