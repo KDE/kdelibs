@@ -930,6 +930,9 @@ void KHTMLPart::clear()
   d->m_selectionEnd = DOM::Node();
   d->m_startOffset = 0;
   d->m_endOffset = 0;
+#ifndef QT_NO_CLIPBOARD
+  connect( kapp->clipboard(), SIGNAL( selectionChanged()), SLOT( slotClearSelection()));
+#endif
 
   d->m_totalObjectCount = 0;
   d->m_loadedObjects = 0;
@@ -1964,6 +1967,16 @@ void KHTMLPart::setSelection( const DOM::Range &r )
     d->m_endOffset = r.endOffset();
     d->m_doc->setSelection(d->m_selectionStart.handle(),d->m_startOffset,
                            d->m_selectionEnd.handle(),d->m_endOffset);
+}
+
+void KHTMLPart::slotClearSelection()
+{
+    d->m_selectionStart = 0;
+    d->m_startOffset = 0;
+    d->m_selectionEnd = 0;
+    d->m_endOffset = 0;
+    d->m_doc->clearSelection();
+    emitSelectionChanged();
 }
 
 void KHTMLPart::overURL( const QString &url, const QString &target, bool shiftPressed )
@@ -3920,7 +3933,9 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
     text.replace(QRegExp(QChar(0xa0)), " ");
     QClipboard *cb = QApplication::clipboard();
     cb->setSelectionMode( true );
+    disconnect( kapp->clipboard(), SIGNAL( selectionChanged()), this, SLOT( slotClearSelection()));
     cb->setText(text);
+    connect( kapp->clipboard(), SIGNAL( selectionChanged()), SLOT( slotClearSelection()));
     cb->setSelectionMode( false );
 #endif
     //kdDebug( 6000 ) << "selectedText = " << text << endl;

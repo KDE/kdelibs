@@ -980,6 +980,11 @@ private slots:
    */
   void slotJobSpeed(KIO::Job*, unsigned long);
 
+  /**
+   * @internal
+   */
+  void slotClearSelection();
+
 private:
 
 
