@@ -25,6 +25,8 @@
 
 using namespace KABC;
 
+static const char delimiter[ 3 ] = { '\n', '\n', '\n' };
+
 LDIF::LDIF()
 {
   startParsing();
@@ -336,10 +338,7 @@ LDIF::ParseVal LDIF::nextItem()
 
 void LDIF::endLDIF()
 {
-  mLdif.resize( 3 );  
-  mLdif[ 0 ] = '\n';
-  mLdif[ 1 ] = '\n';
-  mLdif[ 2 ] = '\n';
+  mLdif.resetRawData( delimiter, 3 );  
   mPos = 0;
 }
 
