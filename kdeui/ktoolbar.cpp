@@ -1657,7 +1657,7 @@ void KToolBar::loadState( const QDomElement &element )
     else
 	setFullSize( FALSE );
 
-    QMainWindow::ToolBarDock dock;
+    QMainWindow::ToolBarDock dock = QMainWindow::Top;
     int index = 0, offset = -1;
     bool nl = FALSE;
 
@@ -1782,7 +1782,7 @@ void KToolBar::positionYourself()
 						   d->toolBarInfo.index,
 						   d->toolBarInfo.offset );
     if ( testWState( Qt::WState_ForceHide ) )
-	hide();                                                    
+	hide();
     d->positioned = FALSE; // should be set to TRUE, but for a koffice hack we can't do that at the moment
 }
 

@@ -22,7 +22,7 @@
 #include "kmenubar.h"
 #include "ktoolbar.h"
 #include "kstatusbar.h"
-#include "ktmainwindow.h"
+#include "kmainwindow.h"
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kglobalsettings.h>
@@ -116,9 +116,9 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
   id = -1;
   if ( element.tagName().lower() == d->tagMainWindow )
   {
-    KTMainWindow *mainwindow = 0;
-    if ( d->m_widget->inherits( "KTMainWindow" ) )
-      mainwindow = static_cast<KTMainWindow *>(d->m_widget);
+    KMainWindow *mainwindow = 0;
+    if ( d->m_widget->inherits( "KMainWindow" ) )
+      mainwindow = static_cast<KMainWindow *>(d->m_widget);
 
     return mainwindow;
   }
@@ -127,8 +127,8 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
   {
     KMenuBar *bar;
 
-    if ( d->m_widget->inherits( "KTMainWindow" ) )
-      bar = static_cast<KTMainWindow *>(d->m_widget)->menuBar();
+    if ( d->m_widget->inherits( "KMainWindow" ) )
+      bar = static_cast<KMainWindow *>(d->m_widget)->menuBar();
     else
       bar = new KMenuBar( d->m_widget );
 
@@ -187,12 +187,12 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     bool honor = (element.attribute( d->attrName ) == "mainToolBar");
 
     KToolBar *bar = 0;
-    if ( d->m_widget->inherits( "KTMainWindow" ) )
-	bar = new KToolBar( ( (KTMainWindow*)d->m_widget ), element.attribute( d->attrName ).utf8(), honor);
+    if ( d->m_widget->inherits( "KMainWindow" ) )
+	bar = new KToolBar( ( (KMainWindow*)d->m_widget ), element.attribute( d->attrName ).utf8(), honor);
     else
 	bar = new KToolBar( d->m_widget, element.attribute( d->attrName ).utf8(), honor);
 
-    if ( d->m_widget->inherits( "KTMainWindow" ) )
+    if ( d->m_widget->inherits( "KMainWindow" ) )
     {
 	if ( d->m_client && !d->m_client->xmlFile().isEmpty() )
 	    bar->setXMLGUIClient( d->m_client );
@@ -205,10 +205,10 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
 
   if ( element.tagName().lower() == d->tagStatusBar )
   {
-    if ( d->m_widget->inherits( "KTMainWindow" ) )
+    if ( d->m_widget->inherits( "KMainWindow" ) )
     {
-      KTMainWindow *mainWin = static_cast<KTMainWindow *>(d->m_widget);
-      mainWin->enableStatusBar( KStatusBar::Show );
+      KMainWindow *mainWin = static_cast<KMainWindow *>(d->m_widget);
+      mainWin->statusBar()->show();
       return mainWin->statusBar();
     }
     KStatusBar *bar = new KStatusBar( d->m_widget );
@@ -239,8 +239,8 @@ void KXMLGUIBuilder::removeContainer( QWidget *container, QWidget *parent, QDomE
   }
   else if ( container->inherits( "KStatusBar" ) )
   {
-    if ( d->m_widget->inherits( "KTMainWindow" ) )
-      static_cast<KTMainWindow *>(d->m_widget)->enableStatusBar( KStatusBar::Hide );
+    if ( d->m_widget->inherits( "KMainWindow" ) )
+	container->hide();
     else
       delete static_cast<KStatusBar *>(container);
   }
@@ -329,10 +329,10 @@ void KXMLGUIBuilder::setBuilderInstance( KInstance *instance )
 
 void KXMLGUIBuilder::finalizeGUI( KXMLGUIClient * )
 {
-    if ( !d->m_widget || !d->m_widget->inherits( "KTMainWindow" ) )
+    if ( !d->m_widget || !d->m_widget->inherits( "KMainWindow" ) )
 	return;
     KToolBar *toolbar = 0;
-    QListIterator<KToolBar> it( ( (KTMainWindow*)d->m_widget )->toolBarIterator() );
+    QListIterator<KToolBar> it( ( (KMainWindow*)d->m_widget )->toolBarIterator() );
     while ( ( toolbar = it.current() ) ) {
 	++it;
 	toolbar->positionYourself();
