@@ -270,7 +270,7 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat)
           if (useDOMFormat)
           {
              if (cookieCount > 0)
-                cookieStr += ";";
+                cookieStr += "; ";
              cookieStr += cookie->cookieStr(true);
           }
           else if (protVersion == 0)
