@@ -21,8 +21,10 @@
  */
 
 #include "kwin.h"
+#include "kapp.h"
 #include <qwmatrix.h>
 #include <qbitmap.h>
+#include <qwhatsthis.h>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <X11/Xutil.h>
@@ -44,29 +46,80 @@
 #endif
 
 
-static bool atoms = FALSE;
+static bool atoms_created = FALSE;
 
+static Atom wm_protocols;
 static Atom net_number_of_desktops;
 static Atom net_current_desktop;
 static Atom net_active_window;
+static Atom net_wm_context_help;
 static Atom net_kde_docking_window_for;
 
 extern Atom qt_wm_state;
 
 static void createAtoms() {
-    if (!atoms){
+    if (!atoms_created){
 	net_number_of_desktops = XInternAtom(qt_xdisplay(), "_NET_NUMBER_OF_DESKTOPS", False);
 	net_current_desktop = XInternAtom(qt_xdisplay(), "_NET_CURRENT_DESKTOP", False);
 	net_active_window = XInternAtom(qt_xdisplay(), "_NET_ACTIVE_WINDOW", False);
 	net_kde_docking_window_for = XInternAtom(qt_xdisplay(), "_NET_KDE_DOCKING_WINDOW_FOR", False);
-	atoms = True;
+
+	const int max = 20;
+	Atom* atoms[max];
+	char* names[max];
+	Atom atoms_return[max];
+	int n = 0;
+	
+	atoms[n] = &wm_protocols;
+	names[n++] = "WM_PROTOCOLS";
+	
+	atoms[n] = &net_number_of_desktops;
+	names[n++] = "_NET_NUMBER_OF_DESKTOPS";
+
+	atoms[n] = &net_current_desktop;
+	names[n++] = "_NET_CURRENT_DESKTOP";
+
+	atoms[n] = &net_active_window;
+	names[n++] = "_NET_ACTIVE_WINDOW";
+
+	atoms[n] = &net_wm_context_help;
+	names[n++] = "_NET_WM_CONTEXT_HELP";
+
+	atoms[n] = &net_kde_docking_window_for;
+	names[n++] = "_NET_KDE_DOCKING_WINDOW_FOR";
+
+	XInternAtoms( qt_xdisplay(), names, n, FALSE, atoms_return );
+	for (int i = 0; i < n; i++ )
+	    *atoms[i] = atoms_return[i];
+
+	atoms_created = True;
     }
+}
+
+/*
+  Send a client message to window w
+ */
+static void sendClientMessage(Window w, Atom a, long x){
+  XEvent ev;
+  long mask;
+
+  memset(&ev, 0, sizeof(ev));
+  ev.xclient.type = ClientMessage;
+  ev.xclient.window = w;
+  ev.xclient.message_type = a;
+  ev.xclient.format = 32;
+  ev.xclient.data.l[0] = x;
+  ev.xclient.data.l[1] = CurrentTime;
+  mask = 0L;
+  if (w == qt_xrootwin())
+    mask = SubstructureRedirectMask;        /* magic! */
+  XSendEvent(qt_xdisplay(), w, False, mask, &ev);
 }
 
 /*
   Sends a client message to the ROOT window.
  */
-static void sendClientMessage(Window w, Atom a, long x){
+static void sendClientMessageToRoot(Window w, Atom a, long x){
   XEvent ev;
   long mask;
 
@@ -105,7 +158,7 @@ int KWin::numberOfDesktops()
 void KWin::setNumberOfDesktops(int num)
 {
     createAtoms();
-    sendClientMessage( qt_xrootwin(), net_number_of_desktops, num );
+    sendClientMessageToRoot( qt_xrootwin(), net_number_of_desktops, num );
 }
 
 int KWin::currentDesktop()
@@ -130,7 +183,7 @@ int KWin::currentDesktop()
 void KWin::setCurrentDesktop( int desktop )
 {
     createAtoms();
-    sendClientMessage( qt_xrootwin(), net_current_desktop, desktop );
+    sendClientMessageToRoot( qt_xrootwin(), net_current_desktop, desktop );
 }
 
 
@@ -157,7 +210,7 @@ WId KWin::activeWindow()
 void KWin::setActiveWindow( WId win)
 {
     createAtoms();
-    sendClientMessage( win, net_active_window, 0);
+    sendClientMessageToRoot( win, net_active_window, 0);
 }
 
 
@@ -207,4 +260,60 @@ KWin::WindowState KWin::windowState( WId win )
 	XFree( (char *)data );
     }
     return result;
+}
+
+
+
+class ContextWidget : public QWidget
+{
+public:
+    ContextWidget()
+	: QWidget(0,0)
+    {
+       kapp->installX11EventFilter( this );
+      QWhatsThis::enterWhatsThisMode();
+      QCursor c = *QApplication::overrideCursor();
+      QWhatsThis::leaveWhatsThisMode();
+      XGrabPointer( qt_xdisplay(), qt_xrootwin(), TRUE,
+		    (uint)( ButtonPressMask | ButtonReleaseMask |
+			    PointerMotionMask | EnterWindowMask |
+			    LeaveWindowMask ),
+		    GrabModeAsync, GrabModeAsync,
+		    None, c.handle(), CurrentTime );
+      qApp->enter_loop();
+    }
+    
+    
+    bool x11Event( XEvent * ev)
+    {
+	if ( ev->type == ButtonPress && ev->xbutton.button == Button1 ) {
+	    XUngrabPointer( qt_xdisplay(), ev->xbutton.time );
+	    Window root;
+	    Window child = qt_xrootwin();
+	    int root_x, root_y, lx, ly;
+	    uint state;
+	    Window w;
+	    do { 
+		w = child;
+		XQueryPointer( qt_xdisplay(), w, &root, &child,
+			       &root_x, &root_y, &lx, &ly, &state );
+	    } while  ( child != None && child != w );
+	
+	    sendClientMessage(w, wm_protocols, net_wm_context_help);
+	    XEvent e = *ev;
+	    e.xbutton.window = w;
+	    e.xbutton.subwindow = w;
+	    e.xbutton.x = lx;
+	    e.xbutton.y = ly;
+	    XSendEvent( qt_xdisplay(), w, TRUE, ButtonPressMask, &e );
+	    qApp->exit_loop();
+	    return TRUE;
+	}
+	return FALSE;
+    }
+};
+
+void KWin::invokeContextHelp()
+{
+    ContextWidget w;
 }

@@ -103,14 +103,20 @@ public:
        docking for.
      */
     static bool isDockWindow( WId dockWin, WId *forWin = 0 );
-    
-    
+
+
     enum WindowState { WithdrawnState = 0, NormalState = 1, IconicState = 3 };
     /**
        Returns the state of the window @p win. Possible states are
        NormalState, IconicState and WithdrawnState
      */
     static WindowState windowState( WId win );
+    
+    
+    /**
+       Invokes interactive context help
+     */
+    static void invokeContextHelp();
 
 };
 
