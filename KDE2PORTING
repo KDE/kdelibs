@@ -242,3 +242,9 @@ HINTS:
 
 In case you've been using KClipboard, QClipboard is the way to go now.
 
+////////////////////////////////////////////////////////////////////////
+// * KTreeList, KTreeListItem
+
+Use QListView, QListViewItem instead. API is almost the same, you only
+need to add a Column (QListView::addColum) before QListView is useable.
+
