@@ -382,8 +382,13 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
         QPointArray quad(4);
         p->setPen(Qt::NoPen);
         p->setBrush(c);
+#if QT_VERSION < 300
 	ASSERT(x2>x1);
 	ASSERT(y2>y1);
+#else
+	Q_ASSERT(x2>x1);
+	Q_ASSERT(y2>y1);
+#endif
 	if (adjbw1==0 && adjbw2 == 0)
 	  {
             p->drawRect(x1,y1,x2-x1,y2-y1);
@@ -457,7 +462,7 @@ void RenderObject::printBorder(QPainter *p, int _tx, int _ty, int w, int h, cons
 	const QColor& lc = style->borderLeftColor();
 
 	bool ignore_top =
-	  (tc == lc) && 
+	  (tc == lc) &&
 	  (ls <= OUTSET) &&
 	  (ts == DOTTED || ts == DASHED || ts == SOLID || ts == OUTSET);
 
@@ -476,10 +481,10 @@ void RenderObject::printBorder(QPainter *p, int _tx, int _ty, int w, int h, cons
 	const QColor& rc = style->borderRightColor();
 
 	bool ignore_top =
-	  (tc == rc) && 
+	  (tc == rc) &&
 	  (rs <= SOLID || rs == INSET) &&
 	  (ts == DOTTED || ts == DASHED || ts == SOLID || ts == OUTSET);
-	
+
 	bool ignore_bottom =
 	  (bc == rc) &&
 	  (rs <= SOLID || rs == INSET) &&
