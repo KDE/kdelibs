@@ -540,6 +540,9 @@ QString KHTMLSettings::lookupFont(int, int i) const
     const QStringList &fontList = d->fontsForCharset[charset];
     if (fontList.count() > (uint) i)
        font = fontList[i];
+#else
+    if (d->fonts.count() > (uint) i)
+       font = d->fonts[i];
 #endif
     if (font.isEmpty())
         font = d->defaultFonts[i];
