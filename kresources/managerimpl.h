@@ -43,7 +43,7 @@ class ManagerNotifier;
 
   Do not use this class directly. Use ResourceManager instead
 */
-class ManagerImpl : virtual public ManagerIface
+class KRESOURCES_EXPORT ManagerImpl : virtual public ManagerIface
 {
   public:
     ManagerImpl( ManagerNotifier *, const QString &family );

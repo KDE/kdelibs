@@ -44,7 +44,7 @@ class Resource;
   are added, modified or deleted.
 */
 template<class T>
-class KRESOURCES_EXPORT ManagerObserver
+class ManagerObserver
 {
   public:
     virtual void resourceAdded( T *resource ) = 0;
@@ -72,13 +72,13 @@ class ManagerNotifier
   ManagerObserver and add it to the Manager by addObserver().
 */
 template<class T>
-class KRESOURCES_EXPORT Manager : private ManagerNotifier
+class Manager : private ManagerNotifier
 {
   public:
     /**
       Iterator for iterations over all resources managed by a manager.
     */
-    class KRESOURCES_EXPORT Iterator
+    class Iterator
     {
         friend class Manager;
       public:
@@ -120,7 +120,7 @@ class KRESOURCES_EXPORT Manager : private ManagerNotifier
     /**
       Iterator for iterations over only active resources managed by a manager.
     */
-    class KRESOURCES_EXPORT ActiveIterator
+    class ActiveIterator
     {
         friend class Manager;
       public:

@@ -115,7 +115,7 @@ private:
  * @li KFileItem::determineMimeType on the fileItem, and update the icon, etc.
 */
 template<class IconItem, class Parent>
-class KIO_EXPORT KMimeTypeResolver : public KMimeTypeResolverBase // if only this could be a QObject....
+class KMimeTypeResolver : public KMimeTypeResolverBase // if only this could be a QObject....
 {
 public:
   /**

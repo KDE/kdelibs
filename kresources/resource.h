@@ -397,7 +397,7 @@ class KRESOURCES_EXPORT PluginFactoryBase : public KLibFactory
 };
 
 template<class TR,class TC>
-class KRESOURCES_EXPORT PluginFactory : public PluginFactoryBase
+class PluginFactory : public PluginFactoryBase
 {
   public:
     Resource *resource( const KConfig *config )
