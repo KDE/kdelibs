@@ -95,7 +95,7 @@ struct KQuickTip {
   QString txt;
 };
 
-typedef struct KQuickHelp_Token {
+struct KQuickHelp_Token {
   const char *token;
   int tokenID;
 };

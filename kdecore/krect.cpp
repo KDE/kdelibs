@@ -326,7 +326,7 @@ void KRect::setSize(const KSize &_size)
 }
 
 //==========================================================
-bool KRect::contains(const KPoint &_pnt,bool _strict = false) const
+bool KRect::contains(const KPoint &_pnt,bool _strict ) const
 {
   if (_strict)
     return (x1 < _pnt.x()) && (y1 < _pnt.y()) && (x2 > _pnt.x()) && (y2 > _pnt.y());
@@ -335,7 +335,7 @@ bool KRect::contains(const KPoint &_pnt,bool _strict = false) const
 }
 
 //==========================================================
-bool KRect::contains(const KRect &_rect,bool _strict = false) const
+bool KRect::contains(const KRect &_rect,bool _strict ) const
 {
   return (contains(KPoint(_rect.left(),_rect.top()),_strict) && contains(KPoint(_rect.right(),_rect.bottom()),_strict));
 }

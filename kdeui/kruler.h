@@ -238,16 +238,22 @@ KRuler(direction dir, int widgetWidth, QWidget *parent=0, const char *name=0, WF
   /** convenience method:
    * sets up the necessary tasks for the provided styles */
   void setRulerStyle(metric_style);
+#if implemented
   inline metric_style getMetricRulerStyle() const;
 
   /** currently not implemented */
   void setRulerStyle(paint_style);
   /** currently not implemented */
   inline paint_style getPaintRulerStyle() const;
+#endif
+
   /** currently not implemented */
   void setTickStyle(paint_style);
+
+#if implemented
   /** currently not implemented */
   inline paint_style getTickStyle() const;
+#endif
 
   /** Set the amount of pixel between two base marks.
    * Calling this method your are able to stretch or shrink your ruler.
@@ -332,6 +338,7 @@ int
 KRuler::getMediumMarkDistance() const
 { return mmDist; }
 
+#if implemented
 KRuler::metric_style 
 KRuler::getMetricRulerStyle() const;
 
@@ -340,6 +347,7 @@ KRuler::getPaintRulerStyle() const;
 
 KRuler::paint_style 
 KRuler::getTickStyle() const;
+#endif
 
 double 
 KRuler::getPixelPerMark() const

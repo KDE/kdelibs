@@ -171,7 +171,7 @@ public:
   QIntDict<unsigned> *getToUnicodeDict(const KCharsetEntry *charset);
   const KCharsetEntry * conversionHint(const KCharsetEntry *charset);
   bool getFontList(QStrList *lst,QString xcharsetlist);
-  bool KCharsetsData::isDisplayableHack(KCharsetEntry *charset);
+  bool isDisplayableHack(KCharsetEntry *charset);
   bool isDisplayable(KCharsetEntry * charset);
   unsigned decodeAmp(const char *seq,int &len);
   void convert(unsigned code,KCharsetConversionResult & r);

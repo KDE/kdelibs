@@ -357,11 +357,12 @@ KRuler::setRulerStyle(metric_style style)
   // -> no update() call needed here !
 }
 
-
+#if implemented
 void 
 KRuler::setRulerStyle(paint_style);
 void 
 KRuler::setTickStyle(paint_style);
+#endif
 
 /*
 void 
@@ -389,7 +390,7 @@ KRuler::setOffset(int _offset)
 }
 
 void 
-KRuler::slideup(int count = 1)
+KRuler::slideup(int count)
 {
   if (count) {
     offset += count;
@@ -398,7 +399,7 @@ KRuler::slideup(int count = 1)
 }
 
 void 
-KRuler::slidedown(int count = 1)
+KRuler::slidedown(int count)
 {
   if (count) {
     offset -= count;
