@@ -11,9 +11,9 @@
 #include <config.h>
 #include <kapp.h>
 
-static const char *description = I18N_NOOP("A little program to output installation paths");
+static const char * const description = I18N_NOOP("A little program to output installation paths");
 
-static KCmdLineOptions options[] =
+static const KCmdLineOptions options[] =
 {
     { "expandvars", I18N_NOOP("expand ${prefix} and ${exec_prefix} in output"), 0 },
     { "prefix",	   I18N_NOOP("Compiled in prefix for KDE libraries"), 0 },

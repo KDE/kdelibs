@@ -61,7 +61,7 @@ KProcessController::KProcessController()
       SLOT( delayedChildrenCleanup()));
 
   theKProcessController = this;
-  
+
   setupHandlers();
 }
 
@@ -87,7 +87,7 @@ void KProcessController::setupHandlers()
 #endif
 
   sigaction( SIGCHLD, &act, &oldChildHandlerData );
-  
+
   act.sa_handler=SIG_IGN;
   sigemptyset(&(act.sa_mask));
   sigaddset(&(act.sa_mask), SIGPIPE);
@@ -176,13 +176,12 @@ void KProcessController::theSigCHLDHandler(int arg)
 void KProcessController::slotDoHousekeeping(int )
 {
   int bytes_read = 0;
-  pid_t pid;
-  int status;
 
   // read pid and status from the pipe.
 
-  int len = sizeof(pid_t) + sizeof(int), errcnt = 0;
-  unsigned char buf[sizeof(pid_t) + sizeof(int)];
+  const int len = sizeof(pid_t) + sizeof(int);
+  int errcnt = 0;
+  unsigned char buf[len];
   while (bytes_read < len && errcnt < 50) {
       int r = ::read(fd[0], buf + bytes_read, len - bytes_read);
       if (r > 0) bytes_read += r;
@@ -191,7 +190,7 @@ void KProcessController::slotDoHousekeeping(int )
   if (errcnt >= 50) {
 	fprintf(stderr,
 	       "Error: Max. error count for pipe read "
-               "exceed in KProcessController::slotDoHousekeeping\n");
+               "exceeded in KProcessController::slotDoHousekeeping\n");
 	return;           // it makes no sense to continue here!
   }
   if (bytes_read != len) {
@@ -200,9 +199,9 @@ void KProcessController::slotDoHousekeeping(int )
 	       bytes_read, len);
 	return;           // it makes no sense to continue here!
   }
-  pid    = *reinterpret_cast<pid_t *>(buf);
-  status = *reinterpret_cast<int *>(buf + sizeof(pid_t));
-  
+  pid_t pid    = *reinterpret_cast<pid_t *>(buf);
+  int status = *reinterpret_cast<int *>(buf + sizeof(pid_t));
+
   if( pid == 0 ) { // special case, see delayedChildrenCleanup()
       delayedChildrenCleanupTimer.start( 1000, true );
       return;
@@ -254,12 +253,12 @@ KProcessController::~KProcessController()
 {
   assert( theKProcessController == this );
   resetHandlers();
-  
+
   notifier->setEnabled(false);
 
   close(fd[0]);
   close(fd[1]);
-  
+
   delete notifier;
   theKProcessController = 0;
 }
