@@ -207,9 +207,11 @@ void KMDriverDB::loadDbFile()
 			line = t.readLine().stripWhiteSpace();
 			if (line.isEmpty())
 				continue;
-			words = QStringList::split('=',line,false);
-			if (words.count() < 2)
+			int	p = line.find('=');
+			if (p == -1)
 				continue;
+			words.clear();
+			words << line.left(p) << line.mid(p+1);
 			if (words[0] == "FILE")
 			{
 				if (entry) insertEntry(entry);
