@@ -34,7 +34,7 @@
 #include <qstring.h>
 
 //#include <kdebug.h>
-#include "kmdbase.h"
+#include "kmdcodec.h"
 
 // Constants for MD5Transform routine.
 // Although we could use C++ style constants, defines are actually better,
