@@ -1481,6 +1481,7 @@ void KHTMLPart::slotFinishedParsing()
 {
   d->m_bParsing = false;
   d->m_doc->close();
+  checkEmitLoadEvent();
   disconnect(d->m_doc,SIGNAL(finishedParsing()),this,SLOT(slotFinishedParsing()));
 
   if (!d->m_view)
