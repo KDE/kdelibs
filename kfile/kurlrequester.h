@@ -25,6 +25,7 @@
 
 #include <kurl.h>
 
+class KComboBox;
 class KFileDialog;
 class KLineEdit;
 class KURLCompletion;
@@ -70,6 +71,17 @@ public:
 		   bool modal = true );
 
     /**
+     * Special constructor, which creates a KURLRequester widget with a custom
+     * edit-widget. The edit-widget can be either a KComboBox or a KLineEdit
+     * (or inherited thereof). Note: for geometry management reasons, the
+     * edit-widget is reparented to have the KURLRequester as parent.
+     * @param modal specifies whether the filedialog should be opened as modal
+     * or not.
+     */
+    KURLRequester( QWidget *editWidget, QWidget *parent=0, const char *name=0,
+		   bool modal = true );
+
+    /**
      * Destructs the KURLRequester
      */
     ~KURLRequester();
@@ -109,17 +121,26 @@ public:
     KFileDialog * fileDialog() const;
 
     /**
-     * @returns a pointer to the lineedit. It is provided so that you can e.g. 
-     * set an own completion object (e.g. @ref KShellCompletion) into it.
+     * @returns a pointer to the lineedit, either the default one, or the
+     * special one, if you used the special constructor.
+     *
+     * It is provided so that you can e.g. set an own completion object
+     * (e.g. @ref KShellCompletion) into it.
      */
-    KLineEdit * lineEdit() const { return myEdit; }
+    KLineEdit * lineEdit() const;
+
+    /**
+     * @returns a pointer to the combobox, in case you have set one using the
+     * special constructor. Returns 0L otherwise.
+     */
+    KComboBox * comboBox() const;
 
     /**
      * @returns a pointer to the pushbutton. It is provided so that you can
      * specify an own pixmap or a text, if you really need to.
      */
     QPushButton * button() const { return myButton; }
-    
+
 signals:
     // forwards from LineEdit
     /**
@@ -143,7 +164,7 @@ signals:
 protected:
     void		init();
 
-    KLineEdit *		myEdit;
+    KLineEdit *		myEdit; // obsolete, remove me
     QPushButton *	myButton;
     KURLCompletion *    myCompletion;
     bool 		myModal;

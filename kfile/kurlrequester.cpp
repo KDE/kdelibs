@@ -26,6 +26,7 @@
 #include <qtooltip.h>
 
 #include <kaccel.h>
+#include <kcombobox.h>
 #include <kdialog.h>
 #include <kfiledialog.h>
 #include <kglobal.h>
@@ -37,10 +38,75 @@
 #include "kurlrequester.h"
 
 
+class KURLRequester::KURLRequesterPrivate
+{
+public:
+    KURLRequesterPrivate() {
+	edit = 0L;
+	combo = 0L;
+    }
+    
+    void setText( const QString& text ) {
+	if ( combo )
+	    combo->setEditText( text );
+	else
+	    edit->setText( text );
+    }
+    
+    void connectSignals( QObject *receiver ) {
+	QObject *sender;
+	if ( combo )
+	    sender = combo;
+	else
+	    sender = edit;
+
+	connect( sender, SIGNAL( textChanged( const QString& )),
+		 receiver, SIGNAL( textChanged( const QString& )));
+	connect( sender, SIGNAL( returnPressed() ),
+		 receiver, SIGNAL( returnPressed() ));
+	connect( sender, SIGNAL( returnPressed( const QString& ) ),
+		 receiver, SIGNAL( returnPressed( const QString& ) ));
+    }
+
+    void setCompletionObject( KCompletion *comp ) {
+	if ( combo )
+	    combo->setCompletionObject( comp );
+	else
+	    edit->setCompletionObject( comp );
+    }
+	
+    QString text() {
+	return combo ? combo->currentText() : edit->text();
+    }
+    
+    
+    KLineEdit *edit;
+    KComboBox *combo;
+};
+
+
+
+KURLRequester::KURLRequester( QWidget *editWidget, QWidget *parent, 
+			      const char *name, bool modal )
+  : QHBox( parent, name )
+{
+    myModal = modal;
+    d = new KURLRequesterPrivate;
+
+    // must have this as parent
+    editWidget->reparent( this, 0, QPoint(0,0) );
+    d->edit = dynamic_cast<KLineEdit*>( editWidget );
+    d->combo = dynamic_cast<KComboBox*>( editWidget );
+
+    init();
+}
+
+
 KURLRequester::KURLRequester( QWidget *parent, const char *name, bool modal )
   : QHBox( parent, name )
 {
     myModal = modal;
+    d = new KURLRequesterPrivate;
     init();
 }
 
@@ -50,6 +116,7 @@ KURLRequester::KURLRequester( const QString& url, QWidget *parent,
   : QHBox( parent, name )
 {
     myModal = modal;
+    d = new KURLRequesterPrivate;
     init();
     setURL( url );
 }
@@ -59,6 +126,7 @@ KURLRequester::~KURLRequester()
 {
     delete myCompletion;
     delete myFileDialog;
+    delete d;
 }
 
 
@@ -67,7 +135,9 @@ void KURLRequester::init()
     myFileDialog    = 0L;
     myShowLocalProt = false;
 
-    myEdit = new KLineEdit( this, "line edit" );
+    if ( !d->combo && !d->edit )
+	d->edit = new KLineEdit( this, "line edit" );
+    
     myButton = new QPushButton( this, "kfile button" );
     myButton->setPixmap(SmallIcon(QString::fromLatin1("folder")));
     QToolTip::add(myButton, i18n("Open filedialog"));
@@ -76,20 +146,16 @@ void KURLRequester::init()
     myButton->setFixedSize( myButton->sizeHint().width(),
     			    myButton->sizeHint().width() );
 
-    setFocusProxy( myEdit );
+    if ( d->combo )
+	setFocusProxy( d->combo );
+    else
+	setFocusProxy( d->edit );
 
-    connect( myEdit, SIGNAL( textChanged( const QString& )),
-	     this, SIGNAL( textChanged( const QString& )));
-    connect( myButton, SIGNAL( clicked() ),
-	     this, SLOT( slotOpenDialog() ));
-    connect( myEdit, SIGNAL( returnPressed() ),
-	     this, SIGNAL( returnPressed() ));
-    connect( myEdit, SIGNAL( returnPressed( const QString& ) ),
-	     this, SIGNAL( returnPressed( const QString& ) ));
+    d->connectSignals( this );
+    connect( myButton, SIGNAL( clicked() ), this, SLOT( slotOpenDialog() ));
 
     myCompletion = new KURLCompletion();
-
-    myEdit->setCompletionObject( myCompletion );
+    d->setCompletionObject( myCompletion );
 
     KAccel *accel = new KAccel( this );
     accel->connectItem( KStdAccel::Open, this, SLOT( slotOpenDialog() ));
@@ -102,22 +168,22 @@ void KURLRequester::setURL( const QString& url )
     bool hasLocalPrefix = (url.left(5) == QString::fromLatin1("file:"));
 
     if ( !myShowLocalProt && hasLocalPrefix )
-	myEdit->setText( url.mid( 5, url.length()-5 ));
+	d->setText( url.mid( 5, url.length()-5 ));
     else
-	myEdit->setText( url );
+	d->setText( url );
 }
 
 
 QString KURLRequester::url() const
 {
-    return myEdit->text();
+    return d->text();
 };
 
 
 void KURLRequester::slotOpenDialog()
 {
     KFileDialog *dlg = fileDialog();
-    if ( !myEdit->text().isEmpty() ) 
+    if ( !d->text().isEmpty() )
     {
 	dlg->setSelection( url() );
     }
@@ -150,6 +216,16 @@ void KURLRequester::setShowLocalProtocol( bool b )
 
     myShowLocalProt = b;
     setURL( url() );
+}
+
+KLineEdit * KURLRequester::lineEdit() const
+{
+    return d->edit;
+}
+
+KComboBox * KURLRequester::comboBox() const
+{
+    return d->combo;
 }
 
 #include "kurlrequester.moc"
