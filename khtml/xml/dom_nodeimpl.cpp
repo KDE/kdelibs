@@ -72,7 +72,7 @@ NodeImpl::~NodeImpl()
 
 DOMString NodeImpl::nodeValue() const
 {
-  return 0;
+  return DOMString();
 }
 
 void NodeImpl::setNodeValue( const DOMString &, int &exceptioncode )
@@ -82,7 +82,7 @@ void NodeImpl::setNodeValue( const DOMString &, int &exceptioncode )
 
 const DOMString NodeImpl::nodeName() const
 {
-  return 0;
+  return DOMString();
 }
 
 unsigned short NodeImpl::nodeType() const
@@ -182,7 +182,11 @@ NodeImpl *NodeImpl::addChild(NodeImpl *)
 
 QString NodeImpl::toHTML() const
 {
-    return recursive_toHTML(true);
+    NodeImpl* fc = firstChild();
+    if ( fc )
+        return fc->recursive_toHTML(true);
+
+    return "";
 }
 
 QString NodeImpl::recursive_toHTML(bool start) const
@@ -286,7 +290,7 @@ void NodeImpl::setChanged(bool b)
 
 DOMString NodeImpl::namespaceURI() const
 {
-    return 0;
+    return DOMString();
 }
 
 
@@ -1062,7 +1066,7 @@ NodeImpl *NodeBaseImpl::appendChild ( NodeImpl *newChild, int &exceptioncode )
             child->attach();
 
         dispatchChildInsertedEvents(child,exceptioncode);
-	
+
         child = nextChild;
     }
 
