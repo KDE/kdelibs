@@ -221,6 +221,19 @@ void KPixmap::patternFill( QColor ca, QColor cb, uint pattern[8] )
 
     pt.end();
 
+    QSize _size = size();
+    bool changed = false;
+    if (_size.width() < 8) {
+	_size.setWidth(8);
+	changed = true;
+    }
+    if (_size.height() < 8) {
+	changed = true;
+	_size.setHeight(8);
+    }
+    if (changed)
+	resize(_size);
+
     int sx, sy = 0;
     while ( sy < height() ) {
 		sx = 0;
@@ -270,15 +283,12 @@ void KPixmap::mapFill( QColor ca, QColor cb, const QString& map )
 	o = QMAX(o, mean);
     }
     
-    debug("unten %d - oben %d", u, o);
-
     for (int i = 0; i < img->numColors(); i++) {
 	QRgb t = img->color(i);
 	int mean = (qRed(t) + qGreen(t) + qBlue(t)) / 3;
 	int r = (int)((double(mean - u) / double(o - u)) * (r2 - r1)) + r1;
 	int g = (int)((double(mean - u) / double(o - u)) * (g2 - g1)) + g1;
 	int b = (int)((double(mean - u) / double(o - u)) * (b2 - b1)) + b1;
-	debug("color %d %d %d", r, g, b);
 	img->setColor(i, qRgb(r, g, b));
     }
     
@@ -325,7 +335,7 @@ bool KPixmap::load( const QString& fileName, const char *format,
 
 bool KPixmap::convertFromImage( const QImage &img, ColorMode mode )
 {
-	int conversion_flags = 0;
+    int conversion_flags = 0;
     switch (mode) {
       case Color:
 		conversion_flags |= ColorOnly;
