@@ -26,7 +26,7 @@
 #include <css_value.h>
 //#include <css_stylesheetimpl.h>
 #include <dom_string.h>
-#include "css_parser.h"
+#include "cssparser.h"
 
 #include <qintdict.h>
 

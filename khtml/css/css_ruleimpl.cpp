@@ -25,7 +25,7 @@
 #include "css_stylesheet.h"
 #include "css_stylesheetimpl.h"
 #include "css_valueimpl.h"
-#include "css_parser.h"
+#include "cssparser.h"
 
 #include "dom_exception.h"
 #include "dom_string.h"

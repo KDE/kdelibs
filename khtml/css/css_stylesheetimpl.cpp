@@ -26,7 +26,7 @@
 #include "css_rule.h"
 #include "css_ruleimpl.h"
 #include "css_valueimpl.h"
-#include "css_parser.h"
+#include "cssparser.h"
 
 #include "dom_string.h"
 #include "dom_exception.h"

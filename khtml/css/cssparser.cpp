@@ -34,8 +34,8 @@ using namespace DOM;
 
 #include <stdio.h>
 
-#include "khtmltokenizer.h"
-#include "khtmlattrs.h"
+#include "htmlhashes.h"
+
 #include "cssproperties.h"
 #include "cssvalues.h"
 
@@ -723,7 +723,7 @@ CSSValueImpl *StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, in
     {
 	QString value(curP, endP - curP);
 	QColor c;
-	setNamedColor(c, value);
+	khtml::setNamedColor(c, value);
 	printf("color is: %d, %d, %d\n", c.red(), c.green(), c.blue());
 	return new CSSPrimitiveValueImpl(c);
     }

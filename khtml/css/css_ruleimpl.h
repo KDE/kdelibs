@@ -26,7 +26,7 @@
 #include <dom_string.h>
 //#include <css_stylesheetimpl.h>
 #include <css_rule.h>
-#include "css_parser.h"
+#include "cssparser.h"
 
 namespace DOM {
 

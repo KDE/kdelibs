@@ -21,8 +21,8 @@
  *
  * $Id$
  */
-#ifndef _CSS_css_parser_h_
-#define _CSS_css_parser_h_
+#ifndef _CSS_cssparser_h_
+#define _CSS_cssparser_h_
 
 #include "dom_string.h"
 #include "dom_misc.h"

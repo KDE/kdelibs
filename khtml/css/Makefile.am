@@ -21,8 +21,9 @@ KDE_CXXFLAGS = $(USE_EXCEPTIONS)
 
 noinst_LTLIBRARIES = libkhtmlmisc.la
 libkhtmlmisc_la_SOURCES = \
-	css_extensionsimpl.cpp  css_stylesheetimpl.cpp  cssparser.cpp \
+	css_stylesheetimpl.cpp  cssparser.cpp \
 	css_ruleimpl.cpp        css_valueimpl.cpp
+#	css_extensionsimpl.cpp  
 
 libkhtmlmisc_la_METASOURCES = AUTO
 
@@ -30,11 +31,9 @@ noinst_HEADERS = \
 	css_extensionsimpl.h  css_stylesheetimpl.h  cssparser.h \
 	css_ruleimpl.h        css_valueimpl.h
 
-libkhtmlmisc_la_LDFLAGS = -version-info 3:0
-
 INCLUDES = -I$(srcdir)/kjs -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio \
 	-I$(srcdir)/java -I$(top_srcdir)/dcop \
-	 -I.. -I. -I../misc -I../css -I../xml -I../html $(all_includes)
+	 -I.. -I. -I../misc -I../css -I../xml -I../html -I../dom $(all_includes)
 
 SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/khtml
 
