@@ -88,8 +88,9 @@ void KIOJob::initStatic()
   if ( !s_mapJobs )
     s_mapJobs = new map<int,KIOJob*>;
 
-  if ( !m_pListProgressDlg )
-    m_pListProgressDlg = new KIOListProgressDlg;
+  // This doesn't seem necessary, since it's built in showListGUI() (David)
+  // if ( !m_pListProgressDlg )
+  //  m_pListProgressDlg = new KIOListProgressDlg;
 }
 
 
