@@ -618,6 +618,13 @@ public:
 
 void KApplication::init(bool GUIenabled)
 {
+  if ((getuid() != geteuid()) ||
+      (getgid() != getegid()))
+  {
+     fprintf(stderr, "The KDE libraries are not designed to run with suid privileges.\n");
+     ::exit(127);
+  }
+
   QApplication::setDesktopSettingsAware( false );
 
   KApp = this;
@@ -700,7 +707,7 @@ static int my_system (const char *command) {
       if (getenv("SHELL"))
          shell = getenv("SHELL");
       execl(shell, shell, "-c", command, 0L);
-      exit(127);
+      ::exit(127);
    }
    do {
       if (waitpid(pid, &status, 0) == -1) {
