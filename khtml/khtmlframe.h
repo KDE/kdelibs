@@ -39,9 +39,7 @@ class HTMLFramePanner : public QFrame
 {
     Q_OBJECT
 public:
-    enum Orientation { HORIZONTAL = 1, VERTICAL = 2 };
-    
-    HTMLFramePanner( HTMLFramePanner::Orientation _orientation, QWidget *_parent = 0L, const char *_name = 0L );
+    HTMLFramePanner( Qt::Orientation _orientation, QWidget *_parent = 0L, const char *_name = 0L );
     ~HTMLFramePanner();
     
     void setChild1( QWidget *_child ) { child1 = _child; }

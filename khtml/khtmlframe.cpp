@@ -70,12 +70,12 @@ HTMLFrameSet::HTMLFrameSet( QWidget *_parent,
     if (nrCols > nrRows)
     {
         elements = nrCols;
-	orientation = HTMLFramePanner::VERTICAL;
+	orientation = Vertical;
     }
     else
     {
         elements = nrRows;
-	orientation = HTMLFramePanner::HORIZONTAL;
+	orientation = Horizontal;
     }
     size.resize( elements );   
 }
@@ -155,7 +155,7 @@ void HTMLFrameSet::resizeEvent( QResizeEvent* )
     if ( !isVisible() )
 	return;      
 
-    if ( orientation == HTMLFramePanner::VERTICAL )
+    if ( orientation == Vertical )
     {
       printf("Calculating col widths...");
       elements = calcSize( cols, width() );
@@ -176,7 +176,7 @@ void HTMLFrameSet::resizeEvent( QResizeEvent* )
     {
 	next = widgetList.next();
 	
-	if ( orientation == HTMLFramePanner::HORIZONTAL )
+	if ( orientation == Horizontal )
 	{
 	    if ( w->isA( "HTMLFramePanner" ) )
 	    {
@@ -393,7 +393,7 @@ HTMLFramePanner::HTMLFramePanner( HTMLFramePanner::Orientation _orientation, QWi
     child2 = 0L;
     orientation = _orientation;
 
-    if ( orientation == HTMLFramePanner::HORIZONTAL )
+    if ( orientation == Horizontal )
       setCursor( sizeVerCursor );
     else
       setCursor( sizeHorCursor );
@@ -410,7 +410,7 @@ void HTMLFramePanner::setIsMoveable( bool _move )
   moveable = _move;
   if ( !moveable )
     setCursor( arrowCursor );
-  else if ( orientation == HTMLFramePanner::HORIZONTAL )
+  else if ( orientation == Horizontal )
     setCursor( sizeVerCursor );
   else
     setCursor( sizeHorCursor );
@@ -441,7 +441,7 @@ void HTMLFramePanner::mouseMoveEvent( QMouseEvent *_ev )
     if ( child1 == 0L || child2 == 0L )
 	return;
 
-    if ( orientation == HTMLFramePanner::HORIZONTAL )
+    if ( orientation == Horizontal )
     {
 	QPoint p = mapToGlobal( _ev->pos() );
 	QPoint p2 = child1->mapToGlobal( QPoint( 0, 0 + 10 ) );
@@ -479,7 +479,7 @@ void HTMLFramePanner::mouseReleaseEvent( QMouseEvent * )
 
     releaseMouse();
 
-    if ( orientation == HTMLFramePanner::HORIZONTAL )
+    if ( orientation == Horizontal )
     {
 	child1->setGeometry( child1->x(), child1->y(), child1->width(), y() - child1->y() );
 	
