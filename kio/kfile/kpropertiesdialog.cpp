@@ -1233,7 +1233,7 @@ public:
   QLabel *explanationLabel;
   QComboBox *ownerPermCombo, *groupPermCombo, *othersPermCombo;
   QCheckBox *extraCheckbox;
-
+    QPushButton *pbAvancedPerm;
   mode_t partialPermissions;
   KFilePermissionsPropsPlugin::PermissionsMode pmode;
   bool canChangePermissions;
@@ -1424,7 +1424,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
     QLayoutItem *spacer = new QSpacerItem(0, 20, QSizePolicy::Minimum, QSizePolicy::Expanding);
     gl->addMultiCell(spacer, 5, 5, 0, 1);
 
-    l = new QPushButton(i18n("A&dvanced Permissions..."), gb);
+    l = d->pbAvancedPerm = new QPushButton(i18n("A&dvanced Permissions..."), gb);
     gl->addMultiCellWidget(l, 6, 6, 0, 1, AlignRight);
     connect(l, SIGNAL( clicked() ), this, SLOT( slotShowAdvancedPermissions() ));
   }
@@ -1571,6 +1571,14 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
       d->cbRecursive = new QCheckBox( i18n("Apply changes to all subdirectories and their contents"), d->m_frame );
       connect( d->cbRecursive, SIGNAL( clicked() ), this, SIGNAL( changed() ) );
       box->addWidget( d->cbRecursive );
+  }
+
+
+
+  if ( isLocal && path.startsWith(KGlobalSettings::trashPath()))
+  {
+      //don't allow to change properties for file into trash
+      enableAccessControls(false);
   }
 
   box->addStretch (10);
@@ -1915,6 +1923,8 @@ void KFilePermissionsPropsPlugin::enableAccessControls(bool enable) {
 	d->othersPermCombo->setEnabled(enable);
 	if (d->extraCheckbox)
 	  d->extraCheckbox->setEnabled(enable);
+        if ( d->pbAvancedPerm)
+            d->pbAvancedPerm->setEnabled(enable);
 }
 
 // updates all widgets in the Access Control frame
