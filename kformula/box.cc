@@ -22,6 +22,8 @@
 #include <stdio.h>
 #include <ctype.h>
 
+template class QList<box>;
+
 //----------------------CONSTRUCTORS AND DESTRUCTORS------------
 //most things they initialize get changed before they are used anyway.
 
