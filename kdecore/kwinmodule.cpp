@@ -22,27 +22,17 @@
 */
 
 #include <qwidget.h>
-
-#include "config.h"
-#if defined QWS_X11 && ! defined K_WS_QTONLY 
-//#ifdef Q_WS_X11 //FIXME
+#ifdef Q_WS_X11 //FIXME
 #include "kwinmodule.h"
 #include "kwin.h"
-
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY 
-#include <X11/Xatom.h> // schroder
-#endif
-
+#include <X11/Xatom.h>
 #include "kapplication.h"
 #include "kdebug.h"
 #include <qtl.h>
 #include <qptrlist.h>
 #include <klocale.h>
 #include <dcopclient.h>
-
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY 
-#include "netwm.h" // schroder
-#endif
+#include "netwm.h"
 
 static KWinModulePrivate* static_d = 0;
 

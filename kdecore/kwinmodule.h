@@ -23,8 +23,6 @@
 #ifndef KWINMODULE_H
 #define KWINMODULE_H
 
-#include "config.h"
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 #include <qobject.h>
 #include <qvaluelist.h>
 #include "kdemacros.h"
@@ -282,5 +280,4 @@ private:
     friend class KWinModulePrivate;
 };
 
-#endif // Q_WS_X11 && ! K_WS_QTONLY
 #endif
