@@ -546,9 +546,11 @@ KWin::WindowInfo::WindowInfo( WId win, unsigned long properties )
 	    XFree( c );
 	}
     }
-    NETRect frame, geom;
-    d->info->kdeGeometry( frame, geom );
-    d->geometry_.setRect( geom.pos.x, geom.pos.y, geom.size.width, geom.size.height );
+    if( properties & NET::WMGeometry ) {
+        NETRect frame, geom;
+        d->info->kdeGeometry( frame, geom );
+        d->geometry_.setRect( geom.pos.x, geom.pos.y, geom.size.width, geom.size.height );
+    }
 }
 
 // this one is only to make QValueList<> or similar happy
@@ -595,21 +597,25 @@ WId KWin::WindowInfo::win() const
 
 unsigned long KWin::WindowInfo::state() const
 {
+    Q_ASSERT( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMState );
     return d->info->state();
 }
 
 NET::MappingState KWin::WindowInfo::mappingState() const
 {
+    Q_ASSERT( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::XAWMState );
     return d->info->mappingState();
 }
 
 NETStrut KWin::WindowInfo::strut() const
 {
+    Q_ASSERT( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMStrut );
     return d->info->strut();
 }
 
 NET::WindowType KWin::WindowInfo::windowType( int supported_types ) const
 {
+    Q_ASSERT( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMWindowType );
     return d->info->windowType( supported_types );
 }
 
@@ -635,11 +641,13 @@ QString KWin::Info::visibleNameWithState() const
 
 QString KWin::WindowInfo::visibleName() const
 {
+    Q_ASSERT( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMVisibleName );
     return d->info->visibleName() ? d->info->visibleName() : d->name_;
 }
 
 QString KWin::WindowInfo::name() const
 {
+    Q_ASSERT( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMName );
     return d->name_;
 }
 
@@ -650,21 +658,25 @@ bool KWin::WindowInfo::isOnCurrentDesktop() const
 
 bool KWin::WindowInfo::isOnDesktop( int desktop ) const
 {
+    Q_ASSERT( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMDesktop );
     return d->info->desktop() == desktop || d->info->desktop() == NET::OnAllDesktops;
 }
 
 bool KWin::WindowInfo::onAllDesktops() const
 {
+    Q_ASSERT( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMDesktop );
     return d->info->desktop() == NET::OnAllDesktops;
 }
 
 int KWin::WindowInfo::desktop() const
 {
+    Q_ASSERT( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMDesktop );
     return d->info->desktop();
 }
 
 QRect KWin::WindowInfo::geometry() const
 {
+    Q_ASSERT( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMGeometry );
     return d->geometry_;
 }
 

@@ -468,6 +468,7 @@ public:
     int desktop() const;
     /**
      * Returns the position and size of the window contents.
+     * Requires NET::WMGeometry passed to KWin::windowInfo().
      */
     QRect geometry() const;
     
