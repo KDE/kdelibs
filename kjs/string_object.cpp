@@ -320,7 +320,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
 	  i++;
 	}
       }
-      delete ovector;
+      delete [] ovector;
     } else if (a0.type() != UndefinedType) {
       u2 = a0.toString(exec);
       if (u2.isEmpty()) {
