@@ -522,7 +522,7 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
     // We are only after certain features...
     QCString request;
     request = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>"
-    "<propfind xmlns:D=\"DAV:\">";
+    "<D:propfind xmlns:D=\"DAV:\">";
 
     // insert additional XML request from the davRequestResponse metadata
     if ( hasMetaData( "davRequestResponse" ) )
@@ -542,9 +542,9 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
       "<D:supportedlock/>"
       "<D:lockdiscovery/>"
       "<D:resourcetype/>"
-      "</prop>";
+      "</D:prop>";
     }
-    request += "</propfind>";
+    request += "</D:propfind>";
 
     davSetRequest( request );
   }
@@ -614,6 +614,27 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
     listEntry( entry, true );
     finished();
   }
+}
+
+void HTTPProtocol::davGeneric( const KURL& url, KIO::HTTP_METHOD method )
+{
+  kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::davGeneric " << url.url()
+                << endl;
+
+  if ( !checkRequestURL( url ) )
+    return;
+
+  // check to make sure this host supports WebDAV
+  if ( !davHostOk() )
+    return;
+
+  // WebDAV method
+  m_request.method = method;
+  m_request.query = QString::null;
+  m_request.cache = CC_Reload;
+  m_request.doProxy = m_bUseProxy;
+
+  retrieveContent( false );
 }
 
 int HTTPProtocol::codeFromResponse( const QString& response )
@@ -1881,11 +1902,18 @@ bool HTTPProtocol::httpOpen()
       break;
   case DAV_PROPFIND:
       header = "PROPFIND ";
+      davData = true;
       davHeader = "Depth: ";
-      if ( m_request.davData.depth == 2 )
-        davHeader += "infinity";
-      else
-        davHeader += QString("%1").arg( m_request.davData.depth );
+      if ( hasMetaData( "davDepth" ) ) {
+        kdDebug(7113) << "Reading DAV depth from metadata: " << metaData( "davDepth" ) << endl;
+        davHeader += metaData( "davDepth" );
+      } else 
+      {
+        if ( m_request.davData.depth == 2 )
+          davHeader += "infinity";
+        else
+          davHeader += QString("%1").arg( m_request.davData.depth );
+      }
       davHeader += "\r\n";
       m_bCachedWrite = false; // Do not put any result in the cache
       break;
@@ -3477,6 +3505,13 @@ void HTTPProtocol::special( const QByteArray &data )
       stream >> url;
       davUnlock( url );
       break;
+    }
+    case 7: // Generic WebDAV
+    {
+      KURL url;
+      int method;
+      stream >> url >> method; 
+      davGeneric( url, (KIO::HTTP_METHOD) method );
     }
     default:
       // Some command we don't understand.

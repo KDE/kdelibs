@@ -32,6 +32,13 @@ For doing a webdav SEARCH, use listDir() and set the metadata element
 davSearchQuery to the search query. The root element of this query should be like
 <d:basicsearch> or <d:sql>.
 
+For doing a generic webdav action, call a special request, with
+the following data:
+int, value 7 (WEBDAV generic)
+KURL url
+int method - the HTTP/WEBDAV method to call
+Send the xml request and receive the xml response in the usual way.
+
 === CREATING A LOCK ===
 To create a lock, call a special request, with the following data:
 

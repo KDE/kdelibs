@@ -36,9 +36,11 @@
 
 #include <kurl.h>
 #include "kio/tcpslavebase.h"
+#include "kio/http.h"
 
 class DCOPClient;
 class QDomElement;
+class QDomNodeList;
 
 namespace KIO {
     class AuthInfo;
@@ -59,9 +61,10 @@ public:
   enum HTTP_AUTH   {AUTH_None, AUTH_Basic, AUTH_Digest};
 
   /** HTTP / DAV method **/
-  enum HTTP_METHOD {HTTP_GET, HTTP_PUT, HTTP_POST, HTTP_HEAD, HTTP_DELETE,
-                    HTTP_OPTIONS, DAV_PROPFIND, DAV_PROPPATCH, DAV_MKCOL,
-                    DAV_COPY, DAV_MOVE, DAV_LOCK, DAV_UNLOCK, DAV_SEARCH };
+  // Removed to interfaces/kio/http.h
+  //enum HTTP_METHOD {HTTP_GET, HTTP_PUT, HTTP_POST, HTTP_HEAD, HTTP_DELETE,
+  //                  HTTP_OPTIONS, DAV_PROPFIND, DAV_PROPPATCH, DAV_MKCOL,
+  //                  DAV_COPY, DAV_MOVE, DAV_LOCK, DAV_UNLOCK, DAV_SEARCH };
 
   /** State of the current Connection **/
   typedef struct
@@ -91,7 +94,7 @@ public:
     QString passwd;
     QString path;
     QString query;
-    HTTP_METHOD method;
+    KIO::HTTP_METHOD method;
     KIO::CacheControl cache;
     KIO::filesize_t offset;
     bool doProxy;
@@ -142,6 +145,9 @@ public:
 
   // ask the host whether it supports WebDAV & cache this info
   bool davHostOk();
+
+  // send generic DAV request
+  void davGeneric( const KURL& url, KIO::HTTP_METHOD method );
 
   // Send requests to lock and unlock resources
   void davLock( const KURL& url, const QString& scope,
