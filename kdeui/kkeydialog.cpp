@@ -329,12 +329,12 @@ void KKeyChooser::init( KAccelActions& actions,
   QWhatsThis::add( d->pList, wtstr );
 
   d->pList->addColumn(i18n("Action"));
-  d->pList->addColumn(i18n("Current Key"));
+  d->pList->addColumn(i18n("Shortcut"));
 
   buildListView();
 
-  connect( d->pList, SIGNAL( currentChanged( QListViewItem * ) ),
-           SLOT( updateAction( QListViewItem * ) ) );
+  connect( d->pList, SIGNAL(currentChanged(QListViewItem*)),
+           SLOT(slotListItemSelected(QListViewItem*)) );
 
   //
   // CREATE CHOOSE KEY GROUP
@@ -342,7 +342,7 @@ void KKeyChooser::init( KAccelActions& actions,
   d->fCArea = new QGroupBox( this );
   topLayout->addWidget( d->fCArea, 1 );
 
-  d->fCArea->setTitle( i18n("Choose a Key for the Selected Action") );
+  d->fCArea->setTitle( i18n("Shortcut for Selected Action") );
   d->fCArea->setFrameStyle( QFrame::Box | QFrame::Sunken );
 
   //
@@ -370,7 +370,7 @@ void KKeyChooser::init( KAccelActions& actions,
   d->kbGroup->hide();
   d->kbGroup->setExclusive( true );
 
-  QRadioButton *rb = new QRadioButton( i18n("&No Key"), d->fCArea );
+  QRadioButton *rb = new QRadioButton( i18n("&None"), d->fCArea );
   d->kbGroup->insert( rb, NoKey );
   rb->setEnabled( false );
   //grid->addMultiCellWidget( rb, 1, 1, 1, 2 );
@@ -378,7 +378,7 @@ void KKeyChooser::init( KAccelActions& actions,
   QWhatsThis::add( rb, i18n("The selected action will not be associated with any key.") );
   connect( rb, SIGNAL(clicked()), SLOT(slotNoKey()) );
 
-  rb = new QRadioButton( i18n("De&fault Key"), d->fCArea );
+  rb = new QRadioButton( i18n("De&fault"), d->fCArea );
   d->kbGroup->insert( rb, DefaultKey );
   rb->setEnabled( false );
   //grid->addMultiCellWidget( rb, 2, 2, 1, 2 );
@@ -386,7 +386,7 @@ void KKeyChooser::init( KAccelActions& actions,
   QWhatsThis::add( rb, i18n("This will bind the default key to the selected action. Usually a reasonable choice.") );
   connect( rb, SIGNAL(clicked()), SLOT(slotDefaultKey()) );
 
-  rb = new QRadioButton( i18n("Custom &Key"), d->fCArea );
+  rb = new QRadioButton( i18n("&Custom"), d->fCArea );
   d->kbGroup->insert( rb, CustomKey );
   rb->setEnabled( false );
   //grid->addMultiCellWidget( rb, 3, 3, 1, 2 );
@@ -467,9 +467,8 @@ void KKeyChooser::buildListView()
 			if( pGroupItem && !pGroupItem->firstChild() )
 				delete pGroupItem;
 			pGroupItem = pParentItem = pItem;
-		} else {
+		} else if( !action.m_sName.isEmpty() )
 			pItem = new KKeyChooserItem( pParentItem, pItem, action );
-		}
 	}
 	if( !pProgramItem->firstChild() )
 		delete pProgramItem;
