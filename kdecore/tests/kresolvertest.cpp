@@ -31,6 +31,7 @@
 #include <qstring.h>
 
 #include <kuniqueapp.h>
+#include <ksocks.h>
 #include <ksockaddr.h>
 #include <kextsock.h>
 #include <kaboutdata.h>
@@ -337,6 +338,9 @@ void go()
       else
 	printf(" Your system doesn't support IPv6\n");
     }
+
+  /* Make sure KSocks doesn't interfere in testing */
+  KSocks::disable();
 
   /* Begin testing */
   printf("\nReady to start testing\nPress any key to continue...");
