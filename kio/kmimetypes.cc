@@ -657,17 +657,31 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices(
   {
     kdebug( KDEBUG_INFO, 7009, "CURRENT KEY = %s", (*it).ascii() );
 
-    QStringList lst = cfg.readListEntry( *it );
-    if ( lst.count() == 3 )
+    QString group = *it;
+    group.prepend( "Menu::" );
+
+    bool bInvalidMenu = false;
+
+    if ( cfg.hasGroup( group ) )
     {
-      Service s;
-      s.m_strName = *lst.at(0);
-      s.m_strIcon = *lst.at(1);
-      s.m_strExec = *lst.at(2);
-      s.m_type = ST_USER_DEFINED;
-      result.append( s );
+      cfg.setGroup( group );
+  
+      if ( !cfg.hasKey( "Name" ) || !cfg.hasKey( "Exec" ) )
+        bInvalidMenu = true;
+      else
+      {
+        Service s;
+        s.m_strName = cfg.readEntry( "Name" );
+        s.m_strIcon = cfg.readEntry( "Icon" );
+        s.m_strExec = cfg.readEntry( "Exec" );
+	s.m_type = ST_USER_DEFINED;
+	result.append( s );
+      }
     }
     else
+      bInvalidMenu = true;
+
+    if ( bInvalidMenu ) 
     {
       QString tmp = i18n("The desktop entry file\n%1\n has an invalid menu entry\n%2").arg( _url.path()).arg( *it );
       QMessageBox::critical( 0L, i18n("Error"), tmp, i18n("OK" ) );
