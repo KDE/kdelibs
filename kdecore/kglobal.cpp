@@ -93,7 +93,9 @@ void KGlobal::freeAll()
 	delete _locale;		_locale = 0;
 	delete _charsets;	_charsets = 0;
 
-	delete _config;		_config = 0;
+//	FIXME: KApp also deletes pConfig!
+//	delete _config;		
+	_config = 0;
 	delete _instanceConfig;	_instanceConfig = 0;
 	_configState =  APPCONFIG_NONE;
 
