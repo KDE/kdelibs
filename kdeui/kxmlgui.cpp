@@ -350,16 +350,8 @@ QString KXMLGUIFactory::readConfigFile( const QString &filename, bool never_null
             return QString::null;
     }
 
-    uint size = file.size();
-    char* buffer = new char[ size + 1 ];
-    file.readBlock( buffer, size );
-    buffer[ size ] = 0;
-    file.close();
-
-    QString text = QString::fromUtf8( buffer, size );
-    delete[] buffer;
-
-    return text;
+    QByteArray buffer(file.readAll());
+    return QString::fromUtf8(buffer.data(), buffer.size());
 }
 
 bool KXMLGUIFactory::saveConfigFile( const QDomDocument& doc,
