@@ -684,7 +684,6 @@ void RenderBox::repaintRectangle(int x, int y, int w, int h, bool immediate, boo
 
     if (style()->position()==FIXED) f=true;
 
-
     // kdDebug( 6040 ) << "RenderBox(" <<this << ", " << renderName() << ")::repaintRectangle (" << x << "/" << y << ") (" << w << "/" << h << ")" << endl;
     RenderObject *o = container();
     if( o ) o->repaintRectangle(x, y, w, h, immediate, f);
@@ -1272,9 +1271,6 @@ void RenderBox::calcAbsoluteHorizontal()
     m_marginRight = mr;
     short old_m_x = m_x;
     m_x = l + ml + cb->borderLeft();
-    if ( old_m_x != m_x && m_layer)
-        m_layer->updateLayerPosition();
-
     //qDebug("h: w=%d, l=%d, r=%d, ml=%d, mr=%d",w,l,r,ml,mr);
 }
 

@@ -200,9 +200,11 @@ public:
     void paintScrollbars(RenderObject::PaintInfo& pI);
     void checkScrollbarsAfterLayout();
     void slotValueChanged(int);
+    void markForRepaint( bool afterLayout = false );
     void updateScrollPositionFromScrollbars();
 
     void updateLayerPosition();
+    void updateLayerPositions(RenderLayer* rootLayer, bool doFullRepaint, bool checkForRepaint = false);
     void layout();
 
     // Get the enclosing stacking context for this layer.  A stacking context is a layer
@@ -308,6 +310,9 @@ protected:
     QPtrVector<RenderLayer>* m_posZOrderList;
     QPtrVector<RenderLayer>* m_negZOrderList;
     bool m_zOrderListsDirty;
+    
+    bool m_markedForRepaint;
+    QRect m_visibleRect;
 
     Marquee* m_marquee; // Used by layers with overflow:marquee
 };

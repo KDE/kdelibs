@@ -250,6 +250,11 @@ void RenderTable::layout()
         return;
     }
 
+    if (markedForRepaint()) {
+        repaintDuringLayout();
+        setMarkedForRepaint(false);
+    }
+
     m_height = 0;
     initMaxMarginValues();
 

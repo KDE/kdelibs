@@ -1282,6 +1282,10 @@ void RenderBlock::layoutInlineChildren(bool relayoutChildren)
         // layout replaced elements
         RenderObject *o = first( this, bidi, false );
         while ( o ) {
+            if (o->markedForRepaint()) {
+                o->repaintDuringLayout();
+                o->setMarkedForRepaint(false);
+             }
             if (o->isReplaced() || o->isFloating() || o->isPositioned()) {
                 // clear the placeHolderBox
                 if (o->isBox())

@@ -124,6 +124,8 @@ void RenderCanvas::layout()
     if (m_printingMode)
        m_minWidth = m_width;
 
+    m_needsFullRepaint =  markedForRepaint() || !view() || view()->needsFullRepaint() || m_printingMode;
+
     setChildNeedsLayout(true);
     setMinMaxKnown(false);
     for(RenderObject* c = firstChild(); c; c = c->nextSibling())
@@ -203,8 +205,21 @@ void RenderCanvas::layout()
 #endif
 
     layer()->resize( kMax( docW,int( m_width ) ), kMax( docH,m_height ) );
+    layer()->updateLayerPositions( layer(), needsFullRepaint(), true );
 
+    scheduleDeferredRepaints();
     setNeedsLayout(false);
+}
+
+bool RenderCanvas::needsFullRepaint() const
+{
+    return m_needsFullRepaint;
+}
+
+void RenderCanvas::repaintViewRectangle(int x, int y, int w, int h)
+{
+  KHTMLAssert( view() );
+  view()->scheduleRepaint( x, y, w, h );
 }
 
 bool RenderCanvas::absolutePosition(int &xPos, int &yPos, bool f)
@@ -282,6 +297,22 @@ void RenderCanvas::repaintRectangle(int x, int y, int w, int h, bool immediate, 
         else
             m_view->scheduleRepaint(x, y, w, h);
     }
+}
+
+void RenderCanvas::deferredRepaint( RenderObject* o )
+{
+    m_dirtyChildren.append( o );
+}
+
+void RenderCanvas::scheduleDeferredRepaints()
+{
+    if (!needsFullRepaint()) {
+        QValueList<RenderObject*>::const_iterator it;
+        for ( it = m_dirtyChildren.begin(); it != m_dirtyChildren.end(); ++it )
+            (*it)->repaint();
+    }
+    //kdDebug(6040) << "scheduled deferred repaints: " << m_dirtyChildren.count() << " needed full repaint: " << needsFullRepaint() << endl;
+    m_dirtyChildren.clear();    
 }
 
 void RenderCanvas::repaint(bool immediate)

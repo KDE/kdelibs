@@ -246,6 +246,8 @@ public:
     bool isReplacedBlock() const { return isInline() && isReplaced() && isRenderBlock(); }
     bool shouldPaintBackgroundOrBorder() const { return m_paintBackground; }
     bool needsLayout() const   { return m_needsLayout || m_normalChildNeedsLayout || m_posChildNeedsLayout; }
+    bool markedForRepaint() const { return m_markedForRepaint; }
+    void setMarkedForRepaint(bool m) { m_markedForRepaint = m; }
     bool selfNeedsLayout() const { return m_needsLayout; }
     bool posChildNeedsLayout() const { return m_posChildNeedsLayout; }
     bool normalChildNeedsLayout() const { return m_normalChildNeedsLayout; }
@@ -269,6 +271,8 @@ public:
 
     void setOverhangingContents(bool p=true);
     void markContainingBlocksForLayout();
+    void dirtyFormattingContext( bool checkContainer );
+    void repaintDuringLayout();
     void setNeedsLayout(bool b, bool markParents = true);
     void setChildNeedsLayout(bool b, bool markParents = true);
     void setMinMaxKnown(bool b=true) {
@@ -684,7 +688,9 @@ private:
 
     bool m_needsLayout               : 1;
     bool m_normalChildNeedsLayout    : 1;
+    bool m_markedForRepaint          : 1;
     bool m_posChildNeedsLayout       : 1;
+
     bool m_minMaxKnown               : 1;
     bool m_floating                  : 1;
 

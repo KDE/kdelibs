@@ -159,6 +159,7 @@ RenderObject::RenderObject(DOM::NodeImpl* node)
       m_verticalPosition( PositionUndefined ),
       m_needsLayout( false ),
       m_normalChildNeedsLayout( false ),
+      m_markedForRepaint( false ),
       m_posChildNeedsLayout( false ),
       m_minMaxKnown( false ),
       m_floating( false ),
@@ -473,10 +474,13 @@ void RenderObject::setPixmap(const QPixmap&, const QRect& /*r*/, CachedImage* im
 
 void RenderObject::setNeedsLayout(bool b, bool markParents)
 {
+    bool alreadyNeededLayout = m_needsLayout;
     m_needsLayout = b;
     if (b) {
-        if (markParents)
+        if (!alreadyNeededLayout && markParents) {
+            dirtyFormattingContext( false );
             markContainingBlocksForLayout();
+        }
     }
     else {
         m_posChildNeedsLayout = false;
@@ -486,9 +490,10 @@ void RenderObject::setNeedsLayout(bool b, bool markParents)
 
 void RenderObject::setChildNeedsLayout(bool b, bool markParents)
 {
+    bool alreadyNeededLayout = m_normalChildNeedsLayout;
     m_normalChildNeedsLayout = b;
     if (b) {
-        if (markParents)
+        if (!alreadyNeededLayout && markParents)
             markContainingBlocksForLayout();
     }
     else {
@@ -1226,15 +1231,46 @@ void RenderObject::setStyle(RenderStyle *style)
         if(nb) nb->ref(this);
     }
 
-
     setShouldPaintBackgroundOrBorder(m_style->backgroundColor().isValid() ||
                                         m_style->hasBorder() || nb );
     m_hasFirstLine = (style->getPseudoStyle(RenderStyle::FIRST_LINE) != 0);
+    if (m_parent) {
+        if ( d >= RenderStyle::Position ) {
+            if (!isText() && d == RenderStyle::CbLayout) {
+                dirtyFormattingContext( true );
+            }
+            setNeedsLayoutAndMinMaxRecalc();
+        } else if (!isText() && d == RenderStyle::Visible) {
+            if (layer())
+                layer()->markForRepaint();
+            else
+                repaint();
+        }
+    }
+}
 
-    if ( d >= RenderStyle::Position && m_parent )
-        setNeedsLayoutAndMinMaxRecalc();
-    else if (!isText() && m_parent && d == RenderStyle::Visible)
-        repaint();
+void RenderObject::dirtyFormattingContext( bool checkContainer )
+{
+    if (m_markedForRepaint && !checkContainer)
+        return;
+    m_markedForRepaint = true;
+    if (layer() && (style()->position() == FIXED || style()->position() == ABSOLUTE))
+        return;        
+    if (m_parent && (checkContainer || style()->width().isVariable() || style()->height().isVariable() || 
+                     !(isFloatingOrPositioned() || flowAroundFloats() || isTableCell() || hasOverflowClip())))
+        container()->dirtyFormattingContext(false);
+}
+
+void RenderObject::repaintDuringLayout()
+{
+    if (canvas()->needsFullRepaint() || isText())
+        return;
+    if (layer()) {
+        layer()->markForRepaint( true );
+    } else {
+       repaint();
+       canvas()->deferredRepaint( this );
+    }
 }
 
 void RenderObject::setOverhangingContents(bool p)

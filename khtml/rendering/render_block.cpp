@@ -449,8 +449,15 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
     if (!relayoutChildren && posChildNeedsLayout() && !normalChildNeedsLayout() && !selfNeedsLayout()) {
         // All we have to is lay out our positioned objects.
         layoutPositionedObjects(relayoutChildren);
+        if (hasOverflowClip())
+            m_layer->checkScrollbarsAfterLayout();
         setNeedsLayout(false);
         return;
+    }
+
+    if (markedForRepaint()) {
+        repaintDuringLayout();
+        setMarkedForRepaint(false);
     }
 
     int oldWidth = m_width;
@@ -590,7 +597,7 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
     // we overflow or not.
     if (style()->hidesOverflow() && m_layer)
         m_layer->checkScrollbarsAfterLayout();
-
+    
     setNeedsLayout(false);
 }
 
@@ -1135,7 +1142,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
                 Length newLineHeight( kMax(compactChild->lineHeight(true)+adj, (int)child->lineHeight(true)),
                                       khtml::Fixed);
                 child->style()->setLineHeight( newLineHeight );
-                child->setNeedsLayout( true );
+                child->setNeedsLayout( true, false );
                 child->layout();
                 compactChild->setPos(compactXPos, compactYPos); // Set the x position.
                 compactChild = 0;
@@ -1211,6 +1218,10 @@ void RenderBlock::layoutPositionedObjects(bool relayoutChildren)
         bool adjOverflow = !(style()->position() == FIXED) && style()->hidesOverflow();
         for ( ; (r = it.current()); ++it ) {
             //kdDebug(6040) << "   have a positioned object" << endl;
+            if (r->markedForRepaint()) {
+                r->repaintDuringLayout();
+                r->setMarkedForRepaint(false);
+            }
             if ( relayoutChildren )
                 r->setChildNeedsLayout(true);
             r->layoutIfNeeded();

@@ -51,6 +51,10 @@ public:
 
     virtual void repaint(bool immediate=false);
     virtual void repaintRectangle(int x, int y, int w, int h, bool immediate=false, bool f=false);
+    void repaintViewRectangle(int x, int y, int w, int h);
+    bool needsFullRepaint() const;
+    void deferredRepaint( RenderObject* o );
+    void scheduleDeferredRepaints();
     virtual void paint(PaintInfo&, int tx, int ty);
     virtual void paintBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty);
     virtual void setSelection(RenderObject *s, int sp, RenderObject *e, int ep);
@@ -106,9 +110,11 @@ protected:
     // used to ignore viewport width when painting to the printer
     bool m_printingMode;
     bool m_printImages;
+    bool m_needsFullRepaint;
     int m_truncatedAt;
 
     int m_maximalOutlineSize; // Used to apply a fudge factor to dirty-rect checks on blocks/tables.
+    QValueList<RenderObject*> m_dirtyChildren;
 };
 
 inline RenderCanvas* RenderObject::canvas() const

@@ -224,6 +224,8 @@ private:
 
     void scheduleRepaint(int x, int y, int w, int h, bool asap=false);
     void unscheduleRepaint();
+    
+    bool needsFullRepaint() const;
 
     void closeChildDialogs();
     bool dialogsAllowed();

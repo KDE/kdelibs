@@ -1,5 +1,41 @@
 2004-12-12  Germain Garand  <germain@ebooksfrance.org>
 
+        Pragmatic incremental repaints: be accurate on layered objects, conservative on
+        objects in normal flow. Fix performance issues on repeated relayouts (#53114)
+
+        * khtmlview.{cpp,h}: add needsFullRepaint flag, mostly similar to WebCore's.
+        (layout): don't repaint the canvas systematically anymore.
+
+        * rendering/bidi.cpp (layoutInlineChildren): schedule a repaint on
+        old rectangle and future rectangle, if marked dirty.
+
+        * rendering/render_block.cpp (layoutBlock/layoutBlockChildren/layoutPositionedObjects): ditto.
+
+        * rendering/render_table.cpp (layout): ditto.
+
+        * rendering/render_box.cpp (calcAbsoluteHorizontal): no more updateLayerPosition() here.
+        Layers positioning now happen in a separate pass.
+
+        * rendering/render_canvas.{cpp,h}
+        (needsFullRepaint): new - used to determine if we need to do incremental repaint at all. Don't waste time if the whole canvas is dirty.
+        (repaintViewRectangle): new - schedule a repaint in absolute coordinates.
+        (deferredRepaint): new - append argument to a list of objects needing a post-layout repaint.
+        (scheduleDeferredRepaints): new - repaint all objects in list described above, at the end of layout.
+
+        * rendering/render_layer.{cpp,h} (markForRepaint): new - schedule a repaint of a layer, calculating its visible rectangle,
+        and optionnally marking it as needing a post-layout repaint.
+        (updateLayerPositions): merged++ from WebCore. Position layers. Repaint layers marked by the above.
+        (calculateClipRects/calculateRects): no more updateLayerPosition call there.
+
+        * rendering/render_object.cpp
+        (setNeedsLayout): when marking for layout, also mark the formatting context for repaint (m_markedForRepaint boolean)
+        (setChildNeedsLayout): merge WebCore guard against multiple dirtying.
+        (setStyle): based on the Style diff, decide whether to dirty only the current formatting context, or also the parent's.
+        (dirtyFormattingContext): new.
+        (repaintDuringLayout): new - schedule a pre/post-layout repaint on the object, if it makes sense.
+
+2004-12-12  Germain Garand  <germain@ebooksfrance.org>
+
         sanitize anchor-jumping code. Merge restoreScrollPosition/gotoAnchor
         slots to avoid undeterministic calling order and redundant
         connections(#94783, 3.3.2 regression of #57360).

@@ -94,6 +94,7 @@ m_scrollMediator( 0 ),
 m_posZOrderList( 0 ),
 m_negZOrderList( 0 ),
 m_zOrderListsDirty( true ),
+m_markedForRepaint( false ),
 m_marquee( 0 )
 {
 }
@@ -139,12 +140,67 @@ void RenderLayer::updateLayerPosition()
         parent()->subtractScrollOffset(x, y);
 
     setPos(x,y);
+}
 
-    // ### this belongs to updatePositions, but updatePositions is not yet merged
+void RenderLayer::markForRepaint( bool afterLayout )
+{
+    if (m_markedForRepaint)
+        return;
+    for (RenderLayer* child = firstChild(); child; child = child->nextSibling())
+        child->markForRepaint( afterLayout );
+    QRect layerBounds, damageRect, fgrect;
+    QRect vr = m_object->viewRect();
+    calculateRects(renderer()->canvas()->layer(), renderer()->viewRect(), layerBounds, damageRect, fgrect);
+    m_visibleRect = damageRect.intersect( layerBounds );
+    if (m_visibleRect.isValid())
+        renderer()->canvas()->repaintViewRectangle( m_visibleRect.x(), m_visibleRect.y(), m_visibleRect.width(), m_visibleRect.height() );
+    if (afterLayout)
+        m_markedForRepaint = true;
+}
+
+void RenderLayer::updateLayerPositions(RenderLayer* rootLayer, bool doFullRepaint, bool checkForRepaint)
+{
+    if (doFullRepaint) {
+        m_object->repaint();
+        checkForRepaint = doFullRepaint = false;
+    }
+    
+    updateLayerPosition(); // For relpositioned layers or non-positioned layers,
+                           // we need to keep in sync, since we may have shifted relative
+                           // to our parent layer.
+
+    if (m_hBar || m_vBar) {
+        // Need to position the scrollbars.
+        int x = 0;
+        int y = 0;
+        convertToLayerCoords(rootLayer, x, y);
+        QRect layerBounds = QRect(x,y,width(),height());
+        positionScrollbars(layerBounds);
+    }
+
+#ifdef APPLE_CHANGES
+    // FIXME: Child object could override visibility.
+    if (checkForRepaint && (m_object->style()->visibility() == VISIBLE))
+        m_object->repaintAfterLayoutIfNeeded(m_repaintRect, m_fullRepaintRect);
+#else    
+    if (checkForRepaint && m_markedForRepaint) {
+        m_markedForRepaint = false;
+        QRect layerBounds, damageRect, fgrect;
+        calculateRects(rootLayer, renderer()->viewRect(), layerBounds, damageRect, fgrect);
+        QRect vr = damageRect.intersect( layerBounds );
+        if (vr != m_visibleRect && vr.isValid())
+            renderer()->canvas()->repaintViewRectangle( vr.x(), vr.y(), vr.width(), vr.height() );
+    }            
+#endif
+    
+    for	(RenderLayer* child = firstChild(); child; child = child->nextSibling())
+        child->updateLayerPositions(rootLayer, doFullRepaint, checkForRepaint);
+        
     // With all our children positioned, now update our marquee if we need to.
     if (m_marquee)
         m_marquee->updateMarqueePosition();
 }
+
 
 short RenderLayer::width() const
 {
@@ -534,8 +590,6 @@ void RenderLayer::positionScrollbars(const QRect& absBounds)
 
 void RenderLayer::checkScrollbarsAfterLayout()
 {
-    updateLayerPosition();
-
     int rightPos = m_object->overflowWidth();
     int bottomPos = m_object->overflowHeight();
 
@@ -643,12 +697,12 @@ static void setClip(QPainter* p, const QRect& paintDirtyRect, const QRect& clipR
 {
     if (paintDirtyRect == clipRect)
         return;
-
     p->save();
 
 #ifdef APPLE_CHANGES
     p->addClip(clipRect);
 #else
+
     QRect clippedRect = p->xForm(clipRect);
     QRegion creg(clippedRect);
     QRegion old = p->clipRegion();
@@ -878,10 +932,6 @@ void RenderLayer::calculateClipRects(const RenderLayer* rootLayer, QRect& overfl
     if (parent())
         parent()->calculateClipRects(rootLayer, overflowClipRect, posClipRect, fixedClipRect);
 
-    updateLayerPosition(); // For relpositioned layers or non-positioned layers,
-                           // we need to keep in sync, since we may have shifted relative
-                           // to our parent layer.
-
     switch (m_object->style()->position()) {
       // A fixed object is essentially the root of its containing block hierarchy, so when
       // we encounter such an object, we reset our clip rects to the fixedClipRect.
@@ -930,8 +980,6 @@ void RenderLayer::calculateRects(const RenderLayer* rootLayer, const QRect& pain
     if (parent())
         parent()->calculateClipRects(rootLayer, overflowClipRect, posClipRect, fixedClipRect);
 
-    updateLayerPosition();
-
     int x = 0;
     int y = 0;
     convertToLayerCoords(rootLayer, x, y);
@@ -963,7 +1011,7 @@ void RenderLayer::calculateRects(const RenderLayer* rootLayer, const QRect& pain
 bool RenderLayer::intersectsDamageRect(const QRect& layerBounds, const QRect& damageRect) const
 {
     return (renderer()->isCanvas() || renderer()->isRoot() || renderer()->isBody() ||
-            renderer()->hasOverhangingFloats() ||
+            (renderer()->hasOverhangingFloats() && !renderer()->hasOverflowClip()) ||
             (renderer()->isInline() && !renderer()->isReplaced()) ||
             layerBounds.intersects(damageRect));
 }

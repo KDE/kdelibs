@@ -221,6 +221,7 @@ public:
         scrollSuspendPreActivate = false;
         complete = false;
         firstRelayout = true;
+        needsFullRepaint = true;
         dirtyLayout = false;
         layoutSchedulingEnabled = true;
         painting = false;
@@ -311,10 +312,10 @@ public:
 
     QScrollView::ScrollBarMode vmode;
     QScrollView::ScrollBarMode hmode;
-    bool prevScrollbarVisible;
-    bool linkPressed;
-    bool useSlowRepaints;
-    bool ignoreWheelEvents;
+    bool prevScrollbarVisible:1;
+    bool linkPressed:1;
+    bool useSlowRepaints:1;
+    bool ignoreWheelEvents:1;
 
     int borderX, borderY;
     KSimpleConfig *formCompletions;
@@ -331,16 +332,17 @@ public:
     int scrollTimerId;
     int scrollTiming;
     int scrollBy;
-    ScrollDirection scrollDirection;
-    bool scrollSuspended;
-    bool scrollSuspendPreActivate;
-    bool complete;
-    bool firstRelayout;
-    bool layoutSchedulingEnabled;
-    bool painting;
-    bool possibleTripleClick;
-    bool dirtyLayout;
-    bool m_dialogsAllowed;
+    ScrollDirection scrollDirection		:2;
+    bool scrollSuspended			:1;
+    bool scrollSuspendPreActivate		:1;
+    bool complete				:1;
+    bool firstRelayout				:1;
+    bool layoutSchedulingEnabled		:1;
+    bool needsFullRepaint			:1;
+    bool painting				:1;
+    bool possibleTripleClick			:1;
+    bool dirtyLayout				:1;
+    bool m_dialogsAllowed			:1;
     QRegion updateRegion;
     KHTMLToolTip *tooltip;
     QPtrDict<QWidget> visibleWidgets;
@@ -605,7 +607,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 
     QPoint pt = contentsToViewport(QPoint(ex, ey));
     QRegion cr = QRect(pt.x(), pt.y(), ew, eh);
-//     kdDebug(6000) << "clip rect: " << QRect(pt.x(), pt.y(), ew, eh) << endl;
+    //kdDebug(6000) << "clip rect: " << QRect(pt.x(), pt.y(), ew, eh) << endl;
     for (QPtrDictIterator<QWidget> it(d->visibleWidgets); it.current(); ++it) {
 	QWidget *w = it.current();
 	RenderWidget* rw = static_cast<RenderWidget*>( it.currentKey() );
@@ -729,12 +731,14 @@ void KHTMLView::layout()
              else if (!d->tooltip)
                  d->tooltip = new KHTMLToolTip( this, d );
         }
-
-        _height = visibleHeight();
-        _width = visibleWidth();
+        d->needsFullRepaint = d->firstRelayout;
+        if (_height !=  visibleHeight() || _width != visibleWidth()) {;
+            d->needsFullRepaint = true;
+            _height = visibleHeight();
+            _width = visibleWidth();
+        }
         //QTime qt;
         //qt.start();
-        root->setNeedsLayoutAndMinMaxRecalc();
         root->layout();
 
         emit finishedLayout();
@@ -754,7 +758,6 @@ void KHTMLView::layout()
 	    showCaret();
         }/*end if*/
 #endif
-	root->repaint();
         if (d->accessKeysActivated) {
             emit hideAccessKeys();
             displayAccessKeys();
@@ -2104,6 +2107,11 @@ void KHTMLView::setWidgetVisible(RenderWidget* w, bool vis)
         d->visibleWidgets.remove(w);
 }
 
+bool KHTMLView::needsFullRepaint() const
+{
+    return d->needsFullRepaint;
+}
+
 void KHTMLView::print()
 {
     print( false );
@@ -2740,9 +2748,9 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
         return;
     }
     else if ( e->timerId() == d->layoutTimerId ) {
-        d->firstRelayout = false;
         d->dirtyLayout = true;
         layout();
+        d->firstRelayout = false;
     }
 #ifndef KHTML_NO_CARET
     else if (d->m_caretViewContext
