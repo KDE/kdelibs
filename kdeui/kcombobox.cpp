@@ -297,9 +297,9 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
                 QString txt = currentText();
                 int len = txt.length();
                 int key = e->key();
-                if ( len && ((!keycode.isNull() &&
-                              keycode.unicode()->isPrint()) ||
-                             key == Key_BackSpace || key == Key_Delete) )
+                if ( len && edit->cursorPosition() == len &&
+                     ((!keycode.isNull() && keycode.unicode()->isPrint()) ||
+                      key == Key_BackSpace || key == Key_Delete) )
                 {
                     kdDebug(292) << "Popup Completion" << endl;
                     if ( emitSignals() )

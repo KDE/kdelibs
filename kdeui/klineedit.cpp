@@ -221,9 +221,10 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             QString old_txt = text();
             QLineEdit::keyPressEvent ( e );
             QString txt = text();
+            int len = txt.length();            
             QString keycode = e->text();
 
-            if ( txt != old_txt )
+            if ( txt != old_txt && len && cursorPosition() == len )
             {
                 kdDebug(293) << "Popup Completion" << endl;
                 if ( emitSignals() )
