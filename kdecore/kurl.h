@@ -26,8 +26,6 @@
 class QUrl;
 class QStringList;
 
-class KURLPrivate;
-
 /**
  * Represent and parse a URL.
  *
@@ -73,14 +71,15 @@ public:
    *             should not use this constructor.
    *             Instead create an empty url and set the path by using
    *             @ref setPath().
+   * @param encoding_hint Reserved, should be 0.
    */
-  KURL( const QString& url );
+  KURL( const QString& url, int encoding_hint = 0 );
   /**
    * Constructor taking a char * @p url, which is an _encoded_ representation
    * of the URL, exactly like the usual constructor. This is useful when
    * then URL, in its encoded form, is strictly ascii.
    */
-  KURL( const char * url );
+  KURL( const char * url, int encoding_hint = 0 );
   /**
    * Copy constructor
    */
@@ -95,8 +94,9 @@ public:
    * @param _baseurl The base url.
    * @param _rel_url This is considered to be encoded. If an absolute path/URL,
    * then _baseurl will be ignored.
+   * @param encoding_hint Reserved, should be 0.
    */
-  KURL( const KURL& _baseurl, const QString& _rel_url );
+  KURL( const KURL& _baseurl, const QString& _rel_url, int encoding_hint=0 );
 
   /**
    * Retrieve the protocol for the URL (i.e., file, http, etc.).
@@ -201,23 +201,26 @@ public:
   /**
    * This is useful for HTTP. It looks first for '?' and decodes then.
    * The encoded path is the concatenation of the current path and the query.
+   * @param encoding_hint Reserved, should be 0.
    */
-  void setEncodedPathAndQuery( const QString& _txt );
+  void setEncodedPathAndQuery( const QString& _txt, int encoding_hint = 0 );
 
   /**
    * @return The concatenation if the encoded path , '?' and the encoded query.
    *
    * @param _no_empty_path If set to true then an empty path is substituted by "/".
+   * @param encoding_hint Reserved, should be 0.
    */
-  QString encodedPathAndQuery( int _trailing = 0, bool _no_empty_path = false ) const;
+  QString encodedPathAndQuery( int _trailing = 0, bool _no_empty_path = false, int encoding_hint = 0) const;
 
   /**
    * @param _txt This is considered to be encoded. This has a good reason:
    * The query may contain the 0 character.
    * 
    * The query should start with a '?'. If it doesn't '?' is prepended.
+   * @param encoding_hint Reserved, should be 0.
    */
-  void setQuery( const QString& _txt );
+  void setQuery( const QString& _txt, int encoding_hint = 0);
 
   /**
    * @return The encoded query. 
@@ -447,23 +450,27 @@ public:
   /**
    * Convenience function
    *
-   * Convert unicoded string to utf8 and use %-style encoding for all
-   * common delimiters / non-ascii characters.
+   * Convert unicoded string to local encoding and use %-style 
+   * encoding for all common delimiters / non-ascii characters.
+   * @param str String to encode
+   * @param encoding_hint Reserved, should be 0.
    **/
-  static QString encode_string(const QString &str);
+  static QString encode_string(const QString &str, int encoding_hint = 0);
 
   /**
    * Convenience function
    *
-   * Decode %-style encoding and convert from utf8 to unicode.
+   * Decode %-style encoding and convert from local encoding to unicode.
    *
    * Revers of encode_string()
+   * @param str String to decode
+   * @param encoding_hint Reserved, should be 0.
    **/
-  static QString decode_string(const QString &str);
+  static QString decode_string(const QString &str, int encoding_hint = 0);
 
 protected:
   void reset();
-  void parse( const QString& _url );
+  void parse( const QString& _url, int encoding_hint = 0);
 
 private:
   QString m_strProtocol;
@@ -474,29 +481,28 @@ private:
   QString m_strRef_encoded;
   QString m_strQuery_encoded;
   QString m_strMalformed;
-
   bool m_bIsMalformed;
   unsigned short int m_iPort;
 
+  QString m_strPath_encoded;
+
   friend QDataStream & operator<< (QDataStream & s, const KURL & a);
   friend QDataStream & operator>> (QDataStream & s, KURL & a);
-
-  KURLPrivate *d;
 };
 
 /**
- * Compares URLs. They are parsed, split and compared. This means they
- * should be both encoded before, or both decoded. Two malformed URLs
- * with the same string representation are nevertheless considered to be
- * unequal. That means no malformed URL equals anything else.
+ * Compares URLs. They are parsed, split and compared. 
+ * Two malformed URLs with the same string representation 
+ * are nevertheless considered to be unequal. 
+ * That means no malformed URL equals anything else.
  */
 bool urlcmp( const QString& _url1, const QString& _url2 );
 
 /**
- * Compares URLs. They are parsed, split and compared. This means they
- * should be both encoded before, or both decoded. Two malformed URLs
- * with the same string representation are nevertheless considered to be
- * unequal. That means no malformed URL equals anything else.
+ * Compares URLs. They are parsed, split and compared. 
+ * Two malformed URLs with the same string representation 
+ * are nevertheless considered to be unequal. 
+ * That means no malformed URL equals anything else.
  *
  * @param _ignore_trailing Described in @ref KURL::cmp
  * @param _ignore_ref If @p true, disables comparison of HTML-style references.

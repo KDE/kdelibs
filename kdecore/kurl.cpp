@@ -33,9 +33,9 @@
 static
 QString encode( const QString& segment )
 {
-  QCString utf8 = segment.utf8();
+  QCString local = segment.local8Bit();
 
-  int old_length = utf8.length();
+  int old_length = local.length();
 
   if ( !old_length )
     return QString::null;
@@ -50,7 +50,7 @@ QString encode( const QString& segment )
     // according to RFC 1738,
     // 2.2. URL Character Encoding Issues (pp. 3-4)
     // WABA: Added non-ascii
-    unsigned char character = utf8[i];
+    unsigned char character = local[i];
     if ( (character <= 32) || (character >= 127) ||
          strchr("<>#@\"&%$:,;?={}|^~[]\'`\\", character) )
     {
@@ -66,7 +66,7 @@ QString encode( const QString& segment )
 	
     }
     else
-      new_segment[ new_length++ ] = utf8[i];
+      new_segment[ new_length++ ] = local[i];
   }
 
   QString result = QString(new_segment, new_length);
@@ -140,8 +140,11 @@ static QString lazy_encode( const QString& segment )
 }
 
 
-static QString decode( const QString& segment )
+static QString decode( const QString& segment, bool *keepEncoded=0 )
 {
+  bool isUnicode = false;
+  bool isLocal = false;
+  bool isAscii = true;
   int old_length = segment.length();
   if ( !old_length )
     return QString::null;
@@ -150,6 +153,7 @@ static QString decode( const QString& segment )
 
   // make a copy of the old one
   char *new_segment = new char[ old_length + 1];
+  QChar *new_usegment = new QChar[ old_length + 1 ];
 
   int i = 0;
   while( i < old_length )
@@ -164,13 +168,37 @@ static QString decode( const QString& segment )
       {
          character = a * 16 + b; // Replace with value of %dd
          i += 2; // Skip dd
+         if (character > 127)
+            isLocal = true;
       }
     }
-    new_segment [ new_length++ ] = character;
+    new_segment [ new_length ] = character;
+    new_usegment [ new_length ] = character;
+    new_length++;
+    if (character > 127)
+    {
+       isAscii = false;
+       if (character > 255)
+          isUnicode = true;
+    }
   }
   new_segment [ new_length ] = 0;
-  QString result = QString::fromUtf8(new_segment, new_length);
+  QString result;
+  // Guess the encoding
+  if ((!isAscii && !isUnicode) || isLocal)
+  {
+     result = QString::fromLocal8Bit(new_segment, new_length);
+     if (keepEncoded)
+       *keepEncoded = true;
+  }
+  else
+  {
+     result = QString( new_usegment, new_length);
+     if (keepEncoded)
+       *keepEncoded = false;
+  }
   delete [] new_segment;
+  delete [] new_usegment;
   return result;
 }
 
@@ -207,16 +235,16 @@ KURL::KURL()
   reset();
 }
 
-KURL::KURL( const QString &url )
+KURL::KURL( const QString &url, int encoding_hint )
 {
   reset();
-  parse( url );
+  parse( url, encoding_hint );
 }
 
-KURL::KURL( const char * url )
+KURL::KURL( const char * url, int encoding_hint )
 {
   reset();
-  parse( QString::fromLatin1(url) );
+  parse( QString::fromLatin1(url), encoding_hint );
 }
 
 KURL::KURL( const KURL& _u )
@@ -226,6 +254,7 @@ KURL::KURL( const KURL& _u )
   m_strPass = _u.m_strPass;
   m_strHost = _u.m_strHost;
   m_strPath = _u.m_strPath;
+  m_strPath_encoded = _u.m_strPath_encoded;
   m_strQuery_encoded = _u.m_strQuery_encoded;
   m_strRef_encoded = _u.m_strRef_encoded;
   m_bIsMalformed = _u.m_bIsMalformed;
@@ -235,7 +264,7 @@ KURL::KURL( const KURL& _u )
 QDataStream & operator<< (QDataStream & s, const KURL & a)
 {
     s << a.m_strProtocol << a.m_strUser << a.m_strPass << a.m_strHost
-      << a.m_strPath << a.m_strQuery_encoded << a.m_strRef_encoded
+      << a.m_strPath << a.m_strPath_encoded << a.m_strQuery_encoded << a.m_strRef_encoded
       << Q_INT8(a.m_bIsMalformed ? 1 : 0) << a.m_iPort;
     return s;
 }
@@ -244,7 +273,7 @@ QDataStream & operator>> (QDataStream & s, KURL & a)
 {
     Q_INT8 malf;
     s >> a.m_strProtocol >> a.m_strUser >> a.m_strPass >> a.m_strHost
-      >> a.m_strPath >> a.m_strQuery_encoded >> a.m_strRef_encoded
+      >> a.m_strPath >> a.m_strPath_encoded >> a.m_strQuery_encoded >> a.m_strRef_encoded
       >> malf >> a.m_iPort;
     a.m_bIsMalformed = (malf != 0);
 
@@ -261,13 +290,14 @@ KURL::KURL( const QUrl &u )
   m_strPass = u.password();
   m_strHost = u.host();
   m_strPath = u.path( FALSE );
+  m_strPath_encoded = QString::null;
   m_strQuery_encoded = u.query();
   m_strRef_encoded = u.ref();
   m_bIsMalformed = !u.isValid();
   m_iPort = u.port();
 }
 
-KURL::KURL( const KURL& _u, const QString& _rel_url )
+KURL::KURL( const KURL& _u, const QString& _rel_url, int encoding_hint )
 {
   // WORKAROUND THE RFC 1606 LOOPHOLE THAT ALLOWS
   // http:/index.html AS A VALID SYNTAX FOR RELATIVE
@@ -301,12 +331,14 @@ KURL::KURL( const KURL& _u, const QString& _rel_url )
           m_strPath.truncate(pos);
        m_strPath += '/';
     }
-    *this = url() + rUrl;
+    KURL tmp( url() + rUrl, encoding_hint);
+    *this = tmp;
     cleanPath();
   }
   else
   {
-    *this = rUrl;
+    KURL tmp( rUrl, encoding_hint);
+    *this = tmp;
   }
 }
 
@@ -317,6 +349,7 @@ void KURL::reset()
   m_strPass = QString::null;
   m_strHost = QString::null;
   m_strPath = QString::null;
+  m_strPath_encoded = QString::null;
   m_strRef_encoded = QString::null;
   m_bIsMalformed = true;
   m_iPort = 0;
@@ -327,7 +360,7 @@ bool KURL::isEmpty() const
   return (m_strPath.isEmpty() && m_strProtocol.isEmpty());
 }
 
-void KURL::parse( const QString& _url )
+void KURL::parse( const QString& _url, int /* encoding_hint */ )
 {
   // Return immediately whenever the given url
   // is empty or null.
@@ -592,6 +625,7 @@ KURL& KURL::operator=( const QUrl & u )
   m_strPass = u.password();
   m_strHost = u.host();
   m_strPath = u.path( FALSE );
+  m_strPath_encoded = QString::null;
   m_strQuery_encoded = u.query();
   m_strRef_encoded = u.ref();
   m_bIsMalformed = !u.isValid();
@@ -607,6 +641,7 @@ KURL& KURL::operator=( const KURL& _u )
   m_strPass = _u.m_strPass;
   m_strHost = _u.m_strHost;
   m_strPath = _u.m_strPath;
+  m_strPath_encoded = _u.m_strPath_encoded;
   m_strQuery_encoded = _u.m_strQuery_encoded;
   m_strRef_encoded = _u.m_strRef_encoded;
   m_bIsMalformed = _u.m_bIsMalformed;
@@ -625,6 +660,7 @@ bool KURL::operator==( const KURL& _u ) const
        m_strPass == _u.m_strPass &&
        m_strHost == _u.m_strHost &&
        m_strPath == _u.m_strPath &&
+       m_strPath_encoded == _u.m_strPath_encoded &&
        m_strQuery_encoded == _u.m_strQuery_encoded &&
        m_strRef_encoded == _u.m_strRef_encoded &&
        m_bIsMalformed == _u.m_bIsMalformed &&
@@ -692,62 +728,38 @@ void KURL::setFileName( const QString& _txt )
   }
 
   path += tmp;
-  setEncodedPathAndQuery( path );
+  setPath( path ); 
   cleanPath();
+}
+
+static QString cleanpath(const QString &path)
+{
+  if (path.isEmpty()) return QString::null;
+  // Did we have a trailing '/'
+  int len = path.length();
+  bool slash = false;
+  if ( len > 0 && path.right(1)[0] == '/' )
+    slash = true;
+
+  QString result = QDir::cleanDirPath( path );
+
+  // Restore the trailing '/'
+  len = result.length();
+  if ( len > 0 && result.right(1)[0] != '/' && slash )
+    result += "/";
+  return result;
 }
 
 void KURL::cleanPath() // taken from the old KURL
 {
-  if ( m_strPath.isEmpty() )
-    return;
-
-  // Did we have a trailing '/'
-  int len = m_strPath.length();
-  bool slash = false;
-  if ( len > 0 && m_strPath.right(1)[0] == '/' )
-    slash = true;
-
-  m_strPath = QDir::cleanDirPath( m_strPath );
-
-  // Restore the trailing '/'
-  len = m_strPath.length();
-  if ( len > 0 && m_strPath.right(1)[0] != '/' && slash )
-    m_strPath += "/";
+  m_strPath = cleanpath(m_strPath);
+  // WABA: Is this safe when "/../" is encoded with %?
+  m_strPath_encoded = cleanpath(m_strPath_encoded);
 }
 
-QString KURL::encodedPathAndQuery( int _trailing, bool _no_empty_path ) const
+static QString trailingSlash( int _trailing, const QString &path )
 {
-  QString tmp = path( _trailing );
-  if ( _no_empty_path && tmp.isEmpty() )
-    tmp = "/";
-
-  tmp = encode( tmp );
-  if ( !m_strQuery_encoded.isEmpty() )
-  {
-    tmp += m_strQuery_encoded;
-  }
-
-  return tmp;
-}
-
-void KURL::setEncodedPathAndQuery( const QString& _txt )
-{
-  int pos = _txt.find( '?' );
-  if ( pos == -1 )
-  {
-    m_strPath = decode( _txt );
-    m_strQuery_encoded = QString::null;
-  }
-  else
-  {
-    m_strPath = decode( _txt.left( pos ) );
-    m_strQuery_encoded = _txt.right(_txt.length() - pos);
-  }
-}
-
-QString KURL::path( int _trailing ) const
-{
-  QString result = path();
+  QString result = path;
 
   if ( _trailing == 0 )
     return result;
@@ -773,6 +785,50 @@ QString KURL::path( int _trailing ) const
     assert( 0 );
     return QString::null;
   }
+}
+
+
+QString KURL::encodedPathAndQuery( int _trailing, bool _no_empty_path, int ) const
+{
+  QString tmp;
+  if (!m_strPath_encoded.isEmpty())
+  {
+     tmp = trailingSlash( _trailing, m_strPath_encoded);
+  } 
+  else 
+  {
+     tmp = path( _trailing );
+     if ( _no_empty_path && tmp.isEmpty() )
+        tmp = "/";
+     tmp = encode( tmp );
+  }
+
+  tmp += m_strQuery_encoded;
+  return tmp;
+}
+
+void KURL::setEncodedPathAndQuery( const QString& _txt, int )
+{
+  int pos = _txt.find( '?' );
+  if ( pos == -1 )
+  {
+    m_strPath_encoded = _txt;
+    m_strQuery_encoded = QString::null;
+  }
+  else
+  {
+    m_strPath_encoded = _txt.left( pos );
+    m_strQuery_encoded = _txt.right(_txt.length() - pos);
+  }
+  bool keepEncoded;
+  m_strPath = decode( m_strPath_encoded, &keepEncoded );
+  if (!keepEncoded)
+     m_strPath_encoded = QString::null;
+}
+
+QString KURL::path( int _trailing ) const
+{
+  return trailingSlash( _trailing, path() );
 }
 
 bool KURL::isLocalFile() const
@@ -819,15 +875,8 @@ QString KURL::url( int _trailing ) const
   }
   else
     u += ":";
-  QString tmp;
-  if ( _trailing == 0 )
-    tmp = m_strPath;
-  else
-    tmp = path( _trailing );
 
-  u += encode( tmp );
-
-  u += m_strQuery_encoded;
+  u += encodedPathAndQuery( _trailing );
 
   if ( hasRef() )
   {
@@ -995,6 +1044,8 @@ QString KURL::fileName( bool _strip_trailing_slash ) const
 
 void KURL::addPath( const QString& _txt )
 {
+  m_strPath_encoded = QString::null;
+
   if ( _txt.isEmpty() )
     return;
 
@@ -1054,12 +1105,15 @@ QString KURL::directory( bool _strip_trailing_slash_from_result,
 // Modified by Torben, weis@kde.org
 bool KURL::cd( const QString& _dir, bool zapRef )
 {
+//TODO
+//WABA: Add support for m_strPath_encoded
   if ( _dir.isEmpty() || m_bIsMalformed )
     return false;
 
   // absolute path ?
   if ( _dir[0] == '/' )
   {
+    m_strPath_encoded = QString::null;
     m_strPath = _dir;
     if ( zapRef )
       setHTMLRef( QString::null );
@@ -1069,6 +1123,7 @@ bool KURL::cd( const QString& _dir, bool zapRef )
   // Users home directory on the local disk ?
   if ( ( _dir[0] == '~' ) && ( m_strProtocol == "file" ))
   {
+    m_strPath_encoded = QString::null;
     m_strPath = QDir::homeDirPath().copy();
     m_strPath += "/";
     m_strPath += _dir.right(m_strPath.length() - 1);
@@ -1082,8 +1137,9 @@ bool KURL::cd( const QString& _dir, bool zapRef )
   // Sub URLs are not touched.
 
   // append '/' if necessary
+//TODO
+//WABA: Add better support for m_strPath_encoded
   QString p = path(1);
-
   p += _dir;
   p = QDir::cleanDirPath( p );
   setPath( p );
@@ -1223,9 +1279,10 @@ void KURL::setPath( const QString & path )
   if (m_strProtocol.isEmpty())
     m_strProtocol = "file";
   m_strPath = path;
+  m_strPath_encoded = QString::null;
 }
 
-void KURL::setQuery( const QString &_txt )
+void KURL::setQuery( const QString &_txt, int )
 {
    if (_txt.length() && (_txt[0] !='?'))
       m_strQuery_encoded = "?" + _txt;
@@ -1233,12 +1290,12 @@ void KURL::setQuery( const QString &_txt )
       m_strQuery_encoded = _txt;
 }
 
-QString KURL::decode_string(const QString &str)
+QString KURL::decode_string(const QString &str, int)
 {
    return decode(str);
 }
 
-QString KURL::encode_string(const QString &str)
+QString KURL::encode_string(const QString &str, int)
 {
    return encode(str);
 }
