@@ -27,19 +27,28 @@
 #include <qgrpbox.h>
 #include <qlabel.h>
 #include <qmlined.h>
+#include <qdict.h>
 
 #include "kfileinfo.h"
 #include "kdir.h"
+#include "kfiledialog.h"
+
+class KPreviewObject;
 
 class KPreview : public QWidget {
+
     Q_OBJECT
     
 public:
-    /**
-     * Create a file info list widget.
-     */
+
     KPreview( const KDir *inDir= 0, QWidget *parent= 0, const char *name= 0);
-    virtual ~KPreview() {};    
+    //static KPreview *getKPreview(KDir *inDir, QWidget *parent= 0, const char *name= 0);
+    //static KPreview *getKPreview();
+    virtual ~KPreview(); 
+    
+public:
+    static void registerPreviewModule( const char * format, PreviewHandler readPreview,
+                                       PreviewType inType);
     
 public slots:
     virtual void previewFile(const KFileInfo *i);
@@ -51,11 +60,17 @@ private:
     QLabel *myOwner;
     QLabel *myGroup;
     QLabel *myType;
-//    QLabel *myPreview;
-    QMultiLineEdit *myPreview;
+    QLabel *myPreviewPicture;
+    QMultiLineEdit *myPreviewText;
     QGroupBox *myBox;
     const KDir *myDir;
+    bool showedText;
+
+    KPreview *_myKPreview;    
 
 };
+
+
+#define KPreviewer (*KPreview::getKPreview())
 
 #endif

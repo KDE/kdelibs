@@ -1369,6 +1369,11 @@ bool KFilePreviewDialog::getShowFilter()
     return (kapp->getConfig()->readNumEntry("ShowFilter", 1) != 0);
 }
 
+void KFilePreviewDialog::registerPreviewModule( const char * format, PreviewHandler readPreview,
+                                                PreviewType inType)
+{
+    KPreview::registerPreviewModule( format, readPreview, inType );
+}
 
 #include "kfiledialog.moc"
 

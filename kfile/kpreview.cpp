@@ -22,8 +22,12 @@
 #include <qlayout.h>
 #include <qfile.h>
 #include <qtstream.h>
+#include <qpixmap.h>
+#include <qwmatrix.h>
+#include <qstring.h>
 
 #include "kpreview.h"
+#include "xview.h"
 
 #include <kdir.h>
 #include <kapp.h>
@@ -31,13 +35,116 @@
 static const int cMaxLines = 20;
 static const int cMaxColumns = 79;
 
-KPreview::KPreview( const KDir *inDir, QWidget *parent, const char *name)
-    : QWidget(parent,name), myDir(inDir)
+bool previewTextFile( const KFileInfo *, const QString inFilename,
+                      QString &outText, QPixmap & )
 {
-    // QWidget::setFocusPolicy(QWidget::StrongFocus);
+    bool loaded = false;
+    QFile lFile( inFilename );
+    if ( lFile.open(IO_ReadOnly) ) {
+        QTextStream t( &lFile );
+        QString line;
+        int n = 1;
+        while ( !t.eof() && (n<cMaxLines) ) { 
+            line = t.readLine();              
+            outText.append(line.mid(0,cMaxColumns));
+            if (line.mid(cMaxColumns,1) != "\n") outText.append("\n");
+            n++;
+        }
+        lFile.close();
+        loaded = true;
+    }
+    return loaded;
+};
+
+bool previewXVPicFile( const KFileInfo *i, const QString inFilename,
+                       QString &, QPixmap &outPixmap )
+{
+    bool loaded = false;
+    QString iconName(inFilename);
+    iconName.detach();
+    int index = iconName.find( i->fileName() );
+    iconName.insert(index,".xvpics/");
+    QFile miniPic( iconName );
+    if ( miniPic.exists() ) {
+        outPixmap = QPixmap( iconName );
+        QWMatrix m;
+        m.scale ( 2.0, 2.0 );
+        outPixmap = outPixmap.xForm( m );  // scale it to double size
+        loaded = true;
+    }
+    return loaded;
+};
+
+/*
+ *
+ */
+class KPreviewObject {
+public:
+    KPreviewObject ( const char *inFormat, 
+                     PreviewHandler inPreviewModule );
+
+    QString format;
+    PreviewHandler preview;
+
+};
+
+KPreviewObject::KPreviewObject ( const char *inFormat, 
+                                 PreviewHandler inPreviewModule )
+ : format(inFormat)
+{
+    preview = inPreviewModule;
+}
+/*
+ *
+ */
+ 
+static QDict<KPreviewObject> *myTextPreviewerStorage = 0;
+static QDict<KPreviewObject> *myPicturePreviewerStorage = 0;
+
+//
+// NOTE: was static, not sure if it has t be static or not ...
+//       commented it out for now
+// 
+//KPreview *KPreview::_myKPreview = 0;
+/*
+KPreview *KPreview::getKPreview(KDir *inDir, QWidget *parent, const char *name)
+{
+    if ( _myKPreview == 0 ) {
+        _myKPreview = new KPreview( inDir, parent, name );
+    }
+    return _myKPreview;
+}
+
+KPreview *KPreview::getKPreview()
+{
+    if ( _myKPreview == 0 )
+       debug("oops");
+    return _myKPreview;
+}
+*/
+
+
+KPreview::~KPreview()
+{
+    if ( myTextPreviewerStorage ) {
+        delete myTextPreviewerStorage;
+        myTextPreviewerStorage = 0;
+        delete myPicturePreviewerStorage;
+        myPicturePreviewerStorage = 0;
+    }
+}
+
+KPreview::KPreview( const KDir *inDir, QWidget *parent, const char *name)
+    : QWidget(parent,name), myDir(inDir), showedText(false)
+{
+
+    QImageIO::defineIOHandler( "XV", "^P7 332", 0, read_xv_file, 0L );
+
+    registerPreviewModule( "TEXT", previewTextFile, PreviewText);    
+    registerPreviewModule( "XVPIC", previewXVPicFile, PreviewPixmap);    
     
     QHBoxLayout *top = new QHBoxLayout( this, 0, 5, "_top" );
-    
+
     myBox = new QGroupBox(this,"_previewbox");
     top->addSpacing(5);
     top->addWidget( myBox, 10 );
@@ -108,61 +215,106 @@ KPreview::KPreview( const KDir *inDir, QWidget *parent, const char *name)
     myType->setAlignment( AlignVCenter | AlignLeft );
     vertical->addMultiCellWidget( myType, 3, 3, 1, 7 );
 
-    myPreview = new QMultiLineEdit( myBox, "_previewpart" );
-    myPreview->setReadOnly(true);
-    vertical->addMultiCellWidget( myPreview, 4, 9, 0, 7 );
+    myPreviewText = new QMultiLineEdit( myBox, "_previewpart" );
+    myPreviewText->setReadOnly(true);
+    vertical->addMultiCellWidget( myPreviewText, 4, 9, 0, 7 );
+
+    myPreviewPicture = new QLabel( myBox, "_previewpart" );
+    // myPreviewText->setBackgroundColor( white );
+    myPreviewPicture->setAlignment( AlignCenter );
+    myPreviewPicture->setFrameStyle( QFrame::Panel | QFrame::Sunken );
+    myPreviewPicture->setLineWidth( 2 );
+    myPreviewPicture->setMinimumHeight( 80 );  // this is the size of the mini pictures
+    vertical->addMultiCellWidget( myPreviewPicture, 4, 9, 0, 7 );
 
 }
 
-void KPreview::previewFile(const KFileInfo *i)
-{
-    bool canOpen = false;
-    QString lType = "";
-
-    if (i->isDir())
-	if (i->isReadable())
-	    lType = "folder";
-	else
-	    lType = "locked folder";
-    else
-	if (i->isReadable()) {
-	    lType = "file";
-            canOpen = true;
-        }
-	else
-	    lType = "locked file";
-    
-    if ( canOpen ) {
-        QString fullPath = myDir->path();
-        fullPath += i->fileName(); 
-        QFile lFile( fullPath );
-        if ( lFile.open(IO_ReadOnly) ) {  
-            QTextStream t( &lFile );       
-            QString s("");
-            QString line;
-            int n = 1;
-            while ( !t.eof() && (n<cMaxLines) ) { // until end of file...
-                line = t.readLine();        // line of text excluding '\n'
-                s.append(line.mid(0,cMaxColumns));
-                if (line.mid(cMaxColumns,1) != "\n") s.append("\n");
-                n++;
-            }
-            lFile.close();
-            myPreview->setText(s);
-        }
-    } else {
-        myPreview->clear();
+void KPreview::registerPreviewModule(const char * format, PreviewHandler readPreview,
+                                     PreviewType inType)
+{   
+    // debug("registering preview module (%s)",format);
+    if ( !myTextPreviewerStorage ) {
+        myTextPreviewerStorage = new QDict<KPreviewObject>;
+        myPicturePreviewerStorage = new QDict<KPreviewObject>;
     }
+
+    KPreviewObject *po;
+    switch ( inType ) {
+        case (PreviewText) :   po = new KPreviewObject( format, readPreview );
+                                    myTextPreviewerStorage->insert( format, po );
+                                    break;
+        case (PreviewPixmap) : po = new KPreviewObject( format, readPreview );
+                                    myPicturePreviewerStorage->insert( format, po );
+                                    break;
+        default :                   break;
+    }
+}
+
+void KPreview::previewFile(const KFileInfo *i)
+{   
+    // upper text part
+    //
+    bool isRegularFile = !i->isDir(); 
+    bool canOpen = i->isReadable() && isRegularFile;
+    QString lType = "";
+    
+    if ( !i->isReadable() )
+        lType += i18n("locked");
+            
     myName->setText(i->fileName());
     mySize->setNum((int)i->size());
     myDate->setText(i->date());
     myOwner->setText(i->owner());
     myGroup->setText(i->group());
+
+    // preview part
+    //
+    QString fullPath;
+    QString lTextOutput;
+    QPixmap lPictOutput;
+    QDictIterator<KPreviewObject> lTextIterator( *myTextPreviewerStorage );
+    QDictIterator<KPreviewObject> lPictIterator( *myPicturePreviewerStorage );
+    bool found = false;
+    if ( canOpen ) {
+        fullPath = myDir->path();
+        fullPath += i->fileName();
+ 
+        lPictIterator.toFirst();
+        while ( lPictIterator.current() && (!found) ) {
+            if ( lPictIterator.current()->preview( i, fullPath, lTextOutput, lPictOutput ) ) {
+                myPreviewPicture->setPixmap( lPictOutput );
+                lType += i18n("picture");
+                found = true;
+                if ( showedText ) {
+                    showedText = false;
+                    myPreviewPicture->raise();
+                }
+            }
+            ++lPictIterator;
+        }
+        lTextIterator.toFirst();
+        while ( !found && lTextIterator.current() ) {
+            if ( lTextIterator.current()->preview( i, fullPath, lTextOutput, lPictOutput ) ) {
+                myPreviewText->setText( lTextOutput );
+                lType += i18n("file");
+                found = true;
+                if ( !showedText ) {
+                    showedText = true;
+                    myPreviewText->raise();
+                }
+            }
+            ++lTextIterator;
+        }
+    } else {
+        myPreviewText->clear();
+        myPreviewPicture->setText("");
+    }
+
+    if ( i->isDir() )
+        lType += i18n("folder");
     myType->setText(lType);
-
-    // TODO: find out, if a repaint is really necessary
+    
 }
-
 
 #include "kpreview.moc"
 

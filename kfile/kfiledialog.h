@@ -450,6 +450,15 @@ protected:
 };
 
 
+
+typedef bool (*PreviewHandler)( const KFileInfo *, const QString fileName,
+                                       QString &, QPixmap & );
+
+
+enum PreviewType { PreviewText = 0x001,
+                   PreviewPixmap = 0x002 };
+
+
 class KFilePreviewDialog : public KFileBaseDialog
 {
 public:
@@ -466,6 +475,10 @@ public:
 				  QWidget *parent= 0, const char *name= 0);
     static QString getSaveFileURL(const char *url= 0, const char *filter= 0,
 				  QWidget *parent= 0, const char *name= 0);
+                                  
+    static void registerPreviewModule( const char * format, PreviewHandler readPreview,
+                                PreviewType inType);
+
     
 protected:
     virtual KFileInfoContents *initFileList( QWidget *parent );

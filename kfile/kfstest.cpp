@@ -31,8 +31,31 @@
 #include <kapp.h>
 #include <kurl.h>
 
+
+/*
+ * just an example of how to make a new preview module
+ *
+bool previewTestFile( const KFileInfo *i, const QString inFilename,
+                      QString &, QPixmap &outPixmap )
+{
+    bool loaded = false;
+    QString iconName(inFilename);
+    iconName.detach();
+    int index = iconName.find( i->fileName() );
+    iconName.insert(index,".xvpics/");
+    QFile miniPic( iconName );
+    if ( miniPic.exists() ) {
+        outPixmap = QPixmap( iconName );
+        loaded = true;
+    }
+    return loaded;
+}
+*/
+
+
 int main(int argc, char **argv)
 {
+
     KApplication a(argc, argv, "kfstest");
     QString name1;
     
@@ -70,6 +93,9 @@ int main(int argc, char **argv)
 	name1 = KFileDialog::getOpenFileURL();
         break;
     case Preview:
+        // this is how you activate the new preview module
+        // 
+        // KFilePreviewDialog::registerPreviewModule( "TEST", previewTestFile, PreviewPixmap );
         KFilePreviewDialog::getOpenFileURL(0,"*.cpp|C++-Files (*.cpp)\n""*|All Files");
         break;
     }

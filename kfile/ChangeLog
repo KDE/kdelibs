@@ -1,3 +1,18 @@
+Mon Apr  6 17:30:18 1998  Daniel Grana <grana@ie.iwi.unibe.ch>
+
+	* kfilepreview.*: restructured previewing, one can now easily
+        use custom previewers, dynamically
+        
+        * kpreview.*: changes for allowing custom previewers, two previewers
+        are hardcoded so far
+
+	* kfiledialog.*: changes changes for allowing custom previewers
+        
+        * kfstest.cpp: changes to preview mode
+        
+        * xview.*: QimageIO module allowing the visual-schnauzer generated
+        images to be loaded
+
 1998-04-06  Stephan Kulow  <coolo@kde.org>
 
 	* debug.h: added debugC. An empty macro to hide debug output

@@ -41,7 +41,7 @@
 #endif
 
 KFilePreview::KFilePreview(   
-                         const KDir *inDir, bool s, QDir::SortSpec sorting, 
+                         KDir *inDir, bool s, QDir::SortSpec sorting, 
 			 QWidget * parent, const char * name ) 
     : KNewPanner(parent, name, KNewPanner::Vertical) , 
       KFileInfoContents(s,sorting)
@@ -60,6 +60,13 @@ KFilePreview::KFilePreview(
     fileList->connectFileSelected(this, SLOT(fileActivated()));
     fileList->connectFileHighlighted(this, SLOT(fileHighlighted()));
 }
+
+void KFilePreview::registerPreviewModule( const char * format, PreviewHandler readPreview,
+                                          PreviewType inType)
+{
+    myPreview->registerPreviewModule( format, readPreview, inType );
+}
+
 
 void KFilePreview::setAutoUpdate(bool f)
 {

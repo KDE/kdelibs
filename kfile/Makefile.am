@@ -29,7 +29,8 @@ DISTCLEANFILES = bookmark.moc kdir.moc kdirlistbox.moc kfiledialog.moc \
 
 include_HEADERS = kfiledialog.h kfileinfo.h bookmark.h  \
 	kremotefile.h kdir.h kdirlistbox.h kfileinfocontents.h \
-	booktoken.h kfiledetaillist.h kcombiview.h kpreview.h kfilepreview.h
+	booktoken.h kfiledetaillist.h kcombiview.h kpreview.h kfilepreview.h \
+	xview.h
 
 noinst_HEADERS = kfiledialogconf.h
 
@@ -37,7 +38,8 @@ kfstest_SOURCES =  kfstest.cpp
 libkfile_la_SOURCES = bookmark.cpp kfiledialogconf.cpp kcombiview.cpp \
 	kdir.cpp kfileinfo.cpp kremotefile.cpp kdirlistbox.cpp \
 	kfiledetaillist.cpp kfiledialog.cpp booktoken.cpp \
-	kfileinfocontents.cpp kfilesimpleview.cpp kpreview.cpp kfilepreview.cpp
+	kfileinfocontents.cpp kfilesimpleview.cpp kpreview.cpp kfilepreview.cpp \
+	xview.cpp
 
 toolbar_DATA = configure.xpm 
 # I'm not sure, if they really should go there
