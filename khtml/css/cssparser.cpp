@@ -39,6 +39,7 @@
 using namespace DOM;
 
 #include <kdebug.h>
+#include <kglobal.h>
 
 #include "htmlhashes.h"
 #include "misc/helper.h"
@@ -1673,7 +1674,7 @@ static QString yyStr;
 
 int getToken()
 {
-    static QString nonword = QString::fromLatin1( " /," );
+    static const QString & nonword = KGlobal::staticQString( " /," );
 
     yyStr = QString::null;
 
