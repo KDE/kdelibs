@@ -316,6 +316,12 @@ public:
    */
    static bool isExecutableFile( const KURL& url, const QString &mimetype );
 
+   /**
+    * @internal
+    * @since 3.4
+    */
+    static bool checkStartupNotify( const QString& binName, const KService* service, bool* silent_arg, QCString* wmclass_arg );
+
 signals:
   /**
    * Emitted when the operation finished.

@@ -524,35 +524,10 @@ static pid_t runCommandInternal( KProcess* proc, const KService* service, const 
   }
   QString bin = KRun::binaryName( binName, true );
 #ifdef Q_WS_X11 // Startup notification doesn't work with QT/E, service isn't needed without Startup notification
-  bool startup_notify = true;
-  bool silent = false;
+  bool silent;
   QCString wmclass;
   KStartupInfoId id;
-  if( service && service->property( "StartupNotify" ).isValid())
-  {
-      silent = !service->property( "StartupNotify" ).toBool();
-      wmclass = service->property( "StartupWMClass" ).toString().latin1();
-  }
-  else if( service && service->property( "X-KDE-StartupNotify" ).isValid())
-  {
-      silent = !service->property( "X-KDE-StartupNotify" ).toBool();
-      wmclass = service->property( "X-KDE-WMClass" ).toString().latin1();
-  }
-  else // non-compliant app ( .desktop file )
-  {
-      if( service )
-      {
-          if( service->type() == "Application" )
-              wmclass = "0"; // doesn't have .desktop entries needed, start as non-compliant
-      }
-      else
-      { // Create startup notification even for apps for which there shouldn't be any,
-        // just without any visual feedback. This will ensure they'll be positioned on the proper
-        // virtual desktop, and will get user timestamp from the ASN ID.
-          wmclass = "0";
-          silent = true;
-      }
-  }
+  bool startup_notify = KRun::checkStartupNotify( binName, service, &silent, &wmclass );
   if( startup_notify )
   {
       id.initId();
@@ -590,6 +565,45 @@ static pid_t runCommandInternal( KProcess* proc, const KService* service, const 
   Q_UNUSED( iconName );
   return KProcessRunner::run( proc, bin );
 #endif
+}
+
+// This code is also used in klauncher.
+bool KRun::checkStartupNotify( const QString& binName, const KService* service, bool* silent_arg, QCString* wmclass_arg )
+{
+  bool silent = false;
+  QCString wmclass;
+  if( service && service->property( "StartupNotify" ).isValid())
+  {
+      silent = !service->property( "StartupNotify" ).toBool();
+      wmclass = service->property( "StartupWMClass" ).toString().latin1();
+  }
+  else if( service && service->property( "X-KDE-StartupNotify" ).isValid())
+  {
+      silent = !service->property( "X-KDE-StartupNotify" ).toBool();
+      wmclass = service->property( "X-KDE-WMClass" ).toString().latin1();
+  }
+  else // non-compliant app
+  {
+      if( service )
+      {
+          if( service->type() == "Application" )
+              wmclass = "0"; // doesn't have .desktop entries needed, start as non-compliant
+          else
+              return false; // no startup notification at all
+      }
+      else
+      { // Create startup notification even for apps for which there shouldn't be any,
+        // just without any visual feedback. This will ensure they'll be positioned on the proper
+        // virtual desktop, and will get user timestamp from the ASN ID.
+          wmclass = "0";
+          silent = true;
+      }
+  }
+  if( silent_arg != NULL )
+      *silent_arg = silent;
+  if( wmclass_arg != NULL )
+      *wmclass_arg = wmclass;
+  return true;
 }
 
 static pid_t runTempService( const KService& _service, const KURL::List& _urls, bool tempFiles )
