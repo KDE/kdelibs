@@ -448,7 +448,7 @@ bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data
   } else {
     struct sockaddr_in server_name;
 
-    if( !initSockaddr( &server_name, _url.host(), port ) ) {
+    if( !KSocket::initSockaddr( &server_name, _url.host(), port ) ) {
       error( ERR_UNKNOWN_HOST, _url.host() );
       return false;
     }
@@ -786,7 +786,7 @@ void HTTPProtocol::slotGetSize( const char *_url )
 
 const char *HTTPProtocol::getUserAgentString ()
 {
-  QString user_agent("Konqueror/1.9.041099");
+  QString user_agent("Konqueror/1.9.041099.2");
 #ifdef DO_MD5
   user_agent+="; Supports MD5-Digest";
 #endif
