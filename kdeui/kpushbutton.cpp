@@ -79,13 +79,20 @@ void KPushButton::init( const KGuiItem &item )
     setText( item.text() );
     slotSettingsChanged( 0 );
     setSizePolicy( QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum ) );
-    
+
     if (kapp)
     {
        connect( kapp, SIGNAL( settingsChanged(int) ),
                SLOT( slotSettingsChanged(int) ) );
        kapp->addKipcEventMask( KIPC::SettingsChanged );
     }
+}
+
+void KPushButton::setGuiItem( const KGuiItem& item )
+{
+    d->item = item;
+    setText( item.text() );
+    slotSettingsChanged( 0 );
 }
 
 void KPushButton::slotSettingsChanged( int /* category */ )

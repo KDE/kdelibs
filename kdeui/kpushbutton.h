@@ -28,7 +28,7 @@ class QDragObject;
 
 /**
  * This is nothing but a QPushButton with drag-support and KGuiItem support. You have to call
- * @ref setDragEnabled( true ) and override the virtual method 
+ * @ref setDragEnabled( true ) and override the virtual method
  * @ref dragObject() to specify the QDragObject to be used.
  *
  * @short A QPushButton with drag-support and KGuiItem support
@@ -76,7 +76,11 @@ public:
      */
     bool isDragEnabled() const { return m_dragEnabled; }
 
-
+    /**
+     * Sets the KGuiItem for this button.
+     */
+    void setGuiItem( const KGuiItem& item );
+        
 protected:
     /**
      * Reimplement this and return the QDragObject that should be used
@@ -105,14 +109,14 @@ private:
 
 private slots:
     void slotSettingsChanged( int category );
-    
+
 private:
     /**
      * Internal.
      * Initialize the KPushButton instance
      */
     void init( const KGuiItem &item );
-    
+
     class KPushButtonPrivate;
     KPushButtonPrivate *d;
 
