@@ -412,6 +412,15 @@ namespace KIO {
          */
         void emitResult();
 
+        /**
+         * @internal
+         * Some extra storage space for jobs that don't have their own
+         * private d pointer.
+         */
+        enum { EF_TransferJobAsync    = (1 << 0), 
+               EF_TransferJobNeedData = (1 << 1) };
+        int &extraFlags();
+
         QPtrList<Job> subjobs;
         int m_error;
         QString m_errorText;
@@ -736,6 +745,22 @@ namespace KIO {
          */
         bool isErrorPage() const { return m_errorPage; }
 
+        /**
+         * Enable the async data mode.
+         * When async data is enabled, data should be provided to the job by 
+         * calling @ref sendAsyncData() instead of returning data in the 
+         * @ref dataReq() signal.
+         * @since 3.2
+         */
+        void setAsyncDataEnabled(bool enabled);
+        
+        /**
+         * Provide data to the job when async data is enabled.
+         * Should be called exactly once after receiving a dataReq signal
+         * Sending an empty block indicates end of data.
+         * @since 3.2
+         */
+        void sendAsyncData(const QByteArray &data);
 
     signals:
         /**

@@ -76,13 +76,14 @@ template class QPtrList<KIO::Job>;
 class Job::JobPrivate
 {
 public:
-    JobPrivate() : m_autoErrorHandling( false ), m_parentJob( 0L ) {}
+    JobPrivate() : m_autoErrorHandling( false ), m_parentJob( 0L ), extraFlags(0) {}
 
     bool m_autoErrorHandling;
     QGuardedPtr<QWidget> m_errorParentWidget;
     // Maybe we could use the QObject parent/child mechanism instead
     // (requires a new ctor, and moving the ctor code to some init()).
     Job* m_parentJob;
+    int extraFlags;
 };
 
 Job::Job(bool showProgressInfo) : QObject(0, "job"), m_error(0), m_percent(0)
@@ -116,6 +117,11 @@ Job::~Job()
     delete m_speedTimer;
     delete d;
     kapp->deref();
+}
+
+int& Job::extraFlags()
+{
+    return d->extraFlags;
 }
 
 void Job::addSubjob(Job *job, bool inheritMetaData)
@@ -849,26 +855,52 @@ void TransferJob::slotFinished()
     }
 }
 
+void TransferJob::setAsyncDataEnabled(bool enabled)
+{
+    if (enabled)
+       extraFlags() |= EF_TransferJobAsync;
+    else
+       extraFlags() &= ~EF_TransferJobAsync;
+}
+
+void TransferJob::sendAsyncData(const QByteArray &dataForSlave)
+{
+    if (extraFlags() & EF_TransferJobNeedData)
+       m_slave->send( MSG_DATA, dataForSlave );
+    
+    extraFlags() &= ~EF_TransferJobNeedData;
+}
+
 // Slave requests data
 void TransferJob::slotDataReq()
 {
     QByteArray dataForSlave;
+
+    extraFlags() |= EF_TransferJobNeedData;
+    
     if (!staticData.isEmpty())
     {
        dataForSlave = staticData;
        staticData = QByteArray();
     }
     else
-        emit dataReq( this, dataForSlave);
+    {
+       emit dataReq( this, dataForSlave);
 
-    static const size_t max_size = 14 * 1024 * 1024;
-    if (dataForSlave.size() > max_size) {
-        kdDebug(7007) << "send " << dataForSlave.size() / 1024 / 1024 << "MB of data in TransferJob::dataReq. This needs to be splitted, which requires a copy. Fix the application.\n";
-        staticData.duplicate(dataForSlave.data() + max_size ,  dataForSlave.size() - max_size);
-        dataForSlave.truncate(max_size);
+       if (extraFlags() & EF_TransferJobAsync)
+          return;
     }
 
-    m_slave->send( MSG_DATA, dataForSlave );
+    static const size_t max_size = 14 * 1024 * 1024;
+    if (dataForSlave.size() > max_size) 
+    {
+       kdDebug(7007) << "send " << dataForSlave.size() / 1024 / 1024 << "MB of data in TransferJob::dataReq. This needs to be splitted, which requires a copy. Fix the application.\n";
+       staticData.duplicate(dataForSlave.data() + max_size ,  dataForSlave.size() - max_size);
+       dataForSlave.truncate(max_size);
+    }
+
+    sendAsyncData(dataForSlave);
+
     if (m_subJob)
     {
        // Bitburger protocol in action
