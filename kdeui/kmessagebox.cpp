@@ -97,13 +97,13 @@ static QString qrichtextify( const QString& text )
 {
   if ( text.isEmpty() || text[0] == '<' )
     return text;
-    
+
   QStringList lines = QStringList::split('\n', text);
   for(QStringList::Iterator it = lines.begin(); it != lines.end(); ++it)
   {
     *it = QStyleSheet::convertFromPlainText( *it, QStyleSheetItem::WhiteSpaceNormal );
   }
-  
+
   return lines.join(QString::null);
 }
 
@@ -192,7 +192,7 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const 
     {
        QVGroupBox *detailsGroup = new QVGroupBox( i18n("Details"), dialog);
        if ( details.length() < 512 ) {
-         KActiveLabel *label3 = new KActiveLabel(qrichtextify(details), 
+         KActiveLabel *label3 = new KActiveLabel(qrichtextify(details),
                                                  detailsGroup);
          label3->setMinimumSize(label3->sizeHint());
          if ((options & KMessageBox::AllowLink) == 0)
@@ -413,6 +413,37 @@ KMessageBox::warningYesNo(QWidget *parent, const QString &text,
 }
 
 int
+KMessageBox::warningYesNoList(QWidget *parent, const QString &text,
+                              const QStringList &strlist,
+                              const QString &caption,
+                              const KGuiItem &buttonYes,
+                              const KGuiItem &buttonNo,
+                              const QString &dontAskAgainName,
+                              int options)
+{
+    ButtonCode res;
+    if ( !shouldBeShownYesNo(dontAskAgainName, res) )
+        return res;
+
+    KDialogBase *dialog= new KDialogBase(
+                       caption.isEmpty() ? i18n("Warning") : caption,
+                       KDialogBase::Yes | KDialogBase::No,
+                       KDialogBase::No, KDialogBase::No,
+                       parent, "warningYesNoList", true, true,
+                       buttonYes, buttonNo);
+
+    bool checkboxResult = false;
+    int result = createKMessageBox(dialog, QMessageBox::Warning, text, strlist,
+                       dontAskAgainName.isEmpty() ? QString::null : i18n("&Do not ask again"),
+                       &checkboxResult, options);
+    res = (result==KDialogBase::Yes ? Yes : No);
+
+    if (checkboxResult)
+        saveDontShowAgainYesNo(dontAskAgainName, res);
+    return res;
+}
+
+int
 KMessageBox::warningContinueCancel(QWidget *parent,
                                    const QString &text,
                                    const QString &caption,
@@ -448,7 +479,7 @@ KMessageBox::warningContinueCancelList(QWidget *parent, const QString &text,
                        &checkboxResult, options);
 
     if ( result==KDialogBase::No )
-	return Cancel;
+        return Cancel;
     if (checkboxResult)
         saveDontShowAgainContinue(dontAskAgainName);
     return Continue;
