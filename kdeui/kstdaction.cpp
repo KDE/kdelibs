@@ -815,7 +815,7 @@ KAction *KStdAction::configureToolbars(const QObject *recvr, const char *slot,
 KAction *KStdAction::help(const QObject *recvr, const char *slot,
                           QObject *parent, const char *name )
 {
-    return new KAction(i18n("shot help", "&Help"), "help",
+    return new KAction(i18n("show help", "&Help"), "help",
                        KStdAccel::key(KStdAccel::Help), recvr, slot, parent,
                        name ? name : stdName(Help));
 }
