@@ -88,6 +88,9 @@ AC_CACHE_CHECK([whether deplibs are loaded by dlopen],
 	# PORTME does your system automatically load deplibs for dlopen()?
 	libltdl_cv_sys_dlopen_deplibs=unknown
 	case "$host_os" in
+	cygwin*)
+	  libltdl_cv_sys_dlopen_deplibs=yes
+	  ;;
 	linux*)
 	  libltdl_cv_sys_dlopen_deplibs=yes
 	  ;;
@@ -117,9 +120,16 @@ AC_CACHE_CHECK([which extension is used for shared libraries],
   libltdl_cv_shlibext, [dnl
 (
   last=
-  for spec in $library_names_spec; do
-    last="$spec"
-  done
+	case "$host_os" in
+    cygwin* | mingw*) 
+      last=".dll" 
+      ;;
+    *)
+      for spec in $library_names_spec; do
+        last="$spec"
+      done
+      ;;
+  esac
 changequote(, )
   echo "$last" | sed 's/\[.*\]//;s/^[^.]*//;s/\$.*$//;s/\.$//' > conftest
 changequote([, ])
@@ -494,6 +504,11 @@ int main() {
   fi
 fi
 
+case "$host_os" in
+  cygwin* | mingw*) 
+    libltdl_cv_need_uscore=no
+    ;;
+esac
 if test x"$libltdl_cv_need_uscore" = xyes; then
   AC_DEFINE(NEED_USCORE, 1,
     [Define if dlsym() requires a leading underscode in symbol names. ])
