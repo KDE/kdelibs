@@ -1,3 +1,9 @@
+kdelibs (4:1.1_19990207-1) unstable; urgency=low
+
+  * new upstream version 1.1 and new epoche
+
+ -- Stephan Kulow <coolo@kde.org>  Sun,  7 Feb 1999 12:12:58 +0100
+
 kdelibs (2:980710-1.0-1) unstable; urgency=low
 
   * new upstream version 1.0
