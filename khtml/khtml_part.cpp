@@ -89,7 +89,7 @@ namespace khtml
 {
   struct ChildFrame
   {
-    ChildFrame() { m_bCompleted = false; m_frame = 0L; m_bPreloaded = false; m_bFrame = true; }
+    ChildFrame() { m_bCompleted = false; m_frame = 0L; m_bPreloaded = false; m_bFrame = true; m_bNotify = false; }
 
     RenderPart *m_frame;
     QGuardedPtr<KParts::ReadOnlyPart> m_part;
@@ -105,6 +105,7 @@ namespace khtml
     KURL m_workingURL;
     bool m_bFrame;
     QStringList m_params;
+    bool m_bNotify;
   };
 
 };
@@ -475,8 +476,7 @@ bool KHTMLPart::restoreURL( const KURL &url )
   d->m_redirectionTimer.stop();
 
   kdDebug( 6050 ) << "closing old URL" << endl;
-  if ( !closeURL() )
-    return false;
+  closeURL();
 
   d->m_bComplete = false;
   d->m_workingURL = url;
@@ -506,7 +506,7 @@ bool KHTMLPart::openURL( const KURL &url )
   d->m_redirectionTimer.stop();
 
   KParts::URLArgs args( d->m_extension->urlArgs() );
-  if ( d->m_frames.count() == 0 && (url.hasHTMLRef() != m_url.hasHTMLRef()) && urlcmp( url.url(), m_url.url(), true, true ) && args.postData.size() == 0 && !args.reload )
+  if ( d->m_frames.count() == 0 && (url.htmlRef() != m_url.htmlRef()) && urlcmp( url.url(), m_url.url(), true, true ) && args.postData.size() == 0 && !args.reload )
   {
     kdDebug( 6050 ) << "KHTMLPart::openURL now m_url = " << url.url() << endl;
     m_url = url;
@@ -526,8 +526,7 @@ bool KHTMLPart::openURL( const KURL &url )
   }
 
   kdDebug( 6050 ) << "closing old URL" << endl;
-  if ( !closeURL() )
-    return false;
+  closeURL();
 
   d->m_bReloading = args.reload;
   if ( (args.postData.size() > 0) && (url.protocol().startsWith("http")) )
@@ -2019,6 +2018,13 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
   // though -> the reference becomes invalid -> crash is likely
   KURL url( _url );
 
+  if (child->m_bNotify)
+  {
+      child->m_bNotify = false;
+      emit d->m_extension->openURLNotify();
+      emit d->m_extension->setLocationBarURL( url.prettyURL() );
+  }
+
   if ( !child->m_services.contains( mimetype ) )
   {
     KParts::ReadOnlyPart *part = createPart( d->m_view->viewport(), child->m_name.ascii(), this, child->m_name.ascii(), mimetype, child->m_serviceName, child->m_services, child->m_params );
@@ -2318,7 +2324,9 @@ void KHTMLPart::slotChildURLRequest( const KURL &url, const KParts::URLArgs &arg
 
   if ( child ) {
       // Inform someone that we are about to show something else.
-      emit d->m_extension->openURLNotify();
+      child->m_bNotify = true;
+//      emit d->m_extension->openURLNotify();
+//      emit d->m_extension->setLocationBarURL( url.prettyURL() );
       requestObject( child, url, args );
   }  else if ( frameName==QString::fromLatin1("_self") ) // this is for embedded objects (via <object>) which want to replace the current document
   {
@@ -2464,6 +2472,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
   QValueList<QByteArray> frameStateBuffers;
   QValueList<int> fSizes;
   KURL::List visitedLinks;
+  long old_cacheId = d->m_cacheId;
 
   stream >> u >> xOffset >> yOffset;
 
@@ -2488,11 +2497,10 @@ void KHTMLPart::restoreState( QDataStream &stream )
   kdDebug( 6050 ) << "m_url " << m_url.url() << " <-> " << u.url() << endl;
   kdDebug( 6050 ) << "m_frames.count() " << d->m_frames.count() << " <-> " << frameCount << endl;
 
-#if 0
-  if ( u == m_url && frameCount >= 1 && frameCount == d->m_frames.count() )
+  if (d->m_cacheId == old_cacheId)
   {
-    kdDebug( 6050 ) << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!! partial restoring !!!!!!!!!!!!!!!!!!!!!" << endl;
-//    emit started( 0L );
+    // Partial restore
+    d->m_redirectionTimer.stop();
 
     FrameIt fIt = d->m_frames.begin();
     FrameIt fEnd = d->m_frames.end();
@@ -2535,15 +2543,17 @@ void KHTMLPart::restoreState( QDataStream &stream )
       }
     }
 
-    //    emit completed();
+    KParts::URLArgs args( d->m_extension->urlArgs() );
+    args.xOffset = xOffset;
+    args.yOffset = yOffset;
+    args.docState = docState; // WABA: How are we going to restore this??
+    d->m_extension->setURLArgs( args );
+
+    d->m_view->setContentsPos( xOffset, yOffset );
   }
   else
-#endif
   {
-#if 0
-    if ( !urlcmp( u.url(), m_url.url(), true, true ) )
-#endif
-
+    // Full restore.
     closeURL();
     // We must force a clear because we want to be sure to delete all
     // frames.

@@ -73,14 +73,17 @@ RenderWidget::~RenderWidget()
 
 void RenderWidget::setQWidget(QWidget *widget, bool show)
 {
-    if(m_widget) {
-        disconnect( m_widget, SIGNAL( destroyed()),
-                    this, SLOT( slotWidgetDestructed()));
-        delete m_widget;
+    if (widget != m_widget)
+    {
+        if(m_widget) {
+            disconnect( m_widget, SIGNAL( destroyed()),
+                        this, SLOT( slotWidgetDestructed()));
+            delete m_widget;
+        }
+        m_widget = widget;
+        connect( m_widget, SIGNAL( destroyed()),
+                 this, SLOT( slotWidgetDestructed()));
     }
-    m_widget = widget;
-    connect( m_widget, SIGNAL( destroyed()),
-             this, SLOT( slotWidgetDestructed()));
     if( show )
 	m_widget->show();
 }
