@@ -47,6 +47,7 @@
 #include <qrect.h>
 #include <qregion.h>
 #include <qstringlist.h>
+#include <qpen.h>
 #include <qbrush.h>
 #include <qsize.h>
 
@@ -484,6 +485,30 @@ kdbgstream& kdbgstream::operator<<( const QColor& c ) {
         *this <<c.name();
     else
         *this << "(invalid/default)";
+    return *this;
+}
+kdbgstream& kdbgstream::operator<<( const QPen& p ) {
+    static const char* const s_penStyles[] = {
+        "NoPen", "SolidLine", "DashLine", "DotLine", "DashDotLine",
+        "DashDotDotLine" };
+    static const char* const s_capStyles[] = {
+        "FlatCap", "SquareCap", "RoundCap" };
+    *this << "[ style:";
+    *this << s_penStyles[ p.style() ];
+    *this << " width:";
+    *this << p.width();
+    *this << " color:";
+    if ( p.color().isValid() )
+        *this << p.color().name();
+    else
+        *this <<"(invalid/default)";
+    if ( p.width() > 0 ) // cap style doesn't matter, otherwise
+    {
+        *this << " capstyle:";
+        *this << s_capStyles[ p.capStyle() >> 4 ];
+        // join style omitted
+    }
+    *this <<" ]";
     return *this;
 }
 kdbgstream& kdbgstream::operator<<( const QBrush& b) {

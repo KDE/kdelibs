@@ -35,6 +35,7 @@ class QRegion;
 class KURL;
 class QStringList;
 class QColor;
+class QPen;
 class QBrush;
 
 class kdbgstream;
@@ -320,6 +321,14 @@ class kdbgstream {
 
     /**
      * Prints the given value.
+     * @param pen the pen to print
+     * @return this stream
+     * @since 3.2
+     */
+    kdbgstream& operator << ( const QPen& pen );
+
+    /**
+     * Prints the given value.
      * @param brush the brush to print
      * @return this stream
      */
@@ -458,6 +467,7 @@ class kndbgstream {
     kndbgstream& operator<<( const KURL & )  { return *this; }
     kndbgstream& operator<<( const QStringList & ) { return *this; }
     kndbgstream& operator<<( const QColor & ) { return *this; }
+    kndbgstream& operator<<( const QPen & ) { return *this; }
     kndbgstream& operator<<( const QBrush & ) { return *this; }
 };
 
