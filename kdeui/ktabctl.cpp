@@ -97,7 +97,7 @@ KTabCtl::KTabCtl(QWidget *parent, const char *name)
 {
     tabs = new QTabBar(this, "_tabbar");
     connect(tabs, SIGNAL(selected(int)), this, SLOT(showTab(int)));
-    tabs->move(2, 0); // BL: 0 instead of 1 to have the white line under tabs
+    tabs->move(2, 1);
 
     //    setFont(QFont("helvetica")); //BL: Why force a font ?
 }
