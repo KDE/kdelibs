@@ -163,7 +163,6 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
     {
       kdDebug(7004) << "listDir: Entry in cache: " << _url << endl;
 
-      Q_ASSERT( itemC->complete );
       Q_ASSERT( itemC->autoUpdates == 0 );
 
       itemsInUse.insert( _url.url(), itemC );
@@ -189,6 +188,9 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
       QPtrList<KDirLister> *list = new QPtrList<KDirLister>;
       list->append( lister );
       urlsCurrentlyHeld.insert( _url.url(), list );
+
+      if ( !itemC->complete )
+        updateDirectory( _url );
     }
     else  // dir not in cache or _reload is true
     {
@@ -493,7 +495,15 @@ void KDirListerCache::updateDirectory( const KURL& _dir )
   QString urlStr = _dir.url(-1);
   if ( !itemsInUse[urlStr] )
   {
-    kdDebug(7004) << k_funcinfo << "updateDirectory aborted, " << _dir << " not in use!" << endl;
+    DirItem *item = itemsCached[urlStr];
+    if ( item )
+    {
+      item->complete = false;
+      kdDebug(7004) << k_funcinfo << "directory " << _dir << " not in use, marked dirty." << endl;
+    }
+    else
+      kdDebug(7004) << k_funcinfo << "aborted, directory " << _dir << " not in cache." << endl;
+
     return;
   }
 
@@ -581,7 +591,7 @@ KFileItem* KDirListerCache::findByURL( const KDirLister *lister, const KURL& _u 
 
 void KDirListerCache::FilesAdded( const KURL &dir )
 {
-  kdDebug(7004) << "FilesAdded " << dir << endl;
+  kdDebug(7004) << k_funcinfo << dir << endl;
   updateDirectory( dir );
 }
 
