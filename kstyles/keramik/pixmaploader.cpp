@@ -1,5 +1,5 @@
 /* 
-   Copyright (c) 2002 Malte Starostik <malte@kde->org>
+   Copyright (c) 2002 Malte Starostik <malte@kde.org>
                  (c) 2002 Maksim Orlovich <mo002j@mail.rochester.edu>
 
    This program is free software; you can redistribute it and/or

@@ -902,7 +902,6 @@ void KeramikStyle::drawKStylePrimitive( KStylePrimitive kpe,
 	}
 }
 
-
 void KeramikStyle::drawControl( ControlElement element,
 								  QPainter *p,
 								  const QWidget *widget,
@@ -1100,12 +1099,14 @@ void KeramikStyle::drawControl( ControlElement element,
 			{
 				QIconSet::Mode mode;
 				
+				
+				
 				// Select the correct icon from the iconset
 				if ( active )
 					mode = enabled ? QIconSet::Active : QIconSet::Disabled;
 				else
 					mode = enabled ? QIconSet::Normal : QIconSet::Disabled;
-
+					
 				// Do we have an icon and are checked at the same time?
 				// Then draw a "pressed" background behind the icon
 				if ( checkable && /*!active &&*/ mi->isChecked() )
@@ -1238,7 +1239,7 @@ void KeramikStyle::drawControl( ControlElement element,
 			// Does the menu item have a submenu?
 			if ( mi->popup() ) {
 				PrimitiveElement arrow = reverse ? PE_ArrowLeft : PE_ArrowRight;
-				int dim = (h-2*itemFrame) / 2;
+				int dim = pixelMetric(PM_MenuButtonIndicator) - itemFrame;
 				QRect vr = visualRect( QRect( x + w - arrowHMargin - itemFrame - dim,
 							y + h / 2 - dim / 2, dim, dim), r );
 
