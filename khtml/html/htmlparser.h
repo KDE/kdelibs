@@ -97,11 +97,6 @@ protected:
      */
     DOM::NodeImpl *current;
 
-    /*
-     * A node blocking the incremental rendering
-     */
-    DOM::NodeImpl *block;
-
     HTMLStackElem *blockStack;
 
     void pushBlock( int _id, int _level,

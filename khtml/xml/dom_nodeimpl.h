@@ -148,7 +148,7 @@ public:
 
     enum SpecialFlags {
 	Layouted    = 0x0001,
-	Blocking    = 0x0002,
+        /*          = 0x0002,*/
 	Parsing     = 0x0004,
 	MinMaxKnown = 0x0008,
 	HasEvents   = 0x0010,
@@ -160,7 +160,6 @@ public:
 	MouseInside = 0x0400
     };
     bool layouted()    { return (flags & Layouted);    }
-    bool blocking()    { return (flags & Blocking);    }
     bool parsing()     { return (flags & Parsing);     }
     bool minMaxKnown() { return (flags & MinMaxKnown); }
     bool hasEvents()   { return (flags & HasEvents);   }
@@ -172,8 +171,6 @@ public:
     bool mouseInside()     { return (flags & MouseInside);     }
     void setLayouted(bool b=true)
 	{ b ? flags|=Layouted : flags&=~Layouted; }
-    void setBlocking(bool b=true)
-	{ b ? flags|=Blocking : flags&=~Blocking; }
     void setParsing(bool b=true)
 	{ b ? flags|=Parsing : flags&=~Parsing; }
     void setMinMaxKnown(bool b=true)

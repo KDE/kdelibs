@@ -260,8 +260,6 @@ void KHTMLParser::reset()
     // before parsing no tags are forbidden...
     memset(forbiddenTag, 0, (ID_CLOSE_TAG+1)*sizeof(ushort));
 
-    block = 0;
-
     inBody = false;
     _inline = false;
 
@@ -391,8 +389,6 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	{
 	    pushBlock(id, tagPriority[id], exitFunc, exitFuncData);
 	    current = newNode;
-	    if(!block && current->blocking())
-		block = current;
 	    n->attach(HTMLWidget);
 	    // ### HACK!!!
 	    if(n->id() == ID_BODY)
@@ -770,31 +766,40 @@ NodeImpl *KHTMLParser::getElement(Token *t)
 	n = form;
 	break;
     case ID_BUTTON:
-	n = new HTMLButtonElementImpl(document, form);
+        if(form)
+            n = new HTMLButtonElementImpl(document, form);
 	break;
     case ID_FIELDSET:
-	n = new HTMLFieldSetElementImpl(document, form);
+        if(form)
+            n = new HTMLFieldSetElementImpl(document, form);
 	break;
     case ID_INPUT:
-	n = new HTMLInputElementImpl(document, form);
+        if(form)
+            n = new HTMLInputElementImpl(document, form);
 	break;
     case ID_LABEL:
-	n = new HTMLLabelElementImpl(document, form);
+        if(form)
+            n = new HTMLLabelElementImpl(document, form);
 	break;
     case ID_LEGEND:
-	n = new HTMLLegendElementImpl(document, form);
+        if(form)
+            n = new HTMLLegendElementImpl(document, form);
 	break;
     case ID_OPTGROUP:
-	n = new HTMLOptGroupElementImpl(document, form);
+        if(form)
+            n = new HTMLOptGroupElementImpl(document, form);
 	break;
     case ID_OPTION:
-	n = new HTMLOptionElementImpl(document, form);
+        if(form)
+            n = new HTMLOptionElementImpl(document, form);
 	break;
     case ID_SELECT:
-	n = new HTMLSelectElementImpl(document, form);
+        if(form)
+            n = new HTMLSelectElementImpl(document, form);
 	break;
     case ID_TEXTAREA:
-	n = new HTMLTextAreaElementImpl(document, form);
+        if(form)
+            n = new HTMLTextAreaElementImpl(document, form);
 	break;
 
 // lists
@@ -1100,25 +1105,8 @@ void KHTMLParser::popOneBlock()
 #endif
 
     if(Elem->node != current)
-    {
 	if(current->renderer()) current->renderer()->close();
 
-	if(!block && current->renderer())
-	{
-	    // ### find a more efficient way...
-	    // this does not really belong here. commenting out... -antti
-/*	    int absX, absY;
-	    current->renderer()->absolutePosition(absX, absY);
-	    int height = absY + current->renderer()->height() + 2*5; // 5==BORDER
-	    int docHeight = HTMLWidget->contentsHeight();
-	    if(height > docHeight)
-		HTMLWidget->resizeContents(HTMLWidget->contentsWidth(), height);*/
-	}
-	else if(block == current)
-	{
-	    block = 0;
-	}
-    }
     if (Elem->exitFunc != 0)
 	(this->*(Elem->exitFunc))( Elem );
 

@@ -286,8 +286,6 @@ HTMLFrameSetElementImpl::HTMLFrameSetElementImpl(DocumentImpl *doc)
     m_resizing = false;
 
     view = 0;
-
-    setBlocking();
 }
 
 HTMLFrameSetElementImpl::~HTMLFrameSetElementImpl()
@@ -522,7 +520,6 @@ bool HTMLFrameSetElementImpl::mouseEvent( int _x, int _y, int button, MouseEvent
 HTMLHeadElementImpl::HTMLHeadElementImpl(DocumentImpl *doc)
     : HTMLElementImpl(doc)
 {
-    setBlocking();
 }
 
 HTMLHeadElementImpl::~HTMLHeadElementImpl()

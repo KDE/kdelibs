@@ -198,7 +198,6 @@ void HTMLFormElementImpl::maybeSubmit()
 
 void HTMLFormElementImpl::registerFormElement(RenderFormElement *e)
 {
-    //printf("registering %p %d\n", e, e->id());
     formElements.append(e);
 }
 
@@ -215,6 +214,7 @@ HTMLGenericFormElementImpl::HTMLGenericFormElementImpl(DocumentImpl *doc, HTMLFo
     : HTMLElementImpl(doc)
 {
     _form = f;
+
     view = 0;
     m_disabled = m_readonly = false;
 }
@@ -223,6 +223,7 @@ HTMLGenericFormElementImpl::HTMLGenericFormElementImpl(DocumentImpl *doc)
     : HTMLElementImpl(doc)
 {
     _form = getForm();
+
     view = 0;
     m_disabled = m_readonly = false;
 }
@@ -281,7 +282,6 @@ HTMLButtonElementImpl::HTMLButtonElementImpl(DocumentImpl *doc, HTMLFormElementI
 {
     _clicked = false;
     _type = SUBMIT;
-    setBlocking();
     dirty = true;
 }
 
@@ -290,7 +290,6 @@ HTMLButtonElementImpl::HTMLButtonElementImpl(DocumentImpl *doc)
 {
     _clicked = false;
     _type = SUBMIT;
-    setBlocking();
     dirty = true;
 }
 
@@ -396,8 +395,6 @@ HTMLInputElementImpl::HTMLInputElementImpl(DocumentImpl *doc)
     _size = 20;
     _clicked = false;
 
-    setBlocking();
-
     view = 0;
 }
 
@@ -409,8 +406,6 @@ HTMLInputElementImpl::HTMLInputElementImpl(DocumentImpl *doc, HTMLFormElementImp
     _maxLen = 0;
     _size = 20;
     _clicked = false;
-
-    setBlocking();
 
     view = 0;
 }
@@ -606,6 +601,9 @@ void HTMLInputElementImpl::attach(KHTMLView *_view)
 	
     	    m_render = f;
 	    m_render->ref();
+            printf("adding %s as child of %s\n", m_render->renderName(),
+                   r->renderName());
+
 	    r->addChild(m_render);
 	}
     }
@@ -702,6 +700,8 @@ DOMString HTMLSelectElementImpl::type() const
 
 long HTMLSelectElementImpl::selectedIndex() const
 {
+    printf(" HTMLSelectElementImpl::selectedIndex()\n");
+
     // ###
     return 0;
 }
@@ -834,7 +834,7 @@ HTMLOptionElementImpl::HTMLOptionElementImpl(DocumentImpl *doc)
 
 const DOMString HTMLOptionElementImpl::nodeName() const
 {
-    return "TEXTAREA";  
+    return "TEXTAREA";
 }
 
 ushort HTMLOptionElementImpl::id() const

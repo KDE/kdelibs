@@ -73,7 +73,6 @@ HTMLTableElementImpl::HTMLTableElementImpl(DocumentImpl *doc)
     rules = None;
     frame = Void;
 
-    setBlocking();
     setParsing();
 
     incremental = false;
