@@ -179,12 +179,12 @@ void KMMainView::initActions()
 	vact->setCurrentItem(0);
 	connect(vact,SIGNAL(activated(int)),SLOT(slotChangeView(int)));
 
-	KActionMenu	*stateAct = new KActionMenu(i18n("Start/Stop printer"), "unknown", m_actions, "printer_state_change");
+	KActionMenu	*stateAct = new KActionMenu(i18n("Start/Stop printer"), "kdeprint_printstate", m_actions, "printer_state_change");
 	stateAct->setDelayed(false);
 	stateAct->insert(new KAction(i18n("&Start printer"),"kdeprint_enableprinter",0,this,SLOT(slotChangePrinterState()),m_actions,"printer_start"));
 	stateAct->insert(new KAction(i18n("Sto&p printer"),"kdeprint_stopprinter",0,this,SLOT(slotChangePrinterState()),m_actions,"printer_stop"));
 
-	stateAct = new KActionMenu(i18n("Enable/Disable job spooling"), "unknown", m_actions, "printer_spool_change");
+	stateAct = new KActionMenu(i18n("Enable/Disable job spooling"), "kdeprint_queuestate", m_actions, "printer_spool_change");
 	stateAct->setDelayed(false);
 	stateAct->insert(new KAction(i18n("&Enable job spooling"),"kdeprint_enableprinter",0,this,SLOT(slotChangePrinterState()),m_actions,"printer_enable"));
 	stateAct->insert(new KAction(i18n("&Disable job spooling"),"kdeprint_stopprinter",0,this,SLOT(slotChangePrinterState()),m_actions,"printer_disable"));

@@ -73,7 +73,7 @@ KMCupsManager::KMCupsManager(QObject *parent, const char *name)
 	// change LANG variable so that CUPS is always using
 	// english language: translation may only come from the PPD
 	// itself, or from KDE.
-	setenv("LANG", "en", true);
+	setenv("LANG", "en", 1);
 }
 
 KMCupsManager::~KMCupsManager()
