@@ -43,7 +43,7 @@ class PluginPage::PluginPagePrivate
 {
     ( new QVBoxLayout( this, 0, KDialog::spacingHint() ) )->setAutoAdd( true );
     d->selwid = new KPluginSelector( this );
-    connect( d->selwid, SIGNAL( changed( bool ) ), this, SLOT( setChanged( bool ) ) );
+    connect( d->selwid, SIGNAL( changed( bool ) ), this, SIGNAL( changed( bool ) ) );
 }
 
     PluginPage::PluginPage( KInstance * instance, QWidget * parent, const QStringList & args )
@@ -52,7 +52,7 @@ class PluginPage::PluginPagePrivate
 {
     ( new QVBoxLayout( this, 0, KDialog::spacingHint() ) )->setAutoAdd( true );
     d->selwid = new KPluginSelector( this );
-    connect( d->selwid, SIGNAL( changed( bool ) ), this, SLOT( setChanged( bool ) ) );
+    connect( d->selwid, SIGNAL( changed( bool ) ), this, SIGNAL( changed( bool ) ) );
     connect( d->selwid, SIGNAL( configCommitted( const QCString & ) ),
             Dispatcher::self(), SLOT( reparseConfiguration( const QCString & ) ) );
 }
