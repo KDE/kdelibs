@@ -89,10 +89,10 @@ KJavaAppletContext * KJavaServerMaintainer::getContext (QObject * w, const QStri
     ContextMap::key_type key = qMakePair (w, doc);
     ContextMap::iterator it = m_contextmap.find (key);
     if (it != m_contextmap.end ()) {
-        (*it).second++;
+        ++((*it).second);
         return (*it).first;
     }
-    KJavaAppletContext * context = new KJavaAppletContext ();
+    KJavaAppletContext* const context = new KJavaAppletContext ();
     m_contextmap.insert (key, qMakePair(context, 1));
     return context;
 }
@@ -119,12 +119,12 @@ AppletParameterDialog::AppletParameterDialog (KJavaAppletWidget * parent)
     : KDialogBase (parent, "paramdialog", true, i18n ("Applet Parameters"),
                    KDialogBase::Close, KDialogBase::Close, true),
       m_appletWidget (parent) {
-    KJavaApplet * applet = parent->applet ();
+    KJavaApplet* const applet = parent->applet ();
     table = new QTable (30, 2, this);
     table->setMinimumSize (QSize (600, 400));
     table->setColumnWidth (0, 200);
     table->setColumnWidth (1, 340);
-    QHeader *header = table->horizontalHeader();
+    QHeader* const header = table->horizontalHeader();
     header->setLabel (0, i18n ("Parameter"));
     header->setLabel (1, i18n ("Value"));
     QTableItem * tit = new QTableItem (table, QTableItem::Never, i18n("Class"));
@@ -139,8 +139,9 @@ AppletParameterDialog::AppletParameterDialog (KJavaAppletWidget * parent)
     table->setItem (2, 0, tit);
     tit = new QTableItem(table, QTableItem::Always, applet->archives());
     table->setItem (2, 1, tit);
-    QMap<QString,QString>::iterator it = applet->getParams().begin ();
-    for (int count = 2; it != applet->getParams().end (); ++it) {
+    QMap<QString,QString>::const_iterator it = applet->getParams().begin();
+    const QMap<QString,QString>::const_iterator itEnd = applet->getParams().end();
+    for (int count = 2; it != itEnd; ++it) {
         tit = new QTableItem (table, QTableItem::Always, it.key ());
         table->setItem (++count, 0, tit);
         tit = new QTableItem(table, QTableItem::Always, it.data ());
@@ -151,11 +152,12 @@ AppletParameterDialog::AppletParameterDialog (KJavaAppletWidget * parent)
 
 void AppletParameterDialog::slotClose () {
     table->selectCells (0, 0, 0, 0);
-    KJavaApplet * applet = m_appletWidget->applet ();
+    KJavaApplet* const applet = m_appletWidget->applet ();
     applet->setAppletClass (table->item (0, 1)->text ());
     applet->setBaseURL (table->item (1, 1)->text ());
     applet->setArchives (table->item (2, 1)->text ());
-    for (int i = 3; i < table->numRows (); ++i) {
+    const int lim = table->numRows();
+    for (int i = 3; i < lim; ++i) {
         if (table->item (i, 0) && table->item (i, 1) && !table->item (i, 0)->text ().isEmpty ())
             applet->setParameter (table->item (i, 0)->text (),
                                   table->item (i, 1)->text ());
@@ -206,12 +208,13 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
     QString classname, classid, codebase, khtml_codebase, src_param;
     int width = -1;
     int height = -1;
-    KJavaApplet * applet = m_view->appletWidget()->applet ();
-    QStringList::const_iterator it = args.begin ();
-    for ( ; it != args.end (); ++it) {
-        int equalPos = (*it).find("=");
+    KJavaApplet* const applet = m_view->appletWidget()->applet ();
+    QStringList::const_iterator it = args.begin();
+    const QStringList::const_iterator itEnd = args.end();
+    for ( ; it != itEnd; ++it) {
+        const int equalPos = (*it).find("=");
         if (equalPos > 0) {
-            QString name = (*it).left (equalPos).upper ();
+            const QString name = (*it).left (equalPos).upper ();
             QString value = (*it).right ((*it).length () - equalPos - 1);
             if (value.at(0)=='\"')
                 value = value.right (value.length () - 1);
@@ -219,7 +222,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
                 value.truncate (value.length () - 1);
             kdDebug(6100) << "name=" << name << " value=" << value << endl;
             if (!name.isEmpty()) {
-                QString name_lower = name.lower ();
+                const QString name_lower = name.lower ();
                 if (name == "__KHTML__PLUGINBASEURL") {
                     baseurl = KURL (KURL (value), QString (".")).url ();
                 } else if (name == "__KHTML__CODEBASE")
@@ -280,15 +283,15 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
     }
     applet->setBaseURL (baseurl);
     // check codebase first
-    KURL kbaseURL( baseurl );
-    KURL newURL(kbaseURL, codebase);
+    const KURL kbaseURL( baseurl );
+    const KURL newURL(kbaseURL, codebase);
     if (kapp->authorizeURLAction("redirect", KURL(baseurl), newURL))
         applet->setCodeBase (newURL.url());
     applet->setAppletClass (classname);
-    KJavaAppletContext * cxt = serverMaintainer->getContext (parent, baseurl);
+    KJavaAppletContext* const cxt = serverMaintainer->getContext (parent, baseurl);
     applet->setAppletContext (cxt);
 
-    KJavaAppletServer * server = cxt->getServer ();
+    KJavaAppletServer* const server = cxt->getServer ();
 
     serverMaintainer->setServer (server);
 
@@ -354,8 +357,8 @@ KJavaAppletViewer::~KJavaAppletViewer () {
 bool KJavaAppletViewer::openURL (const KURL & url) {
     if (!m_view) return false;
     m_closed = false;
-    KJavaAppletWidget * w = m_view->appletWidget ();
-    KJavaApplet * applet = w->applet ();
+    KJavaAppletWidget* const w = m_view->appletWidget ();
+    KJavaApplet* const applet = w->applet ();
     if (applet->isCreated ())
         applet->stop ();
     if (applet->appletClass ().isEmpty ()) {
@@ -381,7 +384,7 @@ bool KJavaAppletViewer::openURL (const KURL & url) {
 bool KJavaAppletViewer::closeURL () {
     kdDebug(6100) << "closeURL" << endl;
     m_closed = true;
-    KJavaApplet * applet = m_view->appletWidget ()->applet ();
+    KJavaApplet* const applet = m_view->appletWidget ()->applet ();
     if (applet->isCreated ())
         applet->stop ();
     applet->getContext()->getServer()->endWaitForReturnData();
@@ -399,14 +402,14 @@ bool KJavaAppletViewer::openFile () {
 }
 
 void KJavaAppletViewer::delayedCreateTimeOut () {
-    KJavaAppletWidget * w = m_view->appletWidget ();
+    KJavaAppletWidget* const w = m_view->appletWidget ();
     if (!w->applet ()->isCreated () && !m_closed)
         w->showApplet ();
 }
 
 void KJavaAppletViewer::appletLoaded () {
     if (!m_view) return;
-    KJavaApplet * applet = m_view->appletWidget ()->applet ();
+    KJavaApplet* const applet = m_view->appletWidget ()->applet ();
     if (applet->isAlive() || applet->failed())
         emit completed();
 }
@@ -437,21 +440,22 @@ void KJavaAppletViewerBrowserExtension::setURLArgs (const KParts::URLArgs & /*ar
 }
 
 void KJavaAppletViewerBrowserExtension::saveState (QDataStream & stream) {
-    KJavaApplet * applet = static_cast<KJavaAppletViewer*>(parent())->view()->appletWidget ()->applet ();
+    KJavaApplet* const applet = static_cast<KJavaAppletViewer*>(parent())->view()->appletWidget ()->applet ();
     stream << applet->appletClass();
     stream << applet->baseURL();
     stream << applet->archives();
     stream << applet->getParams().size ();
-    QMap<QString,QString>::iterator it = applet->getParams().begin ();
-    for ( ; it != applet->getParams().end (); ++it) {
+    QMap<QString,QString>::const_iterator it = applet->getParams().begin();
+    const QMap<QString,QString>::const_iterator itEnd = applet->getParams().end();
+    for ( ; it != itEnd; ++it) {
         stream << it.key ();
         stream << it.data ();
     }
 }
 
 void KJavaAppletViewerBrowserExtension::restoreState (QDataStream & stream) {
-    KJavaAppletWidget * w = static_cast<KJavaAppletViewer*>(parent())->view()->appletWidget();
-    KJavaApplet * applet = w->applet ();
+    KJavaAppletWidget* const w = static_cast<KJavaAppletViewer*>(parent())->view()->appletWidget();
+    KJavaApplet* const applet = w->applet ();
     QString key, val;
     int paramcount;
     stream >> val;
@@ -474,7 +478,7 @@ void KJavaAppletViewerBrowserExtension::restoreState (QDataStream & stream) {
 
 void KJavaAppletViewerBrowserExtension::showDocument (const QString & doc,
                                                       const QString & frame) {
-    KURL url (doc);
+    const KURL url (doc);
     KParts::URLArgs args;
     args.frameName = frame;
     emit openURLRequest (url, args);
@@ -494,12 +498,12 @@ bool KJavaAppletViewerLiveConnectExtension::get (
     if (!m_viewer->appletAlive ())
         return false;
     QStringList args, ret_args;
-    KJavaApplet * applet = m_viewer->view ()->appletWidget ()->applet ();
+    KJavaApplet* const applet = m_viewer->view ()->appletWidget ()->applet ();
     args.append (QString::number (applet->appletId ()));
     args.append (QString::number ((int) objid));
     args.append (name);
     m_jssessions++;
-    bool ret = applet->getContext()->getMember (args, ret_args);
+    const bool ret = applet->getContext()->getMember (args, ret_args);
     m_jssessions--;
     if (!ret || ret_args.count() != 3) return false;
     bool ok;
@@ -517,14 +521,14 @@ bool KJavaAppletViewerLiveConnectExtension::put(const unsigned long objid, const
     if (!m_viewer->appletAlive ())
         return false;
     QStringList args;
-    KJavaApplet * applet = m_viewer->view ()->appletWidget ()->applet ();
+    KJavaApplet* const applet = m_viewer->view ()->appletWidget ()->applet ();
     args.append (QString::number (applet->appletId ()));
     args.append (QString::number ((int) objid));
     args.append (name);
     args.append (value);
-    m_jssessions++;
-    bool ret = applet->getContext()->putMember (args);
-    m_jssessions--;
+    ++m_jssessions;
+    const bool ret = applet->getContext()->putMember (args);
+    --m_jssessions;
     return ret;
 }
 
@@ -532,19 +536,24 @@ bool KJavaAppletViewerLiveConnectExtension::call( const unsigned long objid, con
 {
     if (!m_viewer->appletAlive ())
         return false;
-    KJavaApplet * applet = m_viewer->view ()->appletWidget ()->applet ();
+    KJavaApplet* const applet = m_viewer->view ()->appletWidget ()->applet ();
     QStringList args, ret_args;
     args.append (QString::number (applet->appletId ()));
     args.append (QString::number ((int) objid));
     args.append (func);
-    for (QStringList::const_iterator it=fargs.begin(); it != fargs.end(); ++it)
-        args.append(*it);
-    m_jssessions++;
-    bool ret = applet->getContext()->callMember (args, ret_args);
-    m_jssessions--;
+    {
+        QStringList::const_iterator it = fargs.begin();
+        const QStringList::const_iterator itEnd = fargs.end();
+	for ( ; it != itEnd; ++it)
+            args.append(*it);
+    }
+
+    ++m_jssessions;
+    const bool ret = applet->getContext()->callMember (args, ret_args);
+    --m_jssessions;
     if (!ret || ret_args.count () != 3) return false;
     bool ok;
-    int itype = ret_args[0].toInt (&ok);
+    const int itype = ret_args[0].toInt (&ok);
     if (!ok || itype < 0) return false;
     type = (KParts::LiveConnectExtension::Type) itype;
     retobjid = ret_args[1].toInt (&ok);
@@ -557,7 +566,7 @@ void KJavaAppletViewerLiveConnectExtension::unregister(const unsigned long objid
 {
     if (!m_viewer->view () || !m_viewer->view ())
         return;
-    KJavaApplet * applet = m_viewer->view ()->appletWidget ()->applet ();
+    KJavaApplet* const applet = m_viewer->view ()->appletWidget ()->applet ();
     if (!applet || objid == 0) {
         // typically a gc after a function call on the applet,
         // no need to send to the jvm
@@ -573,12 +582,19 @@ void KJavaAppletViewerLiveConnectExtension::jsEvent (const QStringList & args) {
     if (args.count () < 2 || !m_viewer->appletAlive ())
         return;
     bool ok;
-    unsigned long objid = args[0].toInt(&ok);
-    QString event = args[1];
+    QStringList::ConstIterator it = args.begin();
+    const QStringList::ConstIterator itEnd = args.end();
+    const unsigned long objid = (*it).toInt(&ok);
+    ++it;
+    const QString event = (*it);
+    ++it;
     KParts::LiveConnectExtension::ArgList arglist;
-    for (unsigned i = 2; i < args.count(); i += 2)
+
+    for (; it != itEnd; ++it) {
         // take a deep breath here
-        arglist.push_back(KParts::LiveConnectExtension::ArgList::value_type((KParts::LiveConnectExtension::Type) args[i].toInt(), args[i+1]));
+        const QStringList::ConstIterator prev = it++;
+	arglist.push_back(KParts::LiveConnectExtension::ArgList::value_type((KParts::LiveConnectExtension::Type) (*prev).toInt(), (*it)));
+    }
     emit partEvent (objid, event, arglist);
 }
 
