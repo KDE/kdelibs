@@ -213,7 +213,7 @@ void MdConnectNew(MediaCon *mcon)
       return;
     }
 
-  shm_talkid = shmget(shm_talkkey, talksize, IPC_CREAT | 0x1b6 ); /* %110110110 */
+  shm_talkid = shmget(shm_talkkey, talksize, IPC_CREAT | 0x180 ); /* %110000000 */
   if ( shm_talkid == -1 ) {
     LogError("Could not get shm id.\n");
     return;
