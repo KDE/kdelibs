@@ -2902,6 +2902,18 @@ void KDesktopPropsPlugin::applyChanges()
   config.writeEntry("X-KDE-Username", m_suidUserStr);
   config.writeEntry("X-KDE-StartupNotify", m_startupBool);
   config.writeEntry("X-DCOP-ServiceType", m_dcopServiceType);
+  config.sync();
+
+  // KSycoca update needed?
+  QString sycocaPath = KGlobal::dirs()->relativeLocation("apps", path);
+  bool updateNeeded = !sycocaPath.startsWith("/");
+  if (!updateNeeded)
+  {
+     sycocaPath = KGlobal::dirs()->relativeLocation("xdgdata-apps", path);
+     updateNeeded = !sycocaPath.startsWith("/");
+  }
+  if (updateNeeded)
+     KService::rebuildKSycoca(w);
 }
 
 
@@ -3607,7 +3619,6 @@ void KApplicationPropsPlugin::applyChanges()
   config.writeEntry( QString::fromLatin1("Name"), nameStr, true, false, true );
 
   config.sync();
-  f.close();
 }
 
 void KApplicationPropsPlugin::slotAddExtension()
