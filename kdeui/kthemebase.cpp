@@ -947,7 +947,7 @@ void KThemeBase::applyResourceGroup(KConfig *config, int i)
             &kapp->palette().normal().foreground()));
 
     // Extended color attributes
-    if(config->hasKey("Forground") || config->hasKey("Background")){
+    if(config->hasKey("Foreground") || config->hasKey("Background")){
         QColor fg, bg;
         if(config->hasKey("Background"))
             bg = config->readColorEntry("Background", &bg);
