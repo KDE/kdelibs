@@ -41,7 +41,6 @@ KCModule::KCModule(QWidget *parent, const char *name, const QStringList &)
     kdDebug() << "KCModule " << name << endl;
     d = new KCModulePrivate;
     d->_useRootOnlyMsg = true;
-    d->_instance = new KInstance(name);
 	if (name && strlen(name)) {
 		d->_instance = new KInstance(name);
 		KGlobal::locale()->insertCatalogue(name);
