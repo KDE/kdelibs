@@ -476,7 +476,14 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 bool KWalletD::isAuthorizedApp(const QCString& appid, const QString& wallet, WId w) {
 	int response = 0;
 
-	if (!implicitAllow(wallet, appid)) {
+	QCString thisApp;
+	if (appid.isEmpty()) {
+		thisApp = "KDE System";
+	} else {
+		thisApp = appid;
+	}
+
+	if (!implicitAllow(wallet, thisApp)) {
 		KBetterThanKDialogBase *dialog = new KBetterThanKDialogBase;
 		if (appid.isEmpty()) {
 			dialog->setLabel(i18n("<qt>KDE has requested access to the open wallet '<b>%1</b>'.").arg(QStyleSheet::escape(wallet)));
@@ -496,9 +503,9 @@ bool KWalletD::isAuthorizedApp(const QCString& appid, const QString& wallet, WId
 			KConfig cfg("kwalletrc");
 			cfg.setGroup("Auto Allow");
 			QStringList apps = cfg.readListEntry(wallet);
-			if (!apps.contains(appid)) {
-				apps += appid;
-				_implicitAllowMap[wallet] += appid;
+			if (!apps.contains(thisApp)) {
+				apps += thisApp;
+				_implicitAllowMap[wallet] += thisApp;
 				cfg.writeEntry(wallet, apps);
 				cfg.sync();
 			}
@@ -507,9 +514,9 @@ bool KWalletD::isAuthorizedApp(const QCString& appid, const QString& wallet, WId
 		KConfig cfg("kwalletrc");
 		cfg.setGroup("Auto Deny");
 		QStringList apps = cfg.readListEntry(wallet);
-		if (!apps.contains(appid)) {
-			apps += appid;
-			_implicitDenyMap[wallet] += appid;
+		if (!apps.contains(thisApp)) {
+			apps += thisApp;
+			_implicitDenyMap[wallet] += thisApp;
 			cfg.writeEntry(wallet, apps);
 			cfg.sync();
 		}
