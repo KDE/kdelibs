@@ -6,7 +6,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xos.h>
-#include <X11/Xatom.h>  
+#include <X11/Xatom.h>
 
 #include <assert.h>
 #include <iostream.h>
@@ -14,7 +14,7 @@
 #include <string.h>
 
 // Here we depend on Qt not to change their implementation!!!
-extern Time qt_x_clipboardtime;                 // def. in qapp_x11.cpp   
+extern Time qt_x_clipboardtime;                 // def. in qapp_x11.cpp
 extern QObject *qt_clipboard;                   // defined in qapp_xyz.cpp
 
 KClipboard* KClipboard::s_pSelf = 0L;
@@ -23,7 +23,7 @@ KClipboard* KClipboard::self()
 {
   if ( s_pSelf == 0L )
     s_pSelf = new KClipboard;
-  
+
   return s_pSelf;
 }
 
@@ -34,25 +34,25 @@ KClipboard::KClipboard()
     cerr << "You may only open one KClipboard at once" << endl;
     assert( 0 );
   }
-  
+
   if ( qt_clipboard != 0L )
-  {    
+  {
     cerr << "KClipboard::KClipboard There is already a clipboard registered\n" << endl;
     assert( 0 );
   }
-    
+
   qt_clipboard = this;
-    
+
   m_bOwner = false;
   m_pOwner = 0L;
-  m_bEmpty = true;    
+  m_bEmpty = true;
   m_mimeTypeLen = 0;
 }
 
 KClipboard::~KClipboard()
 {
 }
-   
+
 bool KClipboard::open( int _mode )
 {
   return open( _mode, "application/octet-stream" );
@@ -61,11 +61,11 @@ bool KClipboard::open( int _mode )
 bool KClipboard::open( int _mode, const QString& _format )
 {
   if ( _mode != IO_ReadOnly && _mode != ( IO_WriteOnly | IO_Truncate ) && _mode != IO_WriteOnly )
-  {    
+  {
     cerr << "KClipboard: Wrong flags in call for Ken" << endl;
     assert( 0 );
   }
-    
+
   if ( _mode == IO_WriteOnly )
     _mode |= IO_Truncate;
 
@@ -77,15 +77,15 @@ bool KClipboard::open( int _mode, const QString& _format )
     cerr << "Fuck ya too" << endl;
 
     QBuffer::open( _mode );
-    if ( _format != "application/octet-stream" && 
-	 _format != "text/plain" ) 
+    if ( _format != "application/octet-stream" &&
+	 _format != "text/plain" )
     {
       m_mimeTypeLen = _format.length() + 1;
       writeBlock( _format.ascii(), m_mimeTypeLen );
     }
     else
       m_mimeTypeLen = 0;
-    
+
     cerr << "2 Fuck ya too" << endl;
 
     return true;
@@ -96,7 +96,7 @@ bool KClipboard::open( int _mode, const QString& _format )
     // printf("isEmpty %i\n", ( isEmpty() ? 1:0 ) );
     if ( !isOwner() )
       fetchData();
-      
+
     if ( m_strFormat != _format && _format != "application/octet-stream" )
       return false;
 
@@ -115,27 +115,27 @@ const QString KClipboard::format()
   if ( !isOwner() )
     fetchData();
 
-  return m_strFormat;  
+  return m_strFormat;
 }
-  
+
 void KClipboard::close()
 {
   if ( ( mode() & IO_WriteOnly ) == IO_WriteOnly )
-    setOwner();    
- 
+    setOwner();
+
   QBuffer::close();
- 
+
   if ( ( mode() & IO_ReadOnly ) == IO_ReadOnly && !isOwner() )
     clear();
 }
-    
+
 void KClipboard::clear()
 {
   m_bEmpty = true;
   m_strFormat = "";
-  
+
   buffer().resize( 0 );
-  
+
   if ( isOwner() )
     setOwner();
 }
@@ -156,17 +156,17 @@ void KClipboard::setOwner()
     return;
 
   // printf("Setting owner\n");
-    
+
   QWidget *owner = makeOwner();
   Window win = owner->winId();
   Display *dpy = owner->x11Display();
-    
+
   XSetSelectionOwner( dpy, XA_PRIMARY, win, qt_x_clipboardtime );
   if ( XGetSelectionOwner( dpy, XA_PRIMARY ) != win )
   {
     cerr <<  "KClipboard::setOwner: Cannot set X11 selection owner" << endl;
     return;
-  }                            
+  }
 
   m_bOwner = true;
 }
@@ -174,14 +174,14 @@ void KClipboard::setOwner()
 void KClipboard::fetchData()
 {
   // printf("Getting data\n");
-    
+
   if ( isOwner() )
     return;
 
   // printf("Doing it really!\n");
-    
+
   clear();
-    
+
   QWidget *owner = makeOwner();
   Window   win   = owner->winId();
   Display *display   = owner->x11Display();
@@ -226,8 +226,8 @@ void KClipboard::fetchData()
   QBuffer::open( IO_WriteOnly | IO_Truncate );
 
   bool first = true;
-  
-  do 
+
+  do
   {
     int n = XGetWindowProperty( display, win, prop, nread/4, 1024, TRUE,
 				AnyPropertyType, &type, &format, &nitems,
@@ -243,27 +243,27 @@ void KClipboard::fetchData()
       for( i = 0; i < nitems; i++ )
 	if ( result[i] == 0 )
 	  break;
-      
+
       if ( i < nitems )
       {
 	m_mimeTypeLen = i + 1;
 	m_strFormat = reinterpret_cast<const char*>(result);
       }
       else
-      {  
+      {
 	m_strFormat = "";
       }
     }
-    
+
     writeBlock( (const char*)result, nitems );
     nread += nitems;
 
     XFree( (char *)result );
-    
+
   } while ( bytes_after > 0 );
 
   // printf("#################### READ %i bytes\n", nread );
-    
+
   QBuffer::close();
 
   if ( m_strFormat.isEmpty() )
@@ -282,10 +282,10 @@ void KClipboard::fetchData()
 	return;
       }
     }
-    
-    m_strFormat = "text/plain";  
+
+    m_strFormat = "text/plain";
   }
-  
+
   return;
 }
 
@@ -309,7 +309,7 @@ bool KClipboard::event( QEvent *e )
     // printf("REQUEST\n");
     {
       // printf("Sending %i bytes\n",size());
-	    
+	
       XEvent xev;
       XSelectionRequestEvent *xreqev = &xevent->xselectionrequest;
       xev.xselection.type = SelectionNotify;
@@ -319,7 +319,7 @@ bool KClipboard::event( QEvent *e )
       xev.xselection.target = xreqev->target;
       xev.xselection.property = None;
       xev.xselection.time = xreqev->time;
-      
+
       if ( xreqev->target == XA_STRING )
       {
 	XChangeProperty ( display, xreqev->requestor, xreqev->property, XA_STRING, 8,
@@ -340,28 +340,28 @@ bool KClipboard::event( QEvent *e )
   }
 
   return true;
-}                                              
+}
 
 QWidget* KClipboard::makeOwner()
 {
   // Fake some clipboard owner
-  if ( m_pOwner )  
+  if ( m_pOwner )
     return m_pOwner;
   if ( qApp->mainWidget() )
     m_pOwner = qApp->mainWidget();
-  else                     
+  else
     m_pOwner = new QWidget( 0L );
   return m_pOwner;
-}            
+}
 
 void KClipboard::setURLList( QStringList& _urls )
 {
   open( IO_WriteOnly | IO_Truncate, "url/url" );
-  
+
   QStringList::Iterator iterator = _urls.begin();
   for( ; iterator != _urls.end(); iterator++ )
   {
-    if ( (*iterator) == _urls.getLast() )
+    if ( iterator == _urls.end() )
       writeBlock( *iterator, (*iterator).length() );
     else
       writeBlock( *iterator, (*iterator).length() + 1 );
@@ -410,10 +410,10 @@ bool KClipboard::urlList( QStringList& _urls)
 
 void KClipboard::setText( const QString& _text )
 {
-  open( IO_WriteOnly | IO_Truncate, "text/plain" );  
+  open( IO_WriteOnly | IO_Truncate, "text/plain" );
 
   writeBlock( _text.ascii(), _text.length() );
-  
+
   close();
 }
 
@@ -431,10 +431,10 @@ const QString KClipboard::text()
 
 void KClipboard::setOctetStream( QByteArray& _arr )
 {
-  open( IO_WriteOnly | IO_Truncate );  
+  open( IO_WriteOnly | IO_Truncate );
 
   writeBlock( _arr.data(), _arr.size() );
-  
+
   close();
 }
 
@@ -445,7 +445,7 @@ QByteArray KClipboard::octetStream()
 
   QByteArray ba;
   ba.duplicate( buffer().data() + m_mimeTypeLen, buffer().size() - m_mimeTypeLen );
-  
+
   return ba;
 }
 
