@@ -23,7 +23,7 @@
 #include "kmfactory.h"
 #include "kmmanager.h"
 
-KMDBEntry::KMDBEntry() : recommanded(false)
+KMDBEntry::KMDBEntry() : recommended(false)
 {
 }
 

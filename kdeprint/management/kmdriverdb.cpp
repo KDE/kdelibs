@@ -235,7 +235,7 @@ void KMDriverDB::loadDbFile()
 			else if (words[0] == "DESCRIPTION" && entry)
 				entry->description = words[1];
 			else if (words[0] == "RECOMMANDED" && entry && words[1].lower() == "yes")
-				entry->recommanded = true;
+				entry->recommended = true;
 			else if (words[0] == "DRIVERCOMMENT" && entry)
 				entry->drivercomment = ("<qt>"+words[1].replace("&lt;", "<").replace("&gt;", ">")+"</qt>");
 		}

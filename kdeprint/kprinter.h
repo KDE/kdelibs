@@ -203,7 +203,7 @@ public:
 	/**
 	 * Constructor. This also restores/saves the state from a previous KPrinter object created within
 	 * the same application run, if @p restore is true. Setting @p restore to false may
-	 * be useful if you want an independant/clean KPrinter object.
+	 * be useful if you want an independent/clean KPrinter object.
 	 * @param restore if true, options will be restored/saved between successive KPrinter objects
 	 * @param m the mode to establish the KPrinter in (see QPrinter::PrinterMode)
 	 */
@@ -496,7 +496,7 @@ public:
 	 * \code
 	 * void MyClass:doPreview()
 	 * {
-	 *   // use a "clean" KPrinter object (independant from previous print jobs),
+	 *   // use a "clean" KPrinter object (independent from previous print jobs),
 	 *   // this is not necessary, it depends on the application
 	 *   KPrinter prt( false );
 	 *   prt.setPreviewOnly( true );
@@ -718,7 +718,7 @@ public:
 	/**
 	 * Set the default document filename. This filename will be used as the
 	 * default basename for the output file, instead of the default "print".
-	 * For exmaple, by using setDocFileName("my_document"), the default
+	 * For example, by using setDocFileName("my_document"), the default
 	 * output file will be $HOME/my_document.ps.
 	 * @param filename the default document basename to use
 	 * @see docFileName()

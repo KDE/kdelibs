@@ -78,7 +78,7 @@ void KMWDriverSelect::initPrinter(KMPrinter *p)
 		for (;it.current();++it)
 		{
 			QString	s(it.current()->description);
-			if (it.current()->recommanded)
+			if (it.current()->recommended)
 			{
 				recomm = m_list->count();
 				s.append(i18n(" [recommended]"));
