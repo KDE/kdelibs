@@ -475,8 +475,62 @@ public:
    */
   void detach(); 
 
+  /**
+   * Specify whether to create a pty (pseudo-terminal) for running the 
+   * command.
+   *
+   * @param usePty true if a pty should be created
+   * @param addUtmp true if a utmp entry should be created for the pty
+   *
+   * This function should be called before starting the process.   
+   */
+  void setUsePty(bool usePty, bool addUtmp);
+  
+  /**
+   * Set or change the logical (screen) size of the pty.
+   * The default is 25 rows by 80 lines.
+   *
+   * @param lines the number of rows
+   * @param columns the number of columns
+   */
+  void setPtySize(int lines, int columns);
+  
+  /**
+   * Set whether the pty should honour Xon/Xoff flow control.
+   *
+   * Xon/Xoff flow control is off by default.
+   *
+   * @param useXonXoff true if Xon/Xoff flow control should be used.
+   *
+   * This function should be called before starting the process.   
+   */
+  void setPtyXonXoff(bool useXonXoff);
+
+  /**
+   * @return the name of the master pty device used for this process.
+   * 
+   * This function should only be called after starting the process.
+   */
+  const char *ptyMasterName();
+
+  /**
+   * @return the name of the slave pty device used for this process.
+   * 
+   * This function should only be called after starting the process.
+   */
+  const char *ptySlaveName();
+
+  /**
+   * @return the file descriptor of the master pty
+   */
+  int ptyMasterFd();
 
 
+  /**
+   * @return the file descriptor of the slave pty
+   */
+  int ptySlaveFd();
+  
 signals:
 
   /**
@@ -689,11 +743,35 @@ protected:
   virtual void processHasExited(int state);
 
   /**
+   * Create a master pty.
+   *
+   * This function is called automatically when you use pty's.
+   * @see setUsePty
+   */
+  void openMasterPty();
+
+  /**
+   * Create a slave pty
+   *
+   * @return file descriptor of opened slave pty
+   *
+   * This function is called automatically when you use pty's.
+   * @see setUsePty
+   */
+  void openSlavePty();
+
+  /**
    * Should clean up the communication links to the child after it has
    * exited. Should be called from "processHasExited".
    */
   virtual void commClose();
 
+  /**
+   * Specify the actual executable that should be started (first argument to execve)
+   * Normally the the first argument is the executable but you can 
+   * override that with this function.
+   */
+  void setBinaryExecutable(const char *filename);
 
   /**
    * the socket descriptors for stdin/stdout/stderr.
