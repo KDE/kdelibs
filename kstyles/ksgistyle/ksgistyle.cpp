@@ -83,10 +83,12 @@ static const unsigned char uparrow_bits[] = {
 KSgiStyle::KSgiStyle()
 	:KStyle()
 {
- 	//
-	// set some default sizes
-	//
-	setScrollBarExtent(19, 19);
+  //
+  // set some default sizes
+  //
+  setScrollBarExtent(19, 19);
+  setButtonDefaultIndicatorWidth (0);
+ 
 	
 }
 
@@ -110,10 +112,10 @@ void
 KSgiStyle::polish(QWidget *w)
 {
   if (w->isTopLevel())
-  	return;
+    return;
 		
   if(w->inherits("QButton") || w->inherits("QComboBox")){
-  	w->installEventFilter(this);
+    w->installEventFilter(this);
     QPalette pal = w->palette();
     // we use this as a flag since it's otherwise unused.
     pal.setColor(QColorGroup::Shadow, Qt::white);
@@ -136,7 +138,7 @@ KSgiStyle::unPolish(QWidget *w)
 
   if(w->inherits("QButton") || w->inherits("QComboBox")){
     w->removeEventFilter(this);
-   	QPalette pal = w->palette();
+    QPalette pal = w->palette();
     pal.setColor(QColorGroup::Shadow,
                      kapp->palette().active().color(QColorGroup::Shadow));
     w->setPalette(pal);
@@ -146,31 +148,29 @@ KSgiStyle::unPolish(QWidget *w)
 //--------------------------------------------------------------------
 //
 //	eventFilter - style defined event filter. Used here to do 
-//								highlight on mouse over events
+//		      highlight on mouse over events
 //
      
 bool
 KSgiStyle::eventFilter(QObject* obj, QEvent* ev)
 {
   if(obj->inherits("QButton") || obj->inherits("QComboBox")){
-	  if (ev->type() == QEvent::Enter) {
+    if (ev->type() == QEvent::Enter) {
     	QWidget *btn = (QWidget *)obj;
         if (btn->isEnabled()){
-     		QPalette pal = btn->palette();
-			palStore = pal;
-            pal.setColor(QColorGroup::Shadow,
+     	  QPalette pal = btn->palette();
+	  palStore = pal;
+          pal.setColor(QColorGroup::Shadow,
                      pal.active().color(QColorGroup::Midlight));
-            btn->setPalette(pal);
-//        btn->repaint(false);
+          btn->setPalette(pal);
 
-		}
+        }
     } else if (ev->type() == QEvent::Leave) {
-    	QWidget *btn = (QWidget *)obj;
-  		QPalette pal = btn->palette();
-   		pal.setColor(QColorGroup::Shadow, Qt::white);
-   		btn->setPalette(pal);
-//    	btn->repaint(false);
-	}
+        QWidget *btn = (QWidget *)obj;
+        QPalette pal = btn->palette();
+        pal.setColor(QColorGroup::Shadow, Qt::white);
+        btn->setPalette(pal);
+    }
   } 
 	
   return(false);
@@ -204,7 +204,7 @@ KSgiStyle::drawButton(QPainter *p, int x, int y, int w, int h,
 	drawFullShadeButton(p, x+1, y+1, w-2, h-2, g, sunken, fill);
   } else {
 	drawFullShadeButton(p, x+1, y+1, w-2, h-2, g, sunken,
-			            &g.brush(QColorGroup::Midlight));
+			    &g.brush(QColorGroup::Midlight));
   }	
   p->setPen(oldPen);
 }
@@ -339,7 +339,7 @@ KSgiStyle::drawPushButton(QPushButton *btn, QPainter *p)
 QRect 
 KSgiStyle::buttonRect(int x, int y, int w, int h)
 {
-    return(QRect(x+3, y+3, w-6, h-6));
+    return(QRect(x+2, y+2, w-4, h-4));
 }
 
 //--------------------------------------------------------------------
@@ -392,9 +392,9 @@ KSgiStyle::drawIndicator(QPainter *p, int x, int y, int w, int h,
   
 	
     if (g.shadow() == Qt::white) {
-  	drawPartShadeButton(p, x+1, y+1, w-2, h-2, g, down, &(g.brush(QColorGroup::Background)));
+  	  drawPartShadeButton(p, x+1, y+1, w-2, h-2, g, down, &(g.brush(QColorGroup::Background)));
     } else {
-	drawPartShadeButton(p, x+1, y+1, w-2, h-2, g, down, &(g.brush(QColorGroup::Midlight)));
+	  drawPartShadeButton(p, x+1, y+1, w-2, h-2, g, down, &(g.brush(QColorGroup::Midlight)));
     }
 
   } else {
@@ -796,9 +796,9 @@ KSgiStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
   sub.setRect(subX, subY, buttonDim, buttonDim);
   add.setRect(addX, addY, buttonDim, buttonDim);
 	
-	//
-	// Draw add line button
-	//
+  //
+  // Draw add line button
+  //
 		
   if(controls & AddLine){
   	if(add.isValid()){
@@ -820,14 +820,14 @@ KSgiStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
  			}
 			
 			drawFullShadeButton(p, add.x()+1, add.y()+1, add.width()-2, add.height()-2, g);
-	    drawScrollBarArrow(p, (horizontal) ? RightArrow : DownArrow, add.x()+4,
+	        drawScrollBarArrow(p, (horizontal) ? RightArrow : DownArrow, add.x()+4,
                              add.y()+4, g);
    	}
   }
   
-	//
-	// Draw subtract line button
-	//
+  //
+  // Draw subtract line button
+  //
 	  
   if(controls & SubLine){
   	if(sub.isValid()){
