@@ -26,6 +26,7 @@ Comment[pt]=Apresentação do OpenOffice.org
 Comment[pt_BR]=Apresentações do OpenOffice.org
 Comment[ru]=Презентация OpenOffice.org
 Comment[sk]=Prezentácia OpenOffice.org
+Comment[sl]=Predstavitev OpenOffice.org
 Comment[sr]=OpenOffice.org-ова презентација
 Comment[sv]=OpenOffice.org-presentation
 Comment[tr]=OpenOffice.org Sunumu
@@ -37,7 +38,7 @@ Comment[zh_CN]=OpenOffice.org 演示文稿
 MimeType=application/vnd.sun.xml.impress
 Type=MimeType
 Icon=document
-Patterns=*.sxi;*.SXI;*.sti;*.STI;
+Patterns=*.sxi;*.SXI;
 [Property::X-KDE-NativeExtension]
 Type=QString
 Value=.sxi
