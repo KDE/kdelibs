@@ -87,17 +87,6 @@
  while(<>)
  {
      $useproxy = 1 if /UseProxy=true/;
---- kdelibs-2.2.0-final.orig/kssl/ksslinfodlg.cc
-+++ kdelibs-2.2.0-final/kssl/ksslinfodlg.cc
-@@ -68,7 +68,7 @@
-         }
-     } else {
-         pixmap->setPixmap(BarIcon("unlock"));
--        info->setText(i18n("SSL support is not available in this build of KDE."));
-+        info->setText(i18n("No SSL support!  Install kdebase-crypto."));
-     }
-     d->m_layout->addRowSpacing( 0, 50 ); // give minimum height to look better
- 
 --- kdelibs-2.2.0-final.orig/kssl/kopenssl.cc
 +++ kdelibs-2.2.0-final/kssl/kopenssl.cc
 @@ -143,11 +143,11 @@
