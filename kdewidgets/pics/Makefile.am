@@ -1,5 +1,12 @@
-data_DATA = kcolorbutton.png  kgradientselector.png  kled.png \
-kdualcolorbutton.png  khsselector.png
+data_DATA =  klineedit.png ktextbrowser.png kpasswordedit.png kdatewidget.png \
+             kurlrequester.png kcombobox.png kintspinbox.png \
+             kled.png ksqueezedtextlabel.png  kprogress.png kurllabel.png \
+             kruler.png \
+             klistbox.png klistview.png \
+             kcolorcombo.png khsselector.png kcolorbutton.png \
+             kgradientselector.png kdualcolorbutton.png \
+             kpushbutton.png
+
 datadir = $(kde_datadir)/kdewidgets/pics
 
 EXTRA_DIST = $(data_DATA)
