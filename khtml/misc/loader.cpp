@@ -43,6 +43,7 @@
 #include <qmovie.h>
 #include <qwidget.h>
 
+#include <kapplication.h>
 #include <kio/job.h>
 #include <kio/jobclasses.h>
 #include <kglobal.h>
@@ -991,6 +992,7 @@ CachedImage *DocLoader::requestImage( const DOM::DOMString &url)
 {
     KURL fullURL = m_doc->completeURL( url.string() );
     if ( m_part && m_part->onlyLocalReferences() && fullURL.protocol() != "file") return 0;
+    if ( kapp && m_doc && !kapp->authorizeURLAction("redirect", m_doc->URL(), fullURL.url())) return 0;
 
     bool reload = needReload(fullURL);
 
@@ -1001,6 +1003,7 @@ CachedCSSStyleSheet *DocLoader::requestStyleSheet( const DOM::DOMString &url, co
 {
     KURL fullURL = m_doc->completeURL( url.string() );
     if ( m_part && m_part->onlyLocalReferences() && fullURL.protocol() != "file") return 0;
+    if ( kapp && m_doc && !kapp->authorizeURLAction("redirect", m_doc->URL(), fullURL.url())) return 0;
 
     bool reload = needReload(fullURL);
 
@@ -1011,6 +1014,7 @@ CachedScript *DocLoader::requestScript( const DOM::DOMString &url, const QString
 {
     KURL fullURL = m_doc->completeURL( url.string() );
     if ( m_part && m_part->onlyLocalReferences() && fullURL.protocol() != "file") return 0;
+    if ( kapp && m_doc && !kapp->authorizeURLAction("redirect", m_doc->URL(), fullURL.url())) return 0;
 
     bool reload = needReload(fullURL);
 
@@ -1503,7 +1507,7 @@ void Cache::flush(bool force)
     while ( m_headOfUncacheableList )
         removeCacheEntry( m_headOfUncacheableList );
 
-    for ( int i = MAX_LRU_LISTS-1; i >= 0 && m_totalSizeOfLRULists > maxSize; --i ) 
+    for ( int i = MAX_LRU_LISTS-1; i >= 0 && m_totalSizeOfLRULists > maxSize; --i )
         while ( m_totalSizeOfLRULists > maxSize && m_LRULists[i].m_tail )
             removeCacheEntry( m_LRULists[i].m_tail );
 
