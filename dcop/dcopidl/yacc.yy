@@ -321,7 +321,7 @@ super_class_name
 	| Identifier T_LESS type_list T_GREATER
 	  {
 		QString* tmp = new QString( "    <SUPER>%1</SUPER>\n" );
-		*tmp = tmp->arg( *($1) + "&lt" + *($3) + "&gt;" );
+		*tmp = tmp->arg( *($1) + "&lt;" + *($3) + "&gt;" );
 		$$ = tmp;
 	  }
 	;

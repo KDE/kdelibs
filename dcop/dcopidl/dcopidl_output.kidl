@@ -7,7 +7,7 @@
     <NAME>Test</NAME>
     <SUPER>MyNamespace::MyParentClass</SUPER>
     <SUPER>DCOPObject</SUPER>
-    <SUPER>QValueList&lt<TYPE>QString</TYPE>&gt;</SUPER>
+    <SUPER>QValueList&lt;<TYPE>QString</TYPE>&gt;</SUPER>
     <FUNC>
         <TYPE>QString</TYPE>
         <NAME>url</NAME>
