@@ -111,7 +111,7 @@ namespace khtml
 
       ChildFrame() { m_bCompleted = false; m_frame = 0L; m_bPreloaded = false; m_type = Frame; m_bNotify = false; }
 
-      ~ChildFrame() {  delete (KHTMLRun*) m_run; }
+      ~ChildFrame() {  if (m_run) m_run->abort(); }
 
     RenderPart *m_frame;
     QGuardedPtr<KParts::ReadOnlyPart> m_part;
@@ -1098,7 +1098,7 @@ void KHTMLPart::clear()
     {
       // Stop HTMLRun jobs for frames
       if ( (*it).m_run )
-        delete (*it).m_run;
+        (*it).m_run->abort();
     }
   }
 
@@ -1109,7 +1109,7 @@ void KHTMLPart::clear()
     {
       // Stop HTMLRun jobs for objects
       if ( (*it).m_run )
-        delete (*it).m_run;
+        (*it).m_run->abort();
     }
   }
 
@@ -2664,7 +2664,7 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
   KParts::URLArgs args( _args );
 
   if ( child->m_run )
-    delete (KHTMLRun *)child->m_run;
+    child->m_run->abort();
 
   if ( child->m_part && !args.reload && urlcmp( child->m_part->url().url(), url.url(), true, true ) )
     args.serviceType = child->m_serviceType;
