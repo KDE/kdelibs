@@ -668,7 +668,7 @@ void UIServer::applySettings()
      toolBar()->show();
 }
 
-void UIServer::slotShowContextMenu(KListView*, QListViewItem* /*item*/, const QPoint& pos)
+void UIServer::slotShowContextMenu(KListView*, QListViewItem* item, const QPoint& pos)
 {
    if (m_contextMenu==0)
    {
@@ -678,6 +678,8 @@ void UIServer::slotShowContextMenu(KListView*, QListViewItem* /*item*/, const QP
       m_contextMenu->insertSeparator();
       m_contextMenu->insertItem(i18n("Settings..."), this, SLOT(slotConfigure()));
    }
+   if ( item )
+       item->setSelected( true );
    bool enabled = false;
    QListViewItemIterator it( listProgress );
    for ( ; it.current(); ++it ) {
