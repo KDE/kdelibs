@@ -146,17 +146,18 @@ struct URLArgs
   bool trustedSource;
 
   /**
-   * @return true if the request was a result of a META refresh/redirect request.
+   * @return true if the request was a result of a META refresh/redirect request or
+   * HTTP redirect.
    */
   bool redirectedRequest () const;
 
   /**
-   * Set the redirect flag to indicate URL is a result of a META
-   * redirect request.
+   * Set the redirect flag to indicate URL is a result of either a META redirect
+   * or HTTP redirect.
    *
-   * @param enable
+   * @param redirected
    */
-  void setEnableRedirectedRequest (bool enable);
+  void setRedirectedRequest(bool redirected);
 
   URLArgsPrivate *d;
 };

@@ -134,11 +134,11 @@ void URLArgs::setContentType( const QString & contentType )
   d->contentType = contentType;
 }
 
-void URLArgs::setEnableRedirectedRequest( bool enable )
+void URLArgs::setRedirectedRequest( bool redirected )
 {
   if (!d)
      d = new URLArgsPrivate;
-  d->redirectedRequest = enable;
+  d->redirectedRequest = redirected;
 }
 
 bool URLArgs::redirectedRequest () const
