@@ -273,7 +273,7 @@ KBugReport::~KBugReport()
 
 void KBugReport::updateURL()
 {
-    KURL url = "http://bugs.kde.org/wizard.cgi";
+    KURL url ( "http://bugs.kde.org/wizard.cgi" );
     url.addQueryItem( "os", d->os );
     url.addQueryItem( "compiler", KDE_COMPILER_VERSION );
     url.addQueryItem( "kdeVersion", d->kde_version );
