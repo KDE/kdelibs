@@ -97,9 +97,15 @@ return ok;
 bool KSSLCertificateHome::deleteCertificate(KSSLPKCS12 *cert) {
    if (!cert) return false;
    
+   return deleteCertificateByName(cert->name());
+}
+
+bool KSSLCertificateHome::deleteCertificateByName(const QString &name) {
+   if (name.isEmpty()) return false;
+
 KSimpleConfig cfg("ksslcertificates", false);
 
-   bool ok = cfg.deleteGroup(cert->name());
+   bool ok = cfg.deleteGroup(name);
    cfg.sync();
 
 return ok;

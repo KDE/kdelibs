@@ -121,11 +121,13 @@ k_dcop:
 
   bool addHomeCertificateFile(QString filename, QString password, bool storePass /*=false*/);
 
-  bool addHomeCertificatePKCS12(QString bas64cert, QString passToStore);
+  bool addHomeCertificatePKCS12(QString base64cert, QString passToStore);
 
-  bool deleteHomeCertificateFile(QString filename, QString password);
+  bool deleteHomeCertificateByFile(QString filename, QString password);
 
-  bool deleteHomeCertificatePKCS12(QString base64cert, QString password);
+  bool deleteHomeCertificateByPKCS12(QString base64cert, QString password);
+
+  bool deleteHomeCertificateByName(QString name);
 
 private:
 

@@ -73,6 +73,7 @@ public:
 	 */
 	static bool deleteCertificate(const QString &filename, const QString &password);
 	static bool deleteCertificate(KSSLPKCS12 *cert);
+	static bool deleteCertificateByName(const QString &name);
  
 	/*
 	 *   Returns the list of certificates available

@@ -904,16 +904,20 @@ bool KSSLD::addHomeCertificatePKCS12(QString base64cert, QString passToStore) {
 	return ok;
 }
 
-bool KSSLD::deleteHomeCertificateFile(QString filename, QString password) {
+bool KSSLD::deleteHomeCertificateByFile(QString filename, QString password) {
 	return KSSLCertificateHome::deleteCertificate(filename, password);
 }
 
-bool KSSLD::deleteHomeCertificatePKCS12(QString base64cert, QString password) {
+bool KSSLD::deleteHomeCertificateByPKCS12(QString base64cert, QString password) {
 	bool ok;
 	KSSLPKCS12 *pkcs12 = KSSLPKCS12::fromString(base64cert, password);
 	ok = KSSLCertificateHome::deleteCertificate(pkcs12);
 	delete pkcs12;
 	return ok;
+}
+
+bool KSSLD::deleteHomeCertificateByName(QString name) {
+	return KSSLCertificateHome::deleteCertificateByName(name);
 }
 
 
