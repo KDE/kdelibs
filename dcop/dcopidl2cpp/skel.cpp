@@ -216,8 +216,8 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 		    if ( result == "void" ) {
 			str << "\t" << plainFuncName << "(";
 		    } else {
-			str << "\tQDataStream reply( replyData, IO_WriteOnly );"  << endl;
-			str << "\treply << " << plainFuncName << "(";
+			str << "\tQDataStream _reply_stream( replyData, IO_WriteOnly );"  << endl;
+			str << "\t_reply_stream << " << plainFuncName << "(";
 		    }
 
 		    first = TRUE;

@@ -178,8 +178,8 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 			str << " data, replyType, replyData ) ) {" << endl;
 			if ( result != "void" ) {
 			    str << "\tif ( replyType == \"" << result << "\" ) {" << endl;
-			    str << "\t    QDataStream reply( replyData, IO_ReadOnly );"  << endl;
-			    str << "\t    reply >> result;" << endl;
+			    str << "\t    QDataStream _reply_stream( replyData, IO_ReadOnly );"  << endl;
+			    str << "\t    _reply_stream >> result;" << endl;
 			    str << "\t    setStatus( CallSucceeded );" << endl;
 			    str << "\t} else {" << endl;
 			    str << "\t    callFailed();" << endl;
