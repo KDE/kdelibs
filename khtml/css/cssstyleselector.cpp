@@ -2129,12 +2129,8 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         Length lineHeight;
         if(!primitiveValue) return;
         int type = primitiveValue->primitiveType();
-        if(primitiveValue->getIdent() == CSS_VAL_NORMAL) {
-            if ( style->font().pixelSize() )
-                lineHeight = Length(( QFontMetrics( style->font() ).height() * 100 ) / style->font().pixelSize(), Percent);
-            else
-                lineHeight = Length( 100, Percent );
-        }
+        if(primitiveValue->getIdent() == CSS_VAL_NORMAL)
+            lineHeight = Length( -100, Percent );
         else if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
             lineHeight = Length(computeLength(primitiveValue, style, paintDeviceMetrics), Fixed);
         else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
