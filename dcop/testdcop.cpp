@@ -84,12 +84,12 @@ int main(int argc, char **argv)
 
   QDataStream ds(data, IO_WriteOnly);
   ds << QString("fourty-two") << 42;
-  if (!client->call(app.name(), "object1", "  aFunction(   QString , int  )", data, replyType, reply))
+  if (!client->call(app.name(), "object1", "aFunction(QString,int)", data, replyType, reply))
     qDebug("I couldn't call myself");
   else
       qDebug("return type was '%s'", replyType.data() ); 
 
-  client->send(app.name(), "object1", "  aFunction(   QString , int  )", data );
+  client->send(app.name(), "object1", "aFunction(QString,int)", data );
 
   int n = client->registeredApplications().count();
   qDebug("number of attached applications = %d", n );
@@ -108,17 +108,17 @@ int main(int argc, char **argv)
 
   // Find a object called "object1" in any application that
   // meets the criteria "canLaunchRockets()"
-  bool boolResult = client->findObject( "", "object1", "canLaunchRockets()", data, foundApp, foundObj);
-  qDebug("findObject: result = %s, %s, %s\n", boolResult ? "true" : "false",
-	foundApp.data(), foundObj.data());
+//  bool boolResult = client->findObject( "", "object1", "canLaunchRockets()", data, foundApp, foundObj);
+//  qDebug("findObject: result = %s, %s, %s\n", boolResult ? "true" : "false",
+//	foundApp.data(), foundObj.data());
 
   // Find an application that matches with "konqueror*"
-  boolResult = client->findObject( "konqueror*", "", "", data, foundApp, foundObj);
+  bool boolResult = client->findObject( "konqueror*", "", "", data, foundApp, foundObj);
   qDebug("findObject: result = %s, %s, %s\n", boolResult ? "true" : "false",
 	foundApp.data(), foundObj.data());
 
   // Find an object called "object1" in any application.
-  boolResult = client->findObject( "", "object1", "", data, foundApp, foundObj);
+  boolResult = client->findObject( "", "ksycoca", "", data, foundApp, foundObj);
   qDebug("findObject: result = %s, %s, %s\n", boolResult ? "true" : "false",
 	foundApp.data(), foundObj.data());
 
