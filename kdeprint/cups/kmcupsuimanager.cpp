@@ -56,6 +56,7 @@
 #include "cupsinfos.h"
 
 #include <qlistview.h>
+#include <qwhatsthis.h>
 #include <klocale.h>
 #include <kdebug.h>
 #include <kaction.h>
@@ -81,19 +82,58 @@ void KMCupsUiManager::setupPropertyPages(KMPropertyPage *p)
 
 void KMCupsUiManager::setupWizard(KMWizard *wizard)
 {
+	QString whatsThisLocalprinterBackend = i18n("<qt><p> </p>."
+					        " </qt>" );
+
+	QString whatsThisRemoteLPDBackend = i18n("<qt><p> </p>."
+					        " </qt>" );
+
+	QString whatsThisSMBSharedPrinterBackend = i18n("<qt><p> </p>."
+					        " </qt>" );
+
+	QString whatsThisNetworkprinterTCPBackend = i18n("<qt><p> </p>."
+					        " </qt>" );
+
+	QString whatsThisRemoteCUPSIPPBackend = i18n("<qt><p> </p>."
+					        " </qt>" );
+
+	QString whatsThisRemotePrinterIPPBackend = i18n("<qt><p> </p>."
+					        " </qt>" );
+
+	QString whatsThisSerialFaxModemBackend = i18n("<qt><p> </p>."
+					        " </qt>" );
+
+	QString whatsThisOtherPrintertypeBackend = i18n("<qt><p> </p>."
+					        " </qt>" );
+
+	QString whatsThisClassOfPrinters = i18n("<qt><p> </p>."
+					        " </qt>" );
+
+	QString whatsThis = i18n("<qt><p> </p>."
+					        " </qt>" );
 	KMWBackend	*backend = wizard->backendPage();
 	if (!backend)
 		return;
 	backend->addBackend(KMWizard::Local,i18n("&Local printer (parallel, serial, USB)"),false);
+	QWhatsThis::add(backend, whatsThisLocalprinterBackend);
 	backend->addBackend(KMWizard::LPD,i18n("&Remote LPD queue"),false);
+	QWhatsThis::add(backend, whatsThisRemoteLPDBackend);
 	backend->addBackend(KMWizard::SMB,i18n("&SMB shared printer (Windows)"),false,KMWizard::Password);
+	QWhatsThis::add(backend, whatsThisSMBSharedPrinterBackend);
 	backend->addBackend(KMWizard::TCP,i18n("Ne&twork printer (TCP)"),false);
+	QWhatsThis::add(backend, whatsThisNetworkprinterTCPBackend);
 	backend->addBackend(KMWizard::IPP,i18n("Re&mote CUPS server (IPP/HTTP)"),false,KMWizard::Password);
+	QWhatsThis::add(backend, whatsThisRemoteCUPSIPPBackend);
 	backend->addBackend(KMWizard::Custom+1,i18n("Network printer w/&IPP (IPP/HTTP)"),false);
+	QWhatsThis::add(backend, whatsThisRemotePrinterIPPBackend);
 	backend->addBackend(KMWizard::Custom+2,i18n("S&erial Fax/Modem printer"),false);
+	QWhatsThis::add(backend, whatsThisSerialFaxModemBackend);
 	backend->addBackend(KMWizard::Custom+5,i18n("Other &printer type"),false);
+	QWhatsThis::add(backend, whatsThisOtherPrintertypeBackend);
 	backend->addBackend();
+	QWhatsThis::add(backend, whatsThis);
 	backend->addBackend(KMWizard::Class,i18n("Cl&ass of printers"),false);
+	QWhatsThis::add(backend, whatsThisClassOfPrinters);
 
 	IppRequest	req;
 	QString		uri;

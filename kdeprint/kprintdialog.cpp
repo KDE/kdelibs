@@ -126,19 +126,19 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	QString whatsThisPrintJobProperties = i18n( " <qt> This button takes you to where you can make decisions"
 						" regarding all supported print job options."
 						" </qt>" );
-	QString whatsThisPrinterFilter = i18n(  " <qt> This button reduces the list of visible printers"
-						" to a shorter, more convenient, pre-defined list."
-						" It is particularly useful in enterprise environments"
-						" with many printers. The default is to show <b>all</b> printers."
-						" To create a personal filter list, click on the"
-						" <em>System Options...</em> button at the bottom of this dialog,"
-						" and in the new dialog select <em>Filter</em> (left column in the"
-						" <em>KDE Print Configuration</em> dialog)."
+	QString whatsThisPrinterFilter = i18n(  " <qt><p> This button reduces the list of visible printers"
+						" to a shorter, more convenient, pre-defined list.</p>"
+						" <p>This is particularly useful in enterprise environments"
+						" with lots of printers. The default is to show <b>all</b> printers.</p>"
+						" <p>To create a personal filter list, click on the"
+						" <em>\"System Options...</em>\" button at the bottom of this dialog."
+						" Then, in the new dialog, select <em>\"Filter\"</em> (left column in the"
+						" <em>KDE Print Configuration</em> dialog).</p>"
 						" </qt>" );
-	QString whatsThisAddPrinterWizard = i18n( "<qt> This button starts the KDE Add Printer Wizard."
-						" (<b>not</b> if you use <em>Generic LPD</em>"
-						" or <em>LPRng</em>, or <em>Print Through an External Program</em>.)"
-						" Use the Wizard (with <em>CUPS</em> or <em>RLPR</em>) to add locally"
+	QString whatsThisAddPrinterWizard = i18n( "<qt> This button starts the <em>KDE Add Printer Wizard</em>."
+						" (<b>NOT</b> if you use <em>\"Generic LPD</em>\""
+						" or <em>\"LPRng\"</em>, or <em>\"Print Through an External Program</em>\".)"
+						" Use the Wizard (with <em>\"CUPS\"</em> or <em>\"RLPR\"</em>) to add locally"
 						" defined printers to your system."
 						" </qt>" );
 	QString whatsThisExternalPrintCommand = i18n( " <qt> You can enter any command that"
@@ -157,7 +157,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 						" applications embed all fonts into the PostScript they"
  						" generate for printing?"
 						" <li> Should KDE use an external PostScript viewer"
-						" like <em>gv</em>for print page previews?"
+						" like <em>gv</em> for print page previews?"
 						" <li> Should KDEPrint use a local or a remote CUPS server?,"
 						" </ul> and many more.... "
 					        " </qt>" );
@@ -176,12 +176,13 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 						" or if you want your print subsystem (like CUPS) to do this."
 					        " </qt>" );
 
-	QString whatsThisKeepDialogOpenCheckbox = i18n( " <qt> If you enable this checkbox, the printing dialog"
-						" stays open after you hit the <em>Print</em> button. This is"
-						" especially useful, if you need to \"play\" with various"
+	QString whatsThisKeepDialogOpenCheckbox = i18n( " <qt><p>If you enable this checkbox, the printing dialog"
+						" stays open after you hit the <em>Print</em> button.</p>"
+						" <p> This is"
+						" especially useful, if you need to test various"
 						" print settings (like color matching for an inkjet printer)"
 						" or if you want to send your job to multiple printers (one after"
-						" the other) to have it finished more quickly."
+						" the other) to have it finished more quickly.</p>"
 					        " </qt>" );
 
 	QString whatsThisOutputFileLabel = i18n(" <qt> The \"Output file:\" shows you where your file will be"
@@ -237,6 +238,12 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 						" also lets you cancel the job if something looks wrong. "
 					        " </qt>" );
 
+	QString whatsThisSetDefaultPrinter = i18n(" <qt> This button sets the current printer as the user's"
+						" default. (Button is only visible if the <em>System Options...</em>"
+						" --> <em>General</em> --> <em>Miscellaneous</em>: <em>\"Defaults"
+						" to the last printer used in the application\"</em> is disabled.)"
+					        " </qt>" );
+
 	d = new KPrintDialogPrivate;
 
 	d->m_pages.setAutoDelete(false);
@@ -273,6 +280,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	d->m_options = new KPushButton(KGuiItem(i18n("System Op&tions..."), "kdeprint_configmgr"), this);
 	QWhatsThis::add(d->m_options,whatsThisSystemOptions);
 	d->m_default = new KPushButton(KGuiItem(i18n("Set as &Default"), "kdeprint_defaultsoft"), m_pbox);
+	QWhatsThis::add(d->m_default,whatsThisSetDefaultPrinter);
 	d->m_filter = new QPushButton(m_pbox);
 	d->m_filter->setPixmap(SmallIcon("filter"));
 	d->m_filter->setMinimumSize(QSize(d->m_printers->minimumHeight(),d->m_printers->minimumHeight()));
@@ -598,7 +606,7 @@ void KPrintDialog::slotPrinterSelected(int index)
 			d->m_state->setText(p->stateString());
 			ok = p->isValid();
 			enableSpecial(p->isSpecial());
-			enableOutputFile( p->option("kde-special-file") == "1" );
+			enableOutputFile(p->option("kde-special-file") == "1");
 			setOutputFileExtension(p->option("kde-special-extension"));
 		}
                 else

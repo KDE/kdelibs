@@ -24,11 +24,25 @@
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qregexp.h>
+#include <qwhatsthis.h>
+
 #include <klocale.h>
 
 KPTagsPage::KPTagsPage(bool ro, QWidget *parent, const char *name)
 : KPrintDialogPage(parent, name)
 {
+
+	QString whatsThisAdditionalTagsTable = i18n(" <qt><p>You may send additional messages to the operator(s) of your"
+						" production printers (e.g. in your <em>Central Repro Department</p>)"
+						" Your messages can be read by the operator(s) (or yourself) by viewing"
+						" the <em>\"Job IPP Report\"</em> for the respective job.</p>"
+						" <b>Examples:</b><br><pre>"
+						" <em>Call_after_completion</em> (Name) -- <em>Joe User, phone extension 1234</em> (Value)<br>"
+						" <em>Mail_after_completion</em> (Name) -- <em>Jill User &lt;juser@somecompany.com&gt;</em> (Value)<br>"
+						" <em>Deliver_after_completion</em> (Name) -- <em>to Marketing Department</em> (Value)"
+						" </pre>"
+						" <p><b>Note:</b> the \"Name\" field must not include spaces or tabs."
+					        " </qt>" );
 	setTitle(i18n("Additional Tags"));
 	setOnlyRealPrinters(true);
 
@@ -37,6 +51,7 @@ KPTagsPage::KPTagsPage(bool ro, QWidget *parent, const char *name)
 	m_tags->horizontalHeader()->setLabel(0, i18n("Name"));
 	m_tags->horizontalHeader()->setLabel(1, i18n("Value"));
 	m_tags->setReadOnly(ro);
+	QWhatsThis::add(m_tags, whatsThisAdditionalTagsTable);
 
 	QVBoxLayout	*l0 = new QVBoxLayout(this, 0, 5);
 	l0->addWidget(m_tags);

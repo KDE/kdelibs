@@ -24,6 +24,7 @@
 #include <qlayout.h>
 #include <qtooltip.h>
 #include <qheader.h>
+#include <qwhatsthis.h>
 
 #include <kio/netaccess.h>
 #include <kurldrag.h>
@@ -37,6 +38,55 @@
 KFileList::KFileList(QWidget *parent, const char *name)
 : QWidget(parent, name)
 {
+	QString whatsThisAddFileButton = i18n(  " <qt> This button calls the \"File Open\" dialog to let you"
+						" select a file for printing. Note, that "
+						" <ul><li>you can select ASCII or International Text, PDF,"
+						" PostScript, JPEG, TIFF, PNG, GIF and many other graphic"
+						" formats."
+						" <li>you can select various files from different paths"
+						" and send them as one \"multi-file job\" to the printing"
+						" system."
+						" </ul>"
+					        " </qt>" );
+
+	QString whatsThisRemoveFileButton = i18n(" <qt> This button removes the highlighted file from the"
+						" list of to-be-printed files."
+					        " </qt>" );
+
+	QString whatsThisMoveFileUpButton = i18n(" <qt> <p>This button moves the highlighted file up in the list"
+						" of files to be printed.</p>"
+						" <p>In effect, this changes the order"
+						" of the files' printout.</p>"
+					        " </qt>" );
+
+	QString whatsThisMoveFileDownButton = i18n(" <qt> <p>This button moves the highlighted file down in the list"
+						" of files to be printed..</p>"
+						" <p>In effect, this changes the order"
+						" of the files' printout.</p>"
+					        " </qt>" );
+
+	QString whatsThisOpenFileButton = i18n( " <qt> <p>This button tries to open the highlighted file, so"
+						" you can view or edit it before you send it to the printing"
+						" system.</p>"
+						" <p>If you open"
+						" files, KDEPrint will use the application matching the MIME type of"
+						" the file.</p>"
+					        " </qt>" );
+
+	QString whatsThisFileSelectionListview = i18n( " <qt><p>This list displays all the files you selected for printing."
+						" You can see the file name(s), file path(s) and the file"
+						" (MIME) type(s) as determined by KDEPrint. The initial order of the list is"
+						" the order of your initial selection.</p>"
+						" <p>The list will be printed"
+						" in the same order as displayed finally.</p>"
+						" <p><b>Note:</b> You can select multiple files. The files may be in multiple"
+						" locations. The files may be of multiple MIME types. The buttons on the right"
+						" side let you add more files, remove already selected files from the list, "
+						" re-order the list (by moving files up or down), and open files. If you open"
+						" files, KDEPrint will use the application matching the MIME type of"
+						" the file.</p>"
+					        " </qt>" );
+
 	m_block = false;
 
 	m_files = new KListView(this);
@@ -48,35 +98,41 @@ KFileList::KFileList(QWidget *parent, const char *name)
 	m_files->setAcceptDrops(false);
 	m_files->setSelectionMode(QListView::Extended);
 	m_files->header()->setStretchEnabled(true, 2);
+	QWhatsThis::add(m_files, whatsThisFileSelectionListview);
 	connect(m_files, SIGNAL(selectionChanged()), SLOT(slotSelectionChanged()));
 
 	m_add = new QToolButton(this);
 	m_add->setIconSet(SmallIconSet("fileopen"));
 	connect(m_add, SIGNAL(clicked()), SLOT(slotAddFile()));
 	QToolTip::add(m_add, i18n("Add file"));
+	QWhatsThis::add(m_add, whatsThisAddFileButton);
 
 	m_remove = new QToolButton(this);
 	m_remove->setIconSet(SmallIconSet("remove"));
 	connect(m_remove, SIGNAL(clicked()), SLOT(slotRemoveFile()));
 	QToolTip::add(m_remove, i18n("Remove file"));
+	QWhatsThis::add(m_remove, whatsThisRemoveFileButton);
 	m_remove->setEnabled(false);
 
 	m_open = new QToolButton(this);
 	m_open->setIconSet(SmallIconSet("filefind"));
 	connect(m_open, SIGNAL(clicked()), SLOT(slotOpenFile()));
 	QToolTip::add(m_open, i18n("Open file"));
+	QWhatsThis::add(m_open, whatsThisOpenFileButton);
 	m_open->setEnabled(false);
 
 	m_up = new QToolButton(this);
 	m_up->setIconSet(SmallIconSet("up"));
 	connect(m_up, SIGNAL(clicked()), SLOT(slotUp()));
 	QToolTip::add(m_up, i18n("Move up"));
+	QWhatsThis::add(m_up, whatsThisMoveFileUpButton);
 	m_up->setEnabled(false);
 
 	m_down = new QToolButton(this);
 	m_down->setIconSet(SmallIconSet("down"));
 	connect(m_down, SIGNAL(clicked()), SLOT(slotDown()));
 	QToolTip::add(m_down, i18n("Move down"));
+	QWhatsThis::add(m_down, whatsThisMoveFileDownButton);
 	m_down->setEnabled(false);
 
 	setAcceptDrops(true);
