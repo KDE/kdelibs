@@ -25,7 +25,6 @@
 #define KJAVAPROCESS_H
 
 #include <kprocess.h>
-#include <qmap.h>
 #include <qcstring.h>
 
 /**

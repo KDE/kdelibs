@@ -24,8 +24,11 @@
 #ifndef KJAVAAPPLETSERVER_H
 #define KJAVAAPPLETSERVER_H
 
-#include <qobject.h>
 #include <kjavaprocess.h>
+#include <qobject.h>
+#include <qmap.h>
+
+
 /**
  * @short Communicates with a KJAS server to display and control Java applets.
  *
@@ -127,12 +130,14 @@ public:
 protected:
     void setupJava( KJavaProcess* p );
 
-    KJavaProcess *process;
-    KJavaAppletServerPrivate* d;
+    KJavaProcess* process;
 
 protected slots:
     void slotJavaRequest( const QByteArray& qb );
     void checkShutdown();
+
+private:
+    KJavaAppletServerPrivate* d;
 
 };
 

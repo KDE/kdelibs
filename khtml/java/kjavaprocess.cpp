@@ -4,10 +4,10 @@
 #include <kio/kprotocolmanager.h>
 
 #include <qtextstream.h>
+#include <qmap.h>
 #include <unistd.h>
 
 
-typedef QMap<QString, QString> PropsMap;
 class KJavaProcessPrivate
 {
 friend class KJavaProcess;

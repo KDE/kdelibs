@@ -25,19 +25,24 @@
 #define KJAVAAPPLETCONTEXT_H
 
 #include <qobject.h>
-#include <kurl.h>
 
 /**
  * @short Provides a context for KJavaAppletWidgets
  *
+ * Applets run in a context- (see the Java documentation for more information
+ * on contexts).  Currently, each document in KHTML creates one context, in
+ * which multiple applets can run.
+ *
  * @version $Id$
  * @author Richard J. Moore, rich@kde.org
+ * @author Wynn Wilkes, wynnw@caldera.com
  */
 
 
 class KJavaAppletServer;
 class KJavaApplet;
 class KJavaAppletContextPrivate;
+
 class KJavaAppletContext : public QObject
 {
 Q_OBJECT
@@ -102,15 +107,15 @@ protected:
     //The counter to generate ID's for the contexts
     static int contextCount;
 
-     // The applet server this context is attached to.
-     KJavaAppletServer* server;
+    // The applet server this context is attached to.
+    KJavaAppletServer* server;
 
 protected slots:
-     void received( const QString& cmd, const QStringList& arg );
+    void received( const QString& cmd, const QStringList& arg );
 
 private:
-     int id;
-     KJavaAppletContextPrivate* d;
+    int id;
+    KJavaAppletContextPrivate* d;
 
 };
 
