@@ -1125,7 +1125,7 @@ void KApplication::invokeHTMLHelp( QString filename, QString topic ) const
 	  const char* shell = "/bin/sh";
 	  if (getenv("SHELL"))
 		shell = getenv("SHELL");
-         file.prepend("khcclient ");
+         file.prepend("khelpcenter ");
          execl(shell, shell, "-c", QFile::encodeName(file).data(), 0L);
 	  _exit( 1 );
     }
