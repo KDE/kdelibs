@@ -25,7 +25,7 @@ $(BUILDDIR)/build-stamp:
 	kde_confdir=/etc/kde \
 	kde_mimedir=/usr/share/mimelnk \
 	kde_toolbardir=/usr/share/toolbar \
-	kde_wallpaperdir=/usr/share/wallpaper \
+	kde_wallpaperdir=/usr/share/wallpapers \
 	kde_bindir=/usr/X11R6/bin \
 	kde_partsdir=/usr/lib/parts \
 	CFLAGS="-O2 -Wall -Wno-uninitialized -g" \
