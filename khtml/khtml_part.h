@@ -40,6 +40,8 @@ class KJSProxy;
 class KHTMLView;
 class KHTMLSettings;
 class KJavaAppletContext;
+class KPopupMenu;;
+class KSelectAction;
 
 namespace DOM
 {
@@ -1031,6 +1033,13 @@ private slots:
    */
   void slotHighlight( const QString &, int index, int length );
 
+  /**
+   * @internal
+   */
+  void slotAutomaticDetectionLanguage( int _id );
+
+
+
 private:
 
   enum StatusBarPriority { BarDefaultText, BarHoverText, BarOverrideText };
@@ -1126,6 +1135,10 @@ private:
 
   KHTMLPartPrivate *d;
   friend class KHTMLPartPrivate;
+
+
+  KPopupMenu *m_automaticDetection;
+  KSelectAction *m_manualDetection;
 };
 
 

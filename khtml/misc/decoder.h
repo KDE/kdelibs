@@ -48,7 +48,42 @@ public:
 
     QString flush() const;
 
+
+    enum AutomaticDetectinonLanguage {
+        SemiautomaticDetection,
+        Arabic,
+        Baltic,
+        CentralEuropean,
+        Chinese,
+        Greek,
+        Hebrew,
+        Japanese,
+        Korean,
+        Russian,
+        Thai,
+        Turkish,
+        Ukrainian,
+        Unicode,
+        WesternEuropean
+    };
+
+    void setAutomaticDetectionLanguage( AutomaticDetectinonLanguage _language ) { m_automaticDetectionLanguage = _language; }
+    AutomaticDetectinonLanguage automaticDetectionLanguage() { return m_automaticDetectionLanguage; }
+
+
+
 protected:
+    QCString automaticDetectionForArabic( const char* str );
+    QCString automaticDetectionForBaltic( const char* str );
+    QCString automaticDetectionForCentralEuropean( const char* str );
+    QCString automaticDetectionForCyrillic( const char* str, AutomaticDetectinonLanguage _language );
+    QCString automaticDetectionForGreek( const char* str );
+    QCString automaticDetectionForHebrew( const char* str );
+    QCString automaticDetectionForTurkish( const char* str );
+    QCString automaticDetectionForWesternEuropean( const char* str );
+
+
+
     // codec used for decoding. default is Latin1.
     QTextCodec *m_codec;
     QTextDecoder *m_decoder; // only used for utf16
@@ -60,6 +95,8 @@ protected:
     bool beginning;
     bool visualRTL;
     bool haveEncoding;
+
+    AutomaticDetectinonLanguage m_automaticDetectionLanguage;
 };
 
 };

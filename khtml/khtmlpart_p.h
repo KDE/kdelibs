@@ -147,6 +147,7 @@ public:
     m_bFirstData = true;
     m_submitForm = 0;
     m_delayRedirect = 0;
+    m_automaticDetectionLanguage = khtml::Decoder::SemiautomaticDetection;
 
     // inherit settings from parent
     if(parent && parent->inherits("KHTMLPart"))
@@ -164,6 +165,7 @@ public:
             m_ssl_in_use = part->d->m_ssl_in_use;
             m_onlyLocalReferences = part->d->m_onlyLocalReferences;
             m_zoomFactor = part->d->m_zoomFactor;
+            m_automaticDetectionLanguage = part->d->m_automaticDetectionLanguage;
         }
     }
 
@@ -273,7 +275,7 @@ public:
   KAction *m_paSaveDocument;
   KAction *m_paSaveFrame;
   KAction *m_paSecurity;
-  KSelectAction *m_paSetEncoding;
+  KActionMenu *m_paSetEncoding;
   KSelectAction *m_paUseStylesheet;
   KHTMLZoomFactorAction *m_paIncZoomFactor;
   KHTMLZoomFactorAction *m_paDecZoomFactor;
@@ -391,6 +393,8 @@ public:
   QGuardedPtr<KHTMLPart> m_opener;
   bool m_openedByJS;
   bool m_newJSInterpreterExists; // set to 1 by setOpenedByJS, for window.open
+
+  khtml::Decoder::AutomaticDetectinonLanguage m_automaticDetectionLanguage;
 };
 
 #endif
