@@ -1,4 +1,5 @@
 libmcop 0 libarts-alsa (>= 4:2.2-0) | libarts (>= 4:2.2-0)
+libmcop_mt 0 libarts-alsa (>= 4:2.2-0) | libarts (>= 4:2.2-0)
 libartsc 0 libarts-alsa (>= 4:2.2-0) | libarts (>= 4:2.2-0)
 libartscbackend 0 libarts-alsa (>= 4:2.2-0) | libarts (>= 4:2.2-0)
 libartsdsp 0 libarts-alsa (>= 4:2.2-0) | libarts (>= 4:2.2-0)
