@@ -242,8 +242,8 @@ KIcon KIconTheme::iconPath(QString name, int size, int match)
 		continue;
 	} else
 	{
-	    dw = abs(dir->size() - size);
-	    if (dw >= QMIN(7,delta))
+	    dw = dir->size() - size;
+	    if ((dw > 6) || (abs(dw) >= abs(delta)))
 		continue;
 	}
 
