@@ -842,10 +842,12 @@ public:
    * @param group The name of the group
    * @param bDeep Specify whether non-empty groups should be completely
    *        deleted (including their entries).
+   * @param bGlobal     If @p bGlobal is true, the pair is not removed from the
+   *  application specific config file, but to the global KDE config file.
    * @return If the group is not empty and bDeep is false,
-             deleteGroup returns false.
+   *         deleteGroup returns false.
    */
-  bool deleteGroup( const QString& group, bool bDeep = true );
+  bool deleteGroup( const QString& group, bool bDeep = true, bool bGlobal = false );
 
 
   /**
@@ -1184,13 +1186,17 @@ public:
    
    /**
     * Delete all entries in the entire group
+    * @param bGlobal     If @p bGlobal is true, the entries are not removed 
+    *        from the application specific config file, but from the global 
+    *        KDE config file.
     */
-   void deleteGroup();
+   void deleteGroup(bool bGlobal = false);
 
    // The following functions are reimplemented:
    virtual void setDirty(bool b);
    virtual void putData(const KEntryKey &_key, const KEntry &_data, bool _checkGroup = true);
    virtual KEntry lookupData(const KEntryKey &_key) const;
+   virtual void sync();
    
 private:
    // Hide the following members: 
@@ -1204,7 +1210,6 @@ private:
    // The following members are not used.
    virtual QStringList groupList() const { return QStringList(); }
    virtual void rollback(bool) { } 
-   virtual void sync() { }
    virtual void reparseConfiguration() { }
    virtual QMap<QString, QString> entryMap(const QString &) const 
     { return QMap<QString,QString>(); }

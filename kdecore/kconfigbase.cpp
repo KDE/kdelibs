@@ -1021,7 +1021,7 @@ void KConfigBase::deleteEntry( const char *pKey,
   putData(entryKey, aEntryData, true);
 }
 
-bool KConfigBase::deleteGroup( const QString& group, bool bDeep )
+bool KConfigBase::deleteGroup( const QString& group, bool bDeep, bool bGlobal )
 {
   KEntryMap aEntryMap = internalEntryMap(group);
 
@@ -1041,6 +1041,7 @@ bool KConfigBase::deleteGroup( const QString& group, bool bDeep )
 qWarning("Deleting key = %s", aIt.key().mKey.data());
       (*aIt).bDeleted = true;
       (*aIt).bDirty = true;
+      (*aIt).bGlobal = bGlobal;
       (*aIt).mValue = 0;
       putData(aIt.key(), *aIt, checkGroup);
       checkGroup = false;
@@ -1499,9 +1500,9 @@ KConfigGroup::KConfigGroup(KConfigBase *master, const QCString &group)
   aLocaleString = mMaster->aLocaleString;
 }
 
-void KConfigGroup::deleteGroup()
+void KConfigGroup::deleteGroup(bool bGlobal)
 {
-  mMaster->deleteGroup(KConfigBase::group());
+  mMaster->deleteGroup(KConfigBase::group(), false, bGlobal);
 }
 
 void KConfigGroup::setDirty(bool b)
@@ -1518,6 +1519,12 @@ KEntry KConfigGroup::lookupData(const KEntryKey &_key) const
 {
   return mMaster->lookupData(_key);
 }
+
+void KConfigGroup::sync()
+{
+  mMaster->sync();
+}
+
 
 #include "kconfigbase.moc"
 
