@@ -432,6 +432,7 @@ public:
 
     DOMString toString() const;
 
+    void incDOMTreeVersion() { ++m_domtree_version; }
 signals:
     void finishedParsing();
 
@@ -470,6 +471,8 @@ protected:
     QColor m_textColor;
     NodeImpl *m_hoverNode;
     NodeImpl *m_focusNode;
+
+    unsigned int m_domtree_version;
 
     struct IdNameMapping {
         IdNameMapping(unsigned short _start)

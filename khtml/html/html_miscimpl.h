@@ -51,7 +51,7 @@ class HTMLCollectionImpl : public khtml::Shared<HTMLCollectionImpl>
 public:
     enum Type {
         // from HTMLDocument
-        DOC_IMAGES,    // all IMG elements in the document
+        DOC_IMAGES = 0, // all IMG elements in the document
         DOC_APPLETS,   // all OBJECT and APPLET elements
         DOC_FORMS,     // all FORMS
         DOC_LINKS,     // all A _and_ AREA elements with a value for href
@@ -66,7 +66,8 @@ public:
         // from HTMLMap
         MAP_AREAS,
         DOC_ALL,        // "all" elements (IE)
-        NODE_CHILDREN   // first-level children (IE)
+        NODE_CHILDREN,   // first-level children (IE)
+        LAST_TYPE
     };
 
     HTMLCollectionImpl(NodeImpl *_base, int _tagId);
@@ -98,8 +99,6 @@ protected:
     //NodeImpl *current;
     //int currentPos;
 
-    // For firstItem()/nextItem()
-    mutable NodeImpl *currentItem;
     // For nextNamedItem()
     mutable bool idsDone;
 };

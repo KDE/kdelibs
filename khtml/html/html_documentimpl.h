@@ -26,6 +26,7 @@
 #define HTML_DOCUMENTIMPL_H
 
 #include "xml/dom_docimpl.h"
+#include "html/html_miscimpl.h"
 
 #include <qmap.h>
 
@@ -75,6 +76,15 @@ public:
 
     void setAutoFill() { m_doAutoFill = true; }
 
+    struct CollectionInfo {
+        unsigned int version;
+        NodeImpl *current;
+        unsigned int position;
+        unsigned int length;
+        bool haslength;
+    };
+    CollectionInfo & collectionInfo( int type );
+
 protected:
     HTMLElementImpl *bodyElement;
     HTMLElementImpl *htmlElement;
@@ -89,6 +99,7 @@ protected slots:
      */
     void slotHistoryChanged();
 private:
+    CollectionInfo m_collection_info[HTMLCollectionImpl::LAST_TYPE];
     mutable DOMString m_domain;
 };
 

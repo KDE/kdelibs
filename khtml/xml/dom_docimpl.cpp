@@ -218,7 +218,7 @@ QPtrList<DocumentImpl> * DocumentImpl::changedDocuments;
 
 // KHTMLView might be 0
 DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
-    : NodeBaseImpl( new DocumentPtr() )
+    : NodeBaseImpl( new DocumentPtr() ), m_domtree_version(0)
 {
     document->doc = this;
     m_paintDeviceMetrics = 0;

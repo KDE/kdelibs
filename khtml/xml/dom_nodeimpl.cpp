@@ -817,6 +817,7 @@ void NodeImpl::attach()
         m_render->close();
         m_rendererNeedsClose = false;
     }
+    getDocument()->incDOMTreeVersion();
     m_attached = true;
 }
 
@@ -828,6 +829,7 @@ void NodeImpl::detach()
         m_render->detach();
 
     m_render = 0;
+    getDocument()->incDOMTreeVersion();
     m_attached = false;
 }
 
