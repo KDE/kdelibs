@@ -1,4 +1,4 @@
 
-SUBDIRS = application text audio video image
+SUBDIRS = application text audio video image inode
 
 
