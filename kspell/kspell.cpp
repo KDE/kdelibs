@@ -806,8 +806,6 @@ bool KSpell::check( const QString &_buffer )
 
   newbuffer=origbuffer;
 
-  kdDebug(750) << "{" << newbuffer << "}" << endl;
-
   // KProcIO calls check2 when read from ispell
   OUTPUT(check2);
   proc->fputs ("!");
