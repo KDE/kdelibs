@@ -997,7 +997,7 @@ static QString shellQuote( const QString &_str )
 void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, const QString& _point )
 {
     kdDebug(7101) << "FileProtocol::mount _fstype=" << _fstype << endl;
-    QString buffer;
+    QCString buffer;
 
 #ifdef HAVE_VOLMGT
 	/*
@@ -1056,7 +1056,7 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
 
         kdDebug(7101) << buffer << endl;
 
-        system( buffer.ascii() );
+        system( buffer.data() );
 
         QString err = testLogFile( tmp );
         if ( err.isEmpty() )
@@ -1069,7 +1069,7 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
             // Didn't work - or maybe we just got a warning
             QString mp = KIO::findDeviceMountPoint( _dev );
             // Is the device mounted ?
-            if ( !mp.isNull() )
+            if ( !mp.isEmpty() )
             {
                 kdDebug(7101) << "mount got a warning: " << err << endl;
                 warning( err );
@@ -1078,7 +1078,7 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
             }
             else
             {
-                if ( step == 0 )
+                if ( (step == 0) && !_point.isEmpty())
                 {
                     kdDebug(7101) << err << endl;
                     kdDebug(7101) << "Mounting with those options didn't work, trying with only mountpoint" << endl;
@@ -1107,7 +1107,7 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
 
 void FileProtocol::unmount( const QString& _point )
 {
-    QString buffer;
+    QCString buffer;
 
     KTempFile tmpFile;
     QCString tmpFileC = QFile::encodeName(tmpFile.name());
@@ -1196,7 +1196,7 @@ void FileProtocol::unmount( const QString& _point )
 	}
 #else
     buffer.sprintf( "umount %s 2>%s", QFile::encodeName(_point).data(), tmp );
-    system( buffer.ascii() );
+    system( buffer.data() );
 #endif /* HAVE_VOLMGT */
 
     err = testLogFile( tmp );
