@@ -134,7 +134,7 @@ Value DOMCSSStyleDeclaration::tryGet(ExecState *exec, const UString &propertyNam
   }
 
   if (asNumber) {
-    DOM::CSSValue v = const_cast<DOM::CSSStyleDeclaration &>( styleDecl ).getPropertyCSSValue(p);
+    DOM::CSSValue v = styleDecl.getPropertyCSSValue(p);
     if ( !v.isNull() && v.cssValueType() == DOM::CSSValue::CSS_PRIMITIVE_VALUE)
       return Number(static_cast<DOM::CSSPrimitiveValue>(v).getFloatValue(DOM::CSSPrimitiveValue::CSS_PX));
   }
