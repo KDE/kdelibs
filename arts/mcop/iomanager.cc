@@ -170,12 +170,12 @@ void StdIOManager::processOneEvent(bool blocking)
 		gettimeofday(&currenttime,0);
 
 		list<TimeWatcher *>::iterator ti;
-		for(ti = timeList.begin(); ti != timeList.end(); ti++)
-		{
-			while((*ti)->earlier(currenttime))
-				(*ti)->doTick();
 
-			timeval timertime = (*ti)->nextNotify();
+		ti = timeList.begin();
+		while(ti != timeList.end())
+		{
+			TimeWatcher *w = *ti++;
+			timeval timertime = w->advance(currenttime);
 
 			// if that may happen in the next ten seconds
 			if(timertime.tv_sec < currenttime.tv_sec+10)
@@ -249,10 +249,12 @@ void StdIOManager::processOneEvent(bool blocking)
 		gettimeofday(&currenttime,0);
 
 		list<TimeWatcher *>::iterator ti;
-		for(ti = timeList.begin(); ti != timeList.end(); ti++)
+
+		ti = timeList.begin();
+		while(ti != timeList.end())
 		{
-			while((*ti)->earlier(currenttime))
-				(*ti)->doTick();
+			TimeWatcher *w = *ti++;
+			w->advance(currenttime);
 		}
 	}
 
@@ -335,40 +337,62 @@ void StdIOManager::removeTimer(TimeNotify *notify)
 
 		if(w->notify() == notify)
 		{
-			timeList.erase(i);
-			delete w;
-
-			i = timeList.begin();
+			i = timeList.erase(i);
+			w->destroy();
 		}
 		else i++;
 	}
 }
 
 TimeWatcher::TimeWatcher(int milliseconds, TimeNotify *notify)
+	: milliseconds(milliseconds),_notify(notify),active(false),destroyed(false)
 {
-	_notify = notify;
-	this->milliseconds = milliseconds;
+	gettimeofday(&nextNotify,0);
 
-	gettimeofday(&_nextNotify,0);
-
-	_nextNotify.tv_usec += (milliseconds%1000)*1000;
-	_nextNotify.tv_sec += (milliseconds/1000)+(_nextNotify.tv_usec/1000000);
-	_nextNotify.tv_usec %= 1000000;
+	nextNotify.tv_usec += (milliseconds%1000)*1000;
+	nextNotify.tv_sec += (milliseconds/1000)+(nextNotify.tv_usec/1000000);
+	nextNotify.tv_usec %= 1000000;
 }
 
-void TimeWatcher::doTick()
+timeval TimeWatcher::advance(const timeval& currentTime)
 {
-	_nextNotify.tv_usec += (milliseconds%1000)*1000;
-	_nextNotify.tv_sec += (milliseconds/1000)+(_nextNotify.tv_usec/1000000);
-	_nextNotify.tv_usec %= 1000000;
+	active = true;
+	while(earlier(currentTime))
+	{
+		nextNotify.tv_usec += (milliseconds%1000)*1000;
+		nextNotify.tv_sec += (milliseconds/1000)+(nextNotify.tv_usec/1000000);
+		nextNotify.tv_usec %= 1000000;
 
-	_notify->notifyTime();
+		_notify->notifyTime();
+
+		if(destroyed)
+		{
+			delete this;
+		
+			struct timeval never = { 0xffffffff, 0 };
+			return never;
+		}
+	}
+	active = false;
+	return nextNotify;
 }
 
-bool TimeWatcher::earlier(struct timeval reference)
+bool TimeWatcher::earlier(const timeval& reference)
 {
-	if(_nextNotify.tv_sec > reference.tv_sec) return false;
-	if(_nextNotify.tv_sec < reference.tv_sec) return true;
+	if(nextNotify.tv_sec > reference.tv_sec) return false;
+	if(nextNotify.tv_sec < reference.tv_sec) return true;
 
-	return (_nextNotify.tv_usec < reference.tv_usec);
+	return (nextNotify.tv_usec < reference.tv_usec);
+}
+
+void TimeWatcher::destroy()
+{
+	if(active)
+	{
+		destroyed = true;
+	}
+	else
+	{
+		delete this;
+	}
 }

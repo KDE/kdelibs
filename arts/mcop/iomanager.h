@@ -95,14 +95,16 @@ public:
 class TimeWatcher {
 	int milliseconds;
 	TimeNotify *_notify;
-	struct timeval _nextNotify;
+	timeval nextNotify;
+	bool active, destroyed;
 
+	bool earlier(const timeval& reference);
 public:
 	TimeWatcher(int milliseconds, TimeNotify *notify);
-	inline struct timeval nextNotify() { return _nextNotify; }
+
 	inline TimeNotify *notify() { return _notify; };
-	bool earlier(struct timeval reference);
-	void doTick();
+	timeval advance(const timeval& currentTime);
+	void destroy();
 };
 
 class IOManager {
