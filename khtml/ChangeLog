@@ -1,3 +1,17 @@
+2004-02-20  Frerich Raabe  <raabe@kde.org>
+
+	* misc/loader.cpp (DOCLOADER_SECCHECK): Adjusted the macro so that it
+	takes a bool parameter which indicates whether it should check for
+	invalid redirections.
+	(requestImage, requestScript): Use DOCLOADER_SECCHECK(true) now
+	* misc/loader.cpp/.h (requestStyleSheet): Added parameter which tells
+	whether the given URL references the user-defined stylesheet. If so,
+	use DOCLOADER_SECCHECK(false) to disable the check for invalid
+	redirections (it's not useful for the user-defined URL).
+	* khtml_part.cpp (PartStyleSheetLoader ctor): pass true to
+	DocLoader::requestStyleSheet to indicate that the user-stylesheet is
+	loaded. Fixes seemingly ignored user-defined stylesheet. (#69697)
+
 2004-02-17  Germain Garand  <germain@ebooksfrance.org>
 
         * rendering/render_block.cpp (addChildToFlow): first-letter:
