@@ -402,6 +402,7 @@ void KBookmarkMenu::fillBookmarkMenu()
 
     QMap<QString,QString> dynMenui18nMap; // make const
     dynMenui18nMap["netscape"] = i18n("Netscape Bookmarks");
+    dynMenui18nMap["mozilla"] = i18n("Mozilla Bookmarks");
 
     QValueList<QString> keys = dynMenui18nMap.keys();
     QValueList<QString>::const_iterator it;
@@ -410,24 +411,27 @@ void KBookmarkMenu::fillBookmarkMenu()
        QString menuName = dynMenui18nMap[(*it)];
        QPair<bool, QString> info = m_pManager->showDynamicBookmarks((*it));
 
-       if ( info.first && QFile::exists( info.second ) )
-       {
-         if (!haveSep) 
-         {
-            m_parentMenu->insertSeparator();
-            haveSep = true;
-         }
+       if ( !info.first || !QFile::exists( info.second ) )
+          continue;
 
-         KActionMenu * actionMenu = new KActionMenu( menuName, (*it),
-                                                     m_actionCollection, 0L );
-         actionMenu->plug( m_parentMenu );
-         m_actions.append( actionMenu );
-         KBookmarkMenu *subMenu = new KBookmarkMenu( m_pManager, m_pOwner, actionMenu->popupMenu(),
-                                                     m_actionCollection, false,
-                                                     m_bAddBookmark, QString::null );
-         m_lstSubMenus.append(subMenu);
-         connect(actionMenu->popupMenu(), SIGNAL(aboutToShow()), subMenu, SLOT(slotNSLoad()));
+       if (!haveSep) 
+       {
+          m_parentMenu->insertSeparator();
+          haveSep = true;
        }
+
+       KActionMenu * actionMenu = 
+          new KActionMenu( menuName, (*it), m_actionCollection, 0L );
+       actionMenu->plug( m_parentMenu );
+       m_actions.append( actionMenu );
+
+       KBookmarkMenu *subMenu = 
+          new KBookmarkMenu( m_pManager, m_pOwner, actionMenu->popupMenu(),
+                             m_actionCollection, false,
+                             m_bAddBookmark, QString::null );
+       m_lstSubMenus.append(subMenu);
+
+       connect(actionMenu->popupMenu(), SIGNAL(aboutToShow()), subMenu, SLOT(slotNSLoad()));
     }
   }
 
