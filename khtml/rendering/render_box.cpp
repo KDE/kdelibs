@@ -62,7 +62,7 @@ RenderBox::RenderBox(RenderStyle* style)
     m_minWidth = -1;
     m_maxWidth = -1;
     m_x = m_y = m_width = m_height = 0;
-    
+
     CachedImage *i = style->backgroundImage();
     if(i)
     {
@@ -190,16 +190,16 @@ void RenderBox::printBoxDecorations(QPainter *p,int _x, int _y,
     QColor c = m_style->backgroundColor();
 
     int w = width();
-    int h = height() ;	
+    int h = height() + cellTopExtra() + cellBottomExtra();	
     _ty -= cellTopExtra();
-    
+
     int my = MAX(_ty,_y);
-    int mh; 
-    if (_ty<_y) 
+    int mh;
+    if (_ty<_y)
     	mh=MAX(0,h-(_y-_ty));
-    else 
+    else
     	mh = MIN(_h,h);
-    
+
     if(c.isValid())
 	p->fillRect(_tx, my, w, mh, c);
     CachedImage *i = m_style->backgroundImage();
