@@ -278,6 +278,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
 
     m_inStyleRecalc = false;
     m_pendingStylesheets = 0;
+    m_ignorePendingStylesheets = false;
     m_usesDescendantRules = false;
     m_async = true;
     m_hadLoadError = false;
@@ -1024,6 +1025,24 @@ void DocumentImpl::updateDocumentsRendering()
         if (it->isDocumentChanged())
             it->updateRendering();
     }
+}
+
+void DocumentImpl::updateLayout()
+{
+    bool oldIgnore = m_ignorePendingStylesheets;
+
+    if (!haveStylesheetsLoaded()) {
+        m_ignorePendingStylesheets = true;
+        updateStyleSelector();
+    }
+
+    updateRendering();
+
+    // Only do a layout if changes have occurred that make it necessary.
+    if (m_view && renderer() && !renderer()->layouted())
+        m_view->layout();
+
+    m_ignorePendingStylesheets = oldIgnore;
 }
 
 void DocumentImpl::attach()

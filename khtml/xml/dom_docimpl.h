@@ -179,7 +179,7 @@ public:
      * This method returns true if all top-level stylesheets have loaded (including
      * any @imports that they may be loading).
      */
-    bool haveStylesheetsLoaded() { return m_pendingStylesheets <= 0; }
+    bool haveStylesheetsLoaded() { return m_pendingStylesheets <= 0 || m_ignorePendingStylesheets; }
 
     /**
      * Increments the number of pending sheets.  The <link> elements
@@ -226,6 +226,7 @@ public:
     virtual void recalcStyle( StyleChange = NoChange );
     static QPtrList<DocumentImpl> * changedDocuments;
     virtual void updateRendering();
+    void updateLayout();
     static void updateDocumentsRendering();
     khtml::DocLoader *docLoader() { return m_docLoader; }
 
@@ -446,6 +447,7 @@ protected:
     // We use this count of pending sheets to detect when we can begin attaching
     // elements.
     int m_pendingStylesheets;
+    bool m_ignorePendingStylesheets;
 
     CSSStyleSheetImpl *m_elemSheet;
 
