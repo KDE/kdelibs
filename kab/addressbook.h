@@ -365,7 +365,7 @@ public:
     /** Use this method to retrieve the address at the given \a index.
      *  The method is provided for convenience. The address data is
      *  returned in \a address. */
-    AddressBook::ErrorCode getAddress(int index, Address& address);
+    AddressBook::ErrorCode getAddress(int index, Address& address) const;
     /** Returns the number of addresses of this entry. */
     int noOfAddresses() const;
     /** Query the literal, translated name of the field given by its

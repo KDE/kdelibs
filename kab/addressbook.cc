@@ -365,10 +365,10 @@ bool AddressBook::Entry::nameOfField(const char* key, QString& value)
 }
       
 AddressBook::ErrorCode
-AddressBook::Entry::getAddress(int index, Address& address)
+AddressBook::Entry::getAddress(int index, Address& address) const
 {
   // ###########################################################################
-  list<Address>::iterator pos;
+  list<Address>::const_iterator pos;
   // -----
   if(index>=0 && (unsigned)index<addresses.size())
     {
