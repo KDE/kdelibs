@@ -794,9 +794,7 @@ KLauncher::send_service_startup_info( KService::Ptr service, const QCString& sta
     }
     else // non-compliant app ( .desktop file )
     {
-        if( service->mapNotify()) // old .desktop files
-            wmclass = "";
-        else if( service->type() != "Application" )
+        if( service->type() != "Application" )
             return "0";
         else
             wmclass = "0";
