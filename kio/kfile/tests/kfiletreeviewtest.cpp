@@ -37,6 +37,7 @@ testFrame::testFrame():KMainWindow(0,"Test FileTreeView"),
 {
    treeView = new KFileTreeView( this );
    treeView->setDragEnabled( true );
+   treeView->setAcceptDrops( true );
    treeView->setDropVisualizer( true );
 
    /* Connect to see the status bar */
@@ -79,20 +80,20 @@ void testFrame::showPath( KURL &url )
 
 void testFrame::slotPopulateFinished(KFileTreeViewItem *item )
 {
-#if 0
    if( item )
    {
+#if 0
       int cc = item->childCount();
 
       kdDebug() << "setting column 2 of treeview with count " << cc << endl;
 
       item->setText( 1, QString::number( cc ));
+#endif
    }
    else
    {
       kdDebug() << "slotPopFinished for uninitalised item" << endl;
    }
-#endif
 }
 
 void testFrame::slotSetChildCount( KFileTreeViewItem *item, int c )
