@@ -19,9 +19,9 @@
 #ifndef KLISTVIEW_H
 #define KLISTVIEW_H
 
-#include <qvector.h>
 #include <qlistview.h>
 
+#include <qvector.h>
 #include <qlist.h>
 
 class QDragObject;
@@ -134,9 +134,16 @@ public:
   void moveItem(QListViewItem *item, QListViewItem *parent, QListViewItem *after);
 
   /**
-   * @return the last item of this listview.
+   * @return the last item (not child!) of this listview.
+   *
+   * @see lastChild()
    */
   QListViewItem *lastItem() const;
+
+  /**
+   * @return the last child of this listview.
+   */
+  QListViewItem* lastChild () const;
 
   /**
    * For future expansions.
@@ -304,7 +311,7 @@ signals:
    * @param after is the item after which the drop occured (or 0L, if
    * the drop was above all items
    */
-  void dropped(QDropEvent* e, QListViewItem* parent, QListViewItem* after);
+  void dropped (QDropEvent* e, QListViewItem* parent, QListViewItem* after);
 
   /**
    * This signal is emitted when ever the user moves an item in the list via
@@ -317,17 +324,18 @@ signals:
   /**
    * This signal is emitted when ever the user moves an item in the list via
    * DnD.
-   * If more than one item is moved at the same time, parameters afterFirst and
-   * afterNow will reflect what was true before the move.
-   * This differs from @ref moved() so be careful.  All the items will have been
-   * moved before this is emitted in @moved(), which is not true in this method.
+   * If more than one item is moved at the same time, @p afterFirst and
+   * @p afterNow will reflect what was true before the move.
+   * This differs from @ref moved(), so be careful. All the items will have been
+   * moved before @ref moved() is emitted, which is not true in this method. // FIXME
    * @param item the item that was moved
    * @param afterFirst the item that parameter item was in before the move, in the list
    * @param afterNow the item it's currently after.
    *
    **/
-  void moved(QListViewItem *item, QListViewItem *afterFirst, QListViewItem *afterNow);
+  void moved (QListViewItem *item, QListViewItem *afterFirst, QListViewItem *afterNow);
 
+  
   /**
    * This signal is emitted after all the items have been moved. It reports info for
    * each and every item moved, in order.  The first element in @param items associates
@@ -675,7 +683,7 @@ private slots:
    * @internal
    */
   void slotOnItem( QListViewItem *item );
-
+  
   /**
    * Accessory slot for AutoSelect/ChangeCursorOverItem
    * @internal
@@ -689,6 +697,11 @@ private slots:
   void slotAutoSelect();
 
 private:
+  /**
+   * Handle dropEvent when itemsMovable() is set to true.
+   */
+  void movableDropEvent (QListViewItem* parent, QListViewItem* afterme);
+
   /**
    * Where is the nearest QListViewItem that I'm going to drop?
    **/
