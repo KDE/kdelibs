@@ -543,7 +543,8 @@ bool KHTMLPart::closeURL()
   emit nodeActivated(Node());
 
   // make sure before clear() runs, we pop out of a dialog's message loop
-  d->m_view->closeChildDialogs();
+  if ( d->m_view )
+    d->m_view->closeChildDialogs();
 
   return true;
 }
