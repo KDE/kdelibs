@@ -44,7 +44,7 @@ public:
   virtual int newInstance();
 
   virtual bool process(const QCString &fun, const QByteArray &data,
-		       QCString& replyType, QByteArray &replyData);
+                       QCString& replyType, QByteArray &replyData);
 
   bool cookiesPending(const QString &url);
   void addCookies(const QString &url, const QCString &cookieHeader, long windowId);
@@ -63,8 +63,11 @@ protected:
   QTimer *mTimer;
   bool mAdvicePending;
 
- private:
+private:
   virtual int newInstance(QValueList<QCString>) { return 0; }
+  bool cookieMatches(KHttpCookie*, QString, QString, QString);
+  void putCookie(QStringList*, KHttpCookie*, const QValueList<int>*);
+  void saveCookieJar();
 };
 
 #endif
