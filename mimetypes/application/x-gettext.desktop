@@ -33,7 +33,6 @@ Icon=gettext
 Type=MimeType
 MimeType=application/x-gettext
 Patterns=*.po;*.pot;
-X-KDE-PatternsAccuracy=80
 
 [Property::X-KDE-text]
 Type=bool
