@@ -26,9 +26,6 @@
 #include <qshared.h>
 #include <qmap.h>
 #include <qdatastream.h>
-#ifdef Bool
-#error include X11/Xlib.h after Qt and KDE includes
-#endif
 #include <qvariant.h>
 
 #include <ksimpleconfig.h>
