@@ -122,8 +122,7 @@ NodeImpl* HTMLTableElementImpl::setTFoot( HTMLTableSectionElementImpl *s )
     if(foot) {
         replaceChild ( s, foot, exceptioncode );
         r = s;
-    }
-    else if( firstBody )
+    } else if( firstBody )
         r = insertBefore( s, firstBody, exceptioncode );
     else
         r = appendChild( s, exceptioncode );
@@ -136,13 +135,12 @@ NodeImpl* HTMLTableElementImpl::setTBody( HTMLTableSectionElementImpl *s )
     int exceptioncode = 0;
     NodeImpl* r;
 
-    if(!firstBody)
-        firstBody = s;
-
-    if( foot )
-        r = insertBefore( s, foot, exceptioncode );
-    else
+    if(firstBody) {
+        replaceChild ( s, firstBody, exceptioncode );
+        r = s;
+    } else
         r = appendChild( s, exceptioncode );
+    firstBody = s;
 
     return r;
 }
@@ -155,7 +153,7 @@ HTMLElementImpl *HTMLTableElementImpl::createTHead(  )
         head = new HTMLTableSectionElementImpl(docPtr(), ID_THEAD, true /* implicit */);
         if(foot)
             insertBefore( head, foot, exceptioncode );
-        if(firstBody)
+        else if(firstBody)
             insertBefore( head, firstBody, exceptioncode);
         else
             appendChild(head, exceptioncode);
@@ -320,30 +318,32 @@ NodeImpl *HTMLTableElementImpl::addChild(NodeImpl *child)
     kdDebug( 6030 ) << nodeName().string() << "(Table)::addChild( " << child->nodeName().string() << " )" << endl;
 #endif
 
-    switch(child->id())
-    {
-    case ID_CAPTION:
-        return setCaption(static_cast<HTMLTableCaptionElementImpl *>(child));
-        break;
-    case ID_COL:
-    case ID_COLGROUP:
-        if(head || foot || firstBody)
-            return 0;
-	{
-	    int exceptioncode = 0;
-	    return appendChild(child, exceptioncode);
+    int exceptioncode = 0;
+    NodeImpl *retval = appendChild( child, exceptioncode );
+    if ( retval ) {
+	switch(child->id()) {
+	case ID_CAPTION:
+	    if ( !tCaption )
+		tCaption = static_cast<HTMLTableCaptionElementImpl *>(child);
+	    break;
+	case ID_COL:
+	case ID_COLGROUP:
+	    break;
+	case ID_THEAD:
+	    if ( !head )
+		head = static_cast<HTMLTableSectionElementImpl *>(child);
+	    break;
+	case ID_TFOOT:
+	    if ( !foot )
+		foot = static_cast<HTMLTableSectionElementImpl *>(child);
+	    break;
+	case ID_TBODY:
+	    if ( !firstBody )
+		firstBody = static_cast<HTMLTableSectionElementImpl *>(child);
+	    break;
 	}
-    case ID_THEAD:
-        return setTHead(static_cast<HTMLTableSectionElementImpl *>(child));
-        break;
-    case ID_TFOOT:
-        return setTFoot(static_cast<HTMLTableSectionElementImpl *>(child));
-        break;
-    case ID_TBODY:
-        return setTBody(static_cast<HTMLTableSectionElementImpl *>(child));
-        break;
     }
-    return 0;
+    return retval;
 }
 
 void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)

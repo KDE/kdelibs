@@ -123,11 +123,15 @@ void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
     case TABLE_HEADER_GROUP:
 	if ( !head )
 	    head = static_cast<RenderTableSection *>(child);
+	else if ( !firstBody )
+            firstBody = static_cast<RenderTableSection *>(child);
         break;
     case TABLE_FOOTER_GROUP:
-	if ( !foot )
+	if ( !foot ) {
 	    foot = static_cast<RenderTableSection *>(child);
-        break;
+	    break;
+	}
+	// fall through
     case TABLE_ROW_GROUP:
         if(!firstBody)
             firstBody = static_cast<RenderTableSection *>(child);
@@ -291,15 +295,13 @@ void RenderTable::layout()
 	head->setPos(bl, m_height);
 	m_height += head->height();
     }
-    RenderTableSection *body = firstBody;
+    RenderObject *body = firstBody;
     while ( body ) {
-	body->setPos(bl, m_height);
-	m_height += body->height();
-	RenderObject *next = body->nextSibling();
-	if ( next && next->isTableSection() && next != foot )
-	    body = static_cast<RenderTableSection *>(next);
-	else
-	    body = 0;
+	if ( body != head && body != foot && body->isTableSection() ) {
+	    body->setPos(bl, m_height);
+	    m_height += body->height();
+	}
+	body = body->nextSibling();
     }
     if ( foot ) {
 	foot->setPos(bl, m_height);
@@ -566,6 +568,8 @@ void RenderTable::recalcSections()
 	    RenderTableSection *section = static_cast<RenderTableSection *>(child);
 	    if ( !head )
 		head = section;
+	    else if ( !firstBody )
+		firstBody = section;
 	    if ( section->needCellRecalc )
 		section->recalcCells();
 	    break;
@@ -574,6 +578,8 @@ void RenderTable::recalcSections()
 	    RenderTableSection *section = static_cast<RenderTableSection *>(child);
 	    if ( !foot )
 		foot = section;
+	    else if ( !firstBody )
+		firstBody = section;
 	    if ( section->needCellRecalc )
 		section->recalcCells();
 	    break;
