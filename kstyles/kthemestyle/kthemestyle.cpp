@@ -158,7 +158,7 @@ public:
     }
 };
 
-Q_EXPORT_PLUGIN( KThemeStylePlugin )
+KDE_Q_EXPORT_PLUGIN( KThemeStylePlugin )
 
 
 void kDrawWindowsArrow ( QPainter *p, const QStyle* style, QStyle::PrimitiveElement pe, bool down,

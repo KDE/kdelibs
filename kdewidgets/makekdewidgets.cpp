@@ -99,7 +99,7 @@ static const char widgetCreate[] = "         if (key == \"%Class\")\n"
                                     "                return new %ImplClass%ConstructorArgs;\n";
 static const char endCreate[] = "	return 0;\n"
                                  "}\n"
-                                 "Q_EXPORT_PLUGIN(%PluginName)\n";
+                                 "KDE_Q_EXPORT_PLUGIN(%PluginName)\n";
 
 
 static KCmdLineOptions options[] =

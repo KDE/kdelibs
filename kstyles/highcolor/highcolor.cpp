@@ -76,7 +76,7 @@ class HighColorStylePlugin : public QStylePlugin
 		}
 };
 
-Q_EXPORT_PLUGIN( HighColorStylePlugin )
+KDE_Q_EXPORT_PLUGIN( HighColorStylePlugin )
 // ---------------------------------------------------
 
 

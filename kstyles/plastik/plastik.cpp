@@ -147,7 +147,7 @@ class PlastikStylePlugin : public QStylePlugin
         }
 };
 
-Q_EXPORT_PLUGIN( PlastikStylePlugin )
+KDE_Q_EXPORT_PLUGIN( PlastikStylePlugin )
 // -- end --
 
 PlastikStyle::PlastikStyle() : KStyle( AllowMenuTransparency, ThreeButtonScrollBar),

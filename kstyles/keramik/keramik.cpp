@@ -92,7 +92,7 @@ public:
 	}
 };
 
-Q_EXPORT_PLUGIN( KeramikStylePlugin )
+KDE_Q_EXPORT_PLUGIN( KeramikStylePlugin )
 // ---------------------------------------------------
 
 
