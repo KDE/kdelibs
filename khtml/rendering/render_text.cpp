@@ -683,10 +683,7 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
                                  bidiHeight(), baselineOffset(), width, deleteChar, firstLine);
 
     if(m_lines.count() == m_lines.size())
-    {
-        kdDebug( 6040 ) << "resizing TextSlave array!" << endl;
         m_lines.resize(m_lines.size()*2+1);
-    }
 
     m_lines.insert(m_lines.count(), s);
 }
