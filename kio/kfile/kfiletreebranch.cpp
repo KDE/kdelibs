@@ -75,7 +75,7 @@ KFileTreeBranch::KFileTreeBranch( KFileTreeView *parent, const KURL& url,
 void KFileTreeBranch::slotListerStarted( const KURL &url )
 {
    /* set the parent correct if it is zero. */
-   kdDebug( 1201) << "Find parent for " << url.prettyURL() << endl;
+   kdDebug( 250) << "Find parent for " << url.prettyURL() << endl;
 
    KFileItem *fi = find( url );
 
@@ -84,18 +84,18 @@ void KFileTreeBranch::slotListerStarted( const KURL &url )
    if( fi )
    {
       m_currParent = static_cast<KFileTreeViewItem*>( fi->extraData( this ));
-      kdDebug(1201) << "Current parent changed!" << endl;
+      kdDebug(250) << "Current parent changed!" << endl;
    }
 
    if( !fi && url == m_root->url())
    {
       m_currParent = m_root;
-      kdDebug(1201) << "slotListerStarted: Parent is branch-root!" << endl;
+      kdDebug(250) << "slotListerStarted: Parent is branch-root!" << endl;
    }
 
    if( ! m_currParent )
    {
-      kdDebug(1201) << "No parent found in KFileItem for " << url.prettyURL() << endl;
+      kdDebug(250) << "No parent found in KFileItem for " << url.prettyURL() << endl;
    }
 }
 
@@ -105,7 +105,7 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
 {
    /* Put the new items under the current url */
    KFileItemListIterator it( list );
-   kdDebug(1201) << "Adding items !" << endl;
+   kdDebug(250) << "Adding items !" << endl;
    KFileItem *currItem;
    KFileTreeViewItemList treeViewItList;
    
@@ -159,7 +159,7 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
 	 }
 	 else
 	 {
-	    kdDebug(1201) << "stat of " << filename << " failed !" << endl;
+	    kdDebug(250) << "stat of " << filename << " failed !" << endl;
 	 }
       }
       ++it;
@@ -181,24 +181,44 @@ bool KFileTreeBranch::showExtensions( ) const
    return( m_showExtensions );
 }
 
+/*
+ * The signal that tells that a directory was deleted may arrive before the signal
+ * for its children arrive. Thus, we must walk through the children of a dir and
+ * remove them before removing the dir itself.
+ */
 void KFileTreeBranch::slotDeleteItem( KFileItem *it )
 {
-   kdDebug(1201) << "Slot Delete Item hitted" << endl;
 
+   if( !it ) return;
+   kdDebug(250) << "Slot Delete Item hitted for " << it->url().prettyURL() << endl;
+   
    KFileTreeViewItem *kfti = static_cast<KFileTreeViewItem*>(it->extraData(this));
 
    if( kfti )
    {
-      kdDebug(1201) << "Found corresponding KFileTreeViewItem" << endl;
+      kdDebug( 250 ) << "Child count: " << kfti->childCount() << endl;
+      if( kfti->childCount() > 0 )
+      {
+	 KFileTreeViewItem *child = static_cast<KFileTreeViewItem*>(kfti->firstChild());
+      
+	 while( child )
+	 {
+	    kdDebug(250) << "Calling child to be deleted !" << endl;
+	    KFileTreeViewItem *nextChild = static_cast<KFileTreeViewItem*>(child->nextSibling());
+	    slotDeleteItem( child->fileItem());
+	    child = nextChild;
+	 }
+      }
+      
+      kdDebug(250) << "Found corresponding KFileTreeViewItem" << endl;
       delete( kfti );
+      it->removeExtraData( this );
    }
    else
    {
-      kdDebug(1201) << "Error: kfiletreeviewitem: "<< kfti << endl;
+      kdDebug(250) << "Error: kfiletreeviewitem: "<< kfti << endl;
    }
 }
-
-
 
 
 void KFileTreeBranch::slotCanceled()
@@ -209,7 +229,7 @@ void KFileTreeBranch::slotCanceled()
 
 void KFileTreeBranch::slCompleted()
 {
-   kdDebug(1201) << "SlotCompleted hit !" << endl;
+   kdDebug(250) << "SlotCompleted hit !" << endl;
    emit( populateFinished( m_currParent));
 
    /* This is a walk through the children of the last populated directory.
@@ -236,7 +256,7 @@ void KFileTreeBranch::slCompleted()
 	 if( ! m_nextChild )
 	 {
 	    /* This happens if there is no child at all */
-	    kdDebug( 1201 ) << "No children to recuse" << endl;
+	    kdDebug( 250 ) << "No children to recuse" << endl;
 	 }
 // 	 else
 // 	 {
@@ -255,7 +275,7 @@ void KFileTreeBranch::slCompleted()
 	 while( m_nextChild && !m_nextChild->isDir())
 	 {
 	    m_nextChild = static_cast<KFileTreeViewItem*>(static_cast<QListViewItem*>(m_nextChild->nextSibling()));
-	    kdDebug(1201) << "Next child " << m_nextChild << endl;
+	    kdDebug(250) << "Next child " << m_nextChild << endl;
 	 }
 
 	 /* at this point, m_nextChildren is a dir if defined or m_nextChild is zero, both OK. */
@@ -265,7 +285,7 @@ void KFileTreeBranch::slCompleted()
 	    if( kfi )
 	    {
 	       KURL url = kfi->url();
-	       kdDebug(1201) << "Looking for children of <" << url.prettyURL() << ">" << endl;
+	       kdDebug(250) << "Looking for children of <" << url.prettyURL() << ">" << endl;
 	       m_currParent = m_nextChild;
 
 	       /* now switch the nextChild pointer to the next to have the next item when
@@ -275,12 +295,12 @@ void KFileTreeBranch::slCompleted()
 	       if( kfi->isReadable() )
 		  openURL( url, m_wantDotFiles, true );
 	       else
-		  kdDebug(1201) << "Can not recurse to " << url.prettyURL() << endl;
+		  kdDebug(250) << "Can not recurse to " << url.prettyURL() << endl;
 	    }
 	 }
 	 else
 	 {
-	    kdDebug(1201) << "** parsing of children finished" << endl;
+	    kdDebug(250) << "** parsing of children finished" << endl;
 	    m_recurseChildren = false;
 	    m_currParent = 0L;
 	 }
@@ -288,7 +308,7 @@ void KFileTreeBranch::slCompleted()
    }
    else
    {
-      kdDebug(1201) << "skipping to recurse in complete-slot" << endl;
+      kdDebug(250) << "skipping to recurse in complete-slot" << endl;
       m_currParent = 0L;
 
    }
@@ -300,7 +320,7 @@ void KFileTreeBranch::populate( const KURL& url,  KFileTreeViewItem *currItem )
       return;
    m_currParent = currItem;
 
-   kdDebug(1201) << "Populating <" << url.prettyURL() << ">" << endl;
+   kdDebug(250) << "Populating <" << url.prettyURL() << ">" << endl;
 
    /* Recurse to the first row of children of the new files to get info about children */
    m_recurseChildren = true;
