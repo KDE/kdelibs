@@ -19,7 +19,7 @@ PluginSpellCheck::~PluginSpellCheck()
 
 void PluginSpellCheck::slotSpellCheck()
 {
-    qDebug("Plugin parent : %s (%s)", parent()->name(), parent()->className());
+    kdDebug() << "Plugin parent : " << parent()->name() << " (" << parent()->className() << ")" << endl;
     // The parent is assumed to be a NotepadPart
     if ( !parent()->inherits("NotepadPart") )
        KMessageBox::error(0L,"You just called the spell-check action on a wrong part (not NotepadPart)");

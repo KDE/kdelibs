@@ -47,7 +47,7 @@ public:
 Plugin::Plugin( QObject* parent, const char* name )
     : QObject( parent, name )
 {
-  qDebug( className() );
+  kdDebug() << className() << endl;
   //  d = new PluginPrivate();
 }
 

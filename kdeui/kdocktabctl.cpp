@@ -17,13 +17,14 @@
 */
 #include "kdocktabctl.h"
 
-#include <qwidgetstack.h> 
-#include <qlayout.h> 
+#include <qwidgetstack.h>
+#include <qlayout.h>
 #include <qpushbutton.h>
 #include <qpainter.h>
 #include <qapp.h>
 #include <qwmatrix.h>
 #include <qtooltip.h>
+#include <kdebug.h>
 
 //-----------------------------------------------------------------------------
 // private classes and struct declarations
@@ -696,7 +697,7 @@ void KDockTabCtl::removePage( QWidget* widget )
       tabs->hide();
     }
   } else {
-    qDebug("Try delete notexists page %s",widget->name());
+    kdDebug() << "Try delete notexists page " << widget->name() << endl;
   }
 }
 
@@ -1077,7 +1078,7 @@ void KDockTabBar::setCurrentTab( int id, bool allowDisable )
       _currentTab = data->id;
       repaint( false );
 
-      int curx = 2; // _currentTab start here 
+      int curx = 2; // _currentTab start here
       for ( uint k = 0; k < mainData->count(); k++ ){
         KDockTabBar_Private* data  = mainData->at(k);
         if ( data->id == _currentTab ){
@@ -1085,8 +1086,8 @@ void KDockTabBar::setCurrentTab( int id, bool allowDisable )
         }
         curx += data->width;
       }
-      // curx : _currentTab start here 
-      
+      // curx : _currentTab start here
+
       int count;
       switch ( tabPos ){
         case TAB_TOP:
@@ -1190,7 +1191,7 @@ void KDockTabBar::keyPressEvent( QKeyEvent* e )
       if ( fid != -1 )
         setCurrentTab(fid);
       setFocus();
-      qDebug("Left");
+      kdDebug() << "Left" << endl;
       break;
     case Key_Right:
       id++;
@@ -1208,7 +1209,7 @@ void KDockTabBar::keyPressEvent( QKeyEvent* e )
       if ( fid != -1 )
         setCurrentTab(fid);
       setFocus();
-      qDebug("Right");
+      kdDebug() << "Right" << endl;
       break;
     default:
       break;

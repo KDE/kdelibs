@@ -189,7 +189,7 @@ void KBugReport::slotConfigureEmail()
   connect(m_process, SIGNAL(processExited(KProcess *)), this, SLOT(slotSetFrom()));
   if (!m_process->start())
   {
-    qDebug("Couldn't start kcmshell..");
+    kdDebug() << "Couldn't start kcmshell.." << endl;
     delete m_process;
     m_process = 0;
     return;
@@ -254,7 +254,7 @@ void KBugReport::slotOk( void )
 
 QString KBugReport::text()
 {
-    qDebug(m_bgSeverity->selected()->name());
+    kdDebug() << m_bgSeverity->selected()->name() << endl;
   // Prepend the pseudo-headers to the contents of the mail
   QString severity = QString::fromLatin1(m_bgSeverity->selected()->name());
   QString appname = QString::fromLatin1( m_aboutData

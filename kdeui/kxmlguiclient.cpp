@@ -34,7 +34,7 @@ static void dump_xml(const QDomElement& elem)
 {
   // ##### why not use kdDebug here? That would make it possible to turn it on/off via kdebugdialog (Simon)
   // ##### (and why a separate static method? ;-)
-  qDebug("%s", KXMLGUIFactory::elementToXML(elem).latin1());
+  kdDebug() << KXMLGUIFactory::elementToXML(elem) << endl;
 }
 
 class KXMLGUIClientPrivate

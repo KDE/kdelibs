@@ -1996,7 +1996,7 @@ KDevicePropsPage::KDevicePropsPage( KPropertiesDialog *_props ) : KPropsPage( _p
           it != m_devicelist.end(); ++it, ++index ) {
       // WARNING : this works only if indexDevice == 0
       if ( (*it).left( deviceStr.length() ) == deviceStr ) {
-        //qDebug( "found it %d", index );
+        //kdDebug() << "found it " << index << endl;
         slotActivated( index );
         break;
       }

@@ -28,6 +28,7 @@
 #include <qdatastream.h>  //
 #include <qrect.h>        // for clientArea() and edgeClientArea()
 #include <qwmatrix.h>
+#include "kdebug.h"
 #include <qbitmap.h>
 #include <qwhatsthis.h>
 #include <X11/Xlib.h>
@@ -101,7 +102,7 @@ static void createAtoms() {
 	
   atoms[n] = &net_avoid_spec;
 	names[n++] = "_NET_AVOID_SPEC";
-  
+
   atoms[n] = &net_map_notify;
 	names[n++] = "_NET_MAP_NOTIFY";
 
@@ -356,7 +357,7 @@ void KWin::invokeContextHelp()
 
 void KWin::avoid(WId win, AnchorEdge edge)
 {
-//  qDebug("KWin::avoid()");
+//  kdDebug() << "KWin::avoid()" << endl;
 
   Atom avoidAtom = XInternAtom(qt_xdisplay(), "_NET_AVOID_SPEC", False);
 
@@ -377,12 +378,12 @@ void KWin::avoid(WId win, AnchorEdge edge)
   if (0 != status)
     XSetTextProperty(qt_xdisplay(), win, &avoidProp, avoidAtom);
   else
-    qDebug("KWin::avoid(): Couldn't set text property");
+    kdDebug() << "KWin::avoid(): Couldn't set text property" << endl;
 }
 
 void KWin::stopAvoiding(WId win)
 {
-  qDebug("KWin::stopAvoiding()");
+  kdDebug() << "KWin::stopAvoiding()" << endl;
 
   // This should go into createAtoms()
   Atom avoidAtom = XInternAtom(qt_xdisplay(), "_NET_AVOID_SPEC", False);
@@ -396,7 +397,7 @@ void KWin::stopAvoiding(WId win)
   if (0 != status)
     XSetTextProperty(qt_xdisplay(), win, &avoidProp, avoidAtom);
   else
-    qDebug("KWin::avoid(): Couldn't set text property");
+    kdDebug() << "KWin::avoid(): Couldn't set text property" << endl;
 }
 
 QRect KWin::clientArea()
@@ -407,7 +408,7 @@ QRect KWin::clientArea()
 
   if (!c->isAttached())
     if (!c->attach())
-      qDebug("KWin::clientArea(): Could not attach to DCOP");
+      kdDebug() << "KWin::clientArea(): Could not attach to DCOP" << endl;
 
   QCString replyType;
   QByteArray reply, a;
@@ -421,7 +422,7 @@ QRect KWin::clientArea()
 
     } else {
 
-      qDebug("KWin::clientArea(): Unexpected return type from DCOP call");
+      kdDebug() << "KWin::clientArea(): Unexpected return type from DCOP call" << endl;
     }
   }
 
@@ -436,10 +437,10 @@ QRect KWin::edgeClientArea()
 
   if (!c->isAttached())
     if (!c->attach())
-      qDebug("KWin::clientArea(): Could not attach to DCOP");
+      kdDebug() << "KWin::clientArea(): Could not attach to DCOP" << endl;
 
   QCString replyType;
-  QByteArray reply, a; 
+  QByteArray reply, a;
 
   if (c->call("kwin", "KWinInterface", "edgeClientArea()", a, replyType, reply))
 
@@ -450,16 +451,10 @@ QRect KWin::edgeClientArea()
 
     } else {
 
-      qDebug("KWin::edgeClientArea(): Unexpected return type from DCOP call");
+      kdDebug() << "KWin::edgeClientArea(): Unexpected return type from DCOP call" << endl;
     }
 
-  qDebug(
-    "KWin::edgeClientArea(): Rect I'm returning: (%d, %d) -> (%d, %d)",
-    retval.left(),
-    retval.top(),
-    retval.right(),
-    retval.bottom()
-  );
+  kdDebug() << "KWin::edgeClientArea(): Rect I'm returning: (" << retval.left() << ", " << retval.top() << ") -> (" << retval.right() << ", " << retval.bottom() << ")" << endl;
 
   return retval;
 }
@@ -472,7 +467,7 @@ void KWin::updateClientArea()
     client->attach();
 
   if (!client->send("kwin", "KWinInterface", "updateClientArea()", "")) {
-    qDebug("KWin::updateClientArea(): Could not send DCOP signal to kwin");
+    kdDebug() << "KWin::updateClientArea(): Could not send DCOP signal to kwin" << endl;
   }
 }
 
@@ -490,7 +485,7 @@ bool KWin::avoid(WId win)
     return false;
 
   if (avoidListCount != 1) {
-    qDebug("KWin::avoid(): avoid list count != 1");
+    kdDebug() << "KWin::avoid(): avoid list count != 1" << endl;
     return false;
   }
 
@@ -515,7 +510,7 @@ pid_t KWin::pid(WId win)
     return -1;
 
   if (stringListCount != 1) {
-    qDebug("KWin::pid(): string list count != 1");
+    kdDebug() << "KWin::pid(): string list count != 1" << endl;
     return -1;
   }
 
@@ -525,6 +520,6 @@ pid_t KWin::pid(WId win)
 
   XFreeStringList(stringList);
 
-  return pid; 
+  return pid;
 }
 

@@ -50,6 +50,7 @@
 #include <qtextstream.h>
 #include <kinstance.h>
 #include <kstddirs.h>
+#include <kdebug.h>
 
 #include "ltdl.h"
 #include "klauncher_cmds.h"
@@ -906,7 +907,7 @@ static int initXconnection()
         0,
         BlackPixelOfScreen(DefaultScreenOfDisplay(X11display)),
         BlackPixelOfScreen(DefaultScreenOfDisplay(X11display)) );
-    qDebug("kdeinit: opened connection to %s", DisplayString(X11display));
+    kdDebug() << "kdeinit: opened connection to " << DisplayString(X11display) << endl;
     return XConnectionNumber( X11display );
   } else
     fprintf(stderr, "kdeinit: Can't connect to the X Server.\n" \

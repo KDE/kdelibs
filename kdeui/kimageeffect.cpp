@@ -12,6 +12,7 @@
 
 #include <qimage.h>
 #include <stdlib.h>
+#include <kdebug.h>
 
 #include "kimageeffect.h"
 
@@ -673,13 +674,13 @@ QImage& KImageEffect::modulate(QImage &image, QImage &modImage, bool reverse,
     int mod=0;
     unsigned int x1, x2, y1, y2;
     register int x, y;
-    
+
     // for image, we handle only depth 32
     if (image.depth()<32) image = image.convertDepth(32);
-    
+
     // for modImage, we handle depth 8 and 32
     if (modImage.depth()<8) modImage = modImage.convertDepth(8);
-    
+
     unsigned int *colorTable2 = (modImage.depth()==8) ?
 				 modImage.colorTable():0;
     unsigned int *data1, *data2;
@@ -703,7 +704,7 @@ QImage& KImageEffect::modulate(QImage &image, QImage &modImage, bool reverse,
 	  }
 	  else
 	      color1 = *data1;
-	  
+	
 	  if (type == Intensity || type == Contrast) {
               r = qRed(color1);
 	      g = qGreen(color1);
@@ -715,7 +716,7 @@ QImage& KImageEffect::modulate(QImage &image, QImage &modImage, bool reverse,
 		    (channel == Gray) ? qGray(color2) : 0;
 	        mod = mod*factor/50;
 	      }
-	      
+	
 	      if (type == Intensity) {
 	        if (channel == All) {
 	          r += r * factor/50 * qRed(color2)/256;
@@ -726,7 +727,7 @@ QImage& KImageEffect::modulate(QImage &image, QImage &modImage, bool reverse,
 	          r += r * mod/256;
 	          g += g * mod/256;
 	          b += b * mod/256;
-	        }	      
+	        }	
 	      }
 	      else { // Contrast
 	        if (channel == All) {
@@ -740,7 +741,7 @@ QImage& KImageEffect::modulate(QImage &image, QImage &modImage, bool reverse,
 	          b += (b-128) * mod/128;
 	        }
 	      }
-	      
+	
 	      if (r<0) r=0; if (r>255) r=255;
 	      if (g<0) g=0; if (g>255) g=255;
 	      if (b<0) b=0; if (b>255) b=255;
@@ -755,7 +756,7 @@ QImage& KImageEffect::modulate(QImage &image, QImage &modImage, bool reverse,
 	    	    (channel == Blue) ? qBlue(color2) :
 		    (channel == Gray) ? qGray(color2) : 0;
 	      mod = mod*factor/50;
-	      
+	
 	      if (type == Saturation) {
 		  s -= s * mod/256;
 		  if (s<0) s=0; if (s>255) s=255;
@@ -765,7 +766,7 @@ QImage& KImageEffect::modulate(QImage &image, QImage &modImage, bool reverse,
 		while(h<0) h+=360;
 		h %= 360;
 	      }
-	      
+	
 	      clr.setHsv(h, s, v);
 	      a = qAlpha(*data1);
 	      *data1 = clr.rgb() | ((uint)(a & 0xff) << 24);
@@ -970,19 +971,19 @@ QImage& KImageEffect::blend(QImage &image, float initial_intensity,
         }
     }
 
-    else qDebug("not implemented");
+    else kdDebug() << "not implemented" << endl;
 
     return image;
 }
 
 // Not very efficient as we create a third big image...
 //
-QImage& KImageEffect::blend(QImage &image1, QImage &image2, 
+QImage& KImageEffect::blend(QImage &image1, QImage &image2,
 			    GradientType gt, int xf, int yf)
 {
   QImage image3;
 
-  image3 = KImageEffect::unbalancedGradient(image1.size(), 
+  image3 = KImageEffect::unbalancedGradient(image1.size(),
 				    QColor(0,0,0), QColor(255,255,255),
 				    gt, xf, yf, 0);
 
@@ -990,8 +991,8 @@ QImage& KImageEffect::blend(QImage &image1, QImage &image2,
 }
 
 // Blend image2 into image1, using an RBG channel of blendImage
-// 
-QImage& KImageEffect::blend(QImage &image1, QImage &image2, 
+//
+QImage& KImageEffect::blend(QImage &image1, QImage &image2,
 			    QImage &blendImage, RGBComponent channel)
 {
     int r, g, b;
@@ -1008,7 +1009,7 @@ QImage& KImageEffect::blend(QImage &image1, QImage &image2,
 
     // for blendImage, we handle depth 8 and 32
     if (blendImage.depth()<8) blendImage = blendImage.convertDepth(8);
-    
+
     unsigned int *colorTable3 = (blendImage.depth()==8) ?
 				 blendImage.colorTable():0;
 
@@ -1313,7 +1314,7 @@ QImage& KImageEffect::fade(QImage &img, float val, const QColor &color)
                     b = cb + tbl[blue - cb];
                 *data++ = qRgb(r, g, b);
             }
-        }        
+        }
     }
 
     return img;
@@ -1383,7 +1384,7 @@ QImage& KImageEffect::toGray(QImage &img, bool fast)
 // CT 29Jan2000 - desaturation algorithms
 QImage& KImageEffect::desaturate(QImage &img, float desat)
 {
-    
+
     if (desat < 0) desat = 0.;
     if (desat > 1) desat = 1.;
     int pixels = img.depth() > 8 ? img.width()*img.height() :

@@ -145,7 +145,7 @@ bool Kded::process(const QCString &fun, const QByteArray &/*data*/,
 			   QCString &replyType, QByteArray &/*replyData*/)
 {
   if (fun == "recreate()") {
-    qDebug("got a recreate signal!");
+    kdDebug() << "got a recreate signal!" << endl;
     recreate();
     replyType = "void";
     return true;
@@ -157,7 +157,7 @@ bool Kded::process(const QCString &fun, const QByteArray &/*data*/,
 
 void Kded::readDirectory( const QString& _path )
 {
-  // kdebug(KDEBUG_INFO, 7020, QString("reading %1").arg(_path));
+  // kdDebug(7020) << QString("reading %1").arg(_path) << endl;
 
   QDir d( _path, QString::null, QDir::Unsorted, QDir::AccessMask | QDir::Dirs );
   // set QDir ...

@@ -108,7 +108,7 @@ void KCombiView::insertSorted(KFileViewItem *tfirst, uint )
 
 void KCombiView::insertItem( KFileViewItem * )
 {
-    qDebug("KCombiView::insertItem not implemented (as not needed :)");
+    kdDebug() << "KCombiView::insertItem not implemented (as not needed :)" << endl;
 }
 
 void KCombiView::setSorting( QDir::SortSpec sort )

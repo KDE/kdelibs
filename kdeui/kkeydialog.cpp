@@ -35,7 +35,6 @@
 #include <qgroupbox.h>
 
 
-
 #include <kckey.h>
 #include <kconfig.h>
 #include <kglobal.h>
@@ -44,7 +43,7 @@
 #include <kmessagebox.h>
 #include <kxmlgui.h>
 #include <qdom.h>
-
+#include <kdebug.h>
 #include "kkeydialog.h"
 
 #include <kaction.h>
@@ -206,29 +205,29 @@ void KKeyButton::drawButton( QPainter *painter )
   painter->setClipRegion( r2 );
   painter->setBrush( backgroundColor().dark() );
   painter->drawRoundRect( 0, 0, width(), height(), 20, 20 );
-  
+
   painter->setClipping( FALSE );
   if( width() > 12 && height() > 8 )
     qDrawShadePanel( painter, 6, 4, width() - 12, height() - 8,
 		     colorGroup(), TRUE, 1, 0L );
-  if ( editing ) 
+  if ( editing )
   {
     painter->setPen( colorGroup().base() );
     painter->setBrush( colorGroup().base() );
-  } 
-  else 
+  }
+  else
   {
     painter->setPen( backgroundColor() );
     painter->setBrush( backgroundColor() );
   }
   if( width() > 14 && height() > 10 )
     painter->drawRect( 7, 5, width() - 14, height() - 10 );
-  
+
   drawButtonLabel( painter );
 	
   painter->setPen( colorGroup().text() );
   painter->setBrush( NoBrush );
-  if( hasFocus() || editing ) 
+  if( hasFocus() || editing )
   {
     if( width() > 16 && height() > 12 )
       painter->drawRect( 8, 6, width() - 16, height() - 12 );
@@ -249,7 +248,7 @@ void KKeyButton::drawButton( QPainter *painter )
 /************************************************************************/
 KKeyDialog::KKeyDialog( QDict<KKeyEntry> *aKeyDict, QWidget *parent,
 			bool check_against_std_keys)
-  : KDialogBase( parent, 0, TRUE, i18n("Configure Key Bindings"), 
+  : KDialogBase( parent, 0, TRUE, i18n("Configure Key Bindings"),
 		 Help|Default|Ok|Cancel, Ok )
 {
   KKeyChooser *kc =  new KKeyChooser( aKeyDict, this, check_against_std_keys );
@@ -260,7 +259,7 @@ KKeyDialog::KKeyDialog( QDict<KKeyEntry> *aKeyDict, QWidget *parent,
 
 
 
-int KKeyDialog::configureKeys( KAccel *keys, bool save_settings, 
+int KKeyDialog::configureKeys( KAccel *keys, bool save_settings,
 			       QWidget *parent )
 {
   QDict<KKeyEntry> dict = keys->keyDict();
@@ -269,7 +268,7 @@ int KKeyDialog::configureKeys( KAccel *keys, bool save_settings,
   int retcode = kd->exec();
   delete kd;
 
-  if( retcode == Accepted ) 
+  if( retcode == Accepted )
   {
     keys->setKeyDict( dict );
     if (save_settings)
@@ -278,7 +277,7 @@ int KKeyDialog::configureKeys( KAccel *keys, bool save_settings,
   return retcode;
 }
 
-int KKeyDialog::configureKeys( KGlobalAccel *keys, bool save_settings, 
+int KKeyDialog::configureKeys( KGlobalAccel *keys, bool save_settings,
 			       QWidget *parent )
 {
   QDict<KKeyEntry> dict = keys->keyDict();
@@ -288,7 +287,7 @@ int KKeyDialog::configureKeys( KGlobalAccel *keys, bool save_settings,
   int retcode = kd->exec();
   delete kd;
 
-  if( retcode == Accepted ) 
+  if( retcode == Accepted )
   {
     keys->setKeyDict( dict );
     if (save_settings)
@@ -307,7 +306,7 @@ int KKeyDialog::configureKeys( KActionCollection *coll, const QString& file,
   int retcode = kd->exec();
   delete kd;
 
-  if( retcode != Accepted ) 
+  if( retcode != Accepted )
     return retcode;
 
   if (!save_settings)
@@ -440,7 +439,7 @@ KKeyChooser::KKeyChooser( QDict<KKeyEntry> *aKeyDict, QWidget *parent,
   aIt = aKeyIt;
   aIt->toFirst();
   int id = 0;
-  while ( aIt->current() ) 
+  while ( aIt->current() )
   {
     aIt->current()->aConfigKeyCode = aIt->current()->aCurrentKeyCode;
 		
@@ -529,7 +528,7 @@ KKeyChooser::KKeyChooser( QDict<KKeyEntry> *aKeyDict, QWidget *parent,
   cAlt->setText( QString::fromLatin1("ALT") );
   cAlt->setEnabled( FALSE );
   connect( cAlt, SIGNAL( clicked() ), SLOT( altClicked() ) );
-  
+
   bChange = new KKeyButton(fCArea, "key");
   bChange->setEnabled( FALSE );
   connect( bChange, SIGNAL( clicked() ), SLOT( changeKey() ) );
@@ -555,13 +554,13 @@ KKeyChooser::KKeyChooser( QDict<KKeyEntry> *aKeyDict, QWidget *parent,
   lNotConfig->setFrameStyle( QFrame::Panel | QFrame::Sunken );
   if ( wList->count()==0 )
     lNotConfig->setText( i18n("No keys defined") );
-  else 
+  else
   {
     lNotConfig->setText( i18n("Not configurable") );
     lNotConfig->hide();
   }
   lNotConfig->hide();
-  
+
   lInfo = new QLabel(fCArea);
   resize(0,0);
   lInfo->setAlignment( AlignCenter );
@@ -607,10 +606,10 @@ void KKeyChooser::updateAction( int index )
 void KKeyChooser::readGlobalKeys()
 {
   //debug("KKeyChooser::readGlobalKeys()");
-  
+
   globalDict->clear();
-  
-  
+
+
   // Insert all global keys into globalDict
   int *keyCode;
   KConfig pConfig;
@@ -621,7 +620,7 @@ void KKeyChooser::readGlobalKeys()
 	  *keyCode = KAccel::stringToKey( *gIt );
 	  globalDict->insert( gIt.key(), keyCode);
   }
-  
+
   // Only insert global keys which don't appear in the dictionary to be configured
   aIt->toFirst();
   while ( aIt->current() ) {
@@ -635,10 +634,10 @@ void KKeyChooser::readGlobalKeys()
 void KKeyChooser::readStdKeys()
 {
   // debug("KKeyChooser::readStdKeys()");
-  
+
   stdDict->clear();
-  
-  
+
+
   // Insert all standard keys into globalDict
   int *keyCode;
   KConfig pConfig;
@@ -649,7 +648,7 @@ void KKeyChooser::readStdKeys()
     *keyCode = KAccel::stringToKey( *sIt );
     stdDict->insert( sIt.key(), keyCode);
   }
-  
+
   // Only insert std keys which don't appear in the dictionary to be configured
   aIt->toFirst();
   while ( aIt->current() ) {
@@ -1026,9 +1025,9 @@ void KKeyChooser::keyPressEvent( QKeyEvent *e )
   uint kCode = e->key() & ~(SHIFT | CTRL | ALT);
   /* check the given key :
      if it is a non existent key (=0) : keep the old value and say
-     what happened. 
+     what happened.
   */
-  if ( KAccel::keyToString(kCode).isNull() ) 
+  if ( KAccel::keyToString(kCode).isNull() )
   {
     lInfo->setText( i18n("Undefined key") );
     return;
@@ -1085,7 +1084,7 @@ void KKeyChooser::editKey()
 
 void KKeyChooser::editEnd()
 {
-	qDebug("Called editEnd() which relies on eKey widget");
+	kdDebug() << "Called editEnd() which relies on eKey widget" << endl;
 	
 	//uint kCode = KAccel::stringToKey(eKey->text());
 	uint kCode = 0;
@@ -1107,7 +1106,7 @@ bool KKeyChooser::isKeyPresent()
 	
 	gIt.toFirst();
 	while ( gIt.current() ) {
-		qDebug("current %s:%d code %d", gIt.currentKey().ascii(), *gIt.current(), pEntry->aConfigKeyCode);
+		kdDebug() << "current " << gIt.currentKey() << ":" << *gIt.current() << " code " << pEntry->aConfigKeyCode << endl;
 		if ( (unsigned int)(*gIt.current()) == pEntry->aConfigKeyCode && *gIt.current() != 0 ) {
 			QString actionName( gIt.currentKey() );
 			actionName.stripWhiteSpace();
@@ -1135,14 +1134,14 @@ bool KKeyChooser::isKeyPresent()
 
 	sIt.toFirst();
 	while ( sIt.current() ) {
-		qDebug("current %s:%d code %d", sIt.currentKey().ascii(), *sIt.current(), pEntry->aConfigKeyCode);
+		kdDebug() << "current " << sIt.currentKey() << ":" << *sIt.current() << " code " << pEntry->aConfigKeyCode << endl;
 		if ( (unsigned int)(*sIt.current()) == pEntry->aConfigKeyCode && *sIt.current() != 0 ) {
 			QString actionName( sIt.currentKey() );
 			actionName.stripWhiteSpace();
 
 			QString keyName = KAccel::keyToString( *sIt.current() );
 			
-			QString str = 
+			QString str =
 			    i18n("The %1 key combination has already "
 				 "been allocated\n"
 				 "to the standard %2 action.\n"
@@ -1168,7 +1167,7 @@ bool KKeyChooser::isKeyPresent()
 
 			QString keyName = KAccel::keyToString( aIt->current()->aConfigKeyCode );
 			
-			QString str = 
+			QString str =
 			    i18n("The %1 key combination has already "
 				 "been allocated\n"
 				 "to the %2 action.\n"

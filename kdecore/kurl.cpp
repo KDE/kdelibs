@@ -973,7 +973,7 @@ KURL::List KURL::split( const QString& _url )
     // Continue with recursion ?
     if ( u.hasSubURL() )
     {
-      qDebug("Has SUB URL %s", u.ref().local8Bit().data() );
+      kdDebug() << "Has SUB URL " << u.ref().local8Bit().data() << endl;
       tmp = u.ref();
       u.setRef( QString::null );
       lst.append( u );
@@ -1031,7 +1031,7 @@ QString KURL::join( const KURL::List & lst )
 
 QString KURL::filename( bool _ignore_trailing_slash_in_path ) const
 {
-    qDebug("KURL::filename() is obsolete, use KURL::fileName() instead");
+    kdDebug() << "KURL::filename() is obsolete, use KURL::fileName() instead" << endl;
     return fileName(_ignore_trailing_slash_in_path);
 }
 

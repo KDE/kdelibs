@@ -396,7 +396,7 @@ QString KLocale::translate_priv(const char *msgid, const char *fallback) const
 
   if (!msgid || !msgid[0])
   {
-    qDebug("KLocale: trying to look up \"\" in catalouge. Fix the program");
+    kdDebug() << "KLocale: trying to look up \"\" in catalouge. Fix the program" << endl;
     return QString::null;
   }
 

@@ -229,7 +229,7 @@ void
 KSpell::ispellErrors (KProcess *, char *buffer, int buflen)
 {
   buffer [buflen-1] = '\0';
-  //  kdebug (KDEBUG_INFO, 750, "ispellErrors [%s]\n",	  buffer);
+  //  kdDebug(750) << "ispellErrors [" << buffer << "]\n" << endl;
 }
 
 void KSpell::KSpell2 (KProcIO *)
@@ -805,7 +805,7 @@ void KSpell::check2 (KProcIO *)
     //  if (lastline==-1)
     {
       ksdlg->hide();
-      //      kdebug (KDEBUG_INFO, 750, "check2() done");
+      //      kdDebug(750) << "check2() done" << endl;
       newbuffer.truncate (newbuffer.length()-2);
       emitProgress();
       emit done (newbuffer);
@@ -829,7 +829,7 @@ void KSpell::check3 ()
 			 replacement().ascii());
       break;
     case KS_CANCEL:
-    //      kdebug (KDEBUG_INFO, 750, "cancelled\n");
+    //      kdDebug(750) << "cancelled\n" << endl;
       ksdlg->hide();
       emit done (origbuffer);
       return;
@@ -1015,12 +1015,12 @@ KSpell::modalCheck( QString& text )
     modalWidgetHack = new QWidget(0,0,WType_Modal);
     modalWidgetHack->setGeometry(-10,-10,2,2);
 
-    // qDebug("KSpell1");
+    // kdDebug() << "KSpell1" << endl;
     KSpell* spell = new KSpell( 0L, i18n("Spell Checker"), 0 ,0, 0, TRUE, TRUE );
-    // qDebug("KSpell2");
+    // kdDebug() << "KSpell2" << endl;
     modalWidgetHack->show();
     qApp->enter_loop();
-    // qDebug("KSpell3");
+    // kdDebug() << "KSpell3" << endl;
 
     text = modaltext;
     delete spell;
@@ -1029,7 +1029,7 @@ KSpell::modalCheck( QString& text )
 
 void KSpell::slotModalReady()
 {
-    // qDebug("MODAL READY");
+    // kdDebug() << "MODAL READY" << endl;
     ASSERT( m_status == Running );
     connect( this, SIGNAL( done( const QString & ) ), this, SLOT( slotModalDone( const QString & ) ) );
     check( modaltext );
@@ -1037,7 +1037,7 @@ void KSpell::slotModalReady()
 
 void KSpell::slotModalDone( const QString &_buffer )
 {
-    // qDebug("MODAL DONE %s", _buffer );
+    // kdDebug() << "MODAL DONE " << _buffer << endl;
     modaltext = _buffer;
     cleanUp();
 

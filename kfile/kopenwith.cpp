@@ -50,6 +50,7 @@
 #include <klistview.h>
 
 #include "kopenwith.h"
+#include <kdebug.h>
 
 template class QList<QString>;
 
@@ -147,7 +148,7 @@ void KApplicationTree::addDesktopGroup( QString relPath, KAppTreeListItem *item)
       QString exec;
       bool isDir = false;
       KSycocaEntry *p = (*it);
-      if (p->isType(KST_KService)) 
+      if (p->isType(KST_KService))
       {
          KService *service = static_cast<KService *>(p);
          icon = service->icon();
@@ -159,15 +160,15 @@ void KApplicationTree::addDesktopGroup( QString relPath, KAppTreeListItem *item)
          KServiceGroup *serviceGroup = static_cast<KServiceGroup *>(p);
          icon = serviceGroup->icon();
          text = serviceGroup->caption();
-         relPath = serviceGroup->relPath(); 
+         relPath = serviceGroup->relPath();
          isDir = true;
       }
       else
       {
-         qDebug("KServiceGroup: Unexpected object in list!");
+         kdDebug() << "KServiceGroup: Unexpected object in list!" << endl;
          continue;
       }
-  
+
       QPixmap pixmap = SmallIcon( icon );
 
       if (item)

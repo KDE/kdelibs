@@ -38,6 +38,7 @@
 #include <kpopmenu.h>
 #include <kglobalsettings.h>
 #include <kcombobox.h>
+#include <kdebug.h>
 
 static QFontDatabase *fontDataBase = 0;
 
@@ -897,7 +898,7 @@ int KToggleAction::plug( QWidget* widget, int index )
 {
   if ( !widget->inherits("QPopupMenu") && !widget->inherits("KToolBar") )
   {
-    qDebug("Can not plug KToggleAction in %s", widget->className() );
+    kdDebug() << "Can not plug KToggleAction in " << widget->className() << endl;
     return -1;	
   }
 
@@ -1185,7 +1186,7 @@ void KSelectAction::changeItem( int index, const QString& text )
 {
   if ( index < 0 || index >= (int)d->m_list.count() )
   {
-    qDebug("KSelectAction::changeItem Index out of scope");
+    kdDebug() << "KSelectAction::changeItem Index out of scope" << endl;
     return;
   }
 
@@ -1339,7 +1340,7 @@ int KSelectAction::plug( QWidget *widget, int index )
     return containerCount() - 1;
   }
 
-  qDebug("Can not plug KAction in %s", widget->className() );
+  kdDebug() << "Can not plug KAction in " << widget->className() << endl;
   return -1;
 }
 
@@ -1945,7 +1946,7 @@ void KFontSizeAction::setFontSize( int size )
     }
 
     if ( size < 1 || size > 128 ) {
-	qDebug( "KFontSizeAction: Size %i is out of range", size );
+	kdDebug() << "KFontSizeAction: Size " << size << " is out of range" << endl;
 	return;
     }
 
@@ -1999,7 +2000,7 @@ void KFontSizeAction::slotActivated( const QString& size )
 
   if ( size.toInt() < 1 || size.toInt() > 128 )
   {
-    qDebug( "KFontSizeAction: Size %s is out of range", size.latin1() );
+    kdDebug() << "KFontSizeAction: Size " << size << " is out of range" << endl;
     return;
   }
 
@@ -2095,7 +2096,7 @@ int KActionMenu::plug( QWidget* widget, int index )
   }
   else if ( widget->inherits("QPopupMenu") )
   {
-    QPopupMenu* menu = static_cast<QPopupMenu*>( widget ); 
+    QPopupMenu* menu = static_cast<QPopupMenu*>( widget );
     int id;
     if ( !pixmap().isNull() )
       id = menu->insertItem( pixmap(), d->m_popup, -1, index );	
@@ -2622,13 +2623,13 @@ void KActionCollection::slotHighlighted( int id )
   if ( !actionList )
     return;
 
-  //  qDebug( "highlight -- id is %i", id );
+  //  kdDebug() << "highlight -- id is " << id << endl;
 
   QListIterator<KAction> it( *actionList );
   for (; it.current(); ++it )
     if ( it.current()->isPlugged( container, id ) )
     {
-      // qDebug( "action highlighted: %s", it.current()->name() );
+      // kdDebug() << "action highlighted: " << it.current()->name() << endl;
       emit actionHighlighted( it.current() );
       return;
     }

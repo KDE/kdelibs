@@ -25,6 +25,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "kpanelmenu.h"
 #include <qstringlist.h>
 #include <dcopclient.h>
+#include <kdebug.h>
 
 static int panelmenu_get_seq_id()
 {
@@ -52,7 +53,7 @@ KPanelMenu::KPanelMenu(const QPixmap &icon, const QString &title,
 KPanelMenu::KPanelMenu(QObject *parent, const char *name)
   : QObject(parent, name), DCOPObject(name)
 {
-  realObjId = name;  
+  realObjId = name;
 }
 
 
@@ -68,7 +69,7 @@ void KPanelMenu::init(const QPixmap &icon, const QString &title)
 	stream << icon << title;
 	if ( client->call("kicker", "kickerMenuManager", "createMenu(QPixmap,QString)", sendData, replyType, replyData ) ) {
 	  if (replyType != "QCString")
-	    qDebug("error! replyType for createMenu should be QCstring in KPanelMenu::init");
+	    kdDebug() << "error! replyType for createMenu should be QCstring in KPanelMenu::init" << endl;
 	  else {
 	    QDataStream reply( replyData, IO_ReadOnly );
 	    reply >> realObjId;
@@ -119,16 +120,16 @@ KPanelMenu *KPanelMenu::insertMenu(const QPixmap &icon, const QString &text, int
     QDataStream ret(replyData, IO_ReadOnly);
     QCString subid;
     ret >> subid;
-   
+
     QByteArray sendData2;
     QDataStream stream2(sendData2, IO_WriteOnly);
     stream2 << QCString("activated(int)") << client->appId() << subid;
-    client->send("kicker", subid, "connectDCOPSignal(QCString,QCString,QCString)", sendData2); 
- 
+    client->send("kicker", subid, "connectDCOPSignal(QCString,QCString,QCString)", sendData2);
+
     return new KPanelMenu(this, subid);
 }
 
-                                                                                           
+
 int KPanelMenu::insertItem(const QString &text, int id )
 {
     if ( id < 0 )

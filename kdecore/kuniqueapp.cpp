@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
+#include "kdebug.h"
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -75,12 +76,12 @@ KUniqueApplication::start(int& argc, char** argv,
   char result;
   if (0 > pipe(fd))
   {
-     qDebug("KUniqueApplication: pipe() failed!\n");
+     kdDebug() << "KUniqueApplication: pipe() failed!\n" << endl;
      ::exit(255);
   }
   switch(fork()) {
   case -1:
-     qDebug("KUniqueApplication: fork() failed!\n");
+     kdDebug() << "KUniqueApplication: fork() failed!\n" << endl;
      ::exit(255);
      break;
   case 0:
@@ -91,7 +92,7 @@ KUniqueApplication::start(int& argc, char** argv,
         QCString regName = dc->registerAs(rAppName, false);
         if (regName.isEmpty())
         {
-           qDebug("KUniqueApplication: Child can't attach to DCOP.\n");
+           kdDebug() << "KUniqueApplication: Child can't attach to DCOP.\n" << endl;
            result = -1;
            delete dc;	// Clean up DCOP commmunication
            ::write(fd[1], &result, 1);
@@ -123,12 +124,12 @@ KUniqueApplication::start(int& argc, char** argv,
        if (n == 1) break;
        if (n == 0)
        {
-          qDebug("KUniqueApplication: Pipe closed unexpected.\n");
+          kdDebug() << "KUniqueApplication: Pipe closed unexpected.\n" << endl;
           ::exit(255);
        }
        if (errno != EINTR)
        {
-          qDebug("KUniqueApplication: Error reading from pipe.\n");
+          kdDebug() << "KUniqueApplication: Error reading from pipe.\n" << endl;
           ::exit(255);
        }
      }
@@ -140,12 +141,12 @@ KUniqueApplication::start(int& argc, char** argv,
      dc = new DCOPClient();
      if (!dc->attach())
      {
-        qDebug("KUniqueApplication: Parent can't attach to DCOP.\n");
+        kdDebug() << "KUniqueApplication: Parent can't attach to DCOP.\n" << endl;
         delete dc;	// Clean up DCOP commmunication
         ::exit(255);
      }
      if (!dc->isApplicationRegistered(rAppName)) {
-        qDebug("KUniqueApplication: Registering failed!\n");
+        kdDebug() << "KUniqueApplication: Registering failed!\n" << endl;
      }
      QByteArray data, reply;
      QDataStream ds(data, IO_WriteOnly);
@@ -157,13 +158,13 @@ KUniqueApplication::start(int& argc, char** argv,
      QCString replyType;
      if (!dc->call(rAppName, rAppName, "newInstance(QValueList<QCString>)", data, replyType, reply))
      {
-        qDebug("KUniqueApplication: DCOP communication error!");
+        kdDebug() << "KUniqueApplication: DCOP communication error!" << endl;
         delete dc;	// Clean up DCOP commmunication
         ::exit(255);
      }
      if (replyType != "int")
      {
-        qDebug("KUniqueApplication: DCOP communication error!");
+        kdDebug() << "KUniqueApplication: DCOP communication error!" << endl;
         delete dc;	// Clean up DCOP commmunication
         ::exit(255);
      }
@@ -199,12 +200,12 @@ KUniqueApplication::start()
   char result;
   if (0 > pipe(fd))
   {
-     qDebug("KUniqueApplication: pipe() failed!\n");
+     kdDebug() << "KUniqueApplication: pipe() failed!\n" << endl;
      ::exit(255);
   }
   switch(fork()) {
   case -1:
-     qDebug("KUniqueApplication: fork() failed!\n");
+     kdDebug() << "KUniqueApplication: fork() failed!\n" << endl;
      ::exit(255);
      break;
   case 0:
@@ -215,7 +216,7 @@ KUniqueApplication::start()
         QCString regName = dc->registerAs(appName, false);
         if (regName.isEmpty())
         {
-           qDebug("KUniqueApplication: Child can't attach to DCOP.\n");
+           kdDebug() << "KUniqueApplication: Child can't attach to DCOP.\n" << endl;
            result = -1;
            delete dc;	// Clean up DCOP commmunication
            ::write(fd[1], &result, 1);
@@ -247,12 +248,12 @@ KUniqueApplication::start()
        if (n == 1) break;
        if (n == 0)
        {
-          qDebug("KUniqueApplication: Pipe closed unexpected.\n");
+          kdDebug() << "KUniqueApplication: Pipe closed unexpected.\n" << endl;
           ::exit(255);
        }
        if (errno != EINTR)
        {
-          qDebug("KUniqueApplication: Error reading from pipe.\n");
+          kdDebug() << "KUniqueApplication: Error reading from pipe.\n" << endl;
           ::exit(255);
        }
      }
@@ -264,12 +265,12 @@ KUniqueApplication::start()
      dc = new DCOPClient();
      if (!dc->attach())
      {
-        qDebug("KUniqueApplication: Parent can't attach to DCOP.\n");
+        kdDebug() << "KUniqueApplication: Parent can't attach to DCOP.\n" << endl;
         delete dc;	// Clean up DCOP commmunication
         ::exit(255);
      }
      if (!dc->isApplicationRegistered(appName)) {
-        qDebug("KUniqueApplication: Registering failed!\n");
+        kdDebug() << "KUniqueApplication: Registering failed!\n" << endl;
      }
      QByteArray data, reply;
      QDataStream ds(data, IO_WriteOnly);
@@ -279,13 +280,13 @@ KUniqueApplication::start()
      QCString replyType;
      if (!dc->call(appName, appName, "newInstance()", data, replyType, reply))
      {
-        qDebug("KUniqueApplication: DCOP communication error!");
+        kdDebug() << "KUniqueApplication: DCOP communication error!" << endl;
         delete dc;	// Clean up DCOP commmunication
         ::exit(255);
      }
      if (replyType != "int")
      {
-        qDebug("KUniqueApplication: DCOP communication error!");
+        kdDebug() << "KUniqueApplication: DCOP communication error!" << endl;
         delete dc;	// Clean up DCOP commmunication
         ::exit(255);
      }

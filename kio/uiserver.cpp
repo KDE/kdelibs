@@ -776,7 +776,7 @@ int main(int argc, char **argv)
 
     if (!KUniqueApplication::start())
     {
-      qDebug("kio_uiserver is already running!\n");
+      kdDebug() << "kio_uiserver is already running!\n" << endl;
       return (0);
     }
 

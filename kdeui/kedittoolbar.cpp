@@ -40,13 +40,14 @@
 
 #include <qtextstream.h>
 #include <qfile.h>
+#include <kdebug.h>
 
 static void dump_xml(const QDomDocument& doc)
 {
     QString str;
     QTextStream ts(&str, IO_WriteOnly);
     ts << doc;
-    qDebug("%s", str.ascii());
+    kdDebug() << str << endl;
 }
 
 typedef QValueList<QDomElement> ToolbarList;

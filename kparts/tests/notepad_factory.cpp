@@ -36,7 +36,7 @@ QObject* NotepadFactory::create( QObject* parent, const char* name, const char* 
 {
   if ( parent && !parent->inherits("QWidget") )
   {
-    qDebug("NotepadFactory: parent does not inherit QWidget");
+    kdDebug() << "NotepadFactory: parent does not inherit QWidget" << endl;
     return 0L;
   }
 

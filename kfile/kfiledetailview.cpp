@@ -27,6 +27,7 @@
 #include <kfileviewitem.h>
 #include <kglobalsettings.h>
 #include <klocale.h>
+#include <kdebug.h>
 
 #include "kfiledetailview.h"
 #include "config-kfile.h"
@@ -228,7 +229,7 @@ bool KFileDetailView::isSelected( const KFileViewItem *i ) const
     if ( !i )
 	return false;
     KFileListViewItem *item = (KFileListViewItem*) i->viewItem( this );
-    if ( !item ) qDebug("**** RED ALERT , %s has no ListViewItem", i->name().ascii());
+    if ( !item ) kdDebug() << "**** RED ALERT , " << i->name() << " has no ListViewItem" << endl;
     return (item && item->isSelected());
 }
 
@@ -358,12 +359,12 @@ void KFileDetailView::ensureItemVisible( const KFileViewItem *i )
 // we're in multiselection mode
 void KFileDetailView::slotSelectionChanged()
 {
-    qDebug("void KFileDetailView::slotSelectionChanged()");
+    kdDebug() << "void KFileDetailView::slotSelectionChanged()" << endl;
 }
 
 void KFileDetailView::slotSelectionChanged( QListViewItem * )
 {
-    qDebug("void KFileDetailView::slotSelectionChanged( QListViewItem *item )");
+    kdDebug() << "void KFileDetailView::slotSelectionChanged( QListViewItem *item )" << endl;
 }
 
 #include "kfiledetailview.moc"

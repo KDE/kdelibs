@@ -197,7 +197,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
         }
 	// The child process
 	if(!commSetupDoneC())
-	  qDebug("Could not finish comm setup in child!");
+	  kdDebug() << "Could not finish comm setup in child!" << endl;
 
 	// Matthias
 	if (run_mode == DontCare)
@@ -224,7 +224,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
   } else {
 	// the parent continues here
 	if (!commSetupDoneP())  // finish communication socket setup for the parent
-	  qDebug("Could not finish comm setup in parent!");
+	  kdDebug() << "Could not finish comm setup in parent!" << endl;
 
 	// Discard any data for stdin that might still be there
 	input_data = 0;
@@ -664,7 +664,7 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
   if (shell.isEmpty())
     shell = searchShell();
   if (shell.isEmpty()) {
-    qDebug("Could not find a valid shell\n");
+    kdDebug() << "Could not find a valid shell\n" << endl;
     return false;
   }
 
@@ -676,7 +676,7 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
   }
 
   if (!setupCommunication(comm))
-    qDebug("Could not setup Communication!");
+    kdDebug() << "Could not setup Communication!" << endl;
 
   runs = true;
 
@@ -708,7 +708,7 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
         arglist[3] = 0;
 
 	if(!commSetupDoneC())
-	  qDebug("Could not finish comm setup in child!");
+	  kdDebug() << "Could not finish comm setup in child!" << endl;
 
 	// Matthias
 	if (run_mode == DontCare)
@@ -736,7 +736,7 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
 	// the parent continues here
 
 	if (!commSetupDoneP())  // finish communication socket setup for the parent
-	  qDebug("Could not finish comm setup in parent!");
+	  kdDebug() << "Could not finish comm setup in parent!" << endl;
 
 	// Discard any data for stdin that might still be there
 	input_data = 0;

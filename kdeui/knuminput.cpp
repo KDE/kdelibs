@@ -171,7 +171,7 @@ void KNumInput::layout(bool deep)
         p = p->m_next;
     }
 
-//    qDebug("w1 %d w2 %d", w1, w2);
+//    kdDebug() << "w1 " << w1 << " w2 " << w2 << endl;
 }
 
 

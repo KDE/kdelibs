@@ -512,7 +512,7 @@ void KFileDialog::fileHighlighted(const KFileViewItem *i)
 {
     if (i->isDir())
         return;
-    qDebug("** highlighted **");
+    kdDebug() << "** highlighted **" << endl;
     d->url = i->url();
     if ( (ops->mode() & KFile::Files) == KFile::Files )
 	multiSelectionChanged( i );

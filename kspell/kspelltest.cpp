@@ -30,7 +30,7 @@ int main(int argc, char **argv)
     
     KSpell::modalCheck( text );
     
-    qDebug("Returned %s", text.latin1() );
+    kdDebug() << "Returned " << text << endl;
     
     QLabel* l = new QLabel( text, (QWidget*)0 );
     l->show();

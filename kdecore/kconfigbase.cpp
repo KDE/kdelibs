@@ -29,6 +29,7 @@
 
 #include "kconfigbase.h"
 #include "kconfigbackend.h"
+#include "kdebug.h"
 
 KConfigBase::KConfigBase()
   : backEnd(0L), bDirty(false), bLocaleInitialized(false),
@@ -56,8 +57,8 @@ void KConfigBase::setGroup( const QString& pGroup )
   if ( pGroup.isNull() )
     aGroup = "<default>";
   else if (pGroup.find(QString::fromLatin1("Desktop Entry")) != -1) {
-    qDebug("warning, setting Desktop Entry group through KConfig::setGroup() is deprecated.");
-    qDebug("please use KConfig::setDesktopGroup() instead.");
+    kdDebug() << "warning, setting Desktop Entry group through KConfig::setGroup() is deprecated." << endl;
+    kdDebug() << "please use KConfig::setDesktopGroup() instead." << endl;
     abort();
     setDesktopGroup();
   } else

@@ -200,8 +200,7 @@ QString KStandardDirs::findResourceDir( const char *type,
 
 #ifndef NDEBUG
     if(false && type != "locale")
-      qDebug("KStdDirs::findResDir(): can't find \"%s\" in type \"%s\".",
-            filename.ascii(), type);
+      kdDebug() << "KStdDirs::findResDir(): can't find \"" << filename << "\" in type \"" << type << "\"." << endl;
 #endif
 
     return QString::null;
@@ -457,7 +456,7 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
   }
 
 #if 0
-    qDebug("found dirs for resource %s:",type);
+    kdDebug() << "found dirs for resource " << type << ":" << endl;
     for (QStringList::ConstIterator pit = candidates->begin();
 	 pit != candidates->end();
 	 pit++)
@@ -613,18 +612,18 @@ QString KStandardDirs::saveLocation(const char *type,
     QString fullPath = local + dirs->last() + suffix;
     if (stat(fullPath.ascii(), &st) != 0 || !(S_ISDIR(st.st_mode))) {
 	if(!create) {
-	    qDebug("save location %s doesn't exist", fullPath.ascii());
+	    kdDebug() << "save location " << fullPath << " doesn't exist" << endl;
 	    return local;
 	}
 	if(!makeDir(fullPath, 0700)) {
-	    qDebug("failed to create %s", fullPath.ascii());
+	    kdDebug() << "failed to create " << fullPath << endl;
 	    return local;
 	}
     }
     return fullPath;
 
     // I can't think of a case where this happens
-    qDebug("couldn't find save location for type %s", type);
+    kdDebug() << "couldn't find save location for type " << type << endl;
     return local;
 }
 

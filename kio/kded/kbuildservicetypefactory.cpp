@@ -185,7 +185,7 @@ KBuildServiceTypeFactory::savePatternLists(QDataStream &str)
      // Justify to 6 chars with spaces, so that the size remains constant
      // in the database file.
      QString paddedPattern = (*it).leftJustify(6).right(4); // remove leading "*."
-     //kdebug(KDEBUG_INFO, 7020, "%s", QString("FAST : '%1' '%2'").arg(paddedPattern).arg(dict[(*it)]->name()).latin1());
+     //kdDebug(7020) << QString("FAST : '%1' '%2'").arg(paddedPattern).arg(dict[(*it)]->name()) << endl;
      str << paddedPattern;
      str << dict[(*it)]->offset();
      // Check size remains constant
@@ -208,7 +208,7 @@ KBuildServiceTypeFactory::savePatternLists(QDataStream &str)
    it = otherPatterns.begin();
    for ( ; it != otherPatterns.end() ; ++it )
    {
-     //kdebug(KDEBUG_INFO, 7020, "%s", QString("OTHER : '%1' '%2'").arg(*it).arg(dict[(*it)]->name()).latin1());
+     //kdDebug(7020) << QString("OTHER : '%1' '%2'").arg(*it).arg(dict[(*it)]->name()) << endl;
      str << (*it);
      str << dict[(*it)]->offset();
    }

@@ -183,8 +183,8 @@ void KFormulaEdit::redraw(int all)
     return;
   }
 
-  //kdebug(KDEBUG_INFO, 0, "%s", QString(formText).insert(cursorPos, '$').ascii());
-  //kdebug(KDEBUG_INFO, 0, "%s", uglyForm().ascii());
+  //kdDebug(0) << QString(formText).insert(cursorPos, '$') << endl;
+  //kdDebug(0) << uglyForm() << endl;
 
   pm.fill( getFormula()->getBackColor() ?
 	   *getFormula()->getBackColor() : backgroundColor());

@@ -39,6 +39,7 @@
 #include <kurllabel.h>
 #include <kaboutdialog.h>
 #include <kaboutdialog_private.h>
+#include <kdebug.h>
 
 template class QArray<QWidget*>;
 template class QList<KAboutContributor>;
@@ -1302,7 +1303,7 @@ KAboutWidget::KAboutWidget(QWidget* parent, const char* name)
   if( version==0 || cont==0 || logo==0 || author==0 || maintainer==0 )
   {
     // this will nearly never happen (out of memory in about box?)
-    qDebug("KAboutWidget::KAboutWidget: Out of memory.");
+    kdDebug() << "KAboutWidget::KAboutWidget: Out of memory." << endl;
     kapp->quit();
   }
   // -----
@@ -1492,7 +1493,7 @@ KAboutDialog::KAboutDialog(QWidget* parent, const char* name, bool modal)
   if(about==0)
   {
     // this will nearly never happen (out of memory in about box?)
-    qDebug("KAboutDialog::KAboutDialog: Out of memory.");
+    kdDebug() << "KAboutDialog::KAboutDialog: Out of memory." << endl;
     kapp->quit();
   }
   setMainWidget(about);

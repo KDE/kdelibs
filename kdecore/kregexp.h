@@ -34,9 +34,9 @@ class KRegExpPrivate;
  * <pre>
  *  KRegExp ex( "([A-Za-z]+) (.+)" );
  *  ex.match( "42 Torben Weis" );
- *  qDebug( ex.group(0) );
- *  qDebug( ex.group(1) );
- *  qDebug( ex.group(2) );
+ *  kdDebug() << ex.group(0) << endl;
+ *  kdDebug() << ex.group(1) << endl;
+ *  kdDebug() << ex.group(2) << endl;
  * </pre>
  * Output:
  * <pre>

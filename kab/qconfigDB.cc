@@ -56,7 +56,7 @@ void evaluate_assertion(bool cond, const char* file, int line, const char* text)
 {
   if(!cond)
     {
-      qDebug("%s:%i: %s", file, line, text);
+      kdDebug() << file << ":" << line << ": " << text << endl;
     }
 }
 
