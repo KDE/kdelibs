@@ -2998,7 +2998,7 @@ void FuncDeclNode::processFuncDecl(ExecState *exec)
 
   func.put(exec, "length", Number(plen), ReadOnly|DontDelete|DontEnum);
 
-  exec->context().imp()->variableObject().put(exec,ident,func);
+  exec->context().imp()->variableObject().put(exec,ident,func,Internal);
 
   if (body) {
     // hack the scope so that the function gets put as a property of func, and it's scope
