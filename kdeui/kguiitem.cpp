@@ -156,7 +156,7 @@ QString KGuiItem::plainText() const {
 QIconSet KGuiItem::iconSet() const
 {
     KConfigGroup cg ( KGlobal::config(), "KDE" );
-    if( d->m_hasIcon && cg.readBoolEntry( "showIcons", true ) )
+    if( d->m_hasIcon && cg.readBoolEntry( "showIcons", false ) )
     {
         if( !d->m_iconLoaded )
         {
