@@ -37,24 +37,17 @@ class KCrashBookmarkImporter : public QObject
 public:
     KCrashBookmarkImporter( const QString & fileName ) : m_fileName(fileName) {}
     ~KCrashBookmarkImporter() {}
-
     void parseCrashBookmarks( bool del = true );
-
-    // Usual place for crash bookmarks
     static QString crashBookmarksDir( );
-    // Returns the list of crash logs
-    static QStringList getCrashLogs();
-
+    static QStringList getCrashLogs(); // EMPTY!
 signals:
     void newBookmark( const QString & text, const QCString & url, const QString & additionalInfo );
     void newFolder( const QString & text, bool open, const QString & additionalInfo );
     void newSeparator();
     void endFolder();
-
 protected:
     QString m_fileName;
-    QMap<QString, QString> parseCrashLog_noemit( const QString & filename, bool del );
-    void parseCrashLog( QString filename, bool del );
+    void parseCrashLog( QString filename, bool del ); // EMPTY!
 };
 
 /**
@@ -68,8 +61,10 @@ public:
     void setShouldDelete(bool);
     virtual void parse();
     virtual QString findDefaultLocation(bool forSaving = false) const;
+    static QStringList getCrashLogs();
 private:
     bool m_shouldDelete;
+    QMap<QString, QString> parseCrashLog_noemit( const QString & filename, bool del );
 };
 
 #endif

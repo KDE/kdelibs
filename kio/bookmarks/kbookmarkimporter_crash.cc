@@ -45,7 +45,7 @@ void KCrashBookmarkImporter::parseCrashLog( QString /*filename*/, bool /*del*/ )
     ;
 }
 
-ViewMap KCrashBookmarkImporter::parseCrashLog_noemit( const QString & filename, bool del ) 
+ViewMap KCrashBookmarkImporterImpl::parseCrashLog_noemit( const QString & filename, bool del ) 
 {
     QFile f( filename );
     ViewMap views;
@@ -88,6 +88,11 @@ ViewMap KCrashBookmarkImporter::parseCrashLog_noemit( const QString & filename, 
 
 QStringList KCrashBookmarkImporter::getCrashLogs() 
 {
+    return KCrashBookmarkImporterImpl::getCrashLogs();
+}
+
+QStringList KCrashBookmarkImporterImpl::getCrashLogs() 
+{
     QMap<QString, bool> activeLogs;
 
     DCOPClient* dcop = kapp->dcopClient();
@@ -120,7 +125,7 @@ QStringList KCrashBookmarkImporter::getCrashLogs()
         activeLogs[ret] = true;
     }
 
-    QDir d( crashBookmarksDir() );
+    QDir d( KCrashBookmarkImporterImpl().findDefaultLocation() );
     d.setSorting( QDir::Time );
     d.setFilter( QDir::Files );
     d.setNameFilter( "konqueror-crash-*.log" );
@@ -144,14 +149,14 @@ QStringList KCrashBookmarkImporter::getCrashLogs()
     return crashFiles;
 }
 
-void KCrashBookmarkImporter::parseCrashBookmarks( bool del ) 
+void KCrashBookmarkImporterImpl::parse() 
 {
-    QStringList crashFiles = KCrashBookmarkImporter::getCrashLogs();
+    QStringList crashFiles = KCrashBookmarkImporterImpl::getCrashLogs();
     int count = 1;
     for ( QStringList::Iterator it = crashFiles.begin(); it != crashFiles.end(); ++it ) 
     {
         ViewMap views;
-        views = parseCrashLog_noemit( *it, del );
+        views = parseCrashLog_noemit( *it, m_shouldDelete );
         int outerFolder = ( crashFiles.count() > 1 ) && (views.count() > 0);
         if ( outerFolder )
             emit newFolder( QString("Konqueror Window %1").arg(count++), false, "" );
@@ -173,11 +178,13 @@ void KCrashBookmarkImporterImpl::setShouldDelete( bool shouldDelete )
     m_shouldDelete = shouldDelete;
 }
 
-void KCrashBookmarkImporterImpl::parse() 
+void KCrashBookmarkImporter::parseCrashBookmarks( bool del ) 
 {
-    KCrashBookmarkImporter importer( QString::null );
-    setupSignalForwards( &importer, this );
-    importer.parseCrashBookmarks( m_shouldDelete );
+    KCrashBookmarkImporterImpl importer;
+    importer.setFilename( m_fileName );
+    importer.setShouldDelete( del );
+    importer.setupSignalForwards( &importer, this );
+    importer.parse();
 }
 
 QString KCrashBookmarkImporterImpl::findDefaultLocation( bool ) const 
