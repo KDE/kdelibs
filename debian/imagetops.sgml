@@ -73,7 +73,8 @@ manpage.1: manpage.sgml
     <para>This manual page documents briefly the
       <command>&dhpackage;</command> command.</para>
 
-    <para><command>&dhpackage;</command> is the server for KDE's Desktop Communications Protocol.</para>
+    <para><command>&dhpackage;</command> is used to convert images to
+    postcript for printing.</para>
 
   </refsect1>
   <refsect1>
