@@ -927,7 +927,7 @@ void HTMLInputElementImpl::parseAttribute(AttrImpl *attr)
         // ### ignore for the moment
         break;
     case ATTR_ALIGN:
-        addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value() );
+        addHTMLAlignment( attr->value() );
         break;
     case ATTR_WIDTH:
         // ignore this attribute,  do _not_ add
