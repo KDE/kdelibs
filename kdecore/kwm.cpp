@@ -692,8 +692,9 @@ QPixmap KWM::miniIcon(Window w, int width, int height){
     XWMHints *hints = XGetWMHints(qt_xdisplay(),  w);
     if (hints && 
 	(hints->flags & WindowGroupHint)
-	&& hints->window_group != None){
-      return icon(hints->window_group, width, height);
+	&& hints->window_group != None
+	&& hints->window_group != w){
+      return miniIcon(hints->window_group, width, height);
     }
     Window trans = None;
     if (XGetTransientForHint(qt_xdisplay(), w, &trans)){
@@ -755,7 +756,8 @@ QPixmap KWM::icon(Window w, int width, int height){
     XWMHints *hints = XGetWMHints(qt_xdisplay(),  w);
     if (hints && 
 	(hints->flags & WindowGroupHint)
-	&& hints->window_group != None){
+	&& hints->window_group != None
+	&& hints->window_group != w){
       return icon(hints->window_group, width, height);
     }
     Window trans = None;
