@@ -24,6 +24,7 @@
 #define _KAPP_H
 
 // Version macros. Never put this further down.
+#define KDE_VERSION 193
 #define KDE_VERSION_STRING "1.91 Beta >= 20000624"
 #define KDE_VERSION_MAJOR 1
 #define KDE_VERSION_MINOR 9
@@ -743,6 +744,9 @@ public:
 #endif
 
 // $Log$
+// Revision 1.170  2000/06/25 16:51:37  dsweet
+// Doc edits.
+//
 // Revision 1.169  2000/06/24 15:24:29  faure
 // Implemented Waldo's idea. KApplication holds a reference counter:
 // * This counter indicates when to exit the application.
