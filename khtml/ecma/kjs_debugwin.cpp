@@ -387,7 +387,6 @@ bool KJSDebugWin::sourceUnused(KJS::ExecState * /*exec*/, int sourceId)
   if (fragment) {
       m_sourceFragments.erase(sourceId);
       SourceFile *sourceFile = fragment->sourceFile;
-      delete fragment;
       if (sourceFile->hasOneRef()) {
           m_sourceSel->removeItem(sourceFile->index);
           for (int i = sourceFile->index; i < m_sourceSel->count(); i++) {
@@ -395,8 +394,9 @@ bool KJSDebugWin::sourceUnused(KJS::ExecState * /*exec*/, int sourceId)
               m_sourceSelFiles[i] = m_sourceSelFiles[i+1];
           }
           m_sourceSelFiles.erase(m_sourceSel->count());
-          sourceFile->deref();
+          m_sourceSel->removeItem(m_sourceSel->count()-1);
       }
+      delete fragment;
   }
   return (m_mode != Stop);
 }
@@ -506,9 +506,8 @@ void KJSDebugWin::highLight(int sourceId, int line)
       setCode(sourceFile->code, sourceId);
   }
   m_curSourceFile = source->sourceFile;
-
-  if (line >= 0)
-    m_sourceDisplay->setCurrentItem(line+source->baseLine);
+  if (line > 0)
+    m_sourceDisplay->setCurrentItem(line+source->baseLine-1);
   else
     m_sourceDisplay->setCurrentItem(-1);
 }
@@ -590,14 +589,14 @@ void KJSDebugWin::leaveSession()
 void KJSDebugWin::updateFrameList()
 {
   uint frameno;
-  //  m_frameList->setUpdatesEnabled(false);
+  disconnect(m_frameList,SIGNAL(highlighted(int)),this,SLOT(showFrame(int)));
   m_frameList->clear();
   for (frameno = 0; frameno < m_frames.count(); frameno++) {
     m_frameList->insertItem(m_frames.at(frameno)->toString(),frameno);
   }
-  //  m_frameList->setUpdatesEnabled(true);
-  //  m_frameList->triggerUpdate(true);
+  m_frameList->setSelected(m_frameList->count()-1, true);
   highLight(m_frames.last()->sourceId,m_frames.last()->lineno);
+  connect(m_frameList,SIGNAL(highlighted(int)),this,SLOT(showFrame(int)));
 }
 
 bool KJSDebugWin::setBreakpoint(int sourceId, int line)
