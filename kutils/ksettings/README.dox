@@ -1,6 +1,9 @@
 /** 
 
-\page KSettings The KSettings classes
+\namespace KSettings
+
+\short A collection of classes to create configuration dialogs that work over
+component boundaries
 
 <h2>How to use KSettings::Dialog in your application.</h2>
 
@@ -166,8 +169,14 @@ Parent=
 - The group name (id) is the name you use in the .desktop file of the page:
   If your page's .desktop file says "X-KDE-CfgDlgHierarchy=id" then it will be
   inserted as a child of this entry.
-- The Name
-
+- \p Name: The name of the section. It will appear in the listview.
+- \p Comment: A description of what the modules in this section are. It will
+  appear in the place where the KCMs are placed when the user clicks on the item
+  in the listview.
+- \p Icon: An icon for the item.
+- \p Weight: Defines the position in the listview. See X-KDE-Weight above.
+- \p Parent: If this group should be a child of another group write the parent's
+  group id here.
 
 <hr>
 <h3>5. The Pluginselector</h3>
@@ -217,42 +226,50 @@ And this is what the .desktop file looks like:
 \verbatim
 [Desktop Entry]
 Encoding=UTF-8
-Icon=myplugin
 Type=Service
+Icon=<iconname>
 ServiceTypes=KPluginInfo
+
+Name=MyPlugin
+Comment=My plugin is cool and does foo and bar.
+
+X-KDE-PluginInfo-Name=myplugin
 
 X-KDE-PluginInfo-Author=<your name>
 X-KDE-PluginInfo-Email=<your email>
 X-KDE-PluginInfo-Website=http://www.myplugin.org/
-X-KDE-PluginInfo-Name=myplugin
 X-KDE-PluginInfo-Category=CoolPlugins
 X-KDE-PluginInfo-Version=0.1
 X-KDE-PluginInfo-License=GPL
 X-KDE-PluginInfo-EnabledByDefault=true
 X-KDE-PluginInfo-Depends=myotherplugin
-
-Name=MyPlugin
-Comment=My plugin is cool and does foo and bar.
+X-KDE-CfgDlgHierarchy=GroupID
 \endverbatim
-
 
 Explanation:
 mandatory entries:
-- Name
-- Comment
-- X-KDE-PluginInfo-Name is the "internal name" of the plugin.
-- You need to have KPluginInfo in ServiceTypes but of course you may have more
+- leave \p Type and \p Encoding like in the example
+- \p Name
+- \p Comment
+- \p X-KDE-PluginInfo-Name is the "internal name" of the plugin.
+- You need to have \p KPluginInfo in \p ServiceTypes but of course you may have more
   entries in there.
-- leave Type and Encoding like in the example
 
 optional entries:
-- Icon is the icon used for your plugin (it's shown in the pluginselector if you
-  set one)
-- Author and Email is some information about the author of the plugin.
-- Website is the address for a webpage for this plugin
-- Category is used if your application has different categories of plugins.
-- Depends can be used to tell the application that you need to have
+- \p Icon is the icon used for your plugin (it's shown in the pluginselector if you
+  set one).
+- \p X-KDE-PluginInfo-Author and \p X-KDE-PluginInfo-Email is some information about the author of the plugin.
+- \p X-KDE-PluginInfo-Website is the address for a webpage for this plugin.
+- \p X-KDE-PluginInfo-Category is used if your application has different categories of plugins.
+- \p X-KDE-PluginInfo-Version is the version of this plugin.
+- \p X-KDE-PluginInfo-License is the license of this plugin.
+- \p X-KDE-PluginInfo-EnabledByDefault tells the program whether the plugin
+  should be enabled on first startup or not.
+- \p X-KDE-PluginInfo-Depends can be used to tell the application that you need to have
   myotherplugin enabled for your plugin to work.
+- \p X-KDE-CfgDlgHierarchy is used if you use a \p KSettings::Dialog::ConfigurableInline
+  KSettings::Dialog to put the plugin checkbox into the group with the GroupID
+  you set here.
 
 If you have questions contact Matthias Kretz <kretz@kde.org>.
 */
