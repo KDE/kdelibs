@@ -45,8 +45,7 @@ class QTimer;
  * the current working directory, or the last directory where a file has been
  * selected.
  *
- * You can change this behavior by obtaining a pointer to the dialog
- * (@ref fileDialog()) and calling the appropriate methods.
+ * You can change this behavior by using @ref setMode() or @ref setFilter().
  *
  * @short A widget to request a filename/url from the user
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
@@ -101,6 +100,18 @@ public:
      * @see #showLocalProtocol
      */
     void setShowLocalProtocol( bool b );
+
+    /**
+     * Sets the mode of the file dialog.
+     * @see KFileDialog::setMode()
+     */
+    void setMode( unsigned int m );
+    
+    /**
+     * Sets the filter for the file dialog.
+     * @see KFileDialog::setFilter()
+     */
+    void setFilter(const QString& filter);
 
     /**
      * @returns whether local files will be prefixed with file:/ in the

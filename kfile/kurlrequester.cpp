@@ -85,6 +85,7 @@ public:
     KURLRequesterPrivate() {
 	edit = 0L;
 	combo = 0L;
+        fileDialogMode = KFile::File | KFile::ExistingOnly | KFile::LocalOnly;
     }
 
     void setText( const QString& text ) {
@@ -135,6 +136,8 @@ public:
 
     KLineEdit *edit;
     KComboBox *combo;
+    int fileDialogMode;
+    QString fileDialogFilter;
 };
 
 
@@ -255,6 +258,19 @@ void KURLRequester::slotOpenDialog()
     }
 }
 
+void KURLRequester::setMode(unsigned int mode)
+{
+    d->fileDialogMode = mode;
+    if (myFileDialog)
+       myFileDialog->setMode( d->fileDialogMode );
+}
+
+void KURLRequester::setFilter(const QString &filter)
+{
+    d->fileDialogFilter = filter;
+    if (myFileDialog)
+       myFileDialog->setFilter( d->fileDialogFilter );
+}
 
 KFileDialog * KURLRequester::fileDialog() const
 {
@@ -263,9 +279,9 @@ KFileDialog * KURLRequester::fileDialog() const
 	myFileDialog = new KFileDialog( QString::null, QString::null, p,
 					"file dialog", myModal );
 	
-	myFileDialog->setMode( (KFile::Mode) (KFile::File |
-					      KFile::ExistingOnly |
-					      KFile::LocalOnly ));
+	myFileDialog->setMode( d->fileDialogMode );
+        if (!d->fileDialogFilter.isEmpty())
+           myFileDialog->setFilter( d->fileDialogFilter );
     }
 
     return myFileDialog;
