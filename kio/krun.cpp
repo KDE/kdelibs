@@ -323,7 +323,7 @@ pid_t KRun::run( const QString& _cmd )
     QString prefix =
       (QString(getenv("SHELL")).right(3) == "csh") ?
       "setenv LD_PRELOAD %1 ;" :
-      "LD_PRELOAD=%1;";
+      "LD_PRELOAD=%1 ";
 
     proc << prefix.arg(lib);
     kdDebug(7010) << prefix.arg(lib) << endl;
