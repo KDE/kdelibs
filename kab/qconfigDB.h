@@ -155,6 +155,10 @@ public:
   KeyValueMap(const KeyValueMap&); 
   /** The virtual destructor. */
   virtual ~KeyValueMap(); 
+  /** The begin iterator. Use it to iterate over the keys in the map. */
+  StringStringMap::iterator begin();
+  /** The end iterator. */
+  StringStringMap::iterator end();
   /** Debugging aid: returns true if object is OK. */
   bool invariant();
   /** Returns the number of key-value-pairs in the map. */
@@ -432,7 +436,7 @@ protected:
   /** A timer pointer for watching the file. */
   QTimer *timer;
   // ----------------------------------------------------------------------------
-public: 
+public:
   /** The Qt standard constructor. */
   QConfigDB(QWidget* parent=0, const char* name=0);
   /** The virtual destructor. */
@@ -487,7 +491,7 @@ public:
   /** Return whether the db is empty (e.g. the toplevel section is). */
   bool empty();
   /** Return a string describing the version. */
-  static const char* version() { return "1.0alpha $Revision$"; }
+  static const char* version() { return "2.0 $Revision$"; }
   /** Check wether the given file is locked.
    *  The method returns zero if not, a number > zero is the pid of the process
    *  locking the file, a number < zero reports an error and indicates

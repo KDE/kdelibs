@@ -190,6 +190,16 @@ bool KeyValueMap::invariant()
   return true;
 }
 
+StringStringMap::iterator KeyValueMap::begin()
+{
+  return data->begin();
+}
+
+StringStringMap::iterator KeyValueMap::end()
+{
+  return data->end();
+}
+
 unsigned int
 KeyValueMap::size() const
 {

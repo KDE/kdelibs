@@ -33,6 +33,7 @@ class KeyNameMap;
 #include <qstring.h>
 #include <qsize.h>
 #include <qvariant.h>
+#include <qmap.h>
 
 /** The class KabKey is used to select entries out of the database file.
  *  In future, keys might become more complex. */
@@ -49,6 +50,10 @@ protected:
   KabKeyPrivate *d;
 };
 
+class CategoriesMap : public QMap<int, QString>
+{
+};
+
 // -----------------------------------------------------------------------------
 // this will be incremented when kab's file format changes significantly:
 #if defined KAB_FILE_FORMAT
@@ -59,8 +64,9 @@ protected:
   1:  format enhanced for unlimited number of email addresses
   2:  format enhanced by more address fields
   10: format of kab 2
+  11: added categories
 */
-#define KAB_FILE_FORMAT 10
+#define KAB_FILE_FORMAT 11
 
 // -----------------------------------------------------------------------------
 // this defines will contain the program version used for different purposes:
@@ -79,7 +85,7 @@ protected:
 #define KAB_VERSION 2
 #define KAB_MINOR   2
 #define KAB_PATCH   0
-#define KAB_STATE   "beta"
+#define KAB_STATE   "final"
 
 // -----------------------------------------------------------------------------
 /** The class AddressBook implements the base class for the KDE addressbook. 
@@ -400,6 +406,7 @@ public:
     QString user3; /**< The third user-declared field. */
     QString user4; /**< The fourth user-declared field. */    
     QStringList custom;
+    QStringList categories; /**< The categories this entry is assigned to. */
   protected:
     static KeyNameMap *fields;
   };
@@ -514,6 +521,20 @@ public:
   QString getStandardFilename();
   /** Call this to get a telephone type translated to the locale. */
   static QString phoneType(AddressBook::Telephone);
+  /** Query the entry categories defined for this address
+      book. Categories may differ between addressbooks. */
+  ErrorCode categories(CategoriesMap& categories);
+  /** Modify the categories for this addressbook. The map given will replace the 
+      previoulsy stored one. */
+  ErrorCode setCategories(const CategoriesMap& categories);
+  /** Query the real name of a category by its index. */
+  ErrorCode category(int index, QString&);
+  /** Query the category section. This is the "raw" storage of the defined 
+      categories. It is always defined (or will be created if you have an old 
+      file that does not have categories).
+      @see Section
+  */
+  Section* categoriesSection();
   // ----------------------------------------------------------------------------
 protected:
   QConfigDB *config; /**< The configuration database. */

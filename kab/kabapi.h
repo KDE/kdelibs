@@ -180,7 +180,7 @@ protected slots:
   void entrySelected(int);
   /** Capture status messages from book. */
   void setStatusSlot(const QString&);
-    void slotDoubleClicked ( QListBoxItem * );
+  void slotDoubleClicked ( QListBoxItem * );
   signals:
   /** Send status messages. */
   void setStatus(const QString&);
