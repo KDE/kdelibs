@@ -227,6 +227,20 @@ void List::clear()
   hook->prev = hook;
 }
 
+List *List::copy()
+{
+  List *newList = new List();
+  ListIterator e = end();
+  ListIterator it = begin();
+
+  while(it != e) {
+    newList->append(*it);
+    ++it;
+  }
+
+  return newList;
+}
+
 void List::erase(ListNode *n)
 {
   if (n != hook) {

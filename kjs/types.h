@@ -249,7 +249,8 @@ namespace KJS {
    * intermediate results of expression evaluation and cannot be stored
    * as properties of objects.
    *
-   * The class takes care of memory management via reference counting.
+   * The list is explicitly shared. Note that while copy() returns a deep
+   * copy of the list the referenced objects are still shared.
    */
   class List {
     friend class ListIterator;
@@ -290,6 +291,11 @@ namespace KJS {
      * Remove all elements from the list.
      */
     void clear();
+    /**
+     * Returns a deep copy of the list. Ownership is passed to the user
+     * who is responsible for deleting the list then.
+     */
+    List *copy();
     /**
      * @return A @ref KJS::ListIterator pointing to the first element.
      */

@@ -336,16 +336,7 @@ void Context::popScope()
 
 List* Context::copyOfChain()
 {
-  List *newList = new List();
-  ListIterator end = scopeChain->end();
-  ListIterator itr = scopeChain->begin();
-
-  while(itr != end) {
-    newList->append(*itr);
-    ++itr;
-  }
-
-  return newList;
+  return scopeChain->copy();
 }
 
 
