@@ -188,4 +188,11 @@ protected:
 
 };
 
+
+/**
+ * Return the name of the current display, usable for KFM's locking.
+ */
+
+QString displayName();
+
 #endif
