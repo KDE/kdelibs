@@ -2,6 +2,6 @@
 Encoding=UTF-8
 Type=MimeType
 MimeType=application/x-deb
-Icon=tgz
+Icon=deb
 Patterns=*.deb;*.DEB;
 Comment=Debian Package - AR Archive format
