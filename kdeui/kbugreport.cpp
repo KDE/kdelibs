@@ -326,7 +326,7 @@ void KBugReport::slotConfigureEmail()
 {
   if (m_process) return;
   m_process = new KProcess;
-  *m_process << QString::fromLatin1("kcmshell") << QString::fromLatin1("Personalization/email");
+  *m_process << QString::fromLatin1("kcmshell") << QString::fromLatin1("email");
   connect(m_process, SIGNAL(processExited(KProcess *)), SLOT(slotSetFrom()));
   if (!m_process->start())
   {
