@@ -377,6 +377,11 @@ Value GroupNode::evaluate(ExecState *exec) const
   return group->evaluate(exec);
 }
 
+Reference2 GroupNode::evaluateReference(ExecState *exec) const
+{
+  return group->evaluateReference(exec);
+}
+
 // ----------------------------- ElementNode ----------------------------------
 
 void ElementNode::ref()
