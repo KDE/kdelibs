@@ -589,7 +589,7 @@ static void sighandler(int sig)
 }
 
 DCOPServer::DCOPServer()
-    : QObject(0,0), appIds(200), clients(200)
+    : QObject(0,0), appIds(263), clients(263)
 {
     time = 0; // the beginning of time....
 
