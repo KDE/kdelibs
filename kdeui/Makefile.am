@@ -39,7 +39,7 @@ include_HEADERS = kledlamp.h kprogress.h kpanner.h kcolordlg.h kselect.h \
 		kurllabel.h kruler.h kquickhelp.h kcursor.h kaccelmenu.h \
 		klineeditdlg.h kurlcompletion.h kwidgetid.h kthemebase.h \
 		kthemestyle.h kcharselect.h kcolordrag.h kaction.h \
-		kuiactions.h kintlineedit.h
+		kuiactions.h kintlineedit.h kactmenubuilder.h
 
 libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp \
 		kselect.cpp kdatepik.cpp kdatetbl.cpp kfontdialog.cpp \
@@ -55,7 +55,9 @@ libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp \
 		kurllabel.cpp kruler.cpp kquickhelp.cpp kcursor.cpp \
 		kaccelmenu.cpp klineeditdlg.cpp kurlcompletion.cpp \
 		kthemebase.cpp kthemestyle.cpp kcharselect.cpp \
-		kcolordrag.cpp kaction.cpp kuiactions.cpp kintlineedit.cpp
+		kcolordrag.cpp kaction.cpp kuiactions.cpp \
+		kactmenubuilder.cpp kintlineedit.cpp
+		
 
 
 libkdeui_la_METASOURCES = kbutton.moc kbuttonbox.moc kcolorbtn.moc \
