@@ -3,6 +3,9 @@
  * 
  * $Log$
  *
+ * Revision 1.11  1997/09/18 12:47:15  kulow
+ * uups. The error message is not valid for the cpp file
+ *
  * Revision 1.10  1997/09/18 12:16:03  kulow
  * corrected some header dependencies. Removed most of them in drag.h and put
  * them in drag.cpp. Now it should compile even under SunOS 4.4.1 ;)
@@ -211,6 +214,27 @@ Window KDNDWidget::findRootWindow( QPoint & p )
 			  win = children[i];
 			  win_x = x;
 			  win_y = y;
+			  win_h = h;
+			  win_w = w;
+			}
+		}
+    }     
+int (* oldErrorHandler)(Display *, XErrorEvent *) = NULL;
+  delete attribs;
+  */
+  return win;
+}
+
+
+/**
+ * @oldErrorHandler stores the original error handler.
+ */
+static
+int (* oldErrorHandler)(Display *, XErrorEvent *) = 0L;
+
+/**
+ * Errorhandler to be used during DND
+ */
 static
 int myErrorHandler(Display *d, XErrorEvent *e)
 {
@@ -247,49 +271,41 @@ void KDNDWidget::mouseReleaseEvent( QMouseEvent * _mouse )
   Window win = findRootWindow( p );
   printf("************************************************************\n");
   printf("*** win = %ld **** dndLastWindow = %ld ****\n", win, dndLastWindow );
-  /*  if ( dndLastWindow != 0 )
-    {
-	  XEvent Event;
-	  
-	  Event.xclient.type              = ClientMessage;
-	  Event.xclient.display           = kapp->getDisplay();
-	  Event.xclient.message_type      = kapp->getDndLeaveProtocolAtom();
-	  Event.xclient.format            = 32;
-	  Event.xclient.window            = dndLastWindow;
-	  Event.xclient.data.l[0]         = dndType;
-	  Event.xclient.data.l[1]         = 0;
-	  Event.xclient.data.l[2]         = 0;
-	  Event.xclient.data.l[3]         = p.x();
-	  Event.xclient.data.l[4]         = p.y();
-	
-	  XSendEvent( kapp->getDisplay(), dndLastWindow, True, NoEventMask, &Event);
-	  XSync( kapp->getDisplay(), FALSE );	
-    } */
-  
   printf("************************************************************\n");
   
   drag = false;
 /* I commented this out, since it works without (coolo)
+  // Commenting this out will only work with click on focus window managers
+  // releaseMouse();
+  XUngrabPointer(kapp->getDisplay(),CurrentTime);
+*/
+
   printf("Ungarbbed\n");
   
-	  XEvent Event;
+  // If we found a destination for the drop
    if ( win != 0 )
-	  Event.xclient.type              = ClientMessage;
-	  Event.xclient.display           = kapp->getDisplay();
-	  Event.xclient.message_type      = kapp->getDndProtocolAtom();
-	  Event.xclient.format            = 32;
-	  Event.xclient.window            = dndLastWindow;
-	  Event.xclient.data.l[0]         = dndType;
-	  Event.xclient.data.l[1]         = 0;
-	  Event.xclient.data.l[2]         = 0;
-	  Event.xclient.data.l[3]         = p.x();
-	  Event.xclient.data.l[4]         = p.y();
+  // if ( dndLastWindow != 0 )
+    {	
+          XWindowAttributes Wattr;
 
-	  printf("1\n");
-	  XSendEvent( kapp->getDisplay(), dndLastWindow, True, NoEventMask, &Event );	
-	  printf("2\n");
-	  XSync( kapp->getDisplay(), FALSE );	
-	  printf("3\n");
+          XGetWindowAttributes(kapp->getDisplay(), win, &Wattr);
+          if (Wattr.map_state != IsUnmapped)
+          { 
+	printf("Sending event\n");
+	
+	      XEvent Event;
+	  
+	      Event.xclient.type              = ClientMessage;
+              if (oldErrorHandler == NULL)
+	      Event.xclient.message_type      = kapp->getDndProtocolAtom();
+	      Event.xclient.format            = 32;
+	      Event.xclient.window            = dndLastWindow;
+	      Event.xclient.data.l[0]         = dndType;
+	      Event.xclient.data.l[1]         = 0;
+	      Event.xclient.data.l[2]         = 0;
+	      Event.xclient.data.l[3]         = p.x();
+              oldErrorHandler = NULL;
+
               // Switch to "friendly" error handler.
 	  delete dndData;
 	          oldErrorHandler = XSetErrorHandler(myErrorHandler);
@@ -331,48 +347,6 @@ void KDNDWidget::mouseMoveEvent( QMouseEvent * _mouse )
   // QPoint p = mapToGlobal( _mouse->pos() );
   QPoint p = QCursor::pos();
 
-  
-  /*
-  if ( win != dndLastWindow && dndLastWindow != 0 )
-  {
-	  XEvent Event;
-	  
-	  Event.xclient.type              = ClientMessage;
-	  Event.xclient.display           = kapp->getDisplay();
-	  Event.xclient.message_type      = kapp->getDndLeaveProtocolAtom();
-	  Event.xclient.format            = 32;
-	  Event.xclient.window            = dndLastWindow;
-	  Event.xclient.data.l[0]         = dndType;
-	  Event.xclient.data.l[1]         = 0;
-	  Event.xclient.data.l[2]         = 0;
-	  Event.xclient.data.l[3]         = p.x();
-	  Event.xclient.data.l[4]         = p.y();
-
-	  XSendEvent( kapp->getDisplay(), dndLastWindow, True, NoEventMask, &Event);
-	  XSync( kapp->getDisplay(), FALSE );	
-    }
-  
-  if ( win != 0 )
-    {	
-	  XEvent Event;
-	  
-	  Event.xclient.type              = ClientMessage;
-	  Event.xclient.display           = kapp->getDisplay();
-	  Event.xclient.message_type      = kapp->getDndEnterProtocolAtom();
-	  Event.xclient.format            = 32;
-	  Event.xclient.window            = win;
-	  Event.xclient.data.l[0]         = dndType;
-	  Event.xclient.data.l[1]         = 0;
-	  Event.xclient.data.l[2]         = 0;
-	  Event.xclient.data.l[3]         = p.x();
-	  Event.xclient.data.l[4]         = p.y();
-
-	  XSendEvent( kapp->getDisplay(), win, True, NoEventMask, &Event);
-	  XSync( kapp->getDisplay(), FALSE );	
-    }
-  
-  dndLastWindow = win;
-  */
   /* Window root;
   root = DefaultRootWindow( kapp->getDisplay() );  
   Window win = findRootWindow( p );
@@ -385,6 +359,10 @@ void KDNDWidget::mouseMoveEvent( QMouseEvent * _mouse )
   dndIcon->move( p2 );
   // dndIcon->show();
 }
+
+void KDNDWidget::rootDropEvent( int _x, int _y )
+  if (oldErrorHandler == NULL)
+  Window root;
   Window parent;
   Window *children;
   unsigned int cchildren;
@@ -415,6 +393,8 @@ void KDNDWidget::mouseMoveEvent( QMouseEvent * _mouse )
 	  Event.xclient.display           = kapp->getDisplay();
 	  Event.xclient.message_type      = kapp->getDndRootProtocolAtom();
 	  Event.xclient.format            = 32;
+	  Event.xclient.window            = children[ i ];
+  oldErrorHandler = NULL;
 	  Event.xclient.data.l[1]         = (long) time( 0L );
 	  Event.xclient.data.l[2]         = 0;
 	  Event.xclient.data.l[3]         = _x;
