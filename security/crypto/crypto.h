@@ -39,6 +39,7 @@
 #include <qdatetime.h>
 
 class KURLLabel;
+class KURLRequester;
 class KCryptoConfig;
 class QGridLayout;
 class KSSLCertBox;
@@ -239,8 +240,6 @@ public slots:
   void slotGeneratePersonal();
   void slotUseEGD();
   void slotUseEFile();
-  void slotChooseEGD();
-  void slotChooseOSSL();
   void slotCWcompatible();
   void slotCWus();
   void slotCWexp();
@@ -293,11 +292,10 @@ private:
   QCheckBox *mWarnOnEnter, *mWarnOnLeave;
 
   /* EGD stuff */
-  QPushButton *mChooseEGD;
-  QLabel    *mEGDLabel;
-  QLineEdit *mEGDPath;
-  QCheckBox *mUseEGD;
-  QCheckBox *mUseEFile;
+  QLabel        *mEGDLabel;
+  KURLRequester *mEGDPath;
+  QCheckBox     *mUseEGD;
+  QCheckBox     *mUseEFile;
 
   /* CipherWizards */
   QPushButton *mCWall, *mCWus, *mCWexp, *mCWcompatible;
@@ -323,9 +321,8 @@ private:
   QLabel *yValidFrom, *yValidUntil;
   KURLLabel *untilDate;
 
-  QLabel    *oInfo;
-  QLineEdit *oPath;
-  QPushButton *oFind;
+  QButtonGroup  *oInfo;
+  KURLRequester *oPath;
   QPushButton *oTest;
   QPtrList<OtherCertItem> otherCertDelList;
   QPtrList<YourCertItem> yourCertDelList;

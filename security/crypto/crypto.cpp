@@ -60,6 +60,7 @@
 #include <kurllabel.h>
 #include <kmdcodec.h>
 #include <kgenericfactory.h>
+#include <kurlrequester.h>
 
 #include <qframe.h>
 
@@ -147,7 +148,7 @@ YourCertItem::YourCertItem( QListView *view, QString pkcs, QString pass, QString
     m_module = module;
 KSSLX509Map cert(name);
     QString tmp = cert.getValue("CN");
-    tmp.replace(QRegExp("\n.*"), "");
+    tmp.replace(QRegExp("\n.*"), QString::null);
     setText(0, tmp);
     setText(1, cert.getValue("Email"));
     _pkcs = pkcs;
@@ -176,10 +177,10 @@ KSSLX509Map mcert(name);
 QString tmp;
     setText(0, mcert.getValue("O"));
     tmp = mcert.getValue("OU");
-    tmp.replace(QRegExp("\n.*"), "");
+    tmp.replace(QRegExp("\n.*"), QString::null);
     setText(1, tmp);
     tmp = mcert.getValue("CN");
-    tmp.replace(QRegExp("\n.*"), "");
+    tmp.replace(QRegExp("\n.*"), QString::null);
     setText(2, tmp);
     _name = name;
     _cert = cert;
@@ -352,12 +353,9 @@ QString whatstr;
                                                        KDialog::spacingHint());
   mEGDLabel = new QLabel(i18n("Path to EGD:"), egdframe);
   grid2->addWidget(mEGDLabel, 0, 0);
-  mEGDPath = new QLineEdit(egdframe);
+  mEGDPath = new KURLRequester(egdframe);
+  grid2->addWidget(mEGDPath, 0, 1);
   connect(mEGDPath, SIGNAL(textChanged(const QString&)), SLOT(configChanged()));
-  grid2->addWidget(mEGDPath, 1, 0);
-  mChooseEGD = new QPushButton("...", egdframe);
-  connect(mChooseEGD, SIGNAL(clicked()), SLOT(slotChooseEGD()));
-  grid2->addWidget(mChooseEGD, 1, 1);
   grid->addWidget(egdframe, 4, 1);
   whatstr = i18n("If selected, OpenSSL will be asked to use the entropy gathering"
           " daemon (EGD) for initializing the pseudo-random number generator.");
@@ -367,7 +365,6 @@ QString whatstr;
   QWhatsThis::add(mUseEFile, whatstr);
   whatstr = i18n("Enter the path to the socket created by the entropy gathering"
                 " daemon (or the entropy file) here.");
-  QWhatsThis::add(mChooseEGD, whatstr);
   QWhatsThis::add(mEGDPath, whatstr);
   whatstr = i18n("Click here to browse for the EGD socket file.");
   QWhatsThis::add(mEGDPath, whatstr);
@@ -413,20 +410,18 @@ QString whatstr;
 
 #ifdef HAVE_SSL
   tabOSSL = new QFrame(this);
-  grid = new QGridLayout(tabOSSL, 6, 6, KDialog::marginHint(), KDialog::spacingHint());
+  QBoxLayout *vbox = new QVBoxLayout(tabOSSL, KDialog::marginHint(), KDialog::spacingHint());
 
-  oInfo = new QLabel(i18n("Enter the path to your OpenSSL shared libraries:"), tabOSSL);
-  grid->addMultiCellWidget(oInfo, 0, 0, 0, 5);
-  oPath = new QLineEdit(tabOSSL);
-  grid->addMultiCellWidget(oPath, 1, 1, 0, 4);
-  oFind = new QPushButton(i18n("..."), tabOSSL);
-  grid->addWidget(oFind, 1, 5);
-  oTest = new QPushButton(i18n("&Test..."), tabOSSL);
-  grid->addWidget(oTest, 2, 5);
+  oInfo = new QVButtonGroup(i18n("Path to your OpenSSL shared libraries"), tabOSSL);
+  vbox->addWidget(oInfo);
+  oPath = new KURLRequester(oInfo);
+  vbox->addWidget(oPath);
+  oTest = new QPushButton(i18n("&Test..."), oInfo);
+  vbox->addWidget(oTest);
   connect(oTest, SIGNAL(clicked()), SLOT(slotTestOSSL()));
+  vbox->addStretch();
 
   connect(oPath, SIGNAL(textChanged(const QString&)), SLOT(configChanged()));
-  connect(oFind, SIGNAL(clicked()), SLOT(slotChooseOSSL()));
 
 #endif
 
@@ -479,8 +474,8 @@ QString whatstr;
   grid->addWidget(yourSSLPass, 5, 5);
 
   grid->addMultiCellWidget(new KSeparator(KSeparator::HLine, tabYourSSLCert), 6, 6, 0, 5);
-  ySubject = KSSLInfoDlg::certInfoWidget(tabYourSSLCert, QString(""));
-  yIssuer = KSSLInfoDlg::certInfoWidget(tabYourSSLCert, QString(""));
+  ySubject = KSSLInfoDlg::certInfoWidget(tabYourSSLCert, QString(QString::null));
+  yIssuer = KSSLInfoDlg::certInfoWidget(tabYourSSLCert, QString(QString::null));
   grid->addMultiCellWidget(ySubject, 7, 11, 0, 2);
   grid->addMultiCellWidget(yIssuer, 7, 11, 3, 5);
   whatstr = i18n("This is the information known about the owner of the certificate.");
@@ -627,8 +622,8 @@ QString whatstr;
       otherSSLRemove->setEnabled(false);
 
   grid->addMultiCellWidget(new KSeparator(KSeparator::HLine, tabOtherSSLCert), 8, 8, 0, 5);
-  oSubject = KSSLInfoDlg::certInfoWidget(tabOtherSSLCert, QString(""));
-  oIssuer = KSSLInfoDlg::certInfoWidget(tabOtherSSLCert, QString(""));
+  oSubject = KSSLInfoDlg::certInfoWidget(tabOtherSSLCert, QString(QString::null));
+  oIssuer = KSSLInfoDlg::certInfoWidget(tabOtherSSLCert, QString(QString::null));
   grid->addMultiCellWidget(oSubject, 9, 13, 0, 2);
   grid->addMultiCellWidget(oIssuer, 9, 13, 3, 5);
   whatstr = i18n("This is the information known about the owner of the certificate.");
@@ -656,7 +651,7 @@ QString whatstr;
   grid->addWidget(cacheUntil, 18, 0);
   connect(cachePerm, SIGNAL(clicked()), SLOT(slotPermanent()));
   connect(cacheUntil, SIGNAL(clicked()), SLOT(slotUntil()));
-  untilDate = new KURLLabel("", "", tabOtherSSLCert);
+  untilDate = new KURLLabel(QString::null, QString::null, tabOtherSSLCert);
   grid->addWidget(untilDate, 18, 1);
   connect(untilDate, SIGNAL(leftClickedURL()), SLOT(slotDatePick()));
   untilDate->setEnabled(false);
@@ -720,8 +715,8 @@ QString whatstr;
   connect(caSSLRestore, SIGNAL(clicked()), SLOT(slotCARestore()));
   grid->addWidget(caSSLRestore, 2, 7);
 
-  caSubject = KSSLInfoDlg::certInfoWidget(tabSSLCA, QString(""));
-  caIssuer = KSSLInfoDlg::certInfoWidget(tabSSLCA, QString(""));
+  caSubject = KSSLInfoDlg::certInfoWidget(tabSSLCA, QString(QString::null));
+  caIssuer = KSSLInfoDlg::certInfoWidget(tabSSLCA, QString(QString::null));
   grid->addMultiCellWidget(caSubject, 8, 14, 0, 3);
   grid->addMultiCellWidget(caIssuer, 8, 14, 4, 7);
 
@@ -871,12 +866,12 @@ void KCryptoConfig::load()
     mUseEFile->setChecked(true);
     slotUseEFile();
   }
-  mEGDPath->setText(config->readEntry("EGDPath", ""));
+  mEGDPath->setURL(config->readEntry("EGDPath", QString::null));
 
 
 #ifdef HAVE_SSL
   config->setGroup("OpenSSL");
-  oPath->setText(config->readEntry("Path", ""));
+  oPath->setURL(config->readEntry("Path", QString::null));
 #endif
 
   config->setGroup("SSLv2");
@@ -921,10 +916,10 @@ void KCryptoConfig::load()
     if ((*i).isEmpty() || *i == "<default>") continue;
     pcerts->setGroup(*i);
     YourCertItem *j = new YourCertItem(yourSSLBox,
-                     pcerts->readEntry("PKCS12Base64", ""),
-                     pcerts->readEntry("Password", ""),
+                     pcerts->readEntry("PKCS12Base64", QString::null),
+                     pcerts->readEntry("Password", QString::null),
                      *i, this );
-    j->setPassCache("");
+    j->setPassCache(QString::null);
   }
 
   setAuthCertLists();
@@ -938,7 +933,7 @@ void KCryptoConfig::load()
   else
     defCertBG->setButton(defCertBG->id(defDont));
 
-  QString whichCert = config->readEntry("DefaultCert", "");
+  QString whichCert = config->readEntry("DefaultCert", QString::null);
   defCertBox->setCurrentItem(0);
   for (int i = 0; i < defCertBox->count(); i++) {
      if (defCertBox->text(i) == whichCert) {
@@ -960,7 +955,7 @@ void KCryptoConfig::load()
        aa = KSSLCertificateHome::AuthPrompt;
     HostAuthItem *j = new HostAuthItem(hostAuthList,
                                        *i,
-                                       authcfg->readEntry("certificate", ""),
+                                       authcfg->readEntry("certificate", QString::null),
                                        this );
     j->setAction(aa);
     j->setOriginalName(*i);
@@ -978,7 +973,7 @@ void KCryptoConfig::load()
     if (!sigcfg.hasKey("x509")) continue;
                 new CAItem(caList,
                      (*i),
-                     sigcfg.readEntry("x509", ""),
+                     sigcfg.readEntry("x509", QString::null),
                      sigcfg.readBoolEntry("site", false),
                      sigcfg.readBoolEntry("email", false),
                      sigcfg.readBoolEntry("code", false),
@@ -1021,7 +1016,7 @@ void KCryptoConfig::save()
   config->setGroup("EGD");
   config->writeEntry("UseEGD", mUseEGD->isChecked());
   config->writeEntry("UseEFile", mUseEFile->isChecked());
-  config->writeEntry("EGDPath", mEGDPath->text());
+  config->writeEntry("EGDPath", mEGDPath->url());
 
 #if 0  // NOT IMPLEMENTED IN KDE 2.0
   config->writeEntry("OnMixed", mWarnOnMixed->isChecked());
@@ -1034,7 +1029,7 @@ void KCryptoConfig::save()
 
 #ifdef HAVE_SSL
   config->setGroup("OpenSSL");
-  config->writeEntry("Path", oPath->text());
+  config->writeEntry("Path", oPath->url());
 #endif
 
   int ciphercount = 0;
@@ -1148,7 +1143,7 @@ void KCryptoConfig::save()
     config->writeEntry("AuthMethod", "none");
 
   if (defCertBox->currentItem() == 0)
-     config->writeEntry("DefaultCert", "");
+     config->writeEntry("DefaultCert", QString::null);
   else config->writeEntry("DefaultCert", defCertBox->currentText());
 
   for (HostAuthItem *x = authDelList.first(); x != 0; x = authDelList.next()) {
@@ -1223,10 +1218,9 @@ void KCryptoConfig::defaults()
   mUseEGD->setChecked(false);
   mUseEFile->setChecked(false);
   mEGDLabel->setEnabled(false);
-  mChooseEGD->setEnabled(false);
   mEGDPath->setEnabled(false);
-  mEGDPath->setText("");
-  oPath->setText("");
+  mEGDPath->setURL(QString::null);
+  oPath->setURL(QString::null);
 
   defCertBG->setButton(defCertBG->id(defDont));
 #endif
@@ -1344,7 +1338,7 @@ void KCryptoConfig::slotExportCert() {
 OtherCertItem *x = static_cast<OtherCertItem *>(otherSSLBox->selectedItem());
    if (x) {
      policies->setGroup(x->getSub());
-     KSSLCertificate *cert = KSSLCertificate::fromString(policies->readEntry("Certificate", "").local8Bit());
+     KSSLCertificate *cert = KSSLCertificate::fromString(policies->readEntry("Certificate", QString::null).local8Bit());
      if (cert) {
         KCertExport kce;
         kce.setCertificate(cert);
@@ -1373,7 +1367,7 @@ OtherCertItem *x = static_cast<OtherCertItem *>(otherSSLBox->selectedItem());
   if (!x) return;
 
   policies->setGroup(x->getSub());
-  KSSLCertificate *cert = KSSLCertificate::fromString(policies->readEntry("Certificate", "").local8Bit());
+  KSSLCertificate *cert = KSSLCertificate::fromString(policies->readEntry("Certificate", QString::null).local8Bit());
 
   if (!cert) {
     KMessageBox::error(this, i18n("Error obtaining the certificate."), i18n("SSL"));
@@ -1459,7 +1453,7 @@ QDateTime qdt = x->getExpires();
 
 void KCryptoConfig::slotOtherCertSelect() {
 OtherCertItem *x = static_cast<OtherCertItem *>(otherSSLBox->selectedItem());
-QString iss = "";
+QString iss = QString::null;
    if (x) {
       otherSSLExport->setEnabled(true);
       otherSSLVerify->setEnabled(true);
@@ -1469,7 +1463,7 @@ QString iss = "";
       cacheUntil->setEnabled(true);
       policies->setGroup(x->getSub());
 
-      KSSLCertificate *cert = KSSLCertificate::fromString(policies->readEntry("Certificate", "").local8Bit());
+      KSSLCertificate *cert = KSSLCertificate::fromString(policies->readEntry("Certificate", QString::null).local8Bit());
 
       if (cert) {
          QPalette cspl;
@@ -1497,8 +1491,8 @@ QString iss = "";
          untilDate->setEnabled(x && !x->isPermanent());
          delete cert;
       } else {
-         validFrom->setText("");
-         validUntil->setText("");
+         validFrom->setText(QString::null);
+         validUntil->setText(QString::null);
       }
 
       switch(x->getPolicy()) {
@@ -1528,14 +1522,14 @@ QString iss = "";
       policyPrompt->setChecked(false);
       cachePerm->setEnabled(false);
       cacheUntil->setEnabled(false);
-      validFrom->setText("");
-      validUntil->setText("");
-      untilDate->setText("");
+      validFrom->setText(QString::null);
+      validUntil->setText(QString::null);
+      untilDate->setText(QString::null);
       untilDate->setEnabled(false);
    }
 
 
-   oSubject->setValues(x ? x->getSub() : QString(""));
+   oSubject->setValues(x ? x->getSub() : QString(QString::null));
    oIssuer->setValues(iss);
 
 }
@@ -1587,7 +1581,7 @@ TryImportPassAgain:
 
    new YourCertItem(yourSSLBox,
                     cert->toString(),
-                    "",  // the password - don't store it yet!
+                    QString::null,  // the password - don't store it yet!
                     name,
                     this );
 
@@ -1693,7 +1687,7 @@ QString iss;
 
    // update the info
    iss = pkcs->getCertificate()->getIssuer();
-   ySubject->setValues(x ? x->getName() : QString(""));
+   ySubject->setValues(x ? x->getName() : QString(QString::null));
    yIssuer->setValues(iss);
          QPalette cspl;
          KSSLCertificate *cert = pkcs->getCertificate();
@@ -1761,7 +1755,7 @@ QString iss;
    } else {
    }
 
-   ySubject->setValues(x ? x->getName() : QString(""));
+   ySubject->setValues(x ? x->getName() : QString(QString::null));
    yIssuer->setValues(iss);
 }
 
@@ -1894,16 +1888,16 @@ QString certFile = KFileDialog::getOpenFileName(QString::null, "application/x-x5
 
 		if (certtext.contains("-----BEGIN CERTIFICATE-----")) {
 			qf.reset();
-			certtext = "";
+			certtext = QString::null;
 			while (!qf.atEnd()) {
 				QString xx;
 				qf.readLine(xx, qf.size());
 				certtext += xx;
 			}
-			certtext = certtext.replace(QRegExp("-----BEGIN CERTIFICATE-----"), "");
-			certtext = certtext.replace(QRegExp("-----END CERTIFICATE-----"), "");
+			certtext = certtext.replace(QRegExp("-----BEGIN CERTIFICATE-----"), QString::null);
+			certtext = certtext.replace(QRegExp("-----END CERTIFICATE-----"), QString::null);
 			certtext = certtext.stripWhiteSpace();
-			certtext = certtext.replace(QRegExp("\n"), "");
+			certtext = certtext.replace(QRegExp("\n"), QString::null);
 		} else {
 			// Must [could?] be DER
 			qf.close();
@@ -2014,7 +2008,7 @@ void KCryptoConfig::slotCARestore() {
     if (!sigcfg.hasKey("x509")) continue;
                 new CAItem(caList,
                      (*i),
-                     sigcfg.readEntry("x509", ""),
+                     sigcfg.readEntry("x509", QString::null),
                      sigcfg.readBoolEntry("site", false),
                      sigcfg.readBoolEntry("email", false),
                      sigcfg.readBoolEntry("code", false),
@@ -2030,10 +2024,10 @@ void KCryptoConfig::slotCAItemChanged() {
 CAItem *x = static_cast<CAItem *>(caList->selectedItem());
  if (x) {
     caSSLRemove->setEnabled(true);
-    caSubject->setValues(x ? x->getName() : QString(""));
+    caSubject->setValues(x ? x->getName() : QString(QString::null));
     KSSLCertificate *cert = KSSLCertificate::fromString(x->getCert().local8Bit());
     if (!cert) {
-       caIssuer->setValues(QString(""));
+       caIssuer->setValues(QString(QString::null));
        caSite->setEnabled(false);
        caEmail->setEnabled(false);
        caCode->setEnabled(false);
@@ -2055,8 +2049,8 @@ CAItem *x = static_cast<CAItem *>(caList->selectedItem());
     caSite->setEnabled(false);
     caEmail->setEnabled(false);
     caCode->setEnabled(false);
-    caSubject->setValues(QString(""));
-    caIssuer->setValues(QString(""));
+    caSubject->setValues(QString(QString::null));
+    caIssuer->setValues(QString(QString::null));
  }
 }
 
@@ -2076,8 +2070,8 @@ CAItem *x = static_cast<CAItem *>(caList->selectedItem());
 
 void KCryptoConfig::slotNewHostAuth() {
     HostAuthItem *j = new HostAuthItem(hostAuthList,
-                                       "",
-                                       "",
+                                       QString::null,
+                                       QString::null,
                                        this );
     j->setAction(KSSLCertificateHome::AuthSend);
     hostAuthList->setSelected(j, true);
@@ -2189,27 +2183,12 @@ configChanged();
 void KCryptoConfig::slotAuthCombo() {
 HostAuthItem *x = static_cast<HostAuthItem *>(hostAuthList->selectedItem());
 
-if (x) {
-  if (hostCertBox->currentItem() == 0)
-    x->setCertName("");
-  else x->setCertName(hostCertBox->currentText());
-  configChanged();
-}
-}
-
-
-
-void KCryptoConfig::slotChooseEGD() {
-  QString newFile = KFileDialog::getOpenFileName();
-  if (newFile.length() > 0)
-    mEGDPath->setText(newFile);
-}
-
-
-void KCryptoConfig::slotChooseOSSL() {
-  QString newFile = KFileDialog::getExistingDirectory();
-  if (newFile.length() > 0)
-    oPath->setText(newFile);
+  if (x) {
+    if (hostCertBox->currentItem() == 0)
+      x->setCertName(QString::null);
+    else x->setCertName(hostCertBox->currentText());
+    configChanged();
+  }
 }
 
 
@@ -2242,7 +2221,6 @@ void KCryptoConfig::slotUseEGD() {
   }
   mEGDLabel->setText(i18n("Path to EGD:"));
   mEGDPath->setEnabled(mUseEGD->isChecked());
-  mChooseEGD->setEnabled(mUseEGD->isChecked());
   mEGDLabel->setEnabled(mUseEGD->isChecked());
   configChanged();
 }
@@ -2254,7 +2232,6 @@ void KCryptoConfig::slotUseEFile() {
   }
   mEGDLabel->setText(i18n("Path to entropy file:"));
   mEGDPath->setEnabled(mUseEFile->isChecked());
-  mChooseEGD->setEnabled(mUseEFile->isChecked());
   mEGDLabel->setEnabled(mUseEFile->isChecked());
   configChanged();
 }
@@ -2398,7 +2375,7 @@ bool noneDef, noneHost;
         static_cast<HostAuthItem *>(hostAuthList->firstChild());
                                                               x;
              x = static_cast<HostAuthItem *>(x->nextSibling())) {
-     QString newValue = "";
+     QString newValue = QString::null;
      for (int i = 1; i < hostCertBox->count(); i++) {
         if (hostCertBox->text(i) == x->getCertName()) {
            newValue = x->getCertName();
