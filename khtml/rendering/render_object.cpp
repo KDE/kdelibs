@@ -379,13 +379,8 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
         QPointArray quad(4);
         p->setPen(Qt::NoPen);
         p->setBrush(c);
-#if QT_VERSION < 300
-	ASSERT(x2>x1);
-	ASSERT(y2>y1);
-#else
 	Q_ASSERT(x2>x1);
 	Q_ASSERT(y2>y1);
-#endif
 	if (adjbw1==0 && adjbw2 == 0)
 	  {
             p->drawRect(x1,y1,x2-x1,y2-y1);
@@ -421,7 +416,7 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
 			 x2, y1+QMAX(-adjbw1,0));
             break;
         }
-	p->drawPolygon(quad);
+	p->drawConvexPolygon(quad);
         break;
     }
 
