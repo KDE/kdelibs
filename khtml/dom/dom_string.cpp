@@ -138,7 +138,7 @@ const QChar &DOMString::operator [](unsigned int i) const
 {
     static const QChar nullChar = 0;
 
-    if(!impl || i > impl->l ) return nullChar;
+    if(!impl || i >= impl->l ) return nullChar;
 
     return *(impl->s+i);
 }
@@ -146,8 +146,7 @@ const QChar &DOMString::operator [](unsigned int i) const
 int DOMString::find(const QChar c, int start) const
 {
     unsigned int l = start;
-    if(!impl) return -1;
-    if( l > impl->l ) return -1;
+    if(!impl || l >= impl->l ) return -1;
     while( l < impl->l )
     {
 	if( *(impl->s+l) == c ) return l;
@@ -181,6 +180,8 @@ DOMString DOMString::split(unsigned int pos)
 
 bool DOMString::percentage(int &_percentage) const
 {
+    if(!impl || !impl->l) return false;
+
     if ( *(impl->s+impl->l-1) != QChar('%'))
        return false;
 
