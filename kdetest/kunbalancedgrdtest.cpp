@@ -151,7 +151,7 @@ myTopWidget::myTopWidget (QWidget *parent, const char *name=0)
 
 void myTopWidget::rebalance()
 {
-  itime = time.elapsed();
+  otime = time.elapsed();
 
   QString val; val.sprintf("Balance: X = %3d; Y = %3d", 
 			   xSlider->value(), ySlider->value());
@@ -159,10 +159,10 @@ void myTopWidget::rebalance()
   bLabel->setText(val);
   grds->setBalance(xSlider->value(), ySlider->value());
 
-  if (itime - otime > 500)
+  if ((otime - itime )> 500)
     grds->repaint(false);
 
-  otime = time.elapsed();
+  itime = time.elapsed();
 }
 
 int main(int argc, char **argv)
