@@ -38,7 +38,10 @@ void queryApplications()
 	    printf( "%s\n", (*it).data() );
 
     if ( !dcop->isAttached() )
-	qFatal( "server not accessible" );
+    {
+	qWarning( "server not accessible" );
+        exit(1);
+    }
 }
 
 void queryObjects( const char* app )
@@ -52,7 +55,10 @@ void queryObjects( const char* app )
 	    printf( "%s\n", (*it).data() );
     }
     if ( !ok )
-	qFatal( "application '%s' not accessible", app );
+    {
+	qWarning( "application '%s' not accessible", app );
+	exit(1);
+    }
 }
 
 void queryFunctions( const char* app, const char* obj )
@@ -63,7 +69,10 @@ void queryFunctions( const char* app, const char* obj )
 	printf( "%s\n", (*it).data() );
     }
     if ( !ok )
-	qFatal( "object '%s' in application '%s' not accessible", obj, app );
+    {
+	qWarning( "object '%s' in application '%s' not accessible", obj, app );
+        exit(1);
+    }
 }
 
 
@@ -115,7 +124,10 @@ void callFunction( const char* app, const char* obj, const char* func, int argc,
     int right = f.find( ')' );
 
     if ( right <  left )
-	qFatal( "parentheses do not match" );
+    {
+	qWarning( "parentheses do not match" );
+        exit(1);
+    }
 
     if ( left < 0 ) {
 	// try to get the interface from the server
@@ -125,7 +137,10 @@ void callFunction( const char* app, const char* obj, const char* func, int argc,
 	if ( !ok && argc == 0 )
 	    goto doit;
 	if ( !ok )
-	    qFatal( "object not accessible" );
+        {
+	    qWarning( "object not accessible" );
+            exit(1);
+        }
 	for ( QCStringList::Iterator it = funcs.begin(); it != funcs.end(); ++it ) {
 	    int l = (*it).find( '(' );
 	    int s = (*it).find( ' ');
@@ -142,7 +157,10 @@ void callFunction( const char* app, const char* obj, const char* func, int argc,
 	    }
 	}
 	if ( realfunc.isEmpty() )
-	    qFatal("no such function");
+	{
+	    qWarning("no such function");
+            exit(1);
+	}
 	f = realfunc;
 	left = f.find( '(' );
 	right = f.find( ')' );
@@ -175,7 +193,8 @@ void callFunction( const char* app, const char* obj, const char* func, int argc,
     }
 
     if ( (int) types.count() != argc ) {
-	qFatal( "arguments do not match" );
+	qWarning( "arguments do not match" );
+	exit(1);
     }
 
     QByteArray data, replyData;
@@ -213,12 +232,15 @@ void callFunction( const char* app, const char* obj, const char* func, int argc,
 		arg << QVariant( mkColor( s ) );
 	    else
 		arg << QVariant( s );
-	} else
-	    qFatal( "cannot handle datatype '%s'", type.latin1() );
+	} else {
+	    qWarning( "cannot handle datatype '%s'", type.latin1() );
+	    exit(1);
+	}
     }
 
     if ( !dcop->call( app, obj, f.latin1(),  data, replyType, replyData) ) {
-	qFatal( "call failed");
+	qWarning( "call failed");
+        exit(1);
     } else {
 	QDataStream reply(replyData, IO_ReadOnly);
 	if ( replyType == "int" ) {
