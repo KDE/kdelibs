@@ -207,6 +207,7 @@ static QString substitution(int option, const KURL &_url, bool quote)
           return conditionalQuote(desktopFile.readEntry( "Dev" ), quote);
       }
    }
+	return QString::null;
 }
 
 static QStringList substitution(int option, const KService &_service, bool quote)
