@@ -515,7 +515,6 @@ QString KLocale::formatMoney(double num, const QString &symbol, int precision) c
         ? currencySymbol()
         : symbol;
     if (precision < 0) precision = fracDigits();
-    if (precision > 80) precision = 80; // do not crash Qt...
 
     // the number itself
     bool neg = num < 0;
@@ -573,7 +572,6 @@ QString KLocale::formatNumber(double num, int precision) const
 {
     bool neg = num < 0;
     if (precision == -1) precision = 2;
-    if (precision > 80) precision = 80; // do not crash Qt...
     QString res = QString::number(neg?-num:num, 'f', precision);
     int pos = res.find('.');
     if (pos == -1) pos = res.length();
