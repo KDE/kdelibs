@@ -269,7 +269,7 @@ KCookieDetail::KCookieDetail( KHttpCookieList cookieList, int cookieCount,
     if ( cookie->expireDate() )
       m_expires->setText( KGlobal::locale()->formatDateTime(cookiedate) );
     else
-      m_expires->setText( i18n("End Of Session") );
+      m_expires->setText( i18n("End of Session") );
     m_expires->setMaximumWidth(fontMetrics().width('W') * 25 );
     grid->addWidget( m_expires, 3, 1);
 

@@ -115,7 +115,8 @@ KHttpCookie::KHttpCookie(const QString &_host,
                  const QString &_value,
                  time_t _expireDate,
                  int _protocolVersion,
-                 bool _secure) :
+                 bool _secure,
+                 bool _httpOnly) :
        mHost(_host),
        mDomain(_domain),
        mPath(_path),
@@ -123,7 +124,8 @@ KHttpCookie::KHttpCookie(const QString &_host,
        mValue(_value),
        mExpireDate(_expireDate),
        mProtocolVersion(_protocolVersion),
-       mSecure(_secure)
+       mSecure(_secure),
+       mHttpOnly(_httpOnly)
 {
 }
 
@@ -288,6 +290,9 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
              continue;
 
           if( cookie->isSecure() && !secureRequest )
+             continue;
+
+          if( cookie->isHttpOnly() && useDOMFormat )
              continue;
              
           // Do not send expired cookies.
@@ -673,6 +678,11 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
                      (Name.isEmpty() && Value.lower() == "secure"))
             {
                 lastCookie->mSecure = true;
+            }
+            else if ((Name == "httponly") || 
+                     (Name.isEmpty() && Value.lower() == "httponly"))
+            {
+                lastCookie->mHttpOnly = true;
             }
         }
 
@@ -1147,7 +1157,8 @@ bool KCookieJar::saveCookies(const QString &_filename)
                         cookie->host().local8Bit().data(), domain.local8Bit().data(),
                         path.local8Bit().data(), (unsigned long) cookie->expireDate(),
                         cookie->protocolVersion()+200, cookie->name().local8Bit().data(), 
-                        cookie->isSecure(), cookie->value().local8Bit().data());
+                        (cookie->isSecure() ? 1 : 0) + (cookie->isHttpOnly() ? 2 : 0),
+                        cookie->value().local8Bit().data());
                 cookie = cookieList->next();
             }
             else
@@ -1236,11 +1247,14 @@ bool KCookieJar::loadCookies(const QString &_filename)
             const char *name( parseField(line) );
             bool keepQuotes = false;
             bool secure = false;
+            bool httpOnly = false;
             const char *value = 0;
             if (protVer >= 200)
             {
                 protVer -= 200;
-                secure = atoi( parseField(line) );
+                int i = atoi( parseField(line) );
+                secure = i & 1;
+                httpOnly = i & 2;
                 line[strlen(line)-1] = '\0'; // Strip LF.
                 value = line;
             }
@@ -1264,7 +1278,7 @@ bool KCookieJar::loadCookies(const QString &_filename)
 
             KHttpCookie *cookie = new KHttpCookie(host, domain, path, name,
                                                   value, expDate, protVer,
-                                                  secure);
+                                                  secure, httpOnly);
             addCookie(cookie);
         }
     }
