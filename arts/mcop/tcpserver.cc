@@ -119,7 +119,13 @@ bool TCPServer::initSocket()
 string TCPServer::url()
 {
 	char xurl[200];
-	sprintf(xurl,"tcp:localhost:%d",thePort);
+	char hostname[256];
+
+	if(gethostname(hostname,255) == 0)
+		sprintf(xurl,"tcp:%s:%d",hostname,thePort);
+	else
+		sprintf(xurl,"tcp:localhost:%d",thePort);
+
 	return xurl;
 }
 
