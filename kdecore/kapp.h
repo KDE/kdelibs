@@ -291,7 +291,7 @@ public:
    *                   value will be appended to the filename,
    *                   prefixed with a "#" (hash) character.
    */
-  void invokeHTMLHelp_x( const QString& aFilename, const QString& aTopic = QString::null ) const;
+  void invokeHTMLHelp( const QString& aFilename, const QString& aTopic = QString::null ) const;
 
   /**
    * Invoke the standard email application.
@@ -753,6 +753,9 @@ public:
 #endif
 
 // $Log$
+// Revision 1.154  2000/05/24 08:18:17  kulow
+// adding default parameter for topic
+//
 // Revision 1.153  2000/05/24 07:51:57  kulow
 // renamed invokeHTMLHelp to invokeHTMLHelp_x to find misuses. This function
 // is declared deprecated and invokeHelp should be used, which takes two
