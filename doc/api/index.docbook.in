@@ -79,7 +79,9 @@
             letters, then &quot;n&quot;) comprises preparation for the translation of
             labels and messages appearing in the user interface, support for input,
             output and string manipulation in various character sets, support for
-            different date, time and currency formats.
+            different date, time and currency formats. In the end, a program
+            should be able to run <emphasis>unmodified</emphasis>in any linguistic 
+            environment with any set of cultural conventions.
          </para>
 
          <para>
@@ -210,11 +212,36 @@ if (!QFileInfo(filename).exists()) {
             and 9, and replaces the one with the lowest number with its argument. For
             convenience, this method is overloaded for integers and floats, so in
             contrast to c-like functions like <function>sprintf()</function>, it is
-            typesafe.
+            typesafe. It also has the important advantage that when you have several
+            insertions in a string, the translator has the freedom the change their
+            order. For example, consider the english phrase <blockquote><para>Printed
+            %1 pages of %2 total.</para></blockquote> A german translator could now
+            use as a translation <blockquote><para>Von insgesamt %2 Seiten wurden %1
+            gedruckt.</para></blockquote>
          </para>
 
          <para>
-            laber rhabarber...
+            Sometimes, it turns out that a word which must be translated is ambigous,
+            i.e. it has several meanings in the original (which is normally
+            english). For example, you may have a button with the label
+            &quot;Set&quot; on it. One possible meaning is &quot;A set of
+            elements&quot; which a german translator would substitute with
+            &quot;Menge&quot;. Another meaning is &quot;Set an option&quot; which a
+            german translator would substitute with &quot;Setzen&quot;. Obviously,
+            the <function>i18n()</function> described above can not provide different
+            results for the same phrase in different contexts. A way around this is
+            an overloaded two-argument version of this function. The second argument
+            is the untranslated string, which is used for english users. The first
+            argument only serves the purpose of distinguishing different meanings of
+            the untranslated string. In the above example, you can use 
+            <blockquote><para>
+               <![CDATA[i18n("A set of", "Set")]]>
+            </para></blockquote>
+            for one occurance of &quot;Set&quot; and 
+            <blockquote><para>
+               <![CDATA[i18n("to set", "Set")]]>
+            </para></blockquote>
+            for the other one.
          </para>
 
          <bridgehead id="i18n-translator">From the translator's point of view</bridgehead>
