@@ -1,27 +1,25 @@
 <!SGML  "ISO 8879:1986"
   -- ...................................................................... --
   -- KDE DocBook SGML declaration ......................................... --
-  -- Identical to DocBook SGML declaration V3.1 ........................... --
+  -- Modified from DocBook SGML declaration V4.1 .......................... --
   -- file kde.dcl ......................................................... --
 
 CHARSET
+-- This is in fact the XML charset restricted for SP/Jade --
 
-	BASESET
-  "ISO 646:1983//CHARSET International Reference Version (IRV)//ESC 2/5 4/0"
-	DESCSET
-                    0   9   UNUSED
-                    9   2     9
-                   11   2   UNUSED
-                   13   1    13
-                   14  18   UNUSED
-                   32  95    32
-                  127   1   UNUSED
-
-	BASESET 
-  "ISO Registration Number 100//CHARSET ECMA-94 Right Part of Latin Alphabet Nr. 1//ESC 2/13 4/1"
-	DESCSET  
-                  128  32   UNUSED
-                  160  96   32
+         BASESET
+  "ISO Registration Number 176//CHARSET ISO/IEC 10646-1:1993 UCS-4 with implementation level 3//ESC 2/5 2/15 4/6"
+         DESCSET
+                0       9       UNUSED
+                9       2       9
+                11      2       UNUSED
+                13      1       13
+                14      18      UNUSED
+                32      95      32
+                127     1       UNUSED
+                128     32      UNUSED
+                160     65374   160
+                65534   2       UNUSED 
 
 CAPACITY SGMLREF
 
@@ -102,6 +100,6 @@ FEATURES
 
 APPINFO NONE
 
-  -- End of DocBook SGML declaration V3.1 ................................. --
+  -- End of KDE DocBook SGML declaration .................................. --
   -- ...................................................................... --
 >
