@@ -44,7 +44,7 @@ private:
 
 private:
     bool m_working;
-    QString m_hostname;
+    QCString m_hostname;
     enum
     {
         DHCP,

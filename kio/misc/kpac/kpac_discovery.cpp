@@ -34,7 +34,7 @@ KPACDiscovery::KPACDiscovery()
     if (gethostname( buf, sizeof( buf ) ) == 0)
     {
         buf[ 255 ] = 0;
-        m_hostname = QString::fromLocal8Bit( buf );
+        m_hostname = buf;
 
         // Need to ensure that the hostname is fully qualified
         // Otherwise this would fail on some systems that return
@@ -42,9 +42,9 @@ KPACDiscovery::KPACDiscovery()
         if (getdomainname (buf, sizeof( buf ) ) == 0)
         {
             buf[255] = 0;
-            QString domainname = QString::fromLocal8Bit( buf );
+            QCString domainname = buf;
 
-            if (!m_hostname.endsWith(domainname))
+            if (m_hostname.findRev(domainname) == -1)
             {
               if (m_hostname.length() && (domainname[0] != '.' ||
                   m_hostname[m_hostname.length()-1] != '.'))
