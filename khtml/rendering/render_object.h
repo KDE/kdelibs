@@ -167,7 +167,10 @@ public:
     RenderObject *container() const;
 
     void setOverhangingContents(bool p=true);
-    void setLayouted(bool b=true) {
+    void setLayouted() {
+	m_layouted = true;
+    }
+    void setLayouted(bool b) {
 	m_layouted = b;
 	if(!b) {
 	    RenderObject *o = m_parent;
