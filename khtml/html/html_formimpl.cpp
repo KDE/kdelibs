@@ -608,6 +608,7 @@ HTMLInputElementImpl::HTMLInputElementImpl(DocumentImpl *doc, HTMLFormElementImp
 {
     _type = TEXT;
     m_checked = false;
+    m_value = "";
     _maxLen = -1;
     _size = 20;
     _clicked = false;
