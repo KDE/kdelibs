@@ -20,9 +20,3 @@ dnl
 
 AC_FIND_ZLIB
 
-dnl For kio_ftp
-AC_LANG_SAVE
-AC_LANG_C
-AC_CHECK_FUNCS( memccpy setfsent )
-AC_LANG_RESTORE
-
