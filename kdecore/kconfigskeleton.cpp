@@ -832,7 +832,7 @@ void KConfigSkeleton::ItemIntList::readConfig( KConfig *config )
   readImmutability( config );
 }
 
-void KConfigSkeleton::ItemIntList::setProperty(const QVariant & p)
+void KConfigSkeleton::ItemIntList::setProperty(const QVariant &)
 {
   // TODO: Not yet supported
 }
