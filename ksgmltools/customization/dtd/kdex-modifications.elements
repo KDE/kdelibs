@@ -22,16 +22,16 @@
 -->
 <!ELEMENT bookinfo ((graphic | mediaobject | legalnotice
 		        | modespec | subjectset | itermset
-		        | %kde.bibliocomponent.mix; | bookbiblio)*,
+		        | %kde.bibliocomponent.mix; )*,
 		        ((date, releaseinfo) | (releaseinfo, date)),
                         (graphic | mediaobject | legalnotice
 			| modespec | subjectset
 			| itermset | %kde.bibliocomponent.mix;
-			| bookbiblio)*,
+			)*,
                         ((abstract, keywordset) | (keywordset, abstract)),
 		       (graphic | mediaobject | legalnotice | modespec 
 		       | subjectset | itermset
-		       | %bibliocomponent.mix; | bookbiblio | keywordset)*)>
+		       | %bibliocomponent.mix; | keywordset)*)>
 
 <!-- ID made compulsory -->
 <!ATTLIST section
