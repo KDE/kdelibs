@@ -31,6 +31,9 @@
 #include <time.h>
 #include <sys/wait.h>
 
+#ifdef HAVE_PATHS_H
+#include <paths.h>
+#endif
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
@@ -1172,13 +1175,18 @@ KIOSlavePool* KIOSlavePool::self() {
  *
  ***************************************************************/
 
-
-#ifndef MNTTAB
-#ifdef MTAB_FILE
-#define MNTTAB MTAB_FILE
+#ifdef _PATH_MOUNTED
+// On some Linux, MNTTAB points to /etc/fstab !
+# undef MNTTAB
+# define MNTTAB _PATH_MOUNTED
 #else
-#define MNTTAB "/etc/mnttab"
-#endif
+# ifndef MNTTAB
+#  ifdef MTAB_FILE
+#   define MNTTAB MTAB_FILE
+#  else
+#   define MNTTAB "/etc/mnttab"
+#  endif
+# endif
 #endif
 
 // hopefully there are only two kind of APIs. If not we need a configure test
