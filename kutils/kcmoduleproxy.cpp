@@ -1,4 +1,5 @@
 /*  This file is part of the KDE project
+    Copyright (C) 2004 Frans Englich <frans.englich@telia.com>
     Copyright (C) 2003 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -14,57 +15,525 @@
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
-
 */
 
-#include "kcmoduleproxy.h"
-#include "kcmoduleloader.h"
-#include "kcmoduleinfo.h"
-#include <qlayout.h>
 #include <qapplication.h>
 #include <qcursor.h>
+#include <qdatastream.h>
+#include <qevent.h>
+#include <qfileinfo.h>
+#include <qframe.h>
+#include <qlabel.h>
+#include <qlayout.h>
+#include <qpoint.h>
+#include <qscrollview.h>
+#include <qtextstream.h>
+#include <qvbox.h>
+#include <qwhatsthis.h>
+#include <qwidget.h>
 
+#include <dcopclient.h>
+#include <qxembed.h>
+
+#include <kapplication.h>
+#include <kaboutdata.h>
+#include <kcmodule.h>
+#include <kcmoduleinfo.h>
+#include <kcmoduleloader.h>
+#include <kdebug.h>
+#include <kdialog.h>
+#include <klocale.h>
+#include <kprocess.h>
+#include <kservice.h>
+#include <kstandarddirs.h>
+#include <kuser.h>
+
+#include <X11/Xlib.h>
+
+#include "kcmoduleproxy.h"
+#include "kcmoduleproxyIface.h"
+#include "kcmoduleproxyIfaceImpl.h"
+
+/***************************************************************/
 class KCModuleProxy::KCModuleProxyPrivate
 {
 	public:
 		KCModuleProxyPrivate( const KCModuleInfo & info )
-			: kcm( 0 )
-			, modinfo( info )
+			: args( 0 )
+			, kcm( 0 )
+			, view( 0 )
+			, embedWidget( 0 )
+			, rootProcess ( 0 )
+			, embedFrame ( 0 )
+			, dcopObject( 0 )
+			, dcopClient( 0 )
+			, topLayout( 0 )
+			, rootCommunicator( 0 )
+			, rootInfo( 0 )
+			, modInfo( info )
+			, withFallback( false )
 			, changed( false )
-			, failed( false )
+			, rootMode( false )
+			, bogusOccupier( false )
+			, isInitialized( false )
 		{}
 
 		~KCModuleProxyPrivate()
 		{
+			delete embedFrame;
+			delete dcopClient;
+			delete dcopObject;
+			delete embedWidget;
+			delete rootCommunicator;
+			delete rootProcess;
+			delete rootInfo;
+			delete view;
 			delete kcm;
 		}
 
-		QStringList args;
-		KCModule * kcm;
-		KCModuleInfo modinfo;
-		bool withfallback;
-		bool changed;
-		bool failed;
+		QStringList							args;
+		KCModule							*kcm;
+		QScrollView							*view;
+		QXEmbed								*embedWidget;
+		KProcess							*rootProcess;
+		QVBox								*embedFrame;
+		KCModuleProxyIfaceImpl  			*dcopObject;
+		DCOPClient							*dcopClient;
+		QVBoxLayout							*topLayout; /* Contains QScrollView view, and root stuff */
+		QVBoxLayout							*viewBoxLayout; /* Manages children of view */
+		KCModuleProxyRootCommunicatorImpl	*rootCommunicator;
+		QLabel								*rootInfo;
+		QCString							dcopName;
+		KCModuleInfo 						modInfo;
+		bool 								withFallback;
+		bool 								changed;
+		bool 								rootMode;
+		bool								bogusOccupier;
+		bool								isInitialized;
 };
+/***************************************************************/
 
-KCModuleProxy::KCModuleProxy( const KCModuleInfo & info, bool fallback,
-		QWidget * parent, const char * name, const QStringList & args )
-	: QWidget( parent, name )
-	, d( new KCModuleProxyPrivate( info ) )
+
+
+/*
+ TODO:
+
+ - How KCModuleProxy behaves wrt memory leaks and behavior, when exiting
+ 	from root mode is not tested, because no code make use of it. It needs 
+	work, if it should be used.
+
+ - Should write a document which outlines test cases, to avoid 
+ 	regressions. This class is a hazard.
+
+ - Two Layout problems in runAsRoot:
+ 	* lblBusy doesn't show
+ 	* d->kcm/d->rootInfo doesn't get it right when the user 
+		presses cancel in the kdesu dialog
+
+ - Resizing horizontally is contrained; minimum size is set somewhere. 
+ 	It appears to be somehow derived from the module's size.
+
+ - Prettify: set icon in KCMultiDialog.
+
+ - Perhaps it's possible to link against kdesu such that 
+ 	the dialog is in process?
+
+ */
+/***************************************************************/
+KCModule * KCModuleProxy::realModule() const
 {
-	d->args = args;
-	d->withfallback = fallback;
+
+	/*
+	 * Note, don't call any function that calls realModule() since
+	 * that leads to an infinite loop.
+	 */
+
+	kdDebug(711) << k_funcinfo << endl;
+
+	/* Already loaded */
+	if( d->kcm )
+		return d->kcm;
+
+	/* /We/ have no kcm, but kcmshell running with root prevs does.. */
+	if( d->rootMode )
+		return 0;
+
+	QApplication::setOverrideCursor( Qt::WaitCursor );
+	
+	KCModuleProxy * that = const_cast<KCModuleProxy*>( this );
+
+	if( !d->isInitialized )
+	{
+  		d->dcopName = moduleInfo().handle().prepend("KCModuleProxy-").utf8();
+		d->topLayout = new QVBoxLayout( that, 0, 0, "topLayout" );
+
+		d->view = new QScrollView( that, "view" );
+		d->view->setResizePolicy(QScrollView::AutoOneFit);
+		d->view->setFrameStyle( QScrollView::NoFrame );
+		d->topLayout->addWidget( d->view );
+
+		d->viewBoxLayout = new QVBoxLayout( d->view->viewport(), 0, 0, "viewBoxLayout" );
+		d->isInitialized = true;
+	}
+
+	if( !d->dcopClient )
+		d->dcopClient = new DCOPClient();
+
+	if( !d->dcopClient->isRegistered() )
+  		d->dcopClient->registerAs( d->dcopName, false );
+
+	d->dcopClient->setAcceptCalls( true );
+
+	if( d->dcopClient->appId() == d->dcopName || d->bogusOccupier )
+	{ /* We got the name we requested, because no one was before us, 
+	   * or, it was an random application which had picked that name */
+		kdDebug(711) << "Module not already loaded, loading module" << endl;
+
+		d->dcopObject = new KCModuleProxyIfaceImpl( d->dcopName, that );
+
+		d->kcm = KCModuleLoader::loadModule( moduleInfo(), KCModuleLoader::Inline, d->withFallback,
+			d->view->viewport(), name(), d->args );
+
+		connect( d->kcm, SIGNAL( changed( bool ) ),
+				SLOT(moduleChanged(bool)) );
+		connect( d->kcm, SIGNAL( destroyed() ),
+				SLOT( moduleDestroyed() ) );
+		connect( d->kcm, SIGNAL(quickHelpChanged()), 
+				SIGNAL(quickHelpChanged()));
+		QWhatsThis::add( that, d->kcm->quickHelp() );
+
+		d->viewBoxLayout->addWidget( d->kcm );
+
+		d->view->addChild( d->kcm );
+
+		if ( !d->rootInfo && /* If it's already done */
+				moduleInfo().needsRootPrivileges() /* root, anyone? */ && 
+				!KUser().isSuperUser() ) /* Not necessary if we're root */
+		{
+
+			d->rootInfo = new QLabel( d->view->viewport(), "rootInfo" );
+			d->viewBoxLayout->insertWidget( 0, d->rootInfo );
+			d->view->addChild( d->rootInfo );
+
+			d->rootInfo->setFrameShape(QFrame::Box);
+			d->rootInfo->setFrameShadow(QFrame::Raised);
+
+			const QString msg = d->kcm->rootOnlyMsg();
+			if( msg.isEmpty() )
+				d->rootInfo->setText(i18n(
+   					  "<b>Changes in this section requires root access.</b><br />"
+					  "Click the \"Administrator Mode\" button to "
+					  "allow modifications."));
+			else
+				d->rootInfo->setText(msg);
+
+			QWhatsThis::add( d->rootInfo, i18n(
+				  "This section requires special permissions, probably "
+				  "for system-wide changes. Therefore it is "
+				  "required that you provide the root password to be "
+				  "able to change the modules properties. As long as "
+				  "you don't provide the password, the module will be "
+				  "disabled."));
+		}
+	}
+	else
+	{
+		kdDebug(711) << "Module already loaded, loading KCMError" << endl;
+
+		d->dcopClient->detach();
+ 		/* Re-register as anonymous */
+		d->dcopClient->attach();
+
+		d->dcopClient->setNotifications( true );
+		connect( d->dcopClient, SIGNAL( applicationRemoved( const QCString& )),
+			SLOT( applicationRemoved( const QCString& )));
+
+		/* Figure out the name of where the module is already loaded */
+		QByteArray replyData, data;
+		QCString replyType;
+		QString result;
+		QDataStream arg, stream( replyData, IO_ReadOnly );
+
+		if( d->dcopClient->call( d->dcopName, d->dcopName, "applicationName()", 
+					data, replyType, replyData ))
+		{
+			stream >> result;
+
+			d->kcm = KCModuleLoader::reportError( KCModuleLoader::Inline, 
+					i18n( "Argument is application name", "This configuration section is "
+						"already opened in %1" ).arg( result ), " ", d->view->viewport() );
+
+			d->viewBoxLayout->addWidget( d->kcm );
+			d->view->addChild( d->kcm );
+		}
+		else
+		{
+			kdDebug(711) << "Calling KCModuleProxy's DCOP interface for fetching the name failed." << endl;
+			d->bogusOccupier = true;
+			QApplication::restoreOverrideCursor();
+			return realModule();
+		}
+	}
+
+	QApplication::restoreOverrideCursor();
+
+	return d->kcm;
+}
+
+void KCModuleProxy::applicationRemoved( const QCString& app )
+{
+	if( app == d->dcopName )
+	{
+		/* Violence: Get rid of KCMError & CO, so that 
+		 * realModule() attempts to reload the module */
+		delete d->kcm;
+		d->kcm = 0;
+		d->dcopClient->setNotifications( false );
+		realModule();
+		d->kcm->show();
+	}
+}
+
+void KCModuleProxy::showEvent( QShowEvent * ev )
+{
+
+	kdDebug(711) << k_funcinfo << endl;
+	( void )realModule();
+
+	/* We have no kcm, if we're in root mode */
+	if( d->kcm )
+		d->kcm->show();
+
+	QWidget::showEvent( ev );
+}
+
+void KCModuleProxy::runAsRoot()
+{
+	if ( !moduleInfo().needsRootPrivileges() )
+		return;
+
+	QApplication::setOverrideCursor( Qt::WaitCursor );
+
+	delete d->rootProcess;
+	delete d->embedWidget;
+	delete d->embedFrame;
+
+	d->embedFrame = new QVBox( this, "embedFrame" );
+	d->embedFrame->setFrameStyle( QFrame::Box | QFrame::Raised );
+
+	QPalette pal( red );
+	pal.setColor( QColorGroup::Background, 
+		d->view->parentWidget()->colorGroup().background() );
+	d->embedFrame->setPalette( pal );
+	d->embedFrame->setLineWidth( 2 );
+	d->embedFrame->setMidLineWidth( 2 );
+	d->topLayout->addWidget(d->embedFrame,1);
+
+	d->embedWidget = new QXEmbed( d->embedFrame, "embedWidget" );
+
+	d->view->hide();
+	d->embedFrame->show();
+
+	QLabel *lblBusy = new QLabel(i18n("<big>Loading...</big>"), d->embedWidget, "lblBusy" );
+	lblBusy->setTextFormat(RichText);
+	lblBusy->setAlignment(AlignCenter);
+	lblBusy->setGeometry(0,0, d->kcm->width(), d->kcm->height());
+	lblBusy->show();
+
+	deleteClient();
+	/* The DCOP registration is now gone, and it will occur again when kcmshell soon 
+	 * registers. Here's a race condition in other words, but how likely is that?
+	 *
+	 * - It's a user initiated action, which means the user have to do weird stuff, very
+	 *   quick.
+	 * - If the user _do_ manage to fsck up, the code will recover gracefully, see realModule().
+	 *
+	 * So no worry. At the end of this function, communication with 
+	 * the DCOP object is established.
+	 */
+
+	/* Prepare the process to run the kcmshell */
+	QString cmd = moduleInfo().service()->exec().stripWhiteSpace();
+	if (cmd.left(5) == "kdesu")
+	{
+		cmd = cmd.remove(0,5).stripWhiteSpace();
+
+		/* Remove all kdesu switches */
+		while( cmd.length() > 1 && cmd[ 0 ] == '-' )
+			cmd = cmd.remove( 0, cmd.find( ' ' ) ).stripWhiteSpace();
+	}
+
+	if (cmd.left(8) == "kcmshell")
+		cmd = cmd.remove(0,8).stripWhiteSpace();
+
+	/* Run the process */
+	QString kdesu = KStandardDirs::findExe("kdesu");
+	if (!kdesu.isEmpty())
+	{
+
+		d->rootProcess = new KProcess;
+
+		*d->rootProcess << kdesu;
+		*d->rootProcess << "--nonewdcop" << "-n" << "-d" << QString( "-i%1" ).arg(moduleInfo().icon());
+
+		*d->rootProcess << QString("kcmshell %1 --embed-proxy %2 --lang %3").arg(cmd).arg
+			(d->embedWidget->winId()).arg(KGlobal::locale()->language());
+
+		connect(d->rootProcess, SIGNAL(processExited(KProcess*)), SLOT(rootExited()));
+
+		if ( !d->rootProcess->start( KProcess::NotifyOnExit ))
+		{
+			d->rootMode = false;
+			rootExited();
+		}
+		else
+		{
+			d->rootMode = true;
+			kapp->dcopClient();
+			d->rootCommunicator = new KCModuleProxyRootCommunicatorImpl( d->dcopName + "-RootCommunicator", this );
+		}
+
+		delete lblBusy;
+		QApplication::restoreOverrideCursor();
+		return;
+	}
+
+	/* Clean up in case of failure */
+	delete d->embedFrame;
+	d->embedFrame = 0;
+	delete d->embedWidget;
+	d->embedWidget = 0;
+	delete lblBusy;
+
+	d->view->show();
+	QApplication::restoreOverrideCursor();
+}
+
+void KCModuleProxy::rootExited()
+{
+	kdDebug(711) << k_funcinfo << endl;
+
+	if ( d->embedWidget->embeddedWinId() )
+		XDestroyWindow(qt_xdisplay(), d->embedWidget->embeddedWinId());
+
+	delete d->embedWidget;
+	d->embedWidget = 0;
+
+	delete d->rootProcess;
+	d->rootProcess = 0;
+
+	delete d->embedFrame;
+	d->embedFrame=0;
+
+	delete d->rootCommunicator;
+	d->rootCommunicator = 0;
+
+	/* Such that the "ordinary" module loads again */
+	d->rootMode = false;
+
+	d->view->show();
+	d->topLayout->invalidate();
+
+	QShowEvent ev;
+	showEvent( &ev ); 
+
+	moduleChanged( false );
+	emit childClosed();
 }
 
 KCModuleProxy::~KCModuleProxy()
 {
-	KCModuleLoader::unloadModule( d->modinfo );
+	deleteClient();
+	KCModuleLoader::unloadModule(moduleInfo());
+
 	delete d;
+}
+
+void KCModuleProxy::deleteClient()
+{
+	if( d->embedWidget )
+		XKillClient(qt_xdisplay(), d->embedWidget->embeddedWinId());
+
+
+	delete d->kcm;
+	d->kcm = 0;
+
+	delete d->dcopObject;
+	d->dcopObject = 0;
+
+	if( d->dcopClient && !d->dcopClient->detach() )
+		kdDebug(711) << "Unregistering from DCOP failed." << endl;
+
+	delete d->dcopClient;
+	d->dcopClient = 0;
+
+	kapp->syncX();
+
+}
+
+void KCModuleProxy::moduleChanged( bool c )
+{
+	if(  d->changed == c )
+		return;
+
+	d->changed = c;
+	emit changed( c );
+	emit changed( this );
+}
+
+void KCModuleProxy::moduleDestroyed()
+{
+	d->kcm = 0;
+}
+
+KCModuleProxy::KCModuleProxy( const KService::Ptr & service, bool withFallback, 
+		QWidget  * parent, const char * name, const QStringList & args)
+	: QWidget( parent, name )
+{
+	init( KCModuleInfo( service ));
+	d->args = args;
+	d->withFallback = withFallback;
+}
+
+KCModuleProxy::KCModuleProxy( const KCModuleInfo & info, bool withFallback,
+		QWidget * parent, const char * name, const QStringList & args )
+	: QWidget( parent, name )
+{
+	init( info );
+	d->args = args;
+	d->withFallback = withFallback;
+}
+
+KCModuleProxy::KCModuleProxy( const QString& serviceName, bool withFallback, 
+		QWidget * parent, const char * name, 
+		const QStringList & args)
+	: QWidget( parent, name )
+{
+	init( KCModuleInfo( serviceName ));
+	d->args = args;
+	d->withFallback = withFallback;
+}
+
+void KCModuleProxy::init( const KCModuleInfo& info )
+{ 
+	kdDebug(711) << k_funcinfo << endl;
+
+	d = new KCModuleProxyPrivate( info );
+
+	/* This is all we do for now; all the heavy work is 
+	 * done in realModule(). It's called when the module
+	 * _actually_ is needed, in for example showEvent().
+	 * The module is loaded "on demand" -- lazy loading.
+	 */
+
 }
 
 void KCModuleProxy::load()
 {
-	if( d->kcm )
+
+	if( d->rootMode )
+		callRootModule( "load()" );
+	else if( realModule() )
 	{
 		d->kcm->load();
 		moduleChanged( false );
@@ -73,29 +542,75 @@ void KCModuleProxy::load()
 
 void KCModuleProxy::save()
 {
-	if( d->kcm )
+	if( d->rootMode )
+		callRootModule( "save()" );
+	else if( d->changed && realModule() )
 	{
 		d->kcm->save();
 		moduleChanged( false );
 	}
 }
 
+void KCModuleProxy::callRootModule( const QCString& function )
+{
+	QByteArray sendData, replyData;
+	QCString replyType;
+
+	/* Note, we don't use d->dcopClient here, because it's used for 
+	 * the loaded module(and it's not "us" when this function is called) */
+	if( !kapp->dcopClient()->call( d->dcopName, d->dcopName, function, sendData,
+			replyType, replyData, true, -1 ))
+		kdDebug(711) << "Calling function '" << function << "' failed." << endl;
+
+}
+
 void KCModuleProxy::defaults()
 {
-	if( d->kcm )
-	{
+	if( d->rootMode )
+		callRootModule( "defaults()" );
+	if( realModule() )
 		d->kcm->defaults();
-	}
 }
 
 QString KCModuleProxy::quickHelp() const
 {
-	return realModule() ? realModule()->quickHelp() : QString::null;
+
+	if( !d->rootMode )
+		return realModule() ? realModule()->quickHelp() : QString::null;
+	else
+	{
+		QByteArray data, replyData;
+		QCString replyType;
+
+		if (kapp->dcopClient()->call(d->dcopName, d->dcopName, "quickHelp()",
+				  data, replyType, replyData))
+			kdDebug(711) << "Calling DCOP function bool changed() failed." << endl;
+		else
+		{
+			QDataStream reply(replyData, IO_ReadOnly);
+			if (replyType == "QString")
+			{
+				QString result;
+				reply >> result;
+				return result;
+			}
+			else
+				kdDebug(711) << "DCOP function changed() returned mumbo jumbo." << endl;
+		}
+		return QString::null;
+	}
 }
 
 const KAboutData * KCModuleProxy::aboutData() const
 {
-	return realModule() ? realModule()->aboutData() : 0;
+	if( !d->rootMode )
+		return realModule() ? realModule()->aboutData() : 0;
+	else
+	/* This needs fixing, perhaps cache a KAboutData copy 
+	 * while in root mode? */
+		return 0;
+		
+
 }
 
 int KCModuleProxy::buttons() const
@@ -124,56 +639,27 @@ bool KCModuleProxy::changed() const
 	return d->changed;
 }
 
-KCModule * KCModuleProxy::realModule() const
+const KCModuleInfo& KCModuleProxy::moduleInfo() const
 {
-	if( ! d->kcm && ! d->failed )
-	{
-		QApplication::setOverrideCursor(Qt::WaitCursor);
-		KCModuleProxy * that = const_cast<KCModuleProxy*>( this );
-		( new QHBoxLayout( that, 0, 0 ) )->setAutoAdd( true );
-		d->kcm = KCModuleLoader::loadModule( d->modinfo, d->withfallback,
-				that, name(), d->args );
-		if( ! d->kcm )
-		{
-			QApplication::restoreOverrideCursor();
-			KCModuleLoader::showLastLoaderError( that );
-			d->failed = true;
-			return 0;
-		}
-		connect( d->kcm, SIGNAL( changed( bool ) ),
-				this, SLOT( moduleChanged( bool ) ) );
-		connect( d->kcm, SIGNAL( destroyed() ),
-				this, SLOT( moduleDestroyed() ) );
-		QApplication::restoreOverrideCursor();
-	}
-	return d->kcm;
+	return d->modInfo;
 }
 
-const KCModuleInfo & KCModuleProxy::moduleInfo() const
+bool KCModuleProxy::rootMode() const
 {
-  return d->modinfo;
+	return d->rootMode;
 }
 
-void KCModuleProxy::showEvent( QShowEvent * ev )
+QCString KCModuleProxy::dcopName() const
 {
-	( void )realModule();
-	QWidget::showEvent( ev );
+	return d->dcopName;
 }
 
-void KCModuleProxy::moduleChanged( bool c )
+void KCModuleProxy::emitQuickHelpChanged()
 {
-	if( d->changed != c )
-	{
-		d->changed = c;
-		emit changed( c );
-	}
+	emit quickHelpChanged();
 }
 
-void KCModuleProxy::moduleDestroyed()
-{
-	d->kcm = 0;
-}
-
+/***************************************************************/
 #include "kcmoduleproxy.moc"
 
 // vim: sw=4 ts=4 noet

@@ -2,6 +2,7 @@
    Copyright (c) 2000 Matthias Elter <elter@kde.org>
    Copyright (c) 2003 Daniel Molkentin <molkentin@kde.org>
    Copyright (c) 2003 Matthias Kretz <kretz@kde.org>
+   Copyright (c) 2004 Frans Englich <frans.erglich.com>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -20,42 +21,54 @@
 
 */
 
-#include <qhbox.h>
 #include <qcursor.h>
-
-#include <klocale.h>
-#include <kdebug.h>
-#include <kiconloader.h>
-#include <kmessagebox.h>
-#include <klibloader.h>
-#include <krun.h>
-#include <kprocess.h>
-#include <kaboutdata.h>
-
-#include "kcmultidialog.h"
-#include "kcmultidialog.moc"
-#include "kcmoduleloader.h"
-#include "kcmoduleproxy.h"
-#include <assert.h>
+#include <qhbox.h>
 #include <qlayout.h>
 
+#include <kaboutdata.h>
+#include <kapplication.h>
+#include <kdebug.h>
+#include <kiconloader.h>
+#include <klibloader.h>
+#include <klocale.h>
+#include <kmessagebox.h>
+#include <kprocess.h>
+#include <krun.h>
+#include <kstdguiitem.h>
+#include <kuser.h>
+
+#include "kcmoduleloader.h"
+#include "kcmoduleproxy.h"
+#include "kcmultidialog.h"
+#include "kcmultidialog.moc"
+
+class KCMultiDialog::KCMultiDialogPrivate
+{
+    public:
+        KCMultiDialogPrivate()
+            : hasRootKCM( false ), currentModule( 0 )
+        {}
+
+        bool hasRootKCM;
+        KCModuleProxy* currentModule;
+};
+
+ 
 KCMultiDialog::KCMultiDialog(QWidget *parent, const char *name, bool modal)
     : KDialogBase(IconList, i18n("Configure"), Help | Default |Cancel | Apply |
-            Ok | User1, Ok, parent, name, modal, true,
-            KGuiItem( i18n( "&Reset" ), "undo" ) )
-    , dialogface( IconList )
+            Ok | User1 | User2, Ok, parent, name, modal, true,
+            KStdGuiItem::reset(), KStdGuiItem::adminMode())
+    , dialogface( IconList ), d( new KCMultiDialogPrivate )
 {
-    showButton( User1, false );;
     init();
 }
 
 KCMultiDialog::KCMultiDialog( int dialogFace, const QString & caption, QWidget * parent, const char * name, bool modal )
     : KDialogBase( dialogFace, caption, Help | Default | Cancel | Apply | Ok |
-            User1, Ok, parent, name, modal, true,
-            KGuiItem( i18n( "&Reset" ), "undo" ) )
-    , dialogface( dialogFace )
+            User1 | User2, Ok, parent, name, modal, true,
+            KStdGuiItem::reset(), KStdGuiItem::adminMode())
+    , dialogface( dialogFace ), d( new KCMultiDialogPrivate )
 {
-    showButton( User1, false );;
     init();
 }
 
@@ -63,21 +76,24 @@ KCMultiDialog::KCMultiDialog( int dialogFace, const KGuiItem &user2,
         const KGuiItem &user3, int buttonMask, const QString &caption,
         QWidget *parent, const char *name, bool modal )
     : KDialogBase( dialogFace, caption, buttonMask | Help | Default | Cancel |
-            Apply | Ok | User1, Ok, parent, name, modal, true,
-            KGuiItem( i18n( "&Reset" ), "undo" ), user2, user3 )
-    , dialogface( dialogFace )
+            Apply | Ok | User1 | User2 | User3, Ok, parent, name, modal, true,
+            KStdGuiItem::reset(), user2, user3 )
+    , dialogface( dialogFace ), d( new KCMultiDialogPrivate )
 {
-   showButton( User1, false );;
-   init();
+    kdDebug( 710 ) << "Root modules will not work with this constructor. See the API documentation." << endl;
+    init();
 }
 
 inline void KCMultiDialog::init()
 {
-    d = 0L;
+    connect( this, SIGNAL( finished()), SLOT( dialogClosed()));
+    showButton( User1, false );
+    showButton( User2, false );
     enableButton(Apply, false);
     connect(this, SIGNAL(aboutToShowPage(QWidget *)), this, SLOT(slotAboutToShow(QWidget *)));
     setInitialSize(QSize(640,480));
     moduleParentComponents.setAutoDelete( true );
+
 }
 
 KCMultiDialog::~KCMultiDialog()
@@ -122,8 +138,6 @@ void KCMultiDialog::apply()
     for( ModuleList::Iterator it = m_modules.begin(); it != end; ++it )
     {
         KCModuleProxy * m = ( *it ).kcm;
-        //kdDebug(710) << k_funcinfo << m->name() << ' ' <<
-        //    ( m->aboutData() ? m->aboutData()->appName() : "" ) << endl;
         if( m->changed() )
         {
             m->save();
@@ -197,23 +211,20 @@ void KCMultiDialog::clientChanged(bool state)
 
 void KCMultiDialog::addModule(const QString& path, bool withfallback)
 {
-    kdDebug(710) << "KCMultiDialog::addModule " << path << endl;
-
-    KService::Ptr s = KService::serviceByStorageId(path);
-    if (!s) {
-      kdError() << "Desktop file '" << path << "' not found!" << endl;
-      return;
-    }
-
-    KCModuleInfo info(s);
-    addModule(info, QStringList(), withfallback);
+    addModule(KCModuleInfo( path ), QStringList(), withfallback);
 }
 
 void KCMultiDialog::addModule(const KCModuleInfo& moduleinfo,
         QStringList parentmodulenames, bool withfallback)
 {
-    kdDebug(710) << "KCMultiDialog::addModule " << moduleinfo.moduleName() <<
-        endl;
+    kdDebug(710) << "KCMultiDialog::addModule " 
+        << moduleinfo.moduleName() << endl;
+
+    if ( !kapp->authorizeControlModule( moduleinfo.service()->menuId() ))
+            return;
+
+    if( !KCModuleLoader::testModule( moduleinfo ))
+            return;
 
     QFrame* page = 0;
     if (!moduleinfo.service()->noDisplay())
@@ -250,7 +261,7 @@ void KCMultiDialog::addModule(const KCModuleInfo& moduleinfo,
         // removeAllModules
         module = m_orphanModules[ moduleinfo.service() ];
         m_orphanModules.remove( moduleinfo.service() );
-        kdDebug( 710 ) << "use KCModule from the list of orphans for " <<
+        kdDebug( 710 ) << "Use KCModule from the list of orphans for " <<
             moduleinfo.moduleName() << ": " << module << endl;
 
         module->reparent( page, 0, QPoint( 0, 0 ), true );
@@ -266,8 +277,6 @@ void KCMultiDialog::addModule(const KCModuleInfo& moduleinfo,
         module = new KCModuleProxy( moduleinfo, withfallback, page );
         QStringList parentComponents = moduleinfo.service()->property(
                 "X-KDE-ParentComponents" ).toStringList();
-        kdDebug(710) << k_funcinfo << "ParentComponents=" << parentComponents
-            << endl;
         moduleParentComponents.insert( module,
                 new QStringList( parentComponents ) );
 
@@ -280,6 +289,15 @@ void KCMultiDialog::addModule(const KCModuleInfo& moduleinfo,
     cm.kcm = module;
     cm.service = moduleinfo.service();
     m_modules.append( cm );
+    if ( moduleinfo.needsRootPrivileges() && 
+            !d->hasRootKCM &&
+            !KUser().isSuperUser() ) /* If we're embedded, it's true */
+    {
+        d->hasRootKCM = true;
+        showButton( User2, true );
+        if( plainPage() ) // returns 0 if we're not a Plain dialog
+            slotAboutToShow( page ); // Won't be called otherwise, necessary for adminMode button
+    }
 }
 
 void KCMultiDialog::removeAllModules()
@@ -308,34 +326,65 @@ void KCMultiDialog::removeAllModules()
 }
 
 void KCMultiDialog::show()
-{
-    if( ! isVisible() )
-    {
-        // call load() method of all KCMs
-        ModuleList::Iterator end = m_modules.end();
-        for( ModuleList::Iterator it = m_modules.begin(); it != end; ++it )
-            ( *it ).kcm->load();
-    }
+{ /* KDE 4 Remove..? */
     KDialogBase::show();
 }
 
 void KCMultiDialog::slotAboutToShow(QWidget *page)
 {
-    kdDebug( 710 ) << k_funcinfo << endl;
-    // honor KCModule::buttons
+    kdDebug(710) << k_funcinfo << endl;
+
     QObject * obj = page->child( 0, "KCModuleProxy" );
     if( ! obj )
         return;
+
     KCModuleProxy * module = ( KCModuleProxy* )obj->qt_cast(
             "KCModuleProxy" );
     if( ! module )
         return;
-    // TODO: if the dialogface is Plain we should hide the buttons instead of
-    // disabling
+    d->currentModule = module;
+
     enableButton( KDialogBase::Help,
-            module->buttons() & KCModule::Help );
+            d->currentModule->buttons() & KCModule::Help );
     enableButton( KDialogBase::Default,
-            module->buttons() & KCModule::Default );
+            d->currentModule->buttons() & KCModule::Default );
+
+    disconnect( this, SIGNAL(user2Clicked()), 0, 0 );
+
+    if (d->currentModule->moduleInfo().needsRootPrivileges() &&
+            !d->currentModule->rootMode() )
+    { /* Enable the Admin Mode button */
+        enableButton( User2, true );
+        connect( this, SIGNAL(user2Clicked()), d->currentModule, SLOT( runAsRoot() ));
+        connect( this, SIGNAL(user2Clicked()), SLOT( disableRModeButton() ));
+    }
+    else
+        enableButton( User2, false);
+
 }
+
+void KCMultiDialog::rootExit()
+{
+    enableButton( User2, true);
+}
+
+void KCMultiDialog::disableRModeButton()
+{
+    enableButton( User2, false );
+    connect ( d->currentModule, SIGNAL( childClosed() ), SLOT( rootExit() ));
+}
+
+void KCMultiDialog::dialogClosed()
+{
+    kdDebug(710) << k_funcinfo << endl;
+
+    /* If we don't delete them, the DCOP registration stays, and trying to load the KCMs 
+     * in other situations will lead to "module already loaded in Foo," while to the user 
+     * doesn't appear so(the dialog is hidden) */
+    ModuleList::Iterator end = m_modules.end();
+    for( ModuleList::Iterator it = m_modules.begin(); it != end; ++it )
+            ( *it ).kcm->deleteClient();
+}
+
 
 // vim: sw=4 et sts=4

@@ -26,8 +26,8 @@
 #include <qptrdict.h>
 
 #include <kdialogbase.h>
-#include <kservice.h>
 #include <klocale.h>
+#include <kservice.h>
 
 class KCModuleProxy;
 class KCModuleInfo;
@@ -66,7 +66,8 @@ public:
      *        program interface (example: other dialogs) is accessible while
      *        the dialog is open.
      */
-    KCMultiDialog( int dialogFace, const QString & caption, QWidget * parent = 0, const char * name = 0, bool modal = false );
+    KCMultiDialog( int dialogFace, const QString & caption, QWidget * parent = 0, 
+            const char * name = 0, bool modal = false );
 
 
    /**
@@ -75,6 +76,11 @@ public:
      * of KDialogBase is already used to provide a "Reset" button so only
      * two more buttons are available to users of KCMultiDialog. When clicked 
      * they trigger slotUser2() and slotUser3(). 
+     *
+     * @note If any root modules are added to the dialog when this constructor is 
+     * used, it will not be able to run them with root privileges. Since that will 
+     * render them useless, it is a good idea to use another constructor. In KDE 4 
+     * the argument @p user3 will be removed.
      *
      * @param dialogFace You can use TreeList, Tabbed, Plain, Swallow or
      *        IconList.
@@ -95,7 +101,8 @@ public:
     KCMultiDialog( int dialogFace, const KGuiItem &user2,
             const KGuiItem &user3=KGuiItem(), int buttonMask=User2,
             const QString &caption=i18n("Configure"), QWidget *parent=0,
-            const char *name=0, bool modal=false );
+            const char *name=0, bool modal=false ) KDE_DEPRECATED;
+    // KDE4 remove the user3 argument, and instead initialize it to KStdGuiItem::adminMode.
 
     /**
      * Destructor
@@ -173,7 +180,7 @@ protected slots:
      * This slot is called when the user presses the "Default" Button.
      * You can reimplement it if needed.
      *
-     * @note Make sure you call the original implementation!
+     * @note Make sure you call the original implementation.
      **/
     virtual void slotDefault();
 
@@ -181,7 +188,7 @@ protected slots:
      * This slot is called when the user presses the "Reset" Button.
      * You can reimplement it if needed.
      *
-     * @note Make sure you call the original implementation!
+     * @note Make sure you call the original implementation.
      */
     virtual void slotUser1();
 
@@ -189,7 +196,7 @@ protected slots:
      * This slot is called when the user presses the "Apply" Button.
      * You can reimplement it if needed.
      *
-     * @note Make sure you call the original implementation!
+     * @note Make sure you call the original implementation.
      **/
     virtual void slotApply();
 
@@ -197,7 +204,7 @@ protected slots:
      * This slot is called when the user presses the "OK" Button.
      * You can reimplement it if needed.
      *
-     * @note Make sure you call the original implementation!
+     * @note Make sure you call the original implementation.
      **/
     virtual void slotOk();
 
@@ -207,9 +214,9 @@ protected slots:
      * module's .desktop file to find the path to the documentation,
      * which it then attempts to load.
      * 
-     * You can reimplement this slot it if needed.
+     * You can reimplement this slot if needed.
      *
-     * @note Make sure you call the original implementation!
+     * @note Make sure you call the original implementation.
      **/
     virtual void slotHelp();
 
@@ -219,7 +226,35 @@ private slots:
 
     void clientChanged(bool state);
 
+    /**
+     * Called when entering root mode, and disables
+     * the Admin Mode button such that the user doesn't do it
+     * twice.
+     *
+     * @since 3.4
+     */
+    void disableRModeButton();
+
+    /**
+     * Called when the current module exits from root 
+     * mode. Enables the Administrator Mode button, again.
+     *
+     * @since 3.4
+     */
+    void rootExit();
+
+    /**
+     *
+     * Called when the dialog is hidden. It unregisters the modules,
+     * such that they don't hinder the same modules to be opened in 
+     * another application.
+     *
+     * @since 3.4
+     */
+    void dialogClosed();
+
 private:
+
     void init();
     void apply();
 
@@ -227,6 +262,7 @@ private:
     {
         KCModuleProxy * kcm;
         KService::Ptr service;
+        /* KDE 4 Move to Private class */
     };
     typedef QValueList<CreatedModule> ModuleList;
     ModuleList m_modules;
@@ -238,7 +274,6 @@ private:
     QString _docPath;
     int dialogface;
 
-    // For future use
     class KCMultiDialogPrivate;
     KCMultiDialogPrivate *d;
 };

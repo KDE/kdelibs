@@ -9,14 +9,17 @@ libkutils_la_LIBADD  = ../kio/libkio.la ksettings/libksettings.la
 libkutils_la_SOURCES = kfind.cpp kfinddialog.cpp kreplace.cpp \
                        kreplacedialog.cpp kcmoduleinfo.cpp kcmoduleloader.cpp \
                        kcmultidialog.cpp kmultitabbar.cpp kplugininfo.cpp \
-                       kcmoduleproxy.cpp kpluginselector.cpp
+                       kcmoduleproxy.cpp kpluginselector.cpp \
+                       kcmodulecontainer.cpp kcmoduleproxyIface.skel \
+                       kcmoduleproxyIfaceImpl.cpp
 
 include_HEADERS = kfind.h kfinddialog.h kreplace.h kreplacedialog.h \
                   kcmoduleinfo.h kcmoduleloader.h kcmultidialog.h \
                   kmultitabbar.h kplugininfo.h kcmoduleproxy.h \
-                  kpluginselector.h
+                  kpluginselector.h kcmodulecontainer.h
 
-noinst_HEADERS = kmultitabbar_p.h kpluginselector_p.h
+noinst_HEADERS = kmultitabbar_p.h kpluginselector_p.h \
+                 kcmoduleproxyIface.h kcmoduleproxyIfaceImpl.h
 
 kde_servicetypes_DATA = kplugininfo.desktop
 

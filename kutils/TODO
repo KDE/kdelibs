@@ -1,0 +1,23 @@
+
+This is a list of random changes to do in KDE 4 with the various KCM* classes.
+
+* KCModuleinfo;
+	- Make it inherit KService; saves a lot of code, simplifies ctors/overloads in surrounding classes
+	- Implement docPath in KService
+	- Get rid of loadAll() and do lazy loading in each getter
+
+* Merge KCModuleProxy and its DCOP Object class(MI)
+
+* Get rid of `QStringlist arguments` in KCModule and all the helper classes(simplify API)
+
+* Move stuff to d pointers.. Too much hackish solutions otherwise
+
+* Get rid of bool fallback argument in helper classes(never fails, simplify API)
+
+* The API in KCModule, KCModuleProxy, and the various desktop entries, concerning root loading are butt ugly. It needs cleaning and simplification.
+
+* There's big confusion regarding /when/ the changed(bool) signal should be emitted, abd by /whom/. This can't be fixed properly in 3.x since it means breaking behavior. In KDE 4 it must be made clear if KCModuleProxy should take care of emitting appropriate signals for load()/save()/defaults, or if modules manually should handle it(is there a reason?).
+
+* Root modules in KCModuleProxy doesn't support D&D, or it is perhaps implemented in QXEmbed? Anyway, this is what the  XEmbed Protocol Specification says:
+
+Solving the drag-and-drop problem, however, is quite easy, since the XDND protocol was carefully designed in a way that makes it possible to support embedded windows. Basically, the embedder has to operate as drag-and-drop proxy for the client. Any XDND messages like XdndEnter, Xdnd,Leave, etc. simply have to be passed through. A toolkit's XDND implementation has to take this situation in consideration.
