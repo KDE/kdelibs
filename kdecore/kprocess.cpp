@@ -21,6 +21,10 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.23  1998/09/01 20:21:29  kulow
+   I renamed all old qt header files to the new versions. I think, this looks
+   nicer (and gives the change in configure a sense :)
+
    Revision 1.22  1998/07/29 10:14:28  kulow
    porting to a virtual plattform called "tajsandmineansiplatform" :)
 
@@ -259,7 +263,7 @@ pid_t KProcess::getPid()
 bool KProcess::normalExit()
 {
   int _status = status;
-  return (pid != 0) && (!runs) && (WIFEXITED(_status));
+  return (pid != 0) && (!runs) && (WIFEXITED((_status)));
 }
 
 
@@ -267,7 +271,7 @@ bool KProcess::normalExit()
 int KProcess::exitStatus()
 {
   int _status = status;
-  return WEXITSTATUS(_status);
+  return WEXITSTATUS((_status));
 }
 
 
