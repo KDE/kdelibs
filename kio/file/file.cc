@@ -986,7 +986,7 @@ void FileProtocol::special( const QByteArray &data)
       break;
     }
     default:
-      assert(0);
+      break;
     }
 }
 
