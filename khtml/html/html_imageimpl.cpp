@@ -181,13 +181,13 @@ void HTMLImageElementImpl::attach()
         _style->display() != NONE)
     {
         m_render = new (getDocument()->renderArena()) RenderImage(this);
-        m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
+        m_render->setStyle(_style);
         parentNode()->renderer()->addChild(m_render, nextRenderer());
-        m_render->updateFromElement();
     }
     _style->deref();
-
     NodeBaseImpl::attach();
+    if (m_render)
+        m_render->updateFromElement();
 }
 
 long HTMLImageElementImpl::width() const
@@ -201,7 +201,8 @@ long HTMLImageElementImpl::width() const
             getDocument()->view()->layout();
     }
 
-    return m_render->contentWidth();
+    return m_render ? m_render->contentWidth() : 
+                      getAttribute(ATTR_WIDTH).toInt();
 }
 
 long HTMLImageElementImpl::height() const
@@ -215,7 +216,8 @@ long HTMLImageElementImpl::height() const
             getDocument()->view()->layout();
     }
 
-    return m_render->contentHeight();
+    return m_render ? m_render->contentHeight() :
+                      getAttribute(ATTR_HEIGHT).toInt();
 }
 
 QImage HTMLImageElementImpl::currentImage() const
