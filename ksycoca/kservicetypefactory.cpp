@@ -184,7 +184,7 @@ KServiceTypeFactory::_findServiceTypeByName(const QString &_name)
 
    KServiceType *newServiceType = createServiceType(offset);
 
-   // Check whether the dictionairy was right.
+   // Check whether the dictionary was right.
    if (newServiceType && (newServiceType->name() != _name))
    {
       // No it wasn't...

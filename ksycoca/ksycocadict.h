@@ -35,10 +35,10 @@ public:
    ~KSycocaDict();
 
    /**
-    * Adds a 'payload' to the dictionairy with key 'key'.
+    * Adds a 'payload' to the dictionary with key 'key'.
     * 
     * 'payload' should have a valid offset by the time  
-    * the dictionairy gets saved.
+    * the dictionary gets saved.
     **/
    void add(const QString &key, KSycocaEntry *payload);
    
@@ -57,21 +57,21 @@ public:
    int find_string(const QString &key );
    
    /**
-    * The number of entries in the dictionairy.
+    * The number of entries in the dictionary.
     *
     * Only valid when building the database.
     */
    uint count();
    
    /**
-    * Reset the dictionairy.
+    * Reset the dictionary.
     *
     * Only valid when building the database.
     */
    void clear();
    
    /**
-    * Save the dictionairy to the stream
+    * Save the dictionary to the stream
     * A reasonable fast hash algorithm will be created.
     *
     * Typically this will find 90% of the entries directly.
@@ -88,7 +88,7 @@ public:
     *   Approx. 100 items require a lookup in the duplicate list.
     *
     *   The hash table size will be approx. 20Kb.
-    *   The dupliate list size will be approx. 12Kb.
+    *   The duplicate list size will be approx. 12Kb.
     **/    
    void save(QDataStream &str);
 
