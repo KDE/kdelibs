@@ -214,14 +214,18 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
     kdDebug(129) << "KXMLGUIFactory::addClient( " << client << " )" << endl; // ellis
     static const QString &actionPropElementName = KGlobal::staticQString( "ActionProperties" );
 
+    if ( client->factory() ) {
+        if ( client->factory() == this )
+            return;
+        else
+            client->factory()->removeClient( client ); //just in case someone does stupid things ;-)
+    }
+
     d->pushState();
 
 //    QTime dt; dt.start();
 
     d->guiClient = client;
-
-    if ( client->factory() && client->factory() != this )
-        client->factory()->removeClient( client ); //just in case someone does stupid things ;-)
 
     // add this client to our client list
     if ( d->m_clients.containsRef( client ) == 0 )
