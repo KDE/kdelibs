@@ -75,6 +75,7 @@ public:
       dragDelay (KGlobalSettings::dndEventDelay()),
       editor (new KListViewLineEdit (listview)),
       itemsMovable (true),
+      selectedBySimpleMove(false),
       itemsRenameable (false),
       validDrag (false),
       dragEnabled (false),
@@ -115,6 +116,7 @@ public:
   bool bUseSingle:1;
   bool bChangeCursorOverItem:1;
   bool itemsMovable:1;
+  bool selectedBySimpleMove : 1;
   bool itemsRenameable:1;
   bool validDrag:1;
   bool dragEnabled:1;
@@ -1086,6 +1088,7 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
          currentItem()->setSelected(true);
          currentItem()->repaint();
          return;
+      }
    };
 
    if ((e->state()==ShiftButton) && (e->key()!=Key_Shift) &&
