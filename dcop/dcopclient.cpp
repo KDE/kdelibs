@@ -148,6 +148,10 @@ QCString dcopServerFile()
       fprintf(stderr, "Aborting. $DISPLAY is not set.\n");
       exit(1);
    }
+   int i;
+   if((i = disp.findRev('.')) > disp.findRev(':') && i >= 0)
+       disp.truncate(i);
+
    fName += "/.DCOPserver_";
    char hostName[256];
    if (gethostname(hostName, 255))
@@ -211,7 +215,7 @@ static void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
 
     d->opcode = opcode;
     switch (opcode ) {
-	
+
     case DCOPReplyFailed:
 	if ( replyWait ) {
 	    static_cast<ReplyStruct*>(replyWait->reply)->status = ReplyStruct::Failed;
@@ -309,7 +313,7 @@ void DCOPProcessInternal( DCOPClientPrivate *d, int opcode, CARD32 key, const QB
     QByteArray data;
     ds >> fromApp >> app >> objId >> fun >> data;
     d->senderId = fromApp;
-	
+
     if ( canPost && d->currentKey && key != d->currentKey ) {
 	DCOPClientMessage* msg = new DCOPClientMessage;
 	msg->opcode = opcode;
@@ -320,7 +324,7 @@ void DCOPProcessInternal( DCOPClientPrivate *d, int opcode, CARD32 key, const QB
 	return;
     }
 
-	
+
     QCString replyType;
     QByteArray replyData;
     bool b;
@@ -333,7 +337,7 @@ void DCOPProcessInternal( DCOPClientPrivate *d, int opcode, CARD32 key, const QB
     else
 	b = c->receive( app, objId, fun, data, replyType, replyData );
     // set notifier back to previous state
-	
+
     if ( opcode == DCOPSend )
 	return;
 
@@ -397,7 +401,7 @@ DCOPClient* DCOPClient::mainClient()
 {
     return dcop_main_client;
 }
-    
+
 void DCOPClient::setMainClient( DCOPClient* client )
 {
     dcop_main_client = client;
@@ -419,7 +423,7 @@ DCOPClient::DCOPClient()
     d->transactionList = 0L;
     d->transactionId = 0;
     connect( &d->postMessageTimer, SIGNAL( timeout() ), this, SLOT( processPostedMessagesInternal() ) );
-    
+
     if ( !mainClient() )
 	setMainClient( this );
 }
@@ -433,7 +437,7 @@ DCOPClient::~DCOPClient()
     delete d->notifier;
     delete d->transactionList;
     delete d;
-    
+
     if ( mainClient() == this )
 	setMainClient( 0 );
 }
@@ -511,7 +515,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
 	    QString fName = dcopServerFile();
 	    QFile f(fName);
 	    if (!f.open(IO_ReadOnly)) {
-		emit attachFailed("Could not read network connection list.");
+		emit attachFailed("Could not read network connection list.\n"+fName);
 		return false;
 	    }
 	    QTextStream t(&f);
@@ -1115,7 +1119,7 @@ static bool receiveQtObject( const QCString &objId, const QCString &fun, const Q
 		return true;
 	    }
 	}
-	
+
 
     }
     return false;
@@ -1168,11 +1172,11 @@ bool DCOPClient::receive(const QCString &/*app*/, const QCString &objId,
 	    emit applicationRemoved( r );
 	    return true;
 	}
-	
+
 	if ( process( fun, data, replyType, replyData ) )
 	    return true;
 	// fall through and send to defaultObject if available
-	
+
     } else if ( objId == "qt" || objId.left(3) == "qt/" ) { // dcop <-> qt bridge
 	return receiveQtObject( objId, fun, data, replyType, replyData );
     }
@@ -1353,7 +1357,7 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
 
     do {
 	if ( useEventLoop && d->notifier ) { // we have a socket notifier and a qApp
-		
+
 	    int msecs = 100; // timeout for the GUI refresh
 	    fd_set fds;
 	    struct timeval tv;
@@ -1376,7 +1380,7 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
 		}
 	    }
 	}
-	
+
 	// something is available
 	s = IceProcessMessages(d->iceConn, &waitInfo,
 			       &readyRet);
@@ -1385,9 +1389,9 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
 	    d->currentKey = oldCurrentKey;
 	    return false;
 	}
-	
+
     } while (!readyRet);
-	
+
     d->currentKey = oldCurrentKey;
     return replyStruct.status == ReplyStruct::Ok;
 }

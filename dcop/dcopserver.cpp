@@ -94,6 +94,10 @@ QCString dcopServerFile()
       fprintf(stderr, "Aborting. $DISPLAY is not set.\n");
       exit(1);
    }
+   int i;
+   if((i = disp.findRev('.')) > disp.findRev(':') && i >= 0)
+       disp.truncate(i);
+
    fName += "/.DCOPserver_";
    char hostName[256];
    if (gethostname(hostName, 255))
@@ -484,7 +488,7 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 	    ds >> fromApp >> toApp;
 	    DCOPConnection* target = findApp( toApp );
 	    int datalen = ba.size();
-	
+
 	    if ( target ) {
 		target->waitingForReply.append( iceConn );
 
@@ -557,7 +561,7 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 	    }
 	    DCOPConnection* connreply = findApp( toApp );
 	    int datalen = ba.size();
-	
+
 // 	    DCOPConnection* connreply = clients.find( conn->waitingForReply.take(0) );
 	    if ( !connreply )
 		qWarning("DCOPServer::DCOPReply for unknown connection.");
@@ -940,7 +944,7 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
 		    conn->plainAppId = conn->appId.left( c );
 		else
 		    conn->plainAppId = conn->appId;
-		
+
 		QPtrDictIterator<DCOPConnection> it( clients );
 		QByteArray data;
 		QDataStream datas( data, IO_WriteOnly );

@@ -631,6 +631,7 @@ dcop_connect()
   char        errBuf[1024];
   char        fileName[512];
   char        hostName[256];
+  char        displayName[256];
 
   homeDir = getenv("HOME");
 
@@ -641,6 +642,11 @@ dcop_connect()
   
   if (NULL == display)
     return False;
+
+  strcpy(displayName, display);
+  int i;
+  if((i = strrchr(displayName, '.')) > strrchr(displayName, ':') && i)
+      displayName[i] = '\0';
 
   dcopServer = getenv("DCOPSERVER");
 
@@ -654,7 +660,7 @@ dcop_connect()
     if (gethostname(hostName, 255))
 	    strcpy(hostName, "localhost");
 
-    snprintf(fileName, sizeof(fileName), ".DCOPserver_%s_%s", hostName, display);
+    snprintf(fileName, sizeof(fileName), ".DCOPserver_%s_%s", hostName, displayName);
     f = fopen(fileName, "r");
 
     if (NULL == f) {
