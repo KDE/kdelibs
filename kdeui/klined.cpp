@@ -70,6 +70,7 @@ void KLineEdit::disableCompletion()
 {
     delete comp;
     comp = 0;
+    m_bIsForeignCompObj = false;
 }
 
 void KLineEdit::enableCompletion()
@@ -259,8 +260,8 @@ void KLineEdit::slotReturnPressed()
     // CompletionNone, the input has changed since the last time
     // the ENTER key is pressed, and completion has not been diabled
     // attempt to add the text to KCompletion's list.
-    if( m_bHasInputChanged && comp != 0 &&
-        m_iCompletionMode != KGlobal::CompletionNone )
+    if( !m_bIsForeignCompObj && m_bHasInputChanged &&
+        comp != 0 && m_iCompletionMode != KGlobal::CompletionNone )
     {
         // add the text to KCompletion's list.
         comp->addItem ( text() );
