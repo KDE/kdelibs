@@ -21,6 +21,9 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.26  1998/10/19 08:09:05  ettrich
+   small pseudo fix to kshellprocess reverted
+
    Revision 1.25  1998/09/22 18:03:13  ettrich
    Matthias: small updates to kaccel
 
@@ -525,6 +528,8 @@ void KProcess::commClose()
 	    close(out[0]);
 	if (communication & Stderr)
 	    close(err[0]);
+	
+	communication = NoCommunication;
   }
 }
 
