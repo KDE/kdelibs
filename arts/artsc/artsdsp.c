@@ -297,7 +297,7 @@ int ioctl (int fd, ioctl_request_t request, ...)
 
 #ifdef SNDCTL_DSP_POST
 		case SNDCTL_DSP_POST:               /* _SIO  ('P', 8) */
-		  artsdspdebug("aRts: SNDCTL_DSP_POST unsupported\n",*arg);
+		  artsdspdebug("aRts: SNDCTL_DSP_POST unsupported\n");
 		  break;
 #endif
 
