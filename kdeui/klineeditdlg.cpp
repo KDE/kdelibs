@@ -145,6 +145,7 @@ void KLineEditDlg::slotTextChanged(const QString &text)
     on = !text.isEmpty();
   }
   enableButtonOK( on );
+  enableButton(KDialogBase::User1, text.length());
 }
 
 QString KLineEditDlg::text() const
