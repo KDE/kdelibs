@@ -146,7 +146,7 @@ void KAccelMenu::keyPressEvent ( QKeyEvent * e)
   uint state = e->state()  & ~MouseButtonMask;
   uint kcode = e->key() | state<< 10;
   bool deleteKey = FALSE;
-  bool needQuote = FALSE;
+  //  bool needQuote = FALSE;
   QString stmp;
 
   if (key != Key_Shift && key != Key_Control && key != Key_Meta &&
@@ -169,15 +169,16 @@ void KAccelMenu::keyPressEvent ( QKeyEvent * e)
       case Key_Up: case Key_Down: case Key_Left: case Key_Right:
       case Key_Alt: case Key_Escape: case Key_Space:
       case Key_Return: case Key_Enter:
-	needQuote = TRUE;
+	  //	needQuote = TRUE;
 	break;
 
       default:
-	needQuote = FALSE;
+	  ; //	needQuote = FALSE;
       }
-      if  (!e->state() && e->key() >= Key_0 && e->key() <= Key_Z ) {
-	needQuote = TRUE;
-      }
+
+//       if  (!e->state() && e->key() >= Key_0 && e->key() <= Key_Z ) {
+// 	needQuote = TRUE;
+//       }
     }
 
     if ( /* !needQuote ||*/  quote || deleteKey) {

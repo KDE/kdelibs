@@ -362,16 +362,16 @@ void KFontChooser::setupDisplay()
 {
   QString aString;
   int numEntries, i=0;
-  bool found;
+  //  bool found;
 
   numEntries =  familyListBox->count();
   aString = selFont.family();
-  found = false;
+  //  found = false;
 
   for (i = 0; i < numEntries; i++) {
     if (aString.lower() == (familyListBox->text(i).lower())) {
       familyListBox->setCurrentItem(i);
-      found = true;
+      //      found = true;
       break;
     }
   }
@@ -379,12 +379,12 @@ void KFontChooser::setupDisplay()
 
   numEntries =  sizeListBox->count();
   aString.setNum(selFont.pointSize());
-  found = false;
+  //  found = false;
 
   for (i = 0; i < numEntries; i++){
     if (aString == sizeListBox->text(i)) {
       sizeListBox->setCurrentItem(i);
-      found = true;
+      //      found = true;
       break;
     }
   }
@@ -416,7 +416,7 @@ void KFontChooser::getFontList( QStringList &list, bool fixed )
         // need a family name, style, and point size.
         QStringList styles(dbase.styles(*it));
         QStringList::Iterator astyle = styles.begin();
- 
+
         QFontInfo info(dbase.font(*it, *astyle, 10));
         if (info.fixedPitch())
           lstFixed.append(*it);
@@ -564,6 +564,10 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.58  2001/01/15 14:27:24  knoll
+* arrggll... and I was wondering why people complained about not
+* seeing any thai fonts...
+*
 * Revision 1.57  2000/12/11 23:50:47  granroth
 * Pretty major change in the way that fonts are found.  Previously, all
 * fonts using KFontDialog or KFontChooser were found using XListFonts.
