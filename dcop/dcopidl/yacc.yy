@@ -5,6 +5,8 @@
 
 #include <qstring.h>
 
+#define AMP_ENTITY "&"
+
 extern int yylex();
 
 // extern QString idl_lexFile;
@@ -204,7 +206,7 @@ return
 	  }
 	| T_CONST T_IDENTIFIER T_AMPERSAND
 	  {
-		QString* tmp = new QString("<RET type=\"%1\" qleft=\"const\" qright=\"&amp;\"/>");
+		QString* tmp = new QString("<RET type=\"%1\" qleft=\"const\" qright=\"" AMP_ENTITY "\"/>");
 		*tmp = tmp->arg( *($2) );
 		$$ = tmp;		
 	  }
@@ -216,7 +218,7 @@ return
 	  }
 	| T_CONST T_IDENTIFIER T_LESS return_params T_GREATER T_AMPERSAND
 	  {
-		QString* tmp = new QString("<RET type=\"%1<%2>\" qleft=\"const\" qright=\"&amp;\"/>");
+		QString* tmp = new QString("<RET type=\"%1<%2>\" qleft=\"const\" qright=\"" AMP_ENTITY "\"/>");
 		*tmp = tmp->arg( *($2) ).arg( *($4) );
 		$$ = tmp;		
 	  }
@@ -240,7 +242,7 @@ params
 param
 	: T_CONST T_IDENTIFIER T_AMPERSAND T_IDENTIFIER default
 	  {
-		QString* tmp = new QString("<ARG name=\"%1\" type=\"%2\" qleft=\"const\" qright=\"&amp;\"/>");
+		QString* tmp = new QString("<ARG name=\"%1\" type=\"%2\" qleft=\"const\" qright=\"" AMP_ENTITY "\"/>");
 		*tmp = tmp->arg( *($4) ).arg( *($2) );
 		$$ = tmp;		
 	  }
@@ -258,13 +260,13 @@ param
 	  }
 	| T_IDENTIFIER T_LESS return_params T_GREATER T_AMPERSAND T_IDENTIFIER
 	  {
-		QString* tmp = new QString("<ARG name=\"%1\" type=\"%2<%3>\" qright=\"&amp;\"/>");
+		QString* tmp = new QString("<ARG name=\"%1\" type=\"%2<%3>\" qright=\"" AMP_ENTITY "\"/>");
 		*tmp = tmp->arg( *($6) ).arg( *($1) ).arg( *($3) );
 		$$ = tmp;		
 	  }
 	| T_CONST T_IDENTIFIER T_LESS return_params T_GREATER T_AMPERSAND T_IDENTIFIER
 	  {
-		QString* tmp = new QString("<ARG name=\"%1\" type=\"%1<%2>\" qleft=\"const\" qright=\"&amp;\"/>");
+		QString* tmp = new QString("<ARG name=\"%1\" type=\"%1<%2>\" qleft=\"const\" qright=\"" AMP_ENTITY "\"/>");
 		*tmp = tmp->arg( *($7) ).arg( *($2) ).arg( *($4) );
 		$$ = tmp;		
 	  }
