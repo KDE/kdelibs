@@ -2020,7 +2020,7 @@ void KHTMLPart::slotChildURLRequest( const KURL &url, const KParts::URLArgs &arg
 khtml::ChildFrame *KHTMLPart::frame( const QObject *obj )
 {
   assert( obj->inherits( "KParts::ReadOnlyPart" ) );
-  const KParts::ReadOnlyPart *part = (KParts::ReadOnlyPart *)obj;
+  const KParts::ReadOnlyPart *part = static_cast<const KParts::ReadOnlyPart *>( obj );
 
   FrameIt it = d->m_frames.begin();
   FrameIt end = d->m_frames.end();
