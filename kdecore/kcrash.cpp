@@ -34,6 +34,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+#include <qwindowdefs.h>
 #include <kglobal.h>
 #include <kinstance.h>
 #include <kaboutdata.h>
