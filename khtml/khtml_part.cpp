@@ -2617,7 +2617,10 @@ void KHTMLPart::findTextNext()
   long options = 0;
   if ( d->m_findDialog ) // 0 when we close the dialog
   {
-    d->m_find->setPattern( d->m_findDialog->pattern() );
+    if ( d->m_find->pattern() != d->m_findDialog->pattern() ) {
+	    d->m_find->setPattern( d->m_findDialog->pattern() );
+	    d->m_find->resetCounts();
+    }
     long options = d->m_findDialog->options();
     if ( d->m_lastFindState.options != options )
     {
