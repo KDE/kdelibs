@@ -854,7 +854,6 @@ int KExtendedSocket::lookup()
       if (!process_flags(m_flags, hint))
 	return EAI_BADFLAGS;
 
-      kdDebug(170) << "Performing lookup on " << d->host << "|" << d->service << endl;
       int err = doLookup(d->host, d->service, hint, &d->resolution);
       if (err != 0)
 	{
@@ -868,7 +867,6 @@ int KExtendedSocket::lookup()
       /* leave hint.ai_socktype the same */
       hint.ai_flags |= AI_PASSIVE;  // this is passive, for bind()
 
-      kdDebug(170) << "Performing lookup on " << d->localhost << "|" << d->localservice << endl;
       int err = doLookup(d->localhost, d->localservice, hint, &d->bindres);
       if (err != 0)
 	{
@@ -998,7 +996,7 @@ int KExtendedSocket::listen(int N)
       if (!valid_family(p, m_flags))
 	continue;
 
-      kdDebug(170) << "Trying to listen on " << pretty_sock(p) << endl;
+      //kdDebug(170) << "Trying to listen on " << pretty_sock(p) << endl;
       sockfd = ::socket(p->ai_family, p->ai_socktype, p->ai_protocol);
       if (sockfd == -1)
 	{
@@ -1016,7 +1014,7 @@ int KExtendedSocket::listen(int N)
 	}
 
       // ok, socket has bound
-      kdDebug(170) << "Socket bound: " << sockfd << endl;
+      // kdDebug(170) << "Socket bound: " << sockfd << endl;
       break;
     }
 
@@ -1252,7 +1250,7 @@ int KExtendedSocket::connect()
 
 	      // this means that an event occurred in the socket
 	      int errcode;
-	      ksocklen_t len = sizeof(errcode);
+	      socklen_t len = sizeof(errcode);
 	      retval = getsockopt(sockfd, SOL_SOCKET, SO_ERROR, (char*)&errcode,
 				  &len);
 	      if (retval == -1 || errcode != 0)
