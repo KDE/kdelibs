@@ -95,7 +95,7 @@ QString whatstr;
   mUseSSLv3 = new QCheckBox(i18n("Enable SSLv&3"), tabSSL);
   connect(mUseSSLv3, SIGNAL(clicked()), SLOT(configChanged()));
   grid->addWidget(mUseSSLv3, 1, 1);
-  whatstr = i18n("SSL v3 is the second revision of the SSL protocol."
+  whatstr = i18n("SSL v3 is the third revision of the SSL protocol."
                 " It is most common to enable v2 and v3.");
   QWhatsThis::add(mUseSSLv3, whatstr);
 
