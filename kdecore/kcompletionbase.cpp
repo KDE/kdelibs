@@ -66,8 +66,11 @@ KCompletionBase::~KCompletionBase()
 {
     if( m_bAutoDelCompObj )
     {
+	    // We need to use a QGaurdedPtr at some point here
+	    // since we dish the completion pointer out where
+	    // someone might accidentally delete it!
         delete m_pCompObj;
-        m_pCompObj = 0; // Prevent SEGFAULT on double deletions :)
+        m_pCompObj = 0;
     }
     delete m_pCompletionMenu;
 }

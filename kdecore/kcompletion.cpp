@@ -145,11 +145,9 @@ QString KCompletion::makeCompletion( const QString& string )
 	else
         postProcessMatch( &completion );
 
-/*
- // On each completion ?????? Try typing an URL in konqueror with this enabled !
+
     if ( completion.isNull() )
         doBeep( NoMatch );
-*/
 
     return completion;
 }

@@ -777,6 +777,19 @@ protected:
 
 protected:
 
+	/**
+	 * Returns an instance of the completion object.
+	 *
+	 * This method is only different from @ref completionObject
+	 * in that it does not create a new KCompletion object if
+	 * the internal pointer is null.  Use this method to get the
+	 * pointer to a completion object when inheriting from this
+	 * widget so that you will not inadvertantly create it!!
+	 *	
+	 * @ref an instance of the completion object.
+	 */
+     KCompletion* compObj() const { return m_pCompObj; }
+
     /**
     * Returns a key-binding maps
     *
