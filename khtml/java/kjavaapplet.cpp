@@ -181,7 +181,7 @@ KJavaLiveConnect::KJavaLiveConnect(KJavaAppletContext* c, KJavaApplet* a)
 
 bool KJavaLiveConnect::get(const unsigned long objid, const QString & field, KParts::LiveConnectExtension::Type & type, unsigned long & rid, QString & value )
 {
-    return context->getMember(applet, objid, field, (int) type, rid, value);
+    return context->getMember(applet, objid, field, (int&) type, rid, value);
 }
 
 bool KJavaLiveConnect::put(const unsigned long objid, const QString & name, const QString & value)
@@ -191,7 +191,7 @@ bool KJavaLiveConnect::put(const unsigned long objid, const QString & name, cons
 
 bool KJavaLiveConnect::call( const unsigned long objid, const QString & func, const QStringList & args, KParts::LiveConnectExtension::Type & type, unsigned long & retobjid, QString & value )
 {
-    return context->callMember(applet, objid, func, args, (int) type, retobjid, value);
+    return context->callMember(applet, objid, func, args, (int&) type, retobjid, value);
 }
 
 void KJavaLiveConnect::unregister(const unsigned long objid)
