@@ -121,20 +121,15 @@ void KListView::slotAutoSelect()
   QListViewItem* previousItem = currentItem();
   setCurrentItem( m_pCurrentItem );
 
-  bool block = signalsBlocked();
-  blockSignals( true );
-
-  //No Ctrl? Then clear before!
-  if( !(keybstate & ControlMask) )  
-    clearSelection(); 
-
-  blockSignals( block );
-
   if( m_pCurrentItem ) {
     //Shift pressed?
     if( (keybstate & ShiftMask) ) {
-      block = signalsBlocked();
+      bool block = signalsBlocked();
       blockSignals( true );
+
+      //No Ctrl? Then clear before!
+      if( !(keybstate & ControlMask) )  
+	clearSelection(); 
 
       bool select = !m_pCurrentItem->isSelected();
       bool update = viewport()->isUpdatesEnabled();
@@ -166,6 +161,14 @@ void KListView::slotAutoSelect()
     else if( (keybstate & ControlMask) )
       setSelected( m_pCurrentItem, !m_pCurrentItem->isSelected() );
     else {
+      bool block = signalsBlocked();
+      blockSignals( true );
+
+      if( !m_pCurrentItem->isSelected() )
+	clearSelection(); 
+
+      blockSignals( block );
+
       setSelected( m_pCurrentItem, true );
     }
   }
