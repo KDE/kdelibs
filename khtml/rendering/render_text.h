@@ -42,13 +42,13 @@ namespace khtml
 class TextSlave
 {
 public:
-    TextSlave(int x, int y, QChar *text, int len,
+    TextSlave(int x, int y, int start, int len,
 	      int baseline, int width,
               bool reversed = false, int toAdd = 0, bool firstLine = false)
     {
         m_x = x;
         m_y = y;
-        m_text = text;
+        m_start = start;
         m_len = len;
         m_baseline = baseline;
         m_width = width;
@@ -56,13 +56,12 @@ public:
         m_firstLine = firstLine;
         m_toAdd = toAdd;
     }
-    ~TextSlave();
     void printDecoration( QPainter *pt, RenderText* p, int _tx, int _ty, int decoration, bool begin, bool end);
     void printBoxDecorations(QPainter *p, RenderStyle* style, RenderText *parent, int _tx, int _ty, bool begin, bool end);
-    void printSelection(const Font *f, QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos);
+    void printSelection(const Font *f, RenderText *text, QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos);
 
     // Return before, after (offset set to max), or inside the text, at @p offset
-    FindSelectionResult checkSelectionPoint(int _x, int _y, int _tx, int _ty, const Font *f, int & offset, short lineheight);
+    FindSelectionResult checkSelectionPoint(int _x, int _y, int _tx, int _ty, const Font *f, RenderText *text, int & offset, short lineheight);
 
     /**
      * if this textslave was rendered @ref _ty pixels below the upper edge
@@ -72,19 +71,13 @@ public:
     bool checkVerticalPoint(int _y, int _ty, int _h, int height)
     { if((_ty + m_y > _y + _h) || (_ty + m_y + m_baseline + height < _y)) return false; return true; }
 
-    QChar* m_text;
+    int m_start;
     int m_y;
     unsigned short m_len;
     short m_x;
     unsigned short m_baseline;
     unsigned short m_width;
 
-    // If m_reversed is true, this is right to left text.
-    // In this case, m_text will point to a QChar array which holds the already
-    // reversed string, and the slave has to delete this string by itself.
-    // If false, m_text points into the render text's own QChar array,
-    // and in this case it's allowed to do substractions between m_texts of
-    // different slaves.
     bool m_reversed : 1;
     bool m_firstLine : 1;
     int m_toAdd : 14; // for justified text

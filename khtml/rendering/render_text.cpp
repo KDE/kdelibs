@@ -37,11 +37,7 @@
 using namespace khtml;
 using namespace DOM;
 
-TextSlave::~TextSlave()
-{
-}
-
-void TextSlave::printSelection(const Font *f, QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos)
+void TextSlave::printSelection(const Font *f, RenderText *text, QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos)
 {
     if(startPos > m_len) return;
     if(startPos < 0) startPos = 0;
@@ -53,7 +49,7 @@ void TextSlave::printSelection(const Font *f, QPainter *p, RenderStyle* style, i
     ty += m_baseline;
 
     //kdDebug( 6040 ) << "textSlave::printing(" << s.string() << ") at(" << x+_tx << "/" << y+_ty << ")" << endl;
-    f->drawText(p, m_x + tx, m_y + ty, m_text, m_len, 
+    f->drawText(p, m_x + tx, m_y + ty, text->str->s, text->str->l, m_start, m_len, 
 		m_toAdd, m_reversed ? QPainter::RTL : QPainter::LTR, startPos, endPos, c);
     p->restore();
 }
@@ -121,7 +117,7 @@ void TextSlave::printBoxDecorations(QPainter *pt, RenderStyle* style, RenderText
         p->printBorder(pt, _tx, _ty, width, height, style, begin, end);
 }
 
-FindSelectionResult TextSlave::checkSelectionPoint(int _x, int _y, int _tx, int _ty, const Font *f, int & offset, short lineHeight)
+FindSelectionResult TextSlave::checkSelectionPoint(int _x, int _y, int _tx, int _ty, const Font *f, RenderText *text, int & offset, short lineHeight)
 {
 //     kdDebug(6040) << "TextSlave::checkSelectionPoint " << this << " _x=" << _x << " _y=" << _y
 //                   << " _tx+m_x=" << _tx+m_x << " _ty+m_y=" << _ty+m_y << endl;
@@ -152,7 +148,7 @@ FindSelectionResult TextSlave::checkSelectionPoint(int _x, int _y, int _tx, int 
     if ( m_reversed ) {
 	delta -= m_width;
 	while(pos < m_len) {
-	    int w = f->width(*(m_text+pos));
+	    int w = f->width( text->str->s, text->str->l, m_start + pos);
 	    int w2 = w/2;
 	    w -= w2;
 	    delta += w2;
@@ -162,7 +158,7 @@ FindSelectionResult TextSlave::checkSelectionPoint(int _x, int _y, int _tx, int 
 	}
     } else {
 	while(pos < m_len) {
-	    int w = f->width(*(m_text+pos));
+	    int w = f->width( text->str->s, text->str->l, m_start + pos);
 	    int w2 = w/2;
 	    w -= w2;
 	    delta -= w2;
@@ -307,14 +303,14 @@ TextSlave * RenderText::findTextSlave( int offset, int &pos )
     while(offset > off && si < m_lines.count())
     {
         s = m_lines[++si];
-        off = s->m_text - str->s + s->m_len;
+        off = s->m_start + s->m_len;
     }
     // we are now in the correct text slave
     pos = (offset > off ? s->m_len : s->m_len - (off - offset) );
     return s;
 }
 
-bool RenderText::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
+bool RenderText::nodeAtPoint(NodeInfo& /*info*/, int _x, int _y, int _tx, int _ty)
 {
     assert(parent());
 
@@ -339,7 +335,7 @@ bool RenderText::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
 
     bool oldinside = mouseInside();
     setMouseInside(inside);
-    if (mouseInside() != inside && element())
+    if (mouseInside() != oldinside && element())
         element()->setChanged();
 
     return inside;
@@ -356,19 +352,19 @@ FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int
         TextSlave* s = m_lines[si];
         int result;
         const Font *f = htmlFont( si==0 );
-        result = s->checkSelectionPoint(_x, _y, _tx, _ty, f, offset, m_lineHeight);
+        result = s->checkSelectionPoint(_x, _y, _tx, _ty, f, this, offset, m_lineHeight);
 
 //         kdDebug(6040) << "RenderText::checkSelectionPoint " << this << " line " << si << " result=" << result << " offset=" << offset << endl;
         if ( result == SelectionPointInside ) // x,y is inside the textslave
         {
-            offset += s->m_text - str->s; // add the offset from the previous lines
+            offset += s->m_start; // add the offset from the previous lines
             //kdDebug(6040) << "RenderText::checkSelectionPoint inside -> " << offset << endl;
             node = element();
             return SelectionPointInside;
         } else if ( result == SelectionPointBefore ) {
             // x,y is before the textslave -> stop here
             if ( si > 0 && lastPointAfterInline ) {
-                offset = lastPointAfterInline->m_text - str->s + lastPointAfterInline->m_len;
+                offset = lastPointAfterInline->m_start + lastPointAfterInline->m_len;
                 //kdDebug(6040) << "RenderText::checkSelectionPoint before -> " << offset << endl;
                 node = element();
                 return SelectionPointInside;
@@ -404,10 +400,10 @@ void RenderText::cursorPos(int offset, int &_x, int &_y, int &height)
   height = m_lineHeight; // ### firstLine!!! s->m_height;
 
   const QFontMetrics &fm = metrics( false ); // #### wrong for first-line!
-  QString tekst(s->m_text, s->m_len);
+  QString tekst(str->s + s->m_start, s->m_len);
   _x = s->m_x + (fm.boundingRect(tekst, pos)).right();
   if(pos)
-      _x += fm.rightBearing( *(s->m_text + pos - 1 ) );
+      _x += fm.rightBearing( *(str->s + s->m_start + pos - 1 ) );
 
   int absx, absy;
 
@@ -537,8 +533,8 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
             if(_style->color() != p->pen().color())
                 p->setPen(_style->color());
 
-	    if (s->m_text && s->m_len > 0)
-		font->drawText(p, s->m_x + tx, s->m_y + ty + s->m_baseline, s->m_text, s->m_len, 
+	    if (s->m_len > 0)
+		font->drawText(p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s, str->l, s->m_start, s->m_len, 
 			       s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR);
 
             if(d != TDNONE)
@@ -548,12 +544,12 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
             }
 
             if (selectionState() != SelectionNone ) {
-		int offset = s->m_text - str->s;
+		int offset = s->m_start;
 		int sPos = QMAX( startPos - offset, 0 );
 		int ePos = QMIN( endPos - offset, s->m_len );
                 //kdDebug(6040) << this << " printSelection with startPos=" << sPos << " endPos=" << ePos << endl;
 		if ( sPos < ePos )
-		    s->printSelection(font, p, _style, tx, ty, sPos, ePos);
+		    s->printSelection(font, this, p, _style, tx, ty, sPos, ePos);
 
             }
             if(renderOutline) {
@@ -639,7 +635,7 @@ void RenderText::calcMinMaxWidth()
         } while( i+wordlen < len && !(isBreakable( str->s, i+wordlen, str->l )) );
         if (wordlen)
         {
-            int w = f->width(str->s+i, wordlen);
+            int w = f->width(str->s, str->l, i, wordlen);
             currMinWidth += w;
             currMaxWidth += w;
         }
@@ -658,7 +654,7 @@ void RenderText::calcMinMaxWidth()
             {
                 if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
                 currMinWidth = 0;
-                currMaxWidth += f->width( *(str->s+i+wordlen) );
+                currMaxWidth += f->width( str->s, str->l, i + wordlen );
             }
             /* else if( c == '-')
             {
@@ -765,9 +761,7 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
     // ### should not be needed!!!
     if(len == 0 || (len == 1 && *(str->s+from) == '\n') ) return;
 
-    QChar *ch;
     reverse = reverse && !style()->visuallyOrdered();
-    ch = str->s+from;
 
     // ### margins and RTL
     if(from == 0 && parent()->isInline() && parent()->firstChild()==this)
@@ -780,11 +774,12 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
         width -= marginRight();
 
 #ifdef DEBUG_LAYOUT
+    QChar *ch = str->s+from;
     QConstString cstr(ch, len);
     qDebug("setting slave text to *%s*, len=%d, w)=%d" , cstr.string().latin1(), len, width );//" << y << ")" << " height=" << lineHeight(false) << " fontHeight=" << metrics(false).height() << " ascent =" << metrics(false).ascent() << endl;
 #endif
 
-    TextSlave *s = new TextSlave(x, y, ch, len,
+    TextSlave *s = new TextSlave(x, y, from, len,
                                  baselinePosition( firstLine ),
                                  width, reverse, spaceAdd, firstLine);
 
@@ -812,7 +807,7 @@ unsigned int RenderText::width(unsigned int from, unsigned int len, const Font *
     if ( f == &style()->htmlFont() && from == 0 && len == str->l )
  	 w = m_maxWidth;
     else
-	w = f->width(str->s+from, len );
+	w = f->width(str->s, str->l, from, len );
 
     // ### add margins and support for RTL
 

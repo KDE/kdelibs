@@ -78,11 +78,11 @@ public:
 
     void update( QPaintDeviceMetrics *devMetrics ) const;
 
-    void drawText( QPainter *p, int x, int y, QChar *str, int len, int width,
+    void drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, int len, int width,
                    QPainter::TextDirection d, int from=-1, int to=-1, QColor bg=QColor() ) const;
 
-    int width( QChar *str, int len ) const;
-    int width( QChar ch ) const;
+    int width( QChar *str, int slen, int pos, int len ) const;
+    int width( QChar *str, int slen, int pos ) const;
 
 private:
     FontDef fontDef;

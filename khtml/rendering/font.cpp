@@ -34,13 +34,13 @@
 
 using namespace khtml;
 
-void Font::drawText( QPainter *p, int x, int y, QChar *str, int len,
+void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, int len,
         int toAdd, QPainter::TextDirection d, int from, int to, QColor bg ) const
 {
     // ### fixme for RTL
     if ( !letterSpacing && !wordSpacing && !toAdd && from==-1 ) {
 	// simply draw it
-	p->drawText( x, y, QConstString(str, len).string(), len, d );
+	p->drawText( x, y, QConstString(str, slen).string(), pos, len, d );
     } else {
 	int numSpaces = 0;
 	if ( toAdd ) {
@@ -49,13 +49,13 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int len,
 		    numSpaces++;
 	}
 
-	QConstString cstr( str, len );
+	QConstString cstr( str, slen );
 	QString s( cstr.string() );
 	if ( d == QPainter::RTL ) {
-	    x += width( str, len ) + toAdd;
+	    x += width( str, slen, pos, len ) + toAdd;
 	}
 	for( int i = 0; i < len; i++ ) {
-	    int chw = fm.charWidth( s, i );
+	    int chw = fm.charWidth( s, pos+i );
 	    if ( letterSpacing )
 		chw += letterSpacing;
 	    if ( (wordSpacing || toAdd) && str[i].isSpace() ) {
@@ -74,7 +74,7 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int len,
                 if ( bg.isValid() )
                     p->fillRect( x, y-fm.ascent(), chw, fm.height(), bg );
 
-	        p->drawText( x, y, s, i, 1, d );
+	        p->drawText( x, y, s, pos+i, 1, d );
             }
 	    if ( d != QPainter::RTL )
 		x += chw;
@@ -83,9 +83,10 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int len,
 }
 
 
-int Font::width( QChar *chs, int len ) const
+int Font::width( QChar *chs, int slen, int pos, int len ) const
 {
-    int w = fm.width( QConstString( chs, len).string(), len );
+    // ### might be a little inaccurate
+    int w = fm.width( QConstString( chs+pos, slen-pos).string(), len );
 
     if ( letterSpacing )
 	w += len*letterSpacing;
@@ -100,14 +101,14 @@ int Font::width( QChar *chs, int len ) const
     return w;
 }
 
-int Font::width( QChar ch ) const
+int Font::width( QChar *chs, int slen, int pos ) const
 {
-    int w = fm.width( ch );
+    int w = fm.charWidth( QConstString( chs, slen).string(), pos );
 
     if ( letterSpacing )
 	w += letterSpacing;
 
-    if ( wordSpacing && ch.isSpace() )
+    if ( wordSpacing && (chs+pos)->isSpace() )
 		w += wordSpacing;
     return w;
 }
