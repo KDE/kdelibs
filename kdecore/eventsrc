@@ -663,7 +663,7 @@ Comment[sr@Latn]=Нешто посебно се десило у програму
 Comment[sv]=Någonting speciellt inträffade i programmet
 Comment[zh_CN]=程序中发生了特殊情况
 default_presentation=1
-default_sound=KDE_Beep_Beep.wav
+default_sound=KDE_Beep.ogg
 level=1
 
 [warning]
@@ -971,7 +971,7 @@ Comment[sv]=KDE startas
 Comment[uz]=KDE ишга тушмоқда
 Comment[zh_CN]=KDE 正在启动
 default_presentation=1
-default_sound=KDE_Startup.wav
+default_sound=KDE_Startup_1.ogg
  
 [exitkde]
 Name=Logout
@@ -1059,7 +1059,7 @@ Comment[sv]=KDE avslutas
 Comment[uz]=KDE ишини якунламоқда
 Comment[zh_CN]=KDE 正在退出
 default_presentation=1
-default_sound=KDE_Logout.wav
+default_sound=KDE_Logout_3.ogg
 
 [printerror]
 Name=Print error
@@ -1304,7 +1304,7 @@ Comment[uz]=Маълумот хабари кўрсатилди
 Comment[wa]=On messaedje d' informåcion est håyné
 Comment[xx]=xxAn information message is being shownxx
 Comment[zh_CN]=正在显示信息性消息
-default_sound=KDE_Notify.wav
+default_sound=KDE_Chimes_2.ogg
 default_presentation=65
 nopresentation=18
 
@@ -1422,7 +1422,7 @@ Comment[wa]=On messaedje d' adviertixhmint est håyné
 Comment[xx]=xxA warning message is being shownxx
 Comment[zh_CN]=正在显示警告消息
 Comment[zh_TW]=警告訊息已顯示
-default_sound=KDE_Error.wav
+default_sound=KDE_Error_1.ogg
 default_presentation=65
 nopresentation=18
 level=2
@@ -1538,7 +1538,7 @@ Comment[wa]=On messaedje critike est håyné
 Comment[xx]=xxA critical message is being shownxx
 Comment[zh_CN]=正在显示关键消息
 Comment[zh_TW]=嚴重的警告訊息已顯示
-default_sound=KDE_Critical_Error.wav
+default_sound=KDE_Glass_Break.ogg
 default_presentation=65
 nopresentation=18
 level=4
@@ -1657,7 +1657,7 @@ Comment[wa]=Ene kesse est dmandêye
 Comment[xx]=xxA question is being askedxx
 Comment[zh_CN]=正在提问
 Comment[zh_TW]=問題已經在詢問中
-default_sound=KDE_Beep_Ahem.wav
+default_sound=KDE_Vox_Ahem.ogg
 default_presentation=65
 nopresentation=18
 
