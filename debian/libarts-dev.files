@@ -8,6 +8,7 @@ usr/lib/libx11globalcomm.so
 usr/lib/libartsc.so
 usr/lib/libartscbackend.so
 usr/lib/libartsdsp.so
-usr/lib/libqtmcop.so
+usr/lib/libkmedia2_idl.so
+usr/lib/libkmedia2.so
 usr/include/kde/arts/*
 usr/include/kde/artsc/*

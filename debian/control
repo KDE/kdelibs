@@ -51,7 +51,7 @@ Description: KDE DB libraries (postgresql libraries)
 Package: libarts
 Architecture: any
 Section: libs
-Replaces: libarts-alsa, kdelibs3 (<< 4:2.1-final-0)
+Replaces: libarts-alsa
 Depends: ${shlibs:Depends}
 Suggests: kdelibs3
 Conflicts: suidmanager (<< 0.50), libarts-alsa, kdelibs3 (<< 4:2.1-final-0)
@@ -67,7 +67,7 @@ Description: aRts Sound system
 Package: libkmid
 Architecture: any
 Section: libs
-Replaces: libkmid-alsa
+Replaces: libkmid-alsa, libarts (<< 4:2.2-alpha1-4), libarts-alsa (<< 4:2.2-alpha1-4)
 Depends: ${shlibs:Depends}
 Conflicts: libkmid-alsa
 Description: aRts Sound system (midi/kmedia support libraries)
@@ -83,7 +83,7 @@ Description: aRts Sound system (midi/kmedia support libraries)
 Package: libkmid-alsa
 Architecture: any
 Section: libs
-Replaces: libkmid
+Replaces: libkmid, libarts (<< 4:2.2-alpha1-4), libarts-alsa (<< 4:2.2-alpha1-4)
 Depends: ${shlibs:Depends}
 Conflicts: libkmid
 Description: aRts Sound system (midi/kmedia support libraries with alsa)
@@ -99,7 +99,7 @@ Description: aRts Sound system (midi/kmedia support libraries with alsa)
 Package: libarts-alsa
 Architecture: any
 Section: libs
-Replaces: libarts, kdelibs3 (<< 4:2.2-alpha1-3)
+Replaces: libarts
 Depends: ${shlibs:Depends}
 Suggests: kdelibs3
 Conflicts: suidmanager (<< 0.50), libarts

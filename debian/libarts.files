@@ -7,13 +7,14 @@ usr/lib/libarts*.so.*
 usr/lib/libarts*.la
 usr/lib/libkmedia2_idl.so.*
 usr/lib/libkmedia2_idl.la
+usr/lib/libkmedia2.so.*
+usr/lib/libkmedia2.la
 usr/lib/libsoundserver_idl.so.*
 usr/lib/libsoundserver_idl.la
 usr/lib/libx11globalcomm.so.*
 usr/lib/libx11globalcomm.la
 usr/lib/libartskde.so
 usr/lib/libartskwrapper.so
-usr/bin/artsmessage
 usr/bin/mcopidl
 usr/bin/artsd
 usr/bin/artsplay

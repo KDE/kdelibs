@@ -103,9 +103,9 @@ binary-arch:  build
 	-rm -f `find debian/libarts-alsa/ -name "knotify.desktop"`
 	-rm -rf debian/libarts-alsa/usr/share/apps/knotify/
 	-mv debian/libarts-alsa/usr/bin/knotify debian/libkmid-alsa/usr/bin/
+	-mv debian/libarts-alsa/usr/bin/artsmessage debian/libkmid-alsa/usr/bin/
 	-mv debian/libarts-alsa/usr/lib/*notify* debian/libkmid-alsa/usr/lib/
 	-mv debian/libarts-alsa/usr/lib/*qtmcop* debian/libkmid-alsa/usr/lib/
-	-mv debian/libarts-alsa/usr/lib/*kmedia* debian/libkmid-alsa/usr/lib/
 	-rm -f debian/kdelibs3/usr/share/doc/kde/HTML/default
 	# messy cleanup
 	-rm -rf debian/libarts-alsa/usr/include debian/libkmid-alsa/usr/include
