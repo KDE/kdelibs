@@ -46,9 +46,43 @@ public:
 signals:
 
   /**
-   * Gets emitted when the execute operation has been performed.
+   * This signal is emitted whenever the user executes an iconview item. 
+   * That means depending on the KDE wide Single Click/Double Click 
+   * setting the user clicked or double clicked on that item.
+   * @param item is the pointer to the executed iconview item. 
+   *
+   * Note that you may not delete any @ref QIconViewItem objects in slots 
+   * connected to this signal.
    */
   void executed( QIconViewItem *item );
+
+  /**
+   * This signal is emitted whenever the user executes an iconview item. 
+   * That means depending on the KDE wide Single Click/Double Click 
+   * setting the user clicked or double clicked on that item.
+   * @param item is the pointer to the executed iconview item. 
+   * @param pos is the position where the user has clicked
+   *
+   * Note that you may not delete any @ref QIconViewItem objects in slots 
+   * connected to this signal.
+   */
+  void executed( QIconViewItem *item, const QPoint &pos );
+
+  /**
+   * This signal gets emitted whenever the user double clicks into the 
+   * iconview. 
+   * @param item is the pointer to the clicked iconview item or NULL, 
+   * if the user didn't click on an item. 
+   * @param pos is the position where the user has clicked, and 
+   *
+   * Note that you may not delete any @ref QIconViewItem objects in slots 
+   * connected to this signal.
+   *
+   * This signal is more or less here for the sake of completeness.
+   * You should normally not need to use this. In most cases it´s better 
+   * to use @ref #executed instead.
+   */
+  void doubleClicked( QIconViewItem *item, const QPoint &pos );
 
 protected slots:
  void slotOnItem( QIconViewItem *item );
@@ -60,11 +94,12 @@ protected slots:
   * Auto selection happend.
   */
  void slotAutoSelect();
- void slotExecute( QIconViewItem *item );
+ void slotExecute( QIconViewItem *item, const QPoint &pos );
 
 protected:
   virtual void focusOutEvent( QFocusEvent *fe );
   virtual void contentsMousePressEvent( QMouseEvent *e );
+  virtual void contentsMouseDoubleClickEvent ( QMouseEvent * e );
 
   QCursor oldCursor;
   bool m_bUseSingle;
