@@ -56,8 +56,8 @@ void KComboBox::init()
 {
     // Do not put text in the list, but do not loose
     // it either when rotating up.
-    m_strCurrentText = QString::null;
-	
+    m_strHistoryIterator = QString::null;
+
     // Permanently set some parameters in the parent object.
     QComboBox::setAutoCompletion( false );
 
@@ -90,49 +90,35 @@ void KComboBox::makeCompletion( const QString& text )
 {
     if( m_pEdit )
     {
-	KCompletion *comp = compObj();
-	
-	// We test for zero length text because for some
-	// reason we get an extra text completion with an empty
-	// text when the insertion policy is set to "NoInsertion"	
-	if( !comp || text.length() == 0 ) {
-	    qDebug("**** LALALALLA *********");
-	    return; // No Completion object or empty completion text allowed!!
-	}
+       KCompletion *comp = compObj();
 
-	QString match;
-    	int pos = cursorPosition();		
+       // We test for zero length text because for some
+       // reason we get an extra text completion with an empty
+       // text when the insertion policy is set to "NoInsertion"
+       if( !comp || text.length() == 0 )
+       {
+	  return; // No Completion object or empty completion text allowed!
+       }
+
+    	int pos = cursorPosition();
     	KGlobalSettings::Completion mode = completionMode();
+		QString match = comp->makeCompletion( text );
 
-#if 0
-	// what is this?? this breaks completion and doesn't make much sense.
-	// same in KLineEdit
-    	if( mode == KGlobalSettings::CompletionShell &&
-    		comp->hasMultipleMatches() &&
-    		text != comp->lastMatch() )
-    	{
-	    match = comp->nextMatch();
-	}
-	else {
-	    match = comp->makeCompletion( text );
-	}
-#endif
-	match = comp->makeCompletion( text );
-	     	
         // If no match or the same text, simply return without completing.
         if( match.isNull() || match == text )
         {
        	    // Put the cursor at the end when in semi-automatic
-	    // mode and completion is invoked with the same text.
-	    if( mode == KGlobalSettings::CompletionMan ) {
-		m_pEdit->end( false );
-	    }    	
-	    return;
+	        // mode and completion is invoked with the same text.
+    	    if( mode == KGlobalSettings::CompletionMan )
+			{
+	    	    m_pEdit->end( false );
+	        }
+    	    return;
       	}
-      	
+
       	// Set the current text to the one completed.
-	setEditText( match );
-	
+        setEditText( match );
+
 	    // Hightlight the text whenever appropriate.
     	if( mode == KGlobalSettings::CompletionAuto ||
 	    	mode == KGlobalSettings::CompletionMan )
@@ -141,17 +127,18 @@ void KComboBox::makeCompletion( const QString& text )
             m_pEdit->setCursorPosition( pos );
         }
 	}
+	// Read - only combobox
     else if( !m_pEdit )
     {
-		if( text.isNull() )
-		{
-		    return;
-		}
-		int index = listBox()->index( listBox()->findItem( text ) );
-		if( index >= 0 )
-		{
-		    setCurrentItem( index );
-		}
+	if( text.isNull() )
+	{
+	    return;
+	}
+	int index = listBox()->index( listBox()->findItem( text ) );
+	if( index >= 0 )
+	{
+	    setCurrentItem( index );
+	}
     }
 
 }
@@ -161,93 +148,90 @@ void KComboBox::rotateText( KCompletionBase::KeyBindingType type )
     if( m_pEdit )
     {
     	// Support for rotating through highlighted text!  This means
-		// that if there are multiple matches for the portion of text
-		// entered into the combo box,  one can simply rotate through
-		// all the other possible matches using the previous/next match
-		// keys.  BTW this feature only works if there is a completion
-		// object available to begin with.
-		KCompletion* comp = compObj();
-		if( comp &&
-			( type == KCompletionBase::PrevCompletionMatch ||
-			  type == KCompletionBase::NextCompletionMatch ) )
-		{
-			QString input = ( type == KCompletionBase::PrevCompletionMatch ) ? comp->previousMatch() : comp->nextMatch();
-			
-			// Ignore rotating to the same text			
-            if( input.isNull() || input == currentText() )
+	// that if there are multiple matches for the portion of text
+	// entered into the combo box,  one can simply rotate through
+	// all the other possible matches using the previous/next match
+	// keys.  BTW this feature only works if there is a completion
+	// object available to begin with.
+	KCompletion* comp = compObj();
+	if( comp &&
+		( type == KCompletionBase::PrevCompletionMatch ||
+		  type == KCompletionBase::NextCompletionMatch ) )
+	{
+	   QString input = ( type == KCompletionBase::PrevCompletionMatch ) ? comp->previousMatch() : comp->nextMatch();
+	   // Ignore rotating to the same text
+           if( input.isNull() || input == currentText() )
             {
                 return;
             }
             bool marked = m_pEdit->hasMarkedText(); // See if it had marked text
             int pos = cursorPosition(); // Note the current cursor position
    		    setEditText( input );
-            // Re-mark the selection if it was previously
-            // selected
+            // Re-mark the selection if it was
+			// previously selected
             if( marked )
             {
                 m_pEdit->setSelection( pos, input.length() );
-                m_pEdit->setCursorPosition( pos );				
-			}
+                m_pEdit->setCursorPosition( pos );
+	    }
         }
         else if( type == KCompletionBase::RotateUp ||
                  type == KCompletionBase::RotateDown )
         {
-        	/* History list rotation feature:  The code below supports
-        	   *nix shell like history list rotation.  This feature is
-        	   only available when the insertion policy into the listbox
-        	   of the combo widget it set to either "AtTop" or "AtBottom".
-        	   Other insertion policies are not well equipped to support
-       	       "save the last written text" feature of *nix like shells.
-        	   Note: we do not support the edit previous entry feature!! We
-        	   just remeber the text a user types before he started the
-        	   rotation... */
-        	int index = -1;        	
-			QComboBox::Policy policy = insertionPolicy();
-			if( m_strCurrentText.isNull() &&
-				( policy == QComboBox::AtTop ||
-				  policy == QComboBox::AtBottom ) )
-			{
-				if( type == KCompletionBase::RotateUp )
-				{
-					index = ( policy == QComboBox::AtTop ) ? 0 : count() - 1;
-				}
-				if( index == 0 || index == count() - 1 )
-				{
-					m_strCurrentText = currentText();  //Store the current text.
-				}
-			}
-			else			
-			{
-				if( type == KCompletionBase::RotateUp )
-				{
-					if( policy == QComboBox::AtTop )
-						index = currentItem() + 1;
-					else
-						index = currentItem() - 1;
-				}
-				else if( type == KCompletionBase::RotateDown )
-				{
-					if( policy == QComboBox::AtTop )
-						index = currentItem() - 1;
-					else
-						index = currentItem() + 1;
-				}
-			
-			}	
-			if( index > -1 && index < count() )
-			{			
-				setCurrentItem( index );
-			}
-			else
-			{
-				if( !m_strCurrentText.isNull() &&
-					( ( policy == QComboBox::AtTop && index < 0 ) ||
-					  ( policy == QComboBox::AtBottom && index >= count() ) ) )
-				{
-					setEditText( m_strCurrentText );
-					m_strCurrentText = QString::null;				
-				}
-			}
+	   // NOTE: We only keep the text typed whenever the
+	   // insertion policy is set to insert at the top or
+	   // bottom of the queue.
+	   int index = -1;
+	   QComboBox::Policy policy = insertionPolicy();
+	   if( m_strHistoryIterator.isNull() &&
+	      (policy == QComboBox::AtTop ||
+	       policy == QComboBox::AtBottom ) )
+	   {
+	      index = (policy == QComboBox::AtTop) ? -1 : count();
+	      m_strHistoryIterator = currentText();
+	   }
+	   
+	   if( type == KCompletionBase::RotateUp )
+	   {
+	      switch( policy )
+	      {
+	       case QComboBox::AtTop:
+		 index = currentItem() + 1;
+		 break;
+	       case QComboBox::AtBottom:
+	       default:
+		 index = currentItem() - 1;
+		 break;
+	      }
+	   }
+	   else
+	   {
+	      switch( policy )
+	      {
+	       case QComboBox::AtTop:
+		 index = currentItem() - 1;
+		 break;
+	       case QComboBox::AtBottom:
+	       default:
+		 index = currentItem() + 1;
+		 break;
+	      }
+	   }
+
+	   if( index > -1 && index < count() )
+	   {
+	      setCurrentItem( index );
+	   }
+	   else
+	   {
+	      if( !m_strHistoryIterator.isNull() &&
+		 ( policy == QComboBox::AtTop ||
+		  policy == QComboBox::AtBottom ) )
+                {
+		   setEditText( m_strHistoryIterator );
+		   m_strHistoryIterator = QString::null;
+		}
+	   }
         }
     }
 }
@@ -256,7 +240,7 @@ void KComboBox::itemSelected( QListBoxItem* item )
 {
     if( item != 0 && m_pEdit )
     {
-		m_pEdit->setSelection( 0, currentText().length() );
+       m_pEdit->setSelection( 0, currentText().length() );
     }
 }
 
@@ -284,8 +268,8 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
 	// configurable in KDE.
 	if( e->state() == Qt::AltButton && e->key() == Qt::Key_Up )
 	{
-		e->accept();
-		return;
+	   e->accept();
+	   return;
 	}
 
     if( m_pEdit && m_pEdit->hasFocus() )
@@ -312,22 +296,22 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
         if( mode != KGlobalSettings::CompletionNone )
         {
 
-		    bool fireSignals = emitSignals();
-	        KeyBindingMap keys = getKeyBindings();
-    	    int key = ( keys[TextCompletion] == 0 ) ? KStdAccel::key(KStdAccel::TextCompletion) : keys[TextCompletion];
-            if( KStdAccel::isEqual( e, key ) && fireSignals )
-            {
-                // Emit completion if the completion mode is completionShell or
-                // CompletionMan and there is a completion object present the
-                // current text is not the same as the previous the cursor is
-                // at the end of the string.
-                if( mode == KGlobalSettings::CompletionMan ||
-                    (mode == KGlobalSettings::CompletionShell &&
-	                 m_pEdit->cursorPosition() == (int) currentText().length() ) )
-                {
-                    emit completion( currentText() );
-                    return;
-                }
+	   bool fireSignals = emitSignals();
+	   KeyBindingMap keys = getKeyBindings();
+	   int key = ( keys[TextCompletion] == 0 ) ? KStdAccel::key(KStdAccel::TextCompletion) : keys[TextCompletion];
+	   if( KStdAccel::isEqual( e, key ) && fireSignals )
+           {
+	      // Emit completion if the completion mode is completionShell or
+	      // CompletionMan and there is a completion object present the
+	      // current text is not the same as the previous the cursor is
+	      // at the end of the string.
+	      if( mode == KGlobalSettings::CompletionMan ||
+		 (mode == KGlobalSettings::CompletionShell &&
+		  m_pEdit->cursorPosition() == (int) currentText().length() ) )
+	      {
+		 emit completion( currentText() );
+		 return;
+	      }
 
             }
             // Handles rotateUp.

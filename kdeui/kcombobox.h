@@ -278,7 +278,6 @@ public slots:
     */
     void rotateText( KCompletionBase::KeyBindingType /* type */ );
 
-
 protected slots:
 
     /**
@@ -299,6 +298,16 @@ protected slots:
     * is left to iterate through the list as usual.
     */
     virtual void makeCompletion( const QString& );
+
+   /**
+    * Resets the history list iterator.
+    *
+    * Use this function to reset the history iterator.
+    * It is useful in reseting the iterator whenever
+    * this widget is hidden, but not destroyed.
+    *
+    */
+   void resetHistoryIterator() { m_strHistoryIterator = QString::null; }
 
 protected:
 
@@ -340,7 +349,7 @@ private :
     // to emulate *nix shell like rotation where you
     // would not loose what you typed even if you rotate
     // before finishing it :)
-    QString m_strCurrentText;
+    QString m_strHistoryIterator;
 	
     class KComboBoxPrivate;
     KComboBoxPrivate *d;
