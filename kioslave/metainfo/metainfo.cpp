@@ -24,6 +24,7 @@
 #include <kmimetype.h>
 #include <kdebug.h>
 #include <kfilemetainfo.h>
+#include <stdlib.h>
 
 #include "metainfo.h"
 
