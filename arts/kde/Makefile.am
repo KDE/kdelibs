@@ -14,7 +14,8 @@ libartskde_la_METASOURCES   =	AUTO
 artskdeincludedir	    =	$(includedir)/arts
 artskdeinclude_HEADERS      = 	kplayobject.h kplayobjectfactory.h kartsfloatwatch.h
 
-kartsfloatwatch.cpp: artskde.h
+$(srcdir)/kioinputstream_impl.cpp: artskde.h
+$(srcdir)/kartsfloatwatch.cpp: artskde.h
 artskde.cc: artskde.h
 artskde.mcoptype: artskde.h
 artskde.mcopclass: artskde.h
