@@ -116,8 +116,10 @@ DOMString khtml::parseURL(const DOMString &url)
     if(s[0] == '\'' && s[s.length()-1] == '\'')
         s = s.mid(1, s.length()-2);
 
-    // no more stripWhiteSpace here, as we're inside the
-    // actual string already
+    // remove unnecessary newlines etc from beginning/end
+    // another "just like Netscape" feature
+    s = s.stripWhiteSpace();
+
     return DOMString(s.unicode(), s.length());
 }
 

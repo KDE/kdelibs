@@ -31,6 +31,7 @@
 #include "rendering/render_image.h"
 #include "css/cssstyleselector.h"
 #include "css/cssproperties.h"
+#include "css/csshelper.h"
 #include "html_documentimpl.h"
 
 #include <qstring.h>
@@ -107,10 +108,10 @@ void HTMLImageElementImpl::parseAttribute(AttrImpl *attr)
 	imageURL = attr->value();
 	break;
     case ATTR_WIDTH:
-	addCSSLength(CSS_PROP_WIDTH, attr->value(), false);
+        addCSSLength(CSS_PROP_WIDTH, attr->value(), false);
 	break;
     case ATTR_HEIGHT:
-	addCSSLength(CSS_PROP_HEIGHT, attr->value(), false);
+        addCSSLength(CSS_PROP_HEIGHT, attr->value(), false);
 	break;
     case ATTR_BORDER:
 	addCSSLength(CSS_PROP_BORDER_WIDTH, attr->value(), false);
@@ -149,7 +150,7 @@ void HTMLImageElementImpl::parseAttribute(AttrImpl *attr)
 	}
 	else
 	{
-	    // ### we remove the part before the anchor and hope the map is on the same html page.... 
+	    // ### we remove the part before the anchor and hope the map is on the same html page....
 	    KURL u( static_cast<HTMLDocumentImpl *>(document)->baseURL().string(), attr->value().string() );
 	    usemap = DOMString(u.url());
 	}
@@ -158,7 +159,7 @@ void HTMLImageElementImpl::parseAttribute(AttrImpl *attr)
 	break;
     case ATTR_ALT:
 	alt = attr->value();
-	break;	
+	break;
     default:
 	HTMLElementImpl::parseAttribute(attr);
     }
@@ -174,11 +175,11 @@ void HTMLImageElementImpl::attach(KHTMLView *w)
 	RenderImage *renderImage = new RenderImage();
 	renderImage->setStyle(m_style);
 	renderImage->setAlt(alt);
-	m_render = renderImage;	
+	m_render = renderImage;
 	if(m_render) r->addChild(m_render, _next ? _next->renderer() : 0);
 	renderImage->setImageUrl(imageURL, static_cast<HTMLDocumentImpl *>(document)->baseURL(),
-	                         static_cast<HTMLDocumentImpl *>(document)->docLoader());        
-	
+	                         static_cast<HTMLDocumentImpl *>(document)->docLoader());
+
     }
     NodeBaseImpl::attach( w );
 }
@@ -264,7 +265,7 @@ HTMLMapElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
 	}
 	NodeImpl *child = current->firstChild();
 	if(child)
-	{	
+	{
 	    nodeStack.push(current);
 	    current = child;
 	}
@@ -357,25 +358,28 @@ void HTMLAreaElementImpl::parseAttribute(AttrImpl *attr)
 	else if ( strcasecmp( attr->value(), "poly" ) == 0 )
 	    shape = Poly;
 	else if ( strcasecmp( attr->value(), "rect" ) == 0 )
-	    shape = Rect;	
+	    shape = Rect;
 	break;
-    case ATTR_COORDS:	
-    	coords = attr->val()->toLengthList(); 		
-	break;	
+    case ATTR_COORDS:
+    	coords = attr->val()->toLengthList();
+	break;
     case ATTR_NOHREF:
-	break;	
+	break;
     case ATTR_HREF:
-    	href = attr->val();
-	href->ref();
-	break;	
+    {
+        DOMString s = khtml::parseURL(attr->val());
+        href = s.implementation();
+        href->ref();
+        break;
+    }
     case ATTR_TARGET:
     	target = attr->val();
-	target->ref();
-	break;	
+        target->ref();
+	break;
     case ATTR_ALT:
 	break;
     case ATTR_ACCESSKEY:
-	break;	
+	break;
     default:
 	HTMLElementImpl::parseAttribute(attr);
     }
@@ -408,7 +412,7 @@ HTMLAreaElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
     if(inside || mouseInside()) mouseEventHandler(button, type, inside);
 
     return inside;
-}	
+}
 
 
 
@@ -424,10 +428,10 @@ QRegion HTMLAreaElementImpl::getRegion(int width_, int height_)
 
     // a Poly needs at least 3 points (6 coords), so this is correct
     // just ignore poly's with 2 points or less, because
-    // QRegion will anyway crash on them. 
+    // QRegion will anyway crash on them.
     if ((shape==Poly || shape==Unknown) && coords->count() > 4)
     {
-        //cout << " poly " << endl;	
+        //cout << " poly " << endl;
 	bool xcoord=true;
 	int xx = 0, yy = 0; // shut up egcs...
 	int i=0;
@@ -445,9 +449,9 @@ QRegion HTMLAreaElementImpl::getRegion(int width_, int height_)
 		xcoord = true;
 		points.setPoint(i,xx,yy);
 		i++;
-	    }	    	
+	    }
 	}
-	region = QRegion(points);	
+	region = QRegion(points);
     }
     else if (shape==Circle && coords->count()>=3 || shape==Unknown && coords->count() == 3)
     {
