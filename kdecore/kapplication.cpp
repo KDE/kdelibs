@@ -2392,9 +2392,6 @@ void KApplication::setTopWidget( QWidget *topWidget )
 #ifdef Q_WS_X11 // FIXME(E): Implement for Qt/Embedded
     KWin::setIcons(topWidget->winId(), icon(), miniIcon() ); // NET_WM hints for KWin
 
-    // set a short icon text
-    XSetIconName( qt_xdisplay(), topWidget->winId(), caption().utf8() );
-
     // set the app startup notification window property
     KStartupInfo::setWindowStartupId( topWidget->winId(), startupId());
 #endif
