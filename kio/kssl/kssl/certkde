@@ -41,22 +41,31 @@ foreach $cert (sort(keys(%CERT))) {
     #
     $_ = $purpose;
     if ( /server CA : Yes\n/ || /client CA : Yes\n/ || (/Any Purpose CA : Yes\n/ && (/client : Yes\n/ || /server : Yes\n/ ))) {
-       print BDL "site=true\n";
+       $v_site="true";
     } else {
-       print BDL "site=false\n";
+       $v_site="false";
     }
     #
     if ( /MIME signing CA : Yes\n/ || /MIME encryption CA : Yes\n/ ) {
-       print BDL "email=true\n";
+       $v_email="true";
     } else {
-       print BDL "email=false\n";
+       $v_email="false";
     }
     #
     if ( /Any Purpose CA : Yes\n/ && $codeSubj == 1) {
-       print BDL "code=true\n";
+       $v_code="true";
     } else {
-       print BDL "code=false\n";
+       $v_code="false";
     }
+
+    # are some certificates really broken?
+    if ($v_code == "false" && $v_email == "false") {
+        $v_site = "true";
+    }
+
+    print BDL "site=$v_site\n";
+    print BDL "email=$v_email\n";
+    print BDL "code=$v_code\n";
 }
 close(BDL);
 
