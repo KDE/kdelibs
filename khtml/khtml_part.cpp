@@ -1176,10 +1176,8 @@ void KHTMLPart::write( const char *str, int len )
       // determine the parse mode
       d->m_doc->determineParseMode( decoded );
       d->m_bFirstData = false;
-  }
 
   //kdDebug() << "KHTMLPart::write haveEnc = " << d->m_haveEncoding << endl;
-  if(!d->m_haveEncoding) {
       // ### this is still quite hacky, but should work a lot better than the old solution
       if(d->m_decoder->visuallyOrdered()) d->m_doc->setVisuallyOrdered();
       if (!d->m_haveCharset)
@@ -1191,7 +1189,6 @@ void KHTMLPart::write( const char *str, int len )
          //kdDebug(6005) << "charset is " << (int)d->m_settings->charset() << endl;
       }
       d->m_doc->applyChanges(true, true);
-      d->m_haveEncoding = true;
   }
 
   d->m_doc->write( decoded );
@@ -1425,8 +1422,9 @@ bool KHTMLPart::setEncoding( const QString &name, bool override )
     d->m_encoding = name;
     d->m_haveEncoding = override;
 
-    d->m_charset = KGlobal::charsets()->charsetForEncoding(name);
-    d->m_settings->setCharset( d->m_charset );
+//    setCharset( name, override );
+     d->m_charset = KGlobal::charsets()->charsetForEncoding(name);
+     d->m_settings->setCharset( d->m_charset );
 
     if( !m_url.isEmpty() ) {
         // reload document
