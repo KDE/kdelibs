@@ -22,6 +22,8 @@
 #include <qapplication.h>
 #include <qtimer.h>
 
+using namespace KIO;
+
 KDirSize::KDirSize( const KURL & directory )
     : KIO::Job(false /*No GUI*/), m_bAsync(true), m_totalSize(0L)
 {
