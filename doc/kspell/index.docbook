@@ -72,7 +72,7 @@ on <emphasis>Stop.</emphasis></para>
 
 <para>Clicking on <emphasis>Replace All</emphasis> will initially perform the same function as
 clicking on <emphasis>Replace,</emphasis> but will automatically replace the misspelled word
-with the chosen replacement word if it appears again (at a later point) in your
+with the chosen replacement word, if it appears again (at a later point) in your
 document.</para>
 
 <para>The <emphasis>Ignore All</emphasis> button ignores this and all future occurrences of the
@@ -150,7 +150,7 @@ read the Interational ISpell man page.</para>
 <title>Contact Information</title>
 
 <para>For more information about KSpell, visit the <ulink url="http://www.chaos.umd.edu/~dsweet/KDE/KSpell">KSpell Home Page</ulink>. In
-particular, you will find information about programmng the KSpell C++ class.</para>
+particular, you will find information about programming the KSpell C++ class.</para>
 
 <para>You may email the author/maintainer with questions and/or comments at
 <ulink url="mailto:dsweet@kde.org">dsweet@kde.org</ulink>.</para>
