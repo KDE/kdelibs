@@ -33,6 +33,8 @@
 #include <kdebug.h>
 #include <kxmlguifactory.h>
 
+#include <assert.h>
+
 using namespace KParts;
 
 namespace KParts
