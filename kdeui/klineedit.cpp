@@ -173,16 +173,26 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
 {
     KKey key( e );
 
-    if ( KStdAccel::copy().contains( key ) )
+    if ( KStdAccel::copy().contains( key ) ) {
         copy();
-    else if ( KStdAccel::paste().contains( key ) )
+	return;
+    }
+    else if ( KStdAccel::paste().contains( key ) ) {
         paste();
-    else if ( KStdAccel::cut().contains( key ) )
+	return;
+    }
+    else if ( KStdAccel::cut().contains( key ) ) {
         cut();
-    else if ( KStdAccel::undo().contains( key ) )
+	return;
+    }
+    else if ( KStdAccel::undo().contains( key ) ) {
         undo();
-    else if ( KStdAccel::redo().contains( key ) )
+	return;
+    }
+    else if ( KStdAccel::redo().contains( key ) ) {
         redo();
+	return;
+    }
     else if ( KStdAccel::deleteWordBack().contains( key ) )
     {
         cursorWordBackward(TRUE);
