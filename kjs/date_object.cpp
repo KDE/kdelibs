@@ -131,6 +131,21 @@ int weekDay(double t)
   return wd;
 }
 
+static double timeZoneOffset(const struct tm *t)
+{
+#if defined BSD || defined(__linux__) || defined(__APPLE__)
+  return -(t->tm_gmtoff / 60);
+#else
+#  if defined(__BORLANDC__)
+// FIXME consider non one-hour DST change
+#error please add daylight savings offset here!
+  return _timezone / 60 - (t->tm_isdst > 0 ? 60 : 0);
+#  else
+  return timezone / 60 - (t->tm_isdst > 0 ? 60 : 0 );
+#  endif
+#endif
+}
+
 // ------------------------------ DateInstanceImp ------------------------------
 
 const ClassInfo DateInstanceImp::info = {"Date", 0, 0, 0};
@@ -282,9 +297,7 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
   // make the necessary transformations if necessary
   int realYearOffset = 0;
   double milliOffset = 0.0;
-  int realWeekDay = -1;
   if (milli < 0 || milli >= timeFromYear(2038)) {
-    realWeekDay = weekDay(milli);
     // ### ugly and probably not very precise
     int realYear = yearFromTime(milli);
     int y0 = (realYear / 100) * 100;
@@ -299,19 +312,18 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
   time_t tv = (time_t) floor(milli / 1000.0);
   int ms = int(milli - tv * 1000.0);
 
-  struct tm *t;
-  if (utc)
-    t = gmtime(&tv);
-  else
-    t = localtime(&tv);
+  struct tm *t = utc ? gmtime(&tv) : localtime(&tv);
 
-  // we had one out of range year. use that one (plus/minus offset
+  // we had an out of range year. use that one (plus/minus offset
   // found by calculating tm_year) and fix the week day calculation
   if (realYearOffset != 0) {
     t->tm_year += realYearOffset;
-    assert(realWeekDay != -1);
-    t->tm_wday = realWeekDay;
     milli -= milliOffset;
+    // our own weekday calculation. beware of need for local time.
+    double m = milli;
+    if (!utc)
+      m -= timeZoneOffset(t) * msPerMinute;
+    t->tm_wday = weekDay(m);
   }
 
   // trick gcc. We don't want the Y2K warnings.
@@ -386,17 +398,7 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
     result = Number(ms);
     break;
   case GetTimezoneOffset:
-#if defined BSD || defined(__linux__) || defined(__APPLE__)
-    result = Number(-(t->tm_gmtoff / 60) );
-#else
-#  if defined(__BORLANDC__)
-// FIXME consider non one-hour DST change
-#error please add daylight savings offset here!
-    result = Number(_timezone / 60 - (t->tm_isdst > 0 ? 60 : 0));
-#  else
-    result = Number((timezone / 60 - (t->tm_isdst > 0 ? 60 : 0 )));
-#  endif
-#endif
+    result = Number(timeZoneOffset(t));
     break;
   case SetTime:
     milli = roundValue(exec,args[0]);
@@ -516,12 +518,11 @@ Object DateObjectImp::construct(ExecState *exec, const List &args)
 #endif
     value = utc;
   } else if (numArgs == 1) {
-    UString s = args[0].toString(exec);
-    double d = s.toDouble();
-    if (isNaN(d))
-      value = parseDate(s);
+    Value prim = args[0].toPrimitive(exec);
+    if (prim.isA(StringType))
+      value = parseDate(prim.toString(exec));
     else
-      value = d;
+      value = prim.toNumber(exec);
   } else {
     struct tm t;
     memset(&t, 0, sizeof(t));

@@ -1,3 +1,8 @@
+2004-11-07  Harri Porten  <porten@kde.org>
+
+	* date_object.cpp: fix conversion of Date(value) argument, fixed
+	getDay() for out-of-normal-range dates
+
 2004-10-13  Harri Porten  <porten@kde.org>
 
 	* regexp.cpp: support \u escape sequences in regular expressions 
