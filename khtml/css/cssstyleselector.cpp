@@ -192,9 +192,9 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
     // for non important rules the order is reversed
 
     if(userStyle) userStyle->collect(propsToApply, e, 0x00200000, 0x04000000);
+    // these count as author rules, and come before all other style sheets
+    if(e->styleRules()) propsToApply->append(e->styleRules(), 0x00400000, 0x01000000);
     if(authorStyle) authorStyle->collect(propsToApply, e, 0x00400000, 0x01000000);
-    // these count as author rules, and come after all other style sheets
-    if(e->styleRules()) propsToApply->append(e->styleRules(), 0x00800000, 0x02000000);
 
     propsToApply->sort();
 
