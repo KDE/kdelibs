@@ -233,17 +233,17 @@ public:
      * which have been written for the former @ref KTMainWindow you may
      * find the following three boolean has-functions useful:
      *
-     * This function returns wether the menubar is existing
+     * This function returns whether the menubar is existing
      */
     bool hasMenuBar();
 
     /**
-     * Returns wether the statusbar is existing
+     * Returns whether the statusbar is existing
      */
     bool hasStatusBar();
 
     /**
-     * Returns wether the specified toolbar  is existing
+     * Returns whether the specified toolbar is existing
      */
     bool hasToolBar( int ID = 0 );
 
