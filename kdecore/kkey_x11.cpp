@@ -149,14 +149,16 @@ QString KKeySequence::toString( KKeySequence::I18N bi18n ) const
 	uint keySymX = m_keySymExplicit;
 
 	if( m_origin == OriginUnset )
-		return (bi18n) ? i18n("Unknown Key", "Unset") : QString("Unset");
+		//return (bi18n) ? i18n("Unknown Key", "Unset") : QString("Unset");
+		return QString::null;
 	// TODO: make a clearer way denoting set & unset values in KKeySequence
 	if( m_keyMod == -1 && m_keyCombQt != -1 ) {
 		KKeyX11::keyQtToKeyX( m_keyCombQt, 0, &keySymX, &keyMod );
 		keyMod = calcModExplicit( keyMod );
 	}
 	if( m_keyMod == -1 && keySymX == 0 )
-		return (bi18n) ? i18n("Unknown Key", "Unset") : QString("Unset");
+		//return (bi18n) ? i18n("Unknown Key", "Unset") : QString("Unset");
+		return QString::null;
 
 	if( keyMod & Mod4Mask )      sMods += ToI18N("Meta") + "+";
 	if( keyMod & Mod1Mask )      sMods += ToI18N("Alt") + "+";
