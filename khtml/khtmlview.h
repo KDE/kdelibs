@@ -157,6 +157,8 @@ protected:
 
     void paintElement( khtml::RenderObject *o, int x, int y );
     virtual void resizeEvent ( QResizeEvent * event );
+    virtual void showEvent ( QShowEvent * );
+    virtual void hideEvent ( QHideEvent *);
     virtual bool focusNextPrevChild( bool next );
     virtual void drawContents ( QPainter * p, int clipx, int clipy, int clipw, int cliph );
 

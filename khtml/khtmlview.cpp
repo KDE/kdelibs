@@ -148,7 +148,7 @@ void KHTMLView::init()
     lstViews->append( this );
 
     if(!d->paintBuffer) d->paintBuffer = new QPixmap(PAINT_BUFFER_HEIGHT, PAINT_BUFFER_HEIGHT);
-   if(!d->tp) d->tp = new QPainter(d->paintBuffer);
+   if(!d->tp) d->tp = new QPainter();
 
     setFocusPolicy(QWidget::StrongFocus);
     viewport()->setFocusPolicy( QWidget::WheelFocus );
@@ -173,17 +173,23 @@ void KHTMLView::clear()
     resizeContents(visibleWidth(), visibleHeight());
     viewport()->erase();
 
-    if(d->useSlowRepaints) {
-//         why do we need to delete the paintBuffer here ?
-//         delete d->tp;
-//         tp = 0;
-//         delete paintBuffer;
-//         paintBuffer = 0;
+    if(d->useSlowRepaints)
         setStaticBackground(false);
-    }
 
     d->reset();
     emit cleared();
+}
+
+void KHTMLView::hideEvent(QHideEvent* e)
+{
+//    viewport()->setBackgroundMode(PaletteBase);
+    QScrollView::hideEvent(e);
+}
+
+void KHTMLView::showEvent(QShowEvent* e)
+{
+//    viewport()->setBackgroundMode(NoBackground);
+    QScrollView::showEvent(e);
 }
 
 void KHTMLView::resizeEvent (QResizeEvent* e)
@@ -216,24 +222,21 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
     {
         delete d->tp;
         d->paintBuffer->resize(visibleWidth(),PAINT_BUFFER_HEIGHT);
-        d->tp = new QPainter(d->paintBuffer);
+        d->tp = new QPainter();
     }
-
-    d->tp->save();
-    d->tp->translate(-ex, -ey);
 
     int py=0;
     while (py < eh) {
         int ph = eh-py < PAINT_BUFFER_HEIGHT ? eh-py : PAINT_BUFFER_HEIGHT;
+        d->tp->begin(d->paintBuffer);
+        d->tp->translate(-ex, -ey-py);
         d->tp->fillRect(ex, ey+py, ew, ph, palette().normal().brush(QColorGroup::Base));
         m_part->xmlDocImpl()->renderer()->print(d->tp, ex, ey+py, ew, ph, 0, 0);
+        d->tp->end();
 
         p->drawPixmap(ex, ey+py, *d->paintBuffer, 0, 0, ew, ph);
         py += PAINT_BUFFER_HEIGHT;
-
-        d->tp->translate(0, -PAINT_BUFFER_HEIGHT);
     }
-    d->tp->restore();
 }
 
 void KHTMLView::layout(bool)
@@ -653,7 +656,7 @@ bool KHTMLView::gotoLink(bool forward)
 bool KHTMLView::notabindex(HTMLElementImpl *cur, bool forward)
 {
     // REQ: n must be after the current node and its tabindex must be -1
-    if (cur = m_part->docImpl()->findLink(cur, forward, -1))
+    if ((cur = m_part->docImpl()->findLink(cur, forward, -1)))
         return gotoLink(cur);
 
     if (forward)
@@ -675,7 +678,7 @@ bool KHTMLView::intabindex(HTMLElementImpl *cur, bool forward)
 
     while(tmptabindex>0 && tmptabindex<=maxtabindex)
     {
-        if (cur = m_part->docImpl()->findLink(cur, forward, tmptabindex))
+        if ((cur = m_part->docImpl()->findLink(cur, forward, tmptabindex)))
             return gotoLink(cur);
         tmptabindex+=increment;
     }
@@ -688,7 +691,7 @@ bool KHTMLView::intabindex(HTMLElementImpl *cur, bool forward)
 bool KHTMLView::tabindexzero(HTMLElementImpl *cur, bool forward)
 {
     //REQ: tabindex of result must be 0 and it must be after the current node ;
-    if (cur = m_part->docImpl()->findLink(cur, forward, 0))
+    if ((cur = m_part->docImpl()->findLink(cur, forward, 0)))
         return gotoLink(cur);
     if (!forward)
         return intabindex(cur, forward);
