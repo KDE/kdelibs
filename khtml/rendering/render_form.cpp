@@ -169,7 +169,7 @@ RenderCheckBox::RenderCheckBox(QScrollView *view,
     : RenderButton(view, element)
 {
     CheckBoxWidget *b = new CheckBoxWidget(view->viewport());
-    setQWidget(b);
+    setQWidget(b, false);
     connect(b,SIGNAL(focused()),this,SLOT(slotFocused()));
     connect(b,SIGNAL(blurred()),this,SLOT(slotBlurred()));
     connect(b,SIGNAL(stateChanged(int)),this,SLOT(slotStateChanged(int)));
@@ -215,7 +215,7 @@ RenderRadioButton::RenderRadioButton(QScrollView *view,
 {
     RadioButtonWidget *b = new RadioButtonWidget(view->viewport());
 
-    setQWidget(b);
+    setQWidget(b, false);
     connect(b,SIGNAL(focused()),this,SLOT(slotFocused()));
     connect(b,SIGNAL(blurred()),this,SLOT(slotBlurred()));
     connect(b, SIGNAL(clicked()), this, SLOT(slotClicked()));
@@ -260,7 +260,7 @@ RenderSubmitButton::RenderSubmitButton(QScrollView *view, HTMLInputElementImpl *
     : RenderButton(view, element)
 {
     PushButtonWidget *p = new PushButtonWidget(view->viewport());
-    setQWidget(p);
+    setQWidget(p, false);
     connect(m_widget,SIGNAL(focused()),this,SLOT(slotFocused()));
     connect(m_widget,SIGNAL(blurred()),this,SLOT(slotBlurred()));
 
@@ -403,7 +403,7 @@ RenderLineEdit::RenderLineEdit(QScrollView *view, HTMLInputElementImpl *element)
     if(element->inputType() == HTMLInputElementImpl::PASSWORD)
         edit->setEchoMode( QLineEdit::Password );
 
-    setQWidget(edit);
+    setQWidget(edit, false);
 }
 
 void RenderLineEdit::slotReturnPressed()
@@ -502,7 +502,7 @@ RenderFileButton::RenderFileButton(QScrollView *view, HTMLInputElementImpl *elem
     layout->addWidget(m_edit);
     layout->addWidget(m_button);
 
-    setQWidget(w);
+    setQWidget(w, false);
     m_haveFocus = false;
 }
 
@@ -675,13 +675,13 @@ RenderSelect::RenderSelect(QScrollView *view, HTMLSelectElementImpl *element)
     if(m_listBox) {
         ListBoxWidget *w = createListBox();
         w->setSelectionMode(m_multiple ? QListBox::Multi : QListBox::Single);
-        setQWidget(w);
+        setQWidget(w, false);
         connect(w,SIGNAL(highlighted(int)),this,SLOT(slotActivated(int)));
     }
     else {
         ComboBoxWidget *w = createComboBox();
         m_size = 1;
-        setQWidget(w);
+        setQWidget(w, false);
         connect(w,SIGNAL(activated(int)),this,SLOT(slotActivated(int)));
     }
     m_ignoreSelectEvents = false;
@@ -719,11 +719,11 @@ void RenderSelect::layout( )
             if(m_listBox) {
                 ListBoxWidget *w = createListBox();
                 w->setSelectionMode(m_multiple ? QListBox::Multi : QListBox::Single);
-                setQWidget(w);
+                setQWidget(w, false);
                 connect(m_widget,SIGNAL(highlighted(int)),this,SLOT(slotActivated(int)));
             }
             else {
-                setQWidget(createComboBox());
+                setQWidget(createComboBox(), false);
                 m_size = 1;
                 connect(m_widget,SIGNAL(activated(int)),this,SLOT(slotActivated(int)));
             }
@@ -1078,7 +1078,7 @@ RenderTextArea::RenderTextArea(QScrollView *view, HTMLTextAreaElementImpl *eleme
     : RenderFormElement(view, element)
 {
     TextAreaWidget *edit = new TextAreaWidget(element->wrap(), view);
-    setQWidget(edit);
+    setQWidget(edit, false);
     connect(edit,SIGNAL(textChanged()),this,SLOT(slotTextChanged()));
     connect(edit,SIGNAL(blurred()),this,SLOT(slotBlurred()));
     connect(edit,SIGNAL(focused()),this,SLOT(slotFocused()));

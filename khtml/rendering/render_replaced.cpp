@@ -71,7 +71,7 @@ RenderWidget::~RenderWidget()
     deleted = true;
 }
 
-void RenderWidget::setQWidget(QWidget *widget)
+void RenderWidget::setQWidget(QWidget *widget, bool show)
 {
     if(m_widget) {
         disconnect( m_widget, SIGNAL( destroyed()),
@@ -81,6 +81,8 @@ void RenderWidget::setQWidget(QWidget *widget)
     m_widget = widget;
     connect( m_widget, SIGNAL( destroyed()),
              this, SLOT( slotWidgetDestructed()));
+    if( show )
+	m_widget->show();
 }
 
 void RenderWidget::slotWidgetDestructed()
@@ -102,12 +104,6 @@ void RenderWidget::printReplaced(QPainter *, int _tx, int _ty)
     // the widget stays in it's old place!
     assert(!deleted);
     if(!(m_widget && m_view)) return;
-
-    if(!layouted())
-    {
-        m_widget->hide();
-        return;
-    }
 
     // add offset for relative positioning
     if(isRelPositioned())
