@@ -319,7 +319,9 @@ void ObjectImp::put(ExecState *exec, const UString &propertyName,
   // Assume that a C++ implementation knows what it is doing
   // and let it override the canPut() check.
   if (attr == None && !canPut(exec,propertyName)) {
-    //fprintf( stderr, "canPut %s said NO\n", propertyName.ascii() );
+#ifdef KJS_VERBOSE
+    fprintf( stderr, "canPut %s said NO\n", propertyName.ascii() );
+#endif
     return;
   }
 
@@ -355,6 +357,8 @@ bool ObjectImp::canPut(ExecState *exec, const UString &propertyName) const
 // ECMA 8.6.2.4
 bool ObjectImp::hasProperty(ExecState *exec, const UString &propertyName, bool recursive) const
 {
+  if (propertyName == "__proto__")
+    return true;
   if (_prop->get(propertyName))
     return true;
 
