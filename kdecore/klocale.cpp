@@ -199,20 +199,16 @@ void KLocale::setEncodingLang(const QString &_lang)
     QFile f(location);
     if (f.open(IO_ReadOnly))
     {
-      char *buf = new char[256];
+      char buf[256];
       int l = f.readLine(buf, 256);
       if (l > 0)
-      {
-        if (buf[l - 1] == '\n') buf[l - 1] = 0;
         _codec = QTextCodec::codecForName( buf );
-      }
       f.close();
-      delete [] buf;
     }
   }
   // default to 8 bit unicode
   if (!_codec)
-    _codec = QTextCodec::codecForName( "utf8" );
+    _codec = QTextCodec::codecForName( "UTF-8" );
 }
 
 void KLocale::initLanguage(KConfig *config, const QString& catalogue)
