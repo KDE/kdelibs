@@ -110,7 +110,7 @@ KAboutData::appName() const
 QString
 KAboutData::programName() const
 {
-   if (mProgramName)
+   if (mProgramName && *mProgramName)
       return i18n(mProgramName);
    else
       return QString::null;
