@@ -79,7 +79,7 @@ void KServiceTypeProfile::initStatic()
           p = new KServiceTypeProfile( type, type2 );
 
         bool allow = config.readBoolEntry( "AllowAsDefault" );
-        kdDebug(7010) << "KServiceTypeProfile::initStatic adding service " << application << " to profile for " << type << " with preference " << pref << endl;
+        //kdDebug(7010) << "KServiceTypeProfile::initStatic adding service " << application << " to profile for " << type << " with preference " << pref << endl;
         p->addService( application, pref, allow );
       }
     }
@@ -143,7 +143,7 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _serv
             bool allow = (*it)->allowAsDefault();
             KServiceOffer o( (*it), (*it)->initialPreference(), allow );
             offers.append( o );
-            kdDebug(7010) << "Appending offer " << (*it)->name() << " allow-as-default=" << allow << endl;
+            //kdDebug(7010) << "Appending offer " << (*it)->name() << " allow-as-default=" << allow << endl;
         }
     }
 
