@@ -1,6 +1,6 @@
 [Image Format]
 Type=EPS
-Header=^\%!PS-Adobe
+Header=^(?:%c5%d0|%!PS-Adobe)
 Name=Encapsulated PostScript Image
 Name[be]=Малюнкі Encapsulated PostScript
 Name[ca]=Imatge encapsulada PostScript
