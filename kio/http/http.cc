@@ -1405,8 +1405,6 @@ void HTTPProtocol::get( const QString& path, const QString& query, bool reload )
   m_request.do_proxy = m_bUseProxy;
   buildURL();
 
-  ready();
-
   if (!http_open())
      return;
 
@@ -1432,8 +1430,6 @@ void HTTPProtocol::put( const QString& path, int, bool, bool)
   m_request.offset = 0;
   m_request.do_proxy = m_bUseProxy;
   buildURL();
-
-  ready();
 
   if (!http_open())
      return;
@@ -1461,8 +1457,6 @@ void HTTPProtocol::post( const QString& path, const QString& query)
   m_request.do_proxy = m_bUseProxy;
   buildURL();
 
-  ready();
-
   if (!http_open())
      return;
 
@@ -1489,8 +1483,6 @@ void HTTPProtocol::mimetype( const QString& path )
   m_request.offset = 0;
   m_request.do_proxy = m_bUseProxy;
   buildURL();
-
-  ready();
 
   if (!http_open())
      return;

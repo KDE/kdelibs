@@ -105,10 +105,6 @@ void FileProtocol::get( const QString& path, const QString& /*query*/, bool /* r
 	return;
     }
 
-    ready();
-
-    // TODO gettingFile( usrc );
-
     totalSize( buff.st_size );
     int processed_size = 0;
     time_t t_start = time( 0L );
@@ -227,12 +223,6 @@ void FileProtocol::put( const QString& dest_orig, int _mode, bool _overwrite, bo
         }
         return;
     }
-
-    // We are ready for receiving data
-    ready();
-
-    kDebugInfo( 7101, "Put: Ready" );
-
 
     int result;
     // Loop until we got 0 (end of data)
@@ -356,8 +346,6 @@ void FileProtocol::copy( const QString &src, const QString &dest,
         return;
     }
 
-    ready();
-
     totalSize( buff_src.st_size );
     int processed_size = 0;
     time_t t_start = time( 0L );
@@ -444,8 +432,6 @@ void FileProtocol::rename( const QString &src, const QString &dest,
            return;
         }
     }
-
-    ready();
 
     if ( ::rename( src, dest))
     {
