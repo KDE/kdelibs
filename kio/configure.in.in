@@ -38,8 +38,14 @@ dnl ------------------------------------------------------------------------
 dnl Try to find if we have Linux Dir Notification
 dnl ------------------------------------------------------------------------
 
-kde_have_dnotify=no
+
 AC_MSG_CHECKING([if Linux Directory Notification is available])
+AC_CACHE_VAL(kde_cv_have_dnotify,
+[
+kde_cv_have_dnotify=no
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+
 AC_TRY_COMPILE(
 [
 #ifndef _GNU_SOURCE
@@ -56,9 +62,13 @@ AC_TRY_COMPILE(
 #ifndef F_NOTIFY
 #error no dir notification
 #endif
-],kde_have_dnotify=yes)
+siginfo_t *t = 0;
+],kde_cv_have_dnotify=yes)
 
-if test "$kde_have_dnotify" = "yes" ; then
+AC_LANG_RESTORE
+])
+
+if test "$kde_cv_have_dnotify" = "yes" ; then
   AC_DEFINE_UNQUOTED(HAVE_DNOTIFY, 1, [Define if your system has Linux Directory Notification])
   AC_MSG_RESULT(yes)
 else
