@@ -1120,6 +1120,19 @@ void KeramikStyle::drawControl( ControlElement element,
 				               cg, flags );
 			break;
 		}
+		
+		case CE_ToolButtonLabel:
+		{
+			const QToolButton *toolbutton = static_cast<const QToolButton * >(widget);
+			bool onToolbar = widget->parentWidget() && widget->parentWidget()->inherits( "QToolBar" );
+			QRect nr = r;
+			
+			if (!onToolbar)
+				nr.setWidth(r.width()-2); //Account for shadow
+
+			KStyle::drawControl(element, p, widget, nr, cg, flags, opt);
+			break;
+		}
 
 		case CE_TabBarTab:
 		{
@@ -1794,6 +1807,21 @@ QSize KeramikStyle::sizeFromContents( ContentsType contents,
 			//            w = QMAX( w, 40 );
 
 			return QSize( w + 30, h + 5 ); //MX: No longer blank space -- can make a bit smaller
+		}
+                
+		case CT_ToolButton:
+		{
+			bool onToolbar = widget->parentWidget() && widget->parentWidget()->inherits( "QToolBar" );
+			if (!onToolbar) //Behaves like a button, so scale appropriately to the border
+			{
+				int w = contentSize.width();
+				int h = contentSize.height();
+				return QSize( w + 12, h + 10 );
+			}
+			else
+			{
+				return KStyle::sizeFromContents( contents, widget, contentSize, opt );
+			}
 		}
 
 		case CT_ComboBox:
