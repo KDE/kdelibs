@@ -147,6 +147,12 @@ static const int motifItemVMargin       = 4;    // menu item ver text margin
                 h = QMAX(fm.height() + motifItemVMargin, QApplication::globalStrut().height());
             }
 
+	    else if (mi->widget()) {
+		// For a Widget in the menubar space is needed.
+		w = QMAX(mi->widget()->width() + 2, QApplication::globalStrut().width());
+		h = QMAX(mi->widget()->height() +2, QApplication::globalStrut().height());
+	    }
+
             if (!mi->isSeparator()){
                 if (x + w + dw - width() > 0 && nlitems > 0 ){
                     nlitems = 0;
