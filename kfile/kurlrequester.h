@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 1999,2000 Carsten Pfeiffer <pfeiffer@kde.org>
+    Copyright (C) 1999,2000,2001 Carsten Pfeiffer <pfeiffer@kde.org>
 
     library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -23,6 +23,7 @@
 
 #include <qhbox.h>
 
+#include <kfile.h>
 #include <kpushbutton.h>
 #include <kurl.h>
 
@@ -141,6 +142,17 @@ public:
      */
     QPushButton * button() const { return myButton; }
 
+    /**
+     * @returns the KURLCompletion object used in the lineedit/combobox.
+     */
+    KURLCompletion *completionObject() const { return myCompletion; }
+
+    /**
+     * Lets you specify the mode for the filedialog that is applied upon
+     * construction of the filedialog.
+     */
+    void setFileDialogMode( KFile::Mode mode );
+    
 signals:
     // forwards from LineEdit
     /**

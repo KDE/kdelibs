@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 1999,2000 Carsten Pfeiffer <pfeiffer@kde.org>
+    Copyright (C) 1999,2000,2001 Carsten Pfeiffer <pfeiffer@kde.org>
 
     library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -84,6 +84,10 @@ public:
     KURLRequesterPrivate() {
 	edit = 0L;
 	combo = 0L;
+
+	mode = static_cast<KFile::Mode>( KFile::File |
+					 KFile::ExistingOnly |
+					 KFile::LocalOnly );
     }
 
     void setText( const QString& text ) {
@@ -119,7 +123,7 @@ public:
 	return combo ? combo->currentText() : edit->text();
     }
 
-
+    KFile::Mode mode;
     KLineEdit *edit;
     KComboBox *combo;
 };
@@ -190,7 +194,7 @@ void KURLRequester::init()
     			    myButton->sizeHint().width() );
 
     if ( d->combo )
-	setFocusProxy( d->combo );
+ 	setFocusProxy( d->combo );
     else
 	setFocusProxy( d->edit );
 
@@ -226,8 +230,7 @@ QString KURLRequester::url() const
 void KURLRequester::slotOpenDialog()
 {
     KFileDialog *dlg = fileDialog();
-    if ( !d->text().isEmpty() )
-    {
+    if ( !d->text().isEmpty() ) {
 	dlg->setSelection( url() );
     }
 
@@ -242,10 +245,7 @@ KFileDialog * KURLRequester::fileDialog() const
 	QWidget *p = parentWidget();
 	myFileDialog = new KFileDialog( QString::null, QString::null, p,
 					"file dialog", myModal );
-	KFile::Mode mode = static_cast<KFile::Mode>( KFile::File |
-						     KFile::ExistingOnly |
-						     KFile::LocalOnly );
-	myFileDialog->setMode( mode );
+	myFileDialog->setMode( d->mode );
     }
 
     return myFileDialog;
@@ -276,6 +276,11 @@ void KURLRequester::slotUpdateURL()
     // bin compat, myButton is declared as QPushButton
     KURL u( QDir::currentDirPath() + '/', url() );
     (static_cast<KURLDragPushButton *>( myButton))->setURL( u );
+}
+
+void KURLRequester::setFileDialogMode( KFile::Mode mode )
+{
+    d->mode = mode;
 }
 
 #include "kurlrequester.moc"
