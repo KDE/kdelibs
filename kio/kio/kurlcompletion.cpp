@@ -178,12 +178,10 @@ KURLCompletion::MyURL::~MyURL()
 
 void KURLCompletion::MyURL::filter( bool replace_user_dir, bool replace_env )
 {
-	if ( !dir().isEmpty() ) {
-		QString d = dir();
-		if ( replace_user_dir ) expandTilde( d );
-		if ( replace_env ) expandEnv( d );
-		m_kurl->setPath( d + file() );
-	}
+	QString d = dir() + file();
+	if ( replace_user_dir ) expandTilde( d );
+	if ( replace_env ) expandEnv( d );
+	m_kurl->setPath( d );
 }
 
 ///////////////////////////////////////////////////////
