@@ -67,17 +67,17 @@ KService::init( KDesktopFile *config )
   m_strType = config->readEntry( "Type" );
   if ( m_strType.isEmpty() )
   {
-    kDebugWarning( 7012, QString("The desktop entry file %1 has no Type=... entry. "
-            "It should be \"Application\", or \"Service\"")
-            .arg( m_strDesktopEntryPath ) );
+    kdWarning(7012) << "The desktop entry file " << m_strDesktopEntryPath
+                    << " has no Type=... entry."
+                    << " It should be \"Application\" or \"Service\"" << endl;
     m_bValid = false;
     return;
   }
   if ( m_strType != "Application" && m_strType != "Service" )
   {
-    kDebugWarning( 7012, QString("The desktop entry file %1 has Type=%2 "
-            "instead of \"Application\" or \"Service\"")
-            .arg( m_strDesktopEntryPath ).arg(m_strType) );
+    kdWarning(7012) << "The desktop entry file " << m_strDesktopEntryPath
+                    << " has Type=" << m_strType
+                    << " instead of \"Application\" or \"Service\"" << endl;
     m_bValid = false;
     return;
   }
@@ -88,9 +88,9 @@ KService::init( KDesktopFile *config )
        (resource != "apps") &&
        !absPath)
   {
-    kDebugWarning( 7012, QString("The desktop entry file %1 has Type=%2 "
-            "but is located under \"%3\" instead of \"apps\"")
-            .arg( m_strDesktopEntryPath ).arg(m_strType).arg( resource ));
+    kdWarning(7012) << "The desktop entry file " << m_strDesktopEntryPath
+           << " has Type=" << m_strType << "but is located under \"" << resource
+           << "\" instead of \"apps\"" << endl;
     m_bValid = false;
     return;
   }
@@ -100,9 +100,9 @@ KService::init( KDesktopFile *config )
        (resource != "services") &&
        !absPath)
   {
-    kDebugWarning( 7012, QString("The desktop entry file %1 has Type=%2 "
-            "but is located under \"%3\" instead of \"services\"")
-            .arg( m_strDesktopEntryPath ).arg(m_strType).arg( resource ));
+    kdWarning(7012) << "The desktop entry file " << m_strDesktopEntryPath
+           << " has Type=" << m_strType << "but is located under \"" << resource
+           << "\" instead of \"services\"" << endl;
     m_bValid = false;
     return;
   }
@@ -111,8 +111,8 @@ KService::init( KDesktopFile *config )
   m_strName = config->readEntry( "Name" );
   if ( m_strName.isEmpty() )
   {
-    kDebugWarning( 7012, QString("The desktop entry file %1 has no Name")
-            .arg( m_strDesktopEntryPath ) );
+    kdWarning(7012) << "The desktop entry file " << m_strDesktopEntryPath
+                    <<  " has no Name" << endl;
     m_bValid = false;
     return;
   }
