@@ -51,7 +51,8 @@ public:
    * Be sure to call cleanUp() when you are done with KSpell.
    */
   KSpell(QWidget *_parent, QString,
-	 QObject *obj, const char *slot, KSpellConfig *_kcs=0);
+	 QObject *obj, const char *slot, KSpellConfig *_kcs=0,
+	 bool _progressbar = TRUE);
 
   /**
    * Be sure your instance of KSpell isOk() before you use it.
@@ -88,6 +89,11 @@ public:
    */
 
   virtual bool check (QString _buffer);
+
+  /**
+   * Returns the position (for check())  or word number (for checkList()) of
+   * the last word checked.
+   **/
   inline int lastPosition(void)
     { return lastpos;}
 
@@ -104,7 +110,8 @@ public:
 
   /**
    * checkWord() is the most flexible function.  Some apps might need this
-   *  flexibility.
+   *  flexibility but will sacrifice speed.  Consider checkList()
+   *  for checking many words.
    *
    * checkWord () returns FALSE if buffer is not a word, otherwise it
    *  returns TRUE;
@@ -160,7 +167,7 @@ public:
   /**
    * You might want the full buffer in its partially-checked state.
    */
-  const char *intermediateBuffer (void) {return buffer;}
+  const QString *intermediateBuffer (void) {return &newbuffer;}
 
   /**
    * Tell ispell to ignore this word for the life of this KSpell instance.
@@ -201,7 +208,7 @@ signals:
    *   by checkWord().
    *  If it is emitted by checkWord(), pos=0.
    *  If it is emitted by check(), the pos indicates the position of
-   *   the misspelled word in the _buffer.  (The first position is zero.)
+   *   the misspelled word in the (original) _buffer.  (The first position is zero.)
    *  If it is emitted by checkList(), pos is the index to the misspelled
    *   word in the QStrList passed to checkList().
    *
@@ -239,9 +246,9 @@ signals:
    * emitted when check() is done
    * Copy the results of buffer if you need them.  You can only rely
    *  on the contents of buffer for the life of the slot which was signaled
-   *  by done(char *).
+   *  by done(const char *).
    */
-  void done (char *buffer);
+  void done (const char *buffer);
 
   /**
    * emitted when checkList() is done.  If the argument is
@@ -293,9 +300,10 @@ protected:
   char *temp;
 
   bool cleaning, usedialog, texmode, dlgon, ok, personaldict, dialogwillprocess;
+  bool progressbar, dialogsetup;
 
-  QString ispellID, caption, orig;
-  QString buffer, newbuffer, cwword, dlgorigword;
+  QString caption, orig;
+  QString origbuffer, newbuffer, cwword, dlgorigword;
   QString dlgreplacement, dialog3slot;
 
   int dlgresult, trystart, maxtrystart;
@@ -307,6 +315,8 @@ protected:
   void dialog (QString word, QStrList *sugg, const char* _slot);
   inline QString replacement (void)
     { return dlgreplacement; }
+
+  void setUpDialog ( bool reallyusedialogbox = TRUE);
 
   void emitProgress (void);
   bool cleanFputs (QString s, bool appendCR=TRUE);

@@ -10,7 +10,7 @@
 #include <qlayout.h>
 
 #include <klined.h>
-
+#include <kprogress.h>
 
 //Possible result codes
 enum KS_RESULT {
@@ -30,6 +30,7 @@ class KSpellDlg : public QWidget
   Q_OBJECT
 
   KLined *editbox;
+  KProgress *progbar;
   QListBox *listbox;
   QStrList *sugg;
   QPushButton *qpbrep, *qpbrepa;
@@ -37,19 +38,33 @@ class KSpellDlg : public QWidget
   QList<QWidget> *children;
   QGridLayout *layout;
   QString word, newword;
+  bool progressbar;
 
 public:
   KSpellDlg (QWidget *parent, const char *name,
-			QString& ID);
+	     bool _progressbar = FALSE);
 
   inline QString replacement (void)
     { return newword; }
 
+  /**
+   * Change the misspelled word and suggested replacements
+   *  and enable the disabled buttons on the dialog box.
+   * (Buttons are disabled by @ref standby().)
+   **/
   void init (const QString& _word, QStrList *_sugg);
+
+  /**
+   * Disable some buttons and gray out the misspelled word.
+   **/
   void standby (void);
 
-  virtual ~KSpellDlg()
-    {printf ("KSD killed\n");}
+
+  public slots:
+  /**
+   * Adjust the progress bar to <I>p</I> percent.
+   **/
+  void slotProgress (unsigned int p);
 
 protected:
   void done (int i);
@@ -74,6 +89,7 @@ protected slots:
 
   void selected (int i);
   void highlighted (int i);
+
 
 };
 

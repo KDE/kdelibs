@@ -1,1 +1,1 @@
-#define KSPELLID "KSpell v0.5"
+#define KSPELLID "KSpell v1.0"

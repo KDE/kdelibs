@@ -50,12 +50,17 @@ enum {
 
 
 KSpell::KSpell (QWidget *_parent, QString _caption,
-		QObject *obj, const char *slot, KSpellConfig *_ksc)
+		QObject *obj, const char *slot, KSpellConfig *_ksc,
+		bool _progressbar)
 {
+
+  progressbar = _progressbar;
+
   proc=0;
   ksconfig=0;
   temp=0;
   ksdlg=0;
+  
 
 
   //won't be using the dialog in ksconfig, just the option values
@@ -68,6 +73,7 @@ KSpell::KSpell (QWidget *_parent, QString _caption,
 
   ok=texmode=dlgon=FALSE;
   cleaning=FALSE;
+  dialogsetup = FALSE;
   progres=10;
   curprog=0;
 
@@ -198,8 +204,6 @@ void KSpell::KSpell2 (KProcIO *)
       return;
     }
     
-  ispellID = &temp[5];
-
   //We want to recognize KDE in any text!
   if (ignore ("kde")==FALSE)
     {
@@ -207,10 +211,11 @@ void KSpell::KSpell2 (KProcIO *)
       emit ready(this);
       return;
     }
+
   //We want to recognize linux in any text!
   if (ignore ("linux")==FALSE)
     {
-      kdebug(KDEBUG_INFO, 750, "@KDE was FALSE");
+      kdebug(KDEBUG_INFO, 750, "@Linux was FALSE");
       emit ready(this);
       return;
     }
@@ -218,18 +223,32 @@ void KSpell::KSpell2 (KProcIO *)
 
   NOOUTPUT (KSpell2);
 
-  ksdlg=new KSpellDlg (parent, "dialog", ispellID);
-  ksdlg->setCaption (caption.data());
-  connect (ksdlg, SIGNAL (command (int)), this, 
-		SLOT (slotStopCancel (int)) );
-
-  KWM kwm;
-  kwm.setMiniIcon (ksdlg->winId(), kapp->getMiniIcon());
-
   ok=TRUE;
 
   emit ready(this);
 }
+
+void
+KSpell::setUpDialog (bool reallyuseprogressbar)
+{
+  if (dialogsetup)
+    return;
+
+  
+  //Set up the dialog box
+  ksdlg=new KSpellDlg (parent, "dialog", 
+		       progressbar && reallyuseprogressbar);
+  ksdlg->setCaption (caption.data());
+  connect (ksdlg, SIGNAL (command (int)), this, 
+		SLOT (slotStopCancel (int)) );
+  connect (this, SIGNAL ( progress (unsigned int) ),
+	   ksdlg, SLOT ( slotProgress (unsigned int) ));
+  KWM kwm;
+  kwm.setMiniIcon (ksdlg->winId(), kapp->getMiniIcon());
+
+  dialogsetup = TRUE;
+}
+
 
 bool KSpell::addPersonal (QString word)
 {
@@ -320,6 +339,7 @@ bool KSpell::checkWord (QString buffer, bool _usedialog)
   dialog3slot = SLOT (checkWord3());
 
   usedialog=_usedialog;
+  setUpDialog(FALSE);
   if (_usedialog)
     ksdlg->show();
   else
@@ -486,10 +506,10 @@ int KSpell::parseOneResponse (const QString &buffer, QString &word, QStrList *su
       
       
   kdebug(KDEBUG_ERROR, 750, "HERE?: [%s]", buffer.data());
-  kdebug(KDEBUG_ERROR, 750, "Please report this to dsweet@physics.umd.edu");
+  kdebug(KDEBUG_ERROR, 750, "Please report this to dsweet@chaos.umd.edu");
   kdebug(KDEBUG_ERROR, 750, "Thank you!");
   emit done((bool)FALSE);
-  emit done (KSpell::buffer.data());
+  emit done (KSpell::origbuffer.data());
   return MISTAKE;
 }
 
@@ -500,6 +520,9 @@ bool KSpell::checkList (QStrList *_wordlist)
   if ((totalpos=wordlist->count())==0)
     return FALSE;
   wordlist->first();
+
+  setUpDialog();
+
   //  ksdlg->show(); //only show if we need it
 
   //set the dialog signal handler
@@ -622,38 +645,41 @@ bool KSpell::check (QString _buffer)
 {
   QString qs;
 
+  setUpDialog ();
   //set the dialog signal handler
   dialog3slot = SLOT (check3 ());
 
   kdebug(KDEBUG_INFO, 750, "KS: check");
-  buffer=_buffer;
-  if ((totalpos=buffer.length())==0)
+  origbuffer=_buffer;
+  if ((totalpos=origbuffer.length())==0)
     {
-      emit done(buffer.data());
+      emit done(origbuffer.data());
       return FALSE;
     }
 
-  if (buffer.at(buffer.length()-1)!='\n')
-    {
-      buffer+='\n';
-      buffer+='\n';
-    }
+
   int i;
 
-  newbuffer=buffer.data();
+  newbuffer=origbuffer.data();
 
+  if (newbuffer.at(newbuffer.length()-1)!='\n')
+    {
+      newbuffer+='\n';
+      newbuffer+='\n'; //shouldn't these be removed at some point?
+    }
   OUTPUT(check2);
   proc->fputs ("!");
 
+  //lastpos is a position in newbuffer (it has offset in it)
   offset=lastlastline=lastpos=lastline=0;
 
   emitProgress ();
 
-  i=buffer.find('\n', lastline)+1;
-  qs=buffer.mid (lastpos, i-lastline);
+  i=origbuffer.find('\n', lastline)+1;
+  qs=origbuffer.mid (lastline, i-lastline);
   cleanFputs (qs,FALSE);
 
-  lastline=i;
+  lastline=i; //the character position, not a line number
 
   ksdlg->show();
 
@@ -685,9 +711,9 @@ void KSpell::check2 (KProcIO *)
 	      if (e==REPLACE)
 		{
 		  dlgreplacement=word;
-		  emit corrected (orig, replacement(), lastpos);
+		  emit corrected (orig, (const char *)replacement(), lastpos);
 		  offset+=replacement().length()-orig.length();
-		  newbuffer.replace (lastpos,orig.length(),word);
+		  newbuffer.replace (lastpos, orig.length(), word);
 		}
 	      else  //MISTAKE
 		{
@@ -713,16 +739,16 @@ void KSpell::check2 (KProcIO *)
     return;
 
   //If there is more to check, then send another line to ISpell.
-  if ((unsigned int)lastline<buffer.length())
+  if ((unsigned int)lastline<origbuffer.length())
     {
       int i;
       QString qs;
       
       kdebug(KDEBUG_INFO, 750, "[EOL](%d)[%s]", tempe, temp);
       
-      lastpos=(lastlastline=lastline)+offset;
-      i=buffer.find('\n', lastline)+1;
-      qs=buffer.mid (lastline, i-lastline);
+      lastpos=(lastlastline=lastline)+offset; //do we really want this?
+      i=origbuffer.find('\n', lastline)+1;
+      qs=origbuffer.mid (lastline, i-lastline);
       cleanFputs ((const char*)qs,FALSE);
       lastline=i;
       return;  
@@ -732,16 +758,11 @@ void KSpell::check2 (KProcIO *)
     //  if (lastline==-1)
     {
       ksdlg->hide();
-      buffer=newbuffer.data();
       kdebug (KDEBUG_WARN, 750, "check2() done");
-      emit done (buffer.data());
+      newbuffer.truncate (newbuffer.length()-2);
+      emitProgress();
+      emit done (newbuffer.data());
     }
-
-  /*    {
-      proc->fputs("");
-      lastline=-1;
-    }
-    */
 
 }
 
@@ -757,23 +778,24 @@ void KSpell::check3 ()
     {
     case KS_REPLACE:
     case KS_REPLACEALL:
-      offset+=replacement().length()-orig.length();
-      newbuffer.replace (lastpos, cwword.length(), replacement());
+      offset+=replacement().length()-cwword.length();
+      newbuffer.replace (lastpos, cwword.length(), 
+			 (const char *)replacement());
       break;
     case KS_CANCEL:
+      kdebug (KDEBUG_INFO, 750, "cancelled\n");
       ksdlg->hide();
-      emit done (buffer.data());
+      emit done (origbuffer.data());
       return;
     case KS_STOP:
       ksdlg->hide();
-      buffer=newbuffer.data();
-      emit done (buffer.data());
+      //buffer=newbuffer.data();
+      emitProgress();
+      emit done (newbuffer.data());
       return;
     };
 
   proc->ackRead();
-  //  connect (this, SIGNAL (ez()), this, SLOT (check2a()));
-  //  emit ez();
 }
 
 void
@@ -809,8 +831,6 @@ void KSpell::dialog (QString word, QStrList *sugg, const char *_slot)
 void KSpell::dialog2 (int result)
 {
   QString qs;
-
-  //  dsdebug ("received command %d\n",result);
 
   disconnect (ksdlg, SIGNAL (command (int)), this, SLOT (dialog2(int)));
   dialogwillprocess=FALSE;
@@ -909,14 +929,12 @@ void KSpell::setProgressResolution (unsigned int res)
 
 void KSpell::emitProgress (void)
 {
-  kdebug(KDEBUG_INFO, 750, "KSpell::emitProgress (%f) (%d)",
-	   100.*lastpos/totalpos,curprog);
-  if (100.*lastpos/totalpos>=curprog)
+  int nextprog=(int) (100.*lastpos/totalpos);
+
+  if (nextprog>=curprog)
     {
-      curprog+=progres;
-      kdebug(KDEBUG_INFO, 750, "KSpell::emitProgress (yes)(%f) (%d)",
-	       100.*lastpos/totalpos,curprog);
-      emit progress (curprog-progres);
+      curprog=nextprog;
+      emit progress (curprog);
     }
 }
 
