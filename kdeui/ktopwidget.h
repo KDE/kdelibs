@@ -14,6 +14,9 @@
 
  // $Id$
  // $Log$
+ // Revision 1.25  1998/04/04 11:43:14  radej
+ // Minor docs update.
+ //
 
  /**
   * A Widget that provides toolbars, a status line and a frame.
@@ -25,13 +28,13 @@
   * Then you must construct (or use some existing) widget that will be
   * your main view. You set that main view only once with @ref #setView .
   *
-  * Adding and controll of toolbar(s) is done  with function @ref #toolBar .
-  * Menubar is added or handled with function @ref #menuBar , and statusbar
-  * with function @ref #statusBar .
-  * Toolbars and menubars are handled internaly and you must not delete them on
-  * exit. Function bool @ref #confirmExit () is called from closeEvent.
-  * Reimplement @ref #confirmExit if you need to control over close events.
+  * Adding toolbar(s) is done  with function @ref #addTtoolBar .
+  * Menubar is set with function @ref #setMmenu, and statusbar
+  * with function @ref #setStatusBar .
   *
+  * YOU MUST DELETE TOOLBARS AND MENUBAR ON EXIT (in destructor);
+  * If you have multiple windows then create window on the heap and
+  * delete it in your reimplementation of @ref #closeEvent ().
   *
   * @ref #updateRects is the function that calculates the layout of all
   * elements (toolbars, statusbar, main widget, etc). It is called from
@@ -50,7 +53,7 @@
 class KTopLevelWidget : public QWidget {
     Q_OBJECT
 
-        friend class KToolBar;
+     friend class KToolBar;
 
 public:
     /**
@@ -58,15 +61,14 @@ public:
      */
     KTopLevelWidget( const char *name = 0L );
     /**
-     * Destructor.
+     * Destructor. You must delete all *Bars here.
      */
     ~KTopLevelWidget();
 
     /**
-      * THIS FEATURE IS OBSOLETE AND WILL BE REMOVED.
-      * DO NOT USE! Use toolBar() instead (Matthias)
-      *
-      */
+     * Add toolbar. If index is -1 toolbar will be appended on end
+     * of list of toolbars. Returns ID of toolbar. (for use in @ref #toolBar )
+     */
     int addToolBar( KToolBar *toolbar, int index = -1 );
 
     /**
@@ -86,15 +88,14 @@ public:
     void setView( QWidget *view, bool show_frame = TRUE );
 
     /**
-      * THIS FEATURE IS OBSOLETE AND WILL BE REMOVED.
-      * DO NOT USE! Use menuBar() instead (Matthias)
-      *
+     * Set the menuBar. There can be only one menubar. You can get
+     * pointer to menubar with function @ref #menuBar .
       */
     void setMenu( KMenuBar *menu );
 
     /**
-      * THIS FEATURE IS OBSOLETE AND WILL BE REMOVED.
-      * DO NOT USE! Use statusBar() instead (Matthias)
+     * Set the statusbar. There can be only one statusbar. You can get
+     * pointer to status with function @ref #statusBar .
      */
     void setStatusBar( KStatusBar *statusbar );
 
@@ -128,14 +129,12 @@ public:
     KToolBar *toolBar( int ID = 0 );
 
     /**
-     * Returns a pointer to the menu bar. If there is no
-     * menu bar yet, it will be generated. Do not delete menubar.
+     * Returns a pointer to the menu bar. 
      */
     KMenuBar *menuBar();
 
     /**
-     * Returns a pointer to the status bar. If there is no
-     * status bar yet, it will be generated.
+     * Returns a pointer to the status bar.
      */
     KStatusBar *statusBar();
 
@@ -261,23 +260,20 @@ protected:
     virtual void focusOutEvent ( QFocusEvent *);
 
     /** 
-      * This is called when the widget is closed.
-      * The default implementation will also destroy the
-      * widget. (Matthias)
-      * If you reimplement this function, delete the widget if
-      * event is accepted. (sven)
-      */
+     * The default implementation calls a->accept();
+     * Reimplement this function if you want to handle closeEvents.
+     * If your window is created on the heap, you may want to delete this;
+     * You must delete any toolbars in your destructor; If application
+     * doesn't quit when this window is closed (i.e. you didn't call
+     * @ref QApplication::setMainWidget in your main () ) then you must
+     * delete (use 'delete this;').
+     */
     virtual void closeEvent ( QCloseEvent *);
 
-  /** KTopLevelWidget has the nice habbit that it will exit the
-    * application when the very last KTopLevelWidget is
-    * destroyed. Some applications may not want this default
-    * behaviour,for example if the application wants to ask the user
-    * wether he really wants to quit the application.  This can be
-    * achived by overloading the queryExit() method.  The default
-    * implementation simply returns TRUE, which means that the
-    * application will be quitted. FALSE will cancel the exiting
-    * process. (Matthias) */
+    /**
+     * DO NOT USE - WILL BE REMOVED
+     * returns true;
+     */
     virtual bool queryExit();
 
   /** Save your instance-specific properties.
@@ -288,7 +284,8 @@ protected:
    * Note that any interaction or X calls are forbidden
    * in these functions!
    *
-   * (Matthias) */
+   * (Matthias)
+   */
   virtual void saveProperties(KConfig*){};
   /**
   * Read your instance-specific properties.
@@ -356,10 +353,6 @@ private:
      */
     int borderwidth;
 
-    // this is for binary compatibility
-#ifndef KTW_BINCOMPAT
-    bool usesNewStyle;
-#endif
   // Matthias
 protected:
   void savePropertiesInternal (KConfig*, int);
