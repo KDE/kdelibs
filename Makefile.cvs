@@ -12,3 +12,4 @@ all:
 	$(MAKE) -f admin/Makefile.common cvs
 
 .SILENT:
+.PHONY: all
