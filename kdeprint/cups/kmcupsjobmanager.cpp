@@ -334,7 +334,19 @@ bool KMCupsJobManager::editJobAttributes(KMJob *j)
 		KMManager::self()->setErrorMsg(i18n("Unable to retrieve job information: ")+req.statusMessage());
 		return false;
 	}
+
 	QMap<QString,QString>	opts = req.toMap(IPP_TAG_JOB);
+	// translate the "Copies" option to non-CUPS syntax
+	if (opts.contains("copies"))
+		opts["kde-copies"] = opts["copies"];
+	if (opts.contains("page-set"))
+		opts["kde-pageset"] = (opts["page-set"] == "even" ? "2" : (opts["page-set"] == "odd" ? "1" : "0"));
+	if (opts.contains("OutputOrder"))
+		opts["kde-pageorder"] = opts["OutputOrder"];
+	if (opts.contains("multiple-document-handling"))
+		opts["kde-collate"] = (opts["multiple-document-handling"] == "separate-documents-collated-copies" ? "Collate" : "Uncollate");
+
+	// find printer and construct dialog
 	KMPrinter	*prt = KMManager::self()->findPrinter(j->printer());
 	if (!prt)
 	{
@@ -348,7 +360,7 @@ bool KMCupsJobManager::editJobAttributes(KMJob *j)
 	KMFactory::self()->uiManager()->setupPrinterPropertyDialog(&dlg);
 	if (dlg.driver())
 		dlg.addPage(new KPDriverPage(prt, dlg.driver(), &dlg));
-	//dlg.addPage(new KPCopiesPage(0, &dlg));
+	dlg.addPage(new KPCopiesPage(0, &dlg));
 	dlg.addPage(new KPSchedulePage(&dlg));
 	dlg.setOptions(opts);
 	dlg.setDefaultButton(QString::null);
@@ -358,6 +370,12 @@ bool KMCupsJobManager::editJobAttributes(KMJob *j)
 		opts.clear();
 		// include default values to override non-default values
 		dlg.getOptions(opts, true);
+		// translate the "Copies" options from non-CUPS syntax
+		opts["copies"] = opts["kde-copies"];
+		opts["OutputOrder"] = opts["kde-pageorder"];
+		opts["multiple-document-handling"] = (opts["kde-collate"] == "Collate" ? "separate-documents-collated-copies" : "separate-documents-uncollated-copies");
+		opts["page-set"] = (opts["kde-pageset"] == "1" ? "odd" : (opts["kde-pageset"] == "2" ? "even" : "all"));
+
 		req.init();
 		req.setOperation(IPP_SET_JOB_ATTRIBUTES);
 		req.addURI(IPP_TAG_OPERATION, "job-uri", j->uri());
