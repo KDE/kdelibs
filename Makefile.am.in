@@ -1,10 +1,12 @@
 COMPILE_AFTER_kparts = kmdi kdeprint kinit kate interfaces kcert khtml
 COMPILE_AFTER_kdeprint = kate khtml
+COMPILE_BEFORE_kdecore = libltdl
+COMPILE_AFTER_kdecore = kconf_update kded kdesu kdeui kimgio
+COMPILE_AFTER_kdeui = kab kio
+COMPILE_AFTER_kio = kdewidgets arts kdoctools kioslave
 COMPILE_BEFORE_khtml = kutils
-COMPILE_BEFORE_kab = kdeui
 COMPILE_BEFORE_kabc = kab kresources
 COMPILE_BEFORE_kate = interfaces kutils
-COMPILE_BEFORE_arts = kio
 COMPILE_BEFORE_doc = kdoctools
 
 $(top_srcdir)/acinclude.m4: $(top_srcdir)/admin/acinclude.m4.in $(top_srcdir)/admin/libtool.m4.in $(top_srcdir)/libltdl/ltdl.m4
