@@ -165,6 +165,8 @@ ScriptInterpreter::~ScriptInterpreter()
 
 void ScriptInterpreter::forgetDOMObject( void* objectHandle )
 {
+  if( !interpreterList ) return;
+
   QPtrListIterator<ScriptInterpreter> it( *interpreterList );
   while ( it.current() ) {
     (*it)->deleteDOMObject( objectHandle );
