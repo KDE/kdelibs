@@ -22,7 +22,6 @@
 #include <qlistbox.h>
 #include <qpainter.h>
 
-#include <kapp.h>
 #include <kcharsets.h>
 #include <kconfig.h>
 #include <kglobal.h>
@@ -277,7 +276,7 @@ void KFontCombo::updateFonts()
 
 bool KFontCombo::displayFonts()
 {
-    KConfigGroupSaver saver(kapp->config(), "KDE");
-    return kapp->config()->readBoolEntry("DisplayFontItems", true);
+    KConfigGroupSaver saver(KGlobal::config(), "KDE");
+    return KGlobal::config()->readBoolEntry("DisplayFontItems", true);
 }
 
