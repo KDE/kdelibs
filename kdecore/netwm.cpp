@@ -2273,10 +2273,8 @@ unsigned long NETWinInfo::event(XEvent *event) {
 		    mask |= MaxVert;
 		else if ((Atom) event->xclient.data.l[i] == net_wm_state_max_horiz)
 		    mask |= MaxHoriz;
-		else if ((Atom) event->xclient.data.l[i] == net_wm_state_shaded) {
-		    fprintf(stderr, "NETWinInfo::event: shaded!\n");
+		else if ((Atom) event->xclient.data.l[i] == net_wm_state_shaded)
 		    mask |= Shaded;
-		}
 		else if ((Atom) event->xclient.data.l[i] == net_wm_state_skip_taskbar)
 		    mask |= SkipTaskbar;
 		else if ((Atom) event->xclient.data.l[i] == net_wm_state_stays_on_top)
@@ -2453,7 +2451,7 @@ void NETWinInfo::update(unsigned long dirty) {
 			p->state |= StaysOnTop;
 		}
 	    }
-	    if ( data_ret ) 
+	    if ( data_ret )
 		XFree(data_ret);
 	}
     }
