@@ -136,27 +136,28 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
      */
     bool isTipDialog = (parent != 0);
  
-	QImage img;
-	
+    QImage img;
+    int h,s,v;
+
+    _blendedColor = KGlobalSettings::activeTitleColor();
+    _blendedColor.hsv(&h,&s,&v);
+    _blendedColor.setHsv(h,s*(71/76.0),v*(67/93.0));
+
     if (!isTipDialog)
     {
 	img = QImage(locate("data", "kdewizard/pics/wizard_small.png"));
 	// colorize and check to figure the correct color
-	KIconEffect::colorize(img, KGlobalSettings::activeTitleColor(), 1.0);
+	KIconEffect::colorize(img, _blendedColor, 1.0);
 	QRgb colPixel( img.pixel(0,0) );
 
 	_blendedColor = QColor(qRed(colPixel),qGreen(colPixel),qBlue(colPixel));
     }
-    else
-	_blendedColor = KGlobalSettings::activeTitleColor();
 
     _baseColor = KGlobalSettings::alternateBackgroundColor();
-    _textColor = KGlobalSettings::textColor();
-    int h,s,v;
     _baseColor.hsv(&h,&s,&v);
     _baseColor.setHsv(h,s*(10/6.0),v*(93/99.0));
-    _blendedColor.hsv(&h,&s,&v);
-    _blendedColor.setHsv(h,s*(71/76.0),v*(67/93.0));
+
+    _textColor = KGlobalSettings::textColor();
     
 	
     _database = db;
