@@ -1979,6 +1979,11 @@ void KDirLister::addRefreshItem( const KFileItem *item )
       d->lstRefreshItems = new KFileItemList;
 
     d->lstRefreshItems->append( item );
+  } else {
+    if ( !d->lstRemoveItems )
+      d->lstRemoveItems = new KFileItemList;
+
+      d->lstRemoveItems->append( item );//notify the user that the mimetype of a file changed, which doesn't match a filter or does match an exclude  filter
   }
 }
 
@@ -1992,6 +1997,9 @@ void KDirLister::emitItems()
 
   KFileItemList *tmpRefresh = d->lstRefreshItems;
   d->lstRefreshItems = 0;
+
+  KFileItemList *tmpRemove = d->lstRemoveItems;
+  d->lstRemoveItems = 0;
 
   if ( tmpNew )
   {
@@ -2009,6 +2017,13 @@ void KDirLister::emitItems()
   {
     emit refreshItems( *tmpRefresh );
     delete tmpRefresh;
+  }
+
+  if ( tmpRemove )
+  {
+    for (KFileItem *tmp=tmpRemove->first(); tmp;tmp=tmpRemove->next())
+	    emit deleteItem( tmp);
+    delete tmpRemove;
   }
 }
 

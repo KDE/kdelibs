@@ -56,7 +56,8 @@ public:
     lstNewItems = 0;
     lstRefreshItems = 0;
     lstMimeFilteredItems = 0;
-    
+    lstRemoveItems = 0;
+
     changes = NONE;
     
     window = 0;
@@ -95,7 +96,8 @@ public:
   // file item for the root itself (".")
   KFileItem *rootFileItem;
 
-  KFileItemList *lstNewItems, *lstRefreshItems, *lstMimeFilteredItems;
+  KFileItemList *lstNewItems, *lstRefreshItems, *lstMimeFilteredItems,
+	*lstRemoveItems;
 
   int changes;
  
