@@ -475,7 +475,7 @@ bool Ftp::ftpOpenConnection (LoginMode loginMode)
       return false;       // error emitted by ftpLogin
   }
 
-  m_bTextMode = !metaData("textmode").isEmpty();
+  m_bTextMode = config()->readBoolEntry("textmode", false);
   connected();
   return true;
 }

@@ -118,6 +118,8 @@ PrivacyPolicy		stringlist  \n delimited URIs referring to P3P privacy
 PrivacyCompactPolicy	stringlist  \n delimited P3P compact tag policies
                                 presented by the HTTP server
 
+textmode		bool	When true, switches FTP up/downloads to ascii transfer mode
+
 ** NOTE: Anything in quotes ("") under Value(s) indicates literal value.
 
 
