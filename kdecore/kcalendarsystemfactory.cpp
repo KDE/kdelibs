@@ -1,6 +1,6 @@
 /*
    Copyright (c) 2002 Carlos Moro <cfmoro@correo.uniovi.es>
-   Copyright (c) 2002 Hans Petter Bieker <bieker@kde.org>
+   Copyright (c) 2002-2003 Hans Petter Bieker <bieker@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -26,13 +26,9 @@
 
 #include "kcalendarsystemfactory.h"
 
-//#define HEBREW_CALENDAR_SUPPORT
-
 #include "kcalendarsystemgregorian.h"
 #include "kcalendarsystemhijri.h"
-#ifdef HEBREW_CALENDAR_SUPPORT
 #include "kcalendarsystemhebrew.h"
-#endif
 
 KCalendarSystemFactory::KCalendarSystemFactory()
 {
@@ -46,10 +42,8 @@ KCalendarSystemFactory::~KCalendarSystemFactory()
 KCalendarSystem *KCalendarSystemFactory::create( const QString &calType,
                                                  const KLocale * locale )
 {
-#ifdef HEBREW_CALENDAR_SUPPORT
   if ( calType == "hebrew" )
     return new KCalendarSystemHebrew(locale);
-#endif
   if ( calType == "hijri" )
     return new KCalendarSystemHijri(locale);
   if ( calType == "gregorian" )
@@ -64,9 +58,7 @@ KCalendarSystem *KCalendarSystemFactory::create( const QString &calType,
 QStringList KCalendarSystemFactory::calendarSystems()
 {
    QStringList lst;
-#ifdef HEBREW_CALENDAR_SUPPORT
    lst.append("hebrew");
-#endif
    lst.append("hijri");
    lst.append("gregorian");
 
