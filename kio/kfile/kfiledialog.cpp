@@ -1093,7 +1093,7 @@ void KFileDialog::toolbarCallback(int i) // SLOT
 
 void KFileDialog::setSelection(const QString& url)
 {
-    kdDebug() << "setSelection " << url << endl;
+    kdDebug(kfile_area) << "setSelection " << url << endl;
 
     if (url.isEmpty()) {
         d->selection = QString::null;
