@@ -723,14 +723,14 @@ public:
     KLimitedIODevice( QIODevice *dev, int start, int length )
         : m_dev( dev ), m_start( start ), m_length( length )
     {
-        kdDebug() << "KLimitedIODevice::KLimitedIODevice start=" << start << " length=" << length << endl;
+        //kdDebug(7005) << "KLimitedIODevice::KLimitedIODevice start=" << start << " length=" << length << endl;
         setType( IO_Direct ); // we support sequential too, but then atEnd() tries getch/ungetch !
         open( IO_ReadOnly );
     }
     virtual ~KLimitedIODevice() {}
 
     virtual bool open( int m ) {
-        kdDebug() << "KLimitedIODevice::open m=" << m << endl;
+        //kdDebug(7005) << "KLimitedIODevice::open m=" << m << endl;
         if ( m & IO_ReadOnly ) {
             /*bool ok = false;
             if ( m_dev->isOpen() )
@@ -754,7 +754,7 @@ public:
 
     virtual Q_LONG readBlock ( char * data, Q_ULONG maxlen )
     {
-        kdDebug() << "KLimitedIODevice::readBlock maxlen=" << maxlen << endl;
+        //kdDebug(7005) << "KLimitedIODevice::readBlock maxlen=" << maxlen << endl;
         Q_ULONG max = QMIN( at() + maxlen, m_start + m_length );
         return m_dev->readBlock( data, max );
     }
