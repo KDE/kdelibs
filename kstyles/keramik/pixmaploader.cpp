@@ -366,7 +366,10 @@ void TilePainter::draw( QPainter *p, int x, int y, int width, int height, const 
 
 		//Redistribute any "extra" pixels to the last scaleable row.
 		if ( scaledRows && row == lastScaledRow )
-			h += scaleHeight - scaleHeight / scaledRows * scaledRows;
+		{
+			int allocatedEvenly = scaleHeight / scaledRows * scaledRows;
+			h += scaleHeight - allocatedEvenly;
+		}
 
 
 		//If we're fixed, get the height from the pixmap itself.
@@ -589,4 +592,4 @@ int SpinBoxPainter::tileName( unsigned int column, unsigned int ) const
 }
 
 // vim: ts=4 sw=4 noet
-// kate: indent-width 4; replace-tabs off; tab-width 4;
+// kate: indent-width 4; replace-tabs off; tab-width 4; space-indent off;
