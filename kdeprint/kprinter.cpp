@@ -160,10 +160,20 @@ void KPrinter::loadSettings()
 {
 	d->m_options = d->m_impl->loadOptions();
 
-	// load latest used printer from config file
-	KConfig	*conf = KGlobal::config();
+	// load the last printer used in the current process (if any)
+	// and remove the corresponding entry in the option map, as it
+	// is not needed anymore
+	setSearchName(option("kde-searchname"));
+	d->m_options.remove("kde-searchname");
+
+	KConfig	*conf = KGlobal::config(), *pconf = KMFactory::self()->printConfig();
 	conf->setGroup("KPrinter Settings");
-	setSearchName(conf->readEntry("Printer",QString::null));
+	pconf->setGroup("General");
+
+	// load latest used printer from config file, if required in the options
+	if (searchName().isEmpty() && pconf->readBoolEntry("UseLast", true))
+		setSearchName(conf->readEntry("Printer",QString::null));
+
 	// latest used print command
 	setOption("kde-printcommand",conf->readEntry("PrintCommand"));
 }
@@ -171,7 +181,10 @@ void KPrinter::loadSettings()
 void KPrinter::saveSettings()
 {
 	if (d->m_impl)
+	{
+		setOption("kde-searchname", searchName());
 		d->m_impl->saveOptions(d->m_options);
+	}
 
 	// save latest used printer to config file
 	KConfig	*conf = KGlobal::config();

@@ -531,3 +531,9 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
   	. possibility to have multiple status boxes (one for each app)
 	. added an icon (eye-candy) and the document name being printed
 	. made it configurable in the options dialog
+  * general: possibility to use the default printer on first print instead
+    of the last printer used. Configurable in the options dialog. Now, I
+    should probably re-add the "Set as default" button.
+  * print dialog: re-added the "Set as default" button in the case the
+    user default printer is used on first print instead of the last used
+    printer (it does make sense again to have it)

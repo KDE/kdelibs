@@ -62,3 +62,6 @@ WISHES
 - add somewhere a descriptive string about the print server: for CUPS,
   the current CUPS server (localhost:631) could be shown. Question is
   "Where?".
+
+- in CUPS possibility to filter printer using printer-type attribute,
+  to get only printers having a specified capability

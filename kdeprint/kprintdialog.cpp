@@ -217,7 +217,7 @@ void KPrintDialog::setFlags(int f)
 {
 	SHOWHIDE(d->m_properties, (f & KMUiManager::Properties))
 	d->m_default->hide();
-	//SHOWHIDE(d->m_default, (f & KMUiManager::Default))
+	SHOWHIDE(d->m_default, ((f & KMUiManager::Default) && !KMFactory::self()->printConfig("General")->readBoolEntry("UseLast", true)))
 	SHOWHIDE(d->m_preview, (f & KMUiManager::Preview))
 	bool	on = (f & KMUiManager::OutputToFile);
 	SHOWHIDE(d->m_filelabel, on)
@@ -558,8 +558,10 @@ void KPrintDialog::configChanged()
 	// simply update the printer list: do it all the time
 	// as changing settings may influence the way printer
 	// are listed.
-	//if (d->m_filter->isOn())
-		initialize(d->m_printer);
+	initialize(d->m_printer);
+
+	// update the GUI
+	setFlags(KMFactory::self()->uiManager()->dialogFlags());
 }
 
 void KPrintDialog::expandDialog(bool on)

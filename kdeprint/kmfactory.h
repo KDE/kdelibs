@@ -71,7 +71,7 @@ public:
 	KMSpecialManager* specialManager();
 	KXmlCommandManager* commandManager();
 	KPrinterImpl* printerImplementation();
-	KConfig* printConfig();
+	KConfig* printConfig(const QString& group = QString::null);
 	QString printSystem();
 	QValueList<PluginInfo> pluginList();
 	PluginInfo pluginInfo(const QString& name);

@@ -205,13 +205,15 @@ void KMFactory::loadFactory(const QString& syst)
 	}
 }
 
-KConfig* KMFactory::printConfig()
+KConfig* KMFactory::printConfig(const QString& group)
 {
 	if (!m_printconfig)
 	{
 		m_printconfig = new KConfig("kdeprintrc");
 		Q_CHECK_PTR(m_printconfig);
 	}
+	if (!group.isEmpty())
+		m_printconfig->setGroup(group);
 	return m_printconfig;
 }
 

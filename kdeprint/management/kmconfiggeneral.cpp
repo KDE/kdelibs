@@ -63,8 +63,9 @@ KMConfigGeneral::KMConfigGeneral(QWidget *parent)
 	m_preview->setDisabled(true);
 	m_defaulttestpage->setCursor(KCursor::handCursor());
 
-	QGroupBox	*m_statusbox = new QGroupBox(0, Qt::Vertical, i18n("Status feedback"), this);
+	QGroupBox	*m_statusbox = new QGroupBox(0, Qt::Vertical, i18n("Miscellaneous"), this);
 	m_statusmsg = new QCheckBox(i18n("Show printing status message box"), m_statusbox);
+	m_uselast = new QCheckBox(i18n("Defaults to the last printer used in the application"), m_statusbox);
 
 	//layout
 	QVBoxLayout	*lay0 = new QVBoxLayout(this, 5, 10);
@@ -84,6 +85,7 @@ KMConfigGeneral::KMConfigGeneral(QWidget *parent)
 	lay3->addWidget(m_preview);
 	QVBoxLayout	*lay4 = new QVBoxLayout(m_statusbox->layout(), 10);
 	lay4->addWidget(m_statusmsg);
+	lay4->addWidget(m_uselast);
         m_preview->setEnabled( !m_testpage->lineEdit()->text().isEmpty());
 }
 
@@ -108,6 +110,7 @@ void KMConfigGeneral::loadConfig(KConfig *conf)
 		m_testpage->setURL(tpage);
 	}
 	m_statusmsg->setChecked(conf->readBoolEntry("ShowStatusMsg", true));
+	m_uselast->setChecked(conf->readBoolEntry("UseLast", true));
 }
 
 void KMConfigGeneral::saveConfig(KConfig *conf)
@@ -119,6 +122,7 @@ void KMConfigGeneral::saveConfig(KConfig *conf)
 		KMessageBox::sorry(this, i18n("The selected test page is not a PostScript file. You may not "
 		                              "be able to test your printer anymore."));
 	conf->writeEntry("ShowStatusMsg", m_statusmsg->isChecked());
+	conf->writeEntry("UseLast", m_uselast->isChecked());
 }
 
 void KMConfigGeneral::slotTestPagePreview()
