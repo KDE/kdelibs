@@ -43,19 +43,17 @@
 KFilePreview::KFilePreview(   
                          KDir *inDir, bool s, QDir::SortSpec sorting, 
 			 QWidget * parent, const char * name ) 
-    : KNewPanner(parent, name, KNewPanner::Vertical) , 
+    : QSplitter(Qt::Horizontal, parent, name),
       KFileInfoContents(s,sorting)
 {
 
     fileList = new KDirListBox(true, s, sorting, this, "_dirs");
 
     myPreview = new KPreview( inDir, this, "_preview" );
-
-    activate(fileList->widget(), myPreview);
-
+    
     int pan = kapp->getConfig()->readNumEntry("PannerPosition", 
 					      DefaultPannerPosition);
-    setSeparatorPos(pan);
+    setRubberband(pan);
 
     fileList->connectDirSelected(this, SLOT(dirActivated(KFileInfo *)));
     fileList->connectFileSelected(this, SLOT(fileActivated(KFileInfo *)));

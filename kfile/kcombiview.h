@@ -22,9 +22,9 @@
 #define _KCOMBIVIEW_H
 
 #include "kfileinfocontents.h"
-#include "knewpanner.h"
+#include <qsplitter.h>
 
-class KCombiView: protected KNewPanner, public KFileInfoContents
+class KCombiView: protected QSplitter, public KFileInfoContents
 {
     Q_OBJECT
 	

@@ -21,12 +21,12 @@
 #ifndef _KFILEPREVIEW_H
 #define _KFILEPREVIEW_H
 
+class KDir;
 #include "kpreview.h"
 #include "kfileinfocontents.h"
-#include "knewpanner.h"
-#include "kdir.h"
+#include <qsplitter.h>
 
-class KFilePreview: protected KNewPanner, public KFileInfoContents
+class KFilePreview: protected QSplitter, public KFileInfoContents
 {
     Q_OBJECT
 	

@@ -41,7 +41,7 @@
 KCombiView::KCombiView(  FileView dirs,  FileView files, 
                          bool s, QDir::SortSpec sorting,
 			 QWidget * parent, const char * name ) 
-    : KNewPanner(parent, name, KNewPanner::Vertical) , 
+    : QSplitter(Qt::Horizontal, parent, name) , 
       KFileInfoContents(s,sorting)
 {
     setSorting( QDir::Unsorted ); // we sort in the part views
@@ -73,6 +73,7 @@ KCombiView::KCombiView(  FileView dirs,  FileView files,
 	fileList = getFileList();
     }
 
+    /*
     bool showListLabels =  
 	kapp->getConfig()->readBoolEntry("ShowListLabels", 
 					 DefaultShowListLabels);
@@ -82,18 +83,16 @@ KCombiView::KCombiView(  FileView dirs,  FileView files,
 		  i18n("Contents:"));
 	showLabels(showListLabels);
     }
-    
+    */
+
     bool dirsLeft = kapp->getConfig()->readBoolEntry("ShowDirsLeft", 
 						     DefaultShowDirsLeft);
 
-    if (dirsLeft)
-	activate(dirList->widget(), fileList->widget());
-    else
-	activate(fileList->widget(), dirList->widget());
+    moveToFirst( dirsLeft ? dirList->widget() : fileList->widget());
 
     int pan = kapp->getConfig()->readNumEntry("PannerPosition", 
 					      DefaultPannerPosition);
-    setSeparatorPos(pan);
+    setRubberband(pan);
 
     dirList->connectDirSelected(this, SLOT(dirActivated(KFileInfo*)));
     fileList->connectFileSelected(this, SLOT(fileActivated(KFileInfo*)));
@@ -105,7 +104,7 @@ KCombiView::~KCombiView()
     KConfig *c = kapp->getConfig();
     QString oldgroup = c->group();
     c->setGroup("KFileDialog Settings");
-    c->writeEntry("PannerPosition", separatorPos(), true, true);
+    //    c->writeEntry("PannerPosition", separatorPos(), true, true);
     c->setGroup(oldgroup);
 }
 
