@@ -52,24 +52,28 @@ void UserPaths::initStatic()
   *s_desktopPath = config->readEntry( "Desktop", *s_desktopPath);
   if ( s_desktopPath->right(1) != "/")
     *s_desktopPath += "/";
+  *s_desktopPath = QDir::cleanDirPath( *s_desktopPath );
   
   // Templates Path
   *s_templatesPath = *s_desktopPath + "Templates/";
   *s_templatesPath = config->readEntry( "Templates" , *s_templatesPath);
   if ( s_templatesPath->right(1) != "/")
     *s_templatesPath += "/";
+  *s_templatesPath = QDir::cleanDirPath( *s_templatesPath );
 
   // Autostart Path
   *s_autostartPath = *s_desktopPath + "Autostart/";
   *s_autostartPath = config->readEntry( "Autostart" , *s_autostartPath);
   if ( s_autostartPath->right(1) != "/")
     *s_autostartPath += "/";
+  *s_autostartPath = QDir::cleanDirPath( *s_autostartPath );
 
   // Trash Path
   *s_trashPath = *s_desktopPath + "Trash/";
   *s_trashPath = config->readEntry( "Trash" , *s_trashPath);
-  if ( s_autostartPath->right(1) != "/")
-    *s_autostartPath += "/";
+  if ( s_trashPath->right(1) != "/")
+    *s_trashPath += "/";
+  *s_trashPath = QDir::cleanDirPath( *s_trashPath );
 }
 
 bool UserPaths::testLocalDir( const char *_name )
