@@ -75,7 +75,7 @@ KBuildServiceFactory::createEntry( const QString& file, const char *resource )
      return 0;
 
   // Is it a .desktop file?
-  if ((name.right(8) != ".desktop") && (name.right(7) != ".kdelnk"))
+  if (!name.endsWith(".desktop") && !name.endsWith(".kdelnk"))
       return 0;
 
   KDesktopFile desktopFile(file, true, resource);
