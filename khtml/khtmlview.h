@@ -209,7 +209,7 @@ private:
 
     void scheduleRepaint(int x, int y, int w, int h);
     void unscheduleRepaint();
-    
+
     void closeChildDialogs();
     bool dialogsAllowed();
 
@@ -276,7 +276,7 @@ private:
     void initCaret(bool keepSelection = false);
     /** returns whether the text under the caret will be overridden.
       */
-    bool caretOverrides();
+    bool caretOverrides() const;
     /** ensures that the given element is properly focused.
      *
      * If not in caret mode or design mode, keyboard events are only regarded for
