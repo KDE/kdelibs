@@ -25,6 +25,7 @@
 #include <qtextcodec.h>
 #include <qfile.h>
 #include <qdatetime.h>
+#include <qfileinfo.h>
 
 #include "kglobal.h"
 #include "kstddirs.h"
@@ -1398,3 +1399,34 @@ void KLocale::initInstance()
         kdDebug() << "no app name available using KLocale - nothing to do\n";
 }
 
+QString KLocale::langLookup(const QString &fname, const char *rtype)
+{
+    QStringList search;
+
+    // assemble the local search paths
+    const QStringList localDoc = KGlobal::dirs()->resourceDirs(rtype);
+
+    // look up the different languages
+    for (int id=localDoc.count()-1; id >= 0; --id)
+    {
+        QStringList langs = KGlobal::locale()->languageList();
+        langs.append( "en" );
+        langs.remove( "C" );
+        QStringList::ConstIterator lang;
+        for (lang = langs.begin(); lang != langs.end(); ++lang)
+            search.append(QString("%1%2/%3").arg(localDoc[id]).arg(*lang).arg(fname));
+    }
+
+    // try to locate the file
+    QStringList::Iterator it;
+    for (it = search.begin(); it != search.end(); ++it)
+    {
+        kdDebug() << "Looking for help in: " << *it << endl;
+
+        QFileInfo info(*it);
+        if (info.exists() && info.isFile() && info.isReadable())
+            return *it;
+    }
+
+    return QString::null;
+}

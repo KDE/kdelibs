@@ -529,6 +529,14 @@ public:
      */
      static void setMainCatalogue(const char *catalogue);
 
+    /**
+     * Find localized resource in resourceDir( rtype ) + <lang> + fname.
+     *
+     * @param fname relative path to find
+     * @param rtype resource type to use
+     */
+    static QString langLookup(const QString &fname, const char *rtype = "html");
+
 protected:
     QString chset;
     bool m_weekStartsMonday;
