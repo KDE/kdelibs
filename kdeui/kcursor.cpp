@@ -362,12 +362,15 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
     if( ! ( (t >= QEvent::MouseButtonPress && t <= QEvent::Leave) ||
             (t >= QEvent::Destroy && t <= QEvent::Hide) ||
              t == QEvent::AccelOverride ||
-             t == QEvent::Wheel ) )
+             t == QEvent::Wheel || 
+             t == QEvent::WindowDeactivate) )
       return false;
     
     // disconnect() and connect() on events for a new widget
-    if ( o != hideWidget ) {
-        if ( hideWidget ) {
+    if ( o != hideWidget ) 
+    {
+        if ( hideWidget ) 
+        {
             disconnect( hideWidget, SIGNAL( destroyed() ),
                         this, SLOT( slotWidgetDestroyed()));
         }
@@ -378,7 +381,9 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
     QWidget *w = static_cast<QWidget *>( o );
     hideWidget = w;
 
-    if ( t == QEvent::Leave || t == QEvent::FocusOut || t == QEvent::Destroy) {
+    if ( t == QEvent::Leave || t == QEvent::FocusOut || t == QEvent::Destroy ||
+         t == QEvent::WindowDeactivate ) 
+    {
 	if ( autoHideTimer )
             autoHideTimer->stop();
 
@@ -400,16 +405,18 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
  	return false;
     }
 
-    else if ( t == QEvent::Enter ) {
+    else if ( t == QEvent::Enter ) 
+    {
         if ( isCursorHidden )
             unhideCursor( w );
         if ( autoHideTimer )
             autoHideTimer->start( hideCursorDelay, true );
     }
 
-    else { // other than enter/leave/focus events
-        
-        if ( isCursorHidden ) {
+    else // other than enter/leave/focus events
+    {
+        if ( isCursorHidden ) 
+        {
             if ( t == QEvent::MouseButtonPress ||
                  t == QEvent::MouseButtonRelease ||
                  t == QEvent::MouseButtonDblClick || t == QEvent::MouseMove ||
