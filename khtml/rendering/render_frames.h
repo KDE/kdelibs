@@ -38,39 +38,39 @@ namespace DOM
 
 namespace khtml
 {
-  struct ChildFrame;
+    struct ChildFrame;
 
 class RenderFrameSet : public RenderBox
 {
-  friend class DOM::HTMLFrameSetElementImpl;
+    friend class DOM::HTMLFrameSetElementImpl;
 public:
-  RenderFrameSet( DOM::HTMLFrameSetElementImpl *frameSet );
+    RenderFrameSet( DOM::HTMLFrameSetElementImpl *frameSet );
 
-  virtual ~RenderFrameSet();
+    virtual ~RenderFrameSet();
 
-  virtual const char *renderName() const { return "RenderFrameSet"; }
-  virtual bool isFrameSet() const { return true; }
+    virtual const char *renderName() const { return "RenderFrameSet"; }
+    virtual bool isFrameSet() const { return true; }
 
-  virtual void layout();
+    virtual void layout();
 
-  void positionFrames( );
+    void positionFrames( );
 
-  bool resizing() const { return m_resizing; }
-  bool noResize() const { return element()->noResize(); }
+    bool resizing() const { return m_resizing; }
+    bool noResize() const { return element()->noResize(); }
 
-  bool userResize( DOM::MouseEventImpl *evt );
-  bool canResize( int _x, int _y);
-  void setResizing(bool e);
+    bool userResize( DOM::MouseEventImpl *evt );
+    bool canResize( int _x, int _y);
+    void setResizing(bool e);
 
-  Qt::CursorShape cursorShape() const { return m_cursor; }
+    Qt::CursorShape cursorShape() const { return m_cursor; }
 
-  bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty, HitTestAction hitTestAction, bool inside);
+    bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty, HitTestAction hitTestAction, bool inside);
 
     DOM::HTMLFrameSetElementImpl *element() const
     { return static_cast<DOM::HTMLFrameSetElementImpl*>(RenderObject::element()); }
 
 #ifndef NDEBUG
-  virtual void dump(QTextStream *stream, QString ind = "") const;
+    virtual void dump(QTextStream *stream, QString ind = "") const;
 #endif
 
 private:
