@@ -380,11 +380,11 @@ int KAction::plug( QWidget *w, int index )
     else
     {
       if ( d->m_bIconSet )
-        id = menu->insertItem( iconSet(), plainText(), this,
+        id = menu->insertItem( iconSet(), text(), this,   //dsweet
                                SLOT( slotActivated() ), accel(),
                                -1, index );
       else
-        id = menu->insertItem( plainText(), this, SLOT( slotActivated() ),
+        id = menu->insertItem( text(), this, SLOT( slotActivated() ),  //dsweet
                                accel(), -1, index );
     }
 
