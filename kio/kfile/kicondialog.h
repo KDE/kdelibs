@@ -165,6 +165,12 @@ public:
     QString openDialog();
 
     /**
+     * show()es this dialog and emits a newIcon(const QString&) signal when
+     * successful. QString::null will be emitted if the dialog was aborted.
+     */
+    void showDialog();
+
+    /**
      * Pops up the dialog an lets the user select an icon.
      *
      * @param group The icon group this icon is intended for. Providing the
@@ -186,6 +192,12 @@ public:
                            bool strictIconSize=false, int iconSize = 0,
                            bool user=false, QWidget *parent=0,
                            const QString &caption=QString::null);
+
+signals:
+    void newIconName(const QString&);
+
+protected slots:
+    void slotOk();
 
 private slots:
     void slotButtonClicked(int);
@@ -298,6 +310,7 @@ signals:
 
 private slots:
     void slotChangeIcon();
+    void newIconName(const QString& name);
 
 private:
     bool mbUser;

@@ -276,7 +276,7 @@ KIconDialog::~KIconDialog()
 void KIconDialog::slotAcceptIcons()
 {
   d->custom=QString::null;
-  accept();
+  slotOk();
 }
 
 void KIconDialog::showIcons()
@@ -375,6 +375,34 @@ QString KIconDialog::openDialog()
 	return fi.baseName();
     }
     return QString::null;
+}
+
+void KIconDialog::showDialog()
+{
+    setModal(false);
+    showIcons();
+    show();
+}
+
+void KIconDialog::slotOk()
+{
+    QString name;
+    if (!d->custom.isNull())
+    {
+        name = d->custom;
+    }
+    else
+    {
+        name = mpCanvas->getCurrent();
+        if (!name.isEmpty() && (mType != 1))
+        {
+            QFileInfo fi(name);
+            name = fi.baseName();
+        }
+    }
+
+    emit newIconName(name);
+    KDialogBase::slotOk();
 }
 
 QString KIconDialog::getIcon(KIcon::Group group, KIcon::Context context,
@@ -539,8 +567,13 @@ void KIconButton::setIcon(const QString& icon)
 {
     mIcon = icon;
     setPixmap(mpLoader->loadIcon(mIcon, mGroup, d->iconSize));
+
     if (!mpDialog)
+    {
         mpDialog = new KIconDialog(mpLoader, this);
+        connect(mpDialog, SIGNAL(newIconName(const QString&)), SLOT(newIconName(const QString&)));
+    }
+
     if ( mbUser )
       mpDialog->setCustomLocation( QFileInfo( mpLoader->iconPath(mIcon, mGroup, true) ).dirPath( true ) );
 }
@@ -554,19 +587,27 @@ void KIconButton::resetIcon()
 void KIconButton::slotChangeIcon()
 {
     if (!mpDialog)
+    {
         mpDialog = new KIconDialog(mpLoader, this);
+        connect(mpDialog, SIGNAL(newIconName(const QString&)), SLOT(newIconName(const QString&)));
+    }
 
-    mpDialog->setup( mGroup, mContext, d->m_bStrictIconSize, d->iconSize,
-                     mbUser );
+    mpDialog->setup( mGroup, mContext, d->m_bStrictIconSize, d->iconSize, mbUser );
+    mpDialog->showDialog();
+}
 
-    QString name = mpDialog->openDialog();
+void KIconButton::newIconName(const QString& name)
+{
     if (name.isEmpty())
-	return;
+        return;
+
     QPixmap pm = mpLoader->loadIcon(name, mGroup, d->iconSize);
     setPixmap(pm);
     mIcon = name;
+
     if ( mbUser )
       mpDialog->setCustomLocation( QFileInfo( mpLoader->iconPath(mIcon, mGroup, true) ).dirPath( true ) );
+
     emit iconChanged(name);
 }
 
