@@ -42,26 +42,20 @@ const TypeInfo GlobalImp::info = { "global", GlobalType, &ObjectImp::info, 0, 0 
 Global::Global()
   : Object(0L)
 {
-  rep = 0;
 }
 
 Global::Global(void *)
   : Object(0L)
 {
-  rep = 0;
 }
 
 Global::Global(GlobalImp *d)
-  : Object(0L)
+  : Object(d)
 {
-  rep = d;
-  rep->ref();
 }
 
 Global::~Global()
 {
-  if (rep)
-    rep->deref();
 }
 
 Global Global::current()
