@@ -172,7 +172,7 @@ binary-common:
 	dh_makeshlibs -V
 	dh_installdeb
 	dh_perl
-	dh_shlibdeps -ldebian/kdelibs4/usr/lib:debian/kdelibs4-bin/usr/lib
+	dh_shlibdeps -ldebian/kdelibs-bin/usr/lib:debian/kdelibs4/usr/lib
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb
