@@ -21,9 +21,12 @@
 #define KFILEFILTER_H
 
 #include <qstringlist.h>
+#include <qptrdict.h>
 
 #include <kcombobox.h>
 #include <kmimetype.h>
+
+class KFileFilterPrivate;
 
 class KFileFilter : public KComboBox
 {
@@ -60,6 +63,11 @@ class KFileFilter : public KComboBox
 
  signals:
     void filterChanged();
+    
+private:
+    static QPtrDict<KFileFilterPrivate> *s_Hack;
+    
+    // ### private pointer!!!
 };
 
 #endif

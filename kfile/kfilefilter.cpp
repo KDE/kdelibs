@@ -19,12 +19,39 @@
 
 #include <klocale.h>
 #include <kdebug.h>
+#include <kstaticdeleter.h>
 
 #include "kfilefilter.h"
+
+class KFileFilterPrivate
+{
+public:
+    KFileFilterPrivate() {
+        hasAllSupportedFiles = false;
+    }
+
+    // when we have more than 3 mimefilters and no default-filter,
+    // we don't show the comments of all mimefilters in one line,
+    // instead we show "All supported files". We have to translate
+    // that back to the list of mimefilters in currentFilter() tho.
+    bool hasAllSupportedFiles;
+};
+
+QPtrDict<KFileFilterPrivate> * KFileFilter::s_Hack = 0L;
+KStaticDeleter<QPtrDict<KFileFilterPrivate> > sd;
 
 KFileFilter::KFileFilter( QWidget *parent, const char *name)
     : KComboBox(true, parent, name)
 {
+    if ( !s_Hack ) {
+        s_Hack = new QPtrDict<KFileFilterPrivate>;
+        s_Hack->setAutoDelete( true );
+        sd.setObject( s_Hack );
+    }
+
+    KFileFilterPrivate *d = new KFileFilterPrivate;
+    s_Hack->insert( this, d );
+
     setTrapReturnKey( true );
     setInsertionPolicy(NoInsertion);
     connect( this, SIGNAL( activated( int )), this, SIGNAL( filterChanged() ));
@@ -34,12 +61,14 @@ KFileFilter::KFileFilter( QWidget *parent, const char *name)
 
 KFileFilter::~KFileFilter()
 {
+    s_Hack->remove( this );
 }
 
 void KFileFilter::setFilter(const QString& filter)
 {
     clear();
     filters.clear();
+    s_Hack->find( this )->hasAllSupportedFiles = false;
 
     if (!filter.isEmpty()) {
 	QString tmp = filter;
@@ -64,11 +93,14 @@ void KFileFilter::setFilter(const QString& filter)
 QString KFileFilter::currentFilter() const
 {
     QString f = currentText();
-    if (f == text(currentItem())) {
+    if (f == text(currentItem())) { // user didn't edit the text
 	f = *filters.at(currentItem());
         int mime = f.contains( '/' );
-        if ( mime > 0 ) // we have a mimetype as filter
-            return f;
+        KFileFilter *that = const_cast<KFileFilter*>( this );
+        if ( mime > 0 || (currentItem() == 0 &&
+                          s_Hack->find( that )->hasAllSupportedFiles) ) {
+            return f; // we have a mimetype as filter
+        }
     }
 
     int tab = f.find('|');
@@ -83,6 +115,7 @@ void KFileFilter::setMimeFilter( const QStringList& types, const QString& defaul
     clear();
     filters.clear();
     QString delim = QString::fromLatin1(", ");
+    s_Hack->find( this )->hasAllSupportedFiles = false;
 
     m_allTypes = defaultType.isEmpty() && (types.count() > 1);
 
@@ -110,7 +143,13 @@ void KFileFilter::setMimeFilter( const QStringList& types, const QString& defaul
 
     if ( m_allTypes )
     {
-        insertItem( allComments, 0 );
+        if ( i < 3 ) // show the mime-comments of at max 3 types
+            insertItem( allComments, 0 );
+        else {
+            insertItem( i18n("All supported files"), 0 );
+            s_Hack->find( this )->hasAllSupportedFiles = true;
+        }
+
         filters.prepend( allTypes );
     }
 }

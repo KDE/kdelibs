@@ -432,7 +432,7 @@ void KFileDialog::setMimeFilter( const QStringList& mimeTypes,
     d->mimetypes = mimeTypes;
     filterWidget->setMimeFilter( mimeTypes, defaultType );
 
-    QStringList types = filterWidget->currentFilter();
+    QStringList types = QStringList::split(" ", filterWidget->currentFilter());
     types.append( QString::fromLatin1( "inode/directory" ));
     ops->clearFilter();
     ops->setMimeFilter( types );
