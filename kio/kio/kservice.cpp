@@ -428,6 +428,7 @@ QVariant KService::property( const QString& _name, QVariant::Type t ) const
     // No luck, let's ask KServiceTypeFactory what the type of this property
     // is supposed to be.
     t = KServiceTypeFactory::self()->findPropertyTypeByName(_name);
+    kdDebug(7012) << "Variant was Invalid... now it is " << t << endl;
     if (t == QVariant::Invalid)
     {
       kdDebug(7012) << "Request for unknown property '" << _name << "'\n";
@@ -440,13 +441,14 @@ QVariant KService::property( const QString& _name, QVariant::Type t ) const
   QMap<QString,QVariant>::ConstIterator it = m_mapProps.find( _name );
   if ( (it == m_mapProps.end()) || (!it.data().isValid()))
   {
-     //kdDebug(7012) << "Property not found " << _name << endl;
+     kdDebug(7012) << "Property not found " << _name << endl;
      return QVariant(); // No property set.
   }
 
   switch(t)
   {
     case QVariant::String:
+	kdDebug(7012) << "Property is string " << endl;
         return it.data();
     case QVariant::Bool:
     case QVariant::Int:
@@ -473,6 +475,7 @@ QVariant KService::property( const QString& _name, QVariant::Type t ) const
         }
     default:
         // All others
+	kdDebug(7012) << "Default " << endl;
         KServiceReadProperty ksrp(_name, it.data().toString().utf8());
         return ksrp.readPropertyEntry(_name, t);
   }
