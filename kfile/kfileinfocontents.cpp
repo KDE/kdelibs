@@ -1,7 +1,7 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1998 Stephan Kulow <coolo@kde.org>
                   1998 Daniel Grana <grana@ie.iwi.unibe.ch>
-    
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -33,9 +33,9 @@
 #endif
 
 QPixmap *KFileInfoContents::folder_pixmap = 0;
-QPixmap *KFileInfoContents::locked_folder = 0;   
+QPixmap *KFileInfoContents::locked_folder = 0;
 QPixmap *KFileInfoContents::file_pixmap = 0;
-QPixmap *KFileInfoContents::locked_file = 0;   
+QPixmap *KFileInfoContents::locked_file = 0;
 
 KFileInfoContents::KFileInfoContents( bool use, QDir::SortSpec sorting )
 {
@@ -44,8 +44,8 @@ KFileInfoContents::KFileInfoContents( bool use, QDir::SortSpec sorting )
     sorted_length = 0;
     reversed   = false;        // defaults
     mySortMode = Increasing;
-    mySorting  = sorting; 
-    keepDirsFirst = true; 
+    mySorting  = sorting;
+    keepDirsFirst = true;
 
     useSingleClick = use;
 
@@ -66,7 +66,7 @@ KFileInfoContents::~KFileInfoContents()
 }
 
 
-bool KFileInfoContents::addItem(const KFileInfo *i) 
+bool KFileInfoContents::addItem(const KFileInfo *i)
 {
     if (!acceptsFiles() && i->isFile())
 	return false;
@@ -84,7 +84,7 @@ bool KFileInfoContents::addItem(const KFileInfo *i)
 void KFileInfoContents::addItemList(const KFileInfoList *list)
 {
     setAutoUpdate(false);
-    
+
     bool repaint_needed = false;
     KFileInfoListIterator it(*list);
     for (; it.current(); ++it) {
@@ -99,21 +99,21 @@ void KFileInfoContents::addItemList(const KFileInfoList *list)
 
 void KFileInfoContents::setSorting(QDir::SortSpec new_sort)
 {
-    QDir::SortSpec old_sort = 
+    QDir::SortSpec old_sort =
 	static_cast<QDir::SortSpec>(sorting() & QDir::SortByMask);
-    QDir::SortSpec sortflags = 
+    QDir::SortSpec sortflags =
 	static_cast<QDir::SortSpec>(sorting() & (~QDir::SortByMask));
-    
+
     if (mySortMode == Switching) {
 	if (new_sort == old_sort)
 	    reversed = !reversed;
 	else
 	    reversed = false;
-    } else 
+    } else
 	reversed = (mySortMode == Decreasing);
-    
+
     mySorting = static_cast<QDir::SortSpec>(new_sort | sortflags);
-   
+
     if (count() <= 1) // nothing to do in this case
 	return;
 
@@ -129,7 +129,10 @@ void KFileInfoContents::setSorting(QDir::SortSpec new_sort)
     QuickSort(sortedArray, 0, sorted_length - 1);
     debugC("qsort %ld", time(0));
     for (uint i = 0; i < sorted_length; i++)
-	insertItem(sortedArray[i], -1);
+        // why insert all items with index -1?
+        // insertItem(sortedArray[i], -1); 
+	insertItem(sortedArray[i], i);
+#warning (pfeiffer) coolo, is this ok?
     debugC("qsort %ld", time(0));
     setAutoUpdate(true);
     repaint(true);
@@ -145,19 +148,19 @@ void KFileInfoContents::clear()
     dirsNumber = 0;
 }
 
-void KFileInfoContents::connectDirSelected( QObject *receiver, 
+void KFileInfoContents::connectDirSelected( QObject *receiver,
 					    const char *member)
 {
     sig->connect(sig, SIGNAL(dirActivated(KFileInfo*)), receiver, member);
 }
 
-void KFileInfoContents::connectFileHighlighted( QObject *receiver, 
+void KFileInfoContents::connectFileHighlighted( QObject *receiver,
 					 const char *member)
 {
     sig->connect(sig, SIGNAL(fileHighlighted(KFileInfo*)), receiver, member);
 }
 
-void KFileInfoContents::connectFileSelected( QObject *receiver, 
+void KFileInfoContents::connectFileSelected( QObject *receiver,
 				      const char *member)
 {
     sig->connect(sig, SIGNAL(fileSelected(KFileInfo*)), receiver, member);
@@ -169,32 +172,32 @@ void KFileInfoContents::QuickSort(KFileInfo* a[], int lo0, int hi0)
     int lo = lo0;
     int hi = hi0;
     const KFileInfo *mid;
-    
+
     if ( hi0 > lo0)
 	{
-	    
+	
 	    /* Arbitrarily establishing partition element as the midpoint of
 	     * the array.
 	     */
 	    mid = a[ ( lo0 + hi0 ) / 2 ];
-	    
+	
 	    // loop through the array until indices cross
 	    while( lo <= hi )
 		{
-		    /* find the first element that is greater than or equal to 
+		    /* find the first element that is greater than or equal to
 		     * the partition element starting from the left Index.
 		     */
 		    while( ( lo < hi0 ) && ( compareItems(a[lo], mid) < 0 ) )
 			++lo;
-		    
-		    /* find an element that is smaller than or equal to 
+		
+		    /* find an element that is smaller than or equal to
 		     * the partition element starting from the right Index.
 		     */
 		    while( ( hi > lo0 ) &&  ( compareItems(a[hi], mid) > 0) )
 			--hi;
 
 		    // if the indexes have not crossed, swap
-		    if( lo <= hi ) 
+		    if( lo <= hi )
 			{
 			    if (lo != hi) {
 				const KFileInfo *T = a[lo];
@@ -205,19 +208,19 @@ void KFileInfoContents::QuickSort(KFileInfo* a[], int lo0, int hi0)
 			    --hi;
 			}
 		}
-	    
+	
 	    /* If the right index has not reached the left side of array
 	     * must now sort the left partition.
 	     */
 	    if( lo0 < hi )
 		QuickSort( a, lo0, hi );
-	    
+	
 	    /* If the left index has not reached the right side of array
 	     * must now sort the right partition.
 	     */
 	    if( lo < hi0 )
 		QuickSort( a, lo, hi0 );
-	    
+	
 	}
 }
 
@@ -227,18 +230,18 @@ int KFileInfoContents::compareItems(const KFileInfo *fi1, const KFileInfo *fi2)
     counter++;
     if (counter % 1000 == 0)
 	debugC("compare %d", counter);
-    
+
     bool bigger = true;
-    
+
     if (keepDirsFirst && (fi1->isDir() != fi2->isDir()))
       bigger = !fi1->isDir();
     else {
 
       QDir::SortSpec sort = static_cast<QDir::SortSpec>(mySorting & QDir::SortByMask);
-      
+
       if (fi1->isDir())
 	sort = QDir::Name;
-      
+
       switch (sort) {
       case QDir::Unsorted:
 	bigger = true;  // nothing
@@ -247,17 +250,17 @@ int KFileInfoContents::compareItems(const KFileInfo *fi1, const KFileInfo *fi2)
 	bigger = (fi1->size() > fi2->size());
 	break;
       case QDir::Name:
-      default: 
+      default:
 	bigger = ( fi1->fileName() > fi2->fileName() );
 	break;
       }
     }
-    
+
     if (reversed)
       bigger = !bigger;
 
     // debugC("compare %s against %s: %s", fi1->fileName(), fi2->fileName(), bigger ? "bigger" : "smaller");
-    
+
     return (bigger ? 1 : -1);
 }
 
@@ -268,17 +271,17 @@ int KFileInfoContents::findPosition(const KFileInfo *i, int left)
 
     while (left < right-1) {
 	pos = (left + right) / 2;
-	if (compareItems(i, sortedArray[pos]) < 0) 
+	if (compareItems(i, sortedArray[pos]) < 0)
 	    right = pos;
 	else
 	    left = pos;
     }
-    
+
     // if pos is the left side (rounded), it may be, that we haven't
     // compared to the right side and gave up too early
     if (pos == left && compareItems(i, sortedArray[right]) > 0)
 	pos = right+1;
-    else 
+    else
 	pos = right;
 
     if (pos == -1)
@@ -302,14 +305,14 @@ bool KFileInfoContents::addItemInternal(const KFileInfo *i)
 	    pos = sorted_length;
     }
 
-    // if the namelist already exist, we can use inSort. In general 
+    // if the namelist already exist, we can use inSort. In general
     // this is too slow
     if (nameList)
 	nameList->inSort(i->fileName().ascii());
 
-    insertSortedItem(i, pos); 
+    insertSortedItem(i, pos);
     return insertItem(i, pos);
-} 
+}
 
 
 QString KFileInfoContents::text(uint index) const
@@ -329,7 +332,7 @@ void KFileInfoContents::select( uint index )
 void KFileInfoContents::select( KFileInfo *entry)
 {
   assert(entry);
- 
+
   if ( entry->isDir() ) {
     debugC("selectDir %s",(const char *)((entry->fileName()).local8Bit()));
     sig->activateDir(entry);
@@ -354,7 +357,7 @@ void  KFileInfoContents::repaint(bool f)
     widget()->repaint(f);
 }
 
-void KFileInfoContents::setCurrentItem(const QString &item, 
+void KFileInfoContents::setCurrentItem(const QString &item,
 				       const KFileInfo *entry)
 {
     uint i;
@@ -371,11 +374,11 @@ void KFileInfoContents::setCurrentItem(const QString &item,
 		highlightItem(i);
 		return;
 	    }
-    
+
     warning("setCurrentItem: no match found.");
 }
 
-QString KFileInfoContents::findCompletion( const char *base, 
+QString KFileInfoContents::findCompletion( const char *base,
 					   bool activateFound )
 {
 
@@ -409,24 +412,24 @@ QString KFileInfoContents::findCompletion( const char *base,
 	if (strncmp(name, remainder.ascii(), remainder.length()) == 0)
 	    break;
     }
-    
-    
+
+
     if (name) {
 	
         QCString body = name;
         QCString backup = name;
 
-        // get the possible text completions and store the smallest 
+        // get the possible text completions and store the smallest
 	// common denominator in QString body
-        
+
         unsigned int counter = strlen(base);
-        for ( const char *extra = nameList->next(); extra; 
+        for ( const char *extra = nameList->next(); extra;
 	      extra = nameList->next() ) {
-	    
+	
             counter = strlen(base);
             // case insensitive comparison needed because items are stored insensitively
             // so next instruction stop loop when first letter does no longer match
-            if ( strnicmp( extra, remainder.ascii(), 1 ) != 0 )  
+            if ( strnicmp( extra, remainder.ascii(), 1 ) != 0 )
                 break;
             // this is case sensitive again!
             // goto next item if no completion possible with current item (->extra)
@@ -443,23 +446,23 @@ QString KFileInfoContents::findCompletion( const char *base,
             else
             	body.truncate(counter-1);
             // this is needed because we want to highlight the first item in list
-            // so we separately keep the "smallest" item separate, 
+            // so we separately keep the "smallest" item separate,
             // we need the biggest in case the list is reversed
             if ( extra && ( reversed ? (QString::compare(extra, backup) > 0) : (QString::compare( extra, backup ) < 0) ) )
               backup = extra;
         }
 	name = backup;
-        
+
 	debugC("completion base (%s) name (%s) body (%s)", base, name, body.data());
 
 	bool matchExactly = (name == body);
 
 	if (matchExactly && (activateFound || useSingleClick))
-	    { 
+	    {
 	      for (uint j = 0; j < sorted_length; j++)
 		{
 		  KFileInfo *i = sortedArray[j];
-		    
+		
 		    if (i->fileName() == name) {
 			if (sortedArray[j]->isDir())
 			    body += "/";
@@ -474,12 +477,12 @@ QString KFileInfoContents::findCompletion( const char *base,
 	    } else
 		setCurrentItem(name); // the first matching name
 
-	return body; 
+	return body;
     } else {
 	debugC("no completion for %s", base);
 	return QString();
     }
-    
+
 }
 
 void KFileInfoContents::insertSortedItem(const KFileInfo *item, uint pos)
@@ -504,12 +507,12 @@ void KFileInfoContents::insertSortedItem(const KFileInfo *item, uint pos)
 	sorted_length++;
 	return;
     }
-    
+
     // faster repositioning (very fast :)
     memmove(sortedArray + pos+1,
 	    sortedArray + pos,
 	    (sorted_max - 1 - pos) * sizeof(KFileInfo*));
-    
+
     sortedArray[pos] = const_cast<KFileInfo*>(item);
     sorted_length++;
 }

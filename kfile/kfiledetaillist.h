@@ -27,6 +27,9 @@
 #include "kfileinfocontents.h"
 #include "kdir.h"
 #include <qlistview.h>
+#include <qmap.h>
+
+class KFileListViewItem;
 
 class KFileDetailList : protected QListView, public KFileInfoContents {
     Q_OBJECT
@@ -49,12 +52,33 @@ public:
 protected:
     virtual void highlightItem(unsigned int item);
     virtual bool insertItem(const KFileInfo *i, int index);
+    KFileInfo * kfileInfoItem( const QListViewItem * );
+    void 	updateItems( int index );
+
+    typedef QMap<KFileInfo*,KFileListViewItem*> ItemMapper;
+    ItemMapper 	mapper;
 
 protected slots:
-    void reorderFiles(int inColumn);
-    void selected(QListViewItem*);
-    void singleClicked(QListViewItem*);
-    void highlighted(int);
+    void 	reorderFiles(int inColumn);
+    void 	selected(QListViewItem*);
+    void 	singleClicked(QListViewItem*);
+    void 	highlighted(QListViewItem*);
 };
+
+
+class KFileListViewItem : public QListViewItem
+{
+public:
+  KFileListViewItem( QListView *parent,
+		     QString, QString, QString, QString, QString, QString );
+
+  virtual QString 	key( int col, bool ascending ) 	const;
+  void 			setIndex( int );
+
+private:
+  QString		myKey;
+
+};
+
 
 #endif // KFILEDETAILLIST_H

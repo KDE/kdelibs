@@ -1,3 +1,15 @@
+Sat Oct 23 01:55:00 1999  Carsten Pfeiffer  <pfeiffer@kde.org>
+
+	* kfiledetaillist.cpp (key): hopefully implemented correct mapping
+	from KFileInfo to QListViewItem and back. I had a hard time convincing
+	QListView that KFileInfoContents knows best where to insert an item
+	Now the detaillist is even usable :)
+	Fixed a problem with selection and highlighting
+	Disable clicking on listview headers that can't be used for sorting
+
+	* kfileinfocontents.cpp (setSorting): call insertItem() with a correct
+	(is it?) index, instead of -1
+
 Thu Oct 21 23:18:54 1999  Carsten Pfeiffer  <pfeiffer@kde.org>
 
 	* kfiledialog.cpp (init): removed "[development only] from tooltip
