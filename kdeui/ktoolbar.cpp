@@ -762,9 +762,7 @@ bool KToolBar::fullSize() const
 
 void KToolBar::enableMoving(bool flag )
 {
-    if ( !mainWindow() )
-        return;
-    mainWindow()->setToolBarsMovable( flag );
+    setMovingEnabled(flag);
 }
 
 
