@@ -45,7 +45,28 @@ public:
   /**
    * Button types.
    **/
- enum { Ok = 1, Cancel = 2, Yes = 3, No = 4, Continue = 5 };
+ enum ButtonCode
+ { 
+   Ok = 1, 
+   Cancel = 2, 
+   Yes = 3, 
+   No = 4, 
+   Continue = 5 
+ };
+
+ enum DialogType
+ {
+   QuestionYesNo = 1,
+   WarningYesNo = 2,
+   WarningContinueCancel = 3,
+   WarningYesNoCancel = 4,
+   Information = 5,
+   // Reserved for: SSLMessageBox = 6
+   Sorry = 7,
+   Error = 8,
+   QuestionYesNoCancel = 9
+ };
+                                            
  /**
   * Display a simple "question" dialog.
   *
@@ -499,17 +520,6 @@ public:
 		    const QString& text,
 		    const QString& caption = QString::null, bool notify=true);
 
-  enum { QuestionYesNo = 1,
-         WarningYesNo = 2,
-         WarningContinueCancel = 3,
-         WarningYesNoCancel = 4,
-         Information = 5,
-         // Reserved for: SSLMessageBox = 6
-         Sorry = 7,
-         Error = 8,
-         QuestionYesNoCancel = 9
-         };
-
     /**
      * Alternate method to show a messagebox:
      *
@@ -527,7 +537,7 @@ public:
      *       and for Information, none is used.
      * @return a button code, as defined in KMessageBox, or 0 on communication error.
      */
-    static int messageBox( QWidget *parent, int type, const QString &text,
+    static int messageBox( QWidget *parent, DialogType type, const QString &text,
                     const QString &caption = QString::null,
                     const KGuiItem &buttonYes = KStdGuiItem::yes(),
                     const KGuiItem &buttonNo = KStdGuiItem::no() );
@@ -545,7 +555,7 @@ public:
      * shown.
      */
     static void queuedMessageBox( QWidget *parent,
-                    int type, const QString &text,
+                    DialogType type, const QString &text,
                     const QString &caption = QString::null );
 
 };

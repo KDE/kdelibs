@@ -700,7 +700,7 @@ KMessageBox::about(QWidget *parent, const QString &text,
     return;
 }
 
-int KMessageBox::messageBox( QWidget *parent, int type, const QString &text, const QString &caption, const KGuiItem &buttonYes, const KGuiItem &buttonNo )
+int KMessageBox::messageBox( QWidget *parent, DialogType type, const QString &text, const QString &caption, const KGuiItem &buttonYes, const KGuiItem &buttonNo )
 {
     switch (type) {
         case QuestionYesNo:
@@ -734,7 +734,7 @@ int KMessageBox::messageBox( QWidget *parent, int type, const QString &text, con
     return KMessageBox::Cancel;
 }
 
-void KMessageBox::queuedMessageBox( QWidget *parent, int type, const QString &text, const QString &caption )
+void KMessageBox::queuedMessageBox( QWidget *parent, DialogType type, const QString &text, const QString &caption )
 {
    KMessageBox_queue = true;
    (void) messageBox(parent, type, text, caption);
