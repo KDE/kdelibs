@@ -70,6 +70,12 @@ bool SoundServer_impl::suspend() {
 	return false;
 }
 
+bool SoundServer_impl::terminate() {
+	Dispatcher::the()->terminate();
+	return true;
+}
+
+
 #ifndef __SUNPRO_CC
 /* See bottom of simplesoundserver_impl.cc for the reason this is here.  */
 REGISTER_IMPLEMENTATION(SoundServer_impl);

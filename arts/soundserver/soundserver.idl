@@ -99,6 +99,18 @@ interface SoundServer : SimpleSoundServer
 	 * is, if it is "suspendable". Returns true if successful.
 	 */
 	boolean suspend();
+
+	/**
+	 * Permanently terminates the sound server - this is not intended to be
+	 * widely used. However, it provides a way to "kill" the sound server,
+	 * even if you don't reside on the same host with it, and even if you
+	 * don't know the process id, and so on. In the future it also offers
+	 * the possibility for interested apps to be informed before the server
+	 * goes away, and for important apps to block termination.
+	 *
+	 * Returns true if successful.
+	 */
+	boolean terminate();
 };
 
 /**

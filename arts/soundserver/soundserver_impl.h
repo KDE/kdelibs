@@ -38,6 +38,7 @@ namespace Arts {
 		RealtimeStatus realtimeStatus();
 		long secondsUntilSuspend();
 		bool suspend();
+		bool terminate();
 	};
 
 };
