@@ -185,7 +185,7 @@ void* KLibrary::symbol( const char* symname ) const
     if ( !sym )
     {
         KLibLoader::self()->d->errorMessage = "KLibrary: " + QString::fromLatin1( lt_dlerror() );
-        kdDebug(150) << KLibLoader::self()->d->errorMessage << endl;
+        kdWarning(150) << KLibLoader::self()->d->errorMessage << endl;
         return 0;
     }
 
