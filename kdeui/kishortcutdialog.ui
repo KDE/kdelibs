@@ -546,7 +546,7 @@
 <includes>
     <include location="global" impldecl="in declaration">kshortcut.h</include>
     <include location="global" impldecl="in declaration">kdialog.h</include>
-    <include location="global" impldecl="in declaration">kpushbutton.h</include>
+    <include location="global" impldecl="in implementation">kpushbutton.h</include>
 </includes>
 <forwards>
     <forward>class KShortcut</forward>
