@@ -234,6 +234,9 @@ protected:
   /** a little button for enabling/disabling dragging the dockwidget with the mouse */
   KDockButton_Private* stayButton;
   
+  /** a little button for dock back the dockwidget to it´s previous dockwidget */
+  KDockButton_Private* dockbackButton;
+
   /** the drag panel (double line) */
   KDockWidgetHeaderDrag* drag;
 };
@@ -447,6 +450,13 @@ public slots:
    */
   void changeHideShowState();
 
+  /**
+   * Undocks this. It means it becomes a toplevel widget framed by the system window manager.
+   * A small panel at the top of this undocked widget gives the possibility to drag it into
+   * another dockwidget by mouse (docking).
+   */
+  void undock();
+
 protected:
   
   /**
@@ -482,14 +492,28 @@ signals:
    */
   void headerCloseButtonClicked();
 
-public slots:
+  /**
+   * Signals that the dockback button of the panel (@ref KDockWidgetHeader) has been clicked.
+   */
+  void headerDockbackButtonClicked();
 
   /**
-   * Undocks this. It means it becomes a toplevel widget framed by the system window manager.
-   * A small panel at the top of this undocked widget gives the possibility to drag it into
-   * another dockwidget by mouse (docking).
+   * Signals that the widget processes a close event.
    */
-  void undock();
+	void iMBeingClosed();
+
+protected slots:
+  /** test */
+  void loseFormerBrotherDockWidget();
+
+  /** test */
+  void dockBack();
+
+protected:
+  /** test */
+  KDockWidget* formerBrotherDockWidget;
+  DockPosition currentDockPos;
+  DockPosition formerDockPos;
 
 private:
   /** 

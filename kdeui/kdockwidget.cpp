@@ -40,6 +40,16 @@ static const char*close_xpm[]={
 ".#.#.",
 "#...#"};
 
+static const char*dockback_xpm[]={
+"5 5 2 1",
+"# c black",
+". c None",
+"#....",
+".#...",
+"..#.#",
+"...##",
+"..###"};
+
 static const char*not_close_xpm[]={
 "5 5 2 1",
 "# c black",
@@ -562,7 +572,14 @@ KDockWidgetHeader::KDockWidgetHeader( KDockWidget* parent, const char* name )
   stayButton->setFixedSize(9,9);
   connect( stayButton, SIGNAL(clicked()), this, SLOT(slotStayClicked()));
 
+  dockbackButton = new KDockButton_Private( this, "DockbackButton" );
+  dockbackButton->setPixmap(dockback_xpm);
+  dockbackButton->setFixedSize(9,9);
+  connect( dockbackButton, SIGNAL(clicked()), parent, SIGNAL(headerDockbackButtonClicked()));
+  connect( dockbackButton, SIGNAL(clicked()), parent, SLOT(dockBack()));
+
   layout->addWidget( drag );
+  layout->addWidget( dockbackButton );
   layout->addWidget( stayButton );
   layout->addWidget( closeButton );
   layout->activate();
@@ -572,10 +589,12 @@ KDockWidgetHeader::KDockWidgetHeader( KDockWidget* parent, const char* name )
 void KDockWidgetHeader::setTopLevel( bool isTopLevel )
 {
   if ( isTopLevel ){
+    dockbackButton->show();
     stayButton->hide();
     closeButton->hide();
     drag->setEnabled( true );
   } else {
+    dockbackButton->hide();
     stayButton->show();
     closeButton->show();
   }
@@ -602,6 +621,9 @@ void KDockWidgetHeader::loadConfig( KConfig* c )
 /*************************************************************************/
 KDockWidget::KDockWidget( KDockManager* dockManager, const char* name, const QPixmap &pixmap, QWidget* parent )
 : QWidget( parent, name )
+	,formerBrotherDockWidget(0L)
+  ,currentDockPos(DockNone)
+  ,formerDockPos(DockNone)
 {
   layout = new QVBoxLayout( this );
   layout->setResizeMode( QLayout::Minimum );
@@ -738,6 +760,9 @@ bool KDockWidget::event( QEvent *event )
         }
       }
       break;
+		case QEvent::Close:
+			emit iMBeingClosed();
+			break;
     default:
       break;
   }
@@ -797,12 +822,15 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
     parentTab->setPixmap( this, *pix );
     setDockTabName( parentTab );
 
+    currentDockPos = KDockWidget::DockCenter;
     emit manager->change();
     return (KDockWidget*)parentTab->parent();
   }
 
+  // create a new dockwidget that will contain the target and this
   QWidget* parentDock = target->parentWidget();
   KDockWidget* newDock = new KDockWidget( manager, "tempName", QPixmap(""), parentDock );
+  newDock->currentDockPos = target->currentDockPos;
 
   if ( dockPos == KDockWidget::DockCenter ){
     newDock->isTabGroup = true;
@@ -814,10 +842,21 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
   newDock->applyToWidget( parentDock );
 
   if ( !parentDock ){
+    // dock to a toplevel dockwidget means newDock is toplevel now
     newDock->move( target->frameGeometry().topLeft() );
     newDock->resize( target->geometry().size() );
     if ( target->isVisibleToTLW() ) newDock->show();
   }
+
+  // redirect the dockback button to the new dockwidget
+  if( target->formerBrotherDockWidget != 0L) {
+    newDock->formerBrotherDockWidget = target->formerBrotherDockWidget;
+    if( formerBrotherDockWidget != 0L)
+      QObject::connect( formerBrotherDockWidget, SIGNAL(iMBeingClosed()),
+                        newDock, SLOT(loseFormerBrotherDockWidget()) );
+      target->loseFormerBrotherDockWidget();
+    }
+  newDock->formerDockPos = target->formerDockPos;
 
   if ( dockPos == KDockWidget::DockCenter )
   {
@@ -835,7 +874,14 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
 
     setDockTabName( tab );
     tab->show();
-  } else {
+
+    currentDockPos = DockCenter;
+    target->formerDockPos = target->currentDockPos;
+    target->currentDockPos = DockCenter;
+  }
+  else {
+    // if to dock not to the center of the target dockwidget,
+    // dock to newDock
     KDockSplitter* panner = 0L;
     if ( dockPos == KDockWidget::DockTop  || dockPos == KDockWidget::DockBottom ) panner = new KDockSplitter( newDock, "_dock_split_", Horizontal, spliPos );
     if ( dockPos == KDockWidget::DockLeft || dockPos == KDockWidget::DockRight  ) panner = new KDockSplitter( newDock, "_dock_split_", Vertical , spliPos );
@@ -844,8 +890,27 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
     panner->setFocusPolicy( NoFocus );
     target->applyToWidget( panner );
     applyToWidget( panner );
-    if ( dockPos == KDockWidget::DockRight || dockPos == KDockWidget::DockBottom ) panner->activate( target, this );
-    if ( dockPos == KDockWidget::DockTop   || dockPos == KDockWidget::DockLeft   ) panner->activate( this, target );
+    target->formerDockPos = target->currentDockPos;
+    if ( dockPos == KDockWidget::DockRight) {
+      panner->activate( target, this );
+      currentDockPos = KDockWidget::DockRight;
+      target->currentDockPos = KDockWidget::DockLeft;
+    }
+    else if( dockPos == KDockWidget::DockBottom) {
+      panner->activate( target, this );
+      currentDockPos = KDockWidget::DockBottom;
+      target->currentDockPos = KDockWidget::DockTop;
+    }
+    else if( dockPos == KDockWidget::DockTop) {
+      panner->activate( this, target );
+      currentDockPos = KDockWidget::DockTop;
+      target->currentDockPos = KDockWidget::DockBottom;
+    }
+    else if( dockPos == KDockWidget::DockLeft) {
+      panner->activate( this, target );
+      currentDockPos = KDockWidget::DockLeft;
+      target->currentDockPos = KDockWidget::DockRight;
+    }
     target->show();
     show();
     panner->show();
@@ -886,6 +951,8 @@ void KDockWidget::undock()
     return;
   }
 
+  formerDockPos = currentDockPos;
+
   manager->blockSignals(true);
   manager->undockProcess = true;
 
@@ -897,13 +964,13 @@ void KDockWidget::undock()
     applyToWidget( 0L );
     if ( parentTab->pageCount() == 1 ){
 
-      /* last subdock widget in the tab control*/
+      // last subdock widget in the tab control
       KDockWidget* lastTab = (KDockWidget*)parentTab->getFirstPage();
       parentTab->removePage( lastTab );
       lastTab->applyToWidget( 0L );
       lastTab->move( parentTab->mapToGlobal(parentTab->frameGeometry().topLeft()) );
 
-      /* KDockTabGroup always have a parent is KDockWidget*/
+      // KDockTabGroup always have a parent that is a KDockWidget
       KDockWidget* parentOfTab = (KDockWidget*)parentTab->parent();
       delete parentTab; // KDockTabGroup
 
@@ -936,11 +1003,15 @@ void KDockWidget::undock()
       }
       manager->blockSignals(false);
       emit manager->replaceDock( parentOfTab, lastTab );
+      lastTab->currentDockPos = parentOfTab->currentDockPos;
+			if( parentOfTab->formerBrotherDockWidget)
+				emit parentOfTab->iMBeingClosed();
       manager->blockSignals(true);
       delete parentOfTab;
 
     } else {
       setDockTabName( parentTab );
+      formerBrotherDockWidget = (KDockWidget*)parentTab->getFirstPage();
     }
   } else {
 /*********************************************************************************************/
@@ -951,6 +1022,11 @@ void KDockWidget::undock()
       KDockWidget* secondWidget = (KDockWidget*)parentSplitterOfDockWidget->getAnother( this );
       KDockWidget* group        = (KDockWidget*)parentSplitterOfDockWidget->parentWidget();
       group->hide();
+
+      formerBrotherDockWidget = secondWidget;
+      if( formerBrotherDockWidget != 0L)
+        QObject::connect( formerBrotherDockWidget, SIGNAL(iMBeingClosed()),
+                          this, SLOT(loseFormerBrotherDockWidget()) );
 
       if ( !group->parentWidget() ){
         secondWidget->applyToWidget( 0L, group->frameGeometry().topLeft() );
@@ -968,9 +1044,13 @@ void KDockWidget::undock()
             parentOfGroup->activate( 0L, secondWidget );
         }
       }
+      secondWidget->currentDockPos = group->currentDockPos;
+      secondWidget->formerDockPos  = group->formerDockPos;
       delete parentSplitterOfDockWidget;
       manager->blockSignals(false);
       emit manager->replaceDock( group, secondWidget );
+			if( group->formerBrotherDockWidget)
+				emit group->iMBeingClosed();
       manager->blockSignals(true);
       delete group;
 
@@ -1065,6 +1145,45 @@ void KDockWidget::makeDockVisible()
   }
   show();
 }
+
+void KDockWidget::loseFormerBrotherDockWidget()
+{
+  if( formerBrotherDockWidget != 0L)
+  	QObject::disconnect( formerBrotherDockWidget, SIGNAL(iMBeingClosed()),
+	  									   this, SLOT(loseFormerBrotherKockWidget()) );
+	formerBrotherDockWidget = 0L;
+	repaint();
+}
+
+void KDockWidget::dockBack()
+{
+  if( formerBrotherDockWidget) {
+		// search all children if it tries to dock back to a child
+		bool found = false;
+		QObjectList* cl = queryList("KDockWidget");
+   	QObjectListIt it( *cl );
+	  QObject * obj;
+   	while ( (obj=it.current()) != 0 ) {
+      ++it;
+      QWidget* widg = (QWidget*)obj;
+      if( widg == formerBrotherDockWidget)
+				found = true;
+   	}
+   	delete cl;
+
+		if( !found) {
+			// can dock back to the former brother dockwidget
+			manualDock( formerBrotherDockWidget, formerDockPos);
+			formerBrotherDockWidget = 0L;
+			return;
+		}
+	}
+
+	// else dockback to the dockmainwindow (default behaviour)
+  manualDock( ((KDockMainWindow*)manager->parent())->getMainDockWidget(), formerDockPos);
+  formerBrotherDockWidget = 0L;
+}
+
 /**************************************************************************************/
 
 KDockManager::KDockManager( QWidget* mainWindow , const char* name )
