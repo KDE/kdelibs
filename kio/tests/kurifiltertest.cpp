@@ -15,7 +15,7 @@ static const char * const s_uritypes[] = { "NET_PROTOCOL", "LOCAL_FILE", "LOCAL_
 
 void filter( const char* u, const char * expectedResult = 0, int expectedUriType = -1, QStringList list = QStringList(), const char * abs_path = 0 )
 {
-    QString a = QString::fromLatin1( u );
+    QString a = QString::fromUtf8( u );
     KURIFilterData * m_filterData = new KURIFilterData;
     m_filterData->setData( a );
     if( abs_path ) {
@@ -168,6 +168,7 @@ int main(int argc, char **argv) {
     filter( "ya:foo bar was here", 0, -1 ); // this triggers default search, i.e. google
     filter( "gg:www.kde.org", "http://www.google.com/search?q=www.kde.org&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
     filter( "av:+rock +sample", "http://www.altavista.com/cgi-bin/query?pg=q&kl=XX&stype=stext&q=%2Brock%20%2Bsample", KURIFilterData::NET_PROTOCOL );
+    filter( "gg:é" /*eaccent in utf8*/, "http://www.google.com/search?q=%C3%A9&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
 
     filter( "about:", "about:konqueror", KURIFilterData::NET_PROTOCOL ); // cf kshorturifilter
 
