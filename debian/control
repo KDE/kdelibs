@@ -11,7 +11,7 @@ Package: kdelibs4
 Architecture: any
 Section: libs
 Replaces: kdelibs2g, kdelibs3, kdebase-libs (<< 4:2.2.1-2)
-Depends: ${shlibs:Depends}, python-base, xbase-clients
+Depends: ${shlibs:Depends}, python2.2-base | python2.1-base | python-base, xbase-clients
 Recommends: libarts1, libarts-bin, libkmid0, libkmid-bin, kdelibs4-cups, aspell | ispell
 Suggests: kdelibs4-crypto, anti-aliasing-howto, gdb
 Description: KDE core libraries (runtime files)
