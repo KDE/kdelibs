@@ -211,15 +211,13 @@ void Synth_PLAY_WAV_impl::initialize()
 	_finished = false;
 }
 
-static const int samplingRate=44100;
-
 void Synth_PLAY_WAV_impl::calculateBlock(unsigned long samples)
 {
 	unsigned long haveSamples = 0;
 
 	if(cachedwav)
 	{
-		float speed = cachedwav->samplingRate / (float)samplingRate * _speed;
+		float speed = cachedwav->samplingRate / samplingRateFloat * _speed;
 
 		haveSamples = uni_convert_stereo_2float(samples, cachedwav->buffer,
 		   cachedwav->bufferSize,cachedwav->channelCount,cachedwav->sampleWidth,

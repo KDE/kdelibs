@@ -15,9 +15,10 @@ class ByteStreamToAudio_impl : public ByteStreamToAudio_skel,
 	int haveBytes, pos;
 	queue< DataPacket<mcopbyte>* > inqueue;
 	long _samplingRate, _channels, _bits;
+	bool running;
 public:
 	ByteStreamToAudio_impl() :haveBytes(0), pos(0),
-			_samplingRate(44100), _channels(2), _bits(16)
+			_samplingRate(44100), _channels(2), _bits(16), running(false)
 	{
 		//
 	}
@@ -63,16 +64,33 @@ public:
 	}
 	void calculateBlock(unsigned long samples)
 	{
-		for(unsigned long i=0;i<samples;i++)
+		/* convert samples from buffer, as long as enough buffer space */
+		unsigned long doSamples = haveBytes/4,i;
+		if(samples < doSamples) doSamples = samples;
+
+		for(i=0;i<doSamples;i++)
 		{
-			if(haveBytes >= 4)
+			left[i] = mkSample();
+			right[i] = mkSample();
+		}
+		
+		if(i == samples) /* did we have enough input available? */
+		{
+			running = true;
+		}
+		else
+		{
+			if(running)
 			{
-				left[i] = mkSample();
-				right[i] = mkSample();
+				cout << "ByteStreamToAudio: input underrun" << endl;
+				running = false;
 			}
-			else
+
+			/* fill the rest with zero samples */
+			while(i != samples)
 			{
 				left[i] = right[i] = 0.0;
+				i++;
 			}
 		}
 	}

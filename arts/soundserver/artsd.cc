@@ -27,6 +27,8 @@
 #include "mcoputils.h"
 #include <csignal>
 #include <iostream>
+#include <stdio.h>
+#include "audiosubsys.h"
 
 using namespace std;
 
@@ -35,7 +37,7 @@ extern "C" void stopServer(int)
 	Dispatcher::the()->terminate();
 }
 
-void initSignals()
+static void initSignals()
 {
     signal(SIGHUP ,stopServer);
     signal(SIGQUIT,stopServer);
@@ -43,11 +45,36 @@ void initSignals()
     signal(SIGTERM,stopServer);                                                 
 }
 
-int main()
+static void exitUsage(const char *progname)
 {
-	initSignals();
+	fprintf(stderr,"usage: %s [ options ]\n",progname);
+	fprintf(stderr,"-r <samplingrate>   set samplingrate to use\n");
+	exit(1);	
+}
 
+static void handleArgs(int argc, char **argv)
+{
+	int optch;
+	while((optch = getopt(argc,argv,"r:")) > 0)
+	{
+		switch(optch)
+		{
+			case 'r': AudioSubSystem::the()->samplingRate(atoi(optarg));
+				break;
+			default: 
+					exitUsage(argc?argv[0]:"artsd");
+				break;
+		}
+	}
+}
+
+int main(int argc, char **argv)
+{
 	Dispatcher dispatcher;
+
+	initSignals();
+	handleArgs(argc, argv);
+
 	SimpleSoundServer_var server = new SimpleSoundServer_impl;
 
 	bool result = ObjectManager::the()

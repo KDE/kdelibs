@@ -24,6 +24,15 @@
     */
 
 #include "stdsynthmodule.h"
+#include "audiosubsys.h"
+
+StdSynthModule::StdSynthModule()
+{
+	// TODO: maybe this should be handled over some other mechanism
+
+	samplingRate = AudioSubSystem::the()->samplingRate();
+	samplingRateFloat = (float)samplingRate;
+}
 
 void StdSynthModule::firstInitialize()
 {

@@ -1,11 +1,12 @@
+#ifdef HAVE_LIBAUDIOFILE
+
 #include "soundserver.h"
 #include "cachedwav.h"
 #include "config.h"
-
-#ifdef HAVE_LIBAUDIOFILE
+#include "stdsynthmodule.h"
 #include "convert.h"
 
-class WavPlayObject_impl :public WavPlayObject_skel {
+class WavPlayObject_impl :public WavPlayObject_skel, public StdSynthModule {
 protected:
 	CachedWav *wav;
 	float flpos;
@@ -96,13 +97,12 @@ public:
 		cout << "start" << endl;
 	}
 
-	enum { samplingRate = 44100 /* fixme */ };
 	void calculateBlock(unsigned long samples) {
 		unsigned long haveSamples = 0;
 
 		if(wav && _state == posPlaying)
 		{
-			float speed = wav->samplingRate / (float)samplingRate;
+			float speed = wav->samplingRate / samplingRateFloat;
 
 			haveSamples = uni_convert_stereo_2float(samples, wav->buffer,
 		   		wav->bufferSize,wav->channelCount,wav->sampleWidth,

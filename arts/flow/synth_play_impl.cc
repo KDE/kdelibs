@@ -77,13 +77,13 @@ public:
 	}
 
 	void initialize() {
+		as = AudioSubSystem::the();
+
 		//cout << "Synth_PLAY: initialize() called." << endl;
-		channels = 2;
+		channels = as->channels();
 		maxsamples = 0;
 		outblock = 0;
 		inProgress = false;
-
-		as = AudioSubSystem::the();
 
 		haveSubSys = as->attachProducer(this);
 		if(!haveSubSys)
@@ -92,8 +92,7 @@ public:
 			return;
 		}
 
-					/* fragments, fsize, samplingrate, channels, fullduplex */
-		audiofd = as->open(7,1024, 44100,channels, false);
+		audiofd = as->open(false);
 		if(audiofd < 0)
 		{
 			printf("SynthGenericPlay: audio subsystem init failed\n");

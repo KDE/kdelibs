@@ -28,8 +28,6 @@
 #include <math.h>
 #include <stdio.h>
 
-#define SAMPLINGRATE 44100
-
 class Synth_FREQUENCY_impl :public Synth_FREQUENCY_skel, StdSynthModule
 {
 	float fpos;
@@ -38,7 +36,7 @@ public:
 		fpos = 0;
 	}
 	void calculateBlock(unsigned long cycles) {
-		float fsample = (float)SAMPLINGRATE;
+		float fsample = samplingRateFloat;
 		float finc = *frequency/fsample;
 
 		while(cycles)

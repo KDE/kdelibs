@@ -74,7 +74,8 @@ const char *AudioSubSystem::error()
 	return _error.c_str();
 }
 
-AudioSubSystem::AudioSubSystem()
+AudioSubSystem::AudioSubSystem() :_fragmentCount(7), _fragmentSize(1024),
+                                  _samplingRate(44100), _channels(2)
 {
 	_running = false;
 	usageCount = 0;
@@ -117,8 +118,47 @@ void AudioSubSystem::detachConsumer()
 	if(_running) close();
 }
 
-int AudioSubSystem::open(int fragments,int size, int samplingrate, int channels,
-                         bool wantfullduplex)
+void AudioSubSystem::fragmentCount(int fragmentCount)
+{
+	_fragmentCount = fragmentCount;
+}
+
+int AudioSubSystem::fragmentCount()
+{
+	return _fragmentCount;
+}
+
+void AudioSubSystem::fragmentSize(int fragmentSize)
+{
+	_fragmentSize = fragmentSize;
+}
+
+int AudioSubSystem::fragmentSize()
+{
+	return _fragmentSize;
+}
+
+void AudioSubSystem::samplingRate(int samplingRate)
+{
+	_samplingRate = samplingRate;
+}
+
+int AudioSubSystem::samplingRate()
+{
+	return _samplingRate;
+}
+
+void AudioSubSystem::channels(int channels)
+{
+	_channels = channels;
+}
+
+int AudioSubSystem::channels()
+{
+	return _channels;
+}
+
+int AudioSubSystem::open(bool wantfullduplex)
 {
 #ifdef HAVE_SYS_SOUNDCARD_H
 	int mode;
@@ -163,16 +203,14 @@ int AudioSubSystem::open(int fragments,int size, int samplingrate, int channels,
 
 	int stereo=-1;     /* 0=mono, 1=stereo */
 
-	if(channels == 1)
+	if(_channels == 1)
 	{
 		stereo = 0;
 	}
-	if(channels == 2)
+	if(_channels == 2)
 	{
 		stereo = 1;
 	}
-
-	_channels = channels;
 
 	if(stereo == -1)
 	{
@@ -201,7 +239,7 @@ int AudioSubSystem::open(int fragments,int size, int samplingrate, int channels,
 		return -1;
 	}
 
-	int speed = samplingrate;
+	int speed = _samplingRate;
 
 	if (ioctl(audio_fd, SNDCTL_DSP_SPEED, &speed)==-1)  
 	{
@@ -212,7 +250,7 @@ int AudioSubSystem::open(int fragments,int size, int samplingrate, int channels,
 		return -1;
 	}  
 
-	if (speed != samplingrate)
+	if (speed != _samplingRate)
 	{  
 		_error = "can't set requested samplingrate";
 
@@ -224,19 +262,18 @@ int AudioSubSystem::open(int fragments,int size, int samplingrate, int channels,
 	// higher 16 bits are the number of fragments
 	int frag_arg = 0;
 
-	fragment_size = size;
-
 	// allocate global buffer to do I/O
 	assert(fragment_buffer == 0);
-	fragment_buffer = new char[fragment_size];
+	fragment_buffer = new char[_fragmentSize];
 
+	int size = _fragmentSize;
 	while(size > 0) { size /= 2; frag_arg++; }
-	frag_arg += (fragments << 16);
+	frag_arg += (_fragmentCount << 16);
 	if(ioctl(audio_fd, SNDCTL_DSP_SETFRAGMENT, &frag_arg) == -1)
 	{
 		char buffer[1024];
 		_error = "can't set requested fragments settings";
-		sprintf(buffer,"size%d:count%d\n",fragment_size,fragments);
+		sprintf(buffer,"size%d:count%d\n",_fragmentSize,_fragmentCount);
 		close();
 		return -1;
 	}
@@ -311,7 +348,7 @@ void AudioSubSystem::handleIO(int type)
 #ifdef HAVE_SYS_SOUNDCARD_H
 	if(type & ioRead)
 	{
-		int len = ::read(audio_fd,fragment_buffer,fragment_size);
+		int len = ::read(audio_fd,fragment_buffer,_fragmentSize);
 
 		if(len > 0)
 		{
@@ -324,7 +361,7 @@ void AudioSubSystem::handleIO(int type)
 		/*
 		 * make sure that we have a fragment full of data at least
 		 */
-		while(wBuffer.size() < fragment_size)
+		while(wBuffer.size() < _fragmentSize)
 		{
 			long wbsz = wBuffer.size();
 			producer->needMore();
@@ -347,7 +384,7 @@ void AudioSubSystem::handleIO(int type)
 		audio_buf_info info;
 		ioctl(audio_fd, SNDCTL_DSP_GETOSPACE, &info);
 
-		int can_write = min(info.bytes, fragment_size);
+		int can_write = min(info.bytes, _fragmentSize);
 
 		/*
 		 * ok, so write it (as we checked that our buffer has enough data
@@ -387,9 +424,4 @@ void AudioSubSystem::read(void *buffer, int size)
 void AudioSubSystem::write(void *buffer, int size)
 {
 	wBuffer.write(size,buffer);
-}
-
-int AudioSubSystem::channels()
-{
-	return _channels;
 }

@@ -164,12 +164,13 @@ int main(int argc, char **argv)
 			if(secure)
 			{
 				printf("okay\n");
+				exit(0);
 			}
 			else
 			{
 				printf("fail\n");
+				exit(1);
 			}
-			exit(0);
 		}
 	}
 	if(!secure)

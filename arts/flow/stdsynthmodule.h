@@ -29,7 +29,12 @@
 #include "artsflow.h"
 
 class StdSynthModule :virtual public SynthModule {
+protected:
+	long samplingRate;
+	float samplingRateFloat;
 public:
+	StdSynthModule();
+
 	void firstInitialize();
 	void initialize();
 	void start();

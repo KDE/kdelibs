@@ -52,10 +52,14 @@ public:
 class AudioSubSystem {
 	std::string _error;
 	int audio_fd;
-	int fragment_size;
 	char *fragment_buffer;
 	int usageCount;
+
+	int _fragmentCount;
+	int _fragmentSize;
+	int _samplingRate;
 	int _channels;
+
 	bool _running;
 	bool fullDuplex;
 	PipeBuffer wBuffer, rBuffer;
@@ -96,8 +100,19 @@ public:
 	void detachProducer();
 	void detachConsumer();
 
-	int open(int fragments, int size, int samplingrate, int channels,
-			 bool wantfullduplex);
+	void fragmentSize(int size);
+	int fragmentSize();
+
+	void fragmentCount(int fragments);
+	int fragmentCount();
+
+	void samplingRate(int samplingrate);
+	int samplingRate();
+
+	void channels(int channels);
+	int channels();
+
+	int open(bool wantfullduplex);
 	const char *error();
 
 	/*
@@ -120,8 +135,6 @@ public:
 	 * detachConsumer/detachProducer
 	 */
 	bool running();
-
-	int channels();
 };
 
 #endif /* AUDIOSUBSYS_H */
