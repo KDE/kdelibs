@@ -1,5 +1,7 @@
 #include <kapplication.h>
 #include <kfilemetainfo.h>
+#include <qstringlist.h>
+#include <kdebug.h>
 
 int main( int argc, char **argv )
 {
@@ -7,8 +9,22 @@ int main( int argc, char **argv )
     
     KFileMetaInfoProvider *prov = KFileMetaInfoProvider::self();
     KURL u;
-    u.setPath("/tmp/metatest.txt");
-    prov->metaInfo( u );
+    if (argv[1])
+      u.setPath(argv[1]);
+    else 
+      u.setPath("/tmp/metatest.txt");
+    
+    if (!prov) return 1;
+    KFileMetaInfo* info = prov->metaInfo( u );
+    
+    QStringList l = info->supportedKeys();
+    QStringList::Iterator it;
+    for (it = l.begin(); it!=l.end(); ++it)
+    {
+        KFileMetaInfoItem* item = info->item(*it);
+        kdDebug() << item->translatedKey() << " -> " << item->prefix()
+                  << item->value().toString() << item->postfix() << endl;
+    }
     
     return 0;
 }
