@@ -40,7 +40,7 @@
 #include "kspell.h"
 #include <kwin.h>
 
-#define MAXLINELENGTH 150
+#define MAXLINELENGTH 10000
 
 enum {
 	GOOD=     0,
@@ -99,6 +99,15 @@ KSpell::KSpell (QWidget *_parent, QString _caption,
   case KS_E_LATIN2:
      codec = QTextCodec::codecForName("ISO 8859-2");
      break;
+  case KS_E_LATIN3:
+      codec = QTextCodec::codecForName("ISO 8859-3");
+      break;
+
+  // add the other charsets here
+
+  case KS_E_UTF8:
+      codec = QTextCodec::codecForName("UTF-8");
+      break;
   default:
      break;
   }
@@ -192,6 +201,15 @@ KSpell::startIspell()
       case KS_E_LATIN2:
 	*proc << "-Tlatin2";
 	break;
+      case KS_E_LATIN3:
+        *proc << "-Tlatin3";
+        break;
+
+      // add the other charsets here    
+
+      case KS_E_UTF8:
+        *proc << "-Tutf8";
+        break;
       }
 
 
@@ -338,7 +356,8 @@ KSpell::cleanFputsWord (QString s, bool appendCR)
     //we need some puctuation for ornaments
     if (qs.at(i)!='\'' && qs.at(i)!='\"')
       if (
-	  ispunct ((char)(QChar)qs.at(i)) // #### Should use qs[i].isPunct()
+	  //ispunct ((char)(QChar)qs.at(i)) // #### Should use qs[i].isPunct()
+	  qs[i].isPunct()
 	    || qs[i].isSpace())
 	  qs.remove(i,1);
   }
@@ -352,12 +371,16 @@ KSpell::cleanFputs (QString s, bool appendCR)
   QString qs(s);
   unsigned int j=0,l=qs.length();
 
+  //kdDebug(750) << "KSpell::cleanFputs (before) " << qs.length() << " " << qs << endl;
+
+  // Why we need this stuff?
   if (l<MAXLINELENGTH)
     {
       for (unsigned int i=0;i<l;i++,j++)
 	{
 	  if (//qs.at(i-1)=='\n' &&
-	      ispunct ((char)(QChar)qs.at(i)) // #### Should use qs[i].isPunct()
+	      // ispunct ((char)(QChar)qs.at(i)) // #### Should use qs[i].isPunct()
+	    qs[i].isPunct()
 	    && qs.at(i)!='\'' && qs.at(i)!='\"')
 	    qs.replace (i,1," ");
 	
@@ -366,7 +389,9 @@ KSpell::cleanFputs (QString s, bool appendCR)
       if (qs.isEmpty())
 	qs="";
 
-      return proc->fputs (qs.ascii(), appendCR);
+      //  kdDebug(750) << "KSpell::cleanFputs (after) " << qs.length() << " " << qs << endl;
+
+      return proc->fputs (qs, appendCR);
     }
   else
     return proc->fputs ("\n",appendCR);
@@ -398,7 +423,7 @@ bool KSpell::checkWord (QString buffer, bool _usedialog)
   //  connect (this, SIGNAL (dialog3()), this, SLOT (checkWord3()));
 
   proc->fputs ("%"); // turn off terse mode
-  proc->fputs (buffer.ascii()); // send the word to ispell
+  proc->fputs (buffer); // send the word to ispell
 
   return TRUE;
 }
@@ -755,6 +780,20 @@ void KSpell::check2 (KProcIO *)
 	      e==REPLACE)
 	    {
 	      dlgresult=-1;
+
+	      // if multibyte encoding posinline needs correction
+	      if (ksconfig->encoding() == KS_E_UTF8) {
+		// kdDebug(750) << "line: " 
+		//	     << origbuffer.mid(lastlastline,lastline-lastlastline) 
+		//	     << endl;
+		// kdDebug(750) << "posinline uncorrected: " << posinline << endl;
+		posinline = (QString::fromUtf8(
+		   origbuffer.mid(lastlastline,lastline-lastlastline).utf8(),
+		   posinline)).length();
+		// kdDebug(750) << "posinline corrected: " << posinline << endl;
+	      }
+	      
+
 	      lastpos=posinline+lastlastline+offset;
 	
 	      //orig is set by parseOneResponse()
@@ -799,7 +838,7 @@ void KSpell::check2 (KProcIO *)
       lastpos=(lastlastline=lastline)+offset; //do we really want this?
       i=origbuffer.find('\n', lastline)+1;
       qs=origbuffer.mid (lastline, i-lastline);
-      cleanFputs (qs.ascii(),FALSE);
+      cleanFputs (qs,FALSE);
       lastline=i;
       return;
     }
@@ -829,7 +868,7 @@ void KSpell::check3 ()
     case KS_REPLACEALL:
       offset+=replacement().length()-cwword.length();
       newbuffer.replace (lastpos, cwword.length(),
-			 replacement().ascii());
+			 replacement());
       break;
     case KS_CANCEL:
     //      kdDebug(750) << "cancelled\n" << endl;

@@ -34,7 +34,7 @@ KProcIO::KProcIO ( QTextCodec *_codec)
 {
   rbi=0;
   readsignalon=writeready=TRUE;
-  
+
   if (!codec)
   {
      codec = QTextCodec::codecForName("ISO 8859-1");
@@ -80,9 +80,15 @@ bool KProcIO::start (RunMode runmode)
 
 bool KProcIO::writeStdin (const QString &line, bool appendnewline)
 {
+  //kdDebug(750) << "line \"" << line << "\"" << endl 
+  //	       << "      has " << line.length() << " chars" << endl;
+
   QCString qs( codec->fromUnicode(line));
   if (appendnewline)
     qs+='\n';
+
+  //kdDebug(750) << "buffer has " << qs.length() << "=" << strlen(qs.data()) 
+  //	       << " bytes" << endl;
 
   qlist.append (qs.data());
 
@@ -90,8 +96,11 @@ bool KProcIO::writeStdin (const QString &line, bool appendnewline)
 
   if (writeready)
     {
-      kdDebug(750) << "really writing" << endl;
+      kdDebug(750) << "really writing" << endl
+       << "KIO::write [" << strlen (qlist.current()) << ": " <<
+	qlist.current() << "]" << endl;
       writeready=FALSE;
+
       return KProcess::writeStdin (qlist.current(),
 				   strlen (qlist.current()));
     }
@@ -101,7 +110,7 @@ bool KProcIO::writeStdin (const QString &line, bool appendnewline)
 
 void KProcIO::sent (KProcess *)
 {
-  if (qlist.first())     kdDebug(750) << "KP::sent [" << qlist.first() << "]" << endl;
+  if (qlist.first()) kdDebug(750) << "KP::sent [" << qlist.first() << "]" << endl;
 
   qlist.removeFirst();
 
@@ -112,7 +121,8 @@ void KProcIO::sent (KProcess *)
     }
   else
     {
-      kdDebug(750) << "Sending [" << qlist.first() << "]" << endl;
+      kdDebug(750) << "Sending [" << strlen(qlist.first()) << ": " <<
+       qlist.first() << "]" << endl;
       KProcess::writeStdin (qlist.first(), strlen (qlist.first()));
     }
 
@@ -176,25 +186,24 @@ int KProcIO::readln (QString &line, bool autoAck)
   //in case there's no '\n' at the end of the buffer
   if (len<0 && (unsigned int)rbi<recvbuffer.length())
     {
-      QString qs=recvbuffer.mid (rbi,recvbuffer.length()-rbi);
-      recvbuffer=qs;
+      recvbuffer=recvbuffer.mid (rbi,recvbuffer.length()-rbi);
       rbi=0;
       return -1;
     }
 
   if (len>=0)
     {
-      line = codec->toUnicode(recvbuffer.mid(rbi,len).ascii(), len);   
+      line = codec->toUnicode(recvbuffer.mid(rbi,len), len);
       rbi += len+1;
       return len;
     }
-  
+
   recvbuffer="";
   rbi=0;
 
   //-1 on return signals "no more data" not error
   return -1;
-    
+
 }
 #include "kprocio.moc"
 

@@ -22,20 +22,39 @@
 
 #include <qstring.h>
 #include <qlabel.h>
+#include <qtextcodec.h>
 
 int main(int argc, char **argv)
 {
     KApplication *app = new KApplication(argc, argv, "KSpellTest");
 
-    QString text( "I have noo idee of how to wride englisch or englisch" );
+    // test ASCII
+    //QString text( "I have noo idee of how to wride englisch or englisch" );
+
+    // test Latin-3 (need dictionary "esperanto" and "Latin3" in config)
+    //QCString ctext( "sed jen: e¶oþanø' æiu¼aýde; e¶uþunøo øiun fendredon - kaj dimanøon...");
+    //QTextCodec *codec = QTextCodec::codecForName("ISO 8859-3");
+
+    // test UTF-8 (need dictionary "esperanto" and "UTF-8" in config)  
+   QCString ctext( "sed jen: eÄ?oÅanÄo Ä‰iuÄµaÅ­de eÄ?uÅunÄo Äiun fendredon kaj dimanÄon...");
+   QTextCodec *codec = QTextCodec::codecForName("UTF-8");
     
+    QString text = codec->toUnicode(ctext);
+
     KSpell::modalCheck( text );
-    
+
     kdDebug() << "Returned " << text << endl;
-    
+
     QLabel* l = new QLabel( text, (QWidget*)0 );
     l->show();
-    
+
     return(app->exec());
+
 }
+
+
+
+
+
+
 

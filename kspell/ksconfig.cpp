@@ -91,9 +91,17 @@ KSpellConfig::KSpellConfig( QWidget *parent, const char *name,
   glay->addWidget( dictlist, 2 ,0 );
 
   encodingcombo = new QComboBox( this );
-  encodingcombo->insertItem (i18n("7-Bit/ASCII"));
-  encodingcombo->insertItem (i18n("Latin1"));
-  encodingcombo->insertItem (i18n("Latin2"));
+  encodingcombo->insertItem ("US-ASCII");
+  encodingcombo->insertItem ("ISO 8859-1");
+  encodingcombo->insertItem ("ISO 8859-2");
+  encodingcombo->insertItem ("ISO 8859-3");
+  encodingcombo->insertItem ("ISO 8859-4");
+  encodingcombo->insertItem ("ISO 8859-5");
+  encodingcombo->insertItem ("ISO 8859-7");
+  encodingcombo->insertItem ("ISO 8859-8");
+  encodingcombo->insertItem ("ISO 8859-9");
+  encodingcombo->insertItem ("ISO 8859-15");
+  encodingcombo->insertItem ("UTF-8");
   connect (encodingcombo, SIGNAL (activated(int)), this,
 	   SLOT (sChangeEncoding(int)));
   glay->addMultiCellWidget (encodingcombo, 3, 3, 1, 2);
@@ -353,6 +361,12 @@ KSpellConfig::interpret (QString &fname, QString &lname,
     {
       lname="pt";
       hname=i18n("Portuguese");
+    }
+
+  else if (fname=="esperanto")
+    {
+      lname="eo";
+      hname=i18n("Esperanto");
     }
   
   else
