@@ -105,20 +105,20 @@ KCookieServer::newInstance()
 
    if (args->isSet("shutdown"))
    {
-	quit();
+        quit();
    }
-
+/*
    if(args->isSet("reload-config"))
    {
-	mCookieJar->loadConfig( kapp->config(), true );
+        mCookieJar->loadConfig( kapp->config(), true );
    }
-
+*/
    return 0;
 }
 
 bool
 KCookieServer::process(const QCString &fun, const QByteArray &data,
-		       QCString& replyType, QByteArray &replyData)
+                       QCString& replyType, QByteArray &replyData)
 {
     if (fun == "findCookies(QString)")
     {
@@ -155,8 +155,8 @@ KCookieServer::process(const QCString &fun, const QByteArray &data,
     }
     else if (fun == "reloadPolicy" )
     {
-	kdDebug(7104) << "got \"reload the cookie config policy file\"..." << endl;
-	mCookieJar->loadConfig( kapp->config(), true );
+        kdDebug(7104) << "got \"reload the cookie config policy file\"..." << endl;
+        mCookieJar->loadConfig( kapp->config(), true );
         replyType = "void";
         return true;
     }
@@ -224,7 +224,7 @@ void KCookieServer::checkCookies(KHttpCookie *cookie, bool queue)
             // cookies from the same site.
             if (userAdvice == KCookieDunno)
             {
-		if (queue)
+                if (queue)
                 {
                     mPendingCookies->append(cookie);
                     return;
@@ -234,34 +234,34 @@ void KCookieServer::checkCookies(KHttpCookie *cookie, bool queue)
                     kdDebug(7104) << "Asking user for advice for cookie from " << cookie->host() << endl;
                     mPendingCookies->prepend(cookie);
                     KCookieWin *kw = new KCookieWin( 0L, cookie, mCookieJar);
-	            userAdvice = (KCookieAdvice) kw->advice(mCookieJar);
-	            delete kw;
+                    userAdvice = (KCookieAdvice) kw->advice(mCookieJar);
+                    delete kw;
                     mPendingCookies->take(0);
-	            // Save the cookie config if it has changed
-	            mCookieJar->saveConfig( kapp->config() );
+                    // Save the cookie config if it has changed
+                    mCookieJar->saveConfig( kapp->config() );
                 }
-	    }
-	    advice = userAdvice;
+            }
+            advice = userAdvice;
         }
         switch(advice)
         {
         case KCookieAccept:
             kdDebug(7104) << "Accepting cookies from " << cookie->host() << endl;
             mCookieJar->addCookie(cookie);
-	    break;
-	
-	case KCookieReject:
+            break;
+
+        case KCookieReject:
         default:
             kdDebug(7104) << "Rejecting cookie from " << cookie->host() << endl;
             delete cookie;
-	    break;
+            break;
         }
         cookie = next_cookie;
         if (!cookie && !queue)
         {
-	   // Check if there are cookies on the pending list from the
-	   // same host.
-	   for( cookie = mPendingCookies->first();
+           // Check if there are cookies on the pending list from the
+           // same host.
+           for( cookie = mPendingCookies->first();
                 cookie;
                 cookie = mPendingCookies->next())
            {
