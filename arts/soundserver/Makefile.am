@@ -60,7 +60,7 @@ soundserver.h: $(top_srcdir)/arts/soundserver/soundserver.idl kmedia2.h $(MCOPID
 	$(MCOPIDL) -t $(MCOPINC) $(top_srcdir)/arts/soundserver/soundserver.idl
 
 
-kmedia2.cc: kmedia2.h
+kmedia2.cc: kmedia2.h soundserver.h
 kmedia2.mcoptype: kmedia2.h
 kmedia2.mcopclass: kmedia2.h
 kmedia2.h: $(top_srcdir)/arts/soundserver/kmedia2.idl $(MCOPIDL)
