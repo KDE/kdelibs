@@ -956,7 +956,7 @@ void KHTMLPart::slotShowDocument( const QString &url, const QString &target )
 
   if ( child ) {
       requestObject( child, KURL(url), args );
-  }  else if ( frameName==QString::fromLatin1("_self") ) // this is for embedded objects (via <object>) which want to replace the current document
+  }  else if ( frameName == "_self" )
   {
       KParts::URLArgs newArgs( args );
       newArgs.frameName = QString::null;
@@ -1676,9 +1676,7 @@ void KHTMLPart::slotProgressUpdate()
   else
     percent = d->m_jobPercent;
 
-  if( percent == 100 ) // never set 100% here
-    percent = 99;
-  if( d->m_bComplete ) // only if it's really complete
+  if( d->m_bComplete )
     percent = 100;
 
   if (d->m_statusMessagesEnabled) {
@@ -2839,14 +2837,14 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
   else
   {
     QString extra;
-    if (target == QString::fromLatin1("_blank"))
+    if (target.lower() == "_blank")
     {
       extra = i18n(" (In new window)");
     }
     else if (!target.isEmpty() &&
-             (target != QString::fromLatin1("_top")) &&
-             (target != QString::fromLatin1("_self")) &&
-             (target != QString::fromLatin1("_parent")))
+             (target.lower() != "_top") &&
+             (target.lower() != "_self") &&
+             (target.lower() != "_parent"))
     {
       extra = i18n(" (In other frame)");
     }
@@ -3976,7 +3974,7 @@ void KHTMLPart::slotChildURLRequest( const KURL &url, const KParts::URLArgs &arg
       // Inform someone that we are about to show something else.
       child->m_bNotify = true;
       requestObject( child, url, args );
-  }  else if ( frameName==QString::fromLatin1("_self") ) // this is for embedded objects (via <object>) which want to replace the current document
+  }  else if ( frameName== "_self" ) // this is for embedded objects (via <object>) which want to replace the current document
   {
       KParts::URLArgs newArgs( args );
       newArgs.frameName = QString::null;
