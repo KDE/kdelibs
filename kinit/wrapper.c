@@ -19,9 +19,7 @@
   Boston, MA 02111-1307, USA.
 */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include "klauncher_cmds.h"
 
@@ -128,7 +126,7 @@ static int read_socket(int sock, char *buffer, int len)
 
 static int openSocket()
 {
-  socklen_t socklen;
+  kde_socklen_t socklen;
   int s;
   struct sockaddr_un server;
 #define MAX_SOCK_FILE 255

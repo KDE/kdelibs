@@ -751,7 +751,7 @@ static void init_kdeinit_socket()
 {
   struct sockaddr_un sa;
   struct sockaddr_un sa_old;
-  socklen_t socklen;
+  kde_socklen_t socklen;
   long options;
   const char *home_dir = getenv("HOME");
   int max_tries = 10;
@@ -1320,7 +1320,7 @@ static void handle_requests(pid_t waitForPid)
       if ((result > 0) && (FD_ISSET(d.wrapper, &rd_set)))
       {
          struct sockaddr_un client;
-         socklen_t sClient = sizeof(client);
+         kde_socklen_t sClient = sizeof(client);
          int sock = accept(d.wrapper, (struct sockaddr *)&client, &sClient);
          if (sock >= 0)
          {
@@ -1340,7 +1340,7 @@ static void handle_requests(pid_t waitForPid)
       if ((result > 0) && (FD_ISSET(d.wrapper_old, &rd_set)))
       {
          struct sockaddr_un client;
-         socklen_t sClient = sizeof(client);
+         kde_socklen_t sClient = sizeof(client);
          int sock = accept(d.wrapper_old, (struct sockaddr *)&client, &sClient);
          if (sock >= 0)
          {
