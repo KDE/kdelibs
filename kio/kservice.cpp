@@ -22,6 +22,7 @@
 #include "kservice.h"
 #include "kservicetype.h"
 #include "kuserprofile.h"
+#include "ksycoca.h"
 
 #include <unistd.h>
 #include <sys/types.h>
@@ -37,8 +38,6 @@
 
 #include <ksimpleconfig.h>
 #include <kapp.h>
-#include <kglobal.h>
-#include <kstddirs.h>
 #include <kdebug.h>
 #include <klocale.h>
 
@@ -120,24 +119,10 @@ KService::KService( const QString & _fullpath )
   m_lstServiceTypes = config.readListEntry( "ServiceTypes" );
   // For compatibility with KDE 1.x
   m_lstServiceTypes += config.readListEntry( "MimeType", ';' );
-  
-  // Find the relative path out of the full path
-  QStringList dirs = KGlobal::dirs()->resourceDirs(
-    m_strType == "Application" ? "apps" : "services"
-  );
-  QStringList::ConstIterator dirsit = dirs.begin();
-  for ( ; dirsit != dirs.end() && m_strRelativeFilePath.isEmpty(); ++dirsit ) {
-    // might need canonicalPath() ...
-    if ( _fullpath.find( *dirsit ) == 0 ) // path is dirs + relativePath
-      m_strRelativeFilePath = _fullpath.mid( (*dirsit).length() ); // skip appsdirs
-  }
-  if ( m_strRelativeFilePath.isEmpty() )
-    kdebug( KDEBUG_FATAL, 1203, QString("Couldn't find %1 in any apps dir !!!").arg( _fullpath ) );
-  /*
-  else
-    kdebug( KDEBUG_INFO, 1203, m_strRelativeFilePath );
-  */
 
+  m_strRelativeFilePath = KSycoca::determineRelativePath( _fullpath, 
+                                       m_strType == "Application" ? "apps" : "services" );
+  
   if ( m_strType == "Application" )
     // Specify AllowDefault = false to explicitely forbid it.
     // Most service files don't have that field, so true is the default

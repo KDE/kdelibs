@@ -183,6 +183,24 @@ QDataStream * KSycoca::findHeader()
    return str;
 }
 
+QString KSycoca::determineRelativePath( const QString & _fullpath, const QString & _resource )
+{
+  QString sRelativeFilePath;
+  QStringList dirs = KGlobal::dirs()->resourceDirs( _resource );
+  QStringList::ConstIterator dirsit = dirs.begin();
+  for ( ; dirsit != dirs.end() && sRelativeFilePath.isEmpty(); ++dirsit ) {
+    // might need canonicalPath() ...
+    if ( _fullpath.find( *dirsit ) == 0 ) // path is dirs + relativePath
+      sRelativeFilePath = _fullpath.mid( (*dirsit).length() ); // skip appsdirs
+  }
+  if ( sRelativeFilePath.isEmpty() )
+    kdebug( KDEBUG_FATAL, 1203, QString("Couldn't find %1 in any apps dir !!!").arg( _fullpath ) );
+  else
+    // debug code
+    kdebug( KDEBUG_INFO, 1203, sRelativeFilePath );
+  return sRelativeFilePath;
+}
+
 KSycoca * KSycoca::_self = 0L;
 
 #include "ksycoca.moc"

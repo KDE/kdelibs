@@ -157,7 +157,7 @@ public:
 
   /**
    * @return the relative path to the desktop entry file responsible for
-   *         these services.
+   *         this service.
    * For instance Internet/kppp.desktop
    */
   QString relativeFilePath() const { return m_strRelativeFilePath; }

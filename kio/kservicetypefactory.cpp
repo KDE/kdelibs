@@ -24,8 +24,6 @@
 #include "kmimetype.h"
 
 #include <kapp.h>
-#include <kglobal.h>
-#include <kstddirs.h>
 #include <kdebug.h>
 #include <assert.h>
 

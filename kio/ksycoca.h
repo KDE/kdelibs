@@ -32,7 +32,7 @@ class KSycocaFactoryList;
  * If the existing file is outdated, it will not get read
  * but instead we'll ask kded to regenerate a new one...
 */
-#define KSYCOCA_VERSION 10
+#define KSYCOCA_VERSION 11
 
 /**
  * @internal
@@ -92,6 +92,11 @@ public:
     * @return true if building (i.e. if a KBuildSycoca);
     */
    virtual bool isBuilding() { return false; }
+
+   /**
+    * Determine relative path for a .desktop file from a full path and a resource name
+    */
+   static QString determineRelativePath( const QString & _fullpath, const QString & _resource );
 
 protected:
    void checkVersion();

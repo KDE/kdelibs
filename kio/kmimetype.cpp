@@ -221,12 +221,12 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
 
 KMimeType::KMimeType( const QString & _fullpath, const QString& _type, const QString& _icon, 
                       const QString& _comment, const QStringList& _patterns )
-  : KServiceType( _fullpath, _type, _icon, _comment )
+  : KServiceType( _fullpath, _type, _icon, _comment, "mime" )
 {
   m_lstPatterns = _patterns;
 }
 
-KMimeType::KMimeType( const QString & _fullpath ) : KServiceType( _fullpath )
+KMimeType::KMimeType( const QString & _fullpath ) : KServiceType( _fullpath, "mime" )
 {
   KSimpleConfig _cfg( _fullpath, true);
   _cfg.setDesktopGroup();

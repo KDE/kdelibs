@@ -18,6 +18,7 @@
  **/
 
 #include "kservice.h"
+#include "ksycoca.h"
 #include "kservicetype.h"
 #include "kservicetypefactory.h"
 #include "kservicefactory.h"
@@ -26,8 +27,9 @@
 #include <kdebug.h>
 #include <qsmartptr.h>
 
-KServiceType::KServiceType( const QString & _fullpath )
+KServiceType::KServiceType( const QString & _fullpath, const QString & _resource )
 {
+  m_strRelativeFilePath = KSycoca::determineRelativePath( _fullpath, _resource );
   KSimpleConfig config( _fullpath, true );
   config.setDesktopGroup();
 
@@ -72,9 +74,9 @@ KServiceType::KServiceType( const QString & _fullpath )
 }
 
 KServiceType::KServiceType( const QString & _fullpath, const QString& _type, 
-                            const QString& _icon, const QString& _comment )
+                            const QString& _icon, const QString& _comment, const QString & _resource )
 {
-  // TODO determine relative path from fullpath (problem if mimetype !)
+  m_strRelativeFilePath = KSycoca::determineRelativePath( _fullpath, _resource );
   m_strName = _type;
   m_strIcon = _icon;
   m_strComment = _comment;
@@ -90,7 +92,8 @@ void
 KServiceType::load( QDataStream& _str )
 {
   Q_INT8 b;
-  _str >> m_strName >> m_strIcon >> m_strComment >> m_mapProps >> m_mapPropDefs >> b;
+  _str >> m_strName >> m_strIcon >> m_strComment >> m_mapProps >> m_mapPropDefs 
+       >> b >> m_strRelativeFilePath;
   m_bValid = b;
 }
 
@@ -100,7 +103,8 @@ KServiceType::save( QDataStream& _str )
   KSycocaEntry::save( _str );
   // Warning adding/removing fields here involves a binary incompatible change - update version 
   // number in ksycoca.h
-  _str << m_strName << m_strIcon << m_strComment << m_mapProps << m_mapPropDefs << (Q_INT8)m_bValid;
+  _str << m_strName << m_strIcon << m_strComment << m_mapProps << m_mapPropDefs 
+       << (Q_INT8)m_bValid << m_strRelativeFilePath;
 }
 
 KServiceType::~KServiceType()
