@@ -87,7 +87,9 @@
 <!-- ONLY to supply declarations that were switched off in the 
      first "Modifications" section -->
 
-<!ENTITY % kde.modifications SYSTEM "kdex-modifications.elements">
+<!ENTITY % kde.modifications PUBLIC
+  "-//KDE//ELEMENTS DocBook XML Modifications V2.0//EN"
+  "kde-x-modifications.elements">
 %kde.modifications;
 
 
