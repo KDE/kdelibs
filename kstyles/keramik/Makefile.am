@@ -1,4 +1,3 @@
-
 AM_CPPFLAGS = -DQT_PLUGIN
 
 INCLUDES = -I$(top_srcdir)/kdefx -I$(top_builddir)/kstyles/keramik/ $(all_includes)
@@ -18,7 +17,7 @@ genembed_SOURCES = genembed.cpp
 genembed_LDADD = ../../kdefx/libkdefx.la
 genembed_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 
-pixmaps.keramik: pics/arrow.png pics/checkbox-off.png pics/checkbox-on.png pics/combobox-list-bc.png\
+pixmaps.keramik: pics/checkbox-off.png pics/checkbox-on.png pics/combobox-list-bc.png\
 	 pics/combobox-list-bl.png pics/combobox-list-br.png pics/combobox-list-cl.png pics/combobox-list-cr.png\
 	 pics/combobox-list-tc.png pics/combobox-list-tl.png pics/combobox-list-tr.png pics/frame-shadow-cl.png\
 	 pics/frame-shadow-tc.png pics/frame-shadow-tl.png pics/listview-bc.png pics/listview-bl.png pics/listview-br.png\
@@ -31,7 +30,7 @@ pixmaps.keramik: pics/arrow.png pics/checkbox-off.png pics/checkbox-on.png pics/
 	 pics/pushbutton-default-pressed-bc.png pics/pushbutton-default-pressed-bl.png pics/pushbutton-default-pressed-br.png\
 	 pics/pushbutton-default-pressed-cc.png pics/pushbutton-default-pressed-cl.png pics/pushbutton-default-pressed-cr.png\
 	 pics/pushbutton-default-pressed-tc.png pics/pushbutton-default-pressed-tl.png pics/pushbutton-default-pressed-tr.png\
-	 pics/pushbutton-default-tc.png pics/pushbutton-default-tl.png pics/pushbutton-default-tr.png pics/pushbutton-ocr.png\
+	 pics/pushbutton-default-tc.png pics/pushbutton-default-tl.png pics/pushbutton-default-tr.png \
 	 pics/pushbutton-pressed-bc.png pics/pushbutton-pressed-bl.png pics/pushbutton-pressed-br.png pics/pushbutton-pressed-cc.png\
 	 pics/pushbutton-pressed-cl.png pics/pushbutton-pressed-cr.png pics/pushbutton-pressed-tc.png pics/pushbutton-pressed-tl.png\
 	 pics/pushbutton-pressed-tr.png pics/pushbutton-small-bc.png pics/pushbutton-small-bl.png pics/pushbutton-small-br.png\
@@ -47,13 +46,18 @@ pixmaps.keramik: pics/arrow.png pics/checkbox-off.png pics/checkbox-on.png pics/
 	 pics/scrollbar-hbar-small-slider1.png pics/scrollbar-vbar-arrow1-pressed.png pics/scrollbar-vbar-arrow1.png\
 	 pics/scrollbar-vbar-arrow2-pressed.png pics/scrollbar-vbar-arrow2.png pics/scrollbar-vbar-groove1.png\
 	 pics/scrollbar-vbar-groove2.png pics/scrollbar-vbar-slider1.png pics/scrollbar-vbar-slider2.png\
+	 pics/menubar.png pics/menuitem-cl.png pics/menuitem-cc.png pics/menuitem-cr.png\
 	 pics/scrollbar-vbar-slider3.png pics/scrollbar-vbar-slider4.png pics/scrollbar-vbar-small-slider1.png pics/slider-hgroove-bc.png\
 	 pics/slider-hgroove-bl.png pics/slider-hgroove-br.png pics/slider-hgroove-cc.png pics/slider-hgroove-cl.png pics/slider-hgroove-cr.png\
 	 pics/slider-hgroove-tc.png pics/slider-hgroove-tl.png pics/slider-hgroove-tr.png pics/slider-vgroove-bc.png pics/slider-vgroove-bl.png\
 	 pics/slider-vgroove-br.png pics/slider-vgroove-cc.png pics/slider-vgroove-cl.png pics/slider-vgroove-cr.png pics/slider-vgroove-tc.png\
 	 pics/slider-vgroove-tl.png pics/slider-vgroove-tr.png pics/slider.png pics/spinbox-1.png pics/spinbox-2.png pics/spinbox-3.png\
 	 pics/spinbox-arrow-down.png pics/spinbox-arrow-up.png pics/spinbox-pressed-arrow-down.png pics/spinbox-pressed-arrow-up.png\
-	 pics/spinbox-pressed-down.png pics/spinbox-pressed-up.png pics/tab-bottom-active-bc.png pics/tab-bottom-active-bl.png pics/tab-bottom-active-br.png pics/tab-bottom-active-cc.png pics/tab-bottom-active-cl.png pics/tab-bottom-active-cr.png pics/tab-bottom-inactive-bc.png pics/tab-bottom-inactive-bl.png pics/tab-bottom-inactive-br.png pics/tab-bottom-inactive-cc.png pics/tab-bottom-inactive-cl.png pics/tab-bottom-inactive-cr.png pics/tab-bottom-inactive-separator.png pics/tab-top-active-cc.png pics/tab-top-active-cl.png pics/tab-top-active-cr.png pics/tab-top-active-tc.png pics/tab-top-active-tl.png pics/tab-top-active-tr.png pics/tab-top-inactive-cc.png pics/tab-top-inactive-cl.png pics/tab-top-inactive-cr.png pics/tab-top-inactive-separator.png pics/tab-top-inactive-tc.png pics/tab-top-inactive-tl.png pics/tab-top-inactive-tr.png pics/toolbar-bc.png pics/toolbar-bl.png pics/toolbar-br.png pics/toolbar-cc.png pics/toolbar-cl.png pics/toolbar-cr.png pics/toolbar-tc.png pics/toolbar-tl.png pics/toolbar-tr.png pics/vslider.png
+	 pics/progressbar-cc.png pics/progressbar-cl.png pics/progressbar-cr.png\
+	 pics/toolbar-clk-bc.png pics/toolbar-clk-bl.png pics/toolbar-clk-br.png\
+	 pics/toolbar-clk-cc.png pics/toolbar-clk-cl.png pics/toolbar-clk-cr.png\
+	 pics/toolbar-clk-tc.png pics/toolbar-clk-tl.png pics/toolbar-clk-tr.png\
+	 pics/spinbox-pressed-down.png pics/spinbox-pressed-up.png pics/tab-bottom-active-bc.png pics/tab-bottom-active-bl.png pics/tab-bottom-active-br.png pics/tab-bottom-active-cc.png pics/tab-bottom-active-cl.png pics/tab-bottom-active-cr.png pics/tab-bottom-inactive-bc.png pics/tab-bottom-inactive-bl.png pics/tab-bottom-inactive-br.png pics/tab-bottom-inactive-cc.png pics/tab-bottom-inactive-cl.png pics/tab-bottom-inactive-cr.png pics/tab-bottom-inactive-separator.png pics/tab-top-active-cc.png pics/tab-top-active-cl.png pics/tab-top-active-cr.png pics/tab-top-active-tc.png pics/tab-top-active-tl.png pics/tab-top-active-tr.png pics/tab-top-inactive-cc.png pics/tab-top-inactive-cl.png pics/tab-top-inactive-cr.png pics/tab-top-inactive-separator.png pics/tab-top-inactive-tc.png pics/tab-top-inactive-tl.png pics/tab-top-inactive-tr.png pics/toolbar.png pics/vslider.png
 
 pixmaps.keramik keramikrc.h: genembed
 	pics=`ls $(srcdir)/pics/*.png 2>/dev/null` ;\ 

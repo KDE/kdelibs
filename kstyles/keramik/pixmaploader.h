@@ -38,8 +38,11 @@ namespace Keramik
 	public:
 		PixmapLoader();
 
-		QPixmap pixmap( int name, const QColor& color, bool disabled = false );
-		QPixmap scale( int name, int width, int height, const QColor& color, bool disabled = false );
+		QPixmap pixmap( int name, const QColor& color,  const QColor& bg,
+										 bool disabled = false, bool blend = true );
+										 
+		QPixmap scale( int name, int width, int height, const QColor& color,  const QColor& bg, 
+										bool disabled = false, bool blend = true );
 		QSize size( int id );
 
 		void clear();
@@ -56,25 +59,30 @@ namespace Keramik
 			delete s_instance;
 			s_instance = 0;
 		}
-
+		
 	private:
+	
 		struct KeramikCacheEntry
 		{
 			int m_id;
 			int m_width;
 			int m_height;
 			QRgb m_colorCode;
+			QRgb m_bgCode;
 			bool    m_disabled;
+			bool    m_blended;
 			
 			QPixmap* m_pixmap;
 			
-			KeramikCacheEntry(int id, const QColor& color, bool disabled, int width = -1 , int height = -1, QPixmap* pixmap = 0 ):
-				m_id(id), m_width(width), m_height(height), m_colorCode(color.rgb()),m_disabled(disabled),  m_pixmap(pixmap)
+			KeramikCacheEntry(int id, const QColor& color, const QColor& bg, bool disabled, 
+											bool blended, int width = -1 , int height = -1, QPixmap* pixmap = 0 ):
+				m_id(id), m_width(width), m_height(height), m_colorCode(color.rgb()),m_bgCode(bg.rgb()),
+				m_disabled(disabled),  m_blended(blended), m_pixmap(pixmap)
 			{}
 			
 			int key()
 			{
-				return m_disabled ^ (m_id<<1) ^ (m_width<<11) ^ (m_height<<22) ^ m_colorCode;
+				return m_disabled ^ (m_blended << 1) ^ (m_id<<2) ^ (m_width<<12) ^ (m_height<<22) ^ m_colorCode ^ m_bgCode;
 			}
 			
 			bool operator == (const KeramikCacheEntry& other)
@@ -82,16 +90,14 @@ namespace Keramik
 				return (m_id        == other.m_id) &&
 							(m_width   == other.m_width) &&
 							(m_height == other.m_height) &&
+							(m_blended == other.m_blended) &&
+							(m_bgCode == other.m_bgCode) && 
 							(m_colorCode == other.m_colorCode) && 
 							(m_disabled == other.m_disabled);
 			}
 						
 			~KeramikCacheEntry()
 			{
-				/*if (m_pixmap)
-				{
-					cerr<<"Deleting pixmap!\n";
-				}*/
 				delete m_pixmap;
 			}
 		};
@@ -100,42 +106,44 @@ namespace Keramik
 		{
 			int m_id;
 			QRgb m_colorCode;
+			QRgb m_bgCode;
 			bool    m_disabled;
+			bool    m_blended;
 			
 			QImage* m_image;
 			
-			KeramikImageCacheEntry(int id, const QColor& color, bool disabled, QImage* image = 0 ):
-				m_id(id), m_colorCode(color.rgb()), m_disabled(disabled), m_image(image)
+			KeramikImageCacheEntry(int id, const QColor& color, const QColor& bg, bool disabled, bool blended, QImage* image = 0 ):
+				m_id(id), m_colorCode(color.rgb()), m_bgCode(bg.rgb()), m_disabled(disabled), m_blended(blended), m_image(image)
 			{}
 			
 			int key()
 			{
-				return m_disabled ^ (m_id<<1) ^ m_colorCode;
+				return m_disabled ^ (m_blended<<1) ^ (m_id<<2) ^ m_colorCode ^ m_bgCode;
 			}
 			
 			bool operator == (const KeramikImageCacheEntry& other)
 			{
-				return (m_id        == other.m_id) &&
+				return (m_id           == other.m_id) &&
+							(m_blended == other.m_blended) &&
+							(m_bgCode  == other.m_bgCode) && 
 							(m_colorCode == other.m_colorCode) && 
 							(m_disabled == other.m_disabled);
 			}
 						
 			~KeramikImageCacheEntry()
 			{
-				//if (m_image)
-				//	cerr<<"Deleting image!\n";
 				delete m_image;
 			}
 		};
 
 		
-		QImage* getColored(int id, const QColor& color);
-		QImage* getDisabled(int id, const QColor& color);
+		QImage* getColored(int id, const QColor& color, const QColor& bg, bool blended);
+		QImage* getDisabled(int id, const QColor& color, const QColor& bg, bool blended);
 		QIntCache <KeramikImageCacheEntry> m_imageCache;
 		QIntCache <KeramikCacheEntry>  m_pixmapCache;
 		
 		
-		unsigned char clamp[288];//256+32
+		unsigned char clamp[540];
 
 		static PixmapLoader* s_instance;
 	};
@@ -149,14 +157,15 @@ namespace Keramik
 		enum PaintMode
 		{
 			PaintNormal,
-			PaintMask
+			PaintMask,
+			PaintFullBlend
 		};
 
-		void draw( QPainter *p, int x, int y, int width, int height, const QColor& color,
+		void draw( QPainter *p, int x, int y, int width, int height, const QColor& color, const QColor& bg, 
 		                 bool disabled = false, PaintMode mode = PaintNormal );
-		void draw( QPainter *p, const QRect& rect, const QColor& color, bool disabled = false, PaintMode mode = PaintNormal )
+		void draw( QPainter *p, const QRect& rect, const QColor& color, const QColor& bg, bool disabled = false, PaintMode mode = PaintNormal )
 		{
-			draw( p, rect.x(), rect.y(), rect.width(), rect.height(), color, disabled, mode );
+			draw( p, rect.x(), rect.y(), rect.width(), rect.height(), color, bg, disabled, mode );
 		}
 
 	protected:
@@ -186,15 +195,16 @@ namespace Keramik
 		int absTileName( unsigned int column, unsigned int row ) const
 		{
 			int name = tileName( column, row );
-			//cout<<"@"<<row<<","<<column<<":"<<m_name<<":"<<name<<"\n";
 			return m_name + name;
 		}
 		
 		
-		QPixmap tile( unsigned int column, unsigned int row, const QColor& color, bool disabled )
-			{ return PixmapLoader::the().pixmap( absTileName( column, row ), color, disabled ); }
-		QPixmap scale( unsigned int column, unsigned int row, int width, int height, const QColor& color, bool disabled )
-			{ return PixmapLoader::the().scale( absTileName( column, row ), width, height, color, disabled ); }
+		QPixmap tile( unsigned int column, unsigned int row, const QColor& color, const QColor& bg, bool disabled, bool blend)
+			{ return PixmapLoader::the().pixmap( absTileName( column, row ), color, bg, disabled, blend ); }
+		QPixmap scale( unsigned int column, unsigned int row, int width, int height, const QColor& color, const QColor& bg, 
+							bool disabled, bool blend )
+			{ return PixmapLoader::the().scale( absTileName( column, row ), width, height, color, 
+							bg, disabled, blend ); }
 
 		int m_name;
 		
@@ -207,8 +217,8 @@ namespace Keramik
 		ScaledPainter( int name, Direction direction = Both )
 			: TilePainter( name ), m_direction( direction )
 		{
-			colMde[0] = colMde[1] = colMde[2] = colMde[3] = ( m_direction & Horizontal ) ? Scaled : Fixed;
-			rowMde[0] = rowMde[1] = rowMde[2] = rowMde[3] = ( m_direction & Vertical ) ? Scaled : Fixed;
+			colMde[0] =  ( m_direction & Horizontal ) ? Scaled : Tiled;
+			rowMde[0] =  ( m_direction & Vertical ) ? Scaled : Tiled;
 		}
 		
 		virtual ~ScaledPainter() {};
@@ -244,6 +254,63 @@ namespace Keramik
 		bool m_scaleH;
 		bool m_scaleV;
 	};
+	
+	class RowPainter: public TilePainter
+	{
+	public:
+		RowPainter(int name): TilePainter(name)
+		{
+			colMde[0] = colMde[2] = Fixed;
+			colMde[1] = Tiled;
+			rowMde[0] = Scaled;
+			m_columns = 3;
+		}
+		
+		virtual ~RowPainter() {};
+	protected:
+		virtual int tileName( unsigned int column, unsigned int row ) const
+		{
+			return column + 3; //So can use cl, cc, cr
+		}
+	};
+	
+	class ProgressBarPainter: public TilePainter
+	{
+	public:
+		ProgressBarPainter(int name, bool reverse): TilePainter(name), m_reverse(reverse)
+		{
+			//We use only of the tip bitmaps..
+			if (reverse)
+			{
+				colMde[0] = Fixed;
+				colMde[1] = Tiled;
+			}
+			else
+			{
+				colMde[0] = Tiled;
+				colMde[1] = Fixed;
+			}
+			rowMde[1] = Fixed;
+			
+			m_columns = 2;
+		}
+		
+		virtual ~ProgressBarPainter() {};
+	protected:
+		virtual int tileName( unsigned int column, unsigned int row ) const
+		{
+			if (m_reverse)
+			{
+				return column + 3; //So can use cl, cc, cr
+			}
+			else
+				return column + 4; //So can use cl, cc, cr + we start from cc.
+				
+		}
+		
+		bool m_reverse;
+	};
+
 
 	class ActiveTabPainter : public RectTilePainter
 	{

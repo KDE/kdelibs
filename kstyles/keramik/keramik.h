@@ -127,6 +127,13 @@ protected:
 		return maskMode?Keramik::TilePainter::PaintMask : Keramik::TilePainter::PaintNormal;
 	}
 	
+	Keramik::TilePainter::PaintMode pmodeFullBlend() const
+	{
+		return maskMode?Keramik::TilePainter::PaintMask : Keramik::TilePainter::PaintFullBlend;
+	}
+
+	
+	
 private:
 	QRect subRect(SubRect r, const QWidget *widget) const;
 	

@@ -3,10 +3,11 @@
 
 struct KeramikEmbedImage
 {
+	bool haveAlpha;
 	int width;
 	int height;
 	int id;
-	unsigned char* data;
+	const unsigned char* data;
 };
 
 extern KeramikEmbedImage* KeramikGetDbImage(int id);

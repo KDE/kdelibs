@@ -131,8 +131,6 @@ int main(int argc, char** argv)
 			continue;
 		QImage input(argv[c]);
 
-		Q_UINT32* read  = reinterpret_cast< Q_UINT32* >(input.bits() );
-		int size = input.width()*input.height();
 
 		QFileInfo fi(argv[c]);
 		QString s = fi.baseName();
@@ -172,13 +170,10 @@ int main(int argc, char** argv)
 		QString maskBase = fi.dirPath()+"/"+s+"M.png";
 		//cerr<<maskBase.latin1()<<"\n";
 		
-		//bool preserveWhite  = false;
-		bool forceWhite        = false;
 		bool useMaskImage  = false;
 		
 		if ( s == "checkbox_on" || s == "checkbox_off" )
 		{
-			//preserveWhite = true;
 			maskBase = fi.dirPath()+"/checkboxM.png";
 			//mask
 		}
@@ -186,14 +181,12 @@ int main(int argc, char** argv)
 		if ( s == "radiobutton_on" || s == "radiobutton_off" )
 		{
 			maskBase = fi.dirPath()+"/radiobuttonM.png";
-			//preserveWhite = true;
 		}
 		
 		QFile ftest(maskBase);
 		
 		QImage mask;
 		Q_UINT32* maskRead  = 0;;
-		
 		
 		if (ftest.exists())
 		{
@@ -203,32 +196,85 @@ int main(int argc, char** argv)
 			useMaskImage = true;
 			maskRead = reinterpret_cast< Q_UINT32* >(mask.bits() );
 		}
-			
-					
-		if (s.startsWith("scrollbar_vbar_groove") || s.startsWith("scrollbar_hbar_groove"))
-			forceWhite = true;
-			
+								
 		if (s.contains("button"))
 			KImageEffect::contrastHSV(input);
 			
-		forceWhite =  false; //For now.
-
-		
 		int fullID = assignID[id] + readJustID;//Subwidget..
 		
+		bool highlights = true;
+		bool shadows  = true;
+		
+		float gamma    = 1.0;
+		int brightAdj = 0;
+
+
+			
+		if (s.contains("toolbar") || s.contains("tab-top-active") || s.contains("menubar") )
+		{
+//			highlights = false;
+			gamma    = 1/1.25f;
+			//brightAdj = 10;
+			shadows = false;
+		}
+		
+		if (s.contains("scrollbar") && s.contains("groove"))
+		{
+			//highlights = false;
+			//gamma = 1.5;
+			shadows = false;
+		}
+			//brightAdj = -10;
+		
+		if (s.contains("scrollbar") && s.contains("slider"))
+		{
+			//highlights = false;
+			gamma =1/0.7f;
+			//shadows = false;
+		}
+		
+
+		if (s.contains("menuitem"))
+		{
+			//highlights = false;
+			gamma =1/0.6f;
+			//shadows = false;
+		}
 		
 		image.width   = input.width();
 		image.height = input.height();
 		image.id         = fullID;
 		image.data     = reinterpret_cast<unsigned char*>(strdup(s.latin1()));
-		images.push_back(image);
+		
 
 		bool reallySolid = true;
+		
 		int pixCount = 0;
 		int pixSolid = 0;
 
-		cout<<"static unsigned char "<<s.latin1()<<"[]={\n";
+		cout<<"static const unsigned char "<<s.latin1()<<"[]={\n";
+		
+		Q_UINT32* read  = reinterpret_cast< Q_UINT32* >(input.bits() );
+		int size = input.width()*input.height();
+		
+		for (int pos=0; pos<size; pos++)
+		{
+			QRgb basePix = (QRgb)*read;
 
+			if (qAlpha(basePix) != 255)
+				reallySolid = false;
+			else
+				pixSolid++;
+				
+			pixCount++;
+			read++;
+		}
+		
+		image.haveAlpha = !reallySolid;
+		
+		images.push_back(image);
+
+		read  = reinterpret_cast< Q_UINT32* >(input.bits() );
 		for (int pos=0; pos<size; pos++)
 		{
 			QRgb basePix = (QRgb)*read;
@@ -239,8 +285,8 @@ int main(int argc, char** argv)
 			clr.hsv(&h,&s,&v);
 			
 			v=qGray(basePix);
-#if 0
-			int targetColorAlpha = 0 , greyAdd = 0 , srcAlpha = 0;
+
+			int targetColorAlpha = 0 , greyAdd = 0 , srcAlpha = qAlpha(basePix);
 			
 			if (useMaskImage)
 			{
@@ -249,50 +295,51 @@ int main(int argc, char** argv)
 				
 				targetColorAlpha = int(v*colorDegree+0.5);
 				greyAdd              = int(v*(1-colorDegree)+0.5);
-				srcAlpha              = qAlpha(basePix);
-
-			}
-			else if (forceWhite)
-			{
-				targetColorAlpha = v/4;
-				greyAdd              = 3*v/4;
-				srcAlpha              = qAlpha(basePix);
-			}
-			else if (preserveWhite)
-			{
-				float av = v / 255.0;
-				targetColorAlpha = v/2 + 0.25*(1-av)*v;
-				greyAdd               = v/4 + 0.25*(av)*v;
-				srcAlpha              = qAlpha(basePix);
 			}
 			else
 			{
-				if ((s>4 || v > 64) && ! (preserveWhite && s < 4 && v > 240) )//Checkme
+				if (s>0 || v > 128)
 				{ //Non-shadow
 					float fv = v/255.0;
-					//fv = pow(fv, 1/1.5);
-					targetColorAlpha = (int)(fv*255);
-					greyAdd              = 0;
-					srcAlpha              = qAlpha(basePix);
+					fv = pow(fv, gamma);
+					v = int(255.5*fv);
+					
+					
+					if (s<17 && highlights) //A bit of a highligt..
+					{
+						float effectPortion = (16 - s)/15.0;
+						
+						greyAdd            = v/4.0 * effectPortion*1.2;
+						targetColorAlpha = v - greyAdd;
+					}
+					else
+					{
+						targetColorAlpha = v;//(int)(fv*255);
+						greyAdd              = 0;
+					}
 				}
 		    	else
 				{
-					targetColorAlpha = 0;
-					greyAdd              = v;
-					srcAlpha              = qAlpha(basePix);
+					if (shadows)
+					{
+						targetColorAlpha = 0;
+						greyAdd              = v;
+					}
+					else
+					{
+						targetColorAlpha = v;//(int)(fv*255);
+						greyAdd              = 0;
+					}
 				}
 			}
-#endif
 			
-			if (qAlpha(basePix) != 255)
-				reallySolid = false;
-			else
-				pixSolid++;
-				
-			pixCount++;
+			greyAdd+=brightAdj;
 
-			//cout<<targetColorAlpha<<","<<greyAdd<<","<<srcAlpha<<",";
-			cout<<qRed(basePix)<<","<<qGreen(basePix)<<","<<qBlue(basePix)<<","<<qAlpha(basePix)<<",";
+			if (reallySolid)
+				cout<<targetColorAlpha<<","<<greyAdd<<",";
+			else
+				cout<<targetColorAlpha<<","<<greyAdd<<","<<qAlpha(basePix)<<",";
+			//cout<<qRed(basePix)<<","<<qGreen(basePix)<<","<<qBlue(basePix)<<","<<qAlpha(basePix)<<",";
 			
 			if (pos%8 == 7)
 				cout<<"\n";
@@ -311,11 +358,11 @@ int main(int argc, char** argv)
 		
 	}
 	
-	cout<<"static KeramikEmbedImage  image_db[] = {\n";
+	cout<<"static const KeramikEmbedImage  image_db[] = {\n";
 	
 	for (unsigned int c=0; c<images.size(); c++)
 	{
-		cout<<"\t{ "<<images[c].width<<", "<<images[c].height<<", "<<images[c].id<<", "<<images[c].data<<"},";
+		cout<<"\t{ "<<(images[c].haveAlpha?"true":"false")<<","<<images[c].width<<", "<<images[c].height<<", "<<images[c].id<<", "<<images[c].data<<"},";
 		cout<<"\n";
 	}
 	cout<<"\t{0, 0, 0, 0}\n";
@@ -339,7 +386,7 @@ int main(int argc, char** argv)
 	cout<<"\t\treturn images[id];\n";
 	cout<<"\t}\n\n";
 	cout<<"private:\n";
-	cout<<"\tKeramikImageDb():images(137)\n";
+	cout<<"\tKeramikImageDb():images(211)\n";
 	cout<<"\t{\n";
 	cout<<"\t\tfor (int c=0; image_db[c].width; c++)\n";
 	cout<<"\t\t\timages.insert(image_db[c].id, &image_db[c]);\n";
@@ -349,7 +396,6 @@ int main(int argc, char** argv)
 	cout<<"};\n\n";
 	cout<<"KeramikImageDb* KeramikImageDb::instance = 0;\n\n";
 	
-	//TODO: Generate code for lookup cache?
 	cout<<"KeramikEmbedImage* KeramikGetDbImage(int id)\n";
 	cout<<"{\n";
 	cout<<"\treturn KeramikImageDb::getInstance()->getImage(id);\n";
