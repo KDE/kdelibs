@@ -35,7 +35,7 @@ static void MD5Transform(uint32 buf[4], uint32 in[16]);
 
 void MD5sum(unsigned char *message, long len, char *md5sum)
 {
-	long finalsize = len+1; // in bytes
+	long finalsize = len+1; /* in bytes */
 	int i,j;
 	unsigned char w;
 	uint32 buffer[4] = { 0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476};
@@ -53,8 +53,9 @@ void MD5sum(unsigned char *message, long len, char *md5sum)
 		} else if((finalsize-i > 8) || (finalsize-i <= 4)) {
 			w = 0;
 		} else {
-			// well, the length thing encoded in here will only
-			// work until 2^32 bits (though md5 would support 2^64 bits)
+			/* well, the length thing encoded in here will only
+			   work until 2^32 bits (though md5 would support 2^64
+                           bits) */
 			w = ((len*8) >> ((i+8-finalsize)*8)) & 0xff;
 		}
 		switch(i & 3) {
