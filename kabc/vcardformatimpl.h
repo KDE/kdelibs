@@ -81,6 +81,12 @@ class VCardFormatImpl
 
     void addGeoValue( VCARD::VCard *, VCARD::EntityType, const Geo & );
     Geo readGeoValue( VCARD::ContentLine * );
+
+    void addUTCValue( VCARD::VCard *, VCARD::EntityType, const TimeZone & );
+    TimeZone readUTCValue( VCARD::ContentLine * );
+
+    void addClassValue( VCARD::VCard *, VCARD::EntityType, const Secrecy & );
+    Secrecy readClassValue( VCARD::ContentLine * );
 };
 
 }

@@ -32,7 +32,7 @@ GeoValue::GeoValue()
 }
 
 GeoValue::GeoValue(const GeoValue & x)
-	:	Value(x)
+	:	Value(x), latitude_(x.latitude_), longitude_(x.longitude_)
 {
 }
 
@@ -45,6 +45,9 @@ GeoValue::GeoValue(const QCString & s)
 GeoValue::operator = (GeoValue & x)
 {
 	if (*this == x) return *this;
+
+  latitude_ = x.latitude_;
+  longitude_ = x.longitude_;
 
 	Value::operator = (x);
 	return *this;
@@ -61,7 +64,11 @@ GeoValue::operator = (const QCString & s)
 GeoValue::operator == (GeoValue & x)
 {
 	x.parse();
-	return false;
+
+  if ( latitude_ != x.latitude_ ) return false;
+  if ( longitude_ != x.longitude_ ) return false;
+
+	return true;
 }
 
 GeoValue::~GeoValue()
@@ -71,41 +78,17 @@ GeoValue::~GeoValue()
 	void
 GeoValue::_parse()
 {
-    int semiColon = strRep_.find( ";" );
+  int semiColon = strRep_.find( ";" );
 
-    if ( semiColon == -1 ) // invalid
-	return;
+  if ( semiColon == -1 ) // invalid
+    return;
 
-    latitude_	= strRep_.left( semiColon ).toFloat();
-    longitude_	= strRep_.mid( semiColon + 1, strRep_.length() - semiColon ).toFloat();
+  latitude_ = strRep_.left( semiColon ).toFloat();
+  longitude_ = strRep_.mid( semiColon + 1, strRep_.length() - semiColon ).toFloat();
 }
 
 	void
 GeoValue::_assemble()
 {
-    strRep_.sprintf( "%.6f;%.6f", latitude_, longitude_ );
-}
-
-	void
-GeoValue::setLatitude( float value )
-{
-    latitude_ = value;
-}
-
-	void
-GeoValue::setLongitude( float value )
-{
-    longitude_ = value;
-}
-
-	float
-GeoValue::latitude()
-{
-    return latitude_;
-}
-
-	float
-GeoValue::longitude()
-{
-    return longitude_;
+  strRep_.sprintf( "%.6f;%.6f", latitude_, longitude_ );
 }

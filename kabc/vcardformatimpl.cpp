@@ -163,7 +163,7 @@ bool VCardFormatImpl::loadAddressee( Addressee& addressee, VCard &v )
         break;
 
       case EntityLabel:
-        // not supported by kabc
+        // not yet supported by kabc
         break;
 
       case EntityMailer:
@@ -222,8 +222,15 @@ bool VCardFormatImpl::loadAddressee( Addressee& addressee, VCard &v )
         addressee.setGeo( readGeoValue( cl ) );
         break;
 
+      case EntityTimeZone:
+        addressee.setTimeZone( readUTCValue( cl ) );
+        break;
+
       case EntityVersion:
         break;
+
+      case EntityClass:
+        addressee.setSecrecy( readClassValue( cl ) );
           
       default:
         kdDebug(5700) << "VCardFormat::load(): Unsupported entity: "
@@ -300,6 +307,9 @@ void VCardFormatImpl::saveAddressee( const Addressee &addressee, VCard *v )
   addDateValue( v, EntityBirthday, addressee.birthday().date() );
   addDateTimeValue( v, EntityRevision, addressee.revision() );
   addGeoValue( v, EntityGeo, addressee.geo() );
+  addUTCValue( v, EntityTimeZone, addressee.timeZone() );
+
+  addClassValue( v, EntityClass, addressee.secrecy() );
 }
 
 void VCardFormatImpl::addCustomValue( VCard *v, const QString &txt )
@@ -408,6 +418,50 @@ void VCardFormatImpl::addGeoValue( VCard *vcard, EntityType type,
   GeoValue *v = new GeoValue;
   v->setLatitude( geo.latitude() );
   v->setLongitude( geo.longitude() );
+
+  cl.setValue( v );
+  vcard->add(cl);
+}
+
+void VCardFormatImpl::addUTCValue( VCard *vcard, EntityType type,
+                                    const TimeZone &tz )
+{
+  if ( !tz.isValid() ) return;
+
+  ContentLine cl;
+  cl.setName( EntityTypeToParamName( type ) );
+
+  UTCValue *v = new UTCValue;
+
+  v->setPositive( tz.offset() >= 0 );
+  v->setHour( tz.offset() / 60 );
+  v->setMinute( tz.offset() % 60 );
+
+  cl.setValue( v );
+  vcard->add(cl);
+}
+
+void VCardFormatImpl::addClassValue( VCard *vcard, EntityType type,
+                                    const Secrecy &secrecy )
+{
+  ContentLine cl;
+  cl.setName( EntityTypeToParamName( type ) );
+
+  ClassValue *v = new ClassValue;
+  switch ( secrecy.type() ) {
+    case Secrecy::Public:
+      kdDebug() << "is Pub" << endl;
+      v->setType( ClassValue::Public );
+      break;
+    case Secrecy::Private:
+      kdDebug() << "is Prv" << endl;
+      v->setType( ClassValue::Private );
+      break;
+    case Secrecy::Confidential:
+      kdDebug() << "is Conf" << endl;
+      v->setType( ClassValue::Confidential );
+      break;
+  }
 
   cl.setValue( v );
   vcard->add(cl);
@@ -573,6 +627,39 @@ Geo VCardFormatImpl::readGeoValue( ContentLine *cl )
     return geo;
   } else
     return Geo();
+}
+
+TimeZone VCardFormatImpl::readUTCValue( ContentLine *cl )
+{
+  UTCValue *utcValue = (UTCValue *)cl->value();
+  if ( utcValue ) {
+    TimeZone tz;
+    tz.setOffset(((utcValue->hour()*60)+utcValue->minute())*(utcValue->positive() ? 1 : -1));
+    return tz;
+  } else
+    return TimeZone();
+}
+
+Secrecy VCardFormatImpl::readClassValue( ContentLine *cl )
+{
+  ClassValue *classValue = (ClassValue *)cl->value();
+  if ( classValue ) {
+    Secrecy secrecy;
+    switch ( classValue->type() ) {
+      case ClassValue::Public:
+        secrecy.setType( Secrecy::Public );
+        break;
+      case ClassValue::Private:
+        secrecy.setType( Secrecy::Private );
+        break;
+      case ClassValue::Confidential:
+        secrecy.setType( Secrecy::Confidential );
+        break;
+    }
+
+    return secrecy;
+  } else
+    return Secrecy();
 }
 
 bool VCardFormatImpl::readFromString( const QString &vcard, Addressee &addressee )

@@ -25,6 +25,8 @@
 
 #include <VCardValue.h>
 
+#include <kdebug.h>
+
 using namespace VCARD;
 
 ClassValue::ClassValue()
@@ -92,6 +94,7 @@ ClassValue::_parse()
 	void
 ClassValue::_assemble()
 {
+  kdDebug() << "Write type (" << classType_ << "to file." << endl;
 	switch (classType_) {
 		
 		case Public:

@@ -33,15 +33,19 @@ namespace VCARD
 
 class ClassValue : public Value
 {
-	enum ClassType {
-		Public, Private, Confidential, Other
-	};
+  public:
+	  enum ClassType {
+		  Public, Private, Confidential, Other
+	  };
 	
 #include "ClassValue-generated.h"
+
+  public:
+    void setType( int type ) { classType_ = type; assembled_ = false; }
+    int type() { parse(); return classType_; }
 	
 	private:
-	
-		ClassType classType_;
+		int classType_;
 };
 
 }

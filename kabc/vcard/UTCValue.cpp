@@ -33,7 +33,8 @@ UTCValue::UTCValue()
 }
 
 UTCValue::UTCValue(const UTCValue & x)
-	:	Value(x)
+	:	Value(x),	positive_(x.positive_), hour_(x.hour_), minute_(x.minute_)
+
 {
 }
 
@@ -46,6 +47,10 @@ UTCValue::UTCValue(const QCString & s)
 UTCValue::operator = (UTCValue & x)
 {
 	if (*this == x) return *this;
+
+  positive_ = x.positive_;
+  hour_ = x.hour_;
+  minute_ = x.minute_;
 
 	Value::operator = (x);
 	return *this;
@@ -62,7 +67,12 @@ UTCValue::operator = (const QCString & s)
 UTCValue::operator == (UTCValue & x)
 {
 	x.parse();
-	return false;
+
+  if (positive_ != x.positive_) return false;
+  if (hour_ != x.hour_) return false;
+  if (minute_ != x.minute_) return false;
+
+	return true;
 }
 
 UTCValue::~UTCValue()
@@ -86,16 +96,6 @@ UTCValue::_parse()
 	void
 UTCValue::_assemble()
 {
-	strRep_ = (positive_ ? '+' : '-');
-	
-	if (hour_ < 10) // Pointless zero padding.
-		strRep_ += '0';
-	
-	strRep_ += QCString().setNum(hour_) + ':';
-	
-	if (minute_ < 10) // Pointless zero padding.
-		strRep_ += '0'; 
-	
-	strRep_ += QCString().setNum(minute_);
+  strRep_.sprintf( "%c%.2i:%.2i", (positive_ ? '+' : '-'), hour_, minute_ );
 }
 
