@@ -487,6 +487,22 @@
 70001	dcoppython
 80001	kjsembed
 
+# kdeaddons
+90000	vimpart
+90010	noatun-plugins (dub)
+90020	noatun-plugins (lyrics)
+90100	konq-plugins (fsview)
+90110	konq-plugins (webarchiver)
+90120	konq-plugins (validators)
+90130	konq-plugins (uachanger)
+90140	konq-plugins (sidebar - newsticker)
+90150	konq-plugins (minitools)
+90160	konq-plugins (kuick)
+90170	konq-plugins (kimgalleryplugin)
+90180	konq-plugins (domtreeviewer)
+90190	konq-plugins (dirfilter)
+
+
 # kdenonbeta
 100000       reaktivate (KPart)
 100001       reaktivate (proxy)
