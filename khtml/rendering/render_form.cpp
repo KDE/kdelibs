@@ -145,10 +145,10 @@ void RenderFormElement::layout(bool)
 {
     //kdDebug( 6040 ) << "inside RenderFormElement::layout()" << endl;
 
+#if 0
     // honor style sheet stuff
     int h = 0;
 
-#if 0
     if(parent()) {
         if((h = m_style->width().width(containingBlockWidth())) > 0) {
             kdDebug( 6040 ) << "overwriting width to " << h << endl;
@@ -389,7 +389,7 @@ RenderImageButton::~RenderImageButton()
 
 void RenderImageButton::setImageUrl(DOMString url, DOMString baseUrl)
 {
-    kdDebug( 6060 ) << "RenderImageButton::setImageURL" << endl; 
+    kdDebug( 6060 ) << "RenderImageButton::setImageURL" << endl;
     if(image) image->deref(this);
     image = Cache::requestImage(url, baseUrl);
     image->ref(this);

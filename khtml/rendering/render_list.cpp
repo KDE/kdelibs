@@ -154,8 +154,8 @@ void RenderListMarker::print(QPainter *p, int _x, int _y, int _w, int _h,
     printObject(p, _x, _y, _w, _h, _tx, _ty);
 }
 
-void RenderListMarker::printObject(QPainter *p, int _x, int _y,
-				    int _w, int _h, int _tx, int _ty)
+void RenderListMarker::printObject(QPainter *p, int, int,
+				    int, int, int _tx, int _ty)
 {
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << nodeName().string() << "(ListMarker)::printObject(" << _tx << ", " << _ty << ")" << endl;

@@ -247,5 +247,6 @@ long HTMLPreElementImpl::width() const
 
 void HTMLPreElementImpl::setWidth( long /*w*/ )
 {
+    // ###
 }
 

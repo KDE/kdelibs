@@ -148,10 +148,10 @@ Node Range::getCommonAncestorContainer() /*const*/
 {
     if( isDetached() )
         throw DOMException(DOMException::INVALID_STATE_ERR);
-    
+
     Node parentStart = startContainer;
     Node parentEnd = endContainer;
-    
+
     while( !parentStart.isNull() && (parentStart != parentEnd) )
     {
         while( !parentEnd.isNull() && (parentStart != parentEnd) )
@@ -167,7 +167,7 @@ Node Range::getCommonAncestorContainer() /*const*/
     {
         return Node();
     }
-    
+
     return commonAncestorContainer;
 }
 
@@ -673,7 +673,7 @@ bool Range::boundaryPointsValid(  )
                                           getEndContainer(), getEndOffset() );
     if( valid == 1 )  return false;
     else  return true;
-    
+
 }
 
 void Range::deleteContents(  )
@@ -681,11 +681,11 @@ void Range::deleteContents(  )
     Node cmnRoot = getCommonAncestorContainer();
     printf("CommonAC: %s \n", cmnRoot.nodeName().string().ascii());
 //    printf("end: %d, start: %d", startOffset, endOffset);
-    
+
     if(startContainer == endContainer)
     {
         if(startOffset == endOffset)            // we have a collapsed range
-        {printf("collapsed\n");return;} 
+        {printf("collapsed\n");return;}
 
         // TODO: we need to delete the text Node if a whole text is selected!!
         if( startContainer.nodeType() == Node::TEXT_NODE )
@@ -693,7 +693,7 @@ void Range::deleteContents(  )
             startContainer.nodeValue().remove(startOffset, endOffset);
             startContainer.applyChanges();
         }
-        else 
+        else
         {
             printf("same but not a text node\n");
             Node _tempParent = startContainer;
@@ -707,7 +707,7 @@ void Range::deleteContents(  )
             unsigned int range = endOffset - startOffset;
             Node _nextCurrent = _tempCurrent;                  // to keep track of which node to take next
 
-            for(i=0; i<range && !_tempCurrent.isNull(); i++)   
+            for(i=0; i<range && !_tempCurrent.isNull(); i++)
             {
                 if(_tempParent == _tempCurrent.parentNode() )
                     printf("like\n");
@@ -723,7 +723,7 @@ void Range::deleteContents(  )
     }// END COMMON CONTAINER CASE!!
 
     printf("end common case\n");
-    Node _nextCurrent;                 
+    Node _nextCurrent;
     Node _tempCurrent;
 
     // cleanup left side
@@ -735,16 +735,16 @@ void Range::deleteContents(  )
     }
     else
     {
-     
+
         _tempCurrent = startContainer.firstChild();
         unsigned int i;
-        
+
         for(i=0; i < startOffset; i++)    // get the node given by the offset
             _tempCurrent = _tempCurrent.nextSibling();
-        
+
         _nextCurrent = _tempCurrent;                  // to keep track of which node to take next
-        
-        while( !_tempCurrent.isNull() )   
+
+        while( !_tempCurrent.isNull() )
         {
             _nextCurrent = _tempCurrent.nextSibling();
             _leftParent.removeChild(_tempCurrent);
@@ -755,7 +755,7 @@ void Range::deleteContents(  )
     _leftParent = _leftParent.parentNode();
     while( _leftParent != cmnRoot )
     {
-        while( !_tempCurrent.isNull() )   
+        while( !_tempCurrent.isNull() )
         {
             _nextCurrent = _tempCurrent.nextSibling();
             _leftParent.removeChild(_tempCurrent);
@@ -774,16 +774,16 @@ void Range::deleteContents(  )
     }
     else
     {
-     
+
         Node _tempCurrent = endContainer.firstChild();
         unsigned int i;
-        
+
         for(i=0; i < endOffset; i++)    // get the node given by the offset
             _tempCurrent = _tempCurrent.nextSibling();
-        
+
         Node _nextCurrent = _tempCurrent;                  // to keep track of which node to take next
-        
-        while( !_tempCurrent.isNull() )   
+
+        while( !_tempCurrent.isNull() )
         {
             _nextCurrent = _tempCurrent.previousSibling();
             _leftParent.removeChild(_tempCurrent);
@@ -794,7 +794,7 @@ void Range::deleteContents(  )
     _rightParent = _rightParent.parentNode();
     while( _rightParent != cmnRoot )
     {
-        while( !_tempCurrent.isNull() )   
+        while( !_tempCurrent.isNull() )
         {
             _nextCurrent = _tempCurrent.previousSibling();
             _rightParent.removeChild(_tempCurrent);
@@ -866,7 +866,7 @@ DOMString Range::toString(  )
 //    NodeIterator iterator( getCommonAncestorContainer() );
     DOMString _string;
     Node _node = iterator.nextNode();
-    
+
     while( !_node.isNull() )
     {
         printf( "\nNodetype: %s\n", _node.nodeName().string().ascii() );
@@ -885,7 +885,7 @@ DOMString Range::toString(  )
         else if( _node.nodeName() == "BR" )  _string += "\n";
         else if( _node.nodeName() == "P" || _node.nodeName() == "TD" )  _string += "\n\n";
         else  _string += " ";
-        
+
         _node = iterator.nextNode();
     }
     return _string;
@@ -1167,17 +1167,18 @@ DocumentFragment Range::masterTraverse(bool contentExtract)
 // ---------------------------------------------------------------
 
 DocumentRange::DocumentRange()
+    : Document()
 {
 }
 
 DocumentRange::DocumentRange(const DocumentRange &other)
+    : Document(other)
 {
-    impl = other.impl;
 }
 
 DocumentRange &DocumentRange::operator = (const DocumentRange &other)
 {
-    DocumentRange::operator = (other);
+    Document::operator = (other);
     return *this;
 }
 
