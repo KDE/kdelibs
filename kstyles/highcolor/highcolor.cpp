@@ -1147,8 +1147,9 @@ void HighColorStyle::drawControl( ControlElement element,
 		// -------------------------------------------------------------------
 		case CE_MenuBarItem:
 		{
-			QMenuBar* mb = (QMenuBar*)widget;
-			QRect pr = mb->rect();
+			QMenuBar  *mb = (QMenuBar*)widget;
+			QMenuItem *mi = opt.menuItem();
+			QRect      pr = mb->rect();
 
 			bool active  = flags & Style_Active;
 			bool focused = flags & Style_HasFocus;
@@ -1160,7 +1161,10 @@ void HighColorStyle::drawControl( ControlElement element,
 				renderGradient( p, r, cg.button(), false,
 								r.x(), r.y()-1, pr.width()-2, pr.height()-2);
 
-			QCommonStyle::drawControl(element, p, widget, r, cg, flags, opt);
+			drawItem( p, r, AlignCenter | AlignVCenter | ShowPrefix
+					| DontClip | SingleLine, cg, flags & Style_Enabled,
+					mi->pixmap(), mi->text() );
+			
 			break;
 		}
 
@@ -1181,6 +1185,7 @@ void HighColorStyle::drawControl( ControlElement element,
 			bool enabled    = mi->isEnabled();
 			bool checkable  = popupmenu->isCheckable();
 			bool active     = flags & Style_Active;
+			bool etchtext	= styleHint( SH_EtchDisabledText );
 			bool reverse	= QApplication::reverseLayout();
 
 			// Are we a menu item separator?
@@ -1201,9 +1206,9 @@ void HighColorStyle::drawControl( ControlElement element,
 			
 			// Do we have an icon?
 			if ( mi->iconSet() ) {
-				QRect cr( reverse ? x+w - checkcol : x, y, checkcol, h );
 				QIconSet::Mode mode;
-
+				QRect cr = visualRect( QRect(x, y, checkcol, h), r );
+				
 				// Select the correct icon from the iconset
 				if ( active )
 					mode = enabled ? QIconSet::Active : QIconSet::Disabled;
@@ -1272,7 +1277,7 @@ void HighColorStyle::drawControl( ControlElement element,
 				p->save();
 
 				// Draw etched text if we're inactive and the menu item is disabled
-				if ( !enabled && !active ) {
+				if ( etchtext && !enabled && !active ) {
 					p->setPen( cg.light() );
 					mi->custom()->paint( p, cg, active, enabled, xp+offset, y+m+1, tw, h-2*m );
 					p->setPen( discol );
@@ -1288,8 +1293,9 @@ void HighColorStyle::drawControl( ControlElement element,
 				if ( !s.isNull() ) {
 					int t = s.find( '\t' );
 					int m = itemVMargin;
-					const int text_flags = AlignVCenter | ShowPrefix | DontClip | SingleLine;
-
+					int text_flags = AlignVCenter | ShowPrefix | DontClip | SingleLine;
+					text_flags |= reverse ? AlignRight : AlignLeft;
+					
 					// Does the menu item have a tabstop? (for the accelerator text)
 					if ( t >= 0 ) {
 						int tabx = reverse ? x + rightBorder + itemHMargin + itemFrame :
@@ -1300,7 +1306,7 @@ void HighColorStyle::drawControl( ControlElement element,
 #endif
 						
 						// Draw the right part of the label (accelerator text)
-						if ( !enabled && !active ) {
+						if ( etchtext && !enabled && !active ) {
 							// Draw etched text if we're inactive and the menu item is disabled
 							p->setPen( cg.light() );
 							p->drawText( tabx+offset, y+m+1, tab, h-2*m, text_flags, s.mid( t+1 ) );
@@ -1316,7 +1322,7 @@ void HighColorStyle::drawControl( ControlElement element,
 					
 					// Draw the left part of the label (or the whole label 
 					// if there's no accelerator)
-					if ( !enabled && !active ) {
+					if ( etchtext && !enabled && !active ) {
 						// Etched text again for inactive disabled menu items...
 						p->setPen( cg.light() );
 						p->drawText( xp+offset, y+m+1, tw, h-2*m, text_flags, s, t );
@@ -1345,12 +1351,12 @@ void HighColorStyle::drawControl( ControlElement element,
 				}
 			}
 
-			// Does the menu item have a popup menu?
+			// Does the menu item have a submenu?
 			if ( mi->popup() ) {
 				PrimitiveElement arrow = reverse ? PE_ArrowLeft : PE_ArrowRight;
 				int dim = (h-2*itemFrame) / 2;
-				int xp  = reverse ? x + arrowHMargin + itemFrame :
-					x + w - arrowHMargin - itemFrame - dim;
+				QRect vr = visualRect( QRect( x + w - arrowHMargin - itemFrame - dim,
+							y + h / 2 - dim / 2, dim, dim), r );
 
 				// Draw an arrow at the far end of the menu item
 				if ( active ) {
@@ -1360,11 +1366,10 @@ void HighColorStyle::drawControl( ControlElement element,
 					QColorGroup g2( discol, cg.highlight(), white, white,
 									enabled ? white : discol, discol, white );
 
-					drawPrimitive( arrow, p, QRect(xp, y + h / 2 - dim / 2, dim, dim),
-									g2, Style_Enabled );
+					drawPrimitive( arrow, p, vr, g2, Style_Enabled );
 				} else
-					drawPrimitive( arrow, p, QRect(xp, y + h / 2 - dim / 2, dim, dim),
-									cg, enabled ? Style_Enabled : Style_Default );
+					drawPrimitive( arrow, p, vr, cg,
+							enabled ? Style_Enabled : Style_Default );
 			}
 			break;
 		}
