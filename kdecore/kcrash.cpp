@@ -106,8 +106,7 @@ defaultCrashHandler (int signal)
     {
       printf ("Would start dr. konqi here\n");
 
-      execlp ("drkonqi", "drkonqi", "--fclass=SEGFAULT",
-	      "--messages=Application path\t/usr/bin/test\tOther data\ttestdata",
+      execlp ("xmessage", "xmessage", "An application crashed!",
 	      NULL);
     }
 
