@@ -85,9 +85,9 @@ QString KDesktopFile::readPath()
   return readEntry("Path");
 }
 
-bool KDesktopFile::hasURLType()
+bool KDesktopFile::hasLinkType()
 {
-  return readEntry("Type") == "URL";
+  return readEntry("Type") == "Link";
 }
 
 bool KDesktopFile::hasApplicationType()

@@ -98,9 +98,10 @@ public:
 
 
   /**
-   * Returns true if there is an entry "Type=URL".
+   * Returns true if there is an entry "Type=Link".
+   * The link points to the "URL=" entry.
    */
-  bool hasURLType();
+  bool hasLinkType();
 
   /**
    * Returns true if there is an entry "Type=Application".
