@@ -194,6 +194,7 @@ KSocks::KSocks() : _socksLib(NULL), _st(NULL) {
    _libPaths << ""
              << "/usr/lib/"
              << "/usr/local/lib/"
+             << "/usr/local/socks5/lib/"
              << "/opt/socks5/lib/";
    _libNames << "libsocks.so"                  // Dante
              << "libsocks5.so"                 // ?
