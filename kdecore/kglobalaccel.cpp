@@ -168,6 +168,14 @@ extern "C" {
   }
 }
 
+bool KGlobalAccel::grabKey( uint keyCombQt ) {
+	uint keySymX, keyModX;
+	KAccel::keyQtToKeyX( keyCombQt, 0, &keySymX, &keyModX );
+	kdDebug() << QString( "grabKey: keySymX: %1 keyModX: %1\n" )
+	.arg( keySymX, 0, 16 ).arg( keyModX, 0, 16 );
+	return grabKey( keySymX, keyModX );
+}
+
 bool KGlobalAccel::grabKey( uint keysym, uint mod ) {
 	// Most of this comes from kpanel/main.C
 	// Copyright (C) 1996,97 Matthias Ettrich
@@ -193,7 +201,7 @@ bool KGlobalAccel::grabKey( uint keysym, uint mod ) {
 	// We wan't to catch only our own errors
 	XSync(qt_xdisplay(),0);
 	XErrorHandler savedErrorHandler=XSetErrorHandler(XGrabErrorHandler);
-	
+
 	XGrabKey(qt_xdisplay(),
 		XKeysymToKeycode(qt_xdisplay(), keysym), mod,
 		qt_xrootwin(), True,
@@ -268,25 +276,19 @@ void KGlobalAccel::readSettings()
 {
         for (KKeyEntryMap::ConstIterator aKeyIt = aKeyMap.begin();
              aKeyIt != aKeyMap.end(); ++aKeyIt) {
-          if ( (*aKeyIt).bEnabled ) {
-            uint keysym = keyToXSym( (*aKeyIt).aCurrentKeyCode );
-            uint mod = keyToXMod( (*aKeyIt).aCurrentKeyCode );
-            ungrabKey( keysym, mod );
-          }
+          if ( (*aKeyIt).bEnabled )
+            ungrabKey( (*aKeyIt).aCurrentKeyCode );
 	}
-        
+
         KAccel::readKeyMap( aKeyMap, aGroup, NULL );
-        
+
         for (KKeyEntryMap::ConstIterator aKeyIt = aKeyMap.begin();
              aKeyIt != aKeyMap.end(); ++aKeyIt) {
-          if (  (*aKeyIt).bEnabled ) {
-            uint keysym = keyToXSym( (*aKeyIt).aCurrentKeyCode );
-            uint mod = keyToXMod( (*aKeyIt).aCurrentKeyCode );
-            grabKey( keysym, mod );
-          }
+          if (  (*aKeyIt).bEnabled )
+            grabKey( (*aKeyIt).aCurrentKeyCode );
 	}
 }
-	
+
 void KGlobalAccel::removeItem( const QString& action )
 {
     aKeyMap.remove(action);
@@ -311,7 +313,7 @@ void KGlobalAccel::setEnabled( bool activate )
 }
 
 void KGlobalAccel::setItemEnabled( const QString& action, bool activate )
-{	
+{
 
     if ( !aKeyMap.contains(action) ) {
 	kdDebug() << QString::fromLatin1("KGlobalAccel : cannot enable action %1 "
@@ -325,16 +327,11 @@ void KGlobalAccel::setItemEnabled( const QString& action, bool activate )
     aKeyMap[action].bEnabled = activate;
 
     if ( entry.aCurrentKeyCode == 0 ) return;
-	
-    uint keysym = keyToXSym( entry.aCurrentKeyCode );
-    uint mod = keyToXMod( entry.aCurrentKeyCode );
-
-    if ( keysym == NoSymbol ) return;
 
     if ( entry.bEnabled )
-        grabKey( keysym, mod );
+        grabKey( entry.aCurrentKeyCode );
     else
-        ungrabKey( keysym, mod );
+        ungrabKey( entry.aCurrentKeyCode );
 
 }
 
@@ -344,16 +341,13 @@ bool KGlobalAccel::setKeyDict( const KKeyEntryMap& nKeyMap )
          it != aKeyMap.end(); ++it) {
 	// ungrab all connected and enabled keys
         QString s;
-        if ( (*it).bEnabled ) {
-            uint keysym = keyToXSym( (*it).aCurrentKeyCode );
-            uint mod = keyToXMod( (*it).aCurrentKeyCode );
-            ungrabKey( keysym, mod );
-        }
+        if ( (*it).bEnabled )
+            ungrabKey( (*it).aCurrentKeyCode );
     }
-	
+
     // Clear the dictionary
     aKeyMap.clear();
-	
+
     // Insert the new items into the dictionary and reconnect if neccessary
     // Note also swap config and current key codes !!!!!!
     for (KKeyEntryMap::ConstIterator it = nKeyMap.begin();
@@ -363,23 +357,25 @@ bool KGlobalAccel::setKeyDict( const KKeyEntryMap& nKeyMap )
 
         // Not we write config key code to current key code !!
         entry.aCurrentKeyCode = (*it).aConfigKeyCode;
-	
+
         aKeyMap[it.key()] = entry;
-        if ( entry.bEnabled ) {
-            uint keysym = keyToXSym( entry.aCurrentKeyCode );
-            uint mod = keyToXMod( entry.aCurrentKeyCode );
-            grabKey( keysym, mod );
-        }
-		
+        if ( entry.bEnabled )
+            grabKey( entry.aCurrentKeyCode );
     }
     return true;
+}
+
+bool KGlobalAccel::ungrabKey( uint keyCombQt ) {
+	uint keySymX, keyModX;
+	KAccel::keyQtToKeyX( keyCombQt, 0, &keySymX, &keyModX );
+	return ungrabKey( keySymX, keyModX );
 }
 
 bool KGlobalAccel::ungrabKey( uint keysym, uint mod ) {
 	// Most of this comes from kpanel/main.C
 	// Copyright (C) 1996,97 Matthias Ettrich
 	static int NumLockMask = 0;
-	
+
 	if (do_not_grab)
 	  return true;
 
@@ -400,19 +396,12 @@ bool KGlobalAccel::ungrabKey( uint keysym, uint mod ) {
 	// We wan't to catch only our own errors
 	XSync(qt_xdisplay(),0);
 	XErrorHandler savedErrorHandler=XSetErrorHandler(XGrabErrorHandler);
-	
-	XUngrabKey(qt_xdisplay(),
-		XKeysymToKeycode(qt_xdisplay(), keysym), mod,
-		qt_xrootwin());
-	XUngrabKey(qt_xdisplay(),
-		XKeysymToKeycode(qt_xdisplay(), keysym), mod | LockMask,
-		qt_xrootwin());
-	XUngrabKey(qt_xdisplay(),
-		XKeysymToKeycode(qt_xdisplay(), keysym), mod | NumLockMask,
-		qt_xrootwin());
-	XUngrabKey(qt_xdisplay(),
-		XKeysymToKeycode(qt_xdisplay(), keysym), mod | LockMask | NumLockMask,
-		qt_xrootwin());
+
+	KeyCode keyCodeX = XKeysymToKeycode(qt_xdisplay(), keysym);
+	XUngrabKey(qt_xdisplay(), keyCodeX, mod, qt_xrootwin());
+	XUngrabKey(qt_xdisplay(), keyCodeX, mod | LockMask, qt_xrootwin());
+	XUngrabKey(qt_xdisplay(), keyCodeX, mod | NumLockMask, qt_xrootwin());
+	XUngrabKey(qt_xdisplay(), keyCodeX, mod | LockMask | NumLockMask, qt_xrootwin());
 
 	XSync(qt_xdisplay(),0);
 	XSetErrorHandler(savedErrorHandler);
@@ -430,25 +419,37 @@ void KGlobalAccel::writeSettings() const
 }
 
 bool KGlobalAccel::x11EventFilter( const XEvent *event_ ) {
+    uint keyModX, keyModX2;
+    uint keySymX, keySymX2;
+    int index;
 
     if ( aKeyMap.isEmpty() ) return false;
     if ( event_->type != XKeyPress ) return false;
-	
-    uint mod=event_->xkey.state & (ControlMask | ShiftMask | Mod1Mask);
-    uint keysym= XKeycodeToKeysym(qt_xdisplay(), event_->xkey.keycode, 0);
-	
+
+    keyModX = event_->xkey.state & (ControlMask | ShiftMask | Mod1Mask | Mod4Mask); // ellis
+    // I don't know where it's documented, but Mode_shift sets the 13th bit in 'state'.
+    index = ((keyModX & ShiftMask) ? 1 : 0) +
+	    ((event_->xkey.state & 0x2000) ? 2 : 0);
+    keySymX = XKeycodeToKeysym( qt_xdisplay(), event_->xkey.keycode, index );
+
+    kdDebug() << "x11EventFilter: seek " << KAccel::keyXToString( keySymX, keyModX, false ) << endl;
+    kdDebug() << QString( "x11EventFilter: keyCodeX: %1 state: %2 keySym: %3\n" )
+     .arg( event_->xkey.keycode, 0, 16 ).arg( event_->xkey.state ).arg( keySymX, 0, 16 );
+
+    // Search for which accelerator activated this event:
     KKeyEntry entry;
-    for (KKeyEntryMap::ConstIterator it = aKeyMap.begin();
-	 it != aKeyMap.end(); ++it) {
-	int kc = (*it).aCurrentKeyCode;
-	if ( mod == keyToXMod( kc ) && keysym == keyToXSym( kc ) ) {
+    for (KKeyEntryMap::ConstIterator it = aKeyMap.begin(); it != aKeyMap.end(); ++it) {
+	KAccel::keyQtToKeyX( (*it).aCurrentKeyCode, 0, &keySymX2, &keyModX2 );
+	kdDebug() << "x11EventFilter: found " << KAccel::keyToString( (*it).aCurrentKeyCode ) << endl;
+	if ( keySymX == keySymX2 && keyModX == keyModX2 ) {
 	    entry = *it;
+	    break;
 	}
     }
-	
+
     if ( !entry.receiver || !entry.bEnabled )
 	return false;
-	
+
     if ( !QWidget::keyboardGrabber() ) {
 	XAllowEvents(qt_xdisplay(), AsyncKeyboard, CurrentTime);
 	XUngrabKeyboard(qt_xdisplay(), CurrentTime);
@@ -468,64 +469,26 @@ bool KGlobalAccel::x11EventFilter( const XEvent *event_ ) {
 uint keyToXMod( int keyCode )
 {
 	uint mod = 0;
-	
+
 	if ( keyCode == 0 ) return mod;
-	
+
 	if ( keyCode & Qt::SHIFT )
 		 mod |= ShiftMask;
 	if ( keyCode & Qt::CTRL )
 		 mod |= ControlMask;
 	if ( keyCode & Qt::ALT )
 		 mod |= Mod1Mask;
-		
+	if ( keyCode & (Qt::ALT<<1) )
+		 mod |= Mod4Mask;
+
 	return mod;
 }
 
 uint keyToXSym( int keyCode )
 {
-	char *toks[4], *next_tok;
-        char sKey[100];
-	int nb_toks = 0;
-
-	uint keysym = 0;
-	QString s = KAccel::keyToString( keyCode, false);
-	
-	if ( s.isEmpty() ) return keysym;
-
-        qstrncpy(sKey, s.ascii(), sizeof(sKey));
-	next_tok = strtok( sKey, "+" );
-
-	if ( next_tok == 0L ) return 0;
-	
-	do {
-		toks[nb_toks] = next_tok;
-		nb_toks++;
-		if ( nb_toks == 5 ) return 0;
-		next_tok = strtok( 0L, "+" );
-	} while ( next_tok != 0L );
-
-	// Test for exactly one key (other tokens are accelerators)
-	// Fill the keycode with infos
-	bool  keyFound = false;
-	for ( int i=0; i<nb_toks; i++ ) {
-		if (qstricmp(toks[i], "SHIFT") != 0 &&
-		    qstricmp(toks[i], "CTRL")  != 0 &&
-		    qstricmp(toks[i], "ALT")   != 0) {
-		   if ( keyFound ) return 0;
-		   keyFound = true;
-		   QCString l = toks[i];
-		   l = l.lower();
-		   keysym = XStringToKeysym(l.data());
-		   if (keysym == NoSymbol){
-		     keysym = XStringToKeysym( toks[i] );
-		   }
-		   if ( keysym == NoSymbol ) {
-			return 0;
-		  }
-		}
-	}
-	
-	return keysym;
+	uint keySymX;
+	KAccel::keyQtToKeyX( keyCode, 0, &keySymX, 0 );
+	return keySymX;
 }
 
 #include "kglobalaccel.moc"

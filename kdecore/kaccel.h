@@ -22,6 +22,7 @@
 #ifndef _KACCEL_H
 #define _KACCEL_H
 
+
 #include <qmap.h>
 #include <qstring.h>
 #include <qaccel.h>
@@ -145,6 +146,7 @@ typedef QMap<QString, KKeyEntry> KKeyEntryMap;
  * @short Configurable key binding support.
  * @version $Id$
  */
+
 class KAccel : public QAccel
 {
  Q_OBJECT
@@ -511,16 +513,31 @@ class KAccel : public QAccel
 	 *
 	 * N.B.: @p sKey must @em not be @ref i18n()'d!
 	 */
-	static int stringToKey( const QString& sKey );
+	static uint stringToKey( const QString& sKey );
 
 	/**
 	 * Retrieve a string corresponding to the key code @p keyCode,
 	  * which is empty if
 	 * @p keyCode is not recognized or zero.
 	 */
-	static QString keyToString( int keyCode, bool i18_n = FALSE);
+	static QString keyToString( uint keyCode, bool i18_n = FALSE );
 
- signals:
+	// X11-Related Functions
+	enum ModKeysIndex {
+		ModShiftIndex, ModCapsLockIndex, ModCtrlIndex, ModAltIndex,
+		ModNumLockIndex, ModAltGrIndex, ModMetaIndex, ModScrollLockIndex,
+		MOD_KEYS
+	};
+	static uint stringToKey( const QString& keyStr, unsigned char *pKeyCodeX, uint *pKeySymX, uint *pKeyModX );
+	static void setupMasks();
+	static int keyMapXIndex( uint keySym );
+	static void keySymXMods( uint keySym, uint *pKeyModQt, uint *pKeyModX );
+	static uint keyXToKeyQt( uint keySymX, uint keyModX );
+	static void keyQtToKeyX( uint keyCombQt, unsigned char *pKeyCodeX, uint *pKeySymX, uint *pKeyModX );
+	static QString keyXToString( unsigned char keyCodeX, uint keyModX, bool bi18n );
+	static QString keyXToString( uint keySymX, uint keyModX, bool bi18n );
+
+signals:
 	void keycodeChanged();
 
  protected:
