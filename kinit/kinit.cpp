@@ -128,7 +128,7 @@ static pid_t launch(int argc, const char *_name, const char *args)
       */
      if (0 > socketpair(AF_UNIX, SOCK_STREAM, 0, d.launcher))
      {
-        perror("kdeinit: scoketpair() failed!\n");
+        perror("kdeinit: socketpair() failed!\n");
         exit(255);
      }
      launcher = 1;
@@ -185,6 +185,7 @@ fprintf(stderr, "arg[%d] = %s (%p)\n", i, args, args);
      d.argv[argc] = 0;
 
      printf("Opening \"%s\"\n", cmd.data() );
+     printf("user_search_path=%s\n", lt_dlgetsearchpath());
      d.handle = lt_dlopen( cmd.data() );
      if (!d.handle )
      {
@@ -859,6 +860,10 @@ static void kdeinit_library_path()
    }
    setenv("LTDL_LIBRARY_PATH", ltdl_library_path.data(), 1);
    setenv("LD_LIBRARY_PATH", ld_library_path.data(), 1);
+   if (lt_dlinit())
+   {
+      fprintf(stderr, "can't initialize dynamic loading: %s\n", lt_dlerror());
+   }
 }
 
 extern "C" {
