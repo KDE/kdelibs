@@ -78,8 +78,8 @@ body {
 /* Links in Navigation */
 
 .navLeft a:link, .navCenter :link, .navRight :link, .header a:link, .header a:visited, .bottom-nav a:link, .bottom-nav a:visited {
-  color: white;
-  background: #3E91EB none;
+  color: #41597A;
+  background: white none;
   font-weight: bold;
 }
 
