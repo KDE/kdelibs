@@ -68,3 +68,14 @@ int fcopy(const char *src, const char *dest)
 	return res;
 }
 
+KDEWIN32_EXPORT 
+void win32_slashify(char *path, int maxlen)
+{
+	int len = 0;
+	if (!path)
+		return;
+	for (; *path && len < maxlen ; path++)
+		if ( *path == '\\' )
+			*path = '/';
+}
+

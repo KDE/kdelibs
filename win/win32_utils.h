@@ -40,6 +40,12 @@ extern "C" {
 */
 KDEWIN32_EXPORT int fcopy(const char *src, const char *dest);
 
+/**
+ Converts all backslashes to slashes in @p path.
+ Converting is stopped on a null character or at @p maxlen character.
+*/
+KDEWIN32_EXPORT void win32_slashify(char *path, int maxlen);
+
 #ifdef  __cplusplus
 }
 
