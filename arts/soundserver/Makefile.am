@@ -84,6 +84,7 @@ wavplayobject_impl.cc: soundserver.h artsversion.h
 simplesoundserver_impl.cc: soundserver.h artsversion.h
 soundserver_impl.cc: soundserver.h artsversion.h
 soundserverv2_impl.cc: soundserver.h artsversion.h
+samplestorage_impl.cc: soundserver.h artsversion.h
 
 bd = `echo '$(bindir)' |sed -e "s,\\",,g"`
 
