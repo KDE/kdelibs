@@ -189,6 +189,11 @@ public:
    */
   void rename( const QString& _name );
 
+  /**
+   * To abort applying changes
+   */
+  void abortApplying();
+
 public slots:
   /**
    * Called when the user presses 'Ok'.
@@ -324,11 +329,9 @@ public:
   virtual ~KFilePropsPage();
 
   /**
-   * Applies all changes made.  'General' must be always the first
+   * Applies all changes made.  This page must be always the first
    * page in the dialog, since this function may rename the file which
-   * may confuse other applyChanges functions. When this page is the
-   * first one this means that this applyChanges function is the first
-   * one called.
+   * may confuse other applyChanges functions.
    */
   virtual void applyChanges();
 

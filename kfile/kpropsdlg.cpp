@@ -103,10 +103,12 @@ class KPropertiesDialog::KPropertiesDialogPrivate
 public:
   KPropertiesDialogPrivate()
   {
+    m_aborted = false;
   }
   ~KPropertiesDialogPrivate()
   {
   }
+  bool m_aborted;
 };
 
 KPropertiesDialog::KPropertiesDialog( KFileItem * item ) :
@@ -206,23 +208,28 @@ bool KPropertiesDialog::canDisplay( KFileItemList _items )
 void KPropertiesDialog::slotApply()
 {
   KPropsPage *page;
+  d->m_aborted = false;
   // Apply the changes in the _normal_ order of the tabs now
   // This is because in case of renaming a file, KFilePropsPage will call
   // KPropertiesDialog::rename, so other tab will be ok with whatever order
   // BUT for file copied from templates, we need to do the renaming first !
-  for ( page = m_pageList.first(); page != 0L; page = m_pageList.next() )
+  for ( page = m_pageList.first(); page != 0L && !d->m_aborted; page = m_pageList.next() )
     if ( page->isDirty() )
     {
       kdDebug( 1202 ) << "applying changes for " << page->className() << endl;
       page->applyChanges();
+      // applyChanges may change d->m_aborted.
     }
     else
       kdDebug( 1202 ) << "skipping page " << page->className() << endl;
 
-  if ( m_pageList.first()->isA("KFilePropsPage") )
+  if ( !d->m_aborted && m_pageList.first()->isA("KFilePropsPage") )
     static_cast<KFilePropsPage *>(m_pageList.first())->postApplyChanges();
 
-  emit applied();
+  if ( !d->m_aborted )
+    emit applied();
+  // else, well, partly applied and partly canceled...
+
   emit propertiesClosed();
 
   QTimer::singleShot( 0, this, SLOT( slotDeleteMyself() ) );
@@ -364,6 +371,11 @@ void KPropertiesDialog::rename( const QString& _name )
   updateUrl( newUrl );
 }
 
+void KPropertiesDialog::abortApplying()
+{
+  d->m_aborted = true;
+}
+
 class KPropsPage::KPropsPagePrivate
 {
 public:
@@ -429,6 +441,7 @@ bool KPropsPage::isDirty() const
 
 void KPropsPage::applyChanges()
 {
+  kdWarning(1202) << "applyChanges() not implemented in page !" << endl;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -460,7 +473,10 @@ KFilePropsPage::KFilePropsPage( KPropertiesDialog *_props )
   if ( filename.isEmpty() ) // no template
     filename = properties->kurl().filename();
   else
+  {
     m_bFromTemplate = true;
+    setDirty(); // to enforce that the copy happens
+  }
 
   // Make it human-readable (%2F => '/', ...)
   filename = KIO::decodeFileName( filename );
@@ -743,6 +759,7 @@ void KFilePropsPage::slotCopyFinished( KIO::Job * job )
     if ( job->error() )
     {
 	job->showErrorDialog( d->m_frame );
+        properties->abortApplying(); // Don't apply the changes to the wrong file !
 	return;
     }
   }
@@ -804,7 +821,6 @@ void KFilePropsPage::slotCopyFinished( KIO::Job * job )
 
 void KFilePropsPage::slotFileRenamed( KIO::Job *, const KURL &, const KURL & newUrl )
 {
-    kdDebug(1203) << "KFilePropsPage::slotFileRenamed " << newUrl.url() << endl;
     // This is called in case of an existing local file during the copy/move operation,
     // if the user chooses Rename.
     properties->updateUrl( newUrl );
