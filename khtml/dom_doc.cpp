@@ -248,11 +248,13 @@ DOMString DocumentType::name() const
 
 NamedNodeMap DocumentType::entities() const
 {
+    return NamedNodeMap();
     // ###
 }
 
 NamedNodeMap DocumentType::notations() const
 {
+    return NamedNodeMap();
     // ###
 }
 

@@ -77,7 +77,7 @@ public:
     NodeListImpl *getElementsByTagName ( const DOMString &tagname );
 
     // for KHTML
-    virtual DOMString requestImage(HTMLImageRequester *, DOMString ) {}
+    virtual DOMString requestImage(HTMLImageRequester *, DOMString ) { return DOMString(); }
 };
 
 class DocumentFragmentImpl : public NodeImpl

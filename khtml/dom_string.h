@@ -88,7 +88,7 @@ public:
     void truncate( unsigned int len );
 
     QChar *unicode() const;
-    const QString string() const;
+    QString string() const;
 
     int toInt() const;
     bool percentage(int &_percentage) const;

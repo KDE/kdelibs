@@ -159,7 +159,7 @@ public:
     virtual void pixmapChanged( QPixmap * );
        
 
-protected:
+public:
     /*
      * For each table element with a different width a ColInfo struct is
      * maintained. Consider for example the following table:
@@ -203,6 +203,7 @@ protected:
 	int 	percentage;
     };
 
+protected:
     // This function calculates the actual widths of the columns
     void calcColWidth();
 

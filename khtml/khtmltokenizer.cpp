@@ -1317,7 +1317,7 @@ HTMLTokenizer::~HTMLTokenizer()
 }
 
 
-inline void HTMLTokenizer::checkBuffer(int len)
+void HTMLTokenizer::checkBuffer(int len)
 {
 	// do we need to enlarge the buffer?
 	if ( (dest - buffer) > size-len )
