@@ -60,7 +60,7 @@ using namespace khtml;
 static const QChar commentStart [] = { '<','!','-','-', QChar::null };
 
 static const char scriptEnd [] = "</script";
-static const char listingEnd [] = "</listing";
+static const char xmpEnd [] = "</xmp";
 static const char styleEnd [] =  "</style";
 static const char textareaEnd [] = "</textarea";
 
@@ -167,7 +167,7 @@ void HTMLTokenizer::begin()
     pre = false;
     prePos = 0;
     plaintext = false;
-    listing = false;
+    xmp = false;
     processingInstruction = false;
     script = false;
     escaped = false;
@@ -268,13 +268,13 @@ void HTMLTokenizer::parseSpecial(DOMStringIt &src, bool begin)
 {
     assert( textarea || !Entity );
     assert( !tag );
-    assert( listing+textarea+style+script == 1 );
+    assert( xmp+textarea+style+script == 1 );
 
     if ( begin ) {
         if ( script )        { searchStopper = scriptEnd;   }
         else if ( style )    { searchStopper = styleEnd;    }
         else if ( textarea ) { searchStopper = textareaEnd; }
-        else if ( listing )  { searchStopper = listingEnd;  }
+        else if ( xmp )  { searchStopper = xmpEnd;  }
         searchStopperLen = strlen( searchStopper );
     }
     if ( comment ) parseComment( src );
@@ -298,9 +298,9 @@ void HTMLTokenizer::parseSpecial(DOMStringIt &src, bool begin)
                 processListing(DOMStringIt(scriptCode, scriptCodeSize));
                 if ( style )         { currToken.id = ID_STYLE + ID_CLOSE_TAG; }
                 else if ( textarea ) { currToken.id = ID_TEXTAREA + ID_CLOSE_TAG; }
-                else if ( listing )  { currToken.id = ID_LISTING + ID_CLOSE_TAG; }
+                else if ( xmp )  { currToken.id = ID_XMP + ID_CLOSE_TAG; }
                 processToken();
-                style = script = style = textarea = listing = false;
+                style = script = style = textarea = xmp = false;
                 scriptCodeSize = scriptCodeResync = 0;
             }
             return;
@@ -407,11 +407,11 @@ void HTMLTokenizer::parseComment(DOMStringIt &src)
     while ( src.length() ) {
         scriptCode[ scriptCodeSize++ ] = *src;
         if (src->unicode() == '>' &&
-            ( ( brokenComments && !( script || style || textarea || listing ) ) ||
+            ( ( brokenComments && !( script || style || textarea || xmp ) ) ||
               ( scriptCodeSize > 2 && scriptCode[scriptCodeSize-3] == '-' &&
                 scriptCode[scriptCodeSize-2] == '-' ) ) ) {
             ++src;
-            if ( !( script || listing || textarea || style) ) {
+            if ( !( script || xmp || textarea || style) ) {
 #ifdef COMMENTS_IN_DOM
                 checkScriptBuffer();
                 scriptCode[ scriptCodeSize ] = 0;
@@ -1071,9 +1071,9 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 if (beginTag)
                     parseSpecial(src, style = true);
                 break;
-            case ID_LISTING:
+            case ID_XMP:
                 if (beginTag)
-                    parseSpecial(src, listing = true);
+                    parseSpecial(src, xmp = true);
                 break;
             case ID_SELECT:
                 select = beginTag;
@@ -1181,7 +1181,7 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
             parseSpecial(src, false);
         else if (style)
             parseSpecial(src, false);
-        else if (listing)
+        else if (xmp)
             parseSpecial(src, false);
         else if (textarea)
             parseSpecial(src, false);
@@ -1416,7 +1416,7 @@ void HTMLTokenizer::finish()
         scriptCode[ scriptCodeSize + 1 ] = 0;
         int pos;
         QString food;
-        if ( script || style || textarea || listing ) {
+        if ( script || style || textarea || xmp ) {
             pos = QConstString( scriptCode, scriptCodeSize ).string().find( searchStopper, 0, false );
             if ( pos >= 0 )
                 food.setUnicode( scriptCode+pos, scriptCodeSize-pos ); // deep copy

@@ -103,7 +103,6 @@ const unsigned short DOM::tagPriority[] = {
     1, // ID_LEGEND
     3, // ID_LI
     0, // ID_LINK
-    1, // ID_LISTING
     1, // ID_MAP
     4, // ID_MENU
     0, // ID_META
@@ -144,6 +143,7 @@ const unsigned short DOM::tagPriority[] = {
     1, // ID_U
     4, // ID_UL
     1, // ID_VAR
+    1, // ID_XMP
     0, // ID_TEXT
 };
 
@@ -207,7 +207,6 @@ const tagStatus DOM::endTag[] = {
     REQUIRED,  // ID_LEGEND
     OPTIONAL,  // ID_LI
     FORBIDDEN, // ID_LINK
-    REQUIRED,  // ID_LISTING
     REQUIRED,  // ID_MAP
     REQUIRED,  // ID_MENU
     FORBIDDEN, // ID_META
@@ -248,6 +247,7 @@ const tagStatus DOM::endTag[] = {
     REQUIRED,  // ID_U
     REQUIRED,  // ID_UL
     REQUIRED,  // ID_VAR
+    REQUIRED,  // ID_XMP
     REQUIRED   // ID_TEXT
 };
 
@@ -368,7 +368,7 @@ static const ushort tag_list_1[] = {
     ID_BUTTON,
     ID_COMMENT,
     ID_LI,
-    ID_LISTING,
+    ID_XMP,
     ID__KONQBLOCK,
     ID_INS,
     ID_DEL,
@@ -408,7 +408,7 @@ static const ushort tag_list_3[] = {
     ID_ADDRESS,
     ID_COMMENT,
     ID_LI,
-    ID_LISTING,
+    ID_XMP,
     ID__KONQBLOCK,
     0
 };
@@ -482,7 +482,7 @@ static const ushort tag_list_4[] = {
     ID_BUTTON,
     ID_COMMENT,
     ID_LI,
-    ID_LISTING,
+    ID_XMP,
     0
 };
 

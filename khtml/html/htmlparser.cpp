@@ -242,7 +242,12 @@ void KHTMLParser::parseToken(Token *t)
 
     // if this tag is forbidden inside the current context, pop
     // blocks until we are allowed to add it...
-    while(forbiddenTag[t->id]) popOneBlock();
+    while(forbiddenTag[t->id]) {
+#ifdef PARSER_DEBUG
+        kdDebug( 6035 ) << "t->id: " << t->id << " is forbidden :-( " << endl;
+#endif
+        popOneBlock();
+    }
 
     if ( !insertNode(n) ) {
         // we couldn't insert the node...
@@ -846,6 +851,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
     case ID_P:
         n = new HTMLParagraphElementImpl(document);
         break;
+    case ID_XMP:
     case ID_PRE:
     case ID_PLAINTEXT:
         n = new HTMLPreElementImpl(document);
@@ -943,7 +949,6 @@ NodeImpl *KHTMLParser::getElement(Token* t)
 // block:
     case ID_ADDRESS:
     case ID_CENTER:
-    case ID_LISTING:
         n = new HTMLGenericElementImpl(document, t->id);
         break;
 // inline
