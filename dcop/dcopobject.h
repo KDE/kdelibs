@@ -43,6 +43,7 @@ public:        \
 private:
 
 #define k_dcop_signals public
+#define k_dcop_hidden public
 #define k_dcop public
 #define ASYNC void
 
