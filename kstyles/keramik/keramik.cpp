@@ -434,7 +434,8 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			bool sunken = on || down;
 
 			QString name = "pushbutton";
-			if ( sunken ) name.append( "-pressed" );
+			if ( w < 25 && h < 25 ) name += "-small";
+			if ( sunken ) name += ( "-pressed" );
 
 			p->fillRect( r, cg.background() );
 			Keramik::RectTilePainter( name ).draw(p, x, y, w, h );
@@ -1378,12 +1379,14 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 				{
 					int width = loader.pixmap( "scrollbar-hbar-slider1" ).width();
 					clip |= QRect( slider.x(), slider.y(), width, slider.height() ) & sliderClip;
+					width = loader.pixmap( "scrollbar-hbar-slider3" ).width();
 					clip |= QRect( slider.right() - width, slider.y(), width, slider.height() ) & sliderClip;
 				}
 				else
 				{
 					int height = loader.pixmap( "scrollbar-hbar-slider1" ).height();
 					clip |= QRect( slider.x(), slider.y(), slider.width(), height ) & sliderClip;
+					height = loader.pixmap( "scrollbar-hbar-slider3" ).height();
 					clip |= QRect( slider.x(), slider.bottom() - height, slider.width(), height ) & sliderClip;
 				}
 			}
