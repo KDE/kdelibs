@@ -216,6 +216,12 @@ int main(int argc, char **argv)
 
    KInstance k(&d);
 
+   // this program is in kdelibs so it uses kdelibs as catalogue
+   KLocale::setMainCatalogue("kdelibs");
+   // force generating of KLocale object. if not, the database will get
+   // be translated
+   KGlobal::locale();
+
    DCOPClient *dcopClient = new DCOPClient();
 
    if (dcopClient->registerAs(appName, false) != appName)

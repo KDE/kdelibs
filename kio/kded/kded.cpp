@@ -204,6 +204,9 @@ int main(int argc, char *argv[])
 
      KCmdLineArgs::addCmdLineOptions( options );
 
+     // this program is in kdelibs so it uses kdelibs as catalogue
+     KLocale::setMainCatalogue("kdelibs");
+
      // WABA: Make sure not to enable session management.
      putenv("SESSION_MANAGER=");
 
