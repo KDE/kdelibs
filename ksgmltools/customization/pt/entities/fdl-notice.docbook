@@ -1,12 +1,8 @@
-<para>Permission is granted to copy, distribute and/or modify this
-document under the terms of the GNU Free Documentation License,
-Version 1.1 or any later version published by the Free Software
-Foundation; with &FDLInvariantSections;, with &FDLFrontCoverText;, and
-with &FDLBackCoverText;.  A copy of the license is included in <xref linkend="gnu-fdl">.</para>
-<!--
-Local variables:
-mode: sgml
-sgml-general-insert-case: lower
-sgml-parent-document: ("index.docbook" "book" "bookinfo" "legalnotice" "para")
-End:
--->
+<para>
+É dada permissão para copiar, distribuir e/ou modificar este documento
+ao abrigo da GNU Free Documentation License, Versão 1.1 ou de uma versão
+mais recente publicada pela Free Software Foundation;
+com &FDLInvariantSections;, com &FDLFrontCoverText;, e
+com &FDLBackCoverText;.  Uma cópia desta licença está incluida em
+<xref linkend="gnu-fdl">.
+</para>
