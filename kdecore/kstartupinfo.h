@@ -102,16 +102,6 @@ class KStartupInfo
 	 * @obsolete
 	 */
         KStartupInfo( bool clean_on_cantdetect, QObject* parent = 0, const char* name = 0 );
-        /**
-         * This constructor allows disabling the usage of KWinModule, which is
-         * internally used for detecting new application windows. With KWinModule
-         * disabled, checkStartup() must be called in order to check newly
-         * mapped windows.
-	 *
-	 * @obsolete
-         */
-        KStartupInfo( bool clean_on_cantdetect, bool disable_kwinmodule,
-            QObject* parent, const char* name );
         virtual ~KStartupInfo();
 	/**
 	 * Sends given notification data about started application

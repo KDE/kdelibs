@@ -118,15 +118,6 @@ KStartupInfo::KStartupInfo( bool clean_on_cantdetect_P, QObject* parent_P, const
     init( clean_on_cantdetect_P ? CleanOnCantDetect : 0 );
     }
 
-KStartupInfo::KStartupInfo( bool clean_on_cantdetect_P, bool disable_kwinmodule_P,
-    QObject* parent_P, const char* name_P )
-    : QObject( parent_P, name_P ),
-        timeout( 60 ), d( NULL )
-    {
-    init( ( clean_on_cantdetect_P ? CleanOnCantDetect : 0 )
-	    | ( disable_kwinmodule_P ? DisableKWinModule : 0 ));
-    }
-
 void KStartupInfo::init( int flags_P )
     {
     // d == NULL means "disabled"
