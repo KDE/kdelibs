@@ -53,11 +53,10 @@ public:
     template<class T>
     operator T() {
 	T t;
+	dcopTypeInit(t);
 	if ( typeCheck( dcopTypeName(t), true ) ) {
 	    QDataStream reply( data, IO_ReadOnly );
 	    reply >> t;
-	} else {
-	    dcopTypeInit(t);
 	}
 	return t;
     }
