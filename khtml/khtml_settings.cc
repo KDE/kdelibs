@@ -21,32 +21,15 @@
 #include "khtmldefaults.h"
 #include <kglobalsettings.h>
 #include <kconfig.h>
-#include <ksimpleconfig.h>
 #include <kapp.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <kcharsets.h>
 
-#define KHTML_MAX_FONT_SIZES 15
-
-  static QValueList<int>
-kHTMLDefaultFontSizes(int off)
-{
-  const int defaultFontSizes[KHTML_MAX_FONT_SIZES] =
-  { -3, -2, -1, 0, 2, 4, 6, 10, 15, 20, 25, 30, 35, 40, 45 };
-
-  QValueList<int> l;
-
-  QFont f("helvetica");
-  f.setPixelSize(12);
-
-  int mid = f.pointSize();
-
-  for (int i = 0; i < KHTML_MAX_FONT_SIZES; i++)
-    l << off + mid + defaultFontSizes[i];
-
-  return l;
-}
+#define MAXFONTSIZES 15
+const int defaultSmallFontSizes[MAXFONTSIZES] = { 7, 8, 10, 12, 14, 18, 24, 28, 34, 40, 48, 56, 68, 82, 100 };
+const int defaultMediumFontSizes[MAXFONTSIZES] = { 8, 10, 12, 14, 18, 24, 28, 34, 40, 48, 56, 68, 82, 100, 120 };
+const int defaultLargeFontSizes[MAXFONTSIZES] = { 10, 14, 18, 24, 28, 34, 40, 48, 56, 68, 82, 100, 120, 150 };
 
 
 KHTMLSettings::KJavaScriptAdvice KHTMLSettings::strToAdvice(const QString& _str)
@@ -316,39 +299,13 @@ bool KHTMLSettings::isCSSEnabled( const QString& /*hostname*/ )
 void KHTMLSettings::resetFontSizes()
 {
   m_fontSizes.clear();
-
-  switch (m_fontSize) {
-
-    case 0: // small
-      m_fontSizes = kHTMLDefaultFontSizes(-2);
-      break;
-
-    case 1: // medium
-      m_fontSizes = kHTMLDefaultFontSizes(0);
-      break;
-
-    case 2: // large
-      m_fontSizes = kHTMLDefaultFontSizes(2);
-      break;
-
-    default: // custom
-
-      // Use the 'medium' set as defaults.
-      QValueList<int> defs(kHTMLDefaultFontSizes(0));
-
-      // XXX: Should be read from the config object we're passed in init() ?
-
-      KSimpleConfig * c = new KSimpleConfig("kdeglobals", true);
-      c->setGroup("CustomHTMLFontSizes");
-
-      for (int i = 0; i < KHTML_MAX_FONT_SIZES; i++)
-        m_fontSizes << c->readNumEntry("Size_" + QString::number(i), defs[i]);
-
-      delete c;
-      c = 0;
-
-      break;
-  }
+  for ( int i = 0; i < MAXFONTSIZES; i++ )
+        if( m_fontSize == 0 ) // small
+          m_fontSizes << defaultSmallFontSizes[ i ];
+        else if( m_fontSize == 2 ) // large
+          m_fontSizes << defaultLargeFontSizes[ i ];
+        else
+          m_fontSizes << defaultMediumFontSizes[ i ];
 }
 
 void KHTMLSettings::setFontSizes(const QValueList<int> &_newFontSizes )
