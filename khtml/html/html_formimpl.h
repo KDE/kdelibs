@@ -43,6 +43,7 @@ namespace khtml
     class RenderSelect;
     class RenderLineEdit;
     class RenderRadioButton;
+    class RenderFileButton;
 
     typedef QValueList<QCString> encodingList;
 }
@@ -214,6 +215,7 @@ class HTMLInputElementImpl : public HTMLGenericFormElementImpl
 {
     friend class khtml::RenderLineEdit;
     friend class khtml::RenderRadioButton;
+    friend class khtml::RenderFileButton;
 
 public:
     enum typeEnum {
@@ -252,9 +254,6 @@ public:
     void blur();
     void focus();
 
-    DOMString filename() const { return m_filename; }
-    void setFilename(DOMString _filename) { m_filename = _filename; }
-
     virtual bool maintainsState() { return true; }
     virtual QString state();
     virtual void restoreState(const QString &);
@@ -283,7 +282,6 @@ public:
 protected:
 
     DOMString m_value;
-    DOMString m_filename;
     int       xPos;
     short     m_maxLen;
     short     m_size;

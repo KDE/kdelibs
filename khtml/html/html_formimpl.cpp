@@ -255,11 +255,11 @@ QByteArray HTMLFormElementImpl::formData()
                     if (current->nodeType() == Node::ELEMENT_NODE && current->id() == ID_INPUT &&
                         static_cast<HTMLInputElementImpl*>(current)->inputType() == HTMLInputElementImpl::FILE)
                     {
-                        QString path = static_cast<HTMLInputElementImpl*>(current)->filename().string();
+                        QString path = static_cast<HTMLInputElementImpl*>(current)->value().string();
                         QString onlyfilename = path.mid(path.findRev('/')+1);
 
                         hstr += ("; filename=\"" + onlyfilename + "\"").ascii();
-                        if(!static_cast<HTMLInputElementImpl*>(current)->filename().isEmpty())
+                        if(!static_cast<HTMLInputElementImpl*>(current)->value().isEmpty())
                         {
                             hstr += "\r\nContent-Type: ";
                             KMimeType::Ptr ptr = KMimeType::findByURL(KURL(path));
@@ -774,7 +774,6 @@ HTMLInputElementImpl::HTMLInputElementImpl(DocumentPtr *doc, HTMLFormElementImpl
     m_clicked = false;
     m_checked = false;
 
-    m_filename = "";
     m_haveType = false;
     m_activeSubmit = false;
     m_autocomplete = true;
@@ -821,34 +820,23 @@ DOMString HTMLInputElementImpl::type() const
 QString HTMLInputElementImpl::state( )
 {
     switch (m_type) {
-    case TEXT:
-    case PASSWORD:
-        return m_value.string()+'.'; // Make sure the string is not empty!
     case CHECKBOX:
-        return QString::fromLatin1(m_checked ? "on" : "off");
     case RADIO:
         return QString::fromLatin1(m_checked ? "on" : "off");
-    case FILE:
-        return m_filename.string()+'.';
     default:
-        return QString::null;
+        return value().string()+'.'; // Make sure the string is not empty!
     }
 }
-
-
 
 void HTMLInputElementImpl::restoreState(const QString &state)
 {
     switch (m_type) {
-    case TEXT:
-    case PASSWORD:
-    case FILE:
-        setValue(DOMString(state.left(state.length()-1)));
-        break;
     case CHECKBOX:
     case RADIO:
         setChecked((state == QString::fromLatin1("on")));
+        break;
     default:
+        setValue(DOMString(state.left(state.length()-1)));
         break;
     }
 }
@@ -1128,12 +1116,12 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
 
             // if no filename at all is entered, return successful, however empty
             // null would be more logical but netscape posts an empty file. argh.
-            if(m_filename.isEmpty()) {
+            if(value().isEmpty()) {
                 encoding += dummy;
                 return true;
             }
 
-            KURL fileurl(m_filename.string());
+            KURL fileurl(value().string());
             KIO::UDSEntry filestat;
 
             if (!KIO::NetAccess::stat(fileurl, filestat)) {
@@ -1147,7 +1135,7 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
                 return false;
             }
 
-            if ( KIO::NetAccess::download(KURL(m_filename.string()), local) )
+            if ( KIO::NetAccess::download(KURL(value().string()), local) )
             {
                 QFile file(local);
                 if (file.open(IO_ReadOnly))
@@ -1191,19 +1179,17 @@ void HTMLInputElementImpl::setChecked(bool _checked)
 
     if (m_checked == _checked) return;
     m_checked = _checked;
-    setChanged(true);
+    setChanged();
 }
 
 
 DOMString HTMLInputElementImpl::value() const
 {
-    // Readonly support for type=file
-    if ( m_type == FILE )
-        return m_filename;
-
     if (m_type == CHECKBOX || m_type == RADIO) {
         if (m_value.isNull() && m_checked)
             return DOMString("on");
+        if (!m_checked)
+            return DOMString("");
     }
 
     if(m_value.isNull())
@@ -1215,20 +1201,12 @@ DOMString HTMLInputElementImpl::value() const
 void HTMLInputElementImpl::setValue(DOMString val)
 {
     switch (m_type) {
-    // keep this in sync with encoding()! It uses m_value for HIDDEN, TEXT and PASSWORD.
-    case HIDDEN:
-    case TEXT:
-    case PASSWORD:
-        m_value = (val.isNull() ? DOMString("") : val);
-        setChanged();
-        break;
     case FILE:
         // sorry, can't change this!
-        m_value = m_filename;
-        setChanged();
         break;
     default:
-        setAttribute(ATTR_VALUE,val);
+        m_value = (val.isNull() ? DOMString("") : val);
+        setChanged();
     }
 }
 

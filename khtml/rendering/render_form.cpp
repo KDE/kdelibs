@@ -568,8 +568,7 @@ void RenderFileButton::slotClicked()
 {
     QString file_name = KFileDialog::getOpenFileName(QString::null, QString::null, 0, i18n("Browse..."));
     if (!file_name.isNull()) {
-        // ### truncate if > maxLength
-        element()->setFilename(DOMString(file_name));
+        element()->m_value = DOMString(file_name);
         m_edit->setText(file_name);
     }
 }
@@ -577,7 +576,7 @@ void RenderFileButton::slotClicked()
 void RenderFileButton::updateFromElement()
 {
     m_edit->blockSignals(true);
-    m_edit->setText(element()->filename().string());
+    m_edit->setText(element()->value().string());
     m_edit->blockSignals(false);
     int ml = element()->maxLength();
     if ( ml < 0 || ml > 1024 )
@@ -596,7 +595,7 @@ void RenderFileButton::slotReturnPressed()
 
 void RenderFileButton::slotTextChanged(const QString &string)
 {
-    static_cast<HTMLInputElementImpl*>(element())->setFilename(DOMString(string));
+   element()->m_value = DOMString(string);
 }
 
 void RenderFileButton::select()
