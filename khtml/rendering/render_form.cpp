@@ -424,12 +424,12 @@ void RenderSubmitButton::calcMinMaxWidth()
     static_cast<QPushButton*>(m_widget)->setText(raw);
     static_cast<QPushButton*>(m_widget)->setFont(style()->font());
 
-    // this is 1:1 sizehint of QLineEdit/RenderLineEdit, to avoid
-    // that the button is a lot larger in height than a lineedit
+    // this is a QLineEdit/RenderLineEdit compatible sizehint
     QFontMetrics fm = fontMetrics( m_widget->font() );
     m_widget->constPolish();
-    int h = fm.height() + 8;
-    int w = fm.width( raw ) + 2*fm.width( ' ' );
+    QSize ts = fm.size( ShowPrefix, raw );
+    int h = ts.height() + 8;
+    int w = ts.width() + 2*fm.width( ' ' );
     if ( m_widget->style().guiStyle() == Qt::WindowsStyle && h < 26 )
         h = 22;
     QSize s = QSize( w + 8, h ).expandedTo( m_widget->minimumSizeHint()).expandedTo( QApplication::globalStrut() );
@@ -808,8 +808,11 @@ RenderSelect::RenderSelect(QScrollView *view, HTMLSelectElementImpl *element)
 
 void RenderSelect::calcMinMaxWidth()
 {
-    // ### FIXME
-    layout();
+    // ### ugly HACK FIXME!!!
+    if ( !layouted() )
+        layout();
+
+    setLayouted( false );
 
     RenderFormElement::calcMinMaxWidth();
 }
@@ -919,7 +922,6 @@ void RenderSelect::layout( )
             p = p->next();
         }
 
-        width += 2*w->frameWidth() + w->verticalScrollBar()->sizeHint().width();
         int size = m_size;
         // check if multiple and size was not given or invalid
         // Internet Exploder sets size to QMIN(number of elements, 4)
@@ -928,6 +930,9 @@ void RenderSelect::layout( )
         // so I did that ;-)
         if(size < 1)
             size = QMIN(static_cast<KListBox*>(m_widget)->count(), 10);
+
+        width += 2*w->frameWidth() + w->verticalScrollBar()->sizeHint().width();
+        height = size*height + 2*w->frameWidth();
 
         setIntrinsicWidth( width );
         setIntrinsicHeight( height );
@@ -944,6 +949,8 @@ void RenderSelect::layout( )
         setIntrinsicHeight( s.height() );
     }
 
+    /// uuh, ignore the following line..
+    setLayouted( false );
     RenderFormElement::layout();
 
     m_ignoreSelectEvents = false;
