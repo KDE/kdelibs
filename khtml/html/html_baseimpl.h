@@ -50,7 +50,6 @@ public:
     HTMLBodyElementImpl(DocumentPtr *doc);
     ~HTMLBodyElementImpl();
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
     virtual void parseAttribute(AttrImpl *);
@@ -79,7 +78,6 @@ public:
 
     ~HTMLFrameElementImpl();
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
     virtual void parseAttribute(AttrImpl *);
@@ -116,7 +114,6 @@ public:
 
     ~HTMLFrameSetElementImpl();
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
     virtual void parseAttribute(AttrImpl *);
@@ -162,7 +159,6 @@ public:
 
     ~HTMLHeadElementImpl();
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
 };
 
@@ -175,7 +171,6 @@ public:
 
     ~HTMLHtmlElementImpl();
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
     virtual void attach();
@@ -192,7 +187,6 @@ public:
 
     ~HTMLIFrameElementImpl();
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
     virtual void parseAttribute(AttrImpl *attr);

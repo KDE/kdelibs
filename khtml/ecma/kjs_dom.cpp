@@ -105,10 +105,9 @@ bool DOMNode::toBoolean(ExecState *) const
   previousSibling  DOMNode::PreviousSibling DontDelete|ReadOnly
   nextSibling	DOMNode::NextSibling	DontDelete|ReadOnly
   attributes	DOMNode::Attributes	DontDelete|ReadOnly
-#// new for DOM2 - not yet in khtml
-#namespaceURI	DOMNode::NamespaceURI	DontDelete|ReadOnly
-#prefix		DOMNode::Prefix		DontDelete
-#localName	DOMNode::LocalName	DontDelete|ReadOnly
+  namespaceURI	DOMNode::NamespaceURI	DontDelete|ReadOnly
+  prefix	DOMNode::Prefix		DontDelete
+  localName	DOMNode::LocalName	DontDelete|ReadOnly
   ownerDocument	DOMNode::OwnerDocument	DontDelete|ReadOnly
 #
   onabort	DOMNode::OnAbort		DontDelete
@@ -181,13 +180,12 @@ Value DOMNode::getValue(ExecState *exec, int token) const
     return getDOMNode(exec,node.nextSibling());
   case Attributes:
     return getDOMNamedNodeMap(exec,node.attributes());
-// new for DOM2 - not yet in khtml
-//  case NamespaceURI:
-//    return getString(node.namespaceURI());
-//  case Prefix:
-//    return getString(node.prefix());
-//  case LocalName:
-//    return getString(node.localName());
+  case NamespaceURI:
+    return getString(node.namespaceURI());
+  case Prefix:
+    return getString(node.prefix());
+  case LocalName:
+    return getString(node.localName());
   case OwnerDocument:
     return getDOMNode(exec,node.ownerDocument());
   case OnAbort:
@@ -288,9 +286,8 @@ void DOMNode::putValue(ExecState *exec, int token, const Value& value, int /*att
   case NodeValue:
     node.setNodeValue(value.toString(exec).string());
     break;
-  //case Prefix:
-   // new for DOM2 - not yet in khtml
-   //    node.setPrefix(v.toString().value().string());
+  case Prefix:
+    node.setPrefix(value.toString(exec).string());
     break;
   case OnAbort:
     setListener(exec,DOM::EventImpl::ABORT_EVENT,value);

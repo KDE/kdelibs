@@ -53,11 +53,6 @@ HTMLBaseElementImpl::~HTMLBaseElementImpl()
 {
 }
 
-const DOMString HTMLBaseElementImpl::nodeName() const
-{
-    return "BASE";
-}
-
 ushort HTMLBaseElementImpl::id() const
 {
     return ID_BASE;
@@ -105,11 +100,6 @@ HTMLLinkElementImpl::~HTMLLinkElementImpl()
 {
     if(m_sheet) m_sheet->deref();
     if(m_cachedSheet) m_cachedSheet->deref(this);
-}
-
-const DOMString HTMLLinkElementImpl::nodeName() const
-{
-    return "LINK";
 }
 
 ushort HTMLLinkElementImpl::id() const
@@ -227,11 +217,6 @@ HTMLMetaElementImpl::~HTMLMetaElementImpl()
 {
 }
 
-const DOMString HTMLMetaElementImpl::nodeName() const
-{
-    return "META";
-}
-
 ushort HTMLMetaElementImpl::id() const
 {
     return ID_META;
@@ -326,11 +311,6 @@ HTMLScriptElementImpl::~HTMLScriptElementImpl()
 {
 }
 
-const DOMString HTMLScriptElementImpl::nodeName() const
-{
-    return "SCRIPT";
-}
-
 ushort HTMLScriptElementImpl::id() const
 {
     return ID_SCRIPT;
@@ -346,11 +326,6 @@ HTMLStyleElementImpl::HTMLStyleElementImpl(DocumentPtr *doc) : HTMLElementImpl(d
 HTMLStyleElementImpl::~HTMLStyleElementImpl()
 {
     if(m_sheet) m_sheet->deref();
-}
-
-const DOMString HTMLStyleElementImpl::nodeName() const
-{
-    return "STYLE";
 }
 
 ushort HTMLStyleElementImpl::id() const
@@ -442,11 +417,6 @@ HTMLTitleElementImpl::HTMLTitleElementImpl(DocumentPtr *doc)
 
 HTMLTitleElementImpl::~HTMLTitleElementImpl()
 {
-}
-
-const DOMString HTMLTitleElementImpl::nodeName() const
-{
-    return "TITLE";
 }
 
 ushort HTMLTitleElementImpl::id() const

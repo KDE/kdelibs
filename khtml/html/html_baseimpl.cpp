@@ -61,11 +61,6 @@ HTMLBodyElementImpl::~HTMLBodyElementImpl()
     if(m_styleSheet) m_styleSheet->deref();
 }
 
-const DOMString HTMLBodyElementImpl::nodeName() const
-{
-    return "BODY";
-}
-
 ushort HTMLBodyElementImpl::id() const
 {
     return ID_BODY;
@@ -218,11 +213,6 @@ HTMLFrameElementImpl::~HTMLFrameElementImpl()
 {
 }
 
-const DOMString HTMLFrameElementImpl::nodeName() const
-{
-    return "FRAME";
-}
-
 ushort HTMLFrameElementImpl::id() const
 {
     return ID_FRAME;
@@ -369,11 +359,6 @@ HTMLFrameSetElementImpl::~HTMLFrameSetElementImpl()
 {
     delete m_rows;
     delete m_cols;
-}
-
-const DOMString HTMLFrameSetElementImpl::nodeName() const
-{
-    return "FRAMESET";
 }
 
 ushort HTMLFrameSetElementImpl::id() const
@@ -528,11 +513,6 @@ HTMLHeadElementImpl::~HTMLHeadElementImpl()
 {
 }
 
-const DOMString HTMLHeadElementImpl::nodeName() const
-{
-    return "HEAD";
-}
-
 ushort HTMLHeadElementImpl::id() const
 {
     return ID_HEAD;
@@ -566,11 +546,6 @@ HTMLHtmlElementImpl::~HTMLHtmlElementImpl()
 {
 }
 
-const DOMString HTMLHtmlElementImpl::nodeName() const
-{
-    return "HTML";
-}
-
 ushort HTMLHtmlElementImpl::id() const
 {
     return ID_HTML;
@@ -589,11 +564,6 @@ HTMLIFrameElementImpl::HTMLIFrameElementImpl(DocumentPtr *doc) : HTMLFrameElemen
 
 HTMLIFrameElementImpl::~HTMLIFrameElementImpl()
 {
-}
-
-const DOMString HTMLIFrameElementImpl::nodeName() const
-{
-    return "IFRAME";
 }
 
 ushort HTMLIFrameElementImpl::id() const

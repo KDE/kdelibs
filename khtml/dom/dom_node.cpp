@@ -429,7 +429,7 @@ void Node::normalize (  )
     if (!impl)
 	throw DOMException(DOMException::NOT_FOUND_ERR);
 
-    int exceptioncode;
+    int exceptioncode = 0;
     impl->normalize(exceptioncode);
     if (exceptioncode)
 	throw DOMException(exceptioncode);
@@ -441,7 +441,7 @@ bool Node::isSupported( const DOMString &feature,
     if (!impl)
 	throw DOMException(DOMException::NOT_FOUND_ERR);
 
-    int exceptioncode;
+    int exceptioncode = 0;
     bool r = impl->isSupported(feature,version,exceptioncode);
     if (exceptioncode)
 	throw DOMException(exceptioncode);
@@ -469,7 +469,7 @@ void Node::setPrefix(const DOMString &prefix )
     if (!impl)
 	throw DOMException(DOMException::NOT_FOUND_ERR);
 
-    int exceptioncode;
+    int exceptioncode = 0;
     impl->setPrefix(prefix,exceptioncode);
     if (exceptioncode)
 	throw DOMException(exceptioncode);

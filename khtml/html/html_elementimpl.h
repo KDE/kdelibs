@@ -40,7 +40,7 @@ public:
 
     virtual bool isHTMLElement() const { return true; }
 
-    // make it pure virtual...
+    DOMString tagName() const;
     virtual ushort id() const = 0;
 
     virtual void parseAttribute(AttrImpl *token);
@@ -73,7 +73,6 @@ public:
 
     virtual ~HTMLGenericElementImpl();
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const { return _id; };
 
 protected:

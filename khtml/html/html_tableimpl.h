@@ -72,7 +72,6 @@ public:
     HTMLTableElementImpl(DocumentPtr *doc);
     ~HTMLTableElementImpl();
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
     HTMLTableCaptionElementImpl *caption() const { return tCaption; }
@@ -139,7 +138,6 @@ public:
 
     ~HTMLTableSectionElementImpl();
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
     HTMLElementImpl *insertRow ( long index );
@@ -161,7 +159,6 @@ public:
 
     ~HTMLTableRowElementImpl();
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
     long rowIndex() const;
@@ -183,7 +180,6 @@ public:
 
     ~HTMLTableCellElementImpl();
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const { return _id; }
 
     // ### FIX these two...
@@ -217,7 +213,6 @@ public:
 
     ~HTMLTableColElementImpl();
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
     void setTable(HTMLTableElementImpl *t) { table = t; }
@@ -245,7 +240,6 @@ public:
 
     ~HTMLTableCaptionElementImpl();
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
     virtual void parseAttribute(AttrImpl *attr);

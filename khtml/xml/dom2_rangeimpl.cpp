@@ -70,7 +70,7 @@ RangeImpl::RangeImpl(DocumentPtr *_ownerDocument,
 RangeImpl::~RangeImpl()
 {
     m_ownerDocument->deref();
-    int exceptioncode;
+    int exceptioncode = 0;
     if (!m_detached)
         detach(exceptioncode);
 }

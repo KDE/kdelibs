@@ -69,8 +69,8 @@ public:
 
     QList<khtml::Length> *toLengthList() const;
     bool isLower() const;
-    DOMStringImpl *lower();
-    DOMStringImpl *upper();
+    DOMStringImpl *lower() const;
+    DOMStringImpl *upper() const;
     DOMStringImpl *capitalize();
 
     unsigned int l;

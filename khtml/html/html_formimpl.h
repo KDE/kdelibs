@@ -59,7 +59,6 @@ public:
     HTMLFormElementImpl(DocumentPtr *doc);
     virtual ~HTMLFormElementImpl();
 
-    virtual const DOMString nodeName() const { return "FORM"; }
     virtual ushort id() const;
 
     long length() const;
@@ -193,7 +192,6 @@ public:
         BUTTON
     };
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
     DOMString type() const;
@@ -225,7 +223,6 @@ public:
 
     virtual ~HTMLFieldSetElementImpl();
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
 };
 
@@ -254,7 +251,6 @@ public:
     HTMLInputElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f);
     virtual ~HTMLInputElementImpl();
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
     virtual bool isEnumeratable() const { return inputType() != IMAGE; }
@@ -328,7 +324,6 @@ public:
     HTMLLabelElementImpl(DocumentPtr *doc);
     virtual ~HTMLLabelElementImpl();
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
     virtual void parseAttribute(AttrImpl *attr);
@@ -350,7 +345,6 @@ public:
     HTMLLegendElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f);
     virtual ~HTMLLegendElementImpl();
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
 };
 
@@ -363,7 +357,6 @@ public:
     HTMLSelectElementImpl(DocumentPtr *doc);
     HTMLSelectElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f);
 
-    virtual const DOMString nodeName() const { return "SELECT"; }
     virtual ushort id() const;
 
     DOMString type() const;
@@ -426,7 +419,6 @@ public:
     HTMLOptGroupElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f);
     virtual ~HTMLOptGroupElementImpl();
 
-    virtual const DOMString nodeName() const { return "OPTGROUP"; }
     virtual ushort id() const;
 
     virtual NodeImpl *insertBefore ( NodeImpl *newChild, NodeImpl *refChild, int &exceptioncode );
@@ -451,7 +443,6 @@ public:
     HTMLOptionElementImpl(DocumentPtr *doc);
     HTMLOptionElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f);
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
     DOMString text() const;
@@ -490,7 +481,6 @@ public:
     HTMLTextAreaElementImpl(DocumentPtr *doc);
     HTMLTextAreaElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f);
 
-    virtual const DOMString nodeName() const { return "TEXTAREA"; }
     virtual ushort id() const;
 
     long cols() const { return m_cols; }
@@ -536,7 +526,6 @@ public:
 
     ~HTMLIsIndexElementImpl();
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
     virtual void parseAttribute(AttrImpl *attr);

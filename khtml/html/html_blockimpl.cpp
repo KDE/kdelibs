@@ -45,11 +45,6 @@ HTMLBlockquoteElementImpl::~HTMLBlockquoteElementImpl()
 {
 }
 
-const DOMString HTMLBlockquoteElementImpl::nodeName() const
-{
-    return "BLOCKQUOTE";
-}
-
 ushort HTMLBlockquoteElementImpl::id() const
 {
     return ID_BLOCKQUOTE;
@@ -69,11 +64,6 @@ HTMLDivElementImpl::HTMLDivElementImpl(DocumentPtr *doc)
 
 HTMLDivElementImpl::~HTMLDivElementImpl()
 {
-}
-
-const DOMString HTMLDivElementImpl::nodeName() const
-{
-    return "DIV";
 }
 
 ushort HTMLDivElementImpl::id() const
@@ -107,11 +97,6 @@ HTMLHRElementImpl::HTMLHRElementImpl(DocumentPtr *doc)
 
 HTMLHRElementImpl::~HTMLHRElementImpl()
 {
-}
-
-const DOMString HTMLHRElementImpl::nodeName() const
-{
-    return "HR";
 }
 
 ushort HTMLHRElementImpl::id() const
@@ -196,12 +181,6 @@ HTMLHeadingElementImpl::~HTMLHeadingElementImpl()
 {
 }
 
-const DOMString HTMLHeadingElementImpl::nodeName() const
-{
-    return getTagName(_id);
-}
-
-
 ushort HTMLHeadingElementImpl::id() const
 {
     return _id;
@@ -218,11 +197,6 @@ HTMLParagraphElementImpl::~HTMLParagraphElementImpl()
 {
 }
 
-const DOMString HTMLParagraphElementImpl::nodeName() const
-{
-    return "P";
-}
-
 ushort HTMLParagraphElementImpl::id() const
 {
     return ID_P;
@@ -237,11 +211,6 @@ HTMLPreElementImpl::HTMLPreElementImpl(DocumentPtr *doc)
 
 HTMLPreElementImpl::~HTMLPreElementImpl()
 {
-}
-
-const DOMString HTMLPreElementImpl::nodeName() const
-{
-    return "PRE";
 }
 
 ushort HTMLPreElementImpl::id() const
@@ -271,11 +240,6 @@ HTMLLayerElementImpl::HTMLLayerElementImpl(DocumentPtr *doc)
 
 HTMLLayerElementImpl::~HTMLLayerElementImpl()
 {
-}
-
-const DOMString HTMLLayerElementImpl::nodeName() const
-{
-    return "LAYER";
 }
 
 ushort HTMLLayerElementImpl::id() const

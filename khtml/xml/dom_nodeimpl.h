@@ -314,6 +314,8 @@ public:
     virtual khtml::RenderObject *nextRenderer();
 
     static bool validAttrName(const DOMString &/*name*/) { return true; }
+    static bool validPrefix(const DOMString &/*prefix*/) { return true; }
+    static bool malformedPrefix(const DOMString &/*prefix*/) { return false; }
 
     virtual void dump(QTextStream *stream, QString ind = "") const;
 

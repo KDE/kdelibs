@@ -1419,7 +1419,7 @@ void DocumentImpl::setFocusNode(ElementImpl *n)
             if (m_focusNode->active()) m_focusNode->setActive(false);
             m_focusNode->setFocus(false);
 
-	    int exceptioncode;
+	    int exceptioncode = 0;
 
 	    UIEventImpl *ue = new UIEventImpl(EventImpl::DOMFOCUSOUT_EVENT,
 	                                      true,false,defaultView(),
@@ -1433,7 +1433,7 @@ void DocumentImpl::setFocusNode(ElementImpl *n)
         //kdDebug(6020)<<"DOM::DocumentImpl::setFocusNode("<<n<<")"<<endl;
         if (n)
 	{
-	    int exceptioncode;
+	    int exceptioncode = 0;
 
 	    UIEventImpl *ue = new UIEventImpl(EventImpl::DOMFOCUSIN_EVENT,
 	                                      true,false,defaultView(),

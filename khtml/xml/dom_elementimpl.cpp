@@ -140,6 +140,17 @@ DOMString AttrImpl::namespaceURI() const
     return _namespaceURI;
 }
 
+DOMString AttrImpl::prefix() const
+{
+    // ### implement
+    return DOMString();
+}
+
+void AttrImpl::setPrefix(const DOMString &/*_prefix*/, int &/*exceptioncode*/ )
+{
+    // ### implement
+}
+
 Element AttrImpl::ownerElement() const
 {
     return _element;
@@ -147,8 +158,14 @@ Element AttrImpl::ownerElement() const
 
 DOMString AttrImpl::name() const
 {
-    if(attrId)
-        return getAttrName(attrId);
+    if(attrId) {
+        // For XML documents, XHTML attribute names are all lowercase. For HTML documents,
+        // attribute names are case-insensitive but are stored using their uppercase form
+        if (ownerDocument()->isHTMLDocument())
+            return getAttrName(attrId);
+        else
+            return getAttrName(attrId).lower();
+    }
     else if (_name)
         return _name;
     else
@@ -192,7 +209,7 @@ void AttrImpl::setValue( const DOMString &v )
         _element->parseAttribute(this);
         _element->setChanged(true);
 	if (getDocument()->hasListenerType(DocumentImpl::DOMATTRMODIFIED_LISTENER)) {
-	    int exceptioncode;
+	    int exceptioncode = 0;
 	    _element->dispatchEvent(new MutationEventImpl(EventImpl::DOMATTRMODIFIED_EVENT,true,false,this,prevValue,
 				    _value,_name,MutationEvent::MODIFICATION),exceptioncode);
 	}
@@ -285,6 +302,7 @@ ElementImpl::ElementImpl(DocumentPtr *doc) : NodeBaseImpl(doc)
 {
     namedAttrMap = 0;
     m_styleDecls = 0;
+    m_prefix = 0;
 }
 
 ElementImpl::~ElementImpl()
@@ -302,11 +320,9 @@ ElementImpl::~ElementImpl()
         m_styleDecls->setParent(0);
         m_styleDecls->deref();
     }
-}
 
-DOMString ElementImpl::tagName() const
-{
-    return nodeName();
+    if (m_prefix)
+        m_prefix->deref();
 }
 
 DOMString ElementImpl::getAttribute( const DOMString &name, int &exceptioncode ) const
@@ -472,13 +488,13 @@ bool ElementImpl::hasAttributeNS( const DOMString &/*namespaceURI*/, const DOMSt
 
 DOMString ElementImpl::getAttribute ( const DOMString &name ) const
 {
-    int exceptioncode;
+    int exceptioncode = 0;
     return getAttribute(name,exceptioncode);
 }
 
 void ElementImpl::setAttribute ( const DOMString &name, const DOMString &value)
 {
-    int exceptioncode;
+    int exceptioncode = 0;
     setAttribute(name,value,exceptioncode);
 }
 
@@ -524,7 +540,7 @@ void ElementImpl::setAttribute( int id, const DOMString &value )
     if (value.isNull())
         namedAttrMap->removeIdItem(id);
     else {
-        int exceptioncode;
+        int exceptioncode = 0;
         AttrImpl* a = static_cast<AttrImpl*>(namedAttrMap->getIdItem(id));
         if(a)
             a->setValue(value);
@@ -569,6 +585,54 @@ NodeImpl *ElementImpl::cloneNode ( bool deep, int &exceptioncode )
     if (deep)
         cloneChildNodes(newImpl,exceptioncode);
     return newImpl;
+}
+
+const DOMString ElementImpl::nodeName() const
+{
+    if (m_prefix)
+        return DOMString(m_prefix)+":"+tagName();
+    else
+        return tagName();
+}
+
+DOMString ElementImpl::prefix() const
+{
+    return m_prefix;
+}
+
+void ElementImpl::setPrefix(const DOMString &_prefix, int &exceptioncode )
+{
+    // INVALID_CHARACTER_ERR: Raised if the specified prefix contains an illegal character.
+    if (!validPrefix(_prefix)) {
+        exceptioncode = DOMException::INVALID_CHARACTER_ERR;
+        return;
+    }
+
+    // NO_MODIFICATION_ALLOWED_ERR: Raised if this node is readonly.
+    if (isReadOnly()) {
+        exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+        return;
+    }
+
+    // NAMESPACE_ERR: - Raised if the specified prefix is malformed
+    // - if the namespaceURI of this node is null,
+    // - if the specified prefix is "xml" and the namespaceURI of this node is different from
+    //   "http://www.w3.org/XML/1998/namespace",
+    // - if this node is an attribute and the specified prefix is "xmlns" and
+    //   the namespaceURI of this node is different from "http://www.w3.org/2000/xmlns/",
+    // - or if this node is an attribute and the qualifiedName of this node is "xmlns" [Namespaces].
+    if (malformedPrefix(_prefix) ||
+        namespaceURI().isNull() ||
+        (_prefix == "xml" && namespaceURI() != "http://www.w3.org/XML/1998/namespace")) {
+        exceptioncode = DOMException::NAMESPACE_ERR;
+        return;
+    }
+
+    if (m_prefix)
+        m_prefix->deref();
+    m_prefix = _prefix.implementation();
+    if (m_prefix)
+        m_prefix->ref();
 }
 
 NamedNodeMapImpl *ElementImpl::attributes()
@@ -815,7 +879,7 @@ void ElementImpl::dispatchAttrRemovalEvent(NodeImpl *attr)
 {
     if (!getDocument()->hasListenerType(DocumentImpl::DOMATTRMODIFIED_LISTENER))
 	return;
-    int exceptioncode;
+    int exceptioncode = 0;
     AttrImpl *att = static_cast<AttrImpl*>(attr);
     dispatchEvent(new MutationEventImpl(EventImpl::DOMATTRMODIFIED_EVENT,true,false,attr,att->value(),
 		  att->value(),att->name(),MutationEvent::REMOVAL),exceptioncode);
@@ -825,7 +889,7 @@ void ElementImpl::dispatchAttrAdditionEvent(NodeImpl *attr)
 {
     if (!getDocument()->hasListenerType(DocumentImpl::DOMATTRMODIFIED_LISTENER))
 	return;
-    int exceptioncode;
+    int exceptioncode = 0;
     AttrImpl *att = static_cast<AttrImpl*>(attr);
     dispatchEvent(new MutationEventImpl(EventImpl::DOMATTRMODIFIED_EVENT,true,false,attr,att->value(),
 		  att->value(),att->name(),MutationEvent::ADDITION),exceptioncode);
@@ -846,37 +910,88 @@ void ElementImpl::dump(QTextStream *stream, QString ind) const
 
 // -------------------------------------------------------------------------
 
-XMLElementImpl::XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_name) : ElementImpl(doc)
+XMLElementImpl::XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_tagName) : ElementImpl(doc)
 {
-    m_name = _name;
-    if (m_name)
-        m_name->ref();
+    m_tagName = _tagName;
+    if (m_tagName)
+        m_tagName->ref();
+    // nodeName == tagName
+    m_localName = 0;
+    m_prefix = 0;
     m_namespaceURI = 0;
-    m_id = ownerDocument()->elementId(_name);
+
+    m_id = ownerDocument()->elementId(_tagName);
 }
 
-XMLElementImpl::XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_name, DOMStringImpl *_namespaceURI) : ElementImpl(doc)
+XMLElementImpl::XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_qualifiedName, DOMStringImpl *_namespaceURI) : ElementImpl(doc)
 {
-    m_name = _name;
-    if (m_name)
-        m_name->ref();
+    int colonpos = -1;
+    uint i;
+    for (i = 0; i < _qualifiedName->l && colonpos < 0; i++) {
+        if ((*_qualifiedName)[i] == ':')
+            colonpos = i;
+    }
+
+    // nodeName == qualifiedName == tagName
+    m_tagName = _qualifiedName;
+    m_tagName->ref();
     m_namespaceURI = _namespaceURI;
     if (m_namespaceURI)
         m_namespaceURI->ref();
-    m_id = ownerDocument()->elementId(_name);
+    if (colonpos >= 0) {
+        // we have a prefix
+        m_localName = _qualifiedName->copy();
+        m_localName->ref();
+        m_localName->remove(0,colonpos+1);
+        m_prefix = _qualifiedName->copy();
+        m_prefix->ref();
+        m_prefix->truncate(colonpos);
+    }
+    else {
+        // no prefix
+        m_localName = _qualifiedName;
+        m_localName->ref();
+        m_prefix = 0;
+    }
+
+    // m_id for XMLElementImpl is only used for CSS calculations. Currently with CSS there is
+    // no way to specify namespaces or prefixes, it it is based only on the node name
+    m_id = ownerDocument()->elementId(m_localName);
 }
 
 XMLElementImpl::~XMLElementImpl()
 {
-    if (m_name)
-        m_name->deref();
     if (m_namespaceURI)
         m_namespaceURI->deref();
+    if (m_tagName)
+        m_tagName->deref();
+    if (m_localName)
+        m_localName->deref();
+}
+
+DOMString XMLElementImpl::tagName() const
+{
+    return m_tagName;
 }
 
 const DOMString XMLElementImpl::nodeName() const
 {
-    return m_name;
+    if (m_localName) {
+        // we were created with createElementNS... m_tagName is the qualified name
+        // and possibly includes a colon
+        if (m_prefix)
+            return DOMString(m_prefix)+":"+DOMString(m_localName);
+        else
+            return m_localName;
+    }
+    else {
+        // we were created with createElement... m_tagName does not include a colon
+        // and we have no m_localName set
+        if (m_prefix)
+            return DOMString(m_prefix)+":"+DOMString(m_tagName);
+        else
+            return m_tagName;
+    }
 }
 
 DOMString XMLElementImpl::namespaceURI() const
@@ -884,6 +999,10 @@ DOMString XMLElementImpl::namespaceURI() const
     return m_namespaceURI;
 }
 
+DOMString XMLElementImpl::localName() const
+{
+    return m_localName;
+}
 
 bool XMLElementImpl::isXMLElementNode() const
 {
@@ -917,7 +1036,7 @@ NamedAttrMapImpl &NamedAttrMapImpl::operator =(const NamedAttrMapImpl &other)
     // first initialize attrs vector, then call parseAttribute on it
     // this allows parseAttribute to use getAttribute
     for (i = 0; i < len; i++) {
-        int exceptioncode; // ### propogate
+        int exceptioncode = 0; // ### propogate
         attrs[i] = static_cast<AttrImpl*>(other.attrs[i]->cloneNode(true,exceptioncode));
         attrs[i]->_element = element;
         attrs[i]->ref();
@@ -985,7 +1104,7 @@ NodeImpl *NamedAttrMapImpl::removeNamedItemNS( const DOMString &namespaceURI,
 
 AttrImpl *NamedAttrMapImpl::getIdItem ( int id ) const
 {
-    int exceptioncode; // will be ignored
+    int exceptioncode = 0; // will be ignored
     DOMString nullstr;
     return getItem(id,nullstr,nullstr,ID_COMPARE,exceptioncode);
 }
@@ -999,7 +1118,7 @@ Attr NamedAttrMapImpl::setIdItem ( AttrImpl *attr, int &exceptioncode )
 
 Attr NamedAttrMapImpl::removeIdItem ( int id )
 {
-    int exceptioncode; // will be ignored
+    int exceptioncode = 0; // will be ignored
     DOMString nullstr;
     return removeItem(id,nullstr,nullstr,ID_COMPARE,exceptioncode);
 }

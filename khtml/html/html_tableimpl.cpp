@@ -75,11 +75,6 @@ HTMLTableElementImpl::~HTMLTableElementImpl()
 {
 }
 
-const DOMString HTMLTableElementImpl::nodeName() const
-{
-    return "TABLE";
-}
-
 ushort HTMLTableElementImpl::id() const
 {
     return ID_TABLE;
@@ -87,7 +82,7 @@ ushort HTMLTableElementImpl::id() const
 
 NodeImpl* HTMLTableElementImpl::setCaption( HTMLTableCaptionElementImpl *c )
 {
-    int exceptioncode;
+    int exceptioncode = 0;
     NodeImpl* r;
     if(tCaption) {
         replaceChild ( c, tCaption, exceptioncode );
@@ -101,7 +96,7 @@ NodeImpl* HTMLTableElementImpl::setCaption( HTMLTableCaptionElementImpl *c )
 
 NodeImpl* HTMLTableElementImpl::setTHead( HTMLTableSectionElementImpl *s )
 {
-    int exceptioncode;
+    int exceptioncode = 0;
     NodeImpl* r;
     if(head) {
         replaceChild( s, head, exceptioncode );
@@ -120,7 +115,7 @@ NodeImpl* HTMLTableElementImpl::setTHead( HTMLTableSectionElementImpl *s )
 
 NodeImpl* HTMLTableElementImpl::setTFoot( HTMLTableSectionElementImpl *s )
 {
-    int exceptioncode;
+    int exceptioncode = 0;
     NodeImpl* r;
     if(foot) {
         replaceChild ( s, foot, exceptioncode );
@@ -136,7 +131,7 @@ NodeImpl* HTMLTableElementImpl::setTFoot( HTMLTableSectionElementImpl *s )
 
 NodeImpl* HTMLTableElementImpl::setTBody( HTMLTableSectionElementImpl *s )
 {
-    int exceptioncode;
+    int exceptioncode = 0;
     NodeImpl* r;
 
     if(!firstBody)
@@ -154,7 +149,7 @@ HTMLElementImpl *HTMLTableElementImpl::createTHead(  )
 {
     if(!head)
     {
-        int exceptioncode;
+        int exceptioncode = 0;
         head = new HTMLTableSectionElementImpl(docPtr(), ID_THEAD);
         if(foot)
             insertBefore( head, foot, exceptioncode );
@@ -169,7 +164,7 @@ HTMLElementImpl *HTMLTableElementImpl::createTHead(  )
 void HTMLTableElementImpl::deleteTHead(  )
 {
     if(head) {
-        int exceptioncode;
+        int exceptioncode = 0;
         HTMLElementImpl::removeChild(head, exceptioncode);
     }
     head = 0;
@@ -179,7 +174,7 @@ HTMLElementImpl *HTMLTableElementImpl::createTFoot(  )
 {
     if(!foot)
     {
-        int exceptioncode;
+        int exceptioncode = 0;
         foot = new HTMLTableSectionElementImpl(docPtr(), ID_TFOOT);
         if(firstBody)
             insertBefore( foot, firstBody, exceptioncode );
@@ -192,7 +187,7 @@ HTMLElementImpl *HTMLTableElementImpl::createTFoot(  )
 void HTMLTableElementImpl::deleteTFoot(  )
 {
     if(foot) {
-        int exceptioncode;
+        int exceptioncode = 0;
         HTMLElementImpl::removeChild(foot, exceptioncode);
     }
     foot = 0;
@@ -202,7 +197,7 @@ HTMLElementImpl *HTMLTableElementImpl::createCaption(  )
 {
     if(!tCaption)
     {
-        int exceptioncode;
+        int exceptioncode = 0;
         tCaption = new HTMLTableCaptionElementImpl(docPtr());
         insertBefore( tCaption, firstChild(), exceptioncode );
     }
@@ -212,7 +207,7 @@ HTMLElementImpl *HTMLTableElementImpl::createCaption(  )
 void HTMLTableElementImpl::deleteCaption(  )
 {
     if(tCaption) {
-        int exceptioncode;
+        int exceptioncode = 0;
         HTMLElementImpl::removeChild(tCaption, exceptioncode);
     }
     tCaption = 0;
@@ -488,11 +483,6 @@ HTMLTableSectionElementImpl::~HTMLTableSectionElementImpl()
     nrows = 0;
 }
 
-const DOMString HTMLTableSectionElementImpl::nodeName() const
-{
-    return getTagName(_id);
-}
-
 ushort HTMLTableSectionElementImpl::id() const
 {
     return _id;
@@ -508,7 +498,7 @@ HTMLElementImpl *HTMLTableSectionElementImpl::insertRow( long index )
     HTMLTableRowElementImpl *r = new HTMLTableRowElementImpl(docPtr());
 
     NodeListImpl *children = childNodes();
-    int exceptioncode;
+    int exceptioncode = 0;
     if(!children || (int)children->length() <= index)
         appendChild(r, exceptioncode);
     else {
@@ -530,7 +520,7 @@ void HTMLTableSectionElementImpl::deleteRow( long index )
     if(children && (int)children->length() > index)
     {
         nrows--;
-        int exceptioncode;
+        int exceptioncode = 0;
         HTMLElementImpl::removeChild(children->item(index), exceptioncode);
     }
     if(children) delete children;
@@ -545,11 +535,6 @@ HTMLTableRowElementImpl::HTMLTableRowElementImpl(DocumentPtr *doc)
 
 HTMLTableRowElementImpl::~HTMLTableRowElementImpl()
 {
-}
-
-const DOMString HTMLTableRowElementImpl::nodeName() const
-{
-    return "TR";
 }
 
 ushort HTMLTableRowElementImpl::id() const
@@ -600,7 +585,7 @@ HTMLElementImpl *HTMLTableRowElementImpl::insertCell( long index )
     HTMLTableCellElementImpl *c = new HTMLTableCellElementImpl(docPtr(), ID_TD);
 
     NodeListImpl *children = childNodes();
-    int exceptioncode;
+    int exceptioncode = 0;
     if(!children || (int)children->length() <= index)
         appendChild(c, exceptioncode);
     else {
@@ -620,7 +605,7 @@ void HTMLTableRowElementImpl::deleteCell( long index )
     if(index < 0) return;
     NodeListImpl *children = childNodes();
     if(children && (int)children->length() > index) {
-        int exceptioncode;
+        int exceptioncode = 0;
         HTMLElementImpl::removeChild(children->item(index), exceptioncode);
     }
     if(children) delete children;
@@ -641,11 +626,6 @@ HTMLTableCellElementImpl::HTMLTableCellElementImpl(DocumentPtr *doc, int tag)
 
 HTMLTableCellElementImpl::~HTMLTableCellElementImpl()
 {
-}
-
-const DOMString HTMLTableCellElementImpl::nodeName() const
-{
-    return getTagName(_id);
 }
 
 void HTMLTableCellElementImpl::parseAttribute(AttrImpl *attr)
@@ -738,11 +718,6 @@ HTMLTableColElementImpl::~HTMLTableColElementImpl()
 {
 }
 
-const DOMString HTMLTableColElementImpl::nodeName() const
-{
-    return getTagName(_id);
-}
-
 ushort HTMLTableColElementImpl::id() const
 {
     return _id;
@@ -806,11 +781,6 @@ HTMLTableCaptionElementImpl::HTMLTableCaptionElementImpl(DocumentPtr *doc)
 
 HTMLTableCaptionElementImpl::~HTMLTableCaptionElementImpl()
 {
-}
-
-const DOMString HTMLTableCaptionElementImpl::nodeName() const
-{
-    return "CAPTION";
 }
 
 ushort HTMLTableCaptionElementImpl::id() const

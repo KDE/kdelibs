@@ -384,7 +384,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 NamedAttrMapImpl *map = static_cast<NamedAttrMapImpl*>(n->attributes());
                 NamedAttrMapImpl *bodymap = static_cast<NamedAttrMapImpl*>(doc()->body()->attributes());
                 unsigned long attrNo;
-                int exceptioncode;
+                int exceptioncode = 0;
                 bool changed = false;
                 for (attrNo = 0; map && attrNo < map->length(); attrNo++)
                     if(!bodymap->getNamedItem(static_cast<AttrImpl*>(map->item(attrNo))->name(),exceptioncode)) {

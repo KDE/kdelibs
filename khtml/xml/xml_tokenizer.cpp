@@ -81,14 +81,11 @@ bool XMLHandler::startElement( const QString& namespaceURI, const QString& /*loc
         exitText();
 
     ElementImpl *newElement;
-    if (namespaceURI.isNull())
-        newElement = m_doc->document()->createElement(qName);
-    else
-        newElement = m_doc->document()->createElementNS(namespaceURI,qName);
+    newElement = m_doc->document()->createElementNS(namespaceURI,qName);
 
     int i;
     for (i = 0; i < atts.length(); i++) {
-        int exceptioncode;
+        int exceptioncode = 0;
         newElement->setAttribute(atts.localName(i),atts.value(i),exceptioncode);
         if (exceptioncode) // exception setting attributes
             return FALSE;
@@ -156,10 +153,10 @@ bool XMLHandler::characters( const QString& ch )
         || enterText()) {
 
         if (m_currentNode->parentNode() &&
-            (m_currentNode->parentNode()->nodeName() == "SCRIPT" ||
-             m_currentNode->parentNode()->nodeName() == "STYLE" ||
-             m_currentNode->parentNode()->nodeName() == "XMP" ||
-             m_currentNode->parentNode()->nodeName() == "TEXTAREA")) {
+            (m_currentNode->parentNode()->nodeName() == "script" ||
+             m_currentNode->parentNode()->nodeName() == "style" ||
+             m_currentNode->parentNode()->nodeName() == "xmp" ||
+             m_currentNode->parentNode()->nodeName() == "textarea")) {
             // ### hack.. preserve whitespace for script, style, xmp and textarea... is this the correct
             // way of doing this?
             // ### use lowercase
@@ -332,7 +329,7 @@ void XMLTokenizer::finish()
     if (!ok) {
         // An error occurred during parsing of the code. Display an error page to the user (the DOM
         // tree is created manually and includes an excerpt from the code where the error is located)
-        int exceptioncode;
+        int exceptioncode = 0;
         while (m_doc->document()->hasChildNodes())
             static_cast<NodeImpl*>(m_doc->document())->removeChild(m_doc->document()->firstChild(),exceptioncode);
 
@@ -388,7 +385,7 @@ void XMLTokenizer::addScripts(NodeImpl *n)
     // Recursively go through the entire document tree, looking for html <script> tags. For each of these
     // that is found, add it to the m_scripts list from which they will be executed
 
-    if (n->nodeName() == "SCRIPT") { // ### also check that namespace is html (and SCRIPT should be lowercase)
+    if (n->nodeName() == "script") { // ### also check that namespace is html (and SCRIPT should be lowercase)
         m_scripts.append(static_cast<HTMLScriptElementImpl*>(n));
     }
 
@@ -407,7 +404,7 @@ void XMLTokenizer::executeScripts()
         DOMString scriptSrc = m_scriptsIt->current()->getAttribute("src");
         QString charset = m_scriptsIt->current()->getAttribute( "charset" ).string();
 
-         if (scriptSrc != "") {
+        if (scriptSrc != "") {
             // we have a src attribute
             m_cachedScript = m_doc->document()->docLoader()->requestScript(scriptSrc, charset);
             ++(*m_scriptsIt);

@@ -668,11 +668,6 @@ HTMLButtonElementImpl::~HTMLButtonElementImpl()
 {
 }
 
-const DOMString HTMLButtonElementImpl::nodeName() const
-{
-    return "BUTTON";
-}
-
 ushort HTMLButtonElementImpl::id() const
 {
     return ID_BUTTON;
@@ -763,11 +758,6 @@ HTMLFieldSetElementImpl::~HTMLFieldSetElementImpl()
 {
 }
 
-const DOMString HTMLFieldSetElementImpl::nodeName() const
-{
-    return "FIELDSET";
-}
-
 ushort HTMLFieldSetElementImpl::id() const
 {
     return ID_FIELDSET;
@@ -813,11 +803,6 @@ void HTMLInputElementImpl::init()
 HTMLInputElementImpl::~HTMLInputElementImpl()
 {
     if ( ownerDocument() ) ownerDocument()->removeElement(this);
-}
-
-const DOMString HTMLInputElementImpl::nodeName() const
-{
-    return "INPUT";
 }
 
 ushort HTMLInputElementImpl::id() const
@@ -1361,11 +1346,6 @@ HTMLLabelElementImpl::~HTMLLabelElementImpl()
 {
 }
 
-const DOMString HTMLLabelElementImpl::nodeName() const
-{
-    return "LABEL";
-}
-
 ushort HTMLLabelElementImpl::id() const
 {
     return ID_LABEL;
@@ -1410,11 +1390,6 @@ HTMLLegendElementImpl::HTMLLegendElementImpl(DocumentPtr *doc)
 
 HTMLLegendElementImpl::~HTMLLegendElementImpl()
 {
-}
-
-const DOMString HTMLLegendElementImpl::nodeName() const
-{
-    return "LEGEND";
 }
 
 ushort HTMLLegendElementImpl::id() const
@@ -1886,11 +1861,6 @@ HTMLOptionElementImpl::HTMLOptionElementImpl(DocumentPtr *doc)
     m_selected = false;
 }
 
-const DOMString HTMLOptionElementImpl::nodeName() const
-{
-    return "OPTION";
-}
-
 ushort HTMLOptionElementImpl::id() const
 {
     return ID_OPTION;
@@ -2178,7 +2148,7 @@ void HTMLTextAreaElementImpl::setDefaultValue(DOMString _defaultValue)
         if (n->isTextNode())
             toRemove.append(n);
     QListIterator<NodeImpl> it(toRemove);
-    int exceptioncode;
+    int exceptioncode = 0;
     for (; it.current(); ++it) {
         removeChild(it.current(), exceptioncode);
     }
@@ -2202,11 +2172,6 @@ HTMLIsIndexElementImpl::HTMLIsIndexElementImpl(DocumentPtr *doc, HTMLFormElement
 
 HTMLIsIndexElementImpl::~HTMLIsIndexElementImpl()
 {
-}
-
-const DOMString HTMLIsIndexElementImpl::nodeName() const
-{
-    return "ISINDEX";
 }
 
 ushort HTMLIsIndexElementImpl::id() const

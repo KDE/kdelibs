@@ -59,6 +59,8 @@ public:
     virtual const DOMString nodeName() const;
     virtual unsigned short nodeType() const;
     virtual DOMString namespaceURI() const;
+    virtual DOMString prefix() const;
+    virtual void setPrefix(const DOMString &_prefix, int &exceptioncode );
 
     virtual DOMString nodeValue() const { return value(); }
     virtual void setNodeValue( const DOMString &, int &exceptioncode );
@@ -103,47 +105,50 @@ public:
 
     // DOM methods & attributes for Element
 
-    DOMString tagName() const;
+    virtual DOMString tagName() const = 0;
 
-    DOMString getAttribute ( const DOMString &name, int &exceptioncode ) const;
+    virtual DOMString getAttribute ( const DOMString &name, int &exceptioncode ) const;
 
-    void setAttribute ( const DOMString &name, const DOMString &value, int &exceptioncode );
+    virtual void setAttribute ( const DOMString &name, const DOMString &value, int &exceptioncode );
 
-    void removeAttribute ( const DOMString &name, int &exceptioncode );
+    virtual void removeAttribute ( const DOMString &name, int &exceptioncode );
 
-    AttrImpl *getAttributeNode ( const DOMString &name, int &exceptioncode );
+    virtual AttrImpl *getAttributeNode ( const DOMString &name, int &exceptioncode );
 
-    Attr setAttributeNode ( AttrImpl *newAttr, int &exceptioncode );
+    virtual Attr setAttributeNode ( AttrImpl *newAttr, int &exceptioncode );
 
-    Attr removeAttributeNode ( AttrImpl *oldAttr, int &exceptioncode );
+    virtual Attr removeAttributeNode ( AttrImpl *oldAttr, int &exceptioncode );
 
-    NodeListImpl *getElementsByTagName ( const DOMString &name, int &exceptioncode );
+    virtual NodeListImpl *getElementsByTagName ( const DOMString &name, int &exceptioncode );
 
-    DOMString getAttributeNS ( const DOMString &namespaceURI, const DOMString &localName,
-                               int &exceptioncode );
+    virtual DOMString getAttributeNS ( const DOMString &namespaceURI, const DOMString &localName,
+                                       int &exceptioncode );
 
-    void setAttributeNS ( const DOMString &namespaceURI, const DOMString &qualifiedName, 
-                          const DOMString &value, int &exceptioncode );
+    virtual void setAttributeNS ( const DOMString &namespaceURI, const DOMString &qualifiedName, 
+                                  const DOMString &value, int &exceptioncode );
 
-    void removeAttributeNS ( const DOMString &namespaceURI, const DOMString &localName,
-                             int &exceptioncode );
+    virtual void removeAttributeNS ( const DOMString &namespaceURI, const DOMString &localName,
+                                     int &exceptioncode );
 
-    AttrImpl *getAttributeNodeNS ( const DOMString &namespaceURI, const DOMString &localName,
-                                   int &exceptioncode );
-
-    AttrImpl *setAttributeNodeNS ( AttrImpl *newAttr, int &exceptioncode );
-
-    NodeListImpl *getElementsByTagNameNS ( const DOMString &namespaceURI, const DOMString &localName,
+    virtual AttrImpl *getAttributeNodeNS ( const DOMString &namespaceURI, const DOMString &localName,
                                            int &exceptioncode );
 
-    bool hasAttribute ( const DOMString &name, int &exceptioncode ) const;
+    virtual AttrImpl *setAttributeNodeNS ( AttrImpl *newAttr, int &exceptioncode );
 
-    bool hasAttributeNS( const DOMString &namespaceURI, const DOMString &localName,
-                         int &exceptioncode );
+    virtual NodeListImpl *getElementsByTagNameNS ( const DOMString &namespaceURI, const DOMString &localName,
+                                                   int &exceptioncode );
+
+    virtual bool hasAttribute ( const DOMString &name, int &exceptioncode ) const;
+
+    virtual bool hasAttributeNS( const DOMString &namespaceURI, const DOMString &localName,
+                                 int &exceptioncode );
 
     // DOM methods overridden from  parent classes
-    void normalize ( int &exceptioncode );
+    virtual void normalize ( int &exceptioncode );
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
+    virtual const DOMString nodeName() const;
+    virtual DOMString prefix() const;
+    virtual void setPrefix(const DOMString &_prefix, int &exceptioncode );
 
     // Other methods (not part of DOM)
 
@@ -214,6 +219,7 @@ protected: // member variables
     // in the DTD
     virtual NamedAttrMapImpl* defaultMap() const;
     DOM::CSSStyleDeclarationImpl *m_styleDecls;
+    DOMStringImpl *m_prefix;
 };
 
 
@@ -221,18 +227,22 @@ class XMLElementImpl : public ElementImpl
 {
 
 public:
-    XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_name);
-    XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_name, DOMStringImpl *_namespaceURI);
+    XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_tagName);
+    XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_qualifiedName, DOMStringImpl *_namespaceURI);
     ~XMLElementImpl();
 
+    DOMString tagName() const;
     virtual const DOMString nodeName() const;
     virtual DOMString namespaceURI() const;
+    virtual DOMString localName() const;
     virtual unsigned short id() const { return m_id; };
     virtual bool isXMLElementNode() const;
 
 protected:
-    DOMStringImpl *m_name;
     DOMStringImpl *m_namespaceURI;
+    DOMStringImpl *m_tagName;
+    DOMStringImpl *m_localName;
+
     unsigned short m_id;
 };
 

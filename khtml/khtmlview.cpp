@@ -1105,7 +1105,7 @@ void KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
     if (d->underMouse)
 	d->underMouse->ref();
 
-    int exceptioncode;
+    int exceptioncode = 0;
     int clientX, clientY;
     viewportToContents(_mouse->x(), _mouse->y(), clientX, clientY);
     int screenX = _mouse->globalX();

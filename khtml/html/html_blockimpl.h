@@ -41,7 +41,6 @@ public:
 
     ~HTMLBlockquoteElementImpl();
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
     void attach();
@@ -58,7 +57,6 @@ public:
 
     ~HTMLDivElementImpl();
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
     void parseAttribute(AttrImpl *token);
@@ -73,7 +71,6 @@ public:
 
     ~HTMLHRElementImpl();
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
     virtual void parseAttribute(AttrImpl *);
@@ -92,7 +89,6 @@ public:
 
     ~HTMLHeadingElementImpl();
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
 protected:
@@ -114,7 +110,6 @@ public:
 
     ~HTMLParagraphElementImpl();
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
 };
 
@@ -130,7 +125,6 @@ public:
     long width() const;
     void setWidth( long w );
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
 };
 
@@ -142,7 +136,6 @@ public:
     HTMLLayerElementImpl( DocumentPtr *doc );
     ~HTMLLayerElementImpl();
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
     
     virtual void parseAttribute(AttrImpl *);

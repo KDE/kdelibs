@@ -44,7 +44,6 @@ public:
 
     ~HTMLAppletElementImpl();
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
     virtual void parseAttribute(AttrImpl *token);
@@ -71,7 +70,6 @@ public:
 
     ~HTMLEmbedElementImpl();
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
     virtual void parseAttribute(AttrImpl *attr);
@@ -95,7 +93,6 @@ public:
 
     ~HTMLObjectElementImpl();
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
     HTMLFormElementImpl *form() const;
@@ -123,7 +120,6 @@ public:
 
     ~HTMLParamElementImpl();
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
     virtual void parseAttribute(AttrImpl *token);

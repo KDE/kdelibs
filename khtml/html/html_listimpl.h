@@ -41,7 +41,6 @@ public:
     HTMLUListElementImpl(DocumentPtr *doc) : HTMLElementImpl(doc) {}
     virtual ~HTMLUListElementImpl() {}
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
     virtual void parseAttribute(AttrImpl *);
@@ -58,7 +57,6 @@ public:
     HTMLDirectoryElementImpl(DocumentPtr *doc) : HTMLElementImpl(doc) {}
     virtual ~HTMLDirectoryElementImpl() {}
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
     virtual void attach();
@@ -72,7 +70,6 @@ public:
     HTMLMenuElementImpl(DocumentPtr *doc) : HTMLElementImpl(doc) {}
     virtual ~HTMLMenuElementImpl() {}
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
     virtual void attach();
@@ -87,7 +84,6 @@ public:
         : HTMLUListElementImpl(doc) { _start = 1; }
     virtual ~HTMLOListElementImpl() {}
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
     virtual void parseAttribute(AttrImpl *);
@@ -108,7 +104,6 @@ public:
         : HTMLElementImpl(doc) { isValued = false; }
     virtual ~HTMLLIElementImpl() {}
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
     virtual void parseAttribute(AttrImpl *attr);
@@ -128,7 +123,6 @@ public:
     HTMLDListElementImpl(DocumentPtr *doc) : HTMLElementImpl(doc) {}
     virtual ~HTMLDListElementImpl() {}
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
 };
 

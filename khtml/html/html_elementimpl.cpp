@@ -58,6 +58,14 @@ HTMLElementImpl::~HTMLElementImpl()
 {
 }
 
+DOMString HTMLElementImpl::tagName() const
+{
+    if (ownerDocument()->isHTMLDocument())
+        return getTagName(id());
+    else
+        return getTagName(id()).lower();
+}
+
 void HTMLElementImpl::parseAttribute(AttrImpl *attr)
 {
     DOMString indexstring;
@@ -394,10 +402,3 @@ HTMLGenericElementImpl::~HTMLGenericElementImpl()
 {
 }
 
-const DOMString HTMLGenericElementImpl::nodeName() const
-{
-    if (ownerDocument()->isHTMLDocument())
-        return getTagName(_id);
-    else
-        return getTagName(_id).string().lower();
-}

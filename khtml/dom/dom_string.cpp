@@ -180,6 +180,17 @@ DOMString DOMString::split(unsigned int pos)
   return impl->split(pos);
 }
 
+DOMString DOMString::lower() const
+{
+  if(!impl) return DOMString();
+  return impl->lower();
+}
+
+DOMString DOMString::upper() const
+{
+  if(!impl) return DOMString();
+  return impl->upper();
+}
 
 bool DOMString::percentage(int &_percentage) const
 {

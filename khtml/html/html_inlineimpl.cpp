@@ -56,11 +56,6 @@ HTMLAnchorElementImpl::~HTMLAnchorElementImpl()
     if( target ) target->deref();
 }
 
-const DOMString HTMLAnchorElementImpl::nodeName() const
-{
-    return "A";
-}
-
 ushort HTMLAnchorElementImpl::id() const
 {
     return ID_A;
@@ -210,11 +205,6 @@ HTMLBRElementImpl::~HTMLBRElementImpl()
 {
 }
 
-const DOMString HTMLBRElementImpl::nodeName() const
-{
-    return "BR";
-}
-
 ushort HTMLBRElementImpl::id() const
 {
     return ID_BR;
@@ -259,11 +249,6 @@ HTMLFontElementImpl::HTMLFontElementImpl(DocumentPtr *doc)
 
 HTMLFontElementImpl::~HTMLFontElementImpl()
 {
-}
-
-const DOMString HTMLFontElementImpl::nodeName() const
-{
-    return "FONT";
 }
 
 ushort HTMLFontElementImpl::id() const
@@ -353,11 +338,6 @@ HTMLModElementImpl::~HTMLModElementImpl()
 {
 }
 
-const DOMString HTMLModElementImpl::nodeName() const
-{
-    return getTagName(_id);
-}
-
 ushort HTMLModElementImpl::id() const
 {
     return _id;
@@ -372,11 +352,6 @@ HTMLQuoteElementImpl::HTMLQuoteElementImpl(DocumentPtr *doc)
 
 HTMLQuoteElementImpl::~HTMLQuoteElementImpl()
 {
-}
-
-const DOMString HTMLQuoteElementImpl::nodeName() const
-{
-    return "Q";
 }
 
 ushort HTMLQuoteElementImpl::id() const

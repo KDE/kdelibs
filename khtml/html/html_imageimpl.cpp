@@ -68,11 +68,6 @@ HTMLImageElementImpl::~HTMLImageElementImpl()
 
 // DOM related
 
-const DOMString HTMLImageElementImpl::nodeName() const
-{
-    return "IMG";
-}
-
 ushort HTMLImageElementImpl::id() const
 {
     return ID_IMG;
@@ -268,11 +263,6 @@ HTMLMapElementImpl::~HTMLMapElementImpl()
         static_cast<HTMLDocumentImpl*>(ownerDocument())->mapMap.remove(name);
 }
 
-const DOMString HTMLMapElementImpl::nodeName() const
-{
-    return "MAP";
-}
-
 ushort HTMLMapElementImpl::id() const
 {
     return ID_MAP;
@@ -352,11 +342,6 @@ HTMLAreaElementImpl::HTMLAreaElementImpl(DocumentPtr *doc)
 HTMLAreaElementImpl::~HTMLAreaElementImpl()
 {
     delete coords;
-}
-
-const DOMString HTMLAreaElementImpl::nodeName() const
-{
-    return "AREA";
 }
 
 ushort HTMLAreaElementImpl::id() const

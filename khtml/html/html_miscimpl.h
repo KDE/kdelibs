@@ -39,7 +39,6 @@ public:
 
     ~HTMLBaseFontElementImpl();
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
 };
 

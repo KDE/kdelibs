@@ -85,6 +85,15 @@ public:
      */
     DOMString split(unsigned int pos);
 
+    /**
+     * Returns a lowercase version of the string
+     */
+    DOMString lower() const;
+    /**
+     * Returns an uppercase version of the string
+     */
+    DOMString upper() const;
+
     QChar *unicode() const;
     QString string() const;
 

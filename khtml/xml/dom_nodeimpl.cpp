@@ -184,13 +184,16 @@ bool NodeImpl::isSupported( const DOMString &/*feature*/, const DOMString &/*ver
 
 DOMString NodeImpl::prefix() const
 {
-    // ### implement
+    // For nodes other than elements and attributes, the prefix is always null
     return DOMString();
 }
 
-void NodeImpl::setPrefix(const DOMString &/*_prefix*/, int &/*exceptioncode*/ )
+void NodeImpl::setPrefix(const DOMString &/*_prefix*/, int &exceptioncode )
 {
-    // ### implement
+    // The spec says that for nodes other than elements and attributes, prefix is always null.
+    // It does not say what do so when the user tries to set the prefix on another type of
+    // node, however mozilla throws a NAMESPACE_ERR exception
+    exceptioncode = DOMException::NAMESPACE_ERR;
 }
 
 DOMString NodeImpl::localName() const
@@ -586,7 +589,7 @@ bool NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
 
 bool NodeImpl::dispatchHTMLEvent(int _id, bool canBubbleArg, bool cancelableArg)
 {
-    int exceptioncode;
+    int exceptioncode = 0;
     EventImpl *evt = new EventImpl(static_cast<EventImpl::EventId>(_id),canBubbleArg,cancelableArg);
     evt->ref();
     bool r = dispatchEvent(evt,exceptioncode);
@@ -596,7 +599,7 @@ bool NodeImpl::dispatchHTMLEvent(int _id, bool canBubbleArg, bool cancelableArg)
 
 bool NodeImpl::dispatchWindowEvent(int _id, bool canBubbleArg, bool cancelableArg)
 {
-    int exceptioncode;
+    int exceptioncode = 0;
     EventImpl *evt = new EventImpl(static_cast<EventImpl::EventId>(_id),canBubbleArg,cancelableArg);
     evt->setTarget( 0 );
     evt->ref();
@@ -642,7 +645,7 @@ bool NodeImpl::dispatchMouseEvent(QMouseEvent *_mouse, int overrideId, int overr
         return false; // shouldn't happen
 
 
-    int exceptioncode;
+    int exceptioncode = 0;
 
 //    int clientX, clientY;
 //    viewportToContents(_mouse->x(), _mouse->y(), clientX, clientY);
@@ -692,7 +695,7 @@ bool NodeImpl::dispatchUIEvent(int _id, int detail)
     if (_id == EventImpl::DOMACTIVATE_EVENT)
         cancelable = true;
 
-    int exceptioncode;
+    int exceptioncode = 0;
     UIEventImpl *evt = new UIEventImpl(static_cast<EventImpl::EventId>(_id),true,
                                        cancelable,getDocument()->defaultView(),detail);
     evt->ref();
@@ -705,14 +708,14 @@ bool NodeImpl::dispatchSubtreeModifiedEvent()
 {
     if (!getDocument()->hasListenerType(DocumentImpl::DOMSUBTREEMODIFIED_LISTENER))
 	return false;
-    int exceptioncode;
+    int exceptioncode = 0;
     return dispatchEvent(new MutationEventImpl(EventImpl::DOMSUBTREEMODIFIED_EVENT,
 			 true,false,0,DOMString(),DOMString(),DOMString(),0),exceptioncode);
 }
 
 bool NodeImpl::dispatchKeyEvent(QKeyEvent *key)
 {
-    int exceptioncode;
+    int exceptioncode = 0;
     //kdDebug(6010) << "DOM::NodeImpl: dispatching keyboard event" << endl;
     KeyEventImpl *keyEventImpl = new KeyEventImpl(key, getDocument()->defaultView());
     keyEventImpl->ref();
@@ -1911,7 +1914,7 @@ NodeImpl *GenericRONamedNodeMapImpl::removeNamedItemNS( const DOMString &/*names
 void GenericRONamedNodeMapImpl::addNode(NodeImpl *n)
 {
     // The spec says that in the case of duplicates we only keep the first one
-    int exceptioncode;
+    int exceptioncode = 0;
     if (getNamedItem(n->nodeName(),exceptioncode))
         return;
 

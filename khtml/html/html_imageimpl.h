@@ -41,7 +41,6 @@ public:
 
     ~HTMLImageElementImpl();
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
     virtual void parseAttribute(AttrImpl *);
@@ -80,7 +79,6 @@ public:
     HTMLAreaElementImpl(DocumentPtr *doc);
     ~HTMLAreaElementImpl();
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
     virtual void parseAttribute(AttrImpl *attr);
@@ -112,7 +110,6 @@ public:
 
     ~HTMLMapElementImpl();
 
-    virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
     virtual DOMString getName() const { return name; }

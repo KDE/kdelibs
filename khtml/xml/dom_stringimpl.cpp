@@ -253,7 +253,7 @@ bool DOMStringImpl::isLower() const
     return true;
 }
 
-DOMStringImpl *DOMStringImpl::lower()
+DOMStringImpl *DOMStringImpl::lower() const
 {
     DOMStringImpl *c = new DOMStringImpl;
     if(!l) return c;
@@ -267,7 +267,7 @@ DOMStringImpl *DOMStringImpl::lower()
     return c;
 }
 
-DOMStringImpl *DOMStringImpl::upper()
+DOMStringImpl *DOMStringImpl::upper() const
 {
     DOMStringImpl *c = new DOMStringImpl;
     if(!l) return c;

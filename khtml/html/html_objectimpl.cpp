@@ -63,11 +63,6 @@ HTMLAppletElementImpl::~HTMLAppletElementImpl()
     if(archive) archive->deref();
 }
 
-const DOMString HTMLAppletElementImpl::nodeName() const
-{
-    return "APPLET";
-}
-
 ushort HTMLAppletElementImpl::id() const
 {
     return ID_APPLET;
@@ -170,11 +165,6 @@ HTMLEmbedElementImpl::HTMLEmbedElementImpl(DocumentPtr *doc)
 
 HTMLEmbedElementImpl::~HTMLEmbedElementImpl()
 {
-}
-
-const DOMString HTMLEmbedElementImpl::nodeName() const
-{
-    return "EMBED";
 }
 
 ushort HTMLEmbedElementImpl::id() const
@@ -288,11 +278,6 @@ HTMLObjectElementImpl::~HTMLObjectElementImpl()
 {
 }
 
-const DOMString HTMLObjectElementImpl::nodeName() const
-{
-    return "OBJECT";
-}
-
 ushort HTMLObjectElementImpl::id() const
 {
     return ID_OBJECT;
@@ -397,11 +382,6 @@ HTMLParamElementImpl::~HTMLParamElementImpl()
 {
     if(m_name) m_name->deref();
     if(m_value) m_value->deref();
-}
-
-const DOMString HTMLParamElementImpl::nodeName() const
-{
-    return "PARAM";
 }
 
 ushort HTMLParamElementImpl::id() const

@@ -39,11 +39,6 @@ HTMLBaseFontElementImpl::~HTMLBaseFontElementImpl()
 {
 }
 
-const DOMString HTMLBaseFontElementImpl::nodeName() const
-{
-    return "BASEFONT";
-}
-
 ushort HTMLBaseFontElementImpl::id() const
 {
     return ID_BASEFONT;
