@@ -294,7 +294,7 @@ QPixmap PixmapLoader::pixmap( int name, const QColor& color, const QColor& bg, b
 
 QPixmap PixmapLoader::scale( int name, int width, int height, const QColor& color,  const QColor& bg, bool disabled, bool blend )
 {
-	KeramikCacheEntry entry(name, color, disabled, blend, width, height);
+	KeramikCacheEntry entry(name, color, bg, disabled, blend, width, height);
 	KeramikCacheEntry* cacheEntry;
 
 	int key = entry.key();
