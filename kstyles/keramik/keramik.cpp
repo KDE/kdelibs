@@ -1612,9 +1612,9 @@ void KeramikStyle::drawControl( ControlElement element,
 			if ( mi->isSeparator() )
 			{
 				p->setPen( cg.mid() );
-				p->drawLine( main.x()+5, main.y() + 1, main.width()-10, main.y() + 1 );
+				p->drawLine( main.x()+5, main.y() + 1, main.right()-5, main.y() + 1 );
 				p->setPen( cg.light() );
-				p->drawLine( main.x()+5, main.y() + 2, main.width()-10 , main.y() + 2 );
+				p->drawLine( main.x()+5, main.y() + 2, main.right()-5, main.y() + 2 );
 				break;
 			}
 
