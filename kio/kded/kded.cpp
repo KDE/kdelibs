@@ -340,7 +340,7 @@ static KCmdLineOptions options[] =
 class KDEDApplication : public KUniqueApplication
 {
 public:
-  KDEDApplication() : KUniqueApplication( false, false ) // No styles, no GUI 
+  KDEDApplication() : KUniqueApplication( ) 
     { startup = true; }
 
   int newInstance()
@@ -398,7 +398,7 @@ int main(int argc, char *argv[])
      kded->recreate();
 
      signal(SIGTERM, sighandler);
-     KDEDApplication k; // No styles, no GUI
+     KDEDApplication k;
 
      DCOPClient *client = kapp->dcopClient();
      QObject::connect(client, SIGNAL(applicationRemoved(const QCString&)),
