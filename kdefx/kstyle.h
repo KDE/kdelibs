@@ -37,7 +37,7 @@
 class TransparencyHandler;
 class KPixmap;
 
-
+class KStylePrivate;
 /** 
  * Simplifies and extends the QStyle API to make style coding easier.
  *  
@@ -321,8 +321,10 @@ class KStyle: public QCommonStyle
 		KStyle( const KStyle & );
 		KStyle& operator=( const KStyle & );
 
-		struct Private;
-		Private *d;
+	protected:
+		virtual void virtual_hook( int id, void* data );
+	private:
+		KStylePrivate *d;
 };
 
 

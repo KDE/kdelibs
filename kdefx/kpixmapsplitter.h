@@ -25,6 +25,7 @@
 #include <qsize.h>
 #include <qstring.h>
 
+class KPixmapSplitterPrivate;
 /**
  * If you have a pixmap containing several items (icons), you can use this
  * class to get the coordinates of each item.
@@ -113,6 +114,7 @@ private:
     int m_numRows;
 
     bool m_dirty;
+    KPixmapSplitterPrivate* d;
 };
 
 #endif // KPIXMAPSPLITTER_H

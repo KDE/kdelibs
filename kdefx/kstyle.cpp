@@ -86,7 +86,7 @@ class TransparencyHandler : public QObject
 };
 
 
-struct KStyle::Private
+struct KStylePrivate
 {
 	bool  highcolor                : 1;
 	bool  useFilledFrameWorkaround : 1;
@@ -96,17 +96,17 @@ struct KStyle::Private
 	float menuOpacity;
 
 	TransparencyEngine   transparencyEngine;
-	KStyleScrollBarType  scrollbarType;
+	KStyle::KStyleScrollBarType  scrollbarType;
 	TransparencyHandler* menuHandler;
 	QStyle* winstyle;		// ### REMOVE
-	KStyleFlags flags;
+	KStyle::KStyleFlags flags;
 };
 
 // -----------------------------------------------------------------------------
 
 
 KStyle::KStyle( KStyleFlags flags, KStyleScrollBarType sbtype )
-	: QCommonStyle(), d(new Private)
+	: QCommonStyle(), d(new KStylePrivate)
 {
 	d->flags = flags;
 	bool useMenuTransparency    = (flags & AllowMenuTransparency);
@@ -1559,6 +1559,9 @@ void TransparencyHandler::XRenderBlendToPixmap(const QPopupMenu* p)
 	XFreePixmap(dpy, alphaPixmap);
 }
 #endif
+
+void KStyle::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
 
 // vim: set noet ts=4 sw=4:
 
