@@ -2224,7 +2224,11 @@ void HTTPProtocol::get( const KURL& url )
   m_request.method = HTTP_GET;
   m_request.path = url.path();
   m_request.query = url.query();
-  m_request.cache = parseCacheControl(metaData("cache"));
+  QString tmp = metaData("cache");
+  if (tmp.length()>0)
+    m_request.cache = parseCacheControl(tmp);
+  else
+    m_request.cache = KProtocolManager::defaultCacheControl();
   m_request.offset = 0;
   m_request.do_proxy = m_bUseProxy;
   m_request.url = url;

@@ -180,7 +180,6 @@ namespace KIO {
     /**
      * @param url Url to be checked.
      */
-    // KDE3.0 (BCI): use KIO::CacheControl instead
     CacheInfo* getCacheInfo(const KURL& url);
 #endif
 

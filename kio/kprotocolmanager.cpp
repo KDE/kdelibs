@@ -196,14 +196,14 @@ KIO::CacheControl KProtocolManager::defaultCacheControl()
 {
     KConfig *cfg = config();
     cfg->setGroup("Cache Settings");
-    return KIO::parseCacheControl(cfg->readEntry("Default Cache Policy"));
+    return KIO::parseCacheControl(cfg->readEntry("Default Cache Policy", "verify"));
 }
 
 void KProtocolManager::setDefaultCacheControl(KIO::CacheControl policy)
 {
     KConfig *cfg = config();
     cfg->setGroup("Cache Settings");
-    QString tmp = KIO::getCacheControlString(policy);	
+    QString tmp = KIO::getCacheControlString(policy);
     cfg->writeEntry("Default Cache Policy", tmp);
     cfg->sync();
 }
