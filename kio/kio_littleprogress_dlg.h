@@ -16,9 +16,8 @@ public:
 
   KIOLittleProgressDlg( QWidget* parent );
 
-  void totalSize( unsigned long );
-  void processedSize( unsigned long );
-  void speed( unsigned long );
+  void processedSize();
+  void speed();
 
   void setJob( KIOJob *job );
 
@@ -27,17 +26,11 @@ public:
 protected:
   KProgress* m_pProgressBar;
   QLabel* m_pLabel;
-
   QPopupMenu* m_pMenu;
-
-  unsigned long m_iTotalSize;
-  unsigned long m_iProcessedSize;
-  unsigned long m_iSpeed;
-
-  int m_iPercent;
 
   KIOJob* m_pJob;
 
+  int m_iPercent;
   bool mode;
 
   void setMode( bool _mode );
