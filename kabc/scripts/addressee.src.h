@@ -48,6 +48,9 @@ namespace KABC {
 */
 class Addressee
 {
+    friend QDataStream &operator<<( QDataStream &, const Addressee & );
+    friend QDataStream &operator>>( QDataStream &, Addressee & );
+
   public:
     typedef QValueList<Addressee> List;
 
@@ -222,6 +225,9 @@ class Addressee
     struct AddresseeData;
     KSharedPtr<AddresseeData> mData;
 };
+
+QDataStream &operator<<( QDataStream &, const Addressee & );
+QDataStream &operator>>( QDataStream &, Addressee & );
 
 }
 

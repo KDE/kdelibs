@@ -105,6 +105,18 @@ if (!open( CPP_OUT, ">../addressee.cpp" ) ) {
           print CPP_OUT "  if ( mData->$entryNames[$i] != a.mData->$entryNames[$i] ) return false;\n";
         }
       }        
+    } elsif (/--STREAMOUT--/) {
+      for( $i=0; $i<@entryNames; ++$i ) {
+        if ( $entryCtrl[$i] =~ /A/ ) {
+          print CPP_OUT "  s << a.mData->$entryNames[$i];\n";
+        }
+      }        
+    } elsif (/--STREAMIN--/) {
+      for( $i=0; $i<@entryNames; ++$i ) {
+        if ( $entryCtrl[$i] =~ /A/ ) {
+          print CPP_OUT "  s >> a.mData->$entryNames[$i];\n";
+        }
+      }        
     } elsif (/--DEBUG--/) {
       for( $i=0; $i<@entryNames; ++$i ) {
         if ( $entryCtrl[$i] !~ /A/ ) { next; }

@@ -520,3 +520,32 @@ void Addressee::parseEmailAddress( const QString &rawEmail, QString &fullName,
     }
   }
 }
+
+QDataStream &KABC::operator<<( QDataStream &s, const Addressee &a )
+{
+  if (!a.mData) return s;
+
+  --STREAMOUT--
+  s << a.mData->phoneNumbers;
+  s << a.mData->addresses;
+  s << a.mData->emails;
+  s << a.mData->categories;
+  s << a.mData->custom;
+  return s;
+}
+
+QDataStream &KABC::operator>>( QDataStream &s, Addressee &a )
+{
+  if (!a.mData) return s;
+
+  --STREAMIN--
+  s >> a.mData->phoneNumbers;
+  s >> a.mData->addresses;
+  s >> a.mData->emails;
+  s >> a.mData->categories;
+  s >> a.mData->custom;
+
+  a.mData->empty = false;
+
+  return s;
+}

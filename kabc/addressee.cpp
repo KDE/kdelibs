@@ -1075,74 +1075,71 @@ void Addressee::parseEmailAddress( const QString &rawEmail, QString &fullName,
   }
 }
 
-QDataStream &KABC::operator<<( QDataStream &s, const Addressee &addr )
+QDataStream &KABC::operator<<( QDataStream &s, const Addressee &a )
 {
-    if (!addr.mData)
-	return s;
+  if (!a.mData) return s;
 
-    s << addr.mData->uid;
-    s << addr.mData->name;
-    s << addr.mData->formattedName;
-    s << addr.mData->familyName;
-    s << addr.mData->givenName;
-    s << addr.mData->additionalName;
-    s << addr.mData->prefix;
-    s << addr.mData->suffix;
-    s << addr.mData->nickName;
-    s << addr.mData->birthday;
-    s << addr.mData->mailer;
-    s << addr.mData->timeZone;
-    s << addr.mData->geo;
-    s << addr.mData->title;
-    s << addr.mData->role;
-    s << addr.mData->organization;
-    s << addr.mData->note;
-    s << addr.mData->productId;
-    s << addr.mData->revision;
-    s << addr.mData->sortString;
-    s << addr.mData->url;
-    s << addr.mData->phoneNumbers;
-    s << addr.mData->addresses;
-    s << addr.mData->emails;
-    s << addr.mData->categories;
-    s << addr.mData->custom;
-
-    return s;
+  s << a.mData->uid;
+  s << a.mData->name;
+  s << a.mData->formattedName;
+  s << a.mData->familyName;
+  s << a.mData->givenName;
+  s << a.mData->additionalName;
+  s << a.mData->prefix;
+  s << a.mData->suffix;
+  s << a.mData->nickName;
+  s << a.mData->birthday;
+  s << a.mData->mailer;
+  s << a.mData->timeZone;
+  s << a.mData->geo;
+  s << a.mData->title;
+  s << a.mData->role;
+  s << a.mData->organization;
+  s << a.mData->note;
+  s << a.mData->productId;
+  s << a.mData->revision;
+  s << a.mData->sortString;
+  s << a.mData->url;
+  s << a.mData->phoneNumbers;
+  s << a.mData->addresses;
+  s << a.mData->emails;
+  s << a.mData->categories;
+  s << a.mData->custom;
+  return s;
 }
 
-QDataStream &KABC::operator>>( QDataStream &s, Addressee &addr )
+QDataStream &KABC::operator>>( QDataStream &s, Addressee &a )
 {
-    if (!addr.mData)
-	return s;
+  if (!a.mData) return s;
 
-    s >> addr.mData->uid;
-    s >> addr.mData->name;
-    s >> addr.mData->formattedName;
-    s >> addr.mData->familyName;
-    s >> addr.mData->givenName;
-    s >> addr.mData->additionalName;
-    s >> addr.mData->prefix;
-    s >> addr.mData->suffix;
-    s >> addr.mData->nickName;
-    s >> addr.mData->birthday;
-    s >> addr.mData->mailer;
-    s >> addr.mData->timeZone;
-    s >> addr.mData->geo;
-    s >> addr.mData->title;
-    s >> addr.mData->role;
-    s >> addr.mData->organization;
-    s >> addr.mData->note;
-    s >> addr.mData->productId;
-    s >> addr.mData->revision;
-    s >> addr.mData->sortString;
-    s >> addr.mData->url;
-    s >> addr.mData->phoneNumbers;
-    s >> addr.mData->addresses;
-    s >> addr.mData->emails;
-    s >> addr.mData->categories;
-    s >> addr.mData->custom;
+  s >> a.mData->uid;
+  s >> a.mData->name;
+  s >> a.mData->formattedName;
+  s >> a.mData->familyName;
+  s >> a.mData->givenName;
+  s >> a.mData->additionalName;
+  s >> a.mData->prefix;
+  s >> a.mData->suffix;
+  s >> a.mData->nickName;
+  s >> a.mData->birthday;
+  s >> a.mData->mailer;
+  s >> a.mData->timeZone;
+  s >> a.mData->geo;
+  s >> a.mData->title;
+  s >> a.mData->role;
+  s >> a.mData->organization;
+  s >> a.mData->note;
+  s >> a.mData->productId;
+  s >> a.mData->revision;
+  s >> a.mData->sortString;
+  s >> a.mData->url;
+  s >> a.mData->phoneNumbers;
+  s >> a.mData->addresses;
+  s >> a.mData->emails;
+  s >> a.mData->categories;
+  s >> a.mData->custom;
 
-    addr.mData->empty = false;
+  a.mData->empty = false;
 
-    return s;
+  return s;
 }
