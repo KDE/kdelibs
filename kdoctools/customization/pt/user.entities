@@ -6,5 +6,9 @@
      names (which if they occur will cost you a _lot_ of time)
  -->
 <!ENTITY kcontrolcenter "<application>Centro de Controlo &kde;</application>">
-<!ENTITY pex "por exemplo"> <!-- English: &eg; -->
-<!ENTITY ed "é dizer" >    <!-- English: &ie; -->
+<!ENTITY pex "por exemplo">                                         <!-- English: &eg; -->
+<!ENTITY ed "é dizer" >                                            <!-- English: &ie; -->
+<!ENTITY etc "<abbrev>etc.</abbrev>">                               <!-- English: &etc; -->
+<!ENTITY BER "botão <mousebutton>esquerdo</mousebutton> do rato">  <!-- English: &LMB; -->
+<!ENTITY BMR "botão <mousebutton>do meio</mousebutton> do rato">   <!-- English: &MMB; -->
+<!ENTITY BDR "botão <mousebutton>direito</mousebutton> do rato">   <!-- English: &RMB; -->
