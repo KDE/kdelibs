@@ -5585,8 +5585,6 @@ void KHTMLPart::extendSelection( DOM::NodeImpl* node, long offset, DOM::Node& se
 
   QString str;
   int len = 0;
-  // make offset point left to current char
-  if (right && offset > 0) offset--;
   if ( obj->isText() ) { // can be false e.g. when double-clicking on a disabled submit button
     str = static_cast<khtml::RenderText *>(obj)->data().string();
     len = str.length();
