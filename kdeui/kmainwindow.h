@@ -119,7 +119,7 @@ public:
      * KMainWindows must be created on the heap with 'new', like:
      *  <pre> KMainWindow *ktmw = new KMainWindow (...</pre>
      **/
-    KMainWindow( QWidget* parent, const char *name = 0, WFlags f = WType_TopLevel | WDestructiveClose );
+    KMainWindow( QWidget* parent = 0, const char *name = 0, WFlags f = WType_TopLevel | WDestructiveClose );
 
     /**
      * Destructor.
