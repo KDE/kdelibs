@@ -89,12 +89,14 @@ ssize_t TCPSlaveBase::ReadLine(char *data, ssize_t len)
         // let's not segfault!
         if (!data) return -1;
 
-        if (m_bIsSSL || d->usingTLS) {
+        *data = 0;
            // ugliness alert!!  calling read() so many times can't be good...
            int clen = 0;
            char *buf = data;
            while (clen < len) {
-              int rc = d->kssl->read(buf, 1);
+              int rc;
+              if (m_bIsSSL || d->usingTLS) rc = d->kssl->read(buf, 1);
+	      else rc = KSocks::self()->read(m_iSock, buf, 1);
               if (rc < 0) return -1;
               clen++;
               if (*buf++ == '\n')
@@ -102,12 +104,6 @@ ssize_t TCPSlaveBase::ReadLine(char *data, ssize_t len)
            }
            *buf = 0; 
            return clen;
-        }
-
-        // This should change.  It's O(2n) and can be made O(n).
-        *data = 0;
-	fgets(data, len, fp);
-	return strlen(data);
 }
 
 unsigned short int TCPSlaveBase::GetPort(unsigned short int _port)
