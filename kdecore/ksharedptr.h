@@ -58,13 +58,13 @@ public:
    /**
     * Increases the reference count by one
     */
-   void _KShared_ref() { count++; }
+   void _KShared_ref() const { count++; }
 
    /**
     * Releases a reference (decreases the reference count by one).  If
     * the count goes to 0, this object will delete itself
     */
-   void _KShared_unref() { if (!--count) delete this; }
+   void _KShared_unref() const { if (!--count) delete this; }
 
    /**
     * Return the current number of references held
@@ -76,7 +76,7 @@ public:
 protected:
    virtual ~KShared() { }
 private:
-   int count;
+   mutable int count;
 };
 
 /**
