@@ -665,7 +665,7 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
         if ( formatType )  // movie format exists
         {
             imgSource = new ImageSource( _buffer.buffer());
-            m = new QMovie( imgSource, 4096 );
+            m = new QMovie( imgSource, 8192 );
             m->connectUpdate( this, SLOT( movieUpdated( const QRect &) ));
             m->connectStatus( this, SLOT( movieStatus(int)));
             m->connectResize( this, SLOT( movieResize( const QSize& ) ) );
@@ -675,10 +675,7 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
     if ( imgSource )
     {
         imgSource->setEOF(eof);
-        if ( m )
-            m->pushData( ( const unsigned char* ) _buffer.buffer().data()+imgSource->pos,
-                         _buffer.size()-imgSource->pos );
-        imgSource->pos = _buffer.size();
+        imgSource->maybeReady();
     }
 
     if(eof)
