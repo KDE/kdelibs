@@ -69,6 +69,7 @@ public:
       * second prefered language. You can add as many languages as
       * you want. If none of them can be find, the default (C) will
       * be used.
+      *
       * @param catalogue The name of the language file
       */
     KLocale( const QString& catalogue = QString::null );
@@ -88,12 +89,15 @@ public:
       * in the catalogue given to the constructor, it will search
       * in the system catalog. This makes it possible to override
       * some phrases for your needs.
+      *
       * @param index The lookup text and default text, if not found.
       */
     QString translate( const char *index ) const;
 
     /**
      * Allows programs such as kcmlocale to choose which translation to use.
+     *
+     * @param _lang The language you want to use.
      */
     void setLanguage(const QString &_lang);
 
@@ -108,6 +112,8 @@ public:
     /**
      * Retrieve what a decimal point should look like ("." or "," etc.)
      * according to the current locale or user settings.
+     *
+     * @return The decimal symbol used by locale.
      */
     QString decimalSymbol() const;
 
@@ -115,12 +121,16 @@ public:
      * Retrieve what the thousands separator should look
      * like ("," or "." etc.)
      * according to the current locale or user settings.
+     *
+     * @return The thousands separator used by locale.
      */
     QString thousandsSeparator() const;
 
     /**
      * Retrieve what the symbol denoting currency in the current locale
      * as as defined by user settings should look like.
+     *
+     * @return The default currecy symbol used by locale.
      */
     QString currencySymbol() const;
 
@@ -128,6 +138,8 @@ public:
      * Retrieve what a decimal point should look like ("." or "," etc.)
      * for monetary values, according to the current locale or user
      * settings.
+     *
+     * @return The monetary decimal symbol used by locale.
      */
     QString monetaryDecimalSymbol() const;
 
@@ -135,36 +147,48 @@ public:
      * Retrieve what a thousands separator for monetary values should
      * look like ("," or " " etc.) according to the current locale or
      * user settings.
+     *
+     * @return The monetary thousands separator used by locale.
      */
     QString monetaryThousandsSeparator() const;
 
     /**
      * Retrieve what a positive sign should look like ("+", " ", etc.)
      * according to the current locale or user settings.
+     *
+     * @return The positive sign used by locale.
      */
     QString positiveSign() const;
 
     /**
      * Retrieve what a negative sign should look like ("-", etc.)
      * according to the current locale or user settings.
+     *
+     * @return The negative sign used by locale.
      */
     QString negativeSign() const;
 
     /**
      * The number of fractional digits to include in numeric/monetary
      * values (usually 2).
+     *
+     * @return Default number of fractional digits used by locale.
      */
     int fracDigits() const;
 
     /**
      * If and only if the currency symbol precedes a positive value,
      * this will be true.
+     *
+     * @return Where to print the currency symbol for positive numbers.
      */
     bool positivePrefixCurrencySymbol() const;
 
     /**
      * If and only if the currency symbol precedes a negative value,
      * this will be true.
+     *
+     * @return Where to print the currecy symbol for negative numbers.
      */
     bool negativePrefixCurrencySymbol() const;
 
@@ -172,6 +196,7 @@ public:
      * Retrieve the position of a positive sign in relation to a
      * monetary value.
      *
+     * @return Where/how to print the positive sign.
      * @see SignPosition
      */
     SignPosition positiveMonetarySignPosition() const;
@@ -180,6 +205,7 @@ public:
      * Denotes where to place a negative sign in relation to a
      * monetary value.
      *
+     * @return Where/how to print the negative sign.
      * @see SignPosition
      */
     SignPosition negativeMonetarySignPosition() const;
@@ -190,6 +216,10 @@ public:
      *
      * e.g. given 123456, return "$123,456".
      *
+     * @param num The number we want to format
+     * @param currency The currency symbol you want.
+     * @param digits Number of fractional digits.
+     *
      * @return The number of money as a localized string
      */
     QString formatMoney(double num, const QString &currency = QString::null, int digits = -1) const;
@@ -198,6 +228,8 @@ public:
      * This function differs from the above only in that it can take
      * a QString as the argument for convenience.
      *
+     * @param numStr The string you want to reformat.
+     * 
      * @return The number of money as a localized string
      */
     QString formatMoney(const QString &numStr) const;
@@ -209,6 +241,9 @@ public:
      * e.g. given 123456.78, return "123,456.78" (for some European country).
      * If precision isn't specified, fracDigits is used.
      *
+     * @param num The number to convert
+     * @param precision Number of fractinal digits used.
+     *
      * @return The number as a localized string
      */
     QString formatNumber(double num, int precision = -1) const;
@@ -216,6 +251,8 @@ public:
     /**
      * This function differs from the above only in that it can take
      * a QString as the argument for convenience.
+     *
+     * @param numStr The string you want to convert.
      *
      * @return The number as a formated string
      */
@@ -225,6 +262,9 @@ public:
      * Return a string formatted to the current locale's conventions
      * regarding dates.
      *
+     * @param pDate The date to be formated.
+     * @param shotfmt True for non text dates.
+     *
      * @return The date as a string
      */
     QString formatDate(const QDate &pDate, bool shortfmt = false) const;
@@ -233,6 +273,7 @@ public:
      * Return a string formatted to the current locale's conventions
      * regarding times.
      *
+     * @param pTime The time to be formated.
      * @param includeSecs if true, seconds are included in the output,
      *        otherwise only hours and minutes are formatted.
      *
@@ -269,12 +310,15 @@ public:
      * Return a string formated to the current locale's conventions
      * regarding both date and time.
      *
+     * @param pDateTime The date and time to be formated.
+     *
      * @return The date and time as a string
      */
     QString formatDateTime(const QDateTime &pDateTime) const;
 
     /**
      * Converts a localized monetary string to a double.
+     *
      * @param numStr the string we want to convert.
      * @param ok the boolean that is set to false if it's not a number.
      *
@@ -284,6 +328,7 @@ public:
 
     /**
      * Converts a localized numeric string to a double.
+     *
      * @param numStr the string we want to convert.
      * @param ok the boolean that is set to false if it's not a number.
      *
@@ -309,12 +354,19 @@ public:
       * to translate it in loops or something like that.
       * In every other case, the @ref translate methods is fast
       * enough.
+      *
+      * @param text The text to alias.
+      * @param index The index key to use.
       */
     void aliasLocale( const char *text, long int index);
 
     /**
       * Returns an alias, that you have set before or 0, if not
       * set. This method uses @ref QIntDict.
+      *
+      * @param The key of the string to look up.
+      *
+      * @return The translated string.
       */
     QString getAlias( long key ) const;
 
@@ -322,21 +374,29 @@ public:
       * Returns the language used by this object. The domain AND the
       * library translation must be available in this language.
       * 'C' is default, if no other available.
+      *
+      * @return The currently used language.
       */
     QString language() const;
 
     /**
       * Returns the locale used for money by object.
+      *
+      * @return The currency use locale for money formating.
       */
     QString money() const;
 
     /**
       * Returns the locale used for numbers by object.
+      *
+      * @return The currently used locale for numer formating.
       */
     QString number() const;
 
     /**
       * Returns the locale used for time by object.
+      *
+      * @return The currently used locale for time formated.
       */
     QString time() const;
 
@@ -371,24 +431,35 @@ public:
      *
      * If the catalogue does not exist for the chosen language,
      * it will be ignored and C will be used.
+     *
+     * @param catalogue The catalogue to add.
      **/
     void insertCatalogue(const QString& catalogue);
 
     /**
      * returns the parts of the parameter str understood as language setting
      * the format is language_country.charset
+     * @param str The string to split.
+     * @param language This will be set to the language part of the string.
+     * @param country This will be set to the country part of the string.
+     * @param charset This will be set to the charset part of the stirng.
      */
     static void splitLocale(const QString& str,QString& language, QString& country,
                      QString &charset);
 
     /**
      * Init the l10n part of the instance with the config object.
+     *
+     * @param config The configuration object used for init.
      */
     void initFormat(KConfig *config);
 
     /**
      * Init the l18n part of the instance with the given config object. It should
      * be valid and contain the global entries.
+     *
+     * @param config The configuration object used for init.
+     * @param catalogue The main catalogue to use.
      **/
     void initLanguage(KConfig *config, const QString& catalogue);
 
@@ -398,14 +469,18 @@ public:
      * The constructor will initialize the instance, but under some
      * circumstances - when the circumstances do not fit for initialization
      * - it will just delay the initialization til you call initLanguage
+     *
+     * @return Returns true if locale is inited. 
      */
     bool inited() const { return _inited; }
 
     /**
      * Use this to as main catalogue for *all* KLocales, if not the appname
      * will be used.
+     *
+     * @param catalogue Catalogue to override all other main catalogues.
      */
-    static void setMainCatalogue(const char *catalogue);
+     static void setMainCatalogue(const char *catalogue);
 
 protected:
     QString chset;
