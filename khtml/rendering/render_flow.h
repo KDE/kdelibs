@@ -112,10 +112,6 @@ public:
     bool checkClear(RenderObject *child);
 
     void insertSpecialObject(RenderObject *o);
-
-    // from BiDiParagraph
-    virtual void closeParagraph() { positionNewFloats(); }
-
     void removeSpecialObject(RenderObject *o);
     // called from lineWidth, to position the floats added in the last line.
     void positionNewFloats();
