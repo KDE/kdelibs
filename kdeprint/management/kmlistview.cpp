@@ -146,7 +146,7 @@ KMListView::~KMListView()
 
 void KMListView::slotRightButtonClicked(QListViewItem *item, const QPoint& p, int)
 {
-	emit rightButtonClicked(item ? item->text(0) : QString::null, p);
+	emit rightButtonClicked(item && item->depth() == 2 ? item->text(0) : QString::null, p);
 }
 
 KMListViewItem* KMListView::findItem(KMPrinter *p)
