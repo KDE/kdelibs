@@ -1322,7 +1322,7 @@ StyleSheetListImpl* DocumentImpl::styleSheets()
 
 void DocumentImpl::createSelector()
 {
-    if ( !m_render && attached() ) return;
+    if ( !m_render || !attached() ) return;
 
     QList<StyleSheetImpl> oldStyleSheets = m_styleSheets->styleSheets;
     m_styleSheets->styleSheets.clear();
