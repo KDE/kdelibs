@@ -31,7 +31,7 @@
 static const KCmdLineOptions options[] =
 {
 	{"+url", 0, 0},
-	{0, 0, 0}
+	KCmdLineLastOption
 };
 
 int main(int argc, char **argv)

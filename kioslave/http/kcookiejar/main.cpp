@@ -41,7 +41,7 @@ static const KCmdLineOptions options[] =
  { "remove <domain>", I18N_NOOP("Remove cookies for domain."), 0 },
  { "remove-all", I18N_NOOP("Remove all cookies."), 0 },
  { "reload-config", I18N_NOOP("Reload configuration file."), 0 },
- { 0, 0, 0 }
+ KCmdLineLastOption
 };
 
 extern "C" int kdemain(int argc, char *argv[])

@@ -17,7 +17,7 @@ static KCmdLineOptions options[] =
 				  "this is rather long comment"), 0 },
  { "baud <baudrate>",	I18N_NOP("set baudrate"), "9600" },
  { "+file(s)",		I18N_NOP("Files to load"), 0 },
- { 0,0,0 }
+ KCmdLineLastOption
 };
 
 #if 1

@@ -329,7 +329,7 @@ int main (int argc, char *argv[])
         { "x", "uudecode the given string or file", 0 },
         { "z", "run a preset message-digest test", 0 },
         { "+command", "[input1, input2,...]", 0 },
-        { 0, 0, 0 }
+        KCmdLineLastOption
     };
 
     KCmdLineArgs::init( argc, argv, "kmdcodectest", description, version );

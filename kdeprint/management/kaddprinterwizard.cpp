@@ -8,7 +8,7 @@ static KCmdLineOptions options[] =
 {
 	{ "kdeconfig", I18N_NOOP("Configure KDE Print"), 0 },
 	{ "serverconfig", I18N_NOOP("Configure print server"), 0 },
-	{0, 0, 0}
+	KCmdLineLastOption
 };
 
 extern "C" int kdemain(int argc, char *argv[])

@@ -13,7 +13,7 @@ using namespace KABC;
 static const KCmdLineOptions options[] =
 {
   {"multiple", I18N_NOOP("Allow selection of multiple addressees."), 0},
-  {0,0,0}
+  KCmdLineLastOption
 };
 
 int main(int argc,char **argv)

@@ -49,7 +49,7 @@ static const KCmdLineOptions options[] =
   { "window-id wid", I18N_NOOP("Run in the specified XWindow."), 0 },
   { "root", I18N_NOOP("Run in the root XWindow."), 0 },
   { "demo", I18N_NOOP("Start screen saver in demo mode."), "default"},
-  { 0,0,0 }
+  KCmdLineLastOption
 };
 
 static void crashHandler( int  )

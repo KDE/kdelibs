@@ -30,7 +30,7 @@
 #include <kaction.h>
 #include "domtreeview.h"
 
-static KCmdLineOptions options[] = { { "+file", "url to open", 0 } , {0, 0, 0} };
+static KCmdLineOptions options[] = { { "+file", "url to open", 0 } , KCmdLineLastOption };
 
 int main(int argc, char *argv[])
 {

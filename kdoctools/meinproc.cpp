@@ -79,7 +79,7 @@ static KCmdLineOptions options[] =
     { "cache <file>", I18N_NOOP( "create a cache file for the document" ), 0},
     { "srcdir <dir>", I18N_NOOP( "set the srcdir, for kdelibs" ), 0},
     { "+xml", I18N_NOOP("The file to transform"), 0},
-    { 0, 0, 0 } // End of options.
+    KCmdLineLastOption // End of options.
 };
 
 

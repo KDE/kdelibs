@@ -42,7 +42,7 @@ static KCmdLineOptions options[] =
 {
 	{ "check <update-file>", I18N_NOOP("Check whether config file itself requires updating"), 0 },
 	{ "+[file]", I18N_NOOP("File to read update instructions from"), 0 },
-        { 0, 0, 0 }
+        KCmdLineLastOption
 };
 
 class KonfUpdate

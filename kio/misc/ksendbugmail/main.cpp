@@ -21,7 +21,7 @@
 static KCmdLineOptions options[] = {
     { "subject <argument>", I18N_NOOP("Subject line"), 0 },
     { "recipient <argument>", I18N_NOOP("Recipient"), "submit@bugs.kde.org" },
-    { 0, 0, 0 }
+    KCmdLineLastOption
 };
 
 void BugMailer::slotError(int errornum) {

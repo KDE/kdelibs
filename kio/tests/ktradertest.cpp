@@ -10,7 +10,7 @@ static KCmdLineOptions options[] =
   { "+[genericServiceType]", "Application (default), or KParts/ReadOnlyPart", 0 },
   { "+[constraint]", "constraint", 0 },
   { "+[preference]", "preference", 0 },
-  { 0, 0, 0 }
+  KCmdLineLastOption
 };
 
 int main( int argc, char **argv )

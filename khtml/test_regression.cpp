@@ -296,7 +296,7 @@ static KCmdLineOptions options[] =
   { "test <filename>", "Run only a single test", 0 } ,
   { "+source_dir", "Directory containing html files to prcoess", 0 } ,
   { "+output_dir", "Directory for comparison/storage of KHTMLPart internal structure dump", 0 } ,
-  {0, 0, 0}
+  KCmdLineLastOption
 };
 
 int main(int argc, char *argv[])

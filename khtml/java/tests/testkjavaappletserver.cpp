@@ -12,7 +12,7 @@
 static KCmdLineOptions options[] =
 {
     { "+[kdelibs_path]", "path to kdelibs directory", 0 },
-    { 0, 0, 0 }
+    KCmdLineLastOption
 };
 
 int main(int argc, char **argv)

@@ -41,7 +41,7 @@ static const KCmdLineOptions options[] =
   {"disable-autostart", I18N_NOOP("Disable automatic startup on login."), 0},
   {"o", 0, 0},
   {"override", I18N_NOOP("Override existing entries."),"1"},
-  {0,0,0}
+  KCmdLineLastOption
 };
 
 void readKMailEntry( const QString &kmailEntry, KABC::AddressBook *ab )

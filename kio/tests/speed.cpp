@@ -42,7 +42,7 @@ void SpeedTest::finished(Job*) {
 static KCmdLineOptions options[] =
 {
   { "+[URL]", "the URL to list", 0 },
-  { 0, 0, 0 }
+  KCmdLineLastOption
 };
 
 int main(int argc, char **argv) {

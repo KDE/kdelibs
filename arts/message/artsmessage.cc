@@ -48,7 +48,7 @@ static KCmdLineOptions options[] =
 	  { "i", 0, 0 },
 	  { "info", I18N_NOOP("Display informational message"), 0 },
 	  { "+message", I18N_NOOP("Message string to be displayed"), 0 },
-	  { 0, 0, 0 } // End of options.
+	  KCmdLineLastOption // End of options.
   };
 
 KAboutData aboutData("artsmessage", I18N_NOOP("artsmessage"), "0.1",

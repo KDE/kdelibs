@@ -66,7 +66,7 @@ bool KUniqueApplication::s_uniqueTestDone = false;
 static KCmdLineOptions kunique_options[] =
 {
   { "nofork", "Don't run in the background.", 0 },
-  { 0, 0, 0 }
+  KCmdLineLastOption
 };
 
 struct DCOPRequest {

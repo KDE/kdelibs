@@ -161,7 +161,7 @@ static KCmdLineOptions options[] =
   { "+[SourceDir]", I18N_NOOP("dir containing test files"), 0 },
   { "+[DestDir]", I18N_NOOP("dir to save rendered images in"), 0 },
   { "+[DestDir]", I18N_NOOP("log filename"), 0 },
-  { 0, 0, 0 }
+  KCmdLineLastOption
   // INSERT YOUR COMMANDLINE OPTIONS HERE
 };
 

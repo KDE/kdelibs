@@ -39,7 +39,7 @@
 static KCmdLineOptions options[] = {
    { "+old", I18N_NOOP("Old hostname."), 0 },
    { "+new", I18N_NOOP("New hostname."), 0 },
-   { 0, 0, 0 }
+   KCmdLineLastOption
 };
 
 static const char *appName = "kdontchangethehostname";

@@ -19,7 +19,7 @@
 static const KCmdLineOptions options[] =
 {
   {"+[directory ...]", "Directory(ies) to watch", 0},
-  {0,0,0}
+  KCmdLineLastOption
 };
 
 

@@ -17,7 +17,7 @@ static const KCmdLineOptions options[] =
 {
   { "save", "", 0 },
   { "number", "", 0 },
-  { 0, 0, 0}
+  KCmdLineLastOption
 };
 
 int main(int argc,char **argv)

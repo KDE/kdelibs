@@ -23,7 +23,7 @@
      { "set ", "Set the value of --item in --group", 0},
      { "groups",  "list the groups of this file", 0 },
      { "mimetypeinfo ", "the mimetype info for a mimetype", 0 },
-     { 0, 0, 0 }
+     KCmdLineLastOption
   };
   
 void printKeyValues(KFileMetaInfo& info)

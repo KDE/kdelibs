@@ -27,7 +27,7 @@
 static KCmdLineOptions options[] =
 {
 	{ "+[file]", I18N_NOOP("Configuration file to load"), 0},
-	{ 0, 0, 0}
+	KCmdLineLastOption
 };
 
 int main(int argc, char *argv[])

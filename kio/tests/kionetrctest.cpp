@@ -41,7 +41,7 @@ int main(int argc, char **argv)
     KCmdLineOptions options[] =
     {
         { "+command", "[url1,url2 ,...]", 0 },
-        { 0, 0, 0 }
+        KCmdLineLastOption
     };
 
     KCmdLineArgs::init( argc, argv, "kionetrctest", description, version );

@@ -51,7 +51,7 @@ application palette (light and dark shades are\ncalculated)."), 0},
 static const KCmdLineOptions options[] =
 {
   { "hello ", I18N_NOOP("Says hello"), 0 },
-  { 0, 0, 0 }
+  KCmdLineLastOption
 };
 
 int main(int argc, char *argv[])

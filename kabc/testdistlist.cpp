@@ -16,7 +16,7 @@ using namespace KABC;
 static const KCmdLineOptions options[] =
 {
   {"list <listname>", I18N_NOOP("Show distribution list with name <listname>"), 0},
-  {0,0,0}
+  KCmdLineLastOption
 };
 
 

@@ -1312,7 +1312,7 @@ static const KCmdLineOptions qt_options[] =
    { "qws", I18N_NOOP("forces the application to run as QWS Server."), 0},
 #endif
    { "reverse", I18N_NOOP("mirrors the whole layout of widgets."), 0},
-   { 0, 0, 0 }
+   KCmdLineLastOption
 };
 
 static const KCmdLineOptions kde_options[] =
@@ -1333,7 +1333,7 @@ static const KCmdLineOptions kde_options[] =
                                   // saved under Qt 3.0.x -- Qt 3.1.x includes the session key now automatically in
 				  // the session id (Simon)
 #endif
-   { 0, 0, 0 }
+   KCmdLineLastOption
 };
 
 void

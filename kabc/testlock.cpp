@@ -160,7 +160,7 @@ static const KCmdLineOptions options[] =
   { "d", 0, 0 },
   { "diraddressbook", "Standard address book directory resource", 0 },
   { "+identifier", "Identifier of resource to be locked, e.g. filename", 0 },
-  { 0, 0, 0 }
+  KCmdLineLastOption
 };
 
 int main(int argc,char **argv)

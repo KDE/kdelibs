@@ -30,7 +30,7 @@ static KCmdLineOptions options[] =
     { "stylesheet <xsl>",  I18N_NOOP( "Stylesheet to use" ), 0 },
     { "stdout", I18N_NOOP( "output whole document to stdout" ), 0 },
     { "+xml", I18N_NOOP("The file to transform"), 0},
-    { 0, 0, 0 } // End of options.
+    KCmdLineLastOption // End of options.
 };
 
 
