@@ -52,12 +52,19 @@ kimgio-config.h: $(PNG_MODULE) $(JPEG_MODULE) $(TIFF_MODULE)
 		fi; \
 	  fi \
 	fi ;\
-	done
+	done; \
+	echo "const char* kimgio_rpaths[] = {" >> kimgio-config.h ;\
+	for i in $(KDE_RPATH); do \
+	  if test ! $$i = "-rpath"; then \
+	    echo "    \"$$i\"," >> kimgio-config.h  ; \
+          fi; \
+	done ;\
+	echo "      0};" >> kimgio-config.h
 
 CLEANFILES = staticmodules kimgio-config.h
 
 libkimgio_la_LDFLAGS = -version-info 3:0 --export-dynamic
-libkimgio_la_LIBADD = `cat staticmodules` ../kdecore/libkdecore.la $(LIB_QT)
+libkimgio_la_LIBADD = `cat staticmodules` $(LIB_KDECORE)
 libkimgio_la_DEPENDENCIES = staticmodules
 libkimgio_la_SOURCES = kimgio.cpp
 kimgio.cpp: kimgio-config.h
@@ -72,5 +79,5 @@ EXTRA_DIST = netpbm.cpp netpbm.h
 check_PROGRAMS = test
 test_SOURCES = test.cpp
 test_LDFLAGS = $(all_libraries) $(KDE_RPATH) 
-test_LDADD = $(LIB_QT) libkimgio.la ../kdecore/libkdecore.la
+test_LDADD = libkimgio.la $(LIB_KDECORE)
 

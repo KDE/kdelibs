@@ -152,7 +152,7 @@ AC_SUBST(LIB_KDEUTIL)
 idldir="\$(includedir)/idl"
 AC_SUBST(idldir)
 
-LIB_KDECORE='$(top_builddir)/kdecore/libkdecore.la -lXext $(LIB_QT)'
+LIB_KDECORE='$(top_builddir)/kdecore/libkdecore.la -lXext $(LIB_QT) $(LIBDL)'
 AC_SUBST(LIB_KDECORE)
 LIB_KDEUI='$(top_builddir)/kdeui/libkdeui.la $(LIB_KDECORE)'
 AC_SUBST(LIB_KDEUI)
