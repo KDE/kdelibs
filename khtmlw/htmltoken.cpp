@@ -278,7 +278,7 @@ void HTMLTokenizer::write( const char *str )
 		    res = charsets->convertTag(searchBuffer, len).copy();
 		    if (len <= 0)
 		    {
-		    	res = NULL;
+		    	res = "";
 		    }
 	        }
 	    }

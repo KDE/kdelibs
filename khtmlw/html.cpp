@@ -1146,7 +1146,7 @@ void KHTMLWidget::begin( const char *_url, int _x_offset, int _y_offset )
     
     stopParser();
     
-    reference = NULL;
+    reference = "";
     
     if ( _url != 0L )
     {
@@ -1489,7 +1489,7 @@ void KHTMLWidget::timerEvent( QTimerEvent * )
     {
     	if (gotoAnchor())
     	{
-    	    reference = NULL;
+    	    reference = "";
     	}
     }
 
@@ -4358,7 +4358,7 @@ bool KHTMLWidget::gotoAnchor( const char *_name )
     
     if (gotoAnchor())
     {
-       reference = NULL;
+       reference = "";
        return TRUE;
     }
     return FALSE;
