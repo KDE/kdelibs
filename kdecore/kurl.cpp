@@ -30,13 +30,6 @@
 #include <qdir.h>
 #include <qstringlist.h>
 
-// NB: return true if "protocol://" is supported
-static bool protocolSupportEmptyPath(QString& protocol)
-{
-	if (protocol == "smb") return true;
-	return false;
-}
-
 static bool
 isRelativeURL(const QString &_url)
 {
@@ -180,16 +173,21 @@ bool KURL::isEmpty() const
 {
   return (m_strPath.isEmpty() && m_strProtocol.isEmpty());
 }
+
 void KURL::parse( const QString& _url )
 {
-  if ( _url.isEmpty() )
-    {
-      m_bIsMalformed = true;
-      return;
-    }
+  // Return immediately whenever the given url
+  // is empty or null.
+  if ( _url.length() == 0  )
+  {
+    m_strProtocol = _url;
+    return;
+  }
 
-  m_bIsMalformed = false;
-  m_strProtocol = "";
+  // This is wrong!! All URLs should be deemed invalid until
+  // they have been correctly parsed. Specially now since ::url()
+  // returns the given url even if it is malformed. (DA)
+  // m_bIsMalformed = false;
 
   QString port;
   int start = 0;
@@ -213,7 +211,7 @@ void KURL::parse( const QString& _url )
   while( (isalpha((int)buf[pos]) || isdigit((int)buf[pos]) ||
           buf[pos] == '+' || buf[pos] == '-') &&
          pos < len ) pos++;
-  if ( pos == len )
+  if ( pos == len - 1 ) // Need to always compare length()-1 otherwise KURL passes "http:" as legal!!! (DA)
     goto NodeErr;
   if (buf[pos] == ':' && buf[pos+1] == '/' && buf[pos+2] == '/' )
     {
@@ -238,8 +236,8 @@ void KURL::parse( const QString& _url )
 
   //Node 3: We need at least one character here
   if ( pos == len )
-    goto NodeOk;
-  //    goto NodeErr;
+    // goto NodeOk; Wrong!!!  As the above comment states at least one character is required here!!!
+      goto NodeErr;
 #if 0
   start = pos++;
 #else
@@ -365,16 +363,16 @@ void KURL::parse( const QString& _url )
  Node11:
   start = pos;
   if ( pos++ == len )
-    goto NodeOk;
-  //    goto NodeErr;
-
+    goto NodeOk; // Wrong, but since a fix was applied up top it is a non-issue here!!!!
+                 // Just for the record an opaque URL such as "mailto:" is always required
+                 // to have at least one more character other than a '/' following the colon.
   // Node 12: Accept the res
   setEncodedPathAndQuery( QString( buf + start, len - start ) );
   goto NodeOk;
 
  NodeOk:
   delete []orig;
-
+  m_bIsMalformed = false; // Valid URL
   if (m_strProtocol.isEmpty())
     m_strProtocol = "file";
 
@@ -652,8 +650,7 @@ QString KURL::url( int _trailing ) const
   // HACK encode parts here!
 
   QString u = m_strProtocol.copy();
-  // NB: Add "://" if supported, otherwise only ":/" will be added for subdirs!
-  if ( hasHost() || protocolSupportEmptyPath(u) )
+  if ( hasHost() )
   {
     u += "://";
     if ( hasUser() )
@@ -817,7 +814,7 @@ void KURL::addPath( const QString& _txt )
   int i = 0;
   int len = m_strPath.length();
   // NB: avoid three '/' when building a new path from nothing
-  if ((len == 0) && protocolSupportEmptyPath(m_strProtocol)) {
+  if ( len == 0 ) {
     while( _txt[i] == '/' ) ++i;
   }
   // Add the trailing '/' if it is missing
@@ -987,11 +984,7 @@ bool KURL::cd( const QString& _dir, bool zapRef )
 
   p += _dir;
   p = QDir::cleanDirPath( p );
-  // NB: QDir set "foo/.." to ".", which we don't want in case the protocol can
-  // support an empty path. ex: "smb://." => "smb://"
-  if ((p == ".") && protocolSupportEmptyPath(m_strProtocol))
-    setPath( "" );
-  else setPath( p );
+  setPath( p );
 
   if ( zapRef )
     setHTMLRef( QString::null );
