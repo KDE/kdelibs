@@ -40,12 +40,33 @@
 #include <X11/Xlib.h>
 
 
-KRootPixmap::KRootPixmap(QWidget *widget)
-    : QObject(widget)
+KRootPixmap::KRootPixmap( QWidget *widget, const char *name )
+    : QObject(widget, name ? name : "KRootPixmap" )
 {
     m_pWidget = widget;
     m_pPixmap = new KSharedPixmap;
-    m_pTimer = new QTimer;
+    m_pTimer = new QTimer( this );
+    m_bInit = false;
+    m_bActive = false;
+    m_bCustomPaint = false;
+
+    connect(kapp, SIGNAL(backgroundChanged(int)), SLOT(slotBackgroundChanged(int)));
+    connect(m_pPixmap, SIGNAL(done(bool)), SLOT(slotDone(bool)));
+    connect(m_pTimer, SIGNAL(timeout()), SLOT(repaint()));
+
+    QObject *obj = m_pWidget;
+    while (obj->parent())
+	obj = obj->parent();
+    obj->installEventFilter(this);
+}
+
+KRootPixmap::KRootPixmap( QWidget *widget, QObject *parent, const char *name )
+    : QObject( parent, name ? name : "KRootPixmap" )
+{
+    m_pWidget = widget;
+    connect( widget, SIGNAL( destroyed() ), SLOT( stop() ) );
+    m_pPixmap = new KSharedPixmap;
+    m_pTimer = new QTimer( this );
     m_bInit = false;
     m_bActive = false;
 
@@ -59,15 +80,13 @@ KRootPixmap::KRootPixmap(QWidget *widget)
     obj->installEventFilter(this);
 }
 
-
 KRootPixmap::~KRootPixmap()
 {
     delete m_pPixmap;
-    delete m_pTimer;
 }
 
 
-int KRootPixmap::currentDesktop()
+int KRootPixmap::currentDesktop() const
 {
     NETRootInfo rinfo( qt_xdisplay(), NET::CurrentDesktop );
     rinfo.activate();
@@ -81,7 +100,7 @@ void KRootPixmap::start()
 	return;
 
     m_bActive = true;
-    if (!checkAvailable( false ))
+    if ( !isAvailable() )
     {
 	// We will get a KIPC message when the shared pixmap is available.
 	enableExports();
@@ -163,7 +182,7 @@ void KRootPixmap::repaint(bool force)
 	(m_pWidget->height() < m_Rect.height())
        )
     {
-	m_pWidget->setBackgroundPixmap(*m_pPixmap);
+ 	updateBackground( m_pPixmap );
 	return;
     }
     m_Rect = QRect(p1, p2);
@@ -174,7 +193,7 @@ void KRootPixmap::repaint(bool force)
 }
 
 
-bool KRootPixmap::checkAvailable( bool /* ignored */ )
+bool KRootPixmap::isAvailable() const
 {
     QString name = QString("DESKTOP%1").arg( currentDesktop() );
     return m_pPixmap->isAvailable(name);
@@ -202,7 +221,15 @@ void KRootPixmap::slotDone(bool success)
 	return;
     }
 
-    QPixmap pm = *m_pPixmap;
+    // We need to test active as the pixmap might become available
+    // after the widget has been destroyed.
+    if ( m_bActive )
+	updateBackground( m_pPixmap );
+}
+
+void KRootPixmap::updateBackground( KSharedPixmap *spm )
+{
+    QPixmap pm = *spm;
 
     if (m_Fade > 1e-6)
     {
@@ -212,7 +239,11 @@ void KRootPixmap::slotDone(bool success)
 	pm = io.convertToPixmap(img);
     }
 
-    m_pWidget->setBackgroundPixmap(pm);
+    if ( !m_bCustomPaint )
+	m_pWidget->setBackgroundPixmap( pm );
+    else {
+	emit backgroundUpdated( pm );
+    }
 }
 
 
