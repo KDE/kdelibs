@@ -41,7 +41,12 @@ noinst_HEADERS = internal.h collector.h nodes.h lexer.h lexer.lut.h \
 		 math_object.h object_object.h regexp_object.h error_object.h \
 		 function.h debugger.h property_map.h
 
-libkjs_la_LDFLAGS = -version-info 3:0:2 -no-undefined $(USER_LDFLAGS) $(all_libraries)
+if include_VERSION_SCRIPT
+VSCRIPT = -Wl,--version-script=$(srcdir)/libkjs.map
+endif
+
+libkjs_la_LDFLAGS = -version-info 3:0:2 -no-undefined $(VSCRIPT) \
+          $(USER_LDFLAGS) $(all_libraries)
 libkjs_la_LIBADD = -lm $(LIBPCRE)
 
 EXTRA_DIST = grammar.y
