@@ -40,6 +40,7 @@ namespace KABC {
 
 class FormatPlugin;
 class ResourceConfigWidget;
+class Lock;
 
 /**
   @internal
@@ -158,7 +159,7 @@ class ResourceFile : public Resource
 
     FormatPlugin *mFormat;
 
-    QString mLockUniqueName;
+    Lock *mLock;
     
     KDirWatch mDirWatch;
 

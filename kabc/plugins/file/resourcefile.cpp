@@ -1,6 +1,7 @@
 /*
     This file is part of libkabc.
-    Copyright (c) 2001 Cornelius Schumacher <schumacher@kde.org>
+
+    Copyright (c) 2001,2003 Cornelius Schumacher <schumacher@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -39,6 +40,7 @@
 #include "formatfactory.h"
 #include "resourcefileconfig.h"
 #include "stdaddressbook.h"
+#include "lock.h"
 
 #include "resourcefile.h"
 
@@ -86,6 +88,8 @@ void ResourceFile::init( const QString &fileName, const QString &formatName )
   connect( &mDirWatch, SIGNAL( deleted(const QString&) ), SLOT( fileChanged() ) );
 
   setFileName( fileName );
+
+  mLock = 0;
 }
 
 ResourceFile::~ResourceFile()
@@ -108,18 +112,29 @@ Ticket *ResourceFile::requestSaveTicket()
 
   if ( !addressBook() ) return 0;
 
-  if ( !lock( mFileName ) ) {
+  delete mLock;
+  mLock = new Lock( mFileName );
+
+  if ( mLock->lock() ) {
+    addressBook()->emitAddressBookLocked();
+  } else {
+    addressBook()->error( mLock->error() );
     kdDebug(5700) << "ResourceFile::requestSaveTicket(): Unable to lock file '"
-                  << mFileName << "'" << endl;
+                  << mFileName << "': " << mLock->error() << endl;
     return 0;
   }
+
   return createTicket( this );
 }
 
 void ResourceFile::releaseSaveTicket( Ticket *ticket )
 {
   delete ticket;
-  unlock( mFileName );
+
+  delete mLock;
+  mLock = 0;
+
+  addressBook()->emitAddressBookUnlocked();
 }
 
 bool ResourceFile::doOpen()
@@ -193,7 +208,7 @@ bool ResourceFile::asyncLoad()
   return true;
 }
 
-bool ResourceFile::save( Ticket* )
+bool ResourceFile::save( Ticket * )
 {
   kdDebug(5700) << "ResourceFile::save()" << endl;
 
@@ -216,7 +231,7 @@ bool ResourceFile::save( Ticket* )
   return ok;
 }
 
-bool ResourceFile::asyncSave( Ticket* )
+bool ResourceFile::asyncSave( Ticket * )
 {
   QFile file( mTempFile );
 
@@ -238,75 +253,6 @@ bool ResourceFile::asyncSave( Ticket* )
            this, SLOT( uploadFinished( KIO::Job* ) ) );
 
   return true;
-}
-
-bool ResourceFile::lock( const QString &fileName )
-{
-  kdDebug(5700) << "ResourceFile::lock()" << endl;
-
-  QString fn = fileName;
-  fn.replace( "/", "_" );
-
-  QString lockName = locateLocal( "data", "kabc/lock/" + fn + ".lock" );
-  kdDebug(5700) << "-- lock name: " << lockName << endl;
-
-  if ( QFile::exists( lockName ) ) {  // check if it is a stale lock file
-    QFile file( lockName );
-    if ( !file.open( IO_ReadOnly ) )
-      return false;
-
-    QDataStream t( &file );
-
-    QString app; int pid;
-    t >> pid >> app;
-
-    int retval = ::kill( pid, 0 );
-    if ( retval == -1 && errno == ESRCH ) { // process doesn't exists anymore
-      QFile::remove( lockName );
-      kdError() << "dedect stale lock file from process '" << app << "'" << endl;
-      file.close();
-    } else {
-      addressBook()->error( i18n( "The resource '%1' is locked by application '%2'." )
-                            .arg( resourceName() ).arg( app )  );
-      return false;
-    }
-  }
-
-  QString lockUniqueName;
-  lockUniqueName = fn + kapp->randomString( 8 );
-  mLockUniqueName = locateLocal( "data", "kabc/lock/" + lockUniqueName );
-  kdDebug(5700) << "-- lock unique name: " << mLockUniqueName << endl;
-
-  // Create unique file
-  QFile file( mLockUniqueName );
-  file.open( IO_WriteOnly );
-  QDataStream t( &file );
-  t << ::getpid() << QString( KGlobal::instance()->instanceName() );
-  file.close();
-
-  // Create lock file
-  int result = ::link( QFile::encodeName( mLockUniqueName ),
-                       QFile::encodeName( lockName ) );
-
-  if ( result == 0 ) {
-    addressBook()->emitAddressBookLocked();
-    return true;
-  }
-
-  // TODO: check stat
-
-  return false;
-}
-
-void ResourceFile::unlock( const QString &fileName )
-{
-  QString fn = fileName;
-  fn.replace( "/" , "_" );
-
-  QString lockName = locateLocal( "data", "kabc/lock/" + fn + ".lock" );
-  QFile::remove( lockName );
-  QFile::remove( mLockUniqueName );
-  addressBook()->emitAddressBookUnlocked();
 }
 
 void ResourceFile::setFileName( const QString &fileName )
@@ -365,7 +311,7 @@ void ResourceFile::removeAddressee( const Addressee &addr )
 
 void ResourceFile::cleanUp()
 {
-  unlock( mFileName );
+  delete mLock;
 }
 
 void ResourceFile::downloadFinished( KIO::Job* )

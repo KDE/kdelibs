@@ -21,6 +21,8 @@
 
 #include "testlock.h"
 
+#include "stdaddressbook.h"
+
 #include <kaboutdata.h>
 #include <kapplication.h>
 #include <kdebug.h>
@@ -124,17 +126,11 @@ void LockWidget::updateLockView()
     
     QString app;
     int pid;
-    
-    QFile f( Lock::locksDir() + *it );
-    if ( !f.open( IO_ReadOnly ) ) {
-      kdWarning() << "Unable to open lock file '" << f.name() << "'" << endl; 
+    if ( !Lock::readLockFile( dir.filePath( *it ), pid, app ) ) {
+      kdWarning() << "Unable to open lock file '" << *it << "'" << endl; 
     } else {
-      QDataStream t( &f );
-      t >> pid;
-      t >> app;
+      new QListViewItem( mLockView, *it, QString::number( pid ), app );
     }
-    
-    new QListViewItem( mLockView, *it, QString::number( pid ), app );
   }
 }
 
@@ -159,8 +155,10 @@ void LockWidget::unlock()
 
 static const KCmdLineOptions options[] =
 {
-  {"+identifier","Identifier of resource to be locked, e.g. filename", 0 },
-  {0,0,0}
+  { "a", 0, 0 },
+  { "addressbook", "Standard address book", 0 },
+  { "+identifier", "Identifier of resource to be locked, e.g. filename", 0 },
+  { 0, 0, 0 }
 };
 
 int main(int argc,char **argv)
@@ -179,6 +177,13 @@ int main(int argc,char **argv)
   } else if ( args->count() != 0 ) {
     cerr << "Usage: testlock <identifier>" << endl;
     return 1;
+  }
+
+  if ( args->isSet( "addressbook" ) ) {
+    if ( args->count() == 1 ) {
+      cerr << "Ignoring resource identifier" << endl;
+    }
+    identifier = StdAddressBook::fileName(); 
   }
 
   LockWidget mainWidget( identifier );

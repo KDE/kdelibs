@@ -1,6 +1,6 @@
 /*
     This file is part of libkabc.
-    Copyright (c) 2001 Cornelius Schumacher <schumacher@kde.org>
+    Copyright (c) 2001,2003 Cornelius Schumacher <schumacher@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -41,35 +41,53 @@ Lock::Lock( const QString &identifier )
   mIdentifier.replace( "/", "_" );
 }
 
+Lock::~Lock()
+{
+  unlock();
+}
+
 QString Lock::locksDir()
 {
   return locateLocal( "data", "kabc/lock/" );
+}
+
+bool Lock::readLockFile( const QString &filename, int &pid, QString &app )
+{
+  QFile file( filename );
+  if ( !file.open( IO_ReadOnly ) ) return false;
+  
+  QDataStream t( &file );
+  t >> pid >> app;
+  
+  return true;
+}
+
+QString Lock::lockFileName() const
+{
+  return locksDir() + mIdentifier + ".lock";
 }
 
 bool Lock::lock()
 {
   kdDebug(5700) << "Lock::lock()" << endl;
 
-  QString lockName = locksDir() + mIdentifier + ".lock";
+  QString lockName = lockFileName();
   kdDebug(5700) << "-- lock name: " << lockName << endl;
 
   if ( QFile::exists( lockName ) ) {  // check if it is a stale lock file
-    QFile file( lockName );
-    if ( !file.open( IO_ReadOnly ) ) {
+    int pid;
+    QString app;
+
+    if ( !readLockFile( lockFileName(), pid, app ) ) {
       mError = i18n("Unable to open lock file.");
       return false;
     }
 
-    QDataStream t( &file );
-
-    QString app; int pid;
-    t >> pid >> app;
-
     int retval = ::kill( pid, 0 );
     if ( retval == -1 && errno == ESRCH ) { // process doesn't exists anymore
       QFile::remove( lockName );
-      kdError(5700) << "detect stale lock file from process '" << app << "'" << endl;
-      file.close();
+      kdError(5700) << "Removed stale lock file from process '" << app << "'"
+                    << endl;
     } else {
       mError = i18n("The resource '%1' is locked by application '%2'.")
                .arg( mIdentifier ).arg( app );
@@ -107,10 +125,20 @@ bool Lock::lock()
 
 bool Lock::unlock()
 {
-  QString lockName = locksDir() + mIdentifier + ".lock";
-  QFile::remove( lockName );
-  QFile::remove( mLockUniqueName );
-  emit unlocked();
+  int pid;
+  QString app;
+  if ( readLockFile( lockFileName(), pid, app ) ) {
+    if ( pid == getpid() ) {
+      QFile::remove( lockFileName() );
+      QFile::remove( mLockUniqueName );
+      emit unlocked();
+    } else {
+      mError = i18n("Unlock failed. Lock file is owned by other process: %1 (%2)")
+               .arg( app ).arg( QString::number( pid ) );
+      kdDebug() << "Lock::unlock(): " << mError << endl;
+      return false;
+    }
+  }
 
   mError = "";
   return true;

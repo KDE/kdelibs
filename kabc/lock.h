@@ -43,6 +43,11 @@ class Lock : public QObject
     Lock( const QString &identifier );
 
     /**
+      Destruct lock object. This also removes the lock on the resource.
+    */
+    ~Lock();
+
+    /**
       Lock resource.
     */
     bool lock();
@@ -53,6 +58,10 @@ class Lock : public QObject
     bool unlock();
 
     QString error() const;
+
+    QString lockFileName() const;
+
+    static bool readLockFile( const QString &filename, int &pid, QString &app );
 
     static QString locksDir();
 
@@ -66,6 +75,9 @@ class Lock : public QObject
     QString mLockUniqueName;
 
     QString mError;
+
+    class Private;
+    Private *d;
 };
 
 }
