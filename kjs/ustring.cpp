@@ -120,6 +120,7 @@ bool KJS::operator==(const KJS::CString& c1, const KJS::CString& c2)
 UChar UChar::null = UChar(0, 0);
 UStringData UStringData::null = UStringData();
 UString UString::null = UString();
+char* UString::statBuffer = 0L;
 
 UString::UString()
 {
@@ -179,14 +180,20 @@ void UString::append(const UString &t)
 
 CString UString::cstring() const
 {
-  char *c = new char[size()+1];
-  for(unsigned int i = 0; i < size(); i++)
-    c[i] = data()[i].lo;
-  c[size()] = '\0';
-  CString cstr(c);
-  delete [] c;
+  return CString(ascii());
+}
 
-  return cstr;
+char *UString::ascii() const
+{
+  if (statBuffer)
+    delete [] statBuffer;
+
+  statBuffer = new char[size()+1];
+  for(unsigned int i = 0; i < size(); i++)
+    statBuffer[i] = data()[i].lo;
+  statBuffer[size()] = '\0';
+
+  return statBuffer;
 }
 
 UString &UString::operator=(const char *c)

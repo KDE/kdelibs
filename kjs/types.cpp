@@ -160,3 +160,15 @@ int List::size() const
   return s;
 }
 
+KJSO *List::at(int i) const
+{
+  if (i < 0 || i >= size())
+    return newUndefined();
+
+  ListIterator it = begin();
+  int j = 0;
+  while ((j++ < i))
+    it++;
+
+  return it;
+}

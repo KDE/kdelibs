@@ -304,6 +304,8 @@ namespace KJS {
     ListIterator end() const { return ListIterator(hook); }
     bool isEmpty() const { return (hook->prev == hook); }
     int size() const;
+    KJSO *at(int i) const;
+    KJSO *operator[](int i) const { return at(i); }
   private:
     void erase(ListIterator it);
   private:

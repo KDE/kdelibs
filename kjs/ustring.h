@@ -112,6 +112,7 @@ namespace KJS {
 
     // conversions to other string types
     CString cstring() const;
+    char *ascii() const;
     DOM::DOMString string() const;
     QString qstring() const;
 
@@ -132,6 +133,7 @@ namespace KJS {
     void attach(UStringData *r);
     void release();
     UStringData *rep;
+    static char *statBuffer;
   };
 
   bool operator==(const UChar &c1, const UChar &c2);
