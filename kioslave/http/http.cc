@@ -2054,6 +2054,12 @@ bool HTTPProtocol::readHeader()
          setMetaData("modified", m_lastModified);
      return true;
   }
+  
+  QCString locationStr; // In case we get a redirect.
+  QCString cookieStr; // In case we get a cookie.
+  QString disposition; // Incase we get a Content-Disposition
+  QString mediaAttribute;
+  QString mediaValue;
 
   m_etag = QString::null;
   m_lastModified = QString::null;
@@ -2063,10 +2069,6 @@ bool HTTPProtocol::readHeader()
   time_t expireDate = 0; // 0 = no info, 1 = already expired, > 1 = actual date
   int currentAge = 0;
   int maxAge = -1; // -1 = no max age, 0 already expired, > 0 = actual time
-
-  QCString locationStr; // In case we get a redirect.
-  QCString cookieStr; // In case we get a cookie.
-  QString disposition; // Incase we get a Content-Disposition
 
   // read in 4096 bytes at a time (HTTP cookies can be quite large.)
   int len = 0;
@@ -2138,7 +2140,8 @@ bool HTTPProtocol::readHeader()
 
     // Save broken servers from damnation!!
     char* buf = buffer;
-    while( *buf == ' ' ) buf++;
+    while( *buf == ' ' )
+        buf++;
 
     // We got a header back !
     if (strncasecmp(buf, "HTTP/", 5) == 0) {
@@ -2324,36 +2327,39 @@ bool HTTPProtocol::readHeader()
 
     // what type of data do we have?
     else if (strncasecmp(buf, "Content-type:", 13) == 0) {
-       m_strMimeType = QString::fromLatin1(trimLead(buf + 13)).stripWhiteSpace().lower();
-       int semicolonPos = m_strMimeType.find( ';' );
-       if ( semicolonPos != -1 )
-       {
-         int pos = semicolonPos;
-         while ( m_strMimeType[++pos] == ' ' );
-         if ( m_strMimeType.find("charset", pos, false) == pos )
-         {
-           pos+=7;
-           while( m_strMimeType[pos] == ' ' || m_strMimeType[pos] == '=' )
-              pos++;
-           int end_pos = m_strMimeType.length();
-           if ( m_strMimeType[pos] == '"' )
-           {
-              pos++;
-              int index = end_pos-1;
-              while ( index > pos )
-              {
-                  if ( m_strMimeType[index] == '"' )
-                      break;
-                  index--;
-              }
-              if ( index > pos )
-                end_pos = index;
-           }
-           m_strCharset = m_strMimeType.mid( pos, end_pos );
-         }
-         m_strMimeType.truncate( semicolonPos );
-       }
-       kdDebug(7113) << "(" << m_pid << ") Content-type: " << m_strMimeType << endl;
+      char *start = trimLead(buf + 13);
+      char *pos = start;
+
+      // Increment until we encounter ";" or the end of the buffer
+      while ( *pos && *pos != ';' )  pos++;
+
+      // Assign the mime-type.
+      m_strMimeType = QString::fromLatin1(start, pos-start).stripWhiteSpace().lower();
+      kdDebug(7113) << "(" << m_pid << ") Content-type: " << m_strMimeType << endl;
+
+      // If we still have text, then it means we have a mime-type with a
+      // paramter (eg: charset=iso-8851) ; so let's get that...
+      if (*pos)
+      {
+        start = ++pos;
+        while ( *pos && *pos != '=' )  pos++;
+
+        if (*pos)
+        {
+          mediaAttribute = QString::fromLatin1(start, pos-start).stripWhiteSpace().lower();
+          mediaValue = QString::fromLatin1(++pos).stripWhiteSpace().lower();
+
+          kdDebug (7113) << "(" << m_pid << ") Media-Parameter Attribute: "
+                         << mediaAttribute << endl;
+          kdDebug (7113) << "(" << m_pid << ") Media-Parameter Value: "
+                         << mediaValue << endl;
+
+          if ( mediaAttribute.find ("charset", 0, false) &&
+               mediaAttribute.length () == 7)
+            m_strCharset = mediaValue;
+
+        }
+      }
     }
 
     // Date
@@ -2444,19 +2450,21 @@ bool HTTPProtocol::readHeader()
     }
     // Refer to RFC 2616 sec 15.5/19.5.1 and RFC 2183
     else if(strncasecmp(buf, "Content-Disposition:", 20) == 0) {
-      char* dispositionBuf = trimLead(buffer + 20);
+      char* dispositionBuf = trimLead(buf + 20);
       while ( *dispositionBuf )
       {
         if ( strncasecmp( dispositionBuf, "filename", 8 ) == 0 )
         {
           dispositionBuf += 8;
-          while ( (dispositionBuf[0] == ' ') ||
-                  (dispositionBuf[0] == '=') )
+
+          while ( *dispositionBuf == ' ' || *dispositionBuf == '=' )
             dispositionBuf++;
 
           char* bufStart = dispositionBuf;
-          while ( dispositionBuf[0] && (dispositionBuf[0] != ';') )
+
+          while ( *dispositionBuf != ';' )
             dispositionBuf++;
+
           if ( dispositionBuf > bufStart )
           {
             disposition = QString::fromLatin1( bufStart, dispositionBuf-bufStart );
@@ -2466,14 +2474,14 @@ bool HTTPProtocol::readHeader()
         else
         {
           char *bufStart = dispositionBuf;
-          while ( dispositionBuf[0] && (dispositionBuf[0] != ';') )
+
+          while ( *dispositionBuf != ';' )
             dispositionBuf++;
+
           if ( dispositionBuf > bufStart )
-          {
-            // Sometimes "filename=" is missing. 
             disposition = QString::fromLatin1( bufStart, dispositionBuf-bufStart ).stripWhiteSpace();
-          }
-          while ( (dispositionBuf[0] == ';') || (dispositionBuf[0] == ' ') )
+
+          while ( *dispositionBuf == ';' || *dispositionBuf == ' ' )
             dispositionBuf++;
         }
       }
@@ -2486,7 +2494,7 @@ bool HTTPProtocol::readHeader()
         if( pos > -1 )
           disposition = disposition.mid(pos+1);
         kdDebug(7113) << "(" << m_pid << ") (" << m_pid << ") Content-Disposition: "
-											<< disposition << endl;
+                      << disposition << endl;
       }
     }
     else if (strncasecmp(buf, "Proxy-Connection:", 17) == 0) {
@@ -2707,8 +2715,8 @@ bool HTTPProtocol::readHeader()
         m_qContentEncodings.remove(m_qContentEncodings.fromLast());
         m_strMimeType = QString::fromLatin1("application/x-tgz");
      }
-     else if ( (m_request.allowCompressedPage && 
-                m_strMimeType == "text/html") 
+     else if ( (m_request.allowCompressedPage &&
+                m_strMimeType == "text/html")
                 ||
                (m_request.allowCompressedPage &&
                 m_strMimeType != "application/x-tgz" &&
@@ -2792,21 +2800,18 @@ bool HTTPProtocol::readHeader()
 
   // Set charset. Maybe charSet should be a class member, since
   // this method is somewhat recursive....
-  if ( !m_strCharset.isEmpty() )
-  {
-     kdDebug(7113) << "(" << m_pid << ") Setting charset metadata to: " << m_strCharset << endl;
-     setMetaData("charset", m_strCharset);
-  }
+  if ( !mediaAttribute.isEmpty() )
+    setMetaData(mediaAttribute, mediaValue);
 
   if( !disposition.isEmpty() )
   {
-     kdDebug(7113) << "(" << m_pid << ") Setting Content-Disposition metadata to: "
-                   << disposition << endl;
-     setMetaData("content-disposition", disposition);
+    kdDebug(7113) << "(" << m_pid << ") Setting Content-Disposition metadata to: "
+                  << disposition << endl;
+    setMetaData("content-disposition", disposition);
   }
 
   if (!m_lastModified.isEmpty())
-     setMetaData("modified", m_lastModified);
+    setMetaData("modified", m_lastModified);
 
   if (!mayCache)
     setMetaData("no-cache", "true");
