@@ -219,6 +219,7 @@ KDialogBase::~KDialogBase()
 KPushButton *SButton::append( int key, const KGuiItem &item )
 {
   KDialogBaseButton *p = new KDialogBaseButton( item, key, box );
+  p->setAutoDefault( false );
   list.append( p );
   return( p );
 }
@@ -646,10 +647,13 @@ void KDialogBase::makeButtonBox( int buttonMask, ButtonCode defaultButton,
     connect( pb, SIGNAL(clicked()), SLOT(slotClose()) );
   }
 
-  QPushButton *pb = actionButton( defaultButton );
-  if( pb != 0 )
+  if( defaultButton != NoDefault )
   {
-    setButtonFocus( pb, true, false );
+    QPushButton *pb = actionButton( defaultButton );
+    if( pb != 0 )
+    {
+      setButtonFocus( pb, true, false );
+    }
   }
 
   setButtonStyle( ActionStyle0 );

@@ -212,6 +212,8 @@ class KDialogBase : public KDialog
      *  @li @p Yes -     Show Yes-button.
      *  @li @p Stretch - Used internally. Ignored when used in a constructor.
      *  @li @p Filler  - Used internally. Ignored when used in a constructor.
+     *  @li @p NoDefault - Used when specifying a default button; indicates that
+     *                     no button should be marked by default.
      */
     enum ButtonCode
     {
@@ -229,7 +231,8 @@ class KDialogBase : public KDialog
       Yes     = 0x00000100,
       Details = 0x00000400,
       Filler  = 0x40000000,
-      Stretch = 0x80000000
+      Stretch = 0x80000000,
+      NoDefault             ///< @since 3.3
     };
 
     enum ActionButtonStyle
@@ -276,7 +279,8 @@ class KDialogBase : public KDialog
      * @param buttonMask Specifies which buttons will be visible. If zero
      *        (0) no button box will be made.
      * @param defaultButton Specifies which button will be marked as
-     *        the default.
+     *        the default. Use ButtonCode::NoDefault to indicate that no button
+     *        should be marked as the default button.
      * @param separator If @p true, a separator line is drawn between the
      *        action buttons and the main widget.
      * @param user1 User button1 item.
@@ -305,7 +309,8 @@ class KDialogBase : public KDialog
      * @param buttonMask Specifies which buttons will be visible. If zero
      *        (0) no button box will be made.
      * @param defaultButton Specifies which button will be marked as
-     *        the default.
+     *        the default. Use ButtonCode::NoDefault to indicate that no button
+     *        should be marked as the default button.
      * @param parent Parent of the dialog.
      * @param name Dialog name (for internal use only).
      * @param modal Controls dialog modality. If @p false, the rest of the
@@ -343,7 +348,8 @@ class KDialogBase : public KDialog
      * @param buttonMask Specifies which buttons will be visible. If zero
      *        (0) no button box will be made.
      * @param defaultButton Specifies which button will be marked as
-     *        the default.
+     *        the default. Use ButtonCode::NoDefault to indicate that no button
+     *        should be marked as the default button.
      * @param separator If @p true, a separator line is drawn between the
      *        action buttons and the main widget.
      * @param user1 User button1 text item.
@@ -377,7 +383,8 @@ class KDialogBase : public KDialog
      * @param buttonMask Specifies which buttons will be visible. If zero
      *        (0) no button box will be made.
      * @param defaultButton Specifies which button will be marked as
-     *        the default.
+     *        the default. Use ButtonCode::NoDefault to indicate that no button
+     *        should be marked as the default button.
      * @param escapeButton Specifies which button will be activated by
      *        when the dialog receives a @p Key_Escape keypress.
      * @param parent Parent of the dialog.
@@ -1561,8 +1568,9 @@ class KDialogBase : public KDialog
      * only be ran once from the constructor.
      *
      * @param buttonMask Specifies what buttons will be made.
-     * @param defaultButton Specifies what button we be marked as the
-     * default.
+     * @param defaultButton Specifies which button will be marked as
+     *        the default. Use ButtonCode::NoDefault to indicate that no button
+     *        should be marked as the default button.
      * @param user1 User button1 item.
      * @param user2 User button2 item.
      * @param user2 User button3 item.
