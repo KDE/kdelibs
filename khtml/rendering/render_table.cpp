@@ -940,7 +940,6 @@ void RenderTable::calcColMinMax()
         int tot = QMIN(99,totalPercent);
         m_width = QMAX(availableWidth, (minVar + minRel)*100/(100-tot) );
         m_width = QMIN(m_width, availableWidth);
-        totalPercent = QMAX(totalPercent,100);
     }
     else if (hasPercent && hasFixed)
     {
@@ -997,6 +996,7 @@ void RenderTable::calcColMinMax()
     {
         m_minWidth = m_maxWidth = m_width;
     }
+    
     else if(style()->width().type == Variable && hasPercent)
     {
         int tot = QMIN(99,totalPercent);
@@ -1010,8 +1010,7 @@ void RenderTable::calcColMinMax()
     }
 
 
-
-    if (style()->width().type == Percent)
+    else if (style()->width().type == Percent)
     {
         if (realMaxWidth > m_maxWidth)
             m_maxWidth = realMaxWidth;
