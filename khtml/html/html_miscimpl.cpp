@@ -273,10 +273,8 @@ NodeImpl *HTMLCollectionImpl::item( unsigned long index ) const
     NodeImpl *node = getItem(info->current, index, pos);
     while (!node && info->current->parentNode() && info->current->parentNode() != base) {
         info->current = info->current->parentNode();
-        if (info->current->nextSibling()) {
-            pos = (int) info->position + 1;
+        if (info->current->nextSibling())
             node = getItem(info->current->nextSibling(), index, pos);
-        }
     }
     info->current = node;
     info->position = index;
