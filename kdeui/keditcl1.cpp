@@ -199,7 +199,6 @@ KEdit::cleanWhiteSpace()
       return;
    }
 
-   del();
    insert(newText);
    setAutoUpdate(TRUE);
    if (!repaintTimer->isActive())
