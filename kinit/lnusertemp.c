@@ -222,9 +222,11 @@ int main(int argc, char **argv)
   int res = 0;
 
   if ((argc != 2) || 
-      ((strcmp(argv[1], "tmp")!=0) && (strcmp(argv[1], "socket")!=0)))
+      ((strcmp(argv[1], "tmp")!=0) && 
+       (strcmp(argv[1], "socket")!=0) && 
+       (strcmp(argv[1], "cache")!=0)))
   {
-     fprintf(stderr, "Usage: lnusertemp tmp|socket\n");
+     fprintf(stderr, "Usage: lnusertemp tmp|socket|cache\n");
      return 1;
   }
 
@@ -240,13 +242,25 @@ int main(int argc, char **argv)
     
     kde_prefix = "/tmp-"; 
   }
-  else
+  else if (strcmp(argv[1], "socket") == 0)
   {
     tmp_prefix = (char *)malloc(strlen(tmp)+strlen("/ksocket-")+1);
     strcpy(tmp_prefix, tmp );
     strcat(tmp_prefix, "/ksocket-" );
 
     kde_prefix = "/socket-"; 
+  }
+  else if (strcmp(argv[1], "cache") == 0)
+  {
+    tmp = getenv("KDEVARTMP");
+    if (!tmp || !tmp[0]) 
+      tmp = "/var/tmp";
+
+    tmp_prefix = (char *)malloc(strlen(tmp)+strlen("/kdecache-")+1);
+    strcpy(tmp_prefix, tmp );
+    strcat(tmp_prefix, "/kdecache-" );
+
+    kde_prefix = "/cache-"; 
   }
 
   res = build_link(tmp_prefix, kde_prefix); 
