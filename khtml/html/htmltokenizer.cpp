@@ -433,10 +433,10 @@ void HTMLTokenizer::scriptHandler()
 
             setSrc(QString::null);
             scriptCodeSize = scriptCodeResync = 0;
-            QTime dt;
-            dt.start();
+            //QTime dt;
+            //dt.start();
             scriptExecution( exScript, QString(), scriptStartLineno );
-	    kdDebug( 6036 ) << "script execution time:" << dt.elapsed() << endl;
+	    //kdDebug( 6036 ) << "script execution time:" << dt.elapsed() << endl;
         }
     }
 
