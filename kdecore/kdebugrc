@@ -60,6 +60,10 @@ InfoOutput=4
 [1002]
 InfoOutput=4
 
+# KMail
+[5006]
+InfoOutput=2
+
 # kio_http_debug debug info off
 [7113]
 InfoOutput=4
