@@ -300,7 +300,7 @@ public:
 		{
 			strokeColor = toArtColor(m_strokeColor);
 
-			double ratio = sqrt(pow(affine[0], 2) + pow(affine[3], 2)) / sqrt(2.0);
+			double ratio = art_affine_expansion(affine);
 			double strokeWidth = m_strokeWidth * ratio;
 
 			ArtPathStrokeJoinType joinStyle = ART_PATH_STROKE_JOIN_MITER;
