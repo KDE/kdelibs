@@ -90,8 +90,8 @@ using namespace KIO;
 
 #define MAX_IPC_SIZE (1024*8)
 
-// Default expire time in seconds: 30 min.
-#define DEFAULT_EXPIRE (30*60)
+// Default expire time in seconds: 1 min.
+#define DEFAULT_EXPIRE (1*60)
 
 // Timeout for connections to remote sites in seconds
 #define REMOTE_CONNECT_TIMEOUT 20
@@ -1053,8 +1053,9 @@ bool HTTPProtocol::http_open()
   QString referrer = metaData("referrer");
   if (!referrer.isEmpty())
   {
+     //    messageBox(Information, referrer, "...ist der referer", "referer");
      // HTTP uses "Referer" although the correct spelling is "referrer"
-     header += "Referer: "+referrer+"\r\n";
+     header += "referer: "+referrer+"\r\n";
   }
 
   QString acceptHeader = metaData("accept");
