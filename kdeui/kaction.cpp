@@ -12,11 +12,11 @@
 
 #include<kckey.h>
 #include<kconfigbase.h>
+#include<kglobal.h>
 
 #include<kaction.h>
-#include<kdebug.h>
 #include<klocale.h>
-//#include<kconfigbase.h>
+#include<kiconloader.h>
 
 KAction::KAction( const char *desc, 
 			const QString& localDesc,
@@ -52,16 +52,6 @@ KAction::~KAction()
 	delete _icon;		_icon = 0;
 	delete _triggers;	_triggers = 0;
 	delete _menus;		_menus = 0;
-}
-
-void KAction::setIcon( const QIconSet& icon )
-{
-	*_icon = icon;
-}
-
-const QIconSet& KAction::icon() const
-{
-	return *_icon;
 }
 
 void KAction::setAccel( int accel )
@@ -248,42 +238,42 @@ void KAction::setEnabled( bool state )
 
 bool KAction::readConfig( const KConfigBase& cfg )
 {
-#ifndef KAC_NO_CFG
 	QString pfx = "Action" + desc();
 
 	QString key = pfx + "Key";
 	if( cfg.hasKey( key ) ) {
-		QString key = cfg.readEntry( key );
-		int ck = stringToKey( key );
+		QString accel = cfg.readEntry( key );
+		int ck = stringToKey( accel );
 		if( ck != 0 ) {
 			setAccel( ck );
 		}
 	}
-	// TODO: read icon
+
+	key = pfx + "Icon";
+	if( cfg.hasKey( key ) ) {
+		setIcon( cfg.readEntry( key ) );
+	}
 	return true;
-#endif	
 }
 
 void KAction::writeConfig( KConfigBase& cfg )
 {
-#ifndef KAC_NO_CFG
 	QString pfx = "Action" + desc();
 
-	QString key = pfx + "Accel";
-	cfg.writeEntry( key, accel() );
-
-	key = pfx + "Key";
+	QString key = pfx + "Key";
 	cfg.writeEntry( key, keyToString( accel() ) );
-#endif
+
+	key = pfx + "Icon";
+	cfg.writeEntry( key, _iconPath.isEmpty() ? QString("") : _iconPath );
 }
 
 uint KAction::stringToKey( const QString& key )
 {
 	if ( key.isNull() ) {
-		kdebug(KDEBUG_WARN, 125, "stringToKey::Null key");
+		debug( "stringToKey::Null key" );
 		return 0;
 	} else if ( key.isEmpty() ) {
-		kdebug(KDEBUG_WARN, 125, "stringToKey::Empty key");
+		debug( "stringToKey::Empty key" );
 		return 0;
 	}
 
@@ -312,7 +302,7 @@ uint KAction::stringToKey( const QString& key )
 		str = key.mid(tokens[i], tokens[i+1]-tokens[i]-1);
 		str.stripWhiteSpace();
 		if ( str.isEmpty() ) {
-			kdebug(KDEBUG_WARN, 125, "stringToKey::Empty token");
+			debug( "stringToKey::Empty token" );
 			return 0;
 		}
 
@@ -320,8 +310,7 @@ uint KAction::stringToKey( const QString& key )
 		else if ( str=="CTRL" ) keyCode |= Qt::CTRL;
 		else if ( str=="ALT" )  keyCode |= Qt::ALT;
 		else if (codeFound) {
-			kdebug(KDEBUG_WARN, 125, 
-				"stringToKey::Duplicate keycode");
+			debug( "stringToKey::Duplicate keycode" );
 			return 0;
 		} else {
 			// search for keycode
@@ -333,8 +322,7 @@ uint KAction::stringToKey( const QString& key )
 				}
 			}
 			if ( j==NB_KEYS ) {
-				kdebug(KDEBUG_WARN, 125, 
-					"stringToKey::Unknown key name %s", 
+				debug("stringToKey::Unknown key name %s", 
 					str.ascii());
 				return 0;
 			}
@@ -375,5 +363,25 @@ QString KAction::keyToString( uint keyCode, bool i18_n )
 	
 	return QString::null;
 }
+
+void KAction::setIcon( const QString& iconp )
+{
+	_iconPath = iconp;
+	delete _icon; _icon = 0;
+}
+
+const QIconSet& KAction::icon() const
+{
+	if( _icon == 0 ) {
+		KIconLoader *ldr = KGlobal::iconLoader();
+
+		// hackety hack
+		const_cast<KAction *>(this)->_icon = 
+			new QIconSet( ldr->loadIcon( _iconPath, 0, 0, false ) );
+	}
+
+	return *_icon;
+}
+
 
 #include"kaction.moc"
