@@ -45,8 +45,6 @@ protected:
 	QString driverDirInternal();
 
 private:
-	MaticBlock* loadMaticData(const QString&);
-	DrMain* loadMaticDriver(const QString&);
 	QString parsePostpipe(const QString&);
 	QString createPostpipe(const QString&);
 	bool savePpdFile(DrMain*, const QString&);

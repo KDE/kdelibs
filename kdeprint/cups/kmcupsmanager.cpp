@@ -26,13 +26,13 @@
 #include "ipprequest.h"
 #include "cupsinfos.h"
 #include "driver.h"
-#include "matic.h"
 #include "kmfactory.h"
 #include "kmdbentry.h"
 #include "cupsaddsmb2.h"
 #include "ippreportdlg.h"
 #include "kpipeprocess.h"
 #include "util.h"
+#include "foomatic2loader.h"
 
 #include <qfile.h>
 #include <qtextstream.h>
@@ -681,73 +681,16 @@ DrMain* KMCupsManager::loadDriverFile(const QString& fname)
 
 			// try to extract Matic data
 			QString	maticdata;
-			DrGroup	*adjgrp(0);
 			extractMaticData(maticdata,unzipfname);
 			if (!maticdata.isEmpty())
 			{
 				driver->set("matic","1");
-
-				MaticBlock	*blk = loadMaticData(maticdata.latin1()), *varblk(0), *argblk(0);
-				if (blk) varblk = blk->block("$VAR1");
-				if (varblk) argblk = varblk->block("args_byname");
-				for (int i=0;i<2;i++)
+				Foomatic2Loader loader;
+				if ( loader.readFromBuffer( maticdata ) )
 				{
-					if (argblk)
-					{
-						QDictIterator<MaticBlock>	it(argblk->m_blocks);
-						for (;it.current();++it)
-						{
-							QString	type = it.current()->arg("type");
-							if (type != "float" && type != "int" && type != "string")
-								continue;	// skip it
-							if (!adjgrp)
-							{
-								adjgrp = new DrGroup();
-								adjgrp->set("text",i18n("Adjustments"));
-								driver->addGroup(adjgrp);
-							}
-							DrBase	*opt(0);
-							if (type == "float")
-								opt = new DrFloatOption();
-							else if (type == "int")
-								opt = new DrIntegerOption();
-							else
-								opt = new DrStringOption();
-							opt->setName(it.current()->arg("name"));
-							opt->set("text",i18n(it.current()->arg("comment").local8Bit()));
-							if (type == "float" || type == "int")
-							{
-								opt->set("minval",it.current()->arg("min"));
-								opt->set("maxval",it.current()->arg("max"));
-							}
-							opt->setValueText(it.current()->arg("default"));
-							opt->set("default",it.current()->arg("default"));
-							// remove any option (list-type) with the same name (compliant
-							// with the new PPD structure in Foomatic)
-							DrBase	*oldOpt(0);
-							if ((oldOpt=driver->findOption(opt->name())) && oldOpt->type() == DrBase::List)
-							{
-								DrListOption	*oldLOpt = static_cast<DrListOption*>(oldOpt);
-								QString	fixedvals;
-								QPtrListIterator<DrBase>	it(*(oldLOpt->choices()));
-								for (; it.current(); ++it)
-								{
-									fixedvals.append(it.current()->name());
-									if (!it.atLast())
-										fixedvals.append("|");
-								}
-								opt->set("fixedvals", fixedvals);
-							}
-							driver->removeOptionGlobally(opt->name());
-							// finally add the (new) numerical option
-							adjgrp->addOption(opt);
-						}
-					}
-					if (varblk) argblk = varblk->block("args");	// for new Foomatic structure
+					driver = loader.modifyDriver( driver );
 				}
-				delete blk;
 			}
-
 			return driver;
 		}
 		else delete driver;

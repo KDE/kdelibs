@@ -20,7 +20,6 @@
 #include "matichandler.h"
 #include "printcapentry.h"
 #include "kmprinter.h"
-#include "matic.h"
 #include "matichelper.h"
 #include "driver.h"
 #include "kpipeprocess.h"
@@ -28,6 +27,7 @@
 #include "kprinter.h"
 #include "lprsettings.h"
 #include "util.h"
+#include "foomatic2loader.h"
 
 #include <klocale.h>
 #include <kstandarddirs.h>
@@ -95,10 +95,10 @@ bool MaticHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, bool sh
 
 	if (!shortmode)
 	{
-		MaticBlock	*blk = loadMaticData(maticFile(entry));
-		if (blk)
+		Foomatic2Loader loader;
+		if ( loader.readFromFile( maticFile( entry ) ) )
 		{
-			QString	postpipe = blk->arg("$postpipe");
+			QString	postpipe = loader.data()[ "POSTPIPE" ].toString();
 			if (!postpipe.isEmpty())
 			{
 				KURL	url = parsePostpipe(postpipe);
@@ -110,47 +110,17 @@ bool MaticHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, bool sh
 				}
 			}
 
-			MaticBlock	*varblk = blk->block("$VAR1");
-			if (varblk)
+			QMap<QString,QVariant> m = loader.data()[ "VAR" ].toMap();
+			if ( !m.isEmpty() )
 			{
-				prt->setManufacturer(varblk->arg("make"));
-				prt->setModel(varblk->arg("model"));
-				prt->setDriverInfo(QString::fromLatin1("%1 %2 (%3)").arg(prt->manufacturer()).arg(prt->model()).arg(varblk->arg("driver")));
+				prt->setManufacturer(m["make"].toString());
+				prt->setModel(m["model"].toString());
+				prt->setDriverInfo(QString::fromLatin1("%1 %2 (%3)").arg(prt->manufacturer()).arg(prt->model()).arg(m["driver"].toString()));
 			}
 		}
 	}
 
 	return true;
-}
-
-MaticBlock* MaticHandler::loadMaticData(const QString& fname)
-{
-	QFile	f(fname);
-	if (!f.exists() || !f.open(IO_ReadOnly))
-	{
-		kdDebug() << "unable to load matic data: " << fname << endl;
-		return NULL;
-	}
-
-	QCString	buffer(f.size()+1);
-	f.readBlock(buffer.data(), f.size());
-	f.close();
-
-	MaticBlock	*blk = ::loadMaticData(buffer.data());
-	return blk;
-}
-
-DrMain* MaticHandler::loadMaticDriver(const QString& fname)
-{
-	MaticBlock	*blk = loadMaticData(fname);
-	if (blk)
-	{
-		DrMain	*driver = maticToDriver(blk);
-		delete blk;
-		return driver;
-	}
-	else
-		return NULL;
 }
 
 QString MaticHandler::parsePostpipe(const QString& s)
@@ -256,7 +226,7 @@ DrMain* MaticHandler::loadDriver(KMPrinter*, PrintcapEntry *entry, bool)
 	QString	origfilename = maticFile(entry);
 	QString	filename = locateLocal("tmp", "foomatic_" + kapp->randomString(8));
 	::system(QFile::encodeName("cp " + KProcess::quote(origfilename) + " " + KProcess::quote(filename)));
-	DrMain	*driver = loadMaticDriver(filename);
+	DrMain	*driver = Foomatic2Loader::loadDriver(filename);
 	if (driver)
 	{
 		driver->set("template", filename);
@@ -305,7 +275,7 @@ DrMain* MaticHandler::loadDbDriver(const QString& path)
 		in.close();
 		out.close();
 
-		DrMain	*driver = loadMaticDriver(tmpFile);
+		DrMain	*driver = Foomatic2Loader::loadDriver(tmpFile);
 		if (driver)
 		{
 			driver->set("template", tmpFile);

@@ -25,6 +25,7 @@
 #include <qfile.h>
 #include <qstringlist.h>
 #include <kdebug.h>
+#include <klocale.h>
 #include <stdlib.h>
 #include <math.h>
 
@@ -361,6 +362,34 @@ DrBase* DrGroup::clone()
 		grp->addOption(oit.current()->clone());
 
 	return static_cast<DrBase*>(grp);
+}
+
+QString DrGroup::groupForOption( const QString& optname )
+{
+   QString grpname;
+   if ( optname == "PageSize" ||
+		 optname == "InputSlot" ||
+		 optname == "ManualFeed" ||
+		 optname == "MediaType" ||
+		 optname == "MediaColor" ||
+		 optname == "MediaWeight" ||
+		 optname == "Duplex" ||
+		 optname == "DoubleSided" ||
+		 optname == "Copies" )
+      grpname = i18n( "General" );
+   else if ( optname.startsWith(  "stp" ) ||
+			  optname == "Cyan" ||
+			  optname == "Yellow" ||
+			  optname == "Magenta" ||
+			  optname == "Black" ||
+			  optname == "Density" ||
+			  optname == "Contrast" )
+      grpname = i18n( "Adjustments" );
+   else if (  optname.startsWith(  "JCL" ) )
+      grpname = i18n( "JCL" );
+   else
+      grpname = i18n( "Others" );
+	return grpname;
 }
 
 /*************************

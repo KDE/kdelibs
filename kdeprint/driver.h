@@ -108,6 +108,8 @@ public:
 	const QPtrList<DrGroup>& groups()	{ return m_subgroups; }
 	const QPtrList<DrBase>& options()	{ return m_listoptions; }
 
+	static QString groupForOption( const QString& optname );
+
 protected:
 	void createTree(DriverItem *parent);
 	void flattenGroup(QMap<QString, DrBase*>&, int&);

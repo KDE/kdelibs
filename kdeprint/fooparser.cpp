@@ -1,43 +1,56 @@
 
-/*  A Bison parser, made from ./maticparser.yy
+/*  A Bison parser, made from ./fooparser.y
     by GNU Bison version 1.28  */
 
 #define YYBISON 1  /* Identify Bison output.  */
 
-#define yyparse maticparse
-#define yylex maticlex
-#define yyerror maticerror
-#define yylval maticlval
-#define yychar maticchar
-#define yydebug maticdebug
-#define yynerrs maticnerrs
-#define	STRING	257
-#define	UNDEF	258
-#define	VAR	259
-#define	NUM	260
+#define yyparse kdeprint_foomatic2parse
+#define yylex kdeprint_foomatic2lex
+#define yyerror kdeprint_foomatic2error
+#define yylval kdeprint_foomatic2lval
+#define yychar kdeprint_foomatic2char
+#define yydebug kdeprint_foomatic2debug
+#define yynerrs kdeprint_foomatic2nerrs
+#define	VAR	257
+#define	STRING	258
+#define	NUMBER	259
+#define	UNDEF	260
+#define	POSTPIPE	261
+#define	QUOTED	262
 
-#line 5 "./maticparser.yy"
+#line 1 "./fooparser.y"
 
-#include <stdio.h>
-#include <stdlib.h>
+/*
+ *  This file is part of the KDE libraries
+ *  Copyright (c) 2001-2003 Michael Goffioul <goffioul@imec.be>
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Library General Public
+ *  License version 2 as published by the Free Software Foundation.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Library General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Library General Public License
+ *  along with this library; see the file COPYING.LIB.  If not, write to
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
+ **/
 
+#define YYSTYPE QVariant
+#define YYPARSE_PARAM fooloader
 #define YYDEBUG 1
-#include "matic.h"
 
-extern int	line_count;
-extern MHash	*main_hash;
-#line 19 "./maticparser.yy"
+#include <stdlib.h>
+#include <qvariant.h>
+#include "foomatic2loader.h"
 
-#ifndef maticparser_cpp_h
-
-#line 22 "./maticparser.yy"
-typedef union {
-	QString	*string;
-	MHash	*hash;
-	int	num;
-} YYSTYPE;
-#line 27 "./maticparser.yy"
-
+void yyerror(const char*) {}
+int yylex();
+#ifndef YYSTYPE
+#define YYSTYPE int
 #endif
 #include <stdio.h>
 
@@ -49,11 +62,11 @@ typedef union {
 
 
 
-#define	YYFINAL		31
+#define	YYFINAL		36
 #define	YYFLAG		-32768
-#define	YYNTBASE	15
+#define	YYNTBASE	17
 
-#define YYTRANSLATE(x) ((unsigned)(x) <= 260 ? yytranslate[x] : 21)
+#define YYTRANSLATE(x) ((unsigned)(x) <= 262 ? yytranslate[x] : 23)
 
 static const char yytranslate[] = {     0,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -61,17 +74,14 @@ static const char yytranslate[] = {     0,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,    13,     2,     2,     2,     2,     2,     2,
-     2,     2,     2,     2,     2,     2,     2,     2,    14,     2,
-     7,     8,     2,     2,     2,     2,     2,     2,     2,     2,
+     2,     2,     2,     2,     2,     2,     2,     2,    12,     2,
+     9,    14,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-    11,     2,    12,     2,     2,     2,     2,     2,     2,     2,
+    15,     2,    16,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     2,     2,     9,     2,    10,     2,     2,     2,     2,     2,
-     2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     2,     2,    10,     2,    11,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -81,90 +91,94 @@ static const char yytranslate[] = {     0,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     2,     2,     2,     2,     2,     1,     3,     4,     5,     6
+     2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     2,     2,     2,     2,     2,     1,     3,     4,     5,     6,
+     7,     8
 };
 
 #if YYDEBUG != 0
 static const short yyprhs[] = {     0,
-     0,     2,     5,    10,    15,    20,    25,    28,    31,    35,
-    39,    41,    43,    45,    49,    54
+     0,     2,     5,    12,    17,    19,    23,    28,    30,    34,
+    36,    38,    40,    44,    48,    51
 };
 
-static const short yyrhs[] = {    20,
-     0,    15,    20,     0,     3,     7,     8,     6,     0,     3,
-     7,     8,     3,     0,     3,     7,     8,     4,     0,     3,
-     7,     8,    17,     0,     9,    10,     0,    11,    12,     0,
-     9,    19,    10,     0,    11,    19,    12,     0,    16,     0,
-    17,     0,    18,     0,    19,    13,    18,     0,     5,     7,
-    17,    14,     0,     5,     7,     3,    14,     0
+static const short yyrhs[] = {    18,
+     0,    17,    18,     0,     3,     9,    10,    19,    11,    12,
+     0,     7,     9,     8,    12,     0,    20,     0,    19,    13,
+    20,     0,     4,     9,    14,    22,     0,    22,     0,    21,
+    13,    22,     0,     6,     0,     4,     0,     5,     0,    15,
+    21,    16,     0,    10,    19,    11,     0,    15,    16,     0,
+    10,    11,     0
 };
 
 #endif
 
 #if YYDEBUG != 0
 static const short yyrline[] = { 0,
-    44,    45,    48,    49,    50,    51,    54,    55,    56,    57,
-    60,    61,    64,    65,    68,    69
+    42,    43,    46,    47,    50,    51,    54,    57,    58,    61,
+    62,    63,    64,    65,    66,    67
 };
 #endif
 
 
 #if YYDEBUG != 0 || defined (YYERROR_VERBOSE)
 
-static const char * const yytname[] = {   "$","error","$undefined.","STRING",
-"UNDEF","VAR","NUM","'='","'>'","'{'","'}'","'['","']'","','","';'","input",
-"assignment","block","block_body_item","block_body","var_assignment", NULL
+static const char * const yytname[] = {   "$","error","$undefined.","VAR","STRING",
+"NUMBER","UNDEF","POSTPIPE","QUOTED","'='","'{'","'}'","';'","','","'>'","'['",
+"']'","foo","foodata","fieldlist","assignment","valuelist","value", NULL
 };
 #endif
 
 static const short yyr1[] = {     0,
-    15,    15,    16,    16,    16,    16,    17,    17,    17,    17,
-    18,    18,    19,    19,    20,    20
+    17,    17,    18,    18,    19,    19,    20,    21,    21,    22,
+    22,    22,    22,    22,    22,    22
 };
 
 static const short yyr2[] = {     0,
-     1,     2,     4,     4,     4,     4,     2,     2,     3,     3,
-     1,     1,     1,     3,     4,     4
+     1,     2,     6,     4,     1,     3,     4,     1,     3,     1,
+     1,     1,     3,     3,     2,     2
 };
 
 static const short yydefact[] = {     0,
-     0,     0,     1,     0,     2,     0,     0,     0,     0,    16,
-     0,     7,    11,    12,    13,     0,     8,     0,    15,     0,
-     9,     0,    10,     0,    14,     4,     5,     3,     6,     0,
-     0
+     0,     0,     0,     1,     0,     0,     2,     0,     0,     0,
+     0,     5,     4,     0,     0,     0,     0,     3,     6,    11,
+    12,    10,     0,     0,     7,    16,     0,    15,     0,     8,
+    14,     0,    13,     9,     0,     0
 };
 
-static const short yydefgoto[] = {     2,
-    13,    14,    15,    16,     3
+static const short yydefgoto[] = {     3,
+     4,    11,    12,    29,    25
 };
 
-static const short yypact[] = {    -1,
-     5,    28,-32768,    15,-32768,    17,    12,    -2,    18,-32768,
-     9,-32768,-32768,-32768,-32768,     4,-32768,   -10,-32768,    21,
--32768,    16,-32768,     2,-32768,-32768,-32768,-32768,-32768,    30,
--32768
+static const short yypact[] = {    15,
+    11,    20,    10,-32768,    -2,    18,-32768,    27,     7,    23,
+    14,-32768,-32768,    19,    22,    27,    -1,-32768,-32768,-32768,
+-32768,-32768,    12,    -4,-32768,-32768,    17,-32768,     8,-32768,
+-32768,    -1,-32768,-32768,    35,-32768
 };
 
 static const short yypgoto[] = {-32768,
--32768,    -4,    13,    26,    34
+    33,    16,    21,-32768,   -17
 };
 
 
-#define	YYLAST		36
+#define	YYLAST		39
 
 
-static const short yytable[] = {     9,
-    11,    23,    22,     1,    26,    27,     7,    28,     8,    17,
-     7,     4,     8,    21,    11,    20,    22,     6,    11,    29,
-     7,    12,     8,     7,     7,     8,     8,    30,    24,    31,
-    10,    19,     1,    18,    25,     5
+static const short yytable[] = {    20,
+    21,    22,    20,    21,    22,    23,    30,     8,    23,    35,
+    24,    28,     1,    24,    34,    10,     2,     1,    13,     5,
+    32,     2,    26,    33,    15,     9,    16,    31,     6,    16,
+    10,    14,    17,    18,    36,     7,    19,     0,    27
 };
 
 static const short yycheck[] = {     4,
-     3,    12,    13,     5,     3,     4,     9,     6,    11,    12,
-     9,     7,    11,    10,     3,     7,    13,     3,     3,    24,
-     9,    10,    11,     9,     9,    11,    11,     0,     8,     0,
-    14,    14,     5,     8,    22,     2
+     5,     6,     4,     5,     6,    10,    24,    10,    10,     0,
+    15,    16,     3,    15,    32,     4,     7,     3,    12,     9,
+    13,     7,    11,    16,    11,     8,    13,    11,     9,    13,
+     4,     9,    14,    12,     0,     3,    16,    -1,    23
 };
 /* -*-C-*-  Note some compilers choke on comments on `#line' lines.  */
 #line 3 "/usr/lib/bison.simple"
@@ -709,69 +723,61 @@ yyreduce:
 
   switch (yyn) {
 
-case 1:
-#line 44 "./maticparser.yy"
-{ main_hash = new MHash(new QString("Driver"),yyvsp[0].hash); ;
-    break;}
-case 2:
-#line 45 "./maticparser.yy"
-{ main_hash->addHash(yyvsp[0].hash); ;
-    break;}
 case 3:
-#line 48 "./maticparser.yy"
-{ yyval.hash = new MHash(yyvsp[-3].string,yyvsp[0].num); ;
+#line 46 "./fooparser.y"
+{ static_cast<Foomatic2Loader*>(fooloader)->m_foodata.insert("VAR",yyvsp[-2]); ;
     break;}
 case 4:
-#line 49 "./maticparser.yy"
-{ yyval.hash = new MHash(yyvsp[-3].string,yyvsp[0].string); ;
+#line 47 "./fooparser.y"
+{ static_cast<Foomatic2Loader*>(fooloader)->m_foodata.insert("POSTPIPE",yyvsp[-1]); ;
     break;}
 case 5:
-#line 50 "./maticparser.yy"
-{ yyval.hash = new MHash(yyvsp[-3].string,(QString*)0); ;
+#line 50 "./fooparser.y"
+{ yyval = yyvsp[0]; ;
     break;}
 case 6:
-#line 51 "./maticparser.yy"
-{ yyvsp[0].hash->name = yyvsp[-3].string; yyval.hash = yyvsp[0].hash; ;
+#line 51 "./fooparser.y"
+{ QMap<QString,QVariant>::ConstIterator it = yyvsp[0].mapBegin(); yyvsp[-2].asMap().insert(it.key(), it.data()); yyval = yyvsp[-2]; ;
     break;}
 case 7:
-#line 54 "./maticparser.yy"
-{ yyval.hash = new MHash((QString*)0,(QString*)0); ;
+#line 54 "./fooparser.y"
+{ yyval.asMap().insert(yyvsp[-3].toString(), yyvsp[0]); ;
     break;}
 case 8:
-#line 55 "./maticparser.yy"
-{ yyval.hash = new MHash((QString*)0,(QString*)0); ;
+#line 57 "./fooparser.y"
+{ yyval.asList().append(yyvsp[0]); ;
     break;}
 case 9:
-#line 56 "./maticparser.yy"
-{ yyval.hash = yyvsp[-1].hash; ;
+#line 58 "./fooparser.y"
+{ yyvsp[-2].asList().append(yyvsp[0]); yyval = yyvsp[-2]; ;
     break;}
 case 10:
-#line 57 "./maticparser.yy"
-{ yyval.hash = yyvsp[-1].hash; ;
+#line 61 "./fooparser.y"
+{ yyval = QVariant(); ;
     break;}
 case 11:
-#line 60 "./maticparser.yy"
-{ yyval.hash = yyvsp[0].hash; ;
+#line 62 "./fooparser.y"
+{ yyval = yyvsp[0]; ;
     break;}
 case 12:
-#line 61 "./maticparser.yy"
-{ yyval.hash = yyvsp[0].hash; ;
+#line 63 "./fooparser.y"
+{ yyval = yyvsp[0]; ;
     break;}
 case 13:
-#line 64 "./maticparser.yy"
-{ yyval.hash = new MHash((QString*)0,yyvsp[0].hash); ;
+#line 64 "./fooparser.y"
+{ yyval = yyvsp[-1]; ;
     break;}
 case 14:
-#line 65 "./maticparser.yy"
-{ yyvsp[-2].hash->addHash(yyvsp[0].hash); yyval.hash = yyvsp[-2].hash; ;
+#line 65 "./fooparser.y"
+{ yyval = yyvsp[-1]; ;
     break;}
 case 15:
-#line 68 "./maticparser.yy"
-{ yyvsp[-1].hash->name = yyvsp[-3].string; yyval.hash = yyvsp[-1].hash; ;
+#line 66 "./fooparser.y"
+{ yyval = QVariant(); ;
     break;}
 case 16:
-#line 69 "./maticparser.yy"
-{ yyval.hash = new MHash(yyvsp[-3].string,yyvsp[-1].string); ;
+#line 67 "./fooparser.y"
+{ yyval = QVariant(); ;
     break;}
 }
    /* the action file gets copied in in place of this dollarsign */
@@ -995,20 +1001,5 @@ yyerrhandle:
     }
   return 1;
 }
-#line 72 "./maticparser.yy"
+#line 70 "./fooparser.y"
 
-
-/********/
-/* Code */
-/********/
-
-void maticerror(const char *s)
-{
-	fprintf(stderr, "Line %d: %s\n",line_count,s);
-}
-
-void initMaticParser(const char *s)
-{
-	maticdebug = 0;
-	initMaticFlex(s);
-}
