@@ -237,11 +237,11 @@ public:
      *              @p source, false otherwise
      */
     static bool exists(const KURL& url, bool source, QWidget* window);
-    
+
     /**
      * @deprecated. Use the function above instead.
-     */    
-    static bool exists(const KURL& url, bool source);    
+     */
+    static bool exists(const KURL& url, bool source);
 
     /**
      * Tests whether a URL exists and return information on it.
@@ -251,16 +251,16 @@ public:
      *
      * @param url The URL we are testing.
      * @param entry The result of the stat. Iterate over the list
+     * of atoms to get hold of name, type, size, etc., or use @ref KFileItem.
      * @param window main window associated with this job. This is used to
      *               automatically cache and discard authentication information
      *               as needed. If NULL, authentication information will be
      *               cached only for a short duration after which the user will
-     *               again be prompted for passwords as needed.     
-     * of atoms to get hold of name, type, size, etc., or use @ref KFileItem.
+     *               again be prompted for passwords as needed.
      * @return true if successful, false for failure
      */
     static bool stat(const KURL& url, KIO::UDSEntry & entry, QWidget* window);
-    
+
     /**
      * @deprecated. Use the function above instead.
      */
