@@ -10,3 +10,6 @@ AC_CHECK_LIB(m, finite, [
 AC_CHECK_LIB(m, isnan, [
   AC_DEFINE_UNQUOTED(HAVE_FUNC_ISNAN, 1, [Define if you have isnan])
 ])
+
+AC_CHECK_HEADERS(pcreposix.h, [LIBPCRE='-lpcre -lpcreposix'])
+AC_SUBST(LIBPCRE)

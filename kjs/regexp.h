@@ -21,9 +21,16 @@
 #define _KJS_REGEXP_H_
 
 #include <sys/types.h>
+
+#include "config.h"
+
+#ifdef HAVE_PCREPOSIX_H
+#include <pcreposix.h>
+#else  // POSIX regex - not so good...
 extern "C" { // bug with some libc5 distributions
 #include <regex.h>
 }
+#endif //HAVE_PCREPOSIX_H
 
 #include "ustring.h"
 

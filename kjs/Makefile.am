@@ -40,7 +40,7 @@ noinst_HEADERS = nodes.h lexer.h regexp.h internal.h collector.h \
 	debugger.h
 
 libkjs_la_LDFLAGS = -version-info 1:0 -no-undefined
-libkjs_la_LIBADD = -lm
+libkjs_la_LIBADD = -lm $(LIBPCRE)
 
 parser: $(srcdir)/grammar.y
 	cd $(srcdir); \
