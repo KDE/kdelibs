@@ -218,7 +218,7 @@ bool KFileTreeView::acceptDrag(QDropEvent* e ) const
     * acceptDrops() && itemsMovable() && (e->source()==viewport());
     * ask acceptDrops and itemsMovable, but not the third
     */
-   return ancestOK && QUriDrag::canDecode( e ) &&
+   return ancestOK && KURLDrag::canDecode( e ) &&
       ( e->action() == QDropEvent::Copy
 	|| e->action() == QDropEvent::Move
 	|| e->action() == QDropEvent::Link );
