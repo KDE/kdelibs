@@ -2226,7 +2226,7 @@ void StyleBaseImpl::setParsedValue( int propId, const CSSValueImpl *parsedValue)
     m_propList->append(prop);
 #ifdef CSS_DEBUG
     kdDebug( 6080 ) << "added property: " << getPropertyName(propId).string()
-                    << ", value: " << parsedValue->cssText().string()
+                    // non implemented yet << ", value: " << parsedValue->cssText().string()
                     << " important: " << prop->m_bImportant
                     << " nonCSS: " << prop->nonCSSHint << endl;
 #endif
@@ -2330,7 +2330,7 @@ CSSValueImpl* StyleBaseImpl::parseContent(const QChar *curP, const QChar *endP)
     CSSValueListImpl* values = new CSSValueListImpl();
 
     QPtrList<QChar> list = splitContent(curP, endP);
-    for(int n=0; n<list.count(); n+=2)
+    for(uint n=0; n<list.count(); n+=2)
     {
         QString str(list.at(n), list.at(n+1)-list.at(n));
         CSSValueImpl* parsedValue=0;
@@ -2944,7 +2944,6 @@ StyleListImpl::~StyleListImpl()
 
 // --------------------------------------------------------------------------------
 
-
 void CSSSelector::print(void)
 {
     kdDebug( 6080 ) << "[Selector: tag = " <<       tag << ", attr = \"" << attr << "\", value = \"" << value.string().latin1() << "\" relation = " << (int)relation << endl;
@@ -3001,6 +3000,80 @@ bool CSSSelector::operator == ( const CSSSelector &other )
     if ( sel1 || sel2 )
 	return false;
     return true;
+}
+
+DOMString CSSSelector::selectorText() const
+{
+    DOMString str;
+    const CSSSelector* cs = this;
+    if ( cs->tag == -1 && cs->attr == ATTR_ID && cs->match == CSSSelector::Exact )
+    {
+        str = "#";
+        str += cs->value;
+    }
+    else if ( cs->tag == -1 && cs->attr == ATTR_CLASS && cs->match == CSSSelector::List )
+    {
+        str = ".";
+        str += cs->value;
+    }
+    else if ( cs->tag == -1 && cs->match == CSSSelector::Pseudo )
+    {
+        str = ":";
+        str += cs->value;
+    }
+    else
+    {
+        if ( cs->tag == -1 )
+            str = "*";
+        else
+            str = getTagName( cs->tag );
+        // optional attribute
+        if ( cs->attr ) {
+            DOMString attrName = getAttrName( cs->attr );
+            str += "[";
+            str += attrName;
+            switch (cs->match) {
+            case CSSSelector::Exact:
+                str += "=";
+                break;
+            case CSSSelector::Set:
+                str += " "; /// ## correct?
+                       break;
+            case CSSSelector::List:
+                str += "~=";
+                break;
+            case CSSSelector::Hyphen:
+                str += "|=";
+                break;
+            case CSSSelector::Begin:
+                str += "^=";
+                break;
+            case CSSSelector::End:
+                str += "$=";
+                break;
+            case CSSSelector::Contain:
+                str += "*=";
+                break;
+            default:
+                kdWarning(6080) << "Unhandled case in CSSStyleRuleImpl::selectorText : match=" << cs->match << endl;
+            }
+            str += "\"";
+            str += cs->value;
+            str += "\"]";
+        }
+    }
+    if ( cs->tagHistory ) {
+        DOMString tagHistoryText = cs->tagHistory->selectorText();
+        if ( cs->relation == Sibling )
+            str = tagHistoryText + " + " + str;
+        else if ( cs->relation == Child )
+            str = tagHistoryText + " > " + str;
+        else if ( cs->relation == SubSelector )
+            str = tagHistoryText + ":" + str; // ### is this correct?
+        else // Descendant
+            str = tagHistoryText + " " + str;
+    }
+    return str;
 }
 
 // ----------------------------------------------------------------------------

@@ -51,15 +51,19 @@ class CSSSelector
 {
 public:
     CSSSelector(void)
-	: tagHistory(0), attr(0), tag(0), relation( Descendant ), 
+	: tagHistory(0), attr(0), tag(0), relation( Descendant ),
     match( None ), nonCSSHint( false ), pseudoId( 0 ) {}
 
     ~CSSSelector(void) {
 	if (tagHistory)
 	    delete tagHistory;
     }
-    
+
+    /** Print debug output for this selector */
     void print(void);
+
+    /** Re-create selector text from selector's data */
+    DOMString selectorText() const;
 
     // checks if the 2 selectors (including sub selectors) agree.
     bool operator == ( const CSSSelector &other );
@@ -171,7 +175,7 @@ public:
 
         CSSValueImpl* parseContent(const QChar *curP, const QChar *endP);
         QPtrList<QChar> splitContent(const QChar *curP, const QChar *endP);
-                
+
 	// defines units allowed for a certain property, used in parseUnit
 	enum Units
 	{
