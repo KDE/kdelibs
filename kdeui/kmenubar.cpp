@@ -46,256 +46,6 @@
 #define CONTEXT_FLOAT 3
 #define CONTEXT_FLAT 4
 
-// $Id$
-// $Log$
-// Revision 1.90  1999/12/13 13:06:19  mosfet
-// Font metrics fix for the latest Qt and KStyle. Should work with older Qt's but
-// I dunno - at least it will compile but may look funny >:)
-//
-// Revision 1.89  1999/11/24 12:35:32  navindra
-// do not collapse the bars on MidButton press *and* release.  do it only
-// on Mid release, just like is done with the Left button.  i believe the
-// previous behaviour was somewhat confusing and seemed buggy.
-//
-// Revision 1.88  1999/10/31 16:14:11  bero
-// Compilation fix for --enable-final
-//
-// Revision 1.87  1999/10/29 14:28:03  mosfet
-// Fix for KStyle menubar active items to work correctly with the latest Qt CVS.
-// Should be fine with older ones too ;-)
-//
-// Revision 1.86  1999/10/28 12:29:16  mosfet
-// New KStyle drawing code. David: This should fix the active item repaint
-// problem. I finally started getting it too ;-)
-//
-// Revision 1.85  1999/10/09 09:48:44  kalle
-// more get killing
-// You need to cvs update your libc (joke!)
-//
-// Revision 1.84  1999/10/08 23:23:23  bero
-// ktopwidget.h removals
-//
-// Revision 1.83  1999/07/25 18:29:56  kulow
-// unbreak --enable-final
-//
-// Revision 1.82  1999/07/25 11:53:47  kulow
-// taking out some headers from ktmainwindow.h, they just don't belong there
-//
-// Revision 1.81  1999/07/25 09:24:04  kulow
-// good news - the workaround is not needed anymore. I left a
-// comment in the Makefile for now
-//
-// Revision 1.80  1999/07/25 09:11:28  kulow
-// /me thinks these warnings should be default for the moment to bug
-// Mosfet :)
-//
-// Revision 1.79  1999/07/24 21:35:46  mosfet
-// Added kmenubar to kstyle since qmenubar didn't get in qstyle. I can easily
-// switch if that eventually happens.
-//
-// Things are beginning to look *really* nice now. To see the *bars in a small
-// screenshot go to: http://www.jorsm.com/~mosfet/menubars.gif
-//
-// Revision 1.78  1999/06/20 10:49:35  mario
-// Mario: the menu bar was not correctly drawn. This hack fixes that
-//
-// Revision 1.77  1999/06/10 01:05:35  pbrown
-// kde_whateverdir() --> locate.
-//
-// Revision 1.76  1999/06/09 21:52:25  cschlaeg
-// serveral fixes for recently implemented layout management; removed segfault on close; removed segfault for no menubar apps; setFullWidth(false) is working again; floating a bar does not segfault any more but still does not work properly; I will look into this again.
-//
-// Revision 1.75  1999/06/06 17:29:44  cschlaeg
-// New layout management implemented for KTMainWindow. This required
-// updates for KToolBar, KMenuBar and KStatusBar. KTMainWindow::view_*
-// public variables removed. Use mainViewGeometry() instead if you really
-// have to. Added new classes in ktmlayout to handle the new layout
-// management.
-//
-// Revision 1.74  1999/05/11 23:39:47  dfaure
-// Added signal moved() to KStatusBar ; emit moved() in KStatusBar::enable ;
-//  connected it to updateRects in KTMainWindow.
-// Implemented KMenuBar::enable, for consistency with other *bars.
-//
-// Revision 1.73  1999/05/08 18:26:21  ssk
-// Removed KChildMenu altogether. All it was doing was setting the line width
-// anyway.
-//
-// Revision 1.72  1999/05/08 18:05:55  ssk
-// Apparently moc doesn't like inner Q_OBJECTs. Moved KChildMenu (used to be
-// _menuBar) to kmenubar.cpp
-//
-// Revision 1.71  1999/05/08 11:42:32  ssk
-// Nested real menubar class, to clean up kdeui namespace.
-// Minor doc update.
-//
-// Revision 1.70  1999/05/07 15:42:54  kulow
-// making some changes to the code and partly to the API to make it
-// -DQT_NO_ASCII_CAST compatible.
-// The job is quite boring, but triggers some abuses of QString. BTW:
-// I added some TODOs to the code where I was too lazy to continue.
-// Someone should start a grep for TODO in the code on a regular base ;)
-//
-// Revision 1.69  1999/05/06 04:54:03  warwick
-// myqstring = 0  becomes  myqstring = QString::null, or just remove the
-// line if it's already going to be null (default QString constructor).
-//
-// Revision 1.68  1999/04/23 13:56:18  mosfet
-// KDE theme style classes and some KStyle additions to the bars.
-//
-// Revision 1.67  1999/03/06 18:03:33  ettrich
-// the nifty "flat" feature of kmenubar/ktoolbar is now more visible:
-// It has its own menu entry and reacts on simple LMP clicks.
-//
-// Revision 1.66  1999/03/04 17:49:13  ettrich
-// more fixes for Qt-2.0
-//
-// Revision 1.65  1999/03/02 15:56:36  kulow
-// CVS_SILENT replacing klocale->translate with i18n
-//
-// Revision 1.64  1999/03/01 23:34:51  kulow
-// CVS_SILENT ported to Qt 2.0
-//
-// Revision 1.62.2.4  1999/02/21 20:55:47  kulow
-// more porting to Qt 2.0. It compiles and links. Jucheisassa :)
-//
-// Revision 1.62.2.3  1999/02/10 14:27:16  kulow
-// CVS_SILENT: more merging
-//
-// Revision 1.63  1999/02/05 19:16:54  ettrich
-// fixed mac-style toggling for applications with multiple toplevel windows
-//
-// Revision 1.62  1999/01/18 10:56:49  kulow
-// .moc files are back in kdelibs. Built fine here using automake 1.3
-//
-// Revision 1.61  1999/01/15 09:31:08  kulow
-// it's official - kdelibs builds with srcdir != builddir. For this I
-// automocifized it, the generated rules are easier to maintain than
-// selfwritten rules. I have to fight with some bugs of this tool, but
-// generally it's better than keeping them updated by hand.
-//
-// Revision 1.60  1998/12/16 01:42:21  ettrich
-// last fix for today
-//
-// Revision 1.59  1998/12/16 01:40:22  ettrich
-// yet another bugfix (don't worry, didn't effect any yet-existing program)
-//
-// Revision 1.58  1998/12/16 01:27:12  ettrich
-// fixed slightly broken macstyle removal
-//
-// Revision 1.57  1998/12/16 00:01:38  ettrich
-// small fix for menubars
-//
-// Revision 1.56  1998/12/09 14:11:58  radej
-// sven: Bad geometry (vanishing last item) fixed. Debug output commented out.
-//
-// Revision 1.55  1998/12/07 21:47:26  tibirna
-// Endorsed by: Sven Radej <sven@kde.org>
-//
-// CT: 1)         ~/.kderc#[Menubar]\TopOfScreen=yes|no
-//        becomes ~/.kderc#[KDE]\macStyle=on|off
-//     2) GUI config for the macStyle
-//     3) krootwm supports "hot" switching of macStyle (still small problems,
-// 	a restart of krootwm fixes them)
-//
-// Revision 1.54  1998/12/02 16:22:21  radej
-// sven: Flat menubar looks like flat toolbars in Motif style
-//
-// Revision 1.53  1998/11/23 18:32:04  radej
-// sven: MACmode: runtime change works,
-//
-// Revision 1.52  1998/11/23 15:34:04  radej
-// sven: Nicer sysmenu button
-//
-// Revision 1.51  1998/11/23 11:57:17  radej
-// sven: Mac: Force show, if on top y= -2, take icon in showEvent.
-//       Still doesn't gets hidden when it's window loses focus.
-//       ToolBar does.
-//
-// Revision 1.50  1998/11/23 09:57:49  ettrich
-// small improvement, hope Sven likes it
-//
-// Revision 1.49  1998/11/23 00:12:27  radej
-// sven: MACMenu: doesn't show if app doesn't want it to (kvt) + icon size fix
-//
-// Revision 1.48  1998/11/22 13:35:46  radej
-// sven: IMPROVED Mac menubar: Accelerators, SystemMenu, look...
-//
-// Revision 1.47  1998/11/21 20:28:39  ettrich
-// yet another small fix
-//
-// Revision 1.46  1998/11/21 20:25:41  ettrich
-// small fix
-//
-// Revision 1.45  1998/11/18 01:00:03  radej
-// sven: set*BarPos(Flat) works now (I hope)
-//
-// Revision 1.44  1998/11/11 14:32:10  radej
-// sven: *Bars can be made flat by MMB (Like in Netscape, but this works)
-//
-// Revision 1.43  1998/11/10 14:12:47  radej
-// sven: windows-style handle smaller
-//
-// Revision 1.42  1998/11/07 22:39:13  radej
-// sven: Fixed QAccel too (unrepaired what repairEventFilter messed)
-//
-// Revision 1.41  1998/11/07 17:13:57  radej
-// sven: Fixed KAccel, for now
-//
-// Revision 1.40  1998/11/06 17:59:55  radej
-// sven: fixed dynamic style change (QMenuBar is buggy)
-//
-// Revision 1.39  1998/11/06 16:48:21  radej
-// sven: nicer docking, some bugfixes
-//
-// Revision 1.38  1998/11/06 15:08:49  radej
-// sven: finished handles. Comments?
-//
-// Revision 1.37  1998/11/06 12:55:53  radej
-// sven: handle changed again (still not perfect)
-//
-// Revision 1.36  1998/11/05 18:23:32  radej
-// sven: new look for *Bar handles (unfinished)
-//
-// Revision 1.35  1998/10/05 15:09:52  kulow
-// purify (and me) likes initialized members, so I choose one (like the compiler
-// would do :)
-//
-// Revision 1.34  1998/09/07 18:44:29  ettrich
-// Matthias: preparation for new features
-//
-// Revision 1.33  1998/09/07 13:46:58  ettrich
-// Matthias: removed some debug output...
-//
-// Revision 1.32  1998/09/07 13:45:19  ettrich
-// Matthias: removed old qt-1.2 compatibility hack
-//
-// Revision 1.31  1998/09/01 20:22:03  kulow
-// I renamed all old qt header files to the new versions. I think, this looks
-// nicer (and gives the change in configure a sense :)
-//
-// Revision 1.30  1998/08/31 00:52:11  torben
-// Torben: One new function and made others virtual
-// => binary incompatible. Sorry. Please use virtual whenever it is
-// not a performance problem.
-//
-// Revision 1.29  1998/07/23 09:43:38  radej
-// sven: Improved look under diff styles. Winlook is beetter now.
-//
-// Revision 1.28  1998/06/18 08:58:14  radej
-// sven: removed debug output
-//
-// Revision 1.27  1998/05/28 21:49:39  kulow
-// I thought, a little sync between my different acinclude.m4.ins. I've done much
-// to much to know, which version is where ;)
-//
-// Revision 1.26  1998/05/19 14:10:23  radej
-// Bugfixes: Unhighlighting a handle and catching the fast click
-//
-// Revision 1.25  1998/05/07 23:13:09  radej
-// Moving with KToolBoxManager
-//
-
 static bool standalone_menubar = FALSE;
 
 static QPixmap* miniGo = 0;
@@ -453,20 +203,9 @@ void KMenuBar::slotReadConfig ()
   if (_transparent != transparent)
     transparent= _transparent;
 
-  if (style() == MotifStyle)
-  {
-    // menu->setStyle(style()); TODO: port to real Styles
-    menu->setMouseTracking(false);
-    if (position != Floating || position == FloatingSystem)
-      menu->setFrameStyle(Panel | Raised);
-  }
-  else
-  {
-    // menu->setStyle(style()); TODO: port to real Styles
-    menu->setMouseTracking(true);
-    if (position != Floating && position != FloatingSystem)
-      menu->setFrameStyle(NoFrame);
-  }
+  menu->setMouseTracking(false);
+  if (position != Floating || position == FloatingSystem)
+    menu->setFrameStyle(Panel | Raised);
 
   config->setGroup("KDE");//CT as Sven asked
   bool macmode = false;
@@ -717,100 +456,43 @@ bool KMenuBar::eventFilter(QObject *ob, QEvent *ev){
           return(true);
       }
 
-      if (style() == MotifStyle) //Motif style handle
+      if (position == Flat)
       {
-        if (position == Flat)
-        {
-          qDrawShadePanel( &paint, 0, 0, w, 9,
-			   g , FALSE, 1, &b );
-	  paint.setPen( g.light() );
-          stipple_height = 3;
-          while ( stipple_height < w-4 ) {
-            paint.drawPoint( stipple_height+1, 1);
-            paint.drawPoint( stipple_height, 4 );
-            stipple_height+=3;
-          }
-          paint.setPen( g.dark() );
-          stipple_height = 4;
-          while ( stipple_height < w-4 ) {
-            paint.drawPoint( stipple_height+1, 2 );
-            paint.drawPoint( stipple_height, 5);
-            stipple_height+=3;
-	  }
-	  paint.drawLine( 1, 9, w, 9);
-          return true;
-        }
-        qDrawShadePanel( &paint, 0, 0, 9, h,
-                           g , FALSE, 1, &b );
-
-
+        qDrawShadePanel( &paint, 0, 0, w, 9, g , FALSE, 1, &b );
         paint.setPen( g.light() );
         stipple_height = 3;
-        while ( stipple_height < h-4 ) {
-          paint.drawPoint( 1, stipple_height+1);
-          paint.drawPoint( 4, stipple_height);
+        while ( stipple_height < w-4 ) {
+          paint.drawPoint( stipple_height+1, 1);
+          paint.drawPoint( stipple_height, 4 );
           stipple_height+=3;
         }
         paint.setPen( g.dark() );
         stipple_height = 4;
-        while ( stipple_height < h-4 ) {
-          paint.drawPoint( 2, stipple_height+1);
-          paint.drawPoint( 5, stipple_height);
+        while ( stipple_height < w-4 ) {
+          paint.drawPoint( stipple_height+1, 2 );
+          paint.drawPoint( stipple_height, 5);
           stipple_height+=3;
         }
-        return TRUE;
+        paint.drawLine( 1, 9, w, 9);
+        return true;
       }
-      else //windows style handle
-      {
-        if (position == Flat)
-        {
-          qDrawPlainRect ( &paint, 0, 0, handle->width(), 9,
-                           g.mid(), 0, &b);
+      qDrawShadePanel( &paint, 0, 0, 9, h, g , FALSE, 1, &b );
 
-          h = 16;
-          paint.setClipRect(2, 0, w-4, 6);
-          paint.setPen( g.light() );
-          int a = 0-h;
-          while (a <= w+h)
-          {
-            paint.drawLine(w-a, h, w-a+h, 0);
-            paint.drawLine(w-a+1, h, w-a+1+h, 0);
-            a +=6;
-          }
-          a = 0-h;
-          paint.setPen( g.dark() );
-          while (a <= w+h)
-          {
-            paint.drawLine(w-a+2, h, w-a+2+h, 0);
-            paint.drawLine(w-a+3, h, w-a+3+h, 0);
-            a +=6;
-          }
-         return true;
-        }
-
-        qDrawPlainRect ( &paint, 0, 0, 6, handle->height(),
-                         g.mid(), 0, &b);
-        w=6;
-        paint.setClipRect(0, 2, w, h-4);
-
-        paint.setPen( g.light() );
-        int a=0-w;
-        while (a <= h+5)
-        {
-          paint.drawLine(0, h-a, h, 0-a);
-          paint.drawLine(0, h-a+1, h, 0-a+1);
-          a +=6;
-        }
-        a=0-w;
-        paint.setPen( g.dark() );
-        while (a <= h+5)
-        {
-          paint.drawLine(0, h-a+2, h, 0-a+2);
-          paint.drawLine(0, h-a+3, h, 0-a+3);
-          a +=6;
-        }
-        return TRUE;
+      paint.setPen( g.light() );
+      stipple_height = 3;
+      while ( stipple_height < h-4 ) {
+        paint.drawPoint( 1, stipple_height+1);
+        paint.drawPoint( 4, stipple_height);
+        stipple_height+=3;
       }
+      paint.setPen( g.dark() );
+      stipple_height = 4;
+      while ( stipple_height < h-4 ) {
+        paint.drawPoint( 2, stipple_height+1);
+        paint.drawPoint( 5, stipple_height);
+        stipple_height+=3;
+      }
+      return TRUE;
     }
   }
   return FALSE;
@@ -869,15 +551,7 @@ void KMenuBar::setMenuBarPos(menuPosition mpos)
 	      setCaption(s);
 	  }
 	  setFrameStyle( NoFrame);
-	  if (mpos == FloatingSystem)
-	      {
-		  if (style() == MotifStyle)
-		      menu->setFrameStyle(Panel | Raised);
-		  else
-		      menu->setFrameStyle(WinPanel | Raised) ;
-	      }
-	  else
-	      menu->setFrameStyle( NoFrame) ;
+      menu->setFrameStyle(Panel | Raised);
 	  context->changeItem (i18n("UnFloat"), CONTEXT_FLOAT);
 	  context->setItemEnabled (CONTEXT_FLAT, FALSE);
 	
@@ -897,10 +571,6 @@ void KMenuBar::setMenuBarPos(menuPosition mpos)
 	    show();
 	}
 
-//        if (style() == MotifStyle)
-//          menu->setMouseTracking(false);
-//        else
-//          menu->setMouseTracking(true);
 //----------------------------------------------------------------------------
         // Repair repaired Accelerators (Eh, those Trolls...)
         QObjectList	*accelerators = queryList( "QAccel" );
@@ -929,16 +599,7 @@ void KMenuBar::setMenuBarPos(menuPosition mpos)
         emit moved (mpos);
         context->changeItem (i18n("Float"), CONTEXT_FLOAT);
         context->setItemEnabled (CONTEXT_FLAT, TRUE);
-        if (style() == MotifStyle)
-        {
-//          menu->setMouseTracking(false);
-          menu->setFrameStyle(Panel | Raised);
-        }
-        else
-        {
-//          menu->setMouseTracking(true);
-          menu->setFrameStyle(NoFrame);
-        }
+        menu->setFrameStyle(Panel | Raised);
 
         return;
       }

@@ -3,7 +3,8 @@
               (C) 1997, 1998 Mark Donohoe (donohoe@kde.org)
               (C) 1997, 1998 Sven Radej (radej@kde.org)
               (C) 1997, 1998 Matthias Ettrich (ettrich@kde.org)
-			  (C) 1999 Chris Schlaeger (cs@kde.org)
+              (C) 1999 Chris Schlaeger (cs@kde.org)
+              (C) 1999 Kurt Granroth (granroth@kde.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -21,116 +22,11 @@
     Boston, MA 02111-1307, USA.
 */
 
-// $Id$
-// $Log$
-// Revision 1.140  1999/12/21 18:36:01  granroth
-// By default, toolbars will no longer honor the user-set icon mode (icons
-// only, text under icon, etc).  This is for the benefit of apps that
-// have many many toolbars -- multiple toolbars look very bad in any
-// other mode but "icons only".
-//
-// There *ARE* two ways to force a mode change, though.  The first is a
-// boolean flag in the constructor (honor_mode -- default 'false') that,
-// if set to true, will allow the toolbar to read in the global settings.
-// It is up to the application OR more importantly, the application
-// framework to decide which toolbar should honor the setting.  This is
-// the "main" toolbar, in 99.9% of all apps.  In current apps, this is
-// done with 'toolBar(0)' in KTMainWindow or the "mainToolBar" toolbar in
-// the KParts realm.
-//
-// I also added a sub-menu to the toolbar context menu.  This will allow
-// users to change the style for individual toolbars "on the fly"!
-//
-// Revision 1.139  1999/12/19 00:17:32  shausman
-// - KToolBar, KAction: const fixes (QObject *receiver -> const QObject
-//   *receiver )
-// - KStdAction:
-//   - const fixes
-//   - make KStdAction::action() return QAction * instead of KAction *
-//   - make KStdAction::openRecent() return KSelectAction *
-//   - make KStdAction::show*Bar() return KToggleAction *
-//
-// Revision 1.138  1999/12/18 22:00:16  granroth
-// Added convience method: 'clear()'  Basically, it just iterates through
-// all of it's children and removes them in turn.
-//
-// Revision 1.137  1999/12/14 14:20:57  kulow
-// some template and header fixes
-//
-// Revision 1.136  1999/12/04 04:50:38  granroth
-// combox should be fixed size -- they look *really* strange with 40 pixels
-//
-// Revision 1.135  1999/12/04 03:12:50  granroth
-// Quick ugly hack to allow line seperators to display correctly in
-// Vertical as well as Horizontal styles..
-//
-// Revision 1.134  1999/11/24 12:35:33  navindra
-// do not collapse the bars on MidButton press *and* release.  do it only
-// on Mid release, just like is done with the Left button.  i believe the
-// previous behaviour was somewhat confusing and seemed buggy.
-//
-// Revision 1.133  1999/11/14 00:44:10  ettrich
-//
-// do not flicker if not absolutely necessary
-//
-// Revision 1.132  1999/10/10 08:18:57  bero
-// Code cleanup ((void) stuff)
-//
-// Revision 1.131  1999/10/08 23:11:12  bero
-// Fix compilation
-//
-// Revision 1.130  1999/09/21 11:03:54  waba
-// WABA: Clean up interface
-//
-// Revision 1.129  1999/08/04 13:02:48  radej
-// sven: Proposed change from Carsten Pfeiffer for buttons with delayed popups:
-// When popup is visible, click on button will hide the popup and emit click.
-//
-// Revision 1.128  1999/08/03 23:31:17  ettrich
-// make flat only with the handle, not the entire toolbar
-//
-// Revision 1.127  1999/07/26 19:42:44  pbrown
-// fixed for qcombobox.
-//
-// Revision 1.126  1999/07/25 11:53:48  kulow
-// taking out some headers from ktmainwindow.h, they just don't belong there
-//
-// Revision 1.125  1999/07/07 19:12:12  cschlaeg
-// removed horizontal/vertical flipping for floating bars during resize
-//
-// Revision 1.124  1999/06/20 10:49:35  mario
-// Mario: the menu bar was not correctly drawn. This hack fixes that
-//
-// Revision 1.123  1999/06/18 20:28:19  kulow
-// getConfig -> config
-//
-// Revision 1.122  1999/06/15 20:36:33  cschlaeg
-// some more cleanup in ktmlayout; fixed random toolbar handle highlighting
-//
-// Revision 1.121  1999/06/13 21:43:54  cschlaeg
-// fixed-size main widgets are now working; support for fixed-width widget or heightForWidth-widget needs a different concept; will think about it; floating toolbars are still broken
-//
-// Revision 1.120  1999/06/12 21:43:58  knoll
-// kapp->xxxFont() -> KGlobal::xxxFont()
-//
-// Revision 1.119  1999/06/11 04:40:14  glenebob
-// printf -> debug (twice)
-//
-// Revision 1.118  1999/06/10 21:47:50  cschlaeg
-// setFullWidth(false) ignore feature re-implemented; floating resize bug fixed; layout manager documented; resizing floating bars still does not work properly
-//
-
-
 #include <qpainter.h>
 #include <qtooltip.h>
 #include <qdrawutil.h>
-#include <qpalette.h>
-#include <qbitmap.h>
 #include <qstring.h>
-#include <qframe.h>
-#include <qbutton.h>
 #include <qrect.h>
-//#include <qimage.h>
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -336,31 +232,11 @@ void KToolBar::drawContents ( QPainter *)
 
 KToolBar::~KToolBar()
 {
-
-// what is that?! we do not need to recreate before
-// destroying.... (Matthias)
-
-  // OK (sven)
-
-//   if (position == Floating)
-//   {
-//     debug ("KToolBar destructor: about to recreate");
-//     recreate (Parent, oldWFlags, QPoint (oldX, oldY), false);
-//     debug ("KToolBar destructor: recreated");
-//   }
-
-  // what is that?! toolbaritems are children of the toolbar, which
-  // means, qt will delete them for us (Matthias)
-  //for ( KToolBarItem *b = items->first(); b!=0L; b=items->next() )
-  // items.remove();
-  //Uhh... I'm embaresd... (sven)
   delete items;
 
   // I would never guess that (sven)
   if (!QApplication::closingDown())
 	   delete context;
-
-  //debug ("KToolBar destructor");
 }
 
 void KToolBar::setMaxHeight (int h)
@@ -1000,10 +876,6 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
 	    buttonDownOnHandle = FALSE;
 	    ContextCallback(0);
         }
-
-      // too confusing/buggy, imho. --nu
-      //else if (m->button() == MidButton && position != Floating)
-      //   setFlat (position != Flat);
 }
 
 void KToolBar::slotHotSpot(int hs)
@@ -1153,115 +1025,48 @@ void KToolBar::paintEvent(QPaintEvent *)
     // Handle point
     if (horizontal)
     {
-      if (style() == MotifStyle)
-      {
-        qDrawShadePanel( paint, 0, 0, 9, toolbarHeight,
-                         g , false, 1, &b);
-        paint->setPen( g.light() );
-	paint->drawLine( 9, 0, 9, toolbarHeight);
-        stipple_height = 3;
-        while ( stipple_height < toolbarHeight-4 ) {
-          paint->drawPoint( 1, stipple_height+1);
-          paint->drawPoint( 4, stipple_height);
-          stipple_height+=3;
-        }
-        paint->setPen( g.dark() );
-        stipple_height = 4;
-        while ( stipple_height < toolbarHeight-4 ) {
-          paint->drawPoint( 2, stipple_height+1);
-          paint->drawPoint( 5, stipple_height);
-          stipple_height+=3;
-        }
+      qDrawShadePanel( paint, 0, 0, 9, toolbarHeight,
+                       g , false, 1, &b);
+      paint->setPen( g.light() );
+      paint->drawLine( 9, 0, 9, toolbarHeight);
+      stipple_height = 3;
+      while ( stipple_height < toolbarHeight-4 ) {
+        paint->drawPoint( 1, stipple_height+1);
+        paint->drawPoint( 4, stipple_height);
+        stipple_height+=3;
       }
-      else // Windows style handle
-      {
-        int w = 6;
-        int h = toolbarHeight;
-        paint->setClipRect(0, 2, w, h-4);
-
-        qDrawPlainRect ( paint, 0, 0, 9, toolbarHeight,
-                         g.mid(), 0, &b);
-
-        paint->setPen( g.light() );
-        int a=0-w;
-        while (a <= h+5)
-        {
-          paint->drawLine(0, h-a, h, 0-a);
-          paint->drawLine(0, h-a+1, h, 0-a+1);
-          a +=6;
-        }
-        a=0-w;
-        paint->setPen( g.dark() );
-        while (a <= h+5)
-        {
-          paint->drawLine(0, h-a+2, h, 0-a+2);
-          paint->drawLine(0, h-a+3, h, 0-a+3);
-          a +=6;
-        }
+      paint->setPen( g.dark() );
+      stipple_height = 4;
+      while ( stipple_height < toolbarHeight-4 ) {
+        paint->drawPoint( 2, stipple_height+1);
+        paint->drawPoint( 5, stipple_height);
+        stipple_height+=3;
       }
     }
     else // vertical
     {
-      if (style() == MotifStyle)
-      {
-        qDrawShadePanel( paint, 0, 0, toolbarWidth, 9,
-                         g , false, 1, &b);
+      qDrawShadePanel( paint, 0, 0, toolbarWidth, 9,
+                       g , false, 1, &b);
 
-        paint->setPen( g.light() );
-	paint->drawLine( 0, 9, toolbarWidth, 9);
-        stipple_height = 3;
-        while ( stipple_height < toolbarWidth-4 ) {
-          paint->drawPoint( stipple_height+1, 1);
-          paint->drawPoint( stipple_height, 4 );
-          stipple_height+=3;
-        }
-        paint->setPen( g.dark() );
-        stipple_height = 4;
-        while ( stipple_height < toolbarWidth-4 ) {
-          paint->drawPoint( stipple_height+1, 2 );
-          paint->drawPoint( stipple_height, 5);
-          stipple_height+=3;
-        }
+      paint->setPen( g.light() );
+      paint->drawLine( 0, 9, toolbarWidth, 9);
+      stipple_height = 3;
+      while ( stipple_height < toolbarWidth-4 ) {
+        paint->drawPoint( stipple_height+1, 1);
+        paint->drawPoint( stipple_height, 4 );
+        stipple_height+=3;
       }
-      else
-      {
-        qDrawPlainRect( paint, 0, 0, toolbarWidth, 9,
-                        g.mid(), 0, &b);
-
-        int w = toolbarWidth;
-        int h = 15;
-
-        paint->setClipRect(2, 0, w-4, 6);
-
-        //qDrawPlainRect ( paint, 0, 0, 9, toolbarHeight,
-        //                 g.mid(), 0, &b);
-
-        paint->setPen( g.light() );
-        int a = 0-h;
-        while (a <= w+h)
-        {
-          paint->drawLine(w-a, h, w-a+h, 0);
-          paint->drawLine(w-a+1, h, w-a+1+h, 0);
-          a +=6;
-        }
-        a = 0-h;
-        paint->setPen( g.dark() );
-        while (a <= w+h)
-        {
-          paint->drawLine(w-a+2, h, w-a+2+h, 0);
-          paint->drawLine(w-a+3, h, w-a+3+h, 0);
-          a +=6;
-        }
+      paint->setPen( g.dark() );
+      stipple_height = 4;
+      while ( stipple_height < toolbarWidth-4 ) {
+        paint->drawPoint( stipple_height+1, 2 );
+        paint->drawPoint( stipple_height, 5);
+        stipple_height+=3;
       }
-
     }
   } //endif moving
 
-  if (position != Floating)
-    if ( style() == MotifStyle )
-      qDrawShadePanel(paint, 0, 0, width(), height(), g , false, 1);
-    //else
-      //qDrawShadeRect(paint, 0, 0, width(), height(), g , true, 1);
+  qDrawShadePanel(paint, 0, 0, width(), height(), g , false, 1);
 
   paint->end();
   delete paint;
