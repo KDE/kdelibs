@@ -203,7 +203,7 @@ void khtml::setNamedColor(QColor &color, const QString &_name)
     {
         name = name.left(7);
     }
-	      
+
     if ( len > 4 && name[0].lower() == 'r' && name[1].lower() == 'g' &&
          name[2].lower() == 'b' && name[3] == '(' &&
          name[len-1] == ')')
@@ -239,6 +239,28 @@ void khtml::setNamedColor(QColor &color, const QString &_name)
         if (tc.isValid())
             color = tc;
         else {
+/////////////////////////
+#ifdef __GNUC__
+#warning HACK for Qt 3.0 - remove when setNamedColor is fixed
+#endif
+            if ( name[0] != '#' ) {
+                bool hasnonalpha = false;
+                bool hasalpha = false;
+                for(unsigned int i = 0; i < name.length(); i++)
+                    if(name[i].isLetterOrNumber())
+                        hasalpha = true;
+                    else
+                        hasnonalpha = true;
+
+                if ( hasnonalpha && hasalpha ) {
+                    // this can't be a color, set to invalid
+                    // because Qt is buggy and return
+                    color = QColor();
+                    return;
+                }
+            }
+/////////////////////////
+
             color.setNamedColor(name);
             if ( !color.isValid() )  color.setNamedColor( name.lower() );
             if(!color.isValid()) {
