@@ -225,12 +225,12 @@ void KIO::SessionData::configDataFor( SlaveConfig* cfg, const QString& proto,
             cfg->setConfigData( proto, host, "Charsets", d->charsets );
         if ( cfg->configData(proto,host)["CacheDir"].isEmpty() )
         {
-            cfg->setConfigData( proto, host, "CacheDir", 
+            cfg->setConfigData( proto, host, "CacheDir",
                                 KGlobal::dirs()->saveLocation("cache", "http"));
         }
         if ( cfg->configData(proto,host)["UserAgent"].isEmpty() )
         {
-            cfg->setConfigData( proto, host, "UserAgent", 
+            cfg->setConfigData( proto, host, "UserAgent",
                                 KProtocolManager::defaultUserAgent() );
         }
     }
@@ -257,14 +257,7 @@ void KIO::SessionData::reset()
     }
     d->language = languageList.join( ", " );
 
-#if QT_VERSION < 300
-    // Get charset settings...
-    // FIXME: Ugly hack to get appropriate charset value.  Needs
-    // to be simplified when it gets fixed in QT/kdecore.
-    d->charsets = KGlobal::charsets()->name(KGlobal::charsets()->xNameToID(KGlobal::locale()->charset()));
-#else
     d->charsets = QTextCodec::codecForLocale()->mimeName(); // that's the right solution, said Lars
-#endif
     KProtocolManager::reparseConfiguration();
 }
 
