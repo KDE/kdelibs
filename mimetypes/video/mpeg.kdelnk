@@ -6,6 +6,7 @@ Icon=video.xpm
 Patterns=*.mpeg;*.mpg;
 DefaultApp=aktion
 Comment=MPEG Video
+Comment[ca]=Vídeo MPEG
 Comment[cs]=Filmy ve formátu MPEG
 Comment[da]=MPEG-video
 Comment[es]=Video MPEG

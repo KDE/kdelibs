@@ -6,6 +6,7 @@ Icon=video.xpm
 Patterns=*.mov;*.MOV;
 DefaultApp=aktion
 Comment=Quicktime Video
+Comment[ca]=Vídeo Quicktime
 Comment[cs]=Filmy ve formátu Quicktime
 Comment[da]=Quicktime video
 Comment[es]=Video Quicktime
