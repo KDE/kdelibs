@@ -30,7 +30,7 @@ noinst_HEADERS = global.h object.h nodes.h operations.h lexer.h \
 	kjsstring.h grammar.h math_object.h
 
 libkjs_la_LDFLAGS = -version-info 1:0 $(QT_LDFLAGS)
-libkjs_la_LIBADD = $(LIB_KDECORE)
+libkjs_la_LIBADD = $(LIB_KDECORE) -lm
 
 parser: $(srcdir)/grammar.y
 	cd $(srcdir); \
@@ -44,4 +44,4 @@ parser: $(srcdir)/grammar.y
 ## test program
 bin_PROGRAMS 	= testkjs
 testkjs_SOURCES = testkjs.cpp $(libkjs_la_SOURCES)
-testkjs_LDADD = $(LIB_KDECORE)
+testkjs_LDADD = $(libkjs_la_LIBADD)

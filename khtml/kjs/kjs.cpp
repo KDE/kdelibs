@@ -20,9 +20,6 @@
 
 #include <stdio.h>
 
-#include <qmessagebox.h>
-#include <klocale.h>
-
 #include "kjs.h"
 #include "object.h"
 #include "nodes.h"
@@ -83,7 +80,7 @@ void KJSWorld::evaluate(const QString &code)
       fprintf(stderr, "remain nodeCount = %d. Looks like a leak.\n",
 	      KJSWorld::nodeCount);
   } else
-    QMessageBox::warning((QWidget *)htmlw, i18n("JavaScript"), i18n("Parsing error"));
+    fprintf(stderr, "JavaScript parse error.\n");
 }
 
 
