@@ -166,15 +166,15 @@ static bool kdither_32_to_8( const QImage *src, QImage *dst )
 		}
 	}
 
-	delete line1[0];
-	delete line2[0];
-	delete line1[1];
-	delete line2[1];
-	delete line1[2];
-	delete line2[2];
-	delete pv[0];
-	delete pv[1];
-	delete pv[2];
+	delete [] line1[0];
+	delete [] line2[0];
+	delete [] line1[1];
+	delete [] line2[1];
+	delete [] line1[2];
+	delete [] line2[2];
+	delete [] pv[0];
+	delete [] pv[1];
+	delete [] pv[2];
 	
 #undef MAX_R
 #undef MAX_G
