@@ -1131,8 +1131,8 @@ void FileProtocol::slotListDir( const char *_url )
       access = S_IRWXU | S_IRWXG | S_IRWXO;
     } else {
       lstat( tmp.ascii(), &lbuff );
-      type = buff.st_mode;
-      access = buff.st_mode;
+      type = buff.st_mode & S_IFMT; // extract file type
+      access = buff.st_mode & 0x1FF; // extract permissions
       // Is it a link
       if ( S_ISLNK( lbuff.st_mode ) ) {
 	// type |= S_IFLNK; No !! This screws S_ISDIR and friends. (David)
@@ -1144,8 +1144,6 @@ void FileProtocol::slotListDir( const char *_url )
 	  slink = buffer2;
 	}
       }
-      else
-	type &= S_IFMT;
     }
 
 
