@@ -265,27 +265,23 @@ KConfigBase *SlaveBase::config()
 void SlaveBase::sendMetaData()
 {
    KIO_DATA << mOutgoingMetaData;
+
    m_pConnection->send( INF_META_DATA, data );
+   mOutgoingMetaData.clear(); // Clear
 }
+
 
 void SlaveBase::data( const QByteArray &data )
 {
     if (!mOutgoingMetaData.isEmpty())
-    {
        sendMetaData();
-       mOutgoingMetaData.clear();
-    }
     m_pConnection->send( MSG_DATA, data );
 }
 
 void SlaveBase::dataReq( )
 {
     if (!mOutgoingMetaData.isEmpty())
-    {
        sendMetaData();
-       mOutgoingMetaData.clear();
-    }
-
     if (d->needSendCanResume)
         canResume(0);
     m_pConnection->send( MSG_DATA_REQ );
@@ -309,10 +305,7 @@ void SlaveBase::finished()
 {
     mIncomingMetaData.clear(); // Clear meta data
     if (!mOutgoingMetaData.isEmpty())
-    {
        sendMetaData();
-       mOutgoingMetaData.clear();
-    }
     m_pConnection->send( MSG_FINISHED );
 }
 
@@ -401,7 +394,7 @@ void SlaveBase::mimeType( const QString &_type)
     }
   }
   while (cmd != CMD_NONE);
-
+  mOutgoingMetaData.clear();
 // WABA: cmd can be "CMD_NONE" or "CMD_GET" (in which case the slave
 // had been put on hold.) [or special, for http posts].
 // Something else is basically an error
@@ -741,7 +734,6 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         int permissions;
         Q_INT8 iOverwrite, iResume;
         stream >> url >> iOverwrite >> iResume >> permissions;
-
         bool overwrite = ( iOverwrite != 0 );
         bool resume = ( iResume != 0 );
 
@@ -756,12 +748,10 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     case CMD_STAT:
         stream >> url;
         stat( url );
-        mOutgoingMetaData.clear();
         break;
     case CMD_MIMETYPE:
         stream >> url;
         mimetype( url );
-        mOutgoingMetaData.clear();
         break;
     case CMD_LISTDIR:
         stream >> url;
