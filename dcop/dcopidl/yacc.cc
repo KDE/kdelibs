@@ -1214,7 +1214,7 @@ case 65:
 #line 340 "yacc.yy"
 {
 	     if (dcop_area) {
-	  	QString* tmp = new QString("type=\"%1\" qleft=\"const\" qright=\"" AMP_ENTITY "\"/>");
+	  	QString* tmp = new QString(" type=\"%1\" qleft=\"const\" qright=\"" AMP_ENTITY "\"/>");
 		*tmp = tmp->arg( *(yyvsp[-1]._str) );
 		yyval._str = tmp;
 	     }
@@ -1224,7 +1224,7 @@ case 66:
 #line 347 "yacc.yy"
 {
 		if (dcop_area) {
-		  QString* tmp = new QString("type=\"%1<%2>\" qleft=\"const\" qright=\"" AMP_ENTITY "\"/>");
+		  QString* tmp = new QString(" type=\"%1<%2>\" qleft=\"const\" qright=\"" AMP_ENTITY "\"/>");
 		  *tmp = tmp->arg( *(yyvsp[-4]._str) ).arg( *(yyvsp[-2]._str) );
 		  yyval._str = tmp;
 		}
@@ -1247,7 +1247,7 @@ case 68:
 case 69:
 #line 362 "yacc.yy"
 {
-	     QString* tmp = new QString("type=\"%1<%2>\" qleft=\"\" qright=\"\"/>");
+	     QString* tmp = new QString(" type=\"%1<%2>\" qleft=\"\" qright=\"\"/>");
 	     *tmp = tmp->arg( *(yyvsp[-3]._str) ).arg( *(yyvsp[-1]._str) );
 	     yyval._str = tmp;
 	;
@@ -1255,7 +1255,7 @@ case 69:
 case 70:
 #line 367 "yacc.yy"
 {
-		QString* tmp = new QString("type=\"%1\"/>");
+		QString* tmp = new QString(" type=\"%1\"/>");
 		*tmp = tmp->arg( *(yyvsp[0]._str) );
 		yyval._str = tmp;
 	;

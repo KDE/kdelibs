@@ -339,14 +339,14 @@ type
 	  }
 	| T_CONST type_name T_AMPERSAND {
 	     if (dcop_area) {
-	  	QString* tmp = new QString("type=\"%1\" qleft=\"const\" qright=\"" AMP_ENTITY "\"/>");
+	  	QString* tmp = new QString(" type=\"%1\" qleft=\"const\" qright=\"" AMP_ENTITY "\"/>");
 		*tmp = tmp->arg( *($2) );
 		$$ = tmp;
 	     }
 	  }
 	| T_CONST Identifier T_LESS type_list T_GREATER T_AMPERSAND {
 		if (dcop_area) {
-		  QString* tmp = new QString("type=\"%1<%2>\" qleft=\"const\" qright=\"" AMP_ENTITY "\"/>");
+		  QString* tmp = new QString(" type=\"%1<%2>\" qleft=\"const\" qright=\"" AMP_ENTITY "\"/>");
 		  *tmp = tmp->arg( *($2) ).arg( *($4) );
 		  $$ = tmp;
 		}
@@ -360,12 +360,12 @@ type
 	      yyerror("in dcop areas are no pointers allowed!");
 	}
 	| Identifier T_LESS type_list T_GREATER {
-	     QString* tmp = new QString("type=\"%1<%2>\" qleft=\"\" qright=\"\"/>");
+	     QString* tmp = new QString(" type=\"%1<%2>\" qleft=\"\" qright=\"\"/>");
 	     *tmp = tmp->arg( *($1) ).arg( *($3) );
 	     $$ = tmp;
 	}
 	| type_name {
-		QString* tmp = new QString("type=\"%1\"/>");
+		QString* tmp = new QString(" type=\"%1\"/>");
 		*tmp = tmp->arg( *($1) );
 		$$ = tmp;
 	}
