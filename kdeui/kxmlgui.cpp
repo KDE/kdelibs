@@ -36,17 +36,17 @@
 #include <kstddirs.h>
 
 /*
- * TODO: - cleanup ContainerClient::m_* and Node::*
- *       - improve performance
- *       - remove m_groupName stuff!?
- *       - make all the blah( KXMLGUIContainerNode *node, ... ) methods part of
- *         KXMLGUIContainerNode
- *       - make more use of QValueList instead of QList
+ * TODO:     - make more use of QValueList instead of QList
  */
 
-/**
- * This structure is used to know to which servant certain actions belong. In addition we store
- * a boolean value indicating if the actions have been plugged with a merging index or not.
+/*
+ * This structure is used to know to which client certain actions and custom elements (i.e. menu separators) belong.
+ * We do not only use a ContainerClient per GUIClient but also per merging group.
+ *
+ * groupName : Used for grouped merging. Specifies the group name to which these actions/elements belong to.
+ * actionLists : maps from action list name to action list.
+ * mergingName : The (named) merging point.
+ *
  * A ContainerClient always belongs to a ContainerNode.
  */
 struct KXMLGUIContainerClient
@@ -66,21 +66,34 @@ template class QList<KXMLGUIContainerNode>;
 struct MergingIndex
 {
   int value; // the actual index value, used as index for plug() or createContainer() calls
-  QString mergingName;
+  QString mergingName; // the name of the merging index (i.e. the name attribute of the Merge or DefineGroup tag)
   QString clientName; // the name of the client that defined this index
 };
 
-/**
- * Here we store detailed information about a container, its clients (client=a servant having actions
+/*
+ * Here we store detailed information about a container, its clients (client=a guiclient having actions
  * plugged into the container), child nodes, naming information (tagname and name attribute) and
- * index information, used to plug in actions at the correct index for correct GUI merging. In addition
- * we store a boolean value indicating whether the container was inserted into the parent container via
- * a merging-index or not. A merging index is used to plug in child actions and child containers at a
- * specified index, in order to merge the GUI correctly.
+ * merging index information, to plug/insert new actions/items a the correct position.
+ *
+ * The builder variable is needed for using the proper GUIBuilder for destruction ( to use the same for
+ * con- and destruction ). The builderCustomTags and builderContainerTags variables are cached values
+ * of what the corresponding methods of the GUIBuilder which built the container return. The stringlists
+ * is shared all over the place, so there's no need to worry about memory consumption for these
+ * variables :-) 
+ *
+ * The mergingIndices list contains the merging indices ;-) , as defined by <Merge>, <DefineGroup>
+ * or by <ActionList> tags. The order of these index structures within the mergingIndices list
+ * is (and has to be) identical with the order in the DOM tree.
+ *
+ * Beside the merging indices we have the "real" index of the container. It points to the next free position.
+ * (used when no merging index is used for a certain action, custom element or sub-container)
  */
 struct KXMLGUIContainerNode
 {
-  KXMLGUIContainerNode( QWidget *_container, const QString &_tagName, const QString &_name, KXMLGUIContainerNode *_parent = 0L, KXMLGUIClient *_client = 0L, KXMLGUIBuilder *_builder = 0L, int id = -1, const QString &_mergingName = QString::null, const QString &groupName = QString::null );
+  KXMLGUIContainerNode( QWidget *_container, const QString &_tagName, const QString &_name, KXMLGUIContainerNode *_parent = 0L, 
+			KXMLGUIClient *_client = 0L, KXMLGUIBuilder *_builder = 0L, int id = -1, const QString &_mergingName = QString::null, 
+			const QString &groupName = QString::null, const QStringList &customTags = QStringList(), 
+			const QStringList &containerTags = QStringList() );
 
   KXMLGUIContainerNode *parent;
   KXMLGUIClient *client;
@@ -130,26 +143,69 @@ public:
   }
 
   KXMLGUIContainerNode *m_rootNode;
+    
   QString m_clientName;
+    
   QString m_defaultMergingName;
+    
+  /*
+   * Contains the container which is searched for in ::container .
+   */
   QString m_containerName;
+    
+  /*
+   * Basically what client->clientBuilder() returns for ::addClient. Cached.
+   */
   KXMLGUIBuilder *m_clientBuilder;
+    
+  /*
+   * List of all clients
+   */
   QList<KXMLGUIClient> m_clients;
 
+  /*
+   * Contains the name of the actionlist currently plugged/unplugged in ::plugActionList
+   * and ::unplugActionList .
+   */
   QString m_actionListName;
+  /*
+   * Similar to m_actionListName.
+   */
   QList<KAction> m_actionList;
 
   QString tagActionList;
 
   QString attrName;
 
+  /*
+   * The current running default merging index, valid only within one level in ::buildRecursive. Faster than
+   * calculating it each time it's needed.
+   */
   QValueList<MergingIndex>::Iterator m_currentDefaultMergingIt;
+  /*
+   * The current client merging index, valid only within one leve in ::buildRecursive. Faster than calling
+   * calcMergingIndex all the time.
+   */
   QValueList<MergingIndex>::Iterator m_currentClientMergingIt;
 
+  /*
+   * The stringlists the factory's GUIBuilder returns with the corresponding methods.
+   */
+  QStringList m_builderCustomTags;
   QStringList m_builderContainerTags;
+    
+  /*
+   * The stringlists the client's GUIBuilder returns with the corresponding methods.
+   * Only used within ::addClient . Saved globally here to avoid calling the methods
+   * for each ::buildRecursive call.
+   */
+  QStringList m_clientBuilderCustomTags;
+  QStringList m_clientBuilderContainerTags;
 };
 
-KXMLGUIContainerNode::KXMLGUIContainerNode( QWidget *_container, const QString &_tagName, const QString &_name, KXMLGUIContainerNode *_parent, KXMLGUIClient *_client, KXMLGUIBuilder *_builder, int id, const QString &_mergingName, const QString &_groupName )
+KXMLGUIContainerNode::KXMLGUIContainerNode( QWidget *_container, const QString &_tagName, const QString &_name, KXMLGUIContainerNode *_parent, 
+					    KXMLGUIClient *_client, KXMLGUIBuilder *_builder, int id, const QString &_mergingName, 
+					    const QString &_groupName, const QStringList &customTags, const QStringList &containerTags )
 {
   container = _container;
   containerId = id;
@@ -163,17 +219,17 @@ KXMLGUIContainerNode::KXMLGUIContainerNode( QWidget *_container, const QString &
   clients.setAutoDelete( true );
   index = 0;
   mergingName = _mergingName;
-
-  if ( builder )
-  {
-    builderCustomTags = builder->customTags();
-    builderContainerTags = builder->containerTags();
-  }
+  builderCustomTags = customTags;
+  builderContainerTags = containerTags;
 
   if ( parent )
     parent->children.append( this );
 }
 
+/*
+ * Find a merging index with the given name. Used to find an index defined by <Merge name="blah"/>
+ * or by a <DefineGroup name="foo" /> tag.
+ */
 QValueList<MergingIndex>::Iterator KXMLGUIContainerNode::findIndex( const QString &name )
 {
   QValueList<MergingIndex>::Iterator it = mergingIndices.begin();
@@ -184,6 +240,10 @@ QValueList<MergingIndex>::Iterator KXMLGUIContainerNode::findIndex( const QStrin
   return it;
 }
 
+/*
+ * Check if the given container widget is a child of this node and return the node structure
+ * if fonud.
+ */
 KXMLGUIContainerNode *KXMLGUIContainerNode::findContainerNode( QWidget *container )
 {
   QListIterator<KXMLGUIContainerNode> it( children );
@@ -195,6 +255,11 @@ KXMLGUIContainerNode *KXMLGUIContainerNode::findContainerNode( QWidget *containe
   return 0L;
 }
 
+/*
+ * Find a container recursively with the given name. Either compares _name with the
+ * container's tag name or the value of the container's name attribute. Specified by
+ * the tag bool .
+ */
 KXMLGUIContainerNode *KXMLGUIContainerNode::findContainer( const QString &_name, bool tag )
 {
   if ( ( tag && tagName == _name ) ||
@@ -212,6 +277,10 @@ KXMLGUIContainerNode *KXMLGUIContainerNode::findContainer( const QString &_name,
   return 0;
 }
 
+/*
+ * Finds a child container node (not recursively) with the given name and tagname. Explicitly leaves out container
+ * widgets specified in the exludeList . Also ensures that the containers belongs to currClient.
+ */
 KXMLGUIContainerNode *KXMLGUIContainerNode::findContainer( const QString &name, const QString &tagName, const QList<QWidget> *excludeList,
                                                            KXMLGUIClient *currClient )
 {
@@ -328,7 +397,10 @@ KXMLGUIFactory::KXMLGUIFactory( KXMLGUIBuilder *builder, QObject *parent, const 
   m_builder = builder;
   m_client = 0L;
   if ( m_builder )
+  {
       d->m_builderContainerTags = m_builder->containerTags();
+      d->m_builderCustomTags = m_builder->customTags();
+  }
 }
 
 KXMLGUIFactory::~KXMLGUIFactory()
@@ -351,6 +423,9 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
   if ( d->m_clients.containsRef( client ) == 0 )
     d->m_clients.append( client );
 
+  // try to use the build document for building the client's GUI, as the build document
+  // contains the correct container state information (like toolbar positions, sizes, etc.) .
+  // if there is non available, then use the "real" document.
   QDomDocument doc = client->xmlguiBuildDocument();
   if ( doc.isNull() )
     doc = client->domDocument();
@@ -358,9 +433,25 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
   QDomElement docElement = doc.documentElement();
 
   d->m_rootNode->index = -1;
+  
+  // cache some variables
+  
   d->m_clientName = docElement.attribute( d->attrName );
   d->m_clientBuilder = client->clientBuilder();
 
+  if ( d->m_clientBuilder )
+  {
+      d->m_clientBuilderContainerTags = d->m_clientBuilder->containerTags();
+      d->m_clientBuilderCustomTags = d->m_clientBuilder->customTags();
+  }
+  else
+  {
+      d->m_clientBuilderContainerTags = QStringList();
+      d->m_clientBuilderCustomTags = QStringList();
+  }  
+  
+  // process a possibly existing actionproperties section
+  
   QDomElement actionPropElement = docElement.namedItem( actionPropElementName ).toElement();
   if ( actionPropElement.isNull() )
     actionPropElement = docElement.namedItem( actionPropElementName.lower() ).toElement();
@@ -409,16 +500,21 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
 
   buildRecursive( docElement, d->m_rootNode );
 
+  // let the client know that we built its GUI.
   client->setFactory( this );
 
+  // call the finalizeGUI method, to fix up the positions of toolbars for example.
+  // ### FIXME : obey client builder
   m_builder->finalizeGUI( m_client );
 
+  // reset some variables, for safety
   m_client = 0L;
   d->m_clientName = QString::null;
   d->m_clientBuilder = 0L;
 
   emit clientAdded( client );
 
+  // build child clients
   if ( client->childClients()->count() > 0 )
   {
     const QList<KXMLGUIClient> *children = client->childClients();
@@ -430,12 +526,14 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
 
 void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
 {
+  // don't try to remove the client's GUI if we didn't build it
   if ( client->factory() && client->factory() != this )
     return;
 
   // remove this client from our client list
   d->m_clients.removeRef( client );
 
+  // remove child clients first
   if ( client->childClients()->count() > 0 )
   {
     const QList<KXMLGUIClient> *children = client->childClients();
@@ -445,11 +543,18 @@ void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
   }
 
   kdDebug(1002) << "KXMLGUIFactory::removeServant, calling removeRecursive" << endl;
+  
+  // cache some variables
+  
   m_client = client;
   d->m_clientName = client->domDocument().documentElement().attribute( d->attrName );
   d->m_clientBuilder = client->clientBuilder();
+  
   client->setFactory( 0L );
 
+  // if we don't have a build document for that client, yet, then create one by
+  // cloning the original document, so that saving container information in the
+  // DOM tree does not touch the original document.
   QDomDocument doc = client->xmlguiBuildDocument();
   if ( doc.isNull() )
   {
@@ -459,6 +564,8 @@ void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
 
   QDomElement tmp = doc.documentElement();
   removeRecursive( tmp, d->m_rootNode );
+  
+  // reset some variables
   m_client = 0L;
   d->m_clientBuilder = 0L;
   d->m_clientName = QString::null;
@@ -527,21 +634,27 @@ void KXMLGUIFactory::resetInternal( KXMLGUIContainerNode *node )
 
 void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContainerNode *parentNode )
 {
+  // some often used QStrings
   static const QString &tagAction = KGlobal::staticQString( "action" );
   static const QString &tagMerge = KGlobal::staticQString( "merge" );
   static const QString &tagDefineGroup = KGlobal::staticQString( "definegroup" );
   static const QString &attrGroup = KGlobal::staticQString( "group" );
 
-  QStringList customTags = parentNode->builderCustomTags;
-
+  // create a list of supported container and custom tags
+  QStringList customTags = d->m_builderCustomTags;
   QStringList containerTags = d->m_builderContainerTags;
+  
   if ( parentNode->builder != m_builder )
+  {
+    customTags += parentNode->builderCustomTags;
     containerTags += parentNode->builderContainerTags;
+  }
 
   /*
    * This list contains references to all the containers we created on the current level.
    * We use it as "exclude" list, in order to avoid container matches of already created containers having
-   * no proper name attribute to distinct them (like with Separator tags).
+   * no proper name attribute to distinct them.
+   * ### still needed?
    */
   QList<QWidget> containerList;
 
@@ -571,8 +684,11 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
     QString currName = e.attribute( d->attrName );
 
     /*
-     * The "Merge" tag specifies that all containers and actions from *other* servants should be
-     * inserted/plugged in at the current index, and not at the "end" .
+     * The "Merge" tag specifies that all containers and actions from *other* clients should be
+     * inserted/plugged in at the current index, and not appended.
+     * Same semantics apply for <DefineGroup> and <ActionList> . We simply want to save the
+     * index of where the tags appear, in order to "substitute" them with other clients actions,
+     * actionlists, containers, custom elements or even merging indices.
      */
     if ( tag == tagMerge || tag == tagDefineGroup || tag == d->tagActionList )
     {
@@ -603,12 +719,17 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
 
       QValueList<MergingIndex>::Iterator mIt = parentNode->mergingIndices.end();
 
+      // calculate the index of the new merging index. Usually this does not need any calculation,
+      // we just want the last available index (i.e. append) . But in case the <Merge> tag appears
+      // "inside" another <Merge> tag from a previously build client, then we have to use the
+      // "parent's" index. That's why we call calcMergingIndex here.
       MergingIndex newIdx;
       newIdx.value = calcMergingIndex( parentNode, QString::null /* ### allow group for <merge/> ? */ ,
                                        mIt, ignoreDefaultMergingIndex );
       newIdx.mergingName = mergingName;
       newIdx.clientName = d->m_clientName;
 
+      // if that merging index is "inside" another one, then append it right after the "parent" .
       if ( mIt != parentNode->mergingIndices.end() )
         parentNode->mergingIndices.insert( ++mIt, newIdx );
       else
@@ -617,6 +738,7 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
       if ( mergingName == d->m_defaultMergingName )
         ignoreDefaultMergingIndex = true;
 
+      // re-calculate the running default and client merging indices.
       d->m_currentDefaultMergingIt = parentNode->findIndex( d->m_defaultMergingName );
       calcMergingIndex( parentNode, QString::null, d->m_currentClientMergingIt, ignoreDefaultMergingIndex );
     }
@@ -635,21 +757,20 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
         haveGroup = true;
       }
 
-//      int idx = calcMergingIndex( parentNode, group, it, ignoreDefaultMergingIndex );
       int idx;
-      if ( haveGroup )
+      if ( haveGroup ) // if we have a group attribute, then we cannot use our nicely cached running merging index values.
           idx = calcMergingIndex( parentNode, group, it, ignoreDefaultMergingIndex );
-      else if ( d->m_currentClientMergingIt == parentNode->mergingIndices.end() )
-          idx = parentNode->index;
+      else if ( d->m_currentClientMergingIt == parentNode->mergingIndices.end() ) // if we don't have a current merging index, then we
+          idx = parentNode->index;                                                // want to append our action
       else
           idx = (*d->m_currentClientMergingIt).value;
 
 
-      //      if ( !containerClient || haveGroup )
-        containerClient = findClient( parentNode, group, it );
+      containerClient = findClient( parentNode, group, it );
 
       if ( tag == tagAction )
       {
+	// look up the action and plug it in
         KAction *action = m_client->action( e );
 
         if ( !action )
@@ -657,6 +778,7 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
 
         action->plug( parentNode->container, idx );
 
+	// save a reference to the plugged action, in order to properly unplug it afterwards.
         containerClient->actions.append( action );
       }
       else
@@ -668,6 +790,7 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
           containerClient->customElements.append( id );
       }
 
+      // adjust any following merging indices and the current running index for the container
       adjustMergingIndices( parentNode, 1, it );
     }
     else if ( containerTags.contains( tag ) )
@@ -686,6 +809,8 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
          * Enter the next level, as the container already exists :)
          */
         buildRecursive( e, matchingContainer );
+	// re-calculate current default merging indices and client merging indices, as they have changed in the
+	// recursive invocation.
         d->m_currentDefaultMergingIt = parentNode->findIndex( d->m_defaultMergingName );
         calcMergingIndex( parentNode, QString::null, d->m_currentClientMergingIt, ignoreDefaultMergingIndex );
       }
@@ -701,8 +826,6 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
           haveGroup = true;
         }
 
-//      int idx = calcMergingIndex( parentNode, group, it, ignoreDefaultMergingIndex );
-        //      int idx = d->m_currentClientMergingIndex;
         int idx;
         if ( haveGroup )
             idx = calcMergingIndex( parentNode, group, it, ignoreDefaultMergingIndex );
@@ -729,7 +852,7 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
 
         KXMLGUIContainerNode *containerNode = parentNode->findContainerNode( container );
 
-        if ( !containerNode )
+        if ( !containerNode ) // this should be true all times
         {
           containerList.append( container );
 
@@ -737,10 +860,21 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
           if ( it != parentNode->mergingIndices.end() )
             mergingName = (*it).mergingName;
 
-          containerNode = new KXMLGUIContainerNode( container, tag, currName, parentNode, m_client, builder, id, mergingName, group );
+	  QStringList cusTags = d->m_builderCustomTags;
+	  QStringList conTags = d->m_builderContainerTags;
+	  if ( builder != m_builder )
+	  {
+	      cusTags = d->m_clientBuilderCustomTags;
+	      conTags = d->m_clientBuilderContainerTags;
+	  }
+	  
+          containerNode = new KXMLGUIContainerNode( container, tag, currName, parentNode, m_client, builder, id, mergingName, group,
+						    cusTags, conTags );
         }
 
         buildRecursive( e, containerNode );
+	
+	// and re-calculate running values, for better performance
         d->m_currentDefaultMergingIt = parentNode->findIndex( d->m_defaultMergingName );
         calcMergingIndex( parentNode, QString::null, d->m_currentClientMergingIt, ignoreDefaultMergingIndex );
       }
@@ -753,10 +887,13 @@ bool KXMLGUIFactory::removeRecursive( QDomElement &element, KXMLGUIContainerNode
   QDomNodeList childElements = element.childNodes();
   uint childElementCount = childElements.count();
 
+  // process all child containers first
   QListIterator<KXMLGUIContainerNode> childIt( node->children );
   while ( childIt.current() )
   {
     KXMLGUIContainerNode *childNode = childIt.current();
+    
+    // find the corresponding element in the DOM tree (which contains the saved container state)
     QDomElement child;
     // ### slow
     uint i = 0;
@@ -790,11 +927,13 @@ bool KXMLGUIFactory::removeRecursive( QDomElement &element, KXMLGUIContainerNode
 
     while ( clientIt.current() )
       //only unplug the actions of the client we want to remove, as the container might be owned
-      //by a different servant
+      //by a different client
       if ( clientIt.current()->client == m_client )
       {
         assert( node->builder );
 
+	// now quickyl remove all custom elements (i.e. separators) and unplug all actions
+	
         QValueList<int>::ConstIterator custIt = clientIt.current()->customElements.begin();
         QValueList<int>::ConstIterator custEnd = clientIt.current()->customElements.end();
         for (; custIt != custEnd; ++custIt )
@@ -802,16 +941,17 @@ bool KXMLGUIFactory::removeRecursive( QDomElement &element, KXMLGUIContainerNode
 
         QListIterator<KAction> actionIt( clientIt.current()->actions );
         for (; actionIt.current(); ++actionIt )
-        {
-          kdDebug(1002) << "unplugging " << actionIt.current()->name() << " from " << node->container->name() << endl;
           actionIt.current()->unplug( node->container );
-        }
 
+	// now adjust all merging indices
+	
         mergingIt = node->findIndex( clientIt.current()->mergingName );
 
         adjustMergingIndices( node, - ( clientIt.current()->actions.count()
                                     + clientIt.current()->customElements.count() ), mergingIt );
 
+	// unplug all actionslists
+	
         QMap<QString, QList<KAction> >::ConstIterator alIt = clientIt.current()->actionLists.begin();
         QMap<QString, QList<KAction> >::ConstIterator alEnd = clientIt.current()->actionLists.end();
         for (; alIt != alEnd; ++alIt )
@@ -820,6 +960,8 @@ bool KXMLGUIFactory::removeRecursive( QDomElement &element, KXMLGUIContainerNode
           for (; actionIt.current(); ++actionIt )
             actionIt.current()->unplug( node->container );
 
+	  // construct the merging index key (i.e. like named merging) , find the corresponding
+	  // merging index and adjust all indices
           QString mergingKey = alIt.key();
           mergingKey.prepend( d->tagActionList );
 
@@ -829,6 +971,8 @@ bool KXMLGUIFactory::removeRecursive( QDomElement &element, KXMLGUIContainerNode
 
           adjustMergingIndices( node, - alIt.data().count(), mIt );
 
+	  // remove the actionlists' merging index
+	  // ### still needed? we clean up below anyway?
           node->mergingIndices.remove( mIt );
         }
 
@@ -840,6 +984,7 @@ bool KXMLGUIFactory::removeRecursive( QDomElement &element, KXMLGUIContainerNode
 
   mergingIt = node->mergingIndices.end();
 
+  // remove all merging indices the client defined
   QValueList<MergingIndex>::Iterator cmIt = node->mergingIndices.begin();
   while ( cmIt != node->mergingIndices.end() )
     if ( (*cmIt).clientName == d->m_clientName )
@@ -851,13 +996,14 @@ bool KXMLGUIFactory::removeRecursive( QDomElement &element, KXMLGUIContainerNode
   if ( node->clients.count() == 0 && node->children.count() == 0 && node->container &&
        node->client == m_client )
   {
-    //if at this point the container still contains actions from other servants, then something is wrong
-    //with the design of your xml documents ;-) . Anyway, the container was owned by the servant, and that
-    //servant is to be removed, so it's not our problem with other client's actions ;-) .
+    //if at this point the container still contains actions from other clients, then something is wrong
+    //with the design of your xml documents ;-) . Anyway, the container was owned by the client, and that
+    //client is to be removed, so it's not our problem with other client's actions ;-) .
     //(they will detect the removal through the destroyed() signal anyway :)
 
     QWidget *parentContainer = 0L;
 
+    // check if we have a parent container and adjust the parent's merging indices
     if ( node->parent && node->parent->container )
     {
       parentContainer = node->parent->container;
@@ -874,9 +1020,8 @@ bool KXMLGUIFactory::removeRecursive( QDomElement &element, KXMLGUIContainerNode
 
     assert( node->builder );
 
-    kdDebug(1002) << "remove/kill stuff : node is " << node->name << ", container is " << node->container->name() << " (" << node->container->className() << "), parent container is " << ( parentContainer ? parentContainer->name() : 0L ) << endl;
     //remove/kill the container and give the builder a chance to store abitrary state information of
-    //the container in a QByteArray. This information will be re-used for the creation of the same
+    //the container in the DOM element. This information will be re-used for the creation of the same
     //container in case we add the same client again later.
     node->builder->removeContainer( node->container, parentContainer, element, node->containerId );
 
@@ -893,15 +1038,21 @@ bool KXMLGUIFactory::removeRecursive( QDomElement &element, KXMLGUIContainerNode
   return false;
 }
 
+/*
+ * Calculate a merging index. In fact it's more like "find a good merging index" .
+ * Returns the actual index value (for the plug() call for example) and also return
+ * the corresponding MergingIndex in the it argument.
+ */
 int KXMLGUIFactory::calcMergingIndex( KXMLGUIContainerNode *node, const QString &mergingName, QValueList<MergingIndex>::Iterator &it, bool ignoreDefaultMergingIndex )
 {
-//  QValueList<MergingIndex>::Iterator currentDefaultMergingIt = node->findIndex( d->m_defaultMergingName );
   QValueList<MergingIndex>::Iterator mergingIt;
 
-  if ( !mergingName.isEmpty() )
-    mergingIt = node->findIndex( mergingName );
-  else
+  // if we are not looking for a special merging name (like a group or an actionlist name) , then use the client's
+  // name, to get the match between <Merge name="blah" /> and the client name.
+  if ( mergingName.isEmpty() )
     mergingIt = node->findIndex( d->m_clientName );
+  else
+    mergingIt = node->findIndex( mergingName );
 
   QValueList<MergingIndex>::Iterator mergingEnd = node->mergingIndices.end();
   it = mergingEnd;
