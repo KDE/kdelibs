@@ -825,10 +825,13 @@ QString KDirOperator::makeDirCompletion(const QString& string)
 
 void KDirOperator::prepareCompletionObjects()
 {
+    if ( !fileView )
+	return;
+    
     if ( myCompleteListDirty ) { // create the list of all possible completions
-        KFileItemListIterator it( dir->items());
+        KFileViewItemListIterator it( *(fileView->items()) );
         for( ; it.current(); ++it ) {
-            KFileItem *item = it.current();
+            KFileViewItem *item = it.current();
 
             myCompletion.addItem( item->name() );
             if ( item->isDir() )

@@ -105,7 +105,7 @@ public:
      * As const-method, to be fixed in 3.0
      */
     QWidget *widget() const { return const_cast<KFileView*>(this)->widget(); }
-    
+
     /**
       * set the current item in the view.
       *
@@ -119,6 +119,8 @@ public:
       **/
     virtual void setCurrentItem(const QString &filename,
 				const KFileViewItem * entry = 0);
+
+    // virtual KFileViewItem *currentFileItem() const; // ### add after 3.0
 
     /**
      * clears the view and all item lists
