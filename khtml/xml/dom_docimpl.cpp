@@ -1894,7 +1894,6 @@ void DocumentImpl::recalcStyleSelector()
 	    sheet = static_cast<HTMLBodyElementImpl*>(n)->sheet();
         }
         if (sheet) {
-	kdDebug() << "SHEET FOUND" << endl;
             sheet->ref();
             m_styleSheets->styleSheets.append(sheet);
         }
