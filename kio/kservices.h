@@ -1,10 +1,9 @@
 #ifndef __kservices_h__
 #define __kservices_h__
 
-#include <list>
-
 #include <qlist.h>
-#include <qstrlist.h>
+#include <qvaluelist.h>
+#include <qstring.h>
 
 #include <ksimpleconfig.h>
 
@@ -26,61 +25,57 @@ class KServiceTypeProfile;
  */
 class KService
 {
-public:
-  struct Offer
-  {
-    KService* m_pService;
-
-    bool allowAsDefault();
-    int preference();
-    
-    ///////
-    // For internal use only. These variables are needed for sorting
-    ///////
-    QString m_strServiceType;
-    KServiceTypeProfile *m_pServiceTypeProfile;
-    
-    bool operator< ( Offer& _o );
-  };
-  
-  KService( const char *_name, const char *_exec, const char *_icon,
-	    const QStrList& _lstServiceTypes, const char *_comment = 0L,
-	    bool _allow_as_default = true, const char *_path = 0L,
-	    const char *_terminal = 0L, const char *_file = 0L, 
+public:  
+  KService( const QString& _name, const QString& _exec, const QString& _icon,
+	    const QStringList& _lstServiceTypes, const QString& _comment = QString::null,
+	    bool _allow_as_default = true, const QString& _path = QString::null,
+	    const QString& _terminal = QString::null, const QString& _file = QString::null, 
 	    bool _put_in_list = true );
   ~KService();
   
-  const char* name() { return m_strName; }
-  const char* exec() { return m_strExec; }
-  const char* icon() { return m_strIcon; }
-  const char* terminalOptions() { return m_strTerminalOptions; }
-  const char* path() { return m_strPath; }
-  const char* comment() { return m_strComment; }
-  const char* file() { return m_strFile; };
-  QStrList& serviceTypes();
-  bool hasServiceType( const char *_service );
-  bool allowAsDefault() { return m_bAllowAsDefault; }
+  QString name() const { return m_strName; }
+  QString exec() const { return m_strExec; }
+  QString icon() const { return m_strIcon; }
+  QString terminalOptions() const { return m_strTerminalOptions; }
+  QString path() const { return m_strPath; }
+  QString comment() const { return m_strComment; }
+  QString file() const { return m_strFile; };
+  QStringList serviceTypes() const { return m_lstServiceTypes; }
+  bool hasServiceType( const QString& _service ) const;
+  /**
+   * @return TRUE if the service may be used as a default setting, for
+   *         example in a file manager. Usually that is the case, but
+   *         some services may only be started when the user selected
+   *         them. This kind of services returns FALSE here.
+   */
+  bool allowAsDefault() const { return m_bAllowAsDefault; }
   
   /**
-   * @param _result is filled with all matching offers. The list is sorted accrodingly
-   *        to the users profile ( @ref KServiceTypeProfile ).
+   * @return a pointer to the requested service or 0 if the service is
+   *         unknown.
    */
-  static void findServiceByServiceType( const char* _servicetype, list<Offer>& _result );
-
-  static KService* findByName( const char *_name );
+  static KService* find( const QString& _name );
   
   /**
    * @param _file is only used while displaying error messages.
+   * @param _put_in_list will add the service to the list of known
+   *        services. But sometimes you may just want to create
+   *        a service object for internal purposes.
+   * @return a new service or 0 on error. If _put_in_list is FALSE, then
+   *         you have to destroy the object somewhen, otherwise not.
    */
-  static KService* parseService( const char *_file, KSimpleConfig &config, bool _put_in_list = true );
+  static KService* parseService( const QString& _file, KSimpleConfig &config,
+				 bool _put_in_list = true );
 
   /**
-   * Return the whole list of services. Useful to display them.
+   * @return the whole list of services. Useful to display them.
    */
-  static QList <KService>* allServices() { return s_lstServices; }
-  
-protected:
-  static void initServices( const char * _path );
+  static QList<KService>* allServices() { return s_lstServices; }
+
+protected:  
+  static void initServices( const QString&  _path );
+
+private:
   static void initStatic();
 
   QString m_strName;
@@ -90,7 +85,7 @@ protected:
   QString m_strPath;
   QString m_strComment;
   QString m_strFile;
-  QStrList m_lstServiceTypes;
+  QStringList m_lstServiceTypes;
   bool m_bAllowAsDefault;
   
   static QList<KService>* s_lstServices;

@@ -347,7 +347,7 @@ void OpenWithDlg::resizeEvent(QResizeEvent *)
 
 void OpenWithDlg::slotSelected( const QString& _name, const QString& _exec )
 {
-  m_pService = KService::findByName( _name );
+  m_pService = KService::find( _name );
   if ( !m_pService )
     edit->setText( _exec );
   else
@@ -366,7 +366,7 @@ void OpenWithDlg::slotOK()
 {
   if( haveApp )
   {
-    m_pService = KService::findByName( qName );
+    m_pService = KService::find( qName );
   }
 
   haveApp = false;

@@ -2,6 +2,7 @@
 #define __k_reg_factories_h__
 
 #include "kregistry.h"
+#include <qstringlist.h>
 
 class KMimeType;
 class KService;
@@ -37,14 +38,14 @@ public:
    * @return the path for which this factory is responsible.
    *         Please note that the return value may not have a trailing '/'.
    */
-  virtual QStrList& pathList();
+  virtual const QStringList& pathList();
 
   static void  save( QDataStream& _str, KMimeType *_mime );
 
 protected:
   KMimeType* createMimeType( const char *_file, KSimpleConfig &_cfg );
   
-  QStrList m_lst;
+  QStringList m_lst;
 };
 
 
@@ -80,14 +81,14 @@ public:
    * @return the path for which this factory is responsible.
    *         Please note that the return value may not have a trailing '/'.
    */
-  virtual QStrList& pathList();
+  virtual const QStringList& pathList();
 
   static void save( QDataStream& _str, KService *_service );
 
 protected:
   KService* createService( const char *_file, KSimpleConfig &_cfg );
   
-  QStrList m_lst;
+  QStringList m_lst;
 };
 
 #endif

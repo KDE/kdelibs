@@ -1,41 +1,81 @@
 #ifndef __kuserprofile_h__
 #define __kuserprofile_h__
 
-#include <map>
+#include <qmap.h>
 #include <qstring.h>
 #include <qlist.h>
+#include <qvaluelist.h>
 
-#include <string>
+class KService;
+class KServiceTypeProfile;
+
+class KServiceOffer
+{
+public:
+  KServiceOffer();
+  KServiceOffer( const KServiceOffer& );
+  KServiceOffer( const KServiceTypeProfile*, const KService* _service,
+		 int _pref, bool _default );
+  
+  bool operator< ( const KServiceOffer& ) const;
+  bool allowAsDefault() const { return m_bAllowAsDefault; }
+  int preference() const { return m_iPreference; }
+  const KService& service() const { return *m_pService; }
+  const KServiceTypeProfile& profile() const { return *m_pProfile; }
+  bool isValid() const { return m_iPreference >= 0; }
+  
+private:
+  /**
+   * The bigger this number is, the better is this service.
+   */
+  int m_iPreference;
+  /**
+   * Is it allowed to use this service for default actions.
+   */
+  bool m_bAllowAsDefault;
+  const KServiceTypeProfile* m_pProfile;
+  const KService* m_pService;
+};
 
 class KServiceTypeProfile
 {
-public:
-  KServiceTypeProfile( const char *_servicetype );
+public:  
+  typedef QValueList<KServiceOffer> OfferList;
+  
   ~KServiceTypeProfile();
-  
-  /**
-   * Add a service to this profile.
-   */
-  void addService( const char *_service, int _preference, bool _allow_as_default );
-  
+    
   /**
    * @return the users preference of this special service or 0 if
    *         the service is unknown.
    */
-  int preference( const char *_service );
-  bool allowAsDefault( const char *_service );
+  int preference( const QString& _service ) const;
+  bool allowAsDefault( const QString& _service ) const;
+  
+  OfferList offers() const;
   
   /**
    * @return the service type for which this profile is responsible.
    */
-  const char* serviceType() { return m_strServiceType; }
+  QString serviceType() const { return m_strServiceType; }
   
   /**
    * @return the profile for the requested service type.
    */
-  static KServiceTypeProfile* find( const char *_servicetype );
+  static KServiceTypeProfile* find( const QString& _servicetype );
   
 protected:
+  /**
+   * Constructor is called when the user profile is read for the
+   * first time.
+   */
+  KServiceTypeProfile( const QString& _servicetype );
+
+  /**
+   * Add a service to this profile.
+   */
+  void addService( const QString& _service, int _preference = 1, bool _allow_as_default = TRUE );
+
+private:
   /**
    * Represents the users assessment of a special service
    */
@@ -54,7 +94,7 @@ protected:
   /**
    * Map of all services for which we have assessments.
    */
-  map<string,Service> m_mapServices;
+  QMap<QString,Service> m_mapServices;
   
   /**
    * ServiceType of this profile.

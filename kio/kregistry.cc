@@ -54,12 +54,13 @@ void KRegistry::addFactory( KRegFactory *_factory )
 {
   m_lstFactories.append( _factory );
   
-  const char *s;
-  for( s = _factory->pathList().first(); s != 0L; s = _factory->pathList().next() )
+  QStringList::ConstIterator it = _factory->pathList().begin();
+  QStringList::ConstIterator end = _factory->pathList().end();
+  for( ; it != end; ++it )
   {    
-    m_lstToplevelDirs.append( s );
+    m_lstToplevelDirs.append( *it );
     if ( m_bLoaded )
-      readDirectory( s, true );
+      readDirectory( *it, true );
   }
 }
 
@@ -445,11 +446,12 @@ bool KRegFactory::matchFile( const char *_file )
   if ( i == -1 )
     return false;
   file = file.left( i + 1 );
-  
-  const char *s;
-  for( s = pathList().first(); s != 0L; s = pathList().next() )
+
+  QStringList::ConstIterator it = pathList().begin();
+  QStringList::ConstIterator end = pathList().end();
+  for( ; it != end ; ++it )
   {    
-    QString p = s;
+    QString p = *it;
     if ( p.right(1) != "/" )
       p += "/";
   

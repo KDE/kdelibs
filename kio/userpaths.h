@@ -17,8 +17,8 @@
    Boston, MA 02111-1307, USA.
 */     
 
-#ifndef _USERPATHS_H_
-#define _USERPATHS_H_
+#ifndef _KUSERPATHS_H_
+#define _KUSERPATHS_H_
 
 #include <qstring.h>
 
@@ -44,7 +44,7 @@ public:
    * @return true if the directory already existed, false if it has been created
    *              (you can test this value to copy files in the directory)
    */
-  static bool testLocalDir( const char *_name );
+  static bool testLocalDir( const QString& _name );
 
 private:
   /**

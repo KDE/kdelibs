@@ -1,5 +1,6 @@
 #include "krun.h"
 #include "kservices.h"
+#include "kuserprofile.h"
 #include "kmimetypes.h"
 #include "kmimemagic.h"
 #include "kio_job.h"
@@ -44,23 +45,25 @@ bool KRun::runURL( const char *_url, const char *_mimetype )
   }
   
   // Get all services for this mime type
-  list<KService::Offer> offers;
-  KService::findServiceByServiceType( _mimetype, offers );
-
-  if ( offers.size() == 0 || !offers.front().allowAsDefault() )
+  KServiceTypeProfile::OfferList offers;
+  KServiceTypeProfile* profile = KServiceTypeProfile::find( _mimetype );
+  if ( profile )
+    offers = profile->offers();
+  
+  if ( offers.count() == 0 || !offers.begin()->allowAsDefault() )
   {
     kdebug( KDEBUG_INFO, 7010, "No Offers" );
     // HACK TODO: OpenWith
     return false;
   }
   
-  QStrList lst;
+  QStringList lst;
   lst.append( _url );
   // Choose the first service from the list and do the job
-  return KRun::run( offers.front().m_pService, lst );
+  return KRun::run( offers.begin()->service(), lst );
 }
 
-void KRun::shellQuote( string &_str )
+void KRun::shellQuote( QString &_str )
 {
   int i = 0;
   while( ( i = _str.find( '\'', i ) ) != -1 )
@@ -73,39 +76,39 @@ void KRun::shellQuote( string &_str )
   _str += "'";
 }
 
-bool KRun::run( KService* _service, QStrList& _urls )
+bool KRun::run( const KService& _service, QStringList& _urls )
 {
-  QString icon = _service->icon();
-  QString miniicon = _service->icon();
-  QString name = _service->name();
+  QString icon = _service.icon();
+  QString miniicon = _service.icon();
+  QString name = _service.name();
 
-  return run( _service->exec(), _urls, name, icon, miniicon );
+  return run( _service.exec(), _urls, name, icon, miniicon );
 }
 
-bool KRun::run( const char *_exec, QStrList& _urls, const char *_name, const char *_icon,
-		  const char *_mini_icon, const char *_kdelnk_file )
+bool KRun::run( const QString& _exec, QStringList& _urls, const QString& _name,
+		const QString& _icon, const QString& _mini_icon, const QString& _kdelnk_file )
 {
   bool b_local_files = true;
   
-  string U = "",F = "",D = "",N = "";
+  QString U = "",F = "",D = "",N = "";
   
-  const char* it = _urls.first();
-  for( ; it != 0L; it = _urls.next() )
+  QStringList::Iterator it = _urls.begin();
+  for( ; it != _urls.end(); ++it )
   {
-    KURL url( it );
+    KURL url( *it );
     if ( url.isMalformed() )
     {
-      string tmp = (const char*)i18n( "Malformed URL" );
+      QString tmp = i18n( "Malformed URL" );
       tmp += "\n";
-      tmp += it;
-      QMessageBox::critical( 0L, i18n( "KFM Error" ), tmp.c_str(), i18n( "OK" ) );
+      tmp += *it;
+      QMessageBox::critical( 0L, i18n( "KFM Error" ), tmp, i18n( "OK" ) );
       return false;
     }
 
     if ( !url.isLocalFile() )
       b_local_files = false;
 
-    string tmp = it;
+    QString tmp = *it;
     shellQuote( tmp );
     U += tmp;
     U += " ";
@@ -123,49 +126,47 @@ bool KRun::run( const char *_exec, QStrList& _urls, const char *_name, const cha
     F += " ";
   }
   
-  string exec = _exec;
+  QString exec = _exec;
   bool b_local_app = false;
-  if ( exec.find( "%u" ) == string::npos )
+  if ( exec.find( "%u" ) == -1 )
     b_local_app = true;
     
   // Did the user forget to append something like '%f' ?
   // If so, then assume that '%f' is the right choice => the application
   // accepts only local files.
-  if ( exec.find( "%f" ) == string::npos && exec.find( "%u" ) == string::npos && exec.find( "%n" ) == string::npos &&
-       exec.find( "%d" ) == string::npos && exec.find( "%F" ) == string::npos && exec.find( "%U" ) == string::npos &&
-       exec.find( "%N" ) == string::npos && exec.find( "%D" ) == string::npos )
+  if ( exec.find( "%f" ) == -1 && exec.find( "%u" ) == -1 && exec.find( "%n" ) == -1 &&
+       exec.find( "%d" ) == -1 && exec.find( "%F" ) == -1 && exec.find( "%U" ) == -1 &&
+       exec.find( "%N" ) == -1 && exec.find( "%D" ) == -1 )
     exec += " %f";
   
   // Can we pass multiple files on the command line or do we have to start the application for every single file ?
   bool b_allow_multiple = false;
-  if ( exec.find( "%F" ) != string::npos || exec.find( "%U" ) != string::npos || exec.find( "%N" ) != string::npos ||
-       exec.find( "%D" ) != string::npos )
+  if ( exec.find( "%F" ) != -1 || exec.find( "%U" ) != -1 || exec.find( "%N" ) != -1 ||
+       exec.find( "%D" ) != -1 )
     b_allow_multiple = true;
 
   int pos;
   
-  string name = _name;
+  QString name = _name;
   shellQuote( name );
-  while ( ( pos = exec.find( "%c" ) ) != (int)string::npos )
+  while ( ( pos = exec.find( "%c" ) ) != -1 )
     exec.replace( pos, 2, name );
 
-  string icon = _icon;
+  QString icon = _icon;
   shellQuote( icon );
-  if ( !icon.empty() )
+  if ( !icon.isEmpty() )
     icon.insert( 0, "-icon " );
-  while ( ( pos = exec.find( "%i" ) ) != (int)string::npos )
+  while ( ( pos = exec.find( "%i" ) ) != -1 )
     exec.replace( pos, 2, icon );
 
-  string mini_icon = _mini_icon;
+  QString mini_icon = _mini_icon;
   shellQuote( mini_icon );
-  if ( !mini_icon.empty() )
+  if ( !mini_icon.isEmpty() )
     mini_icon.insert( 0, "-miniicon " );
-  while ( ( pos = exec.find( "%m" ) ) != (int)string::npos )
+  while ( ( pos = exec.find( "%m" ) ) != -1 )
     exec.replace( pos, 2, mini_icon );
 
-  if ( !_kdelnk_file )
-    _kdelnk_file = "";
-  while ( ( pos = exec.find( "%k" ) ) != (int)string::npos )
+  while ( ( pos = exec.find( "%k" ) ) != -1 )
     exec.replace( pos, 2, _kdelnk_file );
 
   // The application accepts only local files ?
@@ -176,60 +177,60 @@ bool KRun::run( const char *_exec, QStrList& _urls, const char *_name, const cha
   
   if ( b_allow_multiple || _urls.isEmpty() )
   {	
-    while ( ( pos = exec.find( "%f" )) != (int)string::npos )
+    while ( ( pos = exec.find( "%f" )) != -1 )
       exec.replace( pos, 2, "" );
-    while ( ( pos = exec.find( "%n" )) != (int)string::npos )
+    while ( ( pos = exec.find( "%n" )) != -1 )
       exec.replace( pos, 2, "" );
-    while ( ( pos = exec.find( "%d" )) != (int)string::npos )
+    while ( ( pos = exec.find( "%d" )) != -1 )
       exec.replace( pos, 2, "" );
-    while ( ( pos = exec.find( "%u" )) != (int)string::npos )
+    while ( ( pos = exec.find( "%u" )) != -1 )
       exec.replace( pos, 2, "" );
 
-    while ( ( pos = exec.find( "%F" )) != (int)string::npos )
+    while ( ( pos = exec.find( "%F" )) != -1 )
       exec.replace( pos, 2, F );
-    while ( ( pos = exec.find( "%N" )) != (int)string::npos )
+    while ( ( pos = exec.find( "%N" )) != -1 )
       exec.replace( pos, 2, N );
-    while ( ( pos = exec.find( "%D" )) != (int)string::npos )
+    while ( ( pos = exec.find( "%D" )) != -1 )
       exec.replace( pos, 2, N );
-    while ( ( pos = exec.find( "%U" )) != (int)string::npos )
+    while ( ( pos = exec.find( "%U" )) != -1 )
       exec.replace( pos, 2, U );
 
-    return run( exec.c_str() );
+    return run( exec );
   }
-  
-  it = _urls.first();
-  for( ; it != 0L; it = _urls.next() )
+
+  it = _urls.begin();
+  for( ; it != _urls.end(); ++it )
   {
-    string e = exec;
-    KURL url( it );
-    assert( !url.isMalformed() );
-    string f ( url.path( -1 ) );
+    QString e = exec;
+    KURL url( *it );
+    ASSERT( !url.isMalformed() );
+    QString f ( url.path( -1 ) );
     shellQuote( f );
-    string d ( url.directory() );
+    QString d ( url.directory() );
     shellQuote( d );
-    string n ( url.filename() );
+    QString n ( url.filename() );
     shellQuote( n );
-    string u ( it );
+    QString u ( *it );
     shellQuote( u );
    
-    while ( ( pos = e.find( "%f" )) != (int)string::npos )
+    while ( ( pos = e.find( "%f" )) != -1 )
       e.replace( pos, 2, f );
-    while ( ( pos = e.find( "%n" )) != (int)string::npos )
+    while ( ( pos = e.find( "%n" )) != -1 )
       e.replace( pos, 2, n );
-    while ( ( pos = e.find( "%d" )) != (int)string::npos )
+    while ( ( pos = e.find( "%d" )) != -1 )
       e.replace( pos, 2, d );
-    while ( ( pos = e.find( "%u" )) != (int)string::npos )
+    while ( ( pos = e.find( "%u" )) != -1 )
       e.replace( pos, 2, u );
 
-    return run( e.c_str() );
+    return run( e );
   }
   
   return true;
 }
 
-bool KRun::run( const char *_cmd )
+bool KRun::run( const QString& _cmd )
 {
-  kdebug( KDEBUG_INFO, 7010, "Running %s", _cmd );
+  kdebug( KDEBUG_INFO, 7010, "Running %s", _cmd.ascii() );
   
   QString exec = _cmd;
   exec += " &";
@@ -238,7 +239,7 @@ bool KRun::run( const char *_cmd )
   return true;
 }
 
-bool KRun::runOldApplication( const char *_exec, QStrList& _urls, bool _allow_multiple )
+bool KRun::runOldApplication( const QString& _exec, QStringList& _urls, bool _allow_multiple )
 {
   char **argv = 0L;
   
@@ -251,9 +252,9 @@ bool KRun::runOldApplication( const char *_exec, QStrList& _urls, bool _allow_mu
     argv[ 0 ] = (char*)kfmexec.data();
 
     int i = 1;
-    const char* s;
-    for( s = _urls.first(); s != 0L; s = _urls.next() )
-      argv[ i++ ] = (char*)s;
+    QStringList::Iterator it = _urls.begin();
+    for( ; it != _urls.end(); ++it )
+      argv[ i++ ] = (char*)it->ascii();
     argv[ i ] = 0;
       
     int pid;
@@ -265,12 +266,12 @@ bool KRun::runOldApplication( const char *_exec, QStrList& _urls, bool _allow_mu
   }
   else
   {
-    const char* s;
-    for( s = _urls.first(); s != 0L; s = _urls.next() )
+    QStringList::Iterator it = _urls.begin();
+    for( ; it != _urls.end(); ++it )
     {
       argv = new char*[ 3 ];
       argv[ 0 ] = (char*)kfmexec.data();
-      argv[ 1 ] = (char*)s;
+      argv[ 1 ] = (char*)it->ascii();
       argv[ 2 ] = 0;
       
       int pid;
@@ -285,7 +286,7 @@ bool KRun::runOldApplication( const char *_exec, QStrList& _urls, bool _allow_mu
   return true;
 }
 
-KRun::KRun( const char *_url, mode_t _mode, bool _is_local_file, bool _auto_delete )
+KRun::KRun( const QString& _url, mode_t _mode, bool _is_local_file, bool _auto_delete )
 {
   m_bFault = false;
   m_bAutoDelete = _auto_delete;

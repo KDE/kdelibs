@@ -301,7 +301,7 @@ RenameDlg_Result open_RenameDlg( const char* _src, const char *_dest, RenameDlg_
 
 unsigned long getOffset( QString dest ) {
 
-  if ( KProtocolManager::self().getMarkPartial() )
+  if ( KProtocolManager::self().markPartial() )
     dest += ".part";
 
   KURL d( dest );

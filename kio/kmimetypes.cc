@@ -209,7 +209,8 @@ KMimeType* KMimeType::find( const char *_name )
   return mime;
 }
 
-KMimeType* KMimeType::findByURL( KURL& _url, mode_t _mode, bool _is_local_file, bool _fast_mode )
+KMimeType* KMimeType::findByURL( const KURL& _url, mode_t _mode,
+				 bool _is_local_file, bool _fast_mode )
 {
   check();
 
@@ -583,8 +584,8 @@ bool KDELnkMimeType::runApplication( const char *_url, KSimpleConfig &cfg )
     // The error message was already displayed, so we can just quit here
     return false;
   
-  QStrList empty;
-  bool res = KRun::run( s, empty );
+  QStringList empty;
+  bool res = KRun::run( *s, empty );
   delete s;
   return res;
 }
@@ -699,7 +700,7 @@ void KDELnkMimeType::executeService( const char *_url, KDELnkMimeType::Service& 
   
   if ( _service.m_type == ST_USER_DEFINED )
   {
-    QStrList lst;
+    QStringList lst;
     KRun::run( _service.m_strExec, lst, _service.m_strName, _service.m_strIcon,
 	       _service.m_strIcon, u.path() );
     return;

@@ -83,7 +83,8 @@ public:
    *                   but it is FAST.
    * @return a pointer to the matching mimetype. 0L is NEVER returned.
    */
-  static KMimeType* findByURL( KURL& _url, mode_t _mode = 0, bool _is_local_file = false, bool _fast_mode = false );
+  static KMimeType* findByURL( const KURL& _url, mode_t _mode = 0,
+			       bool _is_local_file = false, bool _fast_mode = false );
 
   /**
    * Get all the mimetypes dict. Useful for showing the list of available mimetypes.

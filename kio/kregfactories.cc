@@ -152,7 +152,7 @@ const char* KMimeTypeFactory::type()
   return "MimeType";
 }
 
-QStrList& KMimeTypeFactory::pathList()
+const QStringList& KMimeTypeFactory::pathList()
 {
   return m_lst;
 }
@@ -214,7 +214,7 @@ void KServiceFactory::save( QDataStream& _str, KService *_service )
 KRegEntry* KServiceFactory::create( KRegistry* _reg, const char *_file, QDataStream& _str )
 {
   QString name, exec, icon, comment, path, terminal, file;
-  QStrList types;
+  QStringList types;
   Q_INT8 allow;
   _str >> name >> exec >> icon >> comment >> path >> terminal >> types >> allow >> file;
   
@@ -248,7 +248,7 @@ const char* KServiceFactory::type()
   return "Application";
 }
 
-QStrList& KServiceFactory::pathList()
+const QStringList& KServiceFactory::pathList()
 {
   return m_lst;
 }

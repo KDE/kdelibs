@@ -11,7 +11,7 @@
 
 #include <qstring.h>
 #include <qmsgbox.h>
-#include <string>
+#include <qtl.h>
 
 #include <ksimpleconfig.h>
 #include <kapp.h>
@@ -33,7 +33,7 @@ void KService::initStatic()
   KService::initServices( path.data() ); */
 }
 
-KService* KService::findByName( const char *_name )
+KService* KService::find( const QString& _name )
 {
   initStatic();
   
@@ -47,29 +47,7 @@ KService* KService::findByName( const char *_name )
   return 0L;
 }
 
-void KService::findServiceByServiceType( const char* _servicetype, list<Offer>& _result )
-{
-  initStatic();
-  
-  assert( s_lstServices );
-
-  KService *s;
-  for( s = s_lstServices->first(); s != 0L; s = s_lstServices->next() )
-  {
-    if ( s->hasServiceType( _servicetype ) )
-    {
-      Offer offer;
-      offer.m_strServiceType = _servicetype;
-      offer.m_pServiceTypeProfile = KServiceTypeProfile::find( _servicetype );
-      offer.m_pService = s;
-      _result.push_back( offer );
-    }
-  }
-  
-  _result.sort();
-}
-
-void KService::initServices( const char * _path )
+void KService::initServices( const QString&  _path )
 {
   initStatic();
   
@@ -82,24 +60,25 @@ void KService::initServices( const char * _path )
   // Loop thru all directory entries
   while ( ( ep = readdir( dp ) ) != 0L )
   {
-    if ( strcmp( ep->d_name, "." ) != 0 && strcmp( ep->d_name, ".." ) != 0 && ep->d_name[0] != '.' )
+    if ( strcmp( ep->d_name, "." ) != 0 &&
+	 strcmp( ep->d_name, ".." ) != 0 && ep->d_name[0] != '.' )
     {    
-      string file = _path;
+      QString file = _path;
       file += "/";
       file += ep->d_name;
 
       struct stat buff;
-      stat( file.c_str(), &buff );
+      stat( file, &buff );
       if ( S_ISDIR( buff.st_mode ) )
-	initServices( file.c_str() );
+	initServices( file );
       else if ( S_ISREG( buff.st_mode ) )
       {
 	// Do we have read access ?
-	if ( access( file.c_str(), R_OK ) == 0 )
+	if ( access( file, R_OK ) == 0 )
 	{
-	  KSimpleConfig config( file.c_str(), true );
+	  KSimpleConfig config( file, true );
 
-	  parseService( file.c_str(), config );	  
+	  parseService( file, config );	  
 	}
       }
     }
@@ -108,7 +87,8 @@ void KService::initServices( const char * _path )
   (void) closedir( dp );
 }
 
-KService* KService::parseService( const char *_file, KSimpleConfig &config, bool _put_in_list )
+KService* KService::parseService( const QString& _file, KSimpleConfig &config,
+				  bool _put_in_list )
 {
   initStatic();
   
@@ -170,7 +150,7 @@ KService* KService::parseService( const char *_file, KSimpleConfig &config, bool
     */
 	  
   // To which mime types is the application bound ?
-  QStrList types;
+  QStringList types;
   int pos2 = 0;
   int old_pos2 = 0;
   while ( ( pos2 = mime.find( ";", pos2 ) ) != - 1 )
@@ -187,10 +167,10 @@ KService* KService::parseService( const char *_file, KSimpleConfig &config, bool
 		       path, terminal, _file, _put_in_list );
 }
 
-KService::KService( const char *_name, const char *_exec, const char *_icon,
-		    const QStrList& _lstServiceTypes, const char *_comment = 0L,
-		    bool _allow_as_default = true, const char *_path = 0L,
-		    const char *_terminal = 0L, const char *_file = 0L,
+KService::KService( const QString& _name, const QString& _exec, const QString& _icon,
+		    const QStringList& _lstServiceTypes, const QString& _comment,
+		    bool _allow_as_default = true, const QString& _path,
+		    const QString& _terminal, const QString& _file,
 		    bool _put_in_list )
 {
   initStatic();
@@ -228,38 +208,8 @@ KService::~KService()
   s_lstServices->removeRef( this );
 }
 
-bool KService::hasServiceType( const char *_service )
+bool KService::hasServiceType( const QString& _service ) const
 {
-  return ( m_lstServiceTypes.find( _service ) != -1 );
+  return ( m_lstServiceTypes.find( _service ) != m_lstServiceTypes.end() );
 }
 
-bool KService::Offer::allowAsDefault()
-{
-  bool allow = m_pService->allowAsDefault();
-  if ( m_pServiceTypeProfile )
-    allow = m_pServiceTypeProfile->allowAsDefault( m_pService->name() );
-
-  return allow;
-}
-
-int KService::Offer::preference()
-{
-  if ( m_pServiceTypeProfile )
-    return m_pServiceTypeProfile->preference( m_pService->name() );
-
-  return 0;
-}
-
-bool KService::Offer::operator< ( KService::Offer& _o )
-{
-  if ( _o.allowAsDefault() && !allowAsDefault() )
-    return true;
-  if ( _o.preference() > preference() )
-    return true;
-  return false;
-}
-
-QStrList& KService::serviceTypes()
-{
-  return m_lstServiceTypes;
-}

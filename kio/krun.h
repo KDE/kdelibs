@@ -46,7 +46,7 @@ public:
    *                       whether it is a local URL or not. This flag is just used to improve speed, since
    *                       the function @ref KURL::isLocalFile is a bit slow.
    */
-  KRun( const char *_url, mode_t _mode = 0, bool _is_local_file = false, bool _auto_delete = true );
+  KRun( const QString& _url, mode_t _mode = 0, bool _is_local_file = false, bool _auto_delete = true );
   ~KRun();
   
   bool hasError() { return m_bFault; }
@@ -63,7 +63,7 @@ public:
    * @param _service
    * @param _urls the list of URLs, can be empty (app launched without argument)
    */
-  static bool run( KService* _service, QStrList& _urls );
+  static bool run( const KService& _service, QStringList& _urls );
   /**
    * Opens a list of URLs with.
    *
@@ -72,10 +72,14 @@ public:
    * @param _icon is the icon which should be used by the application
    * @param _miniicon is the icon which should be used by the application
    */
-  static bool run( const char *_exec, QStrList& _urls, const char *_name = "",
-		   const char *_icon = "", const char *_mini_icon = "", const char *_kdelnk_file = "" );
+  static bool run( const QString& _exec, QStringList& _urls,
+		   const QString& _name = QString::null,
+		   const QString& _icon = QString::null,
+		   const QString& _mini_icon = QString::null,
+		   const QString& _kdelnk_file = QString::null );
 
-  static bool runOldApplication( const char *_exec, QStrList& _urls, bool _allow_multiple );
+  static bool runOldApplication( const QString& _exec, QStringList& _urls,
+				 bool _allow_multiple );
   
 signals:
   void finished();
@@ -140,12 +144,12 @@ protected:
    * @ref _cmd must be a quoted shell command. You must not append "&" to it, since the
    *           function will do that for you. An example is "<tt>greet 'Hello Torben'</tt>".
    */
-  static bool run( const char *_cmd );
+  static bool run( const QString& _cmd );
   
   /**
    * Quotes a string for the shell
    */
-  static void shellQuote( string &_str );
+  static void shellQuote( QString &_str );
 };
 
 

@@ -76,15 +76,15 @@ void UserPaths::initStatic()
   *s_trashPath = QDir::cleanDirPath( *s_trashPath );
 }
 
-bool UserPaths::testLocalDir( const char *_name )
+bool UserPaths::testLocalDir( const QString& _name )
 {
   DIR *dp;
-  QString c = kapp->localkdedir().copy();
+  QString c = kapp->localkdedir();
   c += _name;
-  dp = opendir( c.data() );
+  dp = opendir( c );
   if ( dp == NULL )
   {
-    ::mkdir( c.data(), S_IRWXU );
+    ::mkdir( c, S_IRWXU );
     return false;
   }
   else

@@ -17,7 +17,7 @@
 #include <unistd.h>
 #include <time.h>
 
-#include <qstrlist.h>
+#include <qstringlist.h>
 #include <qtimer.h>
 #include <qlist.h>
 
@@ -152,7 +152,7 @@ public:
    *         A MimeType factory for example would return "/opt/kde/share/mimelnk".
    *         Please note that the return value may not have a trailing '/'.
    */
-  virtual QStrList& pathList() = 0L;
+  virtual const QStringList& pathList() = 0L;
 
   /**
    * @return true if this factory is responsible for files in this

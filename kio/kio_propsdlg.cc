@@ -66,23 +66,24 @@ mode_t FilePermissionsPropsPage::fperm[3][4] = {
         {S_IROTH, S_IWOTH, S_IXOTH, S_ISVTX}
     };
 
-PropertiesDialog::PropertiesDialog( const char *_url, mode_t _mode ) : QObject(), url(_url), mode(_mode)
+PropertiesDialog::PropertiesDialog( const QString& _url, mode_t _mode ) :
+  QObject(), m_url(_url), m_kurl( _url ), m_mode(_mode)
 {
     pageList.setAutoDelete( true );
-  
-    kurl = new KURL( url );
-    if ( kurl->isMalformed() )
+    
+    if ( m_kurl.isMalformed() )
 	delete this;
 
-    if ( mode == (mode_t) -1 )
+    if ( m_mode == (mode_t) -1 )
     {
-      if ( kurl->isLocalFile() )
+      if ( m_kurl.isLocalFile() )
       {
           struct stat buf;
-          stat( kurl->path(), &buf );
-          mode = buf.st_mode;
+          stat( m_kurl.path(), &buf );
+          m_mode = buf.st_mode;
       }
-      else mode = 0;
+      else
+	m_mode = 0;
     }
 
     tab = new QTabDialog( 0L, 0L );
@@ -106,15 +107,12 @@ PropertiesDialog::PropertiesDialog( const char *_url, mode_t _mode ) : QObject()
 
 PropertiesDialog::~PropertiesDialog()
 {
-    pageList.clear();
-    
-    if ( kurl != 0L )
-	delete kurl;
+    pageList.clear();    
 }
 
 void PropertiesDialog::emitPropertiesChanged( const QString& _new_name )
 {
-    emit propertiesChanged( url, _new_name );
+    emit propertiesChanged( m_url, _new_name );
 }
 
 void PropertiesDialog::slotApply()
@@ -123,10 +121,10 @@ void PropertiesDialog::slotApply()
     for ( page = pageList.last(); page != 0L; page = pageList.prev() )
 	page->applyChanges();
 
-    QString s = getURL();
+    QString s = m_url;
 
     // Strip the filename
-    if ( !S_ISDIR( mode ) )
+    if ( !S_ISDIR( m_mode ) )
     {
 	int i = s.findRev( "/" );
 	// Should never happen
@@ -152,65 +150,65 @@ void PropertiesDialog::slotCancel(){
 
 void PropertiesDialog::insertPages()
 { 
-    if ( FilePropsPage::supports( kurl, mode ) )
+    if ( FilePropsPage::supports( m_kurl, m_mode ) )
     {
 	PropsPage *p = new FilePropsPage( this );
-	tab->addTab( p, p->getTabName() );
+	tab->addTab( p, p->tabName() );
 	pageList.append( p );
     }
 
-    if ( FilePermissionsPropsPage::supports( kurl, mode ) )
+    if ( FilePermissionsPropsPage::supports( m_kurl, m_mode ) )
     {
 	PropsPage *p = new FilePermissionsPropsPage( this );
-	tab->addTab( p, p->getTabName() );
+	tab->addTab( p, p->tabName() );
 	pageList.append( p );
     }
 
-    if ( ExecPropsPage::supports( kurl, mode ) )
+    if ( ExecPropsPage::supports( m_kurl, m_mode ) )
     {
 	PropsPage *p = new ExecPropsPage( this );
-	tab->addTab( p, p->getTabName() );
+	tab->addTab( p, p->tabName() );
 	pageList.append( p );
     }
 
-    if ( ApplicationPropsPage::supports( kurl, mode ) )
+    if ( ApplicationPropsPage::supports( m_kurl, m_mode ) )
     {
 	PropsPage *p = new ApplicationPropsPage( this );
-	tab->addTab( p, p->getTabName() );
+	tab->addTab( p, p->tabName() );
 	pageList.append( p );
     }
 
-    if ( BindingPropsPage::supports( kurl, mode ) )
+    if ( BindingPropsPage::supports( m_kurl, m_mode ) )
     {
 	PropsPage *p = new BindingPropsPage( this );
-	tab->addTab( p, p->getTabName() );
+	tab->addTab( p, p->tabName() );
 	pageList.append( p );
     }
 
-    if ( URLPropsPage::supports( kurl, mode ) )
+    if ( URLPropsPage::supports( m_kurl, m_mode ) )
     {
 	PropsPage *p = new URLPropsPage( this );
-	tab->addTab( p, p->getTabName() );
+	tab->addTab( p, p->tabName() );
 	pageList.append( p );
     }
 
-    if ( DirPropsPage::supports( kurl, mode ) )
+    if ( DirPropsPage::supports( m_kurl, m_mode ) )
     {
 	PropsPage *p = new DirPropsPage( this );
-	tab->addTab( p, p->getTabName() );
+	tab->addTab( p, p->tabName() );
 	pageList.append( p );
     }
 
-    if ( DevicePropsPage::supports( kurl, mode ) )
+    if ( DevicePropsPage::supports( m_kurl, m_mode ) )
     {
 	PropsPage *p = new DevicePropsPage( this );
-	tab->addTab( p, p->getTabName() );
+	tab->addTab( p, p->tabName() );
 	pageList.append( p );
     }
 }
 
 
-PropsPage::PropsPage( PropertiesDialog *_props ) : QWidget( _props->getTab(), 0L )
+PropsPage::PropsPage( PropertiesDialog *_props ) : QWidget( _props->tabDialog(), 0L )
 {
     properties = _props;
     fontHeight = 2*fontMetrics().height();
@@ -218,11 +216,11 @@ PropsPage::PropsPage( PropertiesDialog *_props ) : QWidget( _props->getTab(), 0L
 
 FilePropsPage::FilePropsPage( PropertiesDialog *_props ) : PropsPage( _props )
 {
-    QString path = properties->getKURL()->path();
+    QString path = properties->kurl().path();
 
     // Extract the directories name without path
     QString filename;
-    QString tmp2 = properties->getKURL()->path();
+    QString tmp2 = properties->kurl().path();
     if ( tmp2.right(1) == "/" )
 	tmp2.truncate( tmp2.length() - 1 );
     int i = tmp2.findRev( "/" );
@@ -238,9 +236,9 @@ FilePropsPage::FilePropsPage( PropertiesDialog *_props ) : PropsPage( _props )
       tmp += "/";
     bool isTrash = false;
     // is it the trash bin ?
-    if ( strcmp( properties->getKURL()->protocol(), "file" ) == 0L &&
+    if ( strcmp( properties->kurl().protocol(), "file" ) == 0L &&
 	 tmp == UserPaths::trashPath())
-           isTrash = true;
+      isTrash = true;
     
     /* directories may not have a slash at the end if
      * we want to stat() them; it requires that we
@@ -356,25 +354,16 @@ FilePropsPage::FilePropsPage( PropertiesDialog *_props ) : PropsPage( _props )
     layout->activate();
 }
 
-bool FilePropsPage::supports( KURL *_kurl, mode_t _mode )
+bool FilePropsPage::supports( const KURL& _kurl, mode_t _mode )
 {
-// Only local files for now - to be extended
-    return _kurl->isLocalFile();
-/*
-    KURL u( _kurl->url().data() );
-    KURL u2( u.nestedURL() );
-    
-    if ( strcmp( u2.protocol(), "file" ) != 0 )
-	return false;
-    return true;
-*/
-
+  // Only local files for now - to be extended
+  return _kurl.isLocalFile();
 }
 
 void FilePropsPage::applyChanges()
 {
-    QString path = properties->getKURL()->path();
-    QString fname = properties->getKURL()->filename();
+    QString path = properties->kurl().path();
+    QString fname = properties->kurl().filename();
     QString n = name->text();
     KBookmark::encode( n ); // hum this has nothing to do with bookmarks. We'll need to move it
 
@@ -409,8 +398,8 @@ void FilePropsPage::applyChanges()
 FilePermissionsPropsPage::FilePermissionsPropsPage( PropertiesDialog *_props ) 
 : PropsPage( _props )
 {
-    QString path = properties->getKURL()->path();
-    QString fname = properties->getKURL()->filename();
+    QString path = properties->kurl().path();
+    QString fname = properties->kurl().filename();
 
     /* remove appended '/' .. see comment in FilePropsPage */
     if ( path.length() > 1 && path.right( 1 ) == "/" )
@@ -622,24 +611,15 @@ FilePermissionsPropsPage::FilePermissionsPropsPage( PropertiesDialog *_props )
     box->activate();
 }
 
-bool FilePermissionsPropsPage::supports( KURL *_kurl, mode_t _mode )
+bool FilePermissionsPropsPage::supports( const KURL& _kurl, mode_t _mode )
 {
-    return _kurl->isLocalFile();
-/*
-    KURL u( _kurl->url() );
-    KURL u2( u.nestedURL() );
-    
-    if ( strcmp( u2.protocol(), "file" ) != 0 )
-	return false;
-
-    return true;
-*/
+  return _kurl.isLocalFile();
 }
 
 void FilePermissionsPropsPage::applyChanges()
 {
-    QString path = properties->getKURL()->path();
-    QString fname = properties->getKURL()->filename();
+    QString path = properties->kurl().path();
+    QString fname = properties->kurl().filename();
 
     mode_t p = 0L;
     for (int row = 0;row < 3; ++row)
@@ -795,12 +775,12 @@ ExecPropsPage::ExecPropsPage( PropertiesDialog *_props ) : PropsPage( _props )
 
     //
 
-    QFile f( _props->getKURL()->path() );
+    QFile f( _props->kurl().path() );
     if ( !f.open( IO_ReadOnly ) )
 	return;    
     f.close();
 
-    KConfig config( _props->getKURL()->path() );
+    KConfig config( _props->kurl().path() );
     config.setDollarExpansion( false );
     config.setGroup( "KDE Desktop Entry" );
     execStr = config.readEntry( "Exec" );
@@ -841,19 +821,12 @@ void ExecPropsPage::enableCheckedEdit()
 }
 
 
-bool ExecPropsPage::supports( KURL *_kurl, mode_t _mode )
+bool ExecPropsPage::supports( const KURL& _kurl, mode_t _mode )
 {
-/*
-    KURL u( _kurl->url() );
-    KURL u2( u.nestedURL() );
-    
-    if ( strcmp( u2.protocol(), "file" ) != 0 )
-	return false;
-*/
-    if (!_kurl->isLocalFile())
+    if (!_kurl.isLocalFile())
         return false;
 
-    QString t( _kurl->path() );
+    QString t( _kurl.path() );
 
     struct stat buff;
     stat( t, &buff );
@@ -896,7 +869,7 @@ void ExecPropsPage::applyChanges()
     bool err = false;
 // --- Sven's editable global settings changes end ---
 #endif
-    QString path = properties->getKURL()->path();
+    QString path = properties->kurl().path();
 
     QFile f( path );
 
@@ -1018,7 +991,7 @@ URLPropsPage::URLPropsPage( PropertiesDialog *_props ) : PropsPage( _props )
     iconBox->setFixedSize( 50, 50 );
     layout->addWidget(iconBox, 0, AlignLeft);
 
-    QString path = _props->getKURL()->path();
+    QString path = _props->kurl().path();
 
     QFile f( path );
     if ( !f.open( IO_ReadOnly ) )
@@ -1042,7 +1015,7 @@ URLPropsPage::URLPropsPage( PropertiesDialog *_props ) : PropsPage( _props )
 
 }
 
-bool URLPropsPage::supports( KURL *_kurl, mode_t _mode )
+bool URLPropsPage::supports( const KURL& _kurl, mode_t _mode )
 {
 /*
     KURL u( _kurl->url() );
@@ -1051,10 +1024,10 @@ bool URLPropsPage::supports( KURL *_kurl, mode_t _mode )
     if ( strcmp( u2.protocol(), "file" ) != 0 )
 	return false;
 */
-    if (!_kurl->isLocalFile())
+    if (!_kurl.isLocalFile())
         return false;
 
-    QString path = _kurl->path();
+    QString path = _kurl.path();
 
     struct stat buff;
     stat( path, &buff );
@@ -1089,7 +1062,7 @@ bool URLPropsPage::supports( KURL *_kurl, mode_t _mode )
 
 void URLPropsPage::applyChanges()
 {
-    QString path = properties->getKURL()->path();
+    QString path = properties->kurl().path();
 
     QFile f( path );
     if ( !f.open( IO_ReadWrite ) )
@@ -1131,7 +1104,7 @@ DirPropsPage::DirPropsPage( PropertiesDialog *_props ) : PropsPage( _props )
     globalButton->adjustSize();
     connect( globalButton, SIGNAL( clicked() ), this, SLOT( slotApplyGlobal() ) );
 
-    QString tmp = _props->getKURL()->path();
+    QString tmp = _props->kurl().path();
     
     if ( tmp.right(1) != "/" )
 	tmp += "/.directory";
@@ -1151,7 +1124,8 @@ DirPropsPage::DirPropsPage( PropertiesDialog *_props ) : PropsPage( _props )
 
     if ( iconStr.isEmpty() )
     {
-	QString str( KMimeType::findByURL( *properties->getKURL(), properties->getMode(), true )->icon(0L, true) );
+	QString str( KMimeType::findByURL( properties->kurl(),
+					   properties->mode(), true )->icon(0L, true) );
 	KURL u( str );
 	iconStr = u.filename();
     }
@@ -1187,38 +1161,31 @@ DirPropsPage::DirPropsPage( PropertiesDialog *_props ) : PropsPage( _props )
     connect( wallBox, SIGNAL( activated( int ) ), this, SLOT( slotWallPaperChanged( int ) ) );
 }
 
-bool DirPropsPage::supports( KURL *_kurl, mode_t _mode )
+bool DirPropsPage::supports( const KURL& _kurl, mode_t _mode )
 {
+    if (!_kurl.isLocalFile())
+        return false;
+
+    if ( !S_ISDIR( _mode ) )
+      return false;
+
     // Is it the trash bin ?
-    QString path = _kurl->path();
+    QString path = _kurl.path();
     
     QString tmp = path.data();
     
     if ( tmp.right(1) != "/" )
 	tmp += "/";
-    if ( strcmp( _kurl->protocol(), "file" ) == 0L &&
+    if ( strcmp( _kurl.protocol(), "file" ) == 0L &&
 	 tmp == UserPaths::trashPath()) 
         return false;
 
-/*
-    KURL u( _kurl->url() );
-    KURL u2( u.nestedURL() );
-    
-    if ( strcmp( u2.protocol(), "file" ) != 0 )
-	return false;
-*/
-    if (!_kurl->isLocalFile())
-        return false;
-
-    if ( !S_ISDIR( _mode ) )
-      return false;
-    
     return true;    
 }
 
 void DirPropsPage::applyChanges()
 {
-    QString tmp = properties->getKURL()->path();
+    QString tmp = properties->kurl().path();
     if ( tmp.right(1) != "/" )
 	tmp += "/.directory";
     else
@@ -1246,7 +1213,8 @@ void DirPropsPage::applyChanges()
     }
 
     // Get the default image
-    QString str( KMimeType::findByURL( *properties->getKURL(), properties->getMode(), true )->icon(0L, "") );
+    QString str( KMimeType::findByURL( properties->kurl(),
+				       properties->mode(), true )->icon(0L, "") );
     KURL u( str );
     QString str2 = u.filename();
     QString sIcon;
@@ -1261,7 +1229,7 @@ void DirPropsPage::applyChanges()
     // Send a notify to the parent directory since the
     // icon may have changed
 
-    tmp = properties->getKURL()->url();
+    tmp = properties->kurl().url();
     
     if ( tmp.right(1) == "/" )
 	tmp = tmp.left( tmp.length() - 1 );
@@ -1486,7 +1454,7 @@ ApplicationPropsPage::ApplicationPropsPage( PropertiesDialog *_props ) : PropsPa
 
     layout->activate();
 
-    QString path = _props->getKURL()->path() ;
+    QString path = _props->kurl().path() ;
     //KURL::decodeURL( path );	    
     QFile f( path );
     if ( !f.open( IO_ReadOnly ) )
@@ -1502,7 +1470,7 @@ ApplicationPropsPage::ApplicationPropsPage( PropertiesDialog *_props ) : PropsPa
     // Use the file name if no name is specified
     if ( nameStr.isEmpty() )
     {
-	nameStr = _props->getKURL()->filename();
+	nameStr = _props->kurl().filename();
 	if ( nameStr.right(7) == ".kdelnk" )
 	    nameStr.truncate( nameStr.length() - 7 );
 	//KURL::decodeURL( nameStr );
@@ -1548,19 +1516,12 @@ void ApplicationPropsPage::addMimeType( const char * name )
         availableExtensionsList->inSort( name );
 }
 
-bool ApplicationPropsPage::supports( KURL *_kurl, mode_t _mode )
+bool ApplicationPropsPage::supports( const KURL& _kurl, mode_t _mode )
 {
-/*
-    KURL u( _kurl->url() );
-    KURL u2( u.nestedURL() );
-    
-    if ( strcmp( u2.protocol(), "file" ) != 0 )
-	return false;
-*/
-    if (!_kurl->isLocalFile())
+    if (!_kurl.isLocalFile())
         return false;
 
-    QString path = _kurl->path();
+    QString path = _kurl.path();
 
     struct stat buff;
     stat( path, &buff );
@@ -1604,7 +1565,7 @@ void ApplicationPropsPage::applyChanges()
 // --- Sven's editable global settings changes end ---
 #endif
     
-    QString path = properties->getKURL()->path();
+    QString path = properties->kurl().path();
 
     QFile f( path );
     
@@ -1705,7 +1666,7 @@ void ApplicationPropsPage::applyChanges()
 	{
 	  // we must first copy whole kdelnk to local dir
 	  // and then change it. Trust me.
-	  QFile s(properties->getKURL()->path());
+	  QFile s(properties->kurl().path());
 	  s.open(IO_ReadOnly);
 	  //char *buff = (char *) malloc (s.size()+10);   CHANGE TO NEW!
 	  char *buff = new char[s.size()+10];           // Done.
@@ -1871,12 +1832,12 @@ BindingPropsPage::BindingPropsPage( PropertiesDialog *_props ) : PropsPage( _pro
     mainlayout->addSpacing(fontMetrics().height());
     mainlayout->activate();
 
-    QFile f( _props->getKURL()->path() );
+    QFile f( _props->kurl().path() );
     if ( !f.open( IO_ReadOnly ) )
 	return;
     f.close();
 
-    KConfig config( _props->getKURL()->path() );
+    KConfig config( _props->kurl().path() );
     config.setGroup( "KDE Desktop Entry" );
     QString patternStr = config.readEntry( "Patterns" );
     QString appStr = config.readEntry( "DefaultApp" );
@@ -1921,19 +1882,12 @@ BindingPropsPage::BindingPropsPage( PropertiesDialog *_props ) : PropsPage( _pro
     appBox->setCurrentItem( index );
 }
 
-bool BindingPropsPage::supports( KURL *_kurl, mode_t _mode )
+bool BindingPropsPage::supports( const KURL& _kurl, mode_t _mode )
 {
-/*
-    KURL u( _kurl->url() );
-    KURL u2( u.nestedURL() );
-    
-    if ( strcmp( u2.protocol(), "file" ) != 0 )
-	return false;
-*/
-    if (!_kurl->isLocalFile())
+    if (!_kurl.isLocalFile())
         return false;
 
-    QString path = _kurl->path();
+    QString path = _kurl.path();
 
     struct stat buff;
     stat( path, &buff );
@@ -1977,7 +1931,7 @@ void BindingPropsPage::applyChanges()
     // --- Sven's editable global settings changes end ---
 #endif
     
-    QString path = properties->getKURL()->path();
+    QString path = properties->kurl().path();
 
     QFile f( path );
 
@@ -2077,7 +2031,7 @@ void BindingPropsPage::applyChanges()
 	{
 	  // we must first copy whole kdelnk to local dir
 	  // and then change it. Trust me.
-	  QFile s(properties->getKURL()->path());
+	  QFile s(properties->kurl().path());
 	  s.open(IO_ReadOnly);
           char *buff = new char[s.size()+10];
 	  if (buff != 0)
@@ -2201,7 +2155,7 @@ DevicePropsPage::DevicePropsPage( PropertiesDialog *_props ) : PropsPage( _props
     unmounted = new KIconLoaderButton( kapp->getIconLoader(), this );
     unmounted->setGeometry( 170, 250, 50, 50 );
 
-    QString path( _props->getKURL()->path() );
+    QString path( _props->kurl().path() );
     
     QFile f( path );
     if ( !f.open( IO_ReadOnly ) )
@@ -2236,29 +2190,13 @@ DevicePropsPage::DevicePropsPage( PropertiesDialog *_props ) : PropsPage( _props
     unmounted->setIcon( unmountedStr ); 
 }
 
-bool DevicePropsPage::supports( KURL *_kurl, mode_t _mode )
+bool DevicePropsPage::supports( const KURL& _kurl, mode_t _mode )
 {
-/*
-    KURL u( _kurl->url() );
-    KURL u2( u.nestedURL() );
-    
-    if ( strcmp( u2.protocol(), "file" ) != 0 )
-	return false;
-*/
-    if (!_kurl->isLocalFile())
+    if (!_kurl.isLocalFile())
         return false;
 
-    QString path = _kurl->path();
+    QString path = _kurl.path();
 
-    /*
-    struct stat buff;
-    stat( path, &buff );
-
-    struct stat lbuff;
-    lstat( path, &lbuff );
-
-    if ( !S_ISREG( buff.st_mode ) || S_ISDIR( lbuff.st_mode ) )
-    */
     if ( !S_ISREG( _mode ) || S_ISDIR( _mode ) )
 	return false;
 
@@ -2288,7 +2226,7 @@ bool DevicePropsPage::supports( KURL *_kurl, mode_t _mode )
 
 void DevicePropsPage::applyChanges()
 {
-    QString path = properties->getKURL()->path();
+    QString path = properties->kurl().path();
     QFile f( path );
     if ( !f.open( IO_ReadWrite ) )
     {
