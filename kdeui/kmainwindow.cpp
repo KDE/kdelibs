@@ -287,9 +287,6 @@ void KMainWindow::parseGeometry(bool parsewidth)
 
 KMainWindow::~KMainWindow()
 {
-    if (d->autoSaveSettings) {
-        saveMainWindowSettings(KGlobal::config(), d->autoSaveGroup);
-    }
     delete d->settingsTimer;
     QMenuBar* mb = internalMenuBar();
     delete mb;
