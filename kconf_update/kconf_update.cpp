@@ -656,8 +656,14 @@ void KonfUpdate::gotScript(const QString &_script)
    QString path = locate("data","kconf_update/"+script);
    if (path.isEmpty())
    {
-      qWarning("Script '%s' not found.", script.latin1());
-      return;
+      if (interpreter.isEmpty())
+         path = locate("exe", "kconf_update_bin/"+script);
+
+      if (path.isEmpty())
+      {
+        qWarning("Script '%s' not found.", script.latin1());
+        return;
+      }
    }
 
    KTempFile tmp1;
