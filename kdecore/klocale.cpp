@@ -299,7 +299,6 @@ void KLocale::initLanguage(KConfig *config, const QString& catalogue)
       if (!locate("locale", lng[i] + QString::fromLatin1("/LC_MESSAGES/") + catalogue + QString::fromLatin1(".mo")).isNull() &&
 	  !locate("locale", lng[i] + QString::fromLatin1("/LC_MESSAGES/" SYSTEM_MESSAGES ".mo")).isNull())
 	{
-	    debug("setLang %s", lng[i].ascii());
 	  _lang = lng[i];
 	  break;
 	}
