@@ -1118,9 +1118,12 @@ void KFileDialog::buildBookmarkPopup()
 {
     bookmarksMenu->clear();
     bookmarksMenu->insertItem(i18n("Add to bookmarks"), (int) 0 );
-    bookmarksMenu->insertSeparator();
-    int id = 1;
-    fillBookmarkMenu( bookmarks->getRoot(), bookmarksMenu, id );
+    if(bookmarks->getRoot()->getChildren().first()!=NULL)
+      {
+	bookmarksMenu->insertSeparator();
+	int id = 1;
+	fillBookmarkMenu( bookmarks->getRoot(), bookmarksMenu, id );
+      }
 }
 
 void KFileDialog::bookmarkMenuActivated( int choice )
