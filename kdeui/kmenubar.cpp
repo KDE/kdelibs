@@ -29,6 +29,8 @@
 #include <qevent.h>
 #include <qobjectlist.h>
 #include <qaccel.h>
+#include <qpainter.h>
+#include <qstyle.h>
 
 #include <kconfig.h>
 #include <kglobalsettings.h>
@@ -448,6 +450,88 @@ void KMenuBar::closeEvent( QCloseEvent* e )
         e->ignore(); // mainly for the fallback mode 
     else
         QMenuBar::closeEvent( e );
+}
+
+void KMenuBar::drawContents( QPainter* p )
+{
+    // Closes the BR77113
+    // We need to overload this method to paint only the menu items
+    // This way when the KMenuBar is embedded in the menu applet it
+    // integrates correctly.
+    //
+    // Background mode and origin are set so late because of styles
+    // using the polish() method to modify these settings.
+    //
+    // Of course this hack can safely be removed when real transparency
+    // will be available
+
+    if( !d->topLevel )
+    {
+        QMenuBar::drawContents(p);
+    }
+    else
+    {
+        bool up_enabled = isUpdatesEnabled();
+        BackgroundMode bg_mode = backgroundMode();
+        BackgroundOrigin bg_origin = backgroundOrigin();
+        
+        setUpdatesEnabled(false);
+        setBackgroundMode(X11ParentRelative);
+        setBackgroundOrigin(WindowOrigin);
+
+	p->eraseRect( rect() );
+	erase();
+        
+        QColorGroup g = colorGroup();
+        bool e;
+
+        for ( int i=0; i<(int)count(); i++ )
+        {
+            QMenuItem *mi = findItem( idAt( i ) );
+
+            if ( !mi->text().isNull() || mi->pixmap() )
+            {
+                QRect r = itemRect(i);
+                if(r.isEmpty() || !mi->isVisible())
+                    continue;
+
+                e = mi->isEnabledAndVisible();
+                if ( e )
+                    g = isEnabled() ? ( isActiveWindow() ? palette().active() :
+                                        palette().inactive() ) : palette().disabled();
+                else
+                    g = palette().disabled();
+
+                bool item_active = ( actItem ==  i );
+
+                p->setClipRect(r);
+
+                if( item_active )
+                {
+                    QStyle::SFlags flags = QStyle::Style_Default;
+                    if (isEnabled() && e)
+                        flags |= QStyle::Style_Enabled;
+                    if ( item_active )
+                        flags |= QStyle::Style_Active;
+                    if ( item_active && actItemDown )
+                        flags |= QStyle::Style_Down;
+                    flags |= QStyle::Style_HasFocus;
+
+                    style().drawControl(QStyle::CE_MenuBarItem, p, this,
+                                        r, g, flags, QStyleOption(mi));
+                }
+                else
+                {
+                    style().drawItem(p, r, AlignCenter | AlignVCenter | ShowPrefix,
+                                     g, e, mi->pixmap(), mi->text());
+                }
+            }
+        }
+
+        setBackgroundOrigin(bg_origin);
+        setBackgroundMode(bg_mode);
+        setUpdatesEnabled(up_enabled);
+    }
 }
 
 void KMenuBar::virtual_hook( int, void* )

@@ -90,6 +90,7 @@ protected:
     virtual bool eventFilter(QObject *, QEvent *);
     virtual bool x11Event( XEvent* );
     virtual void closeEvent( QCloseEvent* );
+    virtual void drawContents( QPainter* );
 private slots:
     void updateFallbackSize();
     void selectionTimeout();
