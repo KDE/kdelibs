@@ -679,7 +679,7 @@ void RenderPartObject::updateWidget()
               // We have a clsid, means this is activex (Niko)
               serviceType = "application/x-activex-handler";
 
-              if(objbase->classId.contains(QString::fromLatin1("D27CDB6E-AE6D-11cf-96B8-444553540000"))) {
+              if(objbase->classId.find(QString::fromLatin1("D27CDB6E-AE6D-11cf-96B8-444553540000")) >= 0) {
                   // It is ActiveX, but the nsplugin system handling
                   // should also work, that's why we don't override the
                   // serviceType with application/x-activex-handler
@@ -688,11 +688,18 @@ void RenderPartObject::updateWidget()
                   // with nspluginviewer (Niko)
                   serviceType = "application/x-shockwave-flash";
               }
-              else if(objbase->classId.contains(QString::fromLatin1("CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA")))
+              else if(objbase->classId.find(QString::fromLatin1("CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA")) >= 0)
                   serviceType = "audio/x-pn-realaudio-plugin";
-              else if(objbase->classId.contains(QString::fromLatin1("8AD9C840-044E-11D1-B3E9-00805F499D93")) ||
-                      objbase->classId.contains(QString::fromLatin1("CAFEEFAC-0014-0000-0000-ABCDEFFEDCBA")))
+              else if(objbase->classId.find(QString::fromLatin1("8AD9C840-044E-11D1-B3E9-00805F499D93")) >= 0 ||
+                      objbase->classId.find(QString::fromLatin1("CAFEEFAC-0014-0000-0000-ABCDEFFEDCBA")) >= 0)
                   serviceType = "application/x-java-applet";
+              // http://www.apple.com/quicktime/tools_tips/tutorials/activex.html
+              else if(objbase->classId.find(QString::fromLatin1("02BF25D5-8C17-4B23-BC80-D3488ABDDC6B")) >= 0)
+                  serviceType = "video/quicktime";
+              // http://msdn.microsoft.com/library/en-us/dnwmt/html/adding_windows_media_to_web_pages__etse.asp?frame=true
+              else if(objbase->classId.find(QString::fromLatin1("6BF52A52-394A-11d3-B153-00C04F79FAA6")) >= 0 ||
+                      objbase->classId.find(QString::fromLatin1("22D6f312-B0F6-11D0-94AB-0080C74C7E95")) >= 0)
+                  serviceType = "video/x-msvideo";
 
               else
                   kdDebug(6031) << "ActiveX classId " << objbase->classId << endl;
