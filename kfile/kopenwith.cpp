@@ -579,7 +579,9 @@ void KOpenWithDlg::slotOK()
 
   // get the new service pointer
   kdDebug(250) << pathName << endl;
-  KSycoca::self()->notifyDatabaseChanged();
+  // 1- is this really necessary, given the recreate() above ?
+  // 2- the API has changed
+  // ###KSycoca::self()->notifyDatabaseChanged();
   m_pService = KService::serviceByDesktopPath( pathName );
   QApplication::restoreOverrideCursor();
 
