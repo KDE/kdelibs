@@ -45,7 +45,10 @@ INCLUDES = -I$(top_srcdir)/kimgio -I$(top_srcdir)/dcop \
  -I$(top_srcdir)/kwallet/client -I$(top_srcdir)/kutils \
  $(all_includes)
 
-doctypes.cpp: $(srcdir)/doctypes.gperf $(srcdir)/Makefile.am
-	gperf -CEot -L "ANSI-C" -k "*" -N findDoctypeEntry -F ,PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards $(srcdir)/doctypes.gperf > $@
+# Use "make doctypes" to regenerate doctypes.cpp from doctypes.gperf
+doctypes: $(srcdir)/doctypes.gperf $(srcdir)/Makefile.am
+	gperf -CEot -L "ANSI-C" -k "*" -N findDoctypeEntry -F ,PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards $(srcdir)/doctypes.gperf > $(srcdir)/doctypes.cpp
 
-html_documentimpl.lo: doctypes.cpp
+#html_documentimpl.lo: doctypes.cpp
+.PHONY: doctypes
+
