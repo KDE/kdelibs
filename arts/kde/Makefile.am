@@ -6,13 +6,13 @@ INCLUDES                    =   -I$(top_srcdir)/arts \
 				-I$(top_srcdir) $(all_includes)
 lib_LTLIBRARIES  	    =	libartskde.la
 libartskde_la_SOURCES	    =	artskde.cc kioinputstream_impl.cpp kplayobject.cc \
-				kplayobjectfactory.cc kartsfloatwatch.cpp
+				kplayobjectfactory.cc kartsfloatwatch.cpp ksounddispatcher.cc
 libartskde_la_LIBADD        =   $(LIB_KSYCOCA) -lqtmcop $(top_builddir)/arts/soundserver/libsoundserver_idl.la
 libartskde_la_LDFLAGS       =   -L../qtmcop $(all_libraries) -avoid-version -no-undefined
 libartskde_la_METASOURCES   =	AUTO
 
 artskdeincludedir	    =	$(includedir)/arts
-artskdeinclude_HEADERS      = 	kplayobject.h kplayobjectfactory.h kartsfloatwatch.h
+artskdeinclude_HEADERS      = 	kplayobject.h kplayobjectfactory.h kartsfloatwatch.h artskde.h ksounddispatcher.h
 
 $(srcdir)/kioinputstream_impl.cpp: artskde.h
 $(srcdir)/kartsfloatwatch.cpp: artskde.h
