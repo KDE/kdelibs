@@ -2,6 +2,7 @@
 Name=B3/KDE
 Name[af]=b3/kde
 Name[mk]=Б3/KDE
+Name[xxx]=xx
 Comment=B3/Modification of B2
 Comment[af]=b3/verandering van b2
 Comment[az]=B3/B2-nin Təkmilləşdirilmiş halı
@@ -41,6 +42,7 @@ Comment[sk]=B3/Úprava B2
 Comment[sl]=B3/Spremenjena različica B2
 Comment[sv]=B3/Modifierad B2
 Comment[tr]=B3/B2'nin değiştirilmiş hali
+Comment[xxx]=xx
 Comment[zh_CN.GB2312]=B3/修正的 B2
 Comment[zh_TW.Big5]=B3/B2 的修改版
 [KDE]
