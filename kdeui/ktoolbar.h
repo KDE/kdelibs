@@ -15,7 +15,7 @@
 /**
  * This is internal class for use in toolbar
  *
- * @short Internal Combobox class
+ * @short Internal Combobox class for toolbar
  */
 class KToolBarCombo : public KCombo
  {
@@ -40,7 +40,7 @@ class KToolBarCombo : public KCombo
 /**
  * This is internal class for use in toolbar
  *
- * @short Internal Frame class
+ * @short Internal Frame class for toolbar
  */
 class KToolBarFrame : public QFrame
  {
@@ -65,7 +65,7 @@ class KToolBarFrame : public QFrame
 /**
  * This is internal class for use in toolbar
  *
- * @short Internal Lined class
+ * @short Internal Lined class for toolbar
  */
 class KToolBarLined : public KLined
  {
@@ -89,7 +89,7 @@ class KToolBarLined : public KLined
 /**
  * This is internal class for use in toolbar
  *
- * @short Internal Button class
+ * @short Internal Button class for toolbar
  */
 class KToolBarButton : public KButton
  {
@@ -156,6 +156,7 @@ class KToolBarButton : public KButton
  * @ref #enable, @ref #setBarPos ...). Then simply do addToolbar (toolbar),
  * and you're on. See how it's done in testtoolbar.
  * @short KDE Toolbar widget
+ * @author Maintained by Sven Radej <a9509961@unet.univie.ac.at> 
  */
  class KToolBar : public QFrame
   {
@@ -172,7 +173,8 @@ public:
   KToolBar(QWidget *parent=NULL, const char *name=NULL);
 
   /**
-   * Destructor
+   * Destructor. If toolbar is floating it will cleanup itself.
+   * You MUST delete toolbar before exiting.
    */
   virtual ~KToolBar();
 
@@ -443,12 +445,11 @@ public:
   void setMaxHeight (int h);  // Set max height for vertical toolbars
 
   /**
-   * Sets maximal displacement from parent's right border. Argumetnt dw is
-   * width of free space between toolbar and parent's left border. This works
+   * Sets maximal width of horizontal (top or bottom) toolbar. This works
    * only for horizontal toolbars (at Top or Bottom), and has no effect
    * otherwise. Has no effect when toolbar is floating.
    */
-  void setMaxWidth (int dw);   // Set max width for horizontal toolbars
+  void setMaxWidth (int dw);
 
   /**
    * Sets title for toolbar when it floats.
@@ -541,7 +542,7 @@ signals:
      * Emits also if you change state
      * with @ref #setButton or @ref #toggleButton
      * If you make a button normal again, with
-     * @ref #setToggla (FALSE), this signal won't
+     * @ref #setToggle (FALSE), this signal won't
      * be emited.
      */
     void toggled(int);
@@ -554,9 +555,7 @@ signals:
      * @ref KTopLevelWidget::resizeEvent or
      * @ref KTopLevelWidget::updateRects, be sure to connect to
      * this signal. You can connect this signal to slot that
-     * doesn't take parameter. If you click on links to @ref KTopLevelWidget
-     * and if you use kdehelp or even kfm, you will connect it
-     * to SEGV signal.
+     * doesn't take parameter.
      * @see #updateRects
      */
     void moved( BarPosition );

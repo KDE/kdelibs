@@ -330,7 +330,7 @@ void KToolBar::layoutHorizontal ()
     maxwidth = width();
   else
     if (max_width != -1)
-      maxwidth = Parent->width()-max_width;
+      maxwidth = /*Parent->width()-*/max_width;
     else
       maxwidth = Parent->width();
 
