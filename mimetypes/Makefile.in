@@ -40,7 +40,13 @@ INSTALL_DATA = @INSTALL@ -m 644
 all:
 
 Makefile: Makefile.in
-	cd ../.. && CONFIG_FILES=kfm/mimetypes/$@ CONFIG_HEADERS= $(SHELL) ./config.status
+	cd ../.. && CONFIG_FILES=mimetypes/$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+all:
+
+clean:
+
+distclean:
 
 install:
 	$(INSTALL_DIR) $(DESTDIR)
