@@ -702,7 +702,8 @@ bool Ftp::ftpOpenPASVDataConnection()
 	int port = i[4] << 8 | i[5];
   ks.setAddress(host, port);
   ks.setSocketFlags(KExtendedSocket::noResolve);
-
+  ks.setTimeout (connectTimeout());
+  
   if (ks.connect() < 0)
     {
       kdError(7102) << "PASV: ks.connect failed. host=" << host << " port=" << port << endl;
