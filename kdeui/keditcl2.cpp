@@ -686,8 +686,8 @@ void KEdFind::setText(QString string)
 
 void KEdFind::setCaseSensitive( bool b )
 {
-  sensitive->setChecked( b ); 
-} 
+  sensitive->setChecked( b );
+}
 
 bool KEdFind::case_sensitive() const
 {
@@ -696,8 +696,8 @@ bool KEdFind::case_sensitive() const
 
 void KEdFind::setDirection( bool b )
 {
-  direction->setChecked( b ); 
-} 
+  direction->setChecked( b );
+}
 
 bool KEdFind::get_direction() const
 {
@@ -890,7 +890,7 @@ void KEdit::corrected (QString originalword, QString newword, unsigned pos)
 
 void KEdit::posToRowCol(unsigned int pos, unsigned int &line, unsigned int &col)
 {
-  for (line = 0; line < numLines() && col <= pos; line++)
+  for (line = 0; line < static_cast<uint>(numLines()) && col <= pos; line++)
   {
     col += lineLength(line);
     if( isEndOfParagraph(line) )
