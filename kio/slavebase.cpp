@@ -236,6 +236,8 @@ void SlaveBase::disconnectSlave()
 
 void SlaveBase::setMetaData(const QString &key, const QString &value)
 {
+   kdDebug(7019) << "(" << getpid() << ") SlaveBase::setMetaData: Key= "
+                 << key << ", Value= " << value << endl;
    mOutgoingMetaData.replace(key, value);
 }
 
@@ -264,6 +266,9 @@ KConfigBase *SlaveBase::config()
 
 void SlaveBase::sendMetaData()
 {
+   kdDebug(7019) << "(" << getpid() << ") SlaveBase::sendMetaData"
+                 << endl;
+
    KIO_DATA << mOutgoingMetaData;
 
    m_pConnection->send( INF_META_DATA, data );
@@ -273,6 +278,7 @@ void SlaveBase::sendMetaData()
 
 void SlaveBase::data( const QByteArray &data )
 {
+    kdDebug(7019) << "(" << getpid() << ") SlaveBase::data" << endl;
     if (!mOutgoingMetaData.isEmpty())
        sendMetaData();
     m_pConnection->send( MSG_DATA, data );
@@ -280,6 +286,7 @@ void SlaveBase::data( const QByteArray &data )
 
 void SlaveBase::dataReq( )
 {
+    kdDebug(7019) << "(" << getpid() << ") SlaveBase::dataReq" << endl;
     if (!mOutgoingMetaData.isEmpty())
        sendMetaData();
     if (d->needSendCanResume)
@@ -303,6 +310,7 @@ void SlaveBase::connected()
 
 void SlaveBase::finished()
 {
+    kdDebug(7019) << "(" << getpid() << ") SlaveBase::finished" << endl;
     mIncomingMetaData.clear(); // Clear meta data
     if (!mOutgoingMetaData.isEmpty())
        sendMetaData();
@@ -367,12 +375,15 @@ static bool isSubCommand(int cmd)
 
 void SlaveBase::mimeType( const QString &_type)
 {
+  kdDebug(7019) << "(" << getpid() << ") SlaveBase::mimeType" << endl;
   int cmd;
   do
   {
     // Send the meta-data each time we send the mime-type.
     if (!mOutgoingMetaData.isEmpty())
     {
+      kdDebug(7019) << "(" << getpid() << ") mimeType: emitting meta data"
+                    << endl;
       KIO_DATA << mOutgoingMetaData;
       m_pConnection->send( INF_META_DATA, data );
     }
@@ -395,11 +406,11 @@ void SlaveBase::mimeType( const QString &_type)
   }
   while (cmd != CMD_NONE);
   mOutgoingMetaData.clear();
-// WABA: cmd can be "CMD_NONE" or "CMD_GET" (in which case the slave
-// had been put on hold.) [or special, for http posts].
-// Something else is basically an error
-    kdDebug(7019) << "mimetype: reading " << cmd << endl;
-    ASSERT( (cmd == CMD_NONE) || (cmd == CMD_GET) || (cmd == CMD_SPECIAL) );
+  // WABA: cmd can be "CMD_NONE" or "CMD_GET" (in which
+  // case the slave had been put on hold.) [or special,
+  // for http posts]. Something else is basically an error
+  kdDebug(7019) << "(" << getpid() << ") mimetype: reading " << cmd << endl;
+  ASSERT( (cmd == CMD_NONE) || (cmd == CMD_GET) || (cmd == CMD_SPECIAL) );
 }
 
 // remove in KDE 3.0
