@@ -100,8 +100,6 @@ KSplitList::KSplitList( QWidget *parent , const char *name )
 	else
 		setFrameStyle( QFrame::WinPanel | QFrame::Sunken );
 
-	selectColor = KApplication::getKApplication()->selectColor;
-	selectTextColor = KApplication::getKApplication()->selectTextColor;
 }
 
 void KSplitList::resizeEvent( QResizeEvent *e )
@@ -120,9 +118,7 @@ void KSplitList::styleChange( GUIStyle )
 
 void KSplitList::paletteChange ( const QPalette & oldPalette )
 {
-	selectColor = KApplication::getKApplication()->selectColor;
-	selectTextColor = KApplication::getKApplication()->selectTextColor;
-	QListBox::paletteChange( oldPalette );
+    QListBox::paletteChange( oldPalette );
 	
 }
 

@@ -197,7 +197,7 @@ void KTabListBoxColumn::paintCell(QPainter* paint, int row,
   {
     paint->fillRect(0, 0, iwidth, parent->cellHeight(row),
 		     parent->highlightColor);
-    pen.setColor(kapp->selectTextColor);
+    pen.setColor(parent->colorGroup().highlightedText());
     oldPen = paint->pen();
     paint->setPen(pen);
   }
@@ -432,7 +432,7 @@ KTabListBox::KTabListBox(QWidget *parent, const char *name, int columns,
   sepChar   = '\n';
   labelHeight = fm.height() + 4;
   columnPadding = fm.height() / 2;
-  highlightColor = kapp->selectColor;
+  highlightColor = colorGroup().highlight();
   mResizeCol = false;
   stopOrdering=false;
   needsSort=false;
@@ -764,7 +764,7 @@ void KTabListBox::setCurrentItem(int idx, int colId)
 
   unmarkAll();
 
-  
+
   if ( idx <= topItem() && idx < lbox.lastRowVisible() )
       lbox.setTopCell( itemPosList(idx));
   else if ( idx >= lbox.lastRowVisible() )
@@ -775,7 +775,7 @@ void KTabListBox::setCurrentItem(int idx, int colId)
 	  y -= lbox.viewHeight();
 	  lbox.setYOffset( y );
       }
-  
+
   if (idx != current)
   {
     i = current;
@@ -941,7 +941,7 @@ void KTabListBox::appendStrList( QStrList const *strLst )
 void KTabListBox::changeItem(const QString& aStr, int row)
 {
     char  sepStr[2];
-    
+
   if (row < 0 || row >= numRows()) return;
 
   char *str = qstrdup(aStr);
@@ -1320,10 +1320,10 @@ void KTabListBox::mouseMoveEvent(QMouseEvent* e)
   if ((e->state() & LeftButton))
   {
     if(mMouseDragColumn) doMouseMoveCol(e);
-    
+
     if (mResizeCol && abs(mMouseStart.x() - ex) > 4)
       doMouseResizeCol(e);
-    
+
     else if (!mResizeCol &&
 	     (ex < mMouseColLeft ||
 	      ex > (mMouseColLeft+mMouseColWidth)))
@@ -1331,7 +1331,7 @@ void KTabListBox::mouseMoveEvent(QMouseEvent* e)
         mMouseDragColumn=true;
         doMouseMoveCol(e);
       }
-    
+
     QWidget::mouseMoveEvent(e);
     return;
   }

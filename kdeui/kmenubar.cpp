@@ -42,6 +42,9 @@
 // $Id$
 // $Log$
 //
+// Revision 1.66  1999/03/04 17:49:13  ettrich
+// more fixes for Qt-2.0
+//
 // Revision 1.65  1999/03/02 15:56:36  kulow
 // CVS_SILENT replacing klocale->translate with i18n
 //
@@ -573,10 +576,9 @@ bool KMenuBar::eventFilter(QObject *ob, QEvent *ev){
         }
 
         return true;
-        b = kapp->selectColor; // this is much more logical then
+      }
 
-      //else
-      //  b = QWidget::backgroundColor();
+      
       if (ev->type() == QEvent::Enter && highlight) // highlight? - sven
         b = colorGroup().highlight();  // this is much more logical then
                                              colorGroup(), true);

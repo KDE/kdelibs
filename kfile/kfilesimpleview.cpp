@@ -181,17 +181,17 @@ void KFileSimpleView::paintCell( QPainter *p, int row, int col)
 
     if ( (row == curRow) && (col == curCol) ) { // if we are on current cell,
         if ( hasFocus() ) {
-              p->fillRect(0, 0, x2, y2, kapp->selectColor);
-	      p->setPen( kapp->selectTextColor );
+              p->fillRect(0, 0, x2, y2, colorGroup().highlight());
+	      p->setPen( colorGroup().highlightedText() );
         }
         else { // no focus => draw only a dashed line around current item
              p->setPen( DotLine );               // used dashed line to
              p->drawRect( 0, 0, x2, y2 );        // draw rect along cell edges
              p->setPen( SolidLine );             // restore to normal
-             p->setPen( kapp->windowTextColor );
+             p->setPen( colorGroup().base() );
         }
     } else // not on current cell, use the normal color
-          p->setPen( kapp->windowTextColor );
+          p->setPen( colorGroup().text() );
 
     if (index < count()) {
 	p->drawPixmap(0, 1, *pixmaps.at(index));

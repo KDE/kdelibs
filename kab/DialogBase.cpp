@@ -1,7 +1,7 @@
 /* -*- C++ -*-
  * A dialog class that serves as a common base class for all dialogs kab creates.
  * Implementation
- * 
+ *
  * the KDE addressbook.
  * copyright:  (C) Mirko Sucker, 1998
  * license:    GNU Public License, Version 2
@@ -10,6 +10,7 @@
  *             Nana for debugging
  * $Revision$
  */
+#include <qwidget.h>
 #include "DialogBase.h"
 #include <qpixmap.h>
 // #include <qwhatsthis.h>
@@ -50,7 +51,7 @@ DialogBase::DialogBase(QWidget* parent, const char* name, bool modal)
   CHECK(modal==true && "Modeless dialogs are not supported");
   if(dummy==0 && InProcess==0)
     {
-      InProcess=1; 
+      InProcess=1;
       dummy=new DialogBase; // will never be deleted until program ends
       InProcess=0;
     }
@@ -98,7 +99,7 @@ void DialogBase::setBackgroundTile(const QPixmap* p)
     { // ----- enable background tile:
       if(tile==0)
 	{
-	  tile=new QPixmap(*p); 
+	  tile=new QPixmap(*p);
 	} else {
 	  *tile=*p;
 	}
@@ -108,7 +109,7 @@ void DialogBase::setBackgroundTile(const QPixmap* p)
       tile=0;
     }
   if(dummy!=0)
-    {    
+    {
       dummy->emitBackgroundChanged();
     }
   // ############################################################################
@@ -126,7 +127,7 @@ void DialogBase::updateBackground()
     } else {
       QPixmap temp; // a Null pixmap
       frameBase->setBackgroundPixmap(temp);
-      frameMain->setBackgroundPixmap(temp);      
+      frameMain->setBackgroundPixmap(temp);
       frameBase->setBackgroundMode(PaletteBackground);
       frameMain->setBackgroundMode(PaletteBackground);
     }
@@ -185,7 +186,7 @@ void DialogBase::resizeEvent(QResizeEvent*)
       y=frameMain->y()+frameMain->frameWidth()+Grid;
       cx=frameMain->width()-2*frameMain->frameWidth()-2*Grid;
       cy=frameMain->height()-2*frameMain->frameWidth()-2*Grid;
-      main->setGeometry(x, y, cx, cy);    
+      main->setGeometry(x, y, cx, cy);
     }
   // ----- 5. set geometry of headline label and whats-this-button:
   x=FrameBaseFrameWidth+Grid;
@@ -340,10 +341,10 @@ void DialogBase::initializeGeometry()
 {
   // ############################################################################
   const int ButtonWidth=
-    QMAX(buttonCancel->sizeHint().width(), 
+    QMAX(buttonCancel->sizeHint().width(),
 	 QMAX(buttonOK->sizeHint().width(), buttonApply->sizeHint().width()));
   QSize size;
-  int cx, cy; 
+  int cx, cy;
   int ulx, uly, lrx, lry;
   // -----
   getBorderWidths(ulx, uly, lrx, lry);
@@ -353,12 +354,12 @@ void DialogBase::initializeGeometry()
     {
       size=main->minimumSize();
     } else {
-      cx+=100; 
+      cx+=100;
       cy+=66;
     }
   // ----- set minimum size of whole dialog:
   cx=QMAX(ulx+lrx+2*Grid+(size.width()>0 ? size.width() : 0), cx);
-  if(size.height()>0) 
+  if(size.height()>0)
     {
       cy+=size.height();
     }

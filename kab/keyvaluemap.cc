@@ -1,5 +1,5 @@
 /* Implementation of the KeyValueMap class.
- * 
+ *
  * the Configuration Database library
  * copyright:  (C) Mirko Sucker, 1998
  * license:    GNU Public License, Version 2
@@ -10,6 +10,7 @@
 
 #pragma implementation
 
+#include <qwidget.h>
 #include "keyvaluemap.h"
 #include "debug.h"
 #include "functions.h"
@@ -19,7 +20,7 @@ extern "C" {
 	   }
 #include <fstream.h>
 
-class StringStringMap 
+class StringStringMap
   : public map<string, string, less<string> >
 {}; // same as map...
 
@@ -49,7 +50,7 @@ KeyValueMap::~KeyValueMap()
   // ############################################################################
 }
 
-bool 
+bool
 KeyValueMap::invariant()
 {
   // ############################################################################
@@ -57,8 +58,8 @@ KeyValueMap::invariant()
   // ############################################################################
 }
 
-unsigned int 
-KeyValueMap::size() const 
+unsigned int
+KeyValueMap::size() const
 {
   // ############################################################################
   CHECK(data!=0);
@@ -66,7 +67,7 @@ KeyValueMap::size() const
   // ############################################################################
 }
 
-void 
+void
 KeyValueMap::clear()
 {
   register bool GUARD; GUARD=false;
@@ -84,7 +85,7 @@ KeyValueMap::clear()
   // ############################################################################
 }
 
-bool 
+bool
 KeyValueMap::fill(const string& filename, bool force, bool relax)
 {
   REQUIRE(!filename.empty());
@@ -105,7 +106,7 @@ KeyValueMap::fill(const string& filename, bool force, bool relax)
 	{
 	  if(!insertLine(line, force, relax, false))
 	    {
-	      LG(GUARD, "KeyValueMap::fill: could not insert line %s.\n", 
+	      LG(GUARD, "KeyValueMap::fill: could not insert line %s.\n",
 		 line.c_str());
 	      // ignore this case further
 	    }
@@ -116,13 +117,13 @@ KeyValueMap::fill(const string& filename, bool force, bool relax)
   // ############################################################################
 }
 
-bool 
+bool
 KeyValueMap::save(const string& filename, bool force)
 {
   register bool GUARD; GUARD=false;
   REQUIRE(!filename.empty());
   // ############################################################################
-  LG(GUARD, "KeyValueMap::save: saving data to %s.\n", 
+  LG(GUARD, "KeyValueMap::save: saving data to %s.\n",
      filename.c_str());
   StringStringMap::iterator pos;
   ofstream file;
@@ -139,14 +140,14 @@ KeyValueMap::save(const string& filename, bool force)
 	 "file %s for saving.\n", filename.c_str());
       return false;
     }
-  file << "# automatically saved by KeyValueMap object ($Revision$)" 
+  file << "# automatically saved by KeyValueMap object ($Revision$)"
        << endl;
   for(pos=data->begin(); pos!=data->end(); pos++)
     {
       file << (*pos).first << '=' << (*pos).second << endl;
       if(!file.good())
 	{
-	  LG(GUARD, "KeyValueMap::save: error while saving data to file %s.\n", 
+	  LG(GUARD, "KeyValueMap::save: error while saving data to file %s.\n",
 	     filename.c_str());
 	  file.close();
 	  return false;
@@ -155,10 +156,10 @@ KeyValueMap::save(const string& filename, bool force)
   // -----
   file.close();
   // ############################################################################
-  return true; 
+  return true;
 }
 
-bool 
+bool
 KeyValueMap::save(ofstream& file, int count)
 {
   register bool GUARD; GUARD=false;
@@ -169,7 +170,7 @@ KeyValueMap::save(ofstream& file, int count)
      "output stream.\n");
   StringStringMap::iterator pos;
   bool ret = true;
-  char* prefix=new char[count+1]; 
+  char* prefix=new char[count+1];
   memset(prefix, ' ', count);
   prefix[count]=0;
   CHECK(prefix!=0);
@@ -190,7 +191,7 @@ KeyValueMap::save(ofstream& file, int count)
   // ############################################################################
 }
 
-bool 
+bool
 KeyValueMap::erase(const string& key)
 {
   // ############################################################################
@@ -198,9 +199,9 @@ KeyValueMap::erase(const string& key)
   ENSURE(data->find(key)==data->end());
   return rc;
   // ############################################################################
-}  
+}
 
-bool 
+bool
 KeyValueMap::empty()
 {
   // ############################################################################
@@ -209,12 +210,12 @@ KeyValueMap::empty()
   // ############################################################################
 }
 
-bool 
+bool
 KeyValueMap::parseComplexString
-(const string& orig, 
+(const string& orig,
  string::size_type index, // first char to parse
  string& result, // string without leading and trailing ".."
- int& noOfChars) // no of chars that represented the 
+ int& noOfChars) // no of chars that represented the
  const           // complex string in the original
 {
   register bool GUARD; GUARD=false;
@@ -252,7 +253,7 @@ KeyValueMap::parseComplexString
       return false;
     }
   first++;
-  for(;;) 
+  for(;;)
     {
       CHECK(first<orig.size());
       if(orig[first]=='\\')
@@ -279,18 +280,18 @@ KeyValueMap::parseComplexString
 		 "invalid control character.\n            "
 		 "                     This is no valid "
 		 "complex string.\n");
-	      return false;	      
+	      return false;	
 	    }
 	  count+=2; // this took 2 characters
 	  ++first;
 	} else { // it is a character
 	  ++count;
-	  if(orig[first]=='"') 
+	  if(orig[first]=='"')
 	    {
 	      break;
 	    }
 	  temp+=orig[first];
-	  ++first;	  
+	  ++first;	
 	}
       if(first>=orig.size())
 	{
@@ -310,7 +311,7 @@ KeyValueMap::parseComplexString
   return true;
 }
 
-string 
+string
 KeyValueMap::makeComplexString(const string& orig)
 {
   register bool GUARD; GUARD=false;
@@ -347,19 +348,19 @@ KeyValueMap::makeComplexString(const string& orig)
 	default: temp+=orig[count];
 	}
     }
-  temp+='"';  
+  temp+='"';
   LG(GUARD, "KeyValueMap::makeComplexString: result is\n"
             "           -->%s<--.\n", temp.c_str());
   return temp;
   // ############################################################################
 }
 
-bool 
+bool
 KeyValueMap::getRaw(const string& key, string& value) const
 {
   register bool GUARD; GUARD=false;
   // ############################################################################
-  LG(GUARD, "KeyValueMap::getRaw: trying to get raw value for key \"%s\" ... ", 
+  LG(GUARD, "KeyValueMap::getRaw: trying to get raw value for key \"%s\" ... ",
      key.c_str());
   StringStringMap::iterator pos=data->find(key);
   // -----
@@ -369,14 +370,14 @@ KeyValueMap::getRaw(const string& key, string& value) const
       return false;
     } else {
       value=(*pos).second;
-      LG(GUARD, "in KeyValueMap, value is %s.\n", 
+      LG(GUARD, "in KeyValueMap, value is %s.\n",
 	 value.c_str());
       return true;
     }
   // ############################################################################
 }
 
-bool 
+bool
 KeyValueMap::insertRaw(const string& key, const string& value, bool force)
 {
   register bool GUARD; GUARD=false;
@@ -385,7 +386,7 @@ KeyValueMap::insertRaw(const string& key, const string& value, bool force)
      " %s for key %s.\n", value.c_str(), key.c_str());
   int n=0;
   // -----
-  if(key.empty()) 
+  if(key.empty())
     { // empty keys are errors:
       L("KeyValueMap::insertRaw: tried to insert empty key.\n");
       return false;
@@ -405,7 +406,7 @@ KeyValueMap::insertRaw(const string& key, const string& value, bool force)
       LG(GUARD, "KeyValueMap::insertRaw: failed, "
 	 "key already in KeyValueMap.\n");
       return false;
-    }  
+    }
   // ############################################################################
 }
 
@@ -415,17 +416,17 @@ KeyValueMap::insertRaw(const string& key, const string& value, bool force)
 // EXTENDABLE MEANS: OTHER DATATYPES CAN BE ADDED HERE.
 // ----------------------------------------------------------
 
-/** The following functions are the pairs of 
-  * insert-get-methods for different data types. See 
+/** The following functions are the pairs of
+  * insert-get-methods for different data types. See
   * keyvaluemap.h for the declarations.
   */
 
 // strings:
 
-bool 
-KeyValueMap::insert(const string& key, const string& value, bool force) 
+bool
+KeyValueMap::insert(const string& key, const string& value, bool force)
 {
-  register bool GUARD; GUARD=false; 
+  register bool GUARD; GUARD=false;
   // ############################################################################
   LG(GUARD, "KeyValueMap::insert: inserting value\n           -->%s<-- \n"
      "                     for key\n           -->%s<--.\n",
@@ -434,12 +435,12 @@ KeyValueMap::insert(const string& key, const string& value, bool force)
   // ############################################################################
 }
 
-/* Attention: this is another insert function that partens 
+/* Attention: this is another insert function that partens
  * lines like "key=value"!
  * It is used for reading files and command line parameters.
  */
 
-bool 
+bool
 KeyValueMap::insertLine(string line, bool force, bool relax, bool encode)
 {
   register bool GUARD; GUARD=false;
@@ -447,17 +448,17 @@ KeyValueMap::insertLine(string line, bool force, bool relax, bool encode)
   string::size_type index;
   string key;
   string value;
-  // ----- is the line empty or does it contain only 
+  // ----- is the line empty or does it contain only
   //       whitespaces?
   index=line.find_first_not_of(" \t");
   if(line.empty() || index==string::npos)
-    { 
+    {
       LG(GUARD, "KeyValueMap::insertLine: line is empty.\n");
       return false;
     }
   // -----
   index=line.find('=');
-  if(index==string::npos) 
+  if(index==string::npos)
     {
       L("KeyValueMap::insertLine: no \"=\" found in \"%s\".\n", line.c_str());
       return false;
@@ -465,7 +466,7 @@ KeyValueMap::insertLine(string line, bool force, bool relax, bool encode)
   // -----
   key.assign(line, 0, index); // copy from start to '='
   value.assign(line, index+1); // copy the rest
-  // keys should not contain whitespaces 
+  // keys should not contain whitespaces
   // to avoid unpredictable results
   for(;;)
     {
@@ -488,7 +489,7 @@ KeyValueMap::insertLine(string line, bool force, bool relax, bool encode)
   // ############################################################################
 }
 
-bool 
+bool
 KeyValueMap::get(const string& key, string& value) const
 {
   register bool GUARD; GUARD=false;
@@ -515,8 +516,8 @@ KeyValueMap::get(const string& key, string& value) const
 	  } else {
 	    LG(GUARD, "KeyValueMap::get[string]: "
 	       "this is not a complex string.\n");
-	    // non-complex strings are no more allowed in 
-	    // KeyValueMap objects - there is no way to 
+	    // non-complex strings are no more allowed in
+	    // KeyValueMap objects - there is no way to
 	    // insert them exept by hand!
 	    CHECK(false); // kill debug version
 	    return false; // only in non-debug version
@@ -532,7 +533,7 @@ KeyValueMap::get(const string& key, string& value) const
 // (^^^ strings)
 // bool:
 
-bool 
+bool
 KeyValueMap::insert(const string& key, const bool& value, bool force)
 {
   register bool GUARD; GUARD=false;
@@ -553,24 +554,24 @@ KeyValueMap::insert(const string& key, const bool& value, bool force)
 }
 
 
-bool 
+bool
 KeyValueMap::get(const string& key, bool& value) const
 {
   register bool GUARD; GUARD=false;
   // ############################################################################
-  LG(GUARD, "KeyValueMap::get[bool]: trying to get BOOL value for key %s.\n", 
+  LG(GUARD, "KeyValueMap::get[bool]: trying to get BOOL value for key %s.\n",
      key.c_str());
   string v;
   // ----- get string representation:
-  if(!get(key, v)) 
+  if(!get(key, v))
     {
-      LG(GUARD, "KeyValueMap::get[bool]: key %s not in KeyValueMap.\n", 
+      LG(GUARD, "KeyValueMap::get[bool]: key %s not in KeyValueMap.\n",
 	 key.c_str());
       return false;
     }
   // ----- find its state:
   //       hopefully the compiler optimizes the logical tests
-  //       and finishs after comparing with "true" if v is 
+  //       and finishs after comparing with "true" if v is
   //       true
   if(v=="true" || v=="TRUE" || v=="True" || v=="1")
     {
@@ -593,7 +594,7 @@ KeyValueMap::get(const string& key, bool& value) const
 // (^^^ bool)
 // int:
 
-bool 
+bool
 KeyValueMap::insert(const string& key, const int& value, bool force)
 {
   register bool GUARD; GUARD=false;
@@ -613,19 +614,19 @@ KeyValueMap::insert(const string& key, const int& value, bool force)
   // ############################################################################
 }
 
-bool 
+bool
 KeyValueMap::get(const string& key, int& value) const
 {
   register bool GUARD; GUARD=false;
   // ############################################################################
-  LG(GUARD, "KeyValueMap::get[int]: trying to get INTEGER value for key %s.\n", 
+  LG(GUARD, "KeyValueMap::get[int]: trying to get INTEGER value for key %s.\n",
      key.c_str());
   string v;
   int temp;
   // -----
-  if(!get(key, v)) 
+  if(!get(key, v))
     {
-      LG(GUARD, "KeyValueMap::get[int]: key %s not in KeyValueMap.\n", 
+      LG(GUARD, "KeyValueMap::get[int]: key %s not in KeyValueMap.\n",
 	 key.c_str());
       return false;
     }
@@ -633,7 +634,7 @@ KeyValueMap::get(const string& key, int& value) const
   temp=strtol(v.c_str(), 0, 0);
   if(errno==ERANGE)
     {
-      LG(GUARD, "KeyValueMap::get[int]: the value %s is no int number.\n", 
+      LG(GUARD, "KeyValueMap::get[int]: the value %s is no int number.\n",
 	 v.c_str());
       return false;
     }
@@ -646,7 +647,7 @@ KeyValueMap::get(const string& key, int& value) const
 // (^^^ int)
 // int lists:
 
-bool 
+bool
 KeyValueMap::insert(const string& key, const list<int>& values, bool force)
 {
   register bool GUARD; GUARD=false;
@@ -664,16 +665,16 @@ KeyValueMap::insert(const string& key, const list<int>& values, bool force)
     }
   if(!value.empty())
     { // remove the comma and the space:
-      value.ERASE(value.size()-2, 2); 
+      value.ERASE(value.size()-2, 2);
     }
-  LG(GUARD, "KeyValueMap::insert[int list]: constructed string value is %s.\n", 
+  LG(GUARD, "KeyValueMap::insert[int list]: constructed string value is %s.\n",
      value.c_str());
   return insert(key, value, force);
   // ############################################################################
 }
 
 
-bool 
+bool
 KeyValueMap::get(const string& key, list<int>& values) const
 {
   register bool GUARD; GUARD=false;
@@ -687,7 +688,7 @@ KeyValueMap::get(const string& key, list<int>& values) const
   list<string>::iterator pos;
   int temp;
   // -----
-  if(!get(key, value)) 
+  if(!get(key, value))
   {
     LG(GUARD, "KeyValueMap::get[int list]: no such key.\n");
     return false;
@@ -699,7 +700,7 @@ KeyValueMap::get(const string& key, list<int>& values) const
       return false;
     }
   // -----
-  for(pos=tokens.begin(); pos!=tokens.end(); ++pos) 
+  for(pos=tokens.begin(); pos!=tokens.end(); ++pos)
     {
       errno=0;
       temp=0;
@@ -713,8 +714,8 @@ KeyValueMap::get(const string& key, list<int>& values) const
 
 // (^^^ int lists)
 // doubles:
- 
-bool 
+
+bool
 KeyValueMap::insert(const string& key, const double& value, bool force)
 {
   register bool GUARD; GUARD=false;
@@ -734,8 +735,8 @@ KeyValueMap::insert(const string& key, const double& value, bool force)
     }
   // ############################################################################
 }
- 
- 
+
+
 bool KeyValueMap::get(const string& key, double& value) const
 {
   register bool GUARD; GUARD=false;
@@ -744,13 +745,13 @@ bool KeyValueMap::get(const string& key, double& value) const
      "value for key %s.\n", key.c_str());
   string v;
   double temp;
-  if(!get(key, v)) 
+  if(!get(key, v))
     {
       LG(GUARD, "KeyValueMap::get[double]: key %s not in "
 	 "KeyValueMap.\n", key.c_str());
       return false;
     }
-  errno=0; 
+  errno=0;
   temp=strtod(v.c_str(), 0);
   if(errno==ERANGE)
     {
@@ -760,7 +761,7 @@ bool KeyValueMap::get(const string& key, double& value) const
     }
   LG(GUARD, "KeyValueMap::get[double]: success, value is "
      "%f.\n", temp);
-  value=temp;  
+  value=temp;
   return true;
   // ############################################################################
 }
@@ -768,13 +769,13 @@ bool KeyValueMap::get(const string& key, double& value) const
 // (^^^ doubles)
 // lists of strings:
 
-bool 
+bool
 KeyValueMap::get(const string& key, list<string>& values) const
 {
   register bool GUARD; GUARD=false;
   LG(!values.empty(), "KeyValueMap::get[string list]: "
      "attention!\n             \"values\" list reference "
-     "is not empty!\n"); 
+     "is not empty!\n");
   // ############################################################################
   LG(GUARD, "KeyValueMap::get[string list]: trying to decode"
   " string list for key %s.\n", key.c_str());
@@ -788,7 +789,7 @@ KeyValueMap::get(const string& key, list<string>& values) const
 	 " in KeyValueMap.\n", key.c_str());
       return false;
     }
-  // "first" points to the start of the currently parsed 
+  // "first" points to the start of the currently parsed
   // substring
   for(;;)
     { // ----- parten the string down into a list
@@ -797,16 +798,16 @@ KeyValueMap::get(const string& key, list<string>& values) const
       for(;;)
 	{
 	  second=raw.find("\\", second);
-	  // this may never be the last and also not the 
+	  // this may never be the last and also not the
 	  // second last character in a complex string
 	  if(second!=string::npos)
 	    { // ----- check for string end:
 	      CHECK(first<raw.size()-2);
-	      // we use "\e" as token for the 
+	      // we use "\e" as token for the
 	      // string-delimiter
 	      if(raw[second+1]=='e' // the right character
 		 && raw[second-1]!='\\') // not escaped
-		{ 
+		{
 		  LG(GUARD, "KeyValueMap::get"
 		     "[list<string>]: found string end "
 		     "at pos %i.\n", second);
@@ -820,7 +821,7 @@ KeyValueMap::get(const string& key, list<string>& values) const
 	}
       if(second!=string::npos)
 	{
-	  // ----- now second points to the end of the 
+	  // ----- now second points to the end of the
 	  //       substring:
 	  part="\""+raw.substr(first, second-first)+"\"";
 	  // ----- insert decoded value into the list:
@@ -834,7 +835,7 @@ KeyValueMap::get(const string& key, list<string>& values) const
 		"error in string list.\n");
 	      return false;
 	    }
-	  if(second<raw.size()-3) 
+	  if(second<raw.size()-3)
 	    { // there may be another string
 	      first=second+2;
 	    } else { // we are completely finished
@@ -851,7 +852,7 @@ KeyValueMap::get(const string& key, list<string>& values) const
   // ############################################################################
 }
 
-bool 
+bool
 KeyValueMap::insert(const string& key, const list<string>& values, bool force)
 {
   register bool GUARD; GUARD=false;
@@ -872,7 +873,7 @@ KeyValueMap::insert(const string& key, const list<string>& values, bool force)
       value+="\\e";
     }
   value+="\""; // finish the string
-  LG(GUARD, "KeyValueMap::insert[string list]: result of coding is %s.\n", 
+  LG(GUARD, "KeyValueMap::insert[string list]: result of coding is %s.\n",
      value.c_str());
   // ----- insert it without coding:
   return insertRaw(key, value, force);
@@ -882,13 +883,13 @@ KeyValueMap::insert(const string& key, const list<string>& values, bool force)
 // (^^^ lists of strings)
 // lists of doubles:
 
-bool 
+bool
 KeyValueMap::insert(const string& key, const list<double>& values, bool force)
 {
   register bool GUARD; GUARD=false;
   // ############################################################################
   LG(GUARD, "KeyValueMap::insert[double list]: trying to "
-     "insert double list into map.\n");  
+     "insert double list into map.\n");
   char buffer[1024];
   string value;
   // -----
@@ -900,11 +901,11 @@ KeyValueMap::insert(const string& key, const list<double>& values, bool force)
     }
   if(!value.empty())
     { // remove the comma and the space:
-      value.ERASE(value.size()-2, 2); 
+      value.ERASE(value.size()-2, 2);
     }
   LG(GUARD, "KeyValueMap::insert[double list]: constructed "
      "string value is %s.\n", value.c_str());
-  return insert(key, value, force);  
+  return insert(key, value, force);
   // ############################################################################
 }
 
@@ -914,7 +915,7 @@ KeyValueMap::get(const string& key, list<double>& values) const
   register bool GUARD; GUARD=false;
   // ############################################################################
   LG(GUARD, "KeyValueMap::get[double list]: trying to decode"
-     " double list for key %s.\n", key.c_str());  
+     " double list for key %s.\n", key.c_str());
   LG(!values.empty(), "KeyValueMap::get[double list]: "
      "attention - list should be empty but is not.\n");
   string value;
@@ -923,19 +924,19 @@ KeyValueMap::get(const string& key, list<double>& values) const
   string::size_type first=0;
   double temp;
   // -----
-  if(!get(key, value)) 
+  if(!get(key, value))
     {
-      LG(GUARD, 
+      LG(GUARD,
 	 "KeyValueMap::get[double list]: no such key.\n");
       return false;
     }
   // -----
-  for(;;) 
+  for(;;)
     {
-      errno=0; 
+      errno=0;
       temp=strtod((c_str=(char*)value.c_str())+first, end);
       if(temp==0)
-	{ // possibly there where no chars representing an 
+	{ // possibly there where no chars representing an
 	  // int:
 	  if(*end==c_str)
 	    {
@@ -945,13 +946,13 @@ KeyValueMap::get(const string& key, list<double>& values) const
 	      LG(GUARD, "KeyValueMap::get[double list]: "
 		 "found zero.\n");
 	      values.push_back(temp);
-	      first=value.find(',', first+1);	    
+	      first=value.find(',', first+1);	
 	    }
 	} else {
 	  if(errno==ERANGE)
 	    {
 	      LG(GUARD, "KeyValueMap::get[double list]: "
-		 "the value %s is no double number.\n", 
+		 "the value %s is no double number.\n",
 		 value.c_str()+first+1);
 	      return false;
 	    } else {
@@ -965,7 +966,7 @@ KeyValueMap::get(const string& key, list<double>& values) const
       ++first;
     }
   LG(GUARD, "KeyValueMap::get[int list]: done.\n");
-  // ############################################################################  
+  // ############################################################################
   return true;
 }
 

@@ -15,7 +15,7 @@
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
-*/  
+*/
 
 #include <kapp.h>
 #include <qbutton.h>
@@ -52,7 +52,7 @@ void KDirectionButton::drawButton( QPainter *p)
 {
   // I abandoned qDrawArrow(...) 'cause the result was totally unpredictable :-(
 
-  int style = kapp->applicationStyle;
+  int style = kapp->applicationStyle();
   int wm = width()/2, hm = height()/2;
   QColorGroup g = QWidget::colorGroup();
   QPen lightPen, darkPen;
@@ -276,7 +276,7 @@ void KTabButton::drawButton( QPainter *p)
 
   // top outer
   p->drawLine( 1, 0, w-1, 0);
-  
+
   pen.setColor( black );
   p->setPen( pen );
 

@@ -20,6 +20,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.125  1999/03/02 15:56:25  kulow
+// CVS_SILENT replacing klocale->translate with i18n
+//
 // Revision 1.124  1999/03/01 23:33:10  kulow
 // CVS_SILENT ported to Qt 2.0
 //
@@ -1103,7 +1106,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
   return FALSE;
 }
 
-void KApplication::applyGUIStyle(GUIStyle newstyle) {
+void KApplication::applyGUIStyle(GUIStyle /* newstyle */) {
 /*
   QApplication::setStyle( applicationStyle );
 
@@ -1234,69 +1237,53 @@ void KApplication::readSettings()
 
   QString str;
 	
-  // Read the color scheme group from config file
-  // If unavailable set color scheme to KDE default
-
-  config->setGroup( "General");
-  // this default is Qt black
-  textColor = config->readColorEntry( "foreground", &black );
-
-  // this default is the Qt lightGray
-  backgroundColor = config->readColorEntry( "background", &lightGray  );
-
-  // this default is Qt darkBlue
-  selectColor = config->readColorEntry( "selectBackground", &darkBlue );
-
-  // this default is Qt white
-  selectTextColor = config->readColorEntry( "selectForeground", &white);
-
-  // this default is Qt white
-  windowColor = config->readColorEntry( "windowBackground", &white );
-
-  // this default is Qt black
-  windowTextColor = config->readColorEntry( "windowForeground", &black );
-	
   config->setGroup( "WM");
   // this default is Qt lightGray
-  inactiveTitleColor = config->readColorEntry( "inactiveBackground", &lightGray );
+  inactiveTitleColor_ = config->readColorEntry( "inactiveBackground", &lightGray );
 
   // this default is Qt darkGrey
-  inactiveTextColor = config->readColorEntry( "inactiveForeground", &darkGray );
+  inactiveTextColor_ = config->readColorEntry( "inactiveForeground", &darkGray );
 
   // this default is Qt darkBlue
-  activeTitleColor = config->readColorEntry( "activeBackground", &darkBlue );
+  activeTitleColor_ = config->readColorEntry( "activeBackground", &darkBlue );
 
   // this default is Qt white
-  activeTextColor = config->readColorEntry( "activeForeground", &white );
+  activeTextColor_ = config->readColorEntry( "activeForeground", &white );
 
   config->setGroup( "KDE");
-  contrast = config->readNumEntry( "contrast", 7 );
+  contrast_ = config->readNumEntry( "contrast", 7 );
 
   //  Read the font specification from config.
   //  Initialize fonts to default first or it won't work !!
 		
   pCharsets->setDefault(klocale->charset());
-  generalFont = QFont("helvetica", 12, QFont::Normal);
-  pCharsets->setQFont(generalFont);
-  fixedFont = QFont("fixed", 12, QFont::Normal);
-  pCharsets->setQFont(fixedFont);
+  generalFont_ = QFont("helvetica", 12, QFont::Normal);
+  pCharsets->setQFont(generalFont_);
+  fixedFont_ = QFont("fixed", 12, QFont::Normal);
+  pCharsets->setQFont(fixedFont_);
 
   config->setGroup( "General" );
-  generalFont = config->readFontEntry( "font", &generalFont );
-  fixedFont = config->readFontEntry( "fixedFont", &fixedFont );
+  generalFont_ = config->readFontEntry( "font", &generalFont_ );
+  fixedFont_ = config->readFontEntry( "fixedFont", &fixedFont_ );
 
   // Finally, read GUI style from config.
 	
   config->setGroup( "KDE" );
   if ( config->readEntry( "widgetStyle", "Windows 95" ) == "Windows 95" )
-    applicationStyle=WindowsStyle;
+    applicationStyle_=WindowsStyle;
   else
-    applicationStyle=MotifStyle;
+    applicationStyle_=MotifStyle;
 	
 }
 
+
+
 void KApplication::kdisplaySetPalette()
 {
+    emit kdisplayPaletteChanged();
+    emit appearanceChanged();
+    
+    /*    
   // WARNING : QApplication::setPalette() produces inconsistent results.
   // There are 3 problems :-
   // 1) You can't change select colors
@@ -1349,11 +1336,12 @@ void KApplication::kdisplaySetPalette()
 	emit appearanceChanged();
 
   }
+    */
 }
 
 void KApplication::kdisplaySetFont()
 {
-  QApplication::setFont( generalFont, TRUE );
+  QApplication::setFont( generalFont_, TRUE );
   // setFont() works every time for me !
 
   emit kdisplayFontChanged();
@@ -1366,7 +1354,7 @@ void KApplication::kdisplaySetFont()
 void KApplication::kdisplaySetStyle()
 {
   // QApplication::setStyle( applicationStyle );
-  applyGUIStyle( applicationStyle );
+  applyGUIStyle( applicationStyle_ );
 
   emit kdisplayStyleChanged();
   emit appearanceChanged();
@@ -1379,8 +1367,8 @@ void KApplication::kdisplaySetStyleAndFont()
   //  QApplication::setStyle( applicationStyle );
   // 	setStyle() works pretty well but may not change the style of combo
   //	boxes.
-  QApplication::setFont( generalFont, TRUE );
-  applyGUIStyle(applicationStyle);
+  QApplication::setFont( generalFont_, TRUE );
+  applyGUIStyle(applicationStyle_);
 
   emit kdisplayStyleChanged();
   emit kdisplayFontChanged();
@@ -1784,4 +1772,53 @@ void KApplication::unregisterTopWidget()
 {
 }
 
+
+QColor KApplication::inactiveTitleColor()
+{
+    return inactiveTitleColor_;
+}
+
+
+QColor KApplication::inactiveTextColor()
+{
+    return inactiveTextColor_;
+}
+
+
+QColor KApplication::activeTitleColor()
+{
+    return activeTitleColor_;
+}
+
+
+QColor KApplication::activeTextColor()
+{
+    return activeTextColor_;
+}
+
+int KApplication::contrast()
+{
+    return contrast_;
+}
+
+QFont KApplication::generalFont()
+{
+    return generalFont_;
+}
+
+QFont KApplication::fixedFont()
+{
+    return fixedFont_;
+}
+
+
+Qt::GUIStyle KApplication::applicationStyle()
+{
+    return applicationStyle_;
+}
+
+
+
 #include "kapp.moc"
+
+

@@ -1,6 +1,6 @@
 /* -*- C++ -*-
  * This file implements the search dialog..
- * 
+ *
  * the KDE addressbook
  * copyright:  (C) Mirko Sucker, 1998
  * license:    GNU Public License, Version 2
@@ -10,6 +10,7 @@
  * $Revision$
  */
 
+#include <qwidget.h>
 #include "SearchDialog.h"
 #include "SearchDialogMainWidget.h"
 #include "debug.h"
@@ -36,7 +37,7 @@ const char* SearchDialog::Keys[]= {
   "URL",
   "comment"
   /* , "deliveryLabel" */ };
-  
+
 
 SearchDialog::SearchDialog(QWidget* parent, const char* name)
   : DialogBase(parent, name),
@@ -80,7 +81,7 @@ SearchDialog::SearchDialog(QWidget* parent, const char* name)
       widget->comboSelector->insertItem(Descriptions[count]);
     }
   connect(widget->comboSelector, SIGNAL(activated(int)), SLOT(keySelected(int)));
-  connect(widget->lePattern, SIGNAL(textChanged(const char*)), 
+  connect(widget->lePattern, SIGNAL(textChanged(const char*)),
 	  SLOT(valueChanged(const char*)));
   connect(widget, SIGNAL(sizeChanged()), SLOT(initializeGeometry()));
   keySelected(0);

@@ -1,7 +1,7 @@
 /* qktstreelist.cpp
 -------------------------------------------------------------------
 $Id$
-  
+
 KTreeList class implementation
 
 Copyright (C) 1996 Keith Brown and KtSoft
@@ -16,9 +16,9 @@ WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABLILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 Library General Public License for more details. You should have received a
 copy of the GNU Library General Public License along with this program; if
-not, write to the Free Software Foundation, Inc, 675 Mass Ave, 
+not, write to the Free Software Foundation, Inc, 675 Mass Ave,
 Cambridge, MA 02139, USA.
-  
+
 -------------------------------------------------------------------
 */
 
@@ -28,11 +28,11 @@ Cambridge, MA 02139, USA.
 #include <config.h>
 #endif
 
-/* 
+/*
 -------------------------------------------------------------------
 
 KTreeListItem
-  
+
 -------------------------------------------------------------------
 */
 
@@ -241,8 +241,8 @@ void KTreeListItem::insertChild(int index,
   numChildren++;
 }
 
-// indicates whether this item is displayed expanded 
-// NOTE: a TRUE response does not necessarily indicate the item 
+// indicates whether this item is displayed expanded
+// NOTE: a TRUE response does not necessarily indicate the item
 // has any children
 bool KTreeListItem::isExpanded() const
 {
@@ -255,9 +255,9 @@ void KTreeListItem::paint(QPainter *p, const QColorGroup& cg, bool highlighted)
   p->save();
   p->setPen(cg.text());
   p->setBackgroundColor(cg.base());
-  
+
   // precalculate positions
-  
+
   int cellHeight = itemHeight(p->fontMetrics());
   int pixmapX = 3 + indent + branch * indent;
   int pixmapY = (cellHeight - pixmap.height()) / 2;
@@ -266,29 +266,29 @@ void KTreeListItem::paint(QPainter *p, const QColorGroup& cg, bool highlighted)
   int cellCenterY = cellHeight / 2;
   int cellBottomY = cellHeight - 1;
   if(doTree) {
-    
+
     // if this is not the first item in the tree
     // draw the line up towards parent or sibling
- 
-    if(!(parent->getBranch() == -1 && parent->getChild() == this)) 
+
+    if(!(parent->getBranch() == -1 && parent->getChild() == this))
       p->drawLine(parentLeaderX, 0, parentLeaderX, cellCenterY);
-      
+
     // draw the line down towards sibling
-    
-    if(sibling) 
+
+    if(sibling)
       p->drawLine(parentLeaderX, cellCenterY, parentLeaderX, cellBottomY);
-     
+
     // if this item has children or siblings in the tree or is a child of
     // an item other than the root item then
     // draw the little line from the item out to the left
 
-    if(sibling || (child && doExpandButton) || 
+    if(sibling || (child && doExpandButton) ||
     	(parent && (branch > 0 || (branch == 0 && parent->getChild() != this))))
-      p->drawLine(parentLeaderX, cellCenterY, itemLeaderX, cellCenterY); 
+      p->drawLine(parentLeaderX, cellCenterY, itemLeaderX, cellCenterY);
 
     // if there are siblings of ancestors below, draw our portion of
     // the branches that extend through this cell
-      
+
     KTreeListItem *prevRoot = parent;
     for(int i = 1; i <= branch; i++) {
       if(prevRoot->hasSibling()) {
@@ -299,8 +299,8 @@ void KTreeListItem::paint(QPainter *p, const QColorGroup& cg, bool highlighted)
     }
   }
 
-  // if this item has at least one child and expand button drawing is enabled, 
-  // set the rect for the expand button for later mouse press bounds checking, 
+  // if this item has at least one child and expand button drawing is enabled,
+  // set the rect for the expand button for later mouse press bounds checking,
   // and draw the button
 
   if(doExpandButton && child) {
@@ -308,24 +308,24 @@ void KTreeListItem::paint(QPainter *p, const QColorGroup& cg, bool highlighted)
 			 9, 9);
     p->setBrush( cg.base () );
     p->drawRect(expandButton);
-    if(expanded) 
-      p->drawLine(parentLeaderX - 2, cellCenterY, 
+    if(expanded)
+      p->drawLine(parentLeaderX - 2, cellCenterY,
 		  parentLeaderX + 2, cellCenterY);
     else {
       p->drawLine(parentLeaderX - 2, cellCenterY,
 		  parentLeaderX + 2, cellCenterY);
-      p->drawLine(parentLeaderX, cellCenterY - 2, 
+      p->drawLine(parentLeaderX, cellCenterY - 2,
 		  parentLeaderX, cellCenterY + 2);
     }
     p->setBrush(Qt::NoBrush);
   }
-  
+
   // now draw the item pixmap and text, if applicable
-  
+
   p->drawPixmap(pixmapX, pixmapY, pixmap);
   if(doText) {
 	  int textX = pixmapX + pixmap.width() + 4;
-	  int textY = cellHeight - ((cellHeight - p->fontMetrics().ascent() - 
+	  int textY = cellHeight - ((cellHeight - p->fontMetrics().ascent() -
 			  p->fontMetrics().leading()) / 2);
 	  if(highlighted) {
 	    if (qApp->style() == Qt::WindowsStyle) {
@@ -476,7 +476,7 @@ int KTreeListItem::itemWidth(const QFontMetrics& fm) const
 {
   int maxWidth = pixmap.width();
   maxWidth += (4 + fm.width(text));
-  return maxWidth == 0 ? -1 : indent + maxWidth + 
+  return maxWidth == 0 ? -1 : indent + maxWidth +
     indent * branch + 6;
 }
 
@@ -487,7 +487,7 @@ int KTreeListItem::itemWidth(const QFontMetrics& fm) const
 -------------------------------------------------------------------
 
 KTreeList
-  
+
 -------------------------------------------------------------------
 */
 
@@ -504,7 +504,7 @@ KTreeList::KTreeList(QWidget *parent,
   goingDown(FALSE),
   indent(-1),
   showText(TRUE),
-  rubberband_mode(false) 
+  rubberband_mode(false)
 {
   initMetaObject();
   setCellHeight(0);
@@ -536,7 +536,7 @@ KTreeList::~KTreeList()
   delete treeRoot;
 }
 
-// This is needed to make the apply button of kcontroll's 
+// This is needed to make the apply button of kcontroll's
 // color setup working (Marcin Dalecki)
 void KTreeList::paletteChange(const QPalette &)
 {
@@ -565,12 +565,12 @@ void KTreeList::addChildItem(const QString& theText,
 // appends the given item to the children of the item at the given index
 void KTreeList::addChildItem(KTreeListItem *newItem,
                                 int index)
-{                                                                  
+{
   if(!checkItemText(newItem->getText()))
     return;
-  
+
   // find parent item and append new item to parent's sub tree
-  
+
   KTreeListItem *parentItem = itemAt(index);
   if(!parentItem)
     return;
@@ -581,20 +581,20 @@ void KTreeList::addChildItem(KTreeListItem *newItem,
 // given path
 void KTreeList::addChildItem(KTreeListItem *newItem,
                                 const KPath *thePath)
-{                                
+{
   if(!checkItemText(newItem->getText()))
     return;
   if(!checkItemPath(thePath))
     return;
-   
+
   // find parent item and append new item to parent's sub tree
-  
+
   KTreeListItem *parentItem = itemAt(thePath);
   if(!parentItem)
     return;
   addChildItem(parentItem, newItem);
 }
-                                 
+
 // indicates whether horizontal scrollbar appears only when needed
 bool KTreeList::autoBottomScrollBar() const
 {
@@ -724,7 +724,7 @@ void KTreeList::expandOrCollapseItem(int index)
     expandOrCollapse(item);
 }
 
-// visits every item in the tree, visible or not and applies 
+// visits every item in the tree, visible or not and applies
 // the user supplied function with the item and user data passed as parameters
 // if user supplied function returns TRUE, traversal ends and function returns
 void KTreeList::forEveryItem(KForEvery func,
@@ -750,7 +750,7 @@ void KTreeList::forEveryItem(KForEvery func,
   }
 }
 
-// visits every visible item in the tree in order and applies the 
+// visits every visible item in the tree in order and applies the
 // user supplied function with the item and user data passed as parameters
 // if user supplied function returns TRUE, traversal ends and function
 // returns
@@ -821,16 +821,16 @@ void KTreeList::insertItem(KTreeListItem *newItem,
                               bool prefix)
 {
   // check for proper parameters
-  
+
   if(!checkItemText(newItem->getText()))
     return;
 
   // find the item currently at the index, if there is one
-  
+
   KTreeListItem *foundItem = itemAt(index);
 
   // insert new item at the appropriate place
-  
+
   insertItem(foundItem, newItem, prefix);
 }
 
@@ -840,7 +840,7 @@ void KTreeList::insertItem(KTreeListItem *newItem,
 void KTreeList::insertItem(KTreeListItem *newItem,
                               const KPath *thePath,
                               bool prefix)
-{                              
+{
   // check for valid parameters
 	
   if(!checkItemText(newItem->getText()))
@@ -853,10 +853,10 @@ void KTreeList::insertItem(KTreeListItem *newItem,
   KTreeListItem *foundItem = itemAt(thePath);
 
   // insert new item at appropriate place
-  
+
   insertItem(foundItem, newItem, prefix);
 }
-                                              
+
 // returns pointer to KTreeListItem at index or 0 if
 // index is invalid
 KTreeListItem *KTreeList::itemAt(int index)
@@ -873,7 +873,7 @@ KTreeListItem *KTreeList::itemAt(int index)
 KTreeListItem *KTreeList::itemAt(const KPath *path)
 {
   // reverse the path so we can use it
-  
+
   KPath pathCopy = *path, *reversePath = new KPath();
   while(!pathCopy.isEmpty())
     reversePath->push(pathCopy.pop());
@@ -975,7 +975,7 @@ void KTreeList::raiseItem(const KPath *path)
 void KTreeList::removeItem(int index)
 {
   KTreeListItem *item = itemAt(index);
-  if(item) { 
+  if(item) {
     takeItem(item);
     delete item;
   }
@@ -1105,7 +1105,7 @@ void KTreeList::setTreeDrawing(bool enable)
   if(autoUpdate() && isVisible())
     repaint();
 }
-    
+
 // indicates whether item text keys are displayed
 bool KTreeList::showItemText() const
 {
@@ -1173,18 +1173,18 @@ int KTreeList::visibleCount()
 // adds the new item at the end of the parent item's branch
 void KTreeList::addChildItem(KTreeListItem *theParent,
 				KTreeListItem *newItem)
-{ 
+{
   theParent->appendChild(newItem);
-  
+
   // set item state
-  
+
   if(indent > -1)  // custom indent
     newItem->setIndent(indent);
   newItem->setDrawExpandButton(drawExpandButton);
   newItem->setDrawTree(drawTree);
   newItem->setDrawText(showText);
   if(newItem->getBranch() < expansion)
-    newItem->setExpanded(TRUE); 
+    newItem->setExpanded(TRUE);
 	
 	// fix up branch levels of any children new item may already have
 	
@@ -1192,7 +1192,7 @@ void KTreeList::addChildItem(KTreeListItem *theParent,
 		fixChildBranches(newItem);
 		
   // if necessary, adjust cell width, number of rows and repaint
-  
+
   if(theParent->isExpanded() || theParent->childCount() == 1) {
     bool autoU = autoUpdate();
     setAutoUpdate(FALSE);
@@ -1233,21 +1233,17 @@ void KTreeList::changeItem(KTreeListItem *toChange,
 bool KTreeList::checkItemPath(const KPath *path) const
 {
   bool isValid = TRUE;
-  if(!path) 
+  if(!path)
     isValid = FALSE;
   if(path->isEmpty())
-    isValid = FALSE; 
+    isValid = FALSE;
   return isValid;
 }
 
 // returns bool indicating valid item text
 bool KTreeList::checkItemText(const QString& text) const
 {
-  bool isValid = TRUE;
-  if(!text)
-    isValid = FALSE;
-  else if(*text == 0) 
-    isValid = FALSE;
+  bool isValid = !text.isEmpty();
   return isValid;
 }
 
@@ -1273,7 +1269,7 @@ void KTreeList::expandOrCollapse(KTreeListItem *parent)
   bool autoU = autoUpdate();
   setAutoUpdate(FALSE);
   int parentIndex = itemIndex(parent);
-  if(parent->isExpanded()) { 
+  if(parent->isExpanded()) {
     collapseSubTree(parent);
     emit collapsed(parentIndex);
   }
@@ -1312,7 +1308,7 @@ void KTreeList::fixChildBranches(KTreeListItem *parentItem)
 	KTreeListItem *childItem = 0, *siblingItem = 0;
 	int childBranch = parentItem->getBranch() + 1;
 	if(parentItem->hasChild()) {
-		childItem = parentItem->getChild(); 
+		childItem = parentItem->getChild();
 		childItem->setBranch(childBranch);
 		fixChildBranches(childItem);
 	}
@@ -1334,7 +1330,7 @@ void KTreeList::focusInEvent(QFocusEvent *)
   updateCell(current, 0);
 }
 
-// visits every item in the tree, visible or not and applies the user 
+// visits every item in the tree, visible or not and applies the user
 // supplied member function with the item and user data passed as parameters
 // if the user supplied member function returns TRUE, traversal
 // ends and the function returns
@@ -1361,7 +1357,7 @@ void KTreeList::forEveryItem(KForEveryM func,
   }
 }
 
-// visits every visible item in the tree in order and applies the user 
+// visits every visible item in the tree in order and applies the user
 // supplied member function with the item and user data passed as parameters
 // if user supplied function returns TRUE, traversal ends and function
 // returns
@@ -1386,7 +1382,7 @@ void KTreeList::forEveryVisibleItem(KForEveryM func,
   } while(TRUE);
 }
 
-// called by itemIndex() for each item in visible list  
+// called by itemIndex() for each item in visible list
 bool KTreeList::getItemIndex(KTreeListItem *item, void *user)
 {
   KItemSearchInfo *searchInfo = (KItemSearchInfo *)user;
@@ -1424,37 +1420,37 @@ void KTreeList::insertItem(KTreeListItem *referenceItem,
   newItem->setDrawText(showText);
   KTreeListItem *parentItem;
   if(referenceItem) {
-    parentItem = referenceItem->getParent(); 
+    parentItem = referenceItem->getParent();
     int insertIndex = parentItem->childIndex(referenceItem);
     if(!prefix)
       insertIndex++;
     parentItem->insertChild(insertIndex, newItem);
   }
-  
+
   // no reference item, append at end of visible tree
   // need to repaint
-  
+
   else {
     parentItem = treeRoot;
     parentItem->appendChild(newItem);
   }
-  
+
   // set item expansion
-  
+
   if(newItem->getBranch() < expansion)
-    newItem->setExpanded(TRUE); 
-  
+    newItem->setExpanded(TRUE);
+
   // fix up branch levels of any children
-  
+
   if(newItem->hasChild())
 		fixChildBranches(newItem);
 	  	
   // if repaint necessary, do it if visible and auto update
   // enabled
-  
+
   //if(parentItem->isExpanded())
   //  setNumRows(visibleCount());
-  
+
   if(parentItem->isExpanded() || parentItem->childCount() == 1) {
     bool autoU = autoUpdate();
     setAutoUpdate(FALSE);
@@ -1485,16 +1481,16 @@ void KTreeList::join(KTreeListItem *item)
 // handles keyboard interface to tree list
 void KTreeList::keyPressEvent(QKeyEvent *e)
 {
-  if(numRows() == 0) 
-    
+  if(numRows() == 0)
+
     // nothing to be done
-    
+
     return;
   if(currentItem() < 0)
-    
+
     // if no current item, make the top item current
-  
-    setCurrentItem(topCell()); 
+
+    setCurrentItem(topCell());
   int pageSize, delta;
   switch(e->key()) {
     case Key_Up:
@@ -1508,9 +1504,9 @@ void KTreeList::keyPressEvent(QKeyEvent *e)
       }
       break;
     case Key_Down:
-    
+
       // make next item current, scroll down if necessary
-      
+
       if(currentItem() < visibleCount() - 1) {
 	setCurrentItem(currentItem() + 1);
 	if(currentItem() > lastRowVisible())
@@ -1518,42 +1514,42 @@ void KTreeList::keyPressEvent(QKeyEvent *e)
       }
       break;
     case Key_Next:
-    
+
       // move highlight one page down and scroll down
-       
+
       delta = currentItem() - topCell();
       pageSize = lastRowVisible() - topCell();
       setTopCell(QMIN(topCell() +  pageSize, visibleCount() - 1));
       setCurrentItem(QMIN(topCell() + delta, visibleCount() - 1));
       break;
     case Key_Prior:
-    
+
       // move highlight one page up and scroll up
-      
+
       delta = currentItem() - topCell();
       pageSize = lastRowVisible() - topCell();
       setTopCell(QMAX(topCell() - pageSize, 0));
       setCurrentItem(QMAX(topCell() + delta, 0));
       break;
     case Key_Plus:
-    
+
       // if current item has subtree and is collapsed, expand it
-      
+
       if(currentItem() >= 0)
 	expandItem(currentItem());
       break;
     case Key_Minus:
-    
+
       // if current item has subtree and is expanded, collapse it
-      
+
       if(currentItem() >= 0)
 	collapseItem(currentItem());
       break;
     case Key_Return:
     case Key_Enter:
-    
+
       // select the current item
-      
+
       if(currentItem() >= 0)
 	emit selected(currentItem());
       break;
@@ -1586,24 +1582,24 @@ void KTreeList::mouseDoubleClickEvent(QMouseEvent *e)
 	
   QPoint mouseCoord = e->pos();
   int itemClicked = findRow(mouseCoord.y());
-  
+
   // if a valid row was not clicked, do nothing
-  
-  if(itemClicked == -1) 
+
+  if(itemClicked == -1)
     return;
 
   KTreeListItem *item = itemAt(itemClicked);
   if(!item) return;
-  
+
   // translate mouse coord to cell coord
-  
+
   int  cellX, cellY;
   colXPos(0, &cellX);
   rowYPos(itemClicked, &cellY);
   QPoint cellCoord(mouseCoord.x() - cellX, mouseCoord.y() - cellY);
-  
+
   // hit test item
- 
+
   if(item->boundingRect(fontMetrics()).contains(cellCoord))
     emit selected(itemClicked);
 }
@@ -1612,7 +1608,7 @@ void KTreeList::mouseDoubleClickEvent(QMouseEvent *e)
 void KTreeList::mouseMoveEvent(QMouseEvent *e)
 {
   // in rubberband_mode we actually scroll the window now
-  if (rubberband_mode) 
+  if (rubberband_mode)
 	{
 	  move_rubberband(e->pos());
 	}
@@ -1624,15 +1620,15 @@ void KTreeList::mousePressEvent(QMouseEvent *e)
 {
   // first: check which button was pressed
 
-  if (e->button() == MidButton) 
+  if (e->button() == MidButton)
 	{
 	  // RB: the MMB is hardcoded to the "rubberband" scroll mode
 	  if (!rubberband_mode) {
 		start_rubberband(e->pos());
 	  }
 	  return;
-	} 
-  else if (rubberband_mode) 
+	}
+  else if (rubberband_mode)
 	{
 	  // another button was pressed while rubberbanding, stop the move.
 	  // RB: if we allow other buttons while rubberbanding the tree can expand
@@ -1646,31 +1642,31 @@ void KTreeList::mousePressEvent(QMouseEvent *e)
 	
   QPoint mouseCoord = e->pos();
   int itemClicked = findRow(mouseCoord.y());
-  
+
   // if a valid row was not clicked, do nothing
-  
-  if(itemClicked == -1) 
+
+  if(itemClicked == -1)
     return;
 
   KTreeListItem *item = itemAt(itemClicked);
   if(!item) return;
-  
+
   // translate mouse coord to cell coord
-  
+
   int  cellX, cellY;
   colXPos(0, &cellX);
   rowYPos(itemClicked, &cellY);
   QPoint cellCoord(mouseCoord.x() - cellX, mouseCoord.y() - cellY);
-  
+
   // hit test item
- 
+
   if(item->boundingRect(fontMetrics()).contains(cellCoord)){
     setCurrentItem(itemClicked);
     emit singleSelected(itemClicked);    // ettrich
   }
 
   // hit test expand button
-  
+
   else if(item->hasChild()) {
     if(item->expandButtonClicked(cellCoord)) {
       expandOrCollapse(item);
@@ -1683,7 +1679,7 @@ void KTreeList::mousePressEvent(QMouseEvent *e)
 void KTreeList::mouseReleaseEvent(QMouseEvent *e)
 {
   // if it's the MMB end rubberbanding
-  if (rubberband_mode && e->button()==MidButton) 
+  if (rubberband_mode && e->button()==MidButton)
 	{
 	  end_rubberband();
 	}
@@ -1714,7 +1710,7 @@ void KTreeList::start_rubberband(const QPoint& where)
     end_rubberband();
   }
   // RB: Don't now, if this check is necessary
-  if (!viewWidth() || !viewHeight()) return; 
+  if (!viewWidth() || !viewHeight()) return;
   if (!totalWidth() || !totalHeight()) return;
 
   // calculate the size of the rubberband rectangle
@@ -1771,27 +1767,27 @@ void KTreeList::paintCell(QPainter *p, int row, int)
     return;
 
   // if current item, draw highlight and item with reverse text
-  
+
   if(current == row) {
     if(item->drawText())
       paintHighlight(p, item);
     paintItem(p, item, TRUE);
   }
-  
+
   // else just paint the item
 
   else
     paintItem(p, item, FALSE);
 }
 
-// paint the highlight 
-void KTreeList::paintHighlight(QPainter *p, 
+// paint the highlight
+void KTreeList::paintHighlight(QPainter *p,
 				  KTreeListItem *item)
 {
   p->save(); // save state of painter
   QColorGroup cg = colorGroup();
   QColor fc;
-  if(style() == WindowsStyle) 
+  if(style() == WindowsStyle)
     fc = QApplication::winStyleHighlightColor();
   else
     fc = cg.text();
@@ -1799,8 +1795,8 @@ void KTreeList::paintHighlight(QPainter *p,
   int t,l,b,r;
   textRect.coords(&l, &t, &r, &b);
   p->fillRect(textRect, fc); // draw base highlight
-  if(hasFocus()) { 
-// As far as I can tell, Qt doesn't make much of a distinction between 
+  if(hasFocus()) {
+// As far as I can tell, Qt doesn't make much of a distinction between
 // Windows and Motif style in this particular case.
 //    if(style() == WindowsStyle) {  // draw Windows style highlight
 //      textRect.setCoords(l - 1, t - 1, r + 1, b + 1);
@@ -1851,19 +1847,19 @@ void KTreeList::raiseItem(KTreeListItem *item)
 // descend the path recursively and find the item at the end if
 // there is one
 KTreeListItem *KTreeList::recursiveFind
-  (KTreeListItem *subRoot, 
+  (KTreeListItem *subRoot,
    KPath *path)
 {
-  
+
   KTreeListItem *retVal = 0;
   // get the next key
-  
+
   QString *searchString = path->pop();
   KTreeListItem *currentSubTree = subRoot, *nextSubTree = 0;
-  
+
   // iterate through all branches at same level until
   // we find the one we're looking for or run out
-  
+
   while(currentSubTree) {
     if(strcmp(*searchString, currentSubTree->getText()) == 0) {
       if(path->isEmpty()) {
@@ -1871,22 +1867,22 @@ KTreeListItem *KTreeList::recursiveFind
 	nextSubTree = 0;
 	break;
       }
-      if(!currentSubTree->hasChild() && !path->isEmpty()) 
+      if(!currentSubTree->hasChild() && !path->isEmpty())
 	break; // not end of path but no more subtrees
-      
+
       // not end of path, find next level
-      
+
       nextSubTree = currentSubTree->getChild();
       break;
     }
-    
+
     // not in this branch, search next branch
-    
+
     currentSubTree = currentSubTree->getSibling();
   }
 
   // search the next level
-  
+
   if(nextSubTree)
     return recursiveFind(nextSubTree, path);
   return retVal;
@@ -1919,7 +1915,7 @@ bool KTreeList::setItemExpandButtonDrawing(KTreeListItem *item,
 }
 
 // called by setIndentSpacing for every item in tree
-bool KTreeList::setItemIndent(KTreeListItem *item, 
+bool KTreeList::setItemIndent(KTreeListItem *item,
 				 void *)
 {
   item->setIndent(indent);
@@ -1927,7 +1923,7 @@ bool KTreeList::setItemIndent(KTreeListItem *item,
 }
 
 // called by setShowItemText for every item in tree
-bool KTreeList::setItemShowText(KTreeListItem *item, 
+bool KTreeList::setItemShowText(KTreeListItem *item,
 				   void *)
 {
   item->setDrawText(showText);
@@ -1969,12 +1965,12 @@ void KTreeList::takeItem(KTreeListItem *item)
     bool autoU = autoUpdate();
     setAutoUpdate(FALSE);
     setNumRows(visibleCount());
-    
+
 		// If we're not clearing the entire tree, make sure this item is not
 		// the last one and current, or current item index will be invalid! If it
 		// is, then set current to last item.
 		
-		if(!clearing) 
+		if(!clearing)
 			if(index == currentItem() && index > numRows() - 1)
 				setCurrentItem(numRows() - 1);
 			
@@ -1984,7 +1980,7 @@ void KTreeList::takeItem(KTreeListItem *item)
   }
 }
 
-// visits each item, calculates the maximum width  
+// visits each item, calculates the maximum width
 // and updates QTableView
 void KTreeList::updateCellWidth()
 {

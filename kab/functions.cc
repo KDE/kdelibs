@@ -1,6 +1,6 @@
 /* -*- C++ -*-
  * This file implements the global functions.
- * 
+ *
  * the Configuration Database library
  * copyright:  (C) Mirko Sucker, 1998
  * license:    GNU Public License, Version 2
@@ -12,6 +12,7 @@
 
 #pragma implementation
 
+#include <qwidget.h>
 #include "functions.h"
 #include "debug.h"
 #include <stdlib.h>
@@ -65,11 +66,11 @@ bool isComment(string line)
     }
   // ############################################################################
 }
-  
+
 bool getHomeDirectory(string& ref)
 {
   register bool GUARD; GUARD=false;
-  // ############################################################################  
+  // ############################################################################
   char* temp=getenv("HOME");
   // -----
   if(temp!=0)
@@ -96,7 +97,7 @@ bool htmlizeString(const string& orig, string& target)
   unsigned int index;
   // -----
   for(index=0; index<orig.size(); index++)
-    { // ----- the following code is character set depending 
+    { // ----- the following code is character set depending
       //       and will possibly need recompilation for EVERY
       //       system using another charset than the machine
       //       it was compiled on! Lets see.

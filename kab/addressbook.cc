@@ -1,7 +1,7 @@
 /* -*- C++ -*-
- * This file implements the database of addresses and 
+ * This file implements the database of addresses and
  * configuration values.
- * 
+ *
  * the KDE addressbook.
  * copyright:  (C) Mirko Sucker, 1998
  * license:    GNU Public License, Version 2
@@ -11,6 +11,7 @@
  * $Revision$
  */
 
+#include <qwidget.h>
 #include "addressbook.h"
 #ifdef KAB_DEBUG
 #include "debug.h"
@@ -43,7 +44,7 @@ const int AddressBook::NoOfFields=sizeof(Fields)/sizeof(Fields[0]);
  * must be added in AddressBook::restoreDefaults(..)!
  */
 
-const char* AddressBook::Defaults[]= { 
+const char* AddressBook::Defaults[]= {
   "Version=0.9",
   "QueryOnDelete=true",
   "QueryOnChange=true",
@@ -62,15 +63,15 @@ AddressBook::AddressBook(bool readonly_)
   register bool GUARD; GUARD=true;
   REQUIRE(DBFileName!=0);
   // ############################################################################
-  /* The constructor is written to be save. It does NOT 
+  /* The constructor is written to be save. It does NOT
    * assume a connection to a X display, that is why it sends
-   * all of its output to stdout. This provides the 
-   * possibility to use the program as a kind of address data 
+   * all of its output to stdout. This provides the
+   * possibility to use the program as a kind of address data
    * server.
    */
   string filename;
   string dir;
-  LG(GUARD, "AddressBook constructor: called%s.\n", 
+  LG(GUARD, "AddressBook constructor: called%s.\n",
      readonly_ ? " (readonly)" : "");
   // ----- check if directory exists:
   if(initialized)
@@ -145,10 +146,10 @@ AddressBook::AddressBook(bool readonly_)
 	      ::exit(-1);
 	    }
 	} else {
-	  // The program will by default create backup when the key 
+	  // The program will by default create backup when the key
 	  //   "CreateBackup"
 	  // is missing in config section:
-	  bool backup=true; 
+	  bool backup=true;
 	  string backupfilename=filename+".backup";
 	  LG(GUARD, "AddressBook constructor: creating backup "
 	     "of database in file \"%s\".\n", backupfilename.c_str());
@@ -156,13 +157,13 @@ AddressBook::AddressBook(bool readonly_)
 	  if(!load())
 	    {
 	      cerr << i18n
-		("Tried to load database for creating backup, but failed") 
+		("Tried to load database for creating backup, but failed")
 		   << endl;
 	      ::exit(-1);
 	    }
 	  get(ConfigSection, keys);
 	  // database must be valid:
-	  CHECK(get(ConfigSection, keys)); 
+	  CHECK(get(ConfigSection, keys));
 	  keys->get("CreateBackup", backup);
 	  CHECK(keys->get("CreateBackup", backup));
 	  // ----- check for stale lockfile:
@@ -178,7 +179,7 @@ AddressBook::AddressBook(bool readonly_)
 		      LG(GUARD, "AddressBook constructor: "
 			 "stale lockfile, removed.\n");
 		    } else {
-		      LG(GUARD, 
+		      LG(GUARD,
 			 "AddressBook constructor: could "
 			 "not remove stale lockfile.\n");
 		    }
@@ -230,7 +231,7 @@ AddressBook::AddressBook(bool readonly_)
 		{
 		  LG(GUARD, "AddressBook constructor: created new file.\n");
 		} else { // ----- this is a program failure!
-		  CHECK(false); 
+		  CHECK(false);
 		}
 	    }
 	}
@@ -260,10 +261,10 @@ void AddressBook::restoreDefaults()
     {
       if(!keys->insertLine(Defaults[index], true))
 	{
-	  cerr << i18n("Unable to insert \"") << Defaults[index] 
+	  cerr << i18n("Unable to insert \"") << Defaults[index]
 	       << i18n("\" into configuration section (ignored).") << endl;
 	  // this is a syntax error in the "Defaults" aggregate!
-	  CHECK(false); 
+	  CHECK(false);
 	}
     }
   // ----- the lists cannot be inserted by constants because
@@ -306,7 +307,7 @@ bool AddressBook::invariant()
   // REQUIRE or ENSURE themselves!
   if(entrySection()!=0) // DB has already been loaded
     {
-      if(entries.size()!=entrySection()->noOfSections()) return false; 
+      if(entries.size()!=entrySection()->noOfSections()) return false;
       if(entrySection()->noOfSections()!=noOfEntries()) return false;
     }
   return true;
@@ -317,9 +318,9 @@ void AddressBook::changed()
   register bool GUARD; GUARD=true;
   LG(GUARD, "AddressBook::changed: Database has changed its contents.\n");
   // ############################################################################
-  // You should not use REQUIRE here because - as the DB 
+  // You should not use REQUIRE here because - as the DB
   // contents have changed - we cannot ensure the entries-map
-  // to be consistent. It is the job of this function to 
+  // to be consistent. It is the job of this function to
   // create the consistency.
   updateEntriesMap();
   first();
@@ -345,7 +346,7 @@ void AddressBook::updateEntriesMap(string theOne)
   // entries.erase(); // ni in GNU C++ 2.7.2.1
   entries.erase(entries.begin(), entries.end());
   CHECK(entries.empty());
-  if(section!=0) 
+  if(section!=0)
     {
       for(pos=section->sectionsBegin(); pos!=section->sectionsEnd(); pos++)
 	{
@@ -355,9 +356,9 @@ void AddressBook::updateEntriesMap(string theOne)
 	  // sorting order depends on the constructed key
 	  description((*pos).first, key, true);
 	  CHECK(description((*pos).first, key, true));
-	  // Problem: If there are two entries that are 
+	  // Problem: If there are two entries that are
 	  // exactly similar to each other, the key could
-	  // be the same and could not be inserted into 
+	  // be the same and could not be inserted into
 	  // the map because the keys are identifying.
 	  // Solution:: Add the (identifying) DB entry key
 	  // to the key for the mirror map (if a part of a
@@ -366,7 +367,7 @@ void AddressBook::updateEntriesMap(string theOne)
 	  CHECK(!(*pos).first.empty());
 	  entries.insert(StringStringMap::value_type(key, (*pos).first));
 	}
-      LG(GUARD, "AddressBook::updateEntriesMap: current-key (%s) is %s.\n", 
+      LG(GUARD, "AddressBook::updateEntriesMap: current-key (%s) is %s.\n",
 	 theOne.c_str(), theOne.empty() ? "empty" : "not empty");
       if(theOne.empty())
 	{
@@ -400,7 +401,7 @@ bool AddressBook::setCurrent(const string& key)
   CHECK(pos==entries.end());
   return false; // no such key
   // ############################################################################
-}  
+}
 
 Section* AddressBook::configSection()
 {
@@ -441,9 +442,9 @@ bool AddressBook::makeEntryFromSection(Section& section, Entry& entry)
   Entry dummy;
   // ----- clear up the old entry: (change on July 19 1998):
   entry=dummy; // dummy is always completely empty
-  // ----- 
+  // -----
   map=section.getKeys();
-  // the first 6 keys are required, something went wrong if 
+  // the first 6 keys are required, something went wrong if
   // these are not set:
   if(!map->get("name", entry.name)
      || !map->get("firstname", entry.firstname)
@@ -475,7 +476,7 @@ bool AddressBook::makeEntryFromSection(Section& section, Entry& entry)
       if(map->get("talk", entry.talk))
 	{
 	  LG(GUARD, "AddressBook::makeEntryFromSection: "
-	     "found %stalk address(es) (%i).\n", 
+	     "found %stalk address(es) (%i).\n",
 	     entry.talk.empty() ? "no " : "",
 	     entry.talk.size());
 	}
@@ -508,13 +509,13 @@ bool AddressBook::makeEntryFromSection(Section& section, Entry& entry)
 	      if(entry.birthday.setYMD(y, m, d))
 		{
 		  LG(GUARD, "AddressBook::makeEntryFromSection: the date is "
-		     "valid, set birthday to %i-%i-%i (YMD).\n", 
-		     entry.birthday.year() , entry.birthday.month(), 
+		     "valid, set birthday to %i-%i-%i (YMD).\n",
+		     entry.birthday.year() , entry.birthday.month(),
 		     entry.birthday.day());
 		} else {
 		  LG(GUARD, "AddressBook::makeEntryFromSection: birthday is not "
 		     "a valid date.\n");
-		} 
+		}
 	    } else {
 	      LG(GUARD, "AddressBook::makeEntryFromSection: more or less than 3 "
 		 "integers in birthday.\n");
@@ -535,9 +536,9 @@ bool AddressBook::currentEntry(Entry& entry)
       Section::StringSectionMap::iterator pos;
       entrySection()->find((*current).second, pos);
       CHECK(entrySection()->find((*current).second, pos));
-      makeEntryFromSection(*(*pos).second, entry); 
+      makeEntryFromSection(*(*pos).second, entry);
       // this should work all time (it never failed for me)
-      CHECK(makeEntryFromSection(*(*pos).second, entry)); 
+      CHECK(makeEntryFromSection(*(*pos).second, entry));
       return true;
     } else {
       return false;
@@ -607,7 +608,7 @@ bool AddressBook::last()
     {
       pos=entries.end();
       --pos;
-      if(pos!=current) 
+      if(pos!=current)
 	{
 	  current=pos;
 	  currentChanged();
@@ -705,7 +706,7 @@ bool AddressBook::add(const Entry& entry, string& key)
 	}
     }
   // add the element to the mirror map (this also updates the current entry):
-  updateEntriesMap(name); 
+  updateEntriesMap(name);
   key=name;
   return true;
   // ############################################################################
@@ -745,7 +746,7 @@ bool AddressBook::change(const string& key, const Entry& contents)
       birthday.push_back(contents.birthday.month());
       birthday.push_back(contents.birthday.day());
       LG(GUARD, "AddressBook::change: birthday is valid, using it.\n");
-    }      
+    }
   Section* section;
   if(!entrySection()->find(key, section))
     {
@@ -787,7 +788,7 @@ bool AddressBook::change(const string& key, const Entry& contents)
     {
       LG(GUARD, "AddressBook::change: failed to set values.\n");
       // kill the program -> may not happen in debug version!
-      CHECK(0); 
+      CHECK(0);
       return false;
     } else {
       LG(GUARD, "AddressBook::change:  done, updating using current-key %s.\n",
@@ -796,7 +797,7 @@ bool AddressBook::change(const string& key, const Entry& contents)
     }
   return true;
   // ############################################################################
-} 
+}
 
 bool AddressBook::remove()
 {
@@ -820,12 +821,12 @@ bool AddressBook::remove(const string& key)
       return true;
     } else {
       return false;
-    } 
+    }
   // ############################################################################
 }
-   
+
 string AddressBook::nextAvailEntryKey()
-{ // should be improved 
+{ // should be improved
   // (is O(n), but by now it re-uses deleted entry keys)
   // ############################################################################
   unsigned int key=0;
@@ -875,7 +876,7 @@ bool AddressBook::isLastEntry()
   if(noOfEntries()!=0)
     {
       // must not be if DB is not empty:
-      CHECK(current!=entries.end()); 
+      CHECK(current!=entries.end());
       pos++;
       if(pos==entries.end())
 	{
@@ -898,7 +899,7 @@ string AddressBook::getName(const string& key)
   Section* section;
   const string path=EntrySection+(string)"/"+key;
   // -----
-  LG(GUARD, "AddressBook::getName: searching for section \"%s\" (key is %s).\n", 
+  LG(GUARD, "AddressBook::getName: searching for section \"%s\" (key is %s).\n",
      path.c_str(), key.c_str());
   // this method may not be called with wrong keys:
   get(path, section);  CHECK(get(path, section));
@@ -920,7 +921,7 @@ string AddressBook::getName(const string& key)
 	{
 	  result=entry.emails.front();
 	}
-      // if this is still empty use telefon number in 
+      // if this is still empty use telefon number in
       // brackets:
       if(result.empty())
 	{
@@ -963,7 +964,7 @@ bool AddressBook::createNew(string filename)
 	}
       if(!get(ConfigSection, section))
 	{
-	  cerr << i18n("Unable to find previously created section, exiting.") 
+	  cerr << i18n("Unable to find previously created section, exiting.")
 	       << endl;
 	  return false;
 	}
@@ -995,7 +996,7 @@ string AddressBook::currentEntry()
       LG(GUARD, "AddressBook::currentEntry: no entries.\n");
       return "";
     }
-  LG(GUARD, "AddressBook::currentEntry: current entry is %s.\n", 
+  LG(GUARD, "AddressBook::currentEntry: current entry is %s.\n",
      (*current).second.c_str());
   return (*current).second;
   // ############################################################################
@@ -1006,8 +1007,8 @@ bool AddressBook::getEntries(list<AddressBook::Entry>& entries)
   register bool GUARD; GUARD=false;
   REQUIRE(entries.empty());
   LG(GUARD, "AddressBook::getEntries: called.\n");
-  // ############################################################################  
-  Section::StringSectionMap::iterator pos; 
+  // ############################################################################
+  Section::StringSectionMap::iterator pos;
   Section* section=entrySection();
   Entry entry;
   bool error=false;
@@ -1033,14 +1034,14 @@ bool AddressBook::getEntries(list<AddressBook::Entry>& entries)
      entries.size(), error ? ", errors occured" : "");
   CHECK(entries.size()==noOfEntries());
   return !error;
-  // ############################################################################  
+  // ############################################################################
 }
 
 bool AddressBook::nameOfField(const string& field, string& name)
 {
   register bool GUARD; GUARD=true;
   LG(GUARD, "AddressBook::nameOfField: called.\n");
-  // ############################################################################  
+  // ############################################################################
   // this is only initialized once:
   static map<string, string, less<string> > *names=0;
   map<string, string, less<string> >::iterator pos;
@@ -1053,107 +1054,107 @@ bool AddressBook::nameOfField(const string& field, string& name)
       if(!names->insert
 	 (map<string, string, less<string> >::value_type
 	  ("name", i18n("Name").data())).second
-	 || 
+	 ||
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
 	  ("firstname", i18n("First name").ascii())).second
-	 || 
+	 ||
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
 	  ("additionalName", i18n("Additional name").ascii())).second
-	 || 
+	 ||
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
 	  ("namePrefix", i18n("Name prefix").ascii())).second
-	 || 
+	 ||
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
 	  ("fn", i18n("Formatted name").ascii())).second
-	 || 
+	 ||
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
 	  ("comment", i18n("Comment").ascii())).second
-	 || 
+	 ||
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
 	  ("org", i18n("Organization").ascii())).second
-	 || 
+	 ||
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
 	  ("orgUnit", i18n("Unit").ascii())).second
-	 || 
+	 ||
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
 	  ("orgSubUnit", i18n("Subunit").ascii())).second
-	 || 
+	 ||
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
 	  ("title", i18n("Title").ascii())).second
-	 || 
+	 ||
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
 	  ("role", i18n("Role").ascii())).second
-	 || 
+	 ||
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
 	  ("birthday", i18n("Birthday").ascii())).second
-	 || 
+	 ||
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
 	  ("talk", i18n("Talk addresses").ascii())).second
-	 || 
+	 ||
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
 	  ("deliveryLabel", i18n("Delivery label").ascii())).second
-	 || 
+	 ||
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
 	  ("email", i18n("Email address").ascii())).second
-	 || 
+	 ||
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
 	  ("email2", i18n("Second email address").ascii())).second
-	 || 
+	 ||
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
 	  ("email3", i18n("Third email address").ascii())).second
-	 || 
+	 ||
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
 	  ("emails", i18n("Email addresses").ascii())).second
-	 || 
+	 ||
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
 	  ("address", i18n("Address").ascii())).second
-	 || 
+	 ||
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
 	  ("town", i18n("City/Town").ascii())).second
-	 || 
+	 ||
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
 	  ("telephone", i18n("Telephone").ascii())).second
-	 || 
+	 ||
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
 	  ("fax", i18n("Fax number").ascii())).second
-	 || 
+	 ||
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
 	  ("modem", i18n("Modem number").ascii())).second
-	 || 
+	 ||
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
 	  ("URL", i18n("Homepage URL").ascii())).second
-	 || 
+	 ||
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
 	  ("zip", i18n("Zip/postal code").ascii())).second
-	 || 
+	 ||
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
 	  ("state", i18n("State/province").ascii())).second
-	 || 
+	 ||
 	 !names->insert
 	 (map<string, string, less<string> >::value_type
 	  ("country", i18n("Country").ascii())).second
@@ -1172,11 +1173,11 @@ bool AddressBook::nameOfField(const string& field, string& name)
       return false;
     } else {
       name=(*pos).second;
-      LG(GUARD, "AddressBook::nameOfField: name for field %s is %s.\n", 
+      LG(GUARD, "AddressBook::nameOfField: name for field %s is %s.\n",
 	 field.c_str(), name.c_str());
       return true;
     }
-  // ############################################################################  
+  // ############################################################################
 }
 
 bool AddressBook::literalName(const string& key, string& text, bool reverse,
@@ -1184,7 +1185,7 @@ bool AddressBook::literalName(const string& key, string& text, bool reverse,
 {
   register bool GUARD; GUARD=false;
   LG(GUARD, "AddressBook::literalName: called.\n");
-  // ############################################################################  
+  // ############################################################################
   // ----- this method will return either (in this order)
   //       ° the formatted name, if it is set,
   //       ° a combination (see header) of the name fields
@@ -1212,10 +1213,10 @@ bool AddressBook::literalName(const string& key, string& text, bool reverse,
       string::size_type pos;
       // -----
       pos=entry.firstname.find_first_not_of(WhiteSpaces);
-      firstname=pos==string::npos 
+      firstname=pos==string::npos
 	? (string)"" : entry.firstname.substr(pos, 1)+(string)".";
       pos=entry.namePrefix.find_first_not_of(WhiteSpaces);
-      addname=pos==string::npos 
+      addname=pos==string::npos
 	? (string)"" : entry.additionalName.substr(pos, 1)+(string)".";
       nameprefix=entry.namePrefix;
     } else {
@@ -1250,7 +1251,7 @@ bool AddressBook::literalName(const string& key, string& text, bool reverse,
 	      name+=" ";
 	    }
 	  name+=nameprefix;
-	}      
+	}
     } else {
       // firstname - add. name - name prefix - name
       name=firstname;
@@ -1282,7 +1283,7 @@ bool AddressBook::literalName(const string& key, string& text, bool reverse,
   text=name;
   LG(GUARD, "AddressBook::literalName: done, name is %s.\n", text.c_str());
   return true;
-  // ############################################################################  
+  // ############################################################################
 }
 
 bool AddressBook::description(const string& key, string& text, bool reverse,
@@ -1290,7 +1291,7 @@ bool AddressBook::description(const string& key, string& text, bool reverse,
 {
   register bool GUARD; GUARD=true;
   LG(GUARD, "AddressBook::description: called.\n");
-  // ############################################################################  
+  // ############################################################################
   string temp;
   Entry entry;
   // -----
@@ -1303,7 +1304,7 @@ bool AddressBook::description(const string& key, string& text, bool reverse,
   if(!temp.empty())
     {
       text=temp;
-      LG(GUARD, "AddressBook::description: done, description is %s.\n", 
+      LG(GUARD, "AddressBook::description: done, description is %s.\n",
 	 text.c_str());
       return true;
     }
@@ -1324,17 +1325,17 @@ bool AddressBook::description(const string& key, string& text, bool reverse,
     }
   // ----- give up:
   text=i18n("(unnamed entry)");
-  LG(GUARD, "AddressBook::description: done, description is %s.\n", 
+  LG(GUARD, "AddressBook::description: done, description is %s.\n",
      text.c_str());
   return true;
-  // ############################################################################  
+  // ############################################################################
 }
 
 bool AddressBook::birthDay(const string& key, QDate& date)
 {
   register bool GUARD; GUARD=true;
   LG(GUARD, "AddressBook::birthDay: called.\n");
-  // ############################################################################  
+  // ############################################################################
   Entry entry;
   // -----
   if(!getEntry(key, entry))
@@ -1351,7 +1352,7 @@ bool AddressBook::birthDay(const string& key, QDate& date)
       LG(GUARD, "AddressBook::birthDay: done.\n");
       return true;
     }
-  // ############################################################################  
+  // ############################################################################
 }
 
 bool AddressBook::getEntry(const string& key, Section*& data)
@@ -1371,7 +1372,7 @@ bool AddressBook::getEntry(const string& key, Section*& data)
   CHECK(entries!=0);
   if(entries->find(key, entry))
     {
-      LG(GUARD, "AddressBook::getEntry[as a map]: entry %s found.\n", 
+      LG(GUARD, "AddressBook::getEntry[as a map]: entry %s found.\n",
 	 key.c_str());
       data=entry;
       LG(GUARD, "AddressBook::getEntry[as a map]: done.\n");

@@ -3,7 +3,7 @@
               (C) 1997, 1998 Mark Donohoe (donohoe@kde.org)
               (C) 1997, 1998 Sven Radej (radej@kde.org)
               (C) 1997, 1998 Matthias Ettrich (ettrich@kde.org)
-              
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.105  1999/03/06 18:03:36  ettrich
+// the nifty "flat" feature of kmenubar/ktoolbar is now more visible:
+// It has its own menu entry and reacts on simple LMP clicks.
 //
 // Revision 1.104  1999/03/04 17:49:17  ettrich
 // more fixes for Qt-2.0
@@ -202,7 +205,7 @@
 //      [Toolbar style]
 //      IconText=0        0=icons, 1=icons+text
 //      Highlighting=1    0=No, 1=yes
-#include <qtooltip.h> 
+//      Size=26           height of one row in toolbar
 // Fixed white bg on disabled buttons in icontext mode and
 // positioning on signal appearanceChanged - sven 24.3.1998
 //-------------------------------------------------------------------------
@@ -284,7 +287,7 @@ KToolBarButton::KToolBarButton( const QPixmap& pixmap, int _id,
                                 int item_size, const QString& txt,
                                 bool _mb) : QButton( _parent, name )
 {
-  
+  sep=false;
   delayPopup = false;
   parentWidget = (KToolBar *) _parent;
   if (txt)
@@ -422,7 +425,7 @@ void KToolBarButton::setRadio (bool f)
 
 bool KToolBarButton::eventFilter (QObject *o, QEvent *ev)
 {
-      
+  // From Kai-Uwe Sattler <kus@iti.CS.Uni-Magdeburg.De>
   if ((KToolBarButton *)o == this && ev->type () == QEvent::MouseButtonDblClick)
   {
     //debug ("Doubleclick");
@@ -431,7 +434,7 @@ bool KToolBarButton::eventFilter (QObject *o, QEvent *ev)
   }
 
   if ((KToolBarButton *) o == this)
-  
+    if ((ev->type() == QEvent::MouseButtonPress ||
          ev->type() == QEvent::MouseButtonRelease ||
          ev->type() == QEvent::MouseButtonDblClick) && radio && isOn())
       return true;
@@ -445,7 +448,7 @@ bool KToolBarButton::eventFilter (QObject *o, QEvent *ev)
     case QEvent::MouseButtonPress:
       //debug ("Got press | doubleclick");
       // If I get this, it means that popup is visible
-    
+      {
       QRect r(geometry());
       r.moveTopLeft(parentWidget->mapToGlobal(pos()));
       if (r.contains(QCursor::pos()))   // on button
@@ -492,10 +495,10 @@ bool KToolBarButton::eventFilter (QObject *o, QEvent *ev)
       qDrawShadePanel(_painter, 0, 0, width(), height(), colorGroup(), true, 2, 0L );
   }
 
-  
+  else if ( raised )
   {
-  
-  
+    if ( style() == WindowsStyle )
+      qDrawWinButton( _painter, 0, 0, width(), height(), colorGroup(), false );
     else
       qDrawShadePanel( _painter, 0, 0, width(), height(), colorGroup(), false, 2, 0L );
   }
@@ -539,7 +542,7 @@ bool KToolBarButton::eventFilter (QObject *o, QEvent *ev)
       if (pixmap())
         dx= pixmap()->width();
       else
-      
+        dx= 1;
       dy = 0;
       if ( isDown() && style() == WindowsStyle )
       {
@@ -590,13 +593,13 @@ bool KToolBarButton::eventFilter (QObject *o, QEvent *ev)
       _painter->drawPixmap( dx, dy, *pixmap() );
     }
 
-      
+    if (!btext.isNull())
     {
       int tf = AlignBottom|AlignHCenter;
       if (!isEnabled())
         _painter->setPen(palette().disabled().dark());
       dy= pixmap()->height();
-      
+      dx = 2;
 
       if ( isDown() && style() == WindowsStyle )
       {
@@ -605,7 +608,7 @@ bool KToolBarButton::eventFilter (QObject *o, QEvent *ev)
       }
 
       if (toolBarButton)
-  
+        _painter->setFont(buttonFont);
       if(raised)
         _painter->setPen(blue);
       _painter->drawText(0, 0, width(), height()-4, tf, btext);
@@ -646,14 +649,14 @@ void KToolBarButton::modeChange()
   QFont fnt;
 
   //Jesus, I must have been drunk...
-  
+  if (toolBarButton) // I might be a menuBarButton
   {
     buttonFont.setFamily("Helvetica");
     buttonFont.setPointSize(10);
-    fnt=kapp->generalFont;
+    buttonFont.setBold(false);
     buttonFont.setItalic(false);
     buttonFont.setCharSet(font().charSet());
-  
+
     fnt=buttonFont;
   }
   else
@@ -676,7 +679,7 @@ void KToolBarButton::modeChange()
   {
     double factor=_size/26;
     QImage i;
-  
+    i = enabledPixmap.convertToImage();
     i = i.smoothScale(enabledPixmap.width()*factor,
                       enabledPixmap.height()*factor);
     enabledPixmap.resize (i.width(), i.height());
@@ -685,17 +688,17 @@ void KToolBarButton::modeChange()
 */
 
   highlight=parentWidget->highlight;
-    
+  switch (icontext)
   {
   case 0:
     QToolTip::remove(this);
     QToolTip::add(this, btext);
-    
+    resize (myWidth, _size-2);
     break;
 
   case 1:
     QToolTip::remove(this);
-    
+    resize (fm.width(btext)+myWidth, _size-2); // +2+_size-2
     break;
 
   case 2:
@@ -715,7 +718,7 @@ void KToolBarButton::modeChange()
     QToolTip::remove(this);
     resize (fm.width(btext)+myWidth, _size-2); // +2+_size-2
   }
-  
+  else
   {
     QToolTip::remove(this);
     QToolTip::add(this, btext);
@@ -727,7 +730,7 @@ void KToolBarButton::modeChange()
 
 void KToolBarButton::makeDisabledPixmap()
 {
-  
+  if (ImASeparator())
     return;             // No pixmaps for separators
 
   QPalette pal = palette();
@@ -736,11 +739,11 @@ void KToolBarButton::makeDisabledPixmap()
   // Prepare the disabledPixmap for drawing
     mask = new QBitmap(enabledPixmap.createHeuristicMask());
     allocated = true;
-  } 
-  
-  QBitmap bitmap = *mask; // YES! make a DEEP copy before setting the mask!   
+  disabledPixmap.resize(enabledPixmap.width(), enabledPixmap.height());
+  disabledPixmap.fill( g.background() );
+  const QBitmap *mask = enabledPixmap.mask();
   bool allocated = false;
-  
+  if (!mask) {// This shouldn't occur anymore!
       mask = new QBitmap(enabledPixmap.createHeuristicMask());
       allocated = true;
   }
@@ -748,7 +751,7 @@ void KToolBarButton::makeDisabledPixmap()
   QBitmap bitmap = *mask; // YES! make a DEEP copy before setting the mask!
   bitmap.setMask(*mask);
 
-  
+  QPainter p;
   p.setPen( g.mid() );
   p.drawPixmap(0, 0, bitmap);
   p.end();
@@ -806,7 +809,7 @@ void KToolBarButton::ButtonPressed()
 
 void KToolBarButton::ButtonReleased()
 {
-  
+  // if popup is visible we don't get this
   // (gram of praxis weights more than ton of theory)
   //if (myPopup && myPopup->isVisible())
   //  return;
@@ -859,7 +862,7 @@ void KToolBar::ContextCallback( int )
       if (position == Floating)
 	setBarPos (lastPosition);
 	  move(QCursor::pos());
-  
+	  show();
 	}
       break;
     case CONTEXT_FLAT:
@@ -874,10 +877,10 @@ void KToolBar::ContextCallback( int )
 void KToolBar::init()
   context = new QPopupMenu( 0, "context" );
   context->insertItem( i18n("Left"), CONTEXT_LEFT );
-  
+  context->insertItem( i18n("Top"),  CONTEXT_TOP );
   context->insertItem( i18n("Right"), CONTEXT_RIGHT );
   context->insertItem( i18n("Bottom"), CONTEXT_BOTTOM );
-  
+  context->insertItem( i18n("Floating"), CONTEXT_FLOAT );
   context->insertItem( i18n("Flat"), CONTEXT_FLAT );
 //   connect( context, SIGNAL( activated( int ) ), this,
 // 	   SLOT( ContextCallback( int ) ) );
@@ -903,7 +906,7 @@ void KToolBar::init()
 
   mgr =0;
 }
-  
+
 void KToolBar::slotReadConfig()
 {
   int tsize;
@@ -928,7 +931,7 @@ void KToolBar::slotReadConfig()
     doUpdate=true;
   }
 
-  
+  if (icontext != icon_text)
   {
     if (icontext==3)
       item_size = (item_size<40)?40:item_size;
@@ -940,7 +943,7 @@ void KToolBar::slotReadConfig()
   {
     highlight = _highlight;
     doUpdate=true;
-  
+  }
 
   if (_transparent != transparent)
   {
@@ -958,7 +961,7 @@ void KToolBar::drawContents ( QPainter *)
 {
 }
 
-  
+KToolBar::~KToolBar()
 {
 
 // what is that?! we do not need to recreate before
@@ -971,12 +974,12 @@ void KToolBar::drawContents ( QPainter *)
 //     debug ("KToolBar destructor: about to recreate");
 //     recreate (Parent, oldWFlags, QPoint (oldX, oldY), false);
 //     debug ("KToolBar destructor: recreated");
-  
-  
+//   }
+
   // what is that?! toolbaritems are children of the toolbar, which
   // means, qt will delete them for us (Matthias)
   //for ( KToolBarItem *b = items.first(); b!=0L; b=items.next() )
-  
+  // items.remove();
   //Uhh... I'm embaresd... (sven)
 
 
@@ -999,11 +1002,11 @@ void KToolBar::setMaxWidth (int w)
 }
 
 void KToolBar::layoutHorizontal ()
-  
+{
   int offset=3+9+4; // = 16
   int rightOffset;
   int yOffset=1;
-  
+  KToolBarItem *autoSize = 0;
   int mywidth;
   int widest=0;
 
@@ -1030,7 +1033,7 @@ void KToolBar::layoutHorizontal ()
 
   rightOffset=mywidth;
   toolbarHeight= item_size;
-     
+
   for ( KToolBarItem *b = items.first(); b; b=items.next() )
   {
     if (b->isAuto())
@@ -1064,10 +1067,10 @@ void KToolBar::layoutHorizontal ()
              myWidth = b->width();
            if (offset > (rightOffset-myWidth+3))
             {
-           
+              offset =3+4+9;
               yOffset += item_size;
               toolbarHeight += item_size;
-           
+            }
            // Put it *really* *really* there!
            // This is a workaround for a Qt-1.32 bug.
            XMoveWindow(qt_xdisplay(), b->winId(), offset, yOffset);
@@ -1106,11 +1109,11 @@ void KToolBar::layoutHorizontal ()
 
 void KToolBar::layoutVertical ()
 {
- 
+  int offset=3+9+4;
   int yOffset=3;
   int widest;
 
-  
+  horizontal=false; // sven - 040198
 
   //debug ("Ho, ho, hooo... Up-Date!!! (vertical)");
 
@@ -1173,7 +1176,7 @@ void KToolBar::updateRects( bool res )
       else if (width() <= height ()-10)
         layoutVertical ();
       else if(width() >= height ()+10)
-      
+        layoutHorizontal ();
       break;
 
     case Left:
@@ -1227,7 +1230,7 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
           oh = ((KTopLevelWidget *) Parent)->view_bottom -
             ((KTopLevelWidget *) Parent)->view_top;;
         }
-            
+    {
         int  fat = 25; //ness
     {
         mgr = new KToolBoxManager(this, transparent);
@@ -1238,12 +1241,12 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
           mgr->addHotSpot(geometry(), true);             // I'm on top
         else
           mgr->addHotSpot(rr.x(), oy, rr.width(), fat); // top
-  
+
         if (position == Bottom)
           mgr->addHotSpot(geometry(), true);           // I'm on bottom
         else
           mgr->addHotSpot(rr.x(), oy+oh-fat, rr.width(), fat); // bottom
-  
+
         if (position == Left)
           mgr->addHotSpot(geometry(), true);           // I'm on left
         else
@@ -1313,11 +1316,11 @@ void KToolBar::slotHotSpot(int hs)
   {
     switch (hs)
     {
-      
+      case 0: //top
         setBarPos(Top);
         break;
 
-      
+      case 1: //bottom
         setBarPos(Bottom);
         break;
 
@@ -1368,7 +1371,7 @@ void KToolBar::slotHotSpot(int hs)
       case -1: // left all
         mgr->setGeometry(mgr->mouseX(), mgr->mouseY(), width(), height());
         movePos=Floating;
-  
+        break;
     }
   }
 }
@@ -1379,13 +1382,13 @@ void KToolBar::resizeEvent( QResizeEvent *)
   if (position == Floating)  // are we floating? If yes...
     if (!localResize)        // call from updateRects? if *_NOT_*...
       updateRects(true);     // ...update (i.e. WM resized us)
-  
+}
 
 void KToolBar::paintEvent(QPaintEvent *)
 {
   if (mgr)
     return;
-  
+  //MD Lots of rewrite
 
   // This code should be shared with the aequivalent in kmenubar!
   toolbarHeight = height ();
@@ -1396,12 +1399,12 @@ void KToolBar::paintEvent(QPaintEvent *)
     // Took higlighting handle from kmenubar - sven 040198
     QBrush b;
     if (mouseEntered && highlight)
-      b = kapp->selectColor; // this is much more logical then
+      b = colorGroup().highlight(); // this is much more logical then
                             // the hardwired value used before!!
     else
       b = QWidget::backgroundColor();
 
-  
+
       paint->end();
       delete paint;
       return;
@@ -1431,7 +1434,7 @@ void KToolBar::paintEvent(QPaintEvent *)
           paint->drawPoint( 2, stipple_height+1);
           paint->drawPoint( 5, stipple_height);
           stipple_height+=3;
-        
+        }
       }
       else // Windows style handle
       {
@@ -1459,7 +1462,7 @@ void KToolBar::paintEvent(QPaintEvent *)
           a +=6;
         }
       }
-      
+    }
     else // vertical
     {
       if (style() == MotifStyle)
@@ -1481,7 +1484,7 @@ void KToolBar::paintEvent(QPaintEvent *)
         while ( stipple_height < toolbarWidth-4 ) {
           paint->drawPoint( stipple_height+1, 2 );
           paint->drawPoint( stipple_height, 5);
-        
+          stipple_height+=3;
         }
       }
       else
@@ -1584,7 +1587,7 @@ int KToolBar::insertButton( const QPixmap& pixmap, int id, bool enabled,
 			    const QString&_text, int index )
 {
   KToolBarButton *button = new KToolBarButton( pixmap, id, this, 0L, item_size,
-  
+                                               _text);
   KToolBarItem *item = new KToolBarItem(button, ITEM_BUTTON, id,
                                         true);
   if ( index == -1 )
@@ -1611,7 +1614,7 @@ int KToolBar::insertButton( const QPixmap& pixmap, int id, bool enabled,
 /// Inserts a button with popup.
 int KToolBar::insertButton( const QPixmap& pixmap, int id, QPopupMenu *_popup,
                             bool enabled, const QString&_text, int index)
-  if ( index == -1 ) 
+{
   KToolBarButton *button = new KToolBarButton( pixmap, id, this,
                                                0L, item_size, _text);
   KToolBarItem *item = new KToolBarItem(button, ITEM_BUTTON, id,
@@ -1626,7 +1629,7 @@ int KToolBar::insertButton( const QPixmap& pixmap, int id, QPopupMenu *_popup,
   item->setEnabled( enabled );
   item->show();
 
-  
+  connect(button, SIGNAL(clicked(int)), this, SLOT(ButtonClicked(int)));
   connect(button, SIGNAL(doubleClicked(int)), this, SLOT(ButtonDblClicked(int)));
   connect(button, SIGNAL(released(int)), this, SLOT(ButtonReleased(int)));
   connect(button, SIGNAL(pressed(int)), this, SLOT(ButtonPressed(int)));
@@ -1645,8 +1648,8 @@ int KToolBar::insertButton( const QPixmap& pixmap, int id, QPopupMenu *_popup,
 /// Inserts a button with connection.
 
 int KToolBar::insertButton( const QPixmap& pixmap, int id, const char *signal,
- 
-  if ( index == -1 ) 
+			    const QObject *receiver, const char *slot, bool enabled,
+			    const QString&_text, int index )
 {
   KToolBarButton *button = new KToolBarButton( pixmap, id, this,
                                                0L, item_size, _text);
@@ -1697,7 +1700,7 @@ int KToolBar::insertSeparator( int index )
 }
 
 
-  
+/********* LINESEPARATOR *********/
 /// Inserts line separator
 
 int KToolBar::insertLineSeparator( int index )
@@ -1720,16 +1723,16 @@ int KToolBar::insertLineSeparator( int index )
   return items.at();
 }
 
-  
+
 /********* Frame **********/
 /// inserts QFrame
 
 int KToolBar::insertFrame (int _id, int _size, int _index)
 {
   debug ("insertFrame is deprecated. use insertWidget");
-  
+
   QFrame *frame;
-      
+  bool mine = false;
 
   // ok I'll do it for you;
   frame = new QFrame (this);
@@ -1741,14 +1744,14 @@ int KToolBar::insertFrame (int _id, int _size, int _index)
     items.append (item);
   else
     items.insert(_index, item);
-}  
+  item-> resize (_size, item_size-2);
   item->show();
   if (position == Floating)
-int KToolBar::insertWidget(int _id, int _size, QWidget *_widget, 
+    updateRects( true );
   else if (isVisible())
     emit (moved(position));
   return items.at();
-  
+}
 /* A poem all in G-s! No, any widget */
 
 int KToolBar::insertWidget(int _id, int _size, QWidget *_widget,
@@ -1773,8 +1776,8 @@ int KToolBar::insertWidget(int _id, int _size, QWidget *_widget,
 /// Inserts a KLined. KLined is derived from QLineEdit and has another signal, tabPressed,
 //  for completions.
 
- 
-  
+int KToolBar::insertLined(const QString& text, int id, const char *signal,
+			  const QObject *receiver, const char *slot,
 			  bool enabled, const QString& tooltiptext, int size, int index)
 {
   KLined *lined = new KLined (this, 0);
@@ -1806,7 +1809,7 @@ int KToolBar::insertWidget(int _id, int _size, QWidget *_widget,
 int KToolBar::insertCombo (QStrList *list, int id, bool writable,
                            const char *signal, QObject *receiver,
                            const char *slot, bool enabled,
- 
+                           const QString& tooltiptext,
                            int size, int index,
                            KCombo::Policy policy)
 {
@@ -1905,7 +1908,7 @@ void KToolBar::hideItem (int id)
     if (b->ID() == id )
     {
       if(b->isAuto())
-    
+        haveAutoSized=false;
       b->hide();
     }
   if (position == Floating)
@@ -2161,7 +2164,7 @@ QWidget *KToolBar::getWidget (int id)
 
 /// Toolbar itself
 
-  moving = flag; 
+void KToolBar::setFullWidth(bool flag)
 {
   fullWidth = flag;
 }
@@ -2241,13 +2244,13 @@ void KToolBar::setBarPos(BarPosition bpos)
 }
 
 void KToolBar::enableFloating (bool arrrrrrgh)
-    
+{
     context->setItemEnabled (CONTEXT_FLOAT, arrrrrrgh);
 }
 
 void KToolBar::setIconText(int icontext)
 {
-    
+    bool doUpdate=false;
 
     if (icontext != icon_text)
     {
@@ -2274,7 +2277,7 @@ bool KToolBar::enable(BarStatus stat)
    }
   else
     show();
-  
+
   return ( isVisible() == mystat );
 }
 
@@ -2304,7 +2307,7 @@ void KToolBar::mouseMoveEvent(QMouseEvent* mev)
 {
   if (mgr)
     return;
-  
+
   // Handle highlighting - sven 050198
   if (horizontal)
     if (mev->x() < 9)
@@ -2353,13 +2356,13 @@ void KToolBar::mouseReleaseEvent ( QMouseEvent * )
     return;
   mouseEntered = false;
   repaint();
-  
+}
   if (flag && (position == Floating && position == Flat))
 
   if (!flag && (position != Flat))
 {
 
-  
+#define also
 
   if (position == Floating )
   if ( flag == (position == Flat))

@@ -1,6 +1,6 @@
 /* -*- C++ -*-
  * Implementation of the Section class.
- * 
+ *
  * the Configuration Database library
  * copyright:  (C) Mirko Sucker, 1998
  * license:    GNU Public License, Version 2
@@ -12,8 +12,9 @@
 
 #pragma implementation
 
+#include <qwidget.h>
 #include "sections.h"
-#include "debug.h" 
+#include "debug.h"
 #include "functions.h"
 
 const int Section::indent_width=2;
@@ -49,7 +50,7 @@ bool Section::add(const string& name)
       delete section;
       return false;
     } else {
-      LG(GUARD && rc, " success.\n"); 
+      LG(GUARD && rc, " success.\n");
       return true;
     }
   // ########################################################
@@ -74,7 +75,7 @@ bool Section::add(const string& name, Section* section)
 }
 
 bool Section::find
-(const string& name, 
+(const string& name,
  StringSectionMap::iterator& result)
 {
   register bool GUARD; GUARD=false;
@@ -101,7 +102,7 @@ bool Section::remove(const string& name)
   if(!find(name, pos))
     {
       // semantic tautology, but calls invariant():
-      ENSURE(!find(name, pos)); 
+      ENSURE(!find(name, pos));
       return false; // no such section
     } else {
       sections.erase(pos);
@@ -136,7 +137,7 @@ void Section::insertIndentSpace(ofstream& file, int level)
 {
   REQUIRE(file.good());
   CHECK(level>=0);
-  // ########################################################  
+  // ########################################################
   int i, j;
   for(i=0; i<level; i++)
     {
@@ -205,7 +206,7 @@ bool Section::readSection(ifstream& file, bool finish)
       line=ReadLineFromStream(file);
       if(file.eof())
 	{
-	  if(finish==true) 
+	  if(finish==true)
 	    {
 	      L("Section::readSection: "
 		"missing end of section.\n");
@@ -226,7 +227,7 @@ bool Section::readSection(ifstream& file, bool finish)
 	  add(name);
 	  find(name, temp);
 	  // errors may not happen here:
-	  CHECK(find(name, temp)); 
+	  CHECK(find(name, temp));
 	  if(!temp->readSection(file))
 	    {
 	      L("Section::readSection: "
@@ -237,12 +238,12 @@ bool Section::readSection(ifstream& file, bool finish)
 	} else { // it has to be a key-value-pair
 	  if(!keys.insertLine(line, false, true, false))
 	    {
-	      cerr 
+	      cerr
 		<< "Attention: unable to parse "
 		<< "key-value-pair " << endl
-		<< "\t\"" << line << "\"," << endl 
+		<< "\t\"" << line << "\"," << endl
 		<< "ignoring and continuing (maybe "
-		<< "duplicate declaration of the key)." 
+		<< "duplicate declaration of the key)."
 		<< endl;
 	    }
 	}
@@ -273,7 +274,7 @@ bool Section::isBeginOfSection(const string& line)
     {
       cerr << "Attention: characters after start of "
 	   << "section in line" << endl
-	   << "\t\"" << line << "\"" << endl 
+	   << "\t\"" << line << "\"" << endl
 	   << "will be ignored." << endl;
     }
   return true;
@@ -313,15 +314,15 @@ string Section::nameOfSection(const string& line)
   // ########################################################
   string::size_type first, second;
   string part;
-  first=line.find('['); 
+  first=line.find('[');
   second=line.find_first_not_of("[ \t", first);
-  CHECK(first!=string::npos); 
-  CHECK(second!=string::npos); 
+  CHECK(first!=string::npos);
+  CHECK(second!=string::npos);
   CHECK(first<second);
   first=line.find_first_of("] \t", second+1);
   CHECK(first>second); CHECK(first!=string::npos);
   part.append(line, second, first-second);
-  return part; 
+  return part;
   // ########################################################
 }
 

@@ -1,8 +1,8 @@
 /*
- * KProgress -- a progress indicator widget for KDE. 
+ * KProgress -- a progress indicator widget for KDE.
  * (c) 1996 Martynas Kunigelis
  */
- 
+
 #include "kprogress.h"
 #include "kprogress.h"
 
@@ -27,7 +27,7 @@ KProgress::KProgress(Orientation orientation, QWidget *parent, const char *name)
 	initialize();
 }
 
-KProgress::KProgress(int minValue, int maxValue, int value, 
+KProgress::KProgress(int minValue, int maxValue, int value,
 					Orientation orientation, QWidget *parent, const char *name)
 	: QFrame(parent, name),
 	QRangeControl(minValue, maxValue, 1, 10, value),
@@ -52,10 +52,10 @@ void KProgress::initialize()
 	//setMidLineWidth(2);
 	bar_pixmap = 0;
 	bar_style = Solid;
-	bar_color = kapp->selectColor;
-	bar_text_color = kapp->selectTextColor;
-	text_color = kapp->textColor;
-	setBackgroundColor( kapp->windowColor );
+	bar_color = colorGroup().highlight();
+	bar_text_color = colorGroup().highlightedText();
+	text_color = colorGroup().text();
+	setBackgroundMode( PaletteBase );
 	setFont(QFont("helvetica", 12, QFont::Bold));
 	text_enabled = TRUE;
 	adjustStyle();
@@ -96,7 +96,7 @@ void KProgress::setOrientation(Orientation orientation)
 		update();
 	}
 }
- 
+
 void KProgress::setValue(int value)
 {
 	QRangeControl::setValue(value);
@@ -187,10 +187,9 @@ void KProgress::adjustStyle()
 
 void KProgress::paletteChange( const QPalette & )
 {
-	bar_color = kapp->selectColor;
-	bar_text_color = kapp->selectTextColor;
-	text_color = kapp->textColor;
-	setBackgroundColor( kapp->windowColor );
+	bar_color = colorGroup().highlight();
+	bar_text_color = colorGroup().highlightedText();
+	text_color = colorGroup().text();
 }
 		
 void KProgress::drawText(QPainter *p)
@@ -257,7 +256,7 @@ void KProgress::drawContents(QPainter *p)
 				max = (cr.height() - margin) / (fr.height() + margin) + 1;
 				num = recalcValue(max);
 			}
-			p->setClipRect(cr.x() + margin, cr.y() + margin, 
+			p->setClipRect(cr.x() + margin, cr.y() + margin,
 						   cr.width() - margin, cr.height() - margin);
 			for (int i = 0; i < num; i++) {
 				p->setBrushOrigin(fr.topLeft());
@@ -266,7 +265,7 @@ void KProgress::drawContents(QPainter *p)
 			}
 			
 			if (num != max) {
-				if (orient == Horizontal) 
+				if (orient == Horizontal)
 					er.setLeft(fr.right() + 1);
 				else
 					er.setBottom(fr.bottom() + 1);

@@ -2,6 +2,7 @@
  * §Header§
  */
 
+#include <qwidget.h>
 #include "StringListSelectSetDialog.h"
 #include <qlistbox.h>
 #include <kapp.h>
@@ -26,20 +27,20 @@ StringListSelectSetDialog::StringListSelectSetDialog
 
 StringListSelectSetDialog::~StringListSelectSetDialog()
 {
-  // ############################################################################  
-  // ############################################################################  
+  // ############################################################################
+  // ############################################################################
 }
 
 void StringListSelectSetDialog::initializeGeometry()
 {
-  // ############################################################################  
+  // ############################################################################
   QSize size=lbStrings->sizeHint();
   // -----
   if(size.height()<=10)
-    { 
+    {
       size.setHeight(5*lbStrings->itemHeight()+2*lbStrings->frameWidth());
     }
-  if(size.width()<=10) 
+  if(size.width()<=10)
     {
       size.setWidth(lbStrings->fontMetrics().width("This is a long string."));
     }
@@ -107,11 +108,11 @@ bool StringListSelectSetDialog::getSelection(QList<int>& s)
 	}
     }
   if(s.isEmpty())
-    { 
+    {
       return true;
     } else { //       nothing selected
       return false;
-    }      
+    }
   // ############################################################################
 }
 
@@ -132,7 +133,7 @@ bool StringListSelectSetDialog::getSelection(list<string>& s)
       return false;
     } else {
       return true;
-    }  
+    }
   // ############################################################################
 }
 
@@ -149,11 +150,11 @@ bool StringListSelectSetDialog::getSelection(QStrList& s)
 	}
     }
   if(s.isEmpty())
-    { 
+    {
       return true;
     } else { //       nothing selected
       return false;
-    }      
+    }
   // ############################################################################
 }
 

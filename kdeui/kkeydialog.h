@@ -59,7 +59,7 @@ protected:
 
 public slots:
     void setWidth( int newWidth );
- 
+
 protected:
     int halfWidth;
     QString keyName;
@@ -91,9 +91,6 @@ protected:
 	void paletteChange ( const QPalette & oldPalette );
 	void styleChange ( GUIStyle );
 
-protected:
-	QColor selectColor;
-	QColor selectTextColor;
 };
 
 /**
