@@ -1290,7 +1290,7 @@ KURL KHTMLPart::completeURL( const QString &url, const QString &/*target*/ )
 
 void KHTMLPart::scheduleRedirection( int delay, const QString &url )
 {
-    if(!d->m_redirectionTimer.isActive() || delay < d->m_delayRedirect)
+    if(d->m_redirectURL.isEmpty() || delay < d->m_delayRedirect)
     {
         d->m_delayRedirect = delay;
         d->m_redirectURL = url;
