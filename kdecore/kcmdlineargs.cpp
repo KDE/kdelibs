@@ -475,8 +475,20 @@ KCmdLineArgs::parseAllArgs()
             printQ( QString("%1: %2\n").
 			arg(about->appName()).arg(about->version()));
             exit(0);
-         }
-         else {
+         } else if ( strcmp( option, "author") == 0 ) {
+	     if ( about ) {
+		 const QValueList<KAboutPerson> authors = about->authors();
+		 if ( !authors.isEmpty() ) {
+		     printQ( QString(about->appName()) + " " + i18n("was written by\n") );
+		     for (QValueList<KAboutPerson>::ConstIterator it = authors.begin(); it != authors.end(); ++it ) {
+			 printQ( QString("    ") + (*it).name() + " <" + (*it).emailAddress() + ">\n");
+		     }
+		 }
+	     } else {
+		 printQ( QString(about->appName()) + " " + i18n("was written by somebody who wants to remain anonymous.") );
+	     }
+	     exit(0);
+         }else {
            if ((option[0] == 'n') && (option[1] == 'o'))
            {
               option += 2;
@@ -652,6 +664,7 @@ KCmdLineArgs::usage(const char *id)
    }
 
    printQ(optionFormatString.arg("--help-all",-25).arg(i18n("Show all options")));
+   printQ(optionFormatString.arg("--author",-25).arg(i18n("Show author information")));
    printQ(optionFormatString.arg("-V, --version",-25).arg(i18n("Show version information")));
    printQ(optionFormatString.arg("--", -25).arg(i18n("End of options")));
 
@@ -1002,7 +1015,7 @@ KURL KCmdLineArgs::makeURL( const char *urlArg )
       if (b && b>a)
          return KURL(QString::fromLocal8Bit(urlArg)); // Argument is a URL
    }
-   
+
    KURL result;
    result.setPath( cwd()+"/"+QFile::decodeName( urlArg));
    result.cleanPath();
