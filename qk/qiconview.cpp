@@ -1419,11 +1419,12 @@ void QIconViewItem::calcRect( const QString &text_ )
 
     int tw = 0;
     int th = 0;
+    int bearing = - fm->minLeftBearing() - fm->minRightBearing();
     QRect r( fm->boundingRect( 0, 0, iconView()->maxItemWidth() -
 			       ( iconView()->itemTextPos() == QIconView::Bottom ? 0 :
-			       iconRect().width() ),
+			       iconRect().width() ) - bearing,
 			       0xFFFFFFFF, Qt::AlignCenter | Qt::WordBreak, t ) );
-    tw = r.width() - fm->minLeftBearing() - fm->minRightBearing();
+    tw = r.width() + bearing;
     th = r.height();
     if ( tw < fm->width( "X" ) )
 	tw = fm->width( "X" );
