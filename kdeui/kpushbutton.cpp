@@ -84,11 +84,8 @@ void KPushButton::init( const KGuiItem &item )
     kapp->addKipcEventMask( KIPC::SettingsChanged );
 }
 
-void KPushButton::slotSettingsChanged( int category )
+void KPushButton::slotSettingsChanged( int /* category */ )
 {
-//    kdDebug() << "settings changed: " << category << endl;
-    
-    KGlobal::config()->reparseConfiguration();
     KConfigGroup cg ( KGlobal::config(), "KDE" );
     if( d->item.hasIconSet() &&
                         cg.readBoolEntry( "ShowIconsOnPushButtons", false ) )
