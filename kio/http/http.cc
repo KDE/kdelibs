@@ -1325,7 +1325,14 @@ bool HTTPProtocol::readHeader()
      kdDebug(7113) << "readHeader: returning mimetype " << buffer << endl;
      m_strMimeType = QString::fromUtf8( buffer).stripWhiteSpace();
      mimeType(m_strMimeType);
-     // TODO save charset in cache and set it here ?
+     if (!fgets(buffer, 4096, m_fcache) )
+     {
+        // Error, delete cache entry
+        error( ERR_CONNECTION_BROKEN, m_state.hostname );
+        return false;
+     }
+     m_strCharset = QString::fromUtf8( buffer).stripWhiteSpace();
+     setMetaData("charset", m_strCharset);
      return true;
   }
 
@@ -1341,8 +1348,9 @@ bool HTTPProtocol::readHeader()
 
   QCString locationStr; // In case we get a redirect.
   QCString cookieStr; // In case we get a cookie.
-  QString charsetStr; // Incase we get a charset
   QString disposition; // Incase we get a Content-Disposition
+
+  m_strCharset = QString::null;
 
   // read in 4096 bytes at a time (HTTP cookies can be quite large.)
   int len = 0;
@@ -1462,8 +1470,8 @@ bool HTTPProtocol::readHeader()
         int equalPos = m_strMimeType.find( '=' );
         if ( equalPos != -1 )
         {
-          charsetStr = m_strMimeType.mid( equalPos+1 );
-          kdDebug(7103) << "Found charset : " << charsetStr << endl;
+          m_strCharset = m_strMimeType.mid( equalPos+1 );
+          kdDebug(7103) << "Found charset : " << m_strCharset << endl;
         }
         m_strMimeType = m_strMimeType.left( semicolonPos );
       }
@@ -1911,7 +1919,7 @@ bool HTTPProtocol::readHeader()
         m_qContentEncodings.remove(m_qContentEncodings.fromLast());
         m_strMimeType = QString::fromLatin1("application/x-tgz");
      }
-     else if (m_strMimeType == "text/html")
+     else if (m_strMimeType.startsWith("text/"))
      {
         // Unzip!
      }
@@ -1968,10 +1976,10 @@ bool HTTPProtocol::readHeader()
 
   // Set charset. Maybe charSet should be a class member, since
   // this method is somewhat recursive....
-  if ( !charsetStr.isEmpty() )
+  if ( !m_strCharset.isEmpty() )
   {
-     kdDebug(7103) << "Setting charset metadata to " << charsetStr << endl;
-     setMetaData("charset", charsetStr);
+     kdDebug(7103) << "Setting charset metadata to " << m_strCharset << endl;
+     setMetaData("charset", m_strCharset);
   }
 
   if( !disposition.isEmpty() )
@@ -2002,7 +2010,6 @@ bool HTTPProtocol::readHeader()
     kdDebug(7113) << "Cache, adding \"" << m_request.url.url() << "\"" << endl;
   else
     kdDebug(7113) << "Cache, not adding \"" << m_request.url.url() << "\"" << endl;
-
   return true;
 }
 
@@ -2615,7 +2622,6 @@ int HTTPProtocol::readChunked()
         return -1;
      }
   }
-  kdDebug(7113) << "Chunk header = \"" << m_bufReceive.data() << "\"" << endl;
   if (eof())
   {
      kdDebug(7103) << "EOF on Chunk header" << endl;
@@ -2980,7 +2986,7 @@ HTTPProtocol::findCookies( const QString &url)
 // The following code should be kept in sync
 // with the code in http_cache_cleaner.cpp
 
-#define CACHE_REVISION "5\n"
+#define CACHE_REVISION "6\n"
 
 FILE *
 HTTPProtocol::checkCacheEntry( bool readWrite)
@@ -3204,6 +3210,10 @@ HTTPProtocol::createCacheEntry( const QString &mimetype, time_t expireDate)
    fputc('\n', m_fcache);
 
    fputs(mimetype.latin1(), m_fcache);  // Mimetype
+   fputc('\n', m_fcache);
+
+   if (!m_strCharset.isEmpty())
+      fputs(m_strCharset.latin1(), m_fcache);    // Charset 
    fputc('\n', m_fcache);
 
    return;

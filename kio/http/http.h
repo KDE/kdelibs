@@ -284,7 +284,7 @@ protected: // Members
   QByteArray big_buffer;
   QString m_sContentMD5;
   QString m_strMimeType;
-//  QString m_strCharset;
+  QString m_strCharset;
   QString m_strCharsets;
   QString m_strLanguages;
 
