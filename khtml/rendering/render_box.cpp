@@ -212,45 +212,49 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
         // ### might need to add some correct offsets
         // ### use paddingX/Y
 
-        int sx = 0;
-        int sy = 0;
-
         //hacky stuff
         RenderStyle* sptr = style();
         if ( isHtml() && firstChild() && !style()->backgroundImage() )
             sptr = firstChild()->style();
 
+        int sx = 0;
+        int sy = 0;        
 	    int cw,ch;
         int cx,cy;
+        int vpab = borderRight() + borderLeft() + paddingLeft() + paddingRight();
+        int hpab = borderTop() + borderBottom() + paddingTop() + paddingBottom();
 
         // CSS2 chapter 14.2.1
         
         if (sptr->backgroundAttachment())
         {
             //scroll
-            int pw = m_width - sptr->borderRightWidth() - sptr->borderLeftWidth();
-            int ph = m_height - sptr->borderTopWidth() - sptr->borderBottomWidth();
-            
+            int pw = m_width - vpab;
+            int ph = m_height - hpab;
             int pixw = bg->pixmap_size().width();
             int pixh = bg->pixmap_size().height();
             EBackgroundRepeat bgr = sptr->backgroundRepeat();
             if( (bgr == NO_REPEAT || bgr == REPEAT_Y) && w > pixw ) {
                 cw = pixw;
-                cx = _tx + sptr->backgroundXPosition().minWidth(pw-pixw);
+                cx = _tx + sptr->backgroundXPosition().minWidth(pw-pixw) - 1;
             } else {
-                cw = w;
+                cw = w-vpab;
                 cx = _tx;
-                sx =  pixw - (sptr->backgroundXPosition().minWidth(pw-pixw) % pixw );
+                sx =  pixw - ((sptr->backgroundXPosition().minWidth(pw-pixw) - 1) % pixw );
             }
+            
+            cx += borderLeft() + paddingLeft();
 
             if( (bgr == NO_REPEAT || bgr == REPEAT_X) && h > pixh ) {
                 ch = pixh;
-                cy = _ty + sptr->backgroundYPosition().minWidth(ph-pixh);
+                cy = _ty + sptr->backgroundYPosition().minWidth(ph-pixh) - 1;
             } else {
-                ch = h;
+                ch = h-hpab;
                 cy = _ty;
-                sy = pixh - (sptr->backgroundYPosition().minWidth(ph-pixh) % pixh );
+                sy = pixh - ((sptr->backgroundYPosition().minWidth(ph-pixh) - 1) % pixh );
             }            
+            
+            cy += borderTop() + paddingTop();
         } 
         else
         {
@@ -264,24 +268,24 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
             EBackgroundRepeat bgr = sptr->backgroundRepeat();
             if( (bgr == NO_REPEAT || bgr == REPEAT_Y) && w > pixw ) {
                 cw = pixw;
-                cx = vr.x() + sptr->backgroundXPosition().minWidth(pw-pixw);
+                cx = vr.x() + sptr->backgroundXPosition().minWidth(pw-pixw) - 1;
             } else {
                 cw = pw;
                 cx = vr.x();
-                sx =  pixw - (sptr->backgroundXPosition().minWidth(pw-pixw) % pixw );
+                sx =  pixw - ((sptr->backgroundXPosition().minWidth(pw-pixw) - 1) % pixw );
             }
 
             if( (bgr == NO_REPEAT || bgr == REPEAT_X) && h > pixh ) {
                 ch = pixh;
-                cy = vr.y() + sptr->backgroundYPosition().minWidth(ph-pixh);
+                cy = vr.y() + sptr->backgroundYPosition().minWidth(ph-pixh) - 1;
             } else {
                 ch = ph;
                 cy = vr.y();
-                sy = pixh - (sptr->backgroundYPosition().minWidth(ph-pixh) % pixh );
+                sy = pixh - ((sptr->backgroundYPosition().minWidth(ph-pixh) - 1) % pixh );
             }              
 
             QRect fix(cx,cy,cw,ch);
-            QRect ele(_tx,_ty,w,h);            
+            QRect ele(_tx+borderLeft()+paddingLeft(),_ty+borderTop()+paddingTop(),w-vpab,h-hpab);
             QRect b = fix.intersect(ele);
             sx+=b.x()-cx;
             sy+=b.y()-cy;
