@@ -115,14 +115,14 @@ static QString getDescrFromNum(unsigned short _num)
 
     KDebugCache->insert(number, new KDebugEntry(number,data));
   }
-  
+
   delete ts;
   file.close();
 
   ent = KDebugCache->find( _num );
   if ( ent )
       return ent->descr;
-  
+
   return QString::null;
 }
 
@@ -229,7 +229,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned short nArea, const ch
 
                 QFile aOutputFile( aOutputFileName );
                 aOutputFile.open( IO_WriteOnly | IO_Append );
-                aOutputFile.writeBlock( buf, nSize+1 );
+                aOutputFile.writeBlock( buf, nSize );
                 aOutputFile.close();
                 break;
           }
@@ -248,7 +248,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned short nArea, const ch
               if (nPriority == LOG_INFO)
                   output = stderr;
               else */
-                  output = stderr;				
+                  output = stderr;
 	      if ( !aAreaName.isEmpty() ) fprintf( output, "%s: ", aAreaName.ascii() );
 	      fputs(  data, output);
 	      break;
