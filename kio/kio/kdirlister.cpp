@@ -33,7 +33,6 @@
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include <kstaticdeleter.h>
-#include <kdebugclasses.h>
 
 #include "kdirlister_p.h"
 
