@@ -816,7 +816,7 @@ void KJanusWidget::setTreeListAutoResize( bool state )
     mTreeListResizeMode = state == false ?
       QSplitter::KeepSize : QSplitter::Stretch;
     if( d->mSplitter )
-      d->mSplitter->setResizeMode( mTreeList, mTreeListResizeMode );
+      d->mSplitter->setResizeMode( d->mListFrame, mTreeListResizeMode );
   }
 }
 
@@ -886,7 +886,7 @@ void KJanusWidget::showEvent( QShowEvent * )
   if( mFace == TreeList )
   {
     if( d->mSplitter )
-      d->mSplitter->setResizeMode( mTreeList, mTreeListResizeMode );
+      d->mSplitter->setResizeMode( d->mListFrame, mTreeListResizeMode );
   }
 }
 
