@@ -63,11 +63,12 @@ testdcopc_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 testdcopc_SOURCES = testdcopc.c dcopc.c
 testdcopc_LDADD =  KDE-ICE/libkICE.la $(LIBSM)
 
-EXTRA_DIST = HOWTO ICE
+EXTRA_DIST = HOWTO ICE Mainpage.dox
 
 dummy.cpp:
 	echo > dummy.cpp
 
 DOXYGEN_REFERENCES = kdecore
-DOXYGEN_EXCLUDE = KDE-ICE/*
+DOXYGEN_EXCLUDE = KDE-ICE
+
 include ../admin/Doxyfile.am
