@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// KApplication::localkdedir()
+// KConfig searches in $KDEDIR/share/config/kderc
+//
 // Revision 1.71  1997/11/11 05:41:53  wuebben
 // Bernd: implemented iso charset support
 //
@@ -474,7 +477,7 @@ void KApplication::init()
 		}
 	  else
 		  pConfig = new KConfig( aGlobalAppConfigName, aConfigName );
-  aConfigName += "/.kde/config/";
+		    PropModeReplace, (unsigned char *)&data, 1);
   
   pCharsets = new KCharsets();
 		}
@@ -650,7 +653,7 @@ bool KApplication::eventFilter ( QObject*, QEvent* e )
         parameter = (parameter_code)(p + 1);
 
 		  return TRUE; // do not process event further
-	  aSessionConfigName += "/.kde/config/";
+		}
 	}
   return FALSE; // process event further
 }
@@ -720,30 +723,30 @@ bool KApplication::eventFilter ( QObject*, QEvent* e )
 		  char* pHome;
 		  if( (pHome = getenv( "HOME" )) )
 			aSessionConfigName = pHome;
-			  if (!mainWidget() || 
-			      cme->window != mainWidget()->winId()){
+		  else
+			aSessionConfigName = "."; // use current dir if $HOME is not set
 		  aSessionConfigName += "/.kde/share/config/";
 		  aSessionConfigName += argv[i+1];
 		}
 		if (QFile::exists(aSessionConfigName)){
 		  bool bSuccess = aConfigFile.open( IO_ReadWrite ); 
 		  if( bSuccess ){
-			  KWM::setUnsavedDataHint( mainWidget()->winId(),
-									   bUnsavedData );
+			  KWM::setUnsavedDataHint( topWidget()->winId(),
+						   bUnsavedData );
 			  
 			aConfigFile.close();
-			    KWM::setWmCommand( mainWidget()->winId(), aWmCommand);
+  delete theKProcessController; // Stephan: "the can only be one" ;)
   theKProcessController = 0L;
 
     if ( parameter != unknown ) { // remove arguments
 			      QString aCommand = argv()[0];
   if (aMiniIconPixmap.isNull()){
     aMiniIconPixmap = getIconLoader()->loadApplicationMiniIcon( aAppName + ".xpm");
-			      KWM::setWmCommand( mainWidget()->winId(), 
+
 }
 				if (argv()[0][0]=='/')
 				  aCommand = argv()[0];
-			      KWM::setWmCommand( mainWidget()->winId(), 
+				  aCommand=(getcwd(s, 1024));
 						 argv()[0]);
 				  delete [] s;
 				  aCommand+=aAppName;
