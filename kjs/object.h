@@ -110,6 +110,7 @@ namespace KJS {
   struct Property;
   class PropList;
   class List;
+  class GlobalImp;
 
   /**
    * @short Type information.
@@ -618,6 +619,7 @@ namespace KJS {
     void setExtra(void *e);
   private:
     Global(void *);
+    Global(GlobalImp *d);
   };
 
   /**

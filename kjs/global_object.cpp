@@ -50,10 +50,20 @@ Global::Global()
 Global::Global(void *)
   : Object(0L)
 {
+  rep = 0;
+}
+
+Global::Global(GlobalImp *d)
+  : Object(0L)
+{
+  rep = d;
+  rep->ref();
 }
 
 Global::~Global()
 {
+  if (rep)
+    rep->deref();
 }
 
 Global Global::current()
@@ -67,7 +77,7 @@ Global Global::current()
   if (glob.derivedFrom(GlobalType))
     return Global(static_cast<GlobalImp*>(glob.imp()));
   else
-    return 0;
+    return Global();
 }
 
 KJSO Global::objectPrototype() const
