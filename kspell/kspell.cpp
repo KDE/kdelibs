@@ -454,7 +454,7 @@ KSpell::cleanFputs (const QString & s, bool appendCR)
   unsigned l = qs.length();
 
   // some uses of '$' (e.g. "$0") cause ispell to skip all following text
-  for(int i = 0; i < l; ++i)
+  for(unsigned int i = 0; i < l; ++i)
   {
     if(qs[i] == '$')
       qs[i] = ' ';
