@@ -209,7 +209,6 @@ bool RegExpObjectImp::implementsConstruct() const
 // ECMA 15.10.4
 Object RegExpObjectImp::construct(ExecState *exec, const List &args)
 {
-  // TODO: regexp arguments
   String p = args[0].toString(exec);
   String f = args[1].toString(exec);
   UString flags = f.value();

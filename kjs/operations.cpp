@@ -187,11 +187,20 @@ int KJS::relation(ExecState *exec, const Value& v1, const Value& v2)
 
   double n1 = p1.toNumber(exec);
   double n2 = p2.toNumber(exec);
-  /* TODO: check for NaN */
+  if ( isNaN( n1 ) || isNaN( n2 ) )
+    return -1; // means undefined
   if (n1 == n2)
     return 0;
-  /* TODO: +0, -0 and Infinity */
-  return (n1 < n2);
+  /* TODO: +0, -0 */
+  if ( isPosInf( n1 ) )
+    return 0;
+  if ( isPosInf( n2 ) )
+    return 1;
+  if ( isNegInf( n2 ) )
+    return 0;
+  if ( isNegInf( n1 ) )
+    return 1;
+  return (n1 < n2) ? 1 : 0;
 }
 
 double KJS::max(double d1, double d2)

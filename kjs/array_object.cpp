@@ -449,9 +449,23 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
     thisObj.put(exec, "length", Number(length - deleteCount + additionalArgs), DontEnum | DontDelete);
     break;
   }
-  case UnShift: {
-    // TODO - see 15.4.4.13
-    result = Undefined();
+  case UnShift: { // 15.4.4.13
+    unsigned int nrArgs = args.size();
+    for ( unsigned int k = length; k > 0; --k )
+    {
+      UString str = UString::from(k-1);
+      UString str2 = UString::from(k+nrArgs-1);
+      if (thisObj.hasProperty(exec,str)) {
+        Value obj = thisObj.get(exec, str);
+        thisObj.put(exec, str2, obj);
+      } else {
+        thisObj.deleteProperty(exec, str2);
+      }
+    }
+    for ( unsigned int k = 0; k < nrArgs; ++k )
+      thisObj.put(exec, UString::from(k), args[k]);
+    result = Number(length + nrArgs);
+    thisObj.put(exec, "length", result, DontEnum | DontDelete);
     break;
   }
   default:
