@@ -255,7 +255,7 @@ int KRFCDate::localUTCOffset()
   unsigned int timeLocal = ymdhms_to_seconds(tM->tm_year+1900, tM->tm_mon+1, tM->tm_mday,
                                              tM->tm_hour, tM->tm_min, tM->tm_sec);
 
-  return (timeLocal-timeUTC)/60;
+  return ((int)(timeLocal-timeUTC))/60;
 }
 
 
