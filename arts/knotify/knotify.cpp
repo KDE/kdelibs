@@ -532,7 +532,7 @@ void KNotify::playTimeout()
 bool KNotify::isPlaying( const QString& soundFile ) const
 {
     // in local encoding, as passed to the PlayObjectFactory
-    string filename = QFile::encodeName( soundFile ).data();
+    std::string filename = QFile::encodeName( soundFile ).data();
     
     for ( QValueList< Arts::PlayObject >::Iterator it = d->playObjects.begin();
           it != d->playObjects.end(); it++ )
