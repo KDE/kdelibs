@@ -123,7 +123,10 @@ int KDockTabCtl::insertPage( QWidget* widget , const QString &label, int id )
   stack->addWidget( widget, id );
   mainData->append( data );
   tabs->insertTab( label, id );
-  if ( !tabs->isVisible() ) tabs->show();
+  if ( !tabs->isVisible() ){
+    tabs->show();
+    layout->activate();
+  }
 
   // if its page first - this page become current
   if ( mainData->count() == 1 ) setVisiblePage( widget );
@@ -216,17 +219,17 @@ QWidget* KDockTabCtl::page( int id )
 
 void KDockTabCtl::removePage( QWidget* widget )
 {
+  stack->removeWidget( widget );
+  widget->hide();
   KDockTabCtl_Private* data = findData(widget);
   if ( data != 0L ){
     if ( currentPage == widget ) currentPage = 0L;
     tabs->removeTab( data->id );
-    data->widget->hide();
     mainData->remove( data );
     if ( mainData->count() == 0 ){
       tabs->hide();
     }
   }
-  stack->removeWidget( widget );
 }
 
 bool KDockTabCtl::eventFilter( QObject* obj, QEvent* e )
@@ -264,7 +267,6 @@ void KDockTabCtl::showPage( QWidget* widget, bool allowDisable )
   KDockTabCtl_Private* data = findData( widget );
   if ( data != 0L ) tabs->setCurrentTab( data->id, allowDisable );
 
-//  widget->show();
   emit pageSelected( widget );
 }
 
