@@ -428,7 +428,7 @@ void CachedImage::error( int /*err*/, const char */*text*/ )
 }
 
 void CachedImage::load()
-{      
+{
   Cache::loader()->load(this, m_baseURL, true);
 }
 
@@ -479,15 +479,14 @@ void Loader::servePendingRequests()
 
 void Loader::slotFinished( KIO::Job* job )
 {
+  Request *r = m_requestsLoading.take( job );
+  
+  if ( !r )
+    return;
+  
   if (job->error())
-  {
-    Request *r = m_requestsLoading[job];
-    if(!r) return;
-
     r->object->error( job->error(), job->errorText() );
-  } else {
-    Request *r = m_requestsLoading.take( job );
-    if(!r) return;
+  else {
     r->object->data(r->m_buffer, true);
     //kdDebug( 6060 ) << "Loader:: JOB FINISHED " << r->object->url().string() << endl;
 
@@ -842,29 +841,29 @@ void Cache::autoloadImages( bool enable )
 {
   if ( enable == s_autoloadImages )
     return;
-  
+
   s_autoloadImages = enable;
-  
+
   QDictIterator<CachedObject> it( *cache );
   for (; it.current(); ++it )
     if ( it.current()->isImage() )
     {
       CachedImage *img = static_cast<CachedImage *>( it.current() );
-      
+
       CachedObject::Status status = img->status();
       if ( status != CachedObject::Unknown ||
 	   status == CachedObject::Cached ||
 	   status == CachedObject::Uncacheable ||
 	   status == CachedObject::Pending )
         continue;
-	   
+	
       img->load();
     }
-} 
+}
 
 bool Cache::autoloadImages()
 {
-  return s_autoloadImages; 
-} 
+  return s_autoloadImages;
+}
 
 #include "loader.moc"
