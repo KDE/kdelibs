@@ -239,7 +239,7 @@ void HTTPProtocol::resetSessionSettings()
            protocol.replace(0, 6, "http");
            referrerURL.setProtocol(protocol);
         }
-        
+
         if (protocol.startsWith("http"))
         {
            referrerURL.setRef(QString::null);
@@ -667,7 +667,7 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
         // This is a relative URL.
         atom.m_str = href.text();
       }
-      
+
       entry.append( atom );
 
       QDomNodeList propstats = thisResponse.elementsByTagName( "propstat" );
@@ -1188,9 +1188,12 @@ void HTTPProtocol::copy( const KURL& src, const KURL& dest, int, bool overwrite 
   if ( !checkRequestURL( dest ) || !checkRequestURL( src ) )
     return;
 
-  // destination has to be "http://..."
+  // destination has to be "http(s)://..."
   KURL newDest = dest;
-  newDest.setProtocol( "http" );
+  if (newDest.protocol() == "webdavs")
+    newDest.setProtocol("https");
+  else
+    newDest.setProtocol("http");
 
   m_request.method = DAV_COPY;
   m_request.path = src.path();
@@ -1219,7 +1222,10 @@ void HTTPProtocol::rename( const KURL& src, const KURL& dest, bool overwrite )
 
   // destination has to be "http://..."
   KURL newDest = dest;
-  newDest.setProtocol( "http" );
+  if (newDest.protocol() == "webdavs")
+    newDest.setProtocol("https");
+  else
+    newDest.setProtocol("http");
 
   m_request.method = DAV_MOVE;
   m_request.path = src.path();
@@ -3315,7 +3321,7 @@ bool HTTPProtocol::readHeader()
   // We need to try to login again if we failed earlier
   if ( m_bUnauthorized )
   {
-    if ( (m_responseCode == 401) || 
+    if ( (m_responseCode == 401) ||
          (m_bUseProxy && (m_responseCode == 407))
        )
     {
@@ -5164,7 +5170,7 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
   }
   if (!p || !*p)
     return QString::null;
-  
+
   p += 6; // Skip "Digest"
 
   if ( info.username.isEmpty() || info.password.isEmpty() || !p )
