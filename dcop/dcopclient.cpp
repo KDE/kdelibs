@@ -500,7 +500,7 @@ DCOPClient::DCOPClient()
     d->foreign_server = true;
     d->transactionList = 0L;
     d->transactionId = 0;
-    connect( &d->postMessageTimer, SIGNAL( timeout() ), this, SLOT( processPostedMessagesInternal() ) );
+    QObject::connect( &d->postMessageTimer, SIGNAL( timeout() ), this, SLOT( processPostedMessagesInternal() ) );
 
     if ( !mainClient() )
 	setMainClient( this );
@@ -548,7 +548,7 @@ void DCOPClient::bindToApp()
 	    delete d->notifier;
 	d->notifier = new QSocketNotifier(socket(),
 					  QSocketNotifier::Read, 0, 0);
-	connect(d->notifier, SIGNAL(activated(int)),
+	QObject::connect(d->notifier, SIGNAL(activated(int)),
 		SLOT(processSocketData(int)));
     }
 }
