@@ -103,15 +103,8 @@ class KDirOperator : public QWidget {
     /**
       * takes action on the new location. If it's a directory, change
       * into it, if it's a file, correct the name, etc.
-      * @param takeFiles if set to true, if will close the dialog, if
-      * txt is a file name
       */
     void checkPath(const QString& txt, bool takeFiles = false);
-
-    /**
-     * adds a entry of the current directory.
-     **/
-    // void addDirEntry(KFileViewItem *entry);
 
     void connectView(KFileView *);
 

@@ -315,12 +315,15 @@ void KDirOperator::checkPath(const QString &, bool /*takeFiles*/) // SLOT
 void KDirOperator::setURL(const KURL& _newurl, bool clearforward)
 {
     KURL newurl = _newurl;
-    
+
     QString pathstr = newurl.path(+1);
 
     if (pathstr.isEmpty() || pathstr.at(pathstr.length() - 1) != '/')
 	pathstr += '/';
     newurl.setPath(pathstr);
+
+    if (newurl == *dir) // already set
+	return;
 
     debugC("setURL %s %ld (%s)", debugString(newurl.url()), time(0), debugString(dir->url()));
 
@@ -362,7 +365,7 @@ void KDirOperator::setURL(const KURL& _newurl, bool clearforward)
 				"or was not readable."));
 	dir->setURL(backup);
     } else {
-        
+
         myCompletion.clear();
 	emit urlEntered(*dir);
 	pathChanged();
@@ -675,7 +678,7 @@ void KDirOperator::selectFile(const KFileViewItem *item)
 
 void KDirOperator::highlightFile(const KFileViewItem *i)
 {
-    debug("TODO fileHighlighted %p %s", i, sender()->name());
+    emit fileHighlighted(i);
 }
 
 void KDirOperator::filterChanged()

@@ -245,10 +245,11 @@ protected slots:
     void toolbarPressedCallback(int);
     void filterChanged();
     void locationChanged(const QString&);
+    void fileHightlighted(const KFileViewItem *i);
+    void fileSelected(const KFileViewItem *i);
 
     virtual void updateStatusLine(int dirs, int files);
-    virtual void okPressed();
-    virtual void slotOk() {}
+    virtual void slotOk();
     virtual void returnPressed();
 
     void completion();

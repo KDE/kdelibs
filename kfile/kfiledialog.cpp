@@ -90,7 +90,9 @@ QString *KFileDialog::lastDirectory; // to set the start path
 
 KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
 			 QWidget *parent, const char* name, bool modal)
-    : KDialogBase( parent, name, modal, QString::null, KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok )
+    : KDialogBase( parent, name, modal, QString::null,
+		   KDialogBase::Ok | KDialogBase::Cancel,
+		   KDialogBase::Ok )
 {
     d = new KFileDialogPrivate();
     d->boxLayout = 0;
@@ -120,6 +122,10 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
 	    SLOT(updateStatusLine(int, int)));
     connect(ops, SIGNAL(urlEntered(const KURL&)),
 	    SLOT(urlEntered(const KURL&)));
+    connect(ops, SIGNAL(fileHighlighted(const KFileViewItem *)),
+	    SLOT(fileHightlighted(const KFileViewItem *)));
+    connect(ops, SIGNAL(fileSelected(const KFileViewItem *)),
+	    SLOT(fileSelected(const KFileViewItem *)));
 
     visitedDirs = new QStringList();
 
@@ -216,8 +222,6 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     connect(filterWidget, SIGNAL(filterChanged()),
 	    SLOT(filterChanged()));
 
-    connect( this, SIGNAL( okClicked() ), SLOT( okPressed() ) );
-
     connect( this, SIGNAL( cancelClicked() ), SLOT( reject() ) );
 
     connect( locationEdit, SIGNAL( returnPressed() ),
@@ -260,7 +264,7 @@ void KFileDialog::setFilter(const QString& filter)
     ops->setNameFilter(filterWidget->currentFilter());
 }
 
-void KFileDialog::okPressed()
+void KFileDialog::slotOk()
 {
     d->filename_ = locationEdit->currentText();
 
@@ -277,19 +281,25 @@ void KFileDialog::okPressed()
     accept();
 }
 
+void KFileDialog::fileHightlighted(const KFileViewItem *i)
+{
+    d->filename_ = i->url();
+    locationEdit->setEditText(d->filename_);
+}
+
+void KFileDialog::fileSelected(const KFileViewItem *i)
+{
+    d->filename_ = i->url();
+    locationEdit->setEditText(d->filename_);
+}
 
 void KFileDialog::returnPressed()
 {
   if ( locationEdit->currentText().stripWhiteSpace().isEmpty() )
     return;
 
-  debug("** return pressed **");
-  if ( mode() == Directory ) {
-    //    KFileRea
-
-  }
+  slotOk();
 }
-
 
 void KFileDialog::initGUI()
 {
@@ -358,7 +368,7 @@ void KFileDialog::locationChanged(const QString& txt)
     QString newText = text.left(locationEdit->cursorPosition() -1);
 
     KURL url( text );
-    // debug("Proto: %s, host: %s, dir: %s", debugString(url.protocol()),
+    // debugC("Proto: %s, host: %s, dir: %s", debugString(url.protocol()),
     //       debugString(url.host()), debugString(url.directory());
 
     // don't mess with malformed urls or remote urls without directory or host
@@ -368,7 +378,6 @@ void KFileDialog::locationChanged(const QString& txt)
         d->completionHack = newText;
         return;
     }
-
 
     // the user is backspacing -> don't annoy him with completions
     if ( d->completionHack.find( newText ) == 0 ) {
@@ -523,7 +532,7 @@ void KFileDialog::urlEntered(const KURL& url)
 
 void KFileDialog::comboActivated(int)
 {
-    debug("comboActivated");
+    debugC("comboActivated");
 }
 
 void KFileDialog::addToBookmarks() // SLOT
@@ -574,7 +583,7 @@ void KFileDialog::toolbarCallback(int i) // SLOT
 	
 	    d->showStatusLine =
 		c->readBoolEntry(QString::fromLatin1("ShowStatusLine"), DefaultShowStatusLine);
-	    debug("showStatusLine %d", d->showStatusLine);
+	    debugC("showStatusLine %d", d->showStatusLine);
 
 	    initGUI(); // add them back to the layout managment
 	}
@@ -680,7 +689,6 @@ void KFileDialog::setSelection(const QString& name)
 	locationEdit->setEditText(d->filename_);
     }
 }
-
 
 void KFileDialog::completion() // SLOT
 {
