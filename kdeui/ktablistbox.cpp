@@ -316,7 +316,7 @@ void KTabListBox::setNumCols(int aCols)
       colList[i] = new KTabListBoxColumn(this);
   
   itemList = (KTabListBoxItem**)malloc(INIT_MAX_ITEMS * sizeof(KTabListBoxItem*));
-  for (i = 0; i < aCols; i++)
+  for (i = 0; i < INIT_MAX_ITEMS; i++)
       itemList[i] = new KTabListBoxItem(aCols);
 
   maxItems = INIT_MAX_ITEMS;
@@ -487,7 +487,8 @@ void KTabListBox::insertItem(const char* aStr, int row)
   setNumRows(numRows()+1);
   changeItem(aStr, row);
 
-  if (needsUpdate(row)) lbox.repaint();
+  if (needsUpdate(row)) 
+      lbox.repaint();
 }
 
 //-----------------------------------------------------------------------------
@@ -526,7 +527,6 @@ void KTabListBox::changeItem(const char* aStr, int row)
   sepStr[1] = '\0';
 
   item = itemList[row];
-
   pos = strtok(str, sepStr);
   for (i=0; pos && *pos && i<numCols(); i++)
   {
@@ -624,17 +624,20 @@ void KTabListBox::resizeList(int newNumItems)
 
   newItemList = (KTabListBoxItem**)malloc(newNumItems * sizeof(KTabListBoxItem*));
   int nc = numCols();
-  for (i = 0; i < newNumItems; i++)
-      newItemList[i] = new KTabListBoxItem[nc];
   
   ih = newNumItems < numRows() ? newNumItems : numRows();
-  for (i=ih-1; i>=0; i--)
+  for ( i = ih-1; i>=0; i--)
   {
       newItemList[i] = itemList[i];
   }
 
-  for (i = 0; i < maxItems; i++)
-      delete itemList[i];
+  if (newNumItems > numRows())
+      for (i = 0; i < newNumItems - numRows(); i++)
+	  newItemList[i + numRows()] = new KTabListBoxItem(nc);
+  else
+      for (i = 0; i < numRows() - newNumItems; i++)
+	  delete itemList[i + newNumItems];
+  
   free( itemList );
   itemList = newItemList;
   maxItems = newNumItems;
