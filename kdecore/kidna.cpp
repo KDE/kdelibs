@@ -47,10 +47,7 @@ static void KIDNA_load_lib()
    }
    
    if (!KIDNA_lib) 
-   {
-      kdWarning() << "Could not load libidn.so" << endl;
       return; // Error
-   }
 
    KIDNA_utf8_to_ace = (KIDNA_utf8_to_ace_t) lt_dlsym(KIDNA_lib, "idna_utf8_to_ace");
    if (!KIDNA_utf8_to_ace)
