@@ -29,7 +29,7 @@
 
     For instance:
 
-      <!DOCTYPE Book PUBLIC "-//KDE//DTD DocBook V4.1-Based Variant V1.0//EN">
+      <!DOCTYPE book PUBLIC "-//KDE//DTD DocBook V4.1-Based Variant V1.0//EN">
 
     and use kde.cat as the catalogue file.
 -->
@@ -60,6 +60,10 @@
   "-//KDE//ELEMENTS DocBook Pool Redeclarations V1.0//EN"	     >
 <!ENTITY % dbpool.redecl.module "INCLUDE"			     >
 
+<!-- Make ID compulsory for qandasets; cannot be done in redeclaration
+     files; new declaration is in next "Modifications" section -->
+<!ENTITY % qandset.attlist "IGNORE">
+
 
 <!-- ============================================================= -->
 <!--			 Original DocBook DTD			   -->
@@ -68,6 +72,23 @@
 <!ENTITY % DocBookDTD	    PUBLIC
   "-//OASIS//DTD DocBook V4.1//EN"				     >
 %DocBookDTD;
+
+
+<!-- ============================================================= -->
+<!--          Modifications to the original DocBook DTD            -->
+<!-- ============================================================= -->
+<!-- ONLY to supply declarations that were switched off in the 
+     first "Modifications" section -->
+
+<!-- here could the original declaration come, eg %DocBookDTD;
+     (it's a nice way of doing this; other customisations should
+     be redone following this `architecture': the result might be
+     much simpler) -->
+<!ATTLIST QandASet 
+                DefaultLabel (qanda|number|none) #IMPLIED 
+                %common.idreq.attrib; 
+                %qandset.role.attrib; 
+                %local.qandset.attrib;>
 
 
 <!-- ============================================================= -->
