@@ -1,3 +1,7 @@
+2004-02-10  Dirk Mueller  <mueller@kde.org>
+
+	* html/htmlparser.cpp (insertNode): argh. regression fix (http://www.cygwin.com) (#74329).
+
 2004-02-09  David Faure  <faure@kde.org>
 
 	* ecma/kjs_events.h (clear): set listener object to Null(), not to an invalid Object(),
