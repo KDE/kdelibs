@@ -204,7 +204,7 @@ public:
 
     virtual tagStatus startTag() { return TITLEStartTag; }
     virtual tagStatus endTag() { return TITLEEndTag; }
-    virtual void close();
+    virtual void setTitle();
 };
 
 }; //namespace

@@ -404,7 +404,7 @@ ushort HTMLTitleElementImpl::id() const
     return ID_TITLE;
 }
 
-void HTMLTitleElementImpl::close()
+void HTMLTitleElementImpl::setTitle()
 {
     kdDebug( 6030 ) << "Title:close" << endl;
     if(!_first || _first->id() != ID_TEXT) return;

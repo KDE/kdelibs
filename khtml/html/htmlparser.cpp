@@ -1024,6 +1024,9 @@ void KHTMLParser::processCloseTag(Token *t)
 	inBody = true;
 	document->createSelector();
 	break;
+    case ID_TITLE+ID_CLOSE_TAG:
+	static_cast<HTMLTitleElementImpl *>(current)->setTitle();
+	break;
     default:
 	break;
     }
