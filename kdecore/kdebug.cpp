@@ -122,6 +122,12 @@ QString getDescrFromNum(unsigned short _num)
   return "";
 }
 
+void kdebug_null( ushort nLevel, ushort nArea, 
+                         const char* pFormat, ... )
+{
+	return;
+}
+
 void kdebug( ushort nLevel, ushort nArea, 
                          const char* pFormat, ... )
 {
