@@ -96,7 +96,7 @@ namespace KABC {
       LdapConfigWidget( QWidget* parent = 0, 
         const char* name = 0, WFlags fl = 0 );
       /** Constructs a configuration widget */
-      LdapConfigWidget( int flags = W_ALL, QWidget* parent = 0,
+      LdapConfigWidget( int flags, QWidget* parent = 0,
         const char* name = 0, WFlags fl = 0 );
       /** Destructs a configuration widget */
       virtual ~LdapConfigWidget();
