@@ -193,9 +193,31 @@ Node NodeIterator::getPreviousNode(Node n)
   return n.parentNode();
   
 }
-void NodeIterator::deleteNode(Node /*n*/)
+void NodeIterator::deleteNode(Node n)
 {
-  
+    if( n.isNull() )
+        return;  // someone tried to delete a null node :)
+
+    Node _tempDeleted = referenceNode;
+    while( !_tempDeleted.isNull() && _tempDeleted != n) // did I get deleted, or one of my parents?
+        _tempDeleted = _tempDeleted.parentNode();
+
+    if( _tempDeleted.isNull() )  // someone that did consern me got deleted
+        return;
+
+    if( !inFront)
+    {
+        Node _next = getNextNode(_tempDeleted);
+        if( !_next.isNull() )
+            referenceNode = _next;
+        else
+        {
+            inFront = false;
+            referenceNode = getPreviousNode(_tempDeleted);
+            return;
+        }
+    }
+    referenceNode = getPreviousNode(_tempDeleted);
 }
 
 short NodeIterator::isAccepted(Node n)
