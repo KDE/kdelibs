@@ -28,7 +28,7 @@ class QPushButton;
 
 class QDirLineEdit : public QWidget
 {
-	Q_OBJECT;
+	Q_OBJECT
 public:
 	QDirLineEdit(bool file, QWidget *parent = 0, const char *name = 0);
 	~QDirLineEdit();

@@ -32,7 +32,7 @@ class QPushButton;
 
 class KMWIppPrinter : public KMWizardPage
 {
-	Q_OBJECT;
+	Q_OBJECT
 public:
 	KMWIppPrinter(QWidget *parent = 0, const char *name = 0);
 	~KMWIppPrinter();
