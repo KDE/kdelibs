@@ -110,7 +110,7 @@ using namespace KJS;
 %token <ustr> IDENT
 
 /* automatically inserted semicolon */
-%token AUTO
+%token AUTOPLUSPLUS AUTOMINUSMINUS
 
 /* non-terminal types */
 %type <node>  Literal PrimaryExpr Expr MemberExpr FunctionExpr NewExpr CallExpr
@@ -258,9 +258,9 @@ UnaryExpr:
   | VOID UnaryExpr                 { $$ = new VoidNode($2); }
   | TYPEOF UnaryExpr               { $$ = new TypeOfNode($2); }
   | PLUSPLUS UnaryExpr             { $$ = new PrefixNode(OpPlusPlus, $2); }
-  | AUTO PLUSPLUS UnaryExpr        { $$ = new PrefixNode(OpPlusPlus, $3); }
+  | AUTOPLUSPLUS UnaryExpr         { $$ = new PrefixNode(OpPlusPlus, $2); }
   | MINUSMINUS UnaryExpr           { $$ = new PrefixNode(OpMinusMinus, $2); }
-  | AUTO MINUSMINUS UnaryExpr      { $$ = new PrefixNode(OpMinusMinus, $3); }
+  | AUTOMINUSMINUS UnaryExpr       { $$ = new PrefixNode(OpMinusMinus, $2); }
   | '+' UnaryExpr                  { $$ = new UnaryPlusNode($2); }
   | '-' UnaryExpr                  { $$ = new NegateNode($2); }
   | '~' UnaryExpr                  { $$ = new BitwiseNotNode($2); }

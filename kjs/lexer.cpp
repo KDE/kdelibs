@@ -551,19 +551,15 @@ int Lexer::matchPunctuator(unsigned short c1, unsigned short c2,
     return NE;
   } else if (c1 == '+' && c2 == '+') {
     shift(2);
-    if (terminator) {
-      // automatic semicolon insertion
-      stackToken = PLUSPLUS;
-      return AUTO;
-    } else
+    if (terminator)
+      return AUTOPLUSPLUS;
+    else
       return PLUSPLUS;
   } else if (c1 == '-' && c2 == '-') {
     shift(2);
-    if (terminator) {
-      // automatic semicolon insertion
-      stackToken = MINUSMINUS;
-      return AUTO;
-    } else
+    if (terminator)
+      return AUTOMINUSMINUS;
+    else
       return MINUSMINUS;
   } else if (c1 == '=' && c2 == '=') {
     shift(2);

@@ -96,7 +96,8 @@ typedef
 #define	XOREQUAL	310
 #define	OREQUAL	311
 #define	IDENT	312
-#define	AUTO	313
+#define	AUTOPLUSPLUS	313
+#define	AUTOMINUSMINUS	314
 
 
 extern YYSTYPE kjsyylval;
