@@ -343,16 +343,16 @@ QString Address::formattedAddress( const QString &realName,
   KSimpleConfig entry( locate( "locale", 
         QString( "l10n/" ) + ciso + QString( "/entry.desktop" ) ) );
   entry.setGroup( "KCM Locale" );
-  
+
   // decide whether this needs special business address formatting
-  if ( orgaName.isNull() ) {
+  if ( orgaName.isEmpty() ) {
     addrTemplate = entry.readEntry( "AddressFormat" );
   } else {
     addrTemplate = entry.readEntry( "BusinessAddressFormat" );
     if ( addrTemplate.isEmpty() )
       addrTemplate = entry.readEntry( "AddressFormat" );
   }
-  
+
   // in the case there's no format found at all, default to what we've always
   // used:
   if ( addrTemplate.isEmpty() ) {
@@ -361,7 +361,7 @@ QString Address::formattedAddress( const QString &realName,
         << " found). Using default address formatting." << endl;
     addrTemplate = "%0(%n\\n)%0(%cm\\n)%0(%s\\n)%0(PO BOX %p\\n)%0(%l%w%r)%,%z";
   }
-  
+
   // scan
   parseAddressTemplateSection( addrTemplate, ret, realName, orgaName );
 
@@ -527,7 +527,7 @@ QString Address::countryToISO( const QString &cname )
   if ( file.open( IO_ReadOnly ) ) {
     QTextStream s( &file );
     QString strbuf = s.readLine();
-    while( !strbuf.isNull() ) {
+    while( !strbuf.isEmpty() ) {
       QStringList countryInfo = QStringList::split( '\t', strbuf, true );
       if ( countryInfo[ 0 ] == cname ) {
         file.close();
@@ -559,7 +559,7 @@ QString Address::ISOtoCountry( const QString &ISOname )
     QString searchStr = "\t" + ISOname.simplifyWhiteSpace().lower();
     QString strbuf = s.readLine();
     int pos;
-    while ( !strbuf.isNull() ) {
+    while ( !strbuf.isEmpty() ) {
       if ( (pos = strbuf.find( searchStr )) != -1 ) {
         file.close();
         return i18n( strbuf.left( pos ).utf8() );
