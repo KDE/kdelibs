@@ -222,6 +222,7 @@
 7109        kio_tar
 7110        kio_gzip
 7111        kio_sql
+7112        kio_smtp
 7113        kio_http_debug
 7114        kio_nntp
 7115        kio_thumbnail
