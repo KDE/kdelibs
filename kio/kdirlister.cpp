@@ -36,7 +36,7 @@
 class KDirLister::KDirListerPrivate
 {
 public:
-    KDirListerPrivate() { }
+    KDirListerPrivate() { autoUpdate=false; }
     KURL::List lstPendingUpdates;
     bool autoUpdate;
     bool urlChanged;
@@ -54,12 +54,8 @@ KDirLister::KDirLister( bool _delayedMimeTypes )
   m_bDirOnlyMode = false;
   m_bDelayedMimeTypes = _delayedMimeTypes;
   m_isShowingDotFiles = false;
-  d->autoUpdate = true;
+  setAutoUpdate( true );
   d->urlChanged = false;
-  connect( kdirwatch, SIGNAL( dirty( const QString& ) ),
-           this, SLOT( slotDirectoryDirty( const QString& ) ) );
-  connect( kdirwatch, SIGNAL( fileDirty( const QString& ) ),
-           this, SLOT( slotFileDirty( const QString& ) ) );
 }
 
 KDirLister::~KDirLister()
@@ -125,7 +121,7 @@ void KDirLister::openURL( const KURL& _url, bool _showDotFiles, bool _keep )
   // Automatic updating of directories ?
   if ( d->autoUpdate && _url.isLocalFile() )
   {
-    //kdDebug(7003) << "adding to kdirwatch " << _url.path() << endl;
+    //kdDebug(7003) << "adding to kdirwatch " << kdirwatch << " " << _url.path() << endl;
     kdirwatch->addDir( _url.path() );
   }
   m_lstDirs.append( _url );
@@ -490,7 +486,6 @@ void KDirLister::forgetDirs()
     }
   }
   m_lstDirs.clear();
-  kdirwatch->disconnect( this );
 }
 
 KFileItem * KDirLister::createFileItem( const KIO::UDSEntry& entry,
