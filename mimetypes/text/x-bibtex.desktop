@@ -34,6 +34,7 @@ Comment[mn]=Ном зүйн өгөгдөл (bibtex)
 Comment[ms]=Data Bibliografik (Bibtex)
 Comment[mt]=Data bibljografika (bibtex)
 Comment[nb]=Bibliografiske data (bibtex)
+Comment[nds]=Biblografisch Daten (Bibtex)
 Comment[nl]=Bibliografische gegevens (bibtex)
 Comment[nn]=Bibliografiske data (Bibtex)
 Comment[nso]=Data ya Bibliography (Bibtex)
@@ -63,6 +64,7 @@ Icon=tex
 MimeType=text/x-bibtex
 Patterns=*.bib
 Type=MimeType
+X-KDE-IsAlso=text/plain
 
 [Property::X-KDE-text]
 Type=bool
