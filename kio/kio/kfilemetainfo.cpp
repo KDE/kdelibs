@@ -264,7 +264,8 @@ public:
     Data(const QString& _path, uint _what)
         : QShared(),
           path(_path),
-          what(_what)
+          what(_what),
+          mimeTypeInfo( 0L )
     {}
 
     // wee use this one for the streaming operators
