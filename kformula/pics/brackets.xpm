@@ -1,5 +1,5 @@
 /* XPM */
-static char * brackets_xpm[] = {
+static const char* brackets_xpm[] = {
 "22 22 3 1",
 " 	c None",
 ".	c #51445144FFFF",

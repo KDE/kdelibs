@@ -1,5 +1,5 @@
 /* ANSI-C code produced by gperf version 2.7 */
-/* Command-line: gperf -a -L ANSI-C -C -G -c -o -t -k * -NfindEntity -D -s 2 kentities.gperf  */
+/* Command-line: gperf -a -L ANSI-C -C -G -c -o -t -k * -NfindEntity -D -Hhash_Entity -Wwordlist_Entity -s 2 kentities.gperf  */
 /*   This file is part of the KDE libraries
   
      Copyright (C) 1999 Lars Knoll (knoll@mpi-hd.mpg.de)
@@ -44,7 +44,7 @@ struct entity {
 __inline
 #endif
 static unsigned int
-hash (register const char *str, register unsigned int len)
+hash_Entity (register const char *str, register unsigned int len)
 {
   static const unsigned short asso_values[] =
     {
@@ -101,7 +101,7 @@ hash (register const char *str, register unsigned int len)
   return hval;
 }
 
-static const struct entity wordlist[] =
+static const struct entity wordlist_Entity[] =
   {
     {"GT", 62},
     {"rarr", 0x2192},
@@ -539,7 +539,7 @@ findEntity (register const char *str, register unsigned int len)
 {
   if (len <= MAX_WORD_LENGTH && len >= MIN_WORD_LENGTH)
     {
-      register int key = hash (str, len);
+      register int key = hash_Entity (str, len);
 
       if (key <= MAX_HASH_VALUE && key >= 0)
         {
@@ -547,15 +547,15 @@ findEntity (register const char *str, register unsigned int len)
 
           if (index >= 0)
             {
-              register const char *s = wordlist[index].name;
+              register const char *s = wordlist_Entity[index].name;
 
               if (*str == *s && !strncmp (str + 1, s + 1, len - 1))
-                return &wordlist[index];
+                return &wordlist_Entity[index];
             }
           else if (index < -TOTAL_KEYWORDS)
             {
               register int offset = - 1 - TOTAL_KEYWORDS - index;
-              register const struct entity *wordptr = &wordlist[TOTAL_KEYWORDS + lookup[offset]];
+              register const struct entity *wordptr = &wordlist_Entity[TOTAL_KEYWORDS + lookup[offset]];
               register const struct entity *wordendptr = wordptr + -lookup[offset + 1];
 
               while (wordptr < wordendptr)

@@ -1,5 +1,5 @@
 /* XPM */
-static char*index3[]={
+static const char*index3[]={
 "22 22 3 1",
 "a c #0000ff",
 ". c None",

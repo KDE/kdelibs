@@ -39,7 +39,7 @@ AssertDialog::AssertDialog(QWidget* parent, const char* name)
   // -----
   connect(kapp, SIGNAL(appearanceChanged()), SLOT(initializeGeometry()));
   // -----
-  temp=(string)i18n("You have found a bug in ")+(string)kapp->appName()+".";
+  temp=(string)i18n("You have found a bug in %1.").arg(kapp->name());
   labelHeadline->setText(temp.c_str());
   // pixmap.load("bug_3d.xpm");
   labelImage->setPixmap(pixmap);
@@ -202,7 +202,7 @@ void evaluate_assertion(bool condition, const char* file, int line,
       break;
     }
     case 2: { // send mail to author
-      subject=(string)"["+(string)kapp->appName()+(string)"]"
+      subject=(string)"["+(string)kapp->name()+(string)"]"
 	+(string)" assertion failed (file "+file
 	+(string)", line "+(string)buffer
 	+(string)"): "+cond_text;

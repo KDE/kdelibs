@@ -1098,7 +1098,7 @@ trim (dest, str)
 	/* remove the leading and trailing "'" from str 
 	   and store the result in dest */
 	char *tmp;
-	char *end = strrchr(str, '\'');
+	const char *end = strrchr(str, '\'');
 	int len = strlen(str);
 
 	if (*dest)

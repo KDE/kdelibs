@@ -243,9 +243,9 @@ typedef struct
 
 
 /* The chunk commands */
-MdChunk* FindChunk(char *adress, char *ChunkName);
-void*    FindChunkData(char *adress, char *ChunkName);
-MdChunk* WriteChunk (char *adress, char *ChunkName, char *data, int32 length);
+MdChunk* FindChunk(char *adress, const char *ChunkName);
+void*    FindChunkData(char *adress, const char *ChunkName);
+MdChunk* WriteChunk (char *adress, const char *ChunkName, char *data, int32 length);
 
 
 /***********************************************************************************

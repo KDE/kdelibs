@@ -38,7 +38,7 @@ void WriteEndChunkHere(char *adress);
  *				NULL, if chunk not exist.
  *
  *****************************************************************************/
-void *FindChunkData(char *adress, char *ChunkName)
+void *FindChunkData(char *adress, const char *ChunkName)
 {
   MdChunk	*chunk;
   char		*TmpAdr;
@@ -69,7 +69,7 @@ void *FindChunkData(char *adress, char *ChunkName)
  *				not exist.
  *
  *****************************************************************************/
-MdChunk* FindChunk(char *adress, char *ChunkName)
+MdChunk* FindChunk(char *adress, const char *ChunkName)
 {
   /* Pointer to a chunk */
   MdChunk	*chunk;
@@ -135,7 +135,7 @@ MdChunk* FindChunk(char *adress, char *ChunkName)
  *				not be written (No memory left for chunk).
  *
  *****************************************************************************/
-MdChunk* WriteChunk (char *adress, char *ChunkName, char *data, int32 length)
+MdChunk* WriteChunk (char *adress, const char *ChunkName, char *data, int32 length)
 {
   MdChunk	*TmpChunk;
   MdCh_IHDR	*HeaderChunk;

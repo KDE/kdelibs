@@ -216,7 +216,7 @@ static long from_oct(int, char *);
 #define P_NEWS  10          /* Usenet Netnews */
 
 typedef struct asc_type {
-	char *type;
+	const char *type;
 	int  kwords;
 	double  weight;
 } asc_type;
@@ -238,7 +238,7 @@ static asc_type types[] = {
 #define NTYPES (sizeof(types)/sizeof(asc_type))
 
 static struct names {
-	char *name;
+	const char *name;
 	short type;
 } names[] = {
 	{

@@ -1,5 +1,5 @@
 /* XPM */
-static char * bug_3d[] = {
+static const char * bug_3d[] = {
 "56 46 30 1",
 "ä	c None",
 " 	c #FFFFFBEEFFFF",

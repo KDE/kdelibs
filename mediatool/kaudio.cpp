@@ -38,7 +38,7 @@ KAudio::KAudio() : QObject()
   char		ServerId[256];
   char		KMServerCidFile[maxFnameLen];
   const char    kasFileName[]="/.kaudioserver";
-  char		*tmpadr;
+  const char	*tmpadr;
   FILE		*KMServerCidHandle;
   MediaCon	m;
 
