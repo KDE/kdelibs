@@ -506,57 +506,23 @@ bool KToolBarButton::eventFilter(QObject *o, QEvent *ev)
 
 void KToolBarButton::drawButton( QPainter *_painter )
 {
-  if(kapp->kstyle()){
-    KStyle::KToolButtonType iconType;
-    switch(d->m_iconText){
-    case KToolBar::IconOnly:
-        iconType = KStyle::Icon;
-        break;
-    case KToolBar::IconTextRight:
-        iconType = KStyle::IconTextRight;
-        break;
-    case KToolBar::TextOnly:
-        iconType = KStyle::Text;
-        break;
-    case KToolBar::IconTextBottom:
-    default:
-        iconType = KStyle::IconTextBottom;
-        break;
-    }
-    QFont ref_font(KGlobalSettings::toolBarFont());
-    kapp->kstyle()->drawKToolBarButton(_painter, 0, 0, width(), height(),
-      isEnabled()? colorGroup() : palette().disabled(), isDown() || isOn(),
-      d->m_isRaised, isEnabled(), d->m_popup != 0L, iconType, textLabel(),
-      pixmap(), &ref_font, this);
-    return;
-  }
+  QStyle::SFlags flags   = QStyle::Style_Default;
+  QStyle::SCFlags active = QStyle::SC_None;
 
-  if ( isDown() || isOn() )
-  {
-#if QT_VERSION < 300
-    if ( style().guiStyle() == WindowsStyle )
-#else
-    if ( style().styleHint(QStyle::SH_GUIStyle) == WindowsStyle )
-#endif
-      qDrawWinButton(_painter, 0, 0, width(), height(), colorGroup(), true );
-    else
-      qDrawShadePanel(_painter, 0, 0, width(), height(), colorGroup(), true, 2, 0L );
+  if (isDown()) {
+    flags  |= QStyle::Style_Down;
+    active |= QStyle::SC_ToolButton;
   }
+  if (isEnabled()) 	flags |= QStyle::Style_Enabled;
+  if (isOn()) 		flags |= QStyle::Style_On;
+  if (d->m_isRaised)	flags |= QStyle::Style_Raised;
+  if (hasFocus())	flags |= QStyle::Style_HasFocus;
 
-  else if ( d->m_isRaised )
-  {
-#if QT_VERSION < 300
-    if ( style().guiStyle() == WindowsStyle )
-#else
-    if ( style().styleHint(QStyle::SH_GUIStyle) == WindowsStyle )
-#endif
-      qDrawWinButton( _painter, 0, 0, width(), height(), colorGroup(), false );
-    else
-      qDrawShadePanel( _painter, 0, 0, width(), height(), colorGroup(), false, 2, 0L );
-  }
+  // Draw a styled toolbutton
+  style().drawComplexControl(QStyle::CC_ToolButton, _painter, this, rect(),
+	colorGroup(), flags, QStyle::SC_ToolButton, active, QStyleOption());
 
   int dx, dy;
-
   QFont tmp_font(KGlobalSettings::toolBarFont());
   QFontMetrics fm(tmp_font);
 
@@ -566,11 +532,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
     {
       dx = ( width() - pixmap()->width() ) / 2;
       dy = ( height() - pixmap()->height() ) / 2;
-#if QT_VERSION < 300
-      if ( isDown() && style().guiStyle() == WindowsStyle )
-#else
       if ( isDown() && style().styleHint(QStyle::SH_GUIStyle) == WindowsStyle )
-#endif
       {
         ++dx;
         ++dy;
@@ -584,11 +546,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
     {
       dx = 4;
       dy = ( height() - pixmap()->height() ) / 2;
-#if QT_VERSION < 300
-      if ( isDown() && style().guiStyle() == WindowsStyle )
-#else
       if ( isDown() && style().styleHint(QStyle::SH_GUIStyle) == WindowsStyle )
-#endif
       {
         ++dx;
         ++dy;
@@ -604,11 +562,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
       else
         dx = 4;
       dy = 0;
-#if QT_VERSION < 300
-      if ( isDown() && style().guiStyle() == WindowsStyle )
-#else
       if ( isDown() && style().styleHint(QStyle::SH_GUIStyle) == WindowsStyle )
-#endif
       {
         ++dx;
         ++dy;
@@ -629,11 +583,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
         _painter->setPen(palette().disabled().dark());
       dx = (width() - fm.width(textLabel())) / 2;
       dy = (height() - fm.lineSpacing()) / 2;
-#if QT_VERSION < 300
-      if ( isDown() && style().guiStyle() == WindowsStyle )
-#else
       if ( isDown() && style().styleHint(QStyle::SH_GUIStyle) == WindowsStyle )
-#endif
       {
         ++dx;
         ++dy;
@@ -651,11 +601,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
     {
       dx = (width() - pixmap()->width()) / 2;
       dy = (height() - fm.lineSpacing() - pixmap()->height()) / 2;
-#if QT_VERSION < 300
-      if ( isDown() && style().guiStyle() == WindowsStyle )
-#else
       if ( isDown() && style().styleHint(QStyle::SH_GUIStyle) == WindowsStyle )
-#endif
       {
         ++dx;
         ++dy;
@@ -669,11 +615,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
       dx = (width() - fm.width(textLabel())) / 2;
       dy = height() - fm.lineSpacing() - 4;
 
-#if QT_VERSION < 300
-      if ( isDown() && style().guiStyle() == WindowsStyle )
-#else
       if ( isDown() && style().styleHint(QStyle::SH_GUIStyle) == WindowsStyle )
-#endif
       {
         ++dx;
         ++dy;
@@ -688,12 +630,14 @@ void KToolBarButton::drawButton( QPainter *_painter )
 
   if (d->m_popup)
   {
-    if (isEnabled())
-      qDrawArrow (_painter, DownArrow, WindowsStyle, false,
-                  width()-5, height()-5, 0, 0, colorGroup (), true);
-    else
-      qDrawArrow (_painter, DownArrow, WindowsStyle, false,
-                  width()-5, height()-5, 0, 0, colorGroup (), false);
+    QStyle::SFlags arrowFlags = QStyle::Style_Default;
+    
+    if (isDown())	arrowFlags |= QStyle::Style_Down;
+    if (isEnabled()) 	arrowFlags |= QStyle::Style_Enabled;
+    
+      style().drawPrimitive(QStyle::PE_ArrowDown, _painter,
+          QRect(width()-7, height()-7, 7, 7), colorGroup(),
+	  arrowFlags, QStyleOption() );
   }
 }
 
