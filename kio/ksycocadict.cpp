@@ -257,9 +257,13 @@ addDiversity(KSycocaDictStringList *d, int pos)
 void 
 KSycocaDict::save(QDataStream &str)
 {
-   if (!d)
+   if (count() == 0)
    {
-       d = new KSycocaDictStringList();
+      mHashTableSize = 0;
+      mHashList.clear();
+      str << mHashTableSize;
+      str << mHashList;
+      return;
    }
 
    mOffset = str.device()->at();
@@ -286,6 +290,7 @@ KSycocaDict::save(QDataStream &str)
    int lastDiv = 0;
 
    mHashList.clear();
+
 
    while(true)
    {
