@@ -1125,6 +1125,9 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
   if ( *(fe->filename) == '.') {
     if (strncmp(fe->filename, ".X.err", 6) == 0) return;
     if (strncmp(fe->filename, ".xsession-errors", 16) == 0) return;
+    // fontconfig updates the cache on every KDE app start 
+    // (inclusive kio_thumbnail slaves)
+    if (strncmp(fe->filename, ".fonts.cache", 12) == 0) return;
   }
 
   Entry* e = 0;
