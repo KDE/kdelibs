@@ -314,7 +314,6 @@ class KStartupInfo
             KStartupInfoData* data_O, bool remove );
         bool find_wclass( QCString res_name_P, QCString res_class_P,
             KStartupInfoId* id_O, KStartupInfoData* data_O, bool remove );
-        static QCString get_window_startup_id( WId w_P );
         static QCString get_window_hostname( WId w_P );
         void startups_cleanup_internal( bool age_P );
         void clean_all_noncompliant();
