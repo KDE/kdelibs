@@ -131,10 +131,10 @@ static QString splitUrlTarget(const QString &url, QString *target=0)
    QString result = url;
    if(url.startsWith("target://"))
    {
-      int split_pos = url.find('#');
-      result = url.mid(split_pos+1);
+      KURL u(url);
+      result = u.ref();
       if (target)
-         *target = url.mid(9, split_pos-10);
+         *target = u.host();
    }
    return result;
 }
