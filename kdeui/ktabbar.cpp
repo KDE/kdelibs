@@ -116,8 +116,13 @@ void KTabBar::mouseMoveEvent( QMouseEvent *e )
             int xoff = 0, yoff = 0;
             // The additional offsets were found by try and error, TODO: find the rational behind them
             if ( t == tab( currentTab() ) ) {
+#if QT_VERSION >= 0x030200
                 xoff = style().pixelMetric( QStyle::PM_TabBarTabShiftHorizontal, this ) + 3;
                 yoff = style().pixelMetric( QStyle::PM_TabBarTabShiftVertical, this ) - 1;
+#else
+                xoff = 3;
+                yoff = -1;
+#endif
             }
             else {
                 xoff = 5;

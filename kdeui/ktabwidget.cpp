@@ -146,9 +146,11 @@ bool KTabWidget::isEmptyTabbarSpace( const QPoint &p )
     QPoint point( p );
     QSize size( tabBar()->sizeHint() );
     if ( ( tabPosition()==Top && point.y()< size.height() ) || ( tabPosition()==Bottom && point.y()>(height()-size.height() ) ) ) {
+#if QT_VERSION >= 0x030200
         if ( cornerWidget( TopLeft ) )
             point.setX( point.x()-size.height() );
-        if ( tabPosition()==Bottom )
+#endif
+	if ( tabPosition()==Bottom )
             point.setY( point.y()-( height()-size.height() ) );
         QTab *tab = tabBar()->selectTab( point);
         if( tab== 0L )
