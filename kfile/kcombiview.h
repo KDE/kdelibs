@@ -34,7 +34,7 @@ public:
     KCombiView( FileView dirs, FileView files, 
                 bool s, QDir::SortSpec sorting,
 		QWidget * parent=0, const char * name=0 );
-    ~KCombiView() {};
+    ~KCombiView();
     
     virtual QWidget *widget() { return this; }
     virtual void setAutoUpdate(bool);

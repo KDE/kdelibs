@@ -250,20 +250,6 @@ protected:
     void resizeEvent(QResizeEvent *);
     
     /**
-      * Subclasses should overload this method to insert new widgets into
-      * the dialog which will be displayed between the toolbar and the
-      * directory/file views.
-      */
-    virtual void initUpperChildren();
-    
-    /**
-      * Subclasses should overload this method to insert new widgets into
-      * the dialog which will be displayed between the filter and the
-      * button area.
-      */
-    virtual void initLowerChildren();
-
-    /**
       * Subclasses should reimplement this method to swallow the main
       * layout. This allows the addition of children that are outside
       * the existing layout. The function should return the widget that

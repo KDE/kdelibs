@@ -127,9 +127,12 @@ void KFileBaseDialog::init()
     //
     // Read configuration from the config file
     // 
-    int w = c->readNumEntry("Width", 400);
-    int h = c->readNumEntry("Height", 400);
-    
+    QWidget *desk = KApplication::desktop();
+    int w=desk->width() * 5 / 10;
+    int h=desk->height() * 7 / 10;
+    w = c->readNumEntry("Width", w);
+    h = c->readNumEntry("Height", h);
+
     showHidden = (c->readNumEntry("ShowHidden", 0) != 0);
     showStatusLine = (c->readNumEntry("ShowStatusLine", 1) != 0);
       
@@ -195,9 +198,6 @@ void KFileBaseDialog::init()
     toolbar->enableMoving(false);
     toolbar->adjustSize();
     setMinimumWidth(toolbar->width());
-    
-    // Create subclass children
-    initUpperChildren();
     
     if ( c->readNumEntry("KeepDirsFirst", 1) )
         dir->setSorting( QDir::Name | QDir::DirsFirst);
@@ -266,8 +266,6 @@ void KFileBaseDialog::init()
 	
     }
     
-    initLowerChildren();
-    
     // Add the status line
     if ( showStatusLine ) {
 	myStatusLine = new QLabel( this, "StatusBar" );
@@ -312,6 +310,13 @@ void KFileBaseDialog::init()
 	checkPath(filename_);
 	locationEdit->setText(filename_);
     }
+    adjustSize();
+    int w1 = minimumSize().width();
+    int w2 = toolbar->sizeHint().width();
+    if (w1 < w2)
+      setMinimumWidth(w2);
+    debug("size %d %d", toolbar->sizeHint().width(), minimumSize().width());
+    resize(w, h);
 }
 
 void KFileBaseDialog::okPressed()
@@ -373,6 +378,13 @@ KFileBaseDialog::~KFileBaseDialog()
     delete visitedDirs;
     delete dir;
     delete filters;
+    KConfig *c = kapp->getConfig();
+    QString oldgroup= c->group();
+    c->setGroup("KFileDialog Settings");
+    c->writeEntry("Width", width(), true, true);
+    c->writeEntry("Height", height(), true, true);
+    c->setGroup(oldgroup);
+    c->sync();
 }
 
 void KFileBaseDialog::help() // SLOT
@@ -868,7 +880,7 @@ void KFileBaseDialog::mkdir()
     lLayout = new QVBoxLayout( lMakeDir, 5 );
     label = new QLabel(lMakeDir);
     label->setAlignment( AlignLeft | AlignVCenter );
-    label->setText(QString(i18n("Create new directory in :  ")) + dir->path() );
+    label->setText(QString(i18n("Create new directory in: ")) + dir->path() );
     label->setMinimumSize( label->sizeHint() );
     ed= new QLineEdit(lMakeDir);
     ed->setText( i18n("New Directory") );
@@ -1042,19 +1054,19 @@ KFileInfoContents *KFileDialog::initFileList( QWidget *parent )
 {
 
     bool mixDirsAndFiles = 
-	kapp->getConfig()->readNumEntry("MixDirsAndFiles", 0);
+	kapp->getConfig()->readBoolEntry("MixDirsAndFiles", false);
     
     bool showDetails = 
 	(kapp->getConfig()->readEntry("ViewStyle", 
-				      "DetailView") == "DetailView");
+				      "SimpleView") == "DetailView");
     
     bool useSingleClick =
-	kapp->getConfig()->readNumEntry("SingleClick",1);
+	kapp->getConfig()->readBoolEntry("SingleClick",true);
     
     QDir::SortSpec sort = static_cast<QDir::SortSpec>(dir->sorting() &
                                                       QDir::SortByMask);
                                                       
-    if (kapp->getConfig()->readNumEntry("KeepDirsFirst",1))
+    if (kapp->getConfig()->readBoolEntry("KeepDirsFirst", true))
         sort = static_cast<QDir::SortSpec>(sort | QDir::DirsFirst);
     
     dir->setSorting(sort);    
@@ -1118,16 +1130,6 @@ void KFileBaseDialog::completion() // SLOT
 void KFileBaseDialog::resizeEvent(QResizeEvent *)
 {
     toolbar->updateRects(true);
-}
-
-void KFileBaseDialog::initUpperChildren()
-{
-
-}
-
-void KFileBaseDialog::initLowerChildren()
-{
-
 }
 
 /**
@@ -1271,7 +1273,7 @@ void KDirDialog::updateStatusLine()
 {
     QString lDirText;
     if ( fileList->numDirs() == 1 )
-        lDirText = i18n("1 directory");
+        lDirText = i18n("one directory");
     else
 	lDirText.sprintf("%d directories", fileList->numDirs());
 

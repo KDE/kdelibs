@@ -1,3 +1,15 @@
+1998-04-14  Stephan Kulow  <coolo@kde.org>
+
+	* kfiledialogconf.cpp: removed the width/height sliders
+	
+	* kfiledialog.cpp: save the width and height on exit
+
+	* kfiledialogconf.cpp: added more guys to the about box
+
+	* kfiledialog.h: removed init*Children. They were useless
+
+	* kfiledialog.cpp: set the default size to a useful value
+
 Mon Apr  6 17:30:18 1998  Daniel Grana <grana@ie.iwi.unibe.ch>
 
 	* kfilepreview.*: restructured previewing, one can now easily

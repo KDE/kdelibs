@@ -51,22 +51,14 @@ public slots:
 protected:  
   QRadioButton *myDetailView;
   QRadioButton *myShortView;
-
-  QLabel *myWidthLabel;
-  QSlider *myWidth;
-  QLabel *myHeightLabel;
-  QSlider *myHeight;
-
-  QSlider *myPanner;
-  QLabel *myPannerLabel;
-
+  
   QCheckBox *myShowFilter;
   QCheckBox *myShowHidden;
   QCheckBox *myShowStatusLine;
   QCheckBox *useSingleClick;
   QCheckBox *myShowListLabels;
-    QCheckBox *myMixDirsAndFiles;
-    QCheckBox *myKeepDirsFirst;
+  QCheckBox *myMixDirsAndFiles;
+  QCheckBox *myKeepDirsFirst;
 
 };
 

@@ -38,18 +38,26 @@ KFileDialogConfigureDlg::KFileDialogConfigureDlg(QWidget *parent,
   KFileDialogConfigure *kfdc= new KFileDialogConfigure(this);
 
   resize(kfdc->size());
-  addTab(kfdc, klocale->translate("Look and Feel"));
+  addTab(kfdc, i18n("Look and Feel"));
 
-  QLabel *label= new QLabel("KFileDialog\nBy\n"
-			    "Richard Moore\nrich@kde.org", this);
+  QLabel *label= new QLabel(i18n("KDE File Selector by:\n"
+				 "\n"
+				 "Richard Moore <rich@kde.org>\n"
+				 "Stephan Kulow <coolo@kde.org>\n"
+				 "and Daniel Grana <grana@ie.iwi.unibe.ch>\n"
+				 "\n"
+				 "with contributions by\n"
+				 "\n"
+				 "Mario Weilguni <mweilguni@sime.com>\n"
+				 "and Martin Jones <mjones@kde.org>"),
+			    this);
   label->setAlignment(AlignCenter);
   label->adjustSize();
-  addTab(label, klocale->translate("About"));
+  addTab(label, i18n("About"));
 
-  setDefaultButton();
-  setCancelButton();
-  setApplyButton();
-  setOKButton();
+  setCancelButton(i18n("Cancel"));
+  setApplyButton(i18n("Apply"));
+  setOKButton(i18n("OK"));
   connect( this, SIGNAL(applyButtonPressed()), kfdc, SLOT(saveConfiguration()) );
 };
 
@@ -57,85 +65,7 @@ KFileDialogConfigure::KFileDialogConfigure(QWidget *parent,
 					   const char *name)
   : QWidget(parent, name)
 {
-
-  QHBoxLayout *horizontal = new QHBoxLayout( this, 10 );
-
-  QVBoxLayout *vertical = new QVBoxLayout( );
-  horizontal->addLayout( vertical, 10);
-  
-  QGroupBox *box1 = new QGroupBox( i18n("Width"), this ); 
-  QHBoxLayout *hor1 = new QHBoxLayout( box1, 5 );
-  myWidth = new QSlider( 0,
-                         1280,
-                         1,
-                         300,
-                         QSlider::Horizontal,
-                         box1,
-                         "???");
-  myWidth->adjustSize();
-  myWidth->setMaximumHeight( 25 );
-  hor1->addWidget( myWidth, 1 );
-  myWidthLabel = new QLabel(box1);
-  myWidthLabel->setNum(1000);
-  myWidthLabel->adjustSize();
-  myWidthLabel->setFixedSize( myWidthLabel->sizeHint() );
-  hor1->addSpacing( 0 );
-  hor1->addWidget( myWidthLabel, 0 );
-  box1->adjustSize();
-  box1->setMinimumSize( 100, 50 );
-  vertical->addWidget(box1, 5);
-  
-  QGroupBox *box2 = new QGroupBox( i18n("Height"), this ); 
-  QHBoxLayout *hor2 = new QHBoxLayout( box2, 5 );
-  myHeight = new QSlider( 0,
-                          1280,
-                          1,
-                          300,
-                          QSlider::Horizontal,
-                          box2,
-                          "HeightSlider");
-  myHeight->adjustSize();
-  myHeight->setMaximumHeight( 25 );
-  hor2->addWidget( myHeight, 1 ),
-  myHeightLabel = new QLabel(box2);
-  myHeightLabel->setNum(1000);
-  myHeightLabel->adjustSize();
-  myHeightLabel->setFixedSize( myHeightLabel->sizeHint() );
-  hor2->addSpacing( 5 );
-  hor2->addWidget( myHeightLabel, 0 );
-  box2->adjustSize();
-  box2->setMinimumSize( 100, 50 );
-  vertical->addWidget(box2, 5);
-
-  QGroupBox *box3 = new QGroupBox( i18n("Panner"), this ); 
-  QHBoxLayout *hor3 = new QHBoxLayout( box3, 5 );
-  myPanner = new QSlider( 0,
-                         100,
-                         1,
-                         40,
-                         QSlider::Horizontal,
-                         box3,
-                         "PannerSlider");
-  myPanner->setMaximumHeight( 24 );
-  myPanner->adjustSize();
-  hor3->addWidget( myPanner, 1 );
-  myPannerLabel = new QLabel(box3);
-  myPannerLabel->setNum(100);
-  myPannerLabel->adjustSize();
-  myPannerLabel->setFixedSize( myPannerLabel->sizeHint() );
-  hor3->addSpacing( 0 );
-  hor3->addWidget( myPannerLabel, 0 );
-  box3->adjustSize();
-  box3->setMinimumSize( 100, 50);
-  vertical->addWidget(box3, 5);
-  
-  connect( myWidth, SIGNAL(valueChanged(int)), myWidthLabel, SLOT(setNum(int)) );
-  connect( myHeight, SIGNAL(valueChanged(int)), myHeightLabel, SLOT(setNum(int)) );
-  connect( myPanner, SIGNAL(valueChanged(int)), myPannerLabel, SLOT(setNum(int)) );
-  //
-  //
-  QVBoxLayout *choices = new QVBoxLayout(5);
-  horizontal->addLayout( choices, 2 );
+  QVBoxLayout *choices = new QVBoxLayout(this, 5);
   
   QButtonGroup *group= new QButtonGroup( i18n("View style"), this);
   group->setExclusive(true);
@@ -154,12 +84,9 @@ KFileDialogConfigure::KFileDialogConfigure(QWidget *parent,
   l1->addWidget( myDetailView, 0 );
   choices->addWidget(group, 2);
   
-  // Short View not working right now
-  // myShortView->setEnabled(false);
- 
   //
   //
-  QButtonGroup *group2= new QButtonGroup(klocale->translate("Misc"), this);
+  QButtonGroup *group2= new QButtonGroup(i18n("Misc"), this);
   choices->addSpacing(15);
   choices->addWidget( group2, 5 );
   
@@ -194,11 +121,13 @@ KFileDialogConfigure::KFileDialogConfigure(QWidget *parent,
   useSingleClick->adjustSize();
   useSingleClick->setMinimumSize( useSingleClick->sizeHint() );
   l2->addWidget( useSingleClick, 0 );
+  l2->addSpacing(10);
   myMixDirsAndFiles = new QCheckBox( i18n("Mix dirs and files"), group2);
   group2->insert( myMixDirsAndFiles, B_MIX );
   myMixDirsAndFiles->adjustSize();
   myMixDirsAndFiles->setMinimumSize( myMixDirsAndFiles->sizeHint() );
   l2->addWidget( myMixDirsAndFiles, 0 );
+  l2->addSpacing(10);
   myKeepDirsFirst = new QCheckBox( i18n("Keep dirs first"), group2);
   group2->insert( myKeepDirsFirst, B_KEEPDIR );
   myKeepDirsFirst->adjustSize();
@@ -209,9 +138,9 @@ KFileDialogConfigure::KFileDialogConfigure(QWidget *parent,
   l2->activate();
   group->setMinimumSize( group->childrenRect().size() );
   l1->activate();
-  horizontal->activate();
+  choices->activate();
   this->adjustSize();
-
+  
 /*
   horizontal->addSpacing( 10 );
   horizontal->addWidget( group2, 5 );
@@ -220,7 +149,7 @@ KFileDialogConfigure::KFileDialogConfigure(QWidget *parent,
    QLineEdit *findPathEdit;
    findPathEdit= new QLineEdit(this, "findpathedit");
    QLabel *tmpLabel;
-   tmpLabel= new QLabel(findPathEdit, klocale->translate("&Find command:"), this);
+   tmpLabel= new QLabel(findPathEdit, i18n("&Find command:"), this);
    tmpLabel->adjustSize();
    tmpLabel->setAlignment(AlignCenter);
    tmpLabel->setMinimumSize(tmpLabel->size());
@@ -243,23 +172,18 @@ KFileDialogConfigure::KFileDialogConfigure(QWidget *parent,
   oldgroup= c->group();
   c->setGroup("KFileDialog Settings");
 
-  myWidth->setValue(c->readNumEntry("Width", 400));
-  myHeight->setValue(c->readNumEntry("Height", 400));
-  myPanner->setValue(c->readNumEntry("PannerPosition", 40));
-  myPannerLabel->setNum(myPanner->value());
-
-  QString currentViewStyle = c->readEntry("ViewStyle","DetailView");
+  QString currentViewStyle = c->readEntry("ViewStyle","SimpleView");
   if ( currentViewStyle == "DetailView" )
-    myDetailView->setChecked(TRUE);
+    myDetailView->setChecked(true);
   else
-    myShortView->setChecked(TRUE);
-  myShowHidden->setChecked(c->readNumEntry("ShowHidden", 0) != 0);
-  myShowFilter->setChecked(c->readNumEntry("ShowFilter", 1) != 0);
-  myShowListLabels->setChecked(c->readNumEntry("ShowListLabels", 1) != 0);
-  useSingleClick->setChecked(c->readNumEntry("SingleClick", 1) != 0);
-  myShowStatusLine->setChecked(c->readNumEntry("ShowStatusLine", 1) != 0);
-  myMixDirsAndFiles->setChecked(c->readNumEntry("MixDirsAndFiles", 0));
-  myKeepDirsFirst->setChecked(c->readNumEntry("KeepDirsFirst", 1));
+    myShortView->setChecked(true);
+  myShowHidden->setChecked(c->readBoolEntry("ShowHidden", false));
+  myShowFilter->setChecked(c->readBoolEntry("ShowFilter", true));
+  myShowListLabels->setChecked(c->readBoolEntry("ShowListLabels", true));
+  useSingleClick->setChecked(c->readBoolEntry("SingleClick", true));
+  myShowStatusLine->setChecked(c->readBoolEntry("ShowStatusLine", true));
+  myMixDirsAndFiles->setChecked(c->readBoolEntry("MixDirsAndFiles", false));
+  myKeepDirsFirst->setChecked(c->readBoolEntry("KeepDirsFirst", true));
 
   // Restore the old config group
   c->setGroup(oldgroup);
@@ -277,10 +201,6 @@ KFileDialogConfigure::saveConfiguration()
   c= kapp->getConfig();
   oldgroup= c->group();
   c->setGroup("KFileDialog Settings");
-
-  c->writeEntry("Width", myWidth->value(), true, true);
-  c->writeEntry("Height", myHeight->value(), true, true);
-  c->writeEntry("PannerPosition", myPanner->value(), true, true);
 
   c->writeEntry("ViewStyle", 
 		myDetailView->isChecked() ? "DetailView" : "ShortView", 

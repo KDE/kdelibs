@@ -89,12 +89,20 @@ KCombiView::KCombiView(  FileView dirs,  FileView files,
     else
 	activate(fileList->widget(), dirList->widget());
 
-    int pan = kapp->getConfig()->readNumEntry("PannerPosition", 50);
+    int pan = kapp->getConfig()->readNumEntry("PannerPosition", 30);
     setSeparatorPos(pan);
 
     dirList->connectDirSelected(this, SLOT(dirActivated()));
     fileList->connectFileSelected(this, SLOT(fileActivated()));
     fileList->connectFileHighlighted(this, SLOT(fileHighlighted()));
+}
+
+KCombiView::~KCombiView() 
+{
+    KConfig *c = kapp->getConfig();
+    QString oldgroup = c->group();
+    c->writeEntry("PannerPosition", separatorPos(), true, true);
+    c->setGroup(oldgroup);
 }
 
 void KCombiView::setAutoUpdate(bool f)
