@@ -347,22 +347,23 @@ void KonfUpdate::gotId(const QString &_id)
    QStringList ids = config->readListEntry("done");
    if (!_id.isEmpty())
    {
-      if (!ids.contains(_id))
-         ids.append(_id);
-      else
-         qWarning("Id '%s' was already in done-list!", _id.latin1());
-      config->writeEntry("done", ids);
-      config->sync();
-   }
-   if (!_id.isEmpty())
-   {
-      if (!m_bUseConfigInfo && ids.contains(_id))
-      {
-         skip = true;
-         return;
-      }
-      skip = false;
-      id = _id;
+       if (!ids.contains(_id))
+       {
+          ids.append(_id);
+          config->writeEntry("done", ids);
+          config->sync();
+       }
+       else
+       {
+          qWarning("Id '%s' was already in done-list!", _id.latin1());
+          if (!m_bUseConfigInfo)
+          {
+             skip = true;
+             return;
+          }
+       }
+       skip = false;
+       id = _id;
    }
 }
 
