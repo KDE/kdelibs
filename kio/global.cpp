@@ -388,7 +388,11 @@ QString Job::errorString()
 #define STRUCT_SETMNTENT int
 #define GETMNTENT(file, var) ((var=getfsent()) != 0)
 #define MOUNTPOINT(var) var->fs_file
+#if defined(_AIX)
+#define MOUNTTYPE(var) var->fs_type
+#else
 #define MOUNTTYPE(var) var->fs_vfstype
+#endif
 #define FSNAME(var) var->fs_spec
 #else /* no setmntent and no setfsent */
 #define SETMNTENT fopen
