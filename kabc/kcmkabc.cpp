@@ -336,6 +336,7 @@ void ConfigPage::slotEdit()
   dlg.setResourceName( config->readEntry( "ResourceName" ) );
   dlg.setReadOnly( config->readBoolEntry( "ResourceIsReadOnly" ) );
   dlg.setFast( config->readBoolEntry( "ResourceIsFast" ) );
+  dlg.setEditMode( true );
 
   if ( dlg.exec() ) {
     config->writeEntry( "ResourceName", dlg.resourceName() );

@@ -27,21 +27,55 @@
 
 namespace KABC {
 
+/**
+  @short Base widget for editing resource settings
+  
+  The @ref loadSettings() and @ref saveSettings() slots should be
+  reimplemented to store the resource specific settings.
+*/
 class ResourceConfigWidget : public QWidget
 {
   Q_OBJECT
 
 public:
+
+  /**
+    Constructor.
+   */
   ResourceConfigWidget( QWidget *parent = 0, const char *name = 0 );
 
+  /**
+    Sets the widget to 'edit' mode. Reimplement this method if you are
+    interested in the mode change (to disable some GUI element for
+    example). By default the widget is in 'add' mode.
+   */
+  virtual void setEditMode( bool value );
+
 public slots:
+  /**
+    This method is called by the @ref ResourceConfigDialog to
+    load the resource specific settings. You have to reimplement
+    it. @param config points to a config object where you can
+    read the settings. Don't use KConfig::setGroup() on this pointer.
+   */
   virtual void loadSettings( KConfig *config );
+
+  /**
+    This method is called by the @ref ResourceConfigDialog to
+    save the resource specific settings. You have to reimplement
+    it. @param config points to a config object where you can
+    write the settings. Don't use KConfig::setGroup() on this pointer.
+   */
   virtual void saveSettings( KConfig *config );
 
 signals:
   void setResourceName( const QString &name );
   void setReadOnly( bool value );
   void setFast( bool value );
+
+private:
+  class ResourceConfigWidgetPrivate;
+  ResourceConfigWidgetPrivate *d;
 };
 
 }

@@ -61,6 +61,11 @@ ResourceDirConfig::ResourceDirConfig( QWidget* parent,  const char* name )
   }
 }
 
+void ResourceDirConfig::setEditMode( bool value )
+{
+  mFormatBox->setEnabled( !value );
+}
+
 void ResourceDirConfig::loadSettings( KConfig *config )
 {
   QString format = config->readEntry( "FileFormat" );

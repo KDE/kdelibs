@@ -41,6 +41,7 @@ public:
   bool readOnly();
   bool fast();
   QString resourceName();
+  void setEditMode( bool value );
 
 public slots:
   int exec();

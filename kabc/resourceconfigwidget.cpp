@@ -35,4 +35,8 @@ void ResourceConfigWidget::saveSettings( KConfig * )
 {
 }
 
+void ResourceConfigWidget::setEditMode( bool value )
+{
+}
+
 #include "resourceconfigwidget.moc"

@@ -64,6 +64,7 @@ ResourceConfigDlg::ResourceConfigDlg( QWidget *parent, const QString& type,
 
   mConfigWidget = factory->configWidget( type, resourceGroupBox );
   if ( mConfigWidget && mConfig ) {
+    mConfigWidget->setEditMode( false );
     mConfigWidget->loadSettings( mConfig );
     mConfigWidget->show();
     connect( mConfigWidget, SIGNAL( setResourceName( const QString & ) ), SLOT( setResourceName( const QString & ) ) );
@@ -114,6 +115,12 @@ void ResourceConfigDlg::setFast( bool value )
 void ResourceConfigDlg::setResourceName( const QString &name )
 {
   mName->setText( name );
+}
+
+void ResourceConfigDlg::setEditMode( bool value )
+{
+  if ( mConfigWidget )
+    mConfigWidget->setEditMode( value );
 }
 
 void ResourceConfigDlg::accept()

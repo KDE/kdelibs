@@ -35,6 +35,8 @@ class ResourceDirConfig : public ResourceConfigWidget
 public:
   ResourceDirConfig( QWidget* parent = 0, const char* name = 0 );
 
+  void setEditMode( bool value );
+
 public slots:
   void loadSettings( KConfig *config );
   void saveSettings( KConfig *config );
