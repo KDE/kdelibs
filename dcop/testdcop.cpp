@@ -12,19 +12,19 @@
 class MyDCOPObject : public DCOPObject
 {
 public:
-  MyDCOPObject(const QString &name) : DCOPObject(name) {}
-  bool process(const QString &fun, const QByteArray &data,
+  MyDCOPObject(const QCString &name) : DCOPObject(name) {}
+  bool process(const QCString &fun, const QByteArray &data,
 	       QByteArray &replyData);
-  void function(const QString &arg) { qDebug("function got arg: %s",arg.latin1()); }
+  void function(const QCString &arg) { qDebug("function got arg: %s",arg.data()); }
 };
 
-bool MyDCOPObject::process(const QString &fun, const QByteArray &data,
+bool MyDCOPObject::process(const QCString &fun, const QByteArray &data,
 			   QByteArray &replyData)
 {
   qDebug("in MyDCOPObject::process");
   if (fun == "aFunction") {
     QDataStream args(data, IO_ReadOnly);
-    QString arg;
+    QCString arg;
     args >> arg;
     function(arg);
     return true;
@@ -39,6 +39,8 @@ int main(int argc, char **argv)
 
   QByteArray data, reply;
   DCOPClient *client; client = app.dcopClient();
+  client->attach(app.name());
+
   if (!client->call(app.name(), "unknownObj", "unknownFunction", data, reply))
     qDebug("I couldn't call myself.");
 
@@ -59,4 +61,6 @@ int main(int argc, char **argv)
   qDebug("number of attached applications = %d", n );
 
   return app.exec();
+
+  client->detach();
 }
