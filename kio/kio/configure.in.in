@@ -32,6 +32,7 @@ AC_CHECK_HEADERS(sys/mnttab.h mntent.h fstab.h sys/ucred.h sys/mount.h)
 AC_CHECK_FUNCS(setmntent getmntinfo)
 
 AH_VERBATIM(_GETMNTINFO, [
+#ifdef __osf__
 #ifdef __cplusplus
 extern "C" {
 #endif
