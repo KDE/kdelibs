@@ -38,6 +38,8 @@
 #include <qlabel.h>
 #include <qdatastream.h>
 #include <qcstring.h>
+#include <qpainter.h>
+#include <qscrollbar.h>
 
 #include <klocale.h>
 #include <kdebug.h>
@@ -69,6 +71,138 @@
 
 using namespace KJS;
 using namespace khtml;
+
+SourceDisplay::SourceDisplay(KJSDebugWin *debugWin, QWidget *parent, const char *name)
+  : QScrollView(parent,name), m_currentLine(-1), m_sourceFile(0), m_debugWin(debugWin), m_font("fixed",10)
+{
+  verticalScrollBar()->setLineStep(QFontMetrics(m_font).height());
+}
+
+SourceDisplay::~SourceDisplay()
+{
+}
+
+void SourceDisplay::setSource(SourceFile *sourceFile)
+{
+  m_sourceFile = sourceFile;
+  if (!m_sourceFile)
+    return;
+  QString code = sourceFile->getCode();
+  const QChar *chars = code.unicode();
+  uint len = code.length();
+  QChar newLine('\n');
+  QChar cr('\r');
+  QChar tab('\t');
+  QString tabstr("        ");
+  QString line;
+  m_lines.clear();
+  int width = 0;
+  QFontMetrics metrics(m_font);
+
+  for (uint pos = 0; pos < len; pos++) {
+    QChar c = chars[pos];
+    if (c == cr) {
+      if (pos < len-1 && chars[pos+1] == newLine)
+	continue;
+      else
+	c = newLine;
+    }
+    if (c == newLine) {
+      m_lines.append(line);
+      int lineWidth = metrics.width(line);
+      if (lineWidth > width)
+	width = lineWidth;
+      line = "";
+    }
+    else if (c == tab) {
+      line += tabstr;
+    }
+    else {
+      line += c;
+    }
+  }
+  if (line.length()) {
+    m_lines.append(line);
+    int lineWidth = metrics.width(line);
+    if (lineWidth > width)
+      width = lineWidth;
+  }
+
+  int linenoDisplayWidth = metrics.width("888888");
+  resizeContents(linenoDisplayWidth+4+width,metrics.height()*m_lines.count());
+  update();
+}
+
+void SourceDisplay::setCurrentLine(int lineno, bool doCenter)
+{
+  m_currentLine = lineno;
+
+  if (doCenter && m_currentLine >= 0) {
+    QFontMetrics metrics(m_font);
+    int height = metrics.height();
+    center(0,height*m_currentLine+height/2);
+  }
+
+  updateContents();
+}
+
+void SourceDisplay::mouseDoubleClickEvent(QMouseEvent *e)
+{
+  QScrollView::mouseDoubleClickEvent(e);
+  QFontMetrics metrics(m_font);
+  int lineno = (e->y()+contentsY())/metrics.height();
+  emit lineDoubleClicked(lineno+1); // line numbers start from 1
+}
+
+void SourceDisplay::drawContents(QPainter *p, int clipx, int clipy, int clipw, int cliph)
+{
+  if (!m_sourceFile)
+    return;
+
+  QFontMetrics metrics(m_font);
+  int height = metrics.height();
+
+  int firstLine = clipy/height-1;
+  if (firstLine < 0)
+    firstLine = 0;
+  int lastLine = (clipy+cliph)/height+2;
+  if (lastLine > (int)m_lines.count())
+    lastLine = m_lines.count();
+
+  p->fillRect(clipx,clipy,clipw,cliph,palette().active().brush(QColorGroup::Base));
+  p->setFont(m_font);
+
+  int linenoDisplayWidth = metrics.width("888888");
+  p->fillRect(0,clipy,linenoDisplayWidth,cliph,palette().active().brush(QColorGroup::Mid));
+
+  for (int lineno = firstLine; lineno <= lastLine; lineno++) {
+    QString linenoStr = QString().sprintf("%d",lineno+1);
+    p->drawText(0,height*lineno,linenoDisplayWidth,height,Qt::AlignRight,linenoStr);
+
+
+    if (lineno == m_currentLine) {
+      p->fillRect(linenoDisplayWidth,height*lineno,
+		  contentsWidth()-linenoDisplayWidth,height,
+		  palette().active().brush(QColorGroup::Highlight));
+      p->setBrush(palette().active().brush(QColorGroup::HighlightedText));
+    }
+    else if (m_debugWin->haveBreakpoint(m_sourceFile,lineno+1,lineno+1)) {
+      p->fillRect(linenoDisplayWidth,height*lineno,
+		  contentsWidth()-linenoDisplayWidth,height,
+		  QColor(255,192,192));
+      p->setBrush(palette().active().brush(QColorGroup::Text));
+    }
+    else {
+      p->setBrush(palette().active().brush(QColorGroup::Text));
+    }
+
+    p->drawText(linenoDisplayWidth+4,height*lineno,
+		contentsWidth()-linenoDisplayWidth-4,height,
+		Qt::AlignLeft,m_lines[lineno]);
+  }
+}
+
+//-------------------------------------------------------------------------
 
 KJSDebugWin * KJSDebugWin::kjs_html_debugger = 0;
 
@@ -227,10 +361,9 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
   m_sourceSel = new QComboBox(toolBar());
   connect(m_sourceSel,SIGNAL(activated(int)),this,SLOT(slotSourceSelected(int)));
 
-  m_sourceDisplay = new QListBox(sourceSelDisplay);
-  m_sourceDisplay->setFont(font);
+  m_sourceDisplay = new SourceDisplay(this,sourceSelDisplay);
   ssdvl->addWidget(m_sourceDisplay);
-  connect(m_sourceDisplay,SIGNAL(doubleClicked(QListBoxItem*)),SLOT(slotToggleBreakpoint()));
+  connect(m_sourceDisplay,SIGNAL(lineDoubleClicked(int)),SLOT(slotToggleBreakpoint(int)));
 
   QValueList<int> vsplitSizes;
   vsplitSizes.insert(vsplitSizes.end(),120);
@@ -277,36 +410,30 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
 				   m_actionCollection,"stop");
   m_breakAction      = new KAction(i18n("&Break at next Statement"),"bottom",KShortcut(),this,SLOT(slotBreakNext()),
 				   m_actionCollection,"breaknext");
-  m_breakpointAction = new KAction(i18n("&Toggle Breakpoint"),"indent",KShortcut(),this,SLOT(slotToggleBreakpoint()),
-				   m_actionCollection,"toggle");
 
   m_nextAction->setToolTip(i18n("Next"));
   m_stepAction->setToolTip(i18n("Step"));
   m_continueAction->setToolTip(i18n("Continue"));
   m_stopAction->setToolTip(i18n("Stop"));
   m_breakAction->setToolTip("Break at next Statement");
-  m_breakpointAction->setToolTip("Toggle Breakpoint");
 
   m_nextAction->setEnabled(false);
   m_stepAction->setEnabled(false);
   m_continueAction->setEnabled(false);
   m_stopAction->setEnabled(false);
   m_breakAction->setEnabled(true);
-  m_breakpointAction->setEnabled(false);
 
   m_nextAction->plug(debugMenu);
   m_stepAction->plug(debugMenu);
   m_continueAction->plug(debugMenu);
 //   m_stopAction->plug(debugMenu); ### disabled until DebuggerImp::stop() works reliably
   m_breakAction->plug(debugMenu);
-  m_breakpointAction->plug(debugMenu);
 
   m_nextAction->plug(toolBar());
   m_stepAction->plug(toolBar());
   m_continueAction->plug(toolBar());
 //   m_stopAction->plug(toolBar()); ###
   m_breakAction->plug(toolBar());
-  m_breakpointAction->plug(toolBar());
 
   toolBar()->insertWidget(1,300,m_sourceSel);
   toolBar()->setItemAutoSized(1);
@@ -367,13 +494,12 @@ void KJSDebugWin::slotBreakNext()
   m_mode = Step;
 }
 
-void KJSDebugWin::slotToggleBreakpoint()
+void KJSDebugWin::slotToggleBreakpoint(int lineno)
 {
-  if (m_sourceSel->currentItem() < 0 || m_sourceDisplay->currentItem() < 0)
+  if (m_sourceSel->currentItem() < 0)
     return;
 
   SourceFile *sourceFile = m_sourceSelFiles.at(m_sourceSel->currentItem());
-  int lineno = m_sourceDisplay->currentItem()+1; // line numbers start from 1
 
   // Find the source fragment containing the selected line (if any)
   int sourceId = -1;
@@ -396,19 +522,11 @@ void KJSDebugWin::slotToggleBreakpoint()
     return;
 
   // Update the source code display with the appropriate icon
-  QString text(m_sourceDisplay->item(lineno-1)->text());
-  m_sourceDisplay->removeItem(lineno-1);
-  QListBoxPixmap *item;
   int fragmentLineno = lineno-highestBaseLine+1;
-  if (setBreakpoint(sourceId,fragmentLineno)) {
-    item = new QListBoxPixmap(m_stopIcon,text);
-  }
-  else {
+  if (!setBreakpoint(sourceId,fragmentLineno)) // was already set
     deleteBreakpoint(sourceId,fragmentLineno);
-    item = new QListBoxPixmap(m_emptyIcon,text);
-  }
-  m_sourceDisplay->insertItem(item,lineno-1);
-  m_sourceDisplay->setCurrentItem(lineno-1);
+
+  m_sourceDisplay->updateContents();
 }
 
 void KJSDebugWin::slotShowFrame(int frameno)
@@ -737,43 +855,7 @@ void KJSDebugWin::displaySourceFile(SourceFile *sourceFile, bool forceRefresh)
 {
   if (m_curSourceFile == sourceFile && !forceRefresh)
     return;
-  QString code = sourceFile->getCode();
-  const QChar *chars = code.unicode();
-  uint len = code.length();
-  QChar newLine('\n');
-  QChar cr('\r');
-  QChar tab('\t');
-  QString tabstr("        ");
-  QString line;
-  m_sourceDisplay->clear();
-  int lineno = 1;
-  for (uint i = 0; i < len; i++) {
-    QChar c = chars[i];
-    if (c == cr) {
-      if (i < len-1 && chars[i+1] == newLine)
-	continue;
-      else
-	c = newLine;
-    }
-    if (c == newLine) {
-      QPixmap icon = haveBreakpoint(sourceFile,lineno,lineno) ? m_stopIcon : m_emptyIcon;
-      QString str = QString().sprintf("%4d",m_sourceDisplay->count()+1) + " " + line;
-      m_sourceDisplay->insertItem(new QListBoxPixmap(icon,str));
-      lineno++;
-      line = "";
-    }
-    else if (c == tab) {
-      line += tabstr;
-    }
-    else {
-      line += c;
-    }
-  }
-  if (line.length()) {
-    QPixmap icon = haveBreakpoint(sourceFile,lineno,lineno) ? m_stopIcon : m_emptyIcon;
-    QString str = QString().sprintf("%4d",m_sourceDisplay->count()+1) + " " + line;
-    m_sourceDisplay->insertItem(new QListBoxPixmap(icon,str));
-  }
+  m_sourceDisplay->setSource(sourceFile);
   m_curSourceFile = sourceFile;
 }
 
@@ -790,13 +872,7 @@ void KJSDebugWin::setSourceLine(int sourceId, int lineno)
 	  m_sourceSel->setCurrentItem(i);
       displaySourceFile(sourceFile,false);
   }
-  if (lineno > 0) {
-    m_sourceDisplay->setSelected(source->baseLine+lineno-2,true);
-    m_sourceDisplay->centerCurrentItem();
-  }
-  else {
-    m_sourceDisplay->clearSelection();
-  }
+  m_sourceDisplay->setCurrentLine(source->baseLine+lineno-2);
 }
 
 void KJSDebugWin::setNextSourceInfo(QString url, int baseLine)
@@ -872,7 +948,6 @@ void KJSDebugWin::enterSession(ExecState *exec)
     m_continueAction->setEnabled(true);
     m_stopAction->setEnabled(true);
     m_breakAction->setEnabled(false);
-    m_breakpointAction->setEnabled(true);
   }
   m_execStates.push(exec);
 
@@ -897,8 +972,7 @@ void KJSDebugWin::leaveSession()
     m_continueAction->setEnabled(false);
     m_stopAction->setEnabled(false);
     m_breakAction->setEnabled(true);
-    m_breakpointAction->setEnabled(false);
-    m_sourceDisplay->clearSelection();
+    m_sourceDisplay->setCurrentLine(-1);
     enableOtherWindows();
   }
 

@@ -35,6 +35,7 @@
 #include <qcheckbox.h>
 #include <kdialogbase.h>
 #include <kmainwindow.h>
+#include <qscrollview.h>
 
 #include <kjs/debugger.h>
 
@@ -49,6 +50,7 @@ namespace KJS {
   class FunctionImp;
   class List;
   class Interpreter;
+  class KJSDebugWin;
 
   class SourceFile : public DOM::DomShared
   {
@@ -116,6 +118,31 @@ namespace KJS {
       QString m_code;
   };
 
+  class SourceDisplay : public QScrollView {
+    Q_OBJECT
+  public:
+    SourceDisplay(KJSDebugWin *debugWin, QWidget *parent, const char *name = 0);
+    ~SourceDisplay();
+
+    void setSource(SourceFile *sourceFile);
+    void setCurrentLine(int lineno, bool doCenter = true);
+
+  signals:
+    int lineDoubleClicked(int lineno);
+
+  protected:
+    virtual void mouseDoubleClickEvent(QMouseEvent *e);
+    virtual void drawContents(QPainter *p, int clipx, int clipy, int clipw, int cliph);
+
+    QString m_source;
+    int m_currentLine;
+    SourceFile *m_sourceFile;
+    QStringList m_lines;
+
+    KJSDebugWin *m_debugWin;
+    QFont m_font;
+  };
+
   /**
    * @internal
    *
@@ -128,6 +155,7 @@ namespace KJS {
   class KJSDebugWin : public KMainWindow, public Debugger
   {
     Q_OBJECT
+    friend class SourceDisplay;
   public:
     KJSDebugWin(QWidget *parent=0, const char *name=0);
     virtual ~KJSDebugWin();
@@ -167,7 +195,7 @@ namespace KJS {
     void slotContinue();
     void slotStop();
     void slotBreakNext();
-    void slotToggleBreakpoint();
+    void slotToggleBreakpoint(int lineno);
     void slotShowFrame(int frameno);
     void slotSourceSelected(int sourceSelIndex);
     void slotEval();
@@ -229,7 +257,7 @@ namespace KJS {
     KActionCollection *m_actionCollection;
     QPixmap m_stopIcon;
     QPixmap m_emptyIcon;
-    QListBox *m_sourceDisplay;
+    SourceDisplay *m_sourceDisplay;
     QListBox *m_contextList;
 
     KAction *m_stepAction;
@@ -237,7 +265,6 @@ namespace KJS {
     KAction *m_continueAction;
     KAction *m_stopAction;
     KAction *m_breakAction;
-    KAction *m_breakpointAction;
 
     QComboBox *m_sourceSel;
     EvalMultiLineEdit *m_evalEdit;
