@@ -215,7 +215,7 @@ KDEDModule *Kded::loadModule(const KService *s, bool onDemand)
 
     KLibLoader *loader = KLibLoader::self();
 
-    QVariant v = s->property("X-KDE-Factory");
+    QVariant v = s->property("X-KDE-FactoryName");
     QString factory = v.isValid() ? v.toString() : QString::null;
     if (factory.isEmpty())
       factory = s->library();
