@@ -85,6 +85,9 @@ static const char titleEnd [] = "</title";
 //      http://www.obviously.com/
 //
 // There may be better equivalents
+#if 0
+#define fixUpChar(x)
+#else
 #define fixUpChar(x) \
             if (!(x).row() ) { \
                 switch ((x).cell()) \
@@ -140,6 +143,7 @@ static const char titleEnd [] = "</title";
                 default: break; \
                 } \
             }
+#endif
 
 // ----------------------------------------------------------------------------
 
@@ -1111,17 +1115,10 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 
             processToken();
 
-            // we have to take care to close the pre block in
-            // case we encounter an unallowed element....
-            if(pre && beginTag && !DOM::checkChild(ID_PRE, tagID)) {
-                kdDebug(6036) << " not allowed in <pre> " << (int)tagID << endl;
-                pre = false;
-            }
-
             switch( tagID ) {
             case ID_PRE:
                 prePos = 0;
-                pre = beginTag;
+                pre = parser->preMode();
                 break;
             case ID_SCRIPT:
                 if (beginTag) {
@@ -1213,10 +1210,6 @@ void HTMLTokenizer::addPending()
 
         case TabPending:
             p = TAB_SIZE - ( prePos % TAB_SIZE );
-#ifdef TOKEN_DEBUG
-            qDebug("tab pending, prePos: %d, toadd: %d", prePos, p);
-#endif
-
             for ( int x = 0; x < p; x++ )
                 *dest++ = QChar(' ');
             prePos += p;

@@ -171,6 +171,7 @@ void KHTMLParser::reset()
     inSelect = false;
     m_inline = false;
 
+    inPre = 0;
     form = 0;
     map = 0;
     head = 0;
@@ -905,8 +906,9 @@ NodeImpl *KHTMLParser::getElement(Token* t)
     case ID_P:
         n = new HTMLParagraphElementImpl(document);
         break;
-    case ID_XMP:
     case ID_PRE:
+        ++inPre;
+    case ID_XMP:
     case ID_PLAINTEXT:
         n = new HTMLPreElementImpl(document, t->id);
         break;
@@ -1195,6 +1197,9 @@ void KHTMLParser::popOneBlock()
     // This helps getting cases as <p><b>bla</b> <b>bla</b> right.
     if(!current->isInline())
         m_inline = false;
+    if (current->id() == ID_PRE)
+        --inPre;
+
     current = Elem->node;
 
     delete Elem;
