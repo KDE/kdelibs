@@ -568,6 +568,7 @@ QString RenderObject::information() const
     if (element() && element()->focused()) ts << "focus ";
     if (element()) ts << " <" <<  getTagName(element()->id()).string() << ">";
     ts << " (" << xPos() << "," << yPos() << "," << width() << "," << height() << ")"
+       << " [" << minWidth() << "-" << maxWidth() << "]"
 	<< (isTableCell() ?
 	    ( QString::fromLatin1(" [r=") +
 	      QString::number( static_cast<const RenderTableCell *>(this)->row() ) +
@@ -861,12 +862,12 @@ bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
     if (isRelPositioned())
         static_cast<RenderBox*>(this)->relativePositionOffset(tx, ty);
 
-    bool inside = (style()->visibility() != HIDDEN && ((_y >= ty) && (_y < ty + height()) &&
-                  (_x >= tx) && (_x < tx + width()))) || isBody() || isHtml();
+    bool checkPoint = style()->visibility() != HIDDEN && (_y >= ty) && (_y < ty + height());
+    bool inside = (checkPoint && (_x >= tx) && (_x < tx + width())) || isBody() || isHtml();
     bool inner = !info.innerNode();
 
     // ### table should have its own, more performant method
-    if (overhangingContents() || isInline() || isRoot() || isTableRow() || isTableSection() || isPositioned() || inside || mouseInside() ) {
+    if (overhangingContents() || isInline() || isRoot() || isTableRow() || isTableSection() || isPositioned() || checkPoint || mouseInside() ) {
         for (RenderObject* child = lastChild(); child; child = child->previousSibling())
             if (!child->isSpecial() && child->nodeAtPoint(info, _x, _y, tx, ty))
                 inside = true;
