@@ -296,8 +296,10 @@ void KIconLoader::addBaseThemes(KIconThemeNode *node, const QString &appname)
 	if (!d->mThemeList.contains(*it) || d->mThemesInTree.contains(*it))
 	    continue;
 	KIconTheme *theme = new KIconTheme(*it,appname);
-	if (!theme->isValid())
+	if (!theme->isValid()) {
+	    delete theme;
 	    continue;
+	}
         KIconThemeNode *n = new KIconThemeNode(theme);
 	d->mThemesInTree.append(*it);
 	addBaseThemes(n, appname);
