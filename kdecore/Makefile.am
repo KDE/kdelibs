@@ -45,7 +45,7 @@ include_HEADERS = kautoconfig.h kconfig.h kconfigdata.h ksimpleconfig.h \
 	kinstance.h kpalette.h kipc.h klibloader.h ktempfile.h ksavefile.h \
 	krandomsequence.h kstringhandler.h knotifyclient.h kiconeffect.h \
 	kaudioplayer.h kdcoppropertyproxy.h netwm.h \
-	netwm_def.h netwm_p.h kpixmapprovider.h kunload.h kstaticdeleter.h \
+	netwm_def.h kpixmapprovider.h kunload.h kstaticdeleter.h \
 	kextsock.h kextendedsocket.h ksockaddr.h kprocio.h kasyncio.h \
 	kbufferedio.h kurldrag.h kmimesourcefactory.h kmdcodec.h ksocks.h \
 	ksycoca.h ksycocaentry.h ksycocatype.h kxmessages.h kstartupinfo.h \
@@ -70,7 +70,7 @@ vsnprintf_nonpic.c:  $(srcdir)/vsnprintf.c
 	$(LN_S) $(srcdir)/vsnprintf.c vsnprintf_nonpic.c
 
 noinst_HEADERS = kaccelaction.h kaccelbase.h kaccelprivate.h kckey.h \
-	kcompletion_private.h \
+	kcompletion_private.h netwm_p.h \
 	kextsocklookup.h kglobalaccel_x11.h kkeyserver_x11.h \
 	kregpriv.h kshortcutmenu.h ksycocadict.h ksycocafactory.h netsupp.h \
 	kcheckaccelerators.h kcalendarsystemgregorian.h \
