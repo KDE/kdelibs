@@ -1475,3 +1475,4 @@ QPixmap LightStyleV2::stylePixmap( StylePixmap stylepixmap,
 {
     return singleton->basestyle->stylePixmap( stylepixmap, widget, data );
 }
+#include "lightstyle-v2.moc"

@@ -18,12 +18,12 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-AM_CPPFLAGS = -DQT_PLUGIN
+KDE_CXXFLAGS += -DQT_PLUGIN
 
-INCLUDES = $(QT_INCLUDES) $(USER_INCLUDES)
+INCLUDES = $(all_includes)
 noinst_HEADERS = lightstyle-v2.h lightstyle-v3.h
 kde_style_LTLIBRARIES = light.la
-light_la_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -module
+light_la_LDFLAGS = $(all_libraries) $(KDE_PLUGIN) -module
 light_la_LIBADD =  $(LIB_QT)
 light_la_SOURCES = light.cpp lightstyle-v2.cpp lightstyle-v3.cpp
 light_la_METASOURCES = AUTO

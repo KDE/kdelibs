@@ -41,8 +41,8 @@ LightStylePlugin::LightStylePlugin()
 QStringList LightStylePlugin::keys() const
 {
     QStringList list;
-    list << "Light, 2nd revision";
-    list << "Light, 3rd revision";
+    list << "light, 2nd revision";
+    list << "light, 3rd revision";
     return list;
 }
 
