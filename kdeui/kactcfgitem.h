@@ -35,7 +35,9 @@ public:
 	virtual ~KActItemCfg() {}
 
 	KIconLoaderButton *_iconBtn;
-	QCheckBox *_acNone, *_acDef, *_acCustom;
+	QCheckBox *_acNone;
+        QCheckBox *_acDef;
+        QCheckBox *_acCustom;
 };
 
 #endif

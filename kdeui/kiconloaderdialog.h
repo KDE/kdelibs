@@ -224,7 +224,8 @@ signals:
     
 protected:
     KIconLoaderDialog *loaderDialog;
-    QString iconStr, resType;
+    QString iconStr;
+    QString resType;
     KIconLoader *iconLoader;
 };
 

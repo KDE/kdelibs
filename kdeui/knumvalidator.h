@@ -80,8 +80,9 @@ class KIntValidator : public QValidator {
     virtual int base () const;
 
   protected:
-    int   _base;
-    int   _min, _max;
+    int _base;
+    int _min;
+    int _max;
 
 };
 
@@ -130,7 +131,8 @@ class KFloatValidator : public QValidator {
     virtual double top () const;
 
   protected:
-    double   _min, _max;
+    double _min;
+    double _max;
 
 };
 
