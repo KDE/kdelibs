@@ -42,6 +42,8 @@
 
   QFont font = aConfig.readFontEntry( "Chosen" );
   int nRet = KFontDialog::getFont(font);
+  int flags;
+  nRet = KFontDialog::getFontDiff(font, flags);
   aConfig.writeEntry( "Chosen", font, true );
 
   aConfig.sync();
