@@ -1800,4 +1800,23 @@ void NETWinInfo::update(unsigned long dirty) {
 	
 	    XFree(data_ret);
 	}
+
+    if (dirty & WMPid) {
+	p->desktop = 0;
+	if (XGetWindowProperty(p->display, p->window, net_wm_pid, 0l, 1l,
+			       False, XA_CARDINAL, &type_ret,
+			       &format_ret, &nitems_ret,
+			       &unused, &data_ret)
+	    == Success)
+	    if (data_ret) {
+		if (type_ret == XA_CARDINAL && format_ret == 32 &&
+		    nitems_ret == 1) {
+		    p->pid = *((Q_UINT32 *) data_ret);
+		}
+
+		XFree(data_ret);
+	    }
+    }
+
+
 }
