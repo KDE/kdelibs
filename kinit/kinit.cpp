@@ -1259,6 +1259,7 @@ static int initXconnection()
 
 int main(int argc, char **argv, char **envp)
 {
+   int init_pipe[2];
    int i;
    pid_t pid;
    int launch_dcop = 1;
@@ -1292,6 +1293,24 @@ int main(int argc, char **argv, char **envp)
       output_kmapnotify_path();
       return 0;
    }*/
+
+   pipe(init_pipe);
+
+   // Fork here and let parent process exit.
+   // Parent process may only exit after all required services have been
+   // launched. (dcopserver/klauncher and services which start with '+')
+   if (fork() > 0) // Go into background
+   {
+      close(init_pipe[1]);
+      // wait till init is complete
+      char c;
+      while (read(init_pipe[0], &c, 1) < 0);
+      // then exit;
+      close(init_pipe[0]);
+      return 0;
+   }
+   close(init_pipe[0]);
+   d.my_pid = getpid();
 
    /** Make process group leader (for shutting down children later) **/
    if(keep_running)
@@ -1408,14 +1427,9 @@ int main(int argc, char **argv, char **envp)
    if (!keep_running)
       return 0;
 
-   //
-   // Fork here and let parent process exit.
-   // Parent process may only exit after all required services have been
-   // launched. (dcopserver/klauncher and services which start with '+')
-   if (fork() > 0) // Go into background
-       return 0;
-
-   d.my_pid = getpid();
+   char c = 0;
+   write(init_pipe[1], &c, 1); // Kdeinit is started.
+   close(init_pipe[1]);
 
    handle_requests(0);
 
