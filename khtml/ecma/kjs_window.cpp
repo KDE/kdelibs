@@ -27,6 +27,8 @@
 
 #include <qevent.h>
 #include "khtmlview.h"
+#include "htmlattrs.h"
+#include <html_element.h>
 #include "khtml_part.h"
 
 using namespace KJS;
@@ -55,6 +57,11 @@ void Window::tryPut(const UString &p, const KJSO &v)
   if (p == "status") {
     String s = v.toString();
     WindowFunc::setStatusBarText(widget->part(), s.value().qstring());
+  } else if (p == "onload") {
+    if (v.isA(ConstructorType)) {
+      DOM::DOMString s = ((FunctionImp*)v.imp())->name().string() + "()";
+      widget->part()->htmlDocument().body().setAttribute(ATTR_ONLOAD, s);
+    }
   }
 }
 
