@@ -301,7 +301,10 @@ void HTMLLayerElementImpl::parseAttribute(AttributeImpl *attr)
                 removeCSSProperty(CSS_PROP_Z_INDEX);
             break;
         case ATTR_VISIBILITY:
-            addCSSProperty(CSS_PROP_VISIBILITY, attr->value());
+            if (attr->value().lower() == "show")
+                addCSSProperty(CSS_PROP_VISIBILITY, "visible");
+            else if (attr->value().lower() == "hide")
+                addCSSProperty(CSS_PROP_VISIBILITY, "hidden");
             break;
         default:
             HTMLElementImpl::parseAttribute(attr);

@@ -484,9 +484,8 @@ bool CSSParser::parseValue( int propId, bool important, int expected )
             valid_primitive = true;
         break;
 
-    case CSS_PROP_VISIBILITY:           // visible | hidden | collapse | inherit | hide | show
-        if (id == CSS_VAL_VISIBLE || id == CSS_VAL_HIDDEN || id == CSS_VAL_COLLAPSE ||
-            id == CSS_VAL_HIDE || id == CSS_VAL_SHOW )
+    case CSS_PROP_VISIBILITY:           // visible | hidden | collapse | inherit
+        if (id == CSS_VAL_VISIBLE || id == CSS_VAL_HIDDEN || id == CSS_VAL_COLLAPSE)
             valid_primitive = true;
         break;
 

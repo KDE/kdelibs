@@ -2124,11 +2124,9 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 
         if(!primitiveValue) break;
         switch( primitiveValue->getIdent() ) {
-        case CSS_VAL_HIDE:
         case CSS_VAL_HIDDEN:
             style->setVisibility( HIDDEN );
             break;
-        case CSS_VAL_SHOW:
         case CSS_VAL_VISIBLE:
             style->setVisibility( VISIBLE );
             break;
