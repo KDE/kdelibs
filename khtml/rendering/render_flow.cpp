@@ -992,7 +992,7 @@ static inline RenderObject *next(RenderObject *par, RenderObject *current)
 		current = current->parent();
 	    }
 	}
-	
+
         if(!next) break;
 
         if(next->isText() || next->isBR() || next->isFloating() || next->isReplaced() || next->isPositioned())
@@ -1036,6 +1036,13 @@ void RenderFlow::calcMinMaxWidth()
 
         while(child != 0)
         {
+            // positioned children don't affect the minmaxwidth
+            if (child->isPositioned())
+            {
+                child = next(this, child);
+                continue;
+            }
+
             if( !child->isBR() )
             {
                 RenderStyle* cstyle = child->style();
@@ -1113,7 +1120,7 @@ void RenderFlow::calcMinMaxWidth()
         }
         if(m_minWidth < inlineMin) m_minWidth = inlineMin;
         if(m_maxWidth < inlineMax) m_maxWidth = inlineMax;
-//         kdDebug( 6040 ) << "m_minWidth=" << m_minWidth 
+//         kdDebug( 6040 ) << "m_minWidth=" << m_minWidth
 // 			<< " m_maxWidth=" << m_maxWidth << endl;
     }
     else
