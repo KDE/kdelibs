@@ -37,6 +37,7 @@
 #include <stdio.h>
 #include <setjmp.h>
 #include <qdatetime.h>
+#include <kglobal.h>
 
 extern "C" {
 #define XMD_H
