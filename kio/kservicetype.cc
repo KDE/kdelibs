@@ -1,5 +1,6 @@
 #include "kservicetype.h"
 
+#include <assert.h>
 #include <qsmartptr.h>
 
 QList<KServiceType>* KServiceType::s_lstServiceTypes = 0L;
@@ -12,6 +13,8 @@ void KServiceType::initStatic()
 
 KServiceType::KServiceType( KSimpleConfig& _cfg )
 {
+  initStatic();
+  s_lstServiceTypes->append( this );
   _cfg.setGroup( "KDE Desktop Entry" );
 
   m_strName = _cfg.readEntry( "Name" );
@@ -136,6 +139,7 @@ void KServiceType::save( QDataStream& _str ) const
 
 KServiceType* KServiceType::serviceType( const QString& _name )
 {
+  assert( s_lstServiceTypes );
   QListIterator<KServiceType> it( *s_lstServiceTypes );
   for( ; it.current(); ++it )
     if ( it.current()->name() == _name )
