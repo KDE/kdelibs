@@ -2862,6 +2862,9 @@ KToggleToolBarAction::~KToggleToolBarAction()
 
 int KToggleToolBarAction::plug( QWidget* w, int index )
 {
+  if (kapp && !kapp->authorizeKAction(name()))
+      return -1;
+      
   if ( !m_toolBar ) {
     // Note: topLevelWidget() stops too early, we can't use it.
     QWidget * tl = w;
@@ -2936,6 +2939,9 @@ void KWidgetAction::setAutoSized( bool autoSized )
 
 int KWidgetAction::plug( QWidget* w, int index )
 {
+  if (kapp && !kapp->authorizeKAction(name()))
+      return -1;
+
   if ( !w->inherits( "KToolBar" ) ) {
     kdError() << "KWidgetAction::plug: KWidgetAction must be plugged into KToolBar." << endl;
     return -1;
