@@ -324,13 +324,16 @@ bool KAutoConfig::parseChildren(const QWidget *widget,
 
 	if(trackChanges && changedMap.find(childWidget->className()) != changedMap.end())
 	  connect(childWidget, changedMap[childWidget->className()], SIGNAL(widgetModified()));
+#ifndef NDEBUG
 	else if(trackChanges && changedMap.find(childWidget->className()) == changedMap.end())
 	  kdDebug() << "KAutoConfig::retrieveSettings, Unknown changed signal for widget:" << childWidget->className();
-
+#endif
 	
       }
+#ifndef NDEBUG
       else
         kdDebug() << "KAutoConfig::retrieveSettings, Unknown widget:" << childWidget->className();
+#endif    
     }
     if(parseTheChildren){
       // this widget is not known as something we can store.
