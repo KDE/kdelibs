@@ -54,7 +54,6 @@ static bool expandTilde(QString &);
 static bool expandEnv(QString &);
 
 static QString unescape(const QString &text);
-static QStringList getManDirectories();
 
 // Permission mask for files that are executable by
 // user, group or other
