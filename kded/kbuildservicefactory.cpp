@@ -21,6 +21,7 @@
 #include "ksycoca.h"
 #include "ksycocadict.h"
 #include "kresourcelist.h"
+#include "kmimetype.h"
 
 #include <kglobal.h>
 #include <kstandarddirs.h>
@@ -138,6 +139,15 @@ KBuildServiceFactory::saveOfferList(QDataStream &str)
 {
    m_offerListOffset = str.device()->at();
 
+   // Cache service types in services
+   for(QDictIterator<KSycocaEntry::Ptr> itserv ( *m_entryDict );
+       itserv.current();
+       ++itserv)
+   {
+      KService *service = (KService *) ((KSycocaEntry *)(*itserv.current()));
+      service->enableServiceTypeCache(true);
+   }
+
    // For each entry in servicetypeFactory
    for(QDictIterator<KSycocaEntry::Ptr> it ( *(m_serviceTypeFactory->entryDict()) );
        it.current();
@@ -154,13 +164,14 @@ KBuildServiceFactory::saveOfferList(QDataStream &str)
           ++itserv)
       {
          KService *service = (KService *) ((KSycocaEntry *)(*itserv.current()));
-         if ( service->hasServiceType( serviceType ) )
+         if ( service->hasServiceType( dynamic_cast<KMimeType *>(entry), serviceType ) )
          {
             str << (Q_INT32) entry->offset();
             str << (Q_INT32) service->offset();
          }
       }
    }
+
    str << (Q_INT32) 0;               // End of list marker (0)
 }
 
