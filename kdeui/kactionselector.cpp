@@ -90,8 +90,10 @@ KActionSelector::KActionSelector( QWidget *parent, const char *name )
   QVBoxLayout *loVBtns = new QVBoxLayout( lo );
   loVBtns->addStretch( 1 );
   d->btnUp = new QToolButton( this );
+  d->btnUp->setAutoRepeat( true );
   loVBtns->addWidget( d->btnUp );
   d->btnDown = new QToolButton( this );
+  d->btnDown->setAutoRepeat( true );
   loVBtns->addWidget( d->btnDown );
   loVBtns->addStretch( 1 );
 
@@ -449,7 +451,7 @@ void KActionSelector::buttonRemoveClicked()
 void KActionSelector::buttonUpClicked()
 {
   int c = d->selectedListBox->currentItem();
-  if ( c < 0 ) return;
+  if ( c < 1 ) return;
   QListBoxItem *item = d->selectedListBox->item( c );
   d->selectedListBox->takeItem( item );
   d->selectedListBox->insertItem( item, c-1 );
@@ -460,7 +462,7 @@ void KActionSelector::buttonUpClicked()
 void KActionSelector::buttonDownClicked()
 {
   int c = d->selectedListBox->currentItem();
-  if ( c < 0 ) return;
+  if ( c < 0 || c == d->selectedListBox->count() - 1 ) return;
   QListBoxItem *item = d->selectedListBox->item( c );
   d->selectedListBox->takeItem( item );
   d->selectedListBox->insertItem( item, c+1 );
