@@ -724,7 +724,7 @@ public:
      *
      * Parameters:
      *
-     * modifer of type unsigned long
+     * modifier of type unsigned long
      *   The modifier which the user wishes to query.
      *
      * Return Value: boolean
@@ -732,7 +732,7 @@ public:
      *
      * No Exceptions
      */
-    bool checkModifier(unsigned long modiferArg);
+    bool checkModifier(unsigned long modifierArg); // ### KDE 4: const!
 
 protected:
     TextEvent(TextEventImpl *impl);
