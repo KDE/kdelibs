@@ -1038,7 +1038,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
                     int cw = lineWidth( child->yPos() );
                     static_cast<RenderBox*>(child)->calcHorizontalMargins
                         ( child->style()->marginLeft(), child->style()->marginRight(), cw);
-                    
+                    chPos = leftOff + child->marginLeft();                    
                 }
             }
         } else {
