@@ -23,6 +23,10 @@
 
 // $Id$
 // $Log$
+// Revision 1.138  1999/12/18 22:00:16  granroth
+// Added convience method: 'clear()'  Basically, it just iterates through
+// all of it's children and removes them in turn.
+//
 // Revision 1.137  1999/12/14 14:20:57  kulow
 // some template and header fixes
 //
@@ -1459,7 +1463,7 @@ int KToolBar::insertLined(const QString& text, int id, const char *signal,
 /// Inserts comboBox with QStrList
 
 int KToolBar::insertCombo (QStrList *list, int id, bool writable,
-                           const char *signal, QObject *receiver,
+                           const char *signal, const QObject *receiver,
                            const char *slot, bool enabled,
                            const QString& tooltiptext,
                            int size, int index,
@@ -1489,7 +1493,7 @@ int KToolBar::insertCombo (QStrList *list, int id, bool writable,
 /// Inserts comboBox with QStringList
 
 int KToolBar::insertCombo (const QStringList &list, int id, bool writable,
-                           const char *signal, QObject *receiver,
+                           const char *signal, const QObject *receiver,
                            const char *slot, bool enabled,
                            const QString& tooltiptext,
                            int size, int index,

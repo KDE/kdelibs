@@ -99,7 +99,7 @@ KAction::KAction( const QString& text, int accel, QObject* parent, const char* n
 }
 
 KAction::KAction( const QString& text, int accel,
-	            QObject* receiver, const char* slot, QObject* parent, const char* name )
+	           const QObject* receiver, const char* slot, QObject* parent, const char* name )
  : QAction( text, accel, receiver, slot, parent, name )
 {
 }
@@ -111,7 +111,7 @@ KAction::KAction( const QString& text, const QIconSet& pix, int accel,
 }
 
 KAction::KAction( const QString& text, const QIconSet& pix, int accel,
-	            QObject* receiver, const char* slot, QObject* parent, const char* name )
+	            const QObject* receiver, const char* slot, QObject* parent, const char* name )
  : QAction( text, pix, accel, receiver, slot, parent, name )
 {
 }
@@ -210,7 +210,7 @@ KToggleAction::KToggleAction( const QString& text, int accel, QObject* parent, c
 }
 
 KToggleAction::KToggleAction( const QString& text, int accel,
-	       QObject* receiver, const char* slot, QObject* parent, const char* name )
+	       const QObject* receiver, const char* slot, QObject* parent, const char* name )
     : QToggleAction( text, accel, receiver, slot, parent, name )
 {
     locked = FALSE;
@@ -228,7 +228,7 @@ KToggleAction::KToggleAction( const QString& text, const QIconSet& pix, int acce
 }
 
 KToggleAction::KToggleAction( const QString& text, const QIconSet& pix, int accel,
-	       QObject* receiver, const char* slot, QObject* parent, const char* name )
+			      const QObject* receiver, const char* slot, QObject* parent, const char* name )
     : QToggleAction( text, pix, accel, receiver, slot, parent, name )
 {
     locked = FALSE;
@@ -353,7 +353,7 @@ KSelectAction::KSelectAction( const QString& text, int accel,
 }
 
 KSelectAction::KSelectAction( const QString& text, int accel,
-			      QObject* receiver, const char* slot, QObject* parent,
+			      const QObject* receiver, const char* slot, QObject* parent,
 			      const char* name )
     : QSelectAction( text, accel, parent, name )
 {
@@ -369,7 +369,7 @@ KSelectAction::KSelectAction( const QString& text, const QIconSet& pix, int acce
 }
 
 KSelectAction::KSelectAction( const QString& text, const QIconSet& pix, int accel,
-			      QObject* receiver, const char* slot, QObject* parent,
+			      const QObject* receiver, const char* slot, QObject* parent,
 			      const char* name )
     : QSelectAction( text, pix, accel, receiver, slot, parent, name )
 {
@@ -532,7 +532,7 @@ KFontAction::KFontAction( const QString& text, int accel, QObject* parent, const
 }
 
 KFontAction::KFontAction( const QString& text, int accel,
-	       QObject* receiver, const char* slot, QObject* parent, const char* name )
+			  const QObject* receiver, const char* slot, QObject* parent, const char* name )
     : KSelectAction( text, accel, receiver, slot, parent, name )
 {
     get_fonts( fonts );
@@ -550,7 +550,7 @@ KFontAction::KFontAction( const QString& text, const QIconSet& pix, int accel,
 }
 
 KFontAction::KFontAction( const QString& text, const QIconSet& pix, int accel,
-	       QObject* receiver, const char* slot, QObject* parent, const char* name )
+			  const QObject* receiver, const char* slot, QObject* parent, const char* name )
     : KSelectAction( text, pix, accel, receiver, slot, parent, name )
 {
     get_fonts( fonts );
@@ -591,7 +591,7 @@ KFontSizeAction::KFontSizeAction( const QString& text, int accel,
 }
 
 KFontSizeAction::KFontSizeAction( const QString& text, int accel,
-				  QObject* receiver, const char* slot, QObject* parent,
+				  const QObject* receiver, const char* slot, QObject* parent,
 				  const char* name )
     : KSelectAction( text, accel, receiver, slot, parent, name )
 {
@@ -606,7 +606,7 @@ KFontSizeAction::KFontSizeAction( const QString& text, const QIconSet& pix, int 
 }
 
 KFontSizeAction::KFontSizeAction( const QString& text, const QIconSet& pix, int accel,
-				  QObject* receiver, const char* slot, QObject* parent,
+				  const QObject* receiver, const char* slot, QObject* parent,
 				  const char* name )
     : KSelectAction( text, pix, accel, receiver, slot, parent, name )
 {

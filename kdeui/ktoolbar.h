@@ -22,6 +22,10 @@
 
 // $Id$
 // $Log$
+// Revision 1.68  1999/12/18 22:00:17  granroth
+// Added convience method: 'clear()'  Basically, it just iterates through
+// all of it's children and removes them in turn.
+//
 // Revision 1.67  1999/11/26 12:48:06  dfaure
 // More proofreading. Found what I was looking for, will stop proofreading :-)
 //
@@ -166,13 +170,13 @@ class KToolBoxManager;
   * KToolBar can be "floated", dragged and docked from its parent window.
   *
   * A KToolBar can contain standard or toggle buttons, line edit widgets,
-  * combo boxes, frames or any developer-defined custom widget, with 
-  * automatic full-width resize for each widget except buttons. Buttons 
+  * combo boxes, frames or any developer-defined custom widget, with
+  * automatic full-width resize for each widget except buttons. Buttons
   * can also be connected to popup menus with a delay option.
-  * 
-  * KToolBar can be used as a standalone widget, but @ref KTMainWindow 
+  *
+  * KToolBar can be used as a standalone widget, but @ref KTMainWindow
   * provides easy factories and management of one or more toolbars.
-  * Once you have a KToolBar object, you can insert items into it with the 
+  * Once you have a KToolBar object, you can insert items into it with the
   * insert... methods, or remove them with the @ref removeItem method. This
   * can be done at any time; the toolbar will be automatically updated.
   * There are also many methods to set per-child properties like alignment
@@ -181,7 +185,7 @@ class KToolBoxManager;
   * KToolBar uses a global config group to load toolbar settings on
   * construction. It will reread this config group on a
   * @ref KApplication::apearanceChanged signal.
-  * 
+  *
   * BUGS: Sometimes flickers on auto resize, no workaround has yet been
   * found for this.
   *
@@ -285,12 +289,12 @@ public:
    * @return Returns item index
    */
   int insertCombo (QStrList *list, int id, bool writable,
-                   const char *signal, QObject *recevier,
+                   const char *signal, const QObject *receiver,
                    const char *slot, bool enabled=true,
                    const QString& tooltiptext=QString::null,
                    int size=70, int index=-1,
                    QComboBox::Policy policy = QComboBox::AtBottom);
-		   
+		
   /**
    * Inserts QComboBox with list. Can be writable, but cannot contain
    * pixmaps. By default inserting policy is AtBottom, i.e. typed items
@@ -302,7 +306,7 @@ public:
    * @return Returns item index
    */
   int insertCombo (const QStringList &list, int id, bool writable,
-                   const char *signal, QObject *recevier,
+                   const char *signal, const QObject *receiver,
                    const char *slot, bool enabled=true,
                    const QString& tooltiptext=QString::null,
                    int size=70, int index=-1,

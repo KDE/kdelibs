@@ -30,11 +30,11 @@ class KAction : public QAction
 public:
     KAction( const QString& text, int accel = 0, QObject* parent = 0, const char* name = 0 );
     KAction( const QString& text, int accel,
-	     QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+	     const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
     KAction( const QString& text, const QIconSet& pix, int accel = 0,
 	     QObject* parent = 0, const char* name = 0 );
     KAction( const QString& text, const QIconSet& pix, int accel,
-	     QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+	     const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
     KAction( QObject* parent = 0, const char* name = 0 );
 
     virtual int plug( QWidget *w );
@@ -54,11 +54,11 @@ class KToggleAction : public QToggleAction
 public:
     KToggleAction( const QString& text, int accel = 0, QObject* parent = 0, const char* name = 0 );
     KToggleAction( const QString& text, int accel,
-	     QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+		   const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
     KToggleAction( const QString& text, const QIconSet& pix, int accel = 0,
 	     QObject* parent = 0, const char* name = 0 );
     KToggleAction( const QString& text, const QIconSet& pix, int accel,
-	     QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+		   const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
     KToggleAction( QObject* parent = 0, const char* name = 0 );
 
     int plug( QWidget* );
@@ -82,11 +82,11 @@ class KSelectAction : public QSelectAction
 public:
     KSelectAction( const QString& text, int accel = 0, QObject* parent = 0, const char* name = 0 );
     KSelectAction( const QString& text, int accel,
-	     QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+		   const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
     KSelectAction( const QString& text, const QIconSet& pix, int accel = 0,
 	     QObject* parent = 0, const char* name = 0 );
     KSelectAction( const QString& text, const QIconSet& pix, int accel,
-	     QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+		   const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
     KSelectAction( QObject* parent = 0, const char* name = 0 );
 
     int plug( QWidget* );
@@ -112,11 +112,11 @@ class KFontAction : public KSelectAction
 public:
     KFontAction( const QString& text, int accel = 0, QObject* parent = 0, const char* name = 0 );
     KFontAction( const QString& text, int accel,
-		 QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+		 const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
     KFontAction( const QString& text, const QIconSet& pix, int accel = 0,
 		 QObject* parent = 0, const char* name = 0 );
     KFontAction( const QString& text, const QIconSet& pix, int accel,
-		 QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+		 const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
     KFontAction( QObject* parent = 0, const char* name = 0 );
 
     void setFont( const QString &family );
@@ -138,11 +138,11 @@ class KFontSizeAction : public KSelectAction
 public:
     KFontSizeAction( const QString& text, int accel = 0, QObject* parent = 0, const char* name = 0 );
     KFontSizeAction( const QString& text, int accel,
-		     QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+		     const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
     KFontSizeAction( const QString& text, const QIconSet& pix, int accel = 0,
 		     QObject* parent = 0, const char* name = 0 );
     KFontSizeAction( const QString& text, const QIconSet& pix, int accel,
-		     QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+		     const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
     KFontSizeAction( QObject* parent = 0, const char* name = 0 );
 
     void setFontSize( int size );

@@ -32,10 +32,10 @@ KStdAction::~KStdAction()
 {
 }
 
-KAction *KStdAction::action(StdAction act_enum, QObject *recvr,
+QAction *KStdAction::action(StdAction act_enum, const QObject *recvr,
                             const char *slot, QObject *parent)
 {
-    KAction *act;
+    QAction *act;
     switch (act_enum)
     {
     case New:
@@ -180,49 +180,48 @@ KAction *KStdAction::action(StdAction act_enum, QObject *recvr,
     return act;
 }
 
-KAction *KStdAction::openNew(QObject *recvr, const char *slot,
+KAction *KStdAction::openNew(const QObject *recvr, const char *slot,
                              QObject *parent)
 {
     return new KAction(i18n("&New"), QIconSet(BarIcon("filenew")),
                        KStdAccel::openNew(), recvr, slot, parent);
 }
 
-KAction *KStdAction::open(QObject *recvr, const char *slot, QObject *parent)
+KAction *KStdAction::open(const QObject *recvr, const char *slot, QObject *parent)
 {
     return new KAction(i18n("&Open"), QIconSet(BarIcon("fileopen")),
                        KStdAccel::open(), recvr, slot, parent);
 }
 
-// should this be a KActionMenu or similar?
-KAction *KStdAction::openRecent(QObject *recvr, const char *slot,
-                                QObject *parent)
+KSelectAction *KStdAction::openRecent(const QObject *recvr, const char *slot,
+				      QObject *parent)
 {
-    return new KAction(i18n("Open &Recent"), 0, recvr, slot, parent);
+    return new KSelectAction(i18n("Open &Recent"), 0, recvr, slot, parent);
 }
 
-KAction *KStdAction::save(QObject *recvr, const char *slot, QObject *parent)
+KAction *KStdAction::save(const QObject *recvr, const char *slot, QObject *parent)
 {
     return new KAction(i18n("&Save"), QIconSet(BarIcon("filefloppy")),
                        KStdAccel::save(), recvr, slot, parent);
 }
 
-KAction *KStdAction::saveAs(QObject *recvr, const char *slot, QObject *parent)
+KAction *KStdAction::saveAs(const QObject *recvr, const char *slot, QObject *parent)
 {
     return new KAction(i18n("Save &As..."), 0, recvr, slot, parent);
 }
 
-KAction *KStdAction::revert(QObject *recvr, const char *slot, QObject *parent)
+KAction *KStdAction::revert(const QObject *recvr, const char *slot, QObject *parent)
 {
     return new KAction(i18n("Re&vert"), 0, recvr, slot, parent);
 }
 
-KAction *KStdAction::print(QObject *recvr, const char *slot, QObject *parent)
+KAction *KStdAction::print(const QObject *recvr, const char *slot, QObject *parent)
 {
     return new KAction(i18n("&Print..."), QIconSet(BarIcon("fileprint")),
                        KStdAccel::print(), recvr, slot, parent);
 }
 
-KAction *KStdAction::printPreview(QObject *recvr, const char *slot,
+KAction *KStdAction::printPreview(const QObject *recvr, const char *slot,
                                   QObject *parent)
 {
     return new KAction(i18n("Print Previe&w..."),
@@ -230,230 +229,229 @@ KAction *KStdAction::printPreview(QObject *recvr, const char *slot,
                        parent);
 }
 
-KAction *KStdAction::close(QObject *recvr, const char *slot, QObject *parent)
+KAction *KStdAction::close(const QObject *recvr, const char *slot, QObject *parent)
 {
     return new KAction(i18n("&Close"), QIconSet(BarIcon("close")),
                        KStdAccel::close(), recvr, slot, parent);
 }
 
-KAction *KStdAction::quit(QObject *recvr, const char *slot, QObject *parent)
+KAction *KStdAction::quit(const QObject *recvr, const char *slot, QObject *parent)
 {
     return new KAction(i18n("&Quit"), QIconSet(BarIcon("exit")),
                        KStdAccel::quit(), recvr, slot, parent);
 }
 
-KAction *KStdAction::undo(QObject *recvr, const char *slot, QObject *parent)
+KAction *KStdAction::undo(const QObject *recvr, const char *slot, QObject *parent)
 {
     return new KAction(i18n("Und&o"), QIconSet(BarIcon("undo")),
                        KStdAccel::undo(), recvr, slot, parent);
 }
 
-KAction *KStdAction::redo(QObject *recvr, const char *slot, QObject *parent)
+KAction *KStdAction::redo(const QObject *recvr, const char *slot, QObject *parent)
 {
     return new KAction(i18n("Re&do"), QIconSet(BarIcon("redo")),
                        KStdAccel::redo(), recvr, slot, parent);
 }
 
-KAction *KStdAction::cut(QObject *recvr, const char *slot, QObject *parent)
+KAction *KStdAction::cut(const QObject *recvr, const char *slot, QObject *parent)
 {
     return new KAction(i18n("C&ut"), QIconSet(BarIcon("editcut")),
                        KStdAccel::cut(), recvr, slot, parent);
 }
 
-KAction *KStdAction::copy(QObject *recvr, const char *slot, QObject *parent)
+KAction *KStdAction::copy(const QObject *recvr, const char *slot, QObject *parent)
 {
     return new KAction(i18n("&Copy"), QIconSet(BarIcon("editcopy")),
                        KStdAccel::copy(), recvr, slot, parent);
 }
 
-KAction *KStdAction::paste(QObject *recvr, const char *slot, QObject *parent)
+KAction *KStdAction::paste(const QObject *recvr, const char *slot, QObject *parent)
 {
     return new KAction(i18n("&Paste"), QIconSet(BarIcon("editpaste")),
                        KStdAccel::paste(), recvr, slot, parent);
 }
 
-KAction *KStdAction::selectAll(QObject *recvr, const char *slot,
+KAction *KStdAction::selectAll(const QObject *recvr, const char *slot,
                                QObject *parent)
 {
     return new KAction(i18n("Select &All"), 0, recvr, slot, parent);
 }
 
-KAction *KStdAction::find(QObject *recvr, const char *slot, QObject *parent)
+KAction *KStdAction::find(const QObject *recvr, const char *slot, QObject *parent)
 {
     return new KAction(i18n("&Find"), QIconSet(BarIcon("find")),
                        KStdAccel::find(), recvr, slot, parent);
 }
 
-KAction *KStdAction::findNext(QObject *recvr, const char *slot,
+KAction *KStdAction::findNext(const QObject *recvr, const char *slot,
                               QObject *parent)
 {
     return new KAction(i18n("Find &Next"), KStdAccel::findNext(),
                        recvr, slot, parent);
 }
 
-KAction *KStdAction::findPrev(QObject *recvr, const char *slot,
+KAction *KStdAction::findPrev(const QObject *recvr, const char *slot,
                               QObject *parent)
 {
     return new KAction(i18n("Find &Last"), KStdAccel::findPrev(),
                        recvr, slot, parent);
 }
 
-KAction *KStdAction::replace(QObject *recvr, const char *slot, QObject *parent)
+KAction *KStdAction::replace(const QObject *recvr, const char *slot, QObject *parent)
 {
     return new KAction(i18n("&Replace"), KStdAccel::replace(),
                        recvr, slot, parent);
 }
 
-KAction *KStdAction::actualSize(QObject *recvr, const char *slot,
+KAction *KStdAction::actualSize(const QObject *recvr, const char *slot,
                                 QObject *parent)
 {
     return new KAction(i18n("&Actual Size"), 0, recvr, slot, parent);
 }
 
-KAction *KStdAction::fitToPage(QObject *recvr, const char *slot,
+KAction *KStdAction::fitToPage(const QObject *recvr, const char *slot,
                                QObject *parent)
 {
     return new KAction(i18n("&Fit To Page"), 0, recvr, slot, parent);
 }
 
-KAction *KStdAction::fitToWidth(QObject *recvr, const char *slot,
+KAction *KStdAction::fitToWidth(const QObject *recvr, const char *slot,
                                 QObject *parent)
 {
     return new KAction(i18n("Fit To Page &Width"), 0, recvr, slot, parent);
 }
 
-KAction *KStdAction::fitToHeight(QObject *recvr, const char *slot,
+KAction *KStdAction::fitToHeight(const QObject *recvr, const char *slot,
                                  QObject *parent)
 {
     return new KAction(i18n("Fit To Page &Height"), 0, recvr, slot, parent);
 }
 
-KAction *KStdAction::zoomIn(QObject *recvr, const char *slot, QObject *parent)
+KAction *KStdAction::zoomIn(const QObject *recvr, const char *slot, QObject *parent)
 {
     return new KAction(i18n("Zoom &In"), QIconSet(BarIcon("viewmag+")),
                        KStdAccel::zoomIn(), recvr, slot, parent);
 }
 
 
-KAction *KStdAction::zoomOut(QObject *recvr, const char *slot, QObject *parent)
+KAction *KStdAction::zoomOut(const QObject *recvr, const char *slot, QObject *parent)
 {
     return new KAction(i18n("Zoom &Out"), QIconSet(BarIcon("viewmag-")),
                        KStdAccel::zoomOut(), recvr, slot, parent);
 }
 
-KAction *KStdAction::zoom(QObject *recvr, const char *slot, QObject *parent)
+KAction *KStdAction::zoom(const QObject *recvr, const char *slot, QObject *parent)
 {
     return new KAction(i18n("&Zoom..."), QIconSet(BarIcon("viewzoom")), 0,
                        recvr, slot, parent);
 }
 
-KAction *KStdAction::redisplay(QObject *recvr, const char *slot,
+KAction *KStdAction::redisplay(const QObject *recvr, const char *slot,
                                QObject *parent)
 {
     return new KAction(i18n("&Redisplay"), 0, recvr, slot, parent);
 }
 
-KAction *KStdAction::up(QObject *recvr, const char *slot, QObject *parent)
+KAction *KStdAction::up(const QObject *recvr, const char *slot, QObject *parent)
 {
     return new KAction(i18n("&Up"), QIconSet(BarIcon("up")), 0, recvr, slot,
                        parent);
 }
 
-KAction *KStdAction::back(QObject *recvr, const char *slot, QObject *parent)
+KAction *KStdAction::back(const QObject *recvr, const char *slot, QObject *parent)
 {
     return new KAction(i18n("&Back"), QIconSet(BarIcon("back")), 0,
                        recvr, slot, parent);
 }
 
-KAction *KStdAction::forward(QObject *recvr, const char *slot, QObject *parent)
+KAction *KStdAction::forward(const QObject *recvr, const char *slot, QObject *parent)
 {
     return new KAction(i18n("&Forward"), QIconSet(BarIcon("forward")), 0,
                        recvr, slot, parent);
 }
 
-KAction *KStdAction::home(QObject *recvr, const char *slot, QObject *parent)
+KAction *KStdAction::home(const QObject *recvr, const char *slot, QObject *parent)
 {
-    return new KAction(i18n("&Home"), QIconSet(BarIcon("home")), 0, 
+    return new KAction(i18n("&Home"), QIconSet(BarIcon("home")), 0,
                        recvr, slot, parent);
 }
 
-KAction *KStdAction::prior(QObject *recvr, const char *slot, QObject *parent)
+KAction *KStdAction::prior(const QObject *recvr, const char *slot, QObject *parent)
 {
     return new KAction(i18n("&Previous Page"), QIconSet(BarIcon("prev")),
                        KStdAccel::prior(), recvr, slot, parent);
 }
 
-KAction *KStdAction::next(QObject *recvr, const char *slot, QObject *parent)
+KAction *KStdAction::next(const QObject *recvr, const char *slot, QObject *parent)
 {
     return new KAction(i18n("&Next Page"), QIconSet(BarIcon("next")),
                        KStdAccel::next(), recvr, slot, parent);
 }
 
-KAction *KStdAction::gotoPage(QObject *recvr, const char *slot,
+KAction *KStdAction::gotoPage(const QObject *recvr, const char *slot,
                               QObject *parent)
 {
     return new KAction(i18n("&Go to Page..."), 0, recvr, slot, parent);
 }
 
-KAction *KStdAction::firstPage(QObject *recvr, const char *slot,
+KAction *KStdAction::firstPage(const QObject *recvr, const char *slot,
                                QObject *parent)
 {
     return new KAction(i18n("&First Page"), 0, recvr, slot, parent);
 }
 
-KAction *KStdAction::lastPage(QObject *recvr, const char *slot,
+KAction *KStdAction::lastPage(const QObject *recvr, const char *slot,
                                QObject *parent)
 {
     return new KAction(i18n("&Last Page"), 0, recvr, slot, parent);
 }
 
-KAction *KStdAction::addBookmark(QObject *recvr, const char *slot,
+KAction *KStdAction::addBookmark(const QObject *recvr, const char *slot,
                                  QObject *parent)
 {
     return new KAction(i18n("&Add Bookmark"), KStdAccel::addBookmark(),
                        recvr, slot, parent);
 }
 
-KAction *KStdAction::editBookmarks(QObject *recvr, const char *slot,
+KAction *KStdAction::editBookmarks(const QObject *recvr, const char *slot,
                                   QObject *parent)
 {
     return new KAction(i18n("&Edit Bookmarks..."), 0, recvr, slot, parent);
 }
 
-// should the next three be KToggleActions?
-KAction *KStdAction::showMenubar(QObject *recvr, const char *slot,
-                                 QObject *parent)
+KToggleAction *KStdAction::showMenubar(const QObject *recvr, const char *slot,
+				       QObject *parent)
 {
-    return new KAction(i18n("Show &Menubar"), 0, recvr, slot, parent);
+    return new KToggleAction(i18n("Show &Menubar"), 0, recvr, slot, parent);
 }
 
-KAction *KStdAction::showToolbar(QObject *recvr, const char *slot,
-                                 QObject *parent)
+KToggleAction *KStdAction::showToolbar(const QObject *recvr, const char *slot,
+				       QObject *parent)
 {
-    return new KAction(i18n("Show &Toolbar"), 0, recvr, slot, parent);
+    return new KToggleAction(i18n("Show &Toolbar"), 0, recvr, slot, parent);
 }
 
-KAction *KStdAction::showStatusbar(QObject *recvr, const char *slot,
-                                   QObject *parent)
+KToggleAction *KStdAction::showStatusbar(const QObject *recvr, const char *slot,
+					 QObject *parent)
 {
-    return new KAction(i18n("Show &Statusbar"), 0, recvr, slot, parent);
+    return new KToggleAction(i18n("Show &Statusbar"), 0, recvr, slot, parent);
 }
 
-KAction *KStdAction::keyBindings(QObject *recvr, const char *slot,
+KAction *KStdAction::keyBindings(const QObject *recvr, const char *slot,
                                  QObject *parent)
 {
     return new KAction(i18n("Configure &Key Bindings..."), 0, recvr, slot,
                        parent);
 }
 
-KAction *KStdAction::preferences(QObject *recvr, const char *slot,
+KAction *KStdAction::preferences(const QObject *recvr, const char *slot,
                                  QObject *parent)
 {
     return new KAction(i18n("&Preferences..."), QIconSet(BarIcon("options")),
                        0, recvr, slot, parent);
 }
 
-KAction *KStdAction::help(QObject *recvr, const char *slot, QObject *parent)
+KAction *KStdAction::help(const QObject *recvr, const char *slot, QObject *parent)
 {
     return new KAction(i18n("&Help"), QIconSet(BarIcon("help")),
                        KStdAccel::help(), recvr, slot, parent);
