@@ -2,12 +2,11 @@ Source: #PACKAGE#
 Section: unknown
 Priority: optional
 Maintainer: #USERNAME# <#EMAIL#>
-Build-Depends: debhelper (>> 3.0.0), kdelibs3-dev (>= 3.0-0)
+Build-Depends: debhelper (>> 3.0.0), automake, autoconf, libtool, kdelibs3-dev (>= 3.0-0), libqt3-dev (>= 2:3.0.0.0-1), libqt3-mt-dev (>= 2:3.0.0.0-1), qt3-tools (>= 2:3.0.0.0-1)
 Standards-Version: #POLICY#
 
 Package: #PACKAGE#
 Architecture: any
 Depends: ${shlibs:Depends}
-Enhances: kdebase
 Description: <insert up to 60 chars description>
  <insert long description, indented with spaces>
