@@ -98,11 +98,11 @@ public:
         IconSizeDefault = 0;
         IconTextDefault = "IconOnly";
         
-	IndexDefault = -1;
+	IndexDefault = 0;
         NewLineDefault = false;
-        OffsetDefault = -1;
+        OffsetDefault = 0;
         PositionDefault = "Top";
-        HiddenDefault = false;
+	HiddenDefault = false;
         idleButtons.setAutoDelete(true);
     }
 
@@ -1108,26 +1108,33 @@ void KToolBar::saveSettings(KConfig *config, const QString &_configGroup)
 
     KConfigGroupSaver saver(config, configGroup);
 
-    if ( position != d->PositionDefault )
+    (!config->hasDefault("Position") && position == d->PositionDefault ) ?
+      config->revertToDefault("Position") :
       config->writeEntry("Position", position);
 
-    if ( icontext != d->IconTextDefault )
+    (!config->hasDefault("IconText") && icontext == d->IconTextDefault ) ?
+      config->revertToDefault("IconText") :
       config->writeEntry("IconText", icontext);
-	    
-    if ( iconSize() != d->IconSizeDefault )
+   
+    (!config->hasDefault("IconSize") && iconSize() == d->IconSizeDefault ) ?
+      config->revertToDefault("IconSize") :
       config->writeEntry("IconSize", iconSize());
-
-    if ( isHidden() != d->HiddenDefault )
+    
+    (!config->hasDefault("Hidden") && isHidden() == d->HiddenDefault ) ?
+      config->revertToDefault("Hidden") :
       config->writeEntry("Hidden", isHidden());
-
-    if ( index != d->IndexDefault )
-      config->writeEntry( "Index", index );
-
-    if ( offset() != d->OffsetDefault )
-      config->writeEntry( "Offset", offset() );
-
-    if ( newLine() != d->NewLineDefault )
-      config->writeEntry( "NewLine", newLine() );
+    
+    (!config->hasDefault("Index") && index == d->IndexDefault ) ?
+      config->revertToDefault("Index") :
+      config->writeEntry("Index", index);
+    
+    (!config->hasDefault("Offset") && offset() == d->OffsetDefault ) ?
+      config->revertToDefault("Offset") :
+      config->writeEntry("Offset", offset());
+    
+    (!config->hasDefault("NewLine") && newLine() == d->NewLineDefault ) ?
+      config->revertToDefault("NewLine") :
+      config->writeEntry("NewLine", newLine());
 }
 
 
@@ -1645,12 +1652,6 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
         bool newLine = config->readBoolEntry(attrNewLine, d->NewLineDefault);
         bool hidden = config->readBoolEntry(attrHidden, d->HiddenDefault);
 
-        // Store the default values.
-        d->IndexDefault = index;
-        d->OffsetDefault = offset;
-        d->NewLineDefault = newLine;
-        d->HiddenDefault = hidden;
-
         Dock pos(DockTop);
         if ( position == "Top" )
             pos = DockTop;
@@ -1823,7 +1824,7 @@ void KToolBar::loadState( const QDomElement &element )
     {
         QString attrHidden = element.attribute( "hidden" ).lower();
         if ( !attrHidden.isEmpty() )
-            d->HiddenDefault  = attrHidden  == "true";
+            d->HiddenDefault = attrHidden  == "true";
     }
 
     d->toolBarInfo = KToolBarPrivate::ToolBarInfo( dock, d->IndexDefault, d->NewLineDefault, d->OffsetDefault );
