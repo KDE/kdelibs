@@ -187,6 +187,13 @@ namespace KIO {
      * Find all details for one file or directory.
      */
     StatJob * stat( const KURL& url, bool showProgressInfo = true );
+    /**
+     * Find all details for one file or directory.
+     * This version of the call includes a boolean, @p sideIsSource,
+     * which is true when stating a source file (we will do a get on it if the stat works)
+     * and false when stating a destination file (target of a copy).
+     */
+    StatJob * stat( const KURL& url, bool sideIsSource, bool showProgressInfo /*= true*/ );
 
     /**
      * Get (a.k.a. read).
@@ -217,14 +224,14 @@ namespace KIO {
      *    job->addMetaData("content-type", contentType );
      *    job->addMetaData("referrer", referrerURL);
      *
-     * @p postData is the data that you want to send and 
-     * @p contentType is the format of that data. 
-     * 
+     * @p postData is the data that you want to send and
+     * @p contentType is the format of that data.
+     *
      * You MUST specify content-type!
-     *     
-     * Often @p contentType is "application/x-www-form-urlencoded" and 
-     * the @p postData is then an ASCII string (without null-termination!) 
-     * with characters like space, linefeed and percent escaped like %20, 
+     *
+     * Often @p contentType is "application/x-www-form-urlencoded" and
+     * the @p postData is then an ASCII string (without null-termination!)
+     * with characters like space, linefeed and percent escaped like %20,
      * %0A and %25.
      */
     TransferJob *http_post( const KURL& url, const QByteArray &postData,

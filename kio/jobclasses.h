@@ -382,6 +382,13 @@ namespace KIO {
     public:
         StatJob(const KURL& url, int command, const QByteArray &packedArgs, bool showProgressInfo);
 
+        /** A stat() can have two meanings. Either we want to read from this URL,
+         * or to check if we can write to it. First case is "source", second is "dest".
+         * It is necessary to know what the StatJob is for, to tune the kioslave's behaviour
+         * (e.g. with FTP)
+         */
+        void setSide( bool source ) { m_bSource = source; }
+
         /**
          * Call this in the slot connected to @ref result,
          * and only after making sure no error happened.
@@ -410,6 +417,9 @@ namespace KIO {
     protected:
         UDSEntry m_statResult;
         KURL m_redirectionURL;
+        bool m_bSource;
+        class StatJobPrivate;
+        StatJobPrivate *d;
     };
 
     /**
