@@ -329,6 +329,8 @@ void DownloadDialog::slotDetails()
   Entry *e = getEntry();
   if(!e) return;
 
+  QString lang = KGlobal::locale()->language();
+
   QString info = i18n
   (
     "Name: %1\n"
@@ -348,7 +350,7 @@ void DownloadDialog::slotDetails()
     ).arg(e->rating()
     ).arg(e->downloads()
     ).arg(e->releaseDate().toString()
-    ).arg(e->summary()
+    ).arg(e->summary(lang)
   );
 
   info.append(i18n
@@ -445,21 +447,22 @@ void DownloadDialog::slotSelected()
   QString tmp;
   bool enabled;
   Entry *e = getEntry();
+  QString lang = KGlobal::locale()->language();
 
   if(e)
   {
-    if(!e->preview().isValid())
+    if(!e->preview(lang).isValid())
     {
       m_rt->setText(QString("<b>%1</b><br>%2<br>%3<br><br><i>%4</i><br>(%5)").arg(
-        e->name()).arg(e->author()).arg(e->releaseDate().toString()).arg(e->summary()).arg(e->license()));
+        e->name()).arg(e->author()).arg(e->releaseDate().toString()).arg(e->summary(lang)).arg(e->license()));
     }
     else
     {
-      KIO::NetAccess::download(e->preview(), tmp, this);
+      KIO::NetAccess::download(e->preview(lang), tmp, this);
       m_rt->setText(QString("<b>%1</b><br>%2<br>%3<br><br><img src='%4'><br><i>%5</i><br>(%6)").arg(
-        e->name()).arg(e->author()).arg(e->releaseDate().toString()).arg(tmp).arg(e->summary()).arg(e->license()));
+        e->name()).arg(e->author()).arg(e->releaseDate().toString()).arg(tmp).arg(e->summary(lang)).arg(e->license()));
     }
-    
+
     if(installStatus(e) == 1) enabled = false;
     else enabled = true;
 

@@ -20,6 +20,9 @@
 
 #include "entry.h"
 
+#include <kglobal.h>
+#include <klocale.h>
+
 using namespace KNS;
 
 Entry::Entry() :
@@ -93,12 +96,14 @@ QString Entry::summary( const QString &lang ) const
 {
   if ( mSummaryMap.isEmpty() ) return QString::null;
 
-  if ( lang.isEmpty() ) {
-    if ( !mSummaryMap[ lang ].isEmpty() ) return mSummaryMap[ lang ];
-    else return *(mSummaryMap.begin());
-  } else {
-    return mSummaryMap[ lang ];
+  if ( !mSummaryMap[ lang ].isEmpty() ) return mSummaryMap[ lang ];
+  else {
+    QStringList langs = KGlobal::locale()->languageList();
+    for(QStringList::Iterator it = langs.begin(); it != langs.end(); it++)
+      if( !mSummaryMap[ *it ].isEmpty() ) return mSummaryMap[ *it ];
   }
+  if ( !mSummaryMap[ QString::null ].isEmpty() ) return mSummaryMap[ QString::null ];
+  else return *(mSummaryMap.begin());
 }
 
 
@@ -145,6 +150,12 @@ void Entry::setPayload( const KURL &url, const QString &lang )
 KURL Entry::payload( const QString &lang ) const
 {
   KURL payload = mPayloadMap[ lang ];
+  if ( payload.isEmpty() ) {
+    QStringList langs = KGlobal::locale()->languageList();
+    for(QStringList::Iterator it = langs.begin(); it != langs.end(); it++)
+      if( !mPayloadMap[ *it ].isEmpty() ) return mPayloadMap[ *it ];
+  }
+  if ( payload.isEmpty() ) payload = mPayloadMap [ QString::null ];
   if ( payload.isEmpty() && !mPayloadMap.isEmpty() ) {
     payload = *(mPayloadMap.begin());
   }
@@ -162,6 +173,12 @@ void Entry::setPreview( const KURL &url, const QString &lang )
 KURL Entry::preview( const QString &lang ) const
 {
   KURL preview = mPreviewMap[ lang ];
+  if ( preview.isEmpty() ) {
+    QStringList langs = KGlobal::locale()->languageList();
+    for(QStringList::Iterator it = langs.begin(); it != langs.end(); it++)
+      if( !mPreviewMap[ *it ].isEmpty() ) return mPreviewMap[ *it ];
+  }
+  if ( preview.isEmpty() ) preview = mPreviewMap [ QString::null ];
   if ( preview.isEmpty() && !mPreviewMap.isEmpty() ) {
     preview = *(mPreviewMap.begin());
   }
@@ -212,7 +229,7 @@ void Entry::parseDomElement( const QDomElement &element )
     if ( e.tagName() == "author" ) setAuthor( e.text().stripWhiteSpace() );
     if ( e.tagName() == "licence" ) setLicence( e.text().stripWhiteSpace() );
     if ( e.tagName() == "summary" ) {
-      QString lang = e.attribute( "lang " );
+      QString lang = e.attribute( "lang" );
       setSummary( e.text().stripWhiteSpace(), lang );
     }
     if ( e.tagName() == "version" ) setVersion( e.text().stripWhiteSpace() );
@@ -272,6 +289,6 @@ QDomElement Entry::addElement( QDomDocument &doc, QDomElement &parent,
   QDomElement n = doc.createElement( tag );
   n.appendChild( doc.createTextNode( value ) );
   parent.appendChild( n );
-  
+
   return n;
 }

@@ -88,7 +88,7 @@ UploadDialog::UploadDialog( Engine *engine, QWidget *parent ) :
   topLayout->addWidget( languageLabel, 5, 0 );
   mLanguageCombo = new QComboBox( topPage );
   topLayout->addWidget( mLanguageCombo, 5, 1 );
-  mLanguageCombo->insertStringList( KGlobal::locale()->languagesTwoAlpha() );
+  mLanguageCombo->insertStringList( KGlobal::locale()->languageList() );
 
   QLabel *previewLabel = new QLabel( i18n("Preview URL:"), topPage );
   topLayout->addWidget( previewLabel, 6, 0 );
