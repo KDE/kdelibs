@@ -345,7 +345,27 @@ public:
     virtual void readConfig( KConfig *, const QString& group = QString::null );
     virtual void writeConfig( KConfig *, const QString& group = QString::null);
 
+    /**
+     * This method calculates a QString from the given parameters, that is
+     * suitable for sorting with e.g. QIconView or QListView. Their 
+     * Item-classes usually have a setKey( const QString& ) method or a virtual
+     * method QString key() that is used for sorting.
+     *
+     * @param value Any string that should be used as sort criterion
+     * @param isDir Tells whether the key is computed for an item representing
+     *              a directory (directories are usually sorted before files)
+     * @param sortSpec An ORed combination of QDir::SortSpec flags.
+     *                 Currently, the values IgnoreCase, Reversed and 
+     *                 DirsFirst are taken into account.
+     */
     static QString sortingKey( const QString& value, bool isDir, int sortSpec);
+
+    /**
+     * An overloaded method that takes not a QString, but a number as sort 
+     * criterion. You can use this for file-sizes or dates/times for example.
+     * If you use a time_t, you need to cast that to KIO::filesize_t because 
+     * of ambiguity problems.
+     */
     static QString sortingKey( KIO::filesize_t value, bool isDir,int sortSpec);
 
 protected:
