@@ -24,14 +24,14 @@
 #endif
 
 #include <qdir.h> // must be at the front
-#include <qobjcoll.h>
+#include <qcollection.h>
+#include <qwidgetlist.h>
 #include <qstrlist.h>
 #include <qfile.h>
 #include <qmessagebox.h>
 #include <qtextstream.h>
 #include <qregexp.h>
 #include <qkeycode.h>
-#include <qwidcoll.h>
 #include <qpopupmenu.h>
 #include <qsessionmanager.h>
 #include <qlist.h>
