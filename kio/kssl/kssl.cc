@@ -395,20 +395,28 @@ int rc;
 		return rc;
 	}
 
+connect_again:
 	rc = d->kossl->SSL_connect(d->m_ssl);
 	if (rc == 1) {
 		setConnectionInfo();
 		setPeerInfo();
 		kdDebug(7029) << "KSSL connected OK" << endl;
 	} else {
-		kdDebug(7029) << "KSSL connect failed - rc = " << rc << endl;
-		kdDebug(7029) << "                      ERROR = "
-			      << d->kossl->SSL_get_error(d->m_ssl, rc) << endl;
-		d->kossl->ERR_print_errors_fp(stderr);
-		d->kossl->SSL_shutdown(d->m_ssl);
-		d->kossl->SSL_free(d->m_ssl);
-		d->m_ssl = 0;
-		return -1;
+		int err = d->kossl->SSL_get_error(d->m_ssl, rc);
+		if (err == SSL_ERROR_WANT_READ || err == SSL_ERROR_WANT_WRITE) {
+			// nonblocking - but we block anyways in connect() :)
+			goto connect_again;
+		} else {
+			kdDebug(7029) << "KSSL connect failed - rc = "
+				<< rc << endl;
+			kdDebug(7029) << "                   ERROR = "
+				<< err << endl;
+			d->kossl->ERR_print_errors_fp(stderr);
+			d->kossl->SSL_shutdown(d->m_ssl);
+			d->kossl->SSL_free(d->m_ssl);
+			d->m_ssl = 0;
+			return -1;
+		}
 	}
 
 	if (!d->kossl->SSL_session_reused(d->m_ssl)) {
@@ -458,16 +466,25 @@ return -1;
 
 int KSSL::read(void *buf, int len) {
 #ifdef KSSL_HAVE_SSL
+	int rc = 0;
+
 	if (!m_bInit)
 		return -1;
 
-int rc = d->kossl->SSL_read(d->m_ssl, (char *)buf, len);
+	rc = d->kossl->SSL_read(d->m_ssl, (char *)buf, len);
 	if (rc <= 0) {
 		int err = d->kossl->SSL_get_error(d->m_ssl, rc);
+
+		if (err == SSL_ERROR_WANT_READ || err == SSL_ERROR_WANT_WRITE) {
+			return 0;
+		}
+
 		kdDebug(7029) << "SSL READ ERROR: " << err << endl;
 		if (err != SSL_ERROR_NONE &&
-		    err != SSL_ERROR_ZERO_RETURN && err != SSL_ERROR_SYSCALL)
+		    err != SSL_ERROR_ZERO_RETURN && err != SSL_ERROR_SYSCALL) {
 			rc = -1;      // OpenSSL returns 0 on error too
+		}
+
 //		else if (err == SSL_ERROR_ZERO_RETURN)
 //			rc = 0;
 	}
@@ -486,6 +503,11 @@ int KSSL::write(const void *buf, int len) {
 int rc = d->kossl->SSL_write(d->m_ssl, (const char *)buf, len);
 	if (rc <= 0) {      // OpenSSL returns 0 on error too
 		int err = d->kossl->SSL_get_error(d->m_ssl, rc);
+
+		if (err == SSL_ERROR_WANT_WRITE) {
+			return 0;
+		}
+
 		kdDebug(7029) << "SSL WRITE ERROR: " << err << endl;
 		if (err != SSL_ERROR_NONE &&
 		    err != SSL_ERROR_ZERO_RETURN && err != SSL_ERROR_SYSCALL)
