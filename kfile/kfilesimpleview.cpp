@@ -142,16 +142,18 @@ void KFileSimpleView::paintCell( QPainter *p, int row, int col)
     int y2 = h - 1;
 
     if ( (row == curRow) && (col == curCol) ) { // if we are on current cell,
-	p->fillRect(0, 0, x2, y2, kapp->selectColor);
-	
         if ( hasFocus() ) {
-            p->setPen( DotLine );               
-            p->drawRect( 0, 0, x2, y2 );        
-            p->setPen( SolidLine );             
+              p->fillRect(0, 0, x2, y2, kapp->selectColor);
+	      p->setPen( kapp->selectTextColor );
         }
-	p->setPen( kapp->selectTextColor );
-    } else
-	p->setPen( kapp->windowTextColor );
+        else { // no focus => draw only a dashed line around current item
+             p->setPen( DotLine );               // used dashed line to
+             p->drawRect( 0, 0, x2, y2 );        // draw rect along cell edges
+             p->setPen( SolidLine );             // restore to normal
+             p->setPen( kapp->windowTextColor );
+        }
+    } else // not on current cell, use the normal color
+          p->setPen( kapp->windowTextColor );
 
     if (index < count()) {
 	p->drawPixmap(0, 1, *pixmaps.at(index));
@@ -166,15 +168,19 @@ void KFileSimpleView::keyPressEvent( QKeyEvent* e )
     int newCol = curCol;
     int oldRow = curRow;
     int oldCol = curCol;
+    int lastItem = 0;
+    int jump     = 0;
 
     switch( e->key() ) {                        // Look at the key code
     case Key_Left:
 	if( newCol > 0 )
-	    newCol--;   
+	    newCol--;
+        else newRow = 0;
 	break;
     case Key_Right:                         // Correspondingly...
 	if( newCol < numCols()-1 )
 	    newCol++;
+        else newRow = lastRowVisible();
 	if (newCol * rowsVisible + oldRow >= count())
 	    newRow = count() - rowsVisible * newCol - 1;
 	break;
@@ -195,10 +201,39 @@ void KFileSimpleView::keyPressEvent( QKeyEvent* e )
 	    newRow++;
 	    if (newRow >= numRows()) {
 		newRow = 0;
-		newCol++;
+ 	 	newCol++;
 	    }
 	}
 	break;
+    case Key_Home:
+        newRow = 0;
+        newCol = 0; 
+        break;
+    case Key_End:
+        newRow = count() % numRows() - 1; // calc last item in last col
+        newCol = numCols() - 1;
+        break;
+    case Key_PageUp:
+        jump = lastColVisible() - leftCell(); // num of cols we want to jump
+        if ( curCol - jump < 0 ) {
+          newRow = 0;
+          newCol = 0;
+        } else newCol = curCol - jump;
+        break;
+    case Key_PageDown:
+//        jump = lastColVisible() - curCol + 1; // num of cols we want to jump
+          jump = lastColVisible() - leftCell();
+        lastItem = count() % numRows() - 1;   // last item in last col
+
+        if ( curCol + jump >= numCols() ) { // too far, just go to last col
+          newCol = numCols() - 1;
+          newRow = lastItem; 
+        } else {
+          newCol += jump; 
+          if ( newCol == numCols()-1 && curRow > lastItem ) newRow = lastItem;
+          else newRow = curRow;
+        }
+        break;
     case Key_Enter:
     case Key_Return:
 	select( curCol * rowsVisible + curRow );
