@@ -20,7 +20,7 @@
 NotepadPart::NotepadPart( QWidget * parentWidget )
  : KParts::ReadWritePart( "NotepadPart" )
 {
-  m_instance = new KInstance( "nodepadpart" );
+  m_instance = new KInstance( "notepadpart" );
 
   debug("NotepadPart::NotepadPart");
   m_edit = new QMultiLineEdit( parentWidget, "NotepadPart's multiline edit" );
