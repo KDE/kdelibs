@@ -1365,10 +1365,11 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
             KIO::UDSEntry filestat;
 
             // can't submit file in www-url-form encoded
-            if (multipart && KIO::NetAccess::stat(fileurl, filestat)) {
+            QWidget* toplevel = static_cast<RenderSubmitButton*>(m_render)->widget()->topLevelWidget();
+            if (multipart && KIO::NetAccess::stat(fileurl, filestat, toplevel)) {
                 KFileItem fileitem(filestat, fileurl, true, false);
 
-                if ( fileitem.isFile() && KIO::NetAccess::download(KURL(value().string()), local) ) {
+                if ( fileitem.isFile() && KIO::NetAccess::download(KURL(value().string()), local, toplevel) ) {
                     QFile file(local);
                     if (file.open(IO_ReadOnly)) {
                         QCString filearray(file.size()+1);
