@@ -200,10 +200,10 @@ void KSSLInfoDlg::setup(const QString& peername, const QString& issuer,
     d->m_layout->addMultiCell(layout, 2, 2, 0, 2);
 }
 
-QScrollView *KSSLInfoDlg::buildCertInfo(const QString &certName) {
+QScrollView *KSSLInfoDlg::certInfoWidget(QWidget *parent, const QString &certName, bool doMail) {
     KSSLX509Map cert(certName);
     QString tmp;
-    QScrollView *result = new QScrollView(this);
+    QScrollView *result = new QScrollView(parent);
     result->viewport()->setBackgroundMode(QWidget::PaletteButton);
     QFrame *frame = new QFrame(result);
     QGridLayout *grid = new QGridLayout(frame, 1, 2, KDialog::marginHint(), KDialog::spacingHint());
@@ -242,11 +242,19 @@ QScrollView *KSSLInfoDlg::buildCertInfo(const QString &certName) {
     if (!(tmp = cert.getValue("Email")).isEmpty()) {
         label = new QLabel(i18n("EMail:"), frame);
         label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-        KURLLabel *mail = new KURLLabel(tmp, tmp, frame);
-        connect(mail, SIGNAL(leftClickedURL(const QString &)), SLOT(mailClicked(const QString &)));
+        if (doMail) {
+           KURLLabel *mail = new KURLLabel(tmp, tmp, frame);
+           connect(mail, SIGNAL(leftClickedURL(const QString &)), parent, SLOT(mailClicked(const QString &)));
+        } else {
+           new QLabel(tmp, frame);
+        }
     }
     result->addChild(frame);
     return result;
+}
+
+QScrollView *KSSLInfoDlg::buildCertInfo(const QString &certName) {
+return KSSLInfoDlg::certInfoWidget(this, certName, true);
 }
 
 void KSSLInfoDlg::urlClicked(const QString &url) {

@@ -47,6 +47,7 @@ public:
              const QString& goodFrom, const QString& goodUntil);
 
   void setup( KSSL & ssl, const QString & ip, const QString & url );
+  static QScrollView *certInfoWidget(QWidget *parent, const QString &certName, bool doMail = false);
 
 private:
   QScrollView *buildCertInfo(const QString &certName);
