@@ -60,7 +60,7 @@ is built up from the HTML or XML found in the specified file.
 Let me describe this with an example.
 <p>
 khtml makes use of the document object model (DOM) for storing the document
-in a tree like structure. Imagine a some html like
+in a tree like structure. Imagine some html like
 <pre>
 &lt;html&gt;
     &lt;head&gt;
@@ -83,7 +83,7 @@ in a tree like structure. Imagine a some html like
 </pre>
 In the following I'll show how this input will be processed step by step to generate the visible output
 you will finally see on your screen. I'm describing the things as if they happen one after the other,
-to make the priniciple more clear. In reality, to get visible output on the screen as soon as possible,
+to make the principle more clear. In reality, to get visible output on the screen as soon as possible,
 all these things (from tokenization to the build up and layouting of the rendering tree) happen
 more or less in parallel.
 
@@ -228,7 +228,7 @@ Once we have this list, we can get a <a
 href="rendering/render_style.h">RenderStyle object</a>
 for every DOM element from the <a
 href="css/cssstyleselector.h">CSSStyleSelector</a> by calling
-"styleForElement(DOM::ElementImpl *".
+"styleForElement(DOM::ElementImpl *)".
 The style object describes in a compact form all the
 <a href="css/css_properties.in">CSS properties</a>
 that should get applied to the Node.
@@ -241,8 +241,8 @@ it's general structure the DOM tree, but might have some significant
 differences too. First of all, so called
  <a href="http://www.w3.org/TR/REC-CSS2/visuren.html#anonymous-block-level">anonymous boxes</a> - (see
  <a href="http://www.w3.org/TR/REC-CSS2/">CSS specs</a>) that
-have no DOM counterpart might get inserted into the rendering tree to satify
-DOM requirements. Second, the display propery of the style affects which type
+have no DOM counterpart might get inserted into the rendering tree to satisfy
+DOM requirements. Second, the display property of the style affects which type
 of rendering object is chosen to represent the current DOM object.
 
 <p>
@@ -317,7 +317,7 @@ or when I find some time to do so. Let me name some of the missing things:
 <li>The decoder to convert the incoming stream to Unicode
 <li>interaction with konqueror/applications
 <li>javascript
-<li>dynamic reflow and how to use the DOM to manipulate khtmls visual ouput
+<li>dynamic reflow and how to use the DOM to manipulate khtmls visual output
 <li>mouse/event handling
 <li>real interactions when parsing incrementally
 <li>java
@@ -328,15 +328,15 @@ Still I hope that this short introduction will make it easier for you to get a f
 Now before I finish let me add a small <b>warning</b> and <b>advice</b> to all of you who plan hacking khtml themselves:
 <p>
 khtml is by now a quite big library and it takes some time to understand how it works. Don't let yourself get frustrated
-if you don't immediatly understand how it works. On the other hand, it is by now one of the libraries that
+if you don't immediately understand how it works. On the other hand, it is by now one of the libraries that
 get used a lot, that probably has the biggest number of remaining bugs (even though it's sometimes hard to
 know if some behaviour is really a bug).
 <blockquote>
 Some parts of it's code are however <b>extremely touchy</b> (especially the layouting algorithms), 
-and making changes there (that might fix a bug on on web page) might introduce severe bugs.
+and making changes there (that might fix a bug on one web page) might introduce severe bugs.
 All the people developing khtml have already spend huge amounts of time searching for such bugs,
 that only showed up on some web pages, and thus were found only a week after the change that
-introduced the bug was made. This can be very frustrating for us, und we'd appreciate if people
+introduced the bug was made. This can be very frustrating for us, and we'd appreciate if people
 that are not completely familiar with khtml post changes touching these critical regions to kfm-devel
 for review before applying them.
 </blockquote>
