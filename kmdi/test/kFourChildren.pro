@@ -2,7 +2,7 @@ TEMPLATE        = app
 CONFIG		= qt dll warn_on thread
 
 unix:DEFINES   = NO_INCLUDE_MOCFILES QT_NO_COMPAT
-unix:LIBS       += -lkdevelopqextmdi -L$(KDEDIR)/lib -lkdecore -lkdeui -lDCOP -lkparts
+unix:LIBS       += -lkmdi -L$(KDEDIR)/lib -lkdecore -lkdeui -lDCOP -lkparts
 unix:INCLUDEPATH     += .. ../include $(KDEDIR)/include
 
 win32:DEFINES = NO_KDE NO_KDE2
