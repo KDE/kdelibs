@@ -26,7 +26,7 @@
 // KDE HTML Widget - Tokenizers
 // $Id$
 
-// #define TOKEN_DEBUG
+ #define TOKEN_DEBUG
 //#define TOKEN_PRINT
 
 #ifdef HAVE_CONFIG_H
@@ -591,6 +591,7 @@ void HTMLTokenizer::parseTag(HTMLStringIt &src)
 		if( tquote )
 		{
 		    printf("broken HTML in parseTag: SearchAttribute \n");
+		    tquote=NoQuote;
 		    ++src;
 		    break;
 		}		
@@ -654,18 +655,27 @@ void HTMLTokenizer::parseTag(HTMLStringIt &src)
 	    }
 	    case SearchEqual:
 	    {
-		if(tquote)
+		if( tquote )
 		{
-		    printf("bad HTML in parseTag: SearchEqual\n");
-		    // this is moslty due to a missing '"' somewhere before...
-		    // so let's start searching for a new tag
-		    tquote = NoQuote;
-		    tag = TagName;
-		    ++src;
-		    break;
+		      printf("bad HTML in parseTag: SearchEqual\n");
+		      // this is moslty due to a missing '"' somewhere before..
+		      // so let's start searching for a new tag
+		      tquote = NoQuote;
+		      
+		      Attribute a;
+		      a.id = *buffer;
+		      if(a.id)
+		      {
+			  a.setValue(0, 0);
+			  currToken->attrs.add(a);
+		      }
+		      dest = buffer;
+		      tag = SearchAttribute;
+		      discard = SpaceDiscard;
+		      pending = NonePending;
 		}
-		if( curChar == '=' )
-		{
+		else if( curChar == '=' )
+ 		{
 		    tag = SearchValue;
 		    pending = NonePending; // ignore spaces before '='
 		    discard = SpaceDiscard; // discard spaces after '='
