@@ -54,6 +54,9 @@ namespace khtml
 	virtual void layout( );
 	virtual void calcMinMaxWidth();
 
+	virtual short baselineOffset() const;
+	virtual short verticalPositionHint() const;
+
 	virtual void setPixmap( const QPixmap &, const QRect&, CachedImage *, bool *manualUpdate=0);	
 
 	long int val;

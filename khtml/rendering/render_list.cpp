@@ -360,3 +360,13 @@ void RenderListMarker::calcMinMaxWidth()
     m_minWidth = m_width;
     m_maxWidth = m_width;
 }
+
+short RenderListMarker::baselineOffset() const
+{
+    return QFontMetrics(m_style->font()).ascent();
+}
+
+short RenderListMarker::verticalPositionHint() const
+{
+    return QFontMetrics(m_style->font()).ascent();
+}
