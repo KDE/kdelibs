@@ -116,7 +116,7 @@ AC_CHECK_S_ISSOCK
 AC_CHECK_KSIZE_T
 
 KDE_CHECK_MICO(2.2.6)
-KDE_CHECK_PYTHON(1.5)
+dnl KDE_CHECK_PYTHON(1.5)
 
 if test -n "$qt_includes"; then
   QNAMESPACE_H="$qt_includes/qnamespace.h"
@@ -240,10 +240,6 @@ AC_OUTPUT(Makefile \
 	corba/kded/Makefile \
 	corba/partsui/Makefile \
 	corba/parts/Makefile \
-	corba/python/Makefile \
-	corba/python/idl/Makefile \
-	corba/pykde/Makefile \
-	corba/kpython/Makefile \
 	corba/idl/Makefile \
 	corba/tutorials/Makefile \
 	corba/tutorials/composing/Makefile \
