@@ -265,6 +265,7 @@ bool KMCupsManager::completePrinterShort(KMPrinter *p)
 	uri = printerURI(p, true);
 	req.addURI(IPP_TAG_OPERATION,"printer-uri",uri);
 
+	/*
 	// change host and port for remote stuffs
 	if (!p->uri().isEmpty())
 	{
@@ -300,6 +301,8 @@ bool KMCupsManager::completePrinterShort(KMPrinter *p)
 	//keys.append("printer-location");
 	keys.append("printer-info");
 	keys.append("printer-make-and-model");
+	*/
+
 	keys.append("job-sheets-default");
 	keys.append("job-sheets-supported");
 	keys.append("job-quota-period");
@@ -394,7 +397,7 @@ bool KMCupsManager::testPrinter(KMPrinter *p)
 	uri = printerURI(p);
 	req.addURI(IPP_TAG_OPERATION,"printer-uri",uri);
 	req.addMime(IPP_TAG_OPERATION,"document-format","application/postscript");
-	if (!CupsInfos::self()->realLogin().isEmpty()) req.addName(IPP_TAG_OPERATION,"requesting-user-name",CupsInfos::self()->realLogin());
+	if (!CupsInfos::self()->login().isEmpty()) req.addName(IPP_TAG_OPERATION,"requesting-user-name",CupsInfos::self()->login());
 	req.addName(IPP_TAG_OPERATION,"job-name",QString::fromLatin1("KDE Print Test"));
 	if (req.doFileRequest("/printers/",testpage))
 		return true;
@@ -480,6 +483,9 @@ void KMCupsManager::processRequest(IppRequest* req)
 			printer->addType(((value & CUPS_PRINTER_CLASS) || (value & CUPS_PRINTER_IMPLICIT) ? KMPrinter::Class : KMPrinter::Printer));
 			if ((value & CUPS_PRINTER_REMOTE)) printer->addType(KMPrinter::Remote);
 			if ((value & CUPS_PRINTER_IMPLICIT)) printer->addType(KMPrinter::Implicit);
+
+			// convert printer-type attribute
+			//printer->setPrinterCap( ( value & CUPS_PRINTER_OPTIONS ) >> 2 );
 		}
 		else if (attrname == "printer-state")
 		{
@@ -989,11 +995,13 @@ void KMCupsManager::printerIppReport()
 		req.setOperation(IPP_GET_PRINTER_ATTRIBUTES);
 		uri = printerURI(m_currentprinter, true);
 		req.addURI(IPP_TAG_OPERATION,"printer-uri",uri);
+		/*
 		if (!m_currentprinter->uri().isEmpty())
 		{
 			req.setHost(m_currentprinter->uri().host());
 			req.setPort(m_currentprinter->uri().port());
 		}
+		*/
 		req.dump(2);
 		if (req.doRequest("/printers/"))
 		{
@@ -1126,6 +1134,7 @@ QString downloadDriver(KMPrinter *p)
 	QString	driverfile, prname = p->printerName();
 	bool	changed(false);
 
+	/*
 	if (!p->uri().isEmpty())
 	{
 		// try to load the driver from the host:port
@@ -1139,6 +1148,7 @@ QString downloadDriver(KMPrinter *p)
 		prname = prname.replace(QRegExp("@.*"), "");
 		changed = true;
 	}
+	*/
 
 	// download driver
 	driverfile = cupsGetPPD(prname.local8Bit());
