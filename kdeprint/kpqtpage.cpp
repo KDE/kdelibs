@@ -116,7 +116,7 @@ KPQtPage::KPQtPage(QWidget *parent, const char *name)
 	QRadioButton	*m_nup1 = new QRadioButton("&1", m_nupbox);
 	QRadioButton	*m_nup2 = new QRadioButton("&2", m_nupbox);
 	QRadioButton	*m_nup4 = new QRadioButton("&4", m_nupbox);
-	QRadioButton	*m_nupother = new QRadioButton("&Other", m_nupbox);
+	QRadioButton	*m_nupother = new QRadioButton(i18n("&Other"), m_nupbox);
 	m_nuppix = new QLabel(m_nupbox);
 	m_nuppix->setAlignment(Qt::AlignCenter);
 
