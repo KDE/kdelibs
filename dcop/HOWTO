@@ -174,6 +174,13 @@ else {
     qDebug("doIt returned an unexpected type of reply!");
 }
 
+N.B.: You cannot call() a method belonging to an application which has
+registered with an unique numeric id appended to its textual name (see
+dcopclient.h for more info). In this case, DCOP would not know which
+application it should connect with to call the method. This is not an issue
+with send(), as you can broadcast to all applications that have registered
+with appname-<numeric_id> by using a wildcard (e.g. 'konsole-*'), which
+will send your signal to all applications called 'konsole'.
 
 Receiving Data via DCOP:
 ------------------------
@@ -262,7 +269,92 @@ slotProcessingDone(DCOPClientTransaction *myTransaction, const QString &result)
 Using the dcopidl compiler
 ---------------------
 
-TODO
+dcopidl makes setting up a DCOP server easy. Instead of having to implement
+the process() method and unmarshalling (retrieving from QByteArray) parameters
+manually, you can let dcopidl create the necessary code on your behalf.
+
+This also allows you to describe the interface for your class in a
+single, separate header file.
+
+Writing an IDL file is very similar to writing a normal C++ header.
+
+Example:
+
+#ifndef MY_INTERFACE_H
+#define MY_INTERFACE_H
+ 
+#include <dcopobject.h>
+ 
+class MyInterface : virtual public DCOPObject
+{
+  K_DCOP
+    
+  k_dcop:
+      
+    virtual void myAsynchronousMethod(QString someParameter) = 0;
+    virtual QRect mySynchronousMethod() = 0;
+};
+ 
+#endif
+
+As you can see, you're essentially declaring an abstract base class, which
+virtually inherits from DCOPObject.
+
+Note that you must declare names for your parameters and you must
+use pass-by-value: no pointers or references.
+
+If you're using the standard KDE build scripts, then you can simply
+add this file (which you would call MyInterface.h) to your sources
+directory. Then you edit your Makefile.am, adding 'MyInterface.skel'
+to your SOURCES list and MyInterface.h to include_HEADERS.
+
+The build scripts will use dcopidl to parse MyInterface.h, converting
+it to an XML description in MyInterface.kidl. Next, a file called
+MyInterface_skel.cpp will automatically be created, compiled and
+linked with your binary.
+
+The next thing you have to do is to choose which of your classes will
+implement the interface described in MyInterface.h. Alter the inheritance
+of this class such that it virtually inherits from MyInterface. Then
+add declarations to your class interface similar to those on MyInterface.h,
+but virtual, not pure virtual.
+
+Example:
+
+class MyClass: public QObject, virtual public MyInterface
+{
+  public:
+
+    virtual void myAsynchronousMethod(QString someParameter);
+    virtual void mySynchronousMethod();
+};
+
+Note: (Qt issue) Remember that if you are inheriting from QObject, you must
+place it first in the list of inherited classes.
+
+In the implementation of your class' ctor, you must explicitly initialise
+those classes from which you are inheriting from. This is, of course, good
+practise, but it is essential here as you need to tell DCOPObject the name of
+the interface which your are implementing.
+
+Example:
+
+MyClass::MyClass()
+  : QObject(),
+    DCOPObject("MyInterface")
+{
+  // whatever...
+}
+
+Now you can simply implement the methods you have declared in your interface,
+exactly the same as you would normally.
+
+Example:
+
+MyClass::myAsynchronousMethod(QString someParameter)
+{
+  qDebug("myAsyncMethod called with param `" + someParameter + "'");
+}
 
 Conclusion:
 -----------
