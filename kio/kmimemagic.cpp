@@ -43,10 +43,6 @@ void KMimeMagic::initStatic()
 #include <qregexp.h>
 #include <qstring.h>
 
-#ifndef __GNUC__
-#define __FUNCTION__ "unknown"
-#endif
-
 /*
  * data structures and related constants
  */
@@ -432,14 +428,14 @@ test_table()
 	struct magic *m;
 	struct magic *prevm = NULL;
 
-	// debug("%s: started", __FUNCTION__);
+	// debug("test_table : started", );
 	for (m = conf->magic; m; m = m->next) {
 		if (isprint((((unsigned long) m) >> 24) & 255) &&
 		    isprint((((unsigned long) m) >> 16) & 255) &&
 		    isprint((((unsigned long) m) >> 8) & 255) &&
 		    isprint(((unsigned long) m) & 255)) {
-		    //debug("%s: POINTER CLOBBERED! "
-		    //"m=\"%c%c%c%c\" line=%d", __FUNCTION__,
+		    //debug("test_table: POINTER CLOBBERED! "
+		    //"m=\"%c%c%c%c\" line=%d", 
 			      (((unsigned long) m) >> 24) & 255,
 			      (((unsigned long) m) >> 16) & 255,
 			      (((unsigned long) m) >> 8) & 255,
@@ -515,14 +511,14 @@ apprentice()
 
 	fclose(f);
 
-	kDebugInfo(7018, "%s: conf=%p file=%s m=%s m->next=%s last=%s",
-	      __FUNCTION__, conf,
+	kDebugInfo(7018, "apprentice: conf=%p file=%s m=%s m->next=%s last=%s",
+	      conf,
 	      conf->magicfile ? conf->magicfile : "NULL",
 	      conf->magic ? "set" : "NULL",
 	      (conf->magic && conf->magic->next) ? "set" : "NULL",
 	      conf->last ? "set" : "NULL");
-	kDebugInfo(7018, "%s: read %d lines, %d rules, %d errors",
-	      __FUNCTION__, lineno, rule, errs);
+	kDebugInfo(7018, "apprentice: read %d lines, %d rules, %d errors",
+	      lineno, rule, errs);
 
 #if (MIME_MAGIC_DEBUG_TABLE > 1)
 	test_table();
@@ -560,13 +556,13 @@ buff_apprentice(char *buff)
 		lineno++;
 	} while (len > 0);
 
-	kDebugInfo(7018, "%s: conf=%p m=%s m->next=%s last=%s",
-	      __FUNCTION__, conf,
+	kDebugInfo(7018, "buff_apprentice: conf=%p m=%s m->next=%s last=%s",
+	      conf,
 	      conf->magic ? "set" : "NULL",
 	      (conf->magic && conf->magic->next) ? "set" : "NULL",
 	      conf->last ? "set" : "NULL");
-	kDebugInfo(7018, "%s: read %d lines, %d rules, %d errors",
-	      __FUNCTION__, lineno, rule, errs);
+	kDebugInfo(7018, "buff_apprentice: read %d lines, %d rules, %d errors",
+	      lineno, rule, errs);
 
 #if ( MIME_MAGIC_DEBUG_TABLE > 1 )
 	test_table();
@@ -810,8 +806,8 @@ parse(char *l, int lineno)
 	while ((m->desc[i++] = *l++) != '\0' && i < MAXDESC)
 		/* NULLBODY */ ;
 
-	/*kDebugInfo(7018, "%s: line=%d m=%p next=%p cont=%d desc=%s",
-	      __FUNCTION__, lineno, m, m->next, m->cont_level,
+	/*kDebugInfo(7018, "parse: line=%d m=%p next=%p cont=%d desc=%s",
+	      lineno, m, m->next, m->cont_level,
 	      m->desc ? m->desc : "NULL");*/
 
 	return 0;
@@ -1517,8 +1513,8 @@ KMimeMagic::match(unsigned char *s, int nbytes)
 	union VALUETYPE p;
 	struct magic *m;
 
-	kDebugInfo(7018, "%s: conf=%p file=%s m=%s m->next=%s last=%s",
-	      __FUNCTION__, conf,
+	kDebugInfo(7018, "match: conf=%p file=%s m=%s m->next=%s last=%s",
+	      conf,
 	      conf->magicfile ? conf->magicfile : "NULL",
 	      conf->magic ? "set" : "NULL",
 	      (conf->magic && conf->magic->next) ? "set" : "NULL",
@@ -1528,8 +1524,8 @@ KMimeMagic::match(unsigned char *s, int nbytes)
 		    isprint((((unsigned long) m) >> 16) & 255) &&
 		    isprint((((unsigned long) m) >> 8) & 255) &&
 		    isprint(((unsigned long) m) & 255)) {
-			kDebugInfo(7018, "%s: POINTER CLOBBERED! "
-			      "m=\"%c%c%c%c\"", __FUNCTION__,
+			kDebugInfo(7018, "match: POINTER CLOBBERED! "
+			      "m=\"%c%c%c%c\"",
 			      (int)((((unsigned long) m) >> 24) & 255),
 			      (int)((((unsigned long) m) >> 16) & 255),
 			      (int)((((unsigned long) m) >> 8) & 255),
@@ -1539,7 +1535,7 @@ KMimeMagic::match(unsigned char *s, int nbytes)
 	}
 
 	for (m = conf->magic; m; m = m->next) {
-		//kDebugInfo(7018, "%s: line=%d desc=%s", __FUNCTION__,
+		//kDebugInfo(7018, "match: line=%d desc=%s",
 		//      m->lineno, m->desc);
 
 		/* check if main entry matches */
@@ -1555,9 +1551,9 @@ KMimeMagic::match(unsigned char *s, int nbytes)
 			}
 			m_cont = m->next;
 			while (m_cont && (m_cont->cont_level != 0)) {
-				/*kDebugInfo(7018, "%s: line=%d mc=%p mc->next=%p "
+				/*kDebugInfo(7018, "match: line=%d mc=%p mc->next=%p "
 				      "cont=%d desc=%s",
-				      __FUNCTION__, m_cont->lineno, m_cont,
+				      m_cont->lineno, m_cont,
 				      m_cont->next, m_cont->cont_level,
 				   m_cont->desc ? m_cont->desc : "NULL");*/
 				/*
@@ -1571,8 +1567,8 @@ KMimeMagic::match(unsigned char *s, int nbytes)
 		}
 		/* if we get here, the main entry rule was a match */
 		/* this will be the last run through the loop */
-		kDebugInfo(7018, "%s: rule matched, line=%d type=%d %s",
-		      __FUNCTION__, m->lineno, m->type,
+		kDebugInfo(7018, "match: rule matched, line=%d type=%d %s",
+		      m->lineno, m->type,
 		      (m->type == STRING) ? m->value.s : "");
 
 		/* print the match */
@@ -1592,8 +1588,8 @@ KMimeMagic::match(unsigned char *s, int nbytes)
 		 */
 		m = m->next;
 		while (m && (m->cont_level != 0)) {
-			kDebugInfo(7018, "%s: line=%d cont=%d type=%d %s",
-			      __FUNCTION__, m->lineno, m->cont_level, m->type,
+			kDebugInfo(7018, "match: line=%d cont=%d type=%d %s",
+			      m->lineno, m->cont_level, m->type,
 			      (m->type == STRING) ? m->value.s : "");
 			if (cont_level >= m->cont_level) {
 				if (cont_level > m->cont_level) {
@@ -1633,10 +1629,10 @@ KMimeMagic::match(unsigned char *s, int nbytes)
 			/* move to next continuation record */
 			m = m->next;
 		}
-		kDebugInfo(7018, "%s: matched", __FUNCTION__);
+		kDebugInfo(7018, "match: matched");
 		return 1;       /* all through */
 	}
-	kDebugInfo(7018, "%s: failed", __FUNCTION__);
+	kDebugInfo(7018, "match: failed");
 	return 0;               /* no match at all */
 }
 
@@ -1973,10 +1969,10 @@ KMimeMagic::revision_suffix(const char * fn)
 	int suffix_pos;
 	QString newfn = QString(fn);
 
-	kDebugInfo(7018, "%s: checking %s", __FUNCTION__, fn);
+	kDebugInfo(7018, "revision_suffix: checking %s", fn);
 	/* check for recognized revision suffix */
 	suffix_pos = newfn.findRev(QRegExp("@[0-9]*$"));
-	kDebugInfo(7018, "%s: suffix_pos=%d", __FUNCTION__, suffix_pos);
+	kDebugInfo(7018, "revision_suffix: suffix_pos=%d", suffix_pos);
 	if (suffix_pos == -1)
 		return NULL;
 	return findFileType(newfn.left(suffix_pos).ascii());
