@@ -289,6 +289,7 @@ KLocale::~KLocale()
 const QString KLocale::translate(const char* msgid)
 {
     const char *text = msgid;
+    QString result;
     for (const char* catalogue = catalogues->first(); catalogue; 
 	 catalogue = catalogues->next()) 
     {
@@ -297,7 +298,8 @@ const QString KLocale::translate(const char* msgid)
 	    break;
     }
 
-    return text;
+    result = QString::fromLocal8Bit( text );
+    return result;
 }
 
 QString KLocale::directory() 
