@@ -357,17 +357,20 @@ CSSRuleImpl *CSSStyleDeclarationImpl::parentRule() const
 
 DOM::DOMString CSSStyleDeclarationImpl::cssText() const
 {
+    kdDebug() << "WARNING: CSSStyleDeclarationImpl::cssText, unimplemented, was called" << endl;
     return DOM::DOMString();
     // ###
 }
 
 void CSSStyleDeclarationImpl::setCssText(DOM::DOMString /*str*/)
 {
+    kdDebug() << "WARNING: CSSStyleDeclarationImpl::setCssText, unimplemented, was called" << endl;
     // ###
 }
 
 bool CSSStyleDeclarationImpl::parseString( const DOMString &/*string*/, bool )
 {
+    kdDebug() << "WARNING: CSSStyleDeclarationImpl::parseString, unimplemented, was called" << endl;
     return false;
     // ###
 }
@@ -377,12 +380,14 @@ bool CSSStyleDeclarationImpl::parseString( const DOMString &/*string*/, bool )
 
 DOM::DOMString CSSValueImpl::cssText() const
 {
+    kdDebug() << "WARNING: CSSValueImpl::cssText, unimplemented, was called" << endl;
     return DOM::DOMString();
 }
 
 void CSSValueImpl::setCssText(DOM::DOMString /*str*/)
 {
     // ###
+    kdDebug() << "WARNING: CSSValueImpl::setCssText, unimplemented, was called" << endl;
 }
 
 DOM::DOMString CSSInheritedValueImpl::cssText() const
@@ -414,6 +419,7 @@ void CSSValueListImpl::append(CSSValueImpl *val)
 DOM::DOMString CSSValueListImpl::cssText() const
 {
     // ###
+    kdDebug() << "WARNING: CSSValueListImpl::cssText, unimplemented, was called" << endl;
     return DOM::DOMString();
 }
 
@@ -600,6 +606,7 @@ unsigned short CSSPrimitiveValueImpl::cssValueType() const
 bool CSSPrimitiveValueImpl::parseString( const DOMString &/*string*/, bool )
 {
     // ###
+    kdDebug() << "WARNING: CSSPrimitiveValueImpl::parseString, unimplemented, was called" << endl;
     return false;
 }
 
