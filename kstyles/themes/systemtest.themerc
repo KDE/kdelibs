@@ -217,6 +217,7 @@ Name[eo]=Testado
 Name[fi]=Kokeilu
 Name[hu]=Próba
 Name[ja]=¥Æ¥¹¥ÈÃæ
+Name[sl]=Preizkus
 Name[sv]=Testar
 Comment=Unstable development style
 Comment[af]=Onstabiele ontwikkelingstyl
@@ -232,6 +233,7 @@ Comment[it]=Stile instabile di sviluppo
 Comment[ja]=ÉÔ°ÂÄê¤Ê³«È¯Ãæ¤Î¥Æ¡¼¥Þ¥¹¥¿¥¤¥ë
 Comment[no]=Ustabil utviklingsstil
 Comment[no_NY]=Ustabil utviklingsstil
+Comment[sl]=Slog nestabilnega razvoja
 Comment[sv]=Ostabil utvecklingsstil
 ScrollBarExtent=14
 

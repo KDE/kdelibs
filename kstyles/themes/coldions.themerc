@@ -2,8 +2,10 @@
 Name=Cold Ions
 Name[da]=Kolde ioner
 Name[de]=Kalte Ionen
+Name[sl]=Mrzli ioni
 Comment=Cold Ions unthemed style
 Comment[da]=Kolde ioner stil uden tema
 Comment[de]=Kalte Ionen (kein komplettes Design)
+Comment[sl]=Netematski slog mrzlih ionov
 [KDE]
 widgetStyle=coldionsstyle.la
