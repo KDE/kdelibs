@@ -38,6 +38,35 @@ uint KStdAccel::readKey(KAccel::StdAccel accel, uint defaultKey)
     return v?v:defaultKey;
 }
 
+bool KStdAccel::isEqual( QKeyEvent* ev, int skey )
+{
+    int key;
+    switch ( ev->state() )
+    {
+        case Qt::AltButton:
+            key = ev->key() + Qt::ALT;
+            break;
+        case Qt::ControlButton:
+            key = ev->key() + Qt::CTRL;
+            break;
+        case Qt::ShiftButton:
+            key = ev->key() + Qt::SHIFT;
+            break;
+        case (Qt::AltButton | Qt::ControlButton):
+            key = ev->key() + Qt::ALT + Qt::CTRL;
+            break;
+        case (Qt::AltButton | Qt::ShiftButton):
+            key = ev->key() + Qt::ALT + Qt::SHIFT;
+            break;
+        case (Qt::ControlButton | Qt::ShiftButton):
+            key = ev->key() + Qt::CTRL + Qt::SHIFT;
+            break;
+        default:
+            key = ev->key();
+    }
+    return (key == skey);
+}
+
 uint KStdAccel::open()
 {
   return readKey(KAccel::Open, Qt::CTRL + Qt::Key_O);
@@ -161,3 +190,17 @@ uint KStdAccel::help()
   return readKey(KAccel::Help, Qt::Key_F1);
 }
 
+uint KStdAccel::completion()
+{
+  return readKey(KAccel::TextCompletion, Qt::CTRL+Qt::Key_End);
+}
+
+uint KStdAccel::rotateUp()
+{
+  return readKey(KAccel::RotateUpInList, Qt::Key_Up);
+}
+
+uint KStdAccel::rotateDown()
+{
+  return readKey(KAccel::RotateDownInList, Qt::Key_Down);
+}
