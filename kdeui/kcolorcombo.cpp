@@ -146,7 +146,7 @@ void KColorCombo::slotActivated( int index )
 		{
 			QPainter painter;
 			QPen pen;
-			QRect rect( 0, 0, width(), painter.font().pixelSize()+8 );
+			QRect rect( 0, 0, width(), QFontMetrics(painter.font()).height()+4);
 			QPixmap pixmap( rect.width(), rect.height() );
 
 			if ( qGray( customColor.rgb() ) < 128 )
@@ -158,7 +158,7 @@ void KColorCombo::slotActivated( int index )
 			QBrush brush( customColor );
 			painter.fillRect( rect, brush );
 			painter.setPen( pen );
-			painter.drawText( 2, rect.height()-6, i18n("Custom...") );
+			painter.drawText( 2, QFontMetrics(painter.font()).ascent()+2, i18n("Custom...") );
 			painter.end();
 
 			changeItem( pixmap, 0 );
@@ -187,7 +187,7 @@ void KColorCombo::addColors()
 {
 	QPainter painter;
 	QPen pen;
-	QRect rect( 0, 0, width(), painter.font().pixelSize()+8 );
+	QRect rect( 0, 0, width(), QFontMetrics(painter.font()).height()+4 );
 	QPixmap pixmap( rect.width(), rect.height() );
 	int i;
 
@@ -210,7 +210,7 @@ void KColorCombo::addColors()
 	QBrush brush( customColor );
 	painter.fillRect( rect, brush );
 	painter.setPen( pen );
-	painter.drawText( 2, rect.height()-6, i18n("Custom...") );
+	painter.drawText( 2, QFontMetrics(painter.font()).ascent()+2, i18n("Custom...") );
 	painter.end();
 
 	insertItem( pixmap );
