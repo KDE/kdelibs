@@ -1,0 +1,55 @@
+:
+eval 'exec perl -S $0 ${1+"$@"}'
+    if $running_under_some_shell;
+
+##
+##  cert_bundle -- Bundle CA Certificates into one file
+##  Copyright (c) 1998 Ralf S. Engelschall, All Rights Reserved. 
+##
+
+($certdb, $indexfile, $bundlefile) = @ARGV;
+
+%CERT = ();
+open(IDX, "<$indexfile") || die;
+while (<IDX>) {
+    if (m|^(\S+):\s+(.+)\s*$|) {
+        $CERT{$2} = $1;
+    }
+}
+close(IDX);
+
+$date = `date`;
+$date =~ s|\n$||;
+open(BDL, ">$bundlefile") || die;
+print BDL "##\n";
+print BDL "##  $bundlefile -- Bundle of CA Certificates\n";
+print BDL "##  Last Modified: $date\n";
+print BDL "##\n";
+print BDL "##  This is a bundle of X.509 certificates of public\n";
+print BDL "##  Certificate Authorities (CA). These were automatically\n";
+print BDL "##  extracted from Netscape Communicator's certificate database\n";
+print BDL "##  (the file `$certdb'). It contains the certificates in both\n";
+print BDL "##  plain text and PEM format and therefore can be directly used\n";
+print BDL "##  with an Apache+mod_ssl webserver for SSL client authentication.\n";
+print BDL "##  Just configure this file as the SSLCACertificateFile.\n";
+print BDL "##\n";
+foreach $cert (sort(keys(%CERT))) {
+    $file = $CERT{$cert};
+	print STDERR "Bundling: $cert ($file)\n";
+    $text = `LD_LIBRARY_PATH=~/openssl/install/lib ~/openssl/install/bin/openssl x509 -in $file -inform DER -noout -text`;
+    $text =~ s|\n$||;
+    $text =~ s|^Certificate:|Certificate Ingredients:|;
+    $md5 = `LD_LIBRARY_PATH=~/openssl/install/lib ~/openssl/install/bin/openssl x509 -in $file -inform DER -fingerprint -noout`;
+    $md5 =~ s|^MD5 Fingerprint=(\S+)\n$|$1|;
+    $pem = `LD_LIBRARY_PATH=~/openssl/install/lib ~/openssl/install/bin/openssl x509 -in $file -inform DER -outform PEM`;
+    $pem =~ s|\n$||;
+    print BDL "\n";
+    print BDL "$cert\n";
+    print BDL "=" x length($cert) . "\n";
+    print BDL "MD5 Fingerprint: $md5\n";
+    print BDL "PEM Data:\n";
+    print BDL "$pem\n";
+    print BDL "$text\n";
+}
+close(BDL);
+

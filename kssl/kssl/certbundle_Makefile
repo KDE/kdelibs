@@ -1,0 +1,43 @@
+##
+##  Makefile for building and driving the CA cert extraction
+##  Copyright (c) 1998 Ralf S. Engelschall, All Rights Reserved. 
+##
+
+V=1.0
+
+SSLEAY_INC=/sw/pkg/ssleay/include 
+SSLEAY_LIB=/sw/pkg/ssleay/lib 
+
+CC=cc
+CFLAGS=-pipe -O -g -ggdb3 -Wall -Wshadow -Wpointer-arith -Wcast-align -Wmissing-prototypes -Wmissing-declarations -Wnested-externs -Winline
+LDFLAGS=-g -ggdb3
+
+all: extract
+
+extract: cert_extract
+	./cert_extract cert7.db
+	./cert_bundle cert7.db cert.index ca-cert-bundle.pem
+
+cert_extract.o: cert_extract.c
+	$(CC) $(CFLAGS) -I$(SSLEAY_INC) -ocert_extract.o -c cert_extract.c
+
+cert_extract: cert_extract.o
+	$(CC) $(LDFLAGS) -ocert_extract cert_extract.o -L$(SSLEAY_LIB) -lcrypto -ldb1
+
+clean:
+	-rm -f cert_extract.o
+	-rm -f cert_extract
+	-rm -f core *.core 
+
+distclean: clean
+	-rm -f cert.*.der cert.index
+
+dist: distclean
+	gtar --no-recursion -cvf - `find * -depth -print | sort` |\
+    tardy --user_number=1000  --user_name=rse \
+          --group_number=1000 --group_name=en \
+          --prefix=certbundle-$(V) - |\
+    gzip --best >/tmp/certbundle-$(V).tar.gz && \
+	mv /tmp/certbundle-$(V).tar.gz ..
+	ls -l ../certbundle-$(V).tar.gz
+

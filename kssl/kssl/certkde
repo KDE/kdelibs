@@ -1,0 +1,39 @@
+:
+eval 'exec perl -S $0 ${1+"$@"}'
+    if $running_under_some_shell;
+
+##
+##   Generate the KDE CA list KConfig file
+##
+
+%CERT = ();
+open(IDX, "<cert.index") || die;
+while (<IDX>) {
+    if (m|^(\S+):\s+(.+)\s*$|) {
+        $CERT{$2} = $1;
+    }
+}
+close(IDX);
+
+$date = `date`;
+$date =~ s|\n$||;
+open(BDL, ">ksslcalist") || die;
+foreach $cert (sort(keys(%CERT))) {
+    $file = $CERT{$cert};
+	print STDERR "Bundling: $cert ($file)\n";
+    $pem = `openssl x509 -in $file -inform DER -outform PEM`;
+    $pem =~ s|[\n\r]||g;
+    $pem =~ s|-----BEGIN CERTIFICATE-----||;
+    $pem =~ s|-----END CERTIFICATE-----||;
+    $subj = `openssl x509 -in $file -inform DER -noout -subject`;
+    $subj =~ s|\n$||;
+    $subj =~ s/^subject= //;
+    print BDL "\n";
+    print BDL "[$subj]\n";
+    print BDL "x509=$pem\n";
+    print BDL "site=true\n";
+    print BDL "email=true\n";
+    print BDL "code=true\n";
+}
+close(BDL);
+
