@@ -1,6 +1,6 @@
 BEGIN:VCARD
 EMAIL;TYPE=INTERNET:hello@ximian.com
-LABEL;QUOTED-PRINTABLE;WORK:401 Park Drive  3 West=0ABoston, MA 02215=0AUSA
+LABEL;TYPE=work:401 Park Drive  3 West=0ABoston, MA 02215=0AUSA
 N:;;;;
 NOTE:Welcome to the Ximian Addressbook.
 ORG:Ximian, Inc.
