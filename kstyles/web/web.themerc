@@ -1,0 +1,5 @@
+[Misc]
+Name=Web style
+Comment=Web widget style
+[KDE]
+widgetStyle=webstyle.la
