@@ -65,6 +65,12 @@ RenderFormElement::~RenderFormElement()
 
 void RenderFormElement::applyLayout(int iWidth, int iHeight)
 {
+    if(!m_style->width().isVariable())
+        iWidth = m_style->width().width(containingBlock()->contentWidth());
+
+    if(!m_style->height().isVariable())
+        iHeight = m_style->height().width(containingBlock()->contentHeight());
+
     if(m_widget) {
         m_widget->resize(iWidth, iHeight);
         m_widget->setEnabled(!m_element->disabled());
@@ -1107,7 +1113,7 @@ void RenderTextArea::layout( )
     w->blockSignals(false);
 
     QFontMetrics m = w->fontMetrics();
-    QSize size( QMAX(f->cols(), 1)*m.maxWidth() + w->frameWidth()*5 +
+    QSize size( QMAX(f->cols(), 1)*m.width('x') + w->frameWidth()*5 +
                 w->verticalScrollBar()->sizeHint().width(),
                 QMAX(f->rows(), 1)*m.height() + w->frameWidth()*3 +
                 (w->wordWrap() == QMultiLineEdit::NoWrap ?
