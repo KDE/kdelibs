@@ -1556,7 +1556,7 @@ int RenderBlock::lowestPosition() const
         QPtrListIterator<FloatingObject> it(*m_floatingObjects);
         for ( ; (r = it.current()); ++it ) {
             if (!r->noPaint) {
-                int lp = r->startY + r->node->lowestPosition();
+                int lp = r->startY + r->node->marginTop() + r->node->lowestPosition();
                 bottom = kMax(bottom, lp);
             }
         }
@@ -1589,7 +1589,7 @@ short RenderBlock::rightmostPosition() const
         QPtrListIterator<FloatingObject> it(*m_floatingObjects);
         for ( ; (r = it.current()); ++it ) {
             if (!r->noPaint) {
-                int rp = r->left + r->node->rightmostPosition();
+                int rp = r->left + r->node->marginLeft() + r->node->rightmostPosition();
            	right = kMax(right, rp);
             }
         }
