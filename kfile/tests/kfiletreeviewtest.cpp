@@ -54,7 +54,7 @@ testFrame::testFrame():KMainWindow(0,"Test FileTreeView")
 void testFrame::showPath( KURL &url )
 {
    QString fname = url.fileName ();
-   int branchno = treeView->addRootDir( url, fname );
+   int branchno = treeView->addBranch( url, fname );
    treeView->populateBranch( branchno );
 }
 
