@@ -1478,6 +1478,8 @@ char *HTTPProtocol::gets (char *s, int size)
   while (len < size)
   {
     read(mybuf, 1);
+    if (m_bEOF)
+      break;
 
     if (*mybuf == '\r') // Ignore!
       continue;
