@@ -517,6 +517,7 @@ bool KPixmap::checkColorTable( const QImage &image )
 }
 
 KPixmap::KPixmap(const QPixmap& p)
+    : QPixmap(p)
 {
-   *((QPixmap*)this) = p;
+   //*((QPixmap*)this) = p;
 }
