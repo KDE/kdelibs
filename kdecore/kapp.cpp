@@ -1379,7 +1379,7 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
         }
 
         if(!styleHandle){
-            kdWarning() << "Unable to open style plugin " << styleStr 
+            kdWarning() << "Unable to open style plugin " << styleStr
                     << "(" << lt_dlerror() << ")\n";
 
             pKStyle = new KDEStyle;
@@ -2102,19 +2102,16 @@ QString KApplication::randomString(int length)
 {
    if (length <=0 ) return QString::null;
 
-   char *string=new char[length+1];
-   string[length] = '\0';
+   QString str;
    while (--length)
    {
       int r=random() % 62;
       r+=48;
       if (r>57) r+=7;
       if (r>90) r+=6;
-      string[length]=(char)r;
+      str += char(r);
       // so what if I work backwards?
    }
-   QString str(string);
-   delete [] string;
    return str;
 }
 
