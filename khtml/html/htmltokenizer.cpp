@@ -336,17 +336,21 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
                 currToken.id = ID_LISTING + ID_CLOSE_TAG;
             processToken();
             if (cachedScript) {
+//                 qDebug( "cachedscript extern!" );
+//                 qDebug( "src: *%s*", QString( src.current(), src.length() ).latin1() );
+//                 qDebug( "pending: *%s*", pendingSrc.latin1() );
+                pendingSrc.prepend( QString(src.current(), src.length() ) );
+                _src = QString::null;
+                src = DOMStringIt(_src);
+                scriptCodeSize = 0;
                 cachedScript->ref(this);
                 // will be 0 if script was already loaded and ref() executed it
                 if (cachedScript) {
                     loadingExtScript = true;
-                    pendingSrc.prepend( QString(src.current(), src.length() ) );
-                    _src = QString::null;
-                    src = DOMStringIt(_src);
                 }
             }
             else if (view && doScriptExec && javascript && !parser->skipMode()) {
-                pendingSrc.append( QString( src.current(), src.length() ) ); // deep copy - again
+                pendingSrc.prepend( QString( src.current(), src.length() ) ); // deep copy - again
                 _src = QString::null;
                 src = DOMStringIt( _src );
                 m_executingScript++;
@@ -1145,6 +1149,12 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             {
                 select = beginTag;
             }
+
+            if ( pending ) {
+                if (!( pre || textarea) && !parser->noSpaces() )  addPending();
+                discard = AllDiscard;
+                pending = NonePending;
+            }
             return; // Finished parsing tag!
         }
         } // end switch
@@ -1208,6 +1218,7 @@ void HTMLTokenizer::addPending()
     pending = NonePending;
 }
 
+#if 0
 void HTMLTokenizer::setPlainText()
 {
     if (!plaintext)
@@ -1219,6 +1230,7 @@ void HTMLTokenizer::setPlainText()
        dest = buffer;
     }
 }
+#endif
 
 void HTMLTokenizer::write( const QString &str, bool appendData )
 {
@@ -1291,14 +1303,7 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
 
             switch(cc) {
             case '/':
-            {
-                // Start of an End-Tag
-                if(!(pre || textarea) && pending == LFPending)
-                    pending = NonePending; // Ignore leading Spaces/LFs
-
                 break;
-            }
-
             case '!':
             {
                 // <!-- comment -->
@@ -1337,11 +1342,6 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
                 }
             }
             }; // end case
-
-            if(pending) {
-                discard = AllDiscard;
-                addPending();
-            }
 
             processToken();
 
@@ -1606,24 +1606,32 @@ void HTMLTokenizer::notifyFinished(CachedObject *finishedObj)
 #endif
         cachedScript->deref(this);
         cachedScript = 0;
+
+//         pendingSrc.prepend( QString( src.current(), src.length() ) ); // deep copy - again
+        _src = QString::null;
+        src = DOMStringIt( _src );
         m_executingScript++;
         view->part()->executeScript(scriptSource.string());
         m_executingScript--;
         // 'script' is true when we are called synchronously from
         // parseScript(). In that case parseScript() will take care
         // of 'scriptOutput'.
-        if (!script) {
-           QString rest = pendingSrc;
-           pendingSrc = "";
-           write(rest, true);
-        }
+         if ( !script ) {
+//              qDebug( "adding pending output! *%s*", pendingSrc.latin1() );
+
+             QString rest = pendingSrc;
+             pendingSrc = "";
+             write(rest, false);
+         }
     }
 }
 
 void HTMLTokenizer::addPendingSource()
 {
-    //kdDebug( 6036 ) << "adding pending Output to parsed string" << endl;
+//    kdDebug( 6036 ) << "adding pending Output to parsed string" << endl;
     QString newStr = QString(src.current(), src.length());
+//     qDebug( "src: %s", newStr.latin1() );
+//     qDebug( "pendingSrc: %s", pendingSrc.latin1() );
     newStr += pendingSrc;
     _src = newStr;
     src = DOMStringIt(_src);
