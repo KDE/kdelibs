@@ -92,8 +92,8 @@ Upgrading
 ---------
 
 If you have an older kdebase installed, just copy all your .k*rc files
-from $HOME to $HOME/.kde/config. In the other case, default values are
-used for most apps.
+from $HOME to $HOME/.kde/share/config. In the other case, default values
+are used for most apps.
 
 More Info
 ---------
