@@ -8,7 +8,7 @@ kde_module_LTLIBRARIES = kabc_ldap.la
 kabc_ldap_la_SOURCES = resourceldap.cpp resourceldapconfig.cpp
 
 kabc_ldap_la_LDFLAGS	= $(all_libraries) -module $(KDE_PLUGIN) $(LDAP_LIBS)
-kabc_ldap_la_LIBADD	= $(top_srcdir)/kresources/libkderesources.la ../../libkabc.la \
+kabc_ldap_la_LIBADD	= ../../../kresources/libkderesources.la ../../libkabc.la \
   ../../../kdeui/libkdeui.la
 
 # let automoc handle all of the meta source files (moc)

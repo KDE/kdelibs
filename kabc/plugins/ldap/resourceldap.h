@@ -22,6 +22,9 @@
 #define KABC_RESOURCELDAP_H
 
 
+#include <lber.h>
+#include <ldap.h>
+
 #include "addressbook.h"
 #include "resource.h"
 
