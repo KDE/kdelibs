@@ -236,6 +236,7 @@ public:
     /**
      * The icon theme should be hidden to the user?
      * @return true if the icon theme is hidden
+     * @since 3.1
      */
     bool isHidden() const;
 
