@@ -54,7 +54,8 @@ libkdecore_la_SOURCES = libintl.cpp kdebug.cpp kstddirs.cpp  \
 	kinstance.cpp kpalette.cpp kipc.cpp klibloader.cpp ktempfile.cpp \
 	ksavefile.cpp krandomsequence.cpp kstringhandler.cpp kcompletion.cpp \
 	kcmdlineargs.cpp kaboutdata.cpp kcompletionbase.cpp knotifyclient.cpp \
-	kaudioplayer.cpp kdestyle.cpp kdcoppropertyproxy.cpp
+	kaudioplayer.cpp kdestyle.cpp kdcoppropertyproxy.cpp \
+	kdatastream.cpp
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 3:0 -no-undefined
 libkdecore_la_LIBADD = ../libltdl/libltdlc.la $(LIB_KDEQTADDON) -lXext $(LIB_DCOP) $(LIB_DMALLOC)
