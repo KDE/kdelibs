@@ -1,7 +1,7 @@
 /* This file is part of the KDE project
    Copyright (C) 1998, 1999 Torben Weis <weis@kde.org>
                  2000 Carsten Pfeiffer <pfeiffer@kde.org>
-                 2001-2004 Michael Brade <brade@kde.org>
+                 2001-2005 Michael Brade <brade@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -725,6 +725,7 @@ void KDirListerCache::FilesChanged( const KURL::List &fileList )
       if ( fileitem )
       {
           // we need to refresh the item, because e.g. the permissions can have changed.
+          aboutToRefreshItem( fileitem );
           fileitem->refresh();
           emitRefreshItem( fileitem );
       }
@@ -761,12 +762,12 @@ void KDirListerCache::FileRenamed( const KURL &src, const KURL &dst )
   // Now update the KFileItem representing that file or dir (not exclusive with the above!)
   KURL oldurl( src );
   oldurl.adjustPath( -1 );
-  KFileItem* fileitem = findByURL( 0, oldurl );
+  KFileItem *fileitem = findByURL( 0, oldurl );
   if ( fileitem )
   {
+    aboutToRefreshItem( fileitem );
     fileitem->setURL( dst );
     fileitem->refreshMimeType();
-
     emitRefreshItem( fileitem );
   }
 #ifdef DEBUG_CACHE
@@ -774,7 +775,25 @@ void KDirListerCache::FileRenamed( const KURL &src, const KURL &dst )
 #endif
 }
 
-void KDirListerCache::emitRefreshItem( KFileItem* fileitem )
+void KDirListerCache::aboutToRefreshItem( KFileItem *fileitem )
+{
+  // Look whether this item was shown in any view, i.e. held by any dirlister
+  KURL parentDir( fileitem->url() );
+  parentDir.setPath( parentDir.directory() );
+  QString parentDirURL = parentDir.url();
+  QPtrList<KDirLister> *listers = urlsCurrentlyHeld[parentDirURL];
+  if ( listers )
+    for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
+      kdl->aboutToRefreshItem( fileitem );
+
+  // Also look in urlsCurrentlyListed, in case the user manages to rename during a listing
+  listers = urlsCurrentlyListed[parentDirURL];
+  if ( listers )
+    for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
+      kdl->aboutToRefreshItem( fileitem );
+}
+
+void KDirListerCache::emitRefreshItem( KFileItem *fileitem )
 {
   // Look whether this item was shown in any view, i.e. held by any dirlister
   KURL parentDir( fileitem->url() );
@@ -849,6 +868,7 @@ void KDirListerCache::slotFileDirtyDelayed()
   if ( item )
   {
     // we need to refresh the item, because e.g. the permissions can have changed.
+    aboutToRefreshItem( item );
     item->refresh();
     emitRefreshItem( item );
   }
@@ -1340,6 +1360,9 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
       // check if something changed for this file
       if ( !tmp->cmp( *item ) )
       {
+        for ( kdl = listers->first(); kdl; kdl = listers->next() )
+          kdl->aboutToRefreshItem( tmp );
+
         //kdDebug(7004) << "slotUpdateResult: file changed: " << tmp->name() << endl;
         tmp->assign( *item );
 
@@ -1842,9 +1865,9 @@ void KDirLister::setMimeFilter( const QStringList& mimeFilter )
   if ( !(d->changes & MIME_FILTER) )
     d->oldMimeFilter = d->mimeFilter;
 
-  if (mimeFilter.find ("all/allfiles") != mimeFilter.end () ||
-      mimeFilter.find ("all/all") != mimeFilter.end ())
-    d->mimeFilter.clear ();
+  if ( mimeFilter.find("all/allfiles") != mimeFilter.end() || 
+       mimeFilter.find("all/all") != mimeFilter.end() )
+    d->mimeFilter.clear();
   else
     d->mimeFilter = mimeFilter;
 
@@ -1865,8 +1888,8 @@ void KDirLister::clearMimeFilter()
 {
   if ( !(d->changes & MIME_FILTER) )
   {
-       d->oldMimeFilter = d->mimeFilter;
-       d->oldMimeExcludeFilter = d->mimeExcludeFilter;
+    d->oldMimeFilter = d->mimeFilter;
+    d->oldMimeExcludeFilter = d->mimeExcludeFilter;
   }
   d->mimeFilter.clear();
   d->mimeExcludeFilter.clear();
@@ -2014,6 +2037,17 @@ void KDirLister::addNewItems( const KFileItemList& items )
     addNewItem( *kit );
 }
 
+void KDirLister::aboutToRefreshItem( const KFileItem *item )
+{
+  bool isNameFilterMatch = (d->dirOnlyMode && !item->isDir()) || !matchesFilter( item );
+  bool isMimeFilterMatch = !matchesMimeFilter( item );
+
+  if ( !isNameFilterMatch && !isMimeFilterMatch )
+    d->refreshItemWasFiltered = false;
+  else
+    d->refreshItemWasFiltered = true;
+}
+
 void KDirLister::addRefreshItem( const KFileItem *item )
 {
   bool isNameFilterMatch = (d->dirOnlyMode && !item->isDir()) || !matchesFilter( item );
@@ -2021,12 +2055,22 @@ void KDirLister::addRefreshItem( const KFileItem *item )
 
   if ( !isNameFilterMatch && !isMimeFilterMatch )
   {
-    if ( !d->lstRefreshItems )
-      d->lstRefreshItems = new KFileItemList;
+    if ( d->refreshItemWasFiltered )
+    {
+      if ( !d->lstNewItems )
+        d->lstNewItems = new KFileItemList;
 
-    d->lstRefreshItems->append( item );
+      d->lstNewItems->append( item );
+    }
+    else
+    {
+      if ( !d->lstRefreshItems )
+        d->lstRefreshItems = new KFileItemList;
+
+      d->lstRefreshItems->append( item );
+    }
   }
-  else
+  else if ( !d->refreshItemWasFiltered )
   {
     if ( !d->lstRemoveItems )
       d->lstRemoveItems = new KFileItemList;

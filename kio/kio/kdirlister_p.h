@@ -58,6 +58,7 @@ public:
     lstRefreshItems = 0;
     lstMimeFilteredItems = 0;
     lstRemoveItems = 0;
+    refreshItemWasFiltered = false;
 
     changes = NONE;
 
@@ -99,6 +100,8 @@ public:
 
   KFileItemList *lstNewItems, *lstRefreshItems;
   KFileItemList *lstMimeFilteredItems, *lstRemoveItems;
+
+  bool refreshItemWasFiltered;
 
   int changes;
 
@@ -193,7 +196,6 @@ private slots:
   void slotUpdateResult( KIO::Job *job );
 
 private:
-
   KIO::ListJob *jobForUrl(const QString& _url);
   void killJob( KIO::ListJob *job );
 
@@ -213,7 +215,10 @@ private:
   void removeDirFromCache( const KURL& dir );
   // helper for renameDir
   void emitRedirections( const KURL &oldUrl, const KURL &url );
+
+  void aboutToRefreshItem( KFileItem *fileitem );
   void emitRefreshItem( KFileItem *fileitem );
+
 #ifndef NDEBUG
   void printDebug();
 #endif
