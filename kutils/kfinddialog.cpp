@@ -129,7 +129,7 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
     m_replaceLayout->setSpacing( KDialog::spacingHint() );
 //    m_replaceLayout->setMargin( KDialog::marginHint() );
 
-    m_replaceLabel = new QLabel(i18n("&Replacement text:"), m_replaceGrp);
+    m_replaceLabel = new QLabel(i18n("Replace&ment text:"), m_replaceGrp);
     m_replace = new KHistoryCombo(true, m_replaceGrp);
     m_replace->setMaxCount(10);
     m_replace->setDuplicatesEnabled(false);
@@ -152,7 +152,7 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
 
     m_caseSensitive = new QCheckBox(i18n("C&ase sensitive"), m_optionGrp);
     m_wholeWordsOnly = new QCheckBox(i18n("&Whole words only"), m_optionGrp);
-    m_fromCursor = new QCheckBox(i18n("&From cursor"), m_optionGrp);
+    m_fromCursor = new QCheckBox(i18n("From c&ursor"), m_optionGrp);
     m_findBackwards = new QCheckBox(i18n("Find &backwards"), m_optionGrp);
     m_selectedText = new QCheckBox(i18n("&Selected text"), m_optionGrp);
     setHasSelection( hasSelection );
@@ -208,7 +208,7 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
     enableButtonOK( !pattern().isEmpty() );
     if (forReplace)
     {
-       setButtonOKText(i18n("&Replace"), 
+       setButtonOKText(i18n("&Replace"),
                     i18n("Start replace"),
                     i18n("<qt>If you press the <b>Replace</b> button, the document is "
                          "searched for the text to find and any occurrence is replaced "
@@ -216,7 +216,7 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
     }
     else
     {
-       setButtonOKText(i18n("&Find"), 
+       setButtonOKText(i18n("&Find"),
                     i18n("Start searching"),
                     i18n("<qt>If you press the <b>Find</b> button, the document is "
                          "searched for the text that you entered above.</qt>"));
