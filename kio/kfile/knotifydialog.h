@@ -125,14 +125,14 @@ namespace KNotify
 
     class ApplicationList : public QPtrList<Application>
     {
-        virtual int compareItems ( QPtrCollection::Item item1, 
+        virtual int compareItems ( QPtrCollection::Item item1,
                                    QPtrCollection::Item item2 )
         {
-            return (static_cast<Application*>( item1 )->text() >= 
+            return (static_cast<Application*>( item1 )->text() >=
                 static_cast<Application*>( item2 )->text()) ? 1 : -1;
         }
     };
-    
+
     /**
      * @internal
      */
@@ -209,6 +209,9 @@ namespace KNotify
 
         ApplicationList m_apps;
 
+        class Private;
+        Private *d;
+        
     };
 
 
