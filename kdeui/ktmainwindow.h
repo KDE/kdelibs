@@ -38,7 +38,8 @@
  * from KApplication. It provides full session management, and will save
  * its position geometry and positions of toolbar(s) and menubar on
  * logout. If you want to save aditional data, overload saveProperties and
- * (to read them again on next login) readProperties. To warn user
+ * (to read them again on next login) readProperties. To save special
+ * data about your data, overload saveData. To warn user
  * that application has unsaved data on logout use setUnsavedData.
  *
  * There is also a macro RESTORE which can restore all your windows
@@ -341,12 +342,24 @@ protected:
    *
    * (Matthias) */
   virtual void saveProperties(KConfig*){};
+
   /**
   * Read your instance-specific properties.
   */
   virtual void readProperties(KConfig*){};
-
-
+  /**
+   * This method is called, when @ref KApplication emits signal saveYourself
+   * and after KTMainWindow has verified that it is "main" top-level widget.
+   * So this method will be called only once and not in every widget.
+   * Override it if you need to save other data about your documents on
+   * session end. sessionConfig is a config to which that data should be
+   * saved. Normaly, you don't need this function. But if you want to save
+   * data about your documents that are not in opened windows you might need
+   * it.
+   *
+   * Default implementation does nothing.
+   */
+  virtual void saveData(KConfig* sessionConfig);
     
 protected slots:
     /**

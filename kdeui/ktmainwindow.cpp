@@ -553,11 +553,20 @@ void KTMainWindow::updateRects()
     }
 }
 
+void KTMainWindow::saveData(KConfig*)
+{
+}
 
 void KTMainWindow::saveYourself(){
   // Do session management (Matthias)
   if (kapp->topWidget() != this)
     return;
+
+  // According to Jochen Wilhelmy <digisnap@cs.tu-berlin.de>, this
+  // hook is usefull for better document orientation
+
+  saveData(kapp->getSessionConfig());
+  
   QListIterator<KTMainWindow> it(*memberList);
   int n = 0;
   KConfig* config = KApplication::getKApplication()->getSessionConfig();
