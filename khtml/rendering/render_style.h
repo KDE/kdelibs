@@ -80,6 +80,7 @@ public:
 
     void createData()
     {
+//    	printf("create\n");
     	if (data)
     	    data->deref();
     	data = new DATA;
@@ -88,15 +89,37 @@ public:
 
     DataRef<DATA>& operator=(const DataRef<DATA>& d)
     {
+    	//printf("op=\n");
+    	if (data==d.data)
+	    return *this;
     	if (data)
     	    data->deref();
     	data = d.data;
+
 	data->ref();
+	    
 	return *this;
     }
 
 private:
     DATA* data;
+};
+
+
+class SharedData
+{
+public:
+    SharedData() { _ref=0; counter++; }
+    virtual ~SharedData() { counter--; }
+    
+    void ref() { _ref++;  }
+    void deref() { if(_ref) _ref--; if(_ref<=0) delete this; }
+    bool hasOneRef() { //printf("ref=%d\n",_ref);
+    	return _ref==1; } 
+  
+    static int counter;
+protected:
+    unsigned int _ref;     
 };
 
 
@@ -127,6 +150,12 @@ struct LengthBox
 	bottom=len;
 	return len;
     }
+    
+    bool operator==(const LengthBox& o) const
+    {
+    	return left==o.left && right==o.right && top==o.top && bottom==o.bottom;
+    }
+    
 
     bool nonZero() const { return left.value!=0 || right.value!=0 || top.value!=0 || bottom.value!=0; }
 };
@@ -137,7 +166,7 @@ enum EPosition {
     STATIC, RELATIVE, ABSOLUTE, FIXED
 };
 
-// CENTER is not part of CSS, but we need it to get <table align=center> and the <center>
+// CENTER is not part of CSS, but we need it to get <inherited align=center> and the <center>
 // element right
 enum EFloat {
     FNONE, FLEFT, FRIGHT, FCENTER
@@ -162,15 +191,20 @@ public:
 	width = 3; // medium is default value
 	style = BNONE;
     }
-    unsigned short width;
-    EBorderStyle style;
+    unsigned short width;    
     QColor color;
+    EBorderStyle style : 4;
 
     bool nonZero() const { return width!=0 && style!=BNONE; }
+    
+    bool operator==(const BorderValue& o) const
+    {
+    	return width==o.width && style==o.style && color==o.color;
+    }
 
 };
 
-class BorderData : public DOM::DomShared
+class BorderData : public SharedData
 {
 public:
     BorderValue left;
@@ -182,23 +216,42 @@ public:
     {
     	return left.nonZero() || right.nonZero() || top.nonZero() || bottom.nonZero();	
     }
+    
+    bool operator==(const BorderData& o) const
+    {
+    	return left==o.left && right==o.right && top==o.top && bottom==o.bottom;
+    }
 
 };
 
-class StyleSurroundData : public DOM::DomShared
+class StyleSurroundData : public SharedData
 {
 public:
     StyleSurroundData()
     {
     }
-    ~StyleSurroundData()
+    virtual ~StyleSurroundData()
     {
+    }
+    
+    StyleSurroundData(const StyleSurroundData& o ) : SharedData()
+    {
+    	offset = o.offset;
+	margin = o.margin;
+	padding = o.padding;
+	border = o.border;	
     }
 
     LengthBox offset;
     LengthBox margin;
     LengthBox padding;
     BorderData border;
+    
+    bool operator==(const StyleSurroundData& o) const
+    {
+    	return offset==o.offset && margin==o.margin && 
+	    padding==o.padding && border==o.border;
+    }
 };
 
 
@@ -206,15 +259,26 @@ public:
 // Box attributes. Not inherited.
 
 
-class StyleBoxData : public DOM::DomShared
+class StyleBoxData : public SharedData
 {
 public:
     StyleBoxData()
     {
     }
-    ~StyleBoxData()
+    virtual ~StyleBoxData()
     {
     }
+    
+    StyleBoxData(const StyleBoxData& o ) : SharedData()
+    {
+    	width = o.width;
+	height = o.height;
+	min_width = o.min_width;
+	max_width = o.max_width;
+	min_height = o.min_height;
+	max_height = o.max_height;	
+    }
+    
 
     // copy and assignment
 //    StyleBoxData(const StyleBoxData &other);
@@ -222,12 +286,19 @@ public:
 
     void setDefaultValues()
     {
-	position = STATIC;
-	floating = FNONE;
-    }
 
-    EPosition position;
-    EFloat floating;
+    }
+    
+    bool operator==(const StyleBoxData& o) const
+    {
+    	return 
+	    	width == o.width &&
+		height == o.height &&
+		min_width == o.min_width &&
+		max_width == o.max_width &&
+		min_height == o.min_height &&
+		max_height == o.max_height;
+    }
 
     Length width;
     Length height;
@@ -247,10 +318,6 @@ enum EOverflow {
     OVISIBLE, OHIDDEN, SCROLL, AUTO
 };
 
-enum EVisiblity {
-    VISIBLE, HIDDEN, COLLAPSE
-};
-
 enum EVerticalAlign {
     BASELINE, SUB, SUPER, TOP, TEXT_TOP, MIDDLE,
     BOTTOM, TEXT_BOTTOM
@@ -264,30 +331,41 @@ enum ETableLayout {
     TAUTO, TFIXED
 };
 
-class StyleVisualData : public DOM::DomShared
+class StyleVisualData : public SharedData
 {
 public:
     StyleVisualData()
     {
-	vertical_align = BASELINE;
 	colspan = 1;
-	clear = CNONE;
-	overflow = OVISIBLE;
-	visiblity = VISIBLE; // ### default is inherit!!!
-	layout = TAUTO;
     }
-    EOverflow overflow;
-    EVisiblity visiblity;
-    EVerticalAlign vertical_align;
-    EClear clear;
-    ETableLayout layout;
+    
+    virtual ~StyleVisualData() {
+    }
+    
+    StyleVisualData(const StyleVisualData& o ) : SharedData()
+    {
+    	clip = o.clip;
+	colspan = o.colspan;
+	counter_increment = o.counter_increment;
+	counter_reset = o.counter_reset;
+    }    
+    
+    bool operator==(const StyleVisualData& o) const
+    {
+    	return 
+	    clip == o.clip &&
+	    colspan == o.colspan &&
+	    counter_increment == o.counter_increment &&
+	    counter_reset == o.counter_reset;
+    }       
 
     LengthBox clip;
 
     short colspan; // for html, not a css2 attribute
 
     short counter_increment; //ok, so these are not visual mode spesific
-    short counter_reset;     //can't go to list, since these are not inherited
+    short counter_reset;     //can't go to inherited, since these are not inherited
+
 };
 
 //------------------------------------------------
@@ -297,28 +375,46 @@ enum EBackgroundRepeat {
 
 
 
-class StyleBackgroundData : public DOM::DomShared
+class StyleBackgroundData : public SharedData
 {
 public:
     StyleBackgroundData()
     {
-	image = 0;
+	image = 0;    
     }
+    
+    virtual ~StyleBackgroundData()
+    {
+    }
+    
+    StyleBackgroundData(const StyleBackgroundData& o ) : SharedData()
+    {
+    	color = o.color;
+	image = o.image;
+	x_position = o.x_position;
+	y_position = o.y_position;
+    }      
+    
+    bool operator==(const StyleBackgroundData& o) const
+    {
+    	return 
+	    color == o.color &&
+	    image == o.image &&
+	    x_position == o.x_position &&
+	    y_position == o.y_position;
+    }    
 
     QColor color;
     CachedImage *image;
-
-    EBackgroundRepeat repeat;
-    bool attachment;
 
     Length x_position;
     Length y_position;
 };
 
 //------------------------------------------------
-// Text attributes. These are inherited.
+// Inherited attributes.
 //
-// the text-decoration and text-shadow attributes
+// the inherited-decoration and inherited-shadow attributes
 // are inherited from the
 // first parent which is block level
 //
@@ -340,39 +436,55 @@ enum ETextDecoration{
     TDNONE = 0x0 , UNDERLINE = 0x1, OVERLINE = 0x2, LINE_THROUGH= 0x4, BLINK = 0x8
 };
 
-class StyleTextData : public DOM::DomShared
+class StyleInheritedData : public SharedData
 {
 public:
     void setDefaultValues()
     {
 	letter_spacing = 0;
-	word_spacing = 0;
-	align = JUSTIFY;
-	direction = LTR;
-	text_decoration = TDNONE;
+	word_spacing = 0;	
 	line_height = Length(100, Percent);
 	indent = Length(0, Fixed);
-    }
-
-    QFont font;
-    QColor color;
-    QColor decoration_color;
+	border_spacing = 0;
+	style_image = 0;
+    }   
+    
+    StyleInheritedData() { setDefaultValues(); }
+    virtual ~StyleInheritedData() { }
+    
+    StyleInheritedData(const StyleInheritedData& o ) : SharedData()
+    {
+	indent = o.indent;
+	line_height = o.line_height;
+	letter_spacing = o.letter_spacing;
+	border_spacing = o.border_spacing;
+	style_image = o.style_image;
+	font = o.font;
+	color = o.color;
+	decoration_color = o.decoration_color;
+    }        
+    
+    bool operator==(const StyleInheritedData& o) const
+    {
+    	return memcmp(this, &o, sizeof(*this))==0;
+    }    
 
     Length indent;
     Length line_height;
 
     unsigned int letter_spacing : 8;
-    unsigned int word_spacing : 8;
-
-    ETextAlign align : 2;
-    EDirection direction : 1;
-    EWhiteSpace white_space : 2;
-    int text_decoration : 4;
+    unsigned int word_spacing : 8;              
+    
+    short border_spacing;
+    
+    CachedImage *style_image;
+    
+    QFont font;
+    QColor color;
+    QColor decoration_color; 
+    
 };
 
-
-//------------------------------------------------
-// Table attributes. These are inherited.
 
 enum EEmptyCell {
     SHOW, HIDE
@@ -383,28 +495,6 @@ enum ECaptionSide
     CAPTOP, CAPBOTTOM, CAPLEFT, CAPRIGHT
 };
 
-class StyleTableData : public DOM::DomShared
-{
-public:
-    StyleTableData()
-    {
-    	border_collapse = true;
-    	border_spacing = 0;
-    }
-
-    // true == collapse, false = separate
-    bool border_collapse;
-    short border_spacing;
-
-    EEmptyCell empty_cells;
-
-    ECaptionSide caption_side;
-
-};
-
-
-//------------------------------------------------
-// List attributes. These are inherited.
 
 enum EListStyleType {
      DISC, CIRCLE, SQUARE, LDECIMAL, DECIMAL_LEADING_ZERO,
@@ -415,22 +505,10 @@ enum EListStyleType {
 };
 
 enum EListStylePosition { OUTSIDE, INSIDE };
+    	
+enum EVisiblity { VISIBLE, HIDDEN, COLLAPSE };
 
 
-class StyleListData : public DOM::DomShared
-{
-public:
-    StyleListData()
-    {
-	style_image = 0;
-	style_type = DISC;
-	style_position = OUTSIDE;
-    }
-
-    EListStyleType style_type;
-    CachedImage *style_image;
-    EListStylePosition style_position;
-};
 
 //------------------------------------------------
 
@@ -446,9 +524,35 @@ class RenderStyle
 {
 protected:
 
-    EDisplay _display;
+    EDisplay _display : 5;
 
-    static RenderStyle* _default;
+
+
+// inherit
+    bool _border_collapse : 1 ;    
+    EEmptyCell _empty_cells : 2 ;
+    ECaptionSide _caption_side : 2;    
+    EListStyleType _list_style_type : 5 ;    
+    EListStylePosition _list_style_position :1;        
+    EVisiblity _visiblity : 2;    
+    ETextAlign _text_align : 2;
+    EDirection _direction : 1;
+    EWhiteSpace _white_space : 2;
+    int _text_decoration : 4;    
+    
+
+// don't inherit
+
+    EOverflow _overflow : 4 ;
+    EVerticalAlign _vertical_align : 8;
+    EClear _clear : 2;
+    ETableLayout _table_layout : 1;    
+    EBackgroundRepeat _bg_repeat : 2;
+    bool _bg_attachment : 1;
+    EPosition _position : 2;
+    EFloat _floating : 2;
+    
+    static RenderStyle* _default;        
 
 // non-inherited attributes
     DataRef<StyleBoxData> box;
@@ -457,25 +561,31 @@ protected:
     DataRef<StyleSurroundData> surround;
 
 // inherited attributes
-    DataRef<StyleListData> list;
-    DataRef<StyleTableData> table;
-    DataRef<StyleTextData> text;
+    DataRef<StyleInheritedData> inherited;
 
     static const QColor undefinedColor;
+    
+    void setBitDefaults();
 
 public:
     RenderStyle();
     RenderStyle(const RenderStyle&);
     RenderStyle(const RenderStyle* inheritParent);
     ~RenderStyle();
-
+    
+    
+    bool operator==(const RenderStyle& other) const;
+    void mergeData(RenderStyle* other);
+    
+    static int counter;
+    
     /**
      * Intantiates new style object following the
      * css2 inheritance rules.
      */
     RenderStyle* inheritFrom(RenderStyle* inherit);
 
-    bool        isFloating() { return (box->floating == FLEFT || box->floating == FRIGHT); }
+    bool        isFloating() { return (_floating == FLEFT || _floating == FRIGHT); }
     bool        hasMargin() { return surround->margin.nonZero(); }
     bool        hasPadding() { return surround->padding.nonZero(); }
     bool        hasBorder() { return surround->border.hasBorder(); }
@@ -490,8 +600,8 @@ public:
     Length  	top() {  return surround->offset.top; }
     Length  	bottom() {  return surround->offset.bottom; }
 
-    EPosition 	position() { return box->position; }
-    EFloat  	floating() { return box->floating; }
+    EPosition 	position() { return _position; }
+    EFloat  	floating() { return _floating; }
 
     Length  	width() { return box->width; }
     Length  	height() { return box->height; }
@@ -517,53 +627,53 @@ public:
     EBorderStyle    borderBottomStyle() {  return surround->border.bottom.style; }
     const QColor &  	    borderBottomColor() {  return surround->border.bottom.color; }
 
-    EOverflow overflow() { return visual->overflow; }
-    EVisiblity visiblity() { return visual->visiblity; }
-    EVerticalAlign verticalAlign() { return visual->vertical_align; }
+    EOverflow overflow() { return _overflow; }
+    EVisiblity visiblity() { return _visiblity; }
+    EVerticalAlign verticalAlign() { return _vertical_align; }
 
     Length clipLeft() { return visual->clip.left; }
     Length clipRight() { return visual->clip.right; }
     Length clipTop() { return visual->clip.top; }
     Length clipBottom() { return visual->clip.bottom; }
-    EClear clear() { return visual->clear; }
-    ETableLayout tableLayout() { return visual->layout; }
+    EClear clear() { return _clear; }
+    ETableLayout inheritedLayout() { return _table_layout; }
 
     short colSpan() { return visual->colspan; }
 
-    const QFont & font() { return text->font; }
+    const QFont & font() { return inherited->font; }
 
-    const QColor & color() { return text->color; }
-    Length textIndent() { return text->indent; }
-    ETextAlign textAlign() { return text->align; }
-    int textDecoration() { return text->text_decoration; }
-    const QColor &textDecorationColor() { return text->decoration_color; }
+    const QColor & color() { return inherited->color; }
+    Length inheritedIndent() { return inherited->indent; }
+    ETextAlign textAlign() { return _text_align; }
+    int textDecoration() { return _text_decoration; }
+    const QColor &textDecorationColor() { return inherited->decoration_color; }
 
-    EDirection direction() { return text->direction; }
-    Length lineHeight() { return text->line_height; }
+    EDirection direction() { return _direction; }
+    Length lineHeight() { return inherited->line_height; }
 
-    EWhiteSpace whiteSpace() { return text->white_space; }
+    EWhiteSpace whiteSpace() { return _white_space; }
 
 
     const QColor & backgroundColor() { return background->color; }
     CachedImage *backgroundImage() { return background->image; }
-    EBackgroundRepeat backgroundRepeat() { return background->repeat; }
+    EBackgroundRepeat backgroundRepeat() { return _bg_repeat; }
     // backgroundAttachment returns true for scrolling (regular) attachment, false for fixed
-    bool backgroundAttachment() { return background->attachment; }
+    bool backgroundAttachment() { return _bg_attachment; }
     Length backgroundXPosition() { return background->x_position; }
     Length backgroundYPosition() { return background->y_position; }
 
     // returns true for collapsing borders, false for separate borders
-    bool borderCollapse() { return table->border_collapse; }
-    short borderSpacing() { return table->border_spacing; }
-    EEmptyCell emptyCells() { return table->empty_cells; }
-    ECaptionSide captionSide() { return table->caption_side; }
+    bool borderCollapse() { return _border_collapse; }
+    short borderSpacing() { return inherited->border_spacing; }
+    EEmptyCell emptyCells() { return _empty_cells; }
+    ECaptionSide captionSide() { return _caption_side; }
 
     short counterIncrement() { return visual->counter_increment; }
     short counterReset() { return visual->counter_reset; }
 
-    EListStyleType listStyleType() { return list->style_type; }
-    CachedImage *listStyleImage() { return list->style_image; }
-    EListStylePosition listStylePosition() { return list->style_position; }
+    EListStyleType listStyleType() { return _list_style_type; }
+    CachedImage *listStyleImage() { return inherited->style_image; }
+    EListStylePosition listStylePosition() { return _list_style_position; }
 
     Length marginTop() { return surround->margin.top; }
     Length marginBottom() {  return surround->margin.bottom; }
@@ -578,8 +688,8 @@ public:
 // attribute setter methods
 
     void setDisplay(EDisplay v) { _display = v; }
-    void setPosition(EPosition v) { box.set()->position = v; }
-    void setFloating(EFloat v) { box.set()->floating = v; }
+    void setPosition(EPosition v) { _position = v; }
+    void setFloating(EFloat v) { _floating = v; }
 
     void setRight(Length v) {  surround.set()->offset.right = v; }
     void setLeft(Length v) {  surround.set()->offset.left = v; }
@@ -628,9 +738,9 @@ public:
     void setBorderBottomStyle(EBorderStyle v) {  surround.set()->border.bottom.style = v; }
     void setBorderBottomColor(const QColor & v) {  surround.set()->border.bottom.color = v; }
 
-    void setOverflow(EOverflow v) { visual.set()->overflow = v; }
-    void setVisiblity(EVisiblity v) { visual.set()->visiblity = v; }
-    void setVerticalAlign(EVerticalAlign v) { visual.set()->vertical_align = v; }
+    void setOverflow(EOverflow v) { _overflow = v; }
+    void setVisiblity(EVisiblity v) { _visiblity = v; }
+    void setVerticalAlign(EVerticalAlign v) { _vertical_align = v; }
 
     void setClip(Length v) {
     	StyleVisualData* d = visual.set();
@@ -644,42 +754,42 @@ public:
     void setClipTop(Length v) { visual.set()->clip.top = v; }
     void setClipBottom(Length v) { visual.set()->clip.bottom = v; }
 
-    void setClear(EClear v) { visual.set()->clear = v; }
-    void setTableLayout(ETableLayout v) { visual.set()->layout = v; }
+    void setClear(EClear v) { _clear = v; }
+    void setTableLayout(ETableLayout v) { _table_layout = v; }
     void colSpan(short v) { visual.set()->colspan = v; }
 
-    void setFont(const QFont & v) { text.set()->font = v; }
+    void setFont(const QFont & v) { inherited.set()->font = v; }
 
-    void setColor(const QColor & v) { text.set()->color = v; }
-    void setTextIndent(Length v) { text.set()->indent = v; }
-    void setTextAlign(ETextAlign v) { text.set()->align = v; }
-    void setTextDecoration(int v) { text.set()->text_decoration = v; }
-    void setTextDecorationColor(const QColor &c) { text.set()->decoration_color = c; }
-    void setDirection(EDirection v) { text.set()->direction = v; }
-    void setLineHeight(Length v) { text.set()->line_height = v; }
+    void setColor(const QColor & v) { inherited.set()->color = v; }
+    void setTextIndent(Length v) { inherited.set()->indent = v; }
+    void setTextAlign(ETextAlign v) { _text_align = v; }
+    void setTextDecoration(int v) { _text_decoration = v; }
+    void setTextDecorationColor(const QColor &c) { inherited.set()->decoration_color = c; }
+    void setDirection(EDirection v) { _direction = v; }
+    void setLineHeight(Length v) { inherited.set()->line_height = v; }
 
-    void setWhiteSpace(EWhiteSpace v) { text.set()->white_space = v; }
+    void setWhiteSpace(EWhiteSpace v) { _white_space = v; }
 
 
     void setBackgroundColor(const QColor & v) {  background.set()->color = v; }
     void setBackgroundImage(CachedImage *v) {  background.set()->image = v; }
-    void setBackgroundRepeat(EBackgroundRepeat v) {  background.set()->repeat = v; }
-    void setBackgroundAttachment(bool scroll) {  background.set()->attachment = scroll; }
+    void setBackgroundRepeat(EBackgroundRepeat v) {  _bg_repeat = v; }
+    void setBackgroundAttachment(bool scroll) {  _bg_attachment = scroll; }
     void setBackgroundXPosition(Length v) {  background.set()->x_position = v; }
     void setBackgroundYPosition(Length v) {  background.set()->y_position = v; }
 
-    void setBorderCollapse(bool collapse) { table.set()->border_collapse = collapse; }
-    void setBorderSpacing(short v) { table.set()->border_spacing = v; }
-    void setEmptyCells(EEmptyCell v) { table.set()->empty_cells = v; }
-    void setCaptionSide(ECaptionSide v) { table.set()->caption_side = v; }
+    void setBorderCollapse(bool collapse) { _border_collapse = collapse; }
+    void setBorderSpacing(short v) { inherited.set()->border_spacing = v; }
+    void setEmptyCells(EEmptyCell v) { _empty_cells = v; }
+    void setCaptionSide(ECaptionSide v) { _caption_side = v; }
 
 
     void setCounterIncrement(short v) {  visual.set()->counter_increment = v; }
     void setCounterReset(short v) {  visual.set()->counter_reset = v; }
 
-    void setListStyleType(EListStyleType v) {  list.set()->style_type = v; }
-    void setListStyleImage(CachedImage *v) {  list.set()->style_image = v; }
-    void setListStylePosition(EListStylePosition v) {  list.set()->style_position = v; }
+    void setListStyleType(EListStyleType v) {  _list_style_type = v; }
+    void setListStyleImage(CachedImage *v) {  inherited.set()->style_image = v; }
+    void setListStylePosition(EListStylePosition v) {  _list_style_position = v; }
 
     void setMarginTop(Length v) { surround.set()->margin.top = v; }
     void setMarginBottom(Length v) {  surround.set()->margin.bottom = v; }

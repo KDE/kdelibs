@@ -57,6 +57,12 @@ namespace khtml
 		value = l.value;
 		type = l.type;
 	    }
+	    
+	bool operator==(const Length& o) const
+	{
+	    return type==o.type && value==o.value;
+	}
+	
 	/*
 	 * works only for Fixed and Percent, returns -1 otherwise
 	 */

@@ -28,143 +28,176 @@ using namespace khtml;
 const QColor RenderStyle::undefinedColor;
 
 
-#if 0
-StyleBoxData::StyleBoxData(const StyleBoxData &other)
-    : DomShared()
+
+void
+RenderStyle::setBitDefaults()
 {
-    position = other.position;
-    floating = other.floating;
+    _border_collapse = true;
+    _empty_cells = SHOW;
+    _caption_side = CAPTOP;
+    _list_style_type = DISC;
+    _list_style_position = OUTSIDE;
+    _visiblity = VISIBLE;
+    _text_align = JUSTIFY;
+    _direction = LTR;
+    _text_decoration = TDNONE;
+    _white_space = NORMAL;
 
-    width = other.width;
-    height = other.height;
-
-    min_width = other.min_width;
-    max_width = other.max_width;
-
-    min_height = other.min_height;
-    max_height = other.max_height;
-
-    offset = 0;
-    margin = 0;
-    padding = 0;
-    border = 0;
-    if(other.offset)
-	offset = new LengthBox(*other.offset);
-    if(other.margin)
-	margin = new LengthBox(*other.margin);
-    if(other.padding)
-	padding = new LengthBox(*other.padding);
-    if(other.border)
-	border = new BorderData(*other.border);
+    _vertical_align = BASELINE;
+    _clear = CNONE;
+    _overflow = OVISIBLE;
+    _table_layout = TAUTO;
+    _position = STATIC;
+    _floating = FNONE;
+    _bg_repeat = REPEAT;
+    _bg_attachment = SCROLL; 
 }
 
-const StyleBoxData &StyleBoxData::operator = (const StyleBoxData &other)
-{
-    position = other.position;
-    floating = other.floating;
-
-    width = other.width;
-    height = other.height;
-
-    min_width = other.min_width;
-    max_width = other.max_width;
-
-    min_height = other.min_height;
-    max_height = other.max_height;
-
-    delete offset;
-    delete margin;
-    delete padding;
-    delete border;
-    offset = 0;
-    margin = 0;
-    padding = 0;
-    border = 0;
-    if(other.offset)
-	offset = new LengthBox(*other.offset);
-    if(other.margin)
-	margin = new LengthBox(*other.margin);
-    if(other.padding)
-	padding = new LengthBox(*other.padding);
-    if(other.border)
-	border = new BorderData(*other.border);
-
-    return *this;
-}
-
-#endif
 
 
 RenderStyle::RenderStyle()
 {
+    counter++;
     if (!_default)
     {
     	box.createData();
-    	box.set()->setDefaultValues();
-    	text.createData();
-    	text.set()->setDefaultValues();
+    	box.set()->setDefaultValues();    	
     	visual.createData();
      	background.createData();
-    	list.createData();
-    	table.createData();
-    	surround.createData();
+    	surround.createData();		
+
+    	inherited.createData();
+    	inherited.set()->setDefaultValues();		
+		
 	_default = this;
     }
     else
     {
-    	box = _default->box;
-    	text = _default->text;
+    	box = _default->box;    	
     	visual = _default->visual;
     	background = _default->background;
-    	list = _default->list;
-    	table = _default->table;
     	surround = _default->surround;
+	
+	inherited = _default->inherited;
     }
-
+      
+    setBitDefaults();
+    
     _display = INLINE;
 }
 
 
 RenderStyle::RenderStyle(const RenderStyle& other)
 {
+    counter++;
     box = other.box;
-    text = other.text;
     visual = other.visual;
     background = other.background;    
     surround = other.surround;
-    text = other.text;
     
-    list = other.list;
-    table = other.table;
+    inherited = other.inherited;
+
+    _border_collapse = other._border_collapse;
+    _empty_cells = other._empty_cells;
+    _caption_side = other._caption_side;
+    _list_style_type = other._list_style_type;
+    _list_style_position = other._list_style_position;
+    _visiblity = other._visiblity;
+    _text_align = other._text_align;
+    _direction = other._direction;
+    _text_decoration = other._text_decoration;
+    _white_space = other._white_space;
+
+    _vertical_align = other._vertical_align;
+    _clear = other._clear;
+    _overflow = other._overflow;
+    _table_layout = other._table_layout;
+    _position = other._position;
+    _floating = other._floating;
+    _bg_repeat = other._bg_repeat;
+    _bg_attachment = other._bg_attachment; 
+    
     _display = other._display;
 }
 
 RenderStyle::RenderStyle(const RenderStyle* inheritParent)
 {
+    counter++;
     box = _default->box;
-    text = _default->text;
     visual = _default->visual;
     surround = _default->surround;
     background = _default->background;
 
-    text = inheritParent->text;
-    list = inheritParent->list;
-    table = inheritParent->table;
+    inherited = inheritParent->inherited;
+    
+    setBitDefaults();
+
+    _border_collapse = inheritParent->_border_collapse;
+    _empty_cells = inheritParent->_empty_cells;
+    _caption_side = inheritParent->_caption_side;
+    _list_style_type = inheritParent->_list_style_type;
+    _list_style_position = inheritParent->_list_style_position;
+    _visiblity = inheritParent->_visiblity;
+    _text_align = inheritParent->_text_align;
+    _direction = inheritParent->_direction;
+    _text_decoration = inheritParent->_text_decoration;
+    _white_space = inheritParent->_white_space;      
 
     _display = INLINE;
 }
 
 RenderStyle::~RenderStyle()
 {
+    counter--;
+}
+
+bool RenderStyle::operator==(const RenderStyle& other) const
+{
+    return
+        *box.get() == *other.box.get() &&
+        *visual.get() == *other.visual.get() &&
+    	*background.get() == *other.background.get() &&
+        *surround.get() == *other.surround.get() &&
+	
+    	*inherited.get() == *other.inherited.get() &&    
+        _display == other._display;
+}
+
+void RenderStyle::mergeData(RenderStyle* other)
+{
+    if ( box.get()!=other->box.get() &&  
+    	*box.get() == *other->box.get()) {
+    	box=other->box;
+//	printf("STYLE box merge \n");
+	}
+    if (visual.get()!=other->visual.get() && 
+    	*visual.get() == *other->visual.get()) {
+    	visual=other->visual;
+//	printf("STYLE visual merge \n");
+	}
+    if (background.get()!=other->background.get() &&
+     	*background.get() == *other->background.get()) {
+    	background=other->background;
+//	printf("STYLE bg merge \n");
+	}
+    if (surround.get()!=other->surround.get() && 
+    	*surround.get() == *other->surround.get()) {
+    	surround=other->surround;
+//	printf("STYLE surround merge \n");
+	}
+    if (inherited.get()!=other->inherited.get() && 
+    	*inherited.get() == *other->inherited.get()) {
+    	inherited=other->inherited;
+//	printf("STYLE text merge \n");
+	}
+
 }
 
 RenderStyle*
 RenderStyle::inheritFrom(RenderStyle* from)
 {
     if(!from) return this;
-    text = from->text;
-    list = from->list;
-    table = from->table;
+    inherited = from->inherited;
 
 #if 0
     // text-decoration and text-shadow need special treatment
@@ -184,3 +217,5 @@ RenderStyle::inheritFrom(RenderStyle* from)
 }
 
 RenderStyle* RenderStyle::_default = 0;
+int RenderStyle::counter = 0;
+int SharedData::counter = 0;

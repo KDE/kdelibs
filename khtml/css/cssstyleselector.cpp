@@ -137,6 +137,10 @@ void CSSStyleSelector::loadDefaultStyle()
     defaultStyle->append(sheet);
 }
 
+#include <qmap.h>
+
+static QList<RenderStyle> lastStyles;
+
 RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
 {
     CSSOrderedPropertyList *propsToApply = new CSSOrderedPropertyList();
@@ -157,10 +161,25 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
     if(e->parentNode())
 	style = new RenderStyle(e->parentNode()->style());
     else
-	style = new RenderStyle();
+	style = new RenderStyle();	    
 
     for(int i = 0; i < (int)propsToApply->count(); i++)
 	applyRule(style, propsToApply->at(i)->prop, e);
+	
+	
+//    printf("STYLE count=%d, DATA count=%d\n",RenderStyle::counter, SharedData::counter);
+    
+    // experimental -antti
+    
+    for ( int n=0; n<(int)lastStyles.count(); n++)
+    {
+    	style->mergeData(lastStyles.at(n));
+    }
+    
+    lastStyles.append(style);
+        
+    if (lastStyles.count()>5)
+    	lastStyles.removeFirst();
 	
     delete propsToApply;
 
