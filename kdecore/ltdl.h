@@ -20,7 +20,8 @@ Library General Public License for more details.
 
 You should have received a copy of the GNU Library General Public
 License along with this library; if not, write to the Free
-Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307  USA
 */
 
 /* Only include this header file once. */
@@ -67,18 +68,18 @@ typedef struct {
 } lt_dlsymlist;
 
 __BEGIN_DECLS
-extern int lt_dlinit LTDL_PARAMS(());
+extern int lt_dlinit LTDL_PARAMS((void));
 extern int lt_dlpreload LTDL_PARAMS((const lt_dlsymlist *preloaded));
 extern int lt_dlpreload_default LTDL_PARAMS((const lt_dlsymlist *preloaded));
-extern int lt_dlexit LTDL_PARAMS(());
+extern int lt_dlexit LTDL_PARAMS((void));
 extern lt_dlhandle lt_dlopen LTDL_PARAMS((const char *filename));
 extern lt_dlhandle lt_dlopenext LTDL_PARAMS((const char *filename));
 extern int lt_dlclose LTDL_PARAMS((lt_dlhandle handle));
 extern lt_ptr_t lt_dlsym LTDL_PARAMS((lt_dlhandle handle, const char *name));
-extern const char *lt_dlerror LTDL_PARAMS(());
+extern const char *lt_dlerror LTDL_PARAMS((void));
 extern int lt_dladdsearchdir LTDL_PARAMS((const char *search_dir));
 extern int lt_dlsetsearchpath LTDL_PARAMS((const char *search_path));
-extern const char *lt_dlgetsearchpath LTDL_PARAMS(());
+extern const char *lt_dlgetsearchpath LTDL_PARAMS((void));
 
 extern const lt_dlsymlist lt_preloaded_symbols[];
 #define LTDL_SET_PRELOADED_SYMBOLS() lt_dlpreload_default(lt_preloaded_symbols)
