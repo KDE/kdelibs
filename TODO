@@ -102,3 +102,21 @@ that we would like to make for the next binary incompatible release.
 - kpassdlg.h needs to be renamed to kpassworddialog.h - consistent with other classes(it won't 
   break many apps). The class needs a facelift - see the comments in kpassdlg.{h,cpp}
 
+- KProcess needs a major facelift. Not all of these items need to be BIC, but not needing to
+  worry about legacy will certainly allow an overall cleaner solution.
+  - the internals need to be encapsulated properly. many of the virtuals shouldn't be virtual;
+    lots of protected members should be accessible only via accessors. the current model is
+    theoretically super-flexible, but in fact it is only super-fragile.
+  - clear up pipe() vs. socketpair() usage.
+  - move the draining loop from commClose() to wait()
+  - add additional "channels" beyond std*, with the built-in capability of passing the fd on the
+    command line
+  - redirections, including piping multiple kprocesses together. this should make most cases of
+    reimplementing commSetupDone{P,C} superflous.
+  - possibly create KForkProcess that covers most/all of the remaining commSetupDoneC
+    reimplementations.
+  - do something about the NoRead comm mode
+  - add setComm(); remove comm arg from start(). as a side effect, this will allow for using
+    writeStdin() in Block mode.
+  - merge KProcIO into KProcess; add setBuffered() for separate channels.
+  - use QByteArray for writeStdin(). better than the buf+len arg, as it is ref-counted.
