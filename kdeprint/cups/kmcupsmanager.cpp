@@ -481,6 +481,7 @@ void KMCupsManager::processRequest(IppRequest* req)
 		}
 		attr = attr->next;
 	}
+	delete printer;
 }
 
 DrMain* KMCupsManager::loadPrinterDriver(KMPrinter *p, bool)
