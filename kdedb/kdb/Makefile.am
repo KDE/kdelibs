@@ -4,12 +4,16 @@ headers_kdbui = $(shell cd $(top_srcdir)/kdedb/kdbui && ls *.h)
 all-am:
 	@for file in $(headers_kdbcore) ; \
 	do \
-		ln -sf $(top_srcdir)/kdedb/kdbcore/$$file $$file ; \
+		if [ ! -f $$file ]; then \
+			$(LN_S) $(top_srcdir)/kdedb/kdbcore/$$file $$file ; \
+		fi \
 	done
 
 	@for file in $(headers_kdbui) ; \
 	do \
-		ln -sf $(top_srcdir)/kdedb/kdbui/$$file $$file ; \
+		if [ ! -f $$file ]; then \
+			$(LN_S) $(top_srcdir)/kdedb/kdbui/$$file $$file ; \
+		fi \
 	done
 
 clean-am:
