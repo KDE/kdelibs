@@ -6,6 +6,12 @@
 #include <qpalette.h>
 #include <qpixmap.h>
 
+#ifndef INCLUDE_MENUITEM_DEF
+#define INCLUDE_MENUITEM_DEF
+#endif
+
+#include <qmenubar.h>
+
 class KStyle : public QPlatinumStyle
 {
     Q_OBJECT
@@ -25,6 +31,11 @@ public:
                                     const QString& btext=QString::null,
                                     const QPixmap *icon=NULL,
                                     QFont *font=NULL);
+    virtual void drawKMenuBar(QPainter *p, int x, int y, int w, int h,
+                              const QColorGroup &g, QBrush *fill=NULL);
+    virtual void drawKMenuItem(QPainter *p, int x, int y, int w, int h,
+                               const QColorGroup &g, bool active,
+                               QMenuItem *item, QBrush *fill=NULL);
 };
 
 #endif

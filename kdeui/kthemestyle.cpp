@@ -1053,7 +1053,6 @@ void KThemeStyle::drawPopupMenuItem( QPainter* p, bool checkable, int maxpmw,
     }
 }
 
-
 void KThemeStyle::drawFocusRect(QPainter *p, const QRect &r,
                                 const QColorGroup &g, const QColor *c,
                                 bool atBorder)
@@ -1070,7 +1069,28 @@ void KThemeStyle::drawFocusRect(QPainter *p, const QRect &r,
         p->drawLine(r.x()+1+i, r.bottom()-i, r.right()-1-i, r.bottom()-i);
     }
 }
-            
+
+void KThemeStyle::drawKMenuBar(QPainter *p, int x, int y, int w, int h,
+                               const QColorGroup &g, QBrush *fill)
+{
+    QColorGroup *cg = colorGroup(g, MenuBar);
+    drawBaseButton(p, x, y, w, h, *cg, false, false, MenuBar);
+
+}
+
+void KThemeStyle::drawKMenuItem(QPainter *p, int x, int y, int w, int h,
+                                const QColorGroup &g, bool active,
+                                QMenuItem *mi, QBrush *fill)
+{
+    QColorGroup *cg = colorGroup(g, MenuBar);
+    QColor btext = cg->buttonText();
+    if(active)
+        qDrawShadePanel(p, x, y, w, h, *cg, false, 1);
+    
+    drawItem(p, x, y, w, h, AlignCenter|ShowPrefix|DontClip|SingleLine,
+             *cg, mi->isEnabled(), mi->pixmap(), mi->text(),
+             -1, &btext );;
+}
 
 #include "kthemestyle.moc"
 

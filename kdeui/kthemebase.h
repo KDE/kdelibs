@@ -27,7 +27,7 @@
 #include <qintcache.h>
 #include <qstring.h>
 
-#define WIDGETS 23
+#define WIDGETS 24
 
 /**
  * A very simple pixmap cache for theme plugins. QPixmapCache is not used
@@ -178,7 +178,7 @@ public:
     IndicatorOn, IndicatorOff, Background, PushButton, ExIndicatorOn,
     ExIndicatorOff, ComboBox, ScrollBarSlider, Bevel, ToolButton,
     ScrollButton, BarHandle, ToolBar, ScrollDeco, ComboDeco, Splitter, CheckMark,
-    MenuItemOn, MenuItemOff};
+    MenuItemOn, MenuItemOff, MenuBar};
     /**
      * The scaling type specified by the KConfig file.
      *

@@ -20,6 +20,9 @@
 
 //$Id$
 //$Log$
+//Revision 1.22  1999/06/20 10:49:35  mario
+//Mario: the menu bar was not correctly drawn. This hack fixes that
+//
 //Revision 1.21  1999/06/09 21:52:26  cschlaeg
 //serveral fixes for recently implemented layout management; removed segfault on close; removed segfault for no menubar apps; setFullWidth(false) is working again; floating a bar does not segfault any more but still does not work properly; I will look into this again.
 //
@@ -46,6 +49,19 @@
 #include <qmenubar.h>
 
 class KToolBoxManager;
+
+// Internal menubar class with a reimplemented drawContents for KStyle, since
+// QMenubar is not included in QStyle (mosfet).
+class KStyleMenuBarInternal : public QMenuBar
+{
+public:
+    KStyleMenuBarInternal(QWidget *parent=0, const char *name=0)
+        : QMenuBar(parent, name){;}
+    ~KStyleMenuBarInternal(){;}
+protected:
+    void drawContents(QPainter *p);
+};
+    
 
 /**
  * Floatable menu bar. It can be set to float, Top, or Bottom
@@ -187,7 +203,7 @@ private:
    menuPosition movePosition;
 
    QPopupMenu *context;
-   QMenuBar *menu;
+   KStyleMenuBarInternal *menu;
    QFrame *frame;
 
 signals:

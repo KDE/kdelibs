@@ -16,18 +16,22 @@
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
-*/
+    */
+
+#ifndef INCLUDE_MENUITEM_DEF
+#define INCLUDE_MENUITEM_DEF
+#endif
+
+#include "qobjectlist.h"
+#include "ktopwidget.h"
+#include "kmenubar.h"
 #include <qpainter.h>
 #include <qdrawutil.h>
 #include <qpalette.h>
 #include <qstring.h>
 #include <qframe.h>
+#include <qmenudata.h>
 
-#include "qobjectlist.h"
-
-#include "ktopwidget.h"
-
-#include "kmenubar.h"
 
 #include <klocale.h>
 #include <kglobal.h>
@@ -45,6 +49,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.78  1999/06/20 10:49:35  mario
+// Mario: the menu bar was not correctly drawn. This hack fixes that
+//
 // Revision 1.77  1999/06/10 01:05:35  pbrown
 // kde_whateverdir() --> locate.
 //
@@ -257,7 +264,7 @@ KMenuBar::KMenuBar(QWidget *parent, const char *name)
   standalone_menubar = FALSE;
   frame = new QFrame (this);
   frame->setFrameStyle(NoFrame);
-  menu = new QMenuBar (frame);
+  menu = new KStyleMenuBarInternal (frame);
   menu->setLineWidth( 1 );
   oldMenuFrameStyle = menu->frameStyle();
 
@@ -1048,5 +1055,71 @@ void KMenuBar::setFlat (bool flag)
     emit moved (position); // KTM will call this->updateRects
   }
 }
+
+// From Qt's spacing
+static const int motifBarFrame          = 2;    // menu bar frame width
+static const int motifBarHMargin        = 2;    // menu bar hor margin to item
+static const int motifBarVMargin        = 1;    // menu bar ver margin to item
+static const int motifItemFrame         = 2;    // menu item frame width
+static const int motifItemHMargin       = 5;    // menu item hor text marginstatic const int motifItemVMargin       = 4;    // menu item ver text margin                      
+static const int motifItemVMargin       = 4;    // menu item ver text margin
+
+void KStyleMenuBarInternal::drawContents(QPainter *p)
+{
+    KStyle *stylePtr = kapp->kstyle();
+    if(!stylePtr)
+        QMenuBar::drawContents(p);
+    else{
+        stylePtr->drawKMenuBar(p, 0, 0, width(), height(), colorGroup(),
+                               NULL);
+
+        unsigned int i;
+        int w, h, x=2, y=2, nlitems=0;
+        QMenuItem *mi;
+        QFontMetrics fm = fontMetrics();
+
+        QListIterator<QMenuItem>it(*mitems);
+        for(i=0; it.current(); ++i, ++it){
+            mi = it.current();
+            if(!mi)
+                warning("Menuitem is NULL!");
+
+            w=0, h=0;
+            if (mi->pixmap()){
+                w = mi->pixmap()->width();
+                h = mi->pixmap()->height();
+            }
+            else if (!mi->text().isNull()){
+                w = fm.width(mi->text())
+                    - fm.minLeftBearing()
+                    - fm.minRightBearing()
+                    + 2*motifItemHMargin;
+                h = fm.height() + motifItemVMargin;
+            }
+            /*
+            else if (mi->isSeparator()){
+                separator = i;
+            }
+            if (!mi->isSeparator()){
+                if (x + w + motifBarFrame - max_width > 0 && nlitems > 0){
+                    nlitems = 0;
+                    x = motifBarFrame + motifBarHMargin;
+                    y += h + motifBarHMargin;
+                    separator = -1;
+                }
+                if (y + h + 2*motifBarFrame > max_height)
+                    max_height = y + h + 2*motifBarFrame;
+            } */
+
+            // Draw the item
+            stylePtr->drawKMenuItem(p, x, y, w, h, mi->isEnabled()  ?
+                                    palette().normal() : palette().disabled(),
+                                    i == (unsigned int)actItem, mi, NULL);
+            x += w;
+            nlitems++;
+        }
+    }
+}
+
 #include "kmenubar.moc"
 

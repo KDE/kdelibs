@@ -1,4 +1,5 @@
 #include <kstyle.h>
+#include <qapplication.h>
 #include <qdrawutil.h>
 
 void KStyle::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
@@ -161,6 +162,27 @@ void KStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h, const
             qDrawArrow (p, DownArrow, WindowsStyle, false, w-5, h-5,
                         0, 0, g, false);
     }
+}
+
+void KStyle::drawKMenuBar(QPainter *p, int x, int y, int w, int h,
+                          const QColorGroup &g, QBrush *fill)
+{
+    QBrush brush = fill ? *fill : g.brush(QColorGroup::Button);
+    qDrawWinPanel(p, x, y, w, h, g, false, fill ? fill : &brush);
+}
+
+void KStyle::drawKMenuItem(QPainter *p, int x, int y, int w, int h,
+                           const QColorGroup &g, bool active, QMenuItem *mi,
+                           QBrush *fill)
+{
+    QColor btext = g.buttonText();
+    if(active)
+        qDrawShadePanel(p, x, y, w, h, g, false, 1);
+    
+    QApplication::style().drawItem(p, x, y, w, h,
+                                   AlignCenter|ShowPrefix|DontClip|SingleLine,
+                                   g, mi->isEnabled(), mi->pixmap(), mi->text(),
+                                   -1, &btext );;
 }
 
 #include "kstyle.moc"

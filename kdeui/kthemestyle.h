@@ -247,6 +247,12 @@ public:
                            const QColorGroup &g, bool sunken, bool rounded,
                            int hWidth, int bWidth, ShadeStyle style);
     virtual void drawPushButtonLabel(QPushButton *btn, QPainter *p);
+
+    virtual void drawKMenuBar(QPainter *p, int x, int y, int w, int h,
+                              const QColorGroup &g, QBrush *fill=NULL);
+    virtual void drawKMenuItem(QPainter *p, int x, int y, int w, int h,
+                               const QColorGroup &g, bool active,
+                               QMenuItem *item, QBrush *fill=NULL);  
     /**
      * Returns the width of the splitter as specified in the config file.
      */
