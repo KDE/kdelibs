@@ -228,11 +228,6 @@ void KSSLCertBox::setValues(QString certName, QWidget *mailCatcher) {
         label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
         new QLabel(tmp, _frame);
     }
-    if (!(tmp = cert.getValue("CPS")).isEmpty()) {
-        label = new QLabel("", _frame);   // FIXME: for post 2.2 message freeze
-        label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-        new QLabel(tmp, _frame);
-    }
     if (!(tmp = cert.getValue("Email")).isEmpty()) {
         label = new QLabel(i18n("EMail:"), _frame);
         label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
