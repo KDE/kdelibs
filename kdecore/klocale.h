@@ -325,7 +325,7 @@ public:
      *
      * @return true if the week starts on monday
      */
-    bool weekStartsMonday() const { return true; }
+    bool weekStartsMonday() const;
 
     /**
      * Return a string containing the name of the month name.
@@ -488,6 +488,7 @@ public:
 
 protected:
     QString chset;
+    bool m_weekStartsMonday;
 
     // Numbers and money
     QString _decimalSymbol;

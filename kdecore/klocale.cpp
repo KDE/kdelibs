@@ -359,6 +359,9 @@ void KLocale::initFormat(KConfig *config)
   if (_datefmtshort.isNull())
     _datefmtshort = entry.readEntry(QString::fromLatin1("DateFormatShort"),
 				    QString::fromLatin1("%m/%d/%y"));
+
+  m_weekStartsMonday = entry.readBoolEntry(QString::fromLatin1("WeekStartsMonday"), true);
+  m_weekStartsMonday = config->readBoolEntry(QString::fromLatin1("WeekStartsMonday"), m_weekStartsMonday);
 }
 
 void KLocale::setLanguage(const QString &_lang)
@@ -435,6 +438,11 @@ QString KLocale::translate( const char *index, const char *fallback) const
   delete [] newstring;
 
   return r;
+}
+
+bool KLocale::weekStartsMonday() const
+{
+  return m_weekStartsMonday;
 }
 
 QString KLocale::decimalSymbol() const
@@ -865,6 +873,11 @@ QString KLocale::translate(const char* index, const char* fallback) const
 QString KLocale::translate(const char* msgid) const
 {
   return QString::fromUtf8(msgid);
+}
+
+bool KLocale::weekStartsMonday() const
+{
+  return TRUE;
 }
 
 QString KLocale::decimalSymbol() const
