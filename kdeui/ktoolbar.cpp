@@ -23,6 +23,10 @@
 
 // $Id$
 // $Log$
+// Revision 1.133  1999/11/14 00:44:10  ettrich
+//
+// do not flicker if not absolutely necessary
+//
 // Revision 1.132  1999/10/10 08:18:57  bero
 // Code cleanup ((void) stuff)
 //
@@ -893,8 +897,10 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
 	    buttonDownOnHandle = FALSE;
 	    ContextCallback(0);
         }
-      else if (m->button() == MidButton && position != Floating)
-	  setFlat (position != Flat);
+
+      // too confusing/buggy, imho. --nu
+      //else if (m->button() == MidButton && position != Floating)
+      //   setFlat (position != Flat);
 }
 
 void KToolBar::slotHotSpot(int hs)

@@ -48,6 +48,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.88  1999/10/31 16:14:11  bero
+// Compilation fix for --enable-final
+//
 // Revision 1.87  1999/10/29 14:28:03  mosfet
 // Fix for KStyle menubar active items to work correctly with the latest Qt CVS.
 // Should be fine with older ones too ;-)
@@ -604,9 +607,11 @@ bool KMenuBar::eventFilter(QObject *ob, QEvent *ev){
 	  context->popup( handle->mapToGlobal(((QMouseEvent*)ev)->pos()), 0 );
 	  ContextCallback(0);
 	}
-      else if (((QMouseEvent*)ev)->button() == MidButton &&
-               position != Floating)
-        setFlat (position != Flat);
+
+      // too confusing/buggy, imho. --nu
+      //else if (((QMouseEvent*)ev)->button() == MidButton &&
+      //         position != Floating)
+      //  setFlat (position != Flat);
 
     }
     
