@@ -20,8 +20,9 @@
  */
 // --------------------------------------------------------------------------
 
-#include "dom/dom_doc.h"
+#include "xml/dom_docimpl.h"
 #include "dom/html_base.h"
+#include "dom/dom_doc.h"
 #include "html/html_baseimpl.h"
 #include "misc/htmlhashes.h"
 
@@ -371,8 +372,7 @@ DOMString HTMLIFrameElement::src() const
 {
     if(!impl) return DOMString();
     DOMString s = ((ElementImpl *)impl)->getAttribute(ATTR_SRC);
-    s = ownerDocument().completeURL( s );
-    return s;
+    return !s.isNull() ? impl->getDocument()->completeURL( s.string() ) : s;
 }
 
 void HTMLIFrameElement::setSrc( const DOMString &value )
