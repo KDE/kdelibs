@@ -143,9 +143,8 @@ public:
     // Return before, after (offset set to max), or inside the text, at @p offset
     virtual FindSelectionResult checkSelectionPoint( int _x, int _y, int _tx, int _ty, int & offset );
 
-    virtual unsigned int length() const { return str->l; }
-    // no need for this to be virtual, however length needs to be!
-    inline QChar *text() const { return str->s; }
+    unsigned int length() const { return str->l; }
+    QChar *text() const { return str->s; }
     virtual void position(int x, int y, int from, int len, int width, bool reverse, bool firstLine);
 
     unsigned int width(unsigned int from, unsigned int len, QFontMetrics *fm) const;
@@ -174,7 +173,7 @@ public:
 
     bool firstLine() const { return hasFirstLine; }
     bool hasReturn() const { return m_hasReturn; }
-    
+
     virtual const QFont &font();
     QFontMetrics metrics(bool firstLine = false) const;
 

@@ -276,12 +276,13 @@ RenderText::RenderText(DOMStringImpl *_str)
     m_maxWidth = -1;
     str = _str;
     if(str) str->ref();
+    assert(!str || !str->l || str->s);
 
     m_selectionState = SelectionNone;
     hasFirstLine = false;
     m_hasReturn = true;
     fm = 0;
-    
+
 #ifdef DEBUG_LAYOUT
     QConstString cstr(str->s, str->l);
     kdDebug( 6040 ) << "RenderText::setText '" << (const char *)cstr.string().utf8() << "'" << endl;
@@ -623,7 +624,7 @@ void RenderText::calcMinMaxWidth()
     int currMinWidth = 0;
     int currMaxWidth = 0;
     m_hasReturn = false;
-    
+
     QFontMetrics _fm = khtml::printpainter ? metrics() : *fm;
     int len = str->l;
     if ( len == 1 && str->s->latin1() == '\n' )
@@ -710,6 +711,11 @@ void RenderText::setText(DOMStringImpl *text)
     if(str) str->deref();
     str = text;
     if(str) str->ref();
+
+    // ### what should happen if we change the text of a
+    // RenderBR object ?
+    assert(!isBR() || (str->l == 1 && (*str->s) == '\n'));
+    assert(!str->l || str->s);
 
     setLayouted(false);
     if (containingBlock()!=this)
@@ -827,7 +833,7 @@ unsigned int RenderText::width(unsigned int from, unsigned int len, QFontMetrics
     if ( from + len > str->l ) len = str->l - from;
 
     int w;
-    if ( _fm == fm && from == 0 && len == str->l ) 
+    if ( _fm == fm && from == 0 && len == str->l )
  	 w = m_maxWidth;
     if( len == 1)
         w = _fm->width( *(str->s+from) );
