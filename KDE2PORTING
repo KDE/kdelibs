@@ -111,7 +111,7 @@ khtmlw has been replaced with khtml.
   now. The returned values must _not_ be free()d.
 
   helpMenu() has been moved to KTMainWindow. aboutKDE(), aboutApp() and
-  appHelpActivated() have all been removed See section about ktmainwindow
+  appHelpActivated() have all been removed See section for KTMainWindow
   for more info.
 
   The third argument for KApplication used to be optional. But as it's
@@ -526,21 +526,21 @@ Please adjust your code to it.
 ////////////////////////////////////////////////////////////////////////
 // * KTMainWindow
 
-helpMenu() has been moved to KTMainWindow from kapp (KApplication).
+helpMenu() has been moved to KTMainWindow from KApplication (kapp).
 
 Both the "About KDE" and the "About <Application>" dialog boxes
 are now modeless. "About KDE" is a completely new widget.
 
-If you in the toplevel window (that is based on KTMainWindow) have used
-"kapp->helpMenu( bool, QString )" to get the help menu you must now
-change to "helpMenu( QString )". The QString defaults to QString::null
-so it is sufficient to write helpMenu()
+If you in the toplevel window (that is derived from KTMainWindow) 
+have used "kapp->helpMenu( bool, QString )" to get the help menu 
+you must now change to "helpMenu( QString )". The QString defaults 
+to QString::null so it is sufficient to write helpMenu()
 
 The old aboutKDE(), aboutApp() and appHelpActivated() of KApplication
-has been removed. If you need direct access to these or need access
-to a help menu in a class that is not derived from KTMainWindow then
-allocate an instance of the new class KHelpMenu. See docs or
-khelpmenu.h (kdeui) for more info.
+have all been removed. If you need direct access to these or need 
+access to a help menu in a class that is not derived from 
+KTMainWindow then allocate an instance of the new class KHelpMenu. 
+See KDE 2.0 API reference or khelpmenu.h (kdeui) for additional info.
 
 Espen Sand <espen@kde.org>
 
@@ -550,4 +550,12 @@ Espen Sand <espen@kde.org>
 KPixmap::gradientFill, KPixmap::patternFill, KPixmap::tile and 
 KPixmap::mapFill have been moved to KPixmapEffect, which is now part 
 of libkdeui. 
+
+
+
+
+
+
+
+
 
