@@ -250,7 +250,7 @@ HTMLElementImpl *HTMLTableElementImpl::insertRow( long index, int &exceptioncode
             }
         }
     }
-    if ( !found && foot )
+    if ( !found )
         section = static_cast<HTMLTableSectionElementImpl *>(foot);
 
     // Index == 0 means "insert before first row in current section"
