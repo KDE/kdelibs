@@ -195,19 +195,27 @@ void HelpProtocol::get( const KURL& url )
     kdDebug( 7119 ) << "target " << target.url() << endl;
 
     QString file = target.path();
-    QString docbook_file = file.left(file.findRev('/')) + "/index.docbook";
-    if (!KStandardDirs::exists(file)) {
-        file = docbook_file;
+    
+    if ( mGhelp ) {
+      if ( file.right( 4 ) != ".xml" ) {
+         get_file( target );
+         return;
+      }
     } else {
-        QFileInfo fi(file);
-        if (fi.isDir()) {
-            file = file + "/index.docbook";
+        QString docbook_file = file.left(file.findRev('/')) + "/index.docbook";
+        if (!KStandardDirs::exists(file)) {
+            file = docbook_file;
         } else {
-            if ( file.right( 5 ) != ".html" || !compareTimeStamps( file, docbook_file ) ) {
-                get_file( target );
-                return;
-            } else
-                file = docbook_file;
+            QFileInfo fi(file);
+            if (fi.isDir()) {
+                file = file + "/index.docbook";
+            } else {
+                if ( file.right( 5 ) != ".html" || !compareTimeStamps( file, docbook_file ) ) {
+                    get_file( target );
+                    return;
+                } else
+                    file = docbook_file;
+            }
         }
     }
 
@@ -222,7 +230,14 @@ void HelpProtocol::get( const KURL& url )
         if (mParsed.isEmpty()) {
             unicodeError( i18n( "The requested help file could not be parsed:<br>%1" ).arg( file ) );
         } else {
-            data( fromUnicode( mParsed ) );
+            int pos1 = mParsed.find( "charset=" );
+            if ( pos1 > 0 ) {
+              int pos2 = mParsed.find( '"', pos1 );
+              if ( pos2 > 0 ) {
+                mParsed.replace( pos1, pos2 - pos1, "charset=UTF-8" );
+              }
+            }
+            data( mParsed.utf8() );
         }
     } else {
 
