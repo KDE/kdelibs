@@ -48,7 +48,7 @@ class ProviderDialog;
  * \par Maintainer:
  * Josef Spillner (spillner@kde.org)
  */
-class Engine : public QObject
+class KDE_EXPORT Engine : public QObject
 {
     Q_OBJECT
   public:

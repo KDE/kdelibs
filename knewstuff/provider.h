@@ -43,7 +43,7 @@ namespace KNS {
  * \par Maintainer:
  * Josef Spillner (spillner@kde.org)
  */
-class Provider
+class KDE_EXPORT Provider
 {
   public:
     typedef QPtrList<Provider> List;
