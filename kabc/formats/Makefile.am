@@ -9,6 +9,7 @@ kabcformat_binary_la_SOURCES = binaryformat.cpp
 
 kabcformat_binary_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
 kabcformat_binary_la_LIBADD  = ../libkabc.la
+kabcformat_binary_la_COMPILE_FIRST = ../addressee.h
 
 # let automoc handle all of the meta source files (moc)
 METASOURCES = AUTO
