@@ -58,18 +58,17 @@ Decoder::~Decoder()
 void Decoder::setEncoding(const char *_encoding, bool force)
 {
 #ifdef DECODE_DEBUG
-    kdDebug(0) << "setEncoding " << _encoding << " " << force << endl;
+    kdDebug(6005) << "setEncoding " << _encoding << " " << force << endl;
 #endif
     enc = _encoding;
-    haveEncoding = force;
 
     QTextCodec *old = m_codec;
 #ifdef DECODE_DEBUG
-    kdDebug() << "old encoding is:" << m_codec->name() << endl;
+    kdDebug(6005) << "old encoding is:" << m_codec->name() << endl;
 #endif
     enc = enc.lower();
 #ifdef DECODE_DEBUG
-    kdDebug() << "requesting:" << enc << endl;
+    kdDebug(6005) << "requesting:" << enc << endl;
 #endif
     if(enc.isNull() || enc.isEmpty())
         return;
@@ -84,10 +83,12 @@ void Decoder::setEncoding(const char *_encoding, bool force)
     }
     if( !b ) // in case the codec didn't exist, we keep the old one (fixes some sites specifying invalid codecs)
 	m_codec = old;
+    else
+	haveEncoding = force;
     delete m_decoder;
     m_decoder = m_codec->makeDecoder();
 #ifdef DECODE_DEBUG
-    kdDebug() << "*Decoder::encoding used is" << m_codec->name() << endl;
+    kdDebug(6005) << "Decoder::encoding used is" << m_codec->name() << endl;
 #endif
 }
 
@@ -103,7 +104,7 @@ QString Decoder::decode(const char *data, int len)
 
     if(!haveEncoding && !body) {
 #ifdef DECODE_DEBUG
-        kdDebug(0) << "looking for charset definition" << endl;
+        kdDebug(6005) << "looking for charset definition" << endl;
 #endif
         // check for UTF-16
         uchar * uchars = (uchar *) data;
@@ -168,26 +169,32 @@ QString Decoder::decode(const char *data, int len)
                         int pos = 0;
                         //if( (pos = str.find("http-equiv", pos)) == -1) break;
                         //if( (pos = str.find("content-type", pos)) == -1) break;
-                        if( (pos = str.find("charset", pos)) == -1) break;
-                        pos += 7;
-                        while( (str[pos] == ' ' || str[pos] == '='
-                                || str[pos] == '"')
-                               && pos < (int)str.length())
-                            pos++;
+			bool endFlag = false;
+			while( !endFlag ) {
+			    if( (pos = str.find("charset", pos)) == -1) break;
+			    pos += 7;
+			    while(  pos < (int)str.length() && (str[pos] == ' ' || str[pos] == '='
+								|| str[pos] == '"' ) )
+				pos++;
 
-                        uint endpos = pos;
-                        while( (str[endpos] != ' ' && str[endpos] != '"'
-                                && str[endpos] != '>')
-                               && endpos < str.length() )
-                            endpos++;
-
-                        enc = str.mid(pos, endpos-pos);
+			    uint endpos = pos;
+			    while( endpos < str.length() && (str[endpos] != ' ' && str[endpos] != '"' && str[endpos] != ';'
+							     && str[endpos] != '>') )
+				endpos++;
+			    if ( endpos >= str.length() || str[endpos] == '>' )
+				endFlag = true;
+			    enc = str.mid(pos, endpos-pos);
 #ifdef DECODE_DEBUG
-                        kdDebug( 6005 ) << "Decoder: found charset: " << enc.data() << endl;
+			    kdDebug( 6005 ) << "Decoder: found charset: " << enc.data() << endl;
 #endif
-                        setEncoding(enc, true);
-                        goto found;
-                    }
+			    setEncoding(enc, true);
+			    if( haveEncoding )
+				goto found;
+			    pos = endpos + 1;
+			    if ( endpos >= str.length() )
+				break;
+			}
+		    }
                     case ID_SCRIPT:
                     case (ID_SCRIPT+ID_CLOSE_TAG):
                     case ID_STYLE:
