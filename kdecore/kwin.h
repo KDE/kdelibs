@@ -430,7 +430,7 @@ public:
     /**
      * @deprecated Use WindowInfo .
      */
-    struct Info
+    struct KDECORE_EXPORT Info
     {
       /// The window's id.
 	WId win;

@@ -438,7 +438,7 @@ private:
  *
  * @author Thiago Macieira <thiago.macieira@kdemail.net>
  */
-class KActiveSocketBase: public QIODevice, virtual public KSocketBase
+class KDECORE_EXPORT KActiveSocketBase: public QIODevice, virtual public KSocketBase
 {
 public:
   /**
@@ -669,7 +669,7 @@ protected:
  *
  * @author Thiago Macieira <thiago.macieira@kdemail.net>
  */
-class KPassiveSocketBase: virtual public KSocketBase
+class KDECORE_EXPORT KPassiveSocketBase: virtual public KSocketBase
 {
 public:
   /**

@@ -59,7 +59,7 @@ class KUnixSocketAddress;
  *
  * @author Thiago Macieira <thiago.macieira@kdemail.net>
  */
-class KIpAddress
+class KDECORE_EXPORT KIpAddress
 {
 public:
   /**
@@ -410,7 +410,7 @@ class KSocketAddressData;
  *
  * @author Thiago Macieira <thiago.macieira@kdemail.net>
  */
-class KSocketAddress
+class KDECORE_EXPORT KSocketAddress
 {
 public:
   /**
@@ -638,7 +638,7 @@ public:				// static
  *
  * @author Thiago Macieira <thiago.macieira@kdemail.net>
  */
-class KInetSocketAddress: public KSocketAddress
+class KDECORE_EXPORT KInetSocketAddress: public KSocketAddress
 {
   friend class KSocketAddress;
 public:
@@ -827,7 +827,7 @@ private:
  *
  * @author Thiago Macieira <thiago.macieira@kdemail.net>
  */
-class KUnixSocketAddress: public KSocketAddress
+class KDECORE_EXPORT KUnixSocketAddress: public KSocketAddress
 {
   friend class KSocketAddress;
 public:
