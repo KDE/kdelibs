@@ -45,7 +45,26 @@ bool KIONetAccess::download(const QString src, QString & target)
   bool result = kioNet.downloadInternal( src, target );
   return result;
 }
- 
+
+bool KIONetAccess::upload(const QString src, QString target)
+{
+  // I'm leaving this out for now.  If both src and target
+  // are local, shouldn't we copy the file from src to target?
+  // (But that's not consistent with download() above) -- DS
+  // KURL u (target);
+  // if (u.isLocalFile()){
+  // }
+
+  if (target.isEmpty())
+    return false;
+
+  // If !target.isEmpty(), then downloadInternal just
+  // copies src to target.  Great!
+  KIONetAccess kioNet;
+  bool result = kioNet.downloadInternal( src, target );
+  return result;
+}
+
 QStringList* KIONetAccess::tmpfiles = 0L;
  
 void KIONetAccess::removeTempFile(const QString name)

@@ -81,7 +81,8 @@ public:
     static void removeTempFile(const QString name); 
 
     /**
-     * Upload : TODO
+	 * Upload file src to url target.  Both must be specified,
+	 * unlike @ref download.
      */
     static bool upload(const QString src, const QString target);
 
