@@ -114,6 +114,8 @@ void StdIOManager::processOneEvent(bool blocking)
 	if(level == 1)
 		NotificationManager::the()->run();
 
+	// FIXME: timers *could* change the file descriptors to select...
+	//---
 	if(fdListChanged)
 	{
 		FD_ZERO(&readfds);
@@ -356,13 +358,12 @@ void StdIOManager::remove(IONotify *notify, int types)
 
 		if(w->notify() == notify) w->remove(types);
 
-		if(!w->types())		// nothing left to watch
+		// nothing left to watch?
+		if(w->types() == 0 || w->types() == IOType::reentrant)	
 		{
-			fdList.erase(i);
+			i = fdList.erase(i);
 			delete w;		// FIXME: shouldn't we have a destroy() similar
 			                // to the one for timers
-
-			i = fdList.begin();
 		}
 		else i++;
 	}
