@@ -179,6 +179,7 @@ public:
     bool layoutSchedulingEnabled;
     QRect updateRect;
     KHTMLToolTip *tooltip;
+    QPtrDict<QWidget> visibleWidgets;
 };
 
 #ifndef QT_NO_TOOLTIP
