@@ -494,14 +494,14 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
     //now parse out the arguments
     while( index < qb_size )
     {
-        QString tmp;
-        while( qb[index] != 0 )
-            tmp += qb[ index++ ];
-
-        kdDebug(6100) << "KJavaAppletServer::slotJavaRequest: "<< tmp << endl;
-        args.append( tmp );
-
-        ++index; //skip the sep
+        int sep_pos = qb.find( 0, index );
+        if (sep_pos < 0) {
+            kdError(6100) << "Missing separation byte" << endl;
+            sep_pos = qb_size;
+        }
+        //kdDebug(6100) << "KJavaAppletServer::slotJavaRequest: "<< QString::fromLocal8Bit( qb.data() + index, sep_pos - index ) << endl;
+        args.append( QString::fromLocal8Bit( qb.data() + index, sep_pos - index ) );
+        index = sep_pos + 1; //skip the sep
     }
     //here I should find the context and call the method directly
     //instead of emitting signals
