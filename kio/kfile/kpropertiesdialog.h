@@ -249,6 +249,8 @@ public:
    */
   void abortApplying();
 
+  void showFileSharingPage();
+
 public slots:
   /**
    * Called when the user presses 'Ok'.

@@ -32,7 +32,7 @@ include_HEADERS = kfiledialog.h \
 	kfileiconview.h krecentdocument.h kfileview.h \
 	kfiledialog.h kurlrequester.h kfilepreview.h kfile.h \
 	kurlcombobox.h kurlrequesterdlg.h kopenwith.h kpropsdlg.h \
-	kicondialog.h kdirsize.h kpreviewwidgetbase.h kimagefilepreview.h \
+	kicondialog.h kdirsize.h kpreviewwidgetbase.h kimagefilepreview.h kfilesharedlg.h \
 	kfiletreeview.h kfiletreeviewitem.h kfiletreebranch.h \
 	kdirselectdialog.h kurlbar.h kpropertiesdialog.h
 
@@ -46,7 +46,7 @@ libkfile_la_SOURCES = kfiledialogconf.cpp \
 	kfiledetailview.cpp kcombiview.cpp kurlrequester.cpp \
 	kfilepreview.cpp kurlcombobox.cpp kurlrequesterdlg.cpp \
 	kopenwith.cpp kpropertiesdialog.cpp kicondialog.cpp kdirsize.cpp \
-	krecentdirs.cpp kdiskfreesp.cpp kimagefilepreview.cpp \
+	krecentdirs.cpp kdiskfreesp.cpp kimagefilepreview.cpp kfilesharedlg.cpp \
 	kurlbar.cpp kmetaprops.cpp\
 	kfiletreeview.cpp kfiletreeviewitem.cpp kfiletreebranch.cpp \
 	kdirselectdialog.cpp kfilebookmarkhandler.cpp \
@@ -58,3 +58,15 @@ EXTRA_DIST = NOTES
 
 servicetype_DATA = kpropsdlgplugin.desktop
 servicetypedir = $(kde_servicetypesdir)
+
+
+#Can't be a module, we need to link to it for readConfig
+#kde_module_LTLIBRARIES = libkfileshare.la
+#libkfileshare_la_SOURCES = kfileshare.cpp
+#libkfileshare_la_LIBADD = libkfile.la
+#libkfileshare_la_LDFLAGS = -module $(KDE_PLUGIN)
+#kde_services_DATA = kfilesharepropsplugin.desktop
+
+# Temporary, to be removed
+KDE_OPTIONS = nofinal
+

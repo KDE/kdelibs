@@ -42,6 +42,7 @@
 #include <kmimetype.h>
 #include <krun.h>
 #include <kfilemetainfo.h>
+#include <kfileshare.h>
 
 KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
                       bool _determineMimeTypeOnDemand, bool _urlIsDirectory ) :
@@ -412,6 +413,15 @@ int KFileItem::overlays() const
 
   if ( m_strName[0] == '.' )
      _state |= KIcon::HiddenOverlay;
+
+  if( S_ISDIR( m_fileMode ) && m_bIsLocalURL)
+    {
+        if (KFileShare::isDirectoryShared( m_url.path() ))
+   {
+     kdDebug()<<"KFileShare::isDirectoryShared : "<<m_url.path()<<endl;
+     _state |= KIcon::ShareOverlay;
+     }
+    }
 
   if ( m_pMimeType->name() == "application/x-gzip" && m_url.fileName().right(3) == ".gz" )
      _state |= KIcon::ZipOverlay;

@@ -92,6 +92,7 @@ extern "C" {
 #include <kparts/componentfactory.h>
 #include <kmetaprops.h>
 #include <krun.h>
+#include "kfilesharedlg.h"
 
 #include "kpropertiesdialog.h"
 
@@ -264,6 +265,23 @@ void KPropertiesDialog::init (bool modal, bool autoShow)
     }
 }
 
+void KPropertiesDialog::showFileSharingPage()
+{
+  KPropsDlgPlugin *it;
+  int i=0;
+
+  for ( it=m_pageList.first(); it != 0L; it=m_pageList.next() )
+    {
+      if(dynamic_cast<KFileSharePropsPlugin*>(it))
+   {
+     showPage(i);
+     break;
+   }
+      i++;
+    }
+
+}
+
 void KPropertiesDialog::slotStatResult( KIO::Job * job )
 {
     if (job->error())
@@ -409,6 +427,12 @@ void KPropertiesDialog::insertPages()
   if ( KFileMetaPropsPlugin::supports( m_items ) )
   {
     KPropsDlgPlugin *p = new KFileMetaPropsPlugin( this );
+    insertPlugin (p);
+  }
+
+  if ( KFileSharePropsPlugin::supports( m_items ) )
+  {
+    KPropsDlgPlugin *p = new KFileSharePropsPlugin( this );
     insertPlugin (p);
   }
 
