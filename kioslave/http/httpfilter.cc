@@ -97,6 +97,7 @@ HTTPFilterGZip::HTTPFilterGZip()
 #ifdef DO_GZIP
   bHasHeader = false;
   bHasFinished = false;
+  bPlainText = false;
   bEof = false;
   zstr.next_in = (Bytef *) Z_NULL;
   zstr.avail_in = 0;
@@ -243,6 +244,11 @@ void
 HTTPFilterGZip::slotInput(const QByteArray &d)
 {
 #ifdef DO_GZIP
+  if (bPlainText)
+  {
+     emit output(d);
+     return;
+  }
   if (d.size() == 0)
   {
      if (!bHasFinished)
@@ -252,6 +258,12 @@ HTTPFilterGZip::slotInput(const QByteArray &d)
         QByteArray flush(4);
         flush.fill(0);
         slotInput(flush);
+        if (!bHasFinished && !bHasHeader)
+        {
+           // Send as-is
+           emit output(headerData);
+           bHasFinished = true;
+        }
      }
      QByteArray
      // End of data
@@ -262,6 +274,7 @@ HTTPFilterGZip::slotInput(const QByteArray &d)
   }
   if (bHasFinished)
      return;
+
   if (!bHasHeader)
   {
      bEof = false;
@@ -281,6 +294,13 @@ HTTPFilterGZip::slotInput(const QByteArray &d)
      zstr.next_in = (Bytef *) headerData.data();     
 
      int result = checkHeader();
+     if (result == 1)
+     {
+        bPlainText = true;
+        output(headerData);
+        return;
+     }
+
      if (result != 0)
         return; // next time better
 

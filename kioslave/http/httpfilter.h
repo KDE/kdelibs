@@ -103,6 +103,7 @@ protected:
     bool bEof;
     bool bHasHeader;
     bool bHasFinished;
+    bool bPlainText;
     QByteArray headerData;
 #endif
 };
