@@ -91,28 +91,28 @@ class KateDocument : public Kate::Document,
   //
   public:
     void unloadAllPlugins ();
-    
+
     void enableAllPluginsGUI (KateView *view);
     void disableAllPluginsGUI (KateView *view);
 
     void loadPlugin (uint pluginIndex);
     void unloadPlugin (uint pluginIndex);
-    
+
     void enablePluginGUI (KTextEditor::Plugin *plugin, KateView *view);
     void enablePluginGUI (KTextEditor::Plugin *plugin);
-    
+
     void disablePluginGUI (KTextEditor::Plugin *plugin, KateView *view);
     void disablePluginGUI (KTextEditor::Plugin *plugin);
 
   private:
-     QMemArray<KTextEditor::Plugin *> m_plugins; 
-   
+     QMemArray<KTextEditor::Plugin *> m_plugins;
+
   public:
     bool readOnly () const { return m_bReadOnly; }
     bool browserView () const { return m_bBrowserView; }
     bool singleViewMode () const { return m_bSingleViewMode; }
     KateBrowserExtension *browserExtension () { return m_extension; }
-     
+
   private:
     // only to make part work, don't change it !
     bool m_bSingleViewMode;
@@ -471,10 +471,10 @@ class KateDocument : public Kate::Document,
 
   private:
     void abortLoadKate();
-    
+
     void activateDirWatch ();
     void deactivateDirWatch ();
-    
+
     QString m_dirWatchFile;
 
   //
@@ -601,11 +601,11 @@ class KateDocument : public Kate::Document,
                Otherwise false.
     */
     bool nextNonSpaceCharPos(int &line, int &col);
-    
+
     /**
       Find the position (line and col) of the previous char
       that is not a space. If found line and col point to the found character.
-      Otherwise they have both the value -1. 
+      Otherwise they have both the value -1.
       @returns True if the specified or a preceding character is not a space.
                Otherwise false.
     */
@@ -713,6 +713,16 @@ class KateDocument : public Kate::Document,
     void slotModOnHdCreated (const QString &path);
     void slotModOnHdDeleted (const QString &path);
 
+  private:
+    /**
+     * create a MD5 digest of the file, if it is a local file,
+     * and fill it into the string @p result.
+     * This is using KMD5::hexDigest().
+     *
+     * @return wheather the operation was attempted and succeded.
+     */
+    bool createDigest( QCString &result );
+
   public:
     // should cursor be wrapped ? take config + blockselection state in account
     bool wrapCursor ();
@@ -739,6 +749,7 @@ class KateDocument : public Kate::Document,
 
     bool m_modOnHd;
     unsigned char m_modOnHdReason;
+    QCString m_digest; // MD5 digest, updated on load/save
 
     QString m_docName;
     int m_docNameNumber;
@@ -754,8 +765,8 @@ class KateDocument : public Kate::Document,
     void corrected  ( const QString&, const QString&, unsigned int);
     void spellResult( const QString& );
     void spellCleanDone();
-  
-  
+
+
     void slotQueryClose_save(bool *handled, bool* abortClosing);
 
   private:
@@ -826,7 +837,7 @@ class KateDocument : public Kate::Document,
 
     KIO::TransferJob *m_job;
     KTempFile *m_tempFile;
-    
+
   //
   // IM input stuff
   //
