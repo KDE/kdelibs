@@ -1,6 +1,7 @@
 [KDE Print Entry]
 PrintSystem=lpd
 Comment=LPR (Standard BSD print system)
+Comment[af]= LPR  (STANDAARD BSD DRUK STELSEL)
 Comment[az]=LPR (Standard BSD çap etmə sistemi)
 Comment[bg]=LPR (стандартна система за печат BSD)
 Comment[cs]=LPR (Standardní tiskový systém na BSD)
@@ -31,5 +32,6 @@ Comment[sr]=LPR (standardni BSD sistem za štampanje)
 Comment[sv]=LPR (Standardskrivarsystem för BSD)
 Comment[tr]=LPR (Standart BSD yazdırma sistemi)
 Comment[uk]=LPR (типова система друку BSD)
+Comment[zh_CN.GB2312]=LPR (标准BSD打印系统)
 DetectUris=service:/printer,config:/printcap
 DetectPrecedence=5
