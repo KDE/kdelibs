@@ -73,6 +73,7 @@ CPUUsage::CPUUsage() : d(new CPUUsagePrivate())
 
 CPUUsage::~CPUUsage()
 {
+	delete d;
 	cpuUsage = 0;
 }
 
