@@ -116,7 +116,8 @@ void KComboBox::makeCompletion( const QString& text )
 		KCompletion *comp = completionObject();
     	KGlobalSettings::Completion mode = completionMode();
     	
-    	if( comp->hasMultipleMatches() && mode == KGlobalSettings::CompletionShell )
+    	if( mode == KGlobalSettings::CompletionShell &&
+    		comp->hasMultipleMatches() && text != comp->lastMatch() )
 	    	match = comp->nextMatch();
 	    else
    	    	match = comp->makeCompletion( text );
@@ -151,7 +152,7 @@ void KComboBox::rotateText( KCompletionBase::RotationEvent dir )
     	// a person can rotate through all combinations of car, class,
     	// coffee, cookie, club by just pressing the rotation keys.
 		KCompletion* comp = completionObject();
-        if( m_pEdit->hasMarkedText() )
+        if( m_pEdit->hasMarkedText() && completionMode() != KGlobalSettings::CompletionShell )
         {
 			QString str = m_pEdit->text();
 			QString input = ( dir == KCompletionBase::UpKeyEvent ) ? comp->previousMatch() : comp->nextMatch();

@@ -88,7 +88,7 @@ void KLineEdit::setCompletionMode( KGlobalSettings::Completion mode )
 void KLineEdit::rotateText( KCompletionBase::RotationEvent dir )
 {
     KCompletion* comp = completionObject();
-    if( hasMarkedText() )
+    if( hasMarkedText() && completionMode() != KGlobalSettings::CompletionShell )
     {
         QString str = text();
         QString input = ( dir == KCompletionBase::UpKeyEvent ) ? comp->previousMatch() : comp->nextMatch();
@@ -125,7 +125,8 @@ void KLineEdit::makeCompletion( const QString& text )
 	KCompletion *comp = completionObject();
    	KGlobalSettings::Completion mode = completionMode();
     	
-   	if( comp->hasMultipleMatches() && mode == KGlobalSettings::CompletionShell )
+   	if( mode == KGlobalSettings::CompletionShell &&
+	   	comp->hasMultipleMatches() && text != comp->lastMatch() )
     	match = comp->nextMatch();
     else
     	match = comp->makeCompletion( text );
