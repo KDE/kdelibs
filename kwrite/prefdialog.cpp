@@ -30,6 +30,10 @@ PreferencesDlg::PreferencesDlg( KWrite* kwrite, QWidget* parent, char* name )
   vbox = addVBoxPage( i18n( "Edit" ), QString::null, UserIcon( "misc" ) );
   m_editConfig = new EditConfigTab( vbox, kwrite );
 
+  // view options
+  vbox = addVBoxPage( i18n( "View" ), QString::null, UserIcon( "misc" ) );
+  m_viewConfig = new ViewConfigTab( vbox, kwrite );
+  
   // color options
   vbox = addVBoxPage( i18n( "Colors" ), QString::null, UserIcon( "colors" ) );
   m_colorConfig = new ColorConfig( vbox );
@@ -65,12 +69,11 @@ void PreferencesDlg::applySettings()
   // select options
   m_selectConfig->getData( m_kwrite );
 
-  // select options
-
   // edit options
   m_editConfig->getData(m_kwrite);
 
-  // select options
+  // view options
+  m_viewConfig->getData(m_kwrite);
 
   // color options
   //m_colorConfig->getColors( m_kwrite->doc()->colors() );

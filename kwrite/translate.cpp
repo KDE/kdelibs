@@ -1,6 +1,6 @@
 // $Id$
-//commands
 
+// this file will not be compiled, but parsed by gettext
 
 //Keys
 i18n("Shift")

@@ -519,7 +519,7 @@ class KWriteDoc : QObject {
     void paintTextLine2(QPainter *, int line, int xStart, int xEnd, bool showTabs);
     void paintTextLine(QPainter &, int line, int xStart, int xEnd, bool showTabs);
 //    void printTextLine(QPainter &, int line, int xEnd, int y);
-    void paintBorder(QPainter &, int line, int yStart, int yEnd);
+    void paintBorder(KWrite *, QPainter &, int line, int yStart, int yEnd);
     
     bool hasFileName();
     const QString fileName();

@@ -232,7 +232,7 @@ KWrite::KWrite(QWidget *parentWidget, QObject *parent, int flags, KWriteDoc *doc
 //  doc->incRefCount();
   m_doc = doc;
   m_widget = new KWriteWidget(parentWidget);
-  m_view = new KWriteView(m_doc, m_widget, this, flags & kHandleOwnDND);
+  m_view = new KWriteView(this, m_widget, m_doc, flags & kHandleOwnDND);
   m_widget->m_view = m_view;
 
   // some defaults
@@ -242,12 +242,20 @@ KWrite::KWrite(QWidget *parentWidget, QObject *parent, int flags, KWriteDoc *doc
     | cfDelOnInput | cfMouseAutoCopy
     | cfGroupUndo | cfShowTabs | cfSmartHome;
   m_wrapAt = 80;
+  m_numbersX = 10;
+  m_numbersDigits = 4;
+
   m_searchFlags = 0;
   m_replacePrompt = 0L;
   popup = 0L;
 //  bookmarks.setAutoDelete(true);
   for (int z = 0; z < nBookmarks; z++) bookmark[z] = 0L;
+
+  // geometry
+  m_widget->resize(parentWidget->width(), parentWidget->height());
+//  m_view->setBorderWidth(32);
   
+
   // KWrite commands
   m_dispatcher = new KWCommandDispatcher(m_view);
   KWCommandGroup *g;
@@ -334,8 +342,6 @@ KWrite::KWrite(QWidget *parentWidget, QObject *parent, int flags, KWriteDoc *doc
   kspell.kspellon = FALSE;
 
 //  m_view->setFocus();
-  m_widget->resize(parentWidget->width(), parentWidget->height());
-  
 
   // KPart initialisation
   setWidget(m_widget);
@@ -444,7 +450,7 @@ void KWrite::setCursorPosition(int line, int col) {
   m_doc->updateViews();
 }
 
-int KWrite::config() {
+int KWrite::configFlags() {
   int flags;
 
   flags = m_configFlags;
@@ -453,7 +459,7 @@ int KWrite::config() {
 }
 
 void KWrite::setConfig(int flags) {
-  bool updateView;
+  int changedFlags;
 
   // cfSingleSelectMode is a doc-property
   m_doc->setSingleSelectMode(flags & cfSingleSelectMode);
@@ -461,10 +467,14 @@ void KWrite::setConfig(int flags) {
 
   if (flags != m_configFlags) {
     // update the view if visibility of tabs has changed
-    updateView = (flags ^ m_configFlags) & cfShowTabs;
+    changedFlags = flags ^ m_configFlags;
     m_configFlags = flags;
     emit newConfig();
-    if (updateView) m_view->update();
+    if (changedFlags & cfShowTabs) m_view->update();
+    if (changedFlags & cfBorder) {
+      m_view->setBorderWidth((flags & cfBorder) ? 
+        m_numbersX + m_numbersDigits*7 : 0);
+    }
   }
 }
 
@@ -483,6 +493,13 @@ void KWrite::setUndoSteps(int s) {
 
 int KWrite::undoSteps() {
   return m_doc->undoSteps();
+}
+
+void KWrite::setNumbersDigits(int digits) {
+  m_numbersDigits = digits;
+  if (m_configFlags & cfBorder) {
+    m_view->setBorderWidth(m_numbersX + m_numbersDigits*7);
+  }
 }
 
 void KWrite::setColors(QColor *colors) {
@@ -911,6 +928,7 @@ void KWrite::newDoc() {
     clear();
 }
 
+
 /*
 void KWrite::open() {
   KURL url;
@@ -990,6 +1008,68 @@ bool KWrite::openFile() {
 bool KWrite::saveFile() {
   return writeFile(m_file);
 }
+
+
+void KWrite::printDoc() {
+  QString title = url().filename();
+
+  // where do i get the part-KConfig-object?
+  KTextPrintConfig::print(m_widget, KGlobal::config(), true,
+    title, m_doc->numLines(),
+    this, SLOT(doPrint(KTextPrint&)));
+
+}
+
+void KWrite::doPrint(KTextPrint &printer) {
+  KWriteDoc *doc = m_doc;
+
+  int z, numAttribs;
+  Attribute *a;
+  int line, attr, nextAttr, oldZ;
+  TextLine *textLine;
+  const QChar *s;
+
+//  printer.setTitle(m_doc->fileName());
+  printer.setTabWidth(doc->tabWidth());
+
+  numAttribs = doc->numAttribs();
+  a = doc->attribs();
+  for (z = 0; z < numAttribs; z++) {
+    printer.defineColor(z, a[z].col.red(), a[z].col.green(), a[z].col.blue());
+  }
+
+  printer.begin();
+
+  line = 0;
+  attr = -1;
+  while (true) {
+    textLine = doc->textLine(line);
+    s = textLine->getText();
+//    printer.print(s, textLine->length());
+    oldZ = 0;
+    for (z = 0; z < textLine->length(); z++) {
+      nextAttr = textLine->getAttr(z);
+      if (nextAttr != attr) {
+        attr = nextAttr;
+        printer.print(&s[oldZ], z - oldZ);
+        printer.setColor(attr);
+        int fontStyle = 0;
+        if (a[attr].font.bold()) fontStyle |= KTextPrint::Bold;
+        if (a[attr].font.italic()) fontStyle |= KTextPrint::Italics;
+        printer.setFontStyle(fontStyle);
+        oldZ = z;
+      }
+    }
+    printer.print(&s[oldZ], z - oldZ);
+
+    line++;
+    if (line == doc->numLines()) break;
+    printer.newLine();
+  }
+
+  printer.end();
+}
+
 
 
 void KWrite::doCursorCommand(int cmdNum) {
@@ -1603,6 +1683,7 @@ void KWrite::readConfig(KConfig *config) {
   m_searchFlags = config->readNumEntry("SearchFlags", sfPrompt);
   m_configFlags = config->readNumEntry("ConfigFlags", m_configFlags) & ~cfMark;
   m_wrapAt = config->readNumEntry("WrapAt", m_wrapAt);
+  m_numbersDigits = config->readNumEntry("NumbersDigits", m_numbersDigits);
 /*
   int flags;
 
@@ -1643,6 +1724,7 @@ void KWrite::writeConfig(KConfig *config) {
   config->writeEntry("SearchFlags", m_searchFlags);
   config->writeEntry("ConfigFlags", m_configFlags);
   config->writeEntry("WrapAt", m_wrapAt);
+  config->writeEntry("NumbersDigits", m_numbersDigits);
 
 /*
   int flags;

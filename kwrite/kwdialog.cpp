@@ -23,103 +23,97 @@
 #include <kcolorbtn.h>
 #include <knuminput.h>
 
+#define i18nop // a no-operation i18n(), only KWrite-internal and defined in Makefile.am
+
 #include <kwrite/kwrite_doc.h>
 
 #include "kwdialog.h"
 
-/*
-Please keep the coding style of existing files
-*/
 
-SearchDialog::SearchDialog( QWidget *parent, QStringList &searchFor, QStringList &replaceWith, int flags )
-  : KDialogBase( parent, 0L, true, i18n( "Find Text" ), Ok | Cancel, Ok )
-  , m_replace( 0L )
-{
-  QWidget *page = new QWidget( this );
-  setMainWidget( page );
+SearchDialog::SearchDialog(QWidget *parent, QStringList &searchFor, 
+  QStringList &replaceWith, int flags)
+  : KDialogBase(parent, 0L, true, i18n("Find Text"), Ok | Cancel, Ok), 
+  m_replace(0L) {
 
-  QVBoxLayout *topLayout = new QVBoxLayout( page, 0, spacingHint() );
+  QWidget *page = new QWidget(this);
+  setMainWidget(page);
 
-  m_search = new QComboBox( true, page );
-  m_search->insertStringList( searchFor );
-  m_search->setMinimumWidth( m_search->sizeHint().width() );
+  QVBoxLayout *topLayout = new QVBoxLayout(page, 0, spacingHint());
+
+  m_search = new QComboBox(true, page);
+  m_search->insertStringList(searchFor);
+  m_search->setMinimumWidth(m_search->sizeHint().width());
   m_search->lineEdit()->selectAll();
-  QLabel *label = new QLabel( m_search, i18n( "&Text To Find:" ), page );
-  topLayout->addWidget( label );
-  topLayout->addWidget( m_search );
+  QLabel *label = new QLabel(m_search, i18n("&Text To Find:"), page);
+  topLayout->addWidget(label);
+  topLayout->addWidget(m_search);
 
-  if( flags & sfReplace )
-  {
+  if (flags & sfReplace) {
     // make it a replace dialog
-    setCaption( i18n( "Replace Text" ) );
-    m_replace = new QComboBox( true, page );
-    m_replace->insertStringList( replaceWith );
-    m_replace->setMinimumWidth( m_search->sizeHint().width() );
-    label = new QLabel( m_replace, i18n( "&Replace With:" ), page );
-    topLayout->addWidget( label );
-    topLayout->addWidget( m_replace );
+    setCaption(i18n("Replace Text"));
+    m_replace = new QComboBox(true, page);
+    m_replace->insertStringList(replaceWith);
+    m_replace->setMinimumWidth(m_search->sizeHint().width());
+    label = new QLabel(m_replace, i18n("&Replace With:"), page);
+    topLayout->addWidget(label);
+    topLayout->addWidget(m_replace);
   }
 
-  QGroupBox *group = new QGroupBox( i18n( "Options" ), page );
-  topLayout->addWidget( group, 10 );
+  QGroupBox *group = new QGroupBox(i18n("Options"), page);
+  topLayout->addWidget(group, 10);
 
-  QGridLayout *gbox = new QGridLayout( group, 5, 2, spacingHint() );
-  gbox->addRowSpacing( 0, fontMetrics().lineSpacing() );
-  gbox->setRowStretch( 4, 10 );
+  QGridLayout *gbox = new QGridLayout(group, 5, 2, spacingHint());
+  gbox->addRowSpacing(0, fontMetrics().lineSpacing());
+  gbox->setRowStretch(4, 10);
 
-  m_opt1 = new QCheckBox( i18n( "C&ase Sensitive" ), group );
-  gbox->addWidget( m_opt1, 1, 0 );
+  m_opt1 = new QCheckBox(i18n("C&ase Sensitive"), group);
+  gbox->addWidget(m_opt1, 1, 0);
 
-  m_opt2 = new QCheckBox(i18n("&Whole Words Only" ), group );
-  gbox->addWidget( m_opt2, 2, 0 );
+  m_opt2 = new QCheckBox(i18n("&Whole Words Only"), group);
+  gbox->addWidget(m_opt2, 2, 0);
 
-  m_opt3 = new QCheckBox(i18n("&From Cursor" ), group );
-  gbox->addWidget( m_opt3, 3, 0 );
+  m_opt3 = new QCheckBox(i18n("&From Cursor"), group);
+  gbox->addWidget(m_opt3, 3, 0);
 
-  m_opt4 = new QCheckBox(i18n("Find &Backwards" ), group );
-  gbox->addWidget( m_opt4, 1, 1 );
+  m_opt4 = new QCheckBox(i18n("Find &Backwards"), group);
+  gbox->addWidget(m_opt4, 1, 1);
 
-  m_opt5 = new QCheckBox(i18n("&Selected Text" ), group );
-  gbox->addWidget( m_opt5, 2, 1 );
+  m_opt5 = new QCheckBox(i18n("&Selected Text"), group);
+  gbox->addWidget(m_opt5, 2, 1);
 
-  m_opt1->setChecked( flags & sfCaseSensitive );
-  m_opt2->setChecked( flags & sfWholeWords );
-  m_opt3->setChecked( flags & sfFromCursor );
-  m_opt4->setChecked( flags & sfBackward );
-  m_opt5->setChecked( flags & sfSelected );
+  m_opt1->setChecked(flags & sfCaseSensitive);
+  m_opt2->setChecked(flags & sfWholeWords);
+  m_opt3->setChecked(flags & sfFromCursor);
+  m_opt4->setChecked(flags & sfBackward);
+  m_opt5->setChecked(flags & sfSelected);
 
-  if( m_replace )
-  {
-    m_opt6 = new QCheckBox( i18n( "&Prompt On Replace" ), group );
-    m_opt6->setChecked( flags & sfPrompt );
-    gbox->addWidget( m_opt6, 3, 1 );
+  if (m_replace) {
+    m_opt6 = new QCheckBox(i18n("&Prompt On Replace"), group);
+    m_opt6->setChecked(flags & sfPrompt);
+    gbox->addWidget(m_opt6, 3, 1);
   }
 
   m_search->setFocus();
 }
 
-QString SearchDialog::getSearchFor()
-{
+QString SearchDialog::getSearchFor() {
   return m_search->currentText();
 }
 
-QString SearchDialog::getReplaceWith()
-{
+QString SearchDialog::getReplaceWith() {
   return m_replace->currentText();
 }
 
-int SearchDialog::getFlags()
-{
+int SearchDialog::getFlags() {
   int flags = 0;
 
-  if( m_opt1->isChecked() ) flags |= sfCaseSensitive;
-  if( m_opt2->isChecked() ) flags |= sfWholeWords;
-  if( m_opt3->isChecked() ) flags |= sfFromCursor;
-  if( m_opt4->isChecked() ) flags |= sfBackward;
-  if( m_opt5->isChecked() ) flags |= sfSelected;
-  if( m_replace )
-  {
-    if( m_opt6->isChecked() )
+  if (m_opt1->isChecked()) flags |= sfCaseSensitive;
+  if (m_opt2->isChecked()) flags |= sfWholeWords;
+  if (m_opt3->isChecked()) flags |= sfFromCursor;
+  if (m_opt4->isChecked()) flags |= sfBackward;
+  if (m_opt5->isChecked()) flags |= sfSelected;
+  if (m_replace) {
+    if (m_opt6->isChecked())
       flags |= sfPrompt;
 
     flags |= sfReplace;
@@ -128,39 +122,38 @@ int SearchDialog::getFlags()
   return flags;
 }
 
-void SearchDialog::slotOk()
-{
+void SearchDialog::slotOk() {
   const char *text;
 
   text = m_search->currentText();
 
-  if( text && *text )
+  if (text && *text)
     accept();
 }
 
 // this dialog is not modal
-ReplacePrompt::ReplacePrompt( QWidget *parent )
-  : KDialogBase(parent, 0L, false, i18n( "Replace Text" ),
+ReplacePrompt::ReplacePrompt(QWidget *parent)
+  : KDialogBase(parent, 0L, false, i18n("Replace Text"),
   User3 | User2 | User1 | Close, User3, true,
   i18n("&All"), i18n("&No"), i18n("&Yes")) {
 
   QWidget *page = new QWidget(this);
   setMainWidget(page);
 
-  QBoxLayout *topLayout = new QVBoxLayout( page, 0, spacingHint() );
-  QLabel *label = new QLabel(i18n("Replace this occurence?"),page);
-  topLayout->addWidget(label );
+  QBoxLayout *topLayout = new QVBoxLayout(page, 0, spacingHint());
+  QLabel *label = new QLabel(i18n("Replace this occurence?"), page);
+  topLayout->addWidget(label);
 }
 
-void ReplacePrompt::slotUser1( void ) { // All
+void ReplacePrompt::slotUser1(void) {// All
   done(srAll);
 }
 
-void ReplacePrompt::slotUser2( void ) { // No
+void ReplacePrompt::slotUser2(void) {// No
   done(srNo);
 }
 
-void ReplacePrompt::slotUser3( void ) { // Yes
+void ReplacePrompt::slotUser3(void) {// Yes
   accept();
 }
 
@@ -181,12 +174,12 @@ GotoLineDialog::GotoLineDialog(QWidget *parent, int line, int max)
   QWidget *page = new QWidget(this);
   setMainWidget(page);
 
-  QVBoxLayout *topLayout = new QVBoxLayout( page, 0, spacingHint() );
+  QVBoxLayout *topLayout = new QVBoxLayout(page, 0, spacingHint());
   e1 = new KIntNumInput(line, page);
   e1->setRange(1, max);
   e1->setEditFocus(true);
 
-  QLabel *label = new QLabel( e1,i18n("&Goto Line:"), page );
+  QLabel *label = new QLabel(e1, i18n("&Goto Line:"), page);
   topLayout->addWidget(label);
   topLayout->addWidget(e1);
   topLayout->addSpacing(spacingHint()); // A little bit extra space
@@ -206,14 +199,14 @@ IndentConfigTab::IndentConfigTab(QWidget *parent, KWrite *kWrite)
 
   QVBoxLayout *layout;
   int configFlags;
-  static const char *labels[numFlags] = {I18N_NOOP("&Auto Indent"),
-    I18N_NOOP("Indent With &Spaces"), I18N_NOOP("&Backspace Key Indents"),
-    I18N_NOOP("&Tab Key Indents"), I18N_NOOP("Keep Indent &Profile"),
-    I18N_NOOP("&Keep Extra Spaces")};
+  static const char *labels[numFlags] = {
+    i18nop("&Auto Indent"), i18nop("Indent With &Spaces"), 
+    i18nop("&Backspace Key Indents"), i18nop("&Tab Key Indents"), 
+    i18nop("Keep Indent &Profile"), i18nop("&Keep Extra Spaces")};
   int z;
 
-  layout = new QVBoxLayout(this, 0, KDialog::spacingHint() );
-  configFlags = kWrite->config();
+  layout = new QVBoxLayout(this, 0, KDialog::spacingHint());
+  configFlags = kWrite->configFlags();
   for (z = 0; z < numFlags; z++) {
     opt[z] = new QCheckBox(i18n(labels[z]), this);
     layout->addWidget(opt[z], 0, AlignLeft);
@@ -225,7 +218,7 @@ IndentConfigTab::IndentConfigTab(QWidget *parent, KWrite *kWrite)
 void IndentConfigTab::getData(KWrite *kWrite) {
   int configFlags, z;
 
-  configFlags = kWrite->config();
+  configFlags = kWrite->configFlags();
   for (z = 0; z < numFlags; z++) {
     configFlags &= ~flags[z];
     if (opt[z]->isChecked()) configFlags |= flags[z];
@@ -241,15 +234,14 @@ SelectConfigTab::SelectConfigTab(QWidget *parent, KWrite *kWrite)
 
   QVBoxLayout *layout;
   int configFlags;
-  static const char *labels[numFlags] = {I18N_NOOP("&Persistent Selections"),
-    I18N_NOOP("&Overwrite Selections"), I18N_NOOP("Mouse &Autocopy"),
-    I18N_NOOP("&X11-like Single Selection"), I18N_NOOP("&Vertical Selections"),
-    I18N_NOOP("&Toggle Old")};
-
+  static const char *labels[numFlags] = {
+    i18nop("&Persistent Selections"), i18nop("&Overwrite Selections"), 
+    i18nop("Mouse &Autocopy"), i18nop("&X11-like Single Selection"), 
+    i18nop("&Vertical Selections"), i18nop("&Toggle Old")};
   int z;
 
-  layout = new QVBoxLayout(this, 0, KDialog::spacingHint() );
-  configFlags = kWrite->config();
+  layout = new QVBoxLayout(this, 0, KDialog::spacingHint());
+  configFlags = kWrite->configFlags();
   for (z = 0; z < numFlags; z++) {
     opt[z] = new QCheckBox(i18n(labels[z]), this);
     layout->addWidget(opt[z], 0, AlignLeft);
@@ -261,7 +253,7 @@ SelectConfigTab::SelectConfigTab(QWidget *parent, KWrite *kWrite)
 void SelectConfigTab::getData(KWrite *kWrite) {
   int configFlags, z;
 
-  configFlags = kWrite->config();
+  configFlags = kWrite->configFlags();
   for (z = 0; z < numFlags; z++) {
     configFlags &= ~flags[z]; // clear flag
     if (opt[z]->isChecked()) configFlags |= flags[z]; // set flag if checked
@@ -270,27 +262,27 @@ void SelectConfigTab::getData(KWrite *kWrite) {
 }
 
 const int EditConfigTab::flags[] = {cfWordWrap, cfReplaceTabs, cfRemoveSpaces,
-  cfAutoBrackets, cfGroupUndo, cfShowTabs, cfSmartHome,
+  cfAutoBrackets, cfGroupUndo, /*cfShowTabs,*/ cfSmartHome,
   cfPageUDMovesCursor, cfWrapCursor};
 
 EditConfigTab::EditConfigTab(QWidget *parent, KWrite *kWrite)
   : QWidget(parent, 0L) {
 
   QHBoxLayout *mainLayout;
-  QVBoxLayout *cbLayout, *leLayout;
+  QVBoxLayout *cbLayout, *elLayout;
   int configFlags;
-  static const char *labels[numFlags] = {I18N_NOOP("&Word Wrap"),
-    I18N_NOOP("Replace &Tabs By Spaces"), I18N_NOOP("&Remove Trailing Spaces"),
-    I18N_NOOP("&Auto Brackets"), I18N_NOOP("Group &Undos"), I18N_NOOP("&Show Tabs"),
-    I18N_NOOP("Smart &Home"),
-    I18N_NOOP("&Page Up/Down Moves Cursor"), I18N_NOOP("Wrap &Cursor")};
+  static const char *labels[numFlags] = {
+    i18nop("&Word Wrap"), i18nop("Replace &Tabs By Spaces"), 
+    i18nop("&Remove Trailing Spaces"), i18nop("&Auto Brackets"), 
+    i18nop("Group &Undos"), /*i18nop("&Show Tabs"),*/ i18nop("Smart &Home"), 
+    i18nop("&Page Up/Down Moves Cursor"), i18nop("Wrap &Cursor")};
   int z;
 
-  mainLayout = new QHBoxLayout(this, 0, KDialog::spacingHint() );
+  mainLayout = new QHBoxLayout(this, 0, KDialog::spacingHint());
 
   // checkboxes
-  cbLayout = new QVBoxLayout( mainLayout );
-  configFlags = kWrite->config();
+  cbLayout = new QVBoxLayout(mainLayout);
+  configFlags = kWrite->configFlags();
   for (z = 0; z < numFlags; z++) {
     opt[z] = new QCheckBox(i18n(labels[z]), this);
     cbLayout->addWidget(opt[z], 0, AlignLeft);
@@ -299,8 +291,8 @@ EditConfigTab::EditConfigTab(QWidget *parent, KWrite *kWrite)
   cbLayout->addStretch();
 
   // edit lines
-  leLayout = new QVBoxLayout();
-  mainLayout->addLayout(leLayout,10);
+  elLayout = new QVBoxLayout();
+  mainLayout->addLayout(elLayout, 10);
 
   e1 = new KIntNumInput(kWrite->wordWrapAt(), this);
   e1->setRange(20, 200, 1, false);
@@ -314,16 +306,16 @@ EditConfigTab::EditConfigTab(QWidget *parent, KWrite *kWrite)
   e3->setRange(5, 30000, 1, false);
   e3->setLabel(i18n("Undo steps:"));
 
-  leLayout->addWidget(e1, 0, AlignLeft);
-  leLayout->addWidget(e2, 0, AlignLeft);
-  leLayout->addWidget(e3, 0, AlignLeft);
-  leLayout->addStretch();
+  elLayout->addWidget(e1, 0, AlignLeft);
+  elLayout->addWidget(e2, 0, AlignLeft);
+  elLayout->addWidget(e3, 0, AlignLeft);
+  elLayout->addStretch();
 }
 
 void EditConfigTab::getData(KWrite *kWrite) {
   int configFlags, z;
 
-  configFlags = kWrite->config();
+  configFlags = kWrite->configFlags();
   for (z = 0; z < numFlags; z++) {
     configFlags &= ~flags[z];
     if (opt[z]->isChecked()) configFlags |= flags[z];
@@ -335,32 +327,83 @@ void EditConfigTab::getData(KWrite *kWrite) {
   kWrite->setUndoSteps(e3->value());
 }
 
+
+const int ViewConfigTab::flags[] = {cfShowTabs, cfBorder};
+
+ViewConfigTab::ViewConfigTab(QWidget *parent, KWrite *kWrite)
+  : QWidget(parent, 0L) {
+
+  QHBoxLayout *mainLayout;
+  QVBoxLayout *cbLayout, *elLayout;
+  int configFlags;
+  static const char *labels[numFlags] = {
+    i18nop("&Show Tabs"), i18nop("&Border")};
+  int z;
+
+  mainLayout = new QHBoxLayout(this, 0, KDialog::spacingHint());
+
+  // checkboxes
+  cbLayout = new QVBoxLayout(mainLayout);
+  configFlags = kWrite->configFlags();
+  for (z = 0; z < numFlags; z++) {
+    opt[z] = new QCheckBox(i18n(labels[z]), this);
+    cbLayout->addWidget(opt[z], 0, AlignLeft);
+    opt[z]->setChecked(configFlags & flags[z]);
+  }
+  cbLayout->addStretch();
+
+  // edit lines
+  elLayout = new QVBoxLayout();
+  mainLayout->addLayout(elLayout, 10);
+
+  e1 = new KIntNumInput(kWrite->numbersDigits(), this);
+  e1->setRange(0, 6, 1, false);
+  e1->setLabel(i18n("Line Number Digits:"));
+
+  elLayout->addWidget(e1, 0, AlignLeft);
+  elLayout->addStretch();
+}
+
+void ViewConfigTab::getData(KWrite *kWrite) {
+  int configFlags, z;
+
+  configFlags = kWrite->configFlags();
+  for (z = 0; z < numFlags; z++) {
+    configFlags &= ~flags[z];
+    if (opt[z]->isChecked()) configFlags |= flags[z];
+  }
+  kWrite->setConfig(configFlags);
+
+  kWrite->setNumbersDigits(e1->value());
+}
+
+
 /*
 SettingsDialog::SettingsDialog(int flags, int wrapAt, int tabWidth, int undoSteps,
   QWidget *parent, const char *name)
-  : QDialog(parent,name,true) {
+  : QDialog(parent, name, true) {
 
   QLabel *label1;
   QLabel *label2;
   QLabel *label3;
   QPushButton *button1, *button2;
 
-  QGroupBox *g1 = new QGroupBox(i18n("Edit Options"),this);
-  opt1 = new QCheckBox(i18n("Auto &Indent"),g1);
+  QGroupBox *g1 = new QGroupBox(i18n("Edit Options"), this);
+  opt1 = new QCheckBox(i18n("Auto &Indent"), g1);
 //  opt1->setFixedSize(opt1->sizeHint());
-  opt2 = new QCheckBox(i18n("&Backspace Indent"),g1);
+  opt2 = new QCheckBox(i18n("&Backspace Indent"), g1);
 //  opt2->setFixedSize(opt2->sizeHint());
-  opt3 = new QCheckBox(i18n("&Word Wrap"),g1);
+  opt3 = new QCheckBox(i18n("&Word Wrap"), g1);
 //  opt3->setFixedSize(opt3->sizeHint());
-  opt4 = new QCheckBox(i18n("Replace &Tabs"),g1);
+  opt4 = new QCheckBox(i18n("Replace &Tabs"), g1);
 //  opt4->setFixedSize(opt4->sizeHint());
-  opt5 = new QCheckBox(i18n("Remove Trailing &Spaces"),g1);
+  opt5 = new QCheckBox(i18n("Remove Trailing &Spaces"), g1);
 //  opt5->setFixedSize(opt5->sizeHint());
-  opt6 = new QCheckBox(i18n("Wrap &Cursor"),g1);
+  opt6 = new QCheckBox(i18n("Wrap &Cursor"), g1);
 //  opt6->setFixedSize(opt6->sizeHint());
-  opt7 = new QCheckBox(i18n("&Auto Brackets"),g1);
+  opt7 = new QCheckBox(i18n("&Auto Brackets"), g1);
 //  opt7->setFixedSize(opt7->sizeHint());
-  opt13 = new QCheckBox(i18n("Group &Undos"),g1);
+  opt13 = new QCheckBox(i18n("Group &Undos"), g1);
 //  opt13->setFixedSize(opt13->sizeHint());
 
   g1->setMinimumHeight(8+8+8+7*4+8*(opt1->sizeHint().height()));
@@ -374,17 +417,17 @@ SettingsDialog::SettingsDialog(int flags, int wrapAt, int tabWidth, int undoStep
   opt7->setChecked(flags & cfAutoBrackets);
   opt13->setChecked(flags & cfGroupUndo);
 
-  QGroupBox *g2 = new QGroupBox(i18n("Select Options"),this);
-  opt8 = new QCheckBox(i18n("&Persistent Selections"),g2);
-  opt8->setFixedSize( opt8->sizeHint() );
-  opt9 = new QCheckBox(i18n("&Multiple Selections"),g2);
-  opt9->setFixedSize( opt9->sizeHint() );
-  opt10 = new QCheckBox(i18n("&Vertical Selections"),g2);
-  opt10->setFixedSize( opt10->sizeHint() );
-  opt11 = new QCheckBox(i18n("&Delete On Input"),g2);
-  opt11->setFixedSize( opt11->sizeHint() );
-  opt12 = new QCheckBox(i18n("&Toggle Old"),g2);
-  opt12->setFixedSize( opt12->sizeHint() );
+  QGroupBox *g2 = new QGroupBox(i18n("Select Options"), this);
+  opt8 = new QCheckBox(i18n("&Persistent Selections"), g2);
+  opt8->setFixedSize(opt8->sizeHint());
+  opt9 = new QCheckBox(i18n("&Multiple Selections"), g2);
+  opt9->setFixedSize(opt9->sizeHint());
+  opt10 = new QCheckBox(i18n("&Vertical Selections"), g2);
+  opt10->setFixedSize(opt10->sizeHint());
+  opt11 = new QCheckBox(i18n("&Delete On Input"), g2);
+  opt11->setFixedSize(opt11->sizeHint());
+  opt12 = new QCheckBox(i18n("&Toggle Old"), g2);
+  opt12->setFixedSize(opt12->sizeHint());
 
   g2->setMinimumHeight(8+8+8+4*4+5*(opt8->sizeHint().height()));
 
@@ -396,89 +439,89 @@ SettingsDialog::SettingsDialog(int flags, int wrapAt, int tabWidth, int undoStep
 
 
   e1 = new KIntLineEdit(wrapAt, this, 20, 200);
-  label1 = new QLabel(e1,i18n("Wrap Words At:"),this);
+  label1 = new QLabel(e1, i18n("Wrap Words At:"), this);
   int max = label1->sizeHint().width();
 
   e2 = new KIntLineEdit(tabWidth, this, 1, 16);
-  label2 = new QLabel(e2,i18n("Tab Width:"),this);
+  label2 = new QLabel(e2, i18n("Tab Width:"), this);
   if (label2->sizeHint().width()>max)
     max = label2->sizeHint().width();
 
   e3 = new KIntLineEdit(undoSteps, this, 5, 30000);
-  label3 = new QLabel(e3,i18n("Undo steps:"),this);
+  label3 = new QLabel(e3, i18n("Undo steps:"), this);
   if (label3->sizeHint().width()>max)
     max = label3->sizeHint().width();
 
-  label1->setFixedSize( max, label1->sizeHint().height() );
-  label2->setFixedSize( max, label2->sizeHint().height() );
-  label3->setFixedSize( max, label3->sizeHint().height() );
+  label1->setFixedSize(max, label1->sizeHint().height());
+  label2->setFixedSize(max, label2->sizeHint().height());
+  label3->setFixedSize(max, label3->sizeHint().height());
 
-  e1->setFixedSize( max, e1->sizeHint().height() );
-  e2->setFixedSize( max, e2->sizeHint().height() );
-  e3->setFixedSize( max, e3->sizeHint().height() );
+  e1->setFixedSize(max, e1->sizeHint().height());
+  e2->setFixedSize(max, e2->sizeHint().height());
+  e3->setFixedSize(max, e3->sizeHint().height());
 
-  button1 = new QPushButton(i18n("&OK"),this);
+  button1 = new QPushButton(i18n("&OK"), this);
   button1->setFixedSize(button1->sizeHint());
   button1->setDefault(true);
-  connect(button1,SIGNAL(clicked()),this,SLOT(accept()));
+  connect(button1, SIGNAL(clicked()), this, SLOT(accept()));
 
-  button2 = new QPushButton(i18n("Cancel"),this);
+  button2 = new QPushButton(i18n("Cancel"), this);
   button2->setFixedSize(button2->sizeHint());
-  connect(button2,SIGNAL(clicked()),this,SLOT(reject()));
+  connect(button2, SIGNAL(clicked()), this, SLOT(reject()));
 
 
   QVBoxLayout *mainLayout = new QVBoxLayout(this, 8, 4);
 
   QHBoxLayout *vbl6 = new QHBoxLayout();
-  mainLayout->addLayout( vbl6 );
+  mainLayout->addLayout(vbl6);
 
   QVBoxLayout *vbl3 = new QVBoxLayout();
-  vbl6->addLayout( vbl3 );
+  vbl6->addLayout(vbl3);
 
-  vbl3->addWidget( g1 );
+  vbl3->addWidget(g1);
 
   QVBoxLayout *vbl1 = new QVBoxLayout(g1, 8, 4);
   vbl1->addSpacing(8);
-  vbl1->addWidget( opt1,0,AlignLeft );
-  vbl1->addWidget( opt2,0,AlignLeft );
-  vbl1->addWidget( opt3,0,AlignLeft );
-  vbl1->addWidget( opt4,0,AlignLeft );
-  vbl1->addWidget( opt5,0,AlignLeft );
-  vbl1->addWidget( opt6,0,AlignLeft );
-  vbl1->addWidget( opt7,0,AlignLeft );
-  vbl1->addWidget( opt13,0,AlignLeft );
+  vbl1->addWidget(opt1, 0, AlignLeft);
+  vbl1->addWidget(opt2, 0, AlignLeft);
+  vbl1->addWidget(opt3, 0, AlignLeft);
+  vbl1->addWidget(opt4, 0, AlignLeft);
+  vbl1->addWidget(opt5, 0, AlignLeft);
+  vbl1->addWidget(opt6, 0, AlignLeft);
+  vbl1->addWidget(opt7, 0, AlignLeft);
+  vbl1->addWidget(opt13, 0, AlignLeft);
 
-  vbl3->addSpacing( 10 );
-  vbl3->addWidget( g2 );
+  vbl3->addSpacing(10);
+  vbl3->addWidget(g2);
 
   QVBoxLayout *vbl2 = new QVBoxLayout(g2, 8, 4);
   vbl2->addSpacing(8);
-  vbl2->addWidget( opt8,0,AlignLeft );
-  vbl2->addWidget( opt9,0,AlignLeft );
-  vbl2->addWidget( opt10,0,AlignLeft );
-  vbl2->addWidget( opt11,0,AlignLeft );
-  vbl2->addWidget( opt12,0,AlignLeft );
+  vbl2->addWidget(opt8, 0, AlignLeft);
+  vbl2->addWidget(opt9, 0, AlignLeft);
+  vbl2->addWidget(opt10, 0, AlignLeft);
+  vbl2->addWidget(opt11, 0, AlignLeft);
+  vbl2->addWidget(opt12, 0, AlignLeft);
 
-  vbl6->addSpacing( 10 );
+  vbl6->addSpacing(10);
 
   QVBoxLayout *vbl5 = new QVBoxLayout();
-  vbl6->addLayout( vbl5 );
+  vbl6->addLayout(vbl5);
 
-  vbl5->addWidget( label1,0,AlignLeft );
-  vbl5->addWidget( e1,0,AlignLeft );
-  vbl5->addSpacing( 20 );
-  vbl5->addWidget( label2,0,AlignLeft );
-  vbl5->addWidget( e2,0,AlignLeft );
-  vbl5->addSpacing( 20 );
-  vbl5->addWidget( label3,0,AlignLeft );
-  vbl5->addWidget( e3,0,AlignLeft );
+  vbl5->addWidget(label1, 0, AlignLeft);
+  vbl5->addWidget(e1, 0, AlignLeft);
+  vbl5->addSpacing(20);
+  vbl5->addWidget(label2, 0, AlignLeft);
+  vbl5->addWidget(e2, 0, AlignLeft);
+  vbl5->addSpacing(20);
+  vbl5->addWidget(label3, 0, AlignLeft);
+  vbl5->addWidget(e3, 0, AlignLeft);
 
-  mainLayout->addSpacing( 10 );
-  mainLayout->addStretch( 1 );
+  mainLayout->addSpacing(10);
+  mainLayout->addStretch(1);
 
   QHBoxLayout *vbl4 = new QHBoxLayout();
-  mainLayout->addLayout( vbl4 );
-  vbl4->addStretch( 1 );
+  mainLayout->addLayout(vbl4);
+  vbl4->addStretch(1);
   vbl4->addWidget(button1);
   vbl4->addWidget(button2);
 
@@ -519,50 +562,46 @@ int SettingsDialog::getUndoSteps() {
 }
 */
 
-ColorConfig::ColorConfig( QWidget *parent, char *name )
-  : QGrid( 2, QGrid::Horizontal, parent, name )
-{
+ColorConfig::ColorConfig(QWidget *parent, char *name)
+  : QGrid(2, QGrid::Horizontal, parent, name) {
   setMargin(0);
-  setSpacing( KDialog::spacingHint() );
+  setSpacing(KDialog::spacingHint());
 
   QLabel *label;
 
-  label = new QLabel( i18n("Background:"), this);
-  label->setAlignment( AlignRight|AlignVCenter );
-  m_back = new KColorButton( this );
+  label = new QLabel(i18n("Background:"), this);
+  label->setAlignment(AlignRight|AlignVCenter);
+  m_back = new KColorButton(this);
 
-  label = new QLabel( i18n("Text Background:"), this);
-  label->setAlignment( AlignRight|AlignVCenter );
-  m_textBack = new KColorButton( this );
+  label = new QLabel(i18n("Text Background:"), this);
+  label->setAlignment(AlignRight|AlignVCenter);
+  m_textBack = new KColorButton(this);
 
-  label = new QLabel( i18n("Selected:"), this);
-  label->setAlignment( AlignRight|AlignVCenter );
-  m_selected = new KColorButton( this );
+  label = new QLabel(i18n("Selected:"), this);
+  label->setAlignment(AlignRight|AlignVCenter);
+  m_selected = new KColorButton(this);
 
-  label = new QLabel( i18n("Found:"), this);
-  label->setAlignment( AlignRight|AlignVCenter );
-  m_found = new KColorButton( this );
+  label = new QLabel(i18n("Found:"), this);
+  label->setAlignment(AlignRight|AlignVCenter);
+  m_found = new KColorButton(this);
 
-  label = new QLabel( i18n("Selected + Found:"), this);
-  label->setAlignment( AlignRight|AlignVCenter );
-  m_found = new KColorButton( this );
+  label = new QLabel(i18n("Selected + Found:"), this);
+  label->setAlignment(AlignRight|AlignVCenter);
+  m_found = new KColorButton(this);
 }
 
-ColorConfig::~ColorConfig()
-{
+ColorConfig::~ColorConfig() {
 }
 
-void ColorConfig::setColors(QColor *colors)
-{
-  m_textBack->setColor( colors[0] );
-  m_selected->setColor( colors[1] );
-  m_found->setColor( colors[2] );
-  m_selFound->setColor( colors[3] );
-  m_back->setColor( colors[4] );
+void ColorConfig::setColors(QColor *colors) {
+  m_textBack->setColor(colors[0]);
+  m_selected->setColor(colors[1]);
+  m_found->setColor(colors[2]);
+  m_selFound->setColor(colors[3]);
+  m_back->setColor(colors[4]);
 }
 
-void ColorConfig::getColors(QColor *colors)
-{
+void ColorConfig::getColors(QColor *colors) {
   colors[4] = m_back->color();
   colors[0] = m_textBack->color();
   colors[1] = m_selected->color();
@@ -570,15 +609,13 @@ void ColorConfig::getColors(QColor *colors)
   colors[3] = m_selFound->color();
 }
 
-ColorDialog::ColorDialog( QWidget *parent, QColor *colors )
-  : KDialogBase(parent, 0L, true, i18n("Color Settings"), Ok|Cancel, Ok, true)
-{
-  m_colors = new ColorConfig( this );		
-  m_colors->setColors( colors );
-  setMainWidget( m_colors );
+ColorDialog::ColorDialog(QWidget *parent, QColor *colors)
+  : KDialogBase(parent, 0L, true, i18n("Color Settings"), Ok|Cancel, Ok, true) {
+  m_colors = new ColorConfig(this);
+  m_colors->setColors(colors);
+  setMainWidget(m_colors);
 }
 
-void ColorDialog::getColors(QColor *colors)
-{
-  m_colors->getColors( colors );
+void ColorDialog::getColors(QColor *colors) {
+  m_colors->getColors(colors);
 }

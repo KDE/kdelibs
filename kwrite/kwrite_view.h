@@ -42,7 +42,6 @@
 
 class KWriteDoc;
 class KWriteWidget;
-class KWriteBorder;
 class KTextPrint;
 class KSpell;
 class KSpellConfig;
@@ -52,13 +51,14 @@ void resizeBuffer(void *user, int w, int h);
 class KWriteBorder : public QWidget {
     Q_OBJECT
   public:
-    KWriteBorder(KWriteDoc *, KWriteWidget *, KWriteView *);
+    KWriteBorder(KWrite *, KWriteView *, KWriteDoc *);
 
   protected:
     virtual void paintEvent(QPaintEvent *);
 
-    KWriteDoc *m_doc;
+    KWrite *m_kWrite;
     KWriteView *m_view;
+    KWriteDoc *m_doc;
     
 };
 
@@ -76,16 +76,16 @@ struct BracketMark {
 class KWriteView : public QWidget {
     Q_OBJECT
 
-    friend KWriteDoc;
-    friend KWriteWidget;
     friend KWrite;
+    friend KWriteWidget;
+    friend KWriteDoc;
 
   public:
 
     // a drop-aware container should set HandleOwnURIDrops = false and handle all URI drops
     // KWriteView will otherwise handle URI drops, but is slightly limited
     // KWriteView always handles text drops
-    KWriteView(KWriteDoc *, KWriteWidget *, KWrite *, bool HandleOwnURIDrops);
+    KWriteView(KWrite *, KWriteWidget *, KWriteDoc *, bool HandleOwnURIDrops);
     ~KWriteView();
 
     int contentsX() const {return xPos;}
@@ -168,12 +168,15 @@ class KWriteView : public QWidget {
 //  virtual void dragLeaveEvent(QDragLeaveEvent *);
     virtual void dropEvent(QDropEvent *);
 
+
+    void setBorderWidth(int width); // 0 for no border
   protected:
 
     KWriteDoc *m_doc;
     KWriteWidget *m_widget;
     KWrite *m_kWrite;
     KWriteBorder *m_border;
+    int m_borderWidth;
 
     QScrollBar *xScroll;
     QScrollBar *yScroll;

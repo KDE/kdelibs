@@ -9,6 +9,7 @@ class KWrite;
 class IndentConfigTab;
 class SelectConfigTab;
 class EditConfigTab;
+class ViewConfigTab;
 class ColorConfig;
 class KSpellConfig;
 
@@ -38,6 +39,7 @@ protected:
   IndentConfigTab *m_indentConfig;
   SelectConfigTab *m_selectConfig;
   EditConfigTab   *m_editConfig;
+  ViewConfigTab   *m_viewConfig;
   ColorConfig     *m_colorConfig;
   KWKeyData        m_keyData;
   KWKeyConfigTab  *m_keyConfig;

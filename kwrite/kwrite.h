@@ -94,10 +94,13 @@ enum KWConfigFlags {
   cfRemoveSpaces      = 0x40000,
   cfAutoBrackets      = 0x80000,
   cfGroupUndo         = 0x100000,
-  cfShowTabs          = 0x200000,
-  cfSmartHome         = 0x400000,
-  cfPageUDMovesCursor = 0x800000,
-  cfWrapCursor        = 0x1000000,
+  cfSmartHome         = 0x200000,
+  cfPageUDMovesCursor = 0x400000,
+  cfWrapCursor        = 0x800000,
+
+  // view
+  cfShowTabs          = 0x1000000,
+  cfBorder            = 0x2000000,
 
   // other
   cfKeepSelection     = 0x10000000,
@@ -341,7 +344,7 @@ class KWrite : public KParts::ReadWritePart /*QWidget*/ {
     /**
       Returns the config flags. See the cfXXX constants in the .h file.
     */
-    int config();
+    int configFlags();
 
 
     void setWordWrapAt(int wrapAt) {m_wrapAt = wrapAt;}
@@ -350,6 +353,10 @@ class KWrite : public KParts::ReadWritePart /*QWidget*/ {
     int tabWidth();
     void setUndoSteps(int);
     int undoSteps();
+
+    int numbersX() {return m_numbersX;}
+    void setNumbersDigits(int);
+    int numbersDigits() {return m_numbersDigits;}
 
     void setColors(QColor *colors);
     void getColors(QColor *colors);
@@ -499,7 +506,9 @@ class KWrite : public KParts::ReadWritePart /*QWidget*/ {
 
     int m_configFlags;
     int m_wrapAt;
-
+    int m_numbersX;
+    int m_numbersDigits;
+    
     /*
      * The source, the destination of the copy, and the flags
      * for each job being run(job id is the dict key).
@@ -673,6 +682,8 @@ class KWrite : public KParts::ReadWritePart /*QWidget*/ {
 //    fileResult saveAs();
 
 
+  protected:
+
     /**
       open file for KParts
     */
@@ -683,12 +694,23 @@ class KWrite : public KParts::ReadWritePart /*QWidget*/ {
     */
     virtual bool saveFile();
 
-  protected:
+    
 //    KFM *kfm;
 //    QString kfmURL;
 //    QString kfmFile;
 //    fileAction kfmAction;
 //    int kfmFlags;
+
+//printing
+
+  public slots:
+    /**
+      Shows a dialog for printing and prints if OK was pressed
+    */
+    void printDoc();
+
+  protected slots:
+    void doPrint(KTextPrint &);
 
 
 //command processors

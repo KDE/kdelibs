@@ -61,8 +61,6 @@
 #define _PATH_TMP "/tmp/"
 #endif
 
-#define BORDER_WIDTH 32
-
 #ifndef KDE_USE_FINAL
 struct BufferInfo {
   void *user;
@@ -74,21 +72,24 @@ struct BufferInfo {
 extern QPixmap *getBuffer(void *user);
 extern void releaseBuffer(void *user);
 
-KWriteView::KWriteView(KWriteDoc *doc, KWriteWidget *parent, KWrite *kWrite,
+KWriteView::KWriteView(KWrite *kWrite, KWriteWidget *parent, KWriteDoc *doc,
   bool HandleOwnDND) : QWidget(parent, "KWriteView") {
 
-  m_doc = doc;
-  m_widget = parent;
   m_kWrite = kWrite;
+  m_widget = parent;
+  m_doc = doc;
 
   QWidget::setCursor(ibeamCursor);
   setBackgroundMode(NoBackground);
 
   setFocusPolicy(StrongFocus);
-  move(2 + BORDER_WIDTH, 2);
 
-  m_border = new KWriteBorder(m_doc, m_widget, this);
-  m_border->setGeometry(2, 2, BORDER_WIDTH, 100);
+  m_borderWidth = 0;
+//  move(2 + m_borderWidth, 2);
+  move(2, 2);
+
+  m_border = 0L;//new KWriteBorder(m_kWrite, this, m_doc);
+//  m_border->setGeometry(2, 2, m_borderWidth, 100);
 
   xScroll = new QScrollBar(QScrollBar::Horizontal, parent);
   yScroll = new QScrollBar(QScrollBar::Vertical, parent);
@@ -483,10 +484,13 @@ void KWriteView::changeXPos(int p) {
   int dx = xPos - p;
   xPos = p;
 
-  if (QABS(dx) < width())
+  if (QABS(dx) < width()) {
     scroll(dx, 0); 
-  else
+    if (m_border != 0L) m_border->scroll(dx, 0);
+  } else {
     update();
+    if (m_border != 0L) m_border->update();
+  }  
 }
 
 void KWriteView::changeYPos(int p) {
@@ -494,10 +498,13 @@ void KWriteView::changeYPos(int p) {
   yPos = p;
   clearDirtyCache(height());
 
-  if (QABS(dy) < height())
+  if (QABS(dy) < height()) {
     scroll(0, dy); 
-  else
+    if (m_border != 0L) m_border->scroll(0, dy);
+  } else {
     update();
+    if (m_border != 0L) m_border->update();
+  }  
 }
 
 void KWriteView::getVConfig(VConfig &c) {
@@ -609,7 +616,7 @@ void KWriteView::updateCursor() {
 }
 
 void KWriteView::updateCursor(KWCursor &newCursor) {
-  updateCursor(newCursor, m_kWrite->config());
+  updateCursor(newCursor, m_kWrite->configFlags());
 }
 
 void KWriteView::updateCursor(KWCursor &newCursor, int flags) {
@@ -645,13 +652,15 @@ void KWriteView::clearDirtyCache(int height) {
   updateState = 0;
   lines = endLine - startLine +1;
 
-  if (lines > numLines) {// resize the dirty cache
+  // resize the dirty cache
+  if (lines > numLines) { 
     numLines = lines*2;
-    delete [] lineRanges;
+    delete[] lineRanges;
     lineRanges = new LineRange[numLines];
   }
 
-  for (z = 0; z < lines; z++) {// clear all lines
+  // clear all lines
+  for (z = 0; z < lines; z++) { 
     lineRanges[z].start = 0xffffff;
     lineRanges[z].end = -2;
   }
@@ -754,7 +763,7 @@ void KWriteView::updateView(int flags) {
   z = 0;
 
   do {
-    w = m_widget->width() - (4 + BORDER_WIDTH);
+    w = m_widget->width() - (4 + m_borderWidth);
     h = m_widget->height() - 4;
 
     xMax = m_doc->textWidth() - w;
@@ -818,7 +827,7 @@ void KWriteView::updateView(int flags) {
       pageScroll = fontHeight;
 
     xScroll->blockSignals(true);
-    xScroll->setGeometry(2, h + 2, w + BORDER_WIDTH, 16);
+    xScroll->setGeometry(2, h + 2, w + m_borderWidth, 16);
     xScroll->setRange(0, xMax);
     xScroll->setValue(xPos);
     xScroll->setSteps(fontHeight, pageScroll);
@@ -834,7 +843,7 @@ void KWriteView::updateView(int flags) {
       pageScroll = fontHeight;
 
     yScroll->blockSignals(true);
-    yScroll->setGeometry(w + 2 + BORDER_WIDTH, 2, 16, h);
+    yScroll->setGeometry(w + 2 + m_borderWidth, 2, 16, h);
     yScroll->setRange(0, yMax);
     yScroll->setValue(yPos);
     yScroll->setSteps(fontHeight, pageScroll);
@@ -876,22 +885,24 @@ void KWriteView::updateView(int flags) {
 
 
   // adjust and update the icon border
-  if (h != m_border->height()) {
-    m_border->resize(m_border->width(), h);
-  } else {
-    dy = oldYPos - yPos;
-    b = false;
-    
-    if (flags & ufUpdateOnScroll)
-      b |= dy; 
-    else
-      b |= QABS(dy)*3 > h*2;
-
-    if (b) {
-      m_border->update();
+  if (m_border != 0L) {
+    if (m_borderWidth != m_border->width() || h != m_border->height()) {
+      m_border->resize(m_borderWidth, h);
     } else {
-      if (dy) m_border->scroll(0, dy);
-    }
+      dy = oldYPos - yPos;
+      b = false;
+    
+      if (flags & ufUpdateOnScroll)
+        b |= dy; 
+      else
+        b |= QABS(dy)*3 > h*2;
+
+      if (b) {
+        m_border->update();
+      } else {
+        if (dy) m_border->scroll(0, dy);
+      }
+    }  
   }    
 
 
@@ -899,8 +910,7 @@ void KWriteView::updateView(int flags) {
 }
 
 void KWriteView::paintTextLines(int xPos, int yPos) {
-//  int xStart, xEnd;
-  int line;//, z;
+  int line;
   int h;
   LineRange *r;
 
@@ -912,21 +922,13 @@ void KWriteView::paintTextLines(int xPos, int yPos) {
   for (line = startLine; line <= endLine; line++) {
     if (r->start < r->end) {
 //debug("painttextline %d %d %d", line, r->start, r->end);
-      m_doc->paintTextLine(paint, line, r->start, r->end, m_kWrite->m_configFlags & cfShowTabs);
+      m_doc->paintTextLine(paint, line, r->start, r->end, 
+        m_kWrite->m_configFlags & cfShowTabs);
       bitBlt(this, r->start - (xPos-2), line*h - yPos, drawBuffer, 0, 0,
         r->end - r->start, h);
     }
     r++;
   }
-/*
-  xStart = xPos-2;
-  xEnd = xStart + width();
-  h = m_doc->fontHeight();
-  for (z = 0; z < updateState; z++) {
-    line = updateLines[z];
-    m_doc->paintTextLine(paint, line, xStart, xEnd);
-    bitBlt(this, 0, line*h - yPos, drawBuffer, 0, 0, width(), h);
-  }*/
   paint.end();
 }
 
@@ -946,7 +948,8 @@ void KWriteView::paintCursor() {
     paint.drawLine(x - 2, h, x + 2, h);
   } else {
     paint.begin(drawBuffer);
-    m_doc->paintTextLine(paint, cursor.y(), cXPos - 2, cXPos + 3, m_kWrite->m_configFlags & cfShowTabs);
+    m_doc->paintTextLine(paint, cursor.y(), cXPos - 2, cXPos + 3, 
+      m_kWrite->m_configFlags & cfShowTabs);
     bitBlt(this, x - 2, y, drawBuffer, 0, 0, 5, h);
   }
 
@@ -1201,7 +1204,7 @@ void KWriteView::mouseReleaseEvent(QMouseEvent *event) {
       placeCursor(event->x(), event->y(), 0);
       m_doc->updateViews();
     } else if (dragInfo.state == diNone) {
-      if (m_kWrite->config() & cfMouseAutoCopy)
+      if (m_kWrite->configFlags() & cfMouseAutoCopy)
         m_kWrite->copy();
 
       killTimer(scrollTimer);
@@ -1319,7 +1322,8 @@ void KWriteView::paintEvent(QPaintEvent *event) {
   yEnd = updateR.y() + updateR.height();
 
   while (y < yEnd) {
-    m_doc->paintTextLine(paint, line, xStart, xEnd, m_kWrite->m_configFlags);
+    m_doc->paintTextLine(paint, line, xStart, xEnd, 
+      m_kWrite->m_configFlags & cfShowTabs);
     bitBlt(this, updateR.x(), y, drawBuffer, 0, 0, updateR.width(), h);
     line++;
     y += h;
@@ -1467,15 +1471,34 @@ void KWriteView::dropEvent(QDropEvent *event) {
   }
 }
 
+void KWriteView::setBorderWidth(int width) {
+
+  if (width == m_borderWidth) return;
+  if (width <= 0) {
+    m_borderWidth = 0;
+    delete m_border;
+    m_border = 0L;
+  } else {
+    m_borderWidth = width;
+    if (m_border == 0L) {
+      m_border = new KWriteBorder(m_kWrite, this, m_doc);
+      m_border->setGeometry(2, 2, width, height());
+      m_border->show();
+    }  
+  }
+  move(2 + m_borderWidth, 2);
+  updateView(ufDocGeometry);
+}
 
 
 // KWriteBorder
 
-KWriteBorder::KWriteBorder(KWriteDoc *doc, KWriteWidget *widget, KWriteView *view) 
-  : QWidget(widget) {
+KWriteBorder::KWriteBorder(KWrite *kWrite, KWriteView *view, KWriteDoc *doc) 
+  : QWidget(kWrite->widget()) {
 
-  m_doc = doc;
+  m_kWrite = kWrite;
   m_view = view;
+  m_doc = doc;
 
   setBackgroundMode(PaletteMid);
 }
@@ -1485,14 +1508,14 @@ void KWriteBorder::paintEvent(QPaintEvent *event) {
 
   QRect updateR = event->rect();
 
-  //debug("update rect  = (%i, %i, %i, %i)", updateR.x(), updateR.y(), updateR.width(), updateR.height());
+//  printf("Border update rect = (%i, %i, %i, %i)\n", updateR.x(), updateR.y(), updateR.width(), updateR.height());
 
   QPainter paint(this);
 
   line = (m_view->contentsY() + updateR.y()) / m_doc->fontHeight();
   yStart = line*m_doc->fontHeight() - m_view->contentsY();
 
-  m_doc->paintBorder(paint, line, yStart, updateR.y() + updateR.height());
+  m_doc->paintBorder(m_kWrite, paint, line, yStart, updateR.y() + updateR.height());
 }
 
 

@@ -2116,34 +2116,59 @@ void KWriteDoc::printTextLine(QPainter &paint, int line, int xEnd, int y) {
 }
 */
 
-void KWriteDoc::paintBorder(QPainter &paint, int line, int yStart, int yEnd) {
+void KWriteDoc::paintBorder(KWrite *kWrite, QPainter &paint, int line, 
+  int yStart, int yEnd) {
+
   KWLineAttribute *current;
   int y;
-  Attribute *a;
   
   current = m_lineAttribs.first();
   
+  // attribs are ordered by line number, find the first attribute to paint
   while (current != 0L) {
     if (current->line() >= line) break;
     current = m_lineAttribs.next(current);
   }
 
+  // paint attributes
   while (current != 0L) {
     y = yStart + (current->line() - line)*fontHeight();
     if (y > yEnd) break;
-    current->paint(paint, y, fontHeight());
+
+    // paint all doc-attribs (m_kWrite == 0L), but only the correct view-attribs
+    if (current->m_kWrite == 0L || current->m_kWrite == kWrite)
+      current->paint(paint, y, fontHeight());
     current = m_lineAttribs.next(current);
   }
 
   // paint line numbers;
-  y = yStart;
-  a = &m_attribs[0];
-  paint.setFont(a->font);
-  paint.setPen(a->col);  
-  while (y < yEnd) {
-    paint.drawText(10, y + m_fontAscent - 1, QString::number(line + 1));
-    y += fontHeight();
-    line++;
+  if (kWrite->numbersDigits() > 0) {
+    Attribute *a;
+    QString numberString;
+    int number, z;
+
+    a = &m_attribs[0];
+    paint.setFont(a->font);
+    paint.setPen(a->col);  
+
+    numberString.fill(' ', kWrite->numbersDigits());
+
+    y = yStart;
+    while (y < yEnd) {
+      line++;
+
+      // do number to string by hand to make it fast (no heap-operations)
+      number = line;
+      z = kWrite->numbersDigits();
+      do {      
+        z--;
+        numberString[z] = '0' + number % 10;
+	number /= 10;
+      } while (number > 0 && z > 0);
+
+      paint.drawText(kWrite->numbersX(), y + m_fontAscent - 1, numberString);
+      y += fontHeight();
+    }      
   }
 }
 

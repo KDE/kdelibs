@@ -16,13 +16,12 @@ class KIntNumInput;
 
 #include <kwrite/kwrite_view.h>
 
-class SearchDialog : public KDialogBase
-{
+class SearchDialog : public KDialogBase {
     Q_OBJECT
 
   public:
 
-    SearchDialog( QWidget *parent, QStringList &searchFor, QStringList &replaceWith, int flags );
+    SearchDialog(QWidget *parent, QStringList &searchFor, QStringList &replaceWith, int flags);
     QString getSearchFor();
     QString getReplaceWith();
     int getFlags();
@@ -43,8 +42,7 @@ class SearchDialog : public KDialogBase
     QCheckBox *m_opt6;
 };
 
-class ReplacePrompt : public KDialogBase
-{
+class ReplacePrompt : public KDialogBase {
     Q_OBJECT
 
   public:
@@ -57,9 +55,9 @@ class ReplacePrompt : public KDialogBase
 
   protected slots:
 
-    void slotUser1( void ); // All
-    void slotUser2( void ); // No
-    void slotUser3( void ); // Yes
+    void slotUser1(void); // All
+    void slotUser2(void); // No
+    void slotUser3(void); // Yes
     virtual void done(int);
 
   protected:
@@ -67,8 +65,7 @@ class ReplacePrompt : public KDialogBase
     void closeEvent(QCloseEvent *);
 };
 
-class GotoLineDialog : public KDialogBase
-{
+class GotoLineDialog : public KDialogBase {
     Q_OBJECT
 
   public:
@@ -82,8 +79,7 @@ class GotoLineDialog : public KDialogBase
     QPushButton *btnOK;
 };
 
-class IndentConfigTab : public QWidget
-{
+class IndentConfigTab : public QWidget {
     Q_OBJECT
 
   public:
@@ -93,13 +89,12 @@ class IndentConfigTab : public QWidget
 
   protected:
 
-    static const int numFlags = 6;
+    enum {numFlags = 6};
     static const int flags[numFlags];
     QCheckBox *opt[numFlags];
 };
 
-class SelectConfigTab : public QWidget
-{
+class SelectConfigTab : public QWidget {
     Q_OBJECT
 
  public:
@@ -109,13 +104,12 @@ class SelectConfigTab : public QWidget
 
   protected:
 
-    static const int numFlags = 6;
+    enum {numFlags = 6};
     static const int flags[numFlags];
     QCheckBox *opt[numFlags];
 };
 
-class EditConfigTab : public QWidget
-{
+class EditConfigTab : public QWidget {
     Q_OBJECT
 
   public:
@@ -125,13 +119,31 @@ class EditConfigTab : public QWidget
 
   protected:
 
-    static const int numFlags = 9;
+//    enum {numFlags = 9};
+    enum {numFlags = 8};
     static const int flags[numFlags];
     QCheckBox *opt[numFlags];
-    KIntNumInput *e1;
-    KIntNumInput *e2;
-    KIntNumInput *e3;
+    KIntNumInput *e1; // wrap words at
+    KIntNumInput *e2; // tab width
+    KIntNumInput *e3; // undo steps
 };
+
+class ViewConfigTab : public QWidget {
+    Q_OBJECT
+
+  public:
+
+    ViewConfigTab(QWidget *parent, KWrite *);
+    void getData(KWrite *);
+
+  protected:
+
+    enum {numFlags = 2};
+    static const int flags[numFlags];
+    QCheckBox *opt[numFlags];
+    KIntNumInput *e1; // digits of line numbering
+};
+
 
 /*
 class SettingsDialog : public QDialog {
@@ -163,17 +175,16 @@ class SettingsDialog : public QDialog {
 };
 */
 
-class ColorConfig : public QGrid
-{
+class ColorConfig : public QGrid {
   Q_OBJECT
 
 public:
 
-  ColorConfig( QWidget *parent = 0, char *name = 0 );
+  ColorConfig(QWidget *parent = 0, char *name = 0);
   ~ColorConfig();
 
-  void setColors( QColor * );
-  void getColors( QColor * );
+  void setColors(QColor *);
+  void getColors(QColor *);
 
 private:
 
@@ -184,8 +195,7 @@ private:
   KColorButton *m_selFound;
 };
 
-class ColorDialog : public KDialogBase
-{
+class ColorDialog : public KDialogBase {
   Q_OBJECT
 
 public:

@@ -64,6 +64,11 @@ class KWList {
 
 class KWLineAttributeList;
 
+/**
+  A base class for an attribute of a text line. The attribute may be a 
+  document-associated attribute (for example a breakpoint) 
+  or a view-associated attribute (for example a bookmark).
+*/
 class KWLineAttribute : protected KWListNode {
     friend KWLineAttributeList;
     friend KWriteDoc;
@@ -83,7 +88,7 @@ class KWLineAttribute : protected KWListNode {
     virtual bool deleteNotify() {return true;}
     
     int m_line;
-    KWrite *m_kWrite;
+    KWrite *m_kWrite; // = 0L for doc-attribute, view-attribute otherwise
 };
 
 class KWLineAttributeList : public KWList {
