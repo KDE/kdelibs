@@ -1,5 +1,4 @@
-# KDE Config File
-[KDE Desktop Entry]
+[Desktop Entry]
 Comment=C sources
 Commnet[cs]=Zdrojový kód v jazyku C
 Icon=c_src.xpm

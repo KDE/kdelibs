@@ -1,5 +1,4 @@
-# KDE Config File
-[KDE Desktop Entry]
+[Desktop Entry]
 MimeType=text/x-moc
 Comment=Qt Meta Object File
 DefaultApp=kwrite

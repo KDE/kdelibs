@@ -1,6 +1,6 @@
 
-data_DATA = block.kdelnk chardevice.kdelnk directory-locked.kdelnk \
-	directory.kdelnk fifo.kdelnk socket.kdelnk
+data_DATA = block.desktop chardevice.desktop directory-locked.desktop \
+	directory.desktop fifo.desktop socket.desktop
 
 datadir = $(kde_mimedir)/inode
 

@@ -1,8 +1,8 @@
 
-data_DATA = x-c++src.kdelnk x-c++hdr.kdelnk x-csrc.kdelnk x-java.kdelnk \
-	english.kdelnk x-makefile.kdelnk x-moc.kdelnk x-pascal.kdelnk \
-	x-tcl.kdelnk x-tex.kdelnk html.kdelnk plain.kdelnk x-chdr.kdelnk \
-	x-c.kdelnk x-c++.kdelnk rtf.kdelnk sgml.kdelnk
+data_DATA = x-c++src.desktop x-c++hdr.desktop x-csrc.desktop x-java.desktop \
+	english.desktop x-makefile.desktop x-moc.desktop x-pascal.desktop \
+	x-tcl.desktop x-tex.desktop html.desktop plain.desktop x-chdr.desktop \
+	x-c.desktop x-c++.desktop rtf.desktop sgml.desktop
 
 datadir = $(kde_mimedir)/text
 

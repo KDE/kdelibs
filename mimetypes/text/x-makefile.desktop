@@ -1,5 +1,4 @@
-# KDE Config File
-[KDE Desktop Entry]
+[Desktop Entry]
 MimeType=text/x-makefile
 Comment=Makefile
 DefaultApp=kwrite

@@ -1,5 +1,4 @@
-# KDE Config File
-[KDE Desktop Entry]
+[Desktop Entry]
 Comment=Block Device
 Icon=blockdevice.xpm
 Type=MimeType
