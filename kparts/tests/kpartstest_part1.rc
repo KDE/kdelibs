@@ -1,7 +1,7 @@
 <!DOCTYPE kpartgui>
 <kpartgui name="Part">
 <MenuBar>
- <Menu name="File"><Text>&amp;File</Text>
+ <Menu name="file"><Text>&amp;File</Text>
   <Action name="p1_blah"/>
  </Menu>
  <Menu name="Part1Menu"><text>Part1's Menu</text>

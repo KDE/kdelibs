@@ -1,7 +1,7 @@
 <!DOCTYPE kpartplugin>
 <kpartplugin library="libfoobar">
 <MenuBar>
- <Menu name="File"><Text>&amp;File</Text>
+ <Menu name="file"><Text>&amp;File</Text>
   <Action name="searchreplace"/>
  </Menu>
  <Menu name="woohoo"><Text>fun</Text>
