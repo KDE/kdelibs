@@ -90,27 +90,30 @@ int main (int argc, char *argv[])
 
   /* get slave pty name from master pty file handle in PTY_FILENO *********/
 
+  /* Check that fd is a valid master pseudo terminal.  */
+  pty = ttyname(fd);          /* posix */
+
 #if defined(BSD_PTY_HACK)
+  if (pty == NULL)
+  {
   /*
-    Hack to make kgrantpty work on FreeBSD (and possibly other systems).
-    ttyname(3) does not work on FreeBSD with a file descriptor opened on a
-    /dev/pty?? device.
+    Hack to make kgrantpty work on some versions of FreeBSD (and possibly
+    other systems): ttyname(3) does not work with a file descriptor opened
+    on a /dev/pty?? device.
 
     Instead, this code looks through all the devices in /dev for a device
     which has the same inode as our PTY_FILENO descriptor... if found, we
     have the name for our pty.
   */
 
-  if (uid == 0) {
-    p = getgrnam("wheel");
-    gid = p ? p->gr_gid : getgid();
-  }
-
-  pty = NULL;
-  {
     struct dirent *dirp;
     DIR *dp;
     struct stat dsb;
+
+    if (uid == 0) {
+      p = getgrnam("wheel");
+      gid = p ? p->gr_gid : getgid();
+    }
 
     if (fstat(fd, &dsb) != -1) {
       if ((dp = opendir(_PATH_DEV)) != NULL) {
@@ -129,9 +132,6 @@ int main (int argc, char *argv[])
       }
     }
   }
-#else
-  /* Check that fd is a valid master pseudo terminal.  */
-  pty = ttyname(fd);          /* posix */
 #endif
 
   if (pty == NULL)
