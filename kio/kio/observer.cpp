@@ -255,35 +255,6 @@ bool Observer::openPassDlg( KIO::AuthInfo& info )
         return true;
     }
     return false;
-
-#if 0
-  kdDebug(KDEBUG_OBSERVER) << "Observer::openPassDlg: User= " << info.username
-                << ", Message= " << info.prompt << endl;
-  QCString replyType;
-  QByteArray data, replyData;
-  QDataStream stream( data, IO_WriteOnly );
-  stream << info;
-  if ( kapp->dcopClient()->call( "kio_uiserver", "UIServer",
-                                 "openPassDlg(KIO::AuthInfo)",
-                                 data, replyType, replyData, true ) &&
-       replyType == "QByteArray" )
-  {
-    AuthInfo res_auth;
-    QByteArray wrapper_data;
-    QDataStream wrapper_stream( replyData, IO_ReadOnly );
-    wrapper_stream >> wrapper_data;
-    QDataStream data_stream( wrapper_data, IO_ReadOnly );
-    data_stream >> res_auth;
-    if( res_auth.isModified() )
-    {
-      info.username = res_auth.username;
-      info.password = res_auth.password;
-      return true;
-    }
-  }
-  kdDebug(KDEBUG_OBSERVER) << "Observer::openPassDlg call failed!" << endl;
-  return false;
-#endif
 }
 
 int Observer::messageBox( int progressId, int type, const QString &text,
@@ -391,7 +362,7 @@ int Observer::messageBox( int progressId, int type, const QString &text,
 #endif
 }
 
-RenameDlg_Result Observer::open_RenameDlg( KIO::Job * /*job*/,
+RenameDlg_Result Observer::open_RenameDlg( KIO::Job* job,
                                            const QString & caption,
                                            const QString& src, const QString & dest,
                                            RenameDlg_Mode mode, QString& newDest,
@@ -403,19 +374,27 @@ RenameDlg_Result Observer::open_RenameDlg( KIO::Job * /*job*/,
                                            time_t mtimeDest
                                            )
 {
-  kdDebug(KDEBUG_OBSERVER) << "Observer::open_RenameDlg" << endl;
-  // We now do it in process. So this method is a useless wrapper around KIO::open_RenameDlg.
-  return KIO::open_RenameDlg( caption, src, dest, mode, newDest, sizeSrc, sizeDest,
+  kdDebug(KDEBUG_OBSERVER) << "Observer::open_RenameDlg job=" << job << " progressId=" << job->progressId() << endl;
+  // Hide existing dialog box if any
+  m_uiserver->setJobVisible( job->progressId(), false );
+  // We now do it in process.
+  RenameDlg_Result res =  KIO::open_RenameDlg( caption, src, dest, mode, newDest, sizeSrc, sizeDest,
                               ctimeSrc, ctimeDest, mtimeSrc, mtimeDest );
+  m_uiserver->setJobVisible( job->progressId(), true );
+  return res;
 }
 
-SkipDlg_Result Observer::open_SkipDlg( KIO::Job * /*job*/,
+SkipDlg_Result Observer::open_SkipDlg( KIO::Job* job,
                                        bool _multi,
                                        const QString& _error_text )
 {
-  kdDebug(KDEBUG_OBSERVER) << "Observer::open_SkipDlg" << endl;
+  kdDebug(KDEBUG_OBSERVER) << "Observer::open_SkipDlg job=" << job << " progressId=" << job->progressId() << endl;
+  // Hide existing dialog box if any
+  m_uiserver->setJobVisible( job->progressId(), false );
   // We now do it in process. So this method is a useless wrapper around KIO::open_RenameDlg.
-  return KIO::open_SkipDlg( _multi, _error_text );
+  SkipDlg_Result res = KIO::open_SkipDlg( _multi, _error_text );
+  m_uiserver->setJobVisible( job->progressId(), true );
+  return res;
 }
 
 void Observer::virtual_hook( int id, void* data )
