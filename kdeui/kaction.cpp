@@ -2870,7 +2870,6 @@ void KToolBarMenuAction::singleBarToggled(bool)
 
                                 QPopupMenu *menu=static_cast<QPopupMenu*>(container(i));
                                 int id=itemId(i);
-                                int pos=menu->indexOf(id);
 				menu->setItemChecked(id,checked);
                         }
                 }
