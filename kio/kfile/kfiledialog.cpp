@@ -1189,6 +1189,8 @@ void KFileDialog::dirCompletion( const QString& dir ) // SLOT
         QString complete = ops->makeDirCompletion( url.fileName(false) );
 
         if (!complete.isNull()) {
+	    if(!base.endsWith("/"))
+	        base.append('/');
             QString newText = base + complete;
             QString fileProt = QString::fromLatin1( "file:" );
             
