@@ -273,42 +273,40 @@ void KToggleAction::setChecked( bool c )
     if ( c == checked )
 	return;
 
-    checked = c;
-
     int len = containerCount();
+    
     for( int i = 0; i < len; ++i )
     {
 	QWidget *w = container( i );
 	if ( w->inherits( "KToolBar" ) ) {
 	    	QWidget* r = ( (KToolBar*)w )->getButton( menuId( i ) );
 		if ( r->inherits( "KToolBarButton" ) )
-		    ( (KToolBar*)w )->setButton( menuId( i ), checked );
+		    ( (KToolBar*)w )->setButton( menuId( i ), c );
 	} else if ( w->inherits( "QPopupMenu" ) )
-	    ((QPopupMenu*)w)->setItemChecked( menuId( i ), checked );
+	    ((QPopupMenu*)w)->setItemChecked( menuId( i ), c );
 	else if ( w->inherits( "KMenuBar" ) )
-	    ((KMenuBar*)w)->setItemChecked( menuId( i ), checked );
+	    ((KMenuBar*)w)->setItemChecked( menuId( i ), c );
 	else if ( w->inherits( "KActionWidget" ) )
 	    ((QActionWidget*)w)->updateAction( this );	
     }
 
-    if ( !signalsBlocked() ) {
-	if ( parent() && !exclusiveGroup().isEmpty() ) {
-	    const QObjectList *list = parent()->children();
-	    if ( list ) {
-		QObjectListIt it( *list );
-		for( ; it.current(); ++it ) {
-		    if ( it.current()->inherits( "KToggleAction" ) &&
-			 ((KToggleAction*)it.current())->exclusiveGroup() == exclusiveGroup() ) {
-			((KToggleAction*)it.current())->blockSignals( TRUE );
-			((KToggleAction*)it.current())->setChecked( FALSE );
-			((KToggleAction*)it.current())->blockSignals( FALSE );
-		    }
+    if (  parent() && !exclusiveGroup().isEmpty() ) {
+	const QObjectList *list = parent()->children();
+	if ( list ) {
+	    QObjectListIt it( *list );
+	    for( ; it.current(); ++it ) {
+		if ( it.current()->inherits( "KToggleAction" ) && it.current() != this &&
+		     ((KToggleAction*)it.current())->exclusiveGroup() == exclusiveGroup() ) {
+		    ((KToggleAction*)it.current())->setChecked( FALSE );
 		}
 	    }
 	}
     }
 
-    emit activated();
+    checked = c;
+
+    if ( checked )
+	emit activated();
     emit toggled( isChecked() );
 }
 
