@@ -26,11 +26,14 @@ libkdeprint_la_METASOURCES = AUTO
 noinst_HEADERS = kmdbentry.h kmfactory.h kmjob.h kmjobmanager.h kmmanager.h kmobject.h kmprinter.h \
 		 kmuimanager.h kmvirtualmanager.h driver.h driveritem.h droptionview.h \
 		 driverview.h matic.h kprintpreview.h kprinterimpl.h kprintdialog.h \
-		 kprintdialogpage.h kpcopiespage.h kpdriverpage.h kprinterpropertydialog.h kpgeneralpage.h \
+		 kpcopiespage.h kpdriverpage.h kprinterpropertydialog.h kpgeneralpage.h \
 		 kpqtpage.h kprintprocess.h kmthreadjob.h kpipeprocess.h kdeprintd.h kprintfilter.h \
 		 kmfiltermanager.h kpfilterpage.h kmspecialmanager.h
 
 include_HEADERS = kprinter.h
+
+kdeprint_HEADERS = kprintdialogpage.h
+kdeprintdir = $(includedir)/kdeprint
 
 EXTRA_DIST = maticparser.yy maticscanner.ll kprintpreviewui.rc
 
