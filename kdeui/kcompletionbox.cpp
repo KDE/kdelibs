@@ -25,12 +25,8 @@
 #include <qevent.h>
 #include <kdebug.h>
 
-#include <X11/Xlib.h>
-#undef KeyPress
-#undef FocusIn
-
 KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
-    : KListBox( 0L, name, WType_Popup )
+    : KListBox( 0L, name, WStyle_Customize | WStyle_Tool )
 {
     m_parent = parent;
 
@@ -132,22 +128,15 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
     return KListBox::eventFilter( o, e );
 }
 
-void KCompletionBox::show()
-{
-    KListBox::show();
-    XUngrabKeyboard( x11Display(), CurrentTime );
-}
 
 void KCompletionBox::popup()
 {
-    if ( count()==0 )
+    if ( count() == 0 )
         hide();
     else {
         ensureCurrentVisible();
-        if ( isVisible() )
-            resize( sizeHint() );
-        else
-            show();
+	if ( !isVisible() )
+	    show();
     }
 }
 

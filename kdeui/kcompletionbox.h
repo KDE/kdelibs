@@ -83,11 +83,6 @@ public slots:
      */
     virtual void popup();
 
-    /**
-     * Reimplemented for internal reasons.
-     */
-    virtual void show();
-    
 signals:
     /**
      * Emitted when an item was selected, contains the text of the selected
@@ -96,7 +91,7 @@ signals:
     void activated( const QString& );
 
     /**
-     * Emitted when an item is double clicked, contains the text of the selected 
+     * Emitted when an item is double clicked, contains the text of the selected
      * item.
      */
     void executed( const QString& );
@@ -107,10 +102,10 @@ public slots:
      */
     void down();
 
-    /** 
+    /**
      * Move the selection one line up or select the first item if nothing is selected yet.
      */
-    void up(); 
+    void up();
 
     /**
      * Move the selection one page down.
