@@ -113,7 +113,7 @@ public:
    * Helper function to find out what KConfig is being used.
    * @return pointer to the KConfig that is being used.
    */ 
-  KConfig *getKConfig();
+  KConfig *kconfig();
   
   /**
    * Adds a widget to the list of widgets that should be parsed for any 

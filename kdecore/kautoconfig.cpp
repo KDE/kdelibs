@@ -72,7 +72,7 @@ KAutoConfig::~KAutoConfig(){
   delete d;
 }
 
-KConfig *KAutoConfig::getKConfig(){
+KConfig *KAutoConfig::kconfig(){
   return config;
 }
 
