@@ -1,3 +1,22 @@
+/* This file is part of the KDE project
+   Copyright (C) 1999 Daniel M. Duley <mosfet@kde.org>
+ 
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+ 
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+ 
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
+*/                   
+
 #include <kthemebase.h>
 #include <kapp.h>
 #include <klocale.h>
@@ -179,6 +198,7 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
     btnXShift = config->readNumEntry("ButtonXShift", 0);
     btnYShift = config->readNumEntry("ButtonYShift", 0);
     sliderLen = config->readNumEntry("SliderLength", 30);
+    cacheSize = config->readNumEntry("CacheSize", 1024);
     
 #ifdef KSTYLE_DEBUG
     for(existing=0, i=0; i < WIDGETS; ++i)
@@ -190,14 +210,17 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
 
 }
 
-KThemeBase::KThemeBase()
+KThemeBase::KThemeBase(const QString &configFile)
     :KStyle()
 {
-    config = kapp->getConfig();
+    if(configFile == QString::null)
+        config = kapp->getConfig();
+    else
+        config = new KConfig(configFile, configFile);
     localDir = kapp->localkdedir()+"/share/apps/kstyle/pixmaps/";
     globalDir = kapp->kde_datadir()+"/kstyle/pixmaps/";
-    cache = new KThemeCache(1024);
     readConfig(Qt::WindowsStyle);
+    cache = new KThemeCache(cacheSize);
 }                            
 
 KThemeBase::~KThemeBase()

@@ -1,3 +1,22 @@
+/* This file is part of the KDE project
+   Copyright (C) 1999 Daniel M. Duley <mosfet@kde.org>
+ 
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+ 
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+ 
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
+*/                             
+
 #ifndef __KTHEMEBASE_H
 #define __KTHEMEBASE_H
 
@@ -6,6 +25,7 @@
 #include <kconfig.h>
 #include <qimage.h>
 #include <qintcache.h>
+#include <qstring.h>
 
 #define WIDGETS 19
 
@@ -120,7 +140,13 @@ class KThemeBase: public KStyle
 {
     Q_OBJECT
 public:
-    KThemeBase();
+    /**
+     * Constructs a new KThemeBase object.
+     *
+     * @param configFile A KConfig file to use as the theme configuration.
+     * Defaults to ~/.kderc.
+     */
+    KThemeBase(const QString &configFile = QString::null);
     ~KThemeBase();
     /**
      * Describes if a pixmap should be scaled fully, horizontally, vertically,
@@ -313,6 +339,7 @@ private:
     KThemeCache *cache;
     KConfig *config;
     QString localDir, globalDir;
+    int cacheSize;
 
     /**
      * The theme pixmaps. Many of these may be NULL if no pixmap is specified.
