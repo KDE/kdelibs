@@ -157,15 +157,17 @@ class VCard21Parser {
 
 
 class VCardLine {
-friend class VCard21ParserImpl;
- protected:
-  QString         name;
-  bool            qualified;
-  QValueList<QString> qualifiers;
-  QValueList<QString> parameters;
-  bool isValid() const;
-  void qpEncode(QString& x);
-  void qpDecode(QString& x);
+
+  friend class VCard21ParserImpl;
+
+  protected:
+    QString         name;
+    bool            qualified;
+    QValueList<QString> qualifiers;
+    QValueList<QString> parameters;
+    bool isValid() const;
+    void qpEncode(QString& x);
+    void qpDecode(QString& x);
 };
 
 class VCard21ParserImpl {
