@@ -257,8 +257,8 @@ void KSSLCertificateCache::addCertificate(KSSLCertificate& cert,
   n->permanent = permanent;
   d->certList.prepend(n); 
   if (!permanent) {
-    node->expires = QDateTime::currentDateTime();
-    node->expires.addSecs(3600);
+    n->expires = QDateTime::currentDateTime();
+    n->expires.addSecs(3600);
   }
   saveToDisk();
 }
