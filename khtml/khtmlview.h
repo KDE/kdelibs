@@ -26,7 +26,7 @@
 #define KHTMLVIEW_H
 
 // qt includes and classes
-#include <kscrollview.h>
+#include <qscrollview.h>
 
 #include <kdelibs_export.h>
 
@@ -74,7 +74,7 @@ class KHTMLViewPrivate;
  *
  * Suitable for use as an application's main view.
  **/
-class KHTML_EXPORT KHTMLView : public KScrollView
+class KHTML_EXPORT KHTMLView : public QScrollView
 {
     Q_OBJECT
 

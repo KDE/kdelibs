@@ -456,7 +456,7 @@ void KHTMLToolTip::maybeTip(const QPoint& p)
 #endif
 
 KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
-    : KScrollView( parent, name, WResizeNoErase | WRepaintNoErase )
+    : QScrollView( parent, name, WResizeNoErase | WRepaintNoErase )
 {
     m_medium = "screen";
 
@@ -2797,7 +2797,7 @@ void KHTMLView::viewportWheelEvent(QWheelEvent* e)
     else
     {
         d->scrollBarMoved = true;
-        KScrollView::viewportWheelEvent( e );
+        QScrollView::viewportWheelEvent( e );
 
         QMouseEvent *tempEvent = new QMouseEvent( QEvent::MouseMove, QPoint(-1,-1), QPoint(-1,-1), Qt::NoButton, e->state() );
         emit viewportMouseMoveEvent ( tempEvent );
