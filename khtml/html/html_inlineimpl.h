@@ -34,8 +34,8 @@ class DOMString;
 class HTMLAnchorElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLAnchorElementImpl(DocumentPtr *doc);
-    ~HTMLAnchorElementImpl();
+    HTMLAnchorElementImpl(DocumentPtr *doc)
+        : HTMLElementImpl(doc), m_hasTarget(false) {}
 
     virtual bool isSelectable() const { return m_hasAnchor; }
     virtual Id id() const;
@@ -47,13 +47,11 @@ protected:
 
 // -------------------------------------------------------------------------
 
-//typedef enum { BRNone=0, BRLeft, BRRight, BRAll} BRClear;
-
 class HTMLBRElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLBRElementImpl(DocumentPtr *doc);
-    ~HTMLBRElementImpl();
+    HTMLBRElementImpl(DocumentPtr *doc)
+        : HTMLElementImpl(doc) {}
 
     virtual Id id() const;
     virtual void parseAttribute(AttributeImpl *attr);
@@ -65,8 +63,8 @@ public:
 class HTMLFontElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLFontElementImpl(DocumentPtr *doc);
-    ~HTMLFontElementImpl();
+    HTMLFontElementImpl(DocumentPtr *doc)
+        : HTMLElementImpl(doc) {}
 
     virtual Id id() const;
     virtual void parseAttribute(AttributeImpl *attr);

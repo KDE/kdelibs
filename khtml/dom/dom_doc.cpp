@@ -246,26 +246,26 @@ DocumentFragment Document::createDocumentFragment(  )
 
 Text Document::createTextNode( const DOMString &data )
 {
-    if (impl) return ((DocumentImpl *)impl)->createTextNode( data );
+    if (impl) return ((DocumentImpl *)impl)->createTextNode( data.implementation() );
     return 0;
 }
 
 Comment Document::createComment( const DOMString &data )
 {
-    if (impl) return ((DocumentImpl *)impl)->createComment( data );
+    if (impl) return ((DocumentImpl *)impl)->createComment( data.implementation() );
     return 0;
 }
 
 CDATASection Document::createCDATASection( const DOMString &data )
 {
     // ### DOM1 spec says raise exception if html documents - what about XHTML documents?
-    if (impl) return ((DocumentImpl *)impl)->createCDATASection( data );
+    if (impl) return ((DocumentImpl *)impl)->createCDATASection( data.implementation() );
     return 0;
 }
 
 ProcessingInstruction Document::createProcessingInstruction( const DOMString &target, const DOMString &data )
 {
-    if (impl) return ((DocumentImpl *)impl)->createProcessingInstruction( target, data );
+    if (impl) return ((DocumentImpl *)impl)->createProcessingInstruction( target, data.implementation() );
     return 0;
 }
 

@@ -39,7 +39,6 @@ class HTMLUListElementImpl : public HTMLElementImpl
 {
 public:
     HTMLUListElementImpl(DocumentPtr *doc) : HTMLElementImpl(doc) {}
-    virtual ~HTMLUListElementImpl() {}
 
     virtual Id id() const;
 
@@ -54,7 +53,6 @@ class HTMLDirectoryElementImpl : public HTMLElementImpl
 {
 public:
     HTMLDirectoryElementImpl(DocumentPtr *doc) : HTMLElementImpl(doc) {}
-    virtual ~HTMLDirectoryElementImpl() {}
 
     virtual Id id() const;
 };
@@ -76,8 +74,7 @@ class HTMLOListElementImpl : public HTMLUListElementImpl
 {
 public:
     HTMLOListElementImpl(DocumentPtr *doc)
-        : HTMLUListElementImpl(doc) { _start = 1; }
-    virtual ~HTMLOListElementImpl() {}
+        : HTMLUListElementImpl(doc), _start(1) {}
 
     virtual Id id() const;
     virtual void parseAttribute(AttributeImpl *);
@@ -93,18 +90,11 @@ class HTMLLIElementImpl : public HTMLElementImpl
 {
 public:
     HTMLLIElementImpl(DocumentPtr *doc)
-        : HTMLElementImpl(doc) { isValued = false; }
-    virtual ~HTMLLIElementImpl() {}
+        : HTMLElementImpl(doc) {}
 
     virtual Id id() const;
-
     virtual void parseAttribute(AttributeImpl *attr);
-
     virtual void attach();
-
-private:
-    bool isValued;
-    long requestedValue;
 };
 
 // -------------------------------------------------------------------------

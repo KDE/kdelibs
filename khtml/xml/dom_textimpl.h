@@ -34,13 +34,14 @@ namespace DOM {
 class CharacterDataImpl : public NodeImpl
 {
 public:
-    CharacterDataImpl(DocumentPtr *doc, const DOMString &_text);
-    CharacterDataImpl(DocumentPtr *doc);
+    CharacterDataImpl(DocumentPtr *doc, DOMStringImpl* _text);
+    CharacterDataImpl(DocumentPtr *doc)
+        : NodeImpl(doc), str(0) {}
+
     virtual ~CharacterDataImpl();
 
     // DOM methods & attributes for CharacterData
 
-    virtual DOMString data() const;
     virtual void setData( const DOMString &_data, int &exceptioncode );
     virtual unsigned long length (  ) const;
     virtual DOMString substringData ( const unsigned long offset, const unsigned long count, int &exceptioncode );
@@ -56,7 +57,9 @@ public:
 
     // Other methods (not part of DOM)
 
-    DOMStringImpl *string() { return str; }
+    DOMStringImpl *string() const { return str; }
+    DOMString data() const { return str; }
+
     virtual void checkCharDataOperation( const unsigned long offset, int &exceptioncode );
 #ifndef NDEBUG
     virtual void dump(QTextStream *stream, QString ind = "") const;
@@ -75,10 +78,10 @@ protected:
 class CommentImpl : public CharacterDataImpl
 {
 public:
-    CommentImpl(DocumentPtr *doc, const DOMString &_text);
-    CommentImpl(DocumentPtr *doc);
-    virtual ~CommentImpl();
-
+    CommentImpl(DocumentPtr *doc, DOMStringImpl* _text)
+        : CharacterDataImpl(doc, _text) {}
+    CommentImpl(DocumentPtr *doc)
+        : CharacterDataImpl(doc) {}
     // DOM methods overridden from  parent classes
     virtual DOMString nodeName() const;
     virtual unsigned short nodeType() const;
@@ -95,9 +98,10 @@ public:
 class TextImpl : public CharacterDataImpl
 {
 public:
-    TextImpl(DocumentPtr *impl, const DOMString &_text);
-    TextImpl(DocumentPtr *impl);
-    virtual ~TextImpl();
+    TextImpl(DocumentPtr *impl, DOMStringImpl* _text)
+        : CharacterDataImpl(impl, _text) {}
+    TextImpl(DocumentPtr *impl)
+        : CharacterDataImpl(impl) {}
 
     // DOM methods & attributes for CharacterData
 
@@ -124,11 +128,11 @@ protected:
 
 class CDATASectionImpl : public TextImpl
 {
-// ### should these have id==ID_TEXT
 public:
-    CDATASectionImpl(DocumentPtr *impl, const DOMString &_text);
-    CDATASectionImpl(DocumentPtr *impl);
-    virtual ~CDATASectionImpl();
+    CDATASectionImpl(DocumentPtr *impl, DOMStringImpl* _text)
+        : TextImpl(impl, _text) {}
+    CDATASectionImpl(DocumentPtr *impl)
+        : TextImpl(impl) {}
 
     // DOM methods overridden from  parent classes
     virtual DOMString nodeName() const;

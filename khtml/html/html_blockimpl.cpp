@@ -36,31 +36,6 @@
 using namespace khtml;
 using namespace DOM;
 
-HTMLBlockquoteElementImpl::HTMLBlockquoteElementImpl(DocumentPtr *doc)
-    : HTMLElementImpl(doc)
-{
-}
-
-HTMLBlockquoteElementImpl::~HTMLBlockquoteElementImpl()
-{
-}
-
-NodeImpl::Id HTMLBlockquoteElementImpl::id() const
-{
-    return ID_BLOCKQUOTE;
-}
-
-// -------------------------------------------------------------------------
-
-HTMLDivElementImpl::HTMLDivElementImpl(DocumentPtr *doc)
-    : HTMLElementImpl(doc)
-{
-}
-
-HTMLDivElementImpl::~HTMLDivElementImpl()
-{
-}
-
 NodeImpl::Id HTMLDivElementImpl::id() const
 {
     return ID_DIV;
@@ -84,15 +59,6 @@ void HTMLDivElementImpl::parseAttribute(AttributeImpl *attr)
 }
 
 // -------------------------------------------------------------------------
-
-HTMLHRElementImpl::HTMLHRElementImpl(DocumentPtr *doc)
-    : HTMLElementImpl(doc)
-{
-}
-
-HTMLHRElementImpl::~HTMLHRElementImpl()
-{
-}
 
 NodeImpl::Id HTMLHRElementImpl::id() const
 {
@@ -171,30 +137,6 @@ void HTMLHRElementImpl::attach()
 
 // -------------------------------------------------------------------------
 
-HTMLHeadingElementImpl::HTMLHeadingElementImpl(DocumentPtr *doc, ushort _tagid)
-    : HTMLGenericElementImpl(doc, _tagid)
-{
-}
-
-// -------------------------------------------------------------------------
-
-HTMLParagraphElementImpl::HTMLParagraphElementImpl(DocumentPtr *doc)
-    : HTMLElementImpl(doc)
-{
-}
-
-NodeImpl::Id HTMLParagraphElementImpl::id() const
-{
-    return ID_P;
-}
-
-// -------------------------------------------------------------------------
-
-HTMLPreElementImpl::HTMLPreElementImpl(DocumentPtr *doc, unsigned short _tagid)
-    : HTMLGenericElementImpl(doc, _tagid)
-{
-}
-
 long HTMLPreElementImpl::width() const
 {
     // ###
@@ -206,63 +148,4 @@ void HTMLPreElementImpl::setWidth( long /*w*/ )
     // ###
 }
 
-// ------------------------------------------------------------------------
-
-HTMLLayerElementImpl::HTMLLayerElementImpl(DocumentPtr *doc)
-    : HTMLDivElementImpl( doc )
-{
-//    addCSSProperty(CSS_PROP_POSITION, CSS_VAL_ABSOLUTE);
-//    fixed = false;
-}
-
-HTMLLayerElementImpl::~HTMLLayerElementImpl()
-{
-}
-
-NodeImpl::Id HTMLLayerElementImpl::id() const
-{
-    return ID_LAYER;
-}
-
-
-void HTMLLayerElementImpl::parseAttribute(AttributeImpl *attr)
-{
-    HTMLElementImpl::parseAttribute(attr);
-
-    // layers are evil
-/*    int cssprop;
-    bool page = false;
-    switch(attr->id()) {
-        case ATTR_PAGEX:
-            page = true;
-        case ATTR_LEFT:
-            cssprop = CSS_PROP_LEFT;
-            break;
-        case ATTR_PAGEY:
-            page = true;
-        case ATTR_TOP:
-            cssprop = CSS_PROP_TOP;
-            break;
-        case ATTR_WIDTH:
-            cssprop = CSS_PROP_WIDTH;
-            break;
-        case ATTR_HEIGHT:
-            cssprop = CSS_PROP_HEIGHT;
-            break;
-        case ATTR_Z_INDEX:
-            cssprop = CSS_PROP_Z_INDEX;
-            break;
-        case ATTR_VISIBILITY:
-            cssprop = CSS_PROP_VISIBILITY;
-            break;
-        default:
-            HTMLDivElementImpl::parseAttribute(attr);
-            return;
-    }
-    addCSSProperty(cssprop, attr->value());
-    if ( !fixed && page ) {
-        addCSSProperty(CSS_PROP_POSITION, "fixed");
-        fixed = true;
-    }*/
-}
 

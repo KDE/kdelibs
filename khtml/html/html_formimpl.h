@@ -443,19 +443,10 @@ public:
 class HTMLOptGroupElementImpl : public HTMLGenericFormElementImpl
 {
 public:
-    HTMLOptGroupElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f = 0);
-    virtual ~HTMLOptGroupElementImpl();
+    HTMLOptGroupElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f = 0)
+        : HTMLGenericFormElementImpl(doc, f) {}
 
     virtual Id id() const;
-
-    virtual NodeImpl *insertBefore ( NodeImpl *newChild, NodeImpl *refChild, int &exceptioncode );
-    virtual NodeImpl *replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode );
-    virtual NodeImpl *removeChild ( NodeImpl *oldChild, int &exceptioncode );
-    virtual NodeImpl *appendChild ( NodeImpl *newChild, int &exceptioncode );
-    virtual NodeImpl *addChild( NodeImpl* newChild );
-    virtual void parseAttribute(AttributeImpl *attr);
-    void recalcSelectOptions();
-
 };
 
 
@@ -483,10 +474,6 @@ public:
     void setSelected(bool _selected);
 
     HTMLSelectElementImpl *getSelect() const;
-
-    virtual NodeImpl *addChild( NodeImpl* newChild );
-    void recalcSelectOptions();
-
 
 protected:
     DOMString m_value;

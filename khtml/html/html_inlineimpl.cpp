@@ -42,16 +42,6 @@
 using namespace khtml;
 using namespace DOM;
 
-HTMLAnchorElementImpl::HTMLAnchorElementImpl(DocumentPtr *doc)
-    : HTMLElementImpl(doc)
-{
-    m_hasTarget = false;
-}
-
-HTMLAnchorElementImpl::~HTMLAnchorElementImpl()
-{
-}
-
 NodeImpl::Id HTMLAnchorElementImpl::id() const
 {
     return ID_A;
@@ -178,14 +168,6 @@ void HTMLAnchorElementImpl::parseAttribute(AttributeImpl *attr)
 
 // -------------------------------------------------------------------------
 
-HTMLBRElementImpl::HTMLBRElementImpl(DocumentPtr *doc) : HTMLElementImpl(doc)
-{
-}
-
-HTMLBRElementImpl::~HTMLBRElementImpl()
-{
-}
-
 NodeImpl::Id HTMLBRElementImpl::id() const
 {
     return ID_BR;
@@ -222,15 +204,6 @@ void HTMLBRElementImpl::attach()
 }
 
 // -------------------------------------------------------------------------
-
-HTMLFontElementImpl::HTMLFontElementImpl(DocumentPtr *doc)
-    : HTMLElementImpl(doc)
-{
-}
-
-HTMLFontElementImpl::~HTMLFontElementImpl()
-{
-}
 
 NodeImpl::Id HTMLFontElementImpl::id() const
 {

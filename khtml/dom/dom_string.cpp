@@ -214,7 +214,7 @@ int DOMString::toInt() const
 {
     if(!impl) return 0;
 
-    return QConstString(impl->s, impl->l).string().toInt();
+    return impl->toInt();
 }
 
 DOMString DOMString::copy() const

@@ -39,6 +39,7 @@
 #include "css/cssvalues.h"
 #include "css/csshelper.h"
 #include "xml/dom_textimpl.h"
+#include "xml/dom_docimpl.h"
 #include "xml/dom2_eventsimpl.h"
 #include "khtml_ext.h"
 
@@ -1771,8 +1772,6 @@ int HTMLSelectElementImpl::listToOptionIndex(int listIndex) const
 
 void HTMLSelectElementImpl::recalcListItems()
 {
-    qDebug("HTMLSelectElementImpl::recalcListItems");
-
     NodeImpl* current = firstChild();
     m_listItems.resize(0);
     HTMLOptionElementImpl* foundSelected = 0;
@@ -1807,6 +1806,8 @@ void HTMLSelectElementImpl::recalcListItems()
 
 void HTMLSelectElementImpl::childrenChanged()
 {
+    qDebug("**HTMLSelectElementImpl::childrenChanged");
+
     setRecalcListItems();
 
     HTMLGenericFormElementImpl::childrenChanged();
@@ -1862,7 +1863,7 @@ HTMLKeygenElementImpl::HTMLKeygenElementImpl(DocumentPtr* doc, HTMLFormElementIm
     for (QStringList::Iterator i = keys.begin(); i != keys.end(); ++i) {
         HTMLOptionElementImpl* o = new HTMLOptionElementImpl(doc, form());
         addChild(o);
-        o->addChild(new TextImpl(doc, DOMString(*i)));
+        o->addChild(doc->document()->createTextNode(DOMString(*i).implementation()));
     }
 }
 
@@ -1905,72 +1906,9 @@ bool HTMLKeygenElementImpl::encoding(const QTextCodec* codec, khtml::encodingLis
 
 // -------------------------------------------------------------------------
 
-HTMLOptGroupElementImpl::HTMLOptGroupElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f)
-    : HTMLGenericFormElementImpl(doc, f)
-{
-}
-
-HTMLOptGroupElementImpl::~HTMLOptGroupElementImpl()
-{
-}
-
 NodeImpl::Id HTMLOptGroupElementImpl::id() const
 {
     return ID_OPTGROUP;
-}
-
-NodeImpl *HTMLOptGroupElementImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild, int &exceptioncode )
-{
-    NodeImpl *result = HTMLGenericFormElementImpl::insertBefore(newChild,refChild, exceptioncode);
-    if ( !exceptioncode )
-        recalcSelectOptions();
-    return result;
-}
-
-NodeImpl *HTMLOptGroupElementImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode )
-{
-    NodeImpl *result = HTMLGenericFormElementImpl::replaceChild(newChild,oldChild, exceptioncode);
-    if(!exceptioncode)
-        recalcSelectOptions();
-    return result;
-}
-
-NodeImpl *HTMLOptGroupElementImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
-{
-    NodeImpl *result = HTMLGenericFormElementImpl::removeChild(oldChild, exceptioncode);
-    if( !exceptioncode )
-        recalcSelectOptions();
-    return result;
-}
-
-NodeImpl *HTMLOptGroupElementImpl::appendChild ( NodeImpl *newChild, int &exceptioncode )
-{
-    NodeImpl *result = HTMLGenericFormElementImpl::appendChild(newChild, exceptioncode);
-    if( !exceptioncode )
-        recalcSelectOptions();
-    return result;
-}
-
-NodeImpl* HTMLOptGroupElementImpl::addChild(NodeImpl* newChild)
-{
-    recalcSelectOptions();
-
-    return HTMLGenericFormElementImpl::addChild(newChild);
-}
-
-void HTMLOptGroupElementImpl::parseAttribute(AttributeImpl *attr)
-{
-    HTMLGenericFormElementImpl::parseAttribute(attr);
-    recalcSelectOptions();
-}
-
-void HTMLOptGroupElementImpl::recalcSelectOptions()
-{
-    NodeImpl *select = parentNode();
-    while (select && select->id() != ID_SELECT)
-        select = select->parentNode();
-    if (select)
-        static_cast<HTMLSelectElementImpl*>(select)->setRecalcListItems();
 }
 
 // -------------------------------------------------------------------------
@@ -2003,24 +1941,6 @@ DOMString HTMLOptionElementImpl::text() const
 	    return firstChild()->nodeValue();
     }
     return "";
-}
-
-NodeImpl* HTMLOptionElementImpl::addChild(NodeImpl* newChild)
-{
-    recalcSelectOptions();
-    qDebug("HTMLOptionElementImpl::addChild");
-
-
-    return HTMLGenericFormElementImpl::addChild(newChild);
-}
-
-void HTMLOptionElementImpl::recalcSelectOptions()
-{
-    NodeImpl *select = parentNode();
-    while (select && select->id() != ID_SELECT)
-        select = select->parentNode();
-    if (select)
-        static_cast<HTMLSelectElementImpl*>(select)->setRecalcListItems();
 }
 
 long HTMLOptionElementImpl::index() const
@@ -2275,7 +2195,7 @@ void HTMLTextAreaElementImpl::setDefaultValue(DOMString _defaultValue)
     for (; it.current(); ++it) {
         removeChild(it.current(), exceptioncode);
     }
-    insertBefore(getDocument()->createTextNode(_defaultValue),firstChild(), exceptioncode);
+    insertBefore(getDocument()->createTextNode(_defaultValue.implementation()),firstChild(), exceptioncode);
     setValue(_defaultValue);
 }
 

@@ -289,11 +289,6 @@ DOMString ProcessingInstructionImpl::target() const
     return m_target;
 }
 
-DOMString ProcessingInstructionImpl::data() const
-{
-    return m_data;
-}
-
 void ProcessingInstructionImpl::setData( const DOMString &_data, int &exceptioncode )
 {
     // NO_MODIFICATION_ALLOWED_ERR: Raised when the node is readonly.

@@ -101,22 +101,13 @@ NodeImpl::Id HTMLLIElementImpl::id() const
     return ID_LI;
 }
 
-
 void HTMLLIElementImpl::parseAttribute(AttributeImpl *attr)
 {
     switch(attr->id())
     {
     case ATTR_VALUE:
-        isValued = true;
-        requestedValue = attr->val() ? attr->val()->toInt() : 0;
-
-        if(m_render && m_render->isListItem())
-        {
-            RenderListItem *list = static_cast<RenderListItem *>(m_render);
-            // ### work out what to do when attribute removed - use default of some sort?
-
-            list->setValue(requestedValue);
-        }
+        if(m_render && m_render->isListItem() && m_render->style()->display() == LIST_ITEM)
+            static_cast<RenderListItem*>(m_render)->setValue(attr->value().toInt());
         break;
     case ATTR_TYPE:
         if ( strcmp( attr->value(), "a" ) == 0 )
@@ -143,8 +134,11 @@ void HTMLLIElementImpl::attach()
 
     HTMLElementImpl::attach();
 
-    if ( m_render && isValued  && m_render->style()->display() == LIST_ITEM )
-        static_cast<RenderListItem*>(m_render)->setValue(requestedValue);
+    if ( m_render && m_render->style()->display() == LIST_ITEM ) {
+        DOMString v = getAttribute(ATTR_VALUE);
+        if (!v.isEmpty())
+            static_cast<RenderListItem*>(m_render)->setValue(v.implementation()->toInt());
+    }
 }
 
 

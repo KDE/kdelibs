@@ -876,13 +876,11 @@ NodeImpl *KHTMLParser::getElement(Token* t)
     }
 // formatting elements (block)
     case ID_BLOCKQUOTE:
-        n = new HTMLBlockquoteElementImpl(document);
+    case ID_LAYER:
+        n = new HTMLGenericElementImpl(document, t->id);
         break;
     case ID_DIV:
         n = new HTMLDivElementImpl(document);
-        break;
-    case ID_LAYER:
-        n = new HTMLLayerElementImpl(document);
         break;
     case ID_H1:
     case ID_H2:
@@ -890,13 +888,13 @@ NodeImpl *KHTMLParser::getElement(Token* t)
     case ID_H4:
     case ID_H5:
     case ID_H6:
-        n = new HTMLHeadingElementImpl(document, t->id);
+        n = new HTMLGenericElementImpl(document, t->id);
         break;
     case ID_HR:
         n = new HTMLHRElementImpl(document);
         break;
     case ID_P:
-        n = new HTMLParagraphElementImpl(document);
+        n = new HTMLGenericElementImpl(document, t->id);
         break;
     case ID_PRE:
         ++inPre;
@@ -1249,7 +1247,7 @@ NodeImpl *KHTMLParser::handleIsindex( Token *t )
     DOMString text = i18n("This is a searchable index. Enter search keywords: ");
     if (a)
         text = a->value();
-    child = new TextImpl(document, text);
+    child = new TextImpl(document, text.implementation());
     n->addChild( child );
     child = new HTMLIsIndexElementImpl(document, myform);
     static_cast<ElementImpl *>(child)->setAttribute(ATTR_TYPE, "khtml_isindex");

@@ -36,7 +36,7 @@
 
 namespace DOM {
 
-class HTMLBlockquoteElementImpl;
+class HTMLElementImpl;
 class DOMString;
 
 /**
@@ -53,7 +53,7 @@ public:
     HTMLBlockquoteElement(const Node &other) : HTMLElement()
         {(*this)=other;}
 protected:
-    HTMLBlockquoteElement(HTMLBlockquoteElementImpl *impl);
+    HTMLBlockquoteElement(HTMLElementImpl *impl);
 public:
 
     HTMLBlockquoteElement & operator = (const HTMLBlockquoteElement &other);
@@ -204,7 +204,6 @@ public:
 
 // --------------------------------------------------------------------------
 
-class HTMLHeadingElementImpl;
 class DOMString;
 
 /**
@@ -221,7 +220,7 @@ public:
     HTMLHeadingElement(const Node &other) : HTMLElement()
          {(*this)=other;}
 protected:
-    HTMLHeadingElement(HTMLHeadingElementImpl *impl);
+    HTMLHeadingElement(HTMLElementImpl *impl);
 public:
 
     HTMLHeadingElement & operator = (const HTMLHeadingElement &other);
@@ -246,7 +245,6 @@ public:
 
 // --------------------------------------------------------------------------
 
-class HTMLParagraphElementImpl;
 class DOMString;
 
 /**
@@ -263,7 +261,7 @@ public:
     HTMLParagraphElement(const Node &other) : HTMLElement()
          {(*this)=other;}
 protected:
-    HTMLParagraphElement(HTMLParagraphElementImpl *impl);
+    HTMLParagraphElement(HTMLElementImpl *impl);
 public:
 
     HTMLParagraphElement & operator = (const HTMLParagraphElement &other);

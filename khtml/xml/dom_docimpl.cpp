@@ -350,22 +350,17 @@ DocumentFragmentImpl *DocumentImpl::createDocumentFragment(  )
     return new DocumentFragmentImpl( docPtr() );
 }
 
-TextImpl *DocumentImpl::createTextNode( const DOMString &data )
-{
-    return new TextImpl( docPtr(), data);
-}
-
-CommentImpl *DocumentImpl::createComment ( const DOMString &data )
+CommentImpl *DocumentImpl::createComment ( DOMStringImpl* data )
 {
     return new CommentImpl( docPtr(), data );
 }
 
-CDATASectionImpl *DocumentImpl::createCDATASection ( const DOMString &data )
+CDATASectionImpl *DocumentImpl::createCDATASection ( DOMStringImpl* data )
 {
     return new CDATASectionImpl( docPtr(), data );
 }
 
-ProcessingInstructionImpl *DocumentImpl::createProcessingInstruction ( const DOMString &target, const DOMString &data )
+ProcessingInstructionImpl *DocumentImpl::createProcessingInstruction ( const DOMString &target, DOMStringImpl* data )
 {
     return new ProcessingInstructionImpl( docPtr(),target,data);
 }
@@ -416,24 +411,24 @@ NodeImpl *DocumentImpl::importNode(NodeImpl *importedNode, bool deep, int &excep
 	}
 	else if(importedNode->nodeType() == Node::TEXT_NODE)
 	{
-		result = createTextNode(importedNode->nodeValue());
+		result = createTextNode(static_cast<TextImpl*>(importedNode)->string());
 		deep = false;
 	}
 	else if(importedNode->nodeType() == Node::CDATA_SECTION_NODE)
 	{
-		result = createCDATASection(importedNode->nodeValue());
+		result = createCDATASection(static_cast<CDATASectionImpl*>(importedNode)->string());
 		deep = false;
 	}
 	else if(importedNode->nodeType() == Node::ENTITY_REFERENCE_NODE)
 		result = createEntityReference(importedNode->nodeName());
 	else if(importedNode->nodeType() == Node::PROCESSING_INSTRUCTION_NODE)
 	{
-		result = createProcessingInstruction(importedNode->nodeName(), importedNode->nodeValue());
+		result = createProcessingInstruction(importedNode->nodeName(), importedNode->nodeValue().implementation());
 		deep = false;
 	}
 	else if(importedNode->nodeType() == Node::COMMENT_NODE)
 	{
-		result = createComment(importedNode->nodeValue());
+		result = createComment(static_cast<CommentImpl*>(importedNode)->string());
 		deep = false;
 	}
 	else
@@ -649,25 +644,21 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
         break;
 
 // formatting elements (block)
-    case ID_BLOCKQUOTE:
-        n = new HTMLBlockquoteElementImpl(docPtr());
-        break;
     case ID_DIV:
         n = new HTMLDivElementImpl(docPtr());
         break;
+    case ID_BLOCKQUOTE:
+    case ID_P:
     case ID_H1:
     case ID_H2:
     case ID_H3:
     case ID_H4:
     case ID_H5:
     case ID_H6:
-        n = new HTMLHeadingElementImpl(docPtr(), id);
+        n = new HTMLGenericElementImpl(docPtr(), id);
         break;
     case ID_HR:
         n = new HTMLHRElementImpl(docPtr());
-        break;
-    case ID_P:
-        n = new HTMLParagraphElementImpl(docPtr());
         break;
     case ID_PRE:
         n = new HTMLPreElementImpl(docPtr(), id);

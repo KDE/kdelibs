@@ -519,15 +519,6 @@ void HTMLFrameSetElementImpl::recalcStyle( StyleChange ch )
 
 // -------------------------------------------------------------------------
 
-HTMLHeadElementImpl::HTMLHeadElementImpl(DocumentPtr *doc)
-    : HTMLElementImpl(doc)
-{
-}
-
-HTMLHeadElementImpl::~HTMLHeadElementImpl()
-{
-}
-
 NodeImpl::Id HTMLHeadElementImpl::id() const
 {
     return ID_HEAD;
@@ -547,15 +538,6 @@ void HTMLHtmlElementImpl::attach()
 }
 
 // -------------------------------------------------------------------------
-
-HTMLHtmlElementImpl::HTMLHtmlElementImpl(DocumentPtr *doc)
-    : HTMLElementImpl(doc)
-{
-}
-
-HTMLHtmlElementImpl::~HTMLHtmlElementImpl()
-{
-}
 
 NodeImpl::Id HTMLHtmlElementImpl::id() const
 {

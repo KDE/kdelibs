@@ -1500,7 +1500,6 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 						button,0);
 	me->ref();
 	targetNode->dispatchEvent(me,exceptioncode,true);
-	bool defaultHandled = me->defaultHandled();
         if (me->defaultHandled() || me->defaultPrevented())
             swallowEvent = true;
 	me->deref();

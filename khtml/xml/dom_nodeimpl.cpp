@@ -934,6 +934,8 @@ void NodeImpl::removedFromDocument()
 
 void NodeImpl::childrenChanged()
 {
+    if (parentNode())
+        parentNode()->childrenChanged();
 }
 
 bool NodeImpl::isReadOnly()
@@ -959,13 +961,6 @@ RenderObject * NodeImpl::nextRenderer()
 }
 
 //-------------------------------------------------------------------------
-
-NodeBaseImpl::NodeBaseImpl(DocumentPtr *doc)
-    : NodeImpl(doc)
-{
-    _first = _last = 0;
-}
-
 
 NodeBaseImpl::~NodeBaseImpl()
 {

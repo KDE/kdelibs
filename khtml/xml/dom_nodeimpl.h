@@ -377,7 +377,8 @@ protected:
 class NodeBaseImpl : public NodeImpl
 {
 public:
-    NodeBaseImpl(DocumentPtr *doc);
+    NodeBaseImpl(DocumentPtr *doc)
+        : NodeImpl(doc), _first(0), _last(0) {}
     virtual ~NodeBaseImpl();
 
     // DOM methods overridden from  parent classes

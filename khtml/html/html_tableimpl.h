@@ -124,13 +124,10 @@ class HTMLTablePartElementImpl : public HTMLElementImpl
 {
 public:
     HTMLTablePartElementImpl(DocumentPtr *doc)
-        : HTMLElementImpl(doc), m_solid(false)
+        : HTMLElementImpl(doc)
         { }
 
     virtual void parseAttribute(AttributeImpl *attr);
-
-protected:
-    bool m_solid : 1;
 };
 
 // -------------------------------------------------------------------------
@@ -158,9 +155,8 @@ protected:
 class HTMLTableRowElementImpl : public HTMLTablePartElementImpl
 {
 public:
-    HTMLTableRowElementImpl(DocumentPtr *doc);
-
-    ~HTMLTableRowElementImpl();
+    HTMLTableRowElementImpl(DocumentPtr *doc)
+        : HTMLTablePartElementImpl(doc) {}
 
     virtual Id id() const;
 
@@ -205,7 +201,7 @@ protected:
     int cSpan;
     int _id;
     int rowHeight;
-
+    bool m_solid        : 1;
     bool m_nowrap : 1;
 };
 
@@ -215,8 +211,6 @@ class HTMLTableColElementImpl : public HTMLTablePartElementImpl
 {
 public:
     HTMLTableColElementImpl(DocumentPtr *doc, ushort i);
-
-    ~HTMLTableColElementImpl();
 
     virtual Id id() const;
 
@@ -241,12 +235,10 @@ protected:
 class HTMLTableCaptionElementImpl : public HTMLTablePartElementImpl
 {
 public:
-    HTMLTableCaptionElementImpl(DocumentPtr *doc);
-
-    ~HTMLTableCaptionElementImpl();
+    HTMLTableCaptionElementImpl(DocumentPtr *doc)
+        : HTMLTablePartElementImpl(doc) {}
 
     virtual Id id() const;
-
     virtual void parseAttribute(AttributeImpl *attr);
 };
 

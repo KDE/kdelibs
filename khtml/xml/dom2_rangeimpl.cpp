@@ -814,7 +814,9 @@ DOMString RangeImpl::toString( int &exceptioncode )
         if(n->nodeType() == DOM::Node::TEXT_NODE ||
            n->nodeType() == DOM::Node::CDATA_SECTION_NODE) {
 
-            DOMString str = static_cast<TextImpl *>(n)->data().copy();
+            DOMString str;
+            if (static_cast<TextImpl *>(n)->string())
+               str = static_cast<TextImpl *>(n)->string()->copy();
             if (n == m_endContainer)
                 str.truncate(m_endOffset);
             if (n == m_startContainer)

@@ -549,7 +549,6 @@ void HTMLTablePartElementImpl::parseAttribute(AttributeImpl *attr)
             addCSSProperty(CSS_PROP_BORDER_BOTTOM_STYLE, CSS_VAL_SOLID);
             addCSSProperty(CSS_PROP_BORDER_LEFT_STYLE, CSS_VAL_SOLID);
             addCSSProperty(CSS_PROP_BORDER_RIGHT_STYLE, CSS_VAL_SOLID);
-            m_solid = true;
         }
         break;
     }
@@ -651,15 +650,6 @@ int HTMLTableSectionElementImpl::numRows() const
 
 // -------------------------------------------------------------------------
 
-HTMLTableRowElementImpl::HTMLTableRowElementImpl(DocumentPtr *doc)
-  : HTMLTablePartElementImpl(doc)
-{
-}
-
-HTMLTableRowElementImpl::~HTMLTableRowElementImpl()
-{
-}
-
 NodeImpl::Id HTMLTableRowElementImpl::id() const
 {
     return ID_TR;
@@ -751,6 +741,7 @@ HTMLTableCellElementImpl::HTMLTableCellElementImpl(DocumentPtr *doc, int tag)
   m_nowrap = false;
   _id = tag;
   rowHeight = 0;
+  m_solid = false;
 }
 
 HTMLTableCellElementImpl::~HTMLTableCellElementImpl()
@@ -829,10 +820,6 @@ HTMLTableColElementImpl::HTMLTableColElementImpl(DocumentPtr *doc, ushort i)
     _span = (_id == ID_COLGROUP ? 0 : 1);
 }
 
-HTMLTableColElementImpl::~HTMLTableColElementImpl()
-{
-}
-
 NodeImpl::Id HTMLTableColElementImpl::id() const
 {
     return _id;
@@ -865,15 +852,6 @@ void HTMLTableColElementImpl::parseAttribute(AttributeImpl *attr)
 }
 
 // -------------------------------------------------------------------------
-
-HTMLTableCaptionElementImpl::HTMLTableCaptionElementImpl(DocumentPtr *doc)
-  : HTMLTablePartElementImpl(doc)
-{
-}
-
-HTMLTableCaptionElementImpl::~HTMLTableCaptionElementImpl()
-{
-}
 
 NodeImpl::Id HTMLTableCaptionElementImpl::id() const
 {

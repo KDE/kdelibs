@@ -26,6 +26,7 @@
 #define _DOM_DocumentImpl_h_
 
 #include "xml/dom_elementimpl.h"
+#include "xml/dom_textimpl.h"
 #include "xml/dom2_traversalimpl.h"
 #include "misc/shared.h"
 
@@ -131,10 +132,12 @@ public:
     ElementImpl *documentElement() const;
     virtual ElementImpl *createElement ( const DOMString &tagName );
     DocumentFragmentImpl *createDocumentFragment ();
-    TextImpl *createTextNode ( const DOMString &data );
-    CommentImpl *createComment ( const DOMString &data );
-    CDATASectionImpl *createCDATASection ( const DOMString &data );
-    ProcessingInstructionImpl *createProcessingInstruction ( const DOMString &target, const DOMString &data );
+    TextImpl *createTextNode ( DOMStringImpl* data ) { return new TextImpl( docPtr(), data); }
+    TextImpl *createTextNode ( const QString& data )
+        { return createTextNode(new DOMStringImpl(data.unicode(), data.length())); }
+    CommentImpl *createComment ( DOMStringImpl* data );
+    CDATASectionImpl *createCDATASection ( DOMStringImpl* data );
+    ProcessingInstructionImpl *createProcessingInstruction ( const DOMString &target, DOMStringImpl* data );
     Attr createAttribute(NodeImpl::Id id);
     EntityReferenceImpl *createEntityReference ( const DOMString &name );
     NodeImpl *importNode( NodeImpl *importedNode, bool deep, int &exceptioncode );

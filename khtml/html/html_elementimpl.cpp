@@ -52,11 +52,6 @@
 using namespace DOM;
 using namespace khtml;
 
-HTMLElementImpl::HTMLElementImpl(DocumentPtr *doc)
-    : ElementImpl(doc)
-{
-}
-
 HTMLElementImpl::~HTMLElementImpl()
 {
 }
@@ -322,7 +317,7 @@ bool HTMLElementImpl::setInnerText( const DOMString &text )
 
     removeChildren();
 
-    TextImpl *t = new TextImpl( docPtr(), text );
+    TextImpl *t = new TextImpl( docPtr(), text.implementation() );
     int ec = 0;
     appendChild( t, ec );
     if ( !ec )
