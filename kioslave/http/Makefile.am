@@ -3,38 +3,31 @@
 
 SUBDIRS = kcookiejar
 
-INCLUDES=	$(all_includes) $(SSL_INCLUDES)
-LDFLAGS =       $(all_libraries) $(SSL_LDFLAGS)
+INCLUDES=	-I$(srcdir)/.. -I$(srcdir)/../.. $(all_includes)
+LDFLAGS =       $(all_libraries)
 
 ####### Files
 
 bin_PROGRAMS = kio_http_cache_cleaner
-lib_LTLIBRARIES = kio_http.la libkio_http_cache_cleaner.la
+lib_LTLIBRARIES = kio_http_cache_cleaner.la
+kde_module_LTLIBRARIES = kio_http.la
 
-kio_http_la_SOURCES = http.cc extern_md5.c
-kio_http_la_LIBADD = $(LIB_KIO) $(LIBZ) $(LIBSSL)
-kio_http_la_LDFLAGS = -module -avoid-version
+kio_http_la_SOURCES = http.cc
+kio_http_la_LIBADD = ../libkio.la $(LIBZ)
+kio_http_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
 
-check_PROGRAMS = linktest
-linktest_SOURCES = $(kio_http_la_SOURCES) linktest.cpp
-linktest.cpp:
-	echo "int main() {};" > linktest.cpp
-linktest_LDFLAGS  = $(all_libraries) -module -avoid-version
-linktest_LDADD = $(kio_http_la_LIBADD)
-
-kio_http_cache_cleaner_SOURCES = http_cache_cleaner.cpp
-kio_http_cache_cleaner_LDADD   = $(LIB_KDECORE)
+kio_http_cache_cleaner_SOURCES = dummy.cpp
+kio_http_cache_cleaner_LDADD   = kio_http_cache_cleaner.la
 kio_http_cache_cleaner_LDFLAGS = $(KDE_RPATH)
 
-libkio_http_cache_cleaner_la_SOURCES = http_cache_cleaner.cpp
-libkio_http_cache_cleaner_la_LIBADD  = $(LIB_KDECORE)
-libkio_http_cache_cleaner_la_LDFLAGS = -module -avoid-version
+kio_http_cache_cleaner_la_SOURCES = http_cache_cleaner.cpp
+kio_http_cache_cleaner_la_LIBADD  = $(LIB_KIO)
+kio_http_cache_cleaner_la_LDFLAGS = -module -avoid-version
 
-noinst_HEADERS = http.h extern_md5.h
-
-kioconfig_DATA = http.desktop https.desktop
-kioconfigdir = $(kde_confdir)/protocols
+noinst_HEADERS = http.h
 
 kdelnkdir = $(kde_servicesdir)
-kdelnk_DATA = http_cache_cleaner.desktop
+kdelnk_DATA = http_cache_cleaner.desktop http.protocol https.protocol
 
+dummy.cpp:
+	echo > dummy.cpp

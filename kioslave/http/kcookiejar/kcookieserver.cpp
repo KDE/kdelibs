@@ -1,22 +1,25 @@
 /*
-    This file is part of the KDE File Manager
+This file is part of KDE
 
-    Copyright (C) 1998 Waldo Bastian (bastian@kde.org)
+  Copyright (C) 1998-2000 Waldo Bastian (bastian@kde.org)
 
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public License
-    version 2 as published by the Free Software Foundation.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-    This software is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    General Public License for more details.
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
 
-    You should have received a copy of the GNU General Public License
-    along with this library; see the file COPYING. If not, write to
-    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-    Boston, MA 02111-1307, USA.
-*/
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 //----------------------------------------------------------------------------
 //
 // KDE Cookie Server
@@ -29,33 +32,42 @@
 #include "kcookiewin.h"
 
 #include <kdebug.h>
-#include <kapp.h>
-#include <kstddirs.h>
+#include <kapplication.h>
+#include <kcmdlineargs.h>
+#include <kstandarddirs.h>
 #include <qtimer.h>
 #include <unistd.h>
-#include <qlist.h>
+#include <qptrlist.h>
+#include <qfile.h>
 
 #include <dcopclient.h>
+#include <kconfig.h>
+
+// Cookie field indexes
+enum CookieDetails { CF_DOMAIN=0, CF_PATH, CF_NAME, CF_HOST,
+                     CF_VALUE, CF_EXPIRE, CF_PROVER, CF_SECURE };
+
 
 class CookieRequest {
 public:
    DCOPClientTransaction *transaction;
    QString url;
+   bool DOM;
 };
 
-template class  QList<CookieRequest>;
+template class  QPtrList<CookieRequest>;
 
-class RequestList : public QList<CookieRequest>
+class RequestList : public QPtrList<CookieRequest>
 {
 public:
-   RequestList() : QList<CookieRequest>() { }
+   RequestList() : QPtrList<CookieRequest>() { }
 };
 
 KCookieServer::KCookieServer()
-  : KUniqueApplication()
+              :KUniqueApplication()
 {
    mCookieJar = new KCookieJar;
-   mPendingCookies = new KCookieList;
+   mPendingCookies = new KHttpCookieList;
    mRequestList = new RequestList;
    mAdvicePending = false;
    mTimer = 0;
@@ -70,7 +82,7 @@ KCookieServer::KCookieServer()
       mCookieJar->loadCookies( filenameOld );
       if (mCookieJar->saveCookies( filename))
       {
-         unlink(filenameOld.ascii()); // Remove old kfm cookie file
+         unlink(QFile::encodeName(filenameOld)); // Remove old kfm cookie file
       }
    }
    else
@@ -81,80 +93,68 @@ KCookieServer::KCookieServer()
 
 KCookieServer::~KCookieServer()
 {
+   if (mCookieJar->changed())
+      slotSave();
    delete mCookieJar;
    delete mTimer;
    delete mPendingCookies;
 }
 
-
-bool
-KCookieServer::process(const QCString &fun, const QByteArray &data,
-		       QCString& replyType, QByteArray &replyData)
+int KCookieServer::newInstance()
 {
-    if (fun == "findCookies(QString)")
-    {
-        QDataStream stream(data, IO_ReadOnly);
-        QString arg1;
-        stream >> arg1;
-        kDebugInfo(7104, "got findCookies( %s )", arg1.ascii());
-        if (cookiesPending(arg1))
-        {
-           kDebugInfo( 7104, "Blocked on pending cookies.");
-           CookieRequest *request = new CookieRequest;
-           request->transaction = dcopClient()->beginTransaction();
-           request->url = arg1;
-           mRequestList->append( request );
-           return true; // Talk to you later :-)
-        }
-        QString res = mCookieJar->findCookies(arg1);
-        QDataStream stream2(replyData, IO_WriteOnly);
-        stream2 << res;
-        replyType = "QString";
-        kDebugInfo( 7104, "result = %s", res.ascii());
-        return true;
-    }
-    else if (fun == "addCookies(QString,QCString)")
-    {
-        QDataStream stream(data, IO_ReadOnly);
-        QString arg1;
-        QCString arg2;
-        stream >> arg1 >> arg2;
-        kDebugInfo( 7104, "got addCookies(%s, %s)", arg1.ascii(), arg2.data());
-        addCookies(arg1, arg2);
-        replyType = "void";
-        return true;
-    }
-    else if (KUniqueApplication::process(fun, data, replyType, replyData))
-    {
-        return true;
-    }
-    kDebugInfo( 7104, "Ignoring unknown DCOP function \"%s\"", fun.data());
-    return false;
+   KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+   if (args->isSet("remove-all"))
+   {
+        mCookieJar->eatAllCookies();
+        slotSave();
+   }
+   if (args->isSet("remove"))
+   {
+        mCookieJar->eatCookiesForDomain(args->getOption("remove"));
+        slotSave();
+   }
+
+   if (args->isSet("shutdown"))
+   {
+        shutdown();
+   }
+   if(args->isSet("reload-config"))
+   {
+        mCookieJar->loadConfig( kapp->config(), true );
+   }
+   return 0;
 }
 
-bool
-KCookieServer::cookiesPending( const QString &url )
+bool KCookieServer::cookiesPending( const QString &url )
 {
   QString fqdn;
-  QString domain;
+  QStringList domains;
   QString path;
   // Check whether 'url' has cookies on the pending list
-  if (!KCookieJar::extractDomain( url, fqdn, domain, path))
+  if (mPendingCookies->isEmpty())
      return false;
-  for( KCookie *cookie = mPendingCookies->first();
-       cookie;
+  if (!KCookieJar::parseURL(url, fqdn, path))
+     return false;
+
+  KCookieJar::extractDomains( fqdn, domains );
+  for( KHttpCookie *cookie = mPendingCookies->first();
+       cookie != 0L;
        cookie = mPendingCookies->next())
   {
-       if (cookie->match( domain, fqdn, path))
+       if (cookie->match( fqdn, domains, path))
           return true;
   }
   return false;
 }
 
-void
-KCookieServer::addCookies(const QString &url, const QCString &cookieHeader)
+void KCookieServer::addCookies( const QString &url, const QCString &cookieHeader,
+                               long windowId, bool useDOMFormat )
 {
-    KCookiePtr cookie = mCookieJar->makeCookies(url, cookieHeader);
+    KHttpCookiePtr cookie = 0;
+    if (useDOMFormat)
+       cookie = mCookieJar->makeDOMCookies(url, cookieHeader, windowId);
+    else
+       cookie = mCookieJar->makeCookies(url, cookieHeader, windowId);
 
     if (mAdvicePending)
     {
@@ -173,14 +173,14 @@ KCookieServer::addCookies(const QString &url, const QCString &cookieHeader)
 
 }
 
-void KCookieServer::checkCookies(KCookie *cookie, bool queue)
+void KCookieServer::checkCookies( KHttpCookie *cookie, bool queue )
 {
-    KCookieAdvice userAdvice = KCookieDunno;
     QString host;
+    KCookieAdvice userAdvice = KCookieDunno;
     if (cookie) host = cookie->host();
     while (cookie)
     {
-        KCookiePtr next_cookie = cookie->next();
+        KHttpCookiePtr next_cookie = cookie->next();
         KCookieAdvice advice = mCookieJar->cookieAdvice(cookie);
         if ((advice == KCookieAsk) || (advice == KCookieDunno))
         {
@@ -188,44 +188,43 @@ void KCookieServer::checkCookies(KCookie *cookie, bool queue)
             // cookies from the same site.
             if (userAdvice == KCookieDunno)
             {
-		if (queue)
+                if (queue)
                 {
                     mPendingCookies->append(cookie);
                     return;
                 }
                 else
                 {
-                    kDebugInfo( 7104, "Asking user for advice for cookie from %s", cookie->host().ascii());
                     mPendingCookies->prepend(cookie);
-                    KCookieWin *kw = new KCookieWin( 0L, cookie);
-	            userAdvice = (KCookieAdvice) kw->advice(mCookieJar);
-	            delete kw;
+                    KCookieWin *kw = new KCookieWin( 0L, cookie,
+                                                     mCookieJar->defaultRadioButton,
+                                                     mCookieJar->showCookieDetails );
+                    userAdvice = kw->advice(mCookieJar, cookie);
+                    delete kw;
                     mPendingCookies->take(0);
-	            // Save the cookie config if it has changed
-	            mCookieJar->saveConfig( kapp->config() );
+                    // Save the cookie config if it has changed
+                    mCookieJar->saveConfig( kapp->config() );
                 }
-	    }
-	    advice = userAdvice;
+            }
+            advice = userAdvice;
         }
         switch(advice)
         {
         case KCookieAccept:
-            kDebugInfo( 7104, "Accepting cookie from %s", cookie->host().ascii());
             mCookieJar->addCookie(cookie);
-	    break;
-	
-	case KCookieReject:
+            break;
+
+        case KCookieReject:
         default:
-            kDebugInfo( 7104, "Rejecting cookie from %s", cookie->host().ascii());
             delete cookie;
-	    break;
+            break;
         }
         cookie = next_cookie;
         if (!cookie && !queue)
         {
-	   // Check if there are cookies on the pending list from the
-	   // same host.
-	   for( cookie = mPendingCookies->first();
+           // Check if there are cookies on the pending list from the
+           // same host.
+           for( cookie = mPendingCookies->first();
                 cookie;
                 cookie = mPendingCookies->next())
            {
@@ -241,14 +240,14 @@ void KCookieServer::checkCookies(KCookie *cookie, bool queue)
     }
 
     // Check if we can handle any request
-    for( CookieRequest *request = mRequestList->first();
-         request;)
+    for ( CookieRequest *request = mRequestList->first(); request;)
     {
         if (!cookiesPending( request->url ))
         {
            QCString replyType;
            QByteArray replyData;
-           QString res = mCookieJar->findCookies( request->url );
+           QString res = mCookieJar->findCookies( request->url, request->DOM );
+
            QDataStream stream2(replyData, IO_WriteOnly);
            stream2 << res;
            replyType = "QString";
@@ -265,23 +264,276 @@ void KCookieServer::checkCookies(KCookie *cookie, bool queue)
         }
     }
     if (mCookieJar->changed() && !mTimer)
-    {
-       mTimer = new QTimer();
-       connect( mTimer, SIGNAL( timeout()), SLOT( slotSave()));
-       mTimer->start( 1000*60*SAVE_DELAY );
-    }
+        saveCookieJar();
 }
 
 void KCookieServer::slotSave()
 {
-   kDebugInfo( 7104, "Saving cookie stuff!\n");
-
    delete mTimer;
    mTimer = 0;
    QString filename = locateLocal("appdata", "cookies");
    mCookieJar->saveCookies(filename);
+}
 
-   mCookieJar->saveConfig( kapp->config());
+void KCookieServer::saveCookieJar()
+{
+    if( mTimer )
+        return;
+
+    mTimer = new QTimer();
+    connect( mTimer, SIGNAL( timeout()), SLOT( slotSave()));
+    mTimer->start( 1000*60*SAVE_DELAY );
+}
+
+void KCookieServer::putCookie( QStringList& out, KHttpCookie *cookie,
+                               const QValueList<int>& fields )
+{
+    QValueList<int>::ConstIterator i = fields.begin();
+    for ( ; i != fields.end(); ++i )
+    {
+        switch(*i)
+        {
+         case CF_DOMAIN :
+            out << cookie->domain();
+            break;
+         case CF_NAME :
+            out << cookie->name();
+            break;
+         case CF_PATH :
+            out << cookie->path();
+            break;
+         case CF_HOST :
+            out << cookie->host();
+            break;
+         case CF_VALUE :
+            out << cookie->value();
+            break;
+         case CF_EXPIRE :
+            out << QString::number(cookie->expireDate());
+            break;
+         case CF_PROVER :
+            out << QString::number(cookie->protocolVersion());
+            break;
+         case CF_SECURE :
+            out << QString::number( cookie->isSecure() ? 1 : 0 );
+            break;
+         default :
+            out << QString::null;
+        }
+    }
+}
+
+bool KCookieServer::cookieMatches( KHttpCookiePtr c,
+                                   QString domain, QString fqdn,
+                                   QString path, QString name )
+{
+    if( c )
+    {
+        bool hasDomain = !domain.isEmpty();
+        return
+       ((hasDomain && c->domain() == domain) ||
+        fqdn == c->host()) &&
+       (c->path()   == path)   &&
+       (c->name()   == name);
+    }
+    return false;
+}
+
+// DCOP function
+QString
+KCookieServer::findCookies(QString url)
+{
+   if (cookiesPending(url))
+   {
+      CookieRequest *request = new CookieRequest;
+      request->transaction = dcopClient()->beginTransaction();
+      request->url = url;
+      request->DOM = false;
+      mRequestList->append( request );
+      return QString::null; // Talk to you later :-)
+   }
+   return mCookieJar->findCookies(url, false);
+}
+
+// DCOP function
+QStringList
+KCookieServer::findDomains()
+{
+   QStringList result;
+   const QStringList domains = mCookieJar->getDomainList();
+   for ( QStringList::ConstIterator domIt = domains.begin();
+         domIt != domains.end(); ++domIt )
+   {
+       // Ignore domains that have policy set for but contain
+       // no cookies whatsoever...
+       const KHttpCookieList* list =  mCookieJar->getCookieList(*domIt, "");
+       if ( list && !list->isEmpty() )
+          result << *domIt;
+   }
+   return result;
+}
+
+// DCOP function
+QStringList
+KCookieServer::findCookies(QValueList<int> fields,
+                           QString domain,
+                           QString fqdn,
+                           QString path,
+                           QString name)
+{
+   QStringList result;
+   bool allDomCookies = name.isEmpty();
+
+   const KHttpCookieList* list =  mCookieJar->getCookieList(domain, fqdn);
+   if ( list && !list->isEmpty() )
+   {
+      QPtrListIterator<KHttpCookie>it( *list );
+      for ( ; it.current(); ++it )
+      {
+         if ( !allDomCookies )
+         {
+            if ( cookieMatches(it.current(), domain, fqdn, path, name) )
+            {
+               putCookie(result, it.current(), fields);
+               break;
+            }
+         }
+         else
+            putCookie(result, it.current(), fields);
+      }
+   }
+   return result;
+}
+
+// DCOP function
+QString
+KCookieServer::findDOMCookies(QString url)
+{
+   if (cookiesPending(url))
+   {
+      CookieRequest *request = new CookieRequest;
+      request->transaction = dcopClient()->beginTransaction();
+      request->url = url;
+      request->DOM = true;
+      mRequestList->append( request );
+      return QString::null; // Talk to you later :-)
+   }
+   return mCookieJar->findCookies(url, true);
+}
+
+// DCOP function
+void
+KCookieServer::addCookies(QString arg1, QCString arg2, long arg3)
+{
+   addCookies(arg1, arg2, arg3, false);
+}
+
+// DCOP function
+void
+KCookieServer::deleteCookie(QString domain, QString fqdn,
+                            QString path, QString name)
+{
+   const KHttpCookieList* list = mCookieJar->getCookieList( domain, fqdn );
+   if ( list && !list->isEmpty() )
+   {
+      QPtrListIterator<KHttpCookie>it (*list);
+      for ( ; it.current(); ++it )
+      {
+         if( cookieMatches(it.current(), domain, fqdn, path, name) )
+         {
+            mCookieJar->eatCookie( it.current() );
+            if (!mTimer)
+               saveCookieJar();
+            break;
+         }
+      }
+   }
+}
+
+// DCOP function
+void
+KCookieServer::deleteCookiesFromDomain(QString domain)
+{
+   mCookieJar->eatCookiesForDomain(domain);
+   if (!mTimer)
+      saveCookieJar();
+}
+
+void
+KCookieServer::deleteSessionCookies( long winId )
+{
+  mCookieJar->eatSessionCookies( winId );
+  if(!mTimer)
+    saveCookieJar();
+}
+
+void
+KCookieServer::deleteSessionCookiesFor(QString fqdn, long winId)
+{
+  mCookieJar->eatSessionCookies( fqdn, winId );
+  if(!mTimer)
+    saveCookieJar();
+}
+
+// DCOP function
+void
+KCookieServer::deleteAllCookies()
+{
+   mCookieJar->eatAllCookies();
+   if (!mTimer)
+      saveCookieJar();
+}
+
+// DCOP function
+void
+KCookieServer::addDOMCookies(QString arg1, QCString arg2, long arg3)
+{
+   addCookies(arg1, arg2, arg3, true);
+}
+
+// DCOP function
+void
+KCookieServer::setDomainAdvice(QString url, QString advice)
+{
+   QString fqdn;
+   QString dummy;
+   if (KCookieJar::parseURL(url, fqdn, dummy))
+   {
+      QStringList domains;
+      KCookieJar::extractDomains(fqdn, domains);
+      mCookieJar->setDomainAdvice(domains[0],
+                                  KCookieJar::strToAdvice(advice));
+   }
+}
+
+// DCOP function
+QString
+KCookieServer::getDomainAdvice(QString url)
+{
+   KCookieAdvice advice = KCookieDunno;
+   QString fqdn;
+   QString dummy;
+   if (KCookieJar::parseURL(url, fqdn, dummy))
+   {
+      QStringList domains;
+      KCookieJar::extractDomains(fqdn, domains);
+      advice = mCookieJar->getDomainAdvice(domains[0]);
+   }
+   return KCookieJar::adviceToStr(advice);
+}
+
+// DCOP function
+void
+KCookieServer::reloadPolicy()
+{
+   mCookieJar->loadConfig( kapp->config(), true );
+}
+
+// DCOP function
+void
+KCookieServer::shutdown()
+{
+   quit();
 }
 
 #include "kcookieserver.moc"

@@ -1,11 +1,12 @@
 /*
     This file is part of the KDE File Manager
 
-    Copyright (C) 1998 Waldo Bastian (bastian@kde.org)
+    Copyright (C) 1998-2000 Waldo Bastian (bastian@kde.org)
+    Copyright (C) 2000      Dawit Alemayehu (adawit@kde.org)
 
     This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public License 
-    as published by the Free Software Foundation; either version 2 
+    modify it under the terms of the GNU General Public License
+    as published by the Free Software Foundation; either version 2
     of the License, or (at your option) any later version.
 
     This software is distributed in the hope that it will be useful,
@@ -26,30 +27,58 @@
 #ifndef _KCOOKIEWIN_H_
 #define _KCOOKIEWIN_H_
 
-#include "kdialogbase.h"
-#include "kcookiejar.h"                                                
+#include <qgroupbox.h>
 
-class KCookie;
-class QRadioButton;
+#include <kdialog.h>
+#include "kcookiejar.h"
 
-class KCookieWin : public KDialogBase
+class QLineEdit;
+class QPushButton;
+class QVButtonGroup;
+class KURLLabel;
+
+class KCookieDetail : public QGroupBox
 {
-public:
-    
-    KCookieWin( QWidget *parent, KCookie *_cookie );
-    ~KCookieWin();
- 
-    /**
-     * The following function executes the dialog.
-     */
-    KCookieAdvice advice(KCookieJar *cookiejar); 
-    
-protected:
-    KCookie      *cookie;
-    QRadioButton *rb1;
-    QRadioButton *rb2;
-    QRadioButton *rb3;
+    Q_OBJECT
+
+public :
+    KCookieDetail( KHttpCookie* cookie, int cookieCount, QWidget *parent=0,
+                   const char *name=0 );
+    ~KCookieDetail();
+
+private :
+    QLineEdit*   m_name;
+    QLineEdit*   m_value;
+    QLineEdit*   m_expires;
+    QLineEdit*   m_domain;
+    QLineEdit*   m_path;
+    QLineEdit*   m_secure;
+
+    KHttpCookie* m_cookie;
+    KHttpCookie* m_cookie_orig;
+
+private slots:
+    void slotNextCookie();
 };
 
-#endif
+class KCookieWin : public KDialog
+{
+    Q_OBJECT
 
+public :
+    KCookieWin( QWidget *parent, KHttpCookie* cookie, int defaultButton=0,
+                bool showDetails=false );
+    ~KCookieWin();
+
+    KCookieAdvice advice( KCookieJar *cookiejar, KHttpCookie* cookie );
+
+private :
+    QPushButton*   m_button;
+    QVButtonGroup* m_btnGrp;
+    KCookieDetail* m_detailView;
+    bool m_showDetails;
+
+private slots:
+    void slotCookieDetails();
+};
+#endif

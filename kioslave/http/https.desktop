@@ -1,8 +1,0 @@
-# KDE Config File
-[Protocol]
-exec=kio_http
-protocol=https
-input=none
-output=filesystem
-reading=true
-

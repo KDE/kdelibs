@@ -1,142 +1,159 @@
-// $Id$
+/*
+   Copyright (C) 2000,2001 Dawit Alemayehu <adawit@kde.org>
+   Copyright (C) 2000,2001 Waldo Bastian <bastian@kde.org>
+   Copyright (C) 2000,2001 George Staikos <staikos@kde.org>
 
-#ifndef __http_h__
-#define __http_h__
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
 
-#ifdef HAVE_LIBZ
-#define DO_GZIP
-#endif
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
 
-#ifdef HAVE_SSL_H
-#define DO_SSL
-#endif
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
+*/
 
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <sys/socket.h>
+#ifndef HTTP_H_
+#define HTTP_H_
+
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
-
 #include <string.h>
-
-#include <errno.h>
 #include <stdio.h>
-#ifdef DO_SSL
-#include <openssl/ssl.h>
-#endif
-#include <unistd.h>
-#include <netdb.h>
+#include <time.h>
 
-#include <qstack.h>
-#include <qstring.h>
+#include <qptrlist.h>
+#include <qstrlist.h>
+#include <qstringlist.h>
 
-#include <kio/global.h>
-#include <kio/slavebase.h>
-#include <ksock.h>
 #include <kurl.h>
+#include "kio/tcpslavebase.h"
 
-
-// Default ports.. you might want to change this if you're trying to dodge
-// a proxy with some creative network address translation..  HTTP_PORT
-// is used for HTTP and WebDAV/WebFolders, HTTPS_PORT is well used for
-// HTTPS. Duh.
-#define DEFAULT_HTTP_PORT	80
-#define DEFAULT_HTTPS_PORT	443
-
-class HTTPIOJob;
 class DCOPClient;
 
+namespace KIO {
+    class AuthInfo;
+}
 
-class HTTPProtocol : public KIO::SlaveBase
+class HTTPProtocol : public KIO::TCPSlaveBase
 {
 public:
-  HTTPProtocol( KIO::Connection *_conn, const QCString &protocol );
-  virtual ~HTTPProtocol() { }
+  HTTPProtocol( const QCString &protocol, const QCString &pool,
+                const QCString &app );
+  virtual ~HTTPProtocol();
 
+  /** HTTP version **/
   enum HTTP_REV    {HTTP_Unknown, HTTP_10, HTTP_11};
-  enum HTTP_AUTH   {AUTH_None, AUTH_Basic, AUTH_Digest};
-  enum HTTP_PROTO  {PROTO_HTTP, PROTO_HTTPS, PROTO_WEBDAV};
-  enum HTTP_METHOD {HTTP_GET, HTTP_PUT, HTTP_POST, 
-                    HTTP_PROPFIND, HTTP_HEAD, HTTP_DELETE};
 
+  /** Authorization method used **/
+  enum HTTP_AUTH   {AUTH_None, AUTH_Basic, AUTH_Digest};
+
+  /** Current protocol mode used **/
+  enum HTTP_PROTO  {PROTO_HTTP, PROTO_HTTPS, PROTO_WEBDAV};
+
+  /** HTTP method **/
+  enum HTTP_METHOD {HTTP_GET, HTTP_PUT, HTTP_POST, HTTP_HEAD, HTTP_DELETE};
+
+  /** State of the current Connection **/
   typedef struct
   {
-        QString hostname;
-        short unsigned int port;
-        QString user;
-        QString passwd;
-	bool  do_proxy;
-	QString cef; // Cache Entry File belonging to this URL.
+    QString hostname;
+    short unsigned int port;
+    QString user;
+    QString passwd;
+    bool  doProxy;
+    QString cef; // Cache Entry File belonging to this URL.
   } HTTPState;
 
+  /** The request for the current connection **/
   typedef struct
   {
-	QString hostname;
-	short unsigned int port;
-	QString user;
-	QString passwd;
-	QString path;
-	QString query;
-	HTTP_METHOD method;
-	bool  reload;
-	unsigned long offset;
-	bool do_proxy;
-	KURL url;
+    QString hostname;
+    short unsigned int port;
+    QString user;
+    QString passwd;
+    QString path;
+    QString query;
+    HTTP_METHOD method;
+    KIO::CacheControl cache;
+    KIO::filesize_t offset;
+    bool doProxy;
+    KURL url;
+    QString window;                 // Window Id this request is related to.
+    QString referrer;
+    QString charsets;
+    QString languages;
+    bool allowCompressedPage;
+    bool disablePassDlg;
+    QString userAgent;
+    QString id;
   } HTTPRequest;
 
-  /** 
-   * Fills in m_request.url from the rest of the request data.
-   */
-  void buildURL();
-
-  /**
-   * Opens a connection
-   * @param host
-   * @param port
-   * @param user
-   * @param pass
-   * Called directly by createSlave, this is why there is no equivalent in
-   * SlaveInterface, unlike the other methods.
-   */
-  virtual void openConnection(const QString& host, int port, const QString& user, const QString& pass);
-
-  /**
-   * Closes the connection (forced)
-   */
-  virtual void closeConnection();
+  typedef struct
+  {
+    QCString nc;
+    QCString qop;
+    QCString realm;
+    QCString nonce;
+    QCString method;
+    QCString cnonce;
+    QCString username;
+    QCString password;
+    QStrList digestURI;
+    QCString algorithm;
+    QCString entityBody;
+  } DigestAuthInfo;
 
 
-  virtual void get( const QString& path, const QString& query, bool reload );
-  virtual void put( const QString& path, int _mode,
-			bool _overwrite, bool _resume );
-  void post( const QString& path, const QString& query );
+//---------------------- Re-implemented methods ----------------
+  virtual void setHost(const QString& host, int port, const QString& user,
+                       const QString& pass);
+
+  virtual void slave_status();
+
+  virtual void get( const KURL& url );
+  virtual void put( const KURL& url, int _mode, bool _overwrite,
+                    bool _resume );
 
   /**
    * Special commands supported by this slave :
    * 1 - HTTP POST
+   * 2 - Cache has been updated
+   * 3 - SSL Certificate Cache has been updated
+   * 4 - HTTP multi get
    */
   virtual void special( const QByteArray &data);
 
-  virtual void mimetype( const QString& path);
+  virtual void mimetype( const KURL& url);
 
-#if 0
-  // TODO (replaces testDir and getSize)
-  virtual void stat( const QString& path );
-  virtual void del( const QString& path, bool isfile);
-#endif
+  virtual void stat( const KURL& url );
+
+  virtual void reparseConfiguration();
+
+  virtual void closeConnection(); // Forced close of connection
+
+  void post( const KURL& url );
+  void multiGet(const QByteArray &data);
+  bool checkRequestURL( const KURL& );
+  void cacheUpdate( const KURL &url, bool nocache, time_t expireDate);
 
 protected:
 
   void error( int _errid, const QString &_text );
 
-  int readChunked(); // Read a chunk
-  int readLimited(); // Read maximum m_iSize bytes.
-  int readUnlimited(); // Read as much as possible.
+  int readChunked();    // Read a chunk
+  int readLimited();    // Read maximum m_iSize bytes.
+  int readUnlimited();  // Read as much as possible.
 
-  void decodeGzip();
-
-  int openStream();
+  void decodeGzip();    //decodes data compressed with gzip algorithm
+  void decodeDeflate(); //decodes data compressed with deflate algorithm
 
   /**
     * A "smart" wrapper around write that will use SSL_write or
@@ -155,45 +172,29 @@ protected:
 
   char *gets (char *str, int size);
 
-  /**
-    * An SSLified feof().
-    */
-  bool eof ();
+  void ungets(char *str, int size);
 
   /**
     * Add an encoding on to the appropiate stack this
     * is nececesary because transfer encodings and
     * content encodings must be handled separately.
     */
-  void addEncoding(QString, QStack<char> *);
+  void addEncoding(QString, QStringList &);
 
-  void configAuth(const char *, bool);
-#ifdef DO_SSL
-  void initSSL();
-#endif
+  void configAuth( const char *, bool );
 
-  size_t sendData();
 
-  bool http_open();
-  void http_close(); // Close transfer
+  bool httpOpen();             // Open transfer
+  void httpClose();            // Close transfer
 
-  void http_openConnection(); // Open connection
-  void http_closeConnection(); // Close conection
+  bool httpOpenConnection();   // Open connection
+  void httpCheckConnection();  // Check whether to keep connection.
+  void httpCloseConnection();  // Close conection
+  bool httpIsConnected();      // Checks for existing connection.
 
   bool readHeader();
   bool sendBody();
   bool readBody();
-
-  /**
-    * Return the proper UserAgent string.
-    * Sure, I could make this configurable so
-    * someone could tweak this to their heart's
-    * delight, but right now, this should be
-    * left alone, so if someone complains,
-    * I"m getting weird errors, I can track
-    * down, what version they have.
-    */
-  const char *getUserAgentString();
 
   /**
    * Send a cookie to the cookiejar
@@ -204,22 +205,30 @@ protected:
    * Look for cookies in the cookiejar
    */
   QString findCookies( const QString &url);
-   
+
+  /**
+   * Initializes the cookiejar if it is not running already
+   * and returns true if successful, i.e. the cookiejar started
+   * okay or is currently running.
+   */
+  bool initCookieJar() const;
+
   /**
    * Do a cache lookup for the current url. (m_state.url)
    *
-   * @param CEF the Cache Entry File.
+   * @param readWrite If true, file is opened read/write.
+   *                  If false, file is opened read-only.
    *
    * @return a file stream open for reading and at the start of
    *         the header section when the Cache entry exists and is valid.
-   *         0 if no cache entry could be found, or if the enry is not
+   *         0 if no cache entry could be found, or if the entry is not
    *         valid (any more).
    */
-  FILE *checkCacheEntry(QString &CEF);
+  FILE *checkCacheEntry(bool readWrite = false);
 
   /**
    * Create a cache entry for the current url. (m_state.url)
-   * 
+   *
    * Set the contents type of the cache entry to 'mimetype'.
    */
   void createCacheEntry(const QString &mimetype, time_t expireDate);
@@ -230,82 +239,176 @@ protected:
    * Write 'nbytes' from 'buffer' to the Cache Entry File
    */
   void writeCacheEntry( const char *buffer, int nbytes);
-  
+
   /**
    * Close cache entry
    */
   void closeCacheEntry();
 
   /**
+   * Update expire time of current cache entry.
+   */
+  void updateExpireDate(time_t expireDate, bool updateCreationDate=false);
+
+  /**
    * Quick check whether the cache needs cleaning.
    */
   void cleanCache();
 
-protected: // Members
-  QCString m_protocol;
+  /**
+   * Performs a GET HTTP request.
+   */
+  void retrieveContent();
+
+  /**
+   * Performs a HEAD HTTP request.
+   */
+  bool retrieveHeader(bool close_connection = true);
+
+  /**
+   * Resets any per session settings.
+   */
+  void resetSessionSettings();
+
+  /**
+   * Returns any pre-cached authentication info
+   * in HTTP header format.
+   */
+  QString proxyAuthenticationHeader();
+
+  /**
+   * Retrieves authorization info from cache or user.
+   */
+  bool getAuthorization();
+
+  /**
+   * Saves valid authorization info in the cache daemon.
+   */
+  void saveAuthorization();
+
+  /**
+   * Creates the entity-header for Basic authentication.
+   */
+  QString createBasicAuth( bool isForProxy = false );
+
+  /**
+   * Creates the entity-header for Digest authentication.
+   */
+  QString createDigestAuth( bool isForProxy = false );
+
+  /**
+   * Calcualtes the message digest response based on RFC 2617.
+   */
+  void calculateResponse( DigestAuthInfo &info, QCString &Response );
+
+  /**
+   * Prompts the user for authorization retry.
+   */
+  bool retryPrompt();
+
+  /**
+   * Creates authorization prompt info.
+   */
+  void promptInfo( KIO::AuthInfo& info );
+
+protected:
   HTTPState m_state;
   HTTPRequest m_request;
+  QPtrList<HTTPRequest> m_requestQueue;
+  bool m_bBusy; // Busy handling request queue.
 
   bool m_bEOF;
-  int m_cmd;
-  int m_sock;
-  FILE* m_fsocket;
-  enum HTTP_REV m_HTTPrev;
-  enum HTTP_PROTO m_proto;
+
+  HTTP_REV m_HTTPrev;
+  HTTP_PROTO m_proto;
 
   int m_iSize; // Expected size of message
   long m_iBytesLeft; // # of bytes left to receive in this message.
   QByteArray m_bufReceive; // Receive buffer
+  char m_lineBuf[1024];
+  char *m_linePtr;
+  size_t m_lineCount;
+  char *m_lineBufUnget;
+  char *m_linePtrUnget;
+  size_t m_lineCountUnget;
 
-  // Cache related 
+  // Holds the POST data so it won't get lost on if we
+  // happend to get a 401/407 response when submitting,
+  // a form.
+  QByteArray m_bufPOST;
+
+  // Cache related
   bool m_bUseCache; // Whether the cache is active
   bool m_bCachedRead; // Whether the file is to be read from m_fcache.
   bool m_bCachedWrite; // Whether the file is to be written to m_fcache.
   int m_maxCacheAge; // Maximum age of a cache entry.
   FILE* m_fcache; // File stream of a cache entry
-  QString m_strCacheDir; // Location of the cache. 
+  QString m_strCacheDir; // Location of the cache.
+  QString m_etag; // ETag header.
+  QString m_lastModified; // Last modified.
+  bool m_bMustRevalidate; // Cache entry is expired.
+  long m_cacheExpireDateOffset; // Position in the cache entry where the
+                                // 16 byte expire date is stored.
+  time_t m_expireDate;
 
   // Language/Encoding
-  QStack<char> m_qTransferEncodings, m_qContentEncodings;
-  QByteArray big_buffer;
+  QStringList m_qTransferEncodings;
+  QStringList m_qContentEncodings;
+  QByteArray m_bufEncodedData;
   QString m_sContentMD5;
   QString m_strMimeType;
-  QString m_strCharsets;
-  QString m_strLanguages;
-  
+  QString m_strCharset;
+
   // Proxy related members
-  bool m_bUseProxy;  // Whether we want a proxy
-  int m_strProxyPort;
-  QString m_strNoProxyFor;
-  QString m_strProxyHost;
-  QString m_strProxyUser;
-  QString m_strProxyPass;
-  ksockaddr_in m_proxySockaddr;
+  bool m_bUseProxy;
+  bool m_bIsTunneled;
+  int m_iProxyPort;
+  KURL m_proxyURL;
+  QString m_strProxyRealm;
+
+  QCString m_protocol;
 
   // Authentication
-  QString m_strRealm, 
-          m_strAuthString, 
-          m_strProxyAuthString;
-  enum HTTP_AUTH Authentication, ProxyAuthentication;
+  QString m_strRealm;
+  QString m_strAuthorization;
+  QString m_strProxyAuthorization;
+  HTTP_AUTH Authentication;
+  HTTP_AUTH ProxyAuthentication;
+  bool m_bUnauthorized;
+  short unsigned int m_iProxyAuthCount;
+  short unsigned int m_iWWWAuthCount;
 
   // Persistant connections
   bool m_bKeepAlive;
-  
+
+  // Resumable connections
+  bool m_bCanResume;
+
   // Chunked tranfer encoding
   bool m_bChunked;
 
-  bool m_bCanResume;
+  // Cookie flags
+  bool m_bUseCookiejar;
+  enum { CookiesAuto, CookiesManual, CookiesNone } m_cookieMode;
+
+  // Indicates whether there was some connection error.
+  bool m_bError;
+
+  // Indicates whether an error-page or error-msg should is preferred.
+  bool m_bErrorPage;
 
   DCOPClient *m_dcopClient;
 
-#ifdef DO_SSL
-  // Stuff for OpenSSL/SSLeay
-  bool m_bUseSSL2, m_bUseSSL3, m_bUseTLS1, m_bUseSSL;
-  SSL_METHOD *meth;
-  SSL_CTX *ctx;
-  SSL *hand;
-#endif
+  // Previous and current response codes
+  unsigned int m_responseCode;
+  unsigned int m_prevResponseCode;
+
+  // Values that determine the remote connection timeouts.
+  int m_proxyConnTimeout;
+  int m_remoteConnTimeout;
+  int m_remoteRespTimeout;
+
+	int m_pid;
 
 };
-
 #endif
