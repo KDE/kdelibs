@@ -28,13 +28,14 @@ LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 # Please keep sorted
 check_PROGRAMS = kaboutdialogtest kblendtest kbuttonboxtest kcharselecttest \
 	kcolortest kcolordlgtest \
-	kcontainertest kdatepicktest kdualcolortest kfontdialogtest \
+	kcontainertest kdatepicktest kdialogbasetest \
+	kdualcolortest kfontdialogtest \
 	kgradienttest khashtest \
 	kiconloadertest kledtest kmessageboxtest knuminputtest \
 	kpalettetest \
-	kpopuptest kprogresstest krulertest kseperatortest \
+	kpopuptest kprogresstest krulertest kseparatortest \
 	kstatusbartest ktabctltest \
-	kunbalancedgrdtest kwindowtest kwizardtest \
+	kunbalancedgrdtest kwindowtest kwizardtest
 
 noinst_HEADERS = \
 		ktabctltest.h kiconloadertestmain.h	\
