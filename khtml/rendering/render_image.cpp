@@ -77,7 +77,7 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, b
     	// TODO: call QMovie->stop()
         return;
     }
-    
+
     if(o != image) {
         RenderReplaced::setPixmap(p, r, o, manualUpdate);
         return;
@@ -159,7 +159,7 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, b
     }
 }
 
-void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
+void RenderImage::printObject(QPainter *p, int x, int y, int w, int h, int _tx, int _ty)
 {
     // add offset for relative positioning
     if(isRelPositioned())
@@ -206,7 +206,7 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
         if ( (cWidth != pixSize.width() ||  cHeight != pixSize.height() ) &&
              pix.width() > 0 && pix.height() > 0 && image->valid_rect().isValid())
         {
-            if (resizeCache.isNull())
+            if (resizeCache.isNull() && cWidth && cHeight)
             {
                 QRect scaledrect(image->valid_rect());
                 // ### Qt bug, it doesn't like width/height of 1
@@ -221,10 +221,10 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
                               (float)(cHeight)/pixSize.height() );
                 resizeCache = pix.xForm( matrix );
                 scaledrect = matrix.map(scaledrect);
-//                  qDebug("resizeCache size: %d/%d", resizeCache.width(), resizeCache.height());
-//                  qDebug("valid: %d/%d, scaled: %d/%d",
-//                         image->valid_rect().width(), image->valid_rect().height(),
-//                         scaledrect.width(), scaledrect.height());
+//                   qDebug("resizeCache size: %d/%d", resizeCache.width(), resizeCache.height());
+//                   qDebug("valid: %d/%d, scaled: %d/%d",
+//                          image->valid_rect().width(), image->valid_rect().height(),
+//                          scaledrect.width(), scaledrect.height());
 
                 // sometimes scaledrect.width/height are off by one because
                 // of rounding errors. if the image is fully loaded, we
@@ -249,9 +249,22 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
             // so pix contains the old one (we want to paint), but image->valid_rect is still invalid
             // so use pixSize instead.
             // ### maybe no progressive loading for the second image ?
-            QRect rect(image->valid_rect().isValid() ? image->valid_rect() : QRect(0, 0, pixSize.width(), pixSize.height())) ;
-            //qDebug("normal paint rect %d/%d/%d/%d", rect.x(), rect.y(), rect.width(), rect.height());
-            p->drawPixmap( QPoint( _tx + leftBorder + leftPad, _ty + topBorder + topPad), pix, rect );
+            QRect rect(image->valid_rect().isValid() ? image->valid_rect() : QRect(0, 0, pixSize.width(), pixSize.height()));
+
+            QPoint offs( _tx + leftBorder + leftPad, _ty + topBorder + topPad);
+//             qDebug("normal paint rect %d/%d/%d/%d", rect.x(), rect.y(), rect.width(), rect.height());
+//             rect = rect & QRect( 0 , y - offs.y() - 10, w, 10 + y + h  - offs.y());
+
+//             qDebug("normal paint rect after %d/%d/%d/%d", rect.x(), rect.y(), rect.width(), rect.height());
+//             qDebug("normal paint: offs.y(): %d, y: %d, diff: %d", offs.y(), y, y - offs.y());
+//             qDebug("");
+
+//           p->setClipRect(QRect(x,y,w,h));
+
+
+//             p->drawPixmap( offs.x(), y, pix, rect.x(), rect.y(), rect.width(), rect.height() );
+             p->drawPixmap(offs, pix, rect);
+
         }
     }
     if(style()->outlineWidth())

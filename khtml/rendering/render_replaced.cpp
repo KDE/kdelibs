@@ -43,12 +43,12 @@ void RenderReplaced::print( QPainter *p, int _x, int _y, int _w, int _h,
         return;
 
     _tx += m_x;
-   _ty += m_y;
+    _ty += m_y;
 
-   if((_ty > _y + _h) || (_ty + m_height < _y)) return;
+    if((_ty > _y + _h) || (_ty + m_height < _y)) return;
 
-   if(hasSpecialObjects()) printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
-   printReplaced(p, _tx, _ty);
+    if(hasSpecialObjects()) printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
+    printObject(p, _x, _y, _w, _h, _tx, _ty);
 }
 
 
@@ -109,7 +109,7 @@ void RenderWidget::setStyle(RenderStyle *_style)
     }
 }
 
-void RenderWidget::printReplaced(QPainter *, int _tx, int _ty)
+void RenderWidget::printObject(QPainter *, int, int, int, int, int _tx, int _ty)
 {
     // ### this does not get called if a form element moves of the screen, so
     // the widget stays in it's old place!

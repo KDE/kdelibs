@@ -48,7 +48,7 @@ public:
 
     virtual void calcMinMaxWidth();
 
-    virtual void printReplaced(QPainter *p, int _tx, int _ty);
+    virtual void printObject( QPainter *p, int /*x*/, int /*y*/, int /*w*/, int /*h*/, int tx, int ty);
 
     virtual void layout();
 

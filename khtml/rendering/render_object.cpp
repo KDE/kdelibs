@@ -127,7 +127,12 @@ RenderObject::RenderObject()
 
 RenderObject::~RenderObject()
 {
-    if(m_bgImage) m_bgImage->deref(this);
+    if(m_bgImage) {
+        if(m_bgImage->url().string().contains(QString::fromLatin1("bgeconomia")))
+            qDebug("**** destrukting!");
+
+        m_bgImage->deref(this);
+    }
 
     if (m_style)
 	m_style->deref();
@@ -704,7 +709,11 @@ void RenderObject::setStyle(RenderStyle *style)
     if( m_bgImage != m_style->backgroundImage() ) {
 	if(m_bgImage) m_bgImage->deref(this);
 	m_bgImage = m_style->backgroundImage();
-	if(m_bgImage) m_bgImage->ref(this);
+	if(m_bgImage) {
+            if(m_bgImage->url().string().contains(QString::fromLatin1("bgeconomia")))
+                qDebug("**** refing!");
+            m_bgImage->ref(this);
+        }
     }
 
     if( m_style->backgroundColor().isValid() || m_style->hasBorder() || m_bgImage )

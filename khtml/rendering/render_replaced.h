@@ -42,18 +42,7 @@ public:
 
     virtual void print( QPainter *, int x, int y, int w, int h,
                         int tx, int ty);
-    virtual void printObject( QPainter *p, int /*x*/, int /*y*/,
-                        int /*w*/, int /*h*/, int tx, int ty)
-    {
-        printReplaced(p, tx, ty);
-    }
-
-
-    /**
-     * print the replaced object (or position the pixmap)
-     */
-    virtual void printReplaced(QPainter *p, int _tx, int _ty) = 0;
-
+    virtual void printObject(QPainter *p, int x, int y, int w, int h, int tx, int ty) = 0;
 };
 
 
@@ -66,7 +55,7 @@ public:
 
     virtual void setStyle(RenderStyle *style);
 
-    virtual void printReplaced(QPainter *p, int _tx, int _ty);
+    virtual void printObject(QPainter *p, int x, int y, int w, int h, int tx, int ty);
 
     virtual short verticalPositionHint() const;
 

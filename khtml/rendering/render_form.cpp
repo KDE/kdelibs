@@ -1149,7 +1149,6 @@ bool TextAreaWidget::event( QEvent *e )
     return QMultiLineEdit::event( e );
 }
 
-
 // -------------------------------------------------------------------------
 
 // ### allow contents to be manipulated via DOM - will require updating
