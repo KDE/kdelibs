@@ -9,15 +9,16 @@
 
 <!ENTITY Alt	"<keycap>Alt</keycap>">
 <!ENTITY Backspace	"<keycap>Backspace</keycap>">
-<!ENTITY cdrom  "<hardware>unit&agrave; CD-ROM</hardware>">
+<!ENTITY cdrom	"<hardware>unit&agrave; CD-ROM</hardware>">
 <!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
-<!ENTITY dpi    "<acronym>dpi</acronym>">
-<!ENTITY eg     "<abbrev>ad es.</abbrev>">
+<!ENTITY dpi	"<acronym>dpi</acronym>">
+<!ENTITY eg	"<abbrev>ad es.</abbrev>">
 <!ENTITY Esc	"<keycap>Esc</keycap>">
 <!ENTITY Enter	"<keycap>Invio</keycap>">
-<!ENTITY etc    "<abbrev>ecc.</abbrev>">
-<!ENTITY FAQ    "<acronym>FAQ</acronym>">
-<!ENTITY ie     "cio&egrave;">
+<!ENTITY etc	"<abbrev>ecc.</abbrev>">
+<!ENTITY FAQ	"<acronym>FAQ</acronym>">
+<!ENTITY ie	"cio&egrave;">
+<!ENTITY Tab	"<keycap>Tab</keycap>">
 <!-- remove one of these two -->
 <!ENTITY kcontrol       "<application>Centro di controllo di &kde;</application>">
 <!ENTITY kcontrolcenter	"<application>Centro di controllo di &kde;</application>">
