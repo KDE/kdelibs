@@ -33,17 +33,6 @@
 // private classes and struct declarations
 //-----------------------------------------------------------------------------
 
-struct KDockTabCtl_PrivateStruct
-{
-  KDockTabCtl_PrivateStruct( QWidget* _widget, int _id )
-  { widget = _widget; id = _id; enabled = true; }
-  ~KDockTabCtl_PrivateStruct(){;}
-
-  QWidget* widget;
-  int      id;
-  bool     enabled;
-};
-
 struct KDockTabBar_PrivateStruct
 {
   KDockTabBar_PrivateStruct( int _id, const QString& _label )

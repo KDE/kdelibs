@@ -50,10 +50,24 @@ class QWidgetStack;
 class QBoxLayout;
 class QPushButton;
 
-struct KDockTabCtl_PrivateStruct;
 struct KDockTabBar_PrivateStruct;
 class KDockTabBarPainter;
 class KDockDynTabBarToolTip;
+
+/**
+ * Actually an internal struct. But it is used in a QList of KDockTabCtl (see below).
+ * So we cannot use class forward declaration since QList demands to know the destructor method.
+ */
+struct KDockTabCtl_PrivateStruct
+{
+  KDockTabCtl_PrivateStruct( QWidget* _widget, int _id )
+  { widget = _widget; id = _id; enabled = true; }
+  ~KDockTabCtl_PrivateStruct(){;}
+
+  QWidget* widget;
+  int      id;
+  bool     enabled;
+};
 
 /**
  * The actual tab bar for dockwidgets  (and member of the dockwidget class set). 
