@@ -85,10 +85,7 @@ KCrash::defaultCrashHandler (int signal)
 {
   // Handle possible recursions
   static int crashRecursionCounter = 0;
-  kdDebug(0) << "KCrash: crashing.... crashRecursionCounter = " << crashRecursionCounter << "\n";
-  kdDebug(0) << "KCrash: Appname = " << appName << " apppath = " << appPath << "\n";
-
-  crashRecursionCounter++;
+  crashRecursionCounter++; // Nothing before this, please !
 
   if (crashRecursionCounter < 2) {
     if (_emergencySaveFunction) {
@@ -98,6 +95,8 @@ KCrash::defaultCrashHandler (int signal)
   }
   
   if (crashRecursionCounter < 3 && appName) {
+    kdDebug(0) << "KCrash: crashing.... crashRecursionCounter = " << crashRecursionCounter << "\n";
+    kdDebug(0) << "KCrash: Appname = " << appName << " apppath = " << appPath << "\n";
     pid_t pid = fork();
 
     if (pid <= 0) {
