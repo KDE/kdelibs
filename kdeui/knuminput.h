@@ -190,6 +190,7 @@ class KIntNumInput : public KNumInput
     Q_PROPERTY( int minValue READ minValue WRITE setMinValue )
     Q_PROPERTY( int maxValue READ maxValue WRITE setMaxValue )
     Q_PROPERTY( int referencePoint READ referencePoint WRITE setReferencePoint )
+    Q_PROPERTY( double relativeValue READ relativeValue WRITE setRelativeValue )
     Q_PROPERTY( QString suffix READ suffix WRITE setSuffix )
     Q_PROPERTY( QString prefix READ prefix WRITE setPrefix )
     Q_PROPERTY( QString specialValueText READ specialValueText WRITE setSpecialValueText )
@@ -436,7 +437,9 @@ class KDoubleNumInput : public KNumInput
     Q_PROPERTY( QString prefix READ prefix WRITE setPrefix )
     Q_PROPERTY( QString specialValueText READ specialValueText WRITE setSpecialValueText )
     Q_PROPERTY( int precision READ precision WRITE setPrecision )
-
+    Q_PROPERTY( double referencePoint READ referencePoint WRITE setReferencePoint )
+    Q_PROPERTY( double relativeValue READ relativeValue  WRITE setRelativeValue )
+  
 public:
     /**
      * Constructs an input control for double values
