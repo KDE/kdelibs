@@ -122,6 +122,7 @@ signals:
     void activated( const KURL& url );
 
 protected:
+    virtual void editItem( KURLBarItem * );
     virtual void resizeEvent( QResizeEvent * );
     bool isVertical() const { return orientation() == Vertical; }
 
@@ -201,7 +202,8 @@ public:
                                 bool& appLocal, QWidget *parent = 0 );
 
     KURLBarDropDialog( bool allowGlobal, const KURL& url,
-                       const QString& description, QString icon,
+                       const QString& description, QString icon, 
+                       bool appLocal = true,
                        QWidget *parent = 0, const char *name = 0 );
     ~KURLBarDropDialog();
 

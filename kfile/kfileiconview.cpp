@@ -30,7 +30,7 @@
 #include <kaction.h>
 #include <kapplication.h>
 #include <klocale.h>
-#include <kfileviewitem.h>
+#include <kfileitem.h>
 #include <kglobalsettings.h>
 #include <kio/previewjob.h>
 
@@ -40,8 +40,7 @@
 
 KFileIconViewItem::~KFileIconViewItem()
 {
-    fileInfo()->
-	setViewItem(static_cast<KFileIconView*>(iconView()), (const void*)0);
+    fileInfo()->removeExtraData( iconView() );
 }
 
 class KFileIconView::KFileIconViewPrivate
@@ -98,14 +97,16 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
 
     toolTip = 0;
     setResizeMode( Adjust );
-    setGridX( 120 );
-    setWordWrapIconText( FALSE );
-    setAutoArrange( TRUE );
+    setGridX( 160 );
+    setWordWrapIconText( false );
+    setAutoArrange( true );
     setItemsMovable( false );
     setMode( KIconView::Select );
+    KIconView::setSorting( true );
     // as long as QIconView only shows tooltips when the cursor is over the
     // icon (and not the text), we have to create our own tooltips
     setShowToolTips( false );
+    slotSmallColumns();
 
     connect( this, SIGNAL( returnPressed(QIconViewItem *) ),
 	     SLOT( selected( QIconViewItem *) ) );
@@ -120,8 +121,8 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
 	     this, SLOT( showToolTip( QIconViewItem * ) ) );
     connect( this, SIGNAL( onViewport() ),
 	     this, SLOT( removeToolTip() ) );
-    connect( this, SIGNAL( rightButtonPressed( QIconViewItem*, const QPoint&)),
-	     SLOT( slotRightButtonPressed( QIconViewItem* ) ) );
+    connect( this, SIGNAL( contextMenuRequested(QIconViewItem*,const QPoint&)),
+	     SLOT( slotActivateMenu( QIconViewItem*, const QPoint& ) ) );
 
     KFile::SelectionMode sm = KFileView::selectionMode();
     switch ( sm ) {
@@ -147,20 +148,20 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
 	connect( this, SIGNAL( selectionChanged( QIconViewItem * )),
 		 SLOT( highlighted( QIconViewItem * )));
 
-    readConfig();
- }
+//###    readConfig();
+}
 
 KFileIconView::~KFileIconView()
 {
-    writeConfig();
+// ###    writeConfig();
     removeToolTip();
     delete d;
 }
 
-void KFileIconView::readConfig()
+void KFileIconView::readConfig( KConfig *kc, const QString& group )
 {
-    KConfig *kc = KGlobal::config();
-    KConfigGroupSaver cs( kc, "KFileIconView" );
+    QString gr = group.isEmpty() ? "KFileIconView" : group;
+    KConfigGroupSaver cs( kc, gr );
     QString small = QString::fromLatin1("SmallColumns");
     d->previewIconSize = kc->readNumEntry( "Preview Size", 60 );
 
@@ -174,10 +175,10 @@ void KFileIconView::readConfig()
     }
 }
 
-void KFileIconView::writeConfig()
+void KFileIconView::writeConfig( KConfig *kc, const QString& group )
 {
-    KConfig *kc = KGlobal::config();
-    KConfigGroupSaver cs( kc, "KFileIconView" );
+    QString gr = group.isEmpty() ? "KFileIconView" : group;
+    KConfigGroupSaver cs( kc, gr );
     kc->writeEntry( "ViewMode", d->smallColumns->isChecked() ?
 		    QString::fromLatin1("SmallColumns") :
 		    QString::fromLatin1("LargeRows") );
@@ -215,14 +216,14 @@ void KFileIconView::showToolTip( QIconViewItem *item )
     }
 }
 
-void KFileIconView::slotRightButtonPressed( QIconViewItem* item )
+void KFileIconView::slotActivateMenu( QIconViewItem* item, const QPoint& pos )
 {
     if ( !item ) {
-	activateMenu( 0 );
+	sig->activateMenu( 0, pos );
 	return;
     }
-    KFileIconViewItem *i = (KFileIconViewItem*)item;
-    activateMenu( i->fileInfo() );
+    KFileIconViewItem *i = (KFileIconViewItem*) item;
+    sig->activateMenu( i->fileInfo(), pos );
 }
 
 void KFileIconView::hideEvent( QHideEvent *e )
@@ -238,41 +239,46 @@ void KFileIconView::keyPressEvent( QKeyEvent *e )
         e->ignore();
 }
 
-void KFileIconView::setSelected( const KFileViewItem *info, bool enable )
+void KFileIconView::setSelected( const KFileItem *info, bool enable )
 {
-    if ( !info )
+    KFileIconViewItem *item = viewItem( info );
+
+    if ( item )
+        KIconView::setSelected( item, enable, true );
+}
+
+void KFileIconView::selectAll()
+{
+    if (KFileView::selectionMode() == KFile::NoSelection ||
+        KFileView::selectionMode() == KFile::Single)
 	return;
 
-    // we can only hope that this cast works
-    KFileIconViewItem *item = (KFileIconViewItem*)info->viewItem( this );
-
-    if ( item ) {
-	if ( !item->isSelected() )
-	    KIconView::setSelected( item, enable, true );
-	if ( KIconView::currentItem() != item )
-	    KIconView::setCurrentItem( item );
-    }
+    KIconView::selectAll( true );
 }
 
 void KFileIconView::clearSelection()
 {
-    QIconView::clearSelection();
+    KIconView::clearSelection();
+}
+
+void KFileIconView::invertSelection()
+{
+    KIconView::invertSelection();
 }
 
 void KFileIconView::clearView()
 {
-    for (KFileViewItem* first = KFileView::firstItem(); first; first = first->next())
-	first->setViewItem(this, (const void*)0);
-
-    QIconView::clear();
+    KIconView::clear();
     if ( d->job ) {
         d->job->kill();
         d->job = 0L;
     }
 }
 
-void KFileIconView::insertItem( KFileViewItem *i )
+void KFileIconView::insertItem( KFileItem *i )
 {
+    KFileView::insertItem( i );
+    
     int size = myIconSize;
     if ( d->previews->isChecked() && canPreview( i ) )
         size = myIconSize;
@@ -281,7 +287,21 @@ void KFileIconView::insertItem( KFileViewItem *i )
                                                      i->name(),
                                                      i->pixmap( size ), i);
 
-    i->setViewItem( this, item );
+    // see also setSorting()
+    QDir::SortSpec spec = KFileView::sorting();
+
+    if ( spec & QDir::Time )
+        item->setKey( sortingKey( i->time( KIO::UDS_MODIFICATION_TIME ),
+                                  i->isDir(), spec ));
+    else if ( spec & QDir::Size )
+        item->setKey( sortingKey( i->size(), i->isDir(), spec ));
+
+    else // Name or Unsorted
+        item->setKey( sortingKey( i->name(), i->isDir(), spec ));
+
+    //qDebug("** key for: %s: %s", i->name().latin1(), item->key().latin1());
+
+    i->setExtraData( this, item );
 
     if ( d->previews->isChecked() )
         d->previewTimer->start( 10, true );
@@ -291,9 +311,9 @@ void KFileIconView::slotDoubleClicked( QIconViewItem *item )
 {
     if ( !item )
 	return;
-    const KFileViewItem *fi = ( (KFileIconViewItem*)item )->fileInfo();
+    const KFileItem *fi = ( (KFileIconViewItem*)item )->fileInfo();
     if ( fi )
-	select( fi );
+	sig->activate( fi );
 }
 
 void KFileIconView::selected( QIconViewItem *item )
@@ -302,22 +322,20 @@ void KFileIconView::selected( QIconViewItem *item )
 	return;
 
     if ( KGlobalSettings::singleClick() ) {
-	const KFileViewItem *fi = ( (KFileIconViewItem*)item )->fileInfo();
+	const KFileItem *fi = ( (KFileIconViewItem*)item )->fileInfo();
 	if ( fi && (fi->isDir() || !onlyDoubleClickSelectsFiles()) )
-	    select( fi );
+	    sig->activate( fi );
     }
 }
 
-void KFileIconView::setCurrentItem( const KFileViewItem *item )
+void KFileIconView::setCurrentItem( const KFileItem *item )
 {
-    if ( !item )
-        return;
-    KFileIconViewItem *it = (KFileIconViewItem*) item->viewItem( this );
+    KFileIconViewItem *it = viewItem( item );
     if ( it )
         KIconView::setCurrentItem( it );
 }
 
-KFileViewItem * KFileIconView::currentFileItem() const
+KFileItem * KFileIconView::currentFileItem() const
 {
     KFileIconViewItem *current = static_cast<KFileIconViewItem*>( currentItem() );
     if ( current )
@@ -330,9 +348,9 @@ void KFileIconView::highlighted( QIconViewItem *item )
 {
     if ( !item )
 	return;
-    const KFileViewItem *fi = ( (KFileIconViewItem*)item )->fileInfo();
+    const KFileItem *fi = ( (KFileIconViewItem*)item )->fileInfo();
     if ( fi )
-	highlight( fi );
+	sig->highlightFile( fi );
 }
 
 void KFileIconView::setSelectionMode( KFile::SelectionMode sm )
@@ -365,11 +383,9 @@ void KFileIconView::setSelectionMode( KFile::SelectionMode sm )
 		 SLOT( highlighted( QIconViewItem * )));
 }
 
-bool KFileIconView::isSelected( const KFileViewItem *i ) const
+bool KFileIconView::isSelected( const KFileItem *i ) const
 {
-    if ( !i )
-	return false;
-    KFileIconViewItem *item = (KFileIconViewItem*)i->viewItem( this );
+    KFileIconViewItem *item = viewItem( i );
     return (item && item->isSelected());
 }
 
@@ -397,11 +413,9 @@ void KFileIconView::updateView( bool b )
     }
 }
 
-void KFileIconView::updateView( const KFileViewItem *i )
+void KFileIconView::updateView( const KFileItem *i )
 {
-    if ( !i )
-	return;
-    KFileIconViewItem *item = (KFileIconViewItem*)i->viewItem( this );
+    KFileIconViewItem *item = viewItem( i );
     if ( item ) {
         int size = myIconSize;
         if ( d->previews->isChecked() && canPreview( i ) )
@@ -411,11 +425,11 @@ void KFileIconView::updateView( const KFileViewItem *i )
     }
 }
 
-void KFileIconView::removeItem( const KFileViewItem *i )
+void KFileIconView::removeItem( const KFileItem *i )
 {
     if ( !i )
 	return;
-    delete (KFileIconViewItem*)i->viewItem( this );
+    delete viewItem( i );
     KFileView::removeItem( i );
 }
 
@@ -438,18 +452,16 @@ void KFileIconView::updateIcons()
     arrangeItemsInGrid();
 }
 
-void KFileIconView::ensureItemVisible( const KFileViewItem *i )
+void KFileIconView::ensureItemVisible( const KFileItem *i )
 {
-    if ( !i )
-	return;
-    KFileIconViewItem *item = (KFileIconViewItem*)i->viewItem( this );
+    KFileIconViewItem *item = viewItem( i );
     if ( item )
 	KIconView::ensureItemVisible( item );
 }
 
 void KFileIconView::slotSelectionChanged()
 {
-    highlight( 0L );
+    sig->highlightFile( 0L );
 }
 
 void KFileIconView::slotSmallColumns()
@@ -498,17 +510,10 @@ void KFileIconView::showPreviews()
     else
         updateIcons();
 
-    KFileItemList items;
-    KFileViewItem *item = KFileView::firstItem();
-    while( item ) {
-        items.append( item );
-        item = item->next();
-    }
-
     if ( d->job )
         d->job->kill();
 
-    d->job = KIO::filePreview( items, d->previewIconSize, d->previewIconSize );
+    d->job = KIO::filePreview(*items(), d->previewIconSize,d->previewIconSize);
 
     connect( d->job, SIGNAL( result( KIO::Job * )),
              this, SLOT( slotPreviewResult( KIO::Job * )));
@@ -526,14 +531,12 @@ void KFileIconView::slotPreviewResult( KIO::Job *job )
 
 void KFileIconView::gotPreview( const KFileItem *item, const QPixmap& pix )
 {
-    // we can only hope that this cast works
-    KFileIconViewItem *it = (KFileIconViewItem*) (static_cast<const KFileViewItem*>( item ))->viewItem( this );
-    if ( it ) {
+    KFileIconViewItem *it = viewItem( item );
+    if ( it )
         it->setPixmap( pix );
-    }
 }
 
-bool KFileIconView::canPreview( const KFileViewItem *item ) const
+bool KFileIconView::canPreview( const KFileItem *item ) const
 {
     QStringList::Iterator it = d->previewMimeTypes.begin();
     QRegExp r;
@@ -553,6 +556,60 @@ bool KFileIconView::canPreview( const KFileViewItem *item ) const
     }
 
     return false;
+}
+
+KFileItem * KFileIconView::firstFileItem() const
+{
+    KFileIconViewItem *item = static_cast<KFileIconViewItem*>( firstItem() );
+    if ( item )
+        return item->fileInfo();
+    return 0L;
+}
+
+KFileItem * KFileIconView::nextItem( const KFileItem *fileItem ) const
+{
+    if ( fileItem ) {
+        KFileIconViewItem *item = viewItem( fileItem );
+        if ( item )
+            return ((KFileIconViewItem*) item->nextItem())->fileInfo();
+    }
+    return 0L;
+}
+
+KFileItem * KFileIconView::prevItem( const KFileItem *fileItem ) const
+{
+    if ( fileItem ) {
+        KFileIconViewItem *item = viewItem( fileItem );
+        if ( item )
+            return ((KFileIconViewItem*) item->prevItem())->fileInfo();
+    }
+    return 0L;
+}
+
+void KFileIconView::setSorting( QDir::SortSpec spec )
+{
+    KFileView::setSorting( spec );
+    KFileItemListIterator it( *items() );
+
+    KFileItem *item;
+
+    if ( spec & QDir::Time ) {
+        for ( ; (item = it.current()); ++it )
+            viewItem(item)->setKey( sortingKey( item->time( KIO::UDS_MODIFICATION_TIME ), item->isDir(), spec ));
+    }
+
+    else if ( spec & QDir::Size ) {
+        for ( ; (item = it.current()); ++it )
+            viewItem(item)->setKey( sortingKey( item->size(), item->isDir(),
+                                                spec ));
+    }
+    else { // Name or Unsorted
+        for ( ; (item = it.current()); ++it )
+            viewItem(item)->setKey( sortingKey( item->name(), item->isDir(),
+                                                spec ));
+    }
+
+    sort( !isReversed() );
 }
 
 #include "kfileiconview.moc"

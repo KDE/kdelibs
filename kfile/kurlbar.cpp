@@ -66,6 +66,7 @@ void KURLBarItem::setURL( const KURL& url )
 
 void KURLBarItem::setIcon( const QString& icon, int group )
 {
+    m_icon  = icon;
     m_group = group;
 
     if ( icon.isEmpty() )
@@ -328,10 +329,10 @@ void KURLBar::slotSelected( QListBoxItem *item )
 void KURLBar::setCurrentItem( const KURL& url )
 {
     QString u = url.url(-1);
-    
+
     if ( m_activeItem && m_activeItem->url().url(-1) == u )
         return;
-    
+
     QListBoxItem *item = m_listBox->firstItem();
     while ( item ) {
         if ( static_cast<KURLBarItem*>( item )->url().url(-1) == u ) {
@@ -476,7 +477,8 @@ void KURLBar::slotContextMenuRequested( QListBoxItem *item, const QPoint& pos )
                        IconSize );
     popup->insertSeparator();
     popup->insertItem( i18n("&Edit Item"), EditItem );
-    popup->insertItem( i18n("&Remove Item"), RemoveItem );
+    popup->insertSeparator();
+    popup->insertItem( SmallIcon("editdelete"), i18n("&Remove Item"), RemoveItem );
 
     popup->setItemEnabled( EditItem, item != 0L );
     popup->setItemEnabled( RemoveItem, item != 0L );
@@ -488,6 +490,7 @@ void KURLBar::slotContextMenuRequested( QListBoxItem *item, const QPoint& pos )
             m_listBox->triggerUpdate( true );
             break;
         case EditItem:
+            editItem( static_cast<KURLBarItem *>( item ) );
             break;
         case RemoveItem:
             delete item;
@@ -497,7 +500,22 @@ void KURLBar::slotContextMenuRequested( QListBoxItem *item, const QPoint& pos )
     }
 }
 
-
+void KURLBar::editItem( KURLBarItem *item )
+{
+    QString description = item->description();
+    QString icon        = item->icon();
+    bool appLocal       = item->applicationLocal();
+    
+    if ( KURLBarDropDialog::getInformation( m_useGlobal,
+                                            item->url(), description,
+                                            icon, appLocal, this )) 
+    {
+        item->setDescription( description );
+        item->setIcon( icon );
+        item->setApplicationLocal( appLocal );
+        m_listBox->triggerUpdate( true );
+    }
+}
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
@@ -566,7 +584,7 @@ bool KURLBarDropDialog::getInformation( bool allowGlobal, const KURL& url,
 {
     KURLBarDropDialog *dialog = new KURLBarDropDialog( allowGlobal, url,
                                                        description, icon,
-                                                       parent );
+                                                       appLocal, parent );
     if ( dialog->exec() == QDialog::Accepted ) {
         // set the return parameters
         description = dialog->description();
@@ -581,7 +599,7 @@ bool KURLBarDropDialog::getInformation( bool allowGlobal, const KURL& url,
 
 KURLBarDropDialog::KURLBarDropDialog( bool allowGlobal, const KURL& url,
                                       const QString& description,
-                                      QString icon,
+                                      QString icon, bool appLocal,
                                       QWidget *parent, const char *name )
     : KDialogBase( parent, "drop dialog", true,
                    i18n("Quick Access entry Settings"), Ok | Cancel, Ok, true)
@@ -601,16 +619,19 @@ KURLBarDropDialog::KURLBarDropDialog( bool allowGlobal, const KURL& url,
     label->setBuddy( m_iconButton );
 
     label = new QLabel( i18n("&Description:"), grid );
-    m_edit = new KLineEdit( url.fileName(), grid, "description edit" );
+    m_edit = new KLineEdit( grid, "description edit" );
+    m_edit->setText( description.isEmpty() ? url.fileName() : description );
     label->setBuddy( m_edit );
 
     if ( allowGlobal ) {
         m_appLocal = new QCheckBox(i18n("&Only for this application"), box);
-        QWhatsThis::add(m_appLocal,i18n("Select this setting if you want this\n"
-                                        "Quick Access entry only in Filedialogs\n"
-                                        "of the current application.\n\n"
-                                        "Otherwise it will be available in all\n"
-                                        "in all Filedialogs."));
+        m_appLocal->setChecked( appLocal );
+        QWhatsThis::add( m_appLocal,
+                         i18n("Select this setting if you want this\n"
+                              "Quick Access entry only in Filedialogs\n"
+                              "of the current application.\n\n"
+                              "Otherwise it will be available in all\n"
+                              "in all Filedialogs."));
     }
     else
         m_appLocal = 0L;
@@ -655,7 +676,6 @@ void KURLBarToolTip::maybeTip( const QPoint &point )
 	    tip( m_view->itemRect( item ), text );
     }
 }
-
 
 
 #include "kurlbar.moc"

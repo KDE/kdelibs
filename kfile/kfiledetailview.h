@@ -21,7 +21,7 @@
 #ifndef KFILEDETAILVIEW_H
 #define KFILEDETAILVIEW_H
 
-class KFileViewItem;
+class KFileItem;
 class QWidget;
 
 #include <klistview.h>
@@ -29,33 +29,43 @@ class QWidget;
 
 /**
  * An item for the listiew, that has a reference to its corresponding
- * @ref KFileViewItem.
+ * @ref KFileItem.
  */
 class KFileListViewItem : public KListViewItem
 {
 public:
     KFileListViewItem( QListView *parent, const QString &text,
-		       const QPixmap &icon, KFileViewItem *fi )
+		       const QPixmap &icon, KFileItem *fi )
 	: KListViewItem( parent, text ), inf( fi ) {
 	    setPixmap( 0, icon );
     }
     KFileListViewItem( QListView *parent, const QString &text,
-		       const QPixmap &icon, KFileViewItem *fi,
+		       const QPixmap &icon, KFileItem *fi,
 		       QListViewItem *after)
 	: KListViewItem( parent, after ), inf( fi ) {
 	    setPixmap( 0, icon );
 	    setText( 0, text );
     }
+    ~KFileListViewItem() {
+        inf->removeExtraData( listView() );
+    }
 
     /**
-     * @returns the corresponding KFileViewItem
+     * @returns the corresponding KFileItem
      */
-    KFileViewItem *fileInfo() const {
+    KFileItem *fileInfo() const {
 	return inf;
     }
 
+    virtual QString key( int /*column*/, bool /*ascending*/ ) const {
+        return m_key;
+    }
+
+    void setKey( const QString& key ) { m_key = key; }
+
 private:
-    KFileViewItem *inf;
+    KFileItem *inf;
+    QString m_key;
 
 private:
     class KFileListViewItemPrivate;
@@ -64,7 +74,7 @@ private:
 };
 
 /**
- * A list-view capable of showing @ref KFileViewItem'. Used in the filedialog
+ * A list-view capable of showing @ref KFileItem'. Used in the filedialog
  * for example. Most of the documentation is in @ref KFileView class.
  *
  * @see KDirOperator
@@ -86,28 +96,31 @@ public:
     virtual void setSelectionMode( KFile::SelectionMode sm );
 
     virtual void updateView( bool );
-    virtual void updateView(const KFileViewItem*);
-    virtual void removeItem( const KFileViewItem *);
+    virtual void updateView(const KFileItem*);
+    virtual void removeItem( const KFileItem *);
 
-    virtual void setSelected(const KFileViewItem *, bool);
-    virtual bool isSelected(const KFileViewItem *i) const;
+    virtual void setSelected(const KFileItem *, bool);
+    virtual bool isSelected(const KFileItem *i) const;
     virtual void clearSelection();
+    virtual void selectAll();
+    virtual void invertSelection();
 
-    virtual void setCurrentItem( const KFileViewItem * );
-    virtual KFileViewItem * currentFileItem() const;
+    virtual void setCurrentItem( const KFileItem * );
+    virtual KFileItem * currentFileItem() const;
+    virtual KFileItem * firstFileItem() const;
+    virtual KFileItem * nextItem( const KFileItem * ) const;
+    virtual KFileItem * prevItem( const KFileItem * ) const;
 
-    virtual void insertItem( KFileViewItem *i );
+    virtual void insertItem( KFileItem *i );
 
     // implemented to get noticed about sorting changes (for sortingIndicator)
     virtual void setSorting( QDir::SortSpec );
-    virtual void sortReversed();
 
-    void ensureItemVisible( const KFileViewItem * );
+    void ensureItemVisible( const KFileItem * );
+
 
 protected:
-    void setSortIndicator();
-
-    QListViewItem *myLastItem;
+    int m_sortingCol;
 
 protected slots:
     void slotSelectionChanged();
@@ -117,12 +130,21 @@ private slots:
     void selected( QListViewItem *item );
     void slotDoubleClicked( QListViewItem *item );
     void highlighted( QListViewItem *item );
-    void rightButtonPressed ( QListViewItem *item );
+    void slotActivateMenu ( QListViewItem *item, const QPoint& pos );
 
 private:
     virtual void insertItem(QListViewItem *i) { KListView::insertItem(i); }
     virtual void setSorting(int i, bool b) { KListView::setSorting(i, b); }
     virtual void setSelected(QListViewItem *i, bool b) { KListView::setSelected(i, b); }
+
+    inline KFileListViewItem * viewItem( const KFileItem *item ) const {
+        if ( item )
+            return (KFileListViewItem *) item->extraData( this );
+        return 0L;
+    }
+
+    bool m_blockSortingSignal;
+    
     class KFileDetailViewPrivate;
     KFileDetailViewPrivate *d;
 };

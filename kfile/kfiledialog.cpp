@@ -25,26 +25,16 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include <qbitmap.h>
-#include <qbuttongroup.h>
 #include <qptrcollection.h>
-#include <qcolor.h>
 #include <qcombobox.h>
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qlineedit.h>
 #include <qptrlist.h>
-#include <qlistbox.h>
 #include <qpixmap.h>
-#include <qpopupmenu.h>
 #include <qpushbutton.h>
-#include <qptrstack.h>
-#include <qstrlist.h>
-#include <qtabdialog.h>
-#include <qtextstream.h>
 #include <qtooltip.h>
 #include <qtimer.h>
-#include <qdockarea.h>
 
 #include <kapplication.h>
 #include <kaction.h>
@@ -52,10 +42,10 @@
 #include <kcompletionbox.h>
 #include <kconfig.h>
 #include <kdebug.h>
-#include <kdesktopfile.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include <kiconloader.h>
+#include <kimageio.h>
 #include <kio/job.h>
 #include <kio/previewjob.h>
 #include <kio/scheduler.h>
@@ -63,10 +53,10 @@
 #include <kmessagebox.h>
 #include <kmimetype.h>
 #include <kpopupmenu.h>
-#include <kprocess.h>
 #include <kprotocolinfo.h>
 #include <krecentdirs.h>
 #include <kstandarddirs.h>
+#include <kstaticdeleter.h>
 #include <ktoolbar.h>
 #include <ktoolbarbutton.h>
 #include <kurl.h>
@@ -79,26 +69,21 @@
 #include <krecentdocument.h>
 #include <kfiledialogconf.h>
 #include <kfiledialog.h>
-#include <kfileiconview.h>
-#include <kfiledetailview.h>
-#include <kcombiview.h>
 #include <kfilefilter.h>
 #include <kfilebookmark.h>
 #include <kdiroperator.h>
-#include <kstaticdeleter.h>
 #include <kimagefilepreview.h>
-#include <kimageio.h>
 
+#include <kurlbar.h>
 
 enum Buttons { HOTLIST_BUTTON,
                PATH_COMBO, CONFIGURE_BUTTON };
 
+template class QPtrList<KIO::StatJob>;
+
 static void silenceQToolBar(QtMsgType, const char *)
 {
 }
-
-template class QPtrList<KIO::StatJob>;
-
 
 struct KFileDialogPrivate
 {
@@ -120,7 +105,7 @@ struct KFileDialogPrivate
 
     // now following all kind of widgets, that I need to rebuild
     // the geometry managment
-    QVBoxLayout *boxLayout;
+    QBoxLayout *boxLayout;
     QGridLayout *lafBox;
     QHBoxLayout *btngroup;
 
@@ -132,6 +117,7 @@ struct KFileDialogPrivate
     QLabel *filterLabel;
     KURLComboBox *pathCombo;
     QPushButton *okButton, *cancelButton;
+    KURLBar *urlBar;
 
     QPtrList<KIO::StatJob> statJobs;
 
@@ -180,11 +166,37 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     d->cancelButton = new QPushButton( i18n("&Cancel"), d->mainWidget );
     connect( d->okButton, SIGNAL( clicked() ), SLOT( slotOk() ));
     connect( d->cancelButton, SIGNAL( clicked() ), SLOT( slotCancel() ));
+    d->urlBar = new KURLBar( true, d->mainWidget, "url bar" );
+    connect( d->urlBar, SIGNAL( activated( const KURL& )),
+             SLOT( pathComboActivated( const KURL& )) );
+
+    KConfig *config = KGlobal::config();
+    KConfigGroupSaver cs( config, ConfigGroup );
+    if ( config->readBoolEntry( "Set speedbar defaults", true ) ) {
+        KURL u;
+        u.setPath( KGlobalSettings::desktopPath() );
+        d->urlBar->insertItem( u, i18n("Desktop"), false );
+
+        u.setPath( KGlobalSettings::documentPath() );
+        d->urlBar->insertItem( u, i18n("Documents"), false );
+        u.setPath( QDir::homeDirPath() );
+        d->urlBar->insertItem( u, i18n("Home Directory"), false );
+        u.setPath( "/" );
+        d->urlBar->insertItem( u, i18n("Root Directory"), false );
+        u.setPath( "/tmp" );
+        d->urlBar->insertItem( u, i18n("Temporary Files"), false );
+        u = "lan:/";
+        if ( KProtocolInfo::isKnownProtocol( u ) )
+            d->urlBar->insertItem( u, i18n("Network"), false );
+    }
+
+    d->urlBar->readConfig( config, "KFileDialog Speedbar" );
+    d->urlBar->setFixedWidth( d->urlBar->sizeHint().width() );
 
     d->completionLock = false;
     d->myStatusLine = 0;
 
-    QtMsgHandler oldHandler = qInstallMsgHandler( silenceQToolBar ); 
+    QtMsgHandler oldHandler = qInstallMsgHandler( silenceQToolBar );
     toolbar= new KToolBar( d->mainWidget, "KFileDialog::toolbar", true);
     qInstallMsgHandler( oldHandler );
 
@@ -211,28 +223,7 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     text = i18n("Desktop: %1").arg( u.path( +1 ) );
     combo->addDefaultURL( u, KMimeType::pixmapForURL( u, 0, KIcon::Small ), text );
 
-    /*
-    // search for device files on the desktop
-    QDir dir( KGlobalSettings::desktopPath() );
-    dir.setFilter(QDir::Files);
-    const QFileInfoList *list = dir.entryInfoList();
-    QFileInfoListIterator it(*list);
-    QString tmp;
-    if(list){
-        QFileInfo *fi;
-        for(; (fi = it.current()); ++it){
-            KDesktopFile dFile(fi->absFilePath());
-            if(dFile.hasDeviceType()) {
-                kdDebug(kfile_area) << "got one: " << fi->absFilePath() << endl;
-                tmp = dFile.readURL();
-                if ( !tmp.isEmpty() )
-                    combo->addDefaultURL( tmp,
-                                          SmallIcon( dFile.readIcon() ),
-                                          dFile.readName() );
-            }
-        }
-    }
-    */
+    u.setPath( "/tmp" );
 
     d->pathCombo = combo;
     QToolTip::add( d->pathCombo, i18n("Often used directories") );
@@ -266,7 +257,7 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
             // if there is no docpath set (== home dir), we prefer the current
             // directory over it. We also prefer the homedir when our CWD is
             // different from our homedirectory
-            if ( lastDirectory->path(+1) == home.path(+1) || 
+            if ( lastDirectory->path(+1) == home.path(+1) ||
                  QDir::currentDirPath() != QDir::homeDirPath() )
                 *lastDirectory = QDir::currentDirPath();
         }
@@ -279,10 +270,10 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
             SLOT(updateStatusLine(int, int)));
     connect(ops, SIGNAL(urlEntered(const KURL&)),
             SLOT(urlEntered(const KURL&)));
-    connect(ops, SIGNAL(fileHighlighted(const KFileViewItem *)),
-            SLOT(fileHighlighted(const KFileViewItem *)));
-    connect(ops, SIGNAL(fileSelected(const KFileViewItem *)),
-            SLOT(fileSelected(const KFileViewItem *)));
+    connect(ops, SIGNAL(fileHighlighted(const KFileItem *)),
+            SLOT(fileHighlighted(const KFileItem *)));
+    connect(ops, SIGNAL(fileSelected(const KFileItem *)),
+            SLOT(fileSelected(const KFileItem *)));
     connect(ops, SIGNAL(finishedLoading()),
             SLOT(slotLoadingFinished()));
 
@@ -324,6 +315,7 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
                           (int)CONFIGURE_BUTTON, true,
                           i18n("Configure this dialog"));
     */
+
     KActionMenu *menu = new KActionMenu( i18n("Extras"), "misc", this, "extra menu" );
     menu->insert( coll->action( "mkdir" ));
     menu->insert( coll->action( "delete" ));
@@ -338,6 +330,11 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
              ops, SLOT( updateSelectionDependentActions() ));
     menu->plug( toolbar );
 
+    coll->action( "short view" )->plug( toolbar );
+    coll->action( "detailed view" )->plug( toolbar );
+    coll->action( "short view" )->plugAccel( accel );
+    coll->action( "detailed view" )->plugAccel( accel );
+    
     connect(toolbar, SIGNAL(clicked(int)),
             SLOT(toolbarCallback(int)));
 
@@ -416,6 +413,12 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
 KFileDialog::~KFileDialog()
 {
     hide();
+
+    KConfig *config = KGlobal::config();
+    KConfigGroupSaver cs( config, ConfigGroup );
+    config->writeEntry( "Set speedbar defaults", false );
+    d->urlBar->writeConfig( config, "KFileDialog Speedbar" );
+
     delete bookmarks;
     delete d->boxLayout; // we can't delete a widget being managed by a layout,
     d->boxLayout = 0;    // so we delete the layout before (Qt bug to be fixed)
@@ -518,7 +521,7 @@ void KFileDialog::slotOk()
 
     // a list of all selected files/directories (if any)
     // can only be used if the user didn't type any filenames/urls himself
-    const KFileViewItemList *items = ops->selectedItems();
+    const KFileItemList *items = ops->selectedItems();
 
     if ( (mode() & KFile::Directory) != KFile::Directory ) {
         if ( locationEdit->currentText().stripWhiteSpace().isEmpty() ) {
@@ -530,7 +533,7 @@ void KFileDialog::slotOk()
 	    else {
 
 		bool multi = (mode() & KFile::Files) != 0;
-	        KFileViewItemListIterator it( *items );
+	        KFileItemListIterator it( *items );
 		QString endQuote = QString::fromLatin1("\" ");
 		QString name, files;
 		while ( it.current() ) {
@@ -569,7 +572,7 @@ void KFileDialog::slotOk()
 
 	    else { // multi (dirs and/or files)
 		d->url = ops->url();
-		KFileViewItemListIterator it( *items );
+		KFileItemListIterator it( *items );
 		while ( it.current() ) {
 		    d->urlList.append( (*it)->url() );
 		    ++it;
@@ -762,7 +765,7 @@ void KFileDialog::accept()
 
     // clear the topmost item, we insert it as full path later on as item 1
     locationEdit->changeItem( QString::null, 0 );
-    
+
     KURL::List list = selectedURLs();
     QValueListConstIterator<KURL> it = list.begin();
     for ( ; it != list.end(); ++it ) {
@@ -784,7 +787,7 @@ void KFileDialog::accept()
 
     KSimpleConfig *c = new KSimpleConfig(QString::fromLatin1("kdeglobals"),
                                          false);
-    saveConfig( c, ConfigGroup );
+    writeConfig( c, ConfigGroup );
     saveRecentFiles( KGlobal::config() );
     delete c;
 
@@ -800,7 +803,7 @@ void KFileDialog::accept()
 }
 
 
-void KFileDialog::fileHighlighted(const KFileViewItem *i)
+void KFileDialog::fileHighlighted(const KFileItem *i)
 {
     if (i && i->isDir())
         return;
@@ -826,7 +829,7 @@ void KFileDialog::fileHighlighted(const KFileViewItem *i)
     }
 }
 
-void KFileDialog::fileSelected(const KFileViewItem *i)
+void KFileDialog::fileSelected(const KFileItem *i)
 {
     if (i && i->isDir())
         return;
@@ -856,15 +859,15 @@ void KFileDialog::multiSelectionChanged()
         return;
 
     locationEdit->lineEdit()->setEdited( false );
-    KFileViewItem *item;
-    const KFileViewItemList *list = ops->selectedItems();
+    KFileItem *item;
+    const KFileItemList *list = ops->selectedItems();
     if ( !list ) {
         locationEdit->clearEdit();
         return;
     }
 
     static const QString &begin = KGlobal::staticQString(" \"");
-    KFileViewItemListIterator it ( *list );
+    KFileItemListIterator it ( *list );
     QString text;
     while ( (item = it.current()) ) {
         text.append( begin ).append( item->name() ).append( '\"' );
@@ -877,16 +880,21 @@ void KFileDialog::multiSelectionChanged()
 
 void KFileDialog::initGUI()
 {
-    if (d->boxLayout)
-        delete d->boxLayout; // deletes all sub layouts
+    delete d->boxLayout; // deletes all sub layouts
 
     d->boxLayout = new QVBoxLayout( d->mainWidget, 0, KDialog::spacingHint());
     d->boxLayout->addWidget(toolbar, AlignTop);
-    d->boxLayout->addWidget(ops, 4);
-    d->boxLayout->addSpacing(3);
+    
+    QBoxLayout *horiz = new QHBoxLayout( d->boxLayout );
+    horiz->addWidget( d->urlBar );
+    
+    QVBoxLayout *vbox = new QVBoxLayout( horiz );
+
+    vbox->addWidget(ops, 4);
+    vbox->addSpacing(3);
 
     d->lafBox= new QGridLayout(2, 3, KDialog::spacingHint());
-    d->boxLayout->addLayout(d->lafBox, 0);
+    vbox->addLayout(d->lafBox, 0);
     d->lafBox->addWidget(d->locationLabel, 0, 0, AlignVCenter);
     d->lafBox->addWidget(locationEdit, 0, 1, AlignVCenter);
     d->lafBox->addWidget(d->okButton, 0, 2, AlignVCenter);
@@ -906,11 +914,11 @@ void KFileDialog::initGUI()
         updateStatusLine(ops->numDirs(), ops->numFiles());
         d->myStatusLine->setFrameStyle( QFrame::Panel | QFrame::Sunken );
         d->myStatusLine->setAlignment( AlignHCenter | AlignVCenter );
-        d->boxLayout->addWidget( d->myStatusLine, 0 );
+        vbox->addWidget( d->myStatusLine, 0 );
         d->myStatusLine->show();
     }
 
-    d->boxLayout->addSpacing(3);
+    vbox->addSpacing(3);
 
     setTabOrder(ops,  locationEdit);
     setTabOrder(locationEdit, filterWidget);
@@ -1021,6 +1029,9 @@ void KFileDialog::urlEntered(const KURL& url)
 
     locationEdit->blockSignals( false );
     d->completionHack = d->pathCombo->currentText();
+
+    if ( d->urlBar )
+        d->urlBar->setCurrentItem( url );
 }
 
 void KFileDialog::locationActivated( const QString& url )
@@ -1161,8 +1172,8 @@ void KFileDialog::setSelection(const QString& url)
     /* we strip the first / from the path to avoid file://usr which means
      *  / on host usr
      */
-    KFileViewItem i((unsigned) -1, (unsigned)-1, u, true );
-    //    KFileViewItem i(u.path());
+    KFileItem i((unsigned) -1, (unsigned)-1, u, true );
+    //    KFileItem i(u.path());
     if ( i.isDir() && u.isLocalFile() && QFile::exists( u.path() ) ) {
         // trust isDir() only if the file is
         // local (we cannot stat non-local urls) and if it exists!
@@ -1512,7 +1523,7 @@ QString KFileDialog::getSaveFileName(const QString& dir, const QString& filter,
     KFileDialog dlg( specialDir ? dir : QString::null, filter, parent, "filedialog", true);
     if ( !specialDir )
     dlg.setSelection( dir ); // may also be a filename
-    
+
     dlg.setOperationMode( Saving );
     dlg.setCaption(caption.isNull() ? i18n("Save As") : caption);
 
@@ -1621,7 +1632,7 @@ void KFileDialog::readConfig( KConfig *kc, const QString& group )
     kc->setGroup( oldGroup );
 }
 
-void KFileDialog::saveConfig( KConfig *kc, const QString& group )
+void KFileDialog::writeConfig( KConfig *kc, const QString& group )
 {
     if ( !kc )
         return;
@@ -1637,7 +1648,7 @@ void KFileDialog::saveConfig( KConfig *kc, const QString& group )
     kc->writeEntry( PathComboCompletionMode, d->pathCombo->completionMode() );
     kc->writeEntry(LocationComboCompletionMode,locationEdit->completionMode());
 
-    ops->saveConfig( kc, group );
+    ops->writeConfig( kc, group );
     kc->setGroup( oldGroup );
     kc->sync();
 }

@@ -1,7 +1,7 @@
 // -*- c++ -*-
 /* This file is part of the KDE libraries
    Copyright (C) 1997 Stephan Kulow <coolo@kde.org>
-                 2000 Carsten Pfeiffer <pfeiffer@kde.org>
+                 2000, 2001 Carsten Pfeiffer <pfeiffer@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -25,8 +25,10 @@
 #include <qpixmap.h>
 
 #include <kapplication.h>
-#include <kfileviewitem.h>
+#include <kfileitem.h>
+#include <kglobal.h>
 #include <kglobalsettings.h>
+#include <kicontheme.h>
 #include <klocale.h>
 #include <kdebug.h>
 
@@ -35,32 +37,29 @@
 
 #define COL_NAME 0
 #define COL_SIZE 1
-#define COL_PERM 2
-#define COL_DATE 3
+#define COL_DATE 2
+#define COL_PERM 3
 #define COL_OWNER 4
 #define COL_GROUP 5
 
 KFileDetailView::KFileDetailView(QWidget *parent, const char *name)
     : KListView(parent, name), KFileView()
 {
-    KListView::setSorting( -1 );
+    m_sortingCol = COL_NAME;
+    m_blockSortingSignal = false;
     setViewName( i18n("Detailed View") );
-    myLastItem = 0L;
 
     addColumn( i18n( "Name" ) );
     addColumn( i18n( "Size" ) );
-    addColumn( i18n( "Permissions" ) );
     addColumn( i18n( "Date" ) );
+    addColumn( i18n( "Permissions" ) );
     addColumn( i18n( "Owner" ) );
     addColumn( i18n( "Group" ) );
     setShowSortIndicator( TRUE );
     setAllColumnsShowFocus( TRUE );
 
-    QHeader *h = header();
-    h->setClickEnabled( false, COL_PERM );
-    h->setClickEnabled( false, COL_OWNER);
-    h->setClickEnabled( false, COL_GROUP );
-    connect( h, SIGNAL( sectionClicked(int)), SLOT(slotSortingChanged(int) ));
+    connect( header(), SIGNAL( sectionClicked(int)),
+             SLOT(slotSortingChanged(int) ));
 
 
     connect( this, SIGNAL( returnPressed(QListViewItem *) ),
@@ -71,9 +70,9 @@ KFileDetailView::KFileDetailView(QWidget *parent, const char *name)
     connect( this, SIGNAL( doubleClicked(QListViewItem *, const QPoint&, int)),
 	     SLOT( slotDoubleClicked( QListViewItem *) ) );
 
-    connect( this, SIGNAL(rightButtonPressed( QListViewItem *, const QPoint &,
-					      int )),
-	     this, SLOT( rightButtonPressed ( QListViewItem * )));
+    connect( this, SIGNAL(contextMenuRequested( QListViewItem *,
+                                                const QPoint &, int )),
+	     this, SLOT( slotActivateMenu( QListViewItem *, const QPoint& )));
 
     KFile::SelectionMode sm = KFileView::selectionMode();
     switch ( sm ) {
@@ -107,30 +106,28 @@ KFileDetailView::~KFileDetailView()
 {
 }
 
-void KFileDetailView::setSelected( const KFileViewItem *info, bool enable )
+void KFileDetailView::setSelected( const KFileItem *info, bool enable )
 {
     if ( !info )
 	return;
 
     // we can only hope that this casts works
-    KFileListViewItem *item = (KFileListViewItem*)info->viewItem( this );
+    KFileListViewItem *item = (KFileListViewItem*)info->extraData( this );
 
-    if ( item && item != currentItem() ) {
-        KListView::setCurrentItem( item );
+    if ( item )
 	KListView::setSelected( item, enable );
-    }
 }
 
-void KFileDetailView::setCurrentItem( const KFileViewItem *item )
+void KFileDetailView::setCurrentItem( const KFileItem *item )
 {
     if ( !item )
         return;
-    KFileListViewItem *it = (KFileListViewItem*) item->viewItem( this );
+    KFileListViewItem *it = (KFileListViewItem*) item->extraData( this );
     if ( it )
         KListView::setCurrentItem( it );
 }
 
-KFileViewItem * KFileDetailView::currentFileItem() const
+KFileItem * KFileDetailView::currentFileItem() const
 {
     KFileListViewItem *current = static_cast<KFileListViewItem*>( currentItem() );
     if ( current )
@@ -144,36 +141,62 @@ void KFileDetailView::clearSelection()
     KListView::clearSelection();
 }
 
-void KFileDetailView::rightButtonPressed ( QListViewItem *item )
+void KFileDetailView::selectAll()
+{
+    if (KFileView::selectionMode() == KFile::NoSelection ||
+        KFileView::selectionMode() == KFile::Single)
+	return;
+
+    KListView::selectAll( true );
+}
+
+void KFileDetailView::invertSelection()
+{
+    KListView::invertSelection();
+}
+
+void KFileDetailView::slotActivateMenu (QListViewItem *item,const QPoint& pos )
 {
     if ( !item ) {
-	activateMenu( 0 );
+	sig->activateMenu( 0, pos );
 	return;
     }
-    KFileListViewItem *i = (KFileListViewItem*)item;
-    activateMenu( i->fileInfo() );
+    KFileListViewItem *i = (KFileListViewItem*) item;
+    sig->activateMenu( i->fileInfo(), pos );
 }
 
 void KFileDetailView::clearView()
 {
     KListView::clear();
-    myLastItem = 0L;
 }
 
-void KFileDetailView::insertItem( KFileViewItem *i )
+void KFileDetailView::insertItem( KFileItem *i )
 {
+    KFileView::insertItem( i );
+
     KFileListViewItem *item = new KFileListViewItem( (QListView*) this,
-						     i->name(), i->pixmap(), i,
-						     myLastItem );
+                                                     i->name(),
+                                                   i->pixmap(KIcon::SizeSmall),
+                                                     i );
 
-    item->setText( 1, KGlobal::locale()->formatNumber( i->size(), 0 ) );
-    item->setText( 2, i->access() );
-    item->setText( 3, i->date() );
-    item->setText( 4, i->user() );
-    item->setText( 5, i->group() );
-    i->setViewItem( this, item );
+    // see also setSorting()
+    QDir::SortSpec spec = KFileView::sorting();
 
-    myLastItem = item;
+    if ( spec & QDir::Time )
+        item->setKey( sortingKey( i->time( KIO::UDS_MODIFICATION_TIME ),
+                                  i->isDir(), spec ));
+    else if ( spec & QDir::Size )
+        item->setKey( sortingKey( i->size(), i->isDir(), spec ));
+
+    else // Name or Unsorted
+        item->setKey( sortingKey( i->name(), i->isDir(), spec ));
+
+    item->setText( COL_SIZE,  KGlobal::locale()->formatNumber( i->size(), 0 ));
+    item->setText( COL_DATE,  i->timeString() );
+    item->setText( COL_PERM,  i->permissionsString() );
+    item->setText( COL_OWNER, i->user() );
+    item->setText( COL_GROUP, i->group() );
+    i->setExtraData( this, item );
 }
 
 void KFileDetailView::slotDoubleClicked( QListViewItem *item )
@@ -181,9 +204,9 @@ void KFileDetailView::slotDoubleClicked( QListViewItem *item )
     if ( !item )
 	return;
 
-    KFileViewItem *fi = ( (KFileListViewItem*)item )->fileInfo();
+    KFileItem *fi = ( (KFileListViewItem*)item )->fileInfo();
     if ( fi )
-	select( fi );
+	sig->activate( fi );
 }
 
 void KFileDetailView::selected( QListViewItem *item )
@@ -192,9 +215,9 @@ void KFileDetailView::selected( QListViewItem *item )
 	return;
 
     if ( KGlobalSettings::singleClick() ) {
-	KFileViewItem *fi = ( (KFileListViewItem*)item )->fileInfo();
+	KFileItem *fi = ( (KFileListViewItem*)item )->fileInfo();
 	if ( fi && (fi->isDir() || !onlyDoubleClickSelectsFiles()) )
-	    select( fi );
+	    sig->activate( fi );
     }
 }
 
@@ -203,9 +226,9 @@ void KFileDetailView::highlighted( QListViewItem *item )
     if ( !item )
 	return;
 
-    KFileViewItem *fi = ( (KFileListViewItem*)item )->fileInfo();
+    KFileItem *fi = ( (KFileListViewItem*)item )->fileInfo();
     if ( fi )
-	highlight( fi );
+	sig->highlightFile( fi );
 }
 
 
@@ -240,12 +263,12 @@ void KFileDetailView::setSelectionMode( KFile::SelectionMode sm )
 		 SLOT( highlighted( QListViewItem * )));
 }
 
-bool KFileDetailView::isSelected( const KFileViewItem *i ) const
+bool KFileDetailView::isSelected( const KFileItem *i ) const
 {
     if ( !i )
 	return false;
 
-    KFileListViewItem *item = (KFileListViewItem*) i->viewItem( this );
+    KFileListViewItem *item = (KFileListViewItem*) i->extraData( this );
     return (item && item->isSelected());
 }
 
@@ -258,119 +281,130 @@ void KFileDetailView::updateView( bool b )
     QListViewItemIterator it( (QListView*)this );
     for ( ; it.current(); ++it ) {
 	KFileListViewItem *item=static_cast<KFileListViewItem *>(it.current());
-	item->setPixmap( 0, item->fileInfo()->pixmap() );
+	item->setPixmap( 0, item->fileInfo()->pixmap(KIcon::SizeSmall) );
     }
 }
 
-void KFileDetailView::updateView( const KFileViewItem *i )
+void KFileDetailView::updateView( const KFileItem *i )
 {
     if ( !i )
 	return;
 
-    KFileListViewItem *item = (KFileListViewItem*) i->viewItem( this );
+    KFileListViewItem *item = (KFileListViewItem*) i->extraData( this );
     if ( !item )
 	return;
 
-    item->setPixmap( 0, i->pixmap() );
-    item->setText( 2, i->access() );
+    item->setPixmap( COL_NAME, i->pixmap(KIcon::SizeSmall) );
+    item->setText(   COL_PERM, i->permissionsString() );
 
     //item->repaint(); // only repaints if visible
 }
 
 
-void KFileDetailView::removeItem( const KFileViewItem *i )
+void KFileDetailView::removeItem( const KFileItem *i )
 {
     if ( !i )
 	return;
 
-    delete (KFileListViewItem*) i->viewItem( this );
+    delete (KFileListViewItem*) i->extraData( this );
     KFileView::removeItem( i );
 }
 
 void KFileDetailView::slotSortingChanged( int col )
 {
-    KListView::setSorting( -1 );
     QDir::SortSpec sort = sorting();
     int sortSpec = -1;
-    bool reversed = false;
+    bool reversed = col == m_sortingCol && !(sort & QDir::Reversed);
+    m_sortingCol = col;
 
     switch( col ) {
-    case COL_NAME:
-	if ( (sort & QDir::Size) == 0 && (sort & QDir::Time) == 0 )
-	    reversed = true;
-	else
-	    sortSpec = sort & ~QDir::SortByMask | QDir::Name;
-	break;
-    case COL_SIZE:
-	if ( (sort & QDir::Size) == QDir::Size )
-	    reversed = true;
-	else
-	    sortSpec = sort & ~QDir::SortByMask | QDir::Size;
-	break;
-    case COL_DATE:
-	if ( (sort & QDir::Time) == QDir::Time )
-	    reversed = true;
-	else
+        case COL_NAME:
+            sortSpec = sort & ~QDir::SortByMask | QDir::Name;
+            break;
+        case COL_SIZE:
+            sortSpec = sort & ~QDir::SortByMask | QDir::Size;
+            break;
+        case COL_DATE:
 	    sortSpec = sort & ~QDir::SortByMask | QDir::Time;
-	break;
-    default: // FIXME sort by group.... only this view can do this for now
-	break;
+            break;
+
+        // the following columns have no equivalent in QDir, so we set it
+        // to QDir::Unsorted and remember the column (m_sortingCol)
+        case COL_OWNER:
+        case COL_GROUP:
+        case COL_PERM:
+            // grmbl, QDir::Unsorted == SortByMask.
+            sortSpec = sort & ~QDir::SortByMask;// | QDir::Unsorted;
+            break;
+        default:
+            break;
     }
 
-    const KFileViewItem *current = 0L;
-    if ( currentItem() )
-        current = ((KFileListViewItem*)currentItem())->fileInfo();
-
-    if ( sortSpec != -1 )
-	KFileView::setSorting( static_cast<QDir::SortSpec>( sortSpec ) );
-
     if ( reversed )
-	sortReversed();
+        sortSpec |= QDir::Reversed;
     else
-	header()->setSortIndicator( col, !isReversed() );
+        sortSpec &= ~QDir::Reversed;
 
-    if ( current && (sortSpec != -1 || reversed) )
-        KListView::setCurrentItem((QListViewItem*)current->viewItem(this));
+    KFileView::setSorting( static_cast<QDir::SortSpec>( sortSpec ) );
+
+    KFileItem *item;
+    KFileItemListIterator it( *items() );
+
+
+    if ( sortSpec & QDir::Time ) {
+        for ( ; (item = it.current()); ++it )
+            viewItem(item)->setKey( sortingKey( item->time( KIO::UDS_MODIFICATION_TIME ), item->isDir(), sortSpec ));
+    }
+
+    else if ( sortSpec & QDir::Size ) {
+        for ( ; (item = it.current()); ++it )
+            viewItem(item)->setKey( sortingKey( item->size(), item->isDir(),
+                                                sortSpec ));
+    }
+    else { // Name or Unsorted -> use column text
+        for ( ; (item = it.current()); ++it ) {
+            KFileListViewItem *i = viewItem( item );
+            i->setKey( sortingKey( i->text(m_sortingCol), item->isDir(),
+                                   sortSpec ));
+        }
+    }
+
+    KListView::setSorting( m_sortingCol, !reversed );
+
+    if ( !m_blockSortingSignal )
+        sig->changeSorting( static_cast<QDir::SortSpec>( sortSpec ) );
 }
 
 
 void KFileDetailView::setSorting( QDir::SortSpec spec )
 {
-    kdDebug(kfile_area) << "KFileDetailView::setSorting " << count() << endl;
-    KFileView::setSorting( spec );
-    setSortIndicator();
+    int col = 0;
+    if ( spec & QDir::Time )
+        col = COL_DATE;
+    else if ( spec & QDir::Size )
+        col = COL_SIZE;
+    else if ( spec & QDir::Unsorted )
+        col = m_sortingCol;
+    else
+        col = COL_NAME;
+
+    if ( spec & QDir::Reversed ) { // so slotSortingChanged() will reverse
+        KFileView::setSorting( (QDir::SortSpec) (spec & ~QDir::Reversed) );
+        m_sortingCol = col;
+    }
+
+    // don't emit sortingChanged() when called via setSorting()
+    m_blockSortingSignal = true; // can't use blockSignals()
+    slotSortingChanged( col );
+    m_blockSortingSignal = false;
 }
 
 
-void KFileDetailView::sortReversed()
-{
-    KFileView::sortReversed();
-    setSortIndicator();
-}
-
-void KFileDetailView::setSortIndicator()
-{
-    kdDebug(kfile_area) << "setSortingIndicator " << endl;
-
-    QDir::SortSpec spec = sorting();
-    int col = -1;
-
-    if ( (spec & QDir::Size) == QDir::Size )
-	col = COL_SIZE;
-    else if (  (spec & QDir::Time) == QDir::Time )
-	col = COL_DATE;
-    else if ( (spec & QDir::Name) == QDir::Name )
-	col = COL_NAME;
-
-    header()->setSortIndicator( col, !isReversed() );
-}
-
-
-void KFileDetailView::ensureItemVisible( const KFileViewItem *i )
+void KFileDetailView::ensureItemVisible( const KFileItem *i )
 {
     if ( !i )
 	return;
-    KFileListViewItem *item = (KFileListViewItem*) i->viewItem( this );
+    KFileListViewItem *item = (KFileListViewItem*) i->extraData( this );
     if ( item )
 	KListView::ensureItemVisible( item );
 }
@@ -378,7 +412,41 @@ void KFileDetailView::ensureItemVisible( const KFileViewItem *i )
 // we're in multiselection mode
 void KFileDetailView::slotSelectionChanged()
 {
-    highlight( 0L );
+    sig->highlightFile( 0L );
+}
+
+KFileItem * KFileDetailView::firstFileItem() const
+{
+    KFileListViewItem *item = static_cast<KFileListViewItem*>( firstChild() );
+    if ( item )
+        return item->fileInfo();
+    return 0L;
+}
+
+KFileItem * KFileDetailView::nextItem( const KFileItem *fileItem ) const
+{
+    if ( fileItem ) {
+        KFileListViewItem *item = viewItem( fileItem );
+        if ( item )
+            return ((KFileListViewItem*) item->itemBelow())->fileInfo();
+        else
+            return 0L;
+    }
+    else
+        return firstFileItem();
+}
+
+KFileItem * KFileDetailView::prevItem( const KFileItem *fileItem ) const
+{
+    if ( fileItem ) {
+        KFileListViewItem *item = viewItem( fileItem );
+        if ( item )
+            return ((KFileListViewItem*) item->itemAbove())->fileInfo();
+        else
+            return 0L;
+    }
+    else
+        return firstFileItem();
 }
 
 #include "kfiledetailview.moc"

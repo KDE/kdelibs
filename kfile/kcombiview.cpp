@@ -22,7 +22,7 @@
 
 #include <assert.h>
 
-#include "kfileviewitem.h"
+#include "kfileitem.h"
 #include "kcombiview.h"
 #include "kfileiconview.h"
 #include "kfiledetailview.h"
@@ -41,13 +41,18 @@
 #include <qvaluelist.h>
 
 KCombiView::KCombiView( QWidget *parent, const char *name)
-  : QSplitter( parent, name), KFileView(), right(0)
+  : QSplitter( parent, name),
+    KFileView(),
+    right(0)
 {
-    KFileIconView *dirs = new KFileIconView( (QSplitter*)this, "left" );
+    KFileIconView *dirs = new KFileIconView( this, "left" );
     dirs->KFileView::setViewMode( Directories );
     dirs->setArrangement( QIconView::LeftToRight );
+    dirs->setParentView( this );
     left = dirs;
-    dirs->setOperator(this);
+
+    connect( left->signaler(), SIGNAL( sortingChanged( QDir::SortSpec ) ),
+             SLOT( slotSortingChanged( QDir::SortSpec ) ));
 }
 
 KCombiView::~KCombiView()
@@ -66,61 +71,25 @@ void KCombiView::setRight(KFileView *view)
     setSizes( lst );
     setResizeMode( left, QSplitter::KeepSize );
 
-    right->setOperator(this);
+    right->setParentView( this );
     right->setOnlyDoubleClickSelectsFiles( onlyDoubleClickSelectsFiles() );
+
+    connect( right->signaler(), SIGNAL( sortingChanged( QDir::SortSpec ) ),
+             SLOT( slotSortingChanged( QDir::SortSpec ) ));
 }
 
-void KCombiView::insertSorted(KFileViewItem *tfirst, uint)
+void KCombiView::insertItem( KFileItem *item )
 {
-    kdDebug(kfile_area) << "KCombiView::insertSorted\n";
-    KFileViewItem *f_first = 0, *d_first = 0;
-    uint dirs = 0, files = 0;
-
-    KFileViewItem *tmp;
-
-    if ( !right )
-        kdFatal() << "You need to call setRight( someview ) before!" << endl;
-
-    for (KFileViewItem *it = tfirst; it;) {
-	tmp = it->next();
-
-	if (it->isDir()) {
-            left->updateNumbers(it);
-	    if (!d_first) {
-		d_first = it;
-		d_first->setNext(0);
-	    } else {
-		it->setNext(d_first);
-		d_first = it;
-	    }
-	    dirs++;
-	} else {
-            right->updateNumbers(it);
-	    if (!f_first) {
-		f_first = it;
-		f_first->setNext(0);
-	    } else {
-		it->setNext(f_first);
-		f_first = it;
-	    }
-	    files++;
-	}
-	it = tmp;
+    KFileView::insertItem( item );
+    
+    if ( item->isDir() ) {
+        left->updateNumbers( item );
+        left->insertItem( item );
     }
-
-    if (dirs)
-	left->insertSorted(d_first, dirs);
-    if (files)
-	right->insertSorted(f_first, files);
-
-    // ### OUCH! With this, KFileView only knows about the files, not the dirs!
-    // Dunno what this breaks, at least completing of dirs is broken.
-    setFirstItem( right->firstItem() );
-}
-
-void KCombiView::insertItem( KFileViewItem * )
-{
-    kdDebug(kfile_area) << "KCombiView::insertItem not implemented (as not needed :)" << endl;
+    else {
+        right->updateNumbers( item );
+        right->insertItem( item );
+    }
 }
 
 void KCombiView::setSorting( QDir::SortSpec sort )
@@ -129,18 +98,8 @@ void KCombiView::setSorting( QDir::SortSpec sort )
         kdFatal() << "You need to call setRight( someview ) before!" << endl;
     right->setSorting( sort );
     left->KFileView::setSorting( sort );
-    // don't call KFileView::setSorting()! It would resort all items, what
-    // we don't want (the child-views do this themselves)
-    mySorting = right->sorting();
-}
 
-void KCombiView::sortReversed()
-{
-    if ( !right )
-        kdFatal() << "You need to call setRight( someview ) before!" << endl;
-    right->sortReversed();
-    left->sortReversed();
-    reversed = right->isReversed();
+    KFileView::setSorting( right->sorting() );
 }
 
 void KCombiView::clearView()
@@ -157,14 +116,14 @@ void KCombiView::updateView( bool b )
         right->updateView( b );
 }
 
-void KCombiView::updateView( const KFileViewItem *i )
+void KCombiView::updateView( const KFileItem *i )
 {
     left->updateView( i );
     if ( right )
         right->updateView( i );
 }
 
-void KCombiView::removeItem( const KFileViewItem *i )
+void KCombiView::removeItem( const KFileItem *i )
 {
     left->removeItem( i );
     if ( right )
@@ -187,7 +146,21 @@ void KCombiView::clearSelection()
         right->clearSelection();
 }
 
-bool KCombiView::isSelected( const KFileViewItem *item ) const
+void KCombiView::selectAll()
+{
+    left->selectAll();
+    if ( right )
+        right->selectAll();
+}
+
+void KCombiView::invertSelection()
+{
+    left->invertSelection();
+    if ( right )
+        right->invertSelection();
+}
+
+bool KCombiView::isSelected( const KFileItem *item ) const
 {
     assert( right ); // for performance reasons no if ( right ) check.
     return (right->isSelected( item ) || left->isSelected( item ));
@@ -203,25 +176,25 @@ void KCombiView::setSelectionMode( KFile::SelectionMode sm )
     right->setSelectionMode( sm );
 }
 
-void KCombiView::setSelected( const KFileViewItem *item, bool enable )
+void KCombiView::setSelected( const KFileItem *item, bool enable )
 {
     left->setSelected( item, enable );
     if ( right )
         right->setSelected( item, enable );
 }
 
-void KCombiView::setCurrentItem( const KFileViewItem *item )
+void KCombiView::setCurrentItem( const KFileItem *item )
 {
     left->setCurrentItem( item );
     if ( right )
         right->setCurrentItem( item );
 }
 
-KFileViewItem * KCombiView::currentFileItem() const
+KFileItem * KCombiView::currentFileItem() const
 {
     // we can actually have two current items, one in each view. So we simply
     // prefer the fileview's item over the directory's.
-    KFileViewItem *item = 0L;
+    KFileItem *item = 0L;
     if ( right )
         item = right->currentFileItem();
     if ( !item )
@@ -229,34 +202,51 @@ KFileViewItem * KCombiView::currentFileItem() const
     return item;
 }
 
-void KCombiView::selectDir(const KFileViewItem* item)
-{
-    sig->activateDir(item);
-}
-
-void KCombiView::highlightFile(const KFileViewItem* item)
-{
-    sig->highlightFile(item);
-}
-
-void KCombiView::selectFile(const KFileViewItem* item)
-{
-    sig->activateFile(item);
-}
-
-void KCombiView::activatedMenu(const KFileViewItem *item)
-{
-    sig->activateMenu(item);
-}
-
-void KCombiView::ensureItemVisible(const KFileViewItem *item)
+void KCombiView::ensureItemVisible(const KFileItem *item)
 {
     left->ensureItemVisible( item );
     if ( right )
         right->ensureItemVisible( item );
 }
 
-// ***************************************************************************
+KFileItem * KCombiView::firstFileItem() const
+{
+    // ### depending on sortorder dirs first or last?
+    KFileItem *item = 0L;
+    if ( left )
+        item = left->firstFileItem();
+    if ( !item && right )
+        item = right->firstFileItem();
+
+    return item;
+}
+
+KFileItem * KCombiView::nextItem( const KFileItem *fileItem ) const
+{
+    KFileItem *item = 0L;
+    if ( left )
+        item = left->nextItem( fileItem );
+    if ( !item && right )
+        item = right->nextItem( fileItem );
+
+    return item;
+}
+
+KFileItem * KCombiView::prevItem( const KFileItem *fileItem ) const
+{
+    KFileItem *item = 0L;
+    if ( left )
+        item = left->prevItem( fileItem );
+    if ( !item && right )
+        item = right->prevItem( fileItem );
+
+    return item;
+}
+
+void KCombiView::slotSortingChanged( QDir::SortSpec sorting )
+{
+    KFileView::setSorting( sorting );
+}
 
 #include "kcombiview.moc"
 

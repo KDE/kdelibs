@@ -47,7 +47,7 @@ class KFileBookmarkManager;
 class KURLComboBox;
 class KFileFilter;
 class KFileView;
-class KFileViewItem;
+class KFileItem;
 class KToolBar;
 class KPreviewWidgetBase;
 
@@ -673,7 +673,7 @@ protected:
      * adds a entry of the current directory. If disableUpdating is set
      * to true, it will care about clever updating
      **/
-    void addDirEntry(KFileViewItem *entry, bool disableUpdating);
+    void addDirEntry(KFileItem *entry, bool disableUpdating);
 
     /**
       * rebuild geometry managment.
@@ -695,7 +695,7 @@ protected:
     /**
      * Saves the current configuration
      */
-    virtual void saveConfig( KConfig *, const QString& group = QString::null );
+    virtual void writeConfig( KConfig *, const QString& group = QString::null );
 
     /**
      * Reads the recent used files and inserts them into the location combobox
@@ -723,8 +723,8 @@ protected slots:
     void toolbarCallback(int);
     void slotFilterChanged();
     void pathComboChanged( const QString& );
-    void fileHighlighted(const KFileViewItem *i);
-    void fileSelected(const KFileViewItem *i);
+    void fileHighlighted(const KFileItem *i);
+    void fileSelected(const KFileItem *i);
     void slotStatResult(KIO::Job* job);
     void slotLoadingFinished();
 

@@ -21,7 +21,7 @@
 #ifndef KFILEICONVIEW_H
 #define KFILEICONVIEW_H
 
-class KFileViewItem;
+class KFileItem;
 class QWidget;
 class QLabel;
 
@@ -33,27 +33,27 @@ class QLabel;
 
 /**
  * An item for the iconview, that has a reference to its corresponding
- * @ref KFileViewItem.
+ * @ref KFileItem.
  */
 class KFileIconViewItem : public QIconViewItem
 {
 public:
     KFileIconViewItem( QIconView *parent, const QString &text,
 		       const QPixmap &pixmap,
-		       KFileViewItem *fi )
+		       KFileItem *fi )
 	: QIconViewItem( parent, text, pixmap ), inf( fi ) {}
 
     virtual ~KFileIconViewItem();
 
     /**
-     * @returns the corresponding KFileViewItem
+     * @returns the corresponding KFileItem
      */
-    KFileViewItem *fileInfo() const {
+    KFileItem *fileInfo() const {
 	return inf;
     }
 
 private:
-    KFileViewItem *inf;
+    KFileItem *inf;
 
 private:
     class KFileIconViewItemPrivate;
@@ -66,7 +66,7 @@ namespace KIO {
 }
 
 /**
- * An icon-view capable of showing @ref KFileViewItem's. Used in the filedialog
+ * An icon-view capable of showing @ref KFileItem's. Used in the filedialog
  * for example. Most of the documentation is in @ref KFileView class.
  *
  * @see KDirOperator
@@ -86,19 +86,24 @@ public:
     virtual void setAutoUpdate( bool ) {}
 
     virtual void updateView( bool );
-    virtual void updateView(const KFileViewItem*);
-    virtual void removeItem(const KFileViewItem*);
+    virtual void updateView(const KFileItem*);
+    virtual void removeItem(const KFileItem*);
 
-    virtual void insertItem( KFileViewItem *i );
+    virtual void insertItem( KFileItem *i );
     virtual void setSelectionMode( KFile::SelectionMode sm );
 
-    virtual void setSelected(const KFileViewItem *, bool);
-    virtual bool isSelected(const KFileViewItem *i) const;
+    virtual void setSelected(const KFileItem *, bool);
+    virtual bool isSelected(const KFileItem *i) const;
     virtual void clearSelection();
+    virtual void selectAll();
+    virtual void invertSelection();
 
-    virtual void setCurrentItem( const KFileViewItem * );
-    virtual KFileViewItem * currentFileItem() const;
-    
+    virtual void setCurrentItem( const KFileItem * );
+    virtual KFileItem * currentFileItem() const;
+    virtual KFileItem * firstFileItem() const;
+    virtual KFileItem * nextItem( const KFileItem * ) const;
+    virtual KFileItem * prevItem( const KFileItem * ) const;
+
     /**
      * Sets the size of the icons to show. Defaults to @ref KIcon::SizeSmall.
      */
@@ -114,7 +119,9 @@ public:
      */
     int iconSize() const { return myIconSize; }
 
-    void ensureItemVisible( const KFileViewItem * );
+    void ensureItemVisible( const KFileItem * );
+
+    virtual void setSorting(QDir::SortSpec sort);
 
 public slots:
     /**
@@ -139,7 +146,7 @@ private slots:
     void highlighted( QIconViewItem *item );
     void showToolTip( QIconViewItem *item );
     void removeToolTip();
-    void slotRightButtonPressed( QIconViewItem * );
+    void slotActivateMenu( QIconViewItem *, const QPoint& );
     void slotDoubleClicked( QIconViewItem * );
     void slotSelectionChanged();
 
@@ -154,16 +161,23 @@ private:
     QLabel *toolTip;
     int th;
     int myIconSize;
+
     virtual void insertItem(QIconViewItem *a, QIconViewItem *b) { KIconView::insertItem(a, b); }
     virtual void setSelectionMode(QIconView::SelectionMode m) { KIconView::setSelectionMode(m); }
     virtual void setSelected(QIconViewItem *i, bool a, bool b) { KIconView::setSelected(i, a, b); }
 
-    bool canPreview( const KFileViewItem * ) const;
+    bool canPreview( const KFileItem * ) const;
 
-    void readConfig();
-    void writeConfig();
+    virtual void readConfig( KConfig *, const QString& group = QString::null );
+    virtual void writeConfig( KConfig *, const QString& group = QString::null);
 
     void updateIcons();
+
+    inline KFileIconViewItem * viewItem( const KFileItem *item ) const {
+        if ( item )
+            return (KFileIconViewItem *) item->extraData( this );
+        return 0L;
+    }
 
 private:
     class KFileIconViewPrivate;

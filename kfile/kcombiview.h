@@ -63,8 +63,8 @@ public:
     virtual void clearView();
 
     virtual void updateView( bool );
-    virtual void updateView(const KFileViewItem*);
-    virtual void removeItem( const KFileViewItem * );
+    virtual void updateView(const KFileItem*);
+    virtual void removeItem( const KFileItem * );
 
     /**
      * Sets the view to be shown in the right. You need to call this before
@@ -74,34 +74,32 @@ public:
 
     virtual void setSelectionMode( KFile::SelectionMode sm );
 
-    virtual void setSelected(const KFileViewItem *, bool);
-    virtual bool isSelected( const KFileViewItem * ) const;
+    virtual void setSelected(const KFileItem *, bool);
+    virtual bool isSelected( const KFileItem * ) const;
     virtual void clearSelection();
+    virtual void selectAll();
+    virtual void invertSelection();
 
-    virtual void setCurrentItem( const KFileViewItem * );
-    KFileViewItem * currentFileItem() const;
+    virtual void setCurrentItem( const KFileItem * );
+    virtual KFileItem * currentFileItem() const;
+    virtual KFileItem * firstFileItem() const;
+    virtual KFileItem * nextItem( const KFileItem * ) const;
+    virtual KFileItem * prevItem( const KFileItem * ) const;
 
-    virtual void insertSorted(KFileViewItem *tfirst, uint counter);
-    virtual void insertItem( KFileViewItem *i );
+    virtual void insertItem( KFileItem *i );
     virtual void clear();
 
     virtual void setSorting( QDir::SortSpec sort );
-    virtual void sortReversed();
 
-    void ensureItemVisible( const KFileViewItem * );
-
-private:
-    KFileIconView *left;
+    void ensureItemVisible( const KFileItem * );
 
 protected:
+    KFileIconView *left;
     KFileView *right;
 
 protected slots:
-    void activatedMenu(const KFileViewItem*);
-    void selectDir(const KFileViewItem*);
-    void highlightFile(const KFileViewItem*);
-    void selectFile(const KFileViewItem*);
-
+    void slotSortingChanged( QDir::SortSpec ); 
+    
 private:
     class KCombiViewPrivate;
     KCombiViewPrivate *d;

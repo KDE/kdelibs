@@ -117,7 +117,7 @@ int main(int argc, char **argv)
 			QString::fromLatin1("*|All files\n"
 					    "*.lo *.o *.la|All libtool files"),
 			0, 0, true);
-        dlg.setFilter( "*.kdevelop" );
+//        dlg.setFilter( "*.kdevelop" );
 	dlg.setMode( (KFile::Mode) (KFile::Files |
                                     KFile::Directory |
                                     KFile::ExistingOnly |

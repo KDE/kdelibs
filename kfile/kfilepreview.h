@@ -24,7 +24,7 @@
 #define _KFILEPREVIEW_H
 
 #include <kfileview.h>
-#include <kfileviewitem.h>
+#include <kfileitem.h>
 #include <kfilepreview.h>
 #include <kfileiconview.h>
 #include <kfiledetailview.h>
@@ -64,26 +64,29 @@ public:
     KFileView* fileView() const { return left; }
 
     virtual void updateView( bool );
-    virtual void updateView(const KFileViewItem*);
-    virtual void removeItem(const KFileViewItem*);
+    virtual void updateView(const KFileItem*);
+    virtual void removeItem(const KFileItem*);
 
     virtual void setSelectionMode( KFile::SelectionMode sm );
 
+    virtual void setSelected(const KFileItem *, bool);
+    virtual bool isSelected( const KFileItem * ) const;
     virtual void clearSelection();
-    virtual bool isSelected( const KFileViewItem * ) const;
-    virtual void setSelected(const KFileViewItem *, bool);
+    virtual void selectAll();
+    virtual void invertSelection();
 
-    virtual void insertSorted(KFileViewItem *tfirst, uint counter);
-    virtual void insertItem(KFileViewItem *);
+    virtual void insertItem(KFileItem *);
     virtual void clear();
 
-    virtual void setCurrentItem( const KFileViewItem * );
-    virtual KFileViewItem * currentFileItem() const;
+    virtual void setCurrentItem( const KFileItem * );
+    virtual KFileItem * currentFileItem() const;
+    virtual KFileItem * firstFileItem() const;
+    virtual KFileItem * nextItem( const KFileItem * ) const;
+    virtual KFileItem * prevItem( const KFileItem * ) const;
 
     virtual void setSorting( QDir::SortSpec sort );
-    virtual void sortReversed();
 
-    void ensureItemVisible(const KFileViewItem *);
+    void ensureItemVisible(const KFileItem *);
 
     void setPreviewWidget(const QWidget *w, const KURL &u);
 
@@ -91,16 +94,9 @@ signals:
     void showPreview(const KURL &);
     void clearPreview();
 
-protected slots:
-    void activatedMenu(const KFileViewItem*);
-    void selectDir(const KFileViewItem*);
-    void highlightFile(const KFileViewItem*);
-    void selectFile(const KFileViewItem*);
-
 private:
     void init( KFileView *view );
 
-    bool deleted, previewMode; // ### remove
     KFileView *left;
     QWidget *preview;
     QString viewname;

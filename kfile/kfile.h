@@ -63,16 +63,6 @@ public:
     };
 
 
-    /**
-     * Increasing - greater indices mean bigger values
-     * Decrease -  greater indicies mean smaller values
-     */
-    enum SortMode {
-	Increasing,
-	Decreasing
-    };
-
-
     //
     // some bittests
     //

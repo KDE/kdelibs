@@ -1,6 +1,7 @@
 // -*- c++ -*-
 /* This file is part of the KDE libraries
     Copyright (C) 1997 Stephan Kulow <coolo@kde.org>
+    Copyright (C) 2001 Carsten Pfeiffer <pfeiffer@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -21,13 +22,12 @@
 #ifndef KFILEVIEW_H
 #define KFILEVIEW_H
 
-class QSignal;
 class QPoint;
 class KActionCollection;
 
 #include <qwidget.h>
 
-#include "kfileviewitem.h"
+#include "kfileitem.h"
 #include "kfilereader.h"
 #include "kfile.h"
 
@@ -35,25 +35,47 @@ class KActionCollection;
  * internal class to make easier to use signals possible
  * @internal
  **/
-class KFileViewSignaler : public QObject {
+class KFileViewSignaler : public QObject
+{
     Q_OBJECT
 
 public:
-    void activateDir(const KFileViewItem *i) { emit dirActivated(i); }
-    void highlightFile(const KFileViewItem *i) { emit fileHighlighted(i); }
-    void activateFile(const KFileViewItem *i) { emit fileSelected(i); }
-    void activateMenu( const KFileViewItem *i ) { emit activatedMenu( i ); }
+    /**
+      * Call this method when an item is selected (depends on single click /
+      * double click configuration). Emits the appropriate signal.
+      **/
+    void activate( const KFileItem *item ) {
+        if ( item->isDir() )
+            emit dirActivated( item );
+        else
+            emit fileSelected( item );
+    }
+    /**
+     * emits the highlighted signal for item. Call this in your view class
+     * whenever the selection changes.
+     */
+    void highlightFile(const KFileItem *i) { emit fileHighlighted(i); }
+
+    void activateMenu( const KFileItem *i, const QPoint& pos ) {
+        emit activatedMenu( i, pos );
+    }
+
+    void changeSorting( QDir::SortSpec sorting ) {
+        emit sortingChanged( sorting );
+    }
 
 signals:
-    void dirActivated(const KFileViewItem*);
+    void dirActivated(const KFileItem*);
+
+    void sortingChanged( QDir::SortSpec );
 
     /**
      * the item maybe be 0L, indicating that we're in multiselection mode and
      * the selection has changed.
      */
-    void fileHighlighted(const KFileViewItem*);
-    void fileSelected(const KFileViewItem*);
-    void activatedMenu( const KFileViewItem *i );
+    void fileHighlighted(const KFileItem*);
+    void fileSelected(const KFileItem*);
+    void activatedMenu( const KFileItem *i, const QPoint& );
 };
 
 /**
@@ -81,17 +103,7 @@ public:
     /**
      * inserts a list of items.
      **/
-    virtual void addItemList(const KFileViewItemList &list);
-
-    /**
-     * Inserts a list of items. Use this method <b>only</b> if you are sure
-     * that the list really contains KFileViewItems or items  subclassing
-     * KFileViewItem. You can use KDirLister to create a KFileItemList with
-     * any item, subclassing KFileItem. E.g. KFileReader creates KFileViewItems
-     *
-     * @see KDirLister::createFileItem
-     */
-    void addItemList( const KFileItemList& list );
+    void addItemList(const KFileItemList &list);
 
     /**
       * a pure virtual function to get a QWidget, that can be added to
@@ -101,7 +113,7 @@ public:
     virtual QWidget *widget() = 0;
 
     /**
-     * As const-method, to be fixed in 3.0
+     * ### As const-method, to be fixed in 3.0
      */
     QWidget *widget() const { return const_cast<KFileView*>(this)->widget(); }
 
@@ -114,14 +126,14 @@ public:
      * Reimplement this to set @p item the current item in the view, e.g.
      * the item having focus.
      */
-    virtual void setCurrentItem( const KFileViewItem *item ) = 0;
-    
+    virtual void setCurrentItem( const KFileItem *item ) = 0;
+
     /**
-     * @returns the "current" KFileViewItem, e.g. where the cursor is.
+     * @returns the "current" KFileItem, e.g. where the cursor is.
      * Returns 0L when there is no current item (e.g. in an empty view).
      * Subclasses have to implement this.
      */
-    virtual KFileViewItem *currentFileItem() const = 0;
+    virtual KFileItem *currentFileItem() const = 0;
 
     /**
      * Clears the view and all item lists.
@@ -136,59 +148,43 @@ public:
       **/
     virtual void updateView(bool f = true);
 
-    virtual void updateView(const KFileViewItem*);
+    virtual void updateView(const KFileItem*);
 
     /**
      * Removes an item from the list; has to be implemented by the view.
      * Call KFileView::removeItem( item ) after removing it.
      */
-    virtual void removeItem(const KFileViewItem *item);
+    virtual void removeItem(const KFileItem *item);
 
     /**
       * Returns the sorting order of the internal list. Newly added files
       * are added through this sorting.
       */
-    QDir::SortSpec sorting() const { return mySorting; }
+    QDir::SortSpec sorting() const { return m_sorting; }
 
     /**
       * Sets the sorting order of the view.
       *
       * Default is QDir::Name | QDir::IgnoreCase | QDir::DirsFirst
-      * Don't use QDir::Reversed, use @ref sortReversed() if you want to
-      * reverse the sort order.
-      * Calling this method keeps the reversed-setting
-      * If your view wants to get notified about sorting-changes (e.g. to show
-      * a sorting indicator), override this method and call this implementation
-      * in the beginning of your method.
-      * @see #setSortMode
-      **/
+      * Override this in your subclass and sort accordingly (usually by
+      * setting the sorting-key for every item and telling QIconView
+      * or QListView to sort.
+      *
+      * A view may choose to use a different sorting than QDir::Name, Time
+      * or Size. E.g. to sort by mimetype or any possible string. Set the
+      * sorting to QDir::Unsorted for that and do the rest internally.
+      *
+      * @see #sortingKey
+      */
     virtual void setSorting(QDir::SortSpec sort);
 
     /**
-      * Sets the sorting mode. Default mode is Increasing. Affects only
-      * newly added items.
-      * @see #setSorting
-      **/
-    void setSortMode(KFile::SortMode mode) { mySortMode = mode; }
-
-    /**
-     * @returns the current sort mode
-     * @see #setSortMode
-     * @see #setSorting
+     * Tells whether the current items are in reversed order (shortcut to
+     * sorting() & QDir::Reversed).
      */
-    KFile::SortMode sortMode() const { return mySortMode; }
+    bool isReversed() const { return (m_sorting & QDir::Reversed); }
 
-    /**
-     * Toggles the current sort order, i.e. the order is reversed.
-     * @see #isReversed
-     */
-    virtual void sortReversed();
-
-    /**
-     * Tells whether the current items are in reversed order (= contrary to
-     * @ref sortMode).
-     */
-    bool isReversed() const { return reversed; }
+    void sortReversed();
 
     /**
       * @returns the number of dirs and files
@@ -221,22 +217,25 @@ public:
      * somewhere, e.g. in a menu, where the user can choose between views.
      * @see #setViewName
      */
-    QString viewName() const { return viewname; }
+    QString viewName() const { return m_viewName; }
 
     /**
      * Sets the name of the view, which could be displayed somewhere.
      * E.g. "Image Preview".
      */
-    void setViewName( const QString& name ) { viewname = name; }
+    void setViewName( const QString& name ) { m_viewName = name; }
 
-    virtual void setOperator(QObject *ops);
+    virtual void setParentView(KFileView *parent);
 
     /**
      * The derived view must implement this function to add
      * the file in the widget.
      *
-     **/
-    virtual void insertItem( KFileViewItem *i) = 0;
+     * Make sure to call this implementation, i.e.
+     * KFileView::insertItem( i );
+     *
+     */
+    virtual void insertItem( KFileItem *i);
 
     /**
      * pure virtual function, that should be implemented to clear
@@ -248,11 +247,11 @@ public:
      * pure virtual function, that should be implemented to make item i
      * visible, i.e. by scrolling the view appropriately.
      */
-    virtual void ensureItemVisible( const KFileViewItem *i ) = 0;
+    virtual void ensureItemVisible( const KFileItem *i ) = 0;
 
     /**
-     * Clears any selection, unhighlights everything. Must be implemented by the
-     * view.
+     * Clears any selection, unhighlights everything. Must be implemented by
+     * the view.
      */
     virtual void clearSelection() = 0;
 
@@ -273,39 +272,27 @@ public:
      * Tells the view that it should highlight the item.
      * This function must be implemented by the view.
      **/
-    virtual void setSelected(const KFileViewItem *, bool enable) = 0;
+    virtual void setSelected(const KFileItem *, bool enable) = 0;
 
     /**
      * @returns whether the given item is currently selected.
      * Must be implemented by the view.
      */
-    virtual bool isSelected( const KFileViewItem * ) const = 0;
+    virtual bool isSelected( const KFileItem * ) const = 0;
 
     /**
      * @returns all currently highlighted items.
      */
-    const KFileViewItemList * selectedItems() const;
+    const KFileItemList * selectedItems() const;
 
     /**
      * @returns all items currently available in the current sort-order
      */
-    const KFileViewItemList * items() const;
+    const KFileItemList * items() const;
 
-    /**
-     * Inserts "counter" KFileViewItems and sorts them conforming to the
-     * current sort-order.
-     * If you override this method, you have to call @ref setFirstItem()
-     * afterwards, to set the first item of your newly sorted items.
-     */
-    virtual void insertSorted(KFileViewItem *tfirst, uint counter);
-
-    /**
-     * @returns the first (depending on sort order) item. It forms sort of a
-     * list, as each item holds a pointer to the next item.
-     * This is only public for internal reasons, DON'T call it unless you
-     * implement a View yourself and really need to.
-     */
-    KFileViewItem *firstItem() const { return myFirstItem; }
+    virtual KFileItem * firstFileItem() const = 0;
+    virtual KFileItem * nextItem( const KFileItem * ) const = 0;
+    virtual KFileItem * prevItem( const KFileItem * ) const = 0;
 
     /**
      * This is a KFileDialog specific hack: we want to select directories with
@@ -334,7 +321,7 @@ public:
      * increases the number of dirs and files.
      * @returns true if the item fits the view mode
      */
-    bool updateNumbers(const KFileViewItem *i);
+    bool updateNumbers(const KFileItem *i);
 
     // ### make virtual and override in kfilepreview and kcombiview
     /**
@@ -344,38 +331,22 @@ public:
      */
     KActionCollection * actionCollection() const;
 
+    KFileViewSignaler * signaler() const { return sig; }
+
+    virtual void readConfig( KConfig *, const QString& group = QString::null );
+    virtual void writeConfig( KConfig *, const QString& group = QString::null);
+
+    static QString sortingKey( const QString& value, bool isDir, int sortSpec);
+    static QString sortingKey( KIO::filesize_t value, bool isDir,int sortSpec);
+
 protected:
-
-    /**
-      * Call this method when an item is selected (depends on single click /
-      * double click configuration). Emits the appropriate signal.
-      **/
-    void select( const KFileViewItem *item );
-
-    /**
-     * emits the highlighted signal for item. Call this in your subclass,
-     * whenever the selection changes.
-     */
-    void highlight( const KFileViewItem *item) { sig->highlightFile( item ); }
-
     /**
      * compares two items in the current context (sortMode and others)
      * returns -1, if i1 is before i2 and 1, if the other case is true
      * in case, both are equal (in current context), the behaviour is
      * undefined!
      **/
-    int compareItems(const KFileViewItem *fi1, const KFileViewItem *fi2) const;
-
-    /**
-     * this is a help function for sorting, since I can't use the libc
-     * version (because I have a variable sort function)
-     *
-     */
-    void QuickSort(KFileViewItem* a[], int lo0, int hi0) const;
-
-    KFileViewItem *mergeLists(KFileViewItem *list1, KFileViewItem *list2);
-
-    void activateMenu( const KFileViewItem *i ) { sig->activateMenu(i); }
+    // int compareItems(const KFileItem *fi1, const KFileItem *fi2) const;
 
     /**
      * @internal
@@ -384,50 +355,33 @@ protected:
     KFileViewSignaler *sig;
 
     /**
-     * Call this method to set the first item after you call your own
-     * insertSorted(). You only need to call it when you override
-     * insertSorted().
-     */
-    void setFirstItem( KFileViewItem * item ) { myFirstItem = item; }
-
-    /**
      * Call this if you changed the sort order and want to perform the actual
      * sorting and show the new items.
      */
+    /*
     void resort() {
 	if ( count() > 1 ) {
-            const KFileViewItemList *selected = KFileView::selectedItems();
+            const KFileItemList *selected = KFileView::selectedItems();
+            const KFileItem *current = KFileView::currentFileItem();
 
-	    KFileViewItem *item = myFirstItem;
+	    KFileItem *item = myFirstItem;
 	    myFirstItem = 0L;
 	    insertSorted( item, count() );
 
             // restore the old selection
-            KFileViewItemListIterator it( *selected );
+            KFileItemListIterator it( *selected );
             for ( ; it.current(); ++it ) {
                 setSelected( it.current(), true );
             }
+            setCurrentItem( current );
 	}
     }
-
-    /**
-     * You should probably never change this variable, but call setSorting().
-     * It's here for the combi-view, that needs to set the sorting without
-     * resorting (the childviews do that themselves).
-     */
-    QDir::SortSpec mySorting;
-    
-    /**
-     * You should probably never change this variable, but call sortReversed().
-     * It's here for the combi-view, that needs to set the sorting without
-     * resorting (the childviews do that themselves).
-     */
-    bool reversed;
+    */
 
 private:
     static QDir::SortSpec defaultSortSpec;
-    KFile::SortMode mySortMode;
-    QString viewname;
+    QDir::SortSpec m_sorting;
+    QString m_viewName;
 
     /**
      * counters
@@ -438,9 +392,8 @@ private:
     ViewMode view_mode;
     KFile::SelectionMode selection_mode;
 
-    KFileViewItem *myFirstItem;
-    mutable KFileViewItemList *itemList, *selectedList;
-    mutable  bool itemListDirty;
+    KFileItemList m_itemList;
+    mutable KFileItemList *m_selectedList;
     bool myOnlyDoubleClickSelectsFiles;
 
 private:
