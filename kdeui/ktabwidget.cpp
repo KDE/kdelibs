@@ -140,6 +140,9 @@ void KTabWidget::wheelDelta( int delta )
 
 void KTabWidget::mouseDoubleClickEvent( QMouseEvent *e )
 {
+    if( e->button() != LeftButton )
+        return;
+
     if ( isEmptyTabbarSpace( e->pos() ) ) {
         emit( mouseDoubleClick() );
         return;
