@@ -361,7 +361,7 @@ void KClipboard::setURLList( QStringList& _urls )
   QStringList::Iterator iterator = _urls.begin();
   for( ; iterator != _urls.end(); iterator++ )
   {
-    if ( iterator == _urls.end() )
+    if ( iterator == --_urls.end() )
       writeBlock( *iterator, (*iterator).length() );
     else
       writeBlock( *iterator, (*iterator).length() + 1 );
