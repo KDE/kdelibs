@@ -18,6 +18,13 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
+ * This file includes excerpts from the Document Object Model (DOM)
+ * Level 1 Specification (Recommendation)
+ * http://www.w3.org/TR/REC-DOM-Level-1/
+ * Copyright © World Wide Web Consortium , (Massachusetts Institute of
+ * Technology , Institut National de Recherche en Informatique et en
+ * Automatique , Keio University ). All Rights Reserved.
+ *
  * $Id$
  */
 #ifndef _DOM_Document_h_

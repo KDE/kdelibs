@@ -18,6 +18,11 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
+ * This file includes excerpts from the Document Object Model (DOM)
+ * Level 2 Specification (Candidate Recommendation)
+ * http://www.w3.org/TR/2000/CR-DOM-Level-2-20000510/
+ * Copyright © 2000 W3C® (MIT, INRIA, Keio), All Rights Reserved.
+ *
  * $Id$
  */
 #ifndef _CSS_css_stylesheet_h_
