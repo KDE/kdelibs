@@ -9,6 +9,28 @@
 
 2003-10-25  David Faure  <faure@kde.org>
 
+	Make use of the ID scheme much more for elements, getting rid of 
+	m_localName and m_tagName strings in XMLElementImpl.
+	
+	* misc/maketags: switched to lowercase; uppercase is the html-compat case only.
+	* html/html_elementimpl.cpp(tagName,localName): lookup name from id, with proper
+	handling of m_htmlCompat vs xhtml difference.
+	* html/html_elementimpl.h: removed m_xhtml bool, becomes bitfield in NodeImpl instead,
+	since XML elements can be in "HTML compat" mode too (uppercased).
+	* xml/dom_docimpl.cpp (DocumentImpl): XML namespace is id 0 again
+	* xml/dom_docimpl.cpp (createElementNS): check for exceptions when
+	setting the prefix; set HTML compat mode in the element if necessary.
+	Only look for the ID if it's an XML element - if not, createHTMLElement did it.
+	* xml/dom_docimpl.cpp (getId): Do not apply the html-compat case hacks
+	when looking up elements. This is done by createElement[NS] now. Left
+	the code for the attribute lookup only.
+	* xml/dom_elementimpl.cpp (XMLElementImpl::XMLElementImpl): ctor only needs id and prefix.
+	Removed m_tagName and m_localName member vars in all methods, used id lookups instead.
+	* xml/dom_elementimpl.cpp (cloneNode): fixed namespace being lost. Factorized
+	common code with HTMLElementImpl in finishCloneNode.
+	* xml/dom_nodeimpl.*: added m_htmlCompat bool in bitfield. Only makes 
+	sense for elements currently, but would take more memory in ElementImpl.
+
 	* xml/dom_docimpl.cpp (DOMImplementationImpl::createDocument):
 	DOM3 now says a null qualifiedName is allowed in createDocument.
 

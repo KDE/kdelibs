@@ -146,13 +146,14 @@ public:
                          const DOMString& value, int &exceptioncode );
     virtual DOMString prefix() const;
     void setPrefix(const DOMString &_prefix, int &exceptioncode );
-    virtual DOMString namespaceURI() const { return DOMString(); }
+    virtual DOMString namespaceURI() const;
 
     // DOM methods overridden from  parent classes
     virtual DOMString tagName() const = 0;
     virtual unsigned short nodeType() const;
     virtual NodeImpl *cloneNode ( bool deep );
     virtual DOMString nodeName() const;
+    virtual NodeImpl::Id id() const = 0;
     virtual bool isElementNode() const { return true; }
 
     // convenience methods which ignore exceptions
@@ -201,6 +202,7 @@ public:
 protected:
     void createAttributeMap() const;
     void createDecl();
+    void finishCloneNode( ElementImpl *clone, bool deep );
 
 private:
     // map of default attributes. derived element classes are responsible
@@ -220,24 +222,20 @@ class XMLElementImpl : public ElementImpl
 {
 
 public:
-    XMLElementImpl(DocumentPtr *doc, NodeImpl::Id id, DOMStringImpl *_tagName);
-    XMLElementImpl(DocumentPtr *doc, NodeImpl::Id id, DOMStringImpl *_qualifiedName, DOMStringImpl *_namespaceURI);
+    XMLElementImpl(DocumentPtr *doc, NodeImpl::Id id);
+    XMLElementImpl(DocumentPtr *doc, NodeImpl::Id id, DOMStringImpl *_qualifiedName);
     ~XMLElementImpl();
 
     // DOM methods overridden from  parent classes
-
     virtual DOMString tagName() const;
     virtual DOMString localName() const;
     virtual NodeImpl *cloneNode ( bool deep );
-    virtual DOMString namespaceURI() const;
 
     // Other methods (not part of DOM)
     virtual bool isXMLElementNode() const { return true; }
     virtual Id id() const { return m_id; }
 
 protected:
-    DOMStringImpl *m_localName;
-    DOMStringImpl *m_tagName;
     Id  m_id;
 };
 

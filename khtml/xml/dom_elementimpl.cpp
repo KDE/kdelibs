@@ -357,10 +357,18 @@ void ElementImpl::setAttributeMap( NamedAttrMapImpl* list )
 
 NodeImpl *ElementImpl::cloneNode(bool deep)
 {
-    // ### we loose the namespace here ... FIXME
-    ElementImpl *clone = getDocument()->createElement(tagName());
+    ElementImpl *clone;
+    if ( !localName().isNull() )
+        clone = getDocument()->createElementNS( namespaceURI(), nodeName() );
+    else
+        clone = getDocument()->createElement( nodeName() );
     if (!clone) return 0;
+    finishCloneNode( clone, deep );
+    return clone;
+}
 
+void ElementImpl::finishCloneNode( ElementImpl* clone, bool deep )
+{
     // clone attributes
     if (namedAttrMap)
 	clone->attributes()->copyAttributes(namedAttrMap);
@@ -371,13 +379,16 @@ NodeImpl *ElementImpl::cloneNode(bool deep)
 
     if (deep)
         cloneChildNodes(clone);
-
-    return clone;
 }
 
 DOMString ElementImpl::nodeName() const
 {
     return tagName();
+}
+
+DOMString ElementImpl::namespaceURI() const
+{
+    return getDocument()->getName(NamespaceId, id() >> 16);
 }
 
 DOMString ElementImpl::prefix() const
@@ -601,73 +612,51 @@ void ElementImpl::setContentEditable(bool enabled) {
 
 // -------------------------------------------------------------------------
 
-XMLElementImpl::XMLElementImpl(DocumentPtr *doc, NodeImpl::Id id, DOMStringImpl *_tagName)
+XMLElementImpl::XMLElementImpl(DocumentPtr *doc, NodeImpl::Id id)
     : ElementImpl(doc)
 {
     // Called from createElement(). In this case localName, prefix, and namespaceURI all need to be null.
     m_id = id;
-    m_tagName = _tagName;
-    m_tagName->ref();
-    m_localName = 0;
 }
 
-XMLElementImpl::XMLElementImpl(DocumentPtr *doc, NodeImpl::Id id, DOMStringImpl *_qualifiedName,
-                               DOMStringImpl */*_namespaceURI*/)
+XMLElementImpl::XMLElementImpl(DocumentPtr *doc, NodeImpl::Id id, DOMStringImpl *_prefix)
     : ElementImpl(doc)
 {
     // Called from createElementNS()
     m_id = id;
-    m_tagName = _qualifiedName;
-    m_tagName->ref();
 
-    DOMString prefix, localName;
-    splitPrefixLocalName(_qualifiedName, prefix, localName);
-    m_prefix = prefix.implementation();
+    m_prefix = _prefix;
     if (m_prefix)
 	m_prefix->ref();
-    m_localName = localName.implementation();
-    if (m_localName)
-	m_localName->ref();
 }
 
 XMLElementImpl::~XMLElementImpl()
 {
 }
 
-DOMString XMLElementImpl::tagName() const
-{
-    return m_tagName;
-}
-
 DOMString XMLElementImpl::localName() const
 {
-    return m_localName;
+    if ( m_htmlCompat )
+       return DOMString(); // was created with non-namespace-aware createElement()
+    return getDocument()->getName(ElementId, m_id);
 }
 
-DOMString XMLElementImpl::namespaceURI() const
+DOMString XMLElementImpl::tagName() const
 {
-    return getDocument()->getName(NamespaceId, m_id >> 16);
+    DOMString tn = getDocument()->getName(ElementId, id());
+    if (m_htmlCompat)
+        tn = tn.upper();
+
+    if (m_prefix)
+        return DOMString(m_prefix) + ":" + tn;
+
+    return tn;
 }
 
 NodeImpl *XMLElementImpl::cloneNode ( bool deep )
 {
-    XMLElementImpl *clone;
-    if (!m_localName)
-	clone = new XMLElementImpl(docPtr(), id(), m_tagName);
-    else
-	clone = new XMLElementImpl(docPtr(), id(), m_tagName, 0);
-
-    // clone attributes
-    if (namedAttrMap)
-	clone->attributes()->copyAttributes(namedAttrMap);
-
-    // clone individual style rules
-    if (m_styleDecls)
-        *(clone->styleRules()) = *m_styleDecls;
-
-    if (deep)
-        cloneChildNodes(clone);
-
+    XMLElementImpl *clone = new XMLElementImpl(docPtr(), id(), m_prefix);
+    finishCloneNode( clone, deep );
     return clone;
 }
 

@@ -51,9 +51,15 @@
 
 #include <kdebug.h>
 #include <kglobal.h>
+#include "html_elementimpl.h"
 
 using namespace DOM;
 using namespace khtml;
+
+HTMLElementImpl::HTMLElementImpl(DocumentPtr *doc)
+    : ElementImpl( doc )
+{
+}
 
 HTMLElementImpl::~HTMLElementImpl()
 {
@@ -101,19 +107,9 @@ bool HTMLElementImpl::isInline() const
     }
 }
 
-DOMString HTMLElementImpl::tagName() const
-{
-    DOMString tn = getDocument()->getName(ElementId, 
-                        m_xhtml ? XHTML_NSID + id() : id() );
-    if (m_prefix)
-        return DOMString(m_prefix) + ":" + tn;
-
-    return tn;
-}
-
 DOMString HTMLElementImpl::namespaceURI() const
 {
-    return (m_xhtml) ? 
+    return (!m_htmlCompat) ?
         DOMString(XHTML_NAMESPACE) : DOMString();
 }
 
@@ -122,11 +118,37 @@ DOMString HTMLElementImpl::localName() const
 {
     // We only have a localName if we were created by createElementNS(), in which
     // case we are an XHTML element. This also means we have a lowercase name.
-    if (m_xhtml)
-	return getTagName(id()).lower();
+    if (!m_htmlCompat) // XHTML == not HTMLCompat
+    {
+        NodeImpl::Id _id = id();
+        DOMString tn;
+        if ( _id >= ID_LAST_TAG )
+            tn = getDocument()->getName(ElementId, _id);
+        else // HTML tag
+            tn = getTagName( _id );
+	return tn; // lowercase already
+    }
     // createElement() always returns elements with a null localName.
     else
 	return DOMString();
+}
+
+DOMString HTMLElementImpl::tagName() const
+{
+    DOMString tn;
+    NodeImpl::Id _id = id();
+    if ( _id >= ID_LAST_TAG )
+        tn = getDocument()->getName(ElementId, _id);
+    else // HTML tag
+        tn = getTagName( _id );
+
+    if ( m_htmlCompat )
+        tn = tn.upper();
+
+    if (m_prefix)
+        return DOMString(m_prefix) + ":" + tn;
+
+    return tn;
 }
 
 void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
@@ -604,4 +626,3 @@ HTMLGenericElementImpl::HTMLGenericElementImpl(DocumentPtr *doc, ushort i)
 HTMLGenericElementImpl::~HTMLGenericElementImpl()
 {
 }
-

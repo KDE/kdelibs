@@ -63,7 +63,8 @@ NodeImpl::NodeImpl(DocumentPtr *doc)
       m_active( false ),
       m_styleElement( false ),
       m_implicit( false ),
-      m_rendererNeedsClose( false )
+      m_rendererNeedsClose( false ),
+      m_htmlCompat( false )
 {
     if (document)
         document->ref();

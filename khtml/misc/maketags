@@ -52,9 +52,9 @@ while (<IN>) {
     chomp;
     $attr = $_;
     $num = $num + 1;
+    push(@a, "    \"$attr\",");
+    push(@b, "    \"/$attr\",");
     $up = uc($attr);
-    push(@a, "    \"$up\",");
-    push(@b, "    \"/$up\",");
     $up =~ s/-/_/;
     print out $attr . ", ID_" . $up . "\n";
     print header "#define ID_" . $up . " " . $num . "\n";
@@ -87,8 +87,8 @@ while(defined ($line = shift @a))
 {
     print OUT $line."\n";
 }
-print OUT "\    \"TEXT\",\n";
-print OUT "\    \"COMMENT\",\n";
+print OUT "\    \"text\",\n";
+print OUT "\    \"comment\",\n";
 while(defined ($line = shift @b))
 {
     print OUT $line."\n";

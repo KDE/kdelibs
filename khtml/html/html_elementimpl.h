@@ -36,8 +36,7 @@ class DocumentFragment;
 class HTMLElementImpl : public ElementImpl
 {
 public:
-    HTMLElementImpl(DocumentPtr *doc)
-        : ElementImpl(doc), m_xhtml(false) {}
+    HTMLElementImpl(DocumentPtr *doc);
 
     virtual ~HTMLElementImpl();
 
@@ -65,14 +64,10 @@ public:
     DocumentFragment createContextualFragment( const DOMString &html );
     bool setInnerHTML( const DOMString &html );
     bool setInnerText( const DOMString &text );
-    
-    void setXHtmlElement(bool isXHtml) { m_xhtml = isXHtml; }
-    bool isXHtmlElement() const { return m_xhtml; }
 
 protected:
     // for IMG, OBJECT and APPLET
     void addHTMLAlignment( DOMString alignment );
-    bool m_xhtml;
 };
 
 class HTMLGenericElementImpl : public HTMLElementImpl

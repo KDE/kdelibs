@@ -240,8 +240,10 @@ bool HTMLDocumentImpl::childAllowed( NodeImpl *newChild )
 ElementImpl *HTMLDocumentImpl::createElement( const DOMString &name, int* pExceptioncode )
 {
     ElementImpl *e = createHTMLElement(name);
-    if ( e )
+    if ( e ) {
+        e->setHTMLCompat( htmlMode() != XHtml );
         return e;
+    }
     return DocumentImpl::createElement(name, pExceptioncode);
 }
 

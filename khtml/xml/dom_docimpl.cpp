@@ -248,9 +248,9 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_elementMap = new IdNameMapping(ID_LAST_TAG+1);
     m_namespaceMap = new IdNameMapping(1);
     QString xhtml(XHTML_NAMESPACE);
-    m_namespaceMap->ids.insert(xhtml, (void*)1);
-    m_namespaceMap->names.insert(1, new DOMStringImpl(xhtml.unicode(), xhtml.length()));
-    m_namespaceMap->names[1]->ref();
+    m_namespaceMap->ids.insert(xhtml, (void*)0);
+    m_namespaceMap->names.insert(0, new DOMStringImpl(xhtml.unicode(), xhtml.length()));
+    m_namespaceMap->names[0]->ref();
     m_namespaceMap->count++;
     m_focusNode = 0;
     m_hoverNode = 0;
@@ -335,10 +335,9 @@ ElementImpl *DocumentImpl::createElement( const DOMString &name, int* pException
     if ( pExceptioncode && *pExceptioncode )
         return 0;
 
-    if (isHTMLDocument())
-	return new XMLElementImpl( document, id, name.upper().implementation() );
-    else
-	return new XMLElementImpl( document, id, name.implementation() );
+    XMLElementImpl* e = new XMLElementImpl( document, id );
+    e->setHTMLCompat( htmlMode() != XHtml ); // Not a real HTML element, but inside an html-compat doc all tags are uppercase.
+    return e;
 }
 
 AttrImpl *DocumentImpl::createAttribute( const DOMString &tagName, int* pExceptioncode )
@@ -387,6 +386,7 @@ NodeImpl *DocumentImpl::importNode(NodeImpl *importedNode, bool deep, int &excep
 
     if(importedNode->nodeType() == Node::ELEMENT_NODE)
     {
+        // Why not use cloneNode?
 	ElementImpl *otherElem = static_cast<ElementImpl*>(importedNode);
 	NamedAttrMapImpl *otherMap = static_cast<ElementImpl *>(importedNode)->attributes(true);
 
@@ -467,23 +467,28 @@ ElementImpl *DocumentImpl::createElementNS( const DOMString &_namespaceURI, cons
         return 0;
     DOMString prefix, localName;
     splitPrefixLocalName(_qualifiedName.implementation(), prefix, localName, colonPos);
-    Id id = getId(NodeImpl::ElementId, _namespaceURI.implementation(), prefix.implementation(),
-                  localName.implementation(), false);
 
-    // ### make sure html elements only get localName set if created through createElementNS
     if ((isHTMLDocument() && _namespaceURI.isNull()) ||
         (_namespaceURI == XHTML_NAMESPACE && localName == localName.lower())) {
         e = createHTMLElement(localName);
-        int exceptioncode = 0;
         if (e) {
-            if (colonPos >= 0)
-                e->setPrefix(prefix,  exceptioncode);
-            if(!_namespaceURI.isNull())
-                static_cast<HTMLElementImpl*>(e)->setXHtmlElement(true);
+            int _exceptioncode = 0;
+            if (!prefix.isNull())
+                e->setPrefix(prefix, _exceptioncode);
+            if ( _exceptioncode ) {
+                 if ( pExceptioncode ) *pExceptioncode = _exceptioncode;
+                 delete e;
+                 return 0;
+            }
+            if(_namespaceURI.isNull())
+                e->setHTMLCompat( htmlMode() != XHtml );
         }
     }
-    if (!e)
-        e = new XMLElementImpl( document, id, _qualifiedName.implementation(), _namespaceURI.implementation() );
+    if (!e) {
+        Id id = getId(NodeImpl::ElementId, _namespaceURI.implementation(), prefix.implementation(),
+                      localName.implementation(), false);
+        e = new XMLElementImpl( document, id, prefix.implementation() );
+    }
 
     return e;
 }
@@ -1618,27 +1623,27 @@ NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI,
     NodeImpl::Id id = 0;
     QConstString n(_name->s, _name->l);
     bool cs = true; // case sensitive
-    if (_type != NodeImpl::NamespaceId) {
+    // Do those hacks only for attributes. Keep everything clean for elements,
+    // it's all handled in createElement*
+    if (_type == NodeImpl::AttributeId) {
         // Each document maintains a mapping of tag name -> id for every tag name encountered
         // in the document.
         cs = (htmlMode() == XHtml);
         // First see if it's a HTML element name
-        bool xhtmlNS = false;
-        if (!_nsURI || (xhtmlNS = !strcasecmp(_nsURI, XHTML_NAMESPACE))) {
+        if (!_nsURI || !strcasecmp(_nsURI, XHTML_NAMESPACE)) {
             // we're in HTML namespace if we know the tag.
             // xhtml is lower case - case sensitive, easy to implement
             if ( cs && (id = lookup(n.string().ascii(), _name->l)) )
-                return xhtmlNS ? XHTML_NSID + id : id;
+                return id;
             // compatibility: upper case - case insensitive
             if ( !cs && (id = lookup(n.string().lower().ascii(), _name->l )) )
-                return xhtmlNS ? XHTML_NSID + id : id;
+                return id;
             // ok, the fast path didn't work out, we need the full check
         }
-
-        // now lets find out the namespace
-        if (_nsURI)
-            id = getId( NodeImpl::NamespaceId, 0, 0, _nsURI, false, 0 ) << 16;
     }
+    // now lets find out the namespace
+    if (_type != NodeImpl::NamespaceId && _nsURI)
+        id = getId( NodeImpl::NamespaceId, 0, 0, _nsURI, false, 0 ) << 16;
 
     // Look in the names array for the name
     // compatibility mode has to lookup upper case
