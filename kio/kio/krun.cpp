@@ -631,7 +631,7 @@ pid_t KRun::run( const KService& _service, const KURL::List& _urls )
   }
 
   QString error;
-  pid_t pid = 0;
+  int pid = 0;
 
   int i = KApplication::startServiceByDesktopPath(
         _service.desktopEntryPath(), _urls.toStringList(), &error, 0L, &pid
@@ -645,7 +645,7 @@ pid_t KRun::run( const KService& _service, const KURL::List& _urls )
   }
 
   kdDebug(7010) << "startServiceByDesktopPath worked fine" << endl;
-  return pid;
+  return (pid_t) pid;
 }
 
 
