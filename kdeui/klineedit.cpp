@@ -82,7 +82,7 @@ KLineEdit::~KLineEdit ()
 void KLineEdit::init()
 {
     d = new KLineEditPrivate;
-    possibleTripleClick=false;
+    possibleTripleClick = false;
     // Enable the context menu by default.
     setContextMenuEnabled( true );
     KCursor::setAutoHideCursor( this, true, true );
@@ -174,13 +174,20 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
     KKey key( e );
     if ( KStdAccel::deleteWordBack().contains( key ) )
     {
-        deleteWordBack();  // to be replaced with QT3 function
+        cursorWordBackward(TRUE);
+        if ( hasSelectedText() )
+            del();
+
         e->accept();
         return;
     }
     else if ( KStdAccel::deleteWordForward().contains( key ) )
     {
-        deleteWordForward(); // to be replaced with QT3 function
+        // Workaround for QT bug where
+        cursorWordForward(TRUE);
+        if ( hasSelectedText() )
+            del();
+
         e->accept();
         return;
     }
@@ -335,7 +342,8 @@ void KLineEdit::mouseDoubleClickEvent( QMouseEvent* e )
     if ( e->button() == Qt::LeftButton  )
     {
         possibleTripleClick=true;
-        QTimer::singleShot(QApplication::doubleClickInterval(),this,SLOT(tripleClickTimeout()));
+        QTimer::singleShot( QApplication::doubleClickInterval(),this,
+                            SLOT(tripleClickTimeout()) );
     }
     QLineEdit::mouseDoubleClickEvent( e );
 }
@@ -371,12 +379,13 @@ QPopupMenu *KLineEdit::createPopupMenu()
                  this, SLOT( completionMenuActivated( int ) ) );
 
         popup->insertSeparator();
-        popup->insertItem( SmallIconSet("completion"), i18n("Completion"), subMenu );
+        popup->insertItem( SmallIconSet("completion"), i18n("Text Completion"),
+                           subMenu );
 
         subMenu->insertItem( i18n("None"), NoCompletion );
         subMenu->insertItem( i18n("Manual"), ShellCompletion );
-        subMenu->insertItem( i18n("Drop-down List"), PopupCompletion );
         subMenu->insertItem( i18n("Automatic"), AutoCompletion );
+        subMenu->insertItem( i18n("Dropdown List"), PopupCompletion );
         subMenu->insertItem( i18n("Short Automatic"), SemiAutoCompletion );
 
         KGlobalSettings::Completion mode = completionMode();
@@ -396,7 +405,9 @@ QPopupMenu *KLineEdit::createPopupMenu()
             subMenu->insertItem( i18n("Default"), Default );
         }
     }
-    // ### do we really need this?
+    // ### do we really need this?  Yes, Please do not remove!  This
+    // allows applications to extend the popup menu without having to
+    // inherit from this class! (DA)
     emit aboutToShowContextMenu( popup );
 
     return popup;
@@ -463,23 +474,7 @@ bool KLineEdit::eventFilter( QObject* o, QEvent* ev )
         if ( ev->type() == QEvent::AccelOverride )
         {
             QKeyEvent *e = static_cast<QKeyEvent *>( ev );
-	    KKey key( e );
-            KeyBindingMap keys = getKeyBindings();
-            const KShortcut& tc_key = ( keys[TextCompletion].isNull() ) ?
-                           KStdAccel::shortcut(KStdAccel::TextCompletion) :
-                           keys[TextCompletion];
-            const KShortcut& nc_key = ( keys[NextCompletionMatch].isNull() ) ?
-                           KStdAccel::shortcut(KStdAccel::NextCompletion) :
-                           keys[NextCompletionMatch];
-            const KShortcut& pc_key = ( keys[PrevCompletionMatch].isNull() ) ?
-                           KStdAccel::shortcut(KStdAccel::PrevCompletion) :
-                           keys[PrevCompletionMatch];
-
-            if ( KStdAccel::deleteWordBack().contains( key ) ||
-                 KStdAccel::deleteWordForward().contains( key ) ||
-                 tc_key.contains( key ) ||
-                 nc_key.contains( key ) ||
-                 pc_key.contains( key ) )
+            if (overrideAccel (e))
             {
                 e->accept();
                 return true;
@@ -558,6 +553,44 @@ void KLineEdit::makeCompletionBox()
     }
 }
 
+bool KLineEdit::overrideAccel (const QKeyEvent* e)
+{
+  KShortcut scKey;
+
+  KKey key( e );
+  bool override = false;
+  KeyBindingMap keys = getKeyBindings();
+
+  if (keys[TextCompletion].isNull())
+    scKey = KStdAccel::shortcut(KStdAccel::TextCompletion);
+  else
+    scKey = keys[TextCompletion];
+
+  override |= scKey.contains (key);
+
+  if (keys[NextCompletionMatch].isNull())
+    scKey = KStdAccel::shortcut(KStdAccel::NextCompletion);
+  else
+    scKey = keys[NextCompletionMatch];
+
+  override |= scKey.contains (key);
+
+  if (keys[PrevCompletionMatch].isNull())
+    scKey = KStdAccel::shortcut(KStdAccel::PrevCompletion);
+   else
+    scKey = keys[PrevCompletionMatch];
+
+  override |= scKey.contains (key);
+
+  override |= KStdAccel::deleteWordBack().contains( key );
+  override |= KStdAccel::deleteWordForward().contains( key );
+
+  if (d->completionBox && d->completionBox->isVisible ())
+    override |= (e->key () == Key_Backtab);
+
+  return override;
+}
+
 void KLineEdit::setCompletedItems( const QStringList& items )
 {
     QString txt = text();
@@ -607,19 +640,4 @@ void KLineEdit::create( WId id, bool initializeWindow, bool destroyOldWindow )
 {
     QLineEdit::create( id, initializeWindow, destroyOldWindow );
     KCursor::setAutoHideCursor( this, true, true );
-}
-
-// Temporary functions until QT3 appears. - Seth Chaiklin 20 may 2001
-void KLineEdit::deleteWordForward()
-{
-    cursorWordForward(TRUE);
-    if ( hasSelectedText() )
-        del();
-}
-
-void KLineEdit::deleteWordBack()
-{
-    cursorWordBackward(TRUE);
-    if ( hasSelectedText() )
-        del();
 }
