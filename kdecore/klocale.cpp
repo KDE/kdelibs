@@ -717,7 +717,7 @@ static int readInt(const QString &str, uint &pos)
 QDate KLocale::readDate(const QString &intstr) const
 {
 	QDate date;
-	QString str = intstr.simplifyWhiteSpace();
+	QString str = intstr.simplifyWhiteSpace().lower();
 	QString fmt = _datefmtshort.simplifyWhiteSpace();
 
 	int day = 0, month = 0, year = 0;
@@ -741,6 +741,29 @@ QDate KLocale::readDate(const QString &intstr) const
 
 		c = fmt.at(fmtpos++);
 		switch (c) {
+		case 'a':
+		case 'A':
+			// this will just be ignored
+			for (int j = 1; j < 8; j++) {
+				QString s = WeekDayName(j).lower();
+				if (c == 'a') s = s.left(3);
+				int len = s.length();
+				if (str.mid(strpos, len) == s)
+					strpos += len;
+			}
+			break;
+		case 'b':
+		case 'B':
+			for (int j = 1; j < 13; j++) {
+				QString s = MonthName(j).lower();
+				if (c == 'b') s = s.left(3);
+				int len = s.length();
+				if (str.mid(strpos, len) == s) {
+					month = j;
+					strpos += len;
+				}
+			}
+			break;
 		case 'd':
 		case 'e':
 			day = readInt(str, strpos);
