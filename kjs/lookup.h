@@ -38,24 +38,24 @@ namespace KJS {
     /**
      * s is the offset to the string key (e.g. a property name)
      */
-    const unsigned short soffset;
+    unsigned short soffset;
     /**
      * value is the result value (usually an enum value)
      */
-    const short int value;
+    short int value;
     /**
      * attr is a set for flags (e.g. the property flags, see object.h)
      */
-    const unsigned char attr;
+    unsigned char attr;
     /**
      * params is another number. For property hashtables, it is used to
      * denote the number of argument of the function
      */
-    const unsigned char params;
+    unsigned char params;
     /**
      * next is the index to the next entry for the same hash value
      */
-    const short next;
+    short next;
   };
 
   /**
