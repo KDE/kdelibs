@@ -237,8 +237,10 @@ bool KPrinter::printFiles(const QStringList& l, bool flag)
 			{
 				if (!outputToFile())
 				{
-					QString	cmd = QString("kjobviewer -d %1").arg(KShellProcess::quote(printerName()));
-					KRun::runCommand(cmd, "kjobviewer", "kjobviewer");
+					QStringList args;
+					args << "-d";
+					args << printerName();
+					kapp->kdeinitExec("kjobviewer", args);
 				}
 			}
 		}
