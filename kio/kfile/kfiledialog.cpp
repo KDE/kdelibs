@@ -22,6 +22,8 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include "kfiledialog.h"
+
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -79,13 +81,15 @@
 #include <kdirselectdialog.h>
 #include <kfileview.h>
 #include <krecentdocument.h>
-#include <kfiledialog.h>
 #include <kfilefiltercombo.h>
 #include <kdiroperator.h>
 #include <kimagefilepreview.h>
 
 #include <kfilespeedbar.h>
 #include <kfilebookmarkhandler.h>
+
+#include <X11/Xlib.h>
+#include <fixx11h.h>
 
 enum Buttons { HOTLIST_BUTTON,
                PATH_COMBO, CONFIGURE_BUTTON };
@@ -849,7 +853,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
 
     KURL docPath;
     docPath.setPath( KGlobalSettings::documentPath() );
-    if ( (u.path(+1) != docPath.path(+1)) && 
+    if ( (u.path(+1) != docPath.path(+1)) &&
          QDir(docPath.path(+1)).exists() )
     {
         text = i18n("Documents: %1").arg( docPath.path( +1 ) );
@@ -1318,6 +1322,30 @@ QString KFileDialog::getOpenFileName(const QString& startDir,
     return dlg.selectedFile();
 }
 
+QString KFileDialog::getOpenFileNameWId(const QString& startDir,
+                                        const QString& filter,
+                                        WId parent_id, const QString& caption)
+{
+    QWidget* parent = QWidget::find( parent_id );
+    KFileDialog dlg(startDir, filter, parent, "filedialog", true);
+#ifdef Q_WS_X11
+    if( parent == NULL && parent_id != 0 )
+        XSetTransientForHint( qt_xdisplay(), dlg.winId(), parent_id );
+#else
+    // TODO
+#endif
+
+    dlg.setOperationMode( KFileDialog::Opening );
+
+    dlg.setMode( KFile::File | KFile::LocalOnly );
+    dlg.setCaption(caption.isNull() ? i18n("Open") : caption);
+
+    dlg.ops->clearHistory();
+    dlg.exec();
+
+    return dlg.selectedFile();
+}
+
 QStringList KFileDialog::getOpenFileNames(const QString& startDir,
                                           const QString& filter,
                                           QWidget *parent,
@@ -1551,6 +1579,35 @@ QString KFileDialog::getSaveFileName(const QString& dir, const QString& filter,
         dlg.setSelection( dir ); // may also be a filename
 
     dlg.setOperationMode( Saving );
+    dlg.setCaption(caption.isNull() ? i18n("Save As") : caption);
+
+    dlg.exec();
+
+    QString filename = dlg.selectedFile();
+    if (!filename.isEmpty())
+        KRecentDocument::add(filename);
+
+    return filename;
+}
+
+QString KFileDialog::getSaveFileNameWId(const QString& dir, const QString& filter,
+                                     WId parent_id,
+                                     const QString& caption)
+{
+    bool specialDir = dir.at(0) == ':';
+    QWidget* parent = QWidget::find( parent_id );
+    KFileDialog dlg( specialDir ? dir : QString::null, filter, parent, "filedialog", true);
+#ifdef Q_WS_X11
+    if( parent == NULL && parent_id != 0 )
+        XSetTransientForHint(qt_xdisplay(), dlg.winId(), parent_id);    
+#else
+    // TODO
+#endif
+
+    if ( !specialDir )
+        dlg.setSelection( dir ); // may also be a filename
+
+    dlg.setOperationMode( KFileDialog::Saving);
     dlg.setCaption(caption.isNull() ? i18n("Save As") : caption);
 
     dlg.exec();

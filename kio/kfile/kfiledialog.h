@@ -408,6 +408,17 @@ public:
 				   const QString& caption = QString::null);
 
 
+   /**
+     * Use this version only if you have no QWidget available as
+     * parent widget. This can be the case if the parent widget is
+     * a widget in another process or if the parent widget is a
+     * non-Qt widget. For example, in a GTK program.
+     *
+     * @since 3.4
+    */
+   static QString getOpenFileNameWId(const QString& startDir,
+                                     const QString& filter,
+                                     WId parent_id, const QString& caption);
 
     /**
      * Creates a modal file dialog and returns the selected
@@ -536,6 +547,16 @@ public:
 				   const QString& filter= QString::null,
 				   QWidget *parent= 0,
 				   const QString& caption = QString::null);
+           
+                   
+    /**
+     * This function accepts the window id of the parent window, instead
+     * of QWidget*. It should be used only when necessary.
+     * @since 3.4
+     */         
+    static QString getSaveFileNameWId(const QString& dir, const QString& filter,
+                                     WId parent_id,
+                                     const QString& caption);
 
     /**
      * Creates a modal file dialog and returns the selected
