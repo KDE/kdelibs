@@ -229,6 +229,9 @@ bool KURL::isRelativeURL(const QString &_url)
         // Make another expection for news:comp.os.newsgroup
         if ((i == 5) && (_url.left(5).lower() == "news:"))
            return false;
+        // Make another expection for man:(3)
+        if ((i == 4) && (_url.left(4).lower() == "man:"))
+           return false;
         return true; // "xxx:" or "xxx::yyy"
      }
 
