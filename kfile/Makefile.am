@@ -27,9 +27,11 @@ DISTCLEANFILES = bookmark.moc kdir.moc kdirlistbox.moc kfiledialog.moc \
 	kfiledialogconf.moc kfiledetaillist.moc kfilesimpleview.moc \
 	kcombiview.moc
 
-noinst_HEADERS = bookmark.h kfiledialogconf.h kremotefile.h kdir.h \
-	kfileinfo.h kdirlistbox.h kfileinfocontents.h \
-	kfiledialog.h booktoken.h kfiledetaillist.h kcombiview.h
+include_HEADERS = kfiledialog.h kfileinfo.h bookmark.h  \
+	kremotefile.h kdir.h kdirlistbox.h kfileinfocontents.h \
+	booktoken.h kfiledetaillist.h kcombiview.h
+
+noinst_HEADERS = kfiledialogconf.h
 
 kfstest_SOURCES =  kfstest.cpp
 libkfile_la_SOURCES = bookmark.cpp kfiledialogconf.cpp kcombiview.cpp \
@@ -42,7 +44,7 @@ toolbar_DATA = configure.xpm
 toolbardir = $(kde_toolbardir)
 
 check_PROGRAMS = kfstest
-kfstest_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS)
+kfstest_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) -version-info 0:90
 kfstest_LDADD = libkfile.la ../kdecore/libkdecore.la ../kdeui/libkdeui.la ../kfmlib/libkfm.la -lqt -lXext -lX11 $(LIBSOCKET)
 
 bookmark.cpp:bookmark.moc
