@@ -704,8 +704,8 @@ void NETRootInfo::setCurrentDesktop(int desktop) {
 
 
 void NETRootInfo::setDesktopName(int desktop, const char *desktopName) {
-    // return immediately if the requested desk is out of range
-    if (desktop < 1 || desktop > p->number_of_desktops) return;
+    // allow setting desktop names even for non-existant desktops, see the spec, sect.3.7.
+    if (desktop < 1) return;
 
     if (p->desktop_names[desktop - 1]) delete [] p->desktop_names[desktop - 1];
     p->desktop_names[desktop - 1] = nstrdup(desktopName);
