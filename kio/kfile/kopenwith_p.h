@@ -47,13 +47,13 @@ class KAppTreeListItem : public QListViewItem
 protected:
     QString key(int column, bool ascending) const;
 
-    void init(const QPixmap& pixmap, bool parse, bool dir, const QString &_path, QString exec);
+    void init(const QPixmap& pixmap, bool parse, bool dir, const QString &_path, const QString &exec);
 
 public:
     KAppTreeListItem( KListView* parent, const QString & name, const QPixmap& pixmap,
-                      bool parse, bool dir, const QString &p, QString c );
+                      bool parse, bool dir, const QString &p, const QString &c );
     KAppTreeListItem( QListViewItem* parent, const QString & name, const QPixmap& pixmap,
-                      bool parse, bool dir, const QString &p, QString c );
+                      bool parse, bool dir, const QString &p, const QString &c );
     bool isDirectory();
 
 protected:
