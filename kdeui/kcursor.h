@@ -42,7 +42,7 @@ class QWidget;
  * @short A QCursor wrapper allowing "themed" cursors and auto-hiding cursors.
  * @author Kurt Granroth <granroth@kde.org>
  */
-class KCursor
+class KCursor : public Qt
 {
 public:
     /**
@@ -204,6 +204,9 @@ public:
      * didn't enable or after disabling auto-hiding.
      */
     static void autoHideEventFilter( QObject *, QEvent * );
+
+private:
+    static QCursor *s_handCursor;
 };
 
 
