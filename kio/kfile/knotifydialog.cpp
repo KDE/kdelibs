@@ -27,6 +27,7 @@
 #include <kdebug.h>
 #include <kfiledialog.h>
 #include <kiconloader.h>
+#include <kicontheme.h>
 #include <klineedit.h>
 #include <klocale.h>
 #include <kmessagebox.h>
@@ -37,6 +38,7 @@
 
 #include <qcheckbox.h>
 #include <qgroupbox.h>
+#include <qheader.h>
 #include <qlabel.h>
 #include <qlistview.h>
 #include <qlayout.h>
@@ -110,7 +112,7 @@ KNotifyDialog::KNotifyDialog( QWidget *parent, const char *name, bool modal,
     QVBox *box = makeVBoxMainWidget();
 
     m_notifyWidget = new KNotifyWidget( box, "knotify widget" );
-    
+
     if ( aboutData )
         addApplicationEvents( aboutData->appName() );
 
@@ -159,6 +161,13 @@ void KNotifyDialog::slotDefault()
 //////////////////////////////////////////////////////////////////////
 
 
+#define COL_EXECUTE 0
+#define COL_STDERR  1
+#define COL_MESSAGE 2
+#define COL_LOGFILE 3
+#define COL_SOUND   4
+#define COL_EVENT   5
+
 // simple access to all knotify-handled applications
 KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
                               bool handleAllApps )
@@ -179,7 +188,23 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
     SelectionCombo::fill( m_comboDisable );
 
     m_listview->setFullWidth( true );
+    m_listview->setAllColumnsShowFocus( true );
 
+    QPixmap pexec = SmallIcon("exec");
+    QPixmap psound = SmallIcon("sound");
+    QPixmap plogfile = SmallIcon("log");
+    QPixmap pmessage = SmallIcon("info");
+    QPixmap pstderr = SmallIcon("terminal");
+
+    int w = KIcon::SizeSmall + 6;
+    
+    QHeader *header = m_listview->header();
+    header->setLabel( COL_EXECUTE, pexec,    QString::null, w );
+    header->setLabel( COL_STDERR,  pstderr,  QString::null, w );
+    header->setLabel( COL_MESSAGE, pmessage, QString::null, w );
+    header->setLabel( COL_LOGFILE, plogfile, QString::null, w );
+    header->setLabel( COL_SOUND,   psound,   QString::null, w );
+    
     m_playButton->setPixmap( SmallIcon( "1rightarrow" ) );
     connect( m_playButton, SIGNAL( clicked() ), SLOT( playSound() ));
 
@@ -303,6 +328,7 @@ void KNotifyWidget::showEvent( QShowEvent *e )
 void KNotifyWidget::slotEventChanged( QListViewItem *item )
 {
     bool on = (item != 0L);
+    
     m_actionsBox->setEnabled( on );
     m_controlsBox->setEnabled( on );
 
@@ -310,16 +336,18 @@ void KNotifyWidget::slotEventChanged( QListViewItem *item )
         return;
 
     ListViewItem *lit = static_cast<ListViewItem*>( item );
-    updateWidgets( lit->event() );
+    updateWidgets( lit );
 }
 
-void KNotifyWidget::updateWidgets( const Event& event )
+void KNotifyWidget::updateWidgets( ListViewItem *item )
 {
     bool enable;
     bool checked;
 
     blockSignals( true ); // don't emit changed() signals
 
+    const Event& event = item->event();
+    
     // sound settings
     m_playButton->setEnabled( !event.soundfile.isEmpty() );
     m_soundPath->setURL( event.soundfile );
@@ -356,7 +384,25 @@ void KNotifyWidget::updateWidgets( const Event& event )
     m_passivePopup->setChecked(event.presentation & KNotifyClient::PassivePopup);
     m_stderr->setChecked( event.presentation & KNotifyClient::Stderr );
 
+    updatePixmaps( item );
+    
     blockSignals( false );
+}
+
+void KNotifyWidget::updatePixmaps( ListViewItem *item )
+{
+    Event &event = item->event();
+        
+    if ( event.presentation & KNotifyClient::Execute )
+        item->setPixmap( COL_EXECUTE, SmallIcon("exec") );
+    if ( event.presentation & KNotifyClient::Sound )
+        item->setPixmap( COL_SOUND, SmallIcon("sound") );
+    if ( event.presentation & KNotifyClient::Logfile )
+        item->setPixmap( COL_LOGFILE, SmallIcon("log") );
+    if ( event.presentation & KNotifyClient::Messagebox )
+        item->setPixmap( COL_MESSAGE, SmallIcon("info") );
+    if ( event.presentation & KNotifyClient::Stderr )
+        item->setPixmap( COL_STDERR, SmallIcon("terminal") );
 }
 
 void KNotifyWidget::setCurrentApplication( Application *app )
@@ -374,16 +420,32 @@ void KNotifyWidget::addToView( const EventList& events )
 
     EventListIterator it( events );
 
-    QPixmap icon = SmallIcon("idea");
+    QPixmap pexec = SmallIcon("exec");
+    QPixmap psound = SmallIcon("sound");
+    QPixmap plogfile = SmallIcon("log");
+    QPixmap pmessage = SmallIcon("info");
+    QPixmap pstderr = SmallIcon("terminal");
 
     for ( ; it.current(); ++it )
     {
-        item = new ListViewItem( m_listview, it.current() );
-        item->setPixmap( 0, icon );
+        Event *event = it.current();
+        item = new ListViewItem( m_listview, event );
+        
+        if ( event->presentation & KNotifyClient::Execute )
+            item->setPixmap( COL_EXECUTE, pexec );
+        if ( event->presentation & KNotifyClient::Sound )
+            item->setPixmap( COL_SOUND, psound );
+        if ( event->presentation & KNotifyClient::Logfile )
+            item->setPixmap( COL_LOGFILE, plogfile );
+        if ( event->presentation & KNotifyClient::Messagebox )
+            item->setPixmap( COL_MESSAGE, pmessage );
+        if ( event->presentation & KNotifyClient::Stderr )
+            item->setPixmap( COL_STDERR, pstderr );
     }
 }
 
-void KNotifyWidget::widgetChanged( int what, bool on, QWidget *buddy )
+void KNotifyWidget::widgetChanged( QListViewItem *item, 
+                                   int what, bool on, QWidget *buddy )
 {
     if ( signalsBlocked() )
         return;
@@ -391,32 +453,44 @@ void KNotifyWidget::widgetChanged( int what, bool on, QWidget *buddy )
     if ( buddy )
         buddy->setEnabled( on );
 
-    Event *e = currentEvent();
+    Event &e = static_cast<ListViewItem*>( item )->event();
     if ( on )
     {
-        e->presentation |= what;
+        e.presentation |= what;
         if ( buddy )
             buddy->setFocus();
     }
     else
-        e->presentation &= ~what;
+        e.presentation &= ~what;
 
     emit changed( true );
 }
 
 void KNotifyWidget::soundToggled( bool on )
 {
-    widgetChanged( KNotifyClient::Sound, on, m_soundPath );
+    QListViewItem *item = m_listview->currentItem();
+    if ( !item )
+        return;
+    item->setPixmap( COL_SOUND, on ? SmallIcon("sound") : QPixmap() );
+    widgetChanged( item, KNotifyClient::Sound, on, m_soundPath );
 }
 
 void KNotifyWidget::loggingToggled( bool on )
 {
-    widgetChanged( KNotifyClient::Logfile, on, m_logfilePath );
+    QListViewItem *item = m_listview->currentItem();
+    if ( !item )
+        return;
+    item->setPixmap( COL_LOGFILE, on ? SmallIcon("log") : QPixmap() );
+    widgetChanged( item, KNotifyClient::Logfile, on, m_logfilePath );
 }
 
 void KNotifyWidget::executeToggled( bool on )
 {
-    widgetChanged( KNotifyClient::Execute, on, m_executePath );
+    QListViewItem *item = m_listview->currentItem();
+    if ( !item )
+        return;
+    item->setPixmap( COL_EXECUTE, on ? SmallIcon("exec") : QPixmap() );
+    widgetChanged( item, KNotifyClient::Execute, on, m_executePath );
 }
 
 void KNotifyWidget::messageBoxChanged()
@@ -426,23 +500,34 @@ void KNotifyWidget::messageBoxChanged()
 
     m_passivePopup->setEnabled( m_messageBox->isChecked() );
 
-    Event *e = currentEvent();
+    QListViewItem *item = m_listview->currentItem();
+    if ( !item )
+        return;
+
+    bool on = m_passivePopup->isEnabled();
+    item->setPixmap( COL_MESSAGE, on ? SmallIcon("info") : QPixmap() );
+    
+    Event &e = static_cast<ListViewItem*>( item )->event();
     if ( m_messageBox->isChecked() )
-        e->presentation |= KNotifyClient::Messagebox;
+        e.presentation |= KNotifyClient::Messagebox;
     else
-        e->presentation &= ~KNotifyClient::Messagebox;
+        e.presentation &= ~KNotifyClient::Messagebox;
 
     if ( m_passivePopup->isChecked() )
-        e->presentation |= KNotifyClient::PassivePopup;
+        e.presentation |= KNotifyClient::PassivePopup;
     else
-        e->presentation &= ~KNotifyClient::PassivePopup;
+        e.presentation &= ~KNotifyClient::PassivePopup;
 
     emit changed( true );
 }
 
 void KNotifyWidget::stderrToggled( bool on )
 {
-    widgetChanged( KNotifyClient::Stderr, on );
+    QListViewItem *item = m_listview->currentItem();
+    if ( !item )
+        return;
+    item->setPixmap( COL_STDERR, on ? SmallIcon("terminal") : QPixmap() );
+    widgetChanged( item, KNotifyClient::Stderr, on );
 }
 
 void KNotifyWidget::soundFileChanged( const QString& text )
@@ -475,7 +560,7 @@ void KNotifyWidget::commandlineChanged( const QString& text )
 
 void KNotifyWidget::sort( bool ascending )
 {
-    m_listview->setSorting( 0, ascending );
+    m_listview->setSorting( COL_EVENT, ascending );
     m_listview->sort();
 }
 
@@ -781,5 +866,58 @@ void Application::reloadEvents( bool revertToDefaults )
     return;
 }
 
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+
+ListViewItem::ListViewItem( QListView *view, Event *event )
+    : QListViewItem( view ),
+      m_event( event ) 
+{
+    setText( COL_EVENT, event->text() );
+}
+
+int ListViewItem::compare ( QListViewItem * i, int col, bool ascending ) const
+{
+    ListViewItem *item = static_cast<ListViewItem*>( i );
+    int myPres = m_event->presentation;
+    int otherPres = item->event().presentation;
+    
+    int action = 0;
+    
+    switch ( col )
+    {
+        case COL_EVENT: // use default sorting
+            return QListViewItem::compare( i, col, ascending );
+
+        case COL_EXECUTE:
+            action = KNotifyClient::Execute;
+            break;
+        case COL_LOGFILE:
+            action = KNotifyClient::Logfile;
+            break;
+        case COL_MESSAGE:
+            action = (KNotifyClient::Messagebox | KNotifyClient::PassivePopup);
+            break;
+        case COL_SOUND:
+            action = KNotifyClient::Sound;
+            break;
+        case COL_STDERR:
+            action = KNotifyClient::Stderr;
+            break;
+    }
+    
+    if ( (myPres & action) == (otherPres & action) )
+    {
+        // default sorting by event
+        return QListViewItem::compare( i, COL_EVENT, true );
+    }
+    
+    if ( myPres & action )
+        return -1;
+    if ( otherPres & action )
+        return 1;
+    
+    return 0;
+}
 
 #include "knotifydialog.moc"

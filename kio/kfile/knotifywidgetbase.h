@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Form interface generated from reading ui file './knotifywidgetbase.ui'
 **
-** Created: Mon Aug 12 11:05:42 2002
+** Created: Don Sep 5 12:33:36 2002
 **      by:  The User Interface Compiler (uic)
 **
 ** WARNING! All changes made in this file will be lost!

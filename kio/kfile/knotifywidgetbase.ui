@@ -28,6 +28,61 @@
         <widget class="KListView">
             <column>
                 <property name="text">
+                    <string></string>
+                </property>
+                <property name="clickable">
+                    <bool>true</bool>
+                </property>
+                <property name="resizeable">
+                    <bool>false</bool>
+                </property>
+            </column>
+            <column>
+                <property name="text">
+                    <string></string>
+                </property>
+                <property name="clickable">
+                    <bool>true</bool>
+                </property>
+                <property name="resizeable">
+                    <bool>false</bool>
+                </property>
+            </column>
+            <column>
+                <property name="text">
+                    <string></string>
+                </property>
+                <property name="clickable">
+                    <bool>true</bool>
+                </property>
+                <property name="resizeable">
+                    <bool>false</bool>
+                </property>
+            </column>
+            <column>
+                <property name="text">
+                    <string></string>
+                </property>
+                <property name="clickable">
+                    <bool>true</bool>
+                </property>
+                <property name="resizeable">
+                    <bool>false</bool>
+                </property>
+            </column>
+            <column>
+                <property name="text">
+                    <string></string>
+                </property>
+                <property name="clickable">
+                    <bool>true</bool>
+                </property>
+                <property name="resizeable">
+                    <bool>false</bool>
+                </property>
+            </column>
+            <column>
+                <property name="text">
                     <string>Events</string>
                 </property>
                 <property name="clickable">
@@ -213,6 +268,12 @@
                             <property name="sizeType">
                                 <enum>Expanding</enum>
                             </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>20</width>
+                                    <height>0</height>
+                                </size>
+                            </property>
                         </spacer>
                     </hbox>
                 </widget>
@@ -268,6 +329,12 @@
                             <property name="sizeType">
                                 <enum>Expanding</enum>
                             </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>20</width>
+                                    <height>0</height>
+                                </size>
+                            </property>
                         </spacer>
                     </hbox>
                 </widget>
@@ -302,6 +369,12 @@
                             </property>
                             <property name="sizeType">
                                 <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>20</width>
+                                    <height>0</height>
+                                </size>
                             </property>
                         </spacer>
                     </hbox>
@@ -422,6 +495,12 @@
                             <property name="sizeType">
                                 <enum>Expanding</enum>
                             </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>20</width>
+                                    <height>0</height>
+                                </size>
+                            </property>
                         </spacer>
                     </hbox>
                 </widget>
@@ -469,6 +548,12 @@
                     </property>
                     <property name="sizeType">
                         <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>20</width>
+                            <height>0</height>
+                        </size>
                     </property>
                 </spacer>
                 <widget class="QPushButton">

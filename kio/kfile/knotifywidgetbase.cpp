@@ -2,7 +2,7 @@
 /****************************************************************************
 ** Form implementation generated from reading ui file './knotifywidgetbase.ui'
 **
-** Created: Mit Aug 21 21:16:47 2002
+** Created: Don Sep 5 12:33:38 2002
 **      by:  The User Interface Compiler (uic)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -35,6 +35,16 @@ KNotifyWidgetBase::KNotifyWidgetBase( QWidget* parent,  const char* name, WFlags
     KNotifyWidgetBaseLayout = new QVBoxLayout( this, 11, 6, "KNotifyWidgetBaseLayout"); 
 
     m_listview = new KListView( this, "m_listview" );
+    m_listview->addColumn( QString::null );
+    m_listview->header()->setResizeEnabled( FALSE, m_listview->header()->count() - 1 );
+    m_listview->addColumn( QString::null );
+    m_listview->header()->setResizeEnabled( FALSE, m_listview->header()->count() - 1 );
+    m_listview->addColumn( QString::null );
+    m_listview->header()->setResizeEnabled( FALSE, m_listview->header()->count() - 1 );
+    m_listview->addColumn( QString::null );
+    m_listview->header()->setResizeEnabled( FALSE, m_listview->header()->count() - 1 );
+    m_listview->addColumn( QString::null );
+    m_listview->header()->setResizeEnabled( FALSE, m_listview->header()->count() - 1 );
     m_listview->addColumn( tr2i18n( "Events" ) );
     m_listview->setSizePolicy( QSizePolicy( (QSizePolicy::SizeType)7, (QSizePolicy::SizeType)7, 10, 0, m_listview->sizePolicy().hasHeightForWidth() ) );
     KNotifyWidgetBaseLayout->addWidget( m_listview );
@@ -96,7 +106,7 @@ KNotifyWidgetBase::KNotifyWidgetBase( QWidget* parent,  const char* name, WFlags
     m_messageBox = new QCheckBox( m_actionsBox, "m_messageBox" );
     m_messageBox->setText( tr2i18n( "Show a &message in a pop-up window" ) );
     Layout27->addWidget( m_messageBox );
-    QSpacerItem* spacer = new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
+    QSpacerItem* spacer = new QSpacerItem( 20, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
     Layout27->addItem( spacer );
     m_actionsBoxLayout->addLayout( Layout27 );
 
@@ -108,7 +118,7 @@ KNotifyWidgetBase::KNotifyWidgetBase( QWidget* parent,  const char* name, WFlags
     m_passivePopup->setEnabled( FALSE );
     m_passivePopup->setText( tr2i18n( "&Use a passive window that does not interrupt other work" ) );
     Layout28->addWidget( m_passivePopup );
-    QSpacerItem* spacer_3 = new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
+    QSpacerItem* spacer_3 = new QSpacerItem( 20, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
     Layout28->addItem( spacer_3 );
     m_actionsBoxLayout->addLayout( Layout28 );
 
@@ -117,7 +127,7 @@ KNotifyWidgetBase::KNotifyWidgetBase( QWidget* parent,  const char* name, WFlags
     m_stderr = new QCheckBox( m_actionsBox, "m_stderr" );
     m_stderr->setText( tr2i18n( "Print a message to standard &error output" ) );
     Layout29->addWidget( m_stderr );
-    QSpacerItem* spacer_4 = new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
+    QSpacerItem* spacer_4 = new QSpacerItem( 20, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
     Layout29->addItem( spacer_4 );
     m_actionsBoxLayout->addLayout( Layout29 );
     KNotifyWidgetBaseLayout->addWidget( m_actionsBox );
@@ -160,7 +170,7 @@ KNotifyWidgetBase::KNotifyWidgetBase( QWidget* parent,  const char* name, WFlags
 
     Layout4->addWidget( m_comboDisable, 1, 1 );
     Layout12->addLayout( Layout4 );
-    QSpacerItem* spacer_6 = new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
+    QSpacerItem* spacer_6 = new QSpacerItem( 20, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
     Layout12->addItem( spacer_6 );
     m_controlsBoxLayout->addLayout( Layout12 );
     KNotifyWidgetBaseLayout->addWidget( m_controlsBox );
@@ -172,7 +182,7 @@ KNotifyWidgetBase::KNotifyWidgetBase( QWidget* parent,  const char* name, WFlags
     m_extension->setText( tr2i18n( "Less Options" ) );
     m_extension->setToggleButton( FALSE );
     Layout8->addWidget( m_extension );
-    QSpacerItem* spacer_7 = new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
+    QSpacerItem* spacer_7 = new QSpacerItem( 20, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
     Layout8->addItem( spacer_7 );
 
     m_playerButton = new QPushButton( this, "m_playerButton" );

@@ -91,6 +91,7 @@ namespace KNotify
 {
     class Application;
     class Event;
+    class ListViewItem;
     typedef QPtrList<Event> EventList;
     typedef QPtrListIterator<Application> ApplicationListIterator;
     typedef QPtrListIterator<Event> EventListIterator;
@@ -197,21 +198,23 @@ namespace KNotify
         void openLogDialog( KURLRequester * );
         void openExecDialog( KURLRequester * );
 
-        void updateWidgets( const Event& event );
+        void updateWidgets( ListViewItem *item );
+        void updatePixmaps( ListViewItem *item );
 
         void enableAll();
 
     private:
         QString makeRelative( const QString& );
         void addToView( const EventList& events );
-        void widgetChanged( int what, bool on, QWidget *buddy = 0L );
+        void widgetChanged( QListViewItem *item,
+                            int what, bool on, QWidget *buddy = 0L );
         void selectItem( QListViewItem *item );
 
         ApplicationList m_apps;
 
         class Private;
         Private *d;
-        
+
     };
 
 
@@ -256,12 +259,11 @@ namespace KNotify
     class ListViewItem : public QListViewItem
     {
     public:
-        ListViewItem( QListView *view, Event *event )
-            : QListViewItem( view, event->text() ),
-              m_event( event ) {}
+        ListViewItem( QListView *view, Event *event );
 
-    Event& event() { return *m_event; }
-
+        Event& event() { return *m_event; }
+        virtual int compare (QListViewItem * i, int col, bool ascending) const;
+    
     private:
         Event * m_event;
     };
