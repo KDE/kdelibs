@@ -1,6 +1,14 @@
 [Desktop Entry]
+Type=ServiceType
 X-KDE-ServiceType=Browser/View
 Name=Browser View
+Name[ca]=Vista de fullejador
+Name[de]=Browser-Ansicht
+Name[fi]=Selainnäkymä
+Name[hu]=Böngészõ Nézõ
+Name[ja]=¥Ö¥é¥¦¥¶¥Ó¥å¡¼
+Name[no]=Losviser
+Name[no_NY]=Lesarvising
 
 [PropertyDef::X-KDE-BrowserView-Args]
 Type=QString
