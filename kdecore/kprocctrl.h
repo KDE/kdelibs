@@ -60,7 +60,11 @@ public:
 
 private:
 
+#ifdef __sgi__
+  static void theSigCHLDHandler();
+#else
   static void theSigCHLDHandler(int signal);
+#endif
   // handler for sigchld
 
   int fd[2];
