@@ -28,8 +28,8 @@
 #include <qcheckbox.h>
 #include <qpushbutton.h>
 #include <qvbuttongroup.h>
-#include <kregexpeditor.h>
-#include <kregexpdialoginterface.h>
+#include <kregexpeditorinterface.h>
+#include <kparts/componentfactory.h>
 #include <qvariant.h>
 #include <assert.h>
 
@@ -44,7 +44,7 @@ KHTMLFind::KHTMLFind( KHTMLPart *part, QWidget *parent, const char *name )
   m_part = part;
   m_found = false;
 
-  QWidget *w = KRegExpEditor::createDialog( 0 );
+  QDialog *w = KParts::ComponentFactory::createInstanceFromQuery<QDialog>( "KRegExpEditor/KRegExpEditor" );
   if ( w )
   {
       delete w;
@@ -126,23 +126,20 @@ void KHTMLFind::setNewSearch()
 void KHTMLFind::slotEditRegExp()
 {
   if ( m_editorDialog == 0 )
-    m_editorDialog = KRegExpEditor::createDialog( this );
+      m_editorDialog = KParts::ComponentFactory::createInstanceFromQuery<QDialog>( "KRegExpEditor/KRegExpEditor", QString::null, this );
 
   assert( m_editorDialog );
   
 // ARHL, for some odd reason this dynamic_cast fails?!?! (Simon)
 //  KRegExpDialogInterface *iface = dynamic_cast<KRegExpDialogInterface *>( m_editorDialog );
-  KRegExpDialogInterface *iface = static_cast<KRegExpDialogInterface *>( m_editorDialog->qt_cast( "KRegExpDialogInterface" ) );
+  KRegExpEditorInterface *iface = static_cast<KRegExpEditorInterface *>( m_editorDialog->qt_cast( "KRegExpEditorInterface" ) );
 
   assert( iface );
 
-  QWidget *editor = iface->regExpEditor();
-  assert( editor );
-
-  editor->setProperty( "regexp", getText() );
+  iface->setRegExp( getText() );
   bool ok = m_editorDialog->exec();
   if (ok) 
-    setText( editor->property( "regexp" ).toString() );
+    setText( iface->regExp() );
 }
 
 #include "khtml_find.moc"

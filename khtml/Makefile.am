@@ -49,8 +49,7 @@ libkhtml_la_LIBADD = ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la \
 	$(top_builddir)/kparts/libkparts.la \
 	$(top_builddir)/kfile/libkfile.la \
 	$(top_builddir)/kssl/libkssl.la \
-	$(top_builddir)/kdeprint/libkdeprint.la \
-	$(top_builddir)/interfaces/libkregexpeditor.la
+	$(top_builddir)/kdeprint/libkdeprint.la 
 
 libkhtmlimage_la_SOURCES = khtmlimage.cpp
 libkhtmlimage_la_LDFLAGS = $(KDE_PLUGIN) $(all_libraries)
