@@ -512,7 +512,7 @@ void DocumentImpl::setTitle(DOMString _title)
     m_title = _title;
 
     QString titleStr = m_title.string();
-    for (unsigned i = 0; i < titleStr.length(); ++i)
+    for (unsigned int i = 0; i < titleStr.length(); ++i)
         if (titleStr[i] < ' ')
             titleStr[i] = ' ';
     titleStr = titleStr.stripWhiteSpace();
