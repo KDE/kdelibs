@@ -210,9 +210,11 @@ void KMMainView::initActions()
 	new KAction(i18n("R&estart Server"),"kdeprint_restartsrv",0,this,SLOT(slotServerRestart()),m_actions,"server_restart");
 	new KAction(i18n("Configure &Server..."),"kdeprint_configsrv",0,this,SLOT(slotServerConfigure()),m_actions,"server_configure");
 
-	KToggleAction	*tact = new KToggleAction(i18n("View &Toolbar"),0,m_actions,"view_toolbar");
+	KToggleAction	*tact = new KToggleAction(i18n("Show &Toolbar"),0,m_actions,"view_toolbar");
+	tact->setCheckedState(i18n("Hide &Toolbar"));
 	connect(tact,SIGNAL(toggled(bool)),SLOT(slotToggleToolBar(bool)));
-	tact = new KToggleAction( i18n( "View Me&nu Toolbar" ), 0, m_actions, "view_menubar" );
+	tact = new KToggleAction( i18n( "Show Me&nu Toolbar" ), 0, m_actions, "view_menubar" );
+	tact->setCheckedState(i18n("Hide Me&nu Toolbar"));
 	connect( tact, SIGNAL( toggled( bool ) ), SLOT( slotToggleMenuBar( bool ) ) );
 	tact = new KToggleAction(i18n("Show Pr&inter Details"),"kdeprint_printer_infos", 0,m_actions,"view_printerinfos");
 	tact->setCheckedState(KGuiItem(i18n("Hide Pr&inter Details"),"kdeprint_printer_infos"));
