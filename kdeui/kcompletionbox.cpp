@@ -134,12 +134,12 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
 		hide();
 		return false;
 	    }
-            
-            else if ( type == QEvent::Move )
+
+            else if ( type == QEvent::Move && m_parent )
                 move( m_parent->mapToGlobal(QPoint(0, m_parent->height())));
 
             else if ( type == QEvent::Resize )
-                adjustSize();
+                resize( sizeHint() );
         }
     }
 
@@ -160,10 +160,18 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
             break;
 	}
     }
-    
+
     else { // any other object received an event while we're visible
         if ( type == QEvent::MouseButtonPress )
             hide();
+
+        else if ( m_parent ) {
+            if ( o == m_parent->topLevelWidget() ) { // the toplevel moved?
+                if ( type == QEvent::Move )
+                    move( m_parent->mapToGlobal( QPoint(0, 
+                                                        m_parent->height())));
+            }
+        }
     }
 
     return KListBox::eventFilter( o, e );
@@ -179,7 +187,7 @@ void KCompletionBox::popup()
         if ( !isVisible() )
             show();
         else if ( size().height() < sizeHint().height() )
-            adjustSize();
+            resize( sizeHint() );
     }
 }
 
