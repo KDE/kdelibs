@@ -161,6 +161,13 @@ bool KRun::displayOpenWithDialog( const KURL::List& lst )
 
 bool KRun::displayOpenWithDialog( const KURL::List& lst, bool tempFiles )
 {
+    if (kapp && !kapp->authorizeKAction("openwith"))
+    {
+       // TODO: Better message, i18n freeze :-(
+       KMessageBox::sorry(0L, i18n("You are not authorized to execute this file."));
+       return false;
+    }
+
     KOpenWithDlg l( lst, i18n("Open with:"), QString::null, 0L );
     if ( l.exec() )
     {
