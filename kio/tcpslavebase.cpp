@@ -209,6 +209,25 @@ bool TCPSlaveBase::ConnectToHost( const QString &host,
     unsigned short int port;
     KExtendedSocket ks;
 
+   //  - leaving SSL - warn before we even connect
+   if (metaData("ssl_activate_warnings") == "TRUE" &&
+              metaData("ssl_was_in_use") == "TRUE" &&
+       !m_bIsSSL) {
+      KSSLSettings kss;
+      if (kss.warnOnLeave()) {
+      int result = messageBox( WarningContinueCancel,
+                                     i18n("You are about to leave secure "
+                                          "mode.  Transmissions will no "
+                                          "longer be encrypted.\nThis "
+                                          "means that a third party could "
+                                          "observe your data in transit."),
+                                     i18n("Security information"),
+                                     i18n("Continue Loading") );
+      if ( result == KMessageBox::Cancel )
+         return -1;
+      }
+   }
+
     d->status = -1;
     d->host = host;
     d->needSSLHandShake = m_bIsSSL;
@@ -734,7 +753,6 @@ int TCPSlaveBase::verifyCertificate()
    //                 - transmitting any data unencrypted?  In the app??
    //                         singleton in write()?
 
-   kdDebug(7029) << "In the slave, ssl_activate_warnings = " << metaData("ssl_activate_warnings") << endl;
    if (metaData("ssl_activate_warnings") == "TRUE") {
    //  - entering SSL
    if (!isChild && metaData("ssl_was_in_use") == "FALSE" &&
@@ -760,27 +778,6 @@ int TCPSlaveBase::verifyCertificate()
          messageBox( SSLMessageBox, theurl );
       }
    }
-
-   // This is in the wrong place!!!   FIXME
-#if 0
-   //  - leaving SSL
-   if (!isChild && metaData("ssl_was_in_use") == "TRUE" &&
-                                         d->kssl->settings()->warnOnLeave()) {
-      int result = messageBox( WarningContinueCancel,
-                                     i18n("You are about to leave secure "
-                                          "mode.  Transmissions will no "
-                                          "longer be encrypted.\nThis "
-                                          "means that a third party could "
-                                          "observe your data in transit."),
-                                     i18n("Security information"),
-                                     i18n("Continue Loading") );
-      if ( result == KMessageBox::Cancel )
-      {
-         // FIXME: fail the ENTIRE page here!!
-         return -1;
-      }
-   }
-#endif
 
    //  - mixed SSL/nonSSL
         // I assert that if any two portions of a loaded document are of
