@@ -144,7 +144,7 @@ namespace KJS {
     virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
     Value getValueProperty(ExecState *exec, int token) const;
     virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
-    void putValue(ExecState *exec, int token, const Value& value, int attr);
+    void putValueProperty(ExecState *exec, int token, const Value& value, int attr);
     virtual const ClassInfo* classInfo() const;
     static const ClassInfo info;
     static const ClassInfo style_info, media_info, fontface_info, page_info, import_info, charset_info;

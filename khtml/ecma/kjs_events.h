@@ -65,7 +65,7 @@ namespace KJS {
     Value getValueProperty(ExecState *, int token) const;
     virtual void tryPut(ExecState *exec, const UString &propertyName,
 			const Value& value, int attr = None);
-    void putValue(ExecState *exec, int token, const Value& value, int);
+    void putValueProperty(ExecState *exec, int token, const Value& value, int);
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { Type, Target, CurrentTarget, EventPhase, Bubbles,

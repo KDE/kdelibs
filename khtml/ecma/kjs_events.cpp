@@ -252,7 +252,7 @@ void DOMEvent::tryPut(ExecState *exec, const UString &propertyName,
                                           &DOMEventTable, this);
 }
 
-void DOMEvent::putValue(ExecState *exec, int token, const Value& value, int)
+void DOMEvent::putValueProperty(ExecState *exec, int token, const Value& value, int)
 {
   switch (token) {
   case ReturnValue:

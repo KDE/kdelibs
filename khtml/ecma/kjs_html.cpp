@@ -302,7 +302,7 @@ void KJS::HTMLDocument::tryPut(ExecState *exec, const UString &propertyName, con
   DOMObjectLookupPut<HTMLDocument, DOMDocument>( exec, propertyName, value, attr, &HTMLDocumentTable, this );
 }
 
-void KJS::HTMLDocument::putValue(ExecState *exec, int token, const Value& value, int /*attr*/)
+void KJS::HTMLDocument::putValueProperty(ExecState *exec, int token, const Value& value, int /*attr*/)
 {
   DOM::HTMLDocument doc = static_cast<DOM::HTMLDocument>(node);
   DOM::HTMLBodyElement body = doc.body();
@@ -353,7 +353,7 @@ void KJS::HTMLDocument::putValue(ExecState *exec, int token, const Value& value,
     body.setDir(value.toString(exec).string());
     break;
   default:
-    kdWarning() << "HTMLDocument::putValue unhandled token " << token << endl;
+    kdWarning() << "HTMLDocument::putValueProperty unhandled token " << token << endl;
   }
 }
 
@@ -2100,20 +2100,20 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &propertyName, cons
     }
     else if ((entry->attr & ReadOnly) == 0) // let DOMObjectLookupPut print the warning if not
     {
-      putValue(exec, entry->value, value, attr);
+      putValueProperty(exec, entry->value, value, attr);
       return;
     }
   }
   DOMObjectLookupPut<KJS::HTMLElement, DOMElement>(exec, propertyName, value, attr, &KJS::HTMLElementTable, this);
 }
 
-void KJS::HTMLElement::putValue(ExecState *exec, int token, const Value& value, int)
+void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value& value, int)
 {
   DOM::DOMString str = value.isA(NullType) ? DOM::DOMString() : value.toString(exec).string();
   DOM::Node n = (new DOMNode(exec, KJS::toNode(value)))->toNode();
   DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "KJS::HTMLElement::putValue "
+  kdDebug(6070) << "KJS::HTMLElement::putValueProperty "
                 << " thisTag=" << element.tagName().string()
                 << " token=" << token << endl;
 #endif
@@ -2773,7 +2773,7 @@ void KJS::HTMLElement::putValue(ExecState *exec, int token, const Value& value, 
     element.setInnerText(str);
     return;
   default:
-    kdWarning() << "KJS::HTMLElement::putValue unhandled token " << token << " thisTag=" << element.tagName().string() << " str=" << str.string() << endl;
+    kdWarning() << "KJS::HTMLElement::putValueProperty unhandled token " << token << " thisTag=" << element.tagName().string() << " str=" << str.string() << endl;
   }
 }
 

@@ -42,7 +42,7 @@ namespace KJS {
     Value getValueProperty(ExecState *exec, int token) const;
 
     virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
-    void putValue(ExecState *exec, int token, const Value& value, int attr);
+    void putValueProperty(ExecState *exec, int token, const Value& value, int attr);
     virtual DOM::Node toNode() const { return node; }
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -124,7 +124,7 @@ namespace KJS {
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
     Value getValueProperty(ExecState *exec, int token) const;
-    void putValue(ExecState *exec, int token, const Value& value, int attr);
+    void putValueProperty(ExecState *exec, int token, const Value& value, int attr);
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { Name, Specified, ValueProperty, OwnerElement };

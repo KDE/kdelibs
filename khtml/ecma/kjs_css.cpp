@@ -759,14 +759,14 @@ void DOMCSSRule::tryPut(ExecState *exec, const UString &propertyName, const Valu
     }
     else if ((entry->attr & ReadOnly) == 0) // let DOMObjectLookupPut print the warning if not
     {
-      putValue(exec, entry->value, value, attr);
+      putValueProperty(exec, entry->value, value, attr);
       return;
     }
   }
   DOMObjectLookupPut<DOMCSSRule, DOMObject>(exec, propertyName, value, attr, &DOMCSSRuleTable, this);
 }
 
-void DOMCSSRule::putValue(ExecState *exec, int token, const Value& value, int)
+void DOMCSSRule::putValueProperty(ExecState *exec, int token, const Value& value, int)
 {
   switch (token) {
   // for DOM::CSSRule::STYLE_RULE:
@@ -785,7 +785,7 @@ void DOMCSSRule::putValue(ExecState *exec, int token, const Value& value, int)
     return;
 
   default:
-    kdWarning() << "DOMCSSRule::putValue unhandled token " << token << endl;
+    kdWarning() << "DOMCSSRule::putValueProperty unhandled token " << token << endl;
   }
 }
 

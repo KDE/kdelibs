@@ -215,7 +215,7 @@ namespace KJS {
     ; // do nothing
 #endif
     else
-      thisObj->putValue(exec, entry->value, value, attr);
+      thisObj->putValueProperty(exec, entry->value, value, attr);
   }
 
   // Modified version of IMPLEMENT_PROTOFUNC, to use DOMFunction and tryCall

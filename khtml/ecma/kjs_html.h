@@ -39,7 +39,7 @@ namespace KJS {
     HTMLDocument(ExecState *exec, DOM::HTMLDocument d) : DOMDocument(exec, d) { }
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
-    void putValue(ExecState *exec, int token, const Value& value, int /*attr*/);
+    void putValueProperty(ExecState *exec, int token, const Value& value, int /*attr*/);
     virtual bool hasProperty(ExecState *exec, const UString &propertyName) const;
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -56,7 +56,7 @@ namespace KJS {
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     Value getValueProperty(ExecState *exec, int token) const;
     virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
-    void putValue(ExecState *exec, int token, const Value& value, int);
+    void putValueProperty(ExecState *exec, int token, const Value& value, int);
     virtual bool hasProperty(ExecState *exec, const UString &propertyName) const;
     virtual UString toString(ExecState *exec) const;
     virtual List eventHandlerScope(ExecState *exec) const;

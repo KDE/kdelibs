@@ -294,7 +294,7 @@ void DOMNode::tryPut(ExecState *exec, const UString& propertyName, const Value& 
                                         &DOMNodeTable, this );
 }
 
-void DOMNode::putValue(ExecState *exec, int token, const Value& value, int /*attr*/)
+void DOMNode::putValueProperty(ExecState *exec, int token, const Value& value, int /*attr*/)
 {
   switch (token) {
   case NodeValue:
@@ -373,7 +373,7 @@ void DOMNode::putValue(ExecState *exec, int token, const Value& value, int /*att
     setListener(exec,DOM::EventImpl::UNLOAD_EVENT,value);
     break;
   default:
-    kdWarning() << "DOMNode::putValue unhandled token " << token << endl;
+    kdWarning() << "DOMNode::putValueProperty unhandled token " << token << endl;
   }
 }
 
@@ -634,14 +634,14 @@ void DOMAttr::tryPut(ExecState *exec, const UString &propertyName, const Value& 
                                       &DOMAttrTable, this );
 }
 
-void DOMAttr::putValue(ExecState *exec, int token, const Value& value, int /*attr*/)
+void DOMAttr::putValueProperty(ExecState *exec, int token, const Value& value, int /*attr*/)
 {
   switch (token) {
   case ValueProperty:
     static_cast<DOM::Attr>(node).setValue(value.toString(exec).string());
     return;
   default:
-    kdWarning() << "DOMAttr::putValue unhandled token " << token << endl;
+    kdWarning() << "DOMAttr::putValueProperty unhandled token " << token << endl;
   }
 }
 
