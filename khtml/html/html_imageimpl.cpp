@@ -369,7 +369,7 @@ void HTMLAreaElementImpl::parseAttribute(AttrImpl *attr)
     {
         DOMString s = khtml::parseURL(attr->val());
         href = s.implementation();
-        href->ref();
+        if(href) href->ref();
         break;
     }
     case ATTR_TARGET:
