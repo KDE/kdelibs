@@ -83,6 +83,7 @@
 <!ENTITY AIX	"<trademark>AIX</trademark>">
 <!ENTITY aktion	"<application>AKtion</application>">
 <!ENTITY Alt	"<keycap>Alt</keycap>">
+<!ENTITY amor	"<application>AMOR</application>">
 <!ENTITY ark    "<application>Ark</application>">
 <!ENTITY ATAPI	"<acronym>ATAPI</acronym>">
 <!ENTITY Backspace	"<keycap>Backspace</keycap>">
@@ -154,6 +155,7 @@
 <!ENTITY kikbd	"<application>kikbd</application>">
 <!ENTITY kit	"<application>Kit</application>">
 <!ENTITY kivio	"<application>Kivio</application>">
+<!ENTITY kjezz  "<application>KJezzball</application>">
 <!ENTITY kjots	"<application>KJots</application>">
 <!ENTITY kjumpingcube	"<application>KJumpingCube</application>">
 <!ENTITY klaptopdaemon	"<application>klaptopdaemon</application>">
@@ -167,6 +169,7 @@
 <!ENTITY kmidi	"<application>KMidi</application>">
 <!ENTITY kmines	"<application>KMines</application>">
 <!ENTITY kmix	"<application>KMix</application>">
+<!ENTITY kmoon  "<application>Moon Phase</application>">
 <!ENTITY knewsticker "<application>KNewsTicker</application>">
 <!ENTITY knode	"<application>KNode</application>">
 <!ENTITY knotes	"<application>KNotes</application>">
@@ -191,6 +194,7 @@
 <!ENTITY kpresenter "<application>KPresenter</application>">
 <!ENTITY krayon	"<application>Krayon</application>">
 <!ENTITY kreversi	"<application>KReversi</application>">
+<!ENTITY kruler	"<application>KRuler</application>">
 <!ENTITY ksame	"<application>KSame</application>">
 <!ENTITY kscd	"<application>KSCD</application>">
 <!ENTITY kscore "<application>KScore</application>">
@@ -219,6 +223,7 @@
 <!ENTITY kuser	"<application>Kuser</application>">
 <!ENTITY kview	"<application>kview</application>">
 <!ENTITY kvt	"<application>kvt</application>">
+<!ENTITY kworldwatch  "<application>KWorldWatch</application>">
 <!ENTITY kword "<application>KWord</application>">
 <!ENTITY kwin	"<application>KWin</application>">
 <!ENTITY kwin4	"<application>K Four Wins</application>">
