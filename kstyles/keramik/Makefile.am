@@ -39,7 +39,7 @@ pixmaps.keramik: pics/checkbox-off.png pics/checkbox-on.png pics/combobox-list-b
 	 pics/pushbutton-pressed-tr.png pics/pushbutton-small-bc.png pics/pushbutton-small-bl.png pics/pushbutton-small-br.png\
 	 pics/pushbutton-small-cc.png pics/pushbutton-small-cl.png pics/pushbutton-small-cr.png\
 	 pics/pushbutton-small-pressed-bc.png pics/pushbutton-small-pressed-bl.png pics/pushbutton-small-pressed-br.png\
-	 pics/pushbutton-small-pressed-cc.png pics/pushbutton-small-pressed-cl.png pics/pushbutton-small-pressed-cr.png\ 
+	 pics/pushbutton-small-pressed-cc.png pics/pushbutton-small-pressed-cl.png pics/pushbutton-small-pressed-cr.png\
 	 pics/pushbutton-small-pressed-tc.png pics/pushbutton-small-pressed-tl.png pics/pushbutton-small-pressed-tr.png\
 	 pics/pushbutton-small-tc.png pics/pushbutton-small-tl.png pics/pushbutton-small-tr.png pics/pushbutton-tc.png\
 	 pics/pushbutton-tl.png pics/pushbutton-tr.png pics/radiobutton-off.png pics/radiobutton-on.png pics/ripple.png\
@@ -83,7 +83,7 @@ pixmaps.keramik: pics/checkbox-off.png pics/checkbox-on.png pics/combobox-list-b
 
 
 pixmaps.keramik keramikrc.h: genembed
-	pics=`ls $(srcdir)/pics/*.png 2>/dev/null` ;\ 
+	pics=`ls $(srcdir)/pics/*.png 2>/dev/null` ;\
 	./genembed $$pics > pixmaps.keramik
 
 pixmaploader.lo: pixmaps.keramik
