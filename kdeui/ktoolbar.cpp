@@ -1754,6 +1754,7 @@ KPopupMenu *KToolBar::contextMenu()
 
   d->iconSizesCount = avSizes.count();
 
+  int n = 1;
   QValueList<int>::Iterator it;
   for (it=avSizes.begin(); it!=avSizes.end(); it++) {
       QString text;
@@ -1764,7 +1765,7 @@ KPopupMenu *KToolBar::contextMenu()
       else
           text = i18n("Large (%1x%2)").arg(*it).arg(*it);
       //we use the size as an id, with an offset
-      size->insertItem( text, CONTEXT_ICONSIZES + *it );
+      size->insertItem( text, CONTEXT_ICONSIZES + (n++) );
   }
 
   context->setFont(KGlobalSettings::menuFont());
