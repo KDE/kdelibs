@@ -1,6 +1,6 @@
 # $Id$
 
-INCLUDES = -I$(top_srcdir) $(all_includes)
+INCLUDES = -I$(top_srcdir)/kio -I$(top_srcdir) $(all_includes)
 
 lib_LTLIBRARIES = libktexteditor.la libkregexpeditor.la
 
