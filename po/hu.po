@@ -1,20 +1,22 @@
 # KTranslator Generated File
+
+# KTranslator Generated File
 # KTranslator Generated File
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.1pre2\n"
 "POT-Creation-Date: 1999-04-24 01:02+0200\n"
-"PO-Revision-Date: Thu Jan 28 1999 11:33:33+0100\n"
+"PO-Revision-Date: Tue Aug 31 1999 13:44:35+0200\n"
 "Last-Translator: Marcell Lengyel <miketkf@yahoo.com>\n"
-"Language-Team: Hungarian <hu@li.org>\n"
+"Language-Team: Hungarian <kde-lista@sophia.jpte.hu>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-2\n"
 "Content-Transfer-Encoding: 8-bit\n"
-"X-Generator: KTranslator v 0.4.0\n"
+"X-Generator: KTranslator v 0.5.0"
 
-# , fuzzy
+# 
 #: kab/AssertDialog.cpp:29
-#, fuzzy
+#
 msgid "(unknown file)"
 msgstr "(ismeretlen fájl)"
 
@@ -59,9 +61,9 @@ msgstr "OK"
 msgid "The following condition failed:\n"
 msgstr "A következõ feltétel nem teljesült:\n"
 
-# , fuzzy
+# 
 #: kab/AssertDialog.cpp:141
-#, fuzzy
+#
 msgid "In file "
 msgstr "Ebben a fájlban: "
 
@@ -74,7 +76,7 @@ msgid "Error handling error"
 msgstr "Hiba a hibakezelõben"
 
 #: kab/AssertDialog.cpp:213
-#, fuzzy
+#
 msgid "Could not send message."
 msgstr "Nem tudtam elküldeni az üzenetet."
 
@@ -119,7 +121,7 @@ msgid "&OK"
 msgstr "&OK"
 
 #: kab/DialogBase.cpp:58
-#, fuzzy
+#
 msgid "&Apply"
 msgstr "&Alkalmaz"
 
@@ -157,7 +159,7 @@ msgid "The name prefix"
 msgstr "Név elõtag"
 
 #: kab/SearchDialog.cpp:51
-#, fuzzy
+#
 msgid "The name"
 msgstr "Név"
 
@@ -221,9 +223,9 @@ msgstr "Honlap címe"
 msgid "The comment"
 msgstr "Megjegyzés"
 
-# , fuzzy
+# 
 #: kab/SearchDialog.cpp:74
-#, fuzzy
+#
 msgid "kab: Search entries"
 msgstr "kab: Keresés"
 
@@ -321,7 +323,7 @@ msgstr "Cserél"
 msgid "Insert"
 msgstr "Beszúr"
 
-# , fuzzy
+# 
 #: kdecore/kaccel.cpp:275 kfile/kfiledialog.cpp:131
 msgid "Home"
 msgstr "Elejére"
@@ -331,12 +333,12 @@ msgid "End"
 msgstr "Végére"
 
 #: kdecore/kaccel.cpp:283
-#, fuzzy
+#
 msgid "Prior"
 msgstr "Elõzõ"
 
 #: kdecore/kaccel.cpp:287
-#, fuzzy
+#
 msgid "Next"
 msgstr "Következõ"
 
@@ -445,7 +447,7 @@ msgstr "Saját palettához ad"
 msgid "Custom..."
 msgstr "Saját..."
 
-# , fuzzy
+# 
 #: kdeui/kcontrol.cpp:41 kdeui/kcontrol.cpp:58 po/texts.cpp:135
 msgid "Default"
 msgstr "Alapértékek"
@@ -470,7 +472,7 @@ msgstr "Március"
 msgid "April"
 msgstr "Április"
 
-# , fuzzy
+# 
 #: kdeui/kdatepik.cpp:104 kfile/kfileinfo.cpp:225
 msgid "May"
 msgstr "Május"
@@ -507,22 +509,22 @@ msgstr "December"
 msgid "(invalid)"
 msgstr "(érvénytelen)"
 
-# , fuzzy
+# 
 #: kdeui/kdatetbl.cpp:49
 msgid "Sun"
 msgstr "Vas"
 
-# , fuzzy
+# 
 #: kdeui/kdatetbl.cpp:49
 msgid "Mon"
 msgstr "Hét"
 
-# , fuzzy
+# 
 #: kdeui/kdatetbl.cpp:49
 msgid "Tue"
 msgstr "Kedd"
 
-# , fuzzy
+# 
 #: kdeui/kdatetbl.cpp:50
 msgid "Wed"
 msgstr "Sze"
@@ -535,7 +537,7 @@ msgstr "Csü"
 msgid "Fri"
 msgstr "Pén"
 
-# , fuzzy
+# 
 #: kdeui/kdatetbl.cpp:51
 msgid "Sat"
 msgstr "Szo"
@@ -610,7 +612,7 @@ msgstr "Névtelen"
 
 #: kdeui/keditcl1.cpp:1560
 msgid "Could not save the document\n"
-msgstr "Could not save the document\n"
+msgstr "Nem sikerült elmenteni a dokumentumot\n"
 
 #: kdeui/keditcl1.cpp:1630
 msgid "Save Document As"
@@ -626,7 +628,7 @@ msgstr ""
 
 #: kdeui/keditcl1.cpp:1716
 msgid "You do not have write permission to this file.\n"
-msgstr "You do not have write permission to this file.\n"
+msgstr "Nincsen írás jogod ehhez a fájlhoz.\n"
 
 #: kdeui/keditcl2.cpp:104 kdeui/keditcl2.cpp:361 kdeui/keditcl2.cpp:454
 msgid ""
@@ -729,7 +731,7 @@ msgstr "félkövér"
 msgid "Style"
 msgstr "Stílus"
 
-# , fuzzy
+# 
 #: kdeui/kfontdialog.cpp:339 kdeui/kfontdialog.cpp:497
 #: kdeui/kfontdialog.cpp:526
 msgid "roman"
@@ -773,19 +775,19 @@ msgstr "Billentyû hozzárendelések beállítása"
 msgid "&Help"
 msgstr "&Segítség"
 
-# , fuzzy
+# 
 #: kdeui/kkeydialog.cpp:236 po/texts.cpp:136
-#, fuzzy
+#
 msgid "&Defaults"
-msgstr "Alapértékek"
+msgstr "&Alapértékek"
 
 #: kdeui/kkeydialog.cpp:320
 msgid "Current key"
 msgstr "Jelenlegi billentyû"
 
-# , fuzzy
+# 
 #: kdeui/kkeydialog.cpp:332
-#, fuzzy
+#
 msgid "&Action"
 msgstr "&Esemény"
 
@@ -797,16 +799,16 @@ msgstr "Válasszon billentyût a kijelölt eseményhez"
 msgid "&No key"
 msgstr "&Nincs billentyû"
 
-# , fuzzy
+# 
 #: kdeui/kkeydialog.cpp:401
-#, fuzzy
+#
 msgid "&Default key"
-msgstr "&Alapértékek"
+msgstr "&Alapértelmezett gomb"
 
 #: kdeui/kkeydialog.cpp:409
-#, fuzzy
+#
 msgid "&Custom key"
-msgstr "&Saját"
+msgstr "&Saját gomb"
 
 #: kdeui/kkeydialog.cpp:472
 msgid "No keys defined"
@@ -920,10 +922,10 @@ msgid "Trying to add page when no KWizards are added!"
 msgstr ""
 "Megpróbált egy oldalt hozzáadni, amikor még nem volt KVarázsló hozzáadva!"
 
-# , fuzzy
+# 
 #: kdeui/knotebook.cpp:201 kdeui/kwizard.cpp:182
 msgid "&Default"
-msgstr "&Alapértékek"
+msgstr "&Alapérték"
 
 #: kdeui/kquickhelp.cpp:203
 msgid "Quickhelp"
@@ -941,47 +943,47 @@ msgstr "Bal"
 msgid "Right"
 msgstr "Jobb"
 
-# , fuzzy, c-format
+# , c-format
 #: kdeui/kwizard.cpp:531 kdeui/kwizard.cpp:678
 #, c-format
 msgid "Page %d of %d"
-msgstr "Sor: %d Oszlop: %d"
+msgstr "%d. oldal a %d-bõl"
 
-# , fuzzy
+# 
 #: kfile/kcombiview.cpp:81
 msgid "Folders:"
 msgstr "Mappák:"
 
-# , fuzzy
+# 
 #: kfile/kcombiview.cpp:82
 msgid "Contents:"
 msgstr "Tartalom:"
 
 #: kfile/kfilebookmark.cpp:246
 msgid "<!-- Do not edit this file -->"
-msgstr "<!-- Ne szerkessze ezt a fájlt -->"
+msgstr "<!-- Ne szerkeszd ezt a fájlt -->"
 
-# , fuzzy
+# 
 #: kab/addressbook.cc:1112 kfile/kfiledetaillist.cpp:36
 msgid "Name"
 msgstr "Név"
 
-# , fuzzy
+# 
 #: kfile/kfiledetaillist.cpp:40
 msgid "Permissions"
 msgstr "Hozzáférési jogok"
 
-# , fuzzy
+# 
 #: kfile/kfiledetaillist.cpp:42
 msgid "Date"
 msgstr "Dátum"
 
-# , fuzzy
+# 
 #: kfile/kfiledetaillist.cpp:45
 msgid "Owner"
 msgstr "Tulajdonos"
 
-# , fuzzy
+# 
 #: kfile/kfiledetaillist.cpp:47
 msgid "Group"
 msgstr "Csoport"
@@ -994,7 +996,7 @@ msgstr "Vissza"
 msgid "Forward"
 msgstr "Elõre"
 
-# , fuzzy
+# 
 #: kfile/kfiledialog.cpp:128
 msgid "Up to parent"
 msgstr "Fel, a szülõhöz"
@@ -1003,17 +1005,17 @@ msgstr "Fel, a szülõhöz"
 msgid "Reload"
 msgstr "Újratölt"
 
-# , fuzzy
+# 
 #: kfile/kfiledialog.cpp:156
 msgid "Bookmarks"
 msgstr "Kedvencek"
 
-# , fuzzy
+# 
 #: kfile/kfiledialog.cpp:160
 msgid "Create new folder"
 msgstr "Új mappa létrehozás"
 
-# , fuzzy
+# 
 #: kfile/kfiledialog.cpp:163
 msgid "Search for a file"
 msgstr "Fájl keresés"
@@ -1026,22 +1028,22 @@ msgstr "Dialógus ablak átszerkesztése [csak fejlesztésre]"
 msgid "The path"
 msgstr "Elérési út"
 
-# , fuzzy
+# 
 #: kfile/kfiledialog.cpp:199
 msgid "&Location:"
 msgstr "E&lérési út:"
 
-# , fuzzy
+# 
 #: kfile/kfiledialog.cpp:212
 msgid "&Filter:"
 msgstr "&Szûrõ:"
 
-# , fuzzy
+# 
 #: kfile/kfiledialog.cpp:226
 msgid "Show hidden"
 msgstr "Rejtett megjelenítése"
 
-# , fuzzy
+# 
 #: kfile/kfiledialog.cpp:505
 msgid "Error: Not local file"
 msgstr "Hiba: Nem helyi fájl"
@@ -1054,12 +1056,12 @@ msgstr ""
 "A megadott könyvtár nem helyi könyvtár\n"
 "Az alkalmazás pedig csak helyi fájlokat fogad el."
 
-# , fuzzy
+# 
 #: kfile/kfiledialog.cpp:520 kfile/kfiledialog.cpp:625
 msgid "Error: Cannot Open Directory"
 msgstr "Hiba: Nem lehet megnyitni a könyvtárat."
 
-# , fuzzy
+# 
 #: kfile/kfiledialog.cpp:521
 msgid ""
 "The specified directory does not exist\n"
@@ -1076,52 +1078,52 @@ msgstr "Elvet"
 msgid "Save As"
 msgstr "Mentés másként"
 
-# , fuzzy
+# 
 #: kfile/kfiledialog.cpp:597
 msgid "Root Directory"
-msgstr "Induló könyvtár"
+msgstr "Gyökér könyvtár"
 
-# , fuzzy
+# 
 #: kfile/kfiledialog.cpp:626
 msgid "The specified directory does not exist or was not readable."
 msgstr "A megadott könyvtár nem létezik vagy nem olvasható."
 
-# , fuzzy
+# 
 #: kfile/kfiledialog.cpp:887
 msgid "Create new directory in: "
 msgstr "Könyvtár létrehozása: "
 
-# , fuzzy
+# 
 #: kfile/kfiledialog.cpp:890
 msgid "New Directory"
 msgstr "Új könyvtár"
 
-# , fuzzy
+# 
 #: kfile/kfiledialog.cpp:962
 msgid "Add to bookmarks"
 msgstr "Hozzáadás a kedvencekhez"
 
-# , fuzzy
+# 
 #: kfile/kfiledialog.cpp:1253
 msgid "Choose Directory"
 msgstr "Könyvtár Választás"
 
-# , fuzzy
+# 
 #: kfile/kfiledialog.cpp:1321
 msgid "directory"
 msgstr "könyvtár"
 
-# , fuzzy
+# 
 #: kfile/kfiledialog.cpp:1323
 msgid "directories"
 msgstr "könyvtárak"
 
-# , fuzzy
+# 
 #: kfile/kfiledialog.cpp:1325 kfile/kpreview.cpp:326
 msgid "file"
 msgstr "fájl"
 
-# , fuzzy
+# 
 #: kfile/kfiledialog.cpp:1327
 msgid "files"
 msgstr "fájlok"
@@ -1132,14 +1134,14 @@ msgstr "fájlok"
 msgid "%d %s and %d %s"
 msgstr "%d %s és %d %s"
 
-# , fuzzy
+# 
 #: kfile/kfiledialog.cpp:1339
 msgid "one directory"
 msgstr "egy könyvtár"
 
-# , fuzzy
+# 
 #: kfile/kfiledialog.cpp:1341
-#, fuzzy, c-format
+#, c-format
 msgid "%d directories"
 msgstr "%d könyvtár"
 
@@ -1175,17 +1177,17 @@ msgstr ""
 msgid "About"
 msgstr "Névjegy"
 
-# , fuzzy
+# 
 #: kfile/kfiledialogconf.cpp:71
 msgid "View style"
 msgstr "Stílus megtekintése"
 
-# , fuzzy
+# 
 #: kfile/kfiledialogconf.cpp:75
 msgid "Show Short View"
 msgstr "Mutassa a Rövid Nézetet"
 
-# , fuzzy
+# 
 #: kfile/kfiledialogconf.cpp:81
 msgid "Show Detail View"
 msgstr "Mutassa a Részletes Nézetet"
@@ -1194,22 +1196,22 @@ msgstr "Mutassa a Részletes Nézetet"
 msgid "Misc"
 msgstr "Egyéb"
 
-# , fuzzy
+# 
 #: kfile/kfiledialogconf.cpp:96
 msgid "Show Filter"
 msgstr "Mutassa a szûrõt"
 
-# , fuzzy
+# 
 #: kfile/kfiledialogconf.cpp:102
 msgid "Show List Labels"
 msgstr "Mutassa a Lista Cimkéket"
 
-# , fuzzy
+# 
 #: kfile/kfiledialogconf.cpp:108
 msgid "Show Hidden"
 msgstr "Mutassa a rejtett fájlokat"
 
-# , fuzzy
+# 
 #: kfile/kfiledialogconf.cpp:114
 msgid "Show Status Line"
 msgstr "Mutassa a státuszsort"
@@ -1227,16 +1229,16 @@ msgid "Keep dirs first"
 msgstr "Könyvtárak elõre"
 
 #: kfile/kfilefilter.cpp:35
-#, fuzzy
+#
 msgid "*|All Files"
 msgstr "*|Minden fájl"
 
-# , fuzzy
+# 
 #: kfile/kfileinfo.cpp:97 kfile/kfileinfo.cpp:101
 msgid "unknown"
 msgstr "ismeretlen"
 
-# , fuzzy
+# 
 #: kfile/kfileinfo.cpp:221
 msgid "Jan"
 msgstr "Jan"
@@ -1245,77 +1247,77 @@ msgstr "Jan"
 msgid "Feb"
 msgstr "Feb"
 
-# , fuzzy
+# 
 #: kfile/kfileinfo.cpp:223
 msgid "Mar"
 msgstr "Már"
 
-# , fuzzy
+# 
 #: kfile/kfileinfo.cpp:224
 msgid "Apr"
 msgstr "Ápr"
 
-# , fuzzy
+# 
 #: kfile/kfileinfo.cpp:226
 msgid "Jun"
 msgstr "Jún"
 
-# , fuzzy
+# 
 #: kfile/kfileinfo.cpp:227
 msgid "Jul"
 msgstr "Júl"
 
-# , fuzzy
+# 
 #: kfile/kfileinfo.cpp:228
 msgid "Aug"
 msgstr "Aug"
 
-# , fuzzy
+# 
 #: kfile/kfileinfo.cpp:229
 msgid "Sep"
 msgstr "Szep"
 
-# , fuzzy
+# 
 #: kfile/kfileinfo.cpp:230
 msgid "Oct"
 msgstr "Okt"
 
-# , fuzzy
+# 
 #: kfile/kfileinfo.cpp:231
 msgid "Nov"
 msgstr "Nov"
 
-# , fuzzy
+# 
 #: kfile/kfileinfo.cpp:232
 msgid "Dec"
 msgstr "Dec"
 
-# , fuzzy
+# 
 #: kab/editentry.cc:64 kfile/kpreview.cpp:187
 msgid "Name:"
 msgstr "Név:"
 
-# , fuzzy
+# 
 #: kfile/kpreview.cpp:205
 msgid "Date:"
 msgstr "Dátum:"
 
-# , fuzzy
+# 
 #: kfile/kpreview.cpp:214
 msgid "Owner:"
 msgstr "Tulajdonos:"
 
-# , fuzzy
+# 
 #: kfile/kpreview.cpp:223
 msgid "Group:"
 msgstr "Csoport:"
 
-# , fuzzy
+# 
 #: kfile/kpreview.cpp:232
 msgid "Type:"
 msgstr "Típus:"
 
-# , fuzzy
+# 
 #: kfile/kpreview.cpp:287
 msgid "locked"
 msgstr "zárolt"
@@ -1324,7 +1326,7 @@ msgstr "zárolt"
 msgid "picture"
 msgstr "kép"
 
-# , fuzzy
+# 
 #: kfile/kpreview.cpp:343
 msgid "folder"
 msgstr "mappa"
@@ -1339,7 +1341,7 @@ msgstr ""
 "Hiányzik a %s fájl\n"
 "Így nem tudok azonoítani"
 
-# , fuzzy
+# 
 #: kfmlib/kfm.cpp:200 kfmlib/kfm.cpp:210
 msgid "KFM Error"
 msgstr "KFM Hiba"
@@ -1362,9 +1364,9 @@ msgstr "Szótõ/Toldalék értelmezõ nincs a szótárban"
 msgid "Consider run-together words as spelling errors"
 msgstr "Az egybeírt szavak legyenek helyesírási hibák"
 
-# , fuzzy
+# 
 #: kspell/ksconfig.cpp:92
-#, fuzzy
+#
 msgid "Dictionary"
 msgstr "Szótár"
 
@@ -1372,9 +1374,9 @@ msgstr "Szótár"
 msgid "Encoding:"
 msgstr "Kódolás:"
 
-# , fuzzy
+# 
 #: kspell/ksconfig.cpp:147
-#, fuzzy
+#
 msgid "Latin1"
 msgstr "Latin1"
 
@@ -1390,9 +1392,9 @@ msgstr "Angol"
 msgid "Spanish"
 msgstr "Spanyol"
 
-# , fuzzy
+# 
 #: kspell/ksconfig.cpp:304
-#, fuzzy
+#
 msgid "German"
 msgstr "Német"
 
@@ -1400,15 +1402,15 @@ msgstr "Német"
 msgid "Brazilian Portuguese"
 msgstr "Brazil Portugál"
 
-# , fuzzy
+# 
 #: kspell/ksconfig.cpp:317
-#, fuzzy
+#
 msgid "Unknown"
 msgstr "Ismeretlen"
 
-# , fuzzy
+# 
 #: kspell/ksconfig.cpp:348
-#, fuzzy
+#
 msgid "ISpell Default"
 msgstr "ISpell Alapértékek"
 
@@ -1417,7 +1419,7 @@ msgid "Misspelled Word:"
 msgstr "Helytelen szó:"
 
 #: kspell/kspelldlg.cpp:68
-#, fuzzy
+#
 msgid "Replacement:"
 msgstr "Cserélje:"
 
@@ -1619,7 +1621,7 @@ msgstr "Üresre töröl"
 msgid "Italic"
 msgstr "Kurzív"
 
-# , fuzzy
+# 
 #: po/texts.cpp:92
 msgid "Roman"
 msgstr "Román"
@@ -1652,7 +1654,7 @@ msgstr "Böngész ..."
 msgid "&Remove"
 msgstr "&Eltávolít"
 
-# , fuzzy
+# 
 #: po/texts.cpp:102
 msgid "&Properties..."
 msgstr "&Tulajdonságok..."
@@ -1661,12 +1663,12 @@ msgstr "&Tulajdonságok..."
 msgid "Properties"
 msgstr "Tulajdonságok"
 
-# , fuzzy
+# 
 #: po/texts.cpp:104
 msgid "&Start"
 msgstr "&Keres"
 
-# , fuzzy
+# 
 #: po/texts.cpp:105
 msgid "St&op"
 msgstr "Á&llj"
@@ -1699,7 +1701,7 @@ msgstr "Fájlok"
 msgid "Continue"
 msgstr "Folytat"
 
-# , fuzzy
+# 
 #: po/texts.cpp:113
 msgid "Restore"
 msgstr "Visszaállít"
@@ -1720,12 +1722,12 @@ msgstr "Kedd"
 msgid "Wednesday"
 msgstr "Szerda"
 
-# , fuzzy
+# 
 #: po/texts.cpp:119
 msgid "Thursday"
 msgstr "Csütörtök"
 
-# , fuzzy
+# 
 #: po/texts.cpp:120
 msgid "Friday"
 msgstr "Péntek"
@@ -1734,17 +1736,17 @@ msgstr "Péntek"
 msgid "Saturday"
 msgstr "Szombat"
 
-# , fuzzy
+# 
 #: po/texts.cpp:122
 msgid "Sunday"
 msgstr "Vasárnap"
 
-# , fuzzy
+# 
 #: po/texts.cpp:123
 msgid "&Update"
 msgstr "&Frissít"
 
-# , fuzzy
+# 
 #: po/texts.cpp:124
 msgid "Layout"
 msgstr "Kinézet"
@@ -1753,7 +1755,7 @@ msgstr "Kinézet"
 msgid "Highscore"
 msgstr "Eredmények"
 
-# , fuzzy
+# 
 #: po/texts.cpp:126
 msgid "&New View"
 msgstr "Új &Nézet"
@@ -1762,18 +1764,18 @@ msgstr "Új &Nézet"
 msgid "&Insert"
 msgstr "&Beszúr"
 
-# , fuzzy
+# 
 #: po/texts.cpp:130
 msgid "&Next >>"
 msgstr "&Következõ >>"
 
-# , fuzzy
+# 
 #: po/texts.cpp:131
 msgid "<< &Previous"
 msgstr "<< E&lõzõ"
 
 #: po/texts.cpp:138
-#, fuzzy
+#
 msgid "&About..."
 msgstr "&Névjegy..."
 
@@ -1900,7 +1902,7 @@ msgid "Formatted name"
 msgstr "Formatált név"
 
 #: kab/addressbook.cc:1132
-#, fuzzy
+#
 msgid "Comment"
 msgstr "Megjegyzés"
 
@@ -1909,25 +1911,25 @@ msgid "Organization"
 msgstr "Szervezet"
 
 #: kab/addressbook.cc:1140
-#, fuzzy
+#
 msgid "Unit"
 msgstr "Egység"
 
-# , fuzzy
+# 
 #: kab/addressbook.cc:1144
-#, fuzzy
+#
 msgid "Subunit"
 msgstr "Alegység"
 
-# , fuzzy
+# 
 #: kab/addressbook.cc:1148
-#, fuzzy
+#
 msgid "Title"
 msgstr "Cím"
 
-# , fuzzy
+# 
 #: kab/addressbook.cc:1152
-#, fuzzy
+#
 msgid "Role"
 msgstr "Beosztás"
 
@@ -1960,7 +1962,7 @@ msgid "Email addresses"
 msgstr "E-mail címek"
 
 #: kab/addressbook.cc:1184
-#, fuzzy
+#
 msgid "Address"
 msgstr "Lakcím"
 
@@ -1977,7 +1979,7 @@ msgid "Fax number"
 msgstr "Fax szám"
 
 #: kab/addressbook.cc:1200
-#, fuzzy
+#
 msgid "Modem number"
 msgstr "Modem telefonszám"
 
@@ -1994,7 +1996,7 @@ msgid "State/province"
 msgstr "Állam/Megye"
 
 #: kab/addressbook.cc:1216
-#, fuzzy
+#
 msgid "Country"
 msgstr "Ország"
 
@@ -2003,7 +2005,7 @@ msgid "(unnamed entry)"
 msgstr "(névtelen bejegyzés)"
 
 #: kab/datepickerdialog.cc:34
-#, fuzzy
+#
 msgid "Select birthday"
 msgstr "Születésnap kiválasztás"
 
@@ -2012,7 +2014,7 @@ msgid "Edit the current entry"
 msgstr "Aktuális bejegyzés szerkesztése"
 
 #: kab/editentry.cc:61
-#, fuzzy
+#
 msgid "Title:"
 msgstr "Cím:"
 
@@ -2028,9 +2030,9 @@ msgstr "Vezetéknév:"
 msgid "Formatted Name:"
 msgstr "Formatált Név:"
 
-# , fuzzy
+# 
 #: kab/editentry.cc:88
-#, fuzzy
+#
 msgid "&Name"
 msgstr "&Név:"
 
@@ -2042,9 +2044,9 @@ msgstr "Lakcím:"
 msgid "Town/City:"
 msgstr "Város:"
 
-# , fuzzy
+# 
 #: kab/editentry.cc:105
-#, fuzzy
+#
 msgid "State:"
 msgstr "Megye:"
 
@@ -2065,7 +2067,7 @@ msgid "Organization:"
 msgstr "Szervezet:"
 
 #: kab/editentry.cc:146
-#, fuzzy
+#
 msgid "Department:"
 msgstr "Egység:"
 
@@ -2073,9 +2075,9 @@ msgstr "Egység:"
 msgid "Sub-Department:"
 msgstr "Alegység:"
 
-# , fuzzy
+# 
 #: kab/editentry.cc:148
-#, fuzzy
+#
 msgid "Job/Role:"
 msgstr "Beosztás:"
 
@@ -2092,7 +2094,7 @@ msgid "Fax:"
 msgstr "Fax:"
 
 #: kab/editentry.cc:186
-#, fuzzy
+#
 msgid "Modem:"
 msgstr "Modem:"
 
@@ -2109,7 +2111,7 @@ msgid "Edit talk addresses"
 msgstr "Talk címek szerkesztése"
 
 #: kab/editentry.cc:218
-#, fuzzy
+#
 msgid "&Contact"
 msgstr "&Kapcsolat"
 
@@ -2226,28 +2228,28 @@ msgstr ""
 "ezeket a mezõket."
 
 #: kab/widget.cc:315
-#, fuzzy
+#
 msgid "Could not save database after update."
-msgstr "Nem lehet elmenteni az adatbázis fájlt frissítés után."
+msgstr "Nem sikerült elmenteni az adatbázis fájlt frissítés után."
 
 #: kab/widget.cc:323
 msgid "Unable to reopen database file r/o."
 msgstr "Nem lehet megnyitni az adatbázis fájlt csak olvasásra."
 
-# , fuzzy
+# 
 #: kab/widget.cc:482
-#, fuzzy
+#
 msgid "first entry"
 msgstr "elsõ bejegyzés"
 
 #: kab/widget.cc:483
-#, fuzzy
+#
 msgid "previous entry"
 msgstr "elõzõ bejegyzés"
 
-# , fuzzy
+# 
 #: kab/widget.cc:484
-#, fuzzy
+#
 msgid "next entry"
 msgstr "következõ bejegyzés"
 
@@ -2283,14 +2285,14 @@ msgstr "Utolsó bejegyzésre váltás."
 msgid "Sorry, file changed."
 msgstr "Sajnálom, a fájl megváltozott."
 
-# , fuzzy
+# 
 #: kab/widget.cc:625 kab/widget.cc:682 kab/widget.cc:926
-#, fuzzy
+#
 msgid "Permission denied."
 msgstr "Hozzáférés megtagadva."
 
 #: kab/widget.cc:636
-#, fuzzy
+#
 msgid "Remove entry?"
 msgstr "Töröljem a bejegyzést?"
 
@@ -2342,13 +2344,13 @@ msgid "kab: File error"
 msgstr "kab: Fájl hiba"
 
 #: kab/widget.cc:875
-#, fuzzy
+#
 msgid "Could not save database."
 msgstr "Nem tudtam elmenteni az adatbázist."
 
-# , fuzzy
+# 
 #: kab/widget.cc:876
-#, fuzzy
+#
 msgid "&Retry"
 msgstr "&Ismét"
 
@@ -2357,9 +2359,9 @@ msgid "&Ignore"
 msgstr "&Kihagy"
 
 #: kab/widget.cc:879
-#, fuzzy
+#
 msgid "Saving cancelled.\n"
-msgstr "Saving cancelled.\n"
+msgstr "Mentés elvetve.\n"
 
 #: kab/widget.cc:945
 msgid "Entry changed."
@@ -2407,7 +2409,7 @@ msgid "Available talk addresses:"
 msgstr "Jelenlegi talk címek:"
 
 #: kab/widget.cc:1199 kab/widget.cc:1963
-#, fuzzy
+#
 msgid "Cancelled."
 msgstr "Elvetve."
 
@@ -2472,7 +2474,7 @@ msgid "Name-Email-Link (!!)"
 msgstr "Név-E-mail-Kapcsolat (!!)"
 
 #: kab/widget.cc:1831
-#, fuzzy
+#
 msgid "Select table columns"
 msgstr "Táblázat oszlopok választása"
 
@@ -2528,9 +2530,9 @@ msgstr "Üres e-mail cím."
 msgid "No email address."
 msgstr "Hiányzik az e-mail cím."
 
-# , fuzzy
+# 
 #: kab/widget.cc:2124
-#, fuzzy
+#
 msgid "Error calling mailer."
 msgstr "Hiba a levelezõ hívásakor."
 
