@@ -40,6 +40,7 @@
 using namespace DOM;
 
 #include <stdlib.h>
+#include <assert.h>
 
 ValueList::ValueList()
 {
@@ -997,10 +998,45 @@ bool CSSParser::parseValue( int propId, bool important )
 #ifdef CSS_DEBUG_BCKGR
         kdDebug(6080) << "CSS_PROP_BACKGROUND" << endl;
 #endif
+        uint old_numParsed = numParsedProperties;
+
+        // The CSS 2.1 specs require the browser to set all possible expanded
+        // properties to their initial value before the right side is parsed
+        addProperty( CSS_PROP_BACKGROUND_IMAGE,
+                     new CSSImageValueImpl(),
+                     important );
+        addProperty( CSS_PROP_BACKGROUND_REPEAT,
+                     new CSSPrimitiveValueImpl( CSS_VAL_REPEAT ),
+                     important );
+        addProperty( CSS_PROP_BACKGROUND_ATTACHMENT,
+                     new CSSPrimitiveValueImpl( CSS_VAL_SCROLL ),
+                     important );
+        // the background-position part is tricky. mozilla returns 0% 0% as part of the
+        // list. We do not have any backgroundPosition value - but sites relying on that
+        // have to be proofed to exist before we change the binding for that ;/
+        addProperty( CSS_PROP_BACKGROUND_POSITION_X,
+                     new CSSPrimitiveValueImpl( 0, CSSPrimitiveValue::CSS_PERCENTAGE ),
+                     important );
+        addProperty( CSS_PROP_BACKGROUND_POSITION_Y,
+                     new CSSPrimitiveValueImpl( 0, CSSPrimitiveValue::CSS_PERCENTAGE ),
+                     important );
+        addProperty( CSS_PROP_BACKGROUND_COLOR,
+                     new CSSPrimitiveValueImpl( CSS_VAL_TRANSPARENT ),
+                     important );
+
+        // dirk says we should asure that the code doesn't break
+        // because addProperty changes behaviour
+        assert( numParsedProperties - old_numParsed == 6 );
+
         const int properties[5] = { CSS_PROP_BACKGROUND_IMAGE, CSS_PROP_BACKGROUND_REPEAT,
                                     CSS_PROP_BACKGROUND_ATTACHMENT, CSS_PROP_BACKGROUND_POSITION,
                                     CSS_PROP_BACKGROUND_COLOR };
-        return parseShortHand(properties, 5, important);
+        bool ret = parseShortHand(properties, 5, important);
+        if ( !ret ) { // if it failed, we need to remove all again
+            for ( int i = 0; i < 6; i++ ) // 6 here as we have _X + _Y
+                delete parsedProperties[--numParsedProperties];
+        }
+        return ret;
     }
     case CSS_PROP_BORDER:
          // [ 'border-width' || 'border-style' || <color> ] | inherit

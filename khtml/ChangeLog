@@ -1,3 +1,8 @@
+2003-11-07  Stephan Kulow  <coolo@kde.org>
+
+	* css/cssparser.cpp (parseValue): set the background-* properties
+	to their initial value before expanding (#64743)
+
 2003-11-07  Dirk Mueller  <mueller@kde.org>
 
 	* css/css_valueimpl.cpp (cssText): wrap uri's into url(). 
