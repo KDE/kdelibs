@@ -501,7 +501,7 @@ void KCodecs::base64Decode( const QByteArray& in, QByteArray& out )
     {
         // Adhere to RFC 2045 and ignore characters
         // that are not part of the encoding table.
-        char ch = data[idx];
+        unsigned char ch = data[idx];
         if ((ch > 47 && ch < 58) || (ch > 64 && ch < 91) ||
             (ch > 96 && ch < 123) || ch == '+' || ch == '/' || ch == '=')
         {
@@ -694,17 +694,17 @@ void KCodecs::uudecode( const QByteArray& in, QByteArray& out )
     while ( sidx < len )
     {
         // get line length (in number of encoded octets)
-        line_len = UUDecMap[data[sidx++]];
+        line_len = UUDecMap[ (unsigned char) data[sidx++]];
         // ascii printable to 0-63 and 4-byte to 3-byte conversion
         end = didx+line_len;
         char A, B, C, D;
         if (end > 2) {
           while (didx < end-2)
           {
-             A = UUDecMap[data[sidx]];
-             B = UUDecMap[data[sidx+1]];
-             C = UUDecMap[data[sidx+2]];
-             D = UUDecMap[data[sidx+3]];
+             A = UUDecMap[(unsigned char) data[sidx]];
+             B = UUDecMap[(unsigned char) data[sidx+1]];
+             C = UUDecMap[(unsigned char) data[sidx+2]];
+             D = UUDecMap[(unsigned char) data[sidx+3]];
              out[didx++] = ( ((A << 2) & 255) | ((B >> 4) & 003) );
              out[didx++] = ( ((B << 4) & 255) | ((C >> 2) & 017) );
              out[didx++] = ( ((C << 6) & 255) | (D & 077) );
@@ -714,15 +714,15 @@ void KCodecs::uudecode( const QByteArray& in, QByteArray& out )
 
         if (didx < end)
         {
-            A = UUDecMap[data[sidx]];
-            B = UUDecMap[data[sidx+1]];
+            A = UUDecMap[(unsigned char) data[sidx]];
+            B = UUDecMap[(unsigned char) data[sidx+1]];
             out[didx++] = ( ((A << 2) & 255) | ((B >> 4) & 003) );
         }
 
         if (didx < end)
         {
-            B = UUDecMap[data[sidx+1]];
-            C = UUDecMap[data[sidx+2]];
+            B = UUDecMap[(unsigned char) data[sidx+1]];
+            C = UUDecMap[(unsigned char) data[sidx+2]];
             out[didx++] = ( ((B << 4) & 255) | ((C >> 2) & 017) );
         }
 
