@@ -1,3 +1,8 @@
+2004-01-21  Leo Savernik <l.savernik@aon.at>
+
+	* khtml_part.cpp (checkCompleted): do not explicitly set focus to
+	the document if m_focusNodeNumber is not set (fixes dict.leo.org)
+
 2004-01-21  Stephan Kulow  <coolo@kde.org>
 
 	* html/html_formimpl.h: handle malformed forms different than

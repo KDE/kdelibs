@@ -1889,8 +1889,7 @@ void KHTMLPart::checkCompleted()
   {
       if (d->m_focusNodeNumber >= 0)
           d->m_doc->setFocusNode(d->m_doc->nodeWithAbsIndex(d->m_focusNodeNumber));
-      else
-          d->m_doc->setFocusNode(0);
+
       d->m_focusNodeRestored = true;
   }
 
