@@ -111,9 +111,9 @@ HTMLCollection::HTMLCollection(NodeImpl *base, int type)
 HTMLCollection &HTMLCollection::operator = (const HTMLCollection &other)
 {
     if(impl != other.impl) {
-    if(impl) impl->deref();
-    impl = other.impl;
-    if(impl) impl->ref();
+        if(impl) impl->deref();
+        impl = other.impl;
+        if(impl) impl->ref();
     }
     return *this;
 }
