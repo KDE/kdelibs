@@ -95,7 +95,7 @@ PropertyMap::~PropertyMap()
 #endif
         return;
     }
-    
+
     for (int i = 0; i < _table->size; i++) {
         UString::Rep *key = _table->entries[i].key;
         if (key)
@@ -135,7 +135,7 @@ inline int PropertyMap::hash(const UString::Rep *s) const
 ValueImp *PropertyMap::get(const Identifier &name, int &attributes) const
 {
     UString::Rep *rep = name._ustring.rep;
-    
+
     if (!_table) {
 #if USE_SINGLE_ENTRY
         UString::Rep *key = _singleEntry.key;
@@ -146,7 +146,7 @@ ValueImp *PropertyMap::get(const Identifier &name, int &attributes) const
 #endif
         return 0;
     }
-    
+
     int i = hash(rep);
 #if DUMP_STATISTICS
     ++numProbes;
@@ -174,7 +174,7 @@ ValueImp *PropertyMap::get(const Identifier &name) const
 #endif
         return 0;
     }
-    
+
     int i = hash(rep);
 #if DUMP_STATISTICS
     ++numProbes;
@@ -211,13 +211,13 @@ void PropertyMap::put(const Identifier &name, ValueImp *value, int attributes)
     checkConsistency();
 
     UString::Rep *rep = name._ustring.rep;
-    
+
 #if DEBUG_PROPERTIES
     printf ("adding property %s, attributes = 0x%08x (", name.ascii(), attributes);
     printAttributes(attributes);
     printf (")\n");
 #endif
-    
+
 #if USE_SINGLE_ENTRY
     if (!_table) {
         UString::Rep *key = _singleEntry.key;
@@ -239,7 +239,7 @@ void PropertyMap::put(const Identifier &name, ValueImp *value, int attributes)
 
     if (!_table || _table->keyCount * 2 >= _table->size)
         expand();
-    
+
     int i = hash(rep);
 #if DUMP_STATISTICS
     ++numProbes;
@@ -254,7 +254,7 @@ void PropertyMap::put(const Identifier &name, ValueImp *value, int attributes)
         }
         i = (i + 1) & _table->sizeMask;
     }
-    
+
     // Create a new hash table entry.
     rep->ref();
     _table->entries[i].key = rep;
@@ -276,7 +276,7 @@ inline void PropertyMap::insert(UString::Rep *key, ValueImp *value, int attribut
 #endif
     while (_table->entries[i].key)
         i = (i + 1) & _table->sizeMask;
-    
+
     _table->entries[i].key = key;
     _table->entries[i].value = value;
     _table->entries[i].attributes = attributes;
@@ -285,7 +285,7 @@ inline void PropertyMap::insert(UString::Rep *key, ValueImp *value, int attribut
 void PropertyMap::expand()
 {
     checkConsistency();
-    
+
     Table *oldTable = _table;
     int oldTableSize = oldTable ? oldTable->size : 0;
 
@@ -303,7 +303,7 @@ void PropertyMap::expand()
         _singleEntry.key = 0;
     }
 #endif
-    
+
     for (int i = 0; i != oldTableSize; ++i) {
         UString::Rep *key = oldTable->entries[i].key;
         if (key)
@@ -348,13 +348,13 @@ void PropertyMap::remove(const Identifier &name)
     }
     if (!key)
         return;
-    
+
     // Remove the one key.
     key->deref();
     _table->entries[i].key = 0;
     assert(_table->keyCount >= 1);
     --_table->keyCount;
-    
+
     // Reinsert all the items to the right in the same cluster.
     while (1) {
         i = (i + 1) & _table->sizeMask;
@@ -415,9 +415,9 @@ void PropertyMap::addSparseArrayPropertiesToReferenceList(List &list, const Obje
         UString::Rep *key = _singleEntry.key;
         if (key) {
             UString k(key);
-            bool fitsInUInt32;
-            k.toUInt32(&fitsInUInt32);
-            if (fitsInUInt32)
+            bool fitsInULong;
+            unsigned long i = k.toULong(&fitsInULong);
+            if (fitsInULong && i <= 0xFFFFFFFFU)
                 list.append(Reference(base, Identifier(key).ustring()));
         }
 #endif
@@ -428,9 +428,9 @@ void PropertyMap::addSparseArrayPropertiesToReferenceList(List &list, const Obje
         UString::Rep *key = _table->entries[i].key;
         if (key) {
             UString k(key);
-            bool fitsInUInt32;
-            k.toUInt32(&fitsInUInt32);
-            if (fitsInUInt32)
+            bool fitsInULong;
+            unsigned long i = k.toULong(&fitsInULong);
+            if (fitsInULong && i <= 0xFFFFFFFFU)
                 list.append(Reference(base, Identifier(key).ustring()));
         }
     }
@@ -459,11 +459,11 @@ void PropertyMap::save(SavedProperties &p) const
         p._properties = 0;
         return;
     }
-    
+
     p._properties = new SavedProperty [count];
-    
+
     SavedProperty *prop = p._properties;
-    
+
     if (!_table) {
 #if USE_SINGLE_ENTRY
         if (_singleEntry.key && !(_singleEntry.attributes & (ReadOnly | DontEnum | Function))) {

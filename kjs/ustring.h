@@ -26,8 +26,6 @@
 
 #include <kjs/global.h>
 
-#include <stdint.h>
-
 /**
  * @internal
  */
@@ -389,8 +387,6 @@ _hash; }
      * according to the success.
      */
     unsigned long toULong(bool *ok = 0L) const;
-
-    uint32_t toUInt32(bool *ok = 0L) const;
 
     /**
      * Returns this string converted to lower case characters
