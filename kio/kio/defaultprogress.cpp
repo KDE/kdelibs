@@ -101,7 +101,8 @@ void DefaultProgress::init()
   grid->addWidget(new QLabel(i18n("Source:"), this), 0, 0);
 
   sourceEdit = new KLineEdit(this);
-  sourceEdit->setReadOnly (true);
+  sourceEdit->setReadOnly(true);
+  sourceEdit->setEnableSqueezedText(true);
   grid->addWidget(sourceEdit, 0, 2);
 
   destInvite = new QLabel(i18n("Destination:"), this);
@@ -109,6 +110,7 @@ void DefaultProgress::init()
 
   destEdit = new KLineEdit(this);
   destEdit->setReadOnly (true);
+  destEdit->setEnableSqueezedText(true);
   grid->addWidget(destEdit, 1, 2);
 
   m_pProgressBar = new KProgress(this);
@@ -312,12 +314,10 @@ void DefaultProgress::slotCopying( KIO::Job*, const KURL& from, const KURL& to )
     d->noCaptionYet = false;
   }
   mode = Copy;
-  sourceEdit->setSqueezedText(from.prettyURL());
-  sourceEdit->home (false);
+  sourceEdit->setText(from.prettyURL());
   setDestVisible( true );
   checkDestination( to );
-  destEdit->setSqueezedText(to.prettyURL());
-  destEdit->home (false);
+  destEdit->setText(to.prettyURL());
 }
 
 
@@ -328,12 +328,10 @@ void DefaultProgress::slotMoving( KIO::Job*, const KURL& from, const KURL& to )
     d->noCaptionYet = false;
   }
   mode = Move;
-  sourceEdit->setSqueezedText(from.prettyURL());
-  sourceEdit->home (false);
+  sourceEdit->setText(from.prettyURL());
   setDestVisible( true );
   checkDestination( to );
-  destEdit->setSqueezedText(to.prettyURL());
-  destEdit->home (false);
+  destEdit->setText(to.prettyURL());
 }
 
 
@@ -344,8 +342,7 @@ void DefaultProgress::slotCreatingDir( KIO::Job*, const KURL& dir )
     d->noCaptionYet = false;
   }
   mode = Create;
-  sourceEdit->setSqueezedText(dir.prettyURL());
-  sourceEdit->home (false);
+  sourceEdit->setText(dir.prettyURL());
   setDestVisible( false );
 }
 
@@ -357,8 +354,7 @@ void DefaultProgress::slotDeleting( KIO::Job*, const KURL& url )
     d->noCaptionYet = false;
   }
   mode = Delete;
-  sourceEdit->setSqueezedText(url.prettyURL());
-  sourceEdit->home (false);
+  sourceEdit->setText(url.prettyURL());
   setDestVisible( false );
 }
 
@@ -368,32 +364,28 @@ void DefaultProgress::slotTransferring( KIO::Job*, const KURL& url )
     setCaption(i18n("Loading Progress"));
     d->noCaptionYet = false;
   }
-  sourceEdit->setSqueezedText(url.prettyURL());
-  sourceEdit->home (false);
+  sourceEdit->setText(url.prettyURL());
   setDestVisible( false );
 }
 
 void DefaultProgress::slotStating( KIO::Job*, const KURL& url )
 {
   setCaption(i18n("Examining File Progress"));
-  sourceEdit->setSqueezedText(url.prettyURL());
-  sourceEdit->home (false);
+  sourceEdit->setText(url.prettyURL());
   setDestVisible( false );
 }
 
 void DefaultProgress::slotMounting( KIO::Job*, const QString & dev, const QString & point )
 {
   setCaption(i18n("Mounting %1").arg(dev));
-  sourceEdit->setSqueezedText(point);
-  sourceEdit->home (false);
+  sourceEdit->setText(point);
   setDestVisible( false );
 }
 
 void DefaultProgress::slotUnmounting( KIO::Job*, const QString & point )
 {
   setCaption(i18n("Unmounting"));
-  sourceEdit->setSqueezedText(point);
-  sourceEdit->home (false);
+  sourceEdit->setText(point);
   setDestVisible( false );
 }
 
@@ -436,7 +428,7 @@ void DefaultProgress::slotClean() {
     if (!d->startTime.isNull()) {
       int s = d->startTime.elapsed();
       if (!s)
-	s = 1;
+        s = 1;
       speedLabel->setText(i18n("%1/s (done)").arg(KIO::convertSize(1000 * m_iTotalSize / s)));
     }
     setOnlyClean(false);
