@@ -51,7 +51,9 @@
 #include <qfile.h>
 #include <qdatastream.h>
 #include <qtextstream.h>
+#include "kglobal.h"
 #include "kapp.h"
+#include "kinstance.h"
 #include "ktempfile.h"
 
 
@@ -70,15 +72,12 @@ KTempFile::KTempFile(QString filePrefix, QString fileExtension, int mode)
    if (filePrefix.isEmpty())
    {
       const char* tmpDir = 0;
-      tmpDir = getenv("KDE_TEMP");
+      tmpDir = getenv("TMPDIR");
       filePrefix = tmpDir ? tmpDir : _PATH_TMP;
       if (filePrefix.right(1) != "/")
          filePrefix += "/";
    
-      if (kapp)
-         filePrefix += kapp->name();
-      else
-         filePrefix += "kde";
+      filePrefix += KGlobal::instance()->instanceName();
    }
    (void) create(filePrefix, fileExtension, mode);
 }
