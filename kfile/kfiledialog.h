@@ -88,7 +88,7 @@ public:
       *		directory, or the last directory where a file has been
       *		selected.
       *
-      * @param filter   A shell glob that specifies which files to display.
+      * @param filter A shell glob that specifies which files to display.
       * See @ref setFilter() for details on how to use this argument.
       *
       * @param acceptURLs If set to @p false, @ref KFileDialog will
@@ -132,7 +132,7 @@ public:
     /**
      * Set the directory to view.
      *
-     * @param name URL to show.
+     * @param url URL to show.
      * @param clearforward Indicates whether the forward queue
      * should be cleared.
      */
@@ -172,7 +172,9 @@ public:
      * Retrieve the current filter as entered by the user or one of the
      * predefined set via @ref setFilter().
      *
-     * @param @p filter Contains the new filter (only the extension part,
+     * WARNING: There is no parameter filter... so what is this doing here ?
+     *
+     * @param filter Contains the new filter (only the extension part,
      * not the explanation), for example, "*.cpp" or "*.cpp *.cc".
      *
      * @see setFilter()
@@ -223,7 +225,7 @@ public:
      * @param dir This specifies the path the dialog will start in.
      * @param filter This is a space seperated list of shell globs.
      * @param parent The widget the dialog will be centered on initially.
-     * @param name The name of the dialog widget.
+     * @param caption The name of the dialog widget.
      */
     static QString getOpenFileName(const QString& dir= QString::null,
 				   const QString& filter= QString::null,
@@ -241,7 +243,7 @@ public:
      * @param dir This specifies the path the dialog will start in.
      * @param filter This is a space seperated list of shell globs.
      * @param parent The widget the dialog will be centered on initially.
-     * @param name The name of the dialog widget.
+     * @param caption The name of the dialog widget.
      */
     static QStringList getOpenFileNames(const QString& dir= QString::null,
 					const QString& filter= QString::null,
@@ -258,7 +260,7 @@ public:
      * @param url This specifies the path the dialog will start in.
      * @param filter This is a space seperated list of shell globs.
      * @param parent The widget the dialog will be centered on initially.
-     * @param name The name of the dialog widget.
+     * @param caption The name of the dialog widget.
      */
     static KURL getOpenURL(const QString& url = QString::null,
 			   const QString& filter= QString::null,
@@ -276,7 +278,7 @@ public:
      * @param url This specifies the path the dialog will start in.
      * @param filter This is a space seperated list of shell globs.
      * @param parent The widget the dialog will be centered on initially.
-     * @param name The name of the dialog widget.
+     * @param caption The name of the dialog widget.
      */
     static KURL::List getOpenURLs(const QString& url= QString::null,
 				  const QString& filter= QString::null,
@@ -434,7 +436,7 @@ signals:
      * Emitted when the filter changed, i.e. the user entered an own filter
      * or chose one of the predefined set via @ref setFilter().
      *
-     * @param @p filter contains the new filter (only the extension part,
+     * @param filter contains the new filter (only the extension part,
      * not the explanation), i.e. "*.cpp" or "*.cpp *.cc".
      *
      * @see setFilter()

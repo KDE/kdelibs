@@ -412,17 +412,23 @@ void KFileDialog::slotOk()
 
     if ( (mode() & KFile::Directory) == KFile::Directory ) {
         kdDebug(kfile_area) << "Directory\n";
-        if ( QFileInfo(d->url.path()).isDir() ) { // FIXME QFileInfo == local!
-            locationEdit->insertItem( d->url.url(+1), 1 );
-            accept();
+        if ( d->url.isLocalFile() )
+            if ( QFileInfo(d->url.path()).isDir() ) { // FIXME QFileInfo == local!
+                locationEdit->insertItem( d->url.path(+1), 1 );
+                accept();
+            }
+            else // FIXME: !exists() -> create dir
+                if ( (mode() & KFile::File) != KFile::File ) {
+                    KMessageBox::error( d->mainWidget,
+                                        i18n("You have to select a directory!"),
+                                        i18n("Not a directory") );
+                }
+        else
+        {
+                locationEdit->insertItem( d->url.prettyURL(+1), 1 );
+                accept();
         }
-        else // FIXME: !exists() -> create dir
-        if ( (mode() & KFile::File) != KFile::File ) {
-            KMessageBox::error( d->mainWidget,
-                                i18n("You have to select a directory!"),
-                                i18n("Not a directory") );
         return;
-        }
     }
 
     KIO::StatJob *job = 0L;
@@ -488,7 +494,7 @@ void KFileDialog::slotStatResult(KIO::Job* job)
     }
 
     kdDebug(kfile_area) << "filename " << sJob->url().url() << endl;
-    locationEdit->insertItem( sJob->url().url(), 1 );
+    locationEdit->insertItem( sJob->url().prettyURL(), 1 );
 
     if ( count == 0 )
         accept();
@@ -653,15 +659,19 @@ void KFileDialog::pathComboChanged( const QString& txt )
     KURLComboBox *combo = d->pathCombo;
     QString text = txt;
     QString newText = text.left(combo->cursorPosition() -1);
+    KURL url;
     if ( text.at( 0 ) == '/' )
-        text.prepend(QString::fromLatin1("file:"));
-
-    KURL url( text );
+        url.setPath( text );
+    else
+        url = text;
 
     // don't mess with malformed urls or remote urls without directory or host
-    if ( url.isMalformed() ||
+    if ( url.isMalformed()
+          // Why this ? ftp://ftp.kde.org, without directory, is valid! (David)
+          /* ||
          ( text.find(QString::fromLatin1("file:/")) != 0 &&
-           ( url.directory().isNull() || url.host().isNull()) ) ) {
+           ( url.directory().isNull() || url.host().isNull()) ) 
+          */ ) {
         d->completionHack = newText;
         return;
     }
@@ -719,7 +729,7 @@ void KFileDialog::urlEntered(const KURL& url)
     if ( d->pathCombo->count() != 0 ) { // little hack
         d->pathCombo->setURL( url );
     }
-    const QString urlstr = url.url(1);
+    //const QString urlstr = url.url(1);
 
     locationEdit->blockSignals( true );
     locationEdit->setCurrentItem( 0 );
@@ -915,10 +925,13 @@ void KFileDialog::dirCompletion( const QString& dir ) // SLOT
     d->selection = QString::null;
 
     QString text = dir;
+    KURL url;
     if ( text.at( 0 ) == '/' )
-        text.prepend( QString::fromLatin1("file:") );
+        url.setPath( text );
+    else
+        url = text;
 
-    if ( KURL(text).isMalformed() )
+    if ( url.isMalformed() )
         return; // invalid entry in path combo
 
     d->completionLock = true;

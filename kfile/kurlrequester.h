@@ -63,7 +63,7 @@ public:
     KURLRequester( QWidget *parent=0, const char *name=0, bool modal = true );
 
     /**
-     * Constructs a KURLRequester widget with the default URL @param url
+     * Constructs a KURLRequester widget with the default URL @p url
      * @param modal specifies whether the filedialog should be opened as modal
      * or not.
      */
@@ -87,7 +87,7 @@ public:
     ~KURLRequester();
 
     /**
-     * Sets the url in the lineedit to @param url. Depending on the state of
+     * Sets the url in the lineedit to @p url. Depending on the state of
      * @ref showLocalProtocol(), file:/ on local files will be shown or not.
      */
     void setURL(const QString& url);

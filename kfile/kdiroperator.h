@@ -68,7 +68,7 @@ class KDirOperator : public QWidget {
     void setURL(const KURL& url, bool clearforward);
 
     /**
-     * Clears the current selection and attempts to set @param @p filename
+     * Clears the current selection and attempts to set @p filename
      * the current file. filename is just the name, no path or url.
      */
     void setCurrentItem( const QString& filename );

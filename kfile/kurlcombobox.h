@@ -48,7 +48,7 @@ public:
 
     /**
      * Constructs a KURLComboBox.
-     * @param @p mode is either Files, Directories or Both and controls the
+     * @param mode is either Files, Directories or Both and controls the
      * following behavior:
      * @li Files  all inserted URLs will be treated as files, therefore the
      *            url shown in the combo will never show a trailing /
@@ -68,7 +68,7 @@ public:
      * to the default items and those set via @ref setURLs(). So you can call
      * setURL() as often as you want, it will always replace the previous one
      * set via setURL().
-     * If @param @p url is already in the combo, the last item will stay there
+     * If @p url is already in the combo, the last item will stay there
      * and the existing item becomes the current item.
      * The current item will always have the open-directory-pixmap as icon.
      *
@@ -133,7 +133,7 @@ public:
     void setDefaults();
 
     /**
-     * Removes any occurence of @param url. If @param checkDefaultURLs is false
+     * Removes any occurence of @p url. If @p checkDefaultURLs is false
      * default-urls won't be removed.
      */
     void removeURL( const KURL& url, bool checkDefaultURLs = true );

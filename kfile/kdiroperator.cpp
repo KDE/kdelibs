@@ -269,7 +269,7 @@ void KDirOperator::mkdir()
     lLayout = new QVBoxLayout( lMakeDir, 5 );
     label = new QLabel(lMakeDir);
     label->setAlignment( AlignLeft | AlignVCenter );
-    label->setText(i18n("Create new directory in: ") + url().url() );
+    label->setText(i18n("Create new directory in: ") + url().prettyURL() );
     label->setMinimumSize( label->sizeHint() );
     ed= new QLineEdit(lMakeDir);
     ed->setText( i18n("New Directory") );
@@ -404,14 +404,12 @@ void KDirOperator::checkPath(const QString &, bool /*takeFiles*/) // SLOT
 void KDirOperator::setURL(const KURL& _newurl, bool clearforward)
 {
     KURL newurl = _newurl;
-    if ( newurl.protocol().isEmpty() ) {
-        newurl.setProtocol(QString::fromLatin1("file"));
-    }
 
     QString pathstr = newurl.path(+1);
 
-    if (pathstr.isEmpty() || pathstr.at(pathstr.length() - 1) != '/')
-        pathstr += '/';
+    // already done by the +1 above
+    //if (pathstr.isEmpty() || pathstr.at(pathstr.length() - 1) != '/')
+    //    pathstr += '/';
     newurl.setPath(pathstr);
 
     if (newurl == dir->url()) // already set
@@ -551,7 +549,7 @@ void KDirOperator::cdUp()
 {
     KURL tmp( dir->url() );
     tmp.cd(QString::fromLatin1(".."));
-    setURL(tmp.url(), true);
+    setURL(tmp, true);
 }
 
 void KDirOperator::home()
@@ -637,7 +635,7 @@ void KDirOperator::setView( KFile::FileView view )
 void KDirOperator::deleteOldView()
 {
     if ( oldView ) {
-	oldView->widget()->removeEventFilter( this );
+        oldView->widget()->removeEventFilter( this );
         oldView->widget()->hide();
         delete oldView;
         oldView = 0;
@@ -656,11 +654,11 @@ void KDirOperator::connectView(KFileView *view)
         fileView->setOperator(0);
         // it's _very_ unlikly that oldView still has a value
         oldView = fileView;
-	// the timer didn't work (KFileItems being deleted, then the view
-	// being deleted, the view deleting the view items, which tried to
-	// access the (dead) KFileItems. What was it good for anyway?
-	// QTimer::singleShot(0, this, SLOT(deleteOldView()));
-	deleteOldView();
+        // the timer didn't work (KFileItems being deleted, then the view
+        // being deleted, the view deleting the view items, which tried to
+        // access the (dead) KFileItems. What was it good for anyway?
+        // QTimer::singleShot(0, this, SLOT(deleteOldView()));
+        deleteOldView();
     }
 
     fileView = view;
@@ -760,7 +758,7 @@ void KDirOperator::selectDir(const KFileViewItem *item)
 {
     KURL tmp( dir->url() );
     tmp.cd(item->name());
-    setURL(tmp.url(), true);
+    setURL(tmp, true);
 }
 
 void KDirOperator::itemDeleted(KFileItem *item)
@@ -1158,11 +1156,11 @@ void KDirOperator::slotIOFinished()
 bool KDirOperator::eventFilter( QObject *o, QEvent *e )
 {
     if ( e->type() == QEvent::FocusOut ) {
-	if ( fileView && o == fileView->widget() ) {
-	    focusNextPrevChild( true );
-	    return true;
-	}
-	return false;
+        if ( fileView && o == fileView->widget() ) {
+            focusNextPrevChild( true );
+            return true;
+        }
+        return false;
     }
     return QWidget::eventFilter( o, e );
 }

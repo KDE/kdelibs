@@ -238,29 +238,17 @@ void KFileDetailView::updateView( bool b )
     if ( !b )
 	return;
 
-    // hack to make it not flicker
-    qApp->processEvents();
-    viewport()->setUpdatesEnabled( false );
-
     QListViewItemIterator it( (QListView*)this );
     for ( ; it.current(); ++it ) {
 	KFileListViewItem *item=static_cast<KFileListViewItem *>(it.current());
 	item->setPixmap( 0, const_cast<KFileViewItem*>( item->fileInfo() )->pixmap() );
     }
-
-    qApp->processEvents();
-    viewport()->setUpdatesEnabled( true );
-    viewport()->repaint();
 }
 
 void KFileDetailView::updateView( const KFileViewItem *i )
 {
     if ( !i )
 	return;
-
-    // hack to make it not flicker
-    qApp->processEvents();
-    viewport()->setUpdatesEnabled( false );
 
     KFileListViewItem *item = (KFileListViewItem*) i->viewItem( this );
     if ( !item )
@@ -269,9 +257,7 @@ void KFileDetailView::updateView( const KFileViewItem *i )
     item->setPixmap( 0, i->pixmap() );
     item->setText( 2, i->access() );
 
-    qApp->processEvents();
-    viewport()->setUpdatesEnabled( true );
-    item->repaint(); // only repaints if visible
+    //item->repaint(); // only repaints if visible
 }
 
 

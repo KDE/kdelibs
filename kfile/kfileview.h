@@ -64,7 +64,7 @@ signals:
   * make a file view working.
   *
   * Since this class is not a widget, but it's meant to be added to other
-  * widgets, its most important function is @code widget. This should return
+  * widgets, its most important function is @ref widget. This should return
   * a pointer to the implemented widget.
   *
   * @short A base class for views of the KDE file selector
@@ -98,7 +98,7 @@ public:
       * set the highlight on this file.
       *
       * the extend use of this function is to set filename to 0. In this
-      * case the @see KFileViewItem is used to find out the position of the
+      * case the @ref KFileViewItem is used to find out the position of the
       * file. Since this is faster, this way is used in case a view has
       * other child views.
       **/
