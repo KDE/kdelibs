@@ -33,7 +33,7 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kaccel.h kglobalaccel.h kcompletion_private.h kprotocolmanager.h \
 	kregexp.h kstyle.h kcompletion.h kstringhandler.h kstringhandler.h \
 	kstddirs.h kglobal.h ksharedptr.h kde_dmalloc.h \
-	kstartparams.h kallocator.h kautoarray.h ksharedpixmap.h \
+	kstartparams.h kallocator.h ksharedpixmap.h \
 	kinstance.h kpalette.h kipc.h klibloader.h ktempfile.h ksavefile.h \
 	krandomsequence.h knana.h kstringhandler.h kcompletionbase.h
 
