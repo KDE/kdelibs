@@ -2588,7 +2588,7 @@ QString KApplication::tempSaveName( const QString& pFilename ) const
 {
   QString aFilename;
 
-  if( pFilename[0] != '/' )
+  if( QDir::isRelativePath(pFilename) )
     {
       kdWarning(101) << "Relative filename passed to KApplication::tempSaveName" << endl;
       aFilename = QFileInfo( QDir( "." ), pFilename ).absFilePath();
@@ -2617,7 +2617,7 @@ QString KApplication::checkRecoverFile( const QString& pFilename,
 {
   QString aFilename;
 
-  if( pFilename[0] != '/' )
+  if( QDir::isRelativePath(pFilename) )
     {
       kdWarning(101) << "Relative filename passed to KApplication::tempSaveName" << endl;
       aFilename = QFileInfo( QDir( "." ), pFilename ).absFilePath();
