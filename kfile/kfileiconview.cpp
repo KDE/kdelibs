@@ -142,6 +142,7 @@ void KFileIconView::slotRightButtonPressed( QIconViewItem* item )
 
 KFileIconView::~KFileIconView()
 {
+	removeToolTip();
 }
 
 void KFileIconView::setSelected( const KFileViewItem *info, bool enable )
