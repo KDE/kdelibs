@@ -6,29 +6,24 @@
      names (which if they occur will cost you a _lot_ of time)
  -->
 <!ENTITY Alt	"<keycap>Alt</keycap>">
-<!ENTITY Backspace	"<keycap>Retrocés</keycap>">
+<!ENTITY Retro	"<keycap>Retrocés</keycap>"><!-- English: &Backspace -->
 <!ENTITY cdrom	'<hardware>unitat lectora de CD-ROM</hardware>'>
 <!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
-<!ENTITY dpi	'<acronym>ppp</acronym>'>
-<!ENTITY eg     "<abbrev>p.ex.</abbrev>">
-<!ENTITY Enter	"<keycap>Intro</keycap>">
+<!ENTITY ppp	'<acronym>ppp</acronym>'><!-- English: dpi -->
+<!ENTITY pex    "<abbrev>p.ex.</abbrev>"><!-- English: &eg; -->
+<!ENTITY Intro	"<keycap>Intro</keycap>"><!-- English: &Enter; -->
 <!ENTITY Esc	"<keycap>Esc</keycap>">
 <!ENTITY etc    "<abbrev>etc.</abbrev>">
 <!ENTITY FAQ	'<acronym>FAQ</acronym>'>
-<!ENTITY infocenter	"<application>Centre d'informació</application>">
-<!ENTITY kcontrolcenter	"<application>Centre de control del &kde;</application>">
-<!ENTITY LMB    "botó <mousebutton>esquerra</mousebutton> del ratolí">
-<!ENTITY MMB    "botó <mousebutton>mitg</mousebutton> del ratolí">
-<!ENTITY RMB    "botó <mousebutton>dret</mousebutton> del ratolí">
-<!ENTITY OS	"sistema operatiu"><!-- <acronym>OS</acronym>-->
-<!ENTITY Shift	"<keycap>Majús.</keycap>">
+<!ENTITY ead    "<abbrev>és a dir</abbrev>"><!-- English: &ie; -->
+<!ENTITY centreinfo	"<application>Centre d'informació</application>"><!-- English: infocenter -->
+<!ENTITY centrecontrol	"<application>Centre de control del &kde;</application>"><!-- English: &kcontrolcenter; -->
+<!ENTITY BER    "botó <mousebutton>esquerra</mousebutton> del ratolí"><!-- English: &LMB; -->
+<!ENTITY BMR    "botó <mousebutton>mitg</mousebutton> del ratolí"><!-- English: &MMB; -->
+<!ENTITY BDR    "botó <mousebutton>dret</mousebutton> del ratolí"><!-- English: &RMB; -->
+<!ENTITY SO	"sistema operatiu"><!-- English: &OS; -->
+<!ENTITY Maj  	"<keycap>Majús.</keycap>"><!-- English: &Shift; -->
 <!ENTITY Tab	"<keycap>Tabulador</keycap>">
-
-<!-- Note : you do not need to keep the entities' names. For example, you can define
-     "&pex;" instead of "&eg;" (p. ex.) and "&ead;" instead of "&ie;" (es a dir).
-
-    Please translate the entities below:
--->
 <!ENTITY kicon	"<guiicon>
 <inlinemediaobject>
  <objectinfo><title>Les icones del &kde;</title></objectinfo>
