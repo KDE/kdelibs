@@ -76,7 +76,7 @@
 #include <kdiroperator.h>
 #include <kimagefilepreview.h>
 
-#include <kurlbar.h>
+#include <kfilespeedbar.h>
 #include <kfilebookmarkhandler.h>
 
 enum Buttons { HOTLIST_BUTTON,
@@ -115,7 +115,7 @@ struct KFileDialogPrivate
     QLabel *filterLabel;
     KURLComboBox *pathCombo;
     KPushButton *okButton, *cancelButton;
-    KURLBar *urlBar;
+    KFileSpeedBar *urlBar;
     QHBoxLayout *urlBarLayout;
     QWidget *customWidget;
 
@@ -177,18 +177,8 @@ KFileDialog::~KFileDialog()
     KConfig *config = KGlobal::config();
 
     if (d->urlBar)
-    {
-        if ( d->initializeSpeedbar && d->urlBar->isModified() )
-        {
-            QString oldGroup = config->group();
-            config->setGroup( ConfigGroup );
-            // write to kdeglobals
-            config->writeEntry( "Set speedbar defaults", false, true, true );
-            config->setGroup( oldGroup );
-        }
+        d->urlBar->save( config );
 
-        d->urlBar->writeConfig( config, "KFileDialog Speedbar" );
-    }
     config->sync();
 
     delete ops;
@@ -980,47 +970,14 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
 
 void KFileDialog::initSpeedbar()
 {
-    d->urlBar = new KURLBar( true, d->mainWidget, "url bar" );
+    d->urlBar = new KFileSpeedBar( d->mainWidget, "url bar" );
     connect( d->urlBar, SIGNAL( activated( const KURL& )),
              SLOT( enterURL( const KURL& )) );
-
-    d->urlBar->readConfig( KGlobal::config(), "KFileDialog Speedbar" );
-
-    if ( d->initializeSpeedbar ) {
-        KURL u;
-        u.setPath( KGlobalSettings::desktopPath() );
-        d->urlBar->insertItem( u, i18n("Desktop"), false );
-
-        if (KGlobalSettings::documentPath() != QDir::homeDirPath())
-        {
-            u.setPath( KGlobalSettings::documentPath() );
-            d->urlBar->insertItem( u, i18n("Documents"), false, "document" );
-        }
-
-        u.setPath( QDir::homeDirPath() );
-        d->urlBar->insertItem( u, i18n("Home Directory"), false,
-                               "folder_home" );
-        u = "floppy:/";
-        if ( KProtocolInfo::isKnownProtocol( u ) )
-            d->urlBar->insertItem( u, i18n("Floppy"), false,
-                                   KProtocolInfo::icon( "floppy" ) );
-        QStringList tmpDirs = KGlobal::dirs()->resourceDirs( "tmp" );
-        u.setProtocol( "file" );
-        u.setPath( tmpDirs.isEmpty() ? QString("/tmp") : tmpDirs.first() );
-        d->urlBar->insertItem( u, i18n("Temporary Files"), false,
-                               "file_temporary" );
-        u = "lan:/";
-        if ( KProtocolInfo::isKnownProtocol( u ) )
-            d->urlBar->insertItem( u, i18n("Network"), false,
-                                   "network_local" );
-    }
-
 
     // need to set the current url of the urlbar manually (not via urlEntered()
     // here, because the initial url of KDirOperator might be the same as the
     // one that will be set later (and then urlEntered() won't be emitted).
     // ### REMOVE THIS when KDirOperator's initial URL (in the c'tor) is gone.
-    if ( d->urlBar )
         d->urlBar->setCurrentItem( d->url );
 
     d->urlBarLayout->insertWidget( 0, d->urlBar );

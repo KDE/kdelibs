@@ -38,7 +38,8 @@ include_HEADERS = kfiledialog.h \
 	kcustommenueditor.h knotifywidgetbase.h knotifydialog.h
 
 noinst_HEADERS = config-kfile.h krecentdirs.h kmetaprops.h \
-	kfilebookmarkhandler.h kfilemetainfowidget.h kopenwith_p.h
+	kfilebookmarkhandler.h kfilemetainfowidget.h kopenwith_p.h \
+	kfilespeedbar.h
 
 libkfile_la_SOURCES = \
 	kfilefiltercombo.cpp \
@@ -52,7 +53,7 @@ libkfile_la_SOURCES = \
 	kfiletreeview.cpp kfiletreeviewitem.cpp kfiletreebranch.cpp \
 	kdirselectdialog.cpp kfilebookmarkhandler.cpp \
 	kfilemetainfowidget.cpp kcustommenueditor.cpp knotifywidgetbase.cpp \
-	knotifydialog.cpp
+	knotifydialog.cpp kfilespeedbar.cpp
 
 EXTRA_DIST = NOTES
 
