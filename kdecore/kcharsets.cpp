@@ -60,7 +60,7 @@ KCharset::KCharset(const char *str){
    entry=data->charsetEntry(str);
 }
 
-KCharset::KCharset(QString s){
+KCharset::KCharset(const QString s){
 
    if (!data || !charsets){
       fatal("KCharset constructor called when no KCharsets object created");
