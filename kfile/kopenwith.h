@@ -44,6 +44,8 @@ class QStringList;
 /**
  * "Open with" dialog box.
  * Used automatically by KRun, and used by libkonq.
+ *
+ * @author David Faure <faure@kde.org>
  */
 class KOpenWithDlg : public QDialog
 {
@@ -153,6 +155,9 @@ public:
 
 /* ------------------------------------------------------------------------- */
 
+/**
+ * @internal
+ */
 class KAppTreeListItem : public QListViewItem
 {
     bool parsed;
@@ -180,6 +185,9 @@ protected:
 
 /* ------------------------------------------------------------------------- */
 
+/**
+ * @internal
+ */
 class KApplicationTree : public KListView
 {
     Q_OBJECT

@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
    Copyright (C) 1998, 1999 Torben Weis <weis@kde.org>
-   Copyright (c) 1999 Preston Brown <pbrown@kde.org>
+   Copyright (c) 1999, 2000 Preston Brown <pbrown@kde.org>
    Copyright (c) 2000 Simon Hausmann <hausmann@kde.org>
 
    This library is free software; you can redistribute it and/or
@@ -58,9 +58,14 @@ class KPropsPage;
 namespace KIO { class Job; }
 
 /**
- * The main class.
- * This one is visible to the one who created the dialog.
- * It brings up a QTabDialog.
+ * The main properties dialog class.
+ * A Properties Dialog is a dialog which displays various information
+ * about a particular file or URL.  This main class holds various
+ * related classes, which are instantiated in the form of tab entries
+ * in the tabbed dialog that this class provides.  The various tabs
+ * themselves will let the user view or change information about the file
+ * or URL.
+ *
  * This class must be created with (void)new PropertiesDialog(...)
  * It will take care of deleting itself.
  */
@@ -70,15 +75,17 @@ class KPropertiesDialog : public QObject
 public:
 
   /**
-   * @return whether there are any property pages available for the given file items
+   * @return whether there are any property pages available for the
+   * given file items
    */
   static bool canDisplay( KFileItemList _items );
 
   /**
    * Bring up a Properties dialog. Normal constructor for
-   * file-manager-like applications.
+   * file-manager-like applications.  Normally you will use this
+   * method rather than the one below.
    *
-   * @param _items file item whose properties should be displayed.
+   * @param item file item whose properties should be displayed.
    */
   KPropertiesDialog( KFileItem * item );
 
@@ -88,7 +95,9 @@ public:
    *
    * @param _items list of file items whose properties should be
    * displayed. NOTE : the current limitations of PropertiesDialog
-   * makes it use only the FIRST item in the list
+   * makes it use only the FIRST item in the list.  This method is
+   * provided for future expansion when the properties dialog may be
+   * able to get/set properties for a group of items all at once.
    *
    */
   KPropertiesDialog( KFileItemList _items );
@@ -113,7 +122,9 @@ public:
                     const QString& _defaultName );
 
   /**
-   * This looks very much like a destructor :)
+   * Cleans up the properties dialog and frees any associated resources,
+   * including the dialog itself. Note that when a properties dialog is
+   * closed it cleans up and deletes itself.
    */
   virtual ~KPropertiesDialog();
 
@@ -254,6 +265,11 @@ public:
   virtual ~KPropsPage();
 
   /**
+   * @return the name that should appear in the tab.
+   */
+  virtual QString tabName() const { return QString::null; }
+
+  /**
    * Apply all changes to the file.
    * This function is called when the user presses 'Ok'. The last page inserted
    * is called first.
@@ -295,6 +311,7 @@ private:
 /**
  * 'General' page
  *  This page displays the name of the file, its size and access times.
+ * @internal
  */
 class KFilePropsPage : public KPropsPage
 {
@@ -348,6 +365,7 @@ private:
  * 'Permissions' page
  * In this page you can modify permissions and change
  * the owner of a file.
+ * @internal
  */
 class KFilePermissionsPropsPage : public KPropsPage
 {
@@ -404,6 +422,7 @@ private:
  * Type=Application
  *
  * Such files are used to represent a program in kpanel and kfm.
+ * @internal
  */
 class KExecPropsPage : public KPropsPage
 {
@@ -455,6 +474,7 @@ private:
  * URL=....
  *
  * Such files are used to represent a program in kpanel and kfm.
+ * @internal
  */
 class KURLPropsPage : public KPropsPage
 {
@@ -490,6 +510,7 @@ private:
  * Type=Application
  *
  * Such files are used to represent a program in kpanel and kfm.
+ * @internal
  */
 class KApplicationPropsPage : public KPropsPage
 {
@@ -532,6 +553,7 @@ private:
  * Used to edit the files containing
  * [Desktop Entry]
  * Type=MimeType
+ * @internal
  */
 class KBindingPropsPage : public KPropsPage
 {
@@ -562,6 +584,7 @@ private:
 
 /**
  * Properties page for device .desktop files
+ * @internal
  */
 class KDevicePropsPage : public KPropsPage
 {
