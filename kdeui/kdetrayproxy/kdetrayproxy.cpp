@@ -17,6 +17,13 @@
  *
  */
 
+#if !defined(_POSIX_C_SOURCE)
+#define _POSIX_C_SOURCE 199309
+#elif _POSIX_C_SOURCE < 199309
+#undef _POSIX_C_SOURCE
+#define _POSIX_C_SOURCE 199309
+#endif
+
 #include "kdetrayproxy.h"
 
 #include <kapplication.h>
