@@ -34,7 +34,7 @@ include_HEADERS = kledlamp.h kprogress.h kcolordlg.h kselect.h \
 		kdatepik.h kdatetbl.h kfontdialog.h kpopmenu.h \
 		ktabctl.h kstatusbar.h ktopwidget.h \
 		ktmainwindow.h ktmlayout.h ktoolbar.h kmenubar.h \
-		kbutton.h knuminput.h kseparator.h klined.h \
+		knuminput.h kseparator.h klined.h \
 		krestrictedline.h kcolorbtn.h kiconloaderdialog.h \
 		kapplet.h kwmmapp.h kbuttonbox.h ktablistbox.h \
 		kcontainer.h kcontrol.h keditcl.h ktoolboxmgr.h kled.h \
@@ -56,7 +56,7 @@ libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp knuminput.cpp  \
 		kcolordlg.cpp kselect.cpp kdatepik.cpp kdatetbl.cpp \
 		kfontdialog.cpp kpopmenu.cpp ktabctl.cpp \
 		kstatusbar.cpp ktopwidget.cpp ktmainwindow.cpp \
-		ktmlayout.cpp kmenubar.cpp kbutton.cpp \
+		ktmlayout.cpp kmenubar.cpp \
 		kseparator.cpp krestrictedline.cpp  \
 		kcontrol.cpp kcolorbtn.cpp kapplet.cpp kwmmapp.cpp \
 		kbuttonbox.cpp keditcl1.cpp keditcl2.cpp ktoolboxmgr.cpp \
@@ -70,7 +70,7 @@ libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp knuminput.cpp  \
 		ktoolbarradiogroup.cpp ktoolbarbutton.cpp ktoolbaritem.cpp \
 		ktextbrowser.cpp
 
-libkdeui_la_METASOURCES = kbutton.moc kbuttonbox.moc kcolorbtn.moc \
+libkdeui_la_METASOURCES = kbuttonbox.moc kcolorbtn.moc \
 	kcolordlg.moc kcontainer.moc kcontrol.moc kdatepik.moc kdatetbl.moc \
 	kdbtn.moc keditcl.moc kfontdialog.moc kiconloaderdialog.moc \
 	kkeydialog.moc kled.moc kledlamp.moc klined.moc kmenubar.moc \
