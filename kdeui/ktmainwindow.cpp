@@ -173,7 +173,14 @@ void KTMainWindow::closeEvent ( QCloseEvent *e){
   if (queryClose()) {
       e->accept();
 
-      if (memberList->count() == 1) { // last window close accepted?
+      int not_withdrawn = 0;
+      QListIterator<KTMainWindow> it(*KTMainWindow::memberList);
+      for (it.toFirst(); it.current(); ++it){
+	  if ( !it.current()->testWState( WState_Withdrawn ) )
+	      not_withdrawn++;
+      }
+
+      if ( not_withdrawn <= 1 ) { // last window close accepted?
 	  if ( queryExit() ) {            // Yes, Quit app?
 	      kapp->quit();             // ...and quit aplication.
 	  }  else {
