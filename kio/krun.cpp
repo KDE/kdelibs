@@ -58,7 +58,7 @@ bool KRun::runURL( const KURL& u, const QString& _mimetype )
   else if ( _mimetype == "inode/directory-locked" )
   {
     KMessageBoxWrapper::error( 0L,
-            i18n("Can not enter\n%1\nAccess denied").arg(u.url()) );
+            i18n("<qt>Unable to enter <b>%1</b>.\nYou do not have access rights to this location.</qt>").arg(u.url()) );
     return false;
   }
   else if ( _mimetype == "application/x-desktop" )
