@@ -17,27 +17,37 @@
 #define HSV_X 305
 #define RGB_X 385
 
-static QColor standardPalette[17] =
-{	red,
-	green,
-	blue,
-	cyan,
-	magenta,
-	yellow,
-	darkRed,
-	darkGreen,
-	darkBlue,
-	darkCyan,
-	darkMagenta,
-	darkYellow,
-	white,
-	lightGray,
-	gray,
-	darkGray,
-	black
-};
+static QColor *standardPalette = 0;
 
 #define STANDARD_PAL_SIZE 17
+
+void createStandardPalette()
+{
+    if ( standardPalette )
+	return;
+
+    standardPalette = new QColor [STANDARD_PAL_SIZE];
+
+    int i = 0;
+
+    standardPalette[i++] = red;
+    standardPalette[i++] = green;
+    standardPalette[i++] = blue;
+    standardPalette[i++] = cyan;
+    standardPalette[i++] = magenta;
+    standardPalette[i++] = yellow;
+    standardPalette[i++] = darkRed;
+    standardPalette[i++] = darkGreen;
+    standardPalette[i++] = darkBlue;
+    standardPalette[i++] = darkCyan;
+    standardPalette[i++] = darkMagenta;
+    standardPalette[i++] = darkYellow;
+    standardPalette[i++] = white;
+    standardPalette[i++] = lightGray;
+    standardPalette[i++] = gray;
+    standardPalette[i++] = darkGray;
+    standardPalette[i++] = black;
+}
 
 KHSSelector::KHSSelector( QWidget *parent )
 	: KXYSelector( parent )
@@ -76,6 +86,7 @@ void KHSSelector::drawPalette()
 
 	if ( QColor::numBitPlanes() <= 8 )
 	{
+		createStandardPalette();
 		kFSDither dither( standardPalette, STANDARD_PAL_SIZE );
 		QImage tImage = dither.dither( image );
 		pixmap.convertFromImage( tImage );
@@ -122,6 +133,7 @@ void KValueSelector::drawPalette()
 
 	if ( QColor::numBitPlanes() <= 8 )
 	{
+		createStandardPalette();
 		kFSDither dither( standardPalette, STANDARD_PAL_SIZE );
 		QImage tImage = dither.dither( image );
 		pixmap.convertFromImage( tImage );
@@ -605,6 +617,8 @@ KColorCombo::KColorCombo( QWidget *parent, const char *name )
 	customColor.setRgb( 255, 255, 255 );
 	color.setRgb( 255, 255, 255 );
 
+	createStandardPalette();
+
 	addColors();
 
 	connect( this, SIGNAL( activated(int) ), SLOT( slotActivated(int) ) );
@@ -680,6 +694,8 @@ void KColorCombo::addColors()
 	int i;
 
 	clear();
+
+	createStandardPalette();
 
 	for ( i = 0; i < STANDARD_PAL_SIZE; i++ )
 		if ( standardPalette[i] == color ) break;
