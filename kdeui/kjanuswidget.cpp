@@ -103,7 +103,8 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
       mTreeListResizeMode = QSplitter::KeepSize;
 
       d->mListFrame = new QWidget( splitter );
-      ( new QVBoxLayout( d->mListFrame, 0, 0 ) )->setAutoAdd( true );
+      QVBoxLayout *dummy = new QVBoxLayout( d->mListFrame, 0, 0 );
+      dummy->setAutoAdd( true );
       mTreeList = new KListView( d->mListFrame );
       mTreeList->addColumn( QString::null );
       mTreeList->header()->hide();
@@ -882,8 +883,8 @@ void KJanusWidget::showEvent( QShowEvent * )
 {
   if( mFace == TreeList )
   {
-    QSplitter *splitter = (QSplitter*)(mTreeList->parentWidget());
-    splitter->setResizeMode( mTreeList, mTreeListResizeMode );
+      QSplitter* splitter = dynamic_cast<QSplitter*>( mTreeList->parent() );
+      if (splitter) splitter->setResizeMode( mTreeList, mTreeListResizeMode );
   }
 }
 
