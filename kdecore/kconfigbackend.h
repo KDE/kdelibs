@@ -236,7 +236,6 @@ protected:
 
   /**
    * Writes configuration file back.
-   * For KDE 4.0 the first parameter should be const QString &filename
    *
    * @param filename The name of the file to write.
    * @param bGlobal Specifies whether to write only entries which
