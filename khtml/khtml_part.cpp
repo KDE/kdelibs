@@ -3426,11 +3426,9 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
 					    event->nodeAbsX(), event->nodeAbsY(),
 						 node, offset );
 
-        // When this stuff is finished, this should never happen.
-        // But currently....
         if ( node.isNull() || !node.handle() )
         {
-            kdWarning( 6000 ) << "findSelectionNode returned no node" << endl;
+            kdDebug( 6000 ) << "Hmm, findSelectionNode returned no node" << endl;
             d->m_selectionStart = innerNode;
             d->m_startOffset = 0; //?
         } else {
