@@ -244,12 +244,12 @@ protected:
   /**
    * Performs a GET HTTP request.
    */
-  void retrieveContent(bool close = true);
+  void retrieveContent(bool check_ssl = false);
 
   /**
-   * Performs a HEADER HTTP request.
+   * Performs a HEAD HTTP request.
    */
-  void retrieveHeader(bool close = true);
+  bool retrieveHeader(bool close_connection = true);
 
 protected: // Members
   HTTPState m_state;

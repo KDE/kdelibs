@@ -2196,7 +2196,8 @@ void HTTPProtocol::stat(const KURL& url)
   m_request.do_proxy = m_bUseProxy;
   m_request.url = url;
 
-  retrieveHeader( false );
+  if (!retrieveHeader( false ))
+    return;
 
   UDSEntry entry;
   UDSAtom atom;
@@ -2241,7 +2242,7 @@ void HTTPProtocol::get( const KURL& url )
   m_request.passwd = url.pass();
   m_request.user = url.user();
 
-  retrieveContent();
+  retrieveContent( true /* SSL checks */ );
 }
 
 void HTTPProtocol::put( const KURL &url, int, bool, bool)
@@ -2712,6 +2713,7 @@ bool HTTPProtocol::readBody( )
   else
     m_iBytesLeft = 1;
 
+  kdDebug() << "HTTPProtocol::readBody m_iBytesLeft=" << m_iBytesLeft << endl;
 
   // this is the main incoming loop.  gather everything while we can...
   big_buffer.resize(0);
@@ -3245,7 +3247,7 @@ void HTTPProtocol::flushAuthenticationSettings()
   m_iAuthFailed = 0;
 }
 
-void HTTPProtocol::retrieveContent( bool close_connection )
+void HTTPProtocol::retrieveContent( bool check_ssl )
 {
   m_request.window = metaData("window-id");
   flushAuthenticationSettings();
@@ -3256,30 +3258,33 @@ void HTTPProtocol::retrieveContent( bool close_connection )
   if(!readHeader())
     return;
 
-  if (!readBody())
-     return;
+  if (check_ssl)
+    if (!checkSSL())
+      return;
 
-  if( close_connection )
-  {
-    http_close();
-    finished();
-  }
+  if (!readBody())
+    return;
+
+  http_close();
+  finished();
 }
 
-void HTTPProtocol::retrieveHeader( bool close_connection )
+bool HTTPProtocol::retrieveHeader( bool close_connection )
 {
   m_request.window = metaData("window-id");
   flushAuthenticationSettings();
 
   if (!http_open())
-    return;
+    return false;
 
   if (!readHeader())
-    return;
+    return false;
 
-  if( close_connection )
+  if ( close_connection )
   {
     http_close();
     finished();
   }
+
+  return true;
 }
