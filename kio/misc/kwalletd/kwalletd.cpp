@@ -81,6 +81,7 @@ class KWalletTransaction {
 KWalletD::KWalletD(const QCString &name)
 : KDEDModule(name), _failed(0) {
 	srand(time(0));
+	_showingFailureNotify = false;
 	_transactions.setAutoDelete(true);
 	_timeouts = new KTimeout(17);
 	_closeIdle = false;
@@ -602,10 +603,8 @@ bool KWalletD::isOpen(int handle) {
 	KWallet::Backend *rc = _wallets.find(handle);
 
 	if (rc == 0 && ++_failed > 5) {
-		// FIXME: Make this part of a transaction or offload it from
-		//        the main execution path somehow.
-		KMessageBox::information(0, i18n("There have been repeated failed attempts to gain access to a wallet. An application may be misbehaving."), i18n("KDE Wallet Service"));
 		_failed = 0;
+		QTimer::singleShot(0, this, SLOT(notifyFailures()));
 	} else if (rc != 0) {
 		_failed = 0;
 	}
@@ -922,13 +921,20 @@ KWallet::Backend *w = _wallets.find(handle);
 	}
 
 	if (++_failed > 5) {
-		// FIXME: Make this part of a transaction or offload it from
-		//        the main execution path somehow.
-		KMessageBox::information(0, i18n("There have been repeated failed attempts to gain access to a wallet. An application may be misbehaving."), i18n("KDE Wallet Service"));
 		_failed = 0;
+		QTimer::singleShot(0, this, SLOT(notifyFailures()));
 	}
 
 return 0L;
+}
+
+
+void KWalletD::notifyFailures() {
+	if (!_showingFailureNotify) {
+		_showingFailureNotify = true;
+		KMessageBox::information(0, i18n("There have been repeated failed attempts to gain access to a wallet. An application may be misbehaving."), i18n("KDE Wallet Service"));
+		_showingFailureNotify = false;
+	}
 }
 
 

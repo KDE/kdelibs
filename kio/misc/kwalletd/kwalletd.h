@@ -143,6 +143,7 @@ class KWalletD : public KDEDModule {
 		void slotAppUnregistered(const QCString& app);
 		void emitWalletListDirty();
 		void timedOut(int);
+		void notifyFailures();
 
 	private:
 		int internalOpen(const QCString& appid, const QString& wallet, bool isPath = false, WId w = 0);
@@ -171,7 +172,8 @@ class KWalletD : public KDEDModule {
 		KDirWatch *_dw;
 		int _failed;
 
-		bool _leaveOpen, _closeIdle, _launchManager, _enabled, _openPrompt, _firstUse;
+		bool _leaveOpen, _closeIdle, _launchManager, _enabled;
+	       	bool _openPrompt, _firstUse, _showingFailureNotify;
 		int _idleTime;
 		QMap<QString,QStringList> _implicitAllowMap;
 		KTimeout *_timeouts;
