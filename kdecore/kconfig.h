@@ -241,9 +241,26 @@ inline bool KConfig::hasGroup(const QString &_pGroup) const
 
 inline bool KConfig::hasKey(const QString &pKey) const
 {
+  KEntryKey aEntryKey;
+
   cacheCheck();
 
-  KEntryKey aEntryKey = { group(), pKey };
+  if (!locale().isNull()) {
+    // try the localized key first
+    QString aKey = pKey + "[";
+    aKey += locale();
+    aKey += "]";
+    
+    aEntryKey.group = group();
+    aEntryKey.key = aKey;
+    
+    if (aEntryMap.contains(aEntryKey))
+      return true;
+  }
+
+  // try the non-localized version
+  aEntryKey.group = group();
+  aEntryKey.key = pKey;
   return aEntryMap.contains(aEntryKey);
 }
 
