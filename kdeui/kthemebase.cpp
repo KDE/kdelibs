@@ -34,7 +34,8 @@ static const char *widgetEntries[] = {"HorizScrollGroove", "VertScrollGroove",
 "PushButton", "ExIndicatorOn", "ExIndicatorOff", "ComboBox", "ScrollBarSlider",
 "Bevel", "ToolButton", "ScrollBarButton", "BarHandle", "ToolBar",
 "ScrollBarDeco", "ComboDeco", "Splitter", "CheckMark", "MenuItemOn",
-"MenuItemOff", "MenuBar", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"};
+"MenuItemOff", "MenuBar", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight",
+"ProgressBar", "ProgressBackground"};
 
 // Used only internally for handling non-widget option keys. These are needed
 // because they get iterated through in a couple of places and it allows the

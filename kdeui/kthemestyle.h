@@ -269,6 +269,9 @@ public:
                             const QFontMetrics &fm);
     void drawFocusRect(QPainter *p, const QRect &r, const QColorGroup &g,
                        const QColor *c=0, bool atBorder=false);
+    virtual void drawKProgressBlock(QPainter *p, int x, int y, int w, int h,
+                                    const QColorGroup &g, QBrush *fill);
+    virtual void getKProgressBackground(const QColorGroup &g, QBrush &bg);
 
 protected:
     QPalette oldPalette;

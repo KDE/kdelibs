@@ -1141,5 +1141,20 @@ void KThemeStyle::drawKMenuItem(QPainter *p, int x, int y, int w, int h,
              -1, &btext );;
 }
 
+void KThemeStyle::drawKProgressBlock(QPainter *p, int x, int y, int w, int h,
+                                     const QColorGroup &g, QBrush *)
+{
+    const QColorGroup *cg = colorGroup(g, ProgressBar);
+    drawBaseButton(p, x, y, w, h, *cg, false, false, ProgressBar);
+}
+
+void KThemeStyle::getKProgressBackground(const QColorGroup &g, QBrush &bg)
+{
+    const QColorGroup *cg = colorGroup(g, ProgressBg);
+    bg.setColor(cg->color(QColorGroup::Background));
+    if(isPixmap(ProgressBg))
+        bg.setPixmap(*uncached(ProgressBg));
+}
+
 #include "kthemestyle.moc"
 

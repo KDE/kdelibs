@@ -29,7 +29,7 @@
 #include <qintcache.h>
 #include <qstring.h>
 
-#define WIDGETS 28
+#define WIDGETS 30
 
 /**
  * This class adds simple time management to KPixmap for use in flushing
@@ -188,7 +188,7 @@ public:
      ExIndicatorOff, ComboBox, ScrollBarSlider, Bevel, ToolButton,
      ScrollButton, BarHandle, ToolBar, ScrollDeco, ComboDeco, Splitter, CheckMark,
      MenuItemOn, MenuItemOff, MenuBar, ArrowUp, ArrowDown, ArrowLeft,
-     ArrowRight};
+     ArrowRight, ProgressBar, ProgressBg};
     /**
      * The scaling type specified by the KConfig file.
      *

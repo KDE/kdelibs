@@ -10,6 +10,7 @@
 #include <qstring.h>
 #include <qpixmap.h>
 #include <kapp.h>
+#include <kstyle.h>
 
 KProgress::KProgress(QWidget *parent, const char *name)
 	: QFrame(parent, name),
@@ -49,7 +50,7 @@ void KProgress::initialize()
 {
 	//setFrameStyle(QFrame::Panel | QFrame::Sunken);
 	//setLineWidth(2);
-	//setMidLineWidth(2);
+        //setMidLineWidth(2);
 	bar_pixmap = 0;
 	bar_style = Solid;
 	bar_color = colorGroup().highlight();
@@ -57,7 +58,14 @@ void KProgress::initialize()
 	text_color = colorGroup().text();
 	setBackgroundMode( PaletteBase );
 	setFont(QFont("helvetica", 12, QFont::Bold));
-	text_enabled = TRUE;
+        text_enabled = TRUE;
+        if(kapp->kstyle()){
+            QBrush b;
+            QPalette p = palette();
+            kapp->kstyle()->getKProgressBackground(colorGroup(), b);
+            p.setBrush(QColorGroup::Base, b);
+            setPalette(p);
+        }
 	adjustStyle();
 }
 
@@ -217,7 +225,8 @@ void KProgress::drawText(QPainter *p)
 
 void KProgress::drawContents(QPainter *p)
 {
-	QRect cr = contentsRect(), er = cr;
+        bool useKStyle = kapp->kstyle() != NULL;
+        QRect cr = contentsRect(), er = cr;
 	fr = cr;
 	QBrush fb(bar_color), eb(backgroundColor());
 
@@ -238,8 +247,15 @@ void KProgress::drawContents(QPainter *p)
 			}
 				
 			p->setBrushOrigin(cr.topLeft());
-			p->fillRect(fr, fb);
-			p->fillRect(er, eb);
+                        if(useKStyle)
+                            kapp->kstyle()->
+                                drawKProgressBlock(p, fr.x(), fr.y(),
+                                                   fr.width(), fr.height(),
+                                                   colorGroup(), &fb);
+                        else
+                            p->fillRect(fr, fb);
+
+                        p->fillRect(er, eb);
 			
 			break;
 			
@@ -267,9 +283,15 @@ void KProgress::drawContents(QPainter *p)
 						   cr.width() - margin, cr.height() - margin);
 			for (int i = 0; i < num; i++) {
 				p->setBrushOrigin(fr.topLeft());
-				p->fillRect(fr, fb);
-				fr.moveBy(dx, dy);
-			}
+                                if(useKStyle)
+                                    kapp->kstyle()->
+                                        drawKProgressBlock(p, fr.x(), fr.y(),
+                                                           fr.width(), fr.height(),
+                                                           colorGroup(), &fb);
+                                else
+                                    p->fillRect(fr, fb);
+                                fr.moveBy(dx, dy);
+                        }
 			
 			if (num != max) {
 				if (orient == Horizontal)
