@@ -128,8 +128,7 @@ void KFileReader::setURL(const KURL& url)
 {
     KURL oldurl = *this;
     KURL::operator=(url);
-    kDebugInfo(kfile_area, "%s is %sslowly mounted", debugString(url.url()),
-	  (probably_slow_mounted(path(+1).local8Bit()) ? "" : "not "));
+    kdDebug() << "" << endl;
 
     if (isLocalFile()) { // we can check, if the file is there
 	struct stat buf;
@@ -304,7 +303,7 @@ void KFileReader::startLoading()
 
 void KFileReader::slotEntries(KIO::Job*, const KIO::UDSEntryList& entries)
 {
-    kDebugInfo(kfile_area, "slotListEntry");
+    kdDebug() << "" << endl;
     KIO::UDSEntryListIterator it(entries);
     myNewEntries.clear();
     QString baseurl = url();
@@ -416,7 +415,7 @@ void KFileReader::slotDirUpdate()
 
 void KFileReader::slotDirDeleted( const QString& dir )
 {
-  kDebugInfo(kfile_area, "********** dir deleted: %s ***********", dir.ascii());
+  kdDebug() << "" << endl;
 }
 
 void KFileReader::setShowHiddenFiles(bool b)

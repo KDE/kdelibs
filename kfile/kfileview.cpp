@@ -143,7 +143,7 @@ void qt_qstring_stats();
 
 void KFileView::insertSorted(KFileViewItem *tfirst, uint counter)
 {
-    kDebugInfo(kfile_area, "insertedSorted %ld %d", time(0), counter);
+    kdDebug() << "" << endl;
 
     KFileViewItem **sortedArray = new KFileViewItem*[counter];
     KFileViewItem *it;
@@ -168,7 +168,7 @@ void KFileView::insertSorted(KFileViewItem *tfirst, uint counter)
 
     delete [] sortedArray;
 
-    kDebugInfo(kfile_area, "inserting %ld %p", time(0), tfirst);
+    kdDebug() << "" << endl;
     clearView();
     if ( myFirstItem == tfirst ) // we're probably just resorting, not adding atims
 	myFirstItem = 0L;
@@ -373,8 +373,7 @@ int KFileView::compareItems(const KFileViewItem *fi1, const KFileViewItem *fi2) 
     if (reversed && !keepFirst ) // don't reverse dirs to the end!
       bigger = !bigger;
 
-    // kDebugInfo(kfile_area, "compare " + fi1->fileName() + " against " +
-    // fi2->fileName() + ": " + ( bigger ? "bigger" : "smaller"));
+    // kdDebug() << "" << endl;
 
     return (bigger ? 1 : -1);
 }
@@ -382,10 +381,10 @@ int KFileView::compareItems(const KFileViewItem *fi1, const KFileViewItem *fi2) 
 void KFileView::select( const KFileViewItem *item )
 {
     assert(item);
-    kDebugInfo(kfile_area, "select %s", item->name().ascii());
+    kdDebug() << "" << endl;
 
     if ( item->isDir() ) {
-	kDebugInfo(kfile_area, "selectDir %s", item->name().ascii());
+	kdDebug() << "" << endl;
 	sig->activateDir(item);
     } else {
 	sig->activateFile(item);
@@ -400,7 +399,7 @@ void  KFileView::updateView(bool f)
 
 void KFileView::updateView(const KFileViewItem *)
 {
-    kDebugInfo(kfile_area, "repaint not reimplemented in %s", widget()->name("KFileView"));
+    kdDebug() << "" << endl;
 }
 
 void KFileView::setCurrentItem(const QString &item,

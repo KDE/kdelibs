@@ -125,7 +125,7 @@ void KFilePreview::selectDir(const KFileViewItem* item) {
 void KFilePreview::highlightFile(const KFileViewItem* item) {
     emit showPreview(item->url());
 
-    kDebugInfo(kfile_area, "emitted KFilePreview::showPreview() :)");
+    kdDebug() << "" << endl;
     sig->highlightFile(item);
     // the preview widget appears and takes some space of the left view,
     // so we may have to scroll to make the current item visible

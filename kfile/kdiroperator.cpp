@@ -112,7 +112,7 @@ void KDirOperator::setSorting( QDir::SortSpec spec )
 void KDirOperator::readNextMimeType()
 {
     if (pendingMimeTypes.isEmpty()) {
-	kDebugInfo(kfile_area, "all mimetypes checked %ld", time(0));
+	kdDebug() << "" << endl;
 	return;
     }
 
@@ -128,7 +128,7 @@ void KDirOperator::readNextMimeType()
 
 void KDirOperator::slotKIOError(int, const QString& )
 {
-    kDebugInfo(kfile_area, "slotKIOError");
+    kdDebug() << "" << endl;
     resetCursor();
 }
 
@@ -139,7 +139,7 @@ void KDirOperator::resetCursor()
     finished = false;
     if (progress)
 	progress->hide();
-    kDebugInfo(kfile_area, "done %ld", time(0));
+    kdDebug() << "" << endl;
 }
 
 void KDirOperator::activatedMenu( const KFileViewItem *item )
@@ -388,7 +388,7 @@ void KDirOperator::checkPath(const QString &, bool /*takeFiles*/) // SLOT
 	accept();
     }
 #endif
-    kDebugInfo(kfile_area, "TODO checkPath");
+    kdDebug() << "" << endl;
 }
 
 void KDirOperator::setURL(const KURL& _newurl, bool clearforward)
@@ -471,7 +471,7 @@ void KDirOperator::pathChanged()
     if (!fileView)
 	return;
 
-    kDebugInfo(kfile_area, "changed %ld", time(0));
+    kdDebug() << "" << endl;
 
     fileView->clear();
     myCompletion.clear();
@@ -704,7 +704,7 @@ void KDirOperator::insertNewFiles(const KFileViewItemList &newone, bool ready)
     if (newone.isEmpty() && !ready)
 	return;
 
-    kDebugInfo(kfile_area, "insertNewFiles %d", newone.count());
+    kdDebug() << "" << endl;
     myCompleteListDirty = true;
 
     bool isLocal = dir->isLocalFile();

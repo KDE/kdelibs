@@ -94,7 +94,7 @@ KFileViewItem::KFileViewItem(const QString& baseURL, const KIO::UDSEntry &e)
 	case KIO::UDS_CREATION_TIME:
 	    break;
 	default:
-	    kDebugInfo(kfile_area, "got %lx", static_cast<long int>(( *it ).m_uds));
+	    kdDebug() << "" << endl;
 	};
     }
 
@@ -180,7 +180,7 @@ void KFileViewItem::stat(bool alreadyindir)
 
     } else {
 	// default
-	kDebugInfo(kfile_area, "the file does not exist %s%s", debugString(myBaseURL), debugString(myName));
+	kdDebug() << "" << endl;
 	myName.insert(0, '?');
 	mySize = 0;
 	myIsFile = false;

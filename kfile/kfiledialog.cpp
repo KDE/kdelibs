@@ -696,7 +696,7 @@ void KFileDialog::locationActivated( const QString& url )
 
 void KFileDialog::pathComboActivated( const KURL& url)
 {
-    kDebugInfo(kfile_area, "pathComboActivated");
+    kdDebug() << "" << endl;
     setURL( url );
 }
 
@@ -707,14 +707,14 @@ void KFileDialog::pathComboReturnPressed( const QString& url )
 
 void KFileDialog::addToBookmarks() // SLOT
 {
-    kDebugInfo(kfile_area, "Add to bookmarks called");
+    kdDebug() << "" << endl;
     bookmarks->add(ops->url().url(), ops->url().url());
     bookmarks->write();
 }
 
 void KFileDialog::bookmarksChanged() // SLOT
 {
-    kDebugInfo(kfile_area, "Bookmarks changed called");
+    kdDebug() << "" << endl;
 }
 
 void KFileDialog::fillBookmarkMenu( KFileBookmark *parent, QPopupMenu *menu, int &id )
