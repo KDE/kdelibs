@@ -2370,7 +2370,7 @@ public:
   KActionCollectionPrivate()
   {
     m_dctHighlightContainers.setAutoDelete( true );
-    m_keyDict.setAutoDelete( true );
+    // m_keyDict.setAutoDelete( true );
     m_highlight = false;
   }
   ~KActionCollectionPrivate()
