@@ -182,6 +182,10 @@ Dispatcher::~Dispatcher()
 	if(objectManager)
 		objectManager->removeGlobalReferences();
 
+	/* remove everything that might have been tagged for remote copying */
+	referenceClean->forceClean();
+	delete referenceClean;
+
 	d->globalComm = GlobalComm::null();
 
 	/* all objects should be gone now - remove all extensions we loaded */
@@ -203,7 +207,6 @@ Dispatcher::~Dispatcher()
 	 */
 	signal(SIGPIPE,orig_sigpipe);
 
-	delete referenceClean;
 
 	d->interfaceRepo = InterfaceRepo::null();
 
@@ -482,7 +485,6 @@ void Dispatcher::handle(Connection *conn, Buffer *buffer, long messageType)
 				}
 				else if(md5authSupported)
 				{
-
 					Buffer *helloBuffer = new Buffer;
 
 					Header header(MCOP_MAGIC,0,mcopClientHello);
@@ -729,7 +731,7 @@ Connection *Dispatcher::connectObjectRemote(ObjectReference& reference)
 				assert(conn->isConnected(reference.serverID));
 				return conn;
 			}
-			printf("bad luck: connecting server didn't work\n");
+			arts_debug("bad luck: connecting server didn't work");
 			
 			// well - bad luck (connecting that server failed)
 			conn->_release();

@@ -32,6 +32,16 @@ class ReferenceClean : public TimeNotify {
 	Pool<Object_skel>& objectPool;
 public:
 	ReferenceClean(Pool<Object_skel>& objectPool);
+
+	/**
+	 * this routine forces cleaning of all tagged remote objects
+	 *
+	 * it will be called on dispatcher shutdown, since after this there
+	 * is no remote interaction anyway, it is be used to prevent memory
+	 * leaks
+	 */
+	void forceClean();
+
 	void notifyTime();
 	virtual ~ReferenceClean();
 };

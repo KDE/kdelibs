@@ -58,6 +58,12 @@ void Connection::initReceive()
 
 void Connection::receive(unsigned char *data, long len)
 {
+	/*
+	 * protect against being freed while receive is running, as there are a
+	 * few points where reentrant event loops may happen (Dispatcher::handle)
+	 */
+	_copy();
+
 	if(len > remaining)
 	{
 		unsigned char *data2 = data+remaining;
@@ -66,6 +72,8 @@ void Connection::receive(unsigned char *data, long len)
 
 		/* This could be optimized to a non recursive thing (fixme?) */
 		receive(data2,len2);
+
+		_release();	// closes _copy() from start
 		return;
 	}
 	// get a buffer for the incoming message:
@@ -135,4 +143,5 @@ void Connection::receive(unsigned char *data, long len)
 			Dispatcher::the()->handle(this,received,messageType);
 		}
 	}
+	_release();	// closes _copy() from start
 }

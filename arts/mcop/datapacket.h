@@ -106,7 +106,13 @@ public:
 	inline void processed()
 	{
 		useCount--;
-		if(useCount == 0) channel->processedPacket(this);
+		if(useCount == 0)
+		{
+			if(channel)
+				channel->processedPacket(this);
+			else
+				delete this;
+		}
 	}
 
 	virtual ~GenericDataPacket()

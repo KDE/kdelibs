@@ -26,6 +26,8 @@
 #include "synthschedule.h"
 #include "datapacket.h"
 
+#include <queue>
+
 namespace Arts {
 
 class ASyncNetSend : public FlowSystemSender_skel
@@ -42,6 +44,7 @@ public:
 	void notify(const Notification& notification);
 	void processed();
 	void setReceiver(FlowSystemReceiver receiver);
+	void disconnect();
 };
 
 class ASyncNetReceive : public FlowSystemReceiver_skel,
@@ -51,10 +54,12 @@ protected:
 	GenericAsyncStream *stream;
 	FlowSystemSender sender;
 	Notification gotPacketNotification;
+	list<GenericDataPacket *> sent;
 	long _receiveHandlerID;
 
 public:
 	ASyncNetReceive(ASyncPort *port, FlowSystemSender sender);
+	~ASyncNetReceive();
 
 	// GenericDataChannel interface
 	void processedPacket(GenericDataPacket *packet);
@@ -65,6 +70,7 @@ public:
 	// FlowSystemReceiver interface
 	
 	long receiveHandlerID();
+	void disconnect();
 	void receive(Buffer *buffer);	// custom data receiver
 };
 
@@ -72,8 +78,10 @@ class ASyncPort :public Port, public GenericDataChannel {
 protected:
 	long notifyID;
 	std::vector<Notification> subscribers;
+	list<GenericDataPacket *> sent;
 
 	GenericAsyncStream *stream;
+	FlowSystemSender sender;
 
 	bool pull;
 	Notification pullNotification;
@@ -87,6 +95,7 @@ public:
 
 	// Port interface
 	ASyncPort(std::string name, void *ptr, long flags, StdScheduleNode* parent);
+	~ASyncPort();
 
 	void connect(Port *port);
 	void disconnect(Port *port);

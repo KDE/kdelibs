@@ -418,6 +418,7 @@ public:
 	void *_cast(unsigned long iid);
 
 	virtual void processed() = 0;
+	virtual void disconnect() = 0;
 };
 
 class FlowSystemSender_stub : virtual public FlowSystemSender_base, virtual public Arts::Object_stub {
@@ -428,6 +429,7 @@ public:
 	FlowSystemSender_stub(Arts::Connection *connection, long objectID);
 
 	void processed();
+	void disconnect();
 };
 
 class FlowSystemSender_skel : virtual public FlowSystemSender_base, virtual public Arts::Object_skel {
@@ -485,6 +487,7 @@ public:
 	inline FlowSystemSender_base* _base() {return _cache?_cache:_method_call();}
 
 	inline void processed();
+	inline void disconnect();
 };
 
 class FlowSystemReceiver_base : virtual public Arts::Object_base {
@@ -507,6 +510,7 @@ public:
 	void *_cast(unsigned long iid);
 
 	virtual long receiveHandlerID() = 0;
+	virtual void disconnect() = 0;
 };
 
 class FlowSystemReceiver_stub : virtual public FlowSystemReceiver_base, virtual public Arts::Object_stub {
@@ -517,6 +521,7 @@ public:
 	FlowSystemReceiver_stub(Arts::Connection *connection, long objectID);
 
 	long receiveHandlerID();
+	void disconnect();
 };
 
 class FlowSystemReceiver_skel : virtual public FlowSystemReceiver_base, virtual public Arts::Object_skel {
@@ -574,6 +579,7 @@ public:
 	inline FlowSystemReceiver_base* _base() {return _cache?_cache:_method_call();}
 
 	inline long receiveHandlerID();
+	inline void disconnect();
 };
 
 class FlowSystem_base : virtual public Arts::Object_base {
@@ -1101,9 +1107,19 @@ inline void Arts::FlowSystemSender::processed()
 	 _cache?static_cast<Arts::FlowSystemSender_base*>(_cache)->processed():static_cast<Arts::FlowSystemSender_base*>(_method_call())->processed();
 }
 
+inline void Arts::FlowSystemSender::disconnect()
+{
+	 _cache?static_cast<Arts::FlowSystemSender_base*>(_cache)->disconnect():static_cast<Arts::FlowSystemSender_base*>(_method_call())->disconnect();
+}
+
 inline long Arts::FlowSystemReceiver::receiveHandlerID()
 {
 	return _cache?static_cast<Arts::FlowSystemReceiver_base*>(_cache)->receiveHandlerID():static_cast<Arts::FlowSystemReceiver_base*>(_method_call())->receiveHandlerID();
+}
+
+inline void Arts::FlowSystemReceiver::disconnect()
+{
+	 _cache?static_cast<Arts::FlowSystemReceiver_base*>(_cache)->disconnect():static_cast<Arts::FlowSystemReceiver_base*>(_method_call())->disconnect();
 }
 
 inline void Arts::FlowSystem::startObject(Arts::Object node)

@@ -857,13 +857,16 @@ void StdFlowSystem::connectObject(Object sourceObject,const string& sourcePort,
 
 	if(ap)
 	{
+		FlowSystemSender sender;
+		FlowSystemReceiver receiver;
+		FlowSystem remoteFs;
+
 		ASyncNetSend *netsend = new ASyncNetSend();
 		ap->sendNet(netsend);
 
-		FlowSystem remoteFs = destObject._flowSystem();
-		FlowSystemReceiver receiver;
-		receiver = remoteFs.createReceiver(destObject, destPort, FlowSystemSender::_from_base(netsend));
-
+		sender = FlowSystemSender::_from_base(netsend); // don't release netsend
+		remoteFs = destObject._flowSystem();
+		receiver = remoteFs.createReceiver(destObject, destPort, sender);
 		netsend->setReceiver(receiver);
 		arts_debug("connected an asyncnetsend");
 	}
@@ -906,14 +909,7 @@ FlowSystemReceiver StdFlowSystem::createReceiver(Object object,
 	if(ap)
 	{
 		arts_debug("creating packet receiver");
-		/*
-		 * TODO: FIXME: this is to prevent the receiver from just disappearing
-		 * which has the disadvantage that then datapackets which are still
-		 * outstanding cause problems. However, like this, it will never get
-		 * really disconnected on connection drop, which is also bad (but
-		 * not as ugly as a crash)
-		 */
-		return FlowSystemReceiver::_from_base((new ASyncNetReceive(ap, sender))->_copy());
+		return FlowSystemReceiver::_from_base(new ASyncNetReceive(ap, sender));
 	}
 	return FlowSystemReceiver::null();
 }
@@ -958,7 +954,7 @@ void StdFlowSystem::schedule(unsigned long samples)
 				if(died > 10000)
 				{
 					free(done);
-					artsdebug("scheduler confusion: circle?\n");
+					arts_warning("scheduler confusion: circle?");
 					return;
 				}
 			}

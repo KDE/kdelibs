@@ -371,6 +371,13 @@ interface FlowSystemSender {
 	 * a packet of the stream
 	 */
 	oneway void processed();
+
+	/**
+	 * This method is for telling the local FlowSystemSender to break the
+	 * connection to the remote Receiver (it's not intended to be called
+	 * remotely)
+	 */
+	void disconnect();
 };
 
 /**
@@ -384,6 +391,13 @@ interface FlowSystemReceiver {
 	 * The custom message ID which should be used to send the stream packets
 	 */
 	readonly attribute long receiveHandlerID;
+
+	/**
+	 * This method is for telling the local FlowSystemReceiver to break the
+	 * connection to the remote Sender (it's not intended to be called
+	 * remotely)
+	 */
+	void disconnect();
 };
 
 /**

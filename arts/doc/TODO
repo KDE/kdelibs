@@ -3,7 +3,6 @@ as it was before on CORBA.
 
 1. KDE2.0
 
-- fix memory leak when closing down incoming streams
 - check if we need any more private d pointers
 - tune Buffer again
 

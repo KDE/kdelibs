@@ -137,6 +137,8 @@ void SocketConnection::notifyIO(int fd, int types)
 		if(n > 0)
 		{
 			receive(buffer,n);
+			// warning: the object may not exist any more here!
+			return;
 		}
 		else if(n == 0 && errno != EAGAIN)
 		{
