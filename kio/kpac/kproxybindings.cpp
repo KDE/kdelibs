@@ -20,9 +20,14 @@
  *  Boston, MA 02111-1307, USA.
  */
 
-#include <time.h>
-#include <netdb.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+
+#include <netinet/in.h>
 #include <arpa/inet.h>
+
+#include <netdb.h>
+#include <time.h>
 
 #include <qstring.h>
 #include <qregexp.h>
