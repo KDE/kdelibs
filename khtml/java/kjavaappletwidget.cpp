@@ -1,4 +1,5 @@
 #include "kjavaappletwidget.h"
+#include "kjavaappletserver.h"
 
 #include <kwin.h>
 #include <kdebug.h>
@@ -35,7 +36,8 @@ void KJavaAppletWidget::init()
     d   = new KJavaAppletWidgetPrivate;
     m_kwm = new KWinModule( this );
 
-    d->tmplabel = new QLabel( i18n("Loading Applet"), this );
+    d->tmplabel = new QLabel( this );
+    d->tmplabel->setText( KJavaAppletServer::getAppletLabel() );
     d->tmplabel->setAlignment( Qt::AlignCenter | Qt::WordBreak );
     d->tmplabel->setFrameStyle( QFrame::StyledPanel | QFrame::Sunken );
     d->tmplabel->show();
@@ -74,6 +76,7 @@ void KJavaAppletWidget::setWindow( WId w )
                     this,  SLOT( setWindow( WId ) ) );
 
         embed( w );
+        m_applet->init();
     }
 }
 
@@ -83,8 +86,12 @@ QSize KJavaAppletWidget::sizeHint()
     QSize rval = KJavaEmbed::sizeHint();
 
     if( rval.width() == 0 || rval.height() == 0 )
+    {
         if( width() != 0 && height() != 0 )
+        {
             rval = QSize( width(), height() );
+        }
+    }
 
     kdDebug(6100) << "returning: (" << rval.width() << ", " << rval.height() << ")" << endl;
 
@@ -93,7 +100,7 @@ QSize KJavaAppletWidget::sizeHint()
 
 void KJavaAppletWidget::resize( int w, int h )
 {
-    kdDebug(6100) << "KJavaAppletWidget::resize to: " << w << ", " << h << endl;
+    kdDebug(6100) << "KJavaAppletWidget, id = " << m_applet->appletId() << ", ::resize to: " << w << ", " << h << endl;
 
     if( d->tmplabel )
     {

@@ -16,26 +16,25 @@ public class KJASAppletContext implements AppletContext
     //* All the applets in this context
     private Hashtable appletNames;
     private Hashtable appletIDs;
-    private Hashtable appletThreads;
     private Hashtable stubs;
+    private Hashtable runThreads;
+    private Hashtable appletClasses;
 
     private String myID;
     private KJASAppletClassLoader loader;
 
     /**
-     * Create a KJASAppletContext. This is shared by all applets (though perhaps
-     * there should be one for each web page).
+     * Create a KJASAppletContext
      */
     public KJASAppletContext( String _contextID )
     {
         appletNames   = new Hashtable();
         appletIDs     = new Hashtable();
-        appletThreads = new Hashtable();
-
-        stubs = new Hashtable();
-
-        myID = _contextID;
-    };
+        appletClasses = new Hashtable();
+        runThreads    = new Hashtable();
+        stubs         = new Hashtable();
+        myID          = _contextID;
+    }
 
     public String getID()
     {
@@ -44,243 +43,90 @@ public class KJASAppletContext implements AppletContext
 
     public void createApplet( String appletID, String name,
                               String className, String docBase,
-                              String codeBase, String jars,
+                              String codeBase, String archives,
                               Dimension size, String windowName,
                               Hashtable params )
     {
-        String realCodeBaseProtocol = null;
-        URL docBaseURL = null;
-        URL codeBaseURL = null;
         try
         {
-            //first check to see if the protocol is supported by java,
-            //if it's not http or ftp, we've got to use the kde libraries
-            //to handle it.  I don't feel like implementing everything necessary
-            //to handle a new URL in java
-            String docBaseProtocol = null;
-            String codeBaseProtocol = null;
-            boolean useNative = false;
-
-            int i = docBase.indexOf( ':' );
-            if( i != -1 )
-                docBaseProtocol = docBase.substring( 0, i );
-            if( codeBase != null )
+            KJASAppletClassLoader loader = new KJASAppletClassLoader( docBase,
+                                                                      codeBase );
+            if( archives != null )
             {
-                int j = codeBase.indexOf( ':' );
-                if( j != -1 )
-                    codeBaseProtocol = codeBase.substring( 0, j );
-            }
-
-            if( codeBaseProtocol != null )
-                if( !codeBaseProtocol.equals("http") && !codeBaseProtocol.equals( "ftp" ) )
+                StringTokenizer parser = new StringTokenizer( archives, ",", false );
+                while( parser.hasMoreTokens() )
                 {
-                    useNative = true;
-                    realCodeBaseProtocol = codeBaseProtocol;
-                }
-            else
-            if( !docBaseProtocol.equals( "http" ) && !docBaseProtocol.equals( "ftp" ) )
-            {
-                useNative = true;
-                realCodeBaseProtocol = docBaseProtocol;
-            }
-            Main.kjas_debug( "protocol for class loading = " + realCodeBaseProtocol );
-            if( !useNative )
-            {
-
-                //first determine what the real codeBase is: 3 cases
-                //#1. codeBase is absolute URL- use that
-                //#2. codeBase is relative to docBase, create url from those
-                //#3. last resort, use docBase as the codeBase
-
-                URL fixed_docBaseURL = null;
-                try
-                {
-                    docBaseURL = new URL( docBase );
-                    String urlString = docBaseURL.toString();
-                    int j = urlString.lastIndexOf('/');
-                    if (j >= 0 && j < urlString.length() - 1)
-                    {
-                        fixed_docBaseURL = new URL( urlString.substring(0, j+1) );
-                    }
-
-                    Main.kjas_debug( "docBaseURL = " + docBaseURL );
-                    Main.kjas_debug( "fixed_docBaseURL = " + fixed_docBaseURL );
-                }
-                catch ( MalformedURLException mue )
-                {
-                    Main.kjas_debug( "Could not create URL from docBase, not creating applet" );
-                    return;
-                }
-
-                if(codeBase != null)
-                {
-                    Main.kjas_debug( "codeBase not null, trying to create URL from it" );
-                    if( !codeBase.endsWith("/") )
-                        codeBase = codeBase + "/";
-
-                    try
-                    {
-                        codeBaseURL = new URL( codeBase );
-                    } catch( MalformedURLException mue )
-                    {
-                        try
-                        {
-                            Main.kjas_debug( "could not create URL from codeBase alone" );
-                            codeBaseURL = new URL( fixed_docBaseURL, codeBase );
-                        } catch( MalformedURLException mue2 )
-                        {
-                            Main.kjas_debug( "could not create URL from docBaseURL and codeBase" );
-                        }
-                    }
-                }
-
-                if(codeBaseURL == null)
-                {
-                    Main.kjas_debug( "codeBaseURL still null, defaulting to fixed docBase" );
-                    codeBaseURL = fixed_docBaseURL;
-                }
-
-                // codeBaseURL can not be null. This should not happen,
-                // but if it does we fall back to document base
-                if(codeBaseURL == null)
-                {
-                    Main.kjas_debug( "we're falling back to document base = " + docBaseURL );
-                    codeBaseURL = docBaseURL;
-                }
-
-                //then we need to get the classloader...
-                if( loader == null )
-                {
-                    loader = KJASAppletClassLoader.createLoader( codeBaseURL );
-                }
-                else
-                {
-                    //make sure that this codeBase is in the classloader
-                    loader.addCodeBase( codeBaseURL );
-                }
-
-                if( jars != null )
-                {
-                    StringTokenizer parser = new StringTokenizer( jars, ",", false );
-                    while( parser.hasMoreTokens() )
-                    {
-                        String jar = parser.nextToken().trim();
-                        loader.addJar( codeBaseURL, jar );
-                    }
+                    String jar = parser.nextToken().trim();
+                    loader.addJar( jar );
                 }
             }
-            else
-            {
-                Main.kjas_debug( "error: unsupported protocol: " + realCodeBaseProtocol );
-            }
-
             Class appletClass = loader.loadClass( className );
+            appletClasses.put( appletID, appletClass );
 
-            if( appletClass != null )
-            {
-                // Load and instantiate applet
-                Applet app = (Applet) appletClass.newInstance();
-                KJASAppletStub stub = new KJASAppletStub( this, appletID, app, codeBaseURL, docBaseURL, name, params );
+            KJASAppletStub stub = new KJASAppletStub( this, appletID,
+                                                      loader.getCodeBase(),
+                                                      loader.getDocBase(),
+                                                      name, params, size );
+            stub.setSize( size );
+            stubs.put( appletID, stub );
 
-                app.setSize( size );
-
-                appletNames.put( name, app );
-                appletIDs.put( appletID, app );
-                stubs.put( appletID, stub );
-
-                Frame f = new Frame( windowName );
-                AppletPanel p = new AppletPanel( app.getSize() );
-
-                p.add("Center", app);
-                f.add("Center", p);
-                f.pack();
-
-                app.init();
-                Thread t = runApplet( app );
-                if( t != null )
-                    appletThreads.put( appletID, t );
-
-                f.setVisible( true );
-            }
-
-
+            Frame f = new Frame( windowName );
+            f.add( "Center", stub );
+            f.pack();
+            f.setVisible( true );
         }
-        catch ( ClassNotFoundException e )
+        catch( ClassNotFoundException e )
         {
-            Main.kjas_err( "Could not find the needed class" + e, e );
+            Main.kjas_err( "Could not find the needed class " + e, e );
         }
         catch ( Exception e )
         {
-            Main.kjas_err( "Something bad happened: " + e, e );
+            Main.kjas_err( "Something bad happened in createApplet: " + e, e );
         }
     }
 
-    public void destroy()
+    public void initApplet( String appletID )
     {
-        Enumeration e = appletNames.elements();
-        while ( e.hasMoreElements() )
+        KJASAppletStub stub     = (KJASAppletStub) stubs.get( appletID );
+        Class          theClass = (Class) appletClasses.get( appletID );
+        if( stub == null || theClass == null )
         {
-            Applet app = (Applet) e.nextElement();
-            app.stop();
-        }
-
-        e = appletThreads.elements();
-        while( e.hasMoreElements() )
-        {
-            Thread t = (Thread) e.nextElement();
-            t.destroy();
-        }
-
-        appletNames.clear();
-        appletIDs.clear();
-        appletThreads.clear();
-        stubs.clear();
-    }
-
-    public void destroyApplet( String appletID )
-    {
-        Applet app = (Applet) appletIDs.get( appletID );
-        KJASAppletStub stub = (KJASAppletStub) stubs.get( appletID );
-
-        if( app == null || stub == null )
-            Main.kjas_debug( "could not destroy applet: " + appletID );
-        else
-        {
-            Main.kjas_debug( "stopping applet: " + appletID );
-            app.stop();
-            Thread t = (Thread) appletThreads.get( appletID );
-            t.destroy();
-
-            appletThreads.remove( appletID );
-            appletIDs.remove( appletID );
-            appletNames.remove( stub.getAppletName() );
-            appletThreads.remove( appletID );
-            stubs.remove( appletID );
-        }
-    }
-
-    public void startApplet( String appletID )
-    {
-        Applet app = (Applet) appletIDs.get( appletID );
-        Thread t = runApplet( app );
-        if( t != null )
-            appletThreads.put( appletID, t );
-    }
-
-    public void stopApplet( String appletID )
-    {
-        Applet app = (Applet) appletIDs.get( appletID );
-        if( app == null )
-        {
-            Main.kjas_debug( "could not stop applet: " + appletID );
+            Main.kjas_debug( "could not init and show applet: " + appletID );
         }
         else
         {
-            app.stop();
+            try
+            {
+                Main.kjas_debug( "theClass = " + theClass );
+
+                Applet app = (Applet) theClass.newInstance();
+                app.setStub( stub );
+                appletNames.put( stub.getAppletName(), app );
+                appletIDs.put( appletID, app );
+                app.resize( stub.getPreferredSize() );
+                stub.add( "Center", app );
+
+                app.init();
+                Main.kjas_debug( "applet done with init, applet = " + app );
+
+                stub.validate();
+                Main.kjas_debug( "added applet to panel, applet = " + app );
+
+                runApplet( appletID, app );
+                Main.kjas_debug( "applet is running, = " + app );
+            }
+            catch( InstantiationException e )
+            {
+                Main.kjas_err( "Could not instantiate applet: " + e, e );
+            }
+            catch( IllegalAccessException e )
+            {
+                Main.kjas_err( "Could not Access applet class: " + e, e );
+            }
         }
     }
 
-    private Thread runApplet( final Applet app )
+    private Thread runApplet( final String appletID, final Applet app )
     {
         if( app != null )
         {
@@ -294,12 +140,93 @@ public class KJASAppletContext implements AppletContext
                     }
                 }
             );
-            t.start();
-
+            if( t != null )
+            {
+                t.start();
+                runThreads.put( appletID, t );
+            }
             return t;
         }
 
         return null;
+    }
+
+    public void destroy()
+    {
+        Enumeration e = appletNames.elements();
+        while ( e.hasMoreElements() )
+        {
+            Applet app = (Applet) e.nextElement();
+            app.stop();
+        }
+
+        e = runThreads.elements();
+        while( e.hasMoreElements() )
+        {
+            Thread t = (Thread) e.nextElement();
+            t.destroy();
+        }
+
+        appletNames.clear();
+        appletIDs.clear();
+        appletClasses.clear();
+        runThreads.clear();
+        stubs.clear();
+
+        System.gc();
+    }
+
+    public void destroyApplet( String appletID )
+    {
+        Applet         app  = (Applet) appletIDs.get( appletID );
+        KJASAppletStub stub = (KJASAppletStub) stubs.get( appletID );
+
+        if( app == null || stub == null )
+        {
+            Main.kjas_debug( "could not destroy applet: " + appletID );
+        }
+        else
+        {
+            Main.kjas_debug( "stopping applet: " + appletID );
+            app.stop();
+            Thread t = (Thread) runThreads.get( appletID );
+            t.destroy();
+
+            runThreads.remove( appletID );
+            appletIDs.remove( appletID );
+            appletNames.remove( stub.getAppletName() );
+            appletClasses.remove( appletID );
+            stubs.remove( appletID );
+
+            System.gc();
+        }
+    }
+
+    public void startApplet( String appletID )
+    {
+        Applet app = (Applet) appletIDs.get( appletID );
+
+        if( app == null )
+        {
+            Main.kjas_debug( "could not start applet: " + appletID );
+        }
+        else
+        {
+            app.start();
+        }
+    }
+
+    public void stopApplet( String appletID )
+    {
+        Applet app = (Applet) appletIDs.get( appletID );
+        if( app == null )
+        {
+            Main.kjas_debug( "could not stop applet: " + appletID );
+        }
+        else
+        {
+            app.stop();
+        }
     }
 
 
@@ -320,7 +247,7 @@ public class KJASAppletContext implements AppletContext
 
     public AudioClip getAudioClip( URL url )
     {
-        //needs to be implemented
+        //needs to be implemented- tie in to the artsd somehow?
         return null;
     }
 
@@ -348,20 +275,4 @@ public class KJASAppletContext implements AppletContext
             Main.protocol.sendShowStatusCmd( myID, message );
     }
 
-    class AppletPanel
-        extends Panel
-    {
-        Dimension appletSize;
-
-        AppletPanel( Dimension size )
-        {
-            super(new BorderLayout());
-            appletSize = size;
-        }
-
-        public Dimension getPreferredSize()
-        {
-            return appletSize;
-        }
-    }
 }

@@ -90,6 +90,11 @@ void KJavaAppletContext::destroy( KJavaApplet* applet )
     server->destroyApplet( id, appletId );
 }
 
+void KJavaAppletContext::init( KJavaApplet* applet )
+{
+    server->initApplet( id, applet->appletId() );
+}
+
 void KJavaAppletContext::start( KJavaApplet* applet )
 {
     server->startApplet( id, applet->appletId() );

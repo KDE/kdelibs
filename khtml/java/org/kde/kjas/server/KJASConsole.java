@@ -11,7 +11,7 @@ public class KJASConsole
 
     public KJASConsole()
     {
-        super("Java Console");
+        super("Konqueror Java Console");
 
         txt = new TextArea();
         txt.setEditable(false);

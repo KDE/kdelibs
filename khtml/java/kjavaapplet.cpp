@@ -32,6 +32,7 @@ KJavaApplet::KJavaApplet( KJavaAppletWidget* _parent,
         context = KJavaAppletContext::getDefaultContext();
 
     d->reallyExists = false;
+    id = -1;
 }
 
 KJavaApplet::~KJavaApplet()
@@ -112,10 +113,9 @@ QString& KJavaApplet::archives()
     return d->archives;
 }
 
-
 void KJavaApplet::resizeAppletWidget( int width, int height )
 {
-    kdDebug(6100) << "KJavaApplet::resizeAppletWidget to " << width << ", " << height << endl;
+    kdDebug(6100) << "KJavaApplet, id = " << id << ", ::resizeAppletWidget to " << width << ", " << height << endl;
 
     if( d->UIwidget )
         d->UIwidget->resize( width, height );
@@ -145,6 +145,11 @@ void KJavaApplet::create( )
 {
     context->create( this );
     d->reallyExists = true;
+}
+
+void KJavaApplet::init()
+{
+    context->init( this );
 }
 
 void KJavaApplet::start()

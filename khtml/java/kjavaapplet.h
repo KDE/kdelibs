@@ -78,6 +78,7 @@ public:
    void resizeAppletWidget( int width, int height );
 
    void create();
+   void init();
    bool isCreated();
  
    /**

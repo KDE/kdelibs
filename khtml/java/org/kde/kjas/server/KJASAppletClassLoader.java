@@ -14,42 +14,124 @@ import java.security.*;
 public class KJASAppletClassLoader
     extends URLClassLoader
 {
-    public static KJASAppletClassLoader createLoader( URL codeBase )
+    private URL docBaseURL  = null;
+    private URL codeBaseURL = null;
+
+    public KJASAppletClassLoader( String docBase, String codeBase )
     {
-        Main.kjas_debug( "createLoader with: " + codeBase );
+        super( new URL[0] );
 
-        URL[] urls = new URL[1];
-        urls[0] = codeBase;
+        Main.kjas_debug( "Creating classloader with docBase = " + docBase +
+                         " and codeBase = " + codeBase );
 
-        return new KJASAppletClassLoader( urls );
+        try
+        {
+            //first determine what the real codeBase is: 3 cases
+            //#1. codeBase is absolute URL- use that
+            //#2. codeBase is relative to docBase, create url from those
+            //#3. last resort, use docBase as the codeBase
+
+            try
+            {
+                docBaseURL = new URL( docBase );
+            }
+            catch ( MalformedURLException mue )
+            {
+                Main.kjas_debug( "Could not create URL from docBase, not creating applet" );
+                return;
+            }
+
+            if(codeBase != null)
+            {
+                Main.kjas_debug( "codeBase not null, trying to create URL from it" );
+                //we need to do this since codeBase should be a directory
+                //and URLclassLoader assumes anything without a / on the end
+                //is a jar file
+                if( !codeBase.endsWith("/") )
+                    codeBase = codeBase + "/";
+
+                try
+                {
+                    codeBaseURL = new URL( codeBase );
+                } catch( MalformedURLException mue )
+                {
+                    try
+                    {
+                        Main.kjas_debug( "could not create URL from codeBase alone" );
+                        codeBaseURL = new URL( docBaseURL, codeBase );
+                    } catch( MalformedURLException mue2 )
+                    {
+                        Main.kjas_debug( "could not create URL from docBaseURL and codeBase" );
+                    }
+                }
+            }
+
+            if(codeBaseURL == null)
+            {
+                // codeBaseURL can not be null. This should not happen,
+                // but if it does we fall back to document base
+                // we do need to make sure that the docBaseURL is fixed if
+                // it is something like http://www.foo.com/foo.asp
+                // It's got to be a directory.....
+                Main.kjas_debug( "codeBaseURL still null, defaulting to docBase" );
+                String file = docBaseURL.getFile();
+                if( file == null )
+                    codeBaseURL = docBaseURL;
+                else
+                if( file.endsWith( "/" ) )
+                    codeBaseURL = docBaseURL;
+                else
+                {
+                    //delete up to the ending '/'
+                    int dot_index = file.lastIndexOf( '/' );
+                    String newfile = file.substring( 0, dot_index+1 );
+                    codeBaseURL = new URL( docBaseURL.getProtocol(),
+                                           docBaseURL.getHost(),
+                                           newfile );
+                }
+            }
+
+            Main.kjas_debug( "codeBaseURL = " + codeBaseURL );
+            super.addURL( codeBaseURL );
+        }catch( Exception e )
+        {
+        }
+
     }
 
-    public KJASAppletClassLoader( URL[] urls )
-    {
-        super( urls );
-    }
-
-    public void addJar( URL baseURL, String jarname )
+    public void addJar( String jarname )
     {
         try
         {
-            URL newurl = new URL( baseURL, jarname );
+            URL newurl = new URL( codeBaseURL, jarname );
             addURL( newurl );
         }
         catch ( MalformedURLException e )
         {
             Main.kjas_err( "bad url creation: " + e, e );
-            throw new IllegalArgumentException( jarname );
         }
     }
 
+    public URL getDocBase()
+    {
+        return docBaseURL;
+    }
+
+    public URL getCodeBase()
+    {
+        return codeBaseURL;
+    }
+
+    /***************************************************************************
+     * Class Loading Methods
+     **************************************************************************/
     public Class loadClass( String name )
         throws ClassNotFoundException
     {
         //We need to be able to handle foo.class, so strip off the suffix
         if( name.endsWith( ".class" ) )
         {
-            name = name.substring( 0, name.length() - 6 );
+            name = name.substring( 0, name.lastIndexOf( ".class" ) );
         }
 
         //try to load it with the parent first...
@@ -69,16 +151,13 @@ public class KJASAppletClassLoader
         }
     }
 
-
-    /**
-     *  Emergency class loading function- the last resort
-     */
     public Class findClass(String name)
         throws ClassNotFoundException
     {
-        //All we need to worry about here are classes
-        //with kde url's other than those handled by
-        //the URLClassLoader
+        if( name.endsWith( ".class" ) )
+        {
+            name = name.substring( 0, name.lastIndexOf( ".class" ) );
+        }
 
         try
         {
@@ -91,27 +170,9 @@ public class KJASAppletClassLoader
         }
     }
 
-    public void addCodeBase( URL url )
-    {
-        URL[] urls = getURLs();
-
-        boolean inthere = false;
-        for( int i = 0; i < urls.length; i++ )
-        {
-            if( urls[i].equals( url ) )
-            {
-                inthere = true;
-                break;
-            }
-        }
-
-        if( !inthere )
-        {
-            Main.kjas_debug( "KJASAppletClassLoader::addCodeBase, just added: " + url );
-            addURL( url );
-        }
-    }
-
+    /***************************************************************************
+     * Security Manager stuff
+     **************************************************************************/
     protected PermissionCollection getPermissions( CodeSource cs )
     {
         //get the permissions from the SecureClassLoader
@@ -126,15 +187,15 @@ public class KJASAppletClassLoader
         {
             String path = url.getFile().replace('/', File.separatorChar);
 
-	        if (!path.endsWith(File.separator))
+            if (!path.endsWith(File.separator))
             {
                 int endIndex = path.lastIndexOf(File.separatorChar);
-		        if (endIndex != -1)
+                if (endIndex != -1)
                 {
-			        path = path.substring(0, endIndex+1) + "-";
-			        perms.add(new FilePermission(path, "read"));
+                    path = path.substring(0, endIndex+1) + "-";
+                    perms.add(new FilePermission(path, "read"));
                 }
-	        }
+            }
 
             AccessController.doPrivileged(
                 new PrivilegedAction()
@@ -172,7 +233,7 @@ public class KJASAppletClassLoader
                 System.out.println( "getFile returned null" );
             }
 
-            KJASAppletClassLoader loader = KJASAppletClassLoader.createLoader( new URL(args[0]) );
+            KJASAppletClassLoader loader = new KJASAppletClassLoader( args[1], args[1] );
             Class foo = loader.loadClass( args[1] );
 
             System.out.println( "loaded class: " + foo );

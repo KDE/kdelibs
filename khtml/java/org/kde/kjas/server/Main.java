@@ -7,6 +7,7 @@ import java.io.*;
  *  KJAS server recognizes these variablers:
  *    kjas.debug - makes server actions verbose
  *    kjas.showConsole - shows Java Console window
+ *    kjas.log - save a transcript of the debug output to /tmp/kjas.log
  */
 
 public class Main
@@ -19,16 +20,27 @@ public class Main
     private static final boolean             show_console;
     public  static final boolean             debug;
     public  static final boolean             log;
-    private static boolean                   good_jdk;
+    private static boolean                   good_jdk = true;
 
     /**************************************************************************
      * Initialization
      **************************************************************************/
     static
     {
-        debug        = System.getProperty( "kjas.debug" ) != null;
-        show_console = System.getProperty( "kjas.showConsole" ) != null;
-        log          = System.getProperty( "kjas.log" ) != null;
+        if( System.getProperty( "kjas.debug" ) != null )
+            debug = true;
+        else
+            debug = false;
+
+        if( System.getProperty( "kjas.showConsole" ) != null )
+            show_console = true;
+        else
+            show_console = false;
+
+        if( System.getProperty( "kjas.log" ) != null )
+            log = true;
+        else
+            log = false;
 
         protocol_stdout = System.out;
         console         = new KJASConsole();
@@ -40,9 +52,7 @@ public class Main
         try
         {
             float java_version = Float.parseFloat( version );
-            if( java_version >= 1.2 )
-                good_jdk = true;
-            else
+            if( java_version < 1.2 )
                 good_jdk = false;
         } catch( NumberFormatException e )
         {
@@ -95,7 +105,7 @@ public class Main
         {
             console.setVisible( true );
             System.err.println( "ERROR: This version of Java is not supported for security reasons." );
-            System.err.println( "       Please use Java version 1.2 or higher." );
+            System.err.println( "\t\tPlease use Java version 1.2 or higher." );
             return;
         }
 

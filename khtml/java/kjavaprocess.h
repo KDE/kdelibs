@@ -32,7 +32,7 @@ public:
     /**
      * Invoke the JVM.
      */
-    void startJava();
+    bool startJava();
 
     /**
      * Stop the JVM (if it's running).
@@ -103,7 +103,7 @@ protected slots:
     void javaHasDied();
 
 protected:
-    virtual void invokeJVM();
+    virtual bool invokeJVM();
     virtual void killJVM();
 
     void popBuffer();

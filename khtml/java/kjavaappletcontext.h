@@ -38,11 +38,11 @@ public:
     void setContextId( int id );
 
     // Forwarded from the applets
-    void create      ( KJavaApplet* );
-    void destroy     ( KJavaApplet* );
-
-    void start       ( KJavaApplet* );
-    void stop        ( KJavaApplet* );
+    void create  ( KJavaApplet* );
+    void destroy ( KJavaApplet* );
+    void init    ( KJavaApplet* );
+    void start   ( KJavaApplet* );
+    void stop    ( KJavaApplet* );
 
     // use this for applet call backs instead of the slot
     void processCmd( QString cmd, QStringList args );

@@ -87,9 +87,9 @@ bool KJavaProcess::isRunning()
    return javaProcess->isRunning();
 }
 
-void KJavaProcess::startJava()
+bool KJavaProcess::startJava()
 {
-   invokeJVM();
+   return invokeJVM();
 }
 
 void KJavaProcess::stopJava()
@@ -238,7 +238,7 @@ void KJavaProcess::wroteData( )
 }
 
 
-void KJavaProcess::invokeJVM()
+bool KJavaProcess::invokeJVM()
 {
     kdDebug(6100) << "invokeJVM()" << endl;
 
@@ -289,8 +289,12 @@ void KJavaProcess::invokeJVM()
     KProcess::Communication flags =  (KProcess::Communication)
                                      (KProcess::Stdin | KProcess::Stdout |
                                       KProcess::NoRead);
-    javaProcess->start( KProcess::NotifyOnExit, flags );
-    javaProcess->resume(); //start processing stdout on the java process
+
+    bool rval = javaProcess->start( KProcess::NotifyOnExit, flags );
+    if( rval )
+        javaProcess->resume(); //start processing stdout on the java process
+
+    return rval;
 }
 
 void KJavaProcess::killJVM()

@@ -3,37 +3,23 @@ package org.kde.kjas.server;
 import java.applet.*;
 import java.util.*;
 import java.net.*;
+import java.awt.*;
 
 /**
  * The stub used by Applets to communicate with their environment.
  *
  */
 
-public class KJASAppletStub implements AppletStub
+public class KJASAppletStub extends Panel implements AppletStub
 {
-    //** The containing context.
-    KJASAppletContext context;
-
-    //** The applet this stub is attached to.
-    Applet applet;
-
-    //** Maps parameter names to values
-    Hashtable params;
-
-    //** The URL of the class file from which applet was loaded.
-    URL codeBase;
-
-    //** The document that referenced the applet
-    URL docBase;
-
-    //** Is the applet active?
-    boolean active;
-
-    //** The name of this applet instance
-    String name;
-
-    //** The id of this applet- for use in callbacks
-    String appletID;
+    KJASAppletContext context;  // The containing context.
+    Hashtable         params;   // Maps parameter names to values
+    URL               codeBase; // The URL directory where files are
+    URL               docBase;  // The document that referenced the applet
+    boolean           active;   // Is the applet active?
+    String            name;     // The name of this applet instance
+    String            appletID; // The id of this applet- for use in callbacks
+    Dimension         appletSize;
 
     /**
      * Create an AppletStub for the specified applet. The stub will be in
@@ -41,18 +27,18 @@ public class KJASAppletStub implements AppletStub
      * passed applet.
      */
     public KJASAppletStub( KJASAppletContext _context, String _appletID,
-                           Applet _applet, URL _codeBase, URL _docBase, String _name,
-                           Hashtable _params )
+                           URL _codeBase, URL _docBase,
+                           String _name, Hashtable _params, Dimension size )
     {
-        context  = _context;
-        applet   = _applet;
-        codeBase = _codeBase;
-        docBase  = _docBase;
-        name     = _name;
-        appletID = _appletID;
-        params   = new Hashtable( _params );
+        super( new BorderLayout() );
 
-        applet.setStub( this );
+        context    = _context;
+        codeBase   = _codeBase;
+        docBase    = _docBase;
+        name       = _name;
+        appletID   = _appletID;
+        params     = new Hashtable( _params );
+        appletSize = size;
     }
 
     /**
@@ -60,9 +46,10 @@ public class KJASAppletStub implements AppletStub
      */
     public void appletResize( int width, int height )
     {
-        if ( (width > 0) && (height > 0))
+        if ( (width >= 0) && (height >= 0))
         {
             Main.protocol.sendResizeAppletCmd( context.getID(), appletID, width, height );
+            appletSize = new Dimension( width, height );
         }
         else
             System.err.println( "Warning: applet attempted to resize itself to " + width + "," + height );
@@ -111,4 +98,20 @@ public class KJASAppletStub implements AppletStub
     {
         return active;
     }
+
+    public Dimension getPreferredSize()
+    {
+        return appletSize;
+    }
+
+    public Dimension getMinimumSize()
+    {
+        return appletSize;
+    }
+
+    public Dimension getMaximumSize()
+    {
+        return appletSize;
+    }
+
 }

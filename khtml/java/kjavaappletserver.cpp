@@ -6,6 +6,7 @@
 #include <kconfig.h>
 #include <kstddirs.h>
 #include <kdebug.h>
+#include <klocale.h>
 
 #include <qtimer.h>
 #include <qguardedptr.h>
@@ -13,39 +14,46 @@
 
 #include <stdlib.h>
 
-#define CREATE_CONTEXT   (char)1
-#define DESTROY_CONTEXT  (char)2
-#define CREATE_APPLET    (char)3
-#define DESTROY_APPLET   (char)4
-#define START_APPLET     (char)5
-#define STOP_APPLET      (char)6
+#define CREATE_CONTEXT    (char)1
+#define DESTROY_CONTEXT   (char)2
+#define CREATE_APPLET     (char)3
+#define DESTROY_APPLET    (char)4
+#define START_APPLET      (char)5
+#define STOP_APPLET       (char)6
+#define INIT_APPLET       (char)7
 
-#define SHUTDOWN_SERVER  (char)9
-#define SHOW_DOCUMENT    (char)12
-#define SHOW_URLINFRAME  (char)13
-#define SHOW_STATUS      (char)14
-#define RESIZE_APPLET    (char)15
+#define SHUTDOWN_SERVER   (char)9
+
+#define SHOW_DOCUMENT     (char)12
+#define SHOW_URLINFRAME   (char)13
+#define SHOW_STATUS       (char)14
+#define RESIZE_APPLET     (char)15
 
 // For future expansion
 struct KJavaAppletServerPrivate
 {
    int counter;
    QMap< int, QGuardedPtr<KJavaAppletContext> > contexts;
+   QString appletLabel;
 };
 
 static KJavaAppletServer* self = 0;
 
 KJavaAppletServer::KJavaAppletServer()
 {
-   d = new KJavaAppletServerPrivate;
-   process = new KJavaProcess();
+    d = new KJavaAppletServerPrivate;
+    process = new KJavaProcess();
 
-   connect( process, SIGNAL(received(const QByteArray&)),
-            this,    SLOT(received(const QByteArray&)) );
+    connect( process, SIGNAL(received(const QByteArray&)),
+             this,    SLOT(received(const QByteArray&)) );
 
-   setupJava( process );
+    setupJava( process );
 
-   process->startJava();
+    if( process->startJava() )
+        d->appletLabel = i18n( "Loading Applet" );
+    else
+        d->appletLabel = i18n( "Error: java executable not found" );
+
 }
 
 KJavaAppletServer::~KJavaAppletServer()
@@ -55,6 +63,19 @@ KJavaAppletServer::~KJavaAppletServer()
 
     delete process;
     delete d;
+}
+
+QString KJavaAppletServer::getAppletLabel()
+{
+    if( self )
+        return self->appletLabel();
+    else
+        return QString::null;
+}
+
+QString KJavaAppletServer::appletLabel()
+{
+    return d->appletLabel;
 }
 
 KJavaAppletServer* KJavaAppletServer::allocateJavaServer()
@@ -96,8 +117,10 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
     KConfig config ( "konquerorrc", true );
     config.setGroup( "Java/JavaScript Settings" );
 
+    QString jvm_path;
+
     if( config.readBoolEntry( "JavaAutoDetect", true) )
-        p->setJVMPath( "java" );
+        jvm_path = "java";
     else
     {
         QString jPath = config.readEntry( "JavaPath", "/usr/lib/jdk" );
@@ -109,19 +132,19 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
         //a common mistake I've made myself...
         QDir dir( jPath );
         if( dir.exists( "bin/java" ) )
-            p->setJVMPath( jPath + "/bin/java");
+            jvm_path = jPath + "/bin/java";
         else
         {
             if( dir.exists() )
             {
-                p->setJVMPath( jPath );
-            }
-            else
-            {
-                kdError(6100) << "Invalid path to java installation" << endl;
+                jvm_path = jPath;
             }
         }
     }
+
+    //check to see if jvm_path is valid and set d->appletLabel accordingly
+    p->setJVMPath( jvm_path );
+
     QString extraArgs = config.readEntry( "JavaArgs", "" );
     p->setExtraArgs( extraArgs );
 
@@ -226,6 +249,15 @@ void KJavaAppletServer::createApplet( int contextId, int appletId,
     }
 
     process->send( CREATE_APPLET, args );
+}
+
+void KJavaAppletServer::initApplet( int contextId, int appletId )
+{
+    QStringList args;
+    args.append( QString::number( contextId ) );
+    args.append( QString::number( appletId ) );
+
+    process->send( INIT_APPLET, args );
 }
 
 void KJavaAppletServer::destroyApplet( int contextId, int appletId )

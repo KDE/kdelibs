@@ -33,6 +33,7 @@ public:
      */
     static KJavaAppletServer *allocateJavaServer();
     static void               freeJavaServer();
+    static QString getAppletLabel();
 
     /**
      * Create an applet context with the specified id.
@@ -55,6 +56,9 @@ public:
                        const QString jarFile, QSize size,
                        const QMap< QString, QString >& params,
                        const QString windowTitle );
+
+    void initApplet( int contextId, int appletId );
+
     /**
      * Destroy an applet in the specified context with the specified id.
      */
@@ -75,13 +79,13 @@ public:
      */
     void quit();
 
+    QString appletLabel();
+
 protected:
     void setupJava( KJavaProcess *p );
 
     KJavaProcess *process;
     struct KJavaAppletServerPrivate *d;
-
-
 
 protected slots:
     void received( const QByteArray& qb );
