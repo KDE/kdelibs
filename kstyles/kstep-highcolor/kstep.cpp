@@ -84,8 +84,9 @@ void KStepStyle::polish(QApplication *)
     setScrollBarExtent(17, 17);
 }
 
-void KStepStyle::polish(QPalette &pal)
+void KStepStyle::polish(QPalette &)
 {
+    QPalette pal = QApplication::palette();
     KConfig *config = KGlobal::config();
     QString oldGrp = config->group();
     nextGrp = pal.normal();

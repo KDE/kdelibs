@@ -45,7 +45,6 @@ KStepStyle::KStepStyle()
     :KStyle()
 {
     setButtonDefaultIndicatorWidth(4);
-
 }
 
 KStepStyle::~KStepStyle()
@@ -58,9 +57,9 @@ void KStepStyle::polish(QApplication *)
     setScrollBarExtent(19, 19);
 }
 
-void KStepStyle::polish(QPalette &p)
+void KStepStyle::polish(QPalette &)
 {
-    nextGrp = p.normal();
+    nextGrp = QApplication::palette().active();
     nextGrp.setColor(QColorGroup::Dark, Qt::black);
 }
 

@@ -158,11 +158,12 @@ HCStyle::~HCStyle()
     }
 }
 
-void HCStyle::polish(QPalette &pal)
+void HCStyle::polish(QPalette &)
 {
     KConfig *config = KGlobal::config();
     QString oldGrp = config->group();
     config->setGroup("B2");
+    QPalette pal = QApplication::palette();
 
     // if the config has specific colors for items set use those and don't
     // worry about high color usage, otherwise use KDE standard colors for
