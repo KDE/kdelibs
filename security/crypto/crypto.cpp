@@ -444,6 +444,7 @@ QString whatstr;
   grid = new QGridLayout(tabYourSSLCert, 16, 6, KDialog::marginHint(), KDialog::spacingHint() );
 
   yourSSLBox = new QListView(tabYourSSLCert);
+  yourSSLBox->setAllColumnsShowFocus(true);
   whatstr = i18n("This list box shows which certificates of yours KDE"
                 " knows about. You can easily manage them from here.");
   QWhatsThis::add(yourSSLBox, whatstr);
@@ -545,6 +546,7 @@ QString whatstr;
 
   grid->addMultiCellWidget(new QLabel(i18n("Host authentication:"), tabAuth), 5, 5, 0, 1);
   hostAuthList = new QListView(tabAuth);
+  hostAuthList->setAllColumnsShowFocus(true);
   grid->addMultiCellWidget(hostAuthList, 6, 13, 0, 5);
   hostAuthList->addColumn(i18n("Host"));
   hostAuthList->addColumn(i18n("Certificate"));
@@ -601,6 +603,7 @@ QString whatstr;
   oGrid = grid = new QGridLayout(tabOtherSSLCert, 21, 6, KDialog::marginHint(), KDialog::spacingHint());
 
   otherSSLBox = new QListView(tabOtherSSLCert);
+  otherSSLBox->setAllColumnsShowFocus(true);
   connect(otherSSLBox, SIGNAL(selectionChanged()), SLOT(slotOtherCertSelect()));
   whatstr = i18n("This list box shows which site and person certificates KDE"
                 " knows about. You can easily manage them from here.");
@@ -715,6 +718,7 @@ QString whatstr;
   grid = new QGridLayout(tabSSLCA, 11, 8, KDialog::marginHint(), KDialog::spacingHint());
 
   caList = new QListView(tabSSLCA);
+  caList->setAllColumnsShowFocus(true);
   whatstr = i18n("This list box shows which certificate authorities KDE"
                  " knows about. You can easily manage them from here.");
   QWhatsThis::add(caList, whatstr);
