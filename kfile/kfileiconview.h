@@ -18,8 +18,8 @@
     Boston, MA 02111-1307, USA.
 */
 
-#ifndef KFILESIMPLEVIEW_H
-#define KFILESIMPLEVIEW_H
+#ifndef KFILEICONVIEW_H
+#define KFILEICONVIEW_H
 
 class KFileViewItem;
 class QWidget;
@@ -33,8 +33,6 @@ class QLabel;
 
 class KFileIconViewItem : public QIconViewItem
 {
-    Q_OBJECT
-
 public:
     KFileIconViewItem( QIconView *parent, const QString &text,
 		       const QPixmap &pixmap,
@@ -77,7 +75,7 @@ public:
     void setIconSize( KIconLoader::Size size );
     KIconLoader::Size iconSize() const { return myIconSize; }
 
-    
+
 private slots:
     void selected( QIconViewItem *item );
     void highlighted( QIconViewItem *item );
