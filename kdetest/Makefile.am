@@ -24,23 +24,24 @@ LDADD = -L$(topdir)/kdecore/.libs -lkdecore -L$(topdir)/kdeui/.libs -lkdeui $(QT
 
 DISTCLEANFILES = $(BUILT_SOURCES)
 
-noinst_PROGRAMS = kconfigtest kledlamptest kprogresstest kurltest \
+noinst_PROGRAMS = kconfigtest kledlamptest kprogresstest \
 		kcolordlgtest kdatepicktest kfontdialogtest	\
 		kmsgboxtest kpopuptest ktabctltest ktreelisttest	\
 		kkeyconfigtest kseparatortest kiconloadertest		\
 		kwindowtest klinetest kstatusbartest kspinboxtest	\
 		kprocesstest kpannertest kbuttonboxtest ksimpleconfigtest \
-		kcharsetstest
+		kcharsetstest kledtest
 
 noinst_HEADERS = kdatepicktestdlg.h kmsgboxtest.h ktreelisttest.h \
 		kkeyconfigtest.h ktabctltest.h kiconloadertestmain.h	\
 		kwindowtest.h klinetest.h kstatusbartest.h kspinboxtest.h	\
-		kprocesstest.h kcharsetstest.h
+		kprocesstest.h kcharsetstest.h kledtest.h
 
 BUILT_SOURCES = ktabctltest.moc kmsgboxtest.moc kdatepicktestdlg.moc \
 		ktreelisttest.moc kkeyconfigtest.moc kiconloadertestmain.moc \
 		kconfigtest.moc kpannertest.moc kwindowtest.moc klinetest.moc \
-		kstatusbartest.moc kspinboxtest.moc kprocesstest.moc kcharsetstest.moc
+		kstatusbartest.moc kspinboxtest.moc kprocesstest.moc kcharsetstest.moc\
+		kledtest.h
 
 ktabctltest.cpp: ktabctltest.moc
 kiconloadertestmain.cpp: kiconloadertestmain.moc
@@ -56,11 +57,11 @@ kstatusbartest.cpp: kstatusbartest.moc
 kspinboxtest.cpp: kspinboxtest.moc
 kprocesstest.cpp: kprocesstest.moc
 kcharsetstest.cpp: kcharsetstest.moc
+kledtest.cpp: kledtest.moc
 
 kconfigtest_SOURCES = kconfigtest.cpp
 kledlamptest_SOURCES = kledlamptest.cpp
 kprogresstest_SOURCES = kprogresstest.cpp
-kurltest_SOURCES = kurltest.cpp
 kpannertest_SOURCES = kpannertest.cpp
 kcolordlgtest_SOURCES = kcolordlgtest.cpp
 kdatepicktest_SOURCES = kdatepicktest.cpp kdatepicktestdlg.cpp
@@ -80,6 +81,7 @@ kprocesstest_SOURCES = kprocesstest.cpp
 kbuttonboxtest_SOURCES = kbuttonboxtest.cpp
 ksimpleconfigtest_SOURCES = ksimpleconfigtest.cpp
 kcharsetstest_SOURCES = kcharsetstest.cpp
+kledtest_SOURCES = kledtest.cpp
 
 klinetest.moc: klinetest.h
 	$(MOC) klinetest.h -o klinetest.moc
@@ -122,3 +124,6 @@ kprocesstest.moc: kprocesstest.h
 
 kcharsetstest.moc: kcharsetstest.h
 	$(MOC) kcharsetstest.h -o kcharsetstest.moc
+
+kledtest.moc: kledtest.h
+	$(MOC) kledtest.h -o kledtest.moc

@@ -19,6 +19,9 @@
 /* $Id$
 
  * $Log$
+ * Revision 1.12  1998/01/16 21:29:33  kalle
+ * mention the new bug site in the about dialog
+ *
  * Revision 1.11  1997/10/21 20:44:56  kulow
  * removed all NULLs and replaced it with 0L or "".
  * There are some left in mediatool, but this is not C++
@@ -304,7 +307,7 @@ void KConfigTestView::writeButtonClicked()
   pConfig->writeEntry( pKeyEdit->text(), QString( pValueEdit->text() ) );
   pInfoLabel2->setText( "Entry written" );
 
-  KASSERT1( true, KDEBUG_INFO, 1, "Entry written: %d", 27 );
+  KASSERT1( false, KDEBUG_INFO, 1, "Entry written: %d", 27 );
 }
 
 //
@@ -329,8 +332,25 @@ int main( int argc, char **argv )
 	fprintf( stderr, "Recover file does not exist, use %s\n", pRecoverFile );
   free( pRecoverFile );
 
- KSimpleConfig sc( "/tmp/sc.cfg" );
-	sc.writeEntry( "Bua", "Brumm" );
+  KSimpleConfig sc( "/tmp/sc.cfg" );
+	/*
+    sc.writeEntry( "Bua", "Brumm" );
+
+  sc.writeEntry( "boolEntry1", true );
+  sc.writeEntry( "boolEntry2", false );
+  sc.writeEntry( "rectEntry", QRect( 10, 23, 5321, 12 ) );
+  sc.writeEntry( "pointEntry", QPoint( 4351, 1234 ) );
+	*/
+  
+  bool b1 = sc.readBoolEntry( "boolEntry1" );
+  bool b2 = sc.readBoolEntry( "boolEntry2" );
+  QRect rect = sc.readRectEntry( "rectEntry" );
+  QPoint point = sc.readPointEntry( "pointEntry" );
+  fprintf( stderr, "b1 is %s\n", b1 ? "true" : "false" );
+  fprintf( stderr, "b2 is %s\n", b2 ? "true" : "false" );
+  fprintf( stderr, "rect is (%d,%d,%d,%d)\n", rect.left(), rect.top(), rect.width(), rect.height() );
+  fprintf( stderr, "point is (%d,%d)\n", point.x(), point.y() );
+  
 
   return a.exec();
 }
