@@ -50,10 +50,6 @@ int KAction::plug( QWidget *w )
     bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this, SLOT( slotActivated() ),
 		       isEnabled(), text() );
 
-//     KToolBarButton *but = bar->getButton( menuId( id_ ) );
-
-    //connect( but, SIGNAL( clicked( int ) ), this, SLOT( slotActivated() ) );
-
     addContainer( bar, id_ );
 
     connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
@@ -178,16 +174,13 @@ int KToggleAction::plug( QWidget* widget )
  			   isEnabled(), text() );
 
 	KToolBarButton *but = bar->getButton( id_ );
-
-// 	connect( but, SIGNAL( clicked( int ) ), this, SLOT( slotActivated() ) );
-
 	addContainer( bar, id_ );
 	
 	connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
 
 	index =  containerCount() - 1;
   } else
-      index = QAction::plug( widget );
+      index = QToggleAction::plug( widget );
 
     if ( index == -1 )
 	return index;
@@ -214,9 +207,6 @@ int KToggleAction::plug( QWidget* widget )
 
 void KToggleAction::setChecked( bool c )
 {
-//     if ( locked2 )
-// 	return;
-//     locked2 = TRUE;
     checked = c;
 
     int len = containerCount();
@@ -235,11 +225,8 @@ void KToggleAction::setChecked( bool c )
 	    ((QActionWidget*)w)->updateAction( this );	
     }
 
-    // Uncheck all the other toggle actions in the same group
-
     emit activated();
-//     locked2 = FALSE;
-//     QToggleAction::setChecked( checked );
+    emit toggled( isChecked() );
 }
 
 void KToggleAction::slotActivated()
