@@ -830,4 +830,11 @@ RenderObject *RenderObject::container() const
     return o;
 }
 
+void RenderObject::invalidateLayout() 
+{
+    setLayouted(false);
+    if (m_parent && m_parent->layouted())
+        m_parent->invalidateLayout();
+}
+
 

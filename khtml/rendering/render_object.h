@@ -433,6 +433,13 @@ public:
     virtual int rightmostPosition() const {return 0;}
 
     CachedImage *backgroundImage() const { return m_bgImage; }
+    
+    /*
+        recursively invalidate current layout
+    */
+    void invalidateLayout();
+    
+    virtual void calcVerticalMargins() {}
 
 protected:
     virtual void selectionStartEnd(int& spos, int& epos);

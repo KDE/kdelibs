@@ -315,7 +315,10 @@ void RenderFlow::layoutBlockChildren()
 
     int prevMargin = 0;
     if(isTableCell() && child && !child->isPositioned())
+    {
+        child->calcVerticalMargins();
         prevMargin = -child->marginTop();
+    }
 
     //QTime t;
     //t.start();
@@ -341,6 +344,8 @@ void RenderFlow::layoutBlockChildren()
 	    child = child->nextSibling();
 	    continue;
 	}
+        
+        child->calcVerticalMargins();
 
         if(checkClear(child)) prevMargin = 0; // ### should only be 0
         // if oldHeight+prevMargin < newHeight
@@ -679,7 +684,7 @@ RenderFlow::leftOffset() const
 
     if ( firstLine && style()->direction() == LTR ) {
         int cw=0;
-        if (style()->width().isPercent())
+        if (style()->textIndent().isPercent())
             cw = containingBlock()->contentWidth();
         left += style()->textIndent().minWidth(cw);
     }
@@ -722,7 +727,7 @@ RenderFlow::rightOffset() const
 
     if ( firstLine && style()->direction() == RTL ) {
         int cw=0;
-        if (style()->width().isPercent())
+        if (style()->textIndent().isPercent())
             cw = containingBlock()->contentWidth();
         right += style()->textIndent().minWidth(cw);
     }
@@ -1007,6 +1012,9 @@ void RenderFlow::calcMinMaxWidth()
 //    if(minMaxKnown())
 //        return;
 
+    
+    int cw = containingBlock()->contentWidth();
+    
     // non breaking space
     const QChar nbsp = 0xa0;
 
@@ -1024,15 +1032,21 @@ void RenderFlow::calcMinMaxWidth()
         {
             if( !child->isBR() )
             {
+                RenderStyle* cstyle = child->style();
                 int margins = 0;
-                if (!child->style()->marginLeft().isVariable())
+                if (!cstyle->marginLeft().isVariable())
                     margins += child->marginLeft();
-                if (!child->style()->marginRight().isVariable())
+                if (!cstyle->marginRight().isVariable())
                     margins += child->marginRight();
                 int childMin = child->minWidth() + margins;
                 int childMax = child->maxWidth() + margins;
                 if (child->isText() && static_cast<RenderText *>(child)->length() > 0)
                 {
+                    
+                    int ti = cstyle->textIndent().minWidth(cw);
+                    childMin+=ti;
+                    childMax+=ti;
+        
                     if(!child->minMaxKnown())
                         child->calcMinMaxWidth();
                     bool hasNbsp=false;

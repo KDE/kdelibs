@@ -104,6 +104,8 @@ public:
 
     virtual void calcWidth();
     virtual void calcHeight();
+    
+    void calcVerticalMargins();
 
 protected:
     virtual void printBoxDecorations(QPainter *p,int _x, int _y,
@@ -119,7 +121,7 @@ protected:
     void calcAbsoluteHorizontal();
     void calcAbsoluteVertical();
 
-    void calcHorizontalMargins(const Length& ml, const Length& mr, int cw);
+    void calcHorizontalMargins(const Length& ml, const Length& mr, int cw);  
 
     // the actual height of the contents + borders + padding
     int m_height;

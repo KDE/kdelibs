@@ -729,22 +729,15 @@ void RenderBox::calcHeight()
                     h = Length(h.width(cb->contentHeight()), Fixed);
             }
         }
-
-        Length tm = style()->marginTop();
-        Length bm = style()->marginBottom();
-        Length ch = containingBlock()->style()->height();
-
-        // margins are calculated with respect to the _width_ of
-        // the containing block (8.3)
-        int cw = containingBlockWidth();
-
-        m_marginTop = tm.minWidth(cw);
-        m_marginBottom = bm.minWidth(cw);
+        
+        calcVerticalMargins();
 
         // for tables, calculate margins only
         if (isTable())
             return;
 
+        Length ch = containingBlock()->style()->height();
+            
         if (h.isFixed())
             m_height = QMAX (h.value + borderTop() + paddingTop()
                 + borderBottom() + paddingBottom() , m_height);
@@ -755,6 +748,19 @@ void RenderBox::calcHeight()
                     + borderBottom() + paddingBottom(), m_height);
         }
     }
+}
+
+void RenderBox::calcVerticalMargins()
+{
+    Length tm = style()->marginTop();
+    Length bm = style()->marginBottom();
+
+    // margins are calculated with respect to the _width_ of
+    // the containing block (8.3)
+    int cw = containingBlock()->contentWidth();
+
+    m_marginTop = tm.minWidth(cw);
+    m_marginBottom = bm.minWidth(cw);
 }
 
 
