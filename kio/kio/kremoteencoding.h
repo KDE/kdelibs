@@ -62,19 +62,19 @@ public:
    * This function is supposed to work for dirnames, filenames
    * or a full pathname.
    */
-  QString decode(const QCString& name);
+  QString decode(const QCString& name) const;
 
   /**
    * Converts the given name from Unicode.
    * This function is supposed to work for dirnames, filenames
    * or a full pathname.
    */
-  QCString encode(const QString& name);
+  QCString encode(const QString& name) const;
 
   /**
    * Converts the given URL into its 8-bit components
    */
-  QCString encode(const KURL& url);
+  QCString encode(const KURL& url) const;
 
   /**
    * Converts the given URL into 8-bit form and separate the
@@ -83,17 +83,17 @@ public:
    *
    * The dirname is returned with the final slash always stripped
    */
-  QCString directory(const KURL& url, bool ignore_trailing_slash = true);
+  QCString directory(const KURL& url, bool ignore_trailing_slash = true) const;
 
   /**
    * Converts the given URL into 8-bit form and retrieve the filename.
    */
-  QCString fileName(const KURL& url);
+  QCString fileName(const KURL& url) const;
 
   /**
    * Returns the encoding being used.
    */
-  inline const char *encoding()
+  inline const char *encoding() const
   { return codec->name(); }
 
   /**
