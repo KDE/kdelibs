@@ -1314,14 +1314,14 @@ void DocumentImpl::setFocusNode(ElementImpl *n)
     if (m_focusNode != n)
     {
 	if (m_focusNode)
+	{
+	    if (m_focusNode->active()) m_focusNode->setActive(false);
 	    m_focusNode->setFocus(false);
+	}
 	m_focusNode = n;
 	kdDebug(6020)<<"DOM::DocumentImpl::setFocusNode("<<n<<")"<<endl;
 	if (n)
-	{
-	    n->setActive(false);
 	    n->setFocus();
-	}
     }
 }
 
