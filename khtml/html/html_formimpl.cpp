@@ -810,6 +810,19 @@ void HTMLGenericFormElementImpl::attach()
         parentNode()->renderer()->addChild(m_render, nextRenderer());
     }
 
+    // FIXME: This handles the case of a new form element being created by
+    // JavaScript and inserted inside a form. What it does not handle is
+    // a form element being moved from inside a form to outside, or from one
+    // inside one form to another. The reason this other case is hard to fix
+    // is that during parsing, we may have been passed a form that we are not
+    // inside, DOM-tree-wise. If so, it's hard for us to know when we should
+    // be removed from that form's element list.
+    if (!m_form) {
+	m_form = getForm();
+	if (m_form)
+	    m_form->registerFormElement(this);
+    }
+
     NodeBaseImpl::attach();
 
     // The call to updateFromElement() needs to go after the call through
