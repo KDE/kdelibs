@@ -683,7 +683,7 @@ void HTMLBlockElementImpl::layout( bool deep )
     descent = MAX (descent, getRightBottom());
     setLayouted(layouted_);
 
-    printf("layouted = %d\n", layouted_);
+    // printf("layouted = %d\n", layouted_);
 }
 
 
