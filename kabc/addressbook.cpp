@@ -326,7 +326,6 @@ bool AddressBook::load()
   KRES::Manager<Resource>::ActiveIterator it;
   bool ok = true;
   for ( it = d->mManager->activeBegin(); it != d->mManager->activeEnd(); ++it ) {
-    (*it)->setAddressBook( this );
     if ( !(*it)->load() ) {
       error( i18n("Unable to load resource '%1'").arg( (*it)->resourceName() ) );
       ok = false;
@@ -345,8 +344,6 @@ bool AddressBook::asyncLoad()
   KRES::Manager<Resource>::ActiveIterator it;
   bool ok = true;
   for ( it = d->mManager->activeBegin(); it != d->mManager->activeEnd(); ++it ) {
-    (*it)->setAddressBook( this );
-
     d->mPendingLoadResources.append( *it );
     if ( !(*it)->asyncLoad() ) {
       error( i18n("Unable to load resource '%1'").arg( (*it)->resourceName() ) );
@@ -724,9 +721,8 @@ bool AddressBook::addResource( Resource *resource )
     return false;
   }
 
-  resource->setAddressBook( this );
-
   d->mManager->add( resource );
+  resource->setAddressBook( this );
 
   connect( resource, SIGNAL( loadingFinished( Resource* ) ),
            this, SLOT( resourceLoadingFinished( Resource* ) ) );
@@ -753,14 +749,14 @@ bool AddressBook::removeResource( Resource *resource )
   d->mManager->remove( resource );
 
   disconnect( resource, SIGNAL( loadingFinished( Resource* ) ),
-              this, SIGNAL( loadingFinished( Resource* ) ) );
+              this, SLOT( resourceLoadingFinished( Resource* ) ) );
   disconnect( resource, SIGNAL( savingFinished( Resource* ) ),
-              this, SIGNAL( savingFinished( Resource* ) ) );
+              this, SLOT( resourceSavingFinished( Resource* ) ) );
 
   disconnect( resource, SIGNAL( loadingError( Resource*, const QString& ) ),
-              this, SLOT( resourceError( Resource*, const QString& ) ) );
+              this, SLOT( resourceLoadingError( Resource*, const QString& ) ) );
   disconnect( resource, SIGNAL( savingError( Resource*, const QString& ) ),
-              this, SLOT( resourceError( Resource*, const QString& ) ) );
+              this, SLOT( resourceLoadingError( Resource*, const QString& ) ) );
 
   return true;
 }
