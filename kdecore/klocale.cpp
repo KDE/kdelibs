@@ -156,7 +156,7 @@ QString KLocale::WeekDayName (int i) const
 #ifdef ENABLE_NLS
 
 KLocale::KLocale( const QString& _catalogue )
-  : _inited(false)
+  : _inited(false), codec( 0 )
 {
 #ifdef HAVE_SETLOCALE
     /* "" instructs setlocale to use the default locale
@@ -205,8 +205,8 @@ void KLocale::setEncodingLang(const QString &_lang)
   // default to us-ascii
   if (!codec)
   {
-    debug("charset file invalide or not found. Defaulting to us-ascii");
-    codec = QTextCodec::codecForName( "us-ascii" );
+    debug("charset file invalide or not found. Defaulting to latin 1");
+    codec = QTextCodec::codecForName( "ISO 8859-1" );
   }
 }
 
