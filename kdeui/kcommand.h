@@ -198,7 +198,7 @@ public slots:
      * If you implemented undo/redo properly the document is
      * the same you saved before.
      */
-    void documentSaved();   // ### virtual in 3.0 (Werner)
+    virtual void documentSaved();
 
 protected slots:
     void slotUndoAboutToShow();
