@@ -16,6 +16,7 @@ Name[sk]=BMP obrázok
 Name[sr]=BMP slika
 Name[sv]=Bmp-bild
 Name[tr]=BMP Resim Dosyası
+Name[wa]=Imådje BMP
 Read=true
 Write=true
 Suffices=bmp,BMP

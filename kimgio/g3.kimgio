@@ -14,6 +14,7 @@ Name[pt_BR]=CCITT G3 fax
 Name[sr]=CCITT G3 fax
 Name[sv]=CCITT grupp 3-fax
 Name[tr]=CCITT G3 Faks
+Name[wa]=Facs CCITT G3
 Read=true
 Write=false
 Suffices=g3,G3,

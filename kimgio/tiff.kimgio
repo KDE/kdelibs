@@ -17,6 +17,7 @@ Name[sk]=TIFF obrázok
 Name[sr]=TIFF slika
 Name[sv]=Tiff-bild
 Name[tr]=TIFF Resim Dosyası
+Name[wa]=Imådje TIFF
 Read=true
 Write=false
 Suffices=tiff,TIFF,tif,TIF 
