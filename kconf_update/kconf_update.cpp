@@ -728,12 +728,6 @@ void KonfUpdate::gotScript(const QString &_script)
       interpreter = _script.mid(i+1).stripWhiteSpace();
    }
 
-   if (!oldConfig1)
-   {
-      log() << currentFilename << ": !! Script without previous File specification in line " << m_lineCount << " : '" << m_line << "'" << endl;
-      skip = true;
-      return;
-   }
 
    if (script.isEmpty())
    {
@@ -763,31 +757,6 @@ void KonfUpdate::gotScript(const QString &_script)
    else
       log() << currentFilename << ": Running script '" << script << "'" << endl;
 
-   KTempFile tmp1;
-   tmp1.setAutoDelete(true);
-   KTempFile tmp2;
-   tmp2.setAutoDelete(true);
-   KTempFile tmp3;
-   tmp3.setAutoDelete(true);
-   KSimpleConfig cfg(tmp1.name());
-
-   if (oldGroup.isEmpty())
-   {
-       // Write all entries to tmpFile;
-       QStringList grpList = oldConfig1->groupList();
-       for(QStringList::ConstIterator it = grpList.begin();
-           it != grpList.end();
-           ++it)
-       {
-          copyGroup(oldConfig1, *it, &cfg, *it);
-       }
-   }
-   else 
-   {
-       copyGroup(oldConfig1, oldGroup, &cfg, QString::null);
-   }
-   cfg.sync();
-
    QString cmd;
    if (interpreter.isEmpty())
       cmd = path;
@@ -799,11 +768,41 @@ void KonfUpdate::gotScript(const QString &_script)
       cmd += ' ';
       cmd += m_arguments;
    }
-   int result = system(QFile::encodeName(QString("%1 < %2 > %3 2> %4").arg(cmd, tmp1.name(), tmp2.name(), tmp3.name())));
-   if (result)
+
+   KTempFile tmp1;
+   tmp1.setAutoDelete(true);
+   KTempFile tmp2;
+   tmp2.setAutoDelete(true);
+   KTempFile tmp3;
+   tmp3.setAutoDelete(true);
+
+   int result;
+   if (oldConfig1)
    {
-      log() << currentFilename << ": !! An error occured while running '" << cmd << "'" << endl;
-      return;
+       KSimpleConfig cfg(tmp1.name());
+
+       if (oldGroup.isEmpty())
+       {
+           // Write all entries to tmpFile;
+           QStringList grpList = oldConfig1->groupList();
+           for(QStringList::ConstIterator it = grpList.begin();
+               it != grpList.end();
+               ++it)
+           {
+               copyGroup(oldConfig1, *it, &cfg, *it);
+           }
+       }
+       else 
+       {
+           copyGroup(oldConfig1, oldGroup, &cfg, QString::null);
+       }
+       cfg.sync();
+       result = system(QFile::encodeName(QString("%1 < %2 > %3 2> %4").arg(cmd, tmp1.name(), tmp2.name(), tmp3.name())));
+   }
+   else
+   {
+       // No config file
+       result = system(QFile::encodeName(QString("%1 2> %2").arg(cmd, tmp3.name())));
    }
 
    // Copy script stderr to log file
@@ -820,6 +819,15 @@ void KonfUpdate::gotScript(const QString &_script)
        }
      }
    }
+
+   if (result)
+   {
+      log() << currentFilename << ": !! An error occured while running '" << cmd << "'" << endl;
+      return;
+   }
+
+   if (!oldConfig1)
+      return; // Nothing to merge
 
    // Deleting old entries
    {

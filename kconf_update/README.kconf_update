@@ -102,6 +102,10 @@ To delete <oldgroup> use "# DELETEGROUP".
 
 <interpreter> can be something like "perl".
 
+Since KDE 3.3 it is also possible to have a Script without specifying
+<oldfile> or <newfile>. In that case the script is run but it will not be
+fed any input and its output will simply be discarded.
+
 ScriptsArguments=<arguments>
 
 If specified, the arguments will be passed to <script>.
