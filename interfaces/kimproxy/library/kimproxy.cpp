@@ -24,6 +24,7 @@
 #include <qglobal.h>
 #include <qpixmapcache.h>
 #include <dcopclient.h>
+#include <kapplication.h>
 #include <kdcopservicestarter.h> 
 #include <kdebug.h>
 #include <kmessagebox.h>
@@ -364,7 +365,10 @@ void KIMProxy::chatWithContact( const QString& uid )
 	if ( initialize() )
 	{
 		if ( KIMIface_stub* s = stubForUid( uid ) )
+		{
+			kapp->updateRemoteUserTimestamp( s->app() );
 			s->chatWithContact( uid );
+		}
 	}
 	return;
 }
@@ -374,7 +378,10 @@ void KIMProxy::messageContact( const QString& uid, const QString& message )
 	if ( initialize() )
 	{
 		if ( KIMIface_stub* s = stubForUid( uid ) )
+		{
+			kapp->updateRemoteUserTimestamp( s->app() );
 			s->messageContact( uid, message );
+		}
 	}
 	return;
 }
@@ -388,6 +395,7 @@ void KIMProxy::sendFile(const QString &uid, const KURL &sourceURL, const QString
 		{
 			if ( it.current()->canReceiveFiles( uid ) )
 			{
+				kapp->updateRemoteUserTimestamp( it.current()->app() );
 				it.current()->sendFile( uid, sourceURL, altFileName, fileSize );
 				break;
 			}
