@@ -4,6 +4,8 @@
  <Action name="savelinkas" />
  <Action name="saveimageas" />
  <Separator weakSeparator="1" />
+ <Action name="selectAll" />
+ <Separator weakSeparator="1" />
  <Action name="copylinklocation" />
  <Action name="copyimagelocation" />
 </Menu>

@@ -2548,6 +2548,8 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
 
   setInstance( khtml->instance() );
 
+  actionCollection()->insert( khtml->actionCollection()->action( "selectAll" ) );
+  
   // frameset? -> add "Reload Frame"
   if ( khtml->parentPart() )
   {
