@@ -224,6 +224,8 @@ void KDirLister::slotRedirection( KIO::Job *, const KURL & url )
   kdDebug(7003) << "KDirLister::slotRedirection " << url.url() << endl;
   m_url = url;
   emit redirection( url );
+  if ( m_lstDirs.count() == 1 )
+      m_lstDirs.first() = m_url;
 }
 
 void KDirLister::updateDirectory( const KURL& _dir )
@@ -490,7 +492,7 @@ void KDirLister::setNameFilter(const QString& nameFilter)
 
 void KDirLister::FilesAdded( const KURL & directory )
 {
-  //kdDebug(7003) << "FilesAdded " << directory.url() << " - we are showing " << m_lstDirs.first().url() << endl;
+  kdDebug(7003) << "FilesAdded " << directory.url() << " - we are showing " << m_url.url() << endl;
   slotURLDirty( directory );
 }
 
