@@ -68,7 +68,7 @@ static Atom net_wm_ping              = 0;
 // used to determine whether application window is managed or not
 static Atom xa_wm_state              = 0;
 
-static bool netwm_atoms_created            = FALSE;
+static bool netwm_atoms_created            = false;
 
 
 static char *nstrdup(const char *s1) {
