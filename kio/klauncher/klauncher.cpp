@@ -195,7 +195,8 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
    if ((fun == "start_service_by_name(QString,QStringList)") ||
        (fun == "start_service_by_desktop_path(QString,QStringList)")||
        (fun == "start_service_by_desktop_name(QString,QStringList)")||
-       (fun == "kdeinit_exec(QString,QStringList)"))
+       (fun == "kdeinit_exec(QString,QStringList)") ||
+       (fun == "kdeinit_exec_wait(QString,QStringList)"))
    {
       QDataStream stream(data, IO_ReadOnly);
 
@@ -222,10 +223,15 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
          kdDebug(7016) << "KLauncher: Got start_service_by_desktop_name('" << serviceName << "', ...)" << endl;
          finished = start_service_by_desktop_name(serviceName, urls);
       }
-      else
+      else if (fun == "kdeinit_exec(QString,QStringList)")
       {
          kdDebug(7016) << "KLauncher: Got kdeinit_exec('" << serviceName << "', ...)" << endl;
-         finished = kdeinit_exec(serviceName, urls);
+         finished = kdeinit_exec(serviceName, urls, false);
+      }
+      else 
+      {
+         kdDebug(7016) << "KLauncher: Got kdeinit_exec_wait('" << serviceName << "', ...)" << endl;
+         finished = kdeinit_exec(serviceName, urls, true);
       }
       if (!finished)
       {
@@ -360,19 +366,31 @@ KLauncher::slotKDEInitData(int)
      switch(lastRequest->dcop_service_type)
      {
        case KService::DCOP_None:
+       {
          lastRequest->status = KLaunchRequest::Running;
          break;
+       }
 
        case KService::DCOP_Unique:
+       {
          lastRequest->status = KLaunchRequest::Launching;
          break;
+       }
+
+       case KService::DCOP_Wait:
+       {
+         lastRequest->status = KLaunchRequest::Launching;
+         break;
+       }
 
        case KService::DCOP_Multi:
+       {
          lastRequest->status = KLaunchRequest::Launching;
          QCString pidStr;
          pidStr.setNum(lastRequest->pid);
          lastRequest->dcop_name = lastRequest->name + "-" + pidStr;
          break;
+       }
      }
      lastRequest = 0;
      return;
@@ -396,7 +414,10 @@ KLauncher::processDied(pid_t pid, long /* exitStatus */)
    {
       if (request->pid == pid)
       {
-         request->status = KLaunchRequest::Error;
+         if (request->dcop_service_type == KService::DCOP_Wait)
+            request->status = KLaunchRequest::Done;
+         else
+            request->status = KLaunchRequest::Error;
          requestDone(request);
          return;
       }
@@ -426,7 +447,8 @@ KLauncher::slotAppRegistered(const QCString &appId)
 void
 KLauncher::requestDone(KLaunchRequest *request)
 {
-   if (request->status == KLaunchRequest::Running)
+   if ((request->status == KLaunchRequest::Running) ||
+       (request->status == KLaunchRequest::Done))
    {
       DCOPresult.result = 0;
       DCOPresult.dcopName = request->dcop_name;
@@ -628,7 +650,8 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls, bool b
 
    request->dcop_service_type =  service->DCOPServiceType();
 
-   if (request->dcop_service_type == KService::DCOP_None)
+   if ((request->dcop_service_type == KService::DCOP_None) ||   
+       (request->dcop_service_type == KService::DCOP_Wait))
       request->dcop_name = 0;
    else
       request->dcop_name = request->name;
@@ -646,7 +669,7 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls, bool b
 }
 
 bool
-KLauncher::kdeinit_exec(const QString &app, const QStringList &args)
+KLauncher::kdeinit_exec(const QString &app, const QStringList &args, bool wait)
 {
    KLaunchRequest *request = new KLaunchRequest;
 
@@ -660,7 +683,10 @@ KLauncher::kdeinit_exec(const QString &app, const QStringList &args)
 
    request->name = app.local8Bit();
 
-   request->dcop_service_type = KService::DCOP_None;
+   if (wait)
+      request->dcop_service_type = KService::DCOP_Wait;
+   else 
+      request->dcop_service_type = KService::DCOP_None;
    request->dcop_name = 0;
    request->pid = 0;
    request->transaction = dcopClient()->beginTransaction();

@@ -65,7 +65,7 @@ public:
    QCString name;
    QValueList<QCString> arg_list;
    QCString dcop_name;
-   enum status_t { Init = 0, Launching, Running, Error };
+   enum status_t { Init = 0, Launching, Running, Error, Done };
    pid_t pid;
    status_t status;
    DCOPClientTransaction *transaction;
@@ -106,7 +106,7 @@ protected:
    bool start_service_by_name(const QString &serviceName, const QStringList &urls);
    bool start_service_by_desktop_path(const QString &serviceName, const QStringList &urls);
    bool start_service_by_desktop_name(const QString &serviceName, const QStringList &urls);
-   bool kdeinit_exec(const QString &app, const QStringList &args);
+   bool kdeinit_exec(const QString &app, const QStringList &args, bool wait);
 
    bool allowMultipleFiles(const KService::Ptr service);
 
