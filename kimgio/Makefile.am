@@ -1,7 +1,7 @@
 
 if include_TIFF_MODULES
-KIMGIO_TIFF_MODULES=kimg_tiff.la kimg_g3.la
-KIMGIO_TIFF_DATAFILES=tiff.kimgio g3.kimgio
+KIMGIO_TIFF_MODULES=kimg_tiff.la # kimg_g3.la
+KIMGIO_TIFF_DATAFILES=tiff.kimgio # g3.kimgio
 endif
 
 kde_module_LTLIBRARIES= kimg_eps.la kimg_xview.la kimg_krl.la \
