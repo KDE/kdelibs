@@ -441,7 +441,7 @@ void HTMLTokenizer::parseComment(DOMStringIt &src)
         {
             ++src;
 #ifdef COMMENTS_IN_DOM
-            checkBuffer();
+            checkScriptBuffer();
             scriptCode[ scriptCodeSize ] = 0;
             scriptCode[ scriptCodeSize + 1 ] = 0;
             currToken.id = ID_COMMENT;
@@ -1446,6 +1446,18 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
     _src = QString();
     if (noMoreData && !cachedScript)
         end(); // this actually causes us to be deleted
+}
+
+bool HTMLTokenizer::close()
+{
+    if(m_executingScript) {
+        m_executingScript = false;
+        write(scriptOutput, false);
+        scriptOutput = QString::null;
+        return false;
+    }
+
+    return true;
 }
 
 void HTMLTokenizer::end()

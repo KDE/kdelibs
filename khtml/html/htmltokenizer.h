@@ -132,6 +132,7 @@ public:
     virtual void end() = 0;
     virtual void finish() = 0;
     virtual void setOnHold(bool /*_onHold*/) {}
+    virtual bool close() { return true; }
 
 signals:
     void finishedParsing();
@@ -159,6 +160,7 @@ public:
     void write( const QString &str, bool appendData );
     void end();
     void finish();
+    bool close();
     virtual void setOnHold(bool _onHold);
 
 protected:
