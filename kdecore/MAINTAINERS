@@ -78,6 +78,7 @@ kurldrag.cpp		David Faure <faure@kde.org>
 kwin.cpp        	Lubos Lunak <l.lunak@kde.org>
 kwinmodule.cpp  	Lubos Lunak <l.lunak@kde.org>
 kxmessages.cpp		Lubos Lunak <l.lunak@kde.org>
+kxerrorhandler.cpp	Lubos Lunak <l.lunak@kde.org>
 libintl.cpp		Hans Petter Bieker <bieker@kde.org>
 netsupp.cpp
 netwm.cpp       	Lubos Lunak <l.lunak@kde.org>
