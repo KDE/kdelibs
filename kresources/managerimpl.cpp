@@ -104,8 +104,7 @@ void ResourceManagerImpl::remove( Resource *resource, bool useDCOP )
 
   if ( useDCOP ) signalResourceDeleted( resource->identifier() );
 
-  if ( resource )
-    delete resource;
+  delete resource;
 
   kdDebug(5650) << "Finished REsourceManagerImpl::remove()" << endl;
 }
