@@ -161,6 +161,7 @@ public:
    ,d(new KMdiMainFrmPrivate())
    ,m_mdiGUIClient(0)
    ,m_documentTabWidget(0)
+   ,m_managedDockPositionMode(false)
 {
    // Create the local lists of windows
    m_pDocumentViews = new QPtrList<KMdiChildView>;
