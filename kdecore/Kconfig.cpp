@@ -1,6 +1,13 @@
 // $Id$
 //
 /* $Log$
+ * Revision 1.21  1997/08/30 15:51:55  kdecvs
+ * Kalle: BINARY INCOMPATIBLE!!!!!
+ * KApplication provides an IconLoader
+ * KConfig writes a cookie to the start of every config file
+ * KIconLoader now in kdecore (KIconLoaderDialog and KIconLoaderCanvas stay
+ * in kdeui)
+ *
  * Revision 1.20  1997/08/13 10:54:54  kulow
  * Coolo: bugfix against endless parsing
  *
@@ -209,6 +216,10 @@ KConfig::KConfig( QTextStream* pStream )
   pDefGroup->setAutoDelete( true );
   pData->aGroupDict.insert( "<default>", pDefGroup );
 
+  char* pLang = getenv( "LANG" );
+  QString aGetenvString = pLang;
+  pData->aLocaleString = aGetenvString.left( 2 );
+
   parseConfigFiles();
 }
 
@@ -339,7 +350,7 @@ const QString& KConfig::getGroup() const
 }
 
 QString KConfig::readEntry( const QString& rKey, 
-							const QString* pDefault ) const 
+			    const char* pDefault ) const 
 {
   QString aValue;
   // retrieve the current group dictionary
@@ -347,12 +358,20 @@ QString KConfig::readEntry( const QString& rKey,
   
   if( pCurrentGroupDict )
     {
+      // try the localized key first
+      QString aLocalizedKey = rKey + "[" + pData->aLocaleString + "]";
       // find the value for the key in the current group
-      KEntryDictEntry* pData = (*pCurrentGroupDict)[ rKey.data() ];
-      if( pData )
-		aValue = pData->aValue;
-	  else if( pDefault )
-		aValue = *pDefault;
+
+      KEntryDictEntry* pEntryData = (*pCurrentGroupDict)[ aLocalizedKey.data() ];
+
+      if( !pEntryData )
+	// next try with the non-localized one
+	pEntryData = (*pCurrentGroupDict)[ rKey.data() ];
+
+      if( pEntryData )
+	aValue = pEntryData->aValue;
+      else if( pDefault )
+	aValue = *pDefault;
     }
   else if( pDefault )
 	aValue = *pDefault;

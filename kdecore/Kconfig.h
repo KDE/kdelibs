@@ -1,6 +1,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.10  1997/08/05 14:24:38  ettrich
+// Matthias: Final solution to the sync() problem. Sync() doesn't reparse,
+//   but a new method reparseConfiguration() will fullfill this task.
+//
 // Revision 1.9  1997/07/18 05:49:13  ssk
 // Taj: All kdecore doc now in javadoc format (hopefully).
 //
@@ -214,8 +218,7 @@ public:
 * @return The value for this key or an empty string if no value
 *	  was found.
 */
-  QString readEntry( const QString& rKey, 
-					 const QString* pDefault = NULL ) const;
+  QString readEntry( const QString& rKey, const char* pDefault = NULL ) const;
 
 /**
 * Read a list of strings.

@@ -74,7 +74,7 @@ KLocale::KLocale( const char *_catalogue )
 	KConfig config;
 	QString languages = "C";
 	config.setGroup("Locale");
-	languages = config.readEntry("Language", &languages);
+	languages = config.readEntry("Language", languages);
 	// putenv needs an extra malloc!
 	buffer = new char[languages.length() + 6];
 	sprintf(buffer, "LANG=%s",languages.data());

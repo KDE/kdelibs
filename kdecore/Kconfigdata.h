@@ -1,6 +1,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.2  1997/07/18 05:49:14  ssk
+// Taj: All kdecore doc now in javadoc format (hopefully).
+//
 // Revision 1.1.1.1  1997/04/13 14:42:41  cvsuser
 // Source imported
 //
@@ -77,6 +80,7 @@ friend class KConfig;
 private:
   QTextStream* pAppStream;
   QString aGroup;
+  QString aLocaleString; // two-letter locale code
   bool bDirty; // is there any entry that has to be written back to disk?
 
   QDict<KEntryDict> aGroupDict;
