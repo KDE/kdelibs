@@ -126,8 +126,8 @@ public:
    * configuration file.
    * If no config file is specified, it will also look for languages
    * using the environment variables (KDE_LANG, LC_MESSAGES, LC_ALL, LANG),
-   * as well as the global configuration fie. If we were not able to use
-   * non of the specified languages, the default language (en_US) will be
+   * as well as the global configuration file. If KLocale is not able to use
+   * any of the specified languages, the default language (en_US) will be
    * used.
    *
    * If you specify a configuration file, it has to be valid until
