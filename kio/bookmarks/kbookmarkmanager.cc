@@ -505,9 +505,6 @@ void KBookmarkManager::updateFavicon( const QString &url, const QString &favicon
     }
 }
 
-#undef DYNMENUCONFIGPREFIX
-#define DYNMENUCONFIGPREFIX "DynamicMenu-"
-
 KBookmarkManager::DynMenuInfo KBookmarkManager::showDynamicBookmarks( const QString &id ) const 
 {
    KConfig config("kbookmarkrc", false, false);
@@ -527,8 +524,8 @@ KBookmarkManager::DynMenuInfo KBookmarkManager::showDynamicBookmarks( const QStr
 
    } else {
       // have new version config
-      if (config.hasGroup(DYNMENUCONFIGPREFIX + id)) {
-         config.setGroup(DYNMENUCONFIGPREFIX + id);
+      if (config.hasGroup("DynamicMenu-" + id)) {
+         config.setGroup("DynamicMenu-" + id);
          info.show = config.readBoolEntry("Show");
          info.location = config.readPathEntry("Location");
          info.type = config.readEntry("Type");
@@ -558,7 +555,7 @@ void KBookmarkManager::setDynamicBookmarks(const QString &id, const DynMenuInfo 
    KConfig config("kbookmarkrc", false, false);
 
    // add group unconditionally
-   config.setGroup(DYNMENUCONFIGPREFIX + id);
+   config.setGroup("DynamicMenu-" + id);
    config.writeEntry("Show", newMenu.show);
    config.writeEntry("Location", newMenu.location);
    config.writeEntry("Type", newMenu.type);
@@ -571,7 +568,7 @@ void KBookmarkManager::setDynamicBookmarks(const QString &id, const DynMenuInfo 
       if (newMenu.type != "netscape") {
          // update from old xbel method to new rc method
          // though only if not writing the netscape setting
-         config.setGroup(DYNMENUCONFIGPREFIX "netscape");
+         config.setGroup("DynamicMenu-" "netscape");
          DynMenuInfo xbelSetting;
          xbelSetting = showDynamicBookmarks("netscape");
          config.writeEntry("Show", xbelSetting.show);
@@ -586,7 +583,7 @@ void KBookmarkManager::setDynamicBookmarks(const QString &id, const DynMenuInfo 
 
    // make sure list includes type
    config.setGroup("Bookmarks");
-   if (elist.contains(DYNMENUCONFIGPREFIX + id) < 1) {
+   if (elist.contains(id) < 1) {
       elist << id;
       config.writeEntry("DynamicMenus", elist);
    }
