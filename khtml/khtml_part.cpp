@@ -612,6 +612,7 @@ bool KHTMLPart::openURL( const KURL &url )
     args.xOffset = d->m_view->contentsX();
     args.yOffset = d->m_view->contentsY();
     d->m_extension->setURLArgs(args);
+    disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(gotoAnchor()));
     connect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));
   }
 
@@ -1897,10 +1898,6 @@ void KHTMLPart::slotFinishedParsing()
 
   if (!d->m_view)
     return; // We are probably being destructed.
-  // check if the scrollbars are really needed for the content
-  // if not, remove them, relayout, and repaint
-
-  d->m_view->restoreScrollBar();
 
   checkCompleted();
 }
@@ -2085,7 +2082,7 @@ void KHTMLPart::checkCompleted()
       d->m_view->setContentsPos( d->m_extension->urlArgs().xOffset,
                                  d->m_extension->urlArgs().yOffset );
 
-  d->m_view->complete();
+  bool pendingAction = false;
 
   if ( !d->m_redirectURL.isEmpty() )
   {
@@ -2094,15 +2091,17 @@ void KHTMLPart::checkCompleted()
     if ( parentPart() == 0 )
       d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
 
-    emit completed( true );
+    pendingAction = true;
   }
-  else
+  else if ( bPendingChildRedirection )
   {
-    if ( bPendingChildRedirection )
-      emit completed( true );
-    else
-      emit completed();
+    pendingAction = true;
   }
+
+  // the view will emit completed on our behalf, 
+  // either now or at next repaint if one is pending
+  
+  d->m_view->complete( pendingAction );
 
   // find the alternate stylesheets
   QStringList sheets;
@@ -2302,9 +2301,12 @@ void KHTMLPart::setUserStyleSheet(const QString &styleSheet)
 
 void KHTMLPart::gotoAnchor()
 {
-  disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(gotoAnchor()));
-  if ( !gotoAnchor( m_url.encodedHtmlRef()) )
-      gotoAnchor( m_url.htmlRef() );
+  if ( !d->m_doc || !d->m_doc->parsing() ) {
+    disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(gotoAnchor()));
+  }
+
+  if ( !gotoAnchor(m_url.encodedHtmlRef()) )
+      gotoAnchor(m_url.htmlRef());
 }
 
 bool KHTMLPart::gotoAnchor( const QString &name )

@@ -133,6 +133,12 @@ public:
 	PFBottom
     };
 
+    enum CompletedState {
+        CSNone = 0,
+        CSFull,
+        CSActionPending
+    };
+
     KHTMLViewPrivate()
         : underMouse( 0 ), underMouseNonShared( 0 )
     {
@@ -149,6 +155,7 @@ public:
         prevScrollbarVisible = true;
 	tooltip = 0;
         possibleTripleClick = false;
+        emitCompletedAfterRepaint = CSNone;
     }
     ~KHTMLViewPrivate()
     {
@@ -227,6 +234,7 @@ public:
 #endif // KHTML_NO_TYPE_AHEAD_FIND
 	accessKeysActivated = false;
 	accessKeysPreActivate = false;
+        emitCompletedAfterRepaint = CSNone;
     }
     void newScrollTimer(QWidget *view, int tid)
     {
@@ -343,6 +351,7 @@ public:
 #endif // KHTML_NO_TYPE_AHEAD_FIND
     bool accessKeysActivated;
     bool accessKeysPreActivate;
+    CompletedState emitCompletedAfterRepaint;
 };
 
 #ifndef QT_NO_TOOLTIP
@@ -2765,6 +2774,13 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
                 addChild(w, 0, -500000);
     }
     if (d->accessKeysActivated) emit repaintAccessKeys();
+    if (d->emitCompletedAfterRepaint) {
+        if (d->emitCompletedAfterRepaint == KHTMLViewPrivate::CSFull)
+            emit m_part->completed();
+        else
+            emit m_part->completed(true);
+        d->emitCompletedAfterRepaint = KHTMLViewPrivate::CSNone;
+    }
 }
 
 void KHTMLView::scheduleRelayout(khtml::RenderObject * /*clippedObj*/)
@@ -2821,7 +2837,7 @@ void KHTMLView::scheduleRepaint(int x, int y, int w, int h)
 //     kdDebug() << "starting timer " << time << endl;
 }
 
-void KHTMLView::complete()
+void KHTMLView::complete( bool pendingAction )
 {
 //     kdDebug() << "KHTMLView::complete()" << endl;
 
@@ -2834,6 +2850,8 @@ void KHTMLView::complete()
         // do it now
         killTimer(d->layoutTimerId);
         d->layoutTimerId = startTimer( 0 );
+        d->emitCompletedAfterRepaint = pendingAction ? 
+            KHTMLViewPrivate::CSActionPending : KHTMLViewPrivate::CSFull;
     }
 
     // is there a repaint pending?
@@ -2843,7 +2861,18 @@ void KHTMLView::complete()
         // do it now
         killTimer(d->repaintTimerId);
         d->repaintTimerId = startTimer( 20 );
+        d->emitCompletedAfterRepaint = pendingAction ? 
+            KHTMLViewPrivate::CSActionPending : KHTMLViewPrivate::CSFull;
     }
+
+    if (!d->emitCompletedAfterRepaint)
+    {
+        if (!pendingAction)
+            emit m_part->completed();
+        else
+            emit m_part->completed(true);
+    }
+    
 }
 
 #ifndef KHTML_NO_CARET

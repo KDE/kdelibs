@@ -280,7 +280,7 @@ private:
     bool dispatchKeyEvent( QKeyEvent *_ke );
     bool dispatchKeyEventHelper( QKeyEvent *_ke, bool generate_keypress );
 
-    void complete();
+    void complete( bool pendingAction );
 
 #ifndef KHTML_NO_TYPE_AHEAD_FIND
     void findAhead(bool increase);
