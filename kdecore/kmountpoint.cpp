@@ -143,12 +143,18 @@ KMountPoint::List KMountPoint::possibleMountPoints(int infoNeeded)
          
       mp->m_mountPoint = QFile::decodeName(MOUNTPOINT(fe));
       mp->m_mountType = QFile::decodeName(MOUNTTYPE(fe));
-      if (infoNeeded & NeedMountOptions)
+
+      //Devices using supermount have their device names in the mount options
+      //instead of the device field. That's why we need to read the mount options
+      if (infoNeeded & NeedMountOptions || (mp->m_mountType == "supermount"))
       {
          QString options = QFile::decodeName(MOUNTOPTIONS(fe));
          mp->m_mountOptions = QStringList::split(',', options);
       }
 
+      if(mp->m_mountType == "supermount")
+         mp->m_mountedFrom = devNameFromOptions(mp->m_mountOptions);
+ 
       if (infoNeeded & NeedRealDeviceName)
       {
          if (mp->m_mountedFrom.startsWith("/"))
@@ -194,6 +200,7 @@ KMountPoint::List KMountPoint::possibleMountPoints(int infoNeeded)
       mp->m_mountPoint = item[i++];
       mp->m_mountType = item[i++];
       QString options = item[i++];
+
       if (infoNeeded & NeedMountOptions)
       {
          mp->m_mountOptions = QStringList::split(',', options);
@@ -337,11 +344,17 @@ KMountPoint::List KMountPoint::currentMountPoints(int infoNeeded)
          
       mp->m_mountPoint = QFile::decodeName(MOUNTPOINT(fe));
       mp->m_mountType = QFile::decodeName(MOUNTTYPE(fe));
-      if (infoNeeded & NeedMountOptions)
+      
+      //Devices using supermount have their device names in the mount options
+      //instead of the device field. That's why we need to read the mount options 
+      if (infoNeeded & NeedMountOptions || (mp->m_mountType == "supermount"))
       {
          QString options = QFile::decodeName(MOUNTOPTIONS(fe));
          mp->m_mountOptions = QStringList::split(',', options);
       }
+
+      if (mp->m_mountType == "supermount")
+         mp->m_mountedFrom = devNameFromOptions(mp->m_mountOptions);
 
       if (infoNeeded & NeedRealDeviceName)
       {
@@ -356,3 +369,13 @@ KMountPoint::List KMountPoint::currentMountPoints(int infoNeeded)
    return result;
 }
 
+QString KMountPoint::devNameFromOptions(const QStringList &options)
+{
+   // Search options to find the device name
+   for ( QStringList::ConstIterator it = options.begin(); it != options.end(); ++it)
+   {
+      if( (*it).startsWith("dev="))
+         return QString(*it).remove("dev=");
+   } 
+   return QString("none");
+}

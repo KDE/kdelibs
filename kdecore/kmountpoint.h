@@ -85,6 +85,12 @@ public:
    QStringList mountOptions() const { return m_mountOptions; }
 
    /**
+    * When using supermount, the device name is in the options field
+    * as dev=/my/device
+    */
+   static QString devNameFromOptions(const QStringList &options);
+
+   /**
     * Destructor
     */
    ~KMountPoint();
