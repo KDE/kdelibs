@@ -110,7 +110,7 @@ const unsigned short KDE_NO_EXPORT DOM::tagPriority[] = {
     3, // ID_MARQUEE
     5, // ID_MENU
     0, // ID_META
-    1, // ID_NOBR
+    4, // ID_NOBR
    10,// ID_NOEMBED
    10,// ID_NOFRAMES
     3, // ID_NOSCRIPT
@@ -148,7 +148,7 @@ const unsigned short KDE_NO_EXPORT DOM::tagPriority[] = {
     1, // ID_U
     5, // ID_UL
     1, // ID_VAR
-    1, // ID_WBR
+    4, // ID_WBR
     5, // ID_XMP
     0, // ID_TEXT
 };
@@ -589,6 +589,8 @@ bool DOM::checkChild(ushort tagID, ushort childID)
     case ID_LEGEND:
     case ID_Q:
     case ID_A:
+    case ID_NOBR:
+    case ID_WBR:
         // _1 *
         return check_array(childID, tag_list_1);
     case ID_P:
@@ -620,8 +622,6 @@ bool DOM::checkChild(ushort tagID, ushort childID)
         // BODY: _1 * + _2
         if( check_array(childID, tag_list_1) ) return true;
         return check_array(childID, tag_list_2);
-    case ID_NOBR:
-    case ID_WBR:
     case ID_ADDRESS:
         // ADDRESS: ( _0 | P ) *
         if( check_array(childID, tag_list_0) ) return true;
@@ -769,7 +769,11 @@ void DOM::addForbidden(int tagId, ushort *forbiddenTags)
         // we allow nested anchors. The innermost one wil be taken...
         //forbiddenTags[ID_A]++;
         break;
+    case ID_WBR:
+        forbiddenTags[ID_WBR]++;
+        break;
     case ID_NOBR:
+        forbiddenTags[ID_NOBR]++;
         forbiddenTags[ID_PRE]++;
         // fall through
     case ID_PRE:
@@ -842,7 +846,11 @@ void DOM::removeForbidden(int tagId, ushort *forbiddenTags)
     case ID_A:
         //forbiddenTags[ID_A]--;
         break;
+    case ID_WBR:
+        forbiddenTags[ID_WBR]--;
+        break;
     case ID_NOBR:
+        forbiddenTags[ID_NOBR]--;
         forbiddenTags[ID_PRE]--;
         // fall through
     case ID_PRE:
