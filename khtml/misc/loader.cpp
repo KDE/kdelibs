@@ -61,10 +61,7 @@ using namespace DOM;
 void CachedObject::finish()
 {
     if( m_size > MAXCACHEABLE )
-    {
         m_status = Uncacheable;
-        //Cache::flush(true); // Force flush.
-    }
     else
         m_status = Cached;
     KURL url(m_url.string());
@@ -154,6 +151,7 @@ void CachedCSSStyleSheet::ref(CachedObjectClient *c)
 
 void CachedCSSStyleSheet::deref(CachedObjectClient *c)
 {
+    Cache::flush();
     m_clients.remove(c);
     if ( canDelete() && m_free )
       delete this;
@@ -235,6 +233,7 @@ void CachedScript::ref(CachedObjectClient *c)
 
 void CachedScript::deref(CachedObjectClient *c)
 {
+    Cache::flush();
     m_clients.remove(c);
     if ( canDelete() && m_free )
       delete this;
@@ -475,10 +474,10 @@ void CachedImage::deref( CachedObjectClient *c )
 #ifdef CACHE_DEBUG
     kdDebug( 6060 ) << this << " CachedImage::deref(" << c << ") " << endl;
 #endif
+    Cache::flush();
     m_clients.remove( c );
     if(m && m_clients.isEmpty() && m->running())
         m->pause();
-
     if ( canDelete() && m_free )
         delete this;
 }
@@ -1225,7 +1224,6 @@ CachedImage *Cache::requestImage( DocLoader* dl, const DOMString & url, bool rel
         if ( dl && dl->autoloadImages() ) Cache::loader()->load(dl, im, true);
         cache->insert( kurl.url(), im );
         lru->prepend( kurl.url() );
-        flush();
         o = im;
     }
 
@@ -1285,7 +1283,6 @@ CachedCSSStyleSheet *Cache::requestStyleSheet( DocLoader* dl, const DOMString & 
         CachedCSSStyleSheet *sheet = new CachedCSSStyleSheet(dl, kurl.url(), cachePolicy, _expireDate, charset);
         cache->insert( kurl.url(), sheet );
         lru->prepend( kurl.url() );
-        flush();
         o = sheet;
     }
 
@@ -1355,7 +1352,6 @@ CachedScript *Cache::requestScript( DocLoader* dl, const DOM::DOMString &url, bo
         CachedScript *script = new CachedScript(dl, kurl.url(), cachePolicy, _expireDate, charset);
         cache->insert( kurl.url(), script );
         lru->prepend( kurl.url() );
-        flush();
         o = script;
     }
 
@@ -1405,7 +1401,7 @@ void Cache::flush(bool force)
     init();
 
 #ifdef CACHE_DEBUG
-    //statistics();
+    statistics();
     kdDebug( 6060 ) << "Cache: flush()" << endl;
 #endif
 
