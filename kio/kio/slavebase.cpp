@@ -283,7 +283,7 @@ void SlaveBase::dispatchLoop()
           }
         }
     }
-    else if (retval<0)
+    else if ((retval<0) && (errno != EINTR))
     {
        kdDebug(7019) << "dispatchLoop(): select returned " << retval << " "
           << (errno==EBADF?"EBADF":errno==EINTR?"EINTR":errno==EINVAL?"EINVAL":errno==ENOMEM?"ENOMEM":"unknown")
