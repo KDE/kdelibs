@@ -866,7 +866,7 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
         DCOPConnection* conn = clients.find( iceConn );
         if (conn)
         {
-qDebug("DCOPServer: %s emits %s", conn->appId.data(), fun.data());
+           //qDebug("DCOPServer: %s emits %s", conn->appId.data(), fun.data());
            dcopSignals->emitSignal(conn, fun, data, false);
         }
         replyType = "void";
@@ -981,7 +981,7 @@ qDebug("DCOPServer: %s emits %s", conn->appId.data(), fun.data());
         QDataStream args(data, IO_ReadOnly );
         if (args.atEnd()) return false;
         args >> sender >> senderObj >> signal >> receiverObj >> slot >> Volatile;
-qDebug("DCOPServer: connectSignal(sender = %s senderObj = %s signal = %s recvObj = %s slot = %s)", sender.data(), senderObj.data(), signal.data(), receiverObj.data(), slot.data());
+        //qDebug("DCOPServer: connectSignal(sender = %s senderObj = %s signal = %s recvObj = %s slot = %s)", sender.data(), senderObj.data(), signal.data(), receiverObj.data(), slot.data());
         bool b = dcopSignals->connectSignal(sender, senderObj, signal, conn, receiverObj, slot, (Volatile != 0));
         replyType = "bool";
         QDataStream reply( replyData, IO_WriteOnly );
@@ -994,7 +994,7 @@ qDebug("DCOPServer: connectSignal(sender = %s senderObj = %s signal = %s recvObj
         QDataStream args(data, IO_ReadOnly );
         if (args.atEnd()) return false;
         args >> sender >> senderObj >> signal >> receiverObj >> slot;
-qDebug("DCOPServer: disconnectSignal(sender = %s senderObj = %s signal = %s recvObj = %s slot = %s)", sender.data(), senderObj.data(), signal.data(), receiverObj.data(), slot.data());
+        //qDebug("DCOPServer: disconnectSignal(sender = %s senderObj = %s signal = %s recvObj = %s slot = %s)", sender.data(), senderObj.data(), signal.data(), receiverObj.data(), slot.data());
         bool b = dcopSignals->disconnectSignal(sender, senderObj, signal, conn, receiverObj, slot);
         replyType = "bool";
         QDataStream reply( replyData, IO_WriteOnly );
