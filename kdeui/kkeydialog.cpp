@@ -326,6 +326,7 @@ KKeyChooser::KKeyChooser( QDict<KKeyEntry> *aKeyDict, QWidget *parent ,
 	// and fill up the split list box with the action/key pairs.
 	
 	wList = new KSplitList( this );
+	wList->setMinimumHeight(80);
 	stackLayout->addMultiCellWidget( wList, 1, 1, 0, 1 );
 	
 	actLabel = new QLabel( wList, i18n("&Action"), this );
@@ -491,6 +492,7 @@ KKeyChooser::KKeyChooser( QDict<KKeyEntry> *aKeyDict, QWidget *parent ,
 	stdDict->setAutoDelete( true );
 	if (check_against_std_keys)
 	  readStdKeys();
+	wList->setCurrentItem( 0 );
 	topLayout->activate();
 }
 
