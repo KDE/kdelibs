@@ -194,8 +194,10 @@ void KGlobalAccelPrivate::x11MappingNotify()
 bool KGlobalAccelPrivate::x11KeyPress( const XEvent *pEvent )
 {
 	// do not change this line unless you really really know what you are doing (Matthias)
-	if ( !QWidget::keyboardGrabber() && !QApplication::activePopupWidget() )
+	if ( !QWidget::keyboardGrabber() && !QApplication::activePopupWidget() ) {
 		XUngrabKeyboard( qt_xdisplay(), pEvent->xkey.time );
+                XFlush( qt_xdisplay()); // avoid X(?) bug
+        }
 
 	if( !m_bEnabled )
 		return false;
