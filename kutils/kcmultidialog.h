@@ -158,6 +158,7 @@ private:
     QPtrDict<QStringList>  modulePrefParent;
     QString _docPath;
     QString _baseGroup;
+    bool createTreeList;
 
     // For future use
     class KCMultiDialogPrivate;

@@ -41,6 +41,7 @@ KCMultiDialog::KCMultiDialog(const QString& baseGroup, QWidget *parent, const ch
   : KDialogBase(IconList, i18n("Configure"), Help | Default |Cancel | Apply | Ok, Ok,
                 parent, name, modal, true)
   , _baseGroup(baseGroup)
+  , createTreeList( false )
 {
     init();
 }
@@ -48,7 +49,10 @@ KCMultiDialog::KCMultiDialog(const QString& baseGroup, QWidget *parent, const ch
 KCMultiDialog::KCMultiDialog( int dialogFace, const QString & caption, QWidget * parent, const char * name, bool modal )
     : KDialogBase( dialogFace, caption, Help | Default | Cancel | Apply | Ok, Ok,
                    parent, name, modal, true )
+    , createTreeList( false )
 {
+    if( dialogFace == KDialogBase::TreeList )
+        createTreeList = true;
     init();
 }
 
@@ -107,18 +111,16 @@ void KCMultiDialog::apply()
 
 void KCMultiDialog::slotApply()
 {
-    apply();
-
     emit applyClicked();
+    apply();
 }
 
 
 void KCMultiDialog::slotOk()
 {
+    emit okClicked();
     apply();
     accept();
-
-    emit okClicked();
 }
 
 void KCMultiDialog::slotHelp()
@@ -167,8 +169,14 @@ void KCMultiDialog::addModule(const KCModuleInfo& moduleinfo, bool withfallback)
 
     QHBox* page = 0;
     if (!moduleinfo.service()->noDisplay())
-        page = addHBoxPage(moduleinfo.moduleName(), moduleinfo.comment(),
-                              KGlobal::iconLoader()->loadIcon(moduleinfo.icon(), KIcon::Desktop, KIcon::SizeMedium));
+        if( createTreeList )
+            page = addHBoxPage(moduleinfo.moduleNames(), moduleinfo.comment(),
+                    KGlobal::iconLoader()->loadIcon(moduleinfo.icon(),
+                        KIcon::Desktop, KIcon::SizeMedium));
+        else
+            page = addHBoxPage(moduleinfo.moduleName(), moduleinfo.comment(),
+                    KGlobal::iconLoader()->loadIcon(moduleinfo.icon(),
+                        KIcon::Desktop, KIcon::SizeMedium));
     if(!page) {
         KCModuleLoader::unloadModule(moduleinfo);
         return;
