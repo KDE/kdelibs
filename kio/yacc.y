@@ -59,11 +59,11 @@ constraint: /* empty */ { setParseTree( 0L ); }
 bool: bool_or { $$ = $<ptr>1; }
 ;
 
-bool_or: bool_and OR bool_and { $$ = newOR( $<ptr>1, $<ptr>3 ); }
+bool_or: bool_and OR bool_or { $$ = newOR( $<ptr>1, $<ptr>3 ); }
        | bool_and { $$ = $<ptr>1; }
 ;
 
-bool_and: bool_compare AND bool_compare { $$ = newAND( $<ptr>1, $<ptr>3 ); }
+bool_and: bool_compare AND bool_and { $$ = newAND( $<ptr>1, $<ptr>3 ); }
         | bool_compare { $$ = $<ptr>1; }
 ;
 
