@@ -45,7 +45,7 @@ public:
     QColor tabColor( QWidget * ) const;
 
     /*!
-      If \a enable is TRUE, tab reordering with middle button will be enabled.
+      If \a enable is true, tab reordering with middle button will be enabled.
 
       Note that once enabled you shouldn't rely on previously queried
       currentPageIndex() or indexOf( QWidget * ) values anymore.
@@ -57,7 +57,7 @@ public:
     inline bool isTabReorderingEnabled() const;
 
     /*!
-      If \a enable is TRUE, a close button will be shown on mouse hover
+      If \a enable is true, a close button will be shown on mouse hover
       over tab icons which will emit signal closeRequest( QWidget * )
       when pressed.
     */
@@ -73,7 +73,7 @@ public slots:
 
 signals:
     /*!
-      Connect to this and set accept to TRUE if you can and want to decode the event.
+      Connect to this and set accept to true if you can and want to decode the event.
     */
     void testCanDecode(const QDragMoveEvent *e, bool &accept /* result */);
 

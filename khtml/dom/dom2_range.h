@@ -108,7 +108,7 @@ public:
     long endOffset() const;
 
     /**
-     * TRUE if the range is collapsed
+     * true if the range is collapsed
      *
      */
     bool collapsed() const;
@@ -231,8 +231,8 @@ public:
     /**
      * Collapse a range onto one of its end-points
      *
-     * @param toStart If TRUE, collapses the Range onto its start; if
-     * FALSE, collapses it onto its end.
+     * @param toStart If true, collapses the Range onto its start; if
+     * false, collapses it onto its end.
      *
      * @return
      *
@@ -452,7 +452,7 @@ public:
 
     /**
      * not part of the DOM
-     * TRUE if the range is detached
+     * true if the range is detached
      *
      */
     bool isDetached() const;

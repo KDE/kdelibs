@@ -598,7 +598,7 @@ public:
      *
      * @param info  See AuthInfo.
      * @param errorMsg Error message to show
-     * @return      @p TRUE if user clicks on "OK", @p FALSE otherwsie.
+     * @return      @p true if user clicks on "OK", @p false otherwsie.
      * @since 3.1
      */
     bool openPassDlg( KIO::AuthInfo& info, const QString &errorMsg );

@@ -439,7 +439,7 @@ public:
     /**
      * Describes whether a radio or check box is checked, when
      * \c type has the value "Radio" or "Checkbox". The value is
-     * TRUE if explicitly set. Represents the current state of the
+     * true if explicitly set. Represents the current state of the
      * checkbox or radio button. See the <a
      * href="http://www.w3.org/TR/REC-html40/interact/forms.html#adef-checked">
      * checked attribute definition </a> in HTML 4.0.

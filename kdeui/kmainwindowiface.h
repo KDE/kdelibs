@@ -93,7 +93,7 @@ k_dcop:
 	Returns the status of the requested action.
 	@param action The name of the action to activate.  The names of valid
 	can actions can be found by calling actions().
-	@returns The state of the current Actions, TRUE - enabled, FALSE - disabled.
+	@returns The state of the current Actions, true - enabled, false - disabled.
 	*/
 	bool actionIsEnabled( QCString action);
 

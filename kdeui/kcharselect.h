@@ -184,7 +184,7 @@ public:
     virtual int tableNum() const { return tableSpinBox->value(); }
 
     /**
-     * If @p e is set to TRUE, the combobox which allows the user to
+     * If @p e is set to true, the combobox which allows the user to
      * select the font which should be displayed is enabled, else
      * disabled.
      */
@@ -192,7 +192,7 @@ public:
 
     /**
 
-     * If @p e is set to TRUE, the spinbox which allows the user to
+     * If @p e is set to true, the spinbox which allows the user to
      * specify which characters of the font should be displayed, is
      * enabled, else disabled.
      */

@@ -47,7 +47,7 @@ public:
 
     // combo box
     virtual void drawComboButton(QPainter *, int, int, int, int, const QColorGroup &,
-				 bool = FALSE, bool = FALSE, bool = TRUE,
+				 bool = false, bool = false, bool = true,
 				 const QBrush * = 0);
     virtual QRect comboButtonRect(int, int, int, int);
     virtual QRect comboButtonFocusRect(int, int, int, int);
@@ -75,7 +75,7 @@ public:
 
     // button stuffs
     virtual void drawButton(QPainter *, int, int, int, int, const QColorGroup &g,
-    			    bool = FALSE, const QBrush * = 0);
+    			    bool = false, const QBrush * = 0);
     virtual void drawPushButton(QPushButton *, QPainter *);
     virtual void drawBevelButton(QPainter *, int, int, int, int,
 				 const QColorGroup &, bool = false,
@@ -83,9 +83,9 @@ public:
 
     // indicators (QCheckBox)
     virtual void drawCheckMark(QPainter *, int, int, int, int, const QColorGroup &,
-			       bool = FALSE, bool = TRUE);
+			       bool = false, bool = true);
     virtual void drawIndicator(QPainter *, int, int, int, int, const QColorGroup &,
-			       int, bool = FALSE, bool = TRUE);
+			       int, bool = false, bool = true);
     virtual void drawIndicatorMask(QPainter *, int, int, int, int, int);
     virtual QSize indicatorSize(void) const;
 

@@ -93,7 +93,7 @@ public:
    * @param appendnewline if true, a newline '\\n' is appended.
    * @return true if successful, false otherwise
    **/
-  bool writeStdin(const QString &line, bool appendnewline=TRUE);
+  bool writeStdin(const QString &line, bool appendnewline=true);
 
   /**
    * Writes text to stdin of the process.
@@ -120,7 +120,7 @@ public:
    * @return true if successful, false otherwise
    * @deprecated
    **/
-  bool fputs (const QString &line, bool AppendNewLine=TRUE)
+  bool fputs (const QString &line, bool AppendNewLine=true)
     { return writeStdin(line, AppendNewLine); }
 
   /**
@@ -140,7 +140,7 @@ public:
    *
    * readln() never blocks.
    *
-   * autoAck==TRUE makes these functions call ackRead() for you.
+   * autoAck==true makes these functions call ackRead() for you.
    *
    * @param line is used to store the line that was read.
    * @param autoAck when true, ackRead() is called for you.

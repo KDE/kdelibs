@@ -132,7 +132,7 @@ public:
 
     /**
      * This method has been deprecated and will always return
-     * TRUE.  You should instead use the result from the
+     * true.  You should instead use the result from the
      * KURIFilter::filterURI() calls.
      *
      * @deprecated

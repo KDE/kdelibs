@@ -66,7 +66,7 @@ class KFontRequester : public QWidget
     QFont font() const { return m_selFont; }
 
     /**
-     * @return Returns TRUE if only fixed fonts are displayed.
+     * @return Returns true if only fixed fonts are displayed.
      */
     bool isFixedOnly() const { return m_onlyFixed; }
 

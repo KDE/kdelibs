@@ -797,7 +797,7 @@ private:
 
   bool isLocalTransactionFinished(Q_INT32 id, QCString &replyType, QByteArray &replyData);
 
-  bool attachInternal( bool registerAsAnonymous = TRUE );
+  bool attachInternal( bool registerAsAnonymous = true );
 
   bool callInternal(const QCString &remApp, const QCString &remObj,
 	    const QCString &remFun, const QByteArray &data,

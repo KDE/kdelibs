@@ -179,7 +179,7 @@ public:
      * @return A standard help menu.
      */
     KPopupMenu* helpMenu( const QString &aboutAppText = QString::null,
-			  bool showWhatsThis = TRUE );
+			  bool showWhatsThis = true );
 
     /**
      * Returns the help menu. Creates a standard help menu if none exists yet.
@@ -203,7 +203,7 @@ public:
      *
      * @return A standard help menu.
      */
-    KPopupMenu* customHelpMenu( bool showWhatsThis = TRUE );
+    KPopupMenu* customHelpMenu( bool showWhatsThis = true );
 
     /**
      * <b>Session Management</b>\n
@@ -303,7 +303,7 @@ public:
      * You should call canBeRestored() first.
      * If @p show is true (default), this widget will be shown automatically.
      */
-    bool restore( int number, bool show = TRUE );
+    bool restore( int number, bool show = true );
 
     virtual KXMLGUIFactory *guiFactory();
 
@@ -326,7 +326,7 @@ public:
      * KXMLGuiClient::conserveMemory() to free all memory
      *     allocated by the QDomDocument and by the KXMLGUIFactory.
      */
-    void createGUI( const QString &xmlfile = QString::null, bool _conserveMemory = TRUE );
+    void createGUI( const QString &xmlfile = QString::null, bool _conserveMemory = true );
 
     /**
      * Enables the build of a standard help menu when calling createGUI().

@@ -138,7 +138,7 @@ public:
    * @param honor_style If true, then global settings for IconSize and IconText will be honored
    * @param readConfig  whether to apply the configuration (global and application-specific)
    */
-    KToolBar( QWidget *parent, const char *name = 0, bool honor_style = FALSE, bool readConfig = TRUE );
+    KToolBar( QWidget *parent, const char *name = 0, bool honor_style = false, bool readConfig = true );
 
   /**
    * Constructor for non-XML-GUI applications.
@@ -156,7 +156,7 @@ public:
    * @param readConfig  whether to apply the configuration (global and application-specific)
    */
     KToolBar( QMainWindow *parentWindow, QMainWindow::ToolBarDock dock /*= QMainWindow::Top*/, bool newLine = false,
-              const char *name = 0, bool honor_style = FALSE, bool readConfig = TRUE );
+              const char *name = 0, bool honor_style = false, bool readConfig = true );
 
   /**
    * Constructor for non-XML-GUI applications.
@@ -174,7 +174,7 @@ public:
    * @param readConfig  whether to apply the configuration (global and application-specific)
    */
     KToolBar( QMainWindow *parentWindow, QWidget *dock, bool newLine = false,
-              const char *name = 0, bool honor_style = FALSE, bool readConfig = TRUE );
+              const char *name = 0, bool honor_style = false, bool readConfig = true );
 
   /**
    * Destructor
@@ -936,7 +936,7 @@ public:
     void hide();
     void show();
 
-    void updateRects( bool = FALSE ) {}
+    void updateRects( bool = false ) {}
 
     void loadState( const QDomElement &e );
     void saveState( QDomElement &e );

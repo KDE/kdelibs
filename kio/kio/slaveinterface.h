@@ -199,7 +199,7 @@ protected:
     * be started for whatever reason.
      *
      * @param       info See AuthInfo.
-     * @return      TRUE if user clicks on "OK", FALSE otherwsie.
+     * @return      true if user clicks on "OK", false otherwsie.
      */
     void openPassDlg( KIO::AuthInfo& info );
 

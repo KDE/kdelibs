@@ -88,7 +88,7 @@ public:
 
     /**
      * Checks whether the DataTool is read-only.
-     * @return TRUE if the DataTool does not modify the data passed to it by KDataTool::run.
+     * @return true if the DataTool does not modify the data passed to it by KDataTool::run.
      */
     bool isReadOnly() const;
 

@@ -103,7 +103,7 @@ public:
    * @param y Year
    * @param m Month number
    * @param d Day of month
-   * @return TRUE if the date is valid; otherwise returns FALSE.
+   * @return true if the date is valid; otherwise returns false.
    */
   virtual bool setYMD(QDate & date, int y, int m, int d) const = 0;
 

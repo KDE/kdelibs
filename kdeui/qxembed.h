@@ -150,7 +150,7 @@ public:
      * client will be embedded in the window that is passed as
      * -embed command line argument.
      *
-     * The function returns TRUE on success or FALSE if no such command line
+     * The function returns true on success or false if no such command line
      * parameter is specified.
      *
      * @see embedClientIntoWindow()
@@ -182,7 +182,7 @@ public:
     bool customWhatsThis() const;
     void enterWhatsThisMode(); // temporary, fix in Qt (Matthias, Mon Jul 17 15:20:55 CEST 2000  )
 
-    virtual void reparent( QWidget * parent, WFlags f, const QPoint & p, bool showIt = FALSE );
+    virtual void reparent( QWidget * parent, WFlags f, const QPoint & p, bool showIt = false );
 
 signals:
     /**

@@ -291,12 +291,12 @@ public:
    * Undock/Dock, Restore/Maximize/Minimize, Close and an empty sub-popup ( windowPopup() )
    * menu called Operations.
    */
-   virtual QPopupMenu * taskBarPopup(KMdiChildView *pWnd,bool bIncludeWindowPopup = FALSE);
+   virtual QPopupMenu * taskBarPopup(KMdiChildView *pWnd,bool bIncludeWindowPopup = false);
    /**
    * Returns a popup menu with only a title "Window". You can fill it with own operations entries
    * on the MDI view. This popup menu is inserted as last menu item in taskBarPopup() .
    */
-   virtual QPopupMenu * windowPopup(KMdiChildView *pWnd,bool bIncludeTaskbarPopup = TRUE);
+   virtual QPopupMenu * windowPopup(KMdiChildView *pWnd,bool bIncludeTaskbarPopup = true);
    /**
    * Called in the constructor (forces a resize of all MDI views)
    */
@@ -468,7 +468,7 @@ public slots:
    * Removes a KMdiChildView from the MDI system and from the main frame`s control.
    * Note: The view will be deleted!
    */
-   virtual void closeWindow(KMdiChildView *pWnd, bool layoutTaskBar = TRUE);
+   virtual void closeWindow(KMdiChildView *pWnd, bool layoutTaskBar = true);
    /**
    * Switches the KMdiTaskBar on and off.
    */
@@ -478,12 +478,12 @@ public slots:
     * Doesn't work on KMdiChildView which aren't added to the MDI system.
     * Use addWindow() for that.
     */
-   virtual void attachWindow(KMdiChildView *pWnd,bool bShow=TRUE,bool bAutomaticResize=FALSE);
+   virtual void attachWindow(KMdiChildView *pWnd,bool bShow=true,bool bAutomaticResize=false);
    /**
     * Makes a docked KMdiChildView undocked.
     * The view window still remains under the main frame's MDI control.
     */
-   virtual void detachWindow(KMdiChildView *pWnd,bool bShow=TRUE);
+   virtual void detachWindow(KMdiChildView *pWnd,bool bShow=true);
    /**
    * Someone wants that the MDI view to be closed. This method sends a KMdiViewCloseEvent to itself
    * to break the function call stack. See also event() .

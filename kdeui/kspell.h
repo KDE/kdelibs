@@ -97,7 +97,7 @@ public:
    */
   KSpell(QWidget *parent, const QString &caption,
 	 QObject *receiver, const char *slot, KSpellConfig *kcs=0,
-	 bool progressbar = TRUE, bool modal = FALSE);
+	 bool progressbar = true, bool modal = false);
 
   /**
    * Starts the spellchecker.
@@ -156,7 +156,7 @@ public:
    *  in @p _buffer check() reached before stopping.
    */
 
-  virtual bool check (const QString &_buffer, bool usedialog = TRUE);
+  virtual bool check (const QString &_buffer, bool usedialog = true);
 
   /**
    * Returns the position (when using check())  or word
@@ -176,7 +176,7 @@ public:
    *  to check() would result in the mark-up tags being
    *  spell checked.
    */
-  virtual bool checkList (QStringList *_wordlist, bool usedialog = TRUE);
+  virtual bool checkList (QStringList *_wordlist, bool usedialog = true);
 
   /**
    * Spellchecks a single word.
@@ -200,7 +200,7 @@ public:
    *  complete.  You can look at suggestions() to see what the
    *  suggested replacements were.
    */
-  virtual bool checkWord (const QString &_buffer, bool usedialog = FALSE);
+  virtual bool checkWord (const QString &_buffer, bool usedialog = false);
 
   /**
    * Hides the dialog box.
@@ -544,11 +544,11 @@ protected:
   QString replacement () const
     { return dlgreplacement; }
 
-  void setUpDialog ( bool reallyusedialogbox = TRUE);
+  void setUpDialog ( bool reallyusedialogbox = true);
 
   void emitProgress ();
-  bool cleanFputs (const QString & s, bool appendCR=TRUE);
-  bool cleanFputsWord (const QString & s, bool appendCR=TRUE);
+  bool cleanFputs (const QString & s, bool appendCR=true);
+  bool cleanFputsWord (const QString & s, bool appendCR=true);
   void startIspell();
   bool writePersonalDictionary();
   void initialize( QWidget *_parent, const QString &_caption,

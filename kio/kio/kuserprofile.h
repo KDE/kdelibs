@@ -228,7 +228,7 @@ protected:
    * @param _default true if the service should be used as
    *                 default
    */
-  void addService( const QString& _service, int _preference = 1, bool _allow_as_default = TRUE );
+  void addService( const QString& _service, int _preference = 1, bool _allow_as_default = true );
 
 private:
   /**

@@ -122,9 +122,9 @@ public:
    * @param aChallenge is the challenge sent to create a response for
    * @param aBase64 specifies, whether the authentication protocol uses base64
    * encoding. The challenge is decoded from base64 and the response is
-   * encoded base64 if set to TRUE.
+   * encoded base64 if set to true.
    */
-   QCString getResponse(const QByteArray &aChallenge=QByteArray(), bool aBase64 = TRUE);
+   QCString getResponse(const QByteArray &aChallenge=QByteArray(), bool aBase64 = true);
   /**
    * Create a response as above but place it in a QByteArray
    */

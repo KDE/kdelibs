@@ -989,7 +989,7 @@ public:
   void setSplitterOpaqueResize(bool b=true);
 
   /**
-   * Returns TRUE if opaque resizing is enabled, FALSE otherwise.
+   * Returns true if opaque resizing is enabled, false otherwise.
    */
   bool splitterOpaqueResize() const;
 
@@ -1001,7 +1001,7 @@ public:
   void setSplitterKeepSize(bool b=true);
 
   /**
-   * Returns TRUE if the KeepSize is enabled, FALSE otherwise.
+   * Returns true if the KeepSize is enabled, false otherwise.
    */
   bool splitterKeepSize() const;
 
@@ -1014,7 +1014,7 @@ public:
   void setSplitterHighResolution(bool b=true);
 
   /**
-   * Returns TRUE if the splitter uses the high resolution, FALSE otherwise.
+   * Returns true if the splitter uses the high resolution, false otherwise.
    */
   bool splitterHighResolution() const;
 

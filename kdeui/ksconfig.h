@@ -180,11 +180,11 @@ class KSpellConfig : public QWidget
     /**
      * This takes a dictionary file name (fname) and returns a language
      * abbreviation (lname; like de for German), appropriate for the
-     * $LANG variable, and a human-readble name (hname; like "Deutsch").
+     * @p $LANG variable, and a human-readble name (hname; like "Deutsch").
      *
      * It also truncates ".aff" at the end of fname.
      *
-     * TRUE is returned if lname.data()==$LANG
+     * @return @p true if <pre>lname.data()==$LANG</pre>
      */
     bool interpret( QString &fname, QString &lname, QString &hname );
 
