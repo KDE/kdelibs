@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <time.h>
+#include <utime.h>
 #include <unistd.h>
 #ifdef HAVE_STRING_H
 #include <string.h>
@@ -516,6 +517,13 @@ void FileProtocol::copy( const KURL &src, const KURL &dest,
            warning( i18n( "Could not change permissions for\n%1" ).arg( dest.path() ) );
        }
     }
+
+    // copy access and modification time
+    struct utimbuf ut;
+    ut.actime = buff_src.st_atime;
+    ut.modtime = buff_src.st_mtime;
+    if ( ::utime( _dest.data(), &ut ) != 0 )
+        kdWarning() << QString::fromLatin1("Couldn't preserve access and modification time for\n%1").arg( dest.path() ) << endl;
 
     processedSize( buff_src.st_size );
     time_t t = time( 0L );
