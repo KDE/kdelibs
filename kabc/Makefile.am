@@ -37,7 +37,7 @@ kab2kabc_LDADD = libkabc.la ../kab/libkab.la
 kab2kabc_SOURCES = kab2kabc.cpp
 
 EXTRA_PROGRAMS = testkabc testkabcdlg testdistlist bigread bigwrite testdb \
-  testaddressee testaddresseelist kabcargl testaddresslineedit
+  testaddressee testaddresseelist testaddressfmt kabcargl testaddresslineedit
 
 testkabc_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 testkabc_LDADD = libkabc.la
@@ -50,6 +50,10 @@ testaddressee_SOURCES = testaddressee.cpp
 testaddresseelist_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 testaddresseelist_LDADD = libkabc.la
 testaddresseelist_SOURCES = testaddresseelist.cpp
+
+testaddressfmt_LDFLAGS = $(all_libraries) $(KDE_RPATH)
+testaddressfmt_LDADD = libkabc.la
+testaddressfmt_SOURCES = testaddressfmt.cpp
 
 testkabcdlg_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 testkabcdlg_LDADD = libkabc.la

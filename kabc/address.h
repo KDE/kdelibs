@@ -24,6 +24,24 @@
 #include <qstring.h>
 #include <qvaluelist.h>
 
+// template tags for address formatting localization
+#define KABC_FMTTAG_realname   QString("%n")
+#define KABC_FMTTAG_REALNAME   QString("%N")
+#define KABC_FMTTAG_company    QString("%cm")
+#define KABC_FMTTAG_COMPANY    QString("%CM")
+#define KABC_FMTTAG_pobox      QString("%p")
+#define KABC_FMTTAG_street     QString("%s")
+#define KABC_FMTTAG_STREET     QString("%S")
+#define KABC_FMTTAG_zipcode    QString("%z")
+#define KABC_FMTTAG_location   QString("%l")
+#define KABC_FMTTAG_LOCATION   QString("%L")
+#define KABC_FMTTAG_region     QString("%r")
+#define KABC_FMTTAG_REGION     QString("%R")
+#define KABC_FMTTAG_newline    QString("\\n")
+#define KABC_FMTTAG_condcomma  QString("%,")
+#define KABC_FMTTAG_condwhite  QString("%w")
+#define KABC_FMTTAG_purgeempty QString("%0")
+
 namespace KABC {
 
 /**
@@ -244,7 +262,48 @@ class Address
     */
     void dump() const;
 
+    /** 
+      Returns this address formatted according to the country-specific
+      address formatting rules. The formatting rules applied depend on 
+      either the addresses {@link #country country} field, or (if the 
+      latter is empty) on the system country setting. If companyName is
+      provided, an available business address format will be preferred.
+      
+      @param realName   the formatted name of the contact
+      @param orgaName   the name of the organization or company
+      @return           the formatted address (containing newline characters)
+    */
+    QString formattedAddress( const QString &realName=QString::null
+                            , const QString &orgaName=QString::null ) const;
+
   private:
+    /** 
+      Parses a snippet of an address template
+      @param tsection   the template string to be parsed
+      @param result     QString reference in which the result will be stored
+      @return           true if at least one tag evaluated positively, else false
+    */
+    bool parseAddressTemplateSection( const QString &tsection
+                                    ,       QString &result
+                                    , const QString &realName
+                                    , const QString &orgaName ) const;
+
+    /** 
+      Finds the balanced closing bracket starting from the opening bracket at 
+      pos in tsection.
+      @return  position of closing bracket, -1 for unbalanced brackets
+    */
+    int  findBalancedBracket( const QString &tsection, int pos ) const;
+
+    /**
+      Returns ISO code for a localized country name. Only localized country
+      names will be understood. This might be replaced by a KLocale method in
+      the future.
+      @param cname  name of the country
+      @return       two digit ISO code
+    */
+    QString countryToISO( const QString &cname ) const;
+    
     bool mEmpty;
   
     QString mId;
@@ -265,3 +324,4 @@ QDataStream &operator>>( QDataStream &, Address & );
 
 }
 #endif
+// vim:tw=78 cin et sw comments=sr\:/*,mb\:\ ,ex\:*/,\://
