@@ -2253,7 +2253,9 @@ int KURL::uriMode() const
 KURL::URIMode KURL::uriModeForProtocol(const QString& protocol)
 {
 #ifndef KDE_QT_ONLY
-    KURL::URIMode mode = KProtocolInfo::uriParseMode(protocol);
+    KURL::URIMode mode = Auto;
+    if (KGlobal::_instance)
+        mode = KProtocolInfo::uriParseMode(protocol);
     if (mode == Auto ) {
 #else
         KURL::URIMode mode = Auto;
