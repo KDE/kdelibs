@@ -9,6 +9,7 @@
 #include <qapplication.h>
 #include <qfile.h>
 #include <qstatusbar.h>
+#include <qobjectlist.h>
 
 Shell::Shell( QWidget* parent, const char* name )
     : KTMainWindow( name ), m_collection( this )
@@ -190,6 +191,16 @@ void Shell::setActiveView( View* view, Part* part )
 	qApp->sendEvent( old_view, &event );
         m_toolbars.clear();
     }
+    
+    const QObjectList *children = menuBar()->children();
+    if ( children )
+    {
+      QObjectListIt it( *children );
+      for (; it.current(); ++it )
+        if ( it.current()->inherits( "QAction" ) )
+	  ((QAction *)it.current())->unplug( menuBar() );
+    }
+    
     menuBar()->clear();
 
     if ( m_statusBar )
