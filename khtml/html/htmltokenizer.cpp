@@ -635,7 +635,8 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
         case Hexadecimal:
         {
             int uc = EntityChar.unicode();
-            while(src.length()) {
+            int ll = QMIN(src.length(), 9-entityPos);
+            while(ll--) {
                 QChar csrc(src[0].lower());
                 cc = src[0].cell();
 
@@ -644,16 +645,18 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
                     break;
                 }
                 uc = uc*16 + (cc - ( cc < 'a' ? '0' : 'a' - 10));
+                entityBuffer[entityPos++] = cc;
                 ++src;
             }
             EntityChar = QChar(uc);
-
+            if(entityPos == 9) Entity = SearchSemicolon;
             break;
         }
         case Decimal:
         {
             int uc = EntityChar.unicode();
-            while(src.length()) {
+            int ll = QMIN(src.length(), 9-entityPos);
+            while(ll--) {
                 cc = src[0].cell();
 
                 if(src[0].row() || !(cc >= '0' && cc <= '9')) {
@@ -662,9 +665,11 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
                 }
 
                 uc = uc * 10 + (cc - '0');
+                entityBuffer[entityPos++] = cc;
                 ++src;
             }
             EntityChar = QChar(uc);
+            if(entityPos == 9)  Entity = SearchSemicolon;
             break;
         }
         case EntityName:
@@ -683,6 +688,7 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
                 entityBuffer[entityPos++] = cc;
                 ++src;
             }
+            if(entityPos == 9) Entity = SearchSemicolon;
             if(Entity == SearchSemicolon) {
                 if(entityPos > 1) {
                     const entity *e = findEntity(entityBuffer, entityPos);
@@ -694,12 +700,8 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
                 break;
         }
         case SearchSemicolon:
-            //kdDebug( 6036 ) << "ENTITY " << EntityChar.unicode() << ", " << res << endl;
 
-            if (tag && cc != ';' ) {
-                // Don't translate entities in tags with a missing ';'
-                EntityChar = QChar::null;
-            }
+            //kdDebug( 6036 ) << "ENTITY " << EntityChar.unicode() << ", " << res << endl;
 
             fixUpChar(EntityChar);
 
