@@ -200,6 +200,8 @@ void RenderBox::detach()
 
 InlineBox* RenderBox::createInlineBox(bool /*makePlaceHolderBox*/, bool /*isRootLineBox*/)
 {
+    if (m_placeHolderBox)
+        m_placeHolderBox->detach(renderArena());
     return (m_placeHolderBox = new (renderArena()) InlineBox(this));
 }
 
