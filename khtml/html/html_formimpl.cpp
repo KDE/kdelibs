@@ -1506,11 +1506,8 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
 		    check = true;
 	    }
 	    if (check) {
-	        if (evt->id() == EventImpl::KEYUP_EVENT) {
-		    if (m_type == RADIO || m_type == CHECKBOX)
-		        setChecked(m_type == RADIO ? true : !checked());
+	        if (evt->id() == EventImpl::KEYUP_EVENT)
 		    click();
-		}
 	        // Tell the parent that we handle this key (keyup and keydown), even though only keyup activates (#70478)
 	        evt->setDefaultHandled();
 	    }
@@ -1608,7 +1605,8 @@ void HTMLLabelElementImpl::defaultEventHandler(EventImpl *evt)
 	if ( evt->id() == EventImpl::CLICK_EVENT ) {
 	    act = true;
 	}
-	else if ( evt->id() == EventImpl::KEYUP_EVENT ) {
+	else if ( evt->id() == EventImpl::KEYUP_EVENT ||
+	                      evt->id() == EventImpl::KHTML_KEYPRESS_EVENT ) {
 	    QKeyEvent *ke = static_cast<TextEventImpl *>(evt)->qKeyEvent;
 	    if (ke && active() && (ke->key() == Qt::Key_Return || ke->key() == Qt::Key_Enter || ke->key() == Qt::Key_Space))
 		act = true;
