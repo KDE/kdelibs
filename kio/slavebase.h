@@ -430,7 +430,7 @@ protected:
 
     /**
      * Checks whether the password daemon kdesud is
-     * up and running or can be started if it is not.
+     * running or if it can be started if it is not.
      *
      * @return true if password daemon is/can be started successfully.
      */
@@ -457,7 +457,7 @@ protected:
     bool openPassDlg( const QString& msg, QString& user, QString& passwd, bool lockUserName = false );
 
     /**
-     * Checks for any cached Authentication.
+     * Checks for cached authentication for the url given by @p url.
      *
      * @param url           url for which to check cached Authentication.
      * @param user          cached user name.
@@ -493,33 +493,28 @@ protected:
                                     QString& passwd);
 
     /**
-     * Caches Authentication information in kdesu daemon.
+     * Caches authentication information in the kdesu daemon.
      *
      * Authentication caching is based on the following criteria:
      *
-     *   i.)  The protocol as part of the key generation.  This will
-     *        reduce the chances of inadvertantly sending password to the
-     *        incorrect server. Thus, http://www.foobar.org and
-     *        ftp://www.foobar.org are treated as different request sites
-     *        even if the same Authentication is assigned to the user for
-     *        accessing both locations.
+     *    Use the protocol as part of the key generation.  This will
+     *    reduce the chances of inadvertantly sending password to the
+     *    incorrect server. Thus, http://www.foobar.org and
+     *    ftp://www.foobar.org are treated as different request sites
+     *    even if the same Authentication is assigned to the user for
+     *    accessing both locations.
      *
-     *  ii.)  Cache different servers on the the same host but with different
-     *        port numbers. For example, one might have multiple web-based admin
-     *        tools, such as Webmin and SWAT, on the same server with different
-     *        port numbers.
+     *    Allow separate entries for different servers on the the same
+     *    host but with different port numbers. For example, one might
+     *    have multiple web-based admin tools, such as Webmin and SWAT,
+     *    on the same server with different port numbers.
      *
-     * iii.)  Use reference counting to keep track of all applications that are
-     *        requesting password caching for the same location instead of storing
-     *        duplicate enteries.  The cached password can then be deleted when the
-     *        last application referencing it is destroyed.
+     *    Allow password caching for the same host based on "protection
+     *    space" scheme. This enables protocols like HTTP that use RFC
+     *    2617 to correctly store authentication information for multiple
+     *    password protected content within the same site.  Refer to
+     *    RFC 2617 for further details.
      *
-     *  iv.)  Allow redundant password caching for the same host based on heirarchy
-     *        such that protocols, such as HTTP, can store Authentication info
-     *	       for multiple password protected content within the same site.  For example,
-     *        http://foo.org/foo/foo.html and http://foo.org/foo/bar/bar.html would fall
-     *        under the same protection space while http://foo.org/foobar/foo.html would
-     *        not and hence gets a different entry. Refer to RFC 2617 for further details.
      *
      * @param url       url for which Authentication is to be cached.
      * @param user      user name to be cached.
@@ -549,6 +544,21 @@ protected:
      * @param grpname   group name for which cached Authentication is to be deleted.
      */
     void delCachedAuthentication( const QString& grpname );
+
+    /**
+     * Increments the reference count for application using the
+     * give authorization key.
+     *
+     * The reference counting is used by @ref delCachedAuthentication
+     * to determine when it is safe to delete the key from the cache.
+     *
+     * A call to this function will fail, i.e. return false, if there
+     * is no entry for the given @p groupname value and/or the cache
+     * deamon, @p kdesud, cannot be contacted.
+     *
+     * @return true if the registration succeeds.
+     */
+    bool registerCachedAuthKey(  const QString& grpname );
 
     /**
      * Used by the slave to check if it can connect

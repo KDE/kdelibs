@@ -740,13 +740,13 @@ bool SlaveBase::checkCachedAuthentication( const KURL& url,
     KDEsuClient client;
 
     // We always check to make sure that we have an entry for the given
-    // URL first. We accomplish this by checking the "refcount" entry which is
-    // gets created everytime a password is cached for any given URL.  The
-    // intention is to speed up things by avoiding the round trip to the kdesud
-    // daemon for non-password protected URLs, which is the case 99.9% of the time:).
-    bool ok, found = false;
-    client.getVar((auth_key + "-refcount").utf8()).toInt( &ok );
-    if( ok )
+    // URL first. We accomplish this by checking the "hasEntry" entry which
+    // gets created everytime a password is cached for any given URL for the
+    // first time.  The intention of doing this is to speed up things by
+    // keeping the round trip to the kdesud daemon for non-password protected
+    // to a single one call :)
+    bool found = false;
+    if( !client.getVar((auth_key + "-hasEntry").utf8()).isEmpty() )
     {
         kdDebug(7019) << "Found entry for supplied key: " << auth_key << endl
                       << "Looking for matching authentication entry..." << endl;
@@ -754,6 +754,7 @@ bool SlaveBase::checkCachedAuthentication( const KURL& url,
         // Deal with protection space based authentications, namely HTTP.
         // It has by far the most complex scheme in terms of password
         // caching requirements. (DA)
+        bool ok;
         if( verify_path )
         {
             QString new_path = url.path(); // The new path...
@@ -890,20 +891,20 @@ bool SlaveBase::checkCachedAuthentication( const KURL& url,
                 kdDebug (7019) << "Performing \"Realm\" value only match for: " << realm << endl;
                 int count = client.getVar((auth_key + "-dupcount").utf8()).toInt(&ok);
                 if( !ok ) { count = 0; }
-                QString stored_realm;
+                QString stored_value;
                 for( int i=0; i<=count; i++ )
                 {
                     if( i == 0 )
-                        stored_realm = QString::fromUtf8(client.getVar((auth_key + "-realm").utf8()));
+                        stored_value = QString::fromUtf8(client.getVar((auth_key + "-realm").utf8()));
                     else
-                        stored_realm = QString::fromUtf8(client.getVar((auth_key + QString(":%1").arg( i ) + "-realm").utf8()));
-                    if( realm == stored_realm )
+                        stored_value = QString::fromUtf8(client.getVar((auth_key + QString(":%1").arg( i ) + "-realm").utf8()));
+                    if( realm == stored_value )
                     {
                         if( i > 0 )
                             auth_key +=  QString(":%1").arg( i );
                         found = true;
                         kdDebug(7019) << "Found a \"Realm\" match!" << endl
-                                      << "STORED ::" << stored_realm << "::  "
+                                      << "STORED ::" << stored_value << "::  "
                                       << "CURRENT ::" << realm << "::" << endl;
                         break;
                     }
@@ -940,10 +941,10 @@ bool SlaveBase::checkCachedAuthentication( const KURL& url,
 }
 
 bool SlaveBase::cacheAuthentication( const KURL& url,
-                                    const QString& user,
-                                    const QString& passwd,
-                                    const QString& realm,
-                                    const QString& extra )
+                                     const QString& user,
+                                     const QString& passwd,
+                                     const QString& realm,
+                                     const QString& extra )
 {
     // Do not allow caching if: URL is malformed or user name is
     // empty or the password is null!!  Empty password is acceptable
@@ -962,18 +963,18 @@ bool SlaveBase::cacheAuthentication( const KURL& url,
     kdDebug(7019) << "Attempting to cache Authentication for: " << auth_key << endl;
     if( !realm.isEmpty() )
     {
-        bool hasDuplicates;
-        QString stored_realm;
-        int count = client.getVar((auth_key + "-dupcount").utf8()).toInt( &hasDuplicates );
-        if( !hasDuplicates ) { count = 0; }
+        bool ok;
+        QString stored_value;
+        int count = client.getVar((auth_key + "-dupcount").utf8()).toInt( &ok );
+        if( !ok ) { count = 0; }
         for( int i=0; i<=count; i++ )
         {
             if( i == 0 )
-                stored_realm = QString::fromUtf8(client.getVar((auth_key + "-realm").utf8()));
+                stored_value = QString::fromUtf8(client.getVar((auth_key + "-realm").utf8()));
             else
-                stored_realm = QString::fromUtf8( client.getVar((auth_key + QString(":%1").arg( i ) + "-relam").utf8()));
+                stored_value = QString::fromUtf8( client.getVar((auth_key + QString(":%1").arg( i ) + "-relam").utf8()));
 
-            if( stored_realm == realm )
+            if( stored_value == realm )
             {
                 if( i > 0 )
                     auth_key += QString(":%1").arg( i );
@@ -982,20 +983,46 @@ bool SlaveBase::cacheAuthentication( const KURL& url,
             }
         }
 
-        // If there is no cached entry that matches but there is another
-        // value stored with the same key, we increment the duplicate
-        // counter as well as the key so that the entry can safely be
-        // stored under its own entry.  NOTE: this is very important for
-        // protocols that support "Protection space" based authentications.
-        // HTTP is one such protocol.  It supports both Baisc and Digest
-        // authentication as specified by RFC 2617. (DA)
-        if( !isCached && !stored_realm.isEmpty() )
+        // We now have to check and see if we truly have an already cached
+        // entry by comparing the values of the username.  If that does not
+        // match, then we overwrite the previously cached authentication info
+        // with the newer one!  That is the last username used to access the
+        // "Realm" (protection space) wins.
+        if( isCached )
         {
-            client.setVar( (auth_key+"-dupcount").utf8(), QString("%1").arg( count+1 ).utf8(), 0, auth_key.utf8() );
-            auth_key += QString(":%1").arg( count+1 );
-            kdDebug(7019) << "New Protection space for an exisiting key!"
-                          << endl << "Creating new entry: " << auth_key
+            stored_value = QString::fromUtf8(client.getVar((auth_key + "-user").utf8()));
+            kdDebug(7019) << "New name: " << user << endl
+                          << "Stored name: " << stored_value
                           << endl;
+
+            if( user != stored_value )
+            {
+                kdDebug(7019) << "Overwrite existing cached entry at: "
+                              << auth_key;
+                isCached = false;
+            }
+        }
+        else
+        {
+            ok = (client.getVar(( auth_key + "-hasEntry").utf8()) == "true");
+            if( ok )
+            {
+                client.setVar((auth_key+"-dupcount").utf8(),
+                              QString("%1").arg( count+1 ).utf8(), 0,
+                              auth_key.utf8() );
+                auth_key += QString(":%1").arg( count+1 );
+                kdDebug(7019) << "New protection space under existing key!"
+                              << endl << "Creating new entry: " << auth_key
+                              << endl;
+            }
+            else
+            {
+                // If it is not cached and not a duplicate entry,
+                // Simply append a "has Entry" flag.
+                kdDebug(7019) << "Adding a new \"hasEntry\" flag..." << endl;
+                client.setVar((auth_key+"-hasEntry").utf8(),
+                              "true", 0, auth_key.utf8());
+            }
         }
     }
     else
@@ -1005,17 +1032,10 @@ bool SlaveBase::cacheAuthentication( const KURL& url,
             isCached = true;
     }
 
-    // Increment the ref-counter, if the authentication is already stored!!
+    // If we have a cached copy already, just update the
+    // extra fields if needed.
     if( isCached )
     {
-        QString strRefCount = QString("%1").arg( client.getVar((auth_key + "-refcount").utf8()).toInt() + 1 );
-        kdDebug(7019) << "Found an exisitng Authentication entry for: " << auth_key << "!" << endl
-                      << "Incrementing reference count to: " << strRefCount << endl;
-        client.setVar( (auth_key + "-refcount").utf8(), strRefCount.utf8(), 0, auth_key.utf8() );
-        // We update the extra field because it's possible for it to have been
-        // modified.  This is for example important in "Digest authentication"
-        // for the HTTP protocol where the server can change change the "nonce"
-        // value from connection to connection to provide better security.
         if( !extra.isEmpty() )
         {
             QString e = QString::fromUtf8(client.getVar( (auth_key + "-extra").utf8() ));
@@ -1025,13 +1045,13 @@ bool SlaveBase::cacheAuthentication( const KURL& url,
                 client.setVar( (auth_key + "-extra").utf8(), extra.utf8(), 0, auth_key.utf8() );
             }
         }
+        return true;
     }
     // Add a new Authentication entry...
     else
     {
         client.setVar( (auth_key+"-user").utf8(), user.utf8(), 0, auth_key.utf8() );
         client.setVar( (auth_key+"-pass").utf8(), passwd.utf8(), 0, auth_key.utf8() );
-        client.setVar( (auth_key+"-refcount").utf8(), QString("%1").arg(1).utf8(), 0, auth_key.utf8() );
         if( !realm.isEmpty() )
         {
             client.setVar( (auth_key + "-realm").utf8(), realm.utf8(), 0, auth_key.utf8() );
@@ -1061,6 +1081,23 @@ bool SlaveBase::cacheAuthentication( const KURL& url,
     return false;
 }
 
+bool SlaveBase::registerCachedAuthKey( const QString& grpname )
+{
+    KDEsuClient client;
+    kdDebug(7019) << "Request to register cached Authentication for: " << grpname << endl;
+    if( pingCacheDaemon() && !client.getVar((grpname + "-hasEntry").utf8()).isEmpty() )
+    {
+      bool ok;
+      int count = client.getVar( (grpname + "-refcount").utf8() ).toInt( &ok );
+      if( ok )
+        client.setVar( (grpname + "-refcount").utf8(), QString("%1").arg(count+1).utf8(), 0, grpname.utf8() );
+      else
+        client.setVar( (grpname + "-refcount").utf8(), "2", 0, grpname.utf8() );
+      return true;
+    }
+    return false;
+}
+
 void SlaveBase::delCachedAuthentication( const QString& grpname )
 {
     if( !pingCacheDaemon() )
@@ -1073,16 +1110,18 @@ void SlaveBase::delCachedAuthentication( const QString& grpname )
     kdDebug(7019) << "Attempting to delete cached Authentication for: " << grpname << endl;
     if( ok )
     {
-        kdDebug(7019) << "Deleting cached Authentication for: " << grpname << endl;
         if( count > 1 )
         {
-            QString ref_count = QString("%1").arg( count - 1 );
-            client.setVar( (grpname + "-refcount").utf8(), ref_count.utf8(), 0, grpname.utf8() );
-            kdDebug(7019) << "Multiple applications use key. Decrementing reference count: " << ref_count << endl;
+            client.setVar((grpname + "-refcount").utf8(),
+                          QString("%1").arg( count - 1 ).utf8(), 0,
+                          grpname.utf8() );
+            kdDebug(7019) << "Key registered by multiple processes. "
+                          << "Decrementing reference count to: "
+                          << count-1 << endl;
         }
         else
         {
-            kdDebug(7019) << "No reference left or none found.  Deleting the whole group..." << endl;
+            kdDebug(7019) << "Last reference. Deleting the whole group..." << endl;
             client.delGroup(grpname.utf8());
         }
     }
