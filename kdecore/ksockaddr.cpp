@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (C) 2000,2001 Thiago Macieira <thiagom@mail.com>
+ *  Copyright (C) 2000-2002 Thiago Macieira <thiagom@mail.com>
  *
  *  $Id$
  *
@@ -47,13 +47,9 @@
 #define CLOBBER_IN6
 #endif
 
-#ifndef IN6_IS_ADDR_V4MAPPED
-#define NEED_IN6_TESTS
-#endif
-
 #include "netsupp.h"
 
-#define V6_CAN_CONVERT_TO_V4(addr)	(IN6_IS_ADDR_V4MAPPED(addr) || IN6_IS_ADDR_V4COMPAT(addr))
+#define V6_CAN_CONVERT_TO_V4(addr)	(KDE_IN6_IS_ADDR_V4MAPPED(addr) || KDE_IN6_IS_ADDR_V4COMPAT(addr))
 
 #ifdef HAVE_SOCKADDR_SA_LEN
 # define MY_MAX(a, b)  			((a) > (b) ? (a) : (b))
@@ -62,6 +58,11 @@
 #else
 # define MIN_SOCKADDR_LEN		(offsetof(sockaddr, sa_family) + sizeof(((sockaddr*)0)->sa_family))
 #endif
+
+// Minimum size accepted for sockaddr_in6 sockets. 
+// The scopeid field is missing from some implementations
+// that conform to the obsoleted RFC 2133, e.g. Linux glibc 2.1
+#define	MIN_SOCKADDR_IN6_LEN		(offsetof(sockaddr_in6, sin6_addr) + sizeof(((sockaddr_in6*)0)->sin6_addr))
 
 #ifdef offsetof
 #undef offsetof
@@ -143,7 +144,7 @@ KSocketAddress* KSocketAddress::newAddress(const struct sockaddr* sa, ksocklen_t
 
 #ifdef AF_INET6
     case AF_INET6:
-      if (size >= sizeof(sockaddr_in6))
+      if (size >= MIN_SOCKADDR_IN6_LEN)
 	return new KInetSocketAddress((const sockaddr_in6*)sa, size);
       return NULL;
 #endif
@@ -169,7 +170,10 @@ bool KSocketAddress::isEqual(const KSocketAddress& other) const
         return KUnixSocketAddress::areEqualUnix(*this, other, false);
   }
 
-  return false;
+  // This is not a known socket type
+  if (other.datasize != datasize)
+    return false;		// can't be equal
+  return memcmp(data, other.data, datasize) == 0;
 }
 
 bool KSocketAddress::isCoreEqual(const KSocketAddress& other) const
@@ -339,8 +343,7 @@ bool KInetSocketAddress::setAddress(const sockaddr_in6* sin6, ksocklen_t len)
 {
 #ifdef AF_INET6
   // should be family AF_INET6
-  if ((len < (offsetof(sockaddr_in6, sin6_addr) + sizeof(sin6->sin6_addr))) ||
-      (sin6->sin6_family != AF_INET6))
+  if ((len < MIN_SOCKADDR_IN6_LEN) || (sin6->sin6_family != AF_INET6))
     {
       kdWarning() << "KInetSocketAddress::setAddress(sockaddr_in6*) called with invalid sockaddr_in6\n";
       return 0;
@@ -359,7 +362,7 @@ bool KInetSocketAddress::setAddress(const sockaddr_in6* sin6, ksocklen_t len)
 
   fromV6();
   return true;
-#else
+#else  // !AF_INET6
   return false;
 #endif
 }
@@ -580,11 +583,11 @@ QString KInetSocketAddress::nodeName() const
 #endif
   else
     {
-      kdWarning() << "KInetSocketAddress::prettyHost() called on uninitialized class\n";
+      kdWarning() << "KInetSocketAddress::nodeName() called on uninitialized class\n";
       return i18n("<empty>");
     }
 
-  return QString::fromLocal8Bit(buf); // FIXME! What's the encoding?
+  return QString::fromLatin1(buf); // FIXME! What's the encoding?
 }
 
 QString KInetSocketAddress::serviceName() const
@@ -677,6 +680,12 @@ void KInetSocketAddress::fromV4()
   ((Q_UINT32*)&d->sin6.sin6_addr)[0] = ((Q_UINT32*)&d->sin6.sin6_addr)[1] = 0;
   ((Q_UINT32*)&d->sin6.sin6_addr)[2] = htonl(0xffff);
   ((Q_UINT32*)&d->sin6.sin6_addr)[3] = *(Q_UINT32*)&d->sin.sin_addr;
+
+  // Clear flowinfo and scopeid
+  d->sin6.sin6_flowinfo = 0;
+# ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
+  d->sin6.sin6_scope_id = 0;
+# endif
 #endif
 
   // data == KSocketAddress::data
@@ -700,7 +709,7 @@ void KInetSocketAddress::fromV6()
     }
 
   data = (sockaddr*)&d->sin6;
-  datasize = sizeof( sockaddr_in6 );
+  datasize = sizeof( d->sin6 );
 #endif
 }
 
@@ -708,7 +717,7 @@ QString KInetSocketAddress::addrToString(int family, const void* addr)
 {
   char buf[INET6_ADDRSTRLEN+1];
 
-  return QString::fromUtf8(inet_ntop(family, addr, buf, INET6_ADDRSTRLEN));
+  return QString::fromLatin1(inet_ntop(family, addr, buf, INET6_ADDRSTRLEN));
 }
 
 bool KInetSocketAddress::stringToAddr(int family, const char *text, void *dest)
@@ -792,7 +801,8 @@ bool KUnixSocketAddress::setAddress(const sockaddr_un* _sun, ksocklen_t _size)
 
 bool KUnixSocketAddress::setAddress(QCString path)
 {
-  ksocklen_t newsize = offsetof(sockaddr_un, sun_path) + path.length();
+  // the +1 is necessary for the ending zero
+  ksocklen_t newsize = offsetof(sockaddr_un, sun_path) + path.length() + 1;
 
   if (owndata && (d->m_sun != NULL) && (datasize >= newsize))
     {
@@ -859,12 +869,15 @@ bool KUnixSocketAddress::areEqualUnix(const KSocketAddress &s1, const KSocketAdd
    if (s1.family() != s2.family())
       return false;   
 
-   if ((s1.size() < sizeof(sockaddr_un)) || (s2.size() < sizeof(sockaddr_un)))
+   if ((s1.size() < MIN_SOCKADDR_LEN) || (s2.size() < MIN_SOCKADDR_LEN))
       return false;
 
    struct sockaddr_un *sun1 = (sockaddr_un *) s1.address();
    struct sockaddr_un *sun2 = (sockaddr_un *) s2.address();
-    
+
+   if (s1.size() == MIN_SOCKADDR_LEN && s2.size() == MIN_SOCKADDR_LEN)
+     return true;		// unnamed Unix sockets
+
    return (strcmp(sun1->sun_path, sun2->sun_path) == 0);
 }
 
