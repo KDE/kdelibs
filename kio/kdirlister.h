@@ -111,7 +111,7 @@ public:
   /**
    * Convenience method. Starts loading the current directory, e.g. set via
    * @ref setURL(), if the URL is "dirty" -- otherwise the cached entries are
-   * reused. The url is dirty when a new URL was set via setURL or the 
+   * reused. The url is dirty when a new URL was set via setURL or the
    * nameFilter was changed.
    *
    * @see #setURLDirty
@@ -195,6 +195,11 @@ public:
    */
   void setNameFilter(const QString&);
 
+  /**
+   * @returns the current name filter, as set via @ref setNameFilter()
+   */
+  const QString& nameFilter() const;
+    
   /**
    * @returns true if @p name matches a filter in the list,
    * otherwise fale.

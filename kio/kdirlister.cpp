@@ -40,6 +40,7 @@ public:
     KURL::List lstPendingUpdates;
     bool autoUpdate;
     bool urlChanged;
+    QString nameFilter;
 };
 
 KDirLister::KDirLister( bool _delayedMimeTypes )
@@ -486,6 +487,7 @@ void KDirLister::setNameFilter(const QString& nameFilter)
 {
     m_lstFilters.clear();
     d->urlChanged = true;
+    d->nameFilter = nameFilter;
 
     QStringList list = QStringList::split(' ', nameFilter);
 
@@ -494,6 +496,11 @@ void KDirLister::setNameFilter(const QString& nameFilter)
         // Split on white space
         m_lstFilters.append(new QRegExp(*it, false, true ));
     }
+}
+
+const QString& KDirLister::nameFilter() const
+{
+    return d->nameFilter;
 }
 
 void KDirLister::FilesAdded( const KURL & directory )
