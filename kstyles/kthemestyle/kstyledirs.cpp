@@ -1,28 +1,28 @@
-/* 
-   $Id$
-   
-   This file is part of the KDE libraries
-   Adopted from the KStandardDirs code by
-   		Maksim Orlovich <mo002j@mail.rochester.edu>,
+/*
+  $Id$
+  
+  This file is part of the KDE libraries
+  Adopted from the KStandardDirs code by
+    Maksim Orlovich <mo002j@mail.rochester.edu>,
 
-   KStandardDirs are Copyright:
-	(C) 1999 Sirtaj Singh Kang <taj@kde.org>
-	(C) 1999 Stephan Kulow <coolo@kde.org>
-	(C) 1999 Waldo Bastian <bastian@kde.org>
+  KStandardDirs are Copyright:
+(C) 1999 Sirtaj Singh Kang <taj@kde.org>
+(C) 1999 Stephan Kulow <coolo@kde.org>
+(C) 1999 Waldo Bastian <bastian@kde.org>
 
-   This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
-   License version 2 as published by the Free Software Foundation.
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Library General Public
+  License version 2 as published by the Free Software Foundation.
 
-   This library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Library General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public License
-   along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.
+  You should have received a copy of the GNU Library General Public License
+  along with this library; see the file COPYING.LIB.  If not, write to
+  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+  Boston, MA 02111-1307, USA.
 */
 
 #include "config.h"
@@ -37,14 +37,8 @@
 #include <dirent.h>
 #include <pwd.h>
 
-#include <qregexp.h>
-#include <qdict.h>
 #include <qdir.h>
-#include <qfileinfo.h>
-#include <qstring.h>
-#include <qstringlist.h>
 
-#include "kconfig.h"
 #include <sys/param.h>
 #include <unistd.h>
 
@@ -200,23 +194,23 @@ KStyleDirs::~KStyleDirs()
     delete d;
 }
 
-void KStyleDirs::addToSearch( QSettings& s,QString apnd ) const
+void KStyleDirs::addToSearch( QSettings& s, QString apnd ) const
 {
     const QStringList & dirs = enumerateDirs();
     for ( int c = 0; c < dirs.size(); c++ )
     {
-        s.insertSearchPath( QSettings::Unix, dirs[ c ]+apnd );
+        s.insertSearchPath( QSettings::Unix, dirs[ c ] + apnd );
     }
 }
 
-QString KStyleDirs::locate(const QString& path, const QString& file) const
+QString KStyleDirs::locate( const QString& path, const QString& file ) const
 {
     const QStringList & dirs = enumerateDirs();
     for ( int c = 0; c < dirs.size(); c++ )
     {
-        if (QFile::exists(dirs[c]+path+file))
+        if ( QFile::exists( dirs[ c ] + path + file ) )
         {
-            return dirs[c]+path+file;
+            return dirs[ c ] + path + file;
         }
     }
     return "";

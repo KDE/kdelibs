@@ -1,41 +1,41 @@
-/* 
-  $Id$
+/*
+ $Id$
 
-  This file is part of the KDE libraries
-  Copyright (C) 1999 Daniel M. Duley <mosfet@kde.org>
+ This file is part of the KDE libraries
+ Copyright (C) 1999 Daniel M. Duley <mosfet@kde.org>
 
-  KDE3 port (C) 2001-2002 Maksim Orlovich <mo002j@mail.rochester.edu>
-  Port version 0.8.5
+ KDE3 port (C) 2001-2002 Maksim Orlovich <mo002j@mail.rochester.edu>
+ Port version 0.8.5
 
-  Includes code portions from the dotNET style, and the KDE HighColor style.
+ Includes code portions from the dotNET style, and the KDE HighColor style.
 
-  dotNET Style
-  	Copyright (C) 2001, Chris Lee        <lee@azsites.com>
-	                    Carsten Pfeiffer <pfeiffer@kde.org>
+ dotNET Style
+  Copyright (C) 2001, Chris Lee        <lee@azsites.com>
+                    Carsten Pfeiffer <pfeiffer@kde.org>
 
-  KDE3 HighColor Style
-	Copyright (C) 2001 Karol Szwed       <gallium@kde.org>
-		  (C) 2001 Fredrik Höglund   <fredrik@kde.org>
+ KDE3 HighColor Style
+Copyright (C) 2001 Karol Szwed       <gallium@kde.org>
+   (C) 2001 Fredrik Höglund   <fredrik@kde.org>
 
-	Drawing routines adapted from the KDE2 HCStyle,
-	Copyright (C) 2000 Daniel M. Duley   <mosfet@kde.org>
-		  (C) 2000 Dirk Mueller      <mueller@kde.org>
-		  (C) 2001 Martijn Klingens  <mklingens@yahoo.com>
+Drawing routines adapted from the KDE2 HCStyle,
+Copyright (C) 2000 Daniel M. Duley   <mosfet@kde.org>
+   (C) 2000 Dirk Mueller      <mueller@kde.org>
+   (C) 2001 Martijn Klingens  <mklingens@yahoo.com>
 
 
-   This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
-   License version 2 as published by the Free Software Foundation.
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Library General Public
+  License version 2 as published by the Free Software Foundation.
 
-   This library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Library General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public License
-   along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.
+  You should have received a copy of the GNU Library General Public License
+  along with this library; see the file COPYING.LIB.  If not, write to
+  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+  Boston, MA 02111-1307, USA.
 */
 #ifndef __KTHEMESTYLE_H
 #define __KTHEMESTYLE_H
@@ -75,14 +75,14 @@ public:
      * @param configFile A KConfig file to use as the theme configuration.
      * Defaults to ~/.kderc.
      */
-    KThemeStyle(const QString &configFile = QString::null);
+    KThemeStyle( const QString &configFile = QString::null );
     ~KThemeStyle();
 
-    virtual	int pixelMetric ( PixelMetric metric, const QWidget * widget = 0 ) const;
+    virtual int pixelMetric ( PixelMetric metric, const QWidget * widget = 0 ) const;
 
     virtual void drawPrimitive ( PrimitiveElement pe, QPainter * p, const QRect & r, const QColorGroup & cg,
                                  SFlags flags = Style_Default,
-                                 const QStyleOption& = QStyleOption::Default) const;
+                                 const QStyleOption& = QStyleOption::Default ) const;
 
     virtual void drawControl( ControlElement element,
                               QPainter *p,
@@ -99,15 +99,15 @@ public:
                                   const QStyleOption& = QStyleOption::Default ) const;
 
 
-	virtual void drawComplexControl( ComplexControl control,
-					QPainter *p,
-					const QWidget* widget,
-					const QRect &r,
-					const QColorGroup &cg,
-					SFlags flags = Style_Default,
-					SCFlags controls = SC_All,
-					SCFlags active = SC_None,
-					const QStyleOption& = QStyleOption::Default ) const;
+    virtual void drawComplexControl( ComplexControl control,
+                                     QPainter *p,
+                                     const QWidget* widget,
+                                     const QRect &r,
+                                     const QColorGroup &cg,
+                                     SFlags flags = Style_Default,
+                                     SCFlags controls = SC_All,
+                                     SCFlags active = SC_None,
+                                     const QStyleOption& = QStyleOption::Default ) const;
 
     virtual void drawKStylePrimitive( KStylePrimitive kpe,
                                       QPainter* p,
@@ -121,7 +121,7 @@ public:
     virtual int styleHint( StyleHint sh,
                            const QWidget *widget = 0,
                            const QStyleOption& = QStyleOption::Default,
-                           QStyleHintReturn* returnData = 0) const;
+                           QStyleHintReturn* returnData = 0 ) const;
 
     virtual QSize sizeFromContents( ContentsType contents,
                                     const QWidget *widget,
@@ -129,18 +129,18 @@ public:
                                     const QStyleOption& = QStyleOption::Default ) const;
 
 
-    virtual void polish(QWidget* );
-    virtual void unPolish(QWidget* );
+    virtual void polish( QWidget* );
+    virtual void unPolish( QWidget* );
     /**
      * By default this just sets the background brushes to the pixmapped
      * background.
      */
-    virtual void polish(QApplication *app);
-    virtual void unPolish(QApplication*);
+    virtual void polish( QApplication *app );
+    virtual void unPolish( QApplication* );
 
     /// @internal
     // to make it possible for derived classes to overload this function
-    virtual void polish(QPalette& pal);
+    virtual void polish( QPalette& pal );
 
     /**
      * This is a convenience method for drawing widgets with
@@ -155,9 +155,9 @@ public:
      * @param fill An optional fill brush. Currently ignored (the config file
      * is used instead).
      */
-    virtual void drawBaseButton(QPainter *p, int x, int y, int w, int h,
-                                const QColorGroup &g, bool sunken = FALSE,
-                                bool rounded = FALSE, WidgetType type=Bevel) const;
+    virtual void drawBaseButton( QPainter *p, int x, int y, int w, int h,
+                                 const QColorGroup &g, bool sunken = FALSE,
+                                 bool rounded = FALSE, WidgetType type = Bevel ) const;
     /**
      * Draw a mask with for widgets that may be rounded.
      *
@@ -167,8 +167,8 @@ public:
      * @param p The QPainter to draw on.
      * @param rounded @p true if the widget is rounded, @p false if rectangular.
      */
-    virtual void drawBaseMask(QPainter *p, int x, int y, int w, int h,
-                              bool rounded) const;
+    virtual void drawBaseMask( QPainter *p, int x, int y, int w, int h,
+                               bool rounded ) const;
 
 
 
@@ -183,20 +183,20 @@ public:
         * @param bWidth The border width.
         * @param style The shading style to use.
         */
-    virtual void drawShade(QPainter *p, int x, int y, int w, int h,
-                           const QColorGroup &g, bool sunken, bool rounded,
-                           int hWidth, int bWidth, ShadeStyle style) const;
-    int popupMenuItemHeight(bool checkable, QMenuItem *mi,
-                            const QFontMetrics &fm);
+    virtual void drawShade( QPainter *p, int x, int y, int w, int h,
+                            const QColorGroup &g, bool sunken, bool rounded,
+                            int hWidth, int bWidth, ShadeStyle style ) const;
+    int popupMenuItemHeight( bool checkable, QMenuItem *mi,
+                             const QFontMetrics &fm );
 
-    virtual void drawTabMask(QPainter*, const QTabBar*, QTab*, bool selected);
+    virtual void drawTabMask( QPainter*, const QTabBar*, QTab*, bool selected );
 protected:
     QPalette oldPalette, popupPalette, indiPalette, exIndiPalette;
     bool paletteSaved;
-	QStyle *mtfstyle;
+    QStyle *mtfstyle;
 
-	mutable QPixmap* vsliderBackCache;
-	mutable QPixmap* vsliderCache;
+    mutable QPixmap* vsliderBackCache;
+    mutable QPixmap* vsliderCache;
 
 protected slots:
     void paletteChanged();
