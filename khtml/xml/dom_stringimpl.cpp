@@ -203,7 +203,8 @@ static Length parseLength(const QChar *s, unsigned int l)
 khtml::Length* DOMStringImpl::toLengthArray(int& len) const
 {
     QString str(s, l);
-
+    int pos = 0;
+    int pos2;
 
     // web authors are so stupid. This is a workaround
     // to fix lists like "1,2px 3 ,4"
@@ -215,21 +216,17 @@ khtml::Length* DOMStringImpl::toLengthArray(int& len) const
         if ( cc > '9' || ( cc < '0' && cc != '-' && cc != '*' && cc != '%' && cc != '.') )
             str[i] = space;
     }
-
     str = str.simplifyWhiteSpace();
 
-    QStringList segments = QStringList::split(QString(" "), str);
-
-    len = segments.size();
+    len = str.contains(' ') + 1;
     khtml::Length* r = new khtml::Length[len];
-
     int i = 0;
-
-    for ( QStringList::Iterator it = segments.begin(); it != segments.end(); ++it, ++i ) {
-        const QChar* const startPtr = (*it).unicode();
-        const unsigned int l = (*it).length();
-        r[i] = parseLength(startPtr, l);
+    while((pos2 = str.find(' ', pos)) != -1)
+    {
+        r[i++] = parseLength((QChar *) str.unicode()+pos, pos2-pos);
+        pos = pos2+1;
     }
+    r[i] = parseLength((QChar *) str.unicode()+pos, str.length()-pos);
 
     return r;
 }
