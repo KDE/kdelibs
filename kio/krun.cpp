@@ -37,6 +37,7 @@
 #include <kprotocolmanager.h>
 #include <kstddirs.h>
 #include <kprocess.h>
+#include <dcopclient.h>
 
 KFileManager * KFileManager::pFileManager = 0L;
 KOpenWithHandler * KOpenWithHandler::pOpenWithHandler = 0L;
@@ -182,6 +183,35 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
   while ( ( pos = exec.find( "%i" ) ) != -1 )
     exec.replace( pos, 2, icon );
 
+  // App starting notification stuff follows...
+
+  QString _bin_name = _exec;
+
+  // Remove parameters and/or trailing spaces.
+
+  int firstSpace = _bin_name.find(' ');
+
+  if (-1 != firstSpace)
+    _bin_name = _bin_name.left(firstSpace);
+
+  // Remove path.
+
+  int lastSlash = _bin_name.findRev('/');
+
+  _bin_name = _bin_name.mid(lastSlash + 1);
+
+  // By default, res_name should be equal to bin_name.
+  // Some apps don't do this though, like Netscape 4.x.
+
+  QString _res_name = _bin_name;
+
+  bool appStartNotify = true;
+
+  // TODO: Read relevant desktop file if it exists, check if NoAppStartNotify
+  // is set and read XClassHintResName to _res_name if it's set.
+
+  // End app starting notification stuff.
+
   QString mini_icon = _mini_icon;
   shellQuote( mini_icon );
   if ( !mini_icon.isEmpty() )
@@ -218,7 +248,19 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
     while ( ( pos = exec.find( "%U" )) != -1 )
       exec.replace( pos, 2, U );
 
-    return run( exec );
+    // App starting notification is done here if not a buggy app.
+
+    pid_t pid = run(exec);
+
+    if (pid != -1) {
+
+      if (appStartNotify)
+        clientStarted(_bin_name, mini_icon, _res_name, pid);
+
+      return true;
+    }
+    else
+      return false;
   }
 
   it = _urls.begin();
@@ -245,13 +287,23 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
     while ( ( pos = e.find( "%u" )) != -1 )
       e.replace( pos, 2, u );
 
-    return run( e );
+    pid_t pid = run(exec);
+
+    if (pid != -1) {
+
+      if (appStartNotify)
+        clientStarted(_bin_name, mini_icon, _res_name, pid);
+
+      return true;
+    }
+    else
+      return false;
   }
 
   return true;
 }
 
-bool KRun::run( const QString& _cmd )
+pid_t KRun::run( const QString& _cmd )
 {
   kdDebug(7010) << "Running " << _cmd << endl;
 
@@ -259,7 +311,7 @@ bool KRun::run( const QString& _cmd )
   proc << _cmd;
   proc.start(KShellProcess::DontCare);
 
-  return true;
+  return proc.getPid();
 }
 
 bool KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool _allow_multiple )
@@ -627,6 +679,24 @@ void KRun::killJob()
     m_job->kill();
     m_job = 0L;
   }
+}
+
+void KRun::clientStarted(
+  const QString & execName,
+  const QString & iconName,
+  const QString & resName,
+  pid_t pid
+)
+{
+  QByteArray params;
+  QDataStream stream(params, IO_WriteOnly);
+  stream << execName << iconName << resName << pid;
+  kapp->dcopClient()->send(
+    "kicker",
+    "TaskbarApplet",
+    "clientStarted(QString,QString,QString,int)",
+    params
+  );
 }
 
 /****************/

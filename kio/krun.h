@@ -151,8 +151,25 @@ protected:
    * @ref _cmd must be a quoted shell command. You must not append "&"
    * to it, since the function will do that for you. An example is
    * "<tt>greet 'Hello Torben'</tt>".
+   *
+   * @return PID of running command, or -1 if it could not be started.
    */
-  static bool run( const QString& _cmd );
+  static pid_t run( const QString& _cmd );
+
+  /**
+   * Sends a DCOP signal to Kicker's taskbar to indicate that an
+   * application has been started.
+   *
+   * @param execName Name of the app binary.
+   * @param iconName Name of that app's mini icon.
+   * @param resName Application's res_name, usually equivalent to execName.
+   * @param pid PID of the KShellProcess that is executing the binary.
+   */
+  static void clientStarted(
+    const QString & execName,
+    const QString & iconName,
+    const QString & resName,
+    pid_t pid);
 
   /**
    * Quotes a string for the shell
