@@ -187,7 +187,7 @@ public:
      * possibility to specify a parent. Will be removed in KDE 4.0
      */
     KPasswordDialog(int type, QString prompt, bool enableKeep=false,
-	    int extraBttn=0) KDE_DEPRECATED;
+                    int extraBttn=0) KDE_DEPRECATED;
     // note that this implicitly deprecates the 'prompt' variants of
     // getPassword() below. i guess the above constructor needs to be extended.
 
@@ -202,7 +202,7 @@ public:
      * @since 3.3
      */
     KPasswordDialog(Types type, bool enableKeep, int extraBttn, const QString& iconName,
-	    QWidget *parent = 0, const char *name = 0);
+                    QWidget *parent = 0, const char *name = 0);
 
     /**
      * Destructs the password dialog.

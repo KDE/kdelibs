@@ -449,7 +449,7 @@ int KPasswordDialog::getPassword(QCString &password, QString prompt,
 	int *keep)
 {
     bool enableKeep = keep && *keep;
-    KPasswordDialog *dlg = new KPasswordDialog(Password, prompt, enableKeep);
+    KPasswordDialog *dlg = new KPasswordDialog(int(Password), prompt, enableKeep);
     int ret = dlg->exec();
     if (ret == Accepted) {
 	password = dlg->password();
