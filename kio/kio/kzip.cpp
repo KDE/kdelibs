@@ -47,9 +47,10 @@
 #ifdef HAVE_ALLOCA_H
 // explicitly included for systems that don't provide it in stdlib.h
 #include <alloca.h>
-#else
-#include <stdlib.h>
 #endif
+
+// and then there are those that have alloca and stdlib :)
+#include <stdlib.h>
 
 #include <qasciidict.h>
 #include <qfile.h>

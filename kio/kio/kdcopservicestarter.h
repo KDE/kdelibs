@@ -20,9 +20,9 @@
 #define KDCOPSERVICESTARTER_H
 
 #include <qstring.h>
+#include <kstaticdeleter.h>
 
 class KDCOPServiceStarter;
-template<class KDCOPServiceStarter> class KStaticDeleter;
 class QCString;
 
 /**
