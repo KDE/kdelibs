@@ -24,6 +24,9 @@
 
 #include <config.h>
 
+#include <sys/types.h>
+#include <sys/socket.h>
+
 #include "ksocketaddress.h"
 #include "kresolver.h"
 #include "ksocketdevice.h"
@@ -36,6 +39,9 @@ KDatagramSocket::KDatagramSocket(QObject* parent, const char *name)
 {
   peerResolver().setFamily(KResolver::KnownFamily);
   localResolver().setFamily(KResolver::KnownFamily);
+
+  peerResolver().setSocketType(SOCK_DGRAM);
+  localResolver().setSocketType(SOCK_DGRAM);
 
   //  QObject::connect(localResolver(), SIGNAL(finished(KResolverResults)),
   //		   this, SLOT(lookupFinishedLocal()));
@@ -113,6 +119,24 @@ bool KDatagramSocket::connect(const QString& node, const QString& service)
 KDatagramPacket KDatagramSocket::receive()
 {
   Q_LONG size = bytesAvailable();
+  if (size == 0)
+    {
+      // nothing available yet to read
+      // wait for data if we're not blocking
+      if (blocking())
+	socketDevice()->waitForMore(-1); // wait forever
+      else
+	{
+	  // mimic error
+	  setError(IO_ReadError, WouldBlock);
+	  emit gotError(WouldBlock);
+	  return KDatagramPacket();
+	}
+
+      // try again
+      size = bytesAvailable();
+    }
+
   QByteArray data(size);
   KSocketAddress address;
   
@@ -186,6 +210,8 @@ bool KDatagramSocket::doBind()
 {
   if (localResults().count() == 0)
     return true;
+  if (state() >= Bound)
+    return true;		// already bound
 
   KResolverResults::ConstIterator it = localResults().begin();
   for ( ; it != localResults().end(); ++it)
