@@ -66,6 +66,7 @@ HTMLFormElementImpl::HTMLFormElementImpl(DocumentPtr *doc)
     m_multipart = false;
     m_autocomplete = true;
     m_insubmit = false;
+    m_doingsubmit = false;
     m_inreset = false;
     m_enctype = "application/x-www-form-urlencoded";
     m_boundary = "----------0xKhTmLbOuNdArY";
@@ -314,13 +315,19 @@ void HTMLFormElementImpl::setBoundary( const DOMString& bound )
 
 bool HTMLFormElementImpl::submit(  )
 {
-    if(m_insubmit || !view || !view->part() || view->part()->onlyLocalReferences())
-        return m_insubmit;
+    if(m_doingsubmit || !view || !view->part() || view->part()->onlyLocalReferences())
+        return m_doingsubmit;
+
+    if ( m_insubmit )
+        return ( m_doingsubmit = true );
 
     m_insubmit = true;
+    if ( !dispatchHTMLEvent(EventImpl::SUBMIT_EVENT,true,true) && !m_doingsubmit)
+        return ( m_insubmit = false );
+    }
 
 #ifdef FORMS_DEBUG
-    kdDebug( 6030 ) << "submit pressed!" << endl;
+    kdDebug( 6030 ) << "submitting!" << endl;
 #endif
 
     for(HTMLGenericFormElementImpl *current = formElements.first(); current; current = formElements.next())
@@ -349,21 +356,9 @@ bool HTMLFormElementImpl::submit(  )
                                   m_target.string() );
     }
 
-    // if we passed this point once there is no way back.
-    // hence, m_insubmit _must_ _not_ be reset to false here!
-    return m_insubmit;
+    m_doingsubmit = m_insubmit = false;
+    return true;
 }
-
-bool HTMLFormElementImpl::userSubmit()
-{
-    if (dispatchHTMLEvent(EventImpl::SUBMIT_EVENT,true,true)) {
-	submit();
-	return true;
-    }
-    else
-	return false;
-}
-
 
 void HTMLFormElementImpl::reset(  )
 {
@@ -1265,7 +1260,7 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
             if ( ownerDocument() )
                 ownerDocument()->setFocusNode( this );
             m_activeSubmit = true;
-	    if (!m_form->userSubmit()) {
+	    if (!m_form->submit()) {
 		xPos = 0;
 		yPos = 0;
 	    }
@@ -1535,7 +1530,7 @@ void HTMLSelectElementImpl::parseAttribute(AttrImpl *attr)
     switch(attr->attrId)
     {
     case ATTR_SIZE:
-        m_size = attr->val()->toInt();
+        m_size = QMAX( attr->val()->toInt(), 1 );
         break;
     case ATTR_MULTIPLE:
         m_multiple = (attr->val() != 0);

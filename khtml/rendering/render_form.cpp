@@ -360,8 +360,8 @@ RenderSubmitButton::RenderSubmitButton(QScrollView *view, HTMLInputElementImpl *
 {
     QPushButton* p = new QPushButton(view->viewport());
     setQWidget(p);
-     p->setMouseTracking(true);
-     p->installEventFilter(this);
+    p->setMouseTracking(true);
+    p->installEventFilter(this);
     connect(p, SIGNAL(clicked()), this, SLOT(slotClicked()));
 }
 
@@ -393,7 +393,7 @@ void RenderSubmitButton::layout()
     int w = fm.width( raw ) + 2*fm.width( ' ' );
     if ( m_widget->style().guiStyle() == Qt::WindowsStyle && h < 26 )
         h = 22;
-    QSize s = QSize( w + 8, h ).expandedTo( QApplication::globalStrut() );
+    QSize s = QSize( w + 8, h ).expandedTo( m_widget->minimumSizeHint()).expandedTo( QApplication::globalStrut() );
 
     applyLayout(s.width(), s.height());
     if (isPositioned()) {
@@ -499,7 +499,6 @@ RenderLineEdit::RenderLineEdit(QScrollView *view, HTMLInputElementImpl *element)
 
 void RenderLineEdit::slotReturnPressed()
 {
-    // ### this gets called twice when the user presses enter
     // don't submit the form when return was pressed in a completion-popup
     KCompletionBox *box = (static_cast<KLineEdit*>(m_widget))->completionBox(false);
     if ( box && box->isVisible() && box->currentItem() != -1 )
@@ -507,7 +506,7 @@ void RenderLineEdit::slotReturnPressed()
 
     HTMLFormElementImpl* fe = m_element->form();
     if ( fe )
-	fe->userSubmit();
+	fe->submit();
 }
 
 void RenderLineEdit::layout()
@@ -652,7 +651,7 @@ void RenderFileButton::layout( )
 void RenderFileButton::slotReturnPressed()
 {
     if (m_element->form())
-	m_element->form()->userSubmit();
+	m_element->form()->submit();
 }
 
 void RenderFileButton::slotTextChanged(const QString &string)
@@ -744,10 +743,7 @@ RenderSelect::RenderSelect(QScrollView *view, HTMLSelectElementImpl *element)
 {
     m_ignoreSelectEvents = false;
     m_multiple = element->multiple();
-    if (element->size() >= 1)
-	m_size = element->size();
-    else
-	m_size = 1;
+    m_size = element->size();
     m_useListBox = (m_multiple || m_size > 1);
 
     if(m_useListBox)
@@ -774,10 +770,7 @@ void RenderSelect::layout( )
     bool oldListbox = m_useListBox;
 
     m_multiple = f->multiple();
-    if (f->size() >= 1)
-	m_size = f->size();
-    else
-	m_size = 1;
+    m_size = f->size();
     m_useListBox = (m_multiple || m_size > 1);
 
     if (oldMultiple != m_multiple || oldSize != m_size) {

@@ -97,7 +97,6 @@ public:
     virtual void restoreState(const QString &) { };
 
     bool submit();
-    bool userSubmit();
     void reset();
 
     static void i18nData();
@@ -117,6 +116,7 @@ public:
     bool m_multipart : 1;
     bool m_autocomplete : 1;
     bool m_insubmit : 1;
+    bool m_doingsubmit : 1;
     bool m_inreset : 1;
 };
 
