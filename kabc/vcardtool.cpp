@@ -274,8 +274,8 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
 
 Addressee::List VCardTool::parseVCards( const QString& vcard )
 {
-  QChar semicolonSep( ';' );
-  QChar commaSep( ',' );
+  static const QChar semicolonSep( ';' );
+  static const QChar commaSep( ',' );
   QString identifier;
 
   Addressee::List addrList;
@@ -286,14 +286,11 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
     QStringList idents = (*cardIt).identifiers();
     QStringList::ConstIterator identIt;
     for ( identIt = idents.begin(); identIt != idents.end(); ++identIt ) {
-      VCard card = (*cardIt);
-      VCardLine::List lines = card.lines( (*identIt) );
+      VCardLine::List lines = (*cardIt).lines( (*identIt) );
       VCardLine::List::Iterator lineIt;
 
       // iterate over the lines
       for ( lineIt = lines.begin(); lineIt != lines.end(); ++lineIt ) {
-        QStringList params = (*lineIt).parameterList();
-
         identifier = (*lineIt).identifier().lower();
         // ADR
         if ( identifier == "adr" ) {
@@ -325,35 +322,35 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
         }
 
         // AGENT
-        if ( identifier == "agent" )
+        else if ( identifier == "agent" )
           addr.setAgent( parseAgent( *lineIt ) );
 
         // BDAY
-        if ( identifier == "bday" )
+        else if ( identifier == "bday" )
           addr.setBirthday( parseDateTime( (*lineIt).value().asString() ) );
 
         // CATEGORIES
-        if ( identifier == "categories" ) {
+        else if ( identifier == "categories" ) {
           QStringList categories = splitString( commaSep, (*lineIt).value().asString() );
           addr.setCategories( categories );
         }
 
         // CLASS
-        if ( identifier == "class" )
+        else if ( identifier == "class" )
           addr.setSecrecy( parseSecrecy( *lineIt ) );
 
         // EMAIL
-        if ( identifier == "email" ) {
+        else if ( identifier == "email" ) {
           QStringList types = (*lineIt).parameters( "type" );
           addr.insertEmail( (*lineIt).value().asString(), types.findIndex( "PREF" ) != -1 );
         }
 
         // FN
-        if ( identifier == "fn" )
+        else if ( identifier == "fn" )
           addr.setFormattedName( (*lineIt).value().asString() );
 
         // GEO
-        if ( identifier == "geo" ) {
+        else if ( identifier == "geo" ) {
           Geo geo;
 
           QStringList geoParts = QStringList::split( ';', (*lineIt).value().asString(), true );
@@ -364,11 +361,11 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
         }
 
         // KEY
-        if ( identifier == "key" )
+        else if ( identifier == "key" )
           addr.insertKey( parseKey( *lineIt ) );
 
         // LABEL
-        if ( identifier == "label" ) {
+        else if ( identifier == "label" ) {
           int type = 0;
 
           QStringList types = (*lineIt).parameters( "type" );
@@ -395,15 +392,15 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
         }
 
         // LOGO
-        if ( identifier == "logo" )
+        else if ( identifier == "logo" )
           addr.setLogo( parsePicture( *lineIt ) );
 
         // MAILER
-        if ( identifier == "mailer" )
+        else if ( identifier == "mailer" )
           addr.setMailer( (*lineIt).value().asString() );
 
         // N
-        if ( identifier == "n" ) {
+        else if ( identifier == "n" ) {
           QStringList nameParts = splitString( semicolonSep, (*lineIt).value().asString() );
           if ( nameParts.count() > 0 )
             addr.setFamilyName( nameParts[ 0 ] );
@@ -418,47 +415,47 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
         }
 
         // NAME
-        if ( identifier == "name" )
+        else if ( identifier == "name" )
           addr.setName( (*lineIt).value().asString() );
 
         // NICKNAME
-        if ( identifier == "nickname" )
+        else if ( identifier == "nickname" )
           addr.setNickName( (*lineIt).value().asString() );
 
         // NOTE
-        if ( identifier == "note" )
+        else if ( identifier == "note" )
           addr.setNote( (*lineIt).value().asString() );
 
         // ORGANIZATION
-        if ( identifier == "org" )
+        else if ( identifier == "org" )
           addr.setOrganization( (*lineIt).value().asString() );
 
         // PHOTO
-        if ( identifier == "photo" )
+        else if ( identifier == "photo" )
           addr.setPhoto( parsePicture( *lineIt ) );
 
         // PROID
-        if ( identifier == "prodid" )
+        else if ( identifier == "prodid" )
           addr.setProductId( (*lineIt).value().asString() );
 
         // REV
-        if ( identifier == "rev" )
+        else if ( identifier == "rev" )
           addr.setRevision( parseDateTime( (*lineIt).value().asString() ) );
 
         // ROLE
-        if ( identifier == "role" )
+        else if ( identifier == "role" )
           addr.setRole( (*lineIt).value().asString() );
 
         // SORT-STRING
-        if ( identifier == "sort-string" )
+        else if ( identifier == "sort-string" )
           addr.setSortString( (*lineIt).value().asString() );
 
         // SOUND
-        if ( identifier == "sound" )
+        else if ( identifier == "sound" )
           addr.setSound( parseSound( *lineIt ) );
 
         // TEL
-        if ( identifier == "tel" ) {
+        else if ( identifier == "tel" ) {
           PhoneNumber phone;
           phone.setNumber( (*lineIt).value().asString() );
 
@@ -474,11 +471,11 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
         }
 
         // TITLE
-        if ( identifier == "title" )
+        else if ( identifier == "title" )
           addr.setTitle( (*lineIt).value().asString() );
 
         // TZ
-        if ( identifier == "tz" ) {
+        else if ( identifier == "tz" ) {
           TimeZone tz;
           QString date = (*lineIt).value().asString();
 
@@ -492,15 +489,15 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
         }
 
         // UID
-        if ( identifier == "uid" )
+        else if ( identifier == "uid" )
           addr.setUid( (*lineIt).value().asString() );
 
         // URL
-        if ( identifier == "url" )
+        else if ( identifier == "url" )
           addr.setUrl( KURL( (*lineIt).value().asString() ) );
 
         // X-
-        if ( identifier.startsWith( "x-" ) ) {
+        else if ( identifier.startsWith( "x-" ) ) {
           QString key = (*lineIt).identifier().mid( 2 );
           int dash = key.find( "-" );
           addr.insertCustom( key.left( dash ), key.mid( dash + 1 ), (*lineIt).value().asString() );

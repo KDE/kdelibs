@@ -154,6 +154,7 @@ QString VCardParser::createVCards( const VCard::List& list )
 
   bool hasEncoding;
 
+  text.reserve( list.size() * 300 ); // reserve memory to be more efficient
 
   // iterate over the cards
   for ( cardIt = list.begin(); cardIt != list.end(); ++cardIt ) {
@@ -161,8 +162,7 @@ QString VCardParser::createVCards( const VCard::List& list )
 
     idents = (*cardIt).identifiers();
     for ( identIt = idents.begin(); identIt != idents.end(); ++identIt ) {
-      VCard card = (*cardIt);
-      lines = card.lines( (*identIt) );
+      lines = (*cardIt).lines( (*identIt) );
 
       // iterate over the lines
       for ( lineIt = lines.begin(); lineIt != lines.end(); ++lineIt ) {
