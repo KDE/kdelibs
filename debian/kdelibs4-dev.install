@@ -22,6 +22,8 @@ debian/tmp/usr/lib/libkdefx.so
 debian/tmp/usr/lib/libkdeprint.la
 debian/tmp/usr/lib/libkdeprint.so
 debian/tmp/usr/lib/libkdeprint_management.so
+debian/tmp/usr/lib/libkderesources.la
+debian/tmp/usr/lib/libkderesources.so
 debian/tmp/usr/lib/libkdesasl.la
 debian/tmp/usr/lib/libkdesasl.so
 debian/tmp/usr/lib/libkdesu.la
