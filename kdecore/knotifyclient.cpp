@@ -1,7 +1,7 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2000 Charles Samuels <charles@altair.dhs.org>
                  2000 Malte Starostik <starosti@zedat.fu-berlin.de>
-		 2000 Carsten Pfeiffer <pfeiffer@kde.org>   
+		 2000 Carsten Pfeiffer <pfeiffer@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -95,12 +95,12 @@ int KNotifyClient::getPresentation(const QString &eventname)
 {
 	int present;
 	if (eventname.isEmpty()) return Default;
-	
+
 	KConfig eventsfile( KNotifyClient::instance()->instanceName()+".eventsrc", true, false);
 	eventsfile.setGroup(eventname);
-	
+
 	present=eventsfile.readNumEntry("presentation", -1);
-	
+
 	return present;
 }
 
@@ -118,7 +118,7 @@ QString KNotifyClient::getFile(const QString &eventname, int present)
 	case (Logfile):
 		return eventsfile.readEntry("logfile");
 	}
-		
+
 	return QString::null;
 }
 
@@ -126,12 +126,12 @@ int KNotifyClient::getDefaultPresentation(const QString &eventname)
 {
 	int present;
 	if (eventname.isEmpty()) return Default;
-		
+
 	KConfig eventsfile( KNotifyClient::instance()->instanceName()+"/eventsrc", true, false, "data");
 	eventsfile.setGroup(eventname);
-	
+
 	present=eventsfile.readNumEntry("default_presentation", -1);
-	
+
 	return present;
 }
 
@@ -149,14 +149,14 @@ QString KNotifyClient::getDefaultFile(const QString &eventname, int present)
 	case (Logfile):
 		return eventsfile.readEntry("default_logfile");
 	}
-		
+
 	return QString::null;
 }
 
 bool KNotifyClient::startDaemon()
 {
   if (!kapp->dcopClient()->isApplicationRegistered(daemonName))
-    return KApplication::startServiceByDesktopName(daemonName);
+    return KApplication::startServiceByDesktopName(daemonName) == 0;
   return true;
 }
 
@@ -167,7 +167,7 @@ void KNotifyClient::beep(const QString& reason)
     QApplication::beep();
     return;
   }
-    
+
   DCOPClient *client=kapp->dcopClient();
   if (!client->isAttached())
   {
@@ -194,7 +194,7 @@ public:
 	InstanceStack() { m_defaultInstance = 0; }
 	virtual ~InstanceStack() { delete m_defaultInstance; }
 	void push(Instance *instance) { m_instances.push(instance); }
-	
+
 	void pop(Instance *instance)
 	{
 		if (m_instances.top() == instance)
@@ -208,7 +208,7 @@ public:
 		else
 			kdWarning(160) << "Tried to remove an Instance, but the stack was empty." << endl;
     }
-	
+
 	Instance *currentInstance()
 	{
 		if (m_instances.isEmpty())
@@ -220,7 +220,7 @@ public:
 		}
 		return m_instances.top();
 	}
-	
+
 private:
 	QPtrStack<Instance> m_instances;
 	Instance *m_defaultInstance;
