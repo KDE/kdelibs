@@ -24,9 +24,41 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <string.h>
 
 static int arts_debug_level = Arts::Debug::lInfo;
+static bool arts_debug_abort = false;
 static const char *arts_debug_prefix = "";
+
+namespace Arts {
+
+static class DebugInitFromEnv {
+public:
+	DebugInitFromEnv() {
+		const char *env = getenv("ARTS_DEBUG");
+		if(env)
+		{
+			if(strcmp(env,"debug") == 0)
+				arts_debug_level = Debug::lDebug;
+			else if(strcmp(env,"info") == 0)
+				arts_debug_level = Debug::lInfo;
+			else if(strcmp(env,"warning") == 0)
+				arts_debug_level = Debug::lWarning;
+			else if(strcmp(env,"quiet") == 0)
+				arts_debug_level = Debug::lFatal;
+			else
+			{
+				fprintf(stderr,
+					"ARTS_DEBUG must be one of debug,info,warning,quiet\n");
+			}
+		}
+		env = getenv("ARTS_DEBUG_ABORT");
+		if(env)
+			arts_debug_abort = true;
+	}
+} debugInitFromEnv;
+
+};
 
 void Arts::Debug::init(const char *prefix, Level level)
 {
@@ -45,6 +77,7 @@ void Arts::Debug::fatal(const char *fmt, ...)
 	fflush(stderr);
     va_end(ap);
 
+	if(arts_debug_abort) abort();
 	exit(1);
 }
 
