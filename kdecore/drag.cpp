@@ -20,6 +20,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.28  1999/05/21 19:24:16  dmuell
+ * Adding obsolete warnings to KDND* classes (both at compile & run time)
+ *
  * Revision 1.27  1999/05/03 07:21:26  kulow
  * some more warnings removed. Wouldn't it be cool to compile KDE
  * with -ansi -pedantic -Werror? I put that into my egcs's spec file
@@ -172,7 +175,6 @@ static Window debugWin = 0;
 
 KDNDDropZone::KDNDDropZone( QWidget* _parent, int _accept ) : QObject()
 {
-  warning("KDND* is obsolete. Use Qt DND instead");
   widget = _parent;
   acceptType = _accept;
 
@@ -250,7 +252,6 @@ void KDNDDropZone::leave()
 
 KDNDDropZone::~KDNDDropZone()
 {
-  warning("KDND* is obsolete. Use Qt DND instead");
   if (kapp)
      kapp->removeDropZone( this );
 }
@@ -362,7 +363,6 @@ int (* oldErrorHandler)(Display *, XErrorEvent *) = 0L;
 static
 int myErrorHandler(Display *d, XErrorEvent *e)
 {
-  warning("KDND* is obsolete. Use Qt DND instead");
       char msg[80];
 	XGetErrorText(d, e->error_code, msg, 80);
 	//	fprintf(stderr, "Ignored Error: %s\n", msg);
@@ -373,7 +373,6 @@ int myErrorHandler(Display *d, XErrorEvent *e)
 
 void KDNDWidget::mouseReleaseEvent( QMouseEvent * _mouse )
 {
-  warning("KDND* is obsolete. Use Qt DND instead");
     if ( !drag )
     {
 	  dndMouseReleaseEvent( _mouse );
@@ -461,7 +460,6 @@ void KDNDWidget::mouseReleaseEvent( QMouseEvent * _mouse )
 
 void KDNDWidget::mouseMoveEvent( QMouseEvent * _mouse )
 {
-  warning("KDND* is obsolete. Use Qt DND instead");
     if ( !drag )
     {
 	  dndMouseMoveEvent( _mouse );
@@ -555,7 +553,6 @@ void KDNDWidget::rootDropEvent()
 
 KDNDWidget::~KDNDWidget()
 {
-  warning("KDND* is obsolete. Use Qt DND instead");
   if ( dndData != 0L )
      delete [] dndData;
 }
@@ -564,7 +561,6 @@ KDNDIcon::KDNDIcon( QPixmap &_pixmap, int _x, int _y ) :
   QWidget( 0L, 0L, WStyle_Customize | WStyle_Tool | WStyle_NoBorder )
 {
   pixmap = _pixmap;
-  warning("KDND* is obsolete. Use Qt DND instead");
 
   setGeometry( _x, _y, _pixmap.width(), _pixmap.height() );
   show();
@@ -573,7 +569,6 @@ KDNDIcon::KDNDIcon( QPixmap &_pixmap, int _x, int _y ) :
 
 KDNDIcon::KDNDIcon( const KDNDIcon& icon ) : QWidget()
 {
-  warning("KDND* is obsolete. Use Qt DND instead");
   pixmap = icon.pixmap; // implicitly ref-counted
 }
 
