@@ -12,6 +12,7 @@
 <!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
 <!ENTITY dpi	'<acronym>dpi</acronym>'>
 <!ENTITY eg     "<abbrev>e.g.</abbrev>">
+<!ENTITY Enter	"<keycap>Enter</keycap>">
 <!ENTITY Esc	"<keycap>Esc</keycap>">
 <!ENTITY etc    "<abbrev>etc.</abbrev>">
 <!ENTITY FAQ	'<acronym>FAQ</acronym>'>
@@ -23,3 +24,4 @@
 <!ENTITY OS	"operating system"><!-- <acronym>OS</acronym>-->
 <!ENTITY RMB    "<mousebutton>right</mousebutton> mouse button">
 <!ENTITY Shift	"<keycap>Shift</keycap>">
+<!ENTITY Tab	"<keycap>Tab</keycap>">
