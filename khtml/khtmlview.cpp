@@ -514,7 +514,8 @@ void KHTMLView::keyReleaseEvent( QKeyEvent *_ke )
 					  LeftButton, 0,
 					  a->targetRef().string() );
 	    }
-	    e->setPressed(false);
+            if (e)
+	        e->setPressed(false);
 	}
         return;
       break;
