@@ -159,6 +159,13 @@ public:
     bool isFrame();
 
     /**
+     * Find the anchor named '_name'. If the anchor is found, the widget
+     * scrolls to the closest position. Returns TRUE if the anchor has
+     * been found.
+     */
+    bool gotoAnchor( const char *_name );
+
+    /**
      * Sets the width of the border. This is used to implement the tag
      * &lt;frame frameborder=... &gt; tag. FOR INTERNAL USE ONLY.
      * 

@@ -529,6 +529,11 @@ void KHTMLView::setMarginHeight( int _h )
   view->setMarginHeight( _h );
 }
 
+bool KHTMLView::gotoAnchor(const char* anchor)
+{
+  return view->gotoAnchor(anchor);
+}
+
 #include "htmlview.moc"
 
 
