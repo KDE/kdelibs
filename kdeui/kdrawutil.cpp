@@ -183,7 +183,7 @@ void kRoundMaskRegion(QRegion &r, int x, int y, int w, int h)
     r += QRect(x2, y+6, 1, h-12);
 }
 
-void kColorBitmaps(QPainter *p, int x, int y, const QColorGroup &g,
+void kColorBitmaps(QPainter *p, const QColorGroup &g, int x, int y,
                    QBitmap *lightColor, QBitmap *midColor,
                    QBitmap *midlightColor, QBitmap *darkColor,
                    QBitmap *blackColor, QBitmap *whiteColor)
