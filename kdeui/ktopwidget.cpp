@@ -1,10 +1,13 @@
 #include <ktopwidget.h>
 #include <ktopwidget.moc>
 #include <kapp.h>
+#include <kdebug.h>
 #include <Kconfig.h>
 #include <qstrlist.h>
 //#include <qobjcoll.h>
 
+// a static pointer (too bad we cannot have static objects in libraries)
+QList<KTopLevelWidget>* KTopLevelWidget::memberList = NULL;
 
 KTopLevelWidget::KTopLevelWidget( const char *name )
     : QWidget( 0L, name )
@@ -19,6 +22,17 @@ KTopLevelWidget::KTopLevelWidget( const char *name )
     kmainwidgetframe ->setFrameStyle( QFrame::Panel | QFrame::Sunken);
     kmainwidgetframe ->setLineWidth(0);
     kmainwidgetframe ->hide();
+
+	// If the application does not yet have a main widget, make it this one
+	if( !kapp->mainWidget() )
+	  kapp->setMainWidget( this );
+
+	// see if there already is a member list
+	if( !memberList )
+	  memberList = new QList<KTopLevelWidget>;
+
+	// enter the widget in the list of all KTWs
+	memberList->append( this );
 }
 
 KTopLevelWidget::~KTopLevelWidget()
@@ -53,7 +67,28 @@ KTopLevelWidget::~KTopLevelWidget()
     delete menubars;
     delete toolbars;
     */
-    debug ("KTopLevelWidget destructor: finished");
+    KDEBUG (KDEBUG_INFO, 151, "KTopLevelWidget destructor: finished");
+
+	// remove this widget from the member list
+	memberList->remove( this );
+
+	// if this was the mainWidget, find a new one to be it
+	if( kapp->mainWidget() == this )
+	  {
+		KTopLevelWidget* pTemp = NULL;
+		if( ( pTemp = memberList->getFirst() ) )
+		  kapp->setMainWidget( pTemp );
+		// if there is no mainWidget left: bad luck
+		else
+		  {
+			KDEBUG( KDEBUG_FATAL, 151, "No main widget left" );
+			kapp->setMainWidget( NULL );
+
+			// but since it is the last one, it can at least deallocate
+			// the member list...
+			delete memberList;
+		  }
+	  }
 }
 
 int KTopLevelWidget::addToolBar( KToolBar *toolbar, int index )

@@ -217,6 +217,11 @@ protected slots:
 
 private:
 
+  /** 
+	* List of members of KTopLevelWidget class
+	*/
+  static QList<KTopLevelWidget>* memberList;
+
     /**
      * List of toolbars.
      */
