@@ -1050,6 +1050,7 @@ void KMdiMainFrm::findRootDockWidgets(QPtrList<KDockWidget>* pRootDockWidgetList
          }
       }
    }
+   delete pObjList;
 }
 
 /**
