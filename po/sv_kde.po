@@ -1,0 +1,47 @@
+msgid "Error"
+msgstr "Fel"
+
+msgid "Malformed URL"
+msgstr "Ogiltlig URL"
+
+msgid "Yes"
+msgstr "Ja"
+
+msgid "No"
+msgstr "Nej"
+
+msgid "Warning"
+msgstr "Varning"
+
+msgid "Open a file"
+msgstr "Öppna en fil"
+
+msgid "Save a file"
+msgstr "Spara en fil"
+
+msgid "Contents"
+msgstr "Innehåll"
+
+msgid "About"
+msgstr "Om"
+
+msgid "Open"
+msgstr "Öppna"
+
+msgid "Save"
+msgstr "Spara"
+
+msgid "Save As"
+msgstr "Spara som"
+
+msgid "Close"
+msgstr "Stäng"
+
+msgid "Quit"
+msgstr "Avsluta"
+
+msgid "Untitled"
+msgstr "Namnlös"
+
+msgid "OK"
+msgstr "OK"
