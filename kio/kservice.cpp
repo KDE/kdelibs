@@ -191,7 +191,7 @@ KService::init( KDesktopFile *config )
   for( ; it != m_lstServiceTypes.end(); ++it )
   {
     QString servicetype = *it;
-    kdDebug() << m_strName << ":" << servicetype << endl;
+    //kdDebug(7012) << m_strName << ":" << servicetype << endl;
     while ( true )
     {
       KServiceType * s = KServiceTypeFactory::self()->findServiceTypeByName( servicetype );
