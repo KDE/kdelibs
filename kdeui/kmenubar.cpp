@@ -384,7 +384,7 @@ void KMenuBar::checkSize( int& w, int& h )
 	QSize s = sizeHint();
 	w = s.width();
 	h = s.height();
-	++block_resize;
+	--block_resize;
     }
     // This is not done as setMinimumSize(), becase that would set the minimum
     // size in WM_NORMAL_HINTS, and KWin would not allow changing to smaller size
