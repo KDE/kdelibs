@@ -472,18 +472,11 @@ static pid_t runCommandInternal( KProcess* proc, const KService* service, const 
       KStartupInfo::sendStartup( id, data );
   }
   pid_t pid = KProcessRunner::run( proc, bin, id );
-  if( startup_notify )
+  if( startup_notify && pid )
   {
       KStartupInfoData data;
-      if ( pid ) // successfully started
-      {
-          data.addPid( pid );
-          KStartupInfo::sendChange( id, data );
-      } else // not started (e.g. executable not found)
-      {
-          data.setHostname();
-          KStartupInfo::sendFinish( id, data );
-      }
+      data.addPid( pid );
+      KStartupInfo::sendChange( id, data );
       KStartupInfo::resetStartupEnv();
   }
   return pid;
@@ -1037,6 +1030,8 @@ KProcessRunner::KProcessRunner(KProcess * p, const QString & _binName )
       this,     SLOT(slotProcessExited(KProcess *)));
 
   process_->start();
+  if ( !process_->pid() )
+      slotProcessExited( process_ );
 }
 
 #ifdef Q_WS_X11
@@ -1051,6 +1046,8 @@ KProcessRunner::KProcessRunner(KProcess * p, const QString & _binName, const KSt
       this,     SLOT(slotProcessExited(KProcess *)));
 
   process_->start();
+  if ( !process_->pid() )
+      slotProcessExited( process_ );
 }
 #endif
 
@@ -1074,8 +1071,9 @@ KProcessRunner::slotProcessExited(KProcess * p)
   kdDebug(7010) << "slotProcessExited " << binName << endl;
   kdDebug(7010) << "normalExit " << process_->normalExit() << endl;
   kdDebug(7010) << "exitStatus " << process_->exitStatus() << endl;
-  if ( !binName.isEmpty() && process_->normalExit()
-          && ( process_->exitStatus() == 127 || process_->exitStatus() == 1 ) )
+  bool showErr = process_->normalExit()
+                 && ( process_->exitStatus() == 127 || process_->exitStatus() == 1 );
+  if ( !binName.isEmpty() && ( showErr || process_->pid() == 0 ) )
   {
     // Often we get 1 (zsh, csh) or 127 (ksh, bash) because the binary doesn't exist.
     // We can't just rely on that, but it's a good hint.
