@@ -65,7 +65,8 @@ protected:
 
    QString oldFile;
    QString newFile;
-   KSimpleConfig *oldConfig;
+   KConfig *oldConfig1; // Config to read keys from.
+   KSimpleConfig *oldConfig2; // Config to delete keys from.
    KSimpleConfig *newConfig;
 
    QString oldGroup;
@@ -79,7 +80,8 @@ protected:
 
 KonfUpdate::KonfUpdate()
 {
-   oldConfig = 0;
+   oldConfig1 = 0;
+   oldConfig2 = 0;
    newConfig = 0;
 
    config = new KConfig("kconf_updaterc");
@@ -240,9 +242,11 @@ void KonfUpdate::gotFile(const QString &_file)
    if (!oldFile.isEmpty())
    {
       // Close old file.
-      oldConfig->sync();
-      delete oldConfig;
-      oldConfig = 0;
+      delete oldConfig1;
+      oldConfig1 = 0;
+      oldConfig2->sync();
+      delete oldConfig2;
+      oldConfig2 = 0;
 
       oldFile = QString::null;
    }
@@ -273,14 +277,15 @@ void KonfUpdate::gotFile(const QString &_file)
    if (!oldFile.isEmpty())
    {
 qWarning("Old = %s New = %s", oldFile.latin1(), newFile.latin1());
-      oldConfig = new KSimpleConfig(oldFile);
+      oldConfig1 = new KConfig(oldFile, true, false);
+      oldConfig2 = new KSimpleConfig(oldFile);
       if (!newFile.isEmpty())
       {
          newConfig = new KSimpleConfig(newFile);
       }
       else
       {
-         newConfig = oldConfig;
+         newConfig = oldConfig2;
       }
    }
    else
@@ -323,15 +328,15 @@ void KonfUpdate::gotKey(const QString &_key)
       qWarning("Invalid key.");
       return;
    }
-   if (!oldConfig)
+   if (!oldConfig1)
    {
       qWarning("Key without file specification.");
       return;
    }
-   oldConfig->setGroup(oldGroup);
-   if (!oldConfig->hasKey(oldKey))
+   oldConfig1->setGroup(oldGroup);
+   if (!oldConfig1->hasKey(oldKey))
       return;
-   QString value = oldConfig->readEntry(oldKey);
+   QString value = oldConfig1->readEntry(oldKey);
    newConfig->setGroup(newGroup);
    if (!m_bOverwrite && newConfig->hasKey(newKey))
    {
@@ -345,22 +350,24 @@ qWarning("Write %s -> %s", newKey.latin1(), value.latin1());
       return; // Done.
 
    // Delete old entry
-   if ((oldConfig == newConfig) && 
+   if ((oldConfig2 == newConfig) && 
        (oldGroup == newGroup) &&
        (oldKey == newKey))
       return; // Don't delete!
-   oldConfig->setGroup(oldGroup);
-   oldConfig->deleteEntry(oldKey, false);
+   oldConfig2->setGroup(oldGroup);
+   oldConfig2->deleteEntry(oldKey, false);
+   if (oldConfig2->deleteGroup(oldGroup, false)) // Delete group if empty.
+      qWarning("Deleting group %s", oldGroup.latin1());
 }
 
 void KonfUpdate::gotAllKeys()
 {
-   if (!oldConfig)
+   if (!oldConfig1)
    {
       qWarning("AllKeys without file specification.");
       return;
    }
-   QMap<QString, QString> list = oldConfig->entryMap(oldGroup);
+   QMap<QString, QString> list = oldConfig1->entryMap(oldGroup);
    for(QMap<QString, QString>::Iterator it = list.begin();
        it != list.end(); ++it)
    {
