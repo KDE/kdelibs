@@ -164,17 +164,16 @@ void HTMLLinkElementImpl::process()
 
     // IE extension: location of small icon for locationbar / bookmarks
     // Uses both "shortcut icon" and "icon"
-   
+
     if ( part && rel.contains("icon") && !m_url.isEmpty() && !part->parentPart())
         part->browserExtension()->setIconURL( KURL(m_url.string()) );
 
     // Stylesheet
-    if(type.contains("text/css") || rel == "stylesheet" || rel.contains("alternate")) {
+    if(type.contains("text/css") || rel.contains("stylesheet")) {
         // no need to load style sheets which aren't for the screen output
         // ### there may be in some situations e.g. for an editor or script to manipulate
         if( m_media.isNull() || m_media.contains("screen") || m_media.contains("all") || m_media.contains("print") ) {
             m_loading = true;
-
             QString chset = getAttribute( ATTR_CHARSET ).string();
             if (m_cachedSheet)
 		m_cachedSheet->deref(this);
