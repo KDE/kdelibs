@@ -24,6 +24,7 @@
 
 #include "ksslpeerinfo.h"
 #include <qstring.h>
+#include <qregexp.h>
 #include <kdebug.h>
 
 #include <ksockaddr.h>
