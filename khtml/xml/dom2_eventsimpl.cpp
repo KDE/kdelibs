@@ -735,7 +735,7 @@ int TextEventImpl::keyCode() const
     } else {
         int c = charCode();
         if (c != 0) {
-            return QChar(charCode()).upper().unicode();
+            return QChar(c).upper().unicode();
         } else {
             c = m_keyEvent->key();
             if (c == Qt::Key_unknown)
