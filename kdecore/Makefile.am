@@ -62,7 +62,8 @@ noinst_HEADERS = kaccelaction.h kaccelbase.h kaccelprivate.h kckey.h \
 	kcompletion_private.h \
 	kextsocklookup.h kglobalaccel_x11.h kkeyserver_x11.h \
 	kregpriv.h kshortcutmenu.h ksycocadict.h ksycocafactory.h netsupp.h \
-	kcheckaccelerators.h
+	kcheckaccelerators.h kcalendarsystemgregorian.h \
+	kcalendarsystemhijri.h kcalendarsystemhebrew.h
 
 libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kdebug.cpp netwm.cpp  \
 	kconfigbase.cpp kconfig.cpp  ksimpleconfig.cpp kconfigbackend.cpp  \
