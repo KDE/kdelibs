@@ -13,7 +13,7 @@
          This code may be linked against any version of the Qt toolkit
          from Troll Tech, Norway. $
 
-   $Id$	 
+   $Id$
 */
 
 #include "kabapi.h"
@@ -27,7 +27,7 @@
 
 #ifdef KAB_KDEBUG_AREA
 #undef KAB_KDEBUG_AREA
-#endif 
+#endif
 
 #define KAB_KDEBUG_AREA 800
 
@@ -44,6 +44,13 @@ KabAPI::KabAPI(QWidget* parent, const char* name)
   showButtonApply(false);
   enableButtonSeparator(true);
   connect(listbox, SIGNAL(highlighted(int)), SLOT(entrySelected(int)));
+  connect(listbox, SIGNAL(doubleClicked ( QListBoxItem * )),SLOT(slotDoubleClicked ( QListBoxItem * )));
+}
+
+
+void KabAPI::slotDoubleClicked ( QListBoxItem * )
+{
+    accept();
 }
 
 int KabAPI::exec()
@@ -75,11 +82,11 @@ int KabAPI::exec()
 	  return -1;
 	}
     }
-}  
-    
+}
+
 AddressBook::ErrorCode KabAPI::init()
 {
-  // ############################################################################  
+  // ############################################################################
   book=new AddressBook(0, "KABAPI::book", true);  //change parent from "this" to "0" //dsweet
   if(book->getState()==AddressBook::NoError)
     {
@@ -89,7 +96,7 @@ AddressBook::ErrorCode KabAPI::init()
     } else {
       return AddressBook::InternError;
     }
-  // ############################################################################  
+  // ############################################################################
 }
 
 AddressBook::ErrorCode KabAPI::getEntry(AddressBook::Entry& entry, KabKey& key)
@@ -115,13 +122,13 @@ AddressBook::ErrorCode KabAPI::getEntry(AddressBook::Entry& entry, KabKey& key)
     } else {
       return AddressBook::InternError;
     }
-  // ############################################################################  
+  // ############################################################################
 }
 
 AddressBook::ErrorCode KabAPI::add(const AddressBook::Entry& entry, KabKey& key,
 				   bool update)
 {
-  // ############################################################################  
+  // ############################################################################
   if(book->add(entry, key, update)!=AddressBook::NoError)
     {
       KMessageBox::sorry(this, i18n("Your new entry could not be added."));
@@ -129,42 +136,42 @@ AddressBook::ErrorCode KabAPI::add(const AddressBook::Entry& entry, KabKey& key,
     } else {
       return AddressBook::NoError;
     }
-  // ############################################################################  
+  // ############################################################################
 }
 
 AddressBook::ErrorCode KabAPI::remove(const KabKey& key)
 {
   CHECK_PTR(book);
-  // ############################################################################  
+  // ############################################################################
   if(book->AddressBook::remove(key)==AddressBook::NoError)
     {
       return AddressBook::NoError;
     } else {
       return AddressBook::NoEntry;
     }
-  // ############################################################################  
+  // ############################################################################
 }
 
-AddressBook::ErrorCode KabAPI::getEntryByName(const QString&, 
+AddressBook::ErrorCode KabAPI::getEntryByName(const QString&,
 					 list<AddressBook::Entry>&, const int)
 {
-  // ############################################################################  
+  // ############################################################################
   return AddressBook::NotImplemented;
-  // ############################################################################  
+  // ############################################################################
 }
 
 AddressBook::ErrorCode KabAPI::getEntryByName(const AddressBook::Entry&,
 					 list<AddressBook::Entry>&, const int)
 {
-  // ############################################################################  
+  // ############################################################################
   return AddressBook::NotImplemented;
-  // ############################################################################  
+  // ############################################################################
 }
 
 AddressBook::ErrorCode KabAPI::getEntries(list<AddressBook::Entry>& entries)
 {
   kdDebug(KAB_KDEBUG_AREA) << "KabAPI::getEntries: called." << endl;
-  // ############################################################################  
+  // ############################################################################
   if(book->noOfEntries()==0)
     { // ----- database is valid, but empty:
       kdDebug(KAB_KDEBUG_AREA) << "KabAPI::getEntries: no entries." << endl;
@@ -178,7 +185,7 @@ AddressBook::ErrorCode KabAPI::getEntries(list<AddressBook::Entry>& entries)
       kdDebug(KAB_KDEBUG_AREA) << "KabAPI::getEntries: done." << endl;
       return AddressBook::NoError;
     }
-  // ############################################################################  
+  // ############################################################################
 }
 
 AddressBook* KabAPI::addressbook()
