@@ -61,7 +61,8 @@ protected:
 	bool inProgress;		// we are just doing some calculations
 	bool restartIOHandling;	// I/O handlers removed upon reaching 4: restart
 
-	int audiofd;
+	int audioReadFD;
+	int audioWriteFD;
 	bool audioOpen;
 
 	typedef unsigned char uchar;
@@ -94,7 +95,7 @@ public:
 			return;
 		}
 
-		audioOpen = as->open(audiofd);
+		audioOpen = as->open();
 		if(!audioOpen)
 		{
 			if(Dispatcher::the()->flowSystem()->suspended())
@@ -108,7 +109,14 @@ public:
 				arts_info("Synth_PLAY: audio subsystem init failed");
 				arts_info("ASError = %s",as->error());
 			}
+			audioReadFD = audioWriteFD = -1;
 		}
+		else
+		{
+			audioReadFD = as->selectReadFD();
+			audioWriteFD = as->selectWriteFD();
+		}
+
 		channels = as->channels();
 		format = as->format();
 		bits = as->bits();
@@ -119,10 +127,13 @@ public:
 	void notifyTime() {
 		assert(retryOpen);
 
-		audioOpen = as->open(audiofd);
+		audioOpen = as->open();
 
 		if(audioOpen)
 		{
+			audioReadFD = as->selectReadFD();
+			audioWriteFD = as->selectWriteFD();
+
 			streamStart();
 			arts_info("/dev/dsp ok");
 			Dispatcher::the()->ioManager()->removeTimer(this);
@@ -131,14 +142,13 @@ public:
 	}
 
 	void streamStart() {
-		if(audiofd >= 0)
-		{
-			IOManager *iom = Dispatcher::the()->ioManager();
-			int types = IOType::write|IOType::except;
+		IOManager *iom = Dispatcher::the()->ioManager();
 
-			if(as->fullDuplex()) types |= IOType::read;
-			iom->watchFD(audiofd,types,this);
-		}
+		if(audioReadFD >= 0)
+			iom->watchFD(audioReadFD, IOType::read|IOType::except, this);
+
+		if(audioWriteFD >= 0)
+			iom->watchFD(audioWriteFD, IOType::write|IOType::except, this);
 	}
 
 	void streamEnd() {
@@ -146,11 +156,11 @@ public:
 			Dispatcher::the()->ioManager()->removeTimer(this);
 
 		arts_debug("Synth_PLAY: closing audio fd");
-		if(audiofd >= 0)
+		if(audioReadFD >= 0 || audioWriteFD >= 0)
 		{
 			IOManager *iom = Dispatcher::the()->ioManager();
 			iom->remove(this,IOType::all);
-			audiofd = 0;
+			audioReadFD = audioWriteFD = -1;
 		}
 		AudioSubSystem::the()->detachProducer();
 
@@ -214,7 +224,7 @@ public:
 	void notifyIO(int fd, int type)
 	{
 		arts_return_if_fail(as->running());
-		assert(fd == audiofd);
+		assert(fd == audioReadFD || fd == audioWriteFD);
 
 		if(inProgress)
 		{

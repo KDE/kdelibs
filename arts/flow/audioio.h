@@ -60,8 +60,9 @@ public:
 		fragmentSize = 103,	/* usually 256,512,...8192 (a 2^N value) */
 		canRead = 104,		/* the amount of bytes that can be read */
 		canWrite = 105,		/* the amount of bytes that can be written */
-		selectFD = 106,		/* a filedescriptor to be used with select */
-		autoDetect = 107,	/* 0 = don't use this as default 
+		selectReadFD = 106,	/* filedescriptor to be select()ed on for reading */
+		selectWriteFD = 107,/* filedescriptor to be select()ed on for writing */
+		autoDetect = 108,	/* 0 = don't use this as default 
 							 * 1 or higher = preference of using this as default
 							 *
 							 * if nothing else is specified, aRts asks all

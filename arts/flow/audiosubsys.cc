@@ -316,17 +316,31 @@ bool AudioSubSystem::fullDuplex()
 	return d->audioIO->getParam(AudioIO::direction) == 3;
 }
 
+int AudioSubSystem::selectReadFD()
+{
+	initAudioIO();
+	if(!d->audioIO) return false;
+
+	return d->audioIO->getParam(AudioIO::selectReadFD);
+}
+
+int AudioSubSystem::selectWriteFD()
+{
+	initAudioIO();
+	if(!d->audioIO) return false;
+
+	return d->audioIO->getParam(AudioIO::selectWriteFD);
+}
 
 bool AudioSubSystem::check()
 {
-	int fd;
-	bool ok = open(fd);
+	bool ok = open();
 
 	if(ok) close();
 	return ok;
 }
 
-bool AudioSubSystem::open(int& fd)
+bool AudioSubSystem::open()
 {
 	assert(!_running);
 
@@ -337,7 +351,7 @@ bool AudioSubSystem::open(int& fd)
 			_error = "couldn't auto detect which audio I/O method to use";
 		else	
 			_error = "unable to select '"+d->audioIOName+"' style audio I/O";
-		audio_fd = fd = -1;
+		audio_fd = -1;
 		return false;
 	}
 
@@ -352,30 +366,15 @@ bool AudioSubSystem::open(int& fd)
 		assert(fragment_buffer == 0);
 		fragment_buffer = new char[_fragmentSize];
 
-		audio_fd = fd = d->audioIO->getParam(AudioIO::selectFD);
+		audio_fd = d->audioIO->getParam(AudioIO::selectReadFD);
 		return true;
 	}
 	else
 	{
 		_error = d->audioIO->getParamStr(AudioIO::lastError);
-		audio_fd = fd = -1;
+		audio_fd = -1;
 		return false;
 	}
-}
-
-int AudioSubSystem::open()
-{
-	int fd = -1;
-
-	if(!open(fd)) return -1;
-
-	if(fd < 0) {
-		_error = "using obsolete AudioSubSystem::open() interface doesn't work "
-				 "with " + d->audioIOName + " driver";
-		close();
-		return -1;
-	}
-	return fd;
 }
 
 void AudioSubSystem::close()

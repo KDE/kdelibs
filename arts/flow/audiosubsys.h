@@ -158,32 +158,50 @@ public:
 
 	bool check();
 
-	int open();								/* obsolete: see bool open(); */
-	const char *error();
-
-	/*
-	 * returncode of open: -1 indicates an error; otherwise, the returned
-	 * filedescriptor must be watched using select calls, and, whenever
-	 * fd is ready for something, handleIO must be called. 
+	/**
+	 * Opens the audio device.
+	 *
+	 * After opening, you must check selectReadFD() and selectWriteFD() to
+	 * select() on the appropriate file descriptors. Whenever select()ing is
+	 * successful, handleIO needs to be called.
 	 *
 	 * The type for handleIO must be set to ioRead if fd is ready for
 	 * reading, ioWrite if fd is ready for writing, ioExcept if something
 	 * special happend or any combination of these using bitwise or.
+	 *
+	 * @returns true if audio device has been opened successfully,
+	 *          false otherwise
 	 */
+	bool open();
 
+	/**
+	 * human readable error message that descibes why opening the audio device
+	 * failed
+	 */
+	const char *error();
+
+	/**
+	 * File descriptor to select on for reading (@see open()), -1 if there is
+	 * none.
+	 */
+	int selectReadFD();
+
+	/**
+	 * File descriptor to select on for writing (@see open()), -1 if there is
+	 * none.
+	 */
+	int selectWriteFD();
+
+	/**
+	 * Needs to be called to handle I/O on the filedescriptors given by
+	 * selectReadFD() and selectWriteFD() (@see open()).
+	 */
 	void handleIO(int type);
-
-	/*
-	 * the old open function didn't cover cases where the audio driver will
-	 * not be able to provide a file decriptor - it is left for compatibility
-	 * reasons, you should use the bool variant instead
-	 */
-	bool open(int& fd);
 
 	void read(void *buffer, int size);
 	void write(void *buffer, int size);
 
-	/*
+	/**
 	 * returns true as long as the audio subsystem is opened and active (that
 	 * is, between successful opening, with attaching producer, and the first
 	 * detachConsumer/detachProducer)

@@ -422,8 +422,12 @@ int AudioIOOSS::getParam(AudioParam p)
 				return info.bytes;
 			break;
 
-		case selectFD:
-				return audio_fd;
+		case selectReadFD:
+				return (param(direction) & directionRead)?audio_fd:-1;
+			break;
+
+		case selectWriteFD:
+				return (param(direction) & directionWrite)?audio_fd:-1;
 			break;
 
 		case autoDetect:

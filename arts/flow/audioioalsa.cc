@@ -57,7 +57,8 @@ namespace Arts {
 
 class AudioIOALSA : public AudioIO {
 protected:
-	int audio_fd;
+	int audio_read_fd;
+	int audio_write_fd;
 	int requestedFragmentSize;
 	int requestedFragmentCount;
 
@@ -272,13 +273,15 @@ bool AudioIOALSA::open()
             (float)(_fragmentSize*_fragmentCount) /
             (float)(2.0 * _samplingRate * _channels)*1000.0);
 
-  	/* obtain PCM file descriptor */
-	//!! in duplex mode we can provide
-	//!! only one fd (playback or capture) but not both,
-	//!! so there might be problems with full duplex
-  	audio_fd = snd_pcm_file_descriptor(m_pcm_handle,
-		(mode & SND_PCM_OPEN_PLAYBACK)	? SND_PCM_CHANNEL_PLAYBACK
-										: SND_PCM_CHANNEL_CAPTURE);
+  	/* obtain PCM file descriptor(s) */
+	audio_read_fd = audio_write_fd = -1;
+
+	if(_direction & directionRead)
+  		audio_read_fd = snd_pcm_file_descriptor(m_pcm_handle,
+												SND_PCM_CHANNEL_CAPTURE);
+	if(_direction & directionWrite)
+  		audio_write_fd = snd_pcm_file_descriptor(m_pcm_handle,
+												SND_PCM_CHANNEL_PLAYBACK);
 
   	/* start recording */
   	if((_direction & directionRead) && snd_pcm_capture_go(m_pcm_handle)) {
@@ -340,8 +343,12 @@ int AudioIOALSA::getParam(AudioParam p)
 				return status.free;
 			break;
 
-		case selectFD:
-				return audio_fd;
+		case selectReadFD:
+				return audio_read_fd;
+			break;
+
+		case selectWriteFD:
+				return audio_write_fd;
 			break;
 
 		case autoDetect:
