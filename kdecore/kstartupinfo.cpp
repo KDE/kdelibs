@@ -388,7 +388,7 @@ QString KStartupInfo::check_required_startup_fields( const QString& msg, const K
         ret += QString( " NAME=\"%1\"" ).arg( escape_str( name ));
         }
     if( data_P.screen() == -1 ) // add automatically if needed
-        ret += QString( " SCREEN=\"%1\"" ).arg( screen );
+        ret += QString( " SCREEN=%1" ).arg( screen );
     return ret;
     }
 
@@ -995,7 +995,8 @@ QString KStartupInfoData::to_text() const
     if( !d->icon.isEmpty())
         ret += QString::fromLatin1( " ICON=%1" ).arg( d->icon );
     if( d->desktop != 0 )
-        ret += QString::fromLatin1( " DESKTOP=%1" ).arg( d->desktop );
+        ret += QString::fromLatin1( " DESKTOP=%1" )
+            .arg( d->desktop == NET::OnAllDesktops ? NET::OnAllDesktops : d->desktop - 1 ); // spec counts from 0
     if( !d->wmclass.isEmpty())
         ret += QString::fromLatin1( " WMCLASS=%1" ).arg( d->wmclass );
     if( !d->hostname.isEmpty())
@@ -1041,7 +1042,11 @@ KStartupInfoData::KStartupInfoData( const QString& txt_P )
         else if( ( *it ).startsWith( icon_str ))
             d->icon = get_str( *it );
         else if( ( *it ).startsWith( desktop_str ))
+            {
             d->desktop = get_num( *it );
+            if( d->desktop != NET::OnAllDesktops )
+                ++d->desktop; // spec counts from 0
+            }
         else if( ( *it ).startsWith( wmclass_str ))
             d->wmclass = get_cstr( *it );
         else if( ( *it ).startsWith( hostname_str ))
