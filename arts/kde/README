@@ -16,7 +16,7 @@ to play sound
 
 3	KURL file = "file:/home/nikoz/test.mp3";
 
-4	KPlayObjectFactory factory(server);
+4	KPlayObjectFactory factory(server.server());
 5	KPlayObject *playobj = factory.createPlayObject(file, true);
 
 6	playobj->play();
