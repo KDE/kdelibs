@@ -402,7 +402,7 @@
 14303       kopete (cryptography)
 14304       kopete (importer)
 14305       kopete (motionautoaway)
-14306       kopete (msginfo)
+14306       kopete (smpppdcs)
 14307       kopete (nowlistening)
 14308       kopete (translator)
 14309       kopete (webpresence)
@@ -566,4 +566,6 @@
 200003       rosegarden (sequencer)
 200004       rosegarden (sequence manager)
 
+
+300000       kmdi - excessive
 

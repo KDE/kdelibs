@@ -6,9 +6,12 @@ that we would like to make for the next binary incompatible release.
 - There is no reason why KConfigBase should inherit from QObject, get rid of that.
 
 - Change all FooPrivate *d; -> Private * const d; and place initialization
-in constructor (for classes that would benefit this).  To help catch silly mistakes since d should never change. Also concider changing to use KStaticDeleter to help prvent mistakes where developers forget to delete the pointer. Maybe make use of Qt4 helper Macros? 
+  in the constructor (for classes that would benefit from this).  To help catch silly
+  mistakes since d should never change. Also consider changing to use KStaticDeleter to
+  help prevent mistakes where developers forget to delete the pointer. Maybe make use of
+  Qt4 helper macros? 
 
-- Move all utility functions away from KApplication. TDB: Make KApplication 
+- Move all utility functions away from KApplication. TBD: Make KApplication 
   a very thin wrapper around QApplication. Ideally, KApplication should go 
   away completely. The kapp pointer references everywhere must die. Find a 
   way to make that possible
@@ -22,7 +25,7 @@ in constructor (for classes that would benefit this).  To help catch silly mista
   Also free the client from the requirement to inherit from KShared.
 
 - Remove all KSocket, KServerSocket, KSocks and KExtendedSocket references
-  throughout KDE in favour of KNetwork's socket implementations.
+  throughout KDE in favor of KNetwork's socket implementations.
   Also, revise the namespace usage.
 	thiago.macieira@kdemail.net
 
@@ -102,7 +105,7 @@ in constructor (for classes that would benefit this).  To help catch silly mista
 
   Use KConfigXT instead! /FransE
 
-- Is it really necessary to bother people using the KCM API:s with withFallback? I have
+- Is it really necessary to bother people using the KCM APIs with withFallback? I have
   never heard of it failing and when would you not like to have that fallback? I think
   a default of 'true' would be fine(and remove the argument in the APIs).
 
@@ -182,8 +185,9 @@ an alternative help->contents action)
 
 - Merge KPIM::ClickLineEdit with KLineEdit
 
-- Merge all K*Label classes into one that offers all the features such as ellipsis (this time for center, middle and right in order to allow for sqeezing the text), 
-links and selectable text with a consistant API.
+- Merge all K*Label classes into one that offers all the features such as ellipsis (this time for 
+  center, middle and right in order to allow for sqeezing the text), links and selectable text 
+  with a consistant API.
 
 - Make sure all GUI classes adopt well to palette changes.
 
@@ -205,4 +209,8 @@ links and selectable text with a consistant API.
   to merge that code.
 
 - Refactor the kio/bookmarks code so we don't need to use the static d-pointer trick anymore.
+
+- Rename the parameters to KDEDesktopMimeType::pixmap so that they use meaningful names rather than
+  just a, b, c, and d. Probably not something that has to wait for KDE 4, but seems like a good idea
+  to have here for later doing.
 
