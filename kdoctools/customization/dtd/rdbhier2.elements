@@ -36,7 +36,6 @@
     Set to IGNORE:                      to revert from KDE customisation for:
     kde.remove.unused.elements          some elements unlikely to be used
     kde.book.meta.info                  extra requirements for bookinfo element
-    kde.compulsory.id                   compulsory ID on certain elements
 -->
 
 
@@ -60,16 +59,3 @@
 <!ENTITY % book.element "IGNORE">
 <!ENTITY % bookinfo.element "IGNORE">
 <!-- end of kde.book.meta.info -->]]>
-
-
-<!-- To allow for translated file names, ID attributes must be 
-     present (the style sheets use them to generate the file names).
- -->
-<!ENTITY % kde.compulsory.id "IGNORE">
-<![ %kde.compulsory.id; [
-<!ENTITY % chapter.attlist "IGNORE">
-<!ENTITY % sect1.attlist "IGNORE">
-<!-- Sect2-5 have no compulsory ID: they are not used to create
-     chunks. -->
-<!ENTITY % section.attlist "IGNORE">
-<!-- end of kde.compulsory.id -->]]>

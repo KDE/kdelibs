@@ -26,17 +26,13 @@ SGMLDECL "xml.dcl"
 
 			    -- DocBook --
 
-PUBLIC "-//KDE//DTD DocBook XML V4.1.2-Based Variant V1.0//EN"
+PUBLIC "-//KDE//DTD DocBook XML V4.1.2-Based Variant V1.1//EN"
        "dtd/kdex.dtd"
--- This is to work round a bug in the docbook tools --
-PUBLIC "-//KDE//DTD DocBook XML V4.1-Based Variant V1.0//EN"
-       "dtd/kdex.dtd"
--- --
 PUBLIC "-//KDE//ELEMENTS DocBook XML Hierarchy Redeclarations 2 V1.0//EN"
        "dtd/rdbhier2.elements"
 PUBLIC "-//KDE//ELEMENTS DocBook XML Pool Redeclarations V1.0//EN"
        "dtd/rdbpool.elements"
-PUBLIC "-//KDE//ENTITIES DocBook XML General Entity Declarations V1.0//EN"
+PUBLIC "-//KDE//ENTITIES DocBook XML General Entity Declarations V1.1//EN"
        "entities/general.entities"
 PUBLIC "-//KDE//ELEMENTS DocBook XML Modifications V1.0//EN"
        "dtd/modifications.elements"
@@ -108,3 +104,12 @@ CATALOG sv/catalog
 CATALOG tr/catalog
 CATALOG uk/catalog
 CATALOG zh-TW/catalog
+
+-- Previous versions --
+
+PUBLIC "-//KDE//DTD DocBook XML V4.1.2-Based Variant V1.0//EN"
+       "obsolete/kdex.dtd"
+PUBLIC "-//KDE//DTD DocBook XML V4.1-Based Variant V1.0//EN"
+       "obsolete/kdex.dtd"
+PUBLIC "-//KDE//ENTITIES DocBook XML General Entity Declarations V1.0//EN"
+       "obsolete/general.entities"
