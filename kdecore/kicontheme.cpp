@@ -313,7 +313,8 @@ QStringList KIconTheme::queryIconsByContext(int size, KIcon::Context context) co
 
     // We want all the icons for a given context, but we prefer icons
     // of size size . Note that this may (will) include duplicate icons
-    QStringList iconlist[34]; // 33 == 48-16+1
+    //QStringList iconlist[34]; // 33 == 48-16+1
+    QStringList iconlist[128]; // 33 == 48-16+1
     // Usually, only the 0, 6 (22-16), 10 (32-22), 16 (48-32 or 32-16),
     // 26 (48-22) and 32 (48-16) will be used, but who knows if someone
     // will make icon themes with different icon sizes.
@@ -324,11 +325,11 @@ QStringList KIconTheme::queryIconsByContext(int size, KIcon::Context context) co
         if ((context != KIcon::Any) && (context != dir->context()))
             continue;
         dw = abs(dir->size() - size);
-        iconlist[(dw<33)?dw:33]+=dir->iconList();
+        iconlist[(dw<127)?dw:127]+=dir->iconList();
     }
 
     QStringList iconlistResult;
-    for (int i=0; i<34; i++) iconlistResult+=iconlist[i];
+    for (int i=0; i<128; i++) iconlistResult+=iconlist[i];
 
     return iconlistResult;
 }
