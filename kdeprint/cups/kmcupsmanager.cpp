@@ -455,6 +455,7 @@ DrMain* KMCupsManager::loadDriverFile(const QString& fname)
 			driver->set("model",QString::fromLocal8Bit(ppd->shortnickname));
 			driver->set("description",QString::fromLocal8Bit(ppd->nickname));
 			driver->set("template",unzipfname);
+			driver->set("colordevice", QString::number(ppd->color_device));
 			for (int i=0;i<ppd->num_groups;i++)
 			{
 				ppd_group_t	*grp = ppd->groups+i;

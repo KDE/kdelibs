@@ -24,6 +24,8 @@
 #include "kmwizard.h"
 #include "kmconfigdialog.h"
 #include "kmwbackend.h"
+#include "kmfactory.h"
+#include "kprinter.h"
 
 #include "kmpropbanners.h"
 #include "kmpropmembers.h"
@@ -44,6 +46,8 @@
 
 #include "kprinterpropertydialog.h"
 #include "kpgeneralpage.h"
+#include "kpimagepage.h"
+#include "kptextpage.h"
 
 #include "ipprequest.h"
 #include "cupsinfos.h"
@@ -134,6 +138,11 @@ void KMCupsUiManager::setupPrinterPropertyDialog(KPrinterPropertyDialog *dlg)
 {
 	// add general page
 	dlg->addPage(new KPGeneralPage(dlg->printer(),dlg->driver(),dlg,"GeneralPage"));
+	if (KMFactory::self()->settings()->application == KPrinter::StandAlone)
+	{
+		dlg->addPage(new KPImagePage(dlg->driver(), dlg, "ImagePage"));
+		dlg->addPage(new KPTextPage(dlg->driver(), dlg, "TextPage"));
+	}
 }
 
 void KMCupsUiManager::setupConfigDialog(KMConfigDialog *dlg)
