@@ -433,6 +433,7 @@ int KToggleAction::plug( QWidget* widget, int index )
         int id = menuId( _index );
 
         popupMenu( _index )->setItemChecked( id, isChecked() );
+        popupMenu( _index )->setFont(KGlobal::menuFont());
     }
     else if ( widget->inherits("QActionWidget" ) )
     {
@@ -707,6 +708,7 @@ int KSelectAction::plug( QWidget *widget, int index )
     {
 	// Create the PopupMenu and store it in m_menu
 	(void)popupMenu();
+    popupMenu()->setFont(KGlobal::menuFont());
 	
 	QPopupMenu* menu = (QPopupMenu*)widget;
 	int id;
