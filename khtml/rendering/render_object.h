@@ -339,7 +339,9 @@ private:
     RenderStyle *m_style;
     RenderObject *m_parent;
     RenderObject *m_previous;
-    RenderObject *m_next;    
+    RenderObject *m_next;
+    
+    short m_verticalPosition;
 
     bool m_layouted       : 1;
     bool m_parsing        : 1;
@@ -359,8 +361,6 @@ private:
     bool m_containsOverhangingFloats : 1;
     bool m_hasFirstLine : 1;
 
-    short m_verticalPosition;
-    
     friend class RenderContainer;
     friend class RenderRoot;
 };
