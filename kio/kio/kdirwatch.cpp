@@ -34,7 +34,6 @@
 #include <config.h>
 
 #ifdef HAVE_DNOTIFY
-#include <sys/stat.h>
 #include <unistd.h>
 #include <time.h>
 #include <fcntl.h>
@@ -42,6 +41,7 @@
 #include <errno.h>
 #endif
 
+#include <sys/stat.h>
 #include <assert.h>
 #include <qdir.h>
 #include <qfile.h>

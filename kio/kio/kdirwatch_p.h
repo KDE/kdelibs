@@ -11,6 +11,8 @@
 #include <fam.h>
 #endif
 
+#include <ctime>
+
 #define invalid_ctime ((time_t)-1)
 
 /* KDirWatchPrivate is a singleton and does the watching
