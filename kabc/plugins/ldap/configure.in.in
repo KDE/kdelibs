@@ -1,3 +1,7 @@
+AC_DEFUN(KABC_CHECK_LDAP, 
+[
+AC_REQUIRE([KDE_CHECK_LIB64])
+
 AC_MSG_CHECKING(whether to compile LDAP support)
 AC_ARG_WITH(ldap,
 [  --with-ldap=PATH     Set path for LDAP files [default=check]],
@@ -20,10 +24,10 @@ if test "x$with_ldap" = "xCHECK" ; then
   if test $with_ldap = FOUND ; then
     with_ldap=NOTFOUND
     for ext in la so sl a ; do
-      AC_FIND_FILE(libldap.$ext, $kde_libraries /usr/lib /usr/local/lib,
+      AC_FIND_FILE(libldap.$ext, $kde_libraries $libdir /usr/lib$kdelibsuff /usr/local/lib$kdelibsuff,
         ldap_libdir)
       if test -r $ldap_libdir/libldap.$ext ; then
-        if test "x$ldap_libdir" != "x/usr/lib" ; then
+        if test "x$ldap_libdir" != "x/usr/lib$kdelibsuff" ; then
           LDAP_LIBS="-L$ldap_libdir "
           test "$USE_RPATH" = yes && LDAP_RPATH="-R $ldap_libdir"
         fi
@@ -46,9 +50,9 @@ NOTFOUND) AC_MSG_RESULT(searched but not found) ;;
     LDAP_ROOT="$with_ldap"
     if test "x$LDAP_ROOT" != "x/usr" ; then
       LDAP_INCS="-I${LDAP_ROOT}/include"
-      LDAP_LIBS="-L${LDAP_ROOT}/lib "
+      LDAP_LIBS="-L${LDAP_ROOT}/lib$kdelibsuff "
       if test "$USE_RPATH" = "yes" ; then
-        LDAP_RPATH="-R ${LDAP_ROOT}/lib"
+        LDAP_RPATH="-R ${LDAP_ROOT}/lib$kdelibsuff"
       fi
     fi
     LDAP_LIBS="${LDAP_LIBS}-lldap -llber ${LIBRESOLV}"
@@ -95,3 +99,5 @@ AC_SUBST(LDAP_RPATH)
 
 AM_CONDITIONAL(include_LDAP, test -n "$LDAP_SUBDIR")
 
+])
+KABC_CHECK_LDAP
