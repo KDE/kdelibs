@@ -100,6 +100,8 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
     setResizeMode( Adjust );
     setGridX( 160 );
     setWordWrapIconText( false );
+    setArrangement( TopToBottom );
+    setVScrollBarMode( AlwaysOff );
     setAutoArrange( true );
     setItemsMovable( false );
     setMode( KIconView::Select );
@@ -120,9 +122,9 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
 	     SLOT( slotDoubleClicked( QIconViewItem *) ) );
 
     connect( this, SIGNAL( onItem( QIconViewItem * ) ),
-	     this, SLOT( showToolTip( QIconViewItem * ) ) );
+	     SLOT( showToolTip( QIconViewItem * ) ) );
     connect( this, SIGNAL( onViewport() ),
-	     this, SLOT( removeToolTip() ) );
+	     SLOT( removeToolTip() ) );
     connect( this, SIGNAL( contextMenuRequested(QIconViewItem*,const QPoint&)),
 	     SLOT( slotActivateMenu( QIconViewItem*, const QPoint& ) ) );
 
@@ -489,15 +491,15 @@ void KFileIconView::slotSmallColumns()
         d->previews->setChecked( false );
     }
     setItemTextPos( Right );
-//    setArrangement( TopToBottom );
-    setArrangement( LeftToRight );
+    setArrangement( TopToBottom );
+    // setArrangement( LeftToRight );
     setIconSize( KIcon::SizeSmall );
 }
 
 void KFileIconView::slotLargeRows()
 {
     setItemTextPos( Bottom );
-    setArrangement( LeftToRight );
+    // setArrangement( LeftToRight );
     setIconSize( KIcon::SizeMedium );
 }
 
@@ -649,6 +651,7 @@ void KFileIconView::determineIcon( KFileIconViewItem *item )
 
 void KFileIconView::listingCompleted()
 {
+    arrangeItemsInGrid();
     m_resolver->start( d->previews->isChecked() ? 0 : 10 );
 }
 /////////////////////////////////////////////////////////////////
