@@ -204,10 +204,6 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
     if( m_part->docImpl() )
 	body = m_part->docImpl()->body();
 
-    if(!body) {
-       	p->fillRect(ex, ey, ew, eh, palette().normal().brush(QColorGroup::Background));
-	return;
-    }
     //kdDebug( 6000 ) << "drawContents x=" << ex << ",y=" << ey << ",w=" << ew << ",h=" << eh << "wflag=" << testWFlags(WPaintClever) << endl;
 
     int pbHeight;
@@ -306,10 +302,6 @@ void KHTMLView::layout(bool force)
 
 	    root->layout();
 
-	    int rw = root->docWidth();
-	    int rh = root->docHeight();
-
-	    resizeContents(rw, rh);
 
 	    //	    kdDebug( 6000 ) << "TIME: layout() dt=" << qt.elapsed() << endl;
 	    viewport()->repaint(false);
