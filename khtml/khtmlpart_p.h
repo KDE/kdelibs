@@ -218,6 +218,7 @@ public:
     m_jobspeed = 0;
     m_dcop_counter = ++khtml_part_dcop_counter;
     m_statusBarWalletLabel = 0L;
+    m_statusBarUALabel = 0L;
     m_statusBarJSErrorLabel = 0L;
     m_userStyleSheetLastModified = 0;
   }
@@ -243,6 +244,7 @@ public:
   KHTMLPartBrowserHostExtension *m_hostExtension;
   KURLLabel* m_statusBarIconLabel;
   KURLLabel* m_statusBarWalletLabel;
+  KURLLabel* m_statusBarUALabel;
   KURLLabel* m_statusBarJSErrorLabel;
   DOM::DocumentImpl *m_doc;
   khtml::Decoder *m_decoder;
