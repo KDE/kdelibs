@@ -296,20 +296,20 @@ public:
    * the Job given by @ref started.
    */
   void setProgressInfoEnabled( bool show );
- 
+
   /**
    * Returns whether the part shows the progress info dialog used by internal
    * KIO job.
    */
   bool isProgressInfoEnabled() const;
-  
+
 #ifndef KDE_NO_COMPAT
   void showProgressInfo( bool show );
 #endif
 
 public slots:
   /**
-   * Only reimplement openURL if you don't want synchronous network transparency
+   * Only reimplement openURL if you don't want synchronous network transparency
    * Otherwise, reimplement @ref openFile() only .
    *
    * If you reimplement it, don't forget to set the caption, usually with
@@ -335,6 +335,56 @@ public:
    */
   virtual bool closeURL();
 
+public:
+  /**
+   * Initiate sending data to this part.
+   * This is an alternative to openURL, which allows the user of the part
+   * to load the data itself, and send it progressively to the part.
+   *
+   * @param url the URL representing this data. Although not directly used,
+   * every ReadOnlyPart has a URL (see @ref url()), so this simply sets it.
+   * @param mimeType the type of data that is going to be sent to this part.
+   * @return true if the part supports progressive loading and accepts data, false otherwise.
+   */
+  bool openStream( const QString& mimeType, const KURL& url );
+
+  /**
+   * Send some data to the part. @ref openStream must have been called previously,
+   * and must have returned true.
+   * @return true if the data was accepted by the part. If false is returned,
+   * the application should stop sending data, and doesn't have to call @ref closeStream.
+   */
+  bool writeStream( const QByteArray& data );
+
+  /**
+   * Terminate the sending of data to the part.
+   * With some data types (text, html...) @ref closeStream might never actually be called,
+   * in the case of continous streams, for instance plain text or HTML data.
+   */
+  bool closeStream();
+
+private: // Makes no sense for inherited classes to call those. But make it protected there.
+
+  /**
+   * Called by @ref openStream to initiate sending of data.
+   * Parts which implement progress loading should check the @p mimeType
+   * parameter, and return true if they can accept a data stream of that type.
+   */
+  virtual bool doOpenStream( const QString& /*mimeType*/ ) { return false; }
+  /**
+   * Receive some data from the hosting application.
+   * In this method the part should attempt to display the data progressively.
+   * With some data types (text, html...) @ref closeStream might never actually be called,
+   * in the case of continous streams. This can't happen with e.g. images.
+   */
+  virtual bool doWriteStream( const QByteArray& /*data*/ ) { return false; }
+  /**
+   * This is called by @ref closeStream(), to indicate that all the data has been sent.
+   * Parts should ensure that all of the data is displayed at this point.
+   * @return whether the data could be displayed correctly.
+   */
+  virtual bool doCloseStream() { return false; }
+
 signals:
   /**
    * The part emits this when starting data.
@@ -349,7 +399,7 @@ signals:
    * is finished, so that they can access the data when everything is loaded.
    **/
   void completed();
-  
+
   /**
    * Same as the above signal except besides indicating that the data has
    * been completely loaded it also informs the host, by setting the flag,

@@ -404,6 +404,24 @@ void ReadOnlyPart::guiActivateEvent( GUIActivateEvent * event )
   }
 }
 
+bool ReadOnlyPart::openStream( const QString& mimeType, const KURL& url )
+{
+    if ( !closeURL() )
+        return false;
+    m_url = url;
+    return doOpenStream( mimeType );
+}
+
+bool ReadOnlyPart::writeStream( const QByteArray& data )
+{
+    return doWriteStream( data );
+}
+
+bool ReadOnlyPart::closeStream()
+{
+    return doCloseStream();
+}
+
 //////////////////////////////////////////////////
 
 ReadWritePart::ReadWritePart( QObject *parent, const char *name )
