@@ -420,7 +420,11 @@ bool KTabWidget::hoverCloseButtonDelayed() const
 
 void KTabWidget::setAutomaticResizeTabs( bool enabled )
 {
-    d->m_automaticResizeTabs = enabled;
+    if ( d->m_automaticResizeTabs!=enabled ) {
+      d->m_automaticResizeTabs = enabled;
+      if ( count() && !d->m_tabNames[0].isEmpty() )
+        setTabLabel( page(0), d->m_tabNames[0] );
+    }
 }
 
 bool KTabWidget::automaticResizeTabs() const
