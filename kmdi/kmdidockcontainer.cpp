@@ -28,6 +28,7 @@
 #include <qtimer.h>
 #include <qtooltip.h>
 #include <kmultitabbar.h>
+#include <kglobalsettings.h>
 
 #include <kdebug.h>
 #include <kiconloader.h>
@@ -58,7 +59,8 @@ KMdiDockContainer::KMdiDockContainer(QWidget *parent, QWidget *win, int position
   m_position = position;
   m_previousTab=-1;
   m_separatorPos = 17;
-
+  m_movingState=NotMoving;
+  m_startEvent=0;
   kdDebug(760)<<"KMdiDockContainer created"<<endl;
 
   QBoxLayout *l;
@@ -194,7 +196,7 @@ void KMdiDockContainer::insertWidget (KDockWidget *dwdg, QPixmap pixmap, const Q
     }
 
     m_tb->appendTab(pixmap.isNull()?SmallIcon("misc"):pixmap,tab,w->tabPageLabel());
-
+    m_tb->tab(tab)->installEventFilter( this );
     kdDebug(760)<<"NAMENAMENAMENAME:===========================:"<<w->tabPageLabel()<<endl;
 
 //FB    m_tb->setTab(tab,true);
@@ -216,6 +218,61 @@ void KMdiDockContainer::insertWidget (KDockWidget *dwdg, QPixmap pixmap, const Q
   }
 
 //FB  m_ws->raiseWidget(tab);
+}
+
+
+bool KMdiDockContainer::eventFilter( QObject *obj, QEvent *event )
+{
+    switch ( event->type() ){
+      case QEvent::MouseButtonPress:
+	{
+		    KDockWidget * w=m_revMap[dynamic_cast<KMultiTabBarTab*>(obj)->id()];
+		    if (!w)  {
+			kdDebug()<<"NoWidget"<<endl;
+			break;
+		    }
+		    if (!w->getHeader()) { 
+				kdDebug()<<"NO HEADER"<<endl;
+				break;
+			}
+		      KDockWidgetHeader *hdr=static_cast<KDockWidgetHeader*>(w->getHeader()->
+	        	qt_cast("KDockWidgetHeader"));
+			if (!hdr) {
+				kdDebug()<<"Wrong header type in KMdiDockContainer::eventFilter"<<endl;
+				break;
+			}
+			m_dockManager=w->dockManager();
+			m_dragPanel=hdr->dragPanel();
+			if (m_dragPanel) m_movingState=WaitingForMoveStart;
+			delete m_startEvent;
+			m_startEvent=new QMouseEvent(* ((QMouseEvent*)event));
+	}
+		break;
+      case QEvent::MouseButtonRelease:
+		if (m_movingState==Moving) {
+			m_movingState=NotMoving;
+			QApplication::postEvent(m_dragPanel,new QMouseEvent(* ( (QMouseEvent*)event)));
+			delete m_startEvent;
+			m_startEvent=0;
+		}
+      case QEvent::MouseMove:
+		if (m_movingState==WaitingForMoveStart) {
+			QPoint p( ((QMouseEvent*)event)->pos() - m_startEvent->pos() );
+		        if( p.manhattanLength() > KGlobalSettings::dndEventDelay()) {
+				m_dockManager->eventFilter(m_dragPanel,m_startEvent);
+				m_dockManager->eventFilter(m_dragPanel,event);
+				m_movingState=Moving;
+			}
+		} else  if (m_movingState==Moving) {
+			m_dockManager->eventFilter(m_dragPanel,event);
+		}
+		break;
+	default:
+		break;
+		
+	}
+    return false;
+
 }
 
 void KMdiDockContainer::showWidget(KDockWidget *w) {

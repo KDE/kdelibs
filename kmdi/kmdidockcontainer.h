@@ -60,6 +60,8 @@ class KMdiDockContainer: public QWidget, public KDockContainer
     virtual void load(QDomElement&);
 
     void setStyle(int);
+  protected:
+    bool eventFilter(QObject*,QEvent*);
 
   public slots:
     void init();
@@ -91,7 +93,10 @@ class KMdiDockContainer: public QWidget, public KDockContainer
     bool m_vertical;
     bool m_block;
     bool m_tabSwitching;
-
+    QObject *m_dragPanel;
+    KDockManager *m_dockManager;
+    QMouseEvent *m_startEvent;
+    enum MovingState {NotMoving=0,WaitingForMoveStart,Moving} m_movingState;
   signals:
         void activated(KMdiDockContainer*);
         void deactivated(KMdiDockContainer*);

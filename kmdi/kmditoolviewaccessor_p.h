@@ -38,7 +38,7 @@ public:
 	~KMdiToolViewAccessorPrivate() {
 		delete action;
 		if (!widgetContainer.isNull()) widgetContainer->undock();
-		delete widgetContainer;
+		delete (KDockWidget*)widgetContainer;
 	}
 	QGuardedPtr<KDockWidget> widgetContainer;
 	QWidget* widget;
