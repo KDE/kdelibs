@@ -275,20 +275,32 @@ BrowserRun::AskSaveResult BrowserRun::askSave( const KURL & url, KService::Ptr o
 {
     QString surl = KStringHandler::csqueeze( url.prettyURL() );
     QString question;
+    KMimeType::Ptr mime = KMimeType::mimeType( mimeType );
+    QString comment = mimeType;
+
+    // Test if the mimeType is not recognize as octet-stream. 
+    // If so then keep mime-type as comment 
+    if (mime->name() != KMimeType::defaultMimeType()) {
+        // The mime-type is known so display the comment instead of mime-type
+        comment = mime->comment();
+    }
+    // The strange order in the i18n() calls below is due to the possibility
+    // of surl containing a '%'
     if ( suggestedFilename.isEmpty() )
     {
-        question = (offer && !offer->name().isEmpty())
-	       	   ? i18n("Open '%2' using '%1'?").arg(offer->name()).arg(surl)
-                   : i18n("Open '%1'?").arg(surl);
+        question = i18n("Open '%2'?\nType:%1").arg(comment).arg(surl);
     } else {
-        question = (offer && !offer->name().isEmpty())
-		   ? i18n("Open '%3' (%2) using '%1'?").
-                     arg(offer->name()).arg(suggestedFilename).arg(surl)
-                   : i18n("Open '%2' (%1)?").arg(suggestedFilename).arg(surl);
+        question = i18n("Open '%3'?\nName:%2\nType:%1").arg(comment).arg(suggestedFilename).arg(surl);
     }
+
+    // Text used for the open button
+    QString openText = (offer && !offer->name().isEmpty())
+                       ? i18n("&Open with '%1'").arg(offer->name())
+                       : i18n("&Open with...");
+
     int choice = KMessageBox::questionYesNoCancel(
         0L, question, QString::null,
-        KStdGuiItem::saveAs(), i18n("&Open"),
+        KStdGuiItem::saveAs(), openText,
         QString::fromLatin1("askSave")+ mimeType ); // dontAskAgainName
     return choice == KMessageBox::Yes ? Save : ( choice == KMessageBox::No ? Open : Cancel );
 }
