@@ -82,17 +82,16 @@ built for the arch they are building on.  In order to do this and actually
 be successful things like Build-Depends have to be accurate.  A typical 
 Build-Depends line for a KDE based application will look something like this:
 
-  Build-Depends: debhelper (>> 2.0.0), automake, autoconf, libtool, kdelibs-dev (>= 4:2.1.1-0)
+  Build-Depends: debhelper (>> 3.0.0), automake, autoconf, libtool, kdelibs-dev (>= 4:2.2.2-1)
 
 Your app may need alot more than that to actually build however first take a
 look at the Dependencies for kdelibs-dev:
 
-   Depends: kdelibs3 (= 4:2.1.1-5), libarts-dev (= 4:2.1.1-5), libkmid-dev (= 4:2.1.1-5), libqt-dev (>= 2:2.3.0), libaudiofile-dev, gettext, libtiff3g-dev, jade, sgml-base, docbook, docbook-stylesheets, libpcre3-dev
+   Depends: kdelibs3 (= 4:2.2.2-4), libarts-dev (= 4:2.2.2-4), libkmid-dev (= 4:2.2.2-4), libqt-dev (>= 3:2.3.1-1), uic (>= 3:2.3.1-1) | kde-designer, libaudiofile-dev, gettext, libtiff3g-dev | libtiff-dev, docbook, libpcre3-dev, libbz2-dev
 
 and the Dependencies for libqt-dev:
 
-   Depends: libc6 (>= 2.2.2-2), libqt2 (>= 2:2.3.0-final-1) | libqt2-gl (>= 2:2.3.0-final-1), libstdc++2.10-glibc2.2, xlibs (>= 4.0.1-11), perl, libqutil1 (= 2:2.3.0-final-2), uic, xlibs-dev, libmng-dev, libpng2-dev, libjpeg62-dev, libz-dev, libfreetype6-dev, libc6-dev
-
+   Depends: libc6 (>= 2.2.4-4), libpng2 (>= 1.0.12), libqt2 (>= 3:2.3.1-1), libstdc++2.10-glibc2.2 (>= 1:2.95.4-0.010810), xlibs (>> 4.1.0), perl, libqt2 (= 3:2.3.1-16), libqutil1 (= 3:2.3.1-16), uic (= 3:2.3.1-16) | kde-designer, xlibs-dev, libmng-dev, libpng2-dev | libpng-dev, libjpeg62-dev | libjpeg-dev, zlib1g-dev | libz-dev, libfreetype6-dev, libc6-dev
 
 so between the 2 of them you have Build-Depends that equate to:
 

@@ -1,11 +1,18 @@
-ikdelibs (4:2.2.2-4) unstable; urgency=low
+kdelibs (4:2.2.2-4) unstable; urgency=low
 
+  * sync with upstream
   * Build cleanup.  export CFLAGS/CXXFLAGS instead of the old method
-  * Build with Xinerama support for i386
+  * Build-Depends cleanup
+  * Dep cleanup.  Let's not conflict so much for the final release and lets
+    not Recommend everything for the final release.
+  * Build with Xinerama support for i386 only
   * Add in bits in debian/rules to make it easier to build optimized binaries
-  * Include crypto in main
+  * Build with SSL support...yea! no more kdelibs3-crypto
+  * Remove old replaces/conflicts for keystone
+  * Cleanup documentation for freeze
+  * Cleanup dh-make files
 
- -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 27 Nov 2001 15:45:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 30 Nov 2001 02:42:00 -0700
 
 kdelibs (4:2.2.2-3) unstable; urgency=low
 

@@ -2,13 +2,12 @@ Source: #PACKAGE#
 Section: unknown
 Priority: optional
 Maintainer: #USERNAME# <#EMAIL#>
-Build-Depends: debhelper (>> 3.0.0), kdelibs-dev (>= 4:2.2.2-0)
+Build-Depends: debhelper (>> 3.0.0), kdelibs-dev (>= 4:2.2.2-1)
 Standards-Version: #POLICY#
 
 Package: #PACKAGE#
 Architecture: any
 Depends: ${shlibs:Depends}
 Recommends: kdebase-libs
-Enhances: kdebase
 Description: <insert up to 60 chars description>
  <insert long description, indented with spaces>

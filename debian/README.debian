@@ -35,6 +35,8 @@ http://www.debian.org for more information.
 
 The debian KDE package has been modified so you do not need to set the
 KDEDIR environment vairable to use it. You don't need to set QTDIR either.
+However if you find that something really does need QTDIR you can set it
+to /usr/share/qt and it'll be happy. 
 
 2. Changes to KDE directory structure:
 -------------------------------------

@@ -9,9 +9,8 @@
 export DH_COMPAT=3
 ARCH = $(shell dpkg-architecture -qDEB_BUILD_ARCH)
 ifeq ($(ARCH),alpha)
-  COMPILER_FLAGS=CFLAGS="-O0 -mieee" CXXFLAGS="-O0 -mieee"
-else
-  COMPILER_FLAGS=CXX=g++ CC=gcc
+  export CFLAGS=-O0 -mieee
+  export CXXFLAGS=-O0 -mieee
 endif
 
 configure: configure-stamp
@@ -24,7 +23,6 @@ debian/debiandirs: debian/debianrules
 configure-stamp:
 	dh_testdir
 	# Add here commands to configure the package.
-	$(COMPILER_FLAGS) \
 	#CONFIGURE#
 
 	touch configure-stamp
