@@ -148,9 +148,10 @@ QCString KInstance::instanceName() const
 
 KMimeSourceFactory* KInstance::mimeSourceFactory () const
 {
-  if ( d->mimeSourceFactory )
+  if (!d->mimeSourceFactory)
   {
     d->mimeSourceFactory = new KMimeSourceFactory(iconLoader());
   }
+
   return d->mimeSourceFactory;
 }
