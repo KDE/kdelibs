@@ -653,14 +653,14 @@ void HTTPProtocol::slotGetSize( const char *_url )
 
 string HTTPProtocol::getUserAgentString ()
 {
-  QString user_agent("Konqueror/1.1");
+  string user_agent("Konqueror/1.9.032099");
 #ifdef DO_MD5
-  user_agent+="; I\'ve got MD5";
+  user_agent+="; Supports MD5-Digest";
 #endif
 #ifdef DO_GZIP
-  user_agent+="; I\'ve got GZIP";
+  user_agent+="; Supports gzip encoding";
 #endif
-  return user_agent.ascii();
+  return user_agent.c_str();
 }
 
 
