@@ -20,7 +20,7 @@
 #include "util.h"
 #include <qstringlist.h>
 
-KURL smbToURL(const QString& work, const QString& server, const QString& printer)
+KURL smbToUrl(const QString& work, const QString& server, const QString& printer)
 {
 	KURL	url;
 	url.setProtocol("smb");
