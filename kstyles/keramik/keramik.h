@@ -91,6 +91,11 @@ public:
 	                        const QSize& contentSize,
 	                        const QStyleOption& opt ) const;
 
+	SubControl querySubControl( ComplexControl control,
+	                            const QWidget* widget,
+	                            const QPoint& point,
+						        const QStyleOption& opt = QStyleOption::Default ) const;
+
 	QRect querySubControlMetrics( ComplexControl control,
 	                              const QWidget* widget,
 	                              SubControl subcontrol,
@@ -109,8 +114,6 @@ private:
 	// Disable copy constructor and = operator
 	KeramikStyle( const KeramikStyle&  );
 	KeramikStyle& operator=( const KeramikStyle&  );
-
-	Keramik::PixmapLoader *m_loader;
 };
 
 #endif

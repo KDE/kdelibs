@@ -42,6 +42,8 @@
 #include "keramik.moc"
 #include "pixmaploader.h"
 
+#define loader Keramik::PixmapLoader::the()
+
 // -- Style Plugin Interface -------------------------
 class KeramikStylePlugin : public QStylePlugin
 {
@@ -71,12 +73,10 @@ KeramikStyle::KeramikStyle()
 	: KStyle(AllowMenuTransparency | FilledFrameWorkaround, ThreeButtonScrollBar),
 	  hoverWidget(0)
 {
-	m_loader = new Keramik::PixmapLoader;
 }
 
 KeramikStyle::~KeramikStyle()
 {
-	delete m_loader;
 }
 
 
@@ -84,7 +84,7 @@ void KeramikStyle::polish(QWidget* widget)
 {
 	// Put in order of highest occurance to maximise hit rate
 	if ( widget->inherits( "QPushButton" ) || widget->inherits( "QComboBox" ) )
-		widget->setBackgroundMode( PaletteBackground );
+		widget->setBackgroundMode( NoBackground );
  	else if ( widget->parentWidget() && widget->inherits( "QListBox" ) && widget->parentWidget()->inherits( "QComboBox" ) ) {
 	    QListBox* listbox = (QListBox*) widget;
 	    listbox->setLineWidth( 4 );
@@ -136,6 +136,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			QString name = "pushbutton-default";
 			if ( sunken ) name.append( "-pressed" );
 
+			p->fillRect( r, cg.background() );
 			Keramik::RectTilePainter( name ).draw(p, x, y, w, h );
 			break;
 		}
@@ -179,6 +180,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			QString name = "pushbutton";
 			if ( sunken ) name.append( "-pressed" );
 
+			p->fillRect( r, cg.background() );
 			Keramik::RectTilePainter( name ).draw(p, x, y, w, h );
 
 /*			if ( widget->parent() )
@@ -289,8 +291,44 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 		// -------------------------------------------------------------------
 
 		case PE_ScrollBarSlider:
-			Keramik::ScrollBarPainter( "slider", 5, flags & Style_Horizontal ).draw( p, x, y, w, h );
+		{
+			bool horizontal = flags & Style_Horizontal;
+			QString name;
+			unsigned int count = 5;
+
+			if ( horizontal )
+			{
+				if ( w < ( loader.pixmap( "scrollbar-hbar-slider1" ).width() +
+				           loader.pixmap( "scrollbar-hbar-slider3" ).width() +
+				           loader.pixmap( "scrollbar-hbar-slider5" ).width() + 2 ) )
+					if ( w > loader.pixmap( "scrollbar-hbar-small-slider1" ).width() )
+					{
+						name = "med-";
+						count = 3;
+					}
+					else
+					{
+						name = "small-";
+						count = 1;
+					}
+			}
+			else if ( h < ( loader.pixmap( "scrollbar-vbar-slider1" ).height() +
+			                loader.pixmap( "scrollbar-vbar-slider3" ).height() +
+			                loader.pixmap( "scrollbar-vbar-slider5" ).height() + 2 ) )
+				if ( h > loader.pixmap( "scrollbar-vbar-small-slider1" ).height() )
+				{
+					name = "med-";
+					count = 3;
+				}
+				else
+				{
+					name = "small-";
+					count = 1;
+				}
+
+			Keramik::ScrollBarPainter( name + "slider", count, horizontal ).draw( p, x, y, w, h );
 			break;
+		}
 
 		case PE_ScrollBarAddLine:
 		{
@@ -531,6 +569,9 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 				KStyle::drawPrimitive( pe, p, r, cg, flags, opt );
 		}
 		*/
+
+		case PE_PanelLineEdit:
+
 		default:
 			KStyle::drawPrimitive( pe, p, r, cg, flags, opt );
 	}
@@ -1064,8 +1105,9 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 	{
 		// COMBOBOX
 		// -------------------------------------------------------------------
-		case CC_ComboBox: {
-
+		case CC_ComboBox:
+		{
+			p->fillRect( r, cg.background() );
 			// Draw box and arrow
 			if ( controls & SC_ComboBoxArrow ) {
 				if ( active ) flags |= Style_On;
@@ -1075,11 +1117,11 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 				QRect ar = querySubControlMetrics(CC_ComboBox, widget, SC_ComboBoxArrow);
 
 				QRect rr = QStyle::visualRect( QRect( ar.x(), ar.y() + 4,
-				                                      m_loader->pixmap( "ripple" ).width(), ar.height() - 8 ),
+				                                      loader.pixmap( "ripple" ).width(), ar.height() - 8 ),
 				                               widget );
 
-				ar = QStyle::visualRect( QRect( ar.x() + m_loader->pixmap( "ripple" ).width() + 4, ar.y(),
-				                                m_loader->pixmap( "arrow" ).width(), ar.height() ),
+				ar = QStyle::visualRect( QRect( ar.x() + loader.pixmap( "ripple" ).width() + 4, ar.y(),
+				                                loader.pixmap( "arrow" ).width(), ar.height() ),
 				                         widget );
 				Keramik::ScaledPainter( "ripple" ).draw( p, rr );
 				Keramik::CenteredPainter( "arrow" ).draw( p, ar );
@@ -1231,6 +1273,7 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 		case CC_ScrollBar:
 		{
 			const QScrollBar* sb = static_cast< const QScrollBar* >( widget );
+			bool horizontal = sb->orientation() == Horizontal;
 			QRect slider, subpage, addpage, subline, addline;
 
 			slider = querySubControlMetrics( control, widget, SC_ScrollBarSlider, opt );
@@ -1240,34 +1283,24 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 			addline = querySubControlMetrics( control, widget, SC_ScrollBarAddLine, opt );
 
 			if ( controls & SC_ScrollBarSubLine )
-				drawPrimitive( PE_ScrollBarSubLine, p, subline, cg );
+				drawPrimitive( PE_ScrollBarSubLine, p, subline, cg, flags );
 
 			QRegion clip;
 			if ( controls & SC_ScrollBarSubPage ) clip |= subpage;
 			if ( controls & SC_ScrollBarAddPage ) clip |= addpage;
 			p->setClipRegion( clip );
-			Keramik::ScrollBarPainter( "groove", 2, sb->orientation() == Horizontal )
-				.draw( p, slider | subpage | addpage );
+			Keramik::ScrollBarPainter( "groove", 2, horizontal ).draw( p, slider | subpage | addpage );
+
+			if ( horizontal )
+				p->setClipRect( slider.x(), slider.y(), addpage.right() - slider.x() + 1 , slider.height() );
+			else p->setClipRect( slider.x(), slider.y(), slider.width(), addpage.bottom() - slider.y() + 1 );
+
+			if ( controls & SC_ScrollBarSlider )
+				drawPrimitive( PE_ScrollBarSlider, p, slider, cg, flags );
 			p->setClipping( false );
 
-			KStyle::drawComplexControl( control, p, widget, r, cg, flags,
-			                            controls & ~( SC_ScrollBarSubPage | SC_ScrollBarAddPage | SC_ScrollBarSubLine | SC_ScrollBarAddLine ),
-			                            active, opt );
-
 			if ( controls & ( SC_ScrollBarSubLine | SC_ScrollBarAddLine ))
-			{
-				if ( sb->orientation() == Horizontal )
-				{
-					addline.moveBy( -subline.width() , 0 );
-					addline.setWidth( addline.width() + subline.width() );
-				}
-				else
-				{
-					addline.moveBy( 0, -subline.height() );
-					addline.setHeight( addline.height() + subline.height() );
-				}
-				drawPrimitive( PE_ScrollBarAddLine, p, addline, cg );
-			}
+				drawPrimitive( PE_ScrollBarAddLine, p, addline, cg, flags );
 
 			break;
 		}
@@ -1331,16 +1364,18 @@ int KeramikStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 		// CHECKBOXES / RADIO BUTTONS
 		// -------------------------------------------------------------------
 		case PM_ExclusiveIndicatorWidth:	// Radiobutton size
-			return m_loader->pixmap( "radiobutton-on" ).width();
+			return loader.pixmap( "radiobutton-on" ).width();
 		case PM_ExclusiveIndicatorHeight:
-			return m_loader->pixmap( "radiobutton-on" ).height();
+			return loader.pixmap( "radiobutton-on" ).height();
 		case PM_IndicatorWidth:				// Checkbox size
-			return m_loader->pixmap( "checkbox-on" ).width();
+			return loader.pixmap( "checkbox-on" ).width();
 		case PM_IndicatorHeight:
-			return m_loader->pixmap( "checkbox-on") .height();
+			return loader.pixmap( "checkbox-on") .height();
 
 		case PM_ScrollBarExtent:
-			return m_loader->pixmap( "scrollbar-vbar-groove1" ).width();
+			return loader.pixmap( "scrollbar-vbar-groove1" ).width();
+		case PM_ScrollBarSliderMin:
+			return loader.pixmap( "scrollbar-vbar-slider-small" ).height();
 
 		default:
 			return KStyle::pixelMetric(m, widget);
@@ -1362,8 +1397,8 @@ QSize KeramikStyle::sizeFromContents( ContentsType contents,
 			              contentSize.height() + 2 * pixelMetric( PM_ButtonMargin, widget ) );
 
 		case CT_ComboBox:
-			return QSize( contentSize.width() + m_loader->pixmap( "arrow" ).width() + m_loader->pixmap( "ripple" ).width() + 22,
-			              contentSize.height() + 4 );
+			return QSize( contentSize.width() + loader.pixmap( "arrow" ).width() + loader.pixmap( "ripple" ).width() + 22,
+			              contentSize.height() + 8 );
 /*
 		// POPUPMENU ITEM SIZE
 		// -----------------------------------------------------------------
@@ -1429,6 +1464,24 @@ QSize KeramikStyle::sizeFromContents( ContentsType contents,
 }
 
 
+QStyle::SubControl KeramikStyle::querySubControl( ComplexControl control,
+	                                              const QWidget* widget,
+                                                  const QPoint& point,
+                                                  const QStyleOption& opt ) const
+{
+	SubControl result = KStyle::querySubControl( control, widget, point, opt );
+	if ( control == CC_ScrollBar && result == SC_ScrollBarAddLine )
+	{
+		QRect addline = querySubControlMetrics( control, widget, result, opt );
+		if ( static_cast< const QScrollBar* >( widget )->orientation() == Horizontal )
+		{
+			if ( point.x() < addline.center().x() ) result = SC_ScrollBarSubLine;
+		}
+		else if ( point.y() < addline.center().y() ) result = SC_ScrollBarSubLine;
+	}
+	return result;
+}
+
 QRect KeramikStyle::querySubControlMetrics( ComplexControl control,
 									const QWidget* widget,
 	                              SubControl subcontrol,
@@ -1437,41 +1490,73 @@ QRect KeramikStyle::querySubControlMetrics( ComplexControl control,
 	switch ( control )
 	{
 		case CC_ComboBox:
+		{
+			int arrow = loader.pixmap( "arrow" ).width() + loader.pixmap( "ripple" ).width();
 			switch ( subcontrol )
 			{
 				case SC_ComboBoxArrow:
-				{
-					int w = m_loader->pixmap( "arrow" ).width() + m_loader->pixmap( "ripple" ).width();
-					return QRect( widget->width() - w - 10, 0, w, widget->height() );
-				}
+					return QRect( widget->width() - arrow - 10, 0, arrow, widget->height() );
+
+				case SC_ComboBoxEditField:
+					return QRect( 8, 4, widget->width() - arrow - 18, widget->height() - 8 );
+
 				default: break;
 			}
+		}
 
 		case CC_ScrollBar:
 		{
 			const QScrollBar* sb = static_cast< const QScrollBar* >( widget );
+			bool horizontal = sb->orientation() == Horizontal;
+			int addline, subline, sliderpos, sliderlen, maxlen, slidermin;
+			if ( horizontal )
+			{
+				subline = loader.pixmap( "scrollbar-hbar-arrow1" ).width();
+				addline = loader.pixmap( "scrollbar-hbar-arrow2" ).width();
+				maxlen = sb->width() - subline - addline + 5;
+			}
+			else
+			{
+				subline = loader.pixmap( "scrollbar-vbar-arrow1" ).height();
+				addline = loader.pixmap( "scrollbar-vbar-arrow2" ).height();
+				maxlen = sb->height() - subline - addline + 5;
+			}
+			sliderpos = sb->sliderStart();
+			if ( sb->minValue() != sb->maxValue() )
+			{
+				int range = sb->maxValue() - sb->minValue();
+				sliderlen = ( sb->pageStep() * maxlen ) / ( range + sb->pageStep() );
+				slidermin = pixelMetric( PM_ScrollBarSliderMin, sb );
+				if ( sliderlen < slidermin ) sliderlen = slidermin;
+				if ( sliderlen > maxlen ) sliderlen = maxlen;
+			}
+			else sliderlen = maxlen;
+
 			switch ( subcontrol )
 			{
+				case SC_ScrollBarGroove:
+					if ( horizontal ) return QRect( subline, 0, maxlen, sb->height() );
+					else return QRect( 0, subline, sb->width(), maxlen );
+
+				case SC_ScrollBarSlider:
+					if (horizontal) return QRect( sliderpos, 1, sliderlen, sb->height() - 2 );
+					else return QRect( 1, sliderpos, sb->width() - 2, sliderlen );
+
 				case SC_ScrollBarSubLine:
-					if ( sb->orientation() == Horizontal )
-						return QRect( 0, 0, m_loader->pixmap( "scrollbar-hbar-arrow1" ).width(), widget->height() );
-					else
-						return QRect( 0, 0, widget->width(), m_loader->pixmap( "scrollbar-vbar-arrow1" ).height() );
+					if ( horizontal ) return QRect( 0, 0, subline, sb->height() );
+					else return QRect( 0, 0, sb->width(), subline );
 
 				case SC_ScrollBarAddLine:
-					if ( sb->orientation() == Horizontal )
-					{
-						QRect result ( widget->width(), 0,
-						               m_loader->pixmap( "scrollbar-hbar-arrow2" ).width() - m_loader->pixmap( "scrollbar-hbar-arrow1" ).width(), widget->height() );
-						result.moveBy( -result.width(), 0 );
-						return result;
-					}
-					else
-					{
-						QRect result ( widget->width(), 0, widget->width(),
-						               m_loader->pixmap( "scrollbar-vbar-arrow2" ).height() - m_loader->pixmap( "scrollbar-vbar-arrow1" ).height() );
-						result.moveBy( 0, -result.height() );
-					}
+					if ( horizontal ) return QRect( sb->width() - addline, 0, addline, sb->height() );
+					else return QRect( 0, sb->height() - addline, sb->width(), addline );
+
+				case SC_ScrollBarSubPage:
+					if ( horizontal ) return QRect( subline, 0, sliderpos - subline, sb->height() );
+					else return QRect( 0, subline, sb->width(), sliderpos - subline );
+
+				case SC_ScrollBarAddPage:
+					if ( horizontal ) return QRect( sliderpos + sliderlen, 0, maxlen - sliderpos - sliderlen + subline - 5, sb->height() );
+					else return QRect( 0, sliderpos + sliderlen, sb->width(), maxlen - sliderpos - sliderlen + subline - 5 );
 
 				default: break;
 			};
@@ -1523,7 +1608,11 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 			recursion = false;
 			return true;
 		}
-		return false;
+	}
+	else if ( event->type() == QEvent::Show && object->isWidgetType() && object->inherits( "QListBox" ) )
+	{
+		QListBox* listbox = (QListBox*) object;
+		listbox->setGeometry( listbox->x() + 4, listbox->y() - 4, listbox->width() - 8, listbox->height() + 8 );
 	}
 
 	// Handle push button hover effects.

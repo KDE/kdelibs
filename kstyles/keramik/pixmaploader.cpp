@@ -31,12 +31,11 @@
 
 using namespace Keramik;
 
-PixmapLoader* PixmapLoader::s_instance = 0;
+PixmapLoader PixmapLoader::s_instance;
 
 PixmapLoader::PixmapLoader()
 	:m_cache( 193 ) 
 { 
-	s_instance = this; 
 	QPixmapCache::setCacheLimit( 128 );
 	m_cache.setAutoDelete( true );
 }
@@ -95,6 +94,8 @@ void TilePainter::draw( QPainter *p, int x, int y, int width, int height )
 			lastScaledRow = row;
 		}
 		else scaleHeight -= tile( 0, row ).height();
+	if ( scaleWidth < 0 ) scaleWidth = 0;
+	if ( scaleHeight < 0 ) scaleHeight = 0;
 
 	int ypos = y;
 	if ( scaleHeight && !scaledRows ) ypos += scaleHeight / 2;

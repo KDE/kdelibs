@@ -33,17 +33,17 @@ namespace Keramik
 	{
 	public:
 		PixmapLoader();
-		~PixmapLoader() { s_instance = 0; }
 
 		QPixmap pixmap( const QString& name );
 		QPixmap scale( const QString& name, int width, int height );
 
-		static PixmapLoader& the() { return *s_instance; }
+		static PixmapLoader& the() { return s_instance; }
 
 	private:
+
 		QDict< QImage > m_cache;
 
-		static PixmapLoader* s_instance;
+		static PixmapLoader s_instance;
 	};
 
 	class TilePainter
