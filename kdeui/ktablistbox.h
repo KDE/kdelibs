@@ -111,16 +111,16 @@ protected:
 //--------------------------------------------------
 #define KTabListBoxInherited KDNDWidget
 
-/** A multi column listbox 
-* Features:
-*  - User resizeable columns.
-*  - The order of columns can be changed with drag&drop. (Alex)
-*  - 3 modes: Standard, SimpleOrder, ComplexOrder. (Alex)
-* ToDo: 
-*  - Configurable vertical column divisor lines. 
-*  - Save all setting to config file.
-*  - fix flickering into column headers.
-*/
+/** A multi column listbox
+ * Features:
+ *  - User resizeable columns.
+ *  - The order of columns can be changed with drag&drop. (Alex)
+ *  - 3 modes: Standard, SimpleOrder, ComplexOrder. (Alex)
+ * ToDo: 
+ *  - Configurable vertical column divisor lines. 
+ *  - Save all setting to config file.
+ *  - fix flickering into column headers.
+ */
 class KTabListBox : public KDNDWidget
 {
   Q_OBJECT
@@ -137,8 +137,8 @@ public:
   virtual ~KTabListBox();
 
   /** This enable the key-bindings (and set StrongFocus!)
-  *   if you don't want StrongFocus you can implement your own keyPressEvent
-  *   and send an event to KTabListBox from there... */
+   * if you don't want StrongFocus you can implement your own keyPressEvent
+   * and send an event to KTabListBox from there... */
   void enableKey(void) { lbox.enableKey(); }
   
   /** Returns the number of rows */
@@ -339,6 +339,12 @@ protected slots:
   void horSbSlidingDone();
 
 protected:
+  /** Used to create new column objects. Overwrite this method
+   * in a subclass to have your own column objects (e.g. with custom
+   * data in it). You will then also need customData()/setCustomData()
+   * methods in here that access the elememts in itemList[]. */
+  virtual KTabListBoxColumn* newKTabListBoxColumn(void);
+
   bool itemVisible (int idx) { return lbox.rowIsVisible(idx); }
   void updateItem (int idx, bool clear = TRUE);
   bool needsUpdate (int id);
@@ -412,6 +418,7 @@ protected:
   QPoint		mMouseStart;
   bool		mMouseAction;
   bool		mMouseDragColumn; // true when dragging the header of a column.
+
 private:
   // Disabled copy constructor and operator=
   KTabListBox (const KTabListBox &) {}

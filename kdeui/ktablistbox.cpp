@@ -527,7 +527,7 @@ void KTabListBox::setNumCols(int aCols)
   colShowList = new int[aCols];
   for (i=0; i<aCols; i++)
   {
-    colList[i] = new KTabListBoxColumn(this);
+    colList[i] = newKTabListBoxColumn();
     colShowList[i]=i;
   }
   itemList = new KTabListBoxItemPtr[INIT_MAX_ITEMS];
@@ -538,6 +538,13 @@ void KTabListBox::setNumCols(int aCols)
     itemShowList[i]=i;
   }
   maxItems = INIT_MAX_ITEMS;
+}
+
+
+//-----------------------------------------------------------------------------
+KTabListBoxColumn* KTabListBox::newKTabListBoxColumn(void)
+{
+  return (new KTabListBoxColumn(this));
 }
 
 
