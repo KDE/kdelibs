@@ -63,5 +63,6 @@ LDFLAGS: -module -no-undefined
 
 The last seven (not kdeinit modules) should be defined with 
 kde_module_LTLIBRARIES = <Name>
-so that they are installed under $(kde_moduledir), which is usually $prefix/lib/kde2/
+so that they are installed under $(kde_moduledir), which was $prefix/lib/kde2/
+in KDE 2, and is $prefix/lib/kde3/ on KDE3.
 
