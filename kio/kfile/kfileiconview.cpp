@@ -1,7 +1,7 @@
 // -*- c++ -*-
 /* This file is part of the KDE libraries
    Copyright (C) 1997 Stephan Kulow <coolo@kde.org>
-                 2000 Carsten Pfeiffer <pfeiffer@kde.org>
+                 2000,2001,2002 Carsten Pfeiffer <pfeiffer@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -485,7 +485,8 @@ void KFileIconView::slotSelectionChanged()
 void KFileIconView::slotSmallColumns()
 {
     setItemTextPos( Right );
-    setArrangement( TopToBottom );
+//    setArrangement( TopToBottom );
+    setArrangement( LeftToRight );
     setIconSize( KIcon::SizeSmall );
 
     if ( d->job ) {
