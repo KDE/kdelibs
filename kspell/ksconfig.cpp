@@ -11,6 +11,7 @@
 #include <klined.h>
 
 #include "ksconfig.h"
+#include <kglobal.h>
 
 KSpellConfig::KSpellConfig (const KSpellConfig &_ksc)
 	: QWidget(0, 0)
@@ -319,9 +320,9 @@ bool KSpellConfig::interpret (QString &fname, QString &lname,
     }
 
   //We have explicitly chosen English as the default here.
-  if ( (klocale->language()=="C" && 
+  if ( (KGlobal::locale()->language()=="C" && 
 	lname=="en") ||
-       klocale->language()==lname)
+       KGlobal::locale()->language()==lname)
     return TRUE;
     
   return FALSE;

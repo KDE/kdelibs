@@ -288,7 +288,7 @@ KSpellDlg::highlighted (int i)
   */
 
 void
-KSpellDlg::closeEvent( QCloseEvent * e )
+KSpellDlg::closeEvent( QCloseEvent * )
 {
 	cancel();
 }
