@@ -446,7 +446,7 @@ void KPropertiesDialog::insertPages()
 
 void KPropertiesDialog::updateUrl( const KURL& _newUrl )
 {
-  ASSERT( m_items.count() == 1 );
+  Q_ASSERT( m_items.count() == 1 );
   kdDebug(250) << "KPropertiesDialog::updateUrl " << _newUrl.url() << endl;
   m_singleUrl = _newUrl;
   m_items.first()->setURL( _newUrl );
@@ -463,7 +463,7 @@ void KPropertiesDialog::updateUrl( const KURL& _newUrl )
 
 void KPropertiesDialog::rename( const QString& _name )
 {
-  ASSERT( m_items.count() == 1 );
+  Q_ASSERT( m_items.count() == 1 );
   kdDebug(250) << "KPropertiesDialog::rename " << _name << endl;
   KURL newUrl;
   // if we're creating from a template : use currentdir

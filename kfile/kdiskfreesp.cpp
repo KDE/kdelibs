@@ -45,7 +45,7 @@
 KDiskFreeSp::KDiskFreeSp(QObject *parent, const char *name)
     : QObject(parent,name)
 {
-    dfProc = new KProcess(); CHECK_PTR(dfProc);
+    dfProc = new KProcess(); Q_CHECK_PTR(dfProc);
     connect( dfProc, SIGNAL(receivedStdout(KProcess *, char *, int) ),
              this, SLOT (receivedDFStdErrOut(KProcess *, char *, int)) );
     connect(dfProc,SIGNAL(processExited(KProcess *) ),

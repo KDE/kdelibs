@@ -204,7 +204,7 @@ void KFileView::insertSorted(KFileViewItem *tfirst, uint counter)
     for (it = tfirst, index = 0; it; index++, it = it->next())
 	sortedArray[index] = it;
 
-    ASSERT(index == counter);
+    Q_ASSERT(index == counter);
 
     QuickSort(sortedArray, 0, counter - 1);
     tfirst = sortedArray[0];

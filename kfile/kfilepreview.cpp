@@ -70,7 +70,7 @@ void KFilePreview::init( KFileView *view )
 
 void KFilePreview::setFileView( KFileView *view )
 {
-    ASSERT( view );
+    Q_ASSERT( view );
 
     if ( left ) { // remove any previous actions
         for ( uint i = 0; i < left->actionCollection()->count(); i++ )

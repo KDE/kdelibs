@@ -293,7 +293,7 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     coll->action( "delete" )->plugAccel( accel );
 
     bookmarks = new KFileBookmarkManager();
-    CHECK_PTR( bookmarks );
+    Q_CHECK_PTR( bookmarks );
     connect( bookmarks, SIGNAL( changed() ),
              this, SLOT( bookmarksChanged() ) );
 

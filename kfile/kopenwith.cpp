@@ -601,7 +601,7 @@ void KOpenWithDlg::slotOK()
   m_pService = KService::serviceByDesktopPath( pathName );
   QApplication::restoreOverrideCursor();
 
-  ASSERT( m_pService );
+  Q_ASSERT( m_pService );
 
   accept();
 }
