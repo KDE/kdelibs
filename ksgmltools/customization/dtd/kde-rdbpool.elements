@@ -44,11 +44,15 @@
  -->
 <!ENTITY % kde.remove.unused.elements "INCLUDE">
 <![ %kde.remove.unused.elements; [
+<!ENTITY % beginpage.module "IGNORE">
+<!ENTITY % bridgehead.module "IGNORE">
 <!ENTITY % confgroup.content.module "IGNORE">
 <!ENTITY % graphic.module "IGNORE">
 <!ENTITY % graphicco.module "IGNORE">
+<!ENTITY % imageobjectco.module "IGNORE">
 <!ENTITY % inlinegraphic.module "IGNORE">
 <!ENTITY % interfacedefinition.module "IGNORE">
+<!ENTITY % revhistory.content.module "IGNORE">
 <!-- end of kde.remove.unused.elements -->]]>
 
 <!-- KDE Languages
@@ -166,3 +170,4 @@ zh      Chinese
 <!-- End of compulsory ReleaseInfo -->]]>
 
 <!ENTITY % olink.attlist "IGNORE">
+<!ENTITY % glossentry.attlist "IGNORE">

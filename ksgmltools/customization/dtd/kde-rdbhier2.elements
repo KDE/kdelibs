@@ -49,9 +49,6 @@
      %kde.remove.unused.elements; is set in kde-rdbpool.elements.
  -->
 <![ %kde.remove.unused.elements; [
-<!ENTITY % beginpage.module "IGNORE">
-<!ENTITY % bridgehead.module "IGNORE">
-<!ENTITY % revhistory.content.module "IGNORE">
 <!ENTITY % toc.content.module "IGNORE">
 <!ENTITY % lot.content.module "IGNORE">
 <!-- end of kde.remove.unused.elements -->]]>
@@ -67,7 +64,7 @@
 <!-- end of kde.book.meta.info -->]]>
 
 
-<!-- To make allow for translated file names, ID attributes must be 
+<!-- To allow for translated file names, ID attributes must be 
      present (the style sheets use them to generate the file names).
  -->
 <!ENTITY % kde.compulsory.id "INCLUDE">

@@ -73,3 +73,15 @@
 		%olink.role.attrib;
 		%local.olink.attrib;
 >
+
+<!-- ID made compulsory -->
+<!ATTLIST GlossEntry
+		--
+		SortAs: String by which the GlossEntry is to be sorted
+		(alphabetized) in lieu of its proper content
+		--
+		SortAs		CDATA		#IMPLIED
+		%idreq.common.attrib; -- changed --
+		%glossentry.role.attrib;
+		%local.glossentry.attrib;
+>
