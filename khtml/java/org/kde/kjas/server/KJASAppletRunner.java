@@ -4,36 +4,12 @@ import java.util.*;
 import java.net.*;
 import java.applet.*;
 import java.awt.*;
+
 /**
  * Manages the running contexts and applets.
  *
- * <H3>Change Log</H3>
- * <PRE>
- * $Log$
- * Revision 1.5  2000/09/18 02:33:25  rogozin
- * Fix #10848 and #5668
- *
- * Revision 1.4  2000/05/21 19:27:28  rogozin
- *
- * Fix reload exception
- *
- * Revision 1.3  2000/01/29 04:22:28  rogozin
- * Preliminary support for archive tag.
- * Fix size problem.
- *
- * Revision 1.2  2000/01/27 23:41:57  rogozin
- * All applet parameters are passed to KJAS now
- * Next step - make use of them.
- *
- * Revision 1.1.1.1  1999/07/22 17:28:08  rich
- * This is a current snapshot of my work on adding Java support
- * to KDE. Applets now work!
- *
- * </PRE>
- *
- * @version $Id$
- * @author Richard Moore, rich@kde.org
  */
+
 public class KJASAppletRunner
 {
     Hashtable contexts;
@@ -49,11 +25,9 @@ public class KJASAppletRunner
         this.listener = listener;
     }
 
-    //
+
     // Methods that are invoked in respose to requests by the
     // embedding application.
-    //
-
     public void createContext( String contextId )
         throws IllegalArgumentException
     {
@@ -78,13 +52,13 @@ public class KJASAppletRunner
     }
 
     public void createApplet( String contextId,
-                                String appletId,
-                                String name,
-                                String className,
-                                String docBase,
-                                String codeBase,
-                                String jars,
-                                Dimension size)
+                              String appletId,
+                              String name,
+                              String className,
+                              String docBase,
+                              String codeBase,
+                              String jars,
+                              Dimension size )
         throws IllegalArgumentException
     {
         KJASAppletContext context = (KJASAppletContext) contexts.get( contextId );
@@ -133,8 +107,8 @@ public class KJASAppletRunner
             codeBaseURL = docBaseURL;
 
         context.createApplet( appletId, className,
-                    codeBaseURL, docBaseURL,
-                    jars, name, size );
+                              codeBaseURL, docBaseURL,
+                              jars, name, size );
     }
 
     public void destroyApplet( String contextId, String appletId )

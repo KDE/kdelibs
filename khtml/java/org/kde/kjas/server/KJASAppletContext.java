@@ -10,66 +10,8 @@ import java.io.*;
 /**
  * The context in which applets live.
  *
- * <H3>Change Log</H3>
- * <PRE>
- * $Log$
- * Revision 1.12  2000/11/16 00:34:57  wynnw
- * added check to add a '/' to a url like www.absurd.org if that is given
- * as the code base.  Seems like URLClassLoader assumes that anything without
- * an ending '/' is a jar file.  This should fix PR#8152
- *
- * Revision 1.11  2000/11/15 19:54:48  wynnw
- * This update:
- * * Updates the parsing to handle the new KJAS protocol
- * * changes the classloading to use the URLClassLoader
- * * encapsulates callbacks in the KJASProtocolHandler class
- * * adds more debug functionality
- * * fixed the callbacks to use the original PrintStream of stdout
- *
- * Revision 1.10  2000/09/27 11:46:32  sschiman
- * * I've added implementations for the showDocument and showStatus calls to kjas
- * for java applets that want to change the location of a frame. This should fix
- * java menus. (okayed by Lars and mhk)
- *
- * Revision 1.9  2000/09/18 02:33:25  rogozin
- * Fix #10848 and #5668
- *
- * Revision 1.8  2000/05/21 19:27:28  rogozin
- *
- * Fix reload exception
- *
- * Revision 1.7  2000/03/23 03:20:38  rogozin
- *
- * Fix resize issues for jdk 1.1.8.
- * This is was quite a hack.
- *
- * Revision 1.6  2000/03/22 05:19:38  rogozin
- *
- * Window geometry is now handled correctly.
- *
- * Revision 1.5  2000/01/29 04:22:28  rogozin
- * Preliminary support for archive tag.
- * Fix size problem.
- *
- * Revision 1.4  2000/01/27 23:41:57  rogozin
- * All applet parameters are passed to KJAS now
- * Next step - make use of them.
- *
- * Revision 1.3  1999/11/12 02:58:05  rich
- * Updated KJAS server
- *
- * Revision 1.2  1999/10/09 21:55:27  rich
- * More consts
- *
- * Revision 1.1.1.1  1999/07/22 17:28:08  rich
- * This is a current snapshot of my work on adding Java support
- * to KDE. Applets now work!
- *
- * </PRE>
- *
- * @version $Id$
- * @author Richard Moore, rich@kde.org
  */
+
 public class KJASAppletContext implements AppletContext
 {
     //* All the applets in this context
@@ -114,12 +56,10 @@ public class KJASAppletContext implements AppletContext
     {
         try
         {
-            URL real_codeBase;
+            URL real_codeBase = codeBase;
 
-            if( codeBase == null )
+            if( real_codeBase == null )
                 real_codeBase = docBase;
-            else
-                real_codeBase = codeBase;
 
             if( real_codeBase == null )
             {
@@ -269,7 +209,7 @@ public class KJASAppletContext implements AppletContext
     {
         Dimension appletSize;
 
-        AppletPanel(Dimension size)
+        AppletPanel( Dimension size )
         {
             super(new BorderLayout());
             appletSize = size;
@@ -280,7 +220,4 @@ public class KJASAppletContext implements AppletContext
             return appletSize;
         }
     }
-
-
-
 }

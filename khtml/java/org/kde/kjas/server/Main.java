@@ -14,14 +14,17 @@ public class Main
 
     //We need to save a reference to the original stdout
     //for sending messages back
-    public static final PrintStream stdout;
+    public static final PrintStream protocol_stdout;
 
     public static KJASProtocolHandler protocol;
+    public static KJASConsole console;
 
     static
     {
         debug = System.getProperty("kjas.debug") != null;
-        stdout = System.out;
+        protocol_stdout = System.out;
+
+        console = new KJASConsole();
     }
 
     public static void kjas_debug( String msg )
@@ -46,19 +49,20 @@ public class Main
 
     public static void main( String[] args )
     {
-	// Check for Java version. We do not support Java 1.1
-	boolean bad_jdk = checkForJavaVersion(); 
+        // Check for Java version. We do not support Java 1.1
+        boolean bad_jdk = checkForJavaVersion();
 
         if( bad_jdk || System.getProperty("kjas.showConsole") != null )
-            (new KJASConsole()).show();
+            console.show();
 	
-	if(bad_jdk) {
-	    System.err.println("\nERROR: This version of Java is not supported for security reasons.\nERROR: Please use Java version 1.2 or higher.");
-	    return;
-	}
+        if( bad_jdk )
+        {
+            System.err.println("\nERROR: This version of Java is not supported for security reasons.\nERROR: Please use Java version 1.2 or higher.");
+            return;
+        }
 
         KJASAppletRunner runner = new KJASAppletRunner();
-        protocol = new KJASProtocolHandler( System.in, stdout,
+        protocol = new KJASProtocolHandler( System.in, protocol_stdout,
                                             runner, "friend" );
 
         while( true )
@@ -80,7 +84,7 @@ public class Main
 
     private static boolean checkForJavaVersion()
     {
-	String version  = System.getProperty("java.version");;
-	return version.startsWith("1.1");	
+        String version  = System.getProperty("java.version");;
+        return version.startsWith("1.1");	
     }
 }

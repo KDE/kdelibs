@@ -7,29 +7,8 @@ import java.net.*;
 /**
  * The stub used by Applets to communicate with their environment.
  *
- * <H3>Change Log</H3>
- * <PRE>
- * $Log$
- * Revision 1.4  2000/09/16 15:03:41  rogozin
- * Fixed #9920.
- * It still doesn't display URLS, but the applet is loading.
- *
- * Revision 1.3  2000/03/22 05:19:38  rogozin
- *
- * Window geometry is now handled correctly.
- *
- * Revision 1.2  1999/10/09 21:55:27  rich
- * More consts
- *
- * Revision 1.1.1.1  1999/07/22 17:28:08  rich
- * This is a current snapshot of my work on adding Java support
- * to KDE. Applets now work!
- *
- * </PRE>
- *
- * @version $Id$
- * @author Richard Moore, rich@kde.org
  */
+
 public class KJASAppletStub implements AppletStub
 {
     //** The containing context.
@@ -75,10 +54,10 @@ public class KJASAppletStub implements AppletStub
         applet.setStub( this );
     }
 
-   public Applet getApplet()
-   {
-      return applet;
-   }
+    public Applet getApplet()
+    {
+        return applet;
+    }
 
     public void setParameter( String name, String value )
     {

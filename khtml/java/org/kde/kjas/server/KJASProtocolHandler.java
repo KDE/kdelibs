@@ -7,42 +7,8 @@ import java.awt.*;
 /**
  * Encapsulates the KJAS protocol.
  *
- * <H3>Change Log</H3>
- * <PRE>
- * $Log$
- * Revision 1.6  2000/11/15 19:54:48  wynnw
- * This update:
- * * Updates the parsing to handle the new KJAS protocol
- * * changes the classloading to use the URLClassLoader
- * * encapsulates callbacks in the KJASProtocolHandler class
- * * adds more debug functionality
- * * fixed the callbacks to use the original PrintStream of stdout
- *
- * Revision 1.5  2000/05/21 19:27:28  rogozin
- *
- * Fix reload exception
- *
- * Revision 1.4  2000/03/21 03:44:44  rogozin
- *
- * New Java support has been merged.
- *
- * Revision 1.3  2000/03/08 01:04:56  rogozin
- *
- * Java console implemented
- *
- * Revision 1.2  2000/01/27 23:41:57  rogozin
- * All applet parameters are passed to KJAS now
- * Next step - make use of them.
- *
- * Revision 1.1.1.1  1999/07/22 17:28:08  rich
- * This is a current snapshot of my work on adding Java support
- * to KDE. Applets now work!
- *
- * </PRE>
- *
- * @version $Id$
- * @author Richard Moore, rich@kde.org
  */
+
 public class KJASProtocolHandler
 {
     private static final int CreateContextCode  = 1;
