@@ -4,6 +4,8 @@
 #include <qpixmap.h>
 
 #include <kapp.h>
+#include <kglobal.h>
+#include <klined.h>
 #include <klocale.h>
 #include <ksimpleconfig.h>
 #include <ktreelist.h>
@@ -17,8 +19,6 @@
 #include <stdio.h>
 
 #include "kio_openwith.h"
-#include <kglobal.h>
-#include <kdebug.h>
 
 #define SORT_SPEC (QDir::DirsFirst | QDir::Name | QDir::IgnoreCase)
 
