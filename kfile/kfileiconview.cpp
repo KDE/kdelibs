@@ -36,8 +36,8 @@
 
 KFileIconViewItem::~KFileIconViewItem()
 {
-    const_cast<KFileViewItem*>(fileInfo())->
-	setViewItem(static_cast<KFileIconView*>(iconView()), (const void*)0);
+    //    const_cast<KFileViewItem*>(fileInfo())->
+    //	setViewItem(static_cast<KFileIconView*>(iconView()), (const void*)0);
 }
 
 KFileIconView::KFileIconView(QWidget *parent, const char *name)
@@ -154,9 +154,6 @@ void KFileIconView::setSelected( const KFileViewItem *info, bool enable )
     KFileIconViewItem *item = (KFileIconViewItem*)info->viewItem( this );
 
     if ( item ) {
-#if QT_VERSION <= 211
-	slotUpdate(); // QIconView buglet
-#endif
 	KIconView::setSelected( item, enable );
         KIconView::setCurrentItem( item );
 	KIconView::ensureItemVisible( item );
