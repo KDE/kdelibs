@@ -417,7 +417,7 @@ public class KJASAppletContext implements AppletContext
             Field field = c.getField(name);
             ret = getJSTypeValue(field.get(o), objid, value);
         } catch (Exception ex) {
-            Method [] m = c.getDeclaredMethods();
+            Method [] m = c.getMethods();
             for (int i = 0; i < m.length; i++)
                 if (m[i].getName().equals(name)) {
                     ret[0] = JFunction;
@@ -622,6 +622,8 @@ public class KJASAppletContext implements AppletContext
         return ret;
     }
     public void derefObject(int objid) {
+        if (objid == 0)
+            return; // that's an applet
         if (jsReferencedObjects.remove(new Integer(objid)) == null)
             Main.debug("couldn't remove referenced object");
     }
