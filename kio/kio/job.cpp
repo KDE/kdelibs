@@ -788,7 +788,7 @@ void TransferJob::slotFinished()
         // happens (unpacking+repacking)
         staticData.truncate(0);
         m_incomingMetaData.clear();
-        if (queryMetaData("cache") != "reload");
+        if (queryMetaData("cache") != "reload")
             addMetaData("cache","refresh");
         m_suspended = false;
         m_url = m_redirectionURL;
