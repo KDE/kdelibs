@@ -198,6 +198,7 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
             d->urlBar->insertItem( u, i18n("Floppy"), false,
                                    KProtocolInfo::icon( "floppy" ) );
         QStringList tmpDirs = KGlobal::dirs()->resourceDirs( "tmp" );
+        u.setProtocol( "file" );
         u.setPath( tmpDirs.isEmpty() ? "/tmp" : tmpDirs.first() );
         d->urlBar->insertItem( u, i18n("Temporary Files"), false, 
                                "file_temporary" );
@@ -221,23 +222,28 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     KURL u;
     u.setPath( QDir::rootDirPath() );
     QString text = i18n("Root Directory: %1").arg( u.path() );
-    combo->addDefaultURL( u, KMimeType::pixmapForURL( u, 0, KIcon::Small ), text );
+    combo->addDefaultURL( u, KMimeType::pixmapForURL( u, 0, KIcon::Small ),
+                          text );
 
     u.setPath( QDir::homeDirPath() );
     text = i18n("Home Directory: %1").arg( u.path( +1 ) );
-    combo->addDefaultURL( u, KMimeType::pixmapForURL( u, 0, KIcon::Small ), text );
+    combo->addDefaultURL( u, KMimeType::pixmapForURL( u, 0, KIcon::Small ),
+                          text );
 
     KURL docPath;
     docPath.setPath( KGlobalSettings::documentPath() );
     if ( u.path(+1) != docPath.path(+1) ) {
         text = i18n("Documents: %1").arg( docPath.path( +1 ) );
-        combo->addDefaultURL( u, KMimeType::pixmapForURL( u, 0, KIcon::Small ),
+        combo->addDefaultURL( u, 
+                              KMimeType::pixmapForURL( u, 0, KIcon::Small ),
                               text );
     }
 
     u.setPath( KGlobalSettings::desktopPath() );
     text = i18n("Desktop: %1").arg( u.path( +1 ) );
-    combo->addDefaultURL( u, KMimeType::pixmapForURL( u, 0, KIcon::Small ), text );
+    combo->addDefaultURL( u, 
+                          KMimeType::pixmapForURL( u, 0, KIcon::Small ), 
+                          text );
 
     u.setPath( "/tmp" );
 
