@@ -42,6 +42,7 @@ typedef unsigned long Atom;
 #include <qapplication.h>
 #include <qpixmap.h>
 #include <kinstance.h>
+#include <kurl.h>
 
 struct _IceConn;
 class QPopupMenu;
@@ -283,12 +284,19 @@ public:
   void invokeHTMLHelp( const QString& aFilename, const QString& aTopic = QString::null ) const;
 
   /**
-   * Invoke the standard email application.
+   * Convenience method; invokes the standard email application.
    *
    * @param address The destination address
    * @param subject Subject string. Can be QString::null.
    */
   void invokeMailer( const QString &address, const QString &subject );
+  
+  /**
+   * Invokes the standard email application.
+   *
+   * @param mailtoURL A mailto URL.
+   */
+  void invokeMailer( const KURL &mailtoURL );
 
   /**
    * Invoke the standard browser.
@@ -778,6 +786,11 @@ private:
 #endif
 
 // $Log$
+// Revision 1.182  2000/08/13 22:27:32  faure
+// Fixed errors when running kdoc (I meant, it's e.g. @p remFun and not @remFun,
+// @param is allowed of course). Also increased version number in kapp.h while
+// I was at it. Don't update if you don't want to recompile all of KDE :)
+//
 // Revision 1.181  2000/08/07 21:16:58  mueller
 // now that anyway everybody needs recompiling - increased snapshot
 // version string

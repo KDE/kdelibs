@@ -1270,9 +1270,19 @@ void KApplication::invokeHTMLHelp( const QString& _filename, const QString& topi
 
 void KApplication::invokeMailer(const QString &address, const QString &subject)
 {
+   KURL mailtoURL;
+   mailtoURL.setProtocol("mailto");
+   mailtoURL.setPath(address);
+   mailtoURL.setQuery("?subject=" + subject);
+   invokeMailer(mailtoURL);
+}
+
+
+void KApplication::invokeMailer(const KURL &mailtoURL)
+{
    KConfig config("emaildefaults");
    config.setGroup("ClientInfo");
-   QString command = config.readEntry("EmailClient", "kmail -s %s %t");
+   QString command = config.readEntry("EmailClient", "kmail --composer -s %s -c %c -b %b %t");
 
    // TODO: Take care of the preferred terminal app (instead of hardcoding
    // Konsole), this will probably require a rewrite of the configurable
@@ -1281,6 +1291,22 @@ void KApplication::invokeMailer(const QString &address, const QString &subject)
    // like '/opt/kde2/bin/konsole -e %p'). - Frerich
    if (config.readBoolEntry("TerminalClient", false))
       command = "konsole -e " + command;
+
+   QString address = KURL::decode_string(mailtoURL.path()), subject, cc, bcc, body;
+   QStringList queries = QStringList::split('&', mailtoURL.query().mid(1));
+   for (QStringList::Iterator it = queries.begin(); it != queries.end(); ++it)
+     if ((*it).startsWith("subject="))
+       subject = KURL::decode_string((*it).mid(8));
+     else
+     if ((*it).startsWith("cc="))
+       cc = KURL::decode_string((*it).mid(3));
+     else
+     if ((*it).startsWith("bcc="))
+       bcc = KURL::decode_string((*it).mid(4));
+     else
+     if ((*it).startsWith("body="))
+       body = KURL::decode_string((*it).mid(5));
+
 
    // WARNING: This will only work as long as the path of the
    // email client doesn't contain spaces (this is currently
@@ -1296,6 +1322,15 @@ void KApplication::invokeMailer(const QString &address, const QString &subject)
      else
      if ((*it).find("%s") >= 0)
        (*it).replace(QRegExp("%s"), subject);
+     else
+     if ((*it).find("%c") >= 0)
+       (*it).replace(QRegExp("%c"), cc);
+     else
+     if ((*it).find("%b") >= 0)
+       (*it).replace(QRegExp("%b"), bcc);
+     else 
+     if ((*it).find("%B") >= 0)
+       (*it).replace(QRegExp("%B"), body);
 
    QString error;
 
