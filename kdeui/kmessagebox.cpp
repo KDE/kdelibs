@@ -99,7 +99,7 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const 
 
     QWidget *contents = new QWidget(topcontents);
     QHBoxLayout * lay = new QHBoxLayout(contents);
-    lay->setSpacing(KDialog::spacingHint()*2);
+    lay->setSpacing(KDialog::spacingHint());
 
     QLabel *label1 = new QLabel( contents);
 
@@ -168,6 +168,7 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const 
     // TODO: find out why this is 10.
     label2->setFixedSize(QSize(pref_width+10, pref_height));
     lay->addWidget( label2 );
+    lay->addStretch();
 
     KListBox *listbox = 0;
     if (!strlist.isEmpty())
