@@ -836,13 +836,15 @@ void KLineEdit::tripleClickTimeout()
     possibleTripleClick=false;
 }
 
+void KLineEdit::contextMenuEvent( QContextMenuEvent * e )
+{
+    if ( m_bEnableMenu )
+        QLineEdit::contextMenuEvent( e );
+}
+
 QPopupMenu *KLineEdit::createPopupMenu()
 {
     enum { IdUndo, IdRedo, IdSep1, IdCut, IdCopy, IdPaste, IdClear, IdSep2, IdSelectAll };
-
-    // Return if popup menu is not enabled !!
-    if ( !m_bEnableMenu )
-        return 0;
 
     QPopupMenu *popup = QLineEdit::createPopupMenu();
 
