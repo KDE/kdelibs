@@ -849,7 +849,7 @@ void Imp::mark(Imp*)
   }
 }
 
-bool Imp::marked()
+bool Imp::marked() const
 {
   return prev;
 }
@@ -888,23 +888,17 @@ void Imp::operator delete(void*)
   // Do nothing. So far.
 }
 
-void Imp::setMarked(bool _marked)
+void Imp::setMarked(bool m)
 {
-  if (_marked)
-    prev = this;
-  else
-    prev = 0;
+  prev = m ? this : 0L;
 }
 
-void Imp::setGcAllowed(bool _gcAllowed)
+void Imp::setGcAllowed(bool a)
 {
-  if (_gcAllowed)
-    next = this;
-  else
-    next = 0;
+  next = a ? this : 0L;
 }
 
-bool Imp::gcAllowed()
+bool Imp::gcAllowed() const
 {
     return next;
 }

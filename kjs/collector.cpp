@@ -174,7 +174,7 @@ void Collector::collect()
     int del = 0;
     for (int i = 0; i < block->size; i++, r++) {
       if (*r && ((*r)->refcount == 0) && !(*r)->marked() && (*r)->gcAllowed()) {
-	// emulate 'operator delete()'
+	// emulate destructing part of 'operator delete()'
 	(*r)->~Imp();
 	free(*r);
 	*r = 0L;
