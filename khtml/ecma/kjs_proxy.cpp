@@ -79,26 +79,19 @@ public:
   virtual void setSourceFile(QString url, QString code);
   virtual void appendSourceFile(QString url, QString code);
 
-  KJScript* create(KHTMLPart *khtmlpart);
+  void initScript();
 
 private:
-  bool m_inEvaluate; // ### remove
   KJScript* m_script;
+  bool m_debugEnabled;
 };
 
 
 KJSProxyImpl::KJSProxyImpl(KHTMLPart *part)
 {
-  m_script = new KJScript();
-  m_inEvaluate = false;
+  m_script = 0;
   m_part = part;
-
-#ifdef KJS_DEBUGGER
-  m_script->enableDebug();
-#endif
-
-  KJS::Imp *global = m_script->globalObject();
-  global->setPrototype(new Window(m_part));
+  m_debugEnabled = false;
 }
 
 KJSProxyImpl::~KJSProxyImpl()
@@ -106,21 +99,13 @@ KJSProxyImpl::~KJSProxyImpl()
   delete m_script;
 }
 
-
 QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
 			    const QChar *c, unsigned int len,
 			    const DOM::Node &n) {
   // evaluate code. Returns the JS return value or an invalid QVariant
   // if there was none, an error occured or the type couldn't be converted.
 
-  QVariant ret;
-
-
-  QVariant r;
-  bool wasInEvaluate = m_inEvaluate;
-  if (!wasInEvaluate)
-    m_inEvaluate = true;
-
+  initScript();
   m_script->init(); // set a valid current interpreter
 
 #ifdef KJS_DEBUGGER
@@ -143,14 +128,9 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
 
   // let's try to convert the return value
   if (success && m_script->returnValue())
-    ret = KJSOToVariant(m_script->returnValue());
+    return KJSOToVariant(m_script->returnValue());
   else
-    ret = QVariant();
-
-  if (!wasInEvaluate)
-    m_inEvaluate = false;
-
-  return ret;
+    return QVariant();
 }
 
 void KJSProxyImpl::clear() {
@@ -163,20 +143,13 @@ void KJSProxyImpl::clear() {
 //        debugWin->leaveSession();
     }
 #endif
-
-    // ### hack to ensure window remains prototype of the global object
-    KJSO oldProto = m_script->globalObject()->prototype();
-
-    m_script->clear();
-
-    m_script->init();
-    m_script->globalObject()->setPrototype(oldProto);
-
     Window *win = Window::retrieveWindow(m_part);
     if (win)
         win->clear();
-    //    delete m_script;
-    //m_script = 0L;
+
+    m_script->clear(); // may delete window
+    delete m_script;
+    m_script = 0L;
   }
 }
 
@@ -187,6 +160,7 @@ DOM::EventListener *KJSProxyImpl::createHTMLEventHandler(QString sourceUrl, QStr
     KJSDebugWin::instance()->setNextSourceInfo(sourceUrl,m_handlerLineno);
 #endif
 
+  initScript();
   m_script->init(); // set a valid current interpreter
   KJS::Global::current().setExtra(m_part);
   KJS::Constructor constr(KJS::Global::current().get("Function").imp());
@@ -208,7 +182,9 @@ KJScript *KJSProxyImpl::jScript()
 void KJSProxyImpl::setDebugEnabled(bool enabled)
 {
 #ifdef KJS_DEBUGGER
-  m_script->setDebuggingEnabled(enabled);
+  m_debugEnabled = enabled;
+  if (m_script)
+      m_script->setDebuggingEnabled(enabled);
   // NOTE: this is consistent across all KJSProxyImpl instances, as we only
   // ever have 1 debug window
   if (!enabled && KJSDebugWin::instance()) {
@@ -244,6 +220,20 @@ void KJSProxyImpl::appendSourceFile(QString url, QString code)
   if (KJSDebugWin::instance())
     KJSDebugWin::instance()->appendSourceFile(url,code);
 #endif
+}
+
+void KJSProxyImpl::initScript()
+{
+  if (m_script)
+    return;
+
+  m_script = new KJScript();
+#ifdef KJS_DEBUGGER
+  m_script->setDebuggingEnabled(m_debugEnabled);
+#endif
+  m_script->enableDebug();
+  KJS::Imp *global = m_script->globalObject();
+  global->setPrototype(new Window(m_part));
 }
 
 // initialize HTML module
