@@ -151,6 +151,7 @@ namespace DOM {
 	unsigned short *yy_last_accepting_cpos;
 	int yyleng;
 	int yyTok;
+	int yy_start;
     };
 
 }; // namespace

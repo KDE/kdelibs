@@ -549,10 +549,10 @@ specifier_list:
 	$1->nonCSSHint = static_cast<CSSParser *>(parser)->nonCSSHint;
     }
     | specifier_list specifier {
-	$$ = $2;
-	$2->nonCSSHint = static_cast<CSSParser *>(parser)->nonCSSHint;
-	$2->relation = CSSSelector::SubSelector;
-	$$->tagHistory = $1;
+	$$ = $1;
+	$1->nonCSSHint = static_cast<CSSParser *>(parser)->nonCSSHint;
+	$1->relation = CSSSelector::SubSelector;
+	$$->tagHistory = $2;
     }
 ;
 

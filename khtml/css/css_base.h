@@ -51,7 +51,7 @@ namespace DOM {
     {
     public:
 	CSSSelector()
-	    : tagHistory(0), attr(0), tag(0), relation( Descendant ),
+	    : tagHistory(0), attr(0), tag(-1), relation( Descendant ),
 	      match( None ), nonCSSHint( false ), pseudoId( 0 ), _pseudoType(PseudoNotParsed) {}
 
 	~CSSSelector() {
@@ -184,7 +184,7 @@ namespace DOM {
 
 	void setStrictParsing( bool b ) { strictParsing = b; }
 	bool useStrictParsing() const { return strictParsing; }
-	
+
 	StyleSheetImpl* stylesheet();
 
     protected:

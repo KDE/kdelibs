@@ -1355,10 +1355,10 @@ case 58:
 case 59:
 #line 551 "parser.y"
 {
-	yyval.selector = yyvsp[0].selector;
-	yyvsp[0].selector->nonCSSHint = static_cast<CSSParser *>(parser)->nonCSSHint;
-	yyvsp[0].selector->relation = CSSSelector::SubSelector;
-	yyval.selector->tagHistory = yyvsp[-1].selector;
+	yyval.selector = yyvsp[-1].selector;
+	yyvsp[-1].selector->nonCSSHint = static_cast<CSSParser *>(parser)->nonCSSHint;
+	yyvsp[-1].selector->relation = CSSSelector::SubSelector;
+	yyval.selector->tagHistory = yyvsp[0].selector;
     ;
     break;}
 case 60:

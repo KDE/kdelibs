@@ -95,6 +95,7 @@ CSSParser::CSSParser( bool strictParsing )
     id = 0;
     important = false;
     nonCSSHint = false;
+    yy_start = 1;
 
 #if YYDEBUG > 0
     cssyydebug = 1;
@@ -1279,16 +1280,16 @@ bool CSSParser::parseShape( int propId, bool important )
 // [ 'font-style' || 'font-variant' || 'font-weight' ]? 'font-size' [ / 'line-height' ]? 'font-family'
 bool CSSParser::parseFont( bool important )
 {
-    kdDebug(6080) << "parsing font property current=" << valueList->currentValue << endl;
+//     kdDebug(6080) << "parsing font property current=" << valueList->currentValue << endl;
     bool valid = true;
     Value *value = valueList->current();
     FontValueImpl *font = new FontValueImpl;
     // optional font-style, font-variant and font-weight
     while ( value ) {
-	kdDebug( 6080 ) << "got value " << (value->unit == CSSPrimitiveValue::CSS_IDENT ? getValueName( value->iValue ).string() : "")
-			<< " / " << (value->unit == CSSPrimitiveValue::CSS_STRING ||
-				   value->unit == Value::IdentString ? qString( value->string ) : QString::null )
-			<< endl;
+// 	kdDebug( 6080 ) << "got value " << (value->unit == CSSPrimitiveValue::CSS_IDENT ? getValueName( value->iValue ).string() : "")
+// 			<< " / " << (value->unit == CSSPrimitiveValue::CSS_STRING ||
+// 				   value->unit == Value::IdentString ? qString( value->string ) : QString::null )
+// 			<< endl;
 	if ( value->unit == CSSPrimitiveValue::CSS_IDENT ) {
 	    int id = value->iValue;
 	    if ( id == CSS_VAL_NORMAL ) {
@@ -1360,7 +1361,7 @@ bool CSSParser::parseFont( bool important )
     if ( !font->weight )
 	font->weight = new CSSPrimitiveValueImpl( CSS_VAL_NORMAL );
 
-    kdDebug( 6080 ) << "  got style, variant and weight current=" << valueList->currentValue << endl;
+//     kdDebug( 6080 ) << "  got style, variant and weight current=" << valueList->currentValue << endl;
 
     // now a font size _must_ come
     // <absolute-size> | <relative-size> | <length> | <percentage> | inherit
@@ -1395,33 +1396,33 @@ bool CSSParser::parseFont( bool important )
 	font->lineHeight = new CSSPrimitiveValueImpl( CSS_VAL_NORMAL );
     }
 
-    kdDebug( 6080 ) << "  got line height current=" << valueList->currentValue << endl;
+//     kdDebug( 6080 ) << "  got line height current=" << valueList->currentValue << endl;
     // font family must come now
     font->family = parseFontFamily();
 
     if ( valueList->current() || !font->family )
 	goto invalid;
-    kdDebug( 6080 ) << "  got family, parsing ok!" << endl;
+//     kdDebug( 6080 ) << "  got family, parsing ok!" << endl;
 
     addProperty( CSS_PROP_FONT, font, important );
     return true;
 
  invalid:
-    kdDebug(6080) << "   -> invalid" << endl;
+//     kdDebug(6080) << "   -> invalid" << endl;
     delete font;
     return false;
 }
 
 CSSValueListImpl *CSSParser::parseFontFamily()
 {
-    kdDebug( 6080 ) << "CSSParser::parseFontFamily current=" << valueList->currentValue << endl;
+//     kdDebug( 6080 ) << "CSSParser::parseFontFamily current=" << valueList->currentValue << endl;
     CSSValueListImpl *list = new CSSValueListImpl;
     Value *value = valueList->current();
     while ( value ) {
-	kdDebug( 6080 ) << "got value " << (value->unit == CSSPrimitiveValue::CSS_IDENT ? getValueName( value->iValue ).string() : "")
-			<< " / " << (value->unit == CSSPrimitiveValue::CSS_STRING ||
-				   value->unit == Value::IdentString ? qString( value->string ) : QString::null )
-			<< endl;
+// 	kdDebug( 6080 ) << "got value " << (value->unit == CSSPrimitiveValue::CSS_IDENT ? getValueName( value->iValue ).string() : "")
+// 			<< " / " << (value->unit == CSSPrimitiveValue::CSS_STRING ||
+// 				   value->unit == Value::IdentString ? qString( value->string ) : QString::null )
+// 			<< endl;
 	if ( value->unit == CSSPrimitiveValue::CSS_IDENT ) {
 	    id = value->iValue;
 	    if ( id >= CSS_VAL_SERIF && id <= CSS_VAL__KONQ_DEFAULT )
@@ -1432,12 +1433,11 @@ CSSValueListImpl *CSSParser::parseFontFamily()
 		    value->unit == Value::IdentString )
 	    list->append( new FontFamilyValueImpl( qString( value->string ) ) );
 	else {
-	    kdDebug( 6080 ) << "invalid family part" << endl;
+// 	    kdDebug( 6080 ) << "invalid family part" << endl;
 	    break;
 	}
 	value = valueList->next();
 	if ( !value || value->unit != Value::Operator || value->iValue != ',' ) {
-	    kdDebug(6080) << "invalid separator" << endl;
 	    break;
 	}
 	value = valueList->next();
@@ -1469,7 +1469,7 @@ int DOM::CSSParser::lex( void *_yylval ) {
     int length;
     unsigned short *t = text( &length );
 
-    //qDebug("got token %d: '%s'", token, token == END ? "" : QString( (QChar *)t, length ).latin1() );
+    qDebug("got token %d: '%s'", token, token == END ? "" : QString( (QChar *)t, length ).latin1() );
     switch( token ) {
     case S:
     case SGML_CD:
@@ -1529,28 +1529,6 @@ int DOM::CSSParser::lex( void *_yylval ) {
     return token;
 }
 
-#define YY_DECL int DOM::CSSParser::lex()
-#define yyconst const
-typedef int yy_state_type;
-typedef unsigned int YY_CHAR;
-// this line makes sure we treat all Unicode chars correctly.
-#define YY_SC_TO_UI(c) (c > 0xff ? 0xff : c)
-#define YY_DO_BEFORE_ACTION \
-	yytext = yy_bp; \
-	yyleng = (int) (yy_cp - yy_bp); \
-	yy_hold_char = *yy_cp; \
-	*yy_cp = 0; \
-	yy_c_buf_p = yy_cp;
-#define YY_BREAK break;
-#define ECHO qDebug( "%s", QString( (QChar *)yytext, yyleng ).latin1() )
-#define YY_RULE_SETUP
-#define INITIAL 0
-#define YY_STATE_EOF(state) (YY_END_OF_BUFFER + state + 1)
-#define yyterminate() yyTok = END; return yyTok
-#define YY_FATAL_ERROR(a) qFatal(a)
-static const int yy_start = 1;
-
-
 static inline int toHex( char c ) {
     if ( '0' <= c && c <= '9' )
 	return c - '0';
@@ -1581,16 +1559,21 @@ unsigned short *DOM::CSSParser::text(int *length)
 	start += 4;
 	l -= 5;
 	// strip {w}
-	while ( length &&
+	while ( l &&
 		(*start == ' ' || *start == '\t' || *start == '\r' ||
 		 *start == '\n' || *start == '\f' ) ) {
 	    start++; l--;
 	}
-	while ( length &&
+	if ( *start == '"' || *start == '\'' ) {
+	    start++; l--;
+	}
+	while ( l &&
 		(start[l-1] == ' ' || start[l-1] == '\t' || start[l-1] == '\r' ||
 		 start[l-1] == '\n' || start[l-1] == '\f' ) ) {
 	    l--;
 	}
+	if ( l && (start[l-1] == '\"' || start[l-1] == '\'' ) )
+	     l--;
 
     default:
 	break;
@@ -1663,5 +1646,27 @@ unsigned short *DOM::CSSParser::text(int *length)
     return start;
 }
 
+
+#define YY_DECL int DOM::CSSParser::lex()
+#define yyconst const
+typedef int yy_state_type;
+typedef unsigned int YY_CHAR;
+// this line makes sure we treat all Unicode chars correctly.
+#define YY_SC_TO_UI(c) (c > 0xff ? 0xff : c)
+#define YY_DO_BEFORE_ACTION \
+	yytext = yy_bp; \
+	yyleng = (int) (yy_cp - yy_bp); \
+	yy_hold_char = *yy_cp; \
+	*yy_cp = 0; \
+	yy_c_buf_p = yy_cp;
+#define YY_BREAK break;
+#define ECHO qDebug( "%s", QString( (QChar *)yytext, yyleng ).latin1() )
+#define YY_RULE_SETUP
+#define INITIAL 0
+#define YY_STATE_EOF(state) (YY_END_OF_BUFFER + state + 1)
+#define yyterminate() yyTok = END; return yyTok
+#define YY_FATAL_ERROR(a) qFatal(a)
+#define BEGIN yy_start = 1 + 2 *
+#define COMMENT 1
 
 #include "tokenizer.cpp"

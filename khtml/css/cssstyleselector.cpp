@@ -221,8 +221,6 @@ void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s)
 	    file[readbytes] = '\0';
 
 	QString style = QString::fromLatin1( file.data() );
-	if(s)
-	    style += s->settingsToCSS();
 	DOMString str(style);
 
 	quirksSheet = new DOM::CSSStyleSheetImpl((DOM::CSSStyleSheetImpl * ) 0);
