@@ -20,9 +20,10 @@
 
 #include "kmetaprops.h"
 
-#include <kchoicevalidator.h>
+// #include <kchoicevalidator.h>
 #include <kcombobox.h>
 #include <kfilemetainfo.h>
+#include <kglobal.h>
 #include <klocale.h>
 #include <kdebug.h>
 #include <klineedit.h>
@@ -34,6 +35,8 @@
 #include <qlabel.h>
 #include <qpushbutton.h>
 #include <qcheckbox.h>
+
+#include <iostream.h>
 
 class MetaPropsScrollView : public QScrollView
 {
@@ -53,8 +56,8 @@ protected:
     virtual void viewportResizeEvent(QResizeEvent* ev)
     { 
       QScrollView::viewportResizeEvent(ev);
-      m_frame->resize( max(m_frame->sizeHint().width(), ev->size().width()),
-                       max(m_frame->sizeHint().height(), ev->size().height()));
+      m_frame->resize( kMax(m_frame->sizeHint().width(), ev->size().width()),
+                       kMax(m_frame->sizeHint().height(), ev->size().height()));
     };
   
 private:
@@ -327,7 +330,7 @@ void KFileMetaPropsPlugin::applyChanges()
   
   QPtrListIterator<MetaPropsItem> it( d->m_items );
   MetaPropsItem* item;
-  for (; item = it.current(); ++it)
+  for (; (item = it.current()); ++it)
   {
     // we depend on having the correct widget type here
     cout << "wanna add " << item->info.key().latin1() << endl;
