@@ -46,7 +46,7 @@ KMConfigGeneral::KMConfigGeneral(QWidget *parent)
 	m_timer->setSpecialValueText(i18n("Disabled"));
 
 	QGroupBox	*m_testpagebox = new QGroupBox(0, Qt::Vertical, i18n("Test page"), this);
-	m_defaulttestpage = new QCheckBox(i18n("Use non default test page"), m_testpagebox, "TestPageCheck");
+	m_defaulttestpage = new QCheckBox(i18n("&Use non default test page:"), m_testpagebox, "TestPageCheck");
 	m_testpage = new KURLRequester(m_testpagebox,"TestPage");
 	m_preview = new QPushButton(i18n("Preview..."), m_testpagebox);
 	connect(m_defaulttestpage,SIGNAL(toggled(bool)),m_testpage,SLOT(setEnabled(bool)));

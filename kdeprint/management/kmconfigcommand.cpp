@@ -32,13 +32,14 @@ KMConfigCommand::KMConfigCommand(QWidget *parent, const char *name)
 	setPageHeader(i18n("Commands settings"));
 	setPagePixmap("exec");
 
-	QGroupBox	*gb = new QGroupBox(0, Qt::Horizontal, i18n("Co&mmands"), this);
+	QGroupBox	*gb = new QGroupBox(0, Qt::Horizontal, i18n("Edit/Create Commands"), this);
 	QLabel	*lab = new QLabel(i18n(
-				"<p>Command objects are used as the basis to build both print filters "
+				"<p>Command objects perform a conversion from input to output.<br>"
+                "They are used as the basis to build both print filters "
 				"and special printers. They are described by a command string, a "
 				"set of options, a set of requirements and associated mime types. "
 				"Here you can create new command objects and edit existing ones. All "
-				"changes will only be effective for you.</p>"), gb);
+				"changes will only be effective for you."), gb);
 	KXmlCommandSelector	*sel = new KXmlCommandSelector(false, gb);
 
 	QVBoxLayout	*l0 = new QVBoxLayout(this, 5, 10);

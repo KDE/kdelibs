@@ -36,13 +36,13 @@ KMConfigPreview::KMConfigPreview(QWidget *parent, const char *name)
 
 	QGroupBox	*box = new QGroupBox(0, Qt::Vertical, i18n("Preview program"), this);
 
-	m_useext = new QCheckBox(i18n("Use external preview program"), box);
+	m_useext = new QCheckBox(i18n("&Use external preview program:"), box);
 	m_program = new KURLRequester(box);
 	QLabel	*lab = new QLabel(box);
 	lab->setText(i18n("You can use an external preview program (PS viewer) instead of the "
-					  "KDE built-in preview system. Check the box below, if you want to do so. "
-					  "<b><u>Warning:</u></b> using an external program doesn't "
-					  "allow you anymore to cancel printing once the preview has been launched."));
+					  "KDE built-in preview system."
+					  "<p><b><u>Warning:</u></b> using an external program means that "
+					  "printing can not be cancelled from the preview."));
 	lab->setTextFormat(Qt::RichText);
 
 	QVBoxLayout	*l0 = new QVBoxLayout(this, 5, 10);
