@@ -17,6 +17,8 @@
    Boston, MA 02111-1307, USA.
 */
 
+#include <assert.h>
+
 // TODO: Torben: On error free memory!
 
 extern "C"
@@ -28,23 +30,27 @@ void mainParse( const char *_code );
 
 #include "ktraderparsetree.h"
 
-ParseTreeBase::Ptr pTree = 0L;
+ParseTreeBase::Ptr *pTree = 0L;
 
 ParseTreeBase::Ptr parseConstraints( const QString& _constr )
 {
   mainParse( _constr );
-  return pTree;
+  assert( pTree );
+  return *pTree;
 }
 
 ParseTreeBase::Ptr parsePreferences( const QString& _prefs )
 {
   mainParse( _prefs );
-  return pTree;
+  assert( pTree );
+  return *pTree;
 }
 
 void setParseTree( void *_ptr1 )
 {
-  pTree = (ParseTreeBase*)_ptr1;
+  if ( !pTree )
+    pTree = new ParseTreeBase::Ptr; // ### leak
+  *pTree = static_cast<ParseTreeBase*>( _ptr1 );
 }
 
 void* newOR( void *_ptr1, void *_ptr2 )
