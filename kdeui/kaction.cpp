@@ -50,9 +50,9 @@ int KAction::plug( QWidget *w )
     bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this, SLOT( slotActivated() ),
 		       isEnabled(), text() );
 
-    KToolBarButton *but = bar->getButton( id_ );
+//     KToolBarButton *but = bar->getButton( menuId( id_ ) );
 
-    connect( but, SIGNAL( clicked( int ) ), this, SLOT( slotActivated() ) );
+    //connect( but, SIGNAL( clicked( int ) ), this, SLOT( slotActivated() ) );
 
     addContainer( bar, id_ );
 
@@ -214,11 +214,11 @@ int KToggleAction::plug( QWidget* widget )
 
 void KToggleAction::setChecked( bool c )
 {
-    if ( locked2 )
-	return;
-    locked2 = TRUE;
+//     if ( locked2 )
+// 	return;
+//     locked2 = TRUE;
     checked = c;
-    
+
     int len = containerCount();
     for( int i = 0; i < len; ++i )
     {
@@ -237,7 +237,8 @@ void KToggleAction::setChecked( bool c )
 
     // Uncheck all the other toggle actions in the same group
 
-    locked2 = FALSE;
+    emit activated();
+//     locked2 = FALSE;
 //     QToggleAction::setChecked( checked );
 }
 
@@ -256,8 +257,11 @@ void KToggleAction::slotActivated()
 	    for( ; it.current(); ++it )
 	    {
 		if ( it.current()->inherits( "KToggleAction" ) && it.current() != this &&
-		     ((KToggleAction*)it.current())->exclusiveGroup() == exclusiveGroup() )
+		     ((KToggleAction*)it.current())->exclusiveGroup() == exclusiveGroup() ) {
+ 		    ((KToggleAction*)it.current())->blockSignals( TRUE );
 		    ((KToggleAction*)it.current())->setChecked( FALSE );
+ 		    ((KToggleAction*)it.current())->blockSignals( FALSE );
+		}
 	    }
 	}
     }
