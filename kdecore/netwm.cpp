@@ -2185,7 +2185,7 @@ void NETWinInfo::setDesktop(int desktop) {
 	e.xclient.display = p->display;
 	e.xclient.window = p->window;
 	e.xclient.format = 32;
-	e.xclient.data.l[0] = desktop - 1;
+	e.xclient.data.l[0] = desktop == OnAllDesktops ? OnAllDesktops : desktop - 1;
 	e.xclient.data.l[1] = 0l;
 	e.xclient.data.l[2] = 0l;
 	e.xclient.data.l[3] = 0l;
