@@ -34,6 +34,7 @@
 #include "dom/dom_string.h"
 #include "dom/dom_element.h"
 #include "html/html_documentimpl.h"
+#include "html/html_baseimpl.h"
 #include "html/html_miscimpl.h"
 #include "html/html_imageimpl.h"
 #include "html/htmltokenizer.h"
@@ -1304,7 +1305,8 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   d->m_cacheId = 0;
   d->m_bComplete = false;
 
-  KHTMLFactory::vLinks()->insert( url.prettyURL() );
+  if(url.isValid())
+      KHTMLFactory::vLinks()->insert( url.prettyURL() );
 
   // ###
   //stopParser();
@@ -1344,7 +1346,6 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   d->m_doc->ref();
   d->m_doc->attach( d->m_view );
   d->m_doc->setURL( m_url.url() );
-
 
   d->m_doc->setRestoreState(args.docState);
   d->m_doc->open();
@@ -2457,6 +2458,19 @@ bool KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, cons
   (*it).m_frame = frame;
   (*it).m_params = params;
 
+  if ( url.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
+  {
+      khtml::RenderFrame* rf = dynamic_cast<RenderFrame*>(frame);
+      assert(rf);
+      QVariant res = executeScript( DOM::Node(rf->frameImpl()), url.right( url.length() - 11) );
+      if ( res.type() == QVariant::String ) {
+        KURL myurl;
+        myurl.setProtocol("javascript");
+        myurl.setPath(res.asString());
+        return processObjectRequest(&(*it), myurl, QString("text/html") );
+      }
+      return false;
+  }
   return requestObject( &(*it), completeURL( url ) );
 }
 
@@ -2518,7 +2532,7 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
 
 bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url, const QString &mimetype )
 {
-//  kdDebug( 6050 ) << "trying to create part for " << mimetype << endl;
+    //kdDebug( 6050 ) << "trying to create part for " << mimetype << endl;
 
   // IMPORTANT: create a copy of the url here, because it is just a reference, which was likely to be given
   // by an emitting frame part (emit openURLRequest( blahurl, ... ) . A few lines below we delete the part
@@ -2601,7 +2615,6 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
 
       child->m_extension->setBrowserInterface( d->m_extension->browserInterface() );
     }
-
   }
 
   if ( child->m_bPreloaded )
@@ -2619,8 +2632,20 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
   if ( child->m_extension )
     child->m_extension->setURLArgs( child->m_args );
 
-//  kdDebug( 6050 ) << "opening " << url.url() << " in frame" << endl;
-  return child->m_part->openURL( url );
+  if(url.protocol() == "javascript") {
+      KHTMLPart* p = dynamic_cast<KHTMLPart*>( ((KParts::ReadOnlyPart*) child->m_part));
+      // ### ?
+      if(!p) return false;
+
+      p->begin();
+      p->write(url.path());
+      p->end();
+      return true;
+  }
+  else {
+      //kdDebug( 6050 ) << "opening " << url.url() << " in frame" << endl;
+      return child->m_part->openURL( url );
+  }
 }
 
 KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget, const char *widgetName,
