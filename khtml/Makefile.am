@@ -26,7 +26,7 @@ kde_module_LTLIBRARIES = khtmlimagepart.la
 
 libkhtml_la_SOURCES = khtmlview.cpp khtml_part.cpp khtml_run.cpp khtml_factory.cpp khtml_settings.cc \
 		      khtml_events.cpp khtml_find.cpp khtml_ext.cpp khtml_pagecache.cpp khtml_iface.skel khtml_iface.cc \
-		      khtml_printsettings.cpp
+		      khtml_printsettings.cpp htmlpageinfo.ui
 
 libkhtml_la_METASOURCES = AUTO
 

@@ -230,6 +230,7 @@ public:
   QString m_kjsStatusBarText;
   QString m_kjsDefaultStatusBarText;
   QString m_lastModified;
+  QString m_httpHeaders;
 
   // QStrings for SSL metadata
   // Note: When adding new variables don't forget to update ::saveState()/::restoreState()!
@@ -261,6 +262,7 @@ public:
 
   KAction *m_paViewDocument;
   KAction *m_paViewFrame;
+  KAction *m_paViewInfo;
   KAction *m_paSaveBackground;
   KAction *m_paSaveDocument;
   KAction *m_paSaveFrame;

@@ -270,6 +270,7 @@ public:
   KAction *m_paViewImage;
   KAction *m_paReloadFrame;
   KAction *m_paViewFrameSource;
+  KAction *m_paViewFrameInfo;
 };
 
 
@@ -292,10 +293,13 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
                                       actionCollection(), "reloadframe" );
     d->m_paViewFrameSource = new KAction( i18n( "View Frame Source" ), 0, d->m_khtml, SLOT( slotViewDocumentSource() ),
                                           actionCollection(), "viewFrameSource" );
+    d->m_paViewFrameInfo = new KAction( i18n( "View Frame Information" ), 0, d->m_khtml, SLOT( slotViewPageInfo() ), actionCollection(), "viewPageInfo" );
     // This one isn't in khtml_popupmenu.rc anymore, because Print isn't either,
     // and because print frame is already in the toolbar and the menu.
     // But leave this here, so that it's easy to readd it.
     d->m_paPrintFrame = new KAction( i18n( "Print Frame..." ), "fileprint", 0, d->m_khtml->browserExtension(), SLOT( print() ), actionCollection(), "printFrame" );
+  } else {
+    actionCollection()->insert( khtml->actionCollection()->action( "viewPageInfo" ) );
   }
 
   actionCollection()->insert( khtml->actionCollection()->action( "setEncoding" ) );

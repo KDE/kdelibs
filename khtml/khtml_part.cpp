@@ -50,6 +50,8 @@ using namespace DOM;
 #include "ecma/kjs_proxy.h"
 #include "khtml_settings.h"
 
+#include "htmlpageinfo.h"
+
 #include <sys/types.h>
 #include <assert.h>
 #include <unistd.h>
@@ -166,6 +168,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_bMousePressed = false;
   d->m_paViewDocument = new KAction( i18n( "View Document Source" ), 0, this, SLOT( slotViewDocumentSource() ), actionCollection(), "viewDocumentSource" );
   d->m_paViewFrame = new KAction( i18n( "View Frame Source" ), 0, this, SLOT( slotViewFrameSource() ), actionCollection(), "viewFrameSource" );
+  d->m_paViewInfo = new KAction( i18n( "View Document Information" ), 0, this, SLOT( slotViewPageInfo() ), actionCollection(), "viewPageInfo" );
   d->m_paSaveBackground = new KAction( i18n( "Save &Background Image As..." ), 0, this, SLOT( slotSaveBackground() ), actionCollection(), "saveBackground" );
   d->m_paSaveDocument = new KAction( i18n( "&Save As..." ), CTRL+Key_S, this, SLOT( slotSaveDocument() ), actionCollection(), "saveDocument" );
   if ( parentPart() )
@@ -379,6 +382,7 @@ bool KHTMLPart::openURL( const KURL &url )
   }
 
   args.metaData().insert("main_frame_request", parentPart() == 0 ? "TRUE" : "FALSE" );
+  args.metaData().insert("PropagateHttpHeader", "true");
   args.metaData().insert("ssl_was_in_use", d->m_ssl_in_use ? "TRUE" : "FALSE" );
   args.metaData().insert("ssl_activate_warnings", "TRUE" );
   if (d->m_restored)
@@ -969,6 +973,8 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
     d->m_cacheId = KHTMLPageCache::self()->createCacheEntry();
 
     // When the first data arrives, the metadata has just been made available
+    d->m_httpHeaders = d->m_job->queryMetaData("HTTP-Headers");
+
     d->m_bSecurityInQuestion = false;
     d->m_ssl_in_use = (d->m_job->queryMetaData("ssl_in_use") == "TRUE");
     kdDebug(6050) << "SSL in use? " << d->m_job->queryMetaData("ssl_in_use") << endl;
@@ -2150,6 +2156,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
 
   args.metaData().insert("main_frame_request",
                          parentPart() == 0 ? "TRUE":"FALSE");
+  args.metaData().insert("PropagateHttpHeader", "true");
   args.metaData().insert("ssl_was_in_use", d->m_ssl_in_use ? "TRUE":"FALSE");
   args.metaData().insert("ssl_activate_warnings", "TRUE");
 
@@ -2199,6 +2206,36 @@ void KHTMLPart::slotViewDocumentSource()
   //  emit d->m_extension->openURLRequest( m_url, KParts::URLArgs( false, 0, 0, QString::fromLatin1( "text/plain" ) ) );
   (void) KRun::runURL( url, QString::fromLatin1("text/plain") );
 }
+
+void KHTMLPart::slotViewPageInfo()
+{
+  KHTMLInfoDlg *dlg = new KHTMLInfoDlg(NULL, "KHTML Page Info Dialog", false, WDestructiveClose);
+
+  if (d->m_doc)
+     dlg->_title->setText(d->m_doc->title().string());
+
+  // If it's a frame, set the caption to "Frame Information"
+  if ( parentPart() && d->m_doc && d->m_doc->isHTMLDocument() ) {
+     dlg->setCaption(i18n("Frame Information"));
+  }
+
+  dlg->_url->setText(QString("<a href=\"%1\">%2</a>").arg(url().url()).arg(url().prettyURL()));
+  dlg->_lastModified->setText(d->m_lastModified);
+
+  /* populate the list view now */
+  QStringList headers = QStringList::split("\n", d->m_httpHeaders);
+
+  for (QStringList::Iterator it = headers.begin(); it != headers.end(); ++it) {
+    QStringList header = QStringList::split(QRegExp(":[ ]+"), *it);
+    if (header.count() != 2)
+       continue;
+    new QListViewItem(dlg->_headers, header[0], header[1]);
+  }
+
+  dlg->show();
+  /* put no code here */
+}
+
 
 void KHTMLPart::slotViewFrameSource()
 {
@@ -2481,6 +2518,7 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
   if (!d->m_referrer.isEmpty() && !child->m_args.metaData().contains( "referrer" ))
     child->m_args.metaData()["referrer"] = d->m_referrer;
 
+  child->m_args.metaData().insert("PropagateHttpHeader", "true");
   child->m_args.metaData().insert("main_frame_request",
                                   parentPart() == 0 ? "TRUE":"FALSE");
   child->m_args.metaData().insert("ssl_was_in_use",
@@ -2810,6 +2848,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
   if (!d->m_referrer.isEmpty())
      args.metaData()["referrer"] = d->m_referrer;
 
+  args.metaData().insert("PropagateHttpHeader", "true");
   args.metaData().insert("main_frame_request",
                          parentPart() == 0 ? "TRUE":"FALSE");
   args.metaData().insert("ssl_was_in_use", d->m_ssl_in_use ? "TRUE":"FALSE");
@@ -3177,6 +3216,8 @@ void KHTMLPart::saveState( QDataStream &stream )
 
   stream << d->m_zoomFactor;
 
+  stream << d->m_httpHeaders;
+
   // Save ssl data
   stream << d->m_ssl_in_use
          << d->m_ssl_peer_certificate
@@ -3252,6 +3293,8 @@ void KHTMLPart::restoreState( QDataStream &stream )
   int zoomFactor;
   stream >> zoomFactor;
   setZoomFactor(zoomFactor);
+
+  stream >> d->m_httpHeaders;
 
   // Restore ssl data
   stream >> d->m_ssl_in_use

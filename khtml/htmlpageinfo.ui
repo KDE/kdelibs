@@ -1,0 +1,232 @@
+<!DOCTYPE UI><UI version="3.0" stdsetdef="1">
+<class>KHTMLInfoDlg</class>
+<comment>A dialog to display the HTTP headers for a given page.</comment>
+<author>George Staikos &lt;staikos@kde.org&gt;</author>
+<widget class="QDialog">
+    <property name="name">
+        <cstring>HTMLPageInfo</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>600</width>
+            <height>519</height>
+        </rect>
+    </property>
+    <property name="sizePolicy">
+        <sizepolicy>
+            <hsizetype>7</hsizetype>
+            <vsizetype>5</vsizetype>
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+        </sizepolicy>
+    </property>
+    <property name="caption">
+        <string>Page Information</string>
+    </property>
+    <grid>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <property name="margin">
+            <number>11</number>
+        </property>
+        <property name="spacing">
+            <number>6</number>
+        </property>
+        <widget class="QLabel" row="0" column="0">
+            <property name="name">
+                <cstring>TextLabel2</cstring>
+            </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>0</hsizetype>
+                    <vsizetype>0</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
+            </property>
+            <property name="text">
+                <string>Title:</string>
+            </property>
+            <property name="buddy" stdset="0">
+                <cstring>_title</cstring>
+            </property>
+        </widget>
+        <widget class="KActiveLabel" row="1" column="1" rowspan="1" colspan="3">
+            <property name="name">
+                <cstring>_url</cstring>
+            </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>7</hsizetype>
+                    <vsizetype>5</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
+            </property>
+        </widget>
+        <widget class="QLabel" row="1" column="0">
+            <property name="name">
+                <cstring>TextLabel1</cstring>
+            </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>0</hsizetype>
+                    <vsizetype>0</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
+            </property>
+            <property name="text">
+                <string>URL:</string>
+            </property>
+            <property name="buddy" stdset="0">
+                <cstring>_url</cstring>
+            </property>
+        </widget>
+        <widget class="QLabel" row="0" column="1" rowspan="1" colspan="3">
+            <property name="name">
+                <cstring>_title</cstring>
+            </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>7</hsizetype>
+                    <vsizetype>5</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
+            </property>
+        </widget>
+        <widget class="QListView" row="4" column="0" rowspan="1" colspan="4">
+            <column>
+                <property name="text">
+                    <string>Property</string>
+                </property>
+                <property name="clickable">
+                    <bool>true</bool>
+                </property>
+                <property name="resizeable">
+                    <bool>true</bool>
+                </property>
+            </column>
+            <column>
+                <property name="text">
+                    <string>Value</string>
+                </property>
+                <property name="clickable">
+                    <bool>true</bool>
+                </property>
+                <property name="resizeable">
+                    <bool>true</bool>
+                </property>
+            </column>
+            <property name="name">
+                <cstring>_headers</cstring>
+            </property>
+            <property name="selectionMode">
+                <enum>NoSelection</enum>
+            </property>
+        </widget>
+        <widget class="QLabel" row="3" column="0" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>TextLabel6</cstring>
+            </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>0</hsizetype>
+                    <vsizetype>0</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
+            </property>
+            <property name="text">
+                <string>HTTP Headers:</string>
+            </property>
+            <property name="buddy" stdset="0">
+                <cstring>_headers</cstring>
+            </property>
+        </widget>
+        <widget class="QLabel" row="2" column="2" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>_lastModified</cstring>
+            </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>7</hsizetype>
+                    <vsizetype>5</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
+            </property>
+        </widget>
+        <widget class="QLabel" row="2" column="0" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>TextLabel4</cstring>
+            </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>0</hsizetype>
+                    <vsizetype>0</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
+            </property>
+            <property name="text">
+                <string>Last Modified:</string>
+            </property>
+            <property name="buddy" stdset="0">
+                <cstring>_lastModified</cstring>
+            </property>
+        </widget>
+        <spacer row="5" column="0" rowspan="1" colspan="3">
+            <property name="name" stdset="0">
+                <cstring>Spacer3</cstring>
+            </property>
+            <property name="orientation">
+                <enum>Horizontal</enum>
+            </property>
+            <property name="sizeType">
+                <enum>Expanding</enum>
+            </property>
+            <property name="sizeHint">
+                <size>
+                    <width>20</width>
+                    <height>20</height>
+                </size>
+            </property>
+        </spacer>
+        <widget class="KPushButton" row="5" column="3">
+            <property name="name">
+                <cstring>_close</cstring>
+            </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>0</hsizetype>
+                    <vsizetype>5</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
+            </property>
+            <property name="text">
+                <string>&amp;Close</string>
+            </property>
+        </widget>
+    </grid>
+</widget>
+<connections>
+    <connection>
+        <sender>_close</sender>
+        <signal>clicked()</signal>
+        <receiver>HTMLPageInfo</receiver>
+        <slot>close()</slot>
+    </connection>
+</connections>
+<includes>
+    <include location="global" impldecl="in declaration">qlistview.h</include>
+    <include location="global" impldecl="in declaration">kactivelabel.h</include>
+    <include location="global" impldecl="in declaration">qlabel.h</include>
+</includes>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>

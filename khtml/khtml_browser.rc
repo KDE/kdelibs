@@ -16,6 +16,7 @@
  <Menu name="view"><text>&amp;View</text>
   <Action name="viewDocumentSource" />
   <Action name="viewFrameSource" />
+  <Action name="viewPageInfo" />
   <Action name="security" />
   <Action name="setEncoding" />
   <Action name="useStylesheet" />

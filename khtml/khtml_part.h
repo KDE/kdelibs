@@ -868,6 +868,10 @@ private slots:
   /**
    * @internal
    */
+  void slotViewPageInfo();
+  /**
+   * @internal
+   */
   virtual void slotSaveBackground();
   /**
    * @internal
