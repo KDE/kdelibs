@@ -43,6 +43,7 @@
 #include <qdatetime.h>
 #include <qtimer.h>
 #include <qmutex.h>
+#include <qguardedptr.h>
 
 // IDN
 #ifdef HAVE_IDNA_H
@@ -541,10 +542,12 @@ void QResolver::emitFinished()
   if (isRunning())
     d->status = QResolver::Success;
 
+  QGuardedPtr<QObject> p = this; // guard against deletion
+
   if (d->emitSignal)
     emit finished(d->results);
 
-  if (d->deleteWhenDone)
+  if (p && d->deleteWhenDone)
     deleteLater();		// in QObject
 }
 
