@@ -1011,7 +1011,6 @@ class KDialogBase : public KDialog
      *
      * @since 3.3
      */
-
     void setButtonGuiItem( ButtonCode id, const KGuiItem &item );
 
     /**
