@@ -235,22 +235,18 @@ void HCStyle::polish(QPalette &)
     }
 
     QColorGroup g = pal.active();
-    tmpColor = g.background();
+    QColor high = g.background().light(110);
+    QColor low = g.background().dark(110);
     if(vSmall){
-        KPixmapEffect::gradient(*vSmall, g.midlight(),
-                                g.mid(),
+        KPixmapEffect::gradient(*vSmall, high, low,
                                 KPixmapEffect::VerticalGradient);
-        KPixmapEffect::gradient(*vMed, g.midlight(),
-                                g.mid(),
+        KPixmapEffect::gradient(*vMed, high, low,
                                 KPixmapEffect::VerticalGradient);
-        KPixmapEffect::gradient(*vLarge, g.midlight(),
-                                g.mid(),
+        KPixmapEffect::gradient(*vLarge, high, low,
                                 KPixmapEffect::VerticalGradient);
-        KPixmapEffect::gradient(*hMed, g.midlight(),
-                                g.mid(),
+        KPixmapEffect::gradient(*hMed, high, low,
                                 KPixmapEffect::HorizontalGradient);
-        KPixmapEffect::gradient(*hLarge, g.midlight(),
-                                g.mid(),
+        KPixmapEffect::gradient(*hLarge, high, low,
                                 KPixmapEffect::HorizontalGradient);
     }
     QString tmpStr = config->readEntry("CustomWallpaper", "");
@@ -1245,7 +1241,7 @@ void HCStyle::drawKMenuBar(QPainter *p, int x, int y, int w, int h,
     else{
         qDrawShadePanel(p, x, y, w, h, g, false, 1);
         if(vSmall)
-            drawVGradient(p, g.brush(QColorGroup::Mid), x+1, y+1, w-2, h-1);
+            drawVGradient(p, g.brush(QColorGroup::Mid), x+1, y+1, w-2, h-2);
         else
             p->fillRect(x+1, y+1, w-2, h-2, g.brush(QColorGroup::Background));
     }
