@@ -3052,6 +3052,7 @@ bool HTTPProtocol::readHeader()
   // Do we want to cache this request?
   if (m_bUseCache)
   {
+     ::unlink( QFile::encodeName(m_state.cef));
      if ( m_bCachedWrite && !m_strMimeType.isEmpty() )
      {
         // Check...
@@ -3059,10 +3060,6 @@ bool HTTPProtocol::readHeader()
         if (!m_fcache)
            m_bCachedWrite = false; // Error creating cache entry.
         m_expireDate = expireDate;
-     }
-     else
-     {
-        ::unlink( QFile::encodeName(m_state.cef));
      }
   }
 
