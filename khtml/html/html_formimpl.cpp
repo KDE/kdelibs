@@ -556,8 +556,6 @@ void HTMLButtonElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_ONBLUR:
         // ignore for the moment
         break;
-//    case ATTR_NAME:
-        // handled by parent class...
     default:
         HTMLGenericFormElementImpl::parseAttribute(attr);
     }
@@ -798,8 +796,6 @@ void HTMLInputElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_ALIGN:
         addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value(), false);
         break;
-//    case ATTR_NAME:
-        // handled by parent class...
     case ATTR_WIDTH:
         addCSSProperty(CSS_PROP_WIDTH, attr->value(), false);
         break;
@@ -1592,9 +1588,11 @@ void HTMLTextAreaElementImpl::parseAttribute(AttrImpl *attr)
         m_cols = attr->val() ? attr->val()->toInt() : 60;
         break;
     case ATTR_WRAP:
-        if ( strcasecmp( attr->value(), "virtual" ) == 0 )
+        // virtual / physical is Netscape extension of HTML 3.0, now deprecated
+        // soft/ hard / off is recommendation for HTML 4 extension by IE and NS 4
+        if ( strcasecmp( attr->value(), "virtual" ) == 0  || strcasecmp( attr->value(), "soft") == 0)
             m_wrap = ta_Virtual;
-        else if ( strcasecmp ( attr->value(), "physical" ) == 0)
+        else if ( strcasecmp ( attr->value(), "physical" ) == 0 || strcasecmp( attr->value(), "hard") == 0)
             m_wrap = ta_Physical;
         else
             m_wrap = ta_NoWrap;
@@ -1609,8 +1607,6 @@ void HTMLTextAreaElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_ONCHANGE:
         // no need to parse
         break;
-//    case ATTR_NAME:
-        // handled by parent class...
     default:
         HTMLGenericFormElementImpl::parseAttribute(attr);
     }
