@@ -68,14 +68,20 @@
 0	string		RIFF		audio/unknown
 #					- WAVE format
 >8	string		WAVE		audio/x-wav
-# AVI                                   - AVI format
+#                                   	- AVI format
 >8	string		AVI\ 		video/x-msvideo
-#
+
+# Microsoft ASF formats (Smoke this magic-shit baby!)
+# ASF_Header_Object
+0	string  \x30\x26\xB2\x75\x8E\x66\xCF\x11\xA6\xD9\x00\xAA\x00\x62\xCE\x6C video/x-ms-asf
+
+# Realaudio
 0	belong		0x2e7261fd	application/x-pn-realaudio
 
 # MPEG Layer 3 sound files
 # Modified the 11/20/97 at 15:59:04 by Christophe Prud'homme <christophe.prudhomme@asci.fr>
 0       belong          0xfffb          audio/x-mp3
+# FIXME: Not all ID3v2 tagged files are mp3
 0       string          ID3             audio/x-mp3
 
 # OGG files
