@@ -1,16 +1,17 @@
 SUBDIRS = libxslt
 
-INCLUDES= $(all_includes) -I$(top_srcdir)/kio -I$(top_srcdir) $(LIBXML_CFLAGS)
+INCLUDES= $(all_includes) -I$(top_srcdir)/kio -I$(top_srcdir) -I$(top_srcdir)/kio/gzip -I$(top_srcdir)/kio/bzip2 $(LIBXML_CFLAGS) 
 LDFLAGS = $(all_libraries) $(KDE_RPATH) $(LIBXML_RPATH)
-AM_CPPFLAGS = -DSRCDIR="\"$(shell (cd $(srcdir) && pwd))\"" 
+AM_CPPFLAGS = -DSRCDIR="\"$(shell (cd $(srcdir) && pwd))\""  -DTOP_BUILDDIR=\"$(shell (cd $(top_builddir) && pwd))\"
 
-FILTER_LIBS = $(top_builddir)/kio/gzip/kgzipfilter.la $(BZIP2_FILTER) $(LIB_KSYCOCA)
+FILTER_LIBS = $(LIB_KSYCOCA) $(LIBBZ2)
+FILTER_SOURCES = kgzipfilter.cpp kbzip2filter.cpp
 
 ####### Files
 
 kde_module_LTLIBRARIES = kio_help.la
 
-kio_help_la_SOURCES = kio_help.cpp main.cpp xslt.cpp
+kio_help_la_SOURCES = $(FILTER_SOURCES) kio_help.cpp main.cpp xslt.cpp
 kio_help_la_LIBADD = $(FILTER_LIBS) libxslt/libxslt.la
 kio_help_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
 noinst_HEADERS = kio_help.h
@@ -20,10 +21,10 @@ kdelnkdir = $(kde_servicesdir)
 
 bin_PROGRAMS = meinproc checkXML xml2man
 meinproc_LDADD = xslt_pure.o libxslt/libxslt.la $(FILTER_LIBS)
-meinproc_SOURCES = meinproc.cpp
+meinproc_SOURCES = meinproc.cpp $(FILTER_SOURCES)
 
 xml2man_LDADD = xslt_pure.o libxslt/libxslt.la $(FILTER_LIBS)
-xml2man_SOURCES = xml2man.cpp
+xml2man_SOURCES = xml2man.cpp $(FILTER_SOURCES)
 
 xslt_pure.o: xslt.cpp
 	-rm -f xslt_pure.cpp
@@ -31,7 +32,7 @@ xslt_pure.o: xslt.cpp
 	$(CXXCOMPILE) -DSIMPLE_XSLT -c xslt_pure.cpp
 	-rm -f xslt_pure.cpp
 
-checkXML_SOURCES = checkXML.cpp xslt.cpp kio_help.cpp
+checkXML_SOURCES = $(FILTER_SOURCES) checkXML.cpp xslt.cpp kio_help.cpp
 checkXML_LDADD = libxslt/libxslt.la $(FILTER_LIBS)
 
 bin_SCRIPTS = xmlizer kdb2html
@@ -57,3 +58,8 @@ uninstall-local:
 	-rm -rf $(DESTDIR)$(kde_datadir)/ksgmltools2/customization	
 	-rm -rf $(DESTDIR)$(kde_datadir)/ksgmltools2/docbook
 
+kgzipfilter.cpp: 
+	$(LN_S) $(srcdir)/../kio/gzip/kgzipfilter.cpp .
+
+kbzip2filter.cpp:
+	$(LN_S) $(srcdir)/../kio/bzip2/kbzip2filter.cpp .

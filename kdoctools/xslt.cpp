@@ -16,9 +16,9 @@
 #include <qtextcodec.h>
 #include <stdlib.h>
 #include <config.h>
-
-#include "bzip2/kbzip2filter.h"
-#include "gzip/kgzipfilter.h"
+#include <klibloader.h>
+#include <gzip/kgzipfilter.h>
+#include <bzip2/kbzip2filter.h>
 
 #if !defined( SIMPLE_XSLT )
 extern HelpProtocol *slave;
@@ -214,21 +214,29 @@ QString splitOut(const QString &parsed, int index)
 }
 
 void fillInstance(KInstance &ins) {
-    if ( !getenv( "KDELIBS_UNINSTALLED" ) )
+    if ( !getenv( "KDELIBS_UNINSTALLED" ) ) {
         ins.dirs()->addResourceType("dtd", KStandardDirs::kde_default("data") + "ksgmltools2/");
+    }
     ins.dirs()->addResourceDir( "dtd", SRCDIR );
 }
 
+static KFilterBase *filter = 0;
+
 static KFilterBase *findFilterByFileName( const QString &filename )
 {
+    if ( filter )
+        return filter;
+
     if ( filename.right( 4 ) == ".bz2" ) {
 #if defined( HAVE_BZIP2_SUPPORT )
-        return new KBzip2Filter;
+        filter = new KBzip2Filter;
 #endif
     }
 
-    // we return gzip in any case
-    return new KGzipFilter;
+    if ( !filter )
+        filter = new KGzipFilter;
+
+    return filter;
 }
 
 bool saveToCache( const QString &contents, const QString &filename )

@@ -20,6 +20,8 @@
 
 #include <config.h>
 
+#if defined( HAVE_BZIP2_SUPPORT )
+
 // we don't need that
 #define BZ_NO_STDIO
 extern "C" {
@@ -186,3 +188,5 @@ KBzip2Filter::Result KBzip2Filter::compress( bool finish )
                 break;
     }
 }
+
+#endif
