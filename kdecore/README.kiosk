@@ -207,6 +207,11 @@ action/openwith
 action/openintab
 action/openintabfront
 
+Konsole related:
+action/settings // Settings menu
+action/send_signal 
+action/konsole_rmb // RMB context menu
+
 Notes:
 * action/options_show_toolbar will also disable the "Toolbars" submenu
   if present.
