@@ -207,6 +207,7 @@ private slots:
 #endif // KHTML_NO_TYPE_AHEAD_FIND
 
 private:
+
     void scheduleRelayout(khtml::RenderObject* clippedObj=0);
     void unscheduleRelayout();
 
@@ -215,7 +216,6 @@ private:
 
     void closeChildDialogs();
     bool dialogsAllowed();
-    void findAhead(bool increase);
 
     /**
      * Paints the HTML document to a QPainter.
@@ -270,6 +270,10 @@ private:
     bool dispatchKeyEventHelper( QKeyEvent *_ke, bool generate_keypress );
 
     void complete();
+
+#ifndef KHTML_NO_TYPE_AHEAD_FIND
+    void findAhead(bool increase);
+#endif // KHTML_NO_TYPE_AHEAD_FIND
 
 #ifndef KHTML_NO_CARET
     // -- caret-related member functions (for caretMode as well as designMode)
