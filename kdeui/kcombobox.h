@@ -84,6 +84,10 @@ class KURL;
  * KCompletion *comp = combo->completionObject();
  * // Connect to the return pressed signal - optional
  * connect(combo,SIGNAL(returnPressed(const QString&)),comp,SLOT(addItem(const QString&));
+ *
+ * // Provide the to be completed strings. Note that those are separate from the combo's
+ * // contents.
+ * comp->insertItems( someQStringList );
  * </pre>
  *
  * To use your own completion object:
@@ -109,10 +113,6 @@ class KURL;
  * combo->setKeyBinding( KCompletionBase::TextCompletion, Qt::End );
  * // Hide the context (popup) menu
  * combo->setContextMenuEnabled( false );
- * // Temporarly disable signal emition
- * combo->disableSignals();
- * // Default the all key-bindings to their system-wide settings.
- * combo->useGlobalKeyBindings();
  * </pre>
  *
  * @short An enhanced combo box.
