@@ -37,7 +37,7 @@ KMConfigCupsDir::KMConfigCupsDir(QWidget *parent)
 
 	QGroupBox	*m_dirbox = new QGroupBox(0, Qt::Vertical, i18n("Installation Directory"), this);
 	m_installdir = new KURLRequester(m_dirbox);
-	m_installdir->fileDialog()->setMode((KFile::Mode)(KFile::Directory|KFile::ExistingOnly|KFile::LocalOnly));
+	m_installdir->setMode((KFile::Mode)(KFile::Directory|KFile::ExistingOnly|KFile::LocalOnly));
 	m_stddir = new QCheckBox(i18n("Standard installation (/)"), m_dirbox);
 	m_stddir->setCursor(KCursor::handCursor());
 
