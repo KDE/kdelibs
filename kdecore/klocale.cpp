@@ -42,6 +42,13 @@ char *k_bindtextdomain (const char *__domainname,
 #include <kapp.h>
 #include <Kconfig.h>
 
+#if !HAVE_LC_MESSAGES
+/* This value determines the behaviour of the gettext() and dgettext()
+   function.  But some system does not have this defined.  Define it
+   to a default value.  */
+# define LC_MESSAGES (-1)
+#endif
+ 
 #define SYSTEM_MESSAGES "kde"
 
 KLocale *KLocale::pLocale = NULL;
