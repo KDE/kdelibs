@@ -25,6 +25,7 @@ libkio_la_LDFLAGS = -version-info 3:0
 libkio_la_LIBADD = ../kdeui/libkdeui.la
 
 libkio_la_SOURCES = \
+	kio_openwith.cpp ktraderparsetree.cpp \
 	ksycoca.cpp ksycocadict.cpp ksycocafactory.cpp \
         kservicetypefactory.cpp kservicetype.cpp \
 	kmimetype.cpp kmimemagic.cpp \
@@ -32,11 +33,11 @@ libkio_la_SOURCES = \
 	kautomount.cpp kdirwatch.cpp kio_base.cpp kio_cache.cpp \
 	kio_connection.cpp kio_dlg.cpp kio_error.cpp kio_filter.cpp \
 	kio_interface.cpp kio_job.cpp kio_listprogress_dlg.cpp \
-	kio_littleprogress_dlg.cpp kio_netaccess.cpp kio_openwith.cpp \
+	kio_littleprogress_dlg.cpp kio_netaccess.cpp \
 	kio_pass_dlg.cpp kio_paste.cpp kio_rename_dlg.cpp kio_simpleprogress_dlg.cpp \
 	kio_skip_dlg.cpp kpixmapcache.cpp krun.cpp ktar.cpp \
 	kuserpaths.cpp kuserprofile.cpp \
-	ktrader.cpp ktraderparse.cpp ktraderparsetree.cpp \
+	ktrader.cpp ktraderparse.cpp \
 	yacc.c lex.c
 
 libkio_la_METASOURCES = AUTO
