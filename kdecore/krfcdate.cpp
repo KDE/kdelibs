@@ -351,7 +351,7 @@ KRFCDate::parseDateISO8601( const QString& input)
   min    = l[1].toUInt();
   sec    = l[2].toUInt();
 
-  time_t result = ymdhms_to_seconds(year, month+1, mday, hour, min, sec);
+  time_t result = ymdhms_to_seconds(year, month, mday, hour, min, sec);
 
   // avoid negative time values
   if ((offset > 0) && (offset > result))
