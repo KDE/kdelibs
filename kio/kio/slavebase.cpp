@@ -391,6 +391,12 @@ void SlaveBase::processedSize( KIO::filesize_t _bytes )
     d->processed_size = _bytes;
 }
 
+void SlaveBase::processedPercent( float /* percent */ )
+{
+  kdDebug(7019) << "SlaveBase::processedPercent: STUB" << endl;
+}
+
+
 void SlaveBase::speed( unsigned long _bytes_per_second )
 {
     KIO_DATA << _bytes_per_second;

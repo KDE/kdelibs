@@ -170,6 +170,19 @@ public:
     void processedSize( KIO::filesize_t _bytes );
 
     /**
+     * Only use this if you can't know in advance the size of the
+     * copied data. For example, if you're doing variable bitrate
+     * compression of the source.
+     *
+     * STUB ! Currently unimplemented. Here now for binary compatibility.
+     *
+     * Call this during @ref get and @ref copy, once in a while,
+     * to give some info about the current state.
+     * Don't emit it in @ref listDir, @ref listEntries speaks for itself.
+     */
+    void processedPercent( float percent );
+
+    /**
      * Call this in @ref get and @ref copy, to give the current transfer
      * speed, but only if it can't be calculated out of the size you 
      * passed to processedSize (in most cases you don't want to call it)
