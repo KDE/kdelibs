@@ -109,7 +109,18 @@ KUniqueApplication::start()
         pid.setNum(getpid());
         appName = appName + "-" + pid;
      }
-     dcopClient()->registerAs(appName, false );
+
+     // Check to make sure that we're actually able to register with the DCOP
+     // server.
+
+     if(dcopClient()->registerAs(appName, false).isEmpty()) {
+        startKdeinit();
+        if(dcopClient()->registerAs(appName, false).isEmpty()) {
+           kdError() << "KUniqueApplication: Can't setup DCOP communication." << endl;
+           ::exit(255);
+        }           
+     }
+
      // We'll call newInstance in the constructor. Do nothing here.
      return true;
   }
