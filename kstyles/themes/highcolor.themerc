@@ -1,6 +1,6 @@
 [Misc]
 Name=HighColor Default
-Name[af]=hoë-kleur verstek
+Name[af]=Hoë-kleur Verstek
 Name[ar]=مظهر عالي الألوان
 Name[az]=Əsas Yüksək Rəngli
 Name[bg]=HiColor по подразбиране
@@ -57,7 +57,7 @@ Name[zh_CN]=默认的高色彩
 Name[zh_TW]=預設的高彩
 Name[zu]=Umbala Ophezulu Ongaqedekanga
 Comment=Highcolor version of the default style
-Comment[af]=hoë-kleur weergawe van die verstek styl
+Comment[af]=Hoë-kleur weergawe van die verstek styl
 Comment[ar]=النسخة عالية الألوان من المظهر الإفتراضي
 Comment[az]=Əsas tərzin yüksək rəngli buraxılışı
 Comment[bg]=Стил по подразбиране с много цветове
