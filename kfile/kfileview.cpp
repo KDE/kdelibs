@@ -204,7 +204,7 @@ KFileViewItem *KFileView::mergeLists(KFileViewItem *list1, KFileViewItem *list2)
 	return list1;
 
     // We can't have the same item twice in the list. If the assertion fails,
-    // there is a bug somewhere else, e.g. you tried to add an item which is 
+    // there is a bug somewhere else, e.g. you tried to add an item which is
     // already there.
     ASSERT( list1 != list2 );
 
@@ -246,6 +246,9 @@ KFileViewItem *KFileView::mergeLists(KFileViewItem *list1, KFileViewItem *list2)
 
 void KFileView::setSorting(QDir::SortSpec new_sort)
 {
+    if ( mySorting == new_sort )
+	return;
+    
     mySorting = new_sort;
 
     if ( count() > 1 ) {

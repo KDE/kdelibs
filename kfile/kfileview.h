@@ -139,9 +139,12 @@ public:
       * Don't use QDir::Reversed, use @ref sortReversed() if you want to
       * reverse the sort order.
       * Calling this method keeps the reversed-setting
+      * If your view wants to get notified about sorting-changes (e.g. to show
+      * a sorting indicator), override this method and call this implementation
+      * in the beginning of your method.
       * @see #setSortMode
       **/
-    void setSorting(QDir::SortSpec sort); // a little bit complexer
+    virtual void setSorting(QDir::SortSpec sort);
 
     /**
       * Increasing means greater indicies means bigger values
@@ -169,7 +172,7 @@ public:
      * Toggles the current sort order, i.e. the order is reversed.
      * @see #isReversed
      */
-    void sortReversed();
+    virtual void sortReversed();
 
     /**
      * Tells whether the current items are in reversed order (= contrary to

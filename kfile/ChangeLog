@@ -1,3 +1,12 @@
+Sat Feb 12 15:30:40 2000  Carsten Pfeiffer  <pfeiffer@kde.org>
+
+	* kfileview.h:
+	made setSorting() and sortReversed() virtual so that subclasses
+	can intercept that to show sorting order
+	
+	* kfiledetailview.cpp,h (setSortIndicator): 
+	enable header-clicking again to set the sorting
+
 Fri Feb 11 12:17:59 2000  Carsten Pfeiffer  <pfeiffer@kde.org>
 
 	* kfiledialog.cpp (KFileDialog): 

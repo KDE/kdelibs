@@ -29,6 +29,13 @@
 #include <kfileviewitem.h>
 #include <klocale.h>
 
+#define COL_NAME 0
+#define COL_SIZE 1
+#define COL_PERM 2
+#define COL_DATE 3
+#define COL_OWNER 4
+#define COL_GROUP 5
+
 KFileDetailView::KFileDetailView(QWidget *parent, const char *name)
     : KListView(parent, name), KFileView()
 {
@@ -44,7 +51,13 @@ KFileDetailView::KFileDetailView(QWidget *parent, const char *name)
     addColumn( i18n( "Group" ) );
     setShowSortIndicator( TRUE );
     setAllColumnsShowFocus( TRUE );
-    header()->setClickEnabled( false );
+
+    QHeader *h = header();
+    h->setClickEnabled( false, COL_PERM );
+    h->setClickEnabled( false, COL_OWNER);
+    h->setClickEnabled( false, COL_GROUP );
+    connect( h, SIGNAL( sectionClicked(int)), SLOT(slotSortingChanged(int) ));
+
 
     connect( this, SIGNAL( doubleClicked(QListViewItem *) ),
 	     SLOT( selected( QListViewItem *) ) );
@@ -56,10 +69,12 @@ KFileDetailView::KFileDetailView(QWidget *parent, const char *name)
 	     this, SLOT( rightButtonPressed ( QListViewItem * )));
     /*
       if ( KFileView::selectMode() == KFileView::Single )
-      QListView::setSelectionMode( QListView::Single );
+      KListView::setSelectionMode( QListView::Single );
       else
-      QListView::setSelectionMode( QListView::Extended );
+      KListView::setSelectionMode( QListView::Extended );
     */
+
+    setSorting( sorting() );
 }
 
 KFileDetailView::~KFileDetailView()
@@ -75,15 +90,15 @@ void KFileDetailView::highlightItem( const KFileViewItem *info )
     KFileListViewItem *item = (KFileListViewItem*)info->viewItem( this );
 
     if ( item != currentItem() ) {
-        QListView::setCurrentItem( item );
-	QListView::ensureItemVisible( item );
+        KListView::setCurrentItem( item );
+	KListView::ensureItemVisible( item );
 	setSelected( item, TRUE );
     }
 }
 
 void KFileDetailView::clearSelection()
 {
-    QListView::clearSelection();
+    KListView::clearSelection();
 }
 
 void KFileDetailView::rightButtonPressed ( QListViewItem *item )
@@ -98,7 +113,7 @@ void KFileDetailView::rightButtonPressed ( QListViewItem *item )
 
 void KFileDetailView::clearView()
 {
-    QListView::clear();
+    KListView::clear();
     myLastItem = 0L;
 }
 
@@ -143,9 +158,9 @@ void KFileDetailView::setSelectMode( KFileView::SelectionMode sm )
     KFileView::setSelectMode( sm );
     /*
       if ( KFileView::selectMode() == KFileView::Single )
-      QListView::setSelectionMode( QListView::Single );
+      KListView::setSelectionMode( QListView::Single );
       else
-      QListView::setSelectionMode( QListView::Extended );
+      KListView::setSelectionMode( QListView::Extended );
     */
 }
 
@@ -162,11 +177,20 @@ void KFileDetailView::updateView( bool b )
 {
     if ( !b )
 	return;
+
+    // hack to make it not flicker
+    qApp->processEvents();
+    viewport()->setUpdatesEnabled( false );
+
     QListViewItemIterator it( (QListView*)this );
     for ( ; it.current(); ++it ) {
-	KFileListViewItem *item = static_cast<KFileListViewItem *>( it.current() );
+	KFileListViewItem *item=static_cast<KFileListViewItem *>(it.current());
 	item->setPixmap( 0, const_cast<KFileViewItem*>( item->fileInfo() )->pixmap() );
     }
+
+    qApp->processEvents();
+    viewport()->setUpdatesEnabled( true );
+    viewport()->repaint();
 }
 
 void KFileDetailView::updateView( const KFileViewItem *i )
@@ -185,6 +209,77 @@ void KFileDetailView::updateView( const KFileViewItem *i )
     qApp->processEvents();
     viewport()->setUpdatesEnabled( true );
     item->repaint(); // only repaints if visible
+}
+
+
+void KFileDetailView::slotSortingChanged( int col )
+{
+    KListView::setSorting( -1 );
+    QDir::SortSpec sort = sorting();
+    int sortSpec = -1;
+    bool reversed = false;
+
+    switch( col ) {
+    case COL_NAME:
+	if ( (sort & QDir::Size) == 0 && (sort & QDir::Time) == 0 )
+	    reversed = true;
+	else
+	    sortSpec = sort & ~QDir::SortByMask | QDir::Name;
+	break;
+    case COL_SIZE:
+	if ( (sort & QDir::Size) == QDir::Size )
+	    reversed = true;
+	else
+	    sortSpec = sort & ~QDir::SortByMask | QDir::Size;
+	break;
+    case COL_DATE:
+	if ( (sort & QDir::Time) == QDir::Time )
+	    reversed = true;
+	else
+	    sortSpec = sort & ~QDir::SortByMask | QDir::Time;
+	break;
+    default: // FIXME sort by group.... only this view can do this for now
+	break;
+    }
+
+    if ( sortSpec != -1 )
+	KFileView::setSorting( static_cast<QDir::SortSpec>( sortSpec ) );
+
+    if ( reversed )
+	sortReversed();
+    else
+	header()->setSortIndicator( col, !isReversed() );
+}
+
+
+void KFileDetailView::setSorting( QDir::SortSpec spec )
+{
+    KFileView::setSorting( spec );
+    setSortIndicator();
+}
+
+
+void KFileDetailView::sortReversed()
+{
+    KFileView::sortReversed();
+    setSortIndicator();
+
+}
+
+
+void KFileDetailView::setSortIndicator()
+{
+    QDir::SortSpec spec = sorting();
+    int col = -1;
+
+    if ( (spec & QDir::Size) == QDir::Size )
+	col = COL_SIZE;
+    else if (  (spec & QDir::Time) == QDir::Time )
+	col = COL_DATE;
+    else if ( (spec & QDir::Name) == QDir::Name )
+	col = COL_NAME;
+
+    header()->setSortIndicator( col, !isReversed() );
 }
 
 #include "kfiledetailview.moc"

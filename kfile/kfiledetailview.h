@@ -74,13 +74,19 @@ public:
     virtual void clearSelection();
     virtual bool isSelected(const KFileViewItem *i) const;
 
+    // implemented to get noticed about sorting changes (for sortingIndicator)
+    void setSorting( QDir::SortSpec );
+    void sortReversed();
+
 protected:
     virtual void highlightItem(const KFileViewItem *);
     virtual void insertItem( KFileViewItem *i );
-    
+    void setSortIndicator();
+
     QListViewItem *myLastItem;
 
 private slots:
+    void slotSortingChanged( int );
     void selected( QListViewItem *item );
     void highlighted( QListViewItem *item );
     void rightButtonPressed ( QListViewItem *item );
