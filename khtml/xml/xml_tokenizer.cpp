@@ -128,7 +128,7 @@ bool XMLHandler::startCDATA()
     if (m_currentNode->nodeType() == Node::TEXT_NODE)
         exitText();
 
-    NodeImpl *newNode = m_doc->document()->createCDATASection(0);
+    NodeImpl *newNode = m_doc->document()->createCDATASection(new DOMStringImpl(""));
     if (m_currentNode->addChild(newNode)) {
         if (m_view && !newNode->attached())
             newNode->attach();
@@ -223,7 +223,7 @@ bool XMLHandler::fatalError( const QXmlParseException& exception )
 
 bool XMLHandler::enterText()
 {
-    NodeImpl *newNode = m_doc->document()->createTextNode(0);
+    NodeImpl *newNode = m_doc->document()->createTextNode("");
     if (m_currentNode->addChild(newNode)) {
         if (m_view && !newNode->attached())
             newNode->attach();
