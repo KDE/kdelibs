@@ -1893,7 +1893,7 @@ QImage& KImageEffect::selectedImage( QImage &img, const QColor &col )
                 int g = ((0xff-alpha) * qGreen(pix) + alpha * green) >> 8;
                 int b = ((0xff-alpha) * qBlue(pix) + alpha * blue) >> 8;
 
-                *p = qRgba(r, g, b, alpha);
+                *p = qRgba(r, g, b, qAlpha(pix));
             }
             //else // transparent pixel, copy as is
             //    *outp = pix;
