@@ -25,13 +25,11 @@
 #include <qvbox.h>
 #include <qcombobox.h>
 #include <qspinbox.h>
-#include <qfont.h>
 #include <qstring.h>
-#include <qsize.h>
 #include <qpoint.h>
-#include <qstrlist.h>
 #include <qstringlist.h>
 
+class QFont;
 class QFontDatabase;
 class QMouseEvent;
 class QSpinBox;

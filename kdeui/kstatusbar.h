@@ -178,12 +178,6 @@ signals:
    */
   void released( int );
 
-
-protected slots:
-  // ## remove in KDE 3.0
-  void slotPressed (int id);
-  void slotReleased (int id);
-
 private:
   QIntDict<KStatusBarLabel> items;
 };

@@ -35,6 +35,7 @@
 
 #include <kapplication.h>
 #include <kconfig.h>
+#include <kdebug.h>
 #include <kglobal.h>
 
 #include <qvaluelist.h>

@@ -23,7 +23,6 @@
 #define QXEMBED_H
 
 #include <qwidget.h>
-#include <qvaluelist.h>
 
 #ifndef Q_WS_QWS
 

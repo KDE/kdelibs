@@ -31,6 +31,7 @@
 #include <klocale.h>
 #include <kiconloader.h>
 #include <dcopclient.h>
+#include <kstatusbar.h>
 #include <kdebug.h>
 #include <kmessagebox.h>
 #include <kdesu/client.h>

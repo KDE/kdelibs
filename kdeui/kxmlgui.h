@@ -23,7 +23,6 @@
 #include <qobject.h>
 #include <qptrlist.h>
 #include <qdom.h>
-#include <qmap.h>
 #include <qvaluelist.h>
 
 class KAction;

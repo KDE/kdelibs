@@ -3,8 +3,8 @@
 
 #include <qcursor.h>
 #include <qobject.h>
-#include <qpoint.h>
 
+class QPoint;
 class QTimer;
 class QWidget;
 

@@ -80,6 +80,7 @@ extern "C" {
 #include <kio/renamedlg.h>
 #include <kfiledialog.h>
 #include <kmimetype.h>
+#include <kiconloader.h>
 #include <kmessagebox.h>
 #include <kservice.h>
 #include <kcompletion.h>

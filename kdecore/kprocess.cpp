@@ -45,6 +45,7 @@
 #include <config.h>
 
 #include <qfile.h>
+#include <qsocketnotifier.h>
 #include <qregexp.h>
 
 #include <sys/time.h>

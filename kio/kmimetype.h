@@ -23,19 +23,16 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include <qstring.h>
 #include <qstringlist.h>
 #include <qvaluelist.h>
-#include <qdict.h>
-#include <qmap.h>
+#include <qpixmap.h>
 
 #include <kurl.h>
-#include <kiconloader.h>
-#include <ksimpleconfig.h>
 
 #include "ksycocatype.h"
 #include "kservicetype.h"
 
+class KSimpleConfig;
 /**
  * Represent a mime type, like "text/plain".
  *

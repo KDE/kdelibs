@@ -49,6 +49,7 @@
 #include <kdebug.h>
 #include <kdesktopfile.h>
 #include <kdirwatch.h>
+#include <kiconloader.h>
 #include <klocale.h>
 #include <ksimpleconfig.h>
 #include <kstandarddirs.h>

@@ -29,11 +29,11 @@ DEALINGS IN THE SOFTWARE.
 
 #include <qwidget.h>
 #include <qcstring.h>
-#include <qstring.h>
 #include <qmap.h>
 #ifdef Q_WS_X11
 #include <X11/X.h>
 
+class QString;
 // TODO docs
 /**
  * Sending string messages to other applications using the X Client Messages.

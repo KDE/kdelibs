@@ -10,8 +10,8 @@
 #ifndef __KPIXMAP_EFFECT_H
 #define __KPIXMAP_EFFECT_H
 
-#include <kpixmap.h>
-#include <qimage.h>
+class KPixmap;
+class QColor;
 
 /**
  * This class includes various pixmap-based graphical effects.

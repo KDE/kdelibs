@@ -23,8 +23,7 @@
 #define __KCMODULE_H__
 
 #include <qwidget.h>
-#include <kaboutdata.h>
-
+class KAboutData;
 class KCModulePrivate;
 
 /**

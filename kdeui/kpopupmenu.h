@@ -22,6 +22,7 @@
 
 #include <qpopupmenu.h>
 #include <kpixmapeffect.h>
+#include <kpixmap.h>
 
 /**
  * Title widget for use in @ref KPopupMenu.

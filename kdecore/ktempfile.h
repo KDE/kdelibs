@@ -20,11 +20,11 @@
 #ifndef _KTEMPFILE_H_
 #define _KTEMPFILE_H_
 
-#include <qfile.h>
 #include <qstring.h>
 #include <stdio.h>
 #include <errno.h>
 
+class QFile;
 class QTextStream;
 class QDataStream;
 class KSaveFile;

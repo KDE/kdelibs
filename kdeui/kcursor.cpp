@@ -23,6 +23,7 @@
 #endif
 
 #include <kcursor.h>
+#include <kapplication.h>
 
 #include <qbitmap.h>
 #include <qcursor.h>

@@ -22,9 +22,8 @@
 #ifndef KCOMPLETIONBOX_H
 #define KCOMPLETIONBOX_H
 
-#include <qevent.h>
+class QEvent;
 #include <qstringlist.h>
-
 #include <klistbox.h>
 
 /**

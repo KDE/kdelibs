@@ -21,7 +21,6 @@
 #ifndef KCOMPLETION_PRIVATE_H
 #define KCOMPLETION_PRIVATE_H
 
-#include <qlist.h>
 #include <qstring.h>
 
 class KCompTreeNode;

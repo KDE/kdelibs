@@ -32,6 +32,7 @@
 #include <qfile.h>
 
 #include <klargefile.h>
+#include <kiconloader.h>
 #include <kglobal.h>
 #include <kdebug.h>
 #include <klocale.h>

@@ -18,7 +18,7 @@
 #ifndef __KDUALCOLORBTN_H
 #define __KDUALCOLORBTN_H
 
-#include <qbitmap.h>
+class QBitmap;
 #include <qbrush.h>
 #include <qwidget.h>
 

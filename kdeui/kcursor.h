@@ -23,8 +23,6 @@
 #ifndef _KCURSOR_H
 #define _KCURSOR_H
 
-#include <kapp.h>
-
 #include <qcursor.h>
 
 class QWidget;

@@ -29,6 +29,7 @@
 #include <qdir.h>
 #include <qpainter.h>
 #include <qbitmap.h>
+#include <qimage.h>
 #include <stdlib.h>
 #include <krootprop.h>
 

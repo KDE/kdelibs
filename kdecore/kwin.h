@@ -23,7 +23,6 @@
 #include <qwindowdefs.h>
 #include <qstring.h>
 #include <qpixmap.h>
-#include <qvaluelist.h>
 
 #include "netwm_def.h"
 

@@ -116,9 +116,7 @@ void KStatusBar::setItemAlignment (int id, int align)
   KStatusBarLabel *l = items[id];
   if (l)
   {
-    //clear();
     l->setAlignment(align);
-    //reformat(); Not needed I, think (sven)
   }
   else
     kdDebug() << "KStatusBar::setItemAlignment: bad item id: " << id << endl;
@@ -129,25 +127,13 @@ void KStatusBar::setItemFixed(int id, int w)
   KStatusBarLabel *l = items[id];
   if (l)
   {
-    //clear();
     if (w==-1)
       w=fontMetrics().boundingRect(l->text()).width()+3;
 
     l->setFixedSize(w, l->sizeHint().height());
-    //reformat(); Not needed I, think (sven)
   }
   else
     kdDebug() << "KStatusBar::setItemFixed: bad item id: " << id << endl;
-}
-
-void KStatusBar::slotPressed(int _id)
-{
-  emit pressed(_id);
-}
-
-void KStatusBar::slotReleased(int _id)
-{
-  emit released(_id);
 }
 
 #include "kstatusbar.moc"

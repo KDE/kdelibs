@@ -36,6 +36,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <qsocketnotifier.h>
 #include "kprocess.h"
 #include "kprocctrl.h"
 

@@ -20,7 +20,6 @@
 #define KSQUEEZEDTEXTLABEL_H
 
 #include <qlabel.h>
-#include <qtooltip.h>
 
 /**
  * A label class that squeezes its text into the label
@@ -66,7 +65,6 @@ protected:
   QString fullText;
 
 private:
-  QFontMetrics *unused; //### unused, remove in 3.0
   class KSqueezedTextLabelPrivate;
   KSqueezedTextLabelPrivate *d;
 };

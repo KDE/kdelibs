@@ -24,9 +24,9 @@
 
 #include <qdict.h>
 #include <qptrlist.h>
-#include <qstring.h>
 class KSycoca;
 class QStringList;
+class QString;
 class KSycocaDict;
 class KSycocaResourceList;
 

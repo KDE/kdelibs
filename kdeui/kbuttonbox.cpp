@@ -46,6 +46,7 @@
  */
 
 #include "kbuttonbox.moc"
+#include <qpushbutton.h>
 #include <qptrlist.h>
 #include <assert.h>
 
@@ -96,7 +97,7 @@ QPushButton *KButtonBox::addButton(const QString& text, bool noexpand) {
   item->button->adjustSize();
 
   return item->button;
-}	
+}
 
   QPushButton *
 KButtonBox::addButton(
@@ -112,7 +113,7 @@ KButtonBox::addButton(
     QObject::connect(pb, SIGNAL(clicked()), receiver, slot);
 
   return pb;
-}	
+}
 
 
 void KButtonBox::addStretch(int scale) {

@@ -22,11 +22,11 @@
 #ifndef _KDIALOG_BASE_H_
 #define _KDIALOG_BASE_H_
 
-#include <qpushbutton.h>
 #include <kdialog.h>
 #include <kjanuswidget.h> 
 #include <qptrlist.h>
 
+class QPushButton;
 class KSeparator;
 class KURLLabel;
 class QBoxLayout;

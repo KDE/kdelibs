@@ -22,6 +22,7 @@
 #include <unistd.h> // For getuid
 
 #include <qlayout.h>
+#include <qlabel.h>
 #include <qtimer.h>
 
 #include <klocale.h>

@@ -32,6 +32,7 @@
 #include <stdlib.h>
 
 #include <qcheckbox.h>
+#include <qcombobox.h>
 #include <qdrawutil.h>
 #include <qevent.h>
 #include <qfile.h>

@@ -11,6 +11,7 @@
 #include <qpainter.h>
 
 #include "kpixmapeffect.h"
+#include "kpixmap.h"
 #include "kimageeffect.h"
 
 //======================================================================

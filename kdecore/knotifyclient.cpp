@@ -24,6 +24,7 @@
 #include <qptrstack.h>
 
 #include <kstandarddirs.h>
+#include <kapplication.h>
 #include <kconfig.h>
 #include <dcopclient.h>
 #include <kdebug.h>

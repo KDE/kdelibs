@@ -22,8 +22,6 @@
 
 #include <qstring.h>
 #include <qlineedit.h>
-#include <qevent.h>
-
 #include <kdialogbase.h>
 
 class QLabel;

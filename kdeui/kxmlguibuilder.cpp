@@ -20,6 +20,7 @@
 
 #include "kxmlguibuilder.h"
 #include "kmenubar.h"
+#include "kpopupmenu.h"
 #include "ktoolbar.h"
 #include "kstatusbar.h"
 #include "kmainwindow.h"

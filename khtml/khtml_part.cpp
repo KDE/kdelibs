@@ -65,6 +65,7 @@ using namespace DOM;
 #include <kparts/historyprovider.h>
 #include <kmimetype.h>
 #include <kdebug.h>
+#include <kiconloader.h>
 #include <klocale.h>
 #include <kcharsets.h>
 #include <kmessagebox.h>
@@ -79,6 +80,7 @@ using namespace DOM;
 #include <ktempfile.h>
 #include <kglobalsettings.h>
 #include <kurldrag.h>
+#include <kapp.h> // for KDE_VERSION
 #if !defined(QT_NO_DRAGANDDROP) && KDE_VERSION >= 290
 #include <kmultipledrag.h>
 #endif

@@ -20,7 +20,6 @@
 #ifndef __klineeditdlg_h__
 #define __klineeditdlg_h__
 
-#include <qlineedit.h>
 class KLineEdit;
 
 #include <kdialogbase.h>

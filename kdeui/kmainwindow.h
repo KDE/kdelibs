@@ -26,19 +26,17 @@
 #include "kxmlguiclient.h"
 #include "kxmlguibuilder.h"
 #include "kmainwindowiface.h"
-#include <qmap.h>
-#include <kstatusbar.h>
+#include <qmainwindow.h>
 #include <ktoolbar.h>
-#include <kpopupmenu.h>
 
-
+class KPopupMenu;
 class KXMLGUIFactory;
 class KConfig;
 class KHelpMenu;
 class KStatusBar;
+class QStatusBar;
 class KMenuBar;
 class KMWSessionManaged;
-class KToolBar;
 class KMainWindowPrivate;
 class KAccel;
 

@@ -19,7 +19,7 @@
  */
 
 
-#ifdef HAVE_CONFIG_H 
+#ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
@@ -27,6 +27,7 @@
 
 #include <unistd.h>
 #include <qstring.h>
+#include <qfile.h>
 
 #include "kssldefs.h"
 #include "ksslcertificate.h"
@@ -134,7 +135,7 @@ KSSLCertificate *n = NULL;
     if (!x5c) {
        return NULL;
     }
- 
+
     n = new KSSLCertificate;
     n->setCert(x5c);
 #endif
@@ -180,7 +181,7 @@ int n, i;
         i = d->kossl->OBJ_obj2nid(d->m_cert->sig_alg->algorithm);
         rc = i18n("Signature Algorithm: ");
         rc += (i == NID_undef)?i18n("Unknown"):d->kossl->OBJ_nid2ln(i);
- 
+
         rc += i18n("\nSignature Contents:");
         n = d->m_cert->signature->length;
         s = (char *)d->m_cert->signature->data;
@@ -203,11 +204,11 @@ QString rc = "";
 #ifdef HAVE_SSL
    unsigned int n;
    unsigned char md[EVP_MAX_MD_SIZE];
- 
+
    if (!d->kossl->X509_digest(d->m_cert, d->kossl->EVP_md5(), md, &n)) {
       return rc;
    }
-                                
+
    for (unsigned int j = 0; j < n; j++) {
       if (j > 0) rc += ":";
       rc.append(hv[(md[j]&0xf0)>>4]);
@@ -457,11 +458,11 @@ KSSLCertificate::KSSLValidation KSSLCertificate::validate() {
       d->kossl->X509_STORE_CTX_set_chain(certStoreCTX, (STACK_OF(X509)*)d->_chain.rawChain());
 
     //kdDebug(7029) << "KSSL setting CRL.............." << endl;
-    // int X509_STORE_add_crl(X509_STORE *ctx, X509_CRL *x); 
+    // int X509_STORE_add_crl(X509_STORE *ctx, X509_CRL *x);
     //
-    
+
     // int X509_STORE_CTX_set_purpose(X509_STORE_CTX *ctx, int purpose);
-    
+
     //kdDebug(7029) << "KSSL verifying.............." << endl;
     certStoreCTX->error = X509_V_OK;
     rc = d->kossl->X509_verify_cert(certStoreCTX);
@@ -694,7 +695,7 @@ QByteArray qba;
       char *p = cert;
       // FIXME: return code!
       d->kossl->i2d_X509(getCert(), (unsigned char **)&p);
- 
+
       // encode it into a QString
       qba.duplicate(cert, certlen);
       delete[] cert;
@@ -732,13 +733,13 @@ QByteArray qba;
       ASN1_HEADER ah;
       ASN1_OCTET_STRING os;
       KTempFile ktf;
- 
+
       os.data=(unsigned char *)NETSCAPE_CERT_HDR;
       os.length=strlen(NETSCAPE_CERT_HDR);
       ah.header= &os;
       ah.data=(char *)getCert();
       ah.meth=d->kossl->X509_asn1_meth();
- 
+
       d->kossl->ASN1_i2d_fp(ktf.fstream(),(unsigned char *)&ah);
 
       ktf.close();

@@ -197,7 +197,7 @@ void KPasswordEdit::showPass()
  */
 
 KPasswordDialog::KPasswordDialog(Types type, bool enableKeep, int extraBttn,
-                                 QWidget *parent=0, const char *name=0)
+                                 QWidget *parent, const char *name)
     : KDialogBase(parent, name, true, "", Ok|Cancel|extraBttn,
                   Ok, true), m_Keep(enableKeep? 1 : 0), m_Type(type)
 {

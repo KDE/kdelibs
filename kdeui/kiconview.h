@@ -21,8 +21,6 @@
 #include <qcursor.h>
 #include <qiconview.h>
 
-#include <kdebug.h>
-
 /**
  * This Widget extends the functionality of QIconView to honor the system
  * wide settings for Single Click/Double Click mode, Auto Selection and

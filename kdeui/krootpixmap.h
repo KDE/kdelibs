@@ -1,4 +1,4 @@
-/* vi: ts=8 sts=4 sw=4 -*- c++ -*-
+/* vi: ts=8 sts=4 sw=4
  *
  * $Id$
  * This file is part of the KDE project, module kdesktop.

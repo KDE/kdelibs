@@ -21,13 +21,12 @@
 #define __kservices_h__
 
 #include <qstringlist.h>
-#include <qstring.h>
 #include <qmap.h>
-#include <qdatastream.h>
 #include <qvariant.h>
 
 #include "ksycocaentry.h"
 
+class QDataStream;
 class KDesktopFile;
 class KService;
 class KBuildSycoca;
@@ -206,11 +205,11 @@ public:
    * @internal. Allows KServiceType::offers to tweak the initial preference.
    */
   void setInitialPreference( int i ) { m_initialPreference = i; }
-  
+
   /**
    * Whether the entry should be suppressed in menus.
    */
-  bool noDisplay() const; 
+  bool noDisplay() const;
 
   /**
    * Returns the requested properties. Some often used properties
@@ -292,7 +291,7 @@ public:
    */
   static List allServices();
 
-  /** 
+  /**
    * Returns all services that require initialisation.
    *
    * Only needed by "kcminit"

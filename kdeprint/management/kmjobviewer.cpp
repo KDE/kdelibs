@@ -32,6 +32,7 @@
 #include <qpopupmenu.h>
 #include <kmessagebox.h>
 #include <klocale.h>
+#include <kpopupmenu.h>
 #include <kaction.h>
 #include <kstdaction.h>
 #include <kiconloader.h>

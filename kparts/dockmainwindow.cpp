@@ -23,6 +23,7 @@
 #include <kparts/event.h>
 #include <kparts/part.h>
 #include <kparts/plugin.h>
+#include <kstatusbar.h>
 #include <kinstance.h>
 #include <khelpmenu.h>
 #include <kstandarddirs.h>

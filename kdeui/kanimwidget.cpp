@@ -24,6 +24,7 @@
 #include <qpainter.h>
 #include <ktoolbar.h>
 #include <kdebug.h>
+#include <kiconloader.h>
 
 class KAnimWidget::KAnimWidgetPrivate
 {

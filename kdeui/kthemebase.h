@@ -18,14 +18,16 @@
 #ifndef __KTHEMEBASE_H
 #define __KTHEMEBASE_H
 
-#include <qdatetime.h>
 #include <qtimer.h>
+#include <qdatetime.h>
 #include <kstyle.h>
 #include <kpixmap.h>
-#include <kconfig.h>
-#include <qimage.h>
 #include <qintcache.h>
 #include <qstring.h>
+#include <qpalette.h> // for QColorGroup
+
+class QImage;
+class KConfig;
 
 #define WIDGETS 54
 
@@ -51,7 +53,7 @@ public:
 protected:
     QTime *t;
     QPixmap *b[8];
-    
+
 private:
     class KThemePixmapPrivate;
     KThemePixmapPrivate *d;
@@ -167,7 +169,7 @@ protected slots:
 protected:
     QIntCache<KThemePixmap> cache;
     QTimer flushTimer;
-    
+
 private:
     class KThemeCachePrivate;
     KThemeCachePrivate *d;
@@ -558,7 +560,7 @@ private:
 private:
     class KThemeBasePrivate;
     KThemeBasePrivate *d;
-    
+
 };
 
 inline bool KThemeBase::isPixmap( WidgetType widget) const

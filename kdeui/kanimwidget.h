@@ -19,7 +19,6 @@
 #define _KANIMWIDGET_H
 
 #include <qframe.h>
-#include <kiconloader.h>
 
 class QStringList;
 class QPainter;

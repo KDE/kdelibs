@@ -50,6 +50,7 @@
 //#include <arpa/inet.h>
 
 #include <qstring.h>
+#include <qfile.h>
 #include <qstrlist.h>
 #include <qptrlist.h>
 #include <qdict.h>
@@ -834,7 +835,7 @@ void KCookieJar::setDomainAdvice(const QString &_domain, KCookieAdvice _advice)
             (_advice == KCookieDunno))
         {
             // This deletes cookieList!
-            cookieDomains.remove(domain);			
+            cookieDomains.remove(domain);
             domainList.remove(domain);
         }
     }

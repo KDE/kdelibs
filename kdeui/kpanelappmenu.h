@@ -25,8 +25,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef __PANELAPPMENU_H
 #define __PANELAPPMENU_H "$Id$"
 
-#include <qlist.h>
-#include <krootprop.h>
 #include <dcopobject.h>
 
 

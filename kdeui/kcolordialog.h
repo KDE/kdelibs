@@ -25,7 +25,6 @@
 #ifndef __KCOLORDIALOG_H__
 #define __KCOLORDIALOG_H__
 
-#include <qcombobox.h>
 #ifdef Q_WS_QWS
 // FIXME(E): Do we need the KColorDialog extra functionality in Qt Embedded?
 #include <qcolordialog.h>
@@ -34,11 +33,11 @@
 #include <kdialogbase.h>
 #include <qframe.h>
 #include <qpixmap.h>
-#include <qrangecontrol.h>
 #include <qgridview.h>
 
 #include "kselect.h"
 
+class QComboBox;
 class QLineEdit;
 class KListBox;
 class KPalette;

@@ -21,7 +21,7 @@
 #define __KBUTTONBOX__H__
 
 #include <qwidget.h>
-#include <qpushbutton.h>
+class QPushButton;
 
 /**
  * Container widget for buttons. 

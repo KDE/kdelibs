@@ -43,13 +43,13 @@ typedef void Display;
 #include <qapplication.h>
 #include <qpixmap.h>
 #include <kinstance.h>
-#include <kurl.h>
 
 struct _IceConn;
 class QPopupMenu;
 class QStrList;
 class KSessionManaged;
 class KStyle;
+class KURL;
 
 #define kapp KApplication::kApplication()
 

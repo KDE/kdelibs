@@ -40,6 +40,7 @@
 #include "kio/connection.h"
 
 #include <kdebug.h>
+#include <qsocketnotifier.h>
 
 using namespace KIO;
 
@@ -237,7 +238,7 @@ int Connection::read( int* _cmd, QByteArray &data )
 	    if (n == -1) {
 		if (errno == EINTR)
 		    continue;
-		
+
 		kdError(7017) << "Data read failed, errno=" << errno << endl;
 		return -1;
 	    }

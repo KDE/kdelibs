@@ -18,6 +18,7 @@
 */
 
 #include <qhbuttongroup.h>
+#include <qpushbutton.h>
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qlineedit.h>
@@ -31,6 +32,7 @@
 #include <kconfig.h>
 #include <kstandarddirs.h>
 #include <klocale.h>
+#include <kurl.h>
 #include <kmessagebox.h>
 #include <kdebug.h>
 #include <kprocess.h>

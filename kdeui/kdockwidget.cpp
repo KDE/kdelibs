@@ -27,16 +27,16 @@
 #include <qtabwidget.h>
 
 #ifndef NO_KDE2
-#ifdef Q_WS_X11
-#include <X11/X.h>
-#include <X11/Xlib.h>
-#endif
 #include <kapp.h>
 #include <kconfig.h>
 #include <ktoolbar.h>
 #include <kpopupmenu.h>
 #include <kwin.h>
 #include <kdebug.h>
+#ifdef Q_WS_X11
+#include <X11/X.h>
+#include <X11/Xlib.h>
+#endif
 #else
 #include <qapplication.h>
 #include <qtoolbar.h>
@@ -1501,7 +1501,7 @@ static QRect rectEntry(QDomElement &base, const QString &tagName)
     int y = numberEntry(el, "y");
     int width = numberEntry(el, "width");
     int height = numberEntry(el,  "height");
-    
+
     return QRect(x, y, width, height);
 }
 
@@ -1509,7 +1509,7 @@ static QRect rectEntry(QDomElement &base, const QString &tagName)
 static QStrList listEntry(QDomElement &base, const QString &tagName, const QString &subTagName)
 {
     QStrList list;
-    
+
     QDomElement subel = base.namedItem(tagName).firstChild().toElement();
     while (!subel.isNull()) {
         if (subel.tagName() == subTagName)
@@ -1554,11 +1554,11 @@ void KDockManager::writeConfig(QDomElement &base)
         }
 
         QDomElement groupEl;
-        
+
         if (obj->isGroup) {
             //// Save a group
             groupEl = doc.createElement("splitGroup");
-            
+
             groupEl.appendChild(createStringEntry(doc, "firstName", obj->firstName));
             groupEl.appendChild(createStringEntry(doc, "secondName", obj->lastName));
             groupEl.appendChild(createNumberEntry(doc, "orientation", (int)obj->splitterOrientation));
@@ -1576,7 +1576,7 @@ void KDockManager::writeConfig(QDomElement &base)
             //// Save an ordinary dock widget
             groupEl = doc.createElement("dock");
         }
-        
+
         groupEl.appendChild(createStringEntry(doc, "name", QString::fromLatin1(obj->name())));
         groupEl.appendChild(createBoolEntry(doc, "hasParent", obj->parent()));
         if ( !obj->parent() ) {
@@ -1587,8 +1587,8 @@ void KDockManager::writeConfig(QDomElement &base)
             KDockWidgetHeader *h = static_cast<KDockWidgetHeader*>(obj->header);
             groupEl.appendChild(createBoolEntry(doc, "dragEnabled", h->dragEnabled()));
         }
-        
-        base.appendChild(groupEl);    
+
+        base.appendChild(groupEl);
         nameList.append(obj->name());
         nList.remove();
         nList.first();
@@ -1664,7 +1664,7 @@ void KDockManager::readConfig(QDomElement &base)
             KDockWidget *d1 = getDockWidgetFromName( list.first() );
             list.next();
             KDockWidget *d2 = getDockWidgetFromName( list.current() );
-            
+
             KDockWidget *obj = d2->manualDock( d1, KDockWidget::DockCenter );
             if (obj) {
                 KDockTabGroup *tab = (KDockTabGroup*)obj->widget;
@@ -1683,7 +1683,7 @@ void KDockManager::readConfig(QDomElement &base)
             // Read an ordinary dock widget
             obj = getDockWidgetFromName(stringEntry(childEl, "name"));
         }
-        
+
         if (!boolEntry(childEl, "hasParent")) {
             QRect r = rectEntry(childEl, "geometry");
             obj = getDockWidgetFromName(stringEntry(childEl, "name"));
@@ -1692,18 +1692,18 @@ void KDockManager::readConfig(QDomElement &base)
             if (boolEntry(childEl, "visible"))
                 obj->QWidget::show();
         }
-        
+
         if (obj && obj->header && obj->header->inherits("KDockWidgetHeader")) {
             KDockWidgetHeader *h = static_cast<KDockWidgetHeader*>(obj->header);
             h->setDragEnabled(boolEntry(childEl, "dragEnabled"));
         }
-        
+
         childEl = childEl.nextSibling().toElement();
     }
 
     if (main->inherits("KDockMainWindow")) {
         KDockMainWindow *dmain = (KDockMainWindow*)main;
-        
+
         QString mv = stringEntry(base, "centralWidget");
         if (!mv.isEmpty() && getDockWidgetFromName(mv) ) {
             KDockWidget *mvd  = getDockWidgetFromName(mv);
@@ -1736,7 +1736,7 @@ void KDockManager::readConfig(QDomElement &base)
 
 
 #ifndef NO_KDE2
-void KDockManager::writeConfig( KConfig* c, QString group ) 
+void KDockManager::writeConfig( KConfig* c, QString group )
 {
   //debug("BEGIN Write Config");
   if ( !c ) c = kapp->config();
@@ -1995,7 +1995,7 @@ void KDockManager::readConfig( KConfig* c, QString group )
 }
 #endif
 
-KDockWidget* KDockManager::getDockWidgetFromName( const QString& dockName ) 
+KDockWidget* KDockManager::getDockWidgetFromName( const QString& dockName )
 {
   QObjectListIt it( *childDock );
   KDockWidget * obj;
@@ -2204,7 +2204,6 @@ void KDockArea::resizeEvent(QResizeEvent *rsize)
 #ifndef NO_KDE2
     kdDebug()<<"KDockArea::resize"<<endl;
 #endif
-    KDockSplitter *split;
     QObjectList *list=queryList("QWidget",0,false);
 
     QObjectListIt it( *list ); // iterate over the buttons
@@ -2217,6 +2216,7 @@ void KDockArea::resizeEvent(QResizeEvent *rsize)
     }
     delete list;
 #if 0
+    KDockSplitter *split;
 //    for (unsigned int i=0;i<children()->count();i++)
     {
 //    	QPtrList<QObject> list(children());

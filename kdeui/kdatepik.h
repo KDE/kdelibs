@@ -20,7 +20,6 @@
 #ifndef KDATEPICKER_H
 #define KDATEPICKER_H
 #include <qdatetime.h>
-#include <qrect.h>
 #include <qframe.h>
 
 class QLineEdit;

@@ -31,6 +31,7 @@
 #include <klistview.h>
 
 #include <kconfig.h>
+#include <klocale.h>
 #include <kglobalaccel.h>
 #include <kmessagebox.h>
 #include <kxmlgui.h>

@@ -23,7 +23,6 @@
 #define _KGLOBALACCEL_H_
 
 #include <qobject.h>
-#include <qdict.h>
 #include "kaccel.h"
 
 class KGlobalAccelPrivate;

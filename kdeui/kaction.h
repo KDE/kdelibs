@@ -25,9 +25,8 @@
 #define __kaction_h__
 
 #include <qobject.h>
-#include <qmap.h>
-#include <kaccel.h>
 #include <qvaluelist.h>
+#include <kaccel.h> // for KKeyEntryMap
 
 class QMenuBar;
 class QPopupMenu;
@@ -36,6 +35,7 @@ class QPoint;
 class QIconSet;
 class QString;
 
+class KAccel;
 class KConfig;
 class KURL;
 class KInstance;

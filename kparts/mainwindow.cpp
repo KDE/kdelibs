@@ -23,6 +23,7 @@
 #include <kparts/part.h>
 #include <kparts/plugin.h>
 #include <kinstance.h>
+#include <kstatusbar.h>
 #include <khelpmenu.h>
 #include <kstandarddirs.h>
 #include <qapplication.h>

@@ -24,7 +24,6 @@
 #include <qgridview.h>
 #include <qlineedit.h>
 #include <qdatetime.h>
-#include <qsize.h>
 
 /**
 * A table containing month names. It is used to pick a month directly.

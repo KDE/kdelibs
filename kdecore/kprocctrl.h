@@ -28,11 +28,10 @@
 #ifndef __KPROCCTRL_H__
 #define __KPROCCTRL_H__
 
-
-#include <qsocketnotifier.h>
 #include "kprocess.h"
 
 class KProcessControllerPrivate;
+class QSocketNotifier;
 
 /**
  * @short Used internally by @ref KProcess

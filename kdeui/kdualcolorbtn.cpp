@@ -23,6 +23,7 @@
 #include "dcolorreset.xpm"
 #include <kglobalsettings.h>
 #include <qpainter.h>
+#include <qbitmap.h>
 #include <qdrawutil.h>
 
 class KDualColorButton::KDualColorPrivate

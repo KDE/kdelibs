@@ -30,6 +30,7 @@
 #include <kapplication.h>
 #include <kdebug.h>
 #include <kdirwatch.h>
+#include <kglobal.h>
 #include <klocale.h>
 #include <kio/job.h>
 #include <kmessagebox.h>

@@ -33,6 +33,9 @@
 #include <ksimpleconfig.h>
 #include <kapplication.h>
 #include <kdebug.h>
+#include <kdesktopfile.h>
+#include <kglobal.h>
+#include <kiconloader.h>
 #include <klocale.h>
 #include <kconfigbase.h>
 #include <dcopclient.h>
@@ -42,7 +45,6 @@
 #include "kservicetype.h"
 #include "kuserprofile.h"
 #include "ksycoca.h"
-#include <kdesktopfile.h>
 
 KService::KService( const QString & _fullpath )
  : KSycocaEntry( _fullpath)
@@ -314,17 +316,17 @@ class KServiceReadProperty : public KConfigBase
 public:
    KServiceReadProperty(const QString &_key, const QCString &_value)
 	: key(_key), value(_value) { }
-   
+
    bool hasGroup(const QString &) const { /*qDebug("hasGroup(const QString &)");*/ return false; }
    bool hasGroup(const QCString &) const { /*qDebug("hasGroup(const QCString &)");*/ return false; }
    bool hasGroup(const char *) const { /*qDebug("hasGroup(const char *)");*/ return false; }
 
    QStringList groupList() const { return QStringList(); }
 
-   bool hasKey(const QString &pKey) const { /*qDebug("hasKey(const QString &)");*/ return (pKey == key);}      
-   bool hasKey(const char *) const { /*qDebug("hasKey(const char *)");*/ return true;}      
+   bool hasKey(const QString &pKey) const { /*qDebug("hasKey(const QString &)");*/ return (pKey == key);}
+   bool hasKey(const char *) const { /*qDebug("hasKey(const char *)");*/ return true;}
 
-   QMap<QString,QString> entryMap(const QString &) const 
+   QMap<QString,QString> entryMap(const QString &) const
       { return QMap<QString,QString>(); }
 
    void reparseConfiguration() { }
@@ -391,7 +393,7 @@ QVariant KService::property( const QString& _name ) const
   {
      //kdDebug(7012) << "Property not found " << _name << endl;
      return QVariant(); // No property set.
-  }  
+  }
 
   switch(t)
   {
@@ -399,7 +401,7 @@ QVariant KService::property( const QString& _name ) const
         return it.data();
     case QVariant::Bool:
     case QVariant::Int:
-        { 
+        {
            QString aValue = it.data().toString();
            int val = 0;
            if (aValue == "true" || aValue == "on" || aValue == "yes")
@@ -420,7 +422,7 @@ QVariant KService::property( const QString& _name ) const
            }
            return QVariant(val);
         }
-    default: 
+    default:
         // All others
         KServiceReadProperty ksrp(_name, it.data().toString().utf8());
         return ksrp.readPropertyEntry(_name, t);
@@ -495,7 +497,7 @@ bool KService::noDisplay() const {
   if ( (it == m_mapProps.end()) || (!it.data().isValid()))
   {
      return false;
-  }  
+  }
 
   QString aValue = it.data().toString();
   if (aValue == "true" || aValue == "on" || aValue == "yes")

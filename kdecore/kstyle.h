@@ -19,10 +19,8 @@
 #define __KSTYLE_H
 
 #include <qstyle.h>
-#include <qfont.h>
-#include <qpalette.h>
-#include <qpixmap.h>
 
+class QFont;
 class QMenuItem;
 class QPixmap;
 class KStylePrivate;

@@ -35,8 +35,8 @@
 #include <unistd.h>
 #include <qstrlist.h>
 #include <qobject.h>
-#include <qsocketnotifier.h>
 
+class QSocketNotifier;
 class KProcessPrivate;
 
 /**

@@ -22,8 +22,6 @@
 
 #include <qdict.h>
 #include <kdialogbase.h>
-#include <kaccel.h>
-#include <klocale.h>
 
 class QButtonGroup;
 class QCheckBox;
@@ -32,6 +30,7 @@ class QLabel;
 class QLineEdit;
 class KActionCollection;
 class KGlobalAccel;
+class KAccel;
 
 class KKeyDialogPrivate;
 class KKeyChooserPrivate;

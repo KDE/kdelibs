@@ -19,13 +19,12 @@
 #define _KAUTHICON_H "$Id$"
 
 #include <qfileinfo.h>
-#include <qlabel.h>
 #include <qpixmap.h>
 #include <qstring.h>
 #include <qwidget.h>
 
-class QPixmap;
 class QHBoxLayout;
+class QLabel;
 class KAuthIconPrivate;
 
 /**

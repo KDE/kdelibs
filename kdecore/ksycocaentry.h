@@ -21,9 +21,9 @@
 
 #include "ksycocatype.h"
 
-#include <qdatastream.h>
 #include <qvaluelist.h>
 #include <ksharedptr.h>
+class QDataStream;
 
 /**
  * Base class for all entries.

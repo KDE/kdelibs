@@ -28,7 +28,6 @@
 #include <qtoolbutton.h>
 #include <qintdict.h>
 #include <qstring.h>
-#include <qfont.h>
 #include <kglobal.h>
 
 class KToolBar;

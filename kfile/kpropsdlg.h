@@ -40,7 +40,7 @@ class QCheckBox;
 class QPushButton;
 class KLineEdit;
 class KURLRequester;
-
+class QButton;
 class KIconButton;
 class KPropsDlgPlugin;
 

@@ -35,7 +35,7 @@
 
 #define KBase64 KCodecs
 
-#include <stdio.h>
+#include <stdio.h> // for FILE
 #include <qglobal.h>
 #include <qstring.h>
 

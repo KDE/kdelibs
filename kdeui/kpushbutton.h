@@ -20,11 +20,9 @@
 #ifndef KPUSHBUTTON_H
 #define KPUSHBUTTON_H
 
-#include <qdragobject.h>
-#include <qevent.h>
 #include <qpoint.h>
 #include <qpushbutton.h>
-
+class QDragObject;
 
 /**
  * This is nothing but a QPushButton with drag-support. You have to call

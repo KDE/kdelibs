@@ -18,6 +18,7 @@
 */
 
 #include <kglobalsettings.h>
+#include <qdragobject.h>
 
 #include "kpushbutton.h"
 
@@ -68,7 +69,7 @@ void KPushButton::mouseMoveEvent( QMouseEvent *e )
     if ( (e->state() & LeftButton) &&
 	 (e->pos() - startPos).manhattanLength() >
 	 KGlobalSettings::dndEventDelay() ) {
-	
+
 	startDrag();
 	setDown( false );
     }

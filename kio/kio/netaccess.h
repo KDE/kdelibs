@@ -26,9 +26,9 @@
 
 #include <qobject.h>
 #include <qstring.h>
-#include <qstringlist.h>
-#include <kurl.h>
 #include <kio/global.h>
+class QStringList;
+class KURL;
 
 namespace KIO {
 

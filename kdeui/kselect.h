@@ -23,7 +23,7 @@
 #ifndef __KSELECT_H__
 #define __KSELECT_H__
 
-#include <qdialog.h>
+#include <qwidget.h>
 #include <qrangecontrol.h>
 #include <qpixmap.h>
 

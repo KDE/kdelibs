@@ -20,7 +20,6 @@
 #ifndef _KJANUS_WIDGET_H_
 #define _KJANUS_WIDGET_H_
 
-#include <qgrid.h>
 #include <qptrlist.h>
 #include <qpixmap.h>
 #include <qsplitter.h>
@@ -31,6 +30,7 @@
 
 class KListView;
 
+class QGrid;
 class QHBox;
 class QLabel;
 class QTabWidget;
