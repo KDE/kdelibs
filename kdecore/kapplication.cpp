@@ -2646,7 +2646,7 @@ int KApplication::random()
       unsigned int seed;
       init = true;
       int fd = open("/dev/urandom", O_RDONLY);
-      if (fd <= 0 || ::read(fd, &seed, sizeof(seed)) != sizeof(seed))
+      if (fd < 0 || ::read(fd, &seed, sizeof(seed)) != sizeof(seed))
       {
             // No /dev/urandom... try something else.
             srand(getpid());
