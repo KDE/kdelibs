@@ -467,11 +467,6 @@ void KJScriptImp::mark()
     con->mark();
 }
 
-KJScriptImp* KJScriptImp::current()
-{
-  return curr;
-}
-
 void KJScriptImp::init()
 {
   KJScriptImp::curr = this;

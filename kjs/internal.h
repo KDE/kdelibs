@@ -272,7 +272,7 @@ namespace KJS {
     KJScriptImp();
     ~KJScriptImp();
     void mark();
-    static KJScriptImp *current();
+    static KJScriptImp *current() { return curr; }
     static void setException(Imp *e) { assert(curr); curr->exVal = e; }
     static Imp *exception() { assert(curr); return curr->exVal; }
 
