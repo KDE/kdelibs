@@ -274,7 +274,8 @@ QPixmap KeramikStyle::stylePixmap(StylePixmap stylepixmap,
 
 
 KeramikStyle::KeramikStyle()
-	:KStyle( AllowMenuTransparency | FilledFrameWorkaround, ThreeButtonScrollBar ), maskMode(false),
+	:KStyle( AllowMenuTransparency | FilledFrameWorkaround, ThreeButtonScrollBar ),
+		maskMode(false), formMode(false),
 		toolbarBlendWidget(0), titleBarMode(None), flatMode(false), customScrollMode(false), kickerMode(false)
 {
 	forceSmallMode = false;
@@ -1281,6 +1282,13 @@ void KeramikStyle::drawKStylePrimitive( KStylePrimitive kpe,
 	}
 }
 
+bool KeramikStyle::isFormWidget(const QWidget* widget) const
+{
+	if (widget->parent() && widget->parent()->parent() && widget->parent()->parent()->parent() )
+		return !qstrcmp(widget->parent()->parent()->parent()->className(), "KHTMLView");
+	return false;
+}
+
 void KeramikStyle::drawControl( ControlElement element,
 								  QPainter *p,
 								  const QWidget *widget,
@@ -1300,6 +1308,10 @@ void KeramikStyle::drawControl( ControlElement element,
 		case CE_PushButton:
 		{
 			const QPushButton* btn = static_cast< const QPushButton* >( widget );
+
+			if (isFormWidget(btn))
+				formMode = true;
+
 			if ( widget == hoverWidget )
 				flags |= Style_MouseOver;
 
@@ -1316,10 +1328,10 @@ void KeramikStyle::drawControl( ControlElement element,
 					toolbarBlendWidget = widget;
 
 				drawPrimitive( PE_ButtonCommand, p, r, cg, flags );
-
 				toolbarBlendWidget = 0;
 			}
 
+			formMode = false;
 			break;
 		}
 
@@ -1894,10 +1906,13 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 		// -------------------------------------------------------------------
 		case CC_ComboBox:
 		{
-			bool toolbarMode = false;
-			const QComboBox* cb = static_cast< const QComboBox* >( widget );
-			bool compact     = isSizeConstrainedCombo(cb);
-			
+			bool             toolbarMode = false;
+			const QComboBox* cb          = static_cast< const QComboBox* >( widget );
+			bool             compact     = isSizeConstrainedCombo(cb);
+
+			if (isFormWidget(cb))
+				formMode = true;
+
 			QPixmap * buf = 0;
 			QPainter* p2 = p;
 
@@ -2038,6 +2053,8 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 				p->drawPixmap(r.x(), r.y(), *buf);
 				delete buf;
 			}
+
+			formMode = false;
 			break;
 		}
 

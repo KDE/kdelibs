@@ -124,7 +124,8 @@ namespace Keramik
 		{
 			PaintNormal,
 			PaintMask,
-			PaintFullBlend
+			PaintFullBlend,
+			PaintTrivialMask
 		};
 
 		void draw( QPainter *p, int x, int y, int width, int height, const QColor& color, const QColor& bg,
@@ -363,3 +364,4 @@ namespace Keramik
 #endif
 
 // vim: ts=4 sw=4 noet
+// kate: indent-width 4; replace-tabs off; tab-width 4;

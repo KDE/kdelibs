@@ -249,7 +249,7 @@ QImage* PixmapLoader::getColored(int name, const QColor& color, const QColor& ba
 
 QPixmap PixmapLoader::pixmap( int name, const QColor& color, const QColor& bg, bool disabled, bool blend )
 {
-	return scale(name, 0, 0, color, bg, disabled, blend);    
+	return scale(name, 0, 0, color, bg, disabled, blend);
 }
 
 
@@ -287,8 +287,8 @@ QPixmap PixmapLoader::scale( int name, int width, int height, const QColor& colo
 
 	if (width == 0 && height == 0)
 		result = new QPixmap(*img);
-	else                        
-		result = new QPixmap(img->smoothScale( width ? width : img->width(), 
+	else
+		result = new QPixmap(img->smoothScale( width ? width : img->width(),
 											   height ? height: img->height()));
 
 	KeramikCacheEntry* toAdd = new KeramikCacheEntry(entry);
@@ -310,6 +310,12 @@ QSize PixmapLoader::size( int id )
 
 void TilePainter::draw( QPainter *p, int x, int y, int width, int height, const QColor& color, const QColor& bg, bool disabled, PaintMode mode )
 {
+	if (mode == PaintTrivialMask)
+	{
+		p->fillRect(x, y, width, height, Qt::color1);
+		return;
+	}
+
 	bool swBlend = (mode != PaintFullBlend);
 	unsigned int scaledColumns = 0, scaledRows = 0, lastScaledColumn = 0, lastScaledRow = 0;
 	int scaleWidth = width, scaleHeight = height;
@@ -583,3 +589,4 @@ int SpinBoxPainter::tileName( unsigned int column, unsigned int ) const
 }
 
 // vim: ts=4 sw=4 noet
+// kate: indent-width 4; replace-tabs off; tab-width 4;

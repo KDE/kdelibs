@@ -118,17 +118,20 @@ public:
 public slots:
 	void updateProgressPos();
 
-protected:
+private:
 	bool isSizeConstrainedCombo(const QComboBox* combo) const;
+	bool isFormWidget          (const QWidget*   widget) const;
 
 	///Configuration settings
 	bool highlightLineEdits;
 	bool animateProgressBar;
 	bool highlightScrollBar;
 
-protected:
+	//Rendering flags
 	mutable bool forceSmallMode;
 	mutable bool maskMode;   //Ugly round trip flag to permit masking with little code;
+	mutable bool formMode;   //Set when rendering form widgets
+
 	mutable const QWidget* toolbarBlendWidget;  //Ditto for blending with toolbars
 
 	int                        progAnimShift;
@@ -154,7 +157,22 @@ protected:
 
 	Keramik::TilePainter::PaintMode pmode() const
 	{
-		return maskMode?Keramik::TilePainter::PaintMask : Keramik::TilePainter::PaintNormal;
+		if (formMode)
+		{
+			//If we're a form widget, we blend on painting, and consider ourselves
+			//not to have a mask (so we don't get clipped to it)
+			if (maskMode)
+				return Keramik::TilePainter::PaintTrivialMask;
+			else
+				return Keramik::TilePainter::PaintFullBlend;
+		}
+		else
+		{
+			if (maskMode)
+				return Keramik::TilePainter::PaintMask;
+			else
+				return Keramik::TilePainter::PaintNormal;
+		}
 	}
 
 	Keramik::TilePainter::PaintMode pmodeFullBlend() const
@@ -163,7 +181,8 @@ protected:
 	}
 
 	QWidget* hoverWidget;
-private:
+
+
 	bool kickerMode;
 
 	QRect subRect(SubRect r, const QWidget *widget) const;
@@ -176,3 +195,4 @@ private:
 #endif
 
 // vim: ts=4 sw=4 noet
+// kate: indent-width 4; replace-tabs off; tab-width 4;
