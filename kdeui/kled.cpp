@@ -21,6 +21,14 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.9  1999/11/11 16:08:15  antlarr
+ * Fixed some bugs.
+ * Added the possibility to draw a sunk rectangle as the "old" KLedLamp did. 
+ *
+ * Revision 1.8  1999/11/01 22:03:15  dmuell
+ * fixing all kinds of compile warnings
+ * (unused var, unused argument etc)
+ *
  * Revision 1.7  1999/10/10 13:34:14  mirko
  * First merge with KLedLamp that shows a rectangular LED.
  * It does not yet work reliably.
@@ -72,7 +80,15 @@ KLed::paintEvent(QPaintEvent *)
   switch(led_shape)
   {
   case Rectangular:
-    paintrect();
+    switch (led_look) 
+    {
+    case sunken: 
+      paintrectsunken(); 
+      break;
+    default  : 
+      paintrect();
+      break;
+    }
     break;
   case Circular:
     switch (led_look) 
@@ -134,7 +150,7 @@ KLed::paintflat()
   w-=2; h-=2;
   x++; y++;
   // draw the flat led grounding
-  c=current_color;
+  c=led_state ? led_color.light() : led_color.dark();
   p.setPen(c);
   p.setBrush(c);
   p.drawPie(x,y,w,h,0,5760);
@@ -226,7 +242,7 @@ KLed::paintsunken()
   p.drawArc(ring3, (-45+ARC_WHITE_RING3)*16, -2*ARC_WHITE_RING3*16);
 
   // draw the flat led grounding
-  c=current_color;
+  c=led_state ? led_color.light() : led_color.dark();
   p.setPen(c);
   p.setBrush(c);
   p.drawPie(x,y,w,h,0,5760);
@@ -263,12 +279,12 @@ KLed::paintrect()
 {
   QPainter painter(this);
   QBrush lightBrush(led_color);
-  QBrush darkBrush(led_color.dark());
-  QPen pen(led_color.dark());
+  QBrush darkBrush(led_color.dark(300));
+  QPen pen(led_color.dark(300));
   int w=width();
   int h=height();
   // -----
-  switch(led_shape) 
+  switch(led_state) 
   {
   case On:
     painter.setBrush(lightBrush);
@@ -287,6 +303,24 @@ KLed::paintrect()
     break;
   default: break;
   } 
+}
+
+void 
+KLed::paintrectsunken()
+{
+  QPainter painter(this);
+  QBrush lightBrush(led_color);
+  QBrush darkBrush(led_color.dark(400));
+  int w=width();
+  int h=height();
+  // -----
+  painter.setPen(Qt::black);
+  painter.drawRect(0,0,w,h);
+  painter.drawRect(0,0,w-1,h-1);
+  painter.setPen(Qt::white);
+  painter.drawRect(1,1,w-1,h-1);
+
+  painter.fillRect(2, 2, w-4, h-4,(led_state==On)? lightBrush : darkBrush);
 }
 
 KLed::State
@@ -313,7 +347,7 @@ KLed::setState( State state )
   if (led_state != state) 
     {
       led_state = state;
-      setColor(led_color);
+      update();
     }
 }
 
@@ -322,7 +356,7 @@ KLed::toggleState()
 {
   led_state = (State)!led_state;
   // setColor(led_color);
-  setColor(led_state==On ? Qt::green : Qt::darkGreen);
+  update();
 }
 
 void
@@ -330,7 +364,7 @@ KLed::setShape(KLed::Shape s)
 {
   if(led_shape!=s)
     {
-      led_shape=s;
+      led_shape = s;
       repaint(false);
     }
 }
@@ -340,10 +374,7 @@ KLed::setColor(const QColor& col)
 { 
   if(led_color!=col) 
     {
-      led_color=col;
-      current_color=led_state 
-	? led_color.light() 
-	: led_color.dark();
+      led_color = col;
       update(); 
     }
 }

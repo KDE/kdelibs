@@ -200,9 +200,9 @@ class KLed : public QWidget
   void paintround();
   void paintsunken();
   void paintrect();
+  void paintrectsunken();
 
   State led_state;
-  QColor current_color;
   QColor led_color;
   Look  led_look;
   Shape led_shape;
