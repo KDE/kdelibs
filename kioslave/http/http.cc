@@ -3235,6 +3235,8 @@ bool HTTPProtocol::readHeader()
   // Inform the job that we can indeed resume...
   if ( bCanResume && m_request.offset )
     canResume();
+  else
+    m_request.offset = 0;
 
   // We don't cache certain text objects
   if (m_strMimeType.startsWith("text/") &&
