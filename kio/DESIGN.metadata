@@ -105,6 +105,8 @@ ssl_parent_cert	string		Set in TCPSlaveBase and in the caller.  As above, this m
 
 ssl_session_id	string		Set in TCPSlaveBase to indicate the SSL session ID in base64 encoded ASN.1 encoded binary format.  Also set in the caller to indicate to TCPSlaveBase to reuse a particular session ID.
 
+ssl_proxied	bool		Presently exists only if true.  Set in TCPSlaveBase to indicate that a proxy is in use for this SSL connection.
+
 main_frame_request	bool	Actually for SSL, this is set in the caller to tell TCPSlaveBase if this is the request for the main frame of an html page. (dfault: true)
 
 HTTP-Version		string	The HTTP version in use for kio_http (set by http)

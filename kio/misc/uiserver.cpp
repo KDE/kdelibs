@@ -1195,8 +1195,9 @@ void UIServer::showSSLInfoDialog(const QString &url, const KIO::MetaData &meta, 
 
       kdDebug(7024) << "ssl_cert_errors=" << meta["ssl_cert_errors"] << endl;
       kid->setCertState(meta["ssl_cert_errors"]);
+      QString ip = meta.contains("ssl_proxied") ? "" : meta["ssl_peer_ip"];
       kid->setup( x,
-                  meta["ssl_peer_ip"],
+                  ip,
                   url, // the URL
                   meta["ssl_cipher"],
                   meta["ssl_cipher_desc"],

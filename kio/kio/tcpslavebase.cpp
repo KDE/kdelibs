@@ -44,6 +44,7 @@
 #include <ksslall.h>
 #include <ksslcertdlg.h>
 #include <kmessagebox.h>
+#include <kresolver.h>
 
 #include <klocale.h>
 #include <dcopclient.h>
@@ -792,13 +793,24 @@ int TCPSlaveBase::verifyCertificate()
     KSSLCertificate::KSSLValidationList ksvl = pc.validateVerbose(KSSLCertificate::SSLServer);
 
    _IPmatchesCN = d->kssl->peerInfo().certMatchesAddress();
-   if (!_IPmatchesCN && !d->militantSSL) {  // force this if the user wants it
-      if (d->cc->getHostList(pc).contains(ourHost))
-         _IPmatchesCN = true;
+   if (!_IPmatchesCN) {
+      KNetwork::KResolverResults res = KNetwork::KResolver::resolve(d->kssl->peerInfo().peerHost(), "80", KNetwork::KResolver::CanonName);
+      if (!res.isEmpty()) {
+         QString old = d->kssl->peerInfo().peerHost();
+         d->kssl->peerInfo().setPeerHost(res[0].canonicalName());
+         _IPmatchesCN = d->kssl->peerInfo().certMatchesAddress();
+         if (!_IPmatchesCN) {
+            d->kssl->peerInfo().setPeerHost(old);
+         }
+      }
+      if (!_IPmatchesCN && !d->militantSSL) { // force this if the user wants it
+         if (d->cc->getHostList(pc).contains(ourHost)) {
+            _IPmatchesCN = true;
+         }
+      }
    }
 
-   if (!_IPmatchesCN)
-   {
+   if (!_IPmatchesCN) {
       ksvl << KSSLCertificate::InvalidHost;
    }
 
@@ -817,6 +829,9 @@ int TCPSlaveBase::verifyCertificate()
     setMetaData("ssl_cipher_bits",
                   QString::number(d->kssl->connectionInfo().getCipherBits()));
     setMetaData("ssl_peer_ip", d->ip);
+    if (!d->realHost.isEmpty()) {
+       setMetaData("ssl_proxied", "true");
+    }
     
     QString errorStr;
     for(KSSLCertificate::KSSLValidationList::ConstIterator it = ksvl.begin();

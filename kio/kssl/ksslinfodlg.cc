@@ -214,8 +214,15 @@ void KSSLInfoDlg::setup(KSSLCertificate *cert,
 
     layout = new QGridLayout(11, 2, KDialog::spacingHint());
     layout->setColStretch(1, 1);
-    layout->addWidget(new QLabel(i18n("IP address:"), this), 0, 0);
-    layout->addWidget(new QLabel(ip, this), 0, 1);
+    QLabel *ipl = new QLabel(i18n("IP address:"), this);
+    layout->addWidget(ipl, 0, 0);
+    if (ip.isEmpty()) {
+        ipl->hide();
+    }
+    layout->addWidget(ipl = new QLabel(ip, this), 0, 1);
+    if (ip.isEmpty()) {
+        ipl->hide();
+    }
     layout->addWidget(new QLabel(i18n("URL:"), this), 1, 0);
     KSqueezedTextLabel *urlLabel = new KSqueezedTextLabel(url, this);
     layout->addWidget(urlLabel, 1, 1);
