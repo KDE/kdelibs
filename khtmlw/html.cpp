@@ -1128,7 +1128,7 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
 	    {
 		if ( strncasecmp( str, _end[i], strlen( _end[i] ) ) == 0 )
 		{
-		    return str-1;
+		    return str;
 		}
 		i++;
 	    }
@@ -2587,6 +2587,7 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 	HTMLClue::HAlign align = HTMLClue::HNone;
 	HTMLClueV *caption = NULL;
 	HTMLClue::VAlign capAlign = HTMLClue::Bottom;
+	HTMLClue::HAlign oldhalign = divAlign;
 
 	QString s = attr;
 	StringTokenizer st( s, " >" );
@@ -2652,11 +2653,9 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 				}
 			}
 			caption = new HTMLClueV( 0, 0, _clue->getMaxWidth() );
-			HTMLClue::HAlign oldhalign = divAlign;
 			divAlign = HTMLClue::HCenter;
 			flow = NULL;
 			parseBody( caption, endcap );
-			divAlign = oldhalign;
 			table->setCaption( caption, capAlign );
 		}
 		else if ( strncasecmp( str, "<tr", 3 ) == 0 )
@@ -2712,13 +2711,12 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 			QColor bgcolor;
 			HTMLClue::VAlign valign = (rowvalign == HTMLClue::VNone ?
 							HTMLClue::VCenter : rowvalign);
-			HTMLClue::HAlign oldhalign = divAlign;
 
 			if ( heading )
 				divAlign = (rowhalign == HTMLClue::HNone ? HTMLClue::HCenter :
 					rowhalign);
 			else
-				divAlign = (rowhalign == HTMLClue::HNone ? divAlign :
+				divAlign = (rowhalign == HTMLClue::HNone ? HTMLClue::Left :
 					rowhalign);
 
 			QString s = str + 4;
@@ -2788,7 +2786,6 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 			}
 			else
 				str = parseBody( cell, endtd );
-			divAlign = oldhalign;
 			if ( str == NULL )
 			{ 
 				// CC: Close table description in case of a malformed table
@@ -2797,6 +2794,7 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 					table->endRow();
 				table->endTable(); 
 				delete table;
+				divAlign = oldhalign;
 				return NULL;
 			}
 		}
@@ -2834,6 +2832,7 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 	}
 
 	flow = NULL;
+	divAlign = oldhalign;
 
 	return str;
 }

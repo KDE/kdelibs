@@ -1,7 +1,7 @@
 KDE HTML Widget
 ---------------
 
-This is the alpha version 0.7.9
+This is the alpha version 0.8.1
 
 Developers
 ----------
@@ -432,7 +432,13 @@ Version 0.8.0 - Torben
  if we have scanned the complete frame set. All resize events before
  are ignored.
 
+Version 0.8.1 - Martin
+
+ Fixed bug introduced in 0.7.9 affecting lists and glossarys.
+
+ More fixes to tables.
+
 Last change
-27.6.97 Torben Weis
+28.6.97 Martin Jones
 
 
