@@ -257,6 +257,10 @@ protected:
     bool m_specified : 1; // used in AttrImpl. Accessor functions there
     bool m_focused : 1;
     bool m_active : 1;
+
+    // used in elementimpl. Defined here to save a few bytes in the data structures.
+    bool has_tabindex  : 1;
+    short tabindex : 16;
 private:
     static const QChar LESSTHAN;
     static const QChar MORETHAN;

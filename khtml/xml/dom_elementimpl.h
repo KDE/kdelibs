@@ -176,9 +176,6 @@ protected: // member variables
     // for setting this according to the corresponding element description
     // in the DTD
     virtual khtml::AttributeList *defaultMap() const;
-private:
-    bool has_tabindex;
-    short tabindex;
 };
 
 
