@@ -126,6 +126,7 @@ static inline int getValueID(const char *tagStr, int len)
 #define YYPARSE_PARAM parser
 
 #line 79 "parser.y"
+#ifndef PARSER_H
 typedef union {
     CSSRuleImpl *rule;
     CSSSelector *selector;
@@ -145,6 +146,7 @@ typedef union {
     Value value;
     ValueList *valueList;
 } YYSTYPE;
+#endif
 #line 99 "parser.y"
 
 
