@@ -133,7 +133,7 @@ void KLineEdit::init()
                       mode == KGlobalSettings::CompletionPopupAuto ||
                       mode == KGlobalSettings::CompletionAuto);
     connect( this, SIGNAL(selectionChanged()), this, SLOT(slotRestoreSelectionColors()));
-    
+
     QPalette p = palette();
     if ( !d->previousHighlightedTextColor.isValid() )
       d->previousHighlightedTextColor=p.color(QPalette::Normal,QColorGroup::HighlightedText);
@@ -172,9 +172,9 @@ void KLineEdit::setCompletedText( const QString& t, bool marked )
 {
     if ( !d->autoSuggest )
       return;
-      
+
     QString txt = text();
-    
+
     if ( t != txt )
     {
         int start = marked ? txt.length() : t.length();
@@ -309,7 +309,7 @@ void KLineEdit::setText( const QString& text )
         setSqueezedText();
         return;
     }
-    
+
     QLineEdit::setText( text );
 }
 
@@ -321,8 +321,8 @@ void KLineEdit::setSqueezedText()
     QFontMetrics fm(fontMetrics());
     int labelWidth = size().width() - 2*frameWidth() - 2;
     int textWidth = fm.width(fullText);
-    
-    if (textWidth > labelWidth) 
+
+    if (textWidth > labelWidth)
     {
           // start with the dots only
           QString squeezedText = "...";
@@ -333,11 +333,11 @@ void KLineEdit::setSqueezedText()
           squeezedText = fullText.left(letters) + "..." + fullText.right(letters);
           squeezedWidth = fm.width(squeezedText);
 
-      if (squeezedWidth < labelWidth) 
+      if (squeezedWidth < labelWidth)
       {
              // we estimated too short
              // add letters while text < label
-          do 
+          do
           {
                 letters++;
                 squeezedText = fullText.left(letters) + "..." + fullText.right(letters);
@@ -345,12 +345,12 @@ void KLineEdit::setSqueezedText()
              } while (squeezedWidth < labelWidth);
              letters--;
              squeezedText = fullText.left(letters) + "..." + fullText.right(letters);
-      } 
-      else if (squeezedWidth > labelWidth) 
+      }
+      else if (squeezedWidth > labelWidth)
       {
              // we estimated too long
              // remove letters while text > label
-          do 
+          do
           {
                letters--;
                 squeezedText = fullText.left(letters) + "..." + fullText.right(letters);
@@ -358,12 +358,12 @@ void KLineEdit::setSqueezedText()
              } while (squeezedWidth > labelWidth);
           }
 
-      if (letters < 5) 
+      if (letters < 5)
       {
              // too few letters added -> we give up squeezing
           QLineEdit::setText(fullText);
-      } 
-      else 
+      }
+      else
       {
           QLineEdit::setText(squeezedText);
              d->squeezedStart = letters;
@@ -373,15 +373,15 @@ void KLineEdit::setSqueezedText()
           QToolTip::remove( this );
           QToolTip::add( this, fullText );
 
-    } 
-    else 
+    }
+    else
     {
       QLineEdit::setText(fullText);
 
           QToolTip::remove( this );
           QToolTip::hide();
        }
-    
+
        setCursorPosition(0);
 }
 
@@ -411,22 +411,22 @@ void KLineEdit::copy() const
                SLOT(clipboardChanged()) );
       return;
    }
-   
+
    QLineEdit::copy();
 }
 
 void KLineEdit::resizeEvent( QResizeEvent * ev )
 {
     if (!d->squeezedText.isEmpty())
-        setSqueezedText();    
-    
+        setSqueezedText();
+
     QLineEdit::resizeEvent(ev);
 }
 
 void KLineEdit::keyPressEvent( QKeyEvent *e )
 {
     KKey key( e );
-    
+
     if ( KStdAccel::copy().contains( key ) )
     {
         copy();
@@ -515,7 +515,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
       e->accept();
       return;
     }
-    
+
 
     // Filter key-events if EchoMode is normal and
     // completion mode is not set to CompletionNone
@@ -524,7 +524,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
     {
         KeyBindingMap keys = getKeyBindings();
         KGlobalSettings::Completion mode = completionMode();
-        bool noModifier = (e->state() == NoButton || 
+        bool noModifier = (e->state() == NoButton ||
                            e->state() == ShiftButton ||
                            e->state() == Keypad);
 
@@ -575,7 +575,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             QString keycode = e->text();
             if ( !keycode.isEmpty() && (keycode.unicode()->isPrint() ||
                 e->key() == Key_Backspace || e->key() == Key_Delete ) )
-            {          
+            {
                 bool hasUserSelection=d->userSelection;
                 bool hadSelection=hasSelectedText();
 
@@ -595,11 +595,11 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                     setCursorPosition(cPos);
                     cursorNotAtEnd=true;
                 }
-                
+
                 d->disableRestoreSelection = true;
                 QLineEdit::keyPressEvent ( e );
                 d->disableRestoreSelection = false;
-                
+
                 QString txt = text();
                 int len = txt.length();
                 if ( !hasSelectedText() && len /*&& cursorPosition() == len */)
@@ -629,9 +629,9 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                     if(  (e->key() == Key_Backspace || e->key() == Key_Delete) )
                         d->autoSuggest=true;
 
-                    e->accept();                    
-                }                
-                
+                    e->accept();
+                }
+
                 return;
             }
 
@@ -640,7 +640,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         else if (( mode == KGlobalSettings::CompletionPopup ||
                    mode == KGlobalSettings::CompletionPopupAuto ) &&
                    noModifier && !e->text().isEmpty() )
-        {           
+        {
             QString old_txt = text();
             bool hasUserSelection=d->userSelection;
             bool hadSelection=hasSelectedText();
@@ -665,7 +665,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             }
 
             uint selectedLength=selectedText().length();
-            
+
             d->disableRestoreSelection = true;
             QLineEdit::keyPressEvent ( e );
             d->disableRestoreSelection = false;
@@ -710,7 +710,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             }
             else if (!len && d->completionBox && d->completionBox->isVisible())
                 d->completionBox->hide();
-                        
+
             return;
         }
 
@@ -825,7 +825,7 @@ void KLineEdit::mousePressEvent( QMouseEvent* e )
     if ( possibleTripleClick && e->button() == Qt::LeftButton )
     {
         selectAll();
-        e->accept();        
+        e->accept();
         return;
     }
     QLineEdit::mousePressEvent( e );
@@ -836,10 +836,10 @@ void KLineEdit::tripleClickTimeout()
     possibleTripleClick=false;
 }
 
-enum { IdUndo, IdRedo, IdSep1, IdCut, IdCopy, IdPaste, IdClear, IdSep2, IdSelectAll };
-
 QPopupMenu *KLineEdit::createPopupMenu()
 {
+    enum { IdUndo, IdRedo, IdSep1, IdCut, IdCopy, IdPaste, IdClear, IdSep2, IdSelectAll };
+
     // Return if popup menu is not enabled !!
     if ( !m_bEnableMenu )
         return 0;
@@ -991,7 +991,7 @@ bool KLineEdit::eventFilter( QObject* o, QEvent* ev )
                 bool trap = d->completionBox && d->completionBox->isVisible();
 
                 bool stopEvent = trap || (d->grabReturnKeyEvents &&
-                                          (e->state() == NoButton || 
+                                          (e->state() == NoButton ||
                                            e->state() == Keypad));
 
                 // Qt will emit returnPressed() itself if we return false
@@ -1244,7 +1244,7 @@ void KLineEdit::slotRestoreSelectionColors()
 {
     if (d->disableRestoreSelection)
       return;
-    
+
     setUserSelection(true);
 }
 
@@ -1263,7 +1263,7 @@ QString KLineEdit::originalText() const
 {
     if ( d->enableSqueezedText && isReadOnly() )
         return d->squeezedText;
-        
+
     return text();
 }
 

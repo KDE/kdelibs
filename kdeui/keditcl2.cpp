@@ -1070,11 +1070,11 @@ QString KEdit::selectWordUnderCursor( )
 {
     int parag;
     int pos;
-    
+
     getCursorPosition(&parag, &pos);
-    
+
     QString txt = text(parag);
-    
+
     // Find start
     int start = pos;
     while( start > 0 )
@@ -1084,7 +1084,7 @@ QString KEdit::selectWordUnderCursor( )
           break;
        start--;
     }
-    
+
     // Find end
     int end = pos;
     int len = txt.length();
@@ -1099,10 +1099,10 @@ QString KEdit::selectWordUnderCursor( )
     return txt.mid(start, end-start);
 }
 
-enum { IdUndo, IdRedo, IdSep1, IdCut, IdCopy, IdPaste, IdClear, IdSep2, IdSelectAll };
-
 QPopupMenu *KEdit::createPopupMenu( const QPoint& pos )
 {
+    enum { IdUndo, IdRedo, IdSep1, IdCut, IdCopy, IdPaste, IdClear, IdSep2, IdSelectAll };
+
     QPopupMenu *menu = QMultiLineEdit::createPopupMenu( pos );
 
     int id = menu->idAt(0);
