@@ -28,7 +28,7 @@ class KFilterBase;
  * A class for reading and writing compressed data onto a device
  * (e.g. file, but other usages are possible, like a buffer or a socket)
  *
- * To simply read/write compressed files, @see deviceForFile.
+ * To simply read/write compressed files, see @ref deviceForFile.
  *
  * @author David Faure <faure@kde.org>
  */
