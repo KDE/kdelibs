@@ -27,4 +27,23 @@ public:
 
 };
 
+class K2ToggleAction : public QToggleAction
+{
+    Q_OBJECT
+public:
+    K2ToggleAction( const QString& text, int accel = 0, QObject* parent = 0, const char* name = 0 );
+    K2ToggleAction( const QString& text, int accel,
+	     QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+    K2ToggleAction( const QString& text, const QIconSet& pix, int accel = 0,
+	     QObject* parent = 0, const char* name = 0 );
+    K2ToggleAction( const QString& text, const QIconSet& pix, int accel,
+	     QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+    K2ToggleAction( QObject* parent = 0, const char* name = 0 );
+
+    int plug( QWidget* );
+
+    virtual void setChecked( bool );
+
+};
+
 #endif
