@@ -114,19 +114,29 @@ QString KIO::encodeFileName( const QString & _str )
 
 QString KIO::decodeFileName( const QString & _str )
 {
-  QString str( _str );
+  QString str;
 
   int i = 0;
-  while ( ( i = str.find( "%%", i ) ) != -1 )
+  for ( ; i < _str.length() ; ++i )
   {
-    str.replace( i, 2, "%");
-    i++;
+    if ( _str[i]=='%' )
+    {
+      if ( _str[i+1]=='%' ) // %% -> %
+      {
+        str.append('%');
+        ++i;
+      }
+      else if ( _str[i+1]=='2' && (i+2<_str.length()) && _str[i+2].lower()=='f' ) // %2f -> /
+      {
+        str.append('/');
+        i += 2;
+      }
+      else
+        str.append('%');
+    } else
+      str.append(_str[i]);
   }
 
-  while ( ( i = str.find( "%2f" ) ) != -1 )
-      str.replace( i, 3, "/");
-  while ( ( i = str.find( "%2F" ) ) != -1 )
-      str.replace( i, 3, "/");
   return str;
 }
 
