@@ -40,7 +40,7 @@ class KCatalogue;
 /**
  *  i18n is the function that does everything you need to translate
  *  a string. You just wrap around every user visible string a i18n
- *  call to get a QString with the string in the user's prefered
+ *  call to get a QString with the string in the user's preferred
  *  language.
  *
  *  The argument must be an UTF-8 encoded string (If you only use
@@ -51,7 +51,7 @@ class KCatalogue;
 QString i18n(const char *text);
 
 /**
- *  If the string is too ambigious to be translated well to a non-english
+ *  If the string is too ambiguous to be translated well to a non-english
  *  language, use this form of i18n to separate lookup string and english
  *  text.
  *  @see translate
@@ -98,7 +98,7 @@ public:
    * used.
    *
    * If you specify a configuration file, it has to be valid until
-   * the KLocale object is destoryed.
+   * the KLocale object is destroyed.
    *
    * @param catalogue The name of the main language file
    * @param config The configuration file to use.
@@ -147,7 +147,7 @@ public:
    * The real contents of the string is in the argument fallback,
    * but the meaning of it is coded into the argument index.
    * In some cases you'll need this function, when english is
-   * too ambigious to express it.
+   * too ambiguous to express it.
    *
    * Most of the times the translators will tell you if it can't
    * be translated as it, but think of cases as "New", where the
@@ -184,7 +184,7 @@ public:
   /**
    * Changes the current encoding.
    *
-   * @param mibEnum The mib of the prefered codec
+   * @param mibEnum The mib of the preferred codec
    *
    * @return True on success.
    */
@@ -252,7 +252,7 @@ public:
    * Returns what the symbol denoting currency in the current locale
    * as as defined by user settings should look like.
    *
-   * @return The default currecy symbol used by locale.
+   * @return The default currency symbol used by locale.
    */
   QString currencySymbol() const;
 
@@ -310,7 +310,7 @@ public:
    * If and only if the currency symbol precedes a negative value,
    * this will be true.
    *
-   * @return Where to print the currecy symbol for negative numbers.
+   * @return Where to print the currency symbol for negative numbers.
    */
   bool negativePrefixCurrencySymbol() const;
 
@@ -368,7 +368,7 @@ public:
    * If precision isn't specified, 2 is used.
    *
    * @param num The number to convert
-   * @param precision Number of fractinal digits used.
+   * @param precision Number of fractional digits used.
    *
    * @return The number as a localized string
    */
@@ -417,9 +417,9 @@ public:
   bool use12Clock() const;
 
   /**
-   * Use this to determine if the user wants the week to start on monday.
+   * Use this to determine if the user wants the week to start on Monday.
    *
-   * @return true if the week starts on monday
+   * @return true if the week starts on Monday
    */
   bool weekStartsMonday() const;
 
@@ -427,7 +427,7 @@ public:
    * Returns a string containing the name of the month name.
    *
    * @param i the month number of the year starting at 1/January.
-   * @param shortName we will return the short versoin of the string.
+   * @param shortName we will return the short version of the string.
    *
    * @return The name of the month
    */
@@ -437,7 +437,7 @@ public:
    * Returns a string containing the name of the week day.
    *
    * @param i the day number of the week starting at 1/Monday.
-   * @param shortName we will return the short versoin of the string.
+   * @param shortName we will return the short version of the string.
    *
    * @return The name of the week
    */
@@ -532,7 +532,7 @@ public:
 #endif
 
   /**
-   * Returns the prefered languages as ISO 639-1 codes. This means
+   * Returns the preferred languages as ISO 639-1 codes. This means
    * that information about country is removed. If the internal language
    * code might be represented by more than one 639-1 code, they will all be
    * listed (but only once).
@@ -540,7 +540,7 @@ public:
    * If the selected languages are "nn, nb, pt_BR", you will get:
    * "nn, no, nb, pt".
    *
-   * @return List of langauge codes
+   * @return List of language codes
    *
    * @see languageList
    */
@@ -562,7 +562,7 @@ public:
    * NOTE: This is no longer the same as encoding.
    * "iso-8859-1" is default
    *
-   * @return Name of the prefered charset for fonts
+   * @return Name of the preferred charset for fonts
    *
    * @see encoding
    */
@@ -571,9 +571,9 @@ public:
 #endif
 
   /**
-   * Returns the user's prefered encoding.
+   * Returns the user's preferred encoding.
    *
-   * @return The name of the prefered encoding
+   * @return The name of the preferred encoding
    *
    * @see codecForEncoding
    * @see encodingMib
@@ -581,18 +581,18 @@ public:
   const char * encoding() const;
 
   /**
-   * Returns the user's prefered encoding.
+   * Returns the user's preferred encoding.
    *
-   * @return The Mib of the prefered encoding
+   * @return The Mib of the preferred encoding
    *
    * @see encoding
    * @see codecForEncoding
    */
   int encodingMib() const;
   /**
-   * Returns the user's prefered encoding. Should never be NULL.
+   * Returns the user's preferred encoding. Should never be NULL.
    *
-   * @return The codec for the prefered encoding
+   * @return The codec for the preferred encoding
    *
    * @see encoding
    * @see encodingMib
@@ -652,7 +652,7 @@ public:
   /**
    * Changes the separator used to group digits when formating numbers.
    *
-   * @param seprator The new thousands separator.
+   * @param separator The new thousands separator.
    */
   void setThousandsSeparator(const QString & separator);
   /**
@@ -699,13 +699,13 @@ public:
   /**
    * Changes the number of digits used when formating numbers.
    *
-   * @param digits The default number of digist to use.
+   * @param digits The default number of digits to use.
    */
   void setFracDigits(int digits);
   /**
    * Changes the separator used to group digits when formating monetary values.
    *
-   * @param seprator The new thousands separator.
+   * @param separator The new thousands separator.
    */
   void setMonetaryThousandsSeparator(const QString & separator);
   /**
@@ -723,16 +723,16 @@ public:
   void setCurrencySymbol(const QString & symbol);
 
   /**
-   * Returns the prefered page size for printing.
+   * Returns the preferred page size for printing.
    *
-   * @return The prefered page size, cast it to QPrinter::PageSize
+   * @return The preferred page size, cast it to QPrinter::PageSize
    */
   int pageSize() const;
 
   /**
-   * Changes the prefered page size when printing.
+   * Changes the preferred page size when printing.
    *
-   * @param The new prefered page size in the format QPrinter::PageSize
+   * @param The new preferred page size in the format QPrinter::PageSize
    */
   void setPageSize(int paperFormat);
 
@@ -745,14 +745,14 @@ public:
   /**
    * Returns which measuring system we use.
    *
-   * @return The prefered measuring system
+   * @return The preferred measuring system
    */
   MeasureSystem measureSystem() const;
 
   /**
-   * Changes the prefered measuring system.
+   * Changes the preferred measuring system.
    *
-   * @return value The prefered messuring system
+   * @return value The preferred measuring system
    */
   void setMeasureSystem(MeasureSystem value);
 
@@ -770,7 +770,7 @@ public:
 
   /**
    * Translates a message as a QTranslator is supposed to.
-   * The parameters are similiar to i18n(), but the result
+   * The parameters are similar to i18n(), but the result
    * value has other semantics (it can be QString::null)
    **/
   QString translateQt(const char *context, const char *sourceText) const;
