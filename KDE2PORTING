@@ -109,3 +109,23 @@ khtmlw has been replaced with khtml.
                             or KIONetAccess (sync, see kio_netaccess.h)
   DlgLocation removed. Generic dialog boxes should go in kdeui.
 
+////////////////////////////////////////////////////////////////////////
+// * KGlobal: access to KDE global objects.
+
+KGlobal allows centralized access to KDE global objects without including
+extraneous headers. object creation is deferred if possible.
+
+All methods are static and headers for returned types are not included. You
+must have created a KApplication object before the methods can be used.
+
+	#include<kglobal.h>
+	#include<kconfig.h>     // Needed to use KConfig
+	#include<klocale.h>     // Needed to use KLocale
+	#include<kiconloader.h> //
+ 
+	...
+        	KConfig *appcfg = KGlobal::config();
+	        QString mystr	 = i18n( "This is a string" );
+
+
+		KIconLoader *loader = KGlobal::iconLoader();
