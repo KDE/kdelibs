@@ -34,6 +34,7 @@
 #endif
 #include "loader_jpeg.h"
 
+#include <assert.h>
 #include <stdio.h>
 #include <setjmp.h>
 #include <qdatetime.h>
