@@ -381,10 +381,12 @@ QString KIOCache::htmlIndex()
 	cacheIndex += "<tr><td><a href=\"";
 	cacheIndex += cachedFile;
 	cacheIndex += "\"><img border=0 src=\"";
+        QString iconPath;
 	if ( !it.current()->mimeType().isEmpty() )
-	  cacheIndex += KPixmapCache::pixmapFileForMimeType( it.current()->mimeType().ascii(), true );
+	  KMimeType::mimeType( it.current()->mimeType() )->pixmap( KIconLoader::Small, &iconPath );
 	else
-	  cacheIndex += KPixmapCache::pixmapFileForURL( cachedFile.ascii(), 0, true, true );
+	  KMimeType::findByURL( cachedFile, 0, true, true )->pixmap( KIconLoader::Small, &iconPath );
+        cacheIndex += iconPath;
 	
 	cacheIndex += "\"></a></td> ";
 	// Second entry is a href to the actual URL, displaying the

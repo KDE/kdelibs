@@ -288,6 +288,17 @@ KMimeType::~KMimeType()
 {
 }
 
+QPixmap KMimeType::pixmap( KIconLoader::Size _size, QString * _path )
+{
+  return KGlobal::iconLoader()->loadApplicationIcon( icon( QString::null, false ), _size, _path );
+}
+
+QPixmap KMimeType::pixmap( const KURL& _url, KIconLoader::Size _size, QString * _path )
+{
+  return KGlobal::iconLoader()->loadApplicationIcon( icon( _url, _url.isLocalFile() ), _size, _path );
+}
+
+  
 /*******************************************************
  *
  * KFolderType

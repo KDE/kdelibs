@@ -30,6 +30,7 @@
 #include <qmap.h>
 
 #include <kurl.h>
+#include <kiconloader.h>
 #include <ksimpleconfig.h>
 
 #include "ksycocatype.h"
@@ -77,6 +78,25 @@ public:
    * provided instead of a QString for convenience.
    */
   virtual QString icon( const KURL& , bool ) const { return m_strIcon; }
+  /**
+   * Use this function only if you don't have a special URL
+   * for which you search a pixmap.  This function is useful to fond
+   * out, which icon is usually chosen for a certain mime type. Since
+   * no URL is passed, it is impossible to obey icon hints in desktop
+   * entries for example.
+   * @param _size Size requested for the pixmap, see KIconLoader
+   * @param _path Output parameter to get the full path. Seldom needed.
+   */
+  QPixmap pixmap( KIconLoader::Size _size, QString * _path = 0L );
+  /**
+   * Find the pixmap for a given file of this mimetype
+   * Convenience method that uses icon(), but also locates and load the pixmap
+   * @param _url URL for the file
+   * @param _size Size requested for the pixmap, see KIconLoader
+   * @param _path Output parameter to get the full path. Seldom needed.
+   */
+  QPixmap pixmap( const KURL& _url, KIconLoader::Size _size, QString * _path = 0L );
+
   /**
    * The arguments are unused, but provided so that KMimeType derived classes
    * can use them.
@@ -153,7 +173,7 @@ public:
    * Very memory consuming, don't use unless really necessary.
    */
   static List allMimeTypes();
-
+  
 protected:
   /**
    * Signal a missing mime type
