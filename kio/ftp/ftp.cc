@@ -817,7 +817,14 @@ void Ftp::mkdir( const KURL & url, int permissions )
 {
   QString path = url.path();
   if (!m_bLoggedOn)
-     openConnection();
+  {
+      openConnection();
+      if (!m_bLoggedOn)
+      {
+        kdDebug(7102) << "Login failure, aborting" << endl;
+        return;
+      }
+  }
 
   assert( m_bLoggedOn );
 
@@ -842,7 +849,14 @@ void Ftp::mkdir( const KURL & url, int permissions )
 void Ftp::rename( const KURL& src, const KURL& dst, bool overwrite )
 {
   if (!m_bLoggedOn)
-     openConnection();
+  {
+      openConnection();
+      if (!m_bLoggedOn)
+      {
+        kdDebug(7102) << "Login failure, aborting" << endl;
+        return;
+      }
+  }
 
   // The actual functionality is in ftpRename because put needs it
   if ( ftpRename( src.path(), dst.path(), overwrite ) )
@@ -870,7 +884,14 @@ void Ftp::del( const KURL& url, bool isfile )
 {
   QString path = url.path();
   if (!m_bLoggedOn)
-     openConnection();
+  {
+      openConnection();
+      if (!m_bLoggedOn)
+      {
+        kdDebug(7102) << "Login failure, aborting" << endl;
+        return;
+      }
+  }
 
   assert( m_bLoggedOn );
 
@@ -914,7 +935,14 @@ bool Ftp::ftpChmod( const QString & path, int permissions )
 void Ftp::chmod( const KURL & url, int permissions )
 {
   if (!m_bLoggedOn)
-     openConnection();
+  {
+      openConnection();
+      if (!m_bLoggedOn)
+      {
+        kdDebug(7102) << "Login failure, aborting" << endl;
+        return;
+      }
+  }
 
   if ( !ftpChmod( url.path(), permissions ) )
     error( ERR_CANNOT_CHMOD, url.path() );
@@ -992,7 +1020,14 @@ void Ftp::stat( const KURL &url)
   kdDebug(7102) << "Ftp::stat : path='" << url.path() << "'" << endl;
   QString path = QDir::cleanDirPath( url.path() );
   if (!m_bLoggedOn)
-     openConnection();
+  {
+      openConnection();
+      if (!m_bLoggedOn)
+      {
+        kdDebug(7102) << "Login failure, aborting" << endl;
+        return;
+      }
+  }
 
   kdDebug(7102) << "Ftp::stat : cleaned path='" << path << "'" << endl;
 
@@ -1149,7 +1184,14 @@ void Ftp::listDir( const KURL &url )
 {
   kdDebug(7102) << "Ftp::listDir " << url.url() << endl;
   if (!m_bLoggedOn)
-     openConnection();
+  {
+      openConnection();
+      if (!m_bLoggedOn)
+      {
+        kdDebug(7102) << "Login failure, aborting" << endl;
+        return;
+      }
+  }
 
   QString path = url.path();
   // No path specified ?
@@ -1447,7 +1489,14 @@ bool Ftp::ftpCloseDir()
 void Ftp::get( const KURL & url )
 {
   if (!m_bLoggedOn)
-     openConnection();
+  {
+      openConnection();
+      if (!m_bLoggedOn)
+      {
+        kdDebug(7102) << "Login failure, aborting" << endl;
+        return;
+      }
+  }
 
   // Old code used to start by stat'ing, just to make sure it exists
   // Waste of time, I'd say. (David)
@@ -1543,7 +1592,14 @@ void Ftp::get( const KURL & url )
 void Ftp::mimetype( const KURL& url )
 {
   if (!m_bLoggedOn)
-     openConnection();
+  {
+      openConnection();
+      if (!m_bLoggedOn)
+      {
+        kdDebug(7102) << "Login failure, aborting" << endl;
+        return;
+      }
+  }
 
   if ( !ftpOpenCommand( "retr", url.path(), 'I', ERR_CANNOT_OPEN_FOR_READING, 0 ) ) {
     kdWarning(7102) << "Can't open for reading" << endl;
@@ -1608,7 +1664,14 @@ void Ftp::put( const KURL& dest_url, int permissions, bool overwrite, bool resum
 {
   QString dest_orig = dest_url.path();
   if (!m_bLoggedOn)
-     openConnection();
+  {
+      openConnection();
+      if (!m_bLoggedOn)
+      {
+        kdDebug(7102) << "Login failure, aborting" << endl;
+        return;
+      }
+  }
 
   kdDebug(7102) << "Put " << dest_orig << endl;
   QString dest_part( dest_orig );
