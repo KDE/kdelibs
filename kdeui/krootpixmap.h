@@ -192,6 +192,7 @@ protected:
 private slots:
     void slotBackgroundChanged(int);
     void slotDone(bool);
+    void desktopChanged( int desk );
 
 private:
     bool m_bActive, m_bInit, m_bCustomPaint;

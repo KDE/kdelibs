@@ -31,6 +31,7 @@ class KRootPixmapData
 {
 public:
     QWidget *toplevel;
+    KWinModule *kwin;
 };
 
 
@@ -59,6 +60,9 @@ void KRootPixmap::init()
     connect(kapp, SIGNAL(backgroundChanged(int)), SLOT(slotBackgroundChanged(int)));
     connect(m_pPixmap, SIGNAL(done(bool)), SLOT(slotDone(bool)));
     connect(m_pTimer, SIGNAL(timeout()), SLOT(repaint()));
+
+    d->kwin = new KWinModule( this );
+    connect( d->kwin, SIGNAL(currentDesktopChanged(int)), SLOT(desktopChanged(int)) );
 
     d->toplevel = m_pWidget->topLevelWidget();
     d->toplevel->installEventFilter(this);
@@ -153,6 +157,10 @@ bool KRootPixmap::eventFilter(QObject *, QEvent *event)
     return false; // always continue processing
 }
 
+void KRootPixmap::desktopChanged( int desk )
+{
+    repaint(true);
+}
 
 void KRootPixmap::repaint()
 {
