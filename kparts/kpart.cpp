@@ -41,7 +41,8 @@ Part::Part( const char* name )
     : QObject( 0L, name ), m_collection( this )
 {
   d = new PartPrivate;
-  m_widget = 0;
+  m_widget = 0L;
+  m_manager = 0L;
 }
 
 Part::~Part()

@@ -81,7 +81,7 @@ public:
     // Only called by PartManager - should be protected and using friend ?
     void setManager( PartManager * manager ) { m_manager = manager; }
     /**
-     * @return the part manager handling this part
+     * @return the part manager handling this part, if any (0L otherwise)
      */
     PartManager * manager() { return m_manager; }
 
