@@ -705,8 +705,10 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
 	if(ext != "SVG" && ext != "VGZ")
 	{
 	    img = new QImage(icon.path, ext.latin1());
-	    if (img->isNull())
+	    if (img->isNull()) {
+                delete img;
 		return pix;
+            }
 	}
 #ifdef HAVE_LIBART
 	else
