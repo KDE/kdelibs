@@ -180,11 +180,32 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
   Value v = thisObj.internalValue();
   double milli = v.toNumber(exec);
   // special case: time value is NaN
-  if (isNaN(milli) && (id == GetYear || id == GetFullYear || id == GetMonth ||
-                       id == GetDate || id == GetDay || id == GetHours ||
-                       id == GetMinutes || id == GetSeconds ||
-                       id == GetMilliSeconds || id == GetTimezoneOffset))
-    return Number(NaN);
+  if (isNaN(milli)) {
+    switch (id) {
+    case ToString:
+    case ToDateString:
+    case ToTimeString:
+    case ToGMTString:
+    case ToUTCString:
+    case ToLocaleString:
+    case ToLocaleDateString:
+    case ToLocaleTimeString:
+      return String("Invalid Date");
+    case ValueOf:
+    case GetTime:
+    case GetYear:
+    case GetFullYear:
+    case GetMonth:
+    case GetDate:
+    case GetDay:
+    case GetHours:
+    case GetMinutes:
+    case GetSeconds:
+    case GetMilliSeconds:
+    case GetTimezoneOffset:
+      return Number(NaN);
+    }
+  }
   time_t tv = (time_t) floor(milli / 1000.0);
   int ms = int(milli - tv * 1000.0);
 

@@ -1,3 +1,8 @@
+2003-11-21  Harri Porten  <porten@kde.org>
+
+	* date_object.cpp: return "Invalid Date" on string conversions of
+	NaN dates (patch by Apple)
+
 2003-11-20  Harri Porten  <porten@kde.org>
 
 	* date_object.cpp: return NaN in getter functions if the time
