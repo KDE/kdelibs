@@ -298,7 +298,7 @@ DCOPServer::DCOPServer()
 
 //   if (!IceListenForConnections (&numTransports, &listenObjs,
 // 				256, errormsg))
-  if (!IceListenForWellKnownConnections ("5000", &numTransports, &listenObjs,
+  if (!IceListenForWellKnownConnections ("5432", &numTransports, &listenObjs,
 				256, errormsg))
     {
       fprintf (stderr, "%s\n", errormsg);
