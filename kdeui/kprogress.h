@@ -172,10 +172,10 @@ private:
  * undesireable to show a dialog for a split second before hiding it,
  * there are a few ways to control the timing behavior of KProgressDialog.
  * There is a time out that can be set before showing the dialog as well
- * as an option to autohide or keep displaying the dialog once copmlete.
+ * as an option to autohide or keep displaying the dialog once complete.
  *
  * All the functionality of KProgress is available through direct access
- * to the progrss bar widget via progressBar();
+ * to the progress bar widget via progressBar();
  *
  * @short A dialog with a progress bar
  * @author Aaron J. Seigo
