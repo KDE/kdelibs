@@ -22,17 +22,18 @@ main(int argc, char *argv[])
 
    if (build)
    {
-     KBuildSycoca *sycoca= new KBuildSycoca(); // Build data base
+     KBuildSycoca *sycoca= new KBuildSycoca; // Build data base
      
-     KServiceTypeFactory *factory = new KServiceTypeFactory(true); // Build data base
+     KServiceTypeFactory *factory = new KServiceTypeFactory;
      sycoca->addFactory(factory);
-     KServiceFactory *sfactory = new KServiceFactory(true); // Build data base
+     KServiceFactory *sfactory = new KServiceFactory;
      sycoca->addFactory(sfactory);
 
      sycoca->build(); // Parse dirs
      sycoca->save(); // Save database
      delete sycoca;
      delete factory;
+     delete sfactory;
    }
 
 }

@@ -66,7 +66,7 @@ KSycocaDict::~KSycocaDict()
 void 
 KSycocaDict::add(const QString &key, KSycocaEntry *payload)
 {
-   if (key.isEmpty()) abort();
+   if (key.isEmpty()) return; // Not allowed (should never happen)
    if (!payload) return; // Not allowed!
    if (!d)
    {
@@ -77,6 +77,24 @@ KSycocaDict::add(const QString &key, KSycocaEntry *payload)
    d->append(entry);
 }
    
+KSycocaEntry * KSycocaDict::findEntryInMemory( const QString & key )
+{
+  if ( !d )
+    return 0L;
+
+  // This is a building database. Use the in-memory list.
+  // VERY SLOW. But who cares. :)
+  // Used for looking up the mimetype(s) when reading services...
+  // Well we might want to replace the list with a dict...
+  QListIterator<string_entry> it ( *d );
+  for ( ; it.current(); ++it )
+  {
+    if ( it.current()->key == key )
+      return it.current()->payload;
+  }
+  return 0L;
+}
+
 int 
 KSycocaDict::find_string(const QString &key )
 {
@@ -261,7 +279,7 @@ fprintf(stderr, "Calculating hash keys..\n");
    for(string_entry *entry=d->first(); entry; entry = d->next())
    {
       entry->hash = 0;
-fprintf( stderr, "%s\n", entry->key.ascii() );
+//fprintf( stderr, "%s\n", entry->key.ascii() );
       if ((int) entry->key.length() > maxLength)
          maxLength = entry->key.length();
    }
@@ -349,7 +367,7 @@ fprintf(stderr, "Clearing hashtable...\n");
 fprintf(stderr, "Filling hashtable...\n");
    for(string_entry *entry=d->first(); entry; entry = d->next())
    {
-fprintf(stderr, "Filling with %s\n", entry->key.ascii());
+//fprintf(stderr, "Filling with %s\n", entry->key.ascii());
       int hash = entry->hash % mHashTableSize;
       if (!hashTable[hash].entry)
       { // First entry

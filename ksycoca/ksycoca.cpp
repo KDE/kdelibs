@@ -25,6 +25,7 @@
 
 #include <kglobal.h>
 #include <kstddirs.h>
+#include <assert.h>
 
 // Read-only constructor
 KSycoca::KSycoca()
@@ -38,6 +39,7 @@ KSycoca::KSycoca()
    }
    str = new QDataStream(database);
    m_lstFactories = new KSycocaFactoryList();
+   self = this;
 }
 
 // Read-write constructor - only for KBuildSycoca
@@ -52,6 +54,7 @@ KSycoca::KSycoca( bool /* dummy */ )
    }
    str = new QDataStream(database);
    m_lstFactories = new KSycocaFactoryList();
+   self = this;
 }
 
 KSycoca::~KSycoca()
@@ -67,7 +70,7 @@ KSycoca::~KSycoca()
    delete m_lstFactories;
 }
 
-
+//static
 QDataStream *
 KSycoca::findEntry(int offset, KSycocaType &type)
 {
@@ -86,6 +89,7 @@ KSycoca::_findEntry(int offset, KSycocaType &type)
    return str;
 }
 
+//static
 QDataStream *
 KSycoca::registerFactory( KSycocaFactoryId id)
 {
@@ -116,6 +120,13 @@ fprintf(stderr, "KSycoca: Error, KSycocaFactory (id = %d) not found!\n", id);
       }
    }
    return 0;
+}
+
+//static
+bool KSycoca::isBuilding()
+{
+  assert( self );
+  return self->_isBuilding();
 }
 
 KSycoca * KSycoca::self = 0;

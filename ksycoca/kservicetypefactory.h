@@ -50,7 +50,7 @@ public:
   /**
    * Create factory
    */
-  KServiceTypeFactory(bool buildDatabase = false);
+  KServiceTypeFactory();
   
   virtual ~KServiceTypeFactory();
 

@@ -30,10 +30,10 @@
 #include <kglobal.h>
 #include <kstddirs.h>
 
-KServiceFactory::KServiceFactory(bool buildDatabase)
- : KSycocaFactory( buildDatabase, KST_KServiceFactory )
+KServiceFactory::KServiceFactory()
+ : KSycocaFactory( KST_KServiceFactory )
 {
-   if (buildDatabase)
+   if (KSycoca::isBuilding())
    {
       (*m_pathList) += KGlobal::dirs()->resourceDirs( "apps" );
       (*m_pathList) += KGlobal::dirs()->resourceDirs( "services" );
@@ -77,8 +77,12 @@ KService *
 KServiceFactory::_findServiceByName(const QString &_name)
 {
    if (!m_entryDict) return 0; // Error!
-   int offset = m_entryDict->find_string( _name );
 
+   // Warning : this assumes we're NOT building a database
+   // But since findServiceByName isn't called in that case...
+   // [ see KServiceTypeFactory for how to do it if needed ]
+
+   int offset = m_entryDict->find_string( _name );
    if (!offset) return 0; // Not found
 
    KService *newService = createService(offset);

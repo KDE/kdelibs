@@ -40,8 +40,9 @@ public:
 protected: // virtual class
    /**
     * Create a factory which can be used to lookup from/create a database
+    * (depending on KSycoca::isBuilding())
     */
-   KSycocaFactory( bool buildDatabase, KSycocaFactoryId factory_id );
+   KSycocaFactory( KSycocaFactoryId factory_id );
 
 public:
    virtual ~KSycocaFactory();
@@ -56,15 +57,15 @@ public:
    void setOffset(int _offset) { mOffset = _offset; }
 
    /**
-    * Add an entry
-    */
-   void addEntry(KSycocaEntry *newEntry);
-   /**
     * Construct an entry from a config file.
     * To be implemented in the real factories.
     */
    virtual KSycocaEntry *createEntry(const QString &file) = 0L;
 
+   /**
+    * Add an entry
+    */
+   void addEntry(KSycocaEntry *newEntry);
    /**
     * Clear the whole factory - often called before updating it
     * Destroys every entry since the list and the dict are autodelete

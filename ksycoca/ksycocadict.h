@@ -30,8 +30,15 @@ class KSycocaDictStringList;
 class KSycocaDict
 {
 public:
+   /**
+    * Create an empty dict, for building the database
+    */
    KSycocaDict();
+   /**
+    * Create a dict from an existing database
+    */
    KSycocaDict(QDataStream *str, int offset);
+
    ~KSycocaDict();
 
    /**
@@ -55,6 +62,12 @@ public:
     * then no matching entry exists.
     */
    int find_string(const QString &key );
+   
+   /**
+    * Look for an entry in memory
+    * Only valid when building the database.
+    */
+   KSycocaEntry * findEntryInMemory( const QString & key );
    
    /**
     * The number of entries in the dictionary.

@@ -50,9 +50,15 @@ public:
     */
    static QDataStream *registerFactory( KSycocaFactoryId id);
 
+   /**
+    * @return true if building (i.e. if a KBuildSycoca);
+    */
+   static bool isBuilding();
+
 protected:
    QDataStream *_findEntry(int offset, KSycocaType &type);
    QDataStream *_registerFactory( KSycocaFactoryId id);
+   virtual bool _isBuilding() { return false; }
 
 protected:
    KSycocaFactoryList *m_lstFactories;

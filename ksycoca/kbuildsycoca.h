@@ -43,6 +43,8 @@ protected:
    */
   void readDirectory(const QString& dir, KSycocaFactory * factory );
 
+  virtual bool _isBuilding() { return true; }
+
 protected slots:
 
   /**

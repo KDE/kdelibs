@@ -23,10 +23,10 @@
 #include "ksycocadict.h"
 #include <qstringlist.h>
 
-KSycocaFactory::KSycocaFactory(bool buildDatabase, KSycocaFactoryId factory_id)
+KSycocaFactory::KSycocaFactory(KSycocaFactoryId factory_id)
  : m_pathList(0), m_entryList(0)
 {
-   if (!buildDatabase)
+  if (!KSycoca::isBuilding()) // read-only database ?
    {
       QDataStream *str = KSycoca::registerFactory( factory_id );
       // can't call factoryId() here since the constructor can't call inherited methods

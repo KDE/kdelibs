@@ -44,7 +44,7 @@ public:
   /**
    * Create factory
    */
-  KServiceFactory(bool buildDatabase = false);
+  KServiceFactory();
   virtual ~KServiceFactory();
   
   /**

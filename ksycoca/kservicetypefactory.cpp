@@ -29,10 +29,10 @@
 #include <kmessagebox.h>
 #include <kdebug.h>
 
-KServiceTypeFactory::KServiceTypeFactory(bool buildDatabase)
- : KSycocaFactory( buildDatabase, KST_KServiceTypeFactory )
+KServiceTypeFactory::KServiceTypeFactory()
+ : KSycocaFactory( KST_KServiceTypeFactory )
 {
-   if (buildDatabase)
+   if (KSycoca::isBuilding())
    {
       // Read servicetypes first, since they might be needed to read mimetype properties
       (*m_pathList) += KGlobal::dirs()->resourceDirs( "servicetypes" );
@@ -106,21 +106,27 @@ KServiceTypeFactory::findServiceTypeByName(const QString &_name)
 KServiceType *
 KServiceTypeFactory::_findServiceTypeByName(const QString &_name)
 {
-   if (!m_entryDict) return 0; // Error!
-   int offset = m_entryDict->find_string( _name );
-
-   if (!offset) return 0; // Not found
-
-   KServiceType *newServiceType = createServiceType(offset);
-
-   // Check whether the dictionary was right.
-   if (newServiceType && (newServiceType->name() != _name))
+   if (!m_entryDict) return 0L; // Error!
+   if (KSycoca::isBuilding())
    {
-      // No it wasn't...
-      delete newServiceType;
-      newServiceType = 0; // Not found
+     // We're building a database - the service type must be in memory
+     return (KServiceType *) m_entryDict->findEntryInMemory( _name );
    }
-   return newServiceType;
+   else
+   {
+     int offset = m_entryDict->find_string( _name );
+     if (!offset) return 0; // Not found
+     KServiceType * newServiceType = createServiceType(offset);
+
+     // Check whether the dictionary was right.
+     if (newServiceType && (newServiceType->name() != _name))
+     {
+       // No it wasn't...
+       delete newServiceType;
+       newServiceType = 0; // Not found
+     }
+     return newServiceType;
+   }
 }
 
 KServiceType *
