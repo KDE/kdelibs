@@ -361,6 +361,7 @@
 <!ENTITY Visor	"<trademark>Visor</trademark>">
 <!ENTITY windowmaker	"<application>Window Maker</application>">
 <!ENTITY Windows	'<trademark class="registered">Windows</trademark>'>
+<!ENTITY WordNet   '<trademark class="registered">WordNet</trademark>'>
 <!ENTITY Wordperfect '<trademark class="registered"><application>WordPerfect</application></trademark>'>
 <!ENTITY X-Server	"<application>X-Server</application>">
 <!ENTITY XEmacs	"<application>XEmacs</application>">
