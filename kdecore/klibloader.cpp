@@ -372,7 +372,10 @@ QString KLibLoader::findLibrary( const char * name, const KInstance * instance )
 #ifndef NDEBUG
         kdDebug(150) << "library=" << libname << ": No file names " << libname.data() << " found in paths." << endl;
 #endif
+            self()->d->errorMessage = "library=" + libname + ": No file names " + libname.data() + " found in paths.";
       }
+      else
+            self()->d->errorMessage = QString::null;
     }
     return libfile;
 }
