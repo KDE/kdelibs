@@ -47,7 +47,7 @@ KFileInfoContents::KFileInfoContents( bool use, QDir::SortSpec sorting )
 
     useSingleClick = use;
 
-    nameList = new QStrIList();
+    nameList = 0;
 
     // don't use IconLoader to always get the same icon,
     // it looks very strange, if the icons differ from application
@@ -80,7 +80,6 @@ KFileInfoContents::~KFileInfoContents()
 
 bool KFileInfoContents::addItem(const KFileInfo *i) 
 {
-
     if (!acceptsFiles() && i->isFile())
 	return false;
     if (!acceptsDirs() && i->isDir())
@@ -93,13 +92,46 @@ bool KFileInfoContents::addItem(const KFileInfo *i)
 
     itemsList->append(i);
 
-    // we add it nonetheless, we could need it.
-    // TODO: think about it
-    // NOTE: usd in completion - could use sortedList?? dg
-    nameList->inSort(i->fileName());
-    // nameList->append(i->fileName());
-
     return addItemInternal(i);
+}
+
+bool KFileInfoContents::addItemList(const KFileInfoList *list)
+{
+    KFileInfo** array = new (KFileInfo*)[list->count()];
+    uint length = 0;
+    
+    KFileInfoListIterator it(*list);
+    for (; it.current(); ++it) {
+	KFileInfo *item = it.current();
+	
+	if (!acceptsFiles() && item->isFile())
+	    continue;
+	if (!acceptsDirs() && item->isDir())
+	    continue;
+	
+	if (item->isDir())
+	    dirsNumber++;
+	else
+	    filesNumber++;
+	
+	// no sorting
+	itemsList->append(item);
+	array[length++] = item;
+    }
+    for (uint j = 0; j < length; j++) 
+	debug("array %d %x", j, array + j);
+
+    qsort(array, length, sizeof(KFileInfo*), (int (*)(const void *, const void *))compareItems);
+    
+    int left = 0;
+    bool repaint = false;
+    for (uint j = 0; j < length; j++) {
+	left = findPosition(array[j], left);
+	insertSortedItem(array[j], left);
+	repaint |= insertItem(array[j], left);
+    }
+    delete [] array;
+    return repaint;
 }
 
 void KFileInfoContents::setSorting(QDir::SortSpec new_sort)
@@ -142,7 +174,8 @@ void KFileInfoContents::clear()
 {
     sorted_length = 0;
     itemsList->clear();
-    nameList->clear();
+    delete nameList;
+    nameList = 0;
     clearView();
     filesNumber = 0;
     dirsNumber = 0;
@@ -168,14 +201,15 @@ void KFileInfoContents::connectFileSelected( QObject *receiver,
 
 int KFileInfoContents::compareItems(const KFileInfo *fi1, const KFileInfo *fi2)
 {
-   static int counter = 0;
-   counter++;
-   if (counter % 1000 == 0)
-     debugC("compare %d", counter);
-
-
+    static int counter = 0;
+    counter++;
+    if (counter % 1000 == 0)
+	debugC("compare %d", counter);
+    
+    debug("compare %x against %x", fi1, fi2);
+    
     bool bigger = true;
-
+    
     if (keepDirsFirst && (fi1->isDir() != fi2->isDir()))
       bigger = !fi1->isDir();
     else {
@@ -205,51 +239,49 @@ int KFileInfoContents::compareItems(const KFileInfo *fi1, const KFileInfo *fi2)
     return (bigger ? 1 : -1);
 }
 
+int KFileInfoContents::findPosition(const KFileInfo *i, int left)
+{
+    int pos = -1;
+    int right = sorted_length - 1;
+
+    while (left < right-1) {
+	pos = (left + right) / 2;
+	if (compareItems(i, sortedArray[pos]) < 0) 
+	    right = pos;
+	else
+	    left = pos;
+    }
+    
+    // if pos is the left side (rounded), it may be, that we haven't
+    // compared to the right side and gave up too early
+    if (pos == left && compareItems(i, sortedArray[right]) > 0)
+	pos = right+1;
+    else 
+	pos = right;
+
+    return pos;
+}
+
 bool KFileInfoContents::addItemInternal(const KFileInfo *i)
 {
-  int pos = -1;
-  int result;
-
-  if ( sorted_length > 1 && mySorting != QDir::Unsorted) 
-    {
-      // insertation using log(n)
-      bool found = false;
-      int left = 0;
-      int right = sorted_length - 1;
-      
-      while (!found) {
-	pos = (left + right) / 2;
-	result = compareItems(i, sortedArray[pos]);
-	if (result < 0) 
-	  right = pos;
-	else
-	  left = pos;
-
-	if (left >= right-1) {
-	  // if pos is the left side (rounded), it may be, that we haven't
-	  // compared to the right side and gave up too early
-	  if (pos == left && compareItems(i, sortedArray[right]) > 0)
-	    pos = right+1;
-	  else 
-	    pos = right;
-	  found = true;
+    int pos = -1;
+    
+    if ( sorted_length > 1 && mySorting != QDir::Unsorted) {
+	// insertation using log(n)
+	pos = findPosition(i, 0);
+    } else {
+	if (sorted_length == 1) {
+	    pos = (compareItems(i, sortedArray[0]) < 0) ? 0 : 1;
 	}
-      }
     }
-  else
-    {
-      if (sorted_length == 1) {
-	pos = (compareItems(i, sortedArray[0]) < 0) ? 0 : 1;
-      }
-    }
-  if (pos < 0) {
-    insertSortedItem(i, sorted_length);
-    // sorted_length has new value 
-    pos = sorted_length - 1;
-  }  else 
-    insertSortedItem(i, pos); 
-
-  return insertItem(i, pos);
+    if (pos < 0) {
+	insertSortedItem(i, sorted_length);
+	// sorted_length has new value 
+	pos = sorted_length - 1;
+    }  else 
+	insertSortedItem(i, pos); 
+    
+    return insertItem(i, pos);
 } 
 
 
@@ -316,6 +348,11 @@ void KFileInfoContents::setCurrentItem(const char *item,
 QString KFileInfoContents::findCompletion( const char *base, 
 					   bool activateFound )
 {
+
+    if (!nameList) {
+	warning("not implemented yet");
+	return "";
+    }
 
     if ( strlen(base) == 0 ) return 0;
 

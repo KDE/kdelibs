@@ -97,7 +97,7 @@ public:
      * @return true, if a repaint is necessary
      * @see addItem
      **/
-    bool addItemList(KFileInfoList *list);
+    bool addItemList(const KFileInfoList *list);
 
     /**
       * @return the name of the file at position index. 
@@ -343,11 +343,18 @@ private:
     uint filesNumber, dirsNumber;
     KFileInfoContentsSignaler *sig;
 
-  /**
-   * @internal
-   * adds an item to sortedArray
-   **/
-  void insertSortedItem(const KFileInfo *item, uint pos);
+    /**
+     * @internal
+     * adds an item to sortedArray
+     **/
+    void insertSortedItem(const KFileInfo *item, uint pos);
+    
+    /**
+     * @internal
+     * finds the correct position in sortedArray
+     * @returns the found index
+     **/
+    int findPosition(const KFileInfo *item, int left);
 };
 
 #endif // KFILEINFOLISTWIDGET_H

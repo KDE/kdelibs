@@ -1,5 +1,7 @@
 1998-05-14  Stephan Kulow  <coolo@kde.org>
 
+	* kfileinfocontents.cpp: added addItemList 
+
 	* kfileinfocontents.h: introduced KFileInfoContentsSignaler
 
 	* kfileinfocontents.cpp: some more speed improvment

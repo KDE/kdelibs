@@ -662,14 +662,8 @@ void KFileBaseDialog::insertFile(const KFileInfo *entry)
 
 void KFileBaseDialog::insertNewFiles(const KFileInfoList *newone) 
 {
-    repaint_files = false;
-
     fileList->setAutoUpdate(false);
-    
-    KFileInfoListIterator it(*newone);
-    for (; it.current(); ++it)
-	addDirEntry(it.current(), false);
-    
+    repaint_files = fileList->addItemList(newone);
     fileList->setAutoUpdate(true);
 
     if (repaint_files)
