@@ -68,13 +68,11 @@ public:
 
   void setJob( KIO::Job *job );
 
-  virtual void clean();
-
 public slots:
-
-  virtual void slotTotalSize( KIO::Job*, unsigned long _bytes );
-  virtual void slotPercent( KIO::Job*, unsigned long _bytes );
-  virtual void slotSpeed( KIO::Job*, unsigned long _bytes_per_second );
+  virtual void slotClean();
+  virtual void slotTotalSize( KIO::Job*, unsigned long size );
+  virtual void slotPercent( KIO::Job*, unsigned long percent );
+  virtual void slotSpeed( KIO::Job*, unsigned long bytes_per_second );
 
 protected:
   KProgress* m_pProgressBar;

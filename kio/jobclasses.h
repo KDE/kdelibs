@@ -121,6 +121,11 @@ namespace KIO {
         void result( KIO::Job *job );
 
         /**
+         * Emitted when the job is canceled
+         */
+        void canceled( KIO::Job *job );
+
+        /**
          * Progress signal showing the overall progress of the job
          * This is valid for any kind of job, and allows using a
          * a progress bar very easily (see @ref KProgress)

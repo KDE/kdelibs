@@ -108,6 +108,8 @@ void Job::kill()
   QListIterator<Job> it( subjobs );
   for ( ; it.current() ; ++it )
      (*it)->kill();
+
+  emit canceled( this );
   delete this;
 }
 

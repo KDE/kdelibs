@@ -38,6 +38,7 @@
 #include "kio/jobclasses.h"
 #include "kio/uiserver.h"
 
+// pointer for main instance of UIServer
 UIServer* uiserver;
 
 // ToolBar field IDs
@@ -45,6 +46,9 @@ enum { TOOL_CANCEL };
 
 // StatusBar field IDs
 enum { ID_TOTAL_FILES = 1, ID_TOTAL_SIZE, ID_TOTAL_TIME, ID_TOTAL_SPEED };
+
+//static
+int UIServer::s_jobId = 0;
 
 static int defaultColumnWidth[] = { 70,  // SIZE_OPERATION
 				    160, // LOCAL_FILENAME
@@ -57,45 +61,42 @@ static int defaultColumnWidth[] = { 70,  // SIZE_OPERATION
 				    450  // URL
 };
 
-#define INIT_MAX_ITEMS 16
-#define ARROW_SPACE 15
-#define BUTTON_SPACE 4
-#define MINIMUM_SPACE 9
-
+// number of listview columns
 #define NUM_COLS  9
 
-ProgressItem::ProgressItem( ProgressListView* view, QListViewItem *after, QCString app_id, int job_id,
+ProgressItem::ProgressItem( ListProgress* view, QListViewItem *after, QCString app_id, int job_id,
 			    bool showDefault )
   : QListViewItem( view, after ) {
 
-  listView = view;
+  listProgress = view;
   
   m_sAppId = app_id;
   m_iJobId = job_id;
 
   defaultProgress = new DefaultProgress( showDefault );
+  defaultProgress->setOnlyClean( true );
   connect ( defaultProgress, SIGNAL( stopped() ), this, SLOT( slotCanceled() ) );
 }
 
 
-ProgressItem::~ProgressItem()
-{
+ProgressItem::~ProgressItem() {
   delete defaultProgress;
 }
 
 
 void ProgressItem::setTotalSize( unsigned long size ) {
   m_iTotalSize = size;
-  setText( listView->lv_total, KIO::convertSize( m_iTotalSize ) );
 
-  defaultProgress->slotTotalSize( 0, size );
+  setText( listProgress->lv_total, KIO::convertSize( m_iTotalSize ) );
+
+  defaultProgress->slotTotalSize( 0, m_iTotalSize );
 }
 
 
 void ProgressItem::setTotalFiles( unsigned long files ) {
   m_iTotalFiles = files;
 
-  defaultProgress->slotTotalFiles( 0, files );
+  defaultProgress->slotTotalFiles( 0, m_iTotalFiles );
 }
 
 
@@ -115,10 +116,10 @@ void ProgressItem::setProcessedFiles( unsigned long files ) {
   m_iProcessedFiles = files;
 
   QString tmps;
-  tmps.sprintf( "%u / %u", files, m_iTotalFiles );
-  setText( listView->lv_count, tmps );
+  tmps.sprintf( "%u / %u", m_iProcessedFiles, m_iTotalFiles );
+  setText( listProgress->lv_count, tmps );
 
-  defaultProgress->slotProcessedFiles( 0, files );
+  defaultProgress->slotProcessedFiles( 0, m_iProcessedFiles );
 }
 
 
@@ -127,71 +128,71 @@ void ProgressItem::setProcessedDirs( unsigned long dirs ) {
 }
 
 
-void ProgressItem::setPercent( unsigned long ipercent ) {
-  QString tmps = i18n( "%1 % of %2 ").arg( ipercent ).arg( KIO::convertSize(m_iTotalSize));
+void ProgressItem::setPercent( unsigned long percent ) {
+  QString tmps = i18n( "%1 % of %2 ").arg( percent ).arg( KIO::convertSize(m_iTotalSize));
+  setText( listProgress->lv_progress, tmps );
 
-  setText( listView->lv_progress, tmps );
-
-  defaultProgress->slotPercent( 0, ipercent );
+  defaultProgress->slotPercent( 0, percent );
 }
 
 
 void ProgressItem::setSpeed( unsigned long bytes_per_second ) {
+  m_iSpeed = bytes_per_second;
+  m_remainingTime = KIO::calculateRemaining( m_iTotalSize, m_iProcessedSize, m_iSpeed );
+
   QString tmps, tmps2;
-  if ( bytes_per_second == 0 ) {
+  if ( m_iSpeed == 0 ) {
     tmps = i18n( "Stalled");
     tmps2 = tmps;
   } else {
-    tmps = i18n( "%1/s").arg( KIO::convertSize( bytes_per_second ));
-//     tmps2 = m_pJob->getRemainingTime().toString();
+    tmps = i18n( "%1/s").arg( KIO::convertSize( m_iSpeed ));
+    tmps2 = m_remainingTime.toString();
   }
+  setText( listProgress->lv_speed, tmps );
+  setText( listProgress->lv_remaining, tmps2 );
 
-  setText( listView->lv_speed, tmps );
-  setText( listView->lv_remaining, tmps2 );
-
-  m_remainingTime = KIO::calculateRemaining( m_iTotalSize, m_iProcessedSize, bytes_per_second );
-  defaultProgress->slotSpeed( 0, bytes_per_second );
+  defaultProgress->slotSpeed( 0, m_iSpeed );
 }
 
 
 void ProgressItem::setCopying( const KURL& from, const KURL& to ) {
-  setText( listView->lv_operation, i18n("Copying") );
-  setText( listView->lv_url, from.path() );
-  setText( listView->lv_filename, to.filename() );
+  setText( listProgress->lv_operation, i18n("Copying") );
+  setText( listProgress->lv_url, from.path() );
+  setText( listProgress->lv_filename, to.filename() );
 
   defaultProgress->slotCopying( 0, from, to );
 }
 
 
 void ProgressItem::setMoving( const KURL& from, const KURL& to ) {
-  setText( listView->lv_operation, i18n("Moving") );
-  setText( listView->lv_url, from.path() );
-  setText( listView->lv_filename, to.filename() );
+  setText( listProgress->lv_operation, i18n("Moving") );
+  setText( listProgress->lv_url, from.path() );
+  setText( listProgress->lv_filename, to.filename() );
 
   defaultProgress->slotMoving( 0, from, to );
 }
 
 
 void ProgressItem::setRenaming( const KURL& old_name, const KURL& new_name ) {
-  setText( listView->lv_filename, new_name.filename() );
+  setText( listProgress->lv_filename, new_name.filename() );
 
   defaultProgress->slotRenaming( 0, old_name, new_name );
 }
 
 
 void ProgressItem::setCreatingDir( const KURL& dir ) {
-  setText( listView->lv_operation, i18n("Creating") );
-  setText( listView->lv_url, dir.path() );
-  setText( listView->lv_filename, dir.filename() );
+  setText( listProgress->lv_operation, i18n("Creating") );
+  setText( listProgress->lv_url, dir.path() );
+  setText( listProgress->lv_filename, dir.filename() );
 
   defaultProgress->slotCreatingDir( 0, dir );
 }
 
 
 void ProgressItem::setDeleting( const KURL& url ) {
-  setText( listView->lv_operation, i18n("Deleting") );
-  setText( listView->lv_url, url.path() );
-  setText( listView->lv_filename, url.filename() );
+  setText( listProgress->lv_operation, i18n("Deleting") );
+  setText( listProgress->lv_url, url.path() );
+  setText( listProgress->lv_filename, url.filename() );
 
   defaultProgress->slotDeleting( 0, url );
 }
@@ -205,7 +206,7 @@ void ProgressItem::setCanResume( bool _resume ) {
   } else {
     tmps = i18n("No");
   }
-  setText( listView->lv_resume, tmps );
+  setText( listProgress->lv_resume, tmps );
 }
 
 
@@ -219,10 +220,9 @@ void ProgressItem::showDefaultProgress() {
 }
 
 
-
 //-----------------------------------------------------------------------------
 
-ProgressListView::ProgressListView (QWidget *parent, const char *name)
+ListProgress::ListProgress (QWidget *parent, const char *name)
   : KListView (parent, name) {
 
   // enable selection of more than one item
@@ -238,19 +238,18 @@ ProgressListView::ProgressListView (QWidget *parent, const char *name)
   lv_total = addColumn( i18n("Total") );
   lv_speed = addColumn( i18n("Speed") );
   lv_remaining = addColumn( i18n("Rem. Time") );
-  lv_url = addColumn( i18n("Address( URL )") );
+  lv_url = addColumn( i18n("URL") );
 
   readConfig();
 }
 
 
-
-ProgressListView::~ProgressListView() {
+ListProgress::~ListProgress() {
   writeConfig();
 }
 
 
-void ProgressListView::readConfig() {
+void ListProgress::readConfig() {
   KConfig config("uiserverrc");
 
   // read listview geometry properties
@@ -263,19 +262,20 @@ void ProgressListView::readConfig() {
 }
 
 
-void ProgressListView::writeConfig() {
-  KConfig* config = new KConfig("uiserverrc");
+void ListProgress::writeConfig() {
+  KConfig config("uiserverrc");
 
   // write listview geometry properties
-  config->setGroup( "ProgressList" );
+  config.setGroup( "ProgressList" );
   for ( int i = 0; i < NUM_COLS; i++ ) {
     QString tmps;
     tmps.sprintf( "Col%d", i );
-    config->writeEntry( tmps, columnWidth( i ) );
+    config.writeEntry( tmps, columnWidth( i ) );
   }
 
-  config->sync();
+  config.sync();
 }
+
 
 //------------------------------------------------------------
 
@@ -298,13 +298,13 @@ UIServer::UIServer() : KTMainWindow( "" ), DCOPObject("UIServer")
   statusBar()->insertItem( i18n(" %1 kB/s ").arg("123.34"), ID_TOTAL_SPEED);
 
   // setup listview
-  myListView = new ProgressListView( this, "progresslist" );
+  listProgress = new ListProgress( this, "progresslist" );
 
-  setView( myListView, true);
+  setView( listProgress, true);
 
-  connect( myListView, SIGNAL( selectionChanged() ),
+  connect( listProgress, SIGNAL( selectionChanged() ),
 	   SLOT( slotSelection() ) );
-  connect( myListView, SIGNAL( executed( QListViewItem* ) ),
+  connect( listProgress, SIGNAL( executed( QListViewItem* ) ),
 	   SLOT( slotDefaultProgress( QListViewItem* ) ) );
 
   // setup animation timer
@@ -328,15 +328,12 @@ UIServer::~UIServer() {
 }
 
 
-//static
-int UIServer::s_jobId = 0;
-
 int UIServer::newJob( QCString observerAppId )
 {
   kdDebug() << "UIServer::newJob observerAppId=" << observerAppId << ". "
 	    << "Giving id=" << s_jobId+1 << endl;
   
-  QListViewItemIterator it( myListView );
+  QListViewItemIterator it( listProgress );
   for ( ; it.current(); ++it ) {
     if ( it.current()->itemBelow() == 0L ) { // this will find the end of list
       break;
@@ -346,7 +343,7 @@ int UIServer::newJob( QCString observerAppId )
   // increment counter
   s_jobId++;
 
-  ProgressItem *item = new ProgressItem( myListView, it.current(), observerAppId, s_jobId, !m_bShowList );
+  ProgressItem *item = new ProgressItem( listProgress, it.current(), observerAppId, s_jobId, !m_bShowList );
   connect( item, SIGNAL( jobCanceled( ProgressItem* ) ),
  	   SLOT( slotJobCanceled( ProgressItem* ) ) );
 
@@ -356,12 +353,12 @@ int UIServer::newJob( QCString observerAppId )
 
 ProgressItem* UIServer::findItem( int id )
 {
-  QListViewItemIterator it( myListView );
+  QListViewItemIterator it( listProgress );
 
   ProgressItem *item;
 
   for ( ; it.current(); ++it ) {
-    item = (ProgressItem*)it.current();
+    item = (ProgressItem*) it.current();
     if ( item->jobId() == id ) {
       return item;
     }
@@ -540,13 +537,13 @@ void UIServer::slotJobCanceled( ProgressItem *item ) {
   // kill the corresponding job
   killJob( item->appId(), item->jobId() );
 
-  // don't delete item, because killed job should call back jobFinished()
+  // don't delete item, because KIO::Job, when killed, should call back jobFinished()
 }
 
 
 void UIServer::slotUpdate() {
-  // don't do anything if we don't have any registered job
-  if ( myListView->childCount() == 0 ) {
+  // don't do anything if we don't have any inserted progress item
+  if ( listProgress->childCount() == 0 ) {
     hide();
     return;
   }
@@ -558,11 +555,11 @@ void UIServer::slotUpdate() {
 
   ProgressItem *item;
 
-  // count totals
-  QListViewItemIterator it( myListView );
+  // count totals for statusbar
+  QListViewItemIterator it( listProgress );
 
   for ( ; it.current(); ++it ) {
-    item = (ProgressItem*)it.current();
+    item = (ProgressItem*) it.current();
     if ( item->totalSize() != 0 ) {
       iTotalSize += ( item->totalSize() - item->processedSize() );
     }
@@ -595,7 +592,7 @@ void UIServer::slotDefaultProgress( QListViewItem *item ) {
 
 
 void UIServer::slotSelection() {
-  QListViewItemIterator it( myListView );
+  QListViewItemIterator it( listProgress );
 
   for ( ; it.current(); ++it ) {
     if ( it.current()->isSelected() ) {
@@ -619,17 +616,18 @@ void UIServer::writeSettings() {
   KConfig config("uiserverrc");
   config.setGroup( "UIServer" );
 
-  // TODO : write settings ?
+  config.writeEntry( "ShowList", m_bShowList );
 }
 
 
 void UIServer::cancelCurrent() {
-  QListViewItemIterator it( myListView );
-
+  QListViewItemIterator it( listProgress );
+  ProgressItem *item;
+  
   // kill all selected jobs
   while ( it.current() ) {
     if ( it.current()->isSelected() ) {
-      ProgressItem *item = (ProgressItem*) it.current();
+      item = (ProgressItem*) it.current();
       killJob( item->appId(), item->jobId() );
     } else {
       it++; // update counts

@@ -31,14 +31,14 @@
 #include "defaultprogress.h"
 
 class QTimer;
-class ProgressListView;
+class ListProgress;
 
 namespace KIO {
   class Job;
 };
 
 /**
-* One item in the @ref #ProgressListView
+* One item in the @ref #ListProgress
 * @internal
 */
 class ProgressItem : public QObject, public QListViewItem {
@@ -46,7 +46,7 @@ class ProgressItem : public QObject, public QListViewItem {
   Q_OBJECT
 
 public:
-  ProgressItem( ProgressListView* view, QListViewItem *after, QCString app_id, int job_id,
+  ProgressItem( ListProgress* view, QListViewItem *after, QCString app_id, int job_id,
 		bool showDefault = true );
   ~ProgressItem();
 
@@ -63,7 +63,7 @@ public:
   void setProcessedFiles( unsigned long files );
   void setProcessedDirs( unsigned long dirs );
 
-  void setPercent( unsigned long bytes );
+  void setPercent( unsigned long percent );
   void setSpeed( unsigned long bytes_per_second );
 
   void setCopying( const KURL& from, const KURL& to );
@@ -88,22 +88,24 @@ signals:
   void jobCanceled( ProgressItem* );
 
 protected:
-  int m_iJobId;
-  QCString m_sAppId;
 
+  // ids that uniquely identify this progress item
+  QCString m_sAppId;
+  int m_iJobId;
+
+  // parent listview
+  ListProgress *listProgress;
+
+  // associated default progress dialog
   DefaultProgress *defaultProgress;
 
+  // we store these values for calculation of totals ( for statusbar )
   unsigned long m_iTotalSize;
   unsigned long m_iTotalFiles;
-
   unsigned long m_iProcessedSize;
   unsigned long m_iProcessedFiles;
-
   unsigned long m_iSpeed;
-
   QTime m_remainingTime;
-
-  ProgressListView *listView;
 };
 
 
@@ -111,20 +113,20 @@ protected:
 * List view in the @ref #UIServer.
 * @internal
 */
-class ProgressListView : public KListView {
+class ListProgress : public KListView {
 
   Q_OBJECT
 
 public:
 
-  ProgressListView (QWidget *parent = 0, const char *name = 0 );
+  ListProgress (QWidget *parent = 0, const char *name = 0 );
 
-  virtual ~ProgressListView();
+  virtual ~ListProgress();
 
   /**
    * Field constants
    */
-  enum ProgressListViewFields {
+  enum ListProgressFields {
     TB_OPERATION = 0,
     TB_LOCAL_FILENAME = 1,
     TB_RESUME = 2,
@@ -152,15 +154,13 @@ protected:
 /**
  * It's purpose is to show progress of IO operations.
  * There is only one instance of this window for all jobs.
- * The main advantage is, that all downloads, deletions etc. are shown in one place,
- * thus saving precious desktop space.
  *
  * All IO operations ( jobs ) are displayed in this window, one line per operation.
- * User can cancel operations with Cancel button on statusbar.
+ * User can cancel operations with Cancel button on toolbar.
  *
- * Double clicking on an item in the list opens a small download window ( @ref #DefaultProgress ).
+ * Double clicking an item in the list opens a small download window ( @ref #DefaultProgress ).
  *
- * @short Graphical server for progress information with all-in-one progress window.
+ * @short Graphical server for progress information with an optional all-in-one progress window.
  * @author David Faure <faure@kde.org>
  * @author Matej Koss <koss@miesto.sk>
  */
@@ -222,7 +222,7 @@ protected:
   void closeEvent( QCloseEvent * );
 
   QTimer* updateTimer;
-  ProgressListView *myListView;
+  ListProgress* listProgress;
 
   KToolBar::BarPosition toolbarPos;
   QString properties;
@@ -232,10 +232,6 @@ protected:
 
 private:
 
-  // Matt: call this when the user presses cancel
-  // I suggest that the dialog stores both the appid and the
-  // job's progress ID. If that's not possible, then I'll
-  // put some dicts here... Well we need a dict id<->dialog box probably, anyway.
   void killJob( QCString observerAppId, int progressId );
 
   bool m_bShowList;

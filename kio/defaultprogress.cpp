@@ -77,7 +77,7 @@ DefaultProgress::DefaultProgress( bool showNow )
   hBox->addStretch(1);
 
   QPushButton *pb = new QPushButton( i18n("Cancel"), this );
-  connect( pb, SIGNAL( clicked() ), SLOT( stop() ) );
+  connect( pb, SIGNAL( clicked() ), SLOT( slotStop() ) );
   hBox->addWidget( pb );
 
   resize( sizeHint() );

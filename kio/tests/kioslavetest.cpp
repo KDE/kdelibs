@@ -134,6 +134,10 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
   progressButtons->setButton( pr );
   changeProgressMode( pr );
 
+  // statusbar progress widget
+  statusProgress = new StatusbarProgress( statusBar() );
+  statusBar()->addWidget( statusProgress, 0, true );
+
   // run & stop butons
   hbLayout = new QHBoxLayout( topLayout, 15 );
 
@@ -157,9 +161,6 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
 
   main_widget->setMinimumSize( main_widget->sizeHint() );
   setView( main_widget );
-
-  statusProgress = new StatusbarProgress( statusBar() );
-  statusBar()->addWidget( statusProgress, 0, true );
 
   kmain = this;
 
@@ -280,10 +281,12 @@ void KioslaveTest::startJob() {
   connect( job, SIGNAL( result( KIO::Job * ) ),
 	   SLOT( slotResult( KIO::Job * ) ) );
 
+  connect( job, SIGNAL( canceled( KIO::Job * ) ),
+	   SLOT( slotResult( KIO::Job * ) ) );
+
   if (progressMode == ProgressStatus) {
     statusProgress->setJob( job );
   }
-
 
   pbStop->setEnabled( true );
 }
@@ -300,13 +303,10 @@ void KioslaveTest::slotResult( KIO::Job * job )
       UDSEntry entry = ((KIO::StatJob*)job)->statResult();
       printUDSEntry( entry );
   }
+
+  job = 0L;
   pbStart->setEnabled( true );
   pbStop->setEnabled( false );
-
-  if (progressMode == ProgressStatus) {
-    statusProgress->clean();
-  }
-
 }
 
 void KioslaveTest::printUDSEntry( const KIO::UDSEntry & entry )
@@ -393,11 +393,11 @@ void KioslaveTest::slotDataReq(KIO::Job*, QByteArray &data)
 }
 
 void KioslaveTest::stopJob() {
-  pbStop->setEnabled( false );
-
+  kdDebug() << "KioslaveTest::stopJob()" << endl;
   job->kill();
   job = 0L;
 
+  pbStop->setEnabled( false );
   pbStart->setEnabled( true );
 }
 

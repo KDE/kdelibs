@@ -34,7 +34,6 @@ public:
   ~DefaultProgress() {}
 
 public slots:
-
   virtual void slotTotalSize( KIO::Job*, unsigned long _bytes );
   virtual void slotTotalFiles( KIO::Job*, unsigned long _files );
   virtual void slotTotalDirs( KIO::Job*, unsigned long _dirs );

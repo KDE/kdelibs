@@ -16,6 +16,8 @@
    Boston, MA 02111-1307, USA.
 */
 
+#include <kdebug.h>
+
 #include "jobclasses.h"
 #include "progressbase.h"
 
@@ -23,28 +25,34 @@ ProgressBase::ProgressBase( QWidget *parent )
   : QWidget( parent )
 {
   m_pJob = 0;
+
+  // delete dialog after the job is finished / canceled
+  m_bOnlyClean = false;
+
+  // stop job on close
+  m_bStopOnClose = true;
 }
 
 
-void ProgressBase::setJob( KIO::Job *job, bool onlyClean, bool stopOnClose )
+void ProgressBase::setJob( KIO::Job *job )
 {
-  m_bOnlyClean = onlyClean;
-  m_bStopOnClose = stopOnClose;
-
   // first connect all slots
   connect( job, SIGNAL( percent( KIO::Job*, unsigned long ) ),
 	   SLOT( slotPercent( KIO::Job*, unsigned long ) ) );
+
+  connect( job, SIGNAL( result( KIO::Job* ) ),
+	   SLOT( slotFinished( KIO::Job* ) ) );
+  
+  connect( job, SIGNAL( canceled( KIO::Job* ) ),
+	   SLOT( slotFinished( KIO::Job* ) ) );
 
   // then assign job
   m_pJob = job;
 }
 
 
-void ProgressBase::setJob( KIO::CopyJob *job, bool onlyClean, bool stopOnClose )
+void ProgressBase::setJob( KIO::CopyJob *job )
 {
-  m_bOnlyClean = onlyClean;
-  m_bStopOnClose = stopOnClose;
-
   // first connect all slots
   connect( job, SIGNAL( totalSize( KIO::Job*, unsigned long ) ),
 	   SLOT( slotTotalSize( KIO::Job*, unsigned long ) ) );
@@ -78,16 +86,19 @@ void ProgressBase::setJob( KIO::CopyJob *job, bool onlyClean, bool stopOnClose )
   connect( job, SIGNAL( canResume( KIO::Job*, bool ) ),
  	   SLOT( slotCanResume( KIO::Job*, bool ) ) );
 
+  connect( job, SIGNAL( result( KIO::Job* ) ),
+	   SLOT( slotFinished( KIO::Job* ) ) );
+
+  connect( job, SIGNAL( canceled( KIO::Job* ) ),
+	   SLOT( slotFinished( KIO::Job* ) ) );
+
   // then assign job
   m_pJob = job;
 }
 
 
-void ProgressBase::setJob( KIO::DeleteJob *job, bool onlyClean, bool stopOnClose )
+void ProgressBase::setJob( KIO::DeleteJob *job )
 {
-  m_bOnlyClean = onlyClean;
-  m_bStopOnClose = stopOnClose;
-
   // first connect all slots
   connect( job, SIGNAL( totalSize( KIO::Job*, unsigned long ) ),
 	   SLOT( slotTotalSize( KIO::Job*, unsigned long ) ) );
@@ -111,33 +122,56 @@ void ProgressBase::setJob( KIO::DeleteJob *job, bool onlyClean, bool stopOnClose
   connect( job, SIGNAL( deleting( KIO::Job*, const KURL& ) ),
 	   SLOT( slotDeleting( KIO::Job*, const KURL& ) ) );
 
+  connect( job, SIGNAL( result( KIO::Job* ) ),
+	   SLOT( slotFinished( KIO::Job* ) ) );
+
+  connect( job, SIGNAL( canceled( KIO::Job* ) ),
+	   SLOT( slotFinished( KIO::Job* ) ) );
+
   // then assign job
   m_pJob = job;
 }
 
 
 void ProgressBase::closeEvent( QCloseEvent* ) {
+  kdDebug(7007) << "ProgressBase::closeEvent" << endl;
   // kill job when desired
   if ( m_bStopOnClose ) {
-    stop();
-  }
-
-  // clean or delete dialog
-  if ( m_bOnlyClean ) {
-    clean();
+    slotStop();
   } else {
     delete this;
   }
 }
 
-// this will kill job and subsequently also delete or clean this dialog
-void ProgressBase::stop() {
-  if ( m_pJob ) {
-    m_pJob->kill();
+
+void ProgressBase::slotFinished( KIO::Job* job ) {
+  kdDebug(7007) << "ProgressBase::slotFinished  " << job << endl;
+  // clean or delete dialog
+  if ( m_bOnlyClean ) {
+    slotClean();
   } else {
-    emit stopped();
+    delete this;
   }
 }
+
+
+void ProgressBase::slotStop() {
+  kdDebug(7007) << "ProgressBase::slotStop" << endl;
+  if ( m_pJob ) {
+    m_pJob->kill(); // this will call slotFinished
+    m_pJob = 0L;
+  } else {
+    slotFinished( 0 ); // here we call it ourselves
+  }
+
+  emit stopped();
+}
+
+
+void ProgressBase::slotClean() {
+  hide();
+}
+
 
 #include "progressbase.moc"
 

@@ -22,6 +22,7 @@
 
 #include <kapp.h>
 #include <klocale.h>
+#include <kdebug.h>
 
 #include "jobclasses.h"
 #include "statusbarprogress.h"
@@ -31,6 +32,12 @@ StatusbarProgress::StatusbarProgress( QWidget* parent, bool button )
 
   m_bShowButton = button;
 
+  // only clean this dialog
+  m_bOnlyClean = true;
+
+  // TODO : is this really needed ?
+  m_bStopOnClose = false;
+
   int w = fontMetrics().width( " 999.9 kB/s 00:00:01 " ) + 8;
   box = new QHBoxLayout( this, 0, 0 );
 
@@ -38,6 +45,7 @@ StatusbarProgress::StatusbarProgress( QWidget* parent, bool button )
   box->addWidget( m_pButton  );
   stack = new QWidgetStack( this );
   box->addWidget( stack );
+  connect( m_pButton, SIGNAL( clicked() ), this, SLOT( slotStop() ) );
 
   m_pProgressBar = new KProgress( 0, 100, 0, KProgress::Horizontal, this );
   m_pProgressBar->setFrameStyle( QFrame::Box | QFrame::Raised );
@@ -62,10 +70,8 @@ StatusbarProgress::StatusbarProgress( QWidget* parent, bool button )
 
 void StatusbarProgress::setJob( KIO::Job *job )
 {
-  // we don't want to delete this widget, only clean
-  ProgressBase::setJob( job, true, false );
+  ProgressBase::setJob( job );
 
-  connect( m_pButton, SIGNAL( clicked() ), this, SLOT( stop() ) );
   mode = Progress;
   setMode();
 }
@@ -99,8 +105,8 @@ void StatusbarProgress::setMode() {
 }
 
 
-void StatusbarProgress::clean() {
-  m_pJob = 0L;
+void StatusbarProgress::slotClean() {
+  // we don't want to delete this widget, only clean
   m_pProgressBar->setValue( 0 );
   m_pLabel->clear();
 
@@ -109,20 +115,20 @@ void StatusbarProgress::clean() {
 }
 
 
-void StatusbarProgress::slotTotalSize( KIO::Job*, unsigned long _size ) {
-  m_iTotalSize = _size;
+void StatusbarProgress::slotTotalSize( KIO::Job*, unsigned long size ) {
+  m_iTotalSize = size;
 }
 
-void StatusbarProgress::slotPercent( KIO::Job*, unsigned long _percent ) {
-  m_pProgressBar->setValue( _percent );
+void StatusbarProgress::slotPercent( KIO::Job*, unsigned long percent ) {
+  m_pProgressBar->setValue( percent );
 }
 
 
-void StatusbarProgress::slotSpeed( KIO::Job*, unsigned long _bytes_per_second ) {
-  if ( _bytes_per_second == 0 ) {
+void StatusbarProgress::slotSpeed( KIO::Job*, unsigned long bytes_per_second ) {
+  if ( bytes_per_second == 0 ) {
     m_pLabel->setText( i18n( " Stalled ") );
   } else {
-    m_pLabel->setText( i18n( " %1/s ").arg( KIO::convertSize( _bytes_per_second )) );
+    m_pLabel->setText( i18n( " %1/s ").arg( KIO::convertSize( bytes_per_second )) );
   }
 }
 

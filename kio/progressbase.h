@@ -77,42 +77,27 @@ public:
   ProgressBase( QWidget *parent );
   ~ProgressBase() {}
 
-  void setJob( KIO::Job *job, bool onlyClean = false, bool stopOnClose = true );
-  void setJob( KIO::CopyJob *job, bool onlyClean = false, bool stopOnClose = true );
-  void setJob( KIO::DeleteJob *job, bool onlyClean = false, bool stopOnClose = true );
+  // assign job to this progress dialog
+  void setJob( KIO::Job *job );
+  void setJob( KIO::CopyJob *job );
+  void setJob( KIO::DeleteJob *job );
 
-  virtual void clean() {}
+  // should we stop the job when the dialog is closed ?
+  void setStopOnClose( bool stopOnClose ) { m_bStopOnClose = stopOnClose; }
 
-public slots:
-  void stop();
-
-signals:
-  void stopped();
-
-protected:
-
-  void closeEvent( QCloseEvent * );
-
-  // either we set m_pJob or two Id's
-  KIO::Job* m_pJob;
-
-  /**
-   * This variable controls whether the dialog should be deleted or only cleaned when
-   * the KIO::Job is finished ( or canceled ).
-   *
-   * If your dialog is embedded widget and not a separate window, you should set this
-   * variable to true in the constructor of your custom dialog.
-   *
-   * If true - Dialog will only call method @ref clean.
-   * If false - Dialog will be deleted.
-   */
-  bool m_bOnlyClean;
-
-  bool m_bStopOnClose;
-
+  // should we delete the dialog or just clean it when the job is finished ?
+  void setOnlyClean( bool onlyClean ) { m_bOnlyClean = onlyClean; }
 
 public slots:
+  // this method should be called for correct cancelation of IO operation
+  // connect this to the progress widgets buttons etc.
+  void slotStop();
 
+  // this method is called when the widget should be cleaned ( after job is finished )
+  // redefine this for custom behaviour
+  virtual void slotClean();
+
+  // progress slots
   virtual void slotTotalSize( KIO::Job*, unsigned long ) {}
   virtual void slotTotalFiles( KIO::Job*, unsigned long ) {}
   virtual void slotTotalDirs( KIO::Job*, unsigned long ) {}
@@ -132,6 +117,34 @@ public slots:
   virtual void slotRenaming( KIO::Job*, const KURL&, const KURL& ) {}
 
   virtual void slotCanResume( KIO::Job*, bool ) {}
+
+signals:
+  void stopped();
+
+protected slots:
+  void slotFinished( KIO::Job* );
+
+protected:
+
+  virtual void closeEvent( QCloseEvent * );
+
+  KIO::Job* m_pJob;
+
+  /**
+   * This variable controls whether the dialog should be deleted or only cleaned when
+   * the KIO::Job is finished ( or canceled ).
+   *
+   * If your dialog is embedded widget and not a separate window, you should set this
+   * variable to true in the constructor of your custom dialog.
+   *
+   * If true - Dialog will only call method @ref slotClean.
+   * If false - Dialog will be deleted.
+   */
+  bool m_bOnlyClean;
+
+  bool m_bStopOnClose;
+
+
 };
 
 
