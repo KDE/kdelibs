@@ -1,3 +1,8 @@
+# don't change the order of this one. it breaks when openssl is in /usr/include 
+# and the distro's KDE is there too, but the current "devel" KDE prefix is 
+# somewhere else. Another option for the future (needs testing) would be to
+# change SSL_INCLUDES to .../include/openssl and make the source use #include <foo.h>
+# instead of #include <openssl/foo.h>
 INCLUDES=$(all_includes) $(SSL_INCLUDES)
 
 noinst_LTLIBRARIES = libkssl.la
