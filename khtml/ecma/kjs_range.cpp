@@ -99,11 +99,7 @@ Value DOMRange::getValueProperty(ExecState *exec, int token) const
 
 Value DOMRangeProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  if (!thisObj.inherits(&KJS::DOMRange::info)) {
-    Object err = Error::create(exec,TypeError);
-    exec->setException(err);
-    return err;
-  }
+  KJS_CHECK_THIS( KJS::DOMRange, thisObj );
   DOM::Range range = static_cast<DOMRange *>(thisObj.imp())->toRange();
   Value result;
 

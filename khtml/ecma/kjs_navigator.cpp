@@ -420,11 +420,7 @@ Value PluginsFunc::tryCall(ExecState *, Object &, const List &)
 
 Value NavigatorFunc::tryCall(ExecState *exec, Object &thisObj, const List &)
 {
-  if (!thisObj.inherits(&KJS::Navigator::info)) {
-    Object err = Error::create(exec,TypeError);
-    exec->setException(err);
-    return err;
-  }
+  KJS_CHECK_THIS( KJS::Navigator, thisObj );
   Navigator *nav = static_cast<Navigator *>(thisObj.imp());
   // javaEnabled()
   return Boolean(nav->part()->javaEnabled());

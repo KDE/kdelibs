@@ -270,11 +270,7 @@ void DOMEvent::putValueProperty(ExecState *exec, int token, const Value& value, 
 
 Value DOMEventProtoFunc::tryCall(ExecState *exec, Object & thisObj, const List &args)
 {
-  if (!thisObj.inherits(&KJS::DOMEvent::info)) {
-    Object err = Error::create(exec,TypeError);
-    exec->setException(err);
-    return err;
-  }
+  KJS_CHECK_THIS( KJS::DOMEvent, thisObj );
   DOM::Event event = static_cast<DOMEvent *>( thisObj.imp() )->toEvent();
   switch (id) {
     case DOMEvent::StopPropagation:
@@ -394,11 +390,7 @@ Value DOMUIEvent::getValueProperty(ExecState *exec, int token) const
 
 Value DOMUIEventProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  if (!thisObj.inherits(&KJS::DOMUIEvent::info)) {
-    Object err = Error::create(exec,TypeError);
-    exec->setException(err);
-    return err;
-  }
+  KJS_CHECK_THIS( KJS::DOMUIEvent, thisObj );
   DOM::UIEvent uiEvent = static_cast<DOMUIEvent *>(thisObj.imp())->toUIEvent();
   switch (id) {
     case DOMUIEvent::InitUIEvent: {
@@ -525,11 +517,7 @@ Value DOMMouseEvent::getValueProperty(ExecState *exec, int token) const
 
 Value DOMMouseEventProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  if (!thisObj.inherits(&KJS::DOMMouseEvent::info)) {
-    Object err = Error::create(exec,TypeError);
-    exec->setException(err);
-    return err;
-  }
+  KJS_CHECK_THIS( KJS::DOMMouseEvent, thisObj );
   DOM::MouseEvent mouseEvent = static_cast<DOMMouseEvent *>(thisObj.imp())->toMouseEvent();
   switch (id) {
     case DOMMouseEvent::InitMouseEvent:
@@ -609,11 +597,7 @@ Value DOMTextEvent::getValueProperty(ExecState *, int token) const
 
 Value DOMTextEventProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  if (!thisObj.inherits(&KJS::DOMTextEvent::info)) {
-    Object err = Error::create(exec,TypeError);
-    exec->setException(err);
-    return err;
-  }
+  KJS_CHECK_THIS( KJS::DOMTextEvent, thisObj );
   DOM::TextEvent keyEvent = static_cast<DOMTextEvent *>(thisObj.imp())->toTextEvent();
   switch (id) {
     case DOMTextEvent::InitTextEvent:
@@ -713,11 +697,7 @@ Value DOMMutationEvent::getValueProperty(ExecState *exec, int token) const
 
 Value DOMMutationEventProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  if (!thisObj.inherits(&KJS::DOMMutationEvent::info)) {
-    Object err = Error::create(exec,TypeError);
-    exec->setException(err);
-    return err;
-  }
+  KJS_CHECK_THIS( KJS::DOMMutationEvent, thisObj );
   DOM::MutationEvent mutationEvent = static_cast<DOMMutationEvent *>(thisObj.imp())->toMutationEvent();
   switch (id) {
     case DOMMutationEvent::InitMutationEvent:

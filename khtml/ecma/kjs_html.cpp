@@ -57,11 +57,8 @@ IMPLEMENT_PROTOFUNC_DOM(HTMLDocFunction)
 
 Value KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  if (!thisObj.inherits(&HTMLDocument::info)) {
-    Object err = Error::create(exec,TypeError);
-    exec->setException(err);
-    return err;
-  }
+  KJS_CHECK_THIS( HTMLDocument, thisObj );
+
   DOM::HTMLDocument doc = static_cast<KJS::HTMLDocument *>(thisObj.imp())->toDocument();
   String s;
   DOM::HTMLElement element;
@@ -1945,11 +1942,8 @@ HTMLElementFunction::HTMLElementFunction(ExecState *exec, int i, int len)
 
 Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  if (!thisObj.inherits(&KJS::HTMLElement::info)) {
-    Object err = Error::create(exec,TypeError);
-    exec->setException(err);
-    return err;
-  }
+  KJS_CHECK_THIS( HTMLElement, thisObj );
+
   kdDebug(6070) << "KJS::HTMLElementFunction::tryCall " << endl;
   DOM::HTMLElement element = static_cast<KJS::HTMLElement *>(thisObj.imp())->toElement();
 
@@ -2985,11 +2979,7 @@ Value KJS::HTMLCollection::getNamedItems(ExecState *exec, const UString &propert
 
 Value KJS::HTMLCollectionProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  if (!thisObj.inherits(&KJS::HTMLCollection::info)) {
-    Object err = Error::create(exec,TypeError);
-    exec->setException(err);
-    return err;
-  }
+  KJS_CHECK_THIS( KJS::HTMLCollection, thisObj );
   DOM::HTMLCollection coll = static_cast<KJS::HTMLCollection *>(thisObj.imp())->toCollection();
 
   switch (id) {

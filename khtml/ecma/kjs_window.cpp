@@ -996,11 +996,7 @@ void Window::goHistory( int steps )
 
 Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  if (!thisObj.inherits(&Window::info)) {
-    Object err = Error::create(exec,TypeError);
-    exec->setException(err);
-    return err;
-  }
+  KJS_CHECK_THIS( Window, thisObj );
   Window *window = static_cast<Window *>(thisObj.imp());
   QString str, str2;
 
@@ -1697,11 +1693,7 @@ UString Location::toString(ExecState *) const
 
 Value LocationFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  if (!thisObj.inherits(&Location::info)) {
-    Object err = Error::create(exec,TypeError);
-    exec->setException(err);
-    return err;
-  }
+  KJS_CHECK_THIS( Location, thisObj );
   Location *location = static_cast<Location *>(thisObj.imp());
   KHTMLPart *part = location->part();
   if (part) {
@@ -1771,11 +1763,7 @@ Value History::getValueProperty(ExecState *, int token) const
 
 Value HistoryFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  if (!thisObj.inherits(&History::info)) {
-    Object err = Error::create(exec,TypeError);
-    exec->setException(err);
-    return err;
-  }
+  KJS_CHECK_THIS( History, thisObj );
   History *history = static_cast<History *>(thisObj.imp());
 
   Value v = args[0];

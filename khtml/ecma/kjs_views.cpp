@@ -55,11 +55,7 @@ Value DOMAbstractView::tryGet(ExecState *exec, const UString &p) const
 
 Value DOMAbstractViewFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  if (!thisObj.inherits(&KJS::DOMAbstractView::info)) {
-    Object err = Error::create(exec,TypeError);
-    exec->setException(err);
-    return err;
-  }
+  KJS_CHECK_THIS( KJS::DOMAbstractView, thisObj );
   DOM::AbstractView abstractView = static_cast<DOMAbstractView *>(thisObj.imp())->toAbstractView();
   switch (id) {
     case DOMAbstractView::GetComputedStyle: {

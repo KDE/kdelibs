@@ -189,11 +189,7 @@ void DOMCSSStyleDeclaration::tryPut(ExecState *exec, const UString &pName, const
 
 Value DOMCSSStyleDeclarationProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  if (!thisObj.inherits(&KJS::DOMCSSStyleDeclaration::info)) {
-    Object err = Error::create(exec,TypeError);
-    exec->setException(err);
-    return err;
-  }
+  KJS_CHECK_THIS( KJS::DOMCSSStyleDeclaration, thisObj );
   DOM::CSSStyleDeclaration styleDecl = static_cast<DOMCSSStyleDeclaration *>(thisObj.imp())->toStyleDecl();
   String str = args[0].toString(exec);
   DOM::DOMString s = str.value().string();
@@ -395,11 +391,7 @@ Value KJS::getDOMStyleSheetList(ExecState *exec, DOM::StyleSheetList ssl, DOM::D
 
 Value DOMStyleSheetListFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  if (!thisObj.inherits(&KJS::DOMStyleSheetList::info)) {
-    Object err = Error::create(exec,TypeError);
-    exec->setException(err);
-    return err;
-  }
+  KJS_CHECK_THIS( KJS::DOMStyleSheetList, thisObj );
   DOM::StyleSheetList styleSheetList = static_cast<DOMStyleSheetList *>(thisObj.imp())->toStyleSheetList();
   if (id == DOMStyleSheetList::Item)
     return getDOMStyleSheet(exec, styleSheetList.item(args[0].toInteger(exec)));
@@ -463,11 +455,7 @@ Value KJS::getDOMMediaList(ExecState *exec, DOM::MediaList ml)
 
 Value KJS::DOMMediaListProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  if (!thisObj.inherits(&KJS::DOMMediaList::info)) {
-    Object err = Error::create(exec,TypeError);
-    exec->setException(err);
-    return err;
-  }
+  KJS_CHECK_THIS( KJS::DOMMediaList, thisObj );
   DOM::MediaList mediaList = static_cast<DOMMediaList *>(thisObj.imp())->toMediaList();
   switch (id) {
     case DOMMediaList::Item:
@@ -522,11 +510,7 @@ Value DOMCSSStyleSheet::tryGet(ExecState *exec, const UString &p) const
 
 Value DOMCSSStyleSheetProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  if (!thisObj.inherits(&KJS::DOMCSSStyleSheet::info)) {
-    Object err = Error::create(exec,TypeError);
-    exec->setException(err);
-    return err;
-  }
+  KJS_CHECK_THIS( KJS::DOMCSSStyleSheet, thisObj );
   DOM::CSSStyleSheet styleSheet = static_cast<DOMCSSStyleSheet *>(thisObj.imp())->toCSSStyleSheet();
   Value result;
   UString str = args[0].toString(exec);
@@ -584,11 +568,7 @@ Value DOMCSSRuleList::tryGet(ExecState *exec, const UString &p) const
 
 Value DOMCSSRuleListFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  if (!thisObj.inherits(&KJS::DOMCSSRuleList::info)) {
-    Object err = Error::create(exec,TypeError);
-    exec->setException(err);
-    return err;
-  }
+  KJS_CHECK_THIS( KJS::DOMCSSRuleList, thisObj );
   DOM::CSSRuleList cssRuleList = static_cast<DOMCSSRuleList *>(thisObj.imp())->toCSSRuleList();
   switch (id) {
     case DOMCSSRuleList::Item:
@@ -791,11 +771,7 @@ void DOMCSSRule::putValueProperty(ExecState *exec, int token, const Value& value
 
 Value DOMCSSRuleFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  if (!thisObj.inherits(&KJS::DOMCSSRule::info)) {
-    Object err = Error::create(exec,TypeError);
-    exec->setException(err);
-    return err;
-  }
+  KJS_CHECK_THIS( KJS::DOMCSSRule, thisObj );
   DOM::CSSRule cssRule = static_cast<DOMCSSRule *>(thisObj.imp())->toCSSRule();
 
   if (cssRule.type() == DOM::CSSRule::MEDIA_RULE) {
@@ -1011,11 +987,7 @@ Value DOMCSSPrimitiveValue::tryGet(ExecState *exec, const UString &p) const
 
 Value DOMCSSPrimitiveValueProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  if (!thisObj.inherits(&KJS::DOMCSSPrimitiveValue::info)) {
-    Object err = Error::create(exec,TypeError);
-    exec->setException(err);
-    return err;
-  }
+  KJS_CHECK_THIS( KJS::DOMCSSPrimitiveValue, thisObj );
   DOM::CSSPrimitiveValue val = static_cast<DOMCSSPrimitiveValue *>(thisObj.imp())->toCSSPrimitiveValue();
   switch (id) {
     case DOMCSSPrimitiveValue::SetFloatValue:
@@ -1125,11 +1097,7 @@ Value DOMCSSValueList::tryGet(ExecState *exec, const UString &p) const
 
 Value DOMCSSValueListFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  if (!thisObj.inherits(&KJS::DOMCSSValue::info)) {
-    Object err = Error::create(exec,TypeError);
-    exec->setException(err);
-    return err;
-  }
+  KJS_CHECK_THIS( KJS::DOMCSSValueList, thisObj );
   DOM::CSSValueList valueList = static_cast<DOMCSSValueList *>(thisObj.imp())->toValueList();
   switch (id) {
     case DOMCSSValueList::Item:

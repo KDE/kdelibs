@@ -82,11 +82,7 @@ Value DOMNodeIterator::getValueProperty(ExecState *exec, int token) const
 
 Value DOMNodeIteratorProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &)
 {
-  if (!thisObj.inherits(&KJS::DOMNodeIterator::info)) {
-    Object err = Error::create(exec,TypeError);
-    exec->setException(err);
-    return err;
-  }
+  KJS_CHECK_THIS( KJS::DOMNodeIterator, thisObj );
   DOM::NodeIterator nodeIterator = static_cast<DOMNodeIterator *>(thisObj.imp())->toNodeIterator();
   switch (id) {
   case DOMNodeIterator::PreviousNode:
@@ -173,11 +169,7 @@ DOMNodeFilter::~DOMNodeFilter()
 
 Value DOMNodeFilterProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  if (!thisObj.inherits(&KJS::DOMNodeFilter::info)) {
-    Object err = Error::create(exec,TypeError);
-    exec->setException(err);
-    return err;
-  }
+  KJS_CHECK_THIS( KJS::DOMNodeFilter, thisObj );
   DOM::NodeFilter nodeFilter = static_cast<DOMNodeFilter *>(thisObj.imp())->toNodeFilter();
   switch (id) {
     case DOMNodeFilter::AcceptNode:
@@ -261,11 +253,7 @@ void DOMTreeWalker::tryPut(ExecState *exec, const UString &propertyName,
 
 Value DOMTreeWalkerProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &)
 {
-  if (!thisObj.inherits(&KJS::DOMTreeWalker::info)) {
-    Object err = Error::create(exec,TypeError);
-    exec->setException(err);
-    return err;
-  }
+  KJS_CHECK_THIS( KJS::DOMTreeWalker, thisObj );
   DOM::TreeWalker treeWalker = static_cast<DOMTreeWalker *>(thisObj.imp())->toTreeWalker();
   switch (id) {
     case DOMTreeWalker::ParentNode:
