@@ -242,7 +242,7 @@ class BrowserExtensionPrivate
 public:
   BrowserExtensionPrivate()
   {
-    m_historyLength = 0;
+      m_browserInterface = 0;
   }
   ~BrowserExtensionPrivate()
   {
@@ -251,8 +251,8 @@ public:
   KURL m_delayedURL;
   KParts::URLArgs m_delayedArgs;
   bool m_urlDropHandlingEnabled;
-  int m_historyLength;
   KBitArray m_actionStatus;
+  BrowserInterface *m_browserInterface;
 };
 
 };
@@ -347,16 +347,6 @@ void BrowserExtension::setURLDropHandlingEnabled( bool enable )
     d->m_urlDropHandlingEnabled = enable;
 }
 
-void BrowserExtension::setHistoryLength( int length )
-{
-    d->m_historyLength = length;
-}
-
-int BrowserExtension::getHistoryLength() const
-{
-    return d->m_historyLength;
-}
-
 void BrowserExtension::slotCompleted()
 {
   //empty the argument stuff, to avoid bogus/invalid values when opening a new url
@@ -379,6 +369,16 @@ void BrowserExtension::slotEmitOpenURLRequestDelayed()
     d->m_delayedArgs = URLArgs();
     emit openURLRequestDelayed( u, args );
     // tricky: do not do anything here! (no access to member variables, etc.)
+}
+
+void BrowserExtension::setBrowserInterface( BrowserInterface *impl )
+{
+    d->m_browserInterface = impl;
+}
+
+BrowserInterface *BrowserExtension::browserInterface() const
+{
+    return d->m_browserInterface;
 }
 
 void BrowserExtension::slotEnableAction( const char * name, bool enabled )

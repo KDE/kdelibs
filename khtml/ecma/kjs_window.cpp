@@ -29,6 +29,7 @@
 #include <kmessagebox.h>
 #include <klocale.h>
 #include <kparts/browserextension.h>
+#include <kparts/browserinterface.h>
 #include <kwinmodule.h>
 #include <kconfig.h>
 
@@ -868,7 +869,22 @@ KJSO History::get(const UString &p) const
   else if (p == "go")
     return Function(new HistoryFunc(this, HistoryFunc::Go));
   else if (p == "length")
-    return Number(0);
+  {
+      KParts::BrowserExtension *ext = part->browserExtension();
+      if ( !ext )
+          return Number( 0 );
+
+      KParts::BrowserInterface *iface = ext->browserInterface();
+      if ( !iface )
+          return Number( 0 );
+
+      QVariant length = iface->property( "historyLength" );
+
+      if ( length.type() != QVariant::UInt )
+          return Number( 0 );
+
+      return Number( length.toUInt() );
+  }
   else
     return HostImp::get(p);
 }
@@ -876,7 +892,7 @@ KJSO History::get(const UString &p) const
 Completion HistoryFunc::tryExecute(const List &args)
 {
   KParts::BrowserExtension *ext = history->part->browserExtension();
-  
+
   KJSO v = args[0];
   Number n;
   if(!v.isNull())
@@ -884,16 +900,24 @@ Completion HistoryFunc::tryExecute(const List &args)
 
   if(!ext)
     return Completion(Normal);
-    
+
+  KParts::BrowserInterface *iface = ext->browserInterface();
+
+  if ( !iface )
+      return Completion(Normal);
+
   switch (id) {
   case Back:
-      emit ext->goHistory(-1);
+      iface->callMethod( "goHistory(int)", -1 );
+//      emit ext->goHistory(-1);
       break;
   case Forward:
-      emit ext->goHistory(1);
+      iface->callMethod( "goHistory(int)", (int)1 );
+//      emit ext->goHistory(1);
       break;
   case Go:
-      emit ext->goHistory(n.intValue());
+      iface->callMethod( "goHistory(int)", n.intValue() );
+//      emit ext->goHistory(n.intValue());
       break;
   default:
     break;

@@ -37,6 +37,8 @@ class QString;
 
 namespace KParts {
 
+class BrowserInterface;
+
 struct URLArgsPrivate;
 
 struct URLArgs
@@ -213,6 +215,9 @@ public:
   bool isURLDropHandlingEnabled() const;
   void setURLDropHandlingEnabled( bool enable );
 
+  void setBrowserInterface( BrowserInterface *impl );
+  BrowserInterface *browserInterface() const;
+
   /**
    * @return the status (enabled/disabled) of an action.
    * When the enableAction signal is emitted, the browserextension
@@ -263,16 +268,6 @@ public:
    * BrowserExtension class. Convenience method.
    */
   static BrowserExtension *childObject( QObject *obj );
-
-  /**
-   * Returns the Entries in History (updated by Konq)
-   */
-  int getHistoryLength() const;
-  
-  /**
-   * Sets the Entries in History (set by Konq)
-   */
-  void setHistoryLength( int length );
 
 // KDE invents support for public signals...
 #undef signals
@@ -407,8 +402,6 @@ signals:
   void selectionInfo( const QString &text );
   void selectionInfo( const KURL::List &urls );
 
-  void goHistory( int steps );
-  
 private slots:
   void slotCompleted();
   void slotOpenURLRequest( const KURL &url, const KParts::URLArgs &args );

@@ -14,11 +14,13 @@ check-local:
 
 lib_LTLIBRARIES = libkparts.la
 
-libkparts_la_SOURCES = part.cpp plugin.cpp partmanager.cpp mainwindow.cpp dockmainwindow.cpp event.cpp browserextension.cpp factory.cpp  historyprovider.cpp
+libkparts_la_SOURCES = part.cpp plugin.cpp partmanager.cpp mainwindow.cpp dockmainwindow.cpp \
+		       event.cpp browserextension.cpp factory.cpp  historyprovider.cpp \
+		       browserinterface.cpp
 
 kpartsincludedir = $(includedir)/kparts
 kpartsinclude_HEADERS = part.h plugin.h partmanager.h mainwindow.h dockmainwindow.h event.h \
-	browserextension.h factory.h historyprovider.h
+	browserextension.h factory.h historyprovider.h browserinterface.h
 
 libkparts_la_METASOURCES = AUTO
 
