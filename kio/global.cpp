@@ -380,6 +380,16 @@ QString Job::errorString()
 #ifdef HAVE_FSTAB_H
 #include <fstab.h>
 #endif
+#if defined(_AIX)
+#include <sys/mntctl.h>
+#include <sys/vmount.h>
+/* AIX does not prototype mntctl anywhere that I can find */
+#ifndef mntctl
+extern "C" {
+int mntctl(int command, int size, char* buffer);
+}
+#endif
+#endif
 
 /***************************************************************
  *
@@ -403,7 +413,12 @@ QString Job::errorString()
 # endif
 #endif
 
-// hopefully there are only two kind of APIs. If not we need a configure test
+// There are (at least) three kind of APIs:
+// setmntent + getmntent + struct mntent (linux...)
+//             getmntent + struct mnttab
+// mntctl                + struct vmount (AIX)
+// Oh, and getmntinfo (BSD?). This makes four !
+
 #ifdef HAVE_SETMNTENT
 #define SETMNTENT setmntent
 #define ENDMNTENT endmntent
@@ -413,6 +428,8 @@ QString Job::errorString()
 #define MOUNTPOINT(var) var->mnt_dir
 #define MOUNTTYPE(var) var->mnt_type
 #define FSNAME(var) var->mnt_fsname
+#elif defined(_AIX)
+/* we don't need this stuff */
 #else
 #define SETMNTENT fopen
 #define ENDMNTENT fclose
@@ -459,6 +476,53 @@ QString KIO::findDeviceMountPoint( const QString& filename )
         if (realname == device_name) {
             result = mounted[i].f_mntonname;
             break;
+        }
+    }
+
+#elif defined(_AIX)
+
+    char mntctl_buffer[4096];
+    struct vmount *vm;
+    char *mountedfrom;
+    char *mountedto;
+    int fsname_len, num;
+    
+    num = mntctl(MCTL_QUERY, sizeof(mntctl_buffer), mntctl_buffer);
+    
+    if (num > 0)
+    {
+        /* iterate through items in the vmount structure: */
+        vm = (struct vmount *)mntctl_buffer;
+        for ( ; num > 0; num-- )
+        {
+            /* get the name of the mounted file systems: */
+            fsname_len = vm->vmt_data[VMT_STUB].vmt_size;
+            mountedto     = (char*)malloc(fsname_len + 1);
+            strncpy(mountedto, (char *)vm + vm->vmt_data[VMT_STUB].vmt_off, fsname_len);
+
+            /* get the mount-from information: */
+            fsname_len = vm->vmt_data[VMT_OBJECT].vmt_size;
+            mountedfrom     = (char*)malloc(fsname_len + 1);
+            strncpy(mountedfrom, (char *)vm + vm->vmt_data[VMT_OBJECT].vmt_off, fsname_len);
+
+            QCString device_name = mountedfrom;
+	    
+            if (realpath(device_name, realpath_buffer) != 0)
+                // success, use result from realpath
+                device_name = realpath_buffer;
+
+            free(mountedfrom);
+            
+            if (realname == device_name) {
+                result = mountedto;
+                free(mountedto);
+                break;
+            }
+            
+            free(mountedto);
+
+            /* goto the next vmount structure: */
+            vm = (struct vmount *)((char *)vm + vm->vmt_length);
         }
     }
 
@@ -555,6 +619,7 @@ static void check_mount_point(const char *mountpoint, const char *mounttype,
 bool KIO::probably_slow_mounted(const QString& filename)
 {
     char                realname[MAXPATHLEN];
+    char    realpath_buffer[MAXPATHLEN];
 
     memset(realname, 0, MAXPATHLEN);
 
@@ -581,7 +646,6 @@ bool KIO::probably_slow_mounted(const QString& filename)
 #ifdef HAVE_GETMNTINFO
 
     struct statfs *mounted;
-    char    realpath_buffer[MAXPATHLEN];
 
     int num_fs = getmntinfo(&mounted, MNT_NOWAIT);
 
@@ -601,6 +665,51 @@ bool KIO::probably_slow_mounted(const QString& filename)
 #endif
         check_mount_point(mounted[i].f_mntonname, mounttype, mounted[i].f_mntfromname,
                           realname, isauto, isslow,max);
+    }
+
+#elif defined(_AIX)
+
+    char mntctl_buffer[4096];
+    struct vmount *vm;
+    char *mountedfrom;
+    char *mountedto;
+    int fsname_len, num;
+    
+    num = mntctl(MCTL_QUERY, sizeof(mntctl_buffer), mntctl_buffer);
+    
+    if (num > 0)
+    {
+        /* iterate through items in the vmount structure: */
+        vm = (struct vmount *)mntctl_buffer;
+        for ( ; num > 0; num-- )
+        {
+            /* get the name of the mounted file systems: */
+            fsname_len = vm->vmt_data[VMT_STUB].vmt_size;
+            mountedto     = (char*)malloc(fsname_len + 1);
+            strncpy(mountedto, (char *)vm + vm->vmt_data[VMT_STUB].vmt_off, fsname_len);
+
+            /* get the mount-from information: */
+            fsname_len = vm->vmt_data[VMT_OBJECT].vmt_size;
+            mountedfrom     = (char*)malloc(fsname_len + 1);
+            strncpy(mountedfrom, (char *)vm + vm->vmt_data[VMT_OBJECT].vmt_off, fsname_len);
+	    
+            QCString device_name = mountedfrom;
+	    
+            if (realpath(device_name, realpath_buffer) != 0)
+                // success, use result from realpath
+                device_name = realpath_buffer;
+                
+            // Is there any way to properly get the mount-type on AIX?
+            // If so, please fix the second arg to check_mount_point.
+            check_mount_point(mountedto, (vm->vmt_flags & MNT_REMOTE) ? "nfs" : "",
+            				device_name, realname, isauto, isslow, max);
+            
+            free(mountedfrom);
+            free(mountedto);
+
+            /* goto the next vmount structure: */
+            vm = (struct vmount *)((char *)vm + vm->vmt_length);
+        }
     }
 
 #else
