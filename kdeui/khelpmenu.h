@@ -32,6 +32,7 @@ class KAboutDialog;
 class KBugReport;
 class KAboutData;
 class KHelpMenuPrivate;
+class QActionCollection;
 
 /**
  * This class provides the standard KDE help menu with the default "about"
@@ -156,7 +157,7 @@ class KHelpMenu : public QObject
      * 
      */
     KHelpMenu( QWidget *parent, const KAboutData *aboutData,
-	       bool showWhatsThis=true );
+	       bool showWhatsThis=true, QActionCollection *actions = 0 );
 
     /**
      * Destructor

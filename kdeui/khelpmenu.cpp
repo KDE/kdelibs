@@ -40,6 +40,9 @@
 
 #include <kaboutdata.h>
 
+#include <kaction.h>
+#include <kstdaction.h>
+
 class KHelpMenuPrivate
 {
 public:
@@ -64,7 +67,7 @@ KHelpMenu::KHelpMenu( QWidget *parent, const QString &aboutAppText,
 }
 
 KHelpMenu::KHelpMenu( QWidget *parent, const KAboutData *aboutData,
-		      bool showWhatsThis )
+		      bool showWhatsThis, QActionCollection *actions )
   : QObject(parent), mMenu(0), mAboutApp(0), mAboutKDE(0), mBugReport(0),
     d(new KHelpMenuPrivate)
 {
@@ -93,6 +96,16 @@ KHelpMenu::KHelpMenu( QWidget *parent, const KAboutData *aboutData,
   }
   else
     mAboutAppText = QString::null;
+
+    if (actions)
+    {
+        KStdAction::helpContents(this, SLOT(appHelpActivated()), actions);
+        if (showWhatsThis)
+            KStdAction::whatsThis(this, SLOT(contextHelpActivated()), actions);
+        KStdAction::reportBug(this, SLOT(reportBug()), actions);
+        KStdAction::aboutApp(this, SLOT(aboutApplication()), actions);
+        KStdAction::aboutKDE(this, SLOT(aboutKDE()), actions);
+    }
 }
 
 KHelpMenu::~KHelpMenu( void )
