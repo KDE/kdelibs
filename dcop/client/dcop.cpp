@@ -22,7 +22,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <qvariant.h>
 #include "../../kdecore/kdatastream.h"
-#include "../../kdecore/kdatastream.cpp"
 #include "../dcopclient.h"
 #include "../dcopref.h"
 #include <stdlib.h>
