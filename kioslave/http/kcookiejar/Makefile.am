@@ -25,5 +25,8 @@ servicesdir = $(kde_servicesdir)
 update_DATA = kcookiescfg.upd
 updatedir = $(kde_datadir)/kconf_update
 
+cookie_DATA = domain_info
+cookiedir = $(kde_datadir)/khtml
+
 dummy.cpp:
 	echo > dummy.cpp

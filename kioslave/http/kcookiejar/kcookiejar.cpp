@@ -240,6 +240,14 @@ KCookieJar::KCookieJar()
     globalAdvice = KCookieDunno;
     configChanged = false;
     cookiesChanged = false;
+
+    KConfig cfg("khtml/domain_info", true, false, "data");
+    QStringList countries = cfg.readListEntry("twoLevelTLD");
+    for(QStringList::ConstIterator it = countries.begin();
+        it != countries.end(); ++it)
+    {
+       m_twoLevelTLD.replace(*it, (int *) 1);
+    }
 }
 
 //
@@ -444,14 +452,14 @@ static const char * parseNameValue(const char *header,
 
 }
 
-static void stripDomain(const QString &_fqdn, QString &_domain)
+void KCookieJar::stripDomain(const QString &_fqdn, QString &_domain)
 {
    QStringList domains;
-   KCookieJar::extractDomains(_fqdn, domains);
+   extractDomains(_fqdn, domains);
    _domain = domains[0];
 }
 
-static QString stripDomain( KHttpCookiePtr cookiePtr)
+QString KCookieJar::stripDomain( KHttpCookiePtr cookiePtr)
 {
     QString domain; // We file the cookie under this domain.
     if (cookiePtr->domain().isEmpty())
@@ -504,13 +512,30 @@ void KCookieJar::extractDomains(const QString &_fqdn,
     {
        if (partList.count() == 1)
          break; // We only have a TLD left.
+
        if (partList.count() == 2)
        {
           // If this is a TLD, we should stop. (e.g. co.uk)
+          if (m_twoLevelTLD[partList[1].lower()])
+          {
+             // This domain uses two-level TLDs in the form xxxx.yy
+             break;
+          }
+
           // We assume this is a TLD if it ends with .xx.yy or .x.yy
-          if ((partList[0].length() <= 2) &&
-              (partList[1].length() == 2))
-             break; // This is a TLD.
+          if (partList[1].length() == 2)
+          {
+             // If this is a TLD, we should stop. (e.g. co.uk)
+             // We assume this is a TLD if it ends with .xx.yy or .x.yy
+             if (partList[0].length() <= 2)
+                break; // This is a TLD.
+
+             // Catch some TLDs that we miss with the previous check
+             // e.g. com.au, org.uk, mil.co
+             QCString t = partList[0].lower().utf8();
+             if ((t == "com") || (t == "net") || (t == "org") || (t == "gov") || (t == "edu") || (t == "mil") || (t == "int"))
+                break;
+          }
        }
        QString domain = partList.join(".");
        _domains.append("." + domain);
