@@ -21,6 +21,7 @@
  <Action name="incFontSizes" />
  <Action name="decFontSizes" />
  <ActionList name="loadImages" />
+ <Separator />
  <Action name="security" />
 </ToolBar>
 </kpartgui>
