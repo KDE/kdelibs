@@ -12,6 +12,8 @@
  * kicontheme.cpp: Lowlevel icon theme handling.
  */
 
+#include <sys/stat.h>
+#include <unistd.h>
 #include <stdlib.h>
 
 #include <qstring.h>
@@ -372,8 +374,10 @@ QString KIconThemeDir::iconPath(const QString& name) const
     if (!mbValid)
 	return QString::null;
     QString file = mDir + "/" + name;
-    if (KStandardDirs::exists(file))
-      return file;
+
+    if (access(QFile::encodeName(file), R_OK) == 0)
+        return file;
+
     kdDebug(264) << "failed on " << file << endl;
     return QString::null;
 }
