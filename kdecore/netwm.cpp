@@ -824,9 +824,9 @@ void NETRootInfo::setDesktopViewport(int desktop, const NETPoint &viewport) {
 	p->viewport[desktop - 1] = viewport;
 
 	int d, i, l;
-	l = p->viewport.size() * 2;
+	l = p->number_of_desktops * 2;
 	long *data = new long[l];
-	for (d = 0, i = 0; d < p->viewport.size(); d++) {
+	for (d = 0, i = 0; d < p->number_of_desktops; d++) {
 	    data[i++] = p->viewport[d].x;
 	    data[i++] = p->viewport[d].y;
 	}
