@@ -1077,12 +1077,9 @@ void RenderTextArea::calcMinMaxWidth()
     RenderFormElement::calcMinMaxWidth();
 }
 
-void RenderTextArea::layout( )
+void RenderTextArea::updateFromElement()
 {
-    KHTMLAssert( !layouted() );
-
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
-
     w->setReadOnly(element()->readOnly());
     w->blockSignals(true);
     int line, col;
@@ -1092,7 +1089,7 @@ void RenderTextArea::layout( )
     w->blockSignals(false);
     element()->m_dirtyvalue = false;
 
-    RenderFormElement::layout();
+    RenderFormElement::updateFromElement();
 }
 
 void RenderTextArea::close( )

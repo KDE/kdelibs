@@ -394,8 +394,8 @@ public:
 
     virtual const char *renderName() const { return "RenderTextArea"; }
     virtual void calcMinMaxWidth();
-    virtual void layout();
     virtual void close ( );
+    virtual void updateFromElement();
 
     // don't even think about making this method virtual!
     DOM::HTMLTextAreaElementImpl* element() const
