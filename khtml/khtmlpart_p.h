@@ -232,6 +232,7 @@ public:
   unsigned long m_jobspeed;
   QString m_lastModified;
   QString m_httpHeaders;
+  QString m_pageServices;
 
   // QStrings for SSL metadata
   // Note: When adding new variables don't forget to update ::saveState()/::restoreState()!

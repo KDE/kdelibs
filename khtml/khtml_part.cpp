@@ -977,6 +977,8 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
     // When the first data arrives, the metadata has just been made available
     d->m_httpHeaders = d->m_job->queryMetaData("HTTP-Headers");
 
+    d->m_pageServices = d->m_job->queryMetaData("PageServices");
+
     d->m_bSecurityInQuestion = false;
     d->m_ssl_in_use = (d->m_job->queryMetaData("ssl_in_use") == "TRUE");
     kdDebug(6050) << "SSL in use? " << d->m_job->queryMetaData("ssl_in_use") << endl;
@@ -2213,7 +2215,12 @@ void KHTMLPart::slotViewPageInfo()
      dlg->setCaption(i18n("Frame Information"));
   }
 
-  dlg->_url->setText(QString("<a href=\"%1\">%2</a>").arg(url().url()).arg(url().prettyURL()));
+  QString editStr = QString::null;
+
+  if (!d->m_pageServices.isEmpty()) 
+    editStr = "   " + i18n("<a href=\"%1\">[Properties]</a>").arg(d->m_pageServices);
+
+  dlg->_url->setText(QString("<a href=\"%1\">%2</a>%3").arg(url().url()).arg(url().prettyURL()).arg(editStr));
   dlg->_lastModified->setText(d->m_lastModified);
 
   /* populate the list view now */
@@ -3211,6 +3218,7 @@ void KHTMLPart::saveState( QDataStream &stream )
   stream << d->m_zoomFactor;
 
   stream << d->m_httpHeaders;
+  stream << d->m_pageServices;
 
   // Save ssl data
   stream << d->m_ssl_in_use
@@ -3289,6 +3297,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
   setZoomFactor(zoomFactor);
 
   stream >> d->m_httpHeaders;
+  stream >> d->m_pageServices;
 
   // Restore ssl data
   stream >> d->m_ssl_in_use
