@@ -279,13 +279,14 @@ void PartManager::removePart( Part *part )
   }
   disconnect( part, SIGNAL( destroyed() ), this, SLOT( slotObjectDestroyed() ) );
 
-  kdDebug(1000) << QString("Part %1 removed").arg(part->name()) << endl;
+  //Warning. The part could be already deleted
+  //kdDebug(1000) << QString("Part %1 removed").arg(part->name()) << endl;
   d->m_parts.removeRef( part );
+
+  emit partRemoved( part );
 
   if ( part == d->m_activePart )
     setActivePart( 0 );
-
-  emit partRemoved( part );
 }
 
 void PartManager::replacePart( Part * oldPart, Part * newPart, bool setActive )
@@ -368,6 +369,7 @@ void PartManager::setActivePart( Part *part, QWidget *widget )
   // Set the new active instance in KGlobal
   setActiveInstance( d->m_activePart ? d->m_activePart->instance() : 0L );
 
+  kdDebug(1000) << this << " emitting activePartChanged " << d->m_activePart << endl;
   emit activePartChanged( d->m_activePart );
 }
 
