@@ -91,7 +91,7 @@ void ResourceLDAPConfig::loadSettings( KConfig *config )
   mUser->setText( config->readEntry( "LdapUser" ) );
   mPassword->setText( KABC::Resource::cryptStr( config->readEntry( "LdapPassword" ) ) );
   mHost->setText( config->readEntry( "LdapHost" ) );
-  mPort->setValue(  config->readNumEntry( "LdapPort" ) );
+  mPort->setValue(  config->readNumEntry( "LdapPort", 389 ) );
   mDn->setText( config->readEntry( "LdapDn" ) );
   mFilter->setText( config->readEntry( "LdapFilter" ) );
   mAnonymous->setChecked( config->readBoolEntry( "LdapAnonymous" ) );
