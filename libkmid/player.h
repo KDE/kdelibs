@@ -48,6 +48,7 @@ struct PlayerController
 	volatile ulong	ticksTotal;
 	volatile ulong	ticksPlayed;
 	volatile double  millisecsPlayed;
+	volatile ulong  beginmillisec;
 
 	volatile int	tempo;
 

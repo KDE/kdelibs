@@ -40,6 +40,7 @@ for (int chn=0;chn<N_CHANNELS;chn++)
 	for (i=0;i<N_CTL;i++)
 		chn_controller[chn][i]=0;
 	chn_controller[chn][CTL_MAIN_VOLUME]=127;
+	chn_controller[chn][11]=127;
 	chn_controller[chn][0x4a]=127;
 	};
 };
@@ -88,6 +89,7 @@ for (int chn=0;chn<N_CHANNELS;chn++)
 	midi->chnPitchBender(chn,chn_bender[chn]&0xFF,chn_bender[chn]>>8);
 	midi->chnPressure(chn,chn_pressure[chn]);
 	midi->chnController(chn,CTL_MAIN_VOLUME,chn_controller[chn][CTL_MAIN_VOLUME]);
+	midi->chnController(chn,11,chn_controller[chn][11]);
 /*	for (int i=0;i<N_CTL;i++)
 		midi->chnController(chn,i,chn_controller[chn][i]);
 */

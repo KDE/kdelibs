@@ -98,13 +98,6 @@ lastcount=0.0;
 
 loadFMPatches();
 
-#ifdef FMOUTDEBUG
-printf("Number of synth devices : %d\n",ndevs);
-printf("Number of midi ports : %d\n",nmidiports);
-printf("Rate : %d\n",rate);
-#endif
-
-
 };
 
 void fmOut::closeDev (void)

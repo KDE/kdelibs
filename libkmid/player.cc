@@ -26,6 +26,7 @@
 #include "midispec.h"
 #include <string.h>
 #include <unistd.h>
+#include <sys/time.h>
 #include "midistat.h"
 #include "mt32togm.h"
 
@@ -231,6 +232,28 @@ int halt=0;
 ctl->tempo=tempo;
 int playing;
 ctl->paused=0;
+if ((ctl->message!=0)&&(ctl->message & PLAYER_SETPOS))
+	{
+	ctl->moving=1;
+	ctl->message&=~PLAYER_SETPOS;
+	midi->sync(1);
+	midi->tmrStop();
+	midi->closeDev();
+	midistat = new midiStat();
+	SetPos(ctl->gotomsec,midistat);
+	minTime=ctl->gotomsec;
+	prevms=(ulong)minTime;
+	midi->openDev();
+	midi->tmrStart();
+	diffTime=ctl->gotomsec;
+	midistat->sendData(midi,ctl->gm);
+	delete midistat;
+	ctl->moving=0;
+	};
+timeval begintv;
+gettimeofday(&begintv, NULL);
+ctl->beginmillisec=begintv.tv_sec*1000+begintv.tv_usec/1000;
+ctl->OK=1;
 ctl->playing=playing=1;
 while (playing)
     {
@@ -262,7 +285,7 @@ while (playing)
 		playing=0;
 		halt=1;
 		};
-	if (ctl->message & PLAYER_SETPOS)
+/*	if (ctl->message & PLAYER_SETPOS)
 		{
 		ctl->moving=1;
 		ctl->message&=~PLAYER_SETPOS;
@@ -283,7 +306,7 @@ while (playing)
 		while (ctl->OK==1) ;
 		ctl->moving=0;
 		};
-	};
+*/	};
     prevms=minTime;
     ctl->millisecsPlayed=minTime;
     trk=0;

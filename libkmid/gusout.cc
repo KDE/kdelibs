@@ -35,8 +35,72 @@
 #include <stdlib.h>
 #include "../version.h"
 #include "midispec.h"
+#include "gusvoices.h"
 
 SEQ_USE_EXTBUF();
+
+struct pat_header
+  {
+    char            magic[12];
+    char            version[10];
+    char            description[60];
+    unsigned char   instruments;
+    char            voices;
+    char            channels;
+    unsigned short  nr_waveforms;
+    unsigned short  master_volume;
+    unsigned long   data_size;
+  };
+struct sample_header
+  {
+    char            name[7];
+    unsigned char   fractions;
+    long            len;
+    long            loop_start;
+    long            loop_end;
+    unsigned short  base_freq;
+    long            low_note;
+    long            high_note;
+    long            base_note;
+    short           detune;
+    unsigned char   panning;
+
+    unsigned char   envelope_rate[6];
+    unsigned char   envelope_offset[6];
+
+    unsigned char   tremolo_sweep;
+    unsigned char   tremolo_rate;
+    unsigned char   tremolo_depth;
+
+    unsigned char   vibrato_sweep;
+    unsigned char   vibrato_rate;
+    unsigned char   vibrato_depth;
+
+    char            modes;
+
+    short           scale_frequency;
+    unsigned short  scale_factor;
+  };
+
+int get_dint(unsigned char *p)
+{
+unsigned int v=0;
+
+for (int i=0;i<4;i++)
+    {
+    v |= (p[i] << (i*8));
+    }
+return (int)v;
+}
+
+unsigned short get_word(unsigned char *p)
+{
+unsigned short v=0;
+
+for (int i=0;i<2;i++)
+    v |= (*p++ << (i*8));
+return (short)v;
+}
 
 gusOut::gusOut(int d,int total)
 {
@@ -300,18 +364,20 @@ delete_GUS_patches_directory=1;
 
 char *gusOut::patchName(int pgm)
 {
-return "acpiano";
+return GUS_voice_names[pgm];
 };
 
 
 int gusOut::loadPatch(int pgm)
 {
+struct pat_header header;
+struct sample_header sample;
 if (patchloaded[pgm]==1)
     {
     printf("Trying to reload a patch. This should never happen, please report.\n");
     return 0;
     };
-if (patchName(pgm)==NULL)
+if ((patchName(pgm)==NULL)||((patchName(pgm))[0]==0))
     {
     printf("Couldn't guess patch name for patch number %d\n",pgm);
     return -1;
@@ -319,7 +385,8 @@ if (patchName(pgm)==NULL)
 char *s=new char[strlen(GUS_patches_directory)+strlen(patchName(pgm))+10];
 if (s==NULL) return -1;
 sprintf(s,"%s/%s.pat",GUS_patches_directory,patchName(pgm));
-patch_info *patch;
+printf("Loading patch : %s\n",s);
+struct patch_info *patch=NULL;
 struct stat info;
 if (stat(s, &info)==-1)
    {
@@ -334,27 +401,128 @@ if (fh==NULL)
    return -1;
    };
 
-char tmp[256];
-fread(tmp,0xef,1,fh);
-if (strncmp(&tmp[0],"GF1PATCH110",12)!=0)
+unsigned char tmp[256];
+if (fread(tmp,1,0xef,fh)!=0xef)
+   {
+   fclose(fh);
+   printf("Short file ! \n");
+   return -1;
+   };
+memcpy ((char *) &header, tmp, sizeof (header)); 
+
+if (strncmp(header.magic,"GF1PATCH110",12)!=0)
     {
     printf("File %s is corrupted or it isn't a patch file\n",s);
     return -1;
     };
-if (strncmp(&tmp[12],"ID#000002",10)!=0)
+if (strncmp(header.version,"ID#000002",10)!=0)
     {
     printf("File %s's version is not supported\n",s);
     return -1;
     };
 unsigned short nWaves= *(unsigned short *)&tmp[85];
-unsigned short mainVolume= *(unsigned short *)&tmp[87];
+unsigned short masterVolume= *(unsigned short *)&tmp[87];
+#ifdef GUSOUTDEBUG
+printf("nWaves: %d\n",nWaves);
+printf("masterVolume : %d\n",masterVolume);
+#endif
+
 unsigned short i;
-int wavedataposition=0xef;
+int offset=0xef;
 for (i=0;i<nWaves;i++)
     {
+    fseek(fh,offset,SEEK_SET);
+
+    if (fread(tmp,1,sizeof(sample),fh) != sizeof(sample))
+	{
+	fclose(fh);
+	printf("Short file\n");
+	return -1;
+	};
+    memcpy ((char *) &sample, tmp, sizeof (sample));
+    sample.fractions = (char)tmp[7];
+    sample.len = get_dint(&tmp[8]);
+    sample.loop_start = get_dint(&tmp[12]);
+    sample.loop_end = get_dint(&tmp[16]);
+    sample.base_freq = get_word(&tmp[20]);
+    sample.low_note = get_dint(&tmp[22]);
+    sample.high_note = get_dint(&tmp[26]);
+    sample.base_note = get_dint(&tmp[30]);
+    sample.detune = (short)get_word(&tmp[34]);
+    sample.panning = (unsigned char) tmp[36];  
+
+    memcpy (sample.envelope_rate, &tmp[37], 6);
+    memcpy (sample.envelope_offset, &tmp[43], 6);
+
+    sample.tremolo_sweep = (unsigned char) tmp[49];
+    sample.tremolo_rate = (unsigned char) tmp[50];
+    sample.tremolo_depth = (unsigned char) tmp[51];
+
+    sample.vibrato_sweep = (unsigned char) tmp[52];
+    sample.vibrato_rate = (unsigned char) tmp[53];
+    sample.vibrato_depth = (unsigned char) tmp[54];
+    sample.modes = (unsigned char) tmp[55];
+    sample.scale_frequency = (short)get_word(&tmp[56]);
+    sample.scale_factor = get_word(&tmp[58]);
+
+    offset = offset + 96;
+ 
+    patch = (struct patch_info *) malloc(sizeof (*patch) + sample.len);
+    if (patch == NULL)
+       {
+	printf("Not enough memory\n");
+	return -1;
+       };
+    patch->key = GUS_PATCH;
+    patch->device_no = device;
+    patch->instr_no = pgm;
+    patch->mode = sample.modes | WAVE_TREMOLO | WAVE_VIBRATO | WAVE_SCALE;
+    patch->len = sample.len;
+    patch->loop_start = sample.loop_start;
+    patch->loop_end = sample.loop_end;
+    patch->base_note = sample.base_note;
+    patch->high_note = sample.high_note;
+    patch->low_note = sample.low_note;
+    patch->base_freq = sample.base_freq;
+    patch->detuning = sample.detune;
+    patch->panning = (sample.panning - 7) * 16;
+
+    memcpy (patch->env_rate, sample.envelope_rate, 6);
+    memcpy (patch->env_offset, sample.envelope_offset, 6);
+
+    patch->tremolo_sweep = sample.tremolo_sweep;
+    patch->tremolo_rate = sample.tremolo_rate;
+    patch->tremolo_depth = sample.tremolo_depth;
+
+    patch->vibrato_sweep = sample.vibrato_sweep;
+    patch->vibrato_rate = sample.vibrato_rate;
+    patch->vibrato_depth = sample.vibrato_depth;
+
+    patch->scale_frequency = sample.scale_frequency;
+    patch->scale_factor = sample.scale_factor;
+
+    patch->volume = header.master_volume; 
+ 
+    if (fseek (fh, offset, 0) == -1)
+        {
+	fclose(fh);
+	return -1;
+        }
+
+    if ((long)fread (patch->data, 1,sample.len,fh) != sample.len)
+        {
+        printf ("Short file\n");
+        return -1;
+        }
+
+    SEQ_WRPATCH (patch, sizeof (*patch) + sample.len);
+
+    offset = offset + sample.len;
+
     };
 
-
+fclose(fh);
+free(patch); // Shouldn't this 'free' be within the 'for' loop ?
 delete s;
 freememory = device;
 ioctl(seqfd, SNDCTL_SYNTH_MEMAVL, &freememory);
@@ -370,9 +538,24 @@ int patchesordered[256]; //This holds the pgm used ordered by a method which
                // This is set to : 0,188,-1,-1,-1,-1 ...
 getPatchesLoadingOrder(patchesused,patchesordered);
 
+// If above line doesn't work, perhaps you could try this ? :
+// for (int j=0;j<256;j++) patchesordered[j]=patchesused[j];
+int k;
+printf("Patches used : \n");
+for (k=0;k<256;k++)
+    {
+    if (patchesused[k]!=-1) printf("%d,",patchesused[k]);
+    };
+printf("\n Patches used, smartly sorted :\n");
+for (k=0;k<256;k++)
+    {
+    if (patchesordered[k]!=-1) printf("%d,",patchesordered[k]);
+    };
+
 int i=0;
 while (patchesordered[i]!=-1)
     {
+    printf("Load Patch : %d\n",patchesordered[i]);
     loadPatch(patchesordered[i]);
     i++;
     };
@@ -436,5 +619,5 @@ while (i<256)
     };
 };
 
-char *gusOut::GUS_patches_directory="/etc";
+char *gusOut::GUS_patches_directory="/mnt/dosc/gravis/patches";
 int gusOut::delete_GUS_patches_directory = 0;
