@@ -472,7 +472,8 @@ HTTPProtocol::http_openConnection()
         m_sock = ks.fd();
 
         int on = 1;
-        int r = setsockopt( m_sock, SOL_TCP, TCP_NODELAY, &on, sizeof( on ) );
+        (void) setsockopt( m_sock, IPPROTO_TCP, TCP_NODELAY, 
+                           (char*)&on, sizeof( on ) );
 
         // SSL proxying requires setting up a tunnel through the proxy server
         // with the CONNECT directive.
