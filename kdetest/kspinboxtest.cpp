@@ -162,3 +162,5 @@ int main(int argc,char *argv[])
 	app.setMainWidget(&top);	
 	app.exec();
 }
+#include "kspinboxtest.moc"
+

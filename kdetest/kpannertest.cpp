@@ -73,3 +73,5 @@ int main( int argc, char ** argv )
     toplevel->show();
     a->exec();
 }
+#include "kpannertest.moc"
+

@@ -17,7 +17,6 @@
 #    Boston, MA 02111-1307, USA.
 
 INCLUDES = -I$(top_srcdir)/kdecore $(QT_INCLUDES) $(X_INCLUDES) 
-DISTCLEANFILES = $(libkfm_la_METASOURCES)
 
 libkfm_la_METASOURCES = kfm.moc kfmclient_ipc.moc
 

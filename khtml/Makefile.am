@@ -24,8 +24,6 @@ libkhtml_la_SOURCES = khtmlparser.cpp khtmljscript.cpp khtml.cpp khtmlobj.cpp kh
 libkhtml_la_METASOURCES = khtml.moc khtmlcache.moc khtmlembed.moc \
 	khtmlform.moc khtmlframe.moc khtmlview.moc
 
-DISTCLEANFILES = $(libkhtml_la_METASOURCES)
-
 include_HEADERS = khtml.h khtmlview.h khtmlsavedpage.h khtmlembed.h khtmlcache.h 
 noinst_HEADERS = khtmlchain.h khtmlparser.h khtmljscript.h khtmlobj.h khtmlfont.h khtmlform.h khtmltoken.h khtmlframe.h khtmlclue.h khtmldata.h khtmltable.h khtmliter.h khtmlstyle.h
 libkhtml_la_LDFLAGS = -version-info 2:0

@@ -18,7 +18,6 @@
 #    Boston, MA 02111-1307, USA.
 
 INCLUDES = $(QT_INCLUDES) $(X_INCLUDES)
-DISTCLEANFILES = $(libkdecore_la_METASOURCES)
 EXTRA_DIST = convert_key.c charsets.config
 lib_LTLIBRARIES = libkdecore.la
 

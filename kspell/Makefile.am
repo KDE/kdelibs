@@ -22,8 +22,6 @@
 
 INCLUDES=  -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui $(QT_INCLUDES) $(X_INCLUDES)
 
-DISTCLEANFILES = $(libkspell_la_METASOURCES)
-
 lib_LTLIBRARIES  = libkspell.la
 libkspell_la_LDFLAGS = -version-info 2:0
 

@@ -21,8 +21,6 @@ INCLUDES= -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui -I$(top_srcdir)/kfmlib $
 
 lib_LTLIBRARIES  = libkfile.la
 
-DISTCLEANFILES = $(libkfile_la_METASOURCES) 
-
 libkfile_la_METASOURCES = kcombiview.moc kdir.moc kdirlistbox.moc \
 	kfilebookmark.moc kfiledetaillist.moc kfiledialog.moc \
 	kfiledialogconf.moc kfilefilter.moc kfileinfocontents.moc \

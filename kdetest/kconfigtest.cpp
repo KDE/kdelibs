@@ -19,6 +19,10 @@
 /* $Id$
 
  * $Log$
+ * Revision 1.15  1999/01/15 08:59:16  kulow
+ * use seperate moc.cpp files - did you know that most header files herein are
+ * complete hacks? ;)
+ *
  * Revision 1.14  1998/09/21 18:34:46  bieker
  * Use paths.h if we can.
  *
@@ -368,4 +372,6 @@ int main( int argc, char **argv )
 
   return a.exec();
 }
+
+#include "kconfigtest.moc"
 

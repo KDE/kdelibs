@@ -281,3 +281,5 @@ int main(int argc, char **argv)
   outline.show();
   return app.exec();
 }
+#include "ktreelisttest.moc"
+

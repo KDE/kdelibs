@@ -56,7 +56,5 @@ debug ( "[kiconloader demo] started-------------------------" );
   return a.exec();
 }
 
-
-
-
+#include "kiconloadertestmain.moc"
 

@@ -78,3 +78,5 @@ void CMainDlg::printDate(QDate dt)
 {
    m_lab->setText((const char*)dt.toString());
 }
+#include "kdatepicktestdlg.moc"
+

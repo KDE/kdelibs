@@ -2,6 +2,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.3  1999/01/15 08:59:28  kulow
+ * use seperate moc.cpp files - did you know that most header files herein are
+ * complete hacks? ;)
+ *
  * Revision 1.2  1997/09/10 13:53:15  kdecvs
  * Kalle: Use KApplication instead of QApplication
  *
@@ -140,3 +144,4 @@ int main( int argc, char ** argv )
     a->setMainWidget(toplevel);
     a->exec();
 }
+#include "kmsgboxtest.moc"

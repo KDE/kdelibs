@@ -21,7 +21,6 @@
 
 INCLUDES= -I$(top_srcdir)/kdecore -I$(top_srcdir)/kfile $(QT_INCLUDES) $(X_INCLUDES) 
 EXTRA_DIST = error.xpm exclamation.xpm info.xpm stopsign.xpm
-DISTCLEANFILES = $(libkdeui_la_METASOURCES)
 
 lib_LTLIBRARIES = libkdeui.la
 libkdeui_la_LDFLAGS = -version-info 2:0  

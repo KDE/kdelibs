@@ -24,8 +24,6 @@ libkhtmlw_la_SOURCES = jscript.cpp html.cpp htmlobj.cpp htmlfont.cpp htmlform.cp
 libkhtmlw_la_METASOURCES = html.moc htmlform.moc htmlframe.moc \
 	htmlobj.moc htmlview.moc
 
-DISTCLEANFILES = $(libkhtmlw_la_METASOURCES)
-
 include_HEADERS = jscript.h html.h htmlobj.h htmlfont.h htmlform.h \
 	htmltoken.h htmlframe.h htmlview.h htmlclue.h htmldata.h \
 	htmltable.h htmliter.h

@@ -72,7 +72,5 @@ libkab_la_METASOURCES = AssertDialog.moc AssertDialogData.moc DialogBase.moc \
 	businesscard.moc datepickerdialog.moc editentry.moc \
 	kab.moc kabapi.moc searchresults.moc  
 
-DISTCLEANFILES = $(libkab_la_METASOURCES)
-
 picsdir = $(kde_datadir)/kab/pics
 pics_DATA = dialog_background.jpg background_1.jpg

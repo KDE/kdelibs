@@ -23,8 +23,6 @@ LDFLAGS = -L$(topdir)/kdecore/.libs -L$(topdir)/kdeui/.libs -rpath $(topdir)/kde
 
 LDADD = $(LIB_KDEUI)
 
-DISTCLEANFILES = $(BUILT_SOURCES)
-
 check_PROGRAMS = kconfigtest kledlamptest kprogresstest \
 		kcolordlgtest kdatepicktest kfontdialogtest	\
 		kmsgboxtest kpopuptest ktabctltest ktreelisttest	\
@@ -40,90 +38,40 @@ noinst_HEADERS = kdatepicktestdlg.h kmsgboxtest.h ktreelisttest.h \
 		kprocesstest.h kcharsetstest.h kledtest.h kcontainertest.h \
 		klocaletest.h krulertest.h
 
-DISTCLEANFILES = kcharsetstest.moc.cpp kconfigtest.moc.cpp \
-	kcontainertest.moc.cpp kdatepicktestdlg.moc.cpp \
-	kiconloadertestmain.moc.cpp kledtest.moc.cpp \
-	klinetest.moc.cpp klocaletest.moc.cpp kmsgboxtest.moc.cpp \
-	kpannertest.moc.cpp kprocesstest.moc.cpp krulertest.moc.cpp \
-	kspinboxtest.moc.cpp kstatusbartest.moc.cpp ktabctltest.moc.cpp \
-	ktreelisttest.moc.cpp kwindowtest.moc.cpp 
+METASOURCES = kcharsetstest.moc kconfigtest.moc \
+	kcontainertest.moc kdatepicktestdlg.moc \
+	kiconloadertestmain.moc kledtest.moc \
+	klinetest.moc klocaletest.moc kmsgboxtest.moc \
+	kpannertest.moc kprocesstest.moc krulertest.moc \
+	kspinboxtest.moc kstatusbartest.moc ktabctltest.moc \
+	ktreelisttest.moc kwindowtest.moc 
 
 kbuttonboxtest_SOURCES = kbuttonboxtest.cpp
-kcharsetstest_SOURCES = kcharsetstest.cpp kcharsetstest.moc.cpp
+kcharsetstest_SOURCES = kcharsetstest.cpp 
 kcolordlgtest_SOURCES = kcolordlgtest.cpp
-kconfigtest_SOURCES = kconfigtest.cpp kconfigtest.moc.cpp
-kcontainertest_SOURCES = kcontainertest.cpp kcontainertest.moc.cpp
-kdatepicktest_SOURCES = kdatepicktest.cpp kdatepicktestdlg.cpp kdatepicktestdlg.moc.cpp
+kconfigtest_SOURCES = kconfigtest.cpp 
+kcontainertest_SOURCES = kcontainertest.cpp 
+kdatepicktest_SOURCES = kdatepicktest.cpp kdatepicktestdlg.cpp 
 kfontdialogtest_SOURCES = kfontdialogtest.cpp
-kiconloadertest_SOURCES = kiconloadertest.cpp kiconloadertestmain.cpp kiconloadertestmain.moc.cpp
+kiconloadertest_SOURCES = kiconloadertest.cpp kiconloadertestmain.cpp 
 kledlamptest_SOURCES = kledlamptest.cpp 
-kledtest_SOURCES = kledtest.cpp kledtest.moc.cpp
-klinetest_SOURCES = klinetest.cpp klinetest.moc.cpp
-klocaletest_SOURCES = klocaletest.cpp klocaletest.moc.cpp
-kmsgboxtest_SOURCES = kmsgboxtest.cpp kmsgboxtest.moc.cpp
+kledtest_SOURCES = kledtest.cpp 
+klinetest_SOURCES = klinetest.cpp 
+klocaletest_SOURCES = klocaletest.cpp 
+kmsgboxtest_SOURCES = kmsgboxtest.cpp 
 knotebooktest_SOURCES = knotebooktest.cpp
-kpannertest_SOURCES = kpannertest.cpp kpannertest.moc.cpp
+kpannertest_SOURCES = kpannertest.cpp 
 kpopuptest_SOURCES = kpopuptest.cpp
-kprocesstest_SOURCES = kprocesstest.cpp kprocesstest.moc.cpp
+kprocesstest_SOURCES = kprocesstest.cpp 
 kprogresstest_SOURCES = kprogresstest.cpp
 kquickhelptest_SOURCE = kquickhelptest.cpp
-krulertest_SOURCES = krulertest.cpp krulertest.moc.cpp
+krulertest_SOURCES = krulertest.cpp 
 kseparatortest_SOURCES = kseparatortest.cpp
 ksimpleconfigtest_SOURCES = ksimpleconfigtest.cpp
-kspinboxtest_SOURCES = kspinboxtest.cpp kspinboxtest.moc.cpp
-kstatusbartest_SOURCES = kstatusbartest.cpp kstatusbartest.moc.cpp
-ktabctltest_SOURCES = ktabctltest.cpp ktabctltest.moc.cpp
-ktreelisttest_SOURCES = ktreelisttest.cpp ktreelisttest.moc.cpp
-kwindowtest_SOURCES = kwindowtest.cpp kwindowtest.moc.cpp
+kspinboxtest_SOURCES = kspinboxtest.cpp 
+kstatusbartest_SOURCES = kstatusbartest.cpp 
+ktabctltest_SOURCES = ktabctltest.cpp 
+ktreelisttest_SOURCES = ktreelisttest.cpp 
+kwindowtest_SOURCES = kwindowtest.cpp 
 kwizardtest_SOURCES = kwizardtest.cpp
 
-kcharsetstest.moc.cpp: kcharsetstest.h
-	$(MOC) $(srcdir)/kcharsetstest.h -o kcharsetstest.moc.cpp
-
-kconfigtest.moc.cpp: kconfigtest.h
-	$(MOC) $(srcdir)/kconfigtest.h -o kconfigtest.moc.cpp
-
-kcontainertest.moc.cpp: kcontainertest.h
-	$(MOC) $(srcdir)/kcontainertest.h -o kcontainertest.moc.cpp
-
-kdatepicktestdlg.moc.cpp: kdatepicktestdlg.h
-	$(MOC) $(srcdir)/kdatepicktestdlg.h -o kdatepicktestdlg.moc.cpp
-
-kiconloadertestmain.moc.cpp: kiconloadertestmain.h
-	$(MOC) $(srcdir)/kiconloadertestmain.h -o kiconloadertestmain.moc.cpp
-
-kledtest.moc.cpp: kledtest.h
-	$(MOC) $(srcdir)/kledtest.h -o kledtest.moc.cpp
-
-klinetest.moc.cpp: klinetest.h
-	$(MOC) $(srcdir)/klinetest.h -o klinetest.moc.cpp
-
-klocaletest.moc.cpp: klocaletest.h
-	$(MOC) $(srcdir)/klocaletest.h -o klocaletest.moc.cpp
-
-kmsgboxtest.moc.cpp: kmsgboxtest.h
-	$(MOC) $(srcdir)/kmsgboxtest.h -o kmsgboxtest.moc.cpp
-
-kpannertest.moc.cpp: kpannertest.h
-	$(MOC) $(srcdir)/kpannertest.h -o kpannertest.moc.cpp
-
-kprocesstest.moc.cpp: kprocesstest.h
-	$(MOC) $(srcdir)/kprocesstest.h -o kprocesstest.moc.cpp
-
-krulertest.moc.cpp: krulertest.h
-	$(MOC) $(srcdir)/krulertest.h -o krulertest.moc.cpp
-
-kspinboxtest.moc.cpp: kspinboxtest.h
-	$(MOC) $(srcdir)/kspinboxtest.h -o kspinboxtest.moc.cpp
-
-kstatusbartest.moc.cpp: kstatusbartest.h
-	$(MOC) $(srcdir)/kstatusbartest.h -o kstatusbartest.moc.cpp
-
-ktabctltest.moc.cpp: ktabctltest.h
-	$(MOC) $(srcdir)/ktabctltest.h -o ktabctltest.moc.cpp
-
-ktreelisttest.moc.cpp: ktreelisttest.h
-	$(MOC) $(srcdir)/ktreelisttest.h -o ktreelisttest.moc.cpp
-
-kwindowtest.moc.cpp: kwindowtest.h
-	$(MOC) $(srcdir)/kwindowtest.h -o kwindowtest.moc.cpp

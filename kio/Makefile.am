@@ -17,7 +17,6 @@
 #    Boston, MA 02111-1307, USA.
 
 INCLUDES = -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui -I$(top_srcdir)/kdeutils $(QT_INCLUDES) $(X_INCLUDES) 
-DISTCLEANFILES = $(libkio_la_METASOURCES)
 
 lib_LTLIBRARIES = libkio.la
 libkio_la_LDFLAGS = -version-info 2:0

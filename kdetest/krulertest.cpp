@@ -233,3 +233,6 @@ int main(int argc, char **argv)
   window->show();
   return testapp->exec();
 }
+
+#include "krulertest.moc"
+

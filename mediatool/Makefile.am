@@ -35,5 +35,3 @@ libmediatool_la_LIBADD = $(LIBCOMPAT)
 
 libmediatool_la_METASOURCES = kaudio.moc
 
-DISTCLEANFILES = $(libmediatool_la_METASOURCES)
-
