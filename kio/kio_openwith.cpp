@@ -42,6 +42,7 @@
 #include <kmimemagic.h>
 #include <kstddirs.h>
 #include <dcopclient.h>
+#include <kmimetype.h>
 
 #include "kio_openwith.h"
 #include "krun.h"
@@ -324,10 +325,9 @@ KOpenWithDlg::KOpenWithDlg( const QStringList& _url, const QString&_text,
 {
 
     
-    KMimeMagicResult *result = KMimeMagic::self()->findFileType(_url.first().utf8());
-
-    if (result->mimeType() != "")
-      qServiceType = result->mimeType();
+    qServiceType = KMimeType::findByURL(KURL(_url.first()))->name();
+    if (qServiceType == "application/octet-stream")
+      qServiceType = QString::null;
 
     m_pTree = 0L;
     m_pService = 0L;
@@ -436,10 +436,13 @@ void KOpenWithDlg::slotOK()
       if ((*it)->exec() == edit->text() || 
 	  (*it)->name().lower() == edit->text().lower())
 	m_pService = *it;
-    if (m_pService)
+    if (m_pService) {
       edit->setText(m_pService->exec());
+      haveApp = true;
+    }
   }
-  
+
+  QString keepExec(edit->text());
   if (terminal->isChecked()) {
     KSimpleConfig conf("konquerorrc", true);
     conf.setGroup("Misc Defaults");
@@ -450,37 +453,54 @@ void KOpenWithDlg::slotOK()
     edit->setText(t);
   }
   
-  if (m_pService) {
+  if (haveApp && !remember) {
     haveApp = false;
     accept();
     return;
   }
-  
-  // if we got here, we can't seem to find a service for what they
-  // wanted.  Create a new service.
-  QString serviceName;
-  if (edit->text().contains('/'))
-    serviceName = edit->text().right(edit->text().length() - 
-				     edit->text().findRev('/') + 1);
-  else
-    serviceName = edit->text();
-  
-  QString path;
-  if (serviceName.contains(".desktop"))
-    path = locateLocal("apps", serviceName);
-  else
-    path = locateLocal("apps", serviceName + ".desktop");
+  if (remember)
+    if (!remember->isChecked()) {
+      haveApp = false;
+      accept();
+      return;
+    }
 
-  int counter = 1;
-  while (QFile::exists(path))
-    path.insert(path.length() - 8, QString().setNum(counter++));
+  qDebug("KOpenWithDlg needs to create/update a desktop entry");
+  // if we got here, we can't seem to find a service for what they
+  // wanted.  The other possibility is that they have asked for the
+  // association to be remembered.  Create/update service.
+  QString serviceName;
+  if (!haveApp) {
+    if (keepExec.contains('/'))
+      serviceName = keepExec.right(keepExec.length() - 
+				   keepExec.findRev('/') + 1);
+    else
+      serviceName = keepExec;
+  } else
+    serviceName = m_pService->relativeFilePath();
+  
+  if (serviceName.right(8) != ".desktop")
+    serviceName += ".desktop";
+  QString path(locateLocal("apps", serviceName));
 
   KDesktopFile desktop(path);
   desktop.writeEntry("Type", "Application");
-  desktop.writeEntry("Name", serviceName);
-  desktop.writeEntry("Exec", edit->text());
-  if (!qServiceType.isNull() && remember->isChecked())
-    desktop.writeEntry("MimeType", qServiceType +  ';');
+  desktop.writeEntry("Name", haveApp ? qName : serviceName);
+  desktop.writeEntry("Exec", keepExec);
+  if (remember)
+    if (remember->isChecked()) {
+      QStringList mimeList;
+      KDesktopFile oldDesktop(locate("apps", serviceName), true);
+      mimeList = oldDesktop.readEntry("MimeType");
+      if (!mimeList.contains(qServiceType))
+	mimeList.append(qServiceType);
+      desktop.writeEntry("MimeType", mimeList, ';');
+      if (terminal->isChecked())
+	desktop.writeEntry("Terminal", 1);
+      else
+	desktop.writeEntry("Terminal", 0);
+    }
+      
   
   // write it all out to the file
   desktop.sync();
