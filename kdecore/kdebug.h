@@ -124,6 +124,11 @@ class kdbgstream {
     kdbgstream(const char * initialString, unsigned int _area, unsigned int _level, bool _print = true) :
       output(QString::fromLatin1(initialString)), area(_area), level(_level),  print(_print) { }
     ~kdbgstream();
+    kdbgstream &operator<<(bool i)  {
+	if (!print) return *this;
+	output += QString::fromLatin1(i ? "true" : "false");
+	return *this;
+    }
     kdbgstream &operator<<(int i)  {
 	if (!print) return *this;
 	QString tmp; tmp.setNum(i); output += tmp;
