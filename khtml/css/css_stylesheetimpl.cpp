@@ -32,7 +32,7 @@
 #include "dom_exception.h"
 #include "dom_nodeimpl.h"
 
-#include <stdio.h>
+#include <kdebug.h>
 
 using namespace DOM;
 using namespace khtml;
@@ -224,7 +224,7 @@ bool CSSStyleSheetImpl::parseString(const DOMString &string)
     const QChar *curP = string.unicode();
     const QChar *endP = string.unicode()+string.length();
 
-    //printf("parsing sheet, len=%d, sheet is %s\n", string.length(), string.string().ascii());
+    //kdDebug(300) << "parsing sheet, len=" << string.length() << ", sheet is " << string.string() << endl;
 
     // remove leading spaces
     while (curP && (curP < endP))
@@ -271,10 +271,10 @@ bool CSSStyleSheetImpl::isLoading()
 	if(rule->isImportRule())
 	{
 	    CSSImportRuleImpl *import = static_cast<CSSImportRuleImpl *>(rule);
-	    printf("found import\n");
+	    kdDebug(300) << "found import" << endl;
 	    if(import->isLoading())
 	    {
-		printf("--> not loaded\n");
+		kdDebug(300) << "--> not loaded" << endl;
 		return true;
 	    }
 	}
