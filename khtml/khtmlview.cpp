@@ -2770,15 +2770,17 @@ void KHTMLView::viewportWheelEvent(QWheelEvent* e)
         emit zoomView( - e->delta() );
         e->accept();
     }
+    else if (d->firstRelayout)
+    {
+        e->accept();
+    }
     else if( (   (e->orientation() == Vertical &&
-                   ((d->ignoreWheelEvents && 
-                          (!verticalScrollBar()->isVisible() || d->firstRelayout))
+                   ((d->ignoreWheelEvents && !verticalScrollBar()->isVisible())
                      || e->delta() > 0 && contentsY() <= 0
                      || e->delta() < 0 && contentsY() >= contentsHeight() - visibleHeight()))
               ||
                  (e->orientation() == Horizontal &&
-                    ((d->ignoreWheelEvents && 
-                          (!horizontalScrollBar()->isVisible() || d->firstRelayout))
+                    ((d->ignoreWheelEvents && !horizontalScrollBar()->isVisible())
                      || e->delta() > 0 && contentsX() <=0
                      || e->delta() < 0 && contentsX() >= contentsWidth() - visibleWidth())))
             && m_part->parentPart()) 
@@ -2787,8 +2789,8 @@ void KHTMLView::viewportWheelEvent(QWheelEvent* e)
             m_part->parentPart()->view()->wheelEvent( e );
         e->ignore();
     }
-    else if ( (e->orientation() == Vertical && (d->vmode == QScrollView::AlwaysOff || d->firstRelayout)) ||
-              (e->orientation() == Horizontal && (d->hmode == QScrollView::AlwaysOff || d->firstRelayout))) 
+    else if ( (e->orientation() == Vertical && d->vmode == QScrollView::AlwaysOff) ||
+              (e->orientation() == Horizontal && d->hmode == QScrollView::AlwaysOff) ) 
     {
         e->accept();
     }
