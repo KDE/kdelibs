@@ -54,6 +54,9 @@ private:
 public:
   /**
    * Constructs a KRootProp object for the property @p rProp.
+   * @param rProp the property that will be searched, null to
+   *              do nothing
+   * @see setProp()
    **/
    KRootProp( const QString& rProp = QString::null );
   /**
@@ -65,10 +68,12 @@ public:
    
   /**
    * Sets the property in which keys will be searched.
+   * @param rProp the property that will be searched
    **/	
    void setProp(const QString& rProp="");
    /**
     * Returns the name of the property under which keys are searched.
+    * @return the property that will be searched
     **/
    QString prop() const;
    
