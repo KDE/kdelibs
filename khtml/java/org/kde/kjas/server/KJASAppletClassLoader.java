@@ -170,7 +170,6 @@ public class KJASAppletClassLoader
      * Class Loading Methods
      **************************************************************************/
     public Class loadClass( String name )
-        throws ClassNotFoundException
     {
         //We need to be able to handle foo.class, so strip off the suffix
         if( name.endsWith( ".class" ) )
@@ -185,12 +184,12 @@ public class KJASAppletClassLoader
         }
         catch( ClassNotFoundException e )
         {
-            Main.debug( "super couldn't load class: " + name + ", exception = " + e );
-            throw e;
+            Main.kjas_err( "Couldn't load class: " + name, e );
+            return null;
         }
         catch( ClassFormatError e )
         {
-            Main.debug( "Class format error: " + e );
+            Main.kjas_err( "Class format error for " + name, e );
             return null;
         }
     }
