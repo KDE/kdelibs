@@ -83,15 +83,25 @@ public:
     // In case of multiple items named the same way
     NodeImpl *nextNamedItem( const DOMString &name ) const;
 
+    struct CollectionInfo {
+        CollectionInfo() : version(~0) {}
+        unsigned int version;
+        NodeImpl *current;
+        unsigned int position;
+        unsigned int length;
+        bool haslength;
+    };
 protected:
     virtual unsigned long calcLength(NodeImpl *current) const;
     virtual NodeImpl *getItem(NodeImpl *current, int index, int &pos) const;
     virtual NodeImpl *getNamedItem(NodeImpl *current, int attr_id, const DOMString &name) const;
     virtual NodeImpl *nextNamedItemInternal( const DOMString &name ) const;
+    void updateCollectionInfo() const;
     // the base node, the collection refers to
     NodeImpl *base;
     // The collection list the following elements
     int type;
+    mutable CollectionInfo *info;
 
     // ### add optimization, so that a linear loop through the
     // Collection [using item(i)] is O(n) and not O(n^2)!

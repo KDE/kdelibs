@@ -433,6 +433,8 @@ public:
     DOMString toString() const;
 
     void incDOMTreeVersion() { ++m_domtree_version; }
+    unsigned int domTreeVersion() const { return m_domtree_version; }
+
 signals:
     void finishedParsing();
 

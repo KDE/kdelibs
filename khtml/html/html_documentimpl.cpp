@@ -72,8 +72,6 @@ HTMLDocumentImpl::HTMLDocumentImpl(DOMImplementationImpl *_implementation, KHTML
 
     m_doAutoFill = false;
 
-    memset( m_collection_info, 0, sizeof( CollectionInfo ) * HTMLCollectionImpl::LAST_TYPE);
-
 /* dynamic history stuff to be fixed later (pfeiffer)
     connect( KHTMLFactory::vLinks(), SIGNAL( inserted( const QString& )),
              SLOT( slotHistoryChanged() ));
@@ -434,15 +432,6 @@ void HTMLDocumentImpl::determineParseMode( const QString &str )
 
     if ( pMode != oldPMode && styleSelector() )
         recalcStyleSelector();
-}
-
-HTMLDocumentImpl::CollectionInfo & HTMLDocumentImpl::collectionInfo( int type )
-{
-    if (m_collection_info[type].version != m_domtree_version) {
-        memset( &m_collection_info[type], 0, sizeof( CollectionInfo ));
-        m_collection_info[type].version = m_domtree_version;
-    }
-    return m_collection_info[type];
 }
 
 #include "html_documentimpl.moc"

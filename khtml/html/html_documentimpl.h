@@ -76,14 +76,7 @@ public:
 
     void setAutoFill() { m_doAutoFill = true; }
 
-    struct CollectionInfo {
-        unsigned int version;
-        NodeImpl *current;
-        unsigned int position;
-        unsigned int length;
-        bool haslength;
-    };
-    CollectionInfo & collectionInfo( int type );
+    HTMLCollectionImpl::CollectionInfo *collectionInfo(int type) { return m_collection_info+type; }
 
 protected:
     HTMLElementImpl *bodyElement;
@@ -99,7 +92,7 @@ protected slots:
      */
     void slotHistoryChanged();
 private:
-    CollectionInfo m_collection_info[HTMLCollectionImpl::LAST_TYPE];
+    HTMLCollectionImpl::CollectionInfo m_collection_info[HTMLCollectionImpl::LAST_TYPE];
     mutable DOMString m_domain;
 };
 
