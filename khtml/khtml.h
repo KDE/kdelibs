@@ -558,8 +558,8 @@ public:
 
     HTMLSettings *settings();
 
-    void scheduleRedirection(int delay, const QString & url); 
-    
+    void scheduleRedirection(int delay, const QString & url);
+
 public slots:
     /**
      * stops loading the current document
@@ -763,6 +763,9 @@ protected:
 
     virtual void childCompleted( KHTMLWidget* _browser );
 
+    // checks if loading is done and emits the completed() signal if true
+    void checkCompleted();
+    
     // ------------------------------------- member variables ------------------------------------
 
     KHTMLWidget* _parent;

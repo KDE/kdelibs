@@ -683,8 +683,11 @@ void KHTMLWidget::servePendingURLRequests()
   if ( m_lstURLRequestJobs.count() == MAX_REQUEST_JOBS )
     return;
   if ( m_lstPendingURLRequests.count() == 0 )
+  {
+      checkCompleted();
       return;
-
+  }
+  
   printf("starting URLRequestJob\n");
   QDictIterator<HTMLURLRequest> it( m_lstPendingURLRequests );
   HTMLURLRequest *req = it.current();
@@ -923,8 +926,7 @@ void KHTMLWidget::childCompleted( KHTMLWidget *_browser )
       it.current()->m_bReady = true;
   }
 
-  if ( !m_bParsing )
-      emit completed();
+  checkCompleted();
 
   kdebug(0,1202,"<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
 }
@@ -962,7 +964,7 @@ void KHTMLWidget::end()
     kdebug(0,1202,"########### SUB-DocFinished %p ##############",this);
   /** End DEBUG **/
 
-  m_bComplete = true;
+  m_bParsing = false;
 
   document->close();
 
@@ -978,15 +980,26 @@ void KHTMLWidget::end()
       return;
   }
 
-  // Are all children complete now ?
-  QListIterator<Child> it2( m_lstChildren );
-  for( ; it2.current(); ++it2 )
-    if ( !it2.current()->m_bReady )
-      return;
+  checkCompleted();
+}
 
-  emit completed();
-  if ( _parent )
-    _parent->childCompleted( this );
+void KHTMLWidget::checkCompleted()
+{
+    if(m_bParsing) return;
+
+    // Are all children complete now ?
+    QListIterator<Child> it2( m_lstChildren );
+    for( ; it2.current(); ++it2 )
+	if ( !it2.current()->m_bReady )
+	    return;
+
+    if(!m_lstURLRequestJobs.isEmpty() || !m_lstPendingURLRequests.isEmpty())
+	return;
+
+    m_bComplete = true;
+    emit completed();
+    if ( _parent )
+	_parent->childCompleted( this );
 }
 
 void KHTMLWidget::resizeEvent ( QResizeEvent * event )
