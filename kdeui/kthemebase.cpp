@@ -186,8 +186,6 @@ void KThemeBase::copyWidgetConfig(int sourceID, int destID, QString *pixnames,
         if(scaleHints[sourceID] == TileScale && blends[sourceID] == 0.0){
             pixmaps[destID] = pixmaps[sourceID];
             duplicate[destID] = true;
-            warning("KThemeBase: Marking %s as duplicate.",
-                    pixnames[destID].latin1());
         }
         if(!duplicate[destID]){
             pixmaps[destID] = loadPixmap(pixnames[destID]);
@@ -206,8 +204,6 @@ void KThemeBase::copyWidgetConfig(int sourceID, int destID, QString *pixnames,
     if(!brdnames[destID].isEmpty()){
         pbPixmaps[destID] = pbPixmaps[sourceID];
         pbDuplicate[destID] = true;
-        warning("KThemeBase: Marking border pixmap %s as duplicate.",
-                pixnames[destID].latin1());
     }
     
     if(sourceID == ActiveTab && destID == InactiveTab)
@@ -234,7 +230,6 @@ void KThemeBase::readConfig(Qt::GUIStyle /*style*/)
     KRootProp *testProp = new KRootProp("Misc");
     tmpStr = testProp->readEntry("ShadeStyle", "5000");
     if(tmpStr == "5000"){
-        warning("KThemeBase: Initalizing style properties");
         testProp->destroy();
         for(i=0; i < INHERIT_ITEMS; ++i)
             applyResourceGroup(&config, i);
@@ -1113,8 +1108,6 @@ void KThemeBase::readResourceGroup(int i, QString *pixnames, QString *brdnames,
                blends[i] == 0.0){
                 pixmaps[i] = pixmaps[existing];
                 duplicate[i] = true;
-                warning("KThemeBase: Marking %s as duplicate.",
-                        pixnames[i].latin1());
                 break;
             }
         }
@@ -1148,8 +1141,6 @@ void KThemeBase::readResourceGroup(int i, QString *pixnames, QString *brdnames,
             if(tmpStr == brdnames[existing]){
                 pbPixmaps[i] = pbPixmaps[existing];
                 pbDuplicate[i] = true;
-                warning("KThemeBase: Marking border pixmap %s as duplicate.",
-                        brdnames[i].latin1());
                 break;
             }
         }
