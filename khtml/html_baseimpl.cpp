@@ -257,7 +257,7 @@ void HTMLFrameElementImpl::layout(bool)
     printf("%s(Frame)::layout(???) width=%d, layouted=%d\n", nodeName().string().ascii(), width, layouted());
 #endif
     width = availableWidth;
-    
+
     if(!parentWidget || !view) return;
 
     int x,y;
@@ -473,6 +473,20 @@ void HTMLFrameSetElementImpl::layout(bool deep)
 		totalRelative--;
 	    }
 	}
+	
+	// support for totally broken frame declarations
+	if(remainingHeight)
+	{
+	    // just distribute it over all columns...
+	    int rows = totalRows;
+	    for(i = 0; i< totalRows; i++)
+	    {
+		int toAdd = remainingHeight/rows;
+		rows--;
+		rowHeight[i] += toAdd;
+		remainingHeight -= toAdd;
+	    }
+	}	    
     }
     else
 	rowHeight[0] = descent;
@@ -513,6 +527,21 @@ void HTMLFrameSetElementImpl::layout(bool deep)
 		totalRelative--;
 	    }
 	}
+
+	// support for totally broken frame declarations
+	if(remainingWidth)
+	{
+	    // just distribute it over all columns...
+	    int cols = totalCols;
+	    for(i = 0; i< totalCols; i++)
+	    {
+		int toAdd = remainingHeight/cols;
+		cols--;
+		rowHeight[i] += toAdd;
+		remainingHeight -= toAdd;
+	    }
+	}
+
     }
     else
 	colWidth[0] = width;
