@@ -115,11 +115,11 @@ msgstr "Naslovni tekst:"
 
 #: kab/PrintDialog.cpp:27
 msgid "Right footer text:"
-msgstr ""
+msgstr "Tekst u desnom podno¾ju:"
 
 #: kab/PrintDialog.cpp:28
 msgid "Left footer text:"
-msgstr ""
+msgstr "Tekst u lijevom podno¾ju:"
 
 #: kab/SearchDialog.cpp:47
 msgid "The title"
@@ -1377,7 +1377,7 @@ msgstr "Pogled"
 
 #: po/texts.cpp:50
 msgid "&View"
-msgstr "Po&gledaj"
+msgstr "Po&gled"
 
 #: po/texts.cpp:51
 msgid "E&xit"
