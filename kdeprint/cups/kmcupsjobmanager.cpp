@@ -333,6 +333,22 @@ bool KMCupsJobManager::changePriority(const QPtrList<KMJob>& jobs, bool up)
 	return result;
 }
 
+static QString processRange(const QString& range)
+{
+	QStringList	l = QStringList::split(',', range, false);
+	QString	s;
+	for (QStringList::ConstIterator it=l.begin(); it!=l.end(); ++it)
+	{
+		s.append(*it);
+		if ((*it).find('-') == -1)
+			s.append("-").append(*it);
+		s.append(",");
+	}
+	if (!s.isEmpty())
+		s.truncate(s.length()-1);
+	return s;
+}
+
 bool KMCupsJobManager::editJobAttributes(KMJob *j)
 {
 	IppRequest	req;
@@ -395,7 +411,7 @@ bool KMCupsJobManager::editJobAttributes(KMJob *j)
 		opts["multiple-document-handling"] = (opts["kde-collate"] == "Collate" ? "separate-documents-collated-copies" : "separate-documents-uncollated-copies");
 		opts["page-set"] = (opts["kde-pageset"] == "1" ? "odd" : (opts["kde-pageset"] == "2" ? "even" : "all"));
 		// it seems CUPS is buggy. Disable page-ranges modification, otherwise nothing gets printed
-		//opts["page-ranges"] = opts["kde-range"];
+		opts["page-ranges"] = processRange(opts["kde-range"]);
 
 		req.init();
 		req.setOperation(IPP_SET_JOB_ATTRIBUTES);
