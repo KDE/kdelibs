@@ -506,9 +506,7 @@ its parent.
                     <xsl:with-param name="object" select="$prev"/>
                   </xsl:call-template>
                 </xsl:attribute>
-                <xsl:call-template name="gentext">
-                  <xsl:with-param name="key">nav-prev</xsl:with-param>
-                </xsl:call-template>
+                <xsl:call-template name="gentext.nav.prev"/>
               </a>
             </xsl:if>
             <xsl:text>&#160;</xsl:text>
@@ -530,9 +528,7 @@ its parent.
                     <xsl:with-param name="object" select="$next"/>
                   </xsl:call-template>
                 </xsl:attribute>
-                <xsl:call-template name="gentext">
-                  <xsl:with-param name="key">nav-next</xsl:with-param>
-                </xsl:call-template>
+                <xsl:call-template name="gentext.nav.next"/>
               </a>
             </xsl:if>
           </td>
@@ -564,9 +560,7 @@ its parent.
                     <xsl:with-param name="object" select="$prev"/>
                   </xsl:call-template>
                 </xsl:attribute>
-                <xsl:call-template name="gentext">
-                  <xsl:with-param name="key">nav-prev</xsl:with-param>
-                </xsl:call-template>
+                <xsl:call-template name="gentext.nav.prev"/>
               </a>
             </xsl:if>
             <xsl:text>&#160;</xsl:text>
@@ -580,9 +574,7 @@ its parent.
                       <xsl:with-param name="object" select="$home"/>
                     </xsl:call-template>
                   </xsl:attribute>
-                  <xsl:call-template name="gentext">
-                    <xsl:with-param name="key">nav-home</xsl:with-param>
-                  </xsl:call-template>
+                  <xsl:call-template name="gentext.nav.home"/>
                 </a>
               </xsl:when>
               <xsl:otherwise>&#160;</xsl:otherwise>
@@ -597,9 +589,7 @@ its parent.
                     <xsl:with-param name="object" select="$next"/>
                   </xsl:call-template>
                 </xsl:attribute>
-                <xsl:call-template name="gentext">
-                  <xsl:with-param name="key">nav-next</xsl:with-param>
-                </xsl:call-template>
+                <xsl:call-template name="gentext.nav.next"/>
               </a>
             </xsl:if>
           </td>
@@ -619,9 +609,7 @@ its parent.
                       <xsl:with-param name="object" select="$up"/>
                     </xsl:call-template>
                   </xsl:attribute>
-                  <xsl:call-template name="gentext">
-                    <xsl:with-param name="key">nav-up</xsl:with-param>
-                  </xsl:call-template>
+                  <xsl:call-template name="gentext.nav.up"/>
                 </a>
               </xsl:when>
               <xsl:otherwise>&#160;</xsl:otherwise>
@@ -996,6 +984,62 @@ its parent.
   <xsl:if test="count(*)>0 or $generate.index != '0'">
     <xsl:call-template name="process-chunk-element"/>
   </xsl:if>
+</xsl:template>
+
+<!-- ==================================================================== -->
+
+<xsl:param name="generate.legalnotice.link" select="0" doc:type='boolean'/>
+
+<doc:param name="generate.legalnotice.link" xmlns="">
+<refpurpose>TBD</refpurpose>
+<refdescription>
+<para>TBD</para>
+</refdescription>
+</doc:param>
+
+<xsl:template match="legalnotice " mode="titlepage.mode">
+  <xsl:variable name="id"><xsl:call-template name="object.id"/></xsl:variable>
+  <xsl:choose>
+    <xsl:when test="$generate.legalnotice.link != 0">
+
+      <xsl:variable name="filename">
+        <xsl:call-template name="make-relative-filename">
+          <xsl:with-param name="base.dir" select="$base.dir"/>
+          <xsl:with-param name="base.name" select="concat('ln-',$id,$html.ext)"/>
+        </xsl:call-template>
+      </xsl:variable>
+
+      <xsl:variable name="title">
+        <xsl:apply-templates select="." mode="title.markup"/>
+      </xsl:variable>
+
+      <a href="{$filename}">
+        <xsl:copy-of select="$title"/>
+      </a>
+
+      <xsl:call-template name="write.chunk">
+        <xsl:with-param name="filename" select="$filename"/>
+        <xsl:with-param name="content">
+          <html>
+            <head>
+              <title><xsl:value-of select="$title"/></title>
+            </head>
+            <body>
+              <xsl:call-template name="body.attributes"/>
+              <div class="{local-name(.)}">
+                <xsl:apply-templates mode="titlepage.mode"/>
+              </div>
+            </body>
+          </html>
+        </xsl:with-param>
+      </xsl:call-template>
+    </xsl:when>
+    <xsl:otherwise>
+      <div class="{local-name(.)}">
+        <xsl:apply-templates mode="titlepage.mode"/>
+      </div>
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:template>
 
 <!-- ==================================================================== -->

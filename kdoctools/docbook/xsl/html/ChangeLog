@@ -1,3 +1,138 @@
+2001-09-26  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* admon.xsl, biblio.xsl, block.xsl, callout.xsl, component.xsl, division.xsl, ebnf.xsl, formal.xsl, glossary.xsl, graphics.xsl, html.xsl, index.xsl, inline.xsl, lists.xsl, qandaset.xsl, refentry.xsl, sections.xsl, synop.xsl, table.xsl, verbatim.xsl, xref.xsl: 
+	Bug #464487: use (new) anchor template to consistently generate HTML anchors (usually conditionally, in other words, only for elements that actually have an ID)
+
+2001-09-25  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* chunk-common.xsl: Fix gentext.nav.* templates
+
+	* param.xsl, titlepage.xsl: Support automatic collation of year ranges in copyright
+
+2001-09-24  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* refentry.xsl, synop.xsl: Added some paras to improve spacing
+
+	* verbatim.xsl: Implemented changes suggested by Paul Winder, Sam Brow, and John Dreystadt of Arbortext to make 'make-verbatim' less memory intensive; also added paras to literallayout and address divs for better spacing in NS6
+
+2001-09-22  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* changebars.xsl: sgmltag is an inline
+
+	* chunk-common.xsl: Feature request #439053: support generate.legalnotice.link
+
+	* xref.xsl: Bug #462830: allow %p in templates
+
+	* xref.xsl: Bug #463033: allow xref to list items (in orderedlists) and varlistentrys
+
+2001-09-09  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* onechunk.xsl: New file.
+
+2001-08-29  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* lists.xsl: Fix orderedlist numerations
+
+2001-08-25  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* sections.xsl: Bug #451005: no id anchor for bridgehead
+
+2001-08-14  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* xref.xsl: Display the ID when gentext cannot be created
+
+2001-08-11  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* param.xsl: Removed the '?' from olink resolver parameter because
+	the olink template will add that (or not, depending on
+	how that template is customized).
+
+2001-08-08  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* param.xsl, verbatim.xsl: Support shade.verbatim parameter
+
+2001-08-05  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* param.xsl: Removed the FormatDingbatCallout classes, they were the same as the FormatUnicodeCallout classes but with a font wrapper. Added a callout.unicode.font parameter to wrap Unicode callouts
+
+2001-08-04  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* autotoc.xsl: Add '.' to the autotoc.label.separator; suppress the separator if there is no label
+
+	* chunker.xsl: Added a quiet parameter to suppress the Writing... message
+
+	* refentry.xsl: Don't output anchor for refsect*, the anchor is output as part of the title processing
+
+2001-08-02  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* sections.xsl: Allow anchors in section titles
+
+	* xref.xsl: Changed <link> to process its endterm if the element content
+	is empty.
+
+2001-08-01  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* component.xsl: Don't calculate ids where they aren't used; don't put ids on divs because anchors will be output in the component title
+
+	* footnote.xsl: Process simpara in footnote; warn if something unexpected turns up in a footnote
+
+	* formal.xsl: Allow anchors in formal object titles
+
+	* graphics.xsl: Output anchors for images that have IDs
+
+	* lists.xsl: Output anchors for list elements with IDs
+
+	* param.xsl: Leave ../ out of graphics paths by default; that doesn't make sense anymore
+
+	* param.xsl, xref.xsl: First crude beginnings of olink support
+
+	* qandaset.xsl: Remove unnecessary spaces
+
+	* titlepage.templates.xml: Don't suppress othercredit on titlepages
+
+	* titlepage.xsl: Handle othercredits on title pages
+
+2001-07-21  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* block.xsl, param.xsl: Fix title-end punctuation problems on formalparas
+
+2001-07-17  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* graphics.xsl: Fixed bug #442160. Parameter graphic.default.extension is now used also for <graphic> and <inlinegraphic> not only for <imagedata>.
+
+	* xref.xsl: xref element with endterm attribute now uses normal templates
+	to process the children of the element pointed to by the endterm
+	ID. Formerly it just used the built-in template and rendered
+	just the text nodes.
+
+2001-07-16  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* inline.xsl, param.xsl: Added phrase.propagates.style and emphasis.propagates.style: if true, wrap a span around phrase and emphasis elements with the role attribute propagated to the class attribute
+
+	* sections.xsl: added null templates for section titleabbrev in normal mode
+
+	* table.xsl: Wrap tbody around table footnotes (so that the HTML table model is not broken)
+
+2001-07-15  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* param.xsl: Make generate.section.toc.level 0 by default
+
+2001-07-10  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* chunk.xsl: Remove extension namespace declarations; they aren't actually used in this module
+
+	* chunker.xsl: Make exsl:document the first choice
+
+	* chunker.xsl: Fix EXSLT namespace name for exsl:document element
+
+	* chunker.xsl, oldchunker.xsl, param.xsl: Move declaration for default.encoding and saxon.character.representation from param.xsl to (old)chunker.xsl so that chunker.xsl can be used by any stylesheet (indepedent of docbook.xsl). Maybe this should get moved to lib...
+
+	* pi.xsl: Irrelevant encoding change
+
+2001-07-09  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* autotoc.xsl: Fixed typo in reference to annotate.toc variable
+
 2001-07-08  Norman Walsh <nwalsh@users.sourceforge.net>
 
 	* calc-chunks.xsl, chunk-experimental.xsl: Break chunk calculation and chunking into two tasks; *requires* every chunk to have an ID

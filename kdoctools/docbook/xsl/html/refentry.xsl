@@ -15,14 +15,8 @@
 <!-- ==================================================================== -->
 
 <xsl:template match="reference">
-  <xsl:variable name="id">
-    <xsl:call-template name="object.id"/>
-  </xsl:variable>
-
   <div class="{name(.)}">
-    <xsl:if test="@id">
-      <a name="{$id}"/>
-    </xsl:if>
+    <xsl:call-template name="anchor"/>
     <xsl:call-template name="reference.titlepage"/>
     <xsl:if test="not(partintro) and $generate.reference.toc != '0'">
       <xsl:call-template name="division.toc"/>
@@ -61,11 +55,7 @@
 
   <div class="{name(.)}">
     <h1 class="title">
-      <a>
-        <xsl:attribute name="name">
-          <xsl:call-template name="object.id"/>
-        </xsl:attribute>
-      </a>
+      <xsl:call-template name="anchor"/>
       <xsl:copy-of select="$title"/>
     </h1>
     <xsl:apply-templates/>
@@ -98,24 +88,22 @@
 </xsl:template>
 
 <xsl:template match="refnamediv">
-  <xsl:call-template name="block.object"/>
+  <div class="{name(.)}">
+    <xsl:call-template name="anchor"/>
+    <xsl:if test="$refentry.generate.name != 0">
+      <h2>
+        <xsl:call-template name="gentext">
+          <xsl:with-param name="key" select="'RefName'"/>
+        </xsl:call-template>
+      </h2>
+    </xsl:if>
+    <p>
+      <xsl:apply-templates/>
+    </p>
+  </div>
 </xsl:template>
 
 <xsl:template match="refname">
-  <xsl:apply-templates/>
-  <xsl:if test="following-sibling::refname">
-    <xsl:text>, </xsl:text>
-  </xsl:if>
-</xsl:template>
-
-<xsl:template match="refname[1]">
-  <xsl:if test="$refentry.generate.name != 0">
-    <h2>
-      <xsl:call-template name="gentext">
-        <xsl:with-param name="key" select="'RefName'"/>
-      </xsl:call-template>
-    </h2>
-  </xsl:if>
   <xsl:apply-templates/>
   <xsl:if test="following-sibling::refname">
     <xsl:text>, </xsl:text>
@@ -149,11 +137,7 @@
 
 <xsl:template match="refsynopsisdiv">
   <div class="{name(.)}">
-    <a>
-      <xsl:attribute name="name">
-        <xsl:call-template name="object.id"/>
-      </xsl:attribute>
-    </a>
+    <xsl:call-template name="anchor"/>
     <h2>
       <xsl:choose>
         <xsl:when test="refsynopsisdiv/title|title">
@@ -181,40 +165,22 @@
 </xsl:template>
 
 <xsl:template match="refsect1/title">
+  <!-- the ID is output in the block.object call for refsect1 -->
   <h2>
-    <a>
-      <xsl:attribute name="name">
-        <xsl:call-template name="object.id">
-          <xsl:with-param name="object" select="ancestor::refsect1"/>
-        </xsl:call-template>
-      </xsl:attribute>
-    </a>
     <xsl:apply-templates/>
   </h2>
 </xsl:template>
 
 <xsl:template match="refsect2/title">
+  <!-- the ID is output in the block.object call for refsect2 -->
   <h3>
-    <a>
-      <xsl:attribute name="name">
-        <xsl:call-template name="object.id">
-          <xsl:with-param name="object" select="ancestor::refsect2"/>
-        </xsl:call-template>
-      </xsl:attribute>
-    </a>
     <xsl:apply-templates/>
   </h3>
 </xsl:template>
 
 <xsl:template match="refsect3/title">
+  <!-- the ID is output in the block.object call for refsect3 -->
   <h4>
-    <a>
-      <xsl:attribute name="name">
-        <xsl:call-template name="object.id">
-          <xsl:with-param name="object" select="ancestor::refsect3"/>
-        </xsl:call-template>
-      </xsl:attribute>
-    </a>
     <xsl:apply-templates/>
   </h4>
 </xsl:template>

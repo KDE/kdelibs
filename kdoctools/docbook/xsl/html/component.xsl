@@ -16,14 +16,10 @@
 
 <xsl:template name="component.title">
   <xsl:param name="node" select="."/>
-  <xsl:variable name="id">
-    <xsl:call-template name="object.id">
-      <xsl:with-param name="object" select="$node"/>
-    </xsl:call-template>
-  </xsl:variable>
-
   <h2 class="title">
-    <a name="{$id}"/>
+    <xsl:call-template name="anchor">
+      <xsl:with-param name="node" select="$node"/>
+    </xsl:call-template>
     <xsl:apply-templates select="$node" mode="object.title.markup"/>
   </h2>
 </xsl:template>
@@ -54,8 +50,7 @@
 <!-- ==================================================================== -->
 
 <xsl:template match="dedication" mode="dedication">
-  <xsl:variable name="id"><xsl:call-template name="object.id"/></xsl:variable>
-  <div id="{$id}" class="{name(.)}">
+  <div class="{name(.)}">
     <xsl:call-template name="dedication.titlepage"/>
     <xsl:apply-templates/>
     <xsl:call-template name="process.footnotes"/>
@@ -82,8 +77,7 @@
 <!-- ==================================================================== -->
 
 <xsl:template match="colophon">
-  <xsl:variable name="id"><xsl:call-template name="object.id"/></xsl:variable>
-  <div id="{$id}" class="{name(.)}">
+  <div class="{name(.)}">
     <xsl:call-template name="component.separator"/>
     <xsl:call-template name="component.title"/>
     <xsl:call-template name="component.subtitle"/>
@@ -98,11 +92,7 @@
 <!-- ==================================================================== -->
 
 <xsl:template match="preface">
-  <xsl:variable name="id">
-    <xsl:call-template name="object.id"/>
-  </xsl:variable>
-
-  <div id="{$id}" class="{name(.)}">
+  <div class="{name(.)}">
     <xsl:call-template name="component.separator"/>
     <xsl:call-template name="preface.titlepage"/>
     <xsl:if test="$generate.preface.toc != '0'">
@@ -136,10 +126,6 @@
 <!-- ==================================================================== -->
 
 <xsl:template match="chapter">
-  <xsl:variable name="id">
-    <xsl:call-template name="object.id"/>
-  </xsl:variable>
-
   <div class="{name(.)}">
     <xsl:call-template name="component.separator"/>
     <xsl:call-template name="chapter.titlepage"/>
@@ -174,10 +160,6 @@
 <!-- ==================================================================== -->
 
 <xsl:template match="appendix">
-  <xsl:variable name="id">
-    <xsl:call-template name="object.id"/>
-  </xsl:variable>
-
   <div class="{name(.)}">
     <xsl:call-template name="component.separator"/>
     <xsl:call-template name="appendix.titlepage"/>
@@ -190,8 +172,6 @@
 </xsl:template>
 
 <xsl:template match="article/appendix">
-  <xsl:variable name="id"><xsl:call-template name="object.id"/></xsl:variable>
-
   <div class="{name(.)}">
     <xsl:call-template name="section.heading">
       <xsl:with-param name="level" select="2"/>
@@ -295,7 +275,6 @@
 <!-- ==================================================================== -->
 
 <xsl:template match="article">
-  <xsl:variable name="id"><xsl:call-template name="object.id"/></xsl:variable>
   <div class="{name(.)}">
     <xsl:call-template name="article.titlepage"/>
     <xsl:if test="$generate.article.toc != '0'">

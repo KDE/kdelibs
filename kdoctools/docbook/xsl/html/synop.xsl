@@ -23,11 +23,11 @@
 <!-- ==================================================================== -->
 
 <xsl:template match="cmdsynopsis">
-  <xsl:variable name="id"><xsl:call-template name="object.id"/></xsl:variable>
-
-  <div class="{name(.)}" id="{$id}">
-    <a name="{$id}"/>
-    <xsl:apply-templates/>
+  <div class="{name(.)}">
+    <p>
+      <xsl:call-template name="anchor"/>
+      <xsl:apply-templates/>
+    </p>
   </div>
 </xsl:template>
 

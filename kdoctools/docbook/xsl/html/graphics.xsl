@@ -77,20 +77,10 @@
     <xsl:choose>
       <xsl:when test="local-name(.) = 'graphic'
                       or local-name(.) = 'inlinegraphic'">
-        <xsl:choose>
-          <xsl:when test="@fileref">
-            <xsl:value-of select="@fileref"/>
-          </xsl:when>
-          <xsl:when test="@entityref">
-            <xsl:value-of select="unparsed-entity-uri(@entityref)"/>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:message>
-              <xsl:text>A fileref or entityref is required on </xsl:text>
-              <xsl:value-of select="local-name(.)"/>
-            </xsl:message>
-          </xsl:otherwise>
-        </xsl:choose>
+        <!-- handle legacy graphic and inlinegraphic by new template --> 
+        <xsl:call-template name="mediaobject.filename">
+          <xsl:with-param name="object" select="."/>
+        </xsl:call-template>
       </xsl:when>
       <xsl:otherwise>
         <!-- imagedata, videodata, audiodata -->
@@ -153,6 +143,7 @@
 
 <xsl:template match="graphic">
   <p>
+    <xsl:call-template name="anchor"/>
     <xsl:call-template name="process.image"/>
   </p>
 </xsl:template>
@@ -169,6 +160,10 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
+
+  <xsl:if test="@id">
+    <a name="{@id}"/>
+  </xsl:if>
 
   <xsl:choose>
     <xsl:when test="@format='linespecific'">
@@ -206,6 +201,9 @@
 
 <xsl:template match="mediaobject|mediaobjectco">
   <div class="{name(.)}">
+    <xsl:if test="@id">
+      <a name="{@id}"/>
+    </xsl:if>
     <xsl:call-template name="select.mediaobject"/>
     <xsl:apply-templates select="caption"/>
   </div>
@@ -213,6 +211,9 @@
 
 <xsl:template match="inlinemediaobject">
   <span class="{name(.)}">
+    <xsl:if test="@id">
+      <a name="{@id}"/>
+    </xsl:if>
     <xsl:call-template name="select.mediaobject"/>
   </span>
 </xsl:template>
@@ -226,6 +227,9 @@
 <!-- ==================================================================== -->
 
 <xsl:template match="imageobjectco">
+  <xsl:if test="@id">
+    <a name="{@id}"/>
+  </xsl:if>
   <xsl:apply-templates select="imageobject"/>
   <xsl:apply-templates select="calloutlist"/>
 </xsl:template>

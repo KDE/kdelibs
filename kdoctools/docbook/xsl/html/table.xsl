@@ -170,12 +170,14 @@
     <xsl:apply-templates select="tfoot"/>
 
     <xsl:if test=".//footnote">
-      <tr>
-        <td colspan="{@cols}">
-          <xsl:apply-templates select=".//footnote" 
-                               mode="table.footnote.mode"/>
-        </td>
-      </tr>
+      <tbody class="footnotes">
+        <tr>
+          <td colspan="{@cols}">
+            <xsl:apply-templates select=".//footnote" 
+                                 mode="table.footnote.mode"/>
+          </td>
+        </tr>
+      </tbody>
     </xsl:if>
   </table>
 </xsl:template>
@@ -359,12 +361,12 @@
 
     <xsl:if test="not(preceding-sibling::*)
                   and ancestor::row/@id">
-      <a name="{ancestor::row/@id}"/>
+      <xsl:call-template name="anchor">
+        <xsl:with-param name="node" select="ancestor::row[1]"/>
+      </xsl:call-template>
     </xsl:if>
 
-    <xsl:if test="@id">
-      <a name="{@id}"/>
-    </xsl:if>
+    <xsl:call-template name="anchor"/>
 
     <xsl:choose>
       <xsl:when test="$empty.cell">

@@ -33,6 +33,8 @@
   <xsl:apply-templates mode="article.titlepage.recto.auto.mode" select="artheader/authorgroup"/>
   <xsl:apply-templates mode="article.titlepage.recto.auto.mode" select="articleinfo/author"/>
   <xsl:apply-templates mode="article.titlepage.recto.auto.mode" select="artheader/author"/>
+  <xsl:apply-templates mode="article.titlepage.recto.auto.mode" select="articleinfo/othercredit"/>
+  <xsl:apply-templates mode="article.titlepage.recto.auto.mode" select="artheader/othercredit"/>
   <xsl:apply-templates mode="article.titlepage.recto.auto.mode" select="articleinfo/releaseinfo"/>
   <xsl:apply-templates mode="article.titlepage.recto.auto.mode" select="artheader/releaseinfo"/>
   <xsl:apply-templates mode="article.titlepage.recto.auto.mode" select="articleinfo/copyright"/>
@@ -113,6 +115,12 @@
 </div>
 </xsl:template>
 
+<xsl:template match="othercredit" mode="article.titlepage.recto.auto.mode">
+<div xsl:use-attribute-sets="article.titlepage.recto.style">
+<xsl:apply-templates select="." mode="article.titlepage.recto.mode"/>
+</div>
+</xsl:template>
+
 <xsl:template match="releaseinfo" mode="article.titlepage.recto.auto.mode">
 <div xsl:use-attribute-sets="article.titlepage.recto.style">
 <xsl:apply-templates select="." mode="article.titlepage.recto.mode"/>
@@ -177,6 +185,7 @@
   <xsl:apply-templates mode="set.titlepage.recto.auto.mode" select="setinfo/corpauthor"/>
   <xsl:apply-templates mode="set.titlepage.recto.auto.mode" select="setinfo/authorgroup"/>
   <xsl:apply-templates mode="set.titlepage.recto.auto.mode" select="setinfo/author"/>
+  <xsl:apply-templates mode="set.titlepage.recto.auto.mode" select="setinfo/othercredit"/>
   <xsl:apply-templates mode="set.titlepage.recto.auto.mode" select="setinfo/releaseinfo"/>
   <xsl:apply-templates mode="set.titlepage.recto.auto.mode" select="setinfo/copyright"/>
   <xsl:apply-templates mode="set.titlepage.recto.auto.mode" select="setinfo/legalnotice"/>
@@ -250,6 +259,12 @@
 </div>
 </xsl:template>
 
+<xsl:template match="othercredit" mode="set.titlepage.recto.auto.mode">
+<div xsl:use-attribute-sets="set.titlepage.recto.style">
+<xsl:apply-templates select="." mode="set.titlepage.recto.mode"/>
+</div>
+</xsl:template>
+
 <xsl:template match="releaseinfo" mode="set.titlepage.recto.auto.mode">
 <div xsl:use-attribute-sets="set.titlepage.recto.style">
 <xsl:apply-templates select="." mode="set.titlepage.recto.mode"/>
@@ -314,6 +329,7 @@
   <xsl:apply-templates mode="book.titlepage.recto.auto.mode" select="bookinfo/corpauthor"/>
   <xsl:apply-templates mode="book.titlepage.recto.auto.mode" select="bookinfo/authorgroup"/>
   <xsl:apply-templates mode="book.titlepage.recto.auto.mode" select="bookinfo/author"/>
+  <xsl:apply-templates mode="book.titlepage.recto.auto.mode" select="bookinfo/othercredit"/>
   <xsl:apply-templates mode="book.titlepage.recto.auto.mode" select="bookinfo/releaseinfo"/>
   <xsl:apply-templates mode="book.titlepage.recto.auto.mode" select="bookinfo/copyright"/>
   <xsl:apply-templates mode="book.titlepage.recto.auto.mode" select="bookinfo/legalnotice"/>
@@ -382,6 +398,12 @@
 </xsl:template>
 
 <xsl:template match="author" mode="book.titlepage.recto.auto.mode">
+<div xsl:use-attribute-sets="book.titlepage.recto.style">
+<xsl:apply-templates select="." mode="book.titlepage.recto.mode"/>
+</div>
+</xsl:template>
+
+<xsl:template match="othercredit" mode="book.titlepage.recto.auto.mode">
 <div xsl:use-attribute-sets="book.titlepage.recto.style">
 <xsl:apply-templates select="." mode="book.titlepage.recto.mode"/>
 </div>
@@ -460,6 +482,8 @@
   <xsl:apply-templates mode="part.titlepage.recto.auto.mode" select="docinfo/authorgroup"/>
   <xsl:apply-templates mode="part.titlepage.recto.auto.mode" select="partinfo/author"/>
   <xsl:apply-templates mode="part.titlepage.recto.auto.mode" select="docinfo/author"/>
+  <xsl:apply-templates mode="part.titlepage.recto.auto.mode" select="partinfo/othercredit"/>
+  <xsl:apply-templates mode="part.titlepage.recto.auto.mode" select="docinfo/othercredit"/>
   <xsl:apply-templates mode="part.titlepage.recto.auto.mode" select="partinfo/releaseinfo"/>
   <xsl:apply-templates mode="part.titlepage.recto.auto.mode" select="docinfo/releaseinfo"/>
   <xsl:apply-templates mode="part.titlepage.recto.auto.mode" select="partinfo/copyright"/>
@@ -540,6 +564,12 @@
 </div>
 </xsl:template>
 
+<xsl:template match="othercredit" mode="part.titlepage.recto.auto.mode">
+<div xsl:use-attribute-sets="part.titlepage.recto.style">
+<xsl:apply-templates select="." mode="part.titlepage.recto.mode"/>
+</div>
+</xsl:template>
+
 <xsl:template match="releaseinfo" mode="part.titlepage.recto.auto.mode">
 <div xsl:use-attribute-sets="part.titlepage.recto.style">
 <xsl:apply-templates select="." mode="part.titlepage.recto.mode"/>
@@ -613,6 +643,8 @@
   <xsl:apply-templates mode="partintro.titlepage.recto.auto.mode" select="docinfo/authorgroup"/>
   <xsl:apply-templates mode="partintro.titlepage.recto.auto.mode" select="partintroinfo/author"/>
   <xsl:apply-templates mode="partintro.titlepage.recto.auto.mode" select="docinfo/author"/>
+  <xsl:apply-templates mode="partintro.titlepage.recto.auto.mode" select="partintroinfo/othercredit"/>
+  <xsl:apply-templates mode="partintro.titlepage.recto.auto.mode" select="docinfo/othercredit"/>
   <xsl:apply-templates mode="partintro.titlepage.recto.auto.mode" select="partintroinfo/releaseinfo"/>
   <xsl:apply-templates mode="partintro.titlepage.recto.auto.mode" select="docinfo/releaseinfo"/>
   <xsl:apply-templates mode="partintro.titlepage.recto.auto.mode" select="partintroinfo/copyright"/>
@@ -693,6 +725,12 @@
 </div>
 </xsl:template>
 
+<xsl:template match="othercredit" mode="partintro.titlepage.recto.auto.mode">
+<div xsl:use-attribute-sets="partintro.titlepage.recto.style">
+<xsl:apply-templates select="." mode="partintro.titlepage.recto.mode"/>
+</div>
+</xsl:template>
+
 <xsl:template match="releaseinfo" mode="partintro.titlepage.recto.auto.mode">
 <div xsl:use-attribute-sets="partintro.titlepage.recto.style">
 <xsl:apply-templates select="." mode="partintro.titlepage.recto.mode"/>
@@ -766,6 +804,8 @@
   <xsl:apply-templates mode="reference.titlepage.recto.auto.mode" select="docinfo/authorgroup"/>
   <xsl:apply-templates mode="reference.titlepage.recto.auto.mode" select="referenceinfo/author"/>
   <xsl:apply-templates mode="reference.titlepage.recto.auto.mode" select="docinfo/author"/>
+  <xsl:apply-templates mode="reference.titlepage.recto.auto.mode" select="referenceinfo/othercredit"/>
+  <xsl:apply-templates mode="reference.titlepage.recto.auto.mode" select="docinfo/othercredit"/>
   <xsl:apply-templates mode="reference.titlepage.recto.auto.mode" select="referenceinfo/releaseinfo"/>
   <xsl:apply-templates mode="reference.titlepage.recto.auto.mode" select="docinfo/releaseinfo"/>
   <xsl:apply-templates mode="reference.titlepage.recto.auto.mode" select="referenceinfo/copyright"/>
@@ -841,6 +881,12 @@
 </xsl:template>
 
 <xsl:template match="author" mode="reference.titlepage.recto.auto.mode">
+<div xsl:use-attribute-sets="reference.titlepage.recto.style">
+<xsl:apply-templates select="." mode="reference.titlepage.recto.mode"/>
+</div>
+</xsl:template>
+
+<xsl:template match="othercredit" mode="reference.titlepage.recto.auto.mode">
 <div xsl:use-attribute-sets="reference.titlepage.recto.style">
 <xsl:apply-templates select="." mode="reference.titlepage.recto.mode"/>
 </div>
@@ -978,6 +1024,8 @@
   <xsl:apply-templates mode="preface.titlepage.recto.auto.mode" select="docinfo/authorgroup"/>
   <xsl:apply-templates mode="preface.titlepage.recto.auto.mode" select="prefaceinfo/author"/>
   <xsl:apply-templates mode="preface.titlepage.recto.auto.mode" select="docinfo/author"/>
+  <xsl:apply-templates mode="preface.titlepage.recto.auto.mode" select="prefaceinfo/othercredit"/>
+  <xsl:apply-templates mode="preface.titlepage.recto.auto.mode" select="docinfo/othercredit"/>
   <xsl:apply-templates mode="preface.titlepage.recto.auto.mode" select="prefaceinfo/releaseinfo"/>
   <xsl:apply-templates mode="preface.titlepage.recto.auto.mode" select="docinfo/releaseinfo"/>
   <xsl:apply-templates mode="preface.titlepage.recto.auto.mode" select="prefaceinfo/copyright"/>
@@ -1058,6 +1106,12 @@
 </div>
 </xsl:template>
 
+<xsl:template match="othercredit" mode="preface.titlepage.recto.auto.mode">
+<div xsl:use-attribute-sets="preface.titlepage.recto.style">
+<xsl:apply-templates select="." mode="preface.titlepage.recto.mode"/>
+</div>
+</xsl:template>
+
 <xsl:template match="releaseinfo" mode="preface.titlepage.recto.auto.mode">
 <div xsl:use-attribute-sets="preface.titlepage.recto.style">
 <xsl:apply-templates select="." mode="preface.titlepage.recto.mode"/>
@@ -1131,6 +1185,8 @@
   <xsl:apply-templates mode="chapter.titlepage.recto.auto.mode" select="docinfo/authorgroup"/>
   <xsl:apply-templates mode="chapter.titlepage.recto.auto.mode" select="chapterinfo/author"/>
   <xsl:apply-templates mode="chapter.titlepage.recto.auto.mode" select="docinfo/author"/>
+  <xsl:apply-templates mode="chapter.titlepage.recto.auto.mode" select="chapterinfo/othercredit"/>
+  <xsl:apply-templates mode="chapter.titlepage.recto.auto.mode" select="docinfo/othercredit"/>
   <xsl:apply-templates mode="chapter.titlepage.recto.auto.mode" select="chapterinfo/releaseinfo"/>
   <xsl:apply-templates mode="chapter.titlepage.recto.auto.mode" select="docinfo/releaseinfo"/>
   <xsl:apply-templates mode="chapter.titlepage.recto.auto.mode" select="chapterinfo/copyright"/>
@@ -1211,6 +1267,12 @@
 </div>
 </xsl:template>
 
+<xsl:template match="othercredit" mode="chapter.titlepage.recto.auto.mode">
+<div xsl:use-attribute-sets="chapter.titlepage.recto.style">
+<xsl:apply-templates select="." mode="chapter.titlepage.recto.mode"/>
+</div>
+</xsl:template>
+
 <xsl:template match="releaseinfo" mode="chapter.titlepage.recto.auto.mode">
 <div xsl:use-attribute-sets="chapter.titlepage.recto.style">
 <xsl:apply-templates select="." mode="chapter.titlepage.recto.mode"/>
@@ -1284,6 +1346,8 @@
   <xsl:apply-templates mode="appendix.titlepage.recto.auto.mode" select="docinfo/authorgroup"/>
   <xsl:apply-templates mode="appendix.titlepage.recto.auto.mode" select="appendixinfo/author"/>
   <xsl:apply-templates mode="appendix.titlepage.recto.auto.mode" select="docinfo/author"/>
+  <xsl:apply-templates mode="appendix.titlepage.recto.auto.mode" select="appendixinfo/othercredit"/>
+  <xsl:apply-templates mode="appendix.titlepage.recto.auto.mode" select="docinfo/othercredit"/>
   <xsl:apply-templates mode="appendix.titlepage.recto.auto.mode" select="appendixinfo/releaseinfo"/>
   <xsl:apply-templates mode="appendix.titlepage.recto.auto.mode" select="docinfo/releaseinfo"/>
   <xsl:apply-templates mode="appendix.titlepage.recto.auto.mode" select="appendixinfo/copyright"/>
@@ -1364,6 +1428,12 @@
 </div>
 </xsl:template>
 
+<xsl:template match="othercredit" mode="appendix.titlepage.recto.auto.mode">
+<div xsl:use-attribute-sets="appendix.titlepage.recto.style">
+<xsl:apply-templates select="." mode="appendix.titlepage.recto.mode"/>
+</div>
+</xsl:template>
+
 <xsl:template match="releaseinfo" mode="appendix.titlepage.recto.auto.mode">
 <div xsl:use-attribute-sets="appendix.titlepage.recto.style">
 <xsl:apply-templates select="." mode="appendix.titlepage.recto.mode"/>
@@ -1428,6 +1498,7 @@
   <xsl:apply-templates mode="section.titlepage.recto.auto.mode" select="sectioninfo/corpauthor"/>
   <xsl:apply-templates mode="section.titlepage.recto.auto.mode" select="sectioninfo/authorgroup"/>
   <xsl:apply-templates mode="section.titlepage.recto.auto.mode" select="sectioninfo/author"/>
+  <xsl:apply-templates mode="section.titlepage.recto.auto.mode" select="sectioninfo/othercredit"/>
   <xsl:apply-templates mode="section.titlepage.recto.auto.mode" select="sectioninfo/releaseinfo"/>
   <xsl:apply-templates mode="section.titlepage.recto.auto.mode" select="sectioninfo/copyright"/>
   <xsl:apply-templates mode="section.titlepage.recto.auto.mode" select="sectioninfo/legalnotice"/>
@@ -1501,6 +1572,12 @@
 </div>
 </xsl:template>
 
+<xsl:template match="othercredit" mode="section.titlepage.recto.auto.mode">
+<div xsl:use-attribute-sets="section.titlepage.recto.style">
+<xsl:apply-templates select="." mode="section.titlepage.recto.mode"/>
+</div>
+</xsl:template>
+
 <xsl:template match="releaseinfo" mode="section.titlepage.recto.auto.mode">
 <div xsl:use-attribute-sets="section.titlepage.recto.style">
 <xsl:apply-templates select="." mode="section.titlepage.recto.mode"/>
@@ -1565,6 +1642,7 @@
   <xsl:apply-templates mode="sect1.titlepage.recto.auto.mode" select="sect1info/corpauthor"/>
   <xsl:apply-templates mode="sect1.titlepage.recto.auto.mode" select="sect1info/authorgroup"/>
   <xsl:apply-templates mode="sect1.titlepage.recto.auto.mode" select="sect1info/author"/>
+  <xsl:apply-templates mode="sect1.titlepage.recto.auto.mode" select="sect1info/othercredit"/>
   <xsl:apply-templates mode="sect1.titlepage.recto.auto.mode" select="sect1info/releaseinfo"/>
   <xsl:apply-templates mode="sect1.titlepage.recto.auto.mode" select="sect1info/copyright"/>
   <xsl:apply-templates mode="sect1.titlepage.recto.auto.mode" select="sect1info/legalnotice"/>
@@ -1638,6 +1716,12 @@
 </div>
 </xsl:template>
 
+<xsl:template match="othercredit" mode="sect1.titlepage.recto.auto.mode">
+<div xsl:use-attribute-sets="sect1.titlepage.recto.style">
+<xsl:apply-templates select="." mode="sect1.titlepage.recto.mode"/>
+</div>
+</xsl:template>
+
 <xsl:template match="releaseinfo" mode="sect1.titlepage.recto.auto.mode">
 <div xsl:use-attribute-sets="sect1.titlepage.recto.style">
 <xsl:apply-templates select="." mode="sect1.titlepage.recto.mode"/>
@@ -1702,6 +1786,7 @@
   <xsl:apply-templates mode="sect2.titlepage.recto.auto.mode" select="sect2info/corpauthor"/>
   <xsl:apply-templates mode="sect2.titlepage.recto.auto.mode" select="sect2info/authorgroup"/>
   <xsl:apply-templates mode="sect2.titlepage.recto.auto.mode" select="sect2info/author"/>
+  <xsl:apply-templates mode="sect2.titlepage.recto.auto.mode" select="sect2info/othercredit"/>
   <xsl:apply-templates mode="sect2.titlepage.recto.auto.mode" select="sect2info/releaseinfo"/>
   <xsl:apply-templates mode="sect2.titlepage.recto.auto.mode" select="sect2info/copyright"/>
   <xsl:apply-templates mode="sect2.titlepage.recto.auto.mode" select="sect2info/legalnotice"/>
@@ -1775,6 +1860,12 @@
 </div>
 </xsl:template>
 
+<xsl:template match="othercredit" mode="sect2.titlepage.recto.auto.mode">
+<div xsl:use-attribute-sets="sect2.titlepage.recto.style">
+<xsl:apply-templates select="." mode="sect2.titlepage.recto.mode"/>
+</div>
+</xsl:template>
+
 <xsl:template match="releaseinfo" mode="sect2.titlepage.recto.auto.mode">
 <div xsl:use-attribute-sets="sect2.titlepage.recto.style">
 <xsl:apply-templates select="." mode="sect2.titlepage.recto.mode"/>
@@ -1839,6 +1930,7 @@
   <xsl:apply-templates mode="sect3.titlepage.recto.auto.mode" select="sect3info/corpauthor"/>
   <xsl:apply-templates mode="sect3.titlepage.recto.auto.mode" select="sect3info/authorgroup"/>
   <xsl:apply-templates mode="sect3.titlepage.recto.auto.mode" select="sect3info/author"/>
+  <xsl:apply-templates mode="sect3.titlepage.recto.auto.mode" select="sect3info/othercredit"/>
   <xsl:apply-templates mode="sect3.titlepage.recto.auto.mode" select="sect3info/releaseinfo"/>
   <xsl:apply-templates mode="sect3.titlepage.recto.auto.mode" select="sect3info/copyright"/>
   <xsl:apply-templates mode="sect3.titlepage.recto.auto.mode" select="sect3info/legalnotice"/>
@@ -1912,6 +2004,12 @@
 </div>
 </xsl:template>
 
+<xsl:template match="othercredit" mode="sect3.titlepage.recto.auto.mode">
+<div xsl:use-attribute-sets="sect3.titlepage.recto.style">
+<xsl:apply-templates select="." mode="sect3.titlepage.recto.mode"/>
+</div>
+</xsl:template>
+
 <xsl:template match="releaseinfo" mode="sect3.titlepage.recto.auto.mode">
 <div xsl:use-attribute-sets="sect3.titlepage.recto.style">
 <xsl:apply-templates select="." mode="sect3.titlepage.recto.mode"/>
@@ -1976,6 +2074,7 @@
   <xsl:apply-templates mode="sect4.titlepage.recto.auto.mode" select="sect4info/corpauthor"/>
   <xsl:apply-templates mode="sect4.titlepage.recto.auto.mode" select="sect4info/authorgroup"/>
   <xsl:apply-templates mode="sect4.titlepage.recto.auto.mode" select="sect4info/author"/>
+  <xsl:apply-templates mode="sect4.titlepage.recto.auto.mode" select="sect4info/othercredit"/>
   <xsl:apply-templates mode="sect4.titlepage.recto.auto.mode" select="sect4info/releaseinfo"/>
   <xsl:apply-templates mode="sect4.titlepage.recto.auto.mode" select="sect4info/copyright"/>
   <xsl:apply-templates mode="sect4.titlepage.recto.auto.mode" select="sect4info/legalnotice"/>
@@ -2049,6 +2148,12 @@
 </div>
 </xsl:template>
 
+<xsl:template match="othercredit" mode="sect4.titlepage.recto.auto.mode">
+<div xsl:use-attribute-sets="sect4.titlepage.recto.style">
+<xsl:apply-templates select="." mode="sect4.titlepage.recto.mode"/>
+</div>
+</xsl:template>
+
 <xsl:template match="releaseinfo" mode="sect4.titlepage.recto.auto.mode">
 <div xsl:use-attribute-sets="sect4.titlepage.recto.style">
 <xsl:apply-templates select="." mode="sect4.titlepage.recto.mode"/>
@@ -2113,6 +2218,7 @@
   <xsl:apply-templates mode="sect5.titlepage.recto.auto.mode" select="sect5info/corpauthor"/>
   <xsl:apply-templates mode="sect5.titlepage.recto.auto.mode" select="sect5info/authorgroup"/>
   <xsl:apply-templates mode="sect5.titlepage.recto.auto.mode" select="sect5info/author"/>
+  <xsl:apply-templates mode="sect5.titlepage.recto.auto.mode" select="sect5info/othercredit"/>
   <xsl:apply-templates mode="sect5.titlepage.recto.auto.mode" select="sect5info/releaseinfo"/>
   <xsl:apply-templates mode="sect5.titlepage.recto.auto.mode" select="sect5info/copyright"/>
   <xsl:apply-templates mode="sect5.titlepage.recto.auto.mode" select="sect5info/legalnotice"/>
@@ -2181,6 +2287,12 @@
 </xsl:template>
 
 <xsl:template match="author" mode="sect5.titlepage.recto.auto.mode">
+<div xsl:use-attribute-sets="sect5.titlepage.recto.style">
+<xsl:apply-templates select="." mode="sect5.titlepage.recto.mode"/>
+</div>
+</xsl:template>
+
+<xsl:template match="othercredit" mode="sect5.titlepage.recto.auto.mode">
 <div xsl:use-attribute-sets="sect5.titlepage.recto.style">
 <xsl:apply-templates select="." mode="sect5.titlepage.recto.mode"/>
 </div>
@@ -2259,6 +2371,8 @@
   <xsl:apply-templates mode="simplesect.titlepage.recto.auto.mode" select="docinfo/authorgroup"/>
   <xsl:apply-templates mode="simplesect.titlepage.recto.auto.mode" select="simplesectinfo/author"/>
   <xsl:apply-templates mode="simplesect.titlepage.recto.auto.mode" select="docinfo/author"/>
+  <xsl:apply-templates mode="simplesect.titlepage.recto.auto.mode" select="simplesectinfo/othercredit"/>
+  <xsl:apply-templates mode="simplesect.titlepage.recto.auto.mode" select="docinfo/othercredit"/>
   <xsl:apply-templates mode="simplesect.titlepage.recto.auto.mode" select="simplesectinfo/releaseinfo"/>
   <xsl:apply-templates mode="simplesect.titlepage.recto.auto.mode" select="docinfo/releaseinfo"/>
   <xsl:apply-templates mode="simplesect.titlepage.recto.auto.mode" select="simplesectinfo/copyright"/>
@@ -2334,6 +2448,12 @@
 </xsl:template>
 
 <xsl:template match="author" mode="simplesect.titlepage.recto.auto.mode">
+<div xsl:use-attribute-sets="simplesect.titlepage.recto.style">
+<xsl:apply-templates select="." mode="simplesect.titlepage.recto.mode"/>
+</div>
+</xsl:template>
+
+<xsl:template match="othercredit" mode="simplesect.titlepage.recto.auto.mode">
 <div xsl:use-attribute-sets="simplesect.titlepage.recto.style">
 <xsl:apply-templates select="." mode="simplesect.titlepage.recto.mode"/>
 </div>

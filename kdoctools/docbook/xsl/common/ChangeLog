@@ -1,3 +1,72 @@
+2001-09-25  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* common.xsl: Support automatic collation of year ranges in copyright
+
+	* l10n.xsl: Fix gentext.nav.* templates
+
+2001-09-22  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* gentext.xsl: Rewrote substitute-markup to support %p
+
+	* gentext.xsl, labels.xsl: Bug #463033: allow xref to list items (in orderedlists) and varlistentrys
+
+	* titles.xsl: Support title.markup for legal notices
+
+2001-08-29  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* common.xsl: Fix orderedlist numerations
+
+2001-08-14  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* l10n.xsl: Calculation of the dingbat nodeset was simply broken
+
+2001-08-13  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* Makefile: Added stylesheet as a dependency
+
+2001-08-04  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* l10n.dtd: Rename internationalization to i18n, localization to l10n
+
+	* l10n.xml: Rename internationalization to i18n, localization to l10n, add namespace declaration
+
+	* l10n.xsl: Support a local i18n override, rename internationalization to i18n, localization to l10n, add namespace declaration
+
+	* labels.xsl: PartIntros never get a label
+
+2001-08-01  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* gentext.xsl: Pass allow-anchors through properly
+
+	* labels.xsl: Fix question labelling
+
+	* titles.xsl: Output anchors for titles if the titles have ids
+
+2001-07-31  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* l10n.xsl: Reverted the change from [last()] to [1] back to [last()]
+	because that is the correct code.
+
+	* l10n.xsl: Added code to the "l10n.language" template to fall
+	back to the two-letter lang code if a longer lang
+	does not have a <lang>.xml localization file.
+	And it falls back to the default lang if it can't
+	find that either.
+	
+	Also fixed a bug for finding the lang attribute.
+	It was using the last() function, but in an
+	ancestor-or-self node set you want the first ancestor
+	(closest) with a lang value.
+	
+	49c49
+	<                                |ancestor-or-self::*/@xml:lang)[last()]"/>
+	---
+	>                                |ancestor-or-self::*/@xml:lang)[1]"/>
+
+2001-07-17  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* common.xsl: Fixed bug #442160. Parameter graphic.default.extension is now used also for <graphic> and <inlinegraphic> not only for <imagedata>.
+
 2001-07-08  Norman Walsh <nwalsh@users.sourceforge.net>
 
 	* gentext.xsl, titles.xsl: Support xref to bridgehead

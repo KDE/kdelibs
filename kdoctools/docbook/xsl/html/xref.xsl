@@ -17,11 +17,7 @@
 <!-- ==================================================================== -->
 
 <xsl:template match="anchor">
-  <a>
-    <xsl:attribute name="name">
-      <xsl:call-template name="object.id"/>
-    </xsl:attribute>
-  </a>
+  <xsl:call-template name="anchor"/>
 </xsl:template>
 
 <!-- ==================================================================== -->
@@ -35,9 +31,7 @@
     <xsl:with-param name="linkend" select="@linkend"/>
   </xsl:call-template>
 
-  <xsl:if test="@id">
-    <a name="{@id}"/>
-  </xsl:if>
+  <xsl:call-template name="anchor"/>
 
   <xsl:choose>
     <xsl:when test="count($target) = 0">
@@ -83,7 +77,7 @@
 		<xsl:text>???</xsl:text>
 	      </xsl:when>
 	      <xsl:otherwise>
-		<xsl:apply-templates select="$etarget" mode="xref.text"/>
+		<xsl:apply-templates select="$etarget" mode="endterm"/>
 	      </xsl:otherwise>
 	    </xsl:choose>
 	  </xsl:when>
@@ -101,6 +95,11 @@
   </xsl:choose>
 </xsl:template>
 
+<xsl:template match="*" mode="endterm">
+  <!-- Process the children of the endterm element -->
+  <xsl:apply-templates select="child::node()"/>
+</xsl:template>
+
 <!-- ==================================================================== -->
 
 <xsl:template match="*" mode="xref-to">
@@ -110,7 +109,9 @@
   <xsl:message>
     <xsl:text>Don't know what gentext to create for xref to: "</xsl:text>
     <xsl:value-of select="$refelem"/>
-    <xsl:text>"</xsl:text>
+    <xsl:text>", ("</xsl:text>
+    <xsl:value-of select="@id"/>
+    <xsl:text>")</xsl:text>
   </xsl:message>
   <xsl:text>???</xsl:text>
 </xsl:template>
@@ -223,6 +224,10 @@
   <xsl:apply-templates select="." mode="object.xref.markup"/>
 </xsl:template>
 
+<xsl:template match="listitem" mode="xref-to">
+  <xsl:apply-templates select="." mode="object.xref.markup"/>
+</xsl:template>
+
 <xsl:template match="section|simplesect
                      |sect1|sect2|sect3|sect4|sect5
                      |refsect1|refsect2|refsect3" mode="xref-to">
@@ -269,6 +274,15 @@
   </xsl:call-template>
   <xsl:text> </xsl:text>
   <xsl:apply-templates select="." mode="number"/>
+</xsl:template>
+
+<xsl:template match="varlistentry" mode="xref-to">
+  <xsl:apply-templates select="term[1]" mode="xref-to"/>
+</xsl:template>
+
+<xsl:template match="varlistentry/term" mode="xref-to">
+  <!-- to avoid the comma that will be generated if there are several terms -->
+  <xsl:apply-templates/>
 </xsl:template>
 
 <xsl:template match="co" mode="xref-to">
@@ -401,14 +415,52 @@
       </xsl:attribute>
     </xsl:if>
 
-    <xsl:apply-templates/>
+    <xsl:choose>
+      <xsl:when test="count(child::node()) &gt; 0">
+        <!-- If it has content, use it -->
+        <xsl:apply-templates/>
+      </xsl:when>
+      <xsl:otherwise>
+        <!-- else look for an endterm -->
+        <xsl:choose>
+          <xsl:when test="@endterm">
+            <xsl:variable name="etargets" select="id(@endterm)"/>
+            <xsl:variable name="etarget" select="$etargets[1]"/>
+            <xsl:choose>
+              <xsl:when test="count($etarget) = 0">
+                <xsl:message>
+                  <xsl:value-of select="count($etargets)"/>
+                  <xsl:text>Endterm points to nonexistent ID: </xsl:text>
+                  <xsl:value-of select="@endterm"/>
+                </xsl:message>
+                <xsl:text>???</xsl:text>
+              </xsl:when>
+              <xsl:otherwise>
+                  <xsl:apply-templates select="$etarget" mode="endterm"/>
+              </xsl:otherwise>
+            </xsl:choose>
+          </xsl:when>
+        
+          <xsl:otherwise>
+            <xsl:message>
+              <xsl:text>Link element has no content and no Endterm. </xsl:text>
+              <xsl:text>Nothing to show in the link to </xsl:text>
+              <xsl:value-of select="$target"/>
+            </xsl:message>
+            <xsl:text>???</xsl:text>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:otherwise>
+    </xsl:choose>
   </a>
 </xsl:template>
 
 <xsl:template match="ulink">
   <a>
     <xsl:if test="@id">
-      <xsl:attribute name="name"><xsl:value-of select="@id"/></xsl:attribute>
+      <xsl:attribute name="name">
+        <xsl:value-of select="@id"/>
+      </xsl:attribute>
     </xsl:if>
     <xsl:attribute name="href"><xsl:value-of select="@url"/></xsl:attribute>
     <xsl:if test="$ulink.target != ''">
@@ -428,10 +480,110 @@
 </xsl:template>
 
 <xsl:template match="olink">
-  <xsl:if test="@id">
-    <a name="{@id}"/>
-  </xsl:if>
-  <xsl:apply-templates/>
+  <xsl:call-template name="anchor"/>
+  <xsl:variable name="localinfo" select="@localinfo"/>
+
+  <xsl:variable name="href">
+    <xsl:choose>
+      <xsl:when test="@linkmode">
+        <!-- use the linkmode to get the base URI, use localinfo as fragid -->
+        <xsl:variable name="modespec" select="id(@linkmode)"/>
+        <xsl:if test="count($modespec) != 1
+                      or local-name($modespec) != 'modespec'">
+          <xsl:message>Warning: olink linkmode pointer is wrong.</xsl:message>
+        </xsl:if>
+        <xsl:value-of select="$modespec"/>
+        <xsl:if test="@localinfo">
+          <xsl:text>#</xsl:text>
+          <xsl:value-of select="@localinfo"/>
+        </xsl:if>
+      </xsl:when>
+      <xsl:when test="@type = 'href'">
+        <xsl:call-template name="olink.outline">
+          <xsl:with-param name="outline.base.uri"
+                          select="unparsed-entity-uri(@targetdocent)"/>
+          <xsl:with-param name="localinfo" select="@localinfo"/>
+          <xsl:with-param name="return" select="'href'"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$olink.resolver"/>
+        <xsl:text>?</xsl:text>
+        <xsl:value-of select="$olink.sysid"/>
+        <xsl:value-of select="unparsed-entity-uri(@targetdocent)"/>
+        <!-- XSL gives no access to the public identifier (grumble...) -->
+        <xsl:if test="@localinfo">
+          <xsl:text>&amp;</xsl:text>
+          <xsl:value-of select="$olink.fragid"/>
+          <xsl:value-of select="@localinfo"/>
+        </xsl:if>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <a href="{$href}">
+    <xsl:choose>
+      <xsl:when test="count(node()) &gt; 0">
+        <xsl:apply-templates/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:call-template name="olink.outline">
+          <xsl:with-param name="outline.base.uri"
+                          select="unparsed-entity-uri(@targetdocent)"/>
+          <xsl:with-param name="localinfo" select="@localinfo"/>
+          <xsl:with-param name="return" select="'xref'"/>
+        </xsl:call-template>
+      </xsl:otherwise>
+    </xsl:choose>
+  </a>
+</xsl:template>
+
+<xsl:template name="olink.outline">
+  <xsl:param name="outline.base.uri"/>
+  <xsl:param name="localinfo"/>
+  <xsl:param name="return" select="href"/>
+
+  <xsl:variable name="outline-file"
+                select="concat($outline.base.uri,
+                               $olink.outline.ext)"/>
+
+  <xsl:variable name="outline" select="document($outline-file,.)/div"/>
+
+  <xsl:variable name="node-href">
+    <xsl:choose>
+      <xsl:when test="$localinfo != ''">
+        <xsl:variable name="node" select="$outline//*[@id=$localinfo]"/>
+        <xsl:value-of select="$node/@href"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$outline/@href"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <xsl:variable name="node-xref">
+    <xsl:choose>
+      <xsl:when test="$localinfo != ''">
+        <xsl:variable name="node" select="$outline//*[@id=$localinfo]"/>
+        <xsl:copy-of select="$node/xref"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$outline/xref"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <xsl:choose>
+    <xsl:when test="$return = 'href'">
+      <xsl:value-of select="$node-href"/>
+    </xsl:when>
+    <xsl:when test="$return = 'xref'">
+      <xsl:value-of select="$node-xref"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:copy-of select="$node-xref"/>
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:template>
 
 <!-- ==================================================================== -->
@@ -456,6 +608,12 @@
 
 <xsl:template match="function" mode="xref">
   <xsl:call-template name="inline.monoseq"/>
+</xsl:template>
+
+<xsl:template match="*" mode="pagenumber.markup">
+  <xsl:message>
+    <xsl:text>Page numbers make no sense in HTML! (Don't use %p in templates)</xsl:text>
+  </xsl:message>
 </xsl:template>
 
 </xsl:stylesheet>

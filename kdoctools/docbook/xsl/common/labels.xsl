@@ -46,6 +46,10 @@ element label.</para>
   </xsl:choose>
 </xsl:template>
 
+<xsl:template match="partintro" mode="label.markup">
+  <!-- no label -->
+</xsl:template>
+
 <xsl:template match="preface" mode="label.markup">
   <xsl:choose>
     <xsl:when test="@label">
@@ -444,11 +448,10 @@ element label.</para>
       </xsl:call-template>
     </xsl:when>
 
-    <xsl:when test="$deflabel = 'number'">
-      <xsl:if test="name(.) = 'question'">
-        <xsl:value-of select="$prefix"/>
-        <xsl:number level="multiple" count="qandaentry" format="1"/>
-      </xsl:if>
+    <xsl:when test="$deflabel = 'number' and local-name(.) = 'question'">
+      <xsl:value-of select="$prefix"/>
+      <xsl:number level="multiple" count="qandaentry" format="1"/>
+      <xsl:text>. </xsl:text>
     </xsl:when>
   </xsl:choose>
 </xsl:template>
@@ -489,6 +492,34 @@ element label.</para>
       </xsl:choose>
     </xsl:otherwise>
   </xsl:choose>
+</xsl:template>
+
+<xsl:template match="orderedlist/listitem" mode="label.markup">
+  <xsl:variable name="numeration">
+    <xsl:call-template name="list.numeration">
+      <xsl:with-param name="node" select="parent::orderedlist"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:variable name="type">
+    <xsl:choose>
+      <xsl:when test="$numeration='arabic'">1</xsl:when>
+      <xsl:when test="$numeration='loweralpha'">a</xsl:when>
+      <xsl:when test="$numeration='lowerroman'">i</xsl:when>
+      <xsl:when test="$numeration='upperalpha'">A</xsl:when>
+      <xsl:when test="$numeration='upperroman'">I</xsl:when>
+      <!-- What!? This should never happen -->
+      <xsl:otherwise>
+        <xsl:message>
+          <xsl:text>Unexpected numeration: </xsl:text>
+          <xsl:value-of select="$numeration"/>
+        </xsl:message>
+        <xsl:value-of select="1."/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <xsl:number count="listitem" format="{$type}"/>
 </xsl:template>
 
 <xsl:template match="abstract" mode="label.markup">
