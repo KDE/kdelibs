@@ -31,6 +31,7 @@
 294        kdeui (KEdit)
 295        kdeui (KMenuBar)
 296        kdeui (KPopupMenu)
+400        artskde
 500        kdeprint
 750        kspell (kdelibs)
 800        kabapi (kdelibs)
@@ -86,10 +87,10 @@
 4300        kdvi (kdegraphics)
 4400        kpaint (kdegraphics)
 4500        kghostview (kdegraphics)
-4600        kview
-4610        kviewviewer
-4620        kviewcanvas
-4630        kview_plugin
+4600        [1;31mkview[0;39m
+4610        [1;32mkviewviewer[0;39m
+4620        [1;33mkviewcanvas[0;39m
+4630        [1;34mkview_plugin[0;39m
 
 # kdenetwork
 5001        caitoo
