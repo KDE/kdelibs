@@ -1,0 +1,100 @@
+<!-- Originally Copyright (c) 2000 Federico David Sacerdoti <tech@slinuxmachines.com>
+     Modifications/Extensions by Simon Hausmann <hausmann@kde.org>
+
+  This DTD module is identified by the PUBLIC and SYSTEM
+  identifiers:
+  PUBLIC  "-//KDE Project//KPartGUI DTD//EN"
+  SYSTEM "kpartgui.dtd"
+
+  This DTD should be included at the head of an xmlguibuilder XML file like this:
+  <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
+-->
+
+<!--The root element that must enclose all other tags -->
+<!ELEMENT kpartgui ((ActionProperties | MenuBar | ToolBar | Merge | DefineGroup | MainWindow | StatusBar)*)>
+<!ATTLIST kpartgui
+  name CDATA #REQUIRED
+  library CDATA #IMPLIED
+>
+
+<!-- Allows standard actions to be customized -->
+<!ELEMENT ActionProperties (Action+)>
+
+<!-- The menu bar -->
+<!ELEMENT MenuBar ((Menu | Separator | Action | ActionList | Merge | DefineGroup )*)>
+<!ATTLIST MenuBar
+  name CDATA #IMPLIED
+  group CDATA #IMPLIED
+>
+
+<!-- A toolbar that can contain graphic buttons and other widgets -->
+<!ELEMENT ToolBar ((Action | Separator | ActionList | Merge | DefineGroup)*)>
+<!ATTLIST ToolBar
+  name CDATA #REQUIRED
+  fullWidth (true|false) "true"
+  position (top|bottom|left|right) "top"
+  group CDATA #IMPLIED
+>
+
+<!-- A pull down menu like "File" and "Edit" -->
+<!ELEMENT Menu (text?, (Action | ActionList | Separator | TearOffHandle | Merge | DefineGroup)*)>
+<!ATTLIST Menu
+  name CDATA #REQUIRED
+  group CDATA #IMPLIED
+>
+
+<!-- An action that can be put in a menu bar or toolbar. These include standard and app-specific actions. -->
+<!ELEMENT Action EMPTY>
+<!-- We defined only a few standard KAction properties here. Theoritically we can have
+     any property here --> 
+<!ATTLIST Action
+  name CDATA #REQUIRED
+  group CDATA #IMPLIED
+  text CDATA #IMPLIED
+  whatsThis CDATA #IMPLIED
+  toolTip CDATA #IMPLIED
+  shortText CDATA #IMPLIED
+  icon CDATA #IMPLIED
+>
+
+<!-- Inserts a separator item into a menubar or toolbar -->
+<!ELEMENT Separator EMPTY>
+<!ATTLIST Separator
+  lineSeparator (true|false) "false"
+  group CDATA #IMPLIED
+>
+
+<!-- Inserts a tear-off handle into a menu -->
+<!ELEMENT TearOffHandle EMPTY>
+<!ATTLIST TearOffHandle
+  group CDATA #IMPLIED
+>
+
+<!-- Used to name a menu, the first letter in is generally preceded by an '&' to specify
+  the menu's shortcut key -->
+<!ELEMENT text (#PCDATA)>
+
+<!-- Specifies a dynamic list of actions, each of which can be changed by plugging/unplugging it -->
+<!ELEMENT ActionList EMPTY>
+<!ATTLIST ActionList
+  name CDATA #REQUIRED
+>
+
+<!-- Not explicitly defined or in widely used yet. -->
+<!ELEMENT MainWindow (ANY)>
+
+<!-- Not explicitly defined or in widely used yet. -->
+<!ELEMENT StatusBar (ANY)>
+
+<!-- Specifies the entry index for merging in a gui client -->
+<!ELEMENT Merge EMPTY>
+<!ATTLIST Merge
+  name CDATA #IMPLIED
+>
+
+<!-- Specifies a entry index for merging, similar to the Merge tag, but with a global scope and
+     accessible via the group attribute of other tags --> 
+<!ELEMENT DefineGroup EMPTY>
+<!ATTLIST DefineGroup
+  name CDATA #REQUIRED
+>
