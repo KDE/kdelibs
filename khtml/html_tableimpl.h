@@ -200,7 +200,8 @@ protected:
 	HTMLTableCellElementImpl* minCell;
 	HTMLTableCellElementImpl* maxCell;
 	LengthType 	type;
-	int 	value;    
+	int 	value;
+	int 	percentage;    
     };
     
 
@@ -224,9 +225,13 @@ protected:
     QVector<QVector<ColInfo> > colInfos;
 
     void calcColMinMax();
+    void calcSingleColMinMax(int c, ColInfo* col);
     void spreadSpanMinMax(int col, int span, int min, int max, LengthType type);
     
     int maxColSpan;
+    int fixedColMinTotal;
+    
+    QArray<int> percentTotals;
 
     QArray<int> columnPos;
     QArray<int> colMaxWidth;
