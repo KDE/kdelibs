@@ -40,12 +40,21 @@ QString KPrintProcess::errorMessage() const
 bool KPrintProcess::print()
 {
 	m_buffer = QString::null;
-	return start(NotifyOnExit,AllOutput);
+	return start(NotifyOnExit,All);
 }
 
 void KPrintProcess::slotReceivedStderr(KProcess *proc, char *buf, int len)
 {
 	if (proc == this)
-		m_buffer.append(QCString(buf,len)).append("\n");
+	{
+		QCString	str = QCString(buf,len).stripWhiteSpace();
+		if (str.find("?password:") == 0)
+		{
+			QString	login(str.mid(10));
+			emit passwordRequested(this, login);
+		}
+		else
+			m_buffer.append(str.append("\n"));
+	}
 }
 #include "kprintprocess.moc"

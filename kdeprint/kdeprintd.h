@@ -42,6 +42,7 @@ k_dcop:
 
 protected slots:
 	void slotProcessExited(KProcess*);
+	void slotPasswordRequested(KProcess*, const QString&);
 
 protected:
 	void cleanTempFiles();

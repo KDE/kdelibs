@@ -25,6 +25,7 @@
 #include <knotifyclient.h>
 #include <kdebug.h>
 #include <dcopclient.h>
+#include <kio/passdlg.h>
 
 extern "C"
 {
@@ -58,6 +59,7 @@ int KDEPrintd::print(const QString& cmd, const QStringList& files, bool remflag)
 {
 	KPrintProcess	*proc = new KPrintProcess;
 	connect(proc,SIGNAL(processExited(KProcess*)),SLOT(slotProcessExited(KProcess*)));
+	connect(proc,SIGNAL(passwordRequested(KProcess*,const QString&)),SLOT(slotPasswordRequested(KProcess*,const QString&)));
 	*proc << cmd;
 	if (remflag)
 		m_tempfiles.insert(proc,new QStringList(files));
@@ -96,7 +98,7 @@ void KDEPrintd::slotProcessExited(KProcess *proc)
 		m_processpool.take();
 		QString		msg;
 		if (!pproc->normalExit())
-			msg = i18n("<nobr>Abnormal process termination (<b>%1</b>).</nobr>").arg(pproc->args()->first());
+			msg = i18n("Abnormal process termination (<b>%1</b>).").arg(pproc->args()->first());
 		else if (pproc->exitStatus() != 0)
 			msg = i18n("<b>%1</b>: execution failed with message:<p>%2</p>").arg(pproc->args()->first()).arg(pproc->errorMessage());
 		cleanTempFile(pproc);
@@ -105,6 +107,15 @@ void KDEPrintd::slotProcessExited(KProcess *proc)
 		if (!msg.isEmpty())
 			KNotifyClient::event("printerror",i18n("<p><nobr>A print error occured. Error message received from system:</nobr></p><br>%1").arg(msg));
 	}
+}
+
+void KDEPrintd::slotPasswordRequested(KProcess *proc, const QString& login)
+{
+	QString	user(login), passwd, str;
+	if (KIO::PasswordDialog::getNameAndPassword(user, passwd, NULL) == KDialog::Accepted)
+		str.append(user).append(":").append(passwd);
+	str.append("\n");
+	proc->writeStdin(str.local8Bit().data(), str.length());
 }
 
 #include "kdeprintd.moc"
