@@ -175,17 +175,12 @@ KDEStyle::~KDEStyle()
 {
 }
 
-void KDEStyle::polish(QPalette &)
+void KDEStyle::polish(QPalette &pal)
 {
     KConfig *config = KGlobal::config();
     QString oldGrp = config->group();
     config->setGroup("KDEStyle");
 
-    // if the config has specific colors for items set use those and don't
-    // worry about high color usage, otherwise use KDE standard colors for
-    // everything except one color - the slider groove fill. That doesn't
-    // really look good with any of the standard colors and one additional
-    // color alloc shouldn't kill psudeocolor display users :P
     QColor tmpColor(0, 0, 192);
     if(config->hasKey("RadioOnColor")){
         tmpColor = config->readColorEntry("RadioOnColor", &tmpColor);
@@ -200,7 +195,19 @@ void KDEStyle::polish(QPalette &)
         radioOnGrp.setColor(QColorGroup::Light, QColor(0, 0, 255));
         radioOnGrp.setColor(QColorGroup::Dark, QColor(0, 0, 128));
     }
+
+    QColorGroup aGrp = pal.active();
+    QColorGroup dGrp = pal.disabled();
+    QColorGroup iGrp = aGrp;
     
+    iGrp.setColor(QColorGroup::Mid, aGrp.button());
+    iGrp.setColor(QColorGroup::Dark, aGrp.mid());
+    dGrp.setColor(QColorGroup::Mid, aGrp.button());
+    dGrp.setColor(QColorGroup::Dark, aGrp.mid());
+
+    pal.setInactive(iGrp);
+    pal.setDisabled(dGrp);
+
     config->setGroup(oldGrp);
 }
 
@@ -918,7 +925,7 @@ void KDEStyle::drawArrow(QPainter *p, Qt::ArrowType type, bool on, int x,
         right.setMask(right);
     }
     
-    p->setPen(enabled ? on ? g.light() : Qt::black : g.mid());
+    p->setPen(enabled ? on ? g.light() : Qt::black : g.dark());
     if(w > 8){
         x = x + (w-8)/2;
         y = y + (h-8)/2;
