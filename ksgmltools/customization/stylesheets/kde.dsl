@@ -173,6 +173,17 @@
 ;; Output encoding when Tex, such that the script can determine what to convert
 ;; a text to.
 
+;; Origin: html/dbinfo.dsl
+;; How: replace empty-sosofo by process-children
+;; Watch out: when dbinfo.dsl changes (also for printing)
+;; Note: because it just processes the children, it is the same for 
+;;       printing and HTML
+;; Process the author element of chapters and sect1s
+(element (sect1info author) (process-children))
+(element (docinfo author) (process-children))  ; 3.1
+(element (chapterinfo author) (process-children)) ; 4.0
+
+;; Localisation
 &kde-localisation;
     </STYLE-SPECIFICATION-BODY>
   </STYLE-SPECIFICATION>
