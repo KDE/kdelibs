@@ -149,7 +149,7 @@ Value Screen::get(ExecState *exec, const Identifier &p) const
 Value Screen::getValueProperty(ExecState *exec, int token) const
 {
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-  KWinModule info;
+  KWinModule info(0, KWinModule::INFO_DESKTOP);
 #endif
   QWidget *thisWidget = Window::retrieveActive(exec)->part()->view();
   QRect sg = KGlobalSettings::desktopGeometry(thisWidget);
