@@ -40,7 +40,15 @@ class KBufferedSocketPrivate;
  *
  * This class allows the user to create and operate buffered stream sockets
  * such as those used in most Internet connections. This class is
- * also the one that resembles the most to the old @ref QSocket implementation.
+ * also the one that resembles the most to the old @ref QSocket
+ * implementation.
+ *
+ * Objects of this type operate only in non-blocking mode. A call to
+ * setBlocking(true) will result in an error.
+ *
+ * @bug Because of a bug in g++ 2.95.x, this class may return true to
+ *      isBlocking() under some circumstances, even though the socket
+ *      is not blocking.
  *
  * @author Thiago Macieira <thiago.macieira@kdemail.net>
  */
@@ -54,7 +62,7 @@ public:
    * @param node	destination host
    * @param service	destination service to connect to
    */
-  KBufferedSocket(const QString& host = QString::null, const QString& service = QString::null,
+  KBufferedSocket(const QString& node = QString::null, const QString& service = QString::null,
 		  QObject* parent = 0L, const char *name = 0L);
 
   /**
@@ -69,7 +77,7 @@ public:
 
 protected:
   /**
-   * Buffered sockets can only operate in blocking mode.
+   * Buffered sockets can only operate in non-blocking mode.
    */
   virtual bool setSocketOptions(int opts);
 
