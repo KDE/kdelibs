@@ -190,7 +190,7 @@ class DeviceManager
     int initManager(void);
 
     /**
-     * Checks if the device manager has been initialized (with @initManager),
+     * Checks if the device manager has been initialized (with @p initManager),
      * and in case it wasn't, initializes it.
      *
      * @return 0 if it was (or has just been) correctly initialized, and -1 if
@@ -199,7 +199,7 @@ class DeviceManager
     int checkInit(void);
 
     /**
-     * Obsolete. Please use @ref #deviceForChannel() instead.
+     * \obsolete Please use deviceForChannel() instead.
      *
      */
     MidiOut *chntodev(int chn)
@@ -327,6 +327,7 @@ class DeviceManager
      * @param lsb and @p msb the less significant byte and the most significant
      * byte (0 to 127 each) of the number by which notes will be bend. a 0x4000
      * value means not to bend.
+     * @param msb the most significant byte
      */
     void chnPitchBender ( uchar chn, uchar lsb,  uchar msb );
 

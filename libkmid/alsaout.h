@@ -191,7 +191,7 @@ class AlsaOut : public MidiOut
    * channel, and mute all notes being played on it. If b is false, the channel
    * is back to work.
    */
-  virtual void channelMute	( uchar chn, int a );
+  virtual void channelMute	( uchar chn, int b );
 
   /**
    * Change all channel volume events multiplying it by this percentage correction
