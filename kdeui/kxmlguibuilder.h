@@ -50,6 +50,8 @@ class KXMLGUIBuilder
   KInstance *builderInstance() const;
   /* @internal */
   void setBuilderInstance( KInstance *instance );
+  /* @internal */
+  QWidget *widget();
 
   virtual QStringList containerTags() const;
 

@@ -110,6 +110,11 @@ KXMLGUIBuilder::~KXMLGUIBuilder()
   delete d;
 }
 
+QWidget *KXMLGUIBuilder::widget()
+{
+  return d->m_widget;
+}
+
 QStringList KXMLGUIBuilder::containerTags() const
 {
   QStringList res;
