@@ -337,7 +337,12 @@ int KCalendarSystemHijri::weekNumber(const QDate& date, int * yearNum) const
       week = 1;
     }
   else
+  {
+    if ( weekDay1 < 5 )
+      firstDayWeek1 = addDays(firstDayWeek1, - (weekDay1 - 1));
+
     week = firstDayWeek1.daysTo(date) / 7 + 1;
+  }
 
   return week;
 }

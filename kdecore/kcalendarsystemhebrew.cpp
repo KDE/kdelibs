@@ -250,8 +250,6 @@ int KCalendarSystemHebrew::weeksInYear(int year) const
   return nWeekNumber;
 }
 
-// ### CFM many dates have 1 week less than might (eg. 22/12/5765 must be
-//         week 55, not 54
 int KCalendarSystemHebrew::weekNumber(const QDate& date, int * yearNum) const
 {
   QDate firstDayWeek1, lastDayOfYear;
@@ -289,7 +287,13 @@ int KCalendarSystemHebrew::weekNumber(const QDate& date, int * yearNum) const
       week = 1;
     }
   else
-    week = firstDayWeek1.daysTo(date) / 7 + 1;
+  {
+   if( weekDay1 < 5 ) // To calculate properly the number of weeks
+                     //  from day a to x let's make a day 1 of week
+      firstDayWeek1 = addDays( firstDayWeek1, -( weekDay1 - 1));  
+
+   week = firstDayWeek1.daysTo(date) / 7 + 1;
+  }
 
   return week;
 }
