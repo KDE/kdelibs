@@ -804,6 +804,7 @@ void KBookmarkEditFields::setLocation(const QString &str)
 /********************************************************************/
 /********************************************************************/
 
+// TODO - make the dialog use Properties as a title when in Modify mode... (dirk noticed the bug...)
 KBookmarkEditDialog::KBookmarkEditDialog(const QString& title, const QString& url, KBookmarkManager * mgr, BookmarkEditType editType,
                                          QWidget * parent, const char * name, const QString& caption)
   : KDialogBase(parent, name, true, caption,
