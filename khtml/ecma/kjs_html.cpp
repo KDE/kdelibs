@@ -204,13 +204,13 @@ bool KJS::HTMLDocument::hasProperty(ExecState *exec, const UString &propertyName
 
   // Keep in sync with tryGet
   NamedTagLengthDeterminer::TagLength tags[3] = {
-    {ID_IMG, 0, 0L}, {ID_FORM, 0, 0L}, {ID_APPLET, 0, 0L} 
+    {ID_IMG, 0, 0L}, {ID_FORM, 0, 0L}, {ID_APPLET, 0, 0L}
   };
   NamedTagLengthDeterminer(propertyName.string(), tags, 3)(doc.handle());
   for (int i = 0; i < 3; i++)
     if (tags[i].length > 0)
         return true;
- 
+
   if ( view && view->part() )
   {
     KHTMLPart *kp = view->part()->findFrame( propertyName.qstring() );
@@ -241,7 +241,7 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
   // Check for applets with name==propertyName, return item or list if found
 
   NamedTagLengthDeterminer::TagLength tags[3] = {
-    {ID_IMG, 0, 0L}, {ID_FORM, 0, 0L}, {ID_APPLET, 0, 0L} 
+    {ID_IMG, 0, 0L}, {ID_FORM, 0, 0L}, {ID_APPLET, 0, 0L}
   };
   NamedTagLengthDeterminer(propertyName.string(), tags, 3)(doc.handle());
   for (int i = 0; i < 3; i++)
@@ -1287,7 +1287,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case StyleDisabled:        return Boolean(style.disabled());
     case StyleMedia:           return getString(style.media());
     case StyleType:            return getString(style.type());
-    case StyleSheet:           return getDOMStyleSheet(exec,static_cast<DOM::ProcessingInstruction>(node).sheet());
+    case StyleSheet:           return getDOMStyleSheet(exec,style.sheet());
     }
   }
   break;
