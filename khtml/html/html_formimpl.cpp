@@ -84,7 +84,7 @@ HTMLFormElementImpl::HTMLFormElementImpl(DocumentPtr *doc, bool implicit)
 
 HTMLFormElementImpl::~HTMLFormElementImpl()
 {
-    if (getDocument()) {
+    if (getDocument() && getDocument()->view() && getDocument()->view()->part()) {
         getDocument()->view()->part()->dequeueWallet(this);
     }
     QPtrListIterator<HTMLGenericFormElementImpl> it(formElements);
@@ -434,7 +434,6 @@ void HTMLFormElementImpl::walletOpened(KWallet::Wallet *w) {
     assert(w);
     const QString key = calculateAutoFillKey(*this);
     if (!w->hasFolder(KWallet::Wallet::FormDataFolder())) {
-        if (!w->createFolder(KWallet::Wallet::FormDataFolder()))
             return; // failed
     }
     w->setFolder(KWallet::Wallet::FormDataFolder());
