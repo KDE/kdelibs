@@ -201,6 +201,22 @@ public:
   void invokeHTMLHelp( QString aFilename, QString aTopic ) const;
 
   /**
+   * Invoke the standard email application.
+   *
+   * @param address The destination address
+   * @param subject Subject string. Can be QString::null.
+   */
+  void invokeMailer( const QString &address, const QString &subject );
+
+  /**
+   * Invoke the standard browser
+   *
+   * @param url The destination address
+   */
+  void invokeBrowser( const QString &url );
+
+
+  /**
    * Returns a KDE style object if a plugin is in use, or else NULL
    * if a Qt internal style is being used.
    *
@@ -240,9 +256,12 @@ public:
    * @param withAppName indicates that the method shall include or ignore
    * the application name when making the caption string. You are not
    * compliant if you set this to false.
+   * @param modified If true, a 'modified' sign will be included in the
+   * returned string. This is useful when indicating that a file is 
+   * modified, i.e., contains data the has not been saved.
    */
   QString makeStdCaption( const QString &userCaption, 
-			  bool withAppName=true ) const;
+			  bool withAppName=true, bool modified=false ) const;
 
   /**
    * Get a file name in order to make a temporary copy of your document.
@@ -454,6 +473,9 @@ public:
 #endif
 
 // $Log$
+// Revision 1.103  1999/09/21 10:34:50  waba
+// WABA: Made destructor of KSessionManaged virtual.
+//
 // Revision 1.102  1999/09/20 18:22:31  espensa
 // Here comes the KApplication::makeStdCaption() addition.
 //

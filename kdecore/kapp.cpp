@@ -733,26 +733,58 @@ QString KApplication::getCaption() const
 // An attempt to simplify consistent captions. 
 //
 QString KApplication::makeStdCaption( const QString &userCaption, 
-				      bool withAppName ) const
+	                              bool withAppName, bool modified ) const
 {
   if( userCaption.isNull() == true )
   {
     return( getCaption() );
   }
- 
+
+  //
+  // This string should be collected from a global object.
+  //
+  QString modString = i18n("**");
+  if( modified == true ) 
+  {
+    modified = modString.isNull() == true ? false : true;
+  }
+
   if( withAppName == true )
   {
     if( captionLayout == CaptionAppLast )
     {
-      return( QString("%1 - %2").arg(userCaption).arg(getCaption()));
+      if( modified == true )
+      {
+	return( QString("%1 %2 - %3").arg(modString).arg(userCaption).
+		arg(getCaption()));
+      }
+      else
+      {
+	return( QString("%1 - %2").arg(userCaption).arg(getCaption()));
+      }
     }
     else if( captionLayout == CaptionAppFirst )
     {
-      return( QString("%1: %2").arg(getCaption()).arg(userCaption) );
+      if( modified == true )
+      {
+	return( QString("%1: %2 %3").arg(getCaption()).arg(modString).
+		arg(userCaption) );
+      }
+      else
+      {
+	return( QString("%1: %2").arg(getCaption()).arg(userCaption) );
+      }
     }
   }
   
-  return( userCaption );
+  if( modified == true )
+  {
+    return( QString("%1 %2").arg(modString).arg(userCaption) );
+  }
+  else
+  {
+    return( userCaption );
+  }
 }
 
 
@@ -943,6 +975,97 @@ void KApplication::invokeHTMLHelp( QString filename, QString topic ) const
     }
 }
 
+
+void KApplication::invokeMailer(const QString &address,const QString &subject )
+{
+  if( fork() == 0 )
+  {	
+    QString mailClient( "kmail");
+    QString exec = QString("%1 %2 -s %3").arg(mailClient).arg(address).
+      arg(subject);
+
+    setuid( getuid() ); // Make sure a set-user-id prog. is not root anymore
+    setgid( getgid() );
+
+    const char* shell = "/bin/sh";
+    if( getenv("SHELL") ) 
+    {
+      shell = getenv("SHELL");
+    }
+    execl( shell, shell, "-c", exec.ascii(), 0L );
+    exit( 1 );
+  }
+}
+
+
+void KApplication::invokeBrowser( const QString &url )
+{
+  if( fork() == 0 )
+  { 
+    setuid( getuid() ); // Make sure a set-user-id prog. is not root anymore
+    setgid( getgid() );
+    QString browser, exec;
+    
+    //
+    // 1999-10-05 Espen Sand 
+    //
+    // The code below is inspired by the work of Markus Goetz <guruz@gmx.de>
+    // It should not be here at all. We should rather just use a method
+    // that returns the correct browser exec string:
+    // exec = KSomeGlobalObject::browser( url ):
+    // and it must be done before the fork() above I'll guess. Is that OK
+    // with Qt/QString?
+    //
+    #if 0
+    if( 0 )
+    {
+      browser = "lynx";
+      exec = QString("konsole -e %1 %2").arg(browser).arg(url);
+    }
+    else if(0)
+    {
+      browser = "netscape";
+      QString lockFile = QString("%1/.netscape/lock").arg(getenv("HOME"));
+
+      struct stat statInfo;
+      if( lstat(lockFile.ascii(), &statInfo) != -1 )
+      {
+	exec = QString("%1 -remote 'openURL(%2,new-window)'").arg(browser).
+	  arg(url);
+      }
+      else
+      {
+	exec = QString("%1 %2").arg(browser).arg(url);
+      }
+    }
+    else
+    {
+      browser = "kfmclient";
+      exec = QString("%1 openURL %2").arg(browser).arg(url);
+    }
+    #endif
+
+
+    //
+    // This is what we use now.
+    //
+    browser = "kfmclient";
+    exec = QString("%1 openURL %2").arg(browser).arg(url);
+
+    const char* shell = "/bin/sh";
+    if( getenv("SHELL") ) 
+    {
+      shell = getenv("SHELL");
+    }
+    execl( shell, shell, "-c", exec.ascii(), 0L );
+    exit( 1 );
+  }
+
+}
+
+
+
+
 bool KApplication::getKDEFonts(QStringList &fontlist) const
 {
   QString fontfilename = KGlobal::dirs()->getSaveLocation("config") + "kdefonts";
@@ -1071,16 +1194,17 @@ bool checkAccess(const QString& pathname, int mode)
 
 void KApplication::setTopWidget( QWidget *topWidget )
 {
-  if (topWidget){
-      // set the specified caption
-      topWidget->setCaption( getCaption() );
-      // set the specified icons
-      KWM::setIcon(topWidget->winId(), getIcon());
-      KWM::setMiniIcon(topWidget->winId(), getMiniIcon());
-      // set a short icon text
-      // TODO: perhaps using .ascii() isn't right here as this may be seen by
-      // a user?
-      XSetIconName( qt_xdisplay(), topWidget->winId(), getCaption().ascii() );
+  if( topWidget != 0 )
+  {
+    // set the specified caption
+    topWidget->setCaption( getCaption() );
+    // set the specified icons
+    KWM::setIcon(topWidget->winId(), getIcon());
+    KWM::setMiniIcon(topWidget->winId(), getMiniIcon());
+    // set a short icon text
+    // TODO: perhaps using .ascii() isn't right here as this may be seen by
+    // a user?
+    XSetIconName( qt_xdisplay(), topWidget->winId(), getCaption().ascii() );
   }
 }
 
