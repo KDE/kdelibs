@@ -286,6 +286,7 @@ void CSSParser::addProperty( int propId, CSSValueImpl *value, bool important )
 CSSStyleDeclarationImpl *CSSParser::createStyleDeclaration( CSSStyleRuleImpl *rule )
 {
     QPtrList<CSSProperty> *propList = new QPtrList<CSSProperty>;
+    propList->setAutoDelete( true );
     for ( int i = 0; i < numParsedProperties; i++ )
 	propList->append( parsedProperties[i] );
 
