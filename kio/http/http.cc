@@ -164,7 +164,7 @@ void setup_alarm(unsigned int timeout)
 
 #ifdef DO_MD5
 const char * create_digest_auth (const char *header, const char *user,
-				                          const char *passwd, const char *auth_str)
+                                 const char *passwd, const char *auth_str)
 {
   int i;
   HASHHEX HA1;
@@ -178,7 +178,7 @@ const char * create_digest_auth (const char *header, const char *user,
     return "";
 
   QCString t1;
-  kdDebug(7113) << "User is :" << user << ":    Password is : ..." << /* passwd << */ ":" << endl;
+  kdDebug(7113) << "User ::" << user << "::  ,  Password ::[protected]::" << endl;
   while (*p)
   {
     while( (*p == ' ') || (*p == ',') || (*p == '\t')) { p++; }
@@ -229,7 +229,7 @@ const char * create_digest_auth (const char *header, const char *user,
       while( *p == '"' ) p++;  // Go past any " mark(s) first
       while( p[i] != '"' ) i++;  // Read everything until the last " mark
       opaque = QCString(p,i+1);
-      kdDebug(7113) << "opaque:==>" << opaque << endl;
+      kdDebug(7113) << "opaque:==> " << opaque << endl;
     }
     else if (strncasecmp(p, "qop=", 4)==0)
     {
@@ -258,7 +258,7 @@ const char * create_digest_auth (const char *header, const char *user,
   if( !domain.isEmpty() )
   {
     t1 += ", uri=";
-	  t1 += domain.data();
+    t1 += domain.data();
   }
 
   const char* szCNonce = "4477b65d"; // RIDDLE: Can anyone guess what this value means ??
@@ -290,9 +290,6 @@ const char * create_digest_auth (const char *header, const char *user,
     t1 += opaque.data();
     t1 += "\"";
   }
-  // Please do not add things that should be done
-  // by the header generator method itself!! (DA)
-  // t1 += "\r\n";
   kdDebug(7113) << "Digest Response: " << t1.data() << endl;
   return qstrdup(t1.data());
 }
@@ -301,10 +298,7 @@ const char *create_digest_auth (const char *, const char *, const char *, const 
 {
   kdError(7113) << "Cannot perform digest authentication!!!" << endl;
   // error(ERR_COULD_NOT_AUTHENTICATE, "digest");
-
-  // Please do not add things that should be done
-  // by the header generator method itself!! (DA)
-  return strdup(""); // ("\r\n");
+  return strdup("");
 }
 #endif
 
@@ -3329,18 +3323,34 @@ void HTTPProtocol::reparseConfiguration()
     m_strCacheDir = KGlobal::dirs()->saveLocation("data", "kio_http/cache");
     m_maxCacheAge = KProtocolManager::maxCacheAge();
   }
+
   // Update the proxy and remote server connection timeout values
   m_proxyConnTimeout = KProtocolManager::proxyConnectTimeout();
   m_remoteConnTimeout = KProtocolManager::connectTimeout();
   m_remoteRespTimeout = KProtocolManager::responseTimeout();
 
   // Define language and charset settings from KLocale (David)
+  // Get rid of duplicate language entries!!
+  QString tmp;
   QStringList languageList = KGlobal::locale()->languageList();
-  QStringList::Iterator c = languageList.find( QString::fromLatin1("C") );
-  // HTTP servers don't understand "C", they understand "en" :)
-  if ( c != languageList.end() )
-    (*c) = QString::fromLatin1("en");
-  m_strLanguages = languageList.join( " " );
+  QStringList::Iterator it = languageList.begin();
+  do {
+    if ( (*it) == QString::fromLatin1("C") )
+        (*it) = QString::fromLatin1("en");  // Should be user's local language IMHO, but that returns "C" as well!!
+
+    if ( !tmp.isEmpty() && (*it) == tmp )
+    {
+        it = languageList.remove( it );
+    }
+    else
+    {
+        tmp = (*it);
+        ++it;
+    }
+  } while ( it != languageList.end() );
+
+  // Use commas not spaces.
+  m_strLanguages = languageList.join( "," );
   kdDebug(7103) << "Languages list set to " << m_strLanguages << endl;
   m_strCharsets = KGlobal::locale()->charset() + QString::fromLatin1(";q=1.0, utf-8;q=0.8, *;q=0.9");
 }
