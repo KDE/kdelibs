@@ -30,10 +30,9 @@
 #include "kbookmarkimporter.h"
 #include "kbookmarkimporter_ie.h"
 
-static const int g_lineLimit = 4096;
-
 /* antlarr: KDE 4: Make them const QString & */
 void KIEBookmarkImporter::parseIEBookmarks_url_file( QString filename, QString name ) {
+    static const int g_lineLimit = 4096;
 
     QFile f(filename);
 

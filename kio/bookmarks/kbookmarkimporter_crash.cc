@@ -35,8 +35,6 @@
 #include <dirent.h>
 #include <sys/stat.h>
 
-static const int g_lineLimit = 4096;
-
 typedef QMap<QString, QString> ViewMap;
 
 // KDE 4.0: remove this BC keeping stub
@@ -47,6 +45,8 @@ void KCrashBookmarkImporter::parseCrashLog( QString /*filename*/, bool /*del*/ )
 
 ViewMap KCrashBookmarkImporterImpl::parseCrashLog_noemit( const QString & filename, bool del ) 
 {
+    static const int g_lineLimit = 4096;
+
     QFile f( filename );
     ViewMap views;
 
