@@ -77,6 +77,7 @@ struct TestClass {
 struct TestCase {
 	virtual void setUp() { };
 	virtual void tearDown() { };
+	virtual ~TestCase() { };
 };
 
 #define TESTCASE(name)												\

@@ -1,4 +1,4 @@
-check_PROGRAMS = testbuffer
+check_PROGRAMS = testbuffer testifacerepo
 
 TESTS = $(check_PROGRAMS)
 
@@ -9,3 +9,4 @@ INCLUDES = $(all_includes) -I$(top_srcdir)/arts/mcop -I$(top_srcdir)/arts/flow \
 LDFLAGS   = $(all_libraries) $(top_builddir)/arts/mcop/libmcop.la
 
 testbuffer_SOURCES = testbuffer.cc
+testifacerepo_SOURCES = testifacerepo.cc

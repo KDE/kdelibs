@@ -37,6 +37,7 @@ long InterfaceRepo_impl::insertModule(const ModuleDef& newModule)
 {
 	long moduleID = nextModuleID++;
 
+	/* insert interfaces */
 	vector<InterfaceDef>::const_iterator ii;
 	for(ii=newModule.interfaces.begin();
 		ii != newModule.interfaces.end();ii++)
@@ -46,6 +47,7 @@ long InterfaceRepo_impl::insertModule(const ModuleDef& newModule)
 		interfaces.push_back(new InterfaceEntry(b,moduleID));
 	}
 
+	/* insert types */
 	vector<TypeDef>::const_iterator ti;
 	for(ti=newModule.types.begin();
 		ti != newModule.types.end();ti++)
@@ -55,26 +57,21 @@ long InterfaceRepo_impl::insertModule(const ModuleDef& newModule)
 		types.push_back(new TypeEntry(b,moduleID));
 	}
 
+	/* insert enums */
+	vector<EnumDef>::const_iterator ei;
+	for(ei=newModule.enums.begin();
+		ei != newModule.enums.end();ei++)
+	{
+		Buffer b;
+		ei->writeType(b);
+		enums.push_back(new EnumEntry(b,moduleID));
+	}
+
 	return moduleID;
 }
 
 void InterfaceRepo_impl::removeModule(long moduleID)
 {
-	list<TypeEntry *>::iterator ti;
-
-	/* erase types */
-	ti = types.begin();
-	while(ti != types.end())
-	{
-		if((*ti)->moduleID == moduleID)
-		{
-			delete (*ti);
-			types.erase(ti);
-			ti = types.begin();
-		}
-		else ti++;
-	}
-
 	/* erase interfaces */
 	list<InterfaceEntry *>::iterator ii;
 	ii = interfaces.begin();
@@ -87,6 +84,34 @@ void InterfaceRepo_impl::removeModule(long moduleID)
 			ii = interfaces.begin();
 		}
 		else ii++;
+	}
+
+	/* erase types */
+	list<TypeEntry *>::iterator ti;
+	ti = types.begin();
+	while(ti != types.end())
+	{
+		if((*ti)->moduleID == moduleID)
+		{
+			delete (*ti);
+			types.erase(ti);
+			ti = types.begin();
+		}
+		else ti++;
+	}
+
+	/* erase enums */
+	list<EnumEntry *>::iterator ei;
+	ei = enums.begin();
+	while(ei != enums.end())
+	{
+		if((*ei)->moduleID == moduleID)
+		{
+			delete (*ei);
+			enums.erase(ei);
+			ei = enums.begin();
+		}
+		else ei++;
 	}
 }
 
