@@ -40,17 +40,24 @@ PixmapLoader::PixmapLoader()
 	:m_cache( 193 ) 
 { 
 	s_instance = this; 
-	QPixmapCache::setCacheLimit( 32 );
+	QPixmapCache::setCacheLimit( 128 );
+	m_cache.setAutoDelete( true );
 }
 
-const QPixmap& PixmapLoader::pixmap( const QString& name )
+QPixmap PixmapLoader::pixmap( const QString& name )
 {
-	QPixmap* result = m_cache[ name ];
-	if ( !result ) {
-		result = new QPixmap( qembed_findImage( name ) );
-		m_cache.insert( name, result );
+	QPixmap result;
+	if ( QPixmapCache::find( name, result ) )
+		return result;
+
+	QImage* img = m_cache[ name ];
+	if ( !img ) {
+		img = new QImage( qembed_findImage( name ) );
+		m_cache.insert( name, img );
 	}
-	return *result;
+	result.convertFromImage( *img );
+	QPixmapCache::insert( name, result );
+	return result;
 }
 
 
@@ -60,24 +67,37 @@ QPixmap PixmapLoader::scale( const QString& name, int width, int height )
 	QPixmap result;
 	if ( QPixmapCache::find( key, result  ) )
 		return result;
-	const QPixmap& pix = pixmap( name );
-	result = pix.xForm( QWMatrix( width ? double (width ) / pix.width() : 1.0, 0.0, 0.0,
-								  height ? double ( height ) / pix.height() : 1.0, 0.0, 0.0 ) );
+
+	QImage* img = m_cache[ name ];
+	if ( !img ) {
+		img = new QImage( qembed_findImage( name ) );
+		m_cache.insert( name, img );
+	}
+
+	result.convertFromImage( img->scale( width ? width : img->width(), height ? height : img->height() ) );
 	QPixmapCache::insert( key, result );
 	return result;
 }
 
 void TilePainter::draw( QPainter *p, int x, int y, int width, int height )
 {
-	unsigned int scaledColumns = 0, scaledRows = 0;
-	int scaleWidth = width, scaleHeight = height; 
+	unsigned int scaledColumns = 0, scaledRows = 0, lastScaledColumn = 0, lastScaledRow = 0;
+	int scaleWidth = width, scaleHeight = height;
 
 	for ( unsigned int col = 0; col < columns(); ++col )
-		if ( columnMode( col ) == Fixed ) scaleWidth -= tile( col, 0 ).width();
-		else scaledColumns++;
+		if ( columnMode( col ) == Scaled )
+		{
+			scaledColumns++;
+			lastScaledColumn = col;
+		}
+		else scaleWidth -= tile( col, 0 ).width();
 	for ( unsigned int row = 0; row < rows(); ++row )
-		if ( rowMode( row ) == Fixed ) scaleHeight -= tile( 0, row ).height();
-		else scaledRows++;
+		if ( rowMode( row ) == Scaled )
+		{
+			scaledRows++;
+			lastScaledRow = row;
+		}
+		else scaleHeight -= tile( 0, row ).height();
 
 	int ypos = y;
 	if ( scaleHeight && !scaledRows ) ypos += scaleHeight / 2;
@@ -86,13 +106,16 @@ void TilePainter::draw( QPainter *p, int x, int y, int width, int height )
 		int xpos = x;
 		if ( scaleWidth && !scaledColumns ) xpos += scaleWidth / 2;
 		int h = rowMode( row ) == Fixed ? 0 : scaleHeight / scaledRows;
+		if ( scaledRows && row == lastScaledRow ) h += scaleHeight - scaleHeight / scaledRows * scaledRows;
 
 		for ( unsigned int col = 0; col < columns(); ++col )
 		{
 			int w = columnMode( col ) == Fixed ? 0 : scaleWidth / scaledColumns;
+			if ( scaledColumns && col == lastScaledColumn ) w += scaleWidth - scaleWidth / scaledColumns * scaledColumns;
 
-			if ( w || h ) p->drawPixmap( xpos, ypos, scale( col, row, w, h ) );
-			else p->drawPixmap( xpos, ypos, tile( col, row ) );
+			if ( !tile( col, row ).isNull() )
+				if ( w || h ) p->drawPixmap( xpos, ypos, scale( col, row, w, h ) );
+				else p->drawPixmap( xpos, ypos, tile( col, row ) );
 			xpos += w ? w : tile( col, row ).width();
 		}
 		ypos += h ? h : tile( 0, row ).height();
@@ -123,6 +146,19 @@ QString TabPainter::tileName( unsigned int column, unsigned int row ) const
 	Mode check = QApplication::reverseLayout() ? Last : First;
 	if ( column == 0 && m_mode != check ) return "separator";
 		return RectTilePainter::tileName( column, row );
+}
+
+ScrollBarPainter::ScrollBarPainter( const QString& type, int count, bool horizontal )
+	: TilePainter( name( horizontal ) ),
+	  m_type( type ),
+	  m_count( count ),
+	  m_horizontal( horizontal )
+{
+}
+
+QString ScrollBarPainter::name( bool horizontal )
+{
+	return QString( "scrollbar-" ) + ( horizontal ? "hbar" : "vbar" );
 }
 
 // vim: ts=4 sw=4 noet

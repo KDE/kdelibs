@@ -25,6 +25,7 @@
 #include <qdict.h>
 
 class QPixmap;
+class QImage;
 
 namespace Keramik
 {
@@ -34,13 +35,13 @@ namespace Keramik
 		PixmapLoader();
 		~PixmapLoader() { s_instance = 0; }
 
-		const QPixmap& pixmap( const QString& name );
+		QPixmap pixmap( const QString& name );
 		QPixmap scale( const QString& name, int width, int height );
 
 		static PixmapLoader& the() { return *s_instance; }
 
 	private:
-		QDict< QPixmap > m_cache;
+		QDict< QImage > m_cache;
 
 		static PixmapLoader* s_instance;
 	};
@@ -52,6 +53,10 @@ namespace Keramik
 		virtual ~TilePainter() {};
 
 		void draw( QPainter *p, int x, int y, int width, int height );
+		void draw( QPainter *p, const QRect& rect )
+		{
+			draw( p, rect.x(), rect.y(), rect.width(), rect.height() );
+		}
 
 	protected:
 		enum TileMode { Fixed, Scaled };
@@ -64,7 +69,7 @@ namespace Keramik
 
 	private:
 		QString absTileName( unsigned int column, unsigned int row ) const;
-		const QPixmap& tile( unsigned int column, unsigned int row )
+		QPixmap tile( unsigned int column, unsigned int row )
 			{ return PixmapLoader::the().pixmap( absTileName( column, row ) ); }
 		QPixmap scale( unsigned int column, unsigned int row, int width, int height )
 			{ return PixmapLoader::the().scale( absTileName( column, row ), width, height ); }
@@ -75,14 +80,25 @@ namespace Keramik
 	class ScaledPainter : public TilePainter
 	{
 	public:
-		ScaledPainter( const QString& name ) : TilePainter( name ) {};
+		enum Direction { Horizontal = 1, Vertical = 2, Both = Horizontal | Vertical };
+		ScaledPainter( const QString& name, Direction direction = Both )
+			: TilePainter( name ), m_direction( direction ) {};
 		virtual ~ScaledPainter() {};
 
 	protected:
 		virtual unsigned int columns() const { return 1; }
 		virtual unsigned int rows() const { return 1; }
-		virtual TileMode columnMode( unsigned int ) const { return Scaled; }
-		virtual TileMode rowMode( unsigned int ) const { return Scaled; }
+		virtual TileMode columnMode( unsigned int ) const
+		{
+			return ( m_direction & Horizontal ) ? Scaled : Fixed;
+		}
+		virtual TileMode rowMode( unsigned int ) const
+		{
+			return ( m_direction & Vertical ) ? Scaled : Fixed;
+		}
+
+	private:
+		Direction m_direction;
 	};
 
 	class CenteredPainter : public TilePainter
@@ -133,6 +149,36 @@ namespace Keramik
 
 	private:
 		Mode m_mode;
+	};
+
+	class ScrollBarPainter : public TilePainter
+	{
+	public:
+		ScrollBarPainter( const QString& type, int count, bool horizontal );
+		virtual ~ScrollBarPainter() {};
+
+		static QString name( bool horizontal );
+
+	protected:
+		virtual unsigned int columns() const { return m_horizontal ? m_count : 1; }
+		virtual unsigned int rows() const { return m_horizontal ? 1 : m_count; }
+		virtual QString tileName( unsigned int column, unsigned int row ) const
+		{
+			return m_type + QString::number( column ? column + 1 : row + 1 );
+		}
+		virtual TileMode columnMode( unsigned int column ) const
+		{
+			return m_horizontal ? ( column % 2 ) ? Scaled : Fixed : Fixed;
+		}
+		virtual TileMode rowMode( unsigned int row ) const
+		{
+			return m_horizontal ? Fixed : ( row % 2 ) ? Scaled : Fixed;
+		}
+
+	private:
+		QString m_type;
+		int m_count;
+		bool m_horizontal;
 	};
 };
 
