@@ -18,8 +18,6 @@
 
 INCLUDES= -I$(top_srcdir)/kio $(all_includes)
 
-CXXFLAGS := $(CXXFLAGS) -Wall @NOREPO@
-
 bin_PROGRAMS = kded
 kded_LDADD = $(top_builddir)/kio/libkio.la
 kded_LDFLAGS = $(all_libraries) $(KDE_RPATH)

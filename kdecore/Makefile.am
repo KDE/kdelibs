@@ -19,8 +19,6 @@
 
 INCLUDES = $(all_includes)
 
-CXXFLAGS := $(CXXFLAGS) @NOREPO@
-
 SUBDIRS = qk
 
 lib_LTLIBRARIES = libkdecore.la

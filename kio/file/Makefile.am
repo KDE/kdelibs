@@ -4,8 +4,6 @@ INCLUDES=	-I$(top_srcdir)/kio $(all_includes)
 LDFLAGS =       $(all_libraries) $(KDE_RPATH)
 LDADD	=	$(LIB_KIO)
 
-CXXFLAGS := $(CXXFLAGS) @NOREPO@
-
 ####### Files
 
 bin_PROGRAMS = kio_file

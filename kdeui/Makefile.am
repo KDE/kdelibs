@@ -23,8 +23,6 @@ INCLUDES= $(all_includes)
 
 EXTRA_DIST = CHANGES.kdatepicker USERS.kdatepicker
 
-CXXFLAGS := $(CXXFLAGS) @NOREPO@
-
 #uncomment that if the menus look strange
 AM_CPPFLAGS = -DQT2_WORKAROUND
 

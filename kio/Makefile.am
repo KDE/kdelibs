@@ -18,8 +18,6 @@
 
 INCLUDES= $(all_includes)
 
-CXXFLAGS := $(CXXFLAGS) -Wall @NOREPO@
-
 SUBDIRS = . kded
 
 lib_LTLIBRARIES = libkio.la
