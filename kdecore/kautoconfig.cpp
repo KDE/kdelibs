@@ -210,7 +210,6 @@ bool KAutoConfig::saveSettings() {
   if(d->changed){
     emit( settingsChanged() );
     d->changed = false;
-    // Because no app has ever segfaulted.
     config->sync();
     return true;
   }
