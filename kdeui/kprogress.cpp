@@ -15,7 +15,7 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
-/*
+/**
  * KProgress -- a progress indicator widget for KDE.
  */
 
@@ -46,7 +46,7 @@ KProgress::KProgress(Orientation orientation, QWidget *parent, const char *name)
 }
 
 KProgress::KProgress(int minValue, int maxValue, int value,
-					Orientation orientation, QWidget *parent, const char *name)
+                     Orientation orientation, QWidget *parent, const char *name)
 	: QFrame(parent, name),
 	QRangeControl(minValue, maxValue, 1, 10, value),
 	orient(orientation)
@@ -69,24 +69,24 @@ void KProgress::initialize()
 	use_supplied_bar_color = false;
 	bar_pixmap = 0;
 	bar_style = Solid;
-        text_enabled = TRUE;
+	text_enabled = TRUE;
 	setBackgroundMode( PaletteBase );
 	connect(kapp, SIGNAL(appearanceChanged()), this, SLOT(paletteChange()));
 	QFont f(QString::fromLatin1("helvetica"), 12, QFont::Bold);
 	f.setPixelSize(12);
 	setFont(f);
-        paletteChange();
+	paletteChange();
 }
 
 void KProgress::paletteChange()
 {
-        QPalette p = kapp->palette();
-        const QColorGroup &colorGroup = p.active();
-        if (!use_supplied_bar_color)
-	   bar_color = colorGroup.highlight();
+	QPalette p = kapp->palette();
+	const QColorGroup &colorGroup = p.active();
+	if (!use_supplied_bar_color)
+		bar_color = colorGroup.highlight();
 	bar_text_color = colorGroup.highlightedText();
 	text_color = colorGroup.text();
-        setPalette(p);
+	setPalette(p);
 
 	adjustStyle();
 }
@@ -98,7 +98,7 @@ void KProgress::setBarPixmap(const QPixmap &pixmap)
 		return;
 	if (bar_pixmap)
 		delete bar_pixmap;
-		
+
 	bar_pixmap = new QPixmap(pixmap);
 }
 
@@ -158,9 +158,9 @@ QSize KProgress::sizeHint() const
 	QSize s( size() );
 
 	if(orientation() == KProgress::Vertical) {
-	  s.setWidth(24);
+		s.setWidth(24);
 	} else {
-	  s.setHeight(24);
+		s.setHeight(24);
 	}
 
 	return s;
@@ -168,7 +168,7 @@ QSize KProgress::sizeHint() const
 
 QSize KProgress::minimumSizeHint() const
 {
-    return sizeHint();
+	return sizeHint();
 }
 
 QSizePolicy KProgress::sizePolicy() const
@@ -234,11 +234,11 @@ void KProgress::adjustStyle()
 
 void KProgress::paletteChange( const QPalette &p )
 {
-   // This never gets called for global color changes 
-   // because we call setPalette() ourselves.
-   QFrame::paletteChange(p);
+	// This never gets called for global color changes 
+	// because we call setPalette() ourselves.
+	QFrame::paletteChange(p);
 }
-		
+
 void KProgress::drawText(QPainter *p)
 {
 	QRect r(contentsRect());
@@ -258,12 +258,11 @@ void KProgress::drawText(QPainter *p)
 	p->setClipRegion( fr );
 	p->setPen(bar_text_color);
 	p->drawText(r, AlignCenter, s);
-	
 }
 
 void KProgress::drawContents(QPainter *p)
 {
-        QRect cr = contentsRect(), er = cr;
+	QRect cr = contentsRect(), er = cr;
 	fr = cr;
 	QBrush fb(bar_color), eb(backgroundColor());
 
@@ -282,14 +281,14 @@ void KProgress::drawContents(QPainter *p)
 				fr.setTop(cr.bottom() - recalcValue(cr.height()));
 				er.setBottom(fr.top() - 1);
 			}
-				
-			p->setBrushOrigin(cr.topLeft());
-                            p->fillRect(fr, fb);
 
-                        p->fillRect(er, eb);
-			
+			p->setBrushOrigin(cr.topLeft());
+			p->fillRect(fr, fb);
+
+			p->fillRect(er, eb);
+
 			break;
-			
+
 		case Blocked:
 			const int margin = 2;
 			int max, num, dx, dy;
@@ -311,12 +310,12 @@ void KProgress::drawContents(QPainter *p)
 				num = recalcValue(max);
 			}
 			p->setClipRect(cr.x() + margin, cr.y() + margin,
-						   cr.width() - margin, cr.height() - margin);
+			               cr.width() - margin, cr.height() - margin);
 			for (int i = 0; i < num; i++) {
 				p->setBrushOrigin(fr.topLeft());
-                                    p->fillRect(fr, fb);
-                                fr.moveBy(dx, dy);
-                        }
+				p->fillRect(fr, fb);
+				fr.moveBy(dx, dy);
+			}
 			
 			if (num != max) {
 				if (orient == Horizontal)
@@ -328,25 +327,22 @@ void KProgress::drawContents(QPainter *p)
 					p->fillRect(er, eb);
 				}
 			}
-			
+
 			break;
-	}	
-				
+	}
+
 	if (text_enabled && bar_style != Blocked)
 		drawText(p);
-		
-}			
-
-  void
-KProgress::setFormat(const QString & format)
-{
-  format_ = format;
 }
 
-  QString
-KProgress::format() const
+void KProgress::setFormat(const QString & format)
 {
-  return format_;
+	format_ = format;
+}
+
+QString KProgress::format() const
+{
+	return format_;
 }
 
 #include "kprogress.moc"

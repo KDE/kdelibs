@@ -63,28 +63,28 @@ class KProgress : public QFrame, public QRangeControl
 
 public:
   /**
-  * Possible values for bar style.
-  *
-  * @p Solid means one continuous progress bar, @p Blocked means a
-  * progress bar made up of several blocks.
-  */
+   * Possible values for bar style.
+   *
+   * @p Solid means one continuous progress bar, @p Blocked means a
+   * progress bar made up of several blocks.
+   */
   enum BarStyle { Solid, Blocked };
 
   /**
-  * Construct a horizontal progress bar.
-  */
+   * Construct a horizontal progress bar.
+   */
   KProgress(QWidget *parent=0, const char *name=0);
 
   /**
-  * Construct a progress bar with orientation @p orient.
-  */
+   * Construct a progress bar with orientation @p orient.
+   */
   KProgress(Orientation orient, QWidget *parent=0, const char *name=0);
 
   /**
-  * Construct a progress bar with minimum, maximum and initial values.
-  */
+   * Construct a progress bar with minimum, maximum and initial values.
+   */
   KProgress(int minValue, int maxValue, int value, Orientation,
-	    QWidget *parent=0, const char *name=0);
+            QWidget *parent=0, const char *name=0);
 
   /**
    * Destruct the progress bar.
@@ -92,27 +92,27 @@ public:
   ~KProgress();
 
   /**
-  * Set the progress bar style.
-  *
-  * Allowed values are @p Solid and @p Blocked.
-  */
+   * Set the progress bar style.
+   *
+   * Allowed values are @p Solid and @p Blocked.
+   */
   void setBarStyle(BarStyle style);
 
   /**
-  * Set the color of the progress bar.
-  */
+   * Set the color of the progress bar.
+   */
   void setBarColor(const QColor &);
 
   /**
-  * Set a pixmap to be shown in the progress bar.
-  */
+   * Set a pixmap to be shown in the progress bar.
+   */
   void setBarPixmap(const QPixmap &);
 
   /**
-  * Set the orientation of the progress bar.
-  *
-  * Allowed values are @p Horizontal and @p Vertical.
-  */
+   * Set the orientation of the progress bar.
+   *
+   * Allowed values are @p Horizontal and @p Vertical.
+   */
   void setOrientation(Orientation);
 
   /**
@@ -122,44 +122,44 @@ public:
   void setTextEnabled(bool);
 
   /**
-  * Retrieve the bar style.
-  *
-  * @see setBarStyle()
-  */
+   * Retrieve the bar style.
+   *
+   * @see setBarStyle()
+   */
   BarStyle barStyle() const;
 
   /**
-  * Retrieve the bar color.
-  * @see setBarColor()
-  */
+   * Retrieve the bar color.
+   * @see setBarColor()
+   */
   const QColor &barColor() const;
 
   /**
-  * Retrieve the bar pixmap.
-  *
-  * @see setBarPixmap()
-  */
+   * Retrieve the bar pixmap.
+   *
+   * @see setBarPixmap()
+   */
   const QPixmap *barPixmap() const;
 
   /**
-  * Retrive the current status
-  *
-  * @see setValue()
-  */
+   * Retrive the current status
+   *
+   * @see setValue()
+   */
   int value() const { return QRangeControl::value(); }
   /**
-  * Retrive the orientation of the progress bar.
-  *
-  * @see setOrientation()
-  */
+   * Retrive the orientation of the progress bar.
+   *
+   * @see setOrientation()
+   */
   Orientation orientation() const;
 
   /**
-  * Returns @p true if progress text will be displayed,
-  * @p false otherwise.
-  *
-  * @see setFormat()
-  */
+   * Returns @p true if progress text will be displayed,
+   * @p false otherwise.
+   *
+   * @see setFormat()
+   */
   bool textEnabled() const;
 
   /**
@@ -185,81 +185,81 @@ public:
 
 public slots:
 
-    /**
-     * Set the format of the text to use to display status.
-     *
-     * The default format is "%p%" (which looks like "42%".)
-     *
-     * @param format %p is replaced by percentage done, %v is replaced by actual
-     * value, %m is replaced by the maximum value.
-     */
-    void setFormat(const QString & format);
+  /**
+   * Set the format of the text to use to display status.
+   *
+   * The default format is "%p%" (which looks like "42%".)
+   *
+   * @param format %p is replaced by percentage done, %v is replaced by actual
+   * value, %m is replaced by the maximum value.
+   */
+  void setFormat(const QString & format);
 
-	/**
-	 * Set the current value of the progress bar to @p value.
-	 *
-         * This must be a number in the range 0..100.
-	 **/
-	  void setValue(int value);
+  /**
+   * Set the current value of the progress bar to @p value.
+   *
+   * This must be a number in the range 0..100.
+   */
+  void setValue(int value);
 
-        /**
-	 * Advance the progress bar by @p prog.
-	 *
-	 * This method is
-         * provided for convenience and is equivalent with
-         * @ref setValue(value()+prog).
-	 **/
-	void advance(int prog);
+  /**
+   * Advance the progress bar by @p prog.
+   *
+   * This method is
+   * provided for convenience and is equivalent with
+   * @ref setValue(value()+prog).
+   */
+  void advance(int prog);
 
 signals:
-	/**
-	 * Emitted when the state of the progress bar changes.
-	 **/
-	void percentageChanged(int);
+  /**
+   * Emitted when the state of the progress bar changes.
+   */
+  void percentageChanged(int);
 
 protected:
-	/**
-	 * @reimplemented
-	 */
-	void valueChange();
-	/**
-	 * @reimplemented
-	 */
-	void rangeChange();
-	/**
-	 * @reimplemented
-	 */
-	void styleChange( QStyle& );
-	/**
-	 * @reimplemented
-	 */
-	void paletteChange( const QPalette & );
-	/**
-	 * @reimplemented
-	 */
-	void drawContents( QPainter * );
+  /**
+   * @reimplemented
+   */
+  void valueChange();
+  /**
+   * @reimplemented
+   */
+  void rangeChange();
+  /**
+   * @reimplemented
+   */
+  void styleChange( QStyle& );
+  /**
+   * @reimplemented
+   */
+  void paletteChange( const QPalette & );
+  /**
+   * @reimplemented
+   */
+  void drawContents( QPainter * );
 
 private slots:
-	void paletteChange();
+  void paletteChange();
 
 private:
-	QPixmap		*bar_pixmap;
-	bool		use_supplied_bar_color;
-	QColor		bar_color;
-	QColor		bar_text_color;
-	QColor		text_color;
-	QRect fr;
-	BarStyle	bar_style;
-	Orientation orient;
-	bool		text_enabled;
-	QString   format_;
-        void initialize();
-	int recalcValue(int);
-	void drawText(QPainter *);
-	void adjustStyle();
+  QPixmap  *bar_pixmap;
+  bool      use_supplied_bar_color;
+  QColor    bar_color;
+  QColor    bar_text_color;
+  QColor    text_color;
+  QRect     fr;
+  BarStyle  bar_style;
+  Orientation orient;
+  bool      text_enabled;
+  QString   format_;
+  void      initialize();
+  int       recalcValue(int);
+  void      drawText(QPainter *);
+  void      adjustStyle();
 
-	class KProgressPrivate;
-	KProgressPrivate *d;
+  class KProgressPrivate;
+  KProgressPrivate *d;
 };
 
 
