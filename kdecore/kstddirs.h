@@ -148,7 +148,7 @@ public:
 	 * @li all hard paths (most recent first)
 	 *
 	 * @return a full path to the filename specified in the second
-	 *         argument.
+	 *         argument, or QString::null if not found.
 	 */
 	QString findResource( const QString& type, 
 			      const QString& filename ) const;
@@ -160,7 +160,8 @@ public:
 	 * @param type the type of the base directory.
 	 * @param reldir relative directory.
 	 *
-	 * @return a list of matching directories.
+	 * @return a list of matching directories, or an empty
+	 *         list if the resource specified is not found.
 	 */
 	QStringList findDirs( const QString& type, 
                               const QString& reldir ) const;
@@ -174,7 +175,9 @@ public:
 	 * having to look for each file.
 	 *
 	 * @return the directory where the file specified in the second
-	 *         argument is located.
+	 *         argument is located, or QString::null if the type
+	 *         of resource specified is unknown or the resource
+	 *         cannot be found.
 	 */
 	QString findResourceDir( const QString& type,
 				 const QString& filename) const;
@@ -192,7 +195,8 @@ public:
 	 *        may consist of an optional directory and a QRexExp 
 	 *        wildcard expression. E.g. "images\*.jpg" 
 	 *        
-	 * @return a list of directories matching the resource specified.
+	 * @return a list of directories matching the resource specified,
+	 *         or an empty list if the resource type is unknown.
 	 */
 	QStringList findAllResources( const QString& type, 
 				      const QString& filter = QString::null,
@@ -211,8 +215,8 @@ public:
 	 * @param ignoreExecBit	If true, an existing file will be returned
 	 *			even if its executable bit is not set.
 	 *
-	 * @return The path of the executable. If it was not found, this string 
-	 *	will be null.
+	 * @return The path of the executable. If it was not found,
+	 *         it will return QString::null.
 	 */
 	static QString findExe( const QString& appname, 
 				const QString& pathstr=QString::null,
@@ -260,8 +264,9 @@ public:
 	bool addCustomized(KConfig *config);
 
 	/**
-	 * returns the list of possible directories for the type 
-	 * The functions updates the cache if possible
+	 * @return the list of possible directories for the type 
+	 * The functions updates the cache if possible.  If the resource
+	 * type specified is unknown, it will return an empty list.
 	 */
 	QStringList getResourceDirs(const QString& type) const;
 
@@ -275,6 +280,9 @@ public:
 		       that directory yourself
 	 * @param create if set, getSaveLocation will create the directories
 	 *        needed (including those given by suffix)
+	 *
+	 * @return a path where resources of the specified type should be
+	 *         saved, or QString::null if the resource type is unknown.
 	 */
 	 QString getSaveLocation(const QString& type,
 				 const QString& suffix = QString::null, 
@@ -290,6 +298,12 @@ public:
 	 */
 	static bool makeDir(const QString& dir, int mode = 0755);
 
+	/**
+	 * @returns static default for the specified resource.  You
+	 *          should probably be using locate or locateLocal
+	 *          instead.
+	 * @ see #locate, #locateLocal
+	 */
 	static QString kde_default(const QString& type);
 
  private:
