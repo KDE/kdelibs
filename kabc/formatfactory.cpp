@@ -22,6 +22,7 @@
 #include <klocale.h>
 #include <ksimpleconfig.h>
 #include <kstandarddirs.h>
+#include <kstaticdeleter.h>
 
 #include <qfile.h>
 
@@ -32,14 +33,14 @@
 using namespace KABC;
 
 FormatFactory *FormatFactory::mSelf = 0;
+static KStaticDeleter<FormatFactory> staticDeleter;
 
 FormatFactory *FormatFactory::self()
 {
   kdDebug(5700) << "FormatFactory::self()" << endl;
 
-  if ( !mSelf ) {
-    mSelf = new FormatFactory;
-  }
+  if ( !mSelf )
+    staticDeleter.setObject( mSelf, new FormatFactory );
 
   return mSelf;
 }

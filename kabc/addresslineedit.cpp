@@ -32,6 +32,9 @@
 #include <qdragobject.h>
 
 #include <kcompletionbox.h>
+#include <kconfig.h>
+#include <kstandarddirs.h>
+#include <kstaticdeleter.h>
 #include <kstdaccel.h>
 #include <kurldrag.h>
 
@@ -56,6 +59,13 @@ QTimer* AddressLineEdit::s_LDAPTimer = 0L;
 LdapSearch* AddressLineEdit::s_LDAPSearch = 0L;
 QString* AddressLineEdit::s_LDAPText = 0L;
 AddressLineEdit* AddressLineEdit::s_LDAPLineEdit = 0L;
+KConfig *AddressLineEdit::s_config = 0L;
+
+static KStaticDeleter<KCompletion> completionDeleter;
+static KStaticDeleter<QTimer> ldapTimerDeleter;
+static KStaticDeleter<LdapSearch> ldapSearchDeleter;
+static KStaticDeleter<QString> ldapTextDeleter;
+static KStaticDeleter<KConfig> configDeleter;
 
 AddressLineEdit::AddressLineEdit(QWidget* parent,
 		bool useCompletion,
@@ -81,16 +91,16 @@ AddressLineEdit::AddressLineEdit(QWidget* parent,
 void AddressLineEdit::init()
 {
   if ( !s_completion ) {
-      s_completion = new KCompletion();
+      completionDeleter.setObject( s_completion, new KCompletion() );
       s_completion->setOrder( KCompletion::Sorted );
       s_completion->setIgnoreCase( true );
   }
 
   if( m_useCompletion ) {
       if( !s_LDAPTimer ) {
-        s_LDAPTimer = new QTimer;
-        s_LDAPSearch = new LdapSearch;
-        s_LDAPText = new QString;
+        ldapTimerDeleter.setObject( s_LDAPTimer, new QTimer );
+        ldapSearchDeleter.setObject( s_LDAPSearch, new LdapSearch );
+        ldapTextDeleter.setObject( s_LDAPText, new QString );
       }
       connect( s_LDAPTimer, SIGNAL( timeout()), SLOT( slotStartLDAPLookup()));
       connect( s_LDAPSearch, SIGNAL( searchData( const QStringList& )),
@@ -124,6 +134,16 @@ AddressLineEdit::~AddressLineEdit()
 }
 
 //-----------------------------------------------------------------------------
+
+KConfig* AddressLineEdit::config()
+{
+  if ( !s_config )
+    configDeleter.setObject( s_config, new KConfig( locateLocal( "config",
+                             "kabldaprc" ) ) );
+
+  return s_config;
+}
+
 void AddressLineEdit::setFont( const QFont& font )
 {
     KLineEdit::setFont( font );

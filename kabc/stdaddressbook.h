@@ -56,6 +56,12 @@ namespace KABC {
 class StdAddressBook : public AddressBook
 {
   public:
+
+    /**
+      Destructor.
+     */
+    ~StdAddressBook();
+
     /**
       Return the standard addressbook object.
     */
@@ -107,7 +113,6 @@ class StdAddressBook : public AddressBook
   protected:
     StdAddressBook();
     StdAddressBook( bool onlyFastResources );
-    ~StdAddressBook();
 
     void init( bool onlyFastResources );
 

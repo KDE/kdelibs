@@ -56,41 +56,45 @@ struct FormatInfo
  */
 class FormatFactory
 {
-public:
+  public:
     
-  /**
-   * Returns the global format factory.
-   */
-  static FormatFactory *self();
+    /**
+      Destructor.
+     */
+    ~FormatFactory();
 
-  /**
-   * Returns a pointer to a format object or a null pointer
-   * if format type doesn't exist.
-   *
-   * @param type   The type of the format, returned by @ref formats()
-   */
-  FormatPlugin *format( const QString &type );
+    /**
+     * Returns the global format factory.
+     */
+    static FormatFactory *self();
 
-  /**
-   * Returns a list of all available format types.
-   */
-  QStringList formats();
+    /**
+     * Returns a pointer to a format object or a null pointer
+     * if format type doesn't exist.
+     *
+     * @param type   The type of the format, returned by @ref formats()
+     */
+    FormatPlugin *format( const QString &type );
 
-  /**
-   * Returns the info structure for a special type.
-   */
-  FormatInfo *info( const QString &type );
+    /**
+     * Returns a list of all available format types.
+     */
+    QStringList formats();
 
-protected:
-  FormatFactory();
-  ~FormatFactory();
+    /**
+     * Returns the info structure for a special type.
+     */
+    FormatInfo *info( const QString &type );
 
-private:
-  KLibrary *openLibrary( const QString& libName );
+  protected:
+    FormatFactory();
 
-  static FormatFactory *mSelf;
+  private:
+    KLibrary *openLibrary( const QString& libName );
 
-  QDict<FormatInfo> mFormatList;
+    static FormatFactory *mSelf;
+
+    QDict<FormatInfo> mFormatList;
 };
 
 }

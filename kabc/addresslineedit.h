@@ -30,6 +30,8 @@
 #include "klineedit.h"
 #include "kcompletion.h"
 
+class KConfig;
+
 namespace KABC {
 
 class LdapSearch;
@@ -58,6 +60,8 @@ public:
    * @ see KLineEdit::setFont()
    */
   virtual void setFont( const QFont& );
+
+  static KConfig *config();
 
 public slots:
   /**
@@ -109,6 +113,8 @@ private:
   static LdapSearch *s_LDAPSearch;
   static QString *s_LDAPText;
   static AddressLineEdit *s_LDAPLineEdit;
+  static KConfig *s_config;
+
 private:
   class AddressLineEditPrivate* d;
 };

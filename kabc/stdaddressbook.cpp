@@ -27,6 +27,7 @@
 #include <kresources/resourcemanager.h>
 #include <ksimpleconfig.h>
 #include <kstandarddirs.h>
+#include <kstaticdeleter.h>
 
 #include "resource.h"
 
@@ -50,6 +51,8 @@ static void crashHandler( int sigId )
 AddressBook *StdAddressBook::mSelf = 0;
 bool StdAddressBook::mAutomaticSave = true;
 
+static KStaticDeleter<AddressBook> staticDeleter;
+
 QString StdAddressBook::fileName()
 {
   return locateLocal( "data", "kabc/std.vcf" );
@@ -65,7 +68,7 @@ AddressBook *StdAddressBook::self()
   kdDebug(5700) << "StdAddressBook::self()" << endl;
 
   if ( !mSelf )
-    mSelf = new StdAddressBook;
+    staticDeleter.setObject( mSelf, new StdAddressBook );
 
   return mSelf;
 }
@@ -75,7 +78,7 @@ AddressBook *StdAddressBook::self( bool onlyFastResources )
   kdDebug(5700) << "StdAddressBook::self()" << endl;
 
   if ( !mSelf )
-    mSelf = new StdAddressBook( onlyFastResources );
+    staticDeleter.setObject( mSelf, new StdAddressBook( onlyFastResources ) );
 
   return mSelf;
 }
