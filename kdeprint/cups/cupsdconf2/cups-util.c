@@ -290,7 +290,7 @@ cupsPutConf(const char *name)		/* I - Name of the config file to send */
       }
     }
 
-    // send the file now
+    /* send the file now */
     lseek(fd, 0, SEEK_SET);
     status = HTTP_CONTINUE;
     while ((bytes = read(fd, buffer, sizeof(buffer))) > 0)
