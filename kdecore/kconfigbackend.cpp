@@ -41,6 +41,7 @@
 #include "kconfigbackend.h"
 #include "kconfigbase.h"
 #include <kglobal.h>
+#include <klocale.h>
 #include <kstandarddirs.h>
 #include <ksavefile.h>
 #include <kurl.h>
@@ -228,7 +229,16 @@ bool KConfigINIBackEnd::parseConfigFiles()
     }
   }
 
-  if (!mfileName.isEmpty()) {
+  bool bReadFile = !mfileName.isEmpty();
+  while(bReadFile) {
+    bReadFile = false;
+    QString bootLanguage;
+    if (useKDEGlobals && localeString.isEmpty() && !KGlobal::_locale) {
+       // Boot strap language
+       bootLanguage = KLocale::_initLanguage(pConfig);
+       setLocaleString(bootLanguage.utf8());
+    }
+
     bFileImmutable = false;
     QStringList list = KGlobal::dirs()->
       findAllResources(resType, mfileName);
@@ -246,6 +256,18 @@ bool KConfigINIBackEnd::parseConfigFiles()
          if (bFileImmutable)
             break;
       }
+    }
+    QString currentLanguage;
+    if (!bootLanguage.isEmpty())
+    {
+       currentLanguage = KLocale::_initLanguage(pConfig);
+       // If the file changed the language, we need to read the file again
+       // with the new language setting.
+       if (bootLanguage != currentLanguage)
+       {
+          bReadFile = true;
+          setLocaleString(currentLanguage.utf8());
+       }
     }
   }
   if (bFileImmutable)

@@ -30,6 +30,7 @@ class QDateTime;
 
 class KGlobal;
 class KConfig;
+class KConfigBase;
 class KLocalePrivate;
 class KCatalogue;
 
@@ -824,6 +825,11 @@ public:
    * @return Name of the default country
    */
   static QString defaultCountry();
+
+  /**
+   * @internal Called from KConfigBackend to initialize language.
+   */
+  static QString _initLanguage(KConfigBase *config);
 
 protected:
   /**
