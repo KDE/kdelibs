@@ -97,6 +97,8 @@ CLEAR COOKIES
 ## Check domain restrictions #3
 COOKIE ASK http://novell.com/ Set-Cookie: some_value=value1; expires=%NEXTYEAR%
 CHECK http://novell.com/ Cookie: some_value=value1
+# FIXME: Allegedly IE sends cookies to sub-domains as well!
+# See e.g. https://bugzilla.mozilla.org/show_bug.cgi?id=223027
 CHECK http://www.novell.com/
 CLEAR COOKIES
 ## Check domain restrictions #4
