@@ -1343,7 +1343,7 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   d->m_doc->attach( d->m_view );
   d->m_doc->setURL( m_url.url() );
 
-  setAutoloadImages( false );
+  setAutoloadImages( KHTMLFactory::defaultHTMLSettings()->autoLoadImages() );
 
   d->m_doc->setRestoreState(args.docState);
   d->m_doc->open();
