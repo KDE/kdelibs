@@ -10,6 +10,8 @@
 #include <qtextstream.h>
 
 #include <kinstance.h>
+#include <klocale.h>
+#include <kmessagebox.h>
 #include <kio_job.h>
 #include <kstddirs.h>
 
@@ -216,7 +218,8 @@ bool ReadOnlyPart::openURL( const KURL &url )
 {
   if ( url.isMalformed() )
     return false;
-  closeURL();
+  if ( !closeURL() )
+    return false;
   m_url = url;
   if ( m_url.isLocalFile() )
   {
@@ -244,7 +247,7 @@ bool ReadOnlyPart::openURL( const KURL &url )
   }
 }
 
-void ReadOnlyPart::closeURL()
+void ReadOnlyPart::abortLoad()
 {
   if ( d->m_jobId )
   {
@@ -254,12 +257,21 @@ void ReadOnlyPart::closeURL()
 
     d->m_jobId = 0;
   }
+}
+
+bool ReadOnlyPart::closeURL()
+{
+  abortLoad(); //just in case
 
   if ( m_bTemp )
   {
     unlink( m_file.ascii() );
     m_bTemp = false;
   }
+  // It always succeeds for a read-only part,
+  // but the return value exists for reimplementations
+  // (e.g. pressing cancel for a modified read-write part)
+  return true;
 }
 
 void ReadOnlyPart::slotJobFinished( int /*_id*/ )
@@ -286,6 +298,9 @@ ReadWritePart::ReadWritePart( QObject *parent, const char *name )
 ReadWritePart::~ReadWritePart()
 {
   // parent destructor will delete temp file
+  // we can't call our own closeURL() here, because
+  // "cancel" wouldn't cancel anything. We have to assume
+  // the app called closeURL() before destroying us.
 }
 
 void ReadWritePart::setReadWrite( bool readwrite )
@@ -294,14 +309,35 @@ void ReadWritePart::setReadWrite( bool readwrite )
   m_bReadWrite = readwrite;
 }
 
-void ReadWritePart::setModified( bool modified )
+void ReadWritePart::setModified()
 {
-  if ( !m_bReadWrite && modified )
+  if ( !m_bReadWrite )
   {
       kDebugError( 1000, "Can't set a read-only document to 'modified' !" );
       return; 
   }
-  m_bModified = modified;
+  m_bModified = true;
+}
+
+bool ReadWritePart::closeURL()
+{
+  abortLoad(); //just in case
+  if ( m_bModified )
+  {
+    int res = KMessageBox::warningYesNoCancel( 0L,
+            i18n( "The document has been modified\nDo you want to save it ?" ));
+ 
+    switch(res) {
+    case KMessageBox::Yes : 
+      return save(); // TODO : wait for upload to finish, and clean up temp file !
+    case KMessageBox::No :
+      return true;
+    default : // case KMessageBox::Cancel :
+      return false;
+    }
+  }
+  // Not modified => ok and delete temp file.
+  return ReadOnlyPart::closeURL();
 }
 
 bool ReadWritePart::saveAs( const KURL & kurl )

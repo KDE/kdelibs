@@ -177,6 +177,9 @@ public:
    * See also @ref Part for the setXXX methods to call.
    */
   ReadOnlyPart( QObject *parent = 0, const char *name = 0 );
+  /**
+   * Destructor
+   */
   virtual ~ReadOnlyPart();
 
   /**
@@ -191,8 +194,10 @@ public:
    * when switching to another url (note that @ref openURL calls it
    * automatically in this case).
    * If the current URL is not fully loaded yet, aborts loading.
+   * Deletes the temporary file used when the url is remote.
+   * @return always true, but the return value exists for reimplementations
    */
-  virtual void closeURL();
+  virtual bool closeURL();
 
 signals:
   /**
@@ -223,6 +228,11 @@ protected:
    * Otherwise simply define it to { return false; }
    */
   virtual bool openFile() = 0;
+
+  /**
+   * @internal
+   */
+  void abortLoad();
 
   /**
    * Remote (or local) url - the one displayed to the user.
@@ -270,6 +280,13 @@ public:
    * See also @ref Part for the setXXX methods to call.
    */
   ReadWritePart( QObject *parent = 0, const char *name = 0 );
+  /**
+   * Destructor
+   * Applications using a ReadWritePart should make sure, before
+   * destroying it, to call closeURL().
+   * In queryClose, for instance, they should allow closing only if
+   * the return value of closeURL was true. This allows to cancel.
+   */
   virtual ~ReadWritePart();
 
   /**
@@ -291,9 +308,15 @@ public:
   virtual bool isModified() { return m_bModified; }
 
   /**
-   * Call @ref setModified() whenever the contents get modified.
+   * Called when closing the current url (e.g. document), for instance
+   * when switching to another url (note that @ref openURL calls it
+   * automatically in this case).
+   * If the current URL is not fully loaded yet, aborts loading.
+   * Reimplemented from ReadOnlyPart, to handle modified parts
+   * (and suggest saving in this case, with yes/no/cancel).
+   * @return false on cancel
    */
-  virtual void setModified( bool modified = true );
+  virtual bool closeURL();
 
   /**
    * Save the file in the location from which it was opened.
@@ -310,6 +333,14 @@ public:
    * Calls @ref save(), no need to reimplement
    */
   virtual bool saveAs( const KURL &url );
+
+public slots:
+  /**
+   * Call @ref setModified() whenever the contents get modified.
+   * This is a slot for convenience, so that you can connect it
+   * to a signal, like textChanged().
+   */
+  virtual void setModified();
 
 protected:
   /**

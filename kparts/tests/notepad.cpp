@@ -21,19 +21,22 @@
 NotepadPart::NotepadPart( QObject *parent, QWidget * parentWidget )
  : KParts::ReadWritePart( parent, "NotepadPart" )
 {
-  debug("NotepadPart::NotepadPart");
   KInstance * instance = new KInstance( "notepadpart" );
   setInstance( instance );
+
   m_edit = new QMultiLineEdit( parentWidget, "NotepadPart's multiline edit" );
   m_edit->setFocus();
   setWidget( m_edit );
-  setXMLFile( "notepadpart.rc" );
+  connect( m_edit, SIGNAL( textChanged() ), this, SLOT( setModified() ) );
+
   (void)new KAction( i18n( "Search and replace" ), 0, this, SLOT( slotSearchReplace() ), actionCollection(), "searchreplace" );
-  // TODO connect m_edit->changed to setModified()
+  setXMLFile( "notepadpart.rc" );
+
 }
 
 NotepadPart::~NotepadPart()
 {
+debug("NotepadPart::~NotepadPart()");
 }
 
 bool NotepadPart::openFile()
@@ -71,11 +74,13 @@ bool NotepadPart::save()
     f.close();
   } else
     return false;
+  // save() should always call saveToURL() in the end.
   return saveToURL();
 }
 
 void NotepadPart::slotSearchReplace()
 {
+  // What's this ? (David)
   QValueList<KParts::XMLGUIServant *> plugins = KParts::Plugin::pluginServants( this );
   QValueList<KParts::XMLGUIServant *>::ConstIterator it = plugins.begin();
   QValueList<KParts::XMLGUIServant *>::ConstIterator end = plugins.end();

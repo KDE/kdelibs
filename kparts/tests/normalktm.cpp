@@ -59,7 +59,7 @@ Shell::~Shell()
 
 void Shell::slotFileOpen()
 {
-  if ( ! m_part1->openURL( locate("data", KGlobal::instance()->instanceName()+"/example_shell.rc" ) ) )
+  if ( ! m_part1->openURL( locate("data", KGlobal::instance()->instanceName()+"/kpartstest_shell.rc" ) ) )
     KMessageBox::error(this,"Couldn't open file !");
 }
 
@@ -99,7 +99,7 @@ void Shell::slotFileEdit()
   if ( !m_editorpart )
     embedEditor();
   // TODO use KFileDialog to allow testing remote files
-  if ( ! m_editorpart->openURL( QDir::current().absPath()+"/example_shell.rc" ) )
+  if ( ! m_editorpart->openURL( QDir::current().absPath()+"/kpartstest_shell.rc" ) )
     KMessageBox::error(this,"Couldn't open file !");
 }
 

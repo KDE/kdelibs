@@ -62,7 +62,7 @@ Shell::~Shell()
 
 void Shell::slotFileOpen()
 {
-  if ( ! m_part1->openURL( locate("data", KGlobal::instance()->instanceName()+"/example_shell.rc" ) ) )
+  if ( ! m_part1->openURL( locate("data", KGlobal::instance()->instanceName()+"/kpartstest_shell.rc" ) ) )
     KMessageBox::error(this,"Couldn't open file !");
 }
 
@@ -90,6 +90,13 @@ void Shell::embedEditor()
 
 void Shell::slotFileCloseEditor()
 {
+  // It is very important to close the url of a read-write part
+  // before destroying it. This allows to save the document (if modified)
+  // and also to cancel.
+  if ( ! m_editorpart->closeURL() )
+    return;
+
+  // Is this necessary ? (David)
   if ( m_manager->activePart() == m_editorpart )
     createGUI( 0L );
 
@@ -106,7 +113,7 @@ void Shell::slotFileEdit()
   if ( !m_editorpart )
     embedEditor();
   // TODO use KFileDialog to allow testing remote files
-  if ( ! m_editorpart->openURL( QDir::current().absPath()+"/example_shell.rc" ) )
+  if ( ! m_editorpart->openURL( QDir::current().absPath()+"/kpartstest_shell.rc" ) )
     KMessageBox::error(this,"Couldn't open file !");
 }
 

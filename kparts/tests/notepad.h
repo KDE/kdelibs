@@ -7,7 +7,7 @@
 class QMultiLineEdit;
 
 /**
- * Wo said writing a part should be complex ? :-)
+ * Who said writing a part should be complex ? :-)
  * Here is a very simple kedit-like part
  */
 class NotepadPart : public KParts::ReadWritePart
@@ -27,7 +27,6 @@ protected slots:
 
 protected:
   QMultiLineEdit * m_edit;
-  bool m_bModified;
   KInstance *m_instance;
 };
 
