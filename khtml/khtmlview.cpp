@@ -77,7 +77,7 @@ public:
         useSlowRepaints = false;
         currentNode = 0;
         originalNode = 0;
-        vmode = QScrollView::AlwaysOn;
+        vmode = QScrollView::Auto;
         hmode = QScrollView::Auto;
     }
 
@@ -165,7 +165,10 @@ void KHTMLView::clear()
     resizeContents(visibleWidth(), visibleHeight());
     viewport()->erase();
 
-    setVScrollBarMode(d->vmode);
+    if (d->vmode==Auto)
+        setVScrollBarMode(AlwaysOn);
+    else
+        setVScrollBarMode(d->vmode);
     setHScrollBarMode(d->hmode);
 
     if(d->useSlowRepaints) {
@@ -178,8 +181,6 @@ void KHTMLView::clear()
     }
 
     d->reset();
-    d->vmode = vScrollBarMode();
-    d->hmode = hScrollBarMode();
     emit cleared();
 }
 
@@ -256,13 +257,6 @@ void KHTMLView::layout(bool)
             body->renderer()->setLayouted(false);
             root->layout();
             return;
-        }
-        else // d->vmode and d->hmode are caching the user-defined
-            // scrollbarmode when displaying a frame. the values are
-            // reverted when the widget gets cleared.
-        {
-            d->vmode=vScrollBarMode();
-            d->hmode=hScrollBarMode();
         }
 
         _height = visibleHeight();
@@ -795,5 +789,29 @@ void KHTMLView::useSlowRepaints()
     kdDebug(0) << "slow repaints requested" << endl;
     d->useSlowRepaints = true;
     setStaticBackground(true);
+}
+
+
+void KHTMLView::setVScrollBarMode ( ScrollBarMode mode )
+{
+    d->vmode = mode;
+    QScrollView::setVScrollBarMode(mode);
+}
+
+void KHTMLView::setHScrollBarMode ( ScrollBarMode mode )
+{
+    d->hmode = mode;
+    QScrollView::setHScrollBarMode(mode);
+}
+
+void KHTMLView::restoreScrollBar ( )
+{
+    int ow = visibleWidth();
+    QScrollView::setVScrollBarMode(d->vmode);
+    if (visibleWidth() != ow)
+    {
+        layout();
+        updateContents(contentsX(),contentsY(),visibleWidth(),visibleHeight());
+    }
 }
 

@@ -195,6 +195,8 @@ void CSSStyleDeclarationImpl::setProperty ( const DOMString &propertyString)
 void CSSStyleDeclarationImpl::setLengthProperty(int id, const DOMString &value,
 						bool important, bool nonCSSHint)
 {
+    setProperty( id, value, important, nonCSSHint);
+#if 0 // ### FIXME after 2.0    
     if(!value.unicode() || value.length() == 0)
 	return;
     
@@ -205,7 +207,7 @@ void CSSStyleDeclarationImpl::setLengthProperty(int id, const DOMString &value,
     }
 
     CSSValueImpl *v = parseUnit(value.unicode(), value.unicode()+value.length(),
-				INTEGER | PERCENT | LENGTH);
+				INTEGER | PERCENT | LENGTH, );
     if(!v)
     {
 	kdDebug( 6080 ) << "invalid length" << endl;
@@ -225,6 +227,7 @@ void CSSStyleDeclarationImpl::setLengthProperty(int id, const DOMString &value,
     prop->nonCSSHint = nonCSSHint;
     
     m_lstValues->append(prop);
+#endif
 }
 
 unsigned long CSSStyleDeclarationImpl::length() const

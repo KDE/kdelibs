@@ -125,6 +125,16 @@ public:
      */
     int marginHeight() { return _marginHeight; }
 
+    /*
+     * Set vertical scrollbar mode. Reimplemented for internal reasons.
+     */
+    virtual void setVScrollBarMode ( ScrollBarMode mode );
+
+    /*
+     * Set horizontal scrollbar mode. Reimplemented for internal reasons.
+     */        
+    virtual void setHScrollBarMode ( ScrollBarMode mode );
+    
     /**
      * Print the HTML document.
      **/
@@ -194,6 +204,8 @@ private:
     void init();
 
     DOM::NodeImpl *nodeUnderMouse() const;
+    
+    void restoreScrollBar();
 
     // ------------------------------------- member variables ------------------------------------
  private:
