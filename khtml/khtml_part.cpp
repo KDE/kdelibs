@@ -2344,7 +2344,10 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
 
   QString currentUrl = splitUrlTarget(d->m_strSelectedURL);
   if ( _mouse->button() == RightButton )
+  {
     popupMenu( currentUrl );
+    d->m_strSelectedURL = QString::null;
+  }
   else if ( _mouse->button() == MidButton && !d->m_strSelectedURL.isEmpty() )
   {
     KURL u = completeURL( currentUrl );
