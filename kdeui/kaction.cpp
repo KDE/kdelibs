@@ -405,7 +405,7 @@ shortcut may be set:
 	- on plugAccel (deprecated)
 
 On Construction: [via initShortcut()]
-	insert into KAccel of m_parentCollection, 
+	insert into KAccel of m_parentCollection,
 		if kaccel() && isAutoConnectShortcuts() exists
 
 On Plug: [via plug() -> plugShortcut()]
@@ -419,10 +419,10 @@ On Read XML: [via setShortcut()]
 KAccel* KAction::kaccelCurrent()
 {
   KAccel* kaccel = 0;
-  
+
   if( s_kaccelXML )
     kaccel = s_kaccelXML;
-  else if( m_parentCollection && m_parentCollection->kaccel() ) 
+  else if( m_parentCollection && m_parentCollection->kaccel() )
     kaccel = m_parentCollection->kaccel();
 
   return kaccel;
@@ -518,7 +518,7 @@ bool KAction::updateKAccelShortcut( KAccel* kaccel )
 
 void KAction::insertKAccel( KAccel* kaccel )
 {
-  //kdDebug(129) << "KAction::_plugAccel( " << kaccel << " ): this = " << this << endl;
+  //kdDebug(129) << "KAction::insertKAccel( " << kaccel << " ): this = " << this << endl;
   if ( !kaccel->actions().actionPtr( name() ) ) {
     if( updateKAccelShortcut( kaccel ) ) {
       d->m_kaccelList.append( kaccel );
@@ -680,7 +680,7 @@ int KAction::plug( QWidget *w, int index )
 	kdWarning(129) << "KAction::plug called with 0 argument\n";
  	return -1;
   }
-  
+
 #ifndef NDEBUG
   KAccel* kaccel = kaccelCurrent();
   // If there is a shortcut, but no KAccel available
@@ -1146,9 +1146,9 @@ void KAction::slotDestroyed()
   }
 #endif
 
-  for( uint i = 0; i < d->m_kaccelList.count(); i++ ) 
+  for( uint i = 0; i < d->m_kaccelList.count(); i++ )
   {
-    if ( o == d->m_kaccelList[i] ) 
+    if ( o == d->m_kaccelList[i] )
     {
       disconnect( d->m_kaccelList[i], SIGNAL(destroyed()), this, SLOT(slotDestroyed()) );
       d->m_kaccelList.remove( d->m_kaccelList.at( i ) );
@@ -2898,18 +2898,18 @@ void KWidgetAction::setAutoSized( bool autoSized )
 {
   if( m_autoSized == autoSized )
     return;
-  
+
   m_autoSized = autoSized;
-  
+
   if( !m_widget || !isPlugged() )
     return;
-  
+
   KToolBar* toolBar = (KToolBar*)m_widget->parent();
   int i = findContainer( toolBar );
   if ( i == -1 )
     return;
   int id = itemId( i );
-  
+
   toolBar->setItemAutoSized( id, m_autoSized );
 }
 
@@ -2933,7 +2933,7 @@ int KWidgetAction::plug( QWidget* w, int index )
   toolBar->setItemAutoSized( id, m_autoSized );
 
   addContainer( toolBar, id );
-  
+
   connect( toolBar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
 
   return containerCount() - 1;
@@ -3016,7 +3016,7 @@ public:
     m_currentHighlightAction = 0;
     m_statusCleared = true;
   }
-  
+
   KInstance *m_instance;
   QString m_sXMLFile;
   bool m_bAutoConnectShortcuts;
@@ -3029,7 +3029,7 @@ public:
   KAccel *m_kaccel;
   QWidget *m_builderWidget;
   KAccel *m_builderKAccel;
-  
+
   QAsciiDict<KAction> m_actionDict;
   QPtrDict< QPtrList<KAction> > m_dctHighlightContainers;
   bool m_highlight;
@@ -3105,7 +3105,7 @@ void KActionCollection::setWidget( QWidget* w )
   //  kdError(129) << "KActionCollection::setWidget(): must be called before any actions are added to collection!" << endl;
   //  kdDebug(129) << kdBacktrace() << endl;
   //}
-  //else 
+  //else
   if ( !d->m_widget ) {
     d->m_widget = w;
     d->m_kaccel = new KAccel( w, this, "KActionCollection-KAccel" );
@@ -3137,7 +3137,7 @@ void KActionCollection::beginXMLPlug( QWidget *widget )
 		kdWarning() << "KActionCollection::beginXMLPlug() already called!" << endl;
 
 	d->m_builderWidget = widget;
-	
+
 	if( d->m_kaccel )
 		s_kaccelXML = d->m_kaccel;
 	else if( d->m_builderWidget ) {
@@ -3312,7 +3312,7 @@ const KAccel* KActionCollection::accel() const      { return kaccel(); }
 KAction* KActionCollection::action( const char* name, const char* classname ) const
 {
   KAction* pAction = 0;
-  
+
   if ( !classname && name )
     pAction = d->m_actionDict[ name ];
 
@@ -3327,12 +3327,12 @@ KAction* KActionCollection::action( const char* name, const char* classname ) co
       }
     }
   }
-  
+
   if( !pAction ) {
     for( uint i = 0; i < d->m_docList.count() && !pAction; i++ )
       pAction = d->m_docList[i]->action( name, classname );
   }
-  
+
   return pAction;
 }
 
