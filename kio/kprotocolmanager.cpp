@@ -242,7 +242,7 @@ KIO::CacheControl KProtocolManager::cacheControl()
     KConfig *cfg = http_config();
     QString tmp = cfg->readEntry("cache");
     if (tmp.isEmpty())
-       return DEFAULT_CACHE_CONTROL;   
+       return DEFAULT_CACHE_CONTROL;
     return KIO::parseCacheControl(tmp);
 }
 
@@ -292,13 +292,25 @@ QString KProtocolManager::proxyFor( const QString& protocol )
 
 QString KProtocolManager::proxyForURL( const KURL &url )
 {
-  if (!url.host().isEmpty() && pac())
-    return pac()->proxyForURL( url );
-  else
+  QString proxy;
+  ProxyType pt = proxyType();
+
+  switch (pt)
   {
-    QString proxy = proxyFor( url.protocol() );
-    return proxy.isEmpty() ? QString::fromLatin1("DIRECT") : proxy;
+      case PACProxy:
+      case WPADProxy:
+          if (!url.host().isEmpty() && pac())
+              proxy = pac()->proxyForURL( url );
+          break;
+      case EnvVarProxy:
+          proxy = QString::fromLocal8Bit(getenv(proxyFor(url.protocol()).local8Bit()));
+          break;
+      case ManualProxy:
+      default:
+        proxy = proxyFor( url.protocol() );
   }
+
+  return (proxy.isEmpty() ? QString::fromLatin1("DIRECT") : proxy);
 }
 
 void KProtocolManager::badProxy( const QString &proxy )
