@@ -41,7 +41,8 @@ mimetypeapplicationdata_DATA = x-dvi.desktop x-tex-gf.desktop x-gzip.desktop \
 	x-msaccess.desktop x-gettext.desktop x-ruby.desktop x-kcsrc.desktop \
 	x-php.desktop x-font-ttc.desktop x-font-otf.desktop \
 	vnd.mozilla.xul+xml.desktop vnd.sun.xml.draw.desktop \
-	x-kde-wallet.desktop x-cue.desktop x-iso.desktop x-ace.desktop
+	x-kde-wallet.desktop x-cue.desktop x-iso.desktop x-ace.desktop \
+	x-afm.desktop
 
 mimetypeapplicationdatadir = $(kde_mimedir)/application
 
