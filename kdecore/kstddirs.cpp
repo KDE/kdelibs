@@ -65,6 +65,7 @@ KStandardDirs::KStandardDirs( ) : addedCustoms(false)
     dircache.setAutoDelete(true);
     relatives.setAutoDelete(true);
     absolutes.setAutoDelete(true);
+    savelocations.setAutoDelete(true);
     addKDEDefaults();
 }
 
