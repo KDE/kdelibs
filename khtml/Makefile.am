@@ -85,6 +85,7 @@ INCLUDES = -I$(top_srcdir)/kjs -I$(top_srcdir)/kimgio \
 	-I$(top_srcdir)/interfaces \
 	-I$(top_srcdir)/interfaces/kregexpeditor \
         -I$(top_srcdir)/kwallet/client \
+	-I$(top_srcdir)/kutils \
 	-I$(top_srcdir) $(all_includes)
 
 servicedir = $(kde_servicesdir)
