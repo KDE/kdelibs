@@ -9,18 +9,18 @@ bool check(QString txt, QString a, QString b)
 {
   printf("%s : checking '%s' against expected value '%s'... ",
          debugString(txt), debugString(a), debugString(b));
-  if (a == b) 
+  if (a == b)
     printf("ok\n");
   else {
     printf("KO ! \n");
     exit(1);
   }
-  return true; 
+  return true;
 }
 
-int main(int argc, char *argv[]) 
+int main(int argc, char *argv[])
 {
-  KApplication app(argc,argv,"kurltest");
+  KApplication app(argc,argv,"kurltest",false,false);
   KURL::List lst;
 
 //  char * u1 = "file:/home/dfaure/my tar file.tgz#gzip:/decompress#tar:/";
@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
   check("KURL::protocol()", url1.protocol(), "tar");
   check("KURL::path()", url1.path(), "/");
   check("KURL::hasPath()", url1.hasPath()  ? "yes" : "no", "yes");
-  check("KURL::host()", url1.host(), "");
+  check("KURL::host()", url1.host(), QString::null);
   check("KURL::ref()", url1.ref(), "gzip:/decompress#file:/home/dfaure/my%20tar%20file.tgz");
   check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "yes");
   lst = KURL::split( u1 );
@@ -43,11 +43,18 @@ int main(int argc, char *argv[])
 */
 
 
-  KURL udir("/home/dfaure/file.txt");
+  KURL udir;
+  printf("\n* Empty URL\n");
+  check("KURL::url()", udir.url(), QString::null);
+  check("KURL::isEmpty()", udir.isEmpty() ? "ok" : "ko", "ok");
+  check("KURL::isMalformed()", udir.isMalformed() ? "ok" : "ko", "ok");
+
+  udir.setPath("/home/dfaure/file.txt");
   printf("\n* URL is %s\n",udir.url().ascii());
+  check("KURL::path()", udir.path(), "/home/dfaure/file.txt");
+  check("KURL::url()", udir.url(), "file:/home/dfaure/file.txt");
   check("KURL::directory(false,false)", udir.directory(false,false), "/home/dfaure/");
   check("KURL::directory(true,false)", udir.directory(true,false), "/home/dfaure");
-  check("KURL::path()", udir.path(), "/home/dfaure/file.txt");
 
   KURL u2("/home/dfaure/");
   printf("\n* URL is %s\n",u2.url().ascii());
@@ -84,7 +91,7 @@ int main(int argc, char *argv[])
   check("KURL::setFileName()", u2.url(), "file:/home/dfaure/myotherfile.txt");
   // more tricky, renaming a directory (kpropsdlg.cc, line ~ 238)
       QString tmpurl = "file:/home/dfaure/myolddir/";
-      if ( tmpurl.at(tmpurl.length() - 1) == '/') 
+      if ( tmpurl.at(tmpurl.length() - 1) == '/')
 	  // It's a directory, so strip the trailing slash first
 	  tmpurl.truncate( tmpurl.length() - 1);
       KURL newUrl = tmpurl;
@@ -109,53 +116,53 @@ int main(int argc, char *argv[])
   KURL waba1( "http://www.website.com/directory/" );
   {
      KURL waba2( waba1, "relative.html");
-     check("http: Relative URL, single file", waba2.url(), "http://www.website.com/directory/relative.html");  
+     check("http: Relative URL, single file", waba2.url(), "http://www.website.com/directory/relative.html");
   }
   {
      KURL waba2( waba1, "../relative.html");
-     check("http: Relative URL, single file, directory up", waba2.url(), "http://www.website.com/relative.html");  
+     check("http: Relative URL, single file, directory up", waba2.url(), "http://www.website.com/relative.html");
   }
   {
      KURL waba2( waba1, "down/relative.html");
-     check("http: Relative URL, single file, directory down", waba2.url(), "http://www.website.com/directory/down/relative.html");  
+     check("http: Relative URL, single file, directory down", waba2.url(), "http://www.website.com/directory/down/relative.html");
   }
   {
      KURL waba2( waba1, "/down/relative.html");
-     check("http: Relative URL, full path", waba2.url(), "http://www.website.com/down/relative.html");  
+     check("http: Relative URL, full path", waba2.url(), "http://www.website.com/down/relative.html");
   }
   {
      KURL waba2( waba1, "relative.html?query=test&name=harry");
-     check("http: Relative URL, with query", waba2.url(), "http://www.website.com/directory/relative.html?query=test&name=harry");  
+     check("http: Relative URL, with query", waba2.url(), "http://www.website.com/directory/relative.html?query=test&name=harry");
   }
   {
      KURL waba2( waba1, "relative.html#with_reference");
-     check("http: Relative URL, with reference", waba2.url(), "http://www.website.com/directory/relative.html#with_reference");  
+     check("http: Relative URL, with reference", waba2.url(), "http://www.website.com/directory/relative.html#with_reference");
   }
 
   waba1 = "http://www.website.com/directory/filename?bla#blub";
   {
      KURL waba2( waba1, "relative.html");
-     check("http: Relative URL, single file", waba2.url(), "http://www.website.com/directory/relative.html");  
+     check("http: Relative URL, single file", waba2.url(), "http://www.website.com/directory/relative.html");
   }
   {
      KURL waba2( waba1, "../relative.html");
-     check("http: Relative URL, single file, directory up", waba2.url(), "http://www.website.com/relative.html");  
+     check("http: Relative URL, single file, directory up", waba2.url(), "http://www.website.com/relative.html");
   }
   {
      KURL waba2( waba1, "down/relative.html");
-     check("http: Relative URL, single file, directory down", waba2.url(), "http://www.website.com/directory/down/relative.html");  
+     check("http: Relative URL, single file, directory down", waba2.url(), "http://www.website.com/directory/down/relative.html");
   }
   {
      KURL waba2( waba1, "/down/relative.html");
-     check("http: Relative URL, full path", waba2.url(), "http://www.website.com/down/relative.html");  
+     check("http: Relative URL, full path", waba2.url(), "http://www.website.com/down/relative.html");
   }
   {
      KURL waba2( waba1, "relative.html?query=test&name=harry");
-     check("http: Relative URL, with query", waba2.url(), "http://www.website.com/directory/relative.html?query=test&name=harry");  
+     check("http: Relative URL, with query", waba2.url(), "http://www.website.com/directory/relative.html?query=test&name=harry");
   }
   {
      KURL waba2( waba1, "relative.html#with_reference");
-     check("http: Relative URL, with reference", waba2.url(), "http://www.website.com/directory/relative.html#with_reference");  
+     check("http: Relative URL, with reference", waba2.url(), "http://www.website.com/directory/relative.html#with_reference");
   }
 
   // Empty queries should be preserved!

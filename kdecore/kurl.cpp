@@ -97,10 +97,10 @@ QDataStream & operator>> (QDataStream & s, KURL & a)
       >> a.m_strPath >> a.m_strQuery_encoded >> a.m_strRef_encoded
       >> malf >> a.m_iPort;
     a.m_bIsMalformed = (malf != 0);
-    
+
     if ( a.m_strQuery_encoded.isEmpty() )
       a.m_strQuery_encoded = QString::null;
-    
+
     return s;
 }
 
@@ -981,7 +981,7 @@ KURL KURL::upURL( bool _zapRef ) const
   u.cd("..", false /*don't zap ref yet*/);
 
   // Did we change the directory ? => job done
-  if ( ( u.path() != old ) && ( KProtocolManager::self().inputType( u.protocol() ) != KProtocolManager::T_STREAM ) ) // Bug (with tar:/) - will fix (David)
+  if ( ( u.path() != old ) && ( KProtocolManager::self().outputType( u.protocol() ) != KProtocolManager::T_STREAM ) )
   {
     if ( _zapRef )
       u.setHTMLRef( QString::null );
