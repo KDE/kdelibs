@@ -15,6 +15,7 @@ public:
 
 k_dcop:
    QString world();
+   void registerMe(const QCString &app);
 };
 
 #endif

@@ -90,6 +90,12 @@ public:
    */
   void remove(const QCString &app, const QCString &key);
 
+  /**
+   * remove all objects indexed with @p app. 
+   * The objects will be deleted when they are no more referenced.
+   */
+  void removeAll(const QCString &app);
+
 private:
   KDEDModulePrivate *d;
 };

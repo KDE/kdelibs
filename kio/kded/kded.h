@@ -30,6 +30,7 @@
 
 #include <ksycoca.h>
 #include <ksycocatype.h>
+#include <kdedmodule.h>
 
 class KDirWatch;
 
@@ -66,6 +67,16 @@ public slots:
     * Collect all directories to watch
     */
    void build();
+
+   /**
+    * An application unregistered itself with DCOP
+    */
+   void slotApplicationRemoved(const QCString &appId);
+
+   /**
+    * A KDEDModule is about to get destroyed.
+    */
+   void slotKDEDModuleRemoved();
 
 protected slots:
 
@@ -109,6 +120,7 @@ protected:
    QTimer* m_pTimer;
    
    QValueList<DCOPClientTransaction *> m_requests;
+   QList<KDEDModule> m_modules;
 };
 
 #endif

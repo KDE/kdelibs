@@ -34,6 +34,7 @@ public:
 KDEDModule::KDEDModule(const QCString &name) : QObject(), DCOPObject(name)
 {
    d = new KDEDModulePrivate;
+   d->objMap = 0;
 }
   
 KDEDModule::~KDEDModule()
@@ -45,6 +46,11 @@ void KDEDModule::insert(const QCString &app, const QCString &key, KShared *obj)
 {
    if (!d->objMap)
       d->objMap = new KDEDObjectMap;
+
+   // appKey acts as a placeholder
+   KEntryKey appKey(app, 0);
+   d->objMap->replace(appKey, 0);
+
    KEntryKey indexKey(app, key);
 
    // Prevent deletion in case the same object is inserted again.
@@ -75,6 +81,24 @@ void KDEDModule::remove(const QCString &app, const QCString &key)
 
    // Prevent deletion in case the same object is inserted again.
    d->objMap->remove(indexKey);
+}
+
+void KDEDModule::removeAll(const QCString &app)
+{
+   if (!d->objMap)
+      return;
+
+   KEntryKey indexKey(app, 0);
+   // Search for placeholder.
+
+   KDEDObjectMap::Iterator it = d->objMap->find(indexKey);
+   while (it != d->objMap->end())
+   {
+      KDEDObjectMap::Iterator it2 = it++;
+      if (it2.key().mGroup != app)
+         break; // All keys for this app have been removed.
+      d->objMap->remove(it2);  
+   }
 }
 
 #include "kdedmodule.moc"

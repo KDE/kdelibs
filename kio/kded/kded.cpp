@@ -84,10 +84,13 @@ Kded::Kded(int pollInterval, int NFSPollInterval)
   QString path = KGlobal::dirs()->saveLocation("tmp")+"ksycoca";
   QCString cPath = QFile::encodeName(path);
   m_pTimer = new QTimer(this);
-  connect (m_pTimer, SIGNAL(timeout()), this, SLOT(recreate()));
+  connect(m_pTimer, SIGNAL(timeout()), this, SLOT(recreate()));
 
   m_pDirWatch = 0;
   m_pDirWatchNfs = 0;
+//  connect(kapp->dcopClient(), SIGNAL(applicationRemoved(const QCString&)),
+//          this, SLOT(slotApplicationRemoved(const QCString&)));
+//  kapp->dcopClient()->setNotifications(true);
 }
 
 Kded::~Kded()
@@ -137,6 +140,8 @@ qWarning("Calling '%s'", factory.latin1());
         KDEDModule *module = func(obj);
         if (module)
         {
+          m_modules.append(module);
+          connect(module, SIGNAL(destroyed()), SLOT(slotKDEDModuleRemoved()));
 qWarning("Forwarding call to new object.");
           return module->process(fun, data, replyType, replyData);
         }
@@ -144,6 +149,21 @@ qWarning("Forwarding call to new object.");
     }
   }
   return false;
+}
+
+void Kded::slotKDEDModuleRemoved()
+{
+  KDEDModule *module = (KDEDModule *) sender();
+  m_modules.removeRef(module);
+}
+
+void Kded::slotApplicationRemoved(const QCString &appId)
+{
+  for(KDEDModule *module = m_modules.first();
+      module; module = m_modules.next())
+  {
+     module->removeAll(appId);
+  }
 }
 
 void Kded::build()
@@ -380,7 +400,11 @@ int main(int argc, char *argv[])
      signal(SIGTERM, sighandler);
      KDEDApplication k; // No styles, no GUI
 
-     kapp->dcopClient()->setDaemonMode( true );
+     DCOPClient *client = kapp->dcopClient();
+     QObject::connect(client, SIGNAL(applicationRemoved(const QCString&)),
+             kded, SLOT(slotApplicationRemoved(const QCString&)));
+     client->setNotifications(true);
+     client->setDaemonMode( true );
 
      // During startup kdesktop waits for KDED to finish.
      // Send a notifyDatabaseChanged signal even if the database hasn't
@@ -389,8 +413,8 @@ int main(int argc, char *argv[])
      // anyway, because it was too early, so let's send this signal
      // unconditionnally (David)
      QByteArray data;
-     kapp->dcopClient()->send( "*", "ksycoca", "notifyDatabaseChanged()", data );
-     kapp->dcopClient()->send( "ksplash", "", "upAndRunning(QString)",  QString("kded"));
+     client->send( "*", "ksycoca", "notifyDatabaseChanged()", data );
+     client->send( "ksplash", "", "upAndRunning(QString)",  QString("kded"));
 
      return k.exec(); // keep running
 }
