@@ -2062,7 +2062,10 @@ void DocumentImpl::defaultEventHandler(EventImpl *evt)
     Event ev(evt);
     for (; it.current(); ++it) {
         if (it.current()->id == evt->id()) {
-            evt->setCurrentTarget(this);
+            // currentTarget must be 0 in khtml for kjs_events to set "this" correctly.
+            // (this is how we identify events dispatched to the window, like window.onmousedown)
+            // ## currentTarget is unimplemented in IE, and is "window" in Mozilla (how? not a DOM node)
+            evt->setCurrentTarget(0);
             it.current()->listener->handleEvent(ev);
 	    return;
 	}

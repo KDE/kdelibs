@@ -59,7 +59,7 @@ void JSEventListener::handleEvent(DOM::Event &evt)
   KHTMLPart *part = static_cast<Window*>(win.imp())->part();
   KJSProxy *proxy = 0L;
   if (part)
-      proxy = KJSProxy::proxy( part );
+    proxy = KJSProxy::proxy( part );
 
   if (proxy && listener.implementsCall()) {
     ref();
@@ -70,20 +70,26 @@ void JSEventListener::handleEvent(DOM::Event &evt)
     List args;
     args.append(getDOMEvent(exec,evt));
 
-    // Add the event's target element to the scope
-    // (and the document, and the form - see KJS::HTMLElement::eventHandlerScope)
+    // Set "this" to the event's current target
     Object thisObj = Object::dynamicCast(getDOMNode(exec,evt.currentTarget()));
     ScopeChain oldScope = listener.scope();
     if ( thisObj.isValid() ) {
       ScopeChain scope = oldScope;
+      // Add the event's target element to the scope
+      // (and the document, and the form - see KJS::HTMLElement::eventHandlerScope)
       static_cast<DOMNode*>(thisObj.imp())->pushEventHandlerScope(exec, scope);
       listener.setScope( scope );
     }
     else {
-      if ( m_hackThisObj.isValid() )
+      if ( m_hackThisObj.isValid() ) { // special hack for Image
         thisObj = m_hackThisObj;
+      }
       else
-        kdDebug(6070) << "WARNING: Null 'this' object! evt=" << evt.type().string() << " currentTarget==" << evt.currentTarget().handle() << endl;
+      {
+        // Window events (window.onload/window.onresize etc.) must have 'this' set to the window.
+        // DocumentImpl::defaultEventHandler sets currentTarget to 0 to mean 'window'.
+        thisObj = win;
+      }
     }
 
     Window *window = static_cast<Window*>(win.imp());
@@ -102,12 +108,12 @@ void JSEventListener::handleEvent(DOM::Event &evt)
     window->setCurrentEvent( 0 );
     interpreter->setCurrentEvent( 0 );
     if ( exec->hadException() )
-        exec->clearException();
+      exec->clearException();
     else
     {
-        QVariant ret = ValueToVariant(exec, retval);
-        if (ret.type() == QVariant::Bool && ret.toBool() == false)
-            evt.preventDefault();
+      QVariant ret = ValueToVariant(exec, retval);
+      if (ret.type() == QVariant::Bool && ret.toBool() == false)
+        evt.preventDefault();
     }
     window->afterScriptExecution();
     deref();

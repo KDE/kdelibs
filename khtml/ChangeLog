@@ -1,3 +1,9 @@
+2003-10-20  David Faure  <faure@kde.org>
+
+	* xml/dom_docimpl.cpp (defaultEventHandler): set current target to 0 for window events.
+	* ecma/kjs_events.cpp (handleEvent): Window events like window.onload window.onresize etc.
+	must have 'this' set to the window (not to the document).
+
 2003-10-20  Dirk Mueller  <mueller@kde.org>
 
 	* rendering/render_form.cpp (layout): set IE-CSS-extension style palette
