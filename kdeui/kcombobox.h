@@ -94,6 +94,7 @@
  *
  * To use a customized completion objects or your
  * own completion object :
+ *
  * <pre>
  * KComboBox *combo = new KComboBox( this,"mywidget" );
  * KURLCompletion *comp = new KURLCompletion();
@@ -139,9 +140,9 @@ public:
     * Constructs a "read-write" or "read-only" combo box depending on the value of
     * the first argument( bool rw ) with a parent, a name.
     *
-    * @param string text to be shown in the edit widget
-    * @param parent the parent object of this widget
-    * @param name the name of this widget
+    * @param rw when @p true widget will be editable.
+    * @param parent the parent object of this widget.
+    * @param name the name of this widget.
     */
     KComboBox( bool rw, QWidget *parent=0, const char *name=0 );
 
@@ -182,19 +183,6 @@ public:
     * @return true when completion mode is automatic.
     */
     bool autoCompletion() const { return m_iCompletionMode == KGlobalSettings::CompletionAuto; }
-
-    /**
-    * Re-implemented from QComboBox.
-    *
-    * This function now always returns 0.  All the
-    * functions needed to manipulate the line edit
-    * with the execption of echomode are supplied
-    * here.  Methods that affect the funcationality
-    * of this widget are not made available.
-    *
-    * @return always a NULL pointer.
-    */
-    QLineEdit* lineEdit() const { return 0; }
 
     /**
     * Enables or disables the popup (context) menu.
@@ -252,6 +240,13 @@ public:
     * @return true if context menu is enabled.
     */
     bool isContextMenuEnabled() const { return m_bEnableMenu; }
+
+    /**
+    * Returns true if the combo-box is editable.
+    *
+    * @return true if combo is editable.
+    */
+    bool isEditable() const { return (m_pEdit!= 0); }
 
 signals:
 
@@ -422,7 +417,6 @@ protected:
     */
     virtual void keyPressEvent ( QKeyEvent* );
 
-
 private :
     // Holds the length of the entry.
     int m_iPrevlen;
@@ -440,8 +434,22 @@ private :
     QLineEdit* m_pEdit;
     // Context Menu items.
     QPopupMenu *m_pContextMenu;
+
     // Event Filter to trap events
     virtual bool eventFilter( QObject* o, QEvent* e );
+
+    /**
+    * Re-implemented from QComboBox.
+    *
+    * This function now always returns 0.  All the
+    * functions needed to manipulate the line edit
+    * with the execption of echomode are supplied
+    * here.  Methods that affect the funcationality
+    * of this widget are not made available.
+    *
+    * @return always a NULL pointer.
+    */
+    QLineEdit* lineEdit() const { return 0; }
 };
 
 #endif

@@ -61,8 +61,7 @@
  * either @ref completionObject() or @ref setCompletionObject
  * this widget will be automatically enabled to handle the
  * signals.  If you do not need this feature, simply use the
- * appropriate accessor methods or the boolean paramters on
- * the above function to shut them off.
+ * appropriate accessor methods to turn it off.
  *
  * The default key-bindings for completion and rotation
  * are determined from the global settings in @ref KStdAccel.
@@ -76,15 +75,17 @@
  * manual completion, simply invoking @ref setCompletionKey(),
  * without any argument, will result in the completion key being
  * set to 0. This will then force the key-event filter to use the
- * global value. Note that if the EchoMode for this widget is set
- * to something other than @ref QLineEdit::Normal, this method
- * refuses to accept the new completion mode.  This is done
- * purposefully to protect against protected entries such as
- * passwords being cached in KCompletion's list.  Hence, if the
- * EchoMode is not QLineEdit::Normal, the completion mode is
- * automatically disabled.
+ * global value.
+
+ * NOTE: if the EchoMode for this widget is set to something
+ * other than @ref QLineEdit::Normal, the completion mode will
+ * always be defaulted to KGlobal::CompletionNone.  This is
+ * done purposefully to protect against protected entries such
+ * as passwords being cached in KCompletion's list.  Hence, if
+ * the EchoMode is not QLineEdit::Normal, the completion mode
+ * is automatically disabled.
  *
- * @sect Example:
+ * @sect Examples:
  *
  * To enable the basic completion feature :
  *
@@ -97,15 +98,17 @@
  *
  * To use a customized completion objects or your
  * own completion object :
+ *
  * <pre>
  * KLineEdit *edit = new KLineEdit( this,"mywidget" );
  * KURLCompletion *comp = new KURLCompletion();
  * edit->setCompletionObject( comp );
  * // Connect to the return pressed signal - optional
  * connect(edit,SIGNAL(returnPressed(const QString&)),comp,SLOT(addItem(const QString&));
- * <pre>
+ * </pre>
  *
  * Other miscelanous function call examples :
+ *
  * <pre>
  * // Tell the widget not to handle completion and
  * // rotation internally.
@@ -219,6 +222,7 @@ signals:
 
     /**
     * Signal emitted when the rotate up key is pressed.
+    * See @ref KCompletionBase::setRotateUpKey.
     *
     * Note that this signal is NOT emitted if the completion
     * mode is set to CompletionNone or EchoMode is NOT normal.
@@ -227,6 +231,7 @@ signals:
 
     /**
     * Signal emitted when the rotate down key is pressed.
+    * See @ref KCompletionBase::setRotateDownKey.
     *
     * Note that this signal is NOT emitted if the completion
     * mode is set to CompletionNone or EchoMode is NOT normal.
