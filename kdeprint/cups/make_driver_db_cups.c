@@ -1,3 +1,4 @@
+#include <config.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -94,7 +95,7 @@ int parsePpdFile(const char *filename, FILE *output_file)
 			{
 				c2++;
 				c1 = strchr(c2,'"');
-				if (c1) strncpy(value,c2,c1-c2);
+				if (c1) strlcpy(value,c2,c1-c2);
 			}
 			else
 			{
@@ -106,7 +107,7 @@ int parsePpdFile(const char *filename, FILE *output_file)
 				c2 = line+strlen(line)-1;	/* point to \n */
 				while (*c2 && isspace(*c2))
 					c2--;
-				strncpy(value,c1,c2-c1+1);
+				strlcpy(value,c1,c2-c1+1);
 			}
 		}
 		count++;
