@@ -897,6 +897,7 @@ void KHTMLPart::slotViewDocumentSource()
 void KHTMLPart::slotViewFrameSource()
 {
   // ### frames
+  emit d->m_extension->openURLRequest( ((KParts::ReadOnlyPart *)partManager()->activePart())->url(), KParts::URLArgs( false, 0, 0, QString::fromLatin1( "text/plain" ) ) );
 }
 
 void KHTMLPart::slotSaveBackground()
