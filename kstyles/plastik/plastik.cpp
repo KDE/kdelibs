@@ -734,7 +734,7 @@ void PlastikStyle::renderButton(QPainter *p,
     // small fix for the kicker buttons...
     if(kickerMode) enabled = true;
 
-    QPen oldPen( p->pen() );
+    const QPen oldPen( p->pen() );
 
     uint contourFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|
             Round_UpperLeft|Round_UpperRight|Round_BottomLeft|Round_BottomRight;
@@ -2079,7 +2079,7 @@ void PlastikStyle::drawPrimitive(PrimitiveElement pe,
                 }
             }
 
-            p->save();
+            const QWMatrix oldMatrix( p->worldMatrix() );
 
             if (flags & Style_Down) {
                 p->translate(pixelMetric(PM_ButtonShiftHorizontal),
@@ -2111,7 +2111,7 @@ void PlastikStyle::drawPrimitive(PrimitiveElement pe,
             p->drawLineSegments(a, 0, 3);
             p->drawPoint(a[6]);
 
-            p->restore();
+            p->setWorldMatrix( oldMatrix );
 
             break;
         }
