@@ -149,13 +149,19 @@ void HTMLHRElementImpl::parseAttribute(AttrImpl *attr)
 	break;
     }
     case ATTR_WIDTH:
+    {
+
         // cheap hack to cause linebreaks
         // khtmltests/html/strange_hr.html
-        if(!attr->value().toInt())
+        QString vstr = attr->value().string();
+        bool ok;
+        int v = vstr.toInt(&ok);
+        if(ok && !v)
             addCSSLength(CSS_PROP_WIDTH, "1");
         else
             addCSSLength(CSS_PROP_WIDTH, attr->value());
 	break;
+    }
     case ATTR_NOSHADE:
         addCSSProperty(CSS_PROP_BORDER_STYLE, "solid");
         break;
