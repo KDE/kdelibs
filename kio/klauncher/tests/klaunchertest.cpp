@@ -44,7 +44,8 @@ int main(int argc, char *argv[])
 
    QValueList<QCString> args;
 
-   exec_blind("konsole", args);
+//   exec_blind("konsole", args);
+
 
    QString error;
    QCString dcopService;
@@ -54,6 +55,7 @@ int main(int argc, char *argv[])
    printf("Result = %d, error = \"%s\", dcopService = \"%s\"\n",
       result, error.ascii(), dcopService.data());
 
+   return 0;
    result = KService::startServiceByDesktopName(
 		"konqueror", QString::null, dcopService, error);
 

@@ -36,6 +36,10 @@ start_launcher(int socket)
    KLauncher::addCmdLineOptions();
 
    KLauncher launcher(socket);
+
+#warning Temporary hack to get KLocale initialised
+   (void)launcher.config();
+
    launcher.exec();
    return 0;
 }
