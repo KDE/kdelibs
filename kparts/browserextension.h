@@ -31,8 +31,8 @@
 #include <kparts/part.h>
 #include <kparts/event.h>
 
-class KonqFileItem;
-typedef QList<KonqFileItem> KonqFileItemList;
+class KFileItem;
+typedef QList<KFileItem> KFileItemList;
 
 class QString;
 
@@ -217,14 +217,14 @@ signals:
    * Emit this to make the browser show a standard popup menu
    * at the point @p global for the files @p items.
    */
-  void popupMenu( const QPoint &global, const KonqFileItemList &items );
+  void popupMenu( const QPoint &global, const KFileItemList &items );
 
   /**
    * Emit this to make the browser show a standard popup menu
    * at the point @p global for the files @p items.
    * The GUI described by @p client is being merged with the popupmenu of the host
    */
-  void popupMenu( KXMLGUIClient *client, const QPoint &global, const KonqFileItemList &items );
+  void popupMenu( KXMLGUIClient *client, const QPoint &global, const KFileItemList &items );
 
   /**
    * Emit this to make the browser show a standard popup menu
@@ -246,7 +246,7 @@ signals:
                   const QPoint &global, const KURL &url,
                   const QString &mimeType, mode_t mode = -1 );
 
-  void selectionInfo( const KonqFileItemList &items );
+  void selectionInfo( const KFileItemList &items );
   void selectionInfo( const QString &text );
   void selectionInfo( const KURL::List &urls );
 
