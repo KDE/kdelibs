@@ -16,6 +16,7 @@ public:
 	QString chooseMethod (const QString &available, bool isBASE64 = false);
 	void setURL (const KURL &url);
 	QString generateResponse (const QString &challenge = QString::null, bool isBASE64 = false);
+	QString generateResponse (const QString &challenge, bool isBASE64, bool &more);
 
 protected:
 	void loadModules ();

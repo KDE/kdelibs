@@ -60,6 +60,12 @@ void KSASLContext::setURL (const KURL &url)
 
 QString KSASLContext::generateResponse (const QString &challenge, bool isBASE64)
 {
+   bool more = false;
+   return generateResponse(challenge, isBASE64, more);
+}
+
+QString KSASLContext::generateResponse (const QString &challenge, bool isBASE64, bool &more)
+{
 	QString ret, chal;
 	unsigned int x;
 
@@ -76,7 +82,10 @@ QString KSASLContext::generateResponse (const QString &challenge, bool isBASE64)
 		chal = KBase64::decodeString(challenge);
 	else
 		chal = challenge;
-	ret=m_lstModules.at(x)->auth_response(chal, m_urlAuthPath);
+        KSASLAuthModule *module = m_lstModules.at(x);
+
+	ret = module->auth_response(chal, m_urlAuthPath);
+        more = module->property("more").toBool();
 
 	if (isBASE64)
 		return KBase64::encodeString(ret);
