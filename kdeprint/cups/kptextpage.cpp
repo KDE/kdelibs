@@ -149,7 +149,7 @@ void KPTextPage::setOptions(const QMap<QString,QString>& opts)
 	slotPrettyChanged(ID);
 
 	// get default margins
-	QString	m_currentps = opts["PageSize"];
+	m_currentps = opts["PageSize"];
 	resetPageSize();
 
 	bool	marginset(false);
