@@ -49,10 +49,13 @@ class KCardFactory {
   static KCardFactory *self();
   QStringList & getImplentationList() const ;
  
+ protected:
+
+  virtual ~KCardFactory();
  private:
 
   KCardFactory();
-  ~KCardFactory();
+  
   int loadModules();
   void *loadModule(KService::Ptr svc);
 

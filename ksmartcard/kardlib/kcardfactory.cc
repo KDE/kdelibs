@@ -95,20 +95,26 @@ KCardImplementation * KCardFactory::getCard (const QString & slot,
   KCardDB cardBase;
   KCardImplementation * impl=NULL;
   QString handler = cardBase.getModuleName(atr);
+  
+
   if (handler==QString::null) {
    return NULL;
   }
   QStringList types = QStringList::split(",",handler);
   
+  
   KService::Ptr serv = _modules[types[0]][types[1]][types[2]];
+
+  
   
   impl= (KCardImplementation *)loadModule(serv);
-  if (impl==NULL) return NULL;
 
-  KPCSC pcscInt(TRUE);
-  KCardReader * KReader = pcscInt.getReader(slot);
-  if (KReader==NULL) return NULL;
-  if (impl->init(KReader)) return NULL;
+  
+  
+  if (impl==NULL) return NULL;
+  if (impl->init(slot)) return NULL;
+  
+
   return impl;
   
 } 
@@ -131,6 +137,7 @@ KCardImplementation * KCardFactory::getCard (const QString & slot)
   QDataStream _retReaderATR(retval, IO_ReadOnly);
   _retReaderATR>>cardATR;
   
+
   if (cardATR.isNull()){
     
     return NULL;
@@ -149,37 +156,50 @@ QStringList & KCardFactory::getImplentationList()const{
 void *KCardFactory::loadModule(KService::Ptr svc) { 
 
 
+  KCardImplementation * module=0;
+  if (!svc || svc->library().isEmpty()) 
+    return NULL; 
+  
+  QCString obj = svc->desktopEntryName().latin1(); 
+  
+  KLibLoader *loader = KLibLoader::self(); 
+  
+  QVariant v = svc->property("X-KDE-Factory"); 
+  
+  QString factory = v.isValid() ? v.toString() : QString::null; 
+  if (factory.isEmpty()) 
+    factory = svc->library(); 
+  
+  factory = "create_" + factory; 
+  QString libname = "libkscard_" + svc->library(); 
+  
+  
+  KLibrary *lib = loader->library(QFile::encodeName(libname)); 
+  if (lib) { 
+    void *create = lib->symbol(QFile::encodeName(factory)); 
+    
+	  if (create){
+	    
+	    KCardImplementation* (*func)(void); 
+	    func = (KCardImplementation* (*)(void)) create;
+	    module = func();
+	    
+	    if (module){
+	      
+	      return module; 
+	    }
+	    
+	    loader->unloadLibrary(QFile::encodeName(factory)); 
+	    return NULL; 
+	    
+	    
+	  }
+	  else { 
+	    return NULL; 
+	  } 
+  }
+}
 
-	if (!svc || svc->library().isEmpty()) 
-		return NULL; 
- 
-	QCString obj = svc->desktopEntryName().latin1(); 
- 
-	KLibLoader *loader = KLibLoader::self(); 
- 
-	QVariant v = svc->property("X-KDE-Factory"); 
- 
-	QString factory = v.isValid() ? v.toString() : QString::null; 
-	if (factory.isEmpty()) 
-		factory = svc->library(); 
- 
-	factory = "create_" + factory; 
-	QString libname = "libkscard_" + svc->library(); 
-
-
-	KLibrary *lib = loader->library(QFile::encodeName(libname)); 
-	if (lib) { 
-		void *create = lib->symbol(QFile::encodeName(factory)); 
-		if (!create) { 
-			loader->unloadLibrary(QFile::encodeName(factory)); 
-			return NULL; 
-		} 
-		return create; 
-	} else { 
-		return NULL; 
-	} 
-} 
- 
  
 int KCardFactory::loadModules() { 
   

@@ -43,7 +43,7 @@ class KCardImplementation {
 
   
 
-  int init(KCardReader *);
+  int init(const QString &);
   virtual int selectFile(const QString);
   virtual int selectDirectory(const QString);
   virtual KCardCommand getCardSerialNumber();
@@ -61,11 +61,14 @@ class KCardImplementation {
 
   virtual int lastError() const;
   virtual void clearError();
-  
+
+  virtual QString lastErrorMessage () const {return QString::null;};
  private:
 
   class KCardImplementationPrivate;
   KCardImplementationPrivate *d;
+
+  KPCSC * pcscInt;
 
  protected:
 

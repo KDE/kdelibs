@@ -22,6 +22,7 @@
 #include "kcardimplementation.h"
 #include "kcardreader.h"
 
+#include <kdebug.h>
 KCardImplementation::KCardImplementation(const QString & type, 
 					 const QString & subType,
 					 const QString & subSubType)
@@ -32,16 +33,24 @@ KCardImplementation::KCardImplementation(const QString & type,
   _subType =subType ;
   _subSubType =subSubType ;
   _errno = 0;
-
+  _kcardreader = NULL;
+  pcscInt = new KPCSC(TRUE);
 }
 
 
 KCardImplementation::~KCardImplementation() {
+  if  (_kcardreader) delete _kcardreader;
+  delete pcscInt;
+  
 }
 
-int KCardImplementation::init ( KCardReader * selectedReader){
-  if (!selectedReader) return -1;
-  _kcardreader = selectedReader;
+int KCardImplementation::init ( const QString & selectedReader){
+
+  
+  _kcardreader = pcscInt->getReader(selectedReader);
+
+  if (_kcardreader==NULL) return 1;
+  
   return 0;
 }
 
