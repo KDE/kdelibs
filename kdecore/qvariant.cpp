@@ -597,7 +597,7 @@ void QVariant::initTypeNameMap()
 {
     if ( typ_to_name ) return;
 
-    typ_to_name = new QString[NTypes];
+    typ_to_name = new QString[(int)NTypes];
 
     typ_to_name[(int)Empty] = QString::null;
     typ_to_name[(int)String] = QString::fromLatin1("QString");
