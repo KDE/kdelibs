@@ -19,6 +19,7 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include <kaction.h>
 #include <kfilepreview.h>
 #include <kfilepreview.moc>
 
@@ -62,17 +63,28 @@ void KFilePreview::init( KFileView *view )
     preview->setMinimumWidth(l->sizeHint().width()+20);
     setResizeMode(preview, QSplitter::KeepSize);
     setViewName( i18n("Preview") );
+
+    for ( uint i = 0; i < view->actionCollection()->count(); i++ )
+        actionCollection()->insert( view->actionCollection()->action( i ));
 }
 
 void KFilePreview::setFileView( KFileView *view )
 {
     ASSERT( view );
 
+    if ( left ) { // remove any previous actions
+        for ( uint i = 0; i < left->actionCollection()->count(); i++ )
+            actionCollection()->take( left->actionCollection()->action( i ));
+    }
+
     delete left;
     view->widget()->reparent( this, QPoint(0,0) );
     view->KFileView::setViewMode(All);
     view->setOperator(this);
     left=view;
+
+    for ( uint i = 0; i < view->actionCollection()->count(); i++ )
+        actionCollection()->insert( view->actionCollection()->action( i ));
 }
 
 // this url parameter is useless... it's the url of the current directory.
