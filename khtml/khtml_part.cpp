@@ -829,7 +829,8 @@ void KHTMLPart::slotShowDocument( const QString &url, const QString &target )
   }
 
   // TODO: handle child target correctly! currently the script are always executed fur the parent
-  if ( url.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 ) {
+  // When target attribute is supported, make sure it doesn't produce a XSS leak!
+  if ( !child && url.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 ) {
       executeScript( KURL::decode_string( url.right( url.length() - 11) ) );
       return;
   }
@@ -2598,7 +2599,9 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   if ( !target.isEmpty() )
       hasTarget = true;
 
-  if ( url.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
+  // either ignore the target on javascript: as we do now and is 
+  // inconsistent to other browsers, or make sure we don't create a XSS problem here!
+  if ( !hasTarget && url.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
   {
     executeScript( KURL::decode_string( url.right( url.length() - 11 ) ) );
     return;
