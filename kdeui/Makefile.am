@@ -56,7 +56,7 @@ libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp\
 		kkeydialog.cpp kurllabel.cpp kruler.cpp kquickhelp.cpp kcursor.cpp \
 		kaccelmenu.cpp klineeditdlg.cpp kurlcompletion.cpp \
 		kthemebase.cpp kthemestyle.cpp kcharselect.cpp \
-		kcolordrag.cpp kactions.cpp kuiactions.cpp
+		kcolordrag.cpp kaction.cpp kuiactions.cpp
 
 
 libkdeui_la_METASOURCES = kbutton.moc kbuttonbox.moc kcolorbtn.moc \
