@@ -531,8 +531,9 @@ enum ECaptionSide
 
 
 enum EListStyleType {
-     DISC, CIRCLE, SQUARE, LDECIMAL, DECIMAL_LEADING_ZERO,
-     LOWER_ROMAN, UPPER_ROMAN, LOWER_GREEK,
+     LDISC, LCIRCLE, LSQUARE, LBOX, LDIAMOND,
+     LDECIMAL, DECIMAL_LEADING_ZERO, ARABIC_INDIC, PERSIAN, URDU,
+     LOWER_ROMAN, UPPER_ROMAN, LOWER_GREEK, UPPER_GREEK,
      LOWER_ALPHA, LOWER_LATIN, UPPER_ALPHA, UPPER_LATIN,
      HEBREW, ARMENIAN, GEORGIAN, CJK_IDEOGRAPHIC,
      HIRAGANA, KATAKANA, HIRAGANA_IROHA, KATAKANA_IROHA, LNONE
@@ -595,7 +596,7 @@ public:
     static void cleanup();
 
     // static pseudo styles. Dynamic ones are produced on the fly.
-    enum PseudoId { NOPSEUDO, FIRST_LINE, FIRST_LETTER, BEFORE, AFTER, SELECTION };
+    enum PseudoId { NOPSEUDO, FIRST_LINE, FIRST_LETTER, BEFORE, AFTER, SELECTION, ENABLED, DISABLED, CHECKED, INDETERMINATE };
 
 protected:
 
@@ -660,13 +661,13 @@ protected:
                 EPageBreak _page_break_before : 2;
                 EPageBreak _page_break_after : 2;
 
-                PseudoId _styleType : 3;
+                PseudoId _styleType : 4;
 		bool _affectedByHover : 1;
 		bool _affectedByActive : 1;
                 bool _hasClip : 1;
                 EUnicodeBidi _unicodeBidi : 2;
 
-                unsigned int unused : 23;
+                unsigned int unused : 22;
             } f;
             Q_UINT64 _niflags;
         };
@@ -1103,7 +1104,7 @@ public:
     static EEmptyCell initialEmptyCells() { return SHOW; }
     static EFloat initialFloating() { return FNONE; }
     static EListStylePosition initialListStylePosition() { return OUTSIDE; }
-    static EListStyleType initialListStyleType() { return DISC; }
+    static EListStyleType initialListStyleType() { return LDISC; }
     static EOverflow initialOverflow() { return OVISIBLE; }
     static EPageBreak initialPageBreak() { return PBAUTO; }
     static EPosition initialPosition() { return STATIC; }

@@ -199,11 +199,17 @@ inside
 disc
 circle
 square
+box
+-khtml-diamond
 decimal
 decimal-leading-zero
+-khtml-arabic-indic
+-khtml-persian
+-khtml-urdu
 lower-roman
 upper-roman
 lower-greek
+-khtml-upper-greek
 lower-alpha
 lower-latin
 upper-alpha

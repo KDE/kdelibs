@@ -1,11 +1,12 @@
-2004-12-01  Allan Sandfeld Jensen <kde@carewolf.com>
+2004-12-02  Allan Sandfeld Jensen <kde@carewolf.com>
+        Implement remaining CSS2 list-style-types and a few CSS3
 
-        * render/render_list.cpp: Implement hiragana and katakana list-styles,
-        and fix alpha/latin list-styles for values >26.
-
-2004-12-01  Allan Sandfeld Jensen <kde@carewolf.com>
-
-        * render/render_list.{cpp,h}: Implement list-style-type: decimal-leading-zero
+        * render/render_list.cpp: New algorithms for hiragana, katakana,
+            armenian, georgian and decimal-leading-zero.
+            Also fix greek and latin list-styles for larger values.
+        * css/cssvalues.cpp: Parse box, -khtml-diamond, -khtml-arabic-indic,
+            -khtml-persian, -khtml-urdu and -khtml-upper-greek
+        * render/render_style.h: Expand list-style enum
 
 2004-11-30  Germain Garand  <germain@ebooksfrance.org>
 

@@ -40,7 +40,7 @@ struct css_value {
 };
 
 static const css_value* findValue (register const char *str, register unsigned int len);
-/* maximum key range = 1470, duplicates = 0 */
+/* maximum key range = 2771, duplicates = 0 */
 
 #ifdef __GNUC__
 __inline
@@ -54,32 +54,32 @@ hash_val (register const char *str, register unsigned int len)
 {
   static const unsigned short asso_values[] =
     {
-      1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470,
-      1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470,
-      1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470,
-      1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470,
-      1470, 1470, 1470, 1470, 1470,  210,   70, 1470,    0,    0,
-        75,   55,   40,   35,   30,   15,   10,    5, 1470, 1470,
-      1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470,
-      1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470,
-      1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470,
-      1470, 1470, 1470, 1470, 1470, 1470, 1470,   70,   10,  205,
-         0,    0,   54,    4,   19,    5,   79,  135,   50,   40,
-        15,   15,   95,  254,  175,  110,    0,   35,    8,    9,
-         4,  164,   50, 1470, 1470, 1470, 1470, 1470, 1470, 1470,
-      1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470,
-      1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470,
-      1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470,
-      1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470,
-      1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470,
-      1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470,
-      1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470,
-      1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470,
-      1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470,
-      1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470,
-      1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470,
-      1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470, 1470,
-      1470, 1470, 1470, 1470, 1470, 1470, 1470
+      2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771,
+      2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771,
+      2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771,
+      2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771,
+      2771, 2771, 2771, 2771, 2771,  230,   25, 2771,    0,    0,
+        90,   85,   70,   35,   20,   15,   10,    5, 2771, 2771,
+      2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771,
+      2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771,
+      2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771,
+      2771, 2771, 2771, 2771, 2771, 2771, 2771,   30,   10,   40,
+         0,    0,  158,  365,  345,    5,  450,  345,  100,   15,
+        20,   15,  195,   53,  235,  120,    0,   45,    3,  495,
+         3,  310,  225, 2771, 2771, 2771, 2771, 2771, 2771, 2771,
+      2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771,
+      2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771,
+      2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771,
+      2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771,
+      2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771,
+      2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771,
+      2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771,
+      2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771,
+      2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771,
+      2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771,
+      2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771,
+      2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771, 2771,
+      2771, 2771, 2771, 2771, 2771, 2771, 2771
     };
   register int hval = 0;
 
@@ -163,11 +163,11 @@ findValue (register const char *str, register unsigned int len)
 {
   enum
     {
-      TOTAL_KEYWORDS = 250,
+      TOTAL_KEYWORDS = 256,
       MIN_WORD_LENGTH = 2,
       MAX_WORD_LENGTH = 22,
       MIN_HASH_VALUE = 0,
-      MAX_HASH_VALUE = 1469
+      MAX_HASH_VALUE = 2770
     };
 
   static const struct css_value wordlist_value[] =
@@ -180,635 +180,706 @@ findValue (register const char *str, register unsigned int len)
       {"800", CSS_VAL_800},
 #line 46 "cssvalues.gperf"
       {"700", CSS_VAL_700},
-#line 19 "cssvalues.gperf"
-      {"inset", CSS_VAL_INSET},
-#line 220 "cssvalues.gperf"
-      {"hide", CSS_VAL_HIDE},
-#line 145 "cssvalues.gperf"
-      {"inside", CSS_VAL_INSIDE},
 #line 45 "cssvalues.gperf"
       {"600", CSS_VAL_600},
-#line 257 "cssvalues.gperf"
-      {"down", CSS_VAL_DOWN},
+#line 19 "cssvalues.gperf"
+      {"inset", CSS_VAL_INSET},
+#line 145 "cssvalues.gperf"
+      {"inside", CSS_VAL_INSIDE},
 #line 44 "cssvalues.gperf"
       {"500", CSS_VAL_500},
-#line 18 "cssvalues.gperf"
-      {"hidden", CSS_VAL_HIDDEN},
-#line 43 "cssvalues.gperf"
-      {"400", CSS_VAL_400},
-#line 110 "cssvalues.gperf"
-      {"infotext", CSS_VAL_INFOTEXT},
-#line 82 "cssvalues.gperf"
-      {"indigo", CSS_VAL_INDIGO},
-#line 17 "cssvalues.gperf"
-      {"none", CSS_VAL_NONE},
-#line 260 "cssvalues.gperf"
-      {"infinite", CSS_VAL_INFINITE},
-#line 23 "cssvalues.gperf"
-      {"dotted", CSS_VAL_DOTTED},
-#line 118 "cssvalues.gperf"
-      {"window", CSS_VAL_WINDOW},
-#line 137 "cssvalues.gperf"
-      {"left", CSS_VAL_LEFT},
-#line 42 "cssvalues.gperf"
-      {"300", CSS_VAL_300},
-#line 120 "cssvalues.gperf"
-      {"windowtext", CSS_VAL_WINDOWTEXT},
-#line 91 "cssvalues.gperf"
-      {"teal", CSS_VAL_TEAL},
-#line 187 "cssvalues.gperf"
-      {"move", CSS_VAL_MOVE},
+#line 263 "cssvalues.gperf"
+      {"down", CSS_VAL_DOWN},
 #line 37 "cssvalues.gperf"
       {"bold", CSS_VAL_BOLD},
-#line 77 "cssvalues.gperf"
-      {"blue", CSS_VAL_BLUE},
-#line 83 "cssvalues.gperf"
-      {"lime", CSS_VAL_LIME},
-#line 226 "cssvalues.gperf"
-      {"loud", CSS_VAL_LOUD},
-#line 210 "cssvalues.gperf"
-      {"below", CSS_VAL_BELOW},
-#line 41 "cssvalues.gperf"
-      {"200", CSS_VAL_200},
-#line 204 "cssvalues.gperf"
-      {"visible", CSS_VAL_VISIBLE},
-#line 213 "cssvalues.gperf"
-      {"both", CSS_VAL_BOTH},
-#line 166 "cssvalues.gperf"
+#line 146 "cssvalues.gperf"
+      {"disc", CSS_VAL_DISC},
+#line 17 "cssvalues.gperf"
+      {"none", CSS_VAL_NONE},
+#line 223 "cssvalues.gperf"
+      {"embed", CSS_VAL_EMBED},
+#line 23 "cssvalues.gperf"
+      {"dotted", CSS_VAL_DOTTED},
+#line 172 "cssvalues.gperf"
       {"inline", CSS_VAL_INLINE},
-#line 26 "cssvalues.gperf"
-      {"double", CSS_VAL_DOUBLE},
-#line 250 "cssvalues.gperf"
-      {"enabled", CSS_VAL_ENABLED},
-#line 24 "cssvalues.gperf"
-      {"dashed", CSS_VAL_DASHED},
+#line 133 "cssvalues.gperf"
+      {"top", CSS_VAL_TOP},
+#line 43 "cssvalues.gperf"
+      {"400", CSS_VAL_400},
 #line 29 "cssvalues.gperf"
       {"menu", CSS_VAL_MENU},
 #line 111 "cssvalues.gperf"
       {"menutext", CSS_VAL_MENUTEXT},
-#line 128 "cssvalues.gperf"
-      {"middle", CSS_VAL_MIDDLE},
-#line 219 "cssvalues.gperf"
-      {"hand", CSS_VAL_HAND},
-#line 92 "cssvalues.gperf"
-      {"white", CSS_VAL_WHITE},
-#line 224 "cssvalues.gperf"
-      {"level", CSS_VAL_LEVEL},
-#line 243 "cssvalues.gperf"
-      {"thin", CSS_VAL_THIN},
-#line 101 "cssvalues.gperf"
-      {"buttontext", CSS_VAL_BUTTONTEXT},
-#line 134 "cssvalues.gperf"
-      {"bottom", CSS_VAL_BOTTOM},
 #line 52 "cssvalues.gperf"
       {"medium", CSS_VAL_MEDIUM},
-#line 259 "cssvalues.gperf"
-      {"fast", CSS_VAL_FAST},
-#line 256 "cssvalues.gperf"
-      {"up", CSS_VAL_UP},
-#line 251 "cssvalues.gperf"
-      {"disabled", CSS_VAL_DISABLED},
-#line 104 "cssvalues.gperf"
-      {"highlight", CSS_VAL_HIGHLIGHT},
-#line 105 "cssvalues.gperf"
-      {"highlighttext", CSS_VAL_HIGHLIGHTTEXT},
-#line 127 "cssvalues.gperf"
-      {"baseline", CSS_VAL_BASELINE},
-#line 86 "cssvalues.gperf"
-      {"olive", CSS_VAL_OLIVE},
-#line 198 "cssvalues.gperf"
-      {"help", CSS_VAL_HELP},
-#line 182 "cssvalues.gperf"
+#line 42 "cssvalues.gperf"
+      {"300", CSS_VAL_300},
+#line 41 "cssvalues.gperf"
+      {"200", CSS_VAL_200},
+#line 134 "cssvalues.gperf"
+      {"bottom", CSS_VAL_BOTTOM},
+#line 66 "cssvalues.gperf"
+      {"expanded", CSS_VAL_EXPANDED},
+#line 91 "cssvalues.gperf"
+      {"teal", CSS_VAL_TEAL},
+#line 77 "cssvalues.gperf"
+      {"blue", CSS_VAL_BLUE},
+#line 75 "cssvalues.gperf"
+      {"aqua", CSS_VAL_AQUA},
+#line 232 "cssvalues.gperf"
+      {"loud", CSS_VAL_LOUD},
+#line 128 "cssvalues.gperf"
+      {"middle", CSS_VAL_MIDDLE},
+#line 210 "cssvalues.gperf"
+      {"visible", CSS_VAL_VISIBLE},
+#line 83 "cssvalues.gperf"
+      {"lime", CSS_VAL_LIME},
+#line 26 "cssvalues.gperf"
+      {"double", CSS_VAL_DOUBLE},
+#line 188 "cssvalues.gperf"
       {"auto", CSS_VAL_AUTO},
-#line 197 "cssvalues.gperf"
-      {"wait", CSS_VAL_WAIT},
-#line 184 "cssvalues.gperf"
-      {"default", CSS_VAL_DEFAULT},
-#line 199 "cssvalues.gperf"
-      {"ltr", CSS_VAL_LTR},
-#line 196 "cssvalues.gperf"
-      {"text", CSS_VAL_TEXT},
-#line 149 "cssvalues.gperf"
+#line 101 "cssvalues.gperf"
+      {"buttontext", CSS_VAL_BUTTONTEXT},
+#line 256 "cssvalues.gperf"
+      {"enabled", CSS_VAL_ENABLED},
+#line 34 "cssvalues.gperf"
+      {"oblique", CSS_VAL_OBLIQUE},
+#line 257 "cssvalues.gperf"
+      {"disabled", CSS_VAL_DISABLED},
+#line 151 "cssvalues.gperf"
       {"decimal", CSS_VAL_DECIMAL},
 #line 25 "cssvalues.gperf"
       {"solid", CSS_VAL_SOLID},
-#line 89 "cssvalues.gperf"
-      {"red", CSS_VAL_RED},
-#line 209 "cssvalues.gperf"
-      {"avoid", CSS_VAL_AVOID},
-#line 207 "cssvalues.gperf"
+#line 33 "cssvalues.gperf"
+      {"italic", CSS_VAL_ITALIC},
+#line 27 "cssvalues.gperf"
+      {"caption", CSS_VAL_CAPTION},
+#line 127 "cssvalues.gperf"
+      {"baseline", CSS_VAL_BASELINE},
+#line 102 "cssvalues.gperf"
+      {"captiontext", CSS_VAL_CAPTIONTEXT},
+#line 178 "cssvalues.gperf"
+      {"table", CSS_VAL_TABLE},
+#line 247 "cssvalues.gperf"
+      {"static", CSS_VAL_STATIC},
+#line 265 "cssvalues.gperf"
+      {"fast", CSS_VAL_FAST},
+#line 213 "cssvalues.gperf"
       {"absolute", CSS_VAL_ABSOLUTE},
-#line 206 "cssvalues.gperf"
-      {"above", CSS_VAL_ABOVE},
-#line 21 "cssvalues.gperf"
-      {"ridge", CSS_VAL_RIDGE},
-#line 59 "cssvalues.gperf"
-      {"wider", CSS_VAL_WIDER},
+#line 129 "cssvalues.gperf"
+      {"sub", CSS_VAL_SUB},
+#line 63 "cssvalues.gperf"
+      {"condensed", CSS_VAL_CONDENSED},
+#line 84 "cssvalues.gperf"
+      {"maroon", CSS_VAL_MAROON},
+#line 205 "cssvalues.gperf"
+      {"ltr", CSS_VAL_LTR},
 #line 22 "cssvalues.gperf"
       {"outset", CSS_VAL_OUTSET},
 #line 144 "cssvalues.gperf"
       {"outside", CSS_VAL_OUTSIDE},
-#line 222 "cssvalues.gperf"
-      {"invert", CSS_VAL_INVERT},
-#line 14 "cssvalues.gperf"
-      {"inherit", CSS_VAL_INHERIT},
-#line 229 "cssvalues.gperf"
-      {"mix", CSS_VAL_MIX},
-#line 146 "cssvalues.gperf"
-      {"disc", CSS_VAL_DISC},
-#line 254 "cssvalues.gperf"
-      {"ahead", CSS_VAL_AHEAD},
-#line 200 "cssvalues.gperf"
-      {"rtl", CSS_VAL_RTL},
-#line 138 "cssvalues.gperf"
-      {"right", CSS_VAL_RIGHT},
-#line 87 "cssvalues.gperf"
-      {"orange", CSS_VAL_ORANGE},
-#line 218 "cssvalues.gperf"
-      {"fixed", CSS_VAL_FIXED},
-#line 15 "cssvalues.gperf"
-      {"initial", CSS_VAL_INITIAL},
-#line 240 "cssvalues.gperf"
-      {"show", CSS_VAL_SHOW},
-#line 53 "cssvalues.gperf"
-      {"large", CSS_VAL_LARGE},
-#line 99 "cssvalues.gperf"
-      {"buttonhighlight", CSS_VAL_BUTTONHIGHLIGHT},
-#line 221 "cssvalues.gperf"
-      {"higher", CSS_VAL_HIGHER},
-#line 261 "cssvalues.gperf"
-      {"slide", CSS_VAL_SLIDE},
-#line 38 "cssvalues.gperf"
-      {"bolder", CSS_VAL_BOLDER},
-#line 227 "cssvalues.gperf"
-      {"lower", CSS_VAL_LOWER},
-#line 217 "cssvalues.gperf"
-      {"embed", CSS_VAL_EMBED},
-#line 81 "cssvalues.gperf"
-      {"green", CSS_VAL_GREEN},
-#line 115 "cssvalues.gperf"
-      {"threedhighlight", CSS_VAL_THREEDHIGHLIGHT},
-#line 85 "cssvalues.gperf"
-      {"navy", CSS_VAL_NAVY},
-#line 51 "cssvalues.gperf"
-      {"small", CSS_VAL_SMALL},
-#line 258 "cssvalues.gperf"
-      {"slow", CSS_VAL_SLOW},
-#line 84 "cssvalues.gperf"
-      {"maroon", CSS_VAL_MAROON},
-#line 39 "cssvalues.gperf"
-      {"lighter", CSS_VAL_LIGHTER},
-#line 133 "cssvalues.gperf"
-      {"top", CSS_VAL_TOP},
-#line 33 "cssvalues.gperf"
-      {"italic", CSS_VAL_ITALIC},
-#line 93 "cssvalues.gperf"
-      {"yellow", CSS_VAL_YELLOW},
-#line 69 "cssvalues.gperf"
-      {"serif", CSS_VAL_SERIF},
+#line 215 "cssvalues.gperf"
+      {"avoid", CSS_VAL_AVOID},
+#line 89 "cssvalues.gperf"
+      {"red", CSS_VAL_RED},
 #line 212 "cssvalues.gperf"
-      {"blink", CSS_VAL_BLINK},
-#line 79 "cssvalues.gperf"
-      {"fuchsia", CSS_VAL_FUCHSIA},
-#line 244 "cssvalues.gperf"
-      {"underline", CSS_VAL_UNDERLINE},
-#line 20 "cssvalues.gperf"
-      {"groove", CSS_VAL_GROOVE},
-#line 237 "cssvalues.gperf"
-      {"relative", CSS_VAL_RELATIVE},
-#line 36 "cssvalues.gperf"
-      {"normal", CSS_VAL_NORMAL},
-#line 168 "cssvalues.gperf"
-      {"list-item", CSS_VAL_LIST_ITEM},
-#line 263 "cssvalues.gperf"
-      {"unfurl", CSS_VAL_UNFURL},
+      {"above", CSS_VAL_ABOVE},
+#line 262 "cssvalues.gperf"
+      {"up", CSS_VAL_UP},
+#line 206 "cssvalues.gperf"
+      {"rtl", CSS_VAL_RTL},
 #line 28 "cssvalues.gperf"
       {"icon", CSS_VAL_ICON},
 #line 234 "cssvalues.gperf"
-      {"overline", CSS_VAL_OVERLINE},
-#line 236 "cssvalues.gperf"
-      {"pre", CSS_VAL_PRE},
-#line 172 "cssvalues.gperf"
-      {"table", CSS_VAL_TABLE},
-#line 241 "cssvalues.gperf"
-      {"static", CSS_VAL_STATIC},
-#line 100 "cssvalues.gperf"
-      {"buttonshadow", CSS_VAL_BUTTONSHADOW},
-#line 140 "cssvalues.gperf"
-      {"justify", CSS_VAL_JUSTIFY},
+      {"marquee", CSS_VAL_MARQUEE},
+#line 14 "cssvalues.gperf"
+      {"inherit", CSS_VAL_INHERIT},
+#line 38 "cssvalues.gperf"
+      {"bolder", CSS_VAL_BOLDER},
+#line 243 "cssvalues.gperf"
+      {"relative", CSS_VAL_RELATIVE},
+#line 139 "cssvalues.gperf"
+      {"center", CSS_VAL_CENTER},
+#line 36 "cssvalues.gperf"
+      {"normal", CSS_VAL_NORMAL},
+#line 147 "cssvalues.gperf"
+      {"circle", CSS_VAL_CIRCLE},
+#line 202 "cssvalues.gperf"
+      {"text", CSS_VAL_TEXT},
+#line 123 "cssvalues.gperf"
+      {"repeat", CSS_VAL_REPEAT},
+#line 235 "cssvalues.gperf"
+      {"mix", CSS_VAL_MIX},
+#line 71 "cssvalues.gperf"
+      {"cursive", CSS_VAL_CURSIVE},
+#line 149 "cssvalues.gperf"
+      {"box", CSS_VAL_BOX},
+#line 176 "cssvalues.gperf"
+      {"compact", CSS_VAL_COMPACT},
+#line 51 "cssvalues.gperf"
+      {"small", CSS_VAL_SMALL},
+#line 255 "cssvalues.gperf"
+      {"content-box", CSS_VAL_CONTENT_BOX},
+#line 226 "cssvalues.gperf"
+      {"hide", CSS_VAL_HIDE},
+#line 233 "cssvalues.gperf"
+      {"lower", CSS_VAL_LOWER},
+#line 174 "cssvalues.gperf"
+      {"list-item", CSS_VAL_LIST_ITEM},
+#line 165 "cssvalues.gperf"
+      {"armenian", CSS_VAL_ARMENIAN},
+#line 98 "cssvalues.gperf"
+      {"buttonface", CSS_VAL_BUTTONFACE},
+#line 18 "cssvalues.gperf"
+      {"hidden", CSS_VAL_HIDDEN},
+#line 24 "cssvalues.gperf"
+      {"dashed", CSS_VAL_DASHED},
 #line 90 "cssvalues.gperf"
       {"silver", CSS_VAL_SILVER},
-#line 66 "cssvalues.gperf"
-      {"expanded", CSS_VAL_EXPANDED},
-#line 129 "cssvalues.gperf"
-      {"sub", CSS_VAL_SUB},
-#line 117 "cssvalues.gperf"
-      {"threedshadow", CSS_VAL_THREEDSHADOW},
+#line 107 "cssvalues.gperf"
+      {"inactivecaption", CSS_VAL_INACTIVECAPTION},
+#line 225 "cssvalues.gperf"
+      {"hand", CSS_VAL_HAND},
+#line 108 "cssvalues.gperf"
+      {"inactivecaptiontext", CSS_VAL_INACTIVECAPTIONTEXT},
+#line 49 "cssvalues.gperf"
+      {"xx-small", CSS_VAL_XX_SMALL},
+#line 69 "cssvalues.gperf"
+      {"serif", CSS_VAL_SERIF},
+#line 110 "cssvalues.gperf"
+      {"infotext", CSS_VAL_INFOTEXT},
+#line 82 "cssvalues.gperf"
+      {"indigo", CSS_VAL_INDIGO},
+#line 219 "cssvalues.gperf"
+      {"both", CSS_VAL_BOTH},
+#line 266 "cssvalues.gperf"
+      {"infinite", CSS_VAL_INFINITE},
+#line 250 "cssvalues.gperf"
+      {"underline", CSS_VAL_UNDERLINE},
+#line 95 "cssvalues.gperf"
+      {"activecaption", CSS_VAL_ACTIVECAPTION},
+#line 179 "cssvalues.gperf"
+      {"inline-table", CSS_VAL_INLINE_TABLE},
+#line 148 "cssvalues.gperf"
+      {"square", CSS_VAL_SQUARE},
+#line 73 "cssvalues.gperf"
+      {"monospace", CSS_VAL_MONOSPACE},
+#line 130 "cssvalues.gperf"
+      {"super", CSS_VAL_SUPER},
+#line 268 "cssvalues.gperf"
+      {"alternate", CSS_VAL_ALTERNATE},
+#line 137 "cssvalues.gperf"
+      {"left", CSS_VAL_LEFT},
+#line 245 "cssvalues.gperf"
+      {"separate", CSS_VAL_SEPARATE},
+#line 224 "cssvalues.gperf"
+      {"fixed", CSS_VAL_FIXED},
+#line 50 "cssvalues.gperf"
+      {"x-small", CSS_VAL_X_SMALL},
+#line 207 "cssvalues.gperf"
+      {"capitalize", CSS_VAL_CAPITALIZE},
+#line 244 "cssvalues.gperf"
+      {"scroll", CSS_VAL_SCROLL},
+#line 238 "cssvalues.gperf"
+      {"nowrap", CSS_VAL_NOWRAP},
+#line 76 "cssvalues.gperf"
+      {"black", CSS_VAL_BLACK},
+#line 211 "cssvalues.gperf"
+      {"collapse", CSS_VAL_COLLAPSE},
+#line 126 "cssvalues.gperf"
+      {"no-repeat", CSS_VAL_NO_REPEAT},
+#line 193 "cssvalues.gperf"
+      {"move", CSS_VAL_MOVE},
+#line 229 "cssvalues.gperf"
+      {"landscape", CSS_VAL_LANDSCAPE},
+#line 216 "cssvalues.gperf"
+      {"below", CSS_VAL_BELOW},
+#line 240 "cssvalues.gperf"
+      {"overline", CSS_VAL_OVERLINE},
+#line 190 "cssvalues.gperf"
+      {"default", CSS_VAL_DEFAULT},
+#line 209 "cssvalues.gperf"
+      {"lowercase", CSS_VAL_LOWERCASE},
+#line 175 "cssvalues.gperf"
+      {"run-in", CSS_VAL_RUN_IN},
+#line 124 "cssvalues.gperf"
+      {"repeat-x", CSS_VAL_REPEAT_X},
+#line 204 "cssvalues.gperf"
+      {"help", CSS_VAL_HELP},
+#line 260 "cssvalues.gperf"
+      {"ahead", CSS_VAL_AHEAD},
+#line 86 "cssvalues.gperf"
+      {"olive", CSS_VAL_OLIVE},
+#line 106 "cssvalues.gperf"
+      {"inactiveborder", CSS_VAL_INACTIVEBORDER},
+#line 57 "cssvalues.gperf"
+      {"smaller", CSS_VAL_SMALLER},
+#line 242 "cssvalues.gperf"
+      {"pre", CSS_VAL_PRE},
+#line 64 "cssvalues.gperf"
+      {"semi-condensed", CSS_VAL_SEMI_CONDENSED},
+#line 214 "cssvalues.gperf"
+      {"always", CSS_VAL_ALWAYS},
+#line 132 "cssvalues.gperf"
+      {"text-bottom", CSS_VAL_TEXT_BOTTOM},
+#line 241 "cssvalues.gperf"
+      {"portrait", CSS_VAL_PORTRAIT},
+#line 21 "cssvalues.gperf"
+      {"ridge", CSS_VAL_RIDGE},
+#line 15 "cssvalues.gperf"
+      {"initial", CSS_VAL_INITIAL},
+#line 53 "cssvalues.gperf"
+      {"large", CSS_VAL_LARGE},
+#line 94 "cssvalues.gperf"
+      {"activeborder", CSS_VAL_ACTIVEBORDER},
+#line 65 "cssvalues.gperf"
+      {"semi-expanded", CSS_VAL_SEMI_EXPANDED},
+#line 195 "cssvalues.gperf"
+      {"ne-resize", CSS_VAL_NE_RESIZE},
+#line 237 "cssvalues.gperf"
+      {"no-open-quote", CSS_VAL_NO_OPEN_QUOTE},
+#line 185 "cssvalues.gperf"
+      {"table-column", CSS_VAL_TABLE_COLUMN},
+#line 254 "cssvalues.gperf"
+      {"border-box", CSS_VAL_BORDER_BOX},
+#line 186 "cssvalues.gperf"
+      {"table-cell", CSS_VAL_TABLE_CELL},
+#line 87 "cssvalues.gperf"
+      {"orange", CSS_VAL_ORANGE},
+#line 88 "cssvalues.gperf"
+      {"purple", CSS_VAL_PURPLE},
+#line 72 "cssvalues.gperf"
+      {"fantasy", CSS_VAL_FANTASY},
+#line 221 "cssvalues.gperf"
+      {"crop", CSS_VAL_CROP},
+#line 267 "cssvalues.gperf"
+      {"slide", CSS_VAL_SLIDE},
+#line 236 "cssvalues.gperf"
+      {"no-close-quote", CSS_VAL_NO_CLOSE_QUOTE},
+#line 173 "cssvalues.gperf"
+      {"block", CSS_VAL_BLOCK},
+#line 114 "cssvalues.gperf"
+      {"threedface", CSS_VAL_THREEDFACE},
+#line 230 "cssvalues.gperf"
+      {"level", CSS_VAL_LEVEL},
+#line 194 "cssvalues.gperf"
+      {"e-resize", CSS_VAL_E_RESIZE},
+#line 79 "cssvalues.gperf"
+      {"fuchsia", CSS_VAL_FUCHSIA},
+#line 187 "cssvalues.gperf"
+      {"table-caption", CSS_VAL_TABLE_CAPTION},
+#line 222 "cssvalues.gperf"
+      {"cross", CSS_VAL_CROSS},
+#line 208 "cssvalues.gperf"
+      {"uppercase", CSS_VAL_UPPERCASE},
+#line 197 "cssvalues.gperf"
+      {"n-resize", CSS_VAL_N_RESIZE},
+#line 198 "cssvalues.gperf"
+      {"se-resize", CSS_VAL_SE_RESIZE},
+#line 239 "cssvalues.gperf"
+      {"open-quote", CSS_VAL_OPEN_QUOTE},
+#line 59 "cssvalues.gperf"
+      {"wider", CSS_VAL_WIDER},
+#line 161 "cssvalues.gperf"
+      {"lower-latin", CSS_VAL_LOWER_LATIN},
+#line 217 "cssvalues.gperf"
+      {"bidi-override", CSS_VAL_BIDI_OVERRIDE},
+#line 131 "cssvalues.gperf"
+      {"text-top", CSS_VAL_TEXT_TOP},
+#line 228 "cssvalues.gperf"
+      {"invert", CSS_VAL_INVERT},
+#line 62 "cssvalues.gperf"
+      {"extra-condensed", CSS_VAL_EXTRA_CONDENSED},
+#line 55 "cssvalues.gperf"
+      {"xx-large", CSS_VAL_XX_LARGE},
+#line 112 "cssvalues.gperf"
+      {"scrollbar", CSS_VAL_SCROLLBAR},
+#line 81 "cssvalues.gperf"
+      {"green", CSS_VAL_GREEN},
+#line 30 "cssvalues.gperf"
+      {"message-box", CSS_VAL_MESSAGE_BOX},
+#line 67 "cssvalues.gperf"
+      {"extra-expanded", CSS_VAL_EXTRA_EXPANDED},
+#line 220 "cssvalues.gperf"
+      {"close-quote", CSS_VAL_CLOSE_QUOTE},
+#line 32 "cssvalues.gperf"
+      {"status-bar", CSS_VAL_STATUS_BAR},
+#line 177 "cssvalues.gperf"
+      {"inline-block", CSS_VAL_INLINE_BLOCK},
+#line 269 "cssvalues.gperf"
+      {"unfurl", CSS_VAL_UNFURL},
+#line 20 "cssvalues.gperf"
+      {"groove", CSS_VAL_GROOVE},
+#line 249 "cssvalues.gperf"
+      {"thin", CSS_VAL_THIN},
+#line 200 "cssvalues.gperf"
+      {"s-resize", CSS_VAL_S_RESIZE},
+#line 58 "cssvalues.gperf"
+      {"larger", CSS_VAL_LARGER},
+#line 85 "cssvalues.gperf"
+      {"navy", CSS_VAL_NAVY},
+#line 125 "cssvalues.gperf"
+      {"repeat-y", CSS_VAL_REPEAT_Y},
+#line 74 "cssvalues.gperf"
+      {"transparent", CSS_VAL_TRANSPARENT},
+#line 169 "cssvalues.gperf"
+      {"katakana", CSS_VAL_KATAKANA},
+#line 54 "cssvalues.gperf"
+      {"x-large", CSS_VAL_X_LARGE},
+#line 31 "cssvalues.gperf"
+      {"small-caption", CSS_VAL_SMALL_CAPTION},
+#line 78 "cssvalues.gperf"
+      {"crimson", CSS_VAL_CRIMSON},
+#line 156 "cssvalues.gperf"
+      {"lower-roman", CSS_VAL_LOWER_ROMAN},
+#line 61 "cssvalues.gperf"
+      {"ultra-condensed", CSS_VAL_ULTRA_CONDENSED},
+#line 264 "cssvalues.gperf"
+      {"slow", CSS_VAL_SLOW},
+#line 163 "cssvalues.gperf"
+      {"upper-latin", CSS_VAL_UPPER_LATIN},
+#line 191 "cssvalues.gperf"
+      {"pointer", CSS_VAL_POINTER},
 #line 80 "cssvalues.gperf"
       {"gray", CSS_VAL_GRAY},
 #line 103 "cssvalues.gperf"
       {"graytext", CSS_VAL_GRAYTEXT},
-#line 34 "cssvalues.gperf"
-      {"oblique", CSS_VAL_OBLIQUE},
-#line 63 "cssvalues.gperf"
-      {"condensed", CSS_VAL_CONDENSED},
-#line 162 "cssvalues.gperf"
-      {"hiragana", CSS_VAL_HIRAGANA},
-#line 159 "cssvalues.gperf"
-      {"armenian", CSS_VAL_ARMENIAN},
-#line 160 "cssvalues.gperf"
-      {"georgian", CSS_VAL_GEORGIAN},
-#line 232 "cssvalues.gperf"
-      {"nowrap", CSS_VAL_NOWRAP},
-#line 55 "cssvalues.gperf"
-      {"xx-large", CSS_VAL_XX_LARGE},
-#line 185 "cssvalues.gperf"
-      {"pointer", CSS_VAL_POINTER},
-#line 88 "cssvalues.gperf"
-      {"purple", CSS_VAL_PURPLE},
-#line 119 "cssvalues.gperf"
-      {"windowframe", CSS_VAL_WINDOWFRAME},
-#line 139 "cssvalues.gperf"
-      {"center", CSS_VAL_CENTER},
-#line 121 "cssvalues.gperf"
-      {"grey", CSS_VAL_GREY},
-#line 49 "cssvalues.gperf"
-      {"xx-small", CSS_VAL_XX_SMALL},
-#line 75 "cssvalues.gperf"
-      {"aqua", CSS_VAL_AQUA},
-#line 158 "cssvalues.gperf"
-      {"hebrew", CSS_VAL_HEBREW},
-#line 58 "cssvalues.gperf"
-      {"larger", CSS_VAL_LARGER},
-#line 76 "cssvalues.gperf"
-      {"black", CSS_VAL_BLACK},
-#line 262 "cssvalues.gperf"
-      {"alternate", CSS_VAL_ALTERNATE},
-#line 173 "cssvalues.gperf"
-      {"inline-table", CSS_VAL_INLINE_TABLE},
-#line 50 "cssvalues.gperf"
-      {"x-small", CSS_VAL_X_SMALL},
-#line 189 "cssvalues.gperf"
-      {"ne-resize", CSS_VAL_NE_RESIZE},
-#line 116 "cssvalues.gperf"
-      {"threedlightshadow", CSS_VAL_THREEDLIGHTSHADOW},
-#line 190 "cssvalues.gperf"
-      {"nw-resize", CSS_VAL_NW_RESIZE},
-#line 57 "cssvalues.gperf"
-      {"smaller", CSS_VAL_SMALLER},
-#line 242 "cssvalues.gperf"
-      {"thick", CSS_VAL_THICK},
-#line 98 "cssvalues.gperf"
-      {"buttonface", CSS_VAL_BUTTONFACE},
-#line 126 "cssvalues.gperf"
-      {"no-repeat", CSS_VAL_NO_REPEAT},
-#line 132 "cssvalues.gperf"
-      {"text-bottom", CSS_VAL_TEXT_BOTTOM},
-#line 169 "cssvalues.gperf"
-      {"run-in", CSS_VAL_RUN_IN},
-#line 114 "cssvalues.gperf"
-      {"threedface", CSS_VAL_THREEDFACE},
-#line 97 "cssvalues.gperf"
-      {"background", CSS_VAL_BACKGROUND},
-#line 30 "cssvalues.gperf"
-      {"message-box", CSS_VAL_MESSAGE_BOX},
-#line 208 "cssvalues.gperf"
-      {"always", CSS_VAL_ALWAYS},
-#line 255 "cssvalues.gperf"
-      {"reverse", CSS_VAL_REVERSE},
-#line 235 "cssvalues.gperf"
-      {"portrait", CSS_VAL_PORTRAIT},
-#line 71 "cssvalues.gperf"
-      {"cursive", CSS_VAL_CURSIVE},
-#line 72 "cssvalues.gperf"
-      {"fantasy", CSS_VAL_FANTASY},
-#line 131 "cssvalues.gperf"
-      {"text-top", CSS_VAL_TEXT_TOP},
-#line 188 "cssvalues.gperf"
-      {"e-resize", CSS_VAL_E_RESIZE},
-#line 249 "cssvalues.gperf"
-      {"content-box", CSS_VAL_CONTENT_BOX},
-#line 195 "cssvalues.gperf"
-      {"w-resize", CSS_VAL_W_RESIZE},
-#line 167 "cssvalues.gperf"
-      {"block", CSS_VAL_BLOCK},
-#line 123 "cssvalues.gperf"
-      {"repeat", CSS_VAL_REPEAT},
-#line 191 "cssvalues.gperf"
-      {"n-resize", CSS_VAL_N_RESIZE},
-#line 54 "cssvalues.gperf"
-      {"x-large", CSS_VAL_X_LARGE},
-#line 228 "cssvalues.gperf"
-      {"marquee", CSS_VAL_MARQUEE},
-#line 192 "cssvalues.gperf"
-      {"se-resize", CSS_VAL_SE_RESIZE},
-#line 65 "cssvalues.gperf"
-      {"semi-expanded", CSS_VAL_SEMI_EXPANDED},
-#line 193 "cssvalues.gperf"
-      {"sw-resize", CSS_VAL_SW_RESIZE},
-#line 238 "cssvalues.gperf"
-      {"scroll", CSS_VAL_SCROLL},
-#line 252 "cssvalues.gperf"
-      {"forwards", CSS_VAL_FORWARDS},
-#line 225 "cssvalues.gperf"
-      {"line-through", CSS_VAL_LINE_THROUGH},
-#line 248 "cssvalues.gperf"
-      {"border-box", CSS_VAL_BORDER_BOX},
-#line 27 "cssvalues.gperf"
-      {"caption", CSS_VAL_CAPTION},
-#line 73 "cssvalues.gperf"
-      {"monospace", CSS_VAL_MONOSPACE},
-#line 102 "cssvalues.gperf"
-      {"captiontext", CSS_VAL_CAPTIONTEXT},
-#line 60 "cssvalues.gperf"
-      {"narrower", CSS_VAL_NARROWER},
-#line 215 "cssvalues.gperf"
-      {"crop", CSS_VAL_CROP},
-#line 130 "cssvalues.gperf"
-      {"super", CSS_VAL_SUPER},
-#line 147 "cssvalues.gperf"
-      {"circle", CSS_VAL_CIRCLE},
-#line 253 "cssvalues.gperf"
-      {"backwards", CSS_VAL_BACKWARDS},
-#line 205 "cssvalues.gperf"
-      {"collapse", CSS_VAL_COLLAPSE},
-#line 155 "cssvalues.gperf"
-      {"lower-latin", CSS_VAL_LOWER_LATIN},
-#line 194 "cssvalues.gperf"
-      {"s-resize", CSS_VAL_S_RESIZE},
-#line 163 "cssvalues.gperf"
-      {"katakana", CSS_VAL_KATAKANA},
-#line 170 "cssvalues.gperf"
-      {"compact", CSS_VAL_COMPACT},
-#line 211 "cssvalues.gperf"
-      {"bidi-override", CSS_VAL_BIDI_OVERRIDE},
-#line 223 "cssvalues.gperf"
-      {"landscape", CSS_VAL_LANDSCAPE},
-#line 148 "cssvalues.gperf"
-      {"square", CSS_VAL_SQUARE},
-#line 106 "cssvalues.gperf"
-      {"inactiveborder", CSS_VAL_INACTIVEBORDER},
-#line 203 "cssvalues.gperf"
-      {"lowercase", CSS_VAL_LOWERCASE},
-#line 78 "cssvalues.gperf"
-      {"crimson", CSS_VAL_CRIMSON},
-#line 107 "cssvalues.gperf"
-      {"inactivecaption", CSS_VAL_INACTIVECAPTION},
+#line 218 "cssvalues.gperf"
+      {"blink", CSS_VAL_BLINK},
 #line 122 "cssvalues.gperf"
       {"-khtml-text", CSS_VAL__KHTML_TEXT},
-#line 108 "cssvalues.gperf"
-      {"inactivecaptiontext", CSS_VAL_INACTIVECAPTIONTEXT},
-#line 74 "cssvalues.gperf"
-      {"transparent", CSS_VAL_TRANSPARENT},
-#line 67 "cssvalues.gperf"
-      {"extra-expanded", CSS_VAL_EXTRA_EXPANDED},
-#line 239 "cssvalues.gperf"
-      {"separate", CSS_VAL_SEPARATE},
-#line 233 "cssvalues.gperf"
-      {"open-quote", CSS_VAL_OPEN_QUOTE},
-#line 216 "cssvalues.gperf"
-      {"cross", CSS_VAL_CROSS},
-#line 94 "cssvalues.gperf"
-      {"activeborder", CSS_VAL_ACTIVEBORDER},
-#line 64 "cssvalues.gperf"
-      {"semi-condensed", CSS_VAL_SEMI_CONDENSED},
-#line 109 "cssvalues.gperf"
-      {"infobackground", CSS_VAL_INFOBACKGROUND},
-#line 171 "cssvalues.gperf"
-      {"inline-block", CSS_VAL_INLINE_BLOCK},
-#line 201 "cssvalues.gperf"
-      {"capitalize", CSS_VAL_CAPITALIZE},
-#line 124 "cssvalues.gperf"
-      {"repeat-x", CSS_VAL_REPEAT_X},
-#line 95 "cssvalues.gperf"
-      {"activecaption", CSS_VAL_ACTIVECAPTION},
-#line 32 "cssvalues.gperf"
-      {"status-bar", CSS_VAL_STATUS_BAR},
-#line 113 "cssvalues.gperf"
-      {"threeddarkshadow", CSS_VAL_THREEDDARKSHADOW},
-#line 177 "cssvalues.gperf"
-      {"table-row", CSS_VAL_TABLE_ROW},
-#line 231 "cssvalues.gperf"
-      {"no-open-quote", CSS_VAL_NO_OPEN_QUOTE},
-#line 16 "cssvalues.gperf"
-      {"-khtml-native", CSS_VAL__KHTML_NATIVE},
-#line 141 "cssvalues.gperf"
-      {"-khtml-left", CSS_VAL__KHTML_LEFT},
-#line 154 "cssvalues.gperf"
-      {"lower-alpha", CSS_VAL_LOWER_ALPHA},
+#line 138 "cssvalues.gperf"
+      {"right", CSS_VAL_RIGHT},
 #line 68 "cssvalues.gperf"
       {"ultra-expanded", CSS_VAL_ULTRA_EXPANDED},
-#line 186 "cssvalues.gperf"
-      {"progress", CSS_VAL_PROGRESS},
-#line 153 "cssvalues.gperf"
-      {"lower-greek", CSS_VAL_LOWER_GREEK},
-#line 151 "cssvalues.gperf"
-      {"lower-roman", CSS_VAL_LOWER_ROMAN},
-#line 136 "cssvalues.gperf"
-      {"-khtml-auto", CSS_VAL__KHTML_AUTO},
-#line 112 "cssvalues.gperf"
-      {"scrollbar", CSS_VAL_SCROLLBAR},
-#line 180 "cssvalues.gperf"
-      {"table-cell", CSS_VAL_TABLE_CELL},
-#line 142 "cssvalues.gperf"
-      {"-khtml-right", CSS_VAL__KHTML_RIGHT},
-#line 62 "cssvalues.gperf"
-      {"extra-condensed", CSS_VAL_EXTRA_CONDENSED},
-#line 164 "cssvalues.gperf"
-      {"hiragana-iroha", CSS_VAL_HIRAGANA_IROHA},
-#line 70 "cssvalues.gperf"
-      {"sans-serif", CSS_VAL_SANS_SERIF},
-#line 125 "cssvalues.gperf"
-      {"repeat-y", CSS_VAL_REPEAT_Y},
-#line 31 "cssvalues.gperf"
-      {"small-caption", CSS_VAL_SMALL_CAPTION},
-#line 179 "cssvalues.gperf"
-      {"table-column", CSS_VAL_TABLE_COLUMN},
-#line 157 "cssvalues.gperf"
-      {"upper-latin", CSS_VAL_UPPER_LATIN},
-#line 61 "cssvalues.gperf"
-      {"ultra-condensed", CSS_VAL_ULTRA_CONDENSED},
-#line 181 "cssvalues.gperf"
-      {"table-caption", CSS_VAL_TABLE_CAPTION},
-#line 202 "cssvalues.gperf"
-      {"uppercase", CSS_VAL_UPPERCASE},
+#line 93 "cssvalues.gperf"
+      {"yellow", CSS_VAL_YELLOW},
+#line 168 "cssvalues.gperf"
+      {"hiragana", CSS_VAL_HIRAGANA},
 #line 35 "cssvalues.gperf"
       {"small-caps", CSS_VAL_SMALL_CAPS},
-#line 183 "cssvalues.gperf"
-      {"crosshair", CSS_VAL_CROSSHAIR},
+#line 140 "cssvalues.gperf"
+      {"justify", CSS_VAL_JUSTIFY},
+#line 203 "cssvalues.gperf"
+      {"wait", CSS_VAL_WAIT},
+#line 16 "cssvalues.gperf"
+      {"-khtml-native", CSS_VAL__KHTML_NATIVE},
 #line 150 "cssvalues.gperf"
-      {"decimal-leading-zero", CSS_VAL_DECIMAL_LEADING_ZERO},
-#line 214 "cssvalues.gperf"
-      {"close-quote", CSS_VAL_CLOSE_QUOTE},
-#line 230 "cssvalues.gperf"
-      {"no-close-quote", CSS_VAL_NO_CLOSE_QUOTE},
+      {"-khtml-diamond", CSS_VAL__KHTML_DIAMOND},
+#line 136 "cssvalues.gperf"
+      {"-khtml-auto", CSS_VAL__KHTML_AUTO},
+#line 118 "cssvalues.gperf"
+      {"window", CSS_VAL_WINDOW},
+#line 120 "cssvalues.gperf"
+      {"windowtext", CSS_VAL_WINDOWTEXT},
+#line 39 "cssvalues.gperf"
+      {"lighter", CSS_VAL_LIGHTER},
+#line 70 "cssvalues.gperf"
+      {"sans-serif", CSS_VAL_SANS_SERIF},
+#line 97 "cssvalues.gperf"
+      {"background", CSS_VAL_BACKGROUND},
+#line 121 "cssvalues.gperf"
+      {"grey", CSS_VAL_GREY},
+#line 157 "cssvalues.gperf"
+      {"upper-roman", CSS_VAL_UPPER_ROMAN},
+#line 261 "cssvalues.gperf"
+      {"reverse", CSS_VAL_REVERSE},
+#line 164 "cssvalues.gperf"
+      {"hebrew", CSS_VAL_HEBREW},
+#line 196 "cssvalues.gperf"
+      {"nw-resize", CSS_VAL_NW_RESIZE},
+#line 100 "cssvalues.gperf"
+      {"buttonshadow", CSS_VAL_BUTTONSHADOW},
+#line 183 "cssvalues.gperf"
+      {"table-row", CSS_VAL_TABLE_ROW},
+#line 60 "cssvalues.gperf"
+      {"narrower", CSS_VAL_NARROWER},
 #line 246 "cssvalues.gperf"
-      {"-khtml-normal", CSS_VAL__KHTML_NORMAL},
-#line 245 "cssvalues.gperf"
-      {"-khtml-nowrap", CSS_VAL__KHTML_NOWRAP},
+      {"show", CSS_VAL_SHOW},
+#line 258 "cssvalues.gperf"
+      {"forwards", CSS_VAL_FORWARDS},
+#line 248 "cssvalues.gperf"
+      {"thick", CSS_VAL_THICK},
+#line 141 "cssvalues.gperf"
+      {"-khtml-left", CSS_VAL__KHTML_LEFT},
+#line 201 "cssvalues.gperf"
+      {"w-resize", CSS_VAL_W_RESIZE},
+#line 166 "cssvalues.gperf"
+      {"georgian", CSS_VAL_GEORGIAN},
 #line 143 "cssvalues.gperf"
       {"-khtml-center", CSS_VAL__KHTML_CENTER},
-#line 156 "cssvalues.gperf"
+#line 199 "cssvalues.gperf"
+      {"sw-resize", CSS_VAL_SW_RESIZE},
+#line 155 "cssvalues.gperf"
+      {"-khtml-urdu", CSS_VAL__KHTML_URDU},
+#line 259 "cssvalues.gperf"
+      {"backwards", CSS_VAL_BACKWARDS},
+#line 227 "cssvalues.gperf"
+      {"higher", CSS_VAL_HIGHER},
+#line 160 "cssvalues.gperf"
+      {"lower-alpha", CSS_VAL_LOWER_ALPHA},
+#line 92 "cssvalues.gperf"
+      {"white", CSS_VAL_WHITE},
+#line 189 "cssvalues.gperf"
+      {"crosshair", CSS_VAL_CROSSHAIR},
+#line 252 "cssvalues.gperf"
+      {"-khtml-normal", CSS_VAL__KHTML_NORMAL},
+#line 162 "cssvalues.gperf"
       {"upper-alpha", CSS_VAL_UPPER_ALPHA},
-#line 152 "cssvalues.gperf"
-      {"upper-roman", CSS_VAL_UPPER_ROMAN},
-#line 165 "cssvalues.gperf"
-      {"katakana-iroha", CSS_VAL_KATAKANA_IROHA},
-#line 161 "cssvalues.gperf"
-      {"cjk-ideographic", CSS_VAL_CJK_IDEOGRAPHIC},
-#line 56 "cssvalues.gperf"
-      {"-khtml-xxx-large", CSS_VAL__KHTML_XXX_LARGE},
+#line 119 "cssvalues.gperf"
+      {"windowframe", CSS_VAL_WINDOWFRAME},
+#line 192 "cssvalues.gperf"
+      {"progress", CSS_VAL_PROGRESS},
+#line 117 "cssvalues.gperf"
+      {"threedshadow", CSS_VAL_THREEDSHADOW},
+#line 109 "cssvalues.gperf"
+      {"infobackground", CSS_VAL_INFOBACKGROUND},
+#line 158 "cssvalues.gperf"
+      {"lower-greek", CSS_VAL_LOWER_GREEK},
+#line 154 "cssvalues.gperf"
+      {"-khtml-persian", CSS_VAL__KHTML_PERSIAN},
 #line 135 "cssvalues.gperf"
       {"-khtml-baseline-middle", CSS_VAL__KHTML_BASELINE_MIDDLE},
+#line 153 "cssvalues.gperf"
+      {"-khtml-arabic-indic", CSS_VAL__KHTML_ARABIC_INDIC},
+#line 152 "cssvalues.gperf"
+      {"decimal-leading-zero", CSS_VAL_DECIMAL_LEADING_ZERO},
+#line 231 "cssvalues.gperf"
+      {"line-through", CSS_VAL_LINE_THROUGH},
+#line 184 "cssvalues.gperf"
+      {"table-column-group", CSS_VAL_TABLE_COLUMN_GROUP},
+#line 171 "cssvalues.gperf"
+      {"katakana-iroha", CSS_VAL_KATAKANA_IROHA},
 #line 96 "cssvalues.gperf"
       {"appworkspace", CSS_VAL_APPWORKSPACE},
-#line 174 "cssvalues.gperf"
-      {"table-row-group", CSS_VAL_TABLE_ROW_GROUP},
-#line 176 "cssvalues.gperf"
+#line 170 "cssvalues.gperf"
+      {"hiragana-iroha", CSS_VAL_HIRAGANA_IROHA},
+#line 104 "cssvalues.gperf"
+      {"highlight", CSS_VAL_HIGHLIGHT},
+#line 105 "cssvalues.gperf"
+      {"highlighttext", CSS_VAL_HIGHLIGHTTEXT},
+#line 142 "cssvalues.gperf"
+      {"-khtml-right", CSS_VAL__KHTML_RIGHT},
+#line 56 "cssvalues.gperf"
+      {"-khtml-xxx-large", CSS_VAL__KHTML_XXX_LARGE},
+#line 182 "cssvalues.gperf"
       {"table-footer-group", CSS_VAL_TABLE_FOOTER_GROUP},
-#line 175 "cssvalues.gperf"
+#line 251 "cssvalues.gperf"
+      {"-khtml-nowrap", CSS_VAL__KHTML_NOWRAP},
+#line 253 "cssvalues.gperf"
+      {"-khtml-around-floats", CSS_VAL__KHTML_AROUND_FLOATS},
+#line 99 "cssvalues.gperf"
+      {"buttonhighlight", CSS_VAL_BUTTONHIGHLIGHT},
+#line 167 "cssvalues.gperf"
+      {"cjk-ideographic", CSS_VAL_CJK_IDEOGRAPHIC},
+#line 113 "cssvalues.gperf"
+      {"threeddarkshadow", CSS_VAL_THREEDDARKSHADOW},
+#line 181 "cssvalues.gperf"
       {"table-header-group", CSS_VAL_TABLE_HEADER_GROUP},
-#line 178 "cssvalues.gperf"
-      {"table-column-group", CSS_VAL_TABLE_COLUMN_GROUP},
-#line 247 "cssvalues.gperf"
-      {"-khtml-around-floats", CSS_VAL__KHTML_AROUND_FLOATS}
+#line 180 "cssvalues.gperf"
+      {"table-row-group", CSS_VAL_TABLE_ROW_GROUP},
+#line 116 "cssvalues.gperf"
+      {"threedlightshadow", CSS_VAL_THREEDLIGHTSHADOW},
+#line 115 "cssvalues.gperf"
+      {"threedhighlight", CSS_VAL_THREEDHIGHLIGHT},
+#line 159 "cssvalues.gperf"
+      {"-khtml-upper-greek", CSS_VAL__KHTML_UPPER_GREEK}
     };
 
   static const short lookup[] =
     {
         0,  -1,  -1,  -1,  -1,   1,  -1,  -1,  -1,  -1,
         2,  -1,  -1,  -1,  -1,   3,  -1,  -1,  -1,  -1,
-        4,  -1,  -1,  -1,   5,   6,  -1,  -1,  -1,  -1,
-        7,  -1,  -1,  -1,   8,   9,  -1,  -1,  -1,  10,
-       11,  -1,  -1,  12,  13,  14,  -1,  -1,  -1,  15,
-       16,  -1,  -1,  17,  18,  19,  -1,  20,  -1,  -1,
-       21,  -1,  -1,  -1,  22,  23,  -1,  -1,  24,  -1,
-       25,  -1,  -1,  26,  27,  28,  -1,  -1,  29,  30,
-       31,  -1,  -1,  32,  -1,  33,  -1,  -1,  -1,  34,
-       35,  -1,  -1,  -1,  36,  37,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  38,  -1,  -1,  39,  -1,  40,
-       -1,  -1,  -1,  41,  42,  43,  -1,  -1,  -1,  -1,
-       44,  -1,  -1,  -1,  45,  -1,  -1,  -1,  -1,  -1,
+        4,  -1,  -1,  -1,  -1,   5,  -1,  -1,  -1,  -1,
+        6,  -1,  -1,  -1,  -1,   7,  -1,  -1,   8,  -1,
+        9,  -1,  -1,  -1,  -1,  10,  -1,  -1,  -1,  -1,
+       11,  -1,  -1,  -1,  -1,  12,  -1,  -1,  -1,  -1,
+       13,  -1,  -1,  -1,  -1,  14,  -1,  -1,  15,  -1,
+       16,  -1,  -1,  -1,  -1,  17,  -1,  -1,  18,  -1,
+       19,  -1,  -1,  -1,  -1,  20,  -1,  -1,  -1,  -1,
+       21,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       22,  -1,  -1,  -1,  -1,  -1,  23,  -1,  -1,  -1,
+       24,  -1,  -1,  25,  -1,  -1,  26,  -1,  27,  -1,
+       28,  -1,  -1,  29,  -1,  30,  -1,  -1,  31,  -1,
+       -1,  -1,  -1,  -1,  -1,  32,  -1,  -1,  33,  -1,
+       34,  -1,  -1,  35,  -1,  36,  -1,  -1,  -1,  -1,
+       37,  -1,  -1,  -1,  -1,  38,  -1,  -1,  -1,  -1,
+       39,  -1,  -1,  40,  -1,  41,  42,  -1,  -1,  -1,
+       43,  -1,  -1,  -1,  -1,  44,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  45,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        46,  -1,  -1,  -1,  -1,  47,  -1,  -1,  -1,  -1,
-       48,  -1,  -1,  -1,  49,  -1,  -1,  -1,  -1,  -1,
-       50,  -1,  51,  -1,  52,  53,  -1,  -1,  54,  55,
-       56,  -1,  -1,  -1,  57,  58,  -1,  -1,  -1,  -1,
-       59,  -1,  -1,  -1,  -1,  60,  -1,  -1,  61,  -1,
-       62,  -1,  -1,  63,  64,  -1,  -1,  -1,  -1,  65,
-       -1,  -1,  -1,  -1,  -1,  66,  -1,  -1,  -1,  -1,
-       67,  -1,  -1,  -1,  68,  69,  -1,  -1,  -1,  70,
-       71,  -1,  -1,  72,  -1,  73,  -1,  -1,  74,  75,
-       -1,  -1,  -1,  76,  77,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  78,  79,  80,  -1,  81,  -1,  82,
-       83,  -1,  -1,  -1,  84,  85,  -1,  -1,  86,  -1,
-       -1,  -1,  -1,  -1,  87,  -1,  -1,  -1,  88,  -1,
-       89,  -1,  -1,  -1,  90,  91,  -1,  -1,  92,  93,
-       -1,  -1,  -1,  -1,  -1,  94,  -1,  -1,  95,  96,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  97,
-       -1,  -1,  -1,  98,  -1,  99,  -1, 100, 101,  -1,
-      102,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-      103,  -1,  -1,  -1, 104,  -1,  -1,  -1,  -1,  -1,
-      105,  -1, 106,  -1, 107, 108,  -1,  -1,  -1,  -1,
-      109,  -1,  -1, 110,  -1,  -1,  -1, 111, 112,  -1,
-       -1,  -1,  -1, 113,  -1,  -1,  -1,  -1,  -1,  -1,
-      114,  -1, 115, 116,  -1,  -1,  -1, 117,  -1, 118,
-      119,  -1,  -1, 120,  -1, 121,  -1,  -1, 122,  -1,
-       -1,  -1,  -1,  -1, 123,  -1,  -1, 124,  -1, 125,
-       -1,  -1,  -1,  -1,  -1, 126,  -1,  -1,  -1,  -1,
-       -1,  -1, 127,  -1,  -1, 128,  -1, 129, 130,  -1,
-       -1,  -1, 131,  -1,  -1,  -1,  -1,  -1, 132, 133,
-      134,  -1,  -1,  -1,  -1, 135,  -1,  -1,  -1,  -1,
-      136,  -1,  -1,  -1, 137, 138,  -1,  -1,  -1,  -1,
-      139,  -1,  -1,  -1, 140, 141,  -1,  -1, 142, 143,
-      144,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1, 145, 146,  -1,  -1, 147, 148,
-       -1,  -1,  -1, 149,  -1,  -1,  -1,  -1, 150, 151,
-      152,  -1,  -1, 153,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1, 154, 155, 156,  -1,  -1,  -1, 157,
-       -1,  -1,  -1,  -1, 158, 159,  -1,  -1,  -1, 160,
-      161,  -1,  -1, 162,  -1,  -1,  -1,  -1,  -1, 163,
+       48,  -1,  -1,  -1,  -1,  49,  -1,  -1,  -1,  -1,
+       50,  -1,  -1,  -1,  -1,  51,  -1,  -1,  -1,  -1,
+       52,  -1,  -1,  53,  -1,  54,  -1,  -1,  55,  -1,
+       56,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       57,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       58,  -1,  -1,  59,  -1,  -1,  -1,  -1,  -1,  -1,
+       60,  -1,  -1,  -1,  -1,  61,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  62,  -1,
+       63,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       64,  -1,  -1,  -1,  -1,  65,  -1,  -1,  -1,  -1,
+       66,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  67,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-      164,  -1,  -1,  -1, 165,  -1,  -1,  -1,  -1, 166,
+       68,  -1,  -1,  69,  -1,  70,  -1,  -1,  -1,  -1,
+       71,  -1,  -1,  -1,  -1,  72,  -1,  -1,  73,  -1,
+       74,  -1,  -1,  75,  -1,  76,  -1,  -1,  -1,  -1,
+       77,  -1,  -1,  78,  -1,  -1,  -1,  -1,  -1,  -1,
+       79,  -1,  -1,  -1,  -1,  80,  -1,  -1,  81,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  82,  -1,
+       83,  84,  -1,  -1,  -1,  -1,  85,  -1,  -1,  -1,
+       -1,  -1,  -1,  86,  -1,  -1,  -1,  -1,  87,  -1,
+       88,  -1,  -1,  -1,  -1,  89,  -1,  -1,  -1,  -1,
+       90,  -1,  -1,  -1,  -1,  91,  -1,  -1,  92,  -1,
+       -1,  -1,  -1,  -1,  -1,  93,  -1,  -1,  -1,  -1,
+       -1,  94,  -1,  -1,  -1,  95,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  96,  -1,  -1,  -1,  -1,  -1,  -1,
+       97,  -1,  -1,  -1,  -1,  98,  -1,  -1,  99,  -1,
+       -1,  -1,  -1, 100,  -1,  -1,  -1,  -1, 101,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 102,  -1,
+       -1,  -1,  -1,  -1,  -1, 103,  -1,  -1, 104,  -1,
+       -1,  -1,  -1,  -1,  -1, 105,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1, 106,  -1,  -1,  -1,  -1,
+      107,  -1,  -1,  -1,  -1, 108,  -1,  -1,  -1,  -1,
+      109,  -1,  -1,  -1,  -1, 110, 111,  -1,  -1,  -1,
+      112,  -1,  -1, 113,  -1,  -1,  -1,  -1,  -1,  -1,
+      114, 115,  -1,  -1,  -1, 116,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1, 117,  -1,  -1,  -1,  -1, 118,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 119,  -1,
+      120,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 121,  -1,
+      122,  -1,  -1, 123,  -1, 124,  -1,  -1,  -1,  -1,
+      125,  -1,  -1,  -1,  -1, 126,  -1,  -1,  -1,  -1,
+      127,  -1,  -1,  -1,  -1, 128,  -1,  -1, 129,  -1,
+       -1,  -1,  -1, 130,  -1,  -1,  -1,  -1,  -1,  -1,
+      131,  -1,  -1, 132,  -1, 133,  -1,  -1, 134,  -1,
+      135,  -1,  -1,  -1,  -1, 136,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1, 137,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1, 138,  -1, 139,  -1,  -1,  -1,  -1,
+      140,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 141,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-      167,  -1,  -1, 168,  -1,  -1,  -1, 169,  -1, 170,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1, 171, 172,  -1,  -1, 173, 174,
-      175,  -1,  -1,  -1, 176, 177,  -1,  -1,  -1, 178,
-       -1,  -1,  -1,  -1,  -1, 179,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1, 180, 181,  -1,  -1,  -1,  -1,
-      182,  -1,  -1,  -1,  -1, 183,  -1,  -1, 184,  -1,
-       -1,  -1,  -1,  -1,  -1, 185,  -1, 186,  -1,  -1,
-       -1,  -1,  -1, 187,  -1,  -1,  -1,  -1,  -1, 188,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 189,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1, 190, 191,  -1,  -1, 192,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1, 193,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 194, 195,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1, 196,  -1, 197,  -1,  -1, 198,  -1,
-      199,  -1,  -1, 200,  -1, 201,  -1,  -1,  -1, 202,
-       -1,  -1,  -1, 203,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 204,  -1,
-      205,  -1, 206,  -1, 207,  -1,  -1,  -1,  -1, 208,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 209,  -1,
-       -1,  -1,  -1,  -1, 210,  -1,  -1,  -1, 211, 212,
-       -1,  -1,  -1,  -1, 213,  -1,  -1,  -1, 214, 215,
-      216,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1, 217,  -1,  -1,  -1,  -1,
+      142,  -1,  -1, 143,  -1, 144,  -1,  -1,  -1,  -1,
+      145,  -1,  -1, 146,  -1, 147,  -1,  -1,  -1,  -1,
+      148,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 149,  -1,
+      150,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+      151, 152,  -1,  -1,  -1, 153,  -1,  -1, 154,  -1,
+       -1,  -1,  -1, 155,  -1,  -1,  -1,  -1,  -1,  -1,
+      156,  -1,  -1,  -1,  -1, 157,  -1,  -1, 158,  -1,
+       -1, 159,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+      160,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 161,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 162,  -1,
+       -1, 163,  -1,  -1,  -1,  -1,  -1,  -1, 164,  -1,
+      165,  -1,  -1,  -1,  -1, 166,  -1,  -1,  -1,  -1,
+      167,  -1,  -1, 168,  -1, 169,  -1,  -1,  -1,  -1,
+      170,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+      171,  -1,  -1,  -1,  -1, 172,  -1,  -1, 173,  -1,
+       -1,  -1,  -1,  -1,  -1, 174,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1, 175,  -1,  -1, 176,  -1,
+      177,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1, 178,  -1,  -1, 179,  -1,
+      180,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+      181,  -1,  -1, 182,  -1, 183,  -1,  -1,  -1,  -1,
+      184,  -1,  -1, 185,  -1, 186,  -1,  -1, 187,  -1,
+      188,  -1,  -1, 189,  -1, 190,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1, 191,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+      192,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 193,  -1,
+       -1,  -1,  -1,  -1,  -1, 194,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1, 195,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-      218,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1, 219, 220,  -1,  -1, 221,  -1, 222,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1, 223,  -1, 224,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1, 225,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 226,
+      196,  -1,  -1,  -1,  -1, 197,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1, 198,  -1,  -1, 199,  -1,
+      200,  -1,  -1, 201,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1, 227,  -1,  -1,  -1,  -1,
-      228,  -1,  -1,  -1, 229,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1, 202,  -1,  -1, 203,  -1,
+       -1,  -1,  -1, 204,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1, 205,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1, 206,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1, 207,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+      208,  -1,  -1,  -1,  -1, 209,  -1,  -1,  -1,  -1,
+      210,  -1,  -1,  -1,  -1, 211,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1, 212,  -1,  -1,  -1,  -1,  -1,  -1,
+      213,  -1,  -1, 214,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1, 215,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1, 216,  -1,  -1,  -1,  -1,
+      217,  -1,  -1,  -1,  -1, 218,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+      219,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1, 220,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1, 221,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1, 222,  -1,  -1,  -1,  -1,  -1,  -1,
+      223,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1, 224,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+      225,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 226,  -1,
+       -1,  -1,  -1, 227,  -1, 228,  -1,  -1,  -1,  -1,
+      229,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
       230,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1, 231,  -1,  -1,  -1,  -1, 232,
-       -1,  -1,  -1,  -1, 233,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 231,  -1,
+      232,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1, 234,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+      233,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1, 234,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1, 235,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 236,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1, 237,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1, 238,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1, 239,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1, 240,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1, 241,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1, 242,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+      236,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+      237,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1, 238,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1, 239,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1, 240,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1, 241,  -1,  -1, 242,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1, 243,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1, 244,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1, 244,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 245,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 246,  -1,
+       -1,  -1,  -1,  -1,  -1, 246,  -1,  -1,  -1,  -1,
        -1,  -1,  -1, 247,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
@@ -818,11 +889,83 @@ findValue (register const char *str, register unsigned int len)
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 248,
+      248,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 249
+       -1,  -1,  -1,  -1,  -1, 249,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+      250,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1, 251,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+      252,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1, 253,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+      254,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+      255
     };
 
   if (len <= MAX_WORD_LENGTH && len >= MIN_WORD_LENGTH)
@@ -844,7 +987,7 @@ findValue (register const char *str, register unsigned int len)
     }
   return 0;
 }
-#line 264 "cssvalues.gperf"
+#line 270 "cssvalues.gperf"
 
 static const char * const valueList[] = {
 "",
@@ -983,11 +1126,17 @@ static const char * const valueList[] = {
 "disc", 
 "circle", 
 "square", 
+"box", 
+"-khtml-diamond", 
 "decimal", 
 "decimal-leading-zero", 
+"-khtml-arabic-indic", 
+"-khtml-persian", 
+"-khtml-urdu", 
 "lower-roman", 
 "upper-roman", 
 "lower-greek", 
+"-khtml-upper-greek", 
 "lower-alpha", 
 "lower-latin", 
 "upper-alpha", 
