@@ -64,7 +64,7 @@ protected:
      *             which will then be assumed to be installed in the "data" resource,
      *             under a directory named like the instance.
      **/
-    virtual void setXMLFile( QString file );
+    virtual void setXMLFile( const QString & file );
 
     /**
      * Set the XML for the part.

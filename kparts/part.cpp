@@ -103,17 +103,19 @@ void PartBase::setInstance( KInstance *instance, bool loadPlugins )
     Plugin::loadPlugins( m_obj, d->m_instance );
 } 
 
-void PartBase::setXMLFile( QString file )
+void PartBase::setXMLFile( const QString & file )
 {
+  QString fullPath;
   if ( file[0] != '/' )
   {
-    file = locate( "data", QString(instance()->instanceName())+"/"+file );
-    if ( file.isEmpty() )
+    fullPath = locate( "data", QString(instance()->instanceName())+"/"+file );
+    if ( fullPath.isEmpty() )
     {
-      kDebugError( 1000, "File not found : %s", file.ascii() );
+      kDebugError( 1000, "File not found : %s/%s", instance()->instanceName().data(), file.ascii() );
       return;
     }
-  }
+  } else
+    fullPath = file;
 
   QString xml = XMLGUIFactory::readConfigFile( file );
   setXML( xml );
