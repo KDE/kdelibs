@@ -88,9 +88,12 @@ class KStandardDirsPrivate;
 * A type that is added by the class KApplication if you use it, is
 * appdata. This one makes the use of the type data a bit easier as it
 * appends the name of the application.
-* So while you had to @ref locate("data", "myapp/myfile") so you can
-* also write @ref locate("appdata", "myfile") if your KApplication instance
-* is called "myapp".
+* So while you had to @ref locate("data", "appname/filename") so you can
+* also write @ref locate("appdata", "filename") if your KApplication instance
+* is called "myapp". Please note though that you cannot use the "appdata"
+* type if you intend to use it in an applet for Kicker because 'appname' would
+* be "Kicker" instead of the applet's name. Therefore, for applets, you've got
+* to work around this by using @ref locate("data", "appletname/filename").
 *
 * @sect KStandardDirs supports the following environment variables:
 *
