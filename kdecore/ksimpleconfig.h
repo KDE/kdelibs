@@ -1,6 +1,9 @@
 // $Id$
-// Revision 1.1.1.2  1997/12/10 07:08:33  jacek
+//
 // $Log$
+// Imported sources from KDE CVS
+//
+// Revision 1.1.1.2  1997/12/10 07:08:33  jacek
 // Imported sources from KDE CVS
 //
 // Revision 1.1.1.1  1997/12/09 22:02:46  jacek
@@ -57,13 +60,19 @@ protected:
 	*
 	* Writes back any dirty configuration entries.
 	*/
+  virtual ~KSimpleConfig();
+
+  
+  /**
 	* Returns true if the object is read-only
 	*
 	*/
   bool isReadOnly() const { return data()->bReadOnly; }
+
+  /**
    * Write back the cache.
    *
-  const char* deleteEntry( const char* pKey );
+   */
   virtual void sync();
 
   /** Write back the configuration data.
