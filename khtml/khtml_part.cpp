@@ -3716,7 +3716,7 @@ void KHTMLPart::slotSelectAll()
 {
   KHTMLPart *part = this;
 
-  if ( d->m_frames.count() > 0 )
+  if ( d->m_frames.count() > 0 && partManager()->activePart() )
     part = static_cast<KHTMLPart *>( partManager()->activePart() );
 
   assert( part );
