@@ -739,15 +739,14 @@ bool KURL::isParentOf( const KURL& _u ) const
        m_strRef_encoded == _u.m_strRef_encoded &&
        m_iPort == _u.m_iPort )
   {
-    QString p1( QDir::cleanDirPath( path(1) ) );
-    QString p2( QDir::cleanDirPath( _u.path(1) ) );
+    QString p1( QDir::cleanDirPath( path() )+'/' );
+    QString p2( QDir::cleanDirPath( _u.path() )+'/' );
 
     //kdDebug(126) << "p1=" << p1 << endl;
     //kdDebug(126) << "p2=" << p2 << endl;
     //kdDebug(126) << "p1.length()=" << p1.length() << endl;
     //kdDebug(126) << "p2.left(!$)=" << p2.left( p1.length() ) << endl;
-    if ( p1 == p2.left( p1.length() ) )
-      return true;
+    return p2.startsWith( p1 );
   }
   return false;
 }
