@@ -69,12 +69,12 @@ IMPLEMENT_PROTOTYPE(DOMNodeProto,DOMNodeProtoFunc)
 
 const ClassInfo DOMNode::info = { "Node", 0, &DOMNodeTable, 0 };
 
-DOMNode::DOMNode(ExecState *exec, DOM::Node n)
+DOMNode::DOMNode(ExecState *exec, const DOM::Node& n)
   : DOMObject(DOMNodeProto::self(exec)), node(n)
 {
 }
 
-DOMNode::DOMNode(Object proto, DOM::Node n)
+DOMNode::DOMNode(const Object& proto, const DOM::Node& n)
   : DOMObject(proto), node(n)
 {
 }
@@ -461,7 +461,7 @@ UString DOMNode::toString(ExecState *) const
   return "[object " + s + "]";
 }
 
-void DOMNode::setListener(ExecState *exec, int eventId, Value func) const
+void DOMNode::setListener(ExecState *exec, int eventId, const Value& func) const
 {
   node.handle()->setHTMLEventListener(eventId,Window::retrieveActive(exec)->getJSEventListener(func,true));
 }
@@ -535,7 +535,7 @@ Value DOMNodeProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &ar
 
 const ClassInfo DOMNodeList::info = { "NodeList", 0, 0, 0 };
 
-DOMNodeList::DOMNodeList(ExecState *exec, DOM::NodeList l)
+DOMNodeList::DOMNodeList(ExecState *exec, const DOM::NodeList& l)
  : DOMObject(exec->interpreter()->builtinObjectPrototype()), list(l) { }
 
 DOMNodeList::~DOMNodeList()
@@ -739,10 +739,10 @@ const ClassInfo DOMDocument::info = { "Document", &DOMNode::info, &DOMDocumentTa
 @end
 */
 
-DOMDocument::DOMDocument(ExecState *exec, DOM::Document d)
+DOMDocument::DOMDocument(ExecState *exec, const DOM::Document& d)
   : DOMNode(DOMDocumentProto::self(exec), d) { }
 
-DOMDocument::DOMDocument(Object proto, DOM::Document d)
+DOMDocument::DOMDocument(const Object& proto, const DOM::Document& d)
   : DOMNode(proto, d) { }
 
 DOMDocument::~DOMDocument()
@@ -912,7 +912,7 @@ const ClassInfo DOMElement::info = { "Element", &DOMNode::info, &DOMElementTable
 DOMElement::DOMElement(ExecState *exec, const DOM::Element& e)
   : DOMNode(DOMElementProto::self(exec), e) { }
 
-DOMElement::DOMElement(Object proto, const DOM::Element& e)
+DOMElement::DOMElement(const Object& proto, const DOM::Element& e)
   : DOMNode(proto, e) { }
 
 Value DOMElement::tryGet(ExecState *exec, const UString &propertyName) const
@@ -1268,7 +1268,7 @@ Value DOMEntity::getValueProperty(ExecState *, int token) const
 
 // -------------------------------------------------------------------------
 
-Value KJS::getDOMNode(ExecState *exec, DOM::Node n)
+Value KJS::getDOMNode(ExecState *exec, const DOM::Node& n)
 {
   DOMObject *ret = 0;
   if (n.isNull())
@@ -1326,17 +1326,17 @@ Value KJS::getDOMNode(ExecState *exec, DOM::Node n)
   return Value(ret);
 }
 
-Value KJS::getDOMNamedNodeMap(ExecState *exec, DOM::NamedNodeMap m)
+Value KJS::getDOMNamedNodeMap(ExecState *exec, const DOM::NamedNodeMap& m)
 {
   return Value(cacheDOMObject<DOM::NamedNodeMap, KJS::DOMNamedNodeMap>(exec, m));
 }
 
-Value KJS::getDOMNodeList(ExecState *exec, DOM::NodeList l)
+Value KJS::getDOMNodeList(ExecState *exec, const DOM::NodeList& l)
 {
   return Value(cacheDOMObject<DOM::NodeList, KJS::DOMNodeList>(exec, l));
 }
 
-Value KJS::getDOMDOMImplementation(ExecState *exec, DOM::DOMImplementation i)
+Value KJS::getDOMDOMImplementation(ExecState *exec, const DOM::DOMImplementation& i)
 {
   return Value(cacheDOMObject<DOM::DOMImplementation, KJS::DOMDOMImplementation>(exec, i));
 }
@@ -1548,7 +1548,7 @@ IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMCharacterDataProto,DOMCharacterDataProtoFunc,
 DOMCharacterData::DOMCharacterData(ExecState *exec, const DOM::CharacterData& d)
  : DOMNode(DOMCharacterDataProto::self(exec), d) {}
 
-DOMCharacterData::DOMCharacterData(Object proto, const DOM::CharacterData& d)
+DOMCharacterData::DOMCharacterData(const Object& proto, const DOM::CharacterData& d)
  : DOMNode(proto, d) {}
 
 Value DOMCharacterData::tryGet(ExecState *exec, const UString &p) const
