@@ -21,11 +21,11 @@
 <!ENTITY underX11License    PUBLIC "-//KDE//DOCUMENT X11 Licence Declaration//DE"
   "entities/underX11License.docbook"                ><!-- level: para -->
 
-<!ENTITY reporting.bugs     SYSTEM
-  "entities/report-bugs.docbook"                       ><!-- level: ? -->
-<!ENTITY updating.documentation SYSTEM
-  "entities/update-doc.docbook"                     ><!-- level: para -->
 
+<!ENTITY reporting.bugs     PUBLIC "-//KDE//DOCUMENT Report Bugs//DE"
+  "entities/report-bugs.docbook"                       ><!-- level: ? -->
+<!ENTITY updating.documentation PUBLIC "-//KDE//DOCUMENT Updating Documentation//DE"
+  "entities/update-doc.docbook"  
 
 <!-- FDL notice -->
 <!ENTITY FDLNotice PUBLIC "-//KDE//DOCUMENT GNU Free Documentation Notice//DE"

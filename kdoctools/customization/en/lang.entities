@@ -23,9 +23,9 @@
 <!ENTITY underX11License    PUBLIC "-//KDE//DOCUMENT X11 Licence Declaration//EN"
   "entities/underX11License.docbook"                ><!-- level: para -->
 
-<!ENTITY reporting.bugs     SYSTEM
+<!ENTITY reporting.bugs     PUBLIC "-//KDE//DOCUMENT Report Bugs//EN"
   "entities/report-bugs.docbook"                       ><!-- level: ? -->
-<!ENTITY updating.documentation SYSTEM
+<!ENTITY updating.documentation PUBLIC "-//KDE//DOCUMENT Updating Documentation//EN"
   "entities/update-doc.docbook"                     ><!-- level: para -->
 
 
