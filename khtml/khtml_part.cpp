@@ -4478,12 +4478,12 @@ KParts::PartManager *KHTMLPart::partManager()
 
 void KHTMLPart::submitFormAgain()
 {
+  disconnect(this, SIGNAL(completed()), this, SLOT(submitFormAgain()));
   if( d->m_doc && !d->m_doc->parsing() && d->m_submitForm)
     KHTMLPart::submitForm( d->m_submitForm->submitAction, d->m_submitForm->submitUrl, d->m_submitForm->submitFormData, d->m_submitForm->target, d->m_submitForm->submitContentType, d->m_submitForm->submitBoundary );
 
   delete d->m_submitForm;
   d->m_submitForm = 0;
-  disconnect(this, SIGNAL(completed()), this, SLOT(submitFormAgain()));
 }
 
 void KHTMLPart::submitFormProxy( const char *action, const QString &url, const QByteArray &formData, const QString &_target, const QString& contentType, const QString& boundary )

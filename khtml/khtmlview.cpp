@@ -3043,11 +3043,12 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
     }
     if (d->accessKeysActivated) emit repaintAccessKeys();
     if (d->emitCompletedAfterRepaint) {
-        if (d->emitCompletedAfterRepaint == KHTMLViewPrivate::CSFull)
+        bool full = d->emitCompletedAfterRepaint == KHTMLViewPrivate::CSFull;
+        d->emitCompletedAfterRepaint = KHTMLViewPrivate::CSNone;
+        if ( full )
             emit m_part->completed();
         else
             emit m_part->completed(true);
-        d->emitCompletedAfterRepaint = KHTMLViewPrivate::CSNone;
     }
 }
 
