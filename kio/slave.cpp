@@ -74,6 +74,7 @@ Slave::Slave(KServerSocket *socket, const QString &protocol, const QString &sock
     contact_started = time(0);
     idle_since = contact_started;
     m_pid = 0;
+    m_port = 0;
     connect(serv, SIGNAL(accepted( KSocket* )),
 	    SLOT(accept(KSocket*) ) );
 }

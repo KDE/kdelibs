@@ -316,7 +316,7 @@ void SlaveBase::sigsegv_handler (int)
 
 void SlaveBase::setHost(QString const &host, int, QString const &, QString const &)
 {
-   kdDebug( 7007 ) << "setHost( host = " << host << ")";
+    kdDebug( 7007 ) << "setHost( host = " << host << ")" << endl;
 }
 
 void SlaveBase::openConnection(void)
