@@ -2,7 +2,7 @@ dnl put here things which have to be done as very last part of configure
 
 all_tests=fine
 
-if test "x$args_audiolib_found" = "xno"; then
+if test "x$arts_audiolib_found" = "xno"; then
   echo ""
   echo "You're missing libaudiofile. KDE won't be able to play"
   echo "any sounds without it, so please install it."
