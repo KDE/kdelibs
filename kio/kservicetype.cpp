@@ -70,9 +70,10 @@ KServiceType::init( KDesktopFile *config)
     if ( (*gIt).find( "Property::" ) == 0 )
     {
       config->setGroup( *gIt );
-      m_mapProps.insert( (*gIt).mid( 10 ),
-			 config->readPropertyEntry( "Value",
-			 QVariant::nameToType( config->readEntry( "Type" ) ) ) );
+      QVariant v = config->readPropertyEntry( "Value",
+                   QVariant::nameToType( config->readEntry( "Type" ) ) );
+      if ( v.isValid() )
+          m_mapProps.insert( (*gIt).mid( 10 ), v );
     }
   }
 
