@@ -67,6 +67,25 @@ QPtrDict<KBookmarkBarPrivate>* dPtrTemplate<KBookmarkBar, KBookmarkBarPrivate>::
 
 #define dptr() KBookmarkBarPrivate::d(this)
 
+// usage of KXBELBookmarkImporterImpl is just plain evil, but it reduces code dup. so...
+class ToolbarFilter : public KXBELBookmarkImporterImpl {
+public:
+    ToolbarFilter() : m_visible(false) { ; }
+    void filterInto( const KBookmarkGroup &grp ) { traverse(grp); }
+private:
+    virtual void visit( const KBookmark & );
+    virtual void visitEnter( const KBookmarkGroup & );
+    virtual void visitLeave( const KBookmarkGroup & );
+signals:
+    void newBookmark( const QString & text, const QCString & url, const QString & additionalInfo );
+    void newFolder( const QString & text, bool open, const QString & additionalInfo );
+    void newSeparator();
+    void endFolder();
+private:
+    bool m_visible;
+    KBookmarkGroup m_visibleStart;
+};
+
 KBookmarkBar::KBookmarkBar( KBookmarkManager* mgr,
                             KBookmarkOwner *_owner, KToolBar *_toolBar,
                             KActionCollection *coll,
@@ -338,7 +357,7 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e ){
     {
         removeTempSep();
         QDropEvent *dev = (QDropEvent*)e;
-        if ( KBookmarkDrag::canDecode( dev ) )
+        if ( !KBookmarkDrag::canDecode( dev ) )
            return false;
         QValueList<KBookmark> list = KBookmarkDrag::decode( dev );
         if (list.count() > 1)
@@ -377,25 +396,6 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e ){
     }
     return false;
 }
-
-// usage of KXBELBookmarkImporterImpl is just plain evil, but it reduces code dup. so...
-class ToolbarFilter : public KXBELBookmarkImporterImpl {
-public:
-    ToolbarFilter() : m_visible(false) { ; }
-    void filterInto( const KBookmarkGroup &grp ) { traverse(grp); }
-private:
-    virtual void visit( const KBookmark & );
-    virtual void visitEnter( const KBookmarkGroup & );
-    virtual void visitLeave( const KBookmarkGroup & );
-signals:
-    void newBookmark( const QString & text, const QCString & url, const QString & additionalInfo );
-    void newFolder( const QString & text, bool open, const QString & additionalInfo );
-    void newSeparator();
-    void endFolder();
-private:
-    bool m_visible;
-    KBookmarkGroup m_visibleStart;
-};
 
 static bool showInToolbar( const KBookmark &bk ) {
     return true; // iff bk has the flag "showintoolbar"
