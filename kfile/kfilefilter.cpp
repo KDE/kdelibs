@@ -30,7 +30,7 @@ void KFileFilter::setFilter(const char *filter)
 	    g = strtok(0, "\n");
 	}
     } else
-	filters->append("*|All Files");
+	filters->append(i18n("*|All Files"));
 
     clear();
     QString name;
@@ -57,3 +57,4 @@ QString KFileFilter::currentFilter()
 }
 
 #include "kfilefilter.moc"
+
