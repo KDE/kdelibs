@@ -37,17 +37,13 @@
 /**
  * An enhanced QLineEdit widget for inputting text.
  *
- * This widget has the same behaviour as QLineEdit
- * with the following added functionalities : a
- * popup menu that provides basic features such as
- * copy/cut/paste to manipulate content through the
- * mouse, a built-in hook into @ref KCompletion which
- * provides automatic & manual completion as well as
- * iteration through a given list, and the ability to
- * change which keyboard keys to use for these features.
- * Additionally, since this widget inherits form QLineEdit,
- * it can be used as a drop-in replacement where the
- * above extra functionalities are needed and/or useful.
+ * This widget inherits from QComboBox and implements
+ * the following additional functionalities : a built-in
+ * for automatic as well as manual completion and rotation
+ * ( the ability to iterate through a given list) features,
+ * configurable key-bindings to activate these features and
+ * a popup-menu item that can be used to allow the user to
+ * change completion modes on the fly based on their preference.
  *
  * KLineEdit emits a few more additional signals than
  * QLineEdit: @ref completion, @ref rotateUp and @ref rotateDown
@@ -55,32 +51,41 @@
  * connected to a slot that will assist the user in
  * filling out the remaining text.  The two rotation
  * signals are intended to be used to iterate through a
- * list of predefined text entries.
+ * list of predefined text entries while the returnPressed
+ * signal is the same as QLineEdit's except it provides the
+ * current text in the widget as its argument whenever
+ * appropriate ( see @ref completion ).
  *
- * By default, when you create a completion object through
- * either @ref completionObject() or @ref setCompletionObject
- * this widget will be automatically enabled to handle the
- * signals.  If you do not need this feature, simply use the
- * appropriate accessor methods to turn it off.
+ * This widget by default creates a completion object whenever
+ * you invoke the member function @ref completionObject for the
+ * first time.  You can also assign your own completion object
+ * through @ref setCompletionObject function whenever you want
+ * to control the kind of completion object that needs to be
+ * used.  Additionally, when you create a completion object through
+ * either @ref completionObject or @ref setCompletionObject this
+ * widget will be automatically enabled to handle the signals.  If
+ * you do not need this feature, simply use the appropriate accessor
+ * methods or the boolean paramters on the above function to shut
+ * them off.
  *
  * The default key-bindings for completion and rotation
  * are determined from the global settings in @ref KStdAccel.
  * However, these values can be set locally overriding the
- * global settings.  Simply invoking @ref useGlobalSettings
+ * global settings.  Afterwards, simply invoking @ref useGlobalSettings
  * allows you to immediately default the bindings back to the
  * global settings again.  Also if you are interested in only
  * defaulting the key-bindings individually for each action,
- * simply call the setXXXKey methods without any argumet.  For
- * example, after locally customizing the key-binding that invokes
- * manual completion, simply invoking @ref setCompletionKey(),
+ * simply call the appropriate setXXXKey methods without any
+ * argumet.  For example, after locally customizing the key-binding
+ * that invokes a manual completion simply invoking @ref setCompletionKey(),
  * without any argument, will result in the completion key being
  * set to 0. This will then force the key-event filter to use the
  * global value.
-
+ *
  * NOTE: if the EchoMode for this widget is set to something
  * other than @ref QLineEdit::Normal, the completion mode will
  * always be defaulted to KGlobal::CompletionNone.  This is
- * done purposefully to protect against protected entries such
+ * done purposefully to guard against protected entries such
  * as passwords being cached in KCompletion's list.  Hence, if
  * the EchoMode is not QLineEdit::Normal, the completion mode
  * is automatically disabled.
@@ -107,7 +112,7 @@
  * connect(edit,SIGNAL(returnPressed(const QString&)),comp,SLOT(addItem(const QString&));
  * </pre>
  *
- * Other miscelanous function call examples :
+ * Other miscelanous function calls :
  *
  * <pre>
  * // Tell the widget not to handle completion and
@@ -115,8 +120,8 @@
  * edit->setHandleSignals( false );
  * // Set your own completion key for manual completions.
  * edit->setCompletionKey( Qt::End );
- * // Shows the context (popup) menu
- * edit->setEnableContextMenu();
+ * // Hide the context (popup) menu
+ * edit->setEnableContextMenu( false );
  * // Temporarly disable signal emition
  * edit->disableSignals();
  * // Default the key-bindings to system settings.
@@ -182,15 +187,14 @@ public:
    /**
     * Enables/disables the popup (context) menu.
     *
-    * This method also allows you to enable/disable the context
-    * menu. If this method is invoked without an argument, the
-    * context menu will be enabled.  By default the mode changer
-    * is visible when context menu is enabled.  Use either the
-    * second boolean parameter or @ref hideModechanger() if you
-    * do not want this item to be visible.   Also by default, the
-    * context menu is created if this widget is editable. Call this
-    * function with the argument set to false to disable the popup
-    * menu.
+    * Note that when this function is invoked with its argument
+    * set to @p true, then both the context menu and the completion
+    * menu item are enabled.  If you do not want to the completion
+    * item to be visible simply invoke @ref hideModechanger right
+    * after calling this method.  Also by default, the context
+    * menu is automatically created if this widget is editable. Thus
+    * you need to call this function with the argument set to false
+    * if you do not want this behaviour.
     *
     * @param showMenu if true, show the context menu.
     * @param showMode if true, show the mode changer item.
@@ -290,11 +294,11 @@ protected slots:
     /**
     * Inserts the completion menu item as needed.
     *
-    * Since this widget comes with its own pop-up menu
-    * this slot is needed to invoke the method need to
-    * insert the completion menu.  This method,
-    * @ref KCompletionBase::insetCompeltionMenu, is
-    * defined by the KCompletionBase.
+    * Since this widget's parent class comes with its
+    * own pop-up menu this slot is needed to invoke the
+    * method need to insert the completion menu item.
+    * This method, @ref KCompletionBase::insetCompeltionMenu,
+    * is defined by the KCompletionBase.
     */
     virtual void aboutToShowMenu() { insertCompletionMenu( this, SLOT( showCompletionMenu() ), m_pContextMenu, m_pContextMenu->count()-1 ); }
 

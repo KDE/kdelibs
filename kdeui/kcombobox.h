@@ -32,35 +32,35 @@
 /**
  * A combined button, line-edit and a popup list widget.
  *
- * This widget inherits from QComboBox and enhances it
- * with the following functionalities : a built-in @ref
- * KCompletion object which provides automatic & manual
- * completion, the ability to change which keyboard key
- * is used to activate this feature and rotation signals
- * that can be used to iterate through some type of list.
- * They key-bindings for the rotation feature are also
- * configurable and can be interchanged between system and
- * local settings easily.  Moreover,  since this widget
- * inherits form QComboBox it can easily be used as a
- * drop-in replacement where the above functionalities are
- * needed and/or useful.
+ * This widget inherits from QComboBox and implements
+ * the following additional functionalities : a built-in
+ * for automatic as well as manual completion and rotation
+ * ( the ability to iterate through a given list) features,
+ * configurable key-bindings to activate these features and
+ * a popup-menu item that can be used to allow the user to
+ * change completion modes on the fly based on their preference.
  *
- * KComboBox emits a few more additional signals than @ref
- * QComboBox, the main ones being the @ref comepltion and
- * the @ref rotation signal metioned above.  The completion
- * signal is intended to be connected to a slot that will
- * assist the user in filling out the remaining text while
- * the rotation signals, both @ref rotateUp and @ref rotateDown,
+ * KComboBox emits a few more additional signals as well:
+ * The main ones being the @ref comepltion and the @ref
+ * rotation signal metioned above.  The completion signal
+ * is intended to be connected to a slot that will assist
+ * the user in filling out the remaining text while the
+ * rotation signals, both @ref rotateUp and @ref rotateDown,
  * are intended to be used to transverse through some kind
  * of list in opposing directions.  The @ref returnPressed
  * signals are emitted when the user presses the return key.
  *
- * By default, when you create a completion object through
- * either @ref completionObject() or @ref setCompletionObject
- * this widget will be automatically enabled to handle the
- * signals.  If you do not need this feature, simply use the
- * appropriate accessor methods or the boolean paramters on
- * the above function to shut them off.
+ * This widget by default creates a completion object whenever
+ * you invoke the member function @ref completionObject for the
+ * first time.  You can also assign your own completion object
+ * through @ref setCompletionObject function whenever you want
+ * to control the kind of completion object that needs to be
+ * used.  Additionally, when you create a completion object through
+ * either @ref completionObject or @ref setCompletionObject this
+ * widget will be automatically enabled to handle the signals.  If
+ * you do not need this feature, simply use the appropriate accessor
+ * methods or the boolean paramters on the above function to shut
+ * them off.
  *
  * The default key-binding for completion and rotation is
  * determined from the global settings in @ref KStdAccel.
@@ -73,12 +73,11 @@
  * editable, i.e. it is constructed as a "select-only" widget,
  * then only one completion mode, CompletionAuto, is allowed.
  * All the other modes are simply ignored.  The CompletionAuto
- * mode in this case allows you to automatically select
- * an item in the list that matches the pressed key-codes.
- * For example, if you have a list of countries, typing
- * the first few letters of the name attempts to find a
- * match and if one is found it will be selected as the
- * current item.
+ * mode in this case allows you to automatically select an item
+ * the list that matches the pressed key-codes.  For example, if
+ * you have a list of countries, typing the first few letters of
+ * the name attempts to find a match and if one is found it will
+ * be selected as the current item.
  *
  * @sect Example:
  *
@@ -110,7 +109,7 @@
  * // set your own completion key for manual completions.
  * combo->setCompletionKey( Qt::End );
  * // Shows the context (popup) menu
- * combo->setEnableContextMenu();
+ * combo->setEnableContextMenu( false );
  * // Temporarly disable signal emition
  * combo->disableSignals();
  * // Default the key-bindings to system settings.
