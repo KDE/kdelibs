@@ -166,10 +166,10 @@ public:
 
   /**
    * @internal
-   * Retruns information related to the layout of services in this group.
+   * Returns information related to the layout of services in this group.
    */
   QStringList layoutInfo();
-   
+
   /**
    * @internal
    * Load the service from a stream.
