@@ -6664,6 +6664,10 @@ void KHTMLPart::saveToWallet(const QString& key, const QMap<QString,QString>& da
     return;
   }
 
+  if (onlyLocalReferences()) { // avoid triggering on local apps, thumbnails
+    return;
+  }
+
   if (d->m_wallet) {
     if (d->m_bWalletOpened) {
       if (d->m_wallet->isOpen()) {
