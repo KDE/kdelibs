@@ -3,7 +3,7 @@
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
-   License version 2 as published by the Free Software Foundation. 
+   License version 2 as published by the Free Software Foundation.
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,13 +25,13 @@
 #include <kdelibs_export.h>
 
 /**
+ * @short A time selection widget.
+ *
  * This widget can be used to display or allow user selection of time.
  *
  * \image html ktimewidget.png "KDE Time Widget"
  *
- * @short A combination of a time selection widget.
  * @author Hans Petter Bieker <bieker@kde.org>
- * @version $Id$
  * @since 3.2
  */
 class KDEUI_EXPORT KTimeWidget : public QWidget
@@ -46,7 +46,7 @@ public:
   KTimeWidget(QWidget * parent = 0, const char * name = 0);
 
   /**
-   * Constructs a time selection widget with the initial time set to 
+   * Constructs a time selection widget with the initial time set to
    * @p time.
    */
   KTimeWidget(const QTime & time,
