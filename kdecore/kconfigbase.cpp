@@ -1,6 +1,9 @@
 // $Id$
 //
 // $Log$
+//
+// Revision 1.1.1.1  1997/12/09 22:02:45  jacek
+// Imported sorces fromkde
 // thought, it's better to revert them.
 // I checked twice, that only comments are affected ;)
 //
@@ -159,7 +162,7 @@ void KConfigBase::parseOneConfigFile( QFile& rFile,
 	  pEntry->bGlobal = bGlobal;
 	  pEntry->bNLS = false;
 
-  if( !data()->bLocaleInitialized && kapp->localeConstructed() ) 
+      pCurrentGroupDict->insert( aCurrentLine.left( nEqualsPos ).stripWhiteSpace(),
 								 pEntry );
     }
 }
@@ -387,7 +390,7 @@ bool bOK;
 	  // find first part (red)
 	  int nIndex = aValue.find( ',' );
 	  if( nIndex == -1 )
-  if( !data()->bLocaleInitialized && kapp->localeConstructed() )
+		return aRetColor;
 	  nRed = aValue.left( nIndex ).toInt( &bOK );
 	  
 	  // find second part (green)
