@@ -261,7 +261,7 @@ KPropertiesDialog::KPropertiesDialog (const KURL& _tempUrl, const KURL& _current
   init (modal, autoShow);
 }
 
-bool KPropertiesDialog::showDialog(KFileItem* item, QWidget* parent, 
+bool KPropertiesDialog::showDialog(KFileItem* item, QWidget* parent,
                                    const char* name, bool modal)
 {
 #ifdef Q_WS_WIN
@@ -273,7 +273,7 @@ bool KPropertiesDialog::showDialog(KFileItem* item, QWidget* parent,
   return true;
 }
 
-bool KPropertiesDialog::showDialog(const KURL& _url, QWidget* parent, 
+bool KPropertiesDialog::showDialog(const KURL& _url, QWidget* parent,
                                    const char* name, bool modal)
 {
 #ifdef Q_WS_WIN
@@ -712,29 +712,6 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
   if ( !d->bMultiple )
   {
-    // Extract the file name only
-    filename = properties->defaultName();
-    if ( filename.isEmpty() ) // no template
-      filename = properties->kurl().fileName();
-    else
-    {
-      m_bFromTemplate = true;
-      setDirty(); // to enforce that the copy happens
-    }
-    d->oldFileName = filename;
-
-    // Make it human-readable
-    filename = nameFromFileName( filename );
-
-    if ( d->bKDesktopMode && d->bDesktopFile ) {
-        KDesktopFile config( properties->kurl().path(), true /* readonly */ );
-        if ( config.hasKey( "Name" ) ) {
-            filename = config.readName();
-        }
-    }
-
-    oldName = filename;
-
     QString path;
     if ( !m_bFromTemplate ) {
       isTrash = ( properties->kurl().protocol().find( "trash", 0, false)==0 );
@@ -753,11 +730,33 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     if (KExecPropsPlugin::supports(properties->items()) || // KDE4 remove me
         d->bDesktopFile ||
         KBindingPropsPlugin::supports(properties->items())) {
-
       determineRelativePath( path );
-
     }
 
+    // Extract the file name only
+    filename = properties->defaultName();
+    if ( filename.isEmpty() ) { // no template
+        if ( isTrash || isDevice || hasRoot ) // the cases where the filename won't be renameable
+            filename = item->name(); // this gives support for UDS_NAME, e.g. for kio_trash
+        else
+            filename = properties->kurl().fileName();
+    } else {
+      m_bFromTemplate = true;
+      setDirty(); // to enforce that the copy happens
+    }
+    d->oldFileName = filename;
+
+    // Make it human-readable
+    filename = nameFromFileName( filename );
+
+    if ( d->bKDesktopMode && d->bDesktopFile ) {
+        KDesktopFile config( properties->kurl().path(), true /* readonly */ );
+        if ( config.hasKey( "Name" ) ) {
+            filename = config.readName();
+        }
+    }
+
+    oldName = filename;
   }
   else
   {
@@ -863,12 +862,12 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     d->m_lined->setText(filename);
     nameArea = d->m_lined;
     d->m_lined->setFocus();
-    
+
     // Enhanced rename: Don't highlight the file extension.
     int firstDot = filename.find('.');
     if (firstDot > 0)
       d->m_lined->setSelection(0, firstDot);
-    
+
     connect( d->m_lined, SIGNAL( textChanged( const QString & ) ),
              this, SLOT( nameFileChanged(const QString & ) ) );
   }
