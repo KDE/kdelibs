@@ -5,14 +5,14 @@ dnl ================
 AC_ARG_ENABLE(mysql, [  --enable-mysql              build MySQL-plugin [default=yes]],
               mysql_plugin=$enableval, mysql_plugin=yes)
 
-AC_ARG_WITH(mysqlincdir,
+AC_ARG_WITH(mysql_includes,
 [  --with-mysql-includes=DIR   use MySQL-includes installed in this directory ],
 [
   ac_mysql_incdir=$withval
 ], ac_mysql_incdir=/usr/local/include
 )
 
-AC_ARG_WITH(mysqllibdir,
+AC_ARG_WITH(mysql_libraries,
 [  --with-mysql-libraries=DIR  use MySQL-libs installed in this directory ],
 [
   ac_mysql_libdir=$withval
