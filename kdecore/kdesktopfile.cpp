@@ -31,6 +31,7 @@
 #include "kconfigbackend.h"
 #include "kapplication.h"
 #include "kstandarddirs.h"
+#include "kmountpoint.h"
 
 #include "kdesktopfile.h"
 #include "kdesktopfile.moc"
@@ -124,40 +125,20 @@ QString KDesktopFile::readDevice() const
 QString KDesktopFile::readURL() const
 {
     if (hasDeviceType()) {
-	QString devURL;
+        QString device = readDevice();
+        QPtrList<KMountPoint> mountPoints = KMountPoint::possibleMountPoints();
 	
-	// in this case, we do some magic. :)
-	QCString fstabFile;
-	int indexDevice = 0;  // device on first column
-	int indexMountPoint = 1; // mount point on second column
-	int indexFSType = 2; // fstype on third column
-	if (QFile::exists(QString::fromLatin1("/etc/fstab"))) { // Linux, ...
-	    fstabFile = "/etc/fstab";
-	} else if (QFile::exists(QString::fromLatin1("/etc/vfstab"))) { // Solaris
-	    fstabFile = "/etc/vfstab";
-	    indexMountPoint++;
-	    indexFSType++;
-	}
-	// insert your favorite location for fstab here
-	
-	if ( !fstabFile.isEmpty() ) {
-	    QFile f( fstabFile );
-	    f.open( IO_ReadOnly );
-	    QTextStream stream( &f );
-	    stream.setEncoding( QTextStream::Latin1 );
-	    while ( !stream.eof() ) {
-		QString line = stream.readLine();
-		line = line.simplifyWhiteSpace();
-		if (!line.isEmpty() && line[0] == '/') { // skip comments but also
-		    QStringList lst = QStringList::split( ' ', line );
-		    if ( lst[indexDevice] == readDevice() )
-			devURL = lst[indexMountPoint];
-		}
-	    }
-	    f.close();
-	}
-	return devURL;
-
+        for(KMountPoint *mp = mountPoints.first();
+            mp; mp = mountPoints.next())
+        {
+            if (mp->mountedFrom() == device)
+            {
+                KURL u;
+                u.setPath( mp->mountPoint() );
+                return u.url();
+            }
+        }
+        return QString::null;
     } else {
 	QString url = readEntry("URL");
         if ( !url.isEmpty() && url[0] == '/' )
