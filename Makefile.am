@@ -18,7 +18,7 @@
 #    Boston, MA 02111-1307, USA.
 
 
-COMPILE_FIRST = dcop libltdl kdecore kdeui kdesu kssl kjs kio kimgio kfile kparts kdeprint libkmid ksgmltools
+COMPILE_FIRST = dcop libltdl kdecore kdeui kdesu kssl kjs kio kimgio kfile kparts kdeprint libkmid ksgmltools kconf_update
 
 SUBDIRS = $(COMPILE_FIRST) $(TOPSUBDIRS)
 
