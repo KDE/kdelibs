@@ -7,7 +7,7 @@ KDE_ICON=AUTO
 lib_LTLIBRARIES = libkdbui.la
 
 libkdbui_la_SOURCES = plugininfodlg.cpp\
-		connectionbase.ui\
+		connectionbase.cpp\
 		connectionwidget.cpp\
 		connectiondlg.cpp\
 		databasedlg.cpp\
