@@ -61,10 +61,10 @@ static const KCmdLineOptions options[] =
 struct FileInfo {
    QString name;
    int size; // Size in Kb.
-   int age; 
+   int age;
 };
 
-template class QList<FileInfo>; 
+template class QList<FileInfo>;
 
 class FileInfoList : public QList<FileInfo>
 {
@@ -88,23 +88,22 @@ FileInfo *readEntry( const QString &filename)
    char buffer[401];
    bool ok = true;
 
-  // CacheRevision 
+  // CacheRevision
   if (ok && (!fgets(buffer, 400, fs)))
-      ok = false;  
+      ok = false;
    if (ok && (strcmp(buffer, CACHE_REVISION) != 0))
       ok = false;
 
    // Full URL
    if (ok && (!fgets(buffer, 400, fs)))
-      ok = false;  
+      ok = false;
 
    time_t creationDate;
-   time_t expireDate;
    int age;
 
    // Creation Date
    if (ok && (!fgets(buffer, 400, fs)))
-      ok = false;  
+      ok = false;
    if (ok)
    {
       creationDate = (time_t) strtoul(buffer, 0, 10);
@@ -117,11 +116,12 @@ FileInfo *readEntry( const QString &filename)
 
    // Expiration Date
    if (ok && (!fgets(buffer, 400, fs)))
-      ok = false;  
+      ok = false;
    if (ok)
    {
 //WABA: It seems I slightly misunderstood the meaning of "Expire:" header.
 #if 0
+      time_t expireDate;
       expireDate = (time_t) strtoul(buffer, 0, 10);
       if (expireDate && (expireDate < currentDate))
          ok = false; // Expired
@@ -144,7 +144,7 @@ FileInfo *readEntry( const QString &filename)
       // Ignore Last-Modified
    }
 
- 
+
    fclose(fs);
    if (ok)
    {
@@ -163,7 +163,7 @@ void scanDirectory(FileInfoList &fileEntries, const QString &name, const QString
 {
    QDir dir(strDir);
    if (!dir.exists()) return;
-   
+
    QFileInfoList *newEntries = (QFileInfoList *) dir.entryInfoList();
 
    if (!newEntries) return; // Directory not accesible ??
@@ -224,11 +224,11 @@ int main(int argc, char **argv)
       fprintf(stderr, "%s: '%s' does not exist.\n", appName, strCacheDir.ascii());
       return 0;
    }
-   
+
    QStringList dirs = cacheDir.entryList( );
 
    FileInfoList cachedEntries;
-  
+
    for(QStringList::Iterator it = dirs.begin();
        it != dirs.end();
        it++)
@@ -238,7 +238,7 @@ int main(int argc, char **argv)
          scanDirectory( cachedEntries, *it, strCacheDir + "/" + *it);
       }
    }
- 
+
    cachedEntries.sort();
 
    int totalSize = 0;
