@@ -81,7 +81,7 @@ public:
      * Null if you used the QIODevice constructor.
      * @return the zip's file name, or null if a QIODevice is used
      */
-    QString fileName()const { return m_filename; }
+    QString fileName() { return m_filename; }
 
     /**
      * Describes the Zip's compression type.
