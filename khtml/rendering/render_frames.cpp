@@ -75,8 +75,8 @@ RenderFrameSet::~RenderFrameSet()
     m_colWidth = 0;
   }
 
-  delete m_hSplitVar;
-  delete m_vSplitVar;
+  delete [] m_hSplitVar;
+  delete [] m_vSplitVar;
 }
 
 void RenderFrameSet::layout( )
