@@ -172,18 +172,23 @@ static pid_t launch(int argc, const char *_name, const char *args)
      close(d.fd[0]);
      close_fds();
 
-     /** Give the process a new name **/
-     kdeinit_setproctitle( "%s", name.data() );
-
-     d.argv = (char **) malloc(sizeof(char *) * (argc+1));
-     d.argv[0] = name.data();
-     for (int i = 1;  i < argc; i++)
      {
-        d.argv[i] = (char *) args;
-        while(*args != 0) args++;
-        args++;
+       QCString procTitle( name );
+       d.argv = (char **) malloc(sizeof(char *) * (argc+1));
+       d.argv[0] = name.data();
+       for (int i = 1;  i < argc; i++)
+       {
+          d.argv[i] = (char *) args;
+          procTitle += " ";
+          procTitle += (char *) args;
+          while(*args != 0) args++;
+          args++;
+       }
+       d.argv[argc] = 0;
+
+       /** Give the process a new name **/
+       kdeinit_setproctitle( "%s", procTitle.data() );
      }
-     d.argv[argc] = 0;
 
      d.handle = 0;
      if (lib.right(3) == ".la")
