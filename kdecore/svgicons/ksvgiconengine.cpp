@@ -238,7 +238,7 @@ public:
 		QWMatrix matrix = m_engine->painter()->parseTransform(transform);
 
 		QWMatrix *current = m_engine->painter()->worldMatrix();
-		*current *= matrix;
+		*current = matrix * *current;
 	}
 
 	void parseCommonAttributes(QDomNode &node)
