@@ -87,7 +87,7 @@ void KCharSelectTable::setChar( const QChar &_chr )
 //==================================================================
 void KCharSelectTable::setTableNum( int _tableNum )
 {
-    focusItem = QChar( _tableNum * 255 );
+    focusItem = QChar( _tableNum * 256 );
 
     vTableNum = _tableNum;
     repaintContents( false );
@@ -133,7 +133,7 @@ void KCharSelectTable::paintCell( class QPainter* p, int row, int col )
     QFont font = QFont( vFont );
     font.setPixelSize( int(.7 * h) );
 
-    unsigned short c = vTableNum * 255;
+    unsigned short c = vTableNum * 256;
     c += row * numCols();
     c += col;
 
@@ -148,7 +148,7 @@ void KCharSelectTable::paintCell( class QPainter* p, int row, int col )
 	if( fm.inFont( c ) )
 		p->setBrush( QBrush( colorGroup().base() ) );
 	else
-		p->setBrush( QBrush( colorGroup().mid() ) );
+		p->setBrush( QBrush( colorGroup().button() ) );
 	p->setPen( NoPen );
 	p->drawRect( 0, 0, w, h );
 	p->setPen( colorGroup().text() );
@@ -189,7 +189,7 @@ void KCharSelectTable::mouseMoveEvent( QMouseEvent *e )
 	vPos.setX( col );
 	vPos.setY( row );
 
-	vChr = QChar( vTableNum * 255 + 32 * vPos.y() + vPos.x() );
+	vChr = QChar( vTableNum * 256 + numCols() * vPos.y() + vPos.x() );
 
 	QPoint oldFocus = focusPos;
 
@@ -256,7 +256,7 @@ void KCharSelectTable::gotoLeft()
 
 	focusPos.setX( focusPos.x() - 1 );
 
-	focusItem = QChar( vTableNum * 255 + 32 * focusPos.y() + focusPos.x() );
+	focusItem = QChar( vTableNum * 256 + numCols() * focusPos.y() + focusPos.x() );
 
 	repaintCell( oldPos.y(), oldPos.x(), true );
 	repaintCell( focusPos.y(), focusPos.x(), true );
@@ -274,7 +274,7 @@ void KCharSelectTable::gotoRight()
 
 	focusPos.setX( focusPos.x() + 1 );
 
-	focusItem = QChar( vTableNum * 255 + 32 * focusPos.y() + focusPos.x() );
+	focusItem = QChar( vTableNum * 256 + numCols() * focusPos.y() + focusPos.x() );
 
 	repaintCell( oldPos.y(), oldPos.x(), true );
 	repaintCell( focusPos.y(), focusPos.x(), true );
@@ -292,7 +292,7 @@ void KCharSelectTable::gotoUp()
 
 	focusPos.setY( focusPos.y() - 1 );
 
-	focusItem = QChar( vTableNum * 255 + 32 * focusPos.y() + focusPos.x() );
+	focusItem = QChar( vTableNum * 256 + numCols() * focusPos.y() + focusPos.x() );
 
 	repaintCell( oldPos.y(), oldPos.x(), true );
 	repaintCell( focusPos.y(), focusPos.x(), true );
@@ -310,7 +310,7 @@ void KCharSelectTable::gotoDown()
 
 	focusPos.setY( focusPos.y() + 1 );
 
-	focusItem = QChar( vTableNum * 255 + 32 * focusPos.y() + focusPos.x() );
+	focusItem = QChar( vTableNum * 256 + numCols() * focusPos.y() + focusPos.x() );
 
 	repaintCell( oldPos.y(), oldPos.x(), true );
 	repaintCell( focusPos.y(), focusPos.x(), true );
