@@ -405,7 +405,7 @@ public:
      * selected one then @ref htmlView is returned. Otherwise all
      * @ref HTMLFrameSet instances are asked.
      */
-    KHTMLWidget* getSelectedFrame();
+    KHTMLWidget* selectedFrame();
 
     /**
      * Sets point sizes to be associated with the HTML-sizes used in

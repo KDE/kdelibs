@@ -75,6 +75,7 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name)
 
     setCursor(arrowCursor);
     _isFrame = false;
+    _isSelected = false;
 
     init();
 }
@@ -94,6 +95,8 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, KHTMLWidget *_parent_browser, QString
 
     setCursor(arrowCursor);
     _isFrame = true;
+    _isSelected = false;
+
     if(_parent) setURLCursor(_parent->urlCursor());
 
     init();
@@ -285,14 +288,19 @@ KHTMLWidget* KHTMLWidget::findFrame( const QString &_name )
 KHTMLWidget* KHTMLWidget::createFrame( QWidget *_parent, QString _name )
 {
     KHTMLWidget *child = new KHTMLWidget( _parent, this, _name );
+    Child *c = new Child(child, false);
+    m_lstChildren.append(c);
     return child;
 }
 
 KHTMLWidget* KHTMLWidget::getFrame( QString _name )
 {
-    KHTMLWidget *child = findFrame(_name);
-    if(child && child->parentFrame() == this) return child;
-
+    Child *c = m_lstChildren.first();
+    while(c)
+    {	
+	if( c->m_pBrowser->frameName() == _name) return c->m_pBrowser;
+	c = m_lstChildren.next();
+    }
     return 0;
 }
 
@@ -1030,14 +1038,11 @@ void KHTMLWidget::viewportMousePressEvent( QMouseEvent *_mouse )
 
 
     // Make this frame the active one
+    // ### need some visual indication for the active frame.
     if ( _isFrame && !_isSelected )
     {
-	// find top level frame
-	KHTMLWidget *w = this;
-	while(w && w->isFrame())
-	    w = static_cast<KHTMLWidget *>(w->parentWidget());
-	// ####
-	//w->setSelected(this);
+	printf("activating frame!\n");
+	topView()->setFrameSelected(this);
     }
 
     DOMString url;
@@ -1375,12 +1380,6 @@ QString KHTMLWidget::selectedText()
     return QString::null;
 }
 
-KHTMLWidget *KHTMLWidget::getSelectedFrame()
-{
-  #warning FIXME
-  return this;
-}
-
 void
 KHTMLWidget::setFontSizes(const int *newFontSizes, const int *newFixedFontSizes)
 {
@@ -1625,4 +1624,37 @@ KJSWorld *KHTMLWidget::jScript()
     if(!_jScriptEnabled) return 0;
     if(!_jscript) _jscript = new KJSWorld(this);
     return _jscript;
+}
+
+
+void KHTMLWidget::setFrameSelected(KHTMLWidget *w)
+{
+    if(w == this)
+    {
+	_isSelected = true;
+	printf("selecting frame: this=%p\n", this);
+    }
+    else
+	_isSelected = false;
+
+    Child *c = m_lstChildren.first();
+    while(c)
+    {	
+	c->m_pBrowser->setFrameSelected(w);
+	c = m_lstChildren.next();
+    }
+}
+
+KHTMLWidget *KHTMLWidget::selectedFrame()
+{
+    if(_isSelected) return this;
+
+    Child *c = m_lstChildren.first();
+    while(c)
+    {	
+	KHTMLWidget *w = c->m_pBrowser->selectedFrame();
+	if(w) return w;
+	c = m_lstChildren.next();
+    }
+    return 0;
 }
