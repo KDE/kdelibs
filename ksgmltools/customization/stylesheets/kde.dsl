@@ -461,6 +461,12 @@
 (declare-characteristic preserve-sdata?
    "UNREGISTERED::James Clark//Characteristic::preserve-sdata?" #f)
 
+; Callouts - first attempts
+(define %callout-graphics% #t)
+(define %callout-graphics-extension% ".png")
+(define %callout-graphics-path% %kde-doc-common-path%)
+(define %callout-graphics-number-limit% 10)
+
     </STYLE-SPECIFICATION-BODY>
   </STYLE-SPECIFICATION>
 
