@@ -61,10 +61,10 @@
 #define TIMER_INTERVAL		30	// ms between parser parses
 
 
-enum ID { ID_ADDRESS, ID_BIG, ID_BLOCKQUOTE, ID_B, ID_CITE, ID_CODE, ID_EM,
-ID_FONT, ID_HEADER, ID_I, ID_KBD, ID_PRE,
-ID_SAMP, ID_SMALL, ID_STRIKE, ID_STRONG, ID_S, ID_TT, ID_U, ID_CAPTION, 
-ID_TH, ID_TD, ID_TABLE, ID_DIR, ID_MENU, ID_OL, ID_UL, ID_VAR };
+enum ID { ID_ADDRESS, ID_BIG, ID_BLOCKQUOTE, ID_B, ID_CELL, ID_CITE, 
+    ID_CODE, ID_EM, ID_FONT, ID_HEADER, ID_I, ID_KBD, ID_PRE, ID_SAMP, 
+    ID_SMALL, ID_STRIKE, ID_STRONG, ID_S, ID_TT, ID_U, ID_CAPTION, 
+    ID_TH, ID_TD, ID_TABLE, ID_DIR, ID_MENU, ID_OL, ID_UL, ID_VAR };
 
 
 //----------------------------------------------------------------------------
@@ -1447,6 +1447,7 @@ void KHTMLWidget::blockEndFont( HTMLClueV *_clue, HTMLStackElem *Elem)
     if (Elem->miscData1)
     {
 	vspace_inserted = insertVSpace( _clue, vspace_inserted );
+	flow = 0;
     }
 }
 
@@ -2398,18 +2399,15 @@ void KHTMLWidget::parseC( HTMLClueV *_clue, const char *str )
 	}
 	else if (strncmp( str, "cell", 4 ) == 0)
 	{
-	    HTMLClue *f = flow;
-	    if ( flow == 0 )
+	    if ( flow == 0)
 	    {
 		flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
+		flow->setIndent( indent );
 		flow->setHAlign( divAlign );
 		_clue->append( flow );
-		f = flow;
 	    }
 
 	    parseCell( flow, str );
-
-	    flow = f;
 
 	    HTMLText *t = new HTMLText( "", currentFont(), painter );
 	    t->setSeparator( true );
@@ -2559,7 +2557,7 @@ void KHTMLWidget::parseE( HTMLClueV * _clue, const char *str )
 	}
 	else if ( strncmp( str, "/em", 3 ) == 0 )
 	{
-		popBlock( ID_EM, clue);
+		popBlock( ID_EM, _clue);
 	}
 }
 
@@ -2888,7 +2886,7 @@ void KHTMLWidget::parseH( HTMLClueV *_clue, const char *str )
  	      *(str+2)=='4' || *(str+2)=='5' || *(str+2)=='6' ))
 	{
 		// Close tag
-		popBlock( ID_HEADER, clue);
+		popBlock( ID_HEADER, _clue);
 	}
 	else if ( strncmp(str, "hr", 2 ) == 0 )
 	{
@@ -3122,7 +3120,7 @@ void KHTMLWidget::parseI( HTMLClueV *_clue, const char *str )
     }
     else if ( strncmp( str, "/i", 2 ) == 0 )
     {
-	popBlock( ID_I, clue);
+	popBlock( ID_I, _clue);
     }
 }
 
@@ -3141,7 +3139,7 @@ void KHTMLWidget::parseK( HTMLClueV * _clue, const char *str )
 	}
 	else if ( strncmp(str, "/kbd", 4 ) == 0 )
 	{
-		popBlock( ID_KBD, clue);
+		popBlock( ID_KBD, _clue);
 	}
 }
 
@@ -3249,7 +3247,7 @@ void KHTMLWidget::parseM( HTMLClueV *_clue, const char *str )
 	}
 	else if (strncmp( str, "/menu", 5 ) == 0)
 	{
-		popBlock( ID_MENU, clue);
+		popBlock( ID_MENU, _clue);
 	}
 	else if ( strncmp( str, "map", 3 ) == 0 )
 	{
@@ -3359,7 +3357,7 @@ void KHTMLWidget::parseO( HTMLClueV *_clue, const char *str )
     }
     else if ( strncmp( str, "/ol", 3 ) == 0 )
     {
-	popBlock( ID_OL, clue);
+	popBlock( ID_OL, _clue);
     }
     else if ( strncmp( str, "option", 6 ) == 0 )
     {
@@ -3416,7 +3414,7 @@ void KHTMLWidget::parseP( HTMLClueV *_clue, const char *str )
 	}	
 	else if ( strncmp( str, "/pre", 4 ) == 0 )
 	{
-		popBlock( ID_PRE, clue);
+		popBlock( ID_PRE, _clue);
 	}
 	else if ( *str == 'p' && ( *(str+1) == ' ' || *(str+1) == '>' ) )
 	{
@@ -3480,7 +3478,7 @@ void KHTMLWidget::parseS( HTMLClueV *_clue, const char *str )
 	}
 	else if ( strncmp(str, "/samp", 5 ) == 0)
 	{
-		popBlock( ID_SAMP, clue);
+		popBlock( ID_SAMP, _clue);
 	}
 	else if ( strncmp(str, "select", 6 ) == 0)
 	{
@@ -3538,7 +3536,7 @@ void KHTMLWidget::parseS( HTMLClueV *_clue, const char *str )
 	}
 	else if ( strncmp(str, "/small", 6 ) == 0 )
 	{
-		popBlock( ID_SMALL, clue);
+		popBlock( ID_SMALL, _clue);
 	}
 	else if ( strncmp(str, "strong", 6 ) == 0 )
 	{
@@ -3548,7 +3546,7 @@ void KHTMLWidget::parseS( HTMLClueV *_clue, const char *str )
 	}
 	else if ( strncmp(str, "/strong", 7 ) == 0 )
 	{
-		popBlock( ID_STRONG, clue);
+		popBlock( ID_STRONG, _clue);
 	}
 	else if ( strncmp( str, "strike", 6 ) == 0 )
 	{
@@ -3569,11 +3567,11 @@ void KHTMLWidget::parseS( HTMLClueV *_clue, const char *str )
 	{
 	    if ( str[2] == '>' || str[2] == ' ')
 	    {
-	    	popBlock( ID_S, clue);
+	    	popBlock( ID_S, _clue);
 	    }
 	    else if ( strncmp( str+2, "trike", 5 ) == 0 )
 	    {
-		popBlock( ID_STRIKE, clue);
+		popBlock( ID_STRIKE, _clue);
 	    }
 	}
 }
@@ -3674,7 +3672,7 @@ void KHTMLWidget::parseT( HTMLClueV *_clue, const char *str )
 	}
 	else if ( strncmp( str, "/tt", 3 ) == 0 )
 	{
-		popBlock( ID_TT, clue);
+		popBlock( ID_TT, _clue);
 	}
 }
  
@@ -3711,7 +3709,7 @@ void KHTMLWidget::parseU( HTMLClueV *_clue, const char *str )
     }
     else if ( strncmp( str, "/ul", 3 ) == 0 )
     {
-	popBlock( ID_UL, clue);
+	popBlock( ID_UL, _clue);
     }
     else if ( strncmp(str, "u", 1 ) == 0 )
     {
@@ -3724,7 +3722,7 @@ void KHTMLWidget::parseU( HTMLClueV *_clue, const char *str )
     }
     else if ( strncmp( str, "/u", 2 ) == 0 )
     {
-	    popBlock( ID_U, clue);
+	    popBlock( ID_U, _clue);
     }
 }
 
@@ -3739,7 +3737,7 @@ void KHTMLWidget::parseV( HTMLClueV * _clue, const char *str )
 	}
 	else if ( strncmp( str, "/var", 4 ) == 0)
 	{
-		popBlock( ID_VAR, clue);
+		popBlock( ID_VAR, _clue);
 	}
 }
 
@@ -3762,7 +3760,10 @@ void KHTMLWidget::parseZ( HTMLClueV *, const char * )
 const char* KHTMLWidget::parseCell( HTMLClue *_clue, const char *str )
 {
     static const char *end[] = { "</cell>", 0 }; 
-    
+    HTMLClue::HAlign olddivalign = divAlign;
+    HTMLClue *oldFlow = flow;
+    int oldindent = indent;
+
     HTMLClue::HAlign gridHAlign = HTMLClue::HCenter;// global align of all cells
     int cell_width = 90;
 
@@ -3792,10 +3793,19 @@ const char* KHTMLWidget::parseCell( HTMLClue *_clue, const char *str )
     vc->setVAlign( valign );
     vc->setHAlign( halign );
     flow = 0;
+    indent = 0;
+    divAlign = HTMLClue::Left;
+                 
+    pushBlock( ID_CELL, 3 );
     str = parseBody( vc, end );
+    popBlock( ID_CELL, vc );
 
     vc = new HTMLClueV( 0, 0, 10, 0 ); // fixed width
     _clue->append( vc );
+
+    indent = oldindent;
+    divAlign = olddivalign;
+    flow = oldFlow;
 
     return str;
 }
