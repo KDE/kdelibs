@@ -78,13 +78,22 @@ public:
    *        no list is formatted, the internal KDE font list is used.
    *        If that has not been created, X is queried, and all fonts
    *        available on the system are displayed.
+   * @param diff Display the difference version dialog.
+   *        See KFontDialog::getFontDiff().
    * @param visibleListSize The minimum number of visible entries in the
    *        fontlists.
+   * @param sizeIsRelativeFlag If not zero the widget will show a
+   *        checkbox where the user may choose whether the font size
+   *        is to be interpreted as relative size.
+   *        Initial state of this checkbox will be set according to
+   *        *sizeIsRelativeFlag, user choice may be retrieved by
+   *        calling sizeIsRelative().
    */
   KFontChooser(QWidget *parent = 0L, const char *name = 0L,
 	       bool onlyFixed = false,
 	       const QStringList &fontList = QStringList(),
-	       bool makeFrame = true, bool diff = false, int visibleListSize=8);
+	       bool makeFrame = true, int visibleListSize=8,
+               bool diff = false,        bool *sizeIsRelativeFlag = 0L );
 
   /**
    * Destructs the font chooser.
@@ -114,7 +123,7 @@ public:
   void setFont( const QFont &font, bool onlyFixed = false );
 
   /**
-   * @return The bitmask corresponding to the attributes the user 
+   * @return The bitmask corresponding to the attributes the user
    *         wishes to change.
    */
   int fontDiffFlags();
@@ -133,6 +142,20 @@ public:
    * @return The color currently used in the preview (default: black)
    */
   QColor color() const;
+
+  /**
+   * Sets the state of the checkbox indicating whether the font size
+   * is to be interpreted as relative size.
+   * NOTE: If parameter sizeIsRelative was not set in the constructor
+   *       of the widget this setting will be ignored.
+   */
+  void setSizeIsRelative( bool relative );
+
+  /**
+   * @return Whether the font size is to be interpreted as relative size (default: false)
+   */
+  bool sizeIsRelative() const;
+
 
 #if QT_VERSION < 300
   /**
@@ -239,6 +262,7 @@ private:
   KListBox     *styleListBox;
   KListBox     *sizeListBox;
   QComboBox    *charsetsCombo;
+  QCheckBox    *sizeIsRelativeCheckBox;
 
   QFont        selFont;
 
@@ -289,12 +313,19 @@ public:
    *        available on the system are displayed.
    * @param makeFrame Draws a frame with titles around the contents.
    * @param diff Display the difference version dialog. See getFontDiff().
+   * @param sizeIsRelativeFlag If not zero the widget will show a
+   *        checkbox where the user may choose whether the font size
+   *        is to be interpreted as relative size.
+   *        Initial state of this checkbox will be set according to
+   *        *sizeIsRelativeFlag, user choice may be retrieved by
+   *        calling sizeIsRelative().
    *
    */
   KFontDialog( QWidget *parent = 0L, const char *name = 0,
 	       bool onlyFixed = false, bool modal = false,
 	       const QStringList &fontlist = QStringList(),
-	       bool makeFrame = true, bool diff = false );
+	       bool makeFrame = true, bool diff = false,
+               bool *sizeIsRelativeFlag = 0L );
 
   /**
    * Sets the currently selected font in the dialog.
@@ -310,6 +341,21 @@ public:
    * @return The currently selected font in the dialog.
    */
   QFont font() const { return chooser->font(); }
+
+  /**
+   * Sets the state of the checkbox indicating whether the font size
+   * is to be interpreted as relative size.
+   * NOTE: If parameter sizeIsRelative was not set in the constructor
+   *       of the dialog this setting will be ignored.
+   */
+  void setSizeIsRelative( bool relative )
+    { chooser->setSizeIsRelative( relative ); }
+
+  /**
+   * @return Whether the font size is to be interpreted as relative size (default: false)
+   */
+  bool sizeIsRelative() const
+    { return chooser->sizeIsRelative(); }
 
 #if QT_VERSION < 300
   /**
@@ -334,11 +380,18 @@ public:
    * @param parent Parent widget of the dialog. Specifying a widget different
    *        from 0 (Null) improves centering (looks better).
    * @param makeFrame Draws a frame with titles around the contents.
+   * @param sizeIsRelativeFlag If not zero the widget will show a
+   *        checkbox where the user may choose whether the font size
+   *        is to be interpreted as relative size.
+   *        Initial state of this checkbox will be set according to
+   *        *sizeIsRelativeFlag and user choice will be returned
+   *        therein.
    *
-   * @returns @ref QDialog::result().
+   * @return @ref QDialog::result().
    */
   static int getFont( QFont &theFont, bool onlyFixed = false,
-		      QWidget *parent = 0L, bool makeFrame = true );
+		      QWidget *parent = 0L, bool makeFrame = true,
+                      bool* sizeIsRelativeFlag = 0L );
 
   /**
    * Creates a modal font difference dialog, lets the user choose a selection
@@ -348,17 +401,18 @@ public:
    *
    * @param theFont a reference to the font to write the chosen font
    *        into.
+   * @param diffFlags a reference to the int into which the chosen
+   *        difference selection bitmask should be written.
    * @param onlyFixed if true, only select from fixed-width fonts.
    * @param parent Parent widget of the dialog. Specifying a widget different
    *        from 0 (Null) improves centering (looks better).
    * @param makeFrame Draws a frame with titles around the contents.
-   * @param diffFlags a reference to the int into which the chosen
-   *        difference selection bitmask should be written.
    *
    * @returns @ref QDialog::result().
    */
   static int getFontDiff( QFont &theFont, int &diffFlags, bool onlyFixed = false,
-		      QWidget *parent = 0L, bool makeFrame = true );
+		      QWidget *parent = 0L, bool makeFrame = true,
+                      bool* sizeIsRelativeFlag = 0L );
 
   /**
    * When you are not only interested in the font selected, but also
@@ -371,11 +425,18 @@ public:
    * @param parent Parent widget of the dialog. Specifying a widget different
    *        from 0 (Null) improves centering (looks better).
    * @param makeFrame Draws a frame with titles around the contents.
+   * @param sizeIsRelativeFlag If not zero the widget will show a
+   *        checkbox where the user may choose whether the font size
+   *        is to be interpreted as relative size.
+   *        Initial state of this checkbox will be set according to
+   *        *sizeIsRelativeFlag and user choice will be returned
+   *        therein.
    * @return The result of the dialog.
    */
   static int getFontAndText( QFont &theFont, QString &theString,
 			     bool onlyFixed = false, QWidget *parent = 0L,
-			     bool makeFrame = true );
+			     bool makeFrame = true,
+                             bool* sizeIsRelativeFlag = 0L );
 
 signals:
   /**
