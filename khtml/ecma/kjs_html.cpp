@@ -167,9 +167,9 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
     case Title:
       return getString(doc.title());
     case Referrer:
-      return String(doc.referrer());
+      return getString(doc.referrer());
     case Domain:
-      return String(doc.domain());
+      return getString(doc.domain());
     case URL:
       return getString(doc.URL());
     case Body:
