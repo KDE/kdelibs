@@ -3,7 +3,8 @@ lib_LTLIBRARIES = libartsc.la libartscbackend.la
 FLOWLIBS = $(top_builddir)/arts/flow/libartsflow.la
 
 INCLUDES = $(all_includes) -I$(top_srcdir)/arts/mcop -I$(top_srcdir)/arts/flow \
-      -I$(top_builddir)/arts/flow -I$(top_builddir)/arts/soundserver
+      -I$(top_builddir)/arts/flow -I$(top_builddir)/arts/soundserver \
+      -I$(top_srcdir)/libltdl
 
 bin_SCRIPTS = artsc-config
 
