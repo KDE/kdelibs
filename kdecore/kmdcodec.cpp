@@ -19,15 +19,15 @@
    This KMD5 class is based on a C++ implementation of
    "RSA Data Security, Inc. MD5 Message-Digest Algorithm" by
    Mordechai T. Abzug,	Copyright (c) 1995.  This implementation
-   passes the test-suite as defined by RFC 1321.
+   passes the test-suite supplied with RFC 1321.
 
    RFC 1321 "MD5 Message-Digest Algorithm" Copyright (C) 1991-1992,
    RSA Data Security, Inc. Created 1991. All rights reserved.
 
-   The encode/decode utilities in KCodecs were adapted from
-   Ronald Tschalär Copyright (C) 1996-1999 HTTPClient java
-   package, except the Quoted-Printable codec, which is
-   (C) 2001 Rik Hemsley (rikkus) <rik@kde.org>
+   The encode/decode with the exception of quoted-printable utilities
+   in KCodecs were adapted from the HTTPClient java package, Ronald Tschalär
+   Copyright (C) 1996-1999. The quoted-printable as described in RFC
+   2045, section 6.7. codec is by (C) 2001 Rik Hemsley <rik@kde.org>
 */
 
 #include <string.h>
@@ -53,6 +53,7 @@
 #define KMD5_S43 15
 #define KMD5_S44 21
 
+// static constants for base64
 char KCodecs::Base64EncMap[64] = {
                                    0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48,
                                    0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F, 0x50,
@@ -83,6 +84,7 @@ char KCodecs::Base64DecMap[128] = {
                                     0x31, 0x32, 0x33, 0x00, 0x00, 0x00, 0x00, 0x00
                                   };
 
+// static constants for uuencode
 char KCodecs::UUEncMap[64] = {
                                0x60, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27,
                                0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F,
@@ -112,6 +114,11 @@ char KCodecs::UUDecMap[128] = {
                                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
                               };
+
+// static constants for quoted-printable
+char KCodecs::hexChars[16] = "0123456789ABCDEF";
+const unsigned int KCodecs::maxQPLineLength = 70;
+
 
 /******************************** KCodecs ********************************/
 QCString KCodecs::base64Encode( const QCString& str )
@@ -447,6 +454,161 @@ QString KCodecs::decodeString( const QString& data )
     return base64Decode(data);
 }
 
+// strchr(3) for broken systems.
+static int rikFindChar(register const char * _s, const char c)
+{
+  register const char * s = _s;
+
+  while (true)
+  {
+    if (0 == *s) break; if (c == *s) break; ++s;
+    if (0 == *s) break; if (c == *s) break; ++s;
+    if (0 == *s) break; if (c == *s) break; ++s;
+    if (0 == *s) break; if (c == *s) break; ++s;
+  }
+
+  return s - _s;
+}
+
+QCString KCodecs::quotedPrintableEncode(const QByteArray & in)
+{
+  const char * data = in.data();
+  unsigned int length = in.size();
+
+  // Reasonable guess for output size when we're encoding mostly-ASCII
+  // data. It doesn't really matter, because the underlying allocation
+  // routines are quite efficient, but it's nice to have 0 allocations
+  // in many cases.
+
+  QCString output(length * 1.2);
+
+  const unsigned int end = length - 1;
+  unsigned int lineLength = 0;
+
+  for (unsigned int i = 0; i < length; i++)
+  {
+    unsigned char c(data[i]);
+
+    // Plain ASCII chars just go straight out.
+
+    if ((c >= 33) && (c <= 126) && ('=' != c))
+    {
+      output += c;
+
+      ++lineLength;
+    }
+
+    // Spaces need some thought. We have to encode them at eol (or eof).
+
+    else if (' ' == c)
+    {
+      if
+        (
+         (i >= length)
+         ||
+         ((i < end) && (data[i + 1] == '\r') && (data[i + 2] == '\n'))
+        )
+      {
+        output += "=20";
+        lineLength += 3;
+      }
+      else
+      {
+        output += ' ';
+        ++lineLength;
+      }
+    }
+
+    // If we find \r\n, just let it through.
+
+    else if (('\r' == c) && (i < end) && ('\n' == data[i + 1]))
+    {
+      output += "\r\n";
+
+      lineLength = 0;
+
+      ++i;
+    }
+
+    // Anything else is converted to =XX.
+
+    else
+    {
+      output += '=';
+      output += hexChars[c / 16];
+      output += hexChars[c % 16];
+
+      lineLength += 3;
+    }
+
+    // If we're approaching the maximum line length, do a soft line break.
+
+    if ((lineLength > maxQPLineLength) && (i < end))
+    {
+      output += "=\r\n";
+
+      lineLength = 0;
+    }
+
+  }
+
+  return output;
+}
+
+QByteArray KCodecs::quotedPrintableDecode(const QCString & in)
+{
+  const char * data = in.data();
+  const unsigned int length = in.size();
+
+  // Maximum output size is equal to input size.
+
+  QByteArray output(length);
+  char * cursor = output.data();
+
+  for (unsigned int i = 0; i < length; i++)
+  {
+    char c(data[i]);
+
+    if ('=' == c)
+    {
+      if (i < length - 2)
+      {
+        char c1 = data[i + 1];
+        char c2 = data[i + 2];
+
+        if ('\r' == c1 && '\n' == c2)
+        {
+          // Soft line break. No output.
+          i += 2;
+        }
+        else
+        {
+          // =XX encoded byte.
+
+          int hexChar0 = rikFindChar(hexChars, c1);
+          int hexChar1 = rikFindChar(hexChars, c2);
+
+          if (hexChar0 < 16 && hexChar1 < 16)
+          {
+            *cursor++ = char((hexChar0 * 16) | hexChar1);
+            i += 2;
+          }
+        }
+      }
+    }
+    else
+    {
+      *cursor++ = c;
+    }
+  }
+
+  --cursor;
+  output.truncate(cursor - output.data());
+
+  return output;
+}
+
+
 
 /******************************** KMD5 ********************************/
 KMD5::KMD5()
@@ -732,8 +894,8 @@ void KMD5::transform( Q_UINT8 block[64] )
 
     Q_UINT32 a = m_state[0], b = m_state[1], c = m_state[2], d = m_state[3], x[16];
 
-    //decode (x, block, 64);
-    memcpy( x, block, 64 );
+    decode (x, block, 64);
+    //memcpy( x, block, 64 );
     ASSERT(!m_finalized);  // not just a user error, since the method is private
 
     /* Round 1 */
@@ -869,10 +1031,10 @@ void KMD5::II ( Q_UINT32& a, Q_UINT32 b, Q_UINT32 c, Q_UINT32 d,
     a = rotate_left (a, s) +b;
 }
 
-/*
+
 void KMD5::encode ( Q_UINT8 *output, Q_UINT32 *in, Q_UINT32 len )
 {
- #if !defined(WORDS_BIGENDIAN)
+#if !defined(WORDS_BIGENDIAN)
     memcpy(output, in, len);
 
 #else
@@ -891,7 +1053,7 @@ void KMD5::encode ( Q_UINT8 *output, Q_UINT32 *in, Q_UINT32 len )
 // multiple of 4.
 void KMD5::decode (Q_UINT32 *output, Q_UINT8 *in, Q_UINT32 len)
 {
- #if !defined(WORDS_BIGENDIAN)
+#if !defined(WORDS_BIGENDIAN)
     memcpy(output, in, len);
 
 #else
@@ -902,171 +1064,5 @@ void KMD5::decode (Q_UINT32 *output, Q_UINT8 *in, Q_UINT32 len)
                     (static_cast<Q_UINT32>(in[j+2]) << 16) |
                     (static_cast<Q_UINT32>(in[j+3]) << 24);
 #endif
-}
-*/
-
-// Following code Copyright (C) 2001 Rik Hemsley (rikkus) <rik@kde.org>
-
-// Quoted-Printable codec described in RFC 2045, section 6.7.
-
-static const char         hexChars[]      = "0123456789ABCDEF";
-static const unsigned int maxQPLineLength = 70;
-
-// strchr(3) for broken systems.
-
-static int rikFindChar(register const char * _s, const char c)
-{
-  register const char * s = _s;
-
-  while (true)
-  {
-    if (0 == *s) break; if (c == *s) break; ++s;
-    if (0 == *s) break; if (c == *s) break; ++s;
-    if (0 == *s) break; if (c == *s) break; ++s;
-    if (0 == *s) break; if (c == *s) break; ++s;
-  }
-
-  return s - _s;
-}
-
-  QCString
-KCodecs::quotedPrintableEncode(const QByteArray & in)
-{
-  const char * data = in.data();
-  unsigned int length = in.size();
-
-  // Reasonable guess for output size when we're encoding mostly-ASCII
-  // data. It doesn't really matter, because the underlying allocation
-  // routines are quite efficient, but it's nice to have 0 allocations
-  // in many cases.
-
-  QCString output(length * 1.2);
-
-  const unsigned int end = length - 1;
-  unsigned int lineLength = 0;
-
-  for (unsigned int i = 0; i < length; i++)
-  {
-    unsigned char c(data[i]);
-
-    // Plain ASCII chars just go straight out.
-
-    if ((c >= 33) && (c <= 126) && ('=' != c))
-    {
-      output += c;
-
-      ++lineLength;
-    }
-
-    // Spaces need some thought. We have to encode them at eol (or eof).
-
-    else if (' ' == c)
-    {
-      if
-        (
-         (i >= length)
-         ||
-         ((i < end) && (data[i + 1] == '\r') && (data[i + 2] == '\n'))
-        )
-      {
-        output += "=20";
-        lineLength += 3;
-      }
-      else
-      {
-        output += ' ';
-        ++lineLength;
-      }
-    }
-
-    // If we find \r\n, just let it through.
-
-    else if (('\r' == c) && (i < end) && ('\n' == data[i + 1]))
-    {
-      output += "\r\n";
-
-      lineLength = 0;
-
-      ++i;
-    }
-
-    // Anything else is converted to =XX.
-
-    else
-    {
-      output += '=';
-      output += hexChars[c / 16];
-      output += hexChars[c % 16];
-
-      lineLength += 3;
-    }
-
-    // If we're approaching the maximum line length, do a soft line break.
-
-    if ((lineLength > maxQPLineLength) && (i < end))
-    {
-      output += "=\r\n";
-
-      lineLength = 0;
-    }
-    
-  }
-
-  return output;
-}
-
-  QByteArray
-KCodecs::quotedPrintableDecode(const QCString & in)
-{
-  const char * data = in.data();
-  const unsigned int length = in.size();
-
-  // Maximum output size is equal to input size.
-
-  QByteArray output(length);
-  char * cursor = output.data();
-
-  for (unsigned int i = 0; i < length; i++)
-  {
-    char c(data[i]);
-
-    if ('=' == c)
-    {
-      if (i < length - 2)
-      {
-        char c1 = data[i + 1];
-        char c2 = data[i + 2];
-
-        if ('\r' == c1 && '\n' == c2)
-        {
-          // Soft line break. No output.
-          i += 2;
-        }
-        else
-        {
-          // =XX encoded byte.
-
-          int hexChar0 = rikFindChar(hexChars, c1);
-          int hexChar1 = rikFindChar(hexChars, c2);
-
-          if (hexChar0 < 16 && hexChar1 < 16)
-          {
-            *cursor++ = char((hexChar0 * 16) | hexChar1);
-            i += 2;
-          }
-        }
-      }
-    }
-    else
-    {
-      *cursor++ = c;
-    }
-  }
-
-  --cursor;
-
-  output.truncate(cursor - output.data());
-
-  return output;
 }
 

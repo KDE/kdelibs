@@ -64,7 +64,7 @@ typedef char HASHHEX[33];
  * by doing @p "make kmdcodectest".
  *
  * @short A collection of commonly used encoding/decoding algorithms.
- * @author Dawit Alemayheu <adawit@kde.org>
+ * @author Dawit Alemayehu <adawit@kde.org>
  * @author Rik Hemsley <rik@kde.org>
  */
 class KCodecs
@@ -295,7 +295,8 @@ private:
  static char UUDecMap[128];
  static char Base64EncMap[64];
  static char Base64DecMap[128];
-
+ static char hexChars[16];
+ static const unsigned int maxQPLineLength;
 };
 
 /**
@@ -368,7 +369,7 @@ private:
  * </PRE>
  *
  * @short An adapted C++ implementation of RSA Data Securities MD5 algorithm.
- * @author Dawit Alemayheu <adawit@kde.org>
+ * @author Dawit Alemayehu <adawit@kde.org>
  */
 class KMD5
 {
@@ -649,23 +650,23 @@ protected:
   bool isDigestMatch( const char * msg_digest, DigestType type );
 
 private:
-/*
-   void encode( Q_UINT8 *output, Q_UINT32 *in, Q_UINT32 len );
-   void decode( Q_UINT32 *output, Q_UINT8 *in, Q_UINT32 len );
-*/
+
+  void encode( Q_UINT8 *output, Q_UINT32 *in, Q_UINT32 len );
+  void decode( Q_UINT32 *output, Q_UINT8 *in, Q_UINT32 len );
+
   Q_UINT32 rotate_left( Q_UINT32 x, Q_UINT32 n );
   Q_UINT32 F( Q_UINT32 x, Q_UINT32 y, Q_UINT32 z );
   Q_UINT32 G( Q_UINT32 x, Q_UINT32 y, Q_UINT32 z );
   Q_UINT32 H( Q_UINT32 x, Q_UINT32 y, Q_UINT32 z );
   Q_UINT32 I( Q_UINT32 x, Q_UINT32 y, Q_UINT32 z );
-  void FF( Q_UINT32& a, Q_UINT32 b, Q_UINT32 c, Q_UINT32 d,
-           Q_UINT32 x, Q_UINT32  s, Q_UINT32 ac );
-  void GG( Q_UINT32& a, Q_UINT32 b, Q_UINT32 c, Q_UINT32 d,
-           Q_UINT32 x, Q_UINT32 s, Q_UINT32 ac );
-  void HH( Q_UINT32& a, Q_UINT32 b, Q_UINT32 c, Q_UINT32 d,
-           Q_UINT32 x, Q_UINT32 s, Q_UINT32 ac );
-  void II( Q_UINT32& a, Q_UINT32 b, Q_UINT32 c, Q_UINT32 d,
-           Q_UINT32 x, Q_UINT32 s, Q_UINT32 ac );
+  void FF( Q_UINT32& a, Q_UINT32 b, Q_UINT32 c, Q_UINT32 d, Q_UINT32 x,
+               Q_UINT32  s, Q_UINT32 ac );
+  void GG( Q_UINT32& a, Q_UINT32 b, Q_UINT32 c, Q_UINT32 d, Q_UINT32 x,
+                Q_UINT32 s, Q_UINT32 ac );
+  void HH( Q_UINT32& a, Q_UINT32 b, Q_UINT32 c, Q_UINT32 d, Q_UINT32 x,
+                Q_UINT32 s, Q_UINT32 ac );
+  void II( Q_UINT32& a, Q_UINT32 b, Q_UINT32 c, Q_UINT32 d, Q_UINT32 x,
+             Q_UINT32 s, Q_UINT32 ac );
 
 private:
   Q_UINT32 m_state[4];
