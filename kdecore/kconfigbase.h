@@ -153,7 +153,7 @@ public:
    *
    * @param pKey The key to search for
    * @param list In this object, the read list will be returned.
-   * @param sep  The list separator (default ";")
+   * @param sep  The list separator (default ",")
    * @return The number of entries in the list.
    */
   int readListEntry( const QString& pKey, QStrList &list,
@@ -163,7 +163,7 @@ public:
    * Read a list of strings.
    *
    * @param pKey The key to search for.
-   * @param sep  The list separator (default is ";").
+   * @param sep  The list separator (default is ",").
    * @return The list.
    */
   QStringList readListEntry( const QString& pKey, char sep = ',' ) const;
