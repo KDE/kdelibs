@@ -51,13 +51,13 @@
  * are emitted when the user presses the return key.
  *
  * By default this widget creates a completion object whenever
- * you invoke the member function @ref completionObject for the
- * first time.  You can also assign your own completion object
- * through @ref setCompletionObject function whenever you want to
- * control the kind of completion object that needs to be used.
- * Additionally, when you create a completion object through either
- * @ref completionObject or @ref setCompletionObject KLineEdit will
- * be automatically set to handle the rotation and completion signals.
+ * you invoke the member function @ref KCompletionBase::completionObject
+ * for the first time.  You can also assign your own completion object
+ * through @ref KCompletionBase::setCompletionObject function whenever
+ * you want to control the kind of completion object that needs to be
+ * used.  Additionally, when you create a completion object through
+ * either @p completionObject or @p setCompletionObject KLineEdit
+ * will be automatically set to handle the rotation and completion signals.
  * If you do not need this feature, simply use @ref KCompletionBase::setHandleSignals
  * or the boolean paramter when calling @p setCompletionObject to
  * turn it off.
@@ -74,10 +74,7 @@
  * then only one completion mode, CompletionAuto, is allowed.
  * All the other modes are simply ignored.  The CompletionAuto
  * mode in this case allows you to automatically select an item
- * the list that matches the pressed key-codes.  For example, if
- * you have a list of countries, typing the first few letters of
- * the name attempts to find a match and if one is found it will
- * be selected as the current item.
+ * from the list that matches the pressed key-code.
  *
  * @sect Example:
  *
