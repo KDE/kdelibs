@@ -643,7 +643,7 @@ QByteArray UIServer::authorize( const QString& user, const QString& head, const 
 	}
 	if( !isCached )
 	{
-    	KIO::PassDlg dlg( 0L, 0L, true, 0, head, user, host );
+    	KIO::PassDlg dlg( 0L, 0L, true, 0, head, user, QString::null, host );
         if ( dlg.exec() )
 	    {
 	    	QString u = dlg.user();
