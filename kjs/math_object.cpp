@@ -34,6 +34,10 @@
 
 #include "math_object.lut.h"
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif  /*  M_PI  */
+
 using namespace KJS;
 
 // ------------------------------ MathObjectImp --------------------------------
@@ -103,7 +107,7 @@ Value MathObjectImp::getValueProperty(ExecState *, int token) const
     d = 1.0/log(10.0);
     break;
   case Pi:
-    d = 2.0 * asin(1.0);
+    d = M_PI;
     break;
   case Sqrt1_2:
     d = sqrt(0.5);
