@@ -28,15 +28,14 @@ LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 
 check_PROGRAMS = kconfigtest kledlamptest kprogresstest \
 		kcolordlgtest kdatepicktest kfontdialogtest	\
-		kpopuptest ktabctltest \
-		kseparatortest kiconloadertest		\
-		kwindowtest klinetest kstatusbartest 	\
+		kpopuptest ktabctltest kseparatortest kiconloadertest \
+		kwindowtest klinetest kstatusbartest \
 		kprocesstest kbuttonboxtest ksimpleconfigtest \
 		kledtest kcontainertest klocaletest krulertest \
 		kwizardtest kurltest kformulatest \
 		kcharselecttest kstddirstest khtmltest \
 		kopenwithtest kaboutdialogtest kgradienttest \
-		kunbalancedgrdtest kcolortest
+		kunbalancedgrdtest kcolortest knuminputtest
 
 noinst_HEADERS = kdatepicktestdlg.h \
 		ktabctltest.h kiconloadertestmain.h	\
@@ -48,7 +47,7 @@ noinst_HEADERS = kdatepicktestdlg.h \
 METASOURCES = kconfigtest.moc \
 	kcontainertest.moc kdatepicktestdlg.moc \
 	kiconloadertestmain.moc kledtest.moc \
-	klinetest.moc klocaletest.moc \
+	klinetest.moc klocaletest.moc knuminputtest.moc \
 	kprocesstest.moc krulertest.moc \
 	kstatusbartest.moc ktabctltest.moc \
 	kwindowtest.moc kunbalancedgrdtest.moc
@@ -72,6 +71,7 @@ kledtest_SOURCES = kledtest.cpp
 klinetest_SOURCES = klinetest.cpp
 klocaletest_SOURCES = klocaletest.cpp
 klocaletest_LDADD = $(LIB_KDECORE)
+knuminputtest_SOURCES = knuminputtest.cpp
 kopenwithtest_SOURCES = kopenwithtest.cpp
 kopenwithtest_LDADD = $(LIB_KIO)
 kpopuptest_SOURCES = kpopuptest.cpp
