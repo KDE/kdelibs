@@ -22,6 +22,13 @@
 
 // $Id$
 // $Log$
+// Revision 1.57  1999/06/06 17:29:45  cschlaeg
+// New layout management implemented for KTMainWindow. This required
+// updates for KToolBar, KMenuBar and KStatusBar. KTMainWindow::view_*
+// public variables removed. Use mainViewGeometry() instead if you really
+// have to. Added new classes in ktmlayout to handle the new layout
+// management.
+//
 // Revision 1.56  1999/06/04 15:43:55  pbrown
 // improved KLineEdit to have a right popup menu with cut, copy, past, clear
 // etc. like newer windows (heh) applications have.  Renamed class from
@@ -800,7 +807,7 @@ public:
    * This function is required for the Qt layout management to work. It
    * returns information about the size policy.
    */
-  virtual QSizePolicy KToolBar::sizePolicy() const;
+  virtual QSizePolicy sizePolicy() const;
 
   void setFlat (bool flag);
 
