@@ -161,7 +161,7 @@ class CheckBoxWidget : public QCheckBox
 {
     Q_OBJECT
 public:
-    CheckBoxWidget(QWidget *parent) : QCheckBox(parent) {}
+    CheckBoxWidget(QWidget *parent);
 
 protected:
     virtual void focusInEvent(QFocusEvent *);
@@ -198,7 +198,7 @@ class RadioButtonWidget : public QRadioButton
 {
     Q_OBJECT
 public:
-    RadioButtonWidget(QWidget *parent) : QRadioButton(parent) {}
+    RadioButtonWidget(QWidget *parent);
 
 protected:
     virtual void focusInEvent(QFocusEvent *);
@@ -379,7 +379,7 @@ class ListBoxWidget : public KListBox
 {
     Q_OBJECT
 public:
-    ListBoxWidget(QWidget *parent) : KListBox(parent) {}
+    ListBoxWidget(QWidget *parent);
 
 protected:
     virtual void focusInEvent(QFocusEvent *);
@@ -397,7 +397,7 @@ class ComboBoxWidget : public QComboBox
 {
     Q_OBJECT
 public:
-    ComboBoxWidget(QWidget *parent) : QComboBox(parent) {}
+    ComboBoxWidget(QWidget *parent);
 
 protected:
     virtual void focusInEvent(QFocusEvent *);

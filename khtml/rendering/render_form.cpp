@@ -142,6 +142,12 @@ RenderHiddenButton::RenderHiddenButton(QScrollView *view,
 
 // -------------------------------------------------------------------------------
 
+CheckBoxWidget::CheckBoxWidget(QWidget *parent)
+    : QCheckBox(parent)
+{
+    setAutoMask(true);
+}
+
 void CheckBoxWidget::focusInEvent(QFocusEvent* e)
 {
     QCheckBox::focusInEvent(e);
@@ -180,6 +186,12 @@ void RenderCheckBox::slotStateChanged(int state)
 
 
 // -------------------------------------------------------------------------------
+
+RadioButtonWidget::RadioButtonWidget(QWidget *parent)
+    : QRadioButton(parent)
+{
+    setAutoMask(true);
+}
 
 void RadioButtonWidget::focusInEvent(QFocusEvent* e)
 {
@@ -605,6 +617,13 @@ RenderLegend::~RenderLegend()
 
 // -------------------------------------------------------------------------------
 
+ListBoxWidget::ListBoxWidget(QWidget *parent)
+    : KListBox(parent)
+{
+    // ### looks broken
+    //setAutoMask(true);
+}
+
 void ListBoxWidget::focusInEvent(QFocusEvent* e)
 {
     KListBox::focusInEvent(e);
@@ -619,6 +638,12 @@ void ListBoxWidget::focusOutEvent(QFocusEvent* e)
 
 
 // -------------------------------------------------------------------------------
+
+ComboBoxWidget::ComboBoxWidget(QWidget *parent)
+    : QComboBox(parent)
+{
+    setAutoMask(true);
+}
 
 void ComboBoxWidget::focusInEvent(QFocusEvent* e)
 {
@@ -1005,6 +1030,7 @@ TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
         clearTableFlags(Tbl_autoScrollBars);
         setTableFlags(Tbl_vScrollBar | Tbl_hScrollBar);
     }
+    setAutoMask(true);
 }
 
 void TextAreaWidget::focusInEvent(QFocusEvent* e)
