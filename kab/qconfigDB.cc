@@ -564,8 +564,9 @@ KeyValueMap::insertLine(QCString line, bool force, bool relax, bool encode)
   QCString key;
   QCString value;
   // ----- is the line empty or does it contain only whitespaces?
-  for(index=0; isspace(line[index]) && (unsigned)index<line.length(); ++index);
-  if(line.isEmpty() || (unsigned)index==line.length())
+  uint len = line.length();
+  for(index=0; isspace(line[index]) && (unsigned)index<len; ++index);
+  if(line.isEmpty() || (unsigned)index==len)
     {
       kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 	  "KeyValueMap::insertLine: line is empty." << endl;
