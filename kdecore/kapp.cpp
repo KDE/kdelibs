@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.71  1997/11/11 05:41:53  wuebben
+// Bernd: implemented iso charset support
+//
 // Revision 1.49  1997/10/09 11:46:17  kalle
 // Assorted patches by Fritz Elfert, Rainer Bawidamann, Bernhard Kuhn and Lars Kneschke
 //
@@ -292,6 +295,7 @@
 // Revision 1.67  1997/10/30 13:30:15  ettrich
 // Matthias: fix for setWmCommand: now setWmCommand can also be used for
 //   PseudoSessionManagement (this is the default when session management
+//   was not enabled with enableSessionManagement).
 #include <stdlib.h> // getenv()
 //   Now KApplication should work as promised in kapp.h :-)
 //
@@ -306,6 +310,7 @@
 // removed all NULLs and replaced it with 0L or "".
 //
 // Revision 1.62  1997/10/17 15:46:22  stefan
+// Moved the include of stdlib.h -- otherwise gcc-2.7.2.1 has an internal
 // compiler bug. I know - I should upgrade gcc, but for all the
 // poor folks that still have the old one ;-)
 //
@@ -344,6 +349,9 @@
 // Matthias: fixed an async reply problem with invokeHTMLHelp
 //
 // Revision 1.50  1997/10/10 22:09:17  ettrich
+// Matthias: BINARY INCOMPATIBLE CHANGES: extended session management support
+
+#include <qdir.h> // must be at the front
 
 #include "kapp.moc"
 
@@ -1227,7 +1235,11 @@ void KApplication::kdisplaySetPalette()
 
 void KApplication::kdisplaySetFont()
 	QString path = KApplication::kdedir();
-	execlp( "kdehelp", "kdehelp", path.data(), 0 ); 
+	path.append("/share/doc/HTML/default/");
+	path.append(filename);
+  QApplication::setStyle( applicationStyle );
+	if( !topic.isEmpty() )
+	execl(shell, shell, "-c", path.data(), NULL);
 	    path.append( "#" );
 	    path.append(topic);
 	}
