@@ -28,6 +28,7 @@
 #include <klocale.h>
 #include <kfiledialog.h>
 #include <kapp.h>
+#include <kcompletionbox.h>
 #include <kcursor.h>
 
 #include <qcombobox.h>
@@ -485,6 +486,11 @@ RenderLineEdit::RenderLineEdit(QScrollView *view, HTMLInputElementImpl *element)
 
 void RenderLineEdit::slotReturnPressed()
 {
+    // don't submit the form when return was pressed in a completion-popup
+    KCompletionBox *box = (static_cast<KLineEdit*>(m_widget))->completionBox(false);
+    if ( box && box->isVisible() )
+	return;
+    
     if (m_element->form())
         m_element->form()->prepareSubmit();
 }
