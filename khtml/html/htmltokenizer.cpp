@@ -225,8 +225,6 @@ void HTMLTokenizer::begin()
     tquote = NoQuote;
     searchCount = 0;
     Entity = NoEntity;
-    scriptSrc = "";
-    pendingSrc = "";
     noMoreData = false;
     brokenComments = false;
     brokenServer = false;
@@ -419,7 +417,7 @@ void HTMLTokenizer::scriptHandler()
 
             setSrc(QString::null);
             scriptCodeSize = scriptCodeResync = 0;
-            scriptExecution( exScript, QString(), tagStartLineno /*scriptStartLineno*/ );
+            scriptExecution( exScript, QString::null, tagStartLineno /*scriptStartLineno*/ );
         }
     }
 
@@ -431,7 +429,7 @@ void HTMLTokenizer::scriptHandler()
         QString newStr = QString(src.current(), src.length());
         newStr += pendingSrc;
         setSrc(newStr);
-        pendingSrc = "";
+        pendingSrc = QString::null;
     }
     else if ( !prependingSrc.isEmpty() )
         write( prependingSrc, false );
@@ -1066,7 +1064,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 tagID -= ID_CLOSE_TAG;
             else if ( beginTag && tagID == ID_SCRIPT ) {
                 AttributeImpl* a = 0;
-                scriptSrc = scriptSrcCharset = "";
+                scriptSrc = scriptSrcCharset = QString::null;
                 if ( currToken.attrs && /* potentially have a ATTR_SRC ? */
                      parser->doc()->view()->part()->jScriptEnabled() && /* jscript allowed at all? */
                      view /* are we a regular tokenizer or just for innerHTML ? */
@@ -1447,7 +1445,7 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
             ++src;
         }
     }
-    _src = QString();
+    _src = QString::null;
 
     if (noMoreData && cachedScript.isEmpty() && !m_executingScript )
         end(); // this actually causes us to be deleted
@@ -1631,7 +1629,7 @@ void HTMLTokenizer::notifyFinished(CachedObject */*finishedObj*/)
         // of 'scriptOutput'.
         if ( !script ) {
             QString rest = pendingSrc;
-            pendingSrc = "";
+            pendingSrc = QString::null;
             write(rest, false);
             // we might be deleted at this point, do not
             // access any members.
@@ -1639,7 +1637,7 @@ void HTMLTokenizer::notifyFinished(CachedObject */*finishedObj*/)
     }
 }
 
-void HTMLTokenizer::setSrc(QString source)
+void HTMLTokenizer::setSrc(const QString& source)
 {
     lineno += src.lineCount();
     _src = source;
