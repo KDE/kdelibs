@@ -121,6 +121,27 @@ namespace KJS {
     Function *func;
   };
 
+  /**
+   * @short Execution context.
+   */
+  class Context {
+  public:
+    Context(CodeType type = GlobalCode, Context *callingContext = 0L,
+	       Function *func = 0L, const List *args = 0L, KJSO *thisV = 0L);
+    virtual ~Context();
+    const List *pScopeChain() const { return scopeChain; }
+    void pushScope(KJSO *s);
+    void popScope();
+    List *copyOfChain() { /* TODO */ return scopeChain; }
+    KJSO *variableObject() const { return variable; }
+    KJSO *thisValue() const { return thisVal; }
+  private:
+    KJSO *thisVal;
+    Activation *activation;
+    KJSO *variable;
+    List *scopeChain;
+  };
+
   class DeclaredFunction : public Function {
   public:
     DeclaredFunction(ParamList *p, StatementNode *b);

@@ -86,28 +86,6 @@ namespace KJS {
     virtual Object* construct(const List &args) = 0;
   };
 
-  class Activation;
-  /**
-   * @short Execution context.
-   */
-  class Context {
-  public:
-    Context(CodeType type = GlobalCode, Context *callingContext = 0L,
-	       Function *func = 0L, const List *args = 0L, KJSO *thisV = 0L);
-    virtual ~Context();
-    const List *pScopeChain() const { return scopeChain; }
-    void pushScope(KJSO *s);
-    void popScope();
-    List *copyOfChain() { /* TODO */ return scopeChain; }
-    KJSO *variableObject() const { return variable; }
-    KJSO *thisValue() const { return thisVal; }
-  private:
-    KJSO *thisVal;
-    Activation *activation;
-    KJSO *variable;
-    List *scopeChain;
-  };
-
   /**
    * @short Print to stdout for debugging purposes.
    */
