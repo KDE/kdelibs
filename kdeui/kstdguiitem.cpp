@@ -42,6 +42,7 @@ KGuiItem KStdGuiItem::guiItem ( StdItem ui_enum )
   case Forward  : return forward();
   case Print    : return print();
   case Continue : return cont();
+  case Open     : return open();
   default       : return KGuiItem();
   };
 }
@@ -65,6 +66,7 @@ QString KStdGuiItem::stdItem( StdItem ui_enum )
   case Forward  : return QString::fromLatin1("forward");
   case Print    : return QString::fromLatin1("print");
   case Continue : return QString::fromLatin1("continue");
+  case Open     : return QString::fromLatin1("open");
   default       : return QString::null;
   };
 }
@@ -183,5 +185,12 @@ KGuiItem KStdGuiItem::cont()
   return KGuiItem( i18n( "C&ontinue" ), QString::null,
                    i18n( "Continue operation" ) );
 }
+
+KGuiItem KStdGuiItem::open()
+{
+  return KGuiItem( i18n( "&Open" ), "fileopen",
+                   i18n( "Open file" ) );
+}
+
 
 // vim: set ts=2 sts=2 sw=2 et:
