@@ -437,14 +437,16 @@ Completion WindowFunc::tryExecute(const List &args)
         }
         KParts::URLArgs uargs;
         uargs.frameName = args[1].toString().value().qstring();
+        uargs.serviceType = "text/html";
 
         // request new window
         KParts::ReadOnlyPart *newPart = 0L;
-        emit part->browserExtension()->createNewWindow(url, uargs,
-						    winargs,newPart);
+        emit part->browserExtension()->createNewWindow("", uargs,winargs,newPart);
         if (newPart && newPart->inherits("KHTMLPart")) {
 	    Window *win = newWindow(static_cast<KHTMLPart*>(newPart));
 	    win->opener = part;
+	    uargs.serviceType = "";
+	    emit static_cast<KHTMLPart*>(newPart)->browserExtension()->openURLRequest(url,uargs);
 	    result = win;
         } else
             result = Undefined();
