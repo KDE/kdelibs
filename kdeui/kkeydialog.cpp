@@ -408,13 +408,13 @@ KKeyChooser::KKeyChooser( KKeyEntryMap *aKeyMap, QWidget *parent,
   grid->addMultiCellWidget( rb, 1, 1, 1, 2 );
   QWhatsThis::add( rb, i18n("The selected action will not be associated with any key.") );
 
-  rb = new QRadioButton( i18n("&Default key"), d->fCArea );
+  rb = new QRadioButton( i18n("De&fault key"), d->fCArea );
   d->kbGroup->insert( rb, DefaultKey );
   rb->setEnabled( false );
   grid->addMultiCellWidget( rb, 2, 2, 1, 2 );
   QWhatsThis::add( rb, i18n("This will bind the default key to the selected action. Usually a reasonable choice.") );
 
-  rb = new QRadioButton( i18n("&Custom key"), d->fCArea );
+  rb = new QRadioButton( i18n("Custom &key"), d->fCArea );
   d->kbGroup->insert( rb, CustomKey );
   rb->setEnabled( false );
   connect( d->kbGroup, SIGNAL( clicked( int ) ), SLOT( keyMode( int ) ) );
