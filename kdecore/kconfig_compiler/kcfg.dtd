@@ -34,9 +34,8 @@
   <!ATTLIST entry 
                   name CDATA #REQUIRED
 		  type (String|StringList|Font|Rect|Size|Color|
-		        Point|Int|UInt|Bool|Double||Date|Time|
-			DateTime|LongLong|ULongLong|IntList|
-			Enum|Path) #REQUIRED
+		        Point|Int|UInt|Bool|Double||DateTime|
+			LongLong|ULongLong|IntList|Enum|Path) #REQUIRED
 		  key  CDATA #IMPLIED
 		  hidden  (true|false) #IMPLIED>
 

@@ -477,8 +477,6 @@ QString param( const QString &type )
     else if ( type == "UInt" )        return "uint";
     else if ( type == "Bool" )        return "bool";
     else if ( type == "Double" )      return "double";
-    else if ( type == "Date" )        return "const QDate &";
-    else if ( type == "Time" )        return "const QTime &";
     else if ( type == "DateTime" )    return "const QDateTime &";
     else if ( type == "LongLong" )    return "Q_LLONG";
     else if ( type == "ULongLong" )   return "Q_ULLONG";
@@ -507,8 +505,6 @@ QString cppType( const QString &type )
     else if ( type == "UInt" )        return "uint";
     else if ( type == "Bool" )        return "bool";
     else if ( type == "Double" )      return "double";
-    else if ( type == "Date" )        return "QDate";
-    else if ( type == "Time" )        return "QTime";
     else if ( type == "DateTime" )    return "QDateTime";
     else if ( type == "LongLong" )    return "Q_LLONG";
     else if ( type == "ULongLong" )   return "Q_ULLONG";
