@@ -69,6 +69,7 @@ bool KTar::open( int mode )
       if ( n == 0x200 && buffer[0] != 0 )
       {
 	QString name( buffer );
+        //debug( name );
 
 	bool isdir = false;
 	QString nm;
@@ -159,6 +160,14 @@ bool KTar::open( int mode )
 
 KTarDirectory * KTar::findOrCreate( const QString & path )
 {
+  if ( path == "" || path == "/" ) // root dir => found
+    return m_dir;
+  // Important note : for tar.gz files containing absolute paths
+  // (i.e. beginning with "/"), this means the leading "/" will
+  // be removed (no KDirectory for it), which is exactly the way
+  // the "tar" program works (though it displays a warning about it)
+  // See also KTarDirectory::entry().
+
   // Already created ? => found
   KTarEntry* d = m_dir->entry( path );
   if ( d && d->isDirectory() )
@@ -166,8 +175,6 @@ KTarDirectory * KTar::findOrCreate( const QString & path )
 
   // Otherwise go up and try again
   int pos = path.findRev( '/' );
-  if ( pos == 0 ) // root dir => found
-    return m_dir;
   KTarDirectory * parent;
   QString dirname;
   if ( pos == -1 ) // no more slash => create in root dir
@@ -248,8 +255,9 @@ void KTar::writeDir( const QString& name, const QString& user, const QString& gr
     return;
   }
 
+  // In some tar files we can find dir/./ => call cleanDirPath
+  QString n ( QDir::cleanDirPath( name ) );
   // Need trailing '/'
-  QString n( name );
   if ( n.right(1) != "/" )
     n += "/";
 
@@ -346,7 +354,9 @@ void KTar::writeFile( const QString& name, const QString& user, const QString& g
     return;
   }
 
-  QString n( name );
+  // In some tar files we can find dir/./file => call cleanDirPath
+  QString n ( QDir::cleanDirPath( name ) );
+
   int i = n.findRev( '/' );
   if ( i != -1 )
   {
@@ -514,9 +524,16 @@ QStringList KTarDirectory::entries() const
   return l;
 }
 
-KTarEntry* KTarDirectory::entry( const QString& name )
+KTarEntry* KTarDirectory::entry( QString name ) 
+  // not "const QString & name" since we want a local copy
+  // (to remove leading slash if any)
 {
   int pos = name.find( '/' );
+  if ( pos == 0 ) // ouch absolute path (see also KTar::findOrCreate)
+  {
+    name = name.mid( 1 ); // remove leading slash
+    pos = name.find( '/' ); // look again
+  }
   if ( pos != -1 )
   {
     QString left = name.left( pos );
@@ -531,7 +548,7 @@ KTarEntry* KTarDirectory::entry( const QString& name )
   return m_entries[ name ];
 }
 
-const KTarEntry* KTarDirectory::entry( const QString& name ) const
+const KTarEntry* KTarDirectory::entry( QString name ) const
 {
   return ((KTarDirectory*)this)->entry( name );
 }

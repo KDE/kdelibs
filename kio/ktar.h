@@ -209,8 +209,8 @@ public:
    *
    * @param name may be "test1", "mydir/test3", "mydir/mysubdir/test3", etc.
    */
-  KTarEntry* entry( const QString& name );
-  const KTarEntry* entry( const QString& name ) const;
+  KTarEntry* entry( QString name );
+  const KTarEntry* entry( QString name ) const;
 
   /**
    * @internal
