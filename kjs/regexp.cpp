@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
+ *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -27,7 +27,7 @@ using namespace KJS;
 RegExp::RegExp(const UString &p, int f)
  : pattern(p), flags(f)
 {
-  regcomp(&preg, p.ascii(), 0);
+  regcomp(&preg, p.ascii(), REG_EXTENDED);
   /* TODO use flags, check for errors */
 }
 
@@ -37,19 +37,23 @@ RegExp::~RegExp()
   regfree(&preg);
 }
 
-UString RegExp::match(const UString &s, int, int *pos)
+UString RegExp::match(const UString &s, int i, int *pos)
 {
   regmatch_t rmatch[10];
 
-  if (regexec(&preg, s.ascii(), 10, rmatch, 0)) {
+  if (i < 0)
+    i = 0;
+
+  if (i > s.size() || s.isNull() ||
+      regexec(&preg, s.ascii() + i, 10, rmatch, 0)) {
     if (pos)
       *pos = -1;
     return UString::null;
   }
 
   if (pos)
-    *pos = rmatch[0].rm_so;
-  return s.substr(rmatch[0].rm_so, rmatch[0].rm_eo - rmatch[0].rm_so);
+    *pos = rmatch[0].rm_so + i;
+  return s.substr(rmatch[0].rm_so + i, rmatch[0].rm_eo - rmatch[0].rm_so);
 }
 
 bool RegExp::test(const UString &s, int)

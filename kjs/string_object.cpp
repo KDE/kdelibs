@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
+ *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -285,21 +285,49 @@ Completion StringProtoFunc::execute(const List &args)
     result = Object::create(ArrayClass);
     u = s.value();
     i = p0 = 0;
-    d = a1.isA(UndefinedType) ? -1 : a1.toInteger().intValue(); // optionnal max number
-    if(!a0.isA(UndefinedType))
-    {
-        u2 = a0.toString().value();
-        if ( !u2.isEmpty() )
-        {
-          /* TODO: regexps with backtracking, special cases */
-          while (i!=d && (pos = u.find(u2, p0)) >= 0) {
-            result.put(UString::from(i), String(u.substr(p0, pos-p0)));
-            p0 = pos + u2.size();
-            i++;
-          }
-        }
+    d = a1.isDefined() ? a1.toInteger().intValue() : -1; // optional max number
+    if (a0.isA(ObjectType) && Object(a0.imp()).getClass() == RegExpClass) {
+      RegExp reg(a0.get("source").toString().value());
+      if (u.isEmpty() && !reg.match(u, 0).isNull()) {
+	// empty string matched by regexp -> empty array
+	result.put("length", 0);
+	break;
+      }
+      int mpos;
+      pos = 0;
+      while (1) {
+	/* TODO: back references */
+	UString mstr = reg.match(u, pos, &mpos);
+	if (mpos < 0)
+	  break;
+	pos = mpos + (mstr.isEmpty() ? 1 : mstr.size());
+	if (mpos != p0 || !mstr.isEmpty()) {
+	  result.put(UString::from(i), String(u.substr(p0, mpos-p0)));
+	  p0 = mpos + mstr.size();
+	  i++;
+	}
+      }
+    } else if (a0.isDefined()) {
+      u2 = a0.toString().value();
+      if (u2.isEmpty()) {
+	if (u.isEmpty()) {
+	  // empty separator matches empty string -> empty array
+	  put("length", 0);
+	  break;
+	} else {
+	  while (i != d && i < u.size())
+	    result.put(UString::from(i++), String(u.substr(p0++, 1)));
+	}
+      } else {
+	while (i != d && (pos = u.find(u2, p0)) >= 0) {
+	  result.put(UString::from(i), String(u.substr(p0, pos-p0)));
+	  p0 = pos + u2.size();
+	  i++;
+	}
+      }
     }
-    if (i!=d && (p0 < len || i==0 /*don't ever return an empty array*/))
+    // add remaining string, if any
+    if (i != d && (p0 < len || i == 0))
       result.put(UString::from(i++), String(u.substr(p0)));
     result.put("length", i);
     break;
