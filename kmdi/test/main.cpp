@@ -81,13 +81,14 @@ int main( int argc, char **argv )
    h5->setCaption("MDI Test Application");
    h5->show();
 
+#if 0
    KMdiIterator<KMdiChildView*>  *it = mainWdg->createIterator();
    for ( it->first(); !it->isDone(); it->next()) {
       //cout << "--> " << it->currentItem()->caption() << endl;
 
    }
    //delete it;
-
+#endif
 
    mainWdg->resize(500,500);
    a.setMainWidget( mainWdg );

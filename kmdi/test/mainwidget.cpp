@@ -21,6 +21,7 @@
 #include <qmultilineedit.h>
 #include <qlistview.h>
 #include <kmdimainfrm.h>
+#include <kmditoolviewaccessor.h>
 
 #include "mainwidget.h"
 
@@ -32,10 +33,16 @@ MainWidget::MainWidget()
    QMultiLineEdit* mle = new QMultiLineEdit(0L,"theMultiLineEditWidget");
    QMultiLineEdit* mle2 = new QMultiLineEdit(0L,"theMultiLineEditWidget2");
    QMultiLineEdit* mle3 = new QMultiLineEdit(0L,"theMultiLineEditWidget3");
+   QMultiLineEdit* mle4 = new QMultiLineEdit(0L,"theMultiLineEditWidget4");
    mle->setText("This is a QMultiLineEdit widget.");
    addToolWindow( mle, KDockWidget::DockBottom, m_pMdi, 70);
    addToolWindow( mle2, KDockWidget::DockCenter, mle, 70);
    addToolWindow( mle3, KDockWidget::DockCenter, mle, 70);
+   addToolWindow( mle4, KDockWidget::DockNone, mle, 70);
+
+   KMdiToolViewAccessor *tva=createToolWindow();
+   tva->setWidget(new QMultiLineEdit(tva->widgetContainer(),"theMultiLineEditWidget5"));
+   tva->show(KDockWidget::DockCenter,mle,70);   
 
    QListView* lv = new QListView(0L,"theListViewWidget");
    QListView* lv2 = new QListView(0L,"theListViewWidget2");

@@ -22,14 +22,17 @@
 #include "kmdidockcontainer.h"
 #include <qwidgetstack.h>
 #include <qlayout.h>
+#include <qtimer.h>
+#include <qtooltip.h>
 #include <kmultitabbar.h>
+
+#ifndef NO_KDE
 #include <kdebug.h>
 #include <kiconloader.h>                       
 #include <kapplication.h>
 #include <kconfig.h>
-#include <qtimer.h>
-#include <qtooltip.h>
 #include <klocale.h>
+#endif
 
 static const char* const not_close_xpm[]={
 "5 5 2 1",
@@ -41,8 +44,7 @@ static const char* const not_close_xpm[]={
 "#...#",
 "#####"};
 
-
-KMdiDockContainer::KMdiDockContainer(QWidget *parent, QWidget *win, int position):QWidget(parent),KDockContainer()
+KMdiDockContainer::KMdiDockContainer(QWidget *parent, QWidget *win, int position):QWidget(parent),KMdiDockContainerBase()
 {         
 	m_block=false;
 	m_inserted=-1;
@@ -108,10 +110,11 @@ void KMdiDockContainer::init()
 }
 
 
-KDockWidget *KMdiDockContainer::parentDockWidget(){return ((KDockWidget*)parent());}
+KMdiDockWidget *KMdiDockContainer::parentDockWidget(){return ((KMdiDockWidget*)parent());}
     
-void KMdiDockContainer::insertWidget (KDockWidget *w, QPixmap pixmap, const QString &text, int &)
+void KMdiDockContainer::insertWidget (KDockWidget *dwdg, QPixmap pixmap, const QString &text, int &)
 {
+    KMdiDockWidget* w = (KMdiDockWidget*) dwdg;
 	int tab;
 	bool alreadyThere=m_map.contains(w);
 	if (alreadyThere)
@@ -174,13 +177,14 @@ void KMdiDockContainer::changeOverlapMode() {
 		deactivateOverlapMode();
 	}
 	
-	for (QMap<KDockWidget*,KDockButton_Private*>::iterator it=m_overlapButtons.begin();
+	for (QMap<KMdiDockWidget*,KDockButton_Private*>::iterator it=m_overlapButtons.begin();
 		it!=m_overlapButtons.end();++it)
 		it.data()->setOn(!isOverlapMode());
 }
 
-void KMdiDockContainer::removeWidget(KDockWidget* w)
+void KMdiDockContainer::removeWidget(KDockWidget* dwdg)
 {
+    KMdiDockWidget* w = (KMdiDockWidget*) dwdg;
 	if (!m_map.contains(w)) return;
 	int id=m_map[w];
 	m_tb->setTab(id,false);
@@ -196,8 +200,9 @@ void KMdiDockContainer::removeWidget(KDockWidget* w)
 	itemNames.remove(w->name());
 }
 
-void KMdiDockContainer::undockWidget(KDockWidget *w)
+void KMdiDockContainer::undockWidget(KDockWidget *dwdg)
 {
+    KMdiDockWidget* w = (KMdiDockWidget*) dwdg;
 	if (!m_map.contains(w)) return;
 	kdDebug()<<"Wiget has been undocked, setting tab down"<<endl;
 	int id=m_map[w];
@@ -259,6 +264,7 @@ void KMdiDockContainer::setToolTip (KDockWidget *, QString &s)
 	;
 }
 
+#ifndef NO_KDE
 void KMdiDockContainer::save(KConfig*)
 {
 	KConfig *cfg=kapp->config();
@@ -331,7 +337,7 @@ void KMdiDockContainer::load(KConfig*)
 	m_delayedRaise=-1;
 	if (!raise.isEmpty())
 	{
-		for (QMap<KDockWidget*,int>::iterator it=m_map.begin();it!=m_map.end();++it)
+		for (QMap<KMdiDockWidget*,int>::iterator it=m_map.begin();it!=m_map.end();++it)
 		{
 
 			if (it.key()->name()==raise)
@@ -354,6 +360,7 @@ void KMdiDockContainer::load(KConfig*)
 	cfg->setGroup(grp);
 	
 }
+#endif
 
 void KMdiDockContainer::delayedRaise()
 {
@@ -376,4 +383,6 @@ void KMdiDockContainer::collapseOverlapped()
 	}
 }
 
+#ifndef NO_INCLUDE_MOCFILES
 #include "kmdidockcontainer.moc"
+#endif
