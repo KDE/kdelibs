@@ -24,7 +24,6 @@ int bbox ( QImageIO *imageio, int *x1, int *y1, int *x2, int *y2)
 {
 	int ret = FALSE;
         char buf[BUFLEN+1];
-        char dummy[BUFLEN+1];
 
 	while (imageio->ioDevice()->readLine(buf, BUFLEN) != -1)
         {
@@ -33,7 +32,7 @@ int bbox ( QImageIO *imageio, int *x1, int *y1, int *x2, int *y2)
 			// Some EPS files have non-integer values for the bbox
 			// We don't support that currently, but at least we parse it
 			float _x1, _y1, _x2, _y2;
-			if ( sscanf (buf, "%s %f %f %f %f", dummy,
+                        if ( sscanf (buf, "%*s %f %f %f %f", 
 				&_x1, &_y1, &_x2, &_y2) == 5) {
 				*x1=(int)_x1; *y1=(int)_y1; *x2=(int)_x2; *y2=(int)_y2;
 				ret = TRUE;
@@ -152,7 +151,7 @@ void kimgio_eps_write( QImageIO *imageio )
   QFile	inFile(tmpFile.name());
   QString szBoxInfo;
 
-  szBoxInfo.sprintf("%sBoundingBox: 0 0 %d %d\n", "%%",
+  szBoxInfo.sprintf("%%%%BoundingBox: 0 0 %d %d\n", 
                     imageio->image().width(),
                     imageio->image().height());
 
