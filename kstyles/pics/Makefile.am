@@ -6,8 +6,8 @@ data_DATA = aquaice.png           grayice.png           red_checkmark.png \
 	elec_combo.png        marble2.png           slate.png \
 	elec_groove.png       marble3.png           switch_off.png \
 	elec_hdl.png          marble_checked.png    switch_on.png \
-	elec_off.xpm          marble_combo.png      whitemarble.png \
-	elec_on.xpm           marble_off.png        woodmenu.png \
+	elec_off.png          marble_combo.png      whitemarble.png \
+	elec_on.png           marble_off.png        woodmenu.png \
 	elec_slider.png       marble_on.png         yellow_off.png \
 	gold_checked.png      marble_unchecked.png  yellow_on.png \
 	gold_unchecked.png    minigray.png \
@@ -29,8 +29,8 @@ EXTRA_DIST = aquaice.png           grayice.png           red_checkmark.png \
 	elec_combo.png        marble2.png           slate.png \
 	elec_groove.png       marble3.png           switch_off.png \
 	elec_hdl.png          marble_checked.png    switch_on.png \
-	elec_off.xpm          marble_combo.png      whitemarble.png \
-	elec_on.xpm          marble_off.png        woodmenu.png \
+	elec_off.png          marble_combo.png      whitemarble.png \
+	elec_on.png          marble_off.png        woodmenu.png \
 	elec_slider.png       marble_on.png         yellow_off.png \
 	gold_checked.png      marble_unchecked.png  yellow_on.png \
 	gold_unchecked.png    minigray.png \
