@@ -49,7 +49,9 @@ libkssl_la_SOURCES	= \
 			ksslsigners.cc		  \
 			ksslpkcs7.cc		  \
 			ksslpemcallback.cc	  \
-			ksslx509map.cc
+			ksslx509map.cc		  \
+			keygenwizard.ui		  \
+			keygenwizard2.ui
 
 libkssl_la_LDFLAGS = $(all_libraries) -version-info 4:0 -no-undefined
 libkssl_la_LIBADD = $(LIB_KDEUI) 

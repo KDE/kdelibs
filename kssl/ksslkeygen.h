@@ -28,6 +28,8 @@
 
 
 class KOpenSSLProxy;
+class KGWizardPage1;
+class KGWizardPage2;
 
 class KSSLKeyGen : public KWizard {
 	Q_OBJECT
@@ -43,12 +45,17 @@ public:
 	// this is an index into supportedKeySizes();
 	void setKeySize(int idx) { _idx = idx; }
 
+private slots:
+	void slotPassChanged();
+
 private:
  
 	class KSSLKeyGenPrivate;
 	KSSLKeyGenPrivate *d;
 	int _idx;
 	KOpenSSLProxy *kossl;
+	KGWizardPage1 *page1;
+	KGWizardPage2 *page2;
  
 protected:
 

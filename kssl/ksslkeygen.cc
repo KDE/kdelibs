@@ -22,6 +22,9 @@
 #include "ksslkeygen.h"
 #include <klocale.h>
 #include <kdebug.h>
+#include "keygenwizard.h"
+#include "keygenwizard2.h"
+#include <qlineedit.h>
 
 #include <kopenssl.h>
 
@@ -31,12 +34,28 @@ KSSLKeyGen::KSSLKeyGen(QWidget *parent, const char *name, bool modal)
 :KWizard(parent,name,modal) {
 #ifdef HAVE_SSL
 	kossl = KOSSL::self();
+	page1 = new KGWizardPage1(this, "Wizard Page 1");
+	addPage(page1, i18n("KDE Certificate Request"));
+	page2 = new KGWizardPage2(this, "Wizard Page 2");
+	addPage(page2, i18n("KDE Certificate Request - Password"));
+	setHelpEnabled(page1, false);
+	setHelpEnabled(page2, false);
+	setFinishEnabled(page2, false);
+	connect(page2->_password1, SIGNAL(textChanged(const QString&)), this, SLOT(slotPassChanged()));
+	connect(page2->_password2, SIGNAL(textChanged(const QString&)), this, SLOT(slotPassChanged()));
+#else
+	// tell him he doesn't have SSL
 #endif
 }
 
 
 KSSLKeyGen::~KSSLKeyGen() {
 	
+}
+
+
+void KSSLKeyGen::slotPassChanged() {
+	setFinishEnabled(page2, page2->_password1->text() == page2->_password2->text() && page2->_password1->text().length() >= 4);
 }
 
 
