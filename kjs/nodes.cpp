@@ -98,6 +98,10 @@ Node::~Node()
 #ifdef KJS_DEBUG_MEM
 void Node::finalCheck()
 {
+  if (!s_nodes) {
+	  fprintf(stderr, "Node::finalCheck(): list 0\n");
+	  return;
+  }
   fprintf( stderr, "Node::finalCheck(): list count       : %d\n", s_nodes->size() );
   std::list<Node *>::iterator it = s_nodes->begin();
   for ( uint i = 0; it != s_nodes->end() ; ++it, ++i )
