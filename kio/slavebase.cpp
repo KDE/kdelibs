@@ -74,6 +74,10 @@ SlaveBase::SlaveBase( const QCString &protocol,
     connectSlave(mAppSocket);
 }
 
+SlaveBase::~SlaveBase()
+{
+}
+
 void SlaveBase::dispatchLoop()
 {
     fd_set rfds;
@@ -286,6 +290,18 @@ void SlaveBase::infoMessage( const QString &_msg)
 {
     KIO_DATA << _msg;
     m_pConnection->send( INF_INFOMESSAGE, data );
+}
+
+bool SlaveBase::requestNetwork(const QString& host)
+{
+    KIO_DATA << host;
+    m_pConnection->send( MSG_NET_REQUEST, data );
+}
+
+void SlaveBase::dropNetwork(const QString& host)
+{
+    KIO_DATA << host;
+    m_pConnection->send( MSG_NET_DROP, data );
 }
 
 void SlaveBase::statEntry( const UDSEntry& entry )

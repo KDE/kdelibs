@@ -96,7 +96,9 @@ class Connection;
    MSG_RENAMED, // unused
    MSG_RESUME,
    MSG_SLAVE_STATUS,
-   MSG_SLAVE_ACK
+   MSG_SLAVE_ACK,
+   MSG_NET_REQUEST,
+   MSG_NET_DROP
    // add new ones here once a release is done, to avoid breaking binary compatibility
  };
 
@@ -150,6 +152,9 @@ public:
     void gettingFile( const QString & ) ; // ?
     void infoMessage( const QString & ) ;
     void connectFinished();
+
+    void requestNetwork( const QString & );
+    void dropNetwork( const QString & );
 
 protected:
     /////////////////

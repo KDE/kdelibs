@@ -26,6 +26,7 @@
 namespace KIO {
 
 class Connection;
+class SlaveBasePrivate;
 
 /**
  * There are two classes that specifies the protocol between application (job)
@@ -40,7 +41,7 @@ class SlaveBase
 {
 public:
     SlaveBase( const QCString &protocol, const QCString &pool_socket, const QCString &app_socket);
-    virtual ~SlaveBase() { }
+    virtual ~SlaveBase();
 
     /**
      * @internal
@@ -406,6 +407,41 @@ protected:
     void cacheAuthentication(const KURL& url, const QString& user,
                              const QString& password, int auth_type);
 
+    /**
+     * Used by the slave to check if it can connect
+     * to a given host. This should be called where the slave is ready
+     * to do a ::connect() on a socket. For each call to @ref
+     * requestNetwork must exist a matching call to
+     * @ref dropNetwork, or the system will stay online until
+     * KNetMgr gets closed (or the SlaveBase gets destructed)!
+     *
+     * If KNetMgr is not running, then this is a no-op.
+     *
+     * @param host tells the netmgr the host the slave wants to connect
+     *             to. As this could also be a proxy, we can't just take
+     *             the host currenctly connected to (but that's the default
+     *             value)
+     *
+     * @return true in theorie, the host is reachable
+     *         false the system is offline and the host is in a remote network.
+     */
+    bool requestNetwork(const QString& host = QString::null);
+
+    /**
+     * Used by the slave to withdraw a connection requested by
+     * @ref requestNetwork. This function cancels the last call to
+     * @ref requestNetwork. If a client uses more than one internet
+     * connection, it must use dropNetwork(host) to
+     * stop each request.
+     *
+     * If KNetMgr is not running, then this is a no-op.
+     *
+     * @param host the host passed to requestNetwork
+     *
+     * A slave should call this function every time it disconnect from a host.
+     * */
+    void dropNetwork(const QString& host = QString::null);
+
 protected:
     /**
      * Name of the protocol supported by this slave
@@ -430,7 +466,9 @@ private:
     MetaData mOutgoingMetaData;
     MetaData mIncomingMetaData;
     bool mConnectedToApp;
+    SlaveBasePrivate *d;
 };
+
 
 };
 

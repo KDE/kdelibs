@@ -175,6 +175,18 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
         metaData(meta_data);
         break;
     }
+    case MSG_NET_REQUEST: {
+        QString host;
+        stream >> host;
+        emit requestNetwork(host);
+        break;
+    }
+    case MSG_NET_DROP: {
+        QString host;
+        stream >> host;
+        emit dropNetwork(host);
+        break;
+    }
     default:
 	assert( 0 );
     }
