@@ -24,6 +24,7 @@
 
 #include <qwidget.h>
 
+class JavaEmbedPrivate;
 class JavaEmbed : public QWidget
 {
     Q_OBJECT
@@ -59,7 +60,7 @@ protected:
 
 private:
     WId window;
-
+    JavaEmbedPrivate* d;
 };
 
 

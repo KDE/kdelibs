@@ -20,15 +20,16 @@
 *****************************************************************************/
 
 #include "javaembed.h"
-#include <qapplication.h>
 
 #include <kdebug.h>
+#include <klocale.h>
 
+#include <qapplication.h>
 #include <qevent.h>
-#include <qlist.h>
-#include <qptrdict.h>
-#include <qguardedptr.h>
-#include <qfocusdata.h>
+
+struct JavaEmbedPrivate
+{
+};
 
 QString getQtEventName( QEvent* e )
 {
@@ -381,14 +382,13 @@ QString getX11EventName( XEvent* e )
 JavaEmbed::JavaEmbed( QWidget *parent, const char *name, WFlags f )
   : QWidget( parent, name, f )
 {
-    setBackgroundMode( NoBackground );
+    d = new JavaEmbedPrivate;
+
     setFocusPolicy( StrongFocus );
     setKeyCompression( FALSE );
     setAcceptDrops( TRUE );
 
     window = 0;
-
-    qApp->installEventFilter( this );
 }
 
 /*!
@@ -401,17 +401,21 @@ JavaEmbed::~JavaEmbed()
         XUnmapWindow( qt_xdisplay(), window );
         QApplication::flushX();
     }
+
+    delete d;
 }
 
 
 /*!\reimp
  */
-void JavaEmbed::resizeEvent( QResizeEvent* )
+void JavaEmbed::resizeEvent( QResizeEvent* e )
 {
     kdDebug(6100) << "JavaEmbed::resizeEvent" << endl;
 
     if ( window != 0 )
         XResizeWindow( qt_xdisplay(), window, width(), height() );
+    else
+        QWidget::resizeEvent( e );
 }
 
 /*!\reimp
@@ -423,9 +427,6 @@ void JavaEmbed::showEvent( QShowEvent* )
     if ( window != 0 )
         XMapRaised( qt_xdisplay(), window );
 }
-
-
-
 
 bool  JavaEmbed::event( QEvent* e)
 {
@@ -461,7 +462,7 @@ void JavaEmbed::leaveEvent( QEvent* )
 
 /*!\reimp
  */
-void JavaEmbed::keyPressEvent( QKeyEvent * )
+void JavaEmbed::keyPressEvent( QKeyEvent* )
 {
     kdDebug(6100) << "JavaEmbed::keyPressEvent" << endl;
 
@@ -487,7 +488,7 @@ void JavaEmbed::keyReleaseEvent( QKeyEvent* )
 
 /*!\reimp
  */
-void JavaEmbed::focusInEvent( QFocusEvent* e )
+void JavaEmbed::focusInEvent( QFocusEvent* )
 {
     kdDebug(6100) << "JavaEmbed::focusInEvent" << endl;
 
@@ -543,11 +544,8 @@ void JavaEmbed::embed( WId w )
     QApplication::flushX();
 
     XReparentWindow( qt_xdisplay(), window, winId(), 0, 0 );
-    QApplication::syncX();
-
     XMapRaised( qt_xdisplay(), window );
     XResizeWindow( qt_xdisplay(), window, width(), height() );
-    QApplication::syncX();
 
     setFocus();
 }
@@ -567,8 +565,8 @@ bool JavaEmbed::focusNextPrevChild( bool next )
  */
 bool JavaEmbed::x11Event( XEvent* e)
 {
-    kdDebug(6100) << "JavaEmbed::x11Event, event = " << getX11EventName( e )
-        << ", window = " << e->xany.window << endl;
+//    kdDebug(6100) << "JavaEmbed::x11Event, event = " << getX11EventName( e )
+//        << ", window = " << e->xany.window << endl;
 
     switch ( e->type )
     {

@@ -121,22 +121,26 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
     kdDebug(6100) << "KJavaAppletContext::received, cmd = >>" << cmd << "<<" << endl;
     kdDebug(6100) << "arg count = " << arg.count() << endl;;
 
-    if ( cmd=="showstatus" && arg.count()>0 )
+    if ( cmd == QString::fromLatin1("showstatus")
+         && arg.count() > 0 )
     {
         kdDebug(6100) << "status message = " << arg[0] << endl;
         emit showStatus( arg[0] );
     }
-    else if ( cmd=="showurlinframe" && arg.count()>1 )
+    else if ( cmd == QString::fromLatin1( "showurlinframe" )
+              && arg.count() > 1 )
     {
         kdDebug(6100) << "url = " << arg[0] << ", frame = " << arg[1] << endl;
         emit showDocument( arg[0], arg[1] );
     }
-    else if ( cmd=="showdocument" && arg.count()>0 )
+    else if ( cmd == QString::fromLatin1( "showdocument" )
+              && arg.count() > 0 )
     {
         kdDebug(6100) << "url = " << arg[0] << endl;
         emit showDocument( arg[0], "_top" );
     }
-    else if ( cmd=="resizeapplet" )
+    else if ( cmd == QString::fromLatin1( "resizeapplet" )
+              && arg.count() > 0 )
     {
         //arg[1] should be appletID
         //arg[2] should be new width
@@ -155,7 +159,6 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
             KJavaApplet* tmp = d->applets[appletID];
             tmp->resizeAppletWidget( width, height );
         }
-
     }
 }
 

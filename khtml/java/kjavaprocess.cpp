@@ -36,7 +36,7 @@ KJavaProcess::KJavaProcess()
       systemProps()
 {
     d = new KJavaProcessPrivate;
-    CHECK_PTR( d );
+
     d->BufferList.setAutoDelete( true );
 
     javaProcess = new KProcess();

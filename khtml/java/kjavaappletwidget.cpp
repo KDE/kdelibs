@@ -3,14 +3,16 @@
 #include <kwinmodule.h>
 #include <kwin.h>
 #include <kdebug.h>
+#include <klocale.h>
 
 #include <qtimer.h>
 #include <qapplication.h>
-
+#include <qlabel.h>
 
 // For future expansion
 struct KJavaAppletWidgetPrivate
 {
+    QLabel* tmplabel;
 };
 
 static unsigned int count = 0;
@@ -42,11 +44,20 @@ KJavaAppletWidget::KJavaAppletWidget( QWidget* parent, const char* name )
 KJavaAppletWidget::~KJavaAppletWidget()
 {
     delete applet;
+    delete d;
 }
 
 void KJavaAppletWidget::init()
 {
+    d   = new KJavaAppletWidgetPrivate;
     kwm = new KWinModule( this );
+
+    d->tmplabel = new QLabel( i18n("Loading Applet"), this );
+    d->tmplabel->setAlignment( Qt::AlignCenter | Qt::WordBreak );
+    d->tmplabel->setFrameStyle( QFrame::StyledPanel | QFrame::Sunken );
+    d->tmplabel->setMinimumSize( width(), height() );
+
+    kdDebug(6100) << "minimum size for temp label = " << width() << ", " << height() << endl;
 
     uniqueTitle();
     shown = false;
@@ -54,7 +65,6 @@ void KJavaAppletWidget::init()
 
 void KJavaAppletWidget::create()
 {
-//    applet->create();
 }
 
 void KJavaAppletWidget::setAppletClass( const QString &clazzName )
@@ -126,7 +136,6 @@ void KJavaAppletWidget::uniqueTitle()
 void KJavaAppletWidget::showApplet()
 {
     //Now we send applet info to the applet server
-
     if ( !applet->isCreated() )
         applet->create();
 
@@ -165,11 +174,19 @@ void KJavaAppletWidget::setWindow( WId w )
                     this, SLOT( setWindow( WId ) ) );
 
         embed( w );
+
+        delete d->tmplabel;
+        d->tmplabel = 0;
     }
 }
 
 void KJavaAppletWidget::resize( int w, int h)
 {
+    if( d->tmplabel )
+    {
+        d->tmplabel->resize( w, h );
+    }
+
     JavaEmbed::resize( w, h );
     applet->setSize( QSize(w, h) );
 }

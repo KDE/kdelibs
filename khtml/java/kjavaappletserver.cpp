@@ -9,6 +9,7 @@
 
 #include <qtimer.h>
 #include <qguardedptr.h>
+#include <qdir.h>
 
 #include <stdlib.h>
 
@@ -108,7 +109,22 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
         if( jPath[jPath.length()-1] == '/' )
             jPath.remove(jPath.length()-1, 1);
 
-        p->setJVMPath( jPath + "/bin/java");
+        //check here to see if they entered the whole path the java exe
+        //a common mistake I've made myself...
+        QDir dir( jPath );
+        if( dir.exists( "bin/java" ) )
+            p->setJVMPath( jPath + "/bin/java");
+        else
+        {
+            if( dir.exists() )
+            {
+                p->setJVMPath( jPath );
+            }
+            else
+            {
+                kdError(6100) << "Invalid path to java installation" << endl;
+            }
+        }
     }
     QString extraArgs = config.readEntry( "JavaArgs", "" );
     p->setExtraArgs( extraArgs );
@@ -381,19 +397,19 @@ void KJavaAppletServer::received( const QByteArray& qb )
     switch( cmd_code )
     {
         case SHOW_DOCUMENT:
-            cmd = "showdocument";
+            cmd = QString::fromLatin1( "showdocument" );
             break;
 
         case SHOW_URLINFRAME:
-            cmd = "showurlinframe";
+            cmd = QString::fromLatin1( "showurlinframe" );
             break;
 
         case SHOW_STATUS:
-            cmd = "showstatus";
+            cmd = QString::fromLatin1( "showstatus" );
             break;
 
         case RESIZE_APPLET:
-            cmd = "resizeapplet";
+            cmd = QString::fromLatin1( "resizeapplet" );
             break;
 
         default:
@@ -412,7 +428,6 @@ void KJavaAppletServer::received( const QByteArray& qb )
     KJavaAppletContext* tmp = d->contexts[ contextID_num ];
     if( tmp )
         tmp->processCmd( cmd, args );
-
     else
         kdError(6002) << "no context object for this id" << endl;
 }
