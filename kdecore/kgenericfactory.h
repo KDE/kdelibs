@@ -102,6 +102,9 @@ KInstance *KGenericFactoryBase<T>::instance()
  * specified class (template argument) when the class name argument of
  * createObject matches a class name in the given hierarchy.
  *
+ * In case you are developing a KParts component, skip this file and
+ * go directly to @ref KParts::GenericFactory .
+ *
  * Note that the class specified as template argument needs to provide
  * a certain constructor:
  * <ul>
