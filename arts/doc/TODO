@@ -61,8 +61,11 @@ currently mostly done. Remaining issues are:
 
 2. To get everything up again
 
+- add sequence<ObjectType> to MCOP
+- put streamwise blocking into MCOP, see artscat.cc to read really ugly
+  source which lives without that feature
 - namespaces (mapped to modules in the IDL) - currently MCOP puts every
-  interface in the standard namespace
+  interface in the standard namespace  (code generation works)
 - port visual objects
 - do streaming between servers again
 - more work on flow graph descriptions (Structure, etc.) -- external interfaces

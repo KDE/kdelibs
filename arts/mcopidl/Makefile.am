@@ -7,7 +7,7 @@ LDADD = ../mcop/libmcop.la
 
 bin_PROGRAMS = mcopidl
 
-mcopidl_SOURCES = mcopidl.cc yacc.cc scanner.cc
+mcopidl_SOURCES = mcopidl.cc yacc.cc scanner.cc namespace.cc
 noinst_HEADERS = yacc.cc.h
 
 ####### Build rules

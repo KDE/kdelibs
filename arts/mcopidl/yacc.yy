@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <string>
 #include "core.h"
+#include "namespace.h"
 
 using namespace std;
 
@@ -76,15 +77,16 @@ void yyerror( const char *s )
   vector<AttributeDef *> *_attributeDefSeq;
 }
 
-%token T_STRUCT T_ENUM T_INTERFACE T_MODULE
+%token T_STRUCT T_ENUM T_INTERFACE T_MODULE T_VOID
 %token T_LEFT_CURLY_BRACKET T_RIGHT_CURLY_BRACKET
 %token T_LEFT_PARANTHESIS T_RIGHT_PARANTHESIS
 %token T_LESS T_GREATER T_EQUAL
 %token T_SEMICOLON T_COLON T_COMMA
-%token<_str> T_IDENTIFIER
+%token<_str> T_IDENTIFIER T_QUALIFIED_IDENTIFIER
 %type<_str> type
 %type<_str> simpletype
-%type<_str> maybe_identifier
+%type<_str> enumname
+%type<_str> interfacelistelem
 /*%type<_typeComponent> typecomponentdef*/
 %type<_typeComponentSeq> structbody
 %type<_paramDef> paramdef
@@ -95,6 +97,7 @@ void yyerror( const char *s )
 %type<_attributeDefSeq> streamdef
 %type<_interfaceDef> classbody
 %type<_enumComponentSeq> enumbody
+%type<_strs> interfacelist
 %type<_strs> identifierlist
 %type<_strs> defaultdef
 %type<_strs> inheritedinterfaces
@@ -107,7 +110,7 @@ void yyerror( const char *s )
 %token T_INTEGER_LITERAL T_UNKNOWN
 %type<_int> T_INTEGER_LITERAL
 
-%token T_BOOLEAN T_STRING T_LONG T_BYTE T_OBJECT T_SEQUENCE T_AUDIO
+%token T_BOOLEAN T_STRING T_LONG T_BYTE T_OBJECT T_SEQUENCE T_AUDIO T_FLOAT
 %token T_IN T_OUT T_STREAM T_MULTI T_ATTRIBUTE T_READONLY T_ASYNC T_ONEWAY
 %token T_DEFAULT
 
@@ -120,31 +123,35 @@ definitions: epsilon | definition definitions ;
 definition: structdef | interfacedef | moduledef | enumdef ;
 
 structdef:
-	  T_STRUCT T_IDENTIFIER
+	  T_STRUCT T_IDENTIFIER { ModuleHelper::define($2); } 
 	    T_LEFT_CURLY_BRACKET
 	  	  structbody
 	    T_RIGHT_CURLY_BRACKET
 	  T_SEMICOLON
 	  {
-		addStructTodo(new TypeDef($2,*$4));
+        char *qualified = ModuleHelper::qualify($2);
+		addStructTodo(new TypeDef(qualified,*$5));
+		free(qualified);
 	    free($2);
 	  }
 	;
 
 enumdef:
-	  T_ENUM maybe_identifier
+	  T_ENUM enumname { ModuleHelper::define($2); }
 	    T_LEFT_CURLY_BRACKET
 	  	  enumbody
 	    T_RIGHT_CURLY_BRACKET
 	  T_SEMICOLON
 	  {
-	  	addEnumTodo(new EnumDef($2,*$4));
+	    char *qualified = ModuleHelper::qualify($2);
+	  	addEnumTodo(new EnumDef(qualified,*$5));
+		free(qualified);
 		free($2);
-		delete $4;
+		delete $5;
 	  }
 	;
 
-maybe_identifier: T_IDENTIFIER { $$ = $1; } | epsilon { $$ = strdup(""); };
+enumname: T_IDENTIFIER { $$ = $1; } | epsilon { $$ = strdup("_anonymous_"); };
 
 enumbody:
       T_IDENTIFIER
@@ -175,36 +182,36 @@ enumbody:
 	  };
 
 interfacedef:
-	  T_INTERFACE T_IDENTIFIER inheritedinterfaces
+	  T_INTERFACE T_IDENTIFIER { ModuleHelper::define($2); } inheritedinterfaces
 	    T_LEFT_CURLY_BRACKET
 	  	  classbody
 	    T_RIGHT_CURLY_BRACKET
 	  T_SEMICOLON
 	  {
 	    vector<char *>::iterator ii;
-		for(ii=$3->begin(); ii != $3->end(); ii++)
+		for(ii=$4->begin(); ii != $4->end(); ii++)
 		{
-			$5->inheritedInterfaces.push_back(*ii);
+			$6->inheritedInterfaces.push_back(*ii);
 			free(*ii);
 		}
-		delete $3;
-
-	  	//addInterfaceTodo(new InterfaceDef($2,*$5));
-		$5->name = $2;
+		delete $4;
+        char *qualified = ModuleHelper::qualify($2);
+		$6->name = qualified;
+		free(qualified);
 		free($2);
-	  	addInterfaceTodo($5);
+	  	addInterfaceTodo($6);
 	  }
 	;
 
 inheritedinterfaces:
       epsilon { $$ = new vector<char *>; }
-	| T_COLON identifierlist { $$ = $2; };
+	| T_COLON interfacelist { $$ = $2; };
 
 moduledef:
-	  T_MODULE T_IDENTIFIER
+	  T_MODULE T_IDENTIFIER { ModuleHelper::enter($2); free($2); }
 	    T_LEFT_CURLY_BRACKET
 	  	  definitions
-	    T_RIGHT_CURLY_BRACKET
+	    T_RIGHT_CURLY_BRACKET { ModuleHelper::leave(); }
 	  T_SEMICOLON
 	;
 
@@ -350,6 +357,12 @@ identifierlist:
 	  T_IDENTIFIER { $$ = new vector<char *>; $$->push_back($1); }
 	| identifierlist T_COMMA T_IDENTIFIER { $$ = $1; $$->push_back($3); }
 
+interfacelist:
+	  interfacelistelem { $$ = new vector<char *>; $$->push_back($1); }
+	| interfacelist T_COMMA interfacelistelem { $$ = $1; $$->push_back($3); }
+
+interfacelistelem: T_IDENTIFIER | T_QUALIFIED_IDENTIFIER;
+
 structbody: epsilon {
 		// is empty by default
 		$$ = new vector<TypeComponent *>;
@@ -393,9 +406,17 @@ simpletype:
 	| T_BYTE { $$ = strdup("byte"); }
 	| T_OBJECT { $$ = strdup("object"); }
 	| T_AUDIO { $$ = strdup("float"); }
+	| T_FLOAT { $$ = strdup("float"); }
+	| T_VOID { $$ = strdup("void"); }
 	| T_IDENTIFIER {
-		$$ = $1;
+		$$ = ModuleHelper::qualify($1);
+		free($1);
+	  }
+	| T_QUALIFIED_IDENTIFIER {
+		$$ = ModuleHelper::qualify($1);
+		free($1);
 	  };
+
 
 epsilon: /* empty */ ;
 %%

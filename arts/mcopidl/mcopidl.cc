@@ -29,6 +29,7 @@
 #include <stack>
 #include <ctype.h>
 #include "core.h"
+#include "namespace.h"
 #include <iostream>
 
 using namespace std;
@@ -551,6 +552,10 @@ string createTypeCode(string type, const string& name, long model,
 			       + indent + "writeObject(*result,returnCode._base());\n";
 		}
 	}
+	else
+	{
+		fprintf(stderr,"warning: undefined type %s occured\n",type.c_str());
+	}
 
 	if((model & ~MODEL_SEQ) == MODEL_MEMBER
 	|| (model & ~MODEL_SEQ) == MODEL_ARG)
@@ -672,6 +677,7 @@ void doEnumHeader(FILE *header)
 {
 	list<EnumDef *>::iterator edi;
 	vector<EnumComponent *>::iterator i;
+	NamespaceHelper nspace(header);
 
 	for(edi = enums.begin();edi != enums.end(); edi++)
 	{
@@ -679,7 +685,11 @@ void doEnumHeader(FILE *header)
 
 		if(fromInclude(ed->name)) continue; // should come from the include
 
-		fprintf(header,"enum %s {",ed->name.c_str());
+		nspace.setFromSymbol(ed->name);
+		string ename = nspace.printableForm(ed->name);
+		if(ename == "_anonymous_") ename = "";	
+
+		fprintf(header,"enum %s {",ename.c_str());
 		int first = 0;
 		for(i=ed->contents.begin();i != ed->contents.end();i++)
 		{
@@ -695,6 +705,7 @@ void doStructHeader(FILE *header)
 {
 	list<TypeDef *>::iterator csi;
 	vector<TypeComponent *>::iterator i;
+	NamespaceHelper nspace(header);
 
 	for(csi = structs.begin();csi != structs.end(); csi++)
 	{
@@ -702,14 +713,17 @@ void doStructHeader(FILE *header)
 
 		if(fromInclude(d->name)) continue; // should come from the include
 
-		fprintf(header,"class %s : public Type {\n",d->name.c_str());
+		nspace.setFromSymbol(d->name.c_str());
+		string tname = nspace.printableForm(d->name);
+
+		fprintf(header,"class %s : public Type {\n",tname.c_str());
 		fprintf(header,"public:\n");
 
 		/** constructor without arguments **/
-		fprintf(header,"\t%s();\n",d->name.c_str());
+		fprintf(header,"\t%s();\n",tname.c_str());
 
 		/** constructor with arguments **/
-		fprintf(header,"\t%s(",d->name.c_str());
+		fprintf(header,"\t%s(",tname.c_str());
 		int first = 0;
 		for(i=d->contents.begin();i != d->contents.end();i++)
 		{
@@ -721,18 +735,18 @@ void doStructHeader(FILE *header)
 		fprintf(header,");\n");
 
 		/** constructor from stream **/
-		fprintf(header,"\t%s(Buffer& stream);\n",d->name.c_str());
+		fprintf(header,"\t%s(Buffer& stream);\n",tname.c_str());
 
 		/** copy constructor (from same type) **/
 		fprintf(header,"\t%s(const %s& copyType);\n",
-			d->name.c_str(),d->name.c_str());
+			tname.c_str(),tname.c_str());
 
 		/** assignment operator **/
 		fprintf(header,"\t%s& operator=(const %s& assignType);\n",
-			d->name.c_str(),d->name.c_str());
+			tname.c_str(),tname.c_str());
 
 		/** virtual destuctor (removes many annoying compiler warnings) **/
-		fprintf(header,"\tvirtual ~%s();\n\n",d->name.c_str());
+		fprintf(header,"\tvirtual ~%s();\n\n",tname.c_str());
 
 		/** data members **/
 		for(i=d->contents.begin();i != d->contents.end();i++)
@@ -764,9 +778,11 @@ void doStructSource(FILE *source)
 
 		if(fromInclude(d->name)) continue; // should come from the include
 
-		fprintf(source,"%s::%s()\n{\n}\n\n",d->name.c_str(),d->name.c_str());
+		string tname = NamespaceHelper::nameOf(d->name);
 
-		fprintf(source,"%s::%s(",d->name.c_str(),d->name.c_str());
+		fprintf(source,"%s::%s()\n{\n}\n\n",d->name.c_str(),tname.c_str());
+
+		fprintf(source,"%s::%s(",d->name.c_str(),tname.c_str());
 		int first = 0;
 		for(i=d->contents.begin();i != d->contents.end();i++)
 		{
@@ -781,14 +797,14 @@ void doStructSource(FILE *source)
 		fprintf(source,"}\n\n");
 
 		/** constructor from stream **/
-		fprintf(source,"%s::%s(Buffer& stream)\n{\n",d->name.c_str(),d->name.c_str());
+		fprintf(source,"%s::%s(Buffer& stream)\n{\n",d->name.c_str(),tname.c_str());
 		fprintf(source,"\treadType(stream);\n");
 		fprintf(source,"}\n\n");
 
 		/** copy constructor **/
 
 		fprintf(source,"%s::%s(const %s& copyType) : ::Type(copyType)\n{\n",
-			d->name.c_str(),d->name.c_str(),d->name.c_str());
+			d->name.c_str(),tname.c_str(),d->name.c_str());
 		fprintf(source,"\tBuffer buffer;\n");
 		fprintf(source,"\tcopyType.writeType(buffer);\n");
 		fprintf(source,"\treadType(buffer);\n");
@@ -804,7 +820,7 @@ void doStructSource(FILE *source)
 		fprintf(source,"}\n\n");
 	
 		/** virtual destuctor: free type contents **/
-		fprintf(source,"%s::~%s()\n{\n",d->name.c_str(),d->name.c_str());
+		fprintf(source,"%s::~%s()\n{\n",d->name.c_str(),tname.c_str());
 		for(i=d->contents.begin();i != d->contents.end();i++)
 		{
 			string stype = (*i)->type;
@@ -943,6 +959,20 @@ bool haveAsyncStreams(InterfaceDef *d)
 	return false;
 }
 
+string dispatchFunctionName(string interface, long mcount)
+{
+	char number[20];
+	sprintf(number,"%02ld",mcount);
+
+	string nspace = NamespaceHelper::namespaceOf(interface);
+	for (string::iterator i = nspace.begin(); i != nspace.end(); i++)
+		if(*i == ':') *i = '_';
+
+	string iname = NamespaceHelper::nameOf(interface);
+
+	return "_dispatch_" + nspace + "_" + iname + "_" + number;
+}
+
 void createDispatchFunction(FILE *source, long mcount,
 								InterfaceDef *d, MethodDef *md,string name)
 {
@@ -972,8 +1002,8 @@ void createDispatchFunction(FILE *source, long mcount,
 	}
 
 	fprintf(source,"// %s\n",md->name.c_str());
-	fprintf(source,"static void _dispatch_%s_%02ld(%s)\n",
-			d->name.c_str(),mcount,signature.c_str());
+	fprintf(source,"static void %s(%s)\n",
+			dispatchFunctionName(d->name,mcount).c_str(), signature.c_str());
 	fprintf(source,"{\n");
 
 	string call = "(("+d->name+"_skel *)object)->"+name + "(";
@@ -1080,6 +1110,7 @@ void doInterfacesHeader(FILE *header)
 	vector<MethodDef *>::iterator mi;
 	vector<AttributeDef *>::iterator ai;
 	string inherits;
+	NamespaceHelper nspace(header);
 
 	/*
 	 * this allows it to the various interfaces as parameters, returncodes
@@ -1089,13 +1120,17 @@ void doInterfacesHeader(FILE *header)
 	{
 		InterfaceDef *d = *ii;
 		if(!fromInclude(d->name))
-			fprintf(header,"class %s;\n",d->name.c_str());
+		{
+			nspace.setFromSymbol(d->name);
+			fprintf(header,"class %s;\n",nspace.printableForm(d->name).c_str());
+		}
 	}
 	fprintf(header,"\n");
 
 	for(ii = interfaces.begin();ii != interfaces.end(); ii++)
 	{
 		InterfaceDef *d = *ii;
+		string iname;
 
 		if(fromInclude(d->name)) continue; // should come from the include
 
@@ -1103,22 +1138,25 @@ void doInterfacesHeader(FILE *header)
 		inherits = buildInheritanceList(*d,"_base");
 		if(inherits == "") inherits = "virtual public Object_base";
 
-		fprintf(header,"class %s_base : %s {\n",d->name.c_str(),inherits.c_str());
+		nspace.setFromSymbol(d->name);
+		iname = nspace.printableForm(d->name);
+
+		fprintf(header,"class %s_base : %s {\n",iname.c_str(),inherits.c_str());
 		fprintf(header,"public:\n");
 		fprintf(header,"\tstatic unsigned long _IID; // interface ID\n\n");
 		fprintf(header,"\tstatic %s_base *_create(const std::string& subClass"
-						" = \"%s\");\n", d->name.c_str(),d->name.c_str());
+						" = \"%s\");\n", iname.c_str(),d->name.c_str());
 		fprintf(header,"\tstatic %s_base *_fromString(std::string objectref);\n",
-														d->name.c_str());
+														iname.c_str());
 		fprintf(header,"\tstatic %s_base *_fromReference(ObjectReference ref,"
-		                                " bool needcopy);\n\n",d->name.c_str());
+		                                " bool needcopy);\n\n",iname.c_str());
 
 		/* reference counting: _copy */
 		fprintf(header,"\tinline %s_base *_copy() {\n"
 					   "\t\tassert(_refCnt > 0);\n"
 				       "\t\t_refCnt++;\n"
 					   "\t\treturn this;\n"
-					   "\t}\n\n",d->name.c_str());
+					   "\t}\n\n",iname.c_str());
 				
 		// Default I/O info
 		fprintf(header,"\tvirtual vector<std::string> _defaultPortsIn() const;\n");
@@ -1168,13 +1206,13 @@ void doInterfacesHeader(FILE *header)
 		if(inherits == "") inherits = "virtual public Object_stub";
 
 		fprintf(header,"class %s_stub : virtual public %s_base, %s {\n",
-			d->name.c_str(), d->name.c_str(),inherits.c_str());
+			iname.c_str(), iname.c_str(),inherits.c_str());
 		fprintf(header,"protected:\n");
-		fprintf(header,"\t%s_stub();\n\n",d->name.c_str());
+		fprintf(header,"\t%s_stub();\n\n",iname.c_str());
 
 		fprintf(header,"public:\n");
 		fprintf(header,"\t%s_stub(Connection *connection, long objectID);\n\n",
-			d->name.c_str());
+			iname.c_str());
 			/* attributes (not for streams) */
 		for(ai = d->attributes.begin();ai != d->attributes.end();ai++)
 		{
@@ -1214,7 +1252,7 @@ void doInterfacesHeader(FILE *header)
 		if(inherits == "") inherits = "virtual public Object_skel";
 
 		fprintf(header,"class %s_skel : virtual public %s_base,"
-			" %s {\n",d->name.c_str(),d->name.c_str(),inherits.c_str());
+			" %s {\n",iname.c_str(),iname.c_str(),inherits.c_str());
 
 		bool firstStream = true;
 		for(ai = d->attributes.begin();ai != d->attributes.end();ai++)
@@ -1293,7 +1331,7 @@ void doInterfacesHeader(FILE *header)
 		if(haveAsyncStreams) fprintf(header,"\n");
 
 		fprintf(header,"public:\n");
-		fprintf(header,"\t%s_skel();\n\n",d->name.c_str());
+		fprintf(header,"\t%s_skel();\n\n",iname.c_str());
 
 		fprintf(header,"\tstatic std::string _interfaceNameSkel();\n");
 		fprintf(header,"\tstd::string _interfaceName();\n");
@@ -1305,7 +1343,8 @@ void doInterfacesHeader(FILE *header)
 		  fprintf(header,"\tvoid notify(const Notification& notification);\n");
 
 		fprintf(header,"};\n\n");
-		
+
+		nspace.leaveAll();
 		
 		// Create object wrapper for easy C++ syntax
 		
@@ -1316,19 +1355,21 @@ void doInterfacesHeader(FILE *header)
 			fprintf(header,"#include \"flowsystem.h\"\n");
 		}
 		fprintf(header,"\n");
-	
+
+		nspace.setFromSymbol(d->name);
+
 		inherits = ": public SmartWrapper";
 
-		fprintf(header,"class %s %s {\n",d->name.c_str(),inherits.c_str());
+		fprintf(header,"class %s %s {\n",iname.c_str(),inherits.c_str());
 		fprintf(header,"private:\n");
 		fprintf(header,"\tstatic Object_base* _Creator();\n");
-		fprintf(header,"\t%s_base *_cache;\n",d->name.c_str());
-		fprintf(header,"\tinline %s_base *_method_call() {\n",d->name.c_str());
+		fprintf(header,"\t%s_base *_cache;\n",iname.c_str());
+		fprintf(header,"\tinline %s_base *_method_call() {\n",iname.c_str());
 		fprintf(header,"\t\t_pool->checkcreate();\n");
 		fprintf(header,"\t\tif(_pool->base) {\n");
 		fprintf(header,"\t\t\t_cache="
 							"(%s_base *)_pool->base->_cast(%s_base::_IID);\n",
-							d->name.c_str(),d->name.c_str());
+							iname.c_str(),iname.c_str());
 		fprintf(header,"\t\t\tassert(_cache);\n");
 		fprintf(header,"\t\t}\n");
 		fprintf(header,"\t\treturn _cache;\n");
@@ -1337,29 +1378,29 @@ void doInterfacesHeader(FILE *header)
 		fprintf(header,"\npublic:\n");
 
 		// empty constructor: specify creator for create-on-demand
-		fprintf(header,"\tinline %s() : SmartWrapper(_Creator), _cache(0) {}\n",d->name.c_str());
+		fprintf(header,"\tinline %s() : SmartWrapper(_Creator), _cache(0) {}\n",iname.c_str());
 		
 		// constructors from reference and for subclass
 		fprintf(header,"\tinline %s(const SubClass& s) :\n"
 			"\t\tSmartWrapper(%s_base::_create(s.string())), _cache(0) {}\n",
-			d->name.c_str(),d->name.c_str());
+			iname.c_str(),iname.c_str());
 		fprintf(header,"\tinline %s(const Reference &r) :\n"
 			"\t\tSmartWrapper("
 			"r.isString()?(%s_base::_fromString(r.string())):"
 			"(%s_base::_fromReference(r.reference(),true))), _cache(0) {}\n",
-			d->name.c_str(),d->name.c_str(), d->name.c_str());
+			iname.c_str(),iname.c_str(), iname.c_str());
 
 		// copy constructors
 		fprintf(header,"\tinline %s(%s_base* b) : SmartWrapper(b), _cache(0) {}\n",
-			d->name.c_str(),d->name.c_str());
+			iname.c_str(),iname.c_str());
 		fprintf(header,"\tinline %s(const %s& target) : SmartWrapper(target._pool), _cache(target._cache) {}\n",
-			d->name.c_str(),d->name.c_str());
+			iname.c_str(),iname.c_str());
 		fprintf(header,"\tinline %s(SmartWrapper::Pool& p) : SmartWrapper(p), _cache(0) {}\n",
-			d->name.c_str());
+			iname.c_str());
 
 		// copy operator. copy from _base* extraneous (uses implicit const object)
 		fprintf(header,"\tinline %s& operator=(const %s& target) {\n",
-			d->name.c_str(),d->name.c_str());
+			iname.c_str(),iname.c_str());
 		// test for equality
 		fprintf(header,"\t\tif (_pool == target._pool) return *this;\n");
 		// Invalidate all parent caches
@@ -1403,7 +1444,7 @@ void doInterfacesHeader(FILE *header)
 		// conversion to string
 //		fprintf(header,"\tinline std::string toString() const {return _method_call()->_toString();}\n");
 		// conversion to _base* object
-		fprintf(header,"\tinline %s_base* _base() {return _cache?_cache:_method_call();}\n",d->name.c_str());
+		fprintf(header,"\tinline %s_base* _base() {return _cache?_cache:_method_call();}\n",iname.c_str());
 		fprintf(header,"\n");
 
 		InterfaceDef allMerged = mergeAllParents(*d);
@@ -1446,8 +1487,8 @@ void doInterfacesHeader(FILE *header)
 					"\t\t_cache=(%s_base *)_pool->base->_cast(%s_base::_IID);\n"
 					"\t\tassert(_cache);\n"
 					"\t\t_cache->constructor(%s);\n\t}\n",
-					d->name.c_str(), params.c_str(), d->name.c_str(),
-					d->name.c_str(), d->name.c_str(), callparams.c_str());
+					iname.c_str(), params.c_str(), iname.c_str(),
+					iname.c_str(), iname.c_str(), callparams.c_str());
 			} else {
 				fprintf(header,"\tinline %s %s(%s) {return _cache?_cache->%s(%s):_method_call()->%s(%s);}\n",
 					rc.c_str(),	md->name.c_str(), params.c_str(),
@@ -1588,6 +1629,8 @@ void doInterfacesSource(FILE *source)
 
 		if(fromInclude(d->name)) continue; // should come from the include
 
+		string iname = NamespaceHelper::nameOf(d->name);
+
 		// create static functions
 
 		fprintf(source,"%s_base *%s_base::_create(const std::string& subClass)\n",
@@ -1699,14 +1742,14 @@ void doInterfacesSource(FILE *source)
 		// create stub
 
 		/** constructors **/
-		fprintf(source,"%s_stub::%s_stub()\n" ,d->name.c_str(),d->name.c_str());
+		fprintf(source,"%s_stub::%s_stub()\n" ,d->name.c_str(),iname.c_str());
 		fprintf(source,"{\n");
 		fprintf(source,"\t// constructor for subclasses"
 										" (don't use directly)\n");
 		fprintf(source,"}\n\n");
 
 		fprintf(source,"%s_stub::%s_stub(Connection *connection, "
-						"long objectID)\n",d->name.c_str(),d->name.c_str());
+						"long objectID)\n",d->name.c_str(),iname.c_str());
 		fprintf(source,"	: Object_stub(connection, objectID)\n");
 		fprintf(source,"{\n");
 		fprintf(source,"\t// constructor to create a stub for an object\n");
@@ -1825,8 +1868,8 @@ void doInterfacesSource(FILE *source)
 
 		long i;
 		for(i=0;i<mcount;i++)
-			fprintf(source,"\t_addMethod(_dispatch_%s_%02ld,this,"
-			                    "MethodDef(m));\n", d->name.c_str(),i);
+			fprintf(source,"\t_addMethod(%s,this,MethodDef(m));\n",
+							dispatchFunctionName(d->name,i).c_str());
 
 		vector<string>::iterator ii = d->inheritedInterfaces.begin();
 		while(ii != d->inheritedInterfaces.end())
@@ -1837,7 +1880,7 @@ void doInterfacesSource(FILE *source)
 		}
 		fprintf(source,"}\n\n");
 
-		fprintf(source,"%s_skel::%s_skel()\n", d->name.c_str(),d->name.c_str());
+		fprintf(source,"%s_skel::%s_skel()\n", d->name.c_str(),iname.c_str());
 		fprintf(source,"{\n");
 		for(ai = d->attributes.begin(); ai != d->attributes.end(); ai++)
 		{

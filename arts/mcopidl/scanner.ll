@@ -147,6 +147,8 @@ Float_Literal5		"."{Digits}(e|E)("+"|"-")?{Digits}
 
 Kidl_Identifier	[_a-zA-Z][a-zA-Z0-9_]*
 
+Qualified_Identifier	("::")?[_a-zA-Z](("::")?[a-zA-Z0-9_])*
+
 /*--------------------------------------------------------------------------*/
 
 %%
@@ -176,8 +178,10 @@ Kidl_Identifier	[_a-zA-Z][a-zA-Z0-9_]*
 ":"			return T_COLON;
 "="			return T_EQUAL;
 
+void		return T_VOID;
 byte		return T_BYTE;
 long		return T_LONG;
+boolean		return T_BOOLEAN;
 string		return T_STRING;
 object		return T_OBJECT;
 struct		return T_STRUCT;
@@ -190,6 +194,7 @@ readonly	return T_READONLY;
 in			return T_IN;
 out			return T_OUT;
 audio		return T_AUDIO;
+float		return T_FLOAT;
 stream		return T_STREAM;
 multi		return T_MULTI;
 async		return T_ASYNC;
@@ -199,6 +204,11 @@ default		return T_DEFAULT;
 {Kidl_Identifier}	{
 			  yylval._str = strdup(yytext);		// TAKE CARE: free that thing
 			  return T_IDENTIFIER;
+			}
+
+{Qualified_Identifier} {
+			  yylval._str = strdup(yytext);		// TAKE CARE: free that thing
+			  return T_QUALIFIED_IDENTIFIER;
 			}
 
 {Int_Literal}		{
@@ -213,6 +223,7 @@ default		return T_DEFAULT;
 			  yylval._int = ascii_to_longlong( 16, yytext + 2 );
 			  return T_INTEGER_LITERAL;
 			}
+
 .                       {
                           return T_UNKNOWN;
                         }
