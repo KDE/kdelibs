@@ -1,4 +1,4 @@
-/**
+/*
 * kimgio.h -- Declaration of interface to the KDE Image IO library.
 * Sirtaj Singh Kang <taj@kde.org>, 23 Sep 1998.
 *
@@ -17,6 +17,11 @@ void kimgioRegister(void);
 
 /**
 * Interface to the KDE Image IO library.
+*
+* Just call KImageIO::registerFormats to register all extra
+* image formats provided by libkimgio. You will also need to
+* link to this library.
+*
 * @author Sirtaj Singh Kang <taj@kde.org>
 * @version $Id$
 */
@@ -25,7 +30,7 @@ class KImageIO
 
 public:
 
-static void registerFormats() { kimgioRegister(); }
+	static void registerFormats() { kimgioRegister(); }
 
 };
 
