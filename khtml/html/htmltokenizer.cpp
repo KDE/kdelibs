@@ -174,6 +174,7 @@ void HTMLTokenizer::begin()
     scriptSrc = "";
     pendingSrc = "";
     noMoreData = false;
+    brokenComments = false;
 }
 
 void HTMLTokenizer::addListing(DOMStringIt list)
@@ -449,8 +450,10 @@ void HTMLTokenizer::parseComment(DOMStringIt &src)
     checkScriptBuffer(src.length());
     while ( src.length() )
     {
-        if (src->unicode() == '>' && scriptCodeSize >= 2 &&
-            scriptCode[scriptCodeSize-2] == '-' && scriptCode[scriptCodeSize-1] == '-' )
+        if (src->unicode() == '>' &&
+            ( brokenComments ||
+              ( scriptCodeSize >= 2 && scriptCode[scriptCodeSize-2] == '-' &&
+                scriptCode[scriptCodeSize-1] == '-' ) ) )
         {
             ++src;
 #ifdef COMMENTS_IN_DOM
@@ -1475,6 +1478,7 @@ void HTMLTokenizer::finish()
     while(comment && scriptCode && scriptCodeSize)
     {
         // we've found an unmatched comment start
+        brokenComments = true;
         checkScriptBuffer();
         scriptCode[ scriptCodeSize ] = 0;
         scriptCode[ scriptCodeSize + 1 ] = 0;
