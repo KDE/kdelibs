@@ -79,15 +79,15 @@ public:
   void registerAuthData( SessionData::AuthData* );
   void unregisterAuthData( SessionData::AuthData* );
   void purgeCachedData();
-  
+
 private:
-  KDEsuClient * m_kdesuClient;    
+  KDEsuClient * m_kdesuClient;
 };
 
 SessionData::AuthDataList::AuthDataList()
 {
   m_kdesuClient = new KDEsuClient;
-  setAutoDelete(true);    
+  setAutoDelete(true);
 }
 
 SessionData::AuthDataList::~AuthDataList()
@@ -125,7 +125,7 @@ void SessionData::AuthDataList::removeData( const QCString& gkey )
 bool SessionData::AuthDataList::pingCacheDaemon()
 {
   Q_ASSERT(m_kdesuClient);
-  
+
   int sucess = m_kdesuClient->ping();
   if( sucess == -1 )
   {
@@ -224,10 +224,10 @@ void SessionData::configDataFor( MetaData &configData, const QString &proto,
 {
   if ( (proto.find("http", 0, false) == 0 ) ||
      (proto.find("webdav", 0, false) == 0) )
-  {        
+  {
     if (!d->initDone)
         reset();
-    
+
     // These might have already been set so check first
     // to make sure that we do not trumpt settings sent
     // by apps or end-user.
@@ -238,11 +238,10 @@ void SessionData::configDataFor( MetaData &configData, const QString &proto,
     if ( configData["Charsets"].isEmpty() )
         configData["Charsets"] = d->charsets;
     if ( configData["CacheDir"].isEmpty() )
-        configData["CacheDir"] = KGlobal::dirs()->saveLocation("cache", "http");      
+        configData["CacheDir"] = KGlobal::dirs()->saveLocation("cache", "http");
     if ( configData["UserAgent"].isEmpty() )
     {
-      KProtocolManager proto;
-      configData["UserAgent"] = proto.defaultUserAgent();
+      configData["UserAgent"] = KProtocolManager::defaultUserAgent();
     }
   }
 }
@@ -267,7 +266,7 @@ void SessionData::reset()
           (*it) = QString::fromLatin1("en");
     }
     d->language = languageList.join( ", " );
-    
+
     d->charsets = QString::fromLatin1(QTextCodec::codecForLocale()->mimeName()).lower();
     KProtocolManager::reparseConfiguration();
 }

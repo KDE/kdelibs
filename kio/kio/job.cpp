@@ -1278,10 +1278,9 @@ void FileCopyJob::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
         kdDebug(7007) << "FileCopyJob::slotCanResume from PUT job. offset=" << KIO::number(offset) << endl;
         if (offset)
         {
-            KProtocolManager p;
             RenameDlg_Result res = R_RESUME;
 
-            if (!p.autoResume())
+            if (!KProtocolManager::autoResume())
             {
                 QString newPath;
                 // Ask confirmation about resuming previous transfer
