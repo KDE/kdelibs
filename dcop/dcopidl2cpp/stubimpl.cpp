@@ -141,7 +141,7 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 		    bool async = result == "ASYNC";
 		    if ( async) {
 			result = "void";
-			str << result;
+			str << result << " ";
 		    } else
 			result = writeType( str, r );
 
