@@ -1542,7 +1542,7 @@ void WindowQObject::parentDestroyed()
 int WindowQObject::installTimeout(const UString &handler, int t, bool singleShot)
 {
   //kdDebug(6070) << "WindowQObject::installTimeout " << this << " " << handler.ascii() << " milliseconds=" << t << endl;
-  if (t < 16) t = 16;
+  if (t < 10) t = 10;
   int id = startTimer(t);
   ScheduledAction *action = new ScheduledAction(handler.qstring(),singleShot);
   scheduledActions.insert(id, action);
@@ -1553,7 +1553,7 @@ int WindowQObject::installTimeout(const UString &handler, int t, bool singleShot
 int WindowQObject::installTimeout(const Value &func, List args, int t, bool singleShot)
 {
   Object objFunc = Object::dynamicCast( func );
-  if (t < 16) t = 16;
+  if (t < 10) t = 10;
   int id = startTimer(t);
   scheduledActions.insert(id, new ScheduledAction(objFunc,args,singleShot));
   return id;
