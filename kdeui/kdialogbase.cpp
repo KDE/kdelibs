@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE Libraries
- *  Copyright (C) 1999-2000 Mirko Sucker (mirko@kde.org) and
+ *  Copyright (C) 1999-2000 Mirko Sucker (mirko@kde.org) and 
  *  Espen Sand (espen@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
@@ -26,8 +26,8 @@
 
 #include <qgrid.h>
 #include <qhbox.h>
-#include <qlayout.h>
-#include <qlist.h>
+#include <qlayout.h> 
+#include <qlist.h> 
 #include <qtooltip.h>
 #include <qvbox.h>
 #include <qwhatsthis.h>
@@ -44,8 +44,8 @@ KDialogBaseTile *KDialogBase::mTile = 0;
 template class QList<KDialogBaseButton>;
 
 KDialogBase::KDialogBase( QWidget *parent, const char *name, bool modal,
-			  const QString &caption, int buttonMask,
-			  ButtonCode defaultButton, bool separator,
+			  const QString &caption, int buttonMask, 
+			  ButtonCode defaultButton, bool separator, 
 			  const QString &user1, const QString &user2,
 			  const QString &user3 )
   :KDialog( parent, name, modal, /*WStyle_Customize|*/WStyle_DialogBorder),
@@ -59,16 +59,16 @@ KDialogBase::KDialogBase( QWidget *parent, const char *name, bool modal,
 
   enableButtonSeparator( separator );
   makeButtonBox( buttonMask, defaultButton, user1, user2, user3 );
-
+  
   mIsActivated = true;
   setupLayout();
 }
 
 
-KDialogBase::KDialogBase( int dialogFace, const QString &caption,
-			  int buttonMask, ButtonCode defaultButton,
-			  QWidget *parent, const char *name, bool modal,
-			  bool separator, const QString &user1,
+KDialogBase::KDialogBase( int dialogFace, const QString &caption, 
+			  int buttonMask, ButtonCode defaultButton, 
+			  QWidget *parent, const char *name, bool modal, 
+			  bool separator, const QString &user1, 
 			  const QString &user2, const QString &user3 )
   :KDialog( parent, name, modal, /*WStyle_Customize|*/WStyle_DialogBorder ),
    mTopLayout(0), mMainWidget(0), mUrlHelp(0), mJanus(0), mActionSep(0),
@@ -78,7 +78,7 @@ KDialogBase::KDialogBase( int dialogFace, const QString &caption,
 
   makeRelay();
   connect( this, SIGNAL(layoutHintChanged()), this, SLOT(updateGeometry()) );
-
+  
   mJanus = new KJanusWidget( this, "janus", dialogFace );
   if( mJanus == 0 || mJanus->isValid() == false ) { return; }
 
@@ -90,9 +90,9 @@ KDialogBase::KDialogBase( int dialogFace, const QString &caption,
 }
 
 
-KDialogBase::KDialogBase( const QString &caption, int buttonMask,
-			  ButtonCode defaultButton, ButtonCode escapeButton,
-			  QWidget *parent, const char *name, bool modal,
+KDialogBase::KDialogBase( const QString &caption, int buttonMask, 
+			  ButtonCode defaultButton, ButtonCode escapeButton, 
+			  QWidget *parent, const char *name, bool modal, 
 			  bool separator, QString yes,
 			  QString no, QString cancel )
   :KDialog( parent, name, modal, /*WStyle_Customize|*/WStyle_DialogBorder ),
@@ -145,7 +145,7 @@ KDialogBase::slotDelayedDestruct()
 
 void KDialogBase::setupLayout()
 {
-  if( mTopLayout != 0 )
+  if( mTopLayout != 0 ) 
   {
     delete mTopLayout;
   }
@@ -215,7 +215,7 @@ void KDialogBase::enableButtonSeparator( bool state )
     }
     delete mActionSep; mActionSep = 0;
   }
-
+ 
   if( mIsActivated == true )
   {
     setupLayout();
@@ -276,8 +276,8 @@ void KDialogBase::adjustSize()
   //
   // Button separator
   //
-  if( mActionSep != 0 )
-  {
+  if( mActionSep != 0 ) 
+  { 
     s1.rheight() += mActionSep->minimumSize().height() + s;
   }
 
@@ -367,7 +367,7 @@ void KDialogBase::makeButtonBox( int buttonMask, ButtonCode defaultButton,
   {
     QPushButton *pb = mButton.append( User2, user2 );
     if( mMessageBoxMode == true )
-    {
+    { 
       connect( pb, SIGNAL(clicked()), this, SLOT(slotYes()) );
     }
     else
@@ -379,7 +379,7 @@ void KDialogBase::makeButtonBox( int buttonMask, ButtonCode defaultButton,
   {
     QPushButton *pb = mButton.append( User1, user1 );
     if( mMessageBoxMode == true )
-    {
+    { 
       connect( pb, SIGNAL(clicked()), this, SLOT(slotNo()) );
     }
     else
@@ -413,7 +413,7 @@ void KDialogBase::makeButtonBox( int buttonMask, ButtonCode defaultButton,
     QPushButton *pb = mButton.append( Close, i18n("&Close") );
     connect( pb, SIGNAL(clicked()), this, SLOT(slotClose()) );
   }
-
+  
   QPushButton *pb = actionButton( defaultButton );
   if( pb != 0 )
   {
@@ -493,7 +493,7 @@ void KDialogBase::setButtonStyle( int style )
     else if( mButton.mask & Try & layout[i] )
     {
       hbox->addWidget( actionButton( Try ) ); numButton++;
-    }
+    } 
     else if( mButton.mask & Cancel & layout[i] )
     {
       hbox->addWidget( actionButton( Cancel ) ); numButton++;
@@ -580,7 +580,7 @@ void KDialogBase::showButtonCancel( bool state )
 }
 
 
-void KDialogBase::setButtonOKText( const QString &text,
+void KDialogBase::setButtonOKText( const QString &text, 
 				   const QString &tooltip,
 				   const QString &quickhelp )
 {
@@ -601,7 +601,7 @@ void KDialogBase::setButtonOKText( const QString &text,
 
 
 
-void KDialogBase::setButtonApplyText( const QString &text,
+void KDialogBase::setButtonApplyText( const QString &text, 
 				      const QString &tooltip,
 				      const QString &quickhelp )
 {
@@ -623,8 +623,8 @@ void KDialogBase::setButtonApplyText( const QString &text,
 }
 
 
-void KDialogBase::setButtonCancelText( const QString& text,
-				       const QString& tooltip,
+void KDialogBase::setButtonCancelText( const QString& text, 
+				       const QString& tooltip, 
 				       const QString& quickhelp )
 {
   QPushButton *pb = actionButton( Cancel );
@@ -670,7 +670,7 @@ void KDialogBase::setButtonWhatsThis( ButtonCode id, const QString &text )
 
 
 void KDialogBase::setButtonFocus( QPushButton *p,bool isDefault, bool isFocus )
-{
+{ 
   p->setDefault( isDefault );
   isFocus ? p->setFocus() : p->clearFocus();
 }
@@ -684,6 +684,23 @@ void KDialogBase::setTreeListAutoResize( bool state )
   }
 }
 
+void KDialogBase::setShowIconsInTreeList(bool state)
+{
+  if( mJanus != 0 )
+  {
+    mJanus->setShowIconsInTreeList( state );
+  }
+}
+  
+void KDialogBase::setRootIsDecorated( bool state )
+{
+  if( mJanus != 0 )
+  {
+    mJanus->setRootIsDecorated( state );
+  }
+}
+
+
 
 void KDialogBase::setIconListAllVisible( bool state )
 {
@@ -694,45 +711,45 @@ void KDialogBase::setIconListAllVisible( bool state )
 }
 
 
-void KDialogBase::slotHelp()
+void KDialogBase::slotHelp() 
 {
   emit helpClicked();
   kapp->invokeHelp( mAnchor, mHelpApp );
 }
 
 
-void KDialogBase::slotDefault()
+void KDialogBase::slotDefault() 
 {
   emit defaultClicked();
 }
 
 
-void KDialogBase::slotOk()
+void KDialogBase::slotOk() 
 {
   emit okClicked();
   accept();
 }
 
 
-void KDialogBase::slotApply()
+void KDialogBase::slotApply() 
 {
   emit applyClicked();
 }
 
 
-void KDialogBase::slotTry()
+void KDialogBase::slotTry() 
 {
   emit tryClicked();
 }
 
 
-void KDialogBase::slotUser3()
+void KDialogBase::slotUser3() 
 {
   emit user3Clicked();
 }
 
 
-void KDialogBase::slotUser2()
+void KDialogBase::slotUser2() 
 {
   emit user2Clicked();
 }
@@ -744,7 +761,7 @@ void KDialogBase::slotUser1()
 }
 
 
-void KDialogBase::slotYes()
+void KDialogBase::slotYes() 
 {
   emit yesClicked();
   done( Yes );
@@ -758,14 +775,14 @@ void KDialogBase::slotNo()
 }
 
 
-void KDialogBase::slotCancel()
+void KDialogBase::slotCancel() 
 {
   emit cancelClicked();
   done( mMessageBoxMode == true ? Cancel : Rejected );
 }
 
 
-void KDialogBase::slotClose()
+void KDialogBase::slotClose() 
 {
   emit closeClicked();
   reject();
@@ -774,7 +791,7 @@ void KDialogBase::slotClose()
 
 void KDialogBase::helpClickedSlot( const QString & )
 {
-  slotHelp();
+  slotHelp(); 
 }
 
 
@@ -792,13 +809,13 @@ void KDialogBase::enableLinkedHelp( bool state )
     {
       return;
     }
-
+  
     mUrlHelp = new KURLLabel( this, "url" );
     mUrlHelp->setText( helpLinkText() );
     mUrlHelp->setFloat(true);
     mUrlHelp->setUnderline(true);
     if( mShowTile == true && mTile->get() != 0 )
-    {
+    { 
       mUrlHelp->setBackgroundPixmap(*mTile->get());
     }
     mUrlHelp->setMinimumHeight( fontMetrics().height() + marginHint() );
@@ -814,7 +831,7 @@ void KDialogBase::enableLinkedHelp( bool state )
     }
     delete mUrlHelp; mUrlHelp = 0;
   }
-
+ 
   if( mIsActivated == true )
   {
     setupLayout();
@@ -845,30 +862,64 @@ QFrame *KDialogBase::addPage( const QString &itemName, const QString &header,
   return( mJanus == 0 ? 0 : mJanus->addPage( itemName, header, pixmap ) );
 }
 
+QFrame *KDialogBase::addPage( const QStringList &items, const QString &header,
+			      const QPixmap &pixmap )
+{
+  return( mJanus == 0 ? 0 : mJanus->addPage( items, header, pixmap ) );
+}
 
-QVBox *KDialogBase::addVBoxPage( const QString &itemName,
+
+QVBox *KDialogBase::addVBoxPage( const QString &itemName, 
 				 const QString &header, const QPixmap &pixmap )
 {
   return( mJanus == 0 ? 0 : mJanus->addVBoxPage( itemName, header, pixmap) );
 }
 
+QVBox *KDialogBase::addVBoxPage( const QStringList &items, 
+				 const QString &header, const QPixmap &pixmap )
+{
+  return( mJanus == 0 ? 0 : mJanus->addVBoxPage( items, header, pixmap) );
+}
 
-QHBox *KDialogBase::addHBoxPage( const QString &itemName,
+
+QHBox *KDialogBase::addHBoxPage( const QString &itemName, 
 				 const QString &header,
 				 const QPixmap &pixmap )
 {
   return( mJanus == 0 ? 0 : mJanus->addHBoxPage( itemName, header, pixmap ) );
 }
 
+QHBox *KDialogBase::addHBoxPage( const QStringList &items, 
+				 const QString &header,
+				 const QPixmap &pixmap )
+{
+  return( mJanus == 0 ? 0 : mJanus->addHBoxPage( items, header, pixmap ) );
+}
 
-QGrid *KDialogBase::addGridPage( int n, QGrid::Direction dir,
-				 const QString &itemName,
+
+QGrid *KDialogBase::addGridPage( int n, QGrid::Direction dir, 
+				 const QString &itemName, 
 				 const QString &header, const QPixmap &pixmap )
 {
   return( mJanus == 0 ? 0 : mJanus->addGridPage( n, dir, itemName, header,
 						 pixmap) );
 }
 
+QGrid *KDialogBase::addGridPage( int n, QGrid::Direction dir, 
+				 const QStringList &items, 
+				 const QString &header, const QPixmap &pixmap )
+{
+  return( mJanus == 0 ? 0 : mJanus->addGridPage( n, dir, items, header,
+						 pixmap) );
+}
+
+void KDialogBase::setFolderIcon(const QStringList &path, const QPixmap &pixmap)
+{
+  if (mJanus == 0)
+    return;
+  
+  mJanus->setFolderIcon(path,pixmap);
+}
 
 QFrame *KDialogBase::makeMainWidget()
 {
@@ -877,7 +928,7 @@ QFrame *KDialogBase::makeMainWidget()
     printMakeMainWidgetError();
     return( 0 );
   }
-
+  
   QFrame *mainWidget = new QFrame( this );
   setMainWidget( mainWidget );
   return( mainWidget );
@@ -926,7 +977,7 @@ QGrid *KDialogBase::makeGridMainWidget( int n, QGrid::Direction dir )
   mainWidget->setSpacing( spacingHint() );
   setMainWidget( mainWidget );
   return( mainWidget );
-}
+}  
 
 
 void KDialogBase::printMakeMainWidgetError()
@@ -962,7 +1013,7 @@ void KDialogBase::setMainWidget( QWidget *widget )
 }
 
 
-QWidget *KDialogBase::getMainWidget()
+QWidget *KDialogBase::getMainWidget() 
 {
   return( mMainWidget );
 }
@@ -1011,8 +1062,8 @@ void KDialogBase::getBorderWidths(int& ulx, int& uly, int& lrx, int& lry) const
 
   lrx = marginHint();
   lry = mButton.box->minimumSize().height();
-  if( mActionSep != 0 )
-  {
+  if( mActionSep != 0 ) 
+  { 
     lry += mActionSep->minimumSize().height() + marginHint();
   }
 }
@@ -1046,8 +1097,8 @@ void KDialogBase::updateGeometry()
 void KDialogBase::keyPressEvent( QKeyEvent *e )
 {
   //
-  // Reimplemented from KDialog to remove the default behavior
-  // and to add F1 (help) sensitivity and some animation.
+  // Reimplemented from KDialog to remove the default behavior 
+  // and to add F1 (help) sensitivity and some animation. 
   //
   if( e->state() == 0 )
   {
@@ -1141,7 +1192,7 @@ void KDialogBase::updateBackground()
   {
     QPixmap nullPixmap;
     setBackgroundPixmap(nullPixmap);
-    mButton.box->setBackgroundPixmap(nullPixmap);
+    mButton.box->setBackgroundPixmap(nullPixmap);      
     setBackgroundMode(PaletteBackground);
     mButton.box->setBackgroundMode(PaletteBackground);
   }

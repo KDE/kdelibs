@@ -28,7 +28,8 @@
 
 #include <klistbox.h>
 #include <klistview.h>
-
+#include <qstringlist.h>
+#include <qmap.h>
 
 class QGrid;
 class QHBox;
@@ -133,7 +134,7 @@ class KJanusWidget : public QWidget
      *
      * @parame index The index of the page you want to raise.
      */
-    bool showPage( int index );
+    virtual bool showPage( int index );
 
     /**
      * Retrieve the index of the page that are currently displayed.
@@ -141,7 +142,7 @@ class KJanusWidget : public QWidget
      * @return The index or -1 if the face is not Tabbed, TreeList or 
      *         IconList.
      */
-    int  activePageIndex() const;
+    virtual int  activePageIndex() const;
 
     /**
      * Use this to verify 
@@ -149,14 +150,14 @@ class KJanusWidget : public QWidget
      *
      * @return true if the widget was properly created. 
      */
-    bool isValid() const;
+    virtual bool isValid() const;
 
     /**
      * Retrieve the face type.
      *
      * @return The face type.
      */
-    int face() const;
+    virtual int face() const;
 
     /**
      * Retrieve the minimum size that must be made available for the widget
@@ -179,7 +180,7 @@ class KJanusWidget : public QWidget
      *
      * @return The widget or 0 if the face in not Plain.
      */
-    QFrame *plainPage();
+    virtual QFrame *plainPage();
 
     /**
      * Add a new page when the class is used in TreeList, IconList or Tabbed 
@@ -191,13 +192,25 @@ class KJanusWidget : public QWidget
      * @param header A longer string used in TreeList and IconList mode to 
      *        describe the contents of a page. If empty, the item string 
      *        will be used instead.
-     * @param pixmap Used in IconList mode. You should prefer a pixmap
-     *        with size 32x32 pixels.
+     * @param pixmap Used in IconList mode or in TreeList mode. You should
+     *        prefer a pixmap with size 32x32 pixels.
      *
      * @return The empty page or 0 if the face is not TreeList, IconList or 
      *         Tabbed.
      */
-    QFrame *addPage(const QString &item,const QString &header=QString::null,
+    virtual QFrame *addPage(const QString &item,const QString &header=QString::null,
+		    const QPixmap &pixmap=QPixmap() );
+
+    /**
+     * This is like addPage just above, with the difference that the first
+     * element is a list of strings. These strings are used to form a path
+     * of folders down to the given page. The initial elements are names
+     * for the folders, while the last element is the name of the page.
+     * Note: This does yet only work for the TreeList face. Later this may
+     * be added for the IconList face too. In other faces than the
+     * TreeList, all the strings except the last one is ignored.
+     **/
+     virtual QFrame *addPage(const QStringList &items, const QString &header=QString::null,
 		    const QPixmap &pixmap=QPixmap() );
 
     /**
@@ -211,13 +224,25 @@ class KJanusWidget : public QWidget
      * @param header A longer string used in TreeList and IconList mode to 
      *        describe the contents of a page. If empty, the item string 
      *        will be used instead.
-     * @param pixmap Used in IconList mode. You should prefer a pixmap
-     *        with size 32x32 pixels.
+     * @param pixmap Used in IconList mode or in TreeList mode. You should
+     *        prefer a pixmap with size 32x32 pixels.
      *
      * @return The empty page or 0 if the face is not TreeList, IconList or 
-     *         Tabbed.
-     */
-    QVBox *addVBoxPage( const QString &item, 
+     *         Tabbed.  */
+    virtual QVBox *addVBoxPage( const QString &item, 
+			const QString &header=QString::null,
+			const QPixmap &pixmap=QPixmap() );
+
+    /**
+     * This is like addVBoxPage just above, with the difference that the first
+     * element is a list of strings. These strings are used to form a path
+     * of folders down to the given page. The initial elements are names
+     * for the folders, while the last element is the name of the page.
+     * Note: This does yet only work for the TreeList face. Later this may
+     * be added for the IconList face too. In other faces than the
+     * TreeList, all the strings except the last one is ignored.
+     **/
+    virtual QVBox *addVBoxPage( const QStringList &items, 
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
 
@@ -232,13 +257,26 @@ class KJanusWidget : public QWidget
      * @param header A longer string used in TreeList and IconList mode to 
      *        describe the contents of a page. If empty, the item string 
      *        will be used instead.
-     * @param pixmap Used in IconList mode. You should prefer a pixmap
-     *        with size 32x32 pixels.
+     * @param pixmap Used in IconList mode or in TreeList mode. You should
+     *        prefer a pixmap with size 32x32 pixels.
      *
      * @return The empty page or 0 if the face is not TreeList, IconList or 
      *         Tabbed.
      */
-    QHBox *addHBoxPage( const QString &itemName, 
+    virtual QHBox *addHBoxPage( const QString &itemName, 
+			const QString &header=QString::null,
+			const QPixmap &pixmap=QPixmap() );
+
+    /**
+     * This is like addHBoxPage just above, with the difference that the first
+     * element is a list of strings. These strings are used to form a path
+     * of folders down to the given page. The initial elements are names
+     * for the folders, while the last element is the name of the page.
+     * Note: This does yet only work for the TreeList face. Later this may
+     * be added for the IconList face too. In other faces than the
+     * TreeList, all the strings except the last one is ignored.
+     **/
+    virtual QHBox *addHBoxPage( const QStringList &items, 
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
 
@@ -256,14 +294,28 @@ class KJanusWidget : public QWidget
      * @param header A longer string used in TreeList and IconList mode to 
      *        describe the contents of a page. If empty, the item string 
      *        will be used instead.
-     * @param pixmap Used in IconList mode. You should prefer a pixmap
-     *        with size 32x32 pixels.
+     * @param pixmap Used in IconList mode or in TreeList mode. You should
+     *        prefer a pixmap with size 32x32 pixels.
      *
      * @return The empty page or 0 if the face is not TreeList, IconList or 
      *         Tabbed.
      */
-    QGrid *addGridPage( int n, QGrid::Direction dir, 
+    virtual QGrid *addGridPage( int n, QGrid::Direction dir, 
 			const QString &itemName, 
+			const QString &header=QString::null,
+			const QPixmap &pixmap=QPixmap() );
+
+    /**
+     * This is like addGridPage just above, with the difference that the first
+     * element is a list of strings. These strings are used to form a path
+     * of folders down to the given page. The initial elements are names
+     * for the folders, while the last element is the name of the page.
+     * Note: This does yet only work for the TreeList face. Later this may
+     * be added for the IconList face too. In other faces than the
+     * TreeList, all the strings except the last one is ignored.
+     **/
+    virtual QGrid *addGridPage( int n, QGrid::Direction dir, 
+			const QStringList &items, 
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
 
@@ -283,7 +335,7 @@ class KJanusWidget : public QWidget
      * @return The index or -1 if the face is not Tabbed, TreeList or 
      *         IconList
      */
-    int pageIndex( QWidget *widget ) const;
+    virtual int pageIndex( QWidget *widget ) const;
 
     /**
      * Defines the widget to be swallowed. 
@@ -294,7 +346,7 @@ class KJanusWidget : public QWidget
      * @param widget The widget to be swallowed. If 0, then an empty rectangle
      * is displayed.
      */
-    bool setSwallowedWidget( QWidget *widget );
+    virtual bool setSwallowedWidget( QWidget *widget );
 
     /**
      * This function has only effect in TreeList mode.
@@ -306,7 +358,31 @@ class KJanusWidget : public QWidget
      * @param state The resize mode. If false (default) the TreeList keeps
      *              its current width when the widget becomes wider.
      */
-     void setTreeListAutoResize( bool state );
+    virtual void setTreeListAutoResize( bool state );
+
+    /** 
+     * This function has only effect in TreeList mode.
+     *
+     * This tells the widgets whether the icons given in the @ref addPage,
+     * @ref addVBoxPage, @ref addHBoxPage, or @ref addGridPage methods should
+     * be shown in the TreeList.
+     *
+     * Note: This method must be called before calling any of the methods
+     * which add icons to the page.
+     *
+     * @param state If true the icons are shown.
+     **/
+    virtual void setShowIconsInTreeList(bool state);
+  
+    /**
+     * This function has only effect in TreeList mode.
+     *
+     * This tells the widgets whether the root should be decorated. 
+     * For details see @ref QListView::setRootIsDecorated
+     *
+     * @param state Root will be decorated if true.
+     **/
+    virtual void setRootIsDecorated( bool state );
 
     /**
      * This function has only effect in IconList mode.
@@ -320,8 +396,15 @@ class KJanusWidget : public QWidget
      *        adjusted so that every icon in the list is visible at the 
      *        same time. The vertical scrollbar will never be visible.
      */
-    void setIconListAllVisible( bool state );
+    virtual void setIconListAllVisible( bool state );
 
+    /**
+     * Sets the icon used in TreeList Mode for the given path.
+     * @param path The path for which this icon should be shown.
+     * @param pixmap The icon used.
+     **/
+    virtual void setFolderIcon(const QStringList &path, const QPixmap &pixmap);
+  
   public slots:
     /**
      * Give the keyboard input focus to the widget.
@@ -349,17 +432,17 @@ class KJanusWidget : public QWidget
     bool slotShowPage();
     void slotFontChanged();
 
-  private:
+  protected:
     bool showPage( QWidget *w );
-    void addPageWidget( QFrame *page, const QString &itemName, 
+    void addPageWidget( QFrame *page, const QStringList &items, 
 			const QString &header, const QPixmap &pixmap );
+    void InsertTreeListItem(const QStringList &items, const QPixmap &pixmap, QFrame *page);
+    QWidget *FindParent();
 
   private:
     bool mValid;
 
     QList<QWidget> *mPageList;
-    QList<QListViewItem> *mTreeNodeList;
-    QList<QListBoxItem> *mIconNodeList;
     QStringList *mTitleList;
 
     int          mFace;
@@ -372,16 +455,17 @@ class KJanusWidget : public QWidget
     QWidget      *mSwallowPage;
     QWidget      *mActivePageWidget;
     KSeparator   *mTitleSep;
-    int          mActivePageIndex;
     QSplitter::ResizeMode mTreeListResizeMode;
+    bool         mShowIconsInTreeList;
+    QMap<QListViewItem *, QWidget *> mTreeListToPageStack;
+    QMap<QListBoxItem *, QWidget *> mIconListToPageStack;
+    QMap<QString, QPixmap> mFolderIconMap;
+    QMap<QString, QStringList> mChildrenNames;
+    QMap<QString, QWidget *> mChildPages;
+  
 
     class KJanusWidgetPrivate;
     KJanusWidgetPrivate *d;
 };
 
 #endif
-
-
-
-
-
