@@ -508,15 +508,21 @@ void KNotifyWidget::messageBoxChanged()
     item->setPixmap( COL_MESSAGE, on ? SmallIcon("info") : QPixmap() );
     
     Event &e = static_cast<ListViewItem*>( item )->event();
-    if ( m_messageBox->isChecked() )
-        e.presentation |= KNotifyClient::Messagebox;
-    else
-        e.presentation &= ~KNotifyClient::Messagebox;
 
-    if ( m_passivePopup->isChecked() )
-        e.presentation |= KNotifyClient::PassivePopup;
-    else
+    if ( m_messageBox->isChecked() ) {
+	if ( m_passivePopup->isChecked() ) {
+	    e.presentation |= KNotifyClient::PassivePopup;
+	    e.presentation &= ~KNotifyClient::Messagebox;
+	}
+	else {
+	    e.presentation &= ~KNotifyClient::PassivePopup;
+	    e.presentation |= KNotifyClient::Messagebox;
+	}
+    }
+    else {
+        e.presentation &= ~KNotifyClient::Messagebox;
         e.presentation &= ~KNotifyClient::PassivePopup;
+    }
 
     emit changed( true );
 }
