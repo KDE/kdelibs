@@ -194,7 +194,7 @@ public:
   /**
    * Clear all cached information
    */
-  static void clear() { delete s_lstProfiles; s_lstProfiles = 0L; }
+  static void clear();
 
   /**
    * This method activates a special mode of KServiceTypeProfile, in which all/all

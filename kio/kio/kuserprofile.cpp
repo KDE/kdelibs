@@ -96,6 +96,12 @@ void KServiceTypeProfile::initStatic()
 }
 
 //static
+void KServiceTypeProfile::clear()
+{
+    profileDeleter.destructObject();
+}
+
+//static
 KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _servicetype, const QString& _genericServiceType )
 {
     OfferList offers;
