@@ -95,7 +95,6 @@ void KComboBox::setEnableContextMenu( bool showMenu )
     {
         if( !m_bEnableMenu && showMenu )
         {
-            debug ("Creating a completion menu item..." );
             connect ( m_pContextMenu, SIGNAL( aboutToShow() ), this, SLOT( aboutToShowMenu() ) );
             showModeChanger();
         }
@@ -140,21 +139,43 @@ void KComboBox::makeCompletion( const QString& text )
     }
 }
 
-void KComboBox::rotateText( const QString& input )
+void KComboBox::rotateText( const QString& input, int dir )
 {
-    if( input.length() == 0 )
-        return;
-
-    if( m_pEdit != 0 && completionObject() != 0 )
+    if( m_pEdit != 0 )
     {
-        if( completionMode() == KGlobalSettings::CompletionShell )
+        KCompletion* comp = completionObject();
+        if( comp != 0 )
         {
-            m_pEdit->setText( input );
-        }
-        else
-        {
-            int pos = cursorPosition();
-            m_pEdit->validateAndSet( input, pos, pos, input.length() );
+            QString str;
+            int len = m_pEdit->text().length();
+            if( m_pEdit->hasMarkedText() && !input.isNull() )
+            {
+                str = m_pEdit->text();
+                if( input == str ) return; // Skip rotation if same text
+                int pos = str.find( m_pEdit->markedText() );
+                int index = input.find( str.remove( pos , m_pEdit->markedText().length() ) );
+                if( index == -1 ) return;
+                else if( index == 0 ) str = input;
+                m_pEdit->validateAndSet( str, cursorPosition(), pos, str.length() );
+            }
+            else
+            {
+                QStringList list = comp->items();
+                int index = list.findIndex( m_pEdit->text() );
+                if( index == -1 )
+                {
+                    index = ( dir == 1 ) ? 0 : list.count()-1;
+                    str = ( len == 0 ) ? list[index] : input;
+                }
+                else
+                {
+                    index += dir;
+                    if( index >= (int)list.count() ) index = 0; // rotate back to beginning
+                    else if( index < 0  ) index = list.count() - 1; // rotate back to the end
+                    str = list[index];
+                }
+                m_pEdit->setText( str );
+            }
         }
     }
     else if( m_pEdit == 0 )
@@ -171,7 +192,8 @@ void KComboBox::itemSelected( QListBoxItem* item )
 {
     if( item != 0 && m_pEdit != 0 )
     {
-        m_pEdit->setSelection(0, m_pEdit->text().length() );
+        debug( "Item selected from list" );
+        m_pEdit->setSelection( 0, m_pEdit->text().length() );
     }
 }
 
@@ -269,7 +291,6 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
         QMouseEvent* e = (QMouseEvent*) ev;
         if( e->button() == Qt::RightButton && !m_bEnableMenu )
             return true;
-        debug( "RMB clicked!" );
     }
     return QComboBox::eventFilter( o, ev );
 }

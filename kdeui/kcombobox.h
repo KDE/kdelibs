@@ -33,34 +33,34 @@
  * A combined button, line-edit and a popup list widget.
  *
  * This widget inherits from QComboBox and implements
- * the following additional functionalities : a built-in
- * for automatic as well as manual completion and rotation
- * ( the ability to iterate through a given list) features,
- * configurable key-bindings to activate these features and
- * a popup-menu item that can be used to allow the user to
- * change completion modes on the fly based on their preference.
+ * the following additional functionalities:  a completion
+ * object that provides both automatic and manual text
+ * completion as well as text rotation features, configurable
+ * key-bindings to activate these features and a popup-menu
+ * item that can be used to allow the user to set text completion
+ * modes on the fly based on their preference.
  *
- * KComboBox emits a few more additional signals as well:
- * The main ones being the @ref comepltion and the @ref
- * rotation signal metioned above.  The completion signal
- * is intended to be connected to a slot that will assist
- * the user in filling out the remaining text while the
- * rotation signals, both @ref rotateUp and @ref rotateDown,
- * are intended to be used to transverse through some kind
- * of list in opposing directions.  The @ref returnPressed
- * signals are emitted when the user presses the return key.
+ * To support these new features KComboBox also emits a few
+ * more additional signals as well.  The main ones being the
+ * @ref comepltion and the @ref rotation signal metioned above.
+ * The completion signal is intended to be connected to a slot
+ * that will assist the user in filling out the remaining text
+ * while the rotation signals, both @ref rotateUp and @ref rotateDown,
+ * are intended to be used to transverse through some kind of
+ * list in opposing directions.  The @ref returnPressed signals
+ * are emitted when the user presses the return key.
  *
- * This widget by default creates a completion object whenever
+ * By default this widget creates a completion object whenever
  * you invoke the member function @ref completionObject for the
  * first time.  You can also assign your own completion object
- * through @ref setCompletionObject function whenever you want
- * to control the kind of completion object that needs to be
- * used.  Additionally, when you create a completion object through
- * either @ref completionObject or @ref setCompletionObject this
- * widget will be automatically enabled to handle the signals.  If
- * you do not need this feature, simply use the appropriate accessor
- * methods or the boolean paramters on the above function to shut
- * them off.
+ * through @ref setCompletionObject function whenever you want to
+ * control the kind of completion object that needs to be used.
+ * Additionally, when you create a completion object through either
+ * @ref completionObject or @ref setCompletionObject KLineEdit will
+ * be automatically set to handle the rotation and completion signals.
+ * If you do not need this feature, simply use @ref KCompletionBase::setHandleSignals
+ * or the boolean paramter when calling @p setCompletionObject to
+ * turn it off.
  *
  * The default key-binding for completion and rotation is
  * determined from the global settings in @ref KStdAccel.
@@ -273,7 +273,7 @@ public slots:
     * no completion object or the completion object does not contain
     * a next match.
     */
-    virtual void iterateUpInList() { rotateText( completionObject()->previousMatch() ); }
+    virtual void iterateUpInList() { rotateText( completionObject()->previousMatch(), -1 ); }
 
     /**
     * Iterates in the down (next match) direction through the
@@ -285,7 +285,7 @@ public slots:
     * no completion object or the completion object does not contain
     * a next match.
     */
-    virtual void iterateDownInList() { rotateText( completionObject()->nextMatch() ); }
+    virtual void iterateDownInList() { rotateText( completionObject()->nextMatch(), 1 ); }
 
 protected slots:
 
@@ -295,6 +295,8 @@ protected slots:
     * This slot sets the completion mode to the one
     * requested by the end user through the popup
     * menu.
+    *
+    * @param itemID the completion mode type
     */
     virtual void selectedItem( int itemID ) { setCompletionMode( (KGlobalSettings::Completion)itemID ); }
 
@@ -340,8 +342,9 @@ protected:
     * Rotates the text on rotation events.
     *
     * @param string the text to replace the current one with.
+    * @param dir rotation direction ( rotateUp or rotateDown ).
     */
-    void rotateText( const QString& );
+    void rotateText( const QString&, int /* dir */ );
 
     /**
     * Implementation of @ref KCompletionBase::connectSignals().
