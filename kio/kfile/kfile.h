@@ -20,6 +20,8 @@
 
 #include <qdir.h>
 
+#include "kdelibs_export.h"
+
 /**
  * KFile is a class which provides a namespace for some enumerated
  * values associated with the kfile library.  You will never need to
