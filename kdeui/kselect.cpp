@@ -23,8 +23,6 @@
 #include <kimageeffect.h>
 #include "kselect.h"
 
-#include <kdebug.h>
-
 #define STORE_W 8
 #define STORE_W2 STORE_W * 2
 
