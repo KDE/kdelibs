@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="standard_containers" version="2">
+<kpartgui name="standard_containers" version="3">
 <MenuBar>
   <Menu name="file"><text>&amp;File</text>
     <Action name="file_new"/>
@@ -15,18 +15,16 @@
     <Action name="file_revert_all"/>
     <MergeLocal name="revert_merge"/>
     <Separator/>
-    <Action name="file_close"/>
-    <Action name="file_close_all"/>
-    <MergeLocal name="close_merge"/>
-    <Separator/>
     <Action name="file_print"/>
     <Action name="file_print_preview"/>
     <MergeLocal name="print_merge"/>
-    <Separator/>
     <Action name="file_mail"/>
     <Separator/>
     <MergeLocal/>
     <Separator/>
+    <Action name="file_close"/>
+    <Action name="file_close_all"/>
+    <MergeLocal name="close_merge"/>
     <Action name="file_quit"/>
   </Menu>
   <Menu name="game"><text>&amp;Game</text>
