@@ -1379,18 +1379,37 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 			if ( controls & SC_ScrollBarSubLine )
 				drawPrimitive( PE_ScrollBarSubLine, p, subline, cg, flags );
 
+			QRect sliderClip = slider;
+			if ( horizontal )
+				sliderClip.setWidth( addpage.right() - slider.x() + 1 );
+			else sliderClip.setHeight( addpage.bottom() - slider.y() + 1 );
+
 			QRegion clip;
 			if ( controls & SC_ScrollBarSubPage ) clip |= subpage;
 			if ( controls & SC_ScrollBarAddPage ) clip |= addpage;
+			if ( controls & SC_ScrollBarSlider )
+			{
+				if ( horizontal )
+				{
+					int width = loader.pixmap( "scrollbar-hbar-slider1" ).width();
+					clip |= QRect( slider.x(), slider.y(), width, slider.height() ) & sliderClip;
+					clip |= QRect( slider.right() - width, slider.y(), width, slider.height() ) & sliderClip;
+				}
+				else
+				{
+					int height = loader.pixmap( "scrollbar-hbar-slider1" ).height();
+					clip |= QRect( slider.x(), slider.y(), slider.width(), height ) & sliderClip;
+					clip |= QRect( slider.x(), slider.bottom() - height, slider.width(), height ) & sliderClip;
+				}
+			}
 			p->setClipRegion( clip );
 			Keramik::ScrollBarPainter( "groove", 2, horizontal ).draw( p, slider | subpage | addpage );
 
-			if ( horizontal )
-				p->setClipRect( slider.x(), slider.y(), addpage.right() - slider.x() + 1 , slider.height() );
-			else p->setClipRect( slider.x(), slider.y(), slider.width(), addpage.bottom() - slider.y() + 1 );
-
 			if ( controls & SC_ScrollBarSlider )
+			{
+				p->setClipRect( sliderClip );
 				drawPrimitive( PE_ScrollBarSlider, p, slider, cg, flags );
+			}
 			p->setClipping( false );
 
 			if ( controls & ( SC_ScrollBarSubLine | SC_ScrollBarAddLine ))
@@ -1662,8 +1681,8 @@ QRect KeramikStyle::querySubControlMetrics( ComplexControl control,
 					else return QRect( 0, subline, sb->width(), maxlen );
 
 				case SC_ScrollBarSlider:
-					if (horizontal) return QRect( sliderpos, 1, sliderlen, sb->height() - 2 );
-					else return QRect( 1, sliderpos, sb->width() - 2, sliderlen );
+					if (horizontal) return QRect( sliderpos, 1, sliderlen, sb->height() - 3 );
+					else return QRect( 1, sliderpos, sb->width() - 3, sliderlen );
 
 				case SC_ScrollBarSubLine:
 					if ( horizontal ) return QRect( 0, 0, subline, sb->height() );
