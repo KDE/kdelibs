@@ -1,3 +1,7 @@
+2005-03-14  Germain Garand  <germain@ebooksfrance.org>
+
+        * css/html4.css: horizontal rules are centered by default (HTML-4.01 15.3)
+
 2005-03-12  Germain Garand  <germain@ebooksfrance.org>
 
         * ecma/kjs_window.{cpp,h}: implement JS 1.2's window.atob/btoa (base-64 codec interface)

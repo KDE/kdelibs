@@ -102,12 +102,9 @@ CENTER {
 
 HR  {
         display: block;
-        margin-top: 12px;
-        margin-bottom: 12px;
+        margin: 12px auto;
         border-style: inset;
         border-width: 1px;
-        margin-left: 1px; /* will be overwritten by ALIGN */
-        margin-right: 1px; /* will be overwritten by ALIGN */
         -khtml-flow-mode: -khtml-around-floats
 }
 
