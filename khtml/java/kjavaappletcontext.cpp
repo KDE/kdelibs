@@ -20,8 +20,8 @@
  */
 
 #include "kjavaappletcontext.h"
-#include <kjavaappletserver.h>
-#include <kjavaapplet.h>
+#include "kjavaappletserver.h"
+#include "kjavaapplet.h"
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kdebug.h>

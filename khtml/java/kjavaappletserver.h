@@ -24,7 +24,7 @@
 #ifndef KJAVAAPPLETSERVER_H
 #define KJAVAAPPLETSERVER_H
 
-#include <kjavaprocess.h>
+#include "kjavaprocess.h"
 #include <qobject.h>
 #include <qmap.h>
 

@@ -160,8 +160,6 @@ QSize KJavaAppletWidget::sizeHint() const
 
 void KJavaAppletWidget::resize( int w, int h )
 {
-    kdDebug(6100) << "KJavaAppletWidget, id = " << m_applet->appletId() << ", ::resize to: " << w << ", " << h << endl;
-
     if( d->tmplabel )
     {
         d->tmplabel->resize( w, h );
