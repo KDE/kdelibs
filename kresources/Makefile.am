@@ -14,7 +14,7 @@ libkderesources_la_SOURCES = resource.cpp \
   resourceselectdialog.cpp \
   resourcesconfigpage.cpp
 
-libkderesources_la_LDFLAGS = $(all_libraries) -no-undefined -version-info 1:0:0
+libkderesources_la_LDFLAGS = $(all_libraries) -no-undefined -version-info 3:0:2
 libkderesources_la_LIBADD = $(LIB_KDEUI)
 
 kresincludedir = $(includedir)/kresources
