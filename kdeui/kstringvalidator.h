@@ -27,7 +27,9 @@
 
 #include <kdelibs_export.h>
 
-/** 
+/**
+ * @short A QValidator to (dis)allow certain strings
+ *
  * This validator allows you to accept only certain or to accept all
  * but certain strings.
  *
@@ -53,7 +55,6 @@
  *
  * NOTE: fixup isn't yet implemented.
  *
- * @short A QValidator to (dis)allow certain strings
  * @author Marc Mutz <mutz@kde.org>
  **/
 class KDEUI_EXPORT KStringListValidator : public QValidator {
@@ -77,16 +78,16 @@ public:
 			QObject * parent=0, const char * name=0 )
     : QValidator( parent, name ), mStringList( list ),
       mRejecting( rejecting ), mFixupEnabled( fixupEnabled ) {}
-  
+
   virtual State validate( QString & input, int & pos ) const;
   virtual void fixup( QString & input ) const;
 
   void setRejecting( bool rejecting ) { mRejecting = rejecting; }
   bool isRejecting() const { return mRejecting; }
-  
+
   void setFixupEnabled( bool fixupEnabled ) { mFixupEnabled = fixupEnabled; }
   bool isFixupEnabled() const { return mFixupEnabled; }
-  
+
   void setStringList( const QStringList & list ) { mStringList = list; }
   QStringList stringList() const { return mStringList; }
 
@@ -98,7 +99,9 @@ private:
   class KStringListValidator* d;
 };
 
-/** 
+/**
+ * @short A QValidator for mime types.
+ *
  * This validator allows you to validate mimetype names
  * (e.g. text/plain, image/jpeg). Note that the validation is only
  * syntactically. It will e.g. not reject "foo/bar", although that
@@ -111,7 +114,6 @@ private:
  *
  * The fixup will simply remove all non-token characters.
  *
- * @short A QValidator for mime types.
  * @author Marc Mutz <mutz@kde.org>
  **/
 class KDEUI_EXPORT KMimeTypeValidator : public QValidator
@@ -120,7 +122,7 @@ class KDEUI_EXPORT KMimeTypeValidator : public QValidator
 public:
   KMimeTypeValidator( QObject* parent, const char* name=0)
     : QValidator( parent, name ) {}
-  
+
   /**
    * Checks for well-formed mimetype. Returns
    * @li Acceptable iff input ~= /^[:allowed chars:]+\/[:allowed chars:]+$/
