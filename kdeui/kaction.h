@@ -655,9 +655,7 @@ public:
      * @return which "exclusive group" this action is part of.
      * @see setExclusiveGroup
      */
-    virtual QString exclusiveGroup() const;
-
-public slots:
+    QString exclusiveGroup() const;
 
     /**
      * Defines which "exclusive group" this action is part of.
@@ -666,10 +664,10 @@ public slots:
      * of the group.
      */
     virtual void setExclusiveGroup( const QString& name );
-    // why virtual? why slot? (change in KDE 3?)
 
+public slots:
     /**
-     *  Setss the state of the action.
+     *  Sets the state of the action.
      */
     virtual void setChecked( bool );
 
