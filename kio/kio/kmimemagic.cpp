@@ -256,28 +256,34 @@ static struct names {
 	short type;
 } const names[] = {
 	{
-		"<html>", L_HTML
+		"<html", L_HTML
 	},
 	{
-		"<HTML>", L_HTML
+		"<HTML", L_HTML
 	},
 	{
-		"<head>", L_HTML
+		"<head", L_HTML
 	},
 	{
-		"<HEAD>", L_HTML
+		"<HEAD", L_HTML
 	},
 	{
-		"<title>", L_HTML
+		"<body", L_HTML
 	},
 	{
-		"<TITLE>", L_HTML
+		"<BODY", L_HTML
 	},
 	{
-		"<h1>", L_HTML
+		"<title", L_HTML
 	},
 	{
-		"<H1>", L_HTML
+		"<TITLE", L_HTML
+	},
+	{
+		"<h1", L_HTML
+	},
+	{
+		"<H1", L_HTML
 	},
 	{
 		"<a", L_HTML
@@ -305,6 +311,18 @@ static struct names {
 	},
 	{
 		"<DIV", L_HTML
+	},
+	{
+		"<frame", L_HTML
+	},
+	{
+		"<FRAME", L_HTML
+	},
+	{
+		"<frameset", L_HTML
+	},
+	{
+		"<FRAMESET", L_HTML
 	},
         {
                 "<script", L_HTML
@@ -403,9 +421,9 @@ static struct names {
 	{
 		"Received:", L_MAIL
 	},
-	{
+	/* we now stop at '>' for tokens, so this one won't work {
 		">From", L_MAIL
-	},
+        },*/
 	{
 		"Return-Path:", L_MAIL
 	},
@@ -1711,10 +1729,11 @@ KMimeMagic::ascmagic(unsigned char *buf, int nbytes)
 	tokencount = 0;
         bool foundClass = false; // mandatory for java
 	// first collect all possible types and count matches
-	while ((token = strtok((char *) s, " \t\n\r\f,;")) != NULL) {
+        // we stop at '>' too, because of "<title>blah</title>" on HTML pages
+	while ((token = strtok((char *) s, " \t\n\r\f,;>")) != NULL) {
 		s = NULL;       /* make strtok() keep on tokin' */
 #ifdef DEBUG_MIMEMAGIC
-                //kdDebug(7018) << "KMimeMagic::ascmagic token=" << token << endl;
+                kdDebug(7018) << "KMimeMagic::ascmagic token=" << token << endl;
 #endif
 		for (p = names; p->name ; p++) {
 			if (STREQ(p->name, token)) {
@@ -1810,7 +1829,9 @@ KMimeMagic::ascmagic(unsigned char *buf, int nbytes)
             if ( mostaccurate != P_JAVA || foundClass ) // 'class' mandatory for java
             {
 		accuracy = (int)(pcts[mostaccurate] / pctsum * 60);
-                //kdDebug(7018) << "mostaccurate=" << mostaccurate << " pcts=" << pcts[mostaccurate] << " pctsum=" << pctsum << " accuracy=" << accuracy << endl;
+#ifdef DEBUG_MIMEMAGIC
+                kdDebug(7018) << "mostaccurate=" << mostaccurate << " pcts=" << pcts[mostaccurate] << " pctsum=" << pctsum << " accuracy=" << accuracy << endl;
+#endif
 		resultBuf = QString(types[mostaccurate].type);
 		return 1;
             }
