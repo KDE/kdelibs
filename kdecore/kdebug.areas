@@ -83,6 +83,7 @@
 2000        kfind
 2001        kregexpeditor
 2002        kfloppy
+2003        ksim
 
 # kdeadmin
 3000        ksysv 
