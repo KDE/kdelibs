@@ -71,7 +71,7 @@ libkiocore_la_SOURCES = \
 	job.cpp global.cpp \
 	slaveconfig.cpp kurlpixmapprovider.cpp \
 	netaccess.cpp paste.cpp \
-	kmimemagic.cpp kpac.cpp thumbcreator.cpp \
+	kmimemagic.cpp kpac.cpp \
 	tcpslavebase.cpp slavebase.cpp passdlg.cpp \
 	progressbase.cpp defaultprogress.cpp \
 	statusbarprogress.cpp \

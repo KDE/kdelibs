@@ -27,7 +27,7 @@ class ThumbCreator
 {
 public:
     enum Flags { None = 0, DrawFrame = 1, BlendIcon = 2 };
-    virtual ~ThumbCreator();
+    virtual ~ThumbCreator() {}
     /**
      * Creates a thumbnail
      * Note that the width and height parameters should not be used
@@ -53,8 +53,6 @@ public:
      * @return flags for this plugin
      */
     virtual Flags flags() const { return None; }
-protected:
-    virtual void virtual_hook( int id, void* data );
 };
 
 typedef ThumbCreator *(*newCreator)();
