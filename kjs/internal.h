@@ -139,6 +139,7 @@ namespace KJS {
   //                            Internal type impls
   // ---------------------------------------------------------------------------
 
+  // TODO: remove. replaced by light-weight new Reference2 class
   class ReferenceImp : public ValueImp {
   public:
 

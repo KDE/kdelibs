@@ -525,6 +525,7 @@ void ObjectImp::setScope(const List &s)
 
 List ObjectImp::propList(ExecState *exec, bool recursive)
 {
+  // TODO: stop using old Reference class
   List list;
   if (_proto && _proto->type() == ObjectType && recursive)
     list = static_cast<ObjectImp*>(_proto)->propList(exec,recursive);

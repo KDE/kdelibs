@@ -127,19 +127,38 @@ Value ValueImp::getBase(ExecState *exec) const
 // TODO: remove
 UString ValueImp::getPropertyName(ExecState * /*exec*/) const
 {
-#ifndef NDEBUG
-  fprintf(stderr, "ValueImp::getPropertyName: deprecated\n");
-#endif
-  return UString("");
+  if (type() != ReferenceType)
+    // the spec wants a runtime error here. But getValue() and putValue()
+    // will catch this case on their own earlier. When returning a Null
+    // string we should be on the safe side.
+    return UString();
+
+  return (static_cast<const ReferenceImp*>(this))->getPropertyName();
 }
 
 // TODO: remove
-Value ValueImp::getValue(ExecState *) const
+Value ValueImp::getValue(ExecState *exec) const
 {
-#ifndef NDEBUG
-  fprintf(stderr, "ValueImp::getValue: deprecated\n");
-#endif
-  return Undefined();
+  if (type() != ReferenceType)
+    return Value(const_cast<ValueImp*>(this));
+
+  Value o = getBase(exec);
+
+  if (o.isNull() || o.type() == NullType) {
+    UString m = I18N_NOOP("Can't find variable: ") + getPropertyName(exec);
+    Object err = Error::create(exec, ReferenceError, m.ascii());
+    exec->setException(err);
+    return err;
+  }
+
+  if (o.type() != ObjectType) {
+    UString m = I18N_NOOP("Base is not an object");
+    Object err = Error::create(exec, ReferenceError, m.ascii());
+    exec->setException(err);
+    return err;
+  }
+
+  return static_cast<ObjectImp*>(o.imp())->get(exec,getPropertyName(exec));
 }
 
 // TODO: remove
