@@ -44,7 +44,7 @@ class KCModule;
 * <pre>
 *   QString text = "kde.org";
 *   KURIFilterData d = text;
-*   bool filtered = KURIFilter::self()->filter( d );
+*   bool filtered = KURIFilter::self()->filterURI( d );
 *   if( filtered )
 *     print ( "URI: %s\n"Filtered URI: %s\n URI Type: %i\n"Was Filtered: %i"
 *             text.latin1(), d.uri().url().latin1(), d.uriType(), filtered );
