@@ -40,7 +40,8 @@ class KCharsetEntry;
 
 class KCharsetConversionResult{
 friend class KCharsetConverterData;   
-   KCharsetEntry * cCharset;
+friend class KCharsetsData;   
+   const KCharsetEntry * cCharset;
    QString cText;
 public:
 /**
@@ -53,6 +54,13 @@ public:
 */
    operator const char *()const
          { return cText; }
+/**
+* Deep copy of converted string
+*
+* @return pointer to new string it must be freed after use
+*/
+  char * copy()const;
+	
 /**
 * Gives charset of translated string
 */
@@ -70,6 +78,8 @@ public:
    QFont & setQFont(QFont &font)const;
 };
 
+#include <qlist.h>
+
 class KCharsetConverterData;
 
 /**
@@ -86,6 +96,17 @@ class KCharsetConverter{
    KCharsetConverterData *data;
    KCharsetConversionResult result;
 public:
+/**
+ *   Conversion flags
+ *
+ *   They can be use to specify how some characters can be converted.
+ *
+ *     INPUT_AMP_SEQUENCES - convert amp-sequences on input to coresponding characters
+ *     OUTPUT_AMP_SEQUENCES - convert unknown characters to amp-sequences
+ *     AMP_SEQUENCES - two above together 
+ *     UNKNOWN_TO_ASCII - convert unknown characters to ASCII equivalents (not implemented yet)
+ *     UNKNOWN_TO_QUESTION_MARKS - convert unknown characters to '?'
+*/
    enum Flags{
      INPUT_AMP_SEQUENCES=1,
      OUTPUT_AMP_SEQUENCES=2,
@@ -97,12 +118,7 @@ public:
 * Constructor. Start conversion to displayable charset
 *
 * @param inputCharset source charset 
-* @param flags conversion flags. It can be one or several OR-ed values:
-*     INPUT_AMP_SEQUENCES - convert amp-sequences on input to coresponding characters
-*     OUTPUT_AMP_SEQUENCES - convert unknown characters to amp-sequences
-*     AMP_SEQUENCES - two above together 
-*     UNKNOWN_TO_ASCII - convert unknown characters to ASCII equivalents (not implemented yet)
-*     UNKNOWN_TO_QUESTION_MARKS - convert unknown characters to '?'
+* @param flags conversion flags.
 *           
 */
    KCharsetConverter(const char * inputCharset
@@ -122,6 +138,7 @@ public:
 * Destructor.
 */
    ~KCharsetConverter();
+   
 /**
 * Did constructor suceed.
 *
@@ -129,9 +146,57 @@ public:
 * arguments were given to constructor
 */
    bool ok();
+   
+/**
+ * String conversion routine
+ *
+ * Convert string between charsets
+ *
+ * @param str string to convert
+ * @return converted string with charset info
+ *
+*/
    const KCharsetConversionResult & convert(const char *str);
-   const KCharsetConversionResult & convert(int);
+   
+/**
+ * String conversion routine for multiple charsets
+ *
+ * Convert string between charsets
+ *
+ * @param str string to convert
+ * @return converted string divided into chunks of the same charsets
+ *
+*/
+   const QList<KCharsetConversionResult> & multipleConvert(const char *str);
+   
+/**
+ * Charset of converted strings
+ * 
+ * @return charset of strings converted using @ref convert(const char *)
+ */
+   const char * outputCharset();
+   
+/**
+ * Unicode to displayable character conversion
+ *
+ * Currently works only for characters in output charset
+ *
+ * @param code Unicode represantation of character
+ *
+*/
+   const KCharsetConversionResult & convert(unsigned code);
+   
+/**
+ * Character tag to displayable character conversion
+ *
+ * Useful for converting HTML entities, but not only
+ * Currently it works only for characters in output charset
+ *
+ * @param tag character tag or whole amp-sequence 
+ *
+*/
    const KCharsetConversionResult & convertTag(const char *tag);
+   const KCharsetConversionResult & convertTag(const char *tag,int &l);
 };
     
 /**
@@ -243,7 +308,16 @@ public:
    * @see displayable
    */
   bool isDisplayable(const char* charset,const char *face);
-  
+   
+  /**
+   * Is the charset displayable in given font family
+   *
+   * @param charset charset name
+   * @return TRUE if the charset is displayable
+   * @see displayable
+   */
+  bool isDisplayable(const char* charset);
+ 
   /**
    * Is the charset registered
    *
@@ -316,7 +390,29 @@ public:
    * @param font QFont object
    * @return charset name
    */
-  const char * name(const QFont& font);
+  const char * name(const QFont& font);   
+
+  /**
+   * Unicode to displayable character conversion
+   *
+   * Currently works only for characters in output charset
+   *
+   * @param code Unicode represantation of character
+   *
+   */
+   const KCharsetConversionResult & convert(unsigned code);
+   
+  /**
+   * Character tag to displayable character conversion
+   *
+   * Useful for converting HTML entities, but not only
+   * Currently it works only for characters in output charset
+   *
+   * @param tag character tag or whole amp-sequence 
+   *
+   */
+   const KCharsetConversionResult & convertTag(const char *tag);
+   const KCharsetConversionResult & convertTag(const char *tag,int &len);
 };
 
 #endif

@@ -19,7 +19,6 @@
 	*/
 
 #include "kcharsetsdata.h"
-#include "kcharsets.h"
 #include <qdir.h>
 #include <qfile.h>
 #include <stdlib.h>
@@ -47,7 +46,7 @@ KCharsetConverterData::KCharsetConverterData(const char * inputCharset
   inAmps=( (flags&KCharsetConverter::INPUT_AMP_SEQUENCES)!=0 );
   outAmps=( (flags&KCharsetConverter::OUTPUT_AMP_SEQUENCES)!=0 );
   if ( kcharsetsData == 0 ) fatal("KCharsets not initialized!");
-  isOK=initialize(inputCharset,"iso-8859-1");
+  isOK=initialize(inputCharset,0);
   kchdebug("done");
 }
 
@@ -67,7 +66,8 @@ bool KCharsetConverterData::initialize(const char * inputCharset
     kchdebug("Couldn't set input charset to %s\n",inputCharset);
     return FALSE;
   }  
-  output=kcharsetsData->charsetEntry(outputCharset);
+  if (outputCharset==0) output=kcharsetsData->conversionHint(input);
+  else output=kcharsetsData->charsetEntry(outputCharset);
   if (!output) {
     kchdebug("Couldn't set output charset to %s\n",outputCharset);
     return FALSE;
@@ -99,9 +99,9 @@ bool KCharsetConverterData::initialize(const char * inputCharset
 
 bool KCharsetConverterData::getToUnicodeTable(){
 
-  convTable=kcharsetsData->getToUnicodeTable(input->name);
+  convTable=kcharsetsData->getToUnicodeTable(input);
   if (!convTable){
-    convToUniDict=kcharsetsData->getToUnicodeDict(input->name);
+    convToUniDict=kcharsetsData->getToUnicodeDict(input);
     if (!convToUniDict){
       kchdebug("Couldn't get conversion table nor dictionary\n");
       return FALSE;
@@ -185,10 +185,10 @@ bool KCharsetConverterData::decodeUTF8(const char*str,unsigned int &code
   code=0;
   extrachars=0;
   unsigned char chr=*str;
-  kchdebug("str: ");
-  for(int i=0;i<6 && str[i];i++)
-    kchdebug("%02x ",(int)(unsigned char)str[i]);
-  kchdebug("\n");
+//  kchdebug("str: ");
+//  for(int i=0;i<6 && str[i];i++)
+//    kchdebug("%02x ",(int)(unsigned char)str[i]);
+//  kchdebug("\n");
   if ( (chr&0x80)==0 ){
     code=chr&0x7f;
     extrachars=0;
@@ -222,7 +222,7 @@ bool KCharsetConverterData::decodeUTF8(const char*str,unsigned int &code
   while(chars>0){
     str++;
     code<<=6;
-    kchdebug("Code: %4x char: %2x masked char: %2x\n",code,*str,(*str)&0x3f);
+//    kchdebug("Code: %4x char: %2x masked char: %2x\n",code,*str,(*str)&0x3f);
     code|=(*str)&0x3f;
     chars--;
   }
@@ -240,7 +240,7 @@ bool KCharsetConverterData::encodeUTF8(unsigned int code,QString &result){
     result+=(char)code;
     return TRUE;
   }  
-  kchdebug("Code: %4x\n",code);
+//  kchdebug("Code: %4x\n",code);
   int octets=2;
   unsigned mask1=0xc0;
   unsigned mask2=0x1f;
@@ -257,33 +257,54 @@ bool KCharsetConverterData::encodeUTF8(unsigned int code,QString &result){
     octets++;
     left-=6;
   }
-  kchdebug("octets: %i  mask1: %x mask2: %x range: %x left: %i\n"
-            ,octets,mask1,mask2,range,left);
+//  kchdebug("octets: %i  mask1: %x mask2: %x range: %x left: %i\n"
+//            ,octets,mask1,mask2,range,left);
   unsigned char chr=((code>>((octets-1)*6))&mask2)|mask1;
-  kchdebug("Chars: %02x ",chr);
+//  kchdebug("Chars: %02x ",chr);
   result+=chr;
   octets--;
   unsigned int tmp=(code<<left)&0xffffffff;
   while(octets>0){
     chr=((tmp>>24)&0x3f)|0x80;
-    kchdebug("%02x ",chr);
+//    kchdebug("%02x ",chr);
     result+=chr;
     tmp<<=6;
     octets--;
   }
-  kchdebug("\n");
+//  kchdebug("\n");
   return TRUE;
 }
+
+void KCharsetConverterData::convert(const char *str,KCharsetConversionResult &r){
+
+   convert(str,r,0);
+}
+
+void KCharsetConverterData::convert(const char *str,QList<KCharsetConversionResult> &rl){
+unsigned unicode;
+
+  rl.clear();
+  while(str){
+     KCharsetConversionResult *l=new KCharsetConversionResult;
+     str=convert(str,*l,&unicode);
+     rl.append(l); 
+     if (unicode){
+         KCharsetConversionResult *l=new KCharsetConversionResult;
+         kcharsetsData->convert(unicode,*l);
+         rl.append(l); 
+     }
+  }
+}
    
-void KCharsetConverterData::convert(const QString &str
-                                    ,KCharsetConversionResult &result) {
+const char * KCharsetConverterData::convert(const char * str
+                                 ,KCharsetConversionResult &result
+				 ,unsigned *pUnicode) {
 
-
-  kchdebug("Converting:\n-----\n%s\n-----\n",(const char *)str);
-  if (!isOK) return;
+  kchdebug("----- %s ----- => ",str);
+  if (!isOK) return 0;
   if (conversionType == NoConversion ){
     result.cText=str;
-    return ;
+    return 0;
   }
   result.cText="";
   
@@ -291,77 +312,94 @@ void KCharsetConverterData::convert(const QString &str
   int tmp;
   unsigned *ptr=0;
   unsigned index=0;
-  unsigned index2=0;
+  unsigned unicode=0;
   unsigned chr=0;
   
   for(i=0;(inBits<=8)?str[i]:(str[i]&&str[i+1]);){
+    chr=0;
+    index=0;
+    unicode=0;
     switch(inputEnc){
        case UTF7:
-         if (decodeUTF7(((const char *)str)+i,index,tmp)) i+=tmp;
-	 else index=(unsigned char)str[i];
+         if (decodeUTF7(str+i,unicode,tmp)) i+=tmp;
+	 else unicode=(unsigned char)str[i];
 	 break;
        case UTF8:
-         if (decodeUTF8(((const char *)str)+i,index,tmp)) i+=tmp;
-	 else index=(unsigned char)str[i];
+         if (decodeUTF8(str+i,unicode,tmp)) i+=tmp;
+	 else unicode=(unsigned char)str[i];
 	 break;
        default:
-         if (inBits<=8) index=(unsigned char)str[i];
-	 else if (inBits==16) index=(((unsigned char)str[i++])<<8)+(unsigned char)str[i];
+         if (inAmps && str[i]=='&'){
+//           kchdebug("Amperstand found\n");
+	   unicode=kcharsetsData->decodeAmp(str+i,tmp);
+//           kchdebug("i=%i characters: %i code:%4x\n",i,tmp,unicode);
+	   if (tmp<0) unicode=0; // wrong amp sequence
+	   else
+	     if (unicode==0){
+	       result.cText+=QString(str+i,tmp+1);
+	       i+=tmp+1;
+	       continue;
+	     }
+	     else i+=tmp;
+	 } 
+	 if (unicode==0)
+           if (inBits<=8) index=(unsigned char)str[i];
+	   else if (inBits==16) index=(((unsigned char)str[i])<<8)+(unsigned char)str[i];
 	 break;
     }
-    kchdebug("Got index: %x\n",index);
-    if (index>0) switch(conversionType){
+//    kchdebug("Got index: %x\n",index);
+    if (index>0 || unicode>0) switch(conversionType){
        case ToUnicode:
-         if (convTable)
-	   chr=convTable[index];
-	 else if (convToUniDict) {
-           ptr=(*convToUniDict)[index];
-	   if (ptr) chr=*ptr;
-	   else chr=0;
-	 }  
+         if (unicode>0) chr=unicode;
+	 else
+           if (convTable)
+	     chr=convTable[index];
+	   else if (convToUniDict) {
+             ptr=(*convToUniDict)[index];
+	     if (ptr) chr=*ptr;
+	     else chr=0;
+	   }  
 	 break;
        case FromUnicode:
-         ptr=(*convFromUniDict)[index];
+         ptr=(*convFromUniDict)[unicode];
 	 if (ptr) chr=*ptr;
 	 else chr=0;
 	 break;
        case UnicodeUnicode:
-         chr=index;
+         chr=unicode;
 	 break;
        default:
-         if (convTable)
-	   index2=convTable[index];
-	 else{
-           ptr=(*convToUniDict)[index];
- 	   if (ptr) index2=*ptr;
-	   else index2=0;
-	 }  
-         kchdebug("Converted to unicode: %4x\n",index);
-	 if (index2){
-            ptr=(*convFromUniDict)[index2];
+         if (unicode==0)
+           if (convTable)
+  	     unicode=convTable[index];
+	   else{
+             ptr=(*convToUniDict)[index];
+ 	     if (ptr) unicode=*ptr;
+	     else unicode=0;
+	   }  
+//         kchdebug("Converted to unicode: %4x\n",index);
+	 if (unicode){
+            ptr=(*convFromUniDict)[unicode];
   	    if (ptr) chr=*ptr;
 	    else chr=0;
 	 }   
 	 else chr=0;
          break;
     }
-    else chr=0;
-    kchdebug("Converted to: %x\n",chr);
+//    kchdebug("Converted to: %x\n",chr);
     if (outputEnc==UTF8) encodeUTF8(chr,result.cText);
     else if (outputEnc==UTF7) encodeUTF7(chr,result.cText);
     else if (chr==0)
-      if (outAmps){
-        if (conversionType!=FromUnicode){
-	  if (convTable)
-	     index2=convTable[index];
-	   else{
-             ptr=(*convToUniDict)[index];
- 	     if (ptr) index2=*ptr;
-	     else index2=0;
-	   }  
-	}   
-        else index2=index;
-	if (index2) result.cText+="&#"+QString().setNum(index2)+';';
+      if (unicode && pUnicode){
+        *pUnicode=unicode;
+        i++;
+        if (inBits>8 && str[i]) i++;
+        result.cCharset=output;
+	if (str[i]) return str+i;
+	else return 0;
+      }
+      else if (outAmps){
+	if (unicode) result.cText+="&#"+QString().setNum(unicode)+';';
 	else result.cText+="?";
       }  
       else result.cText+="?";
@@ -372,25 +410,64 @@ void KCharsetConverterData::convert(const QString &str
       }
       else result.cText+=(char)chr;
       
-    if (inBits<=8)
-      i++;
-    else
-      i+=2;
+    i++;
+    if (inBits>8 && str[i]) i++;
   }
-  kchdebug("Result:\n-----\n%s\n-----\n",(const char *)result);
+  kchdebug("----- %s -----\n",(const char *)result);
   result.cCharset=output;
+  if (pUnicode) *pUnicode=0;
+  return 0;
 }
+
+static KCharsetConversionResult convResult;
+
+const KCharsetConversionResult & KCharsetConverterData::convert(unsigned code){
+unsigned chr;
+const unsigned *ptr;
+
+   kchdebug("KCCS:convert(code) ");
+
+   if (convFromUniDict){
+     ptr=(*convFromUniDict)[code];
+     if (!ptr) chr=0;
+     else chr=*ptr;
+   }  
+   else chr=0;
+   
+   if (chr==0){
+     kcharsetsData->convert(code,convResult);
+     if (!convResult.cText.isEmpty()) return convResult;
+   }  
+
+   if (chr==0)
+      if (outAmps){
+	if (code) convResult.cText+="&#"+QString().setNum(code)+';';
+	else convResult.cText+="?";
+      }  
+      else convResult.cText+="?";
+   else convResult.cText=chr;
+   
+   return convResult;
+}
+
+const KCharsetConversionResult & KCharsetConverterData::convertTag(
+                                     const char *tag,int &l){
+  
+ kchdebug("Converting: %s\n",(const char *)tag);
+ return convert(kcharsetsData->decodeAmp(tag,l));
+}
+
 
 bool KCharsetConverterData::createFromUnicodeDict(){
 
   QIntDict<unsigned> * dict=new QIntDict<unsigned>;
   dict->setAutoDelete(TRUE);
-  const unsigned *tbl=kcharsetsData->getToUnicodeTable(output->name);
+  const unsigned *tbl=kcharsetsData->getToUnicodeTable(output);
   if (tbl)
     for(int i=0;i<(1<<outBits);i++)
       dict->insert(tbl[i],new unsigned(i));
   else{
-    QIntDict<unsigned> * dict2=kcharsetsData->getToUnicodeDict(output->name);
+    QIntDict<unsigned> * dict2=kcharsetsData->getToUnicodeDict(output);
     if (!dict2){
       kchdebug("Couldn't get to unicode table for %s\n",output->name);
       delete dict;
@@ -406,9 +483,16 @@ bool KCharsetConverterData::createFromUnicodeDict(){
   return TRUE;
 }
 
+const char * KCharsetConverterData::outputCharset()const{
+
+  return output->name;
+}
+
 /////////////////////////////////////////////////
 
 KCharsetsData::KCharsetsData(){
+
+  displayableCharsDict=0;
 
   QString fileName=KApplication::kdedir().copy();
   fileName+="/share/config/charsets";
@@ -452,7 +536,6 @@ void KCharsetsData::scanDirectory(const char *path){
 
 void KCharsetsData::createDictFromi18n(KCharsetEntry *e){
 
-
   kchdebug("Creating unicode dict for %s\n",e->name);
   config->setGroup("general");
   QString dir=config->readEntry("i18ndir");
@@ -491,6 +574,7 @@ void KCharsetsData::createDictFromi18n(KCharsetEntry *e){
     dict->insert(code,new unsigned(unicode));	
   }
   e->toUnicodeDict=dict;
+  defaultCh=charsetEntry("us-ascii");
 }
   
 KCharsetsData::~KCharsetsData(){
@@ -499,14 +583,14 @@ KCharsetsData::~KCharsetsData(){
   KCharsetEntry *e;
   while( (e=it.current()) ){
     if (e->toUnicodeDict) delete e->toUnicodeDict;
-// delete static members ... It is a new vision of C++ :-)
-//    if (e->name) delete e->name;
+    if (e->name) delete e->name;
     delete e;
   }
+  if (displayableCharsDict) delete displayableCharsDict;
   delete config;
 }
 
-KCharsetEntry * KCharsetsData::charsetEntry(const char *name){
+KCharsetEntry * KCharsetsData::varCharsetEntry(const char *name){
 
   config->setGroup("aliases");
   const char *alias=config->readEntry(name);
@@ -518,7 +602,7 @@ KCharsetEntry * KCharsetsData::charsetEntry(const char *name){
   return e;
 }
 
-KCharsetEntry * KCharsetsData::charsetEntry(int index){
+const KCharsetEntry * KCharsetsData::charsetEntry(int index){
 
   int i;
   for(i=0;charsets[i].name;i++)
@@ -534,30 +618,32 @@ KCharsetEntry * KCharsetsData::charsetEntry(int index){
   return 0;
 }
 
-bool KCharsetsData::setDefaultCharset(const char *name){
+bool KCharsetsData::setDefaultCharset(const KCharsetEntry *charset){
 
-  if (charsetEntry(name)){
-    defaultCh=name;
+  if (charset){
+    defaultCh=charset;
     return TRUE;
   }
   return FALSE;
 }
 
-QString KCharsetsData::charsetFace(const char *name,const QString &face){
+QString KCharsetsData::charsetFace(const KCharsetEntry *charset
+                                   ,const QString &face){
 
   config->setGroup("faces");
-  const char *faceStr=config->readEntry(name);
+  const char *faceStr=config->readEntry(charset->name);
   if (!faceStr) return face;
   QString newFace(faceStr);
   newFace.replace(QRegExp("\\*"),face);
   return newFace;
 }
 
-bool KCharsetsData::charsetOfFace(const char * charset,const QString &face){
+bool KCharsetsData::charsetOfFace(const KCharsetEntry * charset,const QString &face){
 
-  kchdebug("Testing if face %s is of charset %s...",(const char *)face,charset);
+  kchdebug("Testing if face %s is of charset %s...",(const char *)face,
+                                                               charset->name);
   config->setGroup("faces");
-  const char *faceStr=config->readEntry(charset);
+  const char *faceStr=config->readEntry(charset->name);
   kchdebug("%s...",faceStr);
   QRegExp rexp(faceStr,FALSE,TRUE);
   if (face.contains(rexp)){
@@ -568,7 +654,7 @@ bool KCharsetsData::charsetOfFace(const char * charset,const QString &face){
   return FALSE;
 }
 
-KCharsetEntry* KCharsetsData::charsetOfFace(const QString &face){
+const KCharsetEntry* KCharsetsData::charsetOfFace(const QString &face){
 
   kchdebug("Searching for charset for face %s...\n",(const char *)face);
   KEntryIterator * it=config->entryIterator("faces");
@@ -588,23 +674,154 @@ KCharsetEntry* KCharsetsData::charsetOfFace(const QString &face){
   return 0;
 }
   
-const unsigned *KCharsetsData::getToUnicodeTable(const char *charset){
+const unsigned *KCharsetsData::getToUnicodeTable(const KCharsetEntry *charset){
 
-  KCharsetEntry *ce=charsetEntry(charset);
-  if (!ce) return 0;
-  return ce->toUnicode;
+  if (!charset) return 0;
+  return charset->toUnicode;
 }
   
-QIntDict<unsigned> *KCharsetsData::getToUnicodeDict(const char *charset){
+QIntDict<unsigned> *KCharsetsData::getToUnicodeDict(const KCharsetEntry *charset){
 
-  KCharsetEntry *ce=charsetEntry(charset);
-  if (!ce) return 0;
-  if (ce->toUnicodeDict == 0) createDictFromi18n(ce);
-  return ce->toUnicodeDict;
+  if (!charset) return 0;
+  if (charset->toUnicodeDict == 0)
+  	createDictFromi18n(varCharsetEntry(charset->name));
+  return charset->toUnicodeDict;
 }
 
-const char *KCharsetsData::faceForCharset(const char *charset){
+const char *KCharsetsData::faceForCharset(const KCharsetEntry *charset){
 
   config->setGroup("faces");
-  return config->readEntry(charset);
+  return config->readEntry(charset->name);
+}
+
+const KCharsetEntry *KCharsetsData::conversionHint(const KCharsetEntry *charset){
+
+  QStrList list;
+  kchdebug("Serching for conversion hint for %s\n",charset->name);
+  config->setGroup("conversionHints");
+  int n=config->readListEntry(charset->name,list);
+  kchdebug("%i entries found\n",n);
+  for(const char *hint=list.first();hint;hint=list.next()){
+    kchdebug("Found: %s\n",hint);
+    const KCharsetEntry *ce=charsetEntry(hint);
+    if (isDisplayable(ce)) return ce;    
+  }
+    
+  return defaultCh;  
+}
+
+bool KCharsetsData::isDisplayable(const KCharsetEntry *charset){
+
+  QFont::CharSet qcharset=charset->qtCharset;
+  kchdebug("qtcharset=%i\n",qcharset);
+  
+  if ( qcharset==QFont::AnyCharSet && strcmp(charset->name,"us-ascii")!=0 ){
+    QString face=faceForCharset(charset);
+    if ( face.isEmpty()) return FALSE;
+    QFont f(face);
+    f.setCharSet(qcharset);
+    f.setFamily(face);
+    QFontInfo fi(f);
+    kchdebug("fi.charset()=%i fi.family()=%s\n",fi.charSet(),fi.family());
+    if (fi.charSet()!=qcharset || fi.family()!=face ) return FALSE;
+    else return TRUE;
+  }  
+  QFont f;
+  f.setCharSet(qcharset);
+  QFontInfo fi(f);
+  kchdebug("fi.charset()=%i\n",fi.charSet());
+  if (qcharset!=QFont::AnyCharSet && fi.charSet()!=qcharset) return FALSE;
+  else return TRUE;
+}
+
+void KCharsetsData::convert(unsigned code,KCharsetConversionResult &convResult){
+unsigned chr;
+
+   kchdebug("KCD:convert(code) %4X -> ",code);
+   chr=0;
+
+   convResult.cText="";
+   convResult.cCharset=0;
+   if (code>127){
+     const QIntDict<KDispCharEntry> *dict=getDisplayableDict();
+
+     KDispCharEntry *ptr=(*dict)[code];
+     if (ptr){
+       chr=ptr->code;
+       convResult.cCharset=ptr->charset; 
+       convResult.cText+=(unsigned char)chr;
+     }  
+   }
+   else{
+     convResult.cCharset=charsetEntry("us-ascii");
+     convResult.cText+=(unsigned char)code;
+   }   
+   kchdebug("%s\n",(const char *)convResult);
+}
+
+unsigned KCharsetsData::decodeAmp(const char *seq,int &len){
+int i;
+
+  kchdebug("Sequence: '%s'\n",seq);
+
+  if (*seq=='&') { seq++; len=1; }
+  else len=0;
+  
+/*  const char *semicolon=strchr(seq,';');
+  
+  if (semicolon) len+=semicolon-seq;
+  else len=-1;*/
+
+//  kchdebug("Sequence: '%s'\n",(const char *)QString(seq,(len>0)?len:20));
+  
+  if (*seq=='#'){
+     unsigned num=atoi(seq+1);
+     kchdebug("Number: '%u'\n",num);
+     return num;
+  }   
+  else
+    for(i=0;i<CHAR_TAGS_COUNT;i++){
+      KCharTags tag=tags[i];
+      int l=strlen(tag.tag);
+      if ( strncmp(seq,tag.tag,l)==0 ){
+        if (seq[l]==';' && tag.tag[l-1]!=';') len=l+1;
+	else len+=l;
+        return tag.code;	  
+      }
+    }
+    
+  len=0;
+  return 0;
+}
+
+void KCharsetsData::convertTag(const char *tag
+                            ,KCharsetConversionResult &convResult
+			    ,int &l){
+  
+ convert(decodeAmp(tag,l),convResult);
+}
+
+const QIntDict<KDispCharEntry> * KCharsetsData::getDisplayableDict(){
+
+  if (displayableCharsDict) return displayableCharsDict;
+  kchdebug("Generating dictonary for displayable characters\n");
+  displayableCharsDict=new QIntDict<KDispCharEntry>;
+  displayableCharsDict->setAutoDelete(TRUE);
+  for(int i=0;charsets[i].name!=0;i++)
+    if (charsets[i].toUnicode && isDisplayable(charsets+i)){
+       kchdebug("Adding characters form %s\n",charsets[i].name);
+       for(int j=0;j<256;j++){
+          unsigned unicode=charsets[i].toUnicode[j];
+          if ( !(*displayableCharsDict)[unicode] ){
+             KDispCharEntry *e=new KDispCharEntry;
+	     e->charset=charsets+i;
+             e->code=j;
+	    displayableCharsDict->insert(unicode,e);
+	  }  
+       }
+    }    
+ #ifdef KCH_DEBUG   
+ displayableCharsDict->statistics();
+ #endif
+ return displayableCharsDict;
 }

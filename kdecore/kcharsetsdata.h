@@ -21,7 +21,7 @@
 #ifndef _CHARSETSDATA_H
 #define _CHARSETSDATA_H
 
-// #define KCH_DEBUG
+#define KCH_DEBUG
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -30,7 +30,9 @@
 #include <qfont.h>
 
 #include <qdict.h>
+#include <qlist.h>
 #include <qintdict.h>
+#include <kcharsets.h>
 
 struct KCharsetEntry{
   char *name;
@@ -40,7 +42,6 @@ struct KCharsetEntry{
   QIntDict<unsigned> * toUnicodeDict;
 };
 
-class KCharsetConversionResult;
 class KCharsetsData;
 
 
@@ -69,8 +70,8 @@ friend class KCharsets;
    QIntDict<unsigned> *convFromUniDict;
    const unsigned *convTable;
    
-   KCharsetEntry * input;
-   KCharsetEntry * output;
+   const KCharsetEntry * input;
+   const KCharsetEntry * output;
    bool isOK;
 
    void setInputSettings();
@@ -82,6 +83,8 @@ friend class KCharsets;
    bool encodeUTF7(unsigned int code,QString &result);
    bool encodeUTF8(unsigned int code,QString &result);
    bool createFromUnicodeTable();
+   const char * convert(const char *str,KCharsetConversionResult &r
+                       ,unsigned *pUnicode);
 public:
    KCharsetConverterData(const char * inputCharset
                          ,const char * outputCharset
@@ -90,7 +93,11 @@ public:
                          ,int flags);
    ~KCharsetConverterData();
    bool initialize(const char * inputCharset,const char * outputCharset);
-   void convert(const QString &str,KCharsetConversionResult &r);
+   void convert(const char *str,KCharsetConversionResult &r);
+   void convert(const char *str,QList<KCharsetConversionResult> &r);
+   const KCharsetConversionResult & convert(unsigned code);
+   const KCharsetConversionResult & convertTag(const char *tag,int &len);
+   const char * outputCharset()const;
    bool ok()const{ return isOK; }
 };
 
@@ -102,30 +109,45 @@ struct KCharTags{
 #define CHAR_TAGS_COUNT 247
 
 class KSimpleConfig;
+
+struct KDispCharEntry{
+  KCharsetEntry *charset;
+  unsigned code;
+};
     
 class KCharsetsData{
   static KCharsetEntry charsets[];
-  static const KCharTags tags[];
   QDict<KCharsetEntry> aliases;
   QDict<KCharsetEntry> i18nCharsets;
-  const char * defaultCh;
+  QIntDict<KDispCharEntry> *displayableCharsDict;
+  const KCharsetEntry * defaultCh;
   KSimpleConfig *config;
   void scanDirectory(const char *path);
   void createDictFromi18n(KCharsetEntry *e);
+  KCharsetEntry * varCharsetEntry(const char *name);
 public:
+  static const KCharTags tags[];
   KCharsetsData();
   ~KCharsetsData();
-  const char *faceForCharset(const char *charset);
-  QString charsetFace(const char *charset,const QString &face);
-  bool charsetOfFace(const char *charset,const QString &face);
-  KCharsetEntry * charsetOfFace(const QString &face);
-  KCharsetEntry * charsetEntry(const char *name);
-  KCharsetEntry * charsetEntry(int index);
-  const char * defaultCharset()
+  const char *faceForCharset(const KCharsetEntry *charset);
+  QString charsetFace(const KCharsetEntry *charset,const QString &face);
+  bool charsetOfFace(const KCharsetEntry *charset,const QString &face);
+  const KCharsetEntry * charsetOfFace(const QString &face);
+  const KCharsetEntry * charsetEntry(const char *name){
+    return varCharsetEntry(name);
+  }
+  const KCharsetEntry * charsetEntry(int index);
+  const KCharsetEntry * defaultCharset()const
                  { return defaultCh; }
-  bool setDefaultCharset(const char *name);
-  const unsigned *getToUnicodeTable(const char *charset);
-  QIntDict<unsigned> *getToUnicodeDict(const char *charset);
+  bool setDefaultCharset(const KCharsetEntry *charset);
+  const unsigned *getToUnicodeTable(const  KCharsetEntry *charset);
+  QIntDict<unsigned> *getToUnicodeDict(const KCharsetEntry *charset);
+  const KCharsetEntry * conversionHint(const KCharsetEntry *charset);
+  bool isDisplayable(const KCharsetEntry * charset);
+  unsigned decodeAmp(const char *seq,int &len);
+  void convert(unsigned code,KCharsetConversionResult & r);
+  void convertTag(const char *tag,KCharsetConversionResult & r,int &l);
+  const QIntDict<KDispCharEntry> * getDisplayableDict();
 };
 
 #ifdef KCH_DEBUG
@@ -134,7 +156,7 @@ public:
 inline void kchdebug(const char *msg,...){
     va_list ap;
     va_start( ap, msg );                // use variable arg list
-    vfprintf( stdout, msg, ap );
+    vfprintf( stderr, msg, ap );
     va_end( ap );                    
 }    
 #else /* KCH_DEBUG */
