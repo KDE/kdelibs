@@ -333,7 +333,9 @@ bool KSocket::initSockaddr (ksockaddr_in *server_name, const char *hostname, uns
 
   if ( hostinfo == 0 )
   {
+#ifdef HAVE_RES_INIT
     res_init();
+#endif
 #ifdef INET6
     // Setup the resolver to look for IPv6 addresses and then
     // as a fall back, look for IPv4.  This means we don't need further
