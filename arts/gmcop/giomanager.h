@@ -35,6 +35,7 @@ class GIOWatch;
 class GIOManagerPrivate;
 struct GIOManagerSource;
 class GIOTimeWatch;
+class GIOManagerBlocking;
 
 /**
  * GIOManager performs MCOP I/O inside the Glib event loop. This way, you will
@@ -57,10 +58,12 @@ private:
 protected:
 	std::list<GIOWatch *> fdList;
 	std::list<GIOTimeWatch *> timeList;
-	std::stack< std::pair<GIOWatch *,int> > notifyStack;
 	int level;
+	bool _blocking;
+	bool fileDescriptorsNeedRecheck;
 	GMainContext *context;
 	GIOManagerSource *source;
+	GIOManagerBlocking *gioManagerBlocking;
 
 public:
 	GIOManager(GMainContext *context = 0);
@@ -73,6 +76,22 @@ public:
 	void remove(IONotify *notify, int types);
 	void addTimer(int milliseconds, TimeNotify *notify);
 	void removeTimer(TimeNotify *notify);
+
+	/**
+	 * This controls what GIOManager will do while waiting for the result
+	 * of an MCOP request, the possibilities are:
+	 *
+	 * @li block until the request is completed (true)
+	 * @li open a local event loop (false)
+	 *
+	 * It is much easier to write working and reliable code with blocking
+	 * enabled, so this is the default. If you disable blocking, you have
+	 * to deal with the fact that timers, user interaction and similar
+	 * "unpredictable" things will possibly influence your code in all
+	 * places where you make a remote MCOP call (which is quite often in
+	 * MCOP applications).
+	 */
+	void setBlocking(bool blocking);
 
 	/* GSource stuff: */
 

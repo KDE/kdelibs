@@ -30,6 +30,16 @@
 using namespace Arts;
 using namespace std;
 
+/*
+ * Fallback for the case where we should perform blocking
+ */
+namespace Arts {
+class GIOManagerBlocking : public StdIOManager {
+public:
+	void setLevel(int newLevel) { level = newLevel; }
+};
+};
+
 namespace Arts {
 	struct GIOManagerSource
 	{
@@ -215,16 +225,47 @@ GIOManager::GIOManager(GMainContext *context)
 	source->ioManager = this;
 	g_source_set_can_recurse(&source->source, true);
 	g_source_attach(&source->source, context);
+
+	gioManagerBlocking = new GIOManagerBlocking();
+	_blocking = true;
+	fileDescriptorsNeedRecheck = false;
 }
 
 GIOManager::~GIOManager()
 {
 	g_source_unref(&source->source);
+	delete gioManagerBlocking;
 }
 
 void GIOManager::processOneEvent(bool blocking)
 {
-	g_main_context_iteration(context, blocking);
+	if(_blocking)
+	{
+		level++;
+		if(level == 1)
+			Dispatcher::lock();
+
+		/*
+		 * we explicitely take the level to gioManagerBlocking, so that it
+		 * will process reentrant watchFDs only
+		 */
+		fileDescriptorsNeedRecheck = true;
+		gioManagerBlocking->setLevel(level);
+		gioManagerBlocking->processOneEvent(blocking);
+
+		if(level == 1)
+			Dispatcher::unlock();
+		level--;
+	}
+	else
+	{
+		g_main_context_iteration(context, blocking);
+	}
+}
+
+void GIOManager::setBlocking(bool blocking)
+{
+	_blocking = blocking;
 }
 
 void GIOManager::run()
@@ -240,6 +281,9 @@ void GIOManager::terminate()
 void GIOManager::watchFD(int fd, int types, IONotify * notify)
 {
 	fdList.push_back(new GIOWatch(source, fd, types, notify));
+
+	if(types & IOType::reentrant)
+		gioManagerBlocking->watchFD(fd, types, notify);
 }
 
 void GIOManager::remove(IONotify *notify, int types)
@@ -268,6 +312,8 @@ void GIOManager::remove(IONotify *notify, int types)
 		}
 		else i++;
 	}
+	if(types & IOType::reentrant)
+		gioManagerBlocking->remove(notify, types);
 }
 
 void GIOManager::addTimer(int milliseconds, TimeNotify *notify)
@@ -327,6 +373,7 @@ gboolean GIOManager::prepare(gint *timeout)
 		GIOWatch *w = *i;
 		w->prepare(level);
 	}
+	fileDescriptorsNeedRecheck = false;
 
 	if(level == 1 && NotificationManager::the()->pending())
 		*timeout = 0;
@@ -383,6 +430,7 @@ gboolean GIOManager::check()
 			result = true;
 		}
 	}
+	fileDescriptorsNeedRecheck = false;
 
 	/*
 	 * check for notifications
@@ -400,57 +448,43 @@ gboolean GIOManager::check()
 
 gboolean GIOManager::dispatch(GSourceFunc /* func */, gpointer /* user_data */)
 {
+	bool done = false;
+
 	level++;
 
 	if(level == 1)
 		Dispatcher::lock();
 
 	// notifications not carried out reentrant
-	if(level == 1)
+	if(!done && level == 1 && NotificationManager::the()->pending())
+	{
 		NotificationManager::the()->run();
-		
-	/* handle filedescriptor things */
-
-	/*
-	 * the problem is, that objects that are being notified may change
-	 * the watch list, add fds, remove fds, remove objects and whatever
-	 * else
-	 *
-	 * so we can' notify them from the loop - but we can make a stack
-	 * of "notifications to do" and send them as soon as we looked up
-	 * in the list what to send
-	 */
-	long tonotify = 0;
-
-	list<GIOWatch *>::iterator i;
-	for(i = fdList.begin(); i != fdList.end(); i++) {
-		GIOWatch *w = *i;
-		int match = w->check();
-
-		if((w->types & IOType::reentrant) == 0 && level != 1)
-		{
-			arts_assert(match == 0);
-		}
-		if(match)
-		{
-			tonotify++;
-			notifyStack.push(make_pair(w,match));
-		}
+		done = true;
 	}
 	
-	while(tonotify != 0)	/* FIXME: what happens if an iowatch gets deleted */
+	// handle filedescriptor things
+	if(!done && !fileDescriptorsNeedRecheck)
 	{
-		GIOWatch *w = notifyStack.top().first;
-		int match = notifyStack.top().second;
+		list<GIOWatch *>::iterator i;
+		for(i = fdList.begin(); i != fdList.end(); i++) {
+			GIOWatch *w = *i;
+			int match = w->check();
 
-		w->notify->notifyIO(w->gpollfd.fd,match);
-
-		notifyStack.pop();
-		tonotify--;
+			if((w->types & IOType::reentrant) == 0 && level != 1)
+			{
+				arts_assert(match == 0);
+			}
+			if(match)
+			{
+				w->notify->notifyIO(w->gpollfd.fd,match);
+				done = true;
+				break;
+			}
+		}
 	}
 
-	/* handle timers - only at level 1 */
-	if(level == 1 && timeList.size())
+	// handle timers - only at level 1
+	if(!done && level == 1 && timeList.size())
 	{
 		struct timeval currenttime;
 		gettimeofday(&currenttime,0);
@@ -465,10 +499,6 @@ gboolean GIOManager::dispatch(GSourceFunc /* func */, gpointer /* user_data */)
 		}
 	}
 
-	// notifications not carried out reentrant
-	if(level == 1)
-		NotificationManager::the()->run();
-	
 	if(level == 1)
 		Dispatcher::unlock();
 	level--;
