@@ -1076,7 +1076,7 @@ BidiIterator RenderFlow::findNextLineBreak(BidiIterator &start)
 	    
 	    BidiIterator it = lBreak;
 	    ++it;
-	    if ( it.obj->isBR() )
+	    if ( it.obj && it.obj->isBR() )
 		lBreak = it;
             return lBreak;
         }
