@@ -840,7 +840,8 @@ void HTMLInputElementImpl::parseAttribute(AttrImpl *attr)
         addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value() );
         break;
     case ATTR_WIDTH:
-        addCSSLength(CSS_PROP_WIDTH, attr->value() );
+        if(getAttribute(ATTR_SIZE).isEmpty())
+            addCSSLength(CSS_PROP_WIDTH, attr->value() );
         break;
     case ATTR_HEIGHT:
         addCSSLength(CSS_PROP_HEIGHT, attr->value() );
