@@ -584,11 +584,7 @@ void KAction::updateShortcut( QPopupMenu* menu, int id )
     else
       s += "\t" + d->m_cut.seq(0).toString();
 
-    QPixmap *pp = menu->pixmap( id );
-    if ( pp && !pp->isNull() )
-      menu->changeItem( *pp, s, id );
-    else
-      menu->changeItem( s, id );
+    menu->changeItem( id, s );
   }
   // Otherwise insert the shortcut itself into the popup menu.
   else {
@@ -936,8 +932,7 @@ void KAction::updateText( int i )
   if ( w->inherits( "QPopupMenu" ) ) {
     int id = itemId( i );
     static_cast<QPopupMenu*>(w)->changeItem( id, d->text() );
-    if ( d->m_kaccel )
-        updateShortcut( static_cast<QPopupMenu*>(w), id );
+    updateShortcut( static_cast<QPopupMenu*>(w), id );
   }
   else if ( w->inherits( "QMenuBar" ) )
     static_cast<QMenuBar*>(w)->changeItem( itemId( i ), d->text() );
@@ -973,8 +968,11 @@ void KAction::updateIcon( int id )
 {
   QWidget* w = container( id );
 
-  if ( w->inherits( "QPopupMenu" ) )
-    static_cast<QPopupMenu*>(w)->changeItem( itemId( id ), d->iconSet( KIcon::Small ), d->text() );
+  if ( w->inherits( "QPopupMenu" ) ) {
+    int itemId_ = itemId( id );
+    static_cast<QPopupMenu*>(w)->changeItem( itemId_, d->iconSet( KIcon::Small ), d->text() );
+    updateShortcut( static_cast<QPopupMenu*>(w), itemId_ );
+  }
   else if ( w->inherits( "QMenuBar" ) )
     static_cast<QMenuBar*>(w)->changeItem( itemId( id ), d->iconSet( KIcon::Small ), d->text() );
   else if ( w->inherits( "KToolBar" ) )
@@ -1001,7 +999,11 @@ void KAction::updateIconSet( int id )
   QWidget *w = container( id );
 
   if ( w->inherits( "QPopupMenu" ) )
-    static_cast<QPopupMenu*>(w)->changeItem( itemId( id ), d->iconSet(), d->text() );
+  {
+    int itemId_ = itemId( id );
+    static_cast<QPopupMenu*>(w)->changeItem( itemId_, d->iconSet(), d->text() );
+    updateShortcut( static_cast<QPopupMenu*>(w), itemId_ );
+  }
   else if ( w->inherits( "QMenuBar" ) )
     static_cast<QMenuBar*>(w)->changeItem( itemId( id ), d->iconSet(), d->text() );
   else if ( w->inherits( "KToolBar" ) )
