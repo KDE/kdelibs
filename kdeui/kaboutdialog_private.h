@@ -188,7 +188,7 @@ class KAboutContributor : public QFrame
 
     KAboutContributorPrivate *d;
 
-	virtual void setName(const char *name) { QFrame::setName(name); }
+	virtual void setName(const char *_name) { QFrame::setName(_name); }
 };
 
 #endif
