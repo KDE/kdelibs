@@ -34,20 +34,20 @@
 #include "file.h"
 
 QString testLogFile( const char *_filename );
-int check( Connection *_con );
+int check( KIOConnection *_con );
 
 void sigchld_handler( int );
 void sigsegv_handler( int );
 
 int main( int , char ** )
 {
-  signal(SIGCHLD, IOProtocol::sigchld_handler);
+  signal(SIGCHLD, KIOProtocol::sigchld_handler);
 #ifdef NDEBUG
   signal(SIGSEGV, IOProtocol::sigsegv_handler);
 #endif
   qDebug( "kio_file : Starting");
 
-  Connection parent( 0, 1 );
+  KIOConnection parent( 0, 1 );
   
   FileProtocol file( &parent );
   file.dispatchLoop();
@@ -55,7 +55,7 @@ int main( int , char ** )
   qDebug( "kio_file : Done" );
 }
 
-FileProtocol::FileProtocol( Connection *_conn ) : IOProtocol( _conn )
+FileProtocol::FileProtocol( KIOConnection *_conn ) : KIOProtocol( _conn )
 {
   m_cmd = CMD_NONE;
   m_bIgnoreJobErrors = false;
@@ -267,7 +267,7 @@ void FileProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename
   m_cmd = CMD_GET;
 
   // Start a server for the destination protocol
-  Slave slave( exec );
+  KIOSlave slave( exec );
   if ( slave.pid() == -1 ) {
     error( ERR_CANNOT_LAUNCH_PROCESS, exec );
     m_cmd = CMD_NONE;
@@ -1086,8 +1086,8 @@ void FileProtocol::slotListDir( const char *_url )
     return;
   }
 
-  UDSEntry entry;
-  UDSAtom atom;
+  KUDSEntry entry;
+  KUDSAtom atom;
   while ( ( ep = readdir( dp ) ) != 0L ) {
     if ( strcmp( ep->d_name, "." ) == 0 || strcmp( ep->d_name, ".." ) == 0 )
       continue;
@@ -1474,14 +1474,14 @@ void FileProtocol::jobError( int _errid, const char *_txt )
  *
  *************************************/
 
-FileIOJob::FileIOJob( Connection *_conn, FileProtocol *_File ) : IOJob( _conn )
+FileIOJob::FileIOJob( KIOConnection *_conn, FileProtocol *_File ) : KIOJobBase( _conn )
 {
   m_pFile = _File;
 }
   
 void FileIOJob::slotError( int _errid, const char *_txt )
 {
-  IOJob::slotError( _errid, _txt );
+  KIOJobBase::slotError( _errid, _txt );
   m_pFile->jobError( _errid, _txt );
 }
 
@@ -1529,7 +1529,7 @@ QString testLogFile( const char *_filename )
 }
 
 
-int check( Connection *_con )
+int check( KIOConnection *_con )
 {
   int err;
   struct timeval tv;

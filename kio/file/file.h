@@ -13,10 +13,10 @@
 #include <kio_interface.h>
 #include <kio_base.h>
 
-class FileProtocol : public IOProtocol
+class FileProtocol : public KIOProtocol
 {
 public:
-  FileProtocol( Connection *_conn );
+  FileProtocol( KIOConnection *_conn );
 //   virtual ~FileProtocol() { }
   
   virtual void slotGet( const char *_url );
@@ -44,7 +44,7 @@ public:
   virtual void slotData( void *_p, int _len );
   virtual void slotDataEnd();
   
-  Connection* connection() { return ConnectionSignals::m_pConnection; }
+  KIOConnection* connection() { return KIOConnectionSignals::m_pConnection; }
 
   void jobError( int _errid, const char *_txt );
   
@@ -86,10 +86,10 @@ protected:
   FILE* m_fPut;
 };
 
-class FileIOJob : public IOJob
+class FileIOJob : public KIOJobBase
 {
 public:
-  FileIOJob( Connection *_conn, FileProtocol *_File );
+  FileIOJob( KIOConnection *_conn, FileProtocol *_File );
   
   virtual void slotError( int _errid, const char *_txt );
 
