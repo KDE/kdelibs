@@ -26,6 +26,8 @@
 #include <qbitmap.h>
 #include <X11/Xatom.h>
 #include <X11/Xutil.h>
+#undef rect
+#undef WithdrawnState
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>

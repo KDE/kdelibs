@@ -45,7 +45,7 @@ libkdecore_la_SOURCES = libintl.cpp kstddirs.cpp  \
 	kconfigbackend.cpp kapp.cpp kuniqueapp.cpp ksock.cpp\
 	kprocess.cpp kprocctrl.cpp klocale.cpp \
 	fakes.cpp kiconloader.cpp kdebug.cpp \
-	kstdaccel.cpp kwinmodule.cpp kwm.cpp kwin.cpp krootprop.cpp kcharsets.cpp \
+	kstdaccel.cpp kwin.cpp kwinmodule.cpp kwm.cpp krootprop.cpp kcharsets.cpp \
 	kpixmap.cpp kckey.cpp kaccel.cpp kcrash.cpp\
 	kprotocolmanager.cpp kurl.cpp kregexp.cpp \
 	kglobal.cpp kglobalsettings.cpp dmalloc.cpp  \

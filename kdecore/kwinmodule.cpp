@@ -55,8 +55,10 @@ static Atom kwm_win_desktop;
 //new stuff
 static Atom net_client_list;
 static Atom net_client_list_stacking;
+#ifndef KDE_USE_FINAL
 static Atom net_active_window;
 static Atom net_current_desktop;
+#endif
 static Atom net_kde_docking_windows;
 
 
