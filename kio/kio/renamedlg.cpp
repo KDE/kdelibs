@@ -28,6 +28,7 @@
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qlineedit.h>
+#include <qdir.h>
 
 #include <kmessagebox.h>
 #include <kpushbutton.h>
@@ -423,50 +424,60 @@ void RenameDlg::b1Pressed()
 
   done( 1 );
 }
-// Propose button clicked
-void RenameDlg::b8Pressed()
+
+static QString suggestName(const KURL& baseURL, const QString& oldName)
 {
-  int pos;
-
-  /* no name to play with */
-  if ( d->m_pLineEdit->text().isEmpty() )
-    return;
-
-  QString dotSuffix, tmp;
-  QString basename = d->m_pLineEdit->text();
+	kdDebug() << "suggestName " << baseURL << " oldName=" << oldName << endl;
+  QString dotSuffix, suggestedName;
+  QString basename = oldName;
 
   int index = basename.find( '.' );
   if ( index != -1 ) {
     dotSuffix = basename.mid( index );
     basename.truncate( index );
-  } else
-    dotSuffix = QString::null;
-  
-  pos = basename.findRev('_' );
+  }
+
+  int pos = basename.findRev( '_' );
   if(pos != -1 ){
+    QString tmp = basename.mid( pos+1 );
     bool ok;
-    tmp = basename.right( basename.length() - (pos + 1) );
-    int number = tmp.toInt( &ok, 10 );
+    int number = tmp.toInt( &ok );
     if ( !ok ) {// ok there is no number
-      basename.append("_1" );
-      d->m_pLineEdit->setText(basename + dotSuffix );
-      return;
+      suggestedName = basename + "1" + dotSuffix;
     }
     else {
      // yes there's already a number behind the _ so increment it by one
-      QString tmp2 = QString::number ( number + 1 );
-      basename.replace( pos+1, tmp.length() ,tmp2);
-      d->m_pLineEdit->setText( basename + dotSuffix );
-      return;
+      basename.replace( pos+1, tmp.length(), QString::number(number+1) );
+      suggestedName = basename + dotSuffix;
     }
   }
   else // no underscore yet
-  {
-    d->m_pLineEdit->setText( basename + "_1" + dotSuffix );
+    suggestedName = basename + "_1" + dotSuffix ;
+
+  // Check if suggested name already exists
+  bool exists = false;
+  // TODO: network transparency. However, using NetAccess from a modal dialog
+  // could be a problem, no? (given that it uses a modal widget itself....)
+  if ( baseURL.isLocalFile() )
+     exists = QFileInfo( baseURL.path(+1) + suggestedName ).exists();
+
+  if ( !exists )
+    return suggestedName;
+  else // already exists -> recurse
+    return suggestName( baseURL, suggestedName );
+}
+
+// Propose button clicked
+void RenameDlg::b8Pressed()
+{
+  /* no name to play with */
+  if ( d->m_pLineEdit->text().isEmpty() )
     return;
 
-  }
-  return; // we should never return from here jic
+  KURL destDirectory( d->dest );
+  destDirectory.setPath( destDirectory.directory() );
+  d->m_pLineEdit->setText( suggestName( destDirectory, d->m_pLineEdit->text() ) );
+  return;
 }
 
 void RenameDlg::b2Pressed()
