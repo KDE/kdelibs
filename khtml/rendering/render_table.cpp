@@ -1802,7 +1802,6 @@ RenderTableSection::RenderTableSection(DOM::NodeImpl* node)
 {
     // init RenderObject attributes
     setInline(false);   // our object is not Inline
-    nrows = 0;
 }
 
 RenderTableSection::~RenderTableSection()
@@ -1863,8 +1862,6 @@ void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild
 #ifndef NDEBUG
 void RenderTableSection::dump(QTextStream *stream, QString ind) const
 {
-    *stream << " nrows=" << nrows;
-
     RenderContainer::dump(stream,ind);
 }
 #endif
@@ -1876,9 +1873,6 @@ RenderTableRow::RenderTableRow(DOM::NodeImpl* node)
 {
     // init RenderObject attributes
     setInline(false);   // our object is not Inline
-
-    rIndex = -1;
-    ncols = 0;
 }
 
 RenderTableRow::~RenderTableRow()
@@ -1963,9 +1957,6 @@ void RenderTableRow::repaint()
 #ifndef NDEBUG
 void RenderTableRow::dump(QTextStream *stream, QString ind) const
 {
-    *stream << " rIndex = " << rIndex;
-    *stream << " ncols = " << ncols;
-
     RenderContainer::dump(stream,ind);
 }
 #endif
@@ -1998,7 +1989,6 @@ RenderTableCell::RenderTableCell(DOM::NodeImpl* _node)
   _col = -1;
   _row = -1;
   updateFromElement();
-  _id = 0;
   rowHeight = 0;
   m_table = 0;
   rowimpl = 0;
@@ -2192,7 +2182,6 @@ void RenderTableCell::dump(QTextStream *stream, QString ind) const
     *stream << " _col=" << _col;
     *stream << " rSpan=" << rSpan;
     *stream << " cSpan=" << cSpan;
-    *stream << " _id=" << _id;
     *stream << " nWrap=" << nWrap;
 
     RenderFlow::dump(stream,ind);
@@ -2211,7 +2200,6 @@ RenderTableCol::RenderTableCol(DOM::NodeImpl* node)
     updateFromElement();
     _currentCol = 0;
     _startCol = 0;
-    _id = 0;
 }
 
 RenderTableCol::~RenderTableCol()
@@ -2256,7 +2244,6 @@ void RenderTableCol::dump(QTextStream *stream, QString ind) const
 {
     *stream << " _span=" << _span;
     *stream << " _startCol=" << _startCol;
-    *stream << " _id=" << _id;
 
     RenderContainer::dump(stream,ind);
 }
