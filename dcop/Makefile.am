@@ -33,7 +33,7 @@ libDCOP_la_LIBADD = $(LIBSM) $(ICE_RLIB)  $(LIB_QT)
 libDCOP_la_LDFLAGS = -version-info 1:0 $(all_libraries)
 
 include_HEADERS = dcopclient.h dcopobject.h dcopstub.h dcopref.h
-noinst_HEADERS = version.h dcopglobal.h dcopserver.h
+noinst_HEADERS = version.h dcopglobal.h dcopserver.h dcop-doc.h
 
 METASOURCES = AUTO
 
