@@ -204,6 +204,7 @@ public:
 
 
     bool isRoot() const;
+    bool isHR() const;
     // some helper functions...
     virtual bool isRenderBlock() const { return false; }
     virtual bool isRenderInline() const { return false; }
@@ -577,6 +578,7 @@ public:
     virtual bool containsFloat(RenderObject* /*o*/) const { return false; }
     virtual void markAllDescendantsWithFloatsForLayout(RenderObject* /*floatToRemove*/ = 0) {}
 
+    bool flowAroundFloats() const;
     bool usesLineWidth() const;
 
     // positioning of inline children (bidi)

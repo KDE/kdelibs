@@ -122,7 +122,7 @@ public:
     // called from lineWidth, to position the floats added in the last line.
     void positionNewFloats();
     void clearFloats();
-    bool checkClear(RenderObject *child);
+    int getClearDelta(RenderObject *child);
     virtual void markAllDescendantsWithFloatsForLayout(RenderObject* floatToRemove = 0);
 
     virtual bool hasFloats() const { return m_floatingObjects!=0; }

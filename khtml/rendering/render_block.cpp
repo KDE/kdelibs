@@ -659,6 +659,10 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
     // be pushed down below a float.
     int clearOccurred = false;
 
+    // If our last normal flow child was a self-collapsing block that cleared a float,
+    // we track it in this variable.
+    bool selfCollapsingBlockClearedFloat = false;
+
     int oldPosMargin = prevPosMargin;
     int oldNegMargin = prevNegMargin;
 
@@ -825,8 +829,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         // we want to ensure that we don't artificially increase our height because of
         // a positioned or floating child.
         int fb = floatBottom();
-        if ( (child->style()->hidesOverflow() || child->style()->flowAroundFloats()) &&
-             style()->width().isFixed() && child->minWidth() > lineWidth( m_height ) ) {
+        if ( child->flowAroundFloats() && style()->width().isFixed() && child->minWidth() > lineWidth( m_height ) ) {
             if (fb > m_height) {
                 m_height = fb;
                 shouldCollapseChild = false;
@@ -941,15 +944,13 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
                 if (prevPosMargin-prevNegMargin) {
                     bottomChildQuirk = child->isBottomMarginQuirk();
                 }
+                selfCollapsingBlockClearedFloat = false;
             }
 
             child->setPos(child->xPos(), ypos);
             if (ypos != yPosEstimate) {
-                if (child->style()->htmlHacks() && child->style()->flowAroundFloats() &&
-                    child->style()->width().isPercent())
-                    // The child's width can be a percentage width and if it has the
-                    // quirky flowAroundFloats
-                    // property set, when the child shifts to clear an item, its width can
+                if (child->style()->width().isPercent() && child->usesLineWidth())
+                    // If the child shifts to clear an item, its width can
                     // change (because it has more available line width).
                     // So go ahead an mark the item as dirty.
                     child->setChildNeedsLayout(true);
@@ -961,14 +962,29 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
                 child->layoutIfNeeded();
             }
         }
+        else
+            selfCollapsingBlockClearedFloat = false;
 
         // Now check for clear.
-        if (checkClear(child)) {
+        int heightIncrease = getClearDelta(child);
+        if (heightIncrease) {
             // The child needs to be lowered.  Move the child so that it just clears the float.
-            child->setPos(child->xPos(), m_height);
+            child->setPos(child->xPos(), child->yPos() + heightIncrease);
             clearOccurred = true;
 
-            if (topMarginContributor) {
+            // Increase our height by the amount we had to clear.
+            if (!child->isSelfCollapsingBlock())
+                m_height += heightIncrease;
+            else {
+                // For self-collapsing blocks that clear, they may end up collapsing
+                // into the bottom of the parent block.  We simulate this behavior by
+                // setting our positive margin value to compensate for the clear.
+                prevPosMargin = kMax(0, child->yPos() - m_height);
+                prevNegMargin = 0;
+                selfCollapsingBlockClearedFloat = true;
+            }
+            
+            if (topMarginContributor && canCollapseTopWithChildren) {
                 // We can no longer collapse with the top of the block since a clear
                 // occurred.  The empty blocks collapse into the cleared block.
                 // XXX This isn't quite correct.  Need clarification for what to do
@@ -976,18 +992,13 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
                 // margins involved. -dwh
                 m_maxTopPosMargin = oldPosMargin;
                 m_maxTopNegMargin = oldNegMargin;
+                topMarginContributor = false;
             }
 
             // If our value of clear caused us to be repositioned vertically to be
             // underneath a float, we might have to do another layout to take into account
             // the extra space we now have available.
-            if (child->style()->htmlHacks() && child->style()->flowAroundFloats() &&
-                child->style()->width().isPercent())
-                // The child's width can be a percentage width and if it has the
-                // quirky flowAroundFloats
-                // property set, when the child shifts to clear an item, its width can
-                // change (because it has more available line width).
-                // So go ahead an mark the item as dirty.
+            if (!child->style()->width().isFixed() && child->usesLineWidth())
                 child->setChildNeedsLayout(true);
             if (child->hasFloats())
                 child->markAllDescendantsWithFloatsForLayout();
@@ -1005,11 +1016,14 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         if (style()->direction() == LTR) {
             chPos += child->marginLeft();
             // html blocks flow around floats
-            if (child->style()->hidesOverflow() ||
-                 (( style()->htmlHacks() || child->isTable() ) && child->style()->flowAroundFloats()))
+            if (child->flowAroundFloats())
             {
                 int leftOff = leftOffset(m_height);
-                if (leftOff != xPos) {
+                if (style()->textAlign() != KHTML_CENTER && !child->style()->marginLeft().isVariable()) {
+                    if (child->marginLeft() < 0)
+                        leftOff += child->marginLeft();
+                    chPos = kMax(chPos, leftOff); // Let the float sit in the child's margin if it can fit.
+                } else if (leftOff != xPos) {
                     // The object is shifting right. The object might be centered, so we need to
                     // recalculate our horizontal margins. Note that the containing block content
                     // width computation will take into account the delta between |leftOff| and |xPos|
@@ -1019,14 +1033,30 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
                     int cw = lineWidth( child->yPos() );
                     static_cast<RenderBox*>(child)->calcHorizontalMargins
                         ( child->style()->marginLeft(), child->style()->marginRight(), cw);
-                    chPos = leftOff + child->marginLeft();
+                    
                 }
             }
         } else {
             chPos -= child->width() + child->marginRight();
-            if (child->style()->hidesOverflow() ||
-                ((style()->htmlHacks() || child->isTable()) && child->style()->flowAroundFloats()))
-                chPos -= leftOffset(m_height);
+            if (child->flowAroundFloats()) {
+                int rightOff = rightOffset(m_height);
+                if (style()->textAlign() != KHTML_CENTER && !child->style()->marginRight().isVariable()) {
+                    if (child->marginRight() < 0)
+                        rightOff -= child->marginRight();
+                    chPos = kMin(chPos, rightOff - child->width()); // Let the float sit in the child's margin if it can fit.
+                } else if (rightOff != xPos) {
+                    // The object is shifting left. The object might be centered, so we need to
+                    // recalculate our horizontal margins. Note that the containing block content
+                    // width computation will take into account the delta between |rightOff| and |xPos|
+                    // so that we can just pass the content width in directly to the |calcHorizontalMargins|
+                    // function.
+                    // -dwh
+                    int cw = lineWidth( child->yPos() );
+                    static_cast<RenderBox*>(child)->calcHorizontalMargins
+                        ( child->style()->marginLeft(), child->style()->marginRight(), cw);
+                    chPos = rightOff - child->marginRight() - child->width();
+                }
+            }
         }
 
         child->setPos(chPos, child->yPos());
@@ -1123,6 +1153,11 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
     // |toAdd|).
     bool canCollapseBottomWithChildren = canCollapseWithChildren && (toAdd == 0) &&
         (style()->height().isVariable() && style()->height().value() == 0);
+
+    // If our last flow was a self-collapsing block that cleared a float, then we don't
+    // collapse it with the bottom of the block.
+    if (selfCollapsingBlockClearedFloat)
+        canCollapseBottomWithChildren = false;
 
     // If we can't collapse with children then go ahead and add in the bottom margins.
     if (!canCollapseBottomWithChildren
@@ -1615,7 +1650,8 @@ unsigned short
 RenderBlock::lineWidth(int y) const
 {
     //kdDebug( 6040 ) << "lineWidth(" << y << ")=" << rightOffset(y) - leftOffset(y) << endl;
-    return rightOffset(y) - leftOffset(y);
+    int result = rightOffset(y) - leftOffset(y);
+    return (result < 0) ? 0 : result;
 }
 
 int
@@ -1789,21 +1825,17 @@ RenderBlock::clearFloats()
     if (m_floatingObjects)
         m_floatingObjects->clear();
 
-    if (isFloating() || isPositioned() || isInlineBlockOrInlineTable()) return;
+    // we are done if the element defines a new block formatting context
+    if (flowAroundFloats() || isRoot() || isCanvas() || isFloatingOrPositioned() || isTableCell()) return;
 
     RenderObject *prev = previousSibling();
 
     // find the element to copy the floats from
     // pass non-flows
-    // pass fAF's unless they contain overhanging stuff
+    // pass fAF's
     bool parentHasFloats = false;
     while (prev) {
-        if (!prev->isRenderBlock() || prev->isFloating() || prev->isPositioned() ||
-            prev->style()->hidesOverflow() ||
-            (prev->style()->flowAroundFloats() &&
-             // A <table> or <ul> can have a height of 0, so its ypos may be the same
-             // as m_y.  That's why we have a <= and not a < here. -dwh
-             (static_cast<RenderBlock *>(prev)->floatBottom()+prev->yPos() <= m_y ))) {
+        if (!prev->isRenderBlock() || prev->isFloatingOrPositioned() || prev->flowAroundFloats()) {
             if ( prev->isFloating() && parent()->isRenderBlock() ) {
                 parentHasFloats = true;
             }
@@ -1832,9 +1864,6 @@ RenderBlock::clearFloats()
     if(!prev->isRenderBlock()) return;
     RenderBlock * flow = static_cast<RenderBlock *>(prev);
     if(!flow->m_floatingObjects) return;
-    if (style()->hidesOverflow() || (( style()->htmlHacks() || isTable() ) && style()->flowAroundFloats()))
-        return; // these elements don't allow floats from previous blocks to intrude into their space.
-
     if(flow->floatBottom() > offset)
         addOverHangingFloats( flow, xoffset, offset );
 }
@@ -1928,19 +1957,19 @@ void RenderBlock::markAllDescendantsWithFloatsForLayout(RenderObject* floatToRem
         for (RenderObject* child = firstChild(); child; child = child->nextSibling()) {
             if (isBlockFlow() && !child->isFloatingOrPositioned() &&
                 (floatToRemove ? child->containsFloat(floatToRemove) : child->hasFloats()))
-                child->markAllDescendantsWithFloatsForLayout();
+                child->markAllDescendantsWithFloatsForLayout(floatToRemove);
         }
     }
 }
 
-bool RenderBlock::checkClear(RenderObject *child)
+int RenderBlock::getClearDelta(RenderObject *child)
 {
-    //kdDebug( 6040 ) << "checkClear on child " << child << " oldheight=" << m_height << endl;
+    //kdDebug( 6040 ) << "getClearDelta on child " << child << " oldheight=" << m_height << endl;
     int bottom = 0;
     switch(child->style()->clear())
     {
         case CNONE:
-            return false;
+            return 0;
         case CLEFT:
             bottom = leftBottom();
             break;
@@ -1952,11 +1981,7 @@ bool RenderBlock::checkClear(RenderObject *child)
             break;
     }
 
-    if (m_height < bottom) {
-        m_height = bottom;
-        return true;
-    }
-    return false;
+    return kMax(0, bottom-(child->yPos()));
 }
 
 bool RenderBlock::isPointInScrollbar(int _x, int _y, int _tx, int _ty)
@@ -2128,9 +2153,9 @@ RenderObject* InlineMinMaxIterator::next()
 
         if (!result) break;
 
-        if (result->isText() || result->isBR() ||
+        if (!result->isPositioned() && (result->isText() || result->isBR() ||
             result->isFloating() || result->isReplaced() ||
-            result->isInlineFlow())
+            result->isInlineFlow()))
             break;
 
         current = result;
@@ -2203,6 +2228,7 @@ void RenderBlock::calcInlineMinMaxWidth()
 
     InlineMinMaxIterator childIterator(this, this);
     bool addedTextIndent = false; // Only gets added in once.
+    RenderObject* prevFloat = 0;
     while (RenderObject* child = childIterator.next())
     {
         normal = child->style()->whiteSpace() == NORMAL;
@@ -2284,6 +2310,18 @@ void RenderBlock::calcInlineMinMaxWidth()
                 if (normal || oldnormal) {
                     if(m_minWidth < inlineMin) m_minWidth = inlineMin;
                     inlineMin = 0;
+                }
+
+                // Check our "clear" setting.  If we're supposed to clear the previous float, then
+                // go ahead and terminate maxwidth as well.
+                if (child->isFloating()) {
+                    if (prevFloat &&
+                        ((prevFloat->style()->floating() == FLEFT && (child->style()->clear() & CLEFT)) ||
+                         (prevFloat->style()->floating() == FRIGHT && (child->style()->clear() & CRIGHT)))) {
+                        m_maxWidth = kMax(inlineMax, (int)m_maxWidth);
+                        inlineMax = 0;
+                    }
+                    prevFloat = child;
                 }
 
                 // Add in text-indent.  This is added in only once.
@@ -2423,12 +2461,21 @@ void RenderBlock::calcBlockMinMaxWidth()
     bool nowrap = style()->whiteSpace() == NOWRAP;
 
     RenderObject *child = firstChild();
+    RenderObject* prevFloat = 0;
+    short int floatWidths = 0;
     while(child != 0)
     {
         // positioned children don't affect the minmaxwidth
         if (child->isPositioned()) {
             child = child->nextSibling();
             continue;
+        }
+
+        if (prevFloat && (!child->isFloating() || 
+                          (prevFloat->style()->floating() == FLEFT && (child->style()->clear() & CLEFT)) ||
+                          (prevFloat->style()->floating() == FRIGHT && (child->style()->clear() & CRIGHT)))) {
+            m_maxWidth = kMax(floatWidths, m_maxWidth);
+            floatWidths = 0;
         }
 
         Length ml = child->style()->marginLeft();
@@ -2468,6 +2515,11 @@ void RenderBlock::calcBlockMinMaxWidth()
         w = child->maxWidth() + margin;
 
         if(m_maxWidth < w) m_maxWidth = w;
+        
+        if (child->isFloating())
+            floatWidths += w;
+        else if (m_maxWidth < w)
+            m_maxWidth = w;
 
         // A very specific WinIE quirk.
         // Example:
@@ -2490,9 +2542,11 @@ void RenderBlock::calcBlockMinMaxWidth()
             if (!cb->isTableCell())
                 m_maxWidth = BLOCK_MAX_WIDTH;
         }
-
+        if (child->isFloating())
+            prevFloat = child;
         child = child->nextSibling();
     }
+    m_maxWidth = kMax(floatWidths, m_maxWidth);
 }
 
 void RenderBlock::close()

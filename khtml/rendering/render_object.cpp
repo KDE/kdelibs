@@ -230,6 +230,11 @@ bool RenderObject::isRoot() const
         element()->getDocument()->documentElement() == element();
 }
 
+bool RenderObject::isHR() const
+{
+    return element() && element()->id() == ID_HR;
+}
+
 bool RenderObject::isHTMLMarquee() const
 {
     return element() && element()->renderer() == this && element()->id() == ID_MARQUEE;
@@ -1839,6 +1844,11 @@ void RenderObject::collectBorders(QValueList<CollapsedBorderValue>& borderStyles
         curr->collectBorders(borderStyles);
 }
 
+bool RenderObject::flowAroundFloats() const
+{
+    return isReplaced() || hasOverflowClip() || style()->flowAroundFloats();
+}
+
 bool RenderObject::usesLineWidth() const
 {
     // 1. All auto-width objects that avoid floats should always use lineWidth
@@ -1846,7 +1856,7 @@ bool RenderObject::usesLineWidth() const
     // (a) tables use contentWidth
     // (b) <hr>s use lineWidth
     // (c) all other objects use lineWidth in quirks mode and contentWidth in strict mode.
-    return (style()->flowAroundFloats() && (style()->width().isVariable() ||/* isHR() ||*/ (style()->htmlHacks() && !isTable())));
+    return (flowAroundFloats() && (style()->width().isVariable() || isHR() || (style()->htmlHacks() && !isTable())));
 }
 
 #undef RED_LUMINOSITY
