@@ -131,10 +131,13 @@ bool KMultiPart::openURL( const KURL &url )
     m_bParsingHeader = true; // we expect a header to come first
     m_bGotAnyHeader = false;
 
-    //KParts::URLArgs args = m_ext->urlArgs();
+    KParts::URLArgs args = m_extension->urlArgs();
     //m_mimeType = args.serviceType;
 
-    m_job = KIO::get( url, false /* TODO pass reload flag */, false );
+    // Hmm, args.reload is set to true when reloading, but this doesn't seem to be enough...
+    // I get "HOLD: Reusing held slave for <url>", and the old data
+
+    m_job = KIO::get( url, args.reload, false );
 
     emit started( m_job );
 
@@ -259,7 +262,8 @@ void KMultiPart::setPart( const QString& mimeType )
         KMessageBox::error( widget(), i18n("No handler found for %1!").arg(m_mimeType) );
         return;
     }
-    setXMLFile( m_part->xmlFile() );
+    // By making the part a child XMLGUIClient of ours, we get its GUI merged in.
+    insertChildClient( m_part );
     m_part->widget()->show();
 
     connect( m_part, SIGNAL( completed() ),
@@ -319,6 +323,8 @@ void KMultiPart::setPart( const QString& mimeType )
     }
 
     m_isHTMLPart = ( mimeType == "text/html" );
+    // Load the part's plugins too.
+    loadPlugins( this, m_part, m_part->instance() );
     // Get the part's GUI to appear
     guiFactory->addClient( this );
 }
@@ -335,6 +341,12 @@ void KMultiPart::startOfData()
         m_mimeType = m_nextMimeType;
         setPart( m_mimeType );
     }
+    Q_ASSERT( m_part );
+    // Pass URLArgs (e.g. reload)
+    KParts::BrowserExtension* childExtension = KParts::BrowserExtension::childObject( m_part );
+    if ( childExtension )
+        childExtension->setURLArgs( m_extension->urlArgs() );
+
     m_nextMimeType = QString::null;
     delete m_tempFile;
     m_tempFile = 0L;
@@ -465,35 +477,5 @@ void KMultiPartBrowserExtension::reparseConfiguration()
     m_imgPart->doc()->setAutoloadImages( true );
 }
 #endif
-
-KAction * KMultiPart::action( const QDomElement &element ) const
-{
-    return m_part ? m_part->action( element ) : KParts::ReadOnlyPart::action( element );
-}
-
-KActionCollection* KMultiPart::actionCollection() const
-{
-    return m_part ? m_part->actionCollection() : KParts::ReadOnlyPart::actionCollection();
-}
-
-KInstance * KMultiPart::instance() const
-{
-    return m_part ? m_part->instance() : KParts::ReadOnlyPart::instance();
-}
-
-QDomDocument KMultiPart::domDocument() const
-{
-    return m_part ? m_part->domDocument() : KParts::ReadOnlyPart::domDocument();
-}
-
-QString KMultiPart::xmlFile() const
-{
-    return m_part ? m_part->xmlFile() : KParts::ReadOnlyPart::xmlFile();
-}
-
-QString KMultiPart::localXMLFile() const
-{
-    return m_part ? m_part->localXMLFile() : KParts::ReadOnlyPart::localXMLFile();
-}
 
 #include "kmultipart.moc"
