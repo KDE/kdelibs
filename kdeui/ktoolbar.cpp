@@ -1582,13 +1582,15 @@ void KToolBar::loadState( const QDomElement &element )
     QString attrOffset = element.attribute( "offset" ).lower();
     QString attrNewLine = element.attribute( "newline" ).lower();
 
-    if ( !attrFullWidth.isEmpty() && attrFullWidth == "true" )
-	setFullSize( TRUE );
-    else
-	setFullSize( FALSE );
+    if ( !attrFullWidth.isEmpty() ) {
+	if ( attrFullWidth == "true" )
+	    setFullSize( TRUE );
+	else
+	    setFullSize( FALSE );
+    }
 
     QMainWindow::ToolBarDock dock = QMainWindow::Top;
-    int index = 0, offset = -1;
+    int index = 0xffffff /*append by default*/, offset = -1;
     bool nl = FALSE;
 
     if ( !attrPosition.isEmpty() ) {
@@ -1751,7 +1753,7 @@ KPopupMenu *KToolBar::contextMenu()
       avSizes = theme->querySizes( KIcon::Toolbar);
 
   d->iconSizesCount = avSizes.count();
-  
+
   QValueList<int>::Iterator it;
   for (it=avSizes.begin(); it!=avSizes.end(); it++) {
       QString text;
@@ -1781,7 +1783,7 @@ void KToolBar::slotContextAboutToShow()
 {
   for(int i = CONTEXT_ICONS; i <= CONTEXT_TEXTUNDER; ++i)
     context->setItemChecked(i, false);
-  
+
   kdDebug() << (int)d->m_iconText << " hmm" << endl;
   switch( d->m_iconText )
   {
@@ -1799,16 +1801,16 @@ void KToolBar::slotContextAboutToShow()
 	    context->setItemChecked(CONTEXT_TEXTUNDER, true);
 	    break;
   }
-  
+
   int i = 0;
   for (; i < d->iconSizesCount; i++ )
       context->setItemChecked( CONTEXT_ICONSIZES + i, false );
-  
+
   context->setItemChecked( CONTEXT_ICONSIZES + d->m_iconSize, true );
-  
+
   for ( i = CONTEXT_TOP; i <= CONTEXT_FLAT; ++i )
       context->setItemChecked( i, false );
-  
+
   switch ( barPos() )
   {
   case KToolBar::Flat:
@@ -1825,10 +1827,10 @@ void KToolBar::slotContextAboutToShow()
       break;
   case KToolBar::Floating:
       context->setItemChecked( CONTEXT_FLOAT, true );
-      break;      
+      break;
   case KToolBar::Top:
       context->setItemChecked( CONTEXT_TOP, true );
-      break;      
+      break;
   default: break;
   }
 }
