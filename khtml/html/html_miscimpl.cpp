@@ -383,6 +383,29 @@ NodeImpl *HTMLCollectionImpl::namedItem( const DOMString &name ) const
 
 NodeImpl *HTMLCollectionImpl::nextNamedItem( const DOMString &name ) const
 {
+    // nextNamedItemInternal can return an item that has both id=<name> and name=<name>
+    // Here, we have to filter out such cases.
+    NodeImpl *impl = nextNamedItemInternal( name );
+    if (!idsDone) // looking for id=<name> -> no filtering
+        return impl;
+    // looking for name=<name> -> filter out if id=<name>
+    bool ok = false;
+    while (impl && !ok)
+    {
+        if(impl->nodeType() == Node::ELEMENT_NODE)
+        {
+            HTMLElementImpl *e = static_cast<HTMLElementImpl *>(impl);
+            ok = (e->getAttribute(ATTR_ID) != name);
+            if (!ok)
+                impl = nextNamedItemInternal( name );
+        } else // can't happen
+            ok = true;
+    }
+    return impl;
+}
+
+NodeImpl *HTMLCollectionImpl::nextNamedItemInternal( const DOMString &name ) const
+{
     //kdDebug() << "\nHTMLCollectionImpl::nextNamedItem starting at " << currentItem << endl;
     // Go to next item first (to avoid returning the same)
     currentItem = nextItem();
@@ -535,7 +558,7 @@ NodeImpl * HTMLFormCollectionImpl::nextItem() const
     return getItem(0 /*base->firstChild() unused*/, ++currentPos, dummy);
 }
 
-NodeImpl * HTMLFormCollectionImpl::nextNamedItem( const DOMString &name ) const
+NodeImpl * HTMLFormCollectionImpl::nextNamedItemInternal( const DOMString &name ) const
 {
     NodeImpl *retval = getNamedFormItem( idsDone ? ATTR_NAME : ATTR_ID, name, ++currentPos );
     if ( retval )
