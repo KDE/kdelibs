@@ -18,7 +18,16 @@
 #include <qpixmap.h>
 #include <qiconset.h>
 
+// Grmbl, X headers.....
+#ifdef Status
+#define KIconLoaderXStatus Status
+#undef Status
+#endif
 #include <qmovie.h>
+#ifdef KIconLoaderXStatus
+#define Status int
+#undef KIconLoaderXStatus
+#endif
 
 #include <kglobal.h>
 #include <kinstance.h>
