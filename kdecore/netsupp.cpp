@@ -180,7 +180,7 @@ make_unix(const char *name, const char *serv)
 // AF_INET6 not defined, we say there is no IPv6 stack
 // otherwise, we try to create a socket.
 // returns: 1 for IPv6 stack available, 2 for not available
-#if KDE_IPV6_LOOKUP_MODE == 1
+#if defined(KDE_IPV6_LOOKUP_MODE) && KDE_IPV6_LOOKUP_MODE == 1
 static int check_ipv6_stack()
 {
 # ifndef AF_INET6
@@ -232,7 +232,7 @@ int kde_getaddrinfo(const char *name, const char *service,
   struct kde_addrinfo* res;
   struct addrinfo* p;
   int err = EAI_SERVICE;
-#if KDE_IPV6_LOOKUP_MODE == 1
+#if defined(KDE_IPV6_LOOKUP_MODE) && KDE_IPV6_LOOKUP_MODE == 1
   // mode 1: do a check on whether we have an IPv6 stack
   static int ipv6_stack = 0;	// 0: unknown, 1: yes, 2: no
 #endif
@@ -262,7 +262,7 @@ int kde_getaddrinfo(const char *name, const char *service,
      goto do_unix;
   }
   
-#if KDE_IPV6_LOOKUP_MODE != 0
+#if defined(KDE_IPV6_LOOKUP_MODE) && KDE_IPV6_LOOKUP_MODE != 0
 # if KDE_IPV6_LOOKUP_MODE == 1
   // mode 1: do a check on whether we have an IPv6 stack
   if (ipv6_stack == 0)
@@ -293,7 +293,7 @@ int kde_getaddrinfo(const char *name, const char *service,
   else
 # endif
 #endif
-#if KDE_IPV6_LOOKUP_MODE != 2
+#if defined(KDE_IPV6_LOOKUP_MODE) && KDE_IPV6_LOOKUP_MODE != 2
       // do the IPV6 resolution
       err = getaddrinfo(name, service, hint, &res->data);
 #endif
