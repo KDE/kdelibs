@@ -52,5 +52,5 @@ kdeprint_LIBS = -lkdeui -lkdecore -lqt
 libkmid_FILES = *.h
 libkmid_LIBS = -lqt
 
-interfaces_FILES = *.h
+interfaces_FILES = */*.h
 interfaces_LIBS = -lkparts -l kdeui -lqt
