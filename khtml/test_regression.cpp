@@ -765,7 +765,7 @@ QImage RegressionTest::renderToImage()
     int eh = m_part->view()->contentsHeight();
 
     if (ew * eh > 4000 * 4000) // don't DoS us
-        return QImage(); 
+        return QImage();
 
 #if 1
 
@@ -1162,8 +1162,12 @@ bool RegressionTest::checkPaintdump(const QString &filename)
     QImage baseline;
     baseline.load( absFilename, "PNG");
     QImage output = renderToImage();
-    if ( !imageEqual( baseline, output ) )
-        output.save(m_baseDir + "/output/" + againstFilename, "PNG", 60);
+    if ( !imageEqual( baseline, output ) ) {
+        QString outputFilename = m_baseDir + "/output/" + againstFilename;
+        QFileInfo info(outputFilename);
+        createMissingDirs(info.dirPath());
+        output.save(outputFilename, "PNG", 60);
+    }
     else {
         ::unlink( QFile::encodeName( m_baseDir + "/output/" + againstFilename ) );
         result = true;
