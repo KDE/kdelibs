@@ -135,6 +135,15 @@ void Addressee::setNameFromString( const QString &str )
   prefixes += "von";
   prefixes += "de";
 
+  KConfig config( "kabcrc" );
+  config.setGroup( "General" );
+  titles += config.readListEntry( "Prefixes" );
+  titles.remove( "" );
+  prefixes += config.readListEntry( "Inclusions" );
+  prefixes.remove( "" );
+  suffixes += config.readListEntry( "Suffixes" );
+  suffixes.remove( "" );
+
   // clear all name parts
   setPrefix( "" );
   setGivenName( "" );
