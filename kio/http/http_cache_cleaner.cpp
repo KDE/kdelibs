@@ -205,7 +205,7 @@ int main(int argc, char **argv)
       if (!name.isEmpty() && (name != appName))
       {
          fprintf(stderr, "%s: Already running! (%s)\n", appName, name.data());
-         exit(0);
+         return 0;
       }
    }
 
@@ -222,7 +222,7 @@ int main(int argc, char **argv)
    if (!cacheDir.exists())
    {
       fprintf(stderr, "%s: '%s' does not exist.\n", appName, strCacheDir.ascii());
-      exit(0);
+      return 0;
    }
    
    QStringList dirs = cacheDir.entryList( );
@@ -260,6 +260,7 @@ int main(int argc, char **argv)
       }
    }
    fprintf(stderr, "%s: Cache size = %d kB.\n", appName, totalSize);
+   return 0;
 }
 
 
