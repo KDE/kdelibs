@@ -66,7 +66,7 @@ public:
 
     
 private:
-static char *FM_patches_directory;
+static const char *FM_patches_directory;
 static int delete_FM_patches_directory;
 public:
 static void setFMPatchesDirectory(const char *dir);

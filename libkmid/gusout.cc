@@ -366,8 +366,9 @@ void gusOut::setGUSPatchesDirectory(const char *dir)
 {
     if ((dir==NULL)||(dir[0]==0)) return;
     if (delete_GUS_patches_directory) delete GUS_patches_directory;
-    GUS_patches_directory=new char[strlen(dir)+1];
-    strcpy(GUS_patches_directory,dir);
+    char *GUS_patches_directory2=new char[strlen(dir)+1];
+    strcpy(GUS_patches_directory2,dir);
+    GUS_patches_directory = GUS_patches_directory2;
     delete_GUS_patches_directory=1;
 }
 
@@ -695,7 +696,7 @@ void gusOut::getPatchesLoadingOrder(int *patchesused,int *patchesordered)
 }
 
 //char *gusOut::GUS_patches_directory="/mnt/dosc/gravis/patches";
-char *gusOut::GUS_patches_directory="/dos/ultrasnd/midi";
+const char *gusOut::GUS_patches_directory="/dos/ultrasnd/midi";
 
 int gusOut::delete_GUS_patches_directory = 0;
 /* No, this doesn't delete any file :-) it's just for internal use */

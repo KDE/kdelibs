@@ -366,8 +366,9 @@ void fmOut::setFMPatchesDirectory(const char *dir)
 {
     if ((dir==NULL)||(dir[0]==0)) return;
     if (delete_FM_patches_directory) delete FM_patches_directory;
-    FM_patches_directory=new char[strlen(dir)+1];
-    strcpy(FM_patches_directory,dir);
+    char *FM_patches_directory2=new char[strlen(dir)+1];
+    strcpy(FM_patches_directory2,dir);
+    FM_patches_directory = FM_patches_directory2;
     delete_FM_patches_directory=1;
 }
 
@@ -384,5 +385,5 @@ void fmOut::setVolumePercentage    ( int i )
 }
 
 
-char *fmOut::FM_patches_directory="/etc";
+const char *fmOut::FM_patches_directory="/etc";
 int fmOut::delete_FM_patches_directory = 0;

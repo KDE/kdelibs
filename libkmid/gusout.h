@@ -71,7 +71,7 @@ public:
     void setPatchesToUse(int *patchesused);
 
 private:
-static char *GUS_patches_directory;
+static const char *GUS_patches_directory;
 static int delete_GUS_patches_directory;
 public:
 static void setGUSPatchesDirectory(const char *dir);
