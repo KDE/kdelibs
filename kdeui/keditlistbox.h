@@ -103,6 +103,17 @@ public:
 		   const char *name = 0, bool checkAtEntering=false,
 		   int buttons = All );
 
+      /**
+       * Another constructor, which allows to use a custom editing widget
+       * instead of the standard KLineEdit widget. E.g. you can use a 
+       * @ref KURLRequester or a @ref KComboBox as input widget. The custom
+       * editor must consist of a lineedit and optionally another widget that
+       * is used as representation. A KComboBox or a KURLRequester have a
+       * KLineEdit as child-widget for example, so the KComboBox is used as
+       * the representation widget.
+       *
+       * @see KURLRequester::customEditor()
+       */
       KEditListBox( const QString& title,
                     const CustomEditor &customEditor,
                     QWidget *parent = 0, const char *name = 0,
