@@ -115,6 +115,8 @@ public:
      * @param eff Lets you choose what kind of blending you like.
      * @param anti_dir Blend in the opposite direction (makes no much sense
      *                  with concentric blending effects).
+     * @param ncols The number of colors to dither the pixmap to. Only
+     *                  used for 8 bpp pixmaps.
      * @return Returns the @ref pixmap(), provided for convenience.
      */
     static KPixmap& blend(KPixmap& pixmap, float initial_intensity,
@@ -127,6 +129,8 @@ public:
      * @param pixmap The pixmap to process.
      * @param lite The hash faces the indicated lighting (cardinal poles)
      * @param spacing How many unmodified pixels inbetween hashes.
+     * @param ncols The number of colors to dither the pixmap to.
+     * Only used for 8 bpp pixmaps.
      * @return Returns The @ref pixmap(), provided for convenience.
      */
     static KPixmap& hash(KPixmap& pixmap, Lighting lite=NorthLite,
@@ -137,28 +141,26 @@ public:
      *
      * The given pixmap is "flattened"
      * between color a to color b.
+     * Doesn't change the original pixmap.
      *
      * @param pixmap The pixmap to process.
+     * @param size The size of the returned pixmap. If @p size is larger than
+     * the original, the resulting pixmap will be tiled.
      * @param ca Color a.
      * @param cb Color b.
      * @param ncols The number of colors to use. The image will be
      * dithered to this depth. Pass zero to prevent dithering.
-     * @return The @ref pixmap(), provided for convenience.
+     * @return The resulting pixmap.
      */
     static KPixmap pattern(const KPixmap& pixmap, QSize size,
                    const QColor &ca, const QColor &cb, int ncols=8);
 
     /**
-     * Recolors a pixmap.
-     *
-     * The most dark color will become color a,
-     * the most bright one color b, and in between.
+     * Fades a pixmap to a certain color.
      *
      * @param pixmap The pixmap to process.
-     * @param ca Color a.
-     * @param cb Color b.
-     * @param ncols The number of colors to use. Pass zero to prevent
-     * dithering.
+     * @param val The strength of the effect. 0 <= val <= 1.
+     * @param color The color to blend to.
      * @return Returns the @ref pixmap(), provided for convenience.
      */
     static KPixmap& fade(KPixmap& pixmap, double val, const QColor &color);

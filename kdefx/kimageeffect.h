@@ -43,7 +43,6 @@ class QColor;
  * just call the static methods. They are encapsulated here merely to provide
  * a common namespace.
  */
-
 class KImageEffect
 {
 public:
@@ -79,7 +78,7 @@ public:
 
     /**
      * Create an unbalanced gradient.
-
+     *
      * An unbalanced gradient is a gradient where the transition from
      * color a to color b is not linear, but in this case, exponential.
      *
@@ -89,7 +88,7 @@ public:
      * @param type The type of gradient.
      * @param xfactor The x decay length. Use a value between -200 and 200.
      * @param yfactor The y decay length.
-     * @param ncols The number of colors. See KPixmapEffect:gradient.
+     * @param ncols The number of colors. See @ref KImageEffect:gradient.
      */
     static QImage unbalancedGradient(const QSize &size, const QColor &ca,
 	    const QColor &cb, GradientType type, int xfactor = 100,
@@ -131,7 +130,7 @@ public:
      */
     static QImage& blend(QImage& src, QImage& dst, float opacity);
 
-     /**
+    /**
      * Blend the provided image into a background of the indicated color.
      *
      * @param initial_intensity this parameter takes values from -1 to 1:
@@ -196,6 +195,7 @@ public:
      * where the clipped rectangle begins.
      */
     static bool blend(int &x, int &y, const QImage & upper, const QImage & lower, QImage & output);
+
     /**
      * Blend an image into another one, using alpha in the expected way and
      * over coordinates @p x and @p y with respect to the lower image.
@@ -222,11 +222,11 @@ public:
      * The number of colors will not be changed.
      *
      * @param image The QImage to process.
-     * @param val The strength of the effect. 0 <= val <= 1.
+     * @param val   The strength of the effect. 0 <= val <= 1.
      * @param color The background color.
      * @return Returns the @ref image(), provided for convenience.
      */
-    static QImage& fade(QImage &img, float val, const QColor &color);
+    static QImage& fade(QImage &image, float val, const QColor &color);
 
 
     /**
@@ -236,6 +236,8 @@ public:
      * @param image A QImage to process.
      * @param ca Color a
      * @param cb Color b
+     * @param ncols The number of colors to dither the image to.
+     * Pass 0 to prevent dithering.
      */
     static QImage& flatten(QImage &image, const QColor &ca,
            const QColor &cb, int ncols=0);
@@ -319,7 +321,7 @@ public:
      * @param size The size of the palette
      * @return Returns the @ref image(), provided for convenience.
      */
-    static QImage& dither(QImage &img, const QColor *palette, int size);
+    static QImage& dither(QImage &image, const QColor *palette, int size);
 
     /**
      * Calculate the image for a selected image, for instance a selected icon
@@ -534,9 +536,9 @@ public:
       * Modifies the pixels along a sine wave.
       *
       * @author Daniel M. Duley (mosfet)
-      * @param src The QImage to process.
-      * @param amplitude The amplitude of the sine wave.
-      * @param wavelength The frequency of the sine wave.
+      * @param src        The QImage to process.
+      * @param amplitude  The amplitude of the sine wave.
+      * @param frequency  The frequency of the sine wave.
       * @return The new image. The original is not changed.
       */
      static QImage wave(QImage &src, double amplitude=25.0, double frequency=150.0,
