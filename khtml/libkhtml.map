@@ -1,6 +1,11 @@
 {
   local: 
   extern "C++" {
+    kjs_html_init;
+    getTagName*;
+    getAttrName*;
+    getValueName*;
+    getPropertyName*;
     DOM::tagPriority;
     DOM::*Impl::*;
     KJS::*;
