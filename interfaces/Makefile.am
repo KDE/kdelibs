@@ -2,8 +2,6 @@
 
 INCLUDES = $(all_includes) -I$(top_srcdir)
 
-KDE_CXXFLAGS = -frtti
-
 lib_LTLIBRARIES = libktexteditor.la
 
 libktexteditor_la_SOURCES = ktexteditor.cpp
