@@ -1,6 +1,6 @@
 /* vi: ts=8 sts=4 sw=4
  *
- * $Id: $
+ * $Id$
  *
  * This file is part of the KDE project, module kfile.
  * Copyright (C) 2000 Geert Jansen <jansen@kde.org>
@@ -144,6 +144,7 @@ KIconDialog::KIconDialog(KIconLoader *loader, QWidget *parent,
 void KIconDialog::init()
 {
     mGroup = mContext = mType = 0;
+    mFileList = KGlobal::dirs()->findAllResources("appicon", QString::fromLatin1("*.png"));
 
     QWidget *main = new QWidget( this );
     setMainWidget(main);
@@ -205,12 +206,21 @@ void KIconDialog::showIcons()
 
 QString KIconDialog::selectIcon(int group, int context)
 {
-    mGroup = group;
-    mType = 0;
-    mpRb1->setChecked(true);
-    mpRb2->setChecked(false);
-    mpCombo->setEnabled(true);
-    mpBrowseBut->setEnabled(false);
+    if (group == KIcon::User)
+    {
+	mType = 1; mGroup = 0;
+	mpRb1->setChecked(false);
+	mpRb2->setChecked(true);
+	mpCombo->setEnabled(false);
+	mpBrowseBut->setEnabled(true);
+    } else
+    {
+	mType = 0; mGroup = group;
+	mpRb1->setChecked(true);
+	mpRb2->setChecked(false);
+	mpCombo->setEnabled(true);
+	mpBrowseBut->setEnabled(false);
+    }
     mContext = context;
     mpCombo->setCurrentItem(mContext-1);
     showIcons();
