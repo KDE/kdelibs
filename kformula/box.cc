@@ -475,6 +475,7 @@ void box::draw(QPainter &p, int x, int y)
 
   QFont f;
   f = p.font();
+  QPen oldPen = p.pen();
 
   p.setFont(lastFont);
 
@@ -534,33 +535,33 @@ void box::draw(QPainter &p, int x, int y)
     break;
 
   case TIMES: //just draw the filled dot
-    p.setBrush( Qt::black );
+    p.setBrush( oldPen.color() );
     p.drawEllipse(x + relx, y + rely - DOTSIZE / 2, DOTSIZE, DOTSIZE);
     p.setBrush( Qt::NoBrush );
     break;
 
   case SLASH:
     if(fontsize >= (DEFAULT_FONT_SIZE + MIN_FONT_SIZE) / 2)
-      p.setPen(QPen(Qt::black, 2));
+      p.setPen(QPen(oldPen.color(), 2));
     else
-      p.setPen(QPen(Qt::black, 1));  // mainly for the printer
+      p.setPen(QPen(oldPen.color(), 1));  // mainly for the printer
 
     p.drawLine(x + relx, rect.bottom() + y,
 	       x + relx + rect.height() / 2, rect.top() + y);
 
-    p.setPen(QPen());
+    p.setPen(oldPen);
 
     break;
 
   case DIVIDE: //draw the bar whose thickness depends on fontsize
     if(fontsize >= (DEFAULT_FONT_SIZE + MIN_FONT_SIZE) / 2)
-      p.setPen(QPen(Qt::black, 2));
+      p.setPen(QPen(oldPen.color(), 2));
     else
-      p.setPen(QPen(Qt::black, 1));  // mainly for the printer
+      p.setPen(QPen(oldPen.color(), 1));  // mainly for the printer
 
     p.drawLine(rect.left() + x, y + rely + 2,
 	       rect.right() + x, y + rely + 2);
-    p.setPen(QPen());
+    p.setPen(oldPen);
     break;
 
   case POWER: //already children drawn
@@ -576,7 +577,7 @@ void box::draw(QPainter &p, int x, int y)
     tmp.moveBy(b2x, b2y);
     i = QMIN((SPACE + tmp.height()) / 2, SPACE * 8);
 
-    p.setPen(QPen(Qt::black, 1));
+    p.setPen(QPen(oldPen.color(), 1));
 
     //The overline:
     p.drawLine(x + tmp.left() - SPACE, tmp.top() + y - SPACE,
@@ -586,22 +587,25 @@ void box::draw(QPainter &p, int x, int y)
     p.drawLine(x + tmp.left() - SPACE, tmp.top() + y - SPACE,
 	       x + tmp.left() + 1 - SPACE - i * 2 / 3, rect.bottom() + y);
 
-    p.setPen(QPen(Qt::black, 2));
+    p.setPen(QPen(oldPen.color(), 2));
 
     //The falling diagonal ("\"):
     p.drawLine(x + tmp.left() - SPACE - i * 2 / 3, rect.bottom() + y,
            x + tmp.left() - SPACE - i, tmp.center().y() + y);
 
-    p.setPen(QPen());
+    p.setPen(QPen(oldPen.color(), 1));
 
     //The little tail:
     p.drawLine(x + tmp.left() - SPACE - i, tmp.center().y() + y,
 	       x + tmp.left() - SPACE * 2 - i,
 	       tmp.center().y() + y + SPACE / 2);
+
+    p.setPen(oldPen);
+
     break;
 
   case PAREN: //the parentheses are ellipse arcs.
-    p.setPen(QPen(Qt::black, 2));
+    p.setPen(QPen(oldPen.color(), 2));
 
     p.drawArc(SPACE / 2 + rect.left() + x, rect.top() + y,
 	      b2x * 2, rect.height(),
@@ -610,14 +614,14 @@ void box::draw(QPainter &p, int x, int y)
     p.drawArc(rect.right() - SPACE / 2 - b2x * 2 + x, rect.top() + y,
 	      b2x * 2, rect.height(), -80 * 16, 160 * 16);
 
-    p.setPen(QPen());
+    p.setPen(oldPen);
     break;
 
   case ABS:
     if(fontsize >= (DEFAULT_FONT_SIZE + MIN_FONT_SIZE) / 2)
-      p.setPen(QPen(Qt::black, 2));
+      p.setPen(QPen(oldPen.color(), 2));
     else
-      p.setPen(QPen(Qt::black, 1));
+      p.setPen(QPen(oldPen.color(), 1));
 
     p.drawLine(rect.left() + x + 2, rect.top() + y,
 	       rect.left() + x + 2, rect.bottom() + y);
@@ -625,14 +629,14 @@ void box::draw(QPainter &p, int x, int y)
     p.drawLine(rect.right() + x - 2, rect.top() + y,
 	       rect.right() + x - 2, rect.bottom() + y);
 
-    p.setPen(QPen());
+    p.setPen(oldPen);
     break;
 
   case BRACKET:
     if(fontsize >= (DEFAULT_FONT_SIZE + MIN_FONT_SIZE) / 2)
-      { p.setPen(QPen(Qt::black, 2)); i = 1; }
+      { p.setPen(QPen(oldPen.color(), 2)); i = 1; }
     else
-      { p.setPen(QPen(Qt::black, 1)); i = 0; }
+      { p.setPen(QPen(oldPen.color(), 1)); i = 0; }
 
     //i is whether to offset the top line one pixel lower
 
@@ -652,7 +656,7 @@ void box::draw(QPainter &p, int x, int y)
     p.drawLine(rect.right() + x - 2 - SPACE - 1, rect.bottom() + y - 1,
 	       rect.right() + x - 2, rect.bottom() + y - 1);
 
-    p.setPen(QPen());
+    p.setPen(oldPen);
     break;
 
   }
