@@ -149,9 +149,11 @@ public:
      * sets the object to delete and registers the object to be
      * deleted to KGlobal. if the given object is 0, the former
      * registration is unregistred
+     * @param isArray tells the destructor to delete an array instead of an object
      **/
-    type *setObject( type *obj) {
+    type *setObject( type *obj, bool isArray = false) {
         deleteit = obj;
+	array = isArray;
 	if (obj)
             KGlobal::registerStaticDeleter(this);
 	else
@@ -159,14 +161,19 @@ public:
         return obj;
     }
     virtual void destructObject() {
-    	delete deleteit; deleteit = 0;
+	if (array)
+	   delete [] deleteit;
+	else
+	   delete deleteit;
+    	deleteit = 0;
     }
     virtual ~KStaticDeleter() {
     	KGlobal::unregisterStaticDeleter(this);
-    	delete deleteit; deleteit = 0;
+	destructObject();
     }
 private:
     type *deleteit;
+    bool array;
 };
 
 #endif // _KGLOBAL_H

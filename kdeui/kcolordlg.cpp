@@ -132,13 +132,14 @@ KColor::hsv(int *_h, int *_s, int *_v)
 
 
 static QColor *standardPalette = 0;
+static KStaticDeleter<QColor> spd;
 
 static void createStandardPalette()
 {
     if ( standardPalette )
 	return;
 
-    standardPalette = new QColor [STANDARD_PAL_SIZE];
+    standardPalette = spd.setObject(new QColor [STANDARD_PAL_SIZE], true);
 
     int i = 0;
 
