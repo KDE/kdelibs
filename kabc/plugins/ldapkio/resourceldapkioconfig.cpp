@@ -291,7 +291,7 @@ OfflineDialog::OfflineDialog( int cachePolicy, const KURL &src, const QString &d
   mSrc = src; mDst = dst;
   mCacheGroup = new QButtonGroup( 1, Qt::Horizontal, 
     i18n("Offline Cache Policy"), page );
-  new QRadioButton( i18n("No offline using"), mCacheGroup );
+  new QRadioButton( i18n("No using offline"), mCacheGroup );
   new QRadioButton( i18n("Use local copy if no connection"), mCacheGroup );
   new QRadioButton( i18n("Always use local copy"), mCacheGroup );
   mCacheGroup->setButton( cachePolicy );  
@@ -316,6 +316,6 @@ void OfflineDialog::loadCache()
       i18n("Successfully downloaded directory server contents!") );
   } else {
     KMessageBox::error( this, 
-      i18n("Error while dowloading directory server contents into file %1.").arg(mDst) );
+      i18n("Error while downloading directory server contents into file %1.").arg(mDst) );
   }
 }
