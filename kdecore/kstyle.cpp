@@ -224,12 +224,33 @@ void KStyle::getKProgressBackground(const QColorGroup &g, QBrush &bg)
     bg = g.brush(QColorGroup::Base);
 }
 
-void KStyle::drawOPToolBar(QPainter *p, int x, int y, int w, int h,
-                           const QColorGroup &g, QBrush *fill)
+
+void KStyle::drawKickerHandle(QPainter *, int, int, int, int,
+                              const QColorGroup &, QBrush *)
 {
-    QBrush brush = fill ? *fill : g.brush(QColorGroup::Background);
-    qDrawWinPanel(p, x, y, w, h, g, false, fill ? fill : &brush);
+    ;
 }
+
+void KStyle::drawKickerAppletHandle(QPainter *, int, int, int, int,
+                                    const QColorGroup &, QBrush *)
+{
+    ;
+}
+
+void KStyle::drawKickerTaskButton(QPainter *, int, int, int, int,
+                                  const QColorGroup &,
+                                  const QString &, bool,
+                                  QPixmap *, QBrush *)
+{
+    ;
+}
+
+void KStyle::getKickerBackground(int, int, Orientation,
+                                 const QColorGroup &, QBrush &)
+{
+    ;
+}
+
 
 #include "kstyle.moc"
 

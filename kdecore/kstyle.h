@@ -94,13 +94,16 @@ public:
      **/
     virtual void getKProgressBackground(const QColorGroup &g, QBrush &bg);
 
-    /**
-     * Internal method for use in the new OpenParts implementation. You should
-     * not override this but drawKToolBar instead.
-     * @internal
-     */
-    virtual void drawOPToolBar(QPainter *p, int x, int y, int w, int h,
-                               const QColorGroup &g, QBrush *fill=NULL);
+    virtual void drawKickerHandle(QPainter *p, int x, int y, int w, int h,
+                                  const QColorGroup &g, QBrush *fill=NULL);
+    virtual void drawKickerAppletHandle(QPainter *p, int x, int y, int w, int h,
+                                        const QColorGroup &g, QBrush *fill=NULL);
+    virtual void drawKickerTaskButton(QPainter *p, int x, int y, int w, int h,
+                                      const QColorGroup &g,
+                                      const QString &title, bool active,
+                                      QPixmap *icon=NULL, QBrush *fill=NULL);
+    virtual void getKickerBackground(int w, int h, Orientation orient,
+                                     const QColorGroup &g, QBrush &bg);
 private:
     KStylePrivate *d;
 };
