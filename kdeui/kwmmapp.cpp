@@ -59,6 +59,9 @@ bool KWMModuleApplication::x11EventFilter( XEvent * ev){
   static Atom kwm_command;
   static Atom module_dockwin_add;
   static Atom module_dockwin_remove;
+  static Atom sound;
+  static Atom register_sound;
+  static Atom unregister_sound;
 
   Atom a;
   Window w;
@@ -97,6 +100,12 @@ bool KWMModuleApplication::x11EventFilter( XEvent * ev){
 					"KWM_MODULE_DOCKWIN_ADD", False);
       module_dockwin_remove = XInternAtom(qt_xdisplay(), 
 					   "KWM_MODULE_DOCKWIN_REMOVE", False);
+      sound = XInternAtom(qt_xdisplay(), 
+			  "KDE_SOUND_EVENT", False);
+      register_sound = XInternAtom(qt_xdisplay(), 
+				   "KDE_REGISTER_SOUND_EVENT", False);
+      unregister_sound = XInternAtom(qt_xdisplay(), 
+				     "KDE_UNREGISTER_SOUND_EVENT", False);
     }
     a = ev->xclient.message_type;
     w = (Window) (ev->xclient.data.l[0]);
@@ -172,7 +181,12 @@ bool KWMModuleApplication::x11EventFilter( XEvent * ev){
       emit windowIconChanged(w);
     }
     if (a == kwm_command){
-      QString com = ev->xclient.data.b;
+      char c[21];
+      int i;
+      for (i=0;i<20;i++)
+	c[i] = ev->xclient.data.b[i];
+      c[i] = '\0';
+      QString com = c;
       emit commandReceived(com);
     }
     if (a == module_dockwin_add){
@@ -189,6 +203,33 @@ bool KWMModuleApplication::x11EventFilter( XEvent * ev){
 	}
       }
       emit dockWindowRemove(w);
+    }
+    if (a == sound){
+      char c[21];
+      int i;
+      for (i=0;i<20;i++)
+	c[i] = ev->xclient.data.b[i];
+      c[i] = '\0';
+      QString com = c;
+      emit playSound(com);
+    }
+    if (a == register_sound){
+      char c[21];
+      int i;
+      for (i=0;i<20;i++)
+	c[i] = ev->xclient.data.b[i];
+      c[i] = '\0';
+      QString com = c;
+      emit registerSound(com);
+    }
+    if (a == unregister_sound){
+      char c[21];
+      int i;
+      for (i=0;i<20;i++)
+	c[i] = ev->xclient.data.b[i];
+      c[i] = '\0';
+      QString com = c;
+      emit unregisterSound(com);
     }
 
     return TRUE;

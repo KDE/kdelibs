@@ -173,6 +173,14 @@ signals:
    */
   void dockWindowRemove(Window);
 
+  /**
+    * Play/register/unregister a sound
+    */
+  void playSound(QString);
+  void registerSound(QString);
+  void unregisterSound(QString);
+
+
 private:
   QWidget* module;
 
