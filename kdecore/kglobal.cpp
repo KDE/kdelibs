@@ -124,7 +124,7 @@ void KGlobal::init()
     if (_instance)
         return;
     
-    _instance = new KInstance("unknown");
+    _instance = new KInstance(QString::null);
     qAddPostRoutine( freeAll );
 }
 

@@ -3,7 +3,6 @@
 
 class KStandardDirs;
 class KConfig;
-class KLocale;
 class KIconLoader;
 class KCharsets;
 class QFont;
@@ -42,7 +41,6 @@ class KInstance
      */
     KIconLoader	*iconLoader() const;
     
-    KLocale          *locale() const;
     KCharsets	     *charsets() const;
     
     QString          instanceName() const;
