@@ -4,7 +4,7 @@ kdelibs (4:2.2.0-0.1beta1-1) unstable; urgency=low
   * Drop optimization down for cross arch building
   * Move libkscreensaver.so over to -dev package where it belongs
  
- -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 17 Jul 2001 12:44:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 25 Jul 2001 03:35:00 -0700
 
 kdelibs (4:2.2.0-0beta1-6) unstable; urgency=low
  

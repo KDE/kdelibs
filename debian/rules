@@ -145,7 +145,7 @@ binary-arch:  build install
 	cp debian/kde.pamd debian/kdelibs3/etc/pam.d/kde
 	dh_installdocs -a
 	-cp debian/dh-make/* debian/kdelibs-dev/usr/share/doc/kdelibs-dev/dh-make/
-	-cp admin/debianrules debian/kdelibs3/usr/share/doc/kdelibs-dev/dh-make/
+	-cp admin/debianrules debian/kdelibs-dev/usr/share/doc/kdelibs-dev/dh-make/
 	dh_undocumented
 	dh_installman -a
 	dh_installmenu -a
