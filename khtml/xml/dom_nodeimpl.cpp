@@ -567,7 +567,7 @@ bool NodeImpl::dispatchWindowEvent(int _id, bool canBubbleArg, bool cancelableAr
     DocumentPtr *doc = document;
     doc->ref();
     bool r = dispatchGenericEvent( evt, exceptioncode );
-    if (!evt->defaultPrevented())
+    if (!evt->defaultPrevented() && doc->document())
 	doc->document()->defaultEventHandler(evt);
     doc->deref();
     evt->deref();
