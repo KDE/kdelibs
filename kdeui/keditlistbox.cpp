@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 2000 David Faure <faure@kde.org>, Alexander Neundorf <neundorf@kde.org>
+    2000, 2002 Carsten Pfeiffer <pfeiffer@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -25,6 +26,7 @@
 #include <qwhatsthis.h>
 #include <qlabel.h>
 
+#include <kcombobox.h>
 #include <kdebug.h>
 #include <kdialog.h>
 #include <klineedit.h>
@@ -33,6 +35,8 @@
 #include <knotifyclient.h>
 
 #include "keditlistbox.h"
+
+#include <assert.h>
 
 class KEditListBoxPrivate
 {
@@ -55,13 +59,23 @@ KEditListBox::KEditListBox(const QString& title, QWidget *parent,
    init( checkAtEntering, buttons );
 }
 
+KEditListBox::KEditListBox(const QString& title, const CustomEditor& custom,
+                           QWidget *parent, const char *name,
+                           bool checkAtEntering, int buttons)
+    :QGroupBox(title, parent, name )
+{
+    m_lineEdit = custom.lineEdit();
+    init( checkAtEntering, buttons, custom.representationWidget() );
+}
+
 KEditListBox::~KEditListBox()
 {
    delete d;
    d=0;
 }
 
-void KEditListBox::init( bool checkAtEntering, int buttons )
+void KEditListBox::init( bool checkAtEntering, int buttons,
+                         QWidget *representationWidget )
 {
    d=new KEditListBoxPrivate;
    d->m_checkAtEntering=checkAtEntering;
@@ -90,10 +104,16 @@ void KEditListBox::init( bool checkAtEntering, int buttons )
 
    grid->setMargin(15);
 
-   m_lineEdit=new KLineEdit(gb);
+   if ( representationWidget )
+       representationWidget->reparent( gb, QPoint(0,0) );
+   else
+       m_lineEdit=new KLineEdit(gb);
+
    m_listBox = new QListBox(gb);
 
-   grid->addMultiCellWidget(m_lineEdit,1,1,0,1);
+   QWidget *editingWidget = representationWidget ?
+                            representationWidget : m_lineEdit;
+   grid->addMultiCellWidget(editingWidget,1,1,0,1);
    grid->addMultiCellWidget(m_listBox, 2, 6 - lostButtons, 0, 0);
    int row = 2;
    if ( buttons & Add ) {
@@ -256,7 +276,7 @@ void KEditListBox::removeItem()
       m_listBox->removeItem( selected );
       if ( count() > 0 )
           m_listBox->setSelected( QMIN( selected, count() - 1 ), true );
-      
+
       emit changed();
    }
 
@@ -267,7 +287,7 @@ void KEditListBox::removeItem()
 void KEditListBox::enableMoveButtons(int index)
 {
     // Update the lineEdit when we select a different line.
-    if(currentText() != m_lineEdit->text()) 
+    if(currentText() != m_lineEdit->text())
         m_lineEdit->setText(currentText());
 
     bool moveEnabled = servUpButton && servDownButton;
@@ -338,5 +358,30 @@ QStringList KEditListBox::items() const
 
 void KEditListBox::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
+
+
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+
+// KURLRequester is in KIO :[
+// KEditListBox::CustomEditor::CustomEditor( KURLRequester *requester )
+// {
+//     m_representationWidget = requester;
+//     m_lineEdit = requester->lineEdit();
+//     if ( !m_lineEdit )
+//     {
+//         KComboBox *combo = requester->comboBox();
+//         if ( combo )
+//             m_lineEdit = dynamic_cast<KLineEdit*>( combo->lineEdit() );
+//     }
+//     assert( m_lineEdit );
+// }
+
+KEditListBox::CustomEditor::CustomEditor( KComboBox *combo )
+{
+    m_representationWidget = combo;
+    m_lineEdit = dynamic_cast<KLineEdit*>( combo->lineEdit() );
+    assert( m_lineEdit );
+}
 
 #include "keditlistbox.moc"

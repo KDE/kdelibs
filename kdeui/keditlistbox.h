@@ -24,6 +24,7 @@
 #include <qlistbox.h>
 
 class KLineEdit;
+class KComboBox;
 class QPushButton;
 
 class KEditListBoxPrivate;
@@ -37,6 +38,36 @@ class KEditListBoxPrivate;
  */
 class KEditListBox : public QGroupBox
 {
+    class CustomEditor
+    {
+    public:
+        CustomEditor()
+            : m_representationWidget( 0L ),
+              m_lineEdit( 0L ) {}
+        CustomEditor( QWidget *repWidget, KLineEdit *edit )
+            : m_representationWidget( repWidget ),
+              m_lineEdit( edit ) {}
+        CustomEditor( KComboBox *combo );
+
+        void setRepresentationWidget( QWidget *repWidget ) {
+            m_representationWidget = repWidget;
+        }
+        void setLineEdit( KLineEdit *edit ) {
+            m_lineEdit = edit;
+        }
+
+        virtual QWidget   *representationWidget() const {
+            return m_representationWidget;
+        }
+        virtual KLineEdit *lineEdit() const {
+            return m_lineEdit;
+        }
+
+    protected:
+        QWidget *m_representationWidget;
+        KLineEdit *m_lineEdit;
+    };
+
    Q_OBJECT
    public:
 
@@ -69,6 +100,12 @@ class KEditListBox : public QGroupBox
       KEditListBox(const QString& title, QWidget *parent = 0,
 		   const char *name = 0, bool checkAtEntering=false,
 		   int buttons = All );
+
+      KEditListBox( const QString& title,
+                    const CustomEditor &customEditor,
+                    QWidget *parent = 0, const char *name = 0,
+                    bool checkAtEntering = false, int buttons = All );
+
       virtual ~KEditListBox();
 
       /**
@@ -161,7 +198,8 @@ class KEditListBox : public QGroupBox
       KLineEdit *m_lineEdit;
 
       //this is called in both ctors, to avoid code duplication
-      void init( bool checkAtEntering, int buttons );
+      void init( bool checkAtEntering, int buttons,
+                 QWidget *representationWidget = 0L );
 
    protected:
       virtual void virtual_hook( int id, void* data );
