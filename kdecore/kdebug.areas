@@ -169,6 +169,7 @@
 7118        kio_bzip2
 7119        kio_help
 7120        kio_sftp
+7121        kio_nfs
 
 # kdevelop
 9000        kdevelop (core)
