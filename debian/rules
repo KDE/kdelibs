@@ -14,6 +14,7 @@ KDEDOCDIR = usr/share/doc/kdelibs3-doc/html
 export KDB2HTML_UNINSTALLED=$(BUILDDIR)/ksgmltools/customization/
 
 tmp = $(shell pwd)/debian/kdelibs3
+alsa-tmp = $(shell pwd)/debian/alsa-tmp
 
 build: build-stamp
 
@@ -37,19 +38,31 @@ build-stamp:
 
 	touch build-stamp
 
+alsa-stamp:
+	dh_testdir
+	$(MAKE) -C arts/ clean
+	$(MAKE) -C libkmid/ clean
+	./configure $(configkde) --with-alsa --without-ssl --enable-cups \
+		--includedir=/usr/include/kde
+	$(MAKE) -C libkmid/ 
+	$(MAKE) -C arts/ 
+	$(MAKE) -C kdeprint/cups 
+	touch alsa-stamp
+
+
 debian-clean:
 	dh_testdir
-	-rm -f build-stamp indep-stamp
+	-rm -f build-stamp alsa-stamp indep-stamp
 	dh_clean
 
 clean: debian-clean
-	-rm -rf debian/debiandirs debian/install-tmp
+	-rm -rf debian/debiandirs debian/install-tmp debian/alsa-tmp
 	if test -d CVS; then \
 	  $(MAKE) -f admin/Makefile.common cvs-clean ;\
 	fi
 	-$(MAKE) distclean
 
-binary-indep:	build-stamp indep-stamp
+binary-indep:	build-stamp alsa-stamp indep-stamp
 indep-stamp:
 	dh_testdir
 	dh_testroot
@@ -82,44 +95,28 @@ indep-stamp:
 	dh_builddeb -i
 	touch indep-stamp
 
-binary-arch:  build
+install: build
 	dh_testdir
 	dh_testroot
 	dh_clean -a
 	-install -d debian/kdelibs3
 	cd debian/install-tmp && find ./ | cpio -pmd $(tmp)/
 	dh_installdirs -a
-	
-	# Now go build alsa and cups versions
-
-	$(MAKE) -C arts/ clean
-	$(MAKE) -C libkmid/ clean
-	./configure $(configkde) --with-alsa --without-ssl --enable-cups \
-		--includedir=/usr/include/kde 
-	$(MAKE) -C libkmid/ DESTDIR=`pwd`/debian/libkmid-alsa/ install
-	$(MAKE) -C arts/ DESTDIR=`pwd`/debian/libarts-alsa/ install
+	$(MAKE) -C libkmid/ DESTDIR=`pwd`/debian/alsa-tmp/ install
+	$(MAKE) -C arts/ DESTDIR=`pwd`/debian/alsa-tmp/ install
 	$(MAKE) -C kdeprint/cups DESTDIR=`pwd`/debian/kdelibs3/ install
-	cp debian/libkmid-alsa.override debian/libkmid-alsa/usr/share/lintian/overrides/libkmid-alsa
-	cp debian/libarts-alsa.override debian/libarts-alsa/usr/share/lintian/overrides/libarts-alsa
-	-rm -f `find debian/libarts-alsa/ -name "knotify.desktop"`
-	-rm -rf debian/libarts-alsa/usr/share/apps/knotify/
-	-mv debian/libarts-alsa/usr/bin/knotify debian/libkmid-alsa/usr/bin/
-	-mv debian/libarts-alsa/usr/bin/artsmessage debian/libkmid-alsa/usr/bin/
-	-mv debian/libarts-alsa/usr/lib/*notify* debian/libkmid-alsa/usr/lib/
-	-mv debian/libarts-alsa/usr/lib/*qtmcop* debian/libkmid-alsa/usr/lib/
+	cp debian/*alsa.override $(alsa-tmp)/usr/share/lintian/overrides/libkmid-alsa
+
+binary-arch:  build install
+	dh_testdir
+	dh_testroot
+	dh_installdirs -a
 	-rm -f debian/kdelibs3/usr/share/doc/kde/HTML/default
-	# messy cleanup
-	-rm -rf debian/libarts-alsa/usr/include debian/libkmid-alsa/usr/include
-	-rm -f `find debian/libarts-alsa/usr/lib -type l -name "*.so"`
-	-rm -f `find debian/libkmid-alsa/usr/lib -type l -name "*.so"`
 	cp debian/*.override debian/kdelibs3/usr/share/lintian/overrides/
 	for i in `ls debian/kdelibs3/usr/share/lintian/overrides/`; do \
 	  mv debian/kdelibs3/usr/share/lintian/overrides/$$i debian/kdelibs3/usr/share/lintian/overrides/`echo $$i | sed -e 's#.override##'`; \
 	done
 	-rm -f debian/kdelibs3/usr/share/lintian/overrides/*alsa
-
-	# now back to normal bits
-
 	debianrc=debian/kdelibs3/etc/kde2/system.kdeglobals ;\
 	echo "[Directories]" > $$debianrc ;\
 	echo "dir_config=/etc/kde2" >> $$debianrc ;\
@@ -133,7 +130,18 @@ binary-arch:  build
 	dh_undocumented
 	dh_installman
 	dh_installmenu -a
-	dh_movefiles -a --sourcedir=debian/kdelibs3
+	# music chairs
+	dh_movefiles -plibarts --sourcedir=debian/kdelibs3
+	dh_movefiles -plibarts-dev --sourcedir=debian/kdelibs3
+	dh_movefiles -plibkmid --sourcedir=debian/kdelibs3
+	dh_movefiles -plibkmid-dev --sourcedir=debian/kdelibs3
+	dh_movefiles -pkdelibs-dev --sourcedir=debian/kdelibs3
+	dh_movefiles -pkdelibs3-cups --sourcedir=debian/kdelibs3
+	dh_movefiles -plibkdb-mysql --sourcedir=debian/kdelibs3
+	dh_movefiles -plibkdb-postgresql --sourcedir=debian/kdelibs3
+	dh_movefiles -plibarts-alsa --sourcedir=debian/alsa-tmp
+	dh_movefiles -plibkmid-alsa --sourcedir=debian/alsa-tmp
+	# ssl cleanup
 	-rm -rf debian/kdelibs3/usr/share/apps/kssl
 	mv debian/kdelibs3/usr/lib/kde2/kio_https.so debian/kdelibs3/usr/lib/kde2/kio_https-nossl.so
 	mv debian/kdelibs3/usr/lib/kde2/kio_https.la debian/kdelibs3/usr/lib/kde2/kio_https-nossl.la
@@ -149,9 +157,9 @@ binary-arch:  build
 	dh_link -a
 	dh_compress -a -X.docbook -X.css -X-license -X.dcl
 	dh_fixperms -a
-	chmod 644 debian/kdelibs3/etc/pam.d/kde debian/kdelibs3/usr/share/lintian/overrides/*
-	chmod 4755 debian/libarts/usr/bin/artswrapper
-	chmod 4755 debian/libarts-alsa/usr/bin/artswrapper
+	-chmod 644 debian/kdelibs3/etc/pam.d/kde debian/kdelibs3/usr/share/lintian/overrides/*
+	-chmod 4755 debian/libarts/usr/bin/artswrapper
+	-chmod 4755 debian/libarts-alsa/usr/bin/artswrapper
 	dh_makeshlibs -a -V
 	dh_installdeb -a
 	dh_shlibdeps -a -l`pwd`/debian/kdelibs3/usr/lib:`pwd`/debian/libarts/usr/lib:`pwd`/debian/libkmid/usr/lib:`pwd`/debian/kdelibs3-cups/usr/lib

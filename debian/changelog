@@ -5,8 +5,9 @@ kdelibs (4:2.2-alpha1-4) experimental; urgency=low
   * Adding artsbuilder to the suggests for libarts/libarts-alsa
   * Includes /tmp security fix
   * Updated Build-Depends/Depends for docbook stuff
+  * More cleanup in debian/rules
  
- -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 23 Apr 2001 15:14:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 24 Apr 2001 12:20:00 -0700
 
 kdelibs (4:2.2-alpha1-3) experimental; urgency=low
  
