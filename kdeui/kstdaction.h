@@ -27,10 +27,9 @@ class QObject;
 /**
  * Convenience methods to access all standard KDE actions.
  *
- * These
- * actions should be used instead of hardcoding menubar and toolbar
- * items.  Using these actions helps your application easily conform
- * to the KDE UI Style Guide
+ * These actions should be used instead of hardcoding menubar and
+ * toolbar items.  Using these actions helps your application easily
+ * conform to the KDE UI Style Guide
  * ( @see http://developer.kde.org/documentation/standards/kde/style/basics/index.html ).
  */
 class KStdAction
@@ -82,7 +81,13 @@ public:
      * @ref KStdAction::StdAction enum.
      */
     static QAction *action(StdAction act_enum, const QObject *recvr = 0,
-                           const char *slot = 0, QObject *parent = 0, const char *name = 0L );
+                           const char *slot = 0, QObject *parent = 0,
+                           const char *name = 0L );
+
+    /**
+     * This will return the internal name of a given standard action.
+     */
+    static const char* stdName(StdAction act_enum);
 
     /** Create a new document or window. */
     static KAction *openNew(const QObject *recvr = 0, const char *slot = 0,
