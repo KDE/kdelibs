@@ -455,11 +455,11 @@ int KToolBar::insertAnimatedWidget(int id, QObject *receiver, const char *slot,
 
 KAnimWidget *KToolBar::animatedWidget( int id )
 {
-    if ( id2widget.find( id ) == id2widget.end() )
+    Id2WidgetMap::Iterator it = id2widget.find( id );
+    if ( it == id2widget.end() )
         return 0;
-    QWidget *w = *id2widget.find( id );
-    if ( w && w->inherits( "KAnimWidget" ) )
-        return (KAnimWidget*)w;
+    if ( (*it) && (*it)->inherits( "KAnimWidget" ) )
+        return (KAnimWidget*)(*it);
     QObjectList *l = queryList( "KAnimWidget" );
     if ( !l || !l->first() ) {
         delete l;
@@ -467,10 +467,14 @@ KAnimWidget *KToolBar::animatedWidget( int id )
     }
 
     for ( QObject *o = l->first(); o; o = l->next() ) {
-        delete l;
-        return (KAnimWidget*)o;
+        if ( o->inherits( "KAnimWidget" ) )
+        {
+            delete l;
+            return (KAnimWidget*)o;
+        }
     }
 
+    delete l;
     return 0;
 }
 
@@ -478,294 +482,278 @@ KAnimWidget *KToolBar::animatedWidget( int id )
 void KToolBar::addConnection (int id, const char *signal,
                                const QObject *receiver, const char *slot)
 {
-    if ( id2widget.find( id ) == id2widget.end() )
+    Id2WidgetMap::Iterator it = id2widget.find( id );
+    if ( it == id2widget.end() )
         return;
-    QWidget *w = *id2widget.find( id );
-    if ( !w )
-        return;
-    connect( w, signal, receiver, slot );
+    if ( (*it) )
+        connect( (*it), signal, receiver, slot );
 }
 
 void KToolBar::setItemEnabled( int id, bool enabled )
 {
-    if ( id2widget.find( id ) == id2widget.end() )
+    Id2WidgetMap::Iterator it = id2widget.find( id );
+    if ( it == id2widget.end() )
         return;
-    QWidget *w = *id2widget.find( id );
-    if ( !w )
-        return;
-    w->setEnabled( enabled );
+    if ( (*it) )
+        (*it)->setEnabled( enabled );
 }
 
 
 void KToolBar::setButtonPixmap( int id, const QPixmap& _pixmap )
 {
-    if ( id2widget.find( id ) == id2widget.end() )
+    Id2WidgetMap::Iterator it = id2widget.find( id );
+    if ( it == id2widget.end() )
         return;
-    QWidget *w = *id2widget.find( id );
-    if ( !w || !w->inherits( "KToolBarButton" ) )
-        return;
-    ( (KToolBarButton*)w )->setPixmap( _pixmap );
+    KToolBarButton * button = dynamic_cast<KToolBarButton *>( *it );
+    if ( button )
+        button->setPixmap( _pixmap );
 }
 
 
 void KToolBar::setButtonIcon( int id, const QString& _icon )
 {
-    if ( id2widget.find( id ) == id2widget.end() )
+    Id2WidgetMap::Iterator it = id2widget.find( id );
+    if ( it == id2widget.end() )
         return;
-    QWidget *w = *id2widget.find( id );
-    if ( !w || !w->inherits( "KToolBarButton" ) )
-        return;
-    ( (KToolBarButton*)w )->setIcon( _icon );
+    KToolBarButton * button = dynamic_cast<KToolBarButton *>( *it );
+    if ( button )
+        button->setIcon( _icon );
 }
 
 void KToolBar::setButtonIconSet( int id, const QIconSet& iconset )
 {
-     Id2WidgetMap::Iterator it = id2widget.find( id );
-     if ( it == id2widget.end() )
+    Id2WidgetMap::Iterator it = id2widget.find( id );
+    if ( it == id2widget.end() )
         return;
-    if ( !(*it) || !(*it)->inherits( "KToolBarButton" ) )
-        return;
-    ( (KToolBarButton*)(*it) )->setIconSet( iconset );
+    KToolBarButton * button = dynamic_cast<KToolBarButton *>( *it );
+    if ( button )
+        button->setIconSet( iconset );
 }
 
 
 void KToolBar::setDelayedPopup (int id , QPopupMenu *_popup, bool toggle )
 {
-    if ( id2widget.find( id ) == id2widget.end() )
+    Id2WidgetMap::Iterator it = id2widget.find( id );
+    if ( it == id2widget.end() )
         return;
-    QWidget *w = *id2widget.find( id );
-    if ( !w || !w->inherits( "KToolBarButton" ) )
-        return;
-    ( (KToolBarButton*)w )->setDelayedPopup( _popup, toggle );
+    KToolBarButton * button = dynamic_cast<KToolBarButton *>( *it );
+    if ( button )
+        button->setDelayedPopup( _popup, toggle );
 }
 
 
 void KToolBar::setAutoRepeat (int id, bool flag)
 {
-    if ( id2widget.find( id ) == id2widget.end() )
+    Id2WidgetMap::Iterator it = id2widget.find( id );
+    if ( it == id2widget.end() )
         return;
-    QWidget *w = *id2widget.find( id );
-    if ( !w || !w->inherits( "KToolBarButton" ) )
-        return;
-    ( (KToolBarButton*)w )->setAutoRepeat( flag );
+    KToolBarButton * button = dynamic_cast<KToolBarButton *>( *it );
+    if ( button )
+        button->setAutoRepeat( flag );
 }
 
 
 void KToolBar::setToggle (int id, bool flag )
 {
-    if ( id2widget.find( id ) == id2widget.end() )
+    Id2WidgetMap::Iterator it = id2widget.find( id );
+    if ( it == id2widget.end() )
         return;
-    QWidget *w = *id2widget.find( id );
-    if ( !w || !w->inherits( "KToolBarButton" ) )
-        return;
-    ( (KToolBarButton*)w )->setToggle( flag );
+    KToolBarButton * button = dynamic_cast<KToolBarButton *>( *it );
+    if ( button )
+        button->setToggle( flag );
 }
 
 
 void KToolBar::toggleButton (int id)
 {
-    if ( id2widget.find( id ) == id2widget.end() )
+    Id2WidgetMap::Iterator it = id2widget.find( id );
+    if ( it == id2widget.end() )
         return;
-    QWidget *w = *id2widget.find( id );
-    if ( !w || !w->inherits( "KToolBarButton" ) )
-        return;
-    ( (KToolBarButton*)w )->toggle();
+    KToolBarButton * button = dynamic_cast<KToolBarButton *>( *it );
+    if ( button )
+        button->toggle();
 }
 
 
 void KToolBar::setButton (int id, bool flag)
 {
-    if ( id2widget.find( id ) == id2widget.end() )
+    Id2WidgetMap::Iterator it = id2widget.find( id );
+    if ( it == id2widget.end() )
         return;
-    QWidget *w = *id2widget.find( id );
-    if ( !w || !w->inherits( "KToolBarButton" ) )
-        return;
-    ( (KToolBarButton*)w )->on( flag );
+    KToolBarButton * button = dynamic_cast<KToolBarButton *>( *it );
+    if ( button )
+        button->on( flag );
 }
 
 
 bool KToolBar::isButtonOn (int id)
 {
-    if ( id2widget.find( id ) == id2widget.end() )
-        return FALSE;
-    QWidget *w = *id2widget.find( id );
-    if ( !w || !w->inherits( "KToolBarButton" ) )
-        return FALSE;
-    return ( (KToolBarButton*)w )->isOn();
+    Id2WidgetMap::Iterator it = id2widget.find( id );
+    if ( it == id2widget.end() )
+        return false;
+    KToolBarButton * button = dynamic_cast<KToolBarButton *>( *it );
+    return button ? button->isOn() : false;
 }
 
 
 void KToolBar::setLinedText (int id, const QString& text)
 {
-    if ( id2widget.find( id ) == id2widget.end() )
+    Id2WidgetMap::Iterator it = id2widget.find( id );
+    if ( it == id2widget.end() )
         return;
-    QWidget *w = *id2widget.find( id );
-    if ( !w || !w->inherits( "QLineEdit" ) )
-        return;
-    ( (QLineEdit*)w )->setText( text );
+    QLineEdit * lineEdit = dynamic_cast<QLineEdit *>( *it );
+    if ( lineEdit )
+        lineEdit->setText( text );
 }
 
 
 QString KToolBar::getLinedText (int id)
 {
-    if ( id2widget.find( id ) == id2widget.end() )
+    Id2WidgetMap::Iterator it = id2widget.find( id );
+    if ( it == id2widget.end() )
         return QString::null;
-    QWidget *w = *id2widget.find( id );
-    if ( !w || !w->inherits( "QLineEdit" ) )
-        return QString::null;
-    return ( (QLineEdit*)w )->text();
+    QLineEdit * lineEdit = dynamic_cast<QLineEdit *>( *it );
+    return lineEdit ? lineEdit->text() : QString::null;
 }
 
 
 void KToolBar::insertComboItem (int id, const QString& text, int index)
 {
-    if ( id2widget.find( id ) == id2widget.end() )
+    Id2WidgetMap::Iterator it = id2widget.find( id );
+    if ( it == id2widget.end() )
         return;
-    QWidget *w = *id2widget.find( id );
-    if ( !w || !w->inherits( "QComboBox" ) )
-        return;
-    ( (QComboBox*)w )->insertItem( text, index );
+    QComboBox * comboBox = dynamic_cast<QComboBox *>( *it );
+    if (comboBox)
+        comboBox->insertItem( text, index );
 }
 
 
 void KToolBar::insertComboList (int id, QStrList *list, int index)
 {
-    if ( id2widget.find( id ) == id2widget.end() )
+    Id2WidgetMap::Iterator it = id2widget.find( id );
+    if ( it == id2widget.end() )
         return;
-    QWidget *w = *id2widget.find( id );
-    if ( !w || !w->inherits( "QComboBox" ) )
-        return;
-    ( (QComboBox*)w )->insertStrList( list, index );
+    QComboBox * comboBox = dynamic_cast<QComboBox *>( *it );
+    if (comboBox)
+        comboBox->insertStrList( list, index );
 }
 
 
 void KToolBar::insertComboList (int id, const QStringList &list, int index)
 {
-    if ( id2widget.find( id ) == id2widget.end() )
+    Id2WidgetMap::Iterator it = id2widget.find( id );
+    if ( it == id2widget.end() )
         return;
-    QWidget *w = *id2widget.find( id );
-    if ( !w || !w->inherits( "QComboBox" ) )
-        return;
-    ( (QComboBox*)w )->insertStringList( list, index );
+    QComboBox * comboBox = dynamic_cast<QComboBox *>( *it );
+    if (comboBox)
+        comboBox->insertStringList( list, index );
 }
 
 
 void KToolBar::removeComboItem (int id, int index)
 {
-    if ( id2widget.find( id ) == id2widget.end() )
+    Id2WidgetMap::Iterator it = id2widget.find( id );
+    if ( it == id2widget.end() )
         return;
-    QWidget *w = *id2widget.find( id );
-    if ( !w || !w->inherits( "QComboBox" ) )
-        return;
-    ( (QComboBox*)w )->removeItem( index );
+    QComboBox * comboBox = dynamic_cast<QComboBox *>( *it );
+    if (comboBox)
+        comboBox->removeItem( index );
 }
 
 
 void KToolBar::setCurrentComboItem (int id, int index)
 {
-    if ( id2widget.find( id ) == id2widget.end() )
+    Id2WidgetMap::Iterator it = id2widget.find( id );
+    if ( it == id2widget.end() )
         return;
-    QWidget *w = *id2widget.find( id );
-    if ( !w || !w->inherits( "QComboBox" ) )
-        return;
-    ( (QComboBox*)w )->setCurrentItem( index );
+    QComboBox * comboBox = dynamic_cast<QComboBox *>( *it );
+    if (comboBox)
+        comboBox->setCurrentItem( index );
 }
 
 
 void KToolBar::changeComboItem  (int id, const QString& text, int index)
 {
-    if ( id2widget.find( id ) == id2widget.end() )
+    Id2WidgetMap::Iterator it = id2widget.find( id );
+    if ( it == id2widget.end() )
         return;
-    QWidget *w = *id2widget.find( id );
-    if ( !w || !w->inherits( "QComboBox" ) )
-        return;
-    ( (QComboBox*)w )->changeItem( text, index );
+    QComboBox * comboBox = dynamic_cast<QComboBox *>( *it );
+    if (comboBox)
+        comboBox->changeItem( text, index );
 }
 
 
 void KToolBar::clearCombo (int id)
 {
-    if ( id2widget.find( id ) == id2widget.end() )
+    Id2WidgetMap::Iterator it = id2widget.find( id );
+    if ( it == id2widget.end() )
         return;
-    QWidget *w = *id2widget.find( id );
-    if ( !w || !w->inherits( "QComboBox" ) )
-        return;
-    ( (QComboBox*)w )->clear();
+    QComboBox * comboBox = dynamic_cast<QComboBox *>( *it );
+    if (comboBox)
+        comboBox->clear();
 }
 
 
 QString KToolBar::getComboItem (int id, int index)
 {
-    if ( id2widget.find( id ) == id2widget.end() )
+    Id2WidgetMap::Iterator it = id2widget.find( id );
+    if ( it == id2widget.end() )
         return QString::null;
-    QWidget *w = *id2widget.find( id );
-    if ( !w || !w->inherits( "QComboBox" ) )
-        return QString::null;
-    return ( (QComboBox*)w )->text( index );
+    QComboBox * comboBox = dynamic_cast<QComboBox *>( *it );
+    return comboBox ? comboBox->text( index ) : QString::null;
 }
 
 
 KComboBox * KToolBar::getCombo(int id)
 {
-    if ( id2widget.find( id ) == id2widget.end() )
+    Id2WidgetMap::Iterator it = id2widget.find( id );
+    if ( it == id2widget.end() )
         return 0;
-    QWidget *w = *id2widget.find( id );
-    if ( !w || !w->inherits( "KComboBox" ) )
-        return 0;
-    return (KComboBox*)w;
+    return dynamic_cast<KComboBox *>( *it );
 }
 
 
 KLineEdit * KToolBar::getLined (int id)
 {
-    if ( id2widget.find( id ) == id2widget.end() )
+    Id2WidgetMap::Iterator it = id2widget.find( id );
+    if ( it == id2widget.end() )
         return 0;
-    QWidget *w = *id2widget.find( id );
-    if ( !w || !w->inherits( "KLineEdit" ) )
-        return 0;
-    return (KLineEdit*)w;
+    return dynamic_cast<KLineEdit *>( *it );
 }
 
 
 KToolBarButton * KToolBar::getButton (int id)
 {
-    if ( id2widget.find( id ) == id2widget.end() )
+    Id2WidgetMap::Iterator it = id2widget.find( id );
+    if ( it == id2widget.end() )
         return 0;
-    QWidget *w = *id2widget.find( id );
-    if ( !w || !w->inherits( "KToolBarButton" ) )
-        return 0;
-    return (KToolBarButton*)w;
+    return dynamic_cast<KToolBarButton *>( *it );
 }
 
 
 void KToolBar::alignItemRight (int id, bool right )
 {
-    if ( id2widget.find( id ) == id2widget.end() )
+    Id2WidgetMap::Iterator it = id2widget.find( id );
+    if ( it == id2widget.end() )
         return;
-    QWidget *w = *id2widget.find( id );
-    if ( rightAligned && !right && w == rightAligned )
+    if ( rightAligned && !right && (*it) == rightAligned )
         rightAligned = 0;
-    if ( w && right )
-        rightAligned = w;
+    if ( (*it) && right )
+        rightAligned = (*it);
 }
 
 
 QWidget *KToolBar::getWidget (int id)
 {
-    if ( id2widget.find( id ) == id2widget.end() )
-        return 0;
-    return *id2widget.find( id );
+    Id2WidgetMap::Iterator it = id2widget.find( id );
+    return ( it == id2widget.end() ) ? 0 : (*it);
 }
 
 
 void KToolBar::setItemAutoSized (int id, bool yes )
 {
-    if ( id2widget.find( id ) == id2widget.end() )
-        return;
-    QWidget *w = *id2widget.find( id );
-    if ( !w )
-        return;
-    if ( yes )
+    QWidget *w = getWidget(id);
+    if ( w && yes )
         setStretchableWidget( w );
 }
 
@@ -780,11 +768,10 @@ void KToolBar::clear ()
 
 void KToolBar::removeItem (int id)
 {
-    if ( id2widget.find( id ) == id2widget.end() )
+    Id2WidgetMap::Iterator it = id2widget.find( id );
+    if ( it == id2widget.end() )
         return;
-    QWidget *w = *id2widget.find( id );
-    if ( !w )
-        return;
+    QWidget * w = (*it);
     id2widget.remove( id );
     widget2id.remove( w );
     widgets.removeRef( w );
@@ -795,9 +782,7 @@ void KToolBar::removeItem (int id)
 
 void KToolBar::hideItem (int id)
 {
-    if ( id2widget.find( id ) == id2widget.end() )
-        return;
-    QWidget *w = *id2widget.find( id );
+    QWidget *w = getWidget(id);
     if ( w )
         w->hide();
 }
@@ -805,9 +790,7 @@ void KToolBar::hideItem (int id)
 
 void KToolBar::showItem (int id)
 {
-    if ( id2widget.find( id ) == id2widget.end() )
-        return;
-    QWidget *w = *id2widget.find( id );
+    QWidget *w = getWidget(id);
     if ( w )
         w->show();
 }
@@ -1005,11 +988,12 @@ bool KToolBar::contextMenuEnabled() const
 
 void KToolBar::setItemNoStyle(int id, bool no_style )
 {
-    if ( id2widget.find( id ) == id2widget.end() )
+    Id2WidgetMap::Iterator it = id2widget.find( id );
+    if ( it == id2widget.end() )
         return;
-    QWidget *w = *id2widget.find( id );
-    if ( w && w->inherits( "KToolBarButton" ) )
-        ( (KToolBarButton*)w )->setNoStyle( no_style );
+    KToolBarButton * button = dynamic_cast<KToolBarButton *>( *it );
+    if (button)
+        button->setNoStyle( no_style );
 }
 
 
@@ -1381,7 +1365,7 @@ void KToolBar::insertWidgetInternal( QWidget *w, int &index, int id )
 {
     // prevent items that have been explicitly inserted by insert*() from
     // being inserted again
-    if ( inserted.findRef( w ) != -1 )
+    if ( !w || inserted.findRef( w ) != -1 )
         return;
 
     if ( widgets.findRef( w ) != -1 )
