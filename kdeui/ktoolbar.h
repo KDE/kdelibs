@@ -22,6 +22,10 @@
 
 // $Id$
 // $Log$
+// Revision 1.58  1999/06/06 22:48:39  pbrown
+// "warning: extra qualification `KToolBar::' on member `sizePolicy'
+// ignored" fixed.
+//
 // Revision 1.57  1999/06/06 17:29:45  cschlaeg
 // New layout management implemented for KTMainWindow. This required
 // updates for KToolBar, KMenuBar and KStatusBar. KTMainWindow::view_*
@@ -688,11 +692,16 @@ public:
    * You have to call this function if you want to have right aligned items or
    * autosized item.
    *
+   * I have started to extend this functionality for vertical bars as well.
+   * So we might consider renaming this to setFullSize() in the future. CS
+   *
    * The toolbar is set to full width by default.
    * @see #alignItemRight
    * @see #setItemAutoSized
    */
-  void setFullWidth(bool flag = true);    // Top and Bottom pos only
+  void setFullWidth(bool flag = true);
+
+  bool fullWidth(void);
 
   /**
    * Enables or disables moving of toolbar.
@@ -719,9 +728,6 @@ public:
   bool enable(BarStatus stat);
 
   /**
-   * This function is no longer needed since it makes no sense with
-   * Qt layout management. CS
-   *
    * Sets maximal height of vertical (Right or Left) toolbar. You normaly
    * do not have to call it, since it's called from
    * @ref KTopLevelWidget#updateRects
@@ -734,9 +740,6 @@ public:
   void setMaxHeight (int h);  // Set max height for vertical toolbars
 
   /**
-   * This function is no longer needed since it makes no sense with
-   * Qt layout management. CS
-   *
    * Sets maximal width of horizontal (top or bottom) toolbar. This works
    * only for horizontal toolbars (at Top or Bottom), and has no effect
    * otherwise. Has no effect when toolbar is floating.
@@ -788,6 +791,13 @@ public:
    * returns the preferred size.
    */
   virtual QSize minimumSizeHint() const;
+
+  /**
+   * This function return the maximum size the toolbar would need without
+   * wrapping. Use this function when you want to fix the toolbar to it's
+   * maximum width/height.
+   */
+  virtual QSize maximumSizeHint() const;
 
   /**
    * This function is required for the Qt layout management to work. It
@@ -886,7 +896,7 @@ private:
   QList<KToolBarItem> items;
 
   QString title;
-  bool fullWidth;
+  bool fullSize;
   BarPosition position;
   bool moving;
   QWidget *Parent;
@@ -900,15 +910,12 @@ private:
   int min_width;
   int min_height;
 
-  int max_width;
-  int max_height;
-
   BarPosition lastPosition; // Where was I last time I was?
   BarPosition movePos;      // Where was I moved to?
   bool mouseEntered;  // Did the mouse touch the cheese?
   bool horizontal;    // Do I stand tall?
   bool localResize;   // Am I trying to understand recursion?
-  bool wasFullWidth;  // Was I loong when I was?
+  bool wasfullSize;  // Was I loong when I was?
   bool haveAutoSized; // Do I have a problem?
 
   KToolBoxManager *mgr;
