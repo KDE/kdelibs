@@ -538,7 +538,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
       d->m_imageURL = KURL( static_cast<DOM::HTMLInputElement>( e ).src().string() );
     new KAction( i18n( "Save Image As..." ), 0, this, SLOT( slotSaveImageAs() ),
                  actionCollection(), "saveimageas" );
-    new KAction( i18n( "Send Image" ), 0, this, SLOT( slotSendImage() ),
+    new KAction( i18n( "Send Image..." ), 0, this, SLOT( slotSendImage() ),
                  actionCollection(), "sendimage" );
 
 

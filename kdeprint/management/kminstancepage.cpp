@@ -89,7 +89,7 @@ void KMInstancePage::initActions()
 	addButton(i18n("Remove"), "edittrash", SLOT(slotRemove()));
 	m_buttons.append(0);
 	addButton(i18n("Set as Default"), "exec", SLOT(slotDefault()));
-	addButton(i18n("Settings..."), "configure", SLOT(slotSettings()));
+	addButton(i18n("Settings"), "configure", SLOT(slotSettings()));
 	m_buttons.append(0);
 	addButton(i18n("Test..."), "fileprint", SLOT(slotTest()));
 }
