@@ -20,6 +20,11 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.24  1999/05/09 17:22:54  ssk
+   API_CHANGE: KIconLoader::getDirList now returns QStringList.
+   KIconLoader now uses QPixmapCache.
+   Added a new appendDirectory method.
+
    Revision 1.23  1999/05/07 16:45:13  kulow
    adding more explicit calls to ascii()
 
@@ -191,7 +196,7 @@ public:
   		{ pixmap_dirs.append( dir_name ); return true; }
 
 
-  QStringList* getDirList() { return &pixmap_dirs; }
+  QStringList getDirList() const { return pixmap_dirs; }
 
   /** 
 	Get the complete path for an icon name.
