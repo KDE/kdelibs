@@ -1,5 +1,9 @@
 2004-01-23  David Faure  <faure@kde.org>
 
+	* html/html_tableimpl.cpp (insertRow): Fix for DOMTS-L2-HTML test
+	HTMLTableElement39.html: insertRow(-1) appends to last section in
+	document order, not to TFOOT.
+
 	* xml/dom_docimpl.cpp (hasFeature): Updated to current state.
 	(createEvent): Allow to create events with eventType="Events"
 
