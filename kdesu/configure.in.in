@@ -27,11 +27,11 @@ AC_CHECK_FUNCS(initgroups)
 
 dnl Compile in kde_bindir to safely find kdesu_stub.
 if test "$exec_prefix" = "NONE"; then
-    bindir="\"$prefix/bin\""
+    bindir_str="\"$prefix/bin\""
 else
-    bindir="\"$exec_prefix/bin\""
+    bindir_str="\"$exec_prefix/bin\""
 fi
-AC_DEFINE_UNQUOTED(__KDE_BINDIR, $bindir, [KDE bindir])
+AC_DEFINE_UNQUOTED(__KDE_BINDIR, $bindir_str, [KDE bindir])
 
 dnl openpty stuff
 AC_CHECK_HEADERS(libutil.h util.h pty.h)
