@@ -306,11 +306,15 @@ public:
   /**
    * Specify whether images contained in the document should be loaded
    * automatically or not.
+   *
+   * @note Request will be ignored if called before @ref begin().
    */
   void setAutoloadImages( bool enable );
   /**
    * Return whether images contained in the document are loaded automatically
    * or not.
+   * @note that the returned information is unrelieable as long as no begin()
+   * was called. 
    */
   bool autoloadImages() const;
 
