@@ -151,7 +151,7 @@ void KServiceType::save( QDataStream& _str ) const
 
 KServiceType* KServiceType::serviceType( const QString& _name )
 {
-  assert( s_lstServiceTypes );
+  assert( !s_lstServiceTypes );
   QListIterator<KServiceType> it( *s_lstServiceTypes );
   for( ; it.current(); ++it )
     if ( it.current()->name() == _name )
