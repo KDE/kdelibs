@@ -570,7 +570,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
     case  KIO::ERR_INTERNAL:
       errorName = i18n( "Internal Error" );
       description = i18n( "The program on your computer which provides access "
-        "to the <strong>%</strong> protocol has reported an internal error." )
+        "to the <strong>%1</strong> protocol has reported an internal error." )
         .arg( protocol );
       causes << cBuglikely;
       solutions << sUpdate << sBugreport;
@@ -688,7 +688,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
         "<strong>%1</strong>." ).arg( url );
       causes << i18n( "You may have supplied incorrect authentication details or "
         "none at all." )
-        << i18n( "Your account may not have permission to access to the "
+        << i18n( "Your account may not have permission to access the "
         "specified resource." );
         /*<< i18n( "On occasion this may be caused by an incorrectly configured "
         "server, for example where a script does not have execution permissions." )*/
@@ -810,18 +810,18 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       break;
 
     case  KIO::ERR_COULD_NOT_MOUNT:
-      errorName = i18n( "Unable to Initialise Input/Output Device" );
+      errorName = i18n( "Unable to Initialize Input/Output Device" );
       techName = i18n( "Could Not Mount Device" );
-      description = i18n( "The requested device could not be initialised "
+      description = i18n( "The requested device could not be initialized "
         "(\"mounted\"). The reported error was: <strong>%1</strong>" )
         .arg( errorText );
       causes << i18n( "The device may not be ready, for example there may be "
         "no media in a removable media device (i.e. no CD-ROM in a CD drive), "
         "or in the case of a peripheral / portable device, the device may not "
         "be correctly connected." )
-        << i18n( "You may not have permissions to initialise (\"mount\") the "
+        << i18n( "You may not have permissions to initialize (\"mount\") the "
         "device. On UNIX systems, often system administrator privileges are "
-        "required to initialse a device." )
+        "required to initialize a device." )
         << cHardware;
       solutions << i18n( "Check that the device is ready; removable drives "
         "must contain media, and portable devices must be connected and powered "
@@ -829,18 +829,18 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       break;
 
     case  KIO::ERR_COULD_NOT_UNMOUNT:
-      errorName = i18n( "Unable to Deinitialise Input/Output Device" );
+      errorName = i18n( "Unable to Uninitialize Input/Output Device" );
       techName = i18n( "Could Not Unmount Device" );
-      description = i18n( "The requested device could not be deinitialised "
+      description = i18n( "The requested device could not be uninitialized "
         "(\"unmounted\"). The reported error was: <strong>%1</strong>" )
         .arg( errorText );
       causes << i18n( "The device may be busy, that is, still in use by "
         "another application or user. Even such things as having an open "
         "browser window on a location on this device may cause the device to "
         "remain in use." )
-        << i18n( "You may not have permissions to deinitialise (\"unmount\") "
-        "the device. On UNIX systems, often system administrator privileges "
-        "are required to deinitialse a device." )
+        << i18n( "You may not have permissions to uninitialize (\"unmount\") "
+        "the device. On UNIX systems, system administrator privileges are "
+        "often required to uninitialize a device." )
         << cHardware;
       solutions << i18n( "Check that no applications are accessing the device, "
         "and try again." ) << sAccess << sSysadmin;
@@ -918,7 +918,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
         "operation was unsuccessful." );
       causes << i18n( "You may have supplied incorrect authentication details or "
         "none at all." )
-        << i18n( "Your account may not have permission to access to the "
+        << i18n( "Your account may not have permission to access the "
         "specified resource." ) << cProtocol;
       solutions << i18n( "Retry the request and ensure your authentication details "
         "are entered correctly." ) << sServeradmin << sSysadmin;
@@ -1158,7 +1158,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
         "written to as there is inadequate disk space." ).arg( errorText );
       solutions << i18n( "Free up enough disk space by 1) deleting unwanted and "
         "temporary files; 2) archiving files to removable media storage such as "
-        "CD-Recodable discs; or 3) obtain more storage capacity." )
+        "CD-Recordable discs; or 3) obtain more storage capacity." )
         << sSysadmin;
       break;
 
