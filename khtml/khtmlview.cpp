@@ -511,17 +511,7 @@ void KHTMLView::keyReleaseEvent( QKeyEvent *_ke )
 
 bool KHTMLView::focusNextPrevChild( bool next )
 {
-    //    return (gotoLink(next) || QScrollView::focusNextPrevChild( next ));
-
-    if (!gotoLink(next))
-      {
-	  bool retval = QScrollView::focusNextPrevChild( next );
-	  viewport()->clearFocus();
-	  return retval;
-      }
-    else
-      return true;
-
+    return (gotoLink(next) || QScrollView::focusNextPrevChild( next ));
 }
 
 void KHTMLView::doAutoScroll()
@@ -649,44 +639,62 @@ bool KHTMLView::gotoLink(bool forward)
     if (!m_part->docImpl())
 	return false;
 
-    int currentTabIndex =
-	(d->currentNode?d->currentNode->tabIndex():-1);
+    if (!d->currentNode && forward)
+	return notabindex(0, forward);
+    else if (!d->currentNode && !forward)
+	return tabindexzero(0, forward);
+    else if(d->currentNode->tabIndex()==-1)
+	return notabindex(d->currentNode, forward);
+    else if (d->currentNode->tabIndex()>0)
+	return intabindex(d->currentNode, forward);
+    else // d->currentNode->tabIndex()==0
+	return tabindexzero(d->currentNode, forward);
+}
+  
+bool KHTMLView::notabindex(HTMLElementImpl *cur, bool forward)
+{
+    // REQ: n must be after the current node and its tabindex must be -1
+    if (cur = m_part->docImpl()->findLink(cur, forward, -1))
+	return gotoLink(cur);
 
-    HTMLElementImpl *n=0;
-
-    // search next link in current scope
-    // (scope means either the links without tabindex or with tabindex)
-
-    n = m_part->docImpl()->findLink(d->currentNode, forward, currentTabIndex);
-
-    if (currentTabIndex!=-1 && (!n || n->tabIndex()!=currentTabIndex))
+    if (forward)
+	return intabindex(cur, forward);
+    setContentsPos( 0, 0);
+    return gotoLink((HTMLElementImpl *)0);
+}
+  
+bool KHTMLView::intabindex(HTMLElementImpl *cur, bool forward)
+{
+    short tmptabindex;
+    short maxtabindex = m_part->docImpl()->findHighestTabIndex();
+    short increment=(forward?1:-1);
+    if (cur)
     {
-	// found element with different tabindex or nothing:
-	// redo search from the beginning matching the current tabindex
-	HTMLElementImpl *m = m_part->docImpl()->findLink(0, forward, currentTabIndex);
-	if (m && m!=d->currentNode && m->tabIndex()==currentTabIndex)
-	    n = m;
+	tmptabindex = cur->tabIndex();
     }
+    else tmptabindex=(forward?1:maxtabindex);
 
-    if (!n)
+    while(tmptabindex>0 && tmptabindex<=maxtabindex)
     {
-	//there is none, so we look for a different item in the whole document.
-	kdDebug(6000)<<"reached document border while searching for link. restarting search...";
-	int maxTabIndex;
-	if (forward && maxTabIndex!=-1)
-	    maxTabIndex = 0;
-	else
-	    maxTabIndex = m_part->docImpl()->findHighestTabIndex();
-
-	if (maxTabIndex!=-1)
-	    n = m_part->docImpl()->findLink(0, forward, maxTabIndex);
-	else
-	    n = 0;
+	if (cur = m_part->docImpl()->findLink(cur, forward, tmptabindex))
+	    return gotoLink(cur);
+	tmptabindex+=increment;
     }
-
-    if (!n)
-	kdDebug(6000)<<"...without finding anything. will return false now.\n";
-    return gotoLink(n);
+    if (forward)
+	return tabindexzero(cur, forward);
+    else
+	return notabindex(cur, forward) ;
+}
+  
+bool KHTMLView::tabindexzero(HTMLElementImpl *cur, bool forward)
+{
+    //REQ: tabindex of result must be 0 and it must be after the current node ;
+    if (cur = m_part->docImpl()->findLink(cur, forward, 0))
+	return gotoLink(cur);
+    if (!forward)
+	return intabindex(cur, forward);
+    setContentsPos( 0, contentsHeight() - height() + 5 );
+    return gotoLink((HTMLElementImpl *)0);
 }
 
 bool KHTMLView::gotoNextLink()

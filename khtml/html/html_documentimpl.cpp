@@ -312,10 +312,6 @@ int HTMLDocumentImpl::findHighestTabIndex()
 HTMLElementImpl *HTMLDocumentImpl::findLink(HTMLElementImpl *n, bool forward, int tabIndexHint)
 {
     // tabIndexHint is the tabIndex that should be found.
-    // if it is not in the document, and direction is forward,
-    // tabIndexHint is incremented until maxTabIndex is reached.
-    // if direction is backward, tabIndexHint is reduced until -1
-    // is encountered.
     // if tabIndex is -1, items containing tabIndex are skipped.
 
   kdDebug(6000)<<"HTMLDocumentImpl:findLink: Node: "<<n<<" forward: "<<(forward?"true":"false")<<" tabIndexHint: "<<tabIndexHint<<"\n";
@@ -327,36 +323,10 @@ HTMLElementImpl *HTMLDocumentImpl::findLink(HTMLElementImpl *n, bool forward, in
 
     do
     {
-	do
-	{
-	    n = findSelectableElement(n, forward);
-	    // this is alright even for non-tabindex-searches,
-	    // because DOM::NodeImpl::tabIndex() defaults to -1.
-	} while (n && (n->tabIndex()!=tabIndexHint));
-	if (n)
-	    break;
-	if (tabIndexHint!=-1)
-	{
-	    if (forward)
-	    {
-		tabIndexHint++;
-		if (tabIndexHint>maxTabIndex)
-		    tabIndexHint=-1;
-		n=0;
-	    }
-	    else
-	    {
-		tabIndexHint--;
-		n=0;
-	    }
-	    kdDebug(6000)<<"trying next tabIndexHint:"<<tabIndexHint<<"\n";
-	}
-	// this is not the same as else ... ,
-	// since tabIndexHint may have been changed in the block above.
-	if (tabIndexHint==-1)
-	    break;
-    } while(1); // break.
-
+	n = findSelectableElement(n, forward);
+	// this is alright even for non-tabindex-searches,
+	// because DOM::NodeImpl::tabIndex() defaults to -1.
+    } while (n && (n->tabIndex()!=tabIndexHint));
     return n;
 }
 

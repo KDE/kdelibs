@@ -209,6 +209,10 @@ private:
      */
     bool gotoLink(DOM::HTMLElementImpl *);
 
+    bool notabindex(DOM::HTMLElementImpl *cur, bool forward);
+    bool intabindex(DOM::HTMLElementImpl *cur, bool forward);
+    bool tabindexzero(DOM::HTMLElementImpl *cur, bool forward);
+
     /**
      * move the view towards the next node 
      * or the last node from this one.
