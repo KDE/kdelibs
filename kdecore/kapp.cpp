@@ -719,40 +719,18 @@ void KApplication::parseCommandLine( )
        dcopClient()->setServerAddress( args->getOption("dcopserver"));
     }
 
-    if (args->isSet("crashhandler"))
+    bool nocrashhandler = (getenv("KDE_DEBUG") != NULL);
+    if (!nocrashhandler && args->isSet("crashhandler"))
     {
-    	
-        // reset the crash handler recursive counter
-        //KCrash::resetCrashRecursion();
-
         // set default crash handler / set emergency save function to nothing
         KCrash::setCrashHandler(KCrash::defaultCrashHandler);
         KCrash::setEmergencySaveFunction(NULL);
 
-        // check if arg(0) contains the whole path, if not, get it from findExe
+// WABA: What's the use of a path if you can't guarantee that 
+// it is the right one?
+// KCrash::setApplicationPath(KStandardDirs::findExe(QCString(args->appName()),NULL,0));
 
-//
-// HEY ! args->arg(0) gives 
-// FAILURE (KCmdLineArgs): Argument out of bounds
-// Application requests for arg(0) without checking count() first. 
-//
-// You can't use args to get argv[0]. You need to make KCmdLineArgs store it
-// for you - unless it's still accessible from argv[0] ?
-// David.
-
-        //if (strstr(args->arg(0),"/"))
-        //{
-#warning can someone fix this?
-//            KCrash::setApplicationPath(QCString().setStr(args->arg(0)));
-        //}
-        //else
-        //{
-#warning can someone fix this?
-//KCrash::setApplicationPath(KStandardDirs::findExe(QCString(args->arg(0)),NULL,0));
-        //}
-
-#warning can someone fix this?
-//        KCrash::setApplicationName(QString(KInstance::instanceName));
+        KCrash::setApplicationName(QString(args->appName()));
     }
 
     delete args; // Throw away

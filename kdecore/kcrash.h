@@ -38,8 +38,8 @@
 class KCrash 
 {
  private: // ;o)
-  static QString appName;
-  static QString appPath;
+  static QString *appName;
+  static QString *appPath;
 
  public:
   static void defaultCrashHandler (int signal);
@@ -78,13 +78,13 @@ class KCrash
    * Sets the application path @param path which should be passed to 
    * Dr. Konqi, our nice crash display application.
    */
-  void setApplicationPath (QString path) { appPath = path; }
+  static void setApplicationPath (QString path) { appPath = new QString(path); }
 
   /**
    * Sets the application name @param name which should be passed to
    * Dr. Konqi, our nice crash display application.
    */
-  void setApplicationName (QString name) { appName = name; }
+  static void setApplicationName (QString name) { appName = new QString(name); }
     
  protected:
   static HandlerType _crashHandler;

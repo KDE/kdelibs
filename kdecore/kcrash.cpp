@@ -37,8 +37,8 @@
 
 KCrash::HandlerType KCrash::_emergencySaveFunction = 0;
 KCrash::HandlerType KCrash::_crashHandler = 0;
-QString KCrash::appName = QString::null;
-QString KCrash::appPath = QString::null;
+QString *KCrash::appName = 0;
+QString *KCrash::appPath = 0;
 
 // This function sets the function which should be called when the 
 // application crashes and the
@@ -75,12 +75,10 @@ void
 KCrash::defaultCrashHandler (int signal)
 {
   // Handle possible recursions
-  static int crashRecursionCounter;
-#warning PLEASE: Someone should check if this static work
-#warning If this procedure crashes, what happens? Does it exit?
-#warning If not, please re-implement resetCrashRecursion,
-#warning add a new member variable to this class and 
-#warning remove the comment in kapp.cpp (resetCrashRecursion)
+  static int crashRecursionCounter = 0;
+
+  printf("KCRash: crashing.... crashRecusrionCounter = %d\n", crashRecursionCounter);
+  printf("Appname = %p apppath = %p\n", appName, appPath);
 
   crashRecursionCounter++;
 
@@ -88,17 +86,34 @@ KCrash::defaultCrashHandler (int signal)
     if (_emergencySaveFunction) {
       _emergencySaveFunction (signal);
     }
+    crashRecursionCounter++; // 
   }
   
   if (crashRecursionCounter < 3) {
-      execlp ("drkonqi", "drkonqi", 
-              "--appname", appName.latin1(),
-              "--apppath", appPath.latin1(),
-              "--signal", QCString().sprintf("%d", signal).data(),
-	      NULL);
+      QCString tmp;
+      tmp.setNum(signal);
+      if (appName && appPath)
+      {
+         execlp ("drkonqi", "drkonqi", 
+                 "--appname", appName->latin1(),
+                 "--apppath", appPath->latin1(),
+                 "--signal", tmp.data(),
+	         NULL);
+      }
+      else if (appName)
+      {
+         execlp ("drkonqi", "drkonqi", 
+                 "--appname", appName->latin1(),
+                 "--signal", tmp.data(),
+	         NULL);
+      }
+      kdDebug(0) << "Unknown appname\n";
   }
 
-  kdDebug(0) << "Unable to start dr. konqi\n";
-  exit (1);
+  if (crashRecursionCounter < 4)
+  {
+     kdDebug(0) << "Unable to start dr. konqi\n";
+  }
+  _exit(255);
 }
 
