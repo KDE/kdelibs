@@ -56,23 +56,31 @@ void RenderRoot::calcWidth()
     // the width gets set by KHTMLView::print when printing to a printer.
     if(printingMode) return;
 
-    m_width = m_view->frameWidth();
+    m_width = m_view->frameWidth() + paddingLeft() + paddingRight() + borderLeft() + borderRight();
+    
     if(m_width < m_minWidth) m_width = m_minWidth;
-    if(m_maxWidth != m_minWidth) m_maxWidth = m_minWidth;
+        
+    if (style()->marginLeft().type==Fixed)
+        m_marginLeft = style()->marginLeft().value;
+    else
+        m_marginLeft = 0;
+    
+    if (style()->marginRight().type==Fixed)
+        m_marginRight = style()->marginRight().value;
+    else
+        m_marginRight = 0;
 }
 
 void RenderRoot::calcMinMaxWidth()
 {
     RenderFlow::calcMinMaxWidth();
-    
-    // set minWidth to width of viewport
-    if(m_minWidth < m_view->frameWidth())
-	m_minWidth = m_view->frameWidth();
+    if(m_maxWidth != m_minWidth) m_maxWidth = m_minWidth;    
 }
 
 void RenderRoot::layout(bool deep)
 {
     calcMinMaxWidth();
+    calcWidth();
     if (deep)
     	RenderFlow::layout(true);
 	
@@ -91,8 +99,7 @@ void RenderRoot::layout(bool deep)
     	    if (h>m_height)
 	    	m_height=h;
     	}	
-    }
-    calcWidth();
+    }    
 }
 
 QScrollView *RenderRoot::view()
@@ -156,7 +163,7 @@ void RenderRoot::updateHeight()
 
 
     int oldHeight = m_height;
-    layout(true);	
+    m_view->layout(true);	
     if(m_height != oldHeight || m_height == m_view->visibleHeight())
     {
 //    	kdDebug( 6040 ) << "resizing " << m_width << "," << m_height << endl;
@@ -169,6 +176,7 @@ void RenderRoot::close()
 {
     setParsing(false);
     updateSize();
+    m_view->layout(true);	
     m_view->repaintContents(0,0,1000000,1000000);
 //    printTree();
 }

@@ -44,9 +44,6 @@
 #include <kimageio.h>
 #include <kdebug.h>
 
-// #### don't hardcode!!!!!!
-#define SCROLLBARWIDTH 16
-
 #define PAINT_BUFFER_HEIGHT 150
 
 template class QList<KHTMLView>;
@@ -139,7 +136,7 @@ void KHTMLView::init()
 
   _marginWidth = -1; // undefined
   _marginHeight = -1;
-  _width = width()- SCROLLBARWIDTH - 2*marginWidth();
+  _width = 0;
   _height = 0;
 
   resizeContents(clipper()->width(), clipper()->height());
@@ -160,14 +157,10 @@ void KHTMLView::clear()
 void KHTMLView::resizeEvent ( QResizeEvent * event )
 {
 //    kdDebug( 6000 ) << "resizeEvent" << endl;
-    layout();
-
-    DOM::HTMLDocumentImpl *doc = m_part->docImpl();
-
-    if ( doc && doc->body() )
-      resizeContents( doc->renderer()->width(), doc->renderer()->height() );
-
+    
     QScrollView::resizeEvent(event);
+    
+    layout();
 }
 
 
@@ -255,10 +248,13 @@ void KHTMLView::viewportPaintEvent ( QPaintEvent* pe  )
 void KHTMLView::layout(bool force)
 {
     //### take care of frmaes (hide scrollbars,...)
-
+    
+    
     if( m_part->docImpl() )
     {	
         DOM::HTMLDocumentImpl *document = m_part->docImpl();
+        
+        khtml::RenderObject* root = document->renderer();
 
 	NodeImpl *body = document->body();
 	if(body && body->id() == ID_FRAMESET)
@@ -266,13 +262,13 @@ void KHTMLView::layout(bool force)
 	    setVScrollBarMode(AlwaysOff);
 	    setHScrollBarMode(AlwaysOff);
 	    _width = width();
-	
-	    document->renderer()->setMinWidth(_width);
-	    document->renderer()->layout(true);
+
+	    root->layout(true);
 	    return;
 	}
 
-	int w = width() - SCROLLBARWIDTH - 2*marginWidth();
+        
+	int w = visibleWidth();
 	int h = visibleHeight();
 
     	if (w != _width || h != _height || force)
@@ -282,26 +278,31 @@ void KHTMLView::layout(bool force)
     	    _width = w;
 	    _height = h;
 
-	    QTime qt;
-	    qt.start();
+//	    QTime qt;
+//	    qt.start();
+                                   
+	    root->layout(true);
+            
+            int rw = root->width()+root->marginLeft()+root->marginRight();
+            int rh = root->height()+root->marginTop()+root->marginBottom();
+            
+	    resizeContents(rw, rh);
+            
+//	    kdDebug( 6000 ) << "TIME: layout() dt=" << qt.elapsed() << endl;
 
-	    document->renderer()->setMinWidth(_width);
-	    document->renderer()->layout(true);
-	    resizeContents(document->renderer()->width(), document->renderer()->height());
-	    kdDebug( 6000 ) << "TIME: layout() dt=" << qt.elapsed() << endl;
-
-	    viewport()->repaint(false);
+	    viewport()->repaint(false);            
 	}
 	else
 	{
-	    document->renderer()->layout(false);
+	    root->layout(false);
 	    viewport()->repaint(false);
 	}
     }
     else
     {
-	_width = width() - SCROLLBARWIDTH - 2*marginWidth();
+	_width = width();
     }
+    
 }
 
 void KHTMLView::paintElement( khtml::RenderObject *o, int xPos, int yPos )
@@ -754,9 +755,8 @@ void KHTMLView::print()
 		      << " height = " << metrics.height() << endl;
 	root->setPrintingMode(true);
 	root->setWidth(metrics.width());
-	root->setMinWidth(metrics.width());
-	root->setMaxWidth(metrics.width());
-	QValueList<int> oldSizes = m_part->fontSizes();
+
+    	QValueList<int> oldSizes = m_part->fontSizes();
 
 	const int printFontSizes[] = { 6, 7, 8, 10, 12, 14, 18, 24,
 				       28, 34, 40, 48, 56, 68, 82, 100, 0 };

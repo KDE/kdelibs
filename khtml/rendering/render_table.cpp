@@ -858,6 +858,19 @@ void RenderTable::calcColMinMax()
 
 //    setMinMaxKnown(true);
 
+
+    
+    // ### HACK, implement anonymous table box
+    // ### copied from renderbox    
+
+    int cw = containingBlockWidth();
+    
+    m_marginRight=0;
+    m_marginLeft=0;
+    
+    calcHorizontalMargins(ml,mr,cw);
+    
+
 }
 
 void RenderTable::calcWidth()
@@ -887,51 +900,6 @@ void RenderTable::calcColWidth(void)
      */
 
     calcColMinMax();
-
-    Length ml = m_style->marginLeft();
-    Length mr = m_style->marginRight();
-
-    
-    // ### HACK, implement anonymous table box
-    // ### copied from renderbox    
-    int cw = containingBlockWidth();
-    
-    m_marginRight=0;
-    m_marginLeft=0;
-    
-    if (cw>m_width && !isFloating())
-    {
-        if (ml.type == Variable && mr.type == Variable )
-        {
-	    m_marginRight = (cw - m_width)/2;		
-	    m_marginLeft = cw - m_width - m_marginRight; 
-        }
-        else if (mr.type == Variable)
-        {
-	    m_marginLeft = ml.width(cw);
-	    m_marginRight = cw - m_width - m_marginLeft;
-        }
-        else if (ml.type == Variable)
-        {	    	
-	    m_marginRight = mr.width(cw);		
-	    m_marginLeft = cw - m_width - m_marginRight;
-        }
-        else
-        {
-	    m_marginLeft = ml.minWidth(cw);
-	    m_marginRight = mr.minWidth(cw);
-        }
-    }    
-    
-    if (cw != m_width + m_marginLeft + m_marginRight && !isFloating())
-    {
-    	if (style()->direction()==LTR)
-	    m_marginRight = cw - m_width - m_marginLeft;
-	else
-	    m_marginLeft = cw - m_width - m_marginRight;
-
-    }
-    
     
     /*
      * Set actColWidth[] to column minimums, it will

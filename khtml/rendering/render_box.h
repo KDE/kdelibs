@@ -69,8 +69,6 @@ public:
 
     virtual short minWidth() const { return m_minWidth; }
     virtual short maxWidth() const { return m_maxWidth; }
-    virtual void setMinWidth(short w) { m_minWidth = w; m_layouted = false; }
-    virtual void  setMaxWidth(short w) { m_maxWidth = w; m_layouted = false; }
 
     virtual short contentWidth() const;
     virtual int contentHeight() const;

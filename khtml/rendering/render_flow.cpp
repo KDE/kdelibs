@@ -980,9 +980,9 @@ void RenderFlow::calcMinMaxWidth()
 
             Length ml = child->style()->marginLeft();
             Length mr = child->style()->marginRight();
-            if (ml.type==Fixed && mr.type==Fixed)
+            if (ml.type!=Variable && mr.type!=Variable)
             {
-                if (child->style()->width().type==Fixed)
+                if (child->style()->width().type!=Variable)
                 {
                     if (child->style()->direction()==LTR)
                         margin = child->marginLeft(); 
@@ -990,13 +990,13 @@ void RenderFlow::calcMinMaxWidth()
                         margin = child->marginRight();  
                 }
                 else 
-                    margin = ml.value+mr.value;
+                    margin = child->marginLeft()+child->marginRight(); 
                                 
             }
-            else if (ml.type == Fixed)
-                margin = ml.value;            
-            else if (mr.type == Fixed)
-                margin = mr.value;    
+            else if (ml.type != Variable)
+                margin = child->marginLeft();             
+            else if (mr.type != Variable)
+                margin = child->marginRight();  
             
             if (margin<0) margin=0;              
                         

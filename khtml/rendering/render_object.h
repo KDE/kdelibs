@@ -295,8 +295,6 @@ public:
 
     virtual short minWidth() const { return 0; }
     virtual short maxWidth() const { return 0; }
-    virtual void setMinWidth(short) { }
-    virtual void setMaxWidth(short) { }
 
     virtual RenderStyle* style() const { return m_style; }
 
