@@ -281,6 +281,14 @@ bool KXMLGUIBase::mergeXML( QDomElement &base, const QDomElement &additive, QAct
       e = e.nextSibling().toElement();
   }
 
+  // do one quick check to make sure that the last element was not
+  // a weak separator
+  QDomElement last = base.lastChild().toElement();
+  if ( (last.tagName() == tagSeparator) && (!last.attribute( attrWeakSeparator ).isNull()) )
+  {
+    base.removeChild( base.lastChild() );
+  }
+
   // now we check if we are empty (in which case we return "true", to
   // indicate the caller that it can delete "us" (the base element
   // argument of "this" call)
