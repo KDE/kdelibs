@@ -92,7 +92,7 @@ void HCAniMenu::scrollIn()
   int w = mnu->width();
   int h = mnu->height();
   int steps = QMIN(w, h) / 10;
-  
+
   bgPix = QPixmap::grabWindow(QApplication::desktop()->winId(),
 				    mnu->x(), mnu->y(), w, h);
 
@@ -115,7 +115,7 @@ void HCAniMenu::scrollIn()
     {
       t.start();
       while(t.elapsed() <= animationDelay );
-      
+
       int howMuch = (int)(float(x) / float(steps) * w);
 
       bitBlt(widget, 0, 0, &mnuPix, w - howMuch, 0, howMuch, h);
@@ -130,7 +130,7 @@ void HCAniMenu::scrollOut()
   int w = mnu->width();
   int h = mnu->height();
   int steps = QMIN(w, h) / 10;
-     
+
   if(!widget)
     widget = new QWidget(0, 0, WStyle_Customize | WStyle_NoBorder |
 			 WStyle_Tool | WType_Popup );
@@ -173,6 +173,7 @@ void HCAniMenu::slotFinished()
 HCStyle::HCStyle()
     :KStyle()
 {
+    highlightWidget = 0L;
     KConfig *config = KGlobal::config();
     QString oldGrp = config->group();
     QPalette p = kapp->palette();
@@ -232,7 +233,7 @@ void HCStyle::polish(QPalette &)
         radioOnGrp.setColor(QColorGroup::Light, QColor(0, 0, 255));
         radioOnGrp.setColor(QColorGroup::Dark, QColor(0, 0, 128));
     }
-    
+
     QColorGroup g = pal.active();
     tmpColor = g.background();
     if(vSmall){
@@ -289,11 +290,6 @@ void HCStyle::polish(QWidget *w)
 
     if(w->inherits("QPushButton")){
         w->installEventFilter(this);
-        QPalette pal = w->palette();
-        // we use this as a flag since it's otherwise unused.
-        pal.setColor(QColorGroup::Highlight, Qt::black);
-        w->setPalette(pal);
-
     }
     if(w->inherits("QMenuBar") || w->inherits("KToolBarButton")){
         w->setBackgroundMode(QWidget::NoBackground);
@@ -314,7 +310,7 @@ void HCStyle::polish(QWidget *w)
         return;
     }
 }
- 
+
 void HCStyle::unPolish(QWidget *w)
 {
     if (w->isTopLevel())
@@ -322,11 +318,6 @@ void HCStyle::unPolish(QWidget *w)
 
     if(w->inherits("QPushButton")){
         w->removeEventFilter(this);
-        QPalette pal = w->palette();
-        pal.setColor(QColorGroup::Highlight,
-                     kapp->palette().active().color(QColorGroup::Highlight));
-        w->setPalette(pal);
-
     }
     if(w->inherits("QMenuBar") || w->inherits("KToolBarButton")){
         w->setBackgroundMode(QWidget::PaletteBackground);
@@ -368,18 +359,14 @@ bool HCStyle::eventFilter(QObject *obj, QEvent *ev)
         if(ev->type() == QEvent::Enter){
             QWidget *btn = (QWidget *)obj;
             if (btn->isEnabled()){
-                QPalette pal = btn->palette();
-                pal.setColor(QColorGroup::Highlight,
-                             pal.active().color(QColorGroup::Midlight));
-                btn->setPalette(pal);
+                highlightWidget = btn;
                 btn->repaint(false);
             }
         }
         else if(ev->type() == QEvent::Leave){
             QWidget *btn = (QWidget *)obj;
-            QPalette pal = btn->palette();
-            pal.setColor(QColorGroup::Highlight, Qt::black);
-            btn->setPalette(pal);
+            if (btn == highlightWidget)
+                highlightWidget = 0L;
             btn->repaint(false);
         }
     }
@@ -390,6 +377,8 @@ void HCStyle::drawButton(QPainter *p, int x, int y, int w, int h,
                          const QColorGroup &g, bool sunken,
                          const QBrush *fill)
 {
+    kDrawBeButton(p, x, y, w, h, g, sunken, &g.brush(QColorGroup::Midlight));
+#if 0
     if(g.highlight() != Qt::black){
         kDrawBeButton(p, x, y, w, h, g, sunken,
                       &g.brush(QColorGroup::Midlight));
@@ -430,6 +419,7 @@ void HCStyle::drawButton(QPainter *p, int x, int y, int w, int h,
     }
     else
         kDrawBeButton(p, x, y, w, h, g, sunken, fill);
+#endif
 }
 
 void HCStyle::drawPushButton(QPushButton *btn, QPainter *p)
@@ -437,12 +427,55 @@ void HCStyle::drawPushButton(QPushButton *btn, QPainter *p)
     QRect r = btn->rect();
     bool sunken = btn->isOn() || btn->isDown();
     QColorGroup g = btn->colorGroup();
-    
+    int x = r.x(), y = r.y(), w = r.width(), h = r.height();
+
     if(sunken)
-        kDrawBeButton(p, r.x(), r.y(), r.width(), r.height(), g, true,
+        kDrawBeButton(p, x, y, w, h, g, true,
                       &g.brush(QColorGroup::Mid));
-    else
-        drawButton(p, r.x(), r.y(), r.width(), r.height(), g, false);
+    else {
+	if (btn != highlightWidget) {
+	    // -----
+	    if(vSmall){
+		int x2 = x+w-1;
+		int y2 = y+h-1;
+		p->setPen(g.dark());
+		p->drawLine(x+1, y, x2-1, y);
+		p->drawLine(x+1, y2, x2-1, y2);
+		p->drawLine(x, y+1, x, y2-1);
+		p->drawLine(x2, y+1, x2, y2-1);
+
+		if(!sunken){
+		    p->setPen(g.light());
+		    p->drawLine(x+2, y+2, x2-1, y+2);
+		    p->drawLine(x+2, y+3, x2-2, y+3);
+		    p->drawLine(x+2, y+4, x+2, y2-1);
+		    p->drawLine(x+3, y+4, x+3, y2-2);
+		}
+		else{
+		    p->setPen(g.mid());
+		    p->drawLine(x+2, y+2, x2-1, y+2);
+		    p->drawLine(x+2, y+3, x2-2, y+3);
+		    p->drawLine(x+2, y+4, x+2, y2-1);
+		    p->drawLine(x+3, y+4, x+3, y2-2);
+		}
+		p->setPen(sunken? g.light() : g.mid());
+		p->drawLine(x2-1, y+2, x2-1, y2-1);
+		p->drawLine(x+2, y2-1, x2-1, y2-1);
+
+		p->setPen(g.mid());
+		p->drawLine(x+1, y+1, x2-1, y+1);
+		p->drawLine(x+1, y+2, x+1, y2-1);
+		p->drawLine(x2-2, y+3, x2-2, y2-2);
+
+		drawVGradient(p, g.brush(QColorGroup::Mid), x+4, y+4, w-6, h-6);
+	    }
+	    else
+		drawButton(p, x, y, w, h, g, false);
+	}
+	else
+	    drawButton(p, x, y, w, h, g, false);
+    }
+
     if(btn->isDefault()){
         p->setPen(Qt::black);
         p->drawLine(r.x()+1, r.y(), r.right()-1, r.y());
@@ -542,7 +575,7 @@ void HCStyle::drawComboButton(QPainter *p, int x, int y, int w, int h,
     p->drawLine(x+1, y2, x2-1, y2);
     p->drawLine(x, y+1, x, y2-1);
     p->drawLine(x2, y+1, x2, y2-1);
-    
+
     if(vSmall)
         drawVGradient(p, g.brush(QColorGroup::Mid), x+2, y+2, w-4, h-4);
     else
@@ -567,7 +600,7 @@ void HCStyle::drawComboButton(QPainter *p, int x, int y, int w, int h,
         p->drawLine(x+3, y+2, x2, y+2);
         p->drawLine(x+2, y+3, x+2, y2);
     }
-    
+
     int arrow_h = h / 3;
     int arrow_w = arrow_h;
     int arrow_x = w - arrow_w - 6;
@@ -606,8 +639,8 @@ void HCStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
 {
     int sliderMin, sliderMax, sliderLength, buttonDim;
     scrollBarMetrics( sb, sliderMin, sliderMax, sliderLength, buttonDim );
- 
-    if (sliderStart > sliderMax) 
+
+    if (sliderStart > sliderMax)
         sliderStart = sliderMax;
 
     bool horiz = sb->orientation() == QScrollBar::Horizontal;
@@ -617,7 +650,7 @@ void HCStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
     int addX, addY, subX, subY;
     int len = horiz ? sb->width() : sb->height();
     int extent = horiz ? sb->height() : sb->width();
- 
+
     if (horiz) {
         subY = addY = ( extent - buttonDim ) / 2;
         subX = 0;
@@ -634,7 +667,7 @@ void HCStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
         subHC.setRect(addX-buttonDim,addY,buttonDim,buttonDim );
     else
         subHC.setRect(addX,addY-buttonDim,buttonDim,buttonDim );
-        
+
     int sliderEnd = sliderStart + sliderLength;
     int sliderW = extent;
 
@@ -650,9 +683,9 @@ void HCStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
         addPageR.setRect( 0, sliderEnd, sliderW, addY - buttonDim - sliderEnd);
         sliderR .setRect( 0, sliderStart, sliderW, sliderLength );
     }
-    
+
     bool maxed = sb->maxValue() == sb->minValue();
-    
+
     if ( controls & AddLine ) {
         drawSBButton(p, addB, g, activeControl == AddLine);
         drawArrow( p, horiz ? RightArrow : DownArrow,
@@ -971,7 +1004,7 @@ void HCStyle::drawIndicator(QPainter *p, int x, int y, int w, int h,
     if(!xBmp.mask())
         xBmp.setMask(xBmp);
 
-    
+
     p->setPen(g.mid());
     p->drawLine(x, y, x2, y);
     p->drawLine(x, y, x, y2);
@@ -1104,7 +1137,7 @@ void HCStyle::drawArrow(QPainter *p, Qt::ArrowType type, bool on, int x,
     static QCOORD d_arrow[]={0,2, 7,2, 0,3, 7,3, 1,4, 6,4, 2,5, 5,5, 3,6, 4,6};
     static QCOORD l_arrow[]={1,3, 1,4, 2,2, 2,5, 3,1, 3,6, 4,0, 4,7, 5,0, 5,7};
     static QCOORD r_arrow[]={2,0, 2,7, 3,0, 3,7, 4,1, 4,6, 5,2, 5,5, 6,3, 6,4};
-    
+
     p->setPen(enabled ? on ? g.light() : Qt::black : g.mid());
     if(w > 8){
         x = x + (w-8)/2;
@@ -1176,7 +1209,7 @@ void HCStyle::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
         p->drawLine(x+4, y+3, x2-4, y+3);
         p->drawLine(x+4, y+5, x2-4, y+5);
         p->drawLine(x+4, y+7, x2-4, y+7);
-        
+
         p->setPen(g.dark());
         p->drawLine(x2, y, x2, y2);
 
@@ -1184,9 +1217,9 @@ void HCStyle::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
         p->drawLine(x+4, y+4, x2-4, y+4);
         p->drawLine(x+4, y+6, x2-4, y+6);
         p->drawLine(x+4, y+8, x2-4, y+8);
-        
+
     }
-        
+
 }
 
 void HCStyle::drawKMenuBar(QPainter *p, int x, int y, int w, int h,
@@ -1248,18 +1281,18 @@ void HCStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
     if(raised || sunken){
         int x2 = x+w;
         int y2 = y+h;
- 
+
         if(vSmall)
             drawVGradient(p, g.brush(QColorGroup::Mid), x, y, w, h);
         else
             p->fillRect(x, y, w, h, g.brush(QColorGroup::Midlight));
- 
+
         p->setPen(g.dark());
         p->drawLine(x+1, y+1, x2-2, y+1);
         p->drawLine(x, y+2, x, y2-3);
         p->drawLine(x2-1, y+2, x2-1, y2-3);
         p->drawLine(x+1, y2-2, x2-2, y2-2);
- 
+
         p->setPen(sunken ? g.mid() : g.light());
         p->drawLine(x+1, y+2, x2-2, y+2);
         p->drawLine(x+1, y+2, x+1, y2-3);
@@ -1450,7 +1483,7 @@ static const int windowsRightBorder     = 12;
     if(act){
         bool dis = !enabled;
         QColorGroup itemg = dis ? pal.disabled() : pal.active();
-        
+
         int checkcol = maxpmw;
 
         qDrawShadePanel(p, x, y, w, h, itemg, true, 1,
@@ -1571,7 +1604,7 @@ void HCStyle::polishPopupMenu(QPopupMenu *mnu)
 
     KStyle::polishPopupMenu(mnu);
     if (config->readBoolEntry("AnimateMenus", false))
-      (void)new HCAniMenu(mnu); 
+      (void)new HCAniMenu(mnu);
     config->setGroup(oldGrp);
 }
 
@@ -1778,7 +1811,7 @@ void HCStyle::drawKickerAppletHandle(QPainter *p, int x, int y, int w, int h,
         p->drawLine(x+2, y+2, x2-2, y+2);
         p->drawLine(x+2, y+5, x2-2, y+5);
     }
-        
+
 }
 
 void HCStyle::drawKickerTaskButton(QPainter *p, int x, int y, int w, int h,
@@ -1792,7 +1825,7 @@ void HCStyle::drawKickerTaskButton(QPainter *p, int x, int y, int w, int h,
         p->fillRect(x+1, y+1, w-2, h-2, g.brush(QColorGroup::Mid));
     else
         p->drawTiledPixmap(x+1, y+1, w-2, h-2, sunken ? *vLarge : *vSmall);
-        
+
     p->setPen(sunken ? Qt::black : g.light());
     p->drawLine(x, y, x2-1, y);
     p->drawLine(x, y, x, y2-1);
@@ -1857,11 +1890,11 @@ void HCStyle::makeWallpaper(QPixmap &dest, const QColor &base)
     p.drawPixmap(0, 0, paper3);
     p.end();
 }
-    
 
 
 
-                
+
+
 #include "hcstyle.moc"
 
 

@@ -181,6 +181,7 @@ protected:
 private:
     QColorGroup radioOnGrp;
     KPixmap *vSmall, *vMed, *vLarge, *hMed, *hLarge;
+    QWidget *highlightWidget;
 };
 
 #endif

@@ -110,7 +110,7 @@ void KDEAniMenu::scrollIn()
 {
     int w = mnu->width();
     int h = mnu->height();
-    
+
     QPixmap bgPix(QPixmap::grabWindow(QApplication::desktop()->winId(),
                                       mnu->x(), mnu->y(), w, h));
     QPixmap mnuPix;
@@ -152,10 +152,8 @@ void KDEAniMenu::slotFinished()
 KDEStyle::KDEStyle()
     :KStyle()
 {
-    KConfig *config = KGlobal::config();
-    QString oldGrp = config->group();
-    QPalette p = kapp->palette();
     setButtonDefaultIndicatorWidth(3);
+    highlightWidget = 0L;
 }
 
 KDEStyle::~KDEStyle()
@@ -167,7 +165,7 @@ void KDEStyle::polish(QPalette &pal)
     KConfig *config = KGlobal::config();
     QString oldGrp = config->group();
     config->setGroup("KDEStyle");
-    
+
     QColor tmpColor(0, 0, 192);
     if(config->hasKey("RadioOnColor")){
         tmpColor = config->readColorEntry("RadioOnColor", &tmpColor);
@@ -187,7 +185,7 @@ void KDEStyle::polish(QPalette &pal)
         QColorGroup aGrp = pal.active();
         QColorGroup dGrp = pal.disabled();
         QColorGroup iGrp = aGrp;
-    
+
         iGrp.setColor(QColorGroup::Mid, aGrp.button());
         iGrp.setColor(QColorGroup::Dark, aGrp.mid());
         dGrp.setColor(QColorGroup::Mid, aGrp.button());
@@ -214,21 +212,17 @@ void KDEStyle::polish(QWidget *w)
     // this needs updated draw routine that doesn't depend on being masked
     if(w->inherits("QComboBox"))
         w->setAutoMask(true);
-    
+
     if(w->inherits("QPushButton")){
         w->installEventFilter(this);
-        QPalette pal = w->palette();
-        // we use this as a flag since it's otherwise unused.
-        pal.setColor(QColorGroup::Highlight, Qt::black);
-        w->setPalette(pal);
     }
 }
- 
+
 void KDEStyle::unPolish(QWidget *w)
 {
     if (w->isTopLevel())
         return;
-    
+
     if(w->inherits("QButton") || w->inherits("QLabel")){
         if(!w->parent() || (!w->parent()->inherits("KToolBar") &&
            !w->parent()->inherits("KHTMLView")))
@@ -236,16 +230,12 @@ void KDEStyle::unPolish(QWidget *w)
         else
             w->setAutoMask(false);
     }
-    
+
     if(w->inherits("QComboBox"))
         w->setAutoMask(false);
 
     if(w->inherits("QPushButton")){
         w->removeEventFilter(this);
-        QPalette pal = w->palette();
-        pal.setColor(QColorGroup::Highlight,
-                     kapp->palette().active().color(QColorGroup::Highlight));
-        w->setPalette(pal);
     }
 }
 
@@ -255,18 +245,14 @@ bool KDEStyle::eventFilter(QObject *obj, QEvent *ev)
         QWidget *btn = (QWidget *)obj;
         if (btn->isEnabled())
         {
-            QPalette pal = btn->palette();
-            pal.setColor(QColorGroup::Highlight,
-                         pal.active().color(QColorGroup::Midlight));
-            btn->setPalette(pal);
+            highlightWidget = btn;
             btn->repaint(false);
         }
     }
     else if(ev->type() == QEvent::Leave){
         QWidget *btn = (QWidget *)obj;
-        QPalette pal = btn->palette();
-        pal.setColor(QColorGroup::Highlight, Qt::black);
-        btn->setPalette(pal);
+	if (btn == highlightWidget)
+	    highlightWidget = 0L;
         btn->repaint(false);
     }
     return(false);
@@ -284,7 +270,7 @@ void KDEStyle::drawButton(QPainter *p, int x, int y, int w, int h,
     p->drawLine(x, y+1, x, y2-1);
     p->drawLine(x+1, y2, x2-1, y2);
     p->drawLine(x2, y+1, x2, y2-1);
-    
+
     if(!sunken){
         p->setPen(g.light());
         p->drawLine(x+2, y+2, x2-1, y+2);
@@ -312,7 +298,7 @@ void KDEStyle::drawButton(QPainter *p, int x, int y, int w, int h,
 
     if(fill)
         p->fillRect(x+4, y+4, w-6, h-6, *fill);
-    
+
     p->setPen(oldPen);
 
 }
@@ -343,9 +329,9 @@ void KDEStyle::drawPushButton(QPushButton *btn, QPainter *p)
         w-=indiWidth*2;
         h-=indiWidth*2;
     }
-    drawButton(p, x, y, w, h, g, sunken, sunken ? &g.brush(QColorGroup::Mid) :
-               g.highlight() == Qt::black ? &g.brush(QColorGroup::Button) :
-               &g.brush(QColorGroup::Midlight));
+    drawButton(p, x, y, w, h, g, sunken, (btn == highlightWidget) ?
+                                          &g.brush(QColorGroup::Midlight) :
+                                          &g.brush(QColorGroup::Button));
 
 }
 
@@ -453,7 +439,7 @@ void KDEStyle::drawComboButton(QPainter *p, int x, int y, int w, int h,
         p->drawLine(x+3, y+2, x2, y+2);
         p->drawLine(x+2, y+3, x+2, y2);
     }
-    
+
     int arrow_h = h / 3;
     int arrow_w = arrow_h;
     int arrow_x = w - arrow_w - 6;
@@ -492,8 +478,8 @@ void KDEStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
 {
     int sliderMin, sliderMax, sliderLength, buttonDim;
     scrollBarMetrics( sb, sliderMin, sliderMax, sliderLength, buttonDim );
- 
-    if (sliderStart > sliderMax) 
+
+    if (sliderStart > sliderMax)
         sliderStart = sliderMax;
 
     bool horiz = sb->orientation() == QScrollBar::Horizontal;
@@ -503,7 +489,7 @@ void KDEStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
     int addX, addY, subX, subY;
     int len = horiz ? sb->width() : sb->height();
     int extent = horiz ? sb->height() : sb->width();
- 
+
     if (horiz) {
         subY = addY = ( extent - buttonDim ) / 2;
         subX = 0;
@@ -520,7 +506,7 @@ void KDEStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
         subB2.setRect(addX-buttonDim,addY,buttonDim,buttonDim );
     else
         subB2.setRect(addX,addY-buttonDim,buttonDim,buttonDim );
-        
+
     int sliderEnd = sliderStart + sliderLength;
     int sliderW = extent;
 
@@ -536,9 +522,9 @@ void KDEStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
         addPageR.setRect( 0, sliderEnd, sliderW, addY - buttonDim - sliderEnd);
         sliderR .setRect( 0, sliderStart, sliderW, sliderLength );
     }
-    
+
     bool maxed = sb->maxValue() == sb->minValue();
-    
+
     if ( controls & AddLine ) {
         drawSBButton(p, addB, g, activeControl == AddLine);
         drawArrow( p, horiz ? RightArrow : DownArrow,
@@ -784,7 +770,7 @@ void KDEStyle::drawIndicator(QPainter *p, int x, int y, int w, int h,
     if(!xBmp.mask())
         xBmp.setMask(xBmp);
 
-    
+
     p->setPen(g.mid());
     p->drawLine(x, y, x2, y);
     p->drawLine(x, y, x, y2);
@@ -818,7 +804,7 @@ void KDEStyle::drawIndicator(QPainter *p, int x, int y, int w, int h,
             p->drawLine(x+3, (y+h)/2+2, x+w-4, (y+h)/2+2);
         }
     }
-    
+
 }
 
 void KDEStyle::drawIndicatorMask(QPainter *p, int x, int y, int w, int h, int)
@@ -909,7 +895,7 @@ void KDEStyle::drawArrow(QPainter *p, Qt::ArrowType type, bool on, int x,
     static QCOORD d_arrow[]={0,2, 7,2, 0,3, 7,3, 1,4, 6,4, 2,5, 5,5, 3,6, 4,6};
     static QCOORD l_arrow[]={1,3, 1,4, 2,2, 2,5, 3,1, 3,6, 4,0, 4,7, 5,0, 5,7};
     static QCOORD r_arrow[]={2,0, 2,7, 3,0, 3,7, 4,1, 4,6, 5,2, 5,5, 6,3, 6,4};
-    
+
     p->setPen(enabled ? on ? g.light() : Qt::black : g.mid());
     if(w > 8){
         x = x + (w-8)/2;
@@ -975,7 +961,7 @@ void KDEStyle::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
         p->drawLine(x+4, y+3, x2-4, y+3);
         p->drawLine(x+4, y+5, x2-4, y+5);
         p->drawLine(x+4, y+7, x2-4, y+7);
-        
+
         p->setPen(g.dark());
         p->drawLine(x2, y, x2, y2);
 
@@ -983,9 +969,9 @@ void KDEStyle::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
         p->drawLine(x+4, y+4, x2-4, y+4);
         p->drawLine(x+4, y+6, x2-4, y+6);
         p->drawLine(x+4, y+8, x2-4, y+8);
-        
+
     }
-        
+
 }
 
 void KDEStyle::drawKMenuBar(QPainter *p, int x, int y, int w, int h,
@@ -1031,15 +1017,15 @@ void KDEStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
     if(raised || sunken){
         int x2 = x+w;
         int y2 = y+h;
- 
+
         p->fillRect(x, y, w, h, g.brush(QColorGroup::Midlight));
- 
+
         p->setPen(g.dark());
         p->drawLine(x+1, y+1, x2-2, y+1);
         p->drawLine(x, y+2, x, y2-3);
         p->drawLine(x2-1, y+2, x2-1, y2-3);
         p->drawLine(x+1, y2-2, x2-2, y2-2);
- 
+
         p->setPen(sunken ? g.mid() : g.light());
         p->drawLine(x+1, y+2, x2-2, y+2);
         p->drawLine(x+1, y+2, x+1, y2-3);
@@ -1187,7 +1173,7 @@ static const int windowsRightBorder     = 12;
     if(act){
         bool dis = !enabled;
         QColorGroup itemg = dis ? pal.disabled() : pal.active();
-        
+
         int checkcol = maxpmw;
 
         qDrawShadePanel(p, x, y, w, h, itemg, true, 1,
@@ -1304,7 +1290,7 @@ void KDEStyle::polishPopupMenu(QPopupMenu *mnu)
 {
     KStyle::polishPopupMenu(mnu);
     // disabled for now because it breaks kicker
-    // (void)new KDEAniMenu(mnu); 
+    // (void)new KDEAniMenu(mnu);
 }
 
 /*
@@ -1500,10 +1486,10 @@ void KDEStyle::drawKickerAppletHandle(QPainter *p, int x, int y, int w, int h,
         p->drawLine(x+2, y+2, x2-2, y+2);
         p->drawLine(x+2, y+5, x2-2, y+5);
     }
-        
-    */    
+
+    */
 }
-                
+
 #include "kdestyle.moc"
 
 

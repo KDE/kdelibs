@@ -167,6 +167,7 @@ protected:
                        QBitmap *blackColor=0, QBitmap *whiteColor=0);
 private:
     QColorGroup radioOnGrp;
+    QWidget *highlightWidget;
 };
 
 #endif
