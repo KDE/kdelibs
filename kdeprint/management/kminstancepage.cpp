@@ -120,12 +120,14 @@ void KMInstancePage::setPrinter(KMPrinter *p)
 		if (*it)
 			(*it)->setEnabled(ok);
 
-	if (!oldText.isEmpty())
-	{
+	//iif (!oldText.isEmpty())
+	//{
 		QListBoxItem	*item = m_view->findItem(oldText);
+		if (!item)
+			item = m_view->findItem(i18n("(Default)"));
 		if (item)
 			m_view->setSelected(item,true);
-	}
+	//}
 }
 
 void KMInstancePage::slotNew()
