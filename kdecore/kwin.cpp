@@ -363,7 +363,8 @@ void KWin::avoid(WId win, AnchorEdge edge)
 
 //  qDebug("KWin::avoid - anchor edge == '%s'", anchorEdge);
 
-  Status status = XStringListToTextProperty(&const_cast<char*>(anchorEdge),
+  char *ae = const_cast<char *>( anchorEdge );
+  Status status = XStringListToTextProperty(&ae,
                                             1, &avoidProp);
 
   if (0 != status)
@@ -383,7 +384,8 @@ void KWin::stopAvoiding(WId win)
 
   const char * anchorEdge = "0";
 
-  Status status = XStringListToTextProperty(&const_cast<char*>(anchorEdge),
+  char *ae = const_cast<char *>( anchorEdge );
+  Status status = XStringListToTextProperty(&ae,
                                             1, &avoidProp);
 
   if (0 != status)
