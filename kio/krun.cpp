@@ -70,7 +70,7 @@ bool KRun::runURL( const KURL& u, const QString& _mimetype )
 	    _mimetype == "application/x-shellscript")
    {
     if ( u.isLocalFile() )
-      return KRun::run( u.path() ); // just execute the url as a command
+      return (KRun::run( u.path() ) != -1); // just execute the url as a command
   }
 
   KURL::List lst;
@@ -210,47 +210,20 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
   QString _dot_desktop;
 
   // Were we passed the name of the desktop file ?
-  if (!_desktop_file.isNull()) {
-    qDebug("I was given the name of the desktop file, `%s'", _dot_desktop.ascii());
+  if (!_desktop_file.isNull())
     _dot_desktop = _desktop_file;
-  }
 
   else {
 
     KService::Ptr service = KService::serviceByDesktopName(_bin_name);
 
     if (0 != service) {
-      _dot_desktop = service->desktopEntryPath();
-      _dot_desktop = locate("apps", service->desktopEntryPath());
 
-      qDebug("I found the desktop file, `%s' myself", _dot_desktop.ascii());
+      KDesktopFile desktopFile(service->desktopEntryPath(), true);
+      _res_name = desktopFile.readEntry("XClassHintResName", _bin_name);
+      _appStartNotify = !desktopFile.readBoolEntry("NoAppStartNotify", false);
     }
-
-    else qDebug("Couldn't find the desktop file");
-
   }
-
-  // Have we got a desktop file path now ?
-  if (!_dot_desktop.isNull()) {
-
-
-    qDebug("Reading the config from `%s'", _dot_desktop.ascii());
-    KConfig c(_dot_desktop, true);
-    c.setDesktopGroup();
-
-    // Find out if the app is buggy and doesn't set res_name at all.
-    _appStartNotify = c.readBoolEntry("NoAppStartNotify", true);
-    qDebug("_appStartNotify == `%s'", _appStartNotify ? "true" : "false");
-
-    // Find out if we can fake it by knowing the res_name in advance.
-    _res_name = c.readEntry("XClassHintResName", _bin_name);
-    qDebug("XClassHintResName == `%s'", _res_name.ascii());
-
-  } else {
-    qDebug("No desktop file at all :(");
-  }
-
-  qDebug("res_name == `%s'", _res_name.ascii());
 
   // End app starting notification stuff.
 
