@@ -176,7 +176,7 @@ namespace KJS {
   public:
     RegExpNode(const UString &p, const UString &f)
       : pattern(p), flags(f) { }
-    Value evaluate(ExecState *exec) const;
+    virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     UString pattern, flags;
@@ -185,7 +185,7 @@ namespace KJS {
   class ThisNode : public Node {
   public:
     ThisNode() {}
-    Value evaluate(ExecState *exec) const;
+    virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   };
 
@@ -205,7 +205,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~GroupNode();
-    Value evaluate(ExecState *exec) const;
+    virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const { group->streamTo(s); }
   private:
     Node *group;
@@ -217,7 +217,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~ElisionNode();
-    Value evaluate(ExecState *exec) const;
+    virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     ElisionNode *elision;
@@ -231,7 +231,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~ElementNode();
-    Value evaluate(ExecState *exec) const;
+    virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     ElementNode *list;
@@ -249,7 +249,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~ArrayNode();
-    Value evaluate(ExecState *exec) const;
+    virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     ElementNode *element;
@@ -263,7 +263,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~ObjectLiteralNode();
-    Value evaluate(ExecState *exec) const;
+    virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     Node *list;
@@ -276,7 +276,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~PropertyValueNode();
-    Value evaluate(ExecState *exec) const;
+    virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     Node *name, *assign, *list;
@@ -286,7 +286,7 @@ namespace KJS {
   public:
     PropertyNode(double d) : numeric(d) { }
     PropertyNode(const UString *s) : str(*s) { }
-    Value evaluate(ExecState *exec) const;
+    virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     double numeric;
@@ -326,7 +326,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~ArgumentListNode();
-    Value evaluate(ExecState *exec) const;
+    virtual Value value(ExecState *exec) const;
     List evaluateList(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
@@ -340,7 +340,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~ArgumentsNode();
-    Value evaluate(ExecState *exec) const;
+    virtual Value value(ExecState *exec) const;
     List evaluateList(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
@@ -367,7 +367,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~FunctionCallNode();
-    Value evaluate(ExecState *exec) const;
+    virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     Node *expr;
@@ -393,7 +393,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~DeleteNode();
-    Value evaluate(ExecState *exec) const;
+    virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     Node *expr;
@@ -405,7 +405,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~VoidNode();
-    Value evaluate(ExecState *exec) const;
+    virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     Node *expr;
@@ -417,7 +417,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~TypeOfNode();
-    Value evaluate(ExecState *exec) const;
+    virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     Node *expr;
@@ -442,7 +442,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~UnaryPlusNode();
-    Value evaluate(ExecState *exec) const;
+    virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     Node *expr;
@@ -454,7 +454,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~NegateNode();
-    Value evaluate(ExecState *exec) const;
+    virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     Node *expr;
@@ -466,7 +466,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~BitwiseNotNode();
-    Value evaluate(ExecState *exec) const;
+    virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     Node *expr;
@@ -478,7 +478,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~LogicalNotNode();
-    Value evaluate(ExecState *exec) const;
+    virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     Node *expr;
@@ -490,7 +490,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~MultNode();
-    Value evaluate(ExecState *exec) const;
+    virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     Node *term1, *term2;
@@ -503,7 +503,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~AddNode();
-    Value evaluate(ExecState *exec) const;
+    virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     Node *term1, *term2;
@@ -517,7 +517,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~ShiftNode();
-    Value evaluate(ExecState *exec) const;
+    virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     Node *term1, *term2;
@@ -545,7 +545,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~EqualNode();
-    Value evaluate(ExecState *exec) const;
+    virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     Node *expr1, *expr2;
@@ -559,7 +559,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~BitOperNode();
-    Value evaluate(ExecState *exec) const;
+    virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     Node *expr1, *expr2;
@@ -576,7 +576,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~BinaryLogicalNode();
-    Value evaluate(ExecState *exec) const;
+    virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     Node *expr1, *expr2;
@@ -593,7 +593,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~ConditionalNode();
-    Value evaluate(ExecState *exec) const;
+    virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     Node *logical, *expr1, *expr2;
@@ -605,7 +605,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~AssignNode();
-    Value value(ExecState *exec) const;
+    virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     Node *left;
@@ -619,7 +619,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~CommaNode();
-    Value evaluate(ExecState *exec) const;
+    virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     Node *expr1, *expr2;

@@ -199,7 +199,7 @@ Value StringNode::value(ExecState *) const
 
 // ----------------------------- RegExpNode -----------------------------------
 
-Value RegExpNode::evaluate(ExecState *exec) const
+Value RegExpNode::value(ExecState *exec) const
 {
   List list;
   String p(pattern);
@@ -214,7 +214,7 @@ Value RegExpNode::evaluate(ExecState *exec) const
 // ----------------------------- ThisNode -------------------------------------
 
 // ECMA 11.1.1
-Value ThisNode::evaluate(ExecState *exec) const
+Value ThisNode::value(ExecState *exec) const
 {
   return exec->context().thisValue();
 }
@@ -284,7 +284,7 @@ bool GroupNode::deref()
 }
 
 // ECMA 11.1.6
-Value GroupNode::evaluate(ExecState *exec) const
+Value GroupNode::value(ExecState *exec) const
 {
   return group->evaluate(exec);
 }
@@ -310,7 +310,7 @@ bool ElisionNode::deref()
 }
 
 // ECMA 11.1.4
-Value ElisionNode::evaluate(ExecState *exec) const
+Value ElisionNode::value(ExecState *exec) const
 {
   if (elision)
     return Number(elision->evaluate(exec).toNumber(exec) + 1);
@@ -347,7 +347,7 @@ bool ElementNode::deref()
 }
 
 // ECMA 11.1.4
-Value ElementNode::evaluate(ExecState *exec) const
+Value ElementNode::value(ExecState *exec) const
 {
   Object array;
   Value val;
@@ -397,7 +397,7 @@ bool ArrayNode::deref()
 }
 
 // ECMA 11.1.4
-Value ArrayNode::evaluate(ExecState *exec) const
+Value ArrayNode::value(ExecState *exec) const
 {
   Object array;
   int length;
@@ -441,7 +441,7 @@ bool ObjectLiteralNode::deref()
 }
 
 // ECMA 11.1.5
-Value ObjectLiteralNode::evaluate(ExecState *exec) const
+Value ObjectLiteralNode::value(ExecState *exec) const
 {
   if (list)
     return list->evaluate(exec);
@@ -478,7 +478,7 @@ bool PropertyValueNode::deref()
 }
 
 // ECMA 11.1.5
-Value PropertyValueNode::evaluate(ExecState *exec) const
+Value PropertyValueNode::value(ExecState *exec) const
 {
   Object obj;
   if (list) {
@@ -503,7 +503,7 @@ Value PropertyValueNode::evaluate(ExecState *exec) const
 // ----------------------------- PropertyNode ---------------------------------
 
 // ECMA 11.1.5
-Value PropertyNode::evaluate(ExecState */*exec*/) const
+Value PropertyNode::value(ExecState */*exec*/) const
 {
   if (str.isNull()) {
     return String(UString::from(numeric));
@@ -612,7 +612,7 @@ bool ArgumentListNode::deref()
   return Node::deref();
 }
 
-Value ArgumentListNode::evaluate(ExecState */*exec*/) const
+Value ArgumentListNode::value(ExecState */*exec*/) const
 {
   assert(0);
   return Value(); // dummy, see evaluateList()
@@ -660,7 +660,7 @@ bool ArgumentsNode::deref()
   return Node::deref();
 }
 
-Value ArgumentsNode::evaluate(ExecState */*exec*/) const
+Value ArgumentsNode::value(ExecState */*exec*/) const
 {
   assert(0);
   return Value(); // dummy, see evaluateList()
@@ -752,7 +752,7 @@ bool FunctionCallNode::deref()
 }
 
 // ECMA 11.2.3
-Value FunctionCallNode::evaluate(ExecState *exec) const
+Value FunctionCallNode::value(ExecState *exec) const
 {
   Value e = expr->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
@@ -862,7 +862,7 @@ bool DeleteNode::deref()
 }
 
 // ECMA 11.4.1
-Value DeleteNode::evaluate(ExecState *exec) const
+Value DeleteNode::value(ExecState *exec) const
 {
   Value e = expr->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
@@ -905,7 +905,7 @@ bool VoidNode::deref()
 }
 
 // ECMA 11.4.2
-Value VoidNode::evaluate(ExecState *exec) const
+Value VoidNode::value(ExecState *exec) const
 {
   Value dummy1 = expr->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
@@ -935,7 +935,7 @@ bool TypeOfNode::deref()
 }
 
 // ECMA 11.4.3
-Value TypeOfNode::evaluate(ExecState *exec) const
+Value TypeOfNode::value(ExecState *exec) const
 {
   const char *s = 0L;
   Value e = expr->evaluate(exec);
@@ -1031,7 +1031,7 @@ bool UnaryPlusNode::deref()
 }
 
 // ECMA 11.4.6
-Value UnaryPlusNode::evaluate(ExecState *exec) const
+Value UnaryPlusNode::value(ExecState *exec) const
 {
   Value e = expr->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
@@ -1061,7 +1061,7 @@ bool NegateNode::deref()
 }
 
 // ECMA 11.4.7
-Value NegateNode::evaluate(ExecState *exec) const
+Value NegateNode::value(ExecState *exec) const
 {
   Value e = expr->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
@@ -1094,7 +1094,7 @@ bool BitwiseNotNode::deref()
 }
 
 // ECMA 11.4.8
-Value BitwiseNotNode::evaluate(ExecState *exec) const
+Value BitwiseNotNode::value(ExecState *exec) const
 {
   Value e = expr->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
@@ -1125,7 +1125,7 @@ bool LogicalNotNode::deref()
 }
 
 // ECMA 11.4.9
-Value LogicalNotNode::evaluate(ExecState *exec) const
+Value LogicalNotNode::value(ExecState *exec) const
 {
   Value e = expr->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
@@ -1160,7 +1160,7 @@ bool MultNode::deref()
 }
 
 // ECMA 11.5
-Value MultNode::evaluate(ExecState *exec) const
+Value MultNode::value(ExecState *exec) const
 {
   Value t1 = term1->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
@@ -1198,7 +1198,7 @@ bool AddNode::deref()
 }
 
 // ECMA 11.6
-Value AddNode::evaluate(ExecState *exec) const
+Value AddNode::value(ExecState *exec) const
 {
   Value t1 = term1->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
@@ -1236,7 +1236,7 @@ bool ShiftNode::deref()
 }
 
 // ECMA 11.7
-Value ShiftNode::evaluate(ExecState *exec) const
+Value ShiftNode::value(ExecState *exec) const
 {
   Value t1 = term1->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
@@ -1364,7 +1364,7 @@ bool EqualNode::deref()
 }
 
 // ECMA 11.9
-Value EqualNode::evaluate(ExecState *exec) const
+Value EqualNode::value(ExecState *exec) const
 {
   Value e1 = expr1->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
@@ -1411,7 +1411,7 @@ bool BitOperNode::deref()
 }
 
 // ECMA 11.10
-Value BitOperNode::evaluate(ExecState *exec) const
+Value BitOperNode::value(ExecState *exec) const
 {
   Value e1 = expr1->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
@@ -1457,7 +1457,7 @@ bool BinaryLogicalNode::deref()
 }
 
 // ECMA 11.11
-Value BinaryLogicalNode::evaluate(ExecState *exec) const
+Value BinaryLogicalNode::value(ExecState *exec) const
 {
   Value e1 = expr1->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
@@ -1502,7 +1502,7 @@ bool ConditionalNode::deref()
 }
 
 // ECMA 11.12
-Value ConditionalNode::evaluate(ExecState *exec) const
+Value ConditionalNode::value(ExecState *exec) const
 {
   Value e = logical->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
@@ -1635,7 +1635,7 @@ bool CommaNode::deref()
 }
 
 // ECMA 11.14
-Value CommaNode::evaluate(ExecState *exec) const
+Value CommaNode::value(ExecState *exec) const
 {
   Value e = expr1->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
