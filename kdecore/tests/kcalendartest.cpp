@@ -5,6 +5,8 @@
 #include "kcalendarsystemfactory.h"
 #include "kcalendarsystem.h"
 
+#include <qstringlist.h>
+
 #include <kapplication.h>
 #include <kaboutdata.h>
 #include <kdebug.h>
@@ -43,6 +45,12 @@ int main(int argc, char **argv) {
         KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
 	KApplication app(false, false);
+
+        QStringList lst = KCalendarSystemFactory::calendarSystems();
+	kdDebug() << "Supported calendar types: " << endl;
+	for (QStringList::Iterator it = lst.begin(); it != lst.end(); ++it)
+            kdDebug() << *it << endl;
+        kdDebug() << endl;
 
 	
         if ( args->isSet("type") )
