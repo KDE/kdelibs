@@ -1,3 +1,7 @@
+2003-10-19  Harri Porten  <porten@froglogic.com>
+
+	* grammar.y: fixed bitwise XOR and OR expressions
+
 2003-09-30  Harri Porten  <harri@froglogic.com>
 
 	* lexer.cpp (isWhiteSpace): allow no-break space
