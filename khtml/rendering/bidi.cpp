@@ -1091,3 +1091,5 @@ RenderObject *RenderFlow::nextObject(RenderObject *current)
     return 0;
 }
 
+// For --enable-final
+#undef BIDI_DEBUG
