@@ -305,7 +305,7 @@ public:
     Sets, if the resource is active.
   */
   void setActive( bool active );
-  
+
   /**
     Return true, if the resource is active.
   */
@@ -349,7 +349,9 @@ protected:
   void setType( const QString& type ) { mType = type; }
 
 private:
+#ifdef QT_THREAD_SUPPORT
   QMutex mMutex;
+#endif
   int mOpenCount;
   QString mType;
   QString mIdentifier;

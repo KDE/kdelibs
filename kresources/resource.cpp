@@ -63,7 +63,9 @@ void Resource::writeConfig( KConfig* config )
 bool Resource::open()
 {
   bool result = true;
+#ifdef QT_THREAD_SUPPORT
   QMutexLocker guard( &mMutex );
+#endif
   if ( ! mOpenCount ) {
     kdDebug(5650) << "Opening resource " << resourceName() << endl;
     result = doOpen();
@@ -74,7 +76,9 @@ bool Resource::open()
 
 void Resource::close()
 {
+#ifdef QT_THREAD_SUPPORT
   QMutexLocker guard( &mMutex );
+#endif
   if ( ! mOpenCount )
   {
     kdDebug(5650) << "ERROR: Resource " << resourceName() << " closed more times than previously opened" << endl;
