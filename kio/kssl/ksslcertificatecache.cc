@@ -18,6 +18,10 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 /*
 
   DESIGN
@@ -67,6 +71,28 @@
 #include <qlist.h>
 #include <kconfig.h>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <stdlib.h>
+#include <pwd.h>
+#include <unistd.h>
+#include <qfile.h>
+#include <qsortedlist.h>
+#include <kglobal.h>
+#include <kstddirs.h>
+#include <kdebug.h>
+
+
+#include <kmdcodec.h>
+
+#ifdef HAVE_SSL
+#define crypt _openssl_crypt
+#include <openssl/ssl.h>
+#include <openssl/x509.h>
+#include <openssl/x509v3.h>
+#include <openssl/pem.h>
+#undef crypt
+#endif
 
 class KSSLCNode {
 public:
@@ -93,7 +119,10 @@ class KSSLCertificateCache::KSSLCertificateCachePrivate {
 
 KSSLCertificateCache::KSSLCertificateCache() {
   d = new KSSLCertificateCachePrivate;
-  d->cfg = new KConfig("ksslpolicies");
+  d->cfg = new KConfig("ksslpolicies", false, false);
+  if (!KGlobal::dirs()->addResourceType("kssl", "share/apps/kssl")) {
+    kdDebug() << "Error adding (kssl, share/apps/kssl)" << endl;
+  }
   loadDefaultPolicies();
 }
 
@@ -107,9 +136,47 @@ KSSLCertificateCache::~KSSLCertificateCache() {
 
 
 void KSSLCertificateCache::saveToDisk() {
-// FIXME: save permapolicies to disk.
+#ifdef HAVE_SSL
+  KSSLCNode *node;
+
+  for (node = d->certList.first(); node; node = d->certList.next()) {
+    if (node->permanent) {
+      // First convert to a binary format and then write the kconfig entry
+      unsigned int certlen = i2d_X509(node->cert->getCert(), NULL);
+      // These should technically be unsigned char * but it doesn't matter
+      // for our purposes
+      char *cert = new char[certlen];
+      char *p = cert;
+        {
+        QByteArray qba;
+ 
+        i2d_X509(node->cert->getCert(), (unsigned char **)&p);
+
+        // encode it into a QString
+        qba.setRawData(cert, certlen);
+        QString certEncoded = KCodecs::base64Encode(qba);
+        qba.resetRawData(cert, certlen);
+
+        // write the (CN, policy, cert) to KConfig
+        d->cfg->setGroup(node->cert->getSubject());
+        d->cfg->writeEntry("Certificate", certEncoded);
+        d->cfg->writeEntry("Policy", node->policy);
+        }
+      delete[] cert;
+    }
+  }  
+
+  d->cfg->sync();
+
+  // insure proper permissions -- contains sensitive data
+  QString cfgName(KGlobal::dirs()->findResource("config", "ksslpolicies"));
+  if (!cfgName.isEmpty())
+    ::chmod(QFile::encodeName(cfgName), 0600);
+#endif
 }
 
+      // FIXME: how do we implement non-permanent policies?
+      
 
 void KSSLCertificateCache::clearList() {
   KSSLCNode *node;
@@ -121,8 +188,38 @@ void KSSLCertificateCache::clearList() {
 }
 
 
+// FIXME: some certs may expire or be revoked and will need to be replaced!!!
+//   Take this into account please!!  - compare by Cert only??
+//   It's only lookups by CN that are affected here.
+
 void KSSLCertificateCache::loadDefaultPolicies() {
-  // FIXME: finish this
+#ifdef HAVE_SSL
+  QStringList groups = d->cfg->groupList();
+
+  for (QStringList::Iterator i = groups.begin();
+                             i != groups.end();
+                             ++i) {
+    if ((*i).length() == 0) continue;
+    d->cfg->setGroup(*i);
+    QCString encodedCert = d->cfg->readEntry("Certificate").local8Bit();
+    if (encodedCert.length() == 0) continue;
+    KSSLCNode *n = new KSSLCNode;
+    QByteArray qba, qbb = encodedCert.copy();
+    KCodecs::base64Decode(qbb, qba);
+    char *qbap = qba.data();
+    X509 *x5c = d2i_X509(NULL, &(unsigned char *)qbap, qba.size());
+    if (!x5c) {
+      delete n;
+      continue;
+    }
+    n->cert = new KSSLCertificate;
+    n->cert->setCert(x5c);
+    n->policy = (KSSLCertificateCache::KSSLCertificatePolicy)
+                d->cfg->readNumEntry("Policy");
+    n->permanent = true;
+    d->certList.append(n); 
+  }
+#endif
 }
 
 
@@ -134,6 +231,8 @@ void KSSLCertificateCache::addCertificate(KSSLCertificate& cert,
     if (cert == *(node->cert)) {
       node->policy = policy;
       node->permanent = permanent;
+      if (permanent)
+        saveToDisk();
       return;
     }
   }
@@ -143,6 +242,8 @@ void KSSLCertificateCache::addCertificate(KSSLCertificate& cert,
   n->policy = policy;
   n->permanent = permanent;
   d->certList.prepend(n); 
+  if (permanent)
+    saveToDisk();
 }
 
 
@@ -208,8 +309,11 @@ bool KSSLCertificateCache::removeByCN(QString& cn) {
 
   for (node = d->certList.first(); node; node = d->certList.next()) {
     if (node->cert->getSubject() == cn) {
+      bool permanent = node->permanent;
       d->certList.remove(node);
       delete node;
+      if (permanent)
+        saveToDisk();
       gotOne = true;
     }
   }
@@ -219,16 +323,18 @@ bool KSSLCertificateCache::removeByCN(QString& cn) {
 
 bool KSSLCertificateCache::removeByCertificate(KSSLCertificate& cert) {
   KSSLCNode *node;
-  bool gotOne = false;
 
   for (node = d->certList.first(); node; node = d->certList.next()) {
     if (cert == *(node->cert)) {
+      bool permanent = node->permanent;
       d->certList.remove(node);
       delete node;
-      gotOne = true;
+      if (permanent)
+        saveToDisk();
+      return true;
     }
   }
-  return gotOne;
+  return false;
 }
 
 

@@ -64,12 +64,15 @@ enum KSSLCertificatePolicy { Unknown, Reject, Accept, Prompt, Ambiguous };
   bool removeByCN(QString& cn);
   bool removeByCertificate(KSSLCertificate& cert);
 
+  // You shouldn't need to call this but in some weird circumstances
+  // it might be necessary.
+  void saveToDisk();
+
 private:
   class KSSLCertificateCachePrivate;
   KSSLCertificateCachePrivate *d;
 
   void loadDefaultPolicies();
-  void saveToDisk();
   void clearList();
 
 };
