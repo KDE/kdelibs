@@ -959,7 +959,7 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &propertyName) con
   }
 
   // Base HTMLElement stuff or parent class forward, as usual
-  return DOMObjectLookupGet<KJS::HTMLElementFunction, KJS::HTMLElement, DOMObject>(exec, propertyName, &KJS::HTMLElementTable, this);
+  return DOMObjectLookupGet<KJS::HTMLElementFunction, KJS::HTMLElement, DOMElement>(exec, propertyName, &KJS::HTMLElementTable, this);
 }
 
 Value KJS::HTMLElement::getValue(ExecState *exec, int token) const
@@ -1847,7 +1847,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &propertyName, cons
       return;
     }
   }
-  DOMObjectLookupPut<KJS::HTMLElement, DOMObject>(exec, propertyName, value, attr, &KJS::HTMLElementTable, this);
+  DOMObjectLookupPut<KJS::HTMLElement, DOMElement>(exec, propertyName, value, attr, &KJS::HTMLElementTable, this);
 }
 
 void KJS::HTMLElement::putValue(ExecState *exec, int token, const Value& value, int)
