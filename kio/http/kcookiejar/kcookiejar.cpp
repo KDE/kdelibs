@@ -162,23 +162,7 @@ bool KHttpCookie::match(const QString &fqdn, const QStringList &domains,
     {
         // No domain set, check hostname.
         if (fqdn != mHost)
-        {
-          // If hostnames do not match, check if the TLD of the
-          // cookie and the request URL match.  If they do send 
-          // the cookie.  This means a cookie without a domain=
-          // field is available to every host under the TLD of 
-          // its fqdn.          
-          if ( domains.isEmpty() )
-            return false;
-          
-          int len = domains.count();
-          QString fqdnTLD = domains[len-2];
-          int matchpos = mHost.find(fqdnTLD, 0, false);
-          
-          if ((matchpos == -1 && domains[len-1] != mHost) ||
-              (matchpos > -1 && (matchpos+fqdnTLD.length() != mHost.length())))
-              return false;
-        }
+          return false;
     }
     else if (!domains.contains(mDomain))
     {
@@ -273,8 +257,23 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat)
 
        for ( cookie=cookieList->first(); cookie != 0; cookie=cookieList->next() )
        {
-          if (!cookie->match( fqdn, domains, path))
-             continue;
+          if (!cookie->match(fqdn, domains, path) && cookie->domain().isEmpty())
+          {
+              // The following code is added because RFC 2109 is completely
+              // ambigious when it comes what needs to be done when cookies
+              // with empty "domain=" fields are present! The following code
+              // makes such cookies available to all the domains/hosts under
+              // the TLD of the cookie in question!
+             QStringList cookieDomainList;
+             extractDomains( cookie->host(), cookieDomainList );
+             
+             int fqdnCount = domains.count();             
+             int cookieDomainCount = cookieDomainList.count();
+             
+             if ( domains[fqdnCount-2] != cookieDomainList[cookieDomainCount-2] &&
+                  domains[fqdnCount-1] != cookieDomainList[cookieDomainCount-1] )
+                continue;
+          }
 
           if( cookie->isSecure() && !secureRequest )
              continue;
