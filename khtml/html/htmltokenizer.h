@@ -89,7 +89,7 @@ protected:
     void parseTag(khtml::DOMStringIt &str);
     void parseEntity(khtml::DOMStringIt &str, bool start = false);
     void parseProcessingInstruction(khtml::DOMStringIt &str);
-    
+
     // check if we have enough space in the buffer.
     // if not enlarge it
     void checkBuffer(int len = 10);
@@ -99,7 +99,7 @@ protected:
     QChar *buffer;
     QChar *dest;
 
-    Token *currToken;
+    khtml::Token *currToken;
 
     // the size of buffer
     int size;
@@ -193,7 +193,7 @@ protected:
 
     // XML processing instructions. Ignored at the moment
     bool processingInstruction;
-    
+
     // Area we in a <!-- comment --> block
     bool comment;
 

@@ -34,6 +34,7 @@
 #include "stringit.h"
 #include "dom_stringimpl.h"
 
+namespace khtml {
 /**
  * @internal
  * represents one HTML Attribute
@@ -182,5 +183,6 @@ inline bool operator==( const Attribute &a, const int &i )
 inline bool operator==( const Attribute &a, const QString &s )
 { return a.value() == s; }
 
+};
 #endif // HTMLTOKEN
 

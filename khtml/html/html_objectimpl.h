@@ -48,7 +48,7 @@ public:
     virtual tagStatus startTag() { return APPLETStartTag; }
     virtual tagStatus endTag() { return APPLETEndTag; }
 
-    virtual void parseAttribute(Attribute *token);
+    virtual void parseAttribute(khtml::Attribute *token);
 
     virtual void attach(KHTMLView *w);
     virtual void detach();
@@ -87,7 +87,7 @@ public:
     long tabIndex() const;
     void setTabIndex( long );
 
-    virtual void parseAttribute(Attribute *token);
+    virtual void parseAttribute(khtml::Attribute *token);
 
     virtual void attach(KHTMLView *w);
     virtual void detach();
@@ -113,7 +113,7 @@ public:
     virtual tagStatus startTag() { return PARAMStartTag; }
     virtual tagStatus endTag() { return PARAMEndTag; }
 
-    virtual void parseAttribute(Attribute *token);
+    virtual void parseAttribute(khtml::Attribute *token);
 
     QString name() { return QConstString(m_name->s, m_name->l).string(); }
     QString value() { return QConstString(m_value->s, m_value->l).string(); }

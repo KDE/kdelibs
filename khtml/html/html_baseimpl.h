@@ -50,7 +50,7 @@ public:
     virtual tagStatus startTag() { return BODYStartTag; }
     virtual tagStatus endTag() { return BODYEndTag; }
 
-    virtual void parseAttribute(Attribute *);
+    virtual void parseAttribute(khtml::Attribute *);
 
     CSSStyleSheetImpl *sheet() const { return m_style; }
 protected:
@@ -72,7 +72,7 @@ public:
     virtual tagStatus startTag() { return FRAMEStartTag; }
     virtual tagStatus endTag() { return FRAMEEndTag; }
 
-    virtual void parseAttribute(Attribute *);
+    virtual void parseAttribute(khtml::Attribute *);
     virtual void attach(KHTMLView *w);
     virtual void detach();
 
@@ -106,7 +106,7 @@ public:
     virtual tagStatus startTag() { return FRAMESETStartTag; }
     virtual tagStatus endTag() { return FRAMESETEndTag; }
 
-    virtual void parseAttribute(Attribute *);
+    virtual void parseAttribute(khtml::Attribute *);
     virtual NodeImpl *addChild(NodeImpl *child);
     virtual void attach(KHTMLView *w);
 

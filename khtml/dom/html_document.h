@@ -64,8 +64,8 @@ class HTMLElement;
  */
 class HTMLDocument : public Document
 {
-    friend class KHTMLView;
-    friend class KHTMLPart;
+    friend class ::KHTMLView;
+    friend class ::KHTMLPart;
 public:
     HTMLDocument();
     /**

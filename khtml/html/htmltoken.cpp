@@ -27,6 +27,7 @@
 
 #include "htmltoken.h"
 #include "htmlhashes.h"
+using namespace khtml;
 
 // ---------------------------------------------------------------------------
 

@@ -32,7 +32,6 @@
 #include "dom/dom_string.h"
 
 class KHTMLView;
-class Token;
 class HTMLStackElem;
 
 namespace DOM {
@@ -42,6 +41,10 @@ namespace DOM {
     class HTMLFormElementImpl;
     class HTMLMapElementImpl;
 }
+
+namespace khtml {
+    class Token;
+};
 
 class KHTMLParser;
 typedef void (KHTMLParser::*blockFunc)(HTMLStackElem *stackElem);
@@ -60,7 +63,7 @@ public:
      * parses one token delivered by the tokenizer
      * Caution: the parser deletes the token after use!
      */
-    void parseToken(Token *_t);
+    void parseToken(khtml::Token *_t);
 
     /**
      * resets the parser
@@ -77,9 +80,9 @@ protected:
     /*
      * generate an element from the token
      */
-    DOM::NodeImpl *getElement(Token *);
+    DOM::NodeImpl *getElement(khtml::Token *);
 
-    void processCloseTag(Token *);
+    void processCloseTag(khtml::Token *);
 
     void insertNode(DOM::NodeImpl *n);
 

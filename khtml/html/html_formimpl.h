@@ -63,7 +63,7 @@ public:
 
     QString formData( );
 
-    virtual void parseAttribute(Attribute *attr);
+    virtual void parseAttribute(khtml::Attribute *attr);
 
     virtual void attach(KHTMLView *w);
     virtual void detach();
@@ -98,7 +98,7 @@ public:
 
     virtual NodeImpl *addChild(NodeImpl *newChild) { return HTMLElementImpl::addChild(newChild); }
 
-    virtual void parseAttribute(Attribute *attr);
+    virtual void parseAttribute(khtml::Attribute *attr);
 
     virtual void attach(KHTMLView *w);
     virtual void detach();
@@ -142,7 +142,7 @@ public:
 
     DOMString type() const;
 
-    void parseAttribute(Attribute *attr);
+    void parseAttribute(khtml::Attribute *attr);
 
     virtual void attach(KHTMLView *w);
 
@@ -219,7 +219,7 @@ public:
     void select();
     void click();
 
-    virtual void parseAttribute(Attribute *attr);
+    virtual void parseAttribute(khtml::Attribute *attr);
 
     virtual void attach(KHTMLView *w);
     virtual void detach();
@@ -303,7 +303,7 @@ public:
     void blur (  );
     void focus (  );
 
-    virtual void parseAttribute(Attribute *attr);
+    virtual void parseAttribute(khtml::Attribute *attr);
 
     virtual void attach(KHTMLView *w);
 
@@ -349,7 +349,7 @@ public:
 
     long index() const;
     void setIndex( long );
-    virtual void parseAttribute(Attribute *attr);
+    virtual void parseAttribute(khtml::Attribute *attr);
 
     bool selected() const;
 
@@ -398,7 +398,7 @@ public:
     void focus (  );
     void select (  );
 
-    virtual void parseAttribute(Attribute *attr);
+    virtual void parseAttribute(khtml::Attribute *attr);
     virtual void attach(KHTMLView *w);
 
 protected:

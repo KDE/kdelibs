@@ -50,7 +50,7 @@ public:
     virtual tagStatus startTag() { return IMGStartTag; }
     virtual tagStatus endTag() { return IMGEndTag; }
 
-    virtual void parseAttribute(Attribute *);
+    virtual void parseAttribute(khtml::Attribute *);
 
     virtual bool mouseEvent( int _x, int _y, int button, MouseEventType type,
                              int _tx, int _ty, DOMString &url,
@@ -101,7 +101,7 @@ public:
     long tabIndex() const;
     void setTabIndex( long );
 
-    void parseAttribute(Attribute *attr);
+    void parseAttribute(khtml::Attribute *attr);
 
     bool isDefault() { return shape==Default; }
 
@@ -139,7 +139,7 @@ public:
     	return name;
     }
 
-    virtual void parseAttribute(Attribute *attr);
+    virtual void parseAttribute(khtml::Attribute *attr);
 
     virtual tagStatus startTag() { return MAPStartTag; }
     virtual tagStatus endTag() { return MAPEndTag; }

@@ -69,7 +69,7 @@ protected:
 
     int attrId() { return attr.id; }
 
-    Attribute attr;
+    khtml::Attribute attr;
     bool _specified;
 
     NodeImpl *_parent;
@@ -118,7 +118,7 @@ public:
      * override this in subclasses if you need to parse
      * attributes. This is always called, whenever an attribute changed
       */
-    virtual void parseAttribute(Attribute *) {}
+    virtual void parseAttribute(khtml::Attribute *) {}
 
     virtual tagStatus startTag() { return DOM::REQUIRED; }
     virtual tagStatus endTag() { return DOM::REQUIRED; }
@@ -127,7 +127,7 @@ public:
 
     DOMString getAttribute ( int id );
     void setAttribute ( int id, const DOMString &value );
-    void setAttribute ( AttributeList list );
+    void setAttribute ( khtml::AttributeList list );
 
     // State of the element.
     virtual QString state() { return QString::null; }
@@ -138,12 +138,12 @@ public:
 
 protected: // member variables
 
-    AttributeList attributeMap;
+    khtml::AttributeList attributeMap;
 
     // map of default attributes. derived element classes are responsible
     // for setting this according to the corresponding element description
     // in the DTD
-    virtual AttributeList *defaultMap() const;
+    virtual khtml::AttributeList *defaultMap() const;
 
     khtml::RenderStyle *m_style;
 };

@@ -50,7 +50,7 @@ public:
     virtual tagStatus startTag() { return BASEStartTag; }
     virtual tagStatus endTag() { return BASEEndTag; }
 
-    virtual void parseAttribute(Attribute *attr);
+    virtual void parseAttribute(khtml::Attribute *attr);
     virtual void attach(KHTMLView *);
 
 protected:
@@ -97,7 +97,7 @@ public:
 
     // overload from HTMLElementImpl
     virtual void attach(KHTMLView *w);
-    virtual void parseAttribute(Attribute *attr);
+    virtual void parseAttribute(khtml::Attribute *attr);
 
     // from CachedObjectClient
     virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet);
@@ -130,7 +130,7 @@ public:
     virtual tagStatus startTag() { return METAStartTag; }
     virtual tagStatus endTag() { return METAEndTag; }
 
-    virtual void parseAttribute(Attribute *attr);
+    virtual void parseAttribute(khtml::Attribute *attr);
     virtual void attach(KHTMLView *);
 
 protected:
@@ -178,7 +178,7 @@ public:
     StyleSheetImpl *sheet() { return m_sheet; }
 
     // overload from HTMLElementImpl
-    virtual void parseAttribute(Attribute *attr);
+    virtual void parseAttribute(khtml::Attribute *attr);
     virtual NodeImpl *addChild(NodeImpl *child);
 
     bool isLoading();

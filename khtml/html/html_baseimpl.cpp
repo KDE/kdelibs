@@ -41,6 +41,7 @@
 #include <kdebug.h>
 
 using namespace DOM;
+using namespace khtml;
 
 HTMLBodyElementImpl::HTMLBodyElementImpl(DocumentImpl *doc)
     : HTMLElementImpl(doc)

@@ -34,6 +34,7 @@
 #include "misc/htmlhashes.h"
 
 using namespace DOM;
+using namespace khtml;
 
 /*
  * NOTE:
@@ -121,7 +122,7 @@ void AttrImpl::setNodeValue( const DOMString &v )
 AttrImpl::AttrImpl(const DOMString &name, const DOMString &value,
 		   DocumentImpl *doc, bool specified) : NodeImpl(doc)
 {
-    attr = Attribute(name, value);
+    attr = khtml::Attribute(name, value);
     _specified = specified;
 }
 
@@ -197,7 +198,7 @@ void ElementImpl::setAttribute( const DOMString &name, const DOMString &value )
 {
     checkReadOnly();
     // TODO: check for invalid characters in value -> throw exception
-    Attribute a(name, value);
+    khtml::Attribute a(name, value);
     attributeMap.add(a);
 
     parseAttribute(&a);
@@ -207,7 +208,7 @@ void ElementImpl::setAttribute( int id, const DOMString &value )
 {
     checkReadOnly();
     // TODO: check for invalid characters in value -> throw exception
-    Attribute a(id, value);
+    khtml::Attribute a(id, value);
     attributeMap.add(a);
 
     parseAttribute(&a);
@@ -234,7 +235,7 @@ void ElementImpl::removeAttribute( const DOMString &name )
     attributeMap.remove(name);
 
     // ### defaultMap!!!
-    Attribute a(name, "");
+    khtml::Attribute a(name, "");
     parseAttribute(&a);
     applyChanges();
 }
@@ -265,7 +266,7 @@ AttrImpl *ElementImpl::setAttributeNode( AttrImpl *newAttr )
     //  if (newAttr->father!=this)
     //    throw DOMException(INUSE_ATTRIBUTE_ERR);
 
-    Attribute a(newAttr->attrId(), newAttr->value());
+    khtml::Attribute a(newAttr->attrId(), newAttr->value());
     attributeMap.add(a);
     parseAttribute(&a);
     applyChanges();
@@ -286,7 +287,7 @@ AttrImpl *ElementImpl::removeAttributeNode( AttrImpl *oldAttr )
     }
     attributeMap.remove(index);
 
-    Attribute a(oldAttr->name(), "");
+    khtml::Attribute a(oldAttr->name(), "");
     parseAttribute(&a);
     applyChanges();
 

@@ -109,7 +109,7 @@ public:
 
     // overrides
     virtual NodeImpl *addChild(NodeImpl *child);
-    virtual void parseAttribute(Attribute *attr);
+    virtual void parseAttribute(khtml::Attribute *attr);
 
     virtual void attach(KHTMLView *);
     virtual void detach();
@@ -136,7 +136,7 @@ public:
 	: HTMLElementImpl(doc)
 	{ }
 
-    virtual void parseAttribute(Attribute *attr);
+    virtual void parseAttribute(khtml::Attribute *attr);
 
     void attach(KHTMLView *);
     void detach();
@@ -195,7 +195,7 @@ public:
 
     // overrides
     virtual NodeImpl *addChild(NodeImpl *child);
-    virtual void parseAttribute(Attribute *attr);
+    virtual void parseAttribute(khtml::Attribute *attr);
 
 protected:
     // relative to the current section!
@@ -234,7 +234,7 @@ public:
     void setRow(int r) { _row = r; }
 
     // overrides
-    virtual void parseAttribute(Attribute *attr);
+    virtual void parseAttribute(khtml::Attribute *attr);
     virtual void attach(KHTMLView *);
 
 protected:
@@ -273,7 +273,7 @@ public:
     virtual NodeImpl *addChild(NodeImpl *child);
 
     // overrides
-    virtual void parseAttribute(Attribute *attr);
+    virtual void parseAttribute(khtml::Attribute *attr);
 
 protected:
     // could be ID_COL or ID_COLGROUP ... The DOM is not quite clear on

@@ -26,7 +26,9 @@
 #include "qstring.h"
 #include <stdlib.h>
 
-class Attribute;
+namespace khtml {
+    class Attribute;
+};
 
 namespace DOM {
 
@@ -44,7 +46,7 @@ class DOMStringImpl;
 class DOMString
 {
     friend class CharacterDataImpl;
-    friend class Attribute;
+    friend class khtml::Attribute;
 
 public:
     /** default constructor. Gives an empty DOMString */
@@ -91,7 +93,7 @@ public:
      * Splits the string into two. The original string gets truncated to pos, and the rest is returned.
      */
     DOMString split(unsigned int pos);
-    
+
     QChar *unicode() const;
     QString string() const;
 
@@ -114,7 +116,7 @@ public:
      * Needed by kBackpage
      */
     const QChar *stringPtr() const;
-    
+
 protected:
     DOMStringImpl *impl;
 };

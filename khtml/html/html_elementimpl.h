@@ -56,7 +56,7 @@ public:
                              NodeImpl *&innerNode, long &offset);
     virtual void mouseEventHandler( int button, MouseEventType type, bool inside );
 
-    virtual void parseAttribute(Attribute *token);
+    virtual void parseAttribute(khtml::Attribute *token);
 
     virtual DOM::CSSStyleDeclarationImpl *styleRules() { return m_styleDecls; }
 

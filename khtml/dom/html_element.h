@@ -59,7 +59,7 @@ class DOMString;
 class HTMLElement : public Element
 {
     friend class HTMLDocument;
-    friend class KHTMLView;
+    friend class ::KHTMLView;
     friend class HTMLTableElement;
     friend class HTMLTableRowElement;
     friend class HTMLTableSectionElement;
