@@ -71,21 +71,21 @@ static const QChar textareaEnd [] = { '<','/','t','e','x','t','a','r','e','a','>
 // full list http://www.bbsinc.com/iso8859.html
 // There may be better equivalents
 #define fixUpChar(x) \
-            if (!x.row() ) { \
-                switch (x.cell()) \
+            if (!(x).row() ) { \
+                switch ((x).cell()) \
                 { \
-                case 0x82: EntityChar = ','; break; \
-                case 0x84: EntityChar = '"'; break; \
-                case 0x8b: EntityChar = '<'; break; \
-                case 0x9b: EntityChar = '>'; break; \
-                case 0x91: EntityChar = '\''; break; \
-                case 0x92: EntityChar = '\''; break; \
-                case 0x93: EntityChar = '"'; break; \
-                case 0x94: EntityChar = '"'; break; \
-                case 0x95: EntityChar = 0xb7; break; \
-                case 0x96: EntityChar = '-'; break; \
-                case 0x97: EntityChar = '-'; break; \
-                case 0x98: EntityChar = '~'; break; \
+                case 0x82: (x) = ','; break; \
+                case 0x84: (x) = '"'; break; \
+                case 0x8b: (x) = '<'; break; \
+                case 0x9b: (x) = '>'; break; \
+                case 0x91: (x) = '\''; break; \
+                case 0x92: (x) = '\''; break; \
+                case 0x93: (x) = '"'; break; \
+                case 0x94: (x) = '"'; break; \
+                case 0x95: (x) = 0xb7; break; \
+                case 0x96: (x) = '-'; break; \
+                case 0x97: (x) = '-'; break; \
+                case 0x98: (x) = '~'; break; \
                 default: break; \
                 } \
             }
@@ -1438,11 +1438,12 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
             unsigned char row = src[0].row();
             if ( row > 0x05 && row < 0x10 || row > 0xfd )
                     currToken.complexText = true;
-            *dest++ = src[0];
+            *dest = src[0];
+            fixUpChar( *dest );
+            ++dest;
             ++src;
         }
     }
-
     _src = QString();
     if (noMoreData && !cachedScript)
         end(); // this actually causes us to be deleted
@@ -1450,14 +1451,19 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
 
 bool HTMLTokenizer::close()
 {
-    if(m_executingScript) {
+    return true;
+#if 0
+    if(!scriptOutput.isEmpty()) {
         m_executingScript = false;
-        write(scriptOutput, false);
-        scriptOutput = QString::null;
+        addScriptOutput();
+        write(_src, true);
+//         write(scriptOutput, false)
+//         scriptOutput = QString::null;
         return false;
     }
 
     return true;
+#endif
 }
 
 void HTMLTokenizer::end()
