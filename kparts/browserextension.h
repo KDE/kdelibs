@@ -238,6 +238,12 @@ public:
    */
   static QMap<QCString,QCString> actionSlotMap();
 
+  /**
+   * Queries @p obj for a child object which inherits from this
+   * BrowserExtension class. Convenience method.
+   */
+  static BrowserExtension *childObject( QObject *obj );
+
 // KDE invents support for public signals...
 #undef signals
 #define signals public
@@ -409,6 +415,12 @@ public:
    * frameName variable in the urlArgs argument structure (see @ref KParts::URLArgs ) .
    */
   virtual bool openURLInFrame( const KURL &url, const KParts::URLArgs &urlArgs );
+
+  /**
+   * Queries @p obj for a child object which inherits from this
+   * BrowserHostExtension class. Convenience method.
+   */
+  static BrowserHostExtension *childObject( QObject *obj );
 
 private:
   class BrowserHostExtensionPrivate;

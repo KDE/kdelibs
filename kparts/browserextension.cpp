@@ -20,6 +20,7 @@
 #include "browserextension.h"
 
 #include <qtimer.h>
+#include <qobjectlist.h>
 
 using namespace KParts;
 
@@ -337,6 +338,22 @@ QMap<QCString,QCString> BrowserExtension::actionSlotMap()
   return res;
 }
 
+BrowserExtension *BrowserExtension::childObject( QObject *obj )
+{
+    if ( !obj )
+        return 0L;
+
+    // we try to do it on our own, in hope that we are faster than
+    // queryList, which looks kind of big :-)
+    const QObjectList *children = obj->children();
+    QObjectListIt it( *children );
+    for (; it.current(); ++it )
+        if ( it.current()->inherits( "KParts::BrowserExtension" ) )
+            return static_cast<KParts::BrowserExtension *>( it.current() );
+
+    return 0L;
+}
+
 namespace KParts
 {
 
@@ -381,4 +398,22 @@ bool BrowserHostExtension::openURLInFrame( const KURL &, const KParts::URLArgs &
 {
   return false;
 }
+
+BrowserHostExtension *BrowserHostExtension::childObject( QObject *obj )
+{
+    if ( !obj )
+        return 0L;
+
+    // we try to do it on our own, in hope that we are faster than
+    // queryList, which looks kind of big :-)
+    const QObjectList *children = obj->children();
+    QObjectListIt it( *children );
+    for (; it.current(); ++it )
+        if ( it.current()->inherits( "KParts::BrowserHostExtension" ) )
+            return static_cast<KParts::BrowserHostExtension *>( it.current() );
+
+    return 0L;
+}
+
+
 #include "browserextension.moc"
