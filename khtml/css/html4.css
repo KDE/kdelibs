@@ -418,10 +418,12 @@ DEL  {
 
 /*
 SUB { 
-	vertical-align: sub 
+	vertical-align: sub;
+	font-size: smaller;
 }
 SUP { 
-	vertical-align: super 
+	vertical-align: super;
+	font-size: smaller;
 }
 */
 /* ### hack... should get removed once we support the two lines above */
