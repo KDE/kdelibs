@@ -186,11 +186,12 @@ class KAccelBase
 	{
 		KAccelAction* pAction;
 		uint iSeq, iVariation;
+		ActionInfo* pInfoNext; // nil if only one action uses this key.
 
-		ActionInfo() { }
+		ActionInfo() { pAction = 0; iSeq = 0xffff; iVariation = 0xffff; pInfoNext = 0; }
 		ActionInfo( KAccelAction* _pAction, uint _iSeq, uint _iVariation )
-			{ pAction = _pAction; iSeq = _iSeq; iVariation = _iVariation; }
-
+			{ pAction = _pAction; iSeq = _iSeq; iVariation = _iVariation; pInfoNext = 0; }
+		~ActionInfo();
 	};
 	typedef QMap<KKeyServer::Key, ActionInfo> KKeyToActionMap;
 
@@ -215,8 +216,6 @@ class KAccelBase
 	virtual bool disconnectKey( const KKeyServer::Key& ) = 0;
 
  private:
-        class KAccelBasePrivate *d;
-
 	KAccelBase& operator =( const KAccelBase& );
 
 	friend class KAccelActions;

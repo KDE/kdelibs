@@ -1,8 +1,8 @@
 /*
-    Copyright (c) 2001 Ellis Whitehead <ellis@kde.org>
-    Copyright (C) 1998 Mark Donohoe <donohoe@kde.org>
     Copyright (C) 1997-2000 Nicolas Hadacek <hadacek@kde.org>
+    Copyright (C) 1998 Mark Donohoe <donohoe@kde.org>
     Copyright (C) 1998 Matthias Ettrich <ettrich@kde.org>
+    Copyright (c) 2001,2002 Ellis Whitehead <ellis@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -34,17 +34,28 @@
 #include <kkeyserver_x11.h>
 #include <klocale.h>
 
-//----------------------------------------------------
+//---------------------------------------------------------------------
+// class KAccelBase::ActionInfo
+//---------------------------------------------------------------------
 
-class KAccelBasePrivate
+KAccelBase::ActionInfo::~ActionInfo()
 {
-};
+	while( pInfoNext ) {
+		ActionInfo* pNext = pInfoNext->pInfoNext;
+		delete pInfoNext;
+		pInfoNext = pNext;
+	}
+	pInfoNext = 0;
+}
+
+//---------------------------------------------------------------------
+// class KAccelBase
+//---------------------------------------------------------------------
 
 KAccelBase::KAccelBase( int fInitCode )
 :	m_rgActions( this )
 {
 	kdDebug(125) << "KAccelBase(): this = " << this << endl;
-	//d = new KAccelBasePrivate;
 	m_bNativeKeys = fInitCode & NATIVE_KEYS;
 	m_bEnabled = true;
 	m_sConfigGroup = "Shortcuts";
@@ -55,7 +66,6 @@ KAccelBase::KAccelBase( int fInitCode )
 KAccelBase::~KAccelBase()
 {
 	kdDebug(125) << "~KAccelBase(): this = " << this << endl;
-	//delete d;
 }
 
 uint KAccelBase::actionCount() const { return m_rgActions.count(); }
@@ -72,7 +82,8 @@ KAccelAction* KAccelBase::actionPtr( const KKeyServer::Key& key )
 {
 	if( !m_mapKeyToAction.contains( key ) )
 		return 0;
-	return m_mapKeyToAction[key].pAction;
+	// If more than one action is connected to a single key, return nil.
+	return (m_mapKeyToAction[key].pInfoNext == 0) ? m_mapKeyToAction[key].pAction : 0;
 }
 
 KAccelAction* KAccelBase::actionPtr( const KKey& key )
@@ -354,12 +365,13 @@ bool KAccelBase::updateConnections()
 
 		if( bMultiKey ) {
 			// Remove connection to single action if there is one
-			KAccelAction* pAction = actionPtr( key );
-			if( pAction ) {
-				m_mapKeyToAction.remove( key );
-				// FIXME: make disconnectKey take a KKeyServer::Key object
-				disconnectKey( *pAction, key );
-				pAction->decConnections();
+			if( m_mapKeyToAction.contains( key ) ) {
+				KAccelAction* pAction = m_mapKeyToAction[key].pAction;
+				if( pAction ) {
+					m_mapKeyToAction.remove( key );
+					disconnectKey( *pAction, key );
+					pAction->decConnections();
+				}
 			}
 			// Indicate that no single action is associated with this key.
 			info.pAction = 0;
@@ -372,8 +384,9 @@ bool KAccelBase::updateConnections()
 	// Disconnect keys which no longer have bindings:
 	for( KKeyToActionMap::iterator it = m_mapKeyToAction.begin(); it != m_mapKeyToAction.end(); ++it ) {
 		const KKeyServer::Key& key = it.key();
-		if( !mapKeyToAction.contains( key ) ) {
-			KAccelAction* pAction = (*it).pAction;
+		KAccelAction* pAction = (*it).pAction;
+		// If this key is longer used or it points to a different action now,
+		if( !mapKeyToAction.contains( key ) || mapKeyToAction[key].pAction != pAction ) {
 			if( pAction ) {
 				disconnectKey( *pAction, key );
 				pAction->decConnections();
@@ -386,26 +399,28 @@ bool KAccelBase::updateConnections()
 	// In other words, connect any keys which are present in the
 	//  new action map, but which are _not_ present in the old one.
 	for( KKeyToActionMap::iterator it = mapKeyToAction.begin(); it != mapKeyToAction.end(); ++it ) {
-		if( !m_mapKeyToAction.contains( it.key() ) ) {
+		const KKeyServer::Key& key = it.key();
+		KAccelAction* pAction = (*it).pAction;
+		if( !m_mapKeyToAction.contains( key ) || m_mapKeyToAction[key].pAction != pAction ) {
 			// TODO: Decide what to do if connect fails.
 			//  Probably should remove this item from map.
-			KAccelAction* pAction = (*it).pAction;
 			if( pAction ) {
-				if( connectKey( *pAction, it.key() ) )
+				if( connectKey( *pAction, key ) )
 					pAction->incConnections();
 			} else
-				connectKey( it.key() );
+				connectKey( key );
 		}
 	}
 
 	// Store new map.
 	m_mapKeyToAction = mapKeyToAction;
 
+#ifndef NDEBUG
 	for( KKeyToActionMap::iterator it = m_mapKeyToAction.begin(); it != m_mapKeyToAction.end(); ++it ) {
 		kdDebug(125) << "Key: " << it.key().key().toStringInternal() << " => '"
 			<< (((*it).pAction) ? (*it).pAction->name() : QString::null) << "'" << endl;
 	}
-
+#endif
 	return true;
 }
 
@@ -428,7 +443,8 @@ void KAccelBase::createKeyList( QValueVector<X>& rgKeys )
 					KKeyServer::Variations vars;
 					vars.init( seq.key(0), !m_bNativeKeys );
 					for( uint iVari = 0; iVari < vars.count(); iVari++ ) {
-						rgKeys.push_back( X( iAction, iSeq, iVari, vars.key( iVari ) ) );
+						if( vars.key(iVari).code() && vars.key(iVari).sym() )
+							rgKeys.push_back( X( iAction, iSeq, iVari, vars.key( iVari ) ) );
 						//kdDebug(125) << "\t" << pAction->name() << ": " << vars.key(iVari).toStringInternal() << endl;
 					}
 				}
@@ -505,25 +521,29 @@ bool KAccelBase::removeConnection( KAccelAction& action )
 	//for( KKeyToActionMap::iterator it = m_mapKeyToAction.begin(); it != m_mapKeyToAction.end(); ++it )
 	//	kdDebug(125) << "\tKey: " << it.key().toString() << " => '" << (*it)->m_sName << "'" << " " << *it << endl;
 
-	// For each sequence associated with the given action:
-	for( uint iSeq = 0; iSeq < action.shortcut().count(); iSeq++ ) {
-		// Get the first key of the sequence.
-		KKeyServer::Variations vars;
-		vars.init( action.shortcut().seq(iSeq).key(0), !m_bNativeKeys );
-		for( uint iVari = 0; iVari < vars.count(); iVari++ ) {
-			const KKeyServer::Key& key = vars.key( iVari );
+	for( KKeyToActionMap::iterator it = m_mapKeyToAction.begin(); it != m_mapKeyToAction.end(); ++it ) {
+		KKeyServer::Key key = it.key();
+		ActionInfo* pInfo = &(*it);
 
-			if( m_mapKeyToAction.contains( key ) ) {
-				if( m_mapKeyToAction[key].pAction == &action ) {
-					m_mapKeyToAction.remove( key );
-					disconnectKey( action, key );
-					action.decConnections();
-				} else if( m_mapKeyToAction[key].pAction == 0 )
-					return updateConnections();
+		if( &action == pInfo->pAction ) {
+			KKeyToActionMap::iterator itRemove = it;
+			--it;
+			m_mapKeyToAction.remove( itRemove );
+			disconnectKey( action, key );
+			action.decConnections();
+		} /*else if( pInfo->pInfoNext ) {
+			while( pInfo = pInfo->pInfoNext ) {
+				if( &action == pInfo->pAction ) {
+
+				}
 			}
+		}*/
+		else if( (*it).pAction == 0 ) {
+			// FIXME: won't work for multi-key shortcuts.
+			//if( cutOld.contains( key.key() ) )
+				return updateConnections();
 		}
 	}
-
 	return true;
 }
 
