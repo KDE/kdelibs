@@ -26,33 +26,12 @@
 KControlDialog::KControlDialog()
   : QTabDialog(0, 0, FALSE)
 {
-  // Create help button
-  helpBtn = new QPushButton(i18n("&Help"), this);
-  helpBtn->resize(helpBtn->sizeHint());
-  helpBtn->move(7, height() - helpBtn->height() - 7);
-
-
-  // Create default button
-  defaultBtn = new QPushButton(i18n("&Default"), this);
-  defaultBtn->resize(defaultBtn->sizeHint());
-  defaultBtn->move(helpBtn->width()+16, height() - defaultBtn->height() - 7);
-
   // set the default buttons
-  setOKButton(i18n("&OK"));
+  setOkButton(i18n("&OK"));
   setApplyButton(i18n("&Apply"));
   setCancelButton(i18n("&Cancel"));
-
-  //geometry hack.
-  defaultBtn->setText(i18n("&OK"));
-  int w = defaultBtn->sizeHint().width();
-  defaultBtn->setText(i18n("&Apply"));
-  w  = QMAX(w, defaultBtn->sizeHint().width());
-  defaultBtn->setText(i18n("&Cancel"));
-  w  = QMAX(w, defaultBtn->sizeHint().width());
-
-  defaultBtn->setText(i18n("&Default"));
-
-  setMinimumWidth(w*5 + 60);
+  setDefaultButton(i18n("&Default"));
+  setHelpButton(i18n("&Help"));
 }
 
 void KControlDialog::done(int result)
@@ -61,18 +40,6 @@ void KControlDialog::done(int result)
   setResult(result);
   kapp->quit();
 }
-
-
-void KControlDialog::resizeEvent(QResizeEvent *event)
-{
-  QTabDialog::resizeEvent(event);
-
-  if (helpBtn)
-    helpBtn->move(7, height() - helpBtn->height() - 7);
-  if (defaultBtn)
-    defaultBtn->move(16+helpBtn->width(), height() - helpBtn->height() - 7);
-}
-
 
 KControlApplication::KControlApplication(int &argc, char **argv, const QString &name)
   : KApplication(argc, argv, name)
@@ -95,17 +62,15 @@ KControlApplication::KControlApplication(int &argc, char **argv, const QString &
   dialog = new KControlDialog();
   if (!dialog)
     return;
-  // Stephan: this is not possible (or better: not practical)
-  // dialog->setCaption(i18n(title));
 
   // connect the buttons
   connect(dialog, SIGNAL(applyButtonPressed()), this, SLOT(apply()));
-  connect(dialog->helpBtn, SIGNAL(pressed()), this, SLOT(help()));
-  connect(dialog->defaultBtn, SIGNAL(pressed()), this, SLOT(defaultValues()));
-
+  connect(dialog, SIGNAL(helpButtonPressed()), this, SLOT(help()));
+  connect(dialog, SIGNAL(defaultButtonPressed()), this, SLOT(defaultValues()));
+  
   // set dialog as main widget
   setMainWidget(dialog);
-
+  
   // detect, if swallowing
   int start=1;
   if (argc >= 3 && strcmp(argv[1],"-swallow") == 0)

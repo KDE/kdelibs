@@ -51,15 +51,6 @@ public:
    */
   KControlDialog();
 
-protected:
-
-  /**
-   *  Resizes the dialog.
-   *
-   *  @param _event The resize event that shall be processed.
-   */
-  void resizeEvent( QResizeEvent* _event );
-
 protected slots:
 
   /**
@@ -67,10 +58,6 @@ protected slots:
    */
   virtual void done( int );
 
-private:
-
-  QPushButton* helpBtn;
-  QPushButton* defaultBtn;
 };
 
 /**
