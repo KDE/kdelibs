@@ -72,32 +72,6 @@ Please respect the format of the date (DD/MM/YYYY) and of the version
 <date>03/04/1999</date>
 <releaseinfo>1.1.0</releaseinfo>
 
-<!-- Brief revision history.
-Unlike the preceeding information, this is not mandatory.
-Try to keep this section brief.
-This is the history of the *documentation* (the history of the *application*
-goes to the introduction), but nothing prevents you from using the same
-release numbers for both the application the documentation.
--->
-
-<revhistory>
-<revision>
-<revnumber>1.1</revnumber>
-<date>3.4.1999</date>
-<authorinitials>G.N.U.</authorinitials>
-<revremark>Cleaned up a few typos.
-</revremark>
-</revision>
-<revision>
-<revnumber>1.0
-</revnumber>
-<date>3.4.1999</date>
-<authorinitials>G.N.U.</authorinitials>
-<revremark>Initial release.
-</revremark>
-</revision>
-</revhistory>
-
 <!-- Abstract about this handbook -->
 
 <abstract>
@@ -122,7 +96,7 @@ consistent documentation style across all KDE apps. -->
 
 <!-- The introduction chapter contains a brief introduction for the application
 that explains what it does, where to get new versions of the app, where to
-report problems, and a brief revision history of teh app. Basically a long
+report problems, and a brief revision history of the app. Basically a long
 version of the abstract. -->
 
 <para>
@@ -131,7 +105,7 @@ nothing. Please report any problems or feature requests to the KDE mailing
 lists.</para>
 
 <!-- Note that the revhistory tags apply to the documentation version and not to
-the app version. That is why we use an ItemizedList here. -->
+the app version. That is why we use an itemizedlist here. -->
 
 <sect1 id="kapp-revhistory">
 <title>Kapp Revision History</title>
@@ -314,7 +288,7 @@ or menu bars. -->
 <guimenu>File</guimenu>
 <guimenuitem>Quit</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>Quits &kapp;</action></para></listitem>
+<listitem><para><action>Quits</action> &kapp;</para></listitem>
 </varlistentry>
 </variablelist>
 </para>
