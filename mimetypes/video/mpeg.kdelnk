@@ -5,6 +5,7 @@ MimeType=video/mpeg
 Icon=video.xpm
 Patterns=*.mpeg;*.mpg;
 Comment=Mpeg files
+Comment[cs]=Video MPEG soubor
 Comment[de]=MPEG-Datei
 Comment[no]=MPEG-filer
 Comment[nl]=Mpeg bestand
