@@ -35,9 +35,9 @@ CupsdJobsPage::CupsdJobsPage(QWidget *parent, const char *name)
 	setHeader(i18n("Print jobs settings"));
 	setPixmap("fileprint");
 
-	keepjobhistory_ = new QCheckBox(i18n("Preserve Job History"), this);
-	keepjobfiles_ = new QCheckBox(i18n("Preserve Job Files"), this);
-	autopurgejobs_ = new QCheckBox(i18n("Auto Purge Jobs"), this);
+	keepjobhistory_ = new QCheckBox(i18n("Preserve job history"), this);
+	keepjobfiles_ = new QCheckBox(i18n("Preserve job files"), this);
+	autopurgejobs_ = new QCheckBox(i18n("Auto purge jobs"), this);
 	maxjobs_ = new KIntNumInput(this);
 	maxjobsperprinter_ = new KIntNumInput(this);
 	maxjobsperuser_ = new KIntNumInput(this);

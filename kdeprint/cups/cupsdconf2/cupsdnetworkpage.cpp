@@ -38,7 +38,7 @@ CupsdNetworkPage::CupsdNetworkPage(QWidget *parent, const char *name)
 	setHeader(i18n("Network settings"));
 	setPixmap("network");
 
-	keepalive_ = new QCheckBox(i18n("Keep Alive"), this);
+	keepalive_ = new QCheckBox(i18n("Keep alive"), this);
 	keepalivetimeout_ = new KIntNumInput(this);
 	maxclients_ = new KIntNumInput(this);
 	maxrequestsize_ = new KIntNumInput(this);

@@ -61,7 +61,7 @@ KXmlCommandSelector::KXmlCommandSelector(bool canBeNull, QWidget *parent, const 
 	{
 		m_line = new QLineEdit(this);
 		m_browse = new KPushButton(KGuiItem(i18n("&Browse..."), "fileopen"), this);
-		m_usefilter = new QCheckBox(i18n("Use Co&mmand:"), this);
+		m_usefilter = new QCheckBox(i18n("Use co&mmand:"), this);
 		connect(m_browse, SIGNAL(clicked()), SLOT(slotBrowse()));
 		connect(m_usefilter, SIGNAL(toggled(bool)), m_line, SLOT(setDisabled(bool)));
 		connect(m_usefilter, SIGNAL(toggled(bool)), m_browse, SLOT(setDisabled(bool)));

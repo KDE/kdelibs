@@ -1271,7 +1271,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   QGridLayout *gl;
 
   /* Group: Access Permissions */
-  gb = new QGroupBox ( i18n("Access permissions"), d->m_frame );
+  gb = new QGroupBox ( i18n("Access Permissions"), d->m_frame );
   box->addWidget (gb);
 
   gl = new QGridLayout (gb, 6, 6, 15);

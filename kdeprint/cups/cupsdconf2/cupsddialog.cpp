@@ -109,7 +109,7 @@ const char* getPassword(const char*)
 //---------------------------------------------------
 
 CupsdDialog::CupsdDialog(QWidget *parent, const char *name)
-	: KDialogBase(IconList, "", Ok|Cancel|User1, Ok, parent, name, true, true, KGuiItem(i18n("Short help..."), "help"))
+	: KDialogBase(IconList, "", Ok|Cancel|User1, Ok, parent, name, true, true, KGuiItem(i18n("Short Help..."), "help"))
 {
 	KGlobal::iconLoader()->addAppDir("kdeprint");
 	KGlobal::locale()->insertCatalogue("cupsdconf");

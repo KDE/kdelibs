@@ -515,7 +515,7 @@ KHTMLZoomFactorAction::KHTMLZoomFactorAction( KHTMLPart *part, bool direction, c
     m_part = part;
 
     m_popup = new QPopupMenu;
-    m_popup->insertItem( i18n( "Default font size" ) );
+    m_popup->insertItem( i18n( "Default Font Size" ) );
 
     int m = m_direction ? 1 : -1;
 

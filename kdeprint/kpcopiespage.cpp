@@ -70,9 +70,9 @@ KPCopiesPage::KPCopiesPage(KPrinter *prt, QWidget *parent, const char *name)
 	m_copies->setRange(1,999);
 	m_copieslabel->setBuddy(m_copies);
 	m_pageset = new QComboBox(m_pagebox);
-	m_pageset->insertItem(i18n("All pages"));
-	m_pageset->insertItem(i18n("Odd pages"));
-	m_pageset->insertItem(i18n("Even pages"));
+	m_pageset->insertItem(i18n("All Pages"));
+	m_pageset->insertItem(i18n("Odd Pages"));
+	m_pageset->insertItem(i18n("Even Pages"));
 	QLabel	*m_pagesetlabel = new QLabel(i18n("Page &set:"), m_pagebox);
 	m_pagesetlabel->setBuddy(m_pageset);
 	KSeparator	*sepline = new KSeparator(Horizontal, m_pagebox);

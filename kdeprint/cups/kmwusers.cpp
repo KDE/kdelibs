@@ -38,8 +38,8 @@ KMWUsers::KMWUsers(QWidget *parent, const char *name)
 
 	m_users = new KEditListBox(i18n("Users"), this, 0, false, KEditListBox::Add|KEditListBox::Remove);
 	m_type = new QComboBox(this);
-	m_type->insertItem(i18n("Allowed users"));
-	m_type->insertItem(i18n("Denied users"));
+	m_type->insertItem(i18n("Allowed Users"));
+	m_type->insertItem(i18n("Denied Users"));
 
 	QLabel	*lab1 = new QLabel(i18n("Define here a group of allowed/denied users for this printer."), this);
 	QLabel	*lab2 = new QLabel(i18n("&Type:"), this);

@@ -52,7 +52,7 @@ CupsdServerPage::CupsdServerPage(QWidget *parent, const char *name)
 	classification_ = new QComboBox(this);
 	charset_ = new QComboBox(this);
 	printcapformat_ = new QComboBox(this);
-	classoverride_ = new QCheckBox(i18n("Allow Overrides"), this);
+	classoverride_ = new QCheckBox(i18n("Allow overrides"), this);
 
 	classification_->insertItem(i18n("None"));
 	classification_->insertItem(i18n("Classified"));

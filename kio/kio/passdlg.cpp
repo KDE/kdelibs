@@ -139,7 +139,7 @@ void PasswordDialog::init( const QString& prompt, const QString& user,
         d->layout->addRowSpacing( 7, 4 );
         // Row 8: Keep Password
         hbox = new QHBox( main );
-        QCheckBox *cb = new QCheckBox( i18n("&Keep Password"), hbox );
+        QCheckBox *cb = new QCheckBox( i18n("&Keep password"), hbox );
         cb->setFixedSize( cb->sizeHint() );
         d->keep = cfg->readBoolEntry("Keep", false );
         cb->setChecked( d->keep );

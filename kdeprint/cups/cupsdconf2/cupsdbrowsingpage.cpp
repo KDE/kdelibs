@@ -41,15 +41,15 @@ CupsdBrowsingPage::CupsdBrowsingPage(QWidget *parent, const char *name)
 	browseinterval_ = new KIntNumInput(this);
 	browseport_ = new KIntNumInput(this);
 	browsetimeout_ = new KIntNumInput(this);
-	browsing_ = new QCheckBox(i18n("Use Browsing:"), this);
+	browsing_ = new QCheckBox(i18n("Use browsing"), this);
 	cups_ = new QCheckBox("CUPS", this);
 	slp_ = new QCheckBox("SLP", this);
 	browseaddresses_ = new EditList(this);
 	browseorder_ = new QComboBox(this);
-	useimplicitclasses_ = new QCheckBox(i18n("Implicit Classes"), this);
-	hideimplicitmembers_ = new QCheckBox(i18n("Hide Implicit Members"), this);
-	useshortnames_ = new QCheckBox(i18n("Use Short Names"), this);
-	useanyclasses_ = new QCheckBox(i18n("Use \"Any\" Classes"), this);
+	useimplicitclasses_ = new QCheckBox(i18n("Implicit classes"), this);
+	hideimplicitmembers_ = new QCheckBox(i18n("Hide implicit members"), this);
+	useshortnames_ = new QCheckBox(i18n("Use short names"), this);
+	useanyclasses_ = new QCheckBox(i18n("Use \"any\" classes"), this);
 
 	browseorder_->insertItem(i18n("Allow, Deny"));
 	browseorder_->insertItem(i18n("Deny, Allow"));
