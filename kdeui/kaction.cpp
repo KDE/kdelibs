@@ -142,13 +142,13 @@ KAction::KAction( const KGuiItem& item, const KShortcut& cut,
 : QObject( parent, name ), d(new KActionPrivate)
 {
 	initPrivate( item.text(), cut, receiver, slot );
-	if( item.hasIconSet() )
+	if( item.hasIcon() )
 		setIcon( item.iconName() );
 	setToolTip( item.toolTip() );
 	setWhatsThis( item.whatsThis() );
 }
 
-// KDE 4: remove
+#ifndef KDE_NO_COMPAT // KDE 4: remove
 KAction::KAction( const QString& text, const KShortcut& cut,
                   QObject* parent, const char* name )
  : QObject( parent, name ), d(new KActionPrivate)
@@ -207,7 +207,7 @@ KAction::KAction( QObject* parent, const char* name )
 {
     initPrivate( QString::null, KShortcut(), 0, 0 );
 }
-// KDE 4: remove end
+#endif // KDE 4: remove end
 
 KAction::~KAction()
 {
@@ -428,10 +428,10 @@ bool KAction::setShortcut( const KShortcut& cut )
     insertKAccel( kaccel );
 
   if( bChanged ) {
-    // KDE 4: remove
+#ifndef KDE_NO_COMPAT    // KDE 4: remove
     if ( d->m_kaccel )
       d->m_kaccel->setShortcut( name(), cut );
-    // KDE 4: remove end
+#endif    // KDE 4: remove end
       int len = containerCount();
       for( int i = 0; i < len; ++i )
           updateShortcut( i );
@@ -492,12 +492,13 @@ void KAction::removeKAccel( KAccel* kaccel )
   }
 }
 
+#ifndef KDE_NO_COMPAT
 // KDE 4: remove
 void KAction::setAccel( int keyQt )
 {
   setShortcut( KShortcut(keyQt) );
 }
-// KDE 4: remove end
+#endif // KDE 4: remove end
 
 void KAction::updateShortcut( int i )
 {
@@ -556,10 +557,12 @@ void KAction::setShortcutText( const QString& s )
   setShortcut( KShortcut(s) );
 }
 
+#ifndef KDE_NO_COMPAT // Remove in KDE 4
 int KAction::accel() const
 {
   return d->m_cut.keyCodeQt();
 }
+#endif
 
 void KAction::setGroup( const QString& grp )
 {
@@ -817,10 +820,11 @@ void KAction::setEnabled(bool enable)
   if ( enable == d->isEnabled() )
     return;
 
+#ifndef KDE_NO_COMPAT
   // KDE 4: remove
   if (d->m_kaccel)
     d->m_kaccel->setEnabled(name(), enable);
-  // KDE 4: remove end
+#endif  // KDE 4: remove end
 
   const QValueList<KAccel*> & accelList = d->m_kaccelList;
   QValueList<KAccel*>::const_iterator itr = accelList.constBegin();
@@ -859,13 +863,14 @@ void KAction::setShortcutConfigurable( bool b )
 
 void KAction::setText( const QString& text )
 {
+#ifndef KDE_NO_COMPAT
   // KDE 4: remove
   if (d->m_kaccel) {
     KAccelAction* pAction = d->m_kaccel->actions().actionPtr(name());
     if (pAction)
       pAction->setLabel( text );
   }
-  // KDE 4: remove end
+#endif  // KDE 4: remove end
   const QValueList<KAccel*> & accelList = d->m_kaccelList;
   QValueList<KAccel*>::const_iterator itr = accelList.constBegin();
   const QValueList<KAccel*>::const_iterator itrEnd = accelList.constEnd();
@@ -971,7 +976,7 @@ void KAction::updateIconSet( int id )
     static_cast<QMenuBar*>(w)->changeItem( itemId( id ), d->iconSet(), d->text() );
   else if ( ::qt_cast<KToolBar *>( w ) )
   {
-    if ( icon().isEmpty() && d->hasIconSet() ) // only if there is no named icon ( scales better )
+    if ( icon().isEmpty() && d->hasIcon() ) // only if there is no named icon ( scales better )
       static_cast<KToolBar *>(w)->setButtonIconSet( itemId( id ), d->iconSet() );
     else
       static_cast<KToolBar *>(w)->setButtonIconSet( itemId( id ), d->iconSet( KIcon::Small ) );
@@ -1153,13 +1158,13 @@ void KAction::slotDestroyed()
   kdDebug(129) << "KAction::slotDestroyed(): this = " << this << ", name = \"" << name() << "\", sender = " << sender() << endl;
   const QObject* const o = sender();
 
-  // KDE 4: remove
+#ifndef KDE_NO_COMPAT  // KDE 4: remove
   if ( o == d->m_kaccel )
   {
     d->m_kaccel = 0;
     return;
   }
-  // KDE 4: remove end
+#endif  // KDE 4: remove end
   QValueList<KAccel*> & accelList = d->m_kaccelList;
   QValueList<KAccel*>::iterator itr = accelList.begin();
   const QValueList<KAccel*>::iterator itrEnd = accelList.end();

@@ -101,6 +101,7 @@ KActionCollection::KActionCollection( QWidget *watch, QObject* parent, const cha
   setInstance( instance );
 }
 
+#ifndef KDE_NO_COMPAT
 // KDE 4: remove
 KActionCollection::KActionCollection( QObject *parent, const char *name,
                                       KInstance *instance )
@@ -123,8 +124,7 @@ KActionCollection::KActionCollection( const KActionCollection &copy )
   d = new KActionCollectionPrivate;
   *this = copy;
 }
-// KDE 4: remove end
-
+#endif // KDE 4: remove end
 
 KActionCollection::KActionCollection( const char *name, const KXMLGUIClient *parent )
     : QObject( 0L, name )
@@ -365,7 +365,9 @@ void KActionCollection::_clear()
 void KActionCollection::insert( KAction* action )   { _insert( action ); }
 void KActionCollection::remove( KAction* action )   { _remove( action ); }
 KAction* KActionCollection::take( KAction* action ) { return _take( action ); }
+#ifndef KDE_NO_COMPAT
 void KActionCollection::clear()                     { _clear(); }
+#endif
 KAccel* KActionCollection::accel()                  { return kaccel(); }
 const KAccel* KActionCollection::accel() const      { return kaccel(); }
 KAccel* KActionCollection::builderKAccel() const    { return d->m_builderKAccel; }
@@ -629,6 +631,7 @@ const KXMLGUIClient *KActionCollection::parentGUIClient() const
 	return d->m_parentGUIClient;
 }
 
+#ifndef KDE_NO_COMPAT
 // KDE 4: remove
 KActionCollection KActionCollection::operator+(const KActionCollection &c ) const
 {
@@ -667,7 +670,7 @@ KActionCollection &KActionCollection::operator+=( const KActionCollection &c )
 
   return *this;
 }
-// KDE 4: remove end
+#endif // KDE 4: remove end
 
 //---------------------------------------------------------------------
 // KActionShortcutList

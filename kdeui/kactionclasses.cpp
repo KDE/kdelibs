@@ -630,7 +630,7 @@ int KSelectAction::plug( QWidget *widget, int index )
 
     QPopupMenu* menu = static_cast<QPopupMenu*>( widget );
     int id;
-    if ( hasIconSet() )
+    if ( hasIcon() )
       id = menu->insertItem( iconSet(), text(), d->m_menu, -1, index );
     else
       id = menu->insertItem( text(), d->m_menu, -1, index );
@@ -1682,7 +1682,7 @@ int KActionMenu::plug( QWidget* widget, int index )
   {
     QPopupMenu* menu = static_cast<QPopupMenu*>( widget );
     int id;
-    if ( hasIconSet() )
+    if ( hasIcon() )
       id = menu->insertItem( iconSet(), text(), d->m_popup, -1, index );
     else
       id = menu->insertItem( text(), d->m_popup, -1, index );
