@@ -163,16 +163,12 @@ QString KWordWrap::wrappedString() const
 
 QString KWordWrap::truncatedString( bool dots ) const
 {
-    QString ts;
-    QValueList<int>::ConstIterator it = m_breakPositions.begin();
-    if ( it != m_breakPositions.end() )
-    {
-        ts = m_text.left( (*it) + 1 );
-        if ( dots )
-            ts += "...";
-    }
-    else
-        ts = m_text;
+    if ( m_breakPositions.isEmpty() )
+        return m_text;
+
+    QString ts = m_text.left( m_breakPositions.first() + 1 );
+    if ( dots )
+        ts += "...";
     return ts;
 }
 
