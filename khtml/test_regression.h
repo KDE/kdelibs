@@ -124,7 +124,8 @@ class RegressionTest : public QObject
 public:
 
     RegressionTest(KHTMLPart *part, const QString &baseDir,
-		   bool _genOutput);
+		   bool _genOutput, bool runJS, bool runHTML);
+    ~RegressionTest();
 
     enum OutputType { DOMTree, RenderTree };
     QString getPartOutput( OutputType type );
@@ -133,24 +134,31 @@ public:
     void testStaticFile(const QString& filename);
     void testJSFile(const QString& filename);
     bool checkOutput(const QString& againstFilename);
-    enum FailureType { NoFailure = 0, AllFailure = 1, RenderFailure = 2, DomFailure = 4};
+    bool checkPaintdump( const QString& againstFilename);
+    enum FailureType { NoFailure = 0, AllFailure = 1, RenderFailure = 2, DomFailure = 4, PaintFailure = 8, JSFailure = 16};
     bool runTests(QString relPath = QString::null, bool mustExist = false, int known_failure = NoFailure);
-    bool reportResult( bool passed, const QString & description = QString::null, bool error = false );
-    void createMissingDirs(QString path);
+    bool reportResult( bool passed, const QString & description = QString::null );
+    void createMissingDirs(const QString &path);
 
-    QPixmap outputPixmap();
-    bool pixmapsSame( const QImage &lhs, const QPixmap &rhs );
-    void doFailureReport( const QSize& baseSize, const QSize& outSize, const QString& baseDir,  const QString& test );
+    QImage renderToImage();
+    bool imageEqual( const QImage &lhs, const QImage &rhs );
+    void createLink( const QString& test, int failures );
+    void doJavascriptReport( const QString &test );
+    void doFailureReport( const QString& test, int failures );
 
     KHTMLPart *m_part;
     QString m_baseDir;
     bool m_genOutput;
     QString m_currentBase;
 
+    QString m_currentOutput;
     QString m_currentCategory;
     QString m_currentTest;
+    QPixmap* m_paintBuffer;
 
     bool m_getOutput;
+    bool m_runJS;
+    bool m_runHTML;
     int m_passes_work;
     int m_passes_fail;
     int m_failures_work;

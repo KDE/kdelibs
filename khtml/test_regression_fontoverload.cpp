@@ -35,7 +35,7 @@ class QFakeFontEngine : public QFontEngineXLFD
 public:
     QFakeFontEngine( XFontStruct *fs, const char *name, int size );
     ~QFakeFontEngine();
-
+#if 0
     virtual glyph_metrics_t boundingBox( const glyph_t *glyphs,
                                          const advance_t *advances, const qoffset_t *offsets, int numGlyphs );
     glyph_metrics_t boundingBox( glyph_t glyph );
@@ -49,15 +49,12 @@ public:
     int minLeftBearing() const { return 0; }
     int minRightBearing() const { return 0; }
     int cmap() const;
+#endif
     bool canRender( const QChar *string,  int len );
-    inline int size() const { return _size; }
-
-private:
-    int _size;
 };
 
 QFakeFontEngine::QFakeFontEngine( XFontStruct *fs, const char *name, int size )
-    : QFontEngineXLFD( fs,  name,  0), _size( size )
+    : QFontEngineXLFD( fs,  name,  0)
 {
 
 }
@@ -66,6 +63,7 @@ QFakeFontEngine::~QFakeFontEngine()
 {
 }
 
+#if 0
 QFontEngine::Error QFakeFontEngine::stringToCMap( const QChar *str, int len, glyph_t *glyphs, advance_t *advances, int *nglyphs, bool mirrored) const
 {
     QFontEngine::Error ret = QFontEngineXLFD::stringToCMap( str, len, glyphs, advances, nglyphs, mirrored );
@@ -127,6 +125,8 @@ int QFakeFontEngine::cmap() const
     return -1;
 }
 
+#endif
+
 bool QFakeFontEngine::canRender( const QChar *, int )
 {
     return true;
@@ -134,9 +134,6 @@ bool QFakeFontEngine::canRender( const QChar *, int )
 
 static QString courier_pickxlfd( int pixelsize, bool italic, bool bold )
 {
-    if ( italic )
-        return "-adobe-courier-medium-i-normal--0-0-0-0-m-0-iso8859-1";
-
     if ( pixelsize >= 24 )
         pixelsize = 24;
     else if ( pixelsize >= 18 )
@@ -146,13 +143,11 @@ static QString courier_pickxlfd( int pixelsize, bool italic, bool bold )
     else
         pixelsize = 10;
 
-    return QString( "-adobe-courier-%1-%2-normal--%3-*-75-75-m-*-iso10646-1" ).arg( bold ? "bold" : "medium" ).arg( italic ? "i" : "r" ).arg( pixelsize );
+    return QString( "-adobe-courier-%1-%2-normal--%3-*-75-75-m-*-iso10646-1" ).arg( bold ? "bold" : "medium" ).arg( italic ? "o" : "r" ).arg( pixelsize );
 }
 
 static QString helv_pickxlfd( int pixelsize, bool italic, bool bold )
 {
-    italic = false; // there is no such adobe-helvetica?
-
     if ( pixelsize >= 24 )
         pixelsize = 24;
     else if ( pixelsize >= 18 )
@@ -162,7 +157,7 @@ static QString helv_pickxlfd( int pixelsize, bool italic, bool bold )
     else
         pixelsize = 10;
 
-    return QString( "-adobe-helvetica-%1-%2-normal--%3-*-75-75-p-*-iso10646-1" ).arg( bold ? "bold" : "medium" ).arg( italic ? "i" : "r" ).arg( pixelsize );
+    return QString( "-adobe-helvetica-%1-%2-normal--%3-*-75-75-p-*-iso10646-1" ).arg( bold ? "bold" : "medium" ).arg( italic ? "o" : "r" ).arg( pixelsize );
 
 }
 
@@ -180,17 +175,12 @@ QFontDatabase::findFont( QFont::Script script, const QFontPrivate *fp,
     else
         xlfd = helv_pickxlfd( request.pixelSize, request.italic, request.weight > 50 );
 
-    qDebug( "findFont '%s' pixelsize=%d italic=%d weight=%d xlfd: '%s' ", family.latin1(), request.pixelSize, request.italic, request.weight, xlfd.latin1() );
     QFontEngine *fe = 0;
 
     XFontStruct *xfs;
     xfs = XLoadQueryFont(QPaintDevice::x11AppDisplay(), xlfd.latin1() );
     if (!xfs) // as long as you don't do screenshots, it's maybe fine
-	qWarning("we need some fonts. So make sure you have %s installed.", xlfd.latin1());
-
-
-    if ( !xfs )
-        return 0;
+	qFatal("we need some fonts. So make sure you have %s installed.", xlfd.latin1());
 
     unsigned long value;
     if ( !XGetFontProperty( xfs, XA_FONT, &value ) )
@@ -198,7 +188,6 @@ QFontDatabase::findFont( QFont::Script script, const QFontPrivate *fp,
 
     char *n = XGetAtomName( QPaintDevice::x11AppDisplay(), value );
     xlfd = n;
-    qDebug( "found %s", xlfd.latin1() );
     if ( n )
         XFree( n );
 
@@ -305,9 +294,9 @@ void KApplication::dcopFailure( const QString & )
 
 #include <kparts/historyprovider.h>
 
-bool KParts::HistoryProvider::contains( const QString&  ) const
+bool KParts::HistoryProvider::contains( const QString& t ) const
 {
-    return false;
+    return ( t == "http://www.kde.org/" || t == "http://www.google.com/");
 }
 
 
