@@ -142,7 +142,7 @@ static class h_date * gregorianToHebrew(int y, int m, int d)
 /* constants, in 1/18th of minute */
 static const int HOUR = 1080;
 static const int DAY = 24*HOUR;
-static const WEEK = 7*DAY;
+static const int WEEK = 7*DAY;
 #define M(h,p) ((h)*HOUR+p)
 #define MONTH (DAY+M(12,793))
   
@@ -308,7 +308,7 @@ QString KCalendarSystemHebrew::monthNamePossessive(const QDate& date,
 }
 
 // ### Fixme
-QString KCalendarSystemHebrew::monthName(int month, bool shortName) const
+QString KCalendarSystemHebrew::monthName(int month, bool /*shortName*/) const
 {
   switch(month)
   {
