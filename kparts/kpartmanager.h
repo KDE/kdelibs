@@ -75,17 +75,17 @@ signals:
    * Emitted when a new part has been added.
    * @see addPart()
    **/
-  void partAdded( Part *part );
+  void partAdded( KParts::Part *part );
   /**
    * Emitted when a part has been removed.
    * @see removePart()
    **/
-  void partRemoved( Part *part );
+  void partRemoved( KParts::Part *part );
   /**
    * Emitted when the active part has changed.
    * @see setActivePart()
    **/
-  void activePartChanged( Part *newPart );
+  void activePartChanged( KParts::Part *newPart );
 
 protected slots:
     /**
