@@ -492,19 +492,17 @@ void HTMLFormElementImpl::submitFromKeyboard()
         prepareSubmit();
 }
 
-bool HTMLFormElementImpl::prepareSubmit()
+
+void HTMLFormElementImpl::gatherWalletData()
 {
     KHTMLView* const view = getDocument()->view();
-    if(m_insubmit || !view || !view->part() || view->part()->onlyLocalReferences())
-        return m_insubmit;
-
     // check if we have any password input's
     m_walletMap.clear();
     m_havePassword = false;
     m_haveTextarea = false;
     const KURL formUrl(getDocument()->URL());
     if (!view->nonPasswordStorableSite(formUrl.host())) {
-        for (QPtrListIterator<HTMLGenericFormElementImpl> it(formElements); it.current(); ++it)
+        for (QPtrListIterator<HTMLGenericFormElementImpl> it(formElements); it.current(); ++it) {
             if (it.current()->id() == ID_INPUT)  {
                 HTMLInputElementImpl* const c = static_cast<HTMLInputElementImpl*> (it.current());
                 if (c->inputType() == HTMLInputElementImpl::TEXT ||
@@ -517,7 +515,18 @@ bool HTMLFormElementImpl::prepareSubmit()
             }
             else if (it.current()->id() == ID_TEXTAREA)
                 m_haveTextarea = true;
+        }
     }
+}
+
+
+bool HTMLFormElementImpl::prepareSubmit()
+{
+    KHTMLView* const view = getDocument()->view();
+    if(m_insubmit || !view || !view->part() || view->part()->onlyLocalReferences())
+        return m_insubmit;
+
+    gatherWalletData();
 
     m_insubmit = true;
     m_doingsubmit = false;
@@ -552,44 +561,47 @@ void HTMLFormElementImpl::submit(  )
     const KURL formUrl(getDocument()->URL());
 
     if (ok && view) {
+        if (m_walletMap.isEmpty()) {
+            gatherWalletData();
+        }
         if (m_havePassword && !m_haveTextarea && KWallet::Wallet::isEnabled()) {
             const QString key = calculateAutoFillKey(*this);
             const bool doesnotexist = KWallet::Wallet::keyDoesNotExist(KWallet::Wallet::NetworkWallet(), KWallet::Wallet::FormDataFolder(), key);
+            KWallet::Wallet* const w = view->part()->wallet();
+            bool login_changed = false;
 
-                bool login_changed = false;
-                if ( !doesnotexist ) {
-                    // check if the login information changed from what
-                    // we had so far.
-                    KWallet::Wallet* const w = view->part()->wallet();
-                    if (w)  {
-                        if (w->hasFolder(KWallet::Wallet::FormDataFolder())) {
-                            w->setFolder(KWallet::Wallet::FormDataFolder());
-                            QMap<QString, QString> map;
-                            if (!w->readMap(key, map)) {
-                                QMapConstIterator<QString, QString> it = map.begin();
-                                const QMapConstIterator<QString, QString> itEnd = map.end();
-                                for ( ; it != itEnd; ++it )
-                                    if ( map[it.key()] != m_walletMap[it.key()] ) {
-                                        login_changed = true;
-                                        break;
-                                    }
-                            }
-                            else
+            if (!doesnotexist && w) {
+                // check if the login information changed from what
+                // we had so far.
+                if (w->hasFolder(KWallet::Wallet::FormDataFolder())) {
+                    kdDebug() << "   -> has folder" << endl;
+                    w->setFolder(KWallet::Wallet::FormDataFolder());
+                    QMap<QString, QString> map;
+                    if (!w->readMap(key, map)) {
+                        QMapConstIterator<QString, QString> it = map.begin();
+                        const QMapConstIterator<QString, QString> itEnd = map.end();
+                        for ( ; it != itEnd; ++it )
+                            if ( map[it.key()] != m_walletMap[it.key()] ) {
                                 login_changed = true;
-                        }
+                                break;
+                            }
+                    } else {
+                        login_changed = true;
                     }
                 }
+                kdDebug() << "   -> login_changed=" << (login_changed ? "true" : "false" ) << endl;
+            }
 
-                if ( doesnotexist || login_changed ) {
-                    // TODO use KMessageBox::questionYesNoCancel() again, if you can pass a KGuiItem for Cancel
-                    KDialogBase* const dialog = new KDialogBase(i18n("Save Login Information"),
+            if ( doesnotexist || !w || login_changed ) {
+                // TODO use KMessageBox::questionYesNoCancel() again, if you can pass a KGuiItem for Cancel
+                KDialogBase* const dialog = new KDialogBase(i18n("Save Login Information"),
                                                           KDialogBase::Yes | KDialogBase::No | KDialogBase::Cancel,
                                                           KDialogBase::Yes, KDialogBase::Cancel,
                                                           0, "questionYesNoCancel", true, true,
                                                           KStdGuiItem::yes(), KGuiItem(i18n("Never for This Site")), KStdGuiItem::no());
 
-                    bool checkboxResult = false;
-                    const int savePassword = KMessageBox::createKMessageBox(dialog, QMessageBox::Information,
+                bool checkboxResult = false;
+                const int savePassword = KMessageBox::createKMessageBox(dialog, QMessageBox::Information,
                                                                             i18n("Konqueror has the ability to store the password "
                                                                                  "in an encrypted wallet. When the wallet is unlocked, it "
                                                                                  "can then automatically restore the login information "
@@ -597,16 +609,16 @@ void HTMLFormElementImpl::submit(  )
                                                                                  "the information now?"),
                                                                             QStringList(), QString::null, &checkboxResult, KMessageBox::Notify);
 
-                    if ( savePassword == KDialogBase::Yes ) {
-                        // ensure that we have the user / password inside the url
-                        // otherwise we might have a potential security problem
-                        // by saving passwords under wrong lookup key.
+                if ( savePassword == KDialogBase::Yes ) {
+                    // ensure that we have the user / password inside the url
+                    // otherwise we might have a potential security problem
+                    // by saving passwords under wrong lookup key.
 
-                        getDocument()->view()->part()->saveToWallet(key, m_walletMap);
-                    } else if ( savePassword == KDialogBase::No ) {
-                        view->addNonPasswordStorableSite(formUrl.host());
-                    }
+                    getDocument()->view()->part()->saveToWallet(key, m_walletMap);
+                } else if ( savePassword == KDialogBase::No ) {
+                    view->addNonPasswordStorableSite(formUrl.host());
                 }
+            }
         }
 
         const DOMString url(khtml::parseURL(getAttribute(ATTR_ACTION)));

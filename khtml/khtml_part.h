@@ -1478,7 +1478,7 @@ private:
 
   bool processObjectRequest( khtml::ChildFrame *child, const KURL &url, const QString &mimetype );
 
-  KWallet::Wallet* wallet() KDE_DEPRECATED;
+  KWallet::Wallet* wallet();
 
   void openWallet(DOM::HTMLFormElementImpl*);
   void saveToWallet(const QString& key, const QMap<QString,QString>& data);

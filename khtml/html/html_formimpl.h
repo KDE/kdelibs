@@ -105,6 +105,7 @@ public:
     friend class HTMLFormCollectionImpl;
 
 private:
+    void gatherWalletData();
     QPtrList<HTMLGenericFormElementImpl> formElements;
     QPtrList<HTMLImageElementImpl> imgElements;
     DOMString m_target;
