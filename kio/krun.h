@@ -170,7 +170,7 @@ class KFileManager
 {
 public:
   KFileManager() { pFileManager = this; }
-  virtual ~KFileManager() {}
+  virtual ~KFileManager() { pFileManager = 0; }
 
   /**
    * Opens a file manager window for _url
