@@ -55,7 +55,7 @@ class KFileFilter;
  * QFileDialog widget, but has greater functionality and a nicer GUI.
  *
  * You will usually want to use one of the two static methods
- * KFileDialog::getOpenFileName or KFileDialog::getCloseFileName.
+ * KFileDialog::getOpenFileName or KFileDialog::getSaveFileName.
  *
  * The dialog has been designed to allow applications to customise it
  * by subclassing. It uses geometry management to ensure that subclasses
@@ -543,8 +543,3 @@ protected:
 };
 
 #endif
-
-
-
-
-
