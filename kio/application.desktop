@@ -1,0 +1,17 @@
+[Desktop Entry]
+Type=ServiceType
+X-KDE-ServiceType=Application
+Name=Application
+
+[PropertyDef::DocPath]
+Type=QString
+
+[PropertyDef::X-KDE-HideFromPanel]
+Type=bool
+
+[PropertyDef::X-KDE-SubstituteUID]
+Type=bool
+
+[PropertyDef::X-KDE-Username]
+Type=bool
+

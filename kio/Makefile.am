@@ -98,7 +98,7 @@ noinst_HEADERS = ksycocafactory.h kservicetypefactory.h kservicefactory.h \
 	uiserver.h observer.h kimageiofactory.h
 
 kde_mime_DATA = magic
-kde_servicetypes_DATA = kurifilterplugin.desktop
+kde_servicetypes_DATA = application.desktop kurifilterplugin.desktop
 kde_services_DATA = kio_uiserver.desktop
 
 parserfiles = yacc.y lex.l

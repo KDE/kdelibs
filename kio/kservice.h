@@ -131,11 +131,11 @@ public: // KDoc seems to barf on those typedefs and generates no docs after them
   /**
    * @return If the service has to be run under a different uid.
    */
-  bool substituteUid() const { return m_bSuid; }
+  bool substituteUid() const;
   /**
    * @return The username as which the service has to be run.
    */
-  QString username() const { return m_strUsername; }
+  QString username() const;
 
   /**
    * @return the path to the location where the service desktop entry
@@ -281,7 +281,6 @@ private:
   QString m_strPath;
   QString m_strComment;
   QString m_strLibrary;
-  QString m_strUsername;
   int m_libraryMajor;
   int m_libraryMinor;
   QStringList m_lstLibraryDeps;
@@ -289,11 +288,12 @@ private:
   bool m_bAllowAsDefault;
   int m_initialPreference;
   bool m_bTerminal;
-  bool m_bSuid;
+  //bool m_bSuid;
+  //QString m_strUsername;
   QString m_strDesktopEntryPath;
   QString m_strDesktopEntryName;
-  QString m_docPath;
-  bool m_bHideFromPanel;
+  //QString m_docPath;
+  //bool m_bHideFromPanel;
   DCOPServiceType_t m_DCOPServiceType;
   QMap<QString,QVariant> m_mapProps;
   bool m_bValid;

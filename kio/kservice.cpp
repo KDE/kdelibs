@@ -118,8 +118,8 @@ KService::init( KDesktopFile *config )
   }
 
   m_strIcon = config->readEntry( "Icon", "unknown" );
-  m_bTerminal = (config->readBoolEntry( "Terminal" ));
-  m_strTerminalOptions = config->readEntry( "TerminalOptions" );
+  m_bTerminal = (config->readBoolEntry( "Terminal" )); // should be a property IMHO
+  m_strTerminalOptions = config->readEntry( "TerminalOptions" ); // should be a property IMHO
   m_strPath = config->readEntry( "Path" );
   m_strComment = config->readEntry( "Comment" );
   m_bDeleted = config->readBoolEntry( "Hidden", false );
@@ -128,12 +128,17 @@ KService::init( KDesktopFile *config )
   m_libraryMinor = config->readNumEntry( "X-KDE-LibraryMinor", 0 );
   m_lstLibraryDeps = config->readListEntry( "X-KDE-LibraryDependencies" );
   m_lstServiceTypes = config->readListEntry( "ServiceTypes" );
-  m_docPath = config->readEntry("DocPath");
-  m_bHideFromPanel = config->readBoolEntry("X-KDE-HideFromPanel");
   // For compatibility with KDE 1.x
   m_lstServiceTypes += config->readListEntry( "MimeType", ';' );
-  m_bSuid = (config->readEntry( "X-KDE-SubstituteUID" ) == "1");
-  m_strUsername = config->readEntry( "X-KDE-Username" );
+  // Now in application.desktop, i.e. read as properties
+  //m_docPath = config->readEntry("DocPath");
+  //m_bHideFromPanel = config->readBoolEntry("X-KDE-HideFromPanel");
+  //m_bSuid = (config->readEntry( "X-KDE-SubstituteUID" ) == "1");
+  //m_strUsername = config->readEntry( "X-KDE-Username" );
+
+  if ( m_strType == "Application" && !m_lstServiceTypes.contains("Application") )
+    // Applications implement the service type "Application" ;-)
+    m_lstServiceTypes += "Application";
 
   QString dcopServiceType = config->readEntry("X-DCOP-ServiceType").lower();
   if (dcopServiceType == "unique")
@@ -194,8 +199,12 @@ QPixmap KService::pixmap( int _group, int _force_size, int _state, QString * _pa
 
 void KService::load( QDataStream& s )
 {
-  Q_INT8 def, term, suid, hfp;
+  // dummies are here because of fields that were removed, to keep bin compat.
+  // Feel free to re-use, but fields for Applications only (not generic services)
+  // should rather be added to application.desktop
+  Q_INT8 def, term, dummy1, dummy2;
   Q_INT8 dst, initpref;
+  QString dummyStr1, dummyStr2;
 
   s >> m_strType >> m_strName >> m_strExec >> m_strIcon
     >> term >> m_strTerminalOptions
@@ -203,12 +212,10 @@ void KService::load( QDataStream& s )
     >> m_strLibrary >> m_libraryMajor >> m_libraryMinor
     >> dst
     >> m_strDesktopEntryPath >> m_strDesktopEntryName
-    >> suid >> m_strUsername >> initpref >> m_docPath >> hfp;
+    >> dummy1 >> dummyStr1 >> initpref >> dummyStr2 >> dummy2;
 
   m_bAllowAsDefault = def;
   m_bTerminal = term;
-  m_bHideFromPanel = hfp;
-  m_bSuid = suid;
   m_DCOPServiceType = (DCOPServiceType_t) dst;
   m_initialPreference = initpref;
 
@@ -219,9 +226,10 @@ void KService::save( QDataStream& s )
 {
   KSycocaEntry::save( s );
   Q_INT8 def = m_bAllowAsDefault, initpref = m_initialPreference;
-  Q_INT8 term = m_bTerminal, suid = m_bSuid;
+  Q_INT8 term = m_bTerminal;
   Q_INT8 dst = (Q_INT8) m_DCOPServiceType;
-  Q_INT8 hfp = m_bHideFromPanel;
+  Q_INT8 dummy1, dummy2; // see ::load
+  QString dummyStr1, dummyStr2;
 
   // !! This data structure should remain binary compatible at all times !!
   // You may add new fields at the end. Make sure to update the version
@@ -232,7 +240,7 @@ void KService::save( QDataStream& s )
     << m_strLibrary << m_libraryMajor << m_libraryMinor
     << dst
     << m_strDesktopEntryPath << m_strDesktopEntryName
-    << suid << m_strUsername << initpref << m_docPath << hfp;
+    << dummy1 << dummyStr1 << initpref << dummyStr2 << dummy2;
 }
 
 bool KService::hasServiceType( const QString& _servicetype ) const
@@ -281,6 +289,8 @@ QVariant KService::property( const QString& _name ) const
     return QVariant( m_libraryMinor );
   else if ( _name == "LibraryDependencies" )
     return QVariant( m_lstLibraryDeps );
+  /*
+    // Now part of the properties
   else if ( _name == "X-KDE-SubstituteUID" )
     return QVariant( static_cast<int>(m_bSuid) );
   else if ( _name == "X-KDE-Username" )
@@ -289,6 +299,7 @@ QVariant KService::property( const QString& _name ) const
     return QVariant( m_docPath );
   else if ( _name == "X-KDE-HideFromPanel")
     return QVariant( static_cast<int>(m_bHideFromPanel) );
+  */
 
   QMap<QString,QVariant>::ConstIterator it = m_mapProps.find( _name );
   if ( it == m_mapProps.end() )
@@ -321,10 +332,12 @@ QStringList KService::propertyNames() const
   res.append( "LibraryMajor" );
   res.append( "LibraryMinor" );
   res.append( "LibraryDependencies" );
+  /*
   res.append( "X-KDE-SubstituteUID" );
   res.append( "X-KDE-Username" );
   res.append( "DocPath" );
   res.append( "X-KDE-HideFromPanel" );
+  */
 
   return res;
 }
@@ -350,5 +363,14 @@ KService::Ptr KService::serviceByDesktopName( const QString& _name )
 {
   KService * s = KServiceFactory::self()->findServiceByDesktopName( _name );
   return KService::Ptr( s );
+}
+
+bool KService::substituteUid() const {
+  QVariant v = property("X-KDE-SubstituteUID");
+  return v.isValid() && v.toBool();
+}
+QString KService::username() const {
+  QVariant v = property("X-KDE-Username");
+  return v.isValid() ? v.toString() : QString::null;
 }
 
