@@ -205,13 +205,15 @@ void KPrintDialog::setDialogPages(QList<KPrintDialogPage> *pages)
 	}
 }
 
-bool KPrintDialog::printerSetup(KPrinter *printer, QWidget *parent)
+bool KPrintDialog::printerSetup(KPrinter *printer, QWidget *parent, const QString& caption)
 {
 	if (printer)
 	{
 		KPrintDialog	dlg(parent);
 		KMFactory::self()->uiManager()->setupPrintDialog(&dlg);
 		dlg.initialize(printer);
+		if (!caption.isEmpty())
+			dlg.setCaption(caption);
 		return dlg.exec();
 	}
 	return false;

@@ -49,7 +49,7 @@ public:
 	void initialize(KPrinter*);
 	KPrinter* printer() const;
 
-	static bool printerSetup(KPrinter*, QWidget*);
+	static bool printerSetup(KPrinter*, QWidget*, const QString& caption = QString::null);
 
 protected slots:
 	void slotPrinterSelected(int);

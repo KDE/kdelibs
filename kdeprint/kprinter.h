@@ -433,9 +433,10 @@ public:
 	/**
 	 * Setup the KPrinter object using the print dialog, returns true if the user clicked OK.
 	 * @param parent the parent widget to use for the print dialog
+	 * @param caption the caption to use in the print dialog
 	 * @returns boolean value corresponding to the button clicked by the user
 	 */
-	bool setup(QWidget *parent = 0);
+	bool setup(QWidget *parent = 0, const QString& caption = QString::null);
 	/**
 	 * See @ref QPrinter::margins()
 	 */
