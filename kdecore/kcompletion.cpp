@@ -175,9 +175,12 @@ QString KCompletion::makeCompletion( const QString& string )
     if ( (myCompletionMode == KGlobalSettings::CompletionShell ||
 	  myCompletionMode == KGlobalSettings::CompletionMan) &&
 	 string == myLastString ) {
-        myMatches = findAllCompletions( string );
-	postProcessMatches( &myMatches );
-	emit matches( myMatches );
+	// Don't use myMatches since calling postProcessMatches()
+	// on myMatches here would interfere with call to
+	// postProcessMatch() during rotation
+	QStringList l = findAllCompletions( string );
+	postProcessMatches( &l );
+	emit matches( l );
     }
 
     QString completion = findCompletion( string );
@@ -210,6 +213,25 @@ void KCompletion::setCompletionMode( KGlobalSettings::Completion mode )
 }
 
 
+QStringList KCompletion::allMatches()
+{
+	// Don't use myMatches since calling postProcessMatches()
+	// on myMatches here would interfere with call to
+	// postProcessMatch() during rotation
+	QStringList l = findAllCompletions( myLastString );
+	postProcessMatches( &l );
+	return l;
+}
+
+QStringList KCompletion::allMatches( const QString &text )
+{
+	// Don't use myMatches since calling postProcessMatches()
+	// on myMatches here would interfere with call to
+	// postProcessMatch() during rotation
+	QStringList l = findAllCompletions( text );
+	postProcessMatches( &l );
+	return l;
+}
 
 /////////////////////////////////////////////////////
 ///////////////// tree operations ///////////////////

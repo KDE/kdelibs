@@ -284,14 +284,12 @@ public:
      * @returns a list of all items matching the last completed string.
      * Might take some time, when you have LOTS of items.
      */
-    QStringList allMatches() { return findAllCompletions( myLastString ); }
+    QStringList allMatches();
 
     /**
      * @returns a list of all items matching @p string.
      */
-    QStringList allMatches( const QString& string ) {
-	return findAllCompletions( string );
-    }
+    QStringList allMatches( const QString& string );
 
     /**
      * Enables playing a sound when
