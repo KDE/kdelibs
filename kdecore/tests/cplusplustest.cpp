@@ -32,7 +32,7 @@ int main(int , char *[])
   A *pA = &obj;
   B *pB = &obj;
   C *pC = &obj;
-qWarning("pA = %p, pB = %p, pV = %p", pA, pB, pC);
+qWarning("pA = %p, pB = %p, pC = %p", pA, pB, pC);
   if (pA == pC) qWarning("pA == pC");
   if (pB == pC) qWarning("pB == pC");
 
