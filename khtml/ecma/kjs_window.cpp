@@ -1578,7 +1578,7 @@ Value FrameArray::get(ExecState *exec, const UString &p) const
 
 ////////////////////// Location Object ////////////////////////
 
-const ClassInfo Location::info = { "Location", 0, 0, 0 };
+const ClassInfo Location::info = { "Location", 0, &LocationTable, 0 };
 /*
 @begin LocationTable 11
   hash		Location::Hash		DontDelete
