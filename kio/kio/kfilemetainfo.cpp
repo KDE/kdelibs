@@ -1409,7 +1409,7 @@ void KFileMimeTypeInfo::GroupInfo::addVariableInfo( QVariant::Type type,
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
 
-QString KFileMimeTypeInfo::ItemInfo::string(QVariant value, bool mangle) const
+QString KFileMimeTypeInfo::ItemInfo::string(const QVariant& value, bool mangle) const
 {
     QString s;
 

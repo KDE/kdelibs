@@ -323,7 +323,7 @@ public:
          * suffix
 	 * @since 3.1
          */
-        QString string( QVariant value, bool mangle = true ) const;
+        QString string( const QVariant& value, bool mangle = true ) const;
 
         /**
          * Is this item the variable item?
