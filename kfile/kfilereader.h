@@ -33,6 +33,7 @@
 #include <qstring.h>
 #include <qregexp.h>
 #include <qlist.h>
+#include <qtimer.h>
 #include <kdirwatch.h>
 #include <kurl.h>
 #include <kio/global.h>
@@ -199,18 +200,17 @@ protected:
     virtual void startLoading();
 
     KIO::Job *myJob;
-    static KDirWatch *dirWatch;
+    KDirWatch *myDirWatch;
 
 private:
     KFileReader(const KFileReader&);
     KFileReader& operator=(const KFileReader&);
 
-    static void cleanup();
-
     QList<QRegExp> filters;
     // Raw entries (we cache these for performance)
     KFileViewItemList myEntries, myNewEntries, myUpdateList;
     KFileViewItemList myPendingEntries;
+    QTimer *myUpdateTimer;
 
     bool myDirtyFlag;
     bool myAutoUpdate;
