@@ -79,8 +79,9 @@ VCard::List VCardParser::parseVCards( const QString& text )
           vCardLine.setIdentifier( params[0] );
 
         if ( params.count() > 1 ) { // find all parameters
-          for ( uint i = 1; i < params.count(); ++i ) {
-            QStringList pair = QStringList::split( '=', params[i] );
+          QStringList::ConstIterator paramIt = params.begin();
+          for ( ++paramIt; paramIt != params.end(); ++paramIt ) {
+            QStringList pair = QStringList::split( '=', *paramIt );
             if ( pair.size() == 1 ) {
               // correct the fucking 2.1 'standard'
               if ( pair[0].lower() == "quoted-printable" ) {
@@ -96,8 +97,9 @@ VCard::List VCardParser::parseVCards( const QString& text )
             //This is pretty much a faster pair[1].contains( ',' )...
             if ( pair[1].find( ',' ) != -1 ) { // parameter in type=x,y,z format
               const QStringList args = QStringList::split( ',', pair[ 1 ] );
-              for ( uint j = 0; j < args.count(); ++j )
-                vCardLine.addParameter( pair[0].lower(), args[j] );
+              QStringList::ConstIterator argIt;
+              for ( argIt = args.begin(); argIt != args.end(); ++argIt )
+                vCardLine.addParameter( pair[0].lower(), *argIt );
             } else
               vCardLine.addParameter( pair[0].lower(), pair[1] );
           }
