@@ -1740,7 +1740,7 @@ AddressBook::makeEntryFromVCard(const QString&, Entry&)
 }
 
 QString
-AddressBook::getStandardFilename()
+AddressBook::getStandardFileName()
 {
   // ###########################################################################
   return locateLocal( "data", STD_USERFILENAME);

@@ -519,7 +519,7 @@ public:
   /** Returns the complete path to the user standard file. An empty path
    *  indicates an error, but this should not happen. It is NOT ensured
    *  that the file exists. */
-  QString getStandardFilename();
+  QString getStandardFileName();
   /** Call this to get a telephone type translated to the locale. */
   static QString phoneType(AddressBook::Telephone);
   /** Query the entry categories defined for this address
@@ -537,6 +537,12 @@ public:
   */
   Section* categoriesSection();
   // ----------------------------------------------------------------------------
+
+#ifdef KDE_NO_COMPAT
+private:
+#endif
+    QString getStandardFilename() { return getStandardFileName(); };
+
 protected:
   QConfigDB *config; /**< The configuration database. */
   QConfigDB *data; /**< The currently open data files. */
