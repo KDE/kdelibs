@@ -197,12 +197,30 @@ void KConfigBackEnd::setFileWriteMode(int mode)
 
 bool KConfigINIBackEnd::parseConfigFiles()
 {
-  // Parse all desired files from the least to the most specific.
-  if (!mLocalFileName.isEmpty() && !pConfig->isReadOnly() && checkAccess(mLocalFileName, W_OK))
-     mConfigState = KConfigBase::ReadWrite;
-  else
-     mConfigState = KConfigBase::ReadOnly;
+  // Check if we can write to the local file.
+  mConfigState = KConfigBase::ReadOnly;
+  if (!mLocalFileName.isEmpty() && !pConfig->isReadOnly())
+  {
+     if (checkAccess(mLocalFileName, W_OK))
+     {
+        mConfigState = KConfigBase::ReadWrite;
+     }
+     else
+     {
+        // Create the containing dir, maybe it wasn't there
+        KURL path;
+        path.setPath(mLocalFileName);
+        QString dir=path.directory();
+        KStandardDirs::makeDir(dir);
 
+        if (checkAccess(mLocalFileName, W_OK))
+        {
+           mConfigState = KConfigBase::ReadWrite;
+        }
+     }
+  }
+
+  // Parse all desired files from the least to the most specific.
   bFileImmutable = false;
 
   // Parse the general config files
