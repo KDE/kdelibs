@@ -615,11 +615,14 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
     // We return a new array
     Object resObj = Object::dynamicCast(exec->interpreter()->builtinArray().construct(exec,List::empty()));
     result = resObj;
-    int begin = args[0].toInteger(exec);
-    if ( begin < 0 )
-      begin = maxInt( begin + length, 0 );
-    else
-      begin = minInt( begin, length );
+    int begin = 0;
+    if (args[0].type() != UndefinedType) {
+      begin = args[0].toInteger(exec);
+      if ( begin < 0 )
+        begin = maxInt( begin + length, 0 );
+      else
+        begin = minInt( begin, length );
+    }
     int end = length;
     if (args[1].type() != UndefinedType)
     {
