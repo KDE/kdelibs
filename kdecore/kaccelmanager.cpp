@@ -18,18 +18,27 @@
 */
 
 
-#include <qwidget.h>
-#include <qobjectlist.h>
 #include <qapplication.h>
-#include <qpopupmenu.h>
+#include <qcheckbox.h>
+#include <qcombobox.h>
+#include <qgroupbox.h>
+#include <qlabel.h>
+#include <qlineedit.h>
 #include <qmenubar.h>
 #include <qmemarray.h>
-#include <qmainwindow.h>
-#include <qtabbar.h>
-#include <qwidgetstack.h>
-#include <qlabel.h>
-#include <qptrlist.h>
 #include <qmetaobject.h>
+#include <qmainwindow.h>
+#include <qobjectlist.h>
+#include <qpopupmenu.h>
+#include <qptrlist.h>
+#include <qpushbutton.h>
+#include <qradiobutton.h>
+#include <qspinbox.h>
+#include <qtabbar.h>
+#include <qtextview.h>
+#include <qwidget.h>
+#include <qwidgetstack.h>
+
 #include <kstdaction.h>
 #include <kstaticdeleter.h>
 #include <kdebug.h>
@@ -172,7 +181,7 @@ void KAcceleratorManagerPrivate::Item::addChild(Item *item)
 
 void KAcceleratorManagerPrivate::manage(QWidget *widget)
 {
-    if (widget->inherits("QPopupMenu"))
+    if (dynamic_cast<QPopupMenu*>(widget))
     {
         // create a popup accel manager that can deal with dynamic menus
         KPopupAccelManager::manage(static_cast<QPopupMenu*>(widget));
@@ -212,19 +221,19 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
     {
         cnt++;
 
-        if (it->m_widget->inherits("QTabBar"))
+        QTabBar *tabBar = dynamic_cast<QTabBar*>(it->m_widget);
+        if (tabBar)
         {
-            QTabBar *bar = static_cast<QTabBar*>(it->m_widget);
             if (checkChange(contents[cnt]))
-                bar->tabAt(it->m_index)->setText(contents[cnt].accelerated());
+                tabBar->tabAt(it->m_index)->setText(contents[cnt].accelerated());
             continue;
         }
-        if (it->m_widget->inherits("QMenuBar"))
+        QMenuBar *menuBar = dynamic_cast<QMenuBar*>(it->m_widget);
+        if (menuBar)
         {
-            QMenuBar *bar = static_cast<QMenuBar*>(it->m_widget);
             if (it->m_index >= 0)
             {
-                QMenuItem *mitem = bar->findItem(bar->idAt(it->m_index));
+                QMenuItem *mitem = menuBar->findItem(menuBar->idAt(it->m_index));
                 if (mitem)
                 {
                     checkChange(contents[cnt]);
@@ -273,32 +282,36 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
 {
   // first treat the special cases
 
-  if (w->inherits("QTabBar"))
+  QTabBar *tabBar = dynamic_cast<QTabBar*>(w);
+  if (tabBar)
   {
-      manageTabBar(static_cast<QTabBar*>(w), item);
+      manageTabBar(tabBar, item);
       return;
   }
-  
-  if (w->inherits("QPopupMenu"))
+
+  QPopupMenu *popupMenu = dynamic_cast<QPopupMenu*>(w);
+  if (popupMenu)
   {
       // create a popup accel manager that can deal with dynamic menus
-      KPopupAccelManager::manage(static_cast<QPopupMenu*>(w));
+      KPopupAccelManager::manage(popupMenu);
       return;
   }
 
-  if (w->inherits("QMenuBar"))
+  QMenuBar *menuBar = dynamic_cast<QMenuBar*>(w);
+  if (menuBar)
   {
-      manageMenuBar(static_cast<QMenuBar*>(w), item);
+      manageMenuBar(menuBar, item);
       return;
   }
 
-  if (w->inherits("QComboBox") || w->inherits("QLineEdit") ||
-      w->inherits("QTextEdit") || w->inherits("QTextView") ||
-      w->inherits("QSpinBox"))
+  if (dynamic_cast<QComboBox*>(w) || dynamic_cast<QLineEdit*>(w) ||
+      dynamic_cast<QTextEdit*>(w) || dynamic_cast<QTextView*>(w) ||
+      dynamic_cast<QSpinBox*>(w))
       return;
 
   // now treat 'ordinary' widgets
-  if (w->isFocusEnabled() || (w->inherits("QLabel") && static_cast<QLabel*>(w)->buddy()) || w->inherits("QGroupBox"))
+  QLabel *label =  dynamic_cast<QLabel*>(w);
+  if (w->isFocusEnabled() || (label && label->buddy()) || dynamic_cast<QGroupBox*>(w))
   {
     QString content;
     QVariant variant;
@@ -330,11 +343,11 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
 
         // put some more weight on the usual action elements
         int weight = KAccelManagerAlgorithm::DEFAULT_WEIGHT;
-        if (w->inherits("QPushButton") || w->inherits("QCheckBox") || w->inherits("QRadioButton") || w->inherits("QLabel"))
+        if (dynamic_cast<QPushButton*>(w) || dynamic_cast<QCheckBox*>(w) || dynamic_cast<QRadioButton*>(w) || dynamic_cast<QLabel*>(w))
             weight = KAccelManagerAlgorithm::ACTION_ELEMENT_WEIGHT;
 
         // don't put weight on group boxes, as usually the contents are more important
-        if (w->inherits("QGroupBox"))
+        if (dynamic_cast<QGroupBox*>(w))
             weight = KAccelManagerAlgorithm::GROUP_BOX_WEIGHT;
 
         // put a lot of extra weight on the KDialogBaseButton's
