@@ -65,12 +65,20 @@ static int sndfd = -1;
 static int settings;
 static arts_stream_t stream = 0;
 
+#if !defined(HAVE_IOCTL_INT_INT_DOTS) && !defined(HAVE_IOCTL_INT_ULONG_DOTS)
+#error "unknown ioctl type (check config.h, adapt configure test)..."
+#endif
+
 /*
  * original C library functions
  */
 typedef int (*orig_open_ptr)(const char *pathname, int flags, ...);
 typedef int (*orig_close_ptr)(int fd);
+#ifdef HAVE_IOCTL_INT_INT_DOTS
+typedef int (*orig_ioctl_ptr)(int fd, int request, ...);
+#else /* HAVE_IOCTL_INT_ULONG_DOTS */
 typedef int (*orig_ioctl_ptr)(int fd, unsigned long request, ...);
+#endif
 typedef ssize_t (*orig_write_ptr)(int fd, const void *buf, size_t count);
 
 static orig_open_ptr orig_open;
@@ -161,7 +169,11 @@ int open (const char *pathname, int flags, ...)
   return sndfd;
 }
 
+#ifdef HAVE_IOCTL_INT_INT_DOTS
+int ioctl (int fd, int request, ...)
+#else /* HAVE_IOCTL_INT_ULONG_DOTS */
 int ioctl (int fd, unsigned long request, ...)
+#endif
 {
   static int channels;
   static int bits;

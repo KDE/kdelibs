@@ -55,38 +55,42 @@ dnl not required for Linux vs. FreeBSD (for which this test was written), and
 dnl that only the Linux documentation claims that it has an "int" as second
 dnl argument. But maybe there will pop up systems for which the signature
 dnl differs, later.
-dnl 
-dnl AC_DEFUN(AC_CHECK_IOCTL_TYPE,
-dnl [
-dnl   AC_MSG_CHECKING([ioctl type])
-dnl   AC_CACHE_VAL(ac_cv_ioctl_type,
-dnl   [
-dnl     AC_TRY_COMPILE(
-dnl     [
-dnl       #include <sys/ioctl.h>
-dnl 	  int ioctl(int d, int request,...);
-dnl     ],
-dnl     [
-dnl     ],
-dnl 	ac_cv_ioctl_type=1,
-dnl 	ac_cv_ioctl_type=2)
-dnl   ])
-dnl   AC_MSG_RESULT($ac_cv_ioctl_type)
-dnl 
-dnl if test $ac_cv_ioctl_type = 1; then
-dnl   AC_DEFINE(HAVE_IOCTL_INT_INT_DOTS,1,
-dnl 	      [Define if ioctl is declared as int ioctl(int d, int request,...)])
-dnl else
-dnl   AC_DEFINE(HAVE_IOCTL_INT_ULONG_DOTS,1,
-dnl 	      [Define if ioctl is declared as int ioctl(int d, unsigned long request,...)])
-dnl fi
-dnl ])
+
+AC_DEFUN(AC_CHECK_IOCTL_TYPE,
+[
+  AC_MSG_CHECKING([ioctl type])
+  AC_LANG_SAVE
+  AC_LANG_C
+  AC_CACHE_VAL(ac_cv_ioctl_type,
+  [
+    AC_TRY_COMPILE(
+    [
+      #include <sys/ioctl.h>
+	  int ioctl(int d, int request,...);
+    ],
+    [
+    ],
+	ac_cv_ioctl_type=1,
+	ac_cv_ioctl_type=2)
+  ])
+  AC_MSG_RESULT($ac_cv_ioctl_type)
+  AC_LANG_RESTORE
+
+if test $ac_cv_ioctl_type = 1; then
+  AC_DEFINE(HAVE_IOCTL_INT_INT_DOTS,1,
+	      [Define if ioctl is declared as int ioctl(int d, int request,...)])
+else
+  AC_DEFINE(HAVE_IOCTL_INT_ULONG_DOTS,1,
+	      [Define if ioctl is declared as int ioctl(int d, unsigned long request,...)])
+fi
+])
 
 dnl call the tests
 
 AC_CHECK_LIBAUDIOFILE
 AC_CHECK_REALTIME_SCHED
 AC_CHECK_GETDOMAINNAME
+AC_CHECK_IOCTL_TYPE
 
 dnl Don't remove !
 dnl AC_OUTPUT(arts/artsc/artsc-config)
