@@ -21,5 +21,5 @@ Comment[ven]=Itanifaela
 Comment[xh]=Yenza ifayile
 Comment[zu]=Yenza ifayela
 Type=MimeType
-Patterns=Makefile*;makefile*;
+Patterns=Makefile;makefile;Makefile.*;makefile.*
 Icon=make
