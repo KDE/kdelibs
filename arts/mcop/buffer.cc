@@ -178,7 +178,7 @@ bool Buffer::readBool()
 
 mcopbyte Buffer::readByte()
 {
-	if(remaining() >= 0)
+	if(remaining() >= 1)
 	{
 		return d->contents[d->rpos++];
 	}
@@ -195,7 +195,14 @@ void Buffer::readByteSeq(vector<mcopbyte>& result)
 	long i,seqlen = readLong();
 
 	result.clear();
-	for(i=0;i<seqlen;i++) result.push_back(readByte());
+	if(remaining() >= seqlen)
+	{
+		for(i=0;i<seqlen;i++) result.push_back(readByte());
+	}
+	else
+	{
+		d->_readError = true;
+	}
 }
 
 long Buffer::readLong()
@@ -219,7 +226,14 @@ void Buffer::readLongSeq(vector<long>& result)
 	long i,seqlen = readLong();
 
 	result.clear();
-	for(i=0;i<seqlen;i++) result.push_back(readLong());
+	if(remaining() >= seqlen * 4)
+	{
+		for(i=0;i<seqlen;i++) result.push_back(readLong());
+	}
+	else
+	{
+		d->_readError = true;
+	}
 }
 
 float Buffer::readFloat()
@@ -237,7 +251,14 @@ void Buffer::readFloatSeq(vector<float>& result)
 	long i,seqlen = readLong();
 
 	result.clear();
-	for(i=0;i<seqlen;i++) result.push_back(readFloat());
+	if(remaining() >= seqlen * 4)
+	{
+		for(i=0;i<seqlen;i++) result.push_back(readFloat());
+	}
+	else
+	{
+		d->_readError = true;
+	}
 }
 
 void Buffer::readString(string& result)
@@ -264,6 +285,8 @@ void Buffer::readStringSeq(vector<string>& result)
 		string s;
 
 		readString(s);
+		if(d->_readError) return;
+
 		result.push_back(s);
 	}
 }
