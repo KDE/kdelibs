@@ -613,7 +613,7 @@ void KRun::slotStatResult( KIO::Job * job )
   m_job = 0L;
   if (job->error())
   {
-    kdError(7010) << "ERROR " << job->error() << " " << job->errorText() << endl;
+    kdError(7010) << "ERROR " << job->error() << " " << job->errorString() << endl;
     job->showErrorDialog();
 
     m_bFault = true;
