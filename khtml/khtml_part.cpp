@@ -58,6 +58,7 @@ using namespace DOM;
 #include <kglobal.h>
 #include <kstddirs.h>
 #include <kio/job.h>
+#include <kparts/historyprovider.h>
 #include <kmimetype.h>
 #include <kdebug.h>
 #include <klocale.h>
@@ -488,7 +489,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
       setUserStyleSheet( KURL( userStyleSheet ) );
 
   connect( this, SIGNAL( completed() ),
-           this, SLOT( updateActions() ) );  
+           this, SLOT( updateActions() ) );
   connect( this, SIGNAL( completed( bool ) ),
            this, SLOT( updateActions( bool ) ) );
   connect( this, SIGNAL( started( KIO::Job * ) ),
@@ -585,9 +586,7 @@ bool KHTMLPart::restoreURL( const KURL &url )
 
 bool KHTMLPart::openURL( const KURL &url )
 {
-  KURL::List *vlinks = KHTMLFactory::vLinks();
-  if ( !vlinks->contains( url ) )
-      vlinks->append( url );
+  KHTMLFactory::vLinks()->insert( url.url() );
 
   kdDebug( 6050 ) << "KHTMLPart::openURL " << url.url() << endl;
 
@@ -634,7 +633,7 @@ bool KHTMLPart::openURL( const KURL &url )
   }
   else
       d->m_job = KIO::get( url, args.reload, false );
-  
+
   d->m_job->addMetaData(args.metaData());
 
   connect( d->m_job, SIGNAL( result( KIO::Job * ) ),
@@ -1126,7 +1125,7 @@ void KHTMLPart::slotData( KIO::Job*, const QByteArray &data )
        d->m_haveCharset = true;
        d->m_encoding = qData;
     }
-    
+
     // Support for http-refresh
     qData = d->m_job->queryMetaData("http-refresh");
     if( !qData.isEmpty() && d->m_metaRefreshEnabled )
@@ -1136,7 +1135,7 @@ void KHTMLPart::slotData( KIO::Job*, const QByteArray &data )
       int pos = qData.find( ';' );
       if ( pos == -1 )
         pos = qData.find( ',' );
-        
+
       if( pos == -1 )
       {
         delay = qData.toInt();
@@ -1433,7 +1432,7 @@ void KHTMLPart::checkCompleted()
   //kdDebug( 6050 ) << "KHTMLPart::checkCompleted() emitting completed()"  << endl;
 
 /*
-  if ( !d->m_redirectURL.isEmpty() )  
+  if ( !d->m_redirectURL.isEmpty() )
   {
     // Actually we should emit completed since the META redirections are
     // supposed to be started after the current loading is finished. Thus,
@@ -1472,7 +1471,7 @@ void KHTMLPart::checkCompleted()
 
   if ( m_url.htmlRef().isEmpty() && d->m_view->contentsY() == 0 ) // check that the view has not been moved by the user
       d->m_view->setContentsPos( d->m_extension->urlArgs().xOffset, d->m_extension->urlArgs().yOffset );
-  
+
   if ( !d->m_redirectURL.isEmpty() )
     emit completed( true );
   else
@@ -2041,9 +2040,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
 
   //kdDebug( 6000 ) << "complete URL:" << cURL.url() << " target = " << target << endl;
 
-  KURL::List *vlinks = KHTMLFactory::vLinks();
-  if ( !vlinks->contains( cURL ) )
-      vlinks->append( cURL );
+  KHTMLFactory::vLinks()->insert( cURL.url() );
 
   if ( button == LeftButton && ( state & ShiftButton ) && !cURL.isMalformed() )
   {
@@ -2262,7 +2259,7 @@ void KHTMLPart::updateActions( bool )
     bgURL = static_cast<HTMLDocumentImpl*>(d->m_doc)->body()->getAttribute( ATTR_BACKGROUND ).string();
 
   d->m_paSaveBackground->setEnabled( !bgURL.isEmpty() );
-  
+
   // Now start the redirection since the current
   // document should be completely loaded. (DA)
   if ( !d->m_redirectURL.isEmpty() )
@@ -2819,7 +2816,6 @@ void KHTMLPart::saveState( QDataStream &stream )
   }
 
   stream << frameNameLst << frameServiceTypeLst << frameServiceNameLst << frameURLLst << frameStateBufferLst;
-  stream << *KHTMLFactory::vLinks();
 }
 
 void KHTMLPart::restoreState( QDataStream &stream )
@@ -2864,11 +2860,6 @@ void KHTMLPart::restoreState( QDataStream &stream )
 
   stream >> frameCount >> frameNames >> frameServiceTypes >> frameServiceNames
          >> frameURLs >> frameStateBuffers;
-
-  stream >> visitedLinks;
-
-  if ( KHTMLFactory::partList()->count() == 1 ) // only us?
-      *KHTMLFactory::vLinks() = visitedLinks;
 
   d->m_bComplete = false;
 

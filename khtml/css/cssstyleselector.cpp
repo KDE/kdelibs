@@ -297,21 +297,17 @@ static void checkPseudoState( DOM::ElementImpl *e )
     }
     KHTMLView *v = e->ownerDocument()->view();
     KURL url = v->part()->completeURL( e->getAttribute(ATTR_HREF).string() );
-    QValueList<KURL> *list = KHTMLFactory::vLinks();
-    QValueList<KURL>::Iterator it;
-    for( it = list->begin(); it != list->end(); ++it )
-	if( *it == url ) {
-	    pseudoState = PseudoVisited;
-	    return;
-	}
-    pseudoState = PseudoLink;
+    if ( KHTMLFactory::vLinks()->contains( url.url() ) )
+	pseudoState = PseudoVisited;
+    else
+	pseudoState = PseudoLink;
 }
 
 bool CSSOrderedRule::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e)
 {
     bool last = lastSelectorPart;
     lastSelectorPart = false;
-    
+
     if(!e)
         return false;
 

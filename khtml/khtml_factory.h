@@ -21,11 +21,13 @@
 #define __khtml_factory_h__
 
 #include <kparts/factory.h>
+#include <kparts/historyprovider.h>
 #include <qlist.h>
 #include <kurl.h>
 
 class KInstance;
 class KAboutData;
+class HistoryProvider;
 class KHTMLSettings;
 class KHTMLPart;
 
@@ -48,7 +50,9 @@ public:
   static KHTMLSettings *defaultHTMLSettings();
 
   // list of visited URLs
-  static KURL::List *vLinks();
+  static KParts::HistoryProvider *vLinks() { 
+    return KParts::HistoryProvider::self();
+  }
 
 protected:
   static void ref();
@@ -60,7 +64,6 @@ private:
   static KAboutData *s_about;
   static KHTMLSettings *s_settings;
   static QList<KHTMLPart> *s_parts;
-  static KURL::List *s_vlinks;
 };
 
 #endif

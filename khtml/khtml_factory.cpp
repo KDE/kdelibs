@@ -30,6 +30,7 @@
 #include <kinstance.h>
 #include <kaboutdata.h>
 #include <klocale.h>
+#include <kparts/historyprovider.h>
 
 #include <assert.h>
 
@@ -61,7 +62,6 @@ KInstance *KHTMLFactory::s_instance = 0;
 KAboutData *KHTMLFactory::s_about = 0;
 KHTMLSettings *KHTMLFactory::s_settings = 0;
 QList<KHTMLPart> *KHTMLFactory::s_parts = 0;
-KURL::List *KHTMLFactory::s_vlinks = 0;
 
 KHTMLFactory::KHTMLFactory( bool clone )
 {
@@ -86,14 +86,11 @@ KHTMLFactory::~KHTMLFactory()
             assert( s_parts->isEmpty() );
             delete s_parts;
         }
-        if ( s_vlinks )
-            delete s_vlinks;
 
         s_instance = 0;
         s_about = 0;
         s_settings = 0;
         s_parts = 0;
-        s_vlinks = 0;
 
         kdDebug() << "KHTMLFactory::~KHTMLFactory" << endl;
         // clean up static data
@@ -197,16 +194,6 @@ KHTMLSettings *KHTMLFactory::defaultHTMLSettings()
     s_settings = new KHTMLSettings();
 
   return s_settings;
-}
-
-KURL::List *KHTMLFactory::vLinks()
-{
-  assert( s_self );
-
-  if ( !s_vlinks )
-      s_vlinks = new KURL::List();
-
-  return s_vlinks;
 }
 
 #include "khtml_factory.moc"
