@@ -18,4 +18,4 @@
  ]]>
 <!ENTITY FDLBackCoverText "no Back-Cover Texts">
 <!ENTITY FDLNotice PUBLIC "-//KDE//DOCUMENT GNU Free Documentation Notice//EN"
- -- meant to be included, so no NDATA or CDATA -->
+ -- meant to be included, so no NDATA or CDATA (why?) -->

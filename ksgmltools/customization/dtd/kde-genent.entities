@@ -48,7 +48,7 @@
   NDATA linespecific	   -- http://www.gnu.org/copyleft/gpl.html -->
 <!ENTITY GPLNotice	    PUBLIC
   "-//KDE//DOCUMENT GNU General Public License Notice//EN"
-  -- meant for inclusion, so no [CN]DATA SGML --		     >
+  -- meant for inclusion, so no [CN]DATA SGML (why?) --		     >
 <!ENTITY LGPL-html	    PUBLIC
   "-//GNU//DOCUMENT GNU Lesser General Public License V2.1 (HTML)//EN" 
   NDATA SGML		-- http://www.gnu.org/copyleft/lesser.html -->
@@ -64,11 +64,15 @@
 <!ENTITY FDL                PUBLIC
   "-//GNU//DOCUMENT GNU Free Documentation License V1.1//EN"
   NDATA linespecific       -- http://www.gnu.org/copyleft/fdl.html -->
-<!-- FDLNotice is defined in kde-prologue.entities -->
+<!-- FDLNotice is defined in kde-prologue.entities (why?) -->
 
 <!-- KDE olink specification -->
 <!ENTITY kde-modespec
-	'<modespec id="kde-doc-modespec" xreflabel="see &percnt;t">/path/to/documentation</modespec>'>
+	'<modespec id="kde-doc-modespec" xreflabel="see &percnt;t">/path/to/documentation</modespec>
+         <modespec id="kde-man-modespec" xreflabel="see &percnt;t">man:</modespec>
+         <modespec id="kde-info-modespec" xreflabel="see &percnt;t">info:</modespec>
+         <modespec id="kde-help-modespec" xreflabel="see &percnt;t">help:</modespec>
+         <modespec id="kde-lic-modespec" xreflabel="see &percnt;t">common/</modespec>'>
 
 <!-- KDE index generation
      To use: set addindex to INCLUDE

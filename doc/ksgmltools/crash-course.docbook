@@ -410,7 +410,7 @@ the application be obtained through <markup>&amp;kshisen;</markup>,
 
 <para>
 Then it is said that no index should be included, for instance, because none 
-has been generated.  The file <filename>kdedocindex.docbook</filename> must be 
+has been generated.  The file <filename>docindex.docbook</filename> must be 
 present if you set <markup>addindex</markup> to <markup>INCLUDE</markup>.
 </para>
 
