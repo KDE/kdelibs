@@ -217,6 +217,16 @@ public:
     QString formatDateTime(const QDateTime &pDateTime) const;
 
     /**
+     * Converts a localized monetary string to a double.
+     */
+    double readMoney(const QString &numStr, bool * ok=0) const;
+
+    /**
+     * Converts a localized numeric string to a double.
+     */
+    double readNumber(const QString &numStr, bool * ok=0) const;
+
+    /**
       * Creates an alias for the string text. It will be translated
       * and stored under the integer constant index.
       * This can help you to avoid repeated translation. 

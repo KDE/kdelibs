@@ -1,3 +1,4 @@
+
 /* This file is part of the KDE libraries
     Copyright (C) 1997 Stephan Kulow <coolo@kde.org>
     Copyright (c) 1999 Preston Brown <pbrown@kde.org>
@@ -590,6 +591,55 @@ QString KLocale::formatNumber(const QString &numStr) const
 {
   return formatNumber(numStr.toDouble());
 }
+
+double KLocale::readMoney(const QString &str, bool * ok) const
+{
+    bool neg = (negativeMonetarySignPosition() == ParensAround?
+        str.find('('):
+        str.find(negativeSign())) != -1;
+
+    QString buf = monetaryDecimalSymbol();
+    int pos = str.find(buf);
+    
+    QString major = str.left(pos);
+    QString minior;
+    if (pos != -1) minior = str.mid(pos + buf.length());
+    
+    for (pos = major.length(); pos >= 0; pos--)
+        if (!major.at(pos).isNumber()) major.remove(pos, 1);
+        
+    for (pos = minior.length(); pos >= 0; pos--)
+        if (!minior.at(pos).isNumber()) minior.remove(pos, 1);
+        
+    QString tot;
+    if (neg) tot = '-';
+    tot += major + "." + minior;
+    return tot.toDouble(ok);
+}
+
+double KLocale::readNumber(const QString &str, bool * ok) const
+{
+    bool neg = str.find(negativeSign()) != -1;
+
+    QString buf = decimalSymbol();
+    int pos = str.find(buf);
+    
+    QString major = str.left(pos);
+    QString minior;
+    if (pos != -1) minior = str.mid(pos + buf.length());
+    
+    for (pos = major.length(); pos >= 0; pos--)
+        if (!major.at(pos).isNumber()) major.remove(pos, 1);
+        
+    for (pos = minior.length(); pos >= 0; pos--)
+        if (!minior.at(pos).isNumber()) minior.remove(pos, 1);
+        
+    QString tot;
+    if (neg) tot = '-';
+    tot += major + "." + minior;
+    return tot.toDouble(ok);
+}
+
 
 QString KLocale::formatDate(const QDate &pDate) const
 {
