@@ -193,14 +193,14 @@ bool TCPSlaveBase::ConnectToHost(const QCString &host, unsigned short int _port)
            int rc = d->kssl->connect(m_iSock);
            if (rc < 0) { 
               CloseDescriptor();
-	      //error( ERR_COULD_NOT_CONNECT, host);
+	      error( ERR_COULD_NOT_CONNECT, host);
               return false;
            }
            setMetaData("ssl_in_use", "TRUE");
            rc = verifyCertificate();
            if (rc != 1) {
               CloseDescriptor();
-	      //error( ERR_COULD_NOT_CONNECT, host);
+	      error( ERR_COULD_NOT_CONNECT, host);
               return false;
            }
         } else setMetaData("ssl_in_use", "FALSE");
