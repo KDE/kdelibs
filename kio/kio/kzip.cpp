@@ -49,7 +49,7 @@ public:
 KZip::KZip( const QString& filename )
     : KArchive( 0L )
 {
-    kdDebug(7040) << "KZip(filename) reached." << endl;
+    //kdDebug(7040) << "KZip(filename) reached." << endl;
     m_filename = filename;
     d = new KZipPrivate;
     setDevice( new QFile( filename ) );
@@ -58,14 +58,14 @@ KZip::KZip( const QString& filename )
 KZip::KZip( QIODevice * dev )
     : KArchive( dev )
 {
-    kdDebug(7040) << "KZip::KZip( QIODevice * dev) reached." << endl;
+    //kdDebug(7040) << "KZip::KZip( QIODevice * dev) reached." << endl;
     d = new KZipPrivate;
 }
 
 KZip::~KZip()
 {
     // mjarrett: Closes to prevent ~KArchive from aborting w/o device
-    kdDebug(7040) << "~KZip reached." << endl;
+    //kdDebug(7040) << "~KZip reached." << endl;
     if( isOpened() )
         close();
     if ( !m_filename.isEmpty() )
@@ -73,26 +73,18 @@ KZip::~KZip()
     delete d;
 }
 
-#if 0
-void KZip::setOrigFileName( const QCString & /*fileName*/ )
-{
-    kdDebug(7040) << "setorigfilename reached." << endl;
-    if ( !isOpened() || mode() != IO_WriteOnly )
-    { // FIXME: what happens, when there is no device() / there is no filter attached?
-        qWarning( "KZip::setOrigFileName: File must be opened for writing first.\n");
-        return;
-    }
-    //// TODO
-}
-#endif
-
 bool KZip::openArchive( int mode )
 {
-    kdDebug(7040) << "openarchive reached." << endl;
+    //kdDebug(7040) << "openarchive reached." << endl;
     d->m_fileList.clear();
 
     if ( mode == IO_WriteOnly )
         return true;
+    if ( mode != IO_ReadOnly && mode != IO_ReadWrite )
+    {
+        kdWarning(7040) << "Unsupported mode " << mode << endl;
+        return false;
+    }
 
     char buffer[47];
 
@@ -128,7 +120,7 @@ bool KZip::openArchive( int mode )
     // begin of central header
     uint offset = (uchar)buffer[3]*256*256*256 +(uchar)buffer[2]*256*256
 	    +(uchar)buffer[1]*256 + (uchar)buffer[0];
-    kdDebug(7040) << "central header starts at offset=" << offset << endl;
+    //kdDebug(7040) << "central header starts at offset=" << offset << endl;
     if (offset >= size) kdWarning(7040) << "offset >= size" << endl;
 
     b = dev->at(offset);
@@ -160,14 +152,14 @@ bool KZip::openArchive( int mode )
 	    QString name( QString::fromLocal8Bit(bufferName, namelen) );
             delete[] bufferName;
 
-	    kdDebug(7040) << "name: " << name << endl;
+	    //kdDebug(7040) << "name: " << name << endl;
 	    // only in central header ! see below.
     	    int extralen = (uchar)buffer[31] * 256 + (uchar)buffer[30];
 	    int commlen = (uchar)buffer[33] * 256 + (uchar)buffer[32];
 	    int cmethod = (uchar)buffer[11] * 256 + (uchar)buffer[10];
 
-	    kdDebug(7040) << "cmethod: " << cmethod << endl;
-	    kdDebug(7040) << "extralen: " << extralen << endl;
+	    //kdDebug(7040) << "cmethod: " << cmethod << endl;
+	    //kdDebug(7040) << "extralen: " << extralen << endl;
 //	    kdDebug(7040) << "buf1[2]: " << (uchar)buffer[26] << endl;
 //	    kdDebug(7040) << "buf1[3]: " << (uchar)buffer[27] << endl;
 
@@ -190,14 +182,14 @@ bool KZip::openArchive( int mode )
 	    int localextralen = (uchar)localbuf[1] * 256 + (uchar)localbuf[0];
 	    dev->at(save_at);
 
-	    kdDebug(7040) << "localextralen: " << localextralen << endl;
+	    //kdDebug(7040) << "localextralen: " << localextralen << endl;
 
 	    eoffset = eoffset + 30 + localextralen + namelen; //comment only in central header
 
-	    kdDebug(7040) << "esize: " << esize << endl;
-	    kdDebug(7040) << "eoffset: " << eoffset << endl;
-	    kdDebug(7040) << "csize: " << csize << endl;
-	    kdDebug(7040) << "buffer[29]: " << buffer[29] << endl;
+	    //kdDebug(7040) << "esize: " << esize << endl;
+	    //kdDebug(7040) << "eoffset: " << eoffset << endl;
+	    //kdDebug(7040) << "csize: " << csize << endl;
+	    //kdDebug(7040) << "buffer[29]: " << buffer[29] << endl;
 
             bool isdir = false;
             int access = 0777; // TODO available in zip file?
@@ -225,6 +217,7 @@ bool KZip::openArchive( int mode )
             {
 	        entry = new KZipFileEntry( this, entryName, access, time, rootDir()->user(), rootDir()->group(), QString::null,
                                           name, eoffset, esize, cmethod, csize );
+                static_cast<KZipFileEntry *>(entry)->setHeaderStart( offset );
 	        //kdDebug(7040) << "KZipFileEntry created" << endl;
                 d->m_fileList.append( static_cast<KZipFileEntry *>( entry ) );
             }
@@ -243,9 +236,9 @@ bool KZip::openArchive( int mode )
 	    }
 
 	    //calculate offset to next entry
-	    kdDebug(7040) << "offset before: " << offset << endl;
+	    //kdDebug(7040) << "offset before: " << offset << endl;
 	    offset = offset + 46 + commlen + extralen + namelen;
-	    kdDebug(7040) << "offset after: " << offset << endl;
+	    //kdDebug(7040) << "offset after: " << offset << endl;
 	    b = dev->at(offset);
             Q_ASSERT( b );
             if ( !b ) return false;
@@ -262,18 +255,18 @@ bool KZip::openArchive( int mode )
             }
 	} // do exit
     } while ( !end);
-    kdDebug(7040) << "*** done *** " << endl;
+    //kdDebug(7040) << "*** done *** " << endl;
     return true;
 }
 
 bool KZip::closeArchive()
 {
-    if ( mode() != IO_WriteOnly )
+    if ( ! ( mode() & IO_WriteOnly ) )
     {
-        kdDebug(7040) << "closearchive readonly reached." << endl;
+        //kdDebug(7040) << "closearchive readonly reached." << endl;
         return true;
     }
-    //writeonly
+    //ReadWrite or WriteOnly
     //write all central dir file entries
 
     // to be written at the end of the file...
@@ -281,7 +274,7 @@ bool KZip::closeArchive()
     uLong crc = crc32(0L, Z_NULL, 0);
 
     Q_LONG centraldiroffset = device()->at();
-    kdDebug(7040) << "closearchive: centraldiroffset: " << centraldiroffset << endl;
+    //kdDebug(7040) << "closearchive: centraldiroffset: " << centraldiroffset << endl;
     Q_LONG atbackup = device()->at();
     QPtrListIterator<KZipFileEntry> it( d->m_fileList );
 
@@ -398,17 +391,14 @@ bool KZip::closeArchive()
 
         // file name
 	strncpy( buffer + 46, path, path.length() );
-	    kdDebug(7040) << "closearchive length to write: " << bufferSize << endl;
+	//kdDebug(7040) << "closearchive length to write: " << bufferSize << endl;
 	crc = crc32(crc, (Bytef *)buffer, bufferSize );
 	device()->writeBlock( buffer, bufferSize );
         delete[] buffer;
     }
     Q_LONG centraldirendoffset = device()->at();
-    kdDebug(7040) << "closearchive: centraldirendoffset: "
-		<< centraldirendoffset << endl;
-    kdDebug(7040) << "closearchive: device()->at(): "
-		<< device()->at() << endl;
-
+    //kdDebug(7040) << "closearchive: centraldirendoffset: " << centraldirendoffset << endl;
+    //kdDebug(7040) << "closearchive: device()->at(): " << device()->at() << endl;
 
     //write end of central dir record.
     buffer[ 0 ] = 'P'; //end of central dir signature
@@ -423,7 +413,7 @@ bool KZip::closeArchive()
     buffer[ 7 ] = 0;
 
     int count = d->m_fileList.count();
-    kdDebug(7040) << "number of files (count): " << count << endl;
+    //kdDebug(7040) << "number of files (count): " << count << endl;
 
 
     buffer[ 8 ] = (uchar)(count % 256); // total number of entries in central dir of
@@ -438,8 +428,8 @@ bool KZip::closeArchive()
     buffer[ 14 ] = (uchar)((cdsize / (256*256)) % 256);
     buffer[ 15 ] = (uchar)((cdsize / (256*256*256))% 256);
 
-    kdDebug(7040) << "end : centraldiroffset: " << centraldiroffset << endl;
-    kdDebug(7040) << "end : centraldirsize: " << cdsize << endl;
+    //kdDebug(7040) << "end : centraldiroffset: " << centraldiroffset << endl;
+    //kdDebug(7040) << "end : centraldirsize: " << cdsize << endl;
 
     buffer[ 16 ] = (uchar)(centraldiroffset % 256) ; //central dir offset
     buffer[ 17 ] = (uchar)((centraldiroffset / 256) % 256);
@@ -451,7 +441,7 @@ bool KZip::closeArchive()
 
     device()->writeBlock( buffer, 22);
 
-    kdDebug(7040) << "kzip.cpp reached." << endl;
+    //kdDebug(7040) << "kzip.cpp reached." << endl;
     return true;
 }
 
@@ -482,17 +472,24 @@ bool KZip::writeFile( const QString& name, const QString& user, const QString& g
 
 bool KZip::prepareWriting( const QString& name, const QString& user, const QString& group, uint /*size*/ )
 {
-    kdDebug(7040) << "prepareWriting reached." << endl;
+    //kdDebug(7040) << "prepareWriting reached." << endl;
     if ( !isOpened() )
     {
         qWarning( "KZip::writeFile: You must open the zip file before writing to it\n");
         return false;
     }
 
-    if ( mode() != IO_WriteOnly )
+    if ( ! ( mode() & IO_WriteOnly ) ) // accept WriteOnly and ReadWrite
     {
         qWarning( "KZip::writeFile: You must open the zip file for writing\n");
         return false;
+    }
+
+    //kdDebug(7040) << "prepareWriting: currently at: " << device()->at() << " going to end of file: " << device()->size() << endl;
+    if ( device()->at() < device()->size() )
+    {
+        bool bEnd = device()->at( device()->size() );
+        Q_ASSERT( bEnd );
     }
     // Find or create parent dir
     KArchiveDirectory* parentDir = rootDir();
@@ -502,7 +499,7 @@ bool KZip::prepareWriting( const QString& name, const QString& user, const QStri
     {
         QString dir = name.left( i );
         fileName = name.mid( i + 1 );
-        kdDebug() << "KZip::prepareWriting ensuring " << dir << " exists. fileName=" << fileName << endl;
+        //kdDebug(7040) << "KZip::prepareWriting ensuring " << dir << " exists. fileName=" << fileName << endl;
         parentDir = findOrCreate( dir );
     }
 
@@ -511,7 +508,7 @@ bool KZip::prepareWriting( const QString& name, const QString& user, const QStri
                                            name, device()->at() + 30 + name.length(), // start
                                            0 /*size unknown yet*/, d->m_compression, 0 /*csize unknown yet*/ );
     e->setHeaderStart( device()->at() );
-    kdDebug(7040) << "wrote file start: " << e->position() << " name: " << name << endl;
+    //kdDebug(7040) << "wrote file start: " << e->position() << " name: " << name << endl;
     parentDir->addEntry( e );
 
     d->m_currentFile = e;
@@ -520,7 +517,7 @@ bool KZip::prepareWriting( const QString& name, const QString& user, const QStri
     // write out zip header
     QCString encodedName = QFile::encodeName(name);
     int bufferSize = encodedName.length() + 30;
-    kdDebug() << "KZip::prepareWriting bufferSize=" << bufferSize << endl;
+    //kdDebug(7040) << "KZip::prepareWriting bufferSize=" << bufferSize << endl;
     char* buffer = new char[ bufferSize ];
 
     buffer[ 0 ] = 'P'; //local file header signature
@@ -604,19 +601,19 @@ bool KZip::doneWriting( uint size )
     d->m_currentDev = 0L;
 
     Q_ASSERT( d->m_currentFile );
-    kdDebug(7040) << "donewriting reached." << endl;
-    kdDebug(7040) << "filename: " << d->m_currentFile->path() << endl;
-    kdDebug(7040) << "getpos (at): " << device()->at() << endl;
+    //kdDebug(7040) << "donewriting reached." << endl;
+    //kdDebug(7040) << "filename: " << d->m_currentFile->path() << endl;
+    //kdDebug(7040) << "getpos (at): " << device()->at() << endl;
     d->m_currentFile->setSize(size);
     int csize = device()->at() -
         d->m_currentFile->headerStart() - 30 -
 	d->m_currentFile->path().length();
     d->m_currentFile->setCompressedSize(csize);
-    kdDebug(7040) << "usize: " << d->m_currentFile->size() << endl;
-    kdDebug(7040) << "csize: " << d->m_currentFile->compressedSize() << endl;
-    kdDebug(7040) << "headerstart: " << d->m_currentFile->headerStart() << endl;
+    //kdDebug(7040) << "usize: " << d->m_currentFile->size() << endl;
+    //kdDebug(7040) << "csize: " << d->m_currentFile->compressedSize() << endl;
+    //kdDebug(7040) << "headerstart: " << d->m_currentFile->headerStart() << endl;
 
-    kdDebug(7040) << "crc: " << d->m_crc << endl;
+    //kdDebug(7040) << "crc: " << d->m_crc << endl;
     d->m_currentFile->setCRC32( d->m_crc );
 
     d->m_currentFile = 0L;
@@ -638,13 +635,13 @@ bool KZip::writeData(const char * c, unsigned int i)
     d->m_crc = crc32(d->m_crc, (const Bytef *) c , i);
 
     Q_LONG written = d->m_currentDev->writeBlock( c, i );
-    kdDebug(7040) << "KZip::writeData wrote " << i << " bytes." << endl;
+    //kdDebug(7040) << "KZip::writeData wrote " << i << " bytes." << endl;
     Q_ASSERT( written == (Q_LONG)i );
     return written == (Q_LONG)i;
 }
 
 void KZip::setCompression( Compression c )
-{ 
+{
     d->m_compression = ( c == NoCompression ) ? 0 : 8;
 }
 
@@ -665,7 +662,7 @@ QByteArray KZipFileEntry::data() const
 
 QIODevice* KZipFileEntry::device() const
 {
-    kdDebug(7040) << "KZipFileEntry::device creating iodevice limited to pos=" << position() << ", csize=" << compressedSize() << endl;
+    //kdDebug(7040) << "KZipFileEntry::device creating iodevice limited to pos=" << position() << ", csize=" << compressedSize() << endl;
     // Limit the reading to the appropriate part of the underlying device (e.g. file)
     KLimitedIODevice* limitedDev = new KLimitedIODevice( archive()->device(), position(), compressedSize() );
     if ( encoding() == 0 || compressedSize() == 0 ) // no compression (or even no data)
