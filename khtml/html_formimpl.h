@@ -60,6 +60,8 @@ public:
     long length() const;
     void submit (  );
     void reset (  );
+    
+    virtual HAlign hAlign() { return _parent->hAlign(); }
 
     virtual void parseAttribute(Attribute *attr);
 

@@ -347,7 +347,9 @@ void HTMLImageElementImpl::layout(bool)
 	{
 	KHTMLWidget *htmlwidget =  
 	    static_cast<HTMLDocumentImpl *>(document)->HTMLWidget();
-	int hh = predefinedHeight.value*htmlwidget->height()/100;	
+	int hh = imgHeight; 
+	if (_parent->id()==ID_BODY)
+	    hh = predefinedHeight.value*htmlwidget->height()/100;	
 	if (imgHeight != hh)
 	{
 	    resizeCache.resize(0,0);
