@@ -507,22 +507,31 @@ default
 	: /* empty */
 	  {
 	  }
-	| T_EQUAL T_STRING_LITERAL
+	| T_EQUAL default_value
 	  {
 	  }
-	| T_EQUAL int_expression
-	  {
-	  }
-	| T_EQUAL T_DOUBLE_LITERAL
-	  {
-	  }
-	| T_EQUAL bool_value
-	  {
-	  }
-	|  T_EQUAL Identifier T_LEFT_PARANTHESIS params T_RIGHT_PARANTHESIS
+	| T_EQUAL T_LEFT_PARANTHESIS type T_RIGHT_PARANTHESIS default_value /* cast */
 	  {
 	  }
 	;
+
+default_value
+	: T_STRING_LITERAL
+          {
+          }
+        | int_expression
+          {
+          }
+        | T_DOUBLE_LITERAL
+          {
+          }
+        | bool_value
+          {
+          }
+        | Identifier T_LEFT_PARANTHESIS params T_RIGHT_PARANTHESIS
+          {
+          }
+        ;
 
 virtual_qualifier
 	: /* empty */ { $$ = 0; }
