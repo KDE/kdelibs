@@ -24,6 +24,7 @@ QObject* KLibFactory::create( ClassType type, QObject* parent, const char* name 
     case KofficeDocument:
 	return create( parent, name, "KofficeDocument" );
     }
+    return 0L;
 }
 
 // -----------------------------------------------
