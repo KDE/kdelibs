@@ -61,7 +61,7 @@ public:
         m_firstLine = firstLine;
     }
     ~TextSlave();
-    void print( QPainter *p, int _tx, int _ty);
+    void print( QPainter *pt, RenderText* p, int _tx, int _ty);
     void printDecoration( QPainter *pt, RenderText* p, int _tx, int _ty, int decoration, bool begin, bool end);
     void printBoxDecorations(QPainter *p, RenderStyle* style, RenderText *parent, int _tx, int _ty, bool begin, bool end);
     void printSelection(QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos);
@@ -191,7 +191,7 @@ public:
     virtual short marginRight() const { return style()->marginRight().minWidth(0); }
 
     virtual void repaint();
-    
+
     bool hasBreakableChar() const { return m_hasBreakableChar; }
     QFontMetrics metrics(bool firstLine) const;
 
@@ -206,6 +206,8 @@ protected:
     int m_lineHeight;
     short m_minWidth;
     short m_maxWidth;
+
+    friend class TextSlave;
 
     SelectionState m_selectionState : 3 ;
     bool m_hasReturn : 1;

@@ -158,11 +158,7 @@ inline bool operator!=( const BidiIterator &it1, const BidiIterator &it2 )
 
 // -------------------------------------------------------------------------------------------------
 
-#if QT_VERSION < 300
 void RenderFlow::appendRun(QList<BidiRun> &runs, BidiIterator &sor, BidiIterator &eor,
-#else
-void RenderFlow::appendRun(QPtrList<BidiRun> &runs, BidiIterator &sor, BidiIterator &eor,
-#endif
                            BidiContext *context, QChar::Direction dir)
 {
 #if BIDI_DEBUG > 1
@@ -192,11 +188,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
 
     //kdDebug(6041) << "reordering Line from " << start.obj << "/" << start.pos << " to " << end.obj << "/" << end.pos << endl;
 
-#if QT_VERSION < 300
     QList<BidiRun> runs;
-#else
-    QPtrList<BidiRun> runs;
-#endif
     runs.setAutoDelete(true);
 
     BidiContext *context = startEmbed;
@@ -645,11 +637,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
 #if BIDI_DEBUG > 0
     kdDebug(6041) << "reorderLine: lineLow = " << (uint)levelLow << ", lineHigh = " << (uint)levelHigh << endl;
     kdDebug(6041) << "logical order is:" << endl;
-#if QT_VERSION < 300
     QListIterator<BidiRun> it2(runs);
-#else
-    QPtrListIterator<BidiRun> it2(runs);
-#endif
     BidiRun *r2;
     for ( ; (r2 = it2.current()); ++it2 )
         kdDebug(6041) << "    " << r2 << "  start=" << r2->start << "  stop=" << r2->stop << "  level=" << (uint)r2->level << endl;
@@ -688,11 +676,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
 
 #if BIDI_DEBUG > 0
     kdDebug(6041) << "visual order is:" << endl;
-#if QT_VERSION < 300
     QListIterator<BidiRun> it3(runs);
-#else
-    QPtrListIterator<BidiRun> it3(runs);
-#endif
     BidiRun *r3;
     for ( ; (r3 = it3.current()); ++it3 )
     {
@@ -708,8 +692,8 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
     while ( r ) {
         r->height = r->obj->lineHeight( firstLine );
 	r->baseline = r->obj->baselinePosition( firstLine );
-	if ( r->baseline > r->height )
-	    r->baseline = r->height;
+// 	if ( r->baseline > r->height )
+// 	    r->baseline = r->height;
         r->vertical = r->obj->verticalPositionHint( firstLine );
         //kdDebug(6041) << "object="<< r->obj << " height="<<r->height<<" baseline="<< r->baseline << " vertical=" << r->vertical <<endl;
         //int ascent;
@@ -750,8 +734,20 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
         }
     }
     int maxHeight = maxAscent + maxDescent;
+    // CSS2: 10.8.1: line-height on the block level element specifies the *minimum*
+    // height of the generated line box
     r = runs.first();
+    // ### we have no reliable way of detecting empty lineboxes - which
+    // are not allowed to have any height. sigh.(Dirk)
+//     if ( r ) {
+//         int blockHeight = lineHeight( firstLine );
+//         if ( blockHeight > maxHeight )
+//             maxHeight = blockHeight;
+//     }
     int totWidth = 0;
+#if BIDI_DEBUG > 0
+    kdDebug( 6040 ) << "starting run.." << endl;
+#endif
     while ( r ) {
         if(r->vertical == PositionTop)
             r->vertical = m_height;
@@ -760,7 +756,9 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
         else
             r->vertical += m_height + maxAscent - r->baseline;
 
-	//kdDebug(6041) << "object="<< r->obj << " placing at vertical=" << r->vertical <<endl;
+#if BIDI_DEBUG > 0
+	kdDebug(6041) << "object="<< r->obj << " placing at vertical=" << r->vertical <<endl;
+#endif
         if(r->obj->isText())
             r->width = static_cast<RenderText *>(r->obj)->width(r->start, r->stop-r->start);
         else {
@@ -770,7 +768,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
         totWidth += r->width;
         r = runs.next();
     }
-    //kdDebug(6040) << "yPos of line=" << m_height << "  lineHeight=" << maxHeight << endl;
+    //kdDebug(6040) << "yPos of line=" << m_height << "  lineBoxHeight=" << maxHeight << endl;
 
     // now construct the reordered string out of the runs...
 
@@ -794,7 +792,9 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
         break;
     }
     while ( r ) {
-        //kdDebug(6040) << "positioning " << r->obj << " start=" << r->start << " stop=" << r->stop << " yPos=" << r->vertical << endl;
+#if BIDI_DEBUG > 1
+        kdDebug(6040) << "positioning " << r->obj << " start=" << r->start << " stop=" << r->stop << " yPos=" << r->vertical << endl;
+#endif
         r->obj->position(x, r->vertical, r->start, r->stop - r->start, r->width, r->level%2, firstLine);
         x += r->width;
         r = runs.next();

@@ -34,11 +34,7 @@
 
 #include <qcolor.h>
 #include <qfont.h>
-#if QT_VERSION < 300
 #include <qlist.h>
-#else
-#include <qptrlist.h>
-#endif
 #include <qpalette.h>
 #include <qapplication.h>
 #include "dom/dom_misc.h"
@@ -47,19 +43,18 @@
 
 #include <assert.h>
 
-// rikkus: workaround for gcc 2.95.3 (!= for bitfield is broken)
 #define SET_VAR(group,variable,value) \
     if (!(group->variable == value)) \
         group.access()->variable = value;
 
-namespace DOM {    
+namespace DOM {
     class DOMStringImpl;
 }
 
 namespace khtml {
 
     class CachedImage;
-    class CachedObject;    
+    class CachedObject;
 
 template <class DATA>
 class DataRef
@@ -291,7 +286,7 @@ public:
     Length max_height;
 
     Length vertical_align;
-    
+
     int z_index;
 };
 
@@ -304,7 +299,7 @@ enum EOverflow {
 };
 
 enum EVerticalAlign {
-    BASELINE, MIDDLE, SUB, SUPER, TEXT_TOP, 
+    BASELINE, MIDDLE, SUB, SUPER, TEXT_TOP,
     TEXT_BOTTOM, TOP, BOTTOM, BASELINE_MIDDLE, LENGTH
 };
 
@@ -332,7 +327,7 @@ public:
 
     short counter_increment; //ok, so these are not visual mode spesific
     short counter_reset;     //can't go to inherited, since these are not inherited
-    
+
     QPalette palette;      //widget styling with IE attributes
 
 };
@@ -417,7 +412,7 @@ public:
     {
 	letter_spacing = 0;
 	word_spacing = 0;
-	line_height = Length(100, Percent);
+        line_height = Length( -100, Percent );
 	indent = Length(0, Fixed);
 	border_spacing = 0;
 	style_image = 0;
@@ -460,12 +455,9 @@ public:
     }
 
     Length indent;
+    // could be packed in a short but doesn't
+    // make a difference currently because of padding
     Length line_height;
-
-    int letter_spacing : 8;
-    int word_spacing : 8;
-
-    short border_spacing;
 
     CachedImage *style_image;
     CachedImage *cursor_image;
@@ -474,6 +466,10 @@ public:
     QColor color;
     QColor decoration_color;
 
+    int letter_spacing : 8;
+    int word_spacing : 8;
+
+    short border_spacing;
 };
 
 
@@ -549,7 +545,7 @@ protected:
     bool _visuallyOrdered : 1;
     ECursor _cursor_style : 4;
     EFontVariant _font_variant : 1;
-    
+
     bool _htmlHacks :1;
 
 // don't inherit
@@ -569,7 +565,7 @@ protected:
     bool _hasHover : 1;
     bool _hasFocus : 1;
     bool _hasActive : 1;
-    
+
 // non-inherited attributes
     DataRef<StyleBoxData> box;
     DataRef<StyleVisualData> visual;
@@ -589,16 +585,16 @@ protected:
 
 private:
     RenderStyle(const RenderStyle*) {}
-    
+
 public:
 
     RenderStyle();
     // used to create the default style.
     RenderStyle(bool);
     RenderStyle(const RenderStyle&);
-    
+
     virtual ~RenderStyle();
-    
+
     void inheritFrom(const RenderStyle* inheritParent);
 
     PseudoId styleType() { return _styleType; }
@@ -615,7 +611,7 @@ public:
     void setHasHover() { _hasHover = true; }
     void setHasFocus() { _hasFocus = true; }
     void setHasActive() { _hasActive = true; }
-    
+
     bool operator==(const RenderStyle& other) const;
 
     bool        isFloating() const { return (_floating == FLEFT || _floating == FRIGHT); }
@@ -672,7 +668,7 @@ public:
     EVisiblity visiblity() const { return _visiblity; }
     EVerticalAlign verticalAlign() const { return _vertical_align; }
     Length verticalAlignLength() const { return box->vertical_align; }
-    
+
     Length clipLeft() const { return visual->clip.left; }
     Length clipRight() const { return visual->clip.right; }
     Length clipTop() const { return visual->clip.top; }
@@ -732,9 +728,9 @@ public:
 
     ECursor cursor() const { return _cursor_style; }
     EFontVariant fontVariant() { return _font_variant; }
-    
+
     CachedImage *cursorImage() const { return inherited->cursor_image; }
-    
+
 
 // attribute setter methods
 
@@ -843,12 +839,12 @@ public:
 
     int zIndex() const { return box->z_index; }
     void setZIndex(int v) { SET_VAR(box,z_index,v) }
-    
+
     QPalette palette() const { return visual->palette; }
     void setPaletteColor(QPalette::ColorGroup g, QColorGroup::ColorRole r, const QColor& c)
     {
-        visual.access()->palette.setColor(g,r,c); 
-    } 
+        visual.access()->palette.setColor(g,r,c);
+    }
     void resetPalette() // Called when the desktop color scheme changes.
     {
         const_cast<StyleVisualData *>(visual.get())->palette = QApplication::palette();
@@ -858,50 +854,50 @@ public:
     enum ContentType
     {
         CONTENT_NONE, CONTENT_OBJECT, CONTENT_TEXT, CONTENT_COUNTER
-    };            
-        
+    };
+
     virtual ContentType contentType() { return CONTENT_NONE; }
 
     virtual void setContent(DOM::DOMStringImpl* /*s*/) { assert(false); }
     virtual void setContent(CachedObject* /*o*/) { assert(false); }
-    
+
     virtual DOM::DOMStringImpl* contentText() { return 0; }
     virtual CachedObject* contentObject() { return 0; }
-    
+
 };
 
 
 class RenderPseudoElementStyle : public RenderStyle
 {
-public:    
-       
+public:
+
     RenderPseudoElementStyle();
     RenderPseudoElementStyle(bool b);
     RenderPseudoElementStyle(const RenderStyle& r);
 
     virtual ~RenderPseudoElementStyle();
-    
+
     ContentType contentType() { return _contentType; }
 
     void setContent(DOM::DOMStringImpl* s);
     void setContent(CachedObject* o);
-    
+
     DOM::DOMStringImpl* contentText();
     CachedObject* contentObject();
-    
-                    
-private:        
-        
+
+
+private:
+
     void clearContent();
-        
+
     ContentType _contentType;
-        
+
     union {
         CachedObject* object;
         DOM::DOMStringImpl* text;
         // counters...
     } _content ;
-        
+
 };
 
 

@@ -23,6 +23,7 @@
  */
 //#define DEBUG_LAYOUT
 //#define BIDI_DEBUG
+//#define DEBUG_VALIGN
 
 #include "render_text.h"
 #include "break_lines.h"
@@ -54,14 +55,34 @@ TextSlave::~TextSlave()
         QT_DELETE_QCHAR_VEC(m_text);
 }
 
-void TextSlave::print( QPainter *p, int _tx, int _ty)
+void TextSlave::print( QPainter *pt, RenderText* p, int _tx, int _ty)
 {
     if (!m_text || m_len <= 0)
         return;
 
     QConstString s(m_text, m_len);
+
     //kdDebug( 6040 ) << "textSlave::printing(" << s.string() << ") at(" << x+_tx << "/" << y+_ty << ")" << endl;
-    p->drawText(m_x + _tx, m_y + _ty + m_baseline, s.string());
+
+#ifdef DEBUG_VALIGN
+    int fontsize = QFontInfo( p->style()->font() ).pixelSize();
+    int halfleading = ( p->m_lineHeight - fontsize ) / 2;
+    pt->fillRect(m_x + _tx, m_y + _ty + halfleading, m_width, fontsize, Qt::white );
+#else
+    Q_UNUSED( p );
+#endif
+
+    pt->drawText(m_x + _tx, m_y + _ty + m_baseline, s.string());
+
+#ifdef DEBUG_VALIGN
+    pt->setBrush( Qt::NoBrush );
+    pt->setPen( QPen( Qt::black, 0, Qt::DotLine ) );
+    pt->drawRect(m_x + _tx, m_y + _ty, m_width, p->m_lineHeight );
+    pt->setPen( QPen( Qt::magenta, 0, Qt::DotLine ) );
+    pt->drawRect(m_x + _tx, m_y + _ty + halfleading, m_width, fontsize );
+    pt->setPen( Qt::red );
+    pt->drawLine(m_x + _tx, m_y + _ty + m_baseline, m_x + _tx + m_width-1, m_y + _ty + m_baseline );
+#endif
 }
 
 void TextSlave::printSelection(QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos)
@@ -131,14 +152,16 @@ void TextSlave::printBoxDecorations(QPainter *pt, RenderStyle* style, RenderText
 {
     int topExtra = p->borderTop() + p->paddingTop();
     int bottomExtra = p->borderBottom() + p->paddingBottom();
+    // ### firstline
+    int halfleading = (p->m_lineHeight - style->font().pixelSize() ) / 2;
 
     _tx += m_x;
-    _ty += m_y + m_baseline - pt->fontMetrics().ascent() - topExtra;
+    _ty += m_y + halfleading - topExtra;
 
     int width = m_width;
 
-    // the height of the decorations is:  topBorder + topPadding + fm.height() + bottomPadding + bottomBorder
-    int height = pt->fontMetrics().height() + topExtra + bottomExtra;
+    // the height of the decorations is:  topBorder + topPadding + CSS font-size + bottomPadding + bottomBorder
+    int height = style->font().pixelSize() + topExtra + bottomExtra;
 
     if( begin )
 	_tx -= p->paddingLeft() + p->borderLeft();
@@ -153,6 +176,10 @@ void TextSlave::printBoxDecorations(QPainter *pt, RenderStyle* style, RenderText
         // ### use paddingX/Y
         pt->drawTiledPixmap(_tx, _ty, width, height, i->tiled_pixmap(c));
     }
+
+#ifdef DEBUG_VALIGN
+    pt->fillRect(_tx, _ty, width, height, Qt::cyan );
+#endif
 
     if(style->hasBorder())
         p->printBorder(pt, _tx, _ty, width, height, style, begin, end);
@@ -286,10 +313,8 @@ void RenderText::setStyle(RenderStyle *_style)
         delete fm;
         fm = new QFontMetrics( style()->font() );
     }
-    m_lineHeight = style()->lineHeight().width(metrics( false ).height());
-
-    if(m_lineHeight<=0)
-        m_lineHeight = metrics( false ).height();
+    // ### FIXME firstline support
+    m_lineHeight = RenderObject::lineHeight(false);
 
     if ( style()->fontVariant() == SMALL_CAPS ) {
 	setText( str->upper() );
@@ -541,11 +566,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
         int minx =  1000000;
         int maxx = -1000000;
         int outlinebox_y = m_lines[si]->m_y;
-#if QT_VERSION < 300
 	QList <QRect> linerects;
-#else
-	QPtrList <QRect> linerects;
-#endif
         linerects.setAutoDelete(true);
         linerects.append(new QRect());
 
@@ -568,7 +589,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
             if(_style->color() != p->pen().color())
                 p->setPen(_style->color());
 
-            s->print(p, tx, ty);
+            s->print(p, this, tx, ty);
 
             if(d != TDNONE)
             {
@@ -642,8 +663,10 @@ void RenderText::print( QPainter *p, int x, int y, int w, int h,
 
     int s = m_lines.count() - 1;
     if ( s < 0 ) return;
-   if ( ty + m_lines[0]->m_y > y + h ) return;
-   if ( ty + m_lines[s]->m_y + m_lines[s]->m_baseline + m_lineHeight < y ) return;
+
+    // ### incorporate padding/border here!
+    if ( ty + m_lines[0]->m_y > y + h + 64 ) return;
+    if ( ty + m_lines[s]->m_y + m_lines[s]->m_baseline + m_lineHeight + 64 < y ) return;
 
     printObject(p, x, y, w, h, tx, ty);
 }
@@ -764,7 +787,7 @@ void RenderText::setText(DOMStringImpl *text)
         cb->setLayouted(false);
         cb->layout();
     }
-#ifdef DEBUG_LAYOUT
+#ifdef BIDI_DEBUG
     QConstString cstr(str->s, str->l);
     kdDebug( 6040 ) << "RenderText::setText( " << cstr.string().length() << " ) '" << cstr.string() << "'" << endl;
 #endif
@@ -786,14 +809,15 @@ int RenderText::height() const
 int RenderText::lineHeight( bool firstLine ) const
 {
     if ( firstLine )
-	return RenderObject::lineHeight( firstLine );
+ 	return RenderObject::lineHeight( firstLine );
+
     return m_lineHeight;
 }
 
-// #### fix for printpainter and :first-line needed
 short RenderText::baselinePosition( bool firstLine ) const
 {
-    return metrics( firstLine ).ascent();
+    return metrics( firstLine ).ascent() +
+        ( lineHeight( firstLine ) - metrics( firstLine ).height() ) / 2;
 }
 
 void RenderText::position(int x, int y, int from, int len, int width, bool reverse, bool firstLine)
@@ -833,9 +857,6 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
 
     if(from + len == int(str->l) && parent()->isInline() && parent()->lastChild()==this)
         width -= marginRight();
-
-    // add half leading to vertically center it.
-    y += ( m_lineHeight - metrics( firstLine ).height() )/2;
 
 #ifdef DEBUG_LAYOUT
     QConstString cstr(ch, len);
@@ -1032,3 +1053,4 @@ void RenderText::printTextOutline(QPainter *p, int tx, int ty, const QRect &last
 }
 
 #undef BIDI_DEBUG
+#undef DEBUG_LAYOUT
