@@ -576,36 +576,43 @@ void BuildHelper::processActionOrCustomElement( const QDomElement &e, bool isAct
 
     containerClient = parentNode->findChildContainerClient( m_state.guiClient, group, it );
 
+    bool guiElementCreated = false;
     if ( isActionTag )
-        processActionElement( e, idx );
+        guiElementCreated = processActionElement( e, idx );
     else
-        processCustomElement( e, idx );
+        guiElementCreated = processCustomElement( e, idx );
 
-    // adjust any following merging indices and the current running index for the container
-    parentNode->adjustMergingIndices( 1, it );
+    if ( guiElementCreated )
+        // adjust any following merging indices and the current running index for the container
+        parentNode->adjustMergingIndices( 1, it );
 }
 
-void BuildHelper::processActionElement( const QDomElement &e, int idx )
+bool BuildHelper::processActionElement( const QDomElement &e, int idx )
 {
     // look up the action and plug it in
     KAction *action = m_state.guiClient->action( e );
 
     if ( !action )
-        return;
+        return false;
 
     action->plug( parentNode->container, idx );
 
     // save a reference to the plugged action, in order to properly unplug it afterwards.
     containerClient->actions.append( action );
+
+    return true;
 }
 
-void BuildHelper::processCustomElement( const QDomElement &e, int idx )
+bool BuildHelper::processCustomElement( const QDomElement &e, int idx )
 {
     assert( parentNode->builder );
 
     int id = parentNode->builder->createCustomElement( parentNode->container, idx, e );
-    if ( id != 0 )
-        containerClient->customElements.append( id );
+    if ( id == 0 )
+        return false;
+
+    containerClient->customElements.append( id );
+    return true;
 }
 
 void BuildHelper::processStateElement( const QDomElement &element )
