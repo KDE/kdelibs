@@ -160,7 +160,7 @@ QString transform(xmlParserCtxtPtr ctxt, const QString &tss)
     xmlDocPtr res = xsltApplyStylesheet(style_sheet, doc, params);
     xmlFreeDoc(doc);
     if (res != NULL) {
-        xmlOutputBufferPtr outp = xmlOutputBufferCreateIO(writeToQString, closeQString, &parsed, 0);
+        xmlOutputBufferPtr outp = xmlOutputBufferCreateIO(writeToQString, (xmlOutputCloseCallback)closeQString, &parsed, 0);
         outp->written = 0;
         INFO(i18n("Writing document"));
         xsltSaveResultTo ( outp, res, style_sheet );
