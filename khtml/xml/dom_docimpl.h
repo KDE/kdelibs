@@ -426,6 +426,10 @@ public:
      */
     void processHttpEquiv(const DOMString &equiv, const DOMString &content);
 
+    // Returns the owning element in the parent document.
+    // Returns 0 if this is the top level document.
+    ElementImpl *ownerElement() const;
+
     bool isURLAllowed(const QString& url) const;
 
     DOMString toString() const;

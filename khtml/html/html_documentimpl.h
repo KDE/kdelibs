@@ -79,7 +79,6 @@ public:
     HTMLCollectionImpl::CollectionInfo *collectionInfo(int type) { return m_collection_info+type; }
 
 protected:
-    HTMLElementImpl *bodyElement;
     HTMLElementImpl *htmlElement;
     friend class HTMLMapElementImpl;
     friend class HTMLImageElementImpl;

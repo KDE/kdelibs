@@ -50,6 +50,7 @@
 #include "rendering/render_replaced.h"
 #include "rendering/render_arena.h"
 #include "rendering/render_layer.h"
+#include "rendering/render_frames.h"
 
 #include "khtmlview.h"
 #include "khtml_part.h"
@@ -1670,7 +1671,7 @@ NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI,
     QConstString n(_name->s, _name->l);
     bool cs = true; // case sensitive
     if (_type != NodeImpl::NamespaceId) {
-        if (_nsURI) 
+        if (_nsURI)
             nsid = getId( NodeImpl::NamespaceId, 0, 0, _nsURI, false, false, 0 ) << 16;
 
         // Each document maintains a mapping of tag name -> id for every tag name encountered
@@ -2269,6 +2270,23 @@ EventListener *DocumentImpl::createHTMLEventListener(QString code, QString name)
 void DocumentImpl::setDecoderCodec(const QTextCodec *codec)
 {
     m_decoderMibEnum = codec->mibEnum();
+}
+
+ElementImpl *DocumentImpl::ownerElement() const
+{
+    KHTMLView *childView = view();
+    if (!childView)
+        return 0;
+    KHTMLPart *childPart = childView->part();
+    if (!childPart)
+        return 0;
+    ChildFrame *childFrame = childPart->d->m_frame;
+    if (!childFrame)
+        return 0;
+    RenderPart *renderPart = childFrame->m_frame;
+    if (!renderPart)
+        return 0;
+    return static_cast<ElementImpl *>(renderPart->element());
 }
 
 DOMString DocumentImpl::toString() const

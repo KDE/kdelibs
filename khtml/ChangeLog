@@ -1,5 +1,11 @@
 2004-10-05  David Faure  <faure@kde.org>
 
+        * html/html_baseimpl.cpp (parseAttribute): 
+        Set event listener on frame element itself (fixes #72440)
+        * xml/dom_docimpl.cpp (ownerElement): Safari merge.
+        * html/html_documentimpl.cpp (close): 
+        Emit onload event for frames (famous gmail bug).
+
         * ecma/kjs_html.cpp (getValueProperty): 
         Don't return null when innerText or innerHTML is empty.
 
