@@ -30,8 +30,7 @@ bool open_PassDlg( const char *_head, string& _user, string& _pass );
 
 extern "C" {
   char *create_basic_auth (const char *header, const char *user, const char *passwd);
-  char *create_digest_auth (const char *header, const char *user, const char *passwd, const char *realm, 
-			    const char *auth_str);
+  char *create_digest_auth (const char *header, const char *user, const char *passwd, const char *auth_str);
   void sigsegv_handler(int);
   void sigchld_handler(int);
   void sigalrm_handler(int);
@@ -93,12 +92,16 @@ void setup_alarm(unsigned int timeout)
   signal(SIGALRM, sigalrm_handler);
 }
 
-char *create_digest_auth (const char *header, const char *user, const char *passwd, const char *realm,
-			  const char *auth_str)
+char *create_digest_auth (const char *header, const char *user, const char *passwd, const char *auth_str)
 {
-  string r;
+  string domain, realm, algorithm, nonce, opaque, qop;
   const char *p=auth_str;
   int i;
+
+  if (!user || !passwd)
+    return "";
+
+  QString t1;
 
   while (*p) {
     while( (*p == ' ') || (*p == ',') || (*p == '\t'))
@@ -107,39 +110,54 @@ char *create_digest_auth (const char *header, const char *user, const char *pass
     if ( strncasecmp(p, "realm=\"", 7 ) == 0 ) {
       p += 7;
       while( p[i] != '"' ) i++;
-      r.assign( p, i );
-      fprintf(stderr, "REAL is :%s:\n", r.c_str());
+      realm.assign( p, i );
+      fprintf(stderr, "Realm is :%s:\n", realm.c_str());
     } else if (strncasecmp(p, "algorith=\"", 10)==0) {
       p+=10;
       while (p[i] != '"' ) i++;
-      r.assign(p, i);
-      fprintf(stderr, "ALG is :%s:\n", r.c_str());
+      algorithm.assign(p, i);
+      fprintf(stderr, "Algorith is :%s:\n", algorithm.c_str());
+    } else if (strncasecmp(p, "algorithm=\"", 11)==0) {
+      p+=11;
+      while (p[i] != '"') i++;
+      algorithm.assign(p,i);
+    } else if (strncasecmp(p, "domain=\"", 8)==0) {
+      p+=8;
+      while (p[i] != '"') i++;
+      domain.assign(p,i);
+    } else if (strncasecmp(p, "nonce=\"", 7)==0) {
+      p+=7;
+      while (p[i] != '"') i++;
+      nonce.assign(p,i);
+    } else if (strncasecmp(p, "opaque=\"", 8)==0) {
+      p+=8;
+      while (p[i] != '"') i++;
+      opaque.assign(p,i);
+    } else if (strncasecmp(p, "qop=\"", 5)==0) {
+      p+=5;
+      while (p[i] != '"') i++;
+      qop.assign(p,i);
     }
     
     p+=i;
     p++;
   }
-  return "";
-#if 0
-  char *wwwauth;
-  QString t1;
-  if (!user || !header || !passwd)
-    return NULL;
+
   t1 += header;
   t1 += ": Digest username=\"";
   t1 += user;
   t1 += "\", ";
 
   t1 += "realm=\"";
-  t1 += _realm;
+  t1 += realm.c_str();
   t1 += "\", ";
 
   t1 += "nonce=\"";
-  t1 += _nonce;
+  t1 += nonce.c_str();
   t1 += "\", ";
 
   t1 += "uri=\"";
-  t1 += _domain;
+  t1 += domain.c_str();
   t1 += "\", ";
 
 #ifdef DO_MD5
@@ -147,22 +165,23 @@ char *create_digest_auth (const char *header, const char *user, const char *pass
   HASHHEX HA2 = "";
   HASHHEX Response;
   char szNonceCount[9] = "00000001";
-  DigestCalcHA1("md5", user, _realm, passwd, _nonce, 0, HA1);
-  DigestCalcResponse(HA1, _nonce,szNonceCount, 0, "", "GET", _domain, HA2, Response);
+  DigestCalcHA1("md5", user, realm.c_str(), passwd, nonce.c_str(), 0, HA1);
+  DigestCalcResponse(HA1, nonce.c_str(), szNonceCount, 0, "", "GET", domain.c_str(), HA2, Response);
 
   t1 += "response=\"";
   t1 += Response;
   t1 += "\", ";
 #endif
 
-  t1 += "opaque=\"";
-  t1 += _opaque;
-  t1 += "\" ";
+  if (opaque != "") {
+    t1 += "opaque=\"";
+    t1 += opaque.c_str();
+    t1 += "\" ";
+  }
 
   t1 += "\r\n";
-  wwwauth = strdup(t1.data());
-  return wwwauth;
-#endif
+
+  return strdup(t1.data());
 }
 
 char *create_basic_auth (const char *header, const char *user, const char *passwd)
@@ -246,6 +265,10 @@ HTTPProtocol::HTTPProtocol( Connection *_conn ) : IOProtocol( _conn )
 
     m_strNoProxyFor = ProtocolManager::self()->getNoProxyFor().data();
   }
+
+  m_sContentMD5 = "";
+  Authentication = AUTH_None;
+  ProxyAuthentication = AUTH_None;
 
   HTTP = HTTP_Unknown;
 }
@@ -390,7 +413,7 @@ bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data
       command += create_basic_auth("Authorization", _url.user(), _url.pass());
     }
     else if (Authentication == AUTH_Digest) {
-      command+= create_digest_auth("Authorization", _url.user(), _url.pass(), m_strRealm.c_str(), m_strAuthString.c_str());
+      command+= create_digest_auth("Authorization", _url.user(), _url.pass(), m_strAuthString.c_str());
     }
     command+="\r\n";
   }
@@ -398,8 +421,10 @@ bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data
   if( do_proxy ) {
     debug( "http_open 3");
     if( m_strProxyUser != "" && m_strProxyPass != "" ) {
-      command += create_basic_auth("Proxy-authorization", m_strProxyUser.c_str(),
-				   m_strProxyPass.c_str() );
+      if (ProxyAuthentication == AUTH_None || ProxyAuthentication == AUTH_Basic)
+	command += create_basic_auth("Proxy-authorization", m_strProxyUser.c_str(), m_strProxyPass.c_str());
+      else if (ProxyAuthentication == AUTH_Digest)
+	command += create_digest_auth("Proxy-Authorization", m_strProxyUser.c_str(), m_strProxyPass.c_str(), m_strProxyAuthString.c_str());
     }
   }
 
@@ -476,7 +501,7 @@ repeat2:
       HTTP = HTTP_11;
       Authentication = AUTH_None;
       // Unauthorized access
-      if ( strncasecmp( buffer + 9, "401", 3 ) == 0  || strncasecmp(buffer+9, "407",3)==0) {
+      if ( (strncmp(buffer+9, "401", 3)==0) || (strncmp(buffer+9, "407", 3)==0) ) {
 	unauthorized = true;
       } else if ( buffer[9] == '4' ||  buffer[9] == '5' ) {
 	// Tell that we will only get an error page here.
@@ -489,8 +514,10 @@ repeat2:
       KURL u( _url, buffer + 10 );
       redirection( u.url() );
       return http_open( u, _post_data, _post_data_size, _reload, _offset );
-    } else if ( strncmp( buffer, "WWW-Authenticate:", 17 ) == 0 ) {
-      configAuth(buffer + 17);  
+    } else if (strncasecmp(buffer, "WWW-Authenticate:", 17)==0) {
+      configAuth(buffer+17, false);
+    } else if (strncasecmp(buffer, "Proxy-Authenticate:", 19)==0) {
+      configAuth(buffer+19, true);
     } else if (HTTP == HTTP_11) {
       if (strncasecmp(buffer, "Connection: ", 12) == 0) {
 	if (strncasecmp(buffer+12, "Close", 5)==0)
@@ -547,16 +574,18 @@ void HTTPProtocol::addEncoding(QString encoding, QStack<char> *encs)
 }
 
 
-void HTTPProtocol::configAuth(const char *p)
+void HTTPProtocol::configAuth(const char *p, bool b)
 {
+  HTTP_AUTH f;
+  string strAuth;
   while( *p == ' ' ) p++;
   if ( strncmp( p, "Basic", 5 ) == 0 ) {
-    Authentication = AUTH_Basic;
+    f = AUTH_Basic;
     p += 5;
   } else if (strncmp (p, "Digest", 6) ==0 ) {
     p += 6;
-    Authentication = AUTH_Digest;
-    m_strAuthString = strdup(p);
+    f = AUTH_Digest;
+    strAuth = strdup(p);
   } else {
     fprintf(stderr, "Invalid Authorization type requested\n");
     fprintf(stderr, "buffer: %s\n", p);
@@ -575,6 +604,13 @@ void HTTPProtocol::configAuth(const char *p)
     }
     p+=i;
     p++;
+  }
+  if (b) {
+    ProxyAuthentication=f;
+    m_strProxyAuthString = strAuth;
+  } else {
+    Authentication=f;
+    m_strAuthString = strAuth;
   }
 }
 
@@ -735,13 +771,16 @@ void HTTPProtocol::slotGet( const char *_url )
 #ifdef DO_MD5
   MD5Final(buf, &context); // Wrap everything up
   enc_digest = base64_encode_string(buf, 18);
-  int f;
-  if ((f=m_sContentMD5.find("="))<=0)
-    f=m_sContentMD5.length();
-  if (strncmp(enc_digest, m_sContentMD5.c_str(), f)) {
-    fprintf(stderr, "MD5 Checksums don't match.. oops?!:%d:%s:%s:\n", f,enc_digest, m_sContentMD5.c_str());
-  } else
-    fprintf(stderr, "MD5 checksum present, and hey it matched what I calculated.\n");
+  if (m_sContentMD5 != "" ) {
+    int f;
+    if ((f=m_sContentMD5.find("="))<=0)
+      f=m_sContentMD5.length();
+    if (strncmp(enc_digest, m_sContentMD5.c_str(), f)) {
+      fprintf(stderr, "MD5 Checksums don't match.. oops?!:%d:%s:%s:\n", f,enc_digest, m_sContentMD5.c_str());
+    } else
+      fprintf(stderr, "MD5 checksum present, and hey it matched what I calculated.\n");
+  } else 
+    fprintf(stderr, "No MD5 checksum found.  Too Bad.\n");
   fflush(stderr);
   free(enc_digest);
 #endif
