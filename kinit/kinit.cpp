@@ -59,7 +59,6 @@ static Display *X11display = 0;
 #define MAX_SOCK_FILE 255
 static char sock_file[MAX_SOCK_FILE];
 static char sock_link[MAX_SOCK_FILE];
-static QTime* smModificationTime = 0;
 
 /* Group data */
 struct {
@@ -112,30 +111,6 @@ static void close_fds()
    signal(SIGPIPE, SIG_DFL);
 }
 
-static void checkSessionManagementEnvironment()
-{
-    QCString fName = ::getenv("HOME");
-    fName += "/.KSMserver";
-    bool check = !::getenv("SESSION_MANAGER");
-    if ( !check && smModificationTime ) {
-	 QFileInfo info( fName );
-	 QTime current = info.lastModified().time();
-	 check = current > *smModificationTime;
-    }
-    if ( check ) {
-	delete smModificationTime;
-	QFile f( fName );
-	if ( !f.open( IO_ReadOnly ) )
-	    return;
-	QFileInfo info ( f );
-	smModificationTime = new QTime( info.lastModified().time() );
-	QTextStream t(&f);
-	QString s = t.readLine();
-	f.close();
-	::setenv( "SESSION_MANAGER", s.latin1(), TRUE  );
-    }
-} 
-
 static pid_t launch(int argc, const char *_name, const char *args)
 {
   int launcher = 0;
@@ -179,8 +154,6 @@ static pid_t launch(int argc, const char *_name, const char *args)
      exit(255);
   }
 
-  checkSessionManagementEnvironment();
-  
   d.fork = fork();
   switch(d.fork) {
   case -1:
