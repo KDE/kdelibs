@@ -31,6 +31,16 @@
 struct KFontStruct;
 class KFontStructList;
 
+/**
+ * @ref KCharsets is a small class for to help you solve some charset
+ * related problems.
+ * 
+ * It provides an en-/decoder for character entities, and let's you set
+ * fonts to a certain charset. This is needed, because Qt's font matching 
+ * algorithm gives the font family a higher priority than the charset.
+ * For many applications this is not acceptable, since it can totally 
+ * obscure the output, in languages which use non iso-8859-1 charsets.
+ */ 
 class KCharsets
 {
     friend class KGlobal;
@@ -46,43 +56,96 @@ public:
     /** destructor */
     virtual ~KCharsets(){}
 
-    /** converts an entity to a character. 
-	@returns QChar::null if the entity could not be decoded
-    */
+    /** 
+     * converts an entity to a character. The string must contain only the 
+     * entity without the trailing ';'.
+     *	@returns QChar::null if the entity could not be decoded.
+     */
     QChar fromEntity(const QString &str) const;
+    /** 
+     * Overloaded member function. Tries to find an entity in the
+     * @ref QString str. 
+     * @returns a decoded entity if one could be found, @ref QChar::null
+     * otherwise
+     * @param len is a return value, that gives the length of the decoded 
+     * entity.
+     */
     QChar fromEntity(const QString &str, int &len) const;
 
-    /** converts a QChar to an entity */
+    /** 
+     * converts a QChar to an entity. The returned string does already 
+     * contain the leading '&' and the trailing ';'.
+     */
     QString toEntity(const QChar &ch) const;
 
-    /** lists all available charsets for a given family.
-	if family is omitted, it will return all charsets available.*/
+    /** 
+     * lists all available charsets for a given family.
+     * if family is omitted, it will return all charsets available.
+     */
     QList<QFont::CharSet> availableCharsets(QString family = QString::null);
 
-    /** as above, but returns the names of the charsets */
+    /** 
+     * as above, but returns the names of the charsets 
+     */
     QStringList availableCharsetNames(QString family = QString::null);
 
-    /** returns a QFont, which can print the character given, and is closest 
-	to the font given
-    */
+    /** 
+     * @returns a QFont, which can print the character given, and is closest 
+     * to the font given. if no mathing font could be found, the returned font
+     * will have the charset @ref QFont::Any.
+     */
     QFont fontForChar( const QChar &ch, const QFont &f ) const;
 
     //FIXME: setQfont without ecnod arg should return charsetforlocale
     // or unicode...
+
+    /**
+     * sets the @ref QFont f to the charset given in charset. 
+     * Opposed to @ref QFont's setCharset() function, this function will do
+     * it's best to find a font which can display the given charset. It might
+     * change the font's family for this purpose, but care is taken to find
+     * a family which is as close as possible to the font given.
+     */
     void setQFont(QFont &f, QFont::CharSet charset = QFont::Unicode);
+
+    /**
+     * overloaded member function. Provided for convenience.
+     */
     void setQFont(QFont &f, QString charset);
 
+
+    /**
+     * @returns the name of the charset f is set to.
+     */
     QString name(const QFont &f);
+
+    /**
+     * @returns the name of the Charset c.
+     */
     QString name(QFont::CharSet c);
 
-
+    /**
+     * is a font with the given charset available?
+     */
     bool isAvailable(QFont::CharSet charset);
+    /**
+     * overloaded member function. Provided for convenience.
+     */
     bool isAvailable(const QString &charset);
 
+    /**
+     * @returns the charset for the locale.
+     */
     QFont::CharSet charsetForLocale()
 	{  return nameToID(KGlobal::locale()->charset()); };
 
+    /**
+     * does the given font family have a unicode encoding?
+     */
     bool hasUnicode(QString family);
+    /**
+     * does given font exist with a unicode encoding?
+     */
     bool hasUnicode(QFont &font);
 
     enum FixedType { FixedUnknown, Fixed, Proportional }; 
