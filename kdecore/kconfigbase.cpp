@@ -213,7 +213,7 @@ QVariant KConfigBase::readPropertyEntry( const QString& aKey,
       return QVariant();
     case QVariant::Int:
       return QVariant( readNumEntry( aKey ) );
-    case QVariant::Boolean:
+    case QVariant::Bool:
       return QVariant( readBoolEntry( aKey ) );
     case QVariant::Double:
       return QVariant( readDoubleNumEntry( aKey ) );
@@ -772,7 +772,7 @@ void KConfigBase::writeEntry ( const QString& pKey, const QVariant &prop,
     case QVariant::Int:
       writeEntry( pKey, prop.intValue(), bPersistent, bGlobal, bNLS );
       break;
-    case QVariant::Boolean:
+    case QVariant::Bool:
       writeEntry( pKey, prop.boolValue(), bPersistent, bGlobal, bNLS );
       break;
     case QVariant::Double:
