@@ -122,6 +122,20 @@ bool KProgress::textEnabled() const
 	return text_enabled;
 }
 
+QSize KProgress::sizeHint() const
+{
+  QSize s( size() );
+
+  if(orientation() == KProgress::Vertical) {
+    s.setWidth(24);
+  } else {
+    s.setHeight(24);
+  }
+
+  return s;
+}
+
+
 KProgress::Orientation KProgress::orientation() const
 {
 	return orient;

@@ -16,19 +16,29 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
+
 /* 
  * KButtonBox class
  *
  * A container widget for buttons. Uses Qt layout control to place the
  * buttons, can handle both vertical and horizontal button placement.
+*
+ * HISTORY
+ *
+ * 01/09/98  Mario Weilguni <mweilguni@sime.com>
+ * The last button was to far right away from the right/bottom border.
+ * Fixed this. Removed old code. Buttons get now a minimum width.
+ * Programmer may now override minimum width and height of a button.
+ *
  */
 
 #include "kbuttonbox.h"
-#include <stdio.h>
 
 // taken from Qt source
 const int extraMotifWidth = 10;
 const int extraMotifHeight = 10;
+
+const int minButtonWidth = 50;
 
 KButtonBox::KButtonBox(QWidget *parent, int _orientation, 
 		       int border, int autoborder) 
@@ -40,13 +50,7 @@ KButtonBox::KButtonBox(QWidget *parent, int _orientation,
     _autoborder = border;
   else
     _autoborder = autoborder;
-  
-  // create appropriate layout
-//   if(_orientation == HORIZONTAL)
-//     tl_layout = new QHBoxLayout(this, _border, _autoborder);
-//   else
-//     tl_layout = new QVBoxLayout(this, _border, _autoborder);
-  
+
   buttons.setAutoDelete(TRUE);
 }
 
@@ -96,13 +100,11 @@ void KButtonBox::layout() {
 	  b->setFixedSize(bs);
 	}
       } else
-	b->setFixedSize(b->sizeHint());
+	b->setFixedSize(buttonSizeHint(b));
     }
   }  
 
   setMinimumSize(sizeHint());
-  placeButtons();
-//   tl_layout->activate();
 }
 
 void KButtonBox::placeButtons() {
@@ -114,9 +116,12 @@ void KButtonBox::placeButtons() {
     int stretch = 0;
     for(i = 0; i < buttons.count(); i++) {
       KButtonBoxItem *item = buttons.at(i);
-      if(item->button != 0) 
-	fs -= item->button->width() + _autoborder;
-      else
+      if(item->button != 0) {
+	if(i == buttons.count() - 1)
+	  fs -= item->button->width();
+	else
+	  fs -= item->button->width() + _autoborder;
+      } else
 	stretch +=item->stretch;
     }
 
@@ -187,21 +192,7 @@ QSize KButtonBox::bestButtonSize() const {
     QPushButton *b = item->button;
  
     if(b != 0 && !item->noexpand) {      
-      QSize bs = b->sizeHint();
-      fflush(stdout);
-      if(b->style() == MotifStyle && b->isDefault()) {
-	// this is a motif default button, remove the
-	// space for the default ring
-	
-	// Mark Donohoe
-	// 16-11-97
-	// The button size hint for Qt 1.31
-	// doesn't count the extra Motif width and height 
-	// used for drawing a default button.
-	
-	//bs.setWidth(bs.width() - extraMotifWidth);
-	//bs.setHeight(bs.height() - extraMotifHeight);
-      }
+      QSize bs = buttonSizeHint(b);
 
       if(bs.width() > s.width())
 	s.setWidth(bs.width());
@@ -219,7 +210,7 @@ QSize KButtonBox::sizeHint() const {
   if(buttons.count() == 0)
     return QSize(0, 0);
   else {
-    dw = 2*_border;
+    dw = 2 * _border;
 
     QSize bs = bestButtonSize();
     for(i = 0; i < buttons.count(); i++) {
@@ -229,11 +220,11 @@ QSize KButtonBox::sizeHint() const {
       if(b != 0) {
 	QSize s;
 	if(item->noexpand)
-	  s = b->sizeHint();
+	  s = that->buttonSizeHint(b);
 	else
 	  s = bs;
 	
-	if(orientation == HORIZONTAL)
+	if(orientation == HORIZONTAL && i != buttons.count() - 1)
 	  dw += s.width() + _autoborder;
 	else
 	  dw += s.height() + _autoborder;
@@ -254,6 +245,26 @@ QSize KButtonBox::sizeHint() const {
 	return QSize(bs.width() + 2 * _border, dw);
     }
   }  
+}
+
+/*
+ * Returns the best size for a button. If a button is less than 
+ * minButtonWidth pixels wide, return minButtonWidth pixels 
+ * as minimum width
+ */
+QSize KButtonBox::buttonSizeHint(QPushButton *b) const {
+  QSize s = b->sizeHint();  
+  QSize ms = b->minimumSize();
+  if(s.width() < minButtonWidth)
+    s.setWidth(minButtonWidth);
+
+  // allows the programmer to override the settings
+  if(ms.width() > s.width())
+    s.setWidth(ms.width());
+  if(ms.height() > s.height())
+    s.setWidth(ms.height());
+  
+  return s;
 }
 
 #include "kbuttonbox.moc"

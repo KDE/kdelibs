@@ -21,6 +21,8 @@
  *
  * A container widget for buttons. Uses Qt layout control to place the
  * buttons, can handle both vertical and horizontal button placement.
+ * The default border is now 0 (easier to deal with layouts). The space
+ * between buttons is now more Motif compliant
  */
 
 #ifndef __KBUTTONBOX__H__
@@ -29,7 +31,6 @@
 #include <qwidget.h>
 #include <qpushbt.h>
 #include <qlist.h>
-#include <qlayout.h>
 
 /**
   * This class is used internally.
@@ -55,7 +56,7 @@ public:
     * from left to right.
     */
   KButtonBox(QWidget *parent, int _orientation = HORIZONTAL, 
-	     int border = 4, int _autoborder = 10);
+	     int border = 0, int _autoborder = 6);
 
   /**
     * The destructor is needed, otherwise gcc 2.7.2.1 may report an 
@@ -102,12 +103,12 @@ protected:
     */
   QSize bestButtonSize() const;
   void  placeButtons();
+  QSize buttonSizeHint(QPushButton *) const;
 
 protected:
   int _border, _autoborder;
   int orientation;
   bool activated;
-  QBoxLayout *tl_layout;
   QList<KButtonBoxItem> buttons;
 };
 

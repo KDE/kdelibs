@@ -116,6 +116,12 @@ public:
   * Returns TRUE if progress text will be displayed, FALSE otherwise.
   */
   bool textEnabled() const;
+
+  /**
+   * Returns the recommended width for vertical progress bars or
+   * the recommended height for vertical progress bars
+   */
+  virtual QSize sizeHint() const;
 	
 		
 public slots:
