@@ -409,7 +409,7 @@ protected:
     double   m_value, m_lower, m_upper, m_step;
     QString  m_units, m_specialvalue, m_prefix, m_suffix;
     char     *m_format;
-    int      m_sliderstep;
+    int      m_sliderstep; // currently unused
 
     QSize    m_sizeEdit;
 

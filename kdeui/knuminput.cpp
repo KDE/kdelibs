@@ -567,7 +567,8 @@ void KDoubleNumInput::init(double value)
 
     edit = new KDoubleLine(this, "KDoubleNumInput::QLineEdit");
     edit->setAlignment(AlignRight);
-    edit->setValidator(new KFloatValidator(this, "KDoubleNumInput::KFloatValidator"));
+    edit->setValidator(new KFloatValidator(this,
+										   "KDoubleNumInput::KFloatValidator"));
     edit->installEventFilter( this );
     //setFocusProxy(edit);
 
@@ -582,7 +583,7 @@ void KDoubleNumInput::init(double value)
 
 void KDoubleNumInput::sliderMoved(int val)
 {
-    m_value = m_lower + (m_upper - m_lower)*(val/double(m_sliderstep));
+    m_value = m_lower + (double)val * (m_upper - m_lower)/m_slider->maxValue();
 
     resetEditBox();
     emit valueChanged(m_value);
@@ -632,7 +633,8 @@ void KDoubleNumInput::resizeEvent(QResizeEvent* e)
     if(m_label && (m_alignment & AlignVCenter))
         m_label->setGeometry(0, 0, w, m_sizeEdit.height());
 
-    edit->setGeometry(w, h, m_slider ? m_colw2 : e->size().width() - w, m_sizeEdit.height());
+    edit->setGeometry(w, h, m_slider ? m_colw2
+					  : e->size().width() - w, m_sizeEdit.height());
     w += m_colw2 + 8;
 
     if(m_slider)
@@ -692,7 +694,8 @@ void KDoubleNumInput::setValue(double val)
     if(m_upper < m_value) m_value = m_upper;
 
     if(m_slider) {
-        int slvalue = int(((m_value - m_lower)/(m_upper - m_lower))*m_sliderstep);
+        int slvalue = (int)((m_value - m_lower)/(m_upper - m_lower))
+			* m_slider->maxValue();
         m_slider->setValue(slvalue);
     }
 
@@ -702,7 +705,8 @@ void KDoubleNumInput::setValue(double val)
 
 // -----------------------------------------------------------------------------
 
-void KDoubleNumInput::setRange(double lower, double upper, double step, bool slider)
+void KDoubleNumInput::setRange(double lower, double upper, double step,
+							   bool slider)
 {
     m_lower = lower;
     m_upper = upper;
@@ -718,15 +722,20 @@ void KDoubleNumInput::setRange(double lower, double upper, double step, bool sli
     m_value = floor(m_value / m_step) * m_step;
 
     if(slider) {
-        m_sliderstep = int(floor(QMIN((m_upper - m_lower)/m_step, double(INT_MAX-5e7))));
-        int slvalue = int(((m_value - m_lower)/(m_upper - m_lower))*m_sliderstep);
-        m_slider = new QSlider(0, m_sliderstep, 1, slvalue,
-                               QSlider::Horizontal, this);
-        m_slider->setTickmarks(QSlider::Below);
-        m_slider->setTickInterval(m_slider->maxValue() / 10);
-        connect(m_slider, SIGNAL(valueChanged(int)), SLOT(sliderMoved(int)));
-    }
-    else {
+		int slmax = QMIN(INT_MAX, (int)((m_upper - m_lower)/m_step));
+        int slvalue = (int)(slmax * (m_value - m_lower) / (m_upper - m_lower));
+		if (m_slider) {
+			m_slider->setRange(0, slmax);
+			m_slider->setValue(slvalue);
+		} else {
+			m_slider = new QSlider(0, slmax, 1, slvalue,
+								   QSlider::Horizontal, this);
+			m_slider->setTickmarks(QSlider::Below);
+			connect(m_slider, SIGNAL(valueChanged(int)),
+					SLOT(sliderMoved(int)));
+		}
+		m_slider->setTickInterval(slmax / 10);
+    } else {
         delete m_slider;
         m_slider = 0;
     }
