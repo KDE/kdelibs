@@ -42,9 +42,8 @@ extern "C" {
   KJSProxy *kjs_html_init(KHTMLPart *khtml)
   {
     KJScript *script = new KJScript();
-    script->setCurrent(script);
 
-    KJS::Global *global = KJScript::global();
+    KJS::Global *global = script->global();
     DOM::HTMLDocument doc;
     doc = khtml->htmlDocument();
     global->put("document", zeroRef(new KJS::HTMLDocument(doc)));
@@ -52,7 +51,6 @@ extern "C" {
     global->put("navigator", zeroRef(new Navigator()));
     global->put("Image", zeroRef(new ImageObject(global)));
 
-    script->setCurrent(0L);
     // this is somewhat ugly. But the only way I found to control the
     // dlopen'ed interpreter (*no* linking!) were callback functions.
     return new KJSProxy(script, &kjs_eval, &kjs_clear,
@@ -69,7 +67,7 @@ extern "C" {
     script->clear();
   }
   // for later extensions.
-  const char *kjs_special(KJScript *, const char *c)
+  const char *kjs_special(KJScript *, const char *)
   {
     // return something like a version number for now
     return "1";
@@ -130,7 +128,7 @@ KJSO *KJS::HTMLDocFunction::get(const UString &p)
 
 KJSO *KJS::HTMLDocFunction::execute(const List &args)
 {
-  KJSO *result;
+  KJSO *result = 0L;
   Ptr v, n;
   DOM::HTMLElement element;
   DOM::HTMLCollection coll;
