@@ -860,6 +860,9 @@ void KEditToolbarWidget::slotUpButton()
       // select my clone
       m_activeList->setSelected(clone, true);
 
+      // make clone visible
+      m_activeList->ensureItemVisible(clone);
+      
       // and do the real move in the DOM
       d->m_currentToolbarElem.insertBefore(elem, elem.previousSibling());
 
@@ -910,6 +913,9 @@ void KEditToolbarWidget::slotDownButton()
 
       // select my clone
       m_activeList->setSelected(clone, true);
+
+      // make clone visible
+      m_activeList->ensureItemVisible(clone);
 
       // and do the real move in the DOM
       d->m_currentToolbarElem.insertAfter(elem, elem.nextSibling());
