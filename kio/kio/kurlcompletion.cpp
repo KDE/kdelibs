@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2000 David Smith <dsmith@algonet.se>
+   Copyright (C) 2004 Scott Wheeler <wheeler@kde.org>
 
    This class was inspired by a previous KURLCompletion by
    Henner Zeller <zeller@think.de>
@@ -68,6 +69,8 @@ static QString unescape(const QString &text);
 // Constants for types of completion
 enum ComplType {CTNone=0, CTEnv, CTUser, CTMan, CTExe, CTFile, CTUrl, CTInfo};
 
+class CompletionThread;
+
 /**
  * A custom event type that is used to return a list of completion
  * matches from an asyncrynous lookup.
@@ -76,13 +79,46 @@ enum ComplType {CTNone=0, CTEnv, CTUser, CTMan, CTExe, CTFile, CTUrl, CTInfo};
 class CompletionMatchEvent : public QCustomEvent
 {
 public:
-	CompletionMatchEvent(const QStringList &matches) :
-		QCustomEvent(uniqueType()),
-		m_matches(matches) {}
-	QDeepCopy<QStringList> matches() const { return m_matches; }
-	static int uniqueType() { return User + 42; }
+	CompletionMatchEvent( CompletionThread *thread ) :
+		QCustomEvent( uniqueType() ),
+		m_completionThread( thread )
+	{}
+
+	CompletionThread *completionThread() const { return m_completionThread; }
+	static int uniqueType() { return User + 61080; }
+
 private:
+	CompletionThread *m_completionThread;
+};
+
+class CompletionThread : public QThread
+{
+protected:
+	CompletionThread( KURLCompletion *receiver ) :
+		QThread(),
+		m_receiver( receiver ),
+		m_terminationRequested( false )
+	{}
+
+public:
+	void requestTermination() { m_terminationRequested = true; }
+	QDeepCopy<QStringList> matches() const { return m_matches; }
+
+protected:
+	void addMatch( const QString &match ) { m_matches.append( match ); }
+	bool terminationRequested() const { return m_terminationRequested; }
+	void done()
+	{
+		if ( !m_terminationRequested )
+			kapp->postEvent( m_receiver, new CompletionMatchEvent( this ) );
+		else
+			delete this;
+	}
+
+private:
+	KURLCompletion *m_receiver;
 	QStringList m_matches;
+	bool m_terminationRequested;
 };
 
 /**
@@ -90,41 +126,164 @@ private:
  * to the caller via a CompletionMatchEvent.
  */
 
-class UserListThread : public QThread
+class UserListThread : public CompletionThread
 {
 public:
-    UserListThread(KURLCompletion *receiver) :
-		QThread(),
-		m_receiver( receiver ),
-		m_terminationRequested( false ) 
+    UserListThread( KURLCompletion *receiver ) :
+		CompletionThread( receiver )
 	{}
 
-	QDeepCopy<QStringList> matches() const
-	{
-		return finished() ? m_matches : QStringList();
-	}
-
-	void requestTermination() { m_terminationRequested = true; }
-
 protected:
-	void run()
+	virtual void run()
 	{
 		static const QChar tilde = '~';
 
 		struct passwd *pw;
-		while ( ( pw = ::getpwent() ) && !m_terminationRequested )
-			m_matches.append( tilde + QString::fromLocal8Bit( pw->pw_name ) );
+		while ( ( pw = ::getpwent() ) && !terminationRequested() )
+			addMatch( tilde + QString::fromLocal8Bit( pw->pw_name ) );
 
 		::endpwent();
 
-		m_matches.append( tilde );
-		kapp->postEvent( m_receiver, new CompletionMatchEvent( m_matches ) );
+		addMatch( tilde );
+
+		done();
 	}
-private:
-	KURLCompletion *m_receiver;
-	QStringList m_matches;
-	bool m_terminationRequested;
 };
+
+class DirectoryListThread : public CompletionThread
+{
+public:
+	DirectoryListThread( KURLCompletion *receiver,
+	                     const QStringList &dirList,
+	                     const QString &filter,
+	                     bool onlyExe,
+	                     bool onlyDir,
+	                     bool noHidden,
+	                     bool appendSlashToDir) :
+		CompletionThread( receiver ),
+		m_dirList( QDeepCopy<QStringList>( dirList ) ),
+		m_filter( QDeepCopy<QString>( filter ) ),
+		m_onlyExe( onlyExe ),
+		m_onlyDir( onlyDir ),
+		m_noHidden( noHidden ),
+		m_appendSlashToDir( m_appendSlashToDir )
+	{}
+
+	virtual void run();
+
+private:
+	QStringList m_dirList;
+	QString m_filter;
+	bool m_onlyExe;
+	bool m_onlyDir;
+	bool m_noHidden;
+	bool m_appendSlashToDir;
+};
+
+void DirectoryListThread::run()
+{
+	// Thread safety notes:
+	//
+	// There very possibly may be thread safety issues here, but I've done a check
+	// of all of the things that would seem to be problematic.  Here are a few
+	// things that I have checked to be safe here (some used indirectly):
+	//
+	// QDir::currentDirPath(), QDir::setCurrent(), QFile::decodeName(), QFile::encodeName()
+	// QString::fromLocal8Bit(), QString::local8Bit(), QTextCodec::codecForLocale()
+	//
+	// Also see (for POSIX functions):
+	// http://www.opengroup.org/onlinepubs/009695399/functions/xsh_chap02_09.html
+
+	DIR *dir = 0;
+
+	for ( QStringList::ConstIterator it = m_dirList.begin();
+		  it != m_dirList.end() && !terminationRequested();
+		  ++it )
+	{
+		// Open the next directory
+
+		if ( !dir ) {
+			dir = ::opendir( QFile::encodeName( *it ) );
+			if ( ! dir ) {
+				kdDebug() << "Failed to open dir: " << *it << endl;
+				return;
+			}
+		}
+
+		// A trick from KIO that helps performance by a little bit:
+		// chdir to the directroy so we won't have to deal with full paths
+		// with stat()
+
+		QString path = QDir::currentDirPath();
+		QDir::setCurrent( *it );
+
+		// Loop through all directory entries
+
+		struct dirent dirPosition;
+		struct dirent *dirEntry = 0;
+		while ( !terminationRequested() &&
+				::readdir_r( dir, &dirPosition, &dirEntry ) == 0 && dirEntry )
+		{
+			// Skip hidden files if m_noHidden is true
+
+			if ( dirEntry->d_name[0] == '.' && m_noHidden )
+				continue;
+
+			// Skip "."
+
+			if( dirEntry->d_name[0] == '.' && dirEntry->d_name[1] == '\0' )
+				continue;
+
+			// Skip ".."
+
+			if( dirEntry->d_name[0] == '.' && dirEntry->d_name[1] == '.' && dirEntry->d_name[2] == '\0' )
+				continue;
+
+			QString file = QFile::decodeName( dirEntry->d_name );
+
+			if ( m_filter.isEmpty() || file.startsWith( m_filter ) ) {
+
+				if ( m_onlyExe || m_onlyDir || m_appendSlashToDir ) {
+					struct stat sbuff;
+
+					if ( ::stat( dirEntry->d_name, &sbuff ) == 0 ) {
+
+						// Verify executable
+
+						if ( m_onlyExe && ( sbuff.st_mode & MODE_EXE ) == 0 )
+							continue;
+
+						// Verify directory
+
+						if ( m_onlyDir && !S_ISDIR( sbuff.st_mode ) )
+							continue;
+
+						// Add '/' to directories
+
+						if ( m_appendSlashToDir && S_ISDIR( sbuff.st_mode ) )
+							file.append( '/' );
+
+					}
+					else {
+						kdDebug() << "Could not stat file " << file << endl;
+						continue;
+					}
+				}
+
+				addMatch( file );
+			}
+		}
+
+		// chdir to the original directory
+
+		QDir::setCurrent( path );
+
+		::closedir( dir );
+		dir = 0;
+	}
+
+	done();
+}
 
 ///////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////
@@ -246,257 +405,18 @@ void KURLCompletion::MyURL::filter( bool replace_user_dir, bool replace_env )
 
 ///////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////
-// DirLister - list files with timeout
-//
-
-class KURLCompletion::DirLister
-{
-public:
-	DirLister() : m_current(0), m_only_exe(false), m_only_dir(false), m_no_hidden(false),
-		      m_append_slash_to_dir(false), m_dp(0L), m_clk(0), m_timeout(50) { };
-	~DirLister();
-
-	bool listDirectories( const QStringList &dirs,
-	                      const QString &filter,
-	                      bool only_exe,
-	                      bool only_dir,
-	                      bool no_hidden,
-	                      bool append_slash_to_dir);
-
-	void setFilter( const QString& filter );
-
-	bool isRunning();
-	void stop();
-
-	bool listBatch();
-
-	const QStringList &files() const { return m_files; };
-
-	void setTimeout(int milliseconds) { m_timeout = milliseconds; };
-
-private:
-	QStringList  m_dir_list;
-	unsigned int m_current;
-
-	QString m_filter;
-	bool    m_only_exe;
-	bool    m_only_dir;
-	bool    m_no_hidden;
-	bool    m_append_slash_to_dir;
-
-	DIR *m_dp;
-
-	QStringList m_files;
-
-	clock_t m_clk;
-	clock_t m_timeout;
-
-	void  startTimer();
-	bool  timeout();
-};
-
-KURLCompletion::DirLister::~DirLister()
-{
-	stop();
-}
-
-// Start the internal time out counter. Used by listBatch()
-void KURLCompletion::DirLister::startTimer()
-{
-	m_clk = ::clock();
-}
-
-#define CLOCKS_PER_MS (CLOCKS_PER_SEC/1000)
-
-// Returns true m_timeout ms after startTimer() has been called
-bool KURLCompletion::DirLister::timeout()
-{
-	return (m_clk > 0) &&
-	         (::clock() - m_clk > m_timeout * CLOCKS_PER_MS);
-}
-
-// Change the file filter while DirLister is running
-void KURLCompletion::DirLister::setFilter( const QString& filter )
-{
-	m_filter = filter;
-}
-
-// Returns true until alla directories have been listed
-// after a call to listDirectoris
-bool KURLCompletion::DirLister::isRunning()
-{
-	return m_dp != 0L || m_current < m_dir_list.count();
-}
-
-void KURLCompletion::DirLister::stop()
-{
-	if ( m_dp ) {
-		::closedir( m_dp );
-		m_dp = 0L;
-	}
-}
-
-/*
- * listDirectories
- *
- * List the given directories, putting the result in files()
- * Gives control back after m_timeout ms, then listBatch() can be called to
- * go on for another timeout period until all directories are done
- *
- * Returns true if all directories are done within the first 50 ms
- */
-bool KURLCompletion::DirLister::listDirectories(
-		const QStringList& dir_list,
-		const QString& filter,
-		bool only_exe,
-		bool only_dir,
-		bool no_hidden,
-		bool append_slash_to_dir)
-{
-	stop();
-
-	m_dir_list.clear();
-
-	for(QStringList::ConstIterator it = dir_list.begin();
-	    it != dir_list.end(); ++it)
-	{
-	   KURL u;
-	   u.setPath(*it);
-	   if (kapp->authorizeURLAction("list", KURL(), u))
-	      m_dir_list.append(*it);
-	}
-
-	m_filter = filter;
-	m_only_exe = only_exe;
-	m_only_dir = only_dir;
-	m_no_hidden = no_hidden;
-	m_append_slash_to_dir = append_slash_to_dir;
-
-//	kdDebug() << "DirLister: stat_files = " << (m_only_exe || m_append_slash_to_dir) << endl;
-
-	m_files.clear();
-	m_current = 0;
-
-	// Start listing
-	return listBatch();
-}
-
-/*
- * listBatch
- *
- * Get entries from directories in m_dir_list
- * Return false if timed out, and true when all directories are done
- */
-bool KURLCompletion::DirLister::listBatch()
-{
-	startTimer();
-
-	while ( m_current < m_dir_list.count() ) {
-
-		// Open the next directory
-		if ( !m_dp ) {
-			m_dp = ::opendir( QFile::encodeName( m_dir_list[ m_current ] ) );
-
-			if ( m_dp == NULL ) {
-				kdDebug() << "Failed to open dir: " << m_dir_list[ m_current ] << endl;
-				return true;
-			}
-		}
-
-		// A trick from KIO that helps performance by a little bit:
-		// chdir to the directroy so we won't have to deal with full paths
-		// with stat()
-		QString path = QDir::currentDirPath();
-		QDir::setCurrent( m_dir_list[m_current] );
-
-		struct dirent *ep;
-		int cnt = 0;
-		bool time_out = false;
-
-		int filter_len = m_filter.length();
-
-		// Loop through all directory entries
-		while ( !time_out && ( ep = ::readdir( m_dp ) ) != 0L ) {
-
-			// Time to rest...?
-			if ( cnt++ % 10 == 0 && timeout() )
-				time_out = true;  // finish this file, then break
-
-			// Skip ".." and "."
-			// Skip hidden files if m_no_hidden is true
-			if ( ep->d_name[0] == '.' ) {
-				if ( m_no_hidden )
-					continue;
-				if ( ep->d_name[1] == '\0' ||
-					  ( ep->d_name[1] == '.' && ep->d_name[2] == '\0' ) )
-					continue;
-			}
-
-			QString file = QFile::decodeName( ep->d_name );
-
-			if ( filter_len == 0 || file.startsWith( m_filter ) ) {
-
-				if ( m_only_exe || m_only_dir || m_append_slash_to_dir ) {
-					struct stat sbuff;
-
-					if ( ::stat( ep->d_name, &sbuff ) == 0 ) {
-						// Verify executable
-						//
-						if ( m_only_exe && 0 == (sbuff.st_mode & MODE_EXE) )
-							continue;
-
-						// Verify directory
-						//
-						if ( m_only_dir && !S_ISDIR ( sbuff.st_mode ) )
-							continue;
-
-						// Add '/' to directories
-						//
-						if ( m_append_slash_to_dir && S_ISDIR ( sbuff.st_mode ) )
-							file.append( '/' );
-
-					}
-					else {
-						kdDebug() << "Could not stat file " << file << endl;
-						continue;
-					}
-				}
-				m_files.append( file );
-			}
-		}
-
-		// chdir to the original directory
-		QDir::setCurrent( path );
-
-		if ( time_out ) {
-			return false; // not done
-		}
-		else {
-			::closedir( m_dp );
-			m_dp = NULL;
-			m_current++;
-		}
-	}
-
-	return true; // all directories listed
-}
-
-///////////////////////////////////////////////////////
-///////////////////////////////////////////////////////
 // KURLCompletionPrivate
 //
 class KURLCompletionPrivate
 {
 public:
-	KURLCompletionPrivate() : dir_lister(0L),
-	                          url_auto_completion(true),
-	                          completionThread(0) {}
+	KURLCompletionPrivate() : url_auto_completion(true),
+	                          userListThread(0),
+	                          dirListThread(0) {}
 	~KURLCompletionPrivate();
 
 	QValueList<KURL*> list_urls;
 
-	KURLCompletion::DirLister *dir_lister;
-  
 	bool onlyLocalProto;
 
 	// urlCompletion() in Auto/Popup mode?
@@ -528,17 +448,16 @@ public:
 	bool list_urls_no_hidden;
 	QString list_urls_filter; // filter for listed files
 
-	UserListThread *completionThread;
+	CompletionThread *userListThread;
+	CompletionThread *dirListThread;
 };
 
 KURLCompletionPrivate::~KURLCompletionPrivate()
 {
-	assert( dir_lister == 0L );
-	if ( completionThread ) {
-		completionThread->requestTermination();
-		completionThread->wait();
-		delete completionThread;
-	}
+	if ( userListThread )
+		userListThread->requestTermination();
+	if ( dirListThread )
+		dirListThread->requestTermination();
 }
 
 ///////////////////////////////////////////////////////
@@ -716,8 +635,7 @@ QString KURLCompletion::finished()
  */
 bool KURLCompletion::isRunning() const
 {
-	return (d->list_job != 0L ||
-	        (d->dir_lister != 0L && d->dir_lister->isRunning() ));
+	return d->list_job || (d->dirListThread && !d->dirListThread->finished());
 }
 
 /*
@@ -739,9 +657,9 @@ void KURLCompletion::stop()
 		d->list_urls.clear();
 	}
 
-	if ( d->dir_lister ) {
-		delete d->dir_lister;
-		d->dir_lister = 0L;
+	if ( d->dirListThread ) {
+		d->dirListThread->requestTermination();
+		d->dirListThread = 0;
 	}
 }
 
@@ -800,15 +718,15 @@ bool KURLCompletion::userCompletion(const MyURL &url, QString *match)
 		stop();
 		clear();
 
-		if ( !d->completionThread ) {
-			d->completionThread = new UserListThread( this );
-			d->completionThread->start();
+		if ( !d->userListThread ) {
+			d->userListThread = new UserListThread( this );
+			d->userListThread->start();
 
 			// If the thread finishes quickly make sure that the results
 			// are added to the first matching case.
 
-			d->completionThread->wait(200);
-			QStringList l = d->completionThread->matches();
+			d->userListThread->wait( 200 );
+			QStringList l = d->userListThread->matches();
 			addMatches( l );
 		}
 	}
@@ -921,10 +839,8 @@ bool KURLCompletion::exeCompletion(const MyURL &url, QString *match)
 		*match = finished();
 	}
 	else {
-		if ( d->dir_lister ) {
+		if ( d->dirListThread )
 			setListedURL( CTExe, dir, url.file(), no_hidden_files );
-			d->dir_lister->setFilter( url.file() );
-		}
 		*match = QString::null;
 	}
 
@@ -1004,14 +920,8 @@ bool KURLCompletion::fileCompletion(const MyURL &url, QString *match)
 	else if ( !isRunning() ) {
 		*match = finished();
 	}
-	else {
-/*		if ( d->dir_lister ) {
-			setListedURL( CTFile, dir, url.file(), no_hidden_files );
-			d->dir_lister->setFilter( url.file() );
-		}
-*/
+	else
 		*match = QString::null;
-	}
 
 	return true;
 }
@@ -1109,35 +1019,6 @@ void KURLCompletion::addMatches( const QStringList &matches )
 }
 
 /*
- * slotTimer
- *
- * Keeps calling listBatch() on d->dir_lister until it is done
- * with all directories, then makes completion by calling
- * addMatches() and finished()
- */
-void KURLCompletion::slotTimer()
-{
-	// dir_lister is NULL if stop() has been called
-	if ( d->dir_lister ) {
-
-		bool done = d->dir_lister->listBatch();
-
-//		kdDebug() << "listed: " << d->dir_lister->files()->count() << endl;
-
-		if ( done ) {
-			addMatches( d->dir_lister->files() );
-			finished();
-
-			delete d->dir_lister;
-			d->dir_lister = 0L;
-		}
-		else {
-			QTimer::singleShot( 0, this, SLOT(slotTimer()) );
-		}
-	}
-}
-
-/*
  * listDirectories
  *
  * List files starting with 'filter' in the given directories,
@@ -1150,7 +1031,7 @@ void KURLCompletion::slotTimer()
  * DirLister timed out or using kio
  */
 QString KURLCompletion::listDirectories(
-		const QStringList &dirs,
+		const QStringList &dirList,
 		const QString &filter,
 		bool only_exe,
 		bool only_dir,
@@ -1165,47 +1046,28 @@ QString KURLCompletion::listDirectories(
 
 		// Don't use KIO
 
-		if (!d->dir_lister)
-			d->dir_lister = new DirLister;
+		if ( d->dirListThread )
+			d->dirListThread->requestTermination();
 
-		assert( !d->dir_lister->isRunning() );
-
-
-		if ( isAutoCompletion() )
-			// Start with a longer timeout as a compromize to
-			// be able to return the match more often
-			d->dir_lister->setTimeout(100); // 100 ms
-		else
-			// More like no timeout for manual completion
-			d->dir_lister->setTimeout(3000); // 3 s
-
-
-		bool done = d->dir_lister->listDirectories(dirs,
-		                                      filter,
-		                                      only_exe,
-		                                      only_dir,
-		                                      no_hidden,
-		                                      append_slash_to_dir);
-
-		d->dir_lister->setTimeout(20); // 20 ms
-
-		QString match = QString::null;
-
-		if ( done ) {
-			// dir_lister finished before the first timeout
-			addMatches( d->dir_lister->files() );
-			match = finished();
-
-			delete d->dir_lister;
-			d->dir_lister = 0L;
+		QStringList dirs;
+		
+		for ( QStringList::ConstIterator it = dirList.begin();
+		      it != dirList.end();
+		      ++it )
+		{
+			KURL url;
+			url.setPath(*it);
+			if ( kapp->authorizeURLAction( "list", KURL(), url ) )
+				dirs.append( *it );
 		}
-		else {
-			// dir_lister timed out, let slotTimer() continue
-			// the work...
-			QTimer::singleShot( 0, this, SLOT(slotTimer()) );
-		}
+		
+		d->dirListThread = new DirectoryListThread( this, dirs, filter, only_exe, only_dir,
+		                                            no_hidden, append_slash_to_dir );
+		d->dirListThread->start();
+		d->dirListThread->wait( 200 );
+		addMatches( d->dirListThread->matches() );
 
-		return match;
+		return finished();
 	}
 	else {
 
@@ -1213,13 +1075,13 @@ QString KURLCompletion::listDirectories(
 
 		QValueList<KURL*> url_list;
 
-		QStringList::ConstIterator it = dirs.begin();
+		QStringList::ConstIterator it = dirList.begin();
 
-		for ( ; it != dirs.end(); it++ )
+		for ( ; it != dirList.end(); it++ )
 			url_list.append( new KURL(*it) );
 
 		listURLs( url_list, filter, only_exe, no_hidden );
-			// Will call addMatches() and finished()
+		// Will call addMatches() and finished()
 
 		return QString::null;
 	}
@@ -1445,21 +1307,24 @@ void KURLCompletion::customEvent(QCustomEvent *e)
 	if ( e->type() == CompletionMatchEvent::uniqueType() ) {
 
 		CompletionMatchEvent *event = static_cast<CompletionMatchEvent *>( e );
+
+		event->completionThread()->wait();
 		
 		if ( !isListedURL( CTUser ) ) {
 			stop();
 			clear();
-			QStringList matches = event->matches();
-			addMatches( matches );
+			addMatches( event->completionThread()->matches() );
 		}
 
 		setListedURL( CTUser );
 
-		if ( d->completionThread ) {
-			d->completionThread->wait();
-			delete d->completionThread;
-			d->completionThread = 0;
-		}
+		if ( d->userListThread == event->completionThread() )
+			d->userListThread = 0;
+		
+		if ( d->dirListThread == event->completionThread() )
+			d->dirListThread = 0;
+
+		delete event->completionThread();
 	}
 }
 

@@ -167,7 +167,6 @@ public:
                                      bool replaceHome, bool replaceEnv = true );
 
 	class MyURL;
-	class DirLister;
 protected:
 	// Called by KCompletion, adds '/' to directories
 	void postProcessMatch( QString *match ) const;
@@ -179,9 +178,6 @@ protected:
 protected slots:
 	void slotEntries( KIO::Job *, const KIO::UDSEntryList& );
 	void slotIOFinished( KIO::Job * );
-
-private slots:
-	void slotTimer();
 
 private:
 
