@@ -5,6 +5,10 @@
  * This file is part of the KDE project, module kdesu.
  * Copyright (C) 1999,2000 Geert Jansen <jansen@kde.org>
  * 
+ * This is free software; you can use this library under the GNU Library 
+ * General Public License, version 2. See the file "COPYING.LIB" for the 
+ * exact licensing terms.
+ *
  * su.cpp: Execute a program as another user with "class SuProcess".
  */
 
@@ -75,7 +79,7 @@ int SuProcess::exec(const char *password, int check)
     else
 	args += m_User;
     args += "-c";
-    args += QCString(KDE_BINDIR) + "/kdesu_stub";
+    args += QCString(__KDE_BINDIR) + "/kdesu_stub";
 
     if (StubProcess::exec(__PATH_SU, args) < 0)
 	return -1;

@@ -1,0 +1,34 @@
+dnl Check for su
+AC_PATH_PROG(path_su, "su", "no")
+if test "$path_su" = "no"; then
+    AC_MSG_WARN(su was not found)
+else
+    AC_DEFINE_UNQUOTED(__PATH_SU, "$path_su", [path to su])
+fi
+
+dnl Check for POSIX.1b scheduling
+AC_MSG_CHECKING([POSIX.1b scheduling])
+AC_TRY_LINK([
+    #include <sched.h>
+],
+[
+    sched_getscheduler(0);
+],
+have_rtsched="yes", have_rtsched="no")
+if test "$have_rtsched" = "yes"; then
+    AC_DEFINE(POSIX1B_SCHEDULING, 1, [Define if you have POSIX.1b scheduling])
+    AC_MSG_RESULT(yes)
+else
+    AC_MSG_RESULT(no)
+fi
+
+dnl Check for initgroups()
+AC_CHECK_FUNCS(initgroups)
+
+dnl Compile in kde_bindir to safely find kdesu_stub.
+if test "$exec_prefix" = "NONE"; then
+    bindir="\"$prefix/bin\""
+else
+    bindir="\"$exec_prefix/bin\""
+fi
+AC_DEFINE_UNQUOTED(__KDE_BINDIR, $bindir, [KDE bindir])
