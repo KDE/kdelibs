@@ -38,11 +38,12 @@ class KZip::KZipPrivate
 {
 public:
     KZipPrivate()
-        : m_crc( 0 ), m_currentFile( 0L ), m_currentDev( 0L ) {}
+        : m_crc( 0 ), m_currentFile( 0L ), m_currentDev( 0L ), m_compression( 8 ) {}
     unsigned long m_crc;
     KZipFileEntry* m_currentFile; // file currently being written
     QIODevice* m_currentDev; // filterdev used to write to the above file
     QPtrList<KZipFileEntry> m_fileList; // flat list of all files, for the index (saves a recursive method ;)
+    int m_compression;
 };
 
 KZip::KZip( const QString& filename )
@@ -505,16 +506,10 @@ bool KZip::prepareWriting( const QString& name, const QString& user, const QStri
         parentDir = findOrCreate( dir );
     }
 
-    // ## TODO pass a new arg, "int encoding", and define an enum for the values
-    // openoffice meta.xml is not compressed
-    // to allow indexing of the stored file,
-    // so we will do it too.
-    int encoding = ( name == "meta.xml") ? 0 /*stored*/ : 8 /*deflated*/;
-
     // construct a KZipFileEntry and add it to list
     KZipFileEntry * e = new KZipFileEntry( this, fileName, 0777, time( 0 ), user, group, QString::null,
                                            name, device()->at() + 30 + name.length(), // start
-                                           0 /*size unknown yet*/, encoding, 0 /*csize unknown yet*/ );
+                                           0 /*size unknown yet*/, d->m_compression, 0 /*csize unknown yet*/ );
     e->setHeaderStart( device()->at() );
     kdDebug(7040) << "wrote file start: " << e->position() << " name: " << name << endl;
     parentDir->addEntry( e );
@@ -582,7 +577,7 @@ bool KZip::prepareWriting( const QString& name, const QString& user, const QStri
 
     // Prepare device for writing the data
     // Either device() if no compression, or a KFilterDev to compress
-    if ( encoding == 0 ) {
+    if ( d->m_compression == 0 ) {
         d->m_currentDev = device();
         return true;
     }
@@ -631,144 +626,6 @@ bool KZip::doneWriting( uint size )
 void KZip::virtual_hook( int id, void* data )
 { KArchive::virtual_hook( id, data ); }
 
-#if 0
-Q_LONG KZip::readBlock(char * c, long unsigned int i)
-{
-    int cmethod=0;
-    Q_LONG csize=0;
-    QIODevice* dev = device();
-    int pos=dev->at();
-	kdDebug(7040) << "readblock. pos: " << pos <<" size: " << i << endl;
-    KZipFileList::iterator it;
-    for (it= list.begin(); it !=list.end(); ++it )
-    {
-	kdDebug(7040) << "kzipfilter123: offset: " << (*it).start()
-	    << " encoding: "<< (*it).encoding() << endl;
-	if (pos == (*it).start())
-	{
-	    cmethod=(*it).encoding();
-	    csize=(*it).csize();
-	    kdDebug(7040) << "cmethod: " << cmethod << endl;
-	    kdDebug(7040) << "csize: " << csize << endl;
-
-	}
-    }
-    if (cmethod == 8) //zip deflated
-    {
-        // Inflate contents!
-        QByteArray * dataBuffer = new QByteArray( csize );
-	dev->readBlock( dataBuffer->data(), csize);
-        z_stream d_stream;      /* decompression stream */
-
-        d_stream.zalloc = ( alloc_func ) 0;
-        d_stream.zfree = ( free_func ) 0;
-        d_stream.opaque = ( voidpf ) 0;
-
-        d_stream.next_in = ( unsigned char * ) dataBuffer->data();
-        d_stream.avail_in = csize;
-
-        inflateInit2( &d_stream, -MAX_WBITS );
-
-        int err;
-        for ( ;; ) {
-            d_stream.next_out =
-                reinterpret_cast <
-                unsigned char *>(c);
-            d_stream.avail_out = i ;
-            err = inflate( &d_stream, Z_FINISH );
-            if ( err == Z_STREAM_END )
-                break;
-            if ( err < 0 ) { // some error
-                kdWarning(7040) << "readBlock: zlib inflate returned error " << err << endl;
-                break;
-            }
-        }
-
-        delete dataBuffer;
-	return i;
-    }
-    else if (cmethod == 0)
-        return dev->readBlock(c, i);
-    else
-    {
-	kdError() << "This zip file contains files compressed with method "
-	    << cmethod <<", this method is currently not supported by KZip,"
-	    <<" please use a command-line tool to handle this file." << endl;
-	return 0;
-    }
-}
-
-bool KZip::writeData(const char * c, unsigned int i)
-{
-    Q_ASSERT( d->m_currentFile );
-    if (!d->m_currentFile)
-        return false;
-
-//    kdDebug(7040) << "filter:writeblock: m_pos before: " << m_pos << endl;
-
-    QIODevice* dev = device();
-    int cmethod = d->m_currentFile->encoding();
-    int pos = dev->at();
-    kdDebug(7040) << "writeblock. method: " << cmethod << " dev->at() : " << pos <<" size: " << i << endl;
-    // crc to be calculated over uncompressed stuff...
-    // and they didn't mention it in their docs...
-    d->m_crc = crc32(d->m_crc, (const Bytef *) c , i);
-
-    if (cmethod == 8) //zip deflate
-    {
-	    kdDebug(7040) << "compression part reached... " << endl;
-	    kdDebug(7040) << "crc : " << QString::number( d->m_crc , 16) << endl;
-        // Deflate contents!
-        QByteArray * dataBuffer = new QByteArray( i + 100 );
-        z_stream d_stream;      /* decompression stream */
-//	    kdDebug(7040) << "compression part 1 " << endl;
-
-        d_stream.zalloc = ( alloc_func ) 0;
-        d_stream.zfree = ( free_func ) 0;
-        d_stream.opaque = ( voidpf ) 0;
-//	    kdDebug(7040) << "compression part 2 " << endl;
-
-        d_stream.next_in = (unsigned char *)c;
-        d_stream.avail_in = i;
-//	    kdDebug(7040) << "compression part 3 " << endl;
-        int result = deflateInit2(&d_stream, Z_DEFAULT_COMPRESSION,
-		    Z_DEFLATED, -MAX_WBITS, 8, Z_DEFAULT_STRATEGY); // same here
-//	    kdDebug(7040) << "compression part 4 " << endl;
-
-        int err;
-        d_stream.next_out = (unsigned char *)dataBuffer->data();
-//	    kdDebug(7040) << "compression part 5 " << endl;
-
-        d_stream.avail_out = i + 100 ;
-        err = deflate( &d_stream, Z_FINISH );
-        if ( err == Z_STREAM_END )
-            kdDebug(7040) << "Z_STREAM_END " << endl;
-        else if ( err < 0 )
-            kdWarning(7040) << "writeBlock: zlib deflate returned error " << err << endl;
-
-        kdDebug(7040) << "compression part 6: total_out: " <<
-            d_stream.total_out << endl;
-        kdDebug(7040) << "crc after : " << QString::number( d->m_crc , 16) << endl;
-        Q_LONG l = dev->writeBlock((const char *)dataBuffer->data(),
-                                   d_stream.total_out);
-        kdDebug(7040) << "compressed written: " << l << endl;
-	delete dataBuffer;
-	return true;
-    }
-    else if (cmethod == 0)
-    {
-        Q_LONG l;
-//	    kdDebug(7040) << "crc uncompressed : " << QString::number( d->m_crc , 16) << endl;
-        l=dev->writeBlock(c, i);
-//        kdDebug(7040) << "uncompressed written: " << l << endl;
-//	    kdDebug(7040) << "crc uncompressed after: " << QString::number( d->m_crc , 16) << endl;
-        return true;
-
-    }
-    return false;
-}
-#endif
-
 bool KZip::writeData(const char * c, unsigned int i)
 {
     Q_ASSERT( d->m_currentFile );
@@ -785,6 +642,18 @@ bool KZip::writeData(const char * c, unsigned int i)
     Q_ASSERT( written == (Q_LONG)i );
     return written == (Q_LONG)i;
 }
+
+void KZip::setCompression( Compression c )
+{ 
+    d->m_compression = ( c == NoCompression ) ? 0 : 8;
+}
+
+KZip::Compression KZip::compression() const
+{
+   return ( d->m_compression == 8 ) ? DeflateCompression : NoCompression;
+}
+
+///////////////
 
 QByteArray KZipFileEntry::data() const
 {

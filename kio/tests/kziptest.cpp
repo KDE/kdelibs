@@ -107,6 +107,9 @@ int main( int argc, char** argv )
       return 1;
     }
 
+    zip.setCompression( KZip::NoCompression );
+    zip.writeFile( "typeid", "", "", 19, "application/x-kword" );
+    zip.setCompression( KZip::DeflateCompression );
     zip.writeFile( "empty", "weis", "users", 0, "" );
     zip.writeFile( "test1", "weis", "users", 5, "Hallo" );
     zip.writeFile( "test2", "weis", "users", 8, "Hallo Du" );

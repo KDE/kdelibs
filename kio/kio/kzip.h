@@ -64,7 +64,13 @@ public:
      */
     QString fileName() { return m_filename; }
 
-    //void setOrigFileName( const QCString & fileName );
+    enum Compression { NoCompression = 0, DeflateCompression = 1 };
+    /**
+     * Call this before writeFile or prepareWriting, to define whether the next
+     * files to be written should be compressed or not.
+     */
+    void setCompression( Compression c );
+    Compression compression() const;
 
     /**
      * If an archive is opened for writing then you can add a new file
