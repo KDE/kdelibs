@@ -43,6 +43,8 @@ KfmIpc::KfmIpc( int _port )
 KfmIpc::~KfmIpc()
 {
     delete sock;
+    if (pBody != 0)
+      free(pBody);
 }
 
 bool KfmIpc::isConnected()
@@ -118,10 +120,17 @@ void KfmIpc::parse( char *_data, int _len )
     _data += pos;
     _len -= pos;
 
-	if ( strcmp( name, "finished" ) == 0 ) { parse_finished( _data, _len ); } else
-	if ( strcmp( name, "error" ) == 0 ) { parse_error( _data, _len ); } else
-	if ( strcmp( name, "dirEntry" ) == 0 ) { parse_dirEntry( _data, _len ); } else
-    { printf("Unknown command '%s'\n",name); }
+    if ( strcmp( name, "finished" ) == 0 ) 
+      { parse_finished( _data, _len ); } 
+    else
+      if ( strcmp( name, "error" ) == 0 ) 
+	{ parse_error( _data, _len ); } 
+      else
+	if ( strcmp( name, "dirEntry" ) == 0 ) 
+	  { parse_dirEntry( _data, _len ); } 
+	else
+	  { printf("Unknown command '%s'\n",name); }
+    free(name);
 }
 
 
