@@ -436,6 +436,9 @@ void KJScriptImp::clear()
     exVal = 0L;
 
     delete con; con = 0L;
+    Collector::attach(collector);
+    Collector::collect();
+    Collector::detach();
     delete collector; collector = 0L;
 
     initialized = false;
