@@ -1095,8 +1095,13 @@ void KToolBar::saveSettings(KConfig *config, const QString &_configGroup)
     // reappear at the same position the next time.
     // The whole set of indexes has to be saved.
     //kdDebug(220) << name() << "                writing index " << index << endl;
-    config->writeEntry("Index", index);
-
+    KMainWindow *kmw = dynamic_cast<KMainWindow *>(mainWindow());
+    // don't save if there's only one toolbar
+    if ( !kmw || kmw->toolBarIterator().count() > 1 )
+      config->writeEntry("Index", index);
+    else
+      config->revertToDefault("Index");
+   
     if(!config->hasDefault("Offset") && offset() == d->OffsetDefault )
       config->revertToDefault("Offset");
     else
