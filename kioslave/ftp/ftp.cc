@@ -4,7 +4,7 @@
 #include <assert.h>
 
 #include <kio_interface.h>
-#include <kio_manager.h>
+#include <kprotocolmanager.h>
 
 #include <kurl.h>
 
@@ -14,7 +14,7 @@
 #define FTP_PASSWD "kfm-user@kde.org"
 
 const char* strnextchr( const char * p , char c );
-bool open_PassDlg( const char *_head, string& _user, string& _pass );
+bool open_PassDlg( const QString&_head, QString& _user, QString& _pass );
 
 
 Ftp::Ftp()
@@ -183,7 +183,7 @@ bool Ftp::ftpConnect( KURL& _url )
  */
 bool Ftp::ftpConnect( const char *_host, int _port, const char *_user, const char *_pass, string& _path )
 {
-  m_bPersistent = ProtocolManager::self()->getPersistent();
+  m_bPersistent = KProtocolManager::self().getPersistent();
 
   if ( m_bLoggedOn )
     if ( m_bPersistent ) {
@@ -343,17 +343,17 @@ bool Ftp::ftpLogin( const char *_user, const char *_pass, string *_redirect )
 {
   assert( !m_bLoggedOn );
   
-  string user = _user;
-  string pass = _pass;
+  QString user = _user;
+  QString pass = _pass;
 
-  if ( !user.empty() )
+  if ( !user.isEmpty() )
   {    
-    string tempbuf = "user ";
+    QString tempbuf = "user ";
     tempbuf += user;
 
     rspbuf[0] = '\0';
 
-    if ( !ftpSendCmd( tempbuf.c_str(), '3' ) )
+    if ( !ftpSendCmd( tempbuf, '3' ) )
     {
       if ( ftplib_debug > 2 )
 	fprintf( stderr, "1> %s\n", rspbuf );
@@ -363,14 +363,14 @@ bool Ftp::ftpLogin( const char *_user, const char *_pass, string *_redirect )
       return false;
     }     
 
-    if ( pass.empty() )
+    if ( pass.isEmpty() )
     {
-      string tmp;
+      QString tmp;
       tmp = user;
       tmp += "@";
       tmp += m_host;
       
-      if ( !open_PassDlg( tmp.c_str(), user, pass ) )
+      if ( !open_PassDlg( tmp, user, pass ) )
 	return false;
     }
     cerr << "New pass is '" << pass << "'" << endl;
@@ -378,7 +378,7 @@ bool Ftp::ftpLogin( const char *_user, const char *_pass, string *_redirect )
     tempbuf = "pass ";
     tempbuf += pass;
     
-    if ( !ftpSendCmd( tempbuf.c_str(), '2' ) )
+    if ( !ftpSendCmd( tempbuf, '2' ) )
     {
       cerr << "Wrong password" << endl;
       return false;

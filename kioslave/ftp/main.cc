@@ -1,6 +1,5 @@
 #include "main.h"
 
-#include <kio_manager.h>
 #include <kio_rename_dlg.h>
 #include <kio_skip_dlg.h>
 
@@ -10,6 +9,7 @@
 #include <sys/wait.h>
 
 #include <kurl.h>
+#include <kprotocolmanager.h>
 
 int check( Connection *_con );
 
@@ -22,7 +22,7 @@ int main( int argc, char **argv )
   signal(SIGCHLD,sig_handler);
   signal(SIGSEGV,sig_handler2);
 
-  //  ProtocolManager manager;
+  //  KProtocolManager manager;
 
   debug( "kio_ftp : Starting");
 
@@ -233,34 +233,25 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
 
   debug( "kio_ftp : Dest ok %s", dest.data() );
 
-  // Extract destinations right most protocol
-  KURLList lst;
-  if ( !KURL::split( dest, lst )  )
-  {
-    error( ERR_MALFORMED_URL, dest );
-    m_cmd = CMD_NONE;
-    return;
-  }
-
   // Find IO server for destination
-  string exec = ProtocolManager::self()->find( lst.getLast()->protocol() );
+  QString exec = KProtocolManager::self().executable( udest.protocol() );
 
-  if ( exec.empty() )
+  if ( exec.isEmpty() )
   {
-    error( ERR_UNSUPPORTED_PROTOCOL, lst.getLast()->protocol() );
+    error( ERR_UNSUPPORTED_PROTOCOL, udest.protocol() );
     m_cmd = CMD_NONE;
     return;
   }
 
   // Is the right most protocol a filesystem protocol ?
-  if ( ProtocolManager::self()->outputType( lst.getLast()->protocol() ) != ProtocolManager::T_FILESYSTEM )
+  if ( KProtocolManager::self().outputType( udest.protocol() ) != KProtocolManager::T_FILESYSTEM )
   {
-    error( ERR_PROTOCOL_IS_NOT_A_FILESYSTEM, lst.getLast()->protocol() );
+    error( ERR_PROTOCOL_IS_NOT_A_FILESYSTEM, udest.protocol() );
     m_cmd = CMD_NONE;
     return;
   }
       
-  debug( "kio_ftp : IO server ok %s", dest.data() );
+  debug( "kio_ftp : IO server ok %s", dest.ascii() );
 
   // Connect to the ftp server
   KURL usrc( _source.front().c_str() );
@@ -351,10 +342,10 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
   m_cmd = CMD_GET;
   
   // Start a server for the destination protocol
-  Slave slave( exec.c_str() );
+  Slave slave( exec );
   if ( slave.pid() == -1 )
   {
-    error( ERR_CANNOT_LAUNCH_PROCESS, exec.c_str() );
+    error( ERR_CANNOT_LAUNCH_PROCESS, exec );
     ftp.ftpDisconnect( true );
     m_cmd = CMD_NONE;
     return;
@@ -363,7 +354,7 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
   // Put a protocol on top of the job
   FtpIOJob job( &slave, this );
 
-  debug( "kio_ftp : Job started ok %s", dest.data() );
+  debug( "kio_ftp : Job started ok %s", dest.ascii() );
 
   // Tell our client what we 'r' gonna do
   totalSize( size );
@@ -376,9 +367,9 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
   
   // Replace the relative destinations with absolut destinations
   // by prepending the destinations path
-  string tmp1 = lst.getLast()->path( 1 ).data();
+  string tmp1 = udest.path( 1 ).data();
   // Strip '/'
-  string tmp1_stripped = lst.getLast()->path( -1 ).data();
+  string tmp1_stripped = udest.path( -1 ).data();
 
   list<CopyDir>::iterator dit = dirs.begin();
   for( ; dit != dirs.end(); dit++ )
@@ -423,13 +414,9 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
     {
       job.clearError();
 
-      KURLList l( lst );
-      l.getLast()->setPath( dit->m_strRelDest.c_str() );
-
-      QString d;
-      KURL * it = l.first();
-      for( ; it ; it = l.next() )
-	d += it->url();
+      KURL ud( udest );
+      ud.setPath( dit->m_strRelDest.c_str() );
+      QString d = ud.url();
 
       // Is this URL on the skip list ?
       bool skip = false;
@@ -467,8 +454,8 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
 	// Can we prompt the user and ask for a solution ?
 	if ( /* m_bGUI && */ job.errorId() == ERR_DOES_ALREADY_EXIST )
 	{    
-	  string old_path = l.getLast()->path( 1 ).data();
-	  string old_url = l.getLast()->url( 1 ).data();
+	  string old_path = udest.path( 1 ).data();
+	  string old_url = udest.url( 1 ).data();
 	  // Should we skip automatically ?
 	  if ( auto_skip )
 	  {
@@ -483,12 +470,12 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
 	    continue;
 	  }
 
-	  string n;
 	  /* RenameDlg_Mode m = (RenameDlg_Mode)( M_SINGLE | M_OVERWRITE );
 	  if ( dirs.size() > 1 )
 	    m = (RenameDlg_Mode)(M_MULTI | M_SKIP | M_OVERWRITE ); */
 	  RenameDlg_Mode m = (RenameDlg_Mode)( M_MULTI | M_SKIP | M_OVERWRITE );
-	  QString tmp2 = l.getLast()->url();
+	  QString tmp2 = udest.url();
+	  QString n;
 	  RenameDlg_Result r = open_RenameDlg( dit->m_strAbsSource.c_str(), tmp2, m, n );
 	  if ( r == R_CANCEL ) 
 	  {
@@ -499,7 +486,7 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
 	  }
 	  else if ( r == R_RENAME )
 	  {
-	    KURL u( n.c_str() );
+	    KURL u( n );
 	    // The Dialog should have checked this.
 	    if ( u.isMalformed() )
 	      assert( 0 );
@@ -599,15 +586,9 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
     { 
       job.clearError();
 
-      KURLList l( lst );
-      l.getLast()->setPath( fit->m_strRelDest.c_str() );
-    
-      // debug( "kio_ftp : ########### SET Path to '%s'", fit->m_strRelDest.c_str() );
-      
-      QString d;
-      KURL * it = l.first();
-      for( ; it  ; it = l.next())
-	d += it->url();
+      KURL ud( dest );
+      ud.setPath( fit->m_strRelDest.c_str() );
+      QString d = ud.url();
 
       // Is this URL on the skip list ?
       bool skip = false;
@@ -662,7 +643,7 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
 	    skip_copying = true;
 	    continue;
 	  }
-	  QString tmp2 = l.getLast()->url();
+	  QString tmp2 = ud.url();
 	  SkipDlg_Result r;
 	  r = open_SkipDlg( tmp2, ( files.size() > 1 ) );
 	  if ( r == S_CANCEL )
@@ -701,9 +682,9 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
 	  }
 
 	  RenameDlg_Result r;
-	  string n;
+	  QString n;
 
-	  if ( ProtocolManager::self()->getAutoResume() && m_bCanResume &&
+	  if ( KProtocolManager::self().getAutoResume() && m_bCanResume &&
 		    currentError != ERR_DOES_ALREADY_EXIST_FULL ) {
 	    r = R_RESUME_ALL;
 	  }
@@ -724,7 +705,7 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
 		m = (RenameDlg_Mode)( M_SINGLE | M_OVERWRITE);
 	    }
 
-	    QString tmp2 = l.getLast()->url();
+	    QString tmp2 = ud.url();
 	    r = open_RenameDlg( fit->m_strAbsSource.c_str(), tmp2, m, n );
 	  }
 
@@ -737,7 +718,7 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
 	  }
 	  else if ( r == R_RENAME )
 	  {
-	    KURL u( n.c_str() );
+	    KURL u( n );
 	    // The Dialog should have checked this.
 	    if ( u.isMalformed() )
 	      assert( 0 );
@@ -769,13 +750,13 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
 	  else if ( r == R_RESUME )
 	  {
 	    resume = true;
-	    offset = getOffset( l.getLast()->url().data() );
+	    offset = getOffset( ud.url() );
 	    // Dont clear error => we will repeat the current command
 	  }
 	  else if ( r == R_RESUME_ALL )
 	  {
 	    resume_all = true;
-	    offset = getOffset( l.getLast()->url().data() );
+	    offset = getOffset( ud.url() );
 	    // Dont clear error => we will repeat the current command
 	  }
 	  else
@@ -823,7 +804,7 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
     int n;
     int read_size = 0;
     do {
-      setup_alarm( ProtocolManager::self()->getReadTimeout() ); // start timeout
+      setup_alarm( KProtocolManager::self().getReadTimeout() ); // start timeout
       n = ftp.read( buffer, 2048 );
 
       // !!! slow down loop for local testing
@@ -1040,7 +1021,7 @@ void FtpProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _r
   KURL udest_orig( url_orig.c_str() );
   KURL udest_part( url_part.c_str() );
 
-  bool m_bMarkPartial = ProtocolManager::self()->getMarkPartial();
+  bool m_bMarkPartial = KProtocolManager::self().getMarkPartial();
 
   if ( udest_orig.isMalformed() )
   {
@@ -1120,7 +1101,7 @@ void FtpProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _r
 
   // if we are using marking of partial downloads -> add .part extension
   if ( m_bMarkPartial ) {
-    debug( "kio_ftp : Adding .part extension to %s", udest_orig.path() );
+    debug( "kio_ftp : Adding .part extension to %s", udest_orig.path().ascii() );
     udest = udest_part;
   } else
   udest = udest_orig;
@@ -1145,7 +1126,7 @@ void FtpProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _r
   }
 
   if ( !ftp.ftpOpen( udest, Ftp::WRITE, offset ) ) {
-    debug( "kio_ftp : ####################### COULD NOT WRITE %s", udest.path() );
+    debug( "kio_ftp : ####################### COULD NOT WRITE %s", udest.path().ascii() );
 
     error( ftp.error(), ftp.errorText() );
     ftp.ftpDisconnect( true );
@@ -1194,7 +1175,7 @@ void FtpProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _r
       }
 
     } // if the size is less then minimum -> delete the file
-    else if ( e->size < ProtocolManager::self()->getMinimumKeepSize() ) {
+    else if ( e->size < KProtocolManager::self().getMinimumKeepSize() ) {
 	ftp.ftpDelete( udest.path() );
     }
   }

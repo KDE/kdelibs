@@ -11,5 +11,8 @@ bin_PROGRAMS = kio_ftp
 kio_ftp_SOURCES = main.cc ftp.cc
 noinst_HEADERS = main.h ftp.h
 
+kioconfig_DATA = ftp.kdelnk
+kioconfigdir = $(kde_confdir)/protocols
+
 messages:
 

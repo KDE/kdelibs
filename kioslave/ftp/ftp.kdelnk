@@ -1,0 +1,12 @@
+# KDE Config File
+[Protocol]
+exec=kio_ftp
+protocol=ftp
+input=none
+output=filesystem
+listing=Name,Type,Size,Access,Owner,Group,Link
+reading=true
+writing=true
+makedir=true
+deleting=true
+

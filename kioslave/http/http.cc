@@ -42,12 +42,12 @@
 #include "http.h"
 
 #include <kurl.h>
-#include <kio_manager.h>
+#include <kprotocolmanager.h>
 #include <kio_rename_dlg.h>
 #include <kio_skip_dlg.h>
 
 bool open_CriticalDlg( const char *_titel, const char *_message, const char *_but1, const char *_but2 = 0L );
-bool open_PassDlg( const char *_head, string& _user, string& _pass );
+bool open_PassDlg( const QString& _head, QString& _user, QString& _pass );
 
 extern "C" {
   char *create_basic_auth (const char *header, const char *user, const char *passwd);
@@ -285,17 +285,17 @@ HTTPProtocol::HTTPProtocol( Connection *_conn ) : IOProtocol( _conn )
 
   m_bCanResume = true; // most of http servers support resuming ?
 
-  m_bUseProxy = ProtocolManager::self()->getUseProxy();
+  m_bUseProxy = KProtocolManager::self().getUseProxy();
 
   if ( m_bUseProxy ) {
-    KURL ur ( ProtocolManager::self()->getHttpProxy().data() );
+    KURL ur ( KProtocolManager::self().getHttpProxy().data() );
 
     m_strProxyHost = ur.host();
     m_strProxyPort = ur.port();
     m_strProxyUser = ur.user();
     m_strProxyPass = ur.pass();
 
-    m_strNoProxyFor = ProtocolManager::self()->getNoProxyFor().data();
+    m_strNoProxyFor = KProtocolManager::self().getNoProxyFor().data();
   }
 
   m_bEOF=false;
@@ -423,7 +423,7 @@ bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data
 	    port = DEFAULT_HTTP_PORT;
 
     else {
-      fprintf(stderr, "Got a werid protocol (%s), assuming port is 80\n", _url.protocol());
+      fprintf(stderr, "Got a werid protocol (%s), assuming port is 80\n", _url.protocol().ascii());
       fflush(stderr);
       port=80;
     }
@@ -654,8 +654,8 @@ repeat2:
   }
   if (unauthorized) {
     http_close();
-    string user = _url.user();
-    string pass = _url.pass();
+    QString user = _url.user();
+    QString pass = _url.pass();
     if (m_strRealm.empty())
       m_strRealm = _url.host();
     if ( !open_PassDlg(m_strRealm.c_str(), user, pass) ) {
@@ -664,8 +664,8 @@ repeat2:
     }
     
     KURL u( _url );
-    u.setUser( user.c_str() );
-    u.setPass( pass.c_str() );
+    u.setUser( user );
+    u.setPass( pass );
     return http_open( u, _post_data, _post_data_size, _reload, _offset );
   }
 
@@ -1074,16 +1074,15 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 {
   string source = _source;
   string dest = _dest;
-  KURL usrc;
   
-  usrc=KURL(_dest);
-  if ( usrc.isMalformed() ) {
+  KURL udest( _dest );
+  if ( udest.isMalformed() ) {
     error( ERR_MALFORMED_URL, dest.c_str() );
     m_cmd = CMD_NONE;
     return;
   }
 
-  usrc=KURL( _source );
+  KURL usrc( _source );
   if ( usrc.isMalformed() ) {
     error( ERR_MALFORMED_URL, source.c_str() );
     m_cmd = CMD_NONE;
@@ -1096,29 +1095,24 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
     return;
   }
 
-  KURLList lst;
-  if ( !KURL::split( _dest, lst )  ) {
-    error( ERR_MALFORMED_URL, dest.c_str() );
-    m_cmd = CMD_NONE;
-    return;
-  }
-  if ( lst.count() > 1 ) {
+  if ( KURL::split( _dest ).count() != 1 )
+  {
     error( ERR_NOT_FILTER_PROTOCOL, "http" );
     m_cmd = CMD_NONE;
     return;
   }
   
-  string exec = ProtocolManager::self()->find( lst.getLast()->protocol() );
+  QString exec = KProtocolManager::self().executable( udest.protocol() );
 
-  if ( exec.empty() ) {
-    error( ERR_UNSUPPORTED_PROTOCOL, lst.getLast()->protocol() );
+  if ( exec.isEmpty() ) {
+    error( ERR_UNSUPPORTED_PROTOCOL, udest.protocol() );
     m_cmd = CMD_NONE;
     return;
   }
 
   // Is the right most protocol a filesystem protocol ?
-  if ( ProtocolManager::self()->outputType( lst.getLast()->protocol() ) != ProtocolManager::T_FILESYSTEM ) {
-    error( ERR_PROTOCOL_IS_NOT_A_FILESYSTEM, lst.getLast()->protocol() );
+  if ( KProtocolManager::self().outputType( udest.protocol() ) != KProtocolManager::T_FILESYSTEM ) {
+    error( ERR_PROTOCOL_IS_NOT_A_FILESYSTEM, udest.protocol() );
     m_cmd = CMD_NONE;
     return;
   }
@@ -1128,9 +1122,9 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
   list<string> files;
   files.push_back( _source );
   
-  Slave slave( exec.c_str() );
+  Slave slave( exec );
   if ( slave.pid() == -1 ) {
-    error( ERR_CANNOT_LAUNCH_PROCESS, exec.c_str() );
+    error( ERR_CANNOT_LAUNCH_PROCESS, exec );
     m_cmd = CMD_NONE;
     return;
   }
@@ -1170,19 +1164,15 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
       return;
     }
       
-      
-    KURLList l( lst );
+
+    KURL ud( udest );
 
     QString filename = u1.filename();
     if ( filename.isEmpty() ) {
       filename = "index.html";
-      l.getLast()->addPath( filename );
+      ud.addPath( filename );
     }
-    
-    QString d;
-    KURL * it = l.first();
-    for( ; it ; it = l.next() )
-      d += it->url();
+    QString d = ud.url();
     
     // Repeat until we got no error
     do { 
@@ -1260,7 +1250,7 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 	    skip_copying = true;
 	    continue;
 	  }
-	  QString tmp2 = l.getLast()->url();
+	  QString tmp2 = ud.url();
 	  SkipDlg_Result r;
 	  r = open_SkipDlg( tmp2, ( files.size() > 1 ) );
 	  if ( r == S_CANCEL ) {
@@ -1291,9 +1281,9 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 	  }
 
 	  RenameDlg_Result r;
-	  string n;
+	  QString n;
 
-	  if ( ProtocolManager::self()->getAutoResume() && m_bCanResume &&
+	  if ( KProtocolManager::self().getAutoResume() && m_bCanResume &&
 	       currentError != ERR_DOES_ALREADY_EXIST_FULL ) {
 	    r = R_RESUME_ALL;
 	  }
@@ -1314,7 +1304,7 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 		m = (RenameDlg_Mode)( M_SINGLE | M_OVERWRITE);
 	    }
 
-	    QString tmp2 = l.getLast()->url();
+	    QString tmp2 = ud.url();
 	    r = open_RenameDlg( fit->c_str(), tmp2, m, n );
 	  }
 	  if ( r == R_CANCEL ) {
@@ -1323,7 +1313,7 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 	    m_cmd = CMD_NONE;
 	    return;
 	  } else if ( r == R_RENAME ) {
-	    KURL u( n.c_str() );
+	    KURL u( n );
 	    // The Dialog should have checked this.
 	    if ( u.isMalformed() )
 	      assert( "The URL is malformed, something fucked up, you should never see this!" );
@@ -1352,11 +1342,11 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 	    // Dont clear error => we will repeat the current command
 	  } else if ( r == R_RESUME ) {
 	    resume = true;
-	    offset = getOffset( l.getLast()->url().data() );
+	    offset = getOffset( ud.url() );
 	    // Dont clear error => we will repeat the current command
 	  } else if ( r == R_RESUME_ALL ) {
 	    resume_all = true;
-	    offset = getOffset( l.getLast()->url().data() );
+	    offset = getOffset( ud.url() );
 	    // Dont clear error => we will repeat the current command
 	  } else
 	    assert( "Unhandled command!" );
@@ -1387,7 +1377,7 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
     char buffer[ 2048 ];
     int read_size = 0;
     while( !feof( m_fsocket ) ) {
-      setup_alarm( ProtocolManager::self()->getReadTimeout() ); // start timeout
+      setup_alarm( KProtocolManager::self().getReadTimeout() ); // start timeout
       long n = fread( buffer, 1, 2048, m_fsocket );
 
       // !!! slow down loop for local testing

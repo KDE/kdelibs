@@ -26,6 +26,7 @@
 #define ACCEPT_TIMEOUT 30
 
 #include <string>
+#include <qstring.h>
 
 class KURL;
 
@@ -67,9 +68,9 @@ private:
   int sDatal;
 
   int m_error;
-  string m_errorText;
+  QString m_errorText;
 
-  string m_host;
+  QString m_host;
   
   struct netbuf
   {
@@ -209,7 +210,7 @@ public:
   bool mkdir( KURL& _url );
 
   int error() { return m_error; }
-  const char* errorText() { return m_errorText.c_str(); }
+  QString errorText() { return m_errorText; }
 };
 
 #endif
