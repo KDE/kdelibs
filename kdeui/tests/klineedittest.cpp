@@ -9,9 +9,9 @@ int main ( int argc, char **argv)
     KApplication a(argc, argv, "klineedittest");
     //make a central widget to contain the other widgets
     QWidget * w = new QWidget( );
-    KLineEdit *l = new KLineEdit( w, "mylineedit" );
-    l->setHandleCompletion();
-    l->setHandleRotation(); // specify false
+    KLineEdit *l = new KLineEdit( w, "mylineedit", true );
+    l->setEnableContextMenu( true );
+    l->setEnableModeChanger( true );
     // Shows of the value of the returnPressed signals with the QString argument.
     // We simply insert the entered items into the completion object.
     QObject::connect( l, SIGNAL( returnPressed( const QString& ) ), l->completionObject(), SLOT( addItem( const QString& ) ) );
