@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.21  1998/03/27 15:51:57  torben
+// Torben: Bug fix. It was possible to modify internal data of kconfig.
+//
 // Revision 1.20  1998/03/11 11:23:28  kulow
 // if the color entry starts with a '#', use QColor::setNamedColor
 //
@@ -293,7 +296,7 @@ const QString KConfigBase::readEntry( const char* pKey,
 	  }
 	  nDollarPos = aValue.find( '$', nDollarPos+2 );
 	};
-  return aValue.copy();
+  return QString( aValue.data() );
 }
 
 int KConfigBase::readListEntry( const char* pKey, QStrList &list,  
