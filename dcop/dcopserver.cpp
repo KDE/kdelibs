@@ -673,16 +673,17 @@ DCOPServer::~DCOPServer()
 /*!
   Called from our IceIoErrorHandler
  */
-void DCOPServer::ioError( IceConn iceConn )
+void DCOPServer::ioError( IceConn /* iceConn */ )
 {
-    IceSetShutdownNegotiation (iceConn, False);
-    IceCloseConnection( iceConn );
 }
-
 
 void DCOPServer::processData( int /*socket*/ )
 {
-    (void ) IceProcessMessages( ((DCOPConnection*)sender())->iceConn, 0, 0 );
+    IceConn iceConn = ((DCOPConnection*)sender())->iceConn;
+    IceProcessMessagesStatus pstatus = IceProcessMessages( iceConn, 0, 0 );
+    if ( pstatus == IceProcessMessagesIOError ) {
+	IceCloseStatus cstatus = IceCloseConnection( iceConn );
+    }
 }
 
 void DCOPServer::newClient( int /*socket*/ )
