@@ -16,6 +16,8 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
+#ifndef KMESSAGEBOXWRAPPER_H
+#define KMESSAGEBOXWRAPPER_H
 #include <kmessagebox.h>
 #include <kapp.h>
 
@@ -44,3 +46,4 @@ public:
     }
   
 };
+#endif
