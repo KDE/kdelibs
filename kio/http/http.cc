@@ -84,7 +84,7 @@ using namespace KIO;
 // Maximum chunk size is 256K
 #define MAX_CHUNK_SIZE (1024*256)
 
-#define MAX_IPC_SIZE (1024*32)
+#define MAX_IPC_SIZE (1024*8)
 
 // Timeout for connections to remote sites in seconds
 #define REMOTE_CONNECT_TIMEOUT 20
