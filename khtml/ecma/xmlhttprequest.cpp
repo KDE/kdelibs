@@ -110,6 +110,7 @@ Object XMLHttpRequestConstructorImp::construct(ExecState *exec, const List &)
 
 const ClassInfo XMLHttpRequest::info = { "XMLHttpRequest", 0, &XMLHttpRequestTable, 0 };
 
+
 /* Source for XMLHttpRequestTable.
 @begin XMLHttpRequestTable 7
   readyState		XMLHttpRequest::ReadyState		DontDelete|ReadOnly
@@ -216,6 +217,7 @@ XMLHttpRequest::XMLHttpRequest(ExecState *exec, const DOM::Document &d)
     qObject(new XMLHttpRequestQObject(this)),
     doc(static_cast<DOM::DocumentImpl*>(d.handle())),
     async(true),
+    contentType(QString::null),
     job(0),
     state(Uninitialized),
     onReadyStateChangeListener(0),
@@ -308,6 +310,10 @@ void XMLHttpRequest::send(const QString& _body)
   if (method.lower() == "post" && (url.protocol().lower() == "http" || url.protocol().lower() == "https") ) {
       // FIXME: determine post encoding correctly by looking in headers for charset
       job = KIO::http_post( url, QCString(_body.utf8()), false );
+      if(contentType.isNull())
+	job->addMetaData( "content-type", "Content-type: text/plain" );
+      else
+	job->addMetaData( "content-type", contentType );
   }
   else
   {
@@ -368,6 +374,11 @@ void XMLHttpRequest::abort()
 
 void XMLHttpRequest::setRequestHeader(const QString& name, const QString &value)
 {
+  // Content-type needs to be set seperately from the other headers
+  if(name.lower() == "content-type") {
+    contentType = "Content-type: " + value;
+    return;
+  }
   if (requestHeaders.length() > 0) {
     requestHeaders += "\r\n";
   }

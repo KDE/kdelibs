@@ -98,6 +98,7 @@ namespace KJS {
     QString method;
     bool async;
     QString requestHeaders;
+    QString contentType;
 
     KIO::TransferJob * job;
 
