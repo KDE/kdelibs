@@ -136,7 +136,6 @@ public:
   {
     m_kaccel = 0;
     m_configurable = true;
-    m_connected = false;
   }
 
   KAccel *m_kaccel;
@@ -149,8 +148,6 @@ public:
   KShortcut m_cutDefault;
 
   bool m_configurable;
-  bool m_connected;	// 'true' if this action has been connected to a slot.
-  QVariant m_slotParam;
 
   struct Container
   {
@@ -305,19 +302,8 @@ void KAction::initPrivate( const QString& text, const KShortcut& cut,
     if ( m_parentCollection )
         m_parentCollection->insert( this );
 
-    if ( receiver && slot ) {
-        d->m_connected = true;
-        if ( QString(slot).find( QRegExp("\\(\\s*int\\s*\\)") ) >= 0 ) {
-            QRegExp rxVal("\\{(.+)\\}");
-            rxVal.setMinimal( true );
-            if ( rxVal.search( name() ) >= 0 ) {
-                d->m_slotParam = rxVal.cap(1).toInt();
-                connect( this, SIGNAL( activated( int ) ), receiver, slot );
-            }
-        }
-        else
-            connect( this, SIGNAL( activated() ), receiver, slot );
-    }
+    if ( receiver && slot )
+        connect( this, SIGNAL( activated() ), receiver, slot );
 
     if( !cut.isNull() && qstrcmp( name(), "unnamed" ) == 0 )
         kdWarning(129) << "KAction::initPrivate(): trying to assign a shortcut (" << cut.toStringInternal() << ") to an unnamed action." << endl;
@@ -1123,16 +1109,7 @@ void KAction::activate()
 
 void KAction::slotActivated()
 {
-  switch( d->m_slotParam.type() ) {
-    case QVariant::Invalid:
-      emit activated();
-      break;
-    case QVariant::Int:
-      emit activated( d->m_slotParam.toInt() );
-      break;
-    default:
-      break;
-  }
+  emit activated();
 }
 
 void KAction::slotDestroyed()

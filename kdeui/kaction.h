@@ -554,8 +554,6 @@ protected:
 
 signals:
     void activated();
-    /// @since 3.1
-    void activated( int );
     void enabled( bool );
 
 private:
