@@ -865,8 +865,8 @@ public:
     virtual void setContent(DOM::DOMStringImpl* /*s*/) { assert(false); }
     virtual void setContent(CachedObject* /*o*/) { assert(false); }
     
-    virtual DOM::DOMStringImpl* contentText() { assert(false); return 0; }
-    virtual CachedObject* contentObject() { assert(false); return 0; }
+    virtual DOM::DOMStringImpl* contentText() { return 0; }
+    virtual CachedObject* contentObject() { return 0; }
     
 };
 
