@@ -102,7 +102,7 @@ bool KIMProxy::initialize()
 	return m_im_client_stubs.count() != 0;
 }
 
-QStringList KIMProxy::imAddresseeUids()
+QStringList KIMProxy::allContacts()
 {
 	QStringList value;
 	
@@ -317,6 +317,7 @@ bool KIMProxy::startPreferredApp()
 	QCString dcopService;
 	// Get a preferred IM client.
 	// The app will notify itself to us using registeredToDCOP, so we don't need to record a stub for it here
+	// FIXME: error in preferences, see debug output
 	preferences = QString::null;
 	int result = KDCOPServiceStarter::self()->findServiceFor( IM_SERVICE_TYPE, QString::null, preferences, &error, &dcopService );
 
