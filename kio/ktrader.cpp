@@ -32,14 +32,14 @@ public:
   KTraderSorter( const KTraderSorter& s ) : m_userPreference( s.m_userPreference ),
     m_bAllowAsDefault( s.m_bAllowAsDefault ),
     m_traderPreference( s.m_traderPreference ), m_pService( s.m_pService ) { }
-  KTraderSorter( const KService* _service, double _pref1, int _pref2, bool _default )
+  KTraderSorter( const KService::Ptr &_service, double _pref1, int _pref2, bool _default )
   { m_pService = _service;
     m_userPreference = _pref2;
     m_traderPreference = _pref1;
     m_bAllowAsDefault = _default;
   }
 
-  const KService* service() const { return m_pService; }
+  KService::Ptr service() const { return m_pService; }
 
   bool operator< ( const KTraderSorter& ) const;
 
@@ -60,7 +60,7 @@ private:
    */
   double m_traderPreference;
 
-  const KService* m_pService;
+  KService::Ptr m_pService;
 };
 
 bool KTraderSorter::operator< ( const KTraderSorter& _o ) const
@@ -70,7 +70,7 @@ bool KTraderSorter::operator< ( const KTraderSorter& _o ) const
   if ( _o.m_userPreference > m_userPreference )
     return true;
   if ( _o.m_userPreference < m_userPreference )
-    return true;
+    return false;
   if ( _o.m_traderPreference > m_traderPreference )
     return true;
   return false;
@@ -84,7 +84,7 @@ KTrader* KTrader::self()
 {
     if ( !s_self )
 	s_self = new KTrader;
-    
+
     return s_self;
 }
 
@@ -145,19 +145,13 @@ KTrader::OfferList KTrader::query( const QString& _servicetype, const QString& _
 
     QValueList<KTraderSorter>::Iterator it2 = sorter.begin();
     for( ; it2 != sorter.end(); ++it2 )
-    {
-      KService *s = (KService*)(*it2).service();
-      ret.append( s );
-    }
+      ret.prepend( (*it2).service() );
   }
   else
   {
     KServiceTypeProfile::OfferList::Iterator it = lst.begin();
     for( ; it != lst.end(); ++it )
-    {
-      KService *s = (KService*)(*it).service();
-      ret.append( s );
-    }
+      ret.append( (*it).service() );
   }
 
   return ret;

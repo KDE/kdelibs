@@ -55,13 +55,13 @@ struct PreferencesReturn
  *         1  => Does match
  *         <0 => Error
  */
-int matchConstraint( const ParseTreeBase *_tree, const KService*,
+int matchConstraint( const ParseTreeBase *_tree, const KService::Ptr &,
 		     const KServiceTypeProfile::OfferList& );
 
 /**
  * @return 1 on success or <0 on Error
  */
-PreferencesReturn matchPreferences( const ParseTreeBase *_tree, const KService*,
+PreferencesReturn matchPreferences( const ParseTreeBase *_tree, const KService::Ptr &,
 				    const KServiceTypeProfile::OfferList& );
 
 struct PreferencesMaxima
@@ -86,7 +86,7 @@ public:
    */
   ParseContext( const ParseContext* _ctx ) : service( _ctx->service ), maxima( _ctx->maxima ),
     offers( _ctx->offers ) {}
-  ParseContext( const KService* _service, const KServiceTypeProfile::OfferList& _offers,
+  ParseContext( const KService::Ptr & _service, const KServiceTypeProfile::OfferList& _offers,
 		QMap<QString,PreferencesMaxima>& _m )
     : service( _service ), maxima( _m ), offers( _offers ) {}
 
@@ -103,7 +103,7 @@ public:
   QStringList strSeq;
   Type type;
 
-  const KService* service;
+  KService::Ptr service;
 
   QMap<QString,PreferencesMaxima>& maxima;
   const KServiceTypeProfile::OfferList& offers;

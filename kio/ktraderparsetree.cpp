@@ -417,10 +417,10 @@ bool ParseTreeIN::eval( ParseContext *_context ) const
   if ( !m_pRight->eval( &c2 ) )
     return false;
 
-  if ( (c1.type == ParseContext::T_NUM) && 
-       (c2.type == ParseContext::T_SEQ) && 
+  if ( (c1.type == ParseContext::T_NUM) &&
+       (c2.type == ParseContext::T_SEQ) &&
        ((*(c2.seq.begin())).type() == QVariant::Int)) {
-      
+
       QValueList<QVariant>::ConstIterator it = c2.seq.begin();
       QValueList<QVariant>::ConstIterator end = c2.seq.end();
       _context->b = false;
@@ -433,8 +433,8 @@ bool ParseTreeIN::eval( ParseContext *_context ) const
       return true;
   }
 
-  if ( c1.type == ParseContext::T_DOUBLE && 
-       c2.type == ParseContext::T_SEQ && 
+  if ( c1.type == ParseContext::T_DOUBLE &&
+       c2.type == ParseContext::T_SEQ &&
        (*(c2.seq.begin())).type() == QVariant::Double) {
 
       QValueList<QVariant>::ConstIterator it = c2.seq.begin();
@@ -574,7 +574,7 @@ bool ParseTreeMAX2::eval( ParseContext *_context ) const
   return false;
 }
 
-int matchConstraint( const ParseTreeBase *_tree, const KService* _service,
+int matchConstraint( const ParseTreeBase *_tree, const KService::Ptr &_service,
 		     const KServiceTypeProfile::OfferList& _list )
 {
   // Empty tree matches always
@@ -595,7 +595,7 @@ int matchConstraint( const ParseTreeBase *_tree, const KService* _service,
   return ( c.b ? 1 : 0 );
 }
 
-PreferencesReturn matchPreferences( const ParseTreeBase *_tree, const KService* _service,
+PreferencesReturn matchPreferences( const ParseTreeBase *_tree, const KService::Ptr &_service,
 				    const KServiceTypeProfile::OfferList& _list )
 {
   // By default: error
@@ -644,14 +644,14 @@ bool ParseContext::initMaxima( const QString& _prop )
 
   // Double or Int ?
   PreferencesMaxima extrema;
-  if ( prop.type() != QVariant::Int )
+  if ( prop.type() == QVariant::Int )
     extrema.type = PreferencesMaxima::PM_INVALID_INT;
   else
     extrema.type = PreferencesMaxima::PM_INVALID_DOUBLE;
 
   // Iterate over all offers
   KServiceTypeProfile::OfferList::ConstIterator oit = offers.begin();
-  for( ; oit != offers.end(); ++it )
+  for( ; oit != offers.end(); ++oit )
   {
     QVariant p = (*oit).service()->property( _prop );
     if ( p.isValid() )
@@ -682,9 +682,9 @@ bool ParseContext::initMaxima( const QString& _prop )
       else if ( extrema.type == PreferencesMaxima::PM_DOUBLE )
       {
 	if ( p.toDouble() < it.data().fMin )
-	  it.data().fMin = p.toDouble();
+	  extrema.fMin = p.toDouble();
 	if ( p.toDouble() > it.data().fMax )
-	  it.data().fMax = p.toDouble();
+	  extrema.fMax = p.toDouble();
       }
     }
   }
