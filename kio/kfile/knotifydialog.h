@@ -157,8 +157,7 @@ namespace KNotify
          */
         Application * addApplicationEvents( const QString& path );
 
-        void reload( bool revertToDefaults = false );
-
+        void resetDefaults( bool ask );
         void sort( bool ascending = true );
         void setCurrentApplication( Application *app );
 
@@ -180,6 +179,8 @@ namespace KNotify
         virtual void showEvent( QShowEvent * );
         virtual void enableAll( int what, bool enable );
 
+        void reload( bool revertToDefaults = false );
+
     protected slots:
         void playSound();
 
@@ -199,12 +200,12 @@ namespace KNotify
         void openLogDialog( KURLRequester * );
         void openExecDialog( KURLRequester * );
 
-        void updateWidgets( ListViewItem *item );
-        void updatePixmaps( ListViewItem *item );
-
         void enableAll();
 
     private:
+        void updateWidgets( ListViewItem *item );
+        void updatePixmaps( ListViewItem *item );
+
         QString makeRelative( const QString& );
         void addToView( const EventList& events );
         void widgetChanged( QListViewItem *item,
@@ -264,7 +265,7 @@ namespace KNotify
 
         Event& event() { return *m_event; }
         virtual int compare (QListViewItem * i, int col, bool ascending) const;
-    
+
     private:
         Event * m_event;
     };

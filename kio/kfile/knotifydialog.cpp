@@ -147,13 +147,7 @@ void KNotifyDialog::clearApplicationEvents()
 
 void KNotifyDialog::slotDefault()
 {
-    if (KMessageBox::warningContinueCancel(this,
-        i18n("This will cause the notifications "
-             "to be reset to their defaults!"), i18n("Are you sure?"), i18n("Continue"))
-        != KMessageBox::Continue)
-        return;
-
-    m_notifyWidget->reload( true ); // defaults
+    m_notifyWidget->resetDefaults( true ); // ask user
 }
 
 
@@ -197,14 +191,14 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
     QPixmap pstderr = SmallIcon("terminal");
 
     int w = KIcon::SizeSmall + 6;
-    
+
     QHeader *header = m_listview->header();
     header->setLabel( COL_EXECUTE, pexec,    QString::null, w );
     header->setLabel( COL_STDERR,  pstderr,  QString::null, w );
     header->setLabel( COL_MESSAGE, pmessage, QString::null, w );
     header->setLabel( COL_LOGFILE, plogfile, QString::null, w );
     header->setLabel( COL_SOUND,   psound,   QString::null, w );
-    
+
     m_playButton->setPixmap( SmallIcon( "1rightarrow" ) );
     connect( m_playButton, SIGNAL( clicked() ), SLOT( playSound() ));
 
@@ -328,7 +322,7 @@ void KNotifyWidget::showEvent( QShowEvent *e )
 void KNotifyWidget::slotEventChanged( QListViewItem *item )
 {
     bool on = (item != 0L);
-    
+
     m_actionsBox->setEnabled( on );
     m_controlsBox->setEnabled( on );
 
@@ -347,7 +341,7 @@ void KNotifyWidget::updateWidgets( ListViewItem *item )
     blockSignals( true ); // don't emit changed() signals
 
     const Event& event = item->event();
-    
+
     // sound settings
     m_playButton->setEnabled( !event.soundfile.isEmpty() );
     m_soundPath->setURL( event.soundfile );
@@ -380,29 +374,40 @@ void KNotifyWidget::updateWidgets( ListViewItem *item )
 
 
     // other settings
-    m_messageBox->setChecked(event.presentation & (KNotifyClient::Messagebox|KNotifyClient::PassivePopup));
+    m_messageBox->setChecked(event.presentation & (KNotifyClient::Messagebox | KNotifyClient::PassivePopup));
     m_passivePopup->setChecked(event.presentation & KNotifyClient::PassivePopup);
     m_stderr->setChecked( event.presentation & KNotifyClient::Stderr );
 
     updatePixmaps( item );
-    
+
     blockSignals( false );
 }
 
 void KNotifyWidget::updatePixmaps( ListViewItem *item )
 {
+    QPixmap emptyPix;
     Event &event = item->event();
-        
-    if ( event.presentation & KNotifyClient::Execute )
-        item->setPixmap( COL_EXECUTE, SmallIcon("exec") );
-    if ( event.presentation & KNotifyClient::Sound )
-        item->setPixmap( COL_SOUND, SmallIcon("sound") );
-    if ( event.presentation & KNotifyClient::Logfile )
-        item->setPixmap( COL_LOGFILE, SmallIcon("log") );
-    if ( event.presentation & (KNotifyClient::Messagebox|KNotifyClient::PassivePopup) )
-        item->setPixmap( COL_MESSAGE, SmallIcon("info") );
-    if ( event.presentation & KNotifyClient::Stderr )
-        item->setPixmap( COL_STDERR, SmallIcon("terminal") );
+
+    item->setPixmap( COL_EXECUTE, 
+                     (event.presentation & KNotifyClient::Execute) ?
+                     SmallIcon("exec") : emptyPix );
+    
+    item->setPixmap( COL_SOUND, 
+                     (event.presentation & KNotifyClient::Sound) ?
+                     SmallIcon("sound") : emptyPix );
+
+    item->setPixmap( COL_LOGFILE, 
+                     (event.presentation & KNotifyClient::Logfile) ?
+                     SmallIcon("log") : emptyPix );
+
+    item->setPixmap( COL_MESSAGE, 
+                     (event.presentation & 
+                      (KNotifyClient::Messagebox | KNotifyClient::PassivePopup)) ?
+                     SmallIcon("info") : emptyPix );
+
+    item->setPixmap( COL_STDERR, 
+                     (event.presentation & KNotifyClient::Stderr) ?
+                     SmallIcon("terminal") : emptyPix );
 }
 
 void KNotifyWidget::setCurrentApplication( Application *app )
@@ -412,6 +417,8 @@ void KNotifyWidget::setCurrentApplication( Application *app )
 
     m_listview->clear();
     addToView( app->eventList() );
+    
+    selectItem( m_listview->firstChild() );
 }
 
 void KNotifyWidget::addToView( const EventList& events )
@@ -430,7 +437,7 @@ void KNotifyWidget::addToView( const EventList& events )
     {
         Event *event = it.current();
         item = new ListViewItem( m_listview, event );
-        
+
         if ( event->presentation & KNotifyClient::Execute )
             item->setPixmap( COL_EXECUTE, pexec );
         if ( event->presentation & KNotifyClient::Sound )
@@ -444,7 +451,7 @@ void KNotifyWidget::addToView( const EventList& events )
     }
 }
 
-void KNotifyWidget::widgetChanged( QListViewItem *item, 
+void KNotifyWidget::widgetChanged( QListViewItem *item,
                                    int what, bool on, QWidget *buddy )
 {
     if ( signalsBlocked() )
@@ -506,7 +513,7 @@ void KNotifyWidget::messageBoxChanged()
 
     bool on = m_passivePopup->isEnabled();
     item->setPixmap( COL_MESSAGE, on ? SmallIcon("info") : QPixmap() );
-    
+
     Event &e = static_cast<ListViewItem*>( item )->event();
 
     if ( m_messageBox->isChecked() ) {
@@ -580,6 +587,23 @@ void KNotifyWidget::selectItem( QListViewItem *item )
     }
 }
 
+void KNotifyWidget::resetDefaults( bool ask )
+{
+    if ( ask )
+    {
+        if ( KMessageBox::warningContinueCancel(this,
+                                   i18n("This will cause the notifications "
+                                        "to be reset to their defaults!"), 
+                                                i18n("Are you sure?"), 
+                                                i18n("Continue"))
+             != KMessageBox::Continue)
+            return;
+    }
+
+    reload( true ); // defaults
+    emit changed( true );
+}
+
 void KNotifyWidget::reload( bool revertToDefaults )
 {
     m_listview->clear();
@@ -599,7 +623,8 @@ void KNotifyWidget::save()
     kdDebug() << "save\n";
 
     ApplicationListIterator it( m_apps );
-    while ( it.current() ) {
+    while ( it.current() ) 
+    {
         (*it)->save();
         ++it;
     }
@@ -719,19 +744,37 @@ void KNotifyWidget::enableAll()
 
 void KNotifyWidget::enableAll( int what, bool enable )
 {
-    ApplicationListIterator appIt( m_apps );
-    for ( ; appIt.current(); ++appIt )
+    if ( m_listview->childCount() == 0 )
+        return;
+    
+    QListViewItemIterator it( m_listview->firstChild() );
+    for ( ; it.current(); ++it )
     {
-        const EventList& events = appIt.current()->eventList();
-        EventListIterator it( events );
-        for ( ; it.current(); ++it )
-        {
-            if ( enable )
-                it.current()->presentation |= what;
-            else
-                it.current()->presentation &= ~what;
-        }
+        ListViewItem *item = static_cast<ListViewItem*>( it.current() );
+        if ( enable )
+            item->event().presentation |= what;
+        else
+            item->event().presentation &= ~what;
+        
+        updatePixmaps( item );
     }
+
+    
+    
+//     ###
+//     ApplicationListIterator appIt( m_apps );
+//     for ( ; appIt.current(); ++appIt )
+//     {
+//         const EventList& events = appIt.current()->eventList();
+//         EventListIterator it( events );
+//         for ( ; it.current(); ++it )
+//         {
+//             if ( enable )
+//                 it.current()->presentation |= what;
+//             else
+//                 it.current()->presentation &= ~what;
+//         }
+//     }
 
     QListViewItem *item = m_listview->currentItem();
     if ( !item )
@@ -811,6 +854,11 @@ void Application::reloadEvents( bool revertToDefaults )
 {
     if ( m_events )
         m_events->clear();
+    else
+    {
+        m_events = new EventList;
+        m_events->setAutoDelete( true );
+    }
 
     Event *e = 0L;
 
@@ -877,7 +925,7 @@ void Application::reloadEvents( bool revertToDefaults )
 
 ListViewItem::ListViewItem( QListView *view, Event *event )
     : QListViewItem( view ),
-      m_event( event ) 
+      m_event( event )
 {
     setText( COL_EVENT, event->text() );
 }
@@ -887,9 +935,9 @@ int ListViewItem::compare ( QListViewItem * i, int col, bool ascending ) const
     ListViewItem *item = static_cast<ListViewItem*>( i );
     int myPres = m_event->presentation;
     int otherPres = item->event().presentation;
-    
+
     int action = 0;
-    
+
     switch ( col )
     {
         case COL_EVENT: // use default sorting
@@ -911,18 +959,18 @@ int ListViewItem::compare ( QListViewItem * i, int col, bool ascending ) const
             action = KNotifyClient::Stderr;
             break;
     }
-    
+
     if ( (myPres & action) == (otherPres & action) )
     {
         // default sorting by event
         return QListViewItem::compare( i, COL_EVENT, true );
     }
-    
+
     if ( myPres & action )
         return -1;
     if ( otherPres & action )
         return 1;
-    
+
     return 0;
 }
 
