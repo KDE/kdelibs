@@ -20,7 +20,7 @@
 
 #include "hconv.h"
 
-#define RPD     (0.01745329251994329577) /* radians per degree (pi/180) */
+static const double RPD = 0.01745329251994329577; /* radians per degree (pi/180) */
 
 /*
  * Given an integer _n_ and a phase selector (nph=0,1,2,3 for
@@ -196,7 +196,7 @@ SDATE * gregorianToHijri (int y, int m, int d)
 	return(&h);
 }
 
-#define NMONTHS  (1405*12+1)
+static const int NMONTHS = 1405*12+1;
 
 /*
  * Given a Hijri date, compute corresponding C.E. date structure 
