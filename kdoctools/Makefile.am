@@ -32,7 +32,7 @@ xslt_pure.o: xslt.cpp
 	$(LN_S) $(srcdir)/xslt.cpp xslt_pure.cpp
 	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) -DSIMPLE_XSLT $(INCLUDES) $(CPPFLAGS) $(AM_CPPFLAGS) $(CXXFLAGS) -c xslt_pure.cpp
 
-bin_SCRIPTS = xmlizer kdb2html checkXML
+bin_SCRIPTS = kdb2html checkXML
 
 METASOURCES = AUTO
 
