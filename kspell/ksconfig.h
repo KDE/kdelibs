@@ -52,7 +52,8 @@ enum Encoding {
 
 enum KSpellClients {
   KS_CLIENT_ISPELL=0,
-  KS_CLIENT_ASPELL=1
+  KS_CLIENT_ASPELL=1,
+  KS_CLIENT_HSPELL=2
 };
 
 /**

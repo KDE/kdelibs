@@ -143,6 +143,7 @@ KSpellConfig::KSpellConfig( QWidget *parent, const char *name,
   clientcombo = new QComboBox( this );
   clientcombo->insertItem (i18n("International Ispell"));
   clientcombo->insertItem (i18n("Aspell"));
+  clientcombo->insertItem (i18n("Hspell"));
   connect (clientcombo, SIGNAL (activated(int)), this,
 	   SLOT (sChangeClient(int)));
   glay->addMultiCellWidget( clientcombo, 4, 4, 1, 2 );
@@ -220,6 +221,13 @@ KSpellConfig::sChangeClient (int i)
   if (dictcombo) {
     if (iclient == KS_CLIENT_ISPELL)
       getAvailDictsIspell();
+    else if (iclient == KS_CLIENT_HSPELL)
+    {
+      langfnames.clear();
+      dictcombo->clear();
+      dictcombo->insertItem(i18n("Hebrew"));
+      sChangeEncoding(KS_E_LATIN8);
+    }
     else
       getAvailDictsAspell();
   }
@@ -364,6 +372,12 @@ KSpellConfig::fillInDialog ()
   // get list of available dictionaries
   if (iclient == KS_CLIENT_ISPELL)
     getAvailDictsIspell();
+  else if (iclient == KS_CLIENT_HSPELL)
+  {
+    langfnames.clear();
+    dictcombo->clear();
+    dictcombo->insertItem(i18n("Hebrew"));
+  }
   else
     getAvailDictsAspell();
 
