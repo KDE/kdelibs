@@ -87,7 +87,16 @@ crash/hang).
 - maybe implement atomic setting of fragmentcount and -size
   (useful for implementing SNDCTL_DSP_SETFRAGMENT)
 
-  => support for other audio output than OSS
+  => audio output
 
 - maybe use some code from the XMMS-Solaris plugin for the aRtsd sound output.
-  http://www.scms.rgu.ac.uk/staff/jr/computing/unix/xmms/                       
+  http://www.scms.rgu.ac.uk/staff/jr/computing/unix/xmms/
+  (is being worked on)
+
+- modularize audio output to be able to add "drivers" more easily
+
+- support 8bit audio output
+  (i.e. I got a message, complaining that aRts doesn't start:
+  > [root@js6864nt bin]# ./artsd start
+  > Error while initializing the sound driver:
+  > Can't set 16bit (AFMT_S16_LE) playback
