@@ -1114,6 +1114,10 @@ void RenderFlow::calcMinMaxWidth()
     // condition is more IE like.
     bool tableCell = (isTableCell() && !style()->width().isFixed());
 
+    // ## maybe we should replace the noWrap stuff in RenderTable by CSS.
+    bool nowrap = style()->whiteSpace() == NOWRAP ||
+		  ( isTableCell() && static_cast<RenderTableCell *>(this)->noWrap() );
+
     // non breaking space
     const QChar nbsp = 0xa0;
 
@@ -1189,6 +1193,8 @@ void RenderFlow::calcMinMaxWidth()
         if(m_maxWidth < inlineMax) m_maxWidth = inlineMax;
 //          kdDebug( 6040 ) << "m_minWidth=" << m_minWidth
 //  			<< " m_maxWidth=" << m_maxWidth << endl;
+	if ( nowrap )
+	    m_minWidth = m_maxWidth;
     }
     else
     {
@@ -1237,6 +1243,9 @@ void RenderFlow::calcMinMaxWidth()
 
             int w = child->minWidth() + margin;
             if(m_minWidth < w) m_minWidth = w;
+	    // IE ignores tables for calculation of nowrap. Makes some sense.
+	    if ( nowrap && !child->isTable() && m_maxWidth < w )
+		m_maxWidth = w;
             w = child->maxWidth() + margin;
             if(m_maxWidth < w) m_maxWidth = w;
             child = child->nextSibling();
@@ -1246,9 +1255,6 @@ void RenderFlow::calcMinMaxWidth()
 
     if (style()->width().isFixed() && style()->width().value > 0)
         m_maxWidth = KMAX(m_minWidth,short(style()->width().value));
-
-    if ( style()->whiteSpace() == NOWRAP )
-        m_minWidth = m_maxWidth;
 
     int toAdd = 0;
     toAdd = borderLeft() + borderRight() + paddingLeft() + paddingRight();

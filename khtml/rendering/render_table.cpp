@@ -1343,9 +1343,6 @@ void RenderTableCell::calcMinMaxWidth()
 
     RenderFlow::calcMinMaxWidth();
 
-    if(nWrap && !(style()->width().type==Fixed))
-        m_minWidth = m_maxWidth;
-
     setMinMaxKnown();
 }
 
