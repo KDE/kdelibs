@@ -543,8 +543,13 @@ void KOpenWithDlg::slotOK()
     pathName += QString::fromLatin1(".desktop");
   QString path(locateLocal("apps", pathName));
 
-  KServiceTypeProfile::OfferList offerList = KServiceTypeProfile::offers( qServiceType );
-  int maxPreference = offerList.isEmpty() ? 1 : offerList.first().preference();
+  int maxPreference = 1;
+  if (!qServiceType.isEmpty())
+  {
+    KServiceTypeProfile::OfferList offerList = KServiceTypeProfile::offers( qServiceType );
+    if (!offerList.isEmpty())
+      maxPreference = offerList.first().preference();
+  }
 
   KDesktopFile desktop(path);
   desktop.writeEntry(QString::fromLatin1("Type"), QString::fromLatin1("Application"));
@@ -556,7 +561,7 @@ void KOpenWithDlg::slotOK()
       QStringList mimeList;
       KDesktopFile oldDesktop(locate("apps", pathName), true);
       mimeList = oldDesktop.readListEntry(QString::fromLatin1("MimeType"), ';');
-      if (!mimeList.contains(qServiceType))
+      if (!qServiceType.isEmpty() && !mimeList.contains(qServiceType))
         mimeList.append(qServiceType);
       desktop.writeEntry(QString::fromLatin1("MimeType"), mimeList, ';');
       if (terminal->isChecked())
@@ -569,19 +574,22 @@ void KOpenWithDlg::slotOK()
   // write it all out to the file
   desktop.sync();
 
-  // rebuild the database
   QApplication::setOverrideCursor( waitCursor );
-  DCOPClient *dcc = kapp->dcopClient();
-  QByteArray replyData;
-  QCString retType;
-  dcc->call("kded", "kbuildsycoca", "recreate()", QByteArray(),
-            retType, replyData);
 
+  // rebuild the database
+  QStringList args;
+  args.append("--incremental");
+  KApplication::kdeinitExecWait( "kbuildsycoca", args );
+  
   // get the new service pointer
   kdDebug(250) << pathName << endl;
-  // 1- is this really necessary, given the recreate() above ?
-  // 2- the API has changed
-  // ###KSycoca::self()->notifyDatabaseChanged();
+  // We need to read in the new database. It seems the databaseChanged()
+  // signal hasn't been processed in this process yet, since we haven't been
+  // to the event loop yet.
+  QStringList lst;
+  lst << QString::fromLatin1("apps");
+  KSycoca::self()->notifyDatabaseChanged( lst );
+
   m_pService = KService::serviceByDesktopPath( pathName );
   QApplication::restoreOverrideCursor();
 
