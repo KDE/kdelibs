@@ -542,8 +542,8 @@ void KDirOperator::setURL(const KURL& _newurl, bool clearforward)
         forwardStack.clear();
     }
 
-    d->lastURL = newurl.url(-1);
-
+    d->lastURL = currUrl.url(-1);
+    
     pathChanged();
     emit urlEntered(newurl);
 
@@ -953,12 +953,13 @@ void KDirOperator::insertNewFiles(const KFileItemList &newone)
 
     KFileItem *item;
     KFileItemListIterator it( newone );
+    
     while ( (item = it.current()) ) {
 	// highlight the dir we come from, if possible
 	if ( d->dirHighlighting && item->isDir() &&
 	     item->url().url(-1) == d->lastURL ) {
-	    m_fileView->setCurrentItem( (KFileItem*) item );
-	    m_fileView->ensureItemVisible( (KFileItem*) item );
+	    m_fileView->setCurrentItem( item );
+	    m_fileView->ensureItemVisible( item );
 	}
 
 	++it;
@@ -990,15 +991,18 @@ void KDirOperator::selectFile(const KFileItem *item)
 
 void KDirOperator::setCurrentItem( const QString& filename )
 {
-    const KFileItem *item = 0L;
+    if ( m_fileView ) {
+        const KFileItem *item = 0L;
 
-    if ( !filename.isNull() )
-        item = static_cast<KFileItem *>(dir->findByName( filename ));
+        if ( !filename.isNull() )
+            item = static_cast<KFileItem *>(dir->findByName( filename ));
 
-    m_fileView->clearSelection();
-    if ( item ) {
-        m_fileView->setCurrentItem( item );
-	m_fileView->ensureItemVisible( item );
+        m_fileView->clearSelection();
+        if ( item ) {
+            m_fileView->setCurrentItem( item );
+            m_fileView->setSelected( item, true );
+            m_fileView->ensureItemVisible( item );
+        }
     }
 }
 
