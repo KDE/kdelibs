@@ -27,6 +27,7 @@
 #include <kglobal.h>
 #include <klocale.h>
 #include <kshortcut.h>
+#include <kshortcutlist.h>
 
 namespace KStdAccel
 {
@@ -89,7 +90,7 @@ static KStdAccelInfo g_infoStdAccel[] =
 	{ SubstringCompletion, "SubstringCompletion", I18N_NOOP("Substring Completion"), Qt::CTRL+Qt::Key_T, 0, 0, 0, KShortcut(), false },
 	{ RotateUp,            "RotateUp", I18N_NOOP("Previous Item in List"), Qt::Key_Up, 0, 0, 0, KShortcut(), false },
 	{ RotateDown,          "RotateDown", I18N_NOOP("Next Item in List"), Qt::Key_Down, 0, 0, 0, KShortcut(), false },
-	{ AccelNone,                0, 0, 0, 0, 0, 0, KShortcut(), false }
+	{ AccelNone,           0, 0, 0, 0, 0, 0, KShortcut(), false }
 };
 
 static KStdAccelInfo* infoPtr( StdAccel id )
@@ -160,6 +161,22 @@ const KShortcut& shortcut( StdAccel id )
 		initialize( id );
 
 	return pInfo->cut;
+}
+
+StdAccel findStdAccel( const KKeySequence& seq )
+{
+	if( !seq.isNull() ) {
+		for( uint i = 0; g_infoStdAccel[i].psName != 0; i++ ) {
+			StdAccel id = g_infoStdAccel[i].id;
+			if( id != AccelNone ) {
+				if( !g_infoStdAccel[i].bInitialized )
+					initialize( id );
+				if( g_infoStdAccel[i].cut.contains( seq ) )
+					return id;
+			}
+		}
+	}
+	return AccelNone;
 }
 
 KShortcut shortcutDefault( StdAccel id )
@@ -266,6 +283,66 @@ const KShortcut& up()                    { return shortcut( Up ); }
 const KShortcut& back()                  { return shortcut( Back ); }
 const KShortcut& forward()               { return shortcut( Forward ); }
 const KShortcut& showMenubar()           { return shortcut( ShowMenubar ); }
+
+//---------------------------------------------------------------------
+// ShortcutList
+//---------------------------------------------------------------------
+
+ShortcutList::ShortcutList()
+	{ }
+
+ShortcutList::~ShortcutList()
+	{ }
+
+uint ShortcutList::count() const
+{
+	static uint g_nAccels = 0;
+	if( g_nAccels == 0 ) {
+		for( ; g_infoStdAccel[g_nAccels].psName != 0; g_nAccels++ )
+			;
+	}
+	return g_nAccels;
+}
+
+QString ShortcutList::name( uint i ) const
+	{ return g_infoStdAccel[i].psName; }
+
+QString ShortcutList::label( uint i ) const
+	{ return i18n((g_infoStdAccel[i].psDesc) ? g_infoStdAccel[i].psDesc : g_infoStdAccel[i].psName); }
+
+QString ShortcutList::whatsThis( uint ) const
+	{ return QString::null; }
+
+const KShortcut& ShortcutList::shortcut( uint i ) const
+{
+	if( !g_infoStdAccel[i].bInitialized )
+		initialize( g_infoStdAccel[i].id );
+	return g_infoStdAccel[i].cut;
+}
+
+const KShortcut& ShortcutList::shortcutDefault( uint i ) const
+{
+	static KShortcut cut;
+	cut = KStdAccel::shortcutDefault( g_infoStdAccel[i].id );
+	return cut;
+}
+
+bool ShortcutList::isConfigurable( uint i ) const
+	{ return (g_infoStdAccel[i].id != AccelNone); }
+
+bool ShortcutList::setShortcut( uint i, const KShortcut& cut )
+	{ g_infoStdAccel[i].cut = cut; return true; }
+
+QVariant ShortcutList::getOther( Other, uint ) const
+	{ return QVariant(); }
+
+bool ShortcutList::setOther( Other, uint, QVariant )
+	{ return false; }
+
+bool ShortcutList::save() const
+{
+	return writeSettings( "Shortcuts", 0, false, true );
+}
 
 #ifndef KDE_NO_COMPAT
 QString action(StdAccel id)

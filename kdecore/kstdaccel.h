@@ -54,7 +54,6 @@ namespace KStdAccel
     TextCompletion, PrevCompletion, NextCompletion, SubstringCompletion,
     RotateUp, RotateDown
 
-    //NB_STD_ACCELS
 #ifndef KDE_NO_COMPAT
     , WhatThis = WhatsThis
 #endif
@@ -73,6 +72,13 @@ namespace KStdAccel
   QString whatsThis(StdAccel id);
 
   /**
+   * Return the StdAccel id of the standard accel action which
+   * uses this key sequence, or AccelNone if none of them do.
+   * This is used by class KKeyChooser.
+   */
+  StdAccel findStdAccel( const KKeySequence& );
+
+  /**
    * Returns the hardcoded default shortcut for @p id.
    * This does not take into account the user's configuration.
    */
@@ -87,8 +93,6 @@ namespace KStdAccel
    * This does not take into account the user's configuration.
    */
   KShortcut shortcutDefault4(StdAccel id);
-
-  void createAccelActions( KAccelActions& );
 
   /** Open file. Default: Ctrl-o */
   const KShortcut& open();
