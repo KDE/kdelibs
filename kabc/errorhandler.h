@@ -1,6 +1,8 @@
 /*
     This file is part of libkabc.
+
     Copyright (c) 2002 Tobias Koenig <tokoe@kde.org>
+    Copyright (c) 2003 Cornelius Schumacher <schumacher@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,7 +19,6 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
-
 #ifndef KABC_ERRORHANDLER_H
 #define KABC_ERRORHANDLER_H
 
@@ -26,37 +27,65 @@
 namespace KABC {
 
 /**
- * Abstract class that provides displaying of error messages.
- * We need this to make libkabc gui independent on the one side
- * and provide user friendly error messages on the other side.
- * Use @p ConsoleErrorHandler or @p GUIErrorHandler in your
- * application.
- */
+  Abstract class that provides displaying of error messages.
+  We need this to make libkabc gui independent on the one side
+  and provide user friendly error messages on the other side.
+  Use @p ConsoleErrorHandler or @p GuiErrorHandler in your
+  application or provide your own ErrorHandler.
+*/
 class ErrorHandler
 {
-public:
-  virtual void error( const QString& msg ) = 0;
+  public:
+    /**
+      Show error message.
+    */
+    virtual void error( const QString &msg ) = 0;
 };
 
 /**
- * This class prints the error messages to
- * stderr via kdError().
- */
+  This class prints the error messages to stderr via kdError().
+*/
 class ConsoleErrorHandler : public ErrorHandler
 {
-public:
-  virtual void error( const QString& msg );
+  public:
+    virtual void error( const QString &msg );
 };
 
 /**
- * This class shows messages boxes for every
- * error message.
- */
+  This class shows messages boxes for every
+  error message.
+
+  \deprecated Use GuiErrorHandler instead.
+*/
 class GUIErrorHandler : public ErrorHandler
 {
-public:
-  virtual void error( const QString& msg );
+  public:
+    virtual void error( const QString &msg );
+};
+
+/**
+  This class shows messages boxes for every
+  error message.
+*/
+class GuiErrorHandler : public ErrorHandler
+{
+  public:
+    /**
+      Create error handler.
+      
+      \param parent Widget which is used as parent for the error dialogs.
+    */      
+    GuiErrorHandler( QWidget *parent );
+  
+    virtual void error( const QString &msg );
+
+  private:
+    QWidget *mParent;
+    
+    class Private;
+    Private *d;
 };
 
 }
+
 #endif

@@ -1,6 +1,8 @@
 /*
     This file is part of libkabc.
+
     Copyright (c) 2002 Tobias Koenig <tokoe@kde.org>
+    Copyright (c) 2003 Cornelius Schumacher <schumacher@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -26,15 +28,25 @@
 
 using namespace KABC;
 
-void
-ConsoleErrorHandler::error( const QString& msg )
+void ConsoleErrorHandler::error( const QString &msg )
 {
   // no debug area is ok here
   kdError() << msg << endl;
 }
 
-void
-GUIErrorHandler::error( const QString& msg )
+
+void GUIErrorHandler::error( const QString &msg )
 {
   KMessageBox::error( 0, msg, i18n( "Error in libkabc" ) );
+}
+
+
+GuiErrorHandler::GuiErrorHandler( QWidget *parent )
+  : mParent( parent )
+{
+}
+
+void GuiErrorHandler::error( const QString &msg )
+{
+  KMessageBox::error( mParent, msg );
 }
