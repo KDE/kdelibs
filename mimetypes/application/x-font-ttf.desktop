@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=TrueType Font
+Comment[ar]=خط TrueType
 Comment[az]=TrueType Yazı Növü
 Comment[be]=Шрыфт TrueType
 Comment[bg]=Шрифт TrueType
@@ -21,7 +22,8 @@ Comment[fr]=Police de caractères Truetype
 Comment[ga]=Cló TrueType
 Comment[gl]=Fonte Truetype
 Comment[he]=גופן Truetype
-Comment[hi]=ट्रू टाइप फोन्ट
+Comment[hi]=ट्रू टाइप फ़ॉन्ट
+Comment[hr]=TrueType pismo
 Comment[hu]=TrueType-betűtípus
 Comment[is]=TrueType letur
 Comment[it]=Tipo di carattere TrueType

@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=OpenType Font
+Comment[ar]=خط OpenType
 Comment[az]=OpenType Yazı Növü
 Comment[be]=Шрыфт OpenType
 Comment[bg]=Шрифт OpenType
@@ -21,7 +22,8 @@ Comment[fr]=Police de caractères OpenType
 Comment[ga]=Cló OpenType
 Comment[gl]=Fonte OpenType
 Comment[he]=גופן OpenType
-Comment[hi]=ओपन टाइप फोन्ट
+Comment[hi]=ओपन टाइप फ़ॉन्ट
+Comment[hr]=OpenType pismo
 Comment[hu]=OpenType-betűtípus
 Comment[is]=OpenType letur
 Comment[it]=Tipo di carattere OpenType
