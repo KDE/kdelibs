@@ -1082,7 +1082,7 @@ void KToolBar::saveState()
 
 void KToolBar::saveSettings(KConfig *config, const QString &_configGroup)
 {
-kdDebug() << "KToolBar::saveSettings\n";
+    kdDebug(220) << "KToolBar::saveSettings" << endl;;
     QString configGroup = _configGroup;
     if (configGroup.isEmpty())
     {
@@ -1188,7 +1188,7 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
                 if ( i >= CONTEXT_ICONSIZES )
                     setIconSize( i - CONTEXT_ICONSIZES );
                 else
-                    kdWarning() << "No such menu item " << i << " in toolbar context menu" << endl;
+                    kdWarning(220) << "No such menu item " << i << " in toolbar context menu" << endl;
             }
         }
     }
@@ -1401,10 +1401,12 @@ bool KToolBar::highlight() const
 
 void KToolBar::hide()
 {
+    //kdDebug(220) << "KToolBar::hide " << name() << endl;
     // Reggie: Ugly hack, I hate it
     if ( parentWidget() && parentWidget()->inherits( "QMainWindow" ) ) {
         QMainWindow::ToolBarDock dock;
         ( (QMainWindow*)parentWidget() )->getLocation( (QToolBar*)this, dock, d->realIndex, d->realNl, d->realOffset );
+        //kdDebug(220) << "KToolBar::hide " << name() << " realNl set to " << d->realNl << endl;
         d->hasRealPos = TRUE;
         ( (QMainWindow*)parentWidget() )->moveToolBar( this, QMainWindow::Unmanaged );
         if ( dock != QMainWindow::Unmanaged )
@@ -1417,9 +1419,11 @@ void KToolBar::hide()
 
 void KToolBar::show()
 {
+    //kdDebug(220) << "KToolBar::show " << name() << endl;
     // Reggie: Ugly hack, I hate it
     if ( d->hasRealPos && d->realPos != QMainWindow::Unmanaged && parentWidget() && parentWidget()->inherits( "QMainWindow" ) ) {
         d->hasRealPos = FALSE;
+        //kdDebug(220) << "KToolBar::show " << name() << " moveToolBar with realNl=" << d->realNl << endl;
         ( (QMainWindow*)parentWidget() )->moveToolBar( this, d->realPos, d->realNl, d->realIndex, d->realOffset );
     }
     d->hasRealPos = FALSE;
@@ -1574,7 +1578,7 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
         position = gconfig->readEntry(attrPosition, "Top");
         index = gconfig->readEntry(attrIndex, index );
         offset = gconfig->readEntry(attrOffset, offset );
-        nl = gconfig->readEntry(attrNewLine, nl );
+        nl = gconfig->readEntry(attrNewLine, nl ); // always false, not very useful
 
         if ( config->hasGroup(configGroup) )
         {
@@ -1637,7 +1641,6 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
     // ...and if we should move transparently
     if ( mw && transparent != (!mw->opaqueMoving()) ) {
         mw->setOpaqueMoving( !transparent );
-        //doUpdate = false; // DF: Huh ? Seems wrong.
     }
 
     // ...and now the position stuff
@@ -1658,6 +1661,7 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
     else if ( position == "Flat" )
         pos = Flat;
 
+    //kdDebug(220) << "KToolBar::applySettings hidden=" << hidden << endl;
     if (hidden)
         hide();
     else
@@ -1665,6 +1669,9 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
 
     if ( mw ) {
         mw->moveToolBar( this, (QMainWindow::ToolBarDock)pos, newLine, idx, offs );
+        //kdDebug() << "KToolBar::applySettings " << name() << " moveToolBar with newLine=" << newLine << " idx=" << idx << " offs=" << offs << endl;
+        // Yeah, we just did it... I guess it's for saving the "realpos" again ?
+        // Hmm, in that case we could simply do the hide/show after the moveToolBar, no ? (David)
         if ( testWState( WState_ForceHide ) )
             hide();
     }
@@ -1700,7 +1707,7 @@ void KToolBar::toolBarPosChanged( QToolBar *tb )
 
 void KToolBar::loadState( const QDomElement &element )
 {
-    kdDebug() << "KToolBar::loadState " << this << endl;
+    //kdDebug(220) << "KToolBar::loadState " << this << endl;
     if ( !parentWidget() || !parentWidget()->inherits( "KMainWindow") )
         return;
     KMainWindow *mw = static_cast<KMainWindow *>( parentWidget() );
@@ -1720,6 +1727,7 @@ void KToolBar::loadState( const QDomElement &element )
     QString attrIndex = element.attribute( "index" ).lower();
     QString attrOffset = element.attribute( "offset" ).lower();
     QString attrNewLine = element.attribute( "newline" ).lower();
+    QString attrHidden = element.attribute( "hidden" ).lower();
 
     if ( !attrFullWidth.isEmpty() ) {
         if ( attrFullWidth == "true" )
@@ -1758,7 +1766,7 @@ void KToolBar::loadState( const QDomElement &element )
     if ( mw )
     {
        mw->moveToolBar( this, dock, nl, index, offset );
-       //kdDebug() << "moveToolBar in loadState nl=" << nl << " offset=" << offset << endl;
+       //kdDebug(220) << "moveToolBar in loadState for " << name() << " nl=" << nl << " offset=" << offset << endl;
     }
 
     if ( !attrIconText.isEmpty() ) {
@@ -1785,7 +1793,10 @@ void KToolBar::loadState( const QDomElement &element )
     if ( transparentSetting() != (!mw->opaqueMoving()) )
         mw->setOpaqueMoving( !transparentSetting() );
 
-    show();
+    if ( attrHidden == "true" )
+        hide();
+    else
+        show();
 }
 
 void KToolBar::getAttributes( QString &position, QString &icontext, QString &index, QString &offset, QString &newLine )
@@ -1854,22 +1865,36 @@ void KToolBar::saveState( QDomElement &current )
         current.setAttribute( "offset", offset );
     if ( !newLine.isEmpty() )
         current.setAttribute( "newline", newLine );
+    if ( isHidden() )
+        current.setAttribute( "hidden", "true" );
     d->modified = true;
 }
 
+void KToolBar::positionYourself( bool force )
+{
+    if (force)
+        d->positioned = false;
+    positionYourself();
+}
 
 void KToolBar::positionYourself()
 {
     if ( d->positioned || !parentWidget() || !parentWidget()->inherits( "QMainWindow" ) )
+    {
+        //kdDebug(220) << "KToolBar::positionYourself d->positioned=true  ALREADY DONE" << endl;
         return;
-    //kdDebug() << "positionYourself newLine=" << d->toolBarInfo.newline << " offset=" << d->toolBarInfo.offset << endl;
+    }
+    //kdDebug(220) << "positionYourself " << name() << " newLine=" << d->toolBarInfo.newline << " offset=" << d->toolBarInfo.offset << endl;
     ( (QMainWindow*)parentWidget() )->moveToolBar( this, d->toolBarInfo.dock,
                                                    d->toolBarInfo.newline,
                                                    d->toolBarInfo.index,
                                                    d->toolBarInfo.offset );
     if ( testWState( Qt::WState_ForceHide ) )
+    {
+        //kdDebug(220) << "Hiding" << endl;
         hide();
-    // This method can only have an effect once
+    }
+    // This method can only have an effect once - unless force is set
     d->positioned = TRUE;
 }
 

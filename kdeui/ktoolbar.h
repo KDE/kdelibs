@@ -882,7 +882,14 @@ public:
     void loadState( const QDomElement &e );
     void saveState( QDomElement &e );
 
+    /**
+     * @internal
+     */
     void positionYourself();
+    /**
+     * @internal
+     */
+    void positionYourself( bool force ); // BCI: to be merged
 
 signals:
     /**

@@ -129,13 +129,13 @@ KMainWindow::KMainWindow( QWidget* parent, const char *name, WFlags f )
 
     d = new KMainWindowPrivate;
     d->showHelpMenu = true;
-    
+
     setCaption( kapp->caption() );
 }
 
 KMainWindow::~KMainWindow()
 {
-    QMenuBar* mb = internalMenuBar();	
+    QMenuBar* mb = internalMenuBar();
     delete mb;
     delete d;
     memberList->remove( this );
@@ -403,7 +403,7 @@ void KMainWindow::savePropertiesInternal( KConfig *config, int number )
 
 void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configGroup)
 {
-kdDebug() << "KMainWindow::saveMainWindowSettings\n";
+    kdDebug(200) << "KMainWindow::saveMainWindowSettings\n";
     QString entry;
     QStrList entryList;
 
@@ -434,7 +434,7 @@ kdDebug() << "KMainWindow::saveMainWindowSettings\n";
         config->writeEntry(QString::fromLatin1("MenuBar"), entryList, ';');
     }
 
-    int n = 1; // Tolbar counter. toolbars are counted from 1,
+    int n = 1; // Toolbar counter. toolbars are counted from 1,
     KToolBar *toolbar = 0;
     QString toolKey;
     QListIterator<KToolBar> it( toolBarIterator() );
@@ -509,7 +509,7 @@ void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &config
             internalMenuBar()->show();
     }
 
-    int n = 1; // Tolbar counter. toolbars are counted from 1,
+    int n = 1; // Toolbar counter. toolbars are counted from 1,
     KToolBar *toolbar;
     QString toolKey;
     QListIterator<KToolBar> it( toolBarIterator() ); // must use own iterator
@@ -526,6 +526,23 @@ void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &config
         toolbar->applySettings(config, group);
         n++;
     }
+
+    finalizeGUI( true );
+}
+
+void KMainWindow::finalizeGUI( bool force )
+{
+    kdDebug(200) << "KMainWindow::finalizeGUI force=" << force << endl;
+    // The whole reason for this is that moveToolBar relies on the indexes
+    // of the other toolbars, so in theory it should be called only once per
+    // toolbar, but in increasing order of indexes.
+    // Since we can't do that immediately, we move them, and _then_
+    // we call positionYourself again for each of them, but this time
+    // the toolbariterator should give them in the proper order.
+    // Both the XMLGUI and applySettings call this, hence "force" for the latter.
+    QListIterator<KToolBar> it( toolBarIterator() );
+    for ( ; it.current() ; ++ it )
+        it.current()->positionYourself( force );
 }
 
 KMenuBar *KMainWindow::menuBar()

@@ -349,10 +349,15 @@ void KXMLGUIBuilder::finalizeGUI( KXMLGUIClient * )
 {
     if ( !d->m_widget || !d->m_widget->inherits( "KMainWindow" ) )
         return;
+#if 0
     KToolBar *toolbar = 0;
     QListIterator<KToolBar> it( ( (KMainWindow*)d->m_widget )->toolBarIterator() );
     while ( ( toolbar = it.current() ) ) {
+        kdDebug() << "KXMLGUIBuilder::finalizeGUI toolbar=" << (void*)toolbar << endl;
         ++it;
         toolbar->positionYourself();
     }
+#else
+    static_cast<KMainWindow *>(d->m_widget)->finalizeGUI( false );
+#endif
 }

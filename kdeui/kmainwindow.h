@@ -164,7 +164,7 @@ public:
      * (activated by Shift F1), an application specific dialog box,
      * and an "About KDE" dialog box. You must create the application
      * specific dialog box yourself. When the "About application"
-     * menu entry is activated, a signal will trigger the 
+     * menu entry is activated, a signal will trigger the
      * @ref showAboutApplication slot. See @ref showAboutApplication for more
      * information.
      *
@@ -252,7 +252,7 @@ public:
     virtual KXMLGUIFactory *guiFactory();
 
     /**
-     * Create a GUI given a local XML file.  
+     * Create a GUI given a local XML file.
      *
      * If @ref xmlfile is NULL,
      * then it will try to construct a local XML filename like
@@ -330,12 +330,17 @@ public:
 
     /**
      * Save settings for statusbar, menubar and toolbar to their respective
-     * groups in the config file @p config. 
+     * groups in the config file @p config.
      *
      * @param config Config file to save the settings to.
      * @param groupName For internal use only.
-     */    
+     */
     void saveMainWindowSettings(KConfig *config, const QString &groupName = QString::null);
+
+    /**
+     * @internal
+     */
+    void finalizeGUI( bool force );
 
 public slots:
     /**
@@ -497,7 +502,7 @@ protected:
     virtual void saveGlobalProperties( KConfig* sessionConfig );
 
     /**
-     * The counterpart of @ref saveGlobalProperties(). 
+     * The counterpart of @ref saveGlobalProperties().
      *
      * Read the application-specific properties in again.
      */
