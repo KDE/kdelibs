@@ -877,6 +877,60 @@ void KDoubleNumInput::setLabel(const QString & label, int a)
 // ----------------------------------------------------------------------------
 
 
+class KDoubleSpinBoxValidator : public KDoubleValidator
+{
+public:
+    KDoubleSpinBoxValidator( double bottom, double top, int decimals, KDoubleSpinBox* sb, const char *name )
+        : KDoubleValidator( bottom, top, decimals, sb, name ), spinBox( sb ) { }
+
+    virtual State validate( QString& str, int& pos ) const;
+
+private:
+    KDoubleSpinBox *spinBox;
+};
+
+QValidator::State KDoubleSpinBoxValidator::validate( QString& str, int& pos ) const
+{
+    QString pref = spinBox->prefix();
+    QString suff = spinBox->suffix();
+    QString suffStriped = suff.stripWhiteSpace();
+    uint overhead = pref.length() + suff.length();
+    State state = Invalid;
+
+    if ( overhead == 0 ) {
+        state = KDoubleValidator::validate( str, pos );
+    } else {
+        bool stripedVersion = FALSE;
+        if ( str.length() >= overhead && str.startsWith(pref)
+             && (str.endsWith(suff)
+                 || (stripedVersion = str.endsWith(suffStriped))) ) {
+            if ( stripedVersion )
+                overhead = pref.length() + suffStriped.length();
+            QString core = str.mid( pref.length(), str.length() - overhead );
+            int corePos = pos - pref.length();
+            state = KDoubleValidator::validate( core, corePos );
+            pos = corePos + pref.length();
+            str.replace( pref.length(), str.length() - overhead, core );
+        } else {
+            state = KDoubleValidator::validate( str, pos );
+            if ( state == Invalid ) {
+                // stripWhiteSpace(), cf. QSpinBox::interpretText()
+                QString special = spinBox->specialValueText().stripWhiteSpace();
+                QString candidate = str.stripWhiteSpace();
+
+                if ( special.startsWith(candidate) ) {
+                    if ( candidate.length() == special.length() ) {
+                        state = Acceptable;
+                    } else {
+                        state = Intermediate;
+                    }
+                }
+            }
+        }
+    }
+    return state;
+}
+
 // We use a kind of fixed-point arithmetic to represent the range of
 // doubles [mLower,mUpper] in steps of 10^(-mPrecision). Thus, the
 // following relations hold:
@@ -931,7 +985,7 @@ public:
   }
 
   int mPrecision;
-  KDoubleValidator * mValidator;
+  KDoubleSpinBoxValidator * mValidator;
 };
 
 KDoubleSpinBox::KDoubleSpinBox( QWidget * parent, const char * name )
@@ -1095,7 +1149,7 @@ void KDoubleSpinBox::slotValueChanged( int value ) {
 
 void KDoubleSpinBox::updateValidator() {
   if ( !d->mValidator ) {
-    d->mValidator =  new KDoubleValidator( minValue(), maxValue(), precision(),
+    d->mValidator =  new KDoubleSpinBoxValidator( minValue(), maxValue(), precision(),
 					   this, "d->mValidator" );
     base::setValidator( d->mValidator );
   } else
