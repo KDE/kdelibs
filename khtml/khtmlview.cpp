@@ -188,7 +188,7 @@ public:
     }
     void newScrollTimer(QWidget *view, int tid)
     {
-        kdDebug() << "newScrollTimer timer" << tid << endl;
+        //kdDebug(6000) << "newScrollTimer timer " << tid << endl;
         view->killTimer(scrollTimerId);
         scrollTimerId = tid;
     }
@@ -360,7 +360,6 @@ void KHTMLView::init()
     if(!d->tp) d->tp = new QPainter();
 
     setFocusPolicy(QWidget::StrongFocus);
-    viewport()->setFocusPolicy( QWidget::WheelFocus );
     viewport()->setFocusProxy(this);
 
     _marginWidth = -1; // undefined
@@ -898,6 +897,7 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 // returns true if event should be swallowed
 bool KHTMLView::dispatchKeyEvent( QKeyEvent *_ke )
 {
+    Q_ASSERT (m_part->xmlDocImpl());
     if (!m_part->xmlDocImpl())
         return false;
     // Pressing and releasing a key should generate keydown, keypress and keyup events
@@ -918,7 +918,9 @@ bool KHTMLView::dispatchKeyEvent( QKeyEvent *_ke )
     //  DOM:   Down + Press |      (nothing)           Press             |     Up
 
     if( _ke == d->postponed_autorepeat ) // replayed event
+    {
         return false;
+    }
 
     if( _ke->type() == QEvent::KeyPress )
     {
@@ -941,8 +943,11 @@ bool KHTMLView::dispatchKeyEvent( QKeyEvent *_ke )
     }
     else // QEvent::KeyRelease
     {
-        if( !_ke->isAutoRepeat())
+        if( !_ke->isAutoRepeat()) {
+            delete d->postponed_autorepeat;
+            d->postponed_autorepeat = NULL;
             return dispatchKeyEventHelper( _ke, false ); // keyup
+        }
         else
         {
             Q_ASSERT( d->postponed_autorepeat == NULL );
@@ -1219,7 +1224,7 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 {
     if ( e->type() == QEvent::AccelOverride ) {
 	QKeyEvent* ke = (QKeyEvent*) e;
-//kdDebug(6200) << "QEvent::AccelAvailable" << endl;
+//kdDebug(6200) << "QEvent::AccelOverride" << endl;
 	if (m_part->isEditable() || m_part->isCaretMode()
 	    || (m_part->xmlDocImpl() && m_part->xmlDocImpl()->focusNode()
 		&& m_part->xmlDocImpl()->focusNode()->contentEditable())) {
@@ -1357,7 +1362,7 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 	}
     }
 
-//     kdDebug(6000) <<"passing event on to sv event filter " << o << endl;
+//    kdDebug(6000) <<"passing event on to sv event filter object=" << o->className() << " event=" << e->type() << endl;
     return QScrollView::eventFilter(o, e);
 }
 
