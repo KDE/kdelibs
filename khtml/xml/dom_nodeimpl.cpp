@@ -599,7 +599,7 @@ void NodeBaseImpl::checkNoOwner( NodeImpl *newChild )
 {
   //check if newChild is parent of this...
   NodeImpl *n;
-  for( n = this; n != (NodeImpl *)document; n = n->parentNode() )
+  for( n = this; n != (NodeImpl *)document && n!= 0; n = n->parentNode() )
     if(n == newChild)
       throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
 
