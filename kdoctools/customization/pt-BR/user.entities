@@ -15,7 +15,7 @@
 <!ENTITY Esc   "<keycap>Esc</keycap>">
 <!ENTITY etc     "<abbrev>etc.</abbrev>">
 <!ENTITY ex     "<abbrev>por ex.</abbrev>">
-<!ENTITY FAQ     "Perguntas e Respostas - <acronym>FAQ<acronym>">
+<!ENTITY FAQ     "Perguntas e Respostas - <acronym>FAQ</acronym>">
 <!ENTITY ie     "isto é">
 <!ENTITY kcontrol       "<application>Centro de Controle do &kde;</application>">
 <!ENTITY kcontrolcenter "<application>Centro de Controle do &kde;</application>">
