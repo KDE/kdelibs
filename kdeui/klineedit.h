@@ -157,13 +157,13 @@ public:
     *
     * This function allows you to enable the completion feature by supplying
     * your own KCompletion object.  It also enables you to control how this
-    * completion object will be handled by this widget (see note below).
+    * completion object will be handled by this widget (see below).
     *
     * The completion object assigned using method is not, by default, deleted
     * when this object is destroyed.  If you want KLineEdit to handle the
-    * deletion, make sure you set the flag in the parameter below to true.
-    * This is done to allow you to share a single completion object across
-    * multiple widgets.
+    * deletion, make sure you set the the boolean parameter to true.  This
+    * is done to allow you to share a single completion object across mulitple
+    * widgets.
     *
     * @param @p obj A @ref KCompletion or a derived child object.
     * @param @p autoDelete if true, delete the completion object on destruction.
@@ -204,7 +204,7 @@ public:
     * This is a convienence method that will automatically create a completion
     * object for you.  The completion object is an instance of the base class
     * @ref KCompletion.  If you need to make use of a more specialized completion
-    * object, use @ref setCompletionObj.  Also see @ref completionObject.
+    * object, use @ref setCompletionObject.  See also @ref completionObject.
     *
     * @param @p autoDelete if true, delete the completion object on destruction.
     */
