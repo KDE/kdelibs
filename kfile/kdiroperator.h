@@ -207,8 +207,7 @@ class KDirOperator : public QWidget
      * @returns the currently used view.
      * @see #setView
      */
-    // ### make non-const
-    const KFileView * view() const { return fileView; }
+    KFileView * view() const { return fileView; }
 
     /**
      * Returns the widget of the current view. 0L if there is no view/widget.

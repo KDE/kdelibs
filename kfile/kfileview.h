@@ -221,8 +221,7 @@ public:
      * somewhere, e.g. in a menu, where the user can choose between views.
      * @see #setViewName
      */
-    // ### make const!
-    QString viewName() { return viewname; }
+    QString viewName() const { return viewname; }
 
     /**
      * Sets the name of the view, which could be displayed somewhere.
