@@ -76,17 +76,7 @@ void Shell::slotActivePartChanged( KPart *newPart, KPart *oldPart )
   setUpdatesEnabled( false );
 
   m_builder->clearGUI();
-
-  if ( newPart )
-  {
-    KPartGUIServant partServant( newPart );
-    m_builder->createGUI( &partServant );
-  }
-  else
-  {
-    KNullGUIServant nullServant;
-    m_builder->createGUI( &nullServant );
-  }
+  m_builder->createGUI( newPart );
 
   setUpdatesEnabled( true );
 }
