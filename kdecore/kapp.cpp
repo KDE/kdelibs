@@ -20,6 +20,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.98  1998/03/21 23:05:12  mark
+// MD: Addition of a new font, a fixed font, for general use in applications.
+// Unfortunately, I think this is a BINARY INCOMPATIBLE change. (Cleared with Kalle.)
+//
 // Revision 1.97  1998/03/12 21:17:01  wuebben
 // Bernd: updated 'about KDE' text. It is now more in line with KDE goals
 //
@@ -802,8 +806,8 @@ bool KApplication::x11EventFilter( XEvent *_event )
 		{
 		  QString str;
 		  
-		  getConfig()->setGroup("GUI Style");
-		  str = getConfig()->readEntry("Style");
+		  getConfig()->setGroup("KDE");
+		  str = getConfig()->readEntry("widgetStyle");
 		  if(!str.isNull()) 
 		    if(str == "Motif")
 		      applyGUIStyle(MotifStyle);
@@ -1068,108 +1072,62 @@ void KApplication::readSettings()
 
   QString str;
 	
-  QColor col;
-  col.setRgb(192,192,192);  
-
   // Read the color scheme group from config file
   // If unavailable set color scheme to KDE default
+  
+  config->setGroup( "General");
+  // this default is Qt black
+  textColor = config->readColorEntry( "foreground", &black );
+  
+  // this default is the Qt lightGray
+  backgroundColor = config->readColorEntry( "background", &lightGray  );
+  
+  // this default is Qt darkBlue
+  selectColor = config->readColorEntry( "selectBackground", &darkBlue );
+
+  // this default is Qt white
+  selectTextColor = config->readColorEntry( "selectForeground", &white);
+  
+  // this default is Qt white
+  windowColor = config->readColorEntry( "windowBackground", &white );
+  
+  // this default is Qt black
+  windowTextColor = config->readColorEntry( "windowForeground", &black ); 
 	
-  config->setGroup( "Color Scheme");
-  // this default is the KDE standard grey
-  inactiveTitleColor = config->readColorEntry( "InactiveTitleBarColor", &col );
+  config->setGroup( "WM");
+  // this default is Qt lightGray
+  inactiveTitleColor = config->readColorEntry( "inactiveBackground", &lightGray );
 
   // this default is Qt darkGrey
-  inactiveTextColor = config->readColorEntry( "InactiveTitleTextColor", &darkGray );
+  inactiveTextColor = config->readColorEntry( "inactiveForeground", &darkGray );
   
   // this default is Qt darkBlue
-  activeTitleColor = config->readColorEntry( "ActiveTitleBarColor", &darkBlue );
+  activeTitleColor = config->readColorEntry( "activeBackground", &darkBlue );
 
   // this default is Qt white
-  activeTextColor = config->readColorEntry( "ActiveTitleTextColor", &white );
+  activeTextColor = config->readColorEntry( "activeForeground", &white );
   
-  // this default is Qt black
-  textColor = config->readColorEntry( "TextColor", &black );
-  
-  // this default is the KDE standard grey
-  backgroundColor = config->readColorEntry( "BackgroundColor", &col  );
-  
-  // this default is Qt darkBlue
-  selectColor = config->readColorEntry( "SelectColor", &darkBlue );
+  config->setGroup( "KDE");
+  contrast = config->readNumEntry( "contrast", 7 );
 
-  // this default is Qt white
-  selectTextColor = config->readColorEntry( "SelectTextColor", &white);
-  
-  // this default is Qt white
-  windowColor = config->readColorEntry( "WindowColor", &white );
-  
-  // this default is Qt black
-  windowTextColor = config->readColorEntry( "WindowTextColor", &black ); 
-
-  contrast = config->readNumEntry( "Contrast", 7 );
-	
-	//	Read the font specification from config.
-	// 	Initialize fonts to default first or it won't work !!
+  //  Read the font specification from config.
+  //  Initialize fonts to default first or it won't work !!
 		
   generalFont = QFont("helvetica", 12, QFont::Normal);
-
-  config->setGroup( "General Font" );
-	
-  str = config->readEntry( "Charset","default" );
-  if ( !str.isNull() && str!="default" && KCharset(str).ok())
- 	pCharsets->setDefault(str);
-  else
-        pCharsets->setDefault(klocale->charset());
-  pCharsets->setQFont(generalFont);
-	
-  str = config->readEntry( "Family" );
-  if ( !str.isNull() )
-	generalFont.setFamily(str.data());
-	
-  str = config->readEntry( "Point Size" );
-  if ( !str.isNull() )
-	generalFont.setPointSize(atoi(str.data()));
-	
-  str = config->readEntry( "Weight" );
-  if ( !str.isNull() )
-	generalFont.setWeight(atoi(str.data()));
-		
-  str = config->readEntry( "Italic" );
-  if ( !str.isNull() )
-	if ( atoi(str.data()) != 0 )
-	  generalFont.setItalic(True);
-	  
   fixedFont = QFont("fixed", 12, QFont::Normal);
 
-  config->setGroup( "Fixed Font" );
-	
-  str = config->readEntry( "Charset","default" );
-  if ( !str.isNull() && str!="default" && KCharset(str).ok())
- 	pCharsets->setDefault(str);
-  else
-        pCharsets->setDefault(klocale->charset());
+  config->setGroup( "General" );
+  generalFont = config->readFontEntry( "font", new QFont( generalFont ) );
+  fixedFont = config->readFontEntry( "fixedFont", new QFont( fixedFont ) );
+  
+  pCharsets->setDefault(klocale->charset());
+  pCharsets->setQFont(generalFont);
   pCharsets->setQFont(fixedFont);
+  
+  // Finally, read GUI style from config.
 	
-  str = config->readEntry( "Family" );
-  if ( !str.isNull() )
-	fixedFont.setFamily(str.data());
-	
-  str = config->readEntry( "Point Size" );
-  if ( !str.isNull() )
-	fixedFont.setPointSize(atoi(str.data()));
-	
-  str = config->readEntry( "Weight" );
-  if ( !str.isNull() )
-	fixedFont.setWeight(atoi(str.data()));
-		
-  str = config->readEntry( "Italic" );
-  if ( !str.isNull() )
-	if ( atoi(str.data()) != 0 )
-	  fixedFont.setItalic(True);
-
-	// Finally, read GUI style from config.
-	
-  config->setGroup( "GUI Style" );
-  if ( config->readEntry( "Style", "Motif" ) == "Windows 95" )
+  config->setGroup( "KDE" );
+  if ( config->readEntry( "widgetStyle", "Motif" ) == "Windows 95" )
     applicationStyle=WindowsStyle;
   else
     applicationStyle=MotifStyle;
@@ -1197,7 +1155,7 @@ void KApplication::kdisplaySetPalette()
 							 backgroundColor.light(highlightVal),
 							 backgroundColor.dark(lowlightVal), 
 							 backgroundColor.dark(120),
-							 darkGray, windowColor );
+							 backgroundColor.dark(120), windowColor );
 
 	QColorGroup colgrp( textColor, backgroundColor, 
 						backgroundColor.light(highlightVal),
@@ -1215,7 +1173,7 @@ void KApplication::kdisplaySetPalette()
 							 backgroundColor.light(150),
 							 backgroundColor.dark(), 
 							 backgroundColor.dark(120),
-							 darkGray, windowColor );
+							 backgroundColor.dark(120), windowColor );
 
 	QColorGroup colgrp( textColor, backgroundColor, 
 						backgroundColor.light(150),
@@ -1223,6 +1181,7 @@ void KApplication::kdisplaySetPalette()
 						backgroundColor.dark(120),
 						textColor, windowColor );
 
+	QApplication::setWinStyleHighlightColor( selectColor );
 	QApplication::setPalette( QPalette(colgrp,disabledgrp,colgrp), TRUE );
 
 	emit kdisplayPaletteChanged();
