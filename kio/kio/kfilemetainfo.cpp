@@ -122,7 +122,7 @@ bool KFileMetaInfoItem::setValue( const QVariant& value )
 {
     // We don't call makeNull here since it isn't necassery, see deref()
     if ( d == Data::null ) return false;
-    
+
     if ( ! (d->mimeTypeInfo->attributes() & KFileMimeTypeInfo::Modifiable ) ||
          ! (value.canCast(d->mimeTypeInfo->type())))
     {
@@ -400,7 +400,7 @@ QStringList KFileMetaInfo::editableGroups() const
     QStringList::ConstIterator it = supported.begin();
     for ( ; it != supported.end(); ++it ) {
         const KFileMimeTypeInfo::GroupInfo * groupInfo = d->mimeTypeInfo->groupInfo( *it );
-        if ( groupInfo && groupInfo->attributes() & 
+        if ( groupInfo && groupInfo->attributes() &
              (KFileMimeTypeInfo::Addable | KFileMimeTypeInfo::Removable) )
             list.append( *it );
     }
@@ -473,14 +473,14 @@ bool KFileMetaInfo::addGroup( const QString& name )
             const KFileMimeTypeInfo::ItemInfo* iteminfo = ginfo->itemInfo(*it);
             Q_ASSERT(ginfo);
             if (!iteminfo) return false;
-            
+
             if ( !(iteminfo->attributes() & KFileMimeTypeInfo::Addable) &&
                   (iteminfo->attributes() & KFileMimeTypeInfo::Modifiable))
             {
                 // append it now or never
                 group.appendItem(iteminfo->key(), QVariant());
             }
-              
+
         }
 
         d->groups.insert(name, group);
@@ -627,12 +627,12 @@ KFileMetaInfoItem KFileMetaInfo::saveItem( const QString& key,
 {
     // try the preferred groups first
     if ( !preferredGroup.isEmpty() ) {
-        QMapIterator<QString,KFileMetaInfoGroup> it = 
+        QMapIterator<QString,KFileMetaInfoGroup> it =
             d->groups.find( preferredGroup );
 
         // try to create the preferred group, if necessary
         if ( it == d->groups.end() && createGroup ) {
-            const KFileMimeTypeInfo::GroupInfo *groupInfo = 
+            const KFileMimeTypeInfo::GroupInfo *groupInfo =
                 d->mimeTypeInfo->groupInfo( preferredGroup );
             if ( groupInfo && groupInfo->supportedKeys().contains( key ) ) {
                 if ( addGroup( preferredGroup ) )
@@ -664,9 +664,9 @@ KFileMetaInfoItem KFileMetaInfo::saveItem( const QString& key,
         }
         else // not existant -- try to create the group
         {
-            const KFileMimeTypeInfo::GroupInfo *groupInfo = 
+            const KFileMimeTypeInfo::GroupInfo *groupInfo =
                 d->mimeTypeInfo->groupInfo( *groupIt );
-            if ( groupInfo && groupInfo->supportedKeys().contains( key ) ) 
+            if ( groupInfo && groupInfo->supportedKeys().contains( key ) )
             {
                 if ( addGroup( *groupIt ) )
                 {
@@ -682,17 +682,17 @@ KFileMetaInfoItem KFileMetaInfo::saveItem( const QString& key,
     }
 
     // finally check for variable items
-    
+
     return item;
 }
 
-KFileMetaInfoItem KFileMetaInfo::findEditableItem( KFileMetaInfoGroup& group, 
+KFileMetaInfoItem KFileMetaInfo::findEditableItem( KFileMetaInfoGroup& group,
                                                    const QString& key )
 {
     KFileMetaInfoItem item = group.addItem( key );
     if ( item.isValid() && item.isEditable() )
          return item;
-    
+
     if ( (d->mimeTypeInfo->groupInfo( group.name() )->attributes() & KFileMimeTypeInfo::Addable) )
         return item;
 
@@ -1171,7 +1171,7 @@ KFileMetaInfoItem KFileMetaInfoGroup::addItem( const QString& key )
     QMapIterator<QString,KFileMetaInfoItem> it = d->items.find( key );
     if ( it != d->items.end() )
         return it.data();
-    
+
     const KFileMimeTypeInfo::GroupInfo* ginfo = d->mimeTypeInfo->groupInfo(d->name);
 
     if ( !ginfo ) {
@@ -1206,25 +1206,25 @@ bool KFileMetaInfoGroup::removeItem( const QString& key )
           kdDebug(7033) << "trying to remove an item from an invalid group\n";
           return false;
     }
-    
+
     QMapIterator<QString, KFileMetaInfoItem> it = d->items.find(key);
     if ( it==d->items.end() )
     {
           kdDebug(7033) << "trying to remove the non existant item " << key << "\n";
           return false;
     }
-    
+
     if (!((*it).attributes() & KFileMimeTypeInfo::Removable))
     {
         kdDebug(7033) << "trying to remove a non removable item\n";
         return false;
     }
-    
+
     d->items.remove(it);
     d->removedItems.append(key);
     return true;
 }
-  
+
 QStringList KFileMetaInfoGroup::removedItems()
 {
     return d->removedItems;
@@ -1234,9 +1234,15 @@ KFileMetaInfoItem KFileMetaInfoGroup::appendItem(const QString& key,
                                                  const QVariant& value)
 {
     const KFileMimeTypeInfo::GroupInfo* ginfo = d->mimeTypeInfo->groupInfo(d->name);
+    if ( !ginfo ) {
+        kdWarning() << "Trying to append a Metadata item for a non-existant group" << endl;
+        return KFileMetaInfoItem();
+    }
     const KFileMimeTypeInfo::ItemInfo* info = ginfo->itemInfo(key);
-
-    Q_ASSERT(info);
+    if ( !info ) {
+        kdWarning() << "Trying to append a Metadata item for an unknown key (no ItemInfo)" << endl;
+        return KFileMetaInfoItem();
+    }
 
     KFileMetaInfoItem item;
 
@@ -1261,7 +1267,7 @@ KFileMetaInfoGroup::Data* KFileMetaInfoGroup::Data::makeNull()
         // We deliberately do not reset "null" after it has been destroyed!
         // Otherwise we will run into problems later in ~KFileMetaInfoItem
         // where the d-pointer is compared against null.
-      
+
         // ### fix (small memory leak)
         KFileMimeTypeInfo* info = new KFileMimeTypeInfo();
         Data* d = new Data(QString::null);
