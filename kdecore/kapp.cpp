@@ -1825,7 +1825,8 @@ KApplication::startServiceByName( const QString& _name, const QString &URL,
                               QString *error, QCString *dcopService, int *pid )
 {
    QStringList URLs;
-   URLs.append(URL);
+   if (!URL.isEmpty())
+      URLs.append(URL);
    return startServiceInternal(
                       "start_service_by_name(QString,QStringList)",
                       _name, URLs, error, dcopService, pid);
@@ -1845,7 +1846,8 @@ KApplication::startServiceByDesktopPath( const QString& _name, const QString &UR
                               QString *error, QCString *dcopService, int *pid )
 {
    QStringList URLs;
-   URLs.append(URL);
+   if (!URL.isEmpty())
+      URLs.append(URL);
    return startServiceInternal(
                       "start_service_by_desktop_path(QString,QStringList)",
                       _name, URLs, error, dcopService, pid);
@@ -1865,7 +1867,8 @@ KApplication::startServiceByDesktopName( const QString& _name, const QString &UR
                               QString *error, QCString *dcopService, int *pid )
 {
    QStringList URLs;
-   URLs.append(URL);
+   if (!URL.isEmpty())
+      URLs.append(URL);
    return startServiceInternal(
                       "start_service_by_desktop_name(QString,QStringList)",
                       _name, URLs, error, dcopService, pid);
