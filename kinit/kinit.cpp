@@ -421,7 +421,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
           dup2( d.launcher[1], 3); // Make sure the socket has fd 3
           close( d.launcher[1] );
         }
-        
+        close( d.launcher[0] );
      }
 
      if (cwd && *cwd)
