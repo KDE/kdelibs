@@ -1347,21 +1347,6 @@ extern "C" void endvfsent( );
 
 #endif /* HAVE_GETMNTINFO */
 
-// Get the device name from the mount options when using supermount
-static QString supermountDevName(QStringList *options)
-{
-	        // Search options to find the device name
-	for ( QStringList::Iterator it = options->begin(); it != options->end(); ++it)
-	{
-		if( (*it).startsWith("dev="))
-		{
-			return (*it).remove("dev=");
-		}
-	}
-	return QString("none");
-}
-
-
 QString KIO::findDeviceMountPoint( const QString& filename )
 {
     QString result;
@@ -1550,21 +1535,9 @@ QString KIO::findDeviceMountPoint( const QString& filename )
 
     while (GETMNTENT(mtab, me))
     {
-		 // Conectiva changes ( Gustavo Boiko boiko@conectiva.com.br 
-		 QString fs_type = MOUNTTYPE(me);
-		 QCString device_name;
-		 if (fs_type == "supermount")
-		 {
-			 device_name = supermountDevName(&QStringList::split(",",me->mnt_opts)).latin1();
-		 }
-		 else
-		 { 
-			 // There may be symbolic links into the /etc/mnttab
-			 // So we have to find the real device name here as well!
-			 device_name = FSNAME(me);
-		 }
-
-		
+      // There may be symbolic links into the /etc/mnttab
+      // So we have to find the real device name here as well!
+      QCString device_name = FSNAME(me);
       if (device_name.isEmpty() || (device_name == "none"))
          continue;
 
@@ -1852,12 +1825,8 @@ static QString get_mount_info(const QString& filename,
             {
                 // The next GETMNTENT call may destroy 'me'
                 // Copy out the info that we need
+                QCString fsname_me = FSNAME(me);
                 QCString mounttype_me = MOUNTTYPE(me);
-					 QCString fsname_me;
-					 if (mounttype_me == "supermount")
-						 fsname_me = supermountDevName(&QStringList::split(",",me->mnt_opts)).latin1();
-					 else
-						 fsname_me = FSNAME(me);
 
                 STRUCT_SETMNTENT fstab;
                 if ((fstab = SETMNTENT(FSTAB, "r")) == 0) {
@@ -1868,13 +1837,7 @@ static QString get_mount_info(const QString& filename,
                 STRUCT_MNTENT fe;
                 while (GETMNTENT(fstab, fe))
                 {
-						 QCString mounttype_fe = MOUNTTYPE(fe);
-						 QCString fsname_fe;
-						 if ( mounttype_fe == "supermount" )
-							 fsname_fe = supermountDevName(&QStringList::split(",",fe->mnt_opts)).latin1();
-						 else
-							 fsname_fe = FSNAME(fe);
-						 if (fsname_me == fsname_fe)
+                    if (fsname_me == FSNAME(fe))
                     {
                         found = true;
                         if (HASMNTOPT(fe, "noauto") ||
