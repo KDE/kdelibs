@@ -52,7 +52,7 @@ protected:
     void setPart( const QString& mimeType );
 
     void startOfData();
-    void sendData( const QCString& line );
+    void sendData( const QByteArray& line );
     void endOfData();
 
 private slots:

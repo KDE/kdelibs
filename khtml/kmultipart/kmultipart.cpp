@@ -48,15 +48,18 @@ public:
         if ( !storeNewline && c == '\r' )
             return;
         Q_ASSERT( !m_lineComplete );
-        if ( storeNewline || c != '\n' )
-            m_currentLine += c;
+        if ( storeNewline || c != '\n' ) {
+            int sz = m_currentLine.size();
+            m_currentLine.resize( sz+1, QGArray::SpeedOptim );
+            m_currentLine[sz] = c;
+        }
         if ( c == '\n' )
             m_lineComplete = true;
     }
     bool isLineComplete() const {
         return m_lineComplete;
     }
-    QCString currentLine() const {
+    QByteArray currentLine() const {
         return m_currentLine;
     }
     void clearLine() {
@@ -64,11 +67,11 @@ public:
         reset();
     }
     void reset() {
-        m_currentLine = 0L;
+        m_currentLine.resize( 0, QGArray::SpeedOptim );
         m_lineComplete = false;
     }
 private:
-    QCString m_currentLine;
+    QByteArray m_currentLine;
     bool m_lineComplete; // true when ending with '\n'
 };
 
@@ -170,7 +173,16 @@ void KMultiPart::slotData( KIO::Job *job, const QByteArray &data )
         m_lineParser->addChar( data[i], !m_bParsingHeader );
         if ( m_lineParser->isLineComplete() )
         {
-            QCString line = m_lineParser->currentLine();
+            QByteArray lineData = m_lineParser->currentLine();
+#ifdef DEBUG_PARSING
+            kdDebug() << "lineData.size()=" << lineData.size() << endl;
+#endif
+            QCString line( lineData.data(), lineData.size()+1 ); // deep copy
+            // 0-terminate the data, but only for the line-based tests below
+            // We want to keep the raw data in case it ends up in sendData()
+            int sz = line.size();
+            if ( sz > 0 )
+                line[sz-1] = '\0';
 #ifdef DEBUG_PARSING
             kdDebug() << "[" << m_bParsingHeader << "] line='" << line << "'" << endl;
 #endif
@@ -178,8 +190,6 @@ void KMultiPart::slotData( KIO::Job *job, const QByteArray &data )
             {
                 if ( !line.isEmpty() )
                     m_bGotAnyHeader = true;
-                // ### HACK set the multipart boundary to the first line
-                // TODO: get it as metadata from kio_http (part of Content-type field)
                 if ( m_boundary.isNull() )
                 {
                     if ( !line.isEmpty() ) {
@@ -216,8 +226,8 @@ void KMultiPart::slotData( KIO::Job *job, const QByteArray &data )
                 {
 #ifdef DEBUG_PARSING
                     kdDebug() << "boundary found!" << endl;
+                    kdDebug() << "after it is " << line.data() + m_boundaryLength << endl;
 #endif
-                    //kdDebug() << "after it is " << line.data() + m_boundaryLength << endl;
                     // Was it the very last boundary ?
                     if ( !qstrncmp( line.data() + m_boundaryLength, "--", 2 ) )
                     {
@@ -229,7 +239,9 @@ void KMultiPart::slotData( KIO::Job *job, const QByteArray &data )
                     } else
                     {
                         char nextChar = *(line.data() + m_boundaryLength);
-                        //kdDebug() << "KMultiPart::slotData nextChar='" << nextChar << "'" << endl;
+#ifdef DEBUG_PARSING
+                        kdDebug() << "KMultiPart::slotData nextChar='" << nextChar << "'" << endl;
+#endif
                         if ( nextChar == '\n' || nextChar == '\r' ) {
                             endOfData();
                             m_bParsingHeader = true;
@@ -237,12 +249,12 @@ void KMultiPart::slotData( KIO::Job *job, const QByteArray &data )
                         }
                         else {
                             // otherwise, false hit, it has trailing stuff
-                            sendData( line );
+                            sendData( lineData );
                         }
                     }
                 } else {
                     // send to part
-                    sendData( line );
+                    sendData( lineData );
                 }
             }
             m_lineParser->clearLine();
@@ -365,15 +377,17 @@ void KMultiPart::startOfData()
         m_tempFile = new KTempFile;
 }
 
-void KMultiPart::sendData( const QCString& line )
+void KMultiPart::sendData( const QByteArray& line )
 {
     if ( m_isHTMLPart )
     {
         KHTMLPart* htmlPart = static_cast<KHTMLPart *>( static_cast<KParts::ReadOnlyPart *>( m_part ) );
-        htmlPart->write(  line.data(), line.size() );
+        htmlPart->write( line.data(), line.size() );
     }
     else if ( m_tempFile )
+    {
         m_tempFile->file()->writeBlock( line.data(), line.size() );
+    }
 }
 
 void KMultiPart::endOfData()
@@ -385,7 +399,7 @@ void KMultiPart::endOfData()
         htmlPart->end();
     } else if ( m_tempFile )
     {
-	m_tempFile->close();
+        m_tempFile->close();
         kdDebug() << "KMultiPart::endOfData opening " << m_tempFile->name() << endl;
         KURL url;
         url.setPath( m_tempFile->name() );
@@ -402,6 +416,7 @@ void KMultiPart::slotPartCompleted()
         Q_ASSERT( m_part );
         // Delete temp file used by the part
         Q_ASSERT( m_part->url().isLocalFile() );
+	kdDebug() << "slotPartCompleted deleting " << m_part->url().path() << endl;
         (void) unlink( QFile::encodeName( m_part->url().path() ) );
         // Do not emit completed from here.
     }
