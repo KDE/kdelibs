@@ -82,7 +82,7 @@ KFileBaseDialog::KFileBaseDialog(const char *dirName, const char *filter,
 
     // Init flags
     finished = true;
-    debug("start %ld", time(0));
+    debugC("start %ld", time(0));
     filterString = filter;
     
     connect(dir, SIGNAL(finished()),
@@ -380,8 +380,6 @@ void KFileBaseDialog::filterChanged() // SLOT
 void KFileBaseDialog::setHiddenToggle(bool b) // SLOT
 {
     showHidden = b;
-    
-    warning("setHiddenToggle(): %s", b ? "true" : "false");
     pathChanged();
 }
 
@@ -671,7 +669,7 @@ void KFileBaseDialog::slotDirEntry(KFileInfo *entry)
 
 void KFileBaseDialog::slotFinished()
 {
-    debug("finished %ld", time(0));
+    debugC("finished %ld", time(0));
     if (!finished)
 	QApplication::restoreOverrideCursor();
     finished = true;
