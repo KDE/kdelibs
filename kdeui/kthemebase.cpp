@@ -162,7 +162,7 @@ void KThemeBase::generateBorderPix(int i)
         pbPixmaps[i]->setBorder(KThemePixmap::Right, tmp);
     }
     else
-        warning("KThemeBase: Tried making border from empty pixmap");
+        qWarning("KThemeBase: Tried making border from empty pixmap");
 }
 
 
@@ -300,11 +300,11 @@ void KThemeBase::applyConfigFile(const QString &file)
     QFile dest(locateLocal("config", "kstylerc"));
 
     if(!src.open(IO_ReadOnly)){
-        warning("Cannot open theme file for reading!");
+        qWarning("Cannot open theme file for reading!");
         return;
     }
     if(!dest.open(IO_WriteOnly)){
-        warning("Cannot write to theme settings!");
+        qWarning("Cannot write to theme settings!");
         return;
     }
     int input = src.getch();
@@ -397,7 +397,7 @@ QImage* KThemeBase::loadImage(QString &name)
     image->load(path);
     if(!image->isNull())
         return(image);
-    warning("KThemeStyle: Unable to load image %s.", name.ascii());
+    qWarning("KThemeStyle: Unable to load image %s.", name.ascii());
     delete image;
     return(NULL);
 }
@@ -409,7 +409,7 @@ KThemePixmap* KThemeBase::loadPixmap(QString &name)
     pixmap->load(path);
     if (!pixmap->isNull())
        return pixmap;
-    warning("KThemeStyle: Unable to load pixmap %s.", name.ascii());
+    qWarning("KThemeStyle: Unable to load pixmap %s.", name.ascii());
     delete pixmap;
     return(NULL);
 }
@@ -426,7 +426,7 @@ KThemePixmap* KThemeBase::scale(int w, int h, WidgetType widget)
                     cache->insert(pixmaps[widget], KThemeCache::FullScale,
                                   widget);
                 else
-                    warning("We would have inserted a null pixmap!");
+                    qWarning("We would have inserted a null pixmap!");
                 pixmaps[widget] = cachePix;
             }
             else{
@@ -447,7 +447,7 @@ KThemePixmap* KThemeBase::scale(int w, int h, WidgetType widget)
                 if(pixmaps[widget])
                     cache->insert(pixmaps[widget], KThemeCache::HorizontalScale, widget);
                 else
-                    warning("We would have inserted a null pixmap!");
+                    qWarning("We would have inserted a null pixmap!");
                 pixmaps[widget] = cachePix;
             }
             else{
@@ -469,7 +469,7 @@ KThemePixmap* KThemeBase::scale(int w, int h, WidgetType widget)
                 if(pixmaps[widget])
                     cache->insert(pixmaps[widget], KThemeCache::VerticalScale, widget);
                 else
-                    warning("We would have inserted a null pixmap!");
+                    qWarning("We would have inserted a null pixmap!");
                 pixmaps[widget] = cachePix;
             }
             else{
@@ -618,7 +618,7 @@ KThemePixmap* KThemeBase::scaleBorder(int w, int h, WidgetType widget)
         pixmap->setMask(mask);
         cache->insert(pixmap, KThemeCache::FullScale, widget, true);
         if(!pixmap->mask())
-            warning("No mask for border pixmap!");
+            qWarning("No mask for border pixmap!");
     }
     return(pixmap);
 }
@@ -821,7 +821,7 @@ void KThemeBase::applyMiscResourceGroup(KConfig *config)
         prop.writeEntry("SButtonPosition", (int)SBBottomRight);
     else{
         if(tmpStr != "Opposite" && !tmpStr.isEmpty())
-            warning("KThemeStyle: Unrecognized sb button option %s, using Opposite.",
+            qWarning("KThemeStyle: Unrecognized sb button option %s, using Opposite.",
                     tmpStr.ascii());
         prop.writeEntry("SButtonPosition", (int)SBOpposite);
     }
@@ -832,7 +832,7 @@ void KThemeBase::applyMiscResourceGroup(KConfig *config)
         prop.writeEntry("ArrowType", (int)MotifArrow);
     else{
         if(tmpStr != "Normal" && !tmpStr.isEmpty())
-            warning("KThemeStyle: Unrecognized arrow option %s, using Normal.",
+            qWarning("KThemeStyle: Unrecognized arrow option %s, using Normal.",
                     tmpStr.ascii());
         prop.writeEntry("ArrowType", (int)LargeArrow);
     }
@@ -891,7 +891,7 @@ void KThemeBase::applyResourceGroup(KConfig *config, int i)
         tmpVal = (int)VerticalScale;
     else{
         if(tmpStr != "Tile" && !tmpStr.isEmpty())
-            warning("KThemeBase: Unrecognized scale option %s, using Tile.",
+            qWarning("KThemeBase: Unrecognized scale option %s, using Tile.",
                     tmpStr.ascii());
         tmpVal = (int)TileScale;
     }
@@ -915,7 +915,7 @@ void KThemeBase::applyResourceGroup(KConfig *config, int i)
         tmpVal = (int)GrReverseBevel;
     else{
         if(tmpStr != "None" && !tmpStr.isEmpty())
-            warning("KThemeBase: Unrecognized gradient option %s, using None.",
+            qWarning("KThemeBase: Unrecognized gradient option %s, using None.",
                     tmpStr.ascii());
         tmpVal = (int)GrNone;
     }
@@ -1041,7 +1041,7 @@ void KThemeBase::readResourceGroup(int i, QString *pixnames, QString *brdnames,
             copyWidgetConfig(sIndex, i, pixnames, brdnames);
         }
         else
-            warning("KThemeBase: Unable to identify source widget for %s!",                        widgetEntries[i]);
+            qWarning("KThemeBase: Unable to identify source widget for %s!",                        widgetEntries[i]);
         return;
     }
     // special inheritance for disabled arrows (these are tri-state unlike
@@ -1145,9 +1145,9 @@ void KThemeBase::readResourceGroup(int i, QString *pixnames, QString *brdnames,
     if(!tmpStr.isEmpty()){
         pbWidth[i] = prop.readNumEntry(QString::fromLatin1("PixmapBWidth"), 0);
         if(pbWidth[i] == 0){
-            warning("KThemeBase: No border width specified for pixmapped border widget %s",
+            qWarning("KThemeBase: No border width specified for pixmapped border widget %s",
                     widgetEntries[i]);
-            warning("KThemeBase: Using default of 2.");
+            qWarning("KThemeBase: Using default of 2.");
             pbWidth[i] = 2;
         }
         // duplicate check

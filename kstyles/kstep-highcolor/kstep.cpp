@@ -118,7 +118,7 @@ void KStepStyle::polish(QPalette &)
                  QBrush(pal.color(QPalette::Active, QColorGroup::Background),
                         wallPaper));
         else
-            warning("Highcolor KStep: Unable to load wallpaper %s",
+            qWarning("Highcolor KStep: Unable to load wallpaper %s",
                     tmpStr.latin1());
     }
     else if(config->readBoolEntry("UseWallpaper", true)){

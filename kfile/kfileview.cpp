@@ -406,7 +406,7 @@ void KFileView::setCurrentItem(const QString &item,
 	return;
     }
 
-    warning("setCurrentItem: no match found.");
+    qWarning("setCurrentItem: no match found.");
 }
 
 const KFileViewItemList * KFileView::items() const
@@ -438,7 +438,7 @@ const KFileViewItemList * KFileView::selectedItems() const
 	KFileViewItem *item = 0L;
 	for (item = myFirstItem; item; item = item->next()) {
 	    if ( isSelected( item ) )
-		selectedList->append( item ), debug("** selected: %s", item->name().ascii());
+		selectedList->append( item ), qDebug("** selected: %s", item->name().ascii());
 	}
     }
 

@@ -244,7 +244,7 @@ void KDirectionButton::drawButton( QPainter *p)
 
     default:
 #if defined(CHECK_RANGE)
-      warning( "KDirectionButton: Requested Arrow style not supported" );
+      qWarning( "KDirectionButton: Requested Arrow style not supported" );
 #endif
       break;
   }

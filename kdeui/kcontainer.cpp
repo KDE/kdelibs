@@ -138,7 +138,7 @@ void KContainerLayout::repositionWidgets()
 		x += (each_width+_spacing);
 	    }
 	    // ... from the end
-	    warning("homo");
+	    qWarning("homo");
 	    x = size().width() - _endOffset;
 	    for ( item=_endWidgets.first(); item != 0; item=_endWidgets.next() )
 	    {
@@ -178,7 +178,7 @@ void KContainerLayout::repositionWidgets()
 		x += (w+_spacing);
 	    }
 	    // ... from end
-	    warning("non-homo");
+	    qWarning("non-homo");
 	    x = size().width() - _endOffset;
 	    for ( item=_endWidgets.first(); item != 0; item=_endWidgets.next() )
 	    {
@@ -376,10 +376,10 @@ void KContainerLayout::calculateSizeHint()
     }
     if (parent()!=0L && !parent()->inherits("KContainerLayout") && parent()->inherits("QWidget"))
     {
-	warning("setting minimum size for parent widget (%i,%i)",_sizeHint.width(),_sizeHint.height());
+	qWarning("setting minimum size for parent widget (%i,%i)",_sizeHint.width(),_sizeHint.height());
 	((QWidget*)parent())->setMinimumSize(_sizeHint);
     }
-    warning("minimum size (%i,%i)",_sizeHint.width(),_sizeHint.height());
+    qWarning("minimum size (%i,%i)",_sizeHint.width(),_sizeHint.height());
     setMinimumSize(_sizeHint);
 }
 

@@ -260,7 +260,7 @@ void HCStyle::polish(QPalette &)
                  QBrush(pal.color(QPalette::Active, QColorGroup::Background),
                         wallPaper));
         else
-            warning("Highcolor B2: Unable to load wallpaper %s",
+            qWarning("Highcolor B2: Unable to load wallpaper %s",
                     tmpStr.latin1());
     }
     else if(config->readBoolEntry("UseWallpaper", true)){

@@ -211,7 +211,7 @@ bool KFileDetailView::isSelected( const KFileViewItem *i ) const
     if ( !i )
 	return false;
     KFileListViewItem *item = (KFileListViewItem*) i->viewItem( this );
-    if ( !item ) debug("**** RED ALERT , %s has no ListViewItem", i->name().ascii());
+    if ( !item ) qDebug("**** RED ALERT , %s has no ListViewItem", i->name().ascii());
     return (item && item->isSelected());
 }
 
@@ -341,12 +341,12 @@ void KFileDetailView::ensureItemVisible( const KFileViewItem *i )
 // we're in multiselection mode
 void KFileDetailView::slotSelectionChanged()
 {
-    debug("void KFileDetailView::slotSelectionChanged()");
+    qDebug("void KFileDetailView::slotSelectionChanged()");
 }
 
 void KFileDetailView::slotSelectionChanged( QListViewItem * )
 {
-    debug("void KFileDetailView::slotSelectionChanged( QListViewItem *item )");
+    qDebug("void KFileDetailView::slotSelectionChanged( QListViewItem *item )");
 }
 
 #include "kfiledetailview.moc"

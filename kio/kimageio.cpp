@@ -97,7 +97,7 @@ KImageIOFormat::callLibFunc( bool read, QImageIO *iio)
       lt_dlhandle libhandle = lt_dlopen(mLib.ascii());
       if (libhandle == 0) {
          iio->setStatus(1); // error
-         warning("KImageIOFormat::callLibFunc: couldn't dlopen %s (%s)",
+         qWarning("KImageIOFormat::callLibFunc: couldn't dlopen %s (%s)",
 			mLib.ascii(), lt_dlerror());
          return;
       }
@@ -110,7 +110,7 @@ KImageIOFormat::callLibFunc( bool read, QImageIO *iio)
  
          if (func == NULL) {
             iio->setStatus(1); // error
-            warning("couln't find %s (%s)", funcName.ascii(), lt_dlerror());
+            qWarning("couln't find %s (%s)", funcName.ascii(), lt_dlerror());
          }
          mReadFunc = (void (*)(QImageIO *))func;
       }
@@ -121,7 +121,7 @@ KImageIOFormat::callLibFunc( bool read, QImageIO *iio)
  
          if (func == NULL) {
             iio->setStatus(1); // error
-            warning("couln't find %s (%s)", funcName.ascii(), lt_dlerror());
+            qWarning("couln't find %s (%s)", funcName.ascii(), lt_dlerror());
          }
          mWriteFunc = (void (*)(QImageIO *))func;
       }

@@ -106,7 +106,7 @@ void FileProtocol::mkdir( const KURL& url, int permissions )
     }
 
     if ( S_ISDIR( buff.st_mode ) ) {
-	debug("ERR_DIR_ALREADY_EXIST");
+	qDebug("ERR_DIR_ALREADY_EXIST");
 	error( KIO::ERR_DIR_ALREADY_EXIST, url.path() );
 	return;
     }

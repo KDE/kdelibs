@@ -164,7 +164,7 @@ void KApplicationTree::addDesktopGroup( QString relPath, KAppTreeListItem *item)
       }
       else
       {
-         debug("KServiceGroup: Unexpected object in list!");
+         qDebug("KServiceGroup: Unexpected object in list!");
          continue;
       }
   

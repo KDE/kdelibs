@@ -696,7 +696,7 @@ void KDockTabCtl::removePage( QWidget* widget )
       tabs->hide();
     }
   } else {
-    debug("Try delete notexists page %s",widget->name());
+    qDebug("Try delete notexists page %s",widget->name());
   }
 }
 
@@ -1190,7 +1190,7 @@ void KDockTabBar::keyPressEvent( QKeyEvent* e )
       if ( fid != -1 )
         setCurrentTab(fid);
       setFocus();
-      debug("Left");
+      qDebug("Left");
       break;
     case Key_Right:
       id++;
@@ -1208,7 +1208,7 @@ void KDockTabBar::keyPressEvent( QKeyEvent* e )
       if ( fid != -1 )
         setCurrentTab(fid);
       setFocus();
-      debug("Right");
+      qDebug("Right");
       break;
     default:
       break;

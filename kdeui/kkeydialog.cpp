@@ -1085,7 +1085,7 @@ void KKeyChooser::editKey()
 
 void KKeyChooser::editEnd()
 {
-	debug("Called editEnd() which relies on eKey widget");
+	qDebug("Called editEnd() which relies on eKey widget");
 	
 	//uint kCode = KAccel::stringToKey(eKey->text());
 	uint kCode = 0;
@@ -1107,7 +1107,7 @@ bool KKeyChooser::isKeyPresent()
 	
 	gIt.toFirst();
 	while ( gIt.current() ) {
-		debug("current %s:%d code %d", gIt.currentKey().ascii(), *gIt.current(), pEntry->aConfigKeyCode);
+		qDebug("current %s:%d code %d", gIt.currentKey().ascii(), *gIt.current(), pEntry->aConfigKeyCode);
 		if ( (unsigned int)(*gIt.current()) == pEntry->aConfigKeyCode && *gIt.current() != 0 ) {
 			QString actionName( gIt.currentKey() );
 			actionName.stripWhiteSpace();
@@ -1135,7 +1135,7 @@ bool KKeyChooser::isKeyPresent()
 
 	sIt.toFirst();
 	while ( sIt.current() ) {
-		debug("current %s:%d code %d", sIt.currentKey().ascii(), *sIt.current(), pEntry->aConfigKeyCode);
+		qDebug("current %s:%d code %d", sIt.currentKey().ascii(), *sIt.current(), pEntry->aConfigKeyCode);
 		if ( (unsigned int)(*sIt.current()) == pEntry->aConfigKeyCode && *sIt.current() != 0 ) {
 			QString actionName( sIt.currentKey() );
 			actionName.stripWhiteSpace();

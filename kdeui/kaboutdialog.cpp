@@ -1492,7 +1492,7 @@ KAboutDialog::KAboutDialog(QWidget* parent, const char* name, bool modal)
   if(about==0)
   {
     // this will nearly never happen (out of memory in about box?)
-    debug("KAboutDialog::KAboutDialog: Out of memory.");
+    qDebug("KAboutDialog::KAboutDialog: Out of memory.");
     kapp->quit();
   }
   setMainWidget(about);

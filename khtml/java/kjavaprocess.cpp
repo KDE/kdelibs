@@ -143,7 +143,7 @@ void KJavaProcess::wroteData( )
     if ( inputBuffer.count() >= 1 ) {
 	if ( !javaProcess->writeStdin( inputBuffer.first(),
 				       qstrlen( inputBuffer.first() ) ) ) {
-	    warning( "Could not lazy write %s command", inputBuffer.first() );
+	    qWarning( "Could not lazy write %s command", inputBuffer.first() );
 	}
     }
 }
@@ -166,7 +166,7 @@ void KJavaProcess::invokeJVM()
     if ( d->classArgs != QString::null )
         *javaProcess << d->classArgs;
 
-    warning( "Invoking JVM now..." );
+    qWarning( "Invoking JVM now..." );
 
     KProcess::Communication comms = ( KProcess::Communication ) (KProcess::Stdin | KProcess::Stdout);
     javaProcess->start( KProcess::NotifyOnExit, comms );

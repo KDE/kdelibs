@@ -108,7 +108,7 @@ void kimgio_krl_read( QImageIO *iio )
 	int rbytes = io->readBlock( buffer, 512 );
 
 	if( rbytes < 512 ) {
-		warning( "krl_read: wanted %d bytes, read %d", 512, rbytes );
+		qWarning( "krl_read: wanted %d bytes, read %d", 512, rbytes );
 		return;
 	}
 

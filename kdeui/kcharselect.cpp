@@ -362,7 +362,7 @@ void KCharSelect::setFont( const QString &_font )
 	charTable->setFont( _font );
     }
     else
-	warning( "Can't find Font: %s", _font.latin1() );
+	qWarning( "Can't find Font: %s", _font.latin1() );
 }
 
 //==================================================================

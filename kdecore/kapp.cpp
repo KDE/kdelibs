@@ -1039,7 +1039,7 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
         }
 
         if(!styleHandle){
-            warning("KApp: Unable to open style plugin %s (%s).",
+            qWarning("KApp: Unable to open style plugin %s (%s).",
                     styleStr.local8Bit().data(), lt_dlerror());
 
             pKStyle = new KDEStyle;
@@ -1050,7 +1050,7 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
                                            "allocate");
 
             if(!alloc_func){
-                warning("KApp: Unable to init style plugin %s (%s).",
+                qWarning("KApp: Unable to init style plugin %s (%s).",
                         styleStr.local8Bit().data(), lt_dlerror());
                 pKStyle = new KDEStyle;
                 setStyle(pKStyle);
@@ -1065,7 +1065,7 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
                     setStyle(pKStyle);
                 }
                 else{
-                    warning("KApp: Style plugin unable to allocate style.");
+                    qWarning("KApp: Style plugin unable to allocate style.");
                     pKStyle = new KDEStyle;
                     setStyle(pKStyle);
                     lt_dlclose(styleHandle);
@@ -1296,14 +1296,14 @@ void KApplication::invokeHelp( const QString& anchor,
 
    if (startServiceByDesktopName("khelpcenter", url, &error))
    {
-      warning("Could not launch help:\n%s\n", error.local8Bit().data());
+      qWarning("Could not launch help:\n%s\n", error.local8Bit().data());
       return;
    }
 }
 
 void KApplication::invokeHTMLHelp( const QString& _filename, const QString& topic ) const
 {
-   warning("invoking HTML help is deprecated! use docbook and invokeHelp!");
+   qWarning("invoking HTML help is deprecated! use docbook and invokeHelp!");
 
    QString filename;
 
@@ -1322,7 +1322,7 @@ void KApplication::invokeHTMLHelp( const QString& _filename, const QString& topi
 
    if (startServiceByDesktopName("khelpcenter", url, &error))
    {
-      warning("Could not launch help:\n%s\n", error.local8Bit().data());
+      qWarning("Could not launch help:\n%s\n", error.local8Bit().data());
       return;
    }
 }
@@ -1340,7 +1340,7 @@ void KApplication::invokeMailer(const QString &address,const QString &subject )
    QString mailClient( "kmail");
    if (startServiceByDesktopName(mailClient, url.url(), &error))
    {
-      warning("Could not launch mail client:\n%s\n", error.local8Bit().data());
+      qWarning("Could not launch mail client:\n%s\n", error.local8Bit().data());
       return;
    }
 }
@@ -1352,7 +1352,7 @@ void KApplication::invokeBrowser( const QString &url )
 
    if (startServiceByDesktopName("kfmclient", url, &error))
    {
-      warning("Could not launch browser:\n%s\n", error.local8Bit().data());
+      qWarning("Could not launch browser:\n%s\n", error.local8Bit().data());
       return;
    }
 }

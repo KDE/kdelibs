@@ -254,7 +254,7 @@ void KBugReport::slotOk( void )
 
 QString KBugReport::text()
 {
-    debug(m_bgSeverity->selected()->name());
+    qDebug(m_bgSeverity->selected()->name());
   // Prepend the pseudo-headers to the contents of the mail
   QString severity = QString::fromLatin1(m_bgSeverity->selected()->name());
   QString appname = QString::fromLatin1( m_aboutData

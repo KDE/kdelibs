@@ -39,7 +39,7 @@
 
 void KRecentDocument::add(const QString &openStr, bool isUrl)
 {
-    warning("KRecentDocument::add for %s", openStr.latin1());
+    qWarning("KRecentDocument::add for %s", openStr.latin1());
     KConfig *config = KGlobal::config();
     QString oldGrp = config->group();
     config->setGroup(QString::fromLatin1("RecentDocuments"));
@@ -74,7 +74,7 @@ void KRecentDocument::add(const QString &openStr, bool isUrl)
 	   == QString::fromLatin1(kapp->argv()[0]) + 
 	   QString::fromLatin1(" ") + openStr) 
 	{
-            warning("Touching");
+            qWarning("Touching");
             utime(ddesktop.latin1(), NULL);
             return;
         }

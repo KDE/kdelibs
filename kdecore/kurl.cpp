@@ -969,7 +969,7 @@ KURL::List KURL::split( const QString& _url )
     // Continue with recursion ?
     if ( u.hasSubURL() )
     {
-      debug("Has SUB URL %s", u.ref().local8Bit().data() );
+      qDebug("Has SUB URL %s", u.ref().local8Bit().data() );
       tmp = u.ref();
       u.setRef( QString::null );
       lst.append( u );

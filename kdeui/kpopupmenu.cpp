@@ -73,7 +73,7 @@ KPopupTitle::KPopupTitle(QWidget *parent, const char *name)
     else if(tmpStr == QString::fromLatin1("Elliptic"))
         grType = KPixmapEffect::EllipticGradient;
     else{
-        warning("KPopupMenu: Unknown gradient type %s for title item",
+        qWarning("KPopupMenu: Unknown gradient type %s for title item",
                 tmpStr.latin1());
         grType = KPixmapEffect::HorizontalGradient;
     }
@@ -105,7 +105,7 @@ KPopupTitle::KPopupTitle(const KPixmap &background, const QColor &color,
     if(!background.isNull())
         fill = background;
     else
-        warning("KPopupMenu: Empty pixmap used for title.");
+        qWarning("KPopupMenu: Empty pixmap used for title.");
     useGradient = false;
 
     fgColor = textColor;
@@ -198,10 +198,10 @@ void KPopupMenu::changeTitle(int id, const QString &text)
         if(item->widget())
             ((KPopupTitle *)item->widget())->setTitle(text);
         else
-            warning("KPopupMenu: changeTitle() called with non-title id %d.", id);
+            qWarning("KPopupMenu: changeTitle() called with non-title id %d.", id);
     }
     else
-        warning("KPopupMenu: changeTitle() called with invalid id %d.", id);
+        qWarning("KPopupMenu: changeTitle() called with invalid id %d.", id);
 }
 
 void KPopupMenu::changeTitle(int id, const QPixmap &icon, const QString &text)
@@ -211,10 +211,10 @@ void KPopupMenu::changeTitle(int id, const QPixmap &icon, const QString &text)
         if(item->widget())
             ((KPopupTitle *)item->widget())->setTitle(text, &icon);
         else
-            warning("KPopupMenu: changeTitle() called with non-title id %d.", id);
+            qWarning("KPopupMenu: changeTitle() called with non-title id %d.", id);
     }
     else
-        warning("KPopupMenu: changeTitle() called with invalid id %d.", id);
+        qWarning("KPopupMenu: changeTitle() called with invalid id %d.", id);
 }
 
 QString KPopupMenu::title(int id)
@@ -226,10 +226,10 @@ QString KPopupMenu::title(int id)
         if(item->widget())
             return(((KPopupTitle *)item->widget())->title());
         else
-            warning("KPopupMenu: title() called with non-title id %d.", id);
+            qWarning("KPopupMenu: title() called with non-title id %d.", id);
     }
     else
-        warning("KPopupMenu: title() called with invalid id %d.", id);
+        qWarning("KPopupMenu: title() called with invalid id %d.", id);
     return(QString::null);
 }
 
@@ -240,10 +240,10 @@ QPixmap KPopupMenu::titlePixmap(int id)
         if(item->widget())
             return(((KPopupTitle *)item->widget())->icon());
         else
-            warning("KPopupMenu: titlePixmap() called with non-title id %d.", id);
+            qWarning("KPopupMenu: titlePixmap() called with non-title id %d.", id);
     }
     else
-        warning("KPopupMenu: titlePixmap() called with invalid id %d.", id);
+        qWarning("KPopupMenu: titlePixmap() called with invalid id %d.", id);
     QPixmap tmp;
     return(tmp);
 }

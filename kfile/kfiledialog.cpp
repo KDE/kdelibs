@@ -511,7 +511,7 @@ void KFileDialog::fileHighlighted(const KFileViewItem *i)
 {
     if (i->isDir())
         return;
-    debug("** highlighted **");
+    qDebug("** highlighted **");
     d->url = i->url();
     if ( (ops->mode() & KFile::Files) == KFile::Files )
 	multiSelectionChanged( i );
@@ -834,7 +834,7 @@ void KFileDialog::setSelection(const QString& url)
 	u = KURL(ops->url(),  url);
 
     if (u.isMalformed()) { // if it still is
-        warning("%s is not a correct argument for setSelection!", url.latin1());
+        qWarning("%s is not a correct argument for setSelection!", url.latin1());
 	return;
     }
 

@@ -970,7 +970,7 @@ QImage& KImageEffect::blend(QImage &image, float initial_intensity,
         }
     }
 
-    else debug("not implemented");
+    else qDebug("not implemented");
 
     return image;
 }

@@ -600,7 +600,7 @@ QString KStandardDirs::saveLocation(const char *type,
 {
     QStringList *dirs = relatives.find(type);
     if (!dirs)
-	fatal("there are no relative suffixes for type %s registered", type);
+	qFatal("there are no relative suffixes for type %s registered", type);
 
     struct stat st;
     QString local = localkdedir();
@@ -609,18 +609,18 @@ QString KStandardDirs::saveLocation(const char *type,
     QString fullPath = local + dirs->last() + suffix;
     if (stat(fullPath.ascii(), &st) != 0 || !(S_ISDIR(st.st_mode))) {
 	if(!create) {
-	    debug("save location %s doesn't exist", fullPath.ascii());
+	    qDebug("save location %s doesn't exist", fullPath.ascii());
 	    return local;
 	}
 	if(!makeDir(fullPath, 0700)) {
-	    debug("failed to create %s", fullPath.ascii());
+	    qDebug("failed to create %s", fullPath.ascii());
 	    return local;
 	}
     }
     return fullPath;
 
     // I can't think of a case where this happens
-    debug("couldn't find save location for type %s", type);
+    qDebug("couldn't find save location for type %s", type);
     return local;
 }
 
@@ -737,14 +737,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
     {
 	QString key = it2.key();
 	if (key.left(4) == "dir_")
-	{
-	    if (addResourceDir(key.mid(4, key.length()).ascii(), it2.data()))
-	      debug("adding custom dir %s of type %s", it2.data().ascii(),
-		    key.mid(4,key.length()).ascii());
-	    else
-	      debug("couldn't add custom dir %s of type %s", it2.data().ascii(),
-		    key.mid(4,key.length()).ascii());
-	}
+	   addResourceDir(key.mid(4, key.length()).ascii(), it2.data());
     }
 
     // save it for future calls - that will return

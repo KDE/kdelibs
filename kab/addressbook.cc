@@ -1204,7 +1204,7 @@ AddressBook::makeAddressFromMap(KeyValueMap* keys, Entry::Address& address)
     {
       if(!keys->get(Keys[count], *strings[count]))
 	{
-	  debug("AddressBook::makeAddressFromSection: error: could not get "
+	  qDebug("AddressBook::makeAddressFromSection: error: could not get "
 		"value for key %s.", (const char*)Keys[count]);
 	}
     }
@@ -1303,7 +1303,7 @@ AddressBook::createNew(const QString& filename)
 {
   // ###########################################################################
   const QString KabTemplateFile=locate("data", "kab/template.kab");
-  debug("AddressBook::createNew: template file is \"%s\".",
+  qDebug("AddressBook::createNew: template file is \"%s\".",
 	(const char*)KabTemplateFile.utf8());
   QConfigDB db;
   // -----
@@ -1353,7 +1353,7 @@ AddressBook::createConfigFile()
 {
   // ###########################################################################
   const QString ConfigTemplateFile=locate("data", "kab/template.config");
-  debug("AddressBook::createConfigFile: config template file is \"%s\".",
+  qDebug("AddressBook::createConfigFile: config template file is \"%s\".",
 	(const char*)ConfigTemplateFile.utf8());
   const QString filename= locateLocal( "data", STD_CONFIGFILENAME);
   QConfigDB db;

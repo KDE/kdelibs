@@ -38,7 +38,7 @@
 
 #ifndef NDEBUG
 #define MYASSERT(x) if (!x) \
-   fatal("Fatal error: you need to have a KInstance object before\n" \
+   qFatal("Fatal error: you need to have a KInstance object before\n" \
          "you do anything that requires it! Examples of this are config\n" \
          "objects, standard directories or translations.");
 #else

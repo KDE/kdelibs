@@ -112,7 +112,7 @@ void KStatusBar::removeItem (int id)
     // reformat (); // needed? (sven)
   }
   else
-    debug ("KStatusBar::removeItem: bad item id: %d", id);
+    qDebug ("KStatusBar::removeItem: bad item id: %d", id);
 }
 
 void KStatusBar::changeItem( const QString& text, int id )
@@ -125,7 +125,7 @@ void KStatusBar::changeItem( const QString& text, int id )
     reformat();
   }
   else
-    debug ("KStatusBar::changeItem: bad item id: %d", id);
+    qDebug ("KStatusBar::changeItem: bad item id: %d", id);
 }
 
 void KStatusBar::setItemAlignment (int id, int align)
@@ -138,7 +138,7 @@ void KStatusBar::setItemAlignment (int id, int align)
     //reformat(); Not needed I, think (sven)
   }
   else
-    debug ("KStatusBar::setItemAlignment: bad item id: %d", id);
+    qDebug ("KStatusBar::setItemAlignment: bad item id: %d", id);
 }
 
 void KStatusBar::setItemFixed(int id, int w)
@@ -154,7 +154,7 @@ void KStatusBar::setItemFixed(int id, int w)
     //reformat(); Not needed I, think (sven)
   }
   else
-    debug ("KStatusBar::setItemFixed: bad item id: %d", id);
+    qDebug ("KStatusBar::setItemFixed: bad item id: %d", id);
 }
 
 void KStatusBar::slotPressed(int _id)
