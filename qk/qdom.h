@@ -68,7 +68,7 @@ public:
     virtual bool hasFeature( const QString& feature, const QString& version );
 
     bool isNull();
-    
+
 private:
     QDomImplementation( QDOM_ImplementationPrivate* );
 
@@ -123,7 +123,7 @@ public:
     virtual QDomNode replaceChild( const QDomNode& newChild, const QDomNode& oldChild );
     virtual QDomNode removeChild( const QDomNode& oldChild );
     virtual QDomNode appendChild( const QDomNode& newChild );
-    virtual QDomNode cloneNode( bool deep) const;
+    virtual QDomNode cloneNode( bool deep = TRUE ) const;
 
     // Qt extension
     virtual bool isAttr() const { return false; }
@@ -402,18 +402,22 @@ public:
     // virtual QDomNode cloneNode( bool deep) const;
     virtual bool isElement() const;
 
+    /**
+     * Torben: Perhaps we should put that in stream
+     *         operators, like "element >> rect" ?
+     */
     QRect toRect() const;
     QFont toFont() const;
     QPen toPen() const;
     QSize toSize() const;
     QPoint toPoint() const;
-    QObject* toObject( QObject* parent = 0 ) const;
+    /* QObject* toObject( QObject* parent = 0 ) const;
     QWidget* toWidget( QWidget* parent = 0 ) const;
     QLayout* toLayout( QWidget* parent ) const;
     QLayout* toLayout( QLayout* parent, QWidget* mainwidget = 0 ) const;
 
     QVariant property( const QString& name, QVariant::Type ) const;
-    void setProperty( const QString& name, const QVariant& prop );
+    void setProperty( const QString& name, const QVariant& prop ); */
 
     QString text() const;
 
