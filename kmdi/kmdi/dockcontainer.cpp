@@ -51,6 +51,7 @@ static const char* const kmdi_not_close_xpm[]={
 namespace KMDI
 {
 
+
 DockContainer::DockContainer(QWidget *parent, QWidget *win, int position, int flags)
 : QWidget(parent),KDockContainer()
 {
@@ -104,7 +105,7 @@ DockContainer::DockContainer(QWidget *parent, QWidget *win, int position, int fl
 
   l->activate();
   m_ws->hide();
-
+  m_tb->installEventFilter(this);
 }
 
 void DockContainer::setStyle(int style) {
@@ -176,6 +177,7 @@ void DockContainer::insertWidget (KDockWidget *dwdg, QPixmap pixmap, const QStri
     m_map.insert(w,tab);
     m_revMap.insert(tab,w);
 
+
     if (((KDockWidget*)parentWidget())->mayBeShow())
       ((KDockWidget*)parentWidget())->dockBack();
 
@@ -219,6 +221,8 @@ void DockContainer::insertWidget (KDockWidget *dwdg, QPixmap pixmap, const QStri
     itemNames.append(w->name());
     tabCaptions.insert(w->name(),w->tabPageLabel());
     tabTooltips.insert(w->name(),w->toolTipString());
+
+
   }
 
 //FB  m_ws->raiseWidget(tab);
@@ -227,6 +231,16 @@ void DockContainer::insertWidget (KDockWidget *dwdg, QPixmap pixmap, const QStri
 
 bool DockContainer::eventFilter( QObject *obj, QEvent *event )
 {
+    if (obj==m_tb) {
+	if ( (event->type()==QEvent::Resize)  && (m_ws->isHidden()) ) {
+		QSize size=((QResizeEvent*)event)->size();
+		  if (m_vertical)
+			  parentDockWidget()->setForcedFixedWidth(size.width());
+		  else
+			  parentDockWidget()->setForcedFixedHeight(size.height());
+	}
+    }
+    else
     switch ( event->type() ){
       case QEvent::MouseButtonPress:
 	{
@@ -259,6 +273,7 @@ bool DockContainer::eventFilter( QObject *obj, QEvent *event )
 			delete m_startEvent;
 			m_startEvent=0;
 		}
+		break;
       case QEvent::MouseMove:
 		if (m_movingState==WaitingForMoveStart) {
 			QPoint p( ((QMouseEvent*)event)->pos() - m_startEvent->pos() );
@@ -281,9 +296,12 @@ bool DockContainer::eventFilter( QObject *obj, QEvent *event )
 
 void DockContainer::showWidget(KDockWidget *w) {
     if (!m_map.contains(w)) return;
+
+    kdDebug()<<"KMDI::DockContainer::<showWidget"<<endl;
     int id=m_map[w];
     m_tb->setTab(id,true);
     tabClicked(id);
+
 }
 
 void DockContainer::changeOverlapMode()
@@ -364,7 +382,7 @@ void DockContainer::tabClicked(int t)
   kdDebug(760)<<"DockContainer::tabClicked()"<<endl;
   bool call_makeVisible=!m_tabSwitching;
   m_tabSwitching=true;
-  if (m_tb->isTabRaised(t))
+  if ((t!=-1) && m_tb->isTabRaised(t))
   {
 
     if (m_ws->isHidden())

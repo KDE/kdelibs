@@ -312,20 +312,20 @@ void MainWindow::deleteToolWindow( QWidget* pWnd)
   }
 }
 
-void MainWindow::setToolviewStyle(int flag)
+void MainWindow::setToolViewStyle(int flag)
 {
   d->m_styleIDEAlMode = flag; // see KMultiTabBar for the first 3 bits
 
-  DockContainer *tmpL=(DockContainer*) (m_leftContainer->getWidget()->qt_cast("DockContainer"));
+  DockContainer *tmpL=(DockContainer*) (m_leftContainer->getWidget()->qt_cast("KMDI::DockContainer"));
   if (tmpL) tmpL->setStyle(flag);
 
-  DockContainer *tmpR=(DockContainer*) (m_rightContainer->getWidget()->qt_cast("DockContainer"));
+  DockContainer *tmpR=(DockContainer*) (m_rightContainer->getWidget()->qt_cast("KMDI::DockContainer"));
   if (tmpR) tmpR->setStyle(flag);
 
-  DockContainer *tmpT=(DockContainer*) (m_topContainer->getWidget()->qt_cast("DockContainer"));
+  DockContainer *tmpT=(DockContainer*) (m_topContainer->getWidget()->qt_cast("KMDI::DockContainer"));
   if (tmpT) tmpT->setStyle(flag);
 
-  DockContainer *tmpB=(DockContainer*) (m_bottomContainer->getWidget()->qt_cast("DockContainer"));
+  DockContainer *tmpB=(DockContainer*) (m_bottomContainer->getWidget()->qt_cast("KMDI::DockContainer"));
   if (tmpB) tmpB->setStyle(flag);
 
   d->m_toolviewStyle = flag;

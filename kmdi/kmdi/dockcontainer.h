@@ -95,7 +95,7 @@ class DockContainer: public QWidget, public KDockContainer
     QObject *m_dragPanel;
     KDockManager *m_dockManager;
     QMouseEvent *m_startEvent;
-    enum MovingState {NotMoving=0,WaitingForMoveStart,Moving} m_movingState;
+    enum MovingState {NotMoving=0,WaitingForMoveStart,MovingInternal,Moving} m_movingState;
   signals:
         void activated(DockContainer*);
         void deactivated(DockContainer*);

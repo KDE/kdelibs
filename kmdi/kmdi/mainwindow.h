@@ -127,7 +127,7 @@ class MainWindow : public KParts::DockMainWindow
      * Sets the appearance of the toolview tabs.
      * @param flags See KMDI::ToolviewStyle.
      */
-    void setToolviewStyle(int flags);
+    void setToolViewStyle(int flags);
 
   public slots:
     void prevToolViewInDock();
