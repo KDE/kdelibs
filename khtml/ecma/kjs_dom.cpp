@@ -135,7 +135,7 @@ Value DOMNode::tryGet(ExecState *exec, const UString &propertyName) const
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "DOMNode::tryGet " << propertyName.qstring() << endl;
 #endif
-  return DOMObjectLookupOrCreate<DOMNodeFunc, DOMNode, DOMObject>(exec, propertyName, &DOMNodeTable, this);
+  return DOMObjectLookupGet<DOMNodeFunc, DOMNode, DOMObject>(exec, propertyName, &DOMNodeTable, this);
 }
 
 Value DOMNode::getValue(ExecState *, int token) const
@@ -262,8 +262,8 @@ void DOMNode::tryPut(ExecState *exec, const UString& propertyName, const Value& 
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "DOMNode::tryPut " << propertyName.qstring() << endl;
 #endif
-  DOMObjectLookupPutValue<DOMNode,DOMObject>(exec, propertyName, value, attr,
-                                             &DOMNodeTable, this );
+  DOMObjectLookupPut<DOMNode,DOMObject>(exec, propertyName, value, attr,
+                                        &DOMNodeTable, this );
 }
 
 void DOMNode::putValue(ExecState *exec, int token, const Value& value, int /*attr*/)
@@ -533,8 +533,8 @@ Value DOMAttr::tryGet(ExecState *exec, const UString &propertyName) const
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "DOMAttr::tryPut " << propertyName.qstring() << endl;
 #endif
-  return DOMObjectLookupValue<DOMAttr,DOMNode>(exec, propertyName,
-                                               &DOMAttrTable, this );
+  return DOMObjectLookupGetValue<DOMAttr,DOMNode>(exec, propertyName,
+                                                  &DOMAttrTable, this );
 }
 
 Value DOMAttr::getValue(ExecState *, int token) const
@@ -557,8 +557,8 @@ void DOMAttr::tryPut(ExecState *exec, const UString &propertyName, const Value& 
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "DOMAttr::tryPut " << propertyName.qstring() << endl;
 #endif
-  DOMObjectLookupPutValue<DOMAttr,DOMNode>(exec, propertyName, value, attr,
-                                           &DOMAttrTable, this );
+  DOMObjectLookupPut<DOMAttr,DOMNode>(exec, propertyName, value, attr,
+                                      &DOMAttrTable, this );
 }
 
 void DOMAttr::putValue(ExecState *exec, int token, const Value& value, int /*attr*/)
@@ -610,8 +610,8 @@ Value DOMDocument::tryGet(ExecState *exec, const UString &propertyName) const
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "DOMDocument::tryGet " << propertyName.qstring() << endl;
 #endif
-  return DOMObjectLookupOrCreate<DOMDocFunction, DOMDocument, DOMNode>(
-           exec, propertyName, &DOMDocumentTable, this);
+  return DOMObjectLookupGet<DOMDocFunction, DOMDocument, DOMNode>(
+    exec, propertyName, &DOMDocumentTable, this);
 }
 
 Value DOMDocument::getValue(ExecState *, int token) const

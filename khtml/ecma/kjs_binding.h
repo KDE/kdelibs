@@ -100,12 +100,12 @@ namespace KJS {
   QVariant ValueToVariant(ExecState* exec, const Value& val);
 
   /**
-   * We need a modified version of lookupOrCreate because
+   * We need a modified version of lookupGet because
    * we call tryGet instead of get, in DOMObjects.
    */
   template <class FuncImp, class ThisImp, class ParentImp>
-  inline Value DOMObjectLookupOrCreate(ExecState *exec, const UString &propertyName,
-                                       const HashTable* table, const ThisImp* thisObj)
+  inline Value DOMObjectLookupGet(ExecState *exec, const UString &propertyName,
+                                  const HashTable* table, const ThisImp* thisObj)
   {
     const HashEntry* entry = Lookup::findEntry(table, propertyName);
 
@@ -114,28 +114,36 @@ namespace KJS {
 
     //fprintf(stderr, "lookupOrCreate: found value=%d attr=%d\n", entry->value, entry->attr);
     if (entry->attr & Function)
-    {
-      // Look for cached value in dynamic map of properties (in ObjectImp)
-      ValueImp * cachedVal = thisObj->ObjectImp::getDirect(propertyName);
-      /*if (cachedVal)
-        fprintf(stderr, "lookupOrCreate: Function -> looked up in ObjectImp, found type=%d (object=%d)\n",
-                 cachedVal->type(),  ObjectType);*/
-      if (cachedVal && cachedVal->type() == ObjectType)
-        return cachedVal;
-
-      Value val = new FuncImp(exec, entry->value, entry->params);
-      const_cast<ThisImp *>(thisObj)->ObjectImp::put(exec, propertyName, val, entry->attr);
-      return val;
-    }
+      return lookupOrCreateFunction<FuncImp, ThisImp>(exec, propertyName, thisObj, entry);
     return thisObj->getValue(exec, entry->value);
   }
 
   /**
-   * Simplified version of DOMObjectLookupOrCreate in case there are no
+   * Simplified version of DOMObjectLookupGet in case there are only functions.
+   * Using this instead of DOMObjectLookupGet prevents 'this' from implementing a dummy getValue.
+   */
+  template <class FuncImp, class ThisImp, class ParentImp>
+  inline Value DOMObjectLookupGetFunction(ExecState *exec, const UString &propertyName,
+                         const HashTable* table, const ThisImp* thisObj)
+  {
+    const HashEntry* entry = Lookup::findEntry(table, propertyName);
+
+    if (!entry) // not found, forward to parent
+      return thisObj->ParentImp::tryGet(exec, propertyName);
+
+    if (entry->attr & Function)
+      return lookupOrCreateFunction<FuncImp, ThisImp>(exec, propertyName, thisObj, entry);
+
+    fprintf(stderr, "Function bit not set! Shouldn't happen in lookupGetFunction!\n" );
+    return Undefined();
+  };
+
+  /**
+   * Simplified version of DOMObjectLookupGet in case there are no
    * functions, only "values".
    */
   template <class ThisImp, class ParentImp>
-  inline Value DOMObjectLookupValue(ExecState *exec, const UString &propertyName,
+  inline Value DOMObjectLookupGetValue(ExecState *exec, const UString &propertyName,
                            const HashTable* table, const ThisImp* thisObj)
   {
     const HashEntry* entry = Lookup::findEntry(table, propertyName);
@@ -149,24 +157,21 @@ namespace KJS {
   }
 
   /**
-   * We need a modified version of lookupPutValue because
+   * We need a modified version of lookupPut because
    * we call tryPut instead of put, in DOMObjects.
    */
   template <class ThisImp, class ParentImp>
-  inline void DOMObjectLookupPutValue(ExecState *exec, const UString &propertyName,
+  inline void DOMObjectLookupPut(ExecState *exec, const UString &propertyName,
                              const Value& value, int attr,
                              const HashTable* table, ThisImp* thisObj)
   {
     const HashEntry* entry = Lookup::findEntry(table, propertyName);
 
-    if (!entry) { // not found, forward to parent
+    if (!entry || (entry->attr & Function)) { // not found, or function: forward to parent
        thisObj->ParentImp::tryPut(exec, propertyName, value, attr);
-       return;
     }
-
-    if (entry->attr & Function)
-      fprintf(stderr, "Function bit set! Shouldn't happen in lookupPutValue!\n" );
-    thisObj->putValue(exec, entry->value, value, attr);
+    else
+      thisObj->putValue(exec, entry->value, value, attr);
   }
 
 
