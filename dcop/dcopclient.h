@@ -145,10 +145,7 @@ class DCOPClient : public QObject
    * @return The actual @p appId used for the registration or a null string
    * if the registration wasn't successful.
    */
-  QCString registerAs( QCString appId, bool addPID = true );
-
-    ///############FIXME, this should be
-    // QCString registerAs( const QCString& appId, bool addPID = true );
+  QCString registerAs( const QCString &appId, bool addPID = true );
 
   /**
    * Query whether or not the client is registered at the server.
@@ -201,16 +198,18 @@ class DCOPClient : public QObject
    *  (optionally) returned in.
    *
    * A call blocks the application until the process receives the
-   * answer, for a maximum of 1/10 of a second. If the call was not
-   * answered by then, the client opens a local event loop in order to
-   * keep the user interface updated (by processing paint events and
-   * such) until the answer message finally drops in.
+   * answer.
+   *
+   * If @useEventLoop is true, a local event loop will be started after
+   * 1/10th of a second in order to keep the user interface updated 
+   * (by processing paint events and such) until an answer is received.
    *
    * @see send()
    */
   bool call(const QCString &remApp, const QCString &remObj,
 	    const QCString &remFun, const QByteArray &data,
-	    QCString& replyType, QByteArray &replyData, bool fast=false);
+	    QCString& replyType, QByteArray &replyData, 
+	    bool useEventLoop=false, bool fast=false);
 
   /**
    * Searches for an object which matches a criteria.
@@ -240,17 +239,18 @@ class DCOPClient : public QObject
    * returned @p true. If no such object is the function returns @p false.
    *
    * A findObject blocks the application until the process receives the
-   * answer, for a maximum of 1/10 of a second. If the call was not
-   * answered by then, the client opens a local event loop in order to
-   * keep the user interface updated (by processing paint events and
-   * such) until the answer message finally drops in.
+   * answer.
+   *
+   * If @useEventLoop is true, a local event loop will be started after
+   * 1/10th of a second in order to keep the user interface updated 
+   * (by processing paint events and such) until an answer is received.
    *
    * @see send()
    */
   bool findObject(const QCString &remApp, const QCString &remObj,
 	    const QCString &remFun, const QByteArray &data,
 	    QCString &foundApp, QCString &foundObj,
-	    bool fast=false);
+	    bool useEventLoop=false, bool fast=false);
 
   /**
    * Reimplement to handle app-wide function calls unassociated w/an object.
@@ -442,7 +442,7 @@ public slots:
     bool callInternal(const QCString &remApp, const QCString &remObj,
 	    const QCString &remFun, const QByteArray &data,
 	    QCString& replyType, QByteArray &replyData, 
-	    bool fast, int minor_opcode);
+	    bool useEventLoop, bool fast, int minor_opcode);
 };
 
 #endif

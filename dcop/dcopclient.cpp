@@ -476,9 +476,11 @@ bool DCOPClient::isAttached() const
 }
 
 
-QCString DCOPClient::registerAs( QCString appId, bool addPID )
+QCString DCOPClient::registerAs( const QCString &appId, bool addPID )
 {
     QCString result;
+
+    QCString _appId = appId;
 
     // Detach before reregistering.
     if ( isRegistered() ) {
@@ -494,14 +496,14 @@ QCString DCOPClient::registerAs( QCString appId, bool addPID )
     if (addPID) {
 	QCString pid;
 	pid.sprintf("-%d", getpid());
-	appId = appId + pid;
+	_appId = _appId + pid;
     }
 
     // register the application identifier with the server
     QCString replyType;
     QByteArray data, replyData;
     QDataStream arg( data, IO_WriteOnly );
-    arg <<appId;
+    arg << _appId;
     if ( call( "DCOPServer", "", "registerAs(QCString)", data, replyType, replyData ) ) {
 	QDataStream reply( replyData, IO_ReadOnly );
 	reply >> result;
@@ -616,7 +618,7 @@ bool DCOPClient::send(const QCString &remApp, const QCString &remObjId,
 bool DCOPClient::findObject(const QCString &remApp, const QCString &remObj,
                             const QCString &remFun, const QByteArray &data,
                             QCString &foundApp, QCString &foundObj,
-                            bool fast)
+                            bool useEventLoop, bool fast)
 {
     QCStringList appList;
     QCString app = remApp;
@@ -653,7 +655,7 @@ bool DCOPClient::findObject(const QCString &remApp, const QCString &remObj,
         QCString replyType;
         QByteArray replyData;
         if (callInternal((*it), remObj, remFun, data, 
-                     replyType, replyData, fast, DCOPFind))
+                     replyType, replyData, useEventLoop, fast, DCOPFind))
         {
            if (replyType == "DCOPRef")
            {
@@ -861,16 +863,17 @@ bool DCOPClient::find(const QCString &app, const QCString &objId,
 
 bool DCOPClient::call(const QCString &remApp, const QCString &remObjId,
 		      const QCString &remFun, const QByteArray &data,
-		      QCString& replyType, QByteArray &replyData, bool fast)
+		      QCString& replyType, QByteArray &replyData, 
+                      bool useEventLoop, bool fast)
 {
     return callInternal(remApp, remObjId, remFun, data, 
-                         replyType, replyData, fast, DCOPCall);
+                         replyType, replyData, useEventLoop, fast, DCOPCall);
 }
 
 bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
 		      const QCString &remFun, const QByteArray &data,
 		      QCString& replyType, QByteArray &replyData, 
-                      bool, int minor_opcode)
+                      bool useEventLoop, bool, int minor_opcode)
 {
     if ( !isAttached() )
 	return false;
@@ -914,7 +917,7 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
 
 	do {
 	    
-	    if ( d->notifier ) { // we have a socket notifier and a qApp
+	    if ( useEventLoop && d->notifier ) { // we have a socket notifier and a qApp
 		
 		int msecs = 100; // timeout for the GUI refresh
 		fd_set fds;
@@ -950,6 +953,7 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
 	
 	// if we were rejected by the server, we try again, otherwise we return
 	if ( tmp.status == ReplyStruct::Rejected ) {
+            // WABA: Looks like an attempt to keep your CPU usage at 100%
 	    continue;
 	}
 	
