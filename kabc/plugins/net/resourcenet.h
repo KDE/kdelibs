@@ -28,6 +28,7 @@
 #include "resource.h"
 
 class QTimer;
+class KTempFile;
 
 namespace KABC {
 
@@ -84,6 +85,8 @@ class ResourceNet : public Resource
 
     KURL mUrl;
     QString mTempFile;
+    KTempFile *mLocalTempFile;
+    bool mUseLocalTempFile;
 };
 
 }

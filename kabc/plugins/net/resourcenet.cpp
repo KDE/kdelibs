@@ -45,7 +45,8 @@ extern "C"
 
 
 ResourceNet::ResourceNet( const KConfig *config )
-    : Resource( config ), mFormat( 0 )
+    : Resource( config ), mFormat( 0 ),
+      mLocalTempFile( 0 ), mUseLocalTempFile( false )
 {
   KURL url;
 
@@ -71,6 +72,9 @@ ResourceNet::~ResourceNet()
 {
   delete mFormat;
   mFormat = 0;
+
+  delete mLocalTempFile;
+  mLocalTempFile = 0;
 }
 
 void ResourceNet::writeConfig( KConfig *config )
@@ -97,12 +101,21 @@ Ticket *ResourceNet::requestSaveTicket()
 
 bool ResourceNet::doOpen()
 {
+  if ( !KIO::NetAccess::exists( mUrl ) ) {
+    mLocalTempFile = new KTempFile();
+    mLocalTempFile->setAutoDelete( true );
+    mUseLocalTempFile = true;
+    mTempFile = mLocalTempFile->name();
+    return true;
+  }
+
   return KIO::NetAccess::download( mUrl, mTempFile );
 }
 
 void ResourceNet::doClose()
 {
-  KIO::NetAccess::removeTempFile( mTempFile );
+  if ( !mUseLocalTempFile )
+    KIO::NetAccess::removeTempFile( mTempFile );
 }
 
 bool ResourceNet::load()
