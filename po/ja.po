@@ -1,5 +1,12 @@
 # KTranslator Generated File
 
+# KTranslator Generated File
+
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Free Software Foundation, Inc.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR Free Software Foundation, Inc.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
@@ -8,14 +15,13 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-04-14 01:01+0200\n"
-"PO-Revision-Date: Tue May 16 1999 20:16:44+0200\n"
-"Last-Translator: Masanori Hanawa <hanawa@es.yamanashi.ac.jp>\n"
-"Language-Team: Japan <kde-jp@albert.nikkeibp.co.jp>\n"
+"POT-Creation-Date: 1999-04-24 01:02+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: ENCODING\n"
-"X-Generator: KTranslator v 0.4.0"
 
 #: kab/AssertDialog.cpp:29
 msgid "(unknown file)"
@@ -51,8 +57,8 @@ msgstr "アプリケーションの開発者にメールを送ってください"
 #: kdeui/keditcl1.cpp:191 kdeui/keditcl1.cpp:204 kdeui/keditcl1.cpp:1561
 #: kdeui/keditcl1.cpp:1718 kdeui/kfontdialog.cpp:400
 #: kdeui/kiconloaderdialog.cpp:264 kdeui/kmsgbox.cpp:286
-#: kfile/kfiledialog.cpp:252 kfile/kfiledialog.cpp:509
-#: kfile/kfiledialog.cpp:901 kfile/kfiledialogconf.cpp:61 kfmlib/kfm.cpp:411
+#: kfile/kfiledialog.cpp:252 kfile/kfiledialog.cpp:510
+#: kfile/kfiledialog.cpp:902 kfile/kfiledialogconf.cpp:61 kfmlib/kfm.cpp:411
 #: po/texts.cpp:35
 msgid "OK"
 msgstr "確認"
@@ -258,8 +264,8 @@ msgstr "可能な値:"
 msgid "Selected values:"
 msgstr "選択された値:"
 
-#: kdecore/kaccel.cpp:223 kfile/kfiledialog.cpp:558 kfile/kfiledialog.cpp:1217
-#: kfile/kfiledialog.cpp:1377 kfile/kfiledialog.cpp:1411 po/texts.cpp:65
+#: kdecore/kaccel.cpp:223 kfile/kfiledialog.cpp:559 kfile/kfiledialog.cpp:1219
+#: kfile/kfiledialog.cpp:1379 kfile/kfiledialog.cpp:1413 po/texts.cpp:65
 msgid "Open"
 msgstr "開く"
 
@@ -271,8 +277,8 @@ msgstr "新規作成"
 msgid "Close"
 msgstr "閉じる"
 
-#: kdecore/kaccel.cpp:235 kfile/kfiledialog.cpp:1272
-#: kfile/kfiledialog.cpp:1432 po/texts.cpp:75
+#: kdecore/kaccel.cpp:235 kfile/kfiledialog.cpp:1274
+#: kfile/kfiledialog.cpp:1434 po/texts.cpp:75
 msgid "Save"
 msgstr "保存"
 
@@ -350,23 +356,23 @@ msgstr "CTRL"
 msgid "ALT"
 msgstr "ALT"
 
-#: kdecore/kapp.cpp:612 po/texts.cpp:137
+#: kdecore/kapp.cpp:616 po/texts.cpp:137
 msgid "&Contents"
 msgstr "内容(&C)"
 
-#: kdecore/kapp.cpp:618
+#: kdecore/kapp.cpp:622
 msgid "&About"
 msgstr "バージョン情報(&A)"
 
-#: kdecore/kapp.cpp:625
+#: kdecore/kapp.cpp:629
 msgid "About &KDE..."
 msgstr "KDE について(&K)..."
 
-#: kdecore/kapp.cpp:646
+#: kdecore/kapp.cpp:650
 msgid "About KDE"
 msgstr "KDE について"
 
-#: kdecore/kapp.cpp:648
+#: kdecore/kapp.cpp:652
 msgid ""
 "\n"
 "The KDE Desktop Environment was written by the KDE Team,\n"
@@ -376,17 +382,8 @@ msgid ""
 "Visit http://www.kde.org for more information on the KDE\n"
 "Project. Please consider joining and supporting KDE.\n"
 "\n"
-"Please report bugs at http://buglist.kde.org.\n"
+"Please report bugs at http://bugs.kde.org.\n"
 msgstr ""
-"\n"
-"KDEデスクトップ環境はKDEチームによって書かれました。\n"
-"KDEチームはフリーソフトウェア開発のために集まったソフトウェアエンジニアの\n"
-"世界規模のネットワークです。\n"
-"\n"
-"KDEプロジェクトの詳細についてはhttp://www.kde.orgを訪れてください。\n"
-"KDEプロジェクトへの参加とサポートを考慮して下さい。\n"
-"\n"
-"バグレポートはhttp://buglist.kde.orgまでお願いします。\n"
 
 #: kdetest/klocaletest.cpp:100 kdeui/keditcl1.cpp:412 kdeui/keditcl1.cpp:433
 #: kdeui/keditcl1.cpp:494 kdeui/keditcl1.cpp:514 kdeui/keditcl1.cpp:1661
@@ -411,7 +408,7 @@ msgstr "いいえ"
 #: kdeui/kcontrol.cpp:48 kdeui/kcontrol.cpp:55 kdeui/keditcl1.cpp:414
 #: kdeui/keditcl1.cpp:496 kdeui/keditcl2.cpp:895 kdeui/kfontdialog.cpp:403
 #: kdeui/kiconloaderdialog.cpp:265 kdeui/kmsgbox.cpp:321
-#: kfile/kfiledialog.cpp:258 kfile/kfiledialog.cpp:906
+#: kfile/kfiledialog.cpp:258 kfile/kfiledialog.cpp:907
 #: kfile/kfiledialogconf.cpp:59 kfmlib/kfm.cpp:415 kspell/kspelldlg.cpp:143
 #: po/texts.cpp:39
 msgid "Cancel"
@@ -611,7 +608,7 @@ msgstr ""
 
 #: kdeui/keditcl1.cpp:1716
 msgid "You do not have write permission to this file.\n"
-msgstr "このファイルへの書込み許可がありません。\n"
+msgstr "You do not have write permission to this file.\n"
 
 #: kdeui/keditcl2.cpp:104 kdeui/keditcl2.cpp:361 kdeui/keditcl2.cpp:454
 msgid ""
@@ -730,7 +727,7 @@ msgstr "文字セット"
 
 #: kdeui/kfontdialog.cpp:367
 msgid "Dolor Ipse"
-msgstr ""
+msgstr "Dolor Ipse"
 
 #: kdeui/kfontdialog.cpp:519
 msgid "Bold"
@@ -998,11 +995,11 @@ msgstr "フィルタ(&F)"
 msgid "Show hidden"
 msgstr "隠しファイルを表示"
 
-#: kfile/kfiledialog.cpp:504
+#: kfile/kfiledialog.cpp:505
 msgid "Error: Not local file"
 msgstr "エラー: ローカルファイルではありません"
 
-#: kfile/kfiledialog.cpp:505
+#: kfile/kfiledialog.cpp:506
 msgid ""
 "The specified directory is not a local directory\n"
 "But the application accepts just local files."
@@ -1010,11 +1007,11 @@ msgstr ""
 "指定されたディレクトリはローカルディレクトリではありません\n"
 "しかしアプリケーションはただのローカルファイルと認めました。"
 
-#: kfile/kfiledialog.cpp:519 kfile/kfiledialog.cpp:624
+#: kfile/kfiledialog.cpp:520 kfile/kfiledialog.cpp:625
 msgid "Error: Cannot Open Directory"
 msgstr "エラー: ディレクトリを開けません"
 
-#: kfile/kfiledialog.cpp:520
+#: kfile/kfiledialog.cpp:521
 msgid ""
 "The specified directory does not exist\n"
 "or was not readable."
@@ -1022,64 +1019,64 @@ msgstr ""
 "指定されたディレクトリは存在しないか\n"
 "読み込めませんでした。"
 
-#: kfile/kfiledialog.cpp:522 kfile/kfiledialog.cpp:627
+#: kfile/kfiledialog.cpp:523 kfile/kfiledialog.cpp:628
 msgid "Dismiss"
 msgstr "閉じる"
 
-#: kfile/kfiledialog.cpp:573 kfile/kfiledialog.cpp:1392 po/texts.cpp:77
+#: kfile/kfiledialog.cpp:574 kfile/kfiledialog.cpp:1394 po/texts.cpp:77
 msgid "Save As"
 msgstr "名前を付けて保存"
 
-#: kfile/kfiledialog.cpp:596
+#: kfile/kfiledialog.cpp:597
 msgid "Root Directory"
 msgstr "ルートディレクトリ"
 
-#: kfile/kfiledialog.cpp:625
+#: kfile/kfiledialog.cpp:626
 msgid "The specified directory does not exist or was not readable."
 msgstr "指定されたディレクトリは存在しないか読み込めませんでした。"
 
-#: kfile/kfiledialog.cpp:886
+#: kfile/kfiledialog.cpp:887
 msgid "Create new directory in: "
 msgstr "以下の場所にディレクトリを作成: "
 
-#: kfile/kfiledialog.cpp:889
+#: kfile/kfiledialog.cpp:890
 msgid "New Directory"
 msgstr "新しいディレクトリ"
 
-#: kfile/kfiledialog.cpp:961
+#: kfile/kfiledialog.cpp:962
 msgid "Add to bookmarks"
 msgstr "ブックマークに追加"
 
-#: kfile/kfiledialog.cpp:1251
+#: kfile/kfiledialog.cpp:1253
 msgid "Choose Directory"
 msgstr "ディレクトリを選択"
 
-#: kfile/kfiledialog.cpp:1319
+#: kfile/kfiledialog.cpp:1321
 msgid "directory"
 msgstr "ディレクトリ"
 
-#: kfile/kfiledialog.cpp:1321
+#: kfile/kfiledialog.cpp:1323
 msgid "directories"
 msgstr "ディレクトリ"
 
-#: kfile/kfiledialog.cpp:1323 kfile/kpreview.cpp:326
+#: kfile/kfiledialog.cpp:1325 kfile/kpreview.cpp:326
 msgid "file"
 msgstr "ファイル"
 
-#: kfile/kfiledialog.cpp:1325
+#: kfile/kfiledialog.cpp:1327
 msgid "files"
 msgstr "ファイル(複数)"
 
-#: kfile/kfiledialog.cpp:1327
+#: kfile/kfiledialog.cpp:1329
 #, c-format
 msgid "%d %s and %d %s"
 msgstr "%d %s と %d %s"
 
-#: kfile/kfiledialog.cpp:1337
+#: kfile/kfiledialog.cpp:1339
 msgid "one directory"
 msgstr "あるディレクトリ"
 
-#: kfile/kfiledialog.cpp:1339
+#: kfile/kfiledialog.cpp:1341
 #, c-format
 msgid "%d directories"
 msgstr "%d ディレクトリ"
@@ -1272,7 +1269,7 @@ msgstr "ディレクトリ内に無いRoot/Affixの組み合わせを作成"
 
 #: kspell/ksconfig.cpp:75
 msgid "Consider run-together words as spelling errors"
-msgstr ""
+msgstr "Consider run-together words as spelling errors"
 
 #: kspell/ksconfig.cpp:92
 msgid "Dictionary"
@@ -1284,11 +1281,11 @@ msgstr "エンコーディング:"
 
 #: kspell/ksconfig.cpp:147
 msgid "Latin1"
-msgstr ""
+msgstr "Latin1"
 
 #: kspell/ksconfig.cpp:148
 msgid "7-Bit/ASCII"
-msgstr ""
+msgstr "7-Bit/ASCII"
 
 #: kspell/ksconfig.cpp:292
 msgid "English"
@@ -1687,15 +1684,15 @@ msgid ""
 "in your home directory. Run the KDE filemanager\n"
 "kfm once to automatically create it."
 msgstr ""
-"ディレクトリを作成できませんでした。\n"
-"たぶん以前にKDEを使っていなかったため\n"
-"ホームディレクトリにローカル\".kde\"ディレクトリが\n"
-"ありません。それを自動的に作るために\n"
-"KDEのファイルマネージャkfmを実行してください。"
+"The directory could not be created.\n"
+"Probably you do not have used KDE before, so\n"
+"you do not have a local \".kde\" directory\n"
+"in your home directory. Run the KDE filemanager\n"
+"kfm once to automatically create it."
 
 #: kab/addressbook.cc:106
 msgid "The directory has been created.\n"
-msgstr "ディレクトリが作成されました。\n"
+msgstr "The directory has been created.\n"
 
 #: kab/addressbook.cc:140
 msgid "No addressbook database file, creating new one."
@@ -1719,11 +1716,11 @@ msgstr "バックアップファイルを作成できません"
 
 #: kab/addressbook.cc:263
 msgid "Unable to insert \""
-msgstr "設定セクションに\""
+msgstr "Unable to insert \""
 
 #: kab/addressbook.cc:264
 msgid "\" into configuration section (ignored)."
-msgstr "\" を挿入できませんでした (無視)。"
+msgstr "\" into configuration section (ignored)."
 
 #: kab/addressbook.cc:666
 msgid "Unable to add a new entry with available key."
@@ -2079,14 +2076,17 @@ msgid ""
 "You will probably need to edit some of your\n"
 "entries to make use of it."
 msgstr ""
-"kabは現在いくつかの新しいアドレスフィールドをサポート\n"
-"していることに注意してください。これらの新しいフィールドは\n"
+"Please note that kab now supports some new\n"
+"fields in its addresses. These new fields\n"
 "are:\n"
-"州フィールド,\n"
-"国フィールド,\n"
-"郵便番号フィールド。\n"
-"それを利用するためにはいくつかのエントリを編集する\n"
-"必要があるかもしれません。"
+"\n"
+" the state field,\n"
+"\n"
+" the country field and\n"
+"\n"
+" the postal code field.\n"
+"You will probably need to edit some of your\n"
+"entries to make use of it."
 
 #: kab/widget.cc:315
 msgid "Could not save database after update."
@@ -2209,7 +2209,7 @@ msgstr "無視する(&I)"
 
 #: kab/widget.cc:879
 msgid "Saving cancelled.\n"
-msgstr "保存がキャンセルされました。\n"
+msgstr "Saving cancelled.\n"
 
 #: kab/widget.cc:945
 msgid "Entry changed."
