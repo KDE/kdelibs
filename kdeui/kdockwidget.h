@@ -85,7 +85,7 @@ public:
 };
 
 /**
- * An abstract class for all dockwidget header drags. See the class description of KDockWidgetHeaderDrag!
+ * An abstract class for all dockwidget drag-panels of a dockwidget. See the class description of KDockWidgetHeaderDrag!
  *
  * @author Max Judin.
  * @version $Id$
@@ -221,14 +221,22 @@ protected:
 };
 
 /**
- *
+ * It just hides the special implementation of a dockwidget tab group. An abstraction what it is currently.
+ * In general it is like QTabWidget but is more useful for the dockwidget class set.  
  */
 class KDockTabGroup : public KDockTabCtl
 {
   Q_OBJECT
 public:
+  /**
+   * Constructs this. It just calls the method of the base class.
+   */
   KDockTabGroup( QWidget *parent = 0, const char *name = 0 )
   :KDockTabCtl( parent, name ){};
+
+  /**
+   * Destructs a KDockTabGroup.
+   */
   virtual ~KDockTabGroup(){};
 };
 
@@ -483,6 +491,16 @@ friend class KDockWidget;
 friend class KDockMainWindow;
 
 public:
+  /**
+   * Constructs a dockmanager. Some initialization happen:
+   * <UL><LI>It installs an event filter for the main window,</LI>
+   * <LI>a control list for dock objects</LI>
+   * <LI>a control list for menu items concerning to menus provided by the dockmanager</LI>
+   * <LI>Some state variables are set</LI></UL>
+   *
+   * @ param mainWindow the main window controlled by this
+   * @ param name the internal QOject name
+   */
   KDockManager( QWidget* mainWindow, const char* name = 0L );
 
   /**
@@ -490,29 +508,106 @@ public:
    */
   virtual ~KDockManager();
 
+  /**
+   * Saves the current state of the dockmanager and of all controlled widgets. 
+   * State means here to save the geometry, visibility, parents, internal object names, orientation,
+   * separator positions, dockwidget-group information, tab widget states (if it is a tab group) and
+   * last but not least some necessary things for recovering the dockmainwindow state.
+   *
+   * @param c the KDE configuration saver
+   * @param group the name of the section in KConfig
+   */
   void writeConfig( KConfig* c = 0L, QString group = QString::null );
+
+  /**
+   * Like writeConfig but reads the whole stuff in.
+   *
+   * @param c the KDE configuration saver
+   * @param group the name of the section in KConfig
+   */
   void readConfig ( KConfig* c = 0L, QString group = QString::null );
+
+  /**
+   * Shows all encapsulated widgets of all controlled dockwidgets and shows all dockwidgets which are
+   * parent of a dockwidget tab group.
+   */
   void activate();
 
+  /**
+   * It's more or less a method that catches several events which are interesting for the dockmanager.
+   * Mainly mouse events during the drag process of a dockwidgets are of interest here. 
+   *
+   * @param _ the object that sends the event
+   * @param _ the event
+   * @return the return value of the method call of the base class method
+   */
   virtual bool eventFilter( QObject *, QEvent * );
 
-  KDockWidget* findWidgetParentDock( QWidget* );
+  /**
+   * This method finds out what a widgets' dockwidget is. That means the dockmanager has a look at all
+   * dockwidgets it knows and tells you when one of those dockwidgets covers the given widget.
+   *
+   * @param w any widget that is supposed to be encapsulated by one of the controlled dockwidgets
+   * @return the dockwidget that encapsulates that widget, otherwise 0
+   */
+  KDockWidget* findWidgetParentDock( QWidget* w);
+
+  /**
+   * Works like makeDockVisible() but can be called for widgets that covered by a dockwidget.
+   *
+   * @param w the widget that is encapsulated by a dockwidget that turns to visible.
+   */
   void makeWidgetDockVisible( QWidget* w ){ findWidgetParentDock(w)->makeDockVisible(); }
 
+  /**
+   * @return the popupmenu for showing/hiding dockwidgets
+   */
   QPopupMenu* dockHideShowMenu(){ return menu; }
 
+  /**
+   * @param dockName an internal QObject name
+   * @return the dockwidget that has got that internal QObject name
+   */
   KDockWidget* getDockWidgetFromName( const QString& dockName );
 
 signals:
+
+  /**
+   * Signals changes of the docking state of a dockwidget. Usually the dock-toolbar will be updated then. 
+   */
   void change();
+
+  /**
+   * Signals a dockwidget is replaced with another one.
+   */
   void replaceDock( KDockWidget* oldDock, KDockWidget* newDock );
+
+  /**
+   * Signals a dockwidget without parent (toplevel) is shown.
+   */
   void setDockDefaultPos( KDockWidget* );
 
 private slots:
+
+  /**
+   * Clears the popupmenu for showing/hiding dockwidgets and fills it with the current states of all controlled dockwidgets.
+   */
   void slotMenuPopup();
-  void slotMenuActivated( int );
+
+  /**
+   * This method assumes a menuitem of the popupmenu for showing/hiding dockwidgets is selected and toggles that state.
+   *
+   * @param id the popupmenu id of the selected menuitem 
+   */
+  void slotMenuActivated( int id);
 
 private:
+
+  /**
+   *
+   *
+   *
+   */
   struct MenuDockData
   {
     MenuDockData( KDockWidget* _dock, bool _hide )
@@ -526,29 +621,127 @@ private:
     bool hide;
   };
 
+  /**
+   * Finds the KDockWidget at the position given as parameter 
+   *
+   * @param pos global (desktop) position of the wanted dockwidget
+   * @return the dockwidget at that position
+   */
   KDockWidget* findDockWidgetAt( const QPoint& pos );
-  void findChildDockWidget( QWidget*&, const QWidget* p, const QPoint& pos );
-  void findChildDockWidget( const QWidget* p, WidgetList*& );
 
+  /**
+   * Finds the QWidget recursively at the position given as parameter
+   *
+   * @param w a variable where the method puts the QWidget at that position (instead of a return value)
+   * @param p the parent widget where the recursive search should start from
+   * @param pos global (desktop) position of the wanted dockwidget
+   */
+  void findChildDockWidget( QWidget*& w, const QWidget* p, const QPoint& pos );
+
+  /**
+   * Finds all dockwidgets which are child, grandchild and so on of p.
+   *
+   * @param p the parent widget where the recursive search starts from
+   * @param l the widget list that contains the search result after the return of this method
+   */
+  void findChildDockWidget( const QWidget* p, WidgetList*& l);
+
+  /**
+   * Sets a dockwidget in drag mode.
+   */
   void startDrag( KDockWidget* );
-  void dragMove( KDockWidget*, QPoint pos );
+
+  /**
+   * Moves a dockwidget that is in drag mode.
+   *
+   * @param d the dockwidget which is dragged
+   * @param pos the new position of the dragged dockwidget
+   */
+  void dragMove( KDockWidget* d, QPoint pos );
+
+  /**
+   * Finishes the drag mode. If the user let it drop on an other dockwidget, it will possibly be docked (if allowed),
+   * otherwise it becomes toplevel.
+   */
   void drop();
 
+// class members
+
+  /**
+   * Usually the KDockMainWindow but not necessarily.
+   */
   QWidget* main;
+
+  /**
+   * A special manager just for the dragging of a dockwidget
+   */
   KDockMoveManager* mg;
+
+  /**
+   * The dockwidget that is being dragged at the moment
+   */
   KDockWidget* currentDragWidget;
+
+  /**
+   * The target dockwidget where the currentDragWidget is dropped 
+   */
   KDockWidget* currentMoveWidget; // widget where mouse moving
+
+  /**
+   * It is of interest during the dock process. Then it contains all child dockwidgets.
+   */
   WidgetList* childDockWidgetList;
+
+  /**
+   * The dockposition where the dockwidget would be docked to, if we dropped it here.
+   */
   KDockWidget::DockPosition curPos;
+
+  /**
+   * A QList of all objects that are important for docking. 
+   * Some serve as group widgets of dockwidgets, others encapsulate normal widgets.
+   */
   QObjectList* childDock;
+
+  /**
+   * Contains dockwidgets that are created automatically by the dockmanager. For internal use.
+   */
   QObjectList* autoCreateDock;
+
+  /**
+   * For storing the width during the dragging of a dockwidget.
+   */
   int storeW;
+
+  /**
+   *  For storing the height during the dragging of a dockwidget.
+   */
   int storeH;
+
+  /**
+   * State variable if there is a drag process active.
+   */
   bool draging;
+
+  /**
+   * State variable if there is an undock process active
+   */
   bool undockProcess;
+
+  /**
+   * The dockmanager sets it to true if one presses the Cancel key during the drag process.
+   */
   bool dropCancel;
 
+  /**
+   * A popup menu that contains one menuitem for each dockwidget that shows the current visibility state and
+   * to show or hide the appropriate dockwidget.
+   */
   QPopupMenu* menu;
+
+  /**
+   * An internal list containing data for the menuitems for the visibility popup menu.
+   */
   QList<MenuDockData> *menuData;
 };
 
