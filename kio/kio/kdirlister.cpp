@@ -1075,6 +1075,10 @@ KDirLister::KDirLister( bool _delayedMimeTypes )
   d->numJobs = 0;
   d->rootFileItem = 0;
 
+  d->autoUpdate = false;
+  d->isShowingDotFiles = false;
+  d->dirOnlyMode = false;
+
   setAutoUpdate( true );
   setDirOnlyMode( false );
   setShowingDotFiles( false );
