@@ -126,7 +126,7 @@ In some cases, dictionaries will support more than one encoding.  A
 dictionary might, for example, accept accented characters when <emphasis>Latin1</emphasis> is
 selected, but accept email-style character combinations (like <emphasis>'a</emphasis> for an
 accented <emphasis>a</emphasis>) when <emphasis>7-Bit/ASCII</emphasis> is selected.  Please see
-your dictionary's disctribution for more information.</para>
+your dictionary's distribution for more information.</para>
 </sect1>
 
 <sect1 id="spell-checking-client">
@@ -152,7 +152,7 @@ read the Interational ISpell man page.</para>
 <para>For more information about KSpell, visit the <ulink url="http://www.chaos.umd.edu/~dsweet/KDE/KSpell">KSpell Home Page</ulink>. In
 particular, you will find information about programmng the KSpell C++ class.</para>
 
-<para>You mail email the author/maintainer with questions and/or comments at
+<para>You may email the author/maintainer with questions and/or comments at
 <ulink url="mailto:dsweet@kde.org">dsweet@kde.org</ulink>.</para>
 
 <!-- TRANS:CREDIT_FOR_TRANSLATORS -->
