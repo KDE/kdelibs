@@ -374,7 +374,15 @@ FIELDSET {
 
 BUTTON {
         display: block;
-        border-style: outset;
+        border: 2px outset ButtonFace;
+        background-color: ButtonFace;
+        color: ButtonText;
+        padding: 2px 2px 2px 2px;
+        cursor: default;
+}
+
+BUTTON:active {
+        border-style: inset;
 }
 
 /* we want a fixed font for form elements (input & textarea) */
