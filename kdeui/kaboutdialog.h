@@ -1,30 +1,34 @@
-/* -*- C++ -*-
-   This file is part of the KDE libraries
-   Copyright (C) 1999 Mirko Sucker <mirko@kde.org>
+/*
+ * This file is part of the KDE Libraries
+ * Copyright (C) 1999-2000 Mirko Sucker (mirko@kde.org) and 
+ * Espen Sand (espen@kde.org)
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public License
+ * along with this library; see the file COPYING.LIB.  If not, write to
+ * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ *
+ */
 
-   This file declares a class for creating "About ..." dialogs
-   in a general way. It provides geometry management and some
-   options to connect for, like emailing the author or
-   maintainer.
+/**
+ * This file declares a class for creating "About ..." dialogs
+ * in a general way. It provides geometry management and some
+ * options to connect for, like emailing the author or maintainer.
+ */
 
-   This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
-   License as published by the Free Software Foundation; either
-   version 2 of the License, or (at your option) any later version.
 
-   This library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
-
-   You should have received a copy of the GNU Library General Public License
-   along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.
-*/
-
-#ifndef KABOUTDIALOG_H
-#define KABOUTDIALOG_H
+#ifndef _KABOUTDIALOG_H_
+#define _KABOUTDIALOG_H_
 
 #include <kdialogbase.h>
 #include <qframe.h>
@@ -143,6 +147,9 @@ class KAboutContainerBase : public QWidget
 			 bool richText=false, int numLines=10 );
     KAboutContainer *addContainerPage( const QString &title,
       int childAlignment = AlignCenter, int innerAlignment = AlignCenter );
+    KAboutContainer *addScrolledContainerPage( const QString &title,
+      int childAlignment = AlignCenter, int innerAlignment = AlignCenter );
+
     QFrame *addEmptyPage( const QString &title );
 
     KAboutContainer *addContainer( int childAlignment, int innerAlignment );
@@ -499,7 +506,7 @@ class KAboutDialog : public KDialogBase
 
   /**
    * (Constructor II only)
-   * Add a container to a tab box. You can add text and images to a
+   * Adds a container to a tab box. You can add text and images to a
    * container.
    *
    * @param title Tab name.
@@ -510,6 +517,21 @@ class KAboutDialog : public KDialogBase
    * @return The new container.
    */
   KAboutContainer *addContainerPage( const QString &title,
+    int childAlignment = AlignCenter, int innerAlignment = AlignCenter );
+
+  /**
+   * (Constructor II only)
+   * Adds a container inside a QScrollView to a tab box. You can add text 
+   * and images to a container.
+   *
+   * @param title Tab name.
+   * @param childAlignment Specifies how the clildren of the container are
+   *        aligned with respect to the container.
+   * @param innerAlignment Specifies how the clildren are aligned with
+   *        respect to each other.
+   * @return The new container.
+   */
+  KAboutContainer *addScrolledContainerPage( const QString &title,
     int childAlignment = AlignCenter, int innerAlignment = AlignCenter );
 
   /**

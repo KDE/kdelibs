@@ -521,6 +521,38 @@ KAboutContainer *KAboutContainerBase::addContainerPage( const QString &title,
 }
 
 
+KAboutContainer *KAboutContainerBase::addScrolledContainerPage( 
+				      const QString &title,
+				      int childAlignment,
+				      int innerAlignment )
+{
+  if( mPageTab == 0 )
+  {
+    cout << "addPage: " << "Invalid layout" << endl;
+    return( 0 );
+  }
+
+  QFrame *page = addEmptyPage( title );
+  QVBoxLayout *vbox = new QVBoxLayout( page, KDialog::spacingHint() );
+  QScrollView *scrollView = new QScrollView( page );
+  scrollView->viewport()->setBackgroundMode( PaletteBackground );
+  vbox->addWidget( scrollView );
+
+  KAboutContainer *container = new KAboutContainer( scrollView, "container",
+    KDialog::spacingHint(), KDialog::spacingHint(), childAlignment,
+    innerAlignment );
+  scrollView->addChild( container );
+
+
+  connect(container, SIGNAL(urlClick(const QString &)),
+	  SLOT(slotUrlClick(const QString &)));
+  connect(container, SIGNAL(mailClick(const QString &,const QString &)),
+	  SLOT(slotMailClick(const QString &,const QString &)));
+
+  return( container );
+}
+
+
 QFrame *KAboutContainerBase::addEmptyPage( const QString &title )
 {
   if( mPageTab == 0 )
@@ -1599,6 +1631,16 @@ KAboutContainer *KAboutDialog::addContainerPage( const QString &title,
   return( mContainerBase->addContainerPage( title, childAlignment,
 					    innerAlignment) );
 }
+
+
+KAboutContainer *KAboutDialog::addScrolledContainerPage( const QString &title,
+				  int childAlignment, int innerAlignment )
+{
+  if( mContainerBase == 0 ) { return( 0 ); }
+  return( mContainerBase->addScrolledContainerPage( title, childAlignment,
+						    innerAlignment) );
+}
+
 
 
 QFrame *KAboutDialog::addPage( const QString &title )
