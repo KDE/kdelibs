@@ -123,6 +123,10 @@ void KCookie::getICECookie()
 	    kdWarning(900) << k_lineinfo << "Cannot find DCOP server.\n";
 	    return;
         }
+        int i;
+        if((i = disp.findRev('.')) > disp.findRev(':') && i >= 0)
+            disp.truncate(i);
+
 	QCString dcopFile = home + "/.DCOPserver_";
 	char hostName[256];
 	if (gethostname(hostName, 255))
