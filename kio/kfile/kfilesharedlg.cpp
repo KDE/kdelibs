@@ -44,21 +44,26 @@ class KFileSharePropsPlugin::Private
 {
 public:
     QVBox *m_vBox;
-
+    KProcess *m_configProc;
+    bool m_bAllShared;
+    bool m_bAllUnshared;
 };
 
 KFileSharePropsPlugin::KFileSharePropsPlugin( KPropertiesDialog *_props )
     : KPropsDlgPlugin( _props )
 {
-  d = new Private;
-  d->m_vBox = _props->addVBoxPage( i18n("&Share") );
-  properties->setFileSharingPage(d->m_vBox);
-  m_widget = 0L;
-  init();
+    d = new Private;
+    d->m_vBox = _props->addVBoxPage( i18n("&Share") );
+    d->m_configProc = 0;
+    properties->setFileSharingPage(d->m_vBox);
+    m_widget = 0L;
+    init();
 }
 
 KFileSharePropsPlugin::~KFileSharePropsPlugin()
 {
+    if (d->m_configProc)
+        d->m_configProc->detach(); // Detach to prevent that we kill the process
     delete d;
 }
 
@@ -106,17 +111,17 @@ void KFileSharePropsPlugin::init()
         bool ok = true;
         KFileItemList items = properties->items();
         // We have 3 possibilities: all shared, all unshared, or mixed.
-        bool allShared = true;
-        bool allUnshared = true;
+        d->m_bAllShared = true;
+        d->m_bAllUnshared = true;
         KFileItemListIterator it( items );
         for ( ; it.current() && ok; ++it ) {
             QString path = (*it)->url().path();
             if ( !path.startsWith( home ) )
                 ok = false;
             if ( KFileShare::isDirectoryShared( path ) )
-                allUnshared = false;
+                d->m_bAllUnshared = false;
             else
-                allShared = false;
+                d->m_bAllShared = false;
         }
         if ( !ok )
         {
@@ -142,9 +147,9 @@ void KFileSharePropsPlugin::init()
             rbGroup->insert( m_rbShare );
 
             // Activate depending on status
-            if ( allShared )
+            if ( d->m_bAllShared )
                 m_rbShare->setChecked(true);
-            if ( allUnshared )
+            if ( d->m_bAllUnshared )
                 m_rbUnShare->setChecked(true);
 
             // Some help text
@@ -191,14 +196,33 @@ void KFileSharePropsPlugin::init()
         kdWarning() << "KFileShare Authorization still NotInitialized after calling authorization() - impossible" << endl;
         break;
     }
+    m_widget->show(); // In case the dialog was shown already.
 }
 
 void KFileSharePropsPlugin::slotConfigureFileSharing()
 {
-    KProcess proc;
-    proc << KStandardDirs::findExe("kdesu") << "kcmshell" << "fileshare";
-    proc.start( KProcess::DontCare );
+    if (d->m_configProc) return;
+
+    d->m_configProc = new KProcess(this);
+    (*d->m_configProc) << KStandardDirs::findExe("kdesu") << "kcmshell" << "fileshare";
+    if (!d->m_configProc->start( KProcess::NotifyOnExit ))
+    {
+       delete d->m_configProc;
+       d->m_configProc = 0;
+       return;
+    }
+    connect(d->m_configProc, SIGNAL(processExited(KProcess *)),
+            this, SLOT(slotConfigureFileSharingDone()));
     m_pbConfig->setEnabled(false);
+}
+
+void KFileSharePropsPlugin::slotConfigureFileSharingDone()
+{
+    delete d->m_configProc;
+    d->m_configProc = 0;
+    KFileShare::readConfig();
+    KFileShare::readShareList();
+    init();
 }
 
 void KFileSharePropsPlugin::applyChanges()
@@ -207,6 +231,12 @@ void KFileSharePropsPlugin::applyChanges()
     if ( m_rbShare && m_rbUnShare )
     {
         bool share = m_rbShare->isChecked();
+
+        if (share && d->m_bAllShared)
+           return; // Nothing to do
+        if (!share && d->m_bAllUnshared)
+           return; // Nothing to do
+          
         KFileItemList items = properties->items();
         KFileItemListIterator it( items );
         bool ok = true;

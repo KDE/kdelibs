@@ -50,6 +50,7 @@ public:
 
 protected slots:
     void slotConfigureFileSharing();
+    void slotConfigureFileSharingDone();
 
 private:
     void init();
