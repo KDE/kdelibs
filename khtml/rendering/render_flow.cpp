@@ -306,41 +306,6 @@ void RenderFlow::layout( bool deep )
     //kdDebug( 6040 ) << renderName() << " " << this << "::layout() elapsed" << t.elapsed() << endl;
 }
 
-static int getIndent(RenderObject *child)
-{
-    return child->marginLeft();
-    /*int diff = child->containingBlockWidth() - child->width();
-    if(diff <= 0) return 0;
-
-    Length marginLeft = child->style()->marginLeft();
-    Length marginRight = child->style()->marginRight();
-
-    // ### hack to make <td align=> work. maybe it should be done with
-    //	   css class selectors or something?
-    if (child->style()->htmlHacks() && child->containingBlock()->isTableCell())
-    {
-    	if (child->containingBlock()->style()->textAlign()==RIGHT)
-    	{
-    	    marginLeft.type=Variable;
-    	}
-	else if (child->containingBlock()->style()->textAlign()==CENTER)
-	{
-	    marginLeft.type=Variable;
-	    marginRight.type=Variable;
-	}
-    }
-    if(marginLeft.type == Variable)
-    {
-	if(marginRight.type == Variable)
-	    diff /= 2;
-	//kdDebug( 6040 ) << "indenting margin by " << diff << endl;
-	return diff;
-    }
-    else
-	return child->marginLeft();*/
-}
-
-
 void RenderFlow::layoutBlockChildren(bool deep)
 {
 #ifdef DEBUG_LAYOUT
@@ -398,9 +363,9 @@ void RenderFlow::layoutBlockChildren(bool deep)
 
     	// html blocks flow around floats	
     	if (style()->htmlHacks() && child->style()->flowAroundFloats() ) 	
-	    child->setXPos(leftMargin(m_height) + getIndent(child));
+	    child->setXPos(leftMargin(m_height) + child->marginLeft());
 	else
-	    child->setXPos(xPos + getIndent(child));
+	    child->setXPos(xPos + child->marginLeft());
 
 	m_height += child->height();
 	
@@ -1012,11 +977,21 @@ void RenderFlow::calcMinMaxWidth()
 	    
             int margin=0;            
             //  auto margins don't affect minwidth          
-            if (child->style()->marginLeft().type == Fixed)
+
+            Length ml = child->style()->marginLeft();
+            Length mr = child->style()->marginLeft();
+            if (ml.type==Fixed && mr.type==Fixed)
+            {
+                if (style()->direction()==LTR)
+                    margin += child->marginLeft(); 
+                else
+                    margin += child->marginRight();  
+            }
+            else if (ml.type == Fixed)
                 margin += child->marginLeft();            
-            if (child->style()->marginRight().type == Fixed)
-                margin += child->marginRight();
-            
+            else if (mr.type == Fixed)
+                margin += child->marginRight();            
+                        
 	    int w = child->minWidth() + margin;
 
             	    if(m_minWidth < w) m_minWidth = w;
