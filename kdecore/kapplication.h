@@ -25,7 +25,7 @@
 
 // Version macros. Never put this further down.
 #define KDE_VERSION 290
-#define KDE_VERSION_STRING "pre-2.9 CVS >= 20010901"
+#define KDE_VERSION_STRING "pre-2.9 CVS >= 20010924"
 #define KDE_VERSION_MAJOR 2
 #define KDE_VERSION_MINOR 9
 #define KDE_VERSION_RELEASE 0

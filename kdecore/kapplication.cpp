@@ -1661,7 +1661,7 @@ void KApplication::propagateSettings(SettingsCategory arg)
     b = config->readBoolEntry("EffectFadeTooltip", false);
     QApplication::setEffectEnabled( Qt::UI_FadeTooltip, b);
     if(config->readBoolEntry("EffectNoTooltip", false))
-		QToolTip::setEnabled(false);
+        QToolTip::setGloballyEnabled(false);
 
     emit settingsChanged(arg);
 }
