@@ -20,6 +20,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.119  1998/12/13 20:32:57  ettrich
+// reverted some of the previous changes
+//
 // Revision 1.118  1998/12/13 20:04:16  ettrich
 // yet another fix for user defined SM
 //
@@ -1261,7 +1264,7 @@ void KApplication::readSettings()
   // Finally, read GUI style from config.
 	
   config->setGroup( "KDE" );
-  if ( config->readEntry( "widgetStyle", "Motif" ) == "Windows 95" )
+  if ( config->readEntry( "widgetStyle", "Windows 95" ) == "Windows 95" )
     applicationStyle=WindowsStyle;
   else
     applicationStyle=MotifStyle;
