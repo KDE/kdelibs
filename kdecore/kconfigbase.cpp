@@ -697,7 +697,7 @@ QFont KConfigBase::readFontEntry( const char *pKey, const QFont* pDefault ) cons
 
   QString aValue = readEntry( pKey );
   if( !aValue.isNull() ) {
-    if ( aValue.contains( ',' ) != 5 ) {
+    if ( aValue.contains( ',' ) > 5 ) {
       // KDE3 and upwards entry
       if ( !aRetFont.fromString( aValue ) && pDefault )
         aRetFont = *pDefault;
