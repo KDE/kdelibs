@@ -48,6 +48,13 @@ class KFontChooser : public QWidget
   
 public:
   /**
+   *  @li @p FamilyList Identifies the family (leftmost) list.
+   *  @li @p StyleList  Identifies the style (center) list
+   *  @li @p SizeList   Identifies the size (rightmost) list
+   */
+  enum FontColumn { FamilyList=0x01, StyleList=0x02, SizeList=0x04 };
+
+  /**
    * Constructor.  Create a new font picker dialog.
    *
    * @param parent The parent widget.
@@ -65,6 +72,17 @@ public:
 	       bool onlyFixed = false,
 	       const QStringList &fontList = QStringList(),
 	       bool makeFrame = true, int visibleListSize=8 );
+
+  /**
+   * Enables or disables a font column in the chooser. Use this 
+   * function if your application does not need or supports all font 
+   * properties.
+   *
+   * @param font Specifies the columns. An or'ed combination of 
+   *        FamilyList, StyleList and SizeList is possible.
+   * @param state If false the columns are disabled.
+   */
+  void enableColumn( int column, bool state );
 
   /**
    * Set the currently selected font in the chooser.
@@ -117,6 +135,9 @@ public:
    */
   static void getFontList( QStringList &list, const char *pattern );
 
+  /**
+   * Returns the preferred size of the widget
+   */
   virtual QSize sizeHint( void ) const;
 
 private slots:
@@ -151,6 +172,9 @@ protected:
   QLineEdit    *sampleEdit;
   QLineEdit    *xlfdEdit;
 
+  QLabel       *familyLabel;
+  QLabel       *styleLabel;
+  QLabel       *sizeLabel;
   KListBox     *familyListBox;
   KListBox     *styleListBox;
   KListBox     *sizeListBox;

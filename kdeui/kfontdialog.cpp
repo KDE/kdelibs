@@ -55,8 +55,6 @@
 
 #include "kfontdialog.moc"
 
-#define MINSIZE(x) x->setMinimumSize(x->sizeHint());
-
 static int minimumListWidth( const QListBox *list )
 {
   int w=0;
@@ -111,11 +109,11 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   //
   // first, create the labels across the top
   //
-  QLabel *familyLabel = new QLabel( i18n("Font"), page, "familyLabel" );
+  familyLabel = new QLabel( i18n("Font"), page, "familyLabel" );
   gridLayout->addWidget(familyLabel, row, 0, AlignLeft );
-  QLabel *styleLabel = new QLabel( i18n("Font style"), page, "styleLabel");
+  styleLabel = new QLabel( i18n("Font style"), page, "styleLabel");
   gridLayout->addWidget(styleLabel, row, 1, AlignLeft);
-  QLabel *sizeLabel = new QLabel( i18n("Size"), page, "sizeLabel");
+  sizeLabel = new QLabel( i18n("Size"), page, "sizeLabel");
   gridLayout->addWidget(sizeLabel, row, 2, AlignLeft);
 
   row ++;
@@ -201,8 +199,6 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   connect(this, SIGNAL(fontSelected(const QFont &)),
 	  SLOT(displaySample(const QFont &)));
 
-  gridLayout->activate();
-
   QVBoxLayout *vbox;
   if( makeFrame == true )
   {
@@ -228,20 +224,49 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   // Create displayable charsets list
   fillCharsetsCombo();
 
-  vbox->activate();
-
   KConfig *config = KGlobal::config();
   config->setGroup(QString::fromLatin1("General"));
   showXLFDArea(config->readBoolEntry(QString::fromLatin1("fontSelectorShowXLFD"), false));
-
-  topLayout->activate();
 }
+
 
 QSize KFontChooser::sizeHint( void ) const
 {
   return( minimumSizeHint() );
 }
 
+
+void KFontChooser::enableColumn( int column, bool state )
+{
+  if( column & FamilyList )
+  {
+    familyLabel->setEnabled(state);
+    familyListBox->setEnabled(state);
+  }
+  if( column & StyleList )
+  {
+    styleLabel->setEnabled(state);
+    styleListBox->setEnabled(state);
+  }  
+  if( column & SizeList )
+  {
+    sizeLabel->setEnabled(state);
+    sizeListBox->setEnabled(state);
+  }
+}
+
+
+void KFontChooser::setFont( const QFont& aFont, bool onlyFixed )
+{
+  selFont = aFont;
+  if( onlyFixed != usingFixed)
+  {
+    usingFixed = onlyFixed;
+    fillFamilyListBox(usingFixed);
+  }
+  setupDisplay();
+  displaySample(selFont);
+}
 
 
 void KFontChooser::charset_chosen_slot(const QString& chset)
@@ -254,18 +279,6 @@ void KFontChooser::charset_chosen_slot(const QString& chset)
   }
 
   emit fontSelected(selFont);
-}
-
-void KFontChooser::setFont( const QFont& aFont, bool onlyFixed )
-{
-  selFont = aFont;
-  if( onlyFixed != usingFixed)
-  {
-    usingFixed = onlyFixed;
-    fillFamilyListBox(usingFixed);
-  }
-  setupDisplay();
-  displaySample(selFont);
 }
 
 
@@ -519,6 +532,9 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.49  2000/01/18 21:15:02  espen
+* QListBox -> KListBox
+*
 * Revision 1.48  2000/01/17 19:07:58  bieker
 * Made it more QT_NO_CAST_ASCII and QT_NO_ASCII_CAST safe (this is not 100 %
 * yet).
