@@ -22,6 +22,10 @@
 
 // $Id$
 // $Log$
+// Revision 1.71  1998/06/18 13:41:42  radej
+// sven: fixed invisible disabled buttons (I already wanted to defend it as
+//       a feature, like You don't have to see it, it's disabled!)
+//
 // Revision 1.70  1998/06/18 08:56:57  radej
 // sven: removed debug output.
 //
@@ -955,11 +959,16 @@ void KToolBar::paintEvent(QPaintEvent *)
     // Handle point
     if (horizontal)
     {
-      qDrawShadePanel( paint, 0, 0, 9, toolbarHeight,
-                       g , false, 1, &b);
+      if (style() == MotifStyle)
+        qDrawShadePanel( paint, 0, 0, 9, toolbarHeight,
+                         g , false, 1, &b);
+      else
+        qDrawPlainRect ( paint, 0, 0, 9, toolbarHeight,
+                         g.mid(), 1, &b);
 
       paint->setPen( g.light() );
-      paint->drawLine( 9, 0, 9, toolbarHeight);
+      if (style() == MotifStyle)
+        paint->drawLine( 9, 0, 9, toolbarHeight);
       stipple_height = 3;
       while ( stipple_height < toolbarHeight-4 ) {
         paint->drawPoint( 1, stipple_height+1);
@@ -977,11 +986,16 @@ void KToolBar::paintEvent(QPaintEvent *)
     }
     else
     {
-      qDrawShadePanel( paint, 0, 0, toolbarWidth, 9,
-                       g , false, 1, &b);
+      if (style() == MotifStyle)
+        qDrawShadePanel( paint, 0, 0, toolbarWidth, 9,
+                         g , false, 1, &b);
+      else
+        qDrawPlainRect( paint, 0, 0, toolbarWidth, 9,
+                         g.mid(), 1, &b);
 
       paint->setPen( g.light() );
-      paint->drawLine( 0, 9, toolbarWidth, 9);
+      if (style() == MotifStyle)
+        paint->drawLine( 0, 9, toolbarWidth, 9);
       stipple_height = 3;
       while ( stipple_height < toolbarWidth-4 ) {
         paint->drawPoint( stipple_height+1, 1);
