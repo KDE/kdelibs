@@ -146,7 +146,7 @@ void KFileSharePropsPlugin::init()
 	    label = new QLabel( i18n("You can also reconfigure file sharing authorization.") , m_widget );
             label->setAlignment( Qt::AlignAuto | Qt::AlignVCenter | Qt::WordBreak );
 	    vbox->addWidget( label, 0 );
-	    m_pbConfig = new QPushButton( i18n("Configure File Sharing"), m_widget );
+	    m_pbConfig = new QPushButton( i18n("Configure File Sharing..."), m_widget );
 	    connect( m_pbConfig, SIGNAL( clicked() ), SLOT( slotConfigureFileSharing() ) );
 	    vbox->addWidget( m_pbConfig, 0, Qt::AlignHCenter );
 
@@ -165,7 +165,7 @@ void KFileSharePropsPlugin::init()
                     m_widget ), 0 );
         QHBoxLayout* hBox = new QHBoxLayout( (QWidget *)0L );
         vbox->addLayout( hBox, 0 );
-        m_pbConfig = new QPushButton( i18n("Configure File Sharing"), m_widget );
+        m_pbConfig = new QPushButton( i18n("Configure File Sharing..."), m_widget );
         connect( m_pbConfig, SIGNAL( clicked() ), SLOT( slotConfigureFileSharing() ) );
         hBox->addWidget( m_pbConfig, 0, Qt::AlignHCenter );
         vbox->addStretch( 10 ); // align items on top
