@@ -86,24 +86,15 @@ const char * KCharset::name()const{
 
 bool KCharset::isDisplayable(){
 
-  if (!entry) {
-    warning("KCharset: Wrong charset!\n");
-    return FALSE;
-  }  
+  if (!entry) return FALSE;  
   
   return data->isDisplayable(entry);
 }
 
 bool KCharset::isDisplayable(const char *face){
 
-  if (!entry) {
-    warning("KCharset: Wrong charset!\n");
-    return FALSE;
-  }  
-  if (!face){
-    warning("KCharset: NULL face parameter!\n");
-    return FALSE;
-  }  
+  if (!entry) return FALSE;
+  if (!face) return FALSE;
   
   kchdebug("Testing if %s is displayable in %s\n",name(),face);
   if ( stricmp(name(),"any")==0 ){
@@ -142,10 +133,7 @@ bool KCharset::isDisplayable(const char *face){
 
 bool KCharset::isRegistered()const{
 
-  if (!entry) {
-    warning("KCharset: Wrong charset!\n");
-    return FALSE;
-  }  
+  if (!entry) return FALSE;
   if (entry->registered) return TRUE;
   else return FALSE;
 }
