@@ -47,7 +47,9 @@
 
 //temporary workaround--otherwise it warns since
 //there are two possible QChar constructors:
-#define QChar(__x) QChar((int)(__x))
+//#define QChar(__x) QChar((int)(__x))
+// Commented out by David. This makes it impossible to call QChar()
+// (the constructor with no argument).
 
 struct charinfo;
 

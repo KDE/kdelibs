@@ -753,17 +753,17 @@ for(i = 0; i < (int)text.length(); i++) {      \
   parenthesize(text, i, info);                 \
 }
 
-  ADD_PAREN( QString(QChar(LESS)) + QChar(MORE) + QChar(EQUAL) )
+  ADD_PAREN( QString(QChar((int)LESS)) + QChar(MORE) + QChar(EQUAL) )
 
-  ADD_PAREN( QString(QChar(PLUS)) + QChar(MINUS) )
+  ADD_PAREN( QString(QChar((int)PLUS)) + QChar(MINUS) )
 
-  ADD_PAREN( QString(QChar(SLASH)) + QChar(TIMES) )
+  ADD_PAREN( QString(QChar((int)SLASH)) + QChar(TIMES) )
 
-  ADD_PAREN_REVERSE( QString(QChar(CAT)) ) // backwards for evaluation
+  ADD_PAREN_REVERSE( QString(QChar((int)CAT)) ) // backwards for evaluation
 
-  ADD_PAREN( QString(QChar(POWER)) + QChar(SUB) )
+  ADD_PAREN( QString(QChar((int)POWER)) + QChar(SUB) )
 
-  ADD_PAREN_REVERSE( QString(QChar(LSUB)) + QChar(LSUP) )
+  ADD_PAREN_REVERSE( QString(QChar((int)LSUB)) + QChar(LSUP) )
 
   ADD_PAREN( delim() + QChar(SQRT) + QChar(DIVIDE) + QChar(ABOVE) + QChar(BELOW) )
 
