@@ -319,14 +319,14 @@ QString KCalendarSystemHebrew::weekDayName(int day, bool shortName) const
      if (day != 6)
         return QString("%1").arg(day);
      else
-        return QString("Sab");
+        return locale()->translate("Sab");
   }
   else
   {
      if (day != 6)
         return QString("day  % 1").arg(day);
      else
-        return QString("Sabbath");
+        return locale()->translate("Sabbath");
   }
 }
 
