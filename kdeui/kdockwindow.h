@@ -11,7 +11,7 @@ class KDockWindowPrivate;
 
    This class implements dock windows.
 
-   A dock window is a small window (typically 16x16 pixel) that docks
+   A dock window is a small window (typically 24x24 pixel) that docks
    into the desktop panel. It usually displays an icon or an animated
    icon there. The icon serves as representative for the application,
    similar to a taskbar button, but consumes less screen space.
