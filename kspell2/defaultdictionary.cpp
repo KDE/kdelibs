@@ -38,14 +38,14 @@ DefaultDictionary::DefaultDictionary( const QString& lang, Broker *broker )
 {
     d = new Private;
     d->dict = broker->dictionary();
-
+    d->broker = broker;
     connect( broker, SIGNAL(configurationChanged()),
              SLOT(defaultConfigurationChanged()) );
 }
 
 DefaultDictionary::~DefaultDictionary()
 {
-    delete d;
+    delete d; d = 0;
 }
 
 bool DefaultDictionary::check( const QString& word )
