@@ -113,7 +113,7 @@ int StubProcess::ConverseStub(int check)
 	} else if (line == "scheduler") {
 	    if (m_Scheduler == SchedRealtime) writeLine("realtime");
 	    else writeLine("normal");
-	} else if (line == "build_sycoca") {
+	} else if (line == "xwindows_only") {
 	    if (m_bXOnly) writeLine("no");
 	    else writeLine("yes");
 	} else if (line == "app_start_pid") {

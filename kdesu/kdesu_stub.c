@@ -75,7 +75,7 @@ struct param_struct params[] =
     { "ice_auth", 0L },
     { "command", 0L },
     { "path", 0L },
-    { "build_sycoca", 0L },
+    { "xwindows_only", 0L },
     { "user", 0L },
     { "priority", 0L },
     { "scheduler", 0L },
@@ -90,7 +90,7 @@ struct param_struct params[] =
 #define P_ICE_AUTH 5
 #define P_COMMAND 6
 #define P_PATH 7
-#define P_SYCOCA 8
+#define P_XWIN_ONLY 8
 #define P_USER 9
 #define P_PRIORITY 10
 #define P_SCHEDULER 11
@@ -334,14 +334,13 @@ int main()
 
      xsetenv("SESSION_MANAGER", "none");
 
-    /* Rebuild the sycoca */
+    /* Rebuild the sycoca and start kdeinit? */
 
-    if (strcmp(params[P_SYCOCA].value, "no") && system("kded --check"))
-	printf("kdesu_stub: unable to create sycoca\n");
-
-    /* Start kdeinit + klauncher */
-    if (system("kdeinit"))
-	printf("kdesu_stub: unable to start kdeinit or already started\n");
+    if (strcmp(params[P_XWIN_ONLY].value, "no"))
+    {
+	system("kded --check");
+	system("kdeinit");
+    }
 
     /* Execute the command */
 
@@ -362,7 +361,8 @@ int main()
 	    {
 		if (errno == EINTR)
 		    continue;
-		perror("kdesu_stub: waitpid()");
+		if (errno != ECHILD)
+		    perror("kdesu_stub: waitpid()");
 		break;
 	    }
 	    if (WIFEXITED(state))

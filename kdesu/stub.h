@@ -40,8 +40,8 @@ public:
     void setUser(QCString user) { m_User = user; }
 
     /**
-     * Set to "X only mode": DCOP is not forwarded and the sycoca is not
-     * built.
+     * Set to "X only mode": DCOP is not forwarded, the sycoca is not
+     * built and kdeinit is not launched.
      */
     void setXOnly(bool xonly) { m_bXOnly = xonly; }
 
