@@ -111,6 +111,10 @@ public slots:
    *
    * The default format is "%p%" (which looks like "42%".)
    *
+   * Note: Setting the format to anything other then "%p%" will force centerIndicator to true,
+   * since it's often impossible to layout a progressbar with a more general format with the 
+   * indicator string anywhere else.
+   *
    * @param format %p is replaced by percentage done, %v is replaced by actual
    * value, %m is replaced by the maximum value.
    */
