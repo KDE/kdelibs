@@ -120,8 +120,8 @@ static KIO::CopyJob* chooseAndPaste( const KURL& u, QMimeSource* data,
 
     if ( clipboard && dlg.clipboardChanged() ) {
         KMessageBox::sorry( widget,
-                            i18n( "The clipboard has changed since you used 'paste', "
-                                  "the chosen data format isn't applicable anymore. "
+                            i18n( "The clipboard has changed since you used 'paste': "
+                                  "the chosen data format is no longer applicable. "
                                   "Please copy again what you wanted to paste." ) );
         return 0;
     }
