@@ -149,6 +149,15 @@ public:
   static QString iconForURL( const KURL & _url, mode_t _mode = 0 );
 
   /**
+   * @returns the "favicon" (see http://www.favicon.com) for the given @p url,
+   * if available. Does NOT attempt to download the favicon, it only returns
+   * one that is already available. 
+   *
+   * If unavailable, returns QString::null.
+   */
+  static QString favIconForURL( const KURL& url );
+
+  /**
    * @return The desriptive comment associated with the MIME type.
    */
   QString comment() const { return m_strComment; }

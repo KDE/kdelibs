@@ -44,6 +44,7 @@
 #include <qfile.h>
 #include <kmessageboxwrapper.h>
 
+#include <dcopclient.h>
 #include <kapplication.h>
 #include <kprocess.h>
 #include <kdebug.h>
@@ -206,7 +207,7 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
       static const QString& dotdesktop = KGlobal::staticQString(".desktop");
       static const QString& dotkdelnk = KGlobal::staticQString(".kdelnk");
       static const QString& dotdirectory = KGlobal::staticQString(".directory");
-      
+
       // Another filename binding, hardcoded, is .desktop:
       if ( fileName.endsWith( dotdesktop ) )
 	return mimeType( "application/x-desktop" );
@@ -380,10 +381,50 @@ QString KMimeType::iconForURL( const KURL & _url, mode_t _mode )
     QString i( mt->icon( _url, _url.isLocalFile() ));
 
     // if we don't find an icon, maybe we can use the one for the protocol
-    if ( i == unknown || i.isEmpty() || mt->name() == defaultMimeType())
-	i = KProtocolInfo::icon( _url.protocol() );
+    if ( i == unknown || i.isEmpty() || mt->name() == defaultMimeType()) {
+        i = favIconForURL( _url ); // maybe there is a favicon?
+        
+        if ( i.isEmpty() )
+            i = KProtocolInfo::icon( _url.protocol() );
+    }
     return i;
 }
+
+QString KMimeType::favIconForURL( const KURL& url )
+{
+    // this method will be called quite often, so better not read the config
+    // again and again.
+    static bool useFavIcons = true;
+    static bool check = true;
+    if ( check ) {
+        check = false;
+        KConfig *config = KGlobal::config();
+        KConfigGroupSaver cs( config, "HTML Settings" );
+        useFavIcons = config->readBoolEntry( "EnableFavicon", true );
+    }
+    
+    if ( url.isLocalFile() || !url.protocol().startsWith("http") 
+         || !useFavIcons )
+        return QString::null;
+    
+    QByteArray data;
+    QDataStream str(data, IO_WriteOnly);
+    str << url;
+    QCString replyType;
+    QByteArray reply;
+    kapp->dcopClient()->call("kded", "favicons", "iconForURL(KURL)", data,
+                             replyType, reply);
+    if (replyType == "QString")
+    {
+        QDataStream replyStr(reply, IO_ReadOnly);
+        QString result;
+        replyStr >> result;
+        return result;
+    }
+    
+    return QString::null;
+}
+
 
 
 /*******************************************************
