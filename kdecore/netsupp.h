@@ -40,16 +40,12 @@
 #define kde_sockaddr_in6 sockaddr_in6
 #endif
 
-#ifdef s6_addr
-#undef s6_addr
-#endif
-
 /*
  * This is taken from RFC 2553
  */
 struct kde_in6_addr
 {
-  unsigned char s6_addr[16];
+  unsigned char ks6_addr[16];
 };
 
 struct kde_sockaddr_in6
