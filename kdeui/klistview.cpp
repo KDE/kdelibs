@@ -1079,12 +1079,8 @@ QRect KListView::drawItemHighlighter(QPainter *painter, QListViewItem *item)
 #if QT_VERSION < 300
       style().drawFocusRect(painter, r, colorGroup(), &colorGroup().highlight(), true);
 #else
-    {
-      void *data[1];
-      data[0] = (void *)&colorGroup().highlight();
       style().drawPrimitive(QStyle::PE_FocusRect, painter, r, colorGroup(), 
-                            QStyle::Style_FocusAtBorder, data);
-    }
+                            QStyle::Style_FocusAtBorder, colorGroup().highlight());
 #endif
   }
 
@@ -1647,10 +1643,8 @@ void KListView::viewportPaintEvent(QPaintEvent *e)
 #if QT_VERSION < 300
       style().drawFocusRect(&painter, d->mOldDropHighlighter, colorGroup(), 0, true);
 #else
-      void *data[1];
-      data[0] = (void *)0;
       style().drawPrimitive(QStyle::PE_FocusRect, &painter, d->mOldDropHighlighter, colorGroup(), 
-                            QStyle::Style_FocusAtBorder, data);
+                            QStyle::Style_FocusAtBorder);
 #endif
     }
 }

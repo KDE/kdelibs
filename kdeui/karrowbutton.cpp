@@ -66,14 +66,10 @@ void KArrowButton::drawButton(QPainter *p)
 #if defined(Q_CC_GNU)
 #warning beta3's qstyle API doesn't allow to specify the background fill brush!
 #endif
-	// this is awful.... I dislike the new QStyle API...
-	int lw = 2;
-	void *data[ 1 ];
-	data[ 0 ] = (void *)&lw; 
 	style().drawPrimitive( QStyle::PE_Panel, p, QRect( 0, 0, width(), height() ),
 			       colorGroup(), 
 			       isDown() ? QStyle::Style_Sunken : QStyle::Style_Default,
-			       data );
+			       QStyleOption( 2, 0 ) );
 #endif
 
 	if (static_cast<unsigned int>(width()) < arrowSize + margin ||

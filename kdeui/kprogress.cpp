@@ -22,6 +22,7 @@
 #include <qpainter.h>
 #include <qpixmap.h>
 #include <qstring.h>
+#include <qregexp.h>
 
 #include "kprogress.h"
 
@@ -215,6 +216,7 @@ void KProgress::styleChange(QStyle&)
 
 void KProgress::adjustStyle()
 {
+#if QT_VERSION < 300
 	switch (style().guiStyle()) {
 		case WindowsStyle:
 			setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
@@ -225,6 +227,11 @@ void KProgress::adjustStyle()
 			setLineWidth( 2 );
 			break;
 	}
+#else
+// it seems on qt2 guiStyle() was _always_ MotifStyle! (see qstyle.cpp)
+	setFrameStyle(QFrame::Panel | QFrame::Sunken);
+	setLineWidth( 2 );
+#endif
 	update();
 }
 

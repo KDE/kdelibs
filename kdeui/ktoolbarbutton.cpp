@@ -33,6 +33,8 @@
 #include <qtooltip.h>
 #include <qbitmap.h>
 #include <qpopupmenu.h>
+#include <qcursor.h>
+#include <qpainter.h>
 
 #include <kapp.h>
 #include <kdebug.h>
@@ -531,17 +533,23 @@ void KToolBarButton::drawButton( QPainter *_painter )
 
   if ( isDown() || isOn() )
   {
+#if QT_VERSION < 300
     if ( style().guiStyle() == WindowsStyle )
       qDrawWinButton(_painter, 0, 0, width(), height(), colorGroup(), true );
     else
+#endif
+// it seems on qt2 guiStyle() was _always_ MotifStyle! (see qstyle.cpp)
       qDrawShadePanel(_painter, 0, 0, width(), height(), colorGroup(), true, 2, 0L );
   }
 
   else if ( d->m_isRaised )
   {
+#if QT_VERSION < 300
     if ( style().guiStyle() == WindowsStyle )
       qDrawWinButton( _painter, 0, 0, width(), height(), colorGroup(), false );
     else
+#endif
+// it seems on qt2 guiStyle() was _always_ MotifStyle! (see qstyle.cpp)
       qDrawShadePanel( _painter, 0, 0, width(), height(), colorGroup(), false, 2, 0L );
   }
 
@@ -556,11 +564,14 @@ void KToolBarButton::drawButton( QPainter *_painter )
     {
       dx = ( width() - pixmap()->width() ) / 2;
       dy = ( height() - pixmap()->height() ) / 2;
+#if QT_VERSION < 300
       if ( isDown() && style().guiStyle() == WindowsStyle )
       {
         ++dx;
         ++dy;
       }
+#endif
+// it seems on qt2 guiStyle() was _always_ MotifStyle! (see qstyle.cpp)
       _painter->drawPixmap( dx, dy, *pixmap() );
     }
   }
@@ -570,11 +581,14 @@ void KToolBarButton::drawButton( QPainter *_painter )
     {
       dx = 4;
       dy = ( height() - pixmap()->height() ) / 2;
+#if QT_VERSION < 300
       if ( isDown() && style().guiStyle() == WindowsStyle )
       {
         ++dx;
         ++dy;
       }
+#endif
+// it seems on qt2 guiStyle() was _always_ MotifStyle! (see qstyle.cpp)
       _painter->drawPixmap( dx, dy, *pixmap() );
     }
 
@@ -586,11 +600,14 @@ void KToolBarButton::drawButton( QPainter *_painter )
       else
         dx = 4;
       dy = 0;
+#if QT_VERSION < 300
       if ( isDown() && style().guiStyle() == WindowsStyle )
       {
         ++dx;
         ++dy;
       }
+#endif
+// it seems on qt2 guiStyle() was _always_ MotifStyle! (see qstyle.cpp)
 
       _painter->setFont(KGlobalSettings::toolBarFont());
       if(d->m_isRaised)
@@ -607,11 +624,14 @@ void KToolBarButton::drawButton( QPainter *_painter )
         _painter->setPen(palette().disabled().dark());
       dx = (width() - fm.width(textLabel())) / 2;
       dy = (height() - fm.lineSpacing()) / 2;
+#if QT_VERSION < 300
       if ( isDown() && style().guiStyle() == WindowsStyle )
       {
         ++dx;
         ++dy;
       }
+#endif
+// it seems on qt2 guiStyle() was _always_ MotifStyle! (see qstyle.cpp)
 
       _painter->setFont(KGlobalSettings::toolBarFont());
       if(d->m_isRaised)
@@ -625,11 +645,14 @@ void KToolBarButton::drawButton( QPainter *_painter )
     {
       dx = (width() - pixmap()->width()) / 2;
       dy = (height() - fm.lineSpacing() - pixmap()->height()) / 2;
+#if QT_VERSION < 300
       if ( isDown() && style().guiStyle() == WindowsStyle )
       {
         ++dx;
         ++dy;
       }
+#endif 
+// it seems on qt2 guiStyle() was _always_ MotifStyle! (see qstyle.cpp)
       _painter->drawPixmap( dx, dy, *pixmap() );
     }
 
@@ -639,11 +662,14 @@ void KToolBarButton::drawButton( QPainter *_painter )
       dx = (width() - fm.width(textLabel())) / 2;
       dy = height() - fm.lineSpacing() - 4;
 
+#if QT_VERSION < 300
       if ( isDown() && style().guiStyle() == WindowsStyle )
       {
         ++dx;
         ++dy;
       }
+#endif
+// it seems on qt2 guiStyle() was _always_ MotifStyle! (see qstyle.cpp)
 
       _painter->setFont(KGlobalSettings::toolBarFont());
       if(d->m_isRaised)

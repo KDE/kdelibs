@@ -34,6 +34,7 @@
 #include <qstring.h>
 #include <qrect.h>
 #include <qobjectlist.h>
+#include <qtimer.h>
 
 #include <config.h>
 
@@ -1295,6 +1296,7 @@ void KToolBar::paintEvent(QPaintEvent *)
 
 void KToolBar::rebuildLayout()
 {
+#if QT_VERSION < 300
     layoutTimer->stop();
     QApplication::sendPostedEvents( this, QEvent::ChildInserted );
     delete layout();
@@ -1331,6 +1333,7 @@ void KToolBar::rebuildLayout()
             bl->setStretchFactor( stretchableWidget, 10 );
     }
     bl->activate();
+#endif
 }
 
 void KToolBar::childEvent( QChildEvent *e )

@@ -735,8 +735,11 @@ void KDoubleNumInput::doLayout()
 
     if ( edit->frame() ) {
         h += 8;
+// it seems on qt2 guiStyle() was _always_ MotifStyle! (see qstyle.cpp)
+#if QT_VERSION < 300
         if ( edit->style().guiStyle() == WindowsStyle && h < 26 )
             h = 22;
+#endif
         m_sizeEdit.setWidth(w + 8);
         m_sizeEdit.setHeight(h);
     } else {
