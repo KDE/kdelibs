@@ -223,6 +223,7 @@ AC_OUTPUT(Makefile \
 	kspell/Makefile \
 	kab/Makefile \
 	kformula/Makefile \
+	kformula/pics/Makefile \
 	toolbar/Makefile \
 	doc/Makefile \
 	doc/kfile/Makefile \
