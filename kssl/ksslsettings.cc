@@ -119,7 +119,6 @@ bool KSSLSettings::tlsv1() const {
 QString KSSLSettings::getCipherList() {
 QString clist = "";
 #ifdef HAVE_SSL
-  if (!m_bUseTLSv1) {
     QString tcipher;
     bool firstcipher = true;
     SSL_METHOD *meth;
@@ -127,9 +126,7 @@ QString clist = "";
                             cipherSort.setAutoDelete(true);
 
 
-    if (m_bUseTLSv1)
-      meth = d->kossl->TLSv1_client_method();
-    else if (m_bUseSSLv2 && m_bUseSSLv3)
+    if (m_bUseSSLv2 && m_bUseSSLv3)
       meth = d->kossl->SSLv23_client_method();
     else if (m_bUseSSLv3)
       meth = d->kossl->SSLv3_client_method();
@@ -184,7 +181,6 @@ QString clist = "";
     
     //    kdDebug() << "Cipher list is: " << clist << endl;
 
-  } // if
 #endif
 return clist;
 }
@@ -193,7 +189,7 @@ return clist;
 void KSSLSettings::load() {
   m_cfg->reparseConfiguration();
 
-  m_cfg->setGroup("TLSv1");
+  m_cfg->setGroup("TLS");
   m_bUseTLSv1 = m_cfg->readBoolEntry("Enabled", false);
  
   m_cfg->setGroup("SSLv2");
@@ -242,7 +238,7 @@ void KSSLSettings::defaults() {
 
 
 void KSSLSettings::save() {
-  m_cfg->setGroup("TLSv1");
+  m_cfg->setGroup("TLS");
   m_cfg->writeEntry("Enabled", m_bUseTLSv1);
  
   m_cfg->setGroup("SSLv2");

@@ -139,16 +139,13 @@ bool KSSL::initialize() {
     m_cfg->load();
 
   seedWithEGD();
-  // TLS1 goes first - it excludes SSL2/3
   // FIXME: we should be able to force SSL off entirely.
   //        This logic here makes v2 a "default" if no other SSL
   //        version is turned on.  IMHO this is the safest one to
   //        use as the default anyways, so I'm not changing it yet.
-  d->lastInitTLS = m_cfg->tlsv1();
+  d->lastInitTLS = false;
 
-  if (m_cfg->tlsv1())
-    d->m_meth = d->kossl->TLSv1_client_method();
-  else if (m_cfg->sslv2() && m_cfg->sslv3())
+  if (m_cfg->sslv2() && m_cfg->sslv3())
     d->m_meth = d->kossl->SSLv23_client_method();
   else if (m_cfg->sslv3())
     d->m_meth = d->kossl->SSLv3_client_method();
