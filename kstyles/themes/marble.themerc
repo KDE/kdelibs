@@ -239,12 +239,12 @@ Comment[zh_CN.GB2312]=浅色的大理石主题风格
 Comment[zh_TW.Big5]=淺色的大理石主題風格
 
 [General]
-foreground=0,0,0
+Foreground=0,0,0
 selectForeground=255,255,255
 selectBackground=0,0,128
-background=192,192,192
+Background=192,192,192
 windowForeground=0,0,0
-windowBackground=255,255,255     
+windowBackground=255,255,255
 
 [KDE]
 contrast=5
