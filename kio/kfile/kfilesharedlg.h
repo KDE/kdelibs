@@ -20,7 +20,7 @@
 #ifndef kfilesharedlg_h
 #define kfilesharedlg_h
 
-#include <kpropsdlg.h>
+#include <kpropertiesdialog.h>
 class QVBoxLayout;
 class QRadioButton;
 class QPushButton;
