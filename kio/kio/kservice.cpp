@@ -427,7 +427,7 @@ QVariant KService::property( const QString& _name, QVariant::Type t ) const
   {
     // No luck, let's ask KServiceTypeFactory what the type of this property
     // is supposed to be.
-    QVariant::Type t = KServiceTypeFactory::self()->findPropertyTypeByName(_name);
+    t = KServiceTypeFactory::self()->findPropertyTypeByName(_name);
     if (t == QVariant::Invalid)
     {
       kdDebug(7012) << "Request for unknown property '" << _name << "'\n";
