@@ -1,0 +1,10 @@
+dnl ------------------------------------------------------------------------
+dnl Try to find if FAM is installed
+dnl ------------------------------------------------------------------------
+dnl
+kde_have_fam=
+AC_CHECK_LIB(fam, FAMOpen, [LIBFAM="-lfam"; kde_have_fam=yes],kde_have_fam=no)
+AC_SUBST(LIBFAM)
+if test $kde_have_fam = yes; then
+  AC_DEFINE_UNQUOTED(HAVE_FAM, 1, [Define if your system has libfam])
+fi

@@ -58,7 +58,7 @@ KDirWatch::KDirWatch (int _freq)
 
   freq = _freq;
 
-#ifdef USE_FAM
+#ifdef HAVE_FAM
   // It's possible that FAM server can't be started
   if (FAMOpen(&fc) ==0) {
     kdDebug(7001) << "KDirWatch: Using FAM" << endl;
@@ -81,7 +81,7 @@ KDirWatch::~KDirWatch()
   timer->stop();
   //  delete timer; timer was created with 'this' as parent!
 
-#ifdef USE_FAM
+#ifdef HAVE_FAM
   if (use_fam) {
     FAMClose(&fc);
     kdDebug(7001) << "KDirWatch deleted (FAM closed)" << endl;
@@ -108,7 +108,7 @@ void KDirWatch::addDir( const QString& _path )
   e.m_clients = 1;
   e.m_ctime = statbuff.st_ctime;
 
-#ifdef USE_FAM
+#ifdef HAVE_FAM
   if (use_fam) {
     FAMMonitorDirectory(&fc, QFile::encodeName(path), &(e.fr), 0);
     // kdDebug(7001) << "KDirWatch added " <<
@@ -120,7 +120,7 @@ void KDirWatch::addDir( const QString& _path )
 
 
 
-#ifdef USE_FAM
+#ifdef HAVE_FAM
   // if FAM server can't be used, fall back to good old timer...
   if (!use_fam)
 #endif
@@ -163,7 +163,7 @@ void KDirWatch::removeDir( const QString& _path )
   if ( (*it).m_clients > 0 )
     return;
 
-#ifdef USE_FAM
+#ifdef HAVE_FAM
   if (use_fam) {
     FAMCancelMonitor(&fc, &((*it).fr) );
     // kdDebug(7001) << "KDirWatch deleted: " <<
@@ -173,7 +173,7 @@ void KDirWatch::removeDir( const QString& _path )
 
   m_mapDirs.remove( it );
 
-#ifdef USE_FAM
+#ifdef HAVE_FAM
   if (!use_fam)
 #endif
   if( m_mapDirs.isEmpty() )
@@ -195,7 +195,7 @@ bool KDirWatch::stopDirScan( const QString& _path )
 
   (*it).m_ctime = NO_NOTIFY;
 
-#ifdef USE_FAM
+#ifdef HAVE_FAM
   if (use_fam) {
     FAMSuspendMonitor(&fc, &((*it).fr) );
   }
@@ -220,7 +220,7 @@ bool KDirWatch::restartDirScan( const QString& _path )
   stat( QFile::encodeName(path), &statbuff );
   (*it).m_ctime = statbuff.st_ctime;
 
-#ifdef USE_FAM
+#ifdef HAVE_FAM
   if (use_fam) {
     FAMResumeMonitor(&fc, &((*it).fr) );
   }
@@ -231,7 +231,7 @@ bool KDirWatch::restartDirScan( const QString& _path )
 
 void KDirWatch::stopScan()
 {
-#ifdef USE_FAM
+#ifdef HAVE_FAM
   if (use_fam)
     emitEvents = false;
   else
@@ -243,7 +243,7 @@ void KDirWatch::startScan( bool notify, bool skippedToo )
 {
   if (!notify)
     resetList(skippedToo);
-#ifdef USE_FAM
+#ifdef HAVE_FAM
   if (use_fam)
     emitEvents = true;
   else
@@ -311,7 +311,7 @@ void KDirWatch::setFileDirty( const QString & _file )
   emit fileDirty( _file );
 }
 
-#ifdef USE_FAM
+#ifdef HAVE_FAM
 void KDirWatch::famEventReceived()
 {
   if (!use_fam || !emitEvents) return;

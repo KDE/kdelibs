@@ -25,8 +25,7 @@
 #include <qtimer.h>
 #include <qmap.h>
 
-#ifdef HAVE_FAM_H
-#define USE_FAM
+#ifdef HAVE_FAM
 #include <fam.h>
 class QSocketNotifier;
 #endif
@@ -164,7 +163,7 @@ class KDirWatch : public QObject
   {
     time_t m_ctime;
     int m_clients;    
-#ifdef USE_FAM
+#ifdef HAVE_FAM
     FAMRequest fr;
 #endif
   };
@@ -177,7 +176,7 @@ class KDirWatch : public QObject
 
   static KDirWatch* s_pSelf;
 
-#ifdef USE_FAM
+#ifdef HAVE_FAM
   QSocketNotifier *sn;
   FAMConnection fc;
   FAMEvent fe;
