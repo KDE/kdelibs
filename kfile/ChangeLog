@@ -1,3 +1,7 @@
+1998-04-17  Stephan Kulow  <coolo@kde.org>
+
+	* kfileinfocontents.cpp: use the new icons by Mark
+
 Thu Apr 16 10:51:24 1998  Daniel Grana <grana@ie.iwi.unibe.ch>
 
 	* kfiledialog.*: some small fixes concerning preview

@@ -60,10 +60,10 @@ KFileInfoContents::KFileInfoContents( bool use, QDir::SortSpec sorting )
                                     "/mini/lockedfolder.xpm");
     if (!file_pixmap)
 	file_pixmap = new QPixmap(KApplication::kde_icondir() +
-				  "/mini/mini-ball.xpm");
+				  "/mini/unknown.xpm");
     if (!locked_file)
 	locked_file = new QPixmap(KApplication::kde_icondir() +
-				  "/mini/mini-rball.xpm");
+				  "/mini/locked.xpm");
 
     filesNumber = 0;
     dirsNumber = 0;

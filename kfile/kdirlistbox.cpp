@@ -74,10 +74,10 @@ KDirListBoxItem::KDirListBoxItem(const KFileInfo *i)
     
     if (!file_pixmap)
 	file_pixmap = new QPixmap(KApplication::kde_icondir() +
-				  "/mini/mini-ball.xpm");
+				  "/mini/unknown.xpm");
     if (!locked_file)
 	locked_file = new QPixmap(KApplication::kde_icondir() +
-				  "/mini/mini-rball.xpm");
+				  "/mini/locked.xpm");
     
     if (i->isDir())
       pm = (i->isReadable()) ? folder_pixmap : locked_folder;
