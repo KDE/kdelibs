@@ -34,7 +34,7 @@ KMConfigCommand::KMConfigCommand(QWidget *parent, const char *name)
 
 	QGroupBox	*gb = new QGroupBox(0, Qt::Horizontal, i18n("Co&mmands"), this);
 	QLabel	*lab = new QLabel(i18n(
-				"<p>Command objects are used as basis to build both print filters "
+				"<p>Command objects are used as the basis to build both print filters "
 				"and special printers. They are described by a command string, a "
 				"set of options, a set of requirements and associated mime types. "
 				"Here you can create new command objects and edit existing ones. All "

@@ -78,10 +78,10 @@ KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 
 	QWhatsThis::add(m_usefile,
 		i18n("<p>The command will use an output file. If checked, make sure the "
-		     "command contain an output tag.</p>"));
+		     "command contains an output tag.</p>"));
 	QWhatsThis::add(m_command,
 		i18n("<p>The command to execute when printing on this special printer. Either enter "
-			 "directly the command to execute, or associate/create a command object with/for "
+			 "the command to execute directly, or associate/create a command object with/for "
 			 "this special printer. The command object is the preferred method as it provides "
 			 "support for advanced settings like mime type checking, configurable options and "
 			 "requirement list (the plain command is only provided for backward compatibility). "
@@ -137,7 +137,7 @@ bool KMSpecialPrinterDlg::checkSettings()
 {
 	QString	msg;
 	if (m_name->text().isEmpty())
-		msg = i18n("You must provide a non empty name.");
+		msg = i18n("You must provide a non-empty name.");
 	else
 		KXmlCommandManager::self()->checkCommand(m_command->command(),
 					KXmlCommandManager::Basic,

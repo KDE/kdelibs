@@ -114,14 +114,14 @@ void EscpWidget::startCommand(const QString& arg)
 		else if (protocol != "file" && protocol != "parallel" && protocol != "serial" && !protocol.isEmpty())
 		{
 			KMessageBox::error(this,
-				i18n("Unsupported connexion type: %1").arg(protocol));
+				i18n("Unsupported connection type: %1").arg(protocol));
 			return;
 		}
 	}
 
 	if (m_proc.isRunning())
 	{
-		KMessageBox::error(this, i18n("A <b>escputil</b> process is still running. "
+		KMessageBox::error(this, i18n("An <b>escputil</b> process is still running. "
 		                              "You must wait until its completion before continuing."));
 		return;
 	}

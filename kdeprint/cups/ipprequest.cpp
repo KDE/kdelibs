@@ -191,10 +191,10 @@ QString IppRequest::statusMessage()
 	switch (status())
 	{
 		case -2:
-			msg = i18n("Connexion to CUPS server failed. Check that the CUPS server is correctly installed and running.");
+			msg = i18n("Connection to CUPS server failed. Check that the CUPS server is correctly installed and running.");
 			break;
 		case -1:
-			msg = i18n("The IPP request failed for unknown reason.");
+			msg = i18n("The IPP request failed for an unknown reason.");
 			break;
 		default:
 			msg = QString::fromLocal8Bit(ippErrorString((ipp_status_t)status()));

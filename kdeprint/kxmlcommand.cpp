@@ -713,7 +713,7 @@ bool KXmlCommandManager::checkCommand(const QString& xmlId, int inputCheck, int 
 	{
 		status = (xmlCmd->isValid() && KdeprintChecker::check(xmlCmd->requirements()));
 		if (!status)
-			errmsg = i18n("One of the command object's requirement is not met.");
+			errmsg = i18n("One of the command object's requirements is not met.");
 	}
 	QString	cmd = (xmlCmd ? xmlCmd->command() : xmlId);
 	if (status && !cmd.isEmpty() && (inputCheck > None || outputCheck > None))

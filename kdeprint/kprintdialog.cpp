@@ -269,7 +269,7 @@ void KPrintDialog::initialize(KPrinter *printer)
 	{
 		KMessageBox::error(parentWidget(),
 			"<nobr>"+
-			i18n("An error occured while retrieving the printer list:")
+			i18n("An error occurred while retrieving the printer list:")
 			+"</nobr><br><br>"+KMManager::self()->errorMsg());
 	}
 
