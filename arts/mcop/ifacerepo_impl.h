@@ -33,10 +33,11 @@
 #define IFACEREPO_H
 
 #include "core.h"
+#include <map>
 
 namespace Arts {
 
-class InterfaceRepo_impl : virtual public InterfaceRepo_skel {
+class InterfaceRepo_impl : virtual public InterfaceRepoV2_skel {
 	class Entry {
 	public:
 		long moduleID;
@@ -69,6 +70,7 @@ class InterfaceRepo_impl : virtual public InterfaceRepo_skel {
 	std::list<EnumEntry *> enums;
 	std::list<TypeEntry *> types;
 	std::list<InterfaceEntry *> interfaces;
+	std::map<string, TypeIdentification> tiMap;
 
 	long nextModuleID;
 
@@ -82,6 +84,8 @@ public:
 	InterfaceDef queryInterface(const std::string& name);
 	TypeDef queryType(const std::string& name);
 	EnumDef queryEnum(const std::string& name);
+
+	TypeIdentification identifyType(const std::string& name);
 
 	std::vector<std::string> *queryChildren(const std::string& name);
 	std::vector<std::string> *queryInterfaces();

@@ -10,6 +10,7 @@ enum HeaderMagic {MCOP_MAGIC = 1296256848};
 enum MessageType {mcopMessageInvalid = 0, mcopServerHello = 1, mcopClientHello = 2, mcopAuthAccept = 3, mcopInvocation = 4, mcopReturn = 5, mcopOnewayInvocation = 6};
 enum MethodType {methodOneway = 1, methodTwoway = 2};
 enum AttributeType {streamIn = 1, streamOut = 2, streamMulti = 4, attributeStream = 8, attributeAttribute = 16, streamAsync = 32, streamDefault = 64};
+enum TypeIdentification {tiUnknown = 0, tiVoid = 1, tiLong = 2, tiByte = 3, tiString = 4, tiBoolean = 5, tiFloat = 6, tiEnum = 128, tiType = 129, tiInterface = 130};
 };
 namespace Arts {
 class Header : public Arts::Type {
@@ -292,6 +293,7 @@ public:
 };
 namespace Arts {
 class InterfaceRepo;
+class InterfaceRepoV2;
 class FlowSystemSender;
 class FlowSystemReceiver;
 class FlowSystem;
@@ -411,6 +413,105 @@ public:
 	inline std::vector<std::string> * queryInterfaces();
 	inline std::vector<std::string> * queryTypes();
 	inline std::vector<std::string> * queryEnums();
+};
+
+class InterfaceRepoV2_base : virtual public Arts::InterfaceRepo_base {
+public:
+	static unsigned long _IID; // interface ID
+
+	static InterfaceRepoV2_base *_create(const std::string& subClass = "Arts::InterfaceRepoV2");
+	static InterfaceRepoV2_base *_fromString(std::string objectref);
+	static InterfaceRepoV2_base *_fromReference(Arts::ObjectReference ref, bool needcopy);
+
+	inline InterfaceRepoV2_base *_copy() {
+		assert(_refCnt > 0);
+		_refCnt++;
+		return this;
+	}
+
+	virtual std::vector<std::string> _defaultPortsIn() const;
+	virtual std::vector<std::string> _defaultPortsOut() const;
+
+	void *_cast(unsigned long iid);
+
+	virtual Arts::TypeIdentification identifyType(const std::string& name) = 0;
+};
+
+class InterfaceRepoV2_stub : virtual public InterfaceRepoV2_base, virtual public Arts::InterfaceRepo_stub {
+protected:
+	InterfaceRepoV2_stub();
+
+public:
+	InterfaceRepoV2_stub(Arts::Connection *connection, long objectID);
+
+	Arts::TypeIdentification identifyType(const std::string& name);
+};
+
+class InterfaceRepoV2_skel : virtual public InterfaceRepoV2_base, virtual public Arts::InterfaceRepo_skel {
+public:
+	InterfaceRepoV2_skel();
+
+	static std::string _interfaceNameSkel();
+	std::string _interfaceName();
+	bool _isCompatibleWith(const std::string& interfacename);
+	void _buildMethodTable();
+	void dispatch(Arts::Buffer *request, Arts::Buffer *result,long methodID);
+};
+
+};
+#include "reference.h"
+namespace Arts {
+class InterfaceRepoV2 : public Arts::Object {
+private:
+	static Arts::Object_base* _Creator();
+	InterfaceRepoV2_base *_cache;
+	inline InterfaceRepoV2_base *_method_call() {
+		_pool->checkcreate();
+		if(_pool->base) {
+			_cache=(InterfaceRepoV2_base *)_pool->base->_cast(InterfaceRepoV2_base::_IID);
+			assert(_cache);
+		}
+		return _cache;
+	}
+
+protected:
+	inline InterfaceRepoV2(InterfaceRepoV2_base* b) : Arts::Object(b), _cache(0) {}
+
+
+public:
+	typedef InterfaceRepoV2_base _base_class;
+
+	inline InterfaceRepoV2() : Arts::Object(_Creator), _cache(0) {}
+	inline InterfaceRepoV2(const Arts::SubClass& s) :
+		Arts::Object(InterfaceRepoV2_base::_create(s.string())), _cache(0) {}
+	inline InterfaceRepoV2(const Arts::Reference &r) :
+		Arts::Object(r.isString()?(InterfaceRepoV2_base::_fromString(r.string())):(InterfaceRepoV2_base::_fromReference(r.reference(),true))), _cache(0) {}
+	inline InterfaceRepoV2(const Arts::DynamicCast& c) : Arts::Object(InterfaceRepoV2_base::_fromString(c.object().toString())), _cache(0) {}
+	inline InterfaceRepoV2(const InterfaceRepoV2& target) : Arts::Object(target._pool), _cache(target._cache) {}
+	inline InterfaceRepoV2(Arts::Object::Pool& p) : Arts::Object(p), _cache(0) {}
+	inline static InterfaceRepoV2 null() {return InterfaceRepoV2((InterfaceRepoV2_base*)0);}
+	inline static InterfaceRepoV2 _from_base(InterfaceRepoV2_base* b) {return InterfaceRepoV2(b);}
+	inline InterfaceRepoV2& operator=(const InterfaceRepoV2& target) {
+		if (_pool == target._pool) return *this;
+		_pool->Dec();
+		_pool = target._pool;
+		_cache = target._cache;
+		_pool->Inc();
+		return *this;
+	}
+	inline operator Arts::InterfaceRepo() const { return Arts::InterfaceRepo(*_pool); }
+	inline InterfaceRepoV2_base* _base() {return _cache?_cache:_method_call();}
+
+	inline long insertModule(const Arts::ModuleDef& newModule);
+	inline void removeModule(long moduleID);
+	inline Arts::InterfaceDef queryInterface(const std::string& name);
+	inline Arts::TypeDef queryType(const std::string& name);
+	inline Arts::EnumDef queryEnum(const std::string& name);
+	inline std::vector<std::string> * queryChildren(const std::string& name);
+	inline std::vector<std::string> * queryInterfaces();
+	inline std::vector<std::string> * queryTypes();
+	inline std::vector<std::string> * queryEnums();
+	inline Arts::TypeIdentification identifyType(const std::string& name);
 };
 
 class FlowSystemSender_base : virtual public Arts::Object_base {
@@ -1118,6 +1219,56 @@ inline std::vector<std::string> * Arts::InterfaceRepo::queryTypes()
 inline std::vector<std::string> * Arts::InterfaceRepo::queryEnums()
 {
 	return _cache?static_cast<Arts::InterfaceRepo_base*>(_cache)->queryEnums():static_cast<Arts::InterfaceRepo_base*>(_method_call())->queryEnums();
+}
+
+inline long Arts::InterfaceRepoV2::insertModule(const Arts::ModuleDef& newModule)
+{
+	return _cache?static_cast<Arts::InterfaceRepo_base*>(_cache)->insertModule(newModule):static_cast<Arts::InterfaceRepo_base*>(_method_call())->insertModule(newModule);
+}
+
+inline void Arts::InterfaceRepoV2::removeModule(long moduleID)
+{
+	 _cache?static_cast<Arts::InterfaceRepo_base*>(_cache)->removeModule(moduleID):static_cast<Arts::InterfaceRepo_base*>(_method_call())->removeModule(moduleID);
+}
+
+inline Arts::InterfaceDef Arts::InterfaceRepoV2::queryInterface(const std::string& name)
+{
+	return _cache?static_cast<Arts::InterfaceRepo_base*>(_cache)->queryInterface(name):static_cast<Arts::InterfaceRepo_base*>(_method_call())->queryInterface(name);
+}
+
+inline Arts::TypeDef Arts::InterfaceRepoV2::queryType(const std::string& name)
+{
+	return _cache?static_cast<Arts::InterfaceRepo_base*>(_cache)->queryType(name):static_cast<Arts::InterfaceRepo_base*>(_method_call())->queryType(name);
+}
+
+inline Arts::EnumDef Arts::InterfaceRepoV2::queryEnum(const std::string& name)
+{
+	return _cache?static_cast<Arts::InterfaceRepo_base*>(_cache)->queryEnum(name):static_cast<Arts::InterfaceRepo_base*>(_method_call())->queryEnum(name);
+}
+
+inline std::vector<std::string> * Arts::InterfaceRepoV2::queryChildren(const std::string& name)
+{
+	return _cache?static_cast<Arts::InterfaceRepo_base*>(_cache)->queryChildren(name):static_cast<Arts::InterfaceRepo_base*>(_method_call())->queryChildren(name);
+}
+
+inline std::vector<std::string> * Arts::InterfaceRepoV2::queryInterfaces()
+{
+	return _cache?static_cast<Arts::InterfaceRepo_base*>(_cache)->queryInterfaces():static_cast<Arts::InterfaceRepo_base*>(_method_call())->queryInterfaces();
+}
+
+inline std::vector<std::string> * Arts::InterfaceRepoV2::queryTypes()
+{
+	return _cache?static_cast<Arts::InterfaceRepo_base*>(_cache)->queryTypes():static_cast<Arts::InterfaceRepo_base*>(_method_call())->queryTypes();
+}
+
+inline std::vector<std::string> * Arts::InterfaceRepoV2::queryEnums()
+{
+	return _cache?static_cast<Arts::InterfaceRepo_base*>(_cache)->queryEnums():static_cast<Arts::InterfaceRepo_base*>(_method_call())->queryEnums();
+}
+
+inline Arts::TypeIdentification Arts::InterfaceRepoV2::identifyType(const std::string& name)
+{
+	return _cache?static_cast<Arts::InterfaceRepoV2_base*>(_cache)->identifyType(name):static_cast<Arts::InterfaceRepoV2_base*>(_method_call())->identifyType(name);
 }
 
 inline void Arts::FlowSystemSender::processed()

@@ -355,6 +355,27 @@ interface InterfaceRepo {
 	sequence<string> queryEnums();
 };
 
+enum TypeIdentification {
+	tiUnknown = 0,
+	tiVoid = 1,
+	tiLong = 2,
+	tiByte = 3,
+	tiString = 4,
+	tiBoolean = 5,
+	tiFloat = 6,
+	tiEnum = 128,
+	tiType = 129,
+	tiInterface = 130
+};
+
+interface InterfaceRepoV2 : InterfaceRepo {
+	/**
+	 * identifies whether a type is a primitive, enum, type or interface,
+	 * or not known at all
+	 */
+	TypeIdentification identifyType(string name);
+};
+
 /**
  * Flow System interface
  */

@@ -31,6 +31,12 @@ using namespace Arts;
 InterfaceRepo_impl::InterfaceRepo_impl()
 {
 	nextModuleID = 1;
+	tiMap["void"] = tiVoid;
+	tiMap["byte"] = tiByte;
+	tiMap["string"] = tiString;
+	tiMap["boolean"] = tiBoolean;
+	tiMap["float"] = tiFloat;
+	tiMap["long"] = tiLong;
 }
 
 long InterfaceRepo_impl::insertModule(const ModuleDef& newModule)
@@ -44,7 +50,10 @@ long InterfaceRepo_impl::insertModule(const ModuleDef& newModule)
 	{
 		Buffer b;
 		ii->writeType(b);
-		interfaces.push_back(new InterfaceEntry(b,moduleID));
+		InterfaceEntry *ie = new InterfaceEntry(b,moduleID);
+		interfaces.push_back(ie);
+
+		tiMap[ie->name] = tiInterface;
 	}
 
 	/* insert types */
@@ -54,7 +63,10 @@ long InterfaceRepo_impl::insertModule(const ModuleDef& newModule)
 	{
 		Buffer b;
 		ti->writeType(b);
-		types.push_back(new TypeEntry(b,moduleID));
+		TypeEntry *entry = new TypeEntry(b,moduleID);
+		types.push_back(entry);
+
+		tiMap[entry->name] = tiType;
 	}
 
 	/* insert enums */
@@ -64,7 +76,10 @@ long InterfaceRepo_impl::insertModule(const ModuleDef& newModule)
 	{
 		Buffer b;
 		ei->writeType(b);
-		enums.push_back(new EnumEntry(b,moduleID));
+		EnumEntry *entry = new EnumEntry(b,moduleID);
+		enums.push_back(entry);
+
+		tiMap[entry->name] = tiEnum;
 	}
 
 	return moduleID;
@@ -122,11 +137,7 @@ InterfaceDef InterfaceRepo_impl::queryInterfaceLocal(const string& name)
 	for(ii = interfaces.begin();ii != interfaces.end();ii++)
 	{
 		if((*ii)->name == name)
-		{
-			Buffer b;
-			(*ii)->writeType(b);
-			return InterfaceDef(b);
-		}
+			return **ii;
 	}
 	return InterfaceDef();
 }
@@ -187,11 +198,7 @@ TypeDef InterfaceRepo_impl::queryType(const string& name)
 	for(ti = types.begin();ti != types.end();ti++)
 	{
 		if((*ti)->name == name)
-		{
-			Buffer b;
-			(*ti)->writeType(b);
-			return TypeDef(b);
-		}
+			return **ti;
 	}
 
 	arts_warning("InterfaceRepo: no information about the type %s is known.",
@@ -206,11 +213,7 @@ EnumDef InterfaceRepo_impl::queryEnum(const string& name)
 	for(ei = enums.begin();ei != enums.end();ei++)
 	{
 		if((*ei)->name == name)
-		{
-			Buffer b;
-			(*ei)->writeType(b);
-			return EnumDef(b);
-		}
+			return **ei;
 	}
 
 	arts_warning("InterfaceRepo: no information about the enum %s is known.",
@@ -273,4 +276,9 @@ vector<string> *InterfaceRepo_impl::queryEnums()
 		result->push_back((*ei)->name);
 
 	return result;
+}
+
+TypeIdentification InterfaceRepo_impl::identifyType(const string& name)
+{
+	return tiMap[name];
 }
