@@ -11,7 +11,7 @@ class KLedTest : public QWidget
   Q_OBJECT
 protected:
   QTimer timer;
-  KLed *leds[KLed::NoOfShapes*KLed::NoOfLooks*KLed::NoOfStates];
+  KLed *leds[/*KLed::NoOfShapes*/2* /*KLed::NoOfLooks*/3* /*KLed::NoOfStates*/2];
   const int LedWidth;
   const int LedHeight;
   const int Grid;
@@ -27,9 +27,13 @@ protected:
   KLed *l;				// create lamp
   //KLed *l;				// create lamp
   //KLed *l;				// create lamp
-  //KLed::Color ledcolor;
+  int ledcolor;
   KLed::Look  ledlook;
 
+  const QColor red;
+  const QColor blue;
+  const QColor green;
+  const QColor yellow;
 
 public:
 
@@ -42,7 +46,7 @@ public:
 public slots:
   void timeout();
 
-// void nextColor();
+  void nextColor();
   void nextLook();
 
 

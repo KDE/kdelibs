@@ -12,6 +12,11 @@ KLedTest::KLedTest(QWidget* parent)
     LedWidth(16),
     LedHeight(10),
     Grid(3),
+    ledcolor(0),
+    red(QColor("red")),
+    blue(QColor("blue")),
+    green(QColor("green")),
+    yellow(QColor("yellow")),
     kled_round(true) // Switch HERE between rectangle and circular leds
 {
   if (kled_round) {
@@ -31,26 +36,24 @@ KLedTest::KLedTest(QWidget* parent)
     //l->setLook(KLed::Flat);
     //l->setLook(KLed::Flat);
 
-    //l->move(5,5);
+    l->move(5,5);
     //    ktmp tmpobj(l);
     
     t_toggle.start(1000, FALSE);
-    //t_color.start(3500, FALSE);
+    t_color.start(3500, FALSE);
     t_look.start(3500, FALSE);
     QObject::connect(&t_toggle, SIGNAL(timeout()), l, SLOT(toggle()));
-    //QObject::connect(&t_color, SIGNAL(timeout()), l, SLOT(nextColor()));
+    QObject::connect(&t_color, SIGNAL(timeout()), this, SLOT(nextColor()));
     QObject::connect(&t_look, SIGNAL(timeout()), this, SLOT(nextLook()));
     l->show();
     resize(240,140);
   }
   else {
     y=Grid; index=0;
-    for(shape=KLed::NoShape; shape!=KLed::NoOfShapes; shape=(KLed::Shape)(shape+1))
-      {
+    for((int)shape=0; (int)shape<2; shape=(KLed::Shape)(shape+1)) {
       x=Grid;
-      for(look=KLed::NoLook; look!=KLed::NoOfLooks; look=(KLed::Look)(look+1))
-	{
-	  for(state=KLed::Off; state!=KLed::NoOfStates; state=(KLed::State)(state+1))
+      for((int)look=0; (int)look<3; look=(KLed::Look)(look+1)) {
+	for(state=KLed::Off; (int)state<2; state=(KLed::State)(state+1))
 	    {
 	      leds[index]=new KLed(Qt::yellow, state,
 				   (KLed::Look)(look+1),
@@ -76,28 +79,35 @@ KLedTest::~KLedTest()
   }
 }
 
-/*
+
 void 
 KLedTest::nextColor() {
-  register int tmp = (static_cast<int>(ledcolor) + 1) % 5;
-  ledcolor=static_cast<KLed::Color>(tmp);
-  led->setColor(ledcolor);
-  //led->repaint(); 
+
+  ledcolor++;
+  ledcolor%=4;
+
+  switch(ledcolor) {
+  default:
+  case 0: l->setColor(green); break;
+  case 1: l->setColor(blue); break;
+  case 2: l->setColor(red); break;
+  case 3: l->setColor(yellow); break;
+  }
 }
-*/
+
 
 void 
 KLedTest::nextLook() { 
   register int tmp;
   if (kled_round) {
-    tmp = (static_cast<int>(ledlook) ) % 3 + 1;
+    tmp = (static_cast<int>(ledlook) +1 ) % 3 ;
   }
   else {  
     tmp = (static_cast<int>(ledlook) + 1) % 3;
   }
   ledlook = static_cast<KLed::Look>(tmp);
   l->setLook(ledlook);
-  qDebug("painting look %i", ledlook);
+  //qDebug("painting look %i", ledlook);
   //l->repaint(); 
 }
 
