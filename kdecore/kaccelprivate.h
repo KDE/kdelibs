@@ -3,6 +3,9 @@
 
 #include "kkeyserver_x11.h"
 
+/**
+ * @internal
+ */
 class KAccelPrivate : public QObject, public KAccelBase
 {
 	Q_OBJECT

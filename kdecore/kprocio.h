@@ -23,6 +23,8 @@
 #include <qstrlist.h>
 
 class KProcIOPrivate;
+class QTextCodec;
+
 /**
  * @version $Id$
  * @author David Sweet
@@ -49,7 +51,6 @@ class KProcIOPrivate;
  *  parameters, use this class just like KProcess.
  **/
 
-class QTextCodec;
 
 class KProcIO : public KProcess
 {

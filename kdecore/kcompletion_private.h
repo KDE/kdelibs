@@ -28,6 +28,9 @@ class KCompTreeNode;
 
 #include <kallocator.h>
 
+/**
+ * @internal
+ */
 class KCompTreeNodeList
 {
 public:
@@ -140,6 +143,9 @@ private:
 // some more helper stuff
 typedef KSortableValueList<QString> KCompletionMatchesList;
 
+/**
+ * @internal
+ */
 class KCompletionMatchesWrapper
 {
 public:

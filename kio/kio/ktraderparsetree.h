@@ -66,6 +66,9 @@ int matchConstraint( const ParseTreeBase *_tree, const KService::Ptr &,
 PreferencesReturn matchPreferences( const ParseTreeBase *_tree, const KService::Ptr &,
 				    const KServiceTypeProfile::OfferList& );
 
+/**
+ * @internal
+ */
 struct PreferencesMaxima
 {
   enum Type { PM_ERROR, PM_INVALID_INT, PM_INVALID_DOUBLE, PM_DOUBLE, PM_INT };

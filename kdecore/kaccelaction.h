@@ -33,36 +33,31 @@ class QObject;
 class KConfig;
 class KConfigBase;
 
-/*
-	KAccelAction holds information an a given action, such as "Execute Command"
-
-	1) KAccelAction = "Execute Command"
-		Default3 = "Alt+F2"
-		Default4 = "Meta+Enter;Alt+F2"
-		1) KShortcut = "Meta+Enter"
-			1) KKeySequence = "Meta+Enter"
-				1) KKey = "Meta+Enter"
-					1) Meta+Enter
-					2) Meta+Keypad_Enter
-		2) KShortcut = "Alt+F2"
-			1) KKeySequence = "Alt+F2"
-				1) Alt+F2
-	2) KAccelAction = "Something"
-		Default3 = ""
-		Default4 = ""
-		1) KShortcut = "Meta+X,Asterisk"
-			1) KKeySequence = "Meta+X,Asterisk"
-				1) KKey = "Meta+X"
-					1) Meta+X
-				2) KKey = "Asterisk"
-					1) Shift+8 (English layout)
-					2) Keypad_Asterisk
-*/
-
-//---------------------------------------------------------------------
-// KAccelAction
-//---------------------------------------------------------------------
-
+/**
+ *	KAccelAction holds information an a given action, such as "Execute Command"
+ *
+ *	1) KAccelAction = "Execute Command"
+ *		Default3 = "Alt+F2"
+ *		Default4 = "Meta+Enter;Alt+F2"
+ *		1) KShortcut = "Meta+Enter"
+ *			1) KKeySequence = "Meta+Enter"
+ *				1) KKey = "Meta+Enter"
+ *					1) Meta+Enter
+ *					2) Meta+Keypad_Enter
+ *		2) KShortcut = "Alt+F2"
+ *			1) KKeySequence = "Alt+F2"
+ *				1) Alt+F2
+ *	2) KAccelAction = "Something"
+ *		Default3 = ""
+ *		Default4 = ""
+ *		1) KShortcut = "Meta+X,Asterisk"
+ *			1) KKeySequence = "Meta+X,Asterisk"
+ *				1) KKey = "Meta+X"
+ *					1) Meta+X
+ *				2) KKey = "Asterisk"
+ *					1) Shift+8 (English layout)
+ *					2) Keypad_Asterisk
+ */
 class KAccelAction
 {
  public:

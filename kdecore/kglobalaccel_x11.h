@@ -23,6 +23,9 @@ class CodeMod
 };
 typedef QMap<CodeMod, KAccelAction*> CodeModMap;
 
+/**
+ * @internal
+ */
 class KGlobalAccelPrivate : public QWidget, public KAccelBase
 {
 	friend class KGlobalAccel;
