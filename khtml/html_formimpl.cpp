@@ -151,15 +151,19 @@ void HTMLFormElementImpl::slotSubmit()
 void HTMLFormElementImpl::slotReset()
 {
     printf("reset pressed!\n");
+
+    HTMLGenericFormElementImpl *current = formElements.first();
+    while(current)
+    {
+	current->reset();
+	current = formElements.next();
+    }
 }
 
 void HTMLFormElementImpl::radioClicked( NodeImpl *caller, DOMString ident )
 {
     printf("radioClicked\n");
     if(!view) return;
-
-    QStack<NodeImpl> nodeStack;
-    QString formData;
 
     HTMLGenericFormElementImpl *current = formElements.first();
     while(current)
@@ -193,6 +197,8 @@ void HTMLFormElementImpl::registerFormElement(HTMLGenericFormElementImpl *e)
 
 void HTMLFormElementImpl::removeFormElement(HTMLGenericFormElementImpl *e)
 {
+  // ### make sure this get's called, when formElements get removed from
+  // the document tree
     formElements.remove(e);
 }
 
@@ -650,6 +656,7 @@ void HTMLInputElementImpl::attach(KHTMLWidget *_view)
 {
     printf("inputElement::attach()\n");
     view = _view;
+
     switch(_type)
     {
     case TEXT:
@@ -730,7 +737,6 @@ void HTMLInputElementImpl::attach(KHTMLWidget *_view)
 	break;
     }
     }
-
     if(w && _disabled) w->setEnabled(false);
 }
 
@@ -899,6 +905,36 @@ void HTMLInputElementImpl::calcMinMaxWidth()
 
     if(availableWidth && minWidth > availableWidth)
 	if(_parent) _parent->updateSize();
+}
+
+void HTMLInputElementImpl::reset()
+{
+    switch(_type)
+    {
+    case TEXT:
+    case PASSWORD:
+    {
+	static_cast<QLineEdit *>(w)->setText(_value.string());
+	break;
+    }
+    case CHECKBOX:
+    {
+	static_cast<QCheckBox *>(w)->setChecked(_checked);
+	break;
+    }
+    case RADIO:
+    {
+	static_cast<QRadioButton *>(w)->setChecked(_checked);
+	break;
+    }
+    case SUBMIT:
+    case RESET:
+    case FILE:
+    case HIDDEN:
+    case IMAGE:
+    case BUTTON:
+	break;
+    }
 }
 
 // -------------------------------------------------------------------------
@@ -1209,6 +1245,11 @@ void HTMLSelectElementImpl::close()
     layout();
 }
 
+void HTMLSelectElementImpl::reset()
+{
+    // ###
+}
+
 // -------------------------------------------------------------------------
 
 HTMLOptGroupElementImpl::HTMLOptGroupElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f)
@@ -1449,19 +1490,15 @@ void HTMLTextAreaElementImpl::attach(KHTMLWidget *_view)
     view = _view;
     QMultiLineEdit *edit = new QMultiLineEdit(view->viewport());
     w = edit;
-    if(_first && _first->id() == ID_TEXT)
-    {
-	TextImpl *t = static_cast<TextImpl *>(_first);
-	edit->setText(QString(t->string()->s, t->string()->l));
-    }
     if(edit && _disabled) edit->setEnabled(false);
-
 }
 
 void HTMLTextAreaElementImpl::layout( bool )
 {
     _style->font.family = pSettings->fixedFontFace;
     w->setFont( *getFont() );
+
+    reset();
 
     QFontMetrics m = w->fontMetrics();
     QSize size( _cols * m.maxWidth() + 2, m.height()*_rows + 6);
@@ -1492,3 +1529,17 @@ void HTMLTextAreaElementImpl::calcMinMaxWidth()
     if(availableWidth && minWidth > availableWidth)
 	if(_parent) _parent->updateSize();
 }
+
+void HTMLTextAreaElementImpl::reset()
+{
+    printf("textarea::reset()\n");
+    QMultiLineEdit *edit = static_cast<QMultiLineEdit *>(w);
+    if(_first && _first->id() == ID_TEXT)
+    {
+	TextImpl *t = static_cast<TextImpl *>(_first);
+	edit->setText(QString(t->string()->s, t->string()->l));
+    }
+    else
+	edit->setText("");
+}
+

@@ -118,6 +118,8 @@ public:
     virtual short getMinWidth() const;
     virtual short getMaxWidth() const;
 
+    virtual void reset() {}
+
 protected:
     HTMLFormElementImpl *getForm() const;
     QString encodeString( QString e );
@@ -242,6 +244,8 @@ public:
     virtual QString encoding();
     virtual void calcMinMaxWidth();
 
+    virtual void reset();
+
 public slots:
     void slotTextChanged( const QString & );
     void slotReturnPressed();
@@ -345,6 +349,8 @@ public:
 
     virtual bool childrenRendered() { return false; }
 
+    virtual void reset();
+
 protected:
     int _size;
     bool _disabled;
@@ -443,6 +449,8 @@ public:
     virtual void layout( bool deep = false );
 
     virtual void calcMinMaxWidth();
+
+    virtual void reset();
 
 protected:
     int _rows;
