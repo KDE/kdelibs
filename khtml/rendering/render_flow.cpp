@@ -269,11 +269,11 @@ void RenderFlow::layout( bool deep )
     else
     	if (nextSibling())
 	    nextSibling()->setLayouted(false);
-//#ifdef DEBUG_LAYOUT
+#ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(RenderFlow) " << this << " ::layout(" << deep << ") width=" << m_width << ", layouted=" << layouted() << endl;
     if(containingBlock() == static_cast<RenderObject *>(this))
     	kdDebug( 6040 ) << renderName() << ": containingBlock == this" << endl;
-//#endif
+#endif
 
     if(m_width<=0) {
 	if(m_y < 0) m_y = 0;
@@ -287,7 +287,7 @@ void RenderFlow::layout( bool deep )
     m_height = 0;
     m_clearStatus = CNONE;
 
-    kdDebug( 6040 ) << "childrenInline()=" << childrenInline() << endl;
+//    kdDebug( 6040 ) << "childrenInline()=" << childrenInline() << endl;
     if(childrenInline())
 	layoutInlineChildren();
     else

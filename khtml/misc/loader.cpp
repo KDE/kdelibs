@@ -22,7 +22,7 @@
     pages from the web. It has a memory cache for these objects.
 */
 
-#define CACHE_DEBUG
+//#define CACHE_DEBUG
 
 #include "loader.h"
 
@@ -76,7 +76,9 @@ CachedCSSStyleSheet::CachedCSSStyleSheet(const DOMString &url, const DOMString &
 
 CachedCSSStyleSheet::~CachedCSSStyleSheet()
 {
-    //kdDebug( 6060 ) << "CachedCSSStyleSheet::~CachedCSSStyleSheet() " << url().string() << endl;
+#ifdef CACHE_DEBUG
+    kdDebug( 6060 ) << "CachedCSSStyleSheet::~CachedCSSStyleSheet() " << url().string() << endl;
+#endif    
 }
 
 void CachedCSSStyleSheet::ref(CachedObjectClient *c)
@@ -113,7 +115,9 @@ void CachedCSSStyleSheet::checkNotify()
 {
     if(loading) return;
 
-    //kdDebug( 6060 ) << "CachedCSSStyleSheet:: finishedLoading " << m_url.string() << endl;
+#ifdef CACHE_DEBUG
+    kdDebug( 6060 ) << "CachedCSSStyleSheet:: finishedLoading " << m_url.string() << endl;
+#endif    
 
     CachedObjectClient *c;
     for ( c = m_clients.first(); c != 0; c = m_clients.next() )
@@ -283,13 +287,18 @@ CachedImage::~CachedImage()
     if( m ) delete m;
     if( p ) delete p;
     if (bg ) delete bg;
-    //kdDebug( 6060 ) << "CachedImage::~CachedImage() " << url().string() << endl;
+
+#ifdef CACHE_DEBUG    
+    kdDebug( 6060 ) << "CachedImage::~CachedImage() " << url().string() << endl;
+#endif    
 }
 
 void CachedImage::ref( CachedObjectClient *c )
 {
     // make sure we don't get it twice...
+#ifdef CACHE_DEBUG    
     kdDebug( 6060 ) << "CachedImage::ref() " << endl;
+#endif    
     m_clients.remove(c);
     m_clients.append(c);
 
@@ -299,7 +308,9 @@ void CachedImage::ref( CachedObjectClient *c )
 
 void CachedImage::deref( CachedObjectClient *c )
 {
+#ifdef CACHE_DEBUG
     kdDebug( 6060 ) << "CachedImage::deref() " << endl;
+#endif    
     m_clients.remove( c );
     if(m && m_clients.isEmpty() && m->running())
 	m->pause();
@@ -400,7 +411,9 @@ const QPixmap &CachedImage::pixmap( ) const
 
 void CachedImage::notify( CachedObjectClient *c )
 {
+#ifdef CACHE_DEBUG
     kdDebug( 6060 ) << "Cache::notify()" << endl;
+#endif    
 
     if ( m )
     {
@@ -436,7 +449,9 @@ void CachedImage::notify( CachedObjectClient *c )
     {
 	CachedObjectClient *c;
         for ( c = m_clients.first(); c != 0; c = m_clients.next() ) {
+#ifdef CACHE_DEBUG	
 	    kdDebug( 6060 ) << "CachedImage::setPixmap() " << endl;
+#endif    
 	    c->setPixmap( pixmap, this );
 	}
     }
@@ -444,11 +459,15 @@ void CachedImage::notify( CachedObjectClient *c )
 
 void CachedImage::movieUpdated( const QRect & )
 {
+#ifdef CACHE_DEBUG
     kdDebug( 6060 ) << "Cache::movieUpdated()" << endl;
+#endif    
     QPixmap pixmap = m->framePixmap();
     CachedObjectClient *c;
     for ( c = m_clients.first(); c != 0; c = m_clients.next() ) {
+#ifdef CACHE_DEBUG    
 	kdDebug(6060) << "setting pixmap" << endl;
+#endif    
 	c->setPixmap( pixmap, this );
     }
 }
@@ -476,7 +495,9 @@ void CachedImage::clear()
 
 void CachedImage::data ( QBuffer &_buffer, bool eof )
 {
+#ifdef CACHE_DEBUG
     kdDebug( 6060 ) << "in CachedImage::data()" << endl;
+#endif    
     if ( !typeChecked )
     {
 	clear();
@@ -529,7 +550,9 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
 
 void CachedImage::error( int /*err*/, const char */*text*/ )
 {
+#ifdef CACHE_DEBUG
     kdDebug(6060) << "CahcedImage::error" << endl;
+#endif    
     p = 0;
 
     notify();
@@ -574,7 +597,9 @@ void Loader::servePendingRequests()
   // get the first pending request
   Request *req = m_requestsPending.take(0);
 
+#ifdef CACHE_DEBUG
   kdDebug( 6060 ) << "starting Loader url=" << req->object->url().string() << endl;
+#endif    
 
   KIO::Job* job = KIO::get( req->object->url().string(), false, false /*no GUI*/);
 
@@ -596,7 +621,10 @@ void Loader::slotFinished( KIO::Job* job )
     r->object->error( job->error(), job->errorText() );
   else {
     r->object->data(r->m_buffer, true);
-    //kdDebug( 6060 ) << "Loader:: JOB FINISHED " << r->object->url().string() << endl;
+    
+#ifdef CACHE_DEBUG    
+    kdDebug( 6060 ) << "Loader:: JOB FINISHED " << r->object->url().string() << endl;
+#endif    
 
     servePendingRequests();
   }
@@ -745,7 +773,9 @@ CachedImage *Cache::requestImage( const DOMString & url, const DOMString &baseUr
     KURL kurl = completeURL( url, baseUrl );
     if( kurl.isMalformed() )
     {
+#ifdef CACHE_DEBUG    
       kdDebug( 6060 ) << "Cache: Malformed url: " << kurl.url() << endl;
+#endif    
       return 0;
     }
 
@@ -763,7 +793,9 @@ CachedImage *Cache::requestImage( const DOMString & url, const DOMString &baseUr
 
     if(!o->type() == CachedObject::Image)
     {
+#ifdef CACHE_DEBUG    
 	kdDebug( 6060 ) << "Cache::Internal Error in requestImage url=" << kurl.url() << "!" << endl;
+#endif    
 	return 0;
     }
 
@@ -802,7 +834,9 @@ CachedCSSStyleSheet *Cache::requestStyleSheet( const DOMString & url, const DOMS
 
     if(!o->type() == CachedObject::CSSStyleSheet)
     {
+#ifdef CACHE_DEBUG    
 	kdDebug( 6060 ) << "Cache::Internal Error in requestStyleSheet url=" << kurl.url() << "!" << endl;
+#endif    
 	return 0;
     }
 
@@ -928,12 +962,19 @@ void Cache::removeCacheEntry( CachedObject *object )
   // when its reference counter drops down to zero
   if ( object->count() > 0 )
   {
+#ifdef CACHE_DEBUG
     kdDebug( 6060 ) << "cache object for " << key << " is still referenced. Killing it softly..." << endl;
+#endif    
     cache->setAutoDelete( false );
   }
 
+
   if ( cache->remove( key ) )
+  {
+#ifdef CACHE_DEBUG  
     kdDebug( 6060 ) << "removed cache entry for " << key << " from cache dict" << endl;
+#endif    
+   }
 
   cache->setAutoDelete( true );
 
@@ -941,7 +982,9 @@ void Cache::removeCacheEntry( CachedObject *object )
   if ( it != lru->end() )
   {
     lru->remove( it );
+#ifdef CACHE_DEBUG    
     kdDebug( 6060 ) << "removed cache entry for " << key << " from lru" << endl;
+#endif    
   }
 }
 
