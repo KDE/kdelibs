@@ -43,6 +43,12 @@
 class KComboBox::KComboBoxPrivate
 {
 public:
+    KComboBoxPrivate() {
+      handleURLDrops = true;
+      completionBox = 0L;
+      popupMenu = 0L;
+      subMenu = 0L;
+    }
     QString origText;
     bool handleURLDrops;
     bool hasReference;
@@ -83,8 +89,6 @@ KComboBox::~KComboBox()
 void KComboBox::init()
 {
     d = new KComboBoxPrivate;
-    d->completionBox = 0L;
-    d->handleURLDrops = true;
 
     // Permanently set some parameters in the parent object.
     QComboBox::setAutoCompletion( false );
