@@ -115,6 +115,43 @@ int main(int argc, char *argv[])
      check("http: Relative URL, with reference", waba2.url(), "http://www.website.com/directory/relative.html#with_reference");  
   }
 
+  waba1 = "http://www.website.com/directory/filename?bla#blub";
+  {
+     KURL waba2( waba1, "relative.html");
+     check("http: Relative URL, single file", waba2.url(), "http://www.website.com/directory/relative.html");  
+  }
+  {
+     KURL waba2( waba1, "../relative.html");
+     check("http: Relative URL, single file, directory up", waba2.url(), "http://www.website.com/relative.html");  
+  }
+  {
+     KURL waba2( waba1, "down/relative.html");
+     check("http: Relative URL, single file, directory down", waba2.url(), "http://www.website.com/directory/down/relative.html");  
+  }
+  {
+     KURL waba2( waba1, "/down/relative.html");
+     check("http: Relative URL, full path", waba2.url(), "http://www.website.com/down/relative.html");  
+  }
+  {
+     KURL waba2( waba1, "relative.html?query=test&name=harry");
+     check("http: Relative URL, with query", waba2.url(), "http://www.website.com/directory/relative.html?query=test&name=harry");  
+  }
+  {
+     KURL waba2( waba1, "relative.html#with_reference");
+     check("http: Relative URL, with reference", waba2.url(), "http://www.website.com/directory/relative.html#with_reference");  
+  }
+
+  // Empty queries should be preserved!
+  waba1 = "http://www.kde.org/cgi/test.cgi?";
+  check("http: URL with empty query string", waba1.url(),
+        "http://www.kde.org/cgi/test.cgi?");
+
+  // Empty references should be left out.
+  waba1 = "http://www.kde.org/cgi/test.cgi#";
+  check("http: URL with empty reference string", waba1.url(),
+        "http://www.kde.org/cgi/test.cgi");
+
+
   // UNC like names
   KURL unc1("FILE://localhost/home/root");
   check("UNC, with localhost", unc1.path(), "/home/root");
