@@ -606,9 +606,10 @@ inline void KPluginSelector::configPage( int id )
     {
         // no config page
         if( d->hideconfigpage )
+        {
             d->widgetstack->hide();
-        //else
-            //d->widgetstack->
+            return;
+        }
     }
     else
         d->widgetstack->show();
@@ -619,6 +620,9 @@ inline void KPluginSelector::configPage( int id )
 void KPluginSelector::setShowEmptyConfigPage( bool show )
 {
     d->hideconfigpage = !show;
+    if( d->hideconfigpage )
+        if( d->widgetstack->id( d->widgetstack->visibleWidget() ) == 1 )
+            d->widgetstack->hide();
 }
 
 void KPluginSelector::load()
