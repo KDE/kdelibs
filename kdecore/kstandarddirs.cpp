@@ -49,6 +49,7 @@
 #include "kdebug.h"
 #include "kinstance.h"
 #include "kshell.h"
+#include "ksimpleconfig.h"
 #include <sys/param.h>
 #include <unistd.h>
 
@@ -1249,7 +1250,7 @@ void KStandardDirs::checkConfig() const
         const_cast<KStandardDirs*>(this)->addCustomized(KGlobal::_instance->_config);
 }
 
-static QStringList lookupProfiles()
+static QStringList lookupProfiles(const QString &mapFile)
 {
     QStringList profiles;
     
@@ -1268,12 +1269,22 @@ static QStringList lookupProfiles()
                  profiles << profile;
            }
         }
+        return profiles;
     }
-    else
+
+    if (!mapFile.isEmpty() && QFile::exists(mapFile))
     {
-        profiles << "default";
+        KSimpleConfig mapCfg(mapFile);
+        QString user;
+        user.setNum(getuid());
+        if (mapCfg.hasKey(user))
+        {
+           profiles = mapCfg.readListEntry(user, ':');
+           return profiles; 
+        }
     }
-    
+
+    profiles << "default";
     return profiles;
 }
 
@@ -1288,11 +1299,13 @@ bool KStandardDirs::addCustomized(KConfig *config)
 
     // reading the prefixes in
     QString oldGroup = config->group();
+    QString group = QString::fromLatin1("Directories");
+    config->setGroup(group);
+    QString userMapFile = config->readEntry("userProfileMapFile");
 
-    QStringList profiles = lookupProfiles();
+    QStringList profiles = lookupProfiles(userMapFile);
     
     bool priority = false;
-    QString group = QString::fromLatin1("Directories");
     while(true)
     {
         config->setGroup(group);
