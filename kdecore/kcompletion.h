@@ -751,15 +751,25 @@ protected:
     /**
     * Inserts completion mode changers items.
     *
-    * This is method is implemented as a matter of
-    * convience and for the sake of consistency of in
-    * the appearance of the completion mode changer items.
+    * This method is implemented here as a matter of
+    * convience and for the sake of consistency in the
+    * appearance of the completion mode changer items.
+    * It initially inerts four of the standard menu items
+    * labeled: "None", "Manual", "Automatic" and "Semi-Automatic".
+    * and puts a check mark beside the mode that is currently
+    * active.  When the user changes this default mode, another
+    * item labeled "Default" is inserted so that the user can
+    * quickly revert back to the default mode.
     *
-    * Simply invoke this function from your implementation
-    * of the slot supplied to @ref insertCompletionMenu.
-    * See @ref KLineEdit::showCompletionItems or @ref
-    * KComboBox::showCompletionItems for an example of
-    * implementation.
+    * To use this method simply invoke this function from your
+    * implementation of the slot supplied to @ref insertCompletionMenu.
+    * See @ref KLineEdit::showCompletionItems or @ref KComboBox::showCompletionItems
+    * for an example of implementation.
+    *
+    * Note that when this "Default" item, the clicked signal emitted
+    * has its integer argument set to 0.  Thus, you need to make sure
+    * that you replace this value with the one returned by
+    * @ref KGlobalSettings::completionMode().
     *
     * @param receiver object that receives the activation of completion items.
     * @param member method invoked when completion items are clicked.
