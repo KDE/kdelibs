@@ -195,15 +195,9 @@ ushort CommentImpl::id() const
     return ID_COMMENT;
 }
 
-NodeImpl *CommentImpl::cloneNode(bool /*deep*/)
+NodeImpl *CommentImpl::cloneNode(bool /*deep*/, int &/*exceptioncode*/)
 {
-    CommentImpl *newImpl = document->createComment( str );
-
-    newImpl->setParent(0);
-    newImpl->setFirstChild(0);
-    newImpl->setLastChild(0);
-
-    return newImpl;
+    return document->createComment( str );
 }
 
 // DOM Section 1.1.1
@@ -246,7 +240,9 @@ TextImpl *TextImpl::splitText( const unsigned long offset, int &exceptioncode )
     if ( exceptioncode )
 	return 0;
 
-    TextImpl *newText = static_cast<TextImpl*>(cloneNode(true));
+    TextImpl *newText = static_cast<TextImpl*>(cloneNode(true,exceptioncode));
+    if ( exceptioncode )
+	return 0;
     newText->deleteData(0,offset,exceptioncode);
     if ( exceptioncode )
 	return 0;
@@ -293,8 +289,9 @@ void TextImpl::attach(KHTMLView *w)
 
 void TextImpl::detach()
 {
-    m_render = 0;
     CharacterDataImpl::detach();
+    delete m_render;
+    m_render = 0;
 }
 
 void TextImpl::applyChanges(bool,bool force)
@@ -355,15 +352,9 @@ ushort TextImpl::id() const
     return ID_TEXT;
 }
 
-NodeImpl *TextImpl::cloneNode(bool /*deep*/)
+NodeImpl *TextImpl::cloneNode(bool /*deep*/, int &/*exceptioncode*/)
 {
-    TextImpl *newImpl = document->createTextNode(str);
-
-    newImpl->setParent(0);
-    newImpl->setFirstChild(0);
-    newImpl->setLastChild(0);
-
-    return newImpl;
+    return document->createTextNode(str);
 }
 
 void TextImpl::recalcStyle()
@@ -404,15 +395,9 @@ unsigned short CDATASectionImpl::nodeType() const
     return Node::CDATA_SECTION_NODE;
 }
 
-NodeImpl *CDATASectionImpl::cloneNode(bool /*deep*/)
+NodeImpl *CDATASectionImpl::cloneNode(bool /*deep*/, int &/*exceptioncode*/)
 {
-    TextImpl *newImpl = document->createCDATASection(str);
-
-    newImpl->setParent(0);
-    newImpl->setFirstChild(0);
-    newImpl->setLastChild(0);
-
-    return newImpl;
+    return document->createCDATASection(str);
 }
 
 // DOM Section 1.1.1

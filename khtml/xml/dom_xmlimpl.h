@@ -47,6 +47,7 @@ public:
     virtual DOMString systemId() const;
     virtual DOMString notationName() const;
     virtual bool childAllowed( NodeImpl *newChild );
+    virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
 protected:
     DOMStringImpl *m_publicId;
     DOMStringImpl *m_systemId;
@@ -65,6 +66,7 @@ public:
     virtual const DOMString nodeName() const;
     virtual unsigned short nodeType() const;
     virtual bool childAllowed( NodeImpl *newChild );
+    virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
 protected:
     DOMStringImpl *m_entityName;
 };
@@ -82,6 +84,7 @@ public:
     virtual DOMString publicId() const;
     virtual DOMString systemId() const;
     virtual bool childAllowed( NodeImpl *newChild );
+    virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
 protected:
     DOMStringImpl *m_name;
     DOMStringImpl *m_publicId;
@@ -104,6 +107,7 @@ public:
     virtual DOMString data() const;
     virtual void setData( const DOMString &_data );
     virtual bool childAllowed( NodeImpl *newChild );
+    virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
 
 protected:
     DOMStringImpl *m_target;

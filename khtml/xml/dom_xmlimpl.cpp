@@ -26,6 +26,7 @@
 #include "dom_xmlimpl.h"
 #include "dom_docimpl.h"
 #include "dom_stringimpl.h"
+#include "dom_exception.h"
 
 using namespace DOM;
 
@@ -116,6 +117,12 @@ bool EntityImpl::childAllowed( NodeImpl *newChild )
     }
 }
 
+NodeImpl *EntityImpl::cloneNode ( bool /*deep*/, int &exceptioncode )
+{
+    exceptioncode = DOMException::NOT_SUPPORTED_ERR;
+    return 0;
+}
+
 // -------------------------------------------------------------------------
 
 EntityReferenceImpl::EntityReferenceImpl(DocumentImpl *doc) : NodeBaseImpl(doc)
@@ -161,6 +168,16 @@ bool EntityReferenceImpl::childAllowed( NodeImpl *newChild )
 	default:
 	    return false;
     }
+}
+
+NodeImpl *EntityReferenceImpl::cloneNode ( bool deep, int &exceptioncode )
+{
+    EntityReferenceImpl *clone = new EntityReferenceImpl(document,m_entityName);
+    // ### make sure children are readonly
+    // ### since we are a reference, should we clone children anyway (even if not deep?)
+    if (deep)
+	cloneChildNodes(clone,exceptioncode);
+    return clone;
 }
 
 // -------------------------------------------------------------------------
@@ -219,6 +236,12 @@ DOMString NotationImpl::systemId() const
 bool NotationImpl::childAllowed( NodeImpl */*newChild*/ )
 {
     return false;
+}
+
+NodeImpl *NotationImpl::cloneNode ( bool /*deep*/, int &exceptioncode )
+{
+    exceptioncode = DOMException::NOT_SUPPORTED_ERR;
+    return 0;
 }
 
 // -------------------------------------------------------------------------
@@ -286,5 +309,12 @@ bool ProcessingInstructionImpl::childAllowed( NodeImpl */*newChild*/ )
 {
     return false;
 }
+
+NodeImpl *ProcessingInstructionImpl::cloneNode ( bool /*deep*/, int &/*exceptioncode*/ )
+{
+    return new ProcessingInstructionImpl(document,m_target,m_data);
+}
+
+
 
 

@@ -664,6 +664,13 @@ void DocumentImpl::attach(KHTMLView *w)
     NodeBaseImpl::attach(w);
 }
 
+void DocumentImpl::detach()
+{
+    NodeBaseImpl::detach();
+    delete m_render;
+    m_render = 0;
+}
+
 void DocumentImpl::slotFinishedParsing()
 {
     emit finishedParsing();
@@ -1122,6 +1129,12 @@ bool DocumentImpl::childAllowed( NodeImpl *newChild )
     }
 }
 
+NodeImpl *DocumentImpl::cloneNode ( bool /*deep*/, int &exceptioncode )
+{
+    exceptioncode = DOMException::NOT_SUPPORTED_ERR;
+    return 0;
+}
+
 // ----------------------------------------------------------------------------
 
 DocumentFragmentImpl::DocumentFragmentImpl(DocumentImpl *doc) : NodeBaseImpl(doc)
@@ -1159,6 +1172,15 @@ bool DocumentFragmentImpl::childAllowed( NodeImpl *newChild )
 	    return false;
     }
 }
+
+NodeImpl *DocumentFragmentImpl::cloneNode ( bool deep, int &exceptioncode )
+{
+    DocumentFragmentImpl *clone = new DocumentFragmentImpl(document);
+    if (deep)
+	cloneChildNodes(clone,exceptioncode);
+    return clone;
+}
+
 
 // ----------------------------------------------------------------------------
 
@@ -1207,6 +1229,13 @@ bool DocumentTypeImpl::childAllowed( NodeImpl */*newChild*/ )
 {
     return false;
 }
+
+NodeImpl *DocumentTypeImpl::cloneNode ( bool /*deep*/, int &exceptioncode )
+{
+    exceptioncode = DOMException::NOT_SUPPORTED_ERR;
+    return 0;
+}
+
 
 
 

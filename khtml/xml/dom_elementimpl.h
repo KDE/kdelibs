@@ -66,7 +66,7 @@ public:
     virtual NodeImpl *parentNode() const;
     virtual NodeImpl *previousSibling() const;
     virtual NodeImpl *nextSibling() const;
-    virtual NodeImpl *cloneNode ( bool deep );
+    virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
 
     virtual bool deleteMe();
     DOMStringImpl *val() { return _value; }
@@ -128,7 +128,7 @@ public:
     virtual void setStyle(khtml::RenderStyle *style) { m_style = style; }
     virtual khtml::RenderStyle *style() { return m_style; }
     virtual khtml::RenderStyle *activeStyle();
-    virtual NodeImpl *cloneNode ( bool deep );
+    virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
     virtual NamedNodeMapImpl *attributes() const;
 
     /**

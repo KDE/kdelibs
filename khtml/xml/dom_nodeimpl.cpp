@@ -170,12 +170,6 @@ bool NodeImpl::hasChildNodes(  )
   return false;
 }
 
-NodeImpl *NodeImpl::cloneNode( bool )
-{
-  // we have no childs, so we just clone this Node
-  return new NodeImpl(document);
-}
-
 // helper functions not being part of the DOM
 void NodeImpl::setParent(NodeImpl *)
 {
@@ -429,13 +423,6 @@ NodeImpl *NodeWParentImpl::nextSibling() const
     return _next;
 }
 
-NodeImpl *NodeWParentImpl::cloneNode( bool )
-{
-    // we have no childs, so we just clone this Node
-    // the parent is set to 0 anyway...
-    return new NodeWParentImpl(document);
-}
-
 // not part of the DOM
 void NodeWParentImpl::setParent(NodeImpl *n)
 {
@@ -667,8 +654,8 @@ NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
     oldChild->setPreviousSibling(0);
     oldChild->setNextSibling(0);
     oldChild->setParent(0);
-    if (m_render && oldChild->renderer())
-	m_render->removeChild(oldChild->renderer());
+    if (oldChild->renderer() && oldChild->renderer()->parent())
+	oldChild->renderer()->parent()->removeChild(oldChild->renderer());
 
     setChanged(true);
 
@@ -742,27 +729,6 @@ bool NodeBaseImpl::hasChildNodes (  )
 {
     return _first != 0;
 }
-
-NodeImpl *NodeBaseImpl::cloneNode ( bool deep )
-{
-    NodeImpl *newImpl = new NodeBaseImpl(document);
-
-    newImpl->setParent(0);
-    newImpl->setFirstChild(0);
-    newImpl->setLastChild(0);
-
-    if(deep)
-    {
-	NodeImpl *n;
-	for(n = firstChild(); n != lastChild(); n = n->nextSibling())
-	{
-	    int exceptioncode;
-	    newImpl->appendChild(n->cloneNode(deep), exceptioncode);
-	}
-    }
-    return newImpl;
-}
-
 
 // not part of the DOM
 void NodeBaseImpl::setFirstChild(NodeImpl *child)
@@ -866,9 +832,6 @@ void NodeBaseImpl::detach()
 	child = child->nextSibling();
     }
     NodeWParentImpl::detach();
-
-    delete m_render;
-    m_render = 0;
 }
 
 void NodeBaseImpl::setOwnerDocument(DocumentImpl *_document)
@@ -877,6 +840,16 @@ void NodeBaseImpl::setOwnerDocument(DocumentImpl *_document)
     for(n = _first; n != 0; n = n->nextSibling())
 	n->setOwnerDocument(_document);
     NodeWParentImpl::setOwnerDocument(_document);
+}
+
+void NodeBaseImpl::cloneChildNodes(NodeImpl *clone, int &exceptioncode)
+{
+    NodeImpl *n;
+//    for(n = firstChild(); n != lastChild() && !exceptioncode; n = n->nextSibling())
+    for(n = firstChild(); n && !exceptioncode; n = n->nextSibling())
+    {
+	clone->appendChild(n->cloneNode(true,exceptioncode),exceptioncode);
+    }
 }
 
 // ---------------------------------------------------------------------------

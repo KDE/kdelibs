@@ -159,6 +159,7 @@ public:
     khtml::DocLoader *docLoader() { return m_docLoader; }
     void setReloading();
     virtual void attach(KHTMLView *w);
+    virtual void detach();
 
     // to get visually ordered hebrew and arabic pages right
     void setVisuallyOrdered();
@@ -215,6 +216,7 @@ public:
                              MouseEvent *ev );
 
     virtual bool childAllowed( NodeImpl *newChild );
+    virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
 
 signals:
     virtual void finishedParsing();
@@ -256,6 +258,7 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual unsigned short nodeType() const;
+    virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
 
 protected:
     virtual bool childAllowed( NodeImpl *newChild );
@@ -277,6 +280,7 @@ public:
     GenericRONamedNodeMapImpl *m_entities;
     GenericRONamedNodeMapImpl *m_notations;
     virtual bool childAllowed( NodeImpl *newChild );
+    virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
 
 };
 

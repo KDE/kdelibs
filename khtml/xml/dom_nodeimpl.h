@@ -108,7 +108,7 @@ public:
 
     virtual bool hasChildNodes (  );
 
-    virtual NodeImpl *cloneNode ( bool deep );
+    virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode ) = 0;
 
     // helper functions not being part of the DOM
     // Attention: all these functions assume the caller did
@@ -262,8 +262,6 @@ public:
 
     virtual NodeImpl *nextSibling() const;
 
-    virtual NodeImpl *cloneNode ( bool deep );
-
     // helper functions not being part of the DOM
     virtual void setParent(NodeImpl *parent);
     virtual bool deleteMe();
@@ -302,8 +300,6 @@ public:
 
     virtual bool hasChildNodes (  );
 
-    virtual NodeImpl *cloneNode ( bool deep );
-
     // not part of the DOM
     virtual void setFirstChild(NodeImpl *child);
     virtual void setLastChild(NodeImpl *child);
@@ -311,6 +307,7 @@ public:
     virtual void attach(KHTMLView *w);
     virtual void detach();
     virtual void setOwnerDocument(DocumentImpl *_document);
+    virtual void cloneChildNodes(NodeImpl *clone, int &exceptioncode);
 
 protected:
     NodeImpl *_first;

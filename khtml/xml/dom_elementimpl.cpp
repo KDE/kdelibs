@@ -150,7 +150,7 @@ void AttrImpl::setValue( const DOMString &v )
     // according to the DOM docs, we should create an unparsed Text child
     // node here; we decided this was not necessary for HTML
 
-    // TODO: parse value string, interprete entities
+    // ### TODO: parse value string, interprete entities
 
     if (_element)
 	_element->checkReadOnly();
@@ -237,7 +237,7 @@ NodeImpl *AttrImpl::nextSibling() const
     return 0;
 }
 
-NodeImpl *AttrImpl::cloneNode ( bool /*deep*/ )
+NodeImpl *AttrImpl::cloneNode ( bool /*deep*/, int &/*exceptioncode*/ )
 {
     AttrImpl *newImpl = new AttrImpl(*this);
     newImpl->_element = 0; // can't have two attributes with the same name/id attached to an element
@@ -380,27 +380,17 @@ void ElementImpl::removeAttribute( const DOMString &name )
 	delete oldAttr;
 }
 
-NodeImpl *ElementImpl::cloneNode ( bool deep )
+NodeImpl *ElementImpl::cloneNode ( bool deep, int &exceptioncode )
 {
     ElementImpl *newImpl = document->createElement(tagName());
     if (!newImpl)
       return 0;
 
-    newImpl->setParent(0);
-    newImpl->setFirstChild(0);
-    newImpl->setLastChild(0);
-
+    // clone attributes
     *(newImpl->namedAttrMap) = *namedAttrMap;
 
-    if(deep)
-    {
-	NodeImpl *n;
-	for(n = firstChild(); n; n = n->nextSibling())
-	{
-	    int exceptioncode = 0;
-	    newImpl->appendChild(n->cloneNode(deep), exceptioncode);
-	}
-    }
+    if (deep)
+	cloneChildNodes(newImpl,exceptioncode);
     return newImpl;
 }
 
@@ -507,6 +497,8 @@ void ElementImpl::attach(KHTMLView *w)
 void ElementImpl::detach()
 {
     NodeBaseImpl::detach();
+    delete m_render;
+    m_render = 0;
 }
 
 void ElementImpl::applyChanges(bool top, bool force)
@@ -806,7 +798,8 @@ NamedAttrMapImpl &NamedAttrMapImpl::operator =(const NamedAttrMapImpl &other)
     // first initialize attrs vector, then call parseAttribute on it
     // this allows parseAttribute to use getAttribute
     for (i = 0; i < len; i++) {
-	attrs[i] = static_cast<AttrImpl*>(other.attrs[i]->cloneNode(false));
+	int exceptioncode; // ### propogate
+	attrs[i] = static_cast<AttrImpl*>(other.attrs[i]->cloneNode(false,exceptioncode));
 	attrs[i]->_element = element;
     }
 

@@ -77,7 +77,7 @@ public:
     virtual DOMString nodeValue() const;
     virtual unsigned short nodeType() const;
     virtual ushort id() const;
-    virtual NodeImpl *cloneNode(bool deep);
+    virtual NodeImpl *cloneNode(bool deep, int &exceptioncode);
     virtual bool childAllowed( NodeImpl *newChild );
 };
 
@@ -113,7 +113,7 @@ public:
     virtual int findSelectionNode( int _x, int _y, int _tx, int _ty,
                                     DOM::Node & node, int & offset );
 
-    virtual NodeImpl *cloneNode(bool deep);
+    virtual NodeImpl *cloneNode(bool deep, int &exceptioncode);
     virtual void recalcStyle();
     virtual bool childAllowed( NodeImpl *newChild );
 
@@ -131,7 +131,7 @@ public:
     virtual ~CDATASectionImpl();
     virtual const DOMString nodeName() const;
     virtual unsigned short nodeType() const;
-    virtual NodeImpl *cloneNode(bool deep);
+    virtual NodeImpl *cloneNode(bool deep, int &exceptioncode);
     virtual bool childAllowed( NodeImpl *newChild );
 };
 

@@ -3144,7 +3144,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
   DOM::DOMString url = event->url();
   DOM::Node innerNode = event->innerNode();
 
-  if( d->m_bMousePressed && (!d->m_strSelectedURL.isEmpty() || innerNode.elementId() == ID_IMG ) &&
+  if( d->m_bMousePressed && (!d->m_strSelectedURL.isEmpty() || (!innerNode.isNull() && innerNode.elementId() == ID_IMG) ) &&
       ( d->m_dragStartPos - _mouse->pos() ).manhattanLength() > KGlobalSettings::dndEventDelay() &&
       d->m_bDnd && d->m_mousePressNode == innerNode ) {
 
@@ -3183,7 +3183,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
     return;
   }
 
-  if ( !d->m_bMousePressed && url.length() && innerNode.elementId() == ID_IMG )
+  if ( !d->m_bMousePressed && url.length() && !innerNode.isNull() && innerNode.elementId() == ID_IMG )
   {
     HTMLImageElementImpl *i = static_cast<HTMLImageElementImpl *>(innerNode.handle());
     if ( i && i->isServerMap() )

@@ -218,10 +218,13 @@ KJSO Window::get(const UString &p) const
       return v;
 
   // allow shortcuts like 'Image1' instead of document.images.Image1
-  DOM::HTMLCollection coll = part->htmlDocument().all();
-  DOM::HTMLElement element = coll.namedItem(p.string());
-  if (!element.isNull())
-      return getDOMNode(element);
+  if (part->document().isHTMLDocument()) { // might be XML
+    DOM::HTMLCollection coll = part->htmlDocument().all();
+    DOM::HTMLElement element = coll.namedItem(p.string());
+    if (!element.isNull()) {
+        return getDOMNode(element);
+    }
+  }
 
   KHTMLPart *kp = part->findFrame( p.qstring() );
   if (kp)
