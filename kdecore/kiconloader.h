@@ -39,7 +39,7 @@ class KIconEffect;
  *
  * In KDE, it is encouraged to load icons by "Group". An icon group is a
  * location on the screen where icons are being used. Standard groups are:
- * Desktop, Toolbar, MainToolbar, Small and Panel. Each group has some 
+ * Desktop, Toolbar, MainToolbar, Small and Panel. Each group has some
  * centrally configured properties bound to it, including the icon size
  * and effects. This makes it possible to offer a consistent icon look in
  * all KDE applications.
@@ -140,15 +140,15 @@ public:
     QStringList queryIcons(int group_or_size, int context=KIcon::Any) const;
 
     /**
-     * Query all available icons for a specific context. 
+     * Query all available icons for a specific context.
      * @param group_or_size The icon preferred group or size. If available
      * at this group or size, those icons will be returned, in other case,
-     * icons of undefined size will be returned. 
+     * icons of undefined size will be returned.
      * @param context The icon context.
      * @return A QStringList containing the icon names
      * available for that context
      */
-    QStringList queryIconsByContext(int group_or_size, 
+    QStringList queryIconsByContext(int group_or_size,
 				    int context=KIcon::Any) const;
 
     /**
@@ -168,13 +168,6 @@ public:
     KIconEffect *iconEffect() const;
 
     /**
-     * Returns the image associated with a given serialNumber. You should
-     * use the serialNumber of a pixmap returned by loadIcon (or any of
-     * the [Group]Icon helper functions).
-     */
-    QImage *image(int serialNumber) const;
-
-    /**
      * Called by KInstance::newIconLoader to reconfigure the icon loader
      */
     void reconfigure( const QString& _appname, KStandardDirs *_dirs );
@@ -182,7 +175,7 @@ public:
     /**
      * Returns the unknown icon. An icon that is used when no other icon
      * can be found.
-     */ 
+     */
     static QPixmap unknown();
 
     /**
@@ -283,7 +276,7 @@ QPixmap UserIcon(const QString& name, int state=KIcon::DefaultState,
 QPixmap UserIcon(const QString& name, KInstance *instance);
 
 /** Load a user icon, and apply the effects to get an IconSet.  */
-QIconSet UserIconSet(const QString& name, 
+QIconSet UserIconSet(const QString& name,
 	KInstance *instance=KGlobal::instance());
 
 /** Returns the current icon size for a specific group.  */

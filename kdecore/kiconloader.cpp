@@ -144,7 +144,6 @@ struct KIconLoaderPrivate
     KStandardDirs *mpDirs;
     KIconEffect mpEffect;
     QDict<QImage> imgDict;
-    QIntDict<QImage> imgCache;
     QImage lastImage; // last loaded image without effect applied
     QString lastImageKey; // key for icon without effect
     bool lastIconType; // see KIcon::type
@@ -168,7 +167,6 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
 {
     d = new KIconLoaderPrivate;
     d->imgDict.setAutoDelete( true );
-    d->imgCache.setAutoDelete( true );
 
     if (_dirs)
 	d->mpDirs = _dirs;
@@ -624,12 +622,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, int group, int size,
 
     pix.convertFromImage(*img);
 
-    // We only insert the image in the cache if alphaBlending is
-    // being used
-    if (d->mpGroups[group].alphaBlending)
-	d->imgCache.insert(pix.serialNumber(), img);
-    else
-        delete img;
+    delete img;
 
     QPixmapCache::insert(key, pix);
     return pix;
@@ -951,11 +944,6 @@ int IconSize(int group, KInstance *instance)
 {
     KIconLoader *loader = instance->iconLoader();
     return loader->currentSize(group);
-}
-
-QImage *KIconLoader::image(int key) const
-{
-    return d->imgCache.find(key);
 }
 
 QPixmap KIconLoader::unknown()
