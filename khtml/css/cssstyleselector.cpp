@@ -2243,7 +2243,6 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	const KHTMLSettings *s = e->ownerDocument()->view()->part()->settings();
 	QString available = s->availableFamilies();
 	QFont f = style->font();
-	QString family;
 	//kdDebug(0) << "searching for font... available:" << available << endl;
         for(int i = 0; i < len; i++)
         {
@@ -2269,7 +2268,10 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
             else if( face == "konq_default")
                 face = s->stdFontName();
 
+#if QT_VERSION < 300
 	    int pos;
+	    QString family;
+
 	    if( (pos = available.find( face, 0, false)) == -1 ) {
 		QString str = face;
                 int p = face.find(' ');
@@ -2289,7 +2291,6 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 		    pos = available.length();
 		family = available.mid( pos1, pos - pos1 );
 		f.setFamily( family );
-#if QT_VERSION < 300
 		KGlobal::charsets()->setQFont(f, s->charset() );
 		//kdDebug() << "font charset is " << f.charSet() << " script = " << s->script() << endl;
 		if ( s->charset() == s->script() || KGlobal::charsets()->supportsScript( f, s->script() ) ) {
@@ -2297,11 +2298,12 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 		    style->setFont(f);
 		    return;
 		}
-#else
-                style->setFont(f);
-                return;
-#endif
 	    }
+#else
+	    f.setFamily( face );
+            style->setFont(f);
+            return;
+#endif
 //            kdDebug( 6080 ) << "no match for font family " << face << ", got " << f.family() << endl;
         }
 //	kdDebug() << "khtml::setFont: time=" << qt.elapsed() << endl;
