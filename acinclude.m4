@@ -776,7 +776,7 @@ AC_DEFUN(AC_HAVE_GL,
     AC_LANG_C
     ac_save_ldflags=$LDFLAGS
     ac_save_cflags=$CFLAGS
-    LDFLAGS="$LDFLAGS $GL_LDFLAGS $X_LDFLAGS $QT_LDFLAGS -lMesaGL -lMesaGLU-lX11 -lXext"
+    LDFLAGS="$LDFLAGS $GL_LDFLAGS $X_LDFLAGS $QT_LDFLAGS -lMesaGL -lMesaGLU -lX11 -lXext"
     CFLAGS="$CFLAGS $X_INCLUDES"
     test ! -z "$GL_INCLUDE" && CFLAGS="-I$GL_INCLUDE $CFLAGS"
     AC_TRY_LINK([],[],
