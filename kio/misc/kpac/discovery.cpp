@@ -34,6 +34,10 @@
 #ifdef HAVE_ARPA_NAMESER8_COMPAT_H
 #include <arpa/nameser8_compat.h>
 #endif
+#ifdef HAVE_SYS_PARAM_H
+// Basically, the BSDs need this before resolv.h
+#include <sys/param.h>
+#endif
 #include <resolv.h>
 #include <sys/utsname.h>
 
