@@ -8,6 +8,9 @@
 #include "khtmltags.h"
 #include "khtml.h"
 #include <qstring.h>
+
+#include <stdio.h>
+
 using namespace DOM;
 
 // -------------------------------------------------------------------------
