@@ -103,6 +103,8 @@ protected slots:
 
 protected:
 
+    virtual bool event( QEvent *e );
+
     void keyPressEvent( QKeyEvent* _event );
     void fontChange( const QFont& _font );
 

@@ -860,6 +860,17 @@ void KKeyChooser::changeKey()
     grabKeyboard();
 }
 
+// reimplemented to allow configuring the Tab key
+// otherwise it would move focus without being seen by keyPressEvent()
+bool KKeyChooser::event( QEvent *e )
+{
+    if( !d->bKeyIntercept || e->type() != QEvent::KeyPress )
+        return QWidget::event( e );
+        
+    keyPressEvent( ( QKeyEvent* )e );
+    return TRUE;
+    }
+
 void KKeyChooser::keyPressEvent( QKeyEvent *e )
 {
   releaseKeyboard();
