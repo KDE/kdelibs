@@ -604,7 +604,7 @@ repeat2:
        m_bCanResume = false;
     }    
 
-    else if (strncasemp(f_buffer, "Content-length:", 15)==0)
+    else if (strncasecmp(f_buffer, "Content-length:", 15)==0)
       m_iSize = atol(trimLead(f_buffer+15));
     else if (strncasecmp(f_buffer, "Content-Type:", 13)==0) {
       // Jacek: We can't send mimeType signal now,
