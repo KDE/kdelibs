@@ -849,7 +849,7 @@ void KCryptoConfig::load()
   config->setGroup("Warnings");
   mWarnOnEnter->setChecked(config->readBoolEntry("OnEnter", false));
   mWarnOnLeave->setChecked(config->readBoolEntry("OnLeave", true));
-  mWarnOnUnencrypted->setChecked(config->readBoolEntry("OnUnencrypted", false));
+  mWarnOnUnencrypted->setChecked(config->readBoolEntry("OnUnencrypted", true));
 
 #if 0 // NOT IMPLEMENTED IN KDE 2.0
   mWarnOnMixed->setChecked(config->readBoolEntry("OnMixed", true));
