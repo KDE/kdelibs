@@ -1,0 +1,20 @@
+# KDE Config File
+[KDE Desktop Entry]
+Type=MimeType
+MimeType=image/png
+Icon=image.xpm
+Patterns=*.png;*.PNG;
+Comment=PNG images
+Comment[es]=Imagen PNG
+Comment[de]=PNG Bild
+Comment[no]=PNG-bilde
+Comment[nl]=PNG afbeelding
+Comment[pl]=Obraz PNG
+Comment[fi]=PNG kuva
+Comment[fr]=Image PNG
+Comment[pt]=Imagem PNG
+Comment[pt_BR]=Imagem PNG
+Comment[it]=Immagine PNG
+Comment[sk]=PNG obrАzok
+Comment[ro]=Imagine de tip PNG
+Comment[ru]=Изображение PNG
