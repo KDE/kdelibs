@@ -1,7 +1,7 @@
 /**
  * This file is part of the DOM implementation for KDE.
  *
- * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *
  * This library is free software; you can redistribute it and/or
@@ -62,11 +62,6 @@ RenderBox::RenderBox(DOM::NodeImpl* node)
 void RenderBox::setStyle(RenderStyle *_style)
 {
     RenderObject::setStyle(_style);
-
-    // ### move this into the parser. --> should work. Lars
-    // if only horizontal position was defined, vertical should be 50%
-    //if(!_style->backgroundXPosition().isVariable() && _style->backgroundYPosition().isVariable())
-    //style()->setBackgroundYPosition(Length(50, Percent));
 
     switch(_style->position())
     {
