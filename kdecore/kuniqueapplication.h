@@ -44,11 +44,18 @@ class KUniqueApplication : public KApplication, public DCOPObject
 public:
   /**
    * Constructor. Takes command line arguments from KCmdLineArgs
-   * Parameters : See @ref KApplication constructor.
-   * @p configUnique If true, the uniqueness of the application will
+   *
+   * @param allowStyles Set to false to disable the loading on plugin based
+   * styles. This is only useful to applications that do not display a GUI
+   * normally. If you do create an application with @p allowStyles set to false
+   * it normally runs in the background but under special circumstances
+   * displays widgets.  Call @ref KApplication::enableStyles() before 
+   * displaying any widgets.
+   * @param GUIenabled Set to false to disable all GUI stuff. This implies
+   * no styles either.
+   * @param configUnique If true, the uniqueness of the application will
    *                 depend on the value of the "MultipleInstances"
    *                 key in the "KDE" group of the application config file.
-   *
    */
   KUniqueApplication( bool allowStyles=true,
 		      bool GUIenabled=true,
@@ -67,8 +74,6 @@ public:
    *
    * The command line arguments are being sent via DCOP to @ref newInstance()
    * and will be received once the application enters the event loop.
-   * @return @p true if registration is succesful.
-   *         @p false if another process was already running.
    *
    * Typically this is used like:
    * <pre>
@@ -89,6 +94,9 @@ public:
    * Note that it's not necessary to call @ref start() explicitly. It will be
    * called automatically before creating KUniqueApplication if it hasn't
    * been called yet, without any performance impact.
+   *
+   * @return true if registration is succesful.
+   *         false if another process was already running.
    */
   static bool start();
 
@@ -100,7 +108,14 @@ public:
   /**
    * Dispatches any incoming DCOP message for a new instance.
    *
-   * If it is not a request for a new instance, return @p false.
+   * If it is not a request for a new instance, return false.
+   * Overloaded from @ref DCOPObject to make sure that the application
+   * stays unique.
+   * @param fun DCOP function signature
+   * @param data the data for the arguments
+   * @param replyType the type of the reply value
+   * @param replyData the reply
+   * @see DCOPObject
    */
   bool process(const QCString &fun, const QByteArray &data,
 	       QCString &replyType, QByteArray &replyData);
