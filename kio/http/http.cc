@@ -439,6 +439,8 @@ int HTTPProtocol::openStream() {
       kdDebug(7103) << "SSL connection failed." << endl;
       return false;
     }
+    KSSLCertificate::KSSLValidation ksv = 
+                               m_ssl.peerInfo().getPeerCertificate().validate();
     kdDebug(7103) << "SSL connection established." << endl;
     kdDebug(7103) << "SSL connection information follows:" << endl
                   << "+-----------------------------------------------" << endl
@@ -451,6 +453,7 @@ int HTTPProtocol::openStream() {
                   << "| PEER:" << endl
                   << "| Subject: " << m_ssl.peerInfo().getPeerCertificate().getSubject() << endl
                   << "| Issuer: " << m_ssl.peerInfo().getPeerCertificate().getIssuer() << endl
+                  << "| Validation: " << (int)ksv << endl
                   << "+-----------------------------------------------"
                   << endl;
     setMetaData("ssl_in_use", "TRUE");
@@ -467,6 +470,10 @@ int HTTPProtocol::openStream() {
     tci.sprintf("%d", m_ssl.connectionInfo().getCipherBits());
     setMetaData("ssl_cipher_bits", tci);
     setMetaData("ssl_peer_ip", m_ssl_ip);
+    tci.sprintf("%d", (int)ksv);
+    setMetaData("ssl_cert_state", tci);
+    setMetaData("ssl_good_from", m_ssl.peerInfo().getPeerCertificate().getNotBefore());
+    setMetaData("ssl_good_until", m_ssl.peerInfo().getPeerCertificate().getNotAfter());
 
     return true;
   }
