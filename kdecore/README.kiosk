@@ -184,7 +184,6 @@ action/options_save_options
 action/options_configure_keybinding
 action/options_configure
 action/options_configure_toolbars
-action/help
 action/help_contents
 action/help_whats_this
 action/help_report_bug
