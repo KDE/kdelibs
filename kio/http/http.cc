@@ -39,7 +39,6 @@
 #include <unistd.h>
 #include <utime.h>
 
-#include <string>
 #include <kconfig.h>
 #include <kdesu/client.h>
 
@@ -171,7 +170,7 @@ void setup_alarm(unsigned int timeout)
 #ifdef DO_MD5
 const char *create_digest_auth (const char *header, const char *user, const char *passwd, const char *auth_str)
 {
-  string domain, realm, algorithm, nonce, opaque, qop;
+  QCString domain, realm, algorithm, nonce, opaque, qop;
   const char *p=auth_str;
   int i;
   HASHHEX HA1, HA2 = "", Response;
@@ -179,7 +178,7 @@ const char *create_digest_auth (const char *header, const char *user, const char
   if (!user || !passwd)
     return "";
 
-  QString t1;
+  QCString t1;
 
   while (*p) {
     while( (*p == ' ') || (*p == ',') || (*p == '\t'))
@@ -188,37 +187,37 @@ const char *create_digest_auth (const char *header, const char *user, const char
     if ( strncasecmp(p, "realm=\"", 7 ) == 0 ) {
       p += 7;
       while( p[i] != '"' ) i++;
-      realm.assign( p, i );
+      realm = QCString( p, i );
 #ifdef EXTRA_DEBUG
-      kdDebug(7103) << "Realm is :" << realm.c_str() << ":" << endl;
+      kdDebug(7103) << "Realm is :" << realm.data() << ":" << endl;
 #endif
     } else if (strncasecmp(p, "algorith=\"", 10)==0) {
       p+=10;
       while (p[i] != '"' ) i++;
-      algorithm.assign(p, i);
+      algorithm = QCString(p, i);
 #ifdef EXTRA_DEBUG
-      kdDebug(7103) << "Algorithm is :" << algorithm.c_str() << ":" << endl;
+      kdDebug(7103) << "Algorithm is :" << algorithm.data() << ":" << endl;
 #endif
     } else if (strncasecmp(p, "algorithm=\"", 11)==0) {
       p+=11;
       while (p[i] != '"') i++;
-      algorithm.assign(p,i);
+      algorithm = QCString(p,i);
     } else if (strncasecmp(p, "domain=\"", 8)==0) {
       p+=8;
       while (p[i] != '"') i++;
-      domain.assign(p,i);
+      domain = QCString(p,i);
     } else if (strncasecmp(p, "nonce=\"", 7)==0) {
       p+=7;
       while (p[i] != '"') i++;
-      nonce.assign(p,i);
+      nonce = QCString(p,i);
     } else if (strncasecmp(p, "opaque=\"", 8)==0) {
       p+=8;
       while (p[i] != '"') i++;
-      opaque.assign(p,i);
+      opaque = QCString(p,i);
     } else if (strncasecmp(p, "qop=\"", 5)==0) {
       p+=5;
       while (p[i] != '"') i++;
-      qop.assign(p,i);
+      qop = QCString(p,i);
     }
 
     p+=i;
@@ -231,15 +230,15 @@ const char *create_digest_auth (const char *header, const char *user, const char
   t1 += "\", ";
 
   t1 += "realm=\"";
-  t1 += realm.c_str();
+  t1 += realm.data();
   t1 += "\", ";
 
   t1 += "nonce=\"";
-  t1 += nonce.c_str();
+  t1 += nonce.data();
   t1 += "\", ";
 
   t1 += "uri=\"";
-  t1 += domain.c_str();
+  t1 += domain.data();
   t1 += "\", ";
 
   char szCNonce[10] = "abcdefghi";
@@ -247,8 +246,8 @@ const char *create_digest_auth (const char *header, const char *user, const char
 
 
 
-  DigestCalcHA1("md5", user, realm.c_str(), passwd, nonce.c_str(), szCNonce, HA1);
-  DigestCalcResponse(HA1, nonce.c_str(), szNonceCount, szCNonce, qop.c_str(), "GET", domain.c_str(), HA2, Response);
+  DigestCalcHA1("md5", user, realm.data(), passwd, nonce.data(), szCNonce, HA1);
+  DigestCalcResponse(HA1, nonce.data(), szNonceCount, szCNonce, qop.data(), "GET", domain.data(), HA2, Response);
   t1 += "qop=\"auth\", ";
 
   t1 += "cnonce=\"";
@@ -261,13 +260,13 @@ const char *create_digest_auth (const char *header, const char *user, const char
 
   if (opaque != "") {
     t1 += "opaque=\"";
-    t1 += opaque.c_str();
+    t1 += opaque.data();
     t1 += "\" ";
   }
 
   t1 += "\r\n";
 
-  return strdup(t1.latin1());
+  return qstrdup(t1.data());
 }
 #else
 const char *create_digest_auth (const char *, const char *, const char *, const char *)
