@@ -30,8 +30,15 @@ class QLabel;
 class QPushButton;
 class QDate;
 
-/// A widget for selecting dates
-/** A widget for selecting dates */
+/** 
+* Use this class to make a date picker widget.
+*
+* When a date is selected by the user, it emits a signal: dateSelected(QDate)
+*
+* @short A widget for selecting dates.
+* @author Tim Gilman (tdgilman@best.com)
+* @version $Id$
+*/
 class KDatePicker : public QFrame {
    Q_OBJECT
  public:
