@@ -1,5 +1,4 @@
 #include "kio_paste.h"
-#include "kio_linedit_dlg.h"
 #include "kio_error.h"
 #include "kio_interface.h"
 #include "kio_job.h"
@@ -7,6 +6,7 @@
 #include <kclipboard.h>
 #include <kurl.h>
 #include <kapp.h>
+#include <klineeditdlg.h>
 
 #include <qmessagebox.h>
 
