@@ -389,12 +389,16 @@ public:
   /**
    * Set to true if the currently sorted column should be drawn shaded. Defaults to true
    * @param shadeSortColumn True if sort column should be shaded.
+   *
+   * @since 3.4
    */
   void setShadeSortColumn(bool shadeSortColumn);
   
   /**
    * See if the sort column should be drawn shaded
    * @return true if the sort column should be shaded
+   *
+   * @since 3.4
    */
   bool shadeSortColumn(void) const;
 signals:
