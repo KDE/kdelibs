@@ -40,18 +40,14 @@ RenderContainer::RenderContainer()
 
 RenderContainer::~RenderContainer()
 {
-    m_first = 0;
-    m_last = 0;
-
-    //if not, it is mass a deletion, just kill everyone
-    RenderObject *n;
-    RenderObject *next;
-    for( n = m_first; n != 0; n = next )
-    {
-        n->setParent(0); //zero the parent
+    RenderObject* next;
+    for(RenderObject* n = m_first; n; n = next ) {
+        n->setParent(0);
         next = n->nextSibling();
         delete n;
     }
+    m_first = 0;
+    m_last = 0;
 }
 
 void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild)
