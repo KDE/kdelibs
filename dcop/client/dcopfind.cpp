@@ -221,7 +221,8 @@ int main( int argc, char** argv )
        argc = 0;
     }
 
-    findObject( app, objid, function, argc, args );
+    if (findObject( app, objid, function, argc, args ))
+       return 0;
 
-    return 0;
+    return 1;
 }
