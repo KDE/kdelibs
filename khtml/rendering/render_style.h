@@ -23,6 +23,15 @@
 #ifndef RENDERSTYLE_H
 #define RENDERSTYLE_H
 
+/*
+ * WARNING:
+ * --------
+ *
+ * The order of the values in the enums have to agree with the order specified
+ * in cssvalues.in, otherwise some optimizations in the parser will fail,
+ * and produce invaliud results.
+ */
+
 #include <qcolor.h>
 #include <qfont.h>
 #include <qlist.h>

@@ -1,4 +1,12 @@
-azimuth
+#
+# all valid CSS2 properties.
+#
+# aural properties are commented out, as we don't support them anyway.
+#
+# some properties are used in khtml, but are not part of CSS. They are used to get
+# HTML4 compatibilty in the rendering engine.
+#
+#azimuth
 background-attachment
 background-color
 background-image
@@ -26,12 +34,12 @@ color
 content
 counter-increment
 counter-reset
-cue-after
-cue-before
+#cue-after
+#cue-before
 cursor
 direction
 display
-elevation
+#elevation
 empty-cells
 float
 font-family
@@ -70,22 +78,22 @@ page
 page-break-after
 page-break-before
 page-break-inside
-pause-after
-pause-before
-pitch
-pitch-range
-play-during
+#pause-after
+#pause-before
+#pitch
+#pitch-range
+#play-during
 position
 quotes
-richness
+#richness
 right
 size
-speak
-speak-header
-speak-numeral
-speak-punctuation
-speech-rate
-stress
+#speak
+#speak-header
+#speak-numeral
+#speak-punctuation
+#speech-rate
+#stress
 table-layout
 text-align
 text-decoration
@@ -97,8 +105,8 @@ top
 unicode-bidi
 vertical-align
 visibility
-voice-family
-volume
+#voice-family
+#volume
 white-space
 widows
 width
@@ -113,13 +121,13 @@ border-right
 border-bottom
 border-left
 border-width
-cue
+#cue
 font
 list-style
 margin
 outline
 padding
-pause
+#pause
 konq_bgpos_x
 konq_bgpos_y
 scrollbar-face-color

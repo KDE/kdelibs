@@ -24,6 +24,7 @@
 
 //#define CSS_DEBUG
 //#define CSS_AURAL
+//#define CSS_DEBUG_BCKGR
 
 #include "css_stylesheetimpl.h"
 
@@ -715,7 +716,6 @@ QList<CSSProperty> *StyleBaseImpl::parseProperties(const QChar *curP, const QCha
 {
     m_propList = new QList<CSSProperty>;
     m_propList->setAutoDelete(true);
-
     while (curP < endP)
     {
         const QChar *startP = curP;
@@ -1056,13 +1056,14 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId)
 {
    QString value(curP, endP - curP);
-   value = value.lower();
-   const char *val = value.ascii();
-
+   value = value.lower(); //### Is this really needed?
+   const char *val = value.latin1();
+ 
    CSSValueImpl *parsedValue = 0;
-   //kdDebug( 6080 ) << "value: " << value << " val: " << val <<  endl;
 
-   if(!strcmp(val, "inherit")) {
+   // We are using this so often
+   const struct css_value *cssval = findValue(val, endP - curP);
+   if (cssval && cssval->id == CSS_VAL_INHERIT) {
         parsedValue = new CSSInheritedValueImpl(); // inherited value
    } else {
     switch(propId)
@@ -1074,17 +1075,9 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
     /* These properties are not checked for validity, pure performance consideration */
 
     case CSS_PROP_BORDER_COLLAPSE:      // collapse | separate | inherit
-    case CSS_PROP_CAPTION_SIDE:         // top | bottom | left | right | inherit
+    case CSS_PROP_CAPTION_SIDE:         // top | bottom | left | right | inherit //### careful with optimize trick
     case CSS_PROP_CLEAR:                // none | left | right | both | inherit
-    case CSS_PROP_CURSOR:               // [ [<uri> ,]* [ auto | crosshair | default | pointer | move |
-                                        // e-resize | ne-resize | nw-resize | n-resize | se-resize |
-                                        // sw-resize | s-resize | w-resize| text | wait | help ] ] | inherit
-                                        // ### ADD SUPPPORT FOR URI
     case CSS_PROP_DIRECTION:            // ltr | rtl | inherit
-    case CSS_PROP_DISPLAY:
-        // inline | block | list-item | run-in | compact | marker | table | inline-table |
-        // table-row-group | table-header-group | table-footer-group | table-row |
-        // table-column-group | table-column | table-cell | table-caption | none | inherit
     case CSS_PROP_EMPTY_CELLS:          // show | hide | inherit
     case CSS_PROP_FLOAT:                // left | right | none | inherit
     case CSS_PROP_FONT_STRETCH:
@@ -1092,11 +1085,6 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
         // semi-condensed |  semi-expanded | expanded | extra-expanded | ultra-expanded |
         // inherit
     case CSS_PROP_LIST_STYLE_POSITION:  // inside | outside | inherit
-    case CSS_PROP_LIST_STYLE_TYPE:
-        // disc | circle | square | decimal | decimal-leading-zero | lower-roman |
-        // upper-roman | lower-greek | lower-alpha | lower-latin | upper-alpha |
-        // upper-latin | hebrew | armenian | georgian | cjk-ideographic | hiragana |
-        // katakana | hiragana-iroha | katakana-iroha | none | inherit
     case CSS_PROP_OVERFLOW:             // visible | hidden | scroll | auto | inherit
     case CSS_PROP_PAGE:                 // <identifier> | auto // ### CHECK
     case CSS_PROP_PAGE_BREAK_AFTER:     // auto | always | avoid | left | right | inherit
@@ -1109,7 +1097,6 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
     case CSS_PROP_VISIBILITY:           // visible | hidden | collapse | inherit
     case CSS_PROP_WHITE_SPACE:          // normal | pre | nowrap | inherit
     {
-        const struct css_value *cssval = findValue(val, value.length());
         if (cssval)
         {
             parsedValue = new CSSPrimitiveValueImpl(cssval->id);
@@ -1118,8 +1105,8 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
     }
 
     /* All the CSS properties are not supported at the moment. Note that all the CSS2 Aural properties
-     * are only checked, if CSS_AURAL is defined (see parseAuralValues). As we don't support them at all
-     * this seems reasonable.
+     * are only checked, if CSS_AURAL is defined (see parseAuralValues). As we don't support them at 
+     * all this seems reasonable.
      */
 
     case CSS_PROP_SIZE:                 // <length>{1,2} | auto | portrait | landscape | inherit
@@ -1138,40 +1125,57 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
      * correctly
      */
 
-    case CSS_PROP_TEXT_ALIGN:   // left | right | center | justify | <string> | inherit
+    case CSS_PROP_LIST_STYLE_TYPE:
+        // disc | circle | square | decimal | decimal-leading-zero | lower-roman |
+        // upper-roman | lower-greek | lower-alpha | lower-latin | upper-alpha |
+        // upper-latin | hebrew | armenian | georgian | cjk-ideographic | hiragana |
+        // katakana | hiragana-iroha | katakana-iroha | none | inherit
     {
-        const struct css_value *cssval = findValue(val, value.length());
         if (cssval) {
             int id = cssval->id;
-            if (id == CSS_VAL_LEFT || id == CSS_VAL_RIGHT || id == CSS_VAL_CENTER ||
-                id == CSS_VAL_JUSTIFY || id == CSS_VAL_KONQ_CENTER) {
+            if ((id >= CSS_VAL_CIRCLE && id <= CSS_VAL_KATAKANA_IROHA) || id == CSS_VAL_NONE) {
+                parsedValue = new CSSPrimitiveValueImpl(cssval->id);
+            }
+	}
+        break;
+    }
+    case CSS_PROP_DISPLAY:
+        // inline | block | list-item | run-in | compact | marker | table | inline-table |
+        // table-row-group | table-header-group | table-footer-group | table-row |
+        // table-column-group | table-column | table-cell | table-caption | none | inherit
+    {
+        if (cssval) {
+            int id = cssval->id;
+            if ((id >= CSS_VAL_INLINE && id <= CSS_VAL_TABLE_CAPTION) || id == CSS_VAL_NONE) {
+                parsedValue = new CSSPrimitiveValueImpl(cssval->id);
+            }
+	}
+        break;
+    }
+    case CSS_PROP_TEXT_ALIGN:   	
+    	// left | right | center | justify | konq_center | <string> | inherit
+    {
+        if (cssval) {
+            int id = cssval->id;
+            if (id >= CSS_VAL_LEFT && id <= CSS_VAL_KONQ_CENTER) {
                 parsedValue = new CSSPrimitiveValueImpl(cssval->id);
                 break;
             }
         } else {
-            parsedValue = new CSSPrimitiveValueImpl(DOMString(value), CSSPrimitiveValue::CSS_STRING);
+            parsedValue = new CSSPrimitiveValueImpl(DOMString(curP, endP - curP), 
+			                            CSSPrimitiveValue::CSS_STRING);
         }
         break;
     }
     case CSS_PROP_OUTLINE_STYLE:        // <border-style> | inherit
-      {
-#ifdef CSS_DEBUG
-        kdDebug( 6080 ) << "CSS_PROP_OUTLINE_STYLE: " << val << endl;
-#endif
-      }
     case CSS_PROP_BORDER_TOP_STYLE:     //// <border-style> | inherit
     case CSS_PROP_BORDER_RIGHT_STYLE:   //   Defined as:    none | hidden | dotted | dashed |
     case CSS_PROP_BORDER_BOTTOM_STYLE:  //   solid | double | groove | ridge | inset | outset
     case CSS_PROP_BORDER_LEFT_STYLE:    ////
       {
-        const struct css_value *cssval = findValue(val, value.length());
         if (cssval) {
             int id = cssval->id;
-            // Sorry Dirk, but I need this for parseShorthand
-            if (id == CSS_VAL_NONE || id == CSS_VAL_HIDDEN || id == CSS_VAL_DOTTED ||
-                id == CSS_VAL_DASHED || id == CSS_VAL_SOLID || id == CSS_VAL_DOUBLE ||
-                id == CSS_VAL_GROOVE || id == CSS_VAL_RIDGE || id == CSS_VAL_INSET ||
-                id == CSS_VAL_OUTSET) {
+            if (id >= CSS_VAL_NONE && id <= CSS_VAL_OUTSET) {
                 parsedValue = new CSSPrimitiveValueImpl(cssval->id);
             }
         }
@@ -1180,34 +1184,29 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
     case CSS_PROP_FONT_WEIGHT:  // normal | bold | bolder | lighter | 100 | 200 | 300 | 400 |
                                 // 500 | 600 | 700 | 800 | 900 | inherit
     {
-        const struct css_value *cssval = findValue(val, value.length());
         if (cssval) {
             int id = cssval->id;
-            if (id == CSS_VAL_NORMAL || id == CSS_VAL_BOLD || id == CSS_VAL_BOLDER || id == CSS_VAL_LIGHTER) {
-                parsedValue = new CSSPrimitiveValueImpl(cssval->id);
-            }
-        } else {
-            const QString val2( value.stripWhiteSpace() );
-            int id = 0;
-            if (val2 == "100" || val2 == "200" || val2 == "300" || val2 == "400" || val2 == "500")
-                id = CSS_VAL_NORMAL;
-            else if ( val2 == "600" || val2 == "700" || val2 == "800" || val2 == "900" )
-                id = CSS_VAL_BOLD;
-            if ( id )
-                parsedValue = new CSSPrimitiveValueImpl(id);
+            if (id) {
+	        if (id >= CSS_VAL_NORMAL && id <= CSS_VAL_LIGHTER) {
+		    // Allready correct id
+		} else if (id >= CSS_VAL_100 && id <= CSS_VAL_500) {
+		    id = CSS_VAL_NORMAL;
+		} else if (id >= CSS_VAL_600 && id <= CSS_VAL_900) {
+		    id = CSS_VAL_BOLD;
+	        }
+	    }
+	    parsedValue = new CSSPrimitiveValueImpl(id);
         }
         break;
     }
     case CSS_PROP_BACKGROUND_REPEAT:    // repeat | repeat-x | repeat-y | no-repeat | inherit
     {
-#ifdef CSS_DEBUG
+#ifdef CSS_DEBUG_BCKGR
         kdDebug( 6080 ) << "CSS_PROP_BACKGROUND_REPEAT: " << val << endl;
 #endif
-        const struct css_value *cssval = findValue(val, value.length());
         if (cssval) {
             int id = cssval->id;
-            if ( id == CSS_VAL_REPEAT || id == CSS_VAL_REPEAT_X ||
-                 id == CSS_VAL_REPEAT_Y || id == CSS_VAL_NO_REPEAT ) {
+            if ( id >= CSS_VAL_REPEAT && id <= CSS_VAL_NO_REPEAT ) {
                 parsedValue = new CSSPrimitiveValueImpl(cssval->id);
             }
         }
@@ -1215,10 +1214,9 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
     }
     case CSS_PROP_BACKGROUND_ATTACHMENT: // scroll | fixed
     {
-#ifdef CSS_DEBUG
+#ifdef CSS_DEBUG_BCKGR
         kdDebug( 6080 ) << "CSS_PROP_BACKGROUND_ATTACHEMENT: " << val << endl;
 #endif
-        const struct css_value *cssval = findValue(val, value.length());
         if (cssval) {
             int id = cssval->id;
             if ( id == CSS_VAL_SCROLL || id == CSS_VAL_FIXED ) {
@@ -1229,7 +1227,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
     }
     case CSS_PROP_BACKGROUND_POSITION:
     {
-#ifdef CSS_DEBUG
+#ifdef CSS_DEBUG_BCKGR
         kdDebug( 6080 ) << "CSS_PROP_BACKGROUND_POSITION: " << val << endl;
 #endif
         /* Problem: center is ambigous
@@ -1303,7 +1301,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
     case CSS_PROP_KONQ_BGPOS_X:
     case CSS_PROP_KONQ_BGPOS_Y:
     {
-#ifdef CSS_DEBUG
+#ifdef CSS_DEBUG_BCKGR
         kdDebug( 6080 ) << "CSS_PROP_KONQ_BGPOS_{X|Y}: " << val << endl;
 #endif
         parsedValue = parseUnit(curP, endP, PERCENT | NUMBER | LENGTH);
@@ -1322,7 +1320,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 #endif
         // outline has "invert" as additional keyword. we handle
         // it as invalid color and add a special case during rendering
-        if ( value == "invert" ) {
+        if (cssval && cssval->id == CSS_VAL_INVERT) {
             parsedValue = new CSSPrimitiveValueImpl( QColor() );
             break;
         }
@@ -1330,10 +1328,10 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
     }
     case CSS_PROP_BACKGROUND_COLOR:     // <color> | transparent | inherit
     {
-#ifdef CSS_DEBUG
+#ifdef CSS_DEBUG_BCKGR
         kdDebug( 6080 ) << "CSS_PROP_BACKGROUND_COLOR: " << val << endl;
 #endif
-        if ( value == "transparent" ) {
+        if (cssval && cssval->id == CSS_VAL_TRANSPARENT) {
             // ### What are we to do here?
             break;
         }
@@ -1363,44 +1361,51 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
         break;
     }
     case CSS_PROP_BACKGROUND_IMAGE:     // <uri> | none | inherit
-#ifdef CSS_DEBUG
+#ifdef CSS_DEBUG_BCKGR
     {
         kdDebug( 6080 ) << "CSS_PROP_BACKGROUND_IMAGE: " << val << endl;
     }
 #endif
+    case CSS_PROP_CURSOR:               
+    	// [ [<uri> ,]* [ auto | crosshair | default | pointer | move | e-resize | ne-resize | 
+	// nw-resize | // n-resize | se-resize | sw-resize | s-resize | w-resize | text | 
+	// wait | help ] ] | inherit
+    {
+        if (cssval) {
+            int id = cssval->id;
+            if (id >= CSS_VAL_AUTO && id <= CSS_VAL_HELP) {
+                parsedValue = new CSSPrimitiveValueImpl(cssval->id);
+        	break;
+	    }
+        } else {
+	    // Break is explictly missing, looking for <uri>
+	    // ### Only supports parsing the first uri
+	}
+    }
     case CSS_PROP_LIST_STYLE_IMAGE:     // <uri> | none | inherit
     {
-        const struct css_value *cssval = findValue(val, value.length());
         if (cssval && cssval->id == CSS_VAL_NONE)
         {
             parsedValue = new CSSImageValueImpl();
-#ifdef CSS_DEBUG
-            kdDebug( 6080 ) << "empty image " << static_cast<CSSImageValueImpl *>(parsedValue)->image() << endl;
-#endif
-            break;
+//#ifdef CSS_DEBUG
+            kdDebug( 6080 ) << "empty image " << endl;
+//#endif
         } else {
             DOMString value(curP, endP - curP);
             value = khtml::parseURL(value);
-#ifdef CSS_DEBUG
-            kdDebug( 6080 ) << "image, url=" << value.string() << " base=" << baseUrl().string() << endl;
-#endif
             parsedValue = new CSSImageValueImpl(value, baseUrl(), this);
-            break;
+//#ifdef CSS_DEBUG
+            kdDebug( 6080 ) << "image, url=" << value.string() << " base=" << baseUrl().string() << endl;
+//#endif
         }
+        break;
     }
-
     case CSS_PROP_OUTLINE_WIDTH:        // <border-width> | inherit
-#ifdef CSS_DEBUG
-      {
-        kdDebug( 6080 ) << "CSS_PROP_OUTLINE_WIDTH: " << val << endl;
-      }
-#endif
     case CSS_PROP_BORDER_TOP_WIDTH:     //// <border-width> | inherit
     case CSS_PROP_BORDER_RIGHT_WIDTH:   //   Which is defined as
     case CSS_PROP_BORDER_BOTTOM_WIDTH:  //   thin | medium | thick | <length>
     case CSS_PROP_BORDER_LEFT_WIDTH:    ////
     {
-        const struct css_value *cssval = findValue(val, value.length());
         if (cssval) {
             int id = cssval->id;
             if (id == CSS_VAL_THIN || id == CSS_VAL_MEDIUM || id == CSS_VAL_THICK) {
@@ -1413,11 +1418,8 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
     }
     case CSS_PROP_MARKER_OFFSET:        // <length> | auto | inherit
     {
-        const struct css_value *cssval = findValue(val, value.length());
-        if (cssval) {
-            if (cssval->id == CSS_VAL_AUTO) {
-                parsedValue = new CSSPrimitiveValueImpl(cssval->id);
-            }
+        if (cssval && cssval->id == CSS_VAL_AUTO) {
+	    parsedValue = new CSSPrimitiveValueImpl(cssval->id);            
         } else {
             parsedValue = parseUnit(curP, endP, LENGTH);
         }
@@ -1426,7 +1428,6 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
     case CSS_PROP_LETTER_SPACING:       // normal | <length> | inherit
     case CSS_PROP_WORD_SPACING:         // normal | <length> | inherit
     {
-        const struct css_value *cssval = findValue(val, value.length());
         if (cssval) {
             if (cssval->id == CSS_VAL_NORMAL) {
                 parsedValue = new CSSPrimitiveValueImpl(cssval->id);
@@ -1447,15 +1448,12 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
         parsedValue = parseUnit(curP, endP, LENGTH | PERCENT);
         break;
     }
-    case CSS_PROP_FONT_SIZE:            // <absolute-size> | <relative-size> |
-                                        // <length> | <percentage> | inherit
+    case CSS_PROP_FONT_SIZE:            
+    	// <absolute-size> | <relative-size> | <length> | <percentage> | inherit
     {
-        const struct css_value *cssval = findValue(val, value.length());
         if (cssval) {
             int id = cssval->id;
-            if (id == CSS_VAL_XX_SMALL || id == CSS_VAL_X_SMALL || id == CSS_VAL_SMALL ||
-                id == CSS_VAL_MEDIUM || id == CSS_VAL_LARGE || id == CSS_VAL_X_LARGE ||
-                id == CSS_VAL_XX_LARGE || id == CSS_VAL_SMALLER || id == CSS_VAL_LARGER) {
+            if (id >= CSS_VAL_XX_SMALL && id <= CSS_VAL_LARGER) {
                 parsedValue = new CSSPrimitiveValueImpl(cssval->id);
                 break;
             }
@@ -1466,7 +1464,6 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
     }
     case CSS_PROP_FONT_STYLE:           // normal | italic | oblique | inherit
     {
-        const struct css_value *cssval = findValue(val, value.length());
         if (cssval) {
             int id = cssval->id;
             if ( id == CSS_VAL_NORMAL || id == CSS_VAL_ITALIC || id == CSS_VAL_OBLIQUE) {
@@ -1477,7 +1474,6 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
     }
     case CSS_PROP_FONT_VARIANT:         // normal | small-caps | inherit
     {
-        const struct css_value *cssval = findValue(val, value.length());
         if (cssval) {
             int id = cssval->id;
             if ( id == CSS_VAL_NORMAL || id == CSS_VAL_SMALL_CAPS) {
@@ -1486,15 +1482,13 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
         }
         break;
     }
-    case CSS_PROP_VERTICAL_ALIGN:       // baseline | sub | super | top | text-top | middle |
-                                        // bottom | text-bottom | <percentage> | <length> | inherit
+    case CSS_PROP_VERTICAL_ALIGN:       
+    	// baseline | sub | super | top | text-top | middle | bottom | text-bottom |
+	// <percentage> | <length> | inherit
     {
-        const struct css_value *cssval = findValue(val, value.length());
         if (cssval) {
             int id = cssval->id;
-            if (id == CSS_VAL_BASELINE || id == CSS_VAL_SUB || id == CSS_VAL_SUPER ||
-                id == CSS_VAL_TOP || id == CSS_VAL_TEXT_TOP || id == CSS_VAL_MIDDLE ||
-                id == CSS_VAL_BOTTOM || id == CSS_VAL_TEXT_BOTTOM) {
+            if (id >= CSS_VAL_BASELINE && id <= CSS_VAL_TEXT_BOTTOM) {
                 parsedValue = new CSSPrimitiveValueImpl(cssval->id);
             }
         } else {
@@ -1505,11 +1499,8 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
     case CSS_PROP_MAX_HEIGHT:           // <length> | <percentage> | none | inherit
     case CSS_PROP_MAX_WIDTH:            // <length> | <percentage> | none | inherit
     {
-        const struct css_value *cssval = findValue(val, value.length());
-        if (cssval) {
-            if (cssval->id == CSS_VAL_NONE) {
-                parsedValue = new CSSPrimitiveValueImpl(cssval->id);
-            }
+        if (cssval && cssval->id == CSS_VAL_NONE) {
+            parsedValue = new CSSPrimitiveValueImpl(cssval->id);
         } else {
             parsedValue = parseUnit(curP, endP, LENGTH | PERCENT );
         }
@@ -1526,11 +1517,8 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
     case CSS_PROP_MARGIN_BOTTOM:        //   <length> | <percentage> | auto | inherit
     case CSS_PROP_MARGIN_LEFT:          ////
     {
-        const struct css_value *cssval = findValue(val, value.length());
-        if (cssval) {
-            if (cssval->id == CSS_VAL_AUTO) {
-                parsedValue = new CSSPrimitiveValueImpl(cssval->id);
-            }
+        if (cssval && cssval->id == CSS_VAL_AUTO) {
+            parsedValue = new CSSPrimitiveValueImpl(cssval->id);
         } else {
             parsedValue = parseUnit(curP, endP, LENGTH | PERCENT );
         }
@@ -1538,25 +1526,18 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
     }
     case CSS_PROP_FONT_SIZE_ADJUST:     // <number> | none | inherit
     {
-        const struct css_value *cssval = findValue(val, value.length());
-        if (cssval) {
-            if (cssval->id == CSS_VAL_NONE) {
-                parsedValue = new CSSPrimitiveValueImpl(cssval->id);
-                break;
-            }
+        if (cssval && cssval->id == CSS_VAL_NONE) {
+            parsedValue = new CSSPrimitiveValueImpl(cssval->id);
         } else {
-        parsedValue = parseUnit(curP, endP, NUMBER);
+            parsedValue = parseUnit(curP, endP, NUMBER);
         }
         break;
     }
     case CSS_PROP_Z_INDEX:              // auto | <integer> | inherit
     {
-        const struct css_value *cssval = findValue(val, value.length());
-        if (cssval) {
-            if (cssval->id == CSS_VAL_AUTO) {
-                parsedValue = new CSSPrimitiveValueImpl(cssval->id);
-                break;
-            }
+        if (cssval && cssval->id == CSS_VAL_AUTO) {
+            parsedValue = new CSSPrimitiveValueImpl(cssval->id);
+            break;
         }
         // break explicitly missing, looking for <number>
     }
@@ -1568,11 +1549,8 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
     }
     case CSS_PROP_LINE_HEIGHT:          // normal | <number> | <length> | <percentage> | inherit
     {
-        const struct css_value *cssval = findValue(val, value.length());
-        if (cssval) {
-            if (cssval->id == CSS_VAL_NORMAL) {
-                parsedValue = new CSSPrimitiveValueImpl(cssval->id);
-            }
+        if (cssval && cssval->id == CSS_VAL_NORMAL) {
+            parsedValue = new CSSPrimitiveValueImpl(cssval->id);
         } else {
             parsedValue = parseUnit(curP, endP, NUMBER | LENGTH | PERCENT);
         }
@@ -1581,19 +1559,15 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
     case CSS_PROP_COUNTER_INCREMENT:    // [ <identifier> <integer>? ]+ | none | inherit
     case CSS_PROP_COUNTER_RESET:        // [ <identifier> <integer>? ]+ | none | inherit
     {
-        const struct css_value *cssval = findValue(val, value.length());
-        if (cssval) {
-            if (cssval->id == CSS_VAL_NONE) {
-                parsedValue = new CSSPrimitiveValueImpl(cssval->id);
-            }
+        if (cssval && cssval->id == CSS_VAL_NONE) {
+            parsedValue = new CSSPrimitiveValueImpl(cssval->id);
         } else {
             CSSValueListImpl *list = new CSSValueListImpl;
-            QString str(curP, endP-curP);
             int pos=0, pos2;
             while( 1 )
             {
-                pos2 = str.find(',', pos);
-                QString face = str.mid(pos, pos2-pos);
+                pos2 = value.find(',', pos);
+                QString face = value.mid(pos, pos2-pos);
                 face = face.stripWhiteSpace();
                 if(face.length() == 0) break;
                 // ### single quoted is missing...
@@ -1612,14 +1586,13 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
             break;
         }
     }
-    case CSS_PROP_FONT_FAMILY:          // [[ <family-name> | <generic-family> ],]* [<family-name>
-                                        // | <generic-family>] | inherit
+    case CSS_PROP_FONT_FAMILY:          
+    	// [[ <family-name> | <generic-family> ],]* [<family-name> | <generic-family>] | inherit
     {
         CSSValueListImpl *list = new CSSValueListImpl;
-        QString str(curP, endP-curP);
         // css2 compatible parsing...
         FontParser fp;
-        fp.startTokenizer( str, strictParsing );
+        fp.startTokenizer( value, strictParsing );
         QStringList families;
         if ( !fp.matchFontFamily( &families ) )
             return false;
@@ -1636,23 +1609,21 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
             delete list;
         break;
     }
-    case CSS_PROP_TEXT_DECORATION:      // none | [ underline || overline || line-through || blink ] |
-                                        // inherit
+    case CSS_PROP_TEXT_DECORATION:   
+    	// none | [ underline || overline || line-through || blink ] | inherit
     {
-        const struct css_value *cssval = findValue(val, value.length());
         if (cssval) {
            if (cssval->id == CSS_VAL_NONE) {
-                parsedValue = new CSSPrimitiveValueImpl(cssval->id);
+	     parsedValue = new CSSPrimitiveValueImpl(cssval->id);
            } else {
-            CSSValueListImpl *list = new CSSValueListImpl;
-            QString str(curP, endP-curP);
-            str.simplifyWhiteSpace();
-            //kdDebug( 6080 ) << "text-decoration: '" << str << "'" << endl;
-            int pos=0, pos2;
+	     CSSValueListImpl *list = new CSSValueListImpl;
+	     value.simplifyWhiteSpace();
+	     //kdDebug( 6080 ) << "text-decoration: '" << str << "'" << endl;
+	     int pos=0, pos2;
             while( 1 )
             {
-               pos2 = str.find(' ', pos);
-               QString decoration = str.mid(pos, pos2-pos);
+               pos2 = value.find(' ', pos);
+               QString decoration = value.mid(pos, pos2-pos);
                decoration = decoration.stripWhiteSpace();
                //kdDebug( 6080 ) << "found decoration '" << decoration << "'" << endl;
                const struct css_value *cssval = findValue(decoration.lower().ascii(),
@@ -1676,54 +1647,61 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 
     /* shorthand properties */
 
-    case CSS_PROP_BACKGROUND:           // ['background-color' || 'background-image' ||
-                                        // 'background-repeat' || 'background-attachment' ||
-                                        // 'background-position'] | inherit
+    case CSS_PROP_BACKGROUND:  
+    	// ['background-color' || 'background-image' ||'background-repeat' || 
+	// 'background-attachment' || 'background-position'] | inherit
     {
-#ifdef CSS_DEBUG
+#ifdef CSS_DEBUG_BCKGR
         kdDebug(6080) << "CSS_PROP_BACKGROUND" << endl;
 #endif
         return parseBackground(curP, endP);
     }
-    case CSS_PROP_BORDER:               // [ 'border-width' || 'border-style' || <color> ] | inherit
+    case CSS_PROP_BORDER:
+ 	// [ 'border-width' || 'border-style' || <color> ] | inherit
     {
         const int properties[3] = { CSS_PROP_BORDER_WIDTH, CSS_PROP_BORDER_STYLE,
                                     CSS_PROP_BORDER_COLOR };
         return parseShortHand(curP, endP, properties, 3);
     }
-    case CSS_PROP_BORDER_TOP:           // [ 'border-top-width' || 'border-style' || <color> ] | inherit
+    case CSS_PROP_BORDER_TOP:  
+    	// [ 'border-top-width' || 'border-style' || <color> ] | inherit
     {
         const int properties[3] = { CSS_PROP_BORDER_TOP_WIDTH, CSS_PROP_BORDER_TOP_STYLE,
                                     CSS_PROP_BORDER_TOP_COLOR};
         return parseShortHand(curP, endP, properties, 3);
     }
-    case CSS_PROP_BORDER_RIGHT:         // [ 'border-right-width' || 'border-style' || <color> ] | inherit
+    case CSS_PROP_BORDER_RIGHT:  
+    	// [ 'border-right-width' || 'border-style' || <color> ] | inherit
     {
         const int properties[3] = { CSS_PROP_BORDER_RIGHT_WIDTH, CSS_PROP_BORDER_RIGHT_STYLE,
                                     CSS_PROP_BORDER_RIGHT_COLOR };
         return parseShortHand(curP, endP, properties, 3);
     }
-    case CSS_PROP_BORDER_BOTTOM:        // [ 'border-bottom-width' || 'border-style' || <color> ] | inherit
+    case CSS_PROP_BORDER_BOTTOM:  
+    	// [ 'border-bottom-width' || 'border-style' || <color> ] | inherit
     {
         const int properties[3] = { CSS_PROP_BORDER_BOTTOM_WIDTH, CSS_PROP_BORDER_BOTTOM_STYLE,
                                     CSS_PROP_BORDER_BOTTOM_COLOR };
         return parseShortHand(curP, endP, properties, 3);
     }
-    case CSS_PROP_BORDER_LEFT:          // [ 'border-left-width' || 'border-style' || <color> ] | inherit
+    case CSS_PROP_BORDER_LEFT:   
+    	// [ 'border-left-width' || 'border-style' || <color> ] | inherit
     {
         const int properties[3] = { CSS_PROP_BORDER_LEFT_WIDTH, CSS_PROP_BORDER_LEFT_STYLE,
                                     CSS_PROP_BORDER_LEFT_COLOR };
         return parseShortHand(curP, endP, properties, 3);
     }
-    case CSS_PROP_OUTLINE:              // [ 'outline-color' || 'outline-style' || 'outline-width' ] | inherit
+    case CSS_PROP_OUTLINE:
+    	// [ 'outline-color' || 'outline-style' || 'outline-width' ] | inherit
     {
         const int properties[3] = { CSS_PROP_OUTLINE_COLOR, CSS_PROP_OUTLINE_STYLE,
                                     CSS_PROP_OUTLINE_WIDTH };
         return parseShortHand(curP, endP, properties, 3);
     }
-    case CSS_PROP_BORDER_COLOR:         // <color>{1,4} | transparent | inherit
+    case CSS_PROP_BORDER_COLOR:    
+    	// <color>{1,4} | transparent | inherit
     {
-        const struct css_value *cssval = findValue(val, value.length());
+        const struct css_value *cssval = findValue(val, endP - curP);
         if (cssval && cssval->id == CSS_VAL_TRANSPARENT)
         {
             // set border colors to invalid
@@ -1734,34 +1712,37 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
                                     CSS_PROP_BORDER_BOTTOM_COLOR, CSS_PROP_BORDER_LEFT_COLOR };
         return parse4Values(curP, endP, properties);
     }
-    case CSS_PROP_BORDER_WIDTH:         // <border-width>{1,4} | inherit
+    case CSS_PROP_BORDER_WIDTH:        
+    	// <border-width>{1,4} | inherit
     {
         const int properties[4] = { CSS_PROP_BORDER_TOP_WIDTH, CSS_PROP_BORDER_RIGHT_WIDTH,
                                     CSS_PROP_BORDER_BOTTOM_WIDTH, CSS_PROP_BORDER_LEFT_WIDTH };
         return parse4Values(curP, endP, properties);
     }
-    case CSS_PROP_BORDER_STYLE:         // <border-style>{1,4} | inherit
+    case CSS_PROP_BORDER_STYLE:         
+    	// <border-style>{1,4} | inherit
     {
         const int properties[4] = { CSS_PROP_BORDER_TOP_STYLE, CSS_PROP_BORDER_RIGHT_STYLE,
                                     CSS_PROP_BORDER_BOTTOM_STYLE, CSS_PROP_BORDER_LEFT_STYLE };
         return parse4Values(curP, endP, properties);
     }
-    case CSS_PROP_MARGIN:               // <margin-width>{1,4} | inherit
+    case CSS_PROP_MARGIN:          
+    	// <margin-width>{1,4} | inherit
     {
         const int properties[4] = { CSS_PROP_MARGIN_TOP, CSS_PROP_MARGIN_RIGHT,
                                     CSS_PROP_MARGIN_BOTTOM, CSS_PROP_MARGIN_LEFT };
         return parse4Values(curP, endP, properties);
     }
-    case CSS_PROP_PADDING:              // <padding-width>{1,4} | inherit
+    case CSS_PROP_PADDING:             
+    	// <padding-width>{1,4} | inherit
     {
         const int properties[4] = { CSS_PROP_PADDING_TOP, CSS_PROP_PADDING_RIGHT,
                                     CSS_PROP_PADDING_BOTTOM, CSS_PROP_PADDING_LEFT };
         return parse4Values(curP, endP, properties);
     }
-    case CSS_PROP_FONT:                 // [ [ 'font-style' || 'font-variant' || 'font-weight' ]?
-                                        // 'font-size' [ / 'line-height' ]? 'font-family' ] |
-                                        // caption | icon | menu | message-box | small-caption |
-                                        // status-bar | inherit
+    case CSS_PROP_FONT:    
+    	// [ [ 'font-style' || 'font-variant' || 'font-weight' ]? 'font-size' [ / 'line-height' ]? 
+	// 'font-family' ] | caption | icon | menu | message-box | small-caption | status-bar | inherit
     {
         return parseFont(curP, endP);
     }
@@ -1830,7 +1811,7 @@ bool StyleBaseImpl::parseAuralValue( const QChar *curP, const QChar *endP, int p
     case CSS_PROP_CUE_AFTER:            // <uri> | none | inherit
     case CSS_PROP_CUE_BEFORE:           // <uri> | none | inherit
     {
-        const struct css_value *cssval = findValue(val, value.length());
+        const struct css_value *cssval = findValue(val, endP - curP);
         if (cssval) {
             if (cssval->id == CSS_VAL_NONE) {
                 parsedValue = new CSSPrimitiveValueImpl(cssval->id);
@@ -1845,7 +1826,7 @@ bool StyleBaseImpl::parseAuralValue( const QChar *curP, const QChar *endP, int p
     case CSS_PROP_ELEVATION:            // <angle> | below | level | above | higher | lower
                                         // | inherit
     {
-        const struct css_value *cssval = findValue(val, value.length());
+        const struct css_value *cssval = findValue(val, endP - curP);
         if (cssval) {
             int id = cssval->id;
             if (id == CSS_VAL_BELOW || id == CSS_VAL_LEVEL || id == CSS_VAL_ABOVE ||
@@ -1858,9 +1839,9 @@ bool StyleBaseImpl::parseAuralValue( const QChar *curP, const QChar *endP, int p
         break;
     }
     case CSS_PROP_SPEECH_RATE:          // <number> | x-slow | slow | medium | fast |
-                                        // x-fast | faster | slower | inherit --AURAL--
+                                        // x-fast | faster | slower | inherit
     {
-        const struct css_value *cssval = findValue(val, value.length());
+        const struct css_value *cssval = findValue(val, endP - curP);
         if (cssval) {
             int id = cssval->id;
             if (id == CSS_VAL_X_SLOW || id == CSS_VAL_SLOW || id == CSS_VAL_MEDIUM ||
@@ -1877,7 +1858,7 @@ bool StyleBaseImpl::parseAuralValue( const QChar *curP, const QChar *endP, int p
     case CSS_PROP_VOLUME:               // <number> | <percentage> | silent | x-soft | soft |
                                         // medium | loud | x-loud | inherit
     {
-        const struct css_value *cssval = findValue(val, value.length());
+        const struct css_value *cssval = findValue(val, endP - curP);
         if (cssval) {
             int id = cssval->id;
             if (id == CSS_VAL_SILENT || id == CSS_VAL_X_SOFT || id == CSS_VAL_SOFT ||
@@ -1891,7 +1872,7 @@ bool StyleBaseImpl::parseAuralValue( const QChar *curP, const QChar *endP, int p
     }
     case CSS_PROP_PITCH:                 // <frequency> | x-low | low | medium | high | x-high | inherit
     {
-        const struct css_value *cssval = findValue(val, value.length());
+        const struct css_value *cssval = findValue(val, endP - curP);
         if (cssval) {
             int id = cssval->id;
             if (id == CSS_VAL_X_LOW || id == CSS_VAL_LOW || id == CSS_VAL_MEDIUM ||
@@ -1908,7 +1889,7 @@ bool StyleBaseImpl::parseAuralValue( const QChar *curP, const QChar *endP, int p
     case CSS_PROP_SPEAK_NUMERAL:        // digits | continuous | inherit
     case CSS_PROP_SPEAK_PUNCTUATION:    // code | none | inherit
     {
-        const struct css_value *cssval = findValue(val, value.length());
+        const struct css_value *cssval = findValue(val, endP - curP);
         if (cssval)
         {
             parsedValue = new CSSPrimitiveValueImpl(cssval->id);
@@ -1963,7 +1944,7 @@ bool StyleBaseImpl::parseShortHand(const QChar *curP, const QChar *endP, const i
    */
   bool isLast = false;
   bool foundAnything = false;
-  bool *fnd = new bool[num];
+  bool fnd[4]; //Trust me ;)
   for( int i = 0; i < num; i++ )
     fnd[i] = false;
 #ifdef CSS_DEBUG
@@ -1986,7 +1967,6 @@ bool StyleBaseImpl::parseShortHand(const QChar *curP, const QChar *endP, const i
             curP = nextP;
           } else {
             // we've found a property for the last token, so bye
-            delete [] fnd;
             return true;
           }
         }
@@ -1999,10 +1979,10 @@ bool StyleBaseImpl::parseShortHand(const QChar *curP, const QChar *endP, const i
       }
     }
   }
-  delete [] fnd;
   return foundAnything;
 }
 
+/* This one doesn't work 100% correctly, will rewrite later */
 bool StyleBaseImpl::parseBackground(const QChar *curP, const QChar *endP)
 {
   // ### implement background position
@@ -2072,7 +2052,9 @@ bool StyleBaseImpl::parseBackground(const QChar *curP, const QChar *endP)
     if(!found && !fnd[1]) {
       found = parseValue(curP, nextP, CSS_PROP_BACKGROUND_IMAGE);
       if( found ) {
+#ifdef CSS_DEBUG
         kdDebug( 6080 ) << "image!!!" << endl;
+#endif
         fnd[1] = true;
       }
     }
