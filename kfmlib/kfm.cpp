@@ -187,6 +187,22 @@ void KFM::move( const char *_src, const char *_dest )
     ipc->move( _src, _dest );
 }
 
+void KFM::copyClient( const char *_src, const char *_dest )
+{
+    if ( !test() )
+	return;
+    
+    ipc->copyClient( _src, _dest );
+}
+
+void KFM::moveClient( const char *_src, const char *_dest )
+{
+    if ( !test() )
+	return;
+    
+    ipc->moveClient( _src, _dest );
+}
+
 void KFM::selectRootIcons( int _x, int _y, int _w, int _h, bool _add )
 {
     warning( "KFM call: selectRootIcons\n");

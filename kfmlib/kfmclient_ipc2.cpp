@@ -89,18 +89,14 @@ void KfmIpc::moveClient(const char* _src, const char* _dest)
 	write_string( sock->socket(), _dest );
 }
 
-void KfmIpc::ask(int _x, int _y, const char* _src, const char* _dest)
+void KfmIpc::copyClient(const char* _src, const char* _dest)
 {
 	int len = 0;
-	len += len_int( _x );
-	len += len_int( _y );
 	len += len_string( _src );
 	len += len_string( _dest );
-	len += len_string("ask");
+	len += len_string("copyClient");
 	write_int( sock->socket(), len );
-	write_string( sock->socket(), "ask" );
-	write_int( sock->socket(), _x );
-	write_int( sock->socket(), _y );
+	write_string( sock->socket(), "copyClient" );
 	write_string( sock->socket(), _src );
 	write_string( sock->socket(), _dest );
 }
@@ -141,8 +137,10 @@ void KfmIpc::selectRootIcons(int _x, int _y, int _w, int _h, bool _add)
 	write_bool( sock->socket(), _add );
 }
 
-void KfmIpc::parse_finished( char *, int )
+void KfmIpc::parse_finished( char *_data, int _len )
 {
+	int pos = 0;
+
 	// Calling function
 	emit finished(  );
 }

@@ -32,6 +32,8 @@ public:
     void exec( const char *_url, const char *_binding );
     void copy( const char *_src, const char *_dest );
     void move( const char *_src, const char *_dest );    
+    void copyClient( const char *_src, const char *_dest );
+    void moveClient( const char *_src, const char *_dest );    
     // For KWM only
     void selectRootIcons( int _x, int _y, int _w, int _h, bool _add );
   

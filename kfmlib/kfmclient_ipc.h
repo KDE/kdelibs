@@ -9,6 +9,9 @@
 #include <ksock.h>
 #include <qobject.h>
 #include "kfmipc.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
 
 class KfmIpc : public QObject
 {
@@ -36,7 +39,7 @@ public slots:
 public slots:
 	void moveClient(const char* _src, const char* _dest);
 public slots:
-	void ask(int _x, int _y, const char* _src, const char* _dest);
+	void copyClient(const char* _src, const char* _dest);
 public slots:
 	void sortDesktop();
 public slots:
