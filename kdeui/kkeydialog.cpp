@@ -302,7 +302,7 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
 
   QToolButton *clearSearch = new QToolButton(this);
   clearSearch->setTextLabel(i18n("Clear Search"), true);
-  clearSearch->setIconSet(SmallIconSet("locationbar_erase"));
+  clearSearch->setIconSet(SmallIconSet(QApplication::reverseLayout() ? "clear_left" : "locationbar_erase"));
   searchLayout->addWidget(clearSearch);
   QLabel* slbl = new QLabel(i18n("&Search:"), this);
   searchLayout->addWidget(slbl);
