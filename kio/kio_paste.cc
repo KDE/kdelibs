@@ -5,7 +5,8 @@
 #include "kio_error.h"
 #include "kio_interface.h"
 
-#include <kclipboard.h>
+#include <qclipboard.h>
+#include <qdragobject.h>
 #include <kurl.h>
 #include <kapp.h>
 #include <klocale.h>
@@ -21,7 +22,7 @@
 bool isClipboardEmpty()
 {
   QStringList urls;
-  if ( KClipboard::self()->urlList( urls ) ){
+  if ( QUriDrag::decodeToUnicodeUris( QApplication::clipboard()->data(), urls ) ){
     if ( urls.count() == 0 )
       return true;
     return false;
@@ -37,8 +38,10 @@ void pasteClipboard( const char *_dest_url )
     return;
   }
   
+  QMimeSource *data = QApplication::clipboard()->data();
+  
   QStringList urls;
-  if ( KClipboard::self()->urlList( urls ) ) {
+  if ( QUriDrag::decodeToUnicodeUris( data, urls ) ) {
     if ( urls.count() == 0 ) {
       QMessageBox::critical( 0L, i18n("Error"), i18n("The clipboard is empty"), i18n("OK") );
       return;
@@ -50,13 +53,13 @@ void pasteClipboard( const char *_dest_url )
     return;
   }
 
-  if ( KClipboard::self()->size() == 0 )
+  QByteArray ba = data->encodedData( data->format() );
+
+  if ( ba.size() == 0 )
   {
     QMessageBox::critical( 0L, i18n("Error"), i18n("The clipboard is empty"), i18n("OK") );
     return;
   }
-
-  QByteArray ba = KClipboard::self()->octetStream();
 
   pasteData( _dest_url, ba );
 }
