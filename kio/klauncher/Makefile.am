@@ -21,15 +21,15 @@ SUBDIRS = . tests
 INCLUDES= -I$(srcdir)/.. $(all_includes)
 
 bin_PROGRAMS = klauncher
-lib_LTLIBRARIES = libklauncher.la
+lib_LTLIBRARIES = klauncher.la
 
-libklauncher_la_LDFLAGS = $(all_libraries) -no-version -module
-libklauncher_la_LIBADD = $(LIB_KSYCOCA)
-libklauncher_la_SOURCES = klauncher.cpp main.cpp
+klauncher_la_LDFLAGS = $(all_libraries) -module -avoid-version
+klauncher_la_LIBADD = $(LIB_KSYCOCA)
+klauncher_la_SOURCES = klauncher.cpp main.cpp
 
-klauncher_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-klauncher_LDADD = $(LIB_KSYCOCA)
-klauncher_SOURCES = klauncher.cpp main.cpp
+klauncher_LDFLAGS =  $(all_libraries) $(KDE_RPATH)
+klauncher_LDADD = klauncher.la
+klauncher_SOURCES = dummy.cpp
 
 METASOURCES = AUTO
 
