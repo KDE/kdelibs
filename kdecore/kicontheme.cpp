@@ -461,7 +461,10 @@ QStringList KIconTheme::list()
                 continue;
             if (!KStandardDirs::exists(*it + *it2 + "/index.desktop") && !KStandardDirs::exists(*it + *it2 + "/index.theme"))
                 continue;
-            if (!_theme_list->contains(*it2))
+		KIconTheme oink(*it2);
+	    if (!oink.isValid()) continue;
+
+	    if (!_theme_list->contains(*it2))
                 _theme_list->append(*it2);
         }
     }
