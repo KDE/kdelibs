@@ -83,13 +83,18 @@ int player::loadSong(char *filename)
 #endif
     info=new midifileinfo;
     int ok;
+    printf("a\n");
     tracks=readMidiFile(filename,info,ok);
+    printf("b\n");
     if (ok<0) return ok;
     if (tracks==NULL) return -4;
 
+    printf("c\n");
     parseInfoData(info,tracks,ctl->ratioTempo);
+    printf("d\n");
 
     if (parseSong) parseSpecialEvents();
+    printf("e\n");
     songLoaded=1;
     return 0;
 };
@@ -112,11 +117,13 @@ void player::parseSpecialEvents(void)
 #endif
     removeSpecialEvents();
     spev=new SpecialEvent;
+    if (spev==NULL) return;
     SpecialEvent *pspev=spev;
     pspev->type=0;
     pspev->ticks=0;
     if (na!=NULL) delete na;
     na=new NoteArray();
+    if (na==NULL) {delete spev;spev=NULL;return;};
     int trk;
     int minTrk;
     double minTime=0;
@@ -176,9 +183,11 @@ void player::parseSpecialEvents(void)
             else na->add((ulong)minTime,ev->chn,1,ev->note);
             break;
         case (MIDI_NOTEOFF) : 
-            na->add((ulong)minTime,ev->chn,0, ev->note);break;
+            na->add((ulong)minTime,ev->chn,0, ev->note);
+            break;
         case (MIDI_PGM_CHANGE) :
-            na->add((ulong)minTime,ev->chn, 2,ev->patch);break;
+            na->add((ulong)minTime,ev->chn, 2,ev->patch);
+            break;
         case (MIDI_SYSTEM_PREFIX) :
             {
                 if ((ev->command|ev->chn)==META_EVENT)
@@ -188,17 +197,28 @@ void player::parseSpecialEvents(void)
                     case (1) :
                     case (5) :
                         {
+		            if (pspev!=NULL)
+                            {
                             pspev->absmilliseconds=(ulong)minTime;
                             pspev->type=ev->d1;
                             pspev->id=spev_id++;
-                            strncpy(pspev->text,(char *)ev->data,ev->length);
-                            pspev->text[ev->length]=0;
+                            printf("ev->length %d\n",ev->length);
+                            strncpy(pspev->text,(char *)ev->data,
+				(ev->length>1024)? (1023) : (ev->length) );
+                            pspev->text[(ev->length>1024)? (1023):(ev->length)]=0;
+			    printf("%s\n",pspev->text);
                             pspev->next=new SpecialEvent;
-                            pspev=pspev->next;
+#ifdef PLAYERDEBUG
+			    if (pspev->next==NULL) printf("pspev->next=NULL\n");
+#endif
+		            pspev=pspev->next;
+                            };
                         };
                         break;
                     case (ME_SET_TEMPO) :
                         {
+		            if (pspev!=NULL)
+                            {
                             pspev->absmilliseconds=(ulong)minTime;
                             pspev->type=3;
                             pspev->id=spev_id++;
@@ -211,6 +231,7 @@ void player::parseSpecialEvents(void)
                             };
                             pspev->next=new SpecialEvent;
                             pspev=pspev->next;
+                            };
                         };
                         break;
                     };
@@ -511,7 +532,9 @@ void player::play(int calloutput,void output(void))
                              ticksplayed=0;
                              ctl->SPEVplayed++;
                              tempo=(ulong)(((ev->data[0]<<16)|(ev->data[1]<<8)|(ev->data[2]))*ctl->ratioTempo);
+#ifdef PLAYERDEBUG
                              printf("Tempo : %ld %g (ratio : %g)\n",tempo,tempoToMetronomeTempo(tempo),ctl->ratioTempo);
+#endif
                              midi->tmrSetTempo((int)tempoToMetronomeTempo(tempo));
                              ctl->tempo=tempo;
                              for (j=0;j<info->ntracks;j++)

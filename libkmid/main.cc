@@ -91,7 +91,7 @@ void consoleOutput(void)
         };
         if (pctl.ev->d1==ME_SET_TEMPO)
         {
-            printf("Tempo : %g\n",tempoToMetronomeTempo((pctl.ev->data[0]<<16)|(pctl.ev->data[1]<<8)|(pctl.ev->data[2])));
+            printf("\n[Tempo : %g]\n",tempoToMetronomeTempo((pctl.ev->data[0]<<16)|(pctl.ev->data[1]<<8)|(pctl.ev->data[2])));
         };
     };
     
