@@ -301,7 +301,8 @@ void KLocale::initLanguage(KConfig *config, const QString& catalogue)
     QString stmp;
     for(int i=0;_categories[i]!=0;i++) {
       stmp = QString(_categories[i])+ "=" + getLocale(_categories[i]);
-      putenv( stmp.ascii() );
+      // SunOS has putenv(char*) 
+      putenv( const_cast<char*>(stmp.ascii()) );
     }
   }
   // we should use LC_CTYPE, not LC_MESSAGES for charset
