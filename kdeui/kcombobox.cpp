@@ -256,10 +256,10 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
 
         KGlobalSettings::Completion mode = completionMode();
         KeyBindingMap keys = getKeyBindings();
-        bool noModifier = (e->state() == NoButton);
+        bool noModifier = (e->state() == NoButton || e->state()== ShiftButton);
 
         if ( (mode == KGlobalSettings::CompletionAuto ||
-              mode == KGlobalSettings::CompletionMan) /* && noModifier*/ )
+              mode == KGlobalSettings::CompletionMan) && noModifier )
         {
             QString keycode = e->text();
             if ( !keycode.isNull() && keycode.unicode()->isPrint() )
@@ -279,7 +279,7 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
             }
         }
 
-        else if ( mode == KGlobalSettings::CompletionPopup /*&& noModifier*/ )
+        else if ( mode == KGlobalSettings::CompletionPopup && noModifier )
         {
             QComboBox::keyPressEvent( e );
             QString txt = currentText();

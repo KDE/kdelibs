@@ -196,10 +196,10 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         KGlobalSettings::Completion mode = completionMode();
 
         QString keycode = e->text();
-        bool noModifier = (e->state() == NoButton);
+        bool noModifier = (e->state() == NoButton || e->state()== ShiftButton);
 
         if ( (mode == KGlobalSettings::CompletionAuto ||
-              mode == KGlobalSettings::CompletionMan) /*&& noModifier*/ )
+              mode == KGlobalSettings::CompletionMan) && noModifier )
         {
             if ( !keycode.isNull() && keycode.unicode()->isPrint() )
             {
@@ -219,7 +219,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             }
         }
 
-        else if ( mode == KGlobalSettings::CompletionPopup /*&& noModifier*/ )
+        else if ( mode == KGlobalSettings::CompletionPopup && noModifier )
         {
             QString old_txt = text();
             QLineEdit::keyPressEvent ( e );
