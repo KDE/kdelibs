@@ -672,9 +672,9 @@ private slots:
 
 private:
   QComboBox* device;
-  QLineEdit* mountpoint;
+  QLabel* mountpoint;
   QCheckBox* readonly;
-  QLineEdit* fstype;
+  void* unused;
   //KIconButton* mounted;
   KIconButton* unmounted;
 

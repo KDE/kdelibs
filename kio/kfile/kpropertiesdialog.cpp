@@ -2318,7 +2318,6 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
   QCString fstabFile;
   indexDevice = 0;  // device on first column
   indexMountPoint = 1; // mount point on second column
-  indexFSType = 2; // fstype on third column
   if ( QFile::exists(QString::fromLatin1("/etc/fstab")) ) // Linux, ...
   {
     fstabFile = "/etc/fstab";
@@ -2327,7 +2326,6 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
   {
     fstabFile = "/etc/vfstab";
     indexMountPoint++;
-    indexFSType++;
   }
 
   // insert your favorite location for fstab here
@@ -2386,15 +2384,9 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
                       i18n("Mount Point:")); // new style (combobox)
   layout->addWidget(label, 2, 0);
 
-  mountpoint = new KLineEdit( d->m_frame, "LineEdit_mountpoint" );
+  mountpoint = new QLabel( d->m_frame, "LineEdit_mountpoint" );
+
   layout->addWidget(mountpoint, 2, 1);
-
-  label = new QLabel( d->m_frame );
-  label->setText(  i18n("File System Type:") );
-  layout->addWidget(label, 3, 0);
-
-  fstype = new KLineEdit( d->m_frame, "LineEdit_fstype" );
-  layout->addWidget(fstype, 3, 1);
 
   KSeparator* sep = new KSeparator( KSeparator::HLine, d->m_frame);
   layout->addMultiCellWidget(sep, 4, 4, 0, 2);
@@ -2421,7 +2413,6 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
   QString deviceStr = config.readEntry( QString::fromLatin1("Dev") );
   QString mountPointStr = config.readEntry( QString::fromLatin1("MountPoint") );
   bool ro = config.readBoolEntry( QString::fromLatin1("ReadOnly"), false );
-  QString fstypeStr = config.readEntry( QString::fromLatin1("FSType") );
   QString unmountedStr = config.readEntry( QString::fromLatin1("UnmountIcon") );
 
   device->setEditText( deviceStr );
@@ -2442,9 +2433,6 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
   if ( !mountPointStr.isEmpty() )
     mountpoint->setText( mountPointStr );
 
-  if ( !fstypeStr.isEmpty() )
-    fstype->setText( fstypeStr );
-
   readonly->setChecked( ro );
 
   if ( unmountedStr.isEmpty() )
@@ -2459,8 +2447,6 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
   connect( readonly, SIGNAL( toggled( bool ) ),
            this, SIGNAL( changed() ) );
   connect( mountpoint, SIGNAL( textChanged( const QString & ) ),
-           this, SIGNAL( changed() ) );
-  connect( fstype, SIGNAL( textChanged( const QString & ) ),
            this, SIGNAL( changed() ) );
   connect( unmounted, SIGNAL( iconChanged( QString ) ),
            this, SIGNAL( changed() ) );
@@ -2481,7 +2467,6 @@ void KDevicePropsPlugin::slotActivated( int index )
   QStringList lst = QStringList::split( ' ', m_devicelist[index] );
   device->setEditText( lst[indexDevice] );
   mountpoint->setText( lst[indexMountPoint] );
-  fstype->setText( lst[indexFSType] );
 }
 
 bool KDevicePropsPlugin::supports( KFileItemList _items )
@@ -2514,7 +2499,6 @@ void KDevicePropsPlugin::applyChanges()
 
   config.writeEntry( QString::fromLatin1("Dev"), device->currentText() );
   config.writeEntry( QString::fromLatin1("MountPoint"), mountpoint->text() );
-  config.writeEntry( QString::fromLatin1("FSType"), fstype->text() );
 
   config.writeEntry( QString::fromLatin1("UnmountIcon"), unmounted->icon() );
   kdDebug(250) << "unmounted->icon() = " << unmounted->icon() << endl;
