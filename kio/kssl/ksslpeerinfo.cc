@@ -96,7 +96,7 @@ QRegExp rx;
 	if (rx.exactMatch(d->peerHost))
     return d->peerHost == cn;
 
-	if (cn.contains('*') && !isIPAddress) {
+	if (cn.contains('*')) {
 		QStringList parts = QStringList::split('.', cn, false);
 
 		while(parts.count() > 2)
