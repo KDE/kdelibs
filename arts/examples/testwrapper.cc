@@ -83,7 +83,7 @@ void test0()
 	assert(active_d_objects == 0);
 	C c = d;
 	assert(active_d_objects == 0);
-	string abcd = A(d.operator A()).a()+d.b()+c.c()+d.d();
+	string abcd = A(d).a()+d.b()+c.c()+d.d();
 	check("generic inheritance test",abcd == "abcd");
 
 	/*
