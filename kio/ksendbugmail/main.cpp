@@ -67,6 +67,7 @@ int main(int argc, char **argv) {
     QCString recipient = args->getOption("recipient");
     if (recipient.isEmpty())
         recipient = "submit@bugs.kde.org";
+    recipient = "<" + recipient + ">";
 
     QCString subject = args->getOption("subject");
     if (subject.isEmpty())
@@ -91,11 +92,10 @@ int main(int argc, char **argv) {
         char buffer[200];
         gethostname(buffer, 200);
         fromaddr += buffer;
-    } else {
-        QString name = emailConf.readEntry( QString::fromLatin1("FullName"));
-        if (!name.isEmpty())
-            fromaddr = name + QString::fromLatin1(" <") + fromaddr + QString::fromLatin1(">");
     }
+    fromaddr = QString::fromLatin1("<") + fromaddr + QString::fromLatin1(">");
+
+    QString name = emailConf.readEntry( QString::fromLatin1("FullName"));
 
     emailConf.setGroup( QString::fromLatin1("ServerInfo") );
     QString  server = emailConf.readEntry(QString::fromLatin1("Outgoing"), "bugs.kde.org");
@@ -110,7 +110,10 @@ int main(int argc, char **argv) {
     sm.setSenderAddress(fromaddr);
     sm.setRecipientAddress(recipient);
     sm.setMessageSubject(subject);
-    sm.setMessageHeader(QString::fromLatin1("From: %1\r\nTo: %2\r\n").arg(fromaddr).arg(recipient));
+    if (name.isEmpty())
+      sm.setMessageHeader(QString::fromLatin1("From: %1\r\nTo: %2\r\n").arg(fromaddr).arg(recipient));
+    else
+      sm.setMessageHeader(QString::fromLatin1("From: \"%1\" %2\r\nTo: %3\r\n").arg(name).arg(fromaddr).arg(recipient));
     sm.setMessageBody(text);
     sm.sendMessage();
 
