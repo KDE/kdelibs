@@ -563,10 +563,10 @@ void ListProgress::writeSettings() {
 UIServer::UIServer()
 :KMainWindow(0, "")
 ,DCOPObject("UIServer")
+,m_shuttingDown(false)
 ,m_configDialog(0)
 ,m_contextMenu(0)
 ,m_systemTray(0)
-,m_shuttingDown(false)
 {
 
   readSettings();
@@ -1320,6 +1320,7 @@ bool UIServer::queryClose()
     hide();
     return false;
   }
+  return true;
 }
 
 UIServer* UIServer::createInstance()
