@@ -342,6 +342,8 @@ void KSpellConfig::getAvailDictsIspell () {
   QFileInfo dir ("/usr/lib/ispell");
   if (!dir.exists() || !dir.isDir())
     dir.setFile ("/usr/local/lib/ispell");
+  if (!dir.exists() || !dir.isDir())
+    dir.setFile ("/usr/share/ispell");
   if (!dir.exists() || !dir.isDir()) return;
 
   kdDebug(750) << "KSpellConfig::getAvailDictsIspell "
@@ -396,6 +398,8 @@ void KSpellConfig::getAvailDictsAspell () {
   QFileInfo dir ("/usr/lib/aspell");
   if (!dir.exists() || !dir.isDir())
     dir.setFile ("/usr/local/lib/aspell");
+    if (!dir.exists() || !dir.isDir())
+    dir.setFile ("/usr/share/aspell");
   if (!dir.exists() || !dir.isDir()) return;
 
   kdDebug(750) << "KSpellConfig::getAvailDictsAspell "
