@@ -53,7 +53,12 @@ private:
 };
 
 Global::Global()
-  : Object(0)
+  : Object(new GlobalImp())
+{
+}
+
+Global::Global(void *)
+  : Object(0L)
 {
 }
 

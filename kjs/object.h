@@ -396,17 +396,21 @@ namespace KJS {
     static const TypeInfo info;
   };
 
+  class KJScriptImp;
   /**
    * @short Unique global object containing initial native properties.
    */
   class Global : public Object {
+    friend KJScriptImp;
   public:
     Global();
     virtual ~Global();
-    void init();
     static Global current();
     KJSO objectPrototype() const;
     KJSO functionPrototype() const;
+  private:
+    Global(void *);
+    void init();
   };
 
   /**

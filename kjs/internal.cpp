@@ -389,7 +389,8 @@ ActivationImp::~ActivationImp()
 KJScriptImp* KJScriptImp::curr = 0L;
 
 KJScriptImp::KJScriptImp()
-  : initialized(false)
+  : initialized(false),
+    glob(0L)
 {
   KJScriptImp::curr = this;
   lex = new Lexer();
