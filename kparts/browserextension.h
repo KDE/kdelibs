@@ -623,6 +623,11 @@ signals:
    */
   void resizeTopLevelWidget( int w, int h );
 
+  /**
+   * Ask the hosting application to focus @p part.
+   * @since 3.4
+   */
+  void requestFocus(KParts::ReadOnlyPart *part);
 
 private slots:
   void slotCompleted();

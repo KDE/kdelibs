@@ -2136,8 +2136,12 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const 
               trg == "_parent")
             block = false;
 
+          QString caption;
+
           // if there is a frame with the target name, don't block
           if ( view && view->part() )  {
+            if (!view->part()->url().host().isEmpty())
+              caption = view->part()->url().host() + " - ";
             // search all (possibly nested) framesets
             KHTMLPart *currentPart = view->part()->parentPart();
             while( currentPart != 0L ) {
@@ -2148,14 +2152,16 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const 
           }
 
           if ( block && policy == KHTMLSettings::KJSWindowOpenAsk && view ) {
-
+            if (view && view->part())
+            emit view->part()->browserExtension()->requestFocus(view->part());
+            caption += i18n( "Confirmation: JavaScript Popup" );
             if ( KMessageBox::questionYesNo(view, form.action().isEmpty() ?
                    i18n( "This site is submitting a form which will open up a new browser "
                          "window via JavaScript.\n"
                          "Do you want to allow the form to be submitted?" ) :
                    i18n( "<qt>This site is submitting a form which will open <p>%1</p> in a new browser window via JavaScript.<br />"
                          "Do you want to allow the form to be submitted?</qt>").arg(KStringHandler::csqueeze(form.action().string(),  100)),
-                   i18n( "Confirmation: JavaScript Popup" ) ) == KMessageBox::Yes )
+                   caption ) == KMessageBox::Yes )
               block = false;
 
           } else if ( block && policy == KHTMLSettings::KJSWindowOpenSmart ) {

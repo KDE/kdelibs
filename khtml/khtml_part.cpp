@@ -4037,6 +4037,9 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
       connect( child->m_extension, SIGNAL( infoMessage( const QString & ) ),
                d->m_extension, SIGNAL( infoMessage( const QString & ) ) );
 
+      connect( child->m_extension, SIGNAL( requestFocus( KParts::ReadOnlyPart * ) ),
+               this, SLOT( slotRequestFocus( KParts::ReadOnlyPart * ) ) );
+
       child->m_extension->setBrowserInterface( d->m_extension->browserInterface() );
     }
   }
@@ -4545,6 +4548,11 @@ void KHTMLPart::slotChildURLRequest( const KURL &url, const KParts::URLArgs &arg
       newArgs.frameName = QString::null;
       emit d->m_extension->openURLRequest( url, newArgs );
   }
+}
+
+void KHTMLPart::slotRequestFocus( KParts::ReadOnlyPart * )
+{
+  emit d->m_extension->requestFocus(this);
 }
 
 khtml::ChildFrame *KHTMLPart::frame( const QObject *obj )
