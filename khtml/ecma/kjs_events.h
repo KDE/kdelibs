@@ -44,19 +44,17 @@ namespace KJS {
     virtual void handleEvent(DOM::Event &evt);
     virtual DOM::DOMString eventListenerType();
     // Return the KJS function object executed when this event is emitted
-    Object listenerObj() const { return listener; }
-    // Faster version of listenerObj()
-    ObjectImp *listenerObjImp() const { return static_cast<ObjectImp *>(listener.imp()); }
-    // for Window::clear()
-    void clear() { listener = Object(); }
+    Value listenerObj() const { return listener; }
+    // for Window::clear(). This is a bad hack though. The JSEventListener might not get deleted
+    // if it was added to a DOM node in another frame (#61467). But calling removeEventListener on
+    // all nodes we're listening to is quite difficult.
+    void clear() { listener = Null(); }
 
   protected:
-    Object listener;
+    Value listener;
     bool html;
     Object win, m_hackThisObj;
   };
-
-  Value getNodeEventListener(DOM::Node n, int eventId);
 
   // Constructor for Event - currently only used for some global vars
   class EventConstructor : public DOMObject {
