@@ -490,7 +490,7 @@ void KListView::contentsMouseMoveEvent( QMouseEvent *e )
         }
     }
   
-  bool dragOn = dragEnabled();
+  bool dragOn = dragEnabled(), dragged=false;
   QPoint newPos = e->pos();
   if (dragOn && d->validDrag &&
       (newPos.x() > d->startDragPos.x()+d->dragDelay ||
@@ -500,11 +500,12 @@ void KListView::contentsMouseMoveEvent( QMouseEvent *e )
     //(d->startDragPos - e->pos()).manhattanLength() > QApplication::startDragDistance())
     {
       startDrag();
+      dragged=true;
       d->startDragPos = QPoint();
       d->validDrag = false;
     }
 
-  if (!dragOn || d->startDragPos.isNull() || !d->validDrag)
+  if (!dragged && (!dragOn || d->startDragPos.isNull() || !d->validDrag))
     QListView::contentsMouseMoveEvent (e);
 }
 
@@ -558,26 +559,36 @@ void KListView::contentsDropEvent(QDropEvent* e)
 
 void KListView::movableDropEvent (QListViewItem* parent, QListViewItem* afterme)
 {
-  QList<QListViewItem> items, afterFirsts, afterNows;
 
-  for (QListViewItem *i = firstChild(); i != 0; i = i->itemBelow())
-    {
-      if (!i->isSelected())
-        continue;
-      
-      QListViewItem *afterFirst = i->itemAbove();
-      moveItem(i, parent, afterme);
-      emit moved(i, afterFirst, afterme);
-      
-      items.append (i);
-      afterFirsts.append (afterFirst);
-      afterNows.append (afterme);
-      
-      afterme = i;
-    }
-     
+  QList<QListViewItem> items, afterFirsts, afterNows;
+  QListViewItem *current=currentItem();
+  for (QListViewItem *i = firstChild(), *iNext=0; i != 0; i = iNext)
+  {
+    iNext=i->itemBelow();
+    if (!i->isSelected())
+      continue;
+
+    i->setSelected(false);
+
+    QListViewItem *afterFirst = i->itemAbove();
+    moveItem(i, parent, afterme);
+
+    emit moved(i, afterFirst, afterme);
+
+    items.append (i);
+    afterFirsts.append (afterFirst);
+    afterNows.append (afterme);
+
+    afterme = i;
+  }
+  clearSelection();
+  for (QListViewItem *i=items.first(); i != 0; i=items.next() )
+    i->setSelected(true);
+  if (current)
+    setCurrentItem(current);
+
   emit moved(items,afterFirsts,afterNows);
-  
+
   if (firstChild())
     emit moved();
 }
@@ -649,13 +660,15 @@ void KListView::findDrop(const QPoint &pos, QListViewItem *&parent, QListViewIte
 
 void KListView::contentsMouseReleaseEvent( QMouseEvent *e )
 {
+  bool drag=d->validDrag;
   if (e->button() == LeftButton)
-    {
-      d->validDrag = false;
-      d->startDragPos = QPoint();
-    }
+  {
+    d->validDrag = false;
+    d->startDragPos = QPoint();
+  }
 
-  QListView::contentsMouseReleaseEvent( e );
+  if (!drag)
+    QListView::contentsMouseReleaseEvent( e );
 }
 
 QListViewItem* KListView::lastChild () const
