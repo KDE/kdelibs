@@ -1073,6 +1073,21 @@ void KConfigBase::writePathEntry( const QString& pKey, const QString & path,
    writePathEntry(pKey.utf8().data(), path, bPersistent, bGlobal, bNLS);
 }
 
+
+static bool cleanHomeDirPath( QString &path, const QString &homeDir )
+{
+   if (!path.startsWith(homeDir))
+        return false;
+
+   unsigned int len = homeDir.length();
+   // replace by "$HOME" if possible
+   if (path.length() == len || path[len] == '/') {
+        path = path.replace(0, len, QString::fromLatin1("$HOME"));
+        return true;
+   } else 
+        return false;
+}
+
 static QString translatePath( QString path )
 {
    if (path.isEmpty())
@@ -1089,25 +1104,17 @@ static QString translatePath( QString path )
    if (startsWithFile)
         path.remove(0,5); // strip leading "file:/" off the string
 
-   // we can not use KGlobal::dirs()->relativeLocation("home", path)
-   // here, since it would not recognize paths without a trailing '/' 
-   QString homeDir = QDir::homeDirPath();
-   if (path.startsWith(homeDir)) {
-	unsigned int len = homeDir.length();
-        // replace by $HOME if possible
-        if (path.length() == len || path[len] == '/') {
-             path = path.replace(0, len, QString::fromLatin1("$HOME"));
-	}
-   }
-
-   // The HOME environment variable might be different than QDir::homeDirPath() 
-   homeDir = QFile::decodeName(getenv("HOME"));
-   if (path.startsWith(homeDir)) {
-	unsigned int len = homeDir.length();
-        // replace by $HOME if possible
-        if (path.length() == len || path[len] == '/') {
-             path = path.replace(0, len, QString::fromLatin1("$HOME"));
-	}
+   // we can not use KGlobal::dirs()->relativeLocation("home", path) here,
+   // since it would not recognize paths without a trailing '/'.
+   // All of the 3 following functions to return the user's home directory
+   // can return different paths. We have to test all them.
+   QString homeDir0 = QFile::decodeName(getenv("HOME"));
+   QString homeDir1 = QDir::homeDirPath();
+   QString homeDir2 = QDir(homeDir1).canonicalPath();
+   if (cleanHomeDirPath(path, homeDir0) || 
+       cleanHomeDirPath(path, homeDir1) ||
+       cleanHomeDirPath(path, homeDir2) ) {
+     // kdDebug() << "Path was replaced\n";
    }
 
    if (startsWithFile)
