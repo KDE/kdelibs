@@ -1420,7 +1420,7 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
             } else {
                 fileurl = KURL::fromPathOrURL(val);
             }
-qDebug("URL: %s", fileurl.url().latin1());
+
             KIO::UDSEntry filestat;
 
             // can't submit file in www-url-form encoded
