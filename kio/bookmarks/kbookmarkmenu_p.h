@@ -136,9 +136,12 @@ public:
 
   KBookmarkEditDialog( const QString& title, const QString& url, KBookmarkManager *, BookmarkEditType editType,
                        QWidget * = 0, const char * = 0, const QString& caption = i18n( "Add Bookmark" ) );
+
   QString finalUrl() const;
   QString finalTitle() const;
   QString finalAddress() const;
+
+  void setAddress( const QString & );
 
 protected slots:
   void slotOk();
@@ -172,6 +175,7 @@ public:
   static QListView* createTree( KBookmarkManager *, QWidget * = 0, const char * = 0 );
   static void fillTree( QListView*, KBookmarkManager * );
   static QString selectedAddress( QListView* );
+  static void setAddress( QListView *, const QString & );
 };
 
 class KBookmarkSettings 
