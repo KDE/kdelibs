@@ -433,35 +433,31 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
         int firstSi = si;
 
         // Now calculate startPos and endPos, for printing selection.
-        // endPos works this way: 0, no selection. -1, no end to the selection
-        // anything else, works like startPos (can be positive or negative)
+        // We print selection while endPos > 0
         int endPos, startPos;
         if (selectionState() != SelectionNone)
         {
             if (selectionState() == SelectionInside)
             {
-                //kdDebug(6040) << this << " SelectionInside -> 0 to -1" << endl;
+                //kdDebug(6040) << this << " SelectionInside -> 0 to end" << endl;
                 startPos = 0;
-                endPos = -1;
+                endPos = str->l;
             }
             else
             {
                 selectionStartEnd(startPos, endPos);
-                if(selectionState() == SelectionStart) {
-                    //kdDebug(6040) << this << " SelectionStart -> " << startPos << " to -1 " << endl;
-                    endPos = -1;
-                }
-                else if(selectionState() == SelectionEnd) {
-                    //kdDebug(6040) << this << " SelectionEnd -> 0 to " << endPos << endl;
+                if(selectionState() == SelectionStart)
+                    endPos = str->l;
+                else if(selectionState() == SelectionEnd)
                     startPos = 0;
-                }
             }
+            //kdDebug(6040) << this << " Selection from " << startPos << " to " << endPos << endl;
 
             // Eat the lines we don't print (startPos and endPos are from line 0!)
             if ( si > 0 )
             {
                 if ( m_lines[si]->m_reversed )
-                     endPos = 0; // No selection if RTL (TODO)
+                     endPos = -1; // No selection if RTL (TODO)
                 else
                 {
                     // ## Only valid for visuallyOrdered
@@ -469,12 +465,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                     //kdDebug(6040) << this << " RenderText::printObject adjustement si=" << si << " len=" << len << endl;
                     ASSERT( len > 0 );
                     startPos -= len;
-                    if ( endPos != -1 )
-                    {
-                        endPos -= len;
-                        if ( endPos < 0 )
-                            endPos = 0; // finished
-                    }
+                    endPos -= len;
                 }
             }
         }
@@ -506,29 +497,19 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
             }
 
 
-            if (selectionState() != SelectionNone && endPos != 0)
+            if (selectionState() != SelectionNone && endPos > 0)
             {
                 //kdDebug(6040) << this << " printSelection with startPos=" << startPos << " endPos=" << endPos << endl;
                 s->printSelection(p, style, tx, ty, startPos, endPos);
 
                 int diff;
                 if(si < (int)m_lines.count()-1)
-                {
                     // ### only for visuallyOrdered ! (we disabled endPos for RTL, so we can't go here in RTL mode)
                     diff = m_lines[si+1]->m_text - s->m_text;
-                    //kdDebug(6040) << this << " RenderText::printSelection eating the line si=" << si << " diff=" << diff << endl;
-                }
                 else
-                {
                     diff = s->m_len;
-                    //kdDebug(6040) << this << " RenderText::printSelection eating the last line m_len=diff=" << diff << endl;
-                }
-                if ( endPos != -1 )
-                {
-                    endPos -= diff;
-                    if ( endPos < 0 )
-                        endPos = 0; // finished
-                }
+                //kdDebug(6040) << this << " RenderText::printSelection eating the line si=" << si << " length=" << diff << endl;
+                endPos -= diff;
                 startPos -= diff;
                 //kdDebug(6040) << this << " startPos now " << startPos << ", endPos now " << endPos << endl;
             }
@@ -552,7 +533,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                     s->printActivation(p, tx, ty);
 
                 int diff;
-                if(si < (int) m_lines.count()-1)
+                if(si < (int) m_lines.count()-1 && !m_lines[si+1]->m_reversed) // ### no RTL
                     diff = m_lines[si+1]->m_text - s->m_text;
                 else
                     diff = s->m_len;
