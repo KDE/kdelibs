@@ -219,20 +219,27 @@ void KCharsetsPrivate::getAvailableCharsets()
     for ( QStringList::Iterator it = f.begin(); it != f.end(); ++it ) {
 	QStringList chSets = db->charSets(*it, false);
 	QCString family = (*it).latin1(); // can only be latin1
-	if ( family. contains('-') ) // remove foundry
-	    family = family.right( family.length() - family.find('-' ) - 1);
-	//kdDebug() << "KCharsetsPrivate family " << *it << " " << family <<endl;
+        QCString shortFamily; // family without foundry, if "family" contains the foundry
+	if ( family.contains('-') )
+	    shortFamily = family.right( family.length() - family.find('-' ) - 1);
+	//kdDebug() << "KCharsetsPrivate full-family='" << *it << "' family='" << family << "'  charsets: " << chSets.join(",") << endl;
 	for ( QStringList::Iterator ch = chSets.begin(); ch != chSets.end(); ++ch ) {
-	    //kdDebug() << "KCharsetsPrivate::getAvailableCharsets " << *ch << " " << KGlobal::charsets()->xNameToID( *ch ) << endl;
+	    //kdDebug() << "    " << *ch << " " << KGlobal::charsets()->xNameToID( *ch ) << endl;
 	    QCString cs = (*ch).latin1();
 	    QFont::CharSet qcs = kc->xNameToID( cs );
             if ( qcs != QFont::AnyCharSet )
 	      if( !availableCharsets->contains( qcs ) ) {
 		  QValueList<QCString> strList;
 		  strList.append( family );
+                  if ( !shortFamily.isEmpty() )
+		      strList.append( shortFamily );
 		  availableCharsets->insert( qcs, strList );
 	      } else
+	      {
 		  ((*availableCharsets)[qcs]).append(family);
+                  if ( !shortFamily.isEmpty() )
+		      ((*availableCharsets)[qcs]).append(shortFamily);
+	      }
 	}
     }
 
@@ -329,13 +336,12 @@ QList<QFont::CharSet> KCharsets::availableCharsets(QString family)
     QCString f = family.latin1();
     for( QMap<QFont::CharSet, QValueList<QCString> >::Iterator it = d->availableCharsets->begin();
          it != d->availableCharsets->end(); ++it ) {
-	if( !family.isNull() ) {
-	    if ( it.data().contains( f ) == 0)
-		continue;
+	if ( f.isEmpty() || it.data().findIndex( f ) > -1 )
+	{
+	    QFont::CharSet *i = new QFont::CharSet;
+	    *i = it.key();
+	    chSets.append( i );
 	}
-	QFont::CharSet *i = new QFont::CharSet;
-	*i = it.key();
-	chSets.append( i );
     }
     return chSets;
 }
