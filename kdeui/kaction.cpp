@@ -2676,16 +2676,12 @@ KActionPtrList::KActionPtrList()
 }
 
 KActionPtrList::KActionPtrList( const KActionPtrList& coll )
+    : QValueList<KAction *>( coll )
 {
-  static_cast<QValueList<KAction*>&>(*this) = static_cast<const QValueList<KAction*>&>(coll);
 }
 
 KActionPtrList::KActionPtrList( const KActionCollection& coll )
-{
-  static_cast<QValueList<KAction*>&>(*this) = static_cast<const QValueList<KAction*>&>(coll.actions());
-}
-
-KActionPtrList::~KActionPtrList()
+    : QValueList<KAction *>( coll.actions() )
 {
 }
 
@@ -2707,7 +2703,7 @@ KAction* KActionPtrList::action( int index ) const
   return *at( index );
 }
 
-KAction* KActionPtrList::action( const char* name, const char* classname = 0 ) const
+KAction* KActionPtrList::action( const char* name, const char* classname ) const
 {
   for( ConstIterator it = begin(); it != end(); ++it )
   {
@@ -2750,17 +2746,20 @@ void KActionPtrList::setKeyMap( const KAccelActions& map )
 
 KActionPtrList& KActionPtrList::operator=( const KActionPtrList &c )
 {
-  static_cast<QValueList<KAction*>&>(*this) = static_cast<const QValueList<KAction*>&>(c);
+    QValueList<KAction *>::operator=( c );
+    return *this;
 }
 
 KActionPtrList& KActionPtrList::operator=( const KActionCollection &c )
 {
-  static_cast<QValueList<KAction*>&>(*this) = static_cast<const QValueList<KAction*>&>(c.actions());
+    QValueList<KAction *>::operator=( c.actions() );
+    return *this;
 }
 
 KActionPtrList& KActionPtrList::operator+=( const KActionCollection &c )
 {
-  static_cast<QValueList<KAction*>&>(*this) += static_cast<const QValueList<KAction*>&>(c.actions());
+    QValueList<KAction *>::operator+=( c.actions() );
+    return *this;
 }
 
 class KActionCollection::KActionCollectionPrivate

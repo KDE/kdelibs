@@ -1568,22 +1568,21 @@ public:
   KActionPtrList();
   KActionPtrList( const KActionPtrList& );
   KActionPtrList( const KActionCollection& );
-  virtual ~KActionPtrList();
 
-  virtual void insert( KAction* );
-  virtual KAction* take( KAction* );
+  void insert( KAction* );
+  KAction* take( KAction* );
 
-  virtual KAction* action( int index ) const;
-  virtual KAction* action( const char* name, const char* classname = 0 ) const;
+  KAction* action( int index ) const;
+  KAction* action( const char* name, const char* classname = 0 ) const;
 
-  virtual void createKeyMap( KAccelActions& );
-  virtual void setKeyMap( const KAccelActions& map );
+  void createKeyMap( KAccelActions& );
+  void setKeyMap( const KAccelActions& map );
 
-  virtual KActionPtrList &operator=( const KActionPtrList &c );
-  virtual KActionPtrList &operator=( const KActionCollection &c );
-  virtual KActionPtrList &operator+=( const KActionCollection &c );
+  KActionPtrList &operator=( const KActionPtrList &c );
+  KActionPtrList &operator=( const KActionCollection &c );
+  KActionPtrList &operator+=( const KActionCollection &c );
 
-protected:
+private:
   class KActionPtrListPrivate* d;
 };
 
