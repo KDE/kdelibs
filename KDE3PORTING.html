@@ -21,6 +21,7 @@ or <a href="http://doc.trolltech.com/porting.html">this page online</a>.<P>
 <LI><A HREF="#kio">Changes in kio</A></LI>
 <LI><A HREF="#kparts">Changes in kparts</A></LI>
 <LI><A HREF="#khtmlpart">API-cleanup in KHTML</A></LI>
+<LI><A HREF="#kcontrol">KDE Control Center</A></LI>
 </UL>
 
 <H3><A NAME="gettingstarted">Getting started</A></H3>
@@ -157,10 +158,28 @@ disable this use a #define KDE_NO_COMPAT.
 <li>gotoPrevLink has been replaced by gotoLink(false);
 </ul>
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
-<p>
-Dirk Mueller <A HREF="mailto:mueller@kde.org">mueller@kde.org</A>
+
+<H3><A NAME="kcontrol">Changes in KControl</A></H3>
+
+<H4>Modules that require root permission</H4>
+The meaning of the <i>X-KDE-RootOnly</i> flag in the .desktop files has changed.
+In KControl 2.0 a message was shown if the user did not press the &quot;modify&quot; 
+button. With the additional flag <i>X-KDE-HasReadOnlyMode</i> it was possible to show
+a disabled version of the module instead of the message. The behaviour was inconsistent
+and has been changed:
+
+<ul>
+<li><i>X-KDE-HasReadOnlyMode</i> is not used anymore and is ignored by KControl &gt; 2.0.
+<li><i>X-KDE-RootOnly</i> does now show a disabled preview of the widget and a notification box.
+<li>If you want the old behaviour back set <i>X-KDE-IsHiddenByDefault</i> along with 
+<i>X-KDE-RootOnly</i>. Please note that this behaviour is deprecated the sake of
+usability.
+</ul>
+
+For more details please consult the HOWTO file in the kcontrol directory.
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
-
+<p>
+Dirk Mueller <A HREF="mailto:mueller@kde.org">mueller@kde.org</A>
 </BODY>
 </HTML>
