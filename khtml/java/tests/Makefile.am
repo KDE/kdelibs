@@ -1,4 +1,4 @@
-INCLUDES = -I$(top_srcdir)/khtml $(all_includes)
+INCLUDES = -I$(top_srcdir)/khtml/java -I$(top_srcdir)/khtml $(all_includes)
 
 check_PROGRAMS = testserver 
 
