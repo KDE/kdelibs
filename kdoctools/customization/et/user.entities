@@ -12,7 +12,13 @@
 <!ENTITY Ctrl        "<keycap>Ctrl</keycap>">
 <!ENTITY Esc         "<keycap>Esc</keycap>">
 
+<!-- YOU CAN LOCALIZE THE NAMES OF THE ENTITIES AS WELL:
+	&LMB; => &HVN;
+	&MMB; => &HKN;
+	&RMB; => &HPN; -->
 <!ENTITY LMB         "hiire <mousebutton>vasak</mousebutton> nupp">
 <!ENTITY MMB         "hiire <mousebutton>keskmine</mousebutton> nupp">
 <!ENTITY RMB         "hiire <mousebutton>parem</mousebutton> nupp">
 
+<!-- PLEASE VERIFY THAT IT IS CORRECT BELOW -->  
+<!ENTITY nt     "<abbrev>n.t.</abbrev>">		<!-- English: &eg; -->
