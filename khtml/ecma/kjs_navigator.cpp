@@ -166,9 +166,14 @@ KJSO Navigator::get(const UString &p) const
   } else if (p == "userAgent") {
     return String(userAgent);
   } else if (p == "platform") {
-    // danimo: yet another evil hack, but necessary to spoof some sites...
-    return String((userAgent.find(QString::fromLatin1("Win"),0,false)==-1) ?
-           QString::fromLatin1("X11") : QString::fromLatin1("Win32"));
+    // yet another evil hack, but necessary to spoof some sites...
+    if ( (userAgent.find(QString::fromLatin1("Win"),0,false)>=0) )
+      return String(QString::fromLatin1("Win32"));
+    else if ( (userAgent.find(QString::fromLatin1("Macintosh"),0,false)>=0) ||
+              (userAgent.find(QString::fromLatin1("Mac_PowerPC"),0,false)>=0) )
+      return String(QString::fromLatin1("MacPPC"));
+    else
+      return String(QString::fromLatin1("X11"));
   } else if (p == "plugins") {
       kdDebug(6070) << "navigator.plugins" << endl;
       return KJSO(new Plugins());
