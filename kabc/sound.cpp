@@ -20,6 +20,8 @@
 
 #include "sound.h"
 
+#include <qdatastream.h>
+
 using namespace KABC;
 
 Sound::Sound()
@@ -32,7 +34,7 @@ Sound::Sound( const QString &url )
 {
 }
 
-Sound::Sound( const QImage &data )
+Sound::Sound( const QByteArray &data )
   : mData( data ), mIntern( true )
 {
 }
@@ -44,11 +46,15 @@ Sound::~Sound()
 bool Sound::operator==( const Sound &s ) const
 {
   if ( mIntern != s.mIntern ) return false;
-  if ( mIntern )
-    if ( mData != s.mData ) return false;
-  else
-    if ( mUrl != s.mUrl ) return false;
-  
+
+  if ( mIntern ) {
+    if ( mData != s.mData )
+      return false;
+  } else {
+    if ( mUrl != s.mUrl )
+      return false;
+  }
+
   return true;
 }
 
@@ -63,7 +69,7 @@ void Sound::setUrl( const QString &url )
   mIntern = false;
 }
 
-void Sound::setData( const QImage &data )
+void Sound::setData( const QByteArray &data )
 {
   mData = data;
   mIntern = true;
@@ -79,7 +85,7 @@ QString Sound::url() const
   return mUrl;
 }
 
-QImage Sound::data() const
+QByteArray Sound::data() const
 {
   return mData;
 }

@@ -94,6 +94,9 @@ class VCardFormatImpl
     void addPictureValue( VCARD::VCard *, VCARD::EntityType, const Picture &, const Addressee &, bool );
     Picture readPictureValue( VCARD::ContentLine *, VCARD::EntityType, const Addressee &addr );
 
+    void addSoundValue( VCARD::VCard *, const Sound &, const Addressee &, bool );
+    Sound readSoundValue( VCARD::ContentLine *, const Addressee &addr );
+
     void addAgentValue( VCARD::VCard *, const Agent & );
     Agent readAgentValue( VCARD::ContentLine * );
 };

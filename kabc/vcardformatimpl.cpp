@@ -251,6 +251,10 @@ bool VCardFormatImpl::loadAddressee( Addressee& addressee, VCard &v )
         addressee.setAgent( readAgentValue( cl ) );
         break;
 
+      case EntitySound:
+        addressee.setSound( readSoundValue( cl, addressee ) );
+        break;
+
       default:
         kdDebug(5700) << "VCardFormat::load(): Unsupported entity: "
                     << int( type ) << ": " << cl->asString() << endl;
@@ -340,6 +344,8 @@ void VCardFormatImpl::saveAddressee( const Addressee &addressee, VCard *v, bool 
   addPictureValue( v, EntityLogo, addressee.logo(), addressee, intern );
 
   addAgentValue( v, addressee.agent() );
+
+  addSoundValue( v, addressee.sound(), addressee, intern );
 }
 
 void VCardFormatImpl::addCustomValue( VCard *v, const QString &txt )
@@ -863,8 +869,7 @@ void VCardFormatImpl::addPictureValue( VCARD::VCard *vcard, VCARD::EntityType ty
       params.append( new Param( "TYPE", pic.type().utf8() ) );
   } else {
     cl.setValue( new TextValue( pic.url().utf8() ) );
-    if ( !pic.type().isEmpty() )
-      params.append( new Param( "TYPE", pic.type().utf8() ) );
+    params.append( new Param( "VALUE", "uri" ) );
   }
 
   cl.setParamList( params );
@@ -903,12 +908,77 @@ Picture VCardFormatImpl::readPictureValue( VCARD::ContentLine *cl, VCARD::Entity
       img.loadFromData( data );
     }
     pic.setData( img );
+    pic.setType( picType );
   } else {
     pic.setUrl( QString::fromUtf8( v->asString() ) );
   }
-  pic.setType( picType );
 
   return pic;
+}
+
+void VCardFormatImpl::addSoundValue( VCARD::VCard *vcard, const Sound &sound, const Addressee &addr, bool intern )
+{
+  ContentLine cl;
+  cl.setName( EntityTypeToParamName( EntitySound ) );
+
+  if ( sound.isIntern() && sound.data().isNull() )
+    return;
+
+  if ( !sound.isIntern() && sound.url().isEmpty() )
+    return;
+
+  ParamList params;
+  if ( sound.isIntern() ) {
+    QByteArray data = sound.data();
+    if ( intern ) { // only for vCard export we really write the data inline
+        cl.setValue( new TextValue( KCodecs::base64Encode( data ) ) );
+    } else { // save sound in cache
+      QFile file( locateLocal( "data", "kabc/sounds/" + addr.uid() ) );
+      if ( file.open( IO_WriteOnly ) ) {
+        file.writeBlock( data );
+      }
+      cl.setValue( new TextValue( "<dummy>" ) );
+    }
+    params.append( new Param( "ENCODING", "b" ) );
+  } else {
+    cl.setValue( new TextValue( sound.url().utf8() ) );
+    params.append( new Param( "VALUE", "uri" ) );
+  }
+
+  cl.setParamList( params );
+  vcard->add( cl );
+}
+
+Sound VCardFormatImpl::readSoundValue( VCARD::ContentLine *cl, const Addressee &addr )
+{
+  Sound sound;
+  bool isInline = false;
+  TextValue *v = (TextValue *)cl->value();
+
+  ParamList params = cl->paramList();
+  ParamListIterator it( params );
+  for( ; it.current(); ++it ) {
+    if ( (*it)->name() == "ENCODING" && (*it)->value() == "b" )
+      isInline = true;
+  }
+
+  if ( isInline ) {
+    QByteArray data;
+    if ( v->asString() == "<dummy>" ) { // no sound inline stored => sound is in cache
+      QFile file( locateLocal( "data", "kabc/sounds/" + addr.uid() ) );
+      if ( file.open( IO_ReadOnly ) ) {
+        data = file.readAll();
+        file.close();
+      }
+    } else {
+      KCodecs::base64Decode( v->asString(), data );
+    }
+    sound.setData( data );
+  } else {
+    sound.setUrl( QString::fromUtf8( v->asString() ) );
+  }
+
+  return sound;
 }
 
 bool VCardFormatImpl::readFromString( const QString &vcard, Addressee &addressee )

@@ -5,6 +5,7 @@
 #include <kcmdlineargs.h>
 #include <kstandarddirs.h>
 
+#include <qfile.h>
 #include <qimage.h>
 
 #include "geo.h"
@@ -25,20 +26,32 @@ int main(int argc,char **argv)
     KApplication app( false, false );
     AddressBook *ab = StdAddressBook::self();
 
-//#define READ
+#define READ
 
 #ifdef READ
     AddressBook::Iterator it;
     for ( it = ab->begin(); it != ab->end(); ++it ) {
-      Agent agent = (*it).agent();
-      if ( agent.isIntern() )
-        kdDebug() << "Agent=" << agent.addressee()->realName() << endl;
+      QString vcard;
+      VCardConverter converter;
+      converter.addresseeToVCard( *it, vcard );
+      kdDebug() << "card=" << vcard << endl;
     }
 #else
     Addressee addr;
 
     addr.setGivenName("Tobias");
     addr.setFamilyName("Koenig");
+
+
+    Picture pic;
+    QImage img;
+    img.load("/home/tobias/test.png");
+/*
+    pic.setData(img);
+    pic.setType(QImage::imageFormat("/home/tobias/test.png"));
+*/
+    pic.setUrl("http://www.mypict.de");
+    addr.setLogo( pic );
 
     ab->insertAddressee( addr );
 

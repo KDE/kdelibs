@@ -21,25 +21,11 @@
 #ifndef KABC_SOUND_H
 #define KABC_SOUND_H
 
-#include <qimage.h>
-
-/**
- * Because QSound is not flexible enough ( operator= and
- * QSound::QSound( const QSound & ) are private ) we use a
- * dummy implementation here, until either QSound is fixed
- * or we found a better solution.
- */
-//#include <qsound.h>
+#include <qcstring.h>
 #include <qstring.h>
 
 namespace KABC {
 
-/**
- * Important!!!
- *
- * At the moment the vcard format does not support saving and loading
- * this entity.
- */
 class Sound
 {
   friend QDataStream &operator<<( QDataStream &, const Sound & );
@@ -64,7 +50,7 @@ public:
    *
    * @param data  The raw data of the sound.
    */
-  Sound( const QImage &data );
+  Sound( const QByteArray &data );
 
   /**
    * Destructor.
@@ -90,7 +76,7 @@ public:
    *
    * @param data  The raw data of the sound.
    */
-  void setData( const QImage &data );
+  void setData( const QByteArray &data );
 
   /**
    * Returns whether the sound is described by a URL (extern) or
@@ -109,7 +95,7 @@ public:
   /**
    * Returns the raw data of this sound.
    */
-  QImage data() const;
+  QByteArray data() const;
 
   /**
    * Returns string representation of the sound.
@@ -118,7 +104,7 @@ public:
 
 private:
   QString mUrl;
-  QImage mData;
+  QByteArray mData;
 
   int mIntern;
 };
