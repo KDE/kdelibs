@@ -19,6 +19,7 @@
 */
 
 #include "kkeybutton.h"
+#include "kshortcutdialog.h"
 
 #include <qcursor.h>
 #include <qdrawutil.h>
@@ -61,17 +62,14 @@ KKeyButton::KKeyButton(QWidget *parent, const char *name)
 {
 	setFocusPolicy( QWidget::StrongFocus );
 	m_bEditing = false;
-	connect( this, SIGNAL(clicked()), this, SLOT(slotCaptureShortcut()) );
-#ifdef Q_WS_X11
-	kapp->installX11EventFilter( this );	// Allow button to capture X Key Events.
-#endif
+	connect( this, SIGNAL(clicked()), this, SLOT(captureShortcut()) );
 	setShortcut( KShortcut() );
 }
 
 KKeyButton::~KKeyButton ()
 {
-	if( m_bEditing )
-		captureShortcut( false );
+//	if( m_bEditing )
+//		captureShortcut( false );
 }
 
 void KKeyButton::setShortcut( const KShortcut& cut )
@@ -87,6 +85,7 @@ void KKeyButton::setText( const QString& text )
 	setFixedSize( sizeHint().width()+12, sizeHint().height()+8 );
 }
 
+/*
 void KKeyButton::captureShortcut( bool bCapture )
 {
 	m_bEditing = bCapture;
@@ -102,80 +101,22 @@ void KKeyButton::captureShortcut( bool bCapture )
 	}
 	repaint();
 }
+*/
 
-void KKeyButton::slotCaptureShortcut()
+void KKeyButton::captureShortcut()
 {
-	captureShortcut( true );
+	KShortcut cut;
+
+	m_bEditing = true;
+	repaint();
+
+	KShortcutDialog dlg( m_cut, this );
+	if( dlg.exec() == KDialog::Accepted )
+		emit capturedShortcut( dlg.cut() );
+
+	m_bEditing = false;
+	repaint();
 }
-
-#ifdef Q_WS_X11
-bool KKeyButton::x11Event( XEvent *pEvent )
-{
-	if( m_bEditing ) {
-		//kdDebug(125) << "x11Event: type: " << pEvent->type << " window: " << pEvent->xany.window << endl;
-		switch( pEvent->type ) {
-			case XKeyPress:
-			case XKeyRelease:
-				x11EventKeyPress( pEvent );
-				return true;
-			case ButtonPress:
-				captureShortcut( false );
-				setShortcut( m_cut );
-				return true;
-		}
-	}
-	return QWidget::x11Event( pEvent );
-}
-
-void KKeyButton::x11EventKeyPress( XEvent *pEvent )
-{
-	KKeyNative keyNative( pEvent );
-	uint keyModX = keyNative.mod(), keySymX = keyNative.sym();
-
-	//kdDebug(125) << QString( "keycode: 0x%1 state: 0x%2\n" )
-	//			.arg( pEvent->xkey.keycode, 0, 16 ).arg( pEvent->xkey.state, 0, 16 );
-
-	switch( keySymX ) {
-		// Don't allow setting a modifier key as an accelerator.
-		// Also, don't release the focus yet.  We'll wait until
-		//  we get a 'normal' key.
-		case XK_Shift_L:   case XK_Shift_R:	keyModX = KKeyX11::keyModXShift(); break;
-		case XK_Control_L: case XK_Control_R:	keyModX = KKeyX11::keyModXCtrl(); break;
-		case XK_Alt_L:     case XK_Alt_R:	keyModX = KKeyX11::keyModXAlt(); break;
-		case XK_Meta_L:    case XK_Meta_R:	keyModX = KKeyX11::keyModXMeta(); break;
-		case XK_Super_L:   case XK_Super_R:
-		case XK_Hyper_L:   case XK_Hyper_R:
-		case XK_Mode_switch:
-			break;
-		default:
-			if( keyNative.sym() ) {
-				captureShortcut( false );
-				// The parent must decide whether this is a valid
-				//  key, and if so, call setShortcut(uint) with the new value.
-				emit capturedShortcut( KShortcut(KKey(keyNative)) );
-				setShortcut( m_cut );
-			}
-			return;
-	}
-
-	if( pEvent->type == XKeyPress )
-		keyModX |= pEvent->xkey.state;
-	else
-		keyModX = pEvent->xkey.state & ~keyModX;
-
-	QString keyModStr;
-	if( keyModX & KKeyX11::keyModXMeta() )	keyModStr += i18n("Meta") + "+";
-	if( keyModX & KKeyX11::keyModXAlt() )	keyModStr += i18n("Alt") + "+";
-	if( keyModX & KKeyX11::keyModXCtrl() )	keyModStr += i18n("Ctrl") + "+";
-	if( keyModX & KKeyX11::keyModXShift() )	keyModStr += i18n("Shift") + "+";
-
-	// Display currently selected modifiers, or redisplay old key.
-	if( !keyModStr.isEmpty() )
-		setText( keyModStr );
-	else
-		setShortcut( m_cut );
-}
-#endif
 
 void KKeyButton::drawButton( QPainter *painter )
 {
@@ -229,61 +170,4 @@ void KKeyButton::drawButton( QPainter *painter )
 
 }
 
-//----------------------------------------------------
-// KShortcutDialog
-//----------------------------------------------------
-/*
-
-(o) Primary    [Ctrl+V       ]    [ ] Multi-Key     &OK
-( ) Alternate  [Shift+Insert ]    [ ] Multi-Key     &Cancel
-
-class KShortcutBox : public QLineEdit
-{
-	Q_OBJECT
- public:
-	KShortcutBox( QWidget* parent = 0, const char* name = 0 );
-};
-
-class KShortcutDialog : public KDialog
-{
-	Q_OBJECT
- public:
-	KShortcutDialog( const KShortcut& key, QWidget* parent = 0, const char* name = 0 );
-	~KShortcutDialog();
-
- protected:
-	KShortcut m_cut;
-	QRadioButton* m_prbPrimary;
-	KShortcutBox* m_peditPrimary;
-	QRadioButton* m_prbAlternate;
-	KShortcutBox* m_peditAlternate;
-
- private:
-	class KShortcutDialogPrivate* d;
-};
-
-KShortcutDialog::KShortcutDialog( QWidget* parent, const char* name )
-: KDialog( parent, name )
-{
-	initGUI();
-}
-
-void KShortcutDialog::initGUI()
-{
-	//QGridLayout* l;
-	//QRadioButton* rb;
-
-	//l = new QHBoxLayout( this );
-	//rb = new QRadioButton( "Primary", this );
-	//l->addWidget( rb );
-
-	QGrid* grid = new QGrid( 3 );
-	m_prbPrimary = new QRadioButton( i18n("Primary"), grid );
-	m_peditPrimary = new KShortcutBox( ..., grid );
-	m_pcbPrimary = new QCheckBox( i18n("Multi-Key"), grid );
-	m_prbAlternate = new QRadioButton( i18n("Alternate"), grid );
-	m_peditAlternate = new KShortcutBox( ..., grid );
-	m_pcbAlternate = new QCheckBox( i18n("Multi-Key"), grid );
-}
-*/
 #include "kkeybutton.moc"

@@ -147,7 +147,7 @@ class KKeyChooser : public QWidget
 	void slotDefaultKey();
 	void slotCustomKey();
 	void slotListItemSelected( QListViewItem *item );
-	void capturedShortcut( KShortcut cut );
+	void capturedShortcut( const KShortcut& cut );
 
  protected:
 	bool m_bAllowMetaKey;

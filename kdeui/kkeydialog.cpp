@@ -2,6 +2,7 @@
     Copyright (C) 1998 Mark Donohoe <donohoe@kde.org>
     Copyright (C) 1997 Nicolas Hadacek <hadacek@via.ecp.fr>
     Copyright (C) 1998 Matthias Ettrich <ettrich@kde.org>
+    Copyright (C) 2001 Ellis Whitehead <ellis@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -106,7 +107,7 @@ enum { QT_META_MOD = Qt::ALT << 1 };	// Supply Meta bit where Qt left it out.
 /************************************************************************/
 KKeyDialog::KKeyDialog( KAccelActions& actions, QWidget *parent,
                         bool bCheckAgainstStdKeys)
-  : KDialogBase( parent, 0, true, i18n("Configure Key Bindings"),
+  : KDialogBase( parent, 0, true, i18n("Configure Key Bindings"), // Change to "Configure Shortcuts"
                  Help|Default|Ok|Cancel, Ok )
 {
 	m_pKeyChooser = new KKeyChooser( actions, this, bCheckAgainstStdKeys );
@@ -159,6 +160,7 @@ int KKeyDialog::configureKeys( KGlobalAccel *keys, bool bSaveSettings, QWidget *
 int KKeyDialog::configureKeys( KActionCollection *coll, const QString& file,
                                bool bSaveSettings, QWidget *parent )
 {
+    kdDebug(125) << "KKeyDialog::configureKeys( KActionCollection*, " << file << ", " << bSaveSettings << " )" << endl;
     KAccelActions actions;
     coll->createKeyMap( actions );
 
@@ -181,7 +183,7 @@ int KKeyDialog::configureKeys( KActionCollection *coll, const QString& file,
     QString tagActionProp = QString::fromLatin1( "ActionProperties" );
     QString tagAction     = QString::fromLatin1( "Action" );
     QString attrName      = QString::fromLatin1( "name" );
-    QString attrAccel     = QString::fromLatin1( "accel" );
+    QString attrShortcut     = QString::fromLatin1( "shortcut" );
 
     // first, lets see if we have existing properties
     QDomElement elem;
@@ -232,11 +234,12 @@ int KKeyDialog::configureKeys( KActionCollection *coll, const QString& file,
       act_elem = doc.createElement( tagAction );
       act_elem.setAttribute( attrName, action->name() );
     }
-    act_elem.setAttribute( attrAccel, cut.toStringInternal() );
+    act_elem.setAttribute( attrShortcut, cut.toStringInternal() );
 
     elem.appendChild( act_elem );
   }
 
+  kdDebug(125) << "calling KXMLGUIFactory::saveConfigFile()" << endl;
   // finally, write out the result
   KXMLGUIFactory::saveConfigFile(doc, file);
 
@@ -394,7 +397,7 @@ void KKeyChooser::init( KAccelActions& actions,
 
   d->bChange = new KKeyButton(d->fCArea, "key");
   d->bChange->setEnabled( false );
-  connect( d->bChange, SIGNAL(capturedShortcut(KShortcut)), SLOT(capturedShortcut(KShortcut)) );
+  connect( d->bChange, SIGNAL(capturedShortcut(const KShortcut&)), SLOT(capturedShortcut(const KShortcut&)) );
   grid->addRowSpacing( 1, d->bChange->sizeHint().height() + 5 );
 
   wtstr = i18n("Use this button to choose a new shortcut key. Once you click it, "
@@ -539,7 +542,7 @@ void KKeyChooser::slotDefaultKey()
 
 void KKeyChooser::slotCustomKey()
 {
-	d->bChange->captureShortcut( true );
+	d->bChange->captureShortcut();
 }
 
 void KKeyChooser::allDefault()
@@ -637,7 +640,8 @@ void KKeyChooser::setPreferFourModifierKeys( bool bPreferFourModifierKeys )
 	d->bPreferFourModifierKeys = bPreferFourModifierKeys;
 }
 
-void KKeyChooser::capturedShortcut( KShortcut cut )
+// Remove this --ellis 12/31/01
+void KKeyChooser::capturedShortcut( const KShortcut& cut )
 {
 	if( cut.isNull() )
 		d->lInfo->setText( i18n("Undefined key") );
