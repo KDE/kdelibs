@@ -138,7 +138,7 @@ public:
 
   /**
    * Create an empty properties dialog (for applications that want use
-   * a standard dialog, but for things not doable via the plugin-mechanism.
+   * a standard dialog, but for things not doable via the plugin-mechanism).
    *
    * @param title is the string display as the "filename" in the caption of the dialog.
    * @param parent is the parent of the dialog widget.
@@ -161,7 +161,8 @@ public:
    * for extending the properties mechanism.
    *
    * To create a new plugin type, inherit from the base class KPropsPlugin
-   * and implement all the methods.
+   * and implement all the methods. If you define a service .desktop file
+   * for your plugin, you do not need to call insertPlugin().
    *
    * @param plugin is a pointer to the PropsPlugin. The Properties
    *        dialog will do destruction for you. The KPropsPlugin MUST
@@ -288,6 +289,15 @@ private:
  * A Plugin in the Properties dialog
  * This is an abstract class. You must inherit from this class
  * to build a new kind of page.
+ * A plugin in itself is just a library containing code, not a dialog's page.
+ * It's up to the plugin to insert pages into the parent dialog.
+ *
+ * To make a plugin available, define a service that implements the KPropsDlg/Plugin
+ * servicetype, as well as the mimetypes for which the plugin should be created.
+ * For instance, ServiceTypes=KPropsDlg/Plugin,text/html,application/x-mymimetype.
+ *
+ * You can also include X-KDE-Protocol=file if you want that plugin
+ * to be loaded only for local files, for instance.
  */
 class KPropsDlgPlugin : public QObject
 {
@@ -296,7 +306,7 @@ public:
   /**
    * Constructor
    * To insert tabs into the properties dialog, use the add methods provided by
-   * KDialogBase (via props->dialog() )
+   * KDialogBase (the properties dialog is a KDialogBase).
    */
   KPropsDlgPlugin( KPropertiesDialog *_props );
   virtual ~KPropsDlgPlugin();
@@ -322,7 +332,7 @@ public slots:
 
 signals:
   /**
-   * Emit this event when the user changed anything the plugin's tabs.
+   * Emit this event when the user changed anything in the plugin's tabs.
    * The hosting PropertiesDialog will call @ref applyChanges only if the
    * PropsPlugin emits the changed event.
    */
