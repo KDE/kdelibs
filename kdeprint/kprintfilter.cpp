@@ -25,11 +25,24 @@
 #include <qstack.h>
 #include <kstddirs.h>
 #include <kdialogbase.h>
+#include <ksimpleconfig.h>
 
 struct KPrintFilter::KPrintFilterIO
 {
 	QString	m_file;
 	QString	m_pipe;
+};
+
+struct KPrintFilter::KPrintFilterPrivate
+{
+	QString				m_description;
+	QString				m_command;
+	KPrintFilter::KPrintFilterIO	*m_input, *m_output;
+	DrMain				*m_driver;
+	bool				m_read;
+	QStringList			m_mimetypein;
+	QString				m_mimetypeout;
+	QStringList			m_requirements;
 };
 
 //*****************************************************************************************************
@@ -61,20 +74,20 @@ bool FilterHandler::startElement(const QString&, const QString& lname, const QSt
 {
 	if (lname == "kprintfilter" && m_state == None)
 	{
-		m_filter->m_idname = attrs.value("name");
-		m_filter->m_description = attrs.value("description");
+		if (m_filter->m_idname != attrs.value("name"))
+			return false;
 		m_state = Filter;
 	}
 	else if (lname == "filtercommand" && m_state == Filter)
 	{
-		m_filter->m_command = attrs.value("data");
+		m_filter->d->m_command = attrs.value("data");
 	}
 	else if (lname == "filterargs" && m_state == Filter)
 	{
-		m_filter->m_driver = new DrMain();
-		m_filter->m_driver->set("text",m_filter->m_description);
-		m_filter->m_driver->setName(m_filter->m_idname);
-		m_stack.push(m_filter->m_driver);
+		m_filter->d->m_driver = new DrMain();
+		m_filter->d->m_driver->set("text",m_filter->d->m_description);
+		m_filter->d->m_driver->setName(m_filter->m_idname);
+		m_stack.push(m_filter->d->m_driver);
 		m_state = Args;
 	}
 	else if (lname == "filterarg" && m_state == Args)
@@ -119,7 +132,7 @@ bool FilterHandler::startElement(const QString&, const QString& lname, const QSt
 	else if (lname == "filterarg" && (m_state == Input || m_state == Output))
 	{
 		QString	type = attrs.value("name");
-		KPrintFilter::KPrintFilterIO	*io = (m_state == Input ? m_filter->m_input : m_filter->m_output);
+		KPrintFilter::KPrintFilterIO	*io = (m_state == Input ? m_filter->d->m_input : m_filter->d->m_output);
 		if (type == "file") io->m_file = attrs.value("format");
 		else if (type == "pipe") io->m_pipe = attrs.value("format");
 		else return false;
@@ -141,12 +154,12 @@ bool FilterHandler::startElement(const QString&, const QString& lname, const QSt
 	}
 	else if (lname == "filterinput" && m_state == Filter)
 	{
-		m_filter->m_input = new KPrintFilter::KPrintFilterIO();
+		m_filter->d->m_input = new KPrintFilter::KPrintFilterIO();
 		m_state = Input;
 	}
 	else if (lname == "filteroutput" && m_state == Filter)
 	{
-		m_filter->m_output = new KPrintFilter::KPrintFilterIO();
+		m_filter->d->m_output = new KPrintFilter::KPrintFilterIO();
 		m_state = Output;
 	}
 	else return false;
@@ -188,31 +201,45 @@ bool FilterHandler::endElement(const QString&, const QString& lname, const QStri
 KPrintFilter::KPrintFilter(const QString& idname, QObject *parent, const char *name)
 : QObject(parent,name)
 {
-	m_driver = 0;
-	m_input = m_output = 0;
-	m_read = false;
+	d = new KPrintFilterPrivate;
+	d->m_driver = 0;
+	d->m_input = d->m_output = 0;
+	d->m_read = false;
 	m_idname = idname;
+	readDesktopFile();
 }
 
 KPrintFilter::~KPrintFilter()
 {
 	clean();
+	delete d;
 }
 
 void KPrintFilter::clean()
 {
-	delete m_driver;
-	delete m_input;
-	delete m_output;
-	m_input = m_output = 0;
-	m_driver = 0;
+	delete d->m_driver;
+	delete d->m_input;
+	delete d->m_output;
+	d->m_input = d->m_output = 0;
+	d->m_driver = 0;
 }
 
-bool KPrintFilter::readXmlTemplate(const QString& filename)
+bool KPrintFilter::readDesktopFile()
 {
-	if (m_read && filename == m_idname)
+	KSimpleConfig	config(locate("data",QString::fromLatin1("kdeprint/filters/%1.desktop").arg(m_idname)));
+	config.setGroup("KDE Print Filter Entry");
+	d->m_description = config.readEntry("Comment", m_idname);
+	d->m_requirements = config.readListEntry("Require");
+	d->m_mimetypein = config.readListEntry("MimeTypeIn");
+	d->m_mimetypeout = config.readEntry("MimeTypeOut");
+	return true;
+}
+
+bool KPrintFilter::readXmlTemplate()
+{
+	if (d->m_read)
 		return true;
-	QString	cpath = locate("data",QString::fromLatin1("kdeprint/filters/%1.xml").arg(filename));
+	QString	cpath = locate("data",QString::fromLatin1("kdeprint/filters/%1.xml").arg(m_idname));
 	QFile	f(cpath);
 	if (!f.exists())
 		return false;
@@ -221,23 +248,23 @@ bool KPrintFilter::readXmlTemplate(const QString& filename)
 	FilterHandler		handler(this);
 	reader.setContentHandler(&handler);
 	clean();
-	return (m_read=(reader.parse(source) && m_driver && m_input && m_output));
+	return (d->m_read=(reader.parse(source) && d->m_driver && d->m_input && d->m_output));
 }
 
 QString KPrintFilter::buildCommand(const QMap<QString,QString>& options, bool pipein, bool pipeout)
 {
 	QString	cmd;
-	if (readXmlTemplate(m_idname))
+	if (readXmlTemplate())
 	{
 		QString		str;
 		QMap<QString,QString>	fopts;
-		cmd = m_command;
+		cmd = d->m_command;
 		// command arguments
-		m_driver->setOptions(options);
-		m_driver->getOptions(fopts,false);
+		d->m_driver->setOptions(options);
+		d->m_driver->getOptions(fopts,false);
 		for (QMap<QString,QString>::ConstIterator it=fopts.begin(); it!=fopts.end(); ++it)
 		{
-			DrBase	*dopt = m_driver->findOption(it.key());
+			DrBase	*dopt = d->m_driver->findOption(it.key());
 			if (dopt)
 			{
 				QString	format = dopt->get("format");
@@ -247,10 +274,10 @@ QString KPrintFilter::buildCommand(const QMap<QString,QString>& options, bool pi
 		}
 		cmd.replace(QRegExp("%filterargs"),str);
 		// command input
-		str = (pipein ? m_input->m_pipe : m_input->m_file);
+		str = (pipein ? d->m_input->m_pipe : d->m_input->m_file);
 		cmd.replace(QRegExp("%filterinput"),str);
 		// command output
-		str = (pipeout ? m_output->m_pipe : m_output->m_file);
+		str = (pipeout ? d->m_output->m_pipe : d->m_output->m_file);
 		cmd.replace(QRegExp("%filteroutput"),str);
 	}
 	return cmd;
@@ -258,27 +285,52 @@ QString KPrintFilter::buildCommand(const QMap<QString,QString>& options, bool pi
 
 void KPrintFilter::setOptions(const QMap<QString,QString>& opts)
 {
-	if (readXmlTemplate(m_idname))
-		m_driver->setOptions(opts);
+	if (readXmlTemplate())
+		d->m_driver->setOptions(opts);
 }
 
 void KPrintFilter::getOptions(QMap<QString,QString>& opts, bool incldef)
 {
-	if (readXmlTemplate(m_idname))
-		m_driver->getOptions(opts, incldef);
+	if (readXmlTemplate())
+		d->m_driver->getOptions(opts, incldef);
 }
 
 bool KPrintFilter::configure(QWidget *parent)
 {
-	if (readXmlTemplate(m_idname))
+	if (readXmlTemplate())
 	{
-		KDialogBase	dlg(parent,0,true,m_description,KDialogBase::Ok);
+		KDialogBase	dlg(parent,0,true,d->m_description,KDialogBase::Ok);
 		DriverView	view(&dlg);
 		dlg.setMainWidget(&view);
-		view.setDriver(m_driver);
+		view.setDriver(d->m_driver);
 		dlg.resize(350,400);
 		dlg.exec();
 		return true;
 	}
 	return false;
+}
+
+QString KPrintFilter::description() const
+{
+	return d->m_description;
+}
+
+QString KPrintFilter::mimeType() const
+{
+	return d->m_mimetypeout;
+}
+
+bool KPrintFilter::acceptMimeType(const QString& mimetype)
+{
+	return (d->m_mimetypein.find(mimetype) != d->m_mimetypein.end());
+}
+
+QStringList KPrintFilter::inputMimeTypes() const
+{
+	return d->m_mimetypein;
+}
+
+QStringList KPrintFilter::requirements() const
+{
+	return d->m_requirements;
 }

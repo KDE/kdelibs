@@ -42,3 +42,5 @@ Comment[tr]=Genel imajdan PS'e süzgec
 Comment[uk]=Загальний фільтр образів в файли PS
 Comment[vi]=Trình lọc file ảnh thành PS nói chung 
 Comment[zh_CN.GB2312]=通用图像到 PS 过滤程序
+MimeTypeIn=image/jpeg,image/png,image/x-png,image/bmp,image/x-bmp,image/gif,image/tiff
+MimeTypeOut=application/postscript

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<kprintfilter name="psbook2" require="psbook" description="Pamphlet printing - odd pages (step 2)">
+<kprintfilter name="psbook2">
 	<filtercommand data="psbook %filterinput | psnup -2 %filterargs | psselect -o %filteroutput" />
 	<filterargs>
 		<filterarg name="papersize" description="Paper size" format="-p%value" type="list" default="a4">

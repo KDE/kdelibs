@@ -5,6 +5,7 @@ filters_DATA = enscript.desktop enscript.xml\
 	       pdfwrite.desktop pdfwrite.xml \
 	       psbook1.desktop psbook1.xml \
 	       psbook2.desktop psbook2.xml \
-	       psbook.desktop psbook.xml
+	       psbook.desktop psbook.xml \
+	       psselect.desktop psselect.xml
 
 bin_SCRIPTS = imagetops

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<kprintfilter name="pdfwrite" require="gs" description="PDF writer (needs GhostScript)">
+<kprintfilter name="pdfwrite">
 	<filtercommand data="gs -q -dNOPAUSE -sDEVICE=pdfwrite -sOutputFile=%filteroutput %filterargs -c save pop -f %filterinput" />
 	<filterargs>
 		<filterarg name="papersize" description="Paper size" format="-sPAPERSIZE=%value" type="list" default="letter">

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<kprintfilter name="psbook" require="psbook" description="Pamphlet printing (use with small side duplex printing)">
+<kprintfilter name="psbook">
 	<filtercommand data="psbook %filterinput | psnup -2 %filterargs %filteroutput" />
 	<filterargs>
 		<filterarg name="papersize" description="Paper size" format="-p%value" type="list" default="a4">

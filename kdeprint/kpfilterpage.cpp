@@ -27,6 +27,7 @@
 #include <qinputdialog.h>
 #include <qtooltip.h>
 #include <qlayout.h>
+#include <qtextview.h>
 #include <klistview.h>
 #include <klocale.h>
 #include <kiconloader.h>
@@ -37,6 +38,7 @@ KPFilterPage::KPFilterPage(QWidget *parent, const char *name)
 {
 	setTitle(i18n("Filters"));
 	m_activefilters.setAutoDelete(true);
+	m_valid = true;
 
 	m_view = new KListView(this);
 	m_view->addColumn("");
@@ -68,10 +70,14 @@ KPFilterPage::KPFilterPage(QWidget *parent, const char *name)
 	connect(m_configure,SIGNAL(clicked()),SLOT(slotConfigureClicked()));
 	connect(m_view,SIGNAL(doubleClicked(QListViewItem*)),SLOT(slotConfigureClicked()));
 
-	QHBoxLayout	*l1 = new QHBoxLayout(this, 10, 10);
+	m_info = new QTextView(this);
+	m_info->setPaper(colorGroup().background());
+
+	QGridLayout	*l1 = new QGridLayout(this, 2, 2, 10, 10);
+	l1->setColStretch(0, 1);
 	QVBoxLayout	*l2 = new QVBoxLayout(0, 0, 0);
-	l1->addWidget(m_view,1);
-	l1->addLayout(l2,0);
+	l1->addWidget(m_view, 0, 0);
+	l1->addLayout(l2, 0, 1);
 	l2->addWidget(m_add);
 	l2->addWidget(m_remove);
 	l2->addSpacing(5);
@@ -80,6 +86,7 @@ KPFilterPage::KPFilterPage(QWidget *parent, const char *name)
 	l2->addSpacing(5);
 	l2->addWidget(m_configure);
 	l2->addStretch(1);
+	l1->addMultiCellWidget(m_info, 1, 1, 0, 1);
 
 	m_remove->setEnabled(false);
 	m_up->setEnabled(false);
@@ -115,7 +122,9 @@ void KPFilterPage::slotAddClicked()
 		int	index = m_filters.findIndex(choice)-1;
 		KPrintFilter	*filter = KMFactory::self()->filterManager()->filter(m_filters[index]);
 		m_activefilters.insert(filter->idName(),filter);
-		new QListViewItem(m_view,choice,filter->idName());
+		QListViewItem	*item = new QListViewItem(m_view,choice,filter->idName());
+		item->setPixmap(0, SmallIcon("filter"));
+		checkFilterChain();
 	}
 }
 
@@ -126,6 +135,7 @@ void KPFilterPage::slotRemoveClicked()
 		QString	idname = m_view->selectedItem()->text(1);
 		delete m_view->selectedItem();
 		m_activefilters.remove(idname);
+		checkFilterChain();
 	}
 }
 
@@ -135,8 +145,10 @@ void KPFilterPage::slotUpClicked()
 	if (item && item->itemAbove())
 	{
 		QListViewItem	*clone = new QListViewItem(m_view,item->itemAbove()->itemAbove(),item->text(0),item->text(1));
+		clone->setPixmap(0, SmallIcon("filter"));
 		delete item;
 		m_view->setCurrentItem(clone);
+		checkFilterChain();
 	}
 }
 
@@ -146,8 +158,10 @@ void KPFilterPage::slotDownClicked()
 	if (item && item->itemBelow())
 	{
 		QListViewItem	*clone = new QListViewItem(m_view,item->itemBelow(),item->text(0),item->text(1));
+		clone->setPixmap(0, SmallIcon("filter"));
 		delete item;
 		m_view->setCurrentItem(clone);
+		checkFilterChain();
 	}
 }
 
@@ -164,6 +178,7 @@ void KPFilterPage::slotItemSelected(QListViewItem *item)
 	m_up->setEnabled((item != 0 && item->itemAbove() != 0));
 	m_down->setEnabled((item != 0 && item->itemBelow() != 0));
 	m_configure->setEnabled((item != 0));
+	updateInfo();
 }
 
 void KPFilterPage::setOptions(const QMap<QString,QString>& opts)
@@ -199,6 +214,7 @@ void KPFilterPage::setOptions(const QMap<QString,QString>& opts)
 		if (f)
 			item = new QListViewItem(m_view,item,f->description(),f->idName());
 	}
+	checkFilterChain();
 }
 
 void KPFilterPage::getOptions(QMap<QString,QString>& opts, bool incldef)
@@ -231,6 +247,58 @@ KPrintFilter* KPFilterPage::currentFilter()
 	if (m_view->currentItem())
 		filter = m_activefilters.find(m_view->currentItem()->text(1));
 	return filter;
+}
+
+void KPFilterPage::checkFilterChain()
+{
+	QListViewItem	*item = m_view->firstChild();
+	bool		ok(true);
+	m_valid = true;
+	while (item)
+	{
+		item->setPixmap(0, (ok ? SmallIcon("filter") : SmallIcon("filterstop")));
+		KPrintFilter	*f1 = m_activefilters.find(item->text(1));
+		if (f1 && item->nextSibling())
+		{
+			KPrintFilter	*f2 = m_activefilters.find(item->nextSibling()->text(1));
+			if (f2)
+			{
+				if (!f2->acceptMimeType(f1->mimeType()))
+				{
+					item->setPixmap(0, SmallIcon("filterstop"));
+					ok = false;
+					m_valid = false;
+				}
+				else
+					ok = true;
+			}
+		}
+		item = item->nextSibling();
+	}
+}
+
+bool KPFilterPage::isValid(QString& msg)
+{
+	if (!m_valid)
+	{
+		msg = i18n("<p>The filter chain is wrong. The output format of at least one filter is not supported by its follower. See <b>Filters</b> tab for more information.</p>");
+	}
+	return m_valid;
+}
+
+void KPFilterPage::updateInfo()
+{
+	QString	txt;
+	KPrintFilter	*f = currentFilter();
+	if (f)
+	{
+		QString	templ("<b>%1:</b> %2<br>");
+		txt.append(templ.arg(i18n("Name")).arg(f->idName()));
+		txt.append(templ.arg(i18n("Requirements")).arg(f->requirements().join(", ")));
+		txt.append(templ.arg(i18n("Input")).arg(f->inputMimeTypes().join(", ")));
+		txt.append(templ.arg(i18n("Output")).arg(f->mimeType()));
+	}
+	m_info->setText(txt);
 }
 
 #include "kpfilterpage.moc"

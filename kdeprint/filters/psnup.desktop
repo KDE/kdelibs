@@ -37,3 +37,5 @@ Comment[tr]=Her kağıda birden çok sayfa süzgeci
 Comment[uk]=Фільтр укладання декількох сторінок на аркуш
 Comment[vi]=Nhiều trang trên một bềElọc sheet 
 Comment[zh_CN.GB2312]=每张多页过滤程序
+MimeTypeIn=application/postscript
+MimeTypeOut=application/postscript

@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<kprintfilter name="psselect">
+	<filtercommand data="psselect %filterargs %filterinput %filteroutput" />
+	<filterargs>
+		<filterarg name="set" description="Page set" format="%value" type="list" default="-e -o">
+			<value name="-e -o" description="All pages" />
+			<value name="-e" description="Even pages" />
+			<value name="-o" description="Odd pages" />
+		</filterarg>
+		<filterarg name="order" description="Page ordering" format="-%value" default="f" type="bool">
+			<value name="f" description="Forward" />
+			<value name="r" description="Reverse" />
+		</filterarg>
+		<filterarg name="range" description="Page range" format="-p%value" type="string" default="" />
+	</filterargs>
+	<filterinput>
+		<filterarg name="file" format="%in" />
+		<filterarg name="pipe" format="" />
+	</filterinput>
+	<filteroutput>
+		<filterarg name="file" format="> %out" />
+		<filterarg name="pipe" format="" />
+	</filteroutput>
+</kprintfilter>

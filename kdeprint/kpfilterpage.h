@@ -28,6 +28,7 @@ class KListView;
 class KPrintFilter;
 class QListViewItem;
 class QPushButton;
+class QTextView;
 
 class KPFilterPage : public KPrintDialogPage
 {
@@ -38,6 +39,7 @@ public:
 
 	void setOptions(const QMap<QString,QString>& opts);
 	void getOptions(QMap<QString,QString>& opts, bool incldef = false);
+	bool isValid(QString& msg);
 
 protected slots:
 	void slotAddClicked();
@@ -49,12 +51,16 @@ protected slots:
 
 protected:
 	KPrintFilter* currentFilter();
+	void checkFilterChain();
+	void updateInfo();
 
 private:
 	KListView		*m_view;
 	QStringList		m_filters;	// <idname,description> pairs
 	QDict<KPrintFilter>	m_activefilters;
 	QPushButton		*m_add, *m_remove, *m_up, *m_down, *m_configure;
+	bool			m_valid;
+	QTextView		*m_info;
 };
 
 #endif

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<kprintfilter name="psnup" require="psnup" description="Multiple pages per sheet filter">
+<kprintfilter name="psnup">
 	<filtercommand data="psnup %filterargs %filterinput %filteroutput" />
 	<filterargs>
 		<filterarg name="nup" description="Pages per sheet" format="-%value" type="list" default="1">

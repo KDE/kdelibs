@@ -1,0 +1,6 @@
+[KDE Print Filter Entry]
+Name=psselect
+Require=exec:/psselect
+Comment=Page selection/ordering filter
+MimeTypeIn=application/postscript
+MimeTypeOut=application/postscript

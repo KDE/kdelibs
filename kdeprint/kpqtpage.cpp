@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -107,8 +107,9 @@ KPQtPage::KPQtPage(QWidget *parent, const char *name)
 	m_colorpix->setAlignment(Qt::AlignCenter);
 
 	// layout creation
-	QGridLayout	*lay0 = new QGridLayout(this, 2, 2, 10, 10);
+	QGridLayout	*lay0 = new QGridLayout(this, 3, 2, 10, 10);
 	lay0->setRowStretch(1,1);
+	lay0->setRowStretch(2,1);
 	lay0->addWidget(m_pagesizelabel,0,0);
 	lay0->addWidget(m_pagesize,0,1);
 	lay0->addWidget(m_orientbox,1,0);

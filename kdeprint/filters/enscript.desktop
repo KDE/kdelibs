@@ -40,3 +40,5 @@ Comment[ta]=Enscript ¯¨Ã ÅÊ¸ðÊ
 Comment[tr]=Enscript metin süzgeci
 Comment[uk]=Текстовий фільтр enscript
 Comment[vi]=BềElọc văn bản Enscript 
+MimeTypeIn=text/html,text/plain,text/sgml,text/x-c++hdr,text/x-c++src,text/x-chdr,text/x-csrc,text/x-java,text/x-makefile,text/x-pascal,text/x-perl,text/x-python,text/x-tcl,text/x-tex,text/xml
+MimeTypeOut=application/postscript
