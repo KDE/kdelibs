@@ -810,6 +810,19 @@ class KDialogBase : public KDialog
     *                  of KGlobal::config is preserved.
     */
    QSize configDialogSize( const QString& groupName ) const;
+   
+   /**
+    * read the dialogs size from the configuration according to the screen size.
+    * If no size is saved for one dimension of the screen, a default size
+    * is choosed. The default width is 50 percent of the screen width, the
+    * default height is 40 percent of the screen height.
+    *
+    * @param config The @ref KConfig object to read from
+    * @param groupName Name of the group to read from. The old group
+    *                  of KGlobal::config is preserved.
+    * @since 3.2
+    */
+   QSize configDialogSize( KConfig& config, const QString& groupName ) const;
 
    /**
     * save the dialogs size dependant on the screen dimension either to the
@@ -822,6 +835,19 @@ class KDialogBase : public KDialog
     */
    void saveDialogSize( const QString& groupName, bool global=false );
 
+   /**
+    * save the dialogs size dependant on the screen dimension.
+    *
+    * @param config The @ref KConfig object to write to.
+    * @param groupName The group to which the dialogs size is saved. See
+    *        @ref configDialogSize to read the size.
+    * @param global Set to true if the entry should go to the global config.
+    *        Default is false.
+    * @since 3.2
+    */
+   void saveDialogSize( KConfig& config, const QString& groupName,
+			     bool global=false ) const;
+                 
     /**
      * Sets the text of the OK button.
      *
