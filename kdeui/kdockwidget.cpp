@@ -316,7 +316,7 @@ void KDockWidgetHeader::loadConfig( KConfig* c )
 /*************************************************************************/
 KDockWidget::KDockWidget( KDockManager* dockManager, const char* name, const QPixmap &pixmap, QWidget* parent, const QString& strCaption, const QString& strTabPageLabel, WFlags f)
 : QWidget( parent, name, f )
-	,formerBrotherDockWidget(0L)
+  ,formerBrotherDockWidget(0L)
   ,currentDockPos(DockNone)
   ,formerDockPos(DockNone)
   ,pix(new QPixmap(pixmap))
@@ -509,9 +509,9 @@ bool KDockWidget::event( QEvent *event )
         }
       }
       break;
-		case QEvent::Close:
-			emit iMBeingClosed();
-			break;
+    case QEvent::Close:
+      emit iMBeingClosed();
+      break;
     default:
       break;
   }
@@ -774,7 +774,7 @@ void KDockWidget::undock()
       manager->blockSignals(false);
       emit manager->replaceDock( parentOfTab, lastTab );
       lastTab->currentDockPos = parentOfTab->currentDockPos;
-			emit parentOfTab->iMBeingClosed();
+      emit parentOfTab->iMBeingClosed();
       manager->blockSignals(true);
       delete parentOfTab;
 
@@ -818,7 +818,7 @@ void KDockWidget::undock()
       delete parentSplitterOfDockWidget;
       manager->blockSignals(false);
       emit manager->replaceDock( group, secondWidget );
-			emit group->iMBeingClosed();
+      emit group->iMBeingClosed();
       manager->blockSignals(true);
       delete group;
 
@@ -923,38 +923,38 @@ void KDockWidget::makeDockVisible()
 void KDockWidget::loseFormerBrotherDockWidget()
 {
   if( formerBrotherDockWidget != 0L)
-  	QObject::disconnect( formerBrotherDockWidget, SIGNAL(iMBeingClosed()),
-	  									   this, SLOT(loseFormerBrotherDockWidget()) );
-	formerBrotherDockWidget = 0L;
-	repaint();
+    QObject::disconnect( formerBrotherDockWidget, SIGNAL(iMBeingClosed()),
+                         this, SLOT(loseFormerBrotherDockWidget()) );
+  formerBrotherDockWidget = 0L;
+  repaint();
 }
 
 void KDockWidget::dockBack()
 {
   if( formerBrotherDockWidget) {
-		// search all children if it tries to dock back to a child
-		bool found = false;
-		QObjectList* cl = queryList("KDockWidget");
-   	QObjectListIt it( *cl );
-	  QObject * obj;
-   	while ( (obj=it.current()) != 0 ) {
+    // search all children if it tries to dock back to a child
+    bool found = false;
+    QObjectList* cl = queryList("KDockWidget");
+    QObjectListIt it( *cl );
+    QObject * obj;
+    while ( (obj=it.current()) != 0 ) {
       ++it;
       QWidget* widg = (QWidget*)obj;
       if( widg == formerBrotherDockWidget)
-				found = true;
-   	}
-   	delete cl;
+        found = true;
+    }
+    delete cl;
 
-		if( !found) {
-			// can dock back to the former brother dockwidget
-			manualDock( formerBrotherDockWidget, formerDockPos, d->splitPosInPercent, QPoint(0,0), false, d->index);
-			formerBrotherDockWidget = 0L;
-			makeDockVisible();
-			return;
-		}
-	}
+    if( !found) {
+      // can dock back to the former brother dockwidget
+      manualDock( formerBrotherDockWidget, formerDockPos, d->splitPosInPercent, QPoint(0,0), false, d->index);
+      formerBrotherDockWidget = 0L;
+      makeDockVisible();
+      return;
+    }
+  }
 
-	// else dockback to the dockmainwindow (default behaviour)
+  // else dockback to the dockmainwindow (default behaviour)
   manualDock( ((KDockMainWindow*)manager->main)->getMainDockWidget(), formerDockPos, d->splitPosInPercent, QPoint(0,0), false, d->index);
   formerBrotherDockWidget = 0L;
   if (parent())
@@ -989,6 +989,14 @@ public:
    */
   bool readyToDrag;
 
+  /**
+   * This variable stores the offset of the mouse cursor to the upper left edge of the current drag widget.
+   */
+  QPoint dragOffset;
+
+  /**
+   * These flags store information about the splitter behaviour
+   */
   bool splitterOpaqueResize;
   bool splitterKeepSize;
   bool splitterHighResolution;
@@ -1094,6 +1102,8 @@ bool KDockManager::eventFilter( QObject *obj, QEvent *event )
             d->dragRect.moveTopLeft(p);
             drawDragRectangle();
             d->readyToDrag = true;
+
+            d->dragOffset = QCursor::pos()-currentDragWidget->mapToGlobal(QPoint(0,0));
           }
         }
         break;
@@ -1365,8 +1375,7 @@ void KDockManager::drop()
     return;
   }
   if ( !currentMoveWidget && !currentDragWidget->parent() ) {
-    QPoint p = currentDragWidget->mapToGlobal(QPoint(0,0));
-    currentDragWidget->move(p);
+    currentDragWidget->move( QCursor::pos() - d->dragOffset );
   }
   else {
     int splitPos = currentDragWidget->d->splitPosInPercent;
@@ -1380,8 +1389,7 @@ void KDockManager::drop()
       default: break;
       }
     }
-    QPoint p = currentDragWidget->mapToGlobal(QPoint(0,0));
-    currentDragWidget->manualDock( currentMoveWidget, curPos , splitPos, QPoint(p.x(), p.y()) );
+    currentDragWidget->manualDock( currentMoveWidget, curPos , splitPos, QCursor::pos() - d->dragOffset );
     currentDragWidget->makeDockVisible();
   }
 }
@@ -1633,7 +1641,7 @@ void KDockManager::readConfig(QDomElement &base)
             // Read a tab group
             QString name = stringEntry(childEl, "name");
             QStrList list = listEntry(childEl, "tabs", "tab");
-            
+
             KDockWidget *d1 = getDockWidgetFromName( list.first() );
             list.next();
             KDockWidget *d2 = getDockWidgetFromName( list.current() );
@@ -1902,7 +1910,7 @@ void KDockManager::readConfig( KConfig* c, QString group )
         }
         if ( tabDockGroup ){
           tabDockGroup->setName( oname.latin1() );
-  				c->setGroup( group );
+          c->setGroup( group );
           tab->setVisiblePage( c->readNumEntry( oname+":curTab" ) );
         }
       }
@@ -1915,7 +1923,7 @@ void KDockManager::readConfig( KConfig* c, QString group )
       obj->applyToWidget( 0L );
       obj->setGeometry(r);
 
-  		c->setGroup( group );
+      c->setGroup( group );
       if ( c->readBoolEntry( oname + ":visible" ) ){
         obj->QWidget::show();
       }
@@ -1929,12 +1937,12 @@ void KDockManager::readConfig( KConfig* c, QString group )
       obj->header->loadConfig( c );
     }
     nameList.next();
-	}
+  }
 
   if ( main->inherits("KDockMainWindow") ){
     KDockMainWindow* dmain = (KDockMainWindow*)main;
 
-  	c->setGroup( group );
+    c->setGroup( group );
     QString mv = c->readEntry( "Main:view" );
     if ( !mv.isEmpty() && getDockWidgetFromName( mv ) ){
       KDockWidget* mvd  = getDockWidgetFromName( mv );
@@ -1942,14 +1950,14 @@ void KDockManager::readConfig( KConfig* c, QString group )
       mvd->show();
       dmain->setView( mvd );
     }
-  	c->setGroup( group );
+    c->setGroup( group );
     QString md = c->readEntry( "Main:dock" );
     if ( !md.isEmpty() && getDockWidgetFromName( md ) ){
       KDockWidget* mvd  = getDockWidgetFromName( md );
       dmain->setMainDockWidget( mvd );
     }
   } else {
-  	c->setGroup( group );
+    c->setGroup( group );
     QString mv = c->readEntry( "Main:view" );
     if ( !mv.isEmpty() && getDockWidgetFromName( mv ) ){
       KDockWidget* mvd  = getDockWidgetFromName( mv );
@@ -1975,7 +1983,7 @@ KDockWidget* KDockManager::getDockWidgetFromName( const QString& dockName )
   KDockWidget * obj;
   while ( (obj=(KDockWidget*)it.current()) ) {
     ++it;
-		if ( QString(obj->name()) == dockName ) return obj;
+    if ( QString(obj->name()) == dockName ) return obj;
   }
 
   KDockWidget* autoCreate = 0L;
@@ -1983,7 +1991,7 @@ KDockWidget* KDockManager::getDockWidgetFromName( const QString& dockName )
     autoCreate = new KDockWidget( this, dockName.latin1(), QPixmap("") );
     autoCreateDock->append( autoCreate );
   }
-	return autoCreate;
+  return autoCreate;
 }
 void KDockManager::setSplitterOpaqueResize(bool b)
 {
@@ -2024,7 +2032,7 @@ void KDockManager::slotMenuPopup()
   KDockWidget * obj;
   int numerator = 0;
   while ( (obj=(KDockWidget*)it.current()) ) {
-	  ++it;
+    ++it;
     if ( obj->mayBeHide() )
     {
       menu->insertItem( obj->icon() ? *(obj->icon()) : QPixmap(), QString("Hide ") + obj->caption(), numerator++ );
@@ -2052,7 +2060,7 @@ KDockWidget* KDockManager::findWidgetParentDock( QWidget* w )
   KDockWidget * found = 0L;
 
   while ( (dock=(KDockWidget*)it.current()) ) {
-	  ++it;
+    ++it;
     if ( dock->widget == w ){ found  = dock; break; }
   }
   return found;
