@@ -91,6 +91,7 @@ void KComboBox::makeCompletion( const QString& text )
     if( m_pEdit )
     {
 	    KCompletion *comp = compObj();
+	    
 	    // We test for zero length text because for some
 	    // reason we get an extra text completion with an empty
 	    // text when the insertion policy is set to "NoInsertion"	
@@ -125,41 +126,17 @@ void KComboBox::makeCompletion( const QString& text )
     		}    	
          	return;
       	}
-
-		if( insertionPolicy() == KComboBox::NoInsertion )
-		{
-    		int index = ( count() > 0 && match.length() == 0 ) ? -1 : listBox()->index( listBox()->findItem( match ) );
-		    if( index == -1 )
-		    {
-    		    setEditText( match );
-            }
-            else
-            {
-                setCurrentItem( index );
-            }
-
-            if( mode == KGlobalSettings::CompletionAuto ||
-		       	mode == KGlobalSettings::CompletionMan )
-            {
-                m_pEdit->setSelection( pos, match.length() );
-                m_pEdit->setCursorPosition( pos );
-            }
-		}
-		else
-		{
-    		int index = ( match.length() == 0 ) ? -1 : listBox()->index( listBox()->findItem( match ) );
-	    	if( index > -1 )
-		    {
-			    setCurrentItem( index );
-    		}
-			
-	    	if( mode == KGlobalSettings::CompletionAuto ||
-		    	mode == KGlobalSettings::CompletionMan )
-            {
-                m_pEdit->setSelection( pos, match.length() );
-                m_pEdit->setCursorPosition( pos );
-            }
-       }
+      	
+      	// Set the current text to the one completed.
+	    setEditText( match );
+	    
+	    // Hightlight the text whenever appropriate.
+    	if( mode == KGlobalSettings::CompletionAuto ||
+	    	mode == KGlobalSettings::CompletionMan )
+	    {
+            m_pEdit->setSelection( pos, match.length() );
+            m_pEdit->setCursorPosition( pos );
+        }
 	}
     else if( !m_pEdit )
     {
@@ -200,15 +177,7 @@ void KComboBox::rotateText( KCompletionBase::KeyBindingType type )
             }
             bool marked = m_pEdit->hasMarkedText(); // See if it had marked text
             int pos = cursorPosition(); // Note the current cursor position
-       		int index = ( count() > 0 && input.length() == 0 ) ? -1 : listBox()->index( listBox()->findItem( input ) );
-		    if( index == -1 )
-		    {
-    		    setEditText( input );
-            }
-            else
-            {
-                setCurrentItem( index );
-            }
+   		    setEditText( input );
             // Re-mark the selection if it was previously
             // selected
             if( marked )
@@ -217,14 +186,18 @@ void KComboBox::rotateText( KCompletionBase::KeyBindingType type )
                 m_pEdit->setCursorPosition( pos );				
 			}
         }
-        else
+        else if( type == KCompletionBase::RotateUp ||
+                 type == KCompletionBase::RotateDown )
         {
-        	// History list rotation feature:  The code below supports
-        	// *nix shell like history list rotation.  This feature is
-        	// only available when the insertion policy into the listbox
-        	// of the combo widget it set to either "AtTop" or "AtBottom".
-        	// Other insertion policies are not well equipped to support
-        	// "save the last written text" feature of *nix like shells.        	
+        	/* History list rotation feature:  The code below supports
+        	   *nix shell like history list rotation.  This feature is
+        	   only available when the insertion policy into the listbox
+        	   of the combo widget it set to either "AtTop" or "AtBottom".
+        	   Other insertion policies are not well equipped to support
+       	       "save the last written text" feature of *nix like shells.
+        	   Note: we do not support the edit previous entry feature!! We
+        	   just remeber the text a user types before he started the 
+        	   rotation... */
         	int index = -1;        	
 			QComboBox::Policy policy = insertionPolicy();
 			if( m_strCurrentText.isNull() &&
