@@ -70,7 +70,7 @@ void RenderImage::setStyle(RenderStyle* _style)
     RenderReplaced::setStyle(_style);
     // init RenderObject attributes
     setInline( style()->display()==INLINE );
-    setOverhangingContents(style()->height().isPercent());
+    //setOverhangingContents(style()->height().isPercent());
     setSpecialObjects(true);
 
     CachedObject* co = style()->contentObject();
@@ -378,4 +378,31 @@ bool RenderImage::complete() const
     // "complete" means that the image has been loaded
     // but also that its width/height (contentWidth(),contentHeight()) have been calculated.
     return !pix.isNull() && layouted();
+}
+
+short RenderImage::calcReplacedWidth() const
+{
+    const Length w = style()->width();
+
+    if (w.isVariable()) {
+        const Length h = style()->height();
+        if ( m_intrinsicHeight > 0 && ( h.isPercent() || h.isFixed() ) )
+            return ( ( h.isPercent() ? calcReplacedHeight() : h.value )*intrinsicWidth() ) / m_intrinsicHeight;
+    }
+
+    return RenderReplaced::calcReplacedWidth();
+}
+
+int RenderImage::calcReplacedHeight() const
+{
+    const Length h = style()->height();
+
+    if (h.isVariable()) {
+        const Length w = style()->width();
+        if( m_intrinsicWidth > 0 && ( w.isFixed() || w.isPercent() ))
+            return (( w.isPercent() ? calcReplacedWidth() : w.value ) * intrinsicHeight()) / m_intrinsicWidth;
+
+    }
+
+    return RenderReplaced::calcReplacedHeight();
 }

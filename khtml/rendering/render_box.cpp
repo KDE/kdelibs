@@ -589,86 +589,38 @@ void RenderBox::calcHeight()
     }
 }
 
-short RenderBox::calcReplacedWidth(bool* ieHack) const
+short RenderBox::calcReplacedWidth() const
 {
     Length w = style()->width();
-    short width;
-    if ( ieHack )
-        *ieHack = style()->height().isPercent() || w.isPercent();
 
     switch( w.type ) {
-    case Variable:
-    {
-        Length h = style()->height();
-        int ih = intrinsicHeight();
-        if ( ih > 0 && ( h.isPercent() || h.isFixed() ) )
-            width = ( ( h.isPercent() ? calcReplacedHeight() : h.value )*intrinsicWidth() ) / ih;
-        else
-            width = intrinsicWidth();
-        break;
-    }
+    case Fixed:
+        return w.value;
     case Percent:
     {
-        //RenderObject* p = parent();
-        int cw = containingBlockWidth();
-        if ( cw )
-            width = w.minWidth( cw );
-        else
-            width = intrinsicWidth();
-        break;
-    }
-    case Fixed:
-        width = w.value;
-        break;
-    default:
-        width = intrinsicWidth();
-        break;
-    };
+        const int cw = containingBlockWidth();
+        qDebug("calcReplacedWidth: %d", cw);
 
-    return width;
+        if (cw > 0)
+            return w.minWidth(cw);
+    }
+    // fall through
+    default:
+        return intrinsicWidth();
+    }
 }
 
 int RenderBox::calcReplacedHeight() const
 {
-    Length h = style()->height();
-    short height;
-
+    const Length& h = style()->height();
     switch( h.type ) {
-    case Variable:
-    {
-        Length w = style()->width();
-        int iw = intrinsicWidth();
-        if( iw > 0 && ( w.isFixed() || w.isPercent() ))
-            height = (( w.isPercent() ? calcReplacedWidth() : w.value ) * intrinsicHeight()) / iw;
-        else
-            height = intrinsicHeight();
-    }
-    break;
     case Percent:
-    {
-        RenderObject* p = parent();
-        while (p && !p->isTableCell()) p = p->parent();
-        bool doIEHack = !p;
-        RenderObject* cb = containingBlock();
-        if ( !cb->isTableCell() && doIEHack)
-            height = h.minWidth(availableHeight());
-        else {
-            if (!doIEHack)
-                cb = cb->containingBlock();
-
-	    Length h = cb->style()->height();
-            height = h.minWidth(availableHeight());
-        }
-    }
-    break;
+        return availableHeight();
     case Fixed:
-        height = h.value;
-        break;
+        return h.value;
     default:
-        height = intrinsicHeight();
+        return intrinsicHeight();
     };
-
-    return height;
 }
 
 int RenderBox::availableHeight() const

@@ -73,10 +73,6 @@ public:
     virtual bool isRendered() const  { return true; }
     virtual bool isFormElement() const { return true; }
 
-    // IE does not scale according to intrinsicWidth/Height
-    // aspect ratio :-(
-    virtual short calcReplacedWidth(bool* ieHack=0) const;
-    virtual int   calcReplacedHeight() const;
     virtual void updateFromElement();
 
     virtual void layout();

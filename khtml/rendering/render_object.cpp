@@ -204,6 +204,7 @@ RenderObject *RenderObject::containingBlock() const
         if(!isRoot()) {
 #ifndef NDEBUG
             kdDebug( 6040 ) << this << ": " << renderName() << "(RenderObject): No containingBlock!" << endl;
+            kdDebug( 6040 ) << kdBacktrace() << endl;
             const RenderObject* p = this;
             while (p->parent()) p = p->parent();
             p->printTree();

@@ -828,26 +828,6 @@ void RenderPartObject::slotPartLoadingErrorNotify()
     }
 }
 
-// duplication of RenderFormElement... FIX THIS!
-short RenderPartObject::calcReplacedWidth(bool*) const
-{
-    Length w = style()->width();
-    if ( w.isVariable() )
-        return intrinsicWidth();
-    else
-        return RenderReplaced::calcReplacedWidth();
-}
-
-int RenderPartObject::calcReplacedHeight() const
-{
-    Length h = style()->height();
-    if ( h.isVariable() )
-        return intrinsicHeight();
-    else
-        return RenderReplaced::calcReplacedHeight();
-}
-// end duplication
-
 void RenderPartObject::layout( )
 {
     KHTMLAssert( !layouted() );

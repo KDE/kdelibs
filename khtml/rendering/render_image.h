@@ -64,8 +64,10 @@ public:
     virtual void updateFromElement();
 
     virtual void notifyFinished(CachedObject *finishedObj);
-
     virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty);
+
+    virtual short calcReplacedWidth() const;
+    virtual int   calcReplacedHeight() const;
 
 private:
     /*

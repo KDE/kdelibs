@@ -126,8 +126,5 @@ void RenderHtml::layout()
 
 short RenderHtml::containingBlockWidth() const
 {
-    if (root()->view())
-        return root()->view()->visibleWidth();
-    else
-        return RenderFlow::containingBlockWidth();
+    return root()->viewportWidth();
 }

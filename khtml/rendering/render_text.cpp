@@ -62,7 +62,7 @@ void TextSlave::printDecoration( QPainter *pt, RenderText* p, int _tx, int _ty, 
     int width = m_width - 1;
 
     if( begin )
- 	width -= p->paddingLeft() + p->borderLeft();
+  	width -= p->paddingLeft() + p->borderLeft();
 
     if ( end )
         width -= p->paddingRight() + p->borderRight();

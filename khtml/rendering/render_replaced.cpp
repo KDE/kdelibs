@@ -89,13 +89,12 @@ void RenderReplaced::calcMinMaxWidth()
     kdDebug( 6040 ) << "RenderReplaced::calcMinMaxWidth() known=" << minMaxKnown() << endl;
 #endif
 
-    bool isPercent = false;
-    int width = calcReplacedWidth(&isPercent);
+    int width = calcReplacedWidth();
 
     if (!isWidget())
         width += paddingLeft() + paddingRight() + borderLeft() + borderRight();
 
-    if ( isPercent ) {
+    if ( style()->width().isPercent() || style()->height().isPercent() ) {
         m_minWidth = 0;
         m_maxWidth = width;
     }

@@ -88,7 +88,7 @@ public:
     virtual void calcWidth();
     virtual void calcHeight();
 
-    virtual short calcReplacedWidth(bool* ieHack=0) const;
+    virtual short calcReplacedWidth() const;
     virtual int   calcReplacedHeight() const;
 
     virtual int availableHeight() const;
