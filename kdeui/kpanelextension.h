@@ -103,6 +103,7 @@ public:
 
     /// The type of the extension (TODO)
     enum Type { Normal = 0, Stretch };
+    // KDE4: Merge these with KPanelApplet's enums
     enum Action { About = 1, Help = 2, Preferences = 4, ReportBug = 8 };
     enum Position { Left = 0, Right, Top, Bottom };
     enum Alignment { LeftTop = 0, Center, RightBottom };

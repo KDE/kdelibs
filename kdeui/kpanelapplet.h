@@ -108,11 +108,10 @@ public:
      * This enum holds flags which can be ORed together to describe
      * which items the context menu over the applet handle contains.
      */
+    // KDE4: Merge these with KPanelExtension's enums
     enum Action { About = 1, Help = 2, Preferences = 4, ReportBug = 8 };
-    // FIXME: Remove 'p' from element names for KDE 4.
     enum Position { pLeft = 0, pRight, pTop, pBottom };
     enum Alignment { LeftTop = 0, Center, RightBottom };
-    // FIXME: Remove for KDE 4.
     enum Direction { Up = 0, Down, Left, Right };
 
     /**
