@@ -131,7 +131,7 @@ bool KCookieServer::cookiesPending( const QString &url )
   if (!KCookieJar::parseURL(url, fqdn, path))
      return false;
 
-  KCookieJar::extractDomains( fqdn, domains );
+  mCookieJar->extractDomains( fqdn, domains );
   for( KHttpCookie *cookie = mPendingCookies->first();
        cookie != 0L;
        cookie = mPendingCookies->next())
@@ -560,7 +560,7 @@ KCookieServer::setDomainAdvice(QString url, QString advice)
    if (KCookieJar::parseURL(url, fqdn, dummy))
    {
       QStringList domains;
-      KCookieJar::extractDomains(fqdn, domains);
+      mCookieJar->extractDomains(fqdn, domains);
       mCookieJar->setDomainAdvice(domains[0],
                                   KCookieJar::strToAdvice(advice));
    }
@@ -576,7 +576,7 @@ KCookieServer::getDomainAdvice(QString url)
    if (KCookieJar::parseURL(url, fqdn, dummy))
    {
       QStringList domains;
-      KCookieJar::extractDomains(fqdn, domains);
+      mCookieJar->extractDomains(fqdn, domains);
       advice = mCookieJar->getDomainAdvice(domains[0]);
    }
    return KCookieJar::adviceToStr(advice);

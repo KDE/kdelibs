@@ -300,8 +300,8 @@ public:
     /**
      * Returns a list of domains (_domainList) relevant for this host.
      */
-    static void extractDomains(const QString &_fqdn,
-                               QStringList &_domainList);
+    void extractDomains(const QString &_fqdn,
+                        QStringList &_domainList);
 
     static QString adviceToStr(KCookieAdvice _advice);
     static KCookieAdvice strToAdvice(const QString &_str);
@@ -322,12 +322,16 @@ public:
       * by the cookie dialog.
       */     
      void setShowCookieDetails (bool value) { m_showCookieDetails = value; }
-     
+
+protected:
+     void stripDomain(const QString &_fqdn, QString &_domain);
+     QString stripDomain( KHttpCookiePtr cookiePtr);
      
 protected:
     QStringList m_domainList;
     KCookieAdvice m_globalAdvice;
     QDict<KHttpCookieList> m_cookieDomains;
+    QDict<int> m_twoLevelTLD;
    
     bool m_configChanged;
     bool m_cookiesChanged;    
