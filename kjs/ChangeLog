@@ -1,3 +1,11 @@
+2003-09-30  Harri Porten  <harri@froglogic.com>
+
+	* lexer.cpp (isWhiteSpace): allow no-break space
+	* date_object.cpp: only use IE getYear() style if explicitly
+	chosen
+
+================= long break again ================================
+	
 2003-02-02  Harri Porten  <porten@kde.org>
 
 	* internal.h: added NumberImp::staticNaN

@@ -569,7 +569,7 @@ int Lexer::lex()
 bool Lexer::isWhiteSpace(unsigned short c)
 {
   return (c == ' ' || c == '\t' ||
-          c == 0x0b || c == 0x0c);
+          c == 0x0b || c == 0x0c || c == 0xa0);
 }
 
 bool Lexer::isIdentLetter(unsigned short c)
