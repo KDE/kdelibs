@@ -2,6 +2,7 @@
 #define _KTRANSLATER_H
 
 #include <qintdict.h>
+#include <qstring.h>
 
 /**
   *
@@ -67,8 +68,22 @@ public:
       */
     const char* getAlias( long key ) const;
 
+    /**
+      * Returns the language used by this object. The domain AND the
+      * library translation must be available in this language. 
+      * 'C' is default, if no other available.
+      **/
+    const QString& language() const { return language; }
+
+    /**
+      * Return the base directory, where you can find the language
+      * specific things like messages
+      **/
+    const QString& directory();
+
 private:
     char *catalogue;
+    QString language;
     int enabled;
     QIntDict<char> aliases;
     static KLocale *pLocale;

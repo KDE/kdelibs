@@ -724,10 +724,6 @@ char *getcwd ();
 /* Prototypes for local functions.  */
 static char *find_msg (struct loaded_l10nfile *domain_file,
 		       const char *msgid);
-static const char *category_to_name (int category);
-static const char *guess_category_value (int category,
-					 const char *categoryname);
-
 
 /* For those loosing systems which don't have `alloca' we have to add
    some additional code emulating it.  */
@@ -768,7 +764,7 @@ struct block_list
 /* Look up MSGID in the DOMAINNAME message catalog for the current CATEGORY
    locale.  */
 char *
-k_dcgettext (const char *domainname, const char *msgid, const int category)
+k_dcgettext (const char *domainname, const char *msgid, const char *categoryvalue)
 {
 #ifndef HAVE_ALLOCA
   struct block_list *block_list = 0L;
@@ -776,8 +772,7 @@ k_dcgettext (const char *domainname, const char *msgid, const int category)
   struct loaded_l10nfile *domain;
   struct binding *binding;
   const char *categoryname;
-  const char *categoryvalue;
-  char *dirname, *xdomainname;
+  char *dirname, *xdomainname; ;
   char *single_locale;
   char *retval;
   int saved_errno = errno;
@@ -786,13 +781,6 @@ k_dcgettext (const char *domainname, const char *msgid, const int category)
   /* If no real MSGID is given return 0L.  */
   if (msgid == 0L)
     return 0L;
-
-  /* If DOMAINNAME is 0L, we are interested in the default domain.  If
-     CATEGORY is not LC_MESSAGES this might not make much sense but the
-     defintion left this undefined.  */
-  /* if (domainname == 0L)
-     domainname = _nl_current_default_domain;
-  */
 
   /* First find matching binding.  */
   for (binding = _nl_domain_bindings; binding != 0L; binding = binding->next)
@@ -852,24 +840,22 @@ k_dcgettext (const char *domainname, const char *msgid, const int category)
     }
   
   /* Now determine the symbolic name of CATEGORY and its value.  */
-  categoryname = category_to_name (category);
-  categoryvalue = guess_category_value (category, categoryname);
-
+  categoryname = "LC_MESSAGES";
   xdomainname = (char *) alloca (strlen (categoryname)
-				 + strlen (_domainname) + 5);
+                                 + strlen (_domainname) + 5);
+  
   ADD_BLOCK (block_list, xdomainname);
   /* We don't want libintl.a to depend on any other library.  So we
      avoid the non-standard function stpcpy.  In GNU C Library this
      function is available, though.  Also allow the symbol HAVE_STPCPY
      to be defined.  */
   stpcpy (stpcpy (stpcpy (stpcpy (xdomainname, categoryname), "/"),
-		  _domainname),
-	  ".mo");
+                  _domainname),
+          ".mo");
 
   /* Creating working area.  */
   single_locale = (char *) alloca (strlen (categoryvalue) + 1);
   ADD_BLOCK (block_list, single_locale);
-
 
   /* Search for the given string.  This is a loop because we perhaps
      got an ordered list of languages to consider for th translation.  */
@@ -1020,122 +1006,6 @@ find_msg (struct loaded_l10nfile *domain_file, const char *msgid)
   return bottom >= top ? 0L : (char *) domain->data
                                 + W (domain->must_swap,
 				     domain->trans_tab[act].offset);
-}
-
-
-/* Return string representation of locale CATEGORY.  */
-static const char *
-category_to_name (int category)
-{
-  const char *retval;
-
-  switch (category)
-  {
-#ifdef LC_COLLATE
-  case LC_COLLATE:
-    retval = "LC_COLLATE";
-    break;
-#endif
-#ifdef LC_CTYPE
-  case LC_CTYPE:
-    retval = "LC_CTYPE";
-    break;
-#endif
-#ifdef LC_MONETARY
-  case LC_MONETARY:
-    retval = "LC_MONETARY";
-    break;
-#endif
-#ifdef LC_NUMERIC
-  case LC_NUMERIC:
-    retval = "LC_NUMERIC";
-    break;
-#endif
-#ifdef LC_TIME
-  case LC_TIME:
-    retval = "LC_TIME";
-    break;
-#endif
-#ifdef LC_MESSAGES
-  case LC_MESSAGES:
-    retval = "LC_MESSAGES";
-    break;
-#endif
-#ifdef LC_RESPONSE
-  case LC_RESPONSE:
-    retval = "LC_RESPONSE";
-    break;
-#endif
-#ifdef LC_ALL
-  case LC_ALL:
-    /* This might not make sense but is perhaps better than any other
-       value.  */
-    retval = "LC_ALL";
-    break;
-#endif
-  default:
-    /* If you have a better idea for a default value let me know.  */
-    retval = "LC_XXX";
-  }
-
-  return retval;
-}
-
-/* Guess value of current locale from value of the environment variables.  */
-static const char *guess_category_value (int /*category*/, const char *categoryname)
-{
-  const char *retval;
-
-  /* The highest priority value is the `LANGUAGE' environment
-     variable.  This is a GNU extension.  */
-  retval = getenv ("LANGUAGE");
-  if (retval != 0L && retval[0] != '\0')
-    return retval;
-
-  /* `LANGUAGE' is not set.  So we have to proceed with the POSIX
-     methods of looking to `LC_ALL', `LC_xxx', and `LANG'.  On some
-     systems this can be done by the `setlocale' function itself.  */
-#if defined HAVE_SETLOCALE && defined HAVE_LC_MESSAGES && defined HAVE_LOCALE_NULL
-  return setlocale (category, 0L);
-#else
-  /* Setting of LC_ALL overwrites all other.  */
-  retval = getenv ("LC_ALL");
-  if (retval != 0L && retval[0] != '\0')
-    return retval;
-
-  /* Next comes the name of the desired category.  */
-  retval = getenv (categoryname);
-  if (retval != 0L && retval[0] != '\0')
-    return retval;
-
-  /* Last possibility is the LANG environment variable.  */
-  retval = getenv ("LANG");
-  if (retval != 0L && retval[0] != '\0')
-    return retval;
-
-  /* We use C as the default domain.  POSIX says this is implementation
-     defined.  */
-  return "C";
-#endif
-}
-
-/* Look up MSGID in the DOMAINNAME message catalog of the current
-   LC_MESSAGES locale.  */
-char *
-k_dgettext (const char *domainname, const char *msgid)
-{
-  return k_dcgettext (domainname, msgid, LC_MESSAGES);
-}
-
-//#line 62 "finddomain.c"
-
-/* Look up MSGID in the current default message catalog for the current
-   LC_MESSAGES locale.  If not found, returns MSGID itself (the default
-   text).  */
-char *
-k_gettext (const char *msgid)
-{
-  return k_dgettext ((const char *)0L, msgid);
 }
 
 /* Set the current default message catalog to DOMAINNAME.

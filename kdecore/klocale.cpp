@@ -7,25 +7,17 @@
 #include <locale.h>
 #endif
 
+#include <qdir.h>
 /**
   * Stephan: I don't want to put this in an extra header file, since
   * this would make people think, they can use it within C files, but
   * this is not the case.
   **/
 
-/* Look up MSGID in the current default message catalog for the current
-   LC_MESSAGES locale.  If not found, returns MSGID itself (the default
-   text).  */
-char *k_gettext (const char *__msgid);
-
-/* Look up MSGID in the DOMAINNAME message catalog for the current
-   LC_MESSAGES locale.  */
-char *k_dgettext (const char *__domainname, const char *__msgid);
-
 /* Look up MSGID in the DOMAINNAME message catalog for the current CATEGORY
    locale.  */
 char *k_dcgettext (const char *__domainname, const char *__msgid,
-		   const int __category);
+		   const char *language);
 
 /* Set the current default message catalog to DOMAINNAME.
    If DOMAINNAME is null, return the current default.
@@ -54,10 +46,17 @@ char *k_bindtextdomain (const char *__domainname,
 KLocale *KLocale::pLocale = NULL;
 
 #ifdef ENABLE_NLS
+/*
+bool domain_exist(const char * directory, const char * language, const char * catalogue)
+{
+    QString tmp;
+    tmp.sprintf("%s/%s/%s",directory, language, catalogue);
+    return QDir::exists(tmp);
+}
+*/
 
 KLocale::KLocale( const char *_catalogue ) 
 {
-    char *buffer;
 
 #ifdef HAVE_SETLOCALE
     /* Set locale via LC_ALL.  */
@@ -67,23 +66,40 @@ KLocale::KLocale( const char *_catalogue )
     if ( ! _catalogue )
 	_catalogue = kapp->appName().data();
     
-    catalogue = new char[ strlen(_catalogue) + 1 ];
+    catalogue = new char[ strlen(_catalogue) + 12 ];
     strcpy(catalogue, _catalogue);
-    
-    if (! getenv("LANG") ) {
+
+    QString languages;
+    const char *lang = getenv("LANG");
+
+    if (! lang ) {
 	KConfig config;
-	QString languages = "C";
 	config.setGroup("Locale");
-	languages = config.readEntry("Language", languages);
-	// putenv needs an extra malloc!
-	buffer = new char[languages.length() + 6];
-	sprintf(buffer, "LANG=%s",languages.data());
-	putenv(buffer);
+	languages = config.readEntry("Language", "C");
+    } else
+	languages = lang;
+   
+    if (languages.isEmpty())
+	languages = "C";
+    else languages += ":C";
+
+    debug("STRING1 %s",languages.data());
+    QString directory = kapp->kdedir() + "/share/locale";
+
+    while (1) {
+	language = languages.left(languages.find(':'));
+	languages = languages.right(languages.length() - language.length() - 1);
+	if (language.isEmpty() || language == "C")
+	    break;
+	QDir d(directory + "/" +  language + "/LC_MESSAGES");
+	if (d.exists(QString(catalogue) + ".mo") && d.exists(QString(SYSTEM_MESSAGES) + ".mo"))
+	    break;
+	debug("STRING %s %s",language.data(),languages.data());
     }
-    
     /* Set the text message domain.  */
-    k_bindtextdomain ( catalogue , kapp->kdedir() + "/locale");
-    k_bindtextdomain ( SYSTEM_MESSAGES,  kapp->kdedir() + "/share/locale");
+    debug("STRING2 %s %s",language.data(),languages.data());
+    k_bindtextdomain ( catalogue , directory);
+    k_bindtextdomain ( SYSTEM_MESSAGES,  directory);
 
     enabled = 1;
 
@@ -103,31 +119,18 @@ const char *KLocale::translate(const char *msgid)
     if (!enabled)
       return msgid;
 
-    char *text = k_dcgettext( catalogue, msgid, LC_MESSAGES);
+    char *text = k_dcgettext( catalogue, msgid, language.data() );
 
     if (text == msgid) // just compare the pointers
-	return k_dcgettext( SYSTEM_MESSAGES, msgid, LC_MESSAGES);
+	return k_dcgettext( SYSTEM_MESSAGES, msgid, language.data() );
     else
 	return text;
 }
 
-/*
-const char *KLocale::translate(const char *index, const char *d_text)
+const QString& KLocale::directory() 
 {
-    if (!enabled)
-      return index;
-
-    char *text = k_dcgettext( catalogue, index, LC_MESSAGES);
-
-    if (text == index) { // just compare the pointers
-	text =  k_dcgettext( SYSTEM_MESSAGES, index, LC_MESSAGES);
-	if (text == index)
-	    return d_text;
-    }
-    return text;
-    
+    return kapp->kdedir() + "/locale/share/" +  language;
 }
-*/
 
 void KLocale::aliasLocale( const char* text, long int index)
 {
@@ -153,12 +156,10 @@ const char *KLocale::translate(const char *msgid)
     return msgid;
 }
 
-/*
-const char *KLocale::translate(const char *, const char *d_text)
+const QString& KLocale::directory() 
 {
-    return d_text;
+    return kapp->kdedir() + "/locale/share/";
 }
-*/
 
 void KLocale::alias(long index, const char* text)
 {
