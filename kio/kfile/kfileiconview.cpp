@@ -58,6 +58,7 @@ public:
         dropItem = 0;
 
         noArrangement = false;
+	ignoreMaximumSize = false;
 	smallColumns = new KRadioAction( i18n("Small Icons"), 0, parent,
 					 SLOT( slotSmallColumns() ),
 					 parent->actionCollection(),
@@ -107,6 +108,7 @@ public:
     QStringList previewMimeTypes;
     int previewIconSize;
     bool noArrangement :1;
+    bool ignoreMaximumSize :1;
 };
 
 KFileIconView::KFileIconView(QWidget *parent, const char *name)
@@ -489,6 +491,11 @@ void KFileIconView::setPreviewSize( int size )
         showPreviews();
 }
 
+void KFileIconView::setIgnoreMaximumSize(bool ignoreSize)
+{
+    d->ignoreMaximumSize = ignoreSize;
+}
+
 void KFileIconView::updateIcons()
 {
     updateView( true );
@@ -581,6 +588,7 @@ void KFileIconView::showPreviews()
     }
 
     d->job = KIO::filePreview(*items(), d->previewIconSize,d->previewIconSize);
+    d->job->setIgnoreMaximumSize(d->ignoreMaximumSize);
 
     connect( d->job, SIGNAL( result( KIO::Job * )),
              this, SLOT( slotPreviewResult( KIO::Job * )));
