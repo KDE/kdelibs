@@ -1233,6 +1233,7 @@ void DCOPServer::slotTerminate()
     dcopSignals->emitSignal(0L /* dcopserver */, "terminateKDE()", data, false);
     disconnect( m_timer, SIGNAL(timeout()), this, SLOT(slotTerminate()) );
     connect( m_timer, SIGNAL(timeout()), this, SLOT(slotSuicide()) );
+    system(findDcopserverShutdown()+" --nokill");
 }
 
 void DCOPServer::slotSuicide()
