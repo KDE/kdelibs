@@ -61,7 +61,8 @@ public:
       mWebAddress = webAddress;
     }
     /**
-     * @internal - don't use. Required by QValueList
+     * @internal
+     * Don't use. Required by QValueList
      */
     KAboutPerson() {}
 
@@ -233,7 +234,6 @@ class KAboutData
 
     /**
      * Deconstructor
-     * Deletes private class
      */ 
      ~KAboutData();
 
