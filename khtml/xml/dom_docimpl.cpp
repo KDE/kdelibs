@@ -1811,8 +1811,14 @@ void DocumentImpl::setFocusNode(NodeImpl *newFocusNode)
             m_focusNode->ref();
             m_focusNode->dispatchHTMLEvent(EventImpl::FOCUS_EVENT,false,false);
             m_focusNode->dispatchUIEvent(EventImpl::DOMFOCUSIN_EVENT);
-            if (m_focusNode == newFocusNode)
+            if (m_focusNode == newFocusNode) {
                 m_focusNode->setFocus();
+                // eww, I suck. set the focs back to the view.
+                // ### find a better place in the code for this
+                if ((!m_focusNode->renderer() || !m_focusNode->renderer()->isWidget()) &&
+                    getDocument()->view())
+                    getDocument()->view()->setFocus();
+            }
         }
     }
 }
