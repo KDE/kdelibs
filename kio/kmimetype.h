@@ -51,7 +51,7 @@ public:
   typedef QValueList<Ptr> List;
 public:
   /**
-   * Constructor. 
+   * Constructor.
    *
    * You may pass in arguments to create a mimetype with
    * specific properties.
@@ -96,7 +96,7 @@ public:
 
   /**
    * Use this function only if you don't have a special URL
-   * for which you search a pixmap. 
+   * for which you search a pixmap.
    *
    * This function is useful to find
    * out, which icon is usually chosen for a certain mime type. Since
@@ -122,7 +122,7 @@ public:
    * @param _force_size Override globallly configured icon size.
    * @param _state The icon state, one of: @p KIcon::DefaultState,
    * @p KIcon::ActiveState or @p KIcon::DisabledState.
-   * @param _path Output parameter to get the full path. Seldom needed.  
+   * @param _path Output parameter to get the full path. Seldom needed.
    */
   virtual QPixmap pixmap( const KURL& _url, int _group, int _force_size = 0,
 	    int _state = 0, QString * _path = 0L ) const;
@@ -187,7 +187,7 @@ public:
    * looks at the extension.  This is find for FTP, FILE, TAR and
    * friends, but is not for HTTP ( cgi scripts! ). You should use
    * @ref KRun instead, but this function returns immediately while
-   * @ref KRun is async. If no extension matches, then 
+   * @ref KRun is async. If no extension matches, then
    * @ref KMimeMagic is used if the URL a local file or
    * "application/octet-stream" is returned otherwise.
    *
@@ -244,9 +244,9 @@ protected:
   static Ptr s_pDefaultType;
 
 private:
-  virtual QString icon() const { return QString::null; }
-  virtual QString comment() const { return QString::null; }
-  virtual void load(QDataStream&) {}
+  virtual QString icon() const { return KServiceType::icon(); }
+  virtual QString comment() const { return KServiceType::comment(); }
+  virtual void load(QDataStream& d) { KServiceType::load(d); }
 };
 
 /**
@@ -270,8 +270,8 @@ public:
   virtual QString comment( const KURL& _url, bool _is_local ) const;
 
 private:
-  virtual QString icon() const { return QString::null; }
-  virtual QString comment() const { return QString::null; }
+  virtual QString icon() const { return KMimeType::icon(); }
+  virtual QString comment() const { return KMimeType::comment(); }
 };
 
 /**
@@ -348,9 +348,9 @@ protected:
   static bool runMimeType( const KURL& _url, const KSimpleConfig &cfg );
 
 private:
-  QString icon() const { return QString::null; }
-  QString comment() const { return QString::null; }
-  QPixmap pixmap(int, int, int, QString *) const { return QPixmap(); }
+  QString icon() const { return KMimeType::icon(); }
+  QString comment() const { return KMimeType::comment(); }
+  QPixmap pixmap(int a, int b, int c, QString *d) const { return KMimeType::pixmap(a, b, c, d); }
 };
 
 /**

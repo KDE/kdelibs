@@ -39,7 +39,7 @@ class QPopupMenu;
 class QPainter;
 
 /**
- * A toolbar button. This is used internally by @ref KToolBar, use the 
+ * A toolbar button. This is used internally by @ref KToolBar, use the
  * KToolBar methods instead.
  * @internal
  */
@@ -79,7 +79,7 @@ public:
 
   /**
    * Construct a separator button
-   * 
+   *
    * @param parent This button's parent
    * @param name   This button's internal name
    */
@@ -280,7 +280,7 @@ private:
   QPixmap defaultPixmap;
   QPixmap activePixmap;
   QPixmap disabledPixmap;
-  virtual void setIcon(const QPixmap &) {}
+  virtual void setIcon(const QPixmap &p) { QButton::setIcon(p); }
   KToolBarButtonPrivate *d;
 
 

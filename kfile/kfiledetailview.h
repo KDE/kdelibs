@@ -105,8 +105,8 @@ private slots:
 
 private:
     virtual void insertItem(QListViewItem *i) { KListView::insertItem(i); }
-    virtual void setSorting(int, bool) {}
-    virtual void setSelected(QListViewItem *, bool) {}
+    virtual void setSorting(int i, bool b) { KListView::setSorting(i, b); }
+    virtual void setSelected(QListViewItem *i, bool b) { KListView::setSelected(i, b); }
     class KFileDetailViewPrivate;
     KFileDetailViewPrivate *d;
 };

@@ -37,7 +37,7 @@ class QSpinBox;
 class KCharSelectTablePrivate;
 class KCharSelectPrivate;
 
-/** 
+/**
  * A table widget which displayes the characters of a font. Internally
  * used by KCharSelect. See the KCharSelect documentation for further
  * details.
@@ -51,7 +51,7 @@ class KCharSelectTable : public QTableView
     Q_OBJECT
 
 public:
-    KCharSelectTable( QWidget *parent, const char *name, const QString &_font, 
+    KCharSelectTable( QWidget *parent, const char *name, const QString &_font,
 		      const QChar &_chr, int _tableNum );
 
     virtual QSize sizeHint() const;
@@ -95,10 +95,10 @@ signals:
 
 private:
     KCharSelectTablePrivate *d;
-    virtual void setFont(const QFont &) {}
+    virtual void setFont(const QFont &f) { QTableView::setFont(f); }
 };
 
-/** 
+/**
  * A Widget which allows the user to select a character of a
  * specified font in a table
  *
@@ -134,12 +134,12 @@ class KCharSelect : public QVBox
     Q_PROPERTY( bool tableSpinBoxEnabled READ isTableSpinBoxEnabled WRITE enableTableSpinBox )
 
 public:
-    /** 
+    /**
      * Constructor. @p font specifies which font should be displayed, @p
      * chr which character should be selected and @tableNum specifies
      * the number of the table which should be displayed.
      */
-    KCharSelect( QWidget *parent, const char *name, 
+    KCharSelect( QWidget *parent, const char *name,
 		 const QString &font = QString::null, const QChar &chr = ' ', int tableNum = 0 );
     /**
      * Reimplemented.
@@ -150,12 +150,12 @@ public:
      * Sets the font which is displayed to @p font
      */
     virtual void setFont( const QString &font );
-    
+
     /**
      * Sets the currently selected character to @p chr.
      */
     virtual void setChar( const QChar &chr );
-    
+
     /**
      * Sets the currently displayed table to @p tableNum.
      */
@@ -182,7 +182,7 @@ public:
      * disabled.
      */
     virtual void enableFontCombo( bool e ) { fontCombo->setEnabled( e ); }
-    
+
     /**
 
      * If @p e is set to TRUE, the spinbox which allows the user to
@@ -240,7 +240,7 @@ signals:
 
 private:
     KCharSelectPrivate *d;
-    virtual void setFont(const QFont &) {}
+    virtual void setFont(const QFont &) { QVBox::setFont(f); }
 };
 
 #endif

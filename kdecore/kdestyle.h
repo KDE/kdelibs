@@ -39,7 +39,7 @@
  * SUCH DAMAGE.
  *
  */
- 
+
 class KDEAniMenu : public QObject
 {
     Q_OBJECT
@@ -168,8 +168,8 @@ protected:
 private:
     QColorGroup radioOnGrp;
     QWidget *highlightWidget;
-    void polish(QApplication *) {}
-    void unPolish(QApplication *) {}
+    void polish(QApplication *a) { QStyle::polish(a); }
+    void unPolish(QApplication *a) {QStyle::unPolish(a); }
 };
 
 #endif
