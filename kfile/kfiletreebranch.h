@@ -88,6 +88,12 @@ public:
    void         setName( const QString n ) { m_name = n; };
 
    QPixmap& pixmap(){ return(m_rootIcon); }
+
+   /**
+    * @returns whether the items in the branch show their file extensions in the
+    * tree or not. See @ref setShowExtensions for more information.
+    */
+   bool showExtensions( ) const;
    
 public slots:
    /**
@@ -100,6 +106,14 @@ public slots:
 
    void populate( );
 
+   /**
+    *  sets printing of the file extensions on or off. If you pass false to this
+    *  slot, all items of this branch will not show their file extensions in the
+    *  tree.
+    *  @param visible flags if the extensions should be visible or not.
+    */
+   void setShowExtensions( bool visible = true );
+   
 signals:
    /**
     * emitted with the item of a directory which was finished to populate
@@ -130,7 +144,8 @@ private:
 
    bool 		m_wantDotFiles    :1;
    bool                 m_recurseChildren :1;
-
+   bool                 m_showExtensions  :1;
+   
    class KFileTreeBranchPrivate;
    KFileTreeBranchPrivate *d;
 };

@@ -123,6 +123,15 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
 					   this);
       
 	 currItem->setExtraData( this, newKFTVI );
+
+	 if( !m_showExtensions && !currItem->isDir() )
+	 {
+	    QString n = currItem->text();
+	    kdDebug(1202) << "cutting off extension from " << n << endl;
+	    int mPoint = n.findRev( '.' );
+	    if( mPoint > 0 ) n = n.left( mPoint );
+	    newKFTVI->setText( 0, n );
+	 }
       }
 
       /* Now try to find out if there are children for dirs in the treeview */
@@ -162,7 +171,15 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
    
 }
 
+void KFileTreeBranch::setShowExtensions( bool visible )
+{
+   m_showExtensions = visible;
+}
 
+bool KFileTreeBranch::showExtensions( ) const
+{
+   return( m_showExtensions );
+}
 
 void KFileTreeBranch::slotDeleteItem( KFileItem *it )
 {
