@@ -141,18 +141,18 @@ void kdebug_null( ushort /*nLevel*/, ushort /*nArea*/,
 
 static int getNum (const char *key, int _default)
 {
-    return KGlobal::config()->readNumEntry(key, _default);
+  return KGlobal::config()->readNumEntry(key, _default);
 }
 
 static QString getString (const char *key, const char * _default)
 {
-    return KGlobal::config()->readEntry(key, _default);
+  return KGlobal::config()->readEntry(key, _default);
 }
 
 void kdebug( ushort nLevel, ushort nArea, 
 	     const char* pFormat, ... )
 {
-  // Save old grou
+  // Save old group
   QString aOldGroup;
   if (kapp) {
     aOldGroup = KGlobal::config()->group();
@@ -168,7 +168,7 @@ void kdebug( ushort nLevel, ushort nArea,
   QString aCaption;
   QString aAppName = getDescrFromNum(nArea);
   if (aAppName.isEmpty())
-    aAppName=kapp?kapp->name():"unknown";
+    aAppName=KGlobal::instance()?KGlobal::instance()->instanceName():QCString("unknown");
   switch( nLevel )
         {
         case KDEBUG_INFO:
