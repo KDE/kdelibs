@@ -195,6 +195,7 @@ void KListViewLineEdit::terminate(bool commit)
 {
     if ( item )
     {
+        //kdDebug() << "KListViewLineEdit::terminate " << commit << endl;
         if (commit)
             item->setText(col, text());
         int c=col;
@@ -211,7 +212,7 @@ void KListViewLineEdit::focusOutEvent(QFocusEvent *ev)
 {
     QFocusEvent * focusEv = static_cast<QFocusEvent*>(ev);
     // Don't let a RMB close the editor
-    if (focusEv->reason() != QFocusEvent::Popup)
+    if (focusEv->reason() != QFocusEvent::Popup && focusEv->reason() != QFocusEvent::ActiveWindow)
         terminate(true);
 }
 
@@ -438,7 +439,7 @@ void KListView::slotAutoSelect()
     }
   }
   else
-    kdDebug() << "That´s not supposed to happen!!!!" << endl;
+    kdDebug() << "KListView::slotAutoSelect: That´s not supposed to happen!!!!" << endl;
 }
 
 void KListView::emitExecute( QListViewItem *item, const QPoint &pos, int c )
