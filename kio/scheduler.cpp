@@ -229,8 +229,9 @@ void Scheduler::_cancelJob(SimpleJob *job) {
         for(; slave; slave = slaveList->next())
         {
            JobList *list = coSlaves.find(slave);
-           if (list && list->find(job))
-              break;
+           if (list && list->removeRef(job))
+              break; // Job was found and removed. 
+                     // Fall through to kill the slave as well!
         }
         if (!slave)
         {
@@ -722,6 +723,7 @@ Scheduler::_assignJobToSlave(KIO::Slave *slave, SimpleJob *job)
         return false;
     }
 
+    assert(list->contains(job) == 0);
     list->append(job);
     coSlaveTimer.start(0, true); // Start job on timer event
 
