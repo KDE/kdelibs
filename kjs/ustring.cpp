@@ -650,8 +650,8 @@ double UString::toDouble( bool tolerant ) const
   while (isspace(*c))
     c++;
   // don't allow anything after - unless tolerant=true
-  if ( !tolerant && *c != '\0')
-    d = NaN;
+  if (!tolerant && *c != '\0')
+    return NaN;
 
   return d*sign;
 }
