@@ -261,11 +261,6 @@ KPropertiesDialog::~KPropertiesDialog()
   delete d;
 }
 
-void KPropertiesDialog::slotDeleteMyself()
-{
-  delete this;
-}
-
 void KPropertiesDialog::insertPlugin (KPropsDlgPlugin* plugin)
 {
   connect (plugin, SIGNAL (changed ()),
@@ -325,7 +320,7 @@ void KPropertiesDialog::slotOk()
   {
     emit applied();
     emit propertiesClosed();
-    QTimer::singleShot( 0, this, SLOT( slotDeleteMyself() ) );
+    deleteLater();
     accept();
   } // else, keep dialog open for user to fix the problem.
 }
@@ -335,7 +330,7 @@ void KPropertiesDialog::slotCancel()
   emit canceled();
   emit propertiesClosed();
 
-  QTimer::singleShot( 0, this, SLOT( slotDeleteMyself() ) );
+  deleteLater();
   done( Rejected );
 }
 

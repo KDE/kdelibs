@@ -278,7 +278,6 @@ private:
   QPtrList<KPropsDlgPlugin> m_pageList;
 
 private slots:
-  void slotDeleteMyself();
   void slotStatResult( KIO::Job * job );
 private:
   class KPropertiesDialogPrivate;
