@@ -285,7 +285,7 @@ public:
 
   virtual void setURLArgs( const URLArgs &args );
 
-  virtual URLArgs urlArgs();
+  URLArgs urlArgs() const;
 
   /**
    * Returns the current x offset.

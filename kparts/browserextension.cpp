@@ -337,7 +337,7 @@ void BrowserExtension::setURLArgs( const URLArgs &args )
   m_args = args;
 }
 
-URLArgs BrowserExtension::urlArgs()
+URLArgs BrowserExtension::urlArgs() const
 {
   return m_args;
 }
