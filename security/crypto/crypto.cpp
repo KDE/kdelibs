@@ -125,7 +125,7 @@ OtherCertItem::OtherCertItem( QListView *view, QString& sub, bool perm, int poli
     m_module = module;
 KSSLX509Map cert(sub);
     setText(0, cert.getValue("O"));
-    setText(1, cert.getValue("CN").replace(QRegExp("\n"), ", "));
+    setText(1, cert.getValue("CN").replace("\n", ", "));
 
     if (_exp.date().year() > 3000 || _exp.date().year() < 1900)
        _exp.setDate(QDate(3000,1,1));
@@ -148,7 +148,7 @@ YourCertItem::YourCertItem( QListView *view, QString pkcs, QString pass, QString
 {
     m_module = module;
 KSSLX509Map cert(name);
-    QString tmp = cert.getValue("CN").replace(QRegExp("\n"), ", ");
+    QString tmp = cert.getValue("CN").replace("\n", ", ");
     setText(0, tmp);
     setText(1, cert.getValue("Email"));
     _pkcs = pkcs;
@@ -177,10 +177,10 @@ KSSLX509Map mcert(name);
 QString tmp;
     setText(0, mcert.getValue("O"));
     tmp = mcert.getValue("OU");
-    tmp.replace(QRegExp("\n"), ", ");
+    tmp.replace("\n", ", ");
     setText(1, tmp);
     tmp = mcert.getValue("CN");
-    tmp.replace(QRegExp("\n"), ", ");
+    tmp.replace("\n", ", ");
     setText(2, tmp);
     _name = name;
     _cert = cert;
@@ -1920,10 +1920,10 @@ QString certFile = KFileDialog::getOpenFileName(QString::null, "application/x-x5
 				qf.readLine(xx, qf.size());
 				certtext += xx;
 			}
-			certtext = certtext.replace(QRegExp("-----BEGIN CERTIFICATE-----"), QString::null);
-			certtext = certtext.replace(QRegExp("-----END CERTIFICATE-----"), QString::null);
+			certtext = certtext.replace("-----BEGIN CERTIFICATE-----", QString::null);
+			certtext = certtext.replace("-----END CERTIFICATE-----", QString::null);
 			certtext = certtext.stripWhiteSpace();
-			certtext = certtext.replace(QRegExp("\n"), QString::null);
+			certtext = certtext.replace("\n", QString::null);
 		} else {
 			// Must [could?] be DER
 			qf.close();
