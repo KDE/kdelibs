@@ -41,13 +41,6 @@
 using namespace DOM;
 using namespace khtml;
 
-const QChar NodeImpl::LESSTHAN = '<';
-const QChar NodeImpl::MORETHAN = '>';
-const QChar NodeImpl::SLASH = '/';
-const QChar NodeImpl::SPACE = ' ';
-const QChar NodeImpl::EQUALS = '=';
-const QChar NodeImpl::QUOTE = '"';
-
 NodeImpl::NodeImpl(DocumentImpl *doc)
     : document(doc),
       m_render(0),
@@ -193,117 +186,58 @@ NodeImpl *NodeImpl::addChild(NodeImpl *)
 
 QString NodeImpl::toHTML() const
 {
-    long offset = 0;
-    const int stdInc = 10000;
-    long currentLength = stdInc;
-    QChar *htmlText = QT_ALLOC_QCHAR_VEC(stdInc);
-
-    const_cast<NodeImpl *>(this)->recursive( htmlText, currentLength, offset, stdInc );
-    QString finishedHtmlText( htmlText, offset );
-    return finishedHtmlText;
+    return recursive_toHTML( );
 }
 
-void NodeImpl::recursive( QChar *&htmlText, long &currentLength, long &offset, int stdInc )
+QString NodeImpl::recursive_toHTML( ) const
 {
-    DOMString me;
+    QString me;
 
     // Copy who I am into the htmlText string
     if ( nodeType() == Node::TEXT_NODE )
-    {
-        me = nodeValue();
-        int i = me.length();
-        while( (currentLength - offset) <= i*2+4)
-            increaseStringLength( htmlText, currentLength, offset, stdInc);
-
-        memcpy(htmlText+offset, me.stringPtr(), i*2);
-        offset += i;
-    }
+        me = nodeValue().string();
     else
     {   // If I am an element, not a text
-        me = nodeName();
-        int i = me.length();
-        while( (currentLength - offset) <= i*2+4)
-            increaseStringLength( htmlText, currentLength, offset, stdInc);
-        memcpy(htmlText+offset, &LESSTHAN, 2);              // prints <
-        memcpy(htmlText+offset+1, me.stringPtr(), i*2);     // prints tagname
+        me = QChar('<') + nodeName().string();
 
         // print attributes
         if( nodeType() == Node::ELEMENT_NODE )
         {
-            int lattrs = 0;
-            ElementImpl *el = static_cast<ElementImpl *>(this);
+            const ElementImpl *el = static_cast<const ElementImpl *>(this);
             AttrImpl *attr;
             int exceptioncode;
             NamedNodeMapImpl *attrs = el->attributes();
             unsigned long lmap = attrs->length(exceptioncode);
-            for( uint j=0; j<lmap; j++ )
+            for( unsigned int j=0; j<lmap; j++ )
             {
-                attr = static_cast<AttrImpl*>(attrs->item(i,exceptioncode));
-		//if(attr) // Workaround, no fix yet (niko)
-		//{
-            	    unsigned long lname = attr->name().length();
-	    	    unsigned long lvalue = attr->value().length();
-    	    	    while( (currentLength - offset) <= (signed)(i*2+lattrs+lname+lvalue+4) )
-                    increaseStringLength( htmlText, currentLength, offset, stdInc);
-	            memcpy(htmlText+offset+i+lattrs+1, &SPACE, 2);                 // prints a space
-    		    memcpy(htmlText+offset+i+lattrs+2, attr->name().stringPtr(), lname*2);
-    	            memcpy(htmlText+offset+i+lattrs+lname+2, &EQUALS, 2);          // prints =
-            	    memcpy(htmlText+offset+i+lattrs+lname+3, &QUOTE, 2);           // prints "
-            	    memcpy(htmlText+offset+i+lattrs+lname+4, attr->value().stringPtr(), lvalue*2);
-            	    memcpy(htmlText+offset+i+lattrs+lname+lvalue+4, &QUOTE, 2);    // prints "
-            	    lattrs += lname + lvalue + 4;
-		//}
+                attr = static_cast<AttrImpl*>(attrs->item(j,exceptioncode));
+                me += " " + attr->name().string() + "=\"" + attr->value().string() + "\"";
             }
-            offset += lattrs;
         }
 
         // print ending bracket of start tag
         if( firstChild() == 0 )     // if element has no endtag
-        {
-            memcpy(htmlText+offset+i+1, &SPACE, 2);      // prints a space
-            memcpy(htmlText+offset+i+2, &SLASH, 2);      // prints /
-            memcpy(htmlText+offset+i+3, &MORETHAN, 2);   // prints >
-            offset += i+4;
-        }
+            me += " />";
         else                        // if element has endtag
-        {
-            memcpy(htmlText+offset+i+1, &MORETHAN, 2);     // prints >
-            offset += i+2;
-        }
+            me += ">";
     }
 
-    if( firstChild() != 0 )
+    NodeImpl* n;
+
+    if( (n = firstChild()) )
     {
         // print firstChild
-        firstChild()->recursive( htmlText, currentLength, offset, stdInc);
+        me += n->recursive_toHTML( );
 
         // Print my ending tag
         if ( nodeType() != Node::TEXT_NODE )
-        {
-            me = nodeName();
-            int i = me.length();
-            while( (currentLength - offset) <= i*2+3)
-                increaseStringLength( htmlText, currentLength, offset, stdInc);
-            memcpy(htmlText+offset, &LESSTHAN, 2);             // prints <
-            memcpy(htmlText+offset+1, &SLASH, 2);              // prints /
-            memcpy(htmlText+offset+2, me.stringPtr(), i*2);    // prints tagname
-            memcpy(htmlText+offset+i+2, &MORETHAN, 2);         // prints >
-            offset += i+3;
-        }
+            me += "</" + nodeName().string() + ">";
     }
     // print next sibling
-    if( nextSibling() )
-        nextSibling()->recursive( htmlText, currentLength, offset, stdInc);
-}
+    if( (n = nextSibling()) )
+        me += n->recursive_toHTML( );
 
-bool NodeImpl::increaseStringLength( QChar *&htmlText, long &currentLength, long offset, int stdInc)
-{
-    currentLength += stdInc;
-    QChar *htmlTextTmp = QT_ALLOC_QCHAR_VEC( currentLength );
-    memcpy( htmlTextTmp, htmlText, offset*sizeof(QChar) );
-    QT_DELETE_QCHAR_VEC( htmlText );
-    htmlText = htmlTextTmp;
-    return true;       // should return false if not enough memory
+    return me;
 }
 
 void NodeImpl::applyChanges(bool, bool)
@@ -320,7 +254,7 @@ void NodeImpl::getCursor(int offset, int &_x, int &_y, int &height)
 QRect NodeImpl::getRect()
 {
     int _x, _y;
-    if(m_render && m_render->absolutePosition(_x, _y))        
+    if(m_render && m_render->absolutePosition(_x, _y))
         return QRect( _x, _y, m_render->width(), m_render->height() );
     return QRect();
 }
@@ -877,7 +811,7 @@ bool NodeBaseImpl::getUpperLeftCorner(int &xPos, int &yPos)
 	return false;
     RenderObject *o = m_render;
     o->absolutePosition( xPos, yPos );
-    if ( !isInline() ) 
+    if ( !isInline() )
 	return true;
 
     // find the next text/image child, to get a position
@@ -1199,7 +1133,7 @@ void GenericRONamedNodeMapImpl::addNode(NodeImpl *n)
     int exceptioncode;
     if (getNamedItem(n->nodeName(),exceptioncode))
 	return;
-	
+
     n->ref();
     m_contents->append(n);
 }

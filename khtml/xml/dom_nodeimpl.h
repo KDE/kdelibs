@@ -229,8 +229,7 @@ public:
     virtual bool isInline() { return true; }
     virtual void printTree(int indent=0) const;
     virtual QString toHTML() const;
-    virtual void recursive( QChar *&htmlText, long &currentLength, long &offset, int stdInc );
-    virtual bool increaseStringLength( QChar *&htmlText, long &currentLength, long offset, int stdInc );
+    QString recursive_toHTML() const;
 
     virtual void applyChanges(bool top = true, bool force = true);
     virtual void getCursor(int offset, int &_x, int &_y, int &height);
@@ -260,13 +259,6 @@ protected:
     // used in elementimpl. Defined here to save a few bytes in the data structures.
     bool has_tabindex  : 1;
     short tabindex : 16;
-private:
-    static const QChar LESSTHAN;
-    static const QChar MORETHAN;
-    static const QChar SLASH;
-    static const QChar SPACE;
-    static const QChar EQUALS;
-    static const QChar QUOTE;
 };
 
 // this class implements nodes, which can have a parent but no children:
