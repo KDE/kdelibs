@@ -229,12 +229,15 @@ void SButton::resize( bool sameWidth, int margin,
     int spacing, int orientation )
 {
   KDialogBaseButton *p;
+  int h = 0;
   int w = 0;
   int t = 0;
 
   for( p = list.first(); p!=0; p =  list.next() )
   {
-    if( p->sizeHint().width() > w ) { w = p->sizeHint().width(); }
+    const QSize s( p->sizeHint() );
+    if( s.height() > h ) { h = s.height(); }
+    if( s.width() > w ) { w = s.width(); }
   }
 
   if( orientation == Horizontal )
@@ -247,8 +250,7 @@ void SButton::resize( bool sameWidth, int margin,
       t += s.width() + spacing;
     }
 
-    p = list.first();
-    box->setMinimumHeight( margin*2 + ( p==0?0:p->sizeHint().height()));
+    box->setMinimumHeight( margin*2 + h );
     box->setMinimumWidth( margin*2 + t - spacing );
   }
   else
