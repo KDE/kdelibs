@@ -204,6 +204,15 @@ Use QPopupMenu/KPopupMenu or the XML-UI method for building menus.
 <li>setProxyConfigScript( const QString&amp;  )
       </ul>
   </li>
+  <li>In order to support files &gt; 4Gb, the filesize / file-offset argument 
+      in the signals totalSize, processedSize and canResume, which are used 
+      by the io-slaves and passed along to jobs, has been changed from
+      <b>unsigned long</b> to <b>KIO::filesize_t</b>.
+      Make sure to check if you use these signals since your compiler
+      will typically not generate a compile-time error for these changes,
+      instead you might get a run-time error when you try to connect to
+      one of these signals using the old signature.
+  </li>
 </ul>
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
