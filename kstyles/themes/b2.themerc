@@ -1,12 +1,5 @@
 [Misc]
 Name=B2/KDE
 Comment=B2/KDE unthemed style
-Comment[cs]=B2/KDE styl (netémovaný)
-Comment[de]=B2/KDE (kein komplettes Design)
-Comment[eo]=B2/KDE neetosa stilo
-Comment[fi]=B2/KDE teemoittamaton tyyli
-Comment[hu]=B2/KDE téma nélküli stílus
-Comment[no]=B2/KDE stil uten tema
-Comment[sl]=Netematski slog B2/KDE
 [KDE]
 widgetStyle=b2style.la
