@@ -28,6 +28,7 @@
 
 #include "format.h"
 #include "resourcefileconfig.h"
+#include "stdaddressbook.h"
 
 ResourceFileConfig::ResourceFileConfig( QWidget* parent,  const char* name )
     : ResourceConfigWidget( parent, name )
@@ -43,28 +44,29 @@ ResourceFileConfig::ResourceFileConfig( QWidget* parent,  const char* name )
 
     label = new QLabel( i18n( "Location:" ), this );
     fileNameEdit = new KURLRequester( this );
+    fileNameEdit->setMode( KFile::Directory );
 
     mainLayout->addWidget( label, 1, 0 );
     mainLayout->addWidget( fileNameEdit, 1, 1 );
 
-    formatBox->insertItem( i18n( "VCard" ), FORMAT_VCARD );
-    formatBox->insertItem( i18n( "Binary" ), FORMAT_BINARY );
+    formatBox->insertItem( i18n( "VCard" ), KABC::Format::VCard );
+    formatBox->insertItem( i18n( "Binary" ), KABC::Format::Binary );
 }
 
 void ResourceFileConfig::loadSettings( KConfig *config )
 {
-    uint format = config->readNumEntry( "FileFormat", FORMAT_VCARD );
+    uint format = config->readNumEntry( "FileFormat", KABC::Format::VCard );
     formatBox->setCurrentItem( format );
 
-    fileNameEdit->setURL( config->readEntry( "FileName" ) );    
+    fileNameEdit->setURL( config->readEntry( "FilePath" ) );    
     if ( fileNameEdit->url().isEmpty() )
-        fileNameEdit->setURL( locateLocal( "data", "kabc/addrbook.vcf" ) );
+        fileNameEdit->setURL( KABC::StdAddressBook::fileName() );
 }
 
 void ResourceFileConfig::saveSettings( KConfig *config )
 {
     config->writeEntry( "FileFormat", formatBox->currentItem() );
-    config->writeEntry( "FileName", fileNameEdit->url() );
+    config->writeEntry( "FilePath", fileNameEdit->url() );
 }
 
 #include "resourcefileconfig.moc"

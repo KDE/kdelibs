@@ -32,20 +32,14 @@
 using namespace KABC;
 using namespace VCARD;
 
-bool VCardFormatImpl::load( AddressBook *addressBook, Resource *resource, const QString &fileName )
+bool VCardFormatImpl::load( AddressBook *addressBook, Resource *resource, QFile *file )
 {
-    kdDebug(5700) << "VCardFormat::addressBook(): " << addressBook << endl;
+  kdDebug(5700) << "VCardFormat::load()" << endl;
   QString data;
 
-  QFile f( fileName );
-  if ( f.open(IO_ReadOnly) ) {
-    QTextStream t( &f );
-    t.setEncoding(QTextStream::UnicodeUTF8);
-    data = t.read();
-    f.close();
-  } else {
-    return false;
-  }
+  QTextStream t( file );
+  t.setEncoding( QTextStream::UnicodeUTF8 );
+  data = t.read();
   
   VCardEntity e( data.utf8() );
   
@@ -97,11 +91,7 @@ bool VCardFormatImpl::load( AddressBook *addressBook, Resource *resource, const 
           break;
 
         case EntityLabel:
-/**
-    not supported by kabc
-
-          a.setLabel( readTextValue( cl ) );
-*/
+//          not supported by kabc
           break;
 
         case EntityMailer:
@@ -185,14 +175,16 @@ bool VCardFormatImpl::load( AddressBook *addressBook, Resource *resource, const 
   
     a.setResource( resource );
     addressBook->insertAddressee( a );
-    a.setChanged( false );
+
+    Addressee& lastAddr = addressBook->lastAddressee();
+    lastAddr.setChanged( false );
   }
 
   
   return true;
 }
 
-bool VCardFormatImpl::save( AddressBook *addressBook, Resource *resource, const QString &fileName )
+bool VCardFormatImpl::save( Addressee *addressee, QFile *file )
 {
   VCardEntity vcards;
   VCardList vcardlist;
@@ -200,87 +192,65 @@ bool VCardFormatImpl::save( AddressBook *addressBook, Resource *resource, const 
   ContentLine cl;
   QString value;
 
-  AddressBook::Iterator it;
-  for ( it = addressBook->begin(); it != addressBook->end(); ++it ) {
-    if ( (*it).resource() != resource && (*it).resource() != 0 )
-	continue;
+  VCard *v = new VCard;
 
-    if ( (*it).changed() )
-	kdDebug() << "is changed" << endl;
-
-    // mark addressee as saved
-    (*it).setChanged( false );
-
-    VCard *v = new VCard;
-
-    addTextValue( v, EntityName, (*it).name() );
-    addTextValue( v, EntityUID, (*it).uid() );
-    addTextValue( v, EntityFullName, (*it).formattedName() );
+  addTextValue( v, EntityName, addressee->name() );
+  addTextValue( v, EntityUID, addressee->uid() );
+  addTextValue( v, EntityFullName, addressee->formattedName() );
     
-    QStringList emails = (*it).emails();
-    QStringList::ConstIterator it4;
-    for( it4 = emails.begin(); it4 != emails.end(); ++it4 ) {
-      addTextValue( v, EntityEmail, *it4 );
-    }
-
-    QStringList customs = (*it).customs();
-    QStringList::ConstIterator it5;
-    for( it5 = customs.begin(); it5 != customs.end(); ++it5 ) {
-      addCustomValue( v, *it5 );
-    }
-
-    addTextValue( v, EntityURL, (*it).url().url() );
-
-    addNValue( v, *it );
-
-    addTextValue( v, EntityNickname, (*it).nickName() );
-//    addTextValue( v, EntityLabel, (*it).label() );
-    addTextValue( v, EntityMailer, (*it).mailer() );
-    addTextValue( v, EntityTitle, (*it).title() );
-    addTextValue( v, EntityRole, (*it).role() );
-    addTextValue( v, EntityOrganisation, (*it).organization() );
-    addTextValue( v, EntityNote, (*it).note() );
-    addTextValue( v, EntityProductID, (*it).productId() );
-    addTextValue( v, EntitySortString, (*it).sortString() );
-
-    Address::List addresses = (*it).addresses();
-    Address::List::ConstIterator it3;
-    for( it3 = addresses.begin(); it3 != addresses.end(); ++it3 ) {
-      addAddressValue( v, *it3 );
-      addLabelValue( v, *it3 );
-    }
-
-    PhoneNumber::List phoneNumbers = (*it).phoneNumbers();
-    PhoneNumber::List::ConstIterator it2;
-    for( it2 = phoneNumbers.begin(); it2 != phoneNumbers.end(); ++it2 ) {
-      addTelephoneValue( v, *it2 );
-    }
-
-    addTextValue( v, EntityCategories, (*it).categories().join(",") );
-
-    addDateValue( v, EntityBirthday, (*it).birthday().date() );
-    addDateTimeValue( v, EntityRevision, (*it).revision() );
-    addGeoValue( v, EntityGeo, (*it).geo() );
-
-    vcardlist.append( v );
+  QStringList emails = addressee->emails();
+  QStringList::ConstIterator it4;
+  for( it4 = emails.begin(); it4 != emails.end(); ++it4 ) {
+    addTextValue( v, EntityEmail, *it4 );
   }
+
+  QStringList customs = addressee->customs();
+  QStringList::ConstIterator it5;
+  for( it5 = customs.begin(); it5 != customs.end(); ++it5 ) {
+    addCustomValue( v, *it5 );
+  }
+
+  addTextValue( v, EntityURL, addressee->url().url() );
+
+  addNValue( v, *addressee );
+
+  addTextValue( v, EntityNickname, addressee->nickName() );
+  addTextValue( v, EntityMailer, addressee->mailer() );
+  addTextValue( v, EntityTitle, addressee->title() );
+  addTextValue( v, EntityRole, addressee->role() );
+  addTextValue( v, EntityOrganisation, addressee->organization() );
+  addTextValue( v, EntityNote, addressee->note() );
+  addTextValue( v, EntityProductID, addressee->productId() );
+  addTextValue( v, EntitySortString, addressee->sortString() );
+
+  Address::List addresses = addressee->addresses();
+  Address::List::ConstIterator it3;
+  for( it3 = addresses.begin(); it3 != addresses.end(); ++it3 ) {
+    addAddressValue( v, *it3 );
+    addLabelValue( v, *it3 );
+  }
+
+  PhoneNumber::List phoneNumbers = addressee->phoneNumbers();
+  PhoneNumber::List::ConstIterator it2;
+  for( it2 = phoneNumbers.begin(); it2 != phoneNumbers.end(); ++it2 ) {
+    addTelephoneValue( v, *it2 );
+  }
+
+  addTextValue( v, EntityCategories, addressee->categories().join(",") );
+
+  addDateValue( v, EntityBirthday, addressee->birthday().date() );
+  addDateTimeValue( v, EntityRevision, addressee->revision() );
+  addGeoValue( v, EntityGeo, addressee->geo() );
+
+  vcardlist.append( v );
 
   vcards.setCardList( vcardlist );
 
-  KSaveFile f( fileName );
-  if ( f.status() == 0 ) {
-    QTextStream *t = f.textStream();
-    t->setEncoding(QTextStream::UnicodeUTF8);
-    *t << QString::fromUtf8(vcards.asString());
-    return f.close();
-  }
+  QTextStream t( file );
+  t.setEncoding( QTextStream::UnicodeUTF8 );
+  t << QString::fromUtf8( vcards.asString() );
 
-  return false;
-}
-
-void VCardFormatImpl::removeAddressee( const Addressee& )
-{
-    // FIXME: implement when splitting vcard file into single files
+  return true;
 }
 
 void VCardFormatImpl::addCustomValue( VCard *v, const QString &txt )
@@ -378,11 +348,7 @@ void VCardFormatImpl::addAddressParam( ContentLine *cl, int type )
 void VCardFormatImpl::addGeoValue( VCard *vcard, EntityType type,
                                     const Geo &geo )
 {
-    kdDebug() << "addGeoValue()=" << geo.latitude() << endl;
-
   if ( !geo.isValid() ) return;
-
-    kdDebug() << "is valid" << endl;
 
   ContentLine cl;
   cl.setName( EntityTypeToParamName( type ) );

@@ -19,132 +19,79 @@
 */
 
 #include <qdatastream.h>
-#include <qfile.h>
 
 #include <kdebug.h>
 #include <klocale.h>
 
 #include "addressbook.h"
+#include "addressee.h"
+
 #include "binaryformat.h"
 
 #define BINARY_FORMAT_VERSION 1
 
 using namespace KABC;
 
-bool BinaryFormat::load( AddressBook *addressBook, Resource *resource, const QString &fileName )
+bool BinaryFormat::load( AddressBook *addressBook, Resource *resource, QFile *file )
 {
-    kdDebug(5700) << "BinaryFormat::load(): " << fileName << endl;
+  kdDebug(5700) << "BinaryFormat::load()" << endl;
 
-    QFile file( fileName );
+  QDataStream s( file );
 
-    if ( !file.open( IO_ReadOnly ) ) {
-	kdDebug( 5700 ) << "BinaryFormat::load(): " << "can't open file '" <<
-	fileName << "'" << endl;
-	return false;
-    }
-
-    QDataStream s( &file );
-
-    Q_UINT32 magic, version;
+  Q_UINT32 magic, version;
     
-    s >> magic >> version;
+  s >> magic >> version;
 
-    if ( magic != 0x2e93e ) {
-	kdDebug( 5700 ) << "BinaryFormat::load(): file is no addressbook" << endl;
-	return false;
-    }
+  if ( magic != 0x2e93e ) {
+    addressBook->error( QString( i18n("File '%1' has no binary format.") ).arg( file->name() ) );
+    return false;
+  }
 
-    if ( version != BINARY_FORMAT_VERSION ) {
-	kdDebug( 5700 ) << "BinaryFormat::load(): wrong version" << endl;
-	return false;
-    }
+  if ( version != BINARY_FORMAT_VERSION ) {
+    addressBook->error( QString( i18n("File '%1' is wrong version.") ).arg( file->name() ) );
+    return false;
+  }
 
-    Q_UINT32 entries;
-    s >> entries;
-    for (uint i = 0; i < entries; ++i ) {
-	Addressee addressee;
-	s >> addressee;
-	addressee.setResource( resource );
-	addressBook->insertAddressee( addressee );
-	addressee.setChanged( false );
-    }
+  Addressee addressee;
+  s >> addressee;
+  addressee.setResource( resource );
+  addressBook->insertAddressee( addressee );
 
-    return true;
+  Addressee& lastAddr = addressBook->lastAddressee();
+  lastAddr.setChanged( false );
+
+  return true;
 }
 
-bool BinaryFormat::save( AddressBook *addressBook, Resource *resource, const QString &fileName )
+bool BinaryFormat::save( Addressee *addressee, QFile *file )
 {
-    kdDebug( 5700 ) << "BinaryFormat::save(): " << fileName << endl;
+  kdDebug(5700) << "BinaryFormat::save()" << endl;
 
-    QFile file( fileName );
+  QDataStream s( file );
 
-    if ( !file.open( IO_WriteOnly ) ) {
-	kdDebug( 5700 ) << "BinaryFormat::save(): " << "can't open file '" <<
-	fileName << "'" << endl;
-	return false;
-    }
+  Q_UINT32 magic, version;
 
-    QDataStream s( &file );
+  // magic code
+  magic = 0x2e93e;
+  version = BINARY_FORMAT_VERSION;
 
-    Q_UINT32 magic, version, entries;
+  s << magic << version << (*addressee);
 
-    entries = 0; // dummy entry, we will change it later
-
-    // magic code
-    magic = 0x2e93e;
-    version = BINARY_FORMAT_VERSION;
-
-    s << magic << version << entries;
-
-    AddressBook::Iterator it;
-    uint counter = 0;
-    for ( it = addressBook->begin(); it != addressBook->end(); ++it ) {
-	if ( (*it).resource() != resource && (*it).resource() != 0 )
-	    continue;
-
-	// mark addressee as saved
-	(*it).setChanged( false );
-
-	s << (*it);
-	counter++;
-    }
-
-    // change the dummy entry to correct number of entries
-    s.device()->at( 2 * sizeof( Q_UINT32 ) );
-    s << counter;
-
-    file.close();
-
-    return true;
+  return true;
 }
 
-void BinaryFormat::removeAddressee( const Addressee& )
+bool BinaryFormat::checkFormat( QFile *file ) const
 {
-    // FIXME: implement when splitting binary file into single files
-}
+  kdDebug(5700) << "BinaryFormat::checkFormat()" << endl;
 
-QString BinaryFormat::typeInfo() const
-{
-    return i18n( "binary" );
-}
+  QDataStream s( file );
 
-bool BinaryFormat::checkFormat( const QString& fileName ) const
-{
-    kdDebug(5700) << "BinaryFormat::checkFormat(): " << fileName << endl;
-
-    QFile file( fileName );
-
-    if ( !file.open( IO_ReadWrite ) )
-	return false;
-
-    QDataStream s( &file );
-
-    Q_UINT32 magic;
+  Q_UINT32 magic;
     
-    s >> magic;
+  s >> magic;
 
-    if ( magic != 0x2e93e )
-	return false;
-    else
-	return true;
+  if ( magic != 0x2e93e )
+    return false;
+  else
+    return true;
 }

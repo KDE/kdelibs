@@ -46,6 +46,7 @@ public slots:
     void slotAdd();
     void slotRemove();
     void slotEdit();
+    void slotConvert();
     void slotSelectionChanged();
 
 signals:
@@ -58,6 +59,7 @@ private:
     QPushButton* addButton;
     QPushButton* removeButton;
     QPushButton* editButton;
+    QPushButton* convertButton;
 };
 
 class KCMkabc : public KCModule

@@ -1,6 +1,6 @@
 /*
     This file is part of libkabc.
-    Copyright (c) 2001 Cornelius Schumacher <schumacher@kde.org>
+    Copyright (c) 2002 Tobias Koenig <tokoe@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -16,32 +16,46 @@
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
-
-        $Id$
 */
-#ifndef KABC_SIMPLEFORMAT_H
-#define KABC_SIMPLEFORMAT_H
 
-#include "format.h"
+#ifndef KABC_ERRORHANDLER_H
+#define KABC_ERRORHANDLER_H
+
+#include <qstring.h>
 
 namespace KABC {
 
-class AddressBook;
-class Addressee;
-
-/*
-  @short Simple KConfig based fileformat for address book entries.
-  
-  This class provides a simple file format for address book entries based on
-  KSimpleConfig. It is not complete, i.e. it stores only a few data elements
-  of the address book entries. Don't use it or finish it before using it.
+/**
+ * Abstract class that provides displaying of error messages.
+ * We need this to make libkabc gui independend on the one side
+ * and provide user friendly error messages on the other side.
+ * Use @p ConsoleErrorHandler or @p GUIErrorHandler in your
+ * application.
 */
-class SimpleFormat : public Format
+class ErrorHandler
 {
 public:
-  bool load( AddressBook *, Resource *, QFile *file );
-  bool save( Addressee *, QFile *file );
-  bool checkFormat( QFile *file ) const;
+    virtual void error( const QString& msg ) = 0;
+};
+
+/**
+ * This class prints the error messages to
+ * stderr via kdError().
+*/
+class ConsoleErrorHandler : public ErrorHandler
+{
+public:
+    virtual void error( const QString& msg );
+};
+
+/**
+ * This class show messages boxes for every
+ * error message.
+*/
+class GUIErrorHandler : public ErrorHandler
+{
+public:
+    virtual void error( const QString& msg );
 };
 
 }

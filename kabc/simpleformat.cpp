@@ -26,16 +26,17 @@
 #include <kdebug.h>
 
 #include "addressbook.h"
+#include "addressee.h"
 
 #include "simpleformat.h"
 
 using namespace KABC;
 
-bool SimpleFormat::load( AddressBook *addressBook, Resource *resource, const QString &fileName )
+bool SimpleFormat::load( AddressBook *addressBook, Resource *resource, QFile *file )
 {
-  kdDebug(5700) << "SimpleFormat::load(): " << fileName << endl;
+  kdDebug(5700) << "SimpleFormat::load()" << endl;
 
-  KSimpleConfig cfg( fileName );
+  KSimpleConfig cfg( file->name() );
   
   QStringList uids = cfg.groupList();
 

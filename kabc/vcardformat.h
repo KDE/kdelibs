@@ -20,13 +20,12 @@
 #ifndef KABC_VCARDFORMAT_H
 #define KABC_VCARDFORMAT_H
 
-#include <qstring.h>
-
 #include "format.h"
 
 namespace KABC {
 
 class AddressBook;
+class Addressee;
 class VCardFormatImpl;
 
 /**
@@ -40,11 +39,9 @@ class VCardFormat : public Format {
     VCardFormat();
     virtual ~VCardFormat();
   
-    bool load( AddressBook *, Resource *, const QString &fileName );
-    bool save( AddressBook *, Resource *, const QString &fileName );
-    void removeAddressee( const Addressee& addr );
-    QString typeInfo() const;
-    bool checkFormat( const QString &fileName ) const;
+    bool load( AddressBook *, Resource *, QFile *file );
+    bool save( Addressee *, QFile *file );
+    bool checkFormat( QFile *file ) const;
 
   private:
     VCardFormatImpl *mImpl;

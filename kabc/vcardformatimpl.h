@@ -16,10 +16,11 @@
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
+
+        $Id$
 */
 #ifndef KABC_VCARDFORMATIMPL_H
 #define KABC_VCARDFORMATIMPL_H
-// $Id$
 
 #include <qstring.h>
 
@@ -41,9 +42,8 @@ class AddressBook;
 */
 class VCardFormatImpl {
   public:
-    bool load( AddressBook *, Resource *, const QString &fileName );
-    bool save( AddressBook *, Resource *, const QString &fileName );
-	void removeAddressee( const Addressee& addr );
+    bool load( AddressBook *, Resource *, QFile * );
+    bool save( Addressee *, QFile * );
 
   protected:
     void addTextValue (VCARD::VCard *, VCARD::EntityType, const QString & );

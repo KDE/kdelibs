@@ -82,6 +82,8 @@ ConfigPage::ConfigPage( QWidget *parent, const char *name )
     removeButton->setEnabled( false );
     editButton = buttonBox->addButton( i18n( "&Edit..." ), this, SLOT(slotEdit()) );
     editButton->setEnabled( false );
+    convertButton = buttonBox->addButton( i18n( "&Convert..." ), this, SLOT(slotConvert()) );
+    convertButton->setEnabled( false );
     buttonBox->layout();
 
     groupBoxLayout->addWidget( buttonBox );
@@ -255,12 +257,84 @@ void ConfigPage::slotEdit()
     }
 }
 
+void ConfigPage::slotConvert()
+{
+    QListViewItem *item = listView->currentItem();
+    ConfigViewItem *oldConfigItem = dynamic_cast<ConfigViewItem*>( item );
+    if ( !oldConfigItem )
+	return;
+
+    KABC::ResourceFactory *factory = KABC::ResourceFactory::self();
+    KABC::AddressBook ab;
+
+    // ask for target resource
+    QStringList resources;
+    item = listView->firstChild();
+    while ( item != 0 ) {
+	resources.append( item->text( 0 ) );
+	item = item->itemBelow();
+    }
+
+    bool ok = false;
+    QString newName = QInputDialog::getItem( i18n( "Resource Conversion" ),
+	    i18n( "Please select the target resource:" ), resources, 0, false, &ok, this );
+    if ( !ok )
+	return;
+
+    // create old resource
+    QString oldKey = oldConfigItem->key;
+    QString oldType = oldConfigItem->type;
+
+    config->setGroup( "Resource_" + oldKey );
+    KABC::Resource *oldResource = factory->resource( oldType, &ab, config );
+    if ( !oldResource )
+        return;
+
+    if ( !ab.addResource( oldResource ) ) {
+        delete oldResource;
+        return;
+    }
+
+    // load addressees from old resource
+    ab.load();
+
+    // create new Resource
+    QString newKey, newType;
+    item = listView->firstChild();
+    while ( item != 0 ) {
+        if ( item->text( 0 ) == newName ) {
+            ConfigViewItem *newConfigItem = dynamic_cast<ConfigViewItem*>( item );
+            newKey = newConfigItem->key;
+            newType = newConfigItem->type;
+        }
+	item = item->itemBelow();
+    }
+
+    config->setGroup( "Resource_" + newKey );
+    KABC::Resource *newResource = factory->resource( newType, &ab, config );
+    if ( !newResource )
+        return;
+
+    if ( !ab.addResource( newResource ) ) {
+        delete newResource;
+        return;
+    }
+
+    KABC::AddressBook::Iterator it;
+    for ( it = ab.begin(); it != ab.end(); ++it )
+        (*it).setResource( newResource );
+
+    KABC::Ticket *ticket = ab.requestSaveTicket( newResource );
+    ab.save( ticket );
+}
+
 void ConfigPage::slotSelectionChanged()
 {
     bool state = ( listView->currentItem() != 0 );
 
     removeButton->setEnabled( state );
     editButton->setEnabled( state );
+    convertButton->setEnabled( state );
 }
 
 KCMkabc::KCMkabc( QWidget *parent, const char *name )

@@ -16,18 +16,18 @@
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
+
+        $Id$
 */
 #ifndef KABC_BINARYFORMAT_H
 #define KABC_BINARYFORMAT_H
-// $Id$
-
-#include <qstring.h>
 
 #include "format.h"
 
 namespace KABC {
 
 class AddressBook;
+class Addressee;
 
 /*
   @short binary file format for addressbook entries.
@@ -35,11 +35,9 @@ class AddressBook;
 class BinaryFormat : public Format
 {
 public:
-    bool load( AddressBook *, Resource *, const QString &fileName );
-    bool save( AddressBook *, Resource *, const QString &fileName );
-    void removeAddressee( const Addressee& addr );
-    QString typeInfo() const;
-    bool checkFormat( const QString &fileName) const;
+  bool load( AddressBook *, Resource *, QFile *file );
+  bool save( Addressee *, QFile *file );
+  bool checkFormat( QFile *file ) const;
 };
 
 }

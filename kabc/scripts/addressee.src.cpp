@@ -260,12 +260,25 @@ PhoneNumber Addressee::phoneNumber( int type ) const
       return *it;
     }
   }
-  return PhoneNumber();
+  return PhoneNumber( QString(), type );
 }
 
 PhoneNumber::List Addressee::phoneNumbers() const
 {
   return mData->phoneNumbers;
+}
+
+PhoneNumber::List Addressee::phoneNumbers( int type ) const
+{
+  PhoneNumber::List list;
+
+  PhoneNumber::List::ConstIterator it;
+  for( it = mData->phoneNumbers.begin(); it != mData->phoneNumbers.end(); ++it ) {
+    if ( (*it).type() == type ) {
+      list.append( *it );
+    }
+  }
+  return list;
 }
 
 PhoneNumber Addressee::findPhoneNumber( const QString &id ) const
@@ -348,12 +361,26 @@ Address Addressee::address( int type ) const
       return *it;
     }
   }
-  return Address();
+  return Address( type );
 }
 
 Address::List Addressee::addresses() const
 {
   return mData->addresses;
+}
+
+Address::List Addressee::addresses( int type ) const
+{
+  Address::List list;
+
+  Address::List::ConstIterator it;
+  for( it = mData->addresses.begin(); it != mData->addresses.end(); ++it ) {
+    if ( (*it).type() == type ) {
+      list.append( *it );
+    }
+  }
+
+  return list;
 }
 
 Address Addressee::findAddress( const QString &id ) const

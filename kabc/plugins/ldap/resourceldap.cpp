@@ -147,7 +147,7 @@ bool ResourceLDAP::load()
 	"phoneNumber",
 	 0 };
 
-    if ( ldap_search_s( mLdap, mDn.latin1(), LDAP_SCOPE_SUBTREE, "objectClass=person",
+    if ( ldap_search_s( mLdap, mDn.latin1(), LDAP_SCOPE_SUBTREE, QString( "(%1)" ).arg( mFilter ).latin1(),
 	    (char **)LdapSearchAttr, 0, &res ) != LDAP_SUCCESS ) {
 	kdDebug(5700) << "ResourceLDAP: can't search on server" << endl;
 	return false;
@@ -220,6 +220,9 @@ bool ResourceLDAP::save( Ticket * )
 		kdDebug(5770) << "ResourceLDAP: can't modify '" << (*it).uid() << "'" << endl;
 
 	    ldap_mods_free( mods, 1 );
+
+            // mark as unchanged
+            (*it).setChanged( false );
 	}
     }
 
@@ -231,7 +234,7 @@ void ResourceLDAP::removeAddressee( const Addressee &addr )
     LDAPMessage *res;
     LDAPMessage *msg;
 
-    QString filter = QString( "(&(uid=%1)(objectClass=person))" ).arg( addr.uid() );
+    QString filter = QString( "(&(uid=%1)(%2))" ).arg( addr.uid() ).arg( mFilter );
 
     kdDebug() << "ldap:removeAddressee" << filter << endl;
 

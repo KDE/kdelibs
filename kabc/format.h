@@ -20,16 +20,14 @@
 #ifndef KABC_FORMAT_H
 #define KABC_FORMAT_H
 
-#include <qstring.h>
+#include <qfile.h>
 
 #include "resource.h"
-
-#define FORMAT_VCARD	0
-#define FORMAT_BINARY	1
 
 namespace KABC {
 
 class AddressBook;
+class Addressee;
 
 /**
   @short Base class for address book formats.
@@ -38,29 +36,22 @@ class AddressBook;
 */
 class Format {
   public:
+
+    enum Type { VCard, Binary, Simple };
+
     /**
       Load addressbook from file.
     */
-    virtual bool load( AddressBook *, Resource *, const QString &fileName ) = 0;
+    virtual bool load( AddressBook *, Resource *, QFile *file ) = 0;
     /**
       Save addressbook to file.
     */
-    virtual bool save( AddressBook *, Resource *, const QString &fileName ) = 0;
+    virtual bool save( Addressee *, QFile *file ) = 0;
 	
-    /**
-      Remove a addressee from file.
-    */
-    virtual void removeAddressee( const Addressee& addr ) = 0;
-
-    /**
-      String representation of this format.
-    */
-    virtual QString typeInfo() const = 0;
-
     /**
       Check if given file contains the right format
     */
-    virtual bool checkFormat( const QString &fileName ) const = 0;
+    virtual bool checkFormat( QFile *file ) const = 0;
 };
 
 }

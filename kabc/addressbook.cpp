@@ -29,6 +29,7 @@
 #include <kglobal.h>
 #include <kinstance.h>
 
+#include "errorhandler.h"
 #include "resource.h"
 #include "resourcedlg.h"
 
@@ -40,8 +41,10 @@ using namespace KABC;
 struct AddressBook::AddressBookData
 {
   Addressee::List mAddressees;
+  Addressee::List mRemovedAddressees;
   Field::List mAllFields;
   QPtrList<Resource> mResources;
+  ErrorHandler *mErrorHandler;
 };
 
 struct AddressBook::Iterator::IteratorData
@@ -188,11 +191,13 @@ AddressBook::AddressBook()
 {
   d = new AddressBookData;
   d->mResources.setAutoDelete( true );
+  d->mErrorHandler = 0;
 }
 
 AddressBook::~AddressBook()
 {
   d->mResources.clear();
+  delete d->mErrorHandler;
   delete d;
 }
 
@@ -206,7 +211,7 @@ bool AddressBook::load()
   bool ok = true;
   for( r = d->mResources.first(); r; r = d->mResources.next() )
     if ( !r->load() ) {
-      kdDebug(5700) << "AddressBook::load(): can't load resource '" << r->name() << "'" << endl;
+      error( QString( i18n("Can't load resource '%1'") ).arg( r->name() ) );
       ok = false;
     }
 
@@ -218,6 +223,7 @@ bool AddressBook::save( Ticket *ticket )
   kdDebug(5700) << "AddressBook::save()"<< endl;
 
   if ( ticket->resource() ) {
+    deleteRemovedAddressees();
     return ticket->resource()->save( ticket );
   }
 
@@ -278,9 +284,10 @@ void AddressBook::insertAddressee( const Addressee &a )
   for ( it = d->mAddressees.begin(); it != d->mAddressees.end(); ++it ) {
     if ( a.uid() == (*it).uid() ) {
       bool changed = false;
-      if ( a != (*it) ) {
+      Addressee addr = a;
+      if ( addr != (*it) ) {
+        kdDebug() << "insertAddressee: changed=true" << endl;
         changed = true;
-        kdDebug() << "AddressBook::insertAddr: changed" << endl;
       }
       (*it) = a;
       if ( changed ) {
@@ -291,19 +298,15 @@ void AddressBook::insertAddressee( const Addressee &a )
     }
   }
   d->mAddressees.append( a );
-  Addressee addr = d->mAddressees.last();
+  Addressee& addr = lastAddressee();
   addr.setChanged( true );
 }
 
 void AddressBook::removeAddressee( const Addressee &a )
 {
-  kdDebug() << "removeAddressee: " << a.uid() << endl;
   Iterator it;
   for ( it = begin(); it != end(); ++it ) {
     if ( a.uid() == (*it).uid() ) {
-      Resource *resource = a.resource();
-      if ( resource )
-          resource->removeAddressee( a );
       removeAddressee( it );
       return;
     }
@@ -312,6 +315,7 @@ void AddressBook::removeAddressee( const Addressee &a )
 
 void AddressBook::removeAddressee( const Iterator &it )
 {
+  d->mRemovedAddressees.append( (*it) );
   d->mAddressees.remove( it.d->mIt );
 }
 
@@ -482,19 +486,21 @@ bool AddressBook::saveAll()
   bool ok = true;
   Resource *resource = 0;
 
-    for ( uint i = 0; i < d->mResources.count(); ++i ) {
-	resource = d->mResources.at( i );
-	if ( !resource->readOnly() ) {
-	    Ticket *ticket = requestSaveTicket( resource );
-	    if ( !ticket ) {
-		kdError(5700) << "Can't save to standard addressbook. It's locked." << endl;
-	        return false;
-	    }
+  deleteRemovedAddressees();
 
-	    if ( !save( ticket ) )
-		ok = false;
-	}
+  for ( uint i = 0; i < d->mResources.count(); ++i ) {
+    resource = d->mResources.at( i );
+    if ( !resource->readOnly() ) {
+      Ticket *ticket = requestSaveTicket( resource );
+      if ( !ticket ) {
+        error( i18n( "Can't save to standard addressbook. It's locked." ) );
+        return false;
+      }
+
+      if ( !save( ticket ) )
+        ok = false;
     }
+  }
 
   return ok;
 }
@@ -513,4 +519,35 @@ void AddressBook::resourceAddressee( Addressee& addr, Resource *resource )
 QPtrList<Resource> AddressBook::resources()
 {
     return d->mResources;
+}
+
+void AddressBook::setErrorHandler( ErrorHandler *handler )
+{
+    delete d->mErrorHandler;
+    d->mErrorHandler = handler;
+}
+
+void AddressBook::error( const QString& msg )
+{
+    if ( d->mErrorHandler )
+        d->mErrorHandler->error( msg );
+    else
+        kdError(5700) << "no error handler defined" << endl;
+}
+
+void AddressBook::deleteRemovedAddressees()
+{
+  Addressee::List::Iterator it;
+  for ( it = d->mRemovedAddressees.begin(); it != d->mRemovedAddressees.end(); ++it ) {
+    Resource *resource = (*it).resource();
+    if ( resource )
+      resource->removeAddressee( *it );
+  }
+
+  d->mRemovedAddressees.clear();
+}
+
+Addressee &AddressBook::lastAddressee()
+{
+  return d->mAddressees.last();
 }

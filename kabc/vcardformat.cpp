@@ -18,12 +18,8 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include <qfile.h>
-
-#include <klocale.h>
-
-#include "vcardformatimpl.h"
 #include "vcardformat.h"
+#include "vcardformatimpl.h"
 
 using namespace KABC;
 
@@ -37,40 +33,24 @@ VCardFormat::~VCardFormat()
   delete mImpl;
 }
 
-bool VCardFormat::load( AddressBook *addressBook, Resource *resource, const QString &fileName )
+bool VCardFormat::load( AddressBook *addressBook, Resource *resource, QFile *file )
 {
-  return mImpl->load( addressBook, resource, fileName );
+  return mImpl->load( addressBook, resource, file );
 }
 
-bool VCardFormat::save( AddressBook *addressBook, Resource *resource, const QString &fileName )
+bool VCardFormat::save( Addressee *addressee, QFile *file )
 {
-  return mImpl->save( addressBook, resource, fileName );
+  return mImpl->save( addressee, file );
 }
 
-void VCardFormat::removeAddressee( const Addressee& addr )
+bool VCardFormat::checkFormat( QFile *file ) const
 {
-  return mImpl->removeAddressee( addr );
-}
+  QString line;
 
-QString VCardFormat::typeInfo() const
-{
-  return i18n( "VCard" );
-}
-
-bool VCardFormat::checkFormat( const QString &fileName ) const
-{
-    QFile file( fileName );
-    if ( !file.open( IO_ReadWrite ) )
-	return false;
-
-    if ( file.size() == 0 )
-	return true;
-
-    QString line;
-    file.readLine( line, 1024 );
-    line = line.stripWhiteSpace();
-    if ( line == "BEGIN:VCARD" )
-	return true;
-    else
-	return false;
+  file->readLine( line, 1024 );
+  line = line.stripWhiteSpace();
+  if ( line == "BEGIN:VCARD" )
+    return true;
+  else
+    return false;
 }

@@ -1,6 +1,6 @@
 /*
     This file is part of libkabc.
-    Copyright (c) 2001 Cornelius Schumacher <schumacher@kde.org>
+    Copyright (c) 2002 Tobias Koenig <tokoe@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -16,34 +16,24 @@
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
-
-        $Id$
 */
-#ifndef KABC_SIMPLEFORMAT_H
-#define KABC_SIMPLEFORMAT_H
 
-#include "format.h"
+#include <kdebug.h>
+#include <klocale.h>
+#include <kmessagebox.h>
 
-namespace KABC {
+#include "errorhandler.h"
 
-class AddressBook;
-class Addressee;
+using namespace KABC;
 
-/*
-  @short Simple KConfig based fileformat for address book entries.
-  
-  This class provides a simple file format for address book entries based on
-  KSimpleConfig. It is not complete, i.e. it stores only a few data elements
-  of the address book entries. Don't use it or finish it before using it.
-*/
-class SimpleFormat : public Format
+void
+ConsoleErrorHandler::error( const QString& msg )
 {
-public:
-  bool load( AddressBook *, Resource *, QFile *file );
-  bool save( Addressee *, QFile *file );
-  bool checkFormat( QFile *file ) const;
-};
-
+    kdError(5700) << msg << endl;
 }
 
-#endif
+void
+GUIErrorHandler::error( const QString& msg )
+{
+    KMessageBox::error( 0, msg, i18n( "Error in libkabc" ) );
+}

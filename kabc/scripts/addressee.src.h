@@ -152,6 +152,10 @@ class Addressee
     */
     PhoneNumber::List phoneNumbers() const;
     /**
+      Return list of phone numbers with a special type.
+    */
+    PhoneNumber::List phoneNumbers( int type ) const;
+    /**
       Return phone number with the given id.
     */
     PhoneNumber findPhoneNumber( const QString &id ) const;
@@ -174,6 +178,11 @@ class Addressee
       Return list of all addresses.
     */
     Address::List addresses() const;
+    /**
+      Return list of addresses with a special type.
+    */
+    Address::List addresses( int type ) const;
+	
     /**
       Return address with the given id.
     */

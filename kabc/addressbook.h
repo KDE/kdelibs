@@ -29,6 +29,7 @@
 
 namespace KABC {
 
+class ErrorHandler;
 class Resource;
 class Ticket;
 
@@ -249,6 +250,22 @@ class AddressBook : public QObject
     */
     QPtrList<Resource> resources();
 
+    /**
+      Return reference to last addressee added to addressbook
+    */
+    Addressee &lastAddressee();
+
+    /**
+      Set the @p ErrorHandler, that is used by @ref error() to
+      provide gui-independend error messages
+    */
+    void setErrorHandler( ErrorHandler * );
+
+    /**
+      Method to provide gui independend error messages
+    */
+    void error( const QString& );
+
   signals:
     /**
       Emitted, when the address book has changed on disk.
@@ -262,6 +279,9 @@ class AddressBook : public QObject
       Emitted, when the address book has been unlocked.
     */
     void addressBookUnlocked( AddressBook * );
+
+  protected:
+    void deleteRemovedAddressees();
 
   private:
     struct AddressBookData;
