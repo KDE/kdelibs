@@ -5,8 +5,8 @@
 
 bool check(QString txt, QString a, QString b)
 {
-  kdDebug() << txt << ": checking '" << a << "' against expected value '"
-	    << b << "'... " << endl;
+    kdDebug() << txt << ": checking '" << endl << a << endl << "' against expected value '"
+              << endl << b << "'... " << endl;
   if (a == b) 
     printf("ok\n");
   else {
@@ -19,6 +19,7 @@ bool check(QString txt, QString a, QString b)
 int main(int argc, char *argv[]) 
 {
   QString test = "The quick brown fox jumped over the lazy bridge. ";
+
   check("word(test, 3)", 
 	KStringHandler::word(test, 2), 
 	"brown");
@@ -48,7 +49,7 @@ int main(int argc, char *argv[])
        "The Quick Brown Fox Jumped Over The Lazy Bridge. "); 
   check("reverse(test)", 
 	KStringHandler::reverse(test),
-       " bridge. lazy the over jumped fox brown quick The"); 
+       "bridge. lazy the over jumped fox brown quick The"); 
   QString result;
   result = KStringHandler::ljust(test, 70);
   if (result.length() != 70)

@@ -150,12 +150,6 @@ public:
     static QString        rjust( const QString &text , uint width );
     static QString        center( const QString &text , uint width );
 
-    /** Returns a list with each word */
-    static QStringList    split( const QString &text , const char *sep = " " );
-
-    /** Returns a new string built from the list */
-    static QString        join( const QStringList &list , const char *sep = " " );
-
     /** Substitute characters at the beginning of a string by "...".
      * @return the modified string
      * @param str is the string to modify

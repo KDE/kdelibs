@@ -720,7 +720,7 @@ KCmdLineArgs::usage(const char *id)
          if (option->description)
          {
             description = i18n(option->description);
-            dl = KStringHandler::split(description, "\n");
+            dl = QStringList::split("\n", description, true);
             description = dl.first();
             dl.remove( dl.begin() );
          }

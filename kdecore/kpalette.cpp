@@ -137,7 +137,7 @@ KPalette::save()
    QTextStream *str = sf.textStream();
 
    QString description = mDesc.stripWhiteSpace();
-   description = "#"+KStringHandler::join( KStringHandler::split(description, "\n"), "\n#");
+   description = "#"+QStringList::split("\n", description, true).join("\n#");
 
    (*str) << "KDE RGB Palette\n";   
    (*str) << description << "\n";
