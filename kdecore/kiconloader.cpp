@@ -587,6 +587,13 @@ QPixmap KIconLoader::loadIcon(const QString& _name, int group, int size,
 	if ((overlay & KIcon::ZipOverlay) &&
 		((ovl = loadOverlay(theme->zipOverlay(), size)) != 0L))
 	    KIconEffect::overlay(*img, *ovl);
+        if (overlay & KIcon::HiddenOverlay)
+            for (int y = 0; y < img->height(); y++)
+            {
+		Q_UINT32 *line = reinterpret_cast<Q_UINT32 *>(img->scanLine(y));
+                for (int x = 0; x < img->width();  x++)
+                    line[x] = (line[x] & 0x00ffffff) | (QMIN(0x80, qAlpha(line[x])) << 24);
+	    }
     }
 
     // Scale the icon and apply effects if necessary

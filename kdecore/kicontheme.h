@@ -48,7 +48,7 @@ public:
     enum StdSizes { SizeSmall=16, SizeMedium=32, SizeLarge=48 };
     enum States { DefaultState, ActiveState, DisabledState, LastState };
     enum Overlays { LockOverlay=0x100, ZipOverlay=0x200, LinkOverlay=0x400,
-	    OverlayMask = ~0xff };
+            HiddenOverlay=0x800, OverlayMask = ~0xff };
 
     /** The size in pixels of the icon. */
     int size;
