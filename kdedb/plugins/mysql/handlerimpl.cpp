@@ -371,7 +371,7 @@ HandlerImpl::append(KDB::Row row)
 bool 
 HandlerImpl::update(KDB_ULONG pos, KDB::Row row)
 { 
-    kdDebug(20012) << k_funcinfo << endl;
+    kdDebug(20012) << k_funcinfo << pos << endl;
     /*
      * NOTE: we assume here that an update can happen only on single-table recordsets
      * thus, we assume that the table of the first field of the row is the table
@@ -397,7 +397,8 @@ HandlerImpl::update(KDB_ULONG pos, KDB::Row row)
     sql += " where ";
     first = true;
     for (i = 0 ; i < numFields; i++) {
-        if (m_fields[i].flags & PRI_KEY_FLAG) {
+        // kdDebug(20012) << (m_rows[pos])[i].toString() << " - " << row[i].toString() << endl;        
+        if ((m_fields[i].flags & PRI_KEY_FLAG) || ((m_rows[pos])[i] == row[i]) ) {
             if (!first)
                 sql += " and ";
             sql += QString("%1 = %2").arg(m_fields[i].name).arg(format(row[i],m_fields[i].type));
@@ -434,12 +435,12 @@ HandlerImpl::remove(KDB_ULONG /* pos */, KDB::Row row)
     unsigned int i;
     bool first = true;
     for (i = 0 ; i < numFields; i++) {
-        if (m_fields[i].flags & PRI_KEY_FLAG) {
+        // if (m_fields[i].flags & PRI_KEY_FLAG) {
             if (!first)
                 sql += " and ";
             sql += QString("%1 = %2").arg(m_fields[i].name).arg(format(row[i],m_fields[i].type));
             first = false;
-        }
+        // }
     }
 
     int affected = m_conn->execute(sql);
