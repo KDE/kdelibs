@@ -54,3 +54,6 @@ ltdl.c + ltdl.h
 
 Carsten Pfeiffer <pfeiffer@kde.org>
 KCompletion classes
+
+Benjamin meyer <ben@meyerhome.net>
+KAutoConfig class

@@ -9,7 +9,7 @@ class KConfig;
 class QWidget;
 
 /**
- * @author Benjamin C Meyer <ben@meyerhome.net>
+ * @author Benjamin C Meyer <ben at meyerhome.net>
  * 
  * The KAutoConfig class provides a means of automaticly retrieving,
  * saving and reseting basic settings.
