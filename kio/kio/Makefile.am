@@ -58,7 +58,8 @@ include_HEADERS = \
 	kimageio.h kdirnotify.h kdirnotify_stub.h \
 	kurlpixmapprovider.h kprotocolinfo.h kprotocolmanager.h \
 	kfilterbase.h kfilterdev.h kemailsettings.h kscan.h kdatatool.h \
-	karchive.h kfilefilter.h kfilemetainfo.h renamedlgplugin.h
+	karchive.h kfilefilter.h kfilemetainfo.h renamedlgplugin.h \
+	kmimetyperesolver.h
 
 libkiocore_la_LDFLAGS = $(all_libraries)
 libkiocore_la_LIBADD = ../../kdeui/libkdeui.la ../../kdesu/libkdesu.la $(LIBZ) $(LIBFAM) $(LIBVOLMGT)
