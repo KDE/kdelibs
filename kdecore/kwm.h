@@ -226,7 +226,7 @@ public:
   static void setDecoration(Window w, long value);
 
   enum {noDecoration = 0, normalDecoration = 1, tinyDecoration = 2,
-	noFocus = 256};
+	noFocus = 256, standaloneMenuBar = 512};
 
   /**
    * Invokes the logout process (session management, logout dialog, ...)
@@ -536,7 +536,7 @@ public:
    *  is not mapped yet, this function only sets the _state_ of the
    *  maximize button, it does _not_ change the geometry. See
    * doMaximize below.
-     
+
    */
   static void setMaximize(Window w, bool value);
   /**
