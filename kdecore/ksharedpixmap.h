@@ -73,8 +73,10 @@ public:
      *
      * @param id The shared pixmap id string.
      * @param rect The region of the pixmap you want.
+     * @param prop The X property to read the pixmap id from. The default is
+     * "KDE_SHARED_PIXMAPS".
      */
-    KSharedPixmap(QString id, QRect rect=QRect());
+    KSharedPixmap(QString id, QRect rect=QRect(), QString prop=QString::null);
     
     /**
      * Construct from QPixmap.

@@ -96,8 +96,9 @@ KSharedPixmap::KSharedPixmap()
 }
 
 
-KSharedPixmap::KSharedPixmap(QString id, QRect rect)
+KSharedPixmap::KSharedPixmap(QString id, QRect rect, QString prop)
 {
+    mProp = prop;
     init();
     if (!id.isEmpty())
 	copy(id, rect);
@@ -122,7 +123,8 @@ KSharedPixmap::~KSharedPixmap()
 /* private */
 void KSharedPixmap::init()
 {
-    mProp = "KDE_SHARED_PIXMAPS";
+    if (mProp.isEmpty())
+	mProp = "KDE_SHARED_PIXMAPS";
 }
 
 
