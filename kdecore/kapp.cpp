@@ -1302,104 +1302,143 @@ QString KApplication::kdedir()
 const QString& KApplication::kde_htmldir()
 {
   static QString dir;
-  if (dir.isNull()) 
-	dir = KDE_HTMLDIR;
+  if (dir.isNull()) {
+      dir = KDE_HTMLDIR;
+      if (!strncmp(dir.data(), "KDEDIR", 6)) 
+	  dir = kdedir() + dir.right(dir.length() - 6);
+  }
   return dir;
 }
 
 const QString& KApplication::kde_appsdir()
 {
   static QString dir;
-  if (dir.isNull())
-	dir = KDE_APPSDIR;
+  if (dir.isNull()) {
+      dir = KDE_APPSDIR;
+      if (!strncmp(dir.data(), "KDEDIR", 6)) 
+	  dir = kdedir() + dir.right(dir.length() - 6);
+  }
   return dir;
 }
 
 const QString& KApplication::kde_icondir()
 {
   static QString dir;
-  if (dir.isNull()) 
-	dir = KDE_ICONDIR;
+  if (dir.isNull()) {
+      dir = KDE_ICONDIR;
+      if (!strncmp(dir.data(), "KDEDIR", 6)) 
+	  dir = kdedir() + dir.right(dir.length() - 6);
+  }
   return dir;
 }
 
 const QString& KApplication::kde_datadir()
 {
   static QString dir;
-  if (dir.isNull()) 
-	dir = KDE_DATADIR;
+  if (dir.isNull()) {
+      dir = KDE_DATADIR;
+      if (!strncmp(dir.data(), "KDEDIR", 6)) 
+	  dir = kdedir() + dir.right(dir.length() - 6);
+  }
   return dir;
 }
 
 const QString& KApplication::kde_localedir()
 {
   static QString dir;
-  if (dir.isNull()) 
+  if (dir.isNull()) {
 	dir = KDE_LOCALE;
+	if (!strncmp(dir.data(), "KDEDIR", 6)) 
+	    dir = kdedir() + dir.right(dir.length() - 6);
+  }
   return dir;
 }
 
 const QString& KApplication::kde_cgidir()
 {
   static QString dir;
-  if (dir.isNull()) 
-	dir = KDE_CGIDIR;
+  if (dir.isNull()) {
+      dir = KDE_CGIDIR;
+      if (!strncmp(dir.data(), "KDEDIR", 6)) 
+	  dir = kdedir() + dir.right(dir.length() - 6);
+  }
   return dir;
 }
 
 const QString& KApplication::kde_minidir()
 {
   static QString dir;
-  if (dir.isNull()) 
-	dir = KDE_MINIDIR;
+  if (dir.isNull()) {
+      dir = KDE_MINIDIR;
+      if (!strncmp(dir.data(), "KDEDIR", 6)) 
+	  dir = kdedir() + dir.right(dir.length() - 6);
+  }
   return dir;
 }
 
 const QString& KApplication::kde_toolbardir()
 {
   static QString dir;
-  if (dir.isNull()) 
-	dir = KDE_TOOLBARDIR;
+  if (dir.isNull()) {
+      dir = KDE_TOOLBARDIR;
+      if (!strncmp(dir.data(), "KDEDIR", 6)) 
+	  dir = kdedir() + dir.right(dir.length() - 6);
+  }
   return dir;
 }
 
 const QString& KApplication::kde_wallpaperdir()
 {
   static QString dir;
-  if (dir.isNull()) 
-	dir = KDE_WALLPAPERDIR;
+  if (dir.isNull()) {
+      dir = KDE_WALLPAPERDIR;
+      if (!strncmp(dir.data(), "KDEDIR", 6)) 
+	  dir = kdedir() + dir.right(dir.length() - 6);
+  }
   return dir;
 }
  
 const QString& KApplication::kde_bindir()
 {
   static QString dir;
-  if (dir.isNull()) 
-	dir = KDE_BINDIR;
+  if (dir.isNull()) {
+      dir = KDE_BINDIR;
+      if (!strncmp(dir.data(), "KDEDIR", 6)) 
+	  dir = kdedir() + dir.right(dir.length() - 6);
+  }
   return dir;
 }
 
 const QString& KApplication::kde_partsdir()
 {
   static QString dir;
-  if (dir.isNull()) 
-	dir = KDE_PARTSDIR;
+  if (dir.isNull()) {
+      dir = KDE_PARTSDIR;
+      if (!strncmp(dir.data(), "KDEDIR", 6)) 
+	  dir = kdedir() + dir.right(dir.length() - 6);
+  }
   return dir;
 }
 
 const QString& KApplication::kde_configdir()
 {
   static QString dir;
-  if (dir.isNull()) 
-	dir = KDE_CONFIGDIR;
+  if (dir.isNull()) {
+      dir = KDE_CONFIGDIR;
+      if (!strncmp(dir.data(), "KDEDIR", 6)) 
+	  dir = kdedir() + dir.right(dir.length() - 6);
+  }
   return dir;
 }
 
 const QString& KApplication::kde_mimedir()
 {
   static QString dir;
-  if (dir.isNull()) 
-	dir = KDE_MIMEDIR;
+  if (dir.isNull()) {
+      dir = KDE_MIMEDIR;
+      if (!strncmp(dir.data(), "KDEDIR", 6)) 
+	  dir = kdedir() + dir.right(dir.length() - 6);
+  }
   return dir;
 }
 

@@ -56,9 +56,7 @@ AC_DEFINE_UNQUOTED(KDEDIR, "$prefix")
 
 AC_DEFUN(AC_DEFINE_PATH,
 [
-  eval "tempdir=`echo "$2" | sed -e 's/\$(exec_prefix)/\$exec_prefix/' -e 's/\$(prefix)/\$prefix/'`"
-  dnl I have to do this twice, since exec_prefix may be "$(prefix)"
-  eval "tempdir=`echo "$tempdir" | sed -e 's/\$(prefix)/\$prefix/'`"
+  eval "tempdir=`echo $2 | sed -e 's/\$(exec_prefix)/KDEDIR/' -e 's/\$(prefix)/KDEDIR/'`"
   AC_DEFINE_UNQUOTED($1, "$tempdir")
 ])
 
