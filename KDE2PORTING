@@ -78,7 +78,7 @@ khtmlw has been replaced with khtml.
 
   it also doesn't hold a KiconLoader instance. As this also getIconLoader()
   has been removed. Replace kapp->getIconLoader()->loadIcon() with
-  ICON() or use KGlobal::iconLoader() instead of getIconLoader()
+  BarIcon() or use KGlobal::iconLoader() instead of getIconLoader()
 
   kde_*dir() have been removed as they require a unique toplevel directory
   for all applications (KDEDIR). This concept doesn't exist in KDE 2.0
@@ -204,10 +204,17 @@ must have created a KApplication object before the methods can be used.
 
 KIconLoader in 1.1 used to mix icons for applications and for toolbars.
 This has changed, so you may notice that your application doesn't find
-the right icons. loadIcon (used by ICON) returns only toolbar icons.
+the right icons. loadIcon (used by BarIcon) returns only toolbar icons.
 If you need icons for applications, use loadApplicationIcon or 
 loadApplicationMiniIcon. loadMiniIcon has been removed as it did the
 same as loadApplicationMiniIcon.
+The other big change you may notice, is that ICON and Icon have been
+removed as they caused big confusion for not loading application icons
+(see above). For this we added BarIcon which does the same as ICON before.
+The third change in this row is that loadIcon doesn't need the extension
+anymore, but looks for standard extensions (png, xpm) itself. If you hard-
+coded .xpm, loadIcon will issue a warning at runtime, but will still work
+in stripping off the .xpm part
 
 ////////////////////////////////////////////////////////////////////////
 // * KDialog
