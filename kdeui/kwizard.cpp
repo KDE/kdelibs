@@ -24,7 +24,6 @@
 struct KWizProtected
 {
   QPopupMenu       *menu;
-  QAccel           *accel;
   QWidget          *currentwidget;
   KSeparator       *sep1;
   KSeparator       *sep2;
@@ -48,8 +47,35 @@ struct KWizProtected
   
 };
 
+KDialog::KDialog(QWidget *parent, const char *name, bool modal, WFlags f)
+  : QDialog(parent, name, modal, f)
+{
+  //debug("KWizard creation");
+
+  initMetaObject();
+  setFocusPolicy(QWidget::StrongFocus);
+
+}
+
+// Grab QDialogs keypresses if non-modal.
+bool KDialog::eventFilter( QObject *obj, QEvent *e )
+{
+  if ( e->type() == Event_KeyPress && obj == this && !testWFlags(WType_Modal))
+  {
+    QKeyEvent *k = (QKeyEvent*)e;
+    if(k->key() == Key_Escape || k->key() == Key_Return || k->key() == Key_Enter)
+    {
+      debug("KDialog - Received keyevent");
+      return true;
+    }
+  }
+
+  return false;
+}
+
 KWizard::KWizard(QWidget *parent, const char *name, bool modal, WFlags f)
-  : QWidget(parent, name, modal ? (f | WType_Modal) : f)
+  : KDialog(parent, name, modal, f)
+//  : QWidget(parent, name, modal ? (f | WType_Modal) : f)
 {
   //debug("KWizard creation");
 
@@ -61,10 +87,6 @@ KWizard::KWizard(QWidget *parent, const char *name, bool modal, WFlags f)
 
   pwiz->menu = new QPopupMenu();
   connect( pwiz->menu, SIGNAL(activated(int)), SLOT(gotoPage(int)));
-
-  pwiz->accel = new QAccel(this);
-  pwiz->accel->connectItem(pwiz->accel->insertItem(Key_PageDown), this, SLOT(nextPage()) );
-  pwiz->accel->connectItem(pwiz->accel->insertItem(Key_PageUp), this, SLOT(previousPage()) );
 
   pwiz->numpages = 0;
   pwiz->current = -1;
@@ -100,6 +122,8 @@ KWizard::KWizard(QWidget *parent, const char *name, bool modal, WFlags f)
   pwiz->next = new QPushButton(NEXT, this);
   pwiz->next->hide();
   connect( pwiz->next, SIGNAL(clicked()), SLOT(nextPage()));
+
+  installEventFilter(this);
 
   //debug("KWizard created");
 }
@@ -501,6 +525,20 @@ int KWizard::addPage(KWizardPage *p)
   return (p->id);
 }
 
+void KWizard::setPage(int id, QWidget *w)
+{
+  if(!w || pages->count() <= (uint)id)
+    return;
+  pages->at(id)->w = w;
+}
+
+void KWizard::setPage(int id, QString title)
+{
+  if(pages->count() <= (uint)id)
+    return;
+  pages->at(id)->title = title;
+}
+
 void KWizard::setPageEnabled(int id, bool state)
 {
   if(id >= 0 && id < pwiz->numpages)
@@ -658,9 +696,11 @@ void KWizard::previousPage()
     gotoPage(pwiz->current - 1);
 }
 
-bool KWizard::eventFilter( QObject *, QEvent *e )
+// Grab QDialogs keypresses if non-modal and grab mouse events on title
+// to popup menu.
+bool KWizard::eventFilter( QObject *obj, QEvent *e )
 {
-  if ( e->type() == Event_MouseButtonPress )
+  if ( e->type() == Event_MouseButtonPress && obj == pwiz->title)
   {
     QMouseEvent *m = (QMouseEvent*)e;
     if(pwiz->title->rect().contains( m->pos()) && m->button() == RightButton)
@@ -673,6 +713,24 @@ bool KWizard::eventFilter( QObject *, QEvent *e )
       return true;
     }
   }
+
+  if ( e->type() == Event_KeyPress && obj == this)
+  {
+    QKeyEvent *k = (QKeyEvent*)e;
+    if(k->key() == Key_PageUp)
+    {
+      debug("Received keyevent PageUp");
+      previousPage();
+      return true;
+    }
+    else if(k->key() == Key_PageDown)
+    {
+      debug("Received keyevent PageDown");
+      nextPage();
+      return true;
+    }
+  }
+
   return false;
 }
 
