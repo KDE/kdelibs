@@ -461,7 +461,7 @@ QString KLocale::formatMoney(const QString &numStr) const
 QString KLocale::formatNumber(double num) const
 {
 #ifdef HAVE_SETLOCALE
-  return QString().sprintf("%'.2f", num);
+  return QString().sprintf("%.2f", num);
 #endif
   return QString().setNum(num);
 }
