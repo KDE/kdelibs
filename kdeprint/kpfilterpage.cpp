@@ -24,7 +24,6 @@
 
 #include <qpushbutton.h>
 #include <qheader.h>
-#include <qinputdialog.h>
 #include <qtooltip.h>
 #include <qlayout.h>
 #include <qtextview.h>
@@ -109,25 +108,12 @@ void KPFilterPage::updateButton()
 
 void KPFilterPage::slotAddClicked()
 {
-	if (m_filters.count() == 0)
-	{
-		m_filters = KXmlCommandManager::self()->commandListWithDescription();
-	}
-	QStringList	l;
-	for (int i=0;i<(int)m_filters.count();i+=2)
-		if (m_activefilters.find(m_filters[i]) == 0)
-			l.append(m_filters[i+1]);
-	if (l.count() == 0)
-	{
-		KMessageBox::error(this,i18n("No more available filters."));
-		return;
-	}
 	bool	ok;
-	QString	choice = QInputDialog::getItem(i18n("Add Filter"),i18n("Select the filter to add:"),l,0,false,&ok,this);
+	QString choice = KXmlCommandManager::self()->selectCommand( this );
+	ok = !choice.isEmpty();
 	if (ok)
 	{
-		int		index = m_filters.findIndex(choice)-1;
-		KXmlCommand	*cmd = KXmlCommandManager::self()->loadCommand(m_filters[index]);
+		KXmlCommand	*cmd = KXmlCommandManager::self()->loadCommand(choice);
 		QStringList	filters = activeList();
 		int		pos = KXmlCommandManager::self()->insertCommand(filters, cmd->name());
 		QListViewItem	*prev(0);
@@ -138,7 +124,7 @@ void KPFilterPage::slotAddClicked()
 				prev = prev->nextSibling();
 		}
 		m_activefilters.insert(cmd->name(), cmd);
-		QListViewItem	*item = new QListViewItem(m_view, prev, choice, cmd->name());
+		QListViewItem	*item = new QListViewItem(m_view, prev, cmd->description(), cmd->name());
 		item->setPixmap(0, SmallIcon("filter"));
 		checkFilterChain();
 	}
