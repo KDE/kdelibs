@@ -35,9 +35,11 @@ AUTOMAKE_OPTIONS = foreign 1.4
 include_HEADERS = kde.pot
 
 messages:
+	$(EXTRACTRC) */*.rc > rc.cpp	
 	: > kde.pot
-	$(XGETTEXT) -x qt-messages.pot common_texts.cpp */*.cpp */*.cc && cat messages.po qt-messages.pot > $(podir)/kdelibs.pot; rm messages.po
+	$(XGETTEXT) -x qt-messages.pot rc.cpp common_texts.cpp */*.cpp */*.cc && cat messages.po qt-messages.pot > $(podir)/kdelibs.pot; rm messages.po
 	$(XGETTEXT) common_texts.cpp -o kde.pot
+	rm -f rc.cpp
 
 EXTRA_DIST = admin bsd-port debian kdelibs.spec.in kde.pot
 
