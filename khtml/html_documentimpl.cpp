@@ -85,7 +85,7 @@ HTMLDocumentImpl::HTMLDocumentImpl(KHTMLWidget *v, KHTMLCache *c)
     if (!pFontManager)
 	pFontManager = new HTMLFontManager();
     if (!pSettings)
-	pSettings = new HTMLSettings();
+	pSettings = new HTMLSettings(*(view->settings()));
 }
 
 HTMLDocumentImpl::~HTMLDocumentImpl()
@@ -273,7 +273,7 @@ void HTMLDocumentImpl::layout( bool deep )
 void HTMLDocumentImpl::setAvailableWidth(int w) {
     if(w != -1) width = w;
 
-    if(_first) 
+    if(_first)
 	_first->setAvailableWidth(w);
 #if 0
     if(bodyElement)

@@ -437,6 +437,7 @@ public:
     void setMarginHeight(int y) { _marginHeight = y; }
     int marginHeight() { return _marginHeight; }
 
+    HTMLSettings *settings();
 
 public slots:
     virtual void slotStop();
@@ -719,7 +720,7 @@ protected:
 private:
 
     HTMLSettings *defaultSettings;
-    HTMLSettings *settings;
+    HTMLSettings *_settings;
 
     bool bIsTextSelected;
     bool _isFrame;

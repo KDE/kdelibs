@@ -17,6 +17,7 @@
 #include "khtmlfont.h"
 #include "khtmlio.h"
 #include <qcursor.h>
+#include <qcolor.h>
 
 int main(int argc, char *argv[])
 {
@@ -31,9 +32,11 @@ int main(int argc, char *argv[])
     //doc->setFollowsLinks(false);
 
     a.setTopWidget(doc);
+    doc->setURLCursor(QCursor(PointingHandCursor));
+    doc->setDefaultTextColors(QColor(Qt::black), QColor(Qt::red),
+			      QColor(Qt::green));
     doc->openURL(argv[1]);
     a.setTopWidget(doc);
-    doc->setURLCursor(QCursor(PointingHandCursor));
     doc->show();
 
     QPushButton *p = new QPushButton(0, 0);

@@ -204,24 +204,21 @@ const unsigned short tagPriority[] = {
 KHTMLParser::KHTMLParser( KHTMLWidget *_parent,
 			  HTMLDocumentImpl *doc)
 {
-    //printf("parser constructor\n");
+    printf("parser constructor\n");
 
     HTMLWidget    = _parent;
     document      = doc;
 
     blockStack = 0;
 
-    // ### default settings should be created only once per app...
-    settings = new HTMLSettings;
-
     // Style stuff
-    styleSheet = new CSSStyleSheet(settings);
+    styleSheet = new CSSStyleSheet(HTMLWidget->settings());
 
 #ifdef CSS_TEST
     styleSheet->test();
 #endif
 
-    currentStyle = styleSheet->newStyle(NULL);
+    currentStyle = styleSheet->newStyle(0);
 
     // ID_CLOSE_TAG == Num of tags
     forbiddenTag = new ushort[ID_CLOSE_TAG+1];
@@ -233,8 +230,6 @@ KHTMLParser::~KHTMLParser()
 {
     delete styleSheet;
     freeBlock();
-
-    delete settings;
 
     delete [] forbiddenTag;
 

@@ -65,7 +65,7 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name)
 
     setCursor(arrowCursor);
     _isFrame = false;
-    
+
     init();
 }
 
@@ -84,7 +84,7 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, KHTMLWidget *_parent_browser, const c
     setCursor(arrowCursor);
     _isFrame = true;
     if(_parent) setURLCursor(_parent->urlCursor());
-    
+
     init();
 }
 
@@ -131,7 +131,7 @@ void KHTMLWidget::init()
   decoder = 0;
   cache = new KHTMLCache(this);
   defaultSettings = new HTMLSettings;
-  settings = 0;
+  _settings = 0;
 
   _marginWidth = 5;
   _marginHeight = 5;
@@ -150,8 +150,8 @@ void KHTMLWidget::clear()
     decoder = 0;
     delete jscript;
     jscript = 0;
-    if ( settings ) delete settings;
-    settings = 0;
+    if ( _settings ) delete _settings;
+    _settings = 0;
 
     m_lstChildren.clear();
 
@@ -275,7 +275,7 @@ void KHTMLWidget::begin( const QString &_url, int _x_offset, int _y_offset )
 
     m_iNextXOffset = _x_offset;
     m_iNextYOffset = _y_offset;
-    
+
     // ###
     //stopParser();
     m_strURL = _url;
@@ -301,6 +301,8 @@ void KHTMLWidget::begin( const QString &_url, int _x_offset, int _y_offset )
         emit setTitle( "* Unknown *" );
     }
 
+    if(!_settings) _settings = new HTMLSettings( *defaultSettings);
+
     document = new HTMLDocumentImpl(this, cache);
     document->ref();
     document->open();
@@ -311,8 +313,6 @@ void KHTMLWidget::begin( const QString &_url, int _x_offset, int _y_offset )
 
     // ###
     //emit documentStarted();
-
-    settings = new HTMLSettings( *defaultSettings);
 
     m_bParsing = true;
 }
@@ -736,6 +736,8 @@ void KHTMLWidget::slotFormSubmitted( const QString &_method, const QString &_url
 
 void KHTMLWidget::setDefaultTextColors( const QColor& _textc, const QColor& _linkc, const QColor& _vlinkc )
 {
+    printf("setting default text colors\n");
+    
     defaultSettings->fontBaseColor = _textc;
     defaultSettings->linkColor = _linkc;
     defaultSettings->vLinkColor = _vlinkc;
@@ -844,7 +846,7 @@ void KHTMLWidget::end()
   KURL u(m_strURL);
   if ( !u.htmlRef().isEmpty() )
       gotoAnchor( u.htmlRef() );
-  else 
+  else
       setContentsPos( m_iNextXOffset, m_iNextYOffset );
 
 
@@ -897,7 +899,7 @@ void KHTMLWidget::layout()
 	    setVScrollBarMode(AlwaysOff);
 	    setHScrollBarMode(AlwaysOff);
 	    _width = width();
-	    
+	
 	    document->setAvailableWidth(_width);
 	    document->layout(true);
 	    return;
@@ -1421,4 +1423,11 @@ bool KHTMLWidget::isFrameSet()
 
     if(document->body()->id() == ID_FRAMESET) return true;
     return false;
+}
+
+HTMLSettings *KHTMLWidget::settings()
+{
+    // ### check all settings stuff in khtml.cpp for memory leaks...
+    if(!_settings) _settings = new HTMLSettings(*defaultSettings);
+    return _settings; 
 }
