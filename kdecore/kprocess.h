@@ -107,7 +107,17 @@
   -- Closes the child process's stdin (which causes it to see a "feof(stdin)")
   Returns false if you try to close stdin for a process that has been started
   without a communication channel to stdin.
-  
+
+  bool closeStdout();
+  -- Closes the child process's stdout
+  Returns false if you try to close stdout for a process that has been started
+  without a communication channel to stdout
+
+  bool closeStdout();
+  -- Closes the child process's stderr
+  Returns false if you try to close stderr for a process that has been started
+  without a communication channel to stderr
+
   QT signals:
   
   void receivedStdout(KProcess *proc, char *buffer, int buflen);
@@ -132,9 +142,14 @@ public:
 	* the values have to be or'ed together, for example to get
 	* communication with stdout as well as with stdin, you would
 	* specify "Stdin | Stdout"
+	*
+	* If "NoRead" is specified in conjunction with Stdout, 
+	* no data is actually read from "Stdout" but only
+	* the signal "childOutput(int fd)" is emitted.
   */
   enum Communication { NoCommunication = 0, Stdin = 1, Stdout = 2, Stderr = 4,
-					   AllOutput = 6, All = 7 };
+					   AllOutput = 6, All = 7,
+					   NoRead };
 
   /** 
    * Run-modes for a child process.       
@@ -232,6 +247,15 @@ public:
   */    
   pid_t getPid();
 
+  /**
+   * Suspend processing of data from Stdout of the child process.
+   */
+  void suspend();
+   
+  /**
+   * Resume processing of data from Stdout of the child process.
+   */
+  void resume();
 
   /** 
 	@return true if the process has already finished and has exited
@@ -284,6 +308,22 @@ public:
   */
   bool closeStdin();
 
+  /**
+     This causes the stdout file descriptor of the child process to be
+     closed.
+	 +) No communication to the process's stdout has been specified
+	 in the "start" call.
+  */
+  bool closeStdout();
+
+  /**
+     This causes the stderr file descriptor of the child process to be
+     closed.
+	 +) No communication to the process's stderr has been specified
+	 in the "start" call.
+  */
+  bool closeStderr();
+
   signals: 
 
   /**
@@ -307,6 +347,17 @@ public:
      data structures before returning from this slot.
   */
   void receivedStdout(KProcess *proc, char *buffer, int buflen);
+
+  /**
+     These signals get emitted, when output from the child process has
+	 been received on stdout. -- To actually get
+	 these signals, the respective communication link (stdout/stderr)
+	 has to be turned on in "start" and the "NoRead" flag should
+	 have been passed.
+
+     The data still has to be read from file descriptor fd.
+  */
+  void receivedStdout(int fd, int &len);
 
 
   /**

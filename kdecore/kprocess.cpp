@@ -298,15 +298,57 @@ bool KProcess::writeStdin(const char *buffer, int buflen)
   return rv;
 }
 
+void KProcess::suspend()
+{
+  if ((communication & Stdout) && outnot)
+     outnot->setEnabled(false);
+}
 
+void KProcess::resume()
+{
+  if ((communication & Stdout) && outnot)
+     outnot->setEnabled(true);
+}
 
 bool KProcess::closeStdin()
 {
   bool rv;
 
   if (communication & Stdin) {
-    innot->setEnabled(false);
+    communication = (Communication) (communication & ~Stdin);
+    delete innot;
+    innot = 0;
     close(in[1]);
+    rv = true;
+  } else
+    rv = false;
+  return rv;
+}
+
+bool KProcess::closeStdout()
+{
+  bool rv;
+
+  if (communication & Stdout) {
+    communication = (Communication) (communication & ~Stdout);
+    delete outnot;
+    outnot = 0;
+    close(out[0]);
+    rv = true;
+  } else
+    rv = false;
+  return rv;
+}
+
+bool KProcess::closeStderr()
+{
+  bool rv;
+
+  if (communication & Stderr) {
+    communication = (Communication) (communication & ~Stderr);
+    delete errnot;
+    errnot = 0;
+    close(err[0]);
     rv = true;
   } else
     rv = false;
@@ -322,20 +364,16 @@ bool KProcess::closeStdin()
 
 void KProcess::slotChildOutput(int fdno)
 {
-  if (!childOutput(fdno)) {
-	outnot->setEnabled(false);	
-  }
+  if (!childOutput(fdno)) 
+     closeStdout();	
 }
-
 
 
 void KProcess::slotChildError(int fdno)
 {
-  if (!childError(fdno)) {
-    errnot->setEnabled(false);
-  }
+  if (!childError(fdno))
+     closeStderr();
 }
-
 
 
 void KProcess::slotSendData(int)
@@ -372,15 +410,24 @@ void KProcess::processHasExited(int state)
 
 int KProcess::childOutput(int fdno)
 {
-  char buffer[1024];
-  int len;
-
-  len = ::read(fdno, buffer, 1024);
-
-  if ( 0 < len) {
-	emit receivedStdout(this, buffer, len);
+  if (communication & NoRead) {
+     int len = -1;
+     emit receivedStdout(fdno, len);
+     errno = 0; // Make sure errno doesn't read "EAGAIN"
+     return len;
   }
-  return len;
+  else
+  {
+     char buffer[1024];
+     int len;
+
+     len = ::read(fdno, buffer, 1024);
+
+     if ( 0 < len) {
+   	emit receivedStdout(this, buffer, len);
+     }
+     return len;
+  }
 }
 
 
@@ -437,7 +484,7 @@ int KProcess::commSetupDoneP()
 	if (run_mode == Block) return ok;
 
 	if (communication & Stdin) {
-	  ok &= (-1 != fcntl(in[1], F_SETFL, O_NONBLOCK));
+//	  ok &= (-1 != fcntl(in[1], F_SETFL, O_NONBLOCK));
 	  innot =  new QSocketNotifier(in[1], QSocketNotifier::Write, this);
 	  CHECK_PTR(innot);
 	  innot->setEnabled(false); // will be enabled when data has to be sent
@@ -446,15 +493,17 @@ int KProcess::commSetupDoneP()
 	}
 
 	if (communication & Stdout) {
-	  ok &= (-1 != fcntl(out[0], F_SETFL, O_NONBLOCK));
+//	  ok &= (-1 != fcntl(out[0], F_SETFL, O_NONBLOCK));
 	  outnot = new QSocketNotifier(out[0], QSocketNotifier::Read, this);
 	  CHECK_PTR(outnot);
 	  QObject::connect(outnot, SIGNAL(activated(int)),
 					   this, SLOT(slotChildOutput(int)));
+          if (communication & NoRead)
+              suspend();
 	}
 
 	if (communication & Stderr) {
-	  ok &= (-1 != fcntl(err[0], F_SETFL, O_NONBLOCK));
+//	  ok &= (-1 != fcntl(err[0], F_SETFL, O_NONBLOCK));
 	  errnot = new QSocketNotifier(err[0], QSocketNotifier::Read, this );
 	  CHECK_PTR(errnot);
 	  QObject::connect(errnot, SIGNAL(activated(int)),
@@ -521,12 +570,14 @@ void KProcess::commClose()
             if (out[0] > max_fd)
               max_fd = out[0];
             delete outnot;
+            outnot = 0;
           }
           if (b_err) {
 	    fcntl(err[0], F_SETFL, O_NONBLOCK);
             if (err[0] > max_fd)
               max_fd = err[0];
             delete errnot;
+            errnot = 0;
           }
            
 
