@@ -254,8 +254,8 @@ void HTMLTokenizer::processListing(DOMStringIt list)
                 if ( textarea ) {
                     prePos++;
                     *dest++ = *list;
-                }
-                pending = LFPending;
+                } else
+                    pending = LFPending;
             }
             /* Check for MS-DOS CRLF sequence */
             if (*list == '\r')

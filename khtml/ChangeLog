@@ -1,3 +1,7 @@
+2003-10-29  Stephan Kulow  <coolo@kde.org>
+
+	* html/htmltokenizer.cpp (processListing): fixing textarea regression
+
 2003-10-29  David Faure  <faure@kde.org>
 
 	* ecma/kjs_dom.cpp: Patch from Darin Adler to implement Node.item.
