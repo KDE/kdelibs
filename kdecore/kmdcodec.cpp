@@ -837,7 +837,7 @@ void KMD5::finalize ()
 
     Q_UINT8 bits[8];
     Q_UINT32 index, padLen;
-    static unsigned char PADDING[64]=
+    static const unsigned char PADDING[64]=
     {
         0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
