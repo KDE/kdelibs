@@ -44,7 +44,7 @@ class QLabel;
  *
  * @author David Faure <faure@kde.org>
  */
-class KOpenWithDlg : public QDialog
+class KOpenWithDlg : public QDialog //#TODO: Use KDialogBase for KDE4
 {
     Q_OBJECT
 public:
