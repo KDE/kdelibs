@@ -42,15 +42,15 @@
 #include <kcrash.h>
 #include <kdesu/client.h>
 #include <klocale.h>
-#include <kprotocolmanager.h>
+
 #include <ksocks.h>
 
 #include "slavebase.h"
 
 #include "kio/slavebase.h"
-#include "kio/slaveinterface.h"
 #include "kio/connection.h"
 #include "kio/ioslave_defaults.h"
+#include "kio/slaveinterface.h"
 
 using namespace KIO;
 
@@ -766,7 +766,6 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         connectSlave(mPoolSocket);
     } break;
     case CMD_REPARSECONFIGURATION:
-        KProtocolManager::reparseConfiguration();
         reparseConfiguration();
         break;
     case CMD_CONFIG:
