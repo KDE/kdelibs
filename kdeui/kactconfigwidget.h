@@ -50,7 +50,7 @@ public:
 	
 public slots:
 	void allDefault();
-	void listSync();
+	void updateView();
 
 protected slots:
 	void configItem( QListViewItem * );

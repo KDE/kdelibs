@@ -28,6 +28,8 @@ KAction::KAction( const char *desc,
 	_accelId( -1 ),
 
 	_triggers( 0 ),
+	_autoUpdate( true ),
+
 	_receiver( 0 ),
 	_member( QString::null )
 {
@@ -94,6 +96,8 @@ void KAction::setAccel( int accel )
 			emit globalAccel( this, _accel );
 		}
 	}
+
+	signalUpdate();
 }
 
 void KAction::addMenuItem( MenuType *menu, int id )
@@ -170,22 +174,7 @@ void KAction::senderDead()
 		return;
 	}
 
-	const Trigger *sdr = (const Trigger *)s;
-
-	for (TriggerInfo *curr = _triggers->first(); curr != 0; ) {
-		if( curr->type != Button ) {
-			curr = _triggers->next();
-			continue;
-		}
-
-		if ( curr->item.trigger == sdr ) {
-			_triggers->remove();
-			curr = _triggers->current();
-			continue;
-		}
-
-		curr = _triggers->next();
-	}
+	removeTrigger( (Trigger *)s );
 }
 
 void KAction::menuDead()
@@ -198,29 +187,7 @@ void KAction::menuDead()
 		return;
 	}
 
-	const MenuType *sdr = (MenuType *)s;
-	int menuCount = 0;
-
-	for (TriggerInfo *curr = _triggers->first(); curr != 0; ) {
-		if( curr->type != Menu ) {
-			curr = _triggers->next();
-			continue;
-		}
-
-		++menuCount;
-
-		if ( curr->item.menu == sdr ) {
-			_triggers->remove();
-			curr = _triggers->current();
-			continue;
-		}
-
-		curr = _triggers->next();
-	}
-
-	if ( menuCount == 0 && _accel != 0 ) {
-		emit globalAccel( this, _accel );
-	}
+	removeMenu( (MenuType *)s );
 }
 
 void KAction::menuActivated( int id )
@@ -407,6 +374,8 @@ void KAction::setIcon( const QString& iconp )
 {
 	_iconPath = iconp;
 	delete _icon; _icon = 0;
+
+	signalUpdate();
 }
 
 const QIconSet& KAction::icon() const
@@ -422,5 +391,84 @@ const QIconSet& KAction::icon() const
 	return *_icon;
 }
 
+void KAction::removeTrigger( Trigger *uitrigger )
+{
+	if( _triggers == 0 ) {
+		return;
+	}
+
+	for (TriggerInfo *curr = _triggers->first(); curr != 0; ) {
+		if( curr->type != Button ) {
+			curr = _triggers->next();
+			continue;
+		}
+
+		if ( curr->item.trigger == uitrigger ) {
+			_triggers->remove();
+			curr = _triggers->current();
+			continue;
+		}
+
+		curr = _triggers->next();
+	}
+}
+
+void KAction::removeMenu( MenuType *menu )
+{
+	if( _triggers == 0 ) {
+		return;
+	}
+
+	int menuCount = 0;
+
+	for (TriggerInfo *curr = _triggers->first(); curr != 0; ) {
+		if( curr->type != Menu ) {
+			curr = _triggers->next();
+			continue;
+		}
+
+		if ( curr->item.menu == menu ) {
+			_triggers->remove();
+			curr = _triggers->current();
+			continue;
+		}
+
+		++menuCount;
+		curr = _triggers->next();
+	}
+
+	if ( menuCount == 0 && _accel != 0 ) {
+		emit globalAccel( this, _accel );
+	}
+}
+
+void KAction::removeMenuItem( MenuType *menu, int id )
+{
+	if( _triggers == 0 ) {
+		return;
+	}
+
+	int menuCount = 0;
+
+	for (TriggerInfo *curr = _triggers->first(); curr != 0; ) {
+		if( curr->type != Menu ) {
+			curr = _triggers->next();
+			continue;
+		}
+
+		if ( curr->item.menu == menu && curr->id == id ) {
+			_triggers->remove();
+			curr = _triggers->current();
+			continue;
+		}
+
+		++menuCount;
+		curr = _triggers->next();
+	}
+
+	if ( menuCount == 0 && _accel != 0 ) {
+		emit globalAccel( this, _accel );
+	}
+}
 
 #include"kaction.moc"

@@ -29,16 +29,6 @@ public:
 
 private:
 
-	/**
-	 * Encapsulates a menu item that can trigger the action.
-	 */
-	class MenuTrigger {
-	public:
-		MenuType *menu;
-		int	id;
-		MenuTrigger( MenuType *m, int i ) { menu = m; id = i; }
-	};
-
 	enum TriggerType { Menu, Button };
 	
 	/**
@@ -70,15 +60,23 @@ private:
 	QString _toolTip;
 
 	QString	 _iconPath;
+
 	QIconSet *_icon;
 	int _accel;
 	int _accelId;
 
 	Triggers	*_triggers;
+	bool		_autoUpdate;
 
 	QObject		*_receiver;
 	QString		_member;
 
+	
+	/**
+	 * Conditional update signal.
+	 */
+	void signalUpdate() { if ( _autoUpdate ) updated(); }
+	
 public:
 	/**
 	* KAction Constructor.
@@ -92,27 +90,34 @@ public:
 	*/
 	virtual ~KAction();
 
-	/**
-	 * Load the icon using the global @ref KIconLoader.
-	 */
-	void setIcon( const QString& iconpath );
-	QString iconPath() const		{ return _iconPath; }
-
 	const QIconSet& icon() const;
 
-	void setWhatsThis( const QString& whatsthis )
-						{ _whatsThis = whatsthis; }
-	QString whatsThis() const		{ return _whatsThis; }
+	/**
+	 * Load the icon using the global @ref KIconLoader.
+	 * @param iconpath The icon filename.
+	 */
+	void setIcon( const QString& iconpath );
 
-	void setToolTip( const QString& tip )	{ _toolTip = tip; }
+	QString iconPath() const		{ return _iconPath; }
+
+
+	QString whatsThis() const		{ return _whatsThis; }
+	void setWhatsThis( const QString& whatsthis )
+			{ _whatsThis = whatsthis; signalUpdate(); }
+
+
+
 	QString toolTip() const			{ return _toolTip; }
+	void setToolTip( const QString& tip )	
+		{ _toolTip = tip; signalUpdate(); }
 
 	/**
 	 * @return the name of this action. 
 	 */
 	const QString& desc() const 		{ return _name; }
 	const QString& localDesc() const	{ return _localName; }
-	void setLocalDesc( const QString& name ){ _localName = name; }
+	void setLocalDesc( const QString& name )
+		{ _localName = name; signalUpdate(); }
 
 	const QObject *receiver()	{ return _receiver; }
 	const QString& member()		{ return _member; }
@@ -131,11 +136,23 @@ public:
 			const char *member = SIGNAL(clicked()),
 			bool allowDisable = true );
 	
+	void removeTrigger( Trigger *uitrigger );
+	void removeMenu( MenuType *menu );
+	void removeMenuItem( MenuType *menu, int id );
+	
+	void setAutoUpdate( bool updates = true ) { _autoUpdate = updates; }
+	bool autoUpdate() const { return _autoUpdate; }
+	
 	/**
 	 * Enable/disable the signal and all associated trigger objects.
 	 */
 	void setEnabled( bool enabled = true );
 	bool enabled() const { return !signalsBlocked(); }
+
+	/**
+	 * Updates any connected UI elements to reflect any changes in
+	 * configuration.
+	 */
 
 	virtual void writeConfig( KConfigBase& );
 	virtual bool readConfig( const KConfigBase& );
@@ -163,9 +180,10 @@ signals:
 	
 	/**
 	 * Emitted when the user information (icon, tooltip, WhatsThis ) has
-	 * been changed.
+	 * been changed. Not raised if auto updates are disabled.
+	 * @see setAutoUpdate
 	 */
-	void infoChanged();
+	void updated();
 
 	/**
 	 * Emitted when the action expects the parent to set a widget-level

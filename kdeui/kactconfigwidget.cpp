@@ -45,6 +45,12 @@ KActionConfigWidget::KActionConfigWidget( KUIActions *actions,
 	QBoxLayout *layout = new QVBoxLayout( this, 1 );
 	layout->addWidget( _listView );
 	layout->addWidget( _itemcfg );
+
+	// select first action if present
+	QListViewItem *i = _listView->firstChild();
+	if( i ) {
+		_listView->setSelected( i, true );
+	}
 }
 
 KActionConfigWidget::~KActionConfigWidget()
@@ -61,7 +67,7 @@ void KActionConfigWidget::allDefault()
 	}
 }
 
-void KActionConfigWidget::listSync()
+void KActionConfigWidget::updateView()
 {
 	QListIterator<CfgItem> iter( _items );
 
@@ -85,14 +91,15 @@ void KActionConfigWidget::fillListView()
 		_listView->insertItem( item );
 		_items.append( item );
 	}
+
 }
 
 void KActionConfigWidget::configItem( QListViewItem *vitem )
 {
 	// warning: downcast
 	CfgItem *item = (CfgItem *)vitem;
-	_itemcfg->_iconBtn->setIcon( item->action->iconPath() );
 
+	_itemcfg->_iconBtn->setIcon( item->action->iconPath() );
 }
 
 void KActionConfigWidget::setIcon( const QString& icon )
