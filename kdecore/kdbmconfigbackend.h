@@ -3,6 +3,10 @@
 
 class  KConfigDBMBackEndPrivate;
 
+/**
+  * @short (Not yet in libkdecore) Backend to use dbm files as configuration files.
+  */
+
 class KConfigDBMBackEnd
 	: public KConfigBackEnd
 {
