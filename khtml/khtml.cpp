@@ -1270,13 +1270,13 @@ void KHTMLWidget::begin( const char *_url, int _x_offset, int _y_offset )
     if ( _url != 0 )
     {
         actualURL = _url;
-        reference = actualURL.reference();
+        reference = actualURL.ref();
         setBaseURL( _url);
 
         // Set a default title
         KURL title(_url);
-        title.setReference(QString::null);
-        title.setSearchPart(QString::null);
+        title.setRef(QString::null);
+        title.setQuery(QString::null);
         emit setTitle( title.url().data() );
     }
     else
@@ -2536,10 +2536,11 @@ bool KHTMLWidget::URLVisited( const char *_url )
 void KHTMLWidget::setBaseURL( const char *_url)
 {
     baseURL = _url;
-    baseURL.setReference( QString::null );
-    baseURL.setSearchPart( QString::null );
+    baseURL.setRef( QString::null );
+    baseURL.setQuery( QString::null );
             
-    QString p = baseURL.httpPath();
+    QString p = baseURL.path(); 
+       // was httpPath(); is it really important NOT to decode it ? (David)
                
     if ( p.length() > 0 )
     {
@@ -2808,7 +2809,7 @@ KHTMLWidget::restore(SavedPage *p)
 	end();
 	
 	actualURL = p->url;
-	reference = actualURL.reference();
+	reference = actualURL.ref();
 	setBaseURL( p->url);
     }
     

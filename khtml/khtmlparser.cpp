@@ -946,7 +946,7 @@ void KHTMLParser::parseTagA(void)
 	    if ( *p == '#' )
 	    {// reference
 		KURL u( HTMLWidget->getDocumentURL() );
-		u.setReference( p + 1 );
+		u.setRef( p + 1 );
 	        tmpurl = u.url();
 	    }
 	    else
@@ -1044,7 +1044,7 @@ void KHTMLParser::parseTagArea(void)
 	    if ( *p == '#' )
 	    {// reference
 	        KURL u( HTMLWidget->getDocumentURL() );
-	        u.setReference( p + 1 );
+	        u.setRef( p + 1 );
 	        href = ht->newString(u.url().data());
             }
             else 
@@ -2537,7 +2537,7 @@ void KHTMLParser::parseTagMeta(void)
 		     if ( *token == '#' )
 		     {// reference
 		         KURL u( HTMLWidget->actualURL );
-		         u.setReference( token + 1 );
+		         u.setRef( token + 1 );
 		         url = u.url();
 		     }
 		     else 

@@ -1763,7 +1763,7 @@ bool HTMLMap::fileLoaded( QIODevice& file )
       if ( *p == '#' )
       {// reference
 	KURL u( htmlWidget->getDocumentURL() );
-	u.setReference( p + 1 );
+	u.setRef( p + 1 );
 	href = u.url();
       }
       else if ( strchr( p, ':' ) )
