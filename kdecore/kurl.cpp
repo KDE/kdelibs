@@ -1037,6 +1037,60 @@ bool KURL::isLocalFile() const
   return ( ( m_strProtocol == fileProt ) && ( m_strHost.isEmpty()) && !hasSubURL() );
 }
 
+void KURL::setFileEncoding(const QString &encoding)
+{
+  if (!isLocalFile()) 
+     return;
+
+  QString q = query();
+
+  if (!q.isEmpty() && (q[0] == '?'))
+     q = q.mid(1);
+
+  QStringList args = QStringList::split('&', q);
+  for(QStringList::Iterator it = args.begin();
+      it != args.end();)
+  {
+      QString s = decode_string(*it);
+      if (s.startsWith("charset="))
+         it = args.erase(it);
+      else
+         ++it;
+  }
+  if (!encoding.isEmpty())
+     args.append("charset="+encode_string(encoding));
+
+  if (args.isEmpty())
+     setQuery(QString::null);
+  else
+     setQuery(args.join("&"));
+}
+  
+QString KURL::fileEncoding() const
+{
+  if (!isLocalFile()) 
+     return QString::null;
+  
+  QString q = query();
+
+  if (q.isEmpty())
+     return QString::null;
+
+  if (q[0] == '?')
+     q = q.mid(1);
+
+  QStringList args = QStringList::split('&', q);
+  for(QStringList::ConstIterator it = args.begin();
+      it != args.end();
+      ++it)
+  {
+      QString s = decode_string(*it);
+      if (s.startsWith("charset="))
+         return s.mid(8); 
+  }
+  return QString::null;
+}
+
 bool KURL::hasSubURL() const
 {
   if ( m_strProtocol.isEmpty() || m_bIsMalformed )

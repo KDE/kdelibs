@@ -317,6 +317,18 @@ public:
    *         attached to it.
    */
   bool isLocalFile() const;
+  
+  /**
+   * Add encoding information to url.
+   */
+  void setFileEncoding(const QString &encoding);
+  
+  /**
+   * Query encoding information from url.
+   * @return An encoding suitable for QTextCodec::codecForName()
+   *         or an empty string if not encoding was specified.
+   */
+  QString fileEncoding() const;
 
   /**
    * @return @p true if the file has at least one sub URL.
