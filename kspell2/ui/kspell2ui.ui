@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.2" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
 <class>KSpell2UI</class>
 <widget class="QWidget">
     <property name="name">
@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>438</width>
-            <height>308</height>
+            <width>481</width>
+            <height>311</height>
         </rect>
     </property>
     <property name="sizePolicy">
@@ -29,377 +29,294 @@
     <property name="caption">
         <string>KSpell2UI</string>
     </property>
-    <widget class="QLabel">
+    <grid>
         <property name="name">
-            <cstring>textLabel2</cstring>
+            <cstring>unnamed</cstring>
         </property>
-        <property name="geometry">
-            <rect>
-                <x>11</x>
-                <y>40</y>
-                <width>89</width>
-                <height>29</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Unknown word:</string>
-        </property>
-        <property name="whatsThis" stdset="0">
-            <string>&lt;qt&gt;&lt;p&gt;This word was considered to be an "unknown word" because it does not match any entry in the dictionary currently in use. It may also be a word in a foreign language.&lt;/p&gt;
+        <widget class="QLabel" row="1" column="0" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>textLabel2</cstring>
+            </property>
+            <property name="text">
+                <string>Unknown word:</string>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>&lt;qt&gt;&lt;p&gt;This word was considered to be an "unknown word" because it does not match any entry in the dictionary currently in use. It may also be a word in a foreign language.&lt;/p&gt;
 &lt;p&gt;If the word is not misspelled, you may add it to the dictionary by clicking &lt;b&gt;Add to Dictionary&lt;/b&gt;. If you don't want to add the unknown word to the dictionary, but you want to leave it unchanged, click &lt;b&gt;Ignore&lt;/b&gt; or &lt;b&gt;Ignore All&lt;/b&gt;.&lt;/p&gt;
 &lt;p&gt;However, if the word is misspelled, you can try to find the correct replacement in the list below. If you cannot find a replacement there, you may type it in the text box below, and click &lt;b&gt;Replace&lt;/b&gt; or &lt;b&gt;Replace All&lt;/b&gt;.&lt;/p&gt;
 &lt;/qt&gt;</string>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>m_unknownWord</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>106</x>
-                <y>40</y>
-                <width>78</width>
-                <height>29</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>&lt;b&gt;misspelled&lt;/b&gt;</string>
-        </property>
-        <property name="toolTip" stdset="0">
-            <string>Unknown word</string>
-        </property>
-        <property name="whatsThis" stdset="0">
-            <string>&lt;qt&gt;&lt;p&gt;This word was considered to be an "unknown word" because it does not match any entry in the dictionary currently in use. It may also be a word in a foreign language.&lt;/p&gt;
+            </property>
+        </widget>
+        <widget class="QLabel" row="1" column="2">
+            <property name="name">
+                <cstring>m_unknownWord</cstring>
+            </property>
+            <property name="text">
+                <string>&lt;b&gt;misspelled&lt;/b&gt;</string>
+            </property>
+            <property name="toolTip" stdset="0">
+                <string>Unknown word</string>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>&lt;qt&gt;&lt;p&gt;This word was considered to be an "unknown word" because it does not match any entry in the dictionary currently in use. It may also be a word in a foreign language.&lt;/p&gt;
 &lt;p&gt;If the word is not misspelled, you may add it to the dictionary by clicking &lt;b&gt;Add to Dictionary&lt;/b&gt;. If you don't want to add the unknown word to the dictionary, but you want to leave it unchanged, click &lt;b&gt;Ignore&lt;/b&gt; or &lt;b&gt;Ignore All&lt;/b&gt;.&lt;/p&gt;
 &lt;p&gt;However, if the word is misspelled, you can try to find the correct replacement in the list below. If you cannot find a replacement there, you may type it in the text box below, and click &lt;b&gt;Replace&lt;/b&gt; or &lt;b&gt;Replace All&lt;/b&gt;.&lt;/p&gt;
 &lt;/qt&gt;</string>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>textLabel5</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>11</x>
-                <y>268</y>
-                <width>60</width>
-                <height>29</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>&amp;Language:</string>
-        </property>
-        <property name="buddy" stdset="0">
-            <cstring>m_language</cstring>
-        </property>
-        <property name="whatsThis" stdset="0">
-            <string>&lt;qt&gt;
+            </property>
+        </widget>
+        <widget class="QLabel" row="4" column="0">
+            <property name="name">
+                <cstring>textLabel5</cstring>
+            </property>
+            <property name="text">
+                <string>&amp;Language:</string>
+            </property>
+            <property name="buddy" stdset="0">
+                <cstring>m_language</cstring>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>&lt;qt&gt;
 &lt;p&gt;Select the language of the document you are proofing here.&lt;/p&gt;
 &lt;/qt&gt;</string>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>m_contextLabel</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>11</x>
-                <y>11</y>
-                <width>416</width>
-                <height>23</height>
-            </rect>
-        </property>
-        <property name="frameShape">
-            <enum>Box</enum>
-        </property>
-        <property name="text">
-            <string>... the &lt;b&gt;misspelled&lt;/b&gt; word shown in context ...</string>
-        </property>
-        <property name="alignment">
-            <set>WordBreak|AlignCenter</set>
-        </property>
-        <property name="toolTip" stdset="0">
-            <string>Text excerpt showing the unknown word in its context.</string>
-        </property>
-        <property name="whatsThis" stdset="0">
-            <string>&lt;qt&gt;
+            </property>
+        </widget>
+        <widget class="QLabel" row="0" column="0" rowspan="1" colspan="6">
+            <property name="name">
+                <cstring>m_contextLabel</cstring>
+            </property>
+            <property name="frameShape">
+                <enum>Box</enum>
+            </property>
+            <property name="text">
+                <string>... the &lt;b&gt;misspelled&lt;/b&gt; word shown in context ...</string>
+            </property>
+            <property name="alignment">
+                <set>WordBreak|AlignCenter</set>
+            </property>
+            <property name="toolTip" stdset="0">
+                <string>Text excerpt showing the unknown word in its context.</string>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>&lt;qt&gt;
 &lt;p&gt;Here you can see a text excerpt showing the unknown word in its context. If this information is not sufficient to choose the best replacement for the unknown word, you can click on the document you are proofing, read a larger part of the text and then return here to continue proofing.&lt;/p&gt;
 &lt;/qt&gt;</string>
-        </property>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>m_addBtn</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>270</x>
-                <y>40</y>
-                <width>157</width>
-                <height>29</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>&lt;&lt; Add to Dictionary</string>
-        </property>
-        <property name="whatsThis" stdset="0">
-            <string>&lt;qt&gt;
+            </property>
+        </widget>
+        <widget class="QPushButton" row="1" column="4" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>m_addBtn</cstring>
+            </property>
+            <property name="text">
+                <string>&lt;&lt; Add to Dictionary</string>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>&lt;qt&gt;
 &lt;p&gt;The unknown word was detected and considered unknown because it is not included in the dictionary.&lt;br&gt;
 Click here if you consider that the unknown word is not misspelled and you want to avoid wrongly detecting it again in the future. If you want to let it remain as is, but not add it to the dictionary, then click &lt;b&gt;Ignore&lt;/b&gt; or &lt;b&gt;Ignore All&lt;/b&gt; instead.&lt;/p&gt;
 &lt;/qt&gt;</string>
-        </property>
-    </widget>
-    <spacer>
-        <property name="name">
-            <cstring>spacer2</cstring>
-        </property>
-        <property name="orientation">
-            <enum>Horizontal</enum>
-        </property>
-        <property name="sizeType">
-            <enum>Expanding</enum>
-        </property>
-        <property name="sizeHint">
-            <size>
-                <width>74</width>
-                <height>20</height>
-            </size>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>190</x>
-                <y>44</y>
-                <width>74</width>
-                <height>20</height>
-            </rect>
-        </property>
-    </spacer>
-    <widget class="QListView">
-        <column>
-            <property name="text">
-                <string>Suggested Words</string>
             </property>
-            <property name="clickable">
-                <bool>true</bool>
+        </widget>
+        <spacer row="1" column="3">
+            <property name="name">
+                <cstring>spacer2</cstring>
             </property>
-            <property name="resizable">
-                <bool>true</bool>
+            <property name="orientation">
+                <enum>Horizontal</enum>
             </property>
-        </column>
-        <property name="name">
-            <cstring>m_suggestions</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>11</x>
-                <y>110</y>
-                <width>306</width>
-                <height>152</height>
-            </rect>
-        </property>
-        <property name="resizeMode">
-            <enum>AllColumns</enum>
-        </property>
-        <property name="toolTip" stdset="0">
-            <string>Suggestion List</string>
-        </property>
-        <property name="whatsThis" stdset="0">
-            <string>&lt;qt&gt;
+            <property name="sizeType">
+                <enum>Expanding</enum>
+            </property>
+            <property name="sizeHint">
+                <size>
+                    <width>74</width>
+                    <height>20</height>
+                </size>
+            </property>
+        </spacer>
+        <widget class="QListView" row="3" column="0" rowspan="1" colspan="5">
+            <column>
+                <property name="text">
+                    <string>Suggested Words</string>
+                </property>
+                <property name="clickable">
+                    <bool>true</bool>
+                </property>
+                <property name="resizable">
+                    <bool>true</bool>
+                </property>
+            </column>
+            <property name="name">
+                <cstring>m_suggestions</cstring>
+            </property>
+            <property name="resizeMode">
+                <enum>AllColumns</enum>
+            </property>
+            <property name="toolTip" stdset="0">
+                <string>Suggestion List</string>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>&lt;qt&gt;
 &lt;p&gt;If the unknown word is misspelled, you should check if the correction for it is available and if it is, click on it. If none of the words in this list is a good replacement you may type the correct word in the edit box above.&lt;/p&gt;
 &lt;p&gt;To correct this word click &lt;b&gt;Replace&lt;/b&gt; if you want to correct only this occurrence or &lt;b&gt;Replace All&lt;/b&gt; if you want to correct all occurrences.&lt;/p&gt;
 &lt;/qt&gt;</string>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>textLabel4</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>11</x>
-                <y>75</y>
-                <width>89</width>
-                <height>29</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Replace &amp;with:</string>
-        </property>
-        <property name="buddy" stdset="0">
-            <cstring>m_replacement</cstring>
-        </property>
-        <property name="whatsThis" stdset="0">
-            <string>&lt;qt&gt;
-&lt;p&gt;If the unknown word is misspelled, you should type the correction for your misspelled word here or select it from the list below.&lt;/p&gt;
-&lt;p&gt;You can then click &lt;b&gt;Replace&lt;/b&gt; if you want to correct only this occurrence of the word or &lt;b&gt;Replace All&lt;/b&gt; if you want to correct all occurrences.&lt;/p&gt;
-&lt;/qt&gt;</string>
-        </property>
-    </widget>
-    <widget class="QLineEdit">
-        <property name="name">
-            <cstring>m_replacement</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>106</x>
-                <y>79</y>
-                <width>211</width>
-                <height>21</height>
-            </rect>
-        </property>
-        <property name="whatsThis" stdset="0">
-            <string>&lt;qt&gt;
-&lt;p&gt;If the unknown word is misspelled, you should type the correction for your misspelled word here or select it from the list below.&lt;/p&gt;
-&lt;p&gt;You can then click &lt;b&gt;Replace&lt;/b&gt; if you want to correct only this occurrence of the word or &lt;b&gt;Replace All&lt;/b&gt; if you want to correct all occurrences.&lt;/p&gt;
-&lt;/qt&gt;</string>
-        </property>
-    </widget>
-    <widget class="QComboBox">
-        <item>
-            <property name="text">
-                <string>English</string>
             </property>
-        </item>
-        <property name="name">
-            <cstring>m_language</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>77</x>
-                <y>268</y>
-                <width>240</width>
-                <height>29</height>
-            </rect>
-        </property>
-        <property name="toolTip" stdset="0">
-            <string>Language Selection</string>
-        </property>
-        <property name="whatsThis" stdset="0">
-            <string>&lt;qt&gt;
+        </widget>
+        <widget class="QLabel" row="2" column="0" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>textLabel4</cstring>
+            </property>
+            <property name="text">
+                <string>Replace &amp;with:</string>
+            </property>
+            <property name="buddy" stdset="0">
+                <cstring>m_replacement</cstring>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>&lt;qt&gt;
+&lt;p&gt;If the unknown word is misspelled, you should type the correction for your misspelled word here or select it from the list below.&lt;/p&gt;
+&lt;p&gt;You can then click &lt;b&gt;Replace&lt;/b&gt; if you want to correct only this occurrence of the word or &lt;b&gt;Replace All&lt;/b&gt; if you want to correct all occurrences.&lt;/p&gt;
+&lt;/qt&gt;</string>
+            </property>
+        </widget>
+        <widget class="QLineEdit" row="2" column="2" rowspan="1" colspan="3">
+            <property name="name">
+                <cstring>m_replacement</cstring>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>&lt;qt&gt;
+&lt;p&gt;If the unknown word is misspelled, you should type the correction for your misspelled word here or select it from the list below.&lt;/p&gt;
+&lt;p&gt;You can then click &lt;b&gt;Replace&lt;/b&gt; if you want to correct only this occurrence of the word or &lt;b&gt;Replace All&lt;/b&gt; if you want to correct all occurrences.&lt;/p&gt;
+&lt;/qt&gt;</string>
+            </property>
+        </widget>
+        <widget class="QComboBox" row="4" column="1" rowspan="1" colspan="4">
+            <item>
+                <property name="text">
+                    <string>English</string>
+                </property>
+            </item>
+            <property name="name">
+                <cstring>m_language</cstring>
+            </property>
+            <property name="toolTip" stdset="0">
+                <string>Language Selection</string>
+            </property>
+            <property name="whatsThis" stdset="0">
+                <string>&lt;qt&gt;
 &lt;p&gt;Select the language of the document you are proofing here.&lt;/p&gt;
 &lt;/qt&gt;</string>
-        </property>
-    </widget>
-    <widget class="QLayoutWidget">
-        <property name="name">
-            <cstring>layout1</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>323</x>
-                <y>75</y>
-                <width>106</width>
-                <height>232</height>
-            </rect>
-        </property>
-        <vbox>
-            <property name="name">
-                <cstring>unnamed</cstring>
             </property>
-            <widget class="QPushButton">
+        </widget>
+        <widget class="QLayoutWidget" row="2" column="5" rowspan="3" colspan="1">
+            <property name="name">
+                <cstring>layout1</cstring>
+            </property>
+            <vbox>
                 <property name="name">
-                    <cstring>m_suggestBtn</cstring>
+                    <cstring>unnamed</cstring>
                 </property>
-                <property name="text">
-                    <string>S&amp;uggest</string>
-                </property>
-            </widget>
-            <widget class="QPushButton">
-                <property name="name">
-                    <cstring>m_replaceBtn</cstring>
-                </property>
-                <property name="text">
-                    <string>&amp;Replace</string>
-                </property>
-                <property name="whatsThis" stdset="0">
-                    <string>&lt;qt&gt;
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_suggestBtn</cstring>
+                    </property>
+                    <property name="text">
+                        <string>S&amp;uggest</string>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_replaceBtn</cstring>
+                    </property>
+                    <property name="text">
+                        <string>&amp;Replace</string>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>&lt;qt&gt;
 &lt;p&gt;Click here to replace this occurrence of the unknown text with the text in the edit box above (to the left).&lt;/p&gt;
 &lt;/qt&gt;</string>
-                </property>
-            </widget>
-            <widget class="QPushButton">
-                <property name="name">
-                    <cstring>m_replaceAllBtn</cstring>
-                </property>
-                <property name="text">
-                    <string>R&amp;eplace All</string>
-                </property>
-                <property name="whatsThis" stdset="0">
-                    <string>&lt;qt&gt;
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_replaceAllBtn</cstring>
+                    </property>
+                    <property name="text">
+                        <string>R&amp;eplace All</string>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>&lt;qt&gt;
 &lt;p&gt;Click here to replace all occurrences of the unknown text with the text in the edit box above (to the left).&lt;/p&gt;
 &lt;/qt&gt;</string>
-                </property>
-            </widget>
-            <widget class="QPushButton">
-                <property name="name">
-                    <cstring>m_skipBtn</cstring>
-                </property>
-                <property name="text">
-                    <string>&amp;Ignore</string>
-                </property>
-                <property name="whatsThis" stdset="0">
-                    <string>&lt;qt&gt;
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_skipBtn</cstring>
+                    </property>
+                    <property name="text">
+                        <string>&amp;Ignore</string>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>&lt;qt&gt;
 &lt;p&gt;Click here to let this occurrence of the unknown word remain as is.&lt;/p&gt;
 &lt;p&gt;This action is useful when the word is a name, an acronym, a foreign word or any other unknown word that you want to use but not add to the dictionary.&lt;/p&gt;
 &lt;/qt&gt;</string>
-                </property>
-            </widget>
-            <widget class="QPushButton">
-                <property name="name">
-                    <cstring>m_skipAllBtn</cstring>
-                </property>
-                <property name="text">
-                    <string>I&amp;gnore All</string>
-                </property>
-                <property name="accel">
-                    <string>Alt+G</string>
-                </property>
-                <property name="whatsThis" stdset="0">
-                    <string>&lt;qt&gt;
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_skipAllBtn</cstring>
+                    </property>
+                    <property name="text">
+                        <string>I&amp;gnore All</string>
+                    </property>
+                    <property name="accel">
+                        <string>Alt+G</string>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>&lt;qt&gt;
 &lt;p&gt;Click here to let all occurrences of the unknown word remain as they are.&lt;/p&gt;
 &lt;p&gt;This action is useful when the word is a name, an acronym, a foreign word or any other unknown word that you want to use but not add to the dictionary.&lt;/p&gt;
 &lt;/qt&gt;</string>
-                </property>
-            </widget>
-            <widget class="QPushButton">
-                <property name="name">
-                    <cstring>m_autoCorrect</cstring>
-                </property>
-                <property name="text">
-                    <string>Autocorrect</string>
-                </property>
-                <property name="accel">
-                    <string></string>
-                </property>
-                <property name="whatsThis" stdset="0">
-                    <string>&lt;qt&gt;
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_autoCorrect</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Autocorrect</string>
+                    </property>
+                    <property name="accel">
+                        <string></string>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>&lt;qt&gt;
 &lt;p&gt;Click here to let all occurrences of the unknown word remain as they are.&lt;/p&gt;
 &lt;p&gt;This action is useful when the word is a name, an acronym, a foreign word or any other unknown word that you want to use but not add to the dictionary.&lt;/p&gt;
 &lt;/qt&gt;</string>
-                </property>
-            </widget>
-            <spacer>
-                <property name="name">
-                    <cstring>spacer1</cstring>
-                </property>
-                <property name="orientation">
-                    <enum>Vertical</enum>
-                </property>
-                <property name="sizeType">
-                    <enum>Expanding</enum>
-                </property>
-                <property name="sizeHint">
-                    <size>
-                        <width>20</width>
-                        <height>20</height>
-                    </size>
-                </property>
-            </spacer>
-        </vbox>
-    </widget>
+                    </property>
+                </widget>
+                <spacer>
+                    <property name="name">
+                        <cstring>spacer1</cstring>
+                    </property>
+                    <property name="orientation">
+                        <enum>Vertical</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>20</width>
+                            <height>20</height>
+                        </size>
+                    </property>
+                </spacer>
+            </vbox>
+        </widget>
+    </grid>
 </widget>
 <tabstops>
     <tabstop>m_addBtn</tabstop>
