@@ -79,6 +79,7 @@
 #include <errno.h>
 #include <string.h>
 #include <netdb.h>
+#include <netwm.h>
 
 #include "kprocctrl.h"
 
@@ -1625,7 +1626,12 @@ void KApplication::setTopWidget( QWidget *topWidget )
     XFree( (char*)hints);
 
     // set the specified caption
-    topWidget->setCaption( caption() );
+    if ( !topWidget->inherits("KMainWindow") ) { // KMainWindow does this already for us
+	topWidget->setCaption( caption() );
+	NETWinInfo info( qt_xdisplay(), topWidget->winId(), qt_xrootwin(), 0 );
+	info.setName( caption().utf8().data() );
+    }
+    
     // set the specified icons
     topWidget->setIcon( icon() ); //standard X11
     KWin::setIcons(topWidget->winId(), icon(), miniIcon() ); // NET_WM hints for KWin

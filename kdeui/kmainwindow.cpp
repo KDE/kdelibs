@@ -35,6 +35,7 @@
 
 #include <klocale.h>
 #include <kstddirs.h>
+#include <netwm.h>
 
 #include <stdlib.h>
 #include <ctype.h>
@@ -42,7 +43,6 @@
 QList<KMainWindow>* KMainWindow::memberList = 0L;
 static bool no_query_exit = false;
 static KMWSessionManaged* ksm = 0;
-static bool initing = FALSE;
 
 class KMWSessionManaged : public KSessionManaged
 {
@@ -105,7 +105,6 @@ KMainWindow::KMainWindow( QWidget* parent, const char *name, WFlags f )
 {
     setDockMenuEnabled( FALSE );
     mHelpMenu = 0;
-    initing = TRUE;
     kapp->setTopWidget( this );
     connect(kapp, SIGNAL(shutDown()), this, SLOT(shuttingDown()));
     if( !memberList )
@@ -120,7 +119,6 @@ KMainWindow::KMainWindow( QWidget* parent, const char *name, WFlags f )
 	s.setNum( memberList->count() );
 	setName( kapp->instanceName() + "-mainwindow#" + s );
     }
-    initing = FALSE;
 }
 
 KMainWindow::~KMainWindow()
@@ -275,21 +273,19 @@ void KMainWindow::createGUI( const QString &xmlfile, bool _conserveMemory )
 
 void KMainWindow::setCaption( const QString &caption )
 {
-    if ( initing ) // we are in our constructor
-	return;
-    QWidget::setCaption( kapp->makeStdCaption(caption) );
+    setPlainCaption( kapp->makeStdCaption(caption) );
 }
 
 void KMainWindow::setCaption( const QString &caption, bool modified )
 {
-    if ( initing ) // we are in our constructor
-	return;
-    QWidget::setCaption( kapp->makeStdCaption(caption, true, modified) );
+    setCaption( kapp->makeStdCaption(caption, true, modified) );
 }
 
 void KMainWindow::setPlainCaption( const QString &caption )
 {
-    QWidget::setCaption( caption );
+    QMainWindow::setCaption( caption );
+    NETWinInfo info( qt_xdisplay(), winId(), qt_xrootwin(), 0 );
+    info.setName( caption.utf8().data() );
 }
 
 void KMainWindow::appHelpActivated( void )
