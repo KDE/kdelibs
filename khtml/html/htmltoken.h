@@ -48,32 +48,11 @@ class Attribute
     friend class DOM::AttrImpl;
 public:
     Attribute() { id = 0, v = 0, n = 0; }
-    Attribute(const DOMString &name, const DOMString &val);
-    Attribute(const DOMStringImpl *name, DOMStringImpl *val);
-    Attribute(int _id, const DOMString &val)
-	{
-	    id = _id;
-	    v = val.implementation();
-	    if(v) v->ref();
-	    n = 0;
-	}
-
-    Attribute(int _id, DOMStringImpl *val)
-	{ id = _id, v = val; v->ref(); n = 0; }
-    Attribute( const Attribute &other)
-	{
-	    id = other.id;
-	    v = other.v;
-	    if(v) v->ref();
-	    n = other.n;
-	    if(n) n->ref();
-	}
-
     ~Attribute()
-	{
-	    if(v) v->deref();
-	    if(n) n->deref();
-	}
+    {
+        if(v) v->deref();
+        if(n) n->deref();
+    }
 
     Attribute &operator = (const Attribute &other) {
 	id = other.id;
@@ -89,29 +68,14 @@ public:
 
     void setValue(QChar *_s, int _l) {
 	if(v) v->deref();
-	QChar *c = new QChar[_l];
-	memcpy(c, _s, _l*sizeof(QChar));
- 	v = new DOMStringImpl(c, _l);
-	v->ref();
-    }
-    void setValue(const DOMString &s) {
-	if(v) v->deref();
-	v = s.implementation();
-	if(v) v->ref();
-    }
-    void setValue(DOMStringImpl *s) {
-	if(v == s) return;
-	if(v) v->deref();
-	v = s;
-	if(v) v->ref();
+        v = new DOMStringImpl(_s, _l);
+        v->ref();
     }
     DOMString value() const { return v; }
     DOMStringImpl *val() const { return v; }
 
     DOMString name() const;
     void setName(const DOMString &name);
-    void setName(const DOMStringImpl *name);
-    void setName(QChar *_s, int _l);
 
     unsigned char id;
 protected:

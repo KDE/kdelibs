@@ -296,8 +296,7 @@ bool DOM::operator==( const DOMString &a, const char *b )
     if(a.length() != blen) return false;
 
     const QChar* aptr = a.stringPtr();
-    for(unsigned int i = 0; i < blen; i++)
-    {
+    while( blen-- ) {
         if((*aptr++).latin1() != *b++)
             return false;
     }
@@ -327,7 +326,7 @@ bool DOM::operator!=( const DOMString &a, const QString &b )
 
 bool DOM::operator!=( const DOMString &a, const char *b )
 {
-    return a != DOMString(b);
+    return !(a==b);
 }
 
 

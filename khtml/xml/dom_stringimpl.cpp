@@ -40,19 +40,32 @@ template class QList<Length>;
 
 DOMStringImpl::DOMStringImpl(const QChar *str, uint len)
 {
-    s = QT_ALLOC_QCHAR_VEC( len );
-    memcpy( s, str, len * sizeof(QChar) );
-    l = len;
+    if(str && len)
+    {
+        s = QT_ALLOC_QCHAR_VEC( len );
+        memcpy( s, str, len * sizeof(QChar) );
+        l = len;
+    }
+    else
+    {
+        s = 0; l = 0;
+    }
 }
 
 DOMStringImpl::DOMStringImpl(const char *str)
 {
-    l = strlen(str);
-    s = QT_ALLOC_QCHAR_VEC( l );
-    int i = 0;
-    while( i < l ) {
-	s[i] = str[i];
-	i++;
+    if(str)
+    {
+        l = strlen(str);
+        s = QT_ALLOC_QCHAR_VEC( l );
+        int i = l;
+        QChar* ptr = s;
+        while( i-- )
+            *ptr++ = *str++;
+    }
+    else
+    {
+        s = 0; l = 0;
     }
 }
 

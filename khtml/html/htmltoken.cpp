@@ -31,22 +31,6 @@ using namespace khtml;
 
 // ---------------------------------------------------------------------------
 
-Attribute::Attribute(const DOMString &name, const DOMString &val)
-{
-    n = 0;
-    setName(name);
-    v = val.implementation();
-    v->ref();
-}
-
-Attribute::Attribute(const DOMStringImpl *name, DOMStringImpl *val)
-{
-    n = 0;
-    setName(name);
-    v = val;
-    v->ref();
-}
-
 DOMString Attribute::name() const
 {
     if(id)
@@ -67,31 +51,6 @@ void Attribute::setName(const DOMString &name)
 	n = name.implementation();
 	n->ref();
     }
-}
-
-void Attribute::setName(const DOMStringImpl *name)
-{
-    if(n) n->deref();
-    n = 0;
-    id = khtml::getAttrID(QConstString(name->s, name->l).string().lower().ascii(), name->l);
-    if(!id) {
-	n = const_cast<DOMStringImpl *>(name);
-	n->ref();
-    }
-}
-
-void Attribute::setName(QChar *_s, int _l)
-{
-   if(n) v->deref();
-   n = 0;
-
-   if (_s)
-   {
-      QChar *c = new QChar[_l];
-      memcpy(c, _s, _l*sizeof(QChar));
-      n = new DOMStringImpl(c, _l);
-      n->ref();
-   }
 }
 
 //-----------------------------------------------------------------------------
