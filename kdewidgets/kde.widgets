@@ -112,6 +112,11 @@ Group=Buttons (KDE)
 ToolTip=Line Edit for restricted input (KDE)
 Group=Input (KDE)
 
+[KIntSpinBox]
+IncludeFile=knuminput.h
+ToolTip=Enhanced Spinbox for Integer Values (KDE)
+Group=Input (KDE)
+
 [KRuler]
 ToolTip=Measuring Ruler Widget (KDE)
 WhatsThis=A measuring ruler widget as seen in KWord for page widths and heights
