@@ -25,6 +25,7 @@
 #include "kfiledetaillist.h"
 #include "kfileinfo.h"
 #include "kfilesimpleview.h"
+#include "debug.h"
 
 #include <qpainter.h>
 #include <qlistbox.h>
@@ -127,7 +128,7 @@ void KCombiView::setCurrentItem(const char *item, const KFileInfo *i)
 {
     if (item != 0) {
 	i = 0;
-	debug("setCurrentItem %s",item);
+	debugC("setCurrentItem %s",item);
 	for (uint j = 0; j < count(); j++)
 	    if (at(j)->fileName() == item)
 		i = at(j);

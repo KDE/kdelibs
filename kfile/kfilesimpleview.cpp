@@ -24,6 +24,7 @@
 #include "qkeycode.h"
 #include <qpainter.h>
 #include <kapp.h>
+#include "debug.h"
 
 KFileSimpleView::KFileSimpleView(bool s, QDir::SortSpec sorting,
                                  QWidget *parent, const char *name)
@@ -195,7 +196,7 @@ void KFileSimpleView::keyPressEvent( QKeyEvent* e )
 		tmp[0] = e->ascii();
 		QString res = findCompletion(tmp);
 		if (!res.isNull())
-		    debug("found %s",res.data());
+		    debugC("found %s",res.data());
 	    } else
 		e->ignore();
 	}

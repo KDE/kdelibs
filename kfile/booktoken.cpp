@@ -119,7 +119,6 @@ void BookmarkTokenizer::write( const char *str )
 		    int z = (int) strtol( src+2, &endptr, 10 );
 		    // parse only ascii characters unless in quotes
 		    if (z<128 || tquote){
-		        debug("Adding character: '%c'\n",z);
 			*dest++ = z;
 		    }
 		    else{
@@ -130,7 +129,6 @@ void BookmarkTokenizer::write( const char *str )
 		      // add token with the amp-sequence for further conversion
 		      memcpy(buffer,src,endptr-src);
 		      buffer[endptr-src]=0;
-		      debug("Adding token: '%s'\n",buffer);
 		      appendToken(buffer,endptr-src);
 		      
 		      dest=buffer;
@@ -146,7 +144,6 @@ void BookmarkTokenizer::write( const char *str )
 		     if (!tag){
 		       // add currend token
 		       *dest=0;
-		       debug("Adding current token: %s\n",buffer);
 		       appendToken(buffer,dest-buffer);
 		       dest=buffer;
 		    
@@ -156,7 +153,6 @@ void BookmarkTokenizer::write( const char *str )
 		       // add token with the amp-sequence for further conversion
 		       memcpy(buffer,src,endptr-src);
 		       buffer[endptr-src]=0;
-		       debug("Adding token: '%s'\n",buffer);
 		       appendToken(buffer,endptr-src);
 		       src=endptr;
 		       *dest=0;
@@ -168,7 +164,6 @@ void BookmarkTokenizer::write( const char *str )
 		       // characters here.
 		       int len=0;
 		       const QString res=charsets->convertTag(src,len).copy();
-		       debug("Converted to: %s, len: %i\n",(const char *)res,len);
 		       if ( len > 0 )
 		       {
 			   memcpy(dest,(const char *)res,res.length());

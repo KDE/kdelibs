@@ -29,7 +29,7 @@
 #include "kfiledialog.h"
 #include "kfiledetaillist.h"
 #include "kfilesimpleview.h"
-
+#include "debug.h"
 #include "kfilepreview.h"
 
 #include "kcombiview.h"
@@ -68,7 +68,7 @@ KFileBaseDialog::KFileBaseDialog(const char *dirName, const char *filter,
 	if (i.isDir())
 	    dir = new KDir(dirName);
 	else {
-	    debug("I got a filename");
+	    debugC("I got a filename");
 	    QString filename = dirName;
 	    int sep = filename.findRev('/');
 	    if (sep < 0) {
@@ -76,7 +76,7 @@ KFileBaseDialog::KFileBaseDialog(const char *dirName, const char *filter,
 		filename_ = filename;
 	    } else {
 		dir = new KDir(); // take current path
-		debug("path %s", dir->url().data());
+		debugC("path %s", dir->url().data());
 		if (acceptURLs)
 		    filename_ = dir->url() + filename;
 		else
@@ -306,7 +306,7 @@ void KFileBaseDialog::init()
        pathChanged();
 
     if (!filename_.isNull()) {
-	debug("edit %s", locationEdit->text(0));
+	debugC("edit %s", locationEdit->text(0));
 	checkPath(filename_);
 	locationEdit->setText(filename_);
     }
@@ -315,9 +315,9 @@ void KFileBaseDialog::init()
 void KFileBaseDialog::okPressed()
 {
     if (!filename_.isNull())
-	debug("filename %s", filename_.data());
+	debugC("filename %s", filename_.data());
     else {
-	debug("no filename");
+	debugC("no filename");
 	filename_ = locationEdit->currentText();
     }
     accept();
@@ -691,7 +691,7 @@ void KFileBaseDialog::slotFinished()
 
 void KFileBaseDialog::slotKfmError(int, const char *)
 {
-    debug("slotKfmError");    
+    debugC("slotKfmError");    
     if (!finished)
 	QApplication::restoreOverrideCursor();
     finished = true;
@@ -701,7 +701,7 @@ void KFileBaseDialog::comboActivated(int index)
 {
     KDir tmp = *dir;
     for (int i= 0; i < index; i++) {
-	debug("cdUp %s",tmp.url().data());
+	debugC("cdUp %s",tmp.url().data());
 	tmp.cdUp();
     }
     setDir(tmp.url(), true);
@@ -747,14 +747,14 @@ void KFileBaseDialog::updateHistory(bool f, bool b)
 
 void KFileBaseDialog::addToBookmarks() // SLOT
 {
-    debug("Add to bookmarks called");
+    debugC("Add to bookmarks called");
     bookmarks->add(dir->url(), dir->url());
     bookmarks->write();
 }
 
 void KFileBaseDialog::bookmarksChanged() // SLOT
 {
-  debug("Bookmarks changed called");
+  debugC("Bookmarks changed called");
 }
 
 void KFileBaseDialog::fillBookmarkMenu( KBookmark *parent, QPopupMenu *menu, int &id )
@@ -802,7 +802,7 @@ void KFileBaseDialog::toolbarCallback(int i) // SLOT
 	break;
     case HOTLIST_BUTTON:
 	// It's done on the pressed() signal
-	debug("Got pressed signal() for hot list");
+	debugC("Got pressed signal() for hot list");
 	//	toolbarPressedCallback(i);
 	break;
     case MKDIR_BUTTON:
@@ -992,13 +992,13 @@ void KFileBaseDialog::dirActivated()
     KURL::encodeURL(tmps);
     tmp += tmps;
     tmp += "/";
-    debug("dirActivated %s", tmp.data());
+    debugC("dirActivated %s", tmp.data());
     setDir(tmp, true);
 }
 
 void KFileBaseDialog::fileActivated()
 {
-    debug("fileAct");
+    debugC("fileAct");
 	
     if (acceptUrls)
 	filename_ = dir->url();
@@ -1093,7 +1093,7 @@ void KFileBaseDialog::completion() // SLOT
 						base.length()));
 
 	if (!complete.isNull()) {
-	    // debug("Complete %s", complete.data());
+	    debugC("Complete %s", complete.data());
 	    if ( complete != "../" )
                 locationEdit->setText(base + complete);
 	} else {
@@ -1158,7 +1158,7 @@ QString KFileDialog::getOpenFileURL(const char *url, const char *filter,
     
     delete dlg;
     if (!retval.isNull())
-	debug("getOpenFileURL: returning %s", retval.data());
+	debugC("getOpenFileURL: returning %s", retval.data());
     
     return retval;
 }
@@ -1192,7 +1192,7 @@ QString KFileBaseDialog::getDirectory(const char *url,
     
     delete dlg;
     if (!retval.isNull())
-	debug("getDirectory: returning %s", retval.data());
+	debugC("getDirectory: returning %s", retval.data());
     
     return retval;
 }
@@ -1342,7 +1342,7 @@ QString KFilePreviewDialog::getOpenFileURL(const char *url, const char *filter,
     
     delete dlg;
     if (!retval.isNull())
-	debug("getOpenFileURL: returning %s", retval.data());
+	debugC("getOpenFileURL: returning %s", retval.data());
     
     return retval;
 }

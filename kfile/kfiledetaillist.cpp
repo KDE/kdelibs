@@ -52,7 +52,7 @@ KFileDetailList::KFileDetailList(bool s, QDir::SortSpec sorting, QWidget *parent
     connect(this, SIGNAL(headerClicked(int)), SLOT(reorderFiles(int)));
 }
 
-void KFileDetailList::repaint(bool f = true)
+void KFileDetailList::repaint(bool)
 {
     KTabListBox::repaint();
 }
@@ -160,15 +160,12 @@ void KFileDetailList::reorderFiles(int inColumn)
 
     switch ( inColumn ) {
     case 1:
-	debug("new sort by name");
 	new_sort = QDir::Name;
 	break;
     case 2:  
-	debug("new sort by size");
 	new_sort = QDir::Size;
 	break;
     case 4:  
-	debug("new sort by time");
 	new_sort = QDir::Time;
 	break;
     default: 

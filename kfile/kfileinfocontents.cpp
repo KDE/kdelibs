@@ -22,6 +22,7 @@
 #include <qpixmap.h>
 #include <qsignal.h>
 #include <kapp.h>
+#include "debug.h"
 
 #ifdef Unsorted // the "I hate X.h" modus
 #undef Unsorted
@@ -105,7 +106,6 @@ bool KFileInfoContents::addItem(const KFileInfo *i)
 
 void KFileInfoContents::setSorting(QDir::SortSpec new_sort)
 {
-    debug("reorder");
     QDir::SortSpec old_sort = static_cast<QDir::SortSpec>(this->sorting() & QDir::SortByMask);
     QDir::SortSpec sortflags = static_cast<QDir::SortSpec>(this->sorting() & (~QDir::SortByMask));
 
@@ -275,7 +275,7 @@ void KFileInfoContents::select( KFileInfo *entry)
 {
     if ( entry->isDir() ) {
 	lastSDir = entry;
-	debug("selectDir %s",entry->fileName().data());
+	debugC("selectDir %s",entry->fileName().data());
 	sActivateDir->activate();
     } else {
 	lastSFile = entry;
@@ -305,7 +305,6 @@ void KFileInfoContents::setCurrentItem(const char *item,
 				       const KFileInfo *entry)
 {
     if (item != 0) {
-	debug("setCurrentItem %s",item);
 	for (KFileInfo *i = sortedList->first(); i; i = sortedList->next())
 	    if (sortedList->current()->fileName() == item) {
 		highlightItem(sortedList->at());
@@ -377,7 +376,7 @@ QString KFileInfoContents::findCompletion( const char *base,
         }
 	name = backup;
         
-	// debug("completion base (%s) name (%s) body (%s)", base, name, body.data());
+	debugC("completion base (%s) name (%s) body (%s)", base, name, body.data());
 
 	bool matchExactly = (name == body);
 
@@ -402,7 +401,7 @@ QString KFileInfoContents::findCompletion( const char *base,
 
 	return body; 
     } else {
-	debug("no completion for %s", base);
+	debugC("no completion for %s", base);
 	return 0;
     }
     

@@ -1,3 +1,7 @@
+1998-04-06  Stephan Kulow  <coolo@kde.org>
+
+	* debug.h: added debugC. An empty macro to hide debug output
+
 Thu Apr  2 19:39:37 1998  Daniel Grana <grana@ie.iwi.unibe.ch>
 
 	* kpreview.*: widget which for now shows some info about a 
