@@ -357,8 +357,8 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
        }
     }
 
-    // set final permissions
-    if ( _mode != -1 )
+    // set final permissions, if the file was just created
+    if ( _mode != -1 && !orig_exists )
     {
        if (::chmod(_dest_orig.data(), _mode) != 0)
        {
