@@ -457,6 +457,6 @@ KDockWidgetPrivate::~KDockWidgetPrivate()
 {
 }
 
-#ifndef NO_KDE2 // for Qt-only projects, because tmake doesn't take this name
- #include "kdockwidget_private.moc"
-#endif
+// DO NOT REMOVE THIS INCLUDE!!
+#include "kdockwidget_private.moc"
+
