@@ -370,6 +370,7 @@ AREA  {
 	display: none; 
 }
 
+SELECT { display: block; }
 
 /*
  * inline elements
