@@ -237,22 +237,25 @@ QColor KGlobalSettings::alternateBackgroundColor()
     initColors();
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, QString::fromLatin1("General") );
-    QColor base=baseColor();
-	if (base == Qt::white)
-		*kde2AlternateColor = QColor(238,246,255);
-	else
-	{
-		int h, s, v;
-		base.hsv( &h, &s, &v );
-		if (v > 128)
-			*kde2AlternateColor = base.dark(106);
-		else if (base != Qt::black)
-			*kde2AlternateColor = base.light(110);
-		else
-			*kde2AlternateColor = QColor(32,32,32);
-	}
-
+    *kde2AlternateColor = calculateAlternateBackgroundColor( baseColor() );
     return c->readColorEntry( "alternateBackground", kde2AlternateColor );
+}
+
+QColor KGlobalSettings::calculateAlternateBackgroundColor(const QColor& base)
+{
+    if (base == Qt::white)
+        return QColor(238,246,255);
+    else
+    {
+        int h, s, v;
+        base.hsv( &h, &s, &v );
+        if (v > 128)
+            return base.dark(106);
+        else if (base != Qt::black)
+            return base.light(110);
+
+        return QColor(32,32,32);
+    }
 }
 
 QColor KGlobalSettings::linkColor()

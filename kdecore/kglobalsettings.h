@@ -236,8 +236,15 @@ class KGlobalSettings
      * @ref KListViewItem. Any other list that uses alternating background
      * colors should use this too, to obey to the user's preferences. Returns
      * an invalid color if the user doesn't want alternating backgrounds.
+     * @see #calculateAlternateBackgroundColor
      */
     static QColor alternateBackgroundColor();
+    /**
+     * Calculates a color based on @p base to be used as alternating
+     * color for e.g. listviews.
+     * @see #alternateBackgroundColor
+     */
+    static QColor calculateAlternateBackgroundColor(const QColor& base);
 
 
     static QFont generalFont();
