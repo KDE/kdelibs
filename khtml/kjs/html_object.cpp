@@ -27,8 +27,6 @@
 #include "operations.h"
 #include "html_object.h"
 
-#define KJSARG(x) KJSWorld::context->activation->get((x))
-
 using namespace KJS;
 
 /* TODO: make these a shallow copies */
@@ -71,7 +69,7 @@ HTMLDocument::HTMLDocument(KHTMLWidget *w, int id)
   }
 }
 
-KJSO *HTMLDocFunction::execute()
+KJSO *HTMLDocFunction::execute(KJSContext *context)
 {
   KJSO *result;
   Ptr v, n;
@@ -79,7 +77,7 @@ KJSO *HTMLDocFunction::execute()
   
   switch (id) {
   case IDDocWrite:
-    v = KJSARG("0");
+    v = context->activation->get("0");
     n = toString(v);
     doc.write(n->sVal().string());
     result = new KJSUndefined();

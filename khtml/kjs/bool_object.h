@@ -28,27 +28,27 @@ namespace KJS {
 
   class BooleanObject : public KJSInternalFunction {
   public:
-    BooleanObject(KJSPrototype *boolProto, KJSPrototype *funcProto);
-    KJSO* execute();
+    BooleanObject(KJSGlobal *global);
+    KJSO* execute(KJSContext *);
   };
 
   class BooleanConstructor : public KJSConstructor {
   public:
-    BooleanConstructor(KJSPrototype *bp, KJSPrototype *fp);
+    BooleanConstructor(KJSGlobal *global);
     KJSObject* construct(KJSArgList *);
   private:
-    KJSPrototype *boolProto;
+    KJSGlobal *global;
   };
 
   class BooleanPrototype : public KJSPrototype {
   public:
-    BooleanPrototype(KJSPrototype *objProto, KJSPrototype *funcProto);
+    BooleanPrototype(KJSGlobal *global);
   };
 
   class BooleanProtoFunc : public KJSInternalFunction {
   public:
-    BooleanProtoFunc(int i, KJSPrototype *funcProto);
-    KJSO *execute();
+    BooleanProtoFunc(int i, KJSGlobal *global);
+    KJSO *execute(KJSContext *);
   private:
     int id;
   };

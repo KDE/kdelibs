@@ -23,7 +23,7 @@ lib_LTLIBRARIES = libkjs.la
 
 libkjs_la_SOURCES =  kjs.cpp grammar.cpp lexer.cpp nodes.cpp object.cpp \
 	operations.cpp property.cpp kjsstring.cpp math_object.cpp \
-	html_object.cpp bool_object.cpp
+	html_object.cpp bool_object.cpp object_object.cpp
 
 include_HEADERS = kjs.h
 

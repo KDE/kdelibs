@@ -200,11 +200,13 @@ public:
   Type type() const { return Boolean; }
 };
 
+class KJSContext;
+
 class KJSFunction : public KJSO {
 public:
   KJSFunction() { attr = ImplicitNone; }
   void processParameters(KJSArgList *);
-  virtual KJSO* execute() = 0;
+  virtual KJSO* execute(KJSContext *) = 0;
   virtual bool hasAttribute(FunctionAttribute a) const { return (attr & a); }
   virtual CodeType codeType() = 0;
 protected:
@@ -216,7 +218,7 @@ class KJSInternalFunction : public KJSFunction {
 public:
   KJSInternalFunction() { param = 0L; }
   Type type() const { return InternalFunction; }
-  KJSO* execute() = 0;
+  KJSO* execute(KJSContext *) = 0;
   CodeType codeType() { return HostCode; }
 };
 
@@ -224,7 +226,7 @@ class KJSDeclaredFunction : public KJSFunction {
 public:
   KJSDeclaredFunction(KJSParamList *p, StatementNode *b);
   Type type() const { return DeclaredFunction; }
-  KJSO* execute();
+  KJSO* execute(KJSContext *);
   CodeType codeType() { return FunctionCode; }
 private:
   StatementNode *block;
@@ -234,7 +236,7 @@ class KJSAnonymousFunction : public KJSFunction {
 public:
   KJSAnonymousFunction() { /* TODO */ }
   Type type() const { return AnonymousFunction; }
-  KJSO* execute();
+  KJSO* execute(KJSContext *);
   CodeType codeType() { return AnonymousCode; }
 };
 
@@ -317,6 +319,7 @@ class KJSGlobal : public KJSO {
 public:
   KJSGlobal(KHTMLWidget *htmlw = 0L);
   Type type() const { return Object; }
+  KJSPrototype *objProto, *funcProto, *boolProto;
 private:
   static KJSO* eval();
 };

@@ -24,9 +24,33 @@
 
 namespace KJS {
 
+  enum { IDObj2S, IDObjValOf };
+
+  class ObjectObject : public KJSInternalFunction {
+  public:
+    ObjectObject(KJSGlobal *global);
+    KJSO* execute(KJSContext *);
+  };
+
+  class ObjectConstructor : public KJSConstructor {
+  public:
+    ObjectConstructor(KJSGlobal *global);
+    KJSObject* construct(KJSArgList *);
+  private:
+    KJSGlobal *global;
+  };
+
   class ObjectPrototype : public KJSPrototype {
   public:
-    ObjectPrototype() {}
+    ObjectPrototype();
+  };
+
+  class ObjectProtoFunc : public KJSInternalFunction {
+  public:
+    ObjectProtoFunc(int i, KJSGlobal *global);
+    KJSO *execute(KJSContext *);
+  private:
+    int id;
   };
 
 }; // namespace

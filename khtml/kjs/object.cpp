@@ -147,7 +147,7 @@ KJSO *KJSO::executeCall(KJSO *thisV, KJSArgList *args)
   if (args)
     func->processParameters(args);
 
-  Ptr comp = func->execute();
+  Ptr comp = func->execute(KJSWorld::context);
 
   delete KJSWorld::context;
   KJSWorld::context = save;
@@ -312,11 +312,13 @@ KJSGlobal::KJSGlobal(KHTMLWidget *htmlw)
   // function properties
   //  put("eval", new KJSInternalFunction(&eval));
 
-  // constructor properties. basic prototypes first.
-  KJSPrototype *objProto = new ObjectPrototype();
-  KJSPrototype *funcProto = new FunctionPrototype();
+  // constructor properties. prototypes as Global's member variables first.
+  objProto = new ObjectPrototype();
+  funcProto = new FunctionPrototype();
+  boolProto = new BooleanPrototype(this);
 
-  put("Boolean", zeroRef(new BooleanObject(objProto, funcProto)), DontEnum);
+  put("Object", zeroRef(new ObjectObject(this)), DontEnum);
+  put("Boolean", zeroRef(new BooleanObject(this)), DontEnum);
 
   // other properties
   put("Math", zeroRef(new KJSMath()), DontEnum);
@@ -326,6 +328,7 @@ KJSGlobal::KJSGlobal(KHTMLWidget *htmlw)
 
   objProto->deref();
   funcProto->deref();
+  boolProto->deref();
 }
 
 KJSO* KJSGlobal::eval()
@@ -515,13 +518,13 @@ KJSDeclaredFunction::KJSDeclaredFunction(KJSParamList *p, StatementNode *b)
   param = p;
 }
 
-KJSO* KJSDeclaredFunction::execute()
+KJSO* KJSDeclaredFunction::execute(KJSContext *)
 {
  /* TODO */
   return block->evaluate();
 }
 
-KJSO* KJSAnonymousFunction::execute()
+KJSO* KJSAnonymousFunction::execute(KJSContext *)
 {
  /* TODO */
 }

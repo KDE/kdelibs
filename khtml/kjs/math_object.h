@@ -38,7 +38,7 @@ namespace KJS {
   class KJSMathFunc : public KJSInternalFunction {
   public:
     KJSMathFunc(int i) : id(i) { }
-    KJSO *execute();
+    KJSO *execute(KJSContext *);
   private:
     int id;
   };

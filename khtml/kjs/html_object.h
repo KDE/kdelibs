@@ -40,7 +40,7 @@ namespace KJS {
   class HTMLDocFunction : public KJSInternalFunction {
   public:
     HTMLDocFunction(KHTMLWidget *w, int i) : htmlw(w), id(i) { };
-    KJSO *execute();
+    KJSO *execute(KJSContext *);
   private:
     KHTMLWidget *htmlw;
     int id;

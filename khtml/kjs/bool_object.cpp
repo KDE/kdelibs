@@ -21,46 +21,45 @@
 #include "operations.h"
 #include "bool_object.h"
 
-#define KJSARG(x) KJSWorld::context->activation->get((x))
 #define KJSRETURN(x) return new KJSCompletion(Normal,(x))
 
 using namespace KJS;
 
-BooleanObject::BooleanObject(KJSPrototype *objProto, KJSPrototype *funcProto)
+BooleanObject::BooleanObject(KJSGlobal *global)
 {
-  KJSPrototype *boolProto = new BooleanPrototype(objProto, funcProto);
-  KJSConstructor *ctor = new BooleanConstructor(boolProto, funcProto);
+  //  KJSPrototype *boolProto = new BooleanPrototype(objProto, funcProto);
+  KJSConstructor *ctor = new BooleanConstructor(global);
   setConstructor(ctor);
-  boolProto->setConstructor(ctor);
-  setPrototype(boolProto);
+  global->boolProto->setConstructor(ctor);
+  setPrototype(global->boolProto);
   
-  boolProto->deref();
+  //  boolProto->deref();
   ctor->deref();
 
   put("length", zeroRef(new KJSNumber(1)), DontEnum);
 }
 
 // ECMA 15.6.1
-KJSO* BooleanObject::execute()
+KJSO* BooleanObject::execute(KJSContext *context)
 {
   Ptr v, b;
-  Ptr length = KJSWorld::context->activation->get("length");
+  Ptr length = context->activation->get("length");
   int numArgs = (int) length->dVal();
 
   if (numArgs == 0)
     b = new KJSBoolean(false);
   else {
-    v = KJSARG("0");
+    v = context->activation->get("0");
     b = toBoolean(v);
   }
 
   KJSRETURN(b);
 }
 
-BooleanConstructor::BooleanConstructor(KJSPrototype *bp, KJSPrototype *fp)
-  : boolProto(bp)
+BooleanConstructor::BooleanConstructor(KJSGlobal *glob)
+  : global(glob)
 {
-  setPrototype(fp);
+  setPrototype(glob->funcProto);
 }
 
 // ECMA 15.6.2
@@ -74,38 +73,37 @@ KJSObject* BooleanConstructor::construct(KJSArgList *args)
 
   KJSObject *result = new KJSObject();
   result->setClass(BooleanClass);
-  result->setPrototype(boolProto);
+  result->setPrototype(global->boolProto);
   result->setInternalValue(b);
 
   return result;
 }
 
 // ECMA 15.6.4
-BooleanPrototype::BooleanPrototype(KJSPrototype *objProto,
-				   KJSPrototype *funcProto)
+BooleanPrototype::BooleanPrototype(KJSGlobal *global)
 {
   // properties of the Boolean Prototype Object. The constructor will be
   // added later in BooleanObject's constructor
   setClass(BooleanClass);
   setInternalValue(zeroRef(new KJSBoolean(false)));
-  setPrototype(objProto);
+  setPrototype(global->objProto);
 
   const int attr = DontEnum | DontDelete | ReadOnly;
-  put("toString", zeroRef(new BooleanProtoFunc(IDBool2S, funcProto)), attr);
-  put("valueOf", zeroRef(new BooleanProtoFunc(IDBoolvalOf, funcProto)), attr);
+  put("toString", zeroRef(new BooleanProtoFunc(IDBool2S, global)), attr);
+  put("valueOf", zeroRef(new BooleanProtoFunc(IDBoolvalOf, global)), attr);
 }
 
-BooleanProtoFunc::BooleanProtoFunc(int i, KJSPrototype *funcProto)
+BooleanProtoFunc::BooleanProtoFunc(int i, KJSGlobal *global)
   : id(i)
 {
-  setPrototype(funcProto);
+  setPrototype(global->funcProto);
 }
 
 // ECMA 15.6.4.2 + 15.6.4.3
-KJSO *BooleanProtoFunc::execute()
+KJSO *BooleanProtoFunc::execute(KJSContext *context)
 {
   Ptr result;
-  KJSO *thisVal = KJSWorld::context->thisValue;
+  KJSO *thisVal = context->thisValue;
 
   KJSObject *thisObj = static_cast<KJSObject*>(thisVal);
 

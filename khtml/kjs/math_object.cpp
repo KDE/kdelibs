@@ -99,13 +99,13 @@ KJSMath::KJSMath()
   put("tan", new KJSMathFunc(IDTan), attr, true);
 }
 
-KJSO* KJSMathFunc::execute()
+KJSO* KJSMathFunc::execute(KJSContext *context)
 {
-  Ptr v = KJSARG("0");
+  Ptr v = context->activation->get("0");
   Ptr n = toNumber(v);
   double arg = n->dVal();
 
-  Ptr v2 = KJSARG("1");
+  Ptr v2 = context->activation->get("1");
   Ptr n2 = toNumber(v2);
   double arg2 = n2->dVal();
   double result;
