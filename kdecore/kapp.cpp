@@ -119,6 +119,32 @@ public:
     }
 };
 
+
+static QList<QWidget>*x11Filter = 0;
+void KApplication::installX11EventFilter( QWidget* filter )
+{
+    if ( !filter )
+	return;
+    if (!x11Filter)
+	x11Filter = new QList<QWidget>;
+    connect ( filter, SIGNAL( destroyed() ), this, SLOT( x11FilterDestroyed() ) );
+    x11Filter->append( filter );
+}
+
+void KApplication::x11FilterDestroyed()
+{
+    if ( !x11Filter || !sender() )
+	return;
+    QWidget* w = (QWidget*) sender();
+    x11Filter->removeRef( w );
+    if ( x11Filter->isEmpty() ) {
+	delete x11Filter;
+	x11Filter = 0;
+    }
+}
+
+
+
 // the help class for session management communication
 static QList<KSessionManaged>* sessionClients()
 {
@@ -345,9 +371,7 @@ void KApplication::saveState( QSessionManager& sm )
 
     // tell the session manager about our new lifecycle
     QStringList restartCommand = sm.restartCommand();
-    QString restoreLevel;
-    restoreLevel.setNum( session_restore_level );
-    restartCommand << "-restore" << restoreLevel;
+    restartCommand << "-restore" << QString::number( session_restore_level );
     sm.setRestartCommand( restartCommand );
 
     // finally: do session management
@@ -576,7 +600,7 @@ void KApplication::parseCommandLine( int& argc, char** argv )
 	    aDummyString2 += " ";
 	    break;
 	case miniicon:
-	    aMiniIconPixmap = KGlobal::iconLoader()->loadApplicationIcon( argv[i+1], 
+	    aMiniIconPixmap = KGlobal::iconLoader()->loadApplicationIcon( argv[i+1],
 							    KIconLoader::Small);
 	    aDummyString2 += parameter_strings[miniicon-1];
 	    aDummyString2 += " ";
@@ -648,8 +672,23 @@ KApplication::~KApplication()
   KApp = 0;
 }
 
+
+class KAppX11HackWidget: public QWidget
+{
+public:
+    bool publicx11Event( XEvent * e) { return x11Event( e ); }
+};
+
+
 bool KApplication::x11EventFilter( XEvent *_event )
 {
+  if ( x11Filter ) {
+      for ( QWidget* w = x11Filter->first(); w; w = x11Filter->next() ) {
+	  if ( ( (KAppX11HackWidget*)w)->publicx11Event( _event ) )
+	      return TRUE;
+      }
+  }
+
   if ( _event->type == ClientMessage ) {
     XClientMessageEvent *cme = ( XClientMessageEvent * ) _event;
 
@@ -1336,5 +1375,7 @@ int KApplication::contrast() const
 {
     return contrast_;
 }
+
+
 
 #include "kapp.moc"

@@ -309,6 +309,17 @@ public:
    * do not display a GUI and created the KApplication with allowStyles=false.
    */
   void enableStyles();
+    
+    
+    
+  /** 
+      Installs widget \a filter as global x11 event filter. The widget
+      \a filter receives XEvents in its standard x11Event() function.
+      
+      Warning: only do that when absolutely necessary. Installed x11 filter
+      can slow things down.
+   */
+  void installX11EventFilter( QWidget* filter );
 
 protected:
   /**
@@ -340,6 +351,7 @@ protected slots:
 
 private slots:
   void dcopFailure(const QString &);
+  void x11FilterDestroyed();
 
 private:
   KApplicationPrivate* pAppData;
@@ -432,26 +444,26 @@ public:
    */
   void backgroundChanged(int desk);
 
-  /** 
+  /**
       Session management asks you to save the state of your application.
-   
+
      This signal is provided for compatibility only. For new
      appliations, simply use KTMainWindow. By reimplementing @ref
      KTMainWindow::queryClose, @ref KTMainWindow::saveProperties and
      @ref KTMainWindow::readProperties you can simply handle session
      management for applications with multiple toplevel windows.
-     
+
      For purposes without KTMainWindow, create an instance of
      KSessionManaged and reimplement the functions @ref
      KSessionManaged::commitData and/or @ref
      KSessionManaged::saveState
-     
+
      If you still want to use this signal, here is what you should do:
-     
+
      Connect to this signal in order to save your data. Do NOT
      manipulate the UI in that slot, it is blocked by the session
      manager.
-       
+
      Use the @ref ::getSessionConfig KConfig object to store all your
      instance specific datas.
 
@@ -500,16 +512,16 @@ bool checkAccess(const QString& pathname, int mode);
 /**
    Provides highlevel aceess to session management on a per-object
    base.
-   
-   KSessionManaged makes it possible to provide implementations for 
+
+   KSessionManaged makes it possible to provide implementations for
    @ref QApplication::commitData() and @ref QApplication::saveState(), without
    subclassing KApplication. KTMainWindow internally makes use of this.
- 
+
    You don't need to do anything with this class when using
    KTMainWindow. Instead, use @ref KTMainWindow::saveProperties,
    @ref KTMainWindow::readProperties, @ref KTMainWindow::queryClose,
    @ref KTMainWindow::queryExit and friends.
- 
+
   @short Highlevel access to session management.
   @author Matthias Ettrich <ettrich@kde.org>
  */
@@ -518,24 +530,29 @@ class KSessionManaged
 public:
   KSessionManaged();
   virtual ~KSessionManaged();
-    
+
     /**
        See @ref QApplication::saveState for documentation.
-       
+
        This function is just a convenience version to avoid subclassing KApplication.
      */
   virtual bool saveState( QSessionManager& sm );
     /**
        See @ref QApplication::commitData for documentation.
-       
+
        This function is just a convenience version to avoid subclassing KApplication.
      */
   virtual bool commitData( QSessionManager& sm );
 };
 
+
 #endif
 
 // $Log$
+// Revision 1.119  1999/11/03 03:14:00  ettrich
+//
+// session management update. New docs, new functions, more fun.
+//
 // Revision 1.118  1999/10/30 09:46:16  dfaure
 // Documented rAppName in kapp.h
 // Added fourth argument to kuniqueapp, which has now exactly the same args as kapp.

@@ -95,29 +95,14 @@ public:
     * docking module
     */
     const QValueList<WId>& dockWindows() const;
-    
-    
+
+
     /*
       A cached shortcut for KWM::currentDesktop()
      */
     int currentDesktop() const;
 
 signals:
-
-  /**
-   * Note that an init() may also be emitted if the window manager is
-   * restarted. So your module MUST react on it by clearing all internal
-   * data structures.
-   */
-    void init();
-
-
-    /**
-   *    This signal is emitted when a connect is complete, i.e. when
-   *    all existing windows or soundevents have been transfered to
-   *    the module
-   */
-    void initialized();
 
     /**
    * Switch to another virtual desktop
@@ -130,15 +115,6 @@ signals:
     void windowAdd(WId);
 
     /**
-     Add a dialog window. Note that dialog windows are also included
-     in the set of windows you recieve with windowAdd (see above).
-     The dialogs are reported extra (before the windowAdd) to allow a
-     taskbar to exclude them. The dialogWindowAdd signal is guaranteed
-     to be emitted before the correspondinging windowAdd signal.
-   */
-    void dialogWindowAdd(WId);
-
-    /**
    * Remove a window
    */
     void windowRemove(WId);
@@ -149,32 +125,9 @@ signals:
     void windowChange(WId);
 
     /**
-   * Raise a window
-   */
-    void windowRaise(WId);
-
-    /**
-   * Lower a window
-   */
-    void windowLower(WId);
-
-    /**
    * Hint that <Window> is active (= has focus) now.
    */
     void windowActivate(WId);
-
-    /**
-    * A command kwm did not understand. Maybe it is for
-    * your module.
-    */
-    void commandReceived(QString);
-
-
-    /**
-    * This is not integrated into windowChange since reading
-    * icons is somewhat expensive via the KWM class.
-    */
-    void windowIconChanged(WId);
 
     /**
     * The specified desktop got a new name
@@ -197,16 +150,16 @@ signals:
     void dockWindowRemove(WId);
 
     /**
-   * The window region has changed
+   * The workspace area has changed
    */
-    void windowRegionChange();
-
+    void workspaceAreaChanged();
+    
     /**
-    * Play/register/unregister a sound
-    */
-    void playSound(QString);
-    void registerSound(QString);
-    void unregisterSound(QString);
+     * The stacking order of the window changed. The new order
+     * can be obtained with windowsSorted()
+     */
+    void stackingOrderChanged();
+
 
 private:
     KWinModulePrivate* d;

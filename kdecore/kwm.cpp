@@ -215,12 +215,10 @@ QString KWM::properties(Window w){
   data[n++]=isSticky(w)?1:0;
   data[n++]=decoration(w);
 
-  QString s;
   for (i=0;i<n;i++){
-    s.setNum(data[i]);
-    result.append(s);
-    if (i<n-1)
-      result.append("+");
+      result.append( QString::number( data[i] ));
+      if (i<n-1)
+	  result.append("+");
   }
   return result;
 }
@@ -1252,11 +1250,11 @@ void KWM::keepOnTop(Window w) {
 	a = XInternAtom(qt_xdisplay(), "KWM_KEEP_ON_TOP", False);
     sendClientMessage(qt_xrootwin(), a, (long) w);
 
-    
-    
-    //     If you have to use this function in KDE <= 1.1, you can cut&paste the 
+
+
+    //     If you have to use this function in KDE <= 1.1, you can cut&paste the
     //    following code into your application. w is the winId() of your widget.
-    /*    
+    /*
     {
 	XEvent ev;
 	long mask;

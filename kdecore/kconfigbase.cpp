@@ -843,11 +843,7 @@ QString KConfigBase::writeEntry( const QString& pKey, int nValue,
 				 bool bPersistent, bool bGlobal,
 				 bool bNLS )
 {
-  QString aValue;
-
-  aValue.setNum( nValue );
-
-  return writeEntry( pKey, aValue, bPersistent, bGlobal, bNLS );
+  return writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
 }
 
 
@@ -855,11 +851,7 @@ QString KConfigBase::writeEntry( const QString& pKey, unsigned int nValue,
 				 bool bPersistent, bool bGlobal,
 				 bool bNLS )
 {
-  QString aValue;
-
-  aValue.setNum( nValue );
-
-  return writeEntry( pKey, aValue, bPersistent, bGlobal, bNLS );
+  return writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
 }
 
 
@@ -867,11 +859,7 @@ QString KConfigBase::writeEntry( const QString& pKey, long nValue,
 				 bool bPersistent, bool bGlobal,
 				 bool bNLS )
 {
-  QString aValue;
-
-  aValue.setNum( nValue );
-
-  return writeEntry( pKey, aValue, bPersistent, bGlobal, bNLS );
+  return writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
 }
 
 
@@ -879,11 +867,7 @@ QString KConfigBase::writeEntry( const QString& pKey, unsigned long nValue,
 				 bool bPersistent, bool bGlobal,
 				 bool bNLS )
 {
-  QString aValue;
-
-  aValue.setNum( nValue );
-
-  return writeEntry( pKey, aValue, bPersistent, bGlobal, bNLS );
+  return writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
 }
 
 
@@ -891,11 +875,7 @@ QString KConfigBase::writeEntry( const QString& pKey, double nValue,
 				 bool bPersistent, bool bGlobal,
 				 bool bNLS )
 {
-  QString aValue;
-
-  aValue.setNum( nValue );
-
-  return writeEntry( pKey, aValue, bPersistent, bGlobal, bNLS );
+  return writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
 }
 
 
@@ -936,11 +916,11 @@ QString KConfigBase::writeEntry( const QString& pKey, const QFont& rFont,
   QString aCharset = "default";
   if( rFont.charSet() != QFont::AnyCharSet )
       aCharset.setNum( static_cast<int>(rFont.charSet()) );
-  
+
   QTextOStream ts( &aValue );
-  ts << rFont.family() << "," << rFont.pointSize() << "," 
-     << static_cast<int>(rFont.styleHint()) << "," 
-     << aCharset << "," << rFont.weight() << "," 
+  ts << rFont.family() << "," << rFont.pointSize() << ","
+     << static_cast<int>(rFont.styleHint()) << ","
+     << aCharset << "," << rFont.weight() << ","
      << static_cast<int>(nFontBits);
 
   return writeEntry( pKey, aValue, bPersistent, bGlobal, bNLS );

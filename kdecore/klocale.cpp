@@ -749,7 +749,7 @@ QString KLocale::formatDate(const QDate &pDate, bool shortfmt) const
 QString KLocale::formatTime(const QTime &pTime, bool includeSecs) const
 {
   QString rst(_timefmt);
-  
+
   int i = -1;
   while ( (i = rst.findRev('%', i)) != -1 )
     switch ( rst.at(i + 1).latin1() )
@@ -792,7 +792,7 @@ QString KLocale::formatTime(const QTime &pTime, bool includeSecs) const
 	i--;
 	continue;
       }
-  
+
   return rst;
 }
 
@@ -930,7 +930,7 @@ KLocale::SignPosition KLocale::negativeMonetarySignPosition() const
 
 QString KLocale::formatMoney(double num) const
 {
-  return QString().setNum(num);
+  return QString::number( num );
 }
 
 QString KLocale::formatMoney(const QString &numStr) const
@@ -940,7 +940,7 @@ QString KLocale::formatMoney(const QString &numStr) const
 
 QString KLocale::formatNumber(double num, int precision) const
 {
-  return QString().setNum(num, precision==-1?2:precision);
+  return QString::number( num, precision==-1?2:precision);
 }
 
 QString KLocale::formatNumber(const QString &numStr) const
