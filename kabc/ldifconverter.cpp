@@ -162,6 +162,9 @@ bool LDIFConverter::addresseeToLDIF( const Addressee &addr, QString &str )
 
 bool LDIFConverter::LDIFToAddressee( const QString &str, AddresseeList &addrList, QDateTime dt )
 {
+  if (str.isEmpty())
+     return true;
+
   bool endldif = false, end = false;
   LDIF ldif;
   LDIF::ParseVal ret;
