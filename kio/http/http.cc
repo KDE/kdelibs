@@ -67,7 +67,6 @@
 #include <kssl.h>
 #endif
 
-#include "kmdcodec.h"
 #include "http.h"
 
 using namespace KIO;
