@@ -96,16 +96,16 @@ public:
     virtual void restoreState(const QString &) { };
 
 protected:
+    static QCString encodeByteArray( const QByteArray& e );
+
+    QList<HTMLGenericFormElementImpl> formElements;
     DOMString url;
     DOMString target;
     DOMString m_enctype;
     DOMString m_boundary;
+    KHTMLView *view;
     bool m_post;
     bool m_multipart;
-    KHTMLView *view;
-    QList<HTMLGenericFormElementImpl> formElements;
-
-    static QCString encodeByteArray( const QByteArray& e );
 };
 
 // -------------------------------------------------------------------------
@@ -175,9 +175,9 @@ public:
     virtual ~HTMLButtonElementImpl();
 
     enum typeEnum {
-	SUBMIT,
-	RESET,
-	BUTTON
+        SUBMIT,
+        RESET,
+        BUTTON
     };
 
     virtual const DOMString nodeName() const;
@@ -199,10 +199,10 @@ public:
 
 protected:
     DOMString _value;
-    bool _clicked;
-    typeEnum _type;
     QString currValue;
+    typeEnum _type;
     bool dirty;
+    bool _clicked;
 };
 
 // -------------------------------------------------------------------------
@@ -228,16 +228,16 @@ class HTMLInputElementImpl : public HTMLGenericFormElementImpl
 {
 public:
     enum typeEnum {
-	TEXT,
-	PASSWORD,
-	CHECKBOX,
-	RADIO,
-	SUBMIT,
-	RESET,
-	FILE,
-	HIDDEN,
-	IMAGE,
-	BUTTON
+        TEXT,
+        PASSWORD,
+        CHECKBOX,
+        RADIO,
+        SUBMIT,
+        RESET,
+        FILE,
+        HIDDEN,
+        IMAGE,
+        BUTTON
     };
 
     HTMLInputElementImpl(DocumentImpl *doc);
@@ -285,19 +285,24 @@ public:
                              NodeImpl *&innerNode, long &offset );
 
     virtual void setOwnerDocument(DocumentImpl *_document);
+    // used in case input type=image was clicked.
+    int clickX() const { return xPos; }
+    int clickY() const { return yPos; }
 
 protected:
-    typeEnum _type;
-    bool m_haveType;
+
     DOMString m_value;
-    bool m_checked;
+    DOMString m_filename;
+    DOMString _src;
+    DOMString _defaultValue;
+    typeEnum _type;
     int _maxLen;
     int _size;
-    DOMString _src;
+    int xPos, yPos;
     bool _clicked;
-    DOMString _defaultValue;
     bool _defaultChecked;
-    DOMString m_filename;
+    bool m_checked;
+    bool m_haveType;
 };
 
 // -------------------------------------------------------------------------
@@ -385,9 +390,9 @@ public:
     void notifyOptionSelected(HTMLOptionElementImpl *selectedOption, bool selected);
 
 protected:
+    QArray<HTMLGenericFormElementImpl*> m_listItems;
     int m_size;
     bool m_multiple;
-    QArray<HTMLGenericFormElementImpl*> m_listItems;
 };
 
 
@@ -443,10 +448,8 @@ public:
 
 
 protected:
-    bool m_selected;
     DOMString m_value;
-
-//    friend khtml::RenderSelect;
+    bool m_selected;
 };
 
 

@@ -150,10 +150,20 @@ QByteArray HTMLFormElementImpl::formData()
                     if(current->id() == ID_INPUT &&
                        static_cast<HTMLInputElementImpl*>(current)->inputType() == HTMLInputElementImpl::IMAGE)
                     {
-                        enc_string += HTMLFormElementImpl::encodeByteArray(QString(current->name().string() + ".x").local8Bit());
-                        enc_string += "=5&";
-                        enc_string += HTMLFormElementImpl::encodeByteArray(QString(current->name().string() + ".y").local8Bit());
-                        enc_string += "=5";
+                        HTMLInputElementImpl* i = static_cast<HTMLInputElementImpl*>(current);
+                        if(i->clickX() != -1)
+                        {
+                            QCString aStr;
+                            enc_string += HTMLFormElementImpl::encodeByteArray(QString(current->name().string() + ".x").local8Bit());
+                            aStr.setNum(i->clickX());
+                            enc_string += "=";
+                            enc_string += aStr;
+                            enc_string += "&";
+                            enc_string += HTMLFormElementImpl::encodeByteArray(QString(current->name().string() + ".y").local8Bit());
+                            enc_string += "=";
+                            aStr.setNum(i->clickY());
+                            enc_string += aStr;
+                        }
                     }
                     else
                     {
@@ -989,6 +999,8 @@ void HTMLInputElementImpl::reset()
 
 void HTMLInputElementImpl::setChecked(bool _checked)
 {
+    qDebug("setchecked %d", _checked);
+
     m_checked = _checked;
     if (_type == RADIO && _form && m_checked)
         _form->radioClicked(this);
@@ -1018,6 +1030,8 @@ bool HTMLInputElementImpl::mouseEvent( int _x, int _y, int button, MouseEventTyp
     bool wasPressed = pressed();
     bool ret = HTMLGenericFormElementImpl::mouseEvent(_x,_y,button,type,_tx,_ty,url,innerNode,offset);
     if (_type == IMAGE && (type == MouseClick || ((type == MouseRelease) && wasPressed))) {
+        xPos = _x - _tx - m_render->xPos();
+        yPos = _y - _ty - m_render->yPos();
         _clicked = true;
         _form->submit();
         return true;
