@@ -10,6 +10,7 @@ Icon=www
 Class=:internet
 Description=Microsoft Media Server Protocol
 Description[ca]=Protocol Microsoft Media Server
+Description[cs]=Microsoft Media Server protokol
 Description[da]=Microsoft Mediaserver-protokol
 Description[de]=Microsoft Media Server Protokoll
 Description[es]=Protocolo Microsoft Media Server
