@@ -56,6 +56,7 @@ messages:
 	: > kde.pot ;\
 	$(XGETTEXT) -ktranslate -x qt-messages.pot rc.cpp `cat files` && cat messages.po qt-messages.pot > $(podir)/kdelibs.pot
 	$(XGETTEXT) common_texts.cpp -o kde.pot
+	sed -i -e 's,^"Content-Type: text/plain; charset=CHARSET\\n"$,"Content-Type: text/plain; charset=UTF-8\\n",' kde.pot
 	rm -f rc.cpp dirs
 
 EXTRA_DIST = admin bsd-port debian kdelibs.spec.in kde.pot \
