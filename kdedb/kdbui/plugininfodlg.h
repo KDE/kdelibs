@@ -31,6 +31,7 @@ class QListView;
 namespace KDB {
 
 class Plugin;
+class PluginInfoDialogPrivate;
 
 /**
  * Plugin information dialog.
@@ -67,6 +68,7 @@ public:
 private:
 
     QListView *m_listview;
+    PluginInfoDialogPrivate *d;
 };
 
 }

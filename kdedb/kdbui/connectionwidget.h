@@ -32,6 +32,7 @@ class Database;
 class Connection;
 class DBListView;
 
+class ConnectionWidgetPrivate; 
 /**
  *
  * This widget will create new connections and store them in
@@ -74,7 +75,8 @@ public:
     
     Connection *conn;
     DBListView *databaseList;
-    
+
+    ConnectionWidgetPrivate *d;
 };
 
 }

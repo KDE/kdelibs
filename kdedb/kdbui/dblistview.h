@@ -49,6 +49,7 @@ private:
     Object * m_obj;
 };
 
+class DBListViewPrivate; 
 /**
  * Database list view.
  *
@@ -108,6 +109,7 @@ class DBListView: public QListView {
     int m_mode;
 
     Database * currentDB;
+    DBListViewPrivate *d;
 };
 
 }

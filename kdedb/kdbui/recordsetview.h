@@ -5,9 +5,10 @@
 
 #include <kdb/recordset.h>
 
+
 namespace KDB
 {
-
+    class RecordsetViewPrivate;
     class RecordsetView : public QTable
     {
         Q_OBJECT
@@ -32,6 +33,8 @@ namespace KDB
     private:
         bool         m_editable;
         RecordsetPtr m_data;
+
+        RecordsetViewPrivate *d;
     };
 
 };

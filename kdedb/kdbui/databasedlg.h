@@ -33,7 +33,8 @@ namespace KDB {
 class Database;
 class ConnectionWidget;
 class DBListView;
- 
+
+class DatabaseDialogPrivate; 
 /**
  * Open database dialog.
  *
@@ -74,6 +75,8 @@ class DatabaseDialog: public KDialogBase {
     Database * db;
     DBListView *connectionList;
     ConnectionWidget *createWidget;
+
+    DatabaseDialogPrivate *d;
 };
 
 }

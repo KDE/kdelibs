@@ -32,7 +32,8 @@ namespace KDB {
 
 class ConnectionWidget;
 class Connection;
- 
+
+class ConnectionDialogPrivate; 
 /**
  * Connection dialog
  *
@@ -63,6 +64,7 @@ class ConnectionDialog: public KDialogBase {
  private:
 
     ConnectionWidget *connectionWidget;
+    ConnectionDialogPrivate *d;
 };
 
 }
