@@ -513,8 +513,7 @@ void HTMLGenericFormElementImpl::insertedIntoDocument()
 
     HTMLFormElementImpl* newform = getForm();
 
-    if (newform && newform != m_form) {
-        if (m_form) m_form->removeFormElement(this);
+    if (!m_form && newform) {
         m_form = newform;
         m_form->registerFormElement(this);
     }
