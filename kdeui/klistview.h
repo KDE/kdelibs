@@ -471,7 +471,7 @@ signals:
    *
    * This is sent only once per each groups of moves.  That is, for each
    * drop that is a move this will be emitted once, before KListView calls
-   * @ref moveItem()
+   * @see moveItem()
    */
   void aboutToMove();
 

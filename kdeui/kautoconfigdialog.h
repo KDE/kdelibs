@@ -57,7 +57,7 @@ public:
    * there can be more then one dialog at a time so name these for example
    * "Font Settings" or "Color Settings" and not just "Settings".
    * 
-   * @param type - Used in creating the dialog.  @Ref KDialogBase
+   * @param type - Used in creating the dialog.  @see KDialogBase
    * 
    * @param model - Because of the features of KAutoConfig, KAutoConfigDialog
    * does not have to be modal.  To prevent more then one settings dialog
