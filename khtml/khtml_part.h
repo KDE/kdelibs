@@ -503,6 +503,8 @@ protected:
   virtual void khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event );
   virtual void khtmlDrawContentsEvent( khtml::DrawContentsEvent * );
 
+  virtual void guiActivateEvent( KParts::GUIActivateEvent *event );
+
   /**
    * Internal empty reimplementation of @ref KParts::ReadOnlyPart::openFile .
    */

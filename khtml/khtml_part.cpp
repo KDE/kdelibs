@@ -2533,6 +2533,12 @@ void KHTMLPart::khtmlDrawContentsEvent( khtml::DrawContentsEvent * )
 {
 }
 
+void KHTMLPart::guiActivateEvent( KParts::GUIActivateEvent *event )
+{
+  if ( event->activated() )
+    emitSelectionChanged();
+}
+
 void KHTMLPart::slotFind()
 {
   KHTMLPart *part = this;
