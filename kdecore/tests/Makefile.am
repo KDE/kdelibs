@@ -27,7 +27,7 @@ check_PROGRAMS = kconfigtest klocaletest kprocesstest ksimpleconfigtest \
 	kstddirstest kurltest kuniqueapptest ktempfiletest krandomsequencetest \
 	kdebugtest ksocktest kstringhandlertest kcmdlineargstest \
 	kmemtest kidlservertest kidlclienttest dcopkonqtest kipctest \
-	kversiontest
+	kversiontest cplusplustest
 
 noinst_HEADERS = kconfigtest.h klocaletest.h kprocesstest.h 
 
@@ -53,6 +53,7 @@ kidlservertest_SOURCES = KIDLTest.cpp KIDLTest.skel
 kidlclienttest_SOURCES = KIDLTestClient.cpp KIDLTest.stub
 kipctest_SOURCES = kipctest.cpp
 kversiontest_SOURCES = kversiontest.cpp
+cplusplustest_SOURCES = cplusplustest.cpp
 
 check-local: kversiontest
 	@kversiontest
