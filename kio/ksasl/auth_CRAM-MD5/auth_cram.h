@@ -1,5 +1,5 @@
 #ifndef AUTH_CRAM_H
-#define AUTH_CRAM_H "$Id"
+#define AUTH_CRAM_H "$Id$"
 
 #include <kinstance.h>
 #include <klibloader.h>
