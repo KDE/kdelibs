@@ -134,6 +134,8 @@ bool KNotify::notifyBySound(const QString &sound)
 
 bool KNotify::notifyByMessagebox(const QString &text)
 {
+	if ( text.isEmpty() )
+		return false;
 	QMessageBox *notification;
 	notification = new QMessageBox(i18n("Notification"),
 	                               text,
