@@ -137,7 +137,7 @@ public:
 	 those icons which names start with 'mini'.
   */
   QPixmap selectIcon( QString &name, const QString &filter);
-  void setDir( const QStringList &l ) { cb_dirs->clear(); cb_dirs->insertStringList(l); }
+  void addIcons( const QStringList &l ); 
   int exec(QString filter);
 
 protected slots:
