@@ -47,7 +47,7 @@ public:
 	{
 	    return 90.0; // TODO: make modal?
 	}
-
+	
 	double toPixel(const QString &s, bool hmode)
 	{
 		if(s.isEmpty())
@@ -165,12 +165,33 @@ public:
 					}
 				}
 			}
-			
+	
+			// Parse color using KSVGIconPainter (which uses Qt)
+			// Supports all svg-needed color formats
 			QColor qStopColor = m_engine->painter()->parseColor(parseColor);
-			art_u32 stopColor = (qRed(qStopColor.rgb()) << 24) | (qGreen(qStopColor.rgb()) << 16) | (qBlue(qStopColor.rgb()) << 8) | 0xff;
+			
+			// Convert in a libart suitable form
+			QString tempName = qStopColor.name();
+			const char *str = tempName.latin1();
 
-			Q_UINT16 opacity = 0xff;
-
+			int opacity = 0xff;
+			int stopColor = 0;
+				
+			for(int i = 1; str[i]; i++)
+			{
+				int hexval;
+				if(str[i] >= '0' && str[i] <= '9')
+					hexval = str[i] - '0';
+				else if (str[i] >= 'A' && str[i] <= 'F')
+					hexval = str[i] - 'A' + 10;
+				else if (str[i] >= 'a' && str[i] <= 'f')
+					hexval = str[i] - 'a' + 10;
+				else
+					break;
+				
+				stopColor = (stopColor << 4) + hexval;
+			}
+			
 			if(!parseOpacity.isEmpty())
 			{
 				double temp;
@@ -183,7 +204,7 @@ public:
 				else
 					temp = parseOpacity.toDouble();
 
-				opacity = (Q_UINT16) floor(temp * 255 + 0.5);
+				opacity = (int) floor(temp * 255 + 0.5);
 			}
 
 			Q_UINT32 rgba = (stopColor << 8) | opacity;
