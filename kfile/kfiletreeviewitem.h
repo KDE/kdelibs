@@ -20,17 +20,20 @@
 #ifndef kfile_tree_view_item_h
 #define kfile_tree_view_item_h
 
+#include <qptrlist.h>
 #include <qlistview.h>
+
 #include <kfileitem.h>
 #include <kio/global.h>
 #include <kdirlister.h>
 #include <kio/job.h>
-#include <qdict.h>
 
 class KURL;
 class KFileTreeView;
 class KFileTreeBranch;
 class KFileTreeItem;
+
+
 
 class KFileTreeViewItem : public QListViewItem
 {
@@ -56,6 +59,18 @@ private:
    class KFileTreeViewItemPrivate;
    KFileTreeViewItemPrivate *d;
 };
+
+
+/**
+ * List of KFileTreeViewItems
+ */
+typedef QPtrList<KFileTreeViewItem> KFileTreeViewItemList;
+
+/**
+ * Iterator for KFileTreeViewItemList
+ */
+typedef QPtrListIterator<KFileTreeViewItem> KFileTreeViewItemListIterator;
+
 
 #endif
 
