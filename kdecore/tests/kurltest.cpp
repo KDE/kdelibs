@@ -88,6 +88,9 @@ int main(int argc, char *argv[])
   check("KURL::prettyURL()", notPretty.prettyURL(), "http://ferret.lmh.ox.ac.uk/~kdecvs/");
   KURL notPretty2("file:/home/test/directory%20with%20spaces");
   check("KURL::prettyURL()", notPretty2.prettyURL(), "file:/home/test/directory with spaces");
+  KURL url15581("http://alain.knaff.linux.lu/bug-reports/kde/spaces in url.html");
+  check("KURL::prettyURL()", url15581.prettyURL(), "http://alain.knaff.linux.lu/bug-reports/kde/spaces in url.html");
+  check("KURL::url()", url15581.url(), "http://alain.knaff.linux.lu/bug-reports/kde/spaces%20in%20url.html");
 
   KURL carsten;
   carsten.setPath("/home/gis/src/kde/kdelibs/kfile/.#kfiledetailview.cpp.1.18");
@@ -272,5 +275,9 @@ int main(int argc, char *argv[])
   check("man: URL, is relative", KURL::isRelativeURL("man:mmap") ? "true" : "false", "false");
   check("javascript: URL, is relative", KURL::isRelativeURL("javascript:doSomething()") ? "true" : "false", "false");
 
+  KURL ulong("https://swww.gad.de:443/servlet/CookieAccepted?MAIL=s@gad.de&VER=25901");
+  check("host",ulong.host(),"swww.gad.de");
+
   printf("\nTest OK !\n");
 }
+
