@@ -456,8 +456,12 @@ void KIconViewItem::calcRect( const QString& text_ )
 
         itemTextRect = QRect( width - itemTextRect.width(), ( height - itemTextRect.height() ) / 2,
                               itemTextRect.width(), itemTextRect.height() );
-        itemIconRect = QRect( 0, ( height - itemIconRect.height() ) / 2,
-                              itemIconRect.width(), itemIconRect.height() );
+        if ( itemIconRect.height() > itemTextRect.height() ) // icon bigger than text -> center vertically
+            itemIconRect = QRect( 0, ( height - itemIconRect.height() ) / 2,
+                                  itemIconRect.width(), itemIconRect.height() );
+        else // icon smaller than text -> center with first line
+            itemIconRect = QRect( 0, ( fm->height() - itemIconRect.height() ) / 2,
+                                  itemIconRect.width(), itemIconRect.height() );
     }
 #if 0
     kdDebug() << "KIconViewItem::calcRect itemIconRect=" << itemIconRect.x() << "," << itemIconRect.y()
@@ -596,8 +600,6 @@ void KIconViewItem::paintItem( QPainter *p, const QColorGroup &cg )
 
 	p->restore();
     } else {
-	int h = pixmap()->height();
-
 	if ( isSelected() ) {
 	    QPixmap *pix = pixmap();
 	    if ( pix && !pix->isNull() ) {
@@ -613,10 +615,10 @@ void KIconViewItem::paintItem( QPainter *p, const QColorGroup &cg )
 		p2.fillRect( pix->rect(), QBrush( cg.highlight(), QBrush::Dense4Pattern) );
 		p2.end();
 		QRect cr = pix->rect();
-		p->drawPixmap( x() , y() + ( height() - h ) / 2, *buffer, 0, 0, cr.width(), cr.height() );
+		p->drawPixmap( x() , pixmapRect(FALSE).y(), *buffer, 0, 0, cr.width(), cr.height() );
 	    }
 	} else {
-	    p->drawPixmap( x() , y() + ( height() - h ) / 2, *pixmap() );
+	    p->drawPixmap( x() , pixmapRect(FALSE).y(), *pixmap() );
 	}
 
 	p->save();
