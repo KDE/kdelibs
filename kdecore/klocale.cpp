@@ -730,12 +730,6 @@ QString KLocale::formatDate(const QDate &pDate, bool shortfmt) const
 	case 'w':
                 rst.replace(i, 2, QString::number( pDate.dayOfWeek()==7?0:pDate.dayOfWeek() ) );
 		continue;
-	case 'n':
-                rst.replace(i, 2, "\n");
-		continue;
-	case 't':
-                rst.replace(i, 2, "\t");
-                continue;
 	default:
                 rst.remove(i, 1);
 		i--;
@@ -781,12 +775,6 @@ QString KLocale::formatTime(const QTime &pTime, bool includeSecs) const
 	continue;
       case 'p':
 	rst.replace(i, 2, pTime.hour() >= 12?translate("pm"):translate("am"));
-	continue;
-      case 'n':
-	rst.replace(i, 2, "\n");
-	continue;
-      case 't':
-	rst.replace(i, 2, "\t");
 	continue;
       default:
 	rst.remove(i, 1);
