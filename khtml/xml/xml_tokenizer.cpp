@@ -151,7 +151,22 @@ bool XMLHandler::characters( const QString& ch )
 
     if (m_currentNode->nodeType() == Node::TEXT_NODE || m_currentNode->nodeType() == Node::CDATA_SECTION_NODE
         || enterText()) {
-        static_cast<TextImpl*>(m_currentNode)->appendData(ch.simplifyWhiteSpace());
+
+        if (m_currentNode->parentNode() &&
+            (m_currentNode->parentNode()->nodeName() == "SCRIPT" ||
+             m_currentNode->parentNode()->nodeName() == "STYLE" ||
+             m_currentNode->parentNode()->nodeName() == "XMP" ||
+             m_currentNode->parentNode()->nodeName() == "TEXTAREA")) {
+            // ### hack.. preserve whitespace for script, style, xmp and textarea... is this the correct
+            // way of doing this?
+            // ### use lowercase
+            // ### only do this for elements in the xhtml namespace
+            static_cast<TextImpl*>(m_currentNode)->appendData(ch);
+        }
+        else {
+            // for all others, simplify the whitespace
+            static_cast<TextImpl*>(m_currentNode)->appendData(ch.simplifyWhiteSpace());
+        }
         return TRUE;
     }
     else
