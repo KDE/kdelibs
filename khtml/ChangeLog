@@ -1,4 +1,4 @@
-2004-06-30 Tobias Anton <anton@stud.fbi.fh-darmstadt.de>
+2004-06-30  Tobias Anton  <anton@stud.fbi.fh-darmstadt.de>
 	* khtmlview.{cpp,h}:
 	integrated keyboard tabbing with mouse scrolling.
 	Hitting tab skips at most one page, but respects
@@ -287,7 +287,7 @@
 	application of focus to child elements now that outline correctly
 	handles block elements.
 
-2004-05-06 Tobias Anton  <anton@stud.fbi.fh-darmstadt.de>
+2004-05-06  Tobias Anton  <anton@stud.fbi.fh-darmstadt.de>
 
 	* html/htmlparser.cpp (class KHTMLParser): use setCurrent() after reset()
 	to avoid a memleak whenever the parser is used on a DocumentFragment.
