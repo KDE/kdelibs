@@ -16,12 +16,12 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <unistd.h>
+//#include <stdio.h>
+#include <stdlib.h> // strtol
+#include <time.h> // time()
+/*#include <unistd.h>
 #include <grp.h>
-#include <pwd.h>
+#include <pwd.h>*/
 #include <assert.h>
 
 #include <qcstring.h>

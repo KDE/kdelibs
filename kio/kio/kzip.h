@@ -126,9 +126,12 @@ public:
      * using the compression filter associated to given mimetype.
      *
      * @param filename is a local path (e.g. "/home/weis/myfile.zip")
-     * @param mimetype "application/x-gzip" or "application/x-bzip2"
-     * Do not use application/x-tgz or so. Only the compression layer !
+     * @param mimetype Only "application/x-zip" is supported by KZip.
      * If the mimetype is ommitted, it will be determined from the filename.
+     * If something else than application/x-zip is found, the resulting KZip will be invalid.
+     * In summary, if you know for sure that the file is a zip file, you will
+     * save time by passing application/x-zip as parameter. Otherwise, let KZip
+     * check the file.
      */
     KZip( const QString& filename, const QString & mimetype = QString::null );
 
@@ -161,9 +164,11 @@ public:
      */
     void setOrigFileName( const QCString & fileName );
 
-    // not needed for zip
-    virtual bool writeDir( const QString& name, const QString& user, 
-	    const QString& group ) {return true ; }
+    /**
+     * @internal Not needed for zip
+     */
+    virtual bool writeDir( const QString&, const QString&, const QString& ) { return true; }
+
     virtual bool prepareWriting( const QString& name, const QString& user, const QString& group, uint size );
     virtual bool doneWriting( uint size );
 
