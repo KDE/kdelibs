@@ -307,14 +307,14 @@ public:
   static const char *appName();
 
   /**
-   * Print the usage help to @ds stdout and exit.
+   * Print the usage help to stdout and exit.
    *
    * @param complete If true, print all available options.
    **/
   static void usage(const char *id = 0);
 
   /**
-   * Print an error to @ds stderr and the usage help to @ds stdout and exit.
+   * Print an error to stderr and the usage help to stdout and exit.
    *
    **/
   static void usage(const QString &error);

@@ -65,7 +65,7 @@ public:
    * The check is performed looking at the file extension (the file is not
    * opened).
    * Currently, valid extensions are ".kdelnk" and ".desktop".
-   * @eturn @p true if the file appears to be a desktop file.
+   * @return @p true if the file appears to be a desktop file.
    */
   static bool isDesktopFile(const QString& path);
 

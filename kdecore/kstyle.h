@@ -44,7 +44,7 @@ public:
     /**
      * Draw a toolbar (without buttons, etc.)
      *
-     * @p x, @y, @w, and @h tell in which rectangle to draw the toolbar.
+     * @p x, @p y, @p w, and @p h tell in which rectangle to draw the toolbar.
      **/
     virtual void drawKToolBar(QPainter *p, int x, int y, int w, int h,
                               const QColorGroup &g, KToolBarPos type,

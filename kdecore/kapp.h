@@ -25,7 +25,7 @@
 
 // Version macros. Never put this further down.
 #define KDE_VERSION 194
-#define KDE_VERSION_STRING "1.93 Beta >= 20000807"
+#define KDE_VERSION_STRING "1.93 Beta >= 20000813"
 #define KDE_VERSION_MAJOR 1
 #define KDE_VERSION_MINOR 9
 #define KDE_VERSION_RELEASE 4
@@ -778,6 +778,10 @@ private:
 #endif
 
 // $Log$
+// Revision 1.181  2000/08/07 21:16:58  mueller
+// now that anyway everybody needs recompiling - increased snapshot
+// version string
+//
 // Revision 1.180  2000/08/05 03:52:51  waba
 // WABA: Added static kdeinitExec() function
 //

@@ -181,7 +181,7 @@ public:
    *                  the '/' would really alter the URL, while "ftp://host/path" and
    *                  "ftp://host/path/" mean the same directory.
    *
-   * @return The current decoded path. This does @not include the query.
+   * @return The current decoded path. This does not include the query.
    */
   QString path( int _trailing ) const;
 

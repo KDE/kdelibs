@@ -432,7 +432,7 @@ class KAccel : public QAccel
 	QString configGroup() const;
 
 	/**
-	 * If @global is @true, KAccel writes to the global
+	 * If @p global is true, KAccel writes to the global
 	 *  configuration file, instead of the application configuration file.
 	 **/
 	void setConfigGlobal( bool global );
@@ -443,8 +443,8 @@ class KAccel : public QAccel
 	bool configGlobal() const;
 	
 	/**
-	 * Enable all accelerators if activate is @p true, or disable it if
-	 * activate is @p false.
+	 * Enable all accelerators if activate is true, or disable it if
+	 * activate is false.
 	 *
 	 * Individual keys can also be enabled or disabled.
 	 */

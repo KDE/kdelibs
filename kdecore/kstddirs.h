@@ -347,7 +347,7 @@ public:
 	 *
 	 * @param config The object the entries are read from. This should
 	 *        contain global config files
-	 * @return @true if new config paths have been added
+	 * @return true if new config paths have been added
 	 * from @p config.
 	 **/
 	bool addCustomized(KConfig *config);
