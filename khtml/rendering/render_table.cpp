@@ -976,7 +976,8 @@ void RenderTable::calcWidth()
         calcAbsoluteHorizontal();
     }
 
-    int availableWidth = containingBlockWidth();
+    int borderWidth = borderLeft() + borderRight();
+    int availableWidth = containingBlockWidth() - borderWidth;
 
 
     LengthType widthType = style()->width().type;
@@ -1017,7 +1018,7 @@ void RenderTable::calcWidth()
         }
     }
 
-    m_width += borderLeft() + borderRight();
+    m_width += borderWidth;
 }
 
 void RenderTable::calcColWidth(void)
