@@ -319,7 +319,7 @@ bool ReadOnlyPart::closeURL()
 
   if ( m_bTemp )
   {
-    unlink( m_file.ascii() );
+    unlink( QFile::encodeName(m_file) );
     m_bTemp = false;
   }
   // It always succeeds for a read-only part,
@@ -437,7 +437,7 @@ bool ReadWritePart::saveAs( const KURL & kurl )
   {
     if ( m_bTemp ) // get rid of a possible temp file first
     {              // (happens if previous url was remote)
-      unlink( m_file.ascii() );
+      unlink( QFile::encodeName(m_file) );
       m_bTemp = false;
     }
     m_file = m_url.path();

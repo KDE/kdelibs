@@ -22,6 +22,7 @@
 #include <kparts/plugin.h>
 #include <kparts/part.h>
 
+#include <qfile.h>
 #include <qobjectlist.h>
 #include <qfileinfo.h>
 
@@ -120,7 +121,7 @@ void Plugin::loadPlugins( QObject *parent, const QValueList<PluginInfo> &pluginI
      if ( library.isEmpty() )
        continue;
 
-     Plugin *plugin = loadPlugin( parent, library.latin1() );
+     Plugin *plugin = loadPlugin( parent, QFile::encodeName(library) );
 
      if ( plugin )
      {
