@@ -18,8 +18,8 @@
    Boston, MA 02111-1307, USA.
 */
 
-#ifndef __kbrowser_h__
-#define __kbrowser_h__
+#ifndef __kparts_browserextension_h__
+#define __kparts_browserextension_h__
 
 #include <sys/types.h>
 
@@ -27,7 +27,6 @@
 #include <qlist.h>
 #include <qdatastream.h>
 
-#include <kaction.h>
 #include <kparts/part.h>
 #include <kparts/event.h>
 
@@ -58,7 +57,7 @@ struct URLArgs
 
   QByteArray postData; //khtml specific stuff
   QString frameName;
-    
+
   bool trustedSource;
 
   URLArgsPrivate *d;
