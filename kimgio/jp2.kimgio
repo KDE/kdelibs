@@ -1,7 +1,7 @@
 [Image Format]
 Type=jp2
 Header=^\x01\x01\x01\x0C\x6A\x50
-Name=JPEG 2000-Pictures
+Name=JPEG 2000 Image
 Name[be]=Малюнкі JPEG 2000
 Name[da]=JPEG 2000-billeder
 Name[es]=Fotos JPEG 2000
