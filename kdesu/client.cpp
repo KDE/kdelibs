@@ -48,7 +48,6 @@
 
 KDEsuClient::KDEsuClient()
 {
-    d = new KDEsuClientPrivate;
     sockfd = -1;
     char *dpy = getenv("DISPLAY");
     if (dpy == 0L) 
@@ -67,14 +66,7 @@ KDEsuClient::~KDEsuClient()
 	close(sockfd);
 }
 
-// BCI: remove me
 int KDEsuClient::connect()
-{
-    return _connect();
-}
-
-// BCI: rename to connect
-int KDEsuClient::_connect()
 {
     if (sockfd >= 0)
 	close(sockfd);
@@ -162,12 +154,6 @@ int KDEsuClient::setPass(const char *pass, int timeout)
     return command(cmd);
 }
 
-// BCI: remove
-int KDEsuClient::exec(QCString cmd)
-{
-    return exec(cmd, d->user);
-}
-
 int KDEsuClient::exec(QCString prog, QCString user)
 {
     QCString cmd;
@@ -177,12 +163,6 @@ int KDEsuClient::exec(QCString prog, QCString user)
     cmd += escape(user);
     cmd += "\n";
     return command(cmd);
-}
-
-// BCI: remove me
-int KDEsuClient::setUser(QCString user)
-{
-    d->user = user;
 }
 
 int KDEsuClient::setHost(QCString host)
@@ -207,24 +187,14 @@ int KDEsuClient::setScheduler(int sched)
     return command(cmd);
 }
 
-int KDEsuClient::delCommand(QCString key)
+int KDEsuClient::delCommand(QCString key, QCString user)
 {
     QCString cmd = "DEL ";
     cmd += escape(key);
+    cmd += " ";
+    cmd += escape(user);
     cmd += "\n";
     return command(cmd);
-}
-
-// BCI: remove
-int KDEsuClient::setVar(QCString key, QCString value)
-{
-    return setVar(key, value, 0, 0);
-}
-
-// BCI: remove
-int KDEsuClient::setVar(QCString key, QCString value, int timeout)
-{
-    return setVar(key, value, timeout, 0);
 }
 
 int KDEsuClient::setVar(QCString key, QCString value, int timeout, 

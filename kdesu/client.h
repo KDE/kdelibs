@@ -51,9 +51,6 @@ public:
      */
     int exec(QCString command, QCString user);
 
-    /* BCI: remove me */
-    int exec(QCString command);
-
     /**
      * Set root's password, lasts one session.
      *
@@ -62,9 +59,6 @@ public:
      * @return Zero on success, -1 on failure.
      */
     int setPass(const char *pass, int timeout);
-
-    /** BCI: remove me. */
-    int setUser(QCString user);
 
     /**
      * Set the target host (optional).
@@ -89,9 +83,6 @@ public:
      */
     int delCommand(QCString command, QCString user);
 
-    /** BCI: remove me. */
-    int delCommand(QCString command);
-
     /**
      * Set a persistent variable.
      * @param key The name of the variable.
@@ -101,13 +92,7 @@ public:
      * @param group Make the key part of a group. See @ref #delGroup.
      * @return zero on success, -1 on failure.
      */
-    int setVar(QCString key, QCString value, int timeout, QCString group);
-
-    /** BCI: remove me. */
-    int setVar(QCString key, QCString value, int timeout);
-
-    /** BCI: remove me. */
-    int setVar(QCString key, QCString value);
+    int setVar(QCString key, QCString value, int timeout=0, QCString group=0);
 
     /**
      * Get a persistent variable.
@@ -144,17 +129,10 @@ public:
     /** Returns true if the server is safe (installed setgid), false otherwise. */
     bool isServerSGID();
 
-    /** BCI: remove me. */
+private:
     int connect();
 
-private:
-    int _connect();
-
-    class KDEsuClientPrivate
-    {
-    public:
-	QCString user;
-    };
+    class KDEsuClientPrivate;
     KDEsuClientPrivate *d;
 
     int sockfd;

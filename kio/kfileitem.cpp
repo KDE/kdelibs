@@ -255,13 +255,6 @@ QString KFileItem::iconName()
   return determineMimeType()->icon(m_url, false);
 }
 
-
-// BCI: remove me and add default argument to next function
-QPixmap KFileItem::pixmap( int _size ) const
-{
-  return pixmap( _size, KIcon::DefaultState );
-}
-
 // new stuff from KonqFileItem
 QPixmap KFileItem::pixmap( int _size, int _state ) const
 {

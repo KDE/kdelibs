@@ -190,10 +190,7 @@ public:
    * KIcon::ActiveState or KIcon::DisabledState.
    * @return the pixmap
    */
-  QPixmap pixmap( int _size, int _state) const;
-
-  // BCI: remove me
-  QPixmap pixmap( int _size ) const;
+  QPixmap pixmap( int _size, int _state=0 ) const;
 
   /**
    * @return the string to be displayed in the statusbar e.g. when the mouse
