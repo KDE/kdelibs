@@ -4,9 +4,9 @@
  *
  * This file is part of the KDE project, module kdesu.
  * Copyright (C) 1999,2000 Geert Jansen <jansen@kde.org>
- * 
- * This is free software; you can use this library under the GNU Library 
- * General Public License, version 2. See the file "COPYING.LIB" for the 
+ *
+ * This is free software; you can use this library under the GNU Library
+ * General Public License, version 2. See the file "COPYING.LIB" for the
  * exact licensing terms.
  *
  * kcookie.cpp: KDE authentication cookies.
@@ -48,33 +48,33 @@ QCStringList KCookie::split(QCString line, char ch)
 	result += line.mid(i);
     return result;
 }
-    
+
 
 void KCookie::getXCookie()
-{    
+{
     char buf[1024];
     FILE *f;
 
     m_Display = getenv("DISPLAY");
     if (m_Display.isEmpty()) {
-	kDebugError("%s: $DISPLAY is not set", ID);
+	kdError() << ID << ": $DISPLAY is not set\n";
 	return;
     }
     QCString cmd;
     cmd.sprintf("xauth list %s", m_Display.data());
     if (!(f = popen(cmd, "r"))) {
-	kDebugError("%s: popen(): %m", ID);
-	return;
+        kdError() << ID << ": popen(): " << perror << endl;
+        return;
     }
     QCString output = fgets(buf, 1024, f);
     if (pclose(f) < 0) {
-	kDebugError("%s: Could not run xauth", ID);
-	return;
+        kdError() << "ID" << ": Could not run xauth\n";
+        return;
     }
     output = output.simplifyWhiteSpace();
     QCStringList lst = split(output, ' ');
     if (lst.count() != 3) {
-	kDebugError("%s: parse error", ID);
+        kdError() << ID << ": parse error\n";
 	return;
     }
     m_DisplayAuth = (lst[1] + ' ' + lst[2]);
@@ -90,11 +90,11 @@ void KCookie::getICECookie()
     if (dcopsrv.isEmpty()) {
 	QCString home = getenv("HOME");
 	if (home.isEmpty()) {
-	    kDebugWarning("%s: Cannot find DCOP server.", ID);
+	    kdWarning() << ID << ": Cannot find DCOP server.\n";
 	    return;
 	}
 	if (!(f = fopen(home + "/.DCOPserver", "r"))) {
-	    kDebugWarning("%s: Cannot open ~/.DCOPserver.", ID);
+	    kdWarning() << ID << ": Cannot open ~/.DCOPserver.\n";
 	    return;
 	}
 	dcopsrv = fgets(buf, 1024, f);
@@ -103,7 +103,7 @@ void KCookie::getICECookie()
     }
     m_DCOPSrv = split(dcopsrv, ',');
     if (m_DCOPSrv.count() == 0) {
-	kDebugWarning("No DCOP servers found");
+	kdWarning() << "No DCOP servers found\n";
 	return;
     }
 
@@ -112,29 +112,29 @@ void KCookie::getICECookie()
 	QCString cmd;
 	cmd.sprintf("iceauth list netid=%s", (*it).data());
 	if (!(f = popen(cmd, "r"))) {
-	    kDebugError("%s: popen(): %m", ID);
+	    kdError() << ID << ": popen(): " << perror << endl;
 	    break;
 	}
 	QCStringList output;
 	while (fgets(buf, 1024, f) > 0)
 	    output += buf;
 	if (pclose(f) < 0) {
-	    kDebugError("%s: Could not run iceauth.", ID);
+	    kdError() << ID << ": Could not run iceauth.\n";
 	    break;
 	}
 	QCStringList::Iterator it2;
 	for (it2=output.begin(); it2!=output.end(); it2++) {
 	    QCStringList lst = split((*it2).simplifyWhiteSpace(), ' ');
 	    if (lst.count() != 5) {
-		kDebugError("%s: parse error", ID);
+		kdError() << ID << ": parse error\n";
 		break;
 	    }
 	    if (lst[0] == "DCOP")
 		m_DCOPAuth += (lst[3] + ' ' + lst[4]);
 	    else if (lst[0] == "ICE")
 		m_ICEAuth += (lst[3] + ' ' + lst[4]);
-	    else 
-		kDebugError("%s: unknown protocol: %s", ID, lst[0].data());
+	    else
+		kdError() << ID << ": unknown protocol: " << lst[0] << endl;
 	}
     }
 }

@@ -101,7 +101,7 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	break;
     case MSG_ERROR:
 	stream >> i >> str1;
-	kdDebug(7007) << "error " << i << " " << debugString(str1) << endl;
+	kdDebug(7007) << "error " << i << " " << str1 << endl;
 	emit error( i, str1 );
 	break;
     case MSG_SLAVE_STATUS:

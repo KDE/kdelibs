@@ -129,16 +129,26 @@ class kdbgstream {
 	output += QString::fromLatin1(i ? "true" : "false");
 	return *this;
     }
-    kdbgstream &operator<<(char i)  {
+    kdbgstream &operator<<(short i)  {
 	if (!print) return *this;
 	QString tmp; tmp.setNum(i); output += tmp;
 	return *this;
     }
-    kdbgstream &operator<<(unsigned char i) {
+    kdbgstream &operator<<(unsigned short i) {
         if (!print) return *this;
         QString tmp; tmp.setNum(i); output += tmp;
         return *this;
-    }    
+    }
+    kdbgstream &operator<<(char i)  {
+	if (!print) return *this;
+	QString tmp; tmp.setNum(int(i)); output += tmp;
+	return *this;
+    }
+    kdbgstream &operator<<(unsigned char i) {
+        if (!print) return *this;
+        QString tmp; tmp.setNum((unsigned int)(i)); output += tmp;
+        return *this;
+    }
 
     kdbgstream &operator<<(int i)  {
 	if (!print) return *this;
@@ -149,17 +159,17 @@ class kdbgstream {
         if (!print) return *this;
         QString tmp; tmp.setNum(i); output += tmp;
         return *this;
-    }                                                                             
+    }
     kdbgstream &operator<<(long i) {
         if (!print) return *this;
         QString tmp; tmp.setNum(i); output += tmp;
         return *this;
-    }                                                                             
+    }
     kdbgstream &operator<<(unsigned long i) {
         if (!print) return *this;
         QString tmp; tmp.setNum(i); output += tmp;
         return *this;
-    }                                                                             
+    }
     void flush();
     kdbgstream &operator<<(const QString& string) {
 	if (!print) return *this;
@@ -210,6 +220,10 @@ class kndbgstream {
  public:
     kndbgstream() {}
     ~kndbgstream() {}
+    kndbgstream &operator<<(short int )  { return *this; }
+    kndbgstream &operator<<(unsigned short int )  { return *this; }
+    kndbgstream &operator<<(char )  { return *this; }
+    kndbgstream &operator<<(unsigned char )  { return *this; }
     kndbgstream &operator<<(int )  { return *this; }
     kndbgstream &operator<<(unsigned int )  { return *this; }
     void flush() {}

@@ -538,7 +538,7 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls, bool b
       // We need to launch the application N times. That sucks.
       // We ignore the result for application 2 to N.
       // For the first file we launch the application in the
-      // usual way. The reported result is based on this 
+      // usual way. The reported result is based on this
       // application.
       QStringList::ConstIterator it = urls.begin();
       for(++it;
@@ -612,7 +612,7 @@ KLauncher::slotDequeue()
             // Request handled.
             requestDone( request );
             requestList.removeRef( request );
-            continue;   
+            continue;
          }
       }
 
@@ -629,7 +629,7 @@ KLauncher::slotDequeue()
    bProcessingQueue = false;
 }
 
-bool 
+bool
 KLauncher::allowMultipleFiles(const KService::Ptr service)
 {
   QString exec = service->exec();
@@ -703,7 +703,7 @@ KLauncher::createArgs( KLaunchRequest *request, const KService::Ptr service ,
   {
     QString url = *it;
     KURL kurl = url;
-    
+
     QCString f ( QFile::encodeName(kurl.path( -1 )) );
     QCString d ( QFile::encodeName(kurl.directory()) );
     QCString n ( QFile::encodeName(kurl.filename()) );
@@ -713,7 +713,7 @@ KLauncher::createArgs( KLaunchRequest *request, const KService::Ptr service ,
 
     replaceArg(request->arg_list, "%n", n);
     replaceArg(request->arg_list, "%N", n, "%N");
-  
+
     replaceArg(request->arg_list, "%d", d);
     replaceArg(request->arg_list, "%D", d, "%D");
 
@@ -766,7 +766,7 @@ KLauncher::removeArg( QValueList<QCString> &args, const QCString &target)
 pid_t
 KLauncher::requestSlave(const QString &protocol,
                         const QString &host,
-                        const QString &app_socket, QString &error)
+                        const QString &app_socket, QString &)
 {
     IdleSlave *slave;
     for(slave = mSlaveList.first(); slave; slave = mSlaveList.next())

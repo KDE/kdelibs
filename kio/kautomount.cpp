@@ -52,7 +52,7 @@ void KAutoMount::slotResult( KIO::Job * job )
       KFileManager::getFileManager()->openFileManagerWindow( mp );
 
     // Update of window which contains the desktop entry which is used for mount/unmount
-    kdDebug(7015) << " mount finished : updating " << debugString(m_desktopFile) << endl;
+    kdDebug(7015) << " mount finished : updating " << m_desktopFile << endl;
     KDirWatch::self()->setFileDirty( m_desktopFile );
   }
   delete this;
@@ -72,7 +72,7 @@ void KAutoUnmount::slotResult( KIO::Job * job )
   else
   {
     // Update of window which contains the desktop entry which is used for mount/unmount
-    kdDebug(7015) << "unmount finished : updating " << debugString(m_desktopFile) << endl;
+    kdDebug(7015) << "unmount finished : updating " << m_desktopFile << endl;
     KDirWatch::self()->setFileDirty( m_desktopFile );
   }
 

@@ -179,7 +179,7 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
 	}
     }
     */
-    
+
     connect( combo, SIGNAL( urlActivated( const KURL&  )),
 	     this,  SLOT( pathComboActivated( const KURL& ) ));
     connect( combo, SIGNAL( returnPressed( const QString&  )),
@@ -832,7 +832,7 @@ void KFileDialog::setSelection(const QString& url)
 	u = KURL(ops->url(),  url);
 
     if (u.isMalformed()) { // if it still is
-        warning("%s is not a correct argument for setSelection!", debugString(url));
+        warning("%s is not a correct argument for setSelection!", url);
 	return;
     }
 

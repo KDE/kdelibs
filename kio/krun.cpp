@@ -236,7 +236,7 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
       */
 
   }
-  
+
   bool retval = true;
 
   if ( b_allow_multiple || _urls.isEmpty() )
@@ -406,7 +406,7 @@ QString KRun::libmapnotify()
       if (la.open(IO_ReadOnly))
 	{
 	  QTextStream is(&la);
-	  
+	
 	  QString line;
 	  while (!is.atEnd())
 	    {
@@ -428,7 +428,7 @@ QString KRun::libmapnotify()
 	lib = locate("lib", lib);
     }
   kdDebug(7010) << "Found libkmapnotify at: " << lib << endl;
-  
+
   if (!lib.isEmpty())
     libkmapnotify = lib;
 
@@ -481,7 +481,7 @@ void KRun::init()
 
     KMimeType::Ptr mime = KMimeType::findByURL( m_strURL, m_mode, m_bIsLocalFile );
     assert( mime != 0L );
-    kdDebug(7010) << "MIME TYPE is " << debugString(mime->name()) << endl;
+    kdDebug(7010) << "MIME TYPE is " << mime->name() << endl;
     foundMimeType( mime->name() );
     return;
   }
@@ -549,7 +549,7 @@ void KRun::scanFile()
       // Found something - can we trust it ? (see mimetypeFastMode)
       if ( KProtocolManager::self().mimetypeFastMode( m_strURL.protocol(), mime->name() ) )
       {
-        kdDebug(7010) << "Scanfile: MIME TYPE is " << debugString(mime->name()) << endl;
+        kdDebug(7010) << "Scanfile: MIME TYPE is " << mime->name() << endl;
         foundMimeType( mime->name() );
         return;
       }
@@ -568,7 +568,7 @@ void KRun::scanFile()
     m_timer.start( 0, true );
     return;
   }
-  kdDebug(7010) << "###### Scanning file " << debugString(m_strURL.url()) << endl;
+  kdDebug(7010) << "###### Scanning file " << m_strURL.url() << endl;
 
   KIO::MimetypeJob *job = KIO::mimetype( m_strURL);
   connect(job, SIGNAL( result( KIO::Job *)),
@@ -666,7 +666,7 @@ void KRun::slotScanFinished( KIO::Job *job )
 
 void KRun::foundMimeType( const QString& type )
 {
-  kdDebug(7010) << "Resulting mime type is " << debugString(type) << endl;
+  kdDebug(7010) << "Resulting mime type is " << type << endl;
 
 /*
   // Automatically unzip stuff

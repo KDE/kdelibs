@@ -176,7 +176,7 @@ kdDebug(7006) << "HOLD: Discarding hold slave." << endl;
        if (!slave)
        {
           for( slave = idleSlaves->first();
-               slave; 
+               slave;
                slave = idleSlaves->next())
           {
              if ((protocol == slave->protocol()) &&
@@ -208,7 +208,7 @@ kdDebug(7006) << "HOLD: Discarding hold slave." << endl;
              else
              {
                  kdError() << "ERROR " << error << ": couldn't create slave : "
-                           << debugString(errortext) << endl;
+                           << errortext << endl;
                  job->slotError( error, errortext );
                  return;
              }
@@ -346,7 +346,7 @@ void Scheduler::_putSlaveOnHold(KIO::SimpleJob *job, const KURL &url)
    Slave *slave = job->slave();
    ProtocolInfo *protInfo = protInfoDict->get(slave->protocol());
    slave->disconnect(job);
-//WABA: 
+//WABA:
 // Maybe it's better to count 'slaveOnHold' as an active slave.
 // For now, this is needed to keep the count consistent.
    protInfo->activeSlaves--;

@@ -623,7 +623,7 @@ static bool waitForConnect( int sock, int maxTimeout )
       FD_ZERO(&wr);
       FD_SET(sock, &wr);
 
-      timeout.tv_usec = 0; 
+      timeout.tv_usec = 0;
       timeout.tv_sec = 1; // 1 sec
 
       select(sock + 1, (fd_set *)0, &wr, (fd_set *)0, &timeout);
@@ -654,7 +654,7 @@ static bool waitForHeader( int sock, int maxTimeout )
       FD_ZERO(&wr);
       FD_SET(sock, &rd);
 
-      timeout.tv_usec = 0; 
+      timeout.tv_usec = 0;
       timeout.tv_sec = 1; // 1 second
 
       select(sock + 1, &rd, &wr, (fd_set *)0, &timeout);
@@ -1632,7 +1632,7 @@ const char *HTTPProtocol::getUserAgentString ()
     if ( regexp.match(m_state.hostname) > -1 )
     {
       user_agent = split[1];
-      
+
       // if the match was for '*', we keep trying.. otherwise, we are
       // done
       if ( split[0] != "*" )
@@ -2035,7 +2035,9 @@ bool HTTPProtocol::readBody( )
   // If we are in copy mode the use only transfer decoding.
   bool decode = !m_qTransferEncodings.isEmpty(); // || !m_qContentEncodings.isEmpty();
 
+#ifdef DO_MD5
   bool useMD5 = !m_sContentMD5.isEmpty();
+#endif
 
   totalSize( m_iSize );
   // get the starting time.  this is used later to compute the transfer

@@ -337,7 +337,7 @@ void SimpleJob::slotSpeed( unsigned long bytes_per_second )
 
 SimpleJob *KIO::mkdir( const KURL& url, int permissions )
 {
-    kdDebug(7007) << "mkdir " << debugString(url.url()) << endl;
+    kdDebug(7007) << "mkdir " << url.url() << endl;
     KIO_ARGS << url.path() << permissions;
     SimpleJob * job = new SimpleJob(url, CMD_MKDIR, packedArgs, false);
     return job;
@@ -345,14 +345,14 @@ SimpleJob *KIO::mkdir( const KURL& url, int permissions )
 
 SimpleJob *KIO::rmdir( const KURL& url )
 {
-    kdDebug(7007) << "rmdir " << debugString(url.url()) << endl;
+    kdDebug(7007) << "rmdir " << url.url() << endl;
     KIO_ARGS << url.path() << Q_INT8(false); // isFile is false
     return new SimpleJob(url, CMD_DEL, packedArgs, false);
 }
 
 SimpleJob *KIO::chmod( const KURL& url, int permissions )
 {
-    kdDebug(7007) << "chmod " << debugString(url.url()) << endl;
+    kdDebug(7007) << "chmod " << url.url() << endl;
     KIO_ARGS << url.path() << permissions;
     SimpleJob * job = new SimpleJob(url, CMD_CHMOD, packedArgs, false);
     return job;
@@ -360,7 +360,7 @@ SimpleJob *KIO::chmod( const KURL& url, int permissions )
 
 SimpleJob *KIO::special(const KURL& url, const QByteArray & data, bool showProgressInfo)
 {
-    kdDebug(7007) << "special " << debugString(url.url()) << endl;
+    kdDebug(7007) << "special " << url.url() << endl;
     SimpleJob * job = new SimpleJob(url, CMD_SPECIAL, data, showProgressInfo);
     return job;
 }
@@ -402,7 +402,7 @@ void StatJob::slotStatEntry( const KIO::UDSEntry & entry )
 
 StatJob *KIO::stat(const KURL& url)
 {
-    kdDebug(7007) << "stat " << debugString(url.url()) << endl;
+    kdDebug(7007) << "stat " << url.url() << endl;
     KIO_ARGS << url.path() << url.query();
     StatJob * job = new StatJob(url, CMD_STAT, packedArgs );
     return job;
@@ -635,7 +635,7 @@ void MimetypeJob::slotFinished( )
 
 MimetypeJob *KIO::mimetype(const KURL& url )
 {
-    kdDebug(7007) << "mimetype " << debugString(url.url()) << endl;
+    kdDebug(7007) << "mimetype " << url.url() << endl;
     KIO_ARGS << url.path() << url.query();
     MimetypeJob * job = new MimetypeJob(url, CMD_MIMETYPE, packedArgs);
     return job;

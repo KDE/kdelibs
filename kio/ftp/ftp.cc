@@ -1454,7 +1454,7 @@ void Ftp::put( const QString& dest_orig, int permissions, bool overwrite, bool r
   if (!m_bLoggedOn)
      openConnection();
 
-  kdDebug(7102) << "Put " << debugString(dest_orig) << endl;
+  kdDebug(7102) << "Put " << dest_orig << endl;
   QString dest_part( dest_orig );
   dest_part += ".part";
 

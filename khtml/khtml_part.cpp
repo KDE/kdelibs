@@ -359,7 +359,7 @@ bool KHTMLPart::openURL( const KURL &url )
   d->m_workingURL = url;
 
   // initializing m_url to the new url breaks relative links when opening such a link after this call and _before_ begin() is called (when the first
-  // data arrives) (Simon) 
+  // data arrives) (Simon)
   //  m_url = url;
   kdDebug( 6050 ) << "KHTMLPart::openURL now (before started) m_url = " << m_url.url() << endl;
 
@@ -1225,7 +1225,7 @@ void KHTMLPart::updateActions()
 void KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, const QString &frameName,
 			      const QStringList &params )
 {
-  kdDebug( 6050 ) << "childRequest( ..., " << debugString( url ) << ", " << debugString( frameName ) << " )" << endl;
+  kdDebug( 6050 ) << "childRequest( ..., " << url << ", " << frameName << " )" << endl;
   QMap<QString,khtml::ChildFrame>::Iterator it = d->m_frames.find( frameName );
 
   if ( it == d->m_frames.end() )
@@ -1286,7 +1286,7 @@ void KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
 
 void KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &url, const QString &mimetype )
 {
-  kdDebug( 6050 ) << "trying to create part for " << debugString( mimetype ) << endl;
+  kdDebug( 6050 ) << "trying to create part for " << mimetype << endl;
 
   if ( !child->m_services.contains( mimetype ) )
   {
@@ -1358,7 +1358,7 @@ void KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &url,
   if ( child->m_extension )
     child->m_extension->setURLArgs( child->m_args );
 
-  kdDebug( 6050 ) << "opening " << debugString( url.url() ) << " in frame" << endl;
+  kdDebug( 6050 ) << "opening " << url.url() << " in frame" << endl;
   child->m_part->openURL( url );
 }
 
@@ -1699,7 +1699,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
   d->m_bComplete = false;
 
   kdDebug( 6050 ) << "restoreState() docState.count() = " << docState.count() << endl;
-  kdDebug( 6050 ) << "m_url " << debugString( m_url.url() ) << " <-> " << debugString( u.url() ) << endl;
+  kdDebug( 6050 ) << "m_url " << m_url.url() << " <-> " << u.url() << endl;
   kdDebug( 6050 ) << "m_frames.count() " << d->m_frames.count() << " <-> " << frameCount << endl;
 
   if ( u == m_url && frameCount >= 1 && frameCount == d->m_frames.count() )
@@ -1720,7 +1720,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
     {
       khtml::ChildFrame *child = &(*fIt);
 
-      kdDebug( 6050 ) << debugString( *fNameIt ) << " ---- " << debugString( *fServiceTypeIt ) << endl;
+      kdDebug( 6050 ) <<  *fNameIt  << " ---- " <<  *fServiceTypeIt << endl;
 
       if ( child->m_name != *fNameIt || child->m_serviceType != *fServiceTypeIt )
       {
@@ -1764,7 +1764,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
       newChild.m_name = *fNameIt;
       newChild.m_serviceName = *fServiceNameIt;
 
-      kdDebug( 6050 ) << debugString( *fNameIt ) << " ---- " << debugString( *fServiceTypeIt ) << endl;
+      kdDebug( 6050 ) << *fNameIt << " ---- " << *fServiceTypeIt << endl;
 
       FrameIt childFrame = d->m_frames.insert( *fNameIt, newChild );
 

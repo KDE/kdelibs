@@ -537,7 +537,7 @@ void KURLCompletion::list(QString dir, QString filter,
 				
 			}
 			else {
-				kDebugError("Could not stat file %s", full_path.latin1());
+			        kdError() << "Could not stat file " << full_path << endl;
 				continue;
 			}
 

@@ -241,7 +241,7 @@ void KBuildSycoca::save()
    }
    (*m_str) << (Q_INT32) 0; // No more factories.
 
-   kdDebug(7021) << debugString(QString("endOfData : %1").				arg(endOfData,8,16)) << endl;
+   kdDebug(7021) << QString("endOfData : %1").arg(endOfData,8,16) << endl;
 
    // Jump to end of database
    m_str->device()->at(endOfData);
@@ -295,14 +295,14 @@ int main(int argc, char **argv)
         delete KSycoca::self();
      }
    }
-    
+
    KBuildSycoca::KSycocaEntryListList *allEntries = 0;
    if (incremental)
    {
       KSycoca *oldSycoca = KSycoca::self();
       KSycocaFactoryList *factories = new KSycocaFactoryList;
       allEntries = new KBuildSycoca::KSycocaEntryListList;
-      
+
       // Must be in same order as in KBuildSycoca::recreate()!
       factories->append( new KServiceTypeFactory );
       factories->append( new KServiceGroupFactory );
@@ -319,7 +319,7 @@ int main(int argc, char **argv)
           allEntries->append( list );
       }
       delete factories; factories = 0;
-      delete oldSycoca; 
+      delete oldSycoca;
    }
 
    KBuildSycoca *sycoca= new KBuildSycoca; // Build data base

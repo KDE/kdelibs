@@ -222,14 +222,14 @@ void FileProtocol::put( const QString& dest_orig, int _mode, bool _overwrite, bo
     QString dest;
     if (bMarkPartial)
     {
-        kdDebug(7101) << "Appending .part extension to " << debugString(dest_orig) << endl;
+        kdDebug(7101) << "Appending .part extension to " << dest_orig << endl;
         dest = dest_part;
 
         struct stat buff_part;
         bool part_exists = ( ::stat( dest_part, &buff_part ) != -1 );
         if ( part_exists && !_resume )
         {
-             kdDebug(7101) << "Deleting partial file " << debugString(dest_part) << endl;
+             kdDebug(7101) << "Deleting partial file " << dest_part << endl;
              if ( ! remove( dest_part ) ) {
                  part_exists = false;
              } else {
@@ -243,7 +243,7 @@ void FileProtocol::put( const QString& dest_orig, int _mode, bool _overwrite, bo
        dest = dest_orig;
        if ( orig_exists && !_resume )
         {
-             kdDebug(7101) << "Deleting destination file " << debugString(dest_part) << endl;
+             kdDebug(7101) << "Deleting destination file " << dest_part << endl;
              remove( dest_orig );
              // Catch errors when we try to open the file.
         }
@@ -267,7 +267,7 @@ void FileProtocol::put( const QString& dest_orig, int _mode, bool _overwrite, bo
     }
 
     if ( fd < 0 ) {
-	kdDebug(7101) << "####################### COULD NOT WRITE " << debugString(dest) << _mode << endl;
+	kdDebug(7101) << "####################### COULD NOT WRITE " << dest << _mode << endl;
 	kdDebug(7101) << "errno==" << errno << "(" << strerror(errno) << ")" << endl;
         if ( errno == EACCES ) {
             error( KIO::ERR_WRITE_ACCESS_DENIED, dest );
@@ -393,7 +393,7 @@ void FileProtocol::copy( const QString &src, const QString &dest,
 
     int dest_fd = open(dest, O_CREAT | O_TRUNC | O_WRONLY, initialMode);
     if ( dest_fd < 0 ) {
-	kdDebug(7101) << "####################### COULD NOT WRITE " << debugString(dest) << endl;
+	kdDebug(7101) << "####################### COULD NOT WRITE " << dest << endl;
         if ( errno == EACCES ) {
             error( KIO::ERR_WRITE_ACCESS_DENIED, dest );
         } else {
@@ -543,7 +543,7 @@ void FileProtocol::del( const QString& path, bool isfile)
 	 * Delete empty directory
 	 *****/
 	
-	kdDebug(7101) << "Deleting directory " << debugString(path) << endl;
+	kdDebug(7101) << "Deleting directory " << path << endl;
 
 	// TODO deletingFile( source );
 	
@@ -552,7 +552,7 @@ void FileProtocol::del( const QString& path, bool isfile)
        * Delete empty directory
        *****/
 	
-      kdDebug( 7101 ) << "Deleting directory " << debugString(path) << endl;
+      kdDebug( 7101 ) << "Deleting directory " << path << endl;
 
       if ( ::rmdir( path ) == -1 ) {
 	if ((errno == EACCES) || (errno == EPERM))
@@ -734,7 +734,7 @@ void FileProtocol::stat( const QString & path, const QString& /*query*/ )
 
 void FileProtocol::listDir( const QString& path, const QString& /*query*/ )
 {
-    kdDebug(7101) << "=============== LIST " << debugString(path) << " ===============" << endl;
+    kdDebug(7101) << "=============== LIST " << path << " ===============" << endl;
 
     struct stat buff;
     if ( ::stat( path, &buff ) == -1 ) {
@@ -829,7 +829,7 @@ void FileProtocol::special( const QByteArray &data)
 	
 	bool ro = ( iRo != 0 );
 	
-	kdDebug(7101) << "!!!!!!!!! MOUNTING " << debugString(fstype) << " " << debugString(dev) << " " << debugString(point) << endl;
+	kdDebug(7101) << "!!!!!!!!! MOUNTING " << fstype << " " << dev << " " << point << endl;
 	mount( ro, fstype, dev, point );
 	
       }

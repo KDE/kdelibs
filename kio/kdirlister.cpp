@@ -254,7 +254,7 @@ void KDirLister::updateDirectory( const KURL& _dir )
   connect( m_job, SIGNAL( result( KIO::Job * ) ),
 	   SLOT( slotUpdateResult( KIO::Job * ) ) );
 
-  kdDebug(1203) << "update started in " << debugString(m_url.url()) << endl;
+  kdDebug(1203) << "update started in " << m_url.url() << endl;
 
   emit started( m_url.url() );
 }

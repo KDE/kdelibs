@@ -113,7 +113,7 @@ QString KCompletion::makeCompletion( const QString& string )
     if ( myCompletionMode == KGlobalSettings::CompletionNone )
         return QString::null;
 
-    kdDebug(0) << "KCompletion: completing: " << debugString( string ) << endl;
+    kdDebug(0) << "KCompletion: completing: " << string << endl;
 
     myMatches.clear();
     myRotationIndex = 0;
@@ -374,7 +374,7 @@ void KCompletion::doBeep( BeepMode mode )
 	return;
 
     QString text, event;
-    
+
     switch ( mode ) {
     case Rotation:
 	event = QString::fromLatin1("KCompletion: rotation");
