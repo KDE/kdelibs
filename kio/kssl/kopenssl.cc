@@ -239,7 +239,7 @@ KConfig *cfg;
 
    cfg = new KConfig("cryptodefaults", false, false);
    cfg->setGroup("OpenSSL");
-   QString upath = cfg->readEntry("Path", "");
+   QString upath = cfg->readPathEntry("Path");
    if (!upath.isEmpty())
       libpaths << upath;
 

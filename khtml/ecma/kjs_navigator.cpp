@@ -240,7 +240,7 @@ PluginBase::PluginBase(ExecState *exec)
             PluginInfo *plugin = new PluginInfo;
 
             plugin->name = c.readEntry("name");
-            plugin->file = c.readEntry("file");
+            plugin->file = c.readPathEntry("file");
             plugin->desc = c.readEntry("description");
 
             //kdDebug(6070) << "plugin : " << plugin->name << " - " << plugin->desc << endl;

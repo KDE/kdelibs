@@ -1739,8 +1739,8 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
   KSimpleConfig config( path );
   config.setDollarExpansion( false );
   config.setDesktopGroup();
-  execStr = config.readEntry( QString::fromLatin1("Exec") );
-  swallowExecStr = config.readEntry( QString::fromLatin1("SwallowExec") );
+  execStr = config.readPathEntry( QString::fromLatin1("Exec") );
+  swallowExecStr = config.readPathEntry( QString::fromLatin1("SwallowExec") );
   swallowTitleStr = config.readEntry( QString::fromLatin1("SwallowTitle") );
   termBool = config.readBoolEntry( QString::fromLatin1("Terminal") );
   termOptionsStr = config.readEntry( QString::fromLatin1("TerminalOptions") );
@@ -1922,7 +1922,7 @@ KURLPropsPlugin::KURLPropsPlugin( KPropertiesDialog *_props )
 
   KSimpleConfig config( path );
   config.setDesktopGroup();
-  URLStr = config.readEntry( QString::fromLatin1("URL") );
+  URLStr = config.readPathEntry( QString::fromLatin1("URL") );
 
   if ( !URLStr.isNull() )
     URLEdit->setURL( URLStr );

@@ -1671,7 +1671,7 @@ void KFileDialog::readConfig( KConfig *kc, const QString& group )
     ops->readConfig( kc, group );
 
     KURLComboBox *combo = d->pathCombo;
-    combo->setURLs( kc->readListEntry( RecentURLs ), KURLComboBox::RemoveTop );
+    combo->setURLs( kc->readPathListEntry( RecentURLs ), KURLComboBox::RemoveTop );
     combo->setMaxItems( kc->readNumEntry( RecentURLsNumber,
                                           DefaultRecentURLsNumber ) );
     combo->setURL( ops->url() );
@@ -1730,7 +1730,7 @@ void KFileDialog::readRecentFiles( KConfig *kc )
 
     locationEdit->setMaxItems( kc->readNumEntry( RecentFilesNumber,
                                                  DefaultRecentURLsNumber ) );
-    locationEdit->setURLs( kc->readListEntry( RecentFiles ),
+    locationEdit->setURLs( kc->readPathListEntry( RecentFiles ),
                            KURLComboBox::RemoveBottom );
     locationEdit->insertItem( QString::null, 0 ); // dummy item without pixmap
     locationEdit->setCurrentItem( 0 );

@@ -232,7 +232,7 @@ void KDirSelectDialog::readConfig( KConfig *config, const QString& group )
     d->urlCombo->clear();
 
     KConfigGroup conf( config, group );
-    d->urlCombo->setHistoryItems( conf.readListEntry( "History Items" ));
+    d->urlCombo->setHistoryItems( conf.readPathListEntry( "History Items" ));
     
     QSize defaultSize( 400, 450 );
     resize( conf.readSizeEntry( "DirSelectDialog Size", &defaultSize ));

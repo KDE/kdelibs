@@ -568,7 +568,7 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
     QString dir;
     {
     KConfigGroupSaver cfgsav( KGlobal::config(), "i18n" );
-    dir = KGlobal::config()->readEntry("i18ndir", QString::fromLatin1("/usr/share/i18n/charmaps"));
+    dir = KGlobal::config()->readPathEntry("i18ndir", QString::fromLatin1("/usr/share/i18n/charmaps"));
     dir += "/";
     }
 

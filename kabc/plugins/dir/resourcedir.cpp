@@ -43,7 +43,7 @@ extern "C"
 ResourceDir::ResourceDir( AddressBook *addressBook, const KConfig *config )
     : Resource( addressBook )
 {
-  QString path = config->readEntry( "FilePath" );
+  QString path = config->readPathEntry( "FilePath" );
   QString type = config->readEntry( "FileFormat" );
 
   FormatFactory *factory = FormatFactory::self();

@@ -61,7 +61,7 @@ static KConfig *recentdirs_readList(QString &key, QStringList &result, bool read
       config->setGroup(QString::fromLatin1("Recent Dirs"));
    }
 
-   result=config->readListEntry(key);
+   result=config->readPathListEntry(key);
    if (result.isEmpty())
    {
       result.append(KGlobalSettings::documentPath());

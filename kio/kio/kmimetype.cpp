@@ -714,7 +714,7 @@ pid_t KDEDesktopMimeType::runApplication( const KURL& , const QString & _service
 
 pid_t KDEDesktopMimeType::runLink( const KURL& _url, const KSimpleConfig &cfg )
 {
-  QString url = cfg.readEntry( "URL" );
+  QString url = cfg.readPathEntry( "URL" );
   if ( url.isEmpty() )
   {
     QString tmp = i18n("The desktop entry file\n%1\nis of type Link but has no URL=... entry.").arg( _url.url() );
@@ -819,7 +819,7 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices(
 
   if ( cfg.hasKey( "TryExec" ) )
   {
-      QString tryexec = cfg.readEntry( "TryExec" );
+      QString tryexec = cfg.readPathEntry( "TryExec" );
       QString exe =  KStandardDirs::findExe( tryexec );
       if (exe.isEmpty()) {
           return result;
@@ -850,7 +850,7 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices(
         bInvalidMenu = true;
       else
       {
-        QString exec = cfg.readEntry( "Exec" );
+        QString exec = cfg.readPathEntry( "Exec" );
         if ( bLocalFiles || exec.contains("%U") || exec.contains("%u") )
         {
           Service s;

@@ -484,7 +484,7 @@ void KHTMLPopupGUIClient::saveURL( const KURL &url, const KURL &destURL,
             // the empty key  means no integration
             KConfig *cfg = new KConfig("konquerorrc", false, false);
             cfg->setGroup("HTML Settings");
-            QString downloadManger=cfg->readEntry("DownloadManager");
+            QString downloadManger=cfg->readPathEntry("DownloadManager");
             if (!downloadManger.isEmpty())
             {
                 // then find the download manager location

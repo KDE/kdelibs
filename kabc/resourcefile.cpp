@@ -27,7 +27,7 @@ using namespace KABC;
 ResourceFile::ResourceFile( AddressBook *addressBook, const KConfig *config )
     : Resource( addressBook )
 {
-  QString fileName = config->readEntry( "FileName" );
+  QString fileName = config->readPathEntry( "FileName" );
   QString type = config->readEntry( "FileFormat" );
 
   FormatFactory *factory = FormatFactory::self();

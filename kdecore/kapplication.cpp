@@ -1892,7 +1892,7 @@ void KApplication::invokeMailer(const QString &to, const QString &cc, const QStr
 {
    KConfig config("emaildefaults");
    config.setGroup( QString::fromLatin1("PROFILE_Default") );
-   QString command = config.readEntry("EmailClient");
+   QString command = config.readPathEntry("EmailClient");
 
    if (command.isEmpty() || command == QString::fromLatin1("kmail")
        || command.right(6) == "/kmail")

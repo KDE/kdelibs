@@ -32,7 +32,7 @@ extern "C"
 ResourceNet::ResourceNet( AddressBook *addressBook, const KConfig *config )
     : Resource( addressBook )
 {
-  KURL url = config->readEntry( "NetUrl" );
+  KURL url = config->readPathEntry( "NetUrl" );
   QString type = config->readEntry( "NetFormat" );
 
   FormatFactory *factory = FormatFactory::self();

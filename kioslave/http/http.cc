@@ -221,7 +221,7 @@ void HTTPProtocol::resetSessionSettings()
   m_request.bUseCache = config()->readBoolEntry("UseCache", true);
   m_request.bErrorPage = config()->readBoolEntry("errorPage", true);
   m_request.bNoAuth = config()->readBoolEntry("no-auth");
-  m_strCacheDir = config()->readEntry("CacheDir");
+  m_strCacheDir = config()->readPathEntry("CacheDir");
   m_maxCacheAge = config()->readNumEntry("MaxCacheAge", DEFAULT_MAX_CACHE_AGE);
   m_request.window = config()->readEntry("window-id");
 

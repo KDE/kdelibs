@@ -99,7 +99,7 @@ KCustomMenuEditor::load(KConfigBase *cfg)
    QListViewItem *last = 0;
    for(int i = 0; i < count; i++)
    {
-      QString entry = cfg->readEntry(QString("Item%1").arg(i+1));
+      QString entry = cfg->readPathEntry(QString("Item%1").arg(i+1));
       if (entry.isEmpty())
          continue;
 

@@ -252,7 +252,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
                         aKey = "ErrorFilename";
                         break;
                 }
-                QString aOutputFileName = kDebug_data->config->readEntry(aKey, "kdebug.dbg");
+                QString aOutputFileName = kDebug_data->config->readPathEntry(aKey, "kdebug.dbg");
 
                 const int BUFSIZE = 4096;
                 char buf[BUFSIZE] = "";

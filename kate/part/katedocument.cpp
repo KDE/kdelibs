@@ -1787,7 +1787,7 @@ void KateDocument::writeConfig()
 
 void KateDocument::readSessionConfig(KConfig *config)
 {
-  m_url = config->readEntry("URL"); // ### doesn't this break the encoding? (Simon)
+  m_url = config->readPathEntry("URL"); // ### doesn't this break the encoding? (Simon)
   internalSetHlMode(hlManager->nameFind(config->readEntry("Highlight")));
   QString tmpenc=config->readEntry("Encoding");
 

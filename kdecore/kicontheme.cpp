@@ -142,14 +142,14 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
          if ( *it == "default" || *it == "hicolor" ) *it="crystalsvg";
 
     d->hidden = cfg.readBoolEntry("Hidden", false);
-    d->example = cfg.readEntry("Example");
-    d->screenshot = cfg.readEntry("ScreenShot");
+    d->example = cfg.readPathEntry("Example");
+    d->screenshot = cfg.readPathEntry("ScreenShot");
     d->linkOverlay = cfg.readEntry("LinkOverlay", "link");
     d->lockOverlay = cfg.readEntry("LockOverlay", "lock");
     d->zipOverlay = cfg.readEntry("ZipOverlay", "zip");
     d->shareOverlay = cfg.readEntry("ShareOverlay","share");
 
-    QStringList dirs = cfg.readListEntry("Directories");
+    QStringList dirs = cfg.readPathListEntry("Directories");
     mDirs.setAutoDelete(true);
     for (it=dirs.begin(); it!=dirs.end(); it++)
     {

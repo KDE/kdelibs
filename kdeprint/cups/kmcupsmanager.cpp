@@ -111,7 +111,7 @@ QString KMCupsManager::cupsInstallDir()
 {
 	KConfig	*conf=  KMFactory::self()->printConfig();
 	conf->setGroup("CUPS");
-	QString	dir = conf->readEntry("InstallDir",QString::null);
+	QString	dir = conf->readPathEntry("InstallDir");
 	return dir;
 }
 
