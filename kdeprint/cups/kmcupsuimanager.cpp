@@ -172,4 +172,6 @@ void KMCupsUiManager::setupJobViewer(QListView *lv)
 {
 	lv->addColumn(i18n("Priority"));
 	lv->setColumnAlignment(lv->columns()-1, Qt::AlignRight|Qt::AlignVCenter);
+	lv->addColumn(i18n("Billing Information"));
+	lv->setColumnAlignment(lv->columns()-1, Qt::AlignRight|Qt::AlignVCenter);
 }

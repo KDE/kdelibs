@@ -108,6 +108,7 @@ bool KMCupsJobManager::listJobs(const QString& prname, KMJobManager::JobType typ
 	keys.append("job-media-sheets");
 	keys.append("job-media-sheets-completed");
 	keys.append("job-priority");
+	keys.append("job-billing");
 
 	req.setOperation(IPP_GET_JOBS);
 
@@ -195,6 +196,11 @@ void KMCupsJobManager::parseListAnswer(IppRequest& req, KMPrinter *pr)
 		else if (name == "job-priority")
 		{
 			job->setAttribute(0, QString::fromLatin1("%1").arg(attr->values[0].integer, 3));
+		}
+		else if (name == "job-billing")
+		{
+			job->setAttributeCount(2);
+			job->setAttribute(1, QString::fromLocal8Bit(attr->values[0].string.text));
 		}
 
 		if (name.isEmpty() || attr == req.last())
