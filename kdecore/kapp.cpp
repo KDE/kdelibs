@@ -40,7 +40,6 @@
 #include <kapp.h>
 #include <kglobal.h>
 #include <kstddirs.h>
-#include <kcharsets.h>
 #include <kdebug.h>
 #include <klocale.h>
 #include <kiconloader.h>
