@@ -287,7 +287,9 @@ void readKAddressBookEntries( const QString &dataString, Addressee &a )
 
 void importKab( KABC::AddressBook *ab, bool override )
 {
-  if (!QFile::exists(locateLocal("data", "kab/addressbook.kab") )) {
+  QString fileName = KGlobal::dirs()->saveLocation( "data", "kab/" );
+  fileName += "addressbook.kab";
+  if (!QFile::exists( fileName )) {
     kdDebug() << "No KDE 2 addressbook found." << endl;
     return;
   }
