@@ -14,19 +14,19 @@
 #include <klined.h>
 
 //Possible result codes
-#define KS_CANCEL      0 
-#define KS_REPLACE     1
-#define KS_REPLACEALL  2
-#define KS_IGNORE      3
-#define KS_IGNOREALL   4
-#define KS_ADD         5
-
-#define KS_STOP        7
-
+enum {
+  KS_CANCEL      0,
+  KS_REPLACE     1,
+  KS_REPLACEALL  2,
+  KS_IGNORE      3,
+  KS_IGNOREALL   4,
+  KS_ADD         5,
+  KS_STOP        7
+};
 
 class KSpellDlg : public QWidget
 {
-  Q_OBJECT;
+  Q_OBJECT
 
   KLined *editbox;
   QListBox *listbox;
