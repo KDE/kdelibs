@@ -247,11 +247,7 @@ bool Sym::initQt( int keyQt )
 	int symQt = keyQt & 0xffff;
 
 	if( (keyQt & Qt::UNICODE_ACCEL) || symQt < 0x1000 ) {
-		m_sym = symQt;
-		// For reasons unbeknownst to me, Qt converts 'a-z' to 'A-Z'.
-		// So convert it back to lowercase if SHIFT is not held down.
-		if( m_sym >= Qt::Key_A && m_sym <= Qt::Key_Z && !(keyQt & Qt::SHIFT) )
-			m_sym = QChar(m_sym).lower();
+		m_sym = QChar(m_sym).lower();
 		return true;
 	}
 
