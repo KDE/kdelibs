@@ -683,7 +683,7 @@ int KSelectAction::plug( QWidget *widget, int index )
 	    if ( hasIconSet() )
 		id = menu->insertItem( iconSet(), text(), popupMenu(), -1, index );
 	    else
-		id = menu->insertItem( text(), popupMenu(), -1, index );
+		id = menu->insertItem( text(), popupMenu(), -1, index );     
 	}
 
 	menu->setItemEnabled( id, isEnabled() );

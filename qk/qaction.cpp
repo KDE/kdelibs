@@ -1645,6 +1645,7 @@ void QSelectAction::setCurrentItem( int id )
     m_current = id;
 	
     int len = containerCount();
+
     for( int i = 0; i < len; ++i )
     {
 	setCurrentItem( i, id );
@@ -1670,6 +1671,7 @@ void QSelectAction::setCurrentItem( int i, int id )
 #endif
 }
 
+/*
 QPopupMenu* QSelectAction::popupMenu()
 {
     if ( !m_menu )
@@ -1679,6 +1681,27 @@ QPopupMenu* QSelectAction::popupMenu()
 	int id = 0;
 	for( ; it != m_list.end(); ++it )
 	    m_menu->insertItem( *it, this, SLOT( slotActivated( int ) ), 0, id++ );
+    }
+
+    return m_menu;
+}
+*/
+QPopupMenu* QSelectAction::popupMenu()
+{
+    if ( !m_menu )
+    {
+	m_menu = new QPopupMenu;
+	QStringList::ConstIterator it = m_list.begin();
+	int id = 0;
+	for( ; it != m_list.end(); ++it ) {
+	    // Changed: BL
+	  if (!((*it).isEmpty())) {
+	    m_menu->insertItem( *it, this, 
+	       SLOT( slotActivated( int ) ), 0, id++ );
+	  } else {
+	    m_menu->insertSeparator();
+	  }
+	}
     }
 
     return m_menu;
@@ -1833,7 +1856,12 @@ int QSelectAction::plug( QWidget* widget, int index )
 
 	QStringList::ConstIterator it = m_list.begin();
 	for( ; it != m_list.end(); ++it )
+	    // Change by BL -> do not insert the empty ones, to be consistent
+	    // with the behavior in the case of menus
+	    // there is no separator in QComboBox
+	  if (!((*it).isEmpty())) {
 	    b->insertItem( *it );
+	  };
 	
 	b->setEnabled( isEnabled() );
 	
@@ -1858,6 +1886,8 @@ void QSelectAction::slotActivated( int id )
 	return;
 
     m_lock = TRUE;
+    // FIXME: if there are empty items, used as separators
+    // they should be subtracted from this value!!!
     setCurrentItem( id );
     m_lock = FALSE;
 }
