@@ -37,6 +37,7 @@
 #include <dom/html_table.h>
 #include <dom/html_object.h>
 #include <dom_string.h>
+#include <dom_exception.h>
 
 // ### HACK
 #include <xml/dom_docimpl.h>
