@@ -840,7 +840,21 @@ declaration:
 	delete p->valueList;
 	p->valueList = 0;
     }
-  ;
+    property error {
+        $$ = false;
+    }
+    |
+    property ':' maybe_space error expr prio {
+	/* letter-spacing: .none; */
+        delete $5;
+        $$ = false;
+    }
+    |
+    prio {
+        /* div { text-align: center; !important } */
+        $$ = false;
+    }
+ ;
 
 property:
     IDENT maybe_space {
