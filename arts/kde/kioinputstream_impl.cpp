@@ -54,7 +54,7 @@ void KIOInputStream_impl::streamStart()
 
 	if(m_job != 0)
 		m_job->kill();
-	m_job = KIO::get(m_url, false, true);
+	m_job = KIO::get(m_url, false, false);
 	QObject::connect(m_job, SIGNAL(data(KIO::Job *, const QByteArray &)),
 			 this, SLOT(slotData(KIO::Job *, const QByteArray &)));		     
 	QObject::connect(m_job, SIGNAL(result(KIO::Job *)),
