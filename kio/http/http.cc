@@ -848,12 +848,7 @@ bool HTTPProtocol::http_open()
     header += m_state.hostname;
     header += c_buffer;
   }
-
-  QString pathAndQuery = m_request.url.encodedPathAndQuery();
-  if ( !pathAndQuery.isEmpty() )
-    header += m_request.url.encodedPathAndQuery();
-  else
-    header += "/";
+  header += m_request.url.encodedPathAndQuery(0, true);
 
   header += " HTTP/1.1\r\n"; /* start header */
 
