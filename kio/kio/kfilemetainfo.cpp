@@ -816,7 +816,7 @@ void KFilePlugin::setUnit(KFileMimeTypeInfo::ItemInfo* item, uint unit)
             item->m_suffix = i18n("bpp"); break;
 
         case KFileMimeTypeInfo::Hertz:
-            item->m_suffix = i18n("bpp");
+            item->m_suffix = i18n("Hz");
     }
 }
 
