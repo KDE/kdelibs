@@ -1394,9 +1394,6 @@ signals:
   void actionStatusText( const QString &text );
   void clearStatusText();
 
-protected:
-    void childEvent( QChildEvent* );
-
 private slots:
    void slotMenuItemHighlighted( int id );
    void slotToolBarButtonHighlighted( int id, bool highlight );

@@ -61,7 +61,7 @@ static void get_fonts( QStringList &lst )
     {
         QString family = *it;
         if ( family. contains('-') ) // remove foundry
-            family = family.right( family.length() - family.find('-' ) - 1); 
+            family = family.right( family.length() - family.find('-' ) - 1);
         if ( !lst.contains( family ) )
             lst.append( family );
     }
@@ -151,7 +151,7 @@ KAction::KAction( const QString& text, int accel, const QObject* receiver,
     if ( m_parentCollection ) {
         d->m_accel = accel;      // default key binding
         m_parentCollection->insert( this );
-    }    
+    }
 
     setAccel( accel );
     setText( text );
@@ -170,7 +170,7 @@ KAction::KAction( const QString& text, const QIconSet& pix, int accel,
     if ( m_parentCollection ) {
         d->m_accel = accel;      // default key binding
         m_parentCollection->insert( this );
-    }    
+    }
 
     setAccel( accel );
     setText( text );
@@ -187,7 +187,7 @@ KAction::KAction( const QString& text, const QString& pix, int accel,
     if ( m_parentCollection ) {
         d->m_accel = accel;      // default key binding
         m_parentCollection->insert( this );
-    }    
+    }
 
     setText( text );
     setAccel( accel );
@@ -205,7 +205,7 @@ KAction::KAction( const QString& text, const QIconSet& pix, int accel,
     if ( m_parentCollection ) {
         d->m_accel = accel;      // default key binding
         m_parentCollection->insert( this );
-    }    
+    }
 
     setAccel( accel );
     setText( text );
@@ -226,7 +226,7 @@ KAction::KAction( const QString& text, const QString& pix, int accel,
     if ( m_parentCollection ) {
         d->m_accel = accel;      // default key binding
         m_parentCollection->insert( this );
-    }    
+    }
 
     setAccel( accel );
     setText( text );
@@ -245,7 +245,6 @@ KAction::KAction( QObject* parent, const char* name )
 
 KAction::~KAction()
 {
-    // ### Do we really need this? KActionCollection catches QChildEvent, no? (Simon)
     if ( m_parentCollection )
       m_parentCollection->take( this );
 
@@ -387,7 +386,7 @@ int KAction::plug( QWidget *w, int index )
 	kdDebug() << "KAction::plug called with 0 argument\n";
  	return -1;
   }
-	
+
   if ( w->inherits("QPopupMenu") )
   {
     QPopupMenu* menu = static_cast<QPopupMenu*>( w );
@@ -611,9 +610,6 @@ void KAction::setIcon( const QString &icon )
 
   // We load the "Small" icon as the main one (for menu items)
   // and we let setIcon( int, QString ) deal with toolbars
-
-  // We used to use SmallIcon for this, but that's wrong since the
-  // Small group may *not* be 16x16 and we *need* 16x16
   KInstance *instance;
   if ( m_parentCollection )
     instance = m_parentCollection->instance();
@@ -2439,21 +2435,6 @@ KActionCollection::~KActionCollection()
           it.current()->m_parentCollection = 0L;
 
   delete d; d = 0;
-}
-
-void KActionCollection::childEvent( QChildEvent* ev )
-{
-  QObject::childEvent( ev );
-  /*
-  if ( ev->removed() )
-  {
-    // We can not emit a removed signal here since the
-    // actions destructor did already run :-(
-    QCString n = ev->child()->name();
-    if ( d->m_actionDict.take( n ) != 0L )
-        d->m_keyMap.remove( n );
-  }
-  */
 }
 
 void KActionCollection::insert( KAction* action )
