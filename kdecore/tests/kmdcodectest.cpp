@@ -144,8 +144,10 @@ void testCodec( const char* msg, Codec type, bool isFile )
                 break;
         }
         char* result = output.data();
+        int size = output.size();
         // NULL terminate string before printing!
-        result[output.size()] = '\0';
+        if ( size && result[size-1] != '\0' )
+            result[size] = '\0';
         kdDebug() << "Result: \n" << result << endl;
     }
     else
