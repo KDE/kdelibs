@@ -15,11 +15,14 @@ libkdeprint_la_METASOURCES = AUTO
 libkdeprint_la_LDFLAGS = -version-info $(LIBVERSION) $(all_libraries)
 libkdeprint_la_LIBADD = $(LIB_KDEPRINT_CUPS) ./pdq/libkdeprint_pdq.la $(LIB_KPARTS) $(LIB_KFILE)
 
-noinst_HEADERS = kdialogimpl.h kprintcopiespage.h kprintdialog.h kprintdialogpage.h kprinteritem.h \
+noinst_HEADERS = kprintcopiespage.h kprintdialog.h kprintdialogpage.h \
 		 kprinterpropertydialog.h kprintsizecolorpage.h klpddialogimpl.h klpdprinter.h \
 		 previewshell.h
 include_HEADERS = kprinter.h
-pkginclude_HEADERS = optionset.h kjob.h kjoblister.h
+
+
+kdeprint_HEADERS = optionset.h kjob.h kjoblister.h kprinteritem.h kdialogimpl.h
+kdeprintdir = $(includedir)/kdeprint
 
 uidata_DATA = previewshellui.rc
 uidatadir = $(kde_confdir)/ui
