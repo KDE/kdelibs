@@ -119,6 +119,19 @@ namespace KIO {
                             bool showProgressInfo = true );
 
     /**
+     * HTTP POST (for form data) with arbitrary header additions
+     * (e.g., special content types, etc).  This should replace the
+     * other http_post, eventually
+     *
+     * @param url where to write data
+     * @param postData encoded data to post
+     * @param contentType special content type (if needed)
+     */
+    TransferJob *http_post( const KURL& url, const QByteArray &postData,
+                            const QString& headers,
+                            bool showProgressInfo = true );
+
+    /**
      * Finds mimetype for one file or directory.
      */
     MimetypeJob * mimetype( const KURL& url );

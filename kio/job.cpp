@@ -492,11 +492,12 @@ void TransferJob::slotFinished()
                 assert(specialcmd == 1); // you have to switch() here if other cmds are added
                 if (specialcmd == 1) // Assume HTTP POST
                 {
-                   istream >> dummyUrl;
+                   QString contentType;
+                   istream >> dummyUrl >> contentType;
                    Q_INT8 iReload = 1;
                    m_packedArgs.truncate(0);
                    QDataStream stream( m_packedArgs, IO_WriteOnly );
-                   stream << m_url << iReload;
+                   stream << m_url << iReload << contentType;
                    m_command = CMD_GET;
                 }
                 break;
@@ -582,11 +583,21 @@ TransferJob *KIO::get( const KURL& url, bool reload, bool showProgressInfo )
     return job;
 }
 
+TransferJob *KIO::http_post( const KURL& url, const QByteArray &postData, const QString& headers, bool showProgressInfo )
+{
+    assert( url.protocol() == "http" );
+    // Send http post command (1), decoded path and encoded query
+    KIO_ARGS << (int)1 << url << headers;
+    TransferJob * job = new TransferJob( url, CMD_SPECIAL,
+                                         packedArgs, postData, showProgressInfo );
+    return job;
+}
+
 TransferJob *KIO::http_post( const KURL& url, const QByteArray &postData, bool showProgressInfo )
 {
     assert( url.protocol() == "http" );
     // Send http post command (1), decoded path and encoded query
-    KIO_ARGS << (int)1 << url;
+    KIO_ARGS << (int)1 << url << QString("Content-type: application/x-www-form-urlencoded\r\n");
     TransferJob * job = new TransferJob( url, CMD_SPECIAL,
                                          packedArgs, postData, showProgressInfo );
     return job;

@@ -906,7 +906,7 @@ bool HTTPProtocol::http_open()
   }
 
   if (m_request.method == HTTP_POST) {
-    header += "Content-type: application/x-www-form-urlencoded\r\n";
+    header += m_request.user_headers;
   }
 
   // check if we need to login
@@ -1813,21 +1813,23 @@ void HTTPProtocol::mimetype( const KURL& url )
 
 void HTTPProtocol::special( const QByteArray &data)
 {
-    int tmp;
-    QDataStream stream(data, IO_ReadOnly);
+  int tmp;
+  QDataStream stream(data, IO_ReadOnly);
 
-    stream >> tmp;
-    switch (tmp) {
+  stream >> tmp;
+  switch (tmp) {
     case 1: // HTTP POST
-      {
-	KURL url;
-	stream >> url;
-	post( url );
-      }
+    {
+      KURL url;
+      stream >> url >> m_request.user_headers;
+      kdDebug() << "user_headers = " << m_request.user_headers.latin1() << endl;
+      post( url );
       break;
-   default:
-       assert(0);
-   }
+    }
+    default:
+      assert(0);
+  }
+
 }
 
 

@@ -75,6 +75,7 @@ public:
 	unsigned long offset;
 	bool do_proxy;
 	KURL url;
+  QString user_headers;
   } HTTPRequest;
 
   /**
