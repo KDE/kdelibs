@@ -67,7 +67,7 @@
 -->
 
 <STYLE-SHEET>
-  <STYLE-SPECIFICATION ID="KDE-DOCBOOK" USE="KDE-CA KDE-CS KDE-DA KDE-DE KDE-EL KDE-EN KDE-ES KDE-ET KDE-FI KDE-FR KDE-IT KDE-JA KDE-NL KDE-NO KDE-PL KDE-PT KDE-PT-BR KDE-RO KDE-RU KDE-SK KDE-CA KDE-SL KDE-SR KDE-SV">
+  <STYLE-SPECIFICATION ID="KDE-DOCBOOK" USE="KDE-CA KDE-CS KDE-DA KDE-DE KDE-EL KDE-EN KDE-ES KDE-ET KDE-FI KDE-FR KDE-IT KDE-JA KDE-NL KDE-NO KDE-PL KDE-PT KDE-PT-BR KDE-RO KDE-RU KDE-SK KDE-CA KDE-SL KDE-SR KDE-SV KDE-ZH-CN">
     <STYLE-SPECIFICATION-BODY>
 ;; ===================================================================
 ;; KDE Generic Parameters
@@ -251,8 +251,11 @@
     ; == tests for RFC1766 compliance of language code
     ; == could go in the language-fix function
     (case ($lang$)
-      (("pt_BR") (error "L10N ERROR: use pt-BR instead of pt_BR"))
-      (("no_NY") (error "L10N ERROR: use no-NY instead of no_NY"))
+      (("no_ny") (error "L10N ERROR: use no-NY instead of no_NY"))
+      (("pt_br") (error "L10N ERROR: use pt-BR instead of pt_BR"))
+      (("zh_cn") (error "L10N ERROR: use zh-CN instead of zh_CN"))
+      (("zh_cn.gb2312") (error "L10N ERROR: use zh-CN instead of zh_CN.GB2312"))
+      (("zh-cn.gb2312") (error "L10N ERROR: use zh-CN instead of zh-CN.GB2312"))
       (else (empty-sosofo)))
     ; == derived from dbhtml.dsl $standard-html-headers$
     (let ((nl (select-elements (descendants (info-element)) 
@@ -512,5 +515,6 @@
   <EXTERNAL-SPECIFICATION ID="KDE-SL" DOCUMENT="kde-l1sl">
   <EXTERNAL-SPECIFICATION ID="KDE-SR" DOCUMENT="kde-l1sr">
   <EXTERNAL-SPECIFICATION ID="KDE-SV" DOCUMENT="kde-l1sv">
+  <EXTERNAL-SPECIFICATION ID="KDE-ZH-CN" DOCUMENT="kde-l1zh-CN">
 
 </STYLE-SHEET>

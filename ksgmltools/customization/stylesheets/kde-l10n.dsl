@@ -42,6 +42,7 @@
     <![%kde-l10n-sl[ (("sl") %kde-gentext-sl-home-url%) ]]>
     <![%kde-l10n-sr[ (("sr") %kde-gentext-sr-home-url%) ]]>
     <![%kde-l10n-sv[ (("sv") %kde-gentext-sv-home-url%) ]]>
+    <![%kde-l10n-zh-CN[ (("zh-cn") %kde-gentext-zh-CN-home-url%) ]]>
     (else (error "L10N ERROR: kde-gentext-logo-alt: no localised version"))))
 
 ; split up the in files for different languages - take over system from DB
@@ -71,6 +72,7 @@
     <![%kde-l10n-sl[ (("sl") %kde-gentext-sl-logo-alt%) ]]>
     <!-- <![%kde-l10n-sr[ (("sr") %kde-gentext-sr-logo-alt%) ]]> -->
     <![%kde-l10n-sv[ (("sv") %kde-gentext-sv-logo-alt%) ]]>
+    <![%kde-l10n-zh-CN[ (("zh-cn") %kde-gentext-zh-CN-logo-alt%) ]]>
     (else (error "L10N ERROR: kde-gentext-logo-alt: no localised version"))))
 
 ;; In future, the charset in the content-type should become charset=utf-8
@@ -109,6 +111,7 @@
     <![%kde-l10n-sl[ (("sl") %kde-gentext-sl-html-header-tags%) ]]>
     <![%kde-l10n-sr[ (("sr") %kde-gentext-sr-html-header-tags%) ]]>
     <![%kde-l10n-sv[ (("sv") %kde-gentext-sv-html-header-tags%) ]]>
+    <![%kde-l10n-zh-CN[ (("zh-cn") %kde-gentext-zh-CN-html-header-tags%) ]]>
     (else (error "L10N ERROR: kde-gentext-html-header-tags: no localised version")))
    (list
     (list "META"
@@ -147,6 +150,7 @@
     <![%kde-l10n-sl[ (("sl") %kde-gentext-sl-encoding%) ]]>
     <![%kde-l10n-sr[ (("sr") %kde-gentext-sr-encoding%) ]]>
     <![%kde-l10n-sv[ (("sv") %kde-gentext-sv-encoding%) ]]>
+    <![%kde-l10n-zh-CN[ (("zh-cn") %kde-gentext-zh-CN-encoding%) ]]>
     (else (error "L10N ERROR: kde-gentext-encoding: no localised version"))))
 
 (define (kde-gentext-default)
@@ -174,6 +178,7 @@
     <![%kde-l10n-sl[ (("sl") %kde-gentext-sl-default%) ]]>
     <![%kde-l10n-sr[ (("sr") %kde-gentext-sr-default%) ]]>
     <![%kde-l10n-sv[ (("sv") %kde-gentext-sv-default%) ]]>
+    <![%kde-l10n-zh-CN[ (("zh-cn") %kde-gentext-zh-CN-default%) ]]>
     (else (error "L10N ERROR: kde-gentext-default: no localised version"))))
 
 (define (kde-gentext-language)
@@ -201,4 +206,5 @@
     <![%kde-l10n-sl[ (("sl") %kde-gentext-sl-language%) ]]>
     <![%kde-l10n-sr[ (("sr") %kde-gentext-sr-language%) ]]>
     <![%kde-l10n-sv[ (("sv") %kde-gentext-sv-language%) ]]>
+    <![%kde-l10n-zh-CN[ (("zh-cn") %kde-gentext-zh-CN-language%) ]]>
     (else (error "L10N ERROR: kde-gentext-language: no localised version"))))
