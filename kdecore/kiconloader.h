@@ -85,7 +85,7 @@ public:
      * group icons. 
      * @param appname The bare application name.
      */ 
-    void addUserDir(QString appname);
+    void addAppDir(QString appname);
 
     /**
      * Load an icon. It will try very hard to find an icon which is
@@ -134,6 +134,7 @@ private:
     KIcon iconPath2(QString name, int size, int match, KIconThemeNode *node);
 
     void addIconTheme(KIconTheme *theme, KIconThemeNode *node);
+    void addAppThemes(QString appname);
     void addIcons(QStringList *lst, int size, int context, KIconThemeNode *node);
     void printThemeTree(KIconThemeNode *node);
 
@@ -160,8 +161,8 @@ QPixmap BarIcon(QString name, int size, KInstance *instance=KGlobal::instance())
 /** Load a small icon.  */
 QPixmap SmallIcon(QString name, KInstance *instance=KGlobal::instance());
 
-/** Load a listitem icon.  */
-QPixmap ListIcon(QString name, KInstance *instance=KGlobal::instance());
+/** Load a main toolbar icon.  */
+QPixmap MainBarIcon(QString name, KInstance *instance=KGlobal::instance());
 
 /** Load a user icon. */
 QPixmap UserIcon(QString name, KInstance *instance=KGlobal::instance());

@@ -89,7 +89,7 @@ KIconLoader::KIconLoader(QString appname)
     groups += "Kicker";
     groups += "Toolbar";
     groups += "Small";
-    groups += "ListItem";
+    groups += "MainToolbar";
 
     int i;
     QStringList::ConstIterator it;
@@ -121,9 +121,16 @@ KIconLoader::KIconLoader(QString appname)
 		     << " because display depth is too small.\n";
 	mTheme = "locolor";
     }
+
+    // Add global themes to the theme tree.
     mpThemeRoot = new KIconThemeNode;
     mThemeTree += mTheme;
     addIconTheme(root, mpThemeRoot);
+
+    // Insert application specific ones at the top.
+    if (appname.isEmpty()) 
+	appname = KGlobal::instance()->instanceName();
+    addAppDir(appname);
 
     d->dbgString = "Theme tree: ";
     printThemeTree(mpThemeRoot);
@@ -133,16 +140,8 @@ KIconLoader::KIconLoader(QString appname)
     for (int i=0; i<KIcon::LastGroup; i++)
     {
 	if (mpGroups[i].size == 0)
-	    mpGroups[i].size = root->defaultSize(i);
+	    mpGroups[i].size = mpThemeRoot->theme->defaultSize(i);
     }
-
-    // Add application specific directories for special Group = User
-    if (appname.isEmpty()) 
-	appname = KGlobal::instance()->instanceName();
-    mpDirs->addResourceType("usricon", KStandardDirs::kde_default("data") +
-		appname + "/pics/");
-    mpDirs->addResourceType("usricon", KStandardDirs::kde_default("data") +
-		appname + "/toolbar/");
 }
 
 KIconLoader::~KIconLoader()
@@ -152,12 +151,13 @@ KIconLoader::~KIconLoader()
     delete[] mpGroups;
 }
 
-void KIconLoader::addUserDir(QString appname)
+void KIconLoader::addAppDir(QString appname)
 {
-    mpDirs->addResourceType("usricon", KStandardDirs::kde_default("data") +
+    mpDirs->addResourceType("appicon", KStandardDirs::kde_default("data") +
 		appname + "/pics/");
-    mpDirs->addResourceType("usricon", KStandardDirs::kde_default("data") +
+    mpDirs->addResourceType("appicon", KStandardDirs::kde_default("data") +
 		appname + "/toolbar/");
+    addAppThemes(appname);
 }
     
 void KIconLoader::addIconTheme(KIconTheme *theme, KIconThemeNode *node)
@@ -173,6 +173,42 @@ void KIconLoader::addIconTheme(KIconTheme *theme, KIconThemeNode *node)
 	mThemeTree += *it;
 	addIconTheme(new KIconTheme(*it), n);
 	node->links.append(n);
+    }
+}
+
+void KIconLoader::addAppThemes(QString appname)
+{
+    KIconThemeNode *node = new KIconThemeNode;
+    KIconThemeNode *top = node, *tmp;
+    KIconTheme *theme;
+
+    node->theme = 0L;
+    if (QPixmap::defaultDepth() > 8)
+    {
+	theme = new KIconTheme("hicolor", appname);
+	if (theme->isValid())
+	    node->theme = theme;
+	else
+	    delete theme;
+    }
+
+    theme = new KIconTheme("locolor", appname);
+    if (theme->isValid())
+    {
+	if (node->theme != 0L)
+	{
+	    tmp = new KIconThemeNode;
+	    node->links.append(tmp);
+	    node = tmp;
+	}
+	node->theme = theme;
+    } else
+	delete theme;
+
+    if (node->theme != 0L)
+    {
+	top->links.append(mpThemeRoot);
+	mpThemeRoot = top;
     }
 }
 
@@ -228,9 +264,9 @@ QString KIconLoader::iconPath(QString name, int group_or_size,
 	sci = true;
 	break;
     case KIcon::User:
-	path = mpDirs->findResource("usricon", name + ".png");
+	path = mpDirs->findResource("appicon", name + ".png");
 	if (path.isEmpty())
-	     path = mpDirs->findResource("usricon", name + ".xpm");
+	     path = mpDirs->findResource("appicon", name + ".xpm");
 	return path;
     }
 
@@ -376,8 +412,6 @@ QPixmap KIconLoader::loadIcon(QString name, int group_or_size,
 	if (!pix.isNull() || canReturnNull)
 	    return pix;
 
-	if (canReturnNull)
-	    return pix;
 	icon = iconPath2("unknown", size);
 	if (!icon.isValid())
 	{
@@ -507,10 +541,10 @@ QPixmap SmallIcon(QString name, KInstance *instance)
     return loader->loadIcon(name, KIcon::Small);
 }
 
-QPixmap ListIcon(QString name, KInstance *instance)
+QPixmap MainBarIcon(QString name, KInstance *instance)
 {
     KIconLoader *loader = instance->iconLoader();
-    return loader->loadIcon(name, KIcon::ListItem);
+    return loader->loadIcon(name, KIcon::MainToolbar);
 }
 
 QPixmap UserIcon(QString name, KInstance *instance)

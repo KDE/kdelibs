@@ -36,7 +36,8 @@ public:
     enum Context { Any, Action, Application, Device, FileSystem, MimeType };
     enum Types { Fixed, Scalable };
     enum MatchType { MatchExact, MatchBest };
-    enum Group { Desktop, Kicker, Toolbar, Small, ListItem, LastGroup, User };
+    enum Group { Desktop, Kicker, Toolbar, Small, MainToolbar, LastGroup, User };
+    enum StdSizes { SizeSmall=-16, SizeMedium=-32, SizeLarge=-48 };
 
     /** The size in pixels of the icon. */
     int size;
@@ -60,7 +61,7 @@ class KIconTheme
 {
 public:
     /** Load an icon theme by name.  */
-    KIconTheme(QString name);
+    KIconTheme(QString name, QString appName=QString::null);
     ~KIconTheme();
 
     /** The stylized name of the icont theme. */
@@ -71,6 +72,9 @@ public:
 
     /** The themes this icon theme falls back on. */
     QStringList inherits() { return mInherits; }
+
+    /** The icon theme exists? */
+    bool isValid();
 
     /** The mimimum display depth required for this theme. This can either
      * be 8 or 32 */

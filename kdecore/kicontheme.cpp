@@ -63,8 +63,14 @@ private:
 
 /*** KIconTheme ***/
 
-KIconTheme::KIconTheme(QString name)
+KIconTheme::KIconTheme(QString name, QString appName)
 {
+    bool isApp = !appName.isEmpty();
+    if (isApp && (name != "hicolor") && (name != "locolor"))
+    {
+	kdDebug(264) << "Only hicolor and locolor themes can be local.\n";
+	return;
+    }
     QStringList icnlibs = KGlobal::dirs()->resourceDirs("icon");
     QStringList::ConstIterator it;
     for (it=icnlibs.begin(); it!=icnlibs.end(); it++)
@@ -86,13 +92,30 @@ KIconTheme::KIconTheme(QString name)
     mDepth = cfg->readNumEntry("DisplayDepth", 32);
     mInherits = cfg->readListEntry("Inherits");
     
+    if (isApp)
+    {
+	// We just read the global theme description file. This is intended
+	// for app specific themes too. 
+	icnlibs = KGlobal::dirs()->resourceDirs("data");
+	for (it=icnlibs.begin(); it!=icnlibs.end(); it++)
+	{
+	    QFileInfo fi(*it + appName + "/icons/" + name);
+	    if (fi.exists())
+		break;
+	}
+	if (it == icnlibs.end())
+	    return;
+	mDir = *it + appName + "/icons/" + name + "/";
+	mName += "-app";
+    }
+
     int i;
     QStringList groups;
     groups += "Desktop";
     groups += "Kicker";
     groups += "Toolbar";
     groups += "Small";
-    groups += "ListItem";
+    groups += "MainToolbar";
     for (it=groups.begin(), i=0; it!=groups.end(); it++, i++)
     {
 	mDefSize[i] = cfg->readNumEntry(*it + "Default", 32);
@@ -111,6 +134,11 @@ KIconTheme::KIconTheme(QString name)
 
 KIconTheme::~KIconTheme()
 {
+}
+
+bool KIconTheme::isValid()
+{
+    return !mDirs.isEmpty();
 }
 
 int KIconTheme::defaultSize(int group)
