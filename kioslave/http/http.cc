@@ -1514,7 +1514,7 @@ bool HTTPProtocol::httpOpenConnection()
 
     setConnectTimeout( m_proxyConnTimeout );
 
-    if ( !ConnectToHost(proxy_host, proxy_port, false) )
+    if ( !connectToHost(proxy_host, proxy_port, false) )
     {
       switch ( connectResult() )
       {
@@ -1538,7 +1538,7 @@ bool HTTPProtocol::httpOpenConnection()
   {
     // Apparently we don't want a proxy.  let's just connect directly
     setConnectTimeout(m_remoteConnTimeout);
-    if ( !ConnectToHost(m_state.hostname, m_state.port, false ) )
+    if ( !connectToHost(m_state.hostname, m_state.port, false ) )
     {
       switch ( connectResult() )
       {
@@ -1598,11 +1598,9 @@ bool HTTPProtocol::httpOpen()
 {
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpOpen" << endl;
 
-  // Cannot have an https request without the
-  // m_bIsSSL being set!  This can only happen
-  // if InitializeSSL() call failed which in
-  // turn means that SSL is not supported by
-  // current installation !!
+  // Cannot have an https request without the m_bIsSSL being set!  This can
+  // only happen if InitializeSSL() call failed which in turn means that SSL
+  // is not supported by current installation !!
   if ( (m_protocol == "https" || m_protocol == "webdavs") && !m_bIsSSL )
   {
     error( ERR_UNSUPPORTED_PROTOCOL, m_protocol );
@@ -1618,6 +1616,7 @@ bool HTTPProtocol::httpOpen()
   m_bCachedWrite = false;
   m_bMustRevalidate = false;
   m_bEOF = false;
+
   if (m_bUseCache)
   {
      m_fcache = checkCacheEntry( );
@@ -1678,6 +1677,7 @@ bool HTTPProtocol::httpOpen()
   // Clean up previous POST
   bool moreData = false;
   bool davData = false;
+
   // Variable to hold the entire header...
   QString header;
   QString davHeader;
@@ -1813,7 +1813,11 @@ bool HTTPProtocol::httpOpen()
     header += "Connection: Keep-Alive\r\n";
 
     if (!m_request.userAgent.isEmpty())
-        header += "User-Agent: " + m_request.userAgent + "\r\n";
+    {
+        header += "User-Agent: ";
+        header += m_request.userAgent;
+        header += "\r\n";
+    }
 
     if (!m_request.referrer.isEmpty())
     {
@@ -1937,11 +1941,11 @@ bool HTTPProtocol::httpOpen()
     {
       case AUTH_Basic:
           header += createBasicAuth();
-          header+="\r\n";
+          header += "\r\n";
           break;
       case AUTH_Digest:
           header += createDigestAuth();
-          header+="\r\n";
+          header += "\r\n";
           break;
       case AUTH_None:
       default:
@@ -1952,12 +1956,12 @@ bool HTTPProtocol::httpOpen()
     if ( Authentication != AUTH_None )
     {
       kdDebug(7113) << "(" << m_pid << ") Using Authentication: " << endl;
-			kdDebug(7113) << "(" << m_pid << ")   HOST= " << m_state.hostname << endl;
-			kdDebug(7113) << "(" << m_pid << ")   PORT= " << m_state.port << endl;
-			kdDebug(7113) << "(" << m_pid << ")   USER= " << m_state.user << endl;
-			kdDebug(7113) << "(" << m_pid << ")   PASSWORD= [protected]" << endl;
-			kdDebug(7113) << "(" << m_pid << ")   REALM= " << m_strRealm << endl;
-			kdDebug(7113) << "(" << m_pid << ")   EXTRA= " << m_strAuthorization << endl;
+      kdDebug(7113) << "(" << m_pid << ")   HOST= " << m_state.hostname << endl;
+      kdDebug(7113) << "(" << m_pid << ")   PORT= " << m_state.port << endl;
+      kdDebug(7113) << "(" << m_pid << ")   USER= " << m_state.user << endl;
+      kdDebug(7113) << "(" << m_pid << ")   PASSWORD= [protected]" << endl;
+      kdDebug(7113) << "(" << m_pid << ")   REALM= " << m_strRealm << endl;
+      kdDebug(7113) << "(" << m_pid << ")   EXTRA= " << m_strAuthorization << endl;
     }
 
     // Do we need to authorize to the proxy server ?
@@ -1966,7 +1970,7 @@ bool HTTPProtocol::httpOpen()
   }
 
   // add extra header elements for WebDAV
-  if ( davHeader != QString::null )
+  if ( !davHeader.isNull() )
     header += davHeader;
 
   if ( m_protocol == "webdav" || m_protocol == "webdavs" )
@@ -1975,18 +1979,21 @@ bool HTTPProtocol::httpOpen()
   if ( !moreData )
     header += "\r\n";  /* end header */
 
+  kdDebug(7103) << "(" << m_pid << ") ============ Sending Header:" << endl;
+
   QStringList headerOutput = QStringList::split("\r\n", header);
-	QStringList::Iterator it = headerOutput.begin();
-	kdDebug(7103) << "(" << m_pid << ") ============ Sending Header:" << endl;
-	for (; it != headerOutput.end(); it++)
-		kdDebug(7103) << "(" << m_pid << ") " << (*it) << endl;
+  QStringList::Iterator it = headerOutput.begin();
+
+  for (; it != headerOutput.end(); it++)
+    kdDebug(7103) << "(" << m_pid << ") " << (*it) << endl;
 
   // now that we have our formatted header, let's send it!
   bool sendOk;
   sendOk = (write(header.latin1(), header.length()) == (ssize_t) header.length());
   if (!sendOk)
   {
-    kdDebug(7113) << "(" << m_pid << ") httpOpen: Connection broken! (" << m_state.hostname << ")" << endl;
+    kdDebug(7113) << "(" << m_pid << ") httpOpen: Connection broken! ("
+                  << m_state.hostname << ")" << endl;
     if (m_bKeepAlive)
     {
        // With a Keep-Alive connection this can happen.
@@ -1998,8 +2005,8 @@ bool HTTPProtocol::httpOpen()
     }
     if (!sendOk)
     {
-       kdDebug(7113) << "(" << m_pid << ") httpOpen: sendOk==false. Connnection broken ! "
-                     << endl;
+       kdDebug(7113) << "(" << m_pid << ") httpOpen: sendOk==false. Connnection"
+                        " broken ! " << endl;
        error( ERR_CONNECTION_BROKEN, m_state.hostname );
        return false;
     }
@@ -2054,12 +2061,14 @@ bool HTTPProtocol::readHeader()
          setMetaData("modified", m_lastModified);
      return true;
   }
-  
+
   QCString locationStr; // In case we get a redirect.
   QCString cookieStr; // In case we get a cookie.
   QString disposition; // Incase we get a Content-Disposition
-  QString mediaAttribute;
   QString mediaValue;
+  QString mediaAttribute;
+  QStringList responseHeader;
+
 
   m_etag = QString::null;
   m_lastModified = QString::null;
@@ -2088,43 +2097,45 @@ bool HTTPProtocol::readHeader()
   gets(buffer, sizeof(buffer)-1);
   if (m_bEOF)
   {
-     kdDebug(7103) << "(" << m_pid << ")" << "readHeader: EOF while waiting for header start." << endl;
-     if (m_bKeepAlive) // Try to reestablish connection.
-     {
-        httpCloseConnection();
-        if ( !httpOpen() )
-           return false;
-        if (!waitForResponse(m_remoteRespTimeout))
-        {
-           // No response error
-           error( ERR_SERVER_TIMEOUT, m_state.hostname );
-           return false;
-        }
-        gets(buffer, sizeof(buffer)-1);
-     }
-     if (m_bEOF)
-     {
-        if (m_request.method == HTTP_HEAD)
-        {
-           // HACK
-           // Some web-servers fail to respond properly to a HEAD request.
-           // We compensate for their failure to properly implement the HTTP standard
-           // by assuming that they will be sending html.
-           kdDebug(7103) << "readHeader(): HEAD -> returning " << DEFAULT_MIME_TYPE << endl;
-           mimeType(QString::fromLatin1(DEFAULT_MIME_TYPE));
-           return true;
-        }
-        kdDebug(7103) << "readHeader(3): Connnection broken ! " << endl;
-        error( ERR_CONNECTION_BROKEN, m_state.hostname );
+    kdDebug(7103) << "(" << m_pid << ")" << "readHeader: EOF while waiting for header start." << endl;
+    if (m_bKeepAlive) // Try to reestablish connection.
+    {
+      httpCloseConnection();
+      if ( !httpOpen() )
         return false;
-     }
+
+      if (!waitForResponse(m_remoteRespTimeout))
+      {
+        // No response error
+        error( ERR_SERVER_TIMEOUT, m_state.hostname );
+        return false;
+      }
+      gets(buffer, sizeof(buffer)-1);
+    }
+    
+    if (m_bEOF)
+    {
+      if (m_request.method == HTTP_HEAD)
+      {
+        // HACK
+        // Some web-servers fail to respond properly to a HEAD request.
+        // We compensate for their failure to properly implement the HTTP standard
+        // by assuming that they will be sending html.
+        kdDebug(7103) << "readHeader(): HEAD -> returning " << DEFAULT_MIME_TYPE << endl;
+        mimeType(QString::fromLatin1(DEFAULT_MIME_TYPE));
+           return true;
+      }
+      
+      kdDebug(7103) << "readHeader(3): Connnection broken ! " << endl;
+      error( ERR_CONNECTION_BROKEN, m_state.hostname );
+      return false;
+    }
   }
 
-	kdDebug(7103) << "(" << m_pid << ") ============ Received Response:"<< endl;
+  kdDebug(7103) << "(" << m_pid << ") ============ Received Response:"<< endl;
 
-  m_returnedHeaders = "";
-
-  do {
+  do
+  {
     // strip off \r and \n if we have them
     len = strlen(buffer);
 
@@ -2145,43 +2156,30 @@ bool HTTPProtocol::readHeader()
     while( *buf == ' ' )
         buf++;
 
-    // We got a header back !
-    bool isStart = (strncasecmp(buf, "HTTP/", 5) == 0);
+    if (strncasecmp(buf, "HTTP/", 5) == 0)
+    {
+      // Store the the headers so they can be passed to the
+      // calling application later
+      responseHeader << QString::fromLatin1(buf);
 
-    // We pass the headers as metadata so they can be displayed in
-    // the GUI if the user wants to see them.  In addition, we pass
-    // back the HTTP version.  This is separated from the second scope
-    // below for clarity and simplicity.
-
-    if (!isStart) {
-        m_returnedHeaders += buf;
-        m_returnedHeaders += "\n";
-    }
-
-    // Now do what we need to do with the line we get back
-    if (isStart) {
-      if (strncmp(buf+5, "1.0 ",4) == 0)
+      if (strncmp((buf + 5), "1.0",3) == 0)
       {
-         m_HTTPrev = HTTP_10;
-         m_bKeepAlive = false;
+        m_HTTPrev = HTTP_10;
+        m_bKeepAlive = false;
       }
       else // Assume everything else to be 1.1 or higher....
       {
-         m_HTTPrev = HTTP_11;
+        m_HTTPrev = HTTP_11;
 
-         // Connections with proxies are closed by default because
-         // some proxies like junkbuster can't handle persistent
-         // connections but don't tell us.
-         // We will still use persistent connections if the proxy
-         // sends us a "Connection: Keep-Alive" header.
-         if (m_state.doProxy)
-         {
-            m_bKeepAlive = false;
-         }
-         else
-         {
-            m_bKeepAlive = true; // HTTP 1.1 has persistant connections.
-         }
+        // Connections with proxies are closed by default because
+        // some proxies like junkbuster can't handle persistent
+        // connections but don't tell us.
+        // We will still use persistent connections if the proxy
+        // sends us a "Connection: Keep-Alive" header.
+        if (m_state.doProxy)
+          m_bKeepAlive = false;
+        else
+          m_bKeepAlive = true; // HTTP 1.1 has persistant connections.
       }
 
       if ( m_responseCode )
@@ -2192,9 +2190,9 @@ bool HTTPProtocol::readHeader()
       // server side errors
       if (m_responseCode >= 500 && m_responseCode <= 599)
       {
-        if (m_request.method == HTTP_HEAD) {
-           // Ignore error
-        } else {
+        if (m_request.method == HTTP_HEAD); // Ignore error
+        else
+        {
            if (m_bErrorPage)
               errorPage();
            else
@@ -2224,11 +2222,11 @@ bool HTTPProtocol::readHeader()
       {
         // Tell that we will only get an error page here.
         if (m_bErrorPage)
-           errorPage();
+          errorPage();
         else
         {
-           error(ERR_DOES_NOT_EXIST, m_request.url.url());
-           return false;
+          error(ERR_DOES_NOT_EXIST, m_request.url.url());
+          return false;
         }
         m_bCachedWrite = false; // Don't put in cache
         mayCache = false;
@@ -2564,13 +2562,17 @@ bool HTTPProtocol::readHeader()
     memset(buffer, 0, sizeof(buffer));
   } while (len && (gets(buffer, sizeof(buffer)-1)));
 
-  setMetaData("HTTP-Headers", m_returnedHeaders);
+  // Send HTTP version
   if (m_HTTPrev == HTTP_11)
     setMetaData("HTTP-Version", "1.1");
   else if (m_HTTPrev == HTTP_10)
     setMetaData("HTTP-Version", "1.0");
   else
     setMetaData("HTTP-Version", "Unknown");
+
+  // Send the reponse
+  if (!responseHeader.isEmpty())
+    setMetaData("HTTP-Headers", responseHeader.join("\n"));
 
   // If we do not support the requested authentication method...
   if ( (m_responseCode == 401 && Authentication == AUTH_None) ||
@@ -2691,11 +2693,11 @@ bool HTTPProtocol::readHeader()
        sendMetaData();
     }
 
-    kdDebug(7113) << "(" << m_pid << ") request.url: "
-									<< m_request.url.url() << endl
-                  << "LocationStr: " << locationStr.data() << endl;
-    kdDebug(7113) << "(" << m_pid << ") Requesting redirection to: "
-									<< u.url() << endl;
+    kdDebug(7113) << "(" << m_pid << ") request.url: " << m_request.url.url()
+                  << endl << "LocationStr: " << locationStr.data() << endl;
+
+    kdDebug(7113) << "(" << m_pid << ") Requesting redirection to: " << u.url()
+                  << endl;
 
     redirection(u.url());
     m_bCachedWrite = false; // Turn off caching on re-direction (DA)
