@@ -253,7 +253,9 @@ movable_toolbars
           See also action/options_show_toolbar.
 editable_desktop_icons
         - define whether icons on the desktop can be moved, renamed, 
-          deleted or added
+          deleted or added. You might want to set the path for
+          the Desktop to some read-only directory as well.
+          (Instead of $HOME/Desktop)
 run_desktop_files
         - defines whether users may execute desktop files that are not
           part of the default desktop, KDE menu or registered services.
