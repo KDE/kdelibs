@@ -284,6 +284,7 @@ bool KBuildSycoca::build(KSycocaEntryListList *allEntries,
         g_changeList->append(resource);
      }
   }
+  
   return !uptodate || !ctimeDict->isEmpty();
 }
 
@@ -366,6 +367,7 @@ void KBuildSycoca::save()
    (*m_str) << KGlobal::dirs()->kfsstnd_prefixes();
    (*m_str) << newTimestamp;
    (*m_str) << KGlobal::locale()->language();
+   (*m_str) << KGlobal::dirs()->calcResourceHash("services", "update_ksycoca", true);
 
    // Write factory data....
    for(KSycocaFactory *factory = m_lstFactories->first();
@@ -542,7 +544,11 @@ int main(int argc, char **argv)
      QString ksycoca_kfsstnd = KSycoca::self()->kfsstnd_prefixes();
      QString current_language = KGlobal::locale()->language();
      QString ksycoca_language = KSycoca::self()->language();
-     if ((current_kfsstnd != ksycoca_kfsstnd) ||
+     Q_UINT32 current_update_sig = KGlobal::dirs()->calcResourceHash("services", "update_ksycoca", true);
+     Q_UINT32 ksycoca_update_sig = KSycoca::self()->updateSignature();
+     
+     if ((current_update_sig != ksycoca_update_sig) ||
+         (current_kfsstnd != ksycoca_kfsstnd) ||
          (current_language != ksycoca_language))
      {
         incremental = false;
