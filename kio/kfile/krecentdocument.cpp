@@ -67,6 +67,11 @@ QStringList KRecentDocument::recentDocuments()
 
 void KRecentDocument::add(const KURL& url)
 {
+    KRecentDocument::add(url, kapp->argv()[0]); // ### argv[0] might not match the service filename!
+}
+
+void KRecentDocument::add(const KURL& url, const QString& desktopEntryName)
+{
     QString openStr = url.url();
 
     kdDebug(250) << "KRecentDocument::add for " << openStr << endl;
@@ -92,9 +97,8 @@ void KRecentDocument::add(const KURL& url)
         // see if it points to the same file and application
         KSimpleConfig tmp(ddesktop);
         tmp.setDesktopGroup();
-        if(tmp.readEntry(QString::fromLatin1("Exec"))
-	   == QString::fromLatin1(kapp->argv()[0]) +
-	   QString::fromLatin1(" \"") + openStr + '"')
+        if(tmp.readEntry(QString::fromLatin1("X-KDE-LastOpenedWith"))
+	   == desktopEntryName)
 	{
             utime(QFile::encodeName(ddesktop), NULL);
             return;
@@ -124,7 +128,8 @@ void KRecentDocument::add(const KURL& url)
     conf.setDesktopGroup();
     conf.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("Link") );
     conf.writeEntry( QString::fromLatin1("URL"), openStr );
-    conf.writeEntry( QString::fromLatin1("X-KDE-LastOpenedWith"), QString::fromLatin1(kapp->argv()[0]) );
+    // If you change the line below, change the test in the above loop
+    conf.writeEntry( QString::fromLatin1("X-KDE-LastOpenedWith"), desktopEntryName );
     conf.writeEntry( QString::fromLatin1("Name"), url.fileName() );
     conf.writeEntry( QString::fromLatin1("Icon"), KMimeType::iconForURL( url ) );
 }

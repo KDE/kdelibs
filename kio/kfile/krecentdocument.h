@@ -67,6 +67,16 @@ public:
     static void add(const KURL& url);
 
     /**
+     * Add a new item to the Recent Document menu, specifying the application to open it with.
+     * The above add() method uses argv[0] for the app name, which isn't always flexible enough.
+     * This method is used when an application launches another one to open a document.
+     *
+     * @param url The url to add.
+     * @param serviceDesktopName The desktopEntryName of the service to use for opening this document.
+     */
+    static void add(const KURL& url, const QString& desktopEntryName);
+
+    /**
      *
      * Add a new item to the Recent Document menu. Calls add( url ).
      *
