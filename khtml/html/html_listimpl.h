@@ -51,6 +51,8 @@ public:
     virtual tagStatus endTag() { return ULEndTag; }
 
     virtual void parseAttribute(Attribute *);
+    
+    virtual void attach(KHTMLView *);
 };
 
 // -------------------------------------------------------------------------
@@ -66,6 +68,8 @@ public:
 
     virtual tagStatus startTag() { return DIRStartTag; }
     virtual tagStatus endTag() { return DIREndTag; }
+    
+    virtual void attach(KHTMLView *);
 };
 
 // -------------------------------------------------------------------------
@@ -81,6 +85,8 @@ public:
 
     virtual tagStatus startTag() { return MENUStartTag; }
     virtual tagStatus endTag() { return MENUEndTag; }
+    
+    virtual void attach(KHTMLView *);
 };
 
 // -------------------------------------------------------------------------
@@ -101,6 +107,8 @@ public:
     void setStart( long );
 
     virtual void parseAttribute(Attribute *);
+    
+    virtual void attach(KHTMLView *);
 };
 
 // -------------------------------------------------------------------------

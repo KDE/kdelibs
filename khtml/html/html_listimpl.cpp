@@ -60,6 +60,12 @@ void HTMLUListElementImpl::parseAttribute(Attribute *attr)
     }
 }
 
+void HTMLUListElementImpl::attach(KHTMLView *w)
+{
+    HTMLElementImpl::attach(w);
+    style()->setFlowAroundFloats(true);
+}	
+
 // -------------------------------------------------------------------------
 
 const DOMString HTMLDirectoryElementImpl::nodeName() const
@@ -72,6 +78,12 @@ ushort HTMLDirectoryElementImpl::id() const
     return ID_DIR;
 }
 
+void HTMLDirectoryElementImpl::attach(KHTMLView *w)
+{
+    HTMLElementImpl::attach(w);
+    style()->setFlowAroundFloats(true);
+}
+
 // -------------------------------------------------------------------------
 
 const DOMString HTMLMenuElementImpl::nodeName() const
@@ -82,6 +94,12 @@ const DOMString HTMLMenuElementImpl::nodeName() const
 ushort HTMLMenuElementImpl::id() const
 {
     return ID_MENU;
+}
+
+void HTMLMenuElementImpl::attach(KHTMLView *w)
+{
+    HTMLElementImpl::attach(w);
+    style()->setFlowAroundFloats(true);
 }
 
 // -------------------------------------------------------------------------
@@ -126,6 +144,12 @@ void HTMLOListElementImpl::parseAttribute(Attribute *attr)
     default:
         HTMLUListElementImpl::parseAttribute(attr);
     }
+}
+
+void HTMLOListElementImpl::attach(KHTMLView *w)
+{
+    HTMLElementImpl::attach(w);
+    style()->setFlowAroundFloats(true);
 }
 
 // -------------------------------------------------------------------------

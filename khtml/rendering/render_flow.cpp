@@ -292,7 +292,7 @@ void RenderFlow::layoutBlockChildren(bool deep)
 	m_height += margin;
 
     	// html blocks flow around floats	
-    	if (style()->htmlHacks() && !child->childrenInline()) 	    
+    	if (style()->htmlHacks() && child->style()->flowAroundFloats() ) 	    
 	    child->setPos(leftMargin(m_height) + getIndent(child), m_height);
 	else
 	    child->setPos(xPos + getIndent(child), m_height);
@@ -415,17 +415,26 @@ RenderFlow::insertFloat(RenderObject *o)
     positionNewFloats();
     
     // html blocks flow around floats, to do this add floats to parent too
-    if(style()->htmlHacks())     
+    if(style()->htmlHacks() && childrenInline())     
     {
     	RenderObject* obj = parent();
-    	while ( obj && obj->childrenInline() ) obj=obj->parent();
+     	while ( obj && obj->childrenInline() ) obj=obj->parent();
     	if (obj && obj->isFlow() && f->noPaint == false)
 	{
 	    RenderFlow* par = static_cast<RenderFlow*>(obj);
+
 	    if(!par->specialObjects) {
 		par->specialObjects = new QList<SpecialObject>;
 		par->specialObjects->setAutoDelete(true);	
 	    }
+	    
+	    QListIterator<SpecialObject> it(*par->specialObjects);
+	    SpecialObject* tt;	
+	    while ( (tt = it.current()) ) {
+		if (tt->node == o) return;
+		++it;
+	    }	    
+	    
 	    SpecialObject* so = new SpecialObject(*f);
 	    so->startY = so->startY + m_y;
 	    so->endY = so->endY + m_y;
@@ -460,6 +469,12 @@ void RenderFlow::positionNewFloats()
     {
 	RenderObject *o = f->node;
 	int _height = o->height() + o->marginTop() + o->marginBottom();
+	
+	if (f->noPaint)
+	{
+	    f = specialObjects->next();
+	    continue;
+	}
 
 	if (o->style()->floating() == FLEFT)
 	{
@@ -659,6 +674,8 @@ RenderFlow::clearFloats()
     if(!prev->isFlow()) return;
     RenderFlow * flow = static_cast<RenderFlow *>(prev);
     if(!flow->specialObjects) return;
+    if(style()->htmlHacks() && style()->flowAroundFloats()) 
+    	return; //html tables and lists flow as blocks
     if(flow->floatBottom() > offset)
     {
 #ifdef DEBUG_LAYOUT

@@ -355,6 +355,7 @@ void HTMLTableElementImpl::parseAttribute(Attribute *attr)
 void HTMLTableElementImpl::attach(KHTMLView *w)
 {
     HTMLElementImpl::attach(w);
+    style()->setFlowAroundFloats(true);
 }	
 
 void HTMLTableElementImpl::detach()

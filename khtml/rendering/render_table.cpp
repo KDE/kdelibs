@@ -68,8 +68,6 @@ template class QArray<LengthType>;
 RenderTable::RenderTable(RenderStyle *style)
     : RenderBox(style)
 {
-    // ### Should be set from HTMLTableElementImpl!!!!
-    m_htmlTable = true;
 
     tCaption = 0;
     _oldColElem = 0;

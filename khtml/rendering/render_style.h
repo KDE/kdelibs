@@ -538,7 +538,7 @@ protected:
     int _text_decoration : 4;
     bool _visuallyOrdered : 1;
     
-    bool _htmlHacks :1;
+    bool _htmlHacks :1;    
 
 // don't inherit
 
@@ -550,6 +550,8 @@ protected:
     bool _bg_attachment : 1;
     EPosition _position : 2;
     EFloat _floating : 2;
+    
+    bool _flowAroundFloats :1;    
 
     static RenderStyle* _default;
 
@@ -804,6 +806,9 @@ public:
     
     bool htmlHacks() const { return _htmlHacks; }
     void setHtmlHacks(bool b=true) { _htmlHacks = b; }
+    
+    bool flowAroundFloats() const { return _flowAroundFloats; }
+    void setFlowAroundFloats(bool b=true) { _flowAroundFloats = b; }    
 };
 
 } // namespace

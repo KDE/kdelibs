@@ -53,6 +53,7 @@ RenderStyle::setBitDefaults()
     _visuallyOrdered = false;
     
     _htmlHacks=false;
+    _flowAroundFloats=false;
 }
 
 
@@ -122,7 +123,8 @@ RenderStyle::RenderStyle(const RenderStyle& other)
 
     _display = other._display;
     
-    _htmlHacks = other._htmlHacks;
+    _htmlHacks = other._htmlHacks;    
+    _flowAroundFloats = other._flowAroundFloats;
 }
 
 RenderStyle::RenderStyle(const RenderStyle* inheritParent)
