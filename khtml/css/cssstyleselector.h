@@ -150,13 +150,14 @@ namespace khtml
 	static CSSStyleSelectorList *userStyle;
 	CSSStyleSelectorList *authorStyle;
 	
-	
+    public: // we need to make the enum public for SelectorCache
 	enum SelectorState {
 	    Unknown = 0,
 	    Applies,
 	    AppliesPseudo,
 	    Invalid
 	};
+    protected:
 
         struct SelectorCache {
             SelectorState state;
