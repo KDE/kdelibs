@@ -104,8 +104,19 @@ void StdAddressBook::init( bool asynchronous )
   KRES::Manager<Resource>::ActiveIterator it;
   for ( it = manager->activeBegin(); it != manager->activeEnd(); ++it ) {
     (*it)->setAddressBook( this );
-    if ( !(*it)->open() )
+    if ( !(*it)->open() ) {
       error( QString( "Unable to open resource '%1'!" ).arg( (*it)->resourceName() ) );
+      continue;
+    }
+    connect( *it, SIGNAL( loadingFinished( Resource* ) ),
+             this, SLOT( resourceLoadingFinished( Resource* ) ) );
+    connect( *it, SIGNAL( savingFinished( Resource* ) ),
+             this, SLOT( resourceSavingFinished( Resource* ) ) );
+
+    connect( *it, SIGNAL( loadingError( Resource*, const QString& ) ),
+             this, SLOT( resourceLoadingError( Resource*, const QString& ) ) );
+    connect( *it, SIGNAL( savingError( Resource*, const QString& ) ),
+             this, SLOT( resourceSavingError( Resource*, const QString& ) ) );
   }
 
   Resource *res = standardResource();
