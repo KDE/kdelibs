@@ -205,6 +205,11 @@ public:
    * @ref #clear your widget will be hidden, not deleted.
    */
   void message (QWidget *wiiidget, int time=0);
+
+  /**
+   * SizeHint. For now returns height() and width().
+   */
+  QSize sizeHint ();
   
 public slots:
 

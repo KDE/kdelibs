@@ -24,6 +24,9 @@
 #include <kstatusbar.h>
 // $Id$
 // $Log$
+// sven: added sizeHint. Very primitive - width is ?, but height is set
+//       according to fontMetrics
+//
 // Revision 1.13  1998/08/05 09:58:47  radej
 // sven: fixed removeItem SEGV; thanks to Frans van Dorsselaer for report.
 //
@@ -332,6 +335,12 @@ void KStatusBar::slotPressed(int _id)
 }
 
 void KStatusBar::slotReleased(int _id)
+{
+  emit released(_id);
+}
+
+QSize KStatusBar::sizeHint()
+{
   return QSize(width(), height());
 #include <kstatusbar.moc>
 
