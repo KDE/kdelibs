@@ -283,34 +283,41 @@ short RangeImpl::compareBoundaryPoints( NodeImpl *containerA, long offsetA, Node
     }
 
     NodeImpl *n;
-    if (offsetA >= (long)containerA->childNodes()->length()) {
+    NodeListImpl *childNodes = containerA->childNodes();
+    if (offsetA+1 >= (long)childNodes->length()) {
 	// find the next node
-	if (containerA->lastChild())
-	    n = containerA->lastChild();
-	else
-	    n = containerA;
-
+	n = containerA->parentNode();
 	while (n && !n->nextSibling())
 	    n = n->parentNode();
 	if (n)
 	    n = n->nextSibling();
     }
     else
-	n = containerA->childNodes()->item(offsetA);
-	
+	n = containerA->childNodes()->item(offsetA+1);
+    delete childNodes;
+
+    bool atParentEnd = false;	
     while (n) {
 	// traverse forwards and see if we find B
         if( n == containerB)  return -1;       // A is before B
 
-        if (n->firstChild())
-	    n = n->firstChild();
-	else if (n->nextSibling())
-	    n = n->nextSibling();
-	else {
-	    while (n && !n->nextSibling())
-		n = n->parentNode();
-	    if (n)
+        if (!atParentEnd) {
+	    if (n->firstChild())
+		n = n->firstChild();
+	    else if (n->nextSibling())
 		n = n->nextSibling();
+	    else {
+		n = n->parentNode();
+		atParentEnd = true;
+	    }
+	}
+	else {
+	    if (n->nextSibling()) {
+		n = n->nextSibling();
+		atParentEnd = false;
+	    }
+	    else
+		n = n->parentNode();
 	}
     }
 
@@ -347,6 +354,7 @@ void RangeImpl::deleteContents( int &exceptioncode )
     if (exceptioncode)
 	return;
 
+	
     if(m_startContainer == m_endContainer) {
         if(m_startContainer->nodeType() == Node::TEXT_NODE ||
            m_startContainer->nodeType() == Node::CDATA_SECTION_NODE ||
@@ -374,111 +382,116 @@ void RangeImpl::deleteContents( int &exceptioncode )
         return;
     }
 
-    // delete the left-hand side of the range, up until the last ancestor of
-    // m_startContainer before cmnRoot
-    if(m_startContainer->nodeType() == Node::TEXT_NODE ||
-       m_startContainer->nodeType() == Node::CDATA_SECTION_NODE ||
-       m_startContainer->nodeType() == Node::COMMENT_NODE) {
+    if (m_startContainer != cmnRoot) {
+	// delete the left-hand side of the range, up until the last ancestor of
+	// m_startContainer before cmnRoot
+	if(m_startContainer->nodeType() == Node::TEXT_NODE ||
+	   m_startContainer->nodeType() == Node::CDATA_SECTION_NODE ||
+	   m_startContainer->nodeType() == Node::COMMENT_NODE) {
 
-	static_cast<CharacterDataImpl*>(m_startContainer)->deleteData(m_startOffset,
-								      static_cast<CharacterDataImpl*>(m_startContainer)->length()-m_startOffset,
-								      exceptioncode);
-    }
-    else if (m_startContainer->nodeType() == Node::PROCESSING_INSTRUCTION_NODE) {
-	// ### operate just on data ?
-    }
-    else {
-	NodeImpl *n = m_startContainer->firstChild();
-	unsigned long i;
-	for(i = 0; i < m_startOffset; i++) // skip until m_startOffset
-	    n = n->nextSibling();
-	NodeImpl *next = n->nextSibling();
-	while (n) { // delete until end
-	    m_startContainer->removeChild(n,exceptioncode);
-	    n = next;
-	    next = next->nextSibling();
+	    static_cast<CharacterDataImpl*>(m_startContainer)->deleteData(
+		m_startOffset,static_cast<CharacterDataImpl*>(m_startContainer)->length()-m_startOffset,exceptioncode);
+	}
+	else if (m_startContainer->nodeType() == Node::PROCESSING_INSTRUCTION_NODE) {
+	    // ### operate just on data ?
+	}
+	else {
+	    NodeImpl *n = m_startContainer->firstChild();
+	    unsigned long i;
+	    for(i = 0; i < m_startOffset; i++) // skip until m_startOffset
+		n = n->nextSibling();
+	    NodeImpl *next = n->nextSibling();
+	    while (n) { // delete until end
+		m_startContainer->removeChild(n,exceptioncode);
+		n = next;
+		next = next->nextSibling();
+	    }
+	}
+
+	NodeImpl *leftParent = m_startContainer->parentNode();
+	NodeImpl *n = m_startContainer->nextSibling();
+	for (; leftParent != cmnRoot; leftParent = leftParent->parentNode()) {
+	    NodeImpl *next;
+	    for (; n; n = next ) {
+		next = n->nextSibling();
+		leftParent->removeChild(n,exceptioncode);
+	    }
+	    n = leftParent->nextSibling();
 	}
     }
 
-    NodeImpl *leftParent = m_startContainer->parentNode();
-    NodeImpl *n = m_startContainer->nextSibling();
-    for (; leftParent != cmnRoot; leftParent = leftParent->parentNode())
-    {
-	NodeImpl *next;
-        for (; n; n = next ) {
-            next = n->nextSibling();
-            leftParent->removeChild(n,exceptioncode);
-        }
-        n = leftParent->nextSibling();
-    }
+    if (m_endContainer != cmnRoot) {
 
-    // delete the right-hand side of the range, up until the last ancestor of
-    // m_endContainer before cmnRoot
-    if(m_endContainer->nodeType() == Node::TEXT_NODE ||
-       m_endContainer->nodeType() == Node::CDATA_SECTION_NODE ||
-       m_endContainer->nodeType() == Node::COMMENT_NODE) {
+	// delete the right-hand side of the range, up until the last ancestor of
+	// m_endContainer before cmnRoot
+	if(m_endContainer->nodeType() == Node::TEXT_NODE ||
+	   m_endContainer->nodeType() == Node::CDATA_SECTION_NODE ||
+	   m_endContainer->nodeType() == Node::COMMENT_NODE) {
 
-	static_cast<CharacterDataImpl*>(m_endContainer)->deleteData(0,m_endOffset,exceptioncode);
-    }
-    else if (m_startContainer->nodeType() == Node::PROCESSING_INSTRUCTION_NODE) {
-	// ### operate just on data ?
-    }
-    else {
-        NodeImpl *n = m_endContainer->firstChild();
-        unsigned long i;
-        for(i = 0; i < m_endOffset-1; i++) // skip to m_endOffset
-            n = n->nextSibling();
-        NodeImpl *prev;
-        for (; n; n = prev ) {
-            prev = n->previousSibling();
-            m_endContainer->removeChild(n,exceptioncode);
-        }
-    }
+	    static_cast<CharacterDataImpl*>(m_endContainer)->deleteData(0,m_endOffset,exceptioncode);
+	}
+	else if (m_startContainer->nodeType() == Node::PROCESSING_INSTRUCTION_NODE) {
+	    // ### operate just on data ?
+	}
+	else {
+	    NodeImpl *n = m_endContainer->firstChild();
+	    unsigned long i;
+	    for(i = 0; i < m_endOffset-1; i++) // skip to m_endOffset
+		n = n->nextSibling();
+	    NodeImpl *prev;
+	    for (; n; n = prev ) {
+		prev = n->previousSibling();
+		m_endContainer->removeChild(n,exceptioncode);
+	    }
+	}
 
-    NodeImpl *rightParent = m_endContainer->parentNode();
-    n = m_endContainer->previousSibling();
-    for (; rightParent != cmnRoot; rightParent = rightParent->parentNode() )
-    {
-	NodeImpl *prev;
-        for (; n; n = prev )
-        {
-            prev = n->previousSibling();
-            rightParent->removeChild(n,exceptioncode);
-        }
-        n = rightParent->previousSibling();
+	NodeImpl *rightParent = m_endContainer->parentNode();
+	NodeImpl *n = m_endContainer->previousSibling();
+	for (; rightParent != cmnRoot; rightParent = rightParent->parentNode()) {
+	    NodeImpl *prev;
+	    for (; n; n = prev ) {
+		prev = n->previousSibling();
+		rightParent->removeChild(n,exceptioncode);
+	    }
+	    n = rightParent->previousSibling();
+	}
     }
 
     // delete all children of cmnRoot between the start and end container
 
-    NodeImpl *topStartAncestor; // child of cmnRooot
+    NodeImpl *delStart; // child of cmnRooot
     if (m_startContainer == cmnRoot) {
 	unsigned long i;
-	topStartAncestor = m_startContainer->firstChild();
+	delStart = delStart->firstChild();
 	for (i = 0; i < m_startOffset; i++)
-	    topStartAncestor = topStartAncestor->nextSibling();
+	    delStart = delStart->nextSibling();
     }
     else {
-	topStartAncestor = m_startContainer;
-	while (topStartAncestor->parentNode() != cmnRoot)
-	    topStartAncestor = topStartAncestor->parentNode();
+	delStart = m_startContainer;
+	while (delStart->parentNode() != cmnRoot)
+	    delStart = delStart->parentNode();
+	delStart = delStart->nextSibling();
     }
-    NodeImpl *topEndAncestor; // child of cmnRooot
-    if (m_startContainer == cmnRoot) {
+    NodeImpl *delEnd; // child of cmnRooot
+    if (m_endContainer == cmnRoot) {
 	unsigned long i;
-	topEndAncestor = m_endContainer->firstChild();
+	delEnd = m_endContainer->firstChild();
 	for (i = 0; i < m_endOffset; i++)
-	    topEndAncestor = topEndAncestor->nextSibling();
+	    delEnd = delEnd->nextSibling();
     }
     else {
-	topEndAncestor = m_endContainer;
-	while (topEndAncestor->parentNode() != cmnRoot)
-	    topEndAncestor = topEndAncestor->parentNode();
+	delEnd = m_endContainer;
+	while (delEnd->parentNode() != cmnRoot)
+	    delEnd = delEnd->parentNode();
     }
 
     NodeImpl *next;
-    for (n = topStartAncestor->nextSibling(); n && n != topEndAncestor; n = next) {
-	next = n->nextSibling();
-	cmnRoot->removeChild(n,exceptioncode);
+    NodeImpl *n;
+    if (delStart) {
+	for (n = delStart; n && n != delEnd; n = next) {
+	    next = n->nextSibling();
+	    cmnRoot->removeChild(n,exceptioncode);
+	}
     }
 
     collapse(true,exceptioncode);
