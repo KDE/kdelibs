@@ -69,6 +69,10 @@
 #include "httpfilter.h"
 #include "http.h"
 
+#ifdef HAVE_LIBGSSAPI
+#include <gssapi.h>
+#endif
+
 using namespace KIO;
 
 extern "C" {
@@ -2350,7 +2354,8 @@ bool HTTPProtocol::httpOpen()
 
     // Only check for a cached copy if the previous
     // response was NOT a 401 or 407.
-    if ( !m_request.bNoAuth && m_responseCode != 401 && m_responseCode != 407 )
+    // no caching for Negotiate auth.
+    if ( !m_request.bNoAuth && m_responseCode != 401 && m_responseCode != 407 && Authentication != AUTH_Negotiate )
     {
       kdDebug(7113) << "(" << m_pid << ") Calling checkCachedAuthentication " << endl;
       AuthInfo info;
@@ -2380,6 +2385,11 @@ bool HTTPProtocol::httpOpen()
       case AUTH_Digest:
           header += createDigestAuth();
           break;
+#ifdef HAVE_LIBGSSAPI
+      case AUTH_Negotiate:
+          header += createNegotiateAuth();
+          break;
+#endif
       case AUTH_None:
       default:
           break;
@@ -4788,12 +4798,27 @@ void HTTPProtocol::configAuth( char *p, bool b )
     p += 14;
     strAuth = "Basic";
   }
+#ifdef HAVE_LIBGSSAPI
+  else if ( strncasecmp( p, "Negotiate", 9 ) == 0 )
+  {
+    // if we get two 401 in a row let's assume for now that
+    // Negotiate isn't working and ignore it
+    if ( !b && !(m_responseCode == 401 && m_prevResponseCode == 401) )
+    {
+      f = AUTH_Negotiate;
+      memcpy((void *)p, "Negotiate", 9); // Correct for upper-case variations.
+      p += 9;
+    };
+  }
+#endif
   else
   {
     kdWarning(7113) << "(" << m_pid << ") Unsupported or invalid authorization "
                     << "type requested" << endl;
     kdWarning(7113) << "(" << m_pid << ") Request Authorization: " << p << endl;
   }
+
+  kdDebug(7113) << "(" << m_pid << ") Got auth: " << f << endl;
 
   /*
      This check ensures the following:
@@ -4818,8 +4843,12 @@ void HTTPProtocol::configAuth( char *p, bool b )
     }
     else
       m_iWWWAuthCount++;
+
+  kdDebug(7113) << "(" << m_pid << ") Rejected auth: " << f << endl;
     return;
   }
+
+  kdDebug(7113) << "(" << m_pid << ") Accepted auth: " << f << endl;
 
   while (*p)
   {
@@ -5063,7 +5092,12 @@ bool HTTPProtocol::getAuthorization()
       result = true;
     else
     {
-      if ( m_request.disablePassDlg == false )
+      if (Authentication == AUTH_Negotiate)
+      {
+        if (!repeatFailure)
+          result = true;
+      }
+      else if ( m_request.disablePassDlg == false )
       {
         kdDebug( 7113 ) << "(" << m_pid << ") Prompting the user for authorization..." << endl;
         promptInfo( info );
@@ -5126,6 +5160,100 @@ void HTTPProtocol::saveAuthorization()
     cacheAuthentication( info );
   }
 }
+
+#ifdef HAVE_LIBGSSAPI
+QCString HTTPProtocol::gssError( int major_status, int minor_status )
+{
+  OM_uint32 new_status;
+  OM_uint32 msg_ctx = 0;
+  gss_buffer_desc major_string;
+  gss_buffer_desc minor_string;
+  OM_uint32 ret;
+  QCString errorstr;
+
+  errorstr = "";
+
+  do {
+    ret = gss_display_status(&new_status, major_status, GSS_C_GSS_CODE, GSS_C_NULL_OID, &msg_ctx, &major_string);
+    errorstr += (const char *)major_string.value;
+    errorstr += " ";
+    ret = gss_display_status(&new_status, minor_status, GSS_C_MECH_CODE, GSS_C_NULL_OID, &msg_ctx, &minor_string);
+    errorstr += (const char *)minor_string.value;
+    errorstr += " ";
+  } while (!GSS_ERROR(ret) && msg_ctx != 0);
+
+  return errorstr;
+}
+
+QString HTTPProtocol::createNegotiateAuth()
+{
+  QString auth;
+  QCString servicename;
+  QByteArray input;
+  OM_uint32 major_status, minor_status;
+  OM_uint32 req_flags = 0;
+  gss_buffer_desc input_token = GSS_C_EMPTY_BUFFER;
+  gss_buffer_desc output_token = GSS_C_EMPTY_BUFFER;
+  gss_name_t server;
+  gss_ctx_id_t ctx;
+  gss_OID mech_oid;
+  static gss_OID_desc krb5_oid_desc = {9, (void *) "\x2a\x86\x48\x86\xf7\x12\x01\x02\x02"};
+
+  ctx = GSS_C_NO_CONTEXT;
+  mech_oid = &krb5_oid_desc;
+
+  // the service name is "HTTP/f.q.d.n"
+  servicename = "HTTP@";
+  servicename += m_state.hostname.ascii();
+
+  input_token.value = (void *)servicename.data();
+  input_token.length = servicename.length() + 1;
+
+  major_status = gss_import_name(&minor_status, &input_token,
+                                 GSS_C_NT_HOSTBASED_SERVICE, &server);
+
+  input_token.value = NULL;
+  input_token.length = 0;
+
+  if (GSS_ERROR(major_status)) {
+    kdWarning(7113) << "(" << m_pid << ") gss_import_name failed: " << gssError(major_status, minor_status) << endl;
+    return QString::null;
+  }
+
+  major_status = gss_init_sec_context(&minor_status, GSS_C_NO_CREDENTIAL,
+                                      &ctx, server, mech_oid,
+                                      req_flags, GSS_C_INDEFINITE,
+                                      GSS_C_NO_CHANNEL_BINDINGS,
+                                      GSS_C_NO_BUFFER, NULL, &output_token,
+                                      NULL, NULL);
+
+
+  if (GSS_ERROR(major_status) || (output_token.length == 0)) {
+    kdWarning(7113) << "(" << m_pid << ") gss_init_sec_context failed: " << gssError(major_status, minor_status) << endl;
+    gss_release_name(&minor_status, &server);
+    if (ctx != GSS_C_NO_CONTEXT) {
+      gss_delete_sec_context(&minor_status, &ctx, GSS_C_NO_BUFFER);
+      ctx = GSS_C_NO_CONTEXT;
+    }
+    return QString::null;
+  }
+
+  input.duplicate((const char *)output_token.value, output_token.length);
+  auth = "Authorization: Negotiate ";
+  auth += KCodecs::base64Encode( input );
+  auth += "\r\n";
+
+  // free everything
+  gss_release_name(&minor_status, &server);
+  if (ctx != GSS_C_NO_CONTEXT) {
+    gss_delete_sec_context(&minor_status, &ctx, GSS_C_NO_BUFFER);
+    ctx = GSS_C_NO_CONTEXT;
+  }
+  gss_release_buffer(&minor_status, &output_token);
+
+  return auth;
+}
+#endif
 
 QString HTTPProtocol::createBasicAuth( bool isForProxy )
 {

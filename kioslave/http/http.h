@@ -58,7 +58,7 @@ public:
   enum HTTP_REV    {HTTP_None, HTTP_Unknown, HTTP_10, HTTP_11, SHOUTCAST};
 
   /** Authorization method used **/
-  enum HTTP_AUTH   {AUTH_None, AUTH_Basic, AUTH_Digest};
+  enum HTTP_AUTH   {AUTH_None, AUTH_Basic, AUTH_Digest, AUTH_Negotiate};
 
   /** HTTP / DAV method **/
   // Removed to interfaces/kio/http.h
@@ -432,6 +432,18 @@ protected:
    * Creates the entity-header for Digest authentication.
    */
   QString createDigestAuth( bool isForProxy = false );
+
+#ifdef HAVE_LIBGSSAPI
+  /**
+   * Creates the entity-header for Negotiate authentication.
+   */
+  QString createNegotiateAuth();
+
+  /**
+   * create GSS error string
+   */
+  QCString gssError( int major_status, int minor_status );
+#endif
 
   /**
    * Calcualtes the message digest response based on RFC 2617.
