@@ -72,7 +72,7 @@ void KAboutApplication::buildDialog( const KAboutData *aboutData )
 	      QString::null, QString::null );
 
   if (!aboutData->programLogo().isNull())
-    setIcon( aboutData->programLogo() );
+    setProgramLogo( aboutData->programLogo() );
 
   QString appPageText = aboutData->shortDescription() + "\n";
 

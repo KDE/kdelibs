@@ -392,30 +392,37 @@ class KDEUI_EXPORT KAboutDialog : public KDialogBase
 
   /**
    * (Constructor II only)
-   * Define an icon to be shown in the dialog.  Use this to override the
-   * default application icon.  For example, use this function if the 
+   * Define the program logo to be shown in the dialog.  Use this to override the
+   * default program logo.  For example, use this function if the 
    * KAboutDialog is for a panel applet and you want to override the
-   * appletproxy icon with your own icon.
+   * appletproxy logo with your own pixmap.
    *
-   * @param fileName Path to file containing icon data in a format that 
+   * @param fileName Path to file containing logo data in a format that 
    *        can be loaded by QPixmap.
    *
    * @since 3.3
    */
-  void setIcon( const QString &fileName );
+  void setIcon( const QString &fileName ) KDE_DEPRECATED; // KDE4: remove
 
   /**
-   * (Constructor II only)
-   * Define an icon to be shown in the dialog.  Use this to override the
-   * default application icon.  For example, use this function if the 
-   * KAboutDialog is for a panel applet and you want to override the
-   * appletproxy icon with your own icon.
-   *
-   * @param pixmap The icon pixmap.
+   * Overloaded version of setProgramLogo(const QPixmap& pixmap).
    *
    * @since 3.4
    */
-  void setIcon( const QPixmap &pixmap );
+  void setProgramLogo( const QString &fileName );
+
+  /**
+   * (Constructor II only)
+   * Define the program logo to be shown in the dialog.  Use this to override the
+   * default program logo. For example, use this function if the 
+   * KAboutDialog is for a panel applet and you want to override the
+   * appletproxy logo with your own pixmap.
+   *
+   * @param pixmap The logo pixmap.
+   *
+   * @since 3.4
+   */
+  void setProgramLogo( const QPixmap &pixmap );
 
   /**
    * (Constructor II only)

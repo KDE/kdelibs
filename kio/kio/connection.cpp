@@ -22,6 +22,7 @@
 
 #include <config.h>
 
+#include <kde_file.h>
 #include <ksock.h>
 #include <qtimer.h>
 
@@ -127,7 +128,7 @@ void Connection::init(KSocket *sock)
     delete socket;
     socket = sock;
     fd_in = socket->socket();
-    f_out = fdopen( socket->socket(), "wb" );
+    f_out = KDE_fdopen( socket->socket(), "wb" );
 #endif
     if (receiver && ( fd_in != -1 )) {
 	notifier = new QSocketNotifier(fd_in, QSocketNotifier::Read);
@@ -144,7 +145,7 @@ void Connection::init(int _fd_in, int fd_out)
     delete notifier;
     notifier = 0;
     fd_in = _fd_in;
-    f_out = fdopen( fd_out, "wb" );
+    f_out = KDE_fdopen( fd_out, "wb" );
     if (receiver && ( fd_in != -1 )) {
 	notifier = new QSocketNotifier(fd_in, QSocketNotifier::Read);
 	if ( m_suspended ) {

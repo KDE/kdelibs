@@ -53,6 +53,7 @@
 #include "kinstance.h"
 #include "ktempfile.h"
 #include "kstandarddirs.h"
+#include "kde_file.h"
 
 
 /* antlarr: KDE 4: make the parameters const QString & */
@@ -157,7 +158,7 @@ KTempFile::fstream()
    if (mFd < 0) return 0;
 
    // Create a stream
-   mStream = fdopen(mFd, "r+");
+   mStream = KDE_fdopen(mFd, "r+");
    if (!mStream) {
      qWarning("KTempFile: Error trying to open %s: %s", mTmpName.latin1(), strerror(errno));
      mError = errno;

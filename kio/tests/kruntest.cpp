@@ -25,6 +25,7 @@
 #include <kdebug.h>
 #include <kshell.h>
 #include <kservice.h>
+#include <kde_file.h>
 
 #include <qpushbutton.h>
 #include <qlayout.h>
@@ -165,7 +166,7 @@ int main(int argc, char **argv)
           int fd = creat("kruntest.desktop", 0666);
 	  FILE *f;
           if (fd < 0) abort();
-	  f = fdopen(fd, "w");
+	  f = KDE_fdopen(fd, "w");
           fprintf(f, "[Desktop Entry]\n"
 		"Type=Application\n"
 		"Name=just_a_test\n"

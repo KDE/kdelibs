@@ -641,7 +641,7 @@ void KAboutContainerBase::setImage( const QString &fileName )
   mImageFrame->layout()->activate();
 }
 
-void KAboutContainerBase::setIcon( const QString &fileName )
+void KAboutContainerBase::setProgramLogo( const QString &fileName )
 {
   if( fileName.isNull() )
   {
@@ -649,14 +649,14 @@ void KAboutContainerBase::setIcon( const QString &fileName )
   }
 
   QPixmap logo( fileName );
-  setIcon( logo );
+  setProgramLogo( logo );
 }
 
-void KAboutContainerBase::setIcon( const QPixmap &pixmap )
+void KAboutContainerBase::setProgramLogo( const QPixmap &pixmap )
 {
   if( mIconLabel == 0 )
   {
-    kdDebug(291) << "setIcon: " << "Invalid layout" << endl;
+    kdDebug(291) << "setProgramLogo: " << "Invalid layout" << endl;
     return;
   }
   if( !pixmap.isNull() )
@@ -1702,16 +1702,23 @@ void KAboutDialog::setImage( const QString &fileName )
   mContainerBase->setImage( fileName );
 }
 
+// KDE4: remove
 void KAboutDialog::setIcon( const QString &fileName )
 {
   if( mContainerBase == 0 ) { return; }
-  mContainerBase->setIcon( fileName );
+  mContainerBase->setProgramLogo( fileName );
 }
 
-void KAboutDialog::setIcon( const QPixmap &pixmap )
+void KAboutDialog::setProgramLogo( const QString &fileName )
 {
   if( mContainerBase == 0 ) { return; }
-  mContainerBase->setIcon( pixmap );
+  mContainerBase->setProgramLogo( fileName );
+}
+
+void KAboutDialog::setProgramLogo( const QPixmap &pixmap )
+{
+  if( mContainerBase == 0 ) { return; }
+  mContainerBase->setProgramLogo( pixmap );
 }
 
 void KAboutDialog::setImageBackgroundColor( const QColor &color )

@@ -53,6 +53,7 @@
 #include <kapplication.h>
 
 #include <kprotocolmanager.h>
+#include <kde_file.h>
 
 #include "kio/tcpslavebase.h"
 
@@ -388,7 +389,7 @@ bool TCPSlaveBase::connectToHost( const QString &host,
     // Since we want to use stdio on the socket,
     // we must fdopen it to get a file pointer,
     // if it fails, close everything up
-    if ((fp = fdopen(m_iSock, "w+")) == 0) {
+    if ((fp = KDE_fdopen(m_iSock, "w+")) == 0) {
         closeDescriptor();
         return false;
     }
