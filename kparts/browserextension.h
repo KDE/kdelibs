@@ -67,6 +67,9 @@ struct URLArgs
   URLArgs( bool reload, int xOffset, int yOffset, const QString &serviceType = QString::null );
   virtual ~URLArgs();
 
+  QStringList docState() const;
+  void setDocState(const QStringList &);  
+
   bool reload;
   int xOffset;
   int yOffset;

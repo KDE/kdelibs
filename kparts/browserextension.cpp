@@ -28,6 +28,7 @@ namespace KParts
 
 struct URLArgsPrivate
 {
+   QStringList docState;
 };
 
 };
@@ -50,15 +51,11 @@ URLArgs::URLArgs( const URLArgs &args )
   frameName = args.frameName;
   d = 0;
 
-  //copy contents of args.d here
-  /*
-    if ( args.d )
-    {
-      d = new URLArgsPrivate;
-      d->foo = args.foo;
-      etc.
-    }
-   */
+  if ( args.d )
+  {
+     d = new URLArgsPrivate;
+     d->docState  = args.d->docState;
+  }
 }
 
 URLArgs::URLArgs( bool _reload, int _xOffset, int _yOffset, const QString &_serviceType )
@@ -74,6 +71,20 @@ URLArgs::~URLArgs()
 {
   if ( d )
     delete d;
+}
+
+void URLArgs::setDocState(const QStringList &state)
+{
+  if (!d)
+     d = new URLArgsPrivate;
+  d->docState = state;
+}
+
+QStringList URLArgs::docState() const
+{
+  if (d)
+     return d->docState;
+  return QStringList();
 }
 
 namespace KParts
