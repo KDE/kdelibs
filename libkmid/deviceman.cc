@@ -49,7 +49,7 @@
 #ifdef HAVE_LIBASOUND
 #define HAVE_ALSA_SUPPORT
 #include <linux/asequencer.h>
-#elsif defined(HAVE_LIBASOUND2)
+#elif defined(HAVE_LIBASOUND2)
 #define HAVE_ALSA_SUPPORT
 #include <linux/asequencer.h>
 #endif
