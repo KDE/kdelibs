@@ -218,6 +218,7 @@ namespace KJS {
     void popScope();
     List *copyOfChain();
     KJSO variableObject() const { return variable; }
+    void setVariableObject( const KJSO &obj ) { variable = obj; }
     Imp* thisValue() const { return thisVal.imp(); }
     void setThisValue(Imp *t) { thisVal = t; }
     LabelStack *seenLabels() { return &ls; }
@@ -271,7 +272,7 @@ namespace KJS {
     void mark();
     static KJScriptImp *current() { return curr; }
     static void setException(Imp *e);
-    static void setException(const char *msg);      
+    static void setException(const char *msg);
     static bool hadException();
     static KJSO exception();
     static void clearException();
@@ -322,7 +323,7 @@ namespace KJS {
     assert(curr);
     return curr->exMsg;
   }
-  
+
   /**
    * @short Struct used to return the property names of an object
    */

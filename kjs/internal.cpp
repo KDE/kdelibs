@@ -582,9 +582,12 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV,
   Context *context = Context::current();
   clearException();
 
+  KJSO oldVar;
   if (thisV) {
     context->setThisValue(thisV);
     context->pushScope(thisV);
+    oldVar = context->variableObject();
+    context->setVariableObject(thisV);
   }
 
   recursion++;
@@ -617,8 +620,10 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV,
     }
   }
 
-  if (thisV)
+  if (thisV) {
     context->popScope();
+    context->setVariableObject(oldVar);
+  }
 
   if (progNode)
     progNode->deleteStatements();

@@ -95,8 +95,7 @@ KJSProxy *kjs_html_init(KHTMLPart *khtmlpart)
     kjs_html_debugger->setMode(KJS::Debugger::Step);
 #endif
 
-    KJS::KJSO thisNode = n.isNull() ?
-			 KJS::Global::current().prototype() : getDOMNode(n);
+    KJS::KJSO thisNode = n.isNull() ? KJSO() : getDOMNode(n);
 
     KJS::Global::current().put("[[ScriptURL]]",String(khtmlpart->url().url()),DontEnum | DontDelete);
     bool ret = script->evaluate(thisNode, c, len);

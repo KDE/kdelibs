@@ -116,17 +116,41 @@ UString Debugger::varInfo(const UString &ident)
 {
   if (!eng)
     return UString();
-  const List *chain = Context::current()->pScopeChain();
-  ListIterator scope = chain->begin();
-  while (scope != chain->end()) {
-    if (scope->hasProperty(ident)) {
-      KJSO val = scope->get(ident);
-      return UString(val.imp()->typeInfo()->name) + ":" +
-	val.toString().value();
-    }
-    scope++;
+
+  int dot = ident.find('.');
+  if (dot < 0)
+      dot = ident.size();
+  UString sub = ident.substr(0, dot);
+  KJSO obj;
+  // resolve base
+  if (sub == "this") {
+      obj = Context::current()->thisValue();
+  } else {
+      const List *chain = Context::current()->pScopeChain();
+      ListIterator scope = chain->begin();
+      while (scope != chain->end()) {
+	  if (scope->hasProperty(ident)) {
+	      obj = scope->get(ident);
+	      break;
+	  }
+	  scope++;
+      }
+      if (scope == chain->end())
+	return UString();
   }
-  return UString();
+  // look up each part of a.b.c.
+  while (dot < ident.size()) {
+    int olddot = dot;
+    dot = ident.find('.', olddot+1);
+    if (dot < 0)
+      dot = ident.size();
+    sub = ident.substr(olddot+1, dot-olddot-1);
+    obj = obj.get(sub);
+    if (!obj.isDefined())
+      break;
+  }
+
+  return UString(obj.imp()->typeInfo()->name) + ":" + obj.toString().value();
 }
 
 bool Debugger::setVar(const UString &ident, const KJSO &value)

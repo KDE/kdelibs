@@ -1334,8 +1334,7 @@ void FuncDeclNode::processFuncDecl()
 
   Function f(fimp);
 
-  /* TODO: decide between global and activation object */
-  Global::current().put(ident, f);
+  Context::current()->variableObject().put(ident, f);
 }
 
 // ECMA 13
