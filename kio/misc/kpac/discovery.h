@@ -1,9 +1,10 @@
-/* This file is part of the KDE Libraries
-   Copyright (c) 2001 Malte Starostik <malte@kde.org>
+/* 
+   Copyright (c) 2003 Malte Starostik <malte@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
-   License version 2 as published by the Free Software Foundation.
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,35 +19,35 @@
 
 // $Id$
 
-#ifndef _KPAC_DOWNLOADER_H_
-#define _KPAC_DOWNLOADER_H_
+#ifndef KPAC_DISCOVERY_H
+#define KPAC_DISCOVERY_H
 
 #include <qobject.h>
 
-class KURL;
-namespace KIO
+#include "downloader.h"
+
+class KProcIO;
+
+namespace KPAC
 {
-    class Job;
-};
+    class Discovery : public Downloader
+    {
+        Q_OBJECT
+    public:
+        Discovery( QObject* );
 
-class KPACDownloader : public QObject
-{
-    Q_OBJECT
-public:
-    KPACDownloader();
-    bool download(const KURL &url);
-    const QCString &data() const { return m_data; }
+    protected slots:
+        virtual void failed();
 
-private slots:
-    void slotData(KIO::Job *, const QByteArray &);
-    void slotResult(KIO::Job *);
+    private slots:
+        void helperOutput();
 
-private:
-    bool m_working;
-    bool m_success;
-    QCString m_data;
-};
+    private:
+        KProcIO* m_helper;
+        QString m_hostname;
+    };
+}
 
-#endif
+#endif // KPAC_DISCOVERY_H
 
 // vim: ts=4 sw=4 et

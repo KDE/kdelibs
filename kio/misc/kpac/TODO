@@ -1,2 +1,1 @@
 * Make use of badProxy() in KProtocolManager to enable fallbacks
-* Maybe share the downloaded script between concurrently running apps?

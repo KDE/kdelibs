@@ -1,22 +1,27 @@
 
-INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/libltdl $(all_includes)
-
-kde_module_LTLIBRARIES = libkpac.la
+kde_module_LTLIBRARIES = kded_proxyscout.la
 bin_PROGRAMS = kpac_dhcp_helper
 
-libkpac_la_SOURCES = kproxybindings.cpp kpac_impl.cpp kpac_downloader.cpp \
-    kpac_discovery.cpp
-
-libkpac_la_LIBADD = $(LIB_KIO) $(top_builddir)/kjs/libkjs.la
-libkpac_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
-
-noinst_HEADERS = kproxybindings.h kpac_impl.h kpac_downloader.h \
-    kpac_discovery.h dhcp.h
-
+INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/libltdl -I$(top_srcdir)/kded \
+           $(all_includes)
 METASOURCES = AUTO
+KDE_CXXFLAGS = $(USE_EXCEPTIONS)
+
+kded_proxyscout_la_SOURCES = proxyscout.skel proxyscout.cpp script.cpp \
+                             downloader.cpp discovery.cpp
+kded_proxyscout_la_LDFLAGS = $(all_libraries) -module -avoid_version
+kded_proxyscout_la_LIBADD = $(LIB_KIO) $(top_builddir)/kjs/libkjs.la
 
 kpac_dhcp_helper_SOURCES = kpac_dhcp_helper.c
 kpac_dhcp_helper_LDADD = $(LIBSOCKET)
+
+noinst_HEADERS = proxyscout.h script.h downloader.h discovery.h
+
+servicesdir = $(kde_servicesdir)/kded
+services_DATA = proxyscout.desktop
+
+datadir = $(kde_datadir)/proxyscout
+data_DATA = eventsrc
 
 install-exec-local:
 	@(chown root $(bindir)/kpac_dhcp_helper && chmod 4755 $(bindir)/kpac_dhcp_helper) || echo "Please make kpac_dhcp_helper setuid root"

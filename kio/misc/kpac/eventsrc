@@ -1,0 +1,18 @@
+[!Global!]
+IconName=proxy
+Comment=Automatic Proxy Configuration
+
+[script-error]
+Name=Invalid proxy script
+Comment=The downloaded proxy configuration script is invalid
+default_presentation=16
+
+[download-error]
+Name=Script download error
+Comment=The proxy configuration script could not be downloaded
+default_presentation=16
+
+[evaluation-error]
+Name=Script evaluation error
+Comment=There was an error executing the proxy configuration script
+default_presentation=0

@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=Service
+Name=Proxy Scout
+Comment=Proxy Auto Discovery Module
+ServiceTypes=KDEDModule
+X-KDE-ModuleType=Library
+X-KDE-Library=proxyscout
+X-KDE-FactoryName=proxyscout
+X-KDE-Kded-autoload=false
+X-KDE-Kded-load-on-demand=true
