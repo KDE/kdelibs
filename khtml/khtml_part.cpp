@@ -1780,7 +1780,7 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   } else {
     d->m_doc = DOMImplementationImpl::instance()->createHTMLDocument( d->m_view );
     // HTML or XHTML? (#86446)
-    static_cast<HTMLDocumentImpl *>(d->m_doc)->setHTMLRequested( args.serviceType != "application/xhtml+xml" );
+    static_cast<HTMLDocumentImpl *>(d->m_doc)->setHTMLRequested( !servedAsXHTML );
   }
 #ifndef KHTML_NO_CARET
 //  d->m_view->initCaret();
