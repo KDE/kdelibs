@@ -164,6 +164,11 @@ QPopupMenu *KTextEdit::createPopupMenu( const QPoint &pos )
     return menu;
 }
 
+QPopupMenu *KTextEdit::createPopupMenu()
+{
+    return QTextEdit::createPopupMenu();
+}
+
 void KTextEdit::contentsWheelEvent( QWheelEvent *e )
 {
     if ( KGlobalSettings::wheelMouseZooms() )

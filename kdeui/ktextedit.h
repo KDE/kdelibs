@@ -117,7 +117,9 @@ protected:
      * when appropriate.
      */ 
     virtual QPopupMenu *createPopupMenu( const QPoint &pos );
-    
+    // FIXME: use using once we dump gcc 2.x support
+    virtual QPopupMenu *createPopupMenu();
+
 protected:
     virtual void virtual_hook( int id, void* data );
 
