@@ -84,8 +84,7 @@ VCard::List VCardParser::parseVCards( const QString& text )
         params = vCardLine.parameterList();
         if ( params.contains( "encoding" ) ) { // have to decode the data
           QByteArray input, output;
-          input.setRawData( vCardLine.value().asByteArray(),
-                            vCardLine.value().asByteArray().count() );
+          input = value.local8Bit();
           if ( vCardLine.parameter( "encoding" ).lower() == "b" )
             KCodecs::base64Decode( input, output );
           else if ( vCardLine.parameter( "encoding" ).lower() == "quoted-printable" )
@@ -173,12 +172,11 @@ QString VCardParser::createVCards( const VCard::List& list )
 
           if ( hasEncoding ) { // have to encode the data
             QByteArray input, output;
-            input.setRawData( (*lineIt).value().asByteArray(),
-                              (*lineIt).value().asByteArray().count() );
+            input = (*lineIt).value().toByteArray();
             if ( encodingType == "b" )
-              KCodecs::base64Decode( input, output );
+              KCodecs::base64Encode( input, output );
             else if ( encodingType == "quoted-printable" )
-              KCodecs::quotedPrintableDecode( input, output );
+              KCodecs::quotedPrintableEncode( input, output );
             textLine.append( ":" + QString( output ) );
           } else
             textLine.append( ":" + (*lineIt).value().asString().replace( "\n", "\\n" ) );

@@ -567,6 +567,7 @@ VCardLine VCardTool::createPicture( const QString &identifier, const Picture &pi
     if ( !pic.data().isNull() ) {
       QByteArray input;
       QDataStream s( input, IO_WriteOnly );
+      s.setVersion( 4 );
       s << pic.data();
       line.setValue( input );
       line.addParameter( "encoding", "b" );
