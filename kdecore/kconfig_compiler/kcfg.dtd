@@ -31,7 +31,7 @@
 
 <!ELEMENT entry (label?,whatsthis?,code?,values?,default?,parameter?)>
   <!ATTLIST entry 
-                  name CDATA #REQUIRED
+                  name CDATA #IMPLIED
 		  type (String|StringList|Font|Rect|Size|Color|
 		        Point|Int|UInt|Bool|Double|DateTime|
 			LongLong|ULongLong|IntList|Enum|Path) #REQUIRED
