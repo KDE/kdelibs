@@ -4,22 +4,25 @@
 #
 # -Taj (Apr 1999)
 
-kde_MODULES = dcop kdecore kdeui kimgio kio kfile khtml kjs kformula kspell kab kparts
+kde_MODULES = qk dcop kdecore kdeui kimgio kio kfile khtml kjs kformula kspell kab kparts mediatool
+
+qk_FILES = *.h
+qk_LIBS = -lqt
 
 dcop_FILES = *.h
-dcop_LIBS = -lqt
+dcop_LIBS = -lqk -lqt
 
 kdecore_FILES = *.h
-kdecore_LIBS = -lqt
+kdecore_LIBS = -lqk -lqt
 
 kdeui_FILES = *.h
-kdeui_LIBS = -lkdecore -lqt
+kdeui_LIBS = -lkdecore -lqk -lqt
 
 kab_FILES = kabapi.h
 kab_LIBS = -lkdecore -lkdeui -lqt
 
 kfile_FILES= *.h
-kfile_LIBS= -lkdecore -lkdeui -lqt
+kfile_LIBS= -lkio -lkdecore -lkdeui -lqt
 
 kspell_FILES = kspell.h
 kspell_LIBS = -lkdecore -lkdeui -lqt
@@ -42,3 +45,6 @@ kformula_LIBS = -lkdecore -lkdeui -lqt
 
 kparts_FILES = *.h
 kparts_LIBS = -lkdeui -lkdecore -lqt
+
+mediatool_FILES = *.h
+mediatool_LIBS = -lqt
