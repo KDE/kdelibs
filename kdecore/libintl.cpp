@@ -299,7 +299,7 @@ k_nl_load_domain (struct loaded_l10nfile *domain_file)
 
   /* We must know about the size of the file.  */
   if (fstat (fd, &st) != 0
-      && st.st_size < (off_t) sizeof (struct mo_file_header))
+      || st.st_size < (off_t) sizeof (struct mo_file_header))
     {
       /* Something went wrong.  */
       close (fd);
