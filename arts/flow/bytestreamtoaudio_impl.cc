@@ -1,6 +1,8 @@
 #include "artsflow.h"
 #include "stdsynthmodule.h"
 
+using namespace std;
+
 #define compose_16le(first,second) \
 	(((((second)+128)&0xff) << 8)+(first))
 

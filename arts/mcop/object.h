@@ -58,7 +58,7 @@ protected:
 	 * internal management for streams
 	 */
 	ScheduleNode *_scheduleNode;
-	list<ObjectStreamInfo *> _streamList;
+	std::list<ObjectStreamInfo *> _streamList;
 
 	virtual Object_skel *_skel();
 	virtual Object_stub *_stub();

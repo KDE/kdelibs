@@ -49,7 +49,7 @@ public:
 
 	// other casts
 	
-	virtual void *cast(const string& target);
+	virtual void *cast(const std::string& target);
 
 	// internal interface against Object_skel
 	

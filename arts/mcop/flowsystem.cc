@@ -22,7 +22,7 @@ RemoteScheduleNode *ScheduleNode::remoteScheduleNode()
 	return 0;
 }
 
-void *ScheduleNode::cast(const string &target)
+void *ScheduleNode::cast(const std::string &target)
 {
 	return 0;
 }

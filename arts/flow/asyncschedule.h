@@ -32,7 +32,7 @@
 class ASyncNetSend : public FlowSystemSender_skel
 {
 protected:
-	queue<GenericDataPacket *> pqueue;
+	std::queue<GenericDataPacket *> pqueue;
 	FlowSystemReceiver_var receiver;
 	long receiveHandlerID;
 

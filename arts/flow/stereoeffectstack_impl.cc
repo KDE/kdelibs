@@ -1,6 +1,9 @@
 #include "artsflow.h"
 #include "flowsystem.h"
 #include "stdsynthmodule.h"
+#include <iostream>
+
+using namespace std;
 
 class StereoEffectStack_impl : public StereoEffectStack_skel,
 							   public StdSynthModule

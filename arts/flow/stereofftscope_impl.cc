@@ -2,6 +2,9 @@
 #include "fft.h"
 #include "stdsynthmodule.h"
 #include <math.h>
+#include <iostream>
+
+using namespace std;
 
 class StereoFFTScope_impl : public StereoFFTScope_skel, public StdSynthModule {
 protected:

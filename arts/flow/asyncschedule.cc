@@ -24,6 +24,9 @@
     */
 
 #include "asyncschedule.h"
+#include <iostream>
+
+using namespace std;
 
 #undef DEBUG_ASYNC_TRANSFER
 

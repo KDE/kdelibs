@@ -29,6 +29,9 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <iostream>
+
+using namespace std;
 
 class Sender :	public ByteSoundProducer_skel,
 				public StdSynthModule,

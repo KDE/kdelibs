@@ -64,7 +64,7 @@ protected:
 
 	// functionality to remove all connections automatically as soon as
 	// the module gets destroyed
-	list<Port *> autoDisconnect;
+	std::list<Port *> autoDisconnect;
 
 	/**
 	 * call these from your (dis)connect implementation as soon as a the
@@ -230,7 +230,7 @@ public:
 	unsigned long calc(unsigned long cycles);
 
 	Object_skel *object();
-	void *cast(const string &target);
+	void *cast(const std::string &target);
 };
 
 class StdFlowSystem :public FlowSystem_impl
@@ -248,7 +248,7 @@ public:
 						Object* destObject, const std::string& destPort);
 	AttributeType queryFlags(Object* node, const std::string& port);
 
-	FlowSystemReceiver *createReceiver(Object *object, const string &port,
+	FlowSystemReceiver *createReceiver(Object *object, const std::string &port,
 										FlowSystemSender *sender);
 };
 

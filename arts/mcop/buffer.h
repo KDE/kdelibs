@@ -68,7 +68,7 @@ public:
 
 	bool readBool();
 	mcopbyte readByte();
-	void readByteSeq(vector<mcopbyte>& result);
+	void readByteSeq(std::vector<mcopbyte>& result);
 	long readLong();
 	void readLongSeq(std::vector<long>& result);
 	float readFloat();

@@ -141,6 +141,7 @@ Object_skel *Object::_skel()
 Object::ObjectLocation Object::_location()
 {
 	assert(false);
+	return objectIsLocal;
 }
 
 Object_stub *Object::_stub()

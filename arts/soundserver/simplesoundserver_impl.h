@@ -46,7 +46,7 @@ public:
 	long play(const std::string& s);
 	PlayObject *createPlayObject(const std::string& filename);
 	StereoEffectStack *outstack();
-	Object *createObject(const string& name);
+	Object *createObject(const std::string& name);
 
 	void notifyTime();
 };
