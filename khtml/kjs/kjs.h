@@ -73,6 +73,17 @@ public:
    * @param code is an Unicode string containing the code to be executed.
    */
   bool evaluate(const KJS::UString &code);
+  /**
+   * Clear the interpreter's memory. Otherwise, function declarations
+   * and global variables will be remembered after each invokation of
+   * @ref KJScript::evaluate.
+   */
+  void clear();
+private:
+  /**
+   * Initialize global object and context. For internal use only.
+   */
+  void init();
 public:
   static KJScript *current() { return curr; }
   void setCurrent(KJScript *c) { curr = c; }
@@ -89,6 +100,7 @@ public:
   static KJS::KJSLexer *lexer() { return current()->lex; }
   static void setLexer(KJS::KJSLexer *l) { current()->lex = l; }
 private:
+  bool initialized;
   static KJScript *curr;
   KJS::KJSLexer *lex;
   KJS::KJSInternal *internal;

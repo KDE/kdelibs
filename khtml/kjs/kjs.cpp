@@ -43,25 +43,21 @@ class KJScriptLock {
 };
 
 KJScript::KJScript()
+  : initialized(false)
 {
   KJScriptLock lock(this);
-
   setLexer(new KJSLexer());
-  setGlobal(new KJSGlobal());
-  setContext(new KJSContext());
+  init();
 }
 
 KJScript::~KJScript()
 {
+  clear();
+
   KJScriptLock lock(this);
 
   delete lexer();
   setLexer(0L);
-
-  KJS::Node::deleteAllNodes();
-
-  delete context();
-  global()->deref();
 
 #ifdef KJS_DEBUG_MEM
   if (KJSO::count != 0) {
@@ -88,6 +84,8 @@ bool KJScript::evaluate(const UString &code)
 
 bool KJScript::evaluate(const KJS::UChar *code, unsigned int length)
 {
+  init();
+  
   // maintain lock on global "current" pointer while running
   KJScriptLock lock(this);
 
@@ -112,4 +110,28 @@ bool KJScript::evaluate(const KJS::UChar *code, unsigned int length)
     KJS::Node::progNode()->deleteStatements();
 
   return true;
+}
+
+void KJScript::clear()
+{
+  if (initialized) {
+    KJScriptLock lock(this);
+
+    KJS::Node::deleteAllNodes();
+
+    delete context();
+    global()->deref();
+
+    initialized = false;
+  }
+}
+
+void KJScript::init()
+{
+  if (!initialized) {
+    KJScriptLock lock(this);
+    setGlobal(new KJSGlobal());
+    setContext(new KJSContext());
+    initialized = true;
+  }
 }

@@ -22,8 +22,6 @@
 
 #include "kjs.h"
 
-extern int kjsyyparse();
-
 int main(int argc, char **argv)
 {
   const int BufferSize = 100000;
