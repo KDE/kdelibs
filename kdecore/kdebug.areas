@@ -129,11 +129,13 @@
 5006        kmail
 5007        kpf
 5008        ksirc
+5009        filesharing
 5050        libkmime
 5051        libkmime (Codecs)
 5052        libkmime (Plugin Loader)
 5100        libkdenetwork
 5150        libkleopatra
+
 
 # kdepim
 5200        kitchensync
