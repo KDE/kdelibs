@@ -41,6 +41,15 @@
 #include <ctype.h>
 #undef NONE
 
+#ifdef Q_WS_X11
+#ifdef KeyPress
+// defined by X11 headers
+const int XKeyPress = KeyPress;
+const int XKeyRelease = KeyRelease;
+#undef KeyPress
+#endif
+#endif
+
 //-------------------------------------------------------------------
 static void calcKeySym( KKeySequence& key );
 static int calcKeyQt( int keySymX, int keyModX );
@@ -284,7 +293,7 @@ static void calcKeySym( KKeySequence& key )
 		XKeyPressedEvent event;
 		char rgc[3];
 
-		event.type = KeyPress;
+		event.type = XKeyPress;
 		event.display = qt_xdisplay();
 		event.state = key.m_keyMod;
 		if( event.state & KKeyX11::keyModXModeSwitch() )

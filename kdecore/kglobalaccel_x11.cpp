@@ -15,6 +15,15 @@
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
 
+#ifdef Q_WS_X11
+#ifdef KeyPress
+// defined by X11 headers
+const int XKeyPress = KeyPress;
+const int XKeyRelease = KeyRelease;
+#undef KeyPress
+#endif
+#endif
+
 static bool g_bGrabFailed;
 
 extern "C" {
@@ -167,7 +176,7 @@ bool KGlobalAccelPrivate::x11Event( XEvent* pEvent )
 	 case MappingNotify:
 		x11MappingNotify();
 		return true;
-	 case KeyPress:
+	 case XKeyPress:
 		if( x11KeyPress( pEvent ) )
 			return true;
 	 default:

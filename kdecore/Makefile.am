@@ -52,7 +52,7 @@ libkdefakes_la_LDFLAGS = -version-info 4:0
 noinst_HEADERS = kckey.h kregpriv.h kcompletion_private.h netsupp.h \
 	ksycocafactory.h ksycocadict.h kextsocklookup.h
 
-libkdecore_la_SOURCES = libintl.cpp kdebug.cpp netwm.cpp  \
+libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kdebug.cpp netwm.cpp  \
 	kconfigbase.cpp kconfig.cpp  ksimpleconfig.cpp kconfigbackend.cpp  \
 	kdesktopfile.cpp kstandarddirs.cpp ksock.cpp\
 	kprocess.cpp kprocctrl.cpp klocale.cpp krfcdate.cpp\
@@ -65,7 +65,7 @@ libkdecore_la_SOURCES = libintl.cpp kdebug.cpp netwm.cpp  \
 	kglobal.cpp kglobalsettings.cpp dmalloc.cpp  \
 	kallocator.cpp kmimesourcefactory.cpp \
 	kinstance.cpp kpalette.cpp kipc.cpp klibloader.cpp ktempfile.cpp \
-	kapplication.cpp kuniqueapplication.cpp \
+	kuniqueapplication.cpp \
 	ksavefile.cpp krandomsequence.cpp kstringhandler.cpp kcompletion.cpp \
 	kcmdlineargs.cpp kaboutdata.cpp kcompletionbase.cpp knotifyclient.cpp \
 	kaudioplayer.cpp kdestyle.cpp kdcoppropertyproxy.cpp \
