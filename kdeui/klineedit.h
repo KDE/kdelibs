@@ -90,7 +90,7 @@
  * connect( edit, SIGNAL( returnPressed( const QString& ) ), comp, SLOT( addItem( const QString& ) ) );
  * </pre>
  *
- * To enable one feature only or any of them as needed:
+ * To enable a single feature at a time :
  *
  * <pre>
  * KLineEdit *edit = new KLineEdit( this, "mywidget" );
@@ -100,6 +100,12 @@
  * connect( edit, SIGNAL( returnPressed( const QString& ) ), edit->CompletionObject(), SLOT( addItem( const QString& ) ) );
  * </pre>
  *
+ * And do not forget to enable the popup menu :
+ *
+ * <pre>
+ * edit->setEnableContextMenu( true );
+ * edit->
+ * </pre>
  * @short An enhanced single line input widget.
  * @author Dawit Alemayehu <adawit@earthlink.net>
  */
@@ -118,7 +124,7 @@ public:
     * @param @p name the name of this widget
     * @param @p hsig determines if this widget automatically handles both signals internally.
     */
-    KLineEdit( const QString &string, QWidget *parent, const char *name = 0, bool hsig = false );
+    KLineEdit( const QString &string, QWidget *parent, const char *name = 0, bool hsig = true );
 
     /**
     * Constructs a KLineEdit object with a parent and a name.
@@ -128,7 +134,7 @@ public:
     * @param @p name the name of this widget
     * @param @p hsig determines if this widget automatically handles both signals internally.
     */
-    KLineEdit ( QWidget *parent=0, const char *name=0, bool hsig = false );
+    KLineEdit ( QWidget *parent=0, const char *name=0, bool hsig = true );
 
     /**
     *  Destructor.
@@ -178,7 +184,7 @@ public:
     *
     * @return true if the completion object is deleted
     */
-    bool deleteCompletion() const { return m_bAutoDelCompObj; }
+    bool deleteCompletionObject() const { return m_bAutoDelCompObj; }
 
     /**
     * Sets the completion object for deletion upon this widget's destruction.
@@ -189,7 +195,7 @@ public:
     *
     * @param @p autoDelete if set to true the completion object is deleted on exit.
     */
-    void setDeleteCompletion( bool autoDelete ) { m_bAutoDelCompObj = autoDelete; }
+    void setDeleteCompletionObject( bool autoDelete ) { m_bAutoDelCompObj = autoDelete; }
 
     /**
     * Returns a pointer to the current completion object.
@@ -408,21 +414,31 @@ public:
     *
     * This method also allows you to enable/disable the context menu. If this
     * method is invoked without an argument, the context menu will be disabled.
+    * By default the mode changer is visible when context menu is enabled.
+    * Use either hideModechanger() or call this function with the second argument set
+    * to "false" if you do not want that item to be inserted.  Please note that the
+    * @p showChanger flag is only used when a context menu is created.  That is it is
+    * only used when you invoke this function for the first time or when you disable
+    * and then subsequently  re-enable the context menu.  To show or hide the mode changer
+    * item under other circumstances use @ref showModeChanger and @ref hideModeChanger.
     *
     * @param @p showMenu if true, shows the context menu.
+    * @param @p showModeChanger if true, shows the mode changer item in popup menu.
     */
-    virtual void setEnableContextMenu( bool showMenu = true );
+    virtual void setEnableContextMenu( bool showMenu = true, bool showChanger = true );
 
     /**
-    * Enables/disables the completion mode changer item in the context menu.
+    * Makes the completion mode changer visible in the context menu.
     *
-    * This function allows you to enable or disable the completion mode changer
-    * as needed without having to disable the popup menu.  If enabled the user
-    * can change the comepltion mode on the fly.
-    *
-    * @param @p showChanger if set to true, the mode changer item is enabled.
+    * This function allows you to show the completion mode changer, thus, enabling
+    * the user to change the comepltion mode on the fly.
     */
-    virtual void setEnableModeChanger( bool showChanger = false );
+    void showModeChanger() { m_bShowModeChanger = true; }
+
+    /**
+    * Hides the completion mode changer in the context menu.
+    */
+    void hideModeChanger() { m_bShowModeChanger = false; }
 
     /**
     * Returns true when the context menu is enabled.
