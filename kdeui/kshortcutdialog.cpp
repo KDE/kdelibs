@@ -178,8 +178,11 @@ bool KShortcutDialog::x11Event( XEvent *pEvent )
 	switch( pEvent->type ) {
 		case XKeyPress:
 		case XKeyRelease:
-			x11EventKeyPress( pEvent );
-			return true;
+			if( m_bKeyboardGrabbed ) {
+				x11EventKeyPress( pEvent );
+				return true;
+			}
+			break;
 		case ButtonPress:
 			m_iKey = 0;
 			break;
