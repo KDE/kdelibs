@@ -185,7 +185,6 @@ fprintf(stderr, "arg[%d] = %s (%p)\n", i, args, args);
      d.argv[argc] = 0;
 
      printf("Opening \"%s\"\n", cmd.data() );
-     printf("user_search_path=%s\n", lt_dlgetsearchpath());
      d.handle = lt_dlopen( cmd.data() );
      if (!d.handle )
      {
