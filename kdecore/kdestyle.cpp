@@ -1473,6 +1473,8 @@ void KDEStyle::kColorBitmaps(QPainter *p, const QColorGroup &g, int x, int y,
 void KDEStyle::drawKickerAppletHandle(QPainter *p, int x, int y, int w, int h,
                                       const QColorGroup &g, QBrush *)
 {
+  KStyle::drawKickerAppletHandle(p, x, y, w, h, g);
+  /*
     if(h > w){
         int y2 = y+h-1;
 
@@ -1499,10 +1501,8 @@ void KDEStyle::drawKickerAppletHandle(QPainter *p, int x, int y, int w, int h,
         p->drawLine(x+2, y+5, x2-2, y+5);
     }
         
-        
+    */    
 }
-
-
                 
 #include "kdestyle.moc"
 
