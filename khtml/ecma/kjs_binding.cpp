@@ -133,16 +133,11 @@ QConstString UString::qconststring() const
 
 DOM::Node KJS::toNode(const KJSO& obj)
 {
-  if (!obj.derivedFrom("Node")) {
-    //    printf("Can't convert %s to Node.\n", obj.imp()->typeInfo()->name);
+  if (!obj.derivedFrom("Node"))
     return DOM::Node();
-  }
 
-  //  printf("Converting %s to Node.\n", obj.imp()->typeInfo()->name);
   const DOMNode *dobj = static_cast<const DOMNode*>(obj.imp());
-  DOM::Node n = dobj->toNode();
-
-  return n;
+  return dobj->toNode();
 }
 
 KJSO KJS::getString(DOM::DOMString s)
@@ -168,3 +163,11 @@ bool KJS::originCheck(const QString url1, const QString url2)
 }
 
 
+DOM::Range KJS::toRange(const KJSO& obj)
+{
+  if (!obj.derivedFrom("Range"))
+    return DOM::Range();
+
+  const DOMRange *dobj = static_cast<const DOMRange*>(obj.imp());
+  return dobj->toRange();
+}

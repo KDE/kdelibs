@@ -60,6 +60,10 @@ namespace KJS {
    *  Get a String object, or Null() if s is null
    */
   KJSO getString(DOM::DOMString s);
+  /**
+   * Convert an object to a Range. Returns a null Node if not possible.
+   */
+  DOM::Range toRange(const KJSO&);
 
   bool originCheck(const QString url1, const QString url2);
 
