@@ -228,7 +228,7 @@ protected:
     virtual void dropped( QDropEvent *e );
     virtual void dragEntered();
     virtual void dragLeft();
-    virtual void init();
+    virtual void init( QIconViewItem *after = 0 );
     void setView( QIconView* v );
     void setItemRect( const QRect &r );
     void setTextRect( const QRect &r );
