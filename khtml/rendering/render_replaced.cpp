@@ -23,8 +23,10 @@
  */
 #include "render_replaced.h"
 #include "render_root.h"
-#include <qscrollview.h>
+
 #include <assert.h>
+#include <qscrollview.h>
+
 #include "misc/helper.h"
 #include "khtmlview.h"
 
@@ -160,22 +162,34 @@ void RenderReplaced::calcMinMaxWidth()
 RenderWidget::RenderWidget(QScrollView *view)
         : RenderReplaced()
 {
-    deleted = false;
     m_widget = 0;
     m_view = view;
+
+    // this is no real reference counting, its just there
+    // to make sure that we're not deleted while we're recursed
+    // in an eventFilter of the widget
+    ref();
 }
 
+void RenderWidget::detach()
+{
+    remove();
+    if ( m_widget ) {
+        m_widget->hide();
+        if ( m_view )
+            m_view->removeChild( m_widget );
+
+        m_widget->removeEventFilter( this );
+        m_widget->setMouseTracking( false );
+    }
+    deref();
+}
 
 RenderWidget::~RenderWidget()
 {
-    assert(!deleted);
-    if (m_widget)
-    {
-       disconnect( m_widget, SIGNAL( destroyed()),
-             this, SLOT( slotWidgetDestructed()));
-       delete m_widget;
-    }
-    deleted = true;
+    assert( refCount() <= 0 );
+
+    delete m_widget;
 }
 
 void RenderWidget::setQWidget(QWidget *widget, bool show)
@@ -218,7 +232,6 @@ void RenderWidget::printObject(QPainter *, int, int, int, int, int _tx, int _ty)
 {
     // ### this does not get called if a form element moves of the screen, so
     // the widget stays in it's old place!
-    assert(!deleted);
     if(!(m_widget && m_view) || !isVisible()) return;
 
     // add offset for relative positioning

@@ -364,7 +364,7 @@ void RenderFlow::layoutBlockChildren()
 
         int chPos = xPos + child->marginLeft();
 
-	
+
         if(style()->direction() == LTR) {
             // html blocks flow around floats
             if (style()->htmlHacks() && child->style()->flowAroundFloats() )
@@ -647,7 +647,7 @@ void RenderFlow::positionNewFloats()
             }
         }
 #endif
-	
+
 //      kdDebug( 6040 ) << "specialObject y= (" << f->startY << "-" << f->endY << ")" << endl;
 
         f = specialObjects->next();
@@ -923,7 +923,7 @@ RenderFlow::clearFloats()
         prev = parent();
 	if(!prev) return;
     }
-    //kdDebug() << "RenderFlow::clearFloats found previous "<< (void *)this << " prev=" << (void *)prev<< endl; 
+    //kdDebug() << "RenderFlow::clearFloats found previous "<< (void *)this << " prev=" << (void *)prev<< endl;
 
     // add overhanging special objects from the previous RenderFlow
     if(!prev->isFlow()) return;
@@ -951,8 +951,8 @@ void RenderFlow::addOverHangingFloats( RenderFlow *flow, int offset, bool child 
     QListIterator<SpecialObject> it(*flow->specialObjects);
     SpecialObject *r;
     for ( ; (r = it.current()); ++it ) {
-	if ( r->type <= SpecialObject::FloatRight && 
-	     ( ( !child && r->endY > offset ) || 
+	if ( r->type <= SpecialObject::FloatRight &&
+	     ( ( !child && r->endY > offset ) ||
 	       ( child && flow->yPos() + r->endY > height() ) ) ) {
 
 	    SpecialObject* f = 0;
@@ -1348,7 +1348,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
 
                 // make sure boxSource doesn't muck other objects up when deleted
                 removeChildNode(boxSource);
-                delete boxSource;
+                boxSource->detach();
                 // ### what happens with boxSource's bg image if it had one?
             }
         }

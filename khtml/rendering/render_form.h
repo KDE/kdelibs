@@ -61,7 +61,7 @@ class DocLoader;
 
 // -------------------------------------------------------------------------
 
-class RenderFormElement : public khtml::RenderWidget, public DOM::DomShared
+class RenderFormElement : public khtml::RenderWidget
 {
     Q_OBJECT
 public:
@@ -78,7 +78,6 @@ public:
     DOM::HTMLGenericFormElementImpl *element() { return m_element; }
 
     virtual bool eventFilter(QObject*, QEvent*);
-    virtual void remove();
 
 public slots:
     virtual void slotClicked();
@@ -364,6 +363,7 @@ class RenderTextArea : public RenderFormElement
     Q_OBJECT
 public:
     RenderTextArea(QScrollView *view, DOM::HTMLTextAreaElementImpl *element);
+    ~RenderTextArea();
 
     virtual const char *renderName() const { return "RenderTextArea"; }
 

@@ -45,7 +45,7 @@ RenderContainer::~RenderContainer()
 	n->removeFromSpecialObjects();
         n->setParent(0);
         next = n->nextSibling();
-	n->remove();
+        n->detach();
     }
     m_first = 0;
     m_last = 0;

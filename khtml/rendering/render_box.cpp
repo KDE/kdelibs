@@ -622,7 +622,8 @@ void RenderBox::calcHeight()
     {
         Length h;
         if ( isReplaced() )
-            h = Length( static_cast<RenderReplaced*>( this )->calcReplacedHeight(), Fixed );
+            h = Length( static_cast<RenderReplaced*>( this )->
+                        calcReplacedHeight(), Fixed );
         else
             h = style()->height();
 

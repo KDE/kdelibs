@@ -100,6 +100,8 @@ void RenderFormElement::calcMinMaxWidth()
 bool RenderFormElement::eventFilter(QObject* o, QEvent* e)
 {
     ref();
+    m_element->ref();
+
     switch(e->type()) {
     case QEvent::FocusOut:
         m_element->dispatchHTMLEvent(EventImpl::BLUR_EVENT,false,false);
@@ -124,6 +126,7 @@ bool RenderFormElement::eventFilter(QObject* o, QEvent* e)
         absolutePosition(absX,absY);
         QMouseEvent* _e = static_cast<QMouseEvent*>(e);
         QMouseEvent e2(e->type(),QPoint(absX,absY)+_e->pos(),_e->button(),_e->state());
+
         m_element->dispatchMouseEvent(&e2,EventImpl::MOUSEUP_EVENT,m_clickCount);
 
         if((m_pressPos - e2.pos()).manhattanLength() <= QApplication::startDragDistance()) {
@@ -139,10 +142,9 @@ bool RenderFormElement::eventFilter(QObject* o, QEvent* e)
             }
         }
 	// special case for HTML click & ondblclick handler
-	m_element->dispatchMouseEvent(&e2,m_isDoubleClick ? EventImpl::KHTML_DBLCLICK_EVENT : EventImpl::KHTML_CLICK_EVENT,m_clickCount);
-
-	if (!isRenderButton())
-	    m_isDoubleClick = false;
+	m_element->dispatchMouseEvent(&e2, m_isDoubleClick ? EventImpl::KHTML_DBLCLICK_EVENT : EventImpl::KHTML_CLICK_EVENT, m_clickCount);
+        if ( !isRenderButton() )
+            m_isDoubleClick = false;
     }
     break;
     case QEvent::MouseButtonDblClick:
@@ -163,12 +165,12 @@ bool RenderFormElement::eventFilter(QObject* o, QEvent* e)
     break;
     default: break;
     };
-    bool deleted = (refCount() == 1);
+
+    m_element->deref();
+    bool deleted = hasOneRef();
     deref();
-    if (deleted)
-	return true;
-    else
-	return khtml::RenderWidget::eventFilter(o, e);
+
+    return deleted ? true : RenderWidget::eventFilter( o, e );
 }
 
 void RenderFormElement::slotClicked()
@@ -193,12 +195,6 @@ void RenderFormElement::handleMousePressed(QMouseEvent *e)
         m_clickCount++;
 
     m_element->dispatchMouseEvent(&e2,EventImpl::MOUSEDOWN_EVENT,m_clickCount);
-}
-
-void RenderFormElement::remove()
-{
-    prepareRemove();
-    deref();
 }
 
 // -------------------------------------------------------------------------
@@ -296,8 +292,8 @@ RenderSubmitButton::RenderSubmitButton(QScrollView *view, HTMLInputElementImpl *
 {
     QPushButton* p = new QPushButton(view->viewport());
     setQWidget(p, false);
-    p->setMouseTracking(true);
-    p->installEventFilter(this);
+     p->setMouseTracking(true);
+     p->installEventFilter(this);
     connect(p, SIGNAL(clicked()), this, SLOT(slotClicked()));
 }
 
@@ -661,7 +657,7 @@ RenderSelect::RenderSelect(QScrollView *view, HTMLSelectElementImpl *element)
 {
     m_ignoreSelectEvents = false;
     m_multiple = element->multiple();
-    m_size = QMAX(element->size(), 1);
+    m_size = element->size();
     m_useListBox = (m_multiple || m_size > 1);
 
     if(m_useListBox)
@@ -688,7 +684,7 @@ void RenderSelect::layout( )
     bool oldListbox = m_useListBox;
 
     m_multiple = f->multiple();
-    m_size = QMAX(f->size(), 1);
+    m_size = f->size();
     m_useListBox = (m_multiple || m_size > 1);
 
     if (oldMultiple != m_multiple || oldSize != m_size) {
@@ -706,6 +702,7 @@ void RenderSelect::layout( )
             static_cast<KListBox*>(m_widget)->setSelectionMode(m_multiple ? QListBox::Multi : QListBox::Single);
         }
         m_selectionChanged = true;
+        m_optionsChanged = true;
     }
 
     HTMLSelectElementImpl *select = static_cast<HTMLSelectElementImpl*>(m_element);
@@ -761,24 +758,6 @@ void RenderSelect::layout( )
     if (m_selectionChanged)
         updateSelection();
 
-    if (m_useListBox) {
-        // check if multiple and size was not given or invalid
-        // Internet Exploder sets size to QMIN(number of elements, 4)
-        // Netscape seems to simply set it to "number of elements"
-        // the average of that is IMHO QMIN(number of elements, 15)
-        // so I did that ;-)
-        if(m_multiple && m_size < 1)
-            m_size = QMIN(static_cast<KListBox*>(m_widget)->count(), 15);
-    }
-    else {
-        // and now disable the widget in case there is no <option> given
-        // ### do the same if there is only optgroups
-        KComboBox* w = static_cast<KComboBox*>(m_widget);
-        if(!w->count())
-            w->setEnabled(false);
-        // ### select the first option (unless another specified), in case the first item is an optgroup
-    }
-
     // calculate size
     if(m_useListBox) {
         KListBox* w = static_cast<KListBox*>(m_widget);
@@ -793,12 +772,25 @@ void RenderSelect::layout( )
         }
 
         width += 2*w->frameWidth() + w->verticalScrollBar()->sizeHint().width();
-        height = QMAX(m_size, 1)*height + 2*w->frameWidth();
+        int size = m_size;
+        // check if multiple and size was not given or invalid
+        // Internet Exploder sets size to QMIN(number of elements, 4)
+        // Netscape seems to simply set it to "number of elements"
+        // the average of that is IMHO QMIN(number of elements, 15)
+        // so I did that ;-)
+        if(size < 1)
+            size = QMIN(static_cast<KListBox*>(m_widget)->count(), 15);
 
+        height = size*height + 2*w->frameWidth();
         applyLayout(width, height);
     }
     else {
         QSize s(m_widget->sizeHint());
+        KComboBox* w = static_cast<KComboBox*>(m_widget);
+        // and now disable the widget in case there is no <option> given
+        // ### do the same if there is only optgroups
+        if(!w->count())
+            w->setEnabled(false);
 
         applyLayout(s.width(), s.height());
     }
@@ -989,6 +981,16 @@ RenderTextArea::RenderTextArea(QScrollView *view, HTMLTextAreaElementImpl *eleme
     connect(edit,SIGNAL(textChanged()),this,SLOT(slotTextChanged()));
 }
 
+RenderTextArea::~RenderTextArea()
+{
+    HTMLTextAreaElementImpl* e = static_cast<HTMLTextAreaElementImpl*>( m_element );
+
+    if ( e->m_dirtyvalue ) {
+        e->m_value = text();
+        e->m_dirtyvalue = false;
+    }
+}
+
 void RenderTextArea::layout( )
 {
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
@@ -1035,11 +1037,6 @@ void RenderTextArea::close( )
 
 QString RenderTextArea::text()
 {
-    return static_cast<TextAreaWidget *>(m_widget)->text();
-}
-
-void RenderTextArea::slotTextChanged()
-{
     QString txt;
     HTMLTextAreaElementImpl* e = static_cast<HTMLTextAreaElementImpl*>(m_element);
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
@@ -1050,7 +1047,12 @@ void RenderTextArea::slotTextChanged()
     else
         txt = w->text();
 
-    e->m_value = txt;
+    return static_cast<TextAreaWidget *>(m_widget)->text();
+}
+
+void RenderTextArea::slotTextChanged()
+{
+    static_cast<HTMLTextAreaElementImpl*>( m_element )->m_dirtyvalue = true;
 }
 
 void RenderTextArea::select()

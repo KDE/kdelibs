@@ -440,8 +440,9 @@ public:
     
     virtual void calcVerticalMargins() {}
     void removeFromSpecialObjects();
-    virtual void remove();
 
+    virtual void detach();
+    
 protected:
     virtual void selectionStartEnd(int& spos, int& epos);
 
@@ -457,7 +458,13 @@ protected:
                                      int /*_w*/, int /*_h*/, int /*_tx*/, int /*_ty*/) {}
 
     virtual QRect viewRect() const;
-    virtual void prepareRemove();
+    void remove() {
+        removeFromSpecialObjects();
+
+        if ( parent() )
+            //have parent, take care of the tree integrity
+            parent()->removeChild(this);
+    }
 
 private:
     RenderStyle *m_style;

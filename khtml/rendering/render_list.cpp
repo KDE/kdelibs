@@ -96,7 +96,7 @@ void RenderListItem::setStyle(RenderStyle *_style)
         m_marker->setStyle(newStyle);
         addChild(m_marker);
     } else if ( m_marker && style()->listStyleType() == LNONE) {
-	m_marker->remove();
+        m_marker->detach();
         m_marker = 0;
     }
     else if ( m_marker ) {

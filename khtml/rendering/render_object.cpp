@@ -127,9 +127,8 @@ RenderObject::RenderObject()
 
 RenderObject::~RenderObject()
 {
-    if(m_style->backgroundImage()) {
+    if(m_style->backgroundImage())
         m_style->backgroundImage()->deref(this);
-    }
 
     if (m_style)
 	m_style->deref();
@@ -715,18 +714,11 @@ void RenderObject::removeFromSpecialObjects()
     }
 }
 
-void RenderObject::remove()
+void RenderObject::detach()
 {
-    prepareRemove();
+    remove();
+    // by default no refcounting
     delete this;
-}
-
-void RenderObject::prepareRemove()
-{
-    removeFromSpecialObjects();
-    if (parent())
-        //have parent, take care of the tree integrity
-        parent()->removeChild(this);
 }
 
 short RenderObject::verticalPositionHint() const
