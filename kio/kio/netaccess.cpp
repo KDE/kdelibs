@@ -191,6 +191,12 @@ bool NetAccess::mkdir( const KURL & url, QWidget* window, int permissions )
   return kioNet.mkdirInternal( url, permissions, window );
 }
 
+QString NetAccess::fish_execute( const KURL & url, const QString command, QWidget* window )
+{
+  NetAccess kioNet;
+  return kioNet.fish_executeInternal( url, command, window );
+}
+
 QString NetAccess::mimetype( const KURL& url )
 {
   NetAccess kioNet;
@@ -297,6 +303,57 @@ QString NetAccess::mimetypeInternal( const KURL & url, QWidget* window )
 void NetAccess::slotMimetype( KIO::Job *, const QString & type  )
 {
   m_mimetype = type;
+}
+
+QString NetAccess::fish_executeInternal(const KURL & url, const QString command, QWidget* window)
+{
+  QString target, remoteTempFileName, resultData;
+  KURL tempPathUrl;
+  KTempFile tmpFile;
+  tmpFile.setAutoDelete( true );
+
+  if( url.protocol() == "fish" )
+  {
+    // construct remote temp filename
+    tempPathUrl = url;
+    remoteTempFileName = tmpFile.name();
+    // only need the filename KTempFile adds some KDE specific dirs
+    // that probably does not exist on the remote side
+    int pos = remoteTempFileName.findRev('/');
+    remoteTempFileName = "/tmp/fishexec_" + remoteTempFileName.mid(pos + 1);
+    tempPathUrl.setPath( remoteTempFileName );
+    bJobOK = true; // success unless further error occurs
+    QByteArray packedArgs;
+    QDataStream stream( packedArgs, IO_WriteOnly );
+
+    stream << int('X') << tempPathUrl << command;
+
+    KIO::Job * job = KIO::special( tempPathUrl, packedArgs, true );
+    job->setWindow( window );
+    connect( job, SIGNAL( result (KIO::Job *) ),
+             this, SLOT( slotResult (KIO::Job *) ) );
+    enter_loop();
+  
+    // since the KIO::special does not provide feedback we need to download the result
+    if( NetAccess::download( tempPathUrl, target, window ) )
+    {
+      QFile resultFile( target );
+  
+      if (resultFile.open( IO_ReadOnly ))
+      {
+        QTextStream ts( &resultFile );
+        ts.setEncoding( QTextStream::Locale ); // Locale??
+        resultData = ts.read();
+        resultFile.close();
+        NetAccess::del( tempPathUrl, window );
+      }
+    }
+  }
+  else
+  {
+    resultData = QString( "ERROR: Unknown protocol '%1'" ).arg( url.protocol() );
+  }
+  return resultData;
 }
 
 // If a troll sees this, he kills me

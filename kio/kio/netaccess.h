@@ -308,6 +308,19 @@ public:
      */    
     static bool mkdir( const KURL & url, int permissions = -1 );
 
+    /**
+     * Executes a remote process via the fish ioslave in a synchrounous way.
+     *
+     * @param url The remote machine where the command should be executed.
+     * @param command The command to be executed.
+     * @param window main window associated with this job. This is used to
+     *               automatically cache and discard authentication information
+     *               as needed. If NULL, authentication information will be
+     *               cached only for a short duration after which the user will
+     *               again be prompted for passwords as needed.     
+     * @return The resulting output of the @p command that is executed.
+     */
+    static QString fish_execute( const KURL & url, const QString command, QWidget* window );
 
     /**
      * @internal
@@ -364,6 +377,8 @@ private:
     UDSEntry m_entry;
     bool delInternal(const KURL & url, QWidget* window = 0);
     bool mkdirInternal(const KURL & url, int permissions, QWidget* window = 0);
+    QString fish_executeInternal(const KURL & url, const QString command, QWidget* window = 0);
+
     QString mimetypeInternal(const KURL & url, QWidget* window = 0);
     void enter_loop();
     QString m_mimetype;
