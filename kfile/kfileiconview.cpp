@@ -54,6 +54,9 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
     setWordWrapIconText( FALSE );
     setAutoArrange( TRUE );
     setItemsMovable( false );
+    // as long as QIconView only shows tooltips when the cursor is over the
+    // icon (and not the text), we have to create our own tooltips
+    setShowToolTips( false );
 
     connect( this, SIGNAL( executed(QIconViewItem *) ),
 	     SLOT( selected( QIconViewItem *) ) );

@@ -408,16 +408,6 @@ void KDirOperator::setURL(const KURL& _newurl, bool clearforward)
 
     kdDebug(kfile_area) << "setURL " << newurl.url() << " " << time(0) << " (" << dir->url() << ")\n";
 
-    /*
-       what is the sense of this? If it's set, it's set, not?
-       this was for blending out/in completion matches (pfeiffer)
-       if (dir->url() == pathstr) { // already set
-       fileView->clear();
-       fileView->addItemList(dir->currentContents());
-       return;
-       }
-    */
-
     pendingMimeTypes.clear();
 
     if (clearforward) {
@@ -457,9 +447,9 @@ void KDirOperator::setURL(const KURL& _newurl, bool clearforward)
 	    // don't reread when the url stayed the same
 	    ok = ((*dir).url(-1) != newurl.url(-1));
     }
-    else 
+    else
 	ok = true;
-    
+
     if ( ok ) {
         myCompletion.clear();
 	myDirCompletion.clear();

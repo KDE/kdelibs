@@ -63,8 +63,8 @@ private:
   * @author rich@kde.org
   * @version $Id$
   */
-class KFileViewItem {
-
+class KFileViewItem // : public KFileItem
+{
 public:
     /**
       * Construct a KFileViewItem object from a KDirEntry.
@@ -109,7 +109,7 @@ public:
     QString name( bool lowerCase = false ) const {
 	if ( !lowerCase )
 	    return myName;
-	else 
+	else
 	    if ( myLowerCaseName.isNull() )
 		myLowerCaseName = myName.lower();
 	return myLowerCaseName;

@@ -49,6 +49,7 @@
 #include <kcmdlineargs.h>
 #include <kconfig.h>
 #include <kdebug.h>
+#include <kdesktopfile.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include <kiconloader.h>
@@ -156,6 +157,29 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     text = i18n("Desktop: %1").arg( u.path( +1 ) );
     combo->addDefaultURL( u, KMimeType::pixmapForURL( u, 0, KIcon::Small ), text );
 
+    /*
+    // search for device files on the desktop
+    QDir dir( KGlobalSettings::desktopPath() );
+    dir.setFilter(QDir::Files);
+    const QFileInfoList *list = dir.entryInfoList();
+    QFileInfoListIterator it(*list);
+    QString tmp;
+    if(list){
+	QFileInfo *fi;
+	for(; (fi = it.current()); ++it){
+            KDesktopFile dFile(fi->absFilePath());
+            if(dFile.hasDeviceType()) {
+		debug("------------> got one: %s", fi->absFilePath().latin1());
+		tmp = dFile.readURL();
+		if ( !tmp.isEmpty() )
+		    combo->addDefaultURL( tmp,
+					  SmallIcon( dFile.readIcon() ),
+					  dFile.readName() );
+	    }
+	}
+    }
+    */
+    
     connect( combo, SIGNAL( urlActivated( const KURL&  )),
 	     this,  SLOT( pathComboActivated( const KURL& ) ));
     connect( combo, SIGNAL( returnPressed( const QString&  )),
@@ -243,19 +267,19 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
 
     connect( locationEdit, SIGNAL( completion( const QString& )),
 	     SLOT( fileCompletion( const QString& )));
-    connect( locationEdit, SIGNAL( rotateUp() ), 
+    connect( locationEdit, SIGNAL( rotateUp() ),
 	     locationEdit, SLOT( iterateUpInList() ));
-    connect( locationEdit, SIGNAL( rotateDown() ), 
+    connect( locationEdit, SIGNAL( rotateDown() ),
 	     locationEdit, SLOT( iterateDownInList() ));
-    
+
     connect( d->pathCombo, SIGNAL( completion( const QString& )),
 	     SLOT( dirCompletion( const QString& )));
-    connect( d->pathCombo, SIGNAL( rotateUp() ), 
+    connect( d->pathCombo, SIGNAL( rotateUp() ),
 	     d->pathCombo, SLOT( iterateUpInList() ));
-    connect( d->pathCombo, SIGNAL( rotateDown() ), 
+    connect( d->pathCombo, SIGNAL( rotateDown() ),
 	     d->pathCombo, SLOT( iterateDownInList() ));
-    
-    d->locationLabel = new QLabel(locationEdit, i18n("&Location:"), 
+
+    d->locationLabel = new QLabel(locationEdit, i18n("&Location:"),
 				  d->mainWidget);
     d->locationLabel->adjustSize();
     d->locationLabel->setMinimumSize(d->locationLabel->width(),
@@ -622,7 +646,7 @@ void KFileDialog::pathComboChanged( const QString& txt )
 	KURL newLocation(text.left(l+1));
 
 	if ( !newLocation.isMalformed() && newLocation != ops->url() ) {
-	    setURL(text.left(l), true);
+	    setURL(newLocation, true);
 	    d->pathCombo->setEditText(text);
 	}
     }
@@ -648,7 +672,7 @@ void KFileDialog::setURL(const KURL& url, bool clearforward)
 void KFileDialog::urlEntered(const KURL& url)
 {
     QString filename;
-    if (!locationEdit->lineEdit()->edited()) 
+    if (!locationEdit->lineEdit()->edited())
        filename = locationEdit->currentText();
 
     d->selection = QString::null;

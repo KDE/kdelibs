@@ -110,6 +110,7 @@ public:
      * have to be set via @ref setURLs().
      * If you want to specify a special pixmap, use the overloaded method with
      * the pixmap parameter.
+     * Default URLs will be inserted into the combobox by @ref setDefaults()
      */
     void addDefaultURL( const KURL& url, const QString& text = QString::null );
 
@@ -119,16 +120,23 @@ public:
      * have to be set via @ref setURLs().
      * If you don't need to specify a pixmap, use the overloaded method without
      * the pixmap parameter.
+     * Default URLs will be inserted into the combobox by @ref setDefaults()
      */
     void addDefaultURL( const KURL& url, const QPixmap& pix,
 			const QString& text = QString::null );
 
     /**
-     * Clears all items and unserts the default urls into the combo. Will be
+     * Clears all items and inserts the default urls into the combo. Will be
      * called implicitly upon the first call to @ref setURLs() or @ref setURL()
+     * @see #addDefaultURL
      */
     void setDefaults();
 
+    /**
+     * Removes any occurence of @param url. If @param checkDefaultURLs is false
+     * default-urls won't be removed.
+     */
+    void removeURL( const KURL& url, bool checkDefaultURLs = true );
 
 signals:
     /**

@@ -145,14 +145,14 @@ void KURLComboBox::setURLs( QStringList urls )
 	}
 	++it;
     }
-    
+
     // limit to myMaximum items
     int overload = urls.count() - myMaximum + firstItemIndex;
     if ( overload < 0 )
 	overload = 0;
     it = urls.at( overload );
 
-    
+
     KURLComboItem *item = 0L;
     KURL u;
 
@@ -210,11 +210,11 @@ void KURLComboBox::setURL( const KURL& url )
 		    removeItem( mit.key() );
 		    insertItem( opendirPix, mit.data()->url.url( myMode ),
 				mit.key() );
-		    blockSignals( false );
 		}
 		else
 		    changeItem( opendirPix, mit.data()->text, mit.key() );
 	    }
+            blockSignals( false );
             return;
         }
         ++mit;
@@ -281,6 +281,28 @@ void KURLComboBox::setMaxItems( int max )
 	for( ; it.current(); ++it )
 	    insertURLItem( it.current() );
     }
+}
+
+
+void KURLComboBox::removeURL( const KURL& url, bool checkDefaultURLs )
+{
+    QMap<int,const KURLComboItem*>::ConstIterator mit = itemMapper.begin();
+    while ( mit != itemMapper.end() ) {
+        if ( url.url(-1) == mit.data()->url.url(-1) ) {
+	    if ( !itemList.remove( mit.data() ) && checkDefaultURLs )
+		defaultList.remove( mit.data() );
+	}
+	++mit;
+    }
+
+    blockSignals( true );
+    setDefaults();
+    QListIterator<KURLComboItem> it( itemList );
+    while ( it.current() ) {
+	insertURLItem( *it );
+	++it;
+    }
+    blockSignals( false );
 }
 
 
