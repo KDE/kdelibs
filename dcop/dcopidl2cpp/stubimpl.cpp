@@ -33,32 +33,30 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "main.h"
 #include "type.h"
 
-int isIntType( const QString& t)
+static bool isIntType( const QString& t )
 {
-  if ((t == "int")
-      || (t == "signed int")
-      || (t == "unsigned int")
-      || (t == "uint")
-      || (t == "unsigned")
-      || (t == "signed short int")
-      || (t == "signed short")
-      || (t == "short int")
-      || (t == "short")
-      || (t == "unsigned short int")
-      || (t == "unsigned short")
-      || (t == "ushort")
-      || (t == "long int")
-      || (t == "signed long int")
-      || (t == "long")
-      || (t == "signed long")
-      || (t == "unsigned long int")
-      || (t == "unsigned long")
-      || (t == "ulong")
-      || (t == "char")
-      || (t == "signed char")
-      || (t == "unsigned char"))
-    return 1;
-  return 0;
+  return ((t == "int")
+       || (t == "signed int")
+       || (t == "unsigned int")
+       || (t == "uint")
+       || (t == "unsigned")
+       || (t == "signed short int")
+       || (t == "signed short")
+       || (t == "short int")
+       || (t == "short")
+       || (t == "unsigned short int")
+       || (t == "unsigned short")
+       || (t == "ushort")
+       || (t == "long int")
+       || (t == "signed long int")
+       || (t == "long")
+       || (t == "signed long")
+       || (t == "unsigned long int")
+       || (t == "unsigned long")
+       || (t == "ulong")
+       || (t == "char")
+       || (t == "signed char")
+       || (t == "unsigned char"));
 }
 
 /**
@@ -101,11 +99,10 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 	str << endl;
 	for(;;) {
 	    int pos = namespace_tmp.find( "::" );
-	    if( pos < 0 )
-		{
+	    if( pos < 0 ) {
 		className_stub = namespace_tmp;
 		break;
-		}
+	    }
 	    str << "namespace " << namespace_tmp.left( pos ) << " {" << endl;
 	    ++namespace_count;
 	    namespace_tmp = namespace_tmp.mid( pos + 2 );
@@ -181,9 +178,9 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 		str << " ";
 	    str << ")";
 
-	    // const methods in a stub can't compile, they need to call setStatus()
-	    //if ( s.hasAttribute("qual") )
-		//str << " " << s.attribute("qual");
+	    //const methods in a stub can't compile, they need to call setStatus()
+	    //if ( s.hasAttribute("qual") ) 
+       //   str << " " << s.attribute("qual");
 	    str << endl;
 	
 	    str << "{" << endl ;
@@ -256,20 +253,20 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 		} else {
 		    str << "\tsetStatus( CallSucceeded );" << endl;
 		}
-	      str << "    } else { " << endl;
-	      str << "\tcallFailed();" << endl;
-	      str << "    }" << endl;
+		str << "    } else { " << endl;
+		str << "\tcallFailed();" << endl;
+		str << "    }" << endl;
 		if ( result != "void" )
 		    str << "    return result;" << endl;
 	    }
 	    str << "}" << endl << endl;
 	}
 
-	for(;
-	     namespace_count > 0;
-	     --namespace_count )
+	for(; namespace_count > 0; --namespace_count )
 	    str << "} // namespace" << endl;
 	str << endl;
     }
     impl.close();
 }
+
+// :set expandtab!<RETURN>:set ts=8<RETURN>:set sts=4<RETURN>:set sw=4<RETURN>

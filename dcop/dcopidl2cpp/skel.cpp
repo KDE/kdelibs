@@ -175,11 +175,10 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	str << endl;
 	for(;;) {
 	    int pos = namespace_tmp.find( "::" );
-	    if( pos < 0 )
-		{
+	    if( pos < 0 ) {
 		className = namespace_tmp;
 		break;
-		}
+	    }
 	    str << "namespace " << namespace_tmp.left( pos ) << " {" << endl;
 	    ++namespace_count;
 	    namespace_tmp = namespace_tmp.mid( pos + 2 );
@@ -421,12 +420,12 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	    
 	} // for each class function 
 
-	for(;
-	     namespace_count > 0;
-	     --namespace_count )
+	for(; namespace_count > 0; --namespace_count )
 	    str << "} // namespace" << endl;
 	str << endl;
     } // for each CLASS-level tag
 	
     skel.close();
 }
+
+// :set expandtab!<RETURN>:set ts=8<RETURN>:set sts=4<RETURN>:set sw=4<RETURN>

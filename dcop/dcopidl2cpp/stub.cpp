@@ -89,8 +89,7 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de)
     
 	QDomElement n = e.firstChild().toElement();
 	Q_ASSERT( n.tagName() == "NAME" );
-	QString className = n.firstChild().toText().data() 
-		     + ( "_stub" );
+	QString className = n.firstChild().toText().data() + ( "_stub" );
     
 	// find dcop parent ( rightmost super class )
 	QString DCOPParent;
@@ -123,11 +122,10 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de)
 	QString namespace_tmp = className;
 	for(;;) {
 	    int pos = namespace_tmp.find( "::" );
-	    if( pos < 0 )
-		{
+	    if( pos < 0 ) {
 		className = namespace_tmp;
 		break;
-		}
+	    }
 	    str << "namespace " << namespace_tmp.left( pos ) << " {" << endl;
 	    ++namespace_count;
 	    namespace_tmp = namespace_tmp.mid( pos + 2 );
@@ -186,9 +184,9 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de)
 		str << " ";
 	    str << ")";
 
-	    // const methods stubs can't compile, they need to call setStatus().
+	    //const methods stubs can't compile, they need to call setStatus().
 	    //if ( s.hasAttribute("qual") )
-		//str << " " << s.attribute("qual");
+	    //  str << " " << s.attribute("qual");
 	    str << ";" << endl;
 	}
 
@@ -199,9 +197,7 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de)
 	str << "};" << endl;
 	str << endl;
 
-	for(;
-	     namespace_count > 0;
-	     --namespace_count )
+	for(; namespace_count > 0; --namespace_count )
 	    str << "} // namespace" << endl;
 	str << endl;
     }
@@ -210,3 +206,4 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de)
     stub.close();
 }
 
+// :set expandtab!<RETURN>:set ts=8<RETURN>:set sts=4<RETURN>:set sw=4<RETURN>
