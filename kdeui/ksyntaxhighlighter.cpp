@@ -366,7 +366,7 @@ void KDictSpellingHighlighter::slotMisspelling (const QString &originalWord, con
 
     //Emit this baby so that apps that want to have suggestions in a popup over
     //the misspelled word can catch them.
-    emit newSuggestions( originalword, suggestions, pos );
+    emit newSuggestions( originalWord, suggestions, pos );
 
     // this is slow but since kspell is async this will have to do for now
     d->rehighlightRequest->start( 0, true );
