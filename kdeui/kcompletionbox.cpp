@@ -306,7 +306,7 @@ void KCompletionBox::show()
     // is in a layout, that layout will detect inserting new child (posted
     // ChildInserted event), and will trigger relayout (post LayoutHint event).
     // QWidget::show() sends also posted ChildInserted events for the parent,
-    // and later all LayoutHint events, which causes layout updating. 
+    // and later all LayoutHint events, which causes layout updating.
     // The problem is, KCompletionBox::eventFilter() detects resizing
     // of the parent, and calls hide() - and this hide() happen in the middle
     // of show(), causing inconsistent state. I'll try to submit a Qt patch too.
@@ -448,11 +448,11 @@ class KCompletionBoxItem : public QListBoxItem
 {
 public:
     //Returns true if dirty.
-    bool reuse( const QString& newText ) 
-    {   
+    bool reuse( const QString& newText )
+    {
         if ( text() == newText )
             return false;
-        setText( newText ); 
+        setText( newText );
         return true;
     }
 };
@@ -497,10 +497,10 @@ void KCompletionBox::setItems( const QStringList& items )
                 insertItem( new QListBoxText( *it ) );
             }
         }
-        
+
         //If there is an unused item, mark as dirty -> less items now
         if ( item ) {
-            dirty = true; 
+            dirty = true;
         }
 
         QListBoxItem* tmp = item;
@@ -508,10 +508,13 @@ void KCompletionBox::setItems( const QStringList& items )
             tmp = item->next();
             delete item;
         }
-        
+
         if (dirty)
             triggerUpdate( false );
     }
+
+    if ( isVisible() && size().height() != sizeHint().height() )
+        sizeAndPosition();
 
     blockSignals( block );
     d->down_workaround = true;
