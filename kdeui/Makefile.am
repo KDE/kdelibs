@@ -83,3 +83,5 @@ libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp knuminput.cpp  \
 
 libkdeui_la_METASOURCES = AUTO
 
+rcdir = $(kde_confdir)/ui
+rc_DATA = ui_standards.rc

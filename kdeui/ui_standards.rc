@@ -1,0 +1,139 @@
+<!DOCTYPE kpartgui>
+<kpartgui name="standard_containers">
+<MenuBar>
+  <Menu name="file"><text>&amp;File</text>
+    <Action name="file_new"/>
+    <Action name="file_open"/>
+    <Action name="file_open_recent"/>
+    <MergeLocal name="new_merge"/>
+    <Separator/>
+    <Action name="file_save"/>
+    <Action name="file_save_as"/>
+    <Action name="file_revert"/>
+    <MergeLocal name="save_merge"/>
+    <Separator/>
+    <Action name="file_close"/>
+    <Separator/>
+    <Action name="file_print"/>
+    <Action name="file_print_preview"/>
+    <MergeLocal name="print_merge"/>
+    <Separator/>
+    <Action name="file_mail"/>
+    <Separator/>
+    <MergeLocal/>
+    <Separator/>
+    <Action name="file_quit"/>
+  </Menu>
+  <Menu name="game"><text>&amp;Game</text>
+    <Action name="game_new"/>
+    <Action name="game_load"/>
+    <Separator/>
+    <Action name="game_save"/>
+    <Separator/>
+    <Action name="game_highscores"/>
+    <Separator/>
+    <Action name="game_quit"/>
+  </Menu>
+  <Menu name="edit"><text>&amp;Edit</text>
+    <Action name="edit_undo"/>
+    <Action name="edit_redo"/>
+    <Separator/>
+    <Action name="edit_cut"/>
+    <Action name="edit_copy"/>
+    <Action name="edit_paste"/>
+    <Action name="edit_select_all"/>
+    <Separator/>
+    <Action name="edit_find"/>
+    <Action name="edit_find_next"/>
+    <Action name="edit_replace"/>
+    <Separator/>
+    <MergeLocal/>
+  </Menu>
+  <Menu name="view"><text>&amp;View</text>
+    <Action name="view_actual_size"/>
+    <Action name="view_fit_to_page"/>
+    <Action name="view_fit_to_width"/>
+    <Action name="view_fit_to_height"/>
+    <Separator/>
+    <Action name="view_zoom_in"/>
+    <Action name="view_zoom_out"/>
+    <Action name="view_zoom"/>
+    <Separator/>
+    <Action name="view_redisplay"/>
+  </Menu>
+  <Menu name="go_web"><text>&amp;Go</text>
+    <Action name="go_up"/>
+    <Action name="go_back"/>
+    <Action name="go_forward"/>
+    <Action name="go_home"/>
+  </Menu>
+  <Menu name="go_document"><text>&amp;Go</text>
+    <Action name="go_previous"/>
+    <Action name="go_next"/>
+    <Action name="go_goto_page"/>
+    <Action name="go_goto_line"/>
+    <Separator/>
+    <Action name="go_first"/>
+    <Action name="go_last"/>
+  </Menu>
+  <MergeLocal/>
+  <Menu name="bookmarks"><text>&amp;Bookmarks</text>
+    <Action name="bookmarks_add"/>
+    <Action name="bookmarks_edit"/>
+    <Separator/>
+    <MergeLocal/>
+  </Menu>
+  <Menu name="tools"><text>&amp;Tools</text>
+    <Action name="tools_spelling"/>
+    <MergeLocal/>
+  </Menu>
+  <Menu name="settings"><text>&amp;Settings</text>
+    <Action name="options_show_menubar"/>
+    <Action name="options_show_toolbar"/>
+    <Action name="options_show_statusbar"/>
+    <MergeLocal name="show_merge"/>
+    <Separator/>
+    <Action name="options_save_options"/>
+    <MergeLocal name="save_merge"/>
+    <Separator/>
+    <Action name="options_configure_keybinding"/>
+    <Action name="options_configure"/>
+    <MergeLocal name="configure_merge"/>
+    <Separator/>
+    <MergeLocal/>
+  </Menu>
+  <Menu name="help"><text>&amp;Help</text>
+    <Action name="help_contents"/>
+    <Action name="help_whats_this"/>
+    <Separator/>
+    <Action name="help_report_bug"/>
+    <Separator/>
+    <Action name="help_about_app"/>
+    <Action name="help_about_kde"/>
+  </Menu>
+</MenuBar>
+<ToolBar name="mainToolBar">
+  <Action name="file_new"/>
+  <Action name="file_open"/>
+  <Action name="file_save"/>
+  <Action name="file_print"/>
+  <Action name="file_print_preview"/>
+  <Action name="file_mail"/>
+  <Separator/>
+  <Action name="edit_undo"/>
+  <Action name="edit_redo"/>
+  <Action name="edit_cut"/>
+  <Action name="edit_copy"/>
+  <Action name="edit_paste"/>
+  <Separator/>
+  <Action name="view_find"/>
+  <Action name="view_zoom"/>
+  <Separator/>
+  <Action name="go_previous"/>
+  <Action name="go_next"/>
+  <Action name="go_home"/>
+  <Separator/>
+  <MergeLocal/>
+</ToolBar>
+<StatusBar/>
+</kpartgui>
