@@ -444,7 +444,7 @@ QPopupMenu* KApplication::getHelpMenu( bool /*bAboutQtMenu*/,
 	pMenu->connectItem( id, this, SLOT( aboutQt() ) );
 	}
   */
-										 "Please report bug at http://buglist.kde.org.\n\n\n"
+  return pMenu;
 }
 
 
