@@ -320,7 +320,7 @@ void Node::normalize (  )
 }
 
 bool Node::isSupported( const DOMString &feature,
-                        const DOMString &version ) const
+                        const DOMString & /*version*/ ) const
 {
     DOMString upFeature = feature.upper();
     return (upFeature == "HTML" ||

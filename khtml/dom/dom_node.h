@@ -34,6 +34,9 @@
 
 class QRect;
 
+namespace KJS {
+    class HTMLDocument;
+}
 namespace DOM {
 
 class Node;
@@ -895,6 +898,7 @@ class NodeList
     friend class Node;
     friend class Document;
     friend class HTMLDocument;
+    friend class KJS::HTMLDocument;
 
 public:
     NodeList();
