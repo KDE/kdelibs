@@ -979,6 +979,7 @@ private slots:
 
   void ContextCallback(int);
   void slotReadConfig ();
+  void slotIconChanged(int);
   void slotHotSpot (int i);
 
 private:

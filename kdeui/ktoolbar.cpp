@@ -46,6 +46,7 @@
 #include <kstyle.h>
 #include <kpopmenu.h>
 #include <kanimwidget.h>
+#include <kipc.h>
 
 #include "ktoolbarbutton.h"
 #include "ktoolbaritem.h"
@@ -213,8 +214,27 @@ void KToolBar::init()
 
   connect(kapp, SIGNAL(appearanceChanged()), this, SLOT(slotReadConfig()));
 
+  // request notification of changes in icon style
+  kapp->addKipcEventMask(KIPC::IconChanged);
+  connect(kapp, SIGNAL(iconChanged(int)), this, SLOT(slotIconChanged(int)));                               
+
   // finally, read in our configurable settings
   slotReadConfig();
+}
+
+void KToolBar::slotIconChanged(int group)
+{
+  if ((group != KIcon::Toolbar) && (group != KIcon::MainToolbar))
+    return;
+  if ((group == KIcon::MainToolbar) != !strcmp(name(), "mainToolBar"))
+    return; 
+
+  d->m_maxItemWidth  = 0;
+  d->m_maxItemHeight = 0;
+  d->m_approxItemSize = 22;
+  emit modechange();
+  if (isVisible())
+    updateRects(true);
 }
 
 void KToolBar::slotReadConfig()
@@ -2337,7 +2357,7 @@ void KToolBar::setIconSize(int size, bool update)
     d->m_maxItemHeight = 0;
 
     d->m_iconSize = size;
-    d->m_approxItemSize = size; // Instead of always 22, let's try making it == m_iconSize (David)
+    d->m_approxItemSize = 22;
     doUpdate=true;
   }
 

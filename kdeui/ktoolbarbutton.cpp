@@ -194,16 +194,13 @@ void KToolBarButton::modeChange()
   d->m_highlight = d->m_parent->highlight();
   d->m_iconText  = d->m_parent->iconText();
 
-  if (d->m_iconSize != d->m_parent->iconSize())
-  {
-    d->m_iconSize = d->m_parent->iconSize();
-    if (!d->m_iconName.isNull())
-      setIcon(d->m_iconName);
-    if (!d->m_disabledIconName.isNull())
-      setDisabledIcon(d->m_disabledIconName);
-    if (!d->m_defaultIconName.isNull())
-      setDefaultIcon(d->m_defaultIconName);
-  }
+  d->m_iconSize = d->m_parent->iconSize();
+  if (!d->m_iconName.isNull())
+    setIcon(d->m_iconName);
+  if (!d->m_disabledIconName.isNull())
+    setDisabledIcon(d->m_disabledIconName);
+  if (!d->m_defaultIconName.isNull())
+    setDefaultIcon(d->m_defaultIconName);
 
   // we'll go with the size of our pixmap (plus a bit of padding) as
   // the default size...
