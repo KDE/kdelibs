@@ -100,9 +100,11 @@ public:
 
     /**
      * Here's another way of writing a file into an archive:
-     * Call @ref prepareWriting, then call write as many times as wanted,
-     * then call @ref doneWriting( totalSize )
-     * You need to know the size before hand, it is needed in the header!
+     * Call @ref prepareWriting, then call device()->writeBlock() (for tar files)
+     * or writeData (for zip files) [NEW VIRTUAL METHOD NEEDED]
+     * as many times as wanted then call @ref doneWriting( totalSize )
+     * For tar.gz files, you need to know the size before hand, it is needed in the header!
+     * For zip files, size isn't used.
      */
     virtual bool prepareWriting( const QString& name, const QString& user, const QString& group, uint size ) = 0;
 
@@ -248,11 +250,11 @@ public:
     /**
      * Position of the data in the [uncompressed] archive.
      */
-    int position() const;
+    int position() const; // TODO use Q_LONG in KDE-4.0
     /**
      * Size of the data.
      */
-    int size() const;
+    int size() const; // TODO use Q_LONG in KDE-4.0
 
     /**
      * @return the content of this file.
@@ -267,7 +269,7 @@ public:
      * who will have to delete it.
      * The returned device auto-opens (in readonly mode), no need to open it.
      */
-    QIODevice *device() const;
+    QIODevice *device() const; // TODO make virtual
 
     /**
      * @return true, since this entry is a file
@@ -275,8 +277,8 @@ public:
     virtual bool isFile() const { return true; }
 
 private:
-    int m_pos;
-    int m_size;
+    int m_pos; // TODO use Q_LONG in KDE-4.0
+    int m_size; // TODO use Q_LONG in KDE-4.0
 protected:
     virtual void virtual_hook( int id, void* data );
 private:

@@ -28,48 +28,7 @@
 #include <qvaluelist.h>
 #include <karchive.h>
 
-/**
- * @internal
- */
-class KZipFileEntry
-{
-public:
-    KZipFileEntry() : st(-1)
-    {}
-    KZipFileEntry(Q_LONG start, int encoding, Q_LONG csize) :
-		st(start) , enc(encoding) , cs(csize)
-    {}
-    Q_LONG start() const {return st; }
-    int encoding() const {return enc; }
-    Q_LONG csize() const {return cs; }
-    unsigned long crc32() const {return crc; }
-
-    QString filename() const {return fn; }
-    Q_LONG usize() const {return us; }
-    Q_LONG headerstart() const {return hst; }
-
-    void setStart(Q_LONG start) { st=start; }
-    void setEncoding(int encoding) { enc=encoding; }
-    void setCSize(Q_LONG csize) { cs=csize; }
-    void setCRC32(unsigned long crc32) {crc=crc32; }
-
-    void setFilename(QString filename) { fn=filename; }
-    void setUSize(Q_LONG usize) { us=usize; }
-    void setHeaderStart(Q_LONG headerstart) { hst=headerstart; }
-
-private:
-    Q_LONG st;
-    int enc;
-    Q_LONG cs;
-    unsigned long crc;
-
-    QString fn;
-    Q_LONG us;
-    Q_LONG hst;
-
-};
-
-
+class KZipFileEntry;
 /**
  * @short A class for reading/writing zip archives.
  * @author Holger Schroeder <holger-kde@holgis.net>
@@ -107,7 +66,19 @@ public:
 
     //void setOrigFileName( const QCString & fileName );
 
+    /**
+     * If an archive is opened for writing then you can add a new file
+     * using this function.
+     * This method takes the whole data at once.
+     * @param name can include subdirs e.g. path/to/the/file
+     */
+    virtual bool writeFile( const QString& name, const QString& user, const QString& group, uint size, const char* data );
+
+    /**
+     * Alternative method: call prepareWriting, writeData in small chunks, doneWriting
+     */
     virtual bool prepareWriting( const QString& name, const QString& user, const QString& group, uint size );
+    bool writeData( const char* data, uint size );
     virtual bool doneWriting( uint size );
 
 protected:
@@ -125,19 +96,73 @@ protected:
      */
     virtual bool writeDir( const QString&, const QString&, const QString& ) { return true; }
 
-private:
-    /////// Temporary
-    Q_LONG readBlock(char *, long unsigned int);
-    Q_LONG writeBlock(const char *, long unsigned int);
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
     QString m_filename;
     class KZipPrivate;
     KZipPrivate * d;
-    typedef QValueList<KZipFileEntry> KZipFileList;
-    KZipFileList list;
-    KZipFileList::iterator actualFile;
+};
+
+
+/**
+ * @internal
+ */
+class KZipFileEntry : public KArchiveFile
+{
+public:
+    /*KZipFileEntry() : st(-1)
+      {}*/
+    KZipFileEntry( KZip* zip, const QString& name, int access, int date,
+                   const QString& user, const QString& group, const QString& symlink,
+                   const QString& path, Q_LONG start, Q_LONG uncompressedSize,
+                   int encoding, Q_LONG compressedSize) :
+        KArchiveFile( zip, name, access, date, user, group, symlink,
+                      start, uncompressedSize ),
+        m_crc(0),
+        m_compressedSize(compressedSize),
+        m_headerStart(0),
+        m_encoding(encoding),
+        m_path( path )
+    {}
+    int encoding() const { return m_encoding; }
+    Q_LONG compressedSize() const { return m_compressedSize; }
+
+    // Only used when writing
+    void setCompressedSize(Q_LONG compressedSize) { m_compressedSize = compressedSize; }
+
+    // Header start: only used when writing
+    void setHeaderStart(Q_LONG headerstart) { m_headerStart = headerstart; }
+    Q_LONG headerStart() const {return m_headerStart; }
+
+    // CRC: only used when writing
+    unsigned long crc32() const { return m_crc; }
+    void setCRC32(unsigned long crc32) { m_crc=crc32; }
+
+    // Name with complete path - KArchiveFile::name() is the filename only (no path)
+    QString path() const { return m_path; }
+
+    /**
+     * @return the content of this file.
+     * Call data() with care (only once per file), this data isn't cached.
+     */
+    virtual QByteArray data() const;
+
+    /**
+     * This method returns a QIODevice to read the file contents.
+     * This is obviously for reading only.
+     * Note that the ownership of the device is being transferred to the caller,
+     * who will have to delete it.
+     * The returned device auto-opens (in readonly mode), no need to open it.
+     */
+    QIODevice* device() const; // WARNING, not virtual!
+
+private:
+    unsigned long m_crc;
+    Q_LONG m_compressedSize;
+    Q_LONG m_headerStart;
+    int m_encoding;
+    QString m_path;
 };
 
 #endif

@@ -40,7 +40,7 @@ public:
      * @param autoDeleteFilterbase when true this object will become the
      * owner of @p filter.
      */
-    KFilterDev( KFilterBase * filter, bool autodeleteFilterBase = false);
+    KFilterDev( KFilterBase * filter, bool autodeleteFilterBase = false );
     /**
      * Destructs the KFilterDev.
      */
@@ -55,6 +55,13 @@ public:
      * set the name of the original file, to be used in the gzip header.
      */
     void setOrigFileName( const QCString & fileName );
+
+    /**
+     * Call this let this device skip the gzip headers when reading/writing.
+     * This way KFilterDev (with gzip filter) can be used as a direct wrapper
+     * around zlib - this is used by KZip.
+     */
+    void setSkipHeaders();
 
     // Not implemented
     virtual QIODevice::Offset size() const;
@@ -118,8 +125,27 @@ public:
      * In that case 0 will be returned !
      *
      * The returned QIODevice has to be deleted after using.
+     * @param inDevice input device, becomes owned by this device! Automatically deleted!
      */
     static QIODevice * device( QIODevice* inDevice, const QString & mimetype);
+    // BIC: merge with device() method below, using default value for autoDeleteInDevice
+
+    /**
+     * Creates an i/o device that is able to read from the QIODevice @p inDevice,
+     * whether the data is compressed or not. Available compression filters
+     * (gzip/bzip2 etc.) will automatically be used.
+     *
+     * The compression filter to be used is determined @p mimetype .
+     * Pass "application/x-gzip" or "application/x-bzip2"
+     * to use the corresponding decompression filter.
+     *
+     * Warning: application/x-bzip2 may not be available.
+     * In that case 0 will be returned !
+     *
+     * The returned QIODevice has to be deleted after using.
+     * @param inDevice input device. Won't be deleted if @p autoDeleteInDevice = false
+     */
+    static QIODevice * device( QIODevice* inDevice, const QString & mimetype, bool autoDeleteInDevice );
 
 private:
     KFilterBase *filter;

@@ -27,8 +27,9 @@
 class KFilterDev::KFilterDevPrivate
 {
 public:
-    KFilterDevPrivate() : bNeedHeader(true), autoDeleteFilterBase(false) {}
+    KFilterDevPrivate() : bNeedHeader(true), bSkipHeaders(false), autoDeleteFilterBase(false) {}
     bool bNeedHeader;
+    bool bSkipHeaders;
     bool autoDeleteFilterBase;
     QByteArray buffer; // Used as 'input buffer' when reading, as 'output buffer' when writing
     QCString ungetchBuffer;
@@ -91,13 +92,18 @@ QIODevice * KFilterDev::deviceForFile( const QString & fileName, const QString &
 
 QIODevice * KFilterDev::device( QIODevice* inDevice, const QString & mimetype)
 {
+    return device( inDevice, mimetype, true );
+}
+
+QIODevice * KFilterDev::device( QIODevice* inDevice, const QString & mimetype, bool autoDeleteInDevice )
+{
    if (inDevice==0)
       return 0;
    KFilterBase * base = KFilterBase::findFilterByMimeType(mimetype);
    if ( base )
    {
-      base->setDevice(inDevice, true);
-      return new KFilterDev(base, true);
+      base->setDevice(inDevice, true /*auto-delete "base" */);
+      return new KFilterDev(base, autoDeleteInDevice);
    }
    return 0;
 }
@@ -115,9 +121,9 @@ bool KFilterDev::open( int mode )
         d->buffer.resize( 8*1024 );
         filter->setOutBuffer( d->buffer.data(), d->buffer.size() );
     }
-    d->bNeedHeader = true;
+    d->bNeedHeader = !d->bSkipHeaders;
     filter->init( mode );
-    bool ret = filter->device()->open( mode );
+    bool ret = !filter->device()->isOpen() ? filter->device()->open( mode ) : true;
     d->result = KFilterBase::OK;
 
     if ( !ret )
@@ -182,7 +188,7 @@ bool KFilterDev::at( QIODevice::Offset pos )
         ioIndex = 0;
         // We can forget about the cached data
         d->ungetchBuffer.resize(0);
-        d->bNeedHeader = true;
+        d->bNeedHeader = !d->bSkipHeaders;
         d->result = KFilterBase::OK;
         filter->setInBuffer(0L,0);
         filter->reset();
@@ -234,7 +240,8 @@ Q_LONG KFilterDev::readBlock( char *data, Q_ULONG maxlen )
             // Request data from underlying device
             int size = filter->device()->readBlock( d->buffer.data(),
                                                     d->buffer.size() );
-            filter->setInBuffer( d->buffer.data(), size );
+            if ( size )
+                filter->setInBuffer( d->buffer.data(), size );
             //kdDebug(7005) << "KFilterDev::readBlock got " << size << " bytes from device" << endl;
         }
         if (d->bNeedHeader)
@@ -243,10 +250,12 @@ Q_LONG KFilterDev::readBlock( char *data, Q_ULONG maxlen )
             d->bNeedHeader = false;
         }
 
-        if ( filter->inBufferEmpty() )
+        // Breaks the case where we read all data at once, but output buffer is too small
+        // No idea why I added this test, in fact.
+        /*if ( filter->inBufferEmpty() )
             d->result = KFilterBase::END;
-        else
-            d->result = filter->uncompress();
+         else*/
+        d->result = filter->uncompress();
 
         if (d->result == KFilterBase::ERROR)
         {
@@ -255,12 +264,13 @@ Q_LONG KFilterDev::readBlock( char *data, Q_ULONG maxlen )
             break;
         }
 
+        // ### Test removed. Let's simply empty output buffer each time.
         // No more space in output buffer, or finished ?
-        if ((filter->outBufferFull()) || (d->result == KFilterBase::END))
+        //if ((filter->outBufferFull()) || (d->result == KFilterBase::END))
         {
             // We got that much data since the last time we went here
             uint outReceived = availOut - filter->outBufferAvailable();
-            //kdDebug(7005) << "avail_out = " << filter->outBufferAvailable() << " result=" << result << " outReceived=" << outReceived << endl;
+            //kdDebug(7005) << "avail_out = " << filter->outBufferAvailable() << " result=" << d->result << " outReceived=" << outReceived << endl;
             if( availOut < (uint)filter->outBufferAvailable() )
                 kdWarning(7005) << " last availOut " << availOut << " smaller than new avail_out=" << filter->outBufferAvailable() << " !" << endl;
 
@@ -398,4 +408,9 @@ int KFilterDev::ungetch( int ch )
 void KFilterDev::setOrigFileName( const QCString & fileName )
 {
     d->origFileName = fileName;
+}
+
+void KFilterDev::setSkipHeaders()
+{
+    d->bSkipHeaders = true;
 }
