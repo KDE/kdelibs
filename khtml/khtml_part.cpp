@@ -1507,7 +1507,8 @@ void KHTMLPart::htmlError( int errorCode, const QString& text, const KURL& reqUr
   d->m_bJScriptForce = false;
   d->m_bJScriptOverride = true;
   begin();
-  QString errText = QString::fromLatin1( "<HTML><HEAD><TITLE>" );
+  QString errText = QString::fromLatin1( "<HTML dir=%1><HEAD><TITLE>" )
+                           .arg(QApplication::reverseLayout() ? "rtl" : "ltr");
   errText += i18n( "Error while loading %1" ).arg( reqUrl.htmlURL() );
   errText += QString::fromLatin1( "</TITLE></HEAD><BODY><P>" );
   errText += i18n( "An error occurred while loading <B>%1</B>:" ).arg( reqUrl.htmlURL() );
