@@ -2,7 +2,6 @@
 #define KAUTOCONFIG_H
 
 #include <qobject.h>
-#include <kglobal.h>
 #include <qptrlist.h>
 
 class KConfig;
@@ -35,7 +34,7 @@ class QWidget;
  * </pre>
  * 
  * If one of the widgets needs special treatment it can be specified to be
- * ignored.  
+ * ignored using @ref ignoreSubWidget().  
  * 
  * The name of the widget determines the name of the setting.  The initial
  * value of the widget also is the default when asked to reset.
@@ -78,14 +77,14 @@ Q_OBJECT
 signals:
   /**
    * One or more of the settings have been changed.
-   * Is only emited by saveSettings if some setting was changed.
+   * Is only emited by @ref saveSettings if one or more setting were changed.
    */ 
   void settingsChanged();
 
   /**
-   * One of the known options has changed.
+   * One or more of the settings have been changed.
    * @param widget the widget group (pass in via @ref addWidget) that contains
-   * that setting that has changed.
+   * one or more modified setting.
    */
   void settingsChanged(QWidget *widget);
 	
@@ -93,15 +92,16 @@ public:
   /**
    * Constructor.
    * @param kconfig - Config to use when retrieving/saving all of the widgets
-   *        that it knows about.
-   * @param loadAllKnown - Automaticly loads all known widgets.
-   *        If false no widgets are loaded by default, widgets need to be
-   *        manually added using addKAutoConfigWidget(...).  Usefull in cases
-   *        where a dialog only has widgets that arn't of the default type.
+   *        that KAutoConfig knows about.
    */ 
   KAutoConfig(KConfig *kconfig = KGlobal::config(),
 		 QObject *parent=0, const char *name=0);	
-  
+ 
+  /**
+   * Constructor.
+   * Uses KGlobal::config() when retrieving/saving all of the widgets
+   *        that KAutoConfig knows about.
+   */ 
   KAutoConfig(QObject *parent=0, const char *name=0);
 
   /**

@@ -7,6 +7,7 @@
 
 #include <qsqlpropertymap.h>
 #include <qvariant.h>
+#include <kglobal.h>
 
 // For KAutoConfigPrivate
 #include <qptrlist.h>
