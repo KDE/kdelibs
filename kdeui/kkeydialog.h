@@ -144,7 +144,8 @@ class KKeyDialog : public QDialog
 	Q_OBJECT
 	
 public:
-	KKeyDialog( QDict<KKeyEntry> *aKeyDict, QWidget *parent = 0 );
+	KKeyDialog( QDict<KKeyEntry> *aKeyDict, QWidget *parent = 0,
+		    bool check_against_std_keys = false);
 	~KKeyDialog() {};
 
 	static int configureKeys( KAccel *keys );
@@ -169,7 +170,8 @@ class KKeyChooser : public QWidget
 public:
 	enum { NoKey = 1, DefaultKey, CustomKey };
 	
-	KKeyChooser( QDict<KKeyEntry> *aKeyDict, QWidget *parent = 0 );
+	KKeyChooser( QDict<KKeyEntry> *aKeyDict, QWidget *parent = 0,
+		     bool check_against_std_keys = false);
 	~KKeyChooser();
 	
 	QDictIterator<KKeyEntry> *aIt;
@@ -195,6 +197,7 @@ protected slots:
 	void editKey();
 	void editEnd();
 	void readGlobalKeys();
+	void readStdKeys();
 
 protected:
 	void keyPressEvent( QKeyEvent *e );
@@ -202,6 +205,7 @@ protected:
 
 protected:
 	QDict<int> *globalDict;
+	QDict<int> *stdDict;
 	KKeyEntry *pEntry;
 	QString sEntryKey;
 	KSplitList *wList;

@@ -212,7 +212,8 @@ void KKeyButton::paint( QPainter *painter )
 /*                                                                           */
 /*****************************************************************************/
 
-KKeyDialog::KKeyDialog( QDict<KKeyEntry> *aKeyDict, QWidget *parent )
+KKeyDialog::KKeyDialog( QDict<KKeyEntry> *aKeyDict, QWidget *parent,
+			bool check_against_std_keys)
     : QDialog( parent, 0, TRUE )
 {
 	setCaption("Configure key bindings");
@@ -220,7 +221,7 @@ KKeyDialog::KKeyDialog( QDict<KKeyEntry> *aKeyDict, QWidget *parent )
 	
 	QBoxLayout *topLayout = new QVBoxLayout( this, 10 ); 
 	
-	KKeyChooser *kc =  new KKeyChooser( aKeyDict, this );
+	KKeyChooser *kc =  new KKeyChooser( aKeyDict, this, check_against_std_keys );
 	
 	topLayout->addWidget( kc, 10 );
 	
@@ -282,7 +283,8 @@ int KKeyDialog::configureKeys( KGlobalAccel *keys )
     return retcode;
 }
 
-KKeyChooser::KKeyChooser( QDict<KKeyEntry> *aKeyDict, QWidget *parent )
+KKeyChooser::KKeyChooser( QDict<KKeyEntry> *aKeyDict, QWidget *parent ,
+			  bool check_against_std_keys)
     : QWidget( parent )
 {
 	
@@ -481,7 +483,10 @@ KKeyChooser::KKeyChooser( QDict<KKeyEntry> *aKeyDict, QWidget *parent )
 	globalDict = new QDict<int> ( 100, false );
 	globalDict->setAutoDelete( true );
 	readGlobalKeys();
-	
+	stdDict = new QDict<int> ( 100, false );
+	stdDict->setAutoDelete( true );
+	if (check_against_std_keys)
+	  readStdKeys();
 	topLayout->activate();
 }
 
@@ -512,45 +517,62 @@ void KKeyChooser::readGlobalKeys()
 	
 	globalDict->clear();
 	
-	// QDict<int> *tmpDict = new QDict<int> ( 37, false );
 	
 	// Insert all global keys into globalDict
 	int *keyCode;
-	KConfig *pConfig = kapp->getConfig();
-	KEntryIterator *gIt = pConfig->entryIterator( "Global Keys" );
+	KConfig pConfig;
+	KEntryIterator *gIt = pConfig.entryIterator( "Global Keys" );
 	if (gIt){
 	  gIt->toFirst();
 	  while ( gIt->current() ) {
 	    keyCode = new int;
 	    *keyCode = stringToKey( gIt->current()->aValue );
 	    globalDict->insert( gIt->currentKey(), keyCode);
-	    //debug( " %s, %d", gIt->currentKey(), *keyCode );
 	    ++(*gIt);
 	  }
 	}
-	
-	
 	
 	// Only insert global keys which don't appear in the dictionary to be configured
 	aIt->toFirst();
 	while ( aIt->current() ) {
 		if ( globalDict->find( aIt->currentKey() ) ) {
-		  debug("remove: %s", aIt->currentKey() );
 		  globalDict->remove( aIt->currentKey());
 		}
 		++ ( *aIt );
 	}
 	
-	debug("Global dict contents");
+}
+
+void KKeyChooser::readStdKeys()
+{
+	debug("KKeyChooser::readStdKeys()");
 	
-	QDictIterator<int> dIt( *globalDict );
+	stdDict->clear();
 	
-	dIt.toFirst();
-	while ( dIt.current() ) {
-		debug("current %s:%d", dIt.currentKey(), *dIt.current());
-		
-		++dIt;
+	
+	// Insert all standard keys into globalDict
+	int *keyCode;
+	KConfig pConfig;
+	KEntryIterator *sIt = pConfig.entryIterator( "Keys" );
+	if (sIt){
+	  sIt->toFirst();
+	  while ( sIt->current() ) {
+	    keyCode = new int;
+	    *keyCode = stringToKey( sIt->current()->aValue );
+	    stdDict->insert( sIt->currentKey(), keyCode);
+	    ++(*sIt);
+	  }
 	}
+	
+	// Only insert std keys which don't appear in the dictionary to be configured
+	aIt->toFirst();
+	while ( aIt->current() ) {
+		if ( stdDict->find( aIt->currentKey() ) ) {
+		  stdDict->remove( aIt->currentKey());
+		}
+		++ ( *aIt );
+	}
+	
 }
 
 void KKeyChooser::toChange( int index )
@@ -1004,6 +1026,33 @@ bool KKeyChooser::isKeyPresent()
 		++gIt;
 	}
 	
+	// Search the std key codes to find if this keyCode is already used
+	//  elsewhere
+	
+	QDictIterator<int> sIt( *stdDict );
+
+	sIt.toFirst();
+	while ( sIt.current() ) {
+		debug("current %s:%d code %d", sIt.currentKey(), *sIt.current(), pEntry->aConfigKeyCode);
+		if ( (unsigned int)(*sIt.current()) == pEntry->aConfigKeyCode && *sIt.current() != 0 ) {
+			QString actionName( sIt.currentKey() );
+			actionName.stripWhiteSpace();
+
+			QString keyName = keyToString( *sIt.current() );
+			
+			QString str;
+			str.sprintf(
+				"The %s key combination has already been allocated\nto the standard %s action.\n\nPlease choose a unique key combination.",
+				keyName.data(),
+				actionName.data() );
+				
+			QMessageBox::warning( this, "Standard key conflict", str.data() );
+			
+			return TRUE;
+		}
+		++sIt;
+	}
+
 	// Search the aConfigKeyCodes to find if this keyCode is already used
 	// elsewhere
 	aIt->toFirst();
