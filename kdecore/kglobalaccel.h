@@ -31,6 +31,9 @@ class KConfigBase;
 
 class KGlobalAccelPrivate;
 
+/**
+* KGlobalAccel description
+*/
 class KGlobalAccel : public QObject
 {
 	Q_OBJECT
@@ -130,6 +133,7 @@ class KGlobalAccel : public QObject
 	friend class KGlobalAccelPrivate;
 	friend class KAccelShortcutList;
 protected:
+	/// @internal
 	virtual void virtual_hook( int id, void* data );
 private:
 	class KGlobalAccelPrivate* d;
