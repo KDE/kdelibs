@@ -60,102 +60,6 @@ static const char*not_close_xpm[]={
 "#...#",
 "#####"};
 
-static const char*dock_close_bottom[]={
-"16 16 5 1",
-"z c None",
-"b c #c0c000",
-"# c #c0c0c0",
-"a c #868686",
-". c #ffffff",
-"...............#",
-".##############a",
-".##############a",
-".##############a",
-".##############a",
-".##############a",
-".##############a",
-".##############a",
-"zaaaaaaaaaaaaaaa",
-"...............z",
-".bbbbbbbbbbbbbba",
-".bbbbbbbbbbbbbba",
-".bbbbbbbbbbbbbba",
-".bbbbbbbbbbbbbba",
-".bbbbbbbbbbbbbba",
-"#aaaaaaaaaaaaaaa"};
-
-static const char*dock_close_left[]={
-"16 16 5 1",
-"z c None",
-"a c #c0c000",
-"# c #c0c0c0",
-"b c #868686",
-". c #ffffff",
-"......z........#",
-".aaaaab.#######b",
-".aaaaab.#######b",
-".aaaaab.#######b",
-".aaaaab.#######b",
-".aaaaab.#######b",
-".aaaaab.#######b",
-".aaaaab.#######b",
-".aaaaab.#######b",
-".aaaaab.#######b",
-".aaaaab.#######b",
-".aaaaab.#######b",
-".aaaaab.#######b",
-".aaaaab.#######b",
-".aaaaab.#######b",
-"#bbbbbbzbbbbbbbb"};
-
-static const char*dock_close_right[]={
-"16 16 5 1",
-"z c None",
-"b c #c0c000",
-"# c #c0c0c0",
-"a c #868686",
-". c #ffffff",
-"........z......#",
-".#######a.bbbbba",
-".#######a.bbbbba",
-".#######a.bbbbba",
-".#######a.bbbbba",
-".#######a.bbbbba",
-".#######a.bbbbba",
-".#######a.bbbbba",
-".#######a.bbbbba",
-".#######a.bbbbba",
-".#######a.bbbbba",
-".#######a.bbbbba",
-".#######a.bbbbba",
-".#######a.bbbbba",
-".#######a.bbbbba",
-"#aaaaaaaazaaaaaa"};
-
-static const char*dock_close_top[]={
-"16 16 5 1",
-"z c None",
-"  c #c0c000",
-". c #c0c0c0",
-"X c #868686",
-"o c Gray100",
-"ooooooooooooooo.",
-"o              X",
-"o              X",
-"o              X",
-"o              X",
-"o              X",
-"zXXXXXXXXXXXXXXX",
-"oooooooooooooooz",
-"o..............X",
-"o..............X",
-"o..............X",
-"o..............X",
-"o..............X",
-"o..............X",
-"o..............X",
-".XXXXXXXXXXXXXXX"
-};
 /**
  * A special kind of KMainWindow that is able to have dockwidget child widgets.
  *
@@ -169,25 +73,9 @@ static const char*dock_close_top[]={
 KDockMainWindow::KDockMainWindow( const char *name )
 :KMainWindow( 0, name )
 {
-  DockB.dock = 0L;
-  DockB.pos  = KDockWidget::DockBottom;
-
-  DockT.dock = 0L;
-  DockT.pos  = KDockWidget::DockTop;
-
-  DockR.dock = 0L;
-  DockR.pos  = KDockWidget::DockRight;
-
-  DockL.dock = 0L;
-  DockL.pos  = KDockWidget::DockLeft;
-
   QString new_name = QString(name) + QString("_DockManager");
   dockManager = new KDockManager( this, new_name.latin1() );
-  toolbar = 0L;
   mainDockWidget = 0L;
-
-  connect( dockManager, SIGNAL(change()), SLOT(slotDockChange()) );
-  connect( dockManager, SIGNAL(replaceDock(KDockWidget*,KDockWidget*)), SLOT(slotReplaceDock(KDockWidget*,KDockWidget*)) );
 }
 
 KDockMainWindow::~KDockMainWindow()
@@ -198,34 +86,6 @@ void KDockMainWindow::setMainDockWidget( KDockWidget* mdw )
 {
   if ( mainDockWidget == mdw ) return;
   mainDockWidget = mdw;
-  if ( mainDockWidget ){
-    if ( !toolbar ){
-      toolbar = new KToolBar( this );
-      toolbar->insertButton( QPixmap(dock_close_top), 1, true, "Close top dock" );
-      toolbar->insertButton( QPixmap(dock_close_left), 2, true, "Close left dock" );
-      toolbar->insertButton( QPixmap(dock_close_right), 3, true, "Close right dock" );
-      toolbar->insertButton( QPixmap(dock_close_bottom), 4, true, "Close bottom dock" );
-
-      toolbar->setToggle(1);
-      toolbar->setToggle(2);
-      toolbar->setToggle(3);
-      toolbar->setToggle(4);
-
-      toolbar->setButton( 1, true );
-      toolbar->setButton( 2, true );
-      toolbar->setButton( 3, true );
-      toolbar->setButton( 4, true );
-
-      toolbar->setFullSize( false );
-      toolbar->show();
-      connect( toolbar, SIGNAL(toggled(int)), SLOT(slotToggled(int)) );
-      addToolBar( toolbar );
-    }
-  } else {
-    delete toolbar;
-    toolbar = 0L;
-  }
-  slotDockChange();
 }
 
 void KDockMainWindow::setView( QWidget *view )
@@ -242,203 +102,16 @@ KDockWidget* KDockMainWindow::createDockWidget( const QString& name, const QPixm
   return new KDockWidget( dockManager, name.latin1(), pixmap, parent, strCaption, strTabPageLabel );
 }
 
-void KDockMainWindow::slotDockChange()
-{
-  if ( !mainDockWidget ) return;
-
-  KDockWidget* DL = 0L;
-  KDockWidget* DR = 0L;
-  KDockWidget* DT = 0L;
-  KDockWidget* DB = 0L;
-
-  if ( mainDockWidget->parent() == this  || mainDockWidget->parent() == 0L ){
-    if ( toolbar->isButtonOn(1) ) toolbar->setItemEnabled( 1, false );
-    if ( toolbar->isButtonOn(2) ) toolbar->setItemEnabled( 2, false );
-    if ( toolbar->isButtonOn(3) ) toolbar->setItemEnabled( 3, false );
-    if ( toolbar->isButtonOn(4) ) toolbar->setItemEnabled( 4, false );
-    return;
-  }
-
-  KDockWidget* base = mainDockWidget;
-  if ( base->parentTabGroup() )
-    base =dockManager->findWidgetParentDock( base->parentTabGroup() );
-
-  if ( !base )
-    return;
-
-  while ( base != 0L && base->parent()!= 0L && base->parent()->inherits("KDockSplitter") )
-  {
-    KDockSplitter* s = (KDockSplitter*)base->parent();
-    Orientation o = ((KDockWidget*)s->parent())->splitterOrientation;
-    KDockWidget* another = (KDockWidget*)s->getAnother( base );
-    if ( o == Horizontal ){
-      if ( s->getFirst() == base ){
-        DB = DB == 0L ? another : DB;
-      } else {
-        DT = DT == 0L ? another : DT;
-      }
-    } else { //Vertical
-      if ( s->getFirst() == base ){
-        DR = DR == 0L ? another : DR;
-      } else {
-        DL = DL == 0L ? another : DL;
-      }
-    }
-    base = (KDockWidget*)s->parent();
-  }
-  if ( toolbar->isButtonOn(1) ) toolbar->setItemEnabled( 1, DT != 0L );
-  if ( toolbar->isButtonOn(2) ) toolbar->setItemEnabled( 2, DL != 0L );
-  if ( toolbar->isButtonOn(3) ) toolbar->setItemEnabled( 3, DR != 0L );
-  if ( toolbar->isButtonOn(4) ) toolbar->setItemEnabled( 4, DB != 0L );
-
-  /**********************/
-  if ( DB != 0L && toolbar->isButtonOn(4) ){
-    DockB.dock = DB;
-    DockB.dropDock = (KDockWidget*)((KDockSplitter*)DB->parent())->getAnother( DB );
-  }
-  if ( DB == 0L && toolbar->isButtonOn(4) ) DockB.dock = 0L;
-  /**********************/
-  if ( DR != 0L && toolbar->isButtonOn(3) ){
-    DockR.dock = DR;
-    DockR.dropDock = (KDockWidget*)((KDockSplitter*)DR->parent())->getAnother( DR );
-  }
-  if ( DR == 0L && toolbar->isButtonOn(3) ) DockR.dock = 0L;
-  /**********************/
-  if ( DL != 0L && toolbar->isButtonOn(2) ){
-    DockL.dock = DL;
-    DockL.dropDock = (KDockWidget*)((KDockSplitter*)DL->parent())->getAnother( DL );
-  }
-  if ( DL == 0L && toolbar->isButtonOn(2) ) DockL.dock = 0L;
-  /**********************/
-  if ( DT != 0L && toolbar->isButtonOn(1) ){
-    DockT.dock = DT;
-    DockT.dropDock = (KDockWidget*)((KDockSplitter*)DT->parent())->getAnother( DT );
-  }
-  if ( DT == 0L && toolbar->isButtonOn(1) ) DockT.dock = 0L;
-  /**********************/
-}
-
-void KDockMainWindow::slotToggled( int id )
-{
-  switch ( id ){
-    case 1:
-      toolBarManager( toolbar->isButtonOn(1), DockT );
-      break;
-    case 2:
-      toolBarManager( toolbar->isButtonOn(2), DockL );
-      break;
-    case 3:
-      toolBarManager( toolbar->isButtonOn(3), DockR );
-      break;
-    case 4:
-      toolBarManager( toolbar->isButtonOn(4), DockB );
-      break;
-    default:
-      break;
-  }
-}
-
-void KDockMainWindow::toolBarManager( bool toggled, DockPosData &data )
-{
-  if ( data.dock == 0L || data.dropDock == 0L ) return;
-
-  if ( toggled ){
-    data.dock->manualDock( data.dropDock, data.pos, data.sepPos );
-  } else {
-    data.sepPos = ((KDockSplitter*)data.dock->parent())->separatorPos();
-    data.dock->undock();
-  }
-}
-
-void KDockMainWindow::slotReplaceDock( KDockWidget* oldDock, KDockWidget* newDock )
-{
-  DockB.dock = DockB.dock == oldDock ? newDock:DockB.dock;
-  DockT.dock = DockT.dock == oldDock ? newDock:DockT.dock;
-  DockR.dock = DockR.dock == oldDock ? newDock:DockR.dock;
-  DockL.dock = DockL.dock == oldDock ? newDock:DockL.dock;
-
-  DockB.dropDock = DockB.dropDock == oldDock ? newDock:DockB.dropDock;
-  DockT.dropDock = DockT.dropDock == oldDock ? newDock:DockT.dropDock;
-  DockR.dropDock = DockR.dropDock == oldDock ? newDock:DockR.dropDock;
-  DockL.dropDock = DockL.dropDock == oldDock ? newDock:DockL.dropDock;
-}
-
 void KDockMainWindow::makeDockVisible( KDockWidget* dock )
 {
-  if ( !dock ) return;
-
-  if ( toolbar ){
-    toolbar->blockSignals( true );
-
-    QWidget* testWidget = dock;
-
-    while ( testWidget != 0L ){
-      if ( testWidget->isA("KDockWidget") ){
-        KDockWidget* test = (KDockWidget*)testWidget;
-        if ( !toolbar->isButtonOn(1) && DockT.dock == test ){
-          toolbar->toggleButton(1);
-          toolBarManager( true, DockT );
-        }
-        if ( !toolbar->isButtonOn(2) && DockL.dock == test ){
-          toolbar->toggleButton(2);
-          toolBarManager( true, DockL );
-        }
-        if ( !toolbar->isButtonOn(3) && DockR.dock == test ){
-          toolbar->toggleButton(3);
-          toolBarManager( true, DockR );
-        }
-        if ( !toolbar->isButtonOn(4) && DockB.dock == test ){
-          toolbar->toggleButton(4);
-          toolBarManager( true, DockB );
-        }
-      }
-      testWidget = testWidget->parentWidget();
-    }
-
+  if ( dock != 0L)
     dock->makeDockVisible();
-
-    toolbar->blockSignals( false );
-  } else {
-    dock->makeDockVisible();
-  }
 }
 
 void KDockMainWindow::makeDockInvisible( KDockWidget* dock )
 {
-  if ( !dock ) return;
-
-  if ( toolbar ){
-    toolbar->blockSignals( true );
-
-    QWidget* testWidget = dock;
-
-    while ( testWidget != 0L ){
-      if ( testWidget->isA("KDockWidget") ){
-        KDockWidget* test = (KDockWidget*)testWidget;
-        if ( toolbar->isButtonOn(1) && DockT.dock == test ){
-          toolbar->toggleButton(1);
-          toolBarManager( false, DockT );
-        }
-        if ( toolbar->isButtonOn(2) && DockL.dock == test ){
-          toolbar->toggleButton(2);
-          toolBarManager( false, DockL );
-        }
-        if ( toolbar->isButtonOn(3) && DockR.dock == test ){
-          toolbar->toggleButton(3);
-          toolBarManager( false, DockR );
-        }
-        if ( toolbar->isButtonOn(4) && DockB.dock == test ){
-          toolbar->toggleButton(4);
-          toolBarManager( false, DockB );
-        }
-      }
-      testWidget = testWidget->parentWidget();
-    }
-
-    toolbar->blockSignals( false );
-  } else {
+  if ( dock != 0L)
     dock->undock();
-  }
 }
 
 void KDockMainWindow::makeWidgetDockVisible( QWidget* widget )
@@ -448,60 +121,12 @@ void KDockMainWindow::makeWidgetDockVisible( QWidget* widget )
 
 void KDockMainWindow::writeDockConfig( KConfig* c, QString group )
 {
-  if ( toolbar ){
-    toolbar->blockSignals( true );
-
-    if ( !toolbar->isButtonOn(1) ){
-      toolbar->toggleButton(1);
-      toolBarManager( true, DockT );
-    }
-    if ( !toolbar->isButtonOn(2) ){
-      toolbar->toggleButton(2);
-      toolBarManager( true, DockL );
-    }
-    if ( !toolbar->isButtonOn(3) ){
-      toolbar->toggleButton(3);
-      toolBarManager( true, DockR );
-    }
-    if ( !toolbar->isButtonOn(4) ){
-      toolbar->toggleButton(4);
-      toolBarManager( true, DockB );
-    }
-    dockManager->writeConfig( c, group );
-
-    toolbar->blockSignals( false );
-  } else {
-    dockManager->writeConfig( c, group );
-  }
+  dockManager->writeConfig( c, group );
 }
 
 void KDockMainWindow::readDockConfig( KConfig* c, QString group )
 {
-  if ( toolbar ){
-    toolbar->blockSignals( true );
-
-    if ( !toolbar->isButtonOn(1) ){
-      toolbar->toggleButton(1);
-      toolBarManager( true, DockT );
-    }
-    if ( !toolbar->isButtonOn(2) ){
-      toolbar->toggleButton(2);
-      toolBarManager( true, DockL );
-    }
-    if ( !toolbar->isButtonOn(3) ){
-      toolbar->toggleButton(3);
-      toolBarManager( true, DockR );
-    }
-    if ( !toolbar->isButtonOn(4) ){
-      toolbar->toggleButton(4);
-      toolBarManager( true, DockB );
-    }
-    dockManager->readConfig( c, group );
-
-    toolbar->blockSignals( false );
-  } else {
-    dockManager->readConfig( c, group );
-  }
+  dockManager->readConfig( c, group );
 }
 
 

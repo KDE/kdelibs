@@ -708,6 +708,16 @@ public:
   /**
    * Like writeConfig but reads the whole stuff in.
    *
+   * In order to restore a window configuration
+   * from a config file, it looks up widgets by name
+   * (QObject::name) in the childDock variable of
+   * KDockManager. This list in turn contains all
+   * KDockWidgets (according to the KDockWidget constructor).
+   * So in principle, in order to restore a window layout,
+   * one must first construct all widgets, put each of them in a
+   * KDockWidget and then call readConfig(). And for all that
+   * to work, each widget must have a unique name.
+   *
    * @param c the KDE configuration saver
    * @param group the name of the section in KConfig
    */
@@ -965,9 +975,6 @@ private:
  *
  * Docking is fully dynamical at runtime. That means you can always move dockwidgets via drag and drop.
  *
- * Additionally, you get a toolbar for showing and hiding the 4 main dockwidgets which are docked to
- * the actual mainwidget (that is usually a dockwidget as well).
- *
  * And last but not least you can use the popupmenu for showing or hiding any controlled dockwidget
  * of this class and insert it to your main menu bar or anywhere else.
  *
@@ -1092,76 +1099,13 @@ public:
    */
   void setView( QWidget* );
 
-protected slots:
-
-  /**
-   * Updates the dock-toolbar buttons and the internal information about the 4 dockwidgets 
-   * that are directly docked to the main widget.
-   */
-  void slotDockChange();
-
-  /**
-   * Inverts the state of the appropriate toggle-toolbutton of the dock-toolbar.
-   *
-   * @param _ index of the toolbutton
-   */
-  void slotToggled( int );
-
-  /**
-   * Using the given parameters it updates the information about the 4 dockwidgets
-   * that are directly docked to the main widget.
-   *
-   * @param oldDock new main dockwidget
-   * @param newDock old main dockwidget
-   */
-  void slotReplaceDock( KDockWidget* oldDock, KDockWidget* newDock );
-
 protected:
-
-  /**
-   * Used as container for information about one of the 4 dockwidgets that are
-   * directly docked to the main dockwidget.
-   */
-  struct DockPosData
-  {
-    /** A Pointer to the dockwidget at this position */
-    KDockWidget* dock;
-    KDockWidget* dropDock;
-    KDockWidget::DockPosition pos;
-    int sepPos;
-  };
-
-  /**
-   * This method docks as given in the position data, if toggled is true.
-   * Otherwise the dockwidget given with the position data will be undocked.
-   *
-   * @param toggled specifies if the dockwidget gets docked or undocked
-   * @param data    reference to the struct containing information about the appropriate dockwidget
-   */ 
-  void toolBarManager( bool toggled, DockPosData &data );
 
   /** A pointer to the main dockwidget (where one can manualDock() to */
   KDockWidget* mainDockWidget;
 
   /** A pointer to the manager for the dock process */
   KDockManager* dockManager;
-
-  /** Contains information about which dockwidget is docked on the left. */
-  DockPosData DockL;
-
-  /** Contains information about which dockwidget is docked on the right. */
-  DockPosData DockR;
-
-  /** Contains information about which dockwidget is docked at the top. */
-  DockPosData DockT;
-
-  /** Contains information about which dockwidget is docked at the bottom. */
-  DockPosData DockB;
-
-  /** A pointer to the dock toolbar
-   * (for showing or hiding the 4 docked dockwidgets that are docked to the main dockwidget).
-   */
-  KToolBar* toolbar;
 
 private:
   class KDockMainWindowPrivate;
