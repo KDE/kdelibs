@@ -672,7 +672,7 @@ void RenderBox::calcHeight()
                     while(cb && !cb->isRoot())
                         cb = cb->parent();
 
-                if(cb)
+                if(cb && cb->isRoot())
                     h = Length(h.width(static_cast<RenderRoot*>(cb)->view()->visibleHeight()), Fixed);
                 else
                     h = Length(intrinsicHeight(), Fixed);
