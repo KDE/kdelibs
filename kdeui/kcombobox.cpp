@@ -225,14 +225,14 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
             int skipItems = e->delta() / WHEEL_DELTA;
             if ( e->state() & ControlButton ) // fast skipping
                 skipItems *= 10;
-            
+
             int newItem = currentItem() - skipItems;
 
             if ( newItem < 0 )
                 newItem = 0;
             else if ( newItem >= count() )
                 newItem = count() -1;
-            
+
             setCurrentItem( newItem );
             e->accept();
             return true;
@@ -438,7 +438,7 @@ void KHistoryCombo::clearHistory()
 
 void KHistoryCombo::addContextMenuItems( QPopupMenu* menu )
 {
-    if ( menu )
+    if ( menu &&!lineEdit()->text().isEmpty())
     {
         menu->insertSeparator();
         menu->insertItem( i18n("Empty Contents"), this, SLOT( slotClear()));
