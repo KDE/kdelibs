@@ -11,6 +11,19 @@
 1902	kfind (KfindWindow::updateResults)
 1903	kfind (KfindTabDialog::createQuery)
 2000	kfind (kdebase)
+5001    kget
+7001    kiolib (KDirWatch)
+7002    kiolib (KIOCache)
+7003    kiolib (Connection)
+7004    kiolib (Slave)
+7005    kiolib (Filter)
+7006    kiolib (ConnectionSlots::dispatch)
+7007    kiolib (KIOJob)
+7008    kiolib (ProtocolManager)
+7009    kiolib (KMimeType)
+7010    kiolib (KRun)
+7011    kiolib (KRegistry)
+
 
 # 30001-65534 are for KOffice
 30001 koffice
