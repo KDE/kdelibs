@@ -75,7 +75,7 @@ namespace KIO { class Job; }
  * 1a) Reimplement your own KBookmarkOwner
  * 1b) Reimplement and instantiate your own KBookmarkManager
  */
-class KBookmarkMenu : public QObject
+class KIO_EXPORT KBookmarkMenu : public QObject
 {
   Q_OBJECT
   friend class KBookmarkMenuNSImporter;
@@ -228,7 +228,7 @@ protected:
 /**
  * A class connected to KNSBookmarkImporter, to fill KActionMenus.
  */
-class KBookmarkMenuNSImporter : public QObject
+class KIO_EXPORT KBookmarkMenuNSImporter : public QObject
 {
   Q_OBJECT
 public:

@@ -21,14 +21,14 @@
 #ifndef __kbookmarkdombuilder_h
 #define __kbookmarkdombuilder_h
 
-#include <kbookmark.h>
 #include <qvaluestack.h>
 #include <qobject.h>
+#include <kbookmark.h>
 
 /**
  * @since 3.2
  */
-class KBookmarkDomBuilder : public QObject {
+class KIO_EXPORT KBookmarkDomBuilder : public QObject {
    Q_OBJECT
 public:
    KBookmarkDomBuilder(const KBookmarkGroup &group, KBookmarkManager *);

@@ -38,7 +38,7 @@ class QPopupMenu;
  * identical to using KBookmarkMenu so follow the directions
  * there.
  */
-class KBookmarkBar : public QObject
+class KIO_EXPORT KBookmarkBar : public QObject
 {
     Q_OBJECT
     friend class RMB;

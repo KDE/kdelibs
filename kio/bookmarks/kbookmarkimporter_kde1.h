@@ -31,7 +31,7 @@
  * Separated from KBookmarkManager to save memory (we throw this one
  * out once the import is done)
  */
-class KBookmarkImporter
+class KIO_EXPORT KBookmarkImporter
 {
 public:
     KBookmarkImporter( QDomDocument * doc ) : m_pDoc(doc) {}

@@ -25,7 +25,7 @@
 #include <kbookmark.h>
 
 // Clipboard/dnd data : URLs + XML for bookmarks
-class KBookmarkDrag : public QUriDrag
+class KIO_EXPORT KBookmarkDrag : public QUriDrag
 {
 public:
     static KBookmarkDrag * newDrag( const QValueList<KBookmark> & bookmarks,

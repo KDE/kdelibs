@@ -32,7 +32,7 @@
  * A class for importing Opera bookmarks
  * @deprecated
  */
-class KOperaBookmarkImporter : public QObject
+class KIO_EXPORT_DEPRECATED KOperaBookmarkImporter : public QObject
 {
     Q_OBJECT
 public:
@@ -58,7 +58,7 @@ protected:
  * A class for importing Opera bookmarks
  * @since 3.2
  */
-class KOperaBookmarkImporterImpl : public KBookmarkImporterBase
+class KIO_EXPORT KOperaBookmarkImporterImpl : public KBookmarkImporterBase
 {
 public:
     KOperaBookmarkImporterImpl() { }
@@ -71,7 +71,7 @@ private:
 /**
  * @since 3.2
  */
-class KOperaBookmarkExporterImpl : public KBookmarkExporterBase
+class KIO_EXPORT KOperaBookmarkExporterImpl : public KBookmarkExporterBase
 {
 public:
     KOperaBookmarkExporterImpl(KBookmarkManager* mgr, const QString & filename)

@@ -34,7 +34,7 @@
  * and KActionMenu uses it to create actions directly.
  * @since 3.2
  */
-class KBookmarkImporterBase : public QObject
+class KIO_EXPORT KBookmarkImporterBase : public QObject
 {
     Q_OBJECT
 public:
@@ -84,7 +84,7 @@ private:
 /**
  * A class for importing XBEL files
  */
-class KXBELBookmarkImporterImpl : public KBookmarkImporterBase, protected KBookmarkGroupTraverser
+class KIO_EXPORT KXBELBookmarkImporterImpl : public KBookmarkImporterBase, protected KBookmarkGroupTraverser
 {
     Q_OBJECT
 public:

@@ -29,7 +29,7 @@
 /**
  * @since 3.2
  */
-class KBookmarkExporterBase
+class KIO_EXPORT KBookmarkExporterBase
 {
 public:
     KBookmarkExporterBase(KBookmarkManager* mgr, const QString & fileName)

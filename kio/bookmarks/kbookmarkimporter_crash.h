@@ -34,7 +34,7 @@
  * A class for importing all crash sessions as bookmarks
  * @deprecated
  */
-class KDE_DEPRECATED KCrashBookmarkImporter : public QObject
+class KIO_EXPORT_DEPRECATED KCrashBookmarkImporter : public QObject
 {
     Q_OBJECT
 public:
@@ -57,7 +57,7 @@ protected:
  * A class for importing all crash sessions as bookmarks
  * @since 3.2
  */
-class KCrashBookmarkImporterImpl : public KBookmarkImporterBase
+class KIO_EXPORT KCrashBookmarkImporterImpl : public KBookmarkImporterBase
 {
 public:
     KCrashBookmarkImporterImpl() : m_shouldDelete(false) { }
