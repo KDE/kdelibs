@@ -62,7 +62,12 @@ AC_TRY_COMPILE(
 #ifndef F_NOTIFY
 #error no dir notification
 #endif
-siginfo_t *t = 0;
+    int fd;
+    siginfo_t *t = 0;
+
+    fcntl(fd, F_SETSIG, SIGRTMIN);
+    fcntl(fd, F_NOTIFY, DN_DELETE|DN_CREATE|DN_MULTISHOT);
+
 ],kde_cv_have_dnotify=yes)
 
 AC_LANG_RESTORE
