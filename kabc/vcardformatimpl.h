@@ -41,7 +41,7 @@ class AddressBook;
 class VCardFormatImpl {
   public:
     bool load( AddressBook *, Resource *, QFile * );
-    bool save( Addressee *, QFile * );
+    bool save( const Addressee &, QFile * );
 
   protected:
     void addTextValue (VCARD::VCard *, VCARD::EntityType, const QString & );

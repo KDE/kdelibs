@@ -25,10 +25,10 @@
 #include <kstandarddirs.h>
 
 #include "format.h"
-#include "resourcefileconfig.h"
+#include "resourcedirconfig.h"
 #include "stdaddressbook.h"
 
-ResourceFileConfig::ResourceFileConfig( QWidget* parent,  const char* name )
+ResourceDirConfig::ResourceDirConfig( QWidget* parent,  const char* name )
     : ResourceConfigWidget( parent, name )
 {
     resize( 245, 115 ); 
@@ -42,6 +42,7 @@ ResourceFileConfig::ResourceFileConfig( QWidget* parent,  const char* name )
 
     label = new QLabel( i18n( "Location:" ), this );
     fileNameEdit = new KURLRequester( this );
+    fileNameEdit->setMode( KFile::Directory );
 
     mainLayout->addWidget( label, 1, 0 );
     mainLayout->addWidget( fileNameEdit, 1, 1 );
@@ -50,20 +51,20 @@ ResourceFileConfig::ResourceFileConfig( QWidget* parent,  const char* name )
     formatBox->insertItem( i18n( "Binary" ), KABC::Format::Binary );
 }
 
-void ResourceFileConfig::loadSettings( KConfig *config )
+void ResourceDirConfig::loadSettings( KConfig *config )
 {
     uint format = config->readNumEntry( "FileFormat", KABC::Format::VCard );
     formatBox->setCurrentItem( format );
 
-    fileNameEdit->setURL( config->readEntry( "FileName" ) );    
+    fileNameEdit->setURL( config->readEntry( "FilePath" ) );    
     if ( fileNameEdit->url().isEmpty() )
         fileNameEdit->setURL( KABC::StdAddressBook::fileName() );
 }
 
-void ResourceFileConfig::saveSettings( KConfig *config )
+void ResourceDirConfig::saveSettings( KConfig *config )
 {
     config->writeEntry( "FileFormat", formatBox->currentItem() );
-    config->writeEntry( "FileName", fileNameEdit->url() );
+    config->writeEntry( "FilePath", fileNameEdit->url() );
 }
 
-#include "resourcefileconfig.moc"
+#include "resourcedirconfig.moc"

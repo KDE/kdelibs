@@ -60,7 +60,7 @@ bool BinaryFormat::load( AddressBook *addressBook, Resource *resource, QFile *fi
   return true;
 }
 
-bool BinaryFormat::save( Addressee *addressee, QFile *file )
+bool BinaryFormat::save( const Addressee &addressee, QFile *file )
 {
   kdDebug(5700) << "BinaryFormat::save()" << endl;
 
@@ -72,7 +72,7 @@ bool BinaryFormat::save( Addressee *addressee, QFile *file )
   magic = 0x2e93e;
   version = BINARY_FORMAT_VERSION;
 
-  s << magic << version << (*addressee);
+  s << magic << version << addressee;
 
   return true;
 }

@@ -32,10 +32,10 @@ class Addressee;
 */
 class BinaryFormat : public Format
 {
-public:
-  bool load( AddressBook *, Resource *, QFile *file );
-  bool save( Addressee *, QFile *file );
-  bool checkFormat( QFile *file ) const;
+  public:
+    bool load( AddressBook *, Resource *, QFile *file );
+    bool save( const Addressee &, QFile *file );
+    bool checkFormat( QFile *file ) const;
 };
 
 }

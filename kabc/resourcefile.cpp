@@ -2,13 +2,13 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include <qfile.h>
 #include <qregexp.h>
 #include <qtimer.h>
 
 #include <kapplication.h>
 #include <kconfig.h>
 #include <kdebug.h>
-#include <klocale.h>
 #include <kstandarddirs.h>
 #include <kurlrequester.h>
 
@@ -24,33 +24,33 @@ using namespace KABC;
 ResourceFile::ResourceFile( AddressBook *addressBook, const KConfig *config )
     : Resource( addressBook )
 {
-  QString path = config->readEntry( "FilePath" );
-  uint type = config->readNumEntry( "FileFormat", Format::VCard );
+  QString fileName = config->readEntry( "FileName" );
+  uint type = config->readNumEntry( "FileFormat", KABC::Format::VCard );
 
   Format *format = 0;
   switch ( type ) {
-    case Format::VCard:
-      if ( path.isEmpty() )
-        path = StdAddressBook::fileName();
+    case KABC::Format::VCard:
+      if ( fileName.isEmpty() )
+        fileName = StdAddressBook::fileName();
       format = new VCardFormat;
       break;
-    case Format::Binary:
-      if ( path.isEmpty() )
-        path = locateLocal( "data", "kabc/std.bin" );
+    case KABC::Format::Binary:
+      if ( fileName.isEmpty() )
+        fileName = locateLocal( "data", "kabc/std.bin" );
       format = new BinaryFormat;
       break;
     default:
       kdDebug( 5700 ) << "ResourceFile: no valid format type." << endl;
  }
 
-  init( path, format );
+  init( fileName, format );
 }
 
-ResourceFile::ResourceFile( AddressBook *addressBook, const QString &path,
+ResourceFile::ResourceFile( AddressBook *addressBook, const QString &filename,
                             Format *format ) :
   Resource( addressBook )
 {
-  init( path, format );
+  init( filename, format );
 }
 
 ResourceFile::~ResourceFile()
@@ -58,7 +58,7 @@ ResourceFile::~ResourceFile()
   delete mFormat;
 }
 
-void ResourceFile::init( const QString &path, Format *format )
+void ResourceFile::init( const QString &filename, Format *format )
 {
   if ( !format ) {
     mFormat = new VCardFormat();
@@ -66,9 +66,11 @@ void ResourceFile::init( const QString &path, Format *format )
     mFormat = format;
   }
 
-  connect( &mDirWatch, SIGNAL( dirty() ), SLOT( pathChanged() ) );
+  mFileCheckTimer = new QTimer( this );
 
-  setPath( path );
+  setFileName( filename );
+
+  connect( mFileCheckTimer, SIGNAL( timeout() ), SLOT( checkFile() ) );
 }
 
 Ticket *ResourceFile::requestSaveTicket()
@@ -77,9 +79,9 @@ Ticket *ResourceFile::requestSaveTicket()
 
   if ( !addressBook() ) return 0;
 
-  if ( !lock( mPath ) ) {
-    kdDebug(5700) << "ResourceFile::requestSaveTicket(): Can't lock path '"
-                  << mPath << "'" << endl;
+  if ( !lock( mFileName ) ) {
+    kdDebug(5700) << "ResourceFile::requestSaveTicket(): Can't lock file '"
+                  << mFileName << "'" << endl;
     return 0;
   }
   return createTicket( this );
@@ -88,27 +90,7 @@ Ticket *ResourceFile::requestSaveTicket()
 
 bool ResourceFile::open()
 {
-  QDir dir( mPath );
-  if ( !dir.exists() ) // no directory available
-    return dir.mkdir( dir.path() );
-
-  QString testName = dir.entryList( QDir::Files )[0];
-  if ( testName.isNull() || testName.isEmpty() ) // no file in directory
-    return true;
-
-  QFile file( mPath + "/" + testName );
-  if ( !file.open( IO_ReadWrite ) ) {
-    addressBook()->error( i18n( "Can't create file '%1'." ).arg( file.name() ) );
-    return false;
-  }
-
-  if ( file.size() == 0 )
-    return true;
-
-  bool ok = mFormat->checkFormat( &file );
-  file.close();
-
-  return ok;
+  return mFormat->checkFormat( mFileName );
 }
 
 void ResourceFile::close()
@@ -117,84 +99,37 @@ void ResourceFile::close()
 
 bool ResourceFile::load()
 {
-  kdDebug(5700) << "ResourceFile::load(): '" << mPath << "'" << endl;
+  kdDebug(5700) << "ResourceFile::load(): '" << mFileName << "'" << endl;
 
-  QDir dir( mPath );
-  QStringList files = dir.entryList();
-
-  QStringList::Iterator it;
-  bool ok = true;
-  for ( it = files.begin(); it != files.end(); ++it ) {
-    QFile file( mPath + "/" + (*it) );
-
-    if ( !file.open( IO_ReadOnly ) ) {
-      addressBook()->error( i18n( "Unable to open file '%1' for reading" ).arg( file.name() ) );
-      ok = false;
-      continue;
-    }
-
-    if ( !mFormat->load( addressBook(), this, &file ) )
-      ok = false;
-
-    file.close();
-  }
-
-  return ok;
+  return mFormat->load( addressBook(), this, mFileName );
 }
 
 bool ResourceFile::save( Ticket *ticket )
 {
-  kdDebug(5700) << "ResourceFile::save(): '" << mPath << "'" << endl;
+  kdDebug(5700) << "ResourceFile::save()" << endl;
   
-  AddressBook::Iterator it;
-  bool ok = true;
-
-  for ( it = addressBook()->begin(); it != addressBook()->end(); ++it ) {
-    if ( (*it).resource() != this || !(*it).changed() )
-      continue;
-
-    QFile file( mPath + "/" + (*it).uid() );
-    if ( !file.open( IO_ReadWrite ) ) {
-      addressBook()->error( i18n( "Unable to open file '%1' for writing" ).arg( file.name() ) );
-      continue;
-    }
-
-    bool success = mFormat->save( &(*it), &file );
-
-    if ( !success ) {
-      ok = false;
-      file.close();
-      QFile::remove( file.name() );
-      addressBook()->error( i18n( "Unable to save file '%1'." ).arg( file.name() ) );
-      continue;
-    }
-
-    // mark as unchanged
-    (*it).setChanged( false );
-
-    file.close();
-  }
+  bool success = mFormat->save( addressBook(), this, mFileName );
 
   delete ticket;
-  unlock( mPath );
+  unlock( mFileName );
 
-  return ok;
+  return success;
 }
 
-bool ResourceFile::lock( const QString &path )
+bool ResourceFile::lock( const QString &fileName )
 {
   kdDebug(5700) << "ResourceFile::lock()" << endl;
 
-  QString p = path;
-  p.replace( QRegExp("/"), "_" );
+  QString fn = fileName;
+  fn.replace( QRegExp("/"), "_" );
 
-  QString lockName = locateLocal( "data", "kabc/lock/" + p + ".lock" );
+  QString lockName = locateLocal( "data", "kabc/lock/" + fn + ".lock" );
   kdDebug(5700) << "-- lock name: " << lockName << endl;
 
-  if ( QFile::exists( lockName ) ) return false;
+  if (QFile::exists( lockName )) return false;
 
   QString lockUniqueName;
-  lockUniqueName = p + kapp->randomString( 8 );
+  lockUniqueName = fn + kapp->randomString(8);
   mLockUniqueName = locateLocal( "data", "kabc/lock/" + lockUniqueName );
   kdDebug(5700) << "-- lock unique name: " << mLockUniqueName << endl;
 
@@ -217,46 +152,67 @@ bool ResourceFile::lock( const QString &path )
   return false;
 }
 
-void ResourceFile::unlock( const QString &path )
+void ResourceFile::unlock( const QString &fileName )
 {
-  QString p = path;
-  p.replace( QRegExp( "/" ), "_" );
+  QString fn = fileName;
+  fn.replace( QRegExp( "/" ), "_" );
 
-  QString lockName = locate( "data", "kabc/lock/" + p + ".lock" );
+  QString lockName = locate( "data", "kabc/lock/" + fn + ".lock" );
   ::unlink( QFile::encodeName( lockName ) );
   QFile::remove( mLockUniqueName );
   addressBook()->emitAddressBookUnlocked();
 }
 
-void ResourceFile::setPath( const QString &path )
+void ResourceFile::setFileName( const QString &fileName )
 {
-  mDirWatch.stopScan();
-  mDirWatch.removeDir( mPath );
+  mFileName = fileName;
 
-  mPath = path;
-  mDirWatch.addDir( mPath, true );
-  mDirWatch.startScan();
+  struct stat s;
+  int result = stat( QFile::encodeName( mFileName ), &s );
+  if ( result == 0 ) {
+    mChangeTime  = s.st_ctime;
+  }
+
+  mFileCheckTimer->start( 500 );
 }
 
-QString ResourceFile::path() const
+QString ResourceFile::fileName() const
 {
-  return mPath;
+  return mFileName;
 }
 
-void ResourceFile::pathChanged()
+void ResourceFile::checkFile()
 {
-  load();
-  addressBook()->emitAddressBookChanged();
+  struct stat s;
+  int result = stat( QFile::encodeName( mFileName ), &s );
+
+#if 0
+  kdDebug(5700) << "AddressBook::checkFile() result: " << result
+            << " new ctime: " << s.st_ctime
+            << " old ctime: " << mChangeTime
+            << endl;
+#endif
+
+  if ( result == 0 && ( mChangeTime != s.st_ctime ) ) {
+    mChangeTime  = s.st_ctime;
+    load();
+    addressBook()->emitAddressBookChanged();
+  }
 }
 
 QString ResourceFile::identifier() const
 {
-    return path();
+  return fileName();
+}
+
+QString ResourceFile::typeInfo() const
+{
+  return mFormat->typeInfo();
 }
 
 void ResourceFile::removeAddressee( const Addressee& addr )
 {
-    QFile::remove( mPath + "/" + addr.uid() );
+  mFormat->removeAddressee( addr );
 }
 
 #include "resourcefile.moc"

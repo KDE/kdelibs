@@ -2,7 +2,6 @@
 #define KABC_RESOURCEFILE_H
 
 #include <kconfig.h>
-#include <kdirwatch.h>
 
 #include <sys/types.h>
 
@@ -34,38 +33,42 @@ class ResourceFile : public QObject, public Resource
     bool save( Ticket * );
 
     /**
-      Set path to be used for saving.
+      Set name of file to be used for saving.
     */
-    void setPath( const QString & );
+    void setFileName( const QString & );
     /**
-      Return path used for loading and saving the address book.
+      Return name of file used for loading and saving the address book.
     */
-    QString path() const;
+    QString fileName() const;
 
     virtual QString identifier() const;
 
+    QString typeInfo() const;
+
     /**
       Remove a addressee from its source.
-      This method is mainly called by KABC::AddressBook.
+      This method is maily called by KABC::AddressBook.
      */
     void removeAddressee( const Addressee& addr );
 	
   protected slots:
-    void pathChanged();
+    void checkFile();
 
   protected:
-    bool lock( const QString &path );
-    void unlock( const QString &path );
+    bool lock( const QString &fileName );
+    void unlock( const QString &fileName );
+
 
   private:
-    void init( const QString &path, Format *format );
+    void init( const QString &filename, Format *format );
 
+    QString mFileName;
     Format *mFormat;
 
-    KDirWatch mDirWatch;
-
-    QString mPath;
     QString mLockUniqueName;
+    
+    QTimer *mFileCheckTimer;
+    time_t mChangeTime;
 };
 
 }

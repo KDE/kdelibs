@@ -55,16 +55,30 @@ class Format {
      * Load addressbook from file.
      */
     virtual bool load( AddressBook *, Resource *, QFile *file ) = 0;
+    /**
+      Load addressbook from file.
+    */
+    bool load( AddressBook *, Resource *, const QString &fileName );
 
     /**
      * Save a single Addressee to file.
      */
-    virtual bool save( Addressee *, QFile *file ) = 0;
-	
+    virtual bool save( const Addressee &, QFile *file ) = 0;
+    
+    /**
+      Save addressbook to file.
+    */
+    bool save( AddressBook *, Resource *, const QString &fileName );
+    
     /**
      * Checks if given file contains the right format
      */
     virtual bool checkFormat( QFile *file ) const = 0;
+    bool checkFormat( const QString &fileName ) const;
+
+    QString typeInfo();
+    
+    void removeAddressee( const Addressee & );
 };
 
 }

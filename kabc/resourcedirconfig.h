@@ -1,6 +1,6 @@
 /*
     This file is part of libkabc.
-    Copyright (c) 2001 Cornelius Schumacher <schumacher@kde.org>
+    Copyright (c) 2002 Tobias Koenig <tokoe@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -18,39 +18,27 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include "vcardformat.h"
-#include "vcardformatimpl.h"
+#ifndef RESOURCEDIRCONFIG_H
+#define RESOURCEDIRCONFIG_H
 
-using namespace KABC;
+#include <kcombobox.h>
+#include <kurlrequester.h>
 
-VCardFormat::VCardFormat()
-{
-  mImpl = new VCardFormatImpl;
-}
+#include "resourceconfigwidget.h"
 
-VCardFormat::~VCardFormat()
-{
-  delete mImpl;
-}
+class ResourceDirConfig : public ResourceConfigWidget
+{ 
+    Q_OBJECT
 
-bool VCardFormat::load( AddressBook *addressBook, Resource *resource, QFile *file )
-{
-  return mImpl->load( addressBook, resource, file );
-}
+public:
+    ResourceDirConfig( QWidget* parent = 0, const char* name = 0 );
 
-bool VCardFormat::save( const Addressee &addressee, QFile *file )
-{
-  return mImpl->save( addressee, file );
-}
+    KComboBox* formatBox;
+    KURLRequester* fileNameEdit;
 
-bool VCardFormat::checkFormat( QFile *file ) const
-{
-  QString line;
+public slots:
+    void loadSettings( KConfig *config );
+    void saveSettings( KConfig *config );
+};
 
-  file->readLine( line, 1024 );
-  line = line.stripWhiteSpace();
-  if ( line == "BEGIN:VCARD" )
-    return true;
-  else
-    return false;
-}
+#endif

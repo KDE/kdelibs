@@ -181,7 +181,7 @@ bool VCardFormatImpl::load( AddressBook *addressBook, Resource *resource, QFile 
   return true;
 }
 
-bool VCardFormatImpl::save( Addressee *addressee, QFile *file )
+bool VCardFormatImpl::save( const Addressee &addressee, QFile *file )
 {
   VCardEntity vcards;
   VCardList vcardlist;
@@ -191,53 +191,53 @@ bool VCardFormatImpl::save( Addressee *addressee, QFile *file )
 
   VCard *v = new VCard;
 
-  addTextValue( v, EntityName, addressee->name() );
-  addTextValue( v, EntityUID, addressee->uid() );
-  addTextValue( v, EntityFullName, addressee->formattedName() );
+  addTextValue( v, EntityName, addressee.name() );
+  addTextValue( v, EntityUID, addressee.uid() );
+  addTextValue( v, EntityFullName, addressee.formattedName() );
     
-  QStringList emails = addressee->emails();
+  QStringList emails = addressee.emails();
   QStringList::ConstIterator it4;
   for( it4 = emails.begin(); it4 != emails.end(); ++it4 ) {
     addTextValue( v, EntityEmail, *it4 );
   }
 
-  QStringList customs = addressee->customs();
+  QStringList customs = addressee.customs();
   QStringList::ConstIterator it5;
   for( it5 = customs.begin(); it5 != customs.end(); ++it5 ) {
     addCustomValue( v, *it5 );
   }
 
-  addTextValue( v, EntityURL, addressee->url().url() );
+  addTextValue( v, EntityURL, addressee.url().url() );
 
-  addNValue( v, *addressee );
+  addNValue( v, addressee );
 
-  addTextValue( v, EntityNickname, addressee->nickName() );
-  addTextValue( v, EntityMailer, addressee->mailer() );
-  addTextValue( v, EntityTitle, addressee->title() );
-  addTextValue( v, EntityRole, addressee->role() );
-  addTextValue( v, EntityOrganisation, addressee->organization() );
-  addTextValue( v, EntityNote, addressee->note() );
-  addTextValue( v, EntityProductID, addressee->productId() );
-  addTextValue( v, EntitySortString, addressee->sortString() );
+  addTextValue( v, EntityNickname, addressee.nickName() );
+  addTextValue( v, EntityMailer, addressee.mailer() );
+  addTextValue( v, EntityTitle, addressee.title() );
+  addTextValue( v, EntityRole, addressee.role() );
+  addTextValue( v, EntityOrganisation, addressee.organization() );
+  addTextValue( v, EntityNote, addressee.note() );
+  addTextValue( v, EntityProductID, addressee.productId() );
+  addTextValue( v, EntitySortString, addressee.sortString() );
 
-  Address::List addresses = addressee->addresses();
+  Address::List addresses = addressee.addresses();
   Address::List::ConstIterator it3;
   for( it3 = addresses.begin(); it3 != addresses.end(); ++it3 ) {
     addAddressValue( v, *it3 );
     addLabelValue( v, *it3 );
   }
 
-  PhoneNumber::List phoneNumbers = addressee->phoneNumbers();
+  PhoneNumber::List phoneNumbers = addressee.phoneNumbers();
   PhoneNumber::List::ConstIterator it2;
   for( it2 = phoneNumbers.begin(); it2 != phoneNumbers.end(); ++it2 ) {
     addTelephoneValue( v, *it2 );
   }
 
-  addTextValue( v, EntityCategories, addressee->categories().join(",") );
+  addTextValue( v, EntityCategories, addressee.categories().join(",") );
 
-  addDateValue( v, EntityBirthday, addressee->birthday().date() );
-  addDateTimeValue( v, EntityRevision, addressee->revision() );
-  addGeoValue( v, EntityGeo, addressee->geo() );
+  addDateValue( v, EntityBirthday, addressee.birthday().date() );
+  addDateTimeValue( v, EntityRevision, addressee.revision() );
+  addGeoValue( v, EntityGeo, addressee.geo() );
 
   vcardlist.append( v );
 

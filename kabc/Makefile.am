@@ -14,11 +14,9 @@ libkabc_la_SOURCES = \
   distributionlisteditor.cpp resource.cpp \
   vcard21parser.cpp field.cpp resourcefactory.cpp \
   resourceconfigwidget.cpp resourcedlg.cpp errorhandler.cpp \
-  resourcefile.cpp \
-  resourcefileconfig.cpp \
-  binaryformat.cpp \
-  vcardformat.cpp \
-  vcardformatimpl.cpp
+  resourcefile.cpp resourcefileconfig.cpp \
+  format.cpp binaryformat.cpp \
+  vcardformat.cpp vcardformatimpl.cpp
 
 
 kabcincludedir = $(includedir)/kabc

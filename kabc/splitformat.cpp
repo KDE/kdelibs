@@ -159,7 +159,7 @@ int main(int argc,char **argv)
       continue;
     }
 
-    if ( !format->save( &(*it), &addrFile ) ) {
+    if ( !format->save( *it, &addrFile ) ) {
       kdError() << "Can't save '" << addrFile.name() << "'. Skipped!" << endl;
       continue;
     }
