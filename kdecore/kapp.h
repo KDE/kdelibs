@@ -24,11 +24,11 @@
 #define _KAPP_H
 
 // Version macros. Never put this further down.
-#define KDE_VERSION 193
-#define KDE_VERSION_STRING "1.91 Beta >= 20000713"
+#define KDE_VERSION 194
+#define KDE_VERSION_STRING "1.92 Beta >= 20000720"
 #define KDE_VERSION_MAJOR 1
 #define KDE_VERSION_MINOR 9
-#define KDE_VERSION_RELEASE 3
+#define KDE_VERSION_RELEASE 4
 
 class KConfig;
 class KCharsets;
@@ -755,6 +755,11 @@ private:
 #endif
 
 // $Log$
+// Revision 1.175  2000/07/19 02:34:59  matz
+// add a *Private pointer to the remaining classes, that were not only used
+// as namespace, and where a need for reimplementation is even remotely
+// possible.
+//
 // Revision 1.174  2000/07/13 16:08:49  coolo
 // increased date. I've seen bug reports >= 20000708 and I still have 0629 - bah :)
 //
