@@ -1,0 +1,6 @@
+[Desktop Entry]
+Comment=Ada sources
+Icon=source_cpp
+Type=MimeType
+MimeType=text/x-adasrc
+Patterns=*.adb;*.ads;
