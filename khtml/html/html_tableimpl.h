@@ -91,8 +91,8 @@ public:
     void deleteTFoot (  );
     HTMLElementImpl *createCaption (  );
     void deleteCaption (  );
-    HTMLElementImpl *insertRow ( long index );
-    void deleteRow ( long index );
+    HTMLElementImpl *insertRow ( long index, int &exceptioncode );
+    void deleteRow ( long index, int &exceptioncode );
 
     // overrides
     virtual NodeImpl *addChild(NodeImpl *child);
@@ -142,8 +142,8 @@ public:
 
     virtual Id id() const;
 
-    HTMLElementImpl *insertRow ( long index );
-    void deleteRow ( long index );
+    HTMLElementImpl *insertRow ( long index, int& exceptioncode );
+    void deleteRow ( long index, int& exceptioncode );
 
     int numRows() const;
 

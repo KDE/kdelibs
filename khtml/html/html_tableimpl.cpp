@@ -212,7 +212,7 @@ void HTMLTableElementImpl::deleteCaption(  )
     tCaption = 0;
 }
 
-HTMLElementImpl *HTMLTableElementImpl::insertRow( long index )
+HTMLElementImpl *HTMLTableElementImpl::insertRow( long index, int &exceptioncode )
 {
     //kdDebug(6030) << k_funcinfo << index << endl;
     // IE treats index=-1 as default value meaning 'append after last'
@@ -244,10 +244,10 @@ HTMLElementImpl *HTMLTableElementImpl::insertRow( long index )
         section = new HTMLTableSectionElementImpl(docPtr(), ID_TBODY);
         setTBody( section );
     }
-    return section->insertRow( index );
+    return section->insertRow( index, exceptioncode );
 }
 
-void HTMLTableElementImpl::deleteRow( long index )
+void HTMLTableElementImpl::deleteRow( long index, int &exceptioncode )
 {
     HTMLTableSectionElementImpl* section = 0L;
     NodeImpl *node = firstChild();
@@ -263,8 +263,9 @@ void HTMLTableElementImpl::deleteRow( long index )
         }
     }
     if ( section && index >= 0 && index < section->numRows() )
-        section->deleteRow( index );
-    // ## TODO error checking, returning exceptioncode
+        section->deleteRow( index, exceptioncode );
+    else
+        exceptioncode = DOMException::INDEX_SIZE_ERR;
 }
 
 NodeImpl *HTMLTableElementImpl::addChild(NodeImpl *child)
@@ -547,37 +548,44 @@ NodeImpl::Id HTMLTableSectionElementImpl::id() const
 
 // these functions are rather slow, since we need to get the row at
 // the index... but they aren't used during usual HTML parsing anyway
-HTMLElementImpl *HTMLTableSectionElementImpl::insertRow( long index )
+HTMLElementImpl *HTMLTableSectionElementImpl::insertRow( long index, int& exceptioncode )
 {
-    //kdDebug(6030) << k_funcinfo << index << endl;
-    HTMLTableRowElementImpl *r = new HTMLTableRowElementImpl(docPtr());
-
+    HTMLTableRowElementImpl *r = 0L;
     NodeListImpl *children = childNodes();
-    int exceptioncode = 0;
-    if(!children || (int)children->length() <= index)
-        appendChild(r, exceptioncode);
-    else {
-        NodeImpl *n;
-        if(index < 1)
-            n = firstChild();
-        else
-            n = children->item(index);
-        insertBefore(r, n, exceptioncode );
+    int numRows = children ? (int)children->length() : 0;
+    kdDebug(6030) << k_funcinfo << "index=" << index << " numRows=" << numRows << endl;
+    if ( index > numRows ) {
+        exceptioncode = DOMException::INDEX_SIZE_ERR; // per the DOM
     }
-    if(children) delete children;
+    else
+    {
+        r = new HTMLTableRowElementImpl(docPtr());
+        if ( numRows == index )
+            appendChild(r, exceptioncode);
+        else {
+            NodeImpl *n;
+            if(index < 1)
+                n = firstChild();
+            else
+                n = children->item(index);
+            insertBefore(r, n, exceptioncode );
+        }
+    }
+    delete children;
     return r;
 }
 
-void HTMLTableSectionElementImpl::deleteRow( long index )
+void HTMLTableSectionElementImpl::deleteRow( long index, int &exceptioncode )
 {
-    if(index < 0) return;
     NodeListImpl *children = childNodes();
-    if(children && (int)children->length() > index)
+    int numRows = children ? (int)children->length() : 0;
+    if( index >= 0 && index < numRows )
     {
-        int exceptioncode = 0;
         HTMLElementImpl::removeChild(children->item(index), exceptioncode);
     }
-    if(children) delete children;
+    else
+        exceptioncode = DOMException::INDEX_SIZE_ERR;
+    delete children;
 }
 
 
