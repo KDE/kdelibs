@@ -1,7 +1,7 @@
 /*
    This file is part of the KDE libraries
 
-   Copyright (c) 2002 George Staikos <staikos@kde.org>
+   Copyright (c) 2002-2003 George Staikos <staikos@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -24,8 +24,11 @@
 
 #include <kded/kdedmodule.h>
 #include <qstring.h>
+#include <qintdict.h>
 #include "kwalletbackend.h"
 
+#include <time.h>
+#include <stdlib.h>
 
 class KWalletD : public KDEDModule {
 	Q_OBJECT
@@ -36,18 +39,52 @@ class KWalletD : public KDEDModule {
 
 	k_dcop:
 		// Open and unlock the wallet
-		virtual int open(const QString& wallet, const QByteArray& password);
+		virtual int open(const QString& wallet);
 
 		// Close and lock the wallet
-		// Will remain open if others are using it still.
-		virtual int close(const QString& wallet, const QByteArray& password);
+		// If force = true, will close it for all users.  Behave.  This
+		// can break applications, and is generally intended for use by
+		// the wallet manager app only.
+		virtual int close(const QString& wallet, bool force);
+		virtual int close(int handle, bool force);
 
 		// Returns true if the wallet is open
 		virtual bool isOpen(const QString& wallet) const;
+		virtual bool isOpen(int handle) const;
+
+		// A list of all wallets
+		virtual QStringList wallets() const;
+
+		// A list of all folders in this wallet
+		virtual QStringList folderList(int handle);
+
+		// Does this wallet have this folder?
+		virtual bool hasFolder(int handle, const QString& folder);
+
+		// Remove this folder
+		virtual bool removeFolder(int handle, const QString& folder);
+
+		// Read an entry.  If the entry does not exist, it just
+		// returns an empty result.  It is your responsibility to check
+		// hasEntry() first.
+		virtual QByteArray readEntry(int handle, const QString& folder, const QString& key);
+		virtual QString readPassword(int handle, const QString& folder, const QString& key);
+
+		// Write an entry.  rc=0 on success.
+		virtual int writeEntry(int handle, const QString& folder, const QString& key, const QByteArray& value);
+		virtual int writePassword(int handle, const QString& folder, const QString& key, const QString& value);
+
+		// Does the entry exist?
+		virtual bool hasEntry(int handle, const QString& folder, const QString& key);
+
+		// Remove an entry.  rc=0 on success.
+		virtual int removeEntry(int handle, const QString& folder, const QString& key);
+
+	private slots:
+		void slotAppUnregistered(const QCString& app);
 
 	private:
-		QMap<QString,KWallet::Backend*> _wallets;
-		QMap<QString,int> _useCount;
+		QIntDict<KWallet::Backend> _wallets;
 };
 
 

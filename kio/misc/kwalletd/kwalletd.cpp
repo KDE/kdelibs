@@ -20,10 +20,8 @@
 
 */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
+#include <kapplication.h>
+#include <dcopclient.h>
 #include "kwalletd.h"
 
 #include <assert.h>
@@ -54,90 +52,93 @@ extern "C" {
 
 */
 
-/*
-
-   Functions to add:
-
-   - list wallets
-
-   - search wallet
-
-   - add to wallet  (or overwrite of course)
-
-   - remove from wallet
-
-   - list "types" in wallet
-
-   - list contents of wallet
-
-*/
-
-
-
-KWalletD::KWalletD(const QCString &name) : KDEDModule(name)
-{
+KWalletD::KWalletD(const QCString &name)
+: KDEDModule(name) {
+	srand(time(0));
+	KApplication::dcopClient()->setNotifications(true);
+	connect(KApplication::dcopClient(),
+		SIGNAL(applicationRemoved(const QCString&)),
+		this,
+		SLOT(slotAppUnregistered(const QCString&)));
 }
   
 
-KWalletD::~KWalletD()
-{
+KWalletD::~KWalletD() {
 	// Open wallets get closed without being saved of course.
-	for (QMap<QString,KWallet::Backend*>::iterator it = _wallets.begin();
-							it != _wallets.end();
-									++it) {
-		delete it.data();
+	for (QIntDictIterator<KWallet::Backend> it(_wallets);
+						it.current();
+							++it) {
+		emitDCOPSignal("walletClosed(int)", it.currentKey());
+		delete it.current();
+		// FIXME: removeme later
+		_wallets.replace(it.currentKey(), 0L);
 	}
-		
+	_wallets.clear();
 }
 
 
-int KWalletD::open(const QString& wallet, const QByteArray& password) {
-	if (_wallets.contains(wallet)) {
-		assert(_wallets[wallet]->isOpen());
-		_useCount[wallet]++;
-		return 0;
-	}
-
-	_wallets[wallet] = new KWallet::Backend(wallet);
-
-	int rc = _wallets[wallet]->open(password);
-	if (rc != 0) {
-		delete _wallets[wallet];
-		_wallets.remove(wallet);
-	} else {
-		_useCount[wallet] = 1;
-	}
-
-	return rc;
+int KWalletD::open(const QString& wallet) {
 }
 
 
-int KWalletD::close(const QString& wallet, const QByteArray& password) {
-	if (!_wallets.contains(wallet))
-		return -99;
+int KWalletD::close(const QString& wallet, bool force) {
+}
 
-	if (!_wallets[wallet]->isOpen())
-		return -98;
 
-	int rc = _wallets[wallet]->close(password);
-	_useCount[wallet]--;
-
-	if (_useCount[wallet] == 0) {
-		delete _wallets[wallet];
-		_wallets.remove(wallet);
-		_useCount.remove(wallet);
-	}
-	return rc;
+int KWalletD::close(int handle, bool force) {
 }
 
 
 bool KWalletD::isOpen(const QString& wallet) const {
-	if (!_wallets.contains(wallet))
-		return false;
+}
 
-	return _wallets[wallet]->isOpen();
+
+bool KWalletD::isOpen(int handle) const {
+}
+
+
+QStringList KWalletD::wallets() const {
+}
+
+
+QStringList KWalletD::folderList(int handle) {
+}
+
+
+bool KWalletD::hasFolder(int handle, const QString& f) {
+}
+
+
+bool KWalletD::removeFolder(int handle, const QString& f) {
+}
+
+
+QByteArray KWalletD::readEntry(int handle, const QString& folder, const QString& key) {
+}
+
+
+QString KWalletD::readPassword(int handle, const QString& folder, const QString& key) {
+}
+
+
+int KWalletD::writeEntry(int handle, const QString& folder, const QString& key, const QByteArray& value) {
+}
+
+
+int KWalletD::writePassword(int handle, const QString& folder, const QString& key, const QString& value) {
+}
+
+
+bool KWalletD::hasEntry(int handle, const QString& folder, const QString& key) {
+}
+
+
+int KWalletD::removeEntry(int handle, const QString& folder, const QString& key) {
+}
+
+
+void KWalletD::slotAppUnregistered(const QCString& app) {
 }
 
 
 #include "kwalletd.moc"
-
