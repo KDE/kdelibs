@@ -119,17 +119,13 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
   progressButtons->insert( rbProgressNone, ProgressNone );
   hbLayout->addWidget( rbProgressNone, 5 );
 
-  rbProgressSimple = new QRadioButton( i18n("Simple"), progressButtons );
-  progressButtons->insert( rbProgressSimple, ProgressSimple );
-  hbLayout->addWidget( rbProgressSimple, 5 );
+  rbProgressDefault = new QRadioButton( i18n("Default"), progressButtons );
+  progressButtons->insert( rbProgressDefault, ProgressDefault );
+  hbLayout->addWidget( rbProgressDefault, 5 );
 
-  rbProgressList = new QRadioButton( i18n("List"), progressButtons );
-  progressButtons->insert( rbProgressList, ProgressList );
-  hbLayout->addWidget( rbProgressList, 5 );
-
-  rbProgressLittle = new QRadioButton( i18n("Little"), progressButtons );
-  progressButtons->insert( rbProgressLittle, ProgressLittle );
-  hbLayout->addWidget( rbProgressLittle, 5 );
+  rbProgressStatus = new QRadioButton( i18n("Status"), progressButtons );
+  progressButtons->insert( rbProgressStatus, ProgressStatus );
+  hbLayout->addWidget( rbProgressStatus, 5 );
 
   progressButtons->setButton( pr );
   changeProgressMode( pr );
@@ -158,8 +154,8 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
   main_widget->setMinimumSize( main_widget->sizeHint() );
   setView( main_widget );
 
-  //littleProgress = new KIOLittleProgressDlg( statusBar() );
-  //statusBar()->insertWidget( littleProgress, littleProgress->width() , 0 );
+  statusProgress = new StatusbarProgress( statusBar() );
+  statusBar()->addWidget( statusProgress, statusProgress->width() , false );
 
   kmain = this;
 
@@ -186,7 +182,7 @@ void KioslaveTest::changeOperation( int id ) {
 void KioslaveTest::changeProgressMode( int id ) {
   progressMode = id;
 
-  if ( progressMode == ProgressLittle ) {
+  if ( progressMode == ProgressStatus ) {
     enableStatusBar( KStatusBar::Show );
   } else {
     enableStatusBar( KStatusBar::Hide );
@@ -216,32 +212,6 @@ void KioslaveTest::startJob() {
   }
 
   pbStart->setEnabled( false );
-
-  /*
-  job = new KIOJob;
-  job->cacheToPool(true);
-  */
-
-  /*
-  switch ( progressMode ) {
-  case ProgressSimple:
-    job->setGUImode( KIOJob::SIMPLE );
-    break;
-
-  case ProgressList:
-    job->setGUImode( KIOJob::LIST );
-    break;
-
-  case ProgressLittle:
-    job->setGUImode( KIOJob::CUSTOM );
-    job->setProgressDlg( littleProgress );
-    break;
-
-  default:
-    job->setGUImode( KIOJob::NONE );
-    break;
-  }
-  */
 
   switch ( selectedOperation ) {
   case List:
@@ -296,6 +266,11 @@ void KioslaveTest::startJob() {
 
   connect( job, SIGNAL( result( KIO::Job * ) ),
 	   SLOT( slotResult( KIO::Job * ) ) );
+
+  if (progressMode == ProgressStatus) {
+    statusProgress->setJob( job );
+  }
+
 
   pbStop->setEnabled( true );
 }
@@ -419,7 +394,7 @@ static KCmdLineOptions options[] =
  { "o", 0, 0 },
  { "operation <operation>", "Operation (list,listrecursive,stat,get,copy,move,del,shred,mkdir)", "copy" },
  { "p", 0, 0 },
- { "progress <progress>", "Progress Type (none,simple,list,little)", "simple" }
+ { "progress <progress>", "Progress Type (none,default,status)", "default" }
 };
 
 int main(int argc, char **argv) {
@@ -461,12 +436,10 @@ int main(int argc, char **argv) {
   tmps = args->getOption("progress");
   if ( tmps == "none") {
     pr = KioslaveTest::ProgressNone;
-  } else if ( tmps == "simple") {
-    pr = KioslaveTest::ProgressSimple;
-  } else if ( tmps == "list") {
-    pr = KioslaveTest::ProgressList;
-  } else if ( tmps == "little") {
-    pr = KioslaveTest::ProgressLittle;
+  } else if ( tmps == "default") {
+    pr = KioslaveTest::ProgressDefault;
+  } else if ( tmps == "status") {
+    pr = KioslaveTest::ProgressStatus;
   } else KCmdLineArgs::usage("unknown progress mode");
 
   args->clear(); // Free up memory

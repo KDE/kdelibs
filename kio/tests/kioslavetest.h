@@ -21,9 +21,9 @@
 
 #include <ktmainwindow.h>
 
-//#include "kio/littleprogress_dlg.h"
 #include "kio/job.h"
 #include "kio/global.h"
+#include "kio/statusbarprogress.h"
 
 class KioslaveTest : public KTMainWindow {
   Q_OBJECT
@@ -34,8 +34,7 @@ public:
 
   enum Operations { List, ListRecursive, Stat, Get, Put, Copy, Move, Delete, Shred, Mkdir };
 
-  enum ProgressModes { ProgressNone, ProgressSimple,
-		       ProgressList, ProgressLittle };
+  enum ProgressModes { ProgressNone, ProgressDefault, ProgressStatus };
 
 protected:
 
@@ -68,9 +67,8 @@ protected:
   QButtonGroup *progressButtons;
 
   QRadioButton *rbProgressNone;
-  QRadioButton *rbProgressSimple;
-  QRadioButton *rbProgressList;
-  QRadioButton *rbProgressLittle;
+  QRadioButton *rbProgressDefault;
+  QRadioButton *rbProgressStatus;
 
   QPushButton *pbStart;
   QPushButton *pbStop;
@@ -93,7 +91,7 @@ private:
   KIO::Job *job;
   QWidget *main_widget;
 
-  //  KIOLittleProgressDlg *littleProgress;
+  StatusbarProgress *statusProgress;
 
   int selectedOperation;
   int progressMode;
