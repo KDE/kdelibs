@@ -250,12 +250,15 @@ Database::open()
             return false;
         
         if (m_tables.contains(QUERYTABLE)) {
+            kdDebug(20000) << "ok, we have detected the query table" << endl;
             TablePtr queryTable = getTable(QUERYTABLE);
             if (queryTable) {
                 RecordsetPtr rec = queryTable->openRecordset();
                 RecordsetIterator iter = rec->begin();
-                while (iter++) {
-                    m_queries.append(iter->field("Name")->asString());
+                while (iter.current()) {
+                    kdDebug(20000) << iter->field("Name")->toString() << endl;
+                    m_queries.append(iter->field("Name")->toString());
+                    iter++;
                 }
                 
             }

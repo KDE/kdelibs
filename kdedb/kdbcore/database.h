@@ -17,8 +17,8 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */     
-#ifndef DATABASE_H
-#define DATABASE_H
+#ifndef KDB_DATABASE_H
+#define KDB_DATABASE_H
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -57,7 +57,6 @@ typedef QListIterator<Database> DatabaseIterator;
  *
  *
  * @author Alessandro Praduroux <pradu@thekompany.com>
- * @author Michael Koch  <m_kock@bigfoot.de>
  * @version kdbcore 0.0.2
  */
 class Database : public Object{

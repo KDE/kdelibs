@@ -17,8 +17,8 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */     
-#ifndef CONNECTOR_H
-#define CONNECTOR_H
+#ifndef KDB_CONNECTOR_H
+#define KDB_CONNECTOR_H
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -36,7 +36,8 @@ namespace KDB {
 class Exception;
 class Handler;
 class Table;
-
+class Field;
+ 
 /**
  * @short base interaction class for plugins.
  *
@@ -46,7 +47,6 @@ class Table;
  *
  *
  * @author Alessandro Praduroux <pradu@thekompany.com>
- * @author Michael Koch  <m_kock@bigfoot.de>
  * @version kdbcore 0.0.2
  */
  
@@ -125,6 +125,22 @@ class Connector :public Object {
      */
     virtual bool dropTable(const QString & name) = 0;
 
+    /**
+     * append a file to a table. the underlying DBMS must issue an alter here
+     */
+    virtual bool appendField(const QString &table, Field *f) = 0;
+
+    /**
+     * remove a field from a table. the underlying DBMS must issue an alter here
+     */
+    virtual bool removeField(const QString &table, const QString &field) = 0;
+
+    /**
+     * change the definition of a field of the given table. the underlying DBMS
+     * must issue an alter here
+     */
+    virtual bool changeField(const QString &table, Field *f) = 0;
+    
     /**
      * clones the current object. If the object holds an open connection,
      * the resulting connector must be open too.

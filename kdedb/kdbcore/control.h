@@ -17,8 +17,8 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */     
-#ifndef CONTROL_H
-#define CONTROL_H
+#ifndef KDB_CONTROL_H
+#define KDB_CONTROL_H
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -37,7 +37,6 @@ namespace KDB {
  * provide a subclass of this class.
  *
  * @author Alessandro Praduroux <pradu@thekompany.com>
- * @author Michael Koch  <m_kock@bigfoot.de>
  * @version kdbcore 0.0.2
  */
 

@@ -17,8 +17,8 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */     
-#ifndef HANDLER_H
-#define HANDLER_H
+#ifndef KDB_HANDLER_H
+#define KDB_HANDLER_H
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>

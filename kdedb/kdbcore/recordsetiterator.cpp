@@ -200,6 +200,9 @@ RecordPtr
 RecordsetIterator::findFirst(const QString &field, const Value &val)
 {
     //kdDebug(20000) << "RecordsetIterator::findFirst" << " field=" << field << " val=" << val << endl;
+    if (m_handler->count() == 0)
+        return 0L;
+    
     moveFirst();    
     RecordPtr p = current();
     do {
@@ -215,6 +218,10 @@ RecordPtr
 RecordsetIterator::findNext(const QString &field, const Value &val)
 {
     //kdDebug(20000) << "RecordsetIterator::findNext" << " field=" << field << " val=" << val << endl;
+
+    if (m_handler->count() == 0)
+        return 0L;
+
     RecordPtr p;
     while (p = operator++()) {
         if (val == p->field(field).value()) {
@@ -230,6 +237,8 @@ RecordPtr
 RecordsetIterator::findPrevious(const QString &field, const Value &val)
 {
     //kdDebug(20000) << "RecordsetIterator::findPrevious" << " field=" << field << " val=" << val << endl;
+    if (m_handler->count() == 0)
+        return 0L;
     RecordPtr p;
     while (p = operator--()) {
         if (val == p->field(field).value()) {
@@ -245,6 +254,8 @@ RecordPtr
 RecordsetIterator::findLast(const QString &field, const Value &val)
 {
     //kdDebug(20000) << "RecordsetIterator::findLast" << " field=" << field << " val=" << val << endl;
+    if (m_handler->count() == 0)
+        return 0L;
     moveLast();    
     RecordPtr p = current();
     do {

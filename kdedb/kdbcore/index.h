@@ -17,8 +17,8 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */     
-#ifndef INDEX_H
-#define INDEX_H
+#ifndef KDB_INDEX_H
+#define KDB_INDEX_H
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -41,7 +41,6 @@ typedef QListIterator<Index> IndexIterator;
  * Things such fields involved, ordering, if primary or not and so on.
  *
  * @author Alessandro Praduroux <pradu@thekompany.com>
- * @author Michael Koch  <m_kock@bigfoot.de>
  * @version kdbcore 0.0.2
  */
 class Index : public Object{

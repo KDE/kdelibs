@@ -17,8 +17,8 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
-#ifndef TABLE_H
-#define TABLE_H
+#ifndef KDB_TABLE_H
+#define KDB_TABLE_H
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -53,7 +53,6 @@ typedef KSharedPtr<Recordset> RecordsetPtr;
  * @ref openRecordset
  *
  * @author Alessandro Praduroux <pradu@thekompany.com>
- * @author Michael Koch  <m_kock@bigfoot.de>
  * @version kdbcore 0.0.2
  */
 class Table :public DataObject {
@@ -86,6 +85,13 @@ public:
      * alter table to the underlying DBMS.
      */
     bool removeField(const QString &name);
+
+    /**
+     * changes a field definition and issue an
+     * alter table to the underlying DBMS.
+     * the field must be already present in the list of fields
+     */
+    bool changeField(Field *);
 
     /**
      * returns an existing field by name, or 0L if the

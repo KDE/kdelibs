@@ -17,8 +17,8 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */     
-#ifndef PLUGIN_H
-#define PLUGIN_H
+#ifndef KDB_PLUGIN_H
+#define KDB_PLUGIN_H
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -62,7 +62,6 @@ typedef QListIterator<Plugin> PluginIterator;
  *
  *
  * @author Alessandro Praduroux <pradu@thekompany.com>
- * @author Michael Koch  <m_kock@bigfoot.de>
  * @version kdbcore 0.0.2
  */
 class Plugin: public Object {

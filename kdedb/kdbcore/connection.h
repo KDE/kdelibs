@@ -17,8 +17,8 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */     
-#ifndef CONNECTION_H
-#define CONNECTION_H
+#ifndef KDB_CONNECTION_H
+#define KDB_CONNECTION_H
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -51,7 +51,6 @@ typedef QListIterator<Connection> ConnectionIterator;
  * @li creation of new databases (@ref createDatabase )
  *
  * @author Alessandro Praduroux <pradu@thekompany.com>
- * @author Michael Koch  <m_kock@bigfoot.de>
  * @version kdbcore 0.0.2
  */
 

@@ -19,15 +19,15 @@
 */
 
 /**
- * @mainpage
+ * @libdoc the KDE Data access library
  *
- * @section daom Data Access Object Model
+ * @sect Data Access Object Model
  *
  * The class hierarchy of Data access objects is contained in the namespace KDB.
  * All objects are QObjects, and event notification will be performed through QT
  * signal/slot mechanism
  *
- * @section funct Functionality provided
+ * @sect Functionality provided
  *
  * The kdbcore library provides primitives for accessing databases, and it
  * represent an 'abstraction layer' over the different database systems.
@@ -49,7 +49,7 @@
  * A Query object can also be used to build SQL statement giving a list of
  * fields, tables and filter conditions.
  *
- * @section type The KDB type system
+ * @sect The KDB type system
  *
  * Each DBMS implements its own type system. Most (but not all) of these type
  * systems are a superset of the SQL92 specification. The goal of the KDB core
@@ -68,7 +68,7 @@
  * for the standard types. The implementation for a specific field type will throw
  * an exception if an incorrect conversion is attempted.
  *
- * @section dyncap Dynamic capability system
+ * @sect Dynamic capability system
  *
  * Not each DBMS implements the same set of features. Some don't use
  * transactions, or stored procedures, or other specific feature. Being a
@@ -85,7 +85,7 @@
  * stored procedures).
  *
  * The first kind of capability is implemented within the interface of the base
- * object that can implement it (like %KDB::Database::beginTransaction (not implemented yet)).
+ * object that can implement it (like @ref KDB::Connection::beginTransaction ).
  * this implementation will throw an exception if the plugin does not support
  * such a capability
  *
@@ -93,7 +93,7 @@
  * the @ref KDB::Plugin::createObject method. With this method the programmer
  * can obtain a KDB::Capability subclass that can be casted to the specific type
  *
- * @section notes Other useful notes
+ * @sect Other useful notes
  *
  * Memory is managed internally by the library itself. Every object is created within
  * the library and either is destroyed when the library is unloaded or is a reference
@@ -101,7 +101,6 @@
  *
  *
  * @author Alessandro Praduroux <pradu@thekompany.com>
- * @author Michael Koch  <m_kock@bigfoot.de>
  * @version kdbcore 0.0.2
  */
 

@@ -17,8 +17,8 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */     
-#ifndef OBJECT_H
-#define OBJECT_H
+#ifndef KDB_OBJECT_H
+#define KDB_OBJECT_H
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -41,7 +41,6 @@ namespace KDB {
  * error reporting
  *
  * @author Alessandro Praduroux <pradu@thekompany.com>
- * @author Michael Koch  <m_kock@bigfoot.de>
  * @version kdbcore 0.0.2
  */
 class Object: public QObject {

@@ -17,8 +17,8 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */     
-#ifndef EXCEPTION_H
-#define EXCEPTION_H
+#ifndef KDB_EXCEPTION_H
+#define KDB_EXCEPTION_H
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -36,7 +36,6 @@ namespace KDB {
  * depends on the subclasses of this class
  *
  * @author Alessandro Praduroux <pradu@thekompany.com>
- * @author Michael Koch  <m_kock@bigfoot.de>
  * @version kdbcore 0.0.2
  */
 class Exception : public QObject {

@@ -17,8 +17,8 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */     
-#ifndef RECORDSETITERATOR_H
-#define RECORDSETITERATOR_H
+#ifndef KDB_RECORDSETITERATOR_H
+#define KDB_RECORDSETITERATOR_H
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -40,7 +40,6 @@ class Recordset;
  * either sequentialy or randomly.
  *
  * @author Alessandro Praduroux <pradu@thekompany.com>
- * @author Michael Koch  <m_kock@bigfoot.de>
  * @version KDB 0.0.2
  */
 class RecordsetIterator: public Object {

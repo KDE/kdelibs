@@ -147,10 +147,10 @@ Table::newField(const QString &name)
 bool
 Table::appendField(Field *f)
 {
-    // must change it to an alter when in design mode.
     if (!designMode()) {
-        pushError(new InvalidRequest(this, QString("Table %1 is not in design mode").arg(name())));
-        return false;
+        // the table exists, issue an alter
+        if (!connector->appendField(name(), f))
+            return false;
     }
     m_fields.append(f);
     emit fieldAdded(f);
@@ -161,19 +161,41 @@ Table::appendField(Field *f)
 bool
 Table::removeField(const QString &name)
 {
-    // must change it to an alter when in design mode.
-    if (!designMode()) {
-        pushError(new InvalidRequest(this, QString("Table %1 is not in design mode").arg(this->name())));
+    
+    Field * f = getField(name);
+    if (!f) {
         return false;
     }
-    Field * f = getField(name);
-    if (error()) {
-        return false;
+
+    if (!designMode()) {
+        // the table exists, issue an alter
+        if (!connector->removeField(this->name(), name))
+            return false;
     }
     
     m_fields.remove(f);
     emit fieldRemoved(f);
     emit changed();
+    return true;
+}
+
+bool
+Table::changeField(Field *f)
+{
+    // do nothing in design mode, we haven't created the table yet
+    if (!designMode()) {
+        Field * test = getField(f->name());
+        if (!test) {
+            pushError(new ObjectNotFound(this,
+                                         QString("Field %1 is not in table %2").arg(f->name())
+                                         .arg(name())));
+            return false;
+        }
+        
+        if (!connector->changeField(name(), f))
+            return false;
+    }
+    
     return true;
 }
 

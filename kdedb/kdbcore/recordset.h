@@ -17,8 +17,8 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */     
-#ifndef RECORDSET_H
-#define RECORDSET_H
+#ifndef KDB_RECORDSET_H
+#define KDB_RECORDSET_H
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -55,7 +55,6 @@ typedef KSharedPtr<Recordset> RecordsetPtr;
  * existing ones. Updates are allowed in the @ref KDB::Record class
  *
  * @author Alessandro Praduroux <pradu@thekompany.com>
- * @author Michael Koch  <m_kock@bigfoot.de>
  * @version kdbcore 0.0.2
  */
 class Recordset : public DataObject {

@@ -17,8 +17,8 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
-#ifndef DBENGINE_H
-#define DBENGINE_H
+#ifndef KDB_DBENGINE_H
+#define KDB_DBENGINE_H
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -52,7 +52,6 @@ class Database;
  * and @ref openConnection
  *
  * @author Alessandro Praduroux <pradu@thekompany.com>
- * @author Michael Koch  <m_kock@bigfoot.de>
  * @version kdbcore 0.0.2
  */
 
