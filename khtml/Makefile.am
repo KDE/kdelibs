@@ -31,8 +31,8 @@ khtmlcache.cpp: khtmlcache.moc
 khtmlembed.cpp: khtmlembed.moc
 
 DISTCLEANFILES = $(SRC_META)
-include_HEADERS = khtml.h khtmlview.h khtmlsavedpage.h khtmlembed.h
-noinst_HEADERS = khtmlchain.h khtmlparser.h khtmljscript.h khtmlobj.h khtmlfont.h khtmlform.h khtmltoken.h khtmlframe.h khtmlclue.h khtmldata.h khtmltable.h khtmliter.h khtmlcache.h khtmlstyle.h
+include_HEADERS = khtml.h khtmlview.h khtmlsavedpage.h khtmlembed.h khtmlcache.h 
+noinst_HEADERS = khtmlchain.h khtmlparser.h khtmljscript.h khtmlobj.h khtmlfont.h khtmlform.h khtmltoken.h khtmlframe.h khtmlclue.h khtmldata.h khtmltable.h khtmliter.h khtmlstyle.h
 libkhtml_la_LDFLAGS = -version-info 2:0
 
 data_DATA = khtml_dnd.xpm
