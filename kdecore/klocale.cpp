@@ -170,7 +170,7 @@ KLocale::KLocale( const QString& _catalogue )
       KConfigGroupSaver saver(config, QString::fromLatin1("Locale"));
       chset = config->readEntry(QString::fromLatin1("Charset"));
     }
-    if (chset.isNull()) chset = QString::fromLatin1("unicode");
+    if (chset.isNull()) chset = QString::fromLatin1("iso-8859-1");
 
     catalogues = new QStrList(true);
 
