@@ -60,8 +60,6 @@ KWalletD::KWalletD(const QCString &name)
 	connect(_timeouts, SIGNAL(timedOut(int)), this, SLOT(timedOut(int)));
 	reconfigure();
 	KGlobal::dirs()->addResourceType("kwallet", "share/apps/kwallet");
-	KApplication::dcopClient()->setNotifications(true);
-	KApplication::dcopClient()->setQtBridgeEnabled(false);
 	connect(KApplication::dcopClient(),
 		SIGNAL(applicationRemoved(const QCString&)),
 		this,
