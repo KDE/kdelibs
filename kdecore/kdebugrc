@@ -2,6 +2,10 @@
 # This allows to leave the kDebug* calls in the code, but still have them
 # disabled for most users.
 
+# KFile debug info off
+[250]
+InfoOutput=4
+
 # KSpell debug info off
 [750]
 InfoOutput=4
