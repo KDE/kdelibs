@@ -200,7 +200,7 @@ StyleBaseImpl::parseToChar(const QChar *curP, const QChar *endP, QChar c, bool c
 		curP = parseToChar(curP + 1, endP, ']', false);
 		if (!curP)
 		    return(0);
-	    } 
+	    }
 	}
         curP++;
     }
@@ -592,7 +592,8 @@ void StyleBaseImpl::parseProperty(const QChar *curP, const QChar *endP, QList<CS
          return;
     }
 
-    parseValue(curP, endP, propPtr->id, important, propList);
+    if(!parseValue(curP, endP, propPtr->id, important, propList))
+	propList->clear();
 
 }
 
@@ -799,7 +800,7 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
 	QString value(curP, endP - curP);
 	QColor c;
 	khtml::setNamedColor(c, value);
-	if(!c.isValid() && (value != "transparent" && value != "")) return false;
+	if(!c.isValid() && (value != "transparent" )) return false;
 	//kdDebug( 6080 ) << "color is: " << c.red() << ", " << c.green() << ", " << c.blue() << endl;
 	parsedValue = new CSSPrimitiveValueImpl(c);
 	break;
@@ -1069,6 +1070,7 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
 	    found = parseValue(curP, nextP, properties[0], important, propList);
 	    if(!found) found = parseValue(curP, nextP, properties[1], important, propList);
 	    if(!found) found = parseValue(curP, nextP, properties[2], important, propList);
+	    if(!found) return false;
 	    curP = nextP+1;
 	    if(curP >= endP) break;
 	}		
@@ -1202,34 +1204,34 @@ bool StyleBaseImpl::parse4Values(const QChar *curP, const QChar *endP, const int
 		   important, propList);
 	return true;
     case 4:
-	parseValue(list.at(0), list.at(1), properties[0],
-		   important, propList);
-	parseValue(list.at(2), list.at(3), properties[1],
-		   important, propList);
+	if(!parseValue(list.at(0), list.at(1), properties[0],
+		   important, propList)) return false;
+	if(!parseValue(list.at(2), list.at(3), properties[1],
+		   important, propList)) return false;
 	parseValue(list.at(0), list.at(1), properties[2],
 		   important, propList);
 	parseValue(list.at(2), list.at(3), properties[3],
 		   important, propList);
 	return true;
     case 6:
-	parseValue(list.at(0), list.at(1), properties[0],
-		   important, propList);
-	parseValue(list.at(2), list.at(3), properties[1],
-		   important, propList);
-	parseValue(list.at(4), list.at(5), properties[2],
-		   important, propList);
+	if(!parseValue(list.at(0), list.at(1), properties[0],
+		   important, propList)) return false;
+	if(!parseValue(list.at(2), list.at(3), properties[1],
+		   important, propList)) return false;
+	if(!parseValue(list.at(4), list.at(5), properties[2],
+		   important, propList)) return false;
 	parseValue(list.at(2), list.at(3), properties[3],
 		   important, propList);
 	return true;
     case 8:
-	parseValue(list.at(0), list.at(1), properties[0],
-		   important, propList);
-	parseValue(list.at(2), list.at(3), properties[1],
-		   important, propList);
-	parseValue(list.at(4), list.at(5), properties[2],
-		   important, propList);
-	parseValue(list.at(6), list.at(7), properties[3],
-		   important, propList);
+	if(!parseValue(list.at(0), list.at(1), properties[0],
+		   important, propList)) return false;
+	if(!parseValue(list.at(2), list.at(3), properties[1],
+		   important, propList)) return false;
+	if(!parseValue(list.at(4), list.at(5), properties[2],
+		   important, propList)) return false;
+	if(!parseValue(list.at(6), list.at(7), properties[3],
+		   important, propList)) return false;
 	return true;
     default:
 	return false;
@@ -1457,7 +1459,7 @@ QString StyleBaseImpl::preprocess(const QString &str)
     bool comment = false;
     bool escape = false;
     bool firstChar = false;
-    
+
     const QChar *ch = str.unicode();
     const QChar *last = str.unicode()+str.length();
     while(ch <= last) {
@@ -1480,7 +1482,7 @@ QString StyleBaseImpl::preprocess(const QString &str)
 	    if ( firstChar ) {
 		if ( *ch == '*' ) {
 		    comment = true;
-		} else { 
+		} else {
 		    processed += '/';
 		    processed += *ch;
 		}
@@ -1490,7 +1492,9 @@ QString StyleBaseImpl::preprocess(const QString &str)
 	    else
 		processed += *ch;
 	}
-	++ch;      
+	else
+	    processed += *ch;
+	++ch;
     }
 
     return processed;
