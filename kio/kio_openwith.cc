@@ -251,7 +251,7 @@ OpenWithDlg::OpenWithDlg( const QString&_text, const QString& _value, QWidget *p
   label = new QLabel( _text , this );
   label->setGeometry( 10, 10, 350, 15 );
 
-  edit = new KLined( this, 0L );
+  edit = new KLineEdit( this, 0L );
 
   if ( _file_mode )
   {
