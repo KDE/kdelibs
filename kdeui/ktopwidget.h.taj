@@ -1,6 +1,5 @@
 #ifndef _KWIDGET_H
 #define _KWIDGET_H
-
 #include <stdlib.h>
 #include <qwidget.h>
 #include <qlist.h>
@@ -137,6 +136,8 @@ protected slots:
          */
 	void updateRects();
 
+  void setFixed();
+
 private:
 	QList <KToolBar> toolbars;
 	QWidget *kmainwidget;
@@ -148,6 +149,16 @@ private:
          * stores the width of the view frame
          */
 	int borderwidth;
+
+  int reclvl;	/* recursion level of updateRects()
+		 * this will prevent from a program to go wild
+		 * if an indefinite recursion occures.
+		 */
+  bool nores;	/* do not call updateRects() from resizeEvent()
+		 * if this flag is set
+		 */
+
+  QSize newmins, newmaxs;
 };
 
 #endif

@@ -1,11 +1,17 @@
 #include <ktopwidget.h>
 #include <ktopwidget.moc>
 
+#include <stdio.h>
+#include <qtimer.h>
+
 
 KTopLevelWidget::KTopLevelWidget(
                                   const char *name )
   : QWidget( 0L, name )
  {
+   reclvl = 0;
+   nores = FALSE;
+
    kmenubar = NULL;
    kmainwidget = NULL;
    kstatusbar = NULL;
@@ -82,6 +88,11 @@ void KTopLevelWidget::focusOutEvent( QFocusEvent *)
 
 void KTopLevelWidget::updateRects()
 {
+  if(++reclvl == 20) {
+    fprintf(stderr, "Recursion too deep, exiting\n");
+    exit(0);
+  }
+
   int t=0, b=0, l=0, r=0;
   int to=-1, bo=-1, lo=-1, ro=-1;
   int h = height();
@@ -247,9 +258,73 @@ void KTopLevelWidget::updateRects()
        if (view_top < kmenubar->height())
          view_top = kmenubar->height();
    }
-  
+
   if (kmainwidget)
    {
+     QSize s(view_right - view_left - 2 * borderwidth,
+	     view_bottom - view_top - 2 * borderwidth );
+     QWidget *w = kmainwidget;
+
+     QSize newsize = s;
+
+     // check for fixed size widgets
+     if(w->minimumSize() == w->maximumSize()) {
+       QSize si = size();
+       si.setWidth(si.width() - s.width() + w->minimumSize().width());
+       si.setHeight(si.height() - s.height() + w->minimumSize().height());
+       if(si != size()) {
+	 nores = TRUE;		// prevent indef. recursion
+	 setFixedSize(si);
+	 nores = FALSE;
+	 updateRects();
+	 reclvl--;
+       }
+     }
+
+     // check for horizontal constraints
+     if(w->minimumSize().width() > s.width())
+       newsize.setWidth(w->minimumSize().width());
+     else if(w->maximumSize().width() < s.width())
+       newsize.setWidth(w->maximumSize().width());
+
+     // check for vertical constraints
+     if(w->minimumSize().height() > s.height())
+       newsize.setHeight(w->minimumSize().height());
+     else if(w->maximumSize().height() < s.height())
+       newsize.setHeight(w->maximumSize().height());     
+     
+     if(s != newsize) {
+	 nores = TRUE;		// prevent indef. recursion
+	 QSize si;
+	 si = size();
+	 si.setWidth(si.width() - s.width() + w->minimumSize().width());
+	 si.setHeight(si.height() - s.height() + w->minimumSize().height());
+	 newmins = si;
+	 if(newmins.width() > s.width() || newmins.height() > s.height())
+	   resize(newmins);
+	 si = size();
+	 si.setWidth(si.width() - s.width() + w->maximumSize().width());
+	 si.setHeight(si.height() - s.height() + w->maximumSize().height());
+	 newmaxs = si;
+	 if(newmaxs.width() < s.width() || newmaxs.height() < s.height())
+	   resize(newmaxs);
+	 QTimer::singleShot(0, this, SLOT(setFixed()));
+	 nores = FALSE;
+	 updateRects();
+	 reclvl--;
+	 return;
+     }
+
+     // remember old mimumum and maximum sizes
+     QSize si;
+     QSize mins = w->minimumSize();
+     QSize maxs = w->maximumSize();
+     si = size();
+     newmins.setWidth(si.width() - s.width() + mins.width());
+     newmins.setHeight(si.height() - s.height() + mins.height());
+     newmaxs.setWidth(si.width() - s.width() + maxs.width());
+     newmaxs.setHeight(si.height() - s.height() + maxs.height());  
+
      kmainwidgetframe->setGeometry( view_left, view_top,
                                     view_right - view_left,
                                     view_bottom - view_top );
@@ -257,7 +332,21 @@ void KTopLevelWidget::updateRects()
      kmainwidget->setGeometry( view_left + borderwidth, view_top + borderwidth,
                                view_right - view_left - 2 * borderwidth,
                                view_bottom - view_top - 2 * borderwidth );
+
+     // set new minimum/maximum size
+     nores = TRUE;
+     QTimer::singleShot(0, this, SLOT(setFixed()));
+     nores = FALSE;
    }
+
+  reclvl--;
+}
+
+void KTopLevelWidget::setFixed() {
+  nores = TRUE;
+  setMinimumSize(newmins);
+  setMaximumSize(newmaxs);
+  nores = FALSE;
 }
 
 void KTopLevelWidget::setFrameBorderWidth(int size){
@@ -269,8 +358,8 @@ void KTopLevelWidget::setFrameBorderWidth(int size){
 void KTopLevelWidget::resizeEvent( QResizeEvent * )
 {
   //menu resizes themself
-
-  updateRects();
+  if(nores == FALSE)
+    updateRects();
 }
 
 KStatusBar *KTopLevelWidget::statusBar()
@@ -301,5 +390,3 @@ void KTopLevelWidget::enableStatusBar( KStatusBar::BarStatus stat )
     kstatusbar->show();
   updateRects();
 }
-
-
