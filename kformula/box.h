@@ -38,8 +38,8 @@
 //references have values above this and below SYMBOL_ABOVE
 #define MAX_REFERENCES 1000 //maximum references per formula
 #define REFERENCE_ABOVE (SYMBOL_ABOVE - MAX_REFERENCES)
-#define IS_REFERENCE(r) ((r) >= REFERENCE_ABOVE && (r) < SYMBOL_ABOVE)
-#define REFERENCE_NUM(r) ((r) < MAX_REFERENCES ? (r) + REFERENCE_ABOVE : /*error*/ 0)
+inline bool IS_REFERENCE(int r) { return (r >= REFERENCE_ABOVE && r < SYMBOL_ABOVE); }
+inline bool REFERENCE_NUM(int r) { return (r < MAX_REFERENCES ? r + REFERENCE_ABOVE : /*error*/ 0); }
 
 //can be set to 0 if you want to print the string out somewhere.
 //UNUSED_OFFSET is only used in this file.
@@ -56,43 +56,47 @@ struct charinfo;
 //each BoxType must be equal to the character that represents it in
 //the string.  The parser depends on that.
 
+typedef int SymbolType;
+typedef int BoxType;
+
 /**
  * @internal
  */
-enum BoxType {
-  PLUS = '+',
-  MINUS = '-',
-  TIMES = '*',
-  DIVIDE = '\\' + UNUSED_OFFSET,
-  POWER = '^' + UNUSED_OFFSET, //just a test to see if it works
-  SQRT = '@' + UNUSED_OFFSET,
-  TEXT = 't',
-  CAT = '#' + UNUSED_OFFSET,
-  SUB = '_' + UNUSED_OFFSET,
-  LSUP = '6' + UNUSED_OFFSET,
-  LSUB = '%' + UNUSED_OFFSET,
-  PAREN = '(',
-  EQUAL = '=',
-  MORE = '>',
-  LESS = '<',
-  ABS = '|',
-  BRACKET = '[',
-  SLASH = '/',
-  MATRIX = 'm' + UNUSED_OFFSET,
-  SEPARATOR = '&' + UNUSED_OFFSET, // separator for matrices
-  ABOVE = ')' + UNUSED_OFFSET, //something useless
-  BELOW = ']' + UNUSED_OFFSET,
-  SYMBOL = 's' + UNUSED_OFFSET, // whatever
-  // char for keeping track of cursor position in undo/redo:
-  CURSOR = 'c' + UNUSED_OFFSET
+namespace Box {
+
+    const BoxType PLUS = '+';
+    const BoxType MINUS = '-';
+    const BoxType TIMES = '*';
+    const BoxType DIVIDE = '\\' + UNUSED_OFFSET;
+    const BoxType POWER  = '^' + UNUSED_OFFSET; //just a test to see if it works
+    const BoxType SQRT = '@' + UNUSED_OFFSET;
+    const BoxType TEXT = 't';
+    const BoxType CAT = '#' + UNUSED_OFFSET;
+    const BoxType SUB = '_' + UNUSED_OFFSET;
+    const BoxType LSUP = '6' + UNUSED_OFFSET;
+    const BoxType LSUB = '%' + UNUSED_OFFSET;
+    const BoxType PAREN = '(';
+    const BoxType EQUAL = '=';
+    const BoxType MORE = '>';
+    const BoxType LESS = '<';
+    const BoxType ABS = '|';
+    const BoxType BRACKET = '[';
+    const BoxType SLASH = '/';
+    const BoxType MATRIX = 'm' + UNUSED_OFFSET;
+    const BoxType SEPARATOR = '&' + UNUSED_OFFSET; // separator for matrices
+    const BoxType ABOVE = ')' + UNUSED_OFFSET; //something useless
+    const BoxType BELOW = ']' + UNUSED_OFFSET;
+    const BoxType SYMBOL = 's' + UNUSED_OFFSET; // whatever
+    // char for keeping track of cursor position in undo/redo:
+    const BoxType CURSOR = 'c' + UNUSED_OFFSET;
 };
 
-enum SymbolType {
-  INTEGRAL = SYMBOL_ABOVE, // symbols have values above that
-  SUM,
-  PRODUCT,
-  ARROW
-  // elements of the symbol font are their own codes + SYMBOL_ABOVE
+namespace Box {
+    const SymbolType INTEGRAL = SYMBOL_ABOVE + 0; // symbols have values above that
+    const SymbolType SUM      = SYMBOL_ABOVE + 1;
+    const SymbolType PRODUCT  = SYMBOL_ABOVE + 2;
+    const SymbolType ARROW    = SYMBOL_ABOVE + 3;
+    // elements of the symbol font are their own codes + SYMBOL_ABOVE
 };
 
 //a box is a unit of a formula.
@@ -115,7 +119,7 @@ friend class KFormula;
 friend class matrixbox;
 
 protected:
-  int type; //the box type
+  BoxType type; //the box type
   QString text; //if a TEXT box, the text
   QFont lastFont; //the last font used
   QRect rect; //its bounding rectangle
@@ -145,7 +149,7 @@ public:
   box();
   box(int setNum);
   box(QString setText);
-  box(BoxType setType, box * setB1 = NULL, box * setB2 = NULL);
+  box(int setType, box * setB1 = NULL, box * setB2 = NULL);
 
   virtual ~box();
 

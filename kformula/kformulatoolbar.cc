@@ -22,6 +22,8 @@
 #include <kglobal.h>
 #include <kstddirs.h>
 
+using namespace Box;
+
 KFormulaToolBar::KFormulaToolBar(QWidget *parent, const char *name, int _item_size)
   : KToolBar(parent, name, _item_size)
 {

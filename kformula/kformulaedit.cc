@@ -27,6 +27,8 @@
 #include <ctype.h>
 #include <qregexp.h>
 
+using namespace Box;
+
 template class QArray<charinfo>;
 template class QArray<_cursorInfo>;
 
@@ -159,7 +161,7 @@ void KFormulaEdit::resizeEvent(QResizeEvent *)
   QPainter p(&pm);
 
   //clear the pixmap
-  p.fillRect(0, 0, pm.width(), pm.height(), getFormula()->getBackColor() ? 
+  p.fillRect(0, 0, pm.width(), pm.height(), getFormula()->getBackColor() ?
 	     *getFormula()->getBackColor() : backgroundColor());
 
   cacheState = ALL_DIRTY;
@@ -184,9 +186,9 @@ void KFormulaEdit::redraw(int all)
   //kdebug(KDEBUG_INFO, 0, "%s", QString(formText).insert(cursorPos, '$').ascii());
   //kdebug(KDEBUG_INFO, 0, "%s", uglyForm().ascii());
 
-  pm.fill( getFormula()->getBackColor() ? 
+  pm.fill( getFormula()->getBackColor() ?
 	   *getFormula()->getBackColor() : backgroundColor());
-  
+
   p.begin(&pm);
   p.setFont(font());
   //only clear what was drawn.
@@ -261,7 +263,8 @@ void KFormulaEdit::redraw(int all)
 //returns a C-like form for the formula.
 QString KFormulaEdit::uglyForm() const
 {
-  KASSERT(restricted, KDEBUG_WARN, 0, "Called uglyForm on a formula that's not restricted.  God knows what might happen.");
+    if (!restricted)
+	kDebugWarning("Called uglyForm on a formula that's not restricted.  God knows what might happen.");
 
   return KFormula::toUgly(formText);
 }

@@ -21,6 +21,7 @@
 #include "kformula.h"
 #include <stdio.h>
 
+using namespace Box;
 
 //-----------------------CONSTRUCTORS AND DESTRUCTORS-----------------
 
@@ -87,7 +88,7 @@ void matrixbox::addElem(box *e)
 }
 
 //----------------------------CALCULATE---------------------------
-void matrixbox::calculate(QPainter &p, int setFontsize, QFont *f_, QColor *bc, QColor *fc)
+void matrixbox::calculate(QPainter &p, int setFontsize, QFont *f_, QColor *, QColor *)
 {
   if(!dirty) return;
 
@@ -110,7 +111,7 @@ void matrixbox::calculate(QPainter &p, int setFontsize, QFont *f_, QColor *bc, Q
   f = p.font();
   if ( f_ )
       f = *f_;
-  
+
   lastFont = f;
   lastFont.setPointSize(fontsize);
   p.setFont(lastFont);

@@ -28,6 +28,8 @@
 #include <kglobal.h>
 #include <kstddirs.h>
 
+using namespace Box;
+
 template class QArray<box*>;
 template class QDict<double>;
 
@@ -127,7 +129,7 @@ QString KFormula::toUgly(QString ugly)
       ugly.insert(i - 2, "sqrt"); // {}@{...}  -->  sqrt{...}
     }
     else { // we have an nth root.  What to do?
-      kdebug(KDEBUG_WARN, 0, "What do you want to do about nth roots?");
+      kDebugWarning("What do you want to do about nth roots?");
       //for now remove the root sign just to keep the conversion alive
       ugly.remove(i, 1);
     }
@@ -278,7 +280,7 @@ int KFormula::findMatch(QString s, int pos)
       pos++;
     }
 
-    kdebug(KDEBUG_ERROR, 0, "Mismatched delimeters.  String = %s", s.ascii());
+    kDebugError("Mismatched delimeters.  String = %s", s.ascii());
     return -1;
   }
 
@@ -292,11 +294,11 @@ int KFormula::findMatch(QString s, int pos)
       pos--;
     }
 
-    kdebug(KDEBUG_ERROR, 0, "Mismatched delimeters.  String = %s", s.ascii());
+    kDebugError( "Mismatched delimeters.  String = %s", s.ascii());
     return -1;
   }
 
-  kdebug(KDEBUG_ERROR, 0, "Bad delimeters.  String = %s", s.ascii());
+  kDebugError( "Bad delimeters.  String = %s", s.ascii());
   return -1;
 }
 
@@ -355,7 +357,7 @@ QSize KFormula::size() const
 
 void KFormula::makeDirty()
 {
-    if ( boxes.size() == 0 ) 
+    if ( boxes.size() == 0 )
 	return;
     for ( unsigned int i = 0; i < boxes.size(); ++i )
 	boxes[ i ]->makeDirty();
@@ -877,13 +879,13 @@ box * KFormula::makeBoxes(QString str, int offset,
     boxes.resize(boxes.size() + 1);
     if(IS_REFERENCE(str[0].unicode())) {
       ASSERT(referenceFetcher != NULL);
-      
+
       KFormula *f = referenceFetcher->getFormula(str[0].unicode() - REFERENCE_ABOVE);
 
       ASSERT(f != NULL);
 
       boxes[boxes.size() - 1] =
-	new box((BoxType)str[0].unicode(), f->boxes[f->boxes.size() - 1]);
+	new box(str[0].unicode(), f->boxes[f->boxes.size() - 1]);
     }
     else
     if(str[0].unicode() < SYMBOL_ABOVE) {
@@ -964,7 +966,7 @@ box * KFormula::makeBoxes(QString str, int offset,
     //boxes array until all the children have been added.
     box *tmpbox;
 
-    tmpbox = new box((BoxType)(str[toplevel].unicode()), //that's the operator.
+    tmpbox = new box(str[toplevel].unicode(), //that's the operator.
 		     makeBoxes(str, offset, toplevel, info),
 		     makeBoxes(str.mid(toplevel + 1), offset + toplevel + 1,
 			       maxlen - toplevel - 1, info));

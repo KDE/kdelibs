@@ -24,6 +24,8 @@
 
 template class QList<box>;
 
+using namespace Box;
+
 //----------------------CONSTRUCTORS AND DESTRUCTORS------------
 //most things they initialize get changed before they are used anyway.
 
@@ -55,7 +57,7 @@ box::box(QString setText)
   parent = NULL;
 }
 
-box::box(BoxType setType, box * setB1, box * setB2)
+box::box(int setType, box * setB1, box * setB2)
 {
   type = setType;
   b1 = setB1;
@@ -142,7 +144,7 @@ void box::offset(int xoffs, int yoffs)
 //far harder.
 //Now the 0 of the bounding rect represents the "midline" to which
 //everything is valigned-- Andrea Rizzi's idea
-void box::calculate(QPainter &p, int setFontsize, QFont *f_, QColor *, QColor *fc)
+void box::calculate(QPainter &p, int setFontsize, QFont *f_, QColor *, QColor *)
 {
   if(!dirty) return;
 
@@ -161,7 +163,7 @@ void box::calculate(QPainter &p, int setFontsize, QFont *f_, QColor *, QColor *f
   f = p.font();
   if ( f_ )
       f = *f_;
-  
+
   lastFont = f;
   lastFont.setPointSize(fontsize);
   p.setFont(lastFont);
@@ -176,7 +178,7 @@ void box::calculate(QPainter &p, int setFontsize, QFont *f_, QColor *, QColor *f
     b1->calculate(p, fontsize);
     rect = b1->getRect();
   }
-  else  
+  else
   switch(type)
     {
     case TEXT:
@@ -517,11 +519,11 @@ void box::draw(QPainter &p, int x, int y, QFont *f_, QColor *bc, QColor *fc)
   QPen oldPen = p.pen();
   //if ( fc )
   //    oldPen = QPen( *fc );
-  
+
   p.setFont(lastFont);
   if ( fc )
       p.setPen( *fc );
-  
+
   QFontMetrics fm( f );
 
   QRect tmp;
