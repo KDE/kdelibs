@@ -80,6 +80,7 @@ HTMLFormElementImpl::HTMLFormElementImpl(DocumentPtr *doc, bool implicit)
     m_enctype = "application/x-www-form-urlencoded";
     m_boundary = "----------" + KApplication::randomString( 42 + 13 );
     m_acceptcharset = "UNKNOWN";
+    m_malformed = false;
 }
 
 HTMLFormElementImpl::~HTMLFormElementImpl()

@@ -469,8 +469,7 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
         m_topMarginQuirk = style()->marginTop().isQuirk();
         m_bottomMarginQuirk = style()->marginBottom().isQuirk();
 
-#warning FIXME
-        if (element() && element()->id() == ID_FORM /*&& element()->isMalformed()*/)
+        if (element() && element()->id() == ID_FORM && static_cast<HTMLFormElementImpl*>(element())->isMalformed())
             // See if this form is malformed (i.e., unclosed). If so, don't give the form
             // a bottom margin.
             m_maxBottomPosMargin = m_maxBottomNegMargin = 0;
