@@ -52,7 +52,7 @@ KHTMLCachedImage::~KHTMLCachedImage()
     if( p ) delete p;
 }
 
-inline void 
+void 
 KHTMLCachedImage::append( HTMLObject *o ) 
 { 
     clients.append( o ); 
@@ -68,13 +68,13 @@ KHTMLCachedImage::remove( HTMLObject *o )
     m->pause();
 }
 
-inline QPixmap *
+QPixmap *
 KHTMLCachedImage::pixmap() 
 {
     return p;
 }
 
-inline void
+void
 KHTMLCachedImage::computeStatus()
 {
     if( size > MAXCACHEABLE && size > KHTMLCache::size()/MAXPERCENT )
@@ -86,7 +86,7 @@ KHTMLCachedImage::computeStatus()
 	status = KHTMLCache::Cached;
 }
 
-inline void 
+void 
 KHTMLCachedImage::clear()
 {
     if( m ) {
@@ -197,7 +197,7 @@ KHTMLCachedImage::data ( QBuffer & _buffer, bool eof )
     return true;
 }
 
-inline void 
+void 
 KHTMLCachedImage::notify( HTMLObject *o )
 {
     if( o )
