@@ -1,9 +1,9 @@
 /*
     $Id$
 
-    Requires the Qt widget libraries, available at no cost at 
+    Requires the Qt widget libraries, available at no cost at
     http://www.troll.no
-       
+
     Copyright (C) 1996 Bernd Johannes Wuebben  <wuebben@kde.org>
     Copyright (c) 1999 Preston Brown <pbrown@kde.org>
 
@@ -31,8 +31,8 @@
 #include <stdlib.h>
 
 #include <qfile.h>
-#include <qstringlist.h> 
-#include <qtextstream.h> 
+#include <qstringlist.h>
+#include <qtextstream.h>
 #include <qfont.h>
 #include <qlayout.h>
 #include <qcombobox.h>
@@ -56,13 +56,13 @@
 #define MINSIZE(x) x->setMinimumSize(x->sizeHint());
 
 
-KFontChooser::KFontChooser(QWidget *parent, const char *name, 
+KFontChooser::KFontChooser(QWidget *parent, const char *name,
 			   bool onlyFixed,
 			   const QStringList &fontList)
   : QWidget(parent, name), usingFixed(onlyFixed)
 {
   QVBoxLayout *layout = new QVBoxLayout(this, 10);
-  
+
   QGroupBox *box1 = new QGroupBox(i18n("Requested Font"), this);
   layout->addWidget(box1);
 
@@ -70,7 +70,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   layout->addWidget(xlfdBox);
 
   QGridLayout *box1Layout = new QGridLayout(box1, 7, 5, 5);
-  
+
   // some spacing at the top
   box1Layout->addRowSpacing(0, 15);
 
@@ -132,7 +132,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
 
   sizeListBox = new QListBox(box1, "sizeListBox");
   box1Layout->addWidget(sizeListBox, 2, 5);
-  
+
   sizeListBox->insertItem( "4" );
   sizeListBox->insertItem( "5" );
   sizeListBox->insertItem( "6" );
@@ -157,7 +157,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   sizeListBox->insertItem( "32" );
   sizeListBox->insertItem( "48" );
   sizeListBox->insertItem( "64" );
-  
+
   connect( sizeListBox, SIGNAL(highlighted(const QString&)),
 	  SLOT(size_chosen_slot(const QString&)) );
   //  sizeListBox->setRowMode(8);
@@ -168,15 +168,15 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   box1Layout->addWidget(charsetLabel, 3, 1, Qt::AlignRight);
   charsetLabel->setText(i18n("Character set:"));
   MINSIZE(charsetLabel);
-  
+
   charsetsCombo = new QComboBox(true, box1, "charsetsCombo");
   box1Layout->addMultiCellWidget(charsetsCombo, 3, 3, 2, 3);
-  
+
   charsetsCombo->setInsertionPolicy(QComboBox::NoInsertion);
   connect(charsetsCombo, SIGNAL(activated(const QString&)),
 	  SLOT(charset_chosen_slot(const QString&)));
   MINSIZE(charsetsCombo);
-  
+
   sampleEdit = new QLineEdit(box1, "sampleEdit");
   sampleEdit->setAlignment(Qt::AlignCenter);
   box1Layout->addMultiCellWidget(sampleEdit, 4, 4, 1, 5);
@@ -184,7 +184,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   tmpFont.setPointSize(24);
   sampleEdit->setFont(tmpFont);
   sampleEdit->setText("The Quick Brown Fox Jumps Over The Lazy Dog");
-  
+
   connect(this, SIGNAL(fontSelected(const QFont &)),
 	  SLOT(displaySample(const QFont &)));
   MINSIZE(sampleEdit);
@@ -209,7 +209,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
 
   // lets initialize the display if possible
   setFont(kapp->generalFont());
-  
+
   // Create displayable charsets list
   fillCharsetsCombo();
 
@@ -241,7 +241,7 @@ void KFontChooser::setFont( const QFont& aFont, bool onlyFixed)
   }
   setupDisplay();
   displaySample(selFont);
-}  
+}
 
 
 void KFontChooser::fillCharsetsCombo()
@@ -255,7 +255,7 @@ void KFontChooser::fillCharsetsCombo()
   for(QString set=sets.first();!set.isNull();set=sets.next())
     charsetsCombo->insertItem( set );
   charsetsCombo->insertItem( i18n("any") );
-  
+
   QString charset=charsets->name(selFont);
   for(i = 0; i < charsetsCombo->count(); i++){
     if (charset == charsetsCombo->text(i)){
@@ -268,14 +268,14 @@ void KFontChooser::fillCharsetsCombo()
 void KFontChooser::family_chosen_slot(const QString& family)
 {
   selFont.setFamily(family);
- 
+
   fillCharsetsCombo();
-  
+
   emit fontSelected(selFont);
 }
 
 void KFontChooser::size_chosen_slot(const QString& size){
-  
+
   QString size_string = size;
 
   selFont.setPointSize(size_string.toInt());
@@ -302,7 +302,7 @@ void KFontChooser::displaySample(const QFont& font)
   QString string;
 
   sampleEdit->setFont(font);
-  
+
   string = getXLFD(font);
   xlfdLabel->setText(string);
 }
@@ -310,13 +310,13 @@ void KFontChooser::displaySample(const QFont& font)
 void KFontChooser::setupDisplay()
 {
   QString aString;
-  int numEntries, i=0; 
+  int numEntries, i=0;
   bool found;
-  
-  numEntries =  familyListBox->count(); 
+
+  numEntries =  familyListBox->count();
   aString = selFont.family();
   found = false;
-  
+
   for (i = 0; i < numEntries; i++) {
     if (aString.lower() == (familyListBox->text(i).lower())) {
       familyListBox->setCurrentItem(i);
@@ -324,9 +324,9 @@ void KFontChooser::setupDisplay()
       break;
     }
   }
-  
-  
-  numEntries =  sizeListBox->count(); 
+
+
+  numEntries =  sizeListBox->count();
   aString.setNum(selFont.pointSize());
   found = false;
 
@@ -340,9 +340,9 @@ void KFontChooser::setupDisplay()
 
   i = (selFont.bold() ? 2 : 0);
   i += (selFont.italic() ? 1 : 0);
-  
+
   styleListBox->setCurrentItem(i);
-  
+
   // Re-create displayable charsets list
   fillCharsetsCombo();
 }
@@ -351,11 +351,11 @@ void KFontChooser::getFontList( QStringList &list, const char *pattern )
 {
   int num;
   char **xFonts = XListFonts( qt_xdisplay(), pattern, 2000, &num );
-  
+
   for ( int i = 0; i < num; i++ ) {
     addFont( list, xFonts[i] );
   }
-  
+
   XFreeFontNames( xFonts );
 }
 
@@ -366,21 +366,21 @@ void KFontChooser::getFontList( QStringList &list, bool fixed )
   // exist on the server where the desktop is running.
 	
   QStringList lstSys, lstKDE;
-  
+
   if ( fixed ) {
     getFontList( lstSys, "-*-*-*-*-*-*-*-*-*-*-m-*-*-*" );
     getFontList( lstSys, "-*-*-*-*-*-*-*-*-*-*-c-*-*-*" );
   } else
     //getFontList( lstSys, "-*-*-*-*-*-*-*-*-*-*-p-*-*-*" );
     getFontList(lstSys, "*");
-  
+
   lstSys.sort();
 
   if ( !kapp->getKDEFonts( lstKDE ) ) {
     list = lstSys;
     return;
   }
-  
+
   for (int i = 0; i < (int) lstKDE.count(); i++) {
     if (lstSys.contains(lstKDE[i]))
       list.append(lstKDE[i]);
@@ -393,22 +393,22 @@ void KFontChooser::addFont( QStringList &list, const char *xfont )
   const char *ptr = strchr( xfont, '-' );
   if ( !ptr )
     return;
-  
+
   ptr = strchr( ptr + 1, '-' );
   if ( !ptr )
     return;
-  
+
   QString font = ptr + 1;
-  
+
   int pos;
   if ( ( pos = font.find( '-' ) ) > 0 ) {
     font.truncate( pos );
-    
+
     if ( font.find( "open look", 0, false ) >= 0 )
       return;
-    
+
     QStringList::Iterator it = list.begin();
-    
+
     for ( ; it != list.end(); ++it )
       if ( *it == font )
 	return;
@@ -457,7 +457,7 @@ QString KFontChooser::getXLFD( const QFont& font )
 	xlfd += "r-"; // slant
   xlfd += "*-"; // set width
   xlfd += "*-"; // pixels (we cannot know portably, because this
-                // depends on the screen resolution 
+                // depends on the screen resolution
   QString numStr;
   numStr.setNum(fi.pointSize()*10); // points
   xlfd += numStr;
@@ -518,13 +518,13 @@ void KFontChooser::showXLFDArea(bool show)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-KFontDialog::KFontDialog( QWidget *parent, const char* name, 
+KFontDialog::KFontDialog( QWidget *parent, const char* name,
 			  bool onlyFixed, bool modal,
-			  const QStringList &fontList) 
+			  const QStringList &fontList)
   : QDialog( parent, name, modal )
 {
   setCaption( i18n("Select Font") );
-  
+
   QVBoxLayout *layout = new QVBoxLayout(this, 10);
 
   chooser = new KFontChooser(this, "fontChooser", onlyFixed, fontList);
@@ -532,14 +532,14 @@ KFontDialog::KFontDialog( QWidget *parent, const char* name,
 
   KButtonBox *bbox = new KButtonBox(this);
   layout->addWidget(bbox);
-  
+
   bbox->addStretch(1);
   QPushButton *button = bbox->addButton(i18n("OK"));
   button->setDefault(true);
-  connect( button, SIGNAL( clicked() ), 
+  connect( button, SIGNAL( clicked() ),
 	  SLOT( accept() ) );
   button = bbox->addButton(i18n("Cancel"));
-  connect( button, SIGNAL( clicked() ), 
+  connect( button, SIGNAL( clicked() ),
 	  SLOT( reject() ) );
   bbox->layout();
   MINSIZE(bbox);
@@ -554,13 +554,13 @@ KFontDialog::KFontDialog( QWidget *parent, const char* name,
 
 int KFontDialog::getFont( QFont &theFont, bool onlyFixed )
 {
-  KFontDialog dlg( 0L, "Font Selector", true, onlyFixed );
+  KFontDialog dlg( 0L, "Font Selector", onlyFixed, true );
   dlg.setFont( theFont );
   int result = dlg.exec();
-  
+
   if ( result == Accepted )
     theFont = dlg.chooser->font();
-  
+
   return result;
 }
 
@@ -571,11 +571,11 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
   KFontDialog dlg( 0L, "Font and Text Selector", true, onlyFixed );
   dlg.setFont( theFont );
   int result = dlg.exec();
-  
+
   if( result == Accepted ) {
     theFont = dlg.chooser->font();
     theString = dlg.chooser->sampleText();
   }
-  
+
   return result;
 }
