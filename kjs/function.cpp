@@ -470,7 +470,7 @@ void FunctionImp::processParameters(ExecState *exec, const List &args)
 #endif
 }
 
-void FunctionImp::processVarDecls(ExecState */*exec*/)
+void FunctionImp::processVarDecls(ExecState * /*exec*/)
 {
 }
 
@@ -732,7 +732,7 @@ void ActivationImp::mark()
 // ------------------------------ GlobalFunc -----------------------------------
 
 
-GlobalFuncImp::GlobalFuncImp(ExecState */*exec*/, FunctionPrototypeImp *funcProto,
+GlobalFuncImp::GlobalFuncImp(ExecState * /*exec*/, FunctionPrototypeImp *funcProto,
 			     int i, int len, const Identifier &_ident)
   : InternalFunctionImp(funcProto), id(i)
 {

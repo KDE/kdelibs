@@ -99,34 +99,34 @@ void Debugger::detach(Interpreter *interp)
   }
 }
 
-bool Debugger::sourceParsed(ExecState */*exec*/, int /*sourceId*/,
+bool Debugger::sourceParsed(ExecState * /*exec*/, int /*sourceId*/,
                             const UString &/*source*/, int /*errorLine*/)
 {
   return true;
 }
 
-bool Debugger::sourceUnused(ExecState */*exec*/, int /*sourceId*/)
+bool Debugger::sourceUnused(ExecState * /*exec*/, int /*sourceId*/)
 {
   return true;
 }
 
-bool Debugger::exception(ExecState */*exec*/, const Value &/*value*/,
+bool Debugger::exception(ExecState * /*exec*/, const Value &/*value*/,
 			 bool /*inTryCatch*/)
 {
   return true;
 }
 
-bool Debugger::atStatement(ExecState */*exec*/)
+bool Debugger::atStatement(ExecState * /*exec*/)
 {
   return true;
 }
 
-bool Debugger::enterContext(ExecState */*exec*/)
+bool Debugger::enterContext(ExecState * /*exec*/)
 {
   return true;
 }
 
-bool Debugger::exitContext(ExecState */*exec*/, const Completion &/*completion*/)
+bool Debugger::exitContext(ExecState * /*exec*/, const Completion &/*completion*/)
 {
   return true;
 }

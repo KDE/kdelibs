@@ -64,7 +64,7 @@ BooleanPrototypeImp::BooleanPrototypeImp(ExecState *exec,
 
 // ------------------------------ BooleanProtoFuncImp --------------------------
 
-BooleanProtoFuncImp::BooleanProtoFuncImp(ExecState */*exec*/, FunctionPrototypeImp *funcProto,
+BooleanProtoFuncImp::BooleanProtoFuncImp(ExecState * /*exec*/, FunctionPrototypeImp *funcProto,
                                          int i, int len, const Identifier &_ident)
   : InternalFunctionImp(funcProto), id(i)
 {
@@ -100,7 +100,7 @@ Value BooleanProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &/*
 // ------------------------------ BooleanObjectImp -----------------------------
 
 
-BooleanObjectImp::BooleanObjectImp(ExecState */*exec*/, FunctionPrototypeImp *funcProto,
+BooleanObjectImp::BooleanObjectImp(ExecState * /*exec*/, FunctionPrototypeImp *funcProto,
                                    BooleanPrototypeImp *booleanProto)
   : InternalFunctionImp(funcProto)
 {

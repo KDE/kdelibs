@@ -265,7 +265,7 @@ bool ObjectImp::hasPropertyByIndex(ExecState *exec, unsigned propertyName) const
 }
 
 // ECMA 8.6.2.5
-bool ObjectImp::deleteProperty(ExecState */*exec*/, const Identifier &propertyName)
+bool ObjectImp::deleteProperty(ExecState * /*exec*/, const Identifier &propertyName)
 {
   int attributes;
   ValueImp *v = _prop.get(propertyName, attributes);
@@ -462,7 +462,7 @@ UString ObjectImp::toString(ExecState *exec) const
   return prim.toString(exec);
 }
 
-Object ObjectImp::toObject(ExecState */*exec*/) const
+Object ObjectImp::toObject(ExecState * /*exec*/) const
 {
   return Object(const_cast<ObjectImp*>(this));
 }

@@ -154,7 +154,7 @@ const ClassInfo StringPrototypeImp::info = {"String", &StringInstanceImp::info, 
 @end
 */
 // ECMA 15.5.4
-StringPrototypeImp::StringPrototypeImp(ExecState */*exec*/,
+StringPrototypeImp::StringPrototypeImp(ExecState * /*exec*/,
                                        ObjectPrototypeImp *objProto)
   : StringInstanceImp(objProto)
 {

@@ -62,7 +62,7 @@ ObjectPrototypeImp::ObjectPrototypeImp(ExecState *exec,
 
 // ------------------------------ ObjectProtoFuncImp --------------------------------
 
-ObjectProtoFuncImp::ObjectProtoFuncImp(ExecState */*exec*/,
+ObjectProtoFuncImp::ObjectProtoFuncImp(ExecState * /*exec*/,
                                        FunctionPrototypeImp *funcProto,
                                        int i, int len, const Identifier &_ident)
   : InternalFunctionImp(funcProto), id(i)
@@ -130,7 +130,7 @@ Value ObjectProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
 
 // ------------------------------ ObjectObjectImp --------------------------------
 
-ObjectObjectImp::ObjectObjectImp(ExecState */*exec*/,
+ObjectObjectImp::ObjectObjectImp(ExecState * /*exec*/,
                                  ObjectPrototypeImp *objProto,
                                  FunctionPrototypeImp *funcProto)
   : InternalFunctionImp(funcProto)

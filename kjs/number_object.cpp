@@ -75,7 +75,7 @@ NumberPrototypeImp::NumberPrototypeImp(ExecState *exec,
 
 // ------------------------------ NumberProtoFuncImp ---------------------------
 
-NumberProtoFuncImp::NumberProtoFuncImp(ExecState */*exec*/, FunctionPrototypeImp *funcProto,
+NumberProtoFuncImp::NumberProtoFuncImp(ExecState * /*exec*/, FunctionPrototypeImp *funcProto,
                                        int i, int len, const Identifier &_ident)
   : InternalFunctionImp(funcProto), id(i)
 {
@@ -415,7 +415,7 @@ const ClassInfo NumberObjectImp::info = {"Function", &InternalFunctionImp::info,
   MIN_VALUE		NumberObjectImp::MinValue	DontEnum|DontDelete|ReadOnly
 @end
 */
-NumberObjectImp::NumberObjectImp(ExecState */*exec*/,
+NumberObjectImp::NumberObjectImp(ExecState * /*exec*/,
                                  FunctionPrototypeImp *funcProto,
                                  NumberPrototypeImp *numberProto)
   : InternalFunctionImp(funcProto)

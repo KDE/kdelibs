@@ -101,7 +101,7 @@ Value Reference::getBase(ExecState *exec) const
   return base;
 }
 
-Identifier Reference::getPropertyName(ExecState */*exec*/) const
+Identifier Reference::getPropertyName(ExecState * /*exec*/) const
 {
   if (baseIsValue) {
     // the spec wants a runtime error here. But getValue() and putValue()

@@ -48,7 +48,7 @@ namespace KJS {
     // test is unused. The JS spec says that RegExp.test should use
     // RegExp.exec, so it has to store $1 etc.
     // bool test(const UString &s, int i = -1);
-    uint subPatterns() const { return nrSubPatterns; }
+    unsigned int subPatterns() const { return nrSubPatterns; }
   private:
     const UString &pattern;
     int flgs;
@@ -59,7 +59,7 @@ namespace KJS {
 #else
     pcre *pcregex;
 #endif
-    uint nrSubPatterns;
+    unsigned int nrSubPatterns;
 
     RegExp();
   };

@@ -61,7 +61,7 @@ RegExpPrototypeImp::RegExpPrototypeImp(ExecState *exec,
 
 // ------------------------------ RegExpProtoFuncImp ---------------------------
 
-RegExpProtoFuncImp::RegExpProtoFuncImp(ExecState */*exec*/, FunctionPrototypeImp *funcProto,
+RegExpProtoFuncImp::RegExpProtoFuncImp(ExecState * /*exec*/, FunctionPrototypeImp *funcProto,
                                        int i, int len, const Identifier &_ident)
   : InternalFunctionImp(funcProto), id(i)
 {
@@ -154,7 +154,7 @@ RegExpImp::~RegExpImp()
 
 // ------------------------------ RegExpObjectImp ------------------------------
 
-RegExpObjectImp::RegExpObjectImp(ExecState */*exec*/,
+RegExpObjectImp::RegExpObjectImp(ExecState * /*exec*/,
                                  FunctionPrototypeImp *funcProto,
                                  RegExpPrototypeImp *regProto)
 
@@ -188,7 +188,7 @@ Object RegExpObjectImp::arrayOfMatches(ExecState *exec, const UString &result) c
   // The returned array contains 'result' as first item, followed by the list of matches
   list.append(String(result));
   if ( lastOvector )
-    for ( uint i = 1 ; i < lastNrSubPatterns + 1 ; ++i )
+    for ( unsigned int i = 1 ; i < lastNrSubPatterns + 1 ; ++i )
     {
       UString substring = lastString.substr( lastOvector[2*i], lastOvector[2*i+1] - lastOvector[2*i] );
       list.append(String(substring));

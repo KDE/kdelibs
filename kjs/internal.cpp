@@ -25,9 +25,6 @@
 #include <stdio.h>
 #include <math.h>
 #include <assert.h>
-#ifndef NDEBUG
-#include <strings.h>      // for strdup
-#endif
 
 #include "array_object.h"
 #include "bool_object.h"
@@ -55,7 +52,7 @@ extern int kjsyyparse();
 using namespace KJS;
 
 namespace KJS {
-  /* work around some strict alignment requirements 
+  /* work around some strict alignment requirements
      for double variables on some architectures (e.g. PA-RISC) */
   typedef union { unsigned char b[8]; double d; } kjs_double_t;
 

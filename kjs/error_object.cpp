@@ -58,7 +58,7 @@ ErrorPrototypeImp::ErrorPrototypeImp(ExecState *exec,
 
 // ------------------------------ ErrorProtoFuncImp ----------------------------
 
-ErrorProtoFuncImp::ErrorProtoFuncImp(ExecState */*exec*/, FunctionPrototypeImp *funcProto)
+ErrorProtoFuncImp::ErrorProtoFuncImp(ExecState * /*exec*/, FunctionPrototypeImp *funcProto)
   : InternalFunctionImp(funcProto)
 {
   Value protect(this);
@@ -91,7 +91,7 @@ Value ErrorProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &/*ar
 
 // ------------------------------ ErrorObjectImp -------------------------------
 
-ErrorObjectImp::ErrorObjectImp(ExecState */*exec*/, FunctionPrototypeImp *funcProto,
+ErrorObjectImp::ErrorObjectImp(ExecState * /*exec*/, FunctionPrototypeImp *funcProto,
                                ErrorPrototypeImp *errorProto)
   : InternalFunctionImp(funcProto)
 {
@@ -135,7 +135,7 @@ Value ErrorObjectImp::call(ExecState *exec, Object &/*thisObj*/, const List &arg
 
 // ------------------------------ NativeErrorPrototypeImp ----------------------
 
-NativeErrorPrototypeImp::NativeErrorPrototypeImp(ExecState */*exec*/, ErrorPrototypeImp *errorProto,
+NativeErrorPrototypeImp::NativeErrorPrototypeImp(ExecState * /*exec*/, ErrorPrototypeImp *errorProto,
                                                  ErrorType et, UString name, UString message)
   : ObjectImp(errorProto)
 {
@@ -149,7 +149,7 @@ NativeErrorPrototypeImp::NativeErrorPrototypeImp(ExecState */*exec*/, ErrorProto
 
 const ClassInfo NativeErrorImp::info = {"Function", &InternalFunctionImp::info, 0, 0};
 
-NativeErrorImp::NativeErrorImp(ExecState */*exec*/, FunctionPrototypeImp *funcProto,
+NativeErrorImp::NativeErrorImp(ExecState * /*exec*/, FunctionPrototypeImp *funcProto,
                                const Object &prot)
   : InternalFunctionImp(funcProto), proto(0)
 {

@@ -388,7 +388,6 @@ namespace KJS {
    * @short Implementation class for functions implemented in JS.
    */
   class FunctionImp : public InternalFunctionImp {
-    friend class Function;
     friend class ActivationImp;
   public:
     FunctionImp(ExecState *exec, const Identifier &n = Identifier::null());

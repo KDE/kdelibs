@@ -79,7 +79,7 @@ namespace KJS {
   private:
     UString lastString;
     int *lastOvector;
-    uint lastNrSubPatterns;
+    unsigned int lastNrSubPatterns;
   };
 
 } // namespace

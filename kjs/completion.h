@@ -46,7 +46,7 @@ namespace KJS {
    * @short Handle for a Completion type.
    */
 // delme
-  class Completion : public Value {
+  class KJS_EXPORT Completion : public Value {
 // fixme
 /*   class Completion : private Value { */
   public:

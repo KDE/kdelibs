@@ -569,7 +569,7 @@ Value PropertyValueNode::evaluate(ExecState *exec) const
 // ----------------------------- PropertyNode ---------------------------------
 
 // ECMA 11.1.5
-Value PropertyNode::evaluate(ExecState */*exec*/) const
+Value PropertyNode::evaluate(ExecState * /*exec*/) const
 {
   Value s;
 
@@ -685,7 +685,7 @@ bool ArgumentListNode::deref()
   return Node::deref();
 }
 
-Value ArgumentListNode::evaluate(ExecState */*exec*/) const
+Value ArgumentListNode::evaluate(ExecState * /*exec*/) const
 {
   assert(0);
   return Value(); // dummy, see evaluateList()
@@ -721,7 +721,7 @@ bool ArgumentsNode::deref()
   return Node::deref();
 }
 
-Value ArgumentsNode::evaluate(ExecState */*exec*/) const
+Value ArgumentsNode::evaluate(ExecState * /*exec*/) const
 {
   assert(0);
   return Value(); // dummy, see evaluateList()
@@ -1924,7 +1924,7 @@ void BlockNode::processVarDecls(ExecState *exec)
 // ----------------------------- EmptyStatementNode ---------------------------
 
 // ECMA 12.3
-Completion EmptyStatementNode::execute(ExecState */*exec*/)
+Completion EmptyStatementNode::execute(ExecState * /*exec*/)
 {
   return Completion(Normal);
 }
@@ -2481,7 +2481,7 @@ bool ClauseListNode::deref()
   return Node::deref();
 }
 
-Value ClauseListNode::evaluate(ExecState */*exec*/) const
+Value ClauseListNode::evaluate(ExecState * /*exec*/) const
 {
   /* should never be called */
   assert(false);
@@ -2538,7 +2538,7 @@ bool CaseBlockNode::deref()
   return Node::deref();
 }
 
-Value CaseBlockNode::evaluate(ExecState */*exec*/) const
+Value CaseBlockNode::evaluate(ExecState * /*exec*/) const
 {
   /* should never be called */
   assert(false);
@@ -2748,7 +2748,7 @@ bool CatchNode::deref()
   return StatementNode::deref();
 }
 
-Completion CatchNode::execute(ExecState */*exec*/)
+Completion CatchNode::execute(ExecState * /*exec*/)
 {
   // should never be reached. execute(exec, arg) is used instead
   assert(0L);
@@ -2894,7 +2894,7 @@ bool ParameterNode::deref()
 }
 
 // ECMA 13
-Value ParameterNode::evaluate(ExecState */*exec*/) const
+Value ParameterNode::evaluate(ExecState * /*exec*/) const
 {
   return Undefined();
 }
