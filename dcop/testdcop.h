@@ -56,5 +56,6 @@ public slots:
 
   void unregistered(const QCString &appName)
      { printf("UNREGISTER: %s\n", appName.data()); }
+  QCStringList functions();
 };
 #endif
