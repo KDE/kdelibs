@@ -1,6 +1,7 @@
 [KDE Print Entry]
 PrintSystem=cups
 Comment=CUPS (Common UNIX Print System)
+Comment[af]=cups (gemeenskaplike unix druk stelsel)
 Comment[be]=CUPS (Агульная сістэма друку UNIX)
 Comment[ca]=CUPS (Sistema d'impressió comú de Unix)
 Comment[cs]=CUPS (Common Unix Print System)
