@@ -4,6 +4,9 @@ usr/lib/libmcop.la
 usr/lib/libkmid.so.0.0.95
 usr/lib/libkmid.so.0
 usr/lib/libkmid.la
+usr/lib/libqtmcop.so.0.0.0
+usr/lib/libqtmcop.so.0
+usr/lib/libqtmcop.la
 usr/lib/mcop/Arts/*
 usr/lib/libarts*.so.*
 usr/lib/libarts*.la
@@ -16,6 +19,8 @@ usr/lib/libsoundserver_idl.la
 usr/lib/libx11globalcomm.so.0.0.0
 usr/lib/libx11globalcomm.so.0
 usr/lib/libx11globalcomm.la
+usr/lib/knotify.so
+usr/lib/knotify.la
 usr/bin/mcopidl
 usr/bin/artsd
 usr/bin/artsplay
@@ -24,7 +29,9 @@ usr/bin/artswrapper
 usr/bin/artsc-config
 usr/bin/artsdsp
 usr/bin/artsshell
+usr/bin/knotify
 usr/share/man/man1/mcopidl*
 usr/share/man/man1/arts*
+usr/share/man/man1/knotify*
 usr/share/doc/kde/HTML/arts*
 usr/share/lintian/overrides/libarts

@@ -109,7 +109,6 @@ kdelibs3: shlib-missing-in-control-file kbzip2filter usr/lib/kde2/kbzip2filter.s
 kdelibs3: shlib-missing-in-control-file b3style usr/lib/b3style.so
 kdelibs3: shlib-missing-in-control-file libkhtmlimage usr/lib/libkhtmlimage.so
 kdelibs3: shlib-missing-in-control-file libkpac usr/lib/kde2/libkpac.so
-kdelibs3: shlib-missing-in-control-file knotify usr/lib/knotify.so
 kdelibs3: shlib-missing-in-control-file dcopserver usr/lib/dcopserver.so
 kdelibs3: shlib-missing-in-control-file kgzipfilter usr/lib/kde2/kgzipfilter.so
 kdelibs3: shlib-missing-in-control-file kio_ftp usr/lib/kde2/kio_ftp.so

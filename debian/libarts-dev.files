@@ -9,6 +9,7 @@ usr/lib/libartsc.so
 usr/lib/libartscbackend.so
 usr/lib/libartsdsp.so
 usr/lib/libkmid.so
+usr/lib/libqtmcop.so
 usr/include/kde/arts/*
 usr/include/kde/artsc/*
 usr/include/kde/libkmid/*
