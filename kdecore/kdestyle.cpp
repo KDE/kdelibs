@@ -195,7 +195,7 @@ void KDEStyle::polish(QPalette &pal)
         radioOnGrp.setColor(QColorGroup::Light, QColor(0, 0, 255));
         radioOnGrp.setColor(QColorGroup::Dark, QColor(0, 0, 128));
     }
-
+/*
     QColorGroup aGrp = pal.active();
     QColorGroup dGrp = pal.disabled();
     QColorGroup iGrp = aGrp;
@@ -207,7 +207,7 @@ void KDEStyle::polish(QPalette &pal)
 
     pal.setInactive(iGrp);
     pal.setDisabled(dGrp);
-
+*/
     config->setGroup(oldGrp);
 }
 
