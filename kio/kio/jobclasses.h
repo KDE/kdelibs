@@ -757,7 +757,7 @@ namespace KIO {
 
     protected:
         KURL m_redirectionURL;
-                    
+
     protected:
 	virtual void virtual_hook( int id, void* data );
     private:

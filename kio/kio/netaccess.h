@@ -32,6 +32,7 @@
 class QStringList;
 class QWidget;
 class KURL;
+template<typename T, typename K> class QMap;
 
 namespace KIO {
 
@@ -312,7 +313,7 @@ public:
 
     /**
      * @deprecated. Use the function above instead. Passing NULL as the
-     *             additional argument will give the same behaviour, but 
+     *             additional argument will give the same behaviour, but
      *             you should try to identify a suitable parent widget
      *             if at all possible.
      */
@@ -336,7 +337,7 @@ public:
 
     /**
      * @deprecated. Use the function above instead. Passing NULL as the
-     *             additional argument will give the same behaviour, but 
+     *             additional argument will give the same behaviour, but
      *             you should try to identify a suitable parent widget
      *             if at all possible.
      */
@@ -361,6 +362,43 @@ public:
      * @return The resulting output of the @p command that is executed.
      */
     static QString fish_execute( const KURL & url, const QString command, QWidget* window );
+
+    /**
+     * This function executes a job in a synchronous way.
+     * If a job fetches some data, pass a QByteArray pointer as data parameter to this function
+     * and after the function returns it will contain all the data fetched by this job.
+     *
+     * <code>
+     * KIO::Job *job = KIO::get( url, false, false );
+     * QMap<QString, QString> metaData;
+     * metaData.insert( "PropagateHttpHeader", "true" );
+     * if ( NetAccess::synchronousRun( job, 0, &data, &url, &metaData ) ) {
+     *   QString responseHeaders = metaData[ "HTTP-Headers" ];
+     *   kdDebug()<<"Response header = "<< responseHeaders << endl;
+     * }
+     * </code>
+     *
+     * @param job job which the function will run. Note that after this function
+     *            finishes running, job is deleted and you can't access it anymore!
+     * @param window main window associated with this job. This is used to
+     *               automatically cache and discard authentication information
+     *               as needed. If NULL, authentication information will be
+     *               cached only for a short duration after which the user will
+     *               again be prompted for passwords as needed.
+     * @param data if passed and relevant to this job then it will contain the data
+     *               that was fetched by the job
+     * @param finalURL if passed will contain the final url of this job (it might differ
+     *                 from the one it was created with if there was a redirection)
+     * @param metaData you can pass a pointer to the map with meta data you wish to
+     *                 set on the job. After the job finishes this map will hold all the
+     *                 meta data from the job.
+     *
+     * @return true on success, false on failure.
+     *
+     * @since 3.4
+     */
+    static bool synchronousRun( Job* job, QWidget* window, QByteArray* data=0,
+                                KURL* finalURL=0, QMap<QString,QString>* metaData=0 );
 
     /**
      * @internal
@@ -388,7 +426,7 @@ public:
 
     /**
      * @deprecated. Use the function above instead. Passing NULL as the
-     *             additional argument will give the same behaviour, but 
+     *             additional argument will give the same behaviour, but
      *             you should try to identify a suitable parent widget
      *             if at all possible.
      */
@@ -426,14 +464,15 @@ private:
     bool dircopyInternal(const KURL::List& src, const KURL& target,
                          QWidget* window, bool move);
     bool statInternal(const KURL & url, int details, bool source, QWidget* window = 0);
-    UDSEntry m_entry;
+
     bool delInternal(const KURL & url, QWidget* window = 0);
     bool mkdirInternal(const KURL & url, int permissions, QWidget* window = 0);
     QString fish_executeInternal(const KURL & url, const QString command, QWidget* window = 0);
+    bool synchronousRunInternal( Job* job, QWidget* window, QByteArray* data,
+                                 KURL* finalURL, QMap<QString,QString>* metaData );
 
     QString mimetypeInternal(const KURL & url, QWidget* window = 0);
     void enter_loop();
-    QString m_mimetype;
 
     /**
      * List of temporary files
@@ -442,15 +481,27 @@ private:
 
     static QString* lastErrorMsg;
     static int lastErrorCode;
-    /**
-     * Whether the download succeeded or not
-     */
-    bool bJobOK;
+
     friend class I_like_this_class;
 
 private slots:
     void slotResult( KIO::Job * job );
     void slotMimetype( KIO::Job * job, const QString & type );
+    void slotData( KIO::Job*, const QByteArray& );
+    void slotRedirection( KIO::Job*, const KURL& );
+
+private:
+    UDSEntry m_entry;
+    QString m_mimetype;
+    QByteArray m_data;
+    KURL m_url;
+    QMap<QString, QString> *m_metaData;
+
+    /**
+     * Whether the download succeeded or not
+     */
+    bool bJobOK;
+
 private:
     class NetAccessPrivate* d;
 };
