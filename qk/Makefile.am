@@ -31,3 +31,5 @@ METASOURCES = AUTO
 moc_qiconview.cpp: $(srcdir)/qiconview.cpp
 	$(MOC) -f$(srcdir)/qiconview.cpp $(srcdir)/qiconview.cpp -o moc_qiconview.cpp
 
+CLEANFILES = moc_qiconview.cpp
+
