@@ -50,7 +50,10 @@ static void exitUsage(const char *progname)
 {
 	fprintf(stderr,"usage: %s [ options ]\n",progname);
 	fprintf(stderr,"-r <samplingrate>   set samplingrate to use\n");
+	fprintf(stderr,"-h                  display this help and exit\n");
 	fprintf(stderr,"-n                  enable network transparency\n");
+	fprintf(stderr,"-F <fragments>      number of fragments\n");
+	fprintf(stderr,"-S <size>           fragment size in bytes\n");
 	exit(1);	
 }
 
@@ -62,7 +65,7 @@ static int  					cfgFragmentSize	= 0;
 static void handleArgs(int argc, char **argv)
 {
 	int optch;
-	while((optch = getopt(argc,argv,"r:nF:S:")) > 0)
+	while((optch = getopt(argc,argv,"r:nF:S:h")) > 0)
 	{
 		switch(optch)
 		{
@@ -74,6 +77,7 @@ static void handleArgs(int argc, char **argv)
 				break;
 			case 'S': cfgFragmentSize = atoi(optarg);
 				break;
+			case 'h':
 			default: 
 					exitUsage(argc?argv[0]:"artsd");
 				break;
