@@ -94,6 +94,10 @@
 30501	csvfilter
 30502	asciifilter
 30503	htmlfilter
+30510	ole-lib
+30511	ole-excel
+30512	ole-powerpoint
+30513	ole-winword
 31000	koffice
 32001	kword
 33000	kword
