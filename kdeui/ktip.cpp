@@ -105,7 +105,8 @@ void KTipDatabase::addTips(const QString& tipFile )
 	return;
     }
 
-    QString content = file.readAll();
+    QByteArray data = file.readAll();
+    QString content = QString::fromUtf8(data.data(), data.size());
 
     int pos = -1;
     while ((pos = content.find("<html>", pos + 1, false)) != -1)
