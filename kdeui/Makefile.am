@@ -47,7 +47,7 @@ include_HEADERS = kprogress.h kcolordlg.h kselect.h \
 		knumvalidator.h kdialog.h kdialogbase.h \
 		kjanuswidget.h kaboutdialog.h kpixmapeffect.h \
 		kauthicon.h kmessagebox.h \
-		kdualcolorbtn.h kpalette.h ktoolbarbutton.h \
+		kdualcolorbtn.h ktoolbarbutton.h \
 		ktoolbarradiogroup.h ktextbrowser.h kaction.h
 
 # the order of the sources isn't randomly (at least not completly).
@@ -68,7 +68,7 @@ libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp knuminput.cpp  \
 		kcharselect.cpp kcolordrag.cpp qxembed.cpp \
 		knumvalidator.cpp kdialog.cpp kdialogbase.cpp \
 		kjanuswidget.cpp kaboutdialog.cpp kpixmapeffect.cpp \
-		kauthicon.cpp kmessagebox.cpp kdualcolorbtn.cpp kpalette.cpp \
+		kauthicon.cpp kmessagebox.cpp kdualcolorbtn.cpp \
 		ktoolbarradiogroup.cpp ktoolbarbutton.cpp ktoolbaritem.cpp \
 		ktextbrowser.cpp kaction.cpp
 
