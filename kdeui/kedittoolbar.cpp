@@ -235,6 +235,7 @@ void KEditToolbar::slotOk()
   }
   else
   {
+    emit newToolbarConfig();
     accept();
   }
 }
@@ -243,6 +244,7 @@ void KEditToolbar::slotApply()
 {
     (void)m_widget->save();
     enableButtonApply(false);
+    emit newToolbarConfig();
 }
 
 KEditToolbarWidget::KEditToolbarWidget(KActionCollection *collection,

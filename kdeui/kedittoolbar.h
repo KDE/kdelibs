@@ -58,11 +58,19 @@ class KEditToolbarWidgetPrivate;
  * If you are using KMainWindow's settings methods (either save/apply manually
  * or autoSaveSettings), you should write something like:
  * <pre>
- * saveMainWindowSettings( KGlobal::config(), "MainWindow" );
- * KEditToolbar dlg(actionCollection());
- * if (dlg.exec())
+ * void MyClass::slotConfigureToolbars()
  * {
- *    createGUI();
+ *   saveMainWindowSettings( KGlobal::config(), "MainWindow" );
+ *   KEditToolbar dlg(actionCollection());
+ *   connect(&dlg,SIGNAL(newToolbarConfig()),this,SLOT(slotNewToolBarConfig()));
+ *   if (dlg.exec())
+ *   {
+ *      createGUI();
+ *   }
+ * }
+ *
+ * void MyClass::slotNewToolBarConfig() // This is called when OK or Apply is clicked
+ * {
  *    ...if you use any action list, use plugActionList on each here...
  *    applyMainWindowSettings( KGlobal::config(), "MainWindow" );
  * }
@@ -79,13 +87,13 @@ class KEditToolbarWidgetPrivate;
  * An example would be:
  *
  * <pre>
+ * saveMainWindowSettings( KGlobal::config(), "MainWindow" );
  * KEditToolbar dlg(factory());
- * if (dlg.exec())
- * ...
- * </pre>
+ * connect(&dlg,SIGNAL(newToolbarConfig()),this,SLOT(slotNewToolBarConfig()));
+ * dlg.exec(); // Note that you shouldn't call createGUI(), so if() might not be even needed anymore
  *
- * See previous example for adding calls to save/applyMainWindowSettings
- * and plugging action lists back in.
+ * ... // See above for slotNewToolBarConfig
+ * </pre>
  *
  * @short A dialog used to customize or configure toolbars.
  * @author Kurt Granroth <granroth@kde.org>
@@ -167,6 +175,14 @@ protected slots:
   * @internal
   **/
   void acceptOK(bool b);
+
+signals:
+  /**
+   * Signal emitted when 'apply' or 'ok' is clicked.
+   * Connect to it, to plug action lists and to call applyMainWindowSettings
+   * (see sample code in this class's documentation)
+   */
+  void newToolbarConfig();
 
 private:
   void init();
