@@ -402,8 +402,8 @@ protected:
     void invalidateVerticalPositions();
     short getVerticalPosition( bool firstLine ) const;
 
-    RenderStyle* m_style;
 private:
+    RenderStyle* m_style;
     DOM::NodeImpl* m_node;
     RenderObject *m_parent;
     RenderObject *m_previous;

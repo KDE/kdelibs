@@ -269,8 +269,8 @@ RenderText::RenderText(DOM::NodeImpl* node, DOMStringImpl *_str)
 
 void RenderText::setStyle(RenderStyle *_style)
 {
-    if ( m_style != _style ) {
-	m_style = _style;
+    if ( style() != _style ) {
+	RenderObject::setStyle( _style );
 	m_lineHeight = RenderObject::lineHeight(false);
 
 	if ( style()->fontVariant() == SMALL_CAPS ) {
@@ -729,7 +729,7 @@ int RenderText::yPos() const
 
 const QFont &RenderText::font()
 {
-    return m_style->font();
+    return style()->font();
 }
 
 void RenderText::setText(DOMStringImpl *text)
@@ -828,7 +828,7 @@ unsigned int RenderText::width(unsigned int from, unsigned int len, const QFontM
     if ( from + len > str->l ) len = str->l - from;
 
     int w;
-    if ( _fm == &m_style->fontMetrics() && from == 0 && len == str->l )
+    if ( _fm == &style()->fontMetrics() && from == 0 && len == str->l )
  	 w = m_maxWidth;
     if( len == 1)
         w = _fm->width( *(str->s+from) );
