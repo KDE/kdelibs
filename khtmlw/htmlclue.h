@@ -406,6 +406,7 @@ protected:
     void setCells( unsigned int r, unsigned int c, HTMLTableCell *cell );
     void calcColumnWidths();
     void optimiseCellWidth();
+    void scaleColumns(unsigned int c_start, unsigned int c_end, int tooAdd);
     void calcRowHeights();
     void addRows( int );
     void addColumns( int );

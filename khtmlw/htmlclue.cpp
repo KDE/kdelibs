@@ -56,12 +56,15 @@ void HTMLTableCell::setMaxWidth( int _max_width )
     // We allow fixed width cells to be resized in a table
 //    width = max_width = _max_width;
     max_width = _max_width;
-/*
+
+	if (max_width > 0)
+	{
     if ( percent > 0 )
 	width = _max_width * percent / 100;
     else if ( !isFixedWidth() )
 	width = max_width;
-*/
+	}
+
     for ( obj = head; obj != 0; obj = obj->next() )
 	obj->setMaxWidth( max_width );
 }
@@ -78,9 +81,11 @@ int HTMLTableCell::calcMinWidth()
 	    minWidth = w;
     }
 
-//    if ( isFixedWidth() )
-//	return width > minWidth ? width : minWidth;
-
+    if ( isFixedWidth() )
+    {
+        if (width > minWidth)
+            minWidth = width;
+    }
     return minWidth;
 }
 
@@ -469,8 +474,18 @@ void HTMLTable::calcColumnWidths()
 	    }
 	    else
 	    {
-		colPos = columnPrefPos[indx] + cell->calcPreferredWidth() +
-			padding + padding + spacing + borderExtra;
+		colPos = cell->calcPreferredWidth();
+#if 1
+		if (max_width > 0)
+		{
+			if (colPos > max_width)
+			{
+			   colPos = max_width;
+			}
+		}
+#endif
+		colPos += columnPrefPos[indx] + padding + padding + 
+			  spacing + borderExtra;
 		if ( columnPrefPos[c + 1] < colPos )
 		    columnPrefPos[c + 1] = colPos;
 	    }
@@ -478,12 +493,9 @@ void HTMLTable::calcColumnWidths()
 	    if ( columnPrefPos[c + 1] < columnPos[c + 1] )
 		columnPrefPos[c + 1] = columnPos[c + 1];
 	}
+	if (columnPrefPos[c + 1] <= columnPrefPos[c])
+	    columnPrefPos[c + 1] = columnPrefPos[c]+1;
     }
-/*
-    debug( "Cell widths" );
-    for ( c = 0; c <= totalCols; c++ )
-	debug( "cell min: %d, cell pref: %d", columnPos[c], columnPrefPos[c] );
-*/
 }
 
 // Use the minimum and preferred cell widths to produce an optimum
@@ -491,109 +503,374 @@ void HTMLTable::calcColumnWidths()
 // the optimum cell widths.
 void HTMLTable::optimiseCellWidth()
 {
-    unsigned int c, c1;
     int tableWidth = width - border;
-    int totalPref = 0, totalMin = 0, totalPc = 0;
 
     columnOpt = columnPos.copy();
 
-    if ( ( ( percent > 0 || isFixedWidth() ) &&
-	    tableWidth > columnPos[ totalCols ] ) ||
-	    columnPrefPos[totalCols] > tableWidth )
+// This condition is changed!
+//	if ( ( ( percent > 0 || isFixedWidth() ) &&
+//			tableWidth > columnPos[ totalCols ] ) ||
+//			columnPrefPos[totalCols] > tableWidth )
+	if (  
+		   (  
+	         (percent > 0) || 
+				isFixedWidth() ||
+				(columnPrefPos[totalCols] > tableWidth )
+			) &&
+			(tableWidth > columnPos[ totalCols ] )
+		)
     {
+		int addSize = tableWidth - columnPos[ totalCols];
+		scaleColumns(0, totalCols-1, addSize);
+	}
+
+//	else
+//	{
+//		columnOpt = columnPrefPos.copy();
+//	}
+}
+
+void HTMLTable::scaleColumns(unsigned int c_start, unsigned int c_end, int tooAdd)
+{
+	unsigned int r, c;
+	int colspan;
 	int addSize;
+	int minWidth, prefWidth;
+	int totalAllowed, totalRequested;
+   int borderExtra = ( border == 0 ) ? 0 : 1;
+	int tableWidth = width - border;
+//						  - totalCols * (padding * 2 + spacing + borderExtra);
+     
+	int *prefColumnWidth;
 
 	// satisfy fixed width cells
-	for ( c = 1; c <= totalCols; c++ )
+	for ( colspan = 0; colspan <= 1; colspan++)
 	{
-	    int prefWidth = columnPrefPos[c] - columnPrefPos[c-colSpan[c]];
-	    int minWidth = columnPos[c] - columnPos[c-colSpan[c]];
+		for ( r = 0; r < totalRows; r++ )
+		{
+			for ( c = c_start; c <= c_end; c++ )
+	{
+            HTMLTableCell *cell = cells[r][c];
+				
+				if (cell == 0L)
+					continue;
+				if ( r < totalRows - 1 && cells[r+1][c] == cell )
+				   continue;
 
-	    if ( colType[c] == Fixed && prefWidth > minWidth )
+				/* Fixed cells only */
+            if ( !cell->isFixedWidth() )
+            	continue;
+
+				if (colspan == 0)	
+				{
+					// colSpan == 1
+					if (cell->colSpan() != 1)
+						continue;
+				}
+				else
 	    {
-		addSize = prefWidth - minWidth;
+					// colSpan > 1
+					if (cell->colSpan() <= 1)
+						continue;
+					if ( c < totalCols - 1 && cells[r][c+1] == cell )
+						continue;
+				}			                          		
+	    
+	    		minWidth = columnOpt[c+1] - columnOpt[c+1-cell->colSpan()];
+				prefWidth = cell->getWidth() + padding +
+								padding + spacing + borderExtra;
+				if (prefWidth <= minWidth)
+					continue;
 
-		for ( c1 = c; c1 <= totalCols; c1++ )
+				addSize = (prefWidth - minWidth);
+				
+				tooAdd -= addSize;
+				
+				if (colspan == 0)
+				{
+					unsigned int c1;
+					// Just add this to the column size
+					for ( c1 = c+1; c1 <= totalCols; c1++ )
 		    columnOpt[c1] += addSize;
 	    }
+				else
+				{
+					unsigned int c_b = c+1-cell->colSpan();
 
-	    if ( colType[c] == Percent && prefWidth > minWidth )
-		totalPc += ( prefWidth - minWidth );
-	}
+					// Some end-conditions are required here to prevent looping
+					if (c_b < c_start)
+						continue;
+					if ((c_b == c_start) && (c == c_end))
+						continue;
+					
+					// scale the columns covered by 'cell' first
+					scaleColumns(c_b, c, addSize);
 
-	int extra = tableWidth - columnOpt[totalCols];
+				} // if colspan
+			} // for c
+		} // for r
+	} // for colspan	
 
-	// add space to percent width columns
-	if ( extra > 0 )
+	// satisfy percentage width cells
+
+	for ( r = 0; r < totalRows; r++ )
 	{
-	    if ( extra > totalPc )
-		extra = totalPc;
-	    for ( c = 1; c <= totalCols; c++ )
-	    {
-		int prefWidth = columnPrefPos[c] - columnPrefPos[c-colSpan[c]];
-		int minWidth = columnOpt[c] - columnOpt[c-colSpan[c]];
+		totalRequested = 0;
 
-		if ( colType[c] != Percent )
+		if (tooAdd <= 0)		// No space left!
+	    {
+			return;
+		}
+
+		/* first calculate how much we would like to add in this row */
+		for ( c = c_start; c <= c_end; c++ )
+		{
+			HTMLTableCell *cell = cells[r][c];
+				
+			if (cell == 0L)
+				continue;
+			if ( r < totalRows - 1 && cells[r+1][c] == cell )
+			   continue;
+			if ( c < totalCols - 1 && cells[r][c+1] == cell )
+				continue;
+
+			/* Percentage cells only */
+			if ( cell->getPercent() <= 0 )
 		    continue;
 
-		if ( prefWidth > minWidth )
+			// Only cells with a colspan which fits within c_begin .. c_start
+			if (cell->colSpan() > 1)
 		{
-		    addSize = (prefWidth-minWidth) * extra / totalPc;
-		    for ( c1 = c; c1 <= totalCols; c1++ )
-			    columnOpt[c1] += addSize;
+				unsigned int c_b = c+1-cell->colSpan();
+
+				if (c_b < c_start)
+					continue;
+				if ((c_b == c_start) && (c == c_end))
+					continue;
 		}
-	    }
-	}
-	
-	extra = tableWidth - columnOpt[totalCols];
 
-	// add space to variable width columns
-	if ( extra > 0 )
-	{
-	    QArray<int> prefWidth( totalCols+1 );
-	    QArray<int> minWidth( totalCols+1 );
+    		minWidth = columnOpt[c+1] - columnOpt[c+1-cell->colSpan()];
+			prefWidth = tableWidth * cell->getPercent() / 100 + padding +
+							padding + spacing + borderExtra;
 
-	    for ( c = 1; c <= totalCols; c++ )
-	    {
-		if ( colType[c] != Variable )
-		    continue;
+			if (prefWidth <= minWidth)
+				continue;
+					
+			totalRequested += (prefWidth - minWidth);
 
-		prefWidth[c] = columnPrefPos[c] - columnPrefPos[c-colSpan[c]];
-		minWidth[c] = columnOpt[c] - columnOpt[c-colSpan[c]];
-
-		if ( prefWidth[c] > tableWidth )
-		    prefWidth[c] = tableWidth;
-		if ( prefWidth[c] > minWidth[c] )
-		{
-		    totalPref += prefWidth[c];
-		    totalMin += minWidth[c];
-		}
-	    }
-	    for ( c = 1; c <= totalCols; c++ )
-	    {
-		if ( colType[c] != Variable )
+		} // for c
+		
+		if (totalRequested == 0)  // Nothing to do
 			continue;
 
-		if ( prefWidth[c] > minWidth[c] )
+		totalAllowed = tooAdd;
+		
+		// Do the actual adjusting of the percentage cells
+		
+		for ( colspan = 0; colspan <= 1; colspan++)
 		{
-		    addSize = prefWidth[c] * extra / totalPref;
+			for ( c = c_start; c <= c_end; c++ )
+			{
+				HTMLTableCell *cell = cells[r][c];
+				
+				if (cell == 0L)
+					continue;
+				if ( c < totalCols - 1 && cells[r][c+1] == cell )
+					continue;
+				if ( r < totalRows - 1 && cells[r+1][c] == cell )
+				   continue;
+				
+				/* Percentage cells only */
+				if ( cell->getPercent() <= 0 )
+      	     	continue;
 
-		    if ( percent <= 0 && !isFixedWidth() &&
-			    minWidth[c] + addSize > prefWidth[c] )
+				// Only cells with a colspan which fits within c_begin .. c_start
+				if (cell->colSpan() > 1)
+				{
+					unsigned int c_b = c+1-cell->colSpan();
+	
+					if (colspan == 0)
+						continue;
+	
+					if (c_b < c_start)
+						continue;
+					if ((c_b == c_start) && (c == c_end))
+						continue;
+	    }
+				else
+				{
+					if (colspan != 0)
+						continue;
+	}
+	
+		  		minWidth = columnOpt[c+1] - columnOpt[c+1-cell->colSpan()];
+				prefWidth = tableWidth * cell->getPercent() / 100 + padding +
+	    						padding + spacing + borderExtra;
+
+				if (prefWidth <= minWidth)
+					continue;
+
+				addSize = (prefWidth - minWidth);
+			
+				if (totalRequested > totalAllowed) // We can't honour the request, scale it
+	{
+					addSize = addSize * totalAllowed / totalRequested;
+					totalRequested -= (prefWidth - minWidth);
+					totalAllowed -= addSize;
+				}
+
+				tooAdd -= addSize;
+
+				if (colspan == 0)
+				{
+					unsigned int c1;
+					// Just add this to the column size
+					for ( c1 = c+1; c1 <= totalCols; c1++ )
+						columnOpt[c1] += addSize;
+				}
+				else
+	    {
+					unsigned int c_b = c+1-cell->colSpan();
+						// Some end-conditions are required here to prevent looping
+					if (c_b < c_start)
+						continue;
+					if ((c_b == c_start) && (c == c_end))
+		    continue;
+
+					// scale the columns covered by 'cell' first
+					scaleColumns(c_b, c, addSize);
+				} // if colspan
+			} // for c
+		} // for colspan	
+	} // for r
+
+
+	// satisfy variable width cells
+
+	// This should not be calculated on a row by row basis
+	
+	totalRequested = 0;
+
+	if (tooAdd <= 0)		// No space left!
+		{
+		return;
+	    }
+
+	prefColumnWidth = new int [totalCols];
+	
+	/* first calculate how much we would like to add in each column */
+	for ( c = c_start; c <= c_end; c++ )
+	{
+  		minWidth = columnOpt[c+1] - columnOpt[c];
+		prefColumnWidth[c] = minWidth;
+		for ( r = 0; r < totalRows; r++ )
+	    {
+			int prefCellWidth;
+			HTMLTableCell *cell = cells[r][c];
+				
+			if (cell == 0L)
+				continue;
+			if ( r < totalRows - 1 && cells[r+1][c] == cell )
+			continue;
+
+			// Parse colspan-cells in each colomn!
+
+			if ( c < totalCols - 1 && cells[r][c+1] == cell )
+		{
+				// Find the last cell
+				unsigned int c1 = c+2;
+				while ((c1 < totalCols) && (cells[r][c1] == cell))
+					c1++;
+
+	    		minWidth = columnOpt[c1] - columnOpt[c1 + 1 - cell->colSpan()];
+			}
+			else
 		    {
-			addSize = prefWidth[c] - minWidth[c];
+	    		minWidth = columnOpt[c+1] - columnOpt[c];
 		    }
 
-		    for ( c1 = c; c1 <= totalCols; c1++ )
-			columnOpt[c1] += addSize;
+			if (cell->isFixedWidth())
+			{  // fixed width
+				prefCellWidth = cell->getWidth() + padding +
+							padding + spacing + borderExtra;
+			}
+			else if (cell->getPercent() > 0)
+			{  // percentage width
+				prefCellWidth = tableWidth * cell->getPercent() / 100 + padding +
+	    				          padding + spacing + borderExtra;
 		}
+			else
+			{  // variable width
+				prefCellWidth = cell->calcPreferredWidth() + padding +
+							padding + spacing + borderExtra;
 	    }
+			prefCellWidth = prefCellWidth / cell->colSpan();
+
+			if (prefCellWidth > prefColumnWidth[c])
+				prefColumnWidth[c] = prefCellWidth;
 	}
+	
+		if (prefColumnWidth[c] > minWidth)
+		{
+			totalRequested += (prefColumnWidth[c] - minWidth);
     }
     else
     {
-	columnOpt = columnPrefPos.copy();
+			prefColumnWidth[c] = 0;
+		}
+
+	} // for c
+		
+	if (totalRequested > 0)  // Nothing to do
+	{
+		totalAllowed = tooAdd;
+		
+		// Do the actual adjusting of the variable width cells
+		
+		for ( c = c_start; c <= c_end; c++ )
+		{
+			unsigned int c1;
+			
+	  		minWidth = columnOpt[c+1] - columnOpt[c];
+			prefWidth = prefColumnWidth[c];
+			if (prefWidth <= minWidth)
+				continue;
+					
+			addSize = (prefWidth - minWidth);
+				
+			if (totalRequested > totalAllowed) // We can't honour the request, scale it
+			{	
+				addSize = addSize * totalAllowed / totalRequested;
+				totalRequested -= (prefWidth - minWidth);
+				totalAllowed -= addSize;
     }
+					
+			tooAdd -= addSize;
+				
+			// Just add this to the column size
+			for ( c1 = c+1; c1 <= totalCols; c1++ )
+				columnOpt[c1] += addSize;
+		} // for c
+	}
+	delete [] prefColumnWidth;
+
+	// Spread the remaining space equally across all columns
+	if (tooAdd > 0)
+	{	
+		for( c = c_start; c <= c_end; c++)
+		{
+			unsigned int c1;
+
+			addSize = tooAdd / (1 + c_end - c);
+			tooAdd -= addSize;
+			for ( c1 = c+1; c1 <= totalCols; c1++ )
+			{
+				columnOpt[c1] += addSize;
+			}
+		}
+	}	
+
+	return;
 }
 
 void HTMLTable::calcRowHeights()
@@ -1422,7 +1699,10 @@ int HTMLClue::calcMinWidth()
     }
 
     if ( isFixedWidth() )
-	return width > minWidth ? width : minWidth;
+	{
+		if (width > minWidth)
+			minWidth = width;
+	}
 
     return minWidth;
 }
@@ -1681,6 +1961,11 @@ void HTMLClueV::calcSize( HTMLClue *parent )
 	if (max_width != 0 && width < max_width)
 		width = max_width;
 */
+// WABA
+
+	if ((max_width != 0) && (width > max_width))
+		width = max_width;
+
 	HTMLObject *obj;
 
 	if ( halign == HCenter )
@@ -1845,10 +2130,15 @@ int HTMLClueV::getLeftMargin( int _y )
 
     for ( clue = alignLeftList; clue != 0; clue = clue->nextClue() )
     {
+// WABA
+//	if ( clue->getYPos() - clue->getAscent() + clue->parent()->getYPos() -
+//		    clue->parent()->getAscent() <= _y &&
+//		    clue->getYPos() + clue->parent()->getYPos() -
+//		    clue->parent()->getAscent() >= _y )
 	if ( clue->getYPos() - clue->getAscent() + clue->parent()->getYPos() -
-		    clue->parent()->getAscent() < _y &&
+		    clue->parent()->getAscent() <= _y &&
 		    clue->getYPos() + clue->parent()->getYPos() -
-		    clue->parent()->getAscent() > _y )
+		    clue->parent()->getAscent() >= _y )
 	    margin = clue->getXPos() + clue->getWidth();
     }
 
@@ -1862,10 +2152,15 @@ int HTMLClueV::getRightMargin( int _y )
 
     for ( clue = alignRightList; clue != 0; clue = clue->nextClue() )
     {
+//WABA
+//	if ( clue->getYPos()-clue->getAscent()+clue->parent()->getYPos() -
+//		clue->parent()->getAscent() <= _y &&
+//		clue->getYPos() + clue->parent()->getYPos() -
+//		clue->parent()->getAscent() >= _y )
 	if ( clue->getYPos()-clue->getAscent()+clue->parent()->getYPos() -
-		clue->parent()->getAscent() < _y &&
+		clue->parent()->getAscent() <= _y &&
 		clue->getYPos() + clue->parent()->getYPos() -
-		clue->parent()->getAscent() > _y )
+		clue->parent()->getAscent() >= _y )
 	    margin = clue->getXPos();
     }
 
@@ -2072,7 +2367,9 @@ void HTMLClueH::setMaxWidth( int _w )
     // first calculate width minus fixed width objects
     for ( obj = head; obj != 0; obj = obj->next() )
     {
-	if ( obj->getPercent() == 0 )	// i.e. fixed width objects
+//WABA
+//	if ( obj->getPercent() == 0 )	// i.e. fixed width objects
+	if ( obj->getPercent() <= 0 )	// i.e. fixed width objects
 	    _w -= obj->getWidth();
     }
 
@@ -2246,7 +2543,6 @@ void HTMLClueFlow::calcSize( HTMLClue *parent )
     int w = lmargin;
     int a = 0;
     int d = 0;
-    int extra;
 
     bool newLine = false;
 
@@ -2362,6 +2658,7 @@ void HTMLClueFlow::calcSize( HTMLClue *parent )
 	// and need to be aligned.
 	if ( newLine || !obj )
 	{
+	    int extra = 0;
 	    ascent += a + d;
 	    y += a + d;
 
@@ -2386,16 +2683,20 @@ void HTMLClueFlow::calcSize( HTMLClue *parent )
 		if ( line->isAligned() )
 		{
 		    HTMLClue *c = (HTMLClue *)line;
+
 		    if ( c->getHAlign() == Left )
 		    {
 			int margin = parent->getLeftMargin( getYPos() + 1 );
-			c->setPos( margin, ascent + c->getAscent() );
+//WABA
+//			c->setPos( margin, ascent + c->getAscent());
+			c->setXPos( margin);
 		    }
 		    else
 		    {
 			int margin = parent->getRightMargin( getYPos() + 1 );
-			c->setPos( margin - c->getWidth(),
-			    ascent + c->getAscent() );
+			c->setXPos( margin - c->getWidth());
+//WABA
+//			    ascent + c->getAscent());
 		    }
 		}
 		else
@@ -2481,6 +2782,13 @@ int HTMLClueFlow::calcMinWidth()
     {
 	if ( obj->isSeparator() || obj->isNewline() )
 	{
+	    ow = obj->calcMinWidth();
+
+	    runWidth += ow;
+
+	    if ( runWidth > minWidth )
+			minWidth = runWidth;
+
 	    runWidth = 0;
 	}
 	else
