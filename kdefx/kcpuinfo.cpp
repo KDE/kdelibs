@@ -45,7 +45,7 @@
 
 typedef void (*kde_sighandler_t) (int);
 
-
+#ifdef __i386__
 static jmp_buf KDE_NO_EXPORT env;
 
 // Sighandler for the SSE OS support check
@@ -53,14 +53,31 @@ static void KDE_NO_EXPORT sighandler( int )
 {
     std::longjmp( env, 1 );
 }
+#endif
 
+#ifdef __PPC__
+static sigjmp_buf KDE_NO_EXPORT jmpbuf;
+static sig_atomic_t KDE_NO_EXPORT canjump = 0;
+
+static void KDE_NO_EXPORT sigill_handler( int sig )
+{
+    if ( !canjump ) {
+        signal( sig, SIG_DFL );
+        raise( sig );
+    }
+    canjump = 0;
+    siglongjmp( jmpbuf, 1 );
+}
+#endif
 
 static int KDE_NO_EXPORT getCpuFeatures()
 {
     int features = 0;
 
-#if defined(__i386__) && defined( HAVE_GNU_INLINE_ASM )
+#if defined( HAVE_GNU_INLINE_ASM )
+#if defined( __i386__ )
     bool haveCPUID = false;
+    bool have3DNOW = false;
     int result = 0;
 
     // First check if the CPU supports the CPUID instruction
@@ -99,6 +116,24 @@ static int KDE_NO_EXPORT getCpuFeatures()
     if ( result & 0x00800000 )
         features |= KCPUInfo::IntelMMX;
 
+    __asm__ __volatile__(
+      "pushl %%ebx             \n\t"
+      "movl $0x80000000, %%eax \n\t"
+      "cpuid                   \n\t"
+      "cmpl $0x80000000, %%eax \n\t"
+      "jbe .Lno_extended%=     \n\t"
+      "movl $0x80000001, %%eax \n\t"
+      "cpuid                   \n\t"
+      "test $0x80000000, %%edx \n\t"
+      "jz .Lno_extended%=      \n\t"
+      "movl      $1, %%eax     \n\t"   // // Set EAX to true
+      ".Lno_extended%=:        \n\t"
+      "popl   %%ebx            \n\t"   // Restore EBX
+      : "=a"(have3DNOW) : );
+
+    if ( have3DNOW )
+        features |= KCPUInfo::AMD3DNOW;
+
 #ifdef HAVE_X86_SSE
     // Test bit 25 (SSE support)
     if ( result & 0x00200000 ) {
@@ -125,7 +160,21 @@ static int KDE_NO_EXPORT getCpuFeatures()
         //       so we don't have to do any additional tests for that.
     }
 #endif // HAVE_X86_SSE
-#endif // __i386__ && HAVE_GNU_INLINE_ASM
+#elif defined __PPC__ && defined HAVE_PPC_ALTIVEC
+    signal( SIGILL, sigill_handler );
+    if ( sigsetjmp( jmpbuf, 1 ) ) {
+        signal( SIGILL, SIG_DFL );
+    } else {
+        canjump = 1;
+        __asm__ __volatile__( "mtspr 256, %0\n\t"
+                              "vand %%v0, %%v0, %%v0"
+                              : /* none */
+                              : "r" (-1) );
+        signal( SIGILL, SIG_DFL );
+        features |= KCPUInfo::AltiVec;
+    }
+#endif // __i386__
+#endif //HAVE_GNU_INLINE_ASM
 
     return features;
 }

@@ -43,18 +43,16 @@ class KCPUInfo
          * can query.
          */
         enum Extensions {
-            IntelMMX        = 0x1,  //!< Intel's MMX instructions.
-            IntelSSE        = 0x2,  //!< Intel's SSE instructions.
-            IntelSSE2       = 0x4   //!< Intel's SSE2 instructions.
+            IntelMMX        = 1 << 0,  //!< Intel's MMX instructions.
+            IntelSSE        = 1 << 1,  //!< Intel's SSE instructions.
+            IntelSSE2       = 1 << 2,  //!< Intel's SSE2 instructions.
+            AMD3DNOW        = 1 << 3,  //!< AMD 3DNOW instructions
+            AltiVec         = 1 << 4   //!< Motorola AltiVec instructions
         };
 
         /**
          * Returns true if the processor supports @p extension,
          * and false otherwise.
-         *
-         * Note that if you query an extension that's not available on 
-         * the architecture you're compiling for, the returned
-         * information will not be correct.
          *
          * @param   extension the feature to query.
          * @return  If true, the processor supports @p extension.
