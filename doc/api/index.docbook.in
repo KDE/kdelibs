@@ -63,7 +63,7 @@
       <title>Overview</title>
 
 
-      <section id="i18n-overview">
+      <sect1 id="i18n-overview">
          <title>Internationalizing applications</title>
          <para>
             An important goal of KDE is to make applications usable by people in many
@@ -96,7 +96,9 @@
             issues involved from the translator's point of view as well.
          </para>
 
-         <bridgehead id="i18n-programmer">From the programmer's point of view</bridgehead>
+         <sect2 id="i18n-programmer">
+	 <title>From the programmer's point of view</title>
+
          <para>
             KDE programs normally use a translation system based on a modified form
             of the gettext package which is part of glibc on Linux systems. Although
@@ -230,13 +232,20 @@ if (!QFileInfo(filename).exists()) {
             for the other one.
          </para>
 
-         <bridgehead id="i18n-translator">From the translator's point of view</bridgehead>
+         </sect2>
+
+         <sect2 id="i18n-translator">
+	 <title>From the translator's point of view</title>
+
          <para>
          </para>
-      </section>
+
+	 </sect2>
+
+      </sect1>
 
 
-      <section id="xml-overview">
+      <sect1 id="xml-overview">
          <title>Usage of XML in KDE</title> 
          <para>
             Blubber blubber zisch - Motivation...
@@ -244,7 +253,9 @@ if (!QFileInfo(filename).exists()) {
          </para>
 
 
-         <bridgehead id="xml-format">What XML looks like</bridgehead>
+         <sect2 id="xml-format">
+	 <title>What XML looks like</title>
+
          <para>
             Here is an example of an XML file used
             by <application>Columbo</application> to describe a search site on the
@@ -310,8 +321,11 @@ if (!QFileInfo(filename).exists()) {
             </programlistingco>
          </para>
          
+         </sect2>
          
-         <bridgehead id="xml-domapi">Accessing XML files via the QDom API</bridgehead>
+         <sect2 id="xml-domapi">
+	 <title>Accessing XML files via the QDom API</title>
+
          <para>
             Now let us have a look how such a file is parsed. The easiest way is
             to create a <classname>QDomDocument</classname>. With its constructor
@@ -382,7 +396,9 @@ while (!childel.isNull()) {
             </programlisting>
          </para>
          
-      </section>
+	 </sect2>
+
+      </sect1>
 
    </chapter>
 
@@ -453,7 +469,7 @@ while (!childel.isNull()) {
       </para>
 
       
-      <section id="applicationskeleton">
+      <sect1 id="applicationskeleton">
          <title>The core application skeleton</title>
 	 <para>
 	    <variablelist>
@@ -484,9 +500,9 @@ while (!childel.isNull()) {
 	       </varlistentry>
 	    </variablelist>
 	 </para>
-      </section>
+      </sect1>
 
-      <section id="configurationsettings">
+      <sect1 id="configurationsettings">
          <title>Configuration settings</title>
          <para>
 	    <variablelist>
@@ -532,10 +548,10 @@ while (!childel.isNull()) {
 	       </varlistentry>
 	    </variablelist>
          </para>
-      </section>
+      </sect1>
 
       
-      <section id="keyboardaccelerators">
+      <sect1 id="keyboardaccelerators">
          <title>Keyboard accelerators and shortcuts</title>
          <para>
             <variablelist>
@@ -553,10 +569,10 @@ while (!childel.isNull()) {
                </varlistentry>
             </variablelist>
          </para>
-      </section>
+      </sect1>
       
 
-      <section id="filehandling">
+      <sect1 id="filehandling">
          <title>File and URL handling</title>
          <para>
             <variablelist>
@@ -578,10 +594,10 @@ while (!childel.isNull()) {
                </varlistentry>
             </variablelist>
          </para>
-      </section>
+      </sect1>
 
 
-      <section id="imageprocessing">
+      <sect1 id="imageprocessing">
          <title>Image processing</title>
             <para>
             <variablelist>
@@ -603,10 +619,10 @@ while (!childel.isNull()) {
                </varlistentry>
             </variablelist>
             </para>
-      </section>
+      </sect1>
 
 
-      <section id="interprocess">
+      <sect1 id="interprocess">
          <title>Interprocess communication</title>
             <para>
             <variablelist>
@@ -632,9 +648,9 @@ while (!childel.isNull()) {
                </varlistentry>
             </variablelist>
          </para>
-      </section>
+      </sect1>
       
-      <section id="utilityclasses">
+      <sect1 id="utilityclasses">
          <title>Utility classes</title>
          <para>
             <variablelist>
@@ -660,10 +676,10 @@ while (!childel.isNull()) {
                </varlistentry>
             </variablelist>
             </para>
-      </section>
+      </sect1>
 
 
-      <section id="widgets">
+      <sect1 id="widgets">
          <title>Widgets</title>
          <para>
             <variablelist>
@@ -685,10 +701,10 @@ while (!childel.isNull()) {
                </varlistentry>
             </variablelist>
          </para>
-      </section>
+      </sect1>
 
 
-      <section id="dialogs">
+      <sect1 id="dialogs">
          <title>Dialogs</title>
          <para>
             <variablelist>
@@ -706,7 +722,7 @@ while (!childel.isNull()) {
                </varlistentry>
             </variablelist>
          </para>
-      </section>
+      </sect1>
 
    </chapter>   
 
