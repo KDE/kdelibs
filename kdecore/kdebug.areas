@@ -9,6 +9,7 @@
 200	KTMW (kdeui)
 220	KToolBar (kdeui)
 250	kfile (kdelibs)
+264	iconloader (kdelibs)
 300	khtml
 750	kspell (kdelibs)
 800	kabapi (kdelibs)

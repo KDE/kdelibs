@@ -1,255 +1,151 @@
-/* -*- c++ -*-
-   $Id$
+/* vi: ts=8 sts=4 sw=4
+ *
+ * $Id: $
+ *
+ * This file is part of the KDE project, module kdecore.
+ * Copyright (C) 2000 Geert Jansen <jansen@kde.org>
+ *
+ * This is free software; it comes under the GNU Library General 
+ * Public License, version 2. See the file "COPYING.LIB" for the 
+ * exact licensing terms.
+ */
 
-   This file is part of the KDE libraries
-   Copyright (C) 1997 Christoph Neerfeld (chris@kde.org)
-             (C) 1999 Stephan Kulow (coolo@kde.org)
-             (C) 2000 Kurt Granroth (granroth@kde.org)
+#ifndef __KIconLoader_h_Included__
+#define __KIconLoader_h_Included__
 
-   This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
-   License as published by the Free Software Foundation; either
-   version 2 of the License, or (at your option) any later version.
-
-   This library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
-
-   You should have received a copy of the GNU Library General Public License
-   along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.
-
-*/
-#ifndef KICONLOADER_H
-#define KICONLOADER_H
-
-class KConfig;
-class KInstance;
-
-#include <qobject.h>
-#include <qlist.h>
-#include <qpixmap.h>
-#include <qstringlist.h>
 #include <qstring.h>
-#include <kglobal.h>
+#include <qlist.h>
+#include <qmap.h>
+#include <qpixmap.h>
 
+#include "kglobal.h"
+#include "kinstance.h"
+#include "kicontheme.h"
+
+class KIconGroup;
+class KIconThemeNode;
+class KConfig;
 class KIconLoaderPrivate;
+class KStandardDirs;
+
 
 /**
-   Icon loader with caching.
-
-   Multiple loads of the same icon using this class will be cached
-   using @ref QPixmapCache, saving memory and loading time.
-   
-   Within KDE there are two distinct groups of Icons:
-   
-   @li toolbar - Toolbar icons are small icons used on pushbuttons.
-   The size is 22x22 pixels.
-   
-   @li icon - These are icons used to identify an application,
-   a file type or a directory. They are typically shown
-   on the desktop and in directory listings. Their
-   size varies between 16x16 (Small), 32x32 (Medium)
-   and 64x64 (Large). 
-   
-   Icons are searched for according to the KDE file system standard
-   using @ref KStandardDirs. Look up the various methods for details how.
-   
-   All keys used in @ref QPixmapCache by this class have the "$kico_.." prefix.
-   
-   @author Christoph Neerfeld (chris@kde.org) and Stephan Kulow (coolo@kde.org)
-   @version $Id$
-*/
-class KIconLoader 
+ * Iconloader for KDE.
+ *
+ * KIconLoader will load the current icon theme and all its base themes. 
+ * Icons will be searched in any of these themes. Additionally, it caches 
+ * icons and applies effects according the the user's preferences.
+ *
+ * In KDE, icons are loaded by "Group". An icon group is a location on the
+ * screen where icons are being used. Standard groups are: Desktop, Kicker, 
+ * Toolbar, Small and ListItem. For each group, the user determines what size 
+ * of icons are to be used.
+ *
+ * Experts can also load icons by size. This is not recommended because this
+ * won't honour the user's preferences. When loading an icon by size, you
+ * might want to know what sizes are available. This can be done by querying
+ * the current icon theme, as returned by @ref #theme.
+ */
+class KIconLoader
 {
-
 public:
-    
+
+    // Source compatibility issue
+    enum Size { Small=0, Medium, Large, Default };
+
     /**
-     * Specifies the size of the requested icon:
-     * @li Small  - 16x16 pixels
-     * @li Medium - 32x32 pixels
-     * @li Large  - 64x64 pixels
-     * @li Default - the global setting or Medium if it doesn't exist
-     **/
-    enum Size { Small = 0, Medium, Large, Default };
+     * Construct the iconloader.
+     * @param appname Add the local directories of this application to the
+     * icon search path. This can be used for loading icons which are not 
+     * part of a theme. These icons can be loaded using the "User" group in 
+     * @ref #loadIcon or @ref #iconPath. The default argument adds the local
+     * directories of the current application.
+     */
+    KIconLoader(QString appname=QString::null);
 
-  /**
-   * Constructor. Adds some application specific paths to lookup
-   * toolbar icons. These are below the application's data dir 
-   * (@see KStandardDirs for details) and are namely @p pics/ and
-   * @p toolbar/
-   *
-   * @param app_name specifies the name of the application to add
-   * paths of. If the name is null (default) the name from 
-   * @ref KGlobal::instance() is used.
-   * 
-   */
-  KIconLoader ( const QString &app_name = QString::null );
+    /** Cleanup */
+    ~KIconLoader();
 
-  /**
-   * Constructs an KIconLoader for a component stored in a shared library.
-   * Objects constructed with this constructor access all instance related
-   * data (search paths, application name) from the given library instead of
-   * @ref KGlobal::instance().
-   *
-   */
-  KIconLoader( const KInstance* library );
-    
-  /**
-  	Load an icon from disk without cache.
+    /**
+     * Load an icon. It will try very hard to find an icon which is
+     * suitable. If no exact match is found, the best match is returned.
+     * The only case where no icon is returned, is when there's no icon with
+     * the requested @em name.
+     * @param name The name of the icon, without extension.
+     * @param group_or_size If positive, this will find the named icon for
+     * the group @em group_or_size. The group will specify the size and
+     * effects to be applied. If negative, this will load an icon of size 
+     * -@em group_or_size.
+     * @param path_store If not null, the path of the icon is stored here.
+     * @param canReturnNull Can return a null pixmap?
+     */
+    QPixmap loadIcon(QString name, int group_or_size = Default /* SCI */, 
+	    QString *path_store=0L, bool canReturnNull=true);
 
-	This is useful if the icon has changed on the filesystem and
-	you want to be sure that you get the new version, not the old
-	one from the cache. The returned pixmap will be inserted in
-	the cache so you use loadIcon after that.
+    /**
+     * Returns the path of an icon. See @ref #loadIcon.
+     */
+    QString iconPath(QString name, int group_or_size, 
+	    bool canReturnNull=true);
 
-	@see  loadIcon()
-  */
-  QPixmap reloadIcon( const QString& name);
+    /**
+     * Query all available icons for a specific group, having a specific
+     * context.
+     * @param group_or_size The icon group or size. See @ref #loadIcon.
+     * @param context The icon context.
+     */
+    QStringList queryIcons(int group_or_size, int context=KIcon::Any);
 
-  /**
-   * This method should be used for loading most non-toolbar
-   * icons (it @bf will load toolbar icons, but the recommended
-   * way is to use @ref BarIcon).
-   *
-   * @param name Icon name without extension. An example is @p "konqueror" or
-   *             @p "mimetypes/postscript"
-   * @param size The prefered size to load. 
-   * @param path_store This output parameter will contain the full path to the icon
-   *                if not 0.
-   * @param canReturnNull If this is @p false, this function will return
-		the "unknown" icon if the requested icon is not found.
-		The default is to return @p null.
-   */
-    QPixmap loadIcon( const QString& name, Size size = Default,
-                      QString *path_store = 0, bool can_return_null = true );
+    /**
+     * Return the current size for an icon group.
+     */
+    int currentSize(int group);
 
-  /**
-     Get the complete path for a toolbar icon name.
-     
-     @param name	The name of the icon to search for.
-     @param always_valid If true, the function will return the path to
-                 "unknown" if the icon is not found. Note that it will
-		 return null if "unknown" was also not found.
-     
-     @return The physical path to the named icon.
-  */
-  QString iconPath( const QString& name, bool always_valid=false);
+    /**
+     * Returns a pointer to the current theme. Can be used to query
+     * available and default sizes for groups.
+     */
+    const KIconTheme *theme();
 
-  /**
-   * This will return a list of all icon directories that match the
-   * given parameters.  With the default params, this will return all
-   * KDE recognized icon directories that currently exist.  By
-   * changing the params, you can narrow this down to specifics.
-   *
-   * For instance:
-   * <pre>
-   * iconDirs("all", "hicolor", "large");
-   * </pre>
-   * Will return all directories that have large hicolor icons.
-   *
-   * @param type  The icon type (apps, devices, filesystems, mimetypes,
-   *                             toolbars, or all)
-   * @param depth The color depth (hicolor, locolor, or all)
-   * @param size  The icon size (large, medium, small, or all)
-   * @param trim  If true, then only existing directories will be
-   *              returned
-   *
-   * @return A list of all icon directories that match the params
-   */
-  QStringList iconDirs(const QString& type = QString::fromLatin1("all"),
-                       const QString& depth = QString::fromLatin1("all"),
-                       const QString& size = QString::fromLatin1("all"),
-                       bool trim = true) const;
 
-protected:
-
-  // the instance to get the KStandardDirs object from to load the icons
-  const KInstance  * library;
-    
-  /**
-     honourcache will check if the icon is contained in the cache before
-     trying to load it. Used by loadIcon and reloadIcon (with different
-     honourcache parameter)
-  */
-  QPixmap loadInternal( const QString& name,
-			bool honourcache = true );
-
-  // the application name - by default the one of KGlobal::instance()
-  QString appname;
-  
 private:
-  // adds toolbar paths to the KStandardDirs object of the instance
-  void initPath();
+    KIcon iconPath2(QString name, int size);
+    KIcon iconPath2(QString name, int size, int match, KIconThemeNode *node);
 
-  // @internal Disallow assignment and copy-construction
-  KIconLoader( const KIconLoader& );
-  // @internal Disallow assignment and copy-construction
-  KIconLoader& operator= ( const KIconLoader& );
+    void addIconTheme(KIconTheme *theme, KIconThemeNode *node);
+    void addIcons(QStringList *lst, int size, int context, KIconThemeNode *node);
+    void printThemeTree(KIconThemeNode *node);
 
-  Size defaultSize;
-
-  KIconLoaderPrivate *d;
+    QString mTheme;
+    QStringList mThemeList, mThemeTree;
+    KIconGroup *mpGroups;
+    KIconThemeNode *mpThemeRoot;
+    KStandardDirs *mpDirs;
+    KIconLoaderPrivate *d;
 };
 
-/**
- * Helper function to load toolbar icons with. It simply returns
- * library->iconLoader()->loadIcon("toolbar/" + pixmap)
- * so @see loadIcon
- */
-QPixmap BarIcon(const QString& pixmap, 
-		const KInstance* library = KGlobal::instance());
+/** Load a desktop icon.  */
+QPixmap DesktopIcon(QString name, KInstance *instance=KGlobal::instance());
 
-/**
- * Helper function to load toolbar icons with a very specific size. It
- * simply returns
- * library->iconLoader()->loadIcon("toolbar/" + pixmap, size)
- * so @see loadIcon
- */
-QPixmap BarIcon(const QString& pixmap, KIconLoader::Size size,
-		const KInstance* library = KGlobal::instance());
+/** Load a kicker icon.  */
+QPixmap KickerIcon(QString name, KInstance *instance=KGlobal::instance());
 
-/**
- * Helper function to load application icons with. It simply returns
- * library->iconLoader()->loadIcon("apps/" + pixmap)
- * so @see loadIcon
- */
-QPixmap AppIcon(const QString& pixmap,
-		const KInstance* library = KGlobal::instance());
+/** Load a toolbar icon.  */
+QPixmap BarIcon(QString name, KInstance *instance=KGlobal::instance());
 
-/**
- * Helper function to load mimetype icons with. It simply returns
- * library->iconLoader()->loadIcon("mimetypes/" + pixmap)
- * so @see loadIcon
- */
-QPixmap MimeIcon(const QString& pixmap,
-		 const KInstance* library = KGlobal::instance());
+/** SCI: Load a toolbar icon.  */
+QPixmap BarIcon(QString name, int size, KInstance *instance=KGlobal::instance());
 
-/**
- * Helper function to load device icons with. It simply returns
- * library->iconLoader()->loadIcon("devices/" + pixmap)
- * so @see loadIcon
- */
-QPixmap DevIcon(const QString& pixmap,
-		const KInstance* library = KGlobal::instance());
+/** Load a small icon.  */
+QPixmap SmallIcon(QString name, KInstance *instance=KGlobal::instance());
 
-/**
- * Helper function to load filesystem icons with. It simply returns
- * library->iconLoader()->loadIcon("filesystems/" + pixmap)
- * so @see loadIcon
- */
-QPixmap FileIcon(const QString& pixmap,
-		 const KInstance* library = KGlobal::instance());
+/** Load a listitem icon.  */
+QPixmap ListIcon(QString name, KInstance *instance=KGlobal::instance());
 
-/**
- * Helper function to load iconlist icons with. It simply returns
- * library->iconLoader()->loadIcon("listitems/" + pixmap)
- * so @see loadIcon
- */
-QPixmap ListIcon(const QString& pixmap ,
-		 const KInstance* library = KGlobal::instance());
+/** Load a user icon. */
+QPixmap UserIcon(QString name, KInstance *instance=KGlobal::instance());
 
-#endif // KICONLOADER_H
+/** Returns the current icon size for a specific group.  */
+int IconSize(int group, KInstance *instance=KGlobal::instance());
+
+#endif // __KIconLoader_h_Included__

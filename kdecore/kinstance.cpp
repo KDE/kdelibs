@@ -94,7 +94,7 @@ KConfig	*KInstance::config() const
 KIconLoader *KInstance::iconLoader() const
 {
     if( _iconLoader == 0 ) {
-	_iconLoader = new KIconLoader( this );
+	_iconLoader = new KIconLoader( _name );
     }
 
     return _iconLoader;
