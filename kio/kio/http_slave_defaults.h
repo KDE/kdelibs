@@ -19,6 +19,9 @@
 #ifndef _KIO_HTTP_SLAVE_DEFAULTS_H
 #define _KIO_HTTP_SLAVE_DEFAULTS_H
 
+// CONNECTION
+#define DEFAULT_KEEP_ALIVE_TIMEOUT	60		// 60 seconds
+
 // CACHE SETTINGS
 #define DEFAULT_MAX_CACHE_SIZE          5120            // 5 MB
 #define DEFAULT_MAX_CACHE_AGE           60*60*24*14     // 14 DAYS
