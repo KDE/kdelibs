@@ -228,10 +228,11 @@ void HTMLFrameElementImpl::parseAttribute(AttrImpl *attr)
         name = attr->value();
         break;
     case ATTR_FRAMEBORDER:
-        if(attr->value() == "0" || strcasecmp( attr->value(), "no" ) == 0 )
-            frameBorder = false;
-        frameBorderSet = true;
-        break;
+    {
+        frameBorder = attr->value().toInt();
+        frameBorderSet = ( frameBorder != 0 );
+    }
+    break;
     case ATTR_MARGINWIDTH:
         marginWidth = attr->val()->toInt();
         break;
@@ -377,7 +378,8 @@ void HTMLFrameSetElementImpl::parseAttribute(AttrImpl *attr)
         m_totalCols = m_cols->count();
         break;
     case ATTR_FRAMEBORDER:
-        if(attr->value() == "0" || strcasecmp( attr->value(), "no" ) == 0 ) {
+        // false or "no" or "0"..
+        if ( attr->value().toInt() == 0 ) {
             frameborder = false;
             m_border = 0;
         }
@@ -442,6 +444,7 @@ void HTMLFrameSetElementImpl::attach()
 bool HTMLFrameSetElementImpl::verifyLayout()
 {
     QList<khtml::Length>* layoutAttr = 0;
+
     if(m_cols) layoutAttr = m_cols;
     if(m_rows) layoutAttr = m_rows;
 
@@ -643,7 +646,7 @@ void HTMLIFrameElementImpl::parseAttribute(AttrImpl *attr )
 
 void HTMLIFrameElementImpl::attach()
 {
-  KHTMLView* w = ownerDocument()->view();    
+  KHTMLView* w = ownerDocument()->view();
   // limit to how deep we can nest frames
   KHTMLPart *part = w->part();
   int depth = 0;
