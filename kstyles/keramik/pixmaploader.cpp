@@ -34,7 +34,8 @@ using namespace Keramik;
 PixmapLoader PixmapLoader::s_instance;
 
 PixmapLoader::PixmapLoader()
-	:m_cache( 193 ) 
+	: m_cache( 193 ),
+	  m_colorize( false )
 { 
 	QPixmapCache::setCacheLimit( 128 );
 	m_cache.setAutoDelete( true );
@@ -42,18 +43,18 @@ PixmapLoader::PixmapLoader()
 
 void PixmapLoader::setColor( const QColor& color )
 {
-	if ( color == m_color ) return;
-	m_color = color;
+	bool colorize = color.isValid() && color.rgb() != qRgb( 228, 228, 228 );
+	if ( colorize == m_colorize ) return;
+	if ( ( m_colorize = colorize ) )
+		color.hsv( &m_hue, &m_sat, &m_val );
+
 	m_cache.clear();
 	QPixmapCache::clear();
 }
 
 void PixmapLoader::colorize( QImage &img )
 {
-	if ( img.isNull() || !m_color.isValid() ) return;
-	int newh, news, newv;
-	m_color.hsv( &newh, &news, &newv );
-	if ( newh == -1 ) return;
+	if ( img.isNull() ) return;
 
 	img = img.copy();
 	register Q_UINT32* data = reinterpret_cast< Q_UINT32* >( img.bits() );
@@ -63,8 +64,9 @@ void PixmapLoader::colorize( QImage &img )
 		QColor c( *data );
 		int h, s, v;
 		c.hsv( &h, &s, &v );
-		if ( h >= 0 ) h = ( h - 216 + newh ) % 360;
-		c.setHsv( h, QMIN( s * news / 14, 255 ), QMIN( v * newv / 90, 255 ) );
+		if ( m_hue >= 0 && h >= 0 ) h = ( h - 216 + m_hue ) % 360;
+		if ( s ) s += m_sat / 2;
+		c.setHsv( h, QMIN( s, 255 ), QMIN( v * m_val / 228, 255 ) );
 		*data++ = ( c.rgb() & RGB_MASK ) | ( *data & ~RGB_MASK );
 	}
 }
@@ -78,7 +80,7 @@ QPixmap PixmapLoader::pixmap( const QString& name )
 	QImage* img = m_cache[ name ];
 	if ( !img ) {
 		img = new QImage( qembed_findImage( name ) );
-		colorize( *img );
+		if ( m_colorize ) colorize( *img );
 		m_cache.insert( name, img );
 	}
 	result.convertFromImage( *img );

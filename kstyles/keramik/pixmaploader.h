@@ -45,7 +45,8 @@ namespace Keramik
 		void colorize( QImage &img );
 
 		QDict< QImage > m_cache;
-		QColor m_color;
+		bool m_colorize;
+		int m_hue, m_sat, m_val;
 
 		static PixmapLoader s_instance;
 	};
