@@ -513,4 +513,4 @@ static const char * const attrList[] = {
 DOM::DOMString KDE_NO_EXPORT getAttrName(unsigned short id)
 {
     return attrList[id-1];
-};
+}
