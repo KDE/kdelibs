@@ -2745,7 +2745,7 @@ public:
 	NullItem():QCustomMenuItem(){;}
 	virtual ~NullItem(){;}
 	virtual QSize sizeHint(){return QSize(0,0);}
-	virtual	void paint ( QPainter * p, const QColorGroup & cg, bool act, bool enabled, int x, int y, int w, int h ) {
+	virtual	void paint ( QPainter * /*p*/, const QColorGroup & /*cg*/, bool /*act*/, bool /*enabled*/, int /*x*/, int /*y*/, int /*w*/, int /*h*/ ) {
 		return;
 	}
 };
@@ -2828,7 +2828,7 @@ void KToolBarMenuAction::addToolbar(KToolBar *bar)
 	}
 }
 
-void KToolBarMenuAction::removeToolbar(KToolBar *bar)
+void KToolBarMenuAction::removeToolbar(KToolBar * /*bar*/)
 {
 //	d->toolbarActionMap.remove(bar);
 
