@@ -315,6 +315,8 @@ QSize KNoteBook::childSize()
   for(int i = 0; i < pnote->numtabs; i++)
   {
     QSize csize = sections->at(i)->sizeHint();
+    if(csize.isNull())
+      csize = sections->at(i)->size();
     if(size.height() < csize.height())
       size.setHeight(csize.height());
     if(size.width() < csize.width())
@@ -410,9 +412,14 @@ void KNoteBook::directionButton(bool changetab, bool forward)
       gotoTab(pnote->current+1);
       button = pnote->currentwiz->getPreviousButton();
       arrow = pnote->currentwiz->getLeftArrow();
-      str = "<< ";
-      str += sections->at(pnote->current-1)->getTitle(sections->at(pnote->current-1)->numPages()-1);
-      button->setText(str.data());
+      if(pnote->directionsreflectspage)
+      {
+        str = "<< ";
+        str += sections->at(pnote->current-1)->getTitle(sections->at(pnote->current-1)->numPages()-1);
+        button->setText(str.data());
+      }
+      else
+        button->setText(PREV);
       //debug("Setting previous to: %s", str.data());
       button->show();
       if(pnote->enablearrowbuttons)
@@ -425,9 +432,14 @@ void KNoteBook::directionButton(bool changetab, bool forward)
       pnote->currentwiz->gotoPage(pnote->currentwiz->numPages()-1);
       button = pnote->currentwiz->getNextButton();
       arrow = pnote->currentwiz->getRightArrow();
-      str = sections->at(pnote->current+1)->getTitle(0);
-      str += " >>";
-      button->setText(str.data());
+      if(pnote->directionsreflectspage)
+      {
+        str = sections->at(pnote->current+1)->getTitle(0);
+        str += " >>";
+        button->setText(str.data());
+      }
+      else
+        button->setText(NEXT);
       //debug("Setting next to: %s", str.data());
       button->show();
       if(pnote->enablearrowbuttons)
