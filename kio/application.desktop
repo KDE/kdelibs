@@ -80,3 +80,6 @@ Type=bool
 
 [PropertyDef::X-DCOP-ServiceName]
 Type=QString
+
+[PropertyDef::X-KDE-ParentApp]
+Type=QString
