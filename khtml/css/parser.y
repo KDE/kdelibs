@@ -818,14 +818,16 @@ expr:
     }
     | expr operator term {
 	$$ = $1;
-	if ( $2 ) {
-	    Value v;
-	    v.id = 0;
-	    v.unit = Value::Operator;
-	    v.iValue = $2;
-	    $$->addValue( v );
+	if ( $$ ) {
+	    if ( $2 ) {
+		Value v;
+		v.id = 0;
+		v.unit = Value::Operator;
+		v.iValue = $2;
+		$$->addValue( v );
+	    }
+	    $$->addValue( $3 );
 	}
-	$$->addValue( $3 );
     }
     | expr error {
 	delete $1;
