@@ -67,8 +67,12 @@ void KMVirtualManager::addPrinter(KMPrinter *p)
 		if (other)
 		{
 			other->copy(*p);
-                        // recopy options only there were none before (like at startup)
-			if (other->defaultOptions().count() == 0) other->setDefaultOptions(p->defaultOptions());
+			// Replace default options with the new loaded ones: this is needed
+			// if we want to handle 2 lpoptions correctly (system-wide and local).
+			// Anyway, the virtual printers will be reloaded only if something has
+			// changed in one of the files, so it's better to reset everything, to
+			// be sure to use the new changes. Edited options will be left unchanged.
+			other->setDefaultOptions(p->defaultOptions());
 			delete p;
 		}
 		else
@@ -154,12 +158,16 @@ void KMVirtualManager::setAsDefault(KMPrinter *p, const QString& name)
 void KMVirtualManager::refresh()
 {
 	QFileInfo	fi(getenv("HOME") + QString::fromLatin1("/.lpoptions"));
+	QFileInfo	fi2(QString::fromLatin1("/etc/cups/lpoptions"));
 
-	if (fi.exists() && (!m_checktime.isValid() || m_checktime < fi.lastModified()))
+	if (!m_checktime.isValid() || m_checktime < QMAX(fi.lastModified(),fi2.lastModified()))
 	{
                 m_defaultprinter = QString::null;
-                loadFile(fi.absFilePath());
-		m_checktime = fi.lastModified();
+		if (fi2.exists())
+			loadFile(fi2.absFilePath());
+		if (fi.exists())
+                	loadFile(fi.absFilePath());
+		m_checktime = QMAX(fi.lastModified(),fi2.lastModified());
 	}
         else
         { // parse printers looking for instances -> undiscarded them, real printers
