@@ -60,6 +60,8 @@ Cambridge, MA 02139, USA.  */
 #define LOCALE_ALIAS_PATH "/usr/share/local"
 #endif     
 
+#include <stdlib.h>
+
 #if defined(HAVE_ARGZ_H)
 #ifdef __BEGIN_DECLS
 #undef __BEGIN_DECLS
@@ -74,14 +76,10 @@ extern "C" {
 }
 #undef __BEGIN_DECLS
 #undef __END_DECLS
-#define __BEGIN_DECLS extern "C" {
-#define __END_DECLS }
+#define __BEGIN_DECLS	extern "C" { 
+#define	__END_DECLS	} 
 #endif // _ARGZ_H_WORKAROUND_
 #endif // HAVE_ARGZ_H
-
-#if defined STDC_HEADERS
-# include <stdlib.h>
-#endif
 
 #ifdef HAVE_MALLOC_H
 # include <malloc.h>
