@@ -412,7 +412,8 @@ static QString calculateAutoFillKey(const HTMLFormElementImpl& e)
     // otherwise we might have a potential security problem
     // by saving passwords under wrong lookup key.
     const QString name = e.getAttribute(ATTR_NAME).string().stripWhiteSpace();
-    return k.url() + '#' + name;
+    const QStringList url = QStringList::split(';', k.url());
+    return url[0] + '#' + name;
 }
 
 void HTMLFormElementImpl::doAutoFill()
