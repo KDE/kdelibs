@@ -3315,7 +3315,6 @@ void KHTMLPart::saveState( QDataStream &stream )
          << d->m_ssl_cipher_used_bits
          << d->m_ssl_cipher_bits
          << d->m_ssl_cert_state
-         << d->m_ssl_cert_state
          << d->m_ssl_parent_ip
          << d->m_ssl_parent_cert;
 

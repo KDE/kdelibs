@@ -244,7 +244,6 @@ public:
           m_ssl_cipher_used_bits,
           m_ssl_cipher_bits,
           m_ssl_cert_state,
-          m_ssl_cert_state,
           m_ssl_parent_ip,
           m_ssl_parent_cert;
 
