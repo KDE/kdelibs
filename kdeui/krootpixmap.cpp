@@ -8,13 +8,6 @@
  * You can Freely distribute this program under the GNU Library
  * General Public License. See the file "COPYING.LIB" for the exact 
  * licensing terms.
- *
- * 3 Mar 2000: Geert Jansen
- *   - Don't update when moving.
- *   - Use KPixmapIO for applying effects on the transparent background.
- *
- * 18 Dec 1999: Geert Jansen
- *   - Ported to the new KSharedPixmap.
  */
 
 #include <math.h>
@@ -140,6 +133,7 @@ void KRootPixmap::repaint(bool force)
 	return;
     }
     m_Rect = QRect(p1, p2);
+    m_Desk = KWin::currentDesktop();
 
     // KSharedPixmap will correctly generate a tile for us.
     if (!m_pPixmap->loadFromShared(QString("DESKTOP%1").arg(m_Desk), m_Rect))
@@ -184,7 +178,6 @@ void KRootPixmap::slotDone(bool success)
 
 void KRootPixmap::slotBackgroundChanged(int desk)
 {
-    m_Desk = KWin::currentDesktop();
     if (desk == m_Desk)
 	repaint(true);
 }
