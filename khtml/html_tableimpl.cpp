@@ -1302,10 +1302,7 @@ void HTMLTableElementImpl::calcRowHeights()
     		    continue;
 		
 		if (cell->vAlign()!=Top)
-		{
 		    cell->setLayouted(false);
-		    cell->layout();
-		}
 	    }
 	}
 
@@ -2204,11 +2201,9 @@ void HTMLTableCellElementImpl::calcVerticalAlignment(int baseline)
 
 void HTMLTableCellElementImpl::layout(bool deep)
 {
-  // ### antti, what's the sense of this code?
-  //bool lay = layouted();
+    bool lay = layouted();
     HTMLBlockElementImpl::layout(deep);
-    int minHeight = 0;
-    //  setLayouted(lay);
+    setLayouted(lay);
 }
 
 
