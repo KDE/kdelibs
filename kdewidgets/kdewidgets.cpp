@@ -36,6 +36,7 @@
 #include "kruler.h"
 #include "ksqueezedtextlabel.h"
 #include "ktextbrowser.h"
+#include "ktextedit.h"
 #include "kurllabel.h"
 #include "kurlrequester.h"
 
@@ -313,13 +314,21 @@ KDEWidgetsPlugin::KDEWidgetsPlugin()
 	widget.isContainer = false;
 	m_widgets.insert("KSqueezedTextLabel", widget);
 
-	widget.group = "Input (KDE)";
+	widget.group = "Display (KDE)";
 	widget.iconSet = "ktextbrowser.png";
 	widget.includeFile = "ktextbrowser.h";
 	widget.toolTip = "Improved QTextBrowser (KDE)";
 	widget.whatsThis = "KTextBrowser";
 	widget.isContainer = false;
 	m_widgets.insert("KTextBrowser", widget);
+
+	widget.group = "Input (KDE)";
+	widget.iconSet = "ktextedit.png";
+	widget.includeFile = "ktextedit.h";
+	widget.toolTip = "Improved QTextEdit (KDE)";
+	widget.whatsThis = "KTextEdit";
+	widget.isContainer = false;
+	m_widgets.insert("KTextEdit", widget);
 
 	widget.group = "Display (KDE)";
 	widget.iconSet = "kurllabel.png";
@@ -402,6 +411,8 @@ QWidget *KDEWidgetsPlugin::create(const QString &key, QWidget *parent, const cha
 		return new KSqueezedTextLabel("KSqueezedTextLabel", parent, name);
 	if (key == "KTextBrowser")
 		return new KTextBrowser(parent, name);
+	if (key == "KTextEdit")
+		return new KTextEdit(parent, name);
 	if (key == "KURLLabel")
 		return new KURLLabel("KURLLabel", QString::null, parent, name);
 	if (key == "KURLRequester")

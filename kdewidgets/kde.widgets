@@ -135,7 +135,12 @@ Group=Display (KDE)
 
 [KTextBrowser]
 ToolTip=Improved QTextBrowser (KDE)
-WhatsThis=An improved version of the QTextBrowser with mail or system browser invoktion support
+WhatsThis=An improved version of the QTextBrowser with mail or system browser invokation support
+Group=Display (KDE)
+
+[KTextEdit]
+ToolTip=Improved QTextEdit (KDE)
+WhatsThis=An improved version of the QTextEdit with mail or system browser invokation support
 Group=Input (KDE)
 
 [KURLLabel]
