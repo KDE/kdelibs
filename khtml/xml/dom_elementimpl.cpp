@@ -54,20 +54,17 @@ using namespace DOM;
 using namespace khtml;
 
 AttrImpl::AttrImpl(ElementImpl* element, DocumentPtr* docPtr, NodeImpl::Id attrId,
-		   DOMStringImpl *value, DOMStringImpl *prefix, DOMStringImpl *localName)
+		   DOMStringImpl *value, DOMStringImpl *prefix)
     : NodeBaseImpl(docPtr),
-      m_element(element)
+      m_element(element),
+      m_attrId(attrId)
 {
-    m_attrId = attrId;
     m_value = value;
     m_value->ref();
 
     m_prefix = prefix;
     if (m_prefix)
 	m_prefix->ref();
-    m_localName = localName;
-    if (m_localName)
-	m_localName->ref();
     m_specified = true; // we don't yet support default attributes
 }
 
@@ -76,8 +73,6 @@ AttrImpl::~AttrImpl()
     m_value->deref();
     if (m_prefix)
 	m_prefix->deref();
-    if (m_localName)
-	m_localName->deref();
 }
 
 DOMString AttrImpl::nodeName() const
@@ -113,14 +108,16 @@ void AttrImpl::setPrefix(const DOMString &_prefix, int &exceptioncode )
 
 DOMString AttrImpl::namespaceURI() const
 {
-    if (!m_localName)
+    if (m_htmlCompat)
         return DOMString();
     return getDocument()->getName(NamespaceId, m_attrId >> 16);
 }
 
 DOMString AttrImpl::localName() const
 {
-    return m_localName;
+    if (m_htmlCompat)
+       return DOMString();
+    return getDocument()->getName(AttributeId, m_attrId);
 }
 
 DOMString AttrImpl::nodeValue() const
@@ -130,11 +127,14 @@ DOMString AttrImpl::nodeValue() const
 
 DOMString AttrImpl::name() const
 {
-    if (!m_localName)
-        return getDocument()->getName(AttributeId, m_attrId);
-    if (!m_prefix || !m_prefix->l)
-        return m_localName;
-    return DOMString(m_prefix) + ":" + DOMString(m_localName);
+    DOMString n = getDocument()->getName(AttributeId, m_attrId);
+    if (m_htmlCompat)
+        n = n.upper();
+
+    if (m_prefix && m_prefix->l)
+        return DOMString(m_prefix) + ":" + n;
+
+    return n;
 }
 
 void AttrImpl::setValue( const DOMString &v, int &exceptioncode )
@@ -177,7 +177,9 @@ void AttrImpl::setNodeValue( const DOMString &v, int &exceptioncode )
 
 NodeImpl *AttrImpl::cloneNode ( bool /*deep*/)
 {
-     return new AttrImpl(0, docPtr(), m_attrId, m_prefix, m_value, m_localName);
+     AttrImpl* attr = new AttrImpl(0, docPtr(), m_attrId, m_value, m_prefix);
+     attr->setHTMLCompat(m_htmlCompat);
+     return attr;
 }
 
 // DOM Section 1.1.1
@@ -231,6 +233,8 @@ AttrImpl *AttributeImpl::createAttr(ElementImpl *element, DocumentPtr *docPtr)
 {
     if (m_attrId) {
 	AttrImpl *attr = new AttrImpl(element,docPtr,m_attrId,m_data.value);
+        if (!attr) return 0;
+        attr->setHTMLCompat( docPtr->document()->htmlMode() != DocumentImpl::XHtml );
 	m_data.value->deref();
 	m_data.attr = attr;
 	m_data.attr->ref();
@@ -329,7 +333,7 @@ void ElementImpl::setAttributeNS( const DOMString &namespaceURI, const DOMString
     NodeImpl::Id id = getDocument()->getId(AttributeId, namespaceURI.implementation(),
                             prefix.implementation(), localName.implementation(), false, true /*lookupHTML*/);
     attributes()->setValue(id, value.implementation(), 0, prefix.implementation(),
-                           localName.implementation());
+                           true /*nsAware*/, !namespaceURI.isNull() /*hasNS*/);
 }
 
 void ElementImpl::setAttribute(NodeImpl::Id id, const DOMString &value)
@@ -390,7 +394,9 @@ DOMString ElementImpl::nodeName() const
 
 DOMString ElementImpl::namespaceURI() const
 {
-    return getDocument()->getName(NamespaceId, id() >> 16);
+   if (m_htmlCompat)
+        return DOMString();
+   return getDocument()->getName(NamespaceId, id() >> 16);
 }
 
 DOMString ElementImpl::prefix() const
@@ -855,19 +861,19 @@ DOMStringImpl *NamedAttrMapImpl::getValue(NodeImpl::Id id, bool nsAware, DOMStri
 }
 
 void NamedAttrMapImpl::setValue(NodeImpl::Id id, DOMStringImpl *value, DOMStringImpl* qName,
-                                DOMStringImpl *prefix, DOMStringImpl *localName)
+                                DOMStringImpl *prefix, bool nsAware, bool hasNS)
 {
-    assert( !(qName && localName) );
+    assert( !(qName && nsAware) );
     if (!id) return;
 
     // Passing in a null value here causes the attribute to be removed. This is a khtml extension
     // (the spec does not specify what to do in this situation).
     int exceptioncode = 0;
     if (!value) {
-	removeNamedItem(id,(bool)localName, qName, exceptioncode);
+	removeNamedItem(id, nsAware, qName, exceptioncode);
 	return;
     }
-    unsigned int mask = localName ? ~0L : NodeImpl_IdLocalMask;
+    unsigned int mask = nsAware ? ~0L : NodeImpl_IdLocalMask;
     NodeImpl::Id mid = (id & mask);
 
     // Check for an existing attribute.
@@ -888,22 +894,24 @@ void NamedAttrMapImpl::setValue(NodeImpl::Id id, DOMStringImpl *value, DOMString
     // No existing matching attribute; add a new one
     m_attrCount++;
     m_attrs = (AttributeImpl*)realloc(m_attrs,m_attrCount*sizeof(AttributeImpl));
-    if (!localName) {
+    if (!nsAware) {
 	// Called from setAttribute()... we only have a name
         m_attrs[m_attrCount-1].m_attrId = id;
         m_attrs[m_attrCount-1].m_data.value = value;
 	m_attrs[m_attrCount-1].m_data.value->ref();
     }
     else {
-	// Called from setAttributeNS()... need to create a full AttrImpl here to store the
-	// namespaceURI, prefix and localName
+	// Called from setAttributeNS()... need to create a full AttrImpl here
+        if(!m_element)
+            return;
 	m_attrs[m_attrCount-1].m_data.attr = new AttrImpl(m_element,m_element->docPtr(),
 							  id,
 							  value,
-                                                          prefix,
-                                                          localName);
+                                                          prefix);
 	m_attrs[m_attrCount-1].m_attrId = 0; /* "has implementation" flag */
 	m_attrs[m_attrCount-1].m_data.attr->ref();
+        m_attrs[m_attrCount-1].m_data.attr->setHTMLCompat( !hasNS &&
+                                                 m_element->getDocument()->htmlMode() != DocumentImpl::XHtml );
     }
     if (m_element)
 	m_element->parseAttribute(&m_attrs[m_attrCount-1]);

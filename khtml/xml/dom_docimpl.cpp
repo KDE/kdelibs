@@ -250,7 +250,6 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_elementMap = new IdNameMapping(ID_LAST_TAG+1);
     m_namespaceMap = new IdNameMapping(1);
     QString xhtml(XHTML_NAMESPACE);
-    m_namespaceMap->ids.insert(xhtml, (void*)0);
     m_namespaceMap->names.insert(0, new DOMStringImpl(xhtml.unicode(), xhtml.length()));
     m_namespaceMap->names[0]->ref();
     m_namespaceMap->count++;
@@ -349,7 +348,9 @@ AttrImpl *DocumentImpl::createAttribute( const DOMString &tagName, int* pExcepti
                   false /* allocate */, isHTMLDocument(), pExceptioncode);
     if ( pExceptioncode && *pExceptioncode )
         return 0;
-    return new AttrImpl( 0, document, id, DOMString("").implementation());
+    AttrImpl* attr = new AttrImpl( 0, document, id, DOMString("").implementation());
+    attr->setHTMLCompat( htmlMode() != XHtml );
+    return attr;
 }
 
 DocumentFragmentImpl *DocumentImpl::createDocumentFragment(  )
@@ -509,8 +510,10 @@ AttrImpl *DocumentImpl::createAttributeNS( const DOMString &_namespaceURI,
     splitPrefixLocalName(_qualifiedName.implementation(), prefix, localName, colonPos);
     Id id = getId(NodeImpl::AttributeId, _namespaceURI.implementation(), prefix.implementation(),
                   localName.implementation(), false, true /*lookupHTML*/);
-    return new AttrImpl(0, document, id, DOMString("").implementation(),
-                         prefix.implementation(), localName.implementation());
+    AttrImpl* attr = new AttrImpl(0, document, id, DOMString("").implementation(),
+                         prefix.implementation());
+    attr->setHTMLCompat( _namespaceURI.isNull() && htmlMode() != XHtml );
+    return attr;
 }
 
 
@@ -1616,6 +1619,7 @@ NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI,
     if(!_name || !_name->l) return 0;
     IdNameMapping *map;
     IdLookupFunction lookup;
+
     switch (_type) {
     case NodeImpl::ElementId:
         map = m_elementMap;
@@ -1626,6 +1630,8 @@ NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI,
         lookup = getAttrID;
         break;
     case NodeImpl::NamespaceId:
+        if( !strcasecmp(_name, XHTML_NAMESPACE) )
+            return 0; //### Id == 0 can't be used with (void*)int based QDicts...
         map = m_namespaceMap;
         lookup= 0;
         break;
@@ -1687,10 +1693,9 @@ NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI,
     }
 
     // Name not found, so let's add it
-    DOMString nme(name);
     NodeImpl::Id cid = map->count++ + map->idStart;
-    map->names.insert( cid, nme.implementation() );
-    nme.implementation()->ref();
+    map->names.insert( cid, _name );
+    _name->ref();
 
     map->ids.insert( name, (void*)cid );
 
@@ -1730,6 +1735,8 @@ DOMString DocumentImpl::getName( NodeImpl::IdType _type, NodeImpl::Id _id ) cons
         lookup = getAttrName;
         break;
     case NodeImpl::NamespaceId:
+        if( !_id )
+            return XHTML_NAMESPACE;
         map = m_namespaceMap;
         lookup = 0;
         break;

@@ -53,7 +53,7 @@ class AttrImpl : public NodeBaseImpl
 
 public:
     AttrImpl(ElementImpl* element, DocumentPtr* docPtr, NodeImpl::Id attrId,
-	     DOMStringImpl *value, DOMStringImpl *prefix = 0, DOMStringImpl *localName = 0);
+	     DOMStringImpl *value, DOMStringImpl *prefix = 0);
     ~AttrImpl();
 
 private:
@@ -264,7 +264,7 @@ public:
     DOMStringImpl *valueAt(unsigned long index) const;
     DOMStringImpl *getValue(NodeImpl::Id id, bool nsAware = false, DOMStringImpl* qName = 0) const;
     void setValue(NodeImpl::Id id, DOMStringImpl *value, DOMStringImpl* qName = 0,
-                  DOMStringImpl *prefix = 0, DOMStringImpl* localName = 0);
+                  DOMStringImpl *prefix = 0, bool nsAware = false, bool hasNS = false);
     Attr removeAttr(AttrImpl *attr);
     NodeImpl::Id mapId(DOMStringImpl* namespaceURI, DOMStringImpl* localName, bool readonly);
     void copyAttributes(NamedAttrMapImpl *other);
