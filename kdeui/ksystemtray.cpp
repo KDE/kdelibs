@@ -186,9 +186,9 @@ void KSystemTray::mousePressEvent( QMouseEvent *e )
 	if ( parentWidget() ) {
             KAction* action = d->actionCollection->action("minimizeRestore");
 	    if ( parentWidget()->isVisible() )
-		action->setText( i18n("Minimize") );
+		action->setText( i18n("&Minimize") );
 	    else
-		action->setText( i18n("Restore") );
+		action->setText( i18n("&Restore") );
 	}
 	contextMenuAboutToShow( menu );
 	menu->popup( e->globalPos() );
