@@ -130,6 +130,8 @@ class KIOConnection
     private byte [] in_buf = null;                // current input buffer
     private int in_bufpos = 0;                    // position in buffer
     private boolean in_eof = false;               // all data is read
+    private final int LOW_BUFFER_LIMIT = 5;       // put onhold off
+    private final int HIGH_BUFFER_LIMIT = 10;     // put onhold on
 
     protected KIOConnection(URL u) {
         url = u;
@@ -159,8 +161,8 @@ class KIOConnection
             case DATA:
                 if (d.length > 0)
                     data.addLast(d);
-                Main.debug ("KIO DATA (" + jobid + ") " + data.size());
-                if (!onhold && data.size() > 2) {
+                // Main.debug ("KIO DATA (" + jobid + ") " + data.size());
+                if (!onhold && data.size() > HIGH_BUFFER_LIMIT) {
                     Main.protocol.sendDataCmd(jobid, HOLD);
                     onhold = true;
                 }
@@ -200,7 +202,7 @@ class KIOConnection
             in_buf = (byte []) data.removeFirst();
             in_bufpos = 0;
         }
-        if (onhold) {
+        if (onhold && datasize < LOW_BUFFER_LIMIT) {
             Main.protocol.sendDataCmd(jobid, RESUME);
             onhold = false;
         }
@@ -365,7 +367,7 @@ final class KIOHttpConnection extends KIOConnection
                     };
                     headers.add(entry);
                     headersmap.put(entry[0], entry[1]);
-                    Main.debug ("KIO header " + entry[0] + "=" + entry[1]);
+                    // Main.debug ("KIO header " + entry[0] + "=" + entry[1]);
                 }
                 responseCode = 0;
                 if (headersmap.size() > 0) {
