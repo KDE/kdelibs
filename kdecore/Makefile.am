@@ -29,7 +29,7 @@ lib_LTLIBRARIES = libkdefakes.la libkdecore.la
 include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kdesktopfile.h kurl.h ksock.h kaboutdata.h kcmdlineargs.h \
 	kconfigbackend.h kapp.h kapplication.h kuniqueapp.h kuniqueapplication.h \
-	kcharsets.h \
+	kcharsets.h kdeversion.h \
 	kprocess.h kprocctrl.h klocale.h kicontheme.h kiconloader.h kdebug.h \
 	kwinmodule.h kwin.h krootprop.h \
 	kshortcut.h kkeynative.h kaccel.h kglobalaccel.h \
