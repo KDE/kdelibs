@@ -80,7 +80,7 @@ Completion DOMFunction::execute(const List &args)
     completion = tryExecute(args);
   }
   catch (DOM::DOMException e) {
-    Number v(e.code); /* TODO: what kind of object should this be ? */
+    KJSO v = Error::create(GeneralError);
     v.put("code", Number(e.code));
     completion = Completion(Throw, v);
   }
