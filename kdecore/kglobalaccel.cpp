@@ -238,7 +238,7 @@ void KGlobalAccel::readSettings(KConfig* config)
 			.arg( keyQt, 0, 16 ). arg( (*it).aCurrentKeyCode, 0, 16 ).arg( (*it).bEnabled );
 
 		// If the X codes have changed,
-		if( (*it).bEnabled && (keyCodeX != (*it).keyCodeNative || keyModX != (*it).keyModNative) ) {
+		if( (*it).bEnabled && (keyCodeX != (*it).keyCodeNative || keyModX != (*it).keyModNative) && keyCodeX != 0 ) {
 			grabKey( &(*it), false );
 			aKeysToGrab[cKeysToGrab++] = &(*it);
 		}
@@ -363,12 +363,45 @@ extern "C" {
   }
 }
 
+static uint g_keyModMaskXAccel = 0;
+static uint g_keyModMaskXAlwaysOff = 0;
+static uint g_keyModMaskXOnOrOff = 0;
+
+static void calculateGrabMasks()
+{
+	KAccel::readModifierMapping();
+	g_keyModMaskXAccel = KAccel::accelModMaskX();
+	g_keyModMaskXAlwaysOff = ~(
+			KAccel::keyModXShift() |
+			KAccel::keyModXLock() |
+			KAccel::keyModXCtrl() |
+			KAccel::keyModXAlt() |
+			KAccel::keyModXNumLock() |
+			KAccel::keyModXModeSwitch() |
+			KAccel::keyModXMeta() |
+			KAccel::keyModXScrollLock() );
+	g_keyModMaskXOnOrOff =
+			KAccel::keyModXLock() |
+			KAccel::keyModXNumLock() |
+			KAccel::keyModXScrollLock();
+
+	// X11 seems to treat the ModeSwitch bit differently than the others --
+	//  namely, it won't grab anything if it's set, but both switched and
+	//  unswiched keys if it's not.
+	//  So we always need to XGrabKey with the bit set to 0.
+	g_keyModMaskXAlwaysOff |= KAccel::keyModXModeSwitch();
+}
+
 bool KGlobalAccel::grabKey( KKeyEntry *pKeyEntry, bool bGrab )
 {
 	if (do_not_grab)
 		return true;
 	if( !pKeyEntry )
 		return false;
+
+	// Make sure that grab masks have been initialized.
+	if( g_keyModMaskXOnOrOff == 0 )
+		calculateGrabMasks();
 
 	// Get the X equivalents.
 	KKey key = pKeyEntry->aCurrentKeyCode;
@@ -384,14 +417,7 @@ bool KGlobalAccel::grabKey( KKeyEntry *pKeyEntry, bool bGrab )
 		keyModX = pKeyEntry->keyModNative;
 	}
 
-	// X11 seems to treat the ModeSwitch bit differently than the others --
-	//  namely, it won't grab anything if it's set, but both switched and
-	//  unswiched keys if it's not.
-	//  So we always need to XGrabKey with the bit set to 0.
-	//  I don't think this causes any problems, per se, just a potential
-	//  superfluous call to x11EventFilter.
-	uint keyModMaskX = KAccel::accelModMaskX() | KAccel::keyModXModeSwitch();
-	keyModX &= KAccel::accelModMaskX(); // Get rid of any non-relevant bits in mod
+	keyModX &= g_keyModMaskXAccel; // Get rid of any non-relevant bits in mod
 
 #ifndef __osf__
 // this crashes under Tru64 so .....
@@ -403,7 +429,7 @@ bool KGlobalAccel::grabKey( KKeyEntry *pKeyEntry, bool bGrab )
 	if( !keyCodeX )
 		return false;
 
-	// We wan't to catch only our own errors
+	// We want to catch only our own errors
 	grabFailed = false;
 	XSync(qt_xdisplay(),0);
 	XErrorHandler savedErrorHandler=XSetErrorHandler(XGrabErrorHandler);
@@ -413,6 +439,7 @@ bool KGlobalAccel::grabKey( KKeyEntry *pKeyEntry, bool bGrab )
 	// Does anyone with more X-savvy know how to set a mask on qt_xrootwin so that
 	//  the irrelevant bits are always ignored and we can just make one XGrabKey
 	//  call per accelerator?
+	uint keyModMaskX = ~g_keyModMaskXOnOrOff;
 	for( uint irrelevantBitsMask = 0; irrelevantBitsMask <= 0xff; irrelevantBitsMask++ ) {
 		if( (irrelevantBitsMask & keyModMaskX) == 0 ) {
 			kdDebug(125) << QString( "code: 0x%1 state: 0x%2 | 0x%3\n" )
@@ -424,6 +451,8 @@ bool KGlobalAccel::grabKey( KKeyEntry *pKeyEntry, bool bGrab )
 				// If grab failed, then ungrab any previously successful grabs.
 				if( grabFailed ) {
 					kdDebug(125) << "grab failed!\n";
+					pKeyEntry->keyCodeNative = 0;
+					pKeyEntry->keyModNative = 0;
 					for( uint m = 0; m < irrelevantBitsMask; m++ ) {
 						if( m & keyModMaskX == 0 )
 							XUngrabKey( qt_xdisplay(), keyCodeX, keyModX | m, qt_xrootwin() );
@@ -448,13 +477,12 @@ bool KGlobalAccel::x11EventFilter( const XEvent *event_ ) {
 
     if ( event_->type == MappingNotify ) {
 	kdDebug(125) << "Caught MappingNotify" << endl;
-	// Key values may have been reassigned: need to do new XGrabKey()s.
+	// Do XUngrabKey()s.
 	setEnabled( false );
+	// Maybe the X modifier map has been changed.
+	calculateGrabMasks();
+	// Do new XGrabKey()s.
 	setEnabled( true );
-	// This belongs somewhere else where it will only be called once, instead
-	//  of once for each application with a KGlobalAccel object.
-	// But where to go?
-	KAccel::readModifierMapping();
 	return true;
     }
 
