@@ -40,6 +40,9 @@
 #include <stdio.h>
 #include <pwd.h>
 #include <unistd.h>
+
+#include <sys/utsname.h>
+
 #include "kdepackages.h"
 #include <kcombobox.h>
 #include <config.h>
@@ -181,8 +184,13 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
 
   tmpLabel = new QLabel(i18n("OS:"), parent);
   glay->addWidget( tmpLabel, ++row, 0 );
-  d->os = QString::fromLatin1("%1").
-          arg(KDE_COMPILING_OS);
+
+  struct utsname unameBuf;
+  uname( &unameBuf );
+  d->os = QString::fromLatin1( unameBuf.sysname ) +
+					" (" + QString::fromLatin1( unameBuf.machine ) + ") "
+          "release " + QString::fromLatin1( unameBuf.release );
+
   tmpLabel = new QLabel(d->os, parent);
   glay->addMultiCellWidget( tmpLabel, row, row, 1, 2 );
 
