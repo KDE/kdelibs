@@ -830,7 +830,12 @@ unsigned KCharsetsData::decodeAmp(const char *seq,int &len){
   
   if (*seq=='#'){
      char *endptr;
-     unsigned num=strtol(seq+1,&endptr,10);
+     unsigned num;
+     if (*(seq+1) == 'x') 
+         num =strtoul(seq+2,&endptr,16);
+     else
+         num =strtoul(seq+1,&endptr,10);
+     
      kchdebug("Number: '%u'\n",num);
      if (*endptr==';') len+=endptr-seq+1;
      else len+=endptr-seq;
