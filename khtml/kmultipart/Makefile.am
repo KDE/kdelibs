@@ -1,4 +1,4 @@
-INCLUDES = $(all_includes)
+INCLUDES = -I.. $(all_includes)
 
 # These are not really libraries, but modules dynamically opened.
 # So they should be installed in kde_module_dir, which is usually $kde_prefix/lib/kde3
@@ -6,7 +6,7 @@ kde_module_LTLIBRARIES = libkmultipart.la
 
 libkmultipart_la_SOURCES = kmultipart.cpp
 libkmultipart_la_LIBADD = $(LIB_KPARTS)
-libkmultipart_la_LDFLAGS = $(all_libraries) $(KDE_PLUGIN)
+libkmultipart_la_LDFLAGS = -L.. $(all_libraries) $(KDE_PLUGIN)
 
 # Automatically generate moc files
 METASOURCES = AUTO
