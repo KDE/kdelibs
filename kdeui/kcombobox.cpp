@@ -139,7 +139,7 @@ void KComboBox::makeCompletion( const QString& text )
             m_pEdit->setCursorPosition( pos );
         }
     }
-    
+
     // Read - only combobox
     else if( !m_pEdit )
     {
@@ -493,6 +493,11 @@ void KHistoryCombo::keyPressEvent( QKeyEvent *e )
 	if ( myIterateIndex >= count() ) {
 	    myRotated = true;
 	    myIterateIndex = -1;
+	
+	    // if the typed text is the same as the first item, skip the first
+	    if ( myText == text(0) )
+		myIterateIndex = 0;
+
 	    setEditText( myText );
 	}
 	else
