@@ -189,7 +189,7 @@ Value NumberProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
       x = -x;
     }
 
-    if (x >= pow(10.0,21))
+    if (x >= 10e21)
       return String(s+UString::from(x));
 
     double n = floor(x*pow(10.0,f));
