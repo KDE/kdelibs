@@ -17,7 +17,7 @@ namespace KIO
    * Convert size from bytes to the string representation.
    *
    * @param  size  size in bytes
-   * @return converted size as a string - e.g. 123.4 kB , 12 MB
+   * @return converted size as a string - e.g. 123.4 kB , 12.0 MB
    */
   QString convertSize( unsigned long size );
 
