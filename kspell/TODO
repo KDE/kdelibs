@@ -1,3 +1,14 @@
+from Daniel Naber, 2002-02-17:
+
+- there's the pspell library that offers an API to ispell and aspell,
+  it would make our code much simpler. It's not asynchronous by itself,
+  but maybe that can be added in KSpell.
+
+- add an option to ignore HTML/XML markup (-h). It's currently not
+  possible (i.e. it doesn't work) because we feed the text into ispell
+  line by line and it gets confused if tags are spread over more
+  than one line.
+
 from Wolfram Diestel:
 
 - add more charsets - need support from users of this charsets
@@ -5,7 +16,6 @@ from Wolfram Diestel:
    o one process should send data
    o one process should read data
   synchronisation is done only by counting empty output lines from ispell
-
 
 old todo from David Sweet
 -------------------------
