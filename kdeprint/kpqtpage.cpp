@@ -29,6 +29,7 @@
 #include <qradiobutton.h>
 #include <qlabel.h>
 #include <qlayout.h>
+#include <qwhatsthis.h>
 
 #include <kiconloader.h>
 #include <klocale.h>
@@ -65,30 +66,81 @@ KPQtPage::~KPQtPage()
 
 void KPQtPage::init()
 {
+        //WhatsThis strings.... (added by pfeifle@kde.org)
+	QString whatsThisColorModeOtPageLabel = i18n( " <qt> "
+			" <b>Selection of color mode:</b> You can choose between 2 options: "
+			" <ul><li><b>Color</b> and</li> "
+                        " <li><b>Grayscale</b></li></ul> "
+			" </qt>" );
+	QString whatsThisPageSizeOtPageLabel = i18n( " <qt> "
+			" <b>Selection of page size:</b> Select paper size to be printed on from "
+			" the drop-down menu. "
+			" <p>The exact list of choices depends on the printer driver (\"PPD\") you have installed. "
+			" </qt>" );
+	QString whatsThisPagesPerSheetOtPageLabel = i18n( " <qt> "
+			" <b>Selection of pages per sheet:</b> "
+                        " You can choose to print more than one page onto each sheet of paper. "
+                        " This is sometimes useful to save paper. "
+                        " <p><b>Note 1:</b> the page images get scaled down accordingly to print 2 or 4 pages per sheet. "
+                        " The page image does not get scaled if you print 1 page per sheet (the default setting.). "
+                        " <p><b>Note 2:</b> If you select multiple pages per sheet here, the scaling and re-arranging is done "
+                        " by your printing system. "
+			" </qt>" );
+	QString whatsThisOrientationOtPageLabel = i18n( " <qt> "
+			" <b>Selection of image orientation:</b> Orientation of the printed "
+                        " pageimage on your paper is controlled by the radio buttons. By default, "
+                        " the orientation is <em>Portrait</em> "
+                        " <p>You can select 2 alternatives: "
+                        " <ul> "
+                        " <li> <b>Portrait.</b>.Portrait is the default setting. </li> "
+                        " <li> <b>Landscape.</b> </li> "
+                        " </ul> "
+                        " The icon changes according to your selection." 
+			" </qt>" );
 	setTitle(i18n("Print Format"));
 
 	// widget creation
 	m_pagesize = new QComboBox(this);
+          QWhatsThis::add(m_pagesize, whatsThisPageSizeOtPageLabel);
 	QLabel	*m_pagesizelabel = new QLabel(i18n("Page s&ize:"), this);
 	m_pagesizelabel->setAlignment(Qt::AlignVCenter|Qt::AlignRight);
 	m_pagesizelabel->setBuddy(m_pagesize);
 	m_orientbox = new QButtonGroup(0, Qt::Vertical, i18n("Orientation"), this);
+          QWhatsThis::add(m_orientbox, whatsThisOrientationOtPageLabel);
 	m_colorbox = new QButtonGroup(0, Qt::Vertical, i18n("Color Mode"), this);
+          QWhatsThis::add(m_colorbox, whatsThisColorModeOtPageLabel);
 	QRadioButton	*m_portrait = new QRadioButton(i18n("&Portrait"), m_orientbox);
+          QWhatsThis::add(m_portrait, whatsThisOrientationOtPageLabel);
+
 	QRadioButton	*m_landscape = new QRadioButton(i18n("&Landscape"), m_orientbox);
+          QWhatsThis::add(m_landscape, whatsThisOrientationOtPageLabel);
+
 	m_orientpix = new QLabel(m_orientbox);
 	m_orientpix->setAlignment(Qt::AlignCenter);
+          QWhatsThis::add(m_orientpix, whatsThisColorModeOtPageLabel);
+
 	QRadioButton	*m_color = new QRadioButton(i18n("Colo&r"), m_colorbox);
+          QWhatsThis::add(m_color, whatsThisColorModeOtPageLabel);
+
 	QRadioButton	*m_grayscale = new QRadioButton(i18n("&Grayscale"), m_colorbox);
 	m_colorpix = new QLabel(m_colorbox);
 	m_colorpix->setAlignment(Qt::AlignCenter);
+          QWhatsThis::add(m_colorpix, whatsThisColorModeOtPageLabel);
+
 	m_nupbox = new QButtonGroup(0, Qt::Vertical, i18n("Pages per Sheet"), this);
+        //  QWhatsThis::add(m_nupbox, whatsThisPagesPerSheetOtPageLabel);
 	QRadioButton	*m_nup1 = new QRadioButton("&1", m_nupbox);
+          QWhatsThis::add(m_nup1, whatsThisPagesPerSheetOtPageLabel);
 	QRadioButton	*m_nup2 = new QRadioButton("&2", m_nupbox);
+          QWhatsThis::add(m_nup2, whatsThisPagesPerSheetOtPageLabel);
 	QRadioButton	*m_nup4 = new QRadioButton("&4", m_nupbox);
+          QWhatsThis::add(m_nup4, whatsThisPagesPerSheetOtPageLabel);
 	QRadioButton	*m_nupother = new QRadioButton(i18n("Ot&her"), m_nupbox);
+          QWhatsThis::add(m_nupother, whatsThisPagesPerSheetOtPageLabel);
+
 	m_nuppix = new QLabel(m_nupbox);
 	m_nuppix->setAlignment(Qt::AlignCenter);
+          QWhatsThis::add(m_nuppix, whatsThisPagesPerSheetOtPageLabel);
 
 	// layout creation
 	QGridLayout	*lay0 = new QGridLayout(this, 3, 2, 0, 10);
