@@ -186,25 +186,16 @@ KServiceFactory::KServiceFactory( const QStringList& _path_list )
   m_pathList = _path_list;
 }
 
-/*
-KServiceFactory::KServiceFactory( const QString& _system_path, 
-				  const QString& _user_path )
-{
-  if ( !_system_path.isEmpty() )
-    m_pathList.append( systemShareDir() + _system_path );
-  QString user = _user_path;
-  if ( !user.isEmpty() )
-    user = _system_path;
-  if ( !user.isEmpty() )
-    m_pathList.append( userShareDir() + user );
-}
-*/
 KRegEntry* KServiceFactory::create( KRegistry* _reg, const QString& _file, QDataStream& _str )
 {
   Q_UINT32 u;
   _str >> u;
 
-  ASSERT( u == TC_KService );
+  if ( u != TC_KService )
+  {
+    kdebug( KDEBUG_WARN, 7012, "Invalid Service : %s", _file.ascii() );
+    return 0;
+  }
 
   KService *s = new KService( _str );
   if ( !s->isValid() )
