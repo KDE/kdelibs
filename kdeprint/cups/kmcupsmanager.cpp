@@ -416,10 +416,13 @@ void KMCupsManager::loadServerPrinters()
 				QString	s = QString::null;
 				req.name("printer-name",s);
 				setHardDefault(findPrinter(s));
-
-				// everything went OK, just returns
-				return;
 			}
+			// This request may fails for example if no printer is defined. Just
+			// discard the error message. Indeed as we successfully got printers
+			// and classes, the most probable reason why this request may fail is
+			// because of no printer defined. The best would be to actually check
+			// there's no printer (TODO).
+			return;
 		}
 	}
 
