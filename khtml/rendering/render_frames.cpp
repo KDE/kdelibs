@@ -472,7 +472,7 @@ void RenderFrameSet::setResizing(bool e)
 bool RenderFrameSet::canResize( int _x, int _y )
 {
     // if we're not layouted, the gridLayout doesn't contain useful data
-    if (!layouted()) return false;
+    if (!layouted() || !m_gridLayout[0] || !m_gridLayout[1] ) return false;
 
     // check if we're over a horizontal or vertical boundary
     int pos = m_gridLayout[1][0];
