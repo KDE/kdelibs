@@ -3,6 +3,7 @@
 MimeType=text/rtf
 Comment=Rich Text Format
 Comment[no]=Rikt tekstformat
+Comment[ru]=Документ RTF
 DefaultApp=kwrite
 Icon=txt.xpm
 Type=MimeType

@@ -7,3 +7,4 @@ Patterns=*.avi;*.AVI;
 DefaultApp=aktion
 Comment=Microsoft AVI Video
 Comment[pt_BR]=Filme Microsoft AVI
+Comment[ru]=Фильм Microsoft AVI

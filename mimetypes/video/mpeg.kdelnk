@@ -7,3 +7,4 @@ Patterns=*.mpeg;*.mpg;
 DefaultApp=aktion
 Comment=MPEG Video
 Comment[pt_BR]=VМdeo MPEG
+Comment[ru]=MPEG фильм

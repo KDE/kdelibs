@@ -7,3 +7,4 @@ Patterns=*.mov;*.MOV;
 DefaultApp=aktion
 Comment=Quicktime Video
 Comment[pt_BR]=Filme QuickTime
+Comment[ru]=QuickTime фильм
