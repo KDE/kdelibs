@@ -242,7 +242,7 @@ QString KFileMetaInfoItem::string( bool mangle ) const
 
 QVariant::Type KFileMetaInfoItem::type() const
 {
-    return d->value.type();
+    return d->mimeTypeInfo->type();
 }
 
 bool KFileMetaInfoItem::isModified() const
@@ -276,6 +276,11 @@ bool KFileMetaInfoItem::isValid() const
     // If d is equal to null it means that null is initialized already.
     // null is 0L when it hasn't been initialized and d is never 0L.
     return d != Data::null;
+}
+
+void KFileMetaInfoItem::setAdded()
+{
+    d->added = true;
 }
 
 void KFileMetaInfoItem::ref()
@@ -454,11 +459,39 @@ bool KFileMetaInfo::addGroup( const QString& name )
          ! d->groups.contains(name) )
     {
         KFileMetaInfoGroup group( name, d->mimeTypeInfo );
+
+        // add all the items that can't be added by the user later
+        const KFileMimeTypeInfo::GroupInfo* ginfo = d->mimeTypeInfo->groupInfo(name);
+        Q_ASSERT(ginfo);
+        if (!ginfo) return false;
+
+        QStringList keys = ginfo->supportedKeys();
+        for (QStringList::Iterator it = keys.begin(); it != keys.end(); ++it)
+        {
+            const KFileMimeTypeInfo::ItemInfo* iteminfo = ginfo->itemInfo(*it);
+            Q_ASSERT(ginfo);
+            if (!iteminfo) return false;
+            
+            if ( !(iteminfo->attributes() & KFileMimeTypeInfo::Addable) &&
+                  (iteminfo->attributes() & KFileMimeTypeInfo::Modifiable))
+            {
+                // append it now or never
+                group.appendItem(iteminfo->key(), QVariant());
+            }
+              
+        }
+
         d->groups.insert(name, group);
+        group.setAdded();
         return true;
     }
 
     return false;
+}
+
+void KFileMetaInfo::removeGroup( const QString& name )
+{
+    d->groups.remove(name);
 }
 
 const KFileMetaInfo& KFileMetaInfo::operator= (const KFileMetaInfo& info )
@@ -938,6 +971,9 @@ public:
     QString                             name;
     QMap<QString, KFileMetaInfoItem>    items;
     const KFileMimeTypeInfo*            mimeTypeInfo;
+    bool                                dirty   :1;
+    bool                                added   :1;
+    bool                                removed :1;
 
     static Data* null;
     static Data* makeNull();
@@ -1081,6 +1117,11 @@ QString KFileMetaInfoGroup::name() const
     return d->name;
 }
 
+void KFileMetaInfoGroup::setAdded()
+{
+    d->added = true;
+}
+
 void KFileMetaInfoGroup::ref()
 {
     if (d != Data::null) d->ref();
@@ -1123,7 +1164,8 @@ KFileMetaInfoItem KFileMetaInfoGroup::addItem( const QString& key )
         item = KFileMetaInfoItem(info, key, QVariant());
 
     d->items.insert(key, item);
-    item.setValue(QVariant()); // mark as dirty
+    item.setAdded();           // mark as added
+    d->dirty = true;           // mark ourself as dirty, too
     return item;
 }
 
