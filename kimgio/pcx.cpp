@@ -385,7 +385,7 @@ static void writeImage1( QDataStream &s )
   }
 }
 
-void writeImage4( QDataStream &s )
+static void writeImage4( QDataStream &s )
 {
   header.Bpp = 1;
   header.NPlanes = 4;
