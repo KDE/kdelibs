@@ -207,7 +207,7 @@ public:
 
 SessionData::SessionData()
 {
-  authData = new AuthDataList;
+  authData = 0;
   d = new SessionDataPrivate;
 }
 
@@ -275,11 +275,15 @@ void SessionData::reset()
 void SessionData::slotAuthData( const QCString& key, const QCString& gkey,
                                  bool keep )
 {
+  if (!authData)
+    authData = new AuthDataList;
   authData->addData( new SessionData::AuthData(key, gkey, keep) );
 }
 
 void SessionData::slotDelAuthData( const QCString& gkey )
 {
+  if (!authData)
+     return;
   authData->removeData( gkey );
 }
 
