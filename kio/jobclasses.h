@@ -127,6 +127,12 @@ namespace KIO {
         void canceled( KIO::Job *job );
 
         /**
+         * Emitted to display information about this job, as sent by the slave.
+         * Examples of message are "Resolving host", "Connecting to host...", etc.
+         */
+        void infoMessage( KIO::Job *, const QString & msg );
+
+        /**
          * Progress signal showing the overall progress of the job
          * This is valid for any kind of job, and allows using a
          * a progress bar very easily (see @ref KProgress)
@@ -134,10 +140,21 @@ namespace KIO {
         void percent( KIO::Job *job, unsigned long percent );
 
         /**
-         * Emitted to display information about this job, as sent by the slave.
-         * Examples of message are "Resolving host", "Connecting to host...", etc.
+         * Emitted when we know the size of this job (data size for transfers,
+         * number of entries for listings).
          */
-        void infoMessage( KIO::Job *, const QString & msg );
+        void totalSize( KIO::Job *, unsigned long size );
+
+        /**
+         * Regularly emitted to show the progress of this job
+         * (current data size for transfers, entries listed).
+         */
+        void processedSize( KIO::Job *, unsigned long size );
+
+        /**
+         * Emitted to display information about the speed of this job.
+         */
+        void speed( KIO::Job *, unsigned long bytes_per_second );
 
     protected slots:
         /**
@@ -148,6 +165,20 @@ namespace KIO {
          */
         virtual void slotResult( KIO::Job *job );
 
+        /**
+         * Forward signal from subjob
+         */
+        void slotSpeed( KIO::Job*, unsigned long bytes_per_second );
+        /**
+         * Forward signal from subjob
+         */
+        void slotInfoMessage( KIO::Job*, const QString & );
+
+        /**
+         * Remove speed information
+         */
+        void slotSpeedTimeout();
+
     protected:
         /**
          * Add a job that has to be finished before a result
@@ -157,18 +188,32 @@ namespace KIO {
         virtual void addSubjob( Job *job );
 
         /**
-         * Mark a sub job as beeing done. If it's the last to
+         * Mark a sub job as being done. If it's the last to
          * wait on the job will emit a result - jobs with
          * two steps might want to override slotResult
          * in order to avoid calling this method.
          */
         virtual void removeSubjob( Job *job );
 
+        /**
+         * Utility function for inherited jobs.
+         * Emits the percent signal if bigger than m_percent,
+         * after calculating it from the parameters.
+         */
+        void emitPercent( unsigned long processedSize, unsigned long totalSize );
+
+        /**
+         * Utility function for inherited jobs.
+         * Emits the speed signal and starts the timer for removing that info
+         */
+        void emitSpeed( unsigned long bytes_per_second );
+
         QList<Job> subjobs;
         int m_error;
         QString m_errorText;
         unsigned long m_percent;
         int m_progressId; // for uiserver
+        QTimer *m_speedTimer;
     };
 
     /**
@@ -225,42 +270,36 @@ namespace KIO {
          */
         Slave *slave() { return m_slave; }
 
-    signals:
-        /**
-         * Emitted when we know the size of this job (data size for transfers,
-         * number of entries for listings).
-         */
-        void totalSize( KIO::Job *, unsigned long size );
-
-        /**
-         * Regularly emitted to show the progress of this job
-         * (current data size for transfers, entries listed).
-         */
-        void processedSize( KIO::Job *, unsigned long size );
-
-        /**
-         * Emitted to display information about the speed of this job.
-         */
-        void speed( KIO::Job *, unsigned long bytes_per_second );
-
     protected slots:
         /**
          * Called when the slave marks the job
          * as finished.
          */
         virtual void slotFinished( );
-        void slotSpeedTimeout();
 
         /**
          * @internal
          * Called on a slave's warning
          */
-        virtual void slotWarning( const QString & );
+        void slotWarning( const QString & );
 
         /**
          * Called on a slave's info message
          */
-        virtual void slotInfoMessage( const QString & );
+        void slotInfoMessage( const QString & );
+
+        /**
+         * Forward signal from the slave
+         */
+        void slotTotalSize( unsigned long data_size );
+        /**
+         * Forward signal from the slave
+         */
+        void slotProcessedSize( unsigned long data_size );
+        /**
+         * Forward signal from the slave
+         */
+        void slotSpeed( unsigned long bytes_per_second );
 
     public slots:
         /**
@@ -270,18 +309,12 @@ namespace KIO {
          */
         virtual void slotError( int , const QString & );
 
-        void slotTotalSize( unsigned long data_size );
-        void slotProcessedSize( unsigned long data_size );
-        void slotSpeed( unsigned long bytes_per_second );
-
     protected:
         Slave * m_slave;
         QByteArray m_packedArgs;
         KURL m_url;
         int m_command;
         unsigned long m_totalSize;
-
-        QTimer *m_speedTimer;
     };
 
     // Stat Job
@@ -425,26 +458,18 @@ namespace KIO {
          */
         virtual void slotResult( KIO::Job *job );
 
-    signals:
         /**
-         * Emitted when we know the size of this job (data size for transfers,
-         * number of entries for listings).
+         * Forward signal from subjob
          */
-        void totalSize( KIO::Job *, unsigned long size );
-
+        void slotProcessedSize( KIO::Job*, unsigned long size );
         /**
-         * Regularly emitted to show the progress of this job
-         * (current data size for transfers, entries listed).
+         * Forward signal from subjob
          */
-        void processedSize( KIO::Job *, unsigned long size );
-
+        void slotTotalSize( KIO::Job*, unsigned long size );
         /**
-         * Emitted to display information about the speed of this job.
+         * Forward signal from subjob
          */
-        void speed( KIO::Job *, unsigned long bytes_per_second );
-
-    protected slots:
-        void slotProcessedSize( KIO::Job*, unsigned long data_size );
+        void slotPercent( KIO::Job*, unsigned long pct );
 
     protected:
         void startCopyJob();
@@ -463,6 +488,7 @@ namespace KIO {
         TransferJob *m_getJob;
         TransferJob *m_putJob;
         SimpleJob *m_delJob;
+        unsigned long m_totalSize;
     };
 
     class ListJob : public SimpleJob {
@@ -524,16 +550,11 @@ namespace KIO {
 
     signals:
 
-        void totalSize( KIO::Job *, unsigned long size );
         void totalFiles( KIO::Job *, unsigned long files );
         void totalDirs( KIO::Job *, unsigned long dirs );
 
-        void processedSize( KIO::Job *, unsigned long size );
         void processedFiles( KIO::Job *, unsigned long files );
         void processedDirs( KIO::Job *, unsigned long dirs );
-
-        void speed( KIO::Job *, unsigned long bytes_per_second );
-        void infoMessage( KIO::Job *, const QString & msg );
 
         /**
          * The job is copying a file or directory
@@ -573,10 +594,10 @@ namespace KIO {
     protected slots:
         void slotEntries( KIO::Job*, const KIO::UDSEntryList& list );
         virtual void slotResult( KIO::Job *job );
-
+        /**
+         * Forward signal from subjob
+         */
         void slotProcessedSize( KIO::Job*, unsigned long data_size );
-        void slotSpeed( KIO::Job*, unsigned long bytes_per_second );
-        void slotInfoMessage( KIO::Job*, const QString & );
 
     private:
         bool m_move;
@@ -610,16 +631,11 @@ namespace KIO {
 
     signals:
 
-        void totalSize( KIO::Job *, unsigned long size );
         void totalFiles( KIO::Job *, unsigned long files );
         void totalDirs( KIO::Job *, unsigned long dirs );
 
-        void processedSize( KIO::Job *, unsigned long size );
         void processedFiles( KIO::Job *, unsigned long files );
         void processedDirs( KIO::Job *, unsigned long dirs );
-        // Never emitted, but connected in deleteNextDir...
-        void speed( KIO::Job *, unsigned long bytes_per_second );
-        void infoMessage( KIO::Job *, const QString & msg );
 
         void deleting( KIO::Job *, const KURL& file );
 
@@ -632,6 +648,9 @@ namespace KIO {
         void slotEntries( KIO::Job*, const KIO::UDSEntryList& list );
         virtual void slotResult( KIO::Job *job );
 
+        /**
+         * Forward signal from subjob
+         */
         void slotProcessedSize( KIO::Job*, unsigned long data_size );
 
     private:

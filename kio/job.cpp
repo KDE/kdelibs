@@ -62,7 +62,8 @@ using namespace KIO;
 
 #define KIO_ARGS QByteArray packedArgs; QDataStream stream( packedArgs, IO_WriteOnly ); stream
 
-Job::Job(bool showProgressInfo) : QObject(0, "job"), m_error(0), m_percent(0), m_progressId(0)
+Job::Job(bool showProgressInfo) : QObject(0, "job"), m_error(0), m_percent(0),
+                                  m_progressId(0), m_speedTimer(0)
 {
     // All jobs delete themselves after emiting 'result'.
 
@@ -76,6 +77,12 @@ Job::Job(bool showProgressInfo) : QObject(0, "job"), m_error(0), m_percent(0), m
                  Observer::self(), SLOT( slotPercent( KIO::Job*, unsigned long ) ) );
         connect( this, SIGNAL( infoMessage( KIO::Job*, const QString & ) ),
                  Observer::self(), SLOT( slotInfoMessage( KIO::Job*, const QString & ) ) );
+        connect( this, SIGNAL( totalSize( KIO::Job*, unsigned long ) ),
+                 Observer::self(), SLOT( slotTotalSize( KIO::Job*, unsigned long ) ) );
+        connect( this, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
+                 Observer::self(), SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
+        connect( this, SIGNAL( speed( KIO::Job*, unsigned long ) ),
+                 Observer::self(), SLOT( slotSpeed( KIO::Job*, unsigned long ) ) );
     }
 }
 
@@ -83,14 +90,23 @@ Job::~Job()
 {
     if ( m_progressId ) // Did we get an ID from the observer ?
         Observer::self()->jobFinished( m_progressId );
+    delete m_speedTimer;
 }
 
 void Job::addSubjob(Job *job)
 {
     kdDebug(7007) << "addSubjob(" << job << ") this = " << this << endl;
     subjobs.append(job);
-    connect(job, SIGNAL(result(KIO::Job*)),
-	    SLOT(slotResult(KIO::Job*)));
+
+    connect( job, SIGNAL(result(KIO::Job*)),
+             SLOT(slotResult(KIO::Job*)) );
+
+    // Forward information from that subjob.
+    connect( job, SIGNAL(speed( KIO::Job*, unsigned long )),
+             SLOT(slotSpeed(KIO::Job*, unsigned long)) );
+
+    connect( job, SIGNAL(infoMessage( KIO::Job*, const QString & )),
+             SLOT(slotInfoMessage(KIO::Job*, const QString &)) );
 }
 
 void Job::removeSubjob( Job *job )
@@ -102,6 +118,33 @@ void Job::removeSubjob( Job *job )
 	emit result(this);
         delete this; // Suicide is painless
     }
+}
+
+void Job::emitPercent( unsigned long processedSize, unsigned long totalSize )
+{
+  // calculate percents
+  unsigned long ipercent = m_percent;
+
+  if ( totalSize == 0 )
+    m_percent = 100;
+  else
+    m_percent = (unsigned long)(( (float)(processedSize) / (float)(totalSize) ) * 100.0);
+
+  if ( m_percent > ipercent ) {
+    emit percent( this, m_percent );
+    kdDebug(7007) << "Job::emitPercent - percent =  " << (unsigned int) m_percent << endl;
+  }
+}
+
+void Job::emitSpeed( unsigned long bytes_per_second )
+{
+  if ( !m_speedTimer )
+  {
+    m_speedTimer = new QTimer();
+    connect( m_speedTimer, SIGNAL( timeout() ), SLOT( slotSpeedTimeout() ) );
+  }
+  emit speed( this, bytes_per_second );
+  m_speedTimer->start( 5000 );   // 5 seconds interval should be enough
 }
 
 void Job::kill( bool quietly )
@@ -130,6 +173,25 @@ void Job::slotResult( Job *job )
     removeSubjob(job);
 }
 
+void Job::slotSpeed( KIO::Job*, unsigned long bytes_per_second )
+{
+  //kdDebug(7007) << "Job::slotSpeed " << (unsigned int) bytes_per_second << endl;
+  emitSpeed( bytes_per_second );
+}
+
+void Job::slotInfoMessage( KIO::Job*, const QString & msg )
+{
+  emit infoMessage( this, msg );
+}
+
+void Job::slotSpeedTimeout()
+{
+  // send 0 and stop the timer
+  // timer will be restarted only when we receive another speed event
+  emit speed( this, 0 );
+  m_speedTimer->stop();
+}
+
 //Job::errorString is implemented in global.cpp
 
 void Job::showErrorDialog( QWidget * parent )
@@ -145,8 +207,6 @@ SimpleJob::SimpleJob(const KURL& url, int command, const QByteArray &packedArgs,
   : Job(showProgressInfo), m_slave(0), m_packedArgs(packedArgs),
     m_url(url), m_command(command), m_totalSize(0)
 {
-    m_speedTimer = new QTimer();
-
     if (m_url.isMalformed())
     {
         m_error = ERR_MALFORMED_URL;
@@ -154,14 +214,6 @@ SimpleJob::SimpleJob(const KURL& url, int command, const QByteArray &packedArgs,
         QTimer::singleShot(0, this, SLOT(slotFinished()) );
     } else
     {
-        if ( showProgressInfo ) {
-            connect( this, SIGNAL( totalSize( KIO::Job*, unsigned long ) ),
-                     Observer::self(), SLOT( slotTotalSize( KIO::Job*, unsigned long ) ) );
-            connect( this, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
-                     Observer::self(), SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
-            connect( this, SIGNAL( speed( KIO::Job*, unsigned long ) ),
-                     Observer::self(), SLOT( slotSpeed( KIO::Job*, unsigned long ) ) );
-        }
         Scheduler::doJob(this);
     }
 }
@@ -187,8 +239,6 @@ void SimpleJob::removeOnHold()
 
 SimpleJob::~SimpleJob()
 {
-    delete m_speedTimer;
-
     if (m_slave) // was running
     {
         kdDebug(7007) << "SimpleJob::~SimpleJob: Killing running job in destructor!"  << endl;
@@ -268,41 +318,21 @@ void SimpleJob::slotInfoMessage( const QString & msg )
 
 void SimpleJob::slotTotalSize( unsigned long size )
 {
-  m_totalSize = size;
-  emit totalSize( this, size );
+    m_totalSize = size;
+    emit totalSize( this, size );
 }
 
 void SimpleJob::slotProcessedSize( unsigned long size )
 {
-  kdDebug(7007) << "SimpleJob::slotProcessedSize " << size << endl;
-  emit processedSize( this, size );
+    kdDebug(7007) << "SimpleJob::slotProcessedSize " << size << endl;
+    emit processedSize( this, size );
 
-  // calculate percents
-  unsigned long ipercent = m_percent;
-
-  if ( m_totalSize == 0 )
-    m_percent = 100;
-  else
-    m_percent = (unsigned long)(( (float)size / (float)m_totalSize ) * 100.0);
-
-  if ( m_percent > ipercent ) {
-    emit percent( this, m_percent );
-    kdDebug(7007) << "SimpleJob::slotProcessedSize - percent =  " << (unsigned int) m_percent << endl;
-  }
+    emitPercent( size, m_totalSize );
 }
 
 void SimpleJob::slotSpeed( unsigned long bytes_per_second )
 {
-  emit speed( this, bytes_per_second );
-  m_speedTimer->start( 5000 );   // 5 seconds interval should be enough
-}
-
-void SimpleJob::slotSpeedTimeout()
-{
-  // send 0 and stop the timer
-  // timer will be restarted only when we receive another speed event
-  emit speed( this, 0 );
-  m_speedTimer->stop();
+    emitSpeed( bytes_per_second );
 }
 
 SimpleJob *KIO::mkdir( const KURL& url, int permissions )
@@ -621,16 +651,9 @@ MimetypeJob *KIO::mimetype(const KURL& url )
 FileCopyJob::FileCopyJob( const KURL& src, const KURL& dest, int permissions,
                           bool move, bool overwrite, bool resume, bool showProgressInfo)
     : Job(showProgressInfo), m_src(src), m_dest(dest),
-      m_permissions(permissions), m_move(move), m_overwrite(overwrite), m_resume(resume)
+      m_permissions(permissions), m_move(move), m_overwrite(overwrite), m_resume(resume),
+      m_totalSize(0)
 {
-    if ( showProgressInfo ) {
-        connect( this, SIGNAL( totalSize( KIO::Job*, unsigned long ) ),
-                 Observer::self(), SLOT( slotTotalSize( KIO::Job*, unsigned long ) ) );
-        connect( this, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
-                 Observer::self(), SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
-        connect( this, SIGNAL( speed( KIO::Job*, unsigned long ) ),
-                 Observer::self(), SLOT( slotSpeed( KIO::Job*, unsigned long ) ) );
-    }
     kdDebug(7007) << "FileCopyJob::FileCopyJob()" << endl;
     m_moveJob = 0;
     m_copyJob = 0;
@@ -673,28 +696,36 @@ void FileCopyJob::startCopyJob()
 
 void FileCopyJob::connectSubjob( SimpleJob * job )
 {
-    // This is sort of wrong, since the job param should become 'this' when forwarded
-  // (TODO)
     connect( job, SIGNAL(totalSize( KIO::Job*, unsigned long )),
-             this, SIGNAL( totalSize(KIO::Job*, unsigned long)) );
+             this, SLOT( slotTotalSize(KIO::Job*, unsigned long)) );
 
     connect( job, SIGNAL(processedSize( KIO::Job*, unsigned long )),
              this, SLOT( slotProcessedSize(KIO::Job*, unsigned long)) );
 
     connect( job, SIGNAL(percent( KIO::Job*, unsigned long )),
-             this, SIGNAL( percent(KIO::Job*, unsigned long)) );
+             this, SLOT( slotPercent(KIO::Job*, unsigned long)) );
 
-    connect( job, SIGNAL(speed( KIO::Job*, unsigned long )),
-             this, SIGNAL( speed(KIO::Job*, unsigned long)) );
-
-    connect( job, SIGNAL(infoMessage( KIO::Job*, const QString & )),
-             this, SIGNAL( infoMessage(KIO::Job*, const QString &)) );
 }
 
 void FileCopyJob::slotProcessedSize( KIO::Job *, unsigned long size )
 {
     emit processedSize( this, size );
-    // TODO compute percent. We really need to put that code in a common place.
+    emitPercent( size, m_totalSize );
+}
+
+void FileCopyJob::slotTotalSize( KIO::Job*, unsigned long size )
+{
+    m_totalSize = size;
+    emit totalSize( this, m_totalSize );
+}
+
+void FileCopyJob::slotPercent( KIO::Job*, unsigned long pct )
+{
+    if ( pct > m_percent )
+    {
+        m_percent = pct;
+        emit percent( this, m_percent );
+    }
 }
 
 void FileCopyJob::startDataPump()
@@ -1119,22 +1150,15 @@ CopyJob::CopyJob( const KURL::List& src, const KURL& dest, bool move, bool showP
       m_bAutoSkip( false ), m_bOverwriteAll( false )
 {
   if ( showProgressInfo ) {
-    connect( this, SIGNAL( totalSize( KIO::Job*, unsigned long ) ),
-	     Observer::self(), SLOT( slotTotalSize( KIO::Job*, unsigned long ) ) );
     connect( this, SIGNAL( totalFiles( KIO::Job*, unsigned long ) ),
 	     Observer::self(), SLOT( slotTotalFiles( KIO::Job*, unsigned long ) ) );
     connect( this, SIGNAL( totalDirs( KIO::Job*, unsigned long ) ),
 	     Observer::self(), SLOT( slotTotalDirs( KIO::Job*, unsigned long ) ) );
 
-    connect( this, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
-	     Observer::self(), SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
     connect( this, SIGNAL( processedFiles( KIO::Job*, unsigned long ) ),
 	     Observer::self(), SLOT( slotProcessedFiles( KIO::Job*, unsigned long ) ) );
     connect( this, SIGNAL( processedDirs( KIO::Job*, unsigned long ) ),
 	     Observer::self(), SLOT( slotProcessedDirs( KIO::Job*, unsigned long ) ) );
-
-    connect( this, SIGNAL( speed( KIO::Job*, unsigned long ) ),
-	     Observer::self(), SLOT( slotSpeed( KIO::Job*, unsigned long ) ) );
 
     connect( this, SIGNAL( copying( KIO::Job*, const KURL& , const KURL& ) ),
 	     Observer::self(), SLOT( slotCopying( KIO::Job*, const KURL&, const KURL& ) ) );
@@ -1821,29 +1845,7 @@ void CopyJob::slotProcessedSize( KIO::Job*, unsigned long data_size )
   kdDebug(7007) << "CopyJob::slotProcessedSize " << (unsigned int) (m_processedSize + m_fileProcessedSize) << endl;
   emit processedSize( this, m_processedSize + m_fileProcessedSize );
 
-  // calculate percents
-  unsigned long ipercent = m_percent;
-
-  if ( m_totalSize == 0 )
-    m_percent = 100;
-  else
-    m_percent = (unsigned long)(( (float)(m_processedSize + m_fileProcessedSize) / (float)m_totalSize ) * 100.0);
-
-  if ( m_percent > ipercent ) {
-    emit percent( this, m_percent );
-    kdDebug(7007) << "CopyJob::slotProcessedSize - percent =  " << (unsigned int) m_percent << endl;
-  }
-}
-
-void CopyJob::slotSpeed( KIO::Job*, unsigned long bytes_per_second )
-{
-  kdDebug(7007) << "CopyJob::slotSpeed " << (unsigned int) bytes_per_second << endl;
-  emit speed( this, bytes_per_second );
-}
-
-void CopyJob::slotInfoMessage( KIO::Job*, const QString & msg )
-{
-  emit infoMessage( this, msg );
+  emitPercent( m_processedSize + m_fileProcessedSize, m_totalSize );
 }
 
 void CopyJob::slotResultDeletingDirs( Job * job )
@@ -1961,22 +1963,15 @@ DeleteJob::DeleteJob( const KURL::List& src, bool shred, bool showProgressInfo )
     : Job(showProgressInfo), m_totalSize(0), m_processedSize(0), m_fileProcessedSize(0), m_srcList(src), m_shred(shred)
 {
   if ( showProgressInfo ) {
-    connect( this, SIGNAL( totalSize( KIO::Job*, unsigned long ) ),
-	     Observer::self(), SLOT( slotTotalSize( KIO::Job*, unsigned long ) ) );
     connect( this, SIGNAL( totalFiles( KIO::Job*, unsigned long ) ),
 	     Observer::self(), SLOT( slotTotalFiles( KIO::Job*, unsigned long ) ) );
     connect( this, SIGNAL( totalDirs( KIO::Job*, unsigned long ) ),
 	     Observer::self(), SLOT( slotTotalDirs( KIO::Job*, unsigned long ) ) );
 
-    connect( this, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
-	     Observer::self(), SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
     connect( this, SIGNAL( processedFiles( KIO::Job*, unsigned long ) ),
 	     Observer::self(), SLOT( slotProcessedFiles( KIO::Job*, unsigned long ) ) );
     connect( this, SIGNAL( processedDirs( KIO::Job*, unsigned long ) ),
 	     Observer::self(), SLOT( slotProcessedDirs( KIO::Job*, unsigned long ) ) );
-
-    //connect( this, SIGNAL( speed( KIO::Job*, unsigned long ) ),
-    //	     Observer::self(), SLOT( slotSpeed( KIO::Job*, unsigned long ) ) );
 
     connect( this, SIGNAL( deleting( KIO::Job*, const KURL& ) ),
 	     Observer::self(), SLOT( slotDeleting( KIO::Job*, const KURL& ) ) );
@@ -2104,6 +2099,10 @@ void DeleteJob::deleteNextDir()
 
 void DeleteJob::slotProcessedSize( KIO::Job*, unsigned long data_size )
 {
+  // Note: this is the same implementation as CopyJob::slotProcessedSize but
+  // it's different from FileCopyJob::slotProcessedSize - which is why this
+  // is not in Job.
+
   m_fileProcessedSize = data_size;
 
   kdDebug(7007) << "DeleteJob::slotProcessedSize " << (unsigned int) (m_processedSize + m_fileProcessedSize) << endl;
