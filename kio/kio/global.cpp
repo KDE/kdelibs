@@ -1274,6 +1274,14 @@ extern "C" void endvfsent( );
 # endif
 #endif
 
+#ifndef FSTAB
+# ifdef _PATH_FSTAB
+#  define FSTAB _PATH_FSTAB
+# else
+#  define FSTAB "/etc/fstab"
+# endif
+#endif
+
 // There are (at least) four kind of APIs:
 // setmntent + getmntent + struct mntent (linux...)
 //             getmntent + struct mnttab
@@ -1365,7 +1373,6 @@ QString KIO::findDeviceMountPoint( const QString& filename )
 		}
 	}
 	fclose( mnttab );
-	devname.~QCString();
 #else
 
     char    realpath_buffer[MAXPATHLEN];
@@ -1611,11 +1618,14 @@ static QString get_mount_info(const QString& filename,
        }
        if (cachedDevice && (stat_buf.st_dev == cachedDevice->device))
        {
+          bool interestedInIsManual = ismanual != Wrong;
           isautofs = cachedDevice->isautofs;
           isslow = cachedDevice->isslow;
           ismanual = cachedDevice->ismanual;
           fstype = cachedDevice->fstype;
-          return cachedDevice->mountPoint;
+          // Don't use the cache if it doesn't have the information we're looking for
+          if ( !interestedInIsManual || ismanual != Unseen )
+              return cachedDevice->mountPoint;
        }
     }
 
@@ -1787,9 +1797,9 @@ static QString get_mount_info(const QString& filename,
                 QCString mounttype_me = MOUNTTYPE(me);
 
                 STRUCT_SETMNTENT fstab;
-                // TODO: #define FSTAB (FSTAB_FILE?), important for Solaris
-                if ((fstab = SETMNTENT("/etc/fstab", "r")) == 0)
+                if ((fstab = SETMNTENT(FSTAB, "r")) == 0) {
                     continue;
+                }
 
                 bool found = false;
                 STRUCT_MNTENT fe;
@@ -1828,7 +1838,7 @@ static QString get_mount_info(const QString& filename,
        cachedDevice->mountPoint = mountPoint;
        cachedDevice->isautofs = isautofs;
        cachedDevice->isslow = isslow;
-       cachedDevice->ismanual = isslow;
+       cachedDevice->ismanual = ismanual;
        cachedDevice->fstype = fstype;
     }
 
