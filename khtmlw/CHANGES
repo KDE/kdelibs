@@ -1,6 +1,12 @@
 KHTMLW CHANGES
 ==============
 
+Version 0.13.16 - 26 Mar 1998 (Torben)
+---------------
+
+Middle mouse button can now do what the left one can. 
+  This is needed for KFM.
+
 Version 0.12.16 - 23 Mar 1998 (Jacek)
 ---------------
 

@@ -299,7 +299,7 @@ void KHTMLWidget::mousePressEvent( QMouseEvent *_mouse )
 	    _mouse->state() ) )
 	return;
     
-    if ( _mouse->button() == LeftButton )
+    if ( _mouse->button() == LeftButton || _mouse->button() == MidButton )
     {
     	pressed = TRUE;
 	// deselect all currently selected text
@@ -331,7 +331,7 @@ void KHTMLWidget::mousePressEvent( QMouseEvent *_mouse )
 	    if (obj->getURL()[0] != 0)
 	    {
 		// Save data. Perhaps the user wants to start a drag.
-		if ( _mouse->button() == LeftButton )
+		if ( _mouse->button() == LeftButton || _mouse->button() == MidButton )
 		{
 		    pressedURL = obj->getURL();
 		    pressedURL.detach();
@@ -531,7 +531,7 @@ void KHTMLWidget::dndMouseReleaseEvent( QMouseEvent * _mouse )
     }
 
     // emit textSelected() if necessary
-    if ( _mouse->button() == LeftButton )
+    if ( _mouse->button() == LeftButton || _mouse->button() == MidButton )
     {
 	if ( bIsTextSelected )
 	{
