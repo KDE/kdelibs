@@ -539,12 +539,12 @@ int RenderText::bidiHeight() const
 
 short RenderText::baselineOffset() const
 {
-    return fm->ascent();
+    return (m_contentHeight - fm->height())/2 + fm->ascent();
 }
 
 short RenderText::verticalPositionHint() const
 {
-    return fm->ascent();
+    return (m_contentHeight - fm->height())/2 + fm->ascent();
 }
 
 void RenderText::position(int x, int y, int from, int len, int width, bool reverse)
@@ -600,7 +600,7 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
     //#endif
 
     TextSlave *s = new TextSlave(x, y, ch, len,
-				 bidiHeight(), fm->ascent(), width, deleteChar);
+				 bidiHeight(), baselineOffset(), width, deleteChar);
 
     if(!m_first)
 	m_first = m_last = s;
