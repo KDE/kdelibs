@@ -5,13 +5,13 @@ LDFLAGS = $(KDE_RPATH) $(LIBXML_RPATH) $(all_libraries)
 AM_CPPFLAGS = -DSRCDIR="\"$(shell (cd $(srcdir) && pwd))\"" 
 
 FILTER_LIBS = $(LIB_KSYCOCA) $(LIBBZ2)
-FILTER_SOURCES = kgzipfilter.cpp kbzip2filter.cpp
+FILTERSOURCES = kgzipfilter.cpp kbzip2filter.cpp
 
 ####### Files
 
 kde_module_LTLIBRARIES = kio_help.la
 
-kio_help_la_SOURCES = $(FILTER_SOURCES) kio_help.cpp main.cpp xslt.cpp
+kio_help_la_SOURCES = $(FILTERSOURCES) kio_help.cpp main.cpp xslt.cpp
 kio_help_la_LIBADD = $(FILTER_LIBS) libxslt/libxslt.la
 kio_help_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
 noinst_HEADERS = kio_help.h
@@ -21,10 +21,10 @@ kdelnkdir = $(kde_servicesdir)
 
 bin_PROGRAMS = meinproc xml2man
 meinproc_LDADD = xslt_pure.o libxslt/libxslt.la $(FILTER_LIBS)
-meinproc_SOURCES = meinproc.cpp $(FILTER_SOURCES)
+meinproc_SOURCES = meinproc.cpp $(FILTERSOURCES)
 
 xml2man_LDADD = xslt_pure.o libxslt/libxslt.la $(FILTER_LIBS)
-xml2man_SOURCES = xml2man.cpp $(FILTER_SOURCES)
+xml2man_SOURCES = xml2man.cpp $(FILTERSOURCES)
 
 xslt_pure.o: xslt.cpp
 	-rm -f xslt_pure.cpp
