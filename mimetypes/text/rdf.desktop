@@ -1,6 +1,7 @@
 [Desktop Entry]
 MimeType=text/rdf
-Comment=Resource Definition File
+Comment=Resource Description Framework (RDF) file
+Comment[az]=Mənbə Tanımlama Faylı
 Comment[cs]=Soubor s definicemi zdrojů
 Comment[da]=Ressource Definitionsfil
 Comment[de]=Ressource-Definitions-Datei
@@ -15,6 +16,7 @@ Comment[is]=Skilgreiningaskrá auðlinda
 Comment[it]=File di definizione risorse
 Comment[ja]=リソース定義ファイル
 Comment[ko]=자원 정의 파일
+Comment[lt]=resursų aprašymo failas
 Comment[lv]=Resursa Definīciju Fails
 Comment[nl]=Ressource Definition-bestand
 Comment[no]=Ressursdefinisjonsfil
@@ -27,6 +29,7 @@ Comment[sk]=Definičný súbor zdroja
 Comment[sl]=Datoteka z definicijami virov
 Comment[sr]=Fajl sa definicijama resursa
 Comment[sv]=Resursdefinitionsfil
+Comment[ta]=ÅÇí¸¨Ç Å¢ÅÃ¢ìÌõ ¬Å½õ
 Comment[tr]=Kaynak Tanım Dosyası
 Comment[uk]=Файл опису ресурсів
 Comment[zh_CN.GB2312]=资源定义文件
