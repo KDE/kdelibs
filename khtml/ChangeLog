@@ -1,5 +1,10 @@
 2003-11-03  Dirk Mueller  <mueller@kde.org>
 
+	* html/html_formimpl.cpp (defaultEventHandler): react on space too
+	(#64200).
+
+	* dom/html_base.cpp (src): return the completeURL.
+
 	* html/html_formimpl.cpp: remove the addCSSProperty calls and put
 	them in the default stylesheet. the original reasons for them in that
 	place is no longer valid since we implemented the CSS 2.1 selector rules.
