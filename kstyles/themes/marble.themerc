@@ -156,6 +156,7 @@ Name[hu]=Márvány
 Name[ja]=マーブル
 Name[ro]=Marmură
 Name[sl]=Frnikola
+Name[sv]=Marmor
 Comment=Light marble themed style
 Comment[cs]=Téma světlého mramoru
 Comment[de]=Helles Marmordesign
@@ -168,6 +169,7 @@ Comment[no]=Lettmarble-stil med tema
 Comment[no_NY]=Lettmarble-stil med tema
 Comment[ro]=Stil temă marmură luminoasă
 Comment[sl]=Tematski slog svetlih frnikol
+Comment[sv]=Temad stil med ljus marmor
 
 [General]
 foreground=0,0,0
