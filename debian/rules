@@ -13,6 +13,11 @@ QTDOCDIR  = usr/share/doc/qt-doc/doc/html
 KDEDOCDIR = usr/share/doc/kdelibs3-doc/html
 export KDB2HTML_UNINSTALLED=$(BUILDDIR)/ksgmltools/customization/
 ARCH = $(shell dpkg-architecture -qDEB_BUILD_ARCH)
+ifeq ($(ARCH),alpha)
+  COMPILER_FLAGS=CXX=g++ CC=gcc CFLAGS=-O0 CXXFLAGS=-O0
+else
+  COMPILER_FLAGS=CXX=g++ CC=gcc
+endif
 ifeq ($(ARCH),i386)
   OBJPRELINK=--enable-objprelink
 endif
@@ -32,6 +37,7 @@ build-stamp:
 	if test ! -f configure; then \
 	  $(MAKE) -f admin/Makefile.common ;\
 	fi
+	$(COMPILER_FLAGS) \
 	version=`head -1 debian/changelog | sed -e "s#.*(\([^)]*\)).*#Debian Package \1#"` ;\
 	./configure $(configkde) --with-distribution="$$version (`cat /etc/debian_version`)" \
 	--includedir=/usr/include/kde --without-ssl --without-alsa \
