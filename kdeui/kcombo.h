@@ -7,8 +7,9 @@ class KCombo : public QComboBox {
 	Q_OBJECT
 
 public:
-	KCombo( QWidget* parent = NULL, const char* name = NULL, WFlags f = 0 );
-	KCombo( bool readWrite, QWidget* parent = NULL, const char* name = NULL, WFlags f = 0 );
+	KCombo( QWidget* parent = 0, const char* name = 0, WFlags f = 0 );
+	KCombo( bool readWrite, QWidget* parent = 0, 
+		const char* name = 0, WFlags f = 0 );
 	virtual ~KCombo(){};
 
 
@@ -22,8 +23,13 @@ public:
 	void cursorAtEnd(){};
 	void setText( const char *text );
         void setCompletion( bool){};     
+	
  private:
 	bool set_text_called;
+	
+ private slots:
+	void reset_text_called();
+
 };
 
 #endif // _KCOMBO_H_
