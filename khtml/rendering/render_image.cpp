@@ -47,6 +47,7 @@ RenderImage::RenderImage()
 {
     setLayouted(false);
     setParsing(false);
+    setSpecialObjects();
     image = 0;
     berrorPic = false;
 }
@@ -147,7 +148,7 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, b
     }
 }
 
-void RenderImage::printObject(QPainter *p, int /*x*/, int /*y*/, int /*w*/, int /*h*/, int _tx, int _ty)
+void RenderImage::printObject(QPainter *p, int /*_x*/, int /*_y*/, int /*_w*/, int /*_h*/, int _tx, int _ty)
 {
     // add offset for relative positioning
     if(isRelPositioned())
