@@ -40,7 +40,9 @@ AC_CHECK_HEADERS(fcntl.h sys/time.h unistd.h sys/cdefs.h fnmatch.h sysent.h stri
 
 dnl Checks for libraries.
 AC_CHECK_LIB(socket, socket, [LIBSOCKET="-lsocket -lnsl"]) dnl for Solaris
-AC_PATH_KDE(without)
+AC_BASE_PATH_KDE dnl kdelibs is a special case
+AC_CREATE_KFSSTND(default)
+AC_SUBST_KFSSTND
 AC_CHECK_LIB(compat, main, [LIBCOMPAT="-lcompat"]) dnl for FreeBSD
 AC_FIND_GIF
 AC_FIND_JPEG
@@ -59,21 +61,6 @@ AC_DEFUN(AC_DEFINE_PATH,
   eval "tempdir=`echo "$tempdir" | sed -e 's/\$(prefix)/\$prefix/'`"
   AC_DEFINE_UNQUOTED($1, "$tempdir")
 ])
-
-dnl TODO: replace it with --with- things
-kde_htmldir="\$(prefix)/share/doc/HTML"
-kde_appsdir="\$(prefix)/share/applnk"
-kde_icondir="\$(prefix)/share/icons"
-kde_minidir="\$(prefix)/share/icons/mini"
-kde_datadir="\$(prefix)/share/apps"
-kde_locale="\$(prefix)/share/locale"
-kde_cgidir="\$(exec_prefix)/cgi-bin"
-kde_confdir="\$(prefix)/share/config"
-kde_mimedir="\$(prefix)/share/mimelnk"
-kde_toolbardir="\$(prefix)/share/toolbar"
-kde_wallpaperdir="\$(prefix)/share/wallpapers"
-kde_bindir="\$(exec_prefix)/bin"
-kde_partsdir="\$(exec_prefix)/parts"
 
 AC_DEFINE_PATH(KDE_HTMLDIR, $kde_htmldir)
 AC_DEFINE_PATH(KDE_APPSDIR, $kde_appsdir)

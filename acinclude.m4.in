@@ -68,6 +68,26 @@ AC_DEFUN(AC_CREATE_KFSSTND,
 AC_MSG_CHECKING(for KDE paths)
 AC_REQUIRE([AC_CHECK_RPATH])
 AC_REQUIRE([AC_CHECK_BOOL])
+
+if test "$1" = "default"; then
+
+kde_htmldir="\$(prefix)/share/doc/HTML"
+kde_appsdir="\$(prefix)/share/applnk"
+kde_icondir="\$(prefix)/share/icons"
+kde_minidir="\$(prefix)/share/icons/mini"
+kde_datadir="\$(prefix)/share/apps"
+kde_locale="\$(prefix)/share/locale"
+kde_cgidir="\$(exec_prefix)/cgi-bin"
+kde_confdir="\$(prefix)/share/config"
+kde_mimedir="\$(prefix)/share/mimelnk"
+kde_toolbardir="\$(prefix)/share/toolbar"
+kde_wallpaperdir="\$(prefix)/share/wallpapers"
+kde_bindir="\$(exec_prefix)/bin"
+kde_partsdir="\$(exec_prefix)/parts"
+AC_MSG_RESULT(defaults)	
+
+else 
+
 AC_CACHE_VAL(kde_cv_all_paths,
 [
 AC_LANG_CPLUSPLUS
@@ -124,6 +144,8 @@ kde_cv_all_paths="kde_have_all_paths=\"yes\" \
 	kde_wallpaperdir=\"$kde_wallpaperdir\" \
 	kde_bindir=$\"kde_bindir\" \
 	kde_partsdir=\"$kde_partsdir\""
+fi
+
 fi
 ])
 
@@ -352,7 +374,7 @@ AC_PATH_QT_1_3
 ## and $(kde_includes) will be the kdehdrlocation (if needed)
 ## ------------------------------------------------------------------------
 ##
-AC_DEFUN(AC_PATH_KDE,
+AC_DEFUN(AC_BASE_PATH_KDE,
 [
 AC_REQUIRE([AC_PATH_QT])dnl
 AC_MSG_CHECKING([for KDE])
@@ -473,12 +495,23 @@ AC_MSG_RESULT($kde_use_extra_libs)
 AC_SUBST(all_includes)
 AC_SUBST(all_libraries)
 
-# if called with "without" (kdelibs), the paths are already defined
-if test "$1" != "without"; then
-  AC_CREATE_KFSSTND
-fi
-AC_SUBST_KFSSTND
+])
 
+AC_DEFUN(AC_PATH_KDE,
+[
+  AC_BASE_PATH_KDE
+  AC_ARG_ENABLE(path-check, [  --disable-path-check    don't try to find out, where to install],
+  [
+  if test $enableval = "no"; 
+    then ac_use_path_checking="default"
+    else ac_use_path_checking=""
+  fi
+  ], [ac_use_path_checking=""]
+  )
+
+  AC_CREATE_KFSSTND($ac_use_path_checking)
+
+ AC_SUBST_KFSSTND
 ])
 
 dnl slightly changed version of AC_CHECK_FUNC(setenv)
