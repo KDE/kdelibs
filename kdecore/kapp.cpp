@@ -1671,10 +1671,10 @@ void KApplication::propagateSettings(SettingsCategory arg)
     num = config->readNumEntry("WheelScrollLines", QApplication::wheelScrollLines());
     QApplication::setWheelScrollLines(num);
 
-    bool b = config->readBoolEntry("EffectFadeMenu", false);
-    QApplication::setEffectEnabled( Qt::UI_FadeMenu, b);
-    b = config->readBoolEntry("EffectAnimateMenu", false);
+    bool b = config->readBoolEntry("EffectAnimateMenu", false);
     QApplication::setEffectEnabled( Qt::UI_AnimateMenu, b);
+    b = config->readBoolEntry("EffectFadeMenu", false);
+    QApplication::setEffectEnabled( Qt::UI_FadeMenu, b);
     b = config->readBoolEntry("EffectAnimateCombo", false);
     QApplication::setEffectEnabled( Qt::UI_AnimateCombo, b);
     b = config->readBoolEntry("EffectFadeTooltip", false);
