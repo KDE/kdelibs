@@ -21,19 +21,32 @@
 
 #include <qapplication.h>
 #include <qclipboard.h>
+#include <qpopupmenu.h>
 
+#include <ksyntaxhighlighter.h>
+#include <kspell.h>
 #include <kcursor.h>
 #include <kglobalsettings.h>
 #include <kstdaccel.h>
+#include <kiconloader.h>
+#include <klocale.h>
 
 class KTextEdit::KTextEditPrivate
 {
 public:
     KTextEditPrivate()
-        : customPalette( false )
+        : customPalette( false ),
+	  highlighter( 0 ),
+	  spell( 0 )
     {}
+    ~KTextEditPrivate() {
+	delete highlighter;
+	delete spell;
+    }
 
     bool customPalette;
+    KDictSpellingHighlighter *highlighter;
+    KSpell *spell;
 };
 
 KTextEdit::KTextEdit( const QString& text, const QString& context,
@@ -134,6 +147,23 @@ void KTextEdit::deleteWordForward()
     removeSelectedText();
 }
 
+QPopupMenu *KTextEdit::createPopupMenu( const QPoint &pos )
+{
+    QPopupMenu *menu = QTextEdit::createPopupMenu( pos );
+
+    if ( checkSpelling() ) {
+
+	menu->insertSeparator();
+	int id = menu->insertItem( SmallIcon( "spellcheck" ), i18n( "Check Spelling" ), 
+				   this, SLOT( slotCheckSpelling() ) );
+
+	if( text().isEmpty() )
+	    menu->setItemEnabled( id, false );
+    }
+
+    return menu;
+}
+
 void KTextEdit::contentsWheelEvent( QWheelEvent *e )
 {
     if ( KGlobalSettings::wheelMouseZooms() )
@@ -148,6 +178,28 @@ void KTextEdit::setPalette( const QPalette& palette )
     // unsetPalette() is not virtual and calls setPalette() as well
     // so we can use ownPalette() to find out about unsetting
     d->customPalette = ownPalette();
+}
+
+void KTextEdit::setCheckSpelling( bool check )
+{
+    if ( ( check && d->highlighter ) || ( !check && !d->highlighter ) )
+	return;
+
+    // From the above statment we know know that if we're turning checking
+    // on that we need to create a new highlighter and if we're turning it
+    // off we should remove the old one.
+
+    if ( check )
+	d->highlighter = new KDictSpellingHighlighter( this );
+    else {
+	delete d->highlighter;
+	d->highlighter = 0;
+    }
+}
+
+bool KTextEdit::checkSpelling() const
+{
+    return bool( d->highlighter );
 }
 
 void KTextEdit::setReadOnly(bool readOnly)
@@ -184,5 +236,74 @@ void KTextEdit::setReadOnly(bool readOnly)
 
 void KTextEdit::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
+
+void KTextEdit::slotCheckSpelling()
+{
+    delete d->spell;
+    d->spell = new KSpell( this, i18n( "Spell Checking" ), 
+			  this, SLOT( slotSpellCheckReady( KSpell *) ), 0, true, true);
+
+    connect( d->spell, SIGNAL( death() ), 
+	     this, SLOT( spellCheckerFinished() ) );
+
+    connect( d->spell, SIGNAL( misspelling( const QString &, const QStringList &, unsigned int ) ),
+	     this, SLOT( spellCheckerMisspelling( const QString &, const QStringList &, unsigned int ) ) );
+
+    connect( d->spell, SIGNAL( corrected( const QString &, const QString &, unsigned int ) ),
+	     this, SLOT( spellCheckerCorrected( const QString &, const QString &, unsigned int ) ) );
+
+}
+
+void KTextEdit::spellCheckerMisspelling( const QString &text, const QStringList &, unsigned int pos )
+{
+    highLightWord( text.length(), pos );
+}
+
+void KTextEdit::spellCheckerCorrected( const QString &oldWord, const QString &newWord, unsigned int pos )
+{
+    unsigned int l = 0;
+    unsigned int cnt = 0;
+    if ( oldWord != newWord ) {
+        posToRowCol( pos, l, cnt );
+        setSelection( l, cnt, l, cnt + oldWord.length() );
+        removeSelectedText();
+        insert( newWord );
+    }
+}
+
+void KTextEdit::posToRowCol(unsigned int pos, unsigned int &line, unsigned int &col)
+{
+    for ( line = 0; line < static_cast<uint>( lines() ) && col <= pos; line++ )
+	col += paragraphLength( line ) + 1;
+
+    line--;
+    col = pos - col + paragraphLength( line ) + 1;
+}
+
+void KTextEdit::spellCheckerFinished()
+{
+
+}
+
+void KTextEdit::slotSpellCheckReady( KSpell *s )
+{
+    s->check( text() );
+    connect( s, SIGNAL( done( const QString & ) ), this, SLOT( slotSpellCheckDone( const QString & ) ) );
+}
+
+void KTextEdit::slotSpellCheckDone( const QString &s )
+{
+    if ( s != text() )
+	setText( s );
+}
+
+
+void KTextEdit::highLightWord( unsigned int length, unsigned int pos )
+{
+    unsigned int l = 0;
+    unsigned int cnt = 0;
+    posToRowCol( pos, l, cnt );
+    setSelection( l, cnt, l, cnt + length );
+}
 
 #include "ktextedit.moc"

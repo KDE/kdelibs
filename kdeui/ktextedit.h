@@ -22,6 +22,8 @@
 
 #include <qtextedit.h>
 
+class KSpell;
+
 /**
  * This is just a little subclass of QTextEdit, implementing
  * some standard KDE features, like Cursor auto-hiding, configurable
@@ -68,6 +70,18 @@ public:
      */
     virtual void setPalette( const QPalette& palette );
 
+    /**
+     * Turns spell checking for this text edit on or off.
+     */
+    void setCheckSpelling( bool check );
+
+    /**
+     * Returns true if spell checking is enabled for this text edit.
+     */
+    bool checkSpelling() const;
+
+    void highLightWord( unsigned int length, unsigned int pos );
+
 protected:
     /**
      * Reimplemented to catch "delete word" key events.
@@ -91,13 +105,29 @@ protected:
      * if available.
      */
     virtual void deleteWordForward();
+
+    /**
+     * Reimplemented from QTextEdit to add spelling related items
+     * when appropriate.
+     */ 
+    virtual QPopupMenu *createPopupMenu( const QPoint &pos );
     
 protected:
     virtual void virtual_hook( int id, void* data );
+
+private slots:
+    void slotCheckSpelling();
+    void slotSpellCheckReady( KSpell *s );
+    void slotSpellCheckDone( const QString &s );
+    void spellCheckerMisspelling( const QString &text, const QStringList &, unsigned int pos);
+    void spellCheckerCorrected( const QString &, const QString &, unsigned int );
+    void spellCheckerFinished();
+
 private:
+    void posToRowCol( unsigned int pos, unsigned int &line, unsigned int &col );
+
     class KTextEditPrivate;
     KTextEditPrivate *d;
-
 };
 
 #endif // KTEXTEDIT_H
