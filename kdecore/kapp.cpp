@@ -19,7 +19,9 @@
 
 // $Id$
 
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
 
 #include <qdir.h> // must be at the front
 #include <qobjcoll.h>
@@ -34,24 +36,26 @@
 #include <drag.h>
 
 #include <kapp.h>
-#include <kiconloader.h>
-#include <klocale.h>
 #include <kcharsets.h>
 #include <kdebug.h>
-#include "kwm.h"
 #include <kdebugdialog.h>
+#include <klocale.h>
+#include <kiconloader.h>
+#include "kwm.h"
 
-#include <unistd.h>
-#include <fcntl.h>
-#include <X11/Xlib.h>
-#include <X11/Xatom.h>
+#include <sys/types.h>
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
-#include <sys/types.h>
 #include <sys/wait.h>
+
+#include <fcntl.h>
 #include <stdlib.h> // getenv()
 #include <signal.h>
+#include <unistd.h>
+
+#include <X11/Xlib.h>
+#include <X11/Xatom.h>
 
 #include "kprocctrl.h"
 
