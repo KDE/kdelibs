@@ -296,7 +296,7 @@ findTag (register const char *str, register unsigned int len)
 }
 
 
-static const char * tagList[] = {
+static const char * const tagList[] = {
 "",
     "A",
     "ABBR",

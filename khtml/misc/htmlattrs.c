@@ -406,7 +406,7 @@ findAttr (register const char *str, register unsigned int len)
 }
 
 
-static const char *attrList[] = {
+static const char * const attrList[] = {
     "ABBR",
     "ACCEPT-CHARSET",
     "ACCEPT",
