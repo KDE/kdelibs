@@ -23,6 +23,8 @@
 
 #include <qstring.h>
 
+#include <kdelibs_export.h>
+
 class KSSL;
 
 class KSSLSessionPrivate;
