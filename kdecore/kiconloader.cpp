@@ -20,6 +20,9 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.66  1999/08/09 02:51:14  tibirna
+   CT: needed ugly special treatment for icons given as fully qualified path filenames. Perhaps temporary, but I finally tested it and works :-(
+
    Revision 1.65  1999/08/08 22:46:29  tibirna
    CT: Sorry, Coolo. In the light of the last explanation (using "name" instead of "name.png" or "name.xpm" in the ICON macro) i reverted the code to your version and put an additional (fallback) check for cases of erroneous (or extraneous) calls, where developers will still include ".png" extensions or use any other (are ".bmp", ".xbm", ".pbm" ever used or supposed to be used?)
 
@@ -334,27 +337,28 @@ QPixmap KIconLoader::loadApplicationMiniIcon ( const QString& name,
 
 QString KIconLoader::getIconPath( const QString& name, bool always_valid)
 {
-    QString full_path;
-    if (!name.isEmpty()) {
-      QString path = name;
-      if (path.at(0) != '/') {
-	warning ("FIXME: Perhaps this check for '/' is just temporary. It's surely ugly");
-	if (path.right(4) == ".xpm") {
-	  path.truncate(path.length() - 4); 
-	  warning("stripping .xpm from icon %s", name.ascii());
-	}
-	full_path = locate(iconType, path + ".png");
-	if (full_path.isNull())
-          full_path = locate(iconType, path + ".xpm" );
-      }
+  if (name.at(0) == '/') // we can't do anything with an absolute path than returning
+    return name;
+  
+  QString full_path;
+  if (!name.isEmpty()) {
+    QString path = name;
 
-      if (full_path.isNull()) 
-	full_path = locate(iconType, path);
+    if (path.right(4) == ".xpm") {
+      path.truncate(path.length() - 4); 
+      warning("stripping .xpm from icon %s", name.ascii());
     }
-    if (full_path.isNull() && always_valid)
-      full_path = locate(iconType, "unknown.xpm");
+    full_path = locate(iconType, path + ".png");
+    if (full_path.isNull())
+      full_path = locate(iconType, path + ".xpm" );
     
-    return full_path;
+    if (full_path.isNull()) 
+      full_path = locate(iconType, path);
+  }
+  if (full_path.isNull() && always_valid)
+    full_path = locate(iconType, "unknown.xpm");
+    
+  return full_path;
 }
 
 QPixmap KIconLoader::loadInternal ( const QString& name, int w,  int h,
