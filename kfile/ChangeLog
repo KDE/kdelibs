@@ -1,3 +1,11 @@
+Sat Apr 17 15:50:41 1999  Carsten Pfeiffer  <pfeiffer@kde.org>
+
+	* kfiledetaillist.{cpp,h}, kdirview.{cpp,h}:
+	those views didn't have proper keyboard bindings (HOME, END, RETURN)
+
+	* kfiledialog.cpp: fixed some geometry management problems with
+	large toolbar (noticed because of icon+text in toolbar)
+
 1999-01-14  Stephan Kulow  <coolo@kde.org>
 
 	* kfiledialog.cpp: fixed some GUI problems and moved all default
