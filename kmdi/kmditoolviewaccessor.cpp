@@ -44,6 +44,7 @@ KMdiToolViewAccessor::KMdiToolViewAccessor( KMdiMainFrm *parent , QWidget *widge
                                               widgetToWrap->caption() );
 		d->widgetContainer->setWidget(widgetToWrap);
 	}
+	d->widget->installEventFilter(this);
 }
 
 KMdiToolViewAccessor::KMdiToolViewAccessor( KMdiMainFrm *parent) {
@@ -93,8 +94,16 @@ void KMdiToolViewAccessor::setWidgetToWrap(QWidget *widgetToWrap) {
 	mdiMainFrm->m_pToolViews.insert(widgetToWrap,this);
 	if (mdiMainFrm->m_mdiGUIClient)
 		mdiMainFrm->m_mdiGUIClient->addToolView(this);
+	d->widget->installEventFilter(this);
 }
 
+
+bool KMdiToolViewAccessor::eventFilter(QObject *o, QEvent *e) {
+	if (e->type()==QEvent::IconChange) {
+		d->widgetContainer->setPixmap(d->widget->icon()?(*d->widget->icon()):QPixmap());
+	}
+	return false;
+}
 
 void KMdiToolViewAccessor::show(KDockWidget::DockPosition pos, QWidget* pTargetWnd ,int percent) {
   Q_ASSERT(d->widgetContainer);

@@ -129,6 +129,9 @@ void KMdiDockContainer::insertWidget (KDockWidget *dwdg, QPixmap pixmap, const Q
 		m_map.insert(w,tab);
 		m_revMap.insert(tab,w);
 
+                if (((KDockWidget*)parentWidget())->mayBeShow())
+			((KDockWidget*)parentWidget())->dockBack();
+
 		if (w->getHeader()->qt_cast("KDockWidgetHeader")) {
 			kdDebug()<<"*** KDockWidgetHeader has been found"<<endl;
 			KDockWidgetHeader *hdr=static_cast<KDockWidgetHeader*>(w->getHeader()->
@@ -183,6 +186,12 @@ void KMdiDockContainer::changeOverlapMode() {
 		it.data()->setOn(!isOverlapMode());
 }
 
+void KMdiDockContainer::hideIfNeeded() {
+	kdDebug()<<"************************* hideIfNeeded *************************"<<endl;
+	if (!itemNames.count())
+		((KDockWidget*)parentWidget())->undock();
+}
+
 void KMdiDockContainer::removeWidget(KDockWidget* dwdg)
 {
     KMdiDockWidget* w = (KMdiDockWidget*) dwdg;
@@ -199,6 +208,8 @@ void KMdiDockContainer::removeWidget(KDockWidget* dwdg)
 	}
 	KDockContainer::removeWidget(w);
 	itemNames.remove(w->name());
+	if (!itemNames.count())
+		((KDockWidget*)parentWidget())->undock();
 }
 
 void KMdiDockContainer::undockWidget(KDockWidget *dwdg)
@@ -263,6 +274,14 @@ void KMdiDockContainer::setToolTip (KDockWidget *, QString &s)
 {
 	kdDebug()<<"***********************************Setting tooltip for a widget: "<<s<<endl;
 	;
+}
+
+void  KMdiDockContainer::setPixmap(KDockWidget* widget ,const QPixmap& pixmap)
+{
+	int id=m_ws->id(widget);
+	if (id==-1) return;
+	KMultiTabBarTab *tab=m_tb->tab(id);
+	tab->setIcon(pixmap.isNull()?SmallIcon("misc"):pixmap);
 }
 
 #ifndef NO_KDE

@@ -1705,10 +1705,16 @@ void KMdiMainFrm::setupToolViewsForIDEALMode()
     dockToolViewsIntoContainers(topReparentWidgets,m_topContainer);
     
 
-/*
-    m_topContainer->undock();
-    m_rightContainer->undock();
-*/
+    dockManager->setSpecialLeftDockContainer(m_leftContainer);
+    dockManager->setSpecialRightDockContainer(m_rightContainer);
+    dockManager->setSpecialTopDockContainer(m_topContainer);
+    dockManager->setSpecialBottomDockContainer(m_bottomContainer);
+
+
+    ((KMdiDockContainer*) (m_leftContainer->getWidget()))->hideIfNeeded();
+    ((KMdiDockContainer*) (m_rightContainer->getWidget()))->hideIfNeeded();
+    ((KMdiDockContainer*) (m_topContainer->getWidget()))->hideIfNeeded();
+    ((KMdiDockContainer*) (m_bottomContainer->getWidget()))->hideIfNeeded();
 
 }
 

@@ -63,6 +63,9 @@ public slots:
 private:
    class KMdiToolViewAccessorPrivate *d;
    class KMdiMainFrm *mdiMainFrm;
+
+protected:
+	bool eventFilter(QObject *o, QEvent *e);
 };
 
 
