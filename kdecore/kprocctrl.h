@@ -53,11 +53,10 @@ class KProcessController : public QObject
 
 public:
   KProcessController();
-  ~KProcessController(); 
-  //CC: WARNING! Destructor Not virtual (but you don't derive classes from this anyhow...)
+  ~KProcessController();
 
 public:
- 	
+
   /**
    * Only a single instance of this class is allowed at a time,
    * and this static variable is used to track the one instance.
@@ -74,7 +73,7 @@ public:
    */
   static void theSigCHLDHandler(int signal);
   // handler for sigchld
-  
+
   /**
    * @internal
   */
@@ -91,7 +90,7 @@ public:
    * @internal
   */
   void removeKProcess( KProcess* );
-  
+
   /**
    * Wait for any process to exit and handle their exit without
    * starting an event loop.
