@@ -82,7 +82,7 @@ public:
   // clickCount is 3 for a triple-click event
   MouseDoubleClickEvent( QMouseEvent *mouseEvent, int x, int y,
                          const DOM::DOMString &url, const DOM::DOMString& target,
-		         const DOM::Node &innerNode, int clickCount )
+		         const DOM::Node &innerNode, int clickCount = 2 )
   : MouseEvent( s_strMouseDoubleClickEvent, mouseEvent, x, y, url, target, innerNode ),
     m_clickCount( clickCount )
   {}
