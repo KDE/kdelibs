@@ -137,6 +137,8 @@ void MainWindow::slotSetStatusBarText( const QString & text )
 void MainWindow::createShellGUI( bool create )
 {
     bool bAccelAutoUpdate = accel()->setAutoUpdate( false );
+    assert( d->m_bShellGUIActivated != create );
+    d->m_bShellGUIActivated = create;
     if ( create )
     {
         if ( isHelpMenuEnabled() && !d->m_helpMenu )
