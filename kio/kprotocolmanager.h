@@ -331,8 +331,12 @@ public:
    */
   static QString slaveProtocol(const KURL &url, QString &proxy);
 
-private:
+  /**
+   * @internal
+   * (Shared with SlaveConfig)
+   */
   static KConfig *config();
+private:
   static KConfig *http_config();
   static KPAC *pac();
 };

@@ -27,6 +27,7 @@
 #include <kconfig.h>
 #include <kstaticdeleter.h>
 #include <kprotocolinfo.h>
+#include <kprotocolmanager.h>
 
 #include "slaveconfig.h"
 
@@ -70,9 +71,9 @@ void SlaveConfigPrivate::readGlobalConfig()
 {
    global.clear();
    // Read stuff...
-   KConfig config("kioslaverc", true, false);
+   KConfig *config = KProtocolManager::config();
    readConfig(KGlobal::config(), "Socks", &global); // Socks settings.
-   readConfig(&config, "<default>", &global);
+   readConfig(config, "<default>", &global);
 }
 
 SlaveConfigProtocol* SlaveConfigPrivate::readProtocolConfig(const QString &_protocol)

@@ -214,9 +214,9 @@ void HTTPProtocol::resetSessionSettings()
   }
 
   m_bUseCookiejar = config()->readBoolEntry("Cookies");
-  m_bUseCache = config()->readBoolEntry("UseCache");
+  m_bUseCache = config()->readBoolEntry("UseCache", true);
   m_strCacheDir = config()->readEntry("CacheDir");
-  m_maxCacheAge = config()->readNumEntry("MaxCacheAge");
+  m_maxCacheAge = config()->readNumEntry("MaxCacheAge", DEFAULT_MAX_CACHE_AGE);
   m_request.window = config()->readEntry("window-id");
 
   bool sendReferrer = config()->readBoolEntry("SendReferrer", true);

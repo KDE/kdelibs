@@ -89,7 +89,7 @@ KConfig *KProtocolManager::config()
 
   if (!d->config)
   {
-     d->config = new KConfig("kioslaverc", false, false);
+     d->config = new KConfig("kioslaverc", true, false);
   }
   return d->config;
 }

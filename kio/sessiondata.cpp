@@ -28,6 +28,7 @@
 #include <kcharsets.h>
 #include <dcopclient.h>
 #include <kprotocolmanager.h>
+#include <kstandarddirs.h>
 
 #include <kdesu/client.h>
 #include <kio/slaveconfig.h>
@@ -182,23 +183,19 @@ class KIO::SessionData::SessionDataPrivate
 public:
     SessionDataPrivate() {
         useCookie = true;
-        maxCacheAge = DEFAULT_MAX_CACHE_AGE;
+        initDone = false;
     }
 
-    int maxCacheAge;
+    bool initDone;
     bool useCookie;
-    bool useCache;
     QString charsets;
     QString language;
-    QString cacheDir;
-    QString userAgent;
 };
 
 SessionData::SessionData()
 {
     authData = new AuthDataList;
     d = new SessionDataPrivate;
-    reset();
 }
 
 SessionData::~SessionData()
@@ -214,6 +211,8 @@ void KIO::SessionData::configDataFor( SlaveConfig* cfg, const QString& proto,
 {
     if ( cfg && proto.find("http", 0, false) == 0 )
     {
+        if (!d->initDone)
+            reset();
         cfg->setConfigData( proto, host, "Cookies",
                             d->useCookie ? "true":"false" );
 
@@ -224,32 +223,24 @@ void KIO::SessionData::configDataFor( SlaveConfig* cfg, const QString& proto,
             cfg->setConfigData( proto, host, "Languages", d->language );
         if ( cfg->configData(proto,host)["Charsets"].isEmpty() )
             cfg->setConfigData( proto, host, "Charsets", d->charsets );
-        if ( cfg->configData(proto,host)["UseCache"].isEmpty() )
-            cfg->setConfigData( proto, host, "UseCache",
-                                d->useCache ? "true":"false" );
         if ( cfg->configData(proto,host)["CacheDir"].isEmpty() )
-            cfg->setConfigData( proto, host, "CacheDir", d->cacheDir );
-        if ( cfg->configData(proto,host)["MaxCacheAge"].isEmpty() )
-            cfg->setConfigData( proto, host, "MaxCacheAge",
-                                QString::number(d->maxCacheAge) );
+        {
+            cfg->setConfigData( proto, host, "Charsets", 
+                                KGlobal::dirs()->saveLocation("cache", "http"));
+        }
         if ( cfg->configData(proto,host)["UserAgent"].isEmpty() )
         {
-            if ( d->userAgent.isEmpty() )
-            {
-                QString keys = cfg->configData(proto,host)["UserAgentKeys"];
-                if ( keys.isEmpty() )
-                    keys = DEFAULT_USER_AGENT_KEYS;
-                d->userAgent = KProtocolManager::defaultUserAgent( keys );
-            }
-            cfg->setConfigData( proto, host, "UserAgent", d->userAgent );
+            cfg->setConfigData( proto, host, "UserAgent", 
+                                KProtocolManager::defaultUserAgent() );
         }
     }
 }
 
 void KIO::SessionData::reset()
 {
+    d->initDone = true;
     // Get Cookie settings...
-    KConfig* cfg = new KConfig("kcookiejarrc", false, false);
+    KConfig* cfg = new KConfig("kcookiejarrc", true, false);
     cfg->setGroup( "Cookie Policy" );
     d->useCookie = cfg->readBoolEntry( "Cookies", true );
     delete cfg;
@@ -274,13 +265,7 @@ void KIO::SessionData::reset()
 #else
     d->charsets = QTextCodec::codecForLocale()->mimeName(); // that's the right solution, said Lars
 #endif
-
-    // Get cache settings...
     KProtocolManager::reparseConfiguration();
-    d->useCache = KProtocolManager::useCache();
-    d->cacheDir = KProtocolManager::cacheDir();
-    d->maxCacheAge = KProtocolManager::maxCacheAge();
-    d->userAgent = QString::null;
 }
 
 void KIO::SessionData::slotAuthData( const QCString& key, const QCString& gkey,
