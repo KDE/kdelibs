@@ -1,6 +1,9 @@
 // $Id$
 //
 // $Log$
+//
+// Revision 1.12  1997/10/21 20:44:44  kulow
+// removed all NULLs and replaced it with 0L or "".
 // There are some left in mediatool, but this is not C++
 //
 // Revision 1.11  1997/10/16 21:51:15  torben
@@ -79,12 +82,12 @@ void KConfigBase::setLocale()
 
 void KConfigBase::parseOneConfigFile( QFile& rFile, 
 				      KGroupDict* pWriteBackDict,
-      if( nLeftBracket != -1 && nRightBracket != -1 )
+  while( rFile.isOpen() && !aStream.eof() )
 {
     if (!rFile.isOpen()) // come back, if you have real work for us ;->
       return;
 
-	    aCurrentLine.mid( nLeftBracket+1, nRightBracket-1 );
+  QString aCurrentLine;
   QString aCurrentGroup = "";
 
   QDict<KEntryDict> *pDict;
