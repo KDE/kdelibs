@@ -7,6 +7,7 @@ Patterns=*.pfa;*.PFB;*.pfb;*.gsf;*.pcf.Z;
 Comment=Fonts
 Comment[cs]=Znaková sada
 Comment[da]=Skrifter
+Comment[de]=Schrift
 Comment[es]=Fuentes
 Comment[fi]=Kirjasimet
 Comment[fr]=Police de caractères
