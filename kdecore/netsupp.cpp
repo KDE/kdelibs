@@ -788,8 +788,8 @@ int getaddrinfo(const char *name, const char *serv,
     return EAI_NONAME;
 
   // This is just to make it easier
-  if (strcmp(name, "localhost") == 0)
-    name = NULL;
+  if (name != NULL && strcmp(name, "localhost") == 0)
+     name = NULL;
 
   // First, check for a Unix socket
   // family must be either AF_UNIX or AF_UNSPEC
