@@ -54,7 +54,7 @@ KCompletionBase::~KCompletionBase()
     if( m_bAutoDelCompObj && m_pCompObj)
     {
         delete m_pCompObj;
-    }    
+    }
 }
 
 KCompletion* KCompletionBase::completionObject( bool hsig )
@@ -116,16 +116,14 @@ void KCompletionBase::useGlobalKeyBindings()
 	m_keyMap.insert( TextCompletion, 0 );
 	m_keyMap.insert( PrevCompletionMatch, 0 );
 	m_keyMap.insert( NextCompletionMatch, 0 );
-	m_keyMap.insert( RotateUp, 0 );
-	m_keyMap.insert( RotateDown, 0 );
 }
 
 void KCompletionBase::insertDefaultMenuItems( QPopupMenu* popup ) const
 {
         popup->insertItem( i18n( "Cut" ), KCompletionBase::Cut );
         popup->insertItem( i18n( "Copy" ), KCompletionBase::Copy );
-        popup->insertItem( i18n( "Clear" ), KCompletionBase::Clear );        
-        popup->insertItem( i18n( "Paste" ), KCompletionBase::Paste );     
+        popup->insertItem( i18n( "Clear" ), KCompletionBase::Clear );
+        popup->insertItem( i18n( "Paste" ), KCompletionBase::Paste );
         insertCompletionMenuItem( popup );
         popup->insertSeparator();
         popup->insertItem( i18n( "Unselect" ), KCompletionBase::Unselect );
@@ -139,7 +137,7 @@ void KCompletionBase::insertCompletionMenuItem( QPopupMenu* popup, int index ) c
     // Create and insert the completion sub-menu iff
     // a completion object is present.
     if( m_pCompObj )
-    {        
+    {
         QPopupMenu* subMenu = new QPopupMenu( popup );
         subMenu->insertItem( i18n("None"), KCompletionBase::NoCompletion );
         subMenu->setItemChecked( KCompletionBase::NoCompletion, m_iCompletionMode == KGlobalSettings::CompletionNone );

@@ -38,7 +38,7 @@ class QPopupMenu;
  * "shell completion" on QString objects. A common use is completing filenames
  * or URLs (see @ref KURLCompletion()).
  * But it is not limited to URL-completion -- everything should be completable!
- * The user should be able to complete email-addresses, telephone-numbers, 
+ * The user should be able to complete email-addresses, telephone-numbers,
  * commands, SQL queries, ...
  * Everytime your program knows what the user can type into an edit-field, you
  * should offer completion. With KCompletion, this is very easy, and if you are
@@ -48,7 +48,7 @@ class QPopupMenu;
  * KLineEdit and (an editable) KComboBox even do this automatically for you.
  *
  * KCompletion offers the completed string via the signal @ref match() and
- * all matching strings (when the result is ambiguous) via the method 
+ * all matching strings (when the result is ambiguous) via the method
  * @ref allMatches().
  *
  * Notice: auto-completion, shell completion and manual completion work
@@ -123,6 +123,10 @@ class KCompletion : public QObject
     Q_OBJECT
 
 public:
+    /**
+     * Constants that represent the order in which KCompletion performs
+     * completion-lookups.
+     */
     enum CompOrder { Sorted, Insertion, Weighted };
 
     /**
@@ -139,9 +143,11 @@ public:
 
     /**
      * Attempts to find an item in the list of available completions,
-     * that begins with @p string. Will either return the first matching item 
-     * (if there is more than one match) or QString::null, if no match was found. 
-     * In the latter case, a sound will be issued, depending on 
+     * that begins with @p string. Will either return the first matching item
+     * (if there is more than one match) or QString::null, if no match was
+     * found.
+     *
+     * In the latter case, a sound will be issued, depending on
      * @ref isSoundsEnabled().
      * If a match was found, it will also be emitted via the signal
      * @ref match().
@@ -160,7 +166,7 @@ public:
     /**
      * @returns the next item from the matching-items-list.
      * When reaching the beginning, the list is rotated so it will return the
-     * last match and a sound is issued (depending on @ref isSoundsEnabled()). 
+     * last match and a sound is issued (depending on @ref isSoundsEnabled()).
      * When there is no match, QString::null is returned and
      * a sound is be issued.
      * @see #slotPreviousMatch
@@ -170,9 +176,9 @@ public:
     /**
      * @returns the previous item from the matching-items-list
      * When reaching the last item, the list is rotated, so it will return
-     * the first match and a sound is issued (depending on 
-     * @ref isSoundsEnabled()). When there is no match, QString::null is returned
-     * and a sound is issued.
+     * the first match and a sound is issued (depending on
+     * @ref isSoundsEnabled()). When there is no match, QString::null is
+     * returned and a sound is issued.
      * @see #slotNextMatch
      */
     QString nextMatch();
@@ -278,7 +284,7 @@ public:
     /**
      * Enables playing a sound when
      * @li @ref makeCompletion() can't find a match
-     * @li there is a partial completion (= multiple matches in 
+     * @li there is a partial completion (= multiple matches in
      *     Shell-completion mode)
      * @li @ref nextMatch() or @ref previousMatch() hit the last possible
      *     match -> rotation
@@ -415,8 +421,8 @@ protected:
 
     /**
      * This method is called before a list of all available completions is
-     * emitted via @ref matches. You can override this method to modify the found
-     * items before @ref match() or @ref matches() are emitted.
+     * emitted via @ref matches. You can override this method to modify the
+     * found items before @ref match() or @ref matches() are emitted.
      * Never delete that pointer!
      *
      * Default implementation does nothing.
@@ -486,9 +492,7 @@ public:
     enum KeyBindingType {
        TextCompletion,
        PrevCompletionMatch,
-       NextCompletionMatch,
-       RotateUp,
-       RotateDown
+       NextCompletionMatch
     };
 
     /**
@@ -599,7 +603,9 @@ public:
     *
     * @param autoDelete if true, delete completion object on destruction.
     */
-    void setAutoDeleteCompletionObject( bool autoDelete ) { m_bAutoDelCompObj = autoDelete; }
+    void setAutoDeleteCompletionObject( bool autoDelete ) {
+	m_bAutoDelCompObj = autoDelete;
+    }
 
     /**
     * Disables (temporarily) this widget's ability to emit
@@ -610,7 +616,7 @@ public:
     * also disbales any internal handling of these signals.
     * However, unlike @ref setCompletionObject() object,
     * disabling the emition of the signals through this
-    * method does not delete the comlpetion object.
+    * method does not delete the completion object.
     */
     void disableSignals() { m_bEmitSignals = false; }
 
@@ -621,7 +627,7 @@ public:
     * default.  When a completion object is created through
     * completionObject() or setCompletionObject(), these
     * signals are automatically actiavted.  Only call this
-    * functions if you disbaled them manually.
+    * functions if you disabled them manually.
     */
     void enableSignals()  { m_bEmitSignals = true; }
 
@@ -667,7 +673,9 @@ public:
     *
     * @return the completion mode.
     */
-    KGlobalSettings::Completion completionMode() const { return m_iCompletionMode; }
+    KGlobalSettings::Completion completionMode() const {
+	return m_iCompletionMode;
+    }
 
     /**
     * Sets the key-binding to be used for manual text
@@ -695,8 +703,6 @@ public:
     * @li TextCompletion	the manual completion key-binding.
     * @li PrevCompletionMatch	the previous match key for mutiple completion.
     * @li NextCompletionMatch	the next match key for for multiple completion.
-    * @li RotateUp		the key for rotating up in a given list.
-    * @li RotateDown 		the key for rotating down in a given list.
     *
     * @param key key-binding used to rotate down in a list.
     *
