@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Type=MimeType
+Icon=news
 MimeType=message/news
 Patterns=
 Comment=Usenet News Message
@@ -35,6 +36,7 @@ Comment[it]=Messaggio di news Usenet
 Comment[ja]=Usenet ニュースメッセージ
 Comment[ko]=유즈넷 새소식 메세지
 Comment[lt]=Usenet naujienų žinutė
+Comment[lv]=Usenet vēstu ziņojums
 Comment[mk]=Usenet порака со вести
 Comment[mn]=Usenet-Артикел
 Comment[ms]=Mesej Berita Usenet

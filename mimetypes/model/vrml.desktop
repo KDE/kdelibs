@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Type=MimeType
+Icon=multimedia
 MimeType=model/vrml
 Comment=VRML Model
 Comment[ar]=نمودج VRML
@@ -33,6 +34,7 @@ Comment[it]=Modello VRML
 Comment[ja]=VRML モジュール
 Comment[ko]=VRML 모델
 Comment[lt]=VRML modelis
+Comment[lv]=VRML Modelis
 Comment[mk]=VRML модел
 Comment[mn]=VRML Загвар
 Comment[ms]=Model VRML
