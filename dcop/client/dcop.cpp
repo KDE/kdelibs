@@ -215,9 +215,9 @@ QCString demarshal( QDataStream &stream, const QString &type )
         result.sprintf( "%dx%d+%d+%d", r.width(), r.height(), r.x(), r.y() );
     } else if ( type == "QVariant" )
     {
-        QVariant::Type type;
-        stream >> (Q_UINT32)type;
-        return demarshal( stream, QVariant::typeToName( type ) );
+        Q_INT32 type;
+        stream >> type;
+        return demarshal( stream, QVariant::typeToName( (QVariant::Type)type ) );
     } else if ( type == "DCOPRef" )
     {
         DCOPRef r;
