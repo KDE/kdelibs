@@ -44,21 +44,21 @@ KPTextPage::KPTextPage(DrMain *driver, QWidget *parent, const char *name)
 	QGroupBox	*marginbox = new QGroupBox(0, Qt::Vertical, i18n("Margins"), this);
 
 	m_cpi = new KIntNumInput(10, formatbox);
-	m_cpi->setLabel(i18n("Chars per inch:"), Qt::AlignLeft|Qt::AlignVCenter);
+	m_cpi->setLabel(i18n("&Chars per inch:"), Qt::AlignLeft|Qt::AlignVCenter);
 	m_cpi->setRange(1, 999, 1, false);
 	m_lpi = new KIntNumInput(m_cpi, 6, formatbox);
-	m_lpi->setLabel(i18n("Lines per inch:"), Qt::AlignLeft|Qt::AlignVCenter);
+	m_lpi->setLabel(i18n("&Lines per inch:"), Qt::AlignLeft|Qt::AlignVCenter);
 	m_lpi->setRange(1, 999, 1, false);
 	m_columns = new KIntNumInput(m_lpi, 1, formatbox);
-	m_columns->setLabel(i18n("Columns"), Qt::AlignLeft|Qt::AlignVCenter);
+	m_columns->setLabel(i18n("C&olumns"), Qt::AlignLeft|Qt::AlignVCenter);
 	m_columns->setRange(1, 10, 1, false);
 	KSeparator	*sep = new KSeparator(Qt::Horizontal, formatbox);
 	connect(m_columns, SIGNAL(valueChanged(int)), SLOT(slotColumnsChanged(int)));
 
 	m_prettypix = new QLabel(prettybox);
 	m_prettypix->setAlignment(Qt::AlignCenter);
-	QRadioButton	*off = new QRadioButton(i18n("Disabled"), prettybox);
-	QRadioButton	*on = new QRadioButton(i18n("Enabled"), prettybox);
+	QRadioButton	*off = new QRadioButton(i18n("&Disabled"), prettybox);
+	QRadioButton	*on = new QRadioButton(i18n("&Enabled"), prettybox);
 	m_prettyprint = new QButtonGroup(prettybox);
 	m_prettyprint->hide();
 	m_prettyprint->insert(off, 0);
@@ -67,15 +67,15 @@ KPTextPage::KPTextPage(DrMain *driver, QWidget *parent, const char *name)
 	connect(m_prettyprint, SIGNAL(clicked(int)), SLOT(slotPrettyChanged(int)));
 	slotPrettyChanged(0);
 
-	m_custom = new QCheckBox(i18n("Use custom margins"), marginbox);
+	m_custom = new QCheckBox(i18n("&Use custom margins"), marginbox);
 	m_top = new MarginWidget(0, 36.0, marginbox);
 	m_bottom = new MarginWidget(m_top, 36.0, marginbox);
 	m_left = new MarginWidget(m_bottom, 18.0, marginbox);
 	m_right = new MarginWidget(m_left, 18.0, marginbox);
-	m_top->setLabel(i18n("Top:"), Qt::AlignLeft|Qt::AlignVCenter);
-	m_bottom->setLabel(i18n("Bottom:"), Qt::AlignLeft|Qt::AlignVCenter);
-	m_left->setLabel(i18n("Left:"), Qt::AlignLeft|Qt::AlignVCenter);
-	m_right->setLabel(i18n("Right:"), Qt::AlignLeft|Qt::AlignVCenter);
+	m_top->setLabel(i18n("&Top:"), Qt::AlignLeft|Qt::AlignVCenter);
+	m_bottom->setLabel(i18n("&Bottom:"), Qt::AlignLeft|Qt::AlignVCenter);
+	m_left->setLabel(i18n("Le&ft:"), Qt::AlignLeft|Qt::AlignVCenter);
+	m_right->setLabel(i18n("&Right:"), Qt::AlignLeft|Qt::AlignVCenter);
 	m_units = new QComboBox(marginbox);
 	m_units->insertItem(i18n("Pixels"));
 	m_units->insertItem(i18n("Inches (in)"));

@@ -96,12 +96,13 @@ KPSchedulePage::KPSchedulePage(QWidget *parent, const char *name)
 	m_mm->setText(l[1]);
 	m_ss->setText("00");
 
-	QLabel	*lab = new QLabel(i18n("Send print job to printer:"), this);
+	QLabel	*lab = new QLabel(i18n("&Send print job to printer:"), this);
+	lab->setBuddy(m_time);
 	QLabel	*labc1 = new QLabel(":", this);
 	QLabel	*labc2 = new QLabel(":", this);
 
 	QRadioButton	*r1 = new QRadioButton(QString::null, this);
-	QRadioButton	*r2 = new QRadioButton(i18n("at:"), this);
+	QRadioButton	*r2 = new QRadioButton(i18n("&at:"), this);
 
 	m_group->insert(r1, 0);
 	m_group->insert(r2, 1);
@@ -131,6 +132,7 @@ KPSchedulePage::KPSchedulePage(QWidget *parent, const char *name)
 	connect(m_hh, SIGNAL(textChanged(const QString&)), SLOT(slotHourChanged()));
 	connect(m_mm, SIGNAL(textChanged(const QString&)), SLOT(slotHourChanged()));
 	connect(m_ss, SIGNAL(textChanged(const QString&)), SLOT(slotHourChanged()));
+	connect(r2, SIGNAL(clicked()), m_hh, SLOT(setFocus()));
 }
 
 KPSchedulePage::~KPSchedulePage()

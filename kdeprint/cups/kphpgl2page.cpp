@@ -32,10 +32,10 @@ KPHpgl2Page::KPHpgl2Page(QWidget *parent, const char *name)
 
 	QGroupBox	*box = new QGroupBox(0, Qt::Vertical, i18n("HP-GL/2 Options"), this);
 
-	m_blackplot = new QCheckBox(i18n("Use only black pen"), box);
-	m_fitplot = new QCheckBox(i18n("Fit plot to page"), box);
+	m_blackplot = new QCheckBox(i18n("&Use only black pen"), box);
+	m_fitplot = new QCheckBox(i18n("&Fit plot to page"), box);
 	m_penwidth = new KIntNumInput(1000, box);
-	m_penwidth->setLabel(i18n("Pen width:"), Qt::AlignLeft|Qt::AlignVCenter);
+	m_penwidth->setLabel(i18n("&Pen width:"), Qt::AlignLeft|Qt::AlignVCenter);
 	m_penwidth->setSuffix(" [um]");
 	m_penwidth->setRange(0, 10000, 100, true);
 
