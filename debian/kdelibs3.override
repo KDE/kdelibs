@@ -116,3 +116,4 @@ kdelibs3: shlib-missing-in-control-file knotify usr/lib/knotify.so
 kdelibs3: shlib-missing-in-control-file dcopserver usr/lib/dcopserver.so
 kdelibs3: shlib-missing-in-control-file kio_uiserver usr/lib/kio_uiserver.so
 kdelibs3: shlib-missing-in-control-file kimg_ico usr/lib/kimg_ico.so
+kdelibs3: shlib-missing-in-control-file libkhtmlimage usr/lib/libkhtmlimage.so
