@@ -5,7 +5,7 @@
  * the KDE addressbook
  * copyright:  (C) Mirko Sucker, 1998, 1999
  * mail to:    Mirko Sucker <mirko@kde.org>
- * requires:   recent C++-compiler, at least Qt 2.0
+ * requires:   recent C++-compiler, at least Qt 2.1
  
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Library General Public
@@ -28,13 +28,16 @@
 #include "addressbook.h"
 #include "qconfigDB.h"
 #include <qmessagebox.h>
+
 #include <qfileinfo.h>
 #include <qstringlist.h>
+
 #include <kapp.h>
 #include <kglobal.h>
 #include <kstddirs.h>
 #include <klocale.h>
 #include <kdebug.h>
+#include <kmessagebox.h>
 #include <knana.h>
 
 extern "C" {
@@ -90,7 +93,7 @@ struct QStringLess
   /** The function operator, inline. */
   bool operator()(const QString& x, const QString& y) const 
   { 
-    return x < (const char*)y; // make one Qt operator fit exactly
+    return x < y; // make one Qt operator fit exactly
   }
 };
 
@@ -176,9 +179,9 @@ AddressBook::AddressBook(QWidget* parent, const char* name, bool loadit)
      /* || urlEmail==0 || urlHomepage==0
 	|| addressCombo==0 || background==0 */ )
     {
-      QMessageBox::critical
-	(this, i18n("kab: Out of memory"),
-	 i18n("Cannot initialize local variables."));
+      KMessageBox::error(this,
+	 i18n("Cannot initialize local variables."),
+	 i18n("Out of memory"));
       kapp->quit(); // It is critical, but will possibly never happen. 
     }
   connect(data, SIGNAL(fileChanged()), SLOT(dataFileChanged()));
@@ -207,47 +210,47 @@ AddressBook::AddressBook(QWidget* parent, const char* name, bool loadit)
   CHECK(dir!=QString::null);
   // ----- open or create the configuration file and load it:
   filename=dir+"/"+STD_CONFIGFILENAME;
-  if(::access(filename, F_OK)!=0) // if it does not exist
+  if(::access(filename.ascii(), F_OK)!=0) // if it does not exist
     {
       if(createConfigFile()!=NoError)
 	{
-	  QMessageBox::critical
-	    (this, i18n("File error"),
-	     i18n("Your local kab configuration file\n\"")
-	     +filename+"\"\n"+
-	     i18n("could not be created. kab will probably not\n"
+	  KMessageBox::error(this,
+	     i18n("Your local kab configuration file\n"
+		  "\"%1\"\n"
+		  "could not be created. kab will probably not\n"
 		  "work correctly without it.\n"
 		  "Make sure you did not remove writing permission\n"
-		  "from your local kde directory."));
+		  "from your local kde directory.").arg(filename),
+	     i18n("File error"));
 	  state=PermDenied;
 	} else {
-	  QMessageBox::information
-	    (this, i18n("Note"),
-	     i18n("kab has created your local configuration file in\n\"")
-	     +filename+"\"");
+	  KMessageBox::information
+	    (this,
+	     i18n("kab has created your local configuration file in\n"
+		  "\"%1\"").arg(filename));
 	}
     }
   loadConfigFile();
   // ----- check and possibly create user standard file:
   filename=dir+"/"+STD_USERFILENAME;
-  if(::access(filename, F_OK)!=0) // if it does not exist
+  if(::access(filename.ascii(), F_OK)!=0) // if it does not exist
     {
       if(createNew(filename)!=NoError) // ...and we cannot create it
 	{
-	  QMessageBox::critical
-	    (this, i18n("File error"),
-	     i18n("Your standard kab database file\n\"")
-	     +filename+"\"\n"+
-	     i18n("could not be created. kab will probably not\n"
+	  KMessageBox::error(this,
+	     i18n("Your standard kab database file\n"
+		  "\"%1\"\n"
+		  "could not be created. kab will probably not\n"
 		  "work correctly without it.\n"
 		  "Make sure you did not remove writing permission\n"
-		  "from your local kde directory."));
+		  "from your local kde directory.").arg(filename),
+	     i18n("File error"));
 	  state=PermDenied;
 	} else {
-	  QMessageBox::information
-	    (this, i18n("Note"),
-	     i18n("kab has created your standard addressbook in\n\"")
-	     +filename+"\"");
+	  KMessageBox::information
+	    (this,
+	     i18n("kab has created your standard addressbook in\n\"%1\"")
+	     .arg(filename));
 	}
     }
   // ----- load the user standard file:
@@ -263,23 +266,25 @@ AddressBook::AddressBook(QWidget* parent, const char* name, bool loadit)
 	    {
 	      if(!data->save())
 		{
-		  QMessageBox::information
-		    (this, i18n("kab: File error"), 
-		     i18n("Cannot create backup file (permission denied)."));
+		  KMessageBox::information(this,
+		     i18n("Cannot create backup file (permission denied)."),
+		     i18n("File error"));
 		}
 	    } else {
-	      QMessageBox::information
-		(this, i18n("kab: File error"),
+	      KMessageBox::error(this,
 		 i18n("Cannot open backup file for "
-		      "writing (permission denied)."));
+		      "writing (permission denied)."),
+	 i18n("File error"));
+
 	    }
 	  // ----- reset the filename:
 	  if(!data->setFileName(temp, true, true))
 	    {
-	      QMessageBox::information
-		(this, i18n("kab: File error"),
+	      KMessageBox::error(this,
 		 i18n("Critical error:\n"
-		      "Permissions changed in local directory!"));
+		      "Permissions changed in local directory!"),
+	 i18n("File error"));
+
 	      closeFile(false);
 	      state=PermDenied;
 	    } else {
@@ -322,7 +327,7 @@ AddressBook::ErrorCode
 AddressBook::load(QString filename)
 {
   // ----- Remark: Close the file if it could not be loaded!
-  REQUIRE(access(baseDir(), X_OK | F_OK)==0);
+  REQUIRE(access(baseDir().ascii(), X_OK | F_OK)==0);
   // ###########################################################################
   const QString dir=baseDir();
   ErrorCode rc=NoError;
@@ -362,9 +367,9 @@ AddressBook::load(QString filename)
 	    case 1: // save
 	      if(!data->save(i18n("(Safety copy on file error)"), true))
 		{
-		  QMessageBox::information
-		    (this, i18n("File error"),
-		     i18n("Cannot save the file, will close it now."));
+		  KMessageBox::information(this,
+		     i18n("Cannot save the file, will close it now."),
+		     i18n("File error"));
 		  closeFile(false);
 		  rc=PermDenied;
 		}
@@ -384,9 +389,9 @@ AddressBook::load(QString filename)
 	      emit(setStatus(i18n("File opened.")));
 	      state=NoError;
 	    } else {
-	      QMessageBox::information
-		(this, i18n("File error"),
-		 i18n("Could not load the file."));
+	      KMessageBox::information(this,
+		 i18n("Could not load the file."),
+		 i18n("File error"));
 	      closeFile(false);
 	      emit(setStatus(i18n("No such file.")));
 	      rc=NoSuchFile;
@@ -594,9 +599,9 @@ AddressBook::configFileChanged()
   // ###########################################################################
   if(!config->load())
     {
-      QMessageBox::critical
-	(this, i18n("kab: File error"),
-	 i18n("Cannot reload configuration file!"));
+      KMessageBox::error(this,
+	 i18n("Cannot reload configuration file!"),
+	 i18n("File error"));
     } else {
       kDebugInfo(GUARD, KAB_KDEBUG_AREA, "AddressBook::configFileChanged: "
 		 "config file reloaded.");
@@ -886,9 +891,9 @@ AddressBook::add(const Entry& entry, KabKey& key, bool update)
   newEntry=new Section;
   if(newEntry==0)
     {
-      QMessageBox::critical
-	(this, i18n("Out of memory"),
-	 i18n("Cannot initialize local variables."));
+      KMessageBox::error(this,
+	 i18n("Cannot initialize local variables."),
+	 i18n("Out of memory"));
       kapp->quit(); // It is critical, but will possibly never happen.
       return InternError; // shut the compiler up...
     }
@@ -1034,10 +1039,10 @@ AddressBook::lock()
     {
       return NoError;
     } else {
-      QMessageBox::information
-	(this, i18n("kab: File error"),
+      KMessageBox::information(this,
 	 i18n("The file you wanted to change could not be locked.\n"
-	      "It is probably in use by another application or read-only."));
+	      "It is probably in use by another application or read-only."),
+		 i18n("File error"));
       return PermDenied;
     }
   // ###########################################################################
@@ -1698,36 +1703,37 @@ AddressBook::createNew(const QString& filename)
   if(KabTemplateFile.isEmpty()
      || !db.setFileName(KabTemplateFile, true, true))
     {
-      QMessageBox::critical
-	(this, i18n("kab: File error"),
+      KMessageBox::error(this,
 	 i18n("Cannot find kab's template file.\n"
-	      "You cannot create new files."));
+	      "You cannot create new files."),
+	 i18n("File error"));
       return InternError;
     }
   if(!db.load())
     {
-      QMessageBox::critical
-	(this, i18n("kab: Format error"),
+      KMessageBox::error(this,
 	 i18n("Cannot read kab's template file.\n"
-	      "You cannot create new files."));
+	      "You cannot create new files."),
+	 i18n("Format error"));
+
       return InternError;
     }
   if(!db.setFileName(filename, false, false))
     {
-      QMessageBox::information
-	(this, i18n("kab: File error"),
+      KMessageBox::error(this,
 	 i18n("Cannot create the file\n\"")
 	 +filename+"\"\n"+
-	 i18n("Could not create the new file."));
+	 i18n("Could not create the new file."),
+		 i18n("File error"));
       return PermDenied;
     }
   if(!db.save())
     {
-      QMessageBox::information
-	(this, i18n("kab: File error"),
+      KMessageBox::error(this,
 	 i18n("Cannot save the file\n\"")
 	 +filename+"\"\n"+
-	 i18n("Could not create the new file."));
+	 i18n("Could not create the new file."),
+		 i18n("File error"));
       return InternError;
     }
   // -----
@@ -1833,36 +1839,37 @@ AddressBook::createConfigFile()
   if(ConfigTemplateFile.isEmpty()
      || !db.setFileName(ConfigTemplateFile, true, true))
     {
-      QMessageBox::critical
-	(this, i18n("kab: File error"),
+      KMessageBox::error(this,
 	 i18n("Cannot find kab's configuration template file.\n"
-	      "kab cannot be configured."));
+	      "kab cannot be configured."),
+	 i18n("File error"));
+
       return InternError;
     }
   if(!db.load())
     {
-      QMessageBox::critical
-	(this, i18n("kab: Format error"),
+      KMessageBox::error(this,
 	 i18n("Cannot read kab's configuration template file.\n"
-	      "kab cannot be configured."));
+	      "kab cannot be configured."),
+	 i18n("File error"));
       return InternError;
     }
   if(!db.setFileName(filename, false, false))
     {
-      QMessageBox::information
-	(this, i18n("kab: File error"),
+      KMessageBox::error(this,
 	 i18n("Cannot create the file\n\"")
 	 +filename+"\"\n"+
-	 i18n("Could not create the new configuration file."));
+	 i18n("Could not create the new configuration file."),
+	 i18n("File error"));
       return PermDenied;
     }
   if(!db.save())
     {
-      QMessageBox::information
-	(this, i18n("kab: File error"),
+      KMessageBox::error(this,
 	 i18n("Cannot save the file\n\"")
 	 +filename+"\"\n"+
-	 i18n("Could not create the new configuration file."));
+	 i18n("Could not create the new configuration file."),
+	 i18n("File error"));
       return InternError;
     }
   // -----
@@ -1883,18 +1890,18 @@ AddressBook::loadConfigFile()
 	{
 	  return NoError;
 	} else {
-	  QMessageBox::information
-	    (this, i18n("kab: File error"),
+	  KMessageBox::information(this,
 	     i18n("Cannot load kab's local configuration file,\n"
 		  "possibly there is a formation error.\n"
-		  "kab cannot be configured."));
+		  "kab cannot be configured."),
+	     i18n("File error"));
 	  return InternError;
 	}
     } else {
-      QMessageBox::information
-	(this, i18n("kab: File error"),
+      KMessageBox::information(this,
 	 i18n("Cannot find kab's local configuration file.\n"
-	      "kab cannot be configured."));
+	      "kab cannot be configured."),
+	 i18n("File error"));
       return NoSuchFile;
     }
   // ###########################################################################
@@ -1965,32 +1972,32 @@ AddressBook::baseDir()
   dir=KGlobal::dirs()->saveLocation("data", KAB_LOCALDIR, false);
   if(dir==QString::null)
     {
-      QMessageBox::information
-	(this, i18n("kab: First usage"),
+      KMessageBox::information(this,
 	 i18n("The directory where user specific data for the\n"
 	      "addressbook application is stored does not exist.\n"
 	      "The program will try to create\n         \"")
 	 +dir+"\"\n"+
-	 i18n("and store all local files in this directory."));
+	 i18n("and store all local files in this directory."),
+	i18n("First usage"));
       // ----- create the directory and check success:
       dir=KGlobal::dirs()->saveLocation("data", KAB_LOCALDIR, true);
       if(dir==QString::null)
 	{
-	  QMessageBox::information
-	    (this, i18n("kab: Error creating directory"),
-	     i18n("The directory could not be created.\n"
+	  KMessageBox::information(this,
+		i18n("The directory could not be created.\n"
 		  "Probably you do not have used KDE before, so\n"
 		  "you do not have a local \".kde\" directory\n"
 		  "in your home directory. Run the KDE filemanager\n"
 		  "kfm once to automatically create it.\n"
-		  "kab will continue, but no file will be loaded."));
+		  "kab will continue, but no file will be loaded."),
+		i18n("Error creating directory"));
 	  state=PermDenied;
 	  return QString::null;
 	} else { // ----- just for interactivity:
-	  CHECK(access(dir, X_OK | F_OK)==0);
-	  QMessageBox::information
-	    (this, i18n("kab: Directory created"),
-	     i18n("The directory has been created."));
+	  CHECK(access(dir.ascii(), X_OK | F_OK)==0);
+	  KMessageBox::information(this,
+		i18n("The directory has been created."),
+		i18n("Directory created"));
 	  return dir;
 	}
     } else {
