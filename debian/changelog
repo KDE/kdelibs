@@ -1,9 +1,9 @@
-kdelibs (4:2.2.0-final-4) unstable; urgency=low
+kdelibs (4:2.2.1-1) unstable; urgency=low
  
-  * Sync with upstream
+  * New upstream version
   * Move artsc-config into -dev package (Closes: #109973)
  
- -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 24 Aug 2001 10:59:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 25 Aug 2001 05:40:00 -0700
 
 kdelibs (4:2.2.0-final-3) unstable; urgency=low
  
