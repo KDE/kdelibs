@@ -105,6 +105,9 @@ typedef struct _GString GString;
 #define G_BIG_ENDIAN    4321
 #define G_STRINGIFY(macro_or_string)    G_STRINGIFY_ARG (macro_or_string)
 #define G_STRINGIFY_ARG(contents)       #contents
+#ifndef G_LOG_DOMAIN
+#define G_LOG_DOMAIN "gsl"
+#endif
 #if  defined __GNUC__ && !defined __cplusplus
 #  define G_STRLOC      __FILE__ ":" G_STRINGIFY (__LINE__) ":" __PRETTY_FUNCTION__ "()"
 #else
@@ -186,6 +189,8 @@ char *alloca ();
 /* --- inline functions --- */
 void
 gsl_g_log (const gchar*msg,const char *format, va_list ap);
+void
+gsl_g_print_fd (int fd,const char *format, va_list ap);
 static inline void
 g_error (const gchar *format,
 	 ...)
@@ -219,7 +224,16 @@ g_print (const gchar *format,
 {
   va_list args;
   va_start (args, format);
-  gsl_g_log (NULL, format, args);
+  gsl_g_print_fd (1, format, args);
+  va_end (args);
+}
+static inline void
+g_printerr (const gchar *format,
+	    ...)
+{
+  va_list args;
+  va_start (args, format);
+  gsl_g_print_fd (2, format, args);
   va_end (args);
 }
 typedef struct _GTrashStack     GTrashStack;
@@ -335,6 +349,7 @@ typedef struct { int fd; short events, revents; } GPollFD;
 #define	g_strconcat		gsl_g_strconcat
 #define	g_usleep		gsl_g_usleep
 #define	g_strerror		gsl_g_strerror
+#define	g_convert		gsl_g_convert
 #define g_direct_hash 	gsl_g_direct_hash 
 #define g_direct_equal 	gsl_g_direct_equal 
 #define g_str_equal 	gsl_g_str_equal 
@@ -360,7 +375,14 @@ gchar*                g_strndup        (const gchar *str,
 					gsize        n);
 gchar*                g_strconcat      (const gchar *string1,
 					...); /* NULL terminated */
-void g_usleep(unsigned long usec);
+gchar*		      g_convert        (const gchar  *str,
+					gsize        len,           /* gssize */
+					const gchar  *to_codeset,
+					const gchar  *from_codeset,
+					gsize        *bytes_read,     
+					gsize        *bytes_written,  
+					void         **error); /* GError */
+ void g_usleep(unsigned long usec);
 char* g_strerror(int e);
 guint g_direct_hash (gconstpointer v);
 gboolean g_direct_equal (gconstpointer v1, gconstpointer v2);
@@ -369,7 +391,7 @@ guint g_str_hash (gconstpointer key);
 gdouble	g_strtod (const gchar *nptr, 	  gchar **endptr);
 gsize g_printf_string_upper_bound (const gchar *format,  va_list      args);
 gchar * g_stpcpy (gchar       *dest, 	  const gchar *src);
-     
+    
 
 
 /* --- function defines --- */

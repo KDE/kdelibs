@@ -473,8 +473,7 @@ _gsl_op_debug (GslEngineDebugLevel lvl,
       va_start (var_args, format);
       s = g_strdup_vprintf (format, var_args);
       va_end (var_args);
-      g_print ("DEBUG_%s(%p): %s\n", l, gsl_thread_self (), s);
-      /*g_printerr (G_LOG_DOMAIN ": DEBUG_%s(%p): %s\n", l, gsl_thread_self (), s);*/
+      g_printerr (G_LOG_DOMAIN ": DEBUG_%s(%p): %s\n", l, gsl_thread_self (), s);
       g_free (s);
     }
 }

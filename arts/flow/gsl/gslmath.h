@@ -19,8 +19,10 @@
 #ifndef __GSL_MATH_H__
 #define __GSL_MATH_H__
 
-#include <gsl/gsldefs.h>
+/* #define _GNU_SOURCE */     /* for ISO-C99 math: signbit(), nan, etc... */
 #include <math.h>
+
+#include <gsl/gsldefs.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -46,6 +48,14 @@ struct _GslComplex
 };
 
 
+/* --- float/double signbit extraction --- */
+#ifdef signbit
+#  define       gsl_float_sign(dblflt)  (signbit (dblflt))
+#else
+#  define       gsl_float_sign(dblflt)  ((dblflt) < -0.0)       /* good enough for us */
+#endif
+
+
 /* --- complex numbers --- */
 static inline GslComplex gsl_complex		(double		re,
 						 double		im);
@@ -68,8 +78,10 @@ static inline GslComplex gsl_complex_mul3	(GslComplex	c1,
 						 GslComplex	c3);
 static inline GslComplex gsl_complex_div	(GslComplex	a,
 						 GslComplex	b);
+static inline GslComplex gsl_complex_reciprocal	(GslComplex	c);
 static inline GslComplex gsl_complex_sqrt	(GslComplex	z);
 static inline GslComplex gsl_complex_conj	(GslComplex	c); /* {re, -im} */
+static inline GslComplex gsl_complex_id		(GslComplex	c);
 static inline GslComplex gsl_complex_inv	(GslComplex	c); /* {-re, -im} */
 static inline double	 gsl_complex_abs	(GslComplex	c);
 static inline double	 gsl_complex_arg	(GslComplex	c);
@@ -96,10 +108,11 @@ static inline void     gsl_poly_add		(unsigned int	degree,
 static inline void     gsl_poly_sub		(unsigned int	order,
 						 double	       *a, /* [0..degree] */
 						 double	       *b);
-static inline void     gsl_poly_mul		(unsigned int	order,
-						 double	       *p, /* [0..degree*2] */
-						 const double  *a, /* [0..degree] */
-						 const double  *b);
+static inline void     gsl_poly_mul		(double	       *p,  /* out:[0..aorder+border] */
+                                                 unsigned int   aorder,
+						 const double  *a,  /* in:[0..aorder] */
+						 unsigned int   border,
+						 const double  *b); /* in:[0..border] */
 static inline void     gsl_poly_scale		(unsigned int	order,
 						 double	       *a, /* [0..degree] */
 						 double		scale);
@@ -124,6 +137,12 @@ static inline void     gsl_cpoly_mul_monomial	(unsigned int	degree, /* _new_ deg
 static inline void     gsl_cpoly_mul_reciprocal	(unsigned int	degree, /* _new_ degree */
 						 GslComplex    *c, /* in:[0..degree-1] out:[0..degree] */
 						 GslComplex	root); /* c(x) *= (1 - root * x^-1) */
+static inline void     gsl_cpoly_mul		(GslComplex    *p,  /* out:[0..aorder+border] */
+						 unsigned int   aorder,
+						 GslComplex    *a,  /* in:[0..aorder] */
+						 unsigned int   border,
+						 GslComplex    *b); /* in:[0..border] */
+
 char*		       gsl_poly_str		(unsigned int	degree,
 						 double	       *a,
 						 const char    *var);
@@ -138,6 +157,10 @@ static inline double	 gsl_trans_freq2s	(double		w);
 static inline double	 gsl_trans_zepsilon2ss	(double		epsilon);
 double			 gsl_temp_freq		(double		kammer_freq,
 						 int		halftone_delta);
+
+
+/* --- miscellaneous --- */
+gfloat			gsl_bit_depth_epsilon	(guint		n_bits); /* 1..32 */
 
 
 /* --- ellipses --- */
@@ -217,7 +240,7 @@ gsl_complex_mul3 (GslComplex c1,
   double bce = c1.im * c2.re * c3.re;
   double acf = c1.re * c2.re * c3.im;
   double bdf = c1.im * c2.im * c3.im;
-
+  
   return gsl_complex (aec - bde - adf - bcf, ade + bce + acf - bdf);
 }
 static inline GslComplex
@@ -236,6 +259,23 @@ gsl_complex_div	(GslComplex a,
       double r = b.re / b.im, den = b.im + r * b.re;
       c.re = (a.re * r + a.im) / den;
       c.im = (a.im * r - a.re) / den;
+    }
+  return c;
+}
+static inline GslComplex
+gsl_complex_reciprocal (GslComplex c)
+{
+  if (fabs (c.re) >= fabs (c.im))
+    {
+      double r = c.im / c.re, den = c.re + r * c.im;
+      c.re = 1. / den;
+      c.im = - r / den;
+    }
+  else
+    {
+      double r = c.re / c.im, den = c.im + r * c.re;
+      c.re = r / den;
+      c.im = - 1. / den;
     }
   return c;
 }
@@ -280,6 +320,11 @@ static inline GslComplex
 gsl_complex_inv (GslComplex c)
 {
   return gsl_complex (-c.re, -c.im);
+}
+static inline GslComplex
+gsl_complex_id (GslComplex c)
+{
+  return c;
 }
 static inline double
 gsl_complex_abs (GslComplex c)
@@ -346,24 +391,29 @@ gsl_poly_sub (unsigned int degree,
 	      double      *b)
 {
   unsigned int i;
-
+  
   for (i = 0; i <= degree; i++)
     a[i] -= b[i];
 }
 static inline void
-gsl_poly_mul (unsigned int  order,
-	      double	   *p,
-	      const double *a,
-	      const double *b)
+gsl_poly_mul (double        *p,  /* out:[0..aorder+border] */
+	      unsigned int   aorder,
+	      const double  *a,  /* in:[0..aorder] */
+	      unsigned int   border,
+	      const double  *b)  /* in:[0..border] */
 {
-  unsigned int i, j;
+  unsigned int i;
 
-  for (i = 0; i <= 2 * order; i++)
+  for (i = aorder + border; i > 0; i--)
     {
-      p[i] = 0;
-      for (j = i - MIN (i, order); j <= MIN (order, i); j++)
-	p[i] += a[j] * b[i - j];
+      unsigned int j;
+      double t = 0;
+
+      for (j = i - MIN (border, i); j <= MIN (aorder, i); j++)
+	t += a[j] * b[i - j];
+      p[i] = t;
     }
+  p[0] = a[0] * b[0];
 }
 static inline void
 gsl_cpoly_mul_monomial (unsigned int degree,
@@ -371,7 +421,7 @@ gsl_cpoly_mul_monomial (unsigned int degree,
 			GslComplex   root)
 {
   unsigned int j;
-
+  
   c[degree] = c[degree - 1];
   for (j = degree - 1; j >= 1; j--)
     c[j] = gsl_complex_sub (c[j - 1], gsl_complex_mul (c[j], root));
@@ -383,11 +433,32 @@ gsl_cpoly_mul_reciprocal (unsigned int degree,
 			  GslComplex   root)
 {
   unsigned int j;
-
+  
   c[degree] = gsl_complex_mul (c[degree - 1], gsl_complex_inv (root));
   for (j = degree - 1; j >= 1; j--)
     c[j] = gsl_complex_sub (c[j], gsl_complex_mul (c[j - 1], root));
   /* c[0] = c[0]; */
+}
+static inline void
+gsl_cpoly_mul (GslComplex  *p,	/* [0..aorder+border] */
+	       unsigned int aorder,
+	       GslComplex  *a,
+	       unsigned int border,
+	       GslComplex  *b)
+{
+  unsigned int i;
+
+  for (i = aorder + border; i > 0; i--)
+    {
+      GslComplex t;
+      unsigned int j;
+
+      t = gsl_complex (0, 0);
+      for (j = i - MIN (i, border); j <= MIN (aorder, i); j++)
+	t = gsl_complex_add (t, gsl_complex_mul (a[j], b[i - j]));
+      p[i] = t;
+    }
+  p[0] = gsl_complex_mul (a[0], b[0]);
 }
 static inline void
 gsl_poly_scale (unsigned int degree,
@@ -419,7 +490,7 @@ gsl_poly_eval (unsigned int degree,
 	       double	    x)
 {
   double sum = a[degree];
-
+  
   while (degree--)
     sum = sum * x + a[degree];
   return sum;

@@ -1,4 +1,4 @@
-.TH GSL-Functions 3 "14 Nov 2001" "GSL (BSE-0.4.0)" 
+.TH GSL-Functions 3 "11 Dec 2001" "GSL (BSE-0.4.0)" 
 .SH NAME
 GSL-Functions \- GSL Function Reference
 .SH SYNOPSIS
@@ -33,6 +33,38 @@ GSL-Functions \- GSL Function Reference
 \fBgsl_transact\fP (\fIjob\fP, \fI...\fP);
 .br
 \fBgsl_engine_init\fP (\fIrun_threaded\fP, \fIblock_size\fP, \fIsample_freq\fP);
+.br
+\fBgsl_power2_fftac\fP (\fIn_values\fP, \fIri_values_in\fP, \fIri_values_out\fP);
+.br
+\fBgsl_power2_fftsc\fP (\fIn_values\fP, \fIri_values_in\fP, \fIri_values_out\fP);
+.br
+\fBgsl_power2_fftar\fP (\fIn_values\fP, \fIr_values_in\fP, \fIri_values_out\fP);
+.br
+\fBgsl_power2_fftsr\fP (\fIn_values\fP, \fIri_values_in\fP, \fIr_values_out\fP);
+.br
+\fBgsl_filter_butter_lp\fP (\fIiorder\fP, \fIfreq\fP, \fIepsilon\fP, \fIa\fP, \fIb\fP);
+.br
+\fBgsl_filter_tscheb1_lp\fP (\fIiorder\fP, \fIfreq\fP, \fIepsilon\fP, \fIa\fP, \fIb\fP);
+.br
+\fBgsl_filter_tscheb2_lp\fP (\fIiorder\fP, \fIfreq\fP, \fIsteepness\fP, \fIepsilon\fP, \fIa\fP, \fIb\fP);
+.br
+\fBgsl_filter_butter_hp\fP (\fIiorder\fP, \fIfreq\fP, \fIepsilon\fP, \fIa\fP, \fIb\fP);
+.br
+\fBgsl_filter_tscheb1_hp\fP (\fIiorder\fP, \fIfreq\fP, \fIepsilon\fP, \fIa\fP, \fIb\fP);
+.br
+\fBgsl_filter_tscheb2_hp\fP (\fIiorder\fP, \fIfreq\fP, \fIsteepness\fP, \fIepsilon\fP, \fIa\fP, \fIb\fP);
+.br
+\fBgsl_filter_butter_bp\fP (\fIiorder\fP, \fIfreq1\fP, \fIfreq2\fP, \fIepsilon\fP, \fIa\fP, \fIb\fP);
+.br
+\fBgsl_filter_tscheb1_bp\fP (\fIiorder\fP, \fIfreq1\fP, \fIfreq2\fP, \fIepsilon\fP, \fIa\fP, \fIb\fP);
+.br
+\fBgsl_filter_tscheb2_bp\fP (\fIiorder\fP, \fIfreq1\fP, \fIfreq2\fP, \fIsteepness\fP, \fIepsilon\fP, \fIa\fP, \fIb\fP);
+.br
+\fBgsl_filter_butter_bs\fP (\fIiorder\fP, \fIfreq1\fP, \fIfreq2\fP, \fIepsilon\fP, \fIa\fP, \fIb\fP);
+.br
+\fBgsl_filter_tscheb1_bs\fP (\fIiorder\fP, \fIfreq1\fP, \fIfreq2\fP, \fIepsilon\fP, \fIa\fP, \fIb\fP);
+.br
+\fBgsl_filter_tscheb2_bs\fP (\fIiorder\fP, \fIfreq1\fP, \fIfreq2\fP, \fIsteepness\fP, \fIepsilon\fP, \fIa\fP, \fIb\fP);
 .br
 .SH DESCRIPTION
 .SS \fBgsl_job_integrate\fP (\fImodule\fP);
@@ -224,5 +256,265 @@ Convenience function which openes up a new transaction, collects the \fINULL\fP 
 .PD 1
 .PP
 Initialize the GSL engine, this function must be called prior to any other engine related function and can only be invoked once.  
+.PD
+.SS \fBgsl_power2_fftac\fP (\fIn_values\fP, \fIri_values_in\fP, \fIri_values_out\fP);
+.PD 0
+.IP \fI\ n_values\fP 16
+Number of complex values
+.IP \fI\ ri_values_in\fP 16
+Complex sample values [0..n_values*2-1]
+.IP \fI\ ri_values_out\fP 16
+Complex frequency values [0..n_values*2-1]
+.PD 1
+.PP
+This function performs a decimation in time fourier transformation in forward direction, where the input values are equidistant sampled data, and the output values contain the frequency proportions of the input. The input and output arrays are complex values with real and imaginery portions interleaved, adressable in the range [0..2*n_values-1], where n_values must be a power of two. Frequencies are stored in-order, the K-th output corresponds to the frequency K/n_values. (If you want to interpret negative frequencies, note that the frequencies -K/n_values and (n_values-K)/n_values are equivalent). Note that the transformation is performed out of place, the input array is not modified, and may not overlap with the output array.  
+.PD
+.SS \fBgsl_power2_fftsc\fP (\fIn_values\fP, \fIri_values_in\fP, \fIri_values_out\fP);
+.PD 0
+.IP \fI\ n_values\fP 16
+Number of complex values
+.IP \fI\ ri_values_in\fP 16
+Complex frequency values [0..n_values*2-1]
+.IP \fI\ ri_values_out\fP 16
+Complex sample values [0..n_values*2-1]
+.PD 1
+.PP
+This function performs a decimation in time fourier transformation in backwards direction with normalization. As such, this function represents the counterpart to \fBgsl_power2_fftac()\fP, that is, a value array which is transformed into the frequency domain with \fBgsl_power2_fftac()\fP can be reconstructed by issuing \fBgsl_power2_fftsc()\fP on the transform. Note that the transformation is performed out of place, the input array is not modified, and may not overlap with the output array.  
+.PD
+.SS \fBgsl_power2_fftar\fP (\fIn_values\fP, \fIr_values_in\fP, \fIri_values_out\fP);
+.PD 0
+.IP \fI\ n_values\fP 16
+Number of complex values
+.IP \fI\ r_values_in\fP 16
+Real sample values [0..n_values-1]
+.IP \fI\ ri_values_out\fP 16
+Complex frequency values [0..n_values-1]
+.PD 1
+.PP
+Real valued variant of \fBgsl_power2_fftac()\fP, the input array contains real valued equidistant sampled data [0..n_values-1], and the output array contains the positive frequency half of the complex valued fourier transform. Note, that the complex valued fourier transform H of a purely real valued set of data, satisfies \fBH(-f)\fP = Conj(\fBH(f)\fP), where \fBConj()\fP denotes the complex conjugate, so that just the positive frequency half suffices to describe the entire frequency spectrum. Even so, the resulting n_values/2 complex frequencies are one value off in storage size, but the resulting frequencies \fBH(0)\fP and \fBH(n_values/2)\fP are both real valued, so the real portion of \fBH(n_values/2)\fP is stored in ri_values_out[1] (the imaginery part of \fBH(0)\fP), so that both r_values_in and ri_values_out can be of size n_values. Note that the transformation is performed out of place, the input array is not modified, and may not overlap with the output array.  
+.PD
+.SS \fBgsl_power2_fftsr\fP (\fIn_values\fP, \fIri_values_in\fP, \fIr_values_out\fP);
+.PD 0
+.IP \fI\ n_values\fP 15
+Number of complex values
+.IP \fI\ ri_values_in\fP 15
+Complex frequency values [0..n_values-1]
+.IP \fI\ r_values_out\fP 15
+Real sample values [0..n_values-1]
+.PD 1
+.PP
+Real valued variant of \fBgsl_power2_fftsc()\fP, counterpart to \fBgsl_power2_fftar()\fP, using the same frequency storage format. A real valued data set transformed into the frequency domain with \fBgsl_power2_fftar()\fP can be reconstructed using this function. Note that the transformation is performed out of place, the input array is not modified, and may not overlap with the output array.  
+.PD
+.SS \fBgsl_filter_butter_lp\fP (\fIiorder\fP, \fIfreq\fP, \fIepsilon\fP, \fIa\fP, \fIb\fP);
+.PD 0
+.IP \fI\ iorder\fP 10
+filter order
+.IP \fI\ freq\fP 10
+cutoff frequency (0..pi)
+.IP \fI\ epsilon\fP 10
+fall off at cutoff frequency (0..1)
+.IP \fI\ a\fP 10
+root polynomial coefficients a[0..iorder]
+.IP \fI\ b\fP 10
+pole polynomial coefficients b[0..iorder]
+.PD 1
+.PP
+Butterworth lowpass filter.  
+.PD
+.SS \fBgsl_filter_tscheb1_lp\fP (\fIiorder\fP, \fIfreq\fP, \fIepsilon\fP, \fIa\fP, \fIb\fP);
+.PD 0
+.IP \fI\ iorder\fP 10
+filter order
+.IP \fI\ freq\fP 10
+cutoff frequency (0..pi)
+.IP \fI\ epsilon\fP 10
+fall off at cutoff frequency (0..1)
+.IP \fI\ a\fP 10
+root polynomial coefficients a[0..iorder]
+.IP \fI\ b\fP 10
+pole polynomial coefficients b[0..iorder]
+.PD 1
+.PP
+Tschebyscheff type 1 lowpass filter.  
+.PD
+.SS \fBgsl_filter_tscheb2_lp\fP (\fIiorder\fP, \fIfreq\fP, \fIsteepness\fP, \fIepsilon\fP, \fIa\fP, \fIb\fP);
+.PD 0
+.IP \fI\ iorder\fP 12
+filter order
+.IP \fI\ freq\fP 12
+passband cutoff frequency (0..pi)
+.IP \fI\ steepness\fP 12
+frequency steepness (c_freq * (1 + steepness) < pi)
+.IP \fI\ epsilon\fP 12
+fall off at passband frequency (0..1)
+.IP \fI\ a\fP 12
+root polynomial coefficients a[0..iorder]
+.IP \fI\ b\fP 12
+pole polynomial coefficients b[0..iorder]
+.PD 1
+.PP
+Tschebyscheff type 2 lowpass filter.  
+.PD
+.SS \fBgsl_filter_butter_hp\fP (\fIiorder\fP, \fIfreq\fP, \fIepsilon\fP, \fIa\fP, \fIb\fP);
+.PD 0
+.IP \fI\ iorder\fP 10
+filter order
+.IP \fI\ freq\fP 10
+passband frequency (0..pi)
+.IP \fI\ epsilon\fP 10
+fall off at passband frequency (0..1)
+.IP \fI\ a\fP 10
+root polynomial coefficients a[0..iorder]
+.IP \fI\ b\fP 10
+pole polynomial coefficients b[0..iorder]
+.PD 1
+.PP
+Butterworth highpass filter.  
+.PD
+.SS \fBgsl_filter_tscheb1_hp\fP (\fIiorder\fP, \fIfreq\fP, \fIepsilon\fP, \fIa\fP, \fIb\fP);
+.PD 0
+.IP \fI\ iorder\fP 10
+filter order
+.IP \fI\ freq\fP 10
+passband frequency (0..pi)
+.IP \fI\ epsilon\fP 10
+fall off at passband frequency (0..1)
+.IP \fI\ a\fP 10
+root polynomial coefficients a[0..iorder]
+.IP \fI\ b\fP 10
+pole polynomial coefficients b[0..iorder]
+.PD 1
+.PP
+Tschebyscheff type 1 highpass filter.  
+.PD
+.SS \fBgsl_filter_tscheb2_hp\fP (\fIiorder\fP, \fIfreq\fP, \fIsteepness\fP, \fIepsilon\fP, \fIa\fP, \fIb\fP);
+.PD 0
+.IP \fI\ iorder\fP 12
+filter order
+.IP \fI\ freq\fP 12
+stopband frequency (0..pi)
+.IP \fI\ steepness\fP 12
+frequency steepness
+.IP \fI\ epsilon\fP 12
+fall off at passband frequency (0..1)
+.IP \fI\ a\fP 12
+root polynomial coefficients a[0..iorder]
+.IP \fI\ b\fP 12
+pole polynomial coefficients b[0..iorder]
+.PD 1
+.PP
+Tschebyscheff type 2 highpass filter.  
+.PD
+.SS \fBgsl_filter_butter_bp\fP (\fIiorder\fP, \fIfreq1\fP, \fIfreq2\fP, \fIepsilon\fP, \fIa\fP, \fIb\fP);
+.PD 0
+.IP \fI\ iorder\fP 10
+filter order (must be even)
+.IP \fI\ freq1\fP 10
+stopband end frequency (0..pi)
+.IP \fI\ freq2\fP 10
+passband end frequency (0..pi)
+.IP \fI\ epsilon\fP 10
+fall off at passband frequency (0..1)
+.IP \fI\ a\fP 10
+root polynomial coefficients a[0..iorder]
+.IP \fI\ b\fP 10
+pole polynomial coefficients b[0..iorder]
+.PD 1
+.PP
+Butterworth bandpass filter.  
+.PD
+.SS \fBgsl_filter_tscheb1_bp\fP (\fIiorder\fP, \fIfreq1\fP, \fIfreq2\fP, \fIepsilon\fP, \fIa\fP, \fIb\fP);
+.PD 0
+.IP \fI\ iorder\fP 10
+filter order (must be even)
+.IP \fI\ freq1\fP 10
+stopband end frequency (0..pi)
+.IP \fI\ freq2\fP 10
+passband end frequency (0..pi)
+.IP \fI\ epsilon\fP 10
+fall off at passband frequency (0..1)
+.IP \fI\ a\fP 10
+root polynomial coefficients a[0..iorder]
+.IP \fI\ b\fP 10
+pole polynomial coefficients b[0..iorder]
+.PD 1
+.PP
+Tschebyscheff type 1 bandpass filter.  
+.PD
+.SS \fBgsl_filter_tscheb2_bp\fP (\fIiorder\fP, \fIfreq1\fP, \fIfreq2\fP, \fIsteepness\fP, \fIepsilon\fP, \fIa\fP, \fIb\fP);
+.PD 0
+.IP \fI\ iorder\fP 12
+filter order (must be even)
+.IP \fI\ freq1\fP 12
+stopband end frequency (0..pi)
+.IP \fI\ freq2\fP 12
+passband end frequency (0..pi)
+.IP \fI\ steepness\fP 12
+frequency steepness factor
+.IP \fI\ epsilon\fP 12
+fall off at passband frequency (0..1)
+.IP \fI\ a\fP 12
+root polynomial coefficients a[0..iorder]
+.IP \fI\ b\fP 12
+pole polynomial coefficients b[0..iorder]
+.PD 1
+.PP
+Tschebyscheff type 2 bandpass filter.  
+.PD
+.SS \fBgsl_filter_butter_bs\fP (\fIiorder\fP, \fIfreq1\fP, \fIfreq2\fP, \fIepsilon\fP, \fIa\fP, \fIb\fP);
+.PD 0
+.IP \fI\ iorder\fP 10
+filter order (must be even)
+.IP \fI\ freq1\fP 10
+passband end frequency (0..pi)
+.IP \fI\ freq2\fP 10
+stopband end frequency (0..pi)
+.IP \fI\ epsilon\fP 10
+fall off at passband frequency (0..1)
+.IP \fI\ a\fP 10
+root polynomial coefficients a[0..iorder]
+.IP \fI\ b\fP 10
+pole polynomial coefficients b[0..iorder]
+.PD 1
+.PP
+Butterworth bandstop filter.  
+.PD
+.SS \fBgsl_filter_tscheb1_bs\fP (\fIiorder\fP, \fIfreq1\fP, \fIfreq2\fP, \fIepsilon\fP, \fIa\fP, \fIb\fP);
+.PD 0
+.IP \fI\ iorder\fP 10
+filter order (must be even)
+.IP \fI\ freq1\fP 10
+passband end frequency (0..pi)
+.IP \fI\ freq2\fP 10
+stopband end frequency (0..pi)
+.IP \fI\ epsilon\fP 10
+fall off at passband frequency (0..1)
+.IP \fI\ a\fP 10
+root polynomial coefficients a[0..iorder]
+.IP \fI\ b\fP 10
+pole polynomial coefficients b[0..iorder]
+.PD 1
+.PP
+Tschebyscheff type 1 bandstop filter.  
+.PD
+.SS \fBgsl_filter_tscheb2_bs\fP (\fIiorder\fP, \fIfreq1\fP, \fIfreq2\fP, \fIsteepness\fP, \fIepsilon\fP, \fIa\fP, \fIb\fP);
+.PD 0
+.IP \fI\ iorder\fP 12
+filter order (must be even)
+.IP \fI\ freq1\fP 12
+passband end frequency (0..pi)
+.IP \fI\ freq2\fP 12
+stopband end frequency (0..pi)
+.IP \fI\ steepness\fP 12
+frequency steepness factor
+.IP \fI\ epsilon\fP 12
+fall off at passband frequency (0..1)
+.IP \fI\ a\fP 12
+root polynomial coefficients a[0..iorder]
+.IP \fI\ b\fP 12
+pole polynomial coefficients b[0..iorder]
+.PD 1
+.PP
+Tschebyscheff type 2 bandstop filter.  
 .PD
 

@@ -73,10 +73,11 @@ GslDataHandle*	  gsl_data_handle_new_translate	(GslDataHandle	  *src_handle,
 						 GslLong	   tail_cut);
 GslDataHandle*	  gsl_data_handle_new_reversed	(GslDataHandle	  *src_handle);
 GslDataHandle*	  gsl_data_handle_new_insert	(GslDataHandle	  *src_handle,
+						 guint             paste_bit_depth,
 						 GslLong	   insertion_offset,
 						 GslLong	   n_paste_values,
 						 const gfloat	  *paste_values,
-						 guint             paste_bit_depth);
+						 void            (*free) (gpointer values));
 GslDataHandle*	  gsl_data_handle_new_merge	(GslDataHandle	  *src_handle,
 						 GslLong	   insertion_offset,
 						 GslLong	   n_insertions,
@@ -114,6 +115,25 @@ GslDataHandle*	  gsl_wave_handle_new		(const gchar	  *file_name,
 						 guint		   byte_order,
 						 GslLong	   byte_offset,
 						 GslLong	   n_values);
+
+
+/* --- white-beard guru API --- */
+typedef struct
+{
+  const gchar *name;	   /* "GslWave file" or "WAVE audio, RIFF (little-endian)" */
+  
+  /* at least one of the
+   * following three _should_
+   * be non-NULL
+   */
+  const gchar *magic_spec; /* "0 string RIFF\n8 string WAVE" or "0 string #GslWave\n" */
+  const gchar *mime_type;  /* "audio/x-mpg3" or "audio/x-wav" */
+  const gchar *extension;  /* "mp3" or "ogg" or "gslwave" */
+  
+  GslDataHandle* (*load) (const gchar  *file_name,
+			  GslErrorType *error);
+} GslDataHandleLoader;
+void    gsl_data_handle_register_loader (GslDataHandleLoader *loader);
 
 
 /* --- auxillary functions --- */
