@@ -319,7 +319,7 @@ void KDirSelectDialog::slotURLActivated( const QString& text )
 KFileTreeBranch * KDirSelectDialog::createBranch( const KURL& url )
 {
     QString title = url.isLocalFile() ? url.path() : url.prettyURL();
-    KFileTreeBranch *branch = view()->addBranch( url, title );
+    KFileTreeBranch *branch = view()->addBranch( url, title, true );
     branch->setChildRecurse( false );
     view()->setDirOnlyMode( branch, true );
 
