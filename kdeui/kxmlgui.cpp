@@ -113,9 +113,9 @@ class KXMLGUIFactoryPrivate
 public:
   KXMLGUIFactoryPrivate()
   {
-    static QString defaultMergingName = QString::fromLatin1( "<default>" );
-    static QString actionList = QString::fromLatin1( "actionlist" );
-    static QString name = QString::fromLatin1( "name" );
+    static const QString &defaultMergingName = KGlobal::staticQString( "<default>" );
+    static const QString &actionList = KGlobal::staticQString( "actionlist" );
+    static const QString &name = KGlobal::staticQString( "name" );
 
     m_rootNode = new KXMLGUIContainerNode( 0L, QString::null, 0L );
     m_defaultMergingName = defaultMergingName;
@@ -304,9 +304,9 @@ KXMLGUIFactory::~KXMLGUIFactory()
 
 void KXMLGUIFactory::addClient( KXMLGUIClient *client )
 {
-  static QString actionPropElementName = QString::fromLatin1( "ActionProperties" );
-  static QString tagAction = QString::fromLatin1( "action" );
-  static QString attrAccel = QString::fromLatin1( "accel" );
+  static const QString &actionPropElementName = KGlobal::staticQString( "ActionProperties" );
+  static const QString &tagAction = KGlobal::staticQString( "action" );
+  static const QString &attrAccel = KGlobal::staticQString( "accel" );
 
   m_client = client;
 
@@ -493,10 +493,10 @@ void KXMLGUIFactory::resetInternal( KXMLGUIContainerNode *node )
 
 void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContainerNode *parentNode )
 {
-  static QString tagAction = QString::fromLatin1( "action" );
-  static QString tagMerge = QString::fromLatin1( "merge" );
-  static QString tagDefineGroup = QString::fromLatin1( "definegroup" );
-  static QString attrGroup = QString::fromLatin1( "group" );
+  static const QString &tagAction = KGlobal::staticQString( "action" );
+  static const QString &tagMerge = KGlobal::staticQString( "merge" );
+  static const QString &tagDefineGroup = KGlobal::staticQString( "definegroup" );
+  static const QString &attrGroup = KGlobal::staticQString( "group" );
 
   QStringList customTags = parentNode->builderCustomTags;
 
