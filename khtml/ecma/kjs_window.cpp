@@ -151,7 +151,10 @@ KJSO Window::get(const UString &p) const
   else if (p == "offscreenBuffering")
     return Boolean(true);
   else if (p == "opener")
-    return Undefined(); // ###
+    if (opener.isNull())
+      return Undefined();
+    else
+      return newWindow(opener);
   else if (p == "outerHeight")
     return Number(part->view() ? part->view()->height() : 0); // ###
   else if (p == "outerWidth")
@@ -351,9 +354,11 @@ Completion WindowFunc::tryExecute(const List &args)
     KParts::ReadOnlyPart *newPart = 0L;
     emit part->browserExtension()->createNewWindow(url, uargs,
 						   winargs,newPart);
-    if (newPart && newPart->inherits("KHTMLPart"))
-        result = newWindow(static_cast<KHTMLPart*>(newPart));
-    else
+    if (newPart && newPart->inherits("KHTMLPart")) {
+	Window *win = newWindow(static_cast<KHTMLPart*>(newPart));
+	win->opener = part;
+	result = win;
+    } else
         result = Undefined();
     break;
   }

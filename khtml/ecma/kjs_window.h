@@ -51,6 +51,7 @@ namespace KJS {
     void clearTimeout(int timerId);
   private:
     QGuardedPtr<KHTMLPart> part;
+    QGuardedPtr<KHTMLPart> opener;
     WindowQObject *winq;
   };
 
