@@ -23,6 +23,7 @@
 #include <klibloader.h>
 #include <ktrader.h>
 #include <kdebug.h>
+#include <kparts/componentfactory.h>
 
 #include "kurifilter.h"
 
@@ -264,12 +265,12 @@ void KURIFilter::loadPlugins()
 
     for (; it != end; ++it )
     {
-        if ((*it)->library().isEmpty()) { continue; }
-        KLibFactory *factory = KLibLoader::self()->factory((*it)->library().latin1());
-        if (!factory) { continue; }
-        KURIFilterPlugin *plugin = static_cast<KURIFilterPlugin *> (factory->create(0,
-                                   (*it)->desktopEntryName().latin1(), "KURIFilterPlugin"));
-        if ( plugin ) { m_lstPlugins.append( plugin ); }
+	KURIFilterPlugin *plugin = 
+	    KParts::ComponentFactory::createInstanceFromService<KURIFilterPlugin>( *it,
+                                                                                   0,
+										   (*it)->desktopEntryName().latin1() );
+	if ( plugin )
+	    m_lstPlugins.append( plugin );
     }
      // NOTE: Plugin priority is now determined by
      // the entry in the .desktop files...
