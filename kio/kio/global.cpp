@@ -63,7 +63,7 @@ QString KIO::convertSize( KIO::filesize_t size )
         s = i18n( "%1 MB" ).arg( KGlobal::locale()->formatNumber(fsize, 1));
     }
     // Kilo-byte
-    else if ( size > 1024 )
+    else if ( size >= 1024 )
     {
         fsize = (float) size / (float) 1024;
         s = i18n( "%1 KB" ).arg( KGlobal::locale()->formatNumber(fsize, 1));
