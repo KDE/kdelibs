@@ -2,6 +2,7 @@
 #define _KINSTANCE_H
 
 class KStandardDirs;
+class KAboutData;
 class KConfig;
 class KIconLoader;
 class KCharsets;
@@ -48,6 +49,15 @@ class KInstance
     
     KCharsets	     *charsets() const;
     
+    /**
+     *  @return the about data of this instance
+     *  Warning, can be 0L
+     */
+    const KAboutData *aboutData() const;
+
+    /**
+     * @return the instance name
+     */
     QCString          instanceName() const;
 
 protected:
