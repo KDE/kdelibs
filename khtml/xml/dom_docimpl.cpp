@@ -771,7 +771,7 @@ enum HTMLMode {
 void DocumentImpl::determineParseMode( const QString &str )
 {
     // determines the parse mode for HTML
-    // quite some hints here are taken from the mozilla code.
+    // quite some hints here are inspired by the mozilla code.
 
     // default parsing mode is Loose
     pMode = Compat;
@@ -779,23 +779,25 @@ void DocumentImpl::determineParseMode( const QString &str )
     ParseMode systemId = Unknown;
     ParseMode publicId = Unknown;
     HTMLMode htmlMode = Html3;
-    
+
     int pos = 0;
     int doctype = str.find("!doctype", 0, false);
     if( doctype > 2 )
 	pos = doctype - 2;
-    
+
     // get the first tag (or the doctype tag
     int start = str.find('<', pos);
     int stop = str.find('>', pos);
-    if( start != -1 && stop != -1 ) {
-	QString spec = str.mid( start + 1, stop - start - 2 );
+    if( start > -1 && stop > start ) {
+	QString spec = str.mid( start + 1, stop - start - 1 );
 	start = 0;
 	int quote = -1;
 	if( doctype != -1 ) {
 	    while( (quote = spec.find( "\"", start )) != -1 ) {
 		int quote2 = spec.find( "\"", quote+1 );
-		QString val = spec.mid( quote, quote2 - quote );
+                if(quote2 < 0) quote2 = spec.length() - quote - 1;
+		QString val = spec.mid( quote+1, quote2 - quote-1 );
+
 		// find system id
 		pos = val.find("http://www.w3.org/tr/", 0, false);
 		if ( pos != -1 ) {
@@ -804,8 +806,8 @@ void DocumentImpl::determineParseMode( const QString &str )
 			systemId = Strict;
 		    else if (isTransitional(val, pos))
 			systemId = Transitional;
-		    
 		}
+
 		// find public id
 		pos = val.find("//dtd", 0, false );
 		if ( pos != -1 ) {
@@ -815,7 +817,7 @@ void DocumentImpl::determineParseMode( const QString &str )
 			    publicId = Transitional;
 			else
 			    publicId = Strict;
-		    } if ( val.find( "15445:1999", 6 ) ) {
+		    } else if ( val.find( "15445:1999", 6 ) ) {
 			htmlMode = Html4;
 			publicId = Strict;
 		    } else {
@@ -825,7 +827,7 @@ void DocumentImpl::determineParseMode( const QString &str )
 			if ( tagPos != -1 ) {
 			    tagPos = val.find(QRegExp("[0-9]"), tagPos );
 			    int version = val.mid( tagPos ).toInt();
-			    
+
 			    if( version > 3 ) {
 				htmlMode = Html4;
 				if( isTransitional( val, tagPos ) )
@@ -839,7 +841,7 @@ void DocumentImpl::determineParseMode( const QString &str )
 		start = quote2 + 1;
 	    }
 	}
-	
+
 	if( systemId == publicId )
 	    pMode = publicId;
 	else if ( systemId == Unknown ) {
@@ -849,14 +851,13 @@ void DocumentImpl::determineParseMode( const QString &str )
 	} else if ( publicId == Transitional && systemId == Strict ) {
 	    if ( htmlMode == Html3 )
 		pMode = Compat;
-	    else 
+	    else
 		pMode = Strict;
 	} else
 	    pMode = Compat;
-	
+
 	if ( htmlMode == XHtml )
 	    pMode = Strict;
-	
     }
 }
 
