@@ -78,9 +78,6 @@ ksock.moc: ksock.h
 drag.moc: drag.h
 	$(MOC) drag.h -o drag.moc
 
-kkeydata.moc: kkeydata.h
-	$(MOC) kkeydata.h -o kkeydata.moc
-
 kapp.moc: kapp.h
 	$(MOC) kapp.h -o kapp.moc
 
