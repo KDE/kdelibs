@@ -139,7 +139,12 @@ void ProgressBase::closeEvent( QCloseEvent* ) {
   if ( m_bStopOnClose ) {
     slotStop();
   } else {
-    delete this;
+    // clean or delete dialog
+    if ( m_bOnlyClean ) {
+      slotClean();
+    } else {
+      delete this;
+    }
   }
 }
 

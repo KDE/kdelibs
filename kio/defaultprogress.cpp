@@ -129,17 +129,17 @@ void DefaultProgress::slotPercent( KIO::Job*, unsigned long _percent )
 }
 
 
-void DefaultProgress::slotProcessedSize( KIO::Job*, unsigned long _bytes ) {
+void DefaultProgress::slotProcessedSize( KIO::Job*, unsigned long bytes ) {
   QString tmp;
 
-  tmp = i18n( "%1 of %2 ").arg( KIO::convertSize(_bytes) ).arg( KIO::convertSize(m_iTotalSize));
+  tmp = i18n( "%1 of %2 ").arg( KIO::convertSize(bytes) ).arg( KIO::convertSize(m_iTotalSize));
   sizeLabel->setText( tmp );
 }
 
 
-void DefaultProgress::slotProcessedDirs( KIO::Job*, unsigned long _dirs )
+void DefaultProgress::slotProcessedDirs( KIO::Job*, unsigned long dirs )
 {
-  m_iProcessedDirs = _dirs;
+  m_iProcessedDirs = dirs;
 
   QString tmps;
   tmps = i18n("%1 / %2 directories  ").arg( m_iProcessedDirs ).arg( m_iTotalDirs );
@@ -148,9 +148,9 @@ void DefaultProgress::slotProcessedDirs( KIO::Job*, unsigned long _dirs )
 }
 
 
-void DefaultProgress::slotProcessedFiles( KIO::Job*, unsigned long _files )
+void DefaultProgress::slotProcessedFiles( KIO::Job*, unsigned long files )
 {
-  m_iProcessedFiles = _files;
+  m_iProcessedFiles = files;
 
   QString tmps;
   if ( m_iTotalDirs > 1 ) {
@@ -173,45 +173,45 @@ void DefaultProgress::slotSpeed( KIO::Job*, unsigned long _bytes_per_second )
 }
 
 
-void DefaultProgress::slotCopying( KIO::Job*, const KURL& _from,
-					    const KURL& _to )
+void DefaultProgress::slotCopying( KIO::Job*, const KURL& from,
+					    const KURL& to )
 {
   setCaption(i18n("Copy file(s) progress"));
   mode = Copy;
-  sourceLabel->setText( _from.path() );
-  destLabel->setText( _to.path() );
+  sourceLabel->setText( from.url() );
+  destLabel->setText( to.url() );
 }
 
 
-void DefaultProgress::slotMoving( KIO::Job*, const KURL& _from,
-					    const KURL& _to )
+void DefaultProgress::slotMoving( KIO::Job*, const KURL& from,
+					    const KURL& to )
 {
   setCaption(i18n("Move file(s) progress"));
   mode = Move;
-  sourceLabel->setText( _from.path() );
-  destLabel->setText( _to.path() );
+  sourceLabel->setText( from.url() );
+  destLabel->setText( to.url() );
 }
 
 
-void DefaultProgress::slotCreatingDir( KIO::Job*, const KURL& _dir )
+void DefaultProgress::slotCreatingDir( KIO::Job*, const KURL& dir )
 {
   setCaption(i18n("Creating directory"));
   mode = Create;
-  sourceLabel->setText( _dir.path() );
+  sourceLabel->setText( dir.url() );
 }
 
 
-void DefaultProgress::slotDeleting( KIO::Job*, const KURL& _url )
+void DefaultProgress::slotDeleting( KIO::Job*, const KURL& url )
 {
   setCaption(i18n("Delete file(s) progress"));
   mode = Delete;
-  sourceLabel->setText( _url.path() );
+  sourceLabel->setText( url.url() );
 }
 
 
-void DefaultProgress::slotCanResume( KIO::Job*, bool _resume )
+void DefaultProgress::slotCanResume( KIO::Job*, bool resume )
 {
-  if ( _resume ) {
+  if ( resume ) {
     resumeLabel->setText( i18n("Resumable") );
   } else {
     resumeLabel->setText( i18n("Not resumable") );

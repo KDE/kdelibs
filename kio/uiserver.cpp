@@ -157,7 +157,7 @@ void ProgressItem::setSpeed( unsigned long bytes_per_second ) {
 
 void ProgressItem::setCopying( const KURL& from, const KURL& to ) {
   setText( listProgress->lv_operation, i18n("Copying") );
-  setText( listProgress->lv_url, from.path() );
+  setText( listProgress->lv_url, from.url() );
   setText( listProgress->lv_filename, to.filename() );
 
   defaultProgress->slotCopying( 0, from, to );
@@ -166,7 +166,7 @@ void ProgressItem::setCopying( const KURL& from, const KURL& to ) {
 
 void ProgressItem::setMoving( const KURL& from, const KURL& to ) {
   setText( listProgress->lv_operation, i18n("Moving") );
-  setText( listProgress->lv_url, from.path() );
+  setText( listProgress->lv_url, from.url() );
   setText( listProgress->lv_filename, to.filename() );
 
   defaultProgress->slotMoving( 0, from, to );
@@ -182,7 +182,7 @@ void ProgressItem::setRenaming( const KURL& old_name, const KURL& new_name ) {
 
 void ProgressItem::setCreatingDir( const KURL& dir ) {
   setText( listProgress->lv_operation, i18n("Creating") );
-  setText( listProgress->lv_url, dir.path() );
+  setText( listProgress->lv_url, dir.url() );
   setText( listProgress->lv_filename, dir.filename() );
 
   defaultProgress->slotCreatingDir( 0, dir );
@@ -191,7 +191,7 @@ void ProgressItem::setCreatingDir( const KURL& dir ) {
 
 void ProgressItem::setDeleting( const KURL& url ) {
   setText( listProgress->lv_operation, i18n("Deleting") );
-  setText( listProgress->lv_url, url.path() );
+  setText( listProgress->lv_url, url.url() );
   setText( listProgress->lv_filename, url.filename() );
 
   defaultProgress->slotDeleting( 0, url );
@@ -471,7 +471,7 @@ void UIServer::canResume( int id, unsigned int can_resume )
 
 void UIServer::copying( int id, KURL from, KURL to )
 {
-  kdDebug() << "UIServer::copying " << id << " " << from.path() << "  " << to.path() << endl;
+  kdDebug() << "UIServer::copying " << id << " " << from.url() << "  " << to.url() << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -481,7 +481,7 @@ void UIServer::copying( int id, KURL from, KURL to )
 
 void UIServer::moving( int id, KURL from, KURL to )
 {
-  kdDebug() << "UIServer::moving " << id << " " << from.path() << "  " << to.path() << endl;
+  kdDebug() << "UIServer::moving " << id << " " << from.url() << "  " << to.url() << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -491,7 +491,7 @@ void UIServer::moving( int id, KURL from, KURL to )
 
 void UIServer::deleting( int id, KURL url )
 {
-  kdDebug() << "UIServer::deleting " << id << " " << url.path() << endl;
+  kdDebug() << "UIServer::deleting " << id << " " << url.url() << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -501,7 +501,7 @@ void UIServer::deleting( int id, KURL url )
 
 void UIServer::renaming( int id, KURL old_name, KURL new_name )
 {
-  kdDebug() << "UIServer::renaming " << id << " " << old_name.path() << "  " << new_name.path() << endl;
+  kdDebug() << "UIServer::renaming " << id << " " << old_name.url() << "  " << new_name.url() << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -511,7 +511,7 @@ void UIServer::renaming( int id, KURL old_name, KURL new_name )
 
 void UIServer::creatingDir( int id, KURL dir )
 {
-  kdDebug() << "UIServer::creatingDir " << id << " " << dir.path() << endl;
+  kdDebug() << "UIServer::creatingDir " << id << " " << dir.url() << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {

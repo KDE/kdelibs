@@ -130,25 +130,25 @@ void Observer::slotPercent( KIO::Job* job, unsigned long percent )
 
 void Observer::slotCopying( KIO::Job* job, const KURL& from, const KURL& to )
 {
-  kdDebug() << "** Observer::slotCopying " << job << " " << from.path() << " " << to.path() << endl;
+  kdDebug() << "** Observer::slotCopying " << job << " " << from.url() << " " << to.url() << endl;
   m_uiserver->copying( job->progressId(), from, to );
 }
 
 void Observer::slotMoving( KIO::Job* job, const KURL& from, const KURL& to )
 {
-  kdDebug() << "** Observer::slotMoving " << job << " " << from.path() << " " << to.path() << endl;
+  kdDebug() << "** Observer::slotMoving " << job << " " << from.url() << " " << to.url() << endl;
   m_uiserver->moving( job->progressId(), from, to );
 }
 
 void Observer::slotDeleting( KIO::Job* job, const KURL& url )
 {
-  kdDebug() << "** Observer::slotDeleting " << job << " " << url.path() << endl;
+  kdDebug() << "** Observer::slotDeleting " << job << " " << url.url() << endl;
   m_uiserver->deleting( job->progressId(), url );
 }
 
 void Observer::slotCreatingDir( KIO::Job* job, const KURL& dir )
 {
-  kdDebug() << "** Observer::slotCreatingDir " << job << " " << dir.path() << endl;
+  kdDebug() << "** Observer::slotCreatingDir " << job << " " << dir.url() << endl;
   m_uiserver->creatingDir( job->progressId(), dir );
 }
 
