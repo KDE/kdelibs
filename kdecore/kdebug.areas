@@ -134,6 +134,7 @@
 6100        kjas
 
 # libkio
+7000        kio
 7001        kio (KDirWatch)
 7002        kio (Slave)
 7003        kio (KDirLister)
