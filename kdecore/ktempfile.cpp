@@ -99,7 +99,7 @@ KTempFile::create(const QString &filePrefix, const QString &fileExtension,
 #ifdef __FreeBSD__
    mTmpName = filePrefix+QString("XXXX")+fileExtension;
    char *mktmpName = (char *)malloc(mTmpName.length());
-   strcpy(mktmpName, mTmpName.ascii());
+   strcpy(mktmpName, QFile::encodeName(mTmpName));
    mFd = mkstemps(mktmpName, fileExtension.length());
    if (mFd == -1) {
             mError = errno;
@@ -146,7 +146,7 @@ KTempFile::create(const QString &filePrefix, const QString &fileExtension,
    bOpen = true;
 
    // Set uid/gid (neccesary for SUID programs)
-   chown(mTmpName.ascii(), getuid(), getgid());
+   chown(QFile::encodeName(mTmpName), getuid(), getgid());
    return true;
 }
 

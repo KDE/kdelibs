@@ -147,12 +147,12 @@ QString KStandardDirs::findResource( const char *type,
 	return filename; // absolute dirs are absolute dirs, right? :-/
 
 #if 0
-fprintf(stderr, "Find resource: %s\n",type);
+kdDebug() << "Find resource: " << type << endl;
 for (QStringList::ConstIterator pit = prefixes.begin();
      pit != prefixes.end();
      pit++)
 {
-  fprintf(stderr, "Prefix: %s\n", (*pit).ascii());
+  kdDebug() << "Prefix: " << *pit << endl;
 }
 #endif
 
@@ -185,7 +185,7 @@ QString KStandardDirs::findResourceDir( const char *type,
 {
 #ifndef NDEBUG
     if (filename.isEmpty()) {
-      qWarning("filename for type %s in KStandardDirs::findResourceDir is not supposed to be empty!!", type);
+      kdWarning() << "filename for type " << type << " in KStandardDirs::findResourceDir is not supposed to be empty!!" << endl;
       return QString::null;
     }
 #endif
@@ -209,7 +209,7 @@ QString KStandardDirs::findResourceDir( const char *type,
 bool KStandardDirs::exists(const QString &fullPath)
 {
     struct stat buff;
-    if (access(fullPath.ascii(), R_OK) == 0 && stat( fullPath.ascii(), &buff ) == 0)
+    if (access(QFile::encodeName(fullPath), R_OK) == 0 && stat( QFile::encodeName(fullPath), &buff ) == 0)
 	if (fullPath.at(fullPath.length() - 1) != '/') {
 	    if (S_ISREG( buff.st_mode ))
 		return true;
@@ -249,8 +249,7 @@ static void lookupDirectory(const QString& path, const QString &relPart,
 
       QString pathfn = path + fn;
       if ( stat( QFile::encodeName(pathfn), &buff ) != 0 ) {
-	QString tmp = QString("Error stat'ing %1").arg( pathfn );
-	perror(tmp.ascii());
+	kdDebug() << "Error stat'ing " << pathfn << perror << endl;
 	continue; // Couldn't stat (Why not?)
       }
       if ( recursive ) {
@@ -340,9 +339,8 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
 		    continue; // No match
 		QString rfn = relPart+fn;
 		fn = prefix + fn;
-		if ( stat( fn.ascii(), &buff ) != 0 ) {
-		    QString tmp = QString("Error statting %1:").arg( fn );
-		    perror(tmp.ascii());
+		if ( stat( QFile::encodeName(fn), &buff ) != 0 ) {
+		    kdDebug() << "Error statting " << fn << perror << endl;
 		    continue; // Couldn't stat (Why not?)
 		}
 		if ( S_ISDIR( buff.st_mode ))
@@ -610,7 +608,7 @@ QString KStandardDirs::saveLocation(const char *type,
 
     // Check for existance of typed directory + suffix
     QString fullPath = local + dirs->last() + suffix;
-    if (stat(fullPath.ascii(), &st) != 0 || !(S_ISDIR(st.st_mode))) {
+    if (stat(QFile::encodeName(fullPath), &st) != 0 || !(S_ISDIR(st.st_mode))) {
 	if(!create) {
 	    kdDebug() << "save location " << fullPath << " doesn't exist" << endl;
 	    return local;
@@ -650,10 +648,10 @@ bool KStandardDirs::makeDir(const QString& dir, int mode)
         int pos = target.find('/', i);
         base += target.mid(i, pos - i + 1);
         // bail out if we encountered a problem
-        if (stat(base.ascii(), &st) != 0)
+        if (stat(QFile::encodeName(base), &st) != 0)
         {
            // Directory does not exist....
-	  if ( mkdir(base.ascii(), (mode_t) mode) != 0) {
+	  if ( mkdir(QFile::encodeName(base), (mode_t) mode) != 0) {
 	    perror("trying to create local folder");
 	    return false; // Couldn't create it :-(
 	  }

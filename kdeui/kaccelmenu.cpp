@@ -188,12 +188,12 @@ void KAccelMenu::keyPressEvent ( QKeyEvent * e)
 	    keys->changeMenuAccel(this,cid,actions[cid]);
 	  } else {
 	    QString oldact = keys->findKey(kcode);
-	    if (!oldact.isNull() && !keys->configurable(oldact.ascii())) {
+	    if (!oldact.isNull() && !keys->configurable(oldact)) {
 	      stmp = i18n("Key already used as global key: ");
 	      stmp += keys->description(oldact);
 	      KMessageBox::sorry(this, stmp);
 	    } else {
-	      keys->clearItem(oldact.ascii());
+	      keys->clearItem(oldact);
 	      keys->updateItem(actions[cid],kcode);
 	      keys->changeMenuAccel(this,cid,actions[cid]);
 	    }

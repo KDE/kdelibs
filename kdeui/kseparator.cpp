@@ -18,6 +18,8 @@
  */
 
 
+#include <kdebug.h>
+
 #include "kseparator.h"
 
 
@@ -51,7 +53,7 @@ void KSeparator::setOrientation(int orientation)
          break;
       
       default:
-         qWarning("KSeparator::setOrientation(): invalid orientation, using default orientation HLine");
+         kdWarning() << "KSeparator::setOrientation(): invalid orientation, using default orientation HLine" << endl;
          
       case HLine:
          setFrameStyle( QFrame::HLine | QFrame::Sunken );

@@ -383,7 +383,7 @@ void KLocale::insertCatalogue( const QString& catalogue )
     .arg(lang)
     .arg(catalogue);
   k_bindtextdomain ( catalogue.ascii() ,
-		     KGlobal::dirs()->findResourceDir("locale", str).ascii());
+		     QFile::encodeName(KGlobal::dirs()->findResourceDir("locale", str)));
 
   catalogues->append(catalogue.ascii());
 }

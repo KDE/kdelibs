@@ -441,7 +441,7 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP)
 	    cs->tag = -1;
 	}
 	else
-	    cs->tag = khtml::getTagID(tag.lower().data(), tag.length());
+	    cs->tag = khtml::getTagID(tag.lower().ascii(), tag.length());
    }
    if (cs->tag == 0)
    {

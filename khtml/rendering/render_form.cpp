@@ -431,7 +431,7 @@ void RenderLineEdit::layout(bool)
 	// ### this is not really portable between all styles.
 	// I think one should try to find a generic solution which
 	// works with all possible styles. Lars.
-        if ( m_widget->style() == QWidget::WindowsStyle && h < 26 )
+        if ( m_widget->style().guiStyle() == Qt::WindowsStyle && h < 26 )
             h = 22;
         s = QSize( w + 8, h );
     } else
@@ -519,7 +519,7 @@ void RenderFileButton::layout( bool )
 
     if ( m_edit->frame() ) {
         h += 8;
-        if ( m_widget->style() == QWidget::WindowsStyle && h < 26 )
+        if ( m_widget->style().guiStyle() == Qt::WindowsStyle && h < 26 )
             h = 22;
         s = QSize( w + 8, h );
     } else

@@ -370,7 +370,7 @@ const QStringList& KCompletion::findAllCompletions( const QString& string )
         node = node->firstChild();
 	if ( !node->isNull() )
 	    completion += *node;
-	// qDebug("-> %s, %c", completion.ascii(), node->latin1());
+	// kdDebug() << completion << node->latin1();
     }
 
 
@@ -397,7 +397,7 @@ void KCompletion::extractStringsFromNode( const KCompTreeNode *node,
     if ( !node || !matches )
         return;
 
-    // qDebug("Beginning: %s", beginning.ascii());
+    // kDebug() << "Beginning: " << beginning << endl;
     KCompTreeChildren::ConstIterator it;
     const KCompTreeChildren *list = node->children();
     QString string;

@@ -18,6 +18,7 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include <kdebug.h>
 #include <kstatusbar.h>
 #include <kconfig.h>
 #include <kglobal.h>
@@ -112,7 +113,7 @@ void KStatusBar::removeItem (int id)
     // reformat (); // needed? (sven)
   }
   else
-    qDebug ("KStatusBar::removeItem: bad item id: %d", id);
+    kdDebug() << "KStatusBar::removeItem: bad item id: " << id << endl;
 }
 
 void KStatusBar::changeItem( const QString& text, int id )
@@ -125,7 +126,7 @@ void KStatusBar::changeItem( const QString& text, int id )
     reformat();
   }
   else
-    qDebug ("KStatusBar::changeItem: bad item id: %d", id);
+    kdDebug() << "KStatusBar::changeItem: bad item id: " << id << endl;
 }
 
 void KStatusBar::setItemAlignment (int id, int align)
@@ -138,7 +139,7 @@ void KStatusBar::setItemAlignment (int id, int align)
     //reformat(); Not needed I, think (sven)
   }
   else
-    qDebug ("KStatusBar::setItemAlignment: bad item id: %d", id);
+    kdDebug() << "KStatusBar::setItemAlignment: bad item id: " << id << endl;
 }
 
 void KStatusBar::setItemFixed(int id, int w)
@@ -154,7 +155,7 @@ void KStatusBar::setItemFixed(int id, int w)
     //reformat(); Not needed I, think (sven)
   }
   else
-    qDebug ("KStatusBar::setItemFixed: bad item id: %d", id);
+    kdDebug() << "KStatusBar::setItemFixed: bad item id: " << id << endl;
 }
 
 void KStatusBar::slotPressed(int _id)

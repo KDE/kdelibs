@@ -15,9 +15,11 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
+
 #include <kthemestyle.h>
 #include <kthemebase.h>
 #include <kapp.h>
+#include <kdebug.h>
 #include <qbitmap.h>
 #define INCLUDE_MENUITEM_DEF
 #include <qmenudata.h>
@@ -38,7 +40,7 @@ KThemeStyle::KThemeStyle(const QString &configFile )
 }
 
 KThemeStyle::~KThemeStyle(){
-    qWarning("Kthemestyle destructor called");
+    kdWarning() << "Kthemestyle destructor called" << endl;
 }
 
 void KThemeStyle::polish(QApplication */*app*/)

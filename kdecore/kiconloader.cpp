@@ -520,11 +520,11 @@ QStringList KIconLoader::loadAnimated(const QString& name, int group, int size) 
 
     int i=1;
     QString fmt = file.left(file.length() - 8) + "%04d.png";
-    file.sprintf(fmt.latin1(), i);
+    file.sprintf(fmt.utf8(), i);
     while (KStandardDirs::exists(file))
     {
         lst += (name + file.right(file.length() - file.findRev('/')));
-	file.sprintf(fmt.latin1(), ++i);
+	file.sprintf(fmt.utf8(), ++i);
     }
     return lst;
 }
