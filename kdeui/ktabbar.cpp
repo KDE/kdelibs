@@ -78,7 +78,7 @@ void KTabBar::mouseMoveEvent(QMouseEvent *e)
          newPos.y() > mDragStart.y()+delay || newPos.y() < mDragStart.y()-delay)
       {
         QTab *tab = selectTab(e->pos() );
-        if( tab!= 0L ) {
+        if( tab!= 0L && ((KTabWidget*)parent())->isTabReorderingEnabled() ) {
           reorderStartTab = indexOf( tab->identifier() );
           setMouseTracking(true);
           grabMouse(sizeAllCursor);

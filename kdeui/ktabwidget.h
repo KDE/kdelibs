@@ -33,17 +33,30 @@ class KTabWidget : public QTabWidget
 public:
     KTabWidget( QWidget *parent = 0, const char *name = 0, WFlags f = 0 );
 
+/*!
+    If \a enable is TRUE, tab reordering with middle button will be enabled.
+
+    Note that once enabled you shouldn't rely on previously queried
+    currentPageIndex(), indexOf( QWidget * ) or known tab ids anymore.
+
+    You can connect to signal movedTab(int, int, int) which will notify
+    you from which to which index a tab moved and what its new id is.
+*/
+    void setTabReorderingEnabled( bool enable );
+    bool isTabReorderingEnabled() const;
+
 protected slots:
     virtual void mousePressEvent( QMouseEvent * );
     virtual void dragMoveEvent( QDragMoveEvent * );
     virtual void dropEvent( QDropEvent * );
+    virtual void movedTab( int, int );
 
 signals:
     void tabbarContextMenu( const QPoint & );
     void receivedDropEvent( QDropEvent * );
     void receivedDropEvent( QWidget *, QDropEvent * );
     void dragInitiated( QWidget * );
-    void movedTab( int, int );
+    void movedTab( int, int, int );
 
     void contextMenu( QWidget *, const QPoint & );
     void mouseDoubleClick( QWidget * );
@@ -52,6 +65,7 @@ signals:
 private:
     bool isEmptyTabbarSpace( const QPoint & );
 
+    bool mTabReordering;
     KTabBar *m_pTabBar;
 
     KTabWidgetPrivate *d;

@@ -32,7 +32,8 @@ Test::Test( QWidget* parent, const char *name )
   connect( mWidget, SIGNAL( receivedDropEvent( QDropEvent * )), this, SLOT(receivedDropEvent( QDropEvent * )));
   connect( mWidget, SIGNAL( receivedDropEvent( QWidget *, QDropEvent * )), this, SLOT(receivedDropEvent( QWidget *, QDropEvent * )));
   connect( mWidget, SIGNAL( dragInitiated( QWidget * )), this, SLOT(dragInitiated( QWidget * )));
-  connect( mWidget, SIGNAL( movedTab( int, int )), this, SLOT(movedTab( int, int )));
+  connect( mWidget, SIGNAL( movedTab( int, int, int )), this, SLOT(movedTab( int, int, int )));
+  mWidget->setTabReorderingEnabled( true );
 
   QWidget * grid = new QWidget(this);
   QGridLayout * gridlayout = new QGridLayout( grid, 5, 2 );
@@ -312,27 +313,15 @@ void Test::mouseMiddleClick(QWidget *w)
   mWidget->removePage( w );
 }
 
-void Test::movedTab(int from, int to)
+void Test::movedTab(int from, int to, int newId)
 {
   IntList::iterator it;
-  QString label = mWidget->label(from);
-  QString tabtooltip = mWidget->tabToolTip( mWidget->page(from) );
-  QIconSet tabiconset = mWidget->tabIconSet( mWidget->page(from) );
-  QWidget* page = mWidget->page(from);
-  bool current = (page == mWidget->currentPage() );
-  QColor color = mWidget->tabColor( mWidget->page(from) );
 
   it = mList.at( from );
   mList.erase( it );
-  mWidget->removePage( mWidget->page(from) );
 
   it = mList.at( to );
-  mList.insert(it, mWidget->insertChangeableTab( label, to, page ) );
-  page = mWidget->page(to);
-  mWidget->changeTab( mList[to], tabiconset, label );
-  mWidget->setTabToolTip( page, tabtooltip );
-  mWidget->changeTab( mList[to], color );
-  if (current) mWidget->showPage( page );
+  mList.insert( it, newId );
 }
 
 void Test::timerDone()

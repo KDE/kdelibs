@@ -21,7 +21,7 @@
 #include "ktabbar.h"
 
 KTabWidget::KTabWidget( QWidget *parent, const char *name, WFlags f )
-    : QTabWidget( parent, name, f )
+    : QTabWidget( parent, name, f ), mTabReordering( false )
 {
   m_pTabBar = new KTabBar(this, "tabbar");
   setTabBar(m_pTabBar);
@@ -32,7 +32,17 @@ KTabWidget::KTabWidget( QWidget *parent, const char *name, WFlags f )
   connect(m_pTabBar, SIGNAL(mouseMiddleClick( QWidget * )), this, SIGNAL(mouseMiddleClick( QWidget * )));
   connect(m_pTabBar, SIGNAL(dragInitiated( QWidget * )), this, SIGNAL(dragInitiated( QWidget * )));
   connect(m_pTabBar, SIGNAL(receivedDropEvent( QWidget *, QDropEvent * )), this, SIGNAL(receivedDropEvent( QWidget *, QDropEvent * )));
-  connect(m_pTabBar, SIGNAL(movedTab( int, int )), this, SIGNAL(movedTab( int, int )));
+  connect(m_pTabBar, SIGNAL(movedTab( int, int )), this, SLOT(movedTab( int, int )));
+}
+
+bool KTabWidget::isTabReorderingEnabled() const
+{
+  return mTabReordering;
+}
+
+void KTabWidget::setTabReorderingEnabled( bool on)
+{
+  mTabReordering = on;
 }
 
 void KTabWidget::dragMoveEvent( QDragMoveEvent *e )
@@ -63,6 +73,27 @@ void KTabWidget::mousePressEvent( QMouseEvent *e )
     }
   }
   QTabWidget::mousePressEvent( e );
+}
+
+void KTabWidget::movedTab( int from, int to )
+{
+  QString tablabel = label( from );
+  QWidget* w = page( from );
+  QColor color = tabColor( w );
+  QIconSet tabiconset = tabIconSet( w );
+  QString tabtooltip = tabToolTip( w );
+  bool current = (w == currentPage() );
+  removePage( w );
+
+  int newId = insertChangeableTab( tablabel, to, w );
+  w = page( to );
+  changeTab( newId, tabiconset, tablabel );
+  setTabToolTip( w, tabtooltip );
+  changeTab( newId, color );
+  if ( current )
+    showPage( w );
+
+  emit ( movedTab( from, to, newId ) );
 }
 
 bool KTabWidget::isEmptyTabbarSpace( const QPoint &p )
