@@ -122,6 +122,8 @@
 # korn shell magic, sent by George Wu, gwu@clyde.att.com
 0       string          #!/bin/ksh              application/x-shellscript
 0       string          #!\ /bin/ksh            application/x-shellscript
+0       string          #!/bin/zsh              application/x-shellscript
+0       string          #!\ /bin/zsh            application/x-shellscript
 0       string          #!/bin/tcsh             application/x-shellscript
 0       string          #!\ /bin/tcsh           application/x-shellscript
 0       string          #!/usr/local/tcsh       application/x-shellscript
