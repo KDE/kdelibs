@@ -49,15 +49,19 @@ public:
     /**
      * Returns the current foreground color.
      */
-    const QColor foreground();
+    QColor foreground();
     /**
      * Returns the current background color.
      */
-    const QColor background();
+    QColor background();
     /**
-     * Returns the current color selected by the user.
+     * Returns the current color item selected by the user.
      */
-    KDualColorButton::DualColor currentColor();
+    KDualColorButton::DualColor current();
+    /**
+     * Returns the color of the selected item.
+     */
+    QColor currentColor();
     /**
      * Returns the minimum size needed to display the widget and all it's
      * controls.
@@ -73,9 +77,13 @@ public slots:
      */
     void slotSetBackground(const QColor &c);
     /**
-     * Sets the current selected color.
+     * Sets the current selected color item.
      */
     void slotSetCurrent(KDualColorButton::DualColor s);
+    /**
+     * Sets the color of the selected item.
+     */
+    void slotSetCurrentColor(const QColor &c);
 signals:
     /**
      * Emitted when the foreground color is changed.
