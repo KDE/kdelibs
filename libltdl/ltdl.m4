@@ -37,6 +37,7 @@ AC_CHECK_HEADERS(malloc.h memory.h stdlib.h stdio.h ctype.h dlfcn.h dl.h dld.h)
 AC_CHECK_HEADERS(string.h strings.h, break)
 AC_CHECK_FUNCS(strchr index, break)
 AC_CHECK_FUNCS(strrchr rindex, break)
+AC_CHECK_FUNCS(strcmp)
 
 AC_REQUIRE([AC_LTDL_ENABLE_INSTALL])dnl
 AC_REQUIRE([AC_LTDL_SHLIBEXT])dnl
@@ -102,7 +103,7 @@ AC_DEFUN(AC_LTDL_SYSSEARCHPATH,
 AC_CACHE_CHECK([for the default library search path],
   libltdl_cv_sys_search_path, [libltdl_cv_sys_search_path="$sys_lib_dlsearch_path_spec"])
 if test -n "$libltdl_cv_sys_search_path"; then
-  case "$lt_target" in
+  case "$host" in
   *-*-mingw*) pathsep=";" ;;
   *) pathsep=":" ;;
   esac
