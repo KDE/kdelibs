@@ -25,6 +25,7 @@
 //
 // adapted from Qt widgets demo
 
+#include <unistd.h>
 #include <stdlib.h>
 #include <kapp.h>
 #include <qdialog.h>
@@ -226,12 +227,13 @@ int main( int argc, char **argv )
   sc.writeEntry( "stringEntry4", STRINGENTRY4 );
   sc.writeEntry( "stringEntry5", STRINGENTRY5 );
   sc.writeEntry( "stringEntry6", STRINGENTRY6 );
+  sc.writeEntry( "keywith=equalsign", STRINGENTRY1 );
 
   sc.setGroup("Bye");  
   sc.writeEntry( "rectEntry", QRect( 10, 23, 5321, 12 ) );
   sc.writeEntry( "pointEntry", QPoint( 4351, 1234 ) );
   sc.sync();
-  
+
   KConfig sc2( "kconfigtest" );
   sc2.setGroup("Hello");  
   QString hello = sc2.readEntry("Test");
@@ -304,6 +306,15 @@ int main( int argc, char **argv )
   s = sc2.readEntry( "stringEntry6" );
   fprintf(stderr, "comparing stringEntry6 %s with %s -> ", STRINGENTRY6, s.latin1());
   if (s == STRINGENTRY6)
+    fprintf(stderr, "OK\n");
+  else {
+    fprintf(stderr, "not OK\n");
+    exit(-1);
+  }
+
+  s = sc2.readEntry( "keywith=equalsign" );
+  fprintf(stderr, "comparing keywith=equalsign %s with %s -> ", STRINGENTRY1, s.latin1());
+  if (s == STRINGENTRY1)
     fprintf(stderr, "OK\n");
   else {
     fprintf(stderr, "not OK\n");
