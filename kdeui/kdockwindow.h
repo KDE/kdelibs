@@ -21,10 +21,10 @@
 #include <qlabel.h>
 #include "ksystemtray.h"
 
-/*
-  This class is obsolete, it is provided for compatibility only.
-  
-  Use KSystemTray instead.
+/**
+ * This class is obsolete, it is provided for compatibility only.
+ * 
+ * Use KSystemTray instead.
  */
 class KDockWindow : public KSystemTray
 {
