@@ -42,18 +42,3 @@ he will not be able to hear a "You have mail" sound (or to see a talk request).
 Re-routing this to a log window sounds like a very good ideas.
 
 
-
-
-
-### Implementation details ###
-
-
-KNotifyEntry class:
--------------------
-
-A KNotifyEntry instance describes a complete notification event. Such an event is uniqely
-identified by its notification name. But you will not be able to find the name in the
-class. Actually you will have to search very long to find the notification names:
-It has been decided that these do not need to be stored explicitely. They can only be
-accessed via the QDict in the class KNotify.
-

@@ -46,6 +46,13 @@ protected:
 	bool notifyByMessagebox(const QString &text);
 	bool notifyByLogfile(const QString &text, const QString &file);
 	bool notifyByStderr(const QString &text);
+	
+public:
+	/**
+	 * checks if eventname is a global event (exists in config/eventsrc)
+	 **/
+	bool isGlobal(const QString &eventname);
+	
 private:
 	SimpleSoundServer_base *server;
 };

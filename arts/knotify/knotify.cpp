@@ -49,7 +49,7 @@ int main(int argc, char **argv)
 	                     KAboutData::License_GPL, "(C) 1997-2000, KDE Developers");
 	aboutdata.addAuthor("Christian Esken",0,"esken@kde.org");
 	aboutdata.addAuthor("Stefan Westerfeld",I18N_NOOP("Sound support"),"stefan@space.twc.de");
-	aboutdata.addAuthor("Charles Samuels",I18N_NOOP("Current Maintainer"),"charles@altair.dhs.org");
+	aboutdata.addAuthor("Charles Samuels",I18N_NOOP("Current Maintainer"),"charles@kde.org");
 	
 	KCmdLineArgs::init( argc, argv, &aboutdata );
 //	KCmdLineArgs::addCmdLineOptions( options );
@@ -80,29 +80,35 @@ KNotify::KNotify() : QObject(), DCOPObject("Notify")
 }
 
 void KNotify::notify(const QString &event, const QString &fromApp,
-                                  const QString &text, QString sound, QString file,
-                                  int present)
+                     const QString &text, QString sound, QString file,
+                     int present)
 {
 	static bool eventRunning=true;
 	
 	if (event.length())
 	{
-		KConfig eventsfile(locate("data", fromApp+"/eventsrc"));
-		eventsfile.setGroup(event);
+		KConfig *eventsfile;
+		if (isGlobal(event))
+			eventsfile=new KConfig(locate("config", "eventsrc"), true, false);
+		else
+			eventsfile=new KConfig(locate("data", fromApp+"/eventsrc"),true,false);
+			
+		eventsfile->setGroup(event);
 	
 		if (present==-1)
-			present=eventsfile.readNumEntry("presentation", -1);
+			present=eventsfile->readNumEntry("presentation", -1);
 		if (present==-1)
-			present=eventsfile.readNumEntry("default_presentation", 0);
+			present=eventsfile->readNumEntry("default_presentation", 0);
 		
-		sound=eventsfile.readEntry("sound", 0);
+		sound=eventsfile->readEntry("sound", 0);
 		if (sound.isNull())
-			sound=eventsfile.readEntry("default_sound", "");
+			sound=eventsfile->readEntry("default_sound", "");
 			
-		file=eventsfile.readEntry("logfile", 0);
+		file=eventsfile->readEntry("logfile", 0);
 		if (file.isNull())
-			file=eventsfile.readEntry("default_logfile", "");
-		
+			file=eventsfile->readEntry("default_logfile", "");
+			
+		delete eventsfile;
 	}
 	
 	// Not sure if the QFile::is[[:alpha:]]{4,5}able() works yet!
@@ -164,4 +170,8 @@ bool KNotify::notifyByStderr(const QString &text)
 	return true;
 }
 
-
+bool KNotify::isGlobal(const QString &eventname)
+{
+	KConfig c(locate("config", "eventsrc"), true, false);
+	return c.hasGroup(eventname);
+}
