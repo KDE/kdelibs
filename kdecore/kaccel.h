@@ -88,47 +88,54 @@ struct KKeyEntry {
  *
  * The translated first argument for insertItem is only used in the
  * configuration dialog.
- *
+ *<pre>
  * KAccel *a = new KAccel( myWindow );
  * a->insertItem( i18n("Scroll up"), "Scroll Up", "Up" );
  * a->connectItem( "Scroll up", myWindow, SLOT( scrollUp() ) );
  * // a->insertStdItem( KAccel::Print ); //not necessary, since it
-                                                             // is done automatially with the
-                                                            // connect below!
+ 	// is done automatially with the
+ 	// connect below!
  * a->connectItem(KAccel::Print, myWindow, SLOT( printDoc() ) );
  *
  * a->readSettings();
+ *</pre>
  *
- *
- * if a shortcut has a menu entry as well, you could insert them like this. The example
- * is again the KAccel::Print from above.
- *
+ * If a shortcut has a menu entry as well, you could insert them like
+ * this. The example is again the KAccel::Print from above.
+
+ <pre>
  * int id;
  * id = popup->insertItem("&Print",this, SLOT(printDoc()));
  * a->changeMenuAccel(popup, id, KAccel::Print );
+ </pre>
  *
  * If you want a somewhat "exotic" name for your standard print action, like
- *          id = popup->insertItem(i18n("Print &Document"),this, SLOT(printDoc()));
+ *   id = popup->insertItem(i18n("Print &Document"),this, SLOT(printDoc()));
  * it might be a good idea to insert the standard action before as
  *          a->insertStdItem( KAccel::Print, i18n("Print Document") )
  * as well, so that the user can easily find the corresponding function.
  *
+ * This technique works for other actions as well, your scroll up function
+ * in a menu could be done with
  *
- * This technique works for other actions as well, your scroll up function in a menu
- * could be done with
- *
+ <pre>
  *    id = popup->insertItem(i18n"Scroll &up",this, SLOT(scrollUp()));
  *    a->changeMenuAccel(popup, id, "Scroll Up" );
+ </pre>
  *
  * Please keep the order right: first insert all functions in the
- * acceleratior, then call a->readSettings() and _then_ build your menu structure.
- *
- * */
+ * acceleratior, then call a->readSettings() and _then_ build your
+ * menu structure.
+
+ * @short Configurable key binding support.
+ * @version $Id$
+ */
 class KAccel
 {
  public:
  	enum StdAccel { Open=1, New, Close, Save, Print, Quit, Cut, Copy,
-		Paste, Undo, Find, Replace, Insert, Home, End, Prior, Next, Help };
+		Paste, Undo, Find, Replace, Insert, Home, End, Prior, 
+		Next, Help };
 	/**
 	 * Creates a KAccel object with a parent widget and a name.
 	 */
@@ -149,13 +156,11 @@ class KAccel
 	 *
 	 * Arguments:
 	 *
-	 *	\begin{itemize}
-	 *  \item action is the accelerator item action name.
-	 *  \item receiver is the object to receive a signal
-	 *  \item member is a slot or signal in the receiver
-	 *  \item activate indicates whether the accelrator item should be
+	 *  @param action the accelerator item action name.
+	 *  @param receiver the object to receive a signal
+	 *  @param member a slot or signal in the receiver
+	 *  @param activate indicates whether the accelerator item should be
 	 *  enabled immediately
-	 * 	\end{itemize}
 	 */
 	void connectItem( const char * action,
 			  const QObject* receiver, const char* member,
@@ -213,16 +218,14 @@ class KAccel
 	 *	
 	 * Arguments:
 	 *
-	 *	\begin{itemize}
-	 *  \item descr is the localized name of the action, useful in menus or the keybinding
+	 *  @param descr is the localized name of the action, useful in menus or the keybinding
 	 *            editor.
-	 *  \item action is the internal accelerator item action name. It is supposed to be the same
+	 *  @param action is the internal accelerator item action name. It is supposed to be the same
 	 *            for all language.
-	 *  \item defaultKeyCode is a key code to be used as the default for the action.
-	 *  \item configurable indicates whether a user can configure the key
+	 *  @param defaultKeyCode is a key code to be used as the default for the action.
+	 *  @param configurable indicates whether a user can configure the key
 	 *	binding using the KKeyChooser GUI and whether the key will be written
 	 *	back to configuration files on calling writeSettings.
-	 * 	\end{itemize} 	
 	 *
 	 * If an action already exists the old association and connections will be
 	 * removed..
@@ -237,35 +240,35 @@ class KAccel
 	 *	
 	 * Arguments:
 	 *
-	 *	\begin{itemize}
-	 *  \item descr is the localized name of the action, useful in menus or the keybinding
-	 *            editor.
-	 *  \item action is the internal accelerator item action name. It is supposed to be the same
-	 *            for all language.
-	 *  \item defaultKeyCode is a key plus a combination of SHIFT, CTRL
+	 *  @param descr is the localized name of the action, useful in
+	 *  menus or the keybinding
+	 *	      editor.
+	 *  @param action is the internal accelerator item action name. It
+	 *  is supposed to be the same for all language.
+	 *  @param defaultKeyCode is a key plus a combination of SHIFT, CTRL
 	 *	and ALT to be used as the default for the action.
-	 *  \item configurable indicates whether a user can configure the key
-	 *	binding using the KKeyChooser GUI and whether the key will be written
-	 *	back to configuration files on calling writeSettings.
-	 * 	\end{itemize} 	
-	 *
-	 * If an action already exists the old association and connections will be
-	 * removed..
-	 * 	
+	 *  @param configurable indicates whether a user can configure
+	 *  the key
+	 *	binding using the KKeyChooser GUI and whether the key
+	 *	will be written back to configuration files on calling
+	 *	writeSettings.
+
+	 * If an action already exists the old association and connections
+	 * will be removed..
 	 */
 	bool insertItem( const char* descr, const char * action, const char * defaultKeyCode,
 				 bool configurable = TRUE );
 				
 	/**
-	 *	Inserts a standard accelerator item if id equal to Open, New,
-	 *	Close, Save, Print, Quit, Cut, Copy, Paste, Undo, Find, Replace,
-	 *	Insert, Home, End, Prior, Next, or Help.
-	 *
-	 * If an action already exists the old association and connections will be
-	 * removed..
-	 *
-	 * You can (optional) also assign a description to the standard item which
-	 * may be used a in a popup menu.
+	 *	Inserts a standard accelerator item if id equal to Open,
+	 *	New, Close, Save, Print, Quit, Cut, Copy, Paste, Undo,
+	 *	Find, Replace, Insert, Home, End, Prior, Next, or Help.
+
+	 * If an action already exists the old association and connections
+	 * will be removed..
+
+	 * You can (optional) also assign a description to the standard
+	 * item which may be used a in a popup menu.
 	 */
 	bool insertStdItem( StdAccel id, const char* descr = 0 );
 
@@ -335,11 +338,9 @@ class KAccel
 	 *
 	 * Arguments:
 	 *
-	 *	\begin{itemize}
-	 *  \item action is the accelerator item action name.
-	 *	\item activate specifies whether the item should be enabled or
+	 * @param action is the accelerator item action name.
+	 * @param activate specifies whether the item should be enabled or
 	 *	disabled.
-	 * 	\end{itemize}
 	 */
 	void setItemEnabled( const char * action, bool activate );
 	

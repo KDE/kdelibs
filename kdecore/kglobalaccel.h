@@ -115,13 +115,11 @@ class KGlobalAccel : public QObject
 	 *
 	 * Arguments:
 	 *
-	 *	\begin{itemize}
-	 *  \item action is the accelerator item action name.
-	 *  \item receiver is the object to receive a signal
-	 *  \item member is a slot or signal in the receiver
-	 *  \item activate indicates whether the accelrator item should be
+	 *  @param action is the accelerator item action name.
+	 *  @param receiver is the object to receive a signal
+	 *  @param member is a slot or signal in the receiver
+	 *  @param activate indicates whether the accelrator item should be
 	 *  enabled immediately
-	 * 	\end{itemize}
 	 */
 	void connectItem( const char * action,
 						  const QObject* receiver, const char* member,
@@ -172,13 +170,11 @@ class KGlobalAccel : public QObject
 	 *	
 	 * Arguments:
 	 *
-	 *	\begin{itemize}
-	 *  \item action is the accelerator item action name.
-	 *  \item defaultKeyCode is a key code to be used as the default for the action.
-	 *  \item configurable indicates whether a user can configure the key
+	 *  @param action is the accelerator item action name.
+	 *  @param defaultKeyCode is a key code to be used as the default for the action.
+	 *  @param configurable indicates whether a user can configure the key
 	 *	binding using the KKeyChooser GUI and whether the key will be written
 	 *	back to configuration files on calling writeSettings.
-	 * 	\end{itemize} 	
 	 *
 	 * If an action already exists the old association and connections will be
 	 * removed..
@@ -193,18 +189,18 @@ class KGlobalAccel : public QObject
 	 *	
 	 * Arguments:
 	 *
-	 *	\begin{itemize}
-	 *  \item action is the accelerator item action name.
-	 *  \item defaultKeyCode is a key plus a combination of SHIFT, CTRL
+	 *  @param action is the accelerator item action name.
+	 *  @param defaultKeyCode is a key plus a combination of SHIFT, CTRL
 	 *	and ALT to be used as the default for the action.
-	 *  \item configurable indicates whether a user can configure the key
-	 *	binding using the KKeyChooser GUI and whether the key will be written
-	 *	back to configuration files on calling writeSettings.
-	 * 	\end{itemize} 	
+	 *  @param configurable indicates whether a user can configure
+	 *  the key
+	 *	binding using the KKeyChooser GUI and whether the key
+	 *	will be written back to configuration files on calling
+	 *	writeSettings.
 	 *
-	 * If an action already exists the old association and connections will be
-	 * removed..
-	 * 	
+	 * If an action already exists the old association and connections
+	 * will be removed..
+
 	 */
 	bool insertItem( const char* descr, const char * action, const char * defaultKeyCode,
 				 bool configurable = TRUE );
@@ -214,14 +210,15 @@ class KGlobalAccel : public QObject
 	
 	/**
 	* Returns the dictionary of accelerator action names and KKeyEntry
-	* objects. Note that only a shallow copy is returned so that items will be
-	* lost when the KKeyEntry objects are deleted.
+	* objects. Note that only a shallow copy is returned so that
+	* items will be lost when the KKeyEntry objects are deleted.
 	*/	
 	QDict<KKeyEntry> keyDict();
 				
 	/**
-	 * Reads all key associations from the application's configuration files.
-	 */	
+	 * Reads all key associations from the application's configuration
+	 * files.
+	 */
 	void readSettings();
 		
  	/**
@@ -246,11 +243,9 @@ class KGlobalAccel : public QObject
 	 *
 	 * Arguments:
 	 *
-	 *	\begin{itemize}
-	 *  \item action is the accelerator item action name.
-	 *	\item activate specifies whether the item should be enabled or
+	 *  @param action is the accelerator item action name.
+	 *	@param activate specifies whether the item should be enabled or
 	 *	disabled.
-	 * 	\end{itemize}
 	 */
 	void setItemEnabled( const char * action, bool activate );
 	
