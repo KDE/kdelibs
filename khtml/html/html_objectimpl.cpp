@@ -87,9 +87,14 @@ void LiveConnectElementImpl::setLiveConnect(KParts::LiveConnectExtension * lc) {
 
 void LiveConnectElementImpl::liveConnectEvent(const unsigned long, const QString & event, const KParts::LiveConnectExtension::ArgList & args) 
 {
-    if (timer->isActive())
-        timer->stop();
+    if (!liveconnect)
+        // not attached
+        return;
 
+    if (timer->isActive()) {
+        timerDone();
+        timer->stop();
+    }
     script.sprintf("%s(", event.latin1());
     KParts::LiveConnectExtension::ArgList::const_iterator i = args.begin();
     for ( ; i != args.end(); i++) {
@@ -114,6 +119,8 @@ void LiveConnectElementImpl::timerDone() {
 }
 
 void LiveConnectElementImpl::detach() {
+    if (timer->isActive())
+        timer->stop();
     setLiveConnect(0L);
 
     HTMLElementImpl::detach();
