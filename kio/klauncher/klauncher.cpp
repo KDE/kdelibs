@@ -225,6 +225,7 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
       pid_t pid = requestSlave(protocol, host, app_socket, error);
       QDataStream stream2(replyData, IO_WriteOnly);
       stream2 << pid << error;;
+      kdDebug(7016) << "requestSlave got pid " << pid << endl;
       return true;
    }
    else if (fun == "setLaunchEnv(QCString,QCString)")
@@ -237,6 +238,10 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
       setLaunchEnv(name, value);
       replyType = "void";
       return true;
+   }
+   else if (fun == "reparseConfiguration()")
+   {
+     KProtocolManager::self().scanConfig();
    }
    if (KUniqueApplication::process(fun, data, replyType, replyData))
    {
@@ -371,7 +376,7 @@ KLauncher::processDied(pid_t pid, long /* exitStatus */)
       kapp->dcopClient()->call("kicker", "TaskbarApplet",
         "clientDied(pid_t)", params, replyType,
          replyData);
-    }  
+    }
 }
 
 void
