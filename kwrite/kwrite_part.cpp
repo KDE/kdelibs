@@ -64,7 +64,7 @@ KWritePart::KWritePart( QWidget * parentWidget, QObject *parent, bool bBrowser )
   m_kwrite = new KWrite( m_doc, parentWidget );
 
   // check this: at startup the edit widget does not seem to have the focus
-  m_kwrite->setFocus();
+  //  m_kwrite->setFocus(); don't do it here. Let the shell call setFocus! (Simon)
   m_kwrite->setFocusPolicy( QWidget::ClickFocus );
   setWidget( m_kwrite );
 
