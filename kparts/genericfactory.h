@@ -118,11 +118,11 @@ namespace KParts
                                                 const char *className,
                                                 const QStringList &args )
         {
-            QObject *object = KDEPrivate::MultiFactory< KTypeList<T1, T2> >( parentWidget,
-                                                                             widgetName,
-                                                                             parent, name,
-                                                                             className,
-                                                                             args );
+            QObject *object = KDEPrivate::MultiFactory< KTypeList<T1, T2> >::create( parentWidget,
+                                                                                     widgetName,
+                                                                                     parent, name,
+                                                                                     className,
+                                                                                     args );
 
             // (this cast is guaranteed to work...)
             KParts::Part *part = dynamic_cast<KParts::Part *>( object );
