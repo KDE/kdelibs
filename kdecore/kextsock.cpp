@@ -1908,7 +1908,7 @@ void KExtendedSocket::socketActivityRead()
 			      (writeBufferSize() ? dirtyWrite : 0));
 		  ::close(sockfd);
 		  sockfd = -1;	// we're closed
-		  delete d->qsnIn;
+		  d->qsnIn->deleteLater();
 		  delete d->qsnOut;
 		  d->qsnIn = d->qsnOut = NULL;
 		  d->status = done;
