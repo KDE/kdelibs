@@ -643,6 +643,7 @@ void KDirLister::FileRenamed( const KURL &src, const KURL &dst )
           {
               kdDebug( 7003 ) << "Found item, renamed it" << endl;
               (*kit)->setURL( dst );
+              (*kit)->refreshMimeType(); // The new name might lead to a new mimetype
               KFileItemList lst;
               lst.append( *kit );
               emit refreshItems( lst );
