@@ -2031,6 +2031,16 @@ void HTTPProtocol::setHost(const QString& host, int port, const QString& user, c
   m_request.user = user;
   m_request.passwd = pass;
   m_request.do_proxy = m_bUseProxy;
+
+  m_bUseCache = config()->readBoolEntry("UseCache", true);
+  m_strCacheDir = config()->readEntry("CacheDir");
+  if (m_strCacheDir.isEmpty())
+     m_strCacheDir = KGlobal::dirs()->saveLocation("data", "kio_http/cache");
+  m_maxCacheAge = config()->readNumEntry("MaxCacheAge", KProtocolManager::defaultMaxCacheAge());
+
+  kdDebug(7103) << "UseCache: " << metaData("UseCache") << endl;
+  kdDebug(7103) << "CacheDir: " << metaData("CacheDir") << endl;
+  kdDebug(7103) << "MaxCacheAge: " << metaData("MaxCacheAge") << endl;
 }
 
 void HTTPProtocol::slave_status()
@@ -2094,10 +2104,11 @@ void HTTPProtocol::get( const KURL& url )
   m_request.path = url.path();
   m_request.query = url.query();
   QString tmp = metaData("cache");
-  if (tmp.length()>0)
+  if (!tmp.isEmpty())   
     m_request.cache = parseCacheControl(tmp);
   else
     m_request.cache = KProtocolManager::defaultCacheControl();
+
   m_request.offset = 0;
   m_request.do_proxy = m_bUseProxy;
   m_request.url = url;
@@ -3667,12 +3678,7 @@ void HTTPProtocol::reparseConfiguration()
   ProxyAuthentication = AUTH_None;
 
   m_bSendUserAgent = KProtocolManager::sendUserAgent();
-  m_bUseCache = KProtocolManager::useCache();
-  if (m_bUseCache)
-  {
-    m_strCacheDir = KGlobal::dirs()->saveLocation("data", "kio_http/cache");
-    m_maxCacheAge = KProtocolManager::maxCacheAge();
-  }
+
 
   // Obtain the proxy and remote server timeout values
   m_proxyConnTimeout = KProtocolManager::proxyConnectTimeout();

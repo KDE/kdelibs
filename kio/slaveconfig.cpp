@@ -70,7 +70,7 @@ void SlaveConfigPrivate::readGlobalConfig()
    global.clear();
    // Read stuff...
    KConfig config("kioslaverc");
-   readConfig(&config, QString::null, &global);
+   readConfig(&config, "<default>", &global);
 }
 
 SlaveConfigProtocol* SlaveConfigPrivate::readProtocolConfig(const QString &_protocol)
@@ -84,7 +84,7 @@ SlaveConfigProtocol* SlaveConfigPrivate::readProtocolConfig(const QString &_prot
       protocol.insert(_protocol, scp);
    }
    // Read global stuff...
-   readConfig(scp->configFile, QString::null, &(scp->global));  
+   readConfig(scp->configFile, "<default>", &(scp->global));  
    return scp;   
 }
 

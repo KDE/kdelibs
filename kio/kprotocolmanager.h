@@ -246,7 +246,7 @@ public:
    * for connecting to a proxy machine.
    *
    * This method returns the value defined by
-   * DEFAULT_PROXY_CONNECTtimeout in the source file.
+   * DEFAULT_PROXY_CONNECT timeout in the source file.
    */
   static int defaultProxyConnectTimeout();
 
@@ -429,23 +429,23 @@ public:
    */
   static bool useCache();
 
+  static void setUseCache( bool _mode );
+
   /**
    * Returns the maximum age (in seconds) cached files
    * should be kept before they are deleted.
    */
   static int maxCacheAge();  // Maximum cache age in seconds.
+  static void setMaxCacheAge( int cache_age );
+  static int defaultMaxCacheAge(); 
 
   /**
    * Returns the maximum age (in seconds) cached files
    * should be kept before they are deleted.
    */
   static int maxCacheSize(); // Maximum cache size in Kb.
-
-  static void setUseCache( bool _mode );
-
   static void setMaxCacheSize( int cache_size );
-
-  static void setMaxCacheAge( int cache_age );
+  static int defaultMaxCacheSize(); 
 
   /**
    * The directory which contains the cache files
@@ -453,15 +453,22 @@ public:
   static QString cacheDir();
 
   /**
-   * Returns the Cache control directive to be used by default,
-   * say if no reload flag is set and no metadata specifies anything else.
+   * Returns the Cache control directive to be used.
+   */
+  static KIO::CacheControl cacheControl();
+
+  /**
+   * Returns the Cache control directive to be used by default.
+   *
+   * This method returns the value defined by
+   * DEFAULT_CACHE_CONTROL in the source file.
    */
   static KIO::CacheControl defaultCacheControl();
 
   /**
-   * Sets the policy Cache control directive.
+   * Sets the Cache control directive.
    */
-  static void setDefaultCacheControl(KIO::CacheControl);
+  static void setCacheControl(KIO::CacheControl);
 
 
   //**************************************** DOWNLOAD CONFIG ***************************************/
@@ -534,9 +541,11 @@ public:
 
 private:
   static KConfig *config();
+  static KConfig *http_config();
   static KPAC *pac();
 
   static KConfig *_config;
+  static KConfig *_http_config;
   static KPAC *_pac;
 };
 

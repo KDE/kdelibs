@@ -34,6 +34,7 @@
 #define DEFAULT_MAX_CACHE_SIZE          5120          //  5 MB
 #define DEFAULT_MAX_CACHE_AGE           60*60*24*14   // 14 DAYS
 #define DEFAULT_EXPIRE_TIME             1*60          //  1 MIN
+#define DEFAULT_CACHE_CONTROL		KIO::CC_Verify     // Verify with remote
 
 // DEFAULT TIMEOUT VALUE FOR REMOTE AND PROXY CONNECTION
 // AND RESPONSE WAIT PERIOD.  NOTE: CHANGING THESE VALUES
@@ -52,6 +53,7 @@ QString("Mozilla/5.0 (compatible; Konqueror/%1%2)").arg(KDE_VERSION_STRING).arg(
 
 
 KConfig *KProtocolManager::_config = 0;
+KConfig *KProtocolManager::_http_config = 0;
 KPAC *KProtocolManager::_pac = 0;
 KStaticDeleter<KPAC> _pacDeleter;
 
@@ -60,16 +62,30 @@ void KProtocolManager::reparseConfiguration()
 {
   delete _config;
   _config = 0;
+  delete _http_config;
+  _http_config = 0;
 }
 
 KConfig *KProtocolManager::config()
 {
   if (!_config)
   {
-     qAddPostRoutine(KProtocolManager::reparseConfiguration);
+     if (!_http_config)
+        qAddPostRoutine(KProtocolManager::reparseConfiguration);
      _config = new KConfig("kioslaverc", false, false);
   }
   return _config;
+}
+
+KConfig *KProtocolManager::http_config()
+{
+  if (!_http_config)
+  {
+     if (!_config)
+        qAddPostRoutine(KProtocolManager::reparseConfiguration);
+     _http_config = new KConfig("kio_httprc", false, false);
+  }
+  return _http_config;
 }
 
 KPAC *KProtocolManager::pac()
@@ -189,38 +205,51 @@ bool KProtocolManager::useProxy()
 
 bool KProtocolManager::useCache()
 {
-  KConfig *cfg = config();
-  cfg->setGroup( "Cache Settings" );
+  KConfig *cfg = http_config();
   return cfg->readBoolEntry( "UseCache", true );
 }
 
 KIO::CacheControl KProtocolManager::defaultCacheControl()
 {
-    KConfig *cfg = config();
-    cfg->setGroup("Cache Settings");
-    return KIO::parseCacheControl(cfg->readEntry("Default Cache Policy", "verify"));
+    return DEFAULT_CACHE_CONTROL;
 }
 
-void KProtocolManager::setDefaultCacheControl(KIO::CacheControl policy)
+KIO::CacheControl KProtocolManager::cacheControl()
 {
-    KConfig *cfg = config();
-    cfg->setGroup("Cache Settings");
+    KConfig *cfg = http_config();
+    QString tmp = cfg->readEntry("cache");
+    if (tmp.isEmpty())
+       return defaultCacheControl();   
+    return KIO::parseCacheControl(tmp);
+}
+
+void KProtocolManager::setCacheControl(KIO::CacheControl policy)
+{
+    KConfig *cfg = http_config();
     QString tmp = KIO::getCacheControlString(policy);
-    cfg->writeEntry("Default Cache Policy", tmp);
+    cfg->writeEntry("cache", tmp);
     cfg->sync();
+}
+
+int KProtocolManager::defaultMaxCacheAge()
+{
+  return DEFAULT_MAX_CACHE_AGE;
 }
 
 int KProtocolManager::maxCacheAge()
 {
-  KConfig *cfg = config();
-  cfg->setGroup( "Cache Settings" );
+  KConfig *cfg = http_config();
   return cfg->readNumEntry( "MaxCacheAge", DEFAULT_MAX_CACHE_AGE ); // 14 days
+}
+
+int KProtocolManager::defaultMaxCacheSize()
+{
+  return DEFAULT_MAX_CACHE_SIZE;
 }
 
 int KProtocolManager::maxCacheSize()
 {
-  KConfig *cfg = config();
-  cfg->setGroup( "Cache Settings" );
+  KConfig *cfg = http_config();
   return cfg->readNumEntry( "MaxCacheSize", DEFAULT_MAX_CACHE_SIZE ); // 5 MB
 }
 
@@ -317,7 +346,8 @@ QString KProtocolManager::slaveProtocol(const KURL &url, QString &proxy)
      if ((proxy != "DIRECT") && (!proxy.isEmpty()))
      {
         QString noProxy = noProxyFor();
-        if (!revmatch( url.host().lower().latin1(),
+        if (noProxy.isEmpty() || url.host().isEmpty() ||
+            !revmatch( url.host().lower().latin1(),
                        noProxy.lower().latin1() ))
            return QString::fromLatin1("http");
      }
@@ -392,24 +422,21 @@ void KProtocolManager::setPersistentConnections( bool _mode )
 
 void KProtocolManager::setUseCache( bool _mode )
 {
-  KConfig *cfg = config();
-  cfg->setGroup( "Cache Settings" );
+  KConfig *cfg = http_config();
   cfg->writeEntry( "UseCache", _mode );
   cfg->sync();
 }
 
 void KProtocolManager::setMaxCacheSize( int cache_size )
 {
-  KConfig *cfg = config();
-  cfg->setGroup( "Cache Settings" );
+  KConfig *cfg = http_config();
   cfg->writeEntry( "MaxCacheSize", cache_size );
   cfg->sync();
 }
 
 void KProtocolManager::setMaxCacheAge( int cache_age )
 {
-  KConfig *cfg = config();
-  cfg->setGroup( "Cache Settings" );
+  KConfig *cfg = http_config();
   cfg->writeEntry( "MaxCacheAge", cache_age );
   cfg->sync();
 }
@@ -544,9 +571,8 @@ void KProtocolManager::setUserAgentList( const QStringList& agentList )
 
 QString KProtocolManager::cacheDir()
 {
-    KConfig *cfg = config();
-    cfg->setGroup("Cache Settings");
-    return cfg->readEntry("Cache Dir", KGlobal::dirs()->saveLocation("data","kio_http/cache"));
+    KConfig *cfg = http_config();
+    return cfg->readEntry("CacheDir", KGlobal::dirs()->saveLocation("data","kio_http/cache"));
 }
 
 void KProtocolManager::setDefaultUserAgentModifiers( const UAMODIFIERS& mods )
