@@ -1,0 +1,23 @@
+[!Global!]
+appname=kde
+friendly=KDE System Notifications
+
+[KCompletion: rotation]
+friendly=KCompletion End of Matches
+description=The end of the list of matches has been reached.
+default_presentation=0
+
+[KCompletion: no match]
+friendly=KCompletion No Match
+description=No matching completion found.
+default_presentation=0
+
+[KCompletion: partial match]
+friendly=KCompletion Partial Match
+description=There is more than one possible match.
+default_presentation=0
+
+[cannotopenfile]
+friendly=Cannot Open File
+description=The selected file cannot be opened for reading or writing
+default_presentation=0
