@@ -193,8 +193,3 @@ void ResourceIMAP::removeAddressee( const Addressee& addr )
 {
   mDeletedAddressees << addr.uid();
 }
-
-void ResourceIMAP::cleanUp()
-{
-  // We don't have anything to clean up here.
-}

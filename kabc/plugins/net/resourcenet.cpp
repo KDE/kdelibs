@@ -97,6 +97,7 @@ Ticket *ResourceNet::requestSaveTicket()
 
 void ResourceNet::releaseSaveTicket( Ticket *ticket )
 {
+  KIO::NetAccess::removeTempFile( mTempFile );
   delete ticket;
 }
 
@@ -216,11 +217,6 @@ void ResourceNet::setFormat( const QString &name )
 QString ResourceNet::format() const
 {
   return mFormatName;
-}
-
-void ResourceNet::cleanUp()
-{
-  KIO::NetAccess::removeTempFile( mTempFile );
 }
 
 void ResourceNet::downloadFinished( KIO::Job* )

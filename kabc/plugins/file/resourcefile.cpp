@@ -309,12 +309,6 @@ void ResourceFile::removeAddressee( const Addressee &addr )
   mAddrMap.erase( addr.uid() );
 }
 
-void ResourceFile::cleanUp()
-{
-  delete mLock;
-  mLock = 0;
-}
-
 void ResourceFile::downloadFinished( KIO::Job* )
 {
   if ( !mLocalTempFile )

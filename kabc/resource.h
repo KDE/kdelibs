@@ -262,12 +262,6 @@ class Resource : public KRES::Resource
     virtual Addressee::List findByCategory( const QString &category );
 
     /**
-      This method is called by an error handler if the application
-      crashed. You should remove all you locks inside this function.
-     */
-    virtual void cleanUp();
-
-    /**
       Removes all addressees from the resource.
      */
     virtual void clear();

@@ -39,14 +39,18 @@ namespace KABC {
   \code
   KABC::AddressBook *ab = KABC::StdAddressBook::self();
 
-  KABC::AddressBook::Iterator it;
-  for ( it = ab->begin(); it != ab->end(); ++it ) {
-    kdDebug() << "UID=" << (*it).uid() << endl;
+  AddressBook::Ticket *ticket = ab->requestSaveTicket();
 
-    // do some other stuff
+  if ( ticket ) {
+    KABC::AddressBook::Iterator it;
+    for ( it = ab->begin(); it != ab->end(); ++it ) {
+      kdDebug() << "UID=" << (*it).uid() << endl;
+
+      // do some other stuff
+    }
+
+    KABC::StdAddressBook::save( ticket );
   }
-
-  KABC::StdAddressBook::save();
   \endcode
 */
 class StdAddressBook : public AddressBook
@@ -79,13 +83,12 @@ class StdAddressBook : public AddressBook
 
       @deprecated Use AddressBook::save( Ticket* ) instead
      */
-    static bool save();
+    static bool save() KDE_DEPRECATED;
 
     /**
-      Call this method in your crash handler to allow the resources to clean up
-      possible locks.
-     */
-    static void handleCrash();
+      @deprecated There is no need to call this function anymore.
+    */
+    static void handleCrash() KDE_DEPRECATED;
 
     /**
       Returns the default file name for vcard-based addressbook

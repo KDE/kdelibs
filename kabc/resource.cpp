@@ -330,11 +330,6 @@ Addressee::List Resource::findByCategory( const QString &category )
   return results;
 }
 
-void Resource::cleanUp()
-{
-  // do nothing
-}
-
 void Resource::clear()
 {
   mAddrMap.clear();

@@ -369,10 +369,8 @@ bool AddressBook::save( Ticket *ticket )
   if ( ticket->resource() ) {
     deleteRemovedAddressees();
     bool ok = ticket->resource()->save( ticket );
-    ticket->resource()->releaseSaveTicket( ticket );
+    if ( ok ) ticket->resource()->releaseSaveTicket( ticket );
     return ok;
-//    Activate in KDE 4.0
-//    return ticket->resource()->releaseSaveTicket( ticket );
   }
 
   return false;
@@ -385,10 +383,8 @@ bool AddressBook::asyncSave( Ticket *ticket )
   if ( ticket->resource() ) {
     d->mPendingSaveResources.append( ticket->resource() );
     bool ok = ticket->resource()->asyncSave( ticket );
-    ticket->resource()->releaseSaveTicket( ticket );
+    if ( ok ) ticket->resource()->releaseSaveTicket( ticket );
     return ok;
-//    Activate in KDE 4.0
-//    return ticket->resource()->asyncSave( ticket );
   }
 
   return false;
@@ -501,18 +497,14 @@ Ticket *AddressBook::requestSaveTicket( Resource *resource )
   return 0;
 }
 
-void AddressBook::releaseSaveTicket( Ticket* )
+void AddressBook::releaseSaveTicket( Ticket *ticket )
 {
-/*
-  // Will be activated in KDE 4.0
-
   if ( !ticket )
     return;
 
   if ( ticket->resource() ) {
     ticket->resource()->releaseSaveTicket( ticket );
   }
-*/
 }
 
 void AddressBook::insertAddressee( const Addressee &a )
@@ -797,11 +789,6 @@ KRES::Manager<Resource> *AddressBook::resourceManager()
 
 void AddressBook::cleanUp()
 {
-  KRES::Manager<Resource>::ActiveIterator it;
-  for ( it = d->mManager->activeBegin(); it != d->mManager->activeEnd(); ++it ) {
-    if ( !(*it)->readOnly() && (*it)->isOpen() )
-      (*it)->cleanUp();
-  }
 }
 
 void AddressBook::resourceLoadingFinished( Resource *res )

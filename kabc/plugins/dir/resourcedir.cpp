@@ -298,10 +298,4 @@ void ResourceDir::removeAddressee( const Addressee& addr )
   mAddrMap.erase( addr.uid() );
 }
 
-void ResourceDir::cleanUp()
-{
-  delete mLock;
-  mLock = 0;
-}
-
 #include "resourcedir.moc"

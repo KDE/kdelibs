@@ -85,13 +85,6 @@ public:
    */
   virtual void removeAddressee( const Addressee& addr );
 
-  /**
-   * This method is called by an error handler if the application
-   * crashed
-   */
-  virtual void cleanUp();
-
-
 private:
     FormatPlugin* mFormat;
     QStringList mDeletedAddressees;

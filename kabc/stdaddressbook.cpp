@@ -52,7 +52,6 @@ QString StdAddressBook::directoryName()
 
 void StdAddressBook::handleCrash()
 {
-  StdAddressBook::self()->cleanUp();
 }
 
 StdAddressBook *StdAddressBook::self()
@@ -157,10 +156,10 @@ bool StdAddressBook::save()
         return false;
       }
 
-      if ( !ab->save( ticket ) )
+      if ( !ab->save( ticket ) ) {
         ok = false;
-
-      ab->releaseSaveTicket( ticket );
+        ab->releaseSaveTicket( ticket );
+      }
     }
   }
 

@@ -83,12 +83,6 @@ class ResourceNet : public Resource
      */
     QString format() const;
 
-    /**
-      This method is called by an error handler if the application
-      crashed
-     */
-    virtual void cleanUp();
-
   protected:
     void init( const KURL &url, const QString &format );
 

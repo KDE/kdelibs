@@ -124,8 +124,8 @@ class AddressBook : public QObject
 
     /**
       Requests a ticket for saving the addressbook. Calling this function locks
-      the addressbook for all other processes. You need the returned ticket object
-      for calling the save() function.
+      the addressbook for all other processes. You need the returned ticket
+      object for calling the save() function.
 
       @param resource A pointer to the resource which shall be locked. If 0, 
                       the default resource is locked.
@@ -136,12 +136,8 @@ class AddressBook : public QObject
     Ticket *requestSaveTicket( Resource *resource = 0 );
 
     /**
-      Attention!!! This method will be activated in KDE 4.0, at the
-      moment it does nothing...
-
       Releases the ticket requested previously with requestSaveTicket().
-      You have to call this function after saving, otherwise the possible
-      locks of the resource won't be removed.
+      Call this function, if you want to release a ticket without saving.
      */
     void releaseSaveTicket( Ticket *ticket );
 
@@ -162,7 +158,8 @@ class AddressBook : public QObject
     bool asyncLoad();
 
     /**
-      Saves all addressees of one resource synchronously.
+      Saves all addressees of one resource synchronously. If the save is
+      successfull the ticket is deleted.
 
       @param ticket The ticket returned by requestSaveTicket().
       @return Whether the saving was successfully.
@@ -170,7 +167,8 @@ class AddressBook : public QObject
     bool save( Ticket *ticket );
 
     /**
-      Saves all addressees of one resource asynchronously.
+      Saves all addressees of one resource asynchronously. If the save is
+      successfull the ticket is deleted.
 
       @param ticket The ticket returned by requestSaveTicket().
       @return Whether the synchronous part of saving was successfully.
@@ -339,11 +337,9 @@ class AddressBook : public QObject
     void error( const QString &msg );
 
     /**
-      Querys all resources to clean up their lock files.
-      You should call this method in the crash handler of your
-      application.
+      @deprecated There is no need to call this function anymore.
      */
-    void cleanUp();
+    void cleanUp() KDE_DEPRECATED;
 
     /**
       Used for debug output. This function prints out the list
