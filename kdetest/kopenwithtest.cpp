@@ -1,32 +1,24 @@
 #include <qapplication.h>
 #include <qwidget.h>
+#include <qstringlist.h>
 #include <qdir.h>
 #include <kio_openwith.h>
-
-class DemoWidget : public QWidget {
-    
-void paintEvent(QPaintEvent *)
-{
-}
-
-public:
-    DemoWidget() : QWidget()
-    {
-        OpenWithDlg* dlg = new OpenWithDlg("OpenWith_Text", "OpenWith_Value", this);
-
-        if(dlg->exec())
-          ;
-        
-    }       
-};
 
 int main(int argc, char **argv)
 {
     QApplication app(argc, argv);
-    DemoWidget w;
-    app.setMainWidget(&w);
-    w.show();
+    QStringList list;
+
+    list += "file://home/testfile";
+    list += "http://www.kde.org/index.html";
     
-    return app.exec();
+    OpenWithDlg* dlg = new OpenWithDlg(list, "OpenWith_Text", "OpenWith_Value", 0);
+    if(dlg->exec()) {
+        debug("Dialog ended successfully\ntext: %s", dlg->text().ascii());
+    }
+    else
+        debug("Dialog was cancelled.");
+    
+    return 0;
 }
     
