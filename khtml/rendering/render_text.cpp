@@ -701,6 +701,7 @@ const QFont &RenderText::font()
 
 void RenderText::setText(DOMStringImpl *text)
 {
+    if( str == text ) return;
     if(str) str->deref();
     str = text;
     if(str) str->ref();
