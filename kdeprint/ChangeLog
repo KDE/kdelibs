@@ -476,6 +476,10 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
   * CUPS: allow any integer value for RIPCache + don't upload the cupsd.conf
     with wrong settings
 
+*****************
+* KDE-3 RELEASE *
+*****************
+
 (CeBIT) Michael Goffioul <goffioul@imec.be>
   * Fix various crashes:
   	. when changing the CUPS server (notify registered object before
@@ -547,3 +551,6 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
 	. made KMVirtualManager inherit from KPReloadObject to force instance
 	  reloading when something has changed
   * print dialog: added buttons to move files up and down
+  * CUPS: added a generic job tagging mechanism in the form of an additional
+    tab in the print dialog. It contain a 2-columns table where custom tags
+    can be added. Read-only in job editing mode (hope to change that soon).
