@@ -1458,7 +1458,7 @@ bool HTTPProtocol::readHeader()
       // Content-Encoding specified which would then contain
       // the true mime-type for the requested URI i.e. the content
       // type is only applicable to the actual message-body!!
-      m_strMimeType = trimLead(buffer + 13);
+      m_strMimeType = QString::fromLatin1(trimLead(buffer + 13)).lower();
 
       // This header can be something like "text/html; charset foo-blah"
       int semicolonPos = m_strMimeType.find( ';' );
@@ -1470,7 +1470,7 @@ bool HTTPProtocol::readHeader()
           m_strCharset = m_strMimeType.mid( equalPos+1 );
           kdDebug(7103) << "Found charset : " << m_strCharset << endl;
         }
-        m_strMimeType = m_strMimeType.left( semicolonPos ).lower();
+        m_strMimeType = m_strMimeType.left( semicolonPos );
       }
     }
 
