@@ -119,7 +119,7 @@ public:
 			      QCString& replyType, QByteArray &replyData);
 
 
-  /** 
+  /**
    * Returns the names of the interfaces, specific ones last. The
    * functions gets reimplemented by the IDL compiler. If you don't
    * use the IDL compiler, consider implementing this function
@@ -128,7 +128,7 @@ public:
    * @see functions()
    */
   virtual QCStringList interfaces();
-    
+
   /**
    * Returns the list of functions understood by the object. It gets
    * reimplemented by the IDL compiler. If you don't use the IDL
@@ -144,6 +144,57 @@ public:
    * @see process(), processDynamic(), DCOPClient::normalizeFunctionSignature()
    */
   virtual QCStringList functions();
+
+  /**
+   * Emit @p signal as DCOP signal from this object with @data as
+   * arguments
+   */
+  void emitDCOPSignal( const QCString &signal, const QByteArray &data);
+
+  /**
+   * Connect to a DCOP signal
+   * @param sender the name of the client that emits the signal. When empty
+   * the signal will be passed from any client.
+   * @param senderObj the name of the sending object that emits the signal.
+   * @param signal the name of the signal. The arguments should match with slot.
+   * @param slot The name of the slot to call. Its arguments should match with signal.
+   * @param Volatile If true, the connection will not be reestablished when
+   * @p sender unregisters and reregisters with DCOP. In this case the @p sender
+   * must be registered when the connection is made.
+   * If false, the connection will be reestablished when @p sender reregisters.
+   * In this case the connection can be made even if @p sender is not registered
+   * at that time.
+   *
+   * @return false if a connection could not be established.
+   * This will be the case when
+   * @li @p Volatile is true and @p sender  does not exist.
+   * @li @p signal and @p slot do not have matching arguments.
+   */
+  bool connectDCOPSignal( const QCString &sender, const QCString &senderObj,
+                          const QCString &signal,
+                          const QCString &slot,
+                          bool Volatile);
+
+  /**
+   * Disconnect a DCOP signal
+   * @param sender the name of the client that emits the signal.
+   * @param senderObj the name of the object that emits the signal.
+   * If empty all objects will be disconnected.
+   * @param signal the name of the signal. The arguments should match with slot.
+   * If empty all objects will be disconnected.
+   * @param slot The name of the slot the signal is connected to.
+   * If empty all slots will be disconnected.
+   *
+   * A special case is when both sender & signal are empty. In this
+   * case all connections related to this object in the current client
+   * are disconnected. (Both connections from as well as to this object!)
+   *
+   * @return false if no connection(s) where removed.
+   */
+  bool disconnectDCOPSignal( const QCString &sender, const QCString &senderObj,
+                             const QCString &signal,
+                             const QCString &slot);
+
 
   /**
    * @return @p true if an obejct with the questionable @p objId is

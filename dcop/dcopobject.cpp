@@ -34,37 +34,54 @@ inline QMap<QCString, DCOPObject *> *objMap()
   return dcopObjMap;
 }
 
+class DCOPObject::DCOPObjectPrivate
+{
+public:
+    DCOPObjectPrivate()
+        { m_signalConnections = 0; }
+
+    unsigned int m_signalConnections;
+};
+
 DCOPObject::DCOPObject()
 {
+    d = new DCOPObjectPrivate;
     ident.sprintf("%p", this );
     objMap()->insert(ident, this );
 }
 
 DCOPObject::DCOPObject(QObject *obj)
 {
-  QObject *currentObj = obj;
-  while (currentObj != 0L) {
-    ident.prepend( currentObj->name() );
-    ident.prepend("/");
-    currentObj = currentObj->parent();
-  }
-  if ( ident[0] == '/' )
-      ident = ident.mid(1);
+    d = new DCOPObjectPrivate;
+    QObject *currentObj = obj;
+    while (currentObj != 0L) {
+        ident.prepend( currentObj->name() );
+        ident.prepend("/");
+        currentObj = currentObj->parent();
+    }
+    if ( ident[0] == '/' )
+        ident = ident.mid(1);
 
-  objMap()->insert(ident, this);
+    objMap()->insert(ident, this);
 }
 
 DCOPObject::DCOPObject(const QCString &_objId)
   : ident(_objId)
 {
- if ( ident.isEmpty() )
-     ident.sprintf("%p", this );
-  objMap()->insert(ident, this);
+    d = new DCOPObjectPrivate;
+    if ( ident.isEmpty() )
+        ident.sprintf("%p", this );
+    objMap()->insert(ident, this);
 }
 
 DCOPObject::~DCOPObject()
 {
-  objMap()->remove(ident);
+    DCOPClient *client = DCOPClient::mainClient();
+    if ( d->m_signalConnections > 0 && client )
+         client->disconnectDCOPSignal( 0, 0, 0, objId(), 0 );
+
+    objMap()->remove(ident);
+    delete d;
 }
 
 QCString DCOPObject::objId() const
@@ -157,6 +174,41 @@ QCStringList DCOPObject::functions()
     result << "QCStringList functions()";
     return result;
 }
+
+void DCOPObject::emitDCOPSignal( const QCString &signal, const QByteArray &data)
+{
+    DCOPClient *client = DCOPClient::mainClient();
+    if ( client )
+        client->emitDCOPSignal( objId(), signal, data );
+}
+
+bool DCOPObject::connectDCOPSignal( const QCString &sender, const QCString &senderObj,
+                                    const QCString &signal,
+                                    const QCString &slot,
+                                    bool Volatile)
+{
+    DCOPClient *client = DCOPClient::mainClient();
+
+    if ( !client )
+        return false;
+
+    d->m_signalConnections++;
+    return client->connectDCOPSignal( sender, senderObj, signal, objId(), slot, Volatile );
+}
+
+bool DCOPObject::disconnectDCOPSignal( const QCString &sender, const QCString &senderObj,
+                                       const QCString &signal,
+                                       const QCString &slot)
+{
+    DCOPClient *client = DCOPClient::mainClient();
+
+    if ( !client )
+        return false;
+
+    d->m_signalConnections--;
+    return client->disconnectDCOPSignal( sender, senderObj, signal, objId(), slot );
+}
+
 
 QList<DCOPObjectProxy>* DCOPObjectProxy::proxies = 0;
 
