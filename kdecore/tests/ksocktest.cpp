@@ -105,7 +105,7 @@ main(int argc, char *argv[])
    {
       qWarning("Lookup: %s", info->address()->pretty().latin1());
    }
-   check("KExtenededSocket::lookup(), list.first()->address()->pretty(), "213.203.58.36 port 80");
+   check("KExtendedSocket::lookup()", list.first()->address()->pretty(), "213.203.58.36 port 80");
 
 #if 0
    TestApp a(&host_address);
