@@ -99,7 +99,7 @@ bool KAutoConfig::retrieveSettings(bool trackChanges){
     changedMap.insert("QPushButton", SIGNAL(stateChanged(int)));
     changedMap.insert("QRadioButton", SIGNAL(stateChanged(int)));
     changedMap.insert("QComboBox", SIGNAL(activated (int)));
-    //qsqlproperty map doesn't store the text, but the value...
+    //qsqlproperty map doesn't store the text, but the value!
     //changedMap.insert("QComboBox", SIGNAL(textChanged(const QString &)));
     changedMap.insert("QDateEdit", SIGNAL(valueChanged(const QDate &)));
     changedMap.insert("QDateTimeEdit", SIGNAL(valueChanged(const QDateTime &)));
@@ -116,6 +116,7 @@ bool KAutoConfig::retrieveSettings(bool trackChanges){
     // KDE
     changedMap.insert( "KComboBox", SIGNAL(activated (int)));
     changedMap.insert( "KFontCombo", SIGNAL(activated (int)));
+    changedMap.insert( "KFontRequester", SIGNAL(fontSelected(const QFont &)));
     changedMap.insert( "KHistoryCombo", SIGNAL(activated (int)));
 
     changedMap.insert( "KColorButton", SIGNAL(changed(const QColor &)));
@@ -252,8 +253,10 @@ bool KAutoConfig::isDefault() const {
       ++it;
       QVariant defaultValue = d->defaultValues[groupWidget];
       QVariant currentValue = propertyMap->property(groupWidget);
-      if(currentValue != defaultValue)
+      if(currentValue != defaultValue){
+        //qDebug("groupWidget %s, has changed: default: %s new: %s", groupWidget->name(), defaultValue.toString().latin1(), currentValue.toString().latin1());
         return false;
+      }
     }
   }
   return true;

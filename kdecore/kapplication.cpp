@@ -1851,6 +1851,7 @@ void KApplication::installKDEPropertyMap()
     kdeMap->insert( "KDatePicker", "getDate" );
     kdeMap->insert( "KEditListBox", "currentItem" );
     kdeMap->insert( "KFontCombo", "family" );
+    kdeMap->insert( "KFontRequester", "font" );
     kdeMap->insert( "KHistoryCombo", "currentItem" );
     kdeMap->insert( "KListBox", "currentItem" );
     kdeMap->insert( "KLineEdit", "text" );
