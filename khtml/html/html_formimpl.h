@@ -276,6 +276,7 @@ public:
 
     virtual void defaultEventHandler(EventImpl *evt);
     virtual bool isEditable();
+    virtual bool isSelectable() const { return true; };
 
     DOMString altText() const;
 
