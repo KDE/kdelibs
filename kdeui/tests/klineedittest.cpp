@@ -24,7 +24,7 @@ int main ( int argc, char **argv)
     // QObject::connect( l, SIGNAL( returnPressed( const QString& ) ), l->completionObject(), SLOT( addItem( const QString& ) ) );
     l->resize(500,30);
     l->setFocus();
-l->setCompletionMode( KGlobalSettings::CompletionPopup );
+////////// l->setCompletionMode( KGlobalSettings::CompletionPopup );
     QPushButton * push = new QPushButton( "E&xit", w );
     push->resize(100,30);
     push->move(50,50);
