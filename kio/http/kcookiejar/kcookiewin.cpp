@@ -55,7 +55,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qradiobutton.h>
 #include <qvbuttongroup.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <kwin.h>
 #include <klocale.h>
 #include <kglobal.h>

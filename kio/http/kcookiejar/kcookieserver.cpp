@@ -32,9 +32,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "kcookiewin.h"
 
 #include <kdebug.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <kcmdlineargs.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <qtimer.h>
 #include <unistd.h>
 #include <qlist.h>

@@ -52,14 +52,14 @@
 
 #include <qregexp.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <kurl.h>
 #include <ksocks.h>
 #include <kdebug.h>
 #include <klocale.h>
 #include <kconfig.h>
 #include <kextsock.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kservice.h>
 #include <krfcdate.h>
 #include <kinstance.h>

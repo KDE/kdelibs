@@ -26,7 +26,7 @@
 #define KCOOKIESERVER_H
 
 #include <dcopobject.h>
-#include <kuniqueapp.h>
+#include <kuniqueapplication.h>
 
 class KHttpCookieList;
 class KCookieJar;
