@@ -767,7 +767,7 @@ void RenderPartObject::updateWidget()
         embed->param.append( QString::fromLatin1("__KHTML__CODEBASE=\"%1\"").arg( static_cast<ElementImpl *>(o)->getAttribute(ATTR_CODEBASE).string() ) );
 
         // Check if serviceType can be handled by ie. nsplugin
-        // else default to the activexhandler if there is a classid
+		// else default to the activexhandler if there is a classid
         // and a codebase, where we may download the ocx if it's missing (Niko)
         bool retval = part->requestObject( this, url, serviceType, embed->param );
 
@@ -795,6 +795,7 @@ void RenderPartObject::updateWidget()
 
      o->param.append( QString::fromLatin1("__KHTML__PLUGINEMBED=\"YES\"") );
      o->param.append( QString::fromLatin1("__KHTML__PLUGINBASEURL=\"%1\"").arg( part->url().url() ) );
+	 o->param.append( QString::fromLatin1("__KHTML__REQUESTED_FOR_MIMETYPE=\"%1\"").arg( serviceType ) );
 
      part->requestObject( this, url, serviceType, o->param );
 
