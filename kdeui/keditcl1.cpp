@@ -39,7 +39,8 @@
 class KEdit::KEditPrivate
 {
 public:
-    bool overwriteEnabled;
+    bool overwriteEnabled:1;
+    bool posDirty:1;
 };
 
 
@@ -48,12 +49,9 @@ KEdit::KEdit(QWidget *_parent, const char *name)
 {
     d = new KEditPrivate;
     d->overwriteEnabled = false;
+    d->posDirty = true;
 
     parent = _parent;
-
-    // fancy optimized refreshing (Matthias and Paul)
-    repaintTimer = new QTimer(this);
-    connect(repaintTimer, SIGNAL(timeout()), this, SLOT(repaintAll()));
 
     // set some defaults
 
@@ -65,6 +63,9 @@ KEdit::KEdit(QWidget *_parent, const char *name)
 
     setAcceptDrops(true);
     KCursor::setAutoHideCursor( this, true );
+    
+    connect(this, SIGNAL(cursorPositionChanged(int,int)), 
+            this, SLOT(slotCursorPositionChanged()));
 }
 
 
@@ -76,7 +77,7 @@ KEdit::~KEdit()
 void
 KEdit::insertText(QTextStream *stream)
 {
-   setAutoUpdate(FALSE);
+//   setAutoUpdate(FALSE);
    int line, col;
    getCursorPosition(&line, &col);
    int saveline = line;
@@ -89,13 +90,8 @@ KEdit::insertText(QTextStream *stream)
    //   textLine: 2*size rounded up to nearest power of 2 (520Kb -> 1024Kb)
    //   widget:   about (2*size + 60bytes*lines)
    // -> without disabling undo, it often needs almost 8*size
-#if QT_VERSION < 300
-   bool oldUndo = isUndoEnabled();
-   setUndoEnabled( FALSE );
-#else
    int oldUndoDepth = undoDepth();
    setUndoDepth( 0 ); // ### -1?
-#endif
 
    // MS: read everything at once if file <= 1MB,
    // else read in 5000-line chunks to keep memory usage acceptable.
@@ -118,18 +114,12 @@ KEdit::insertText(QTextStream *stream)
         textLine = stream->read(); // Read all !
         insertAt( textLine, line, col);
    }
-#if QT_VERSION < 300
-   setUndoEnabled(oldUndo);
-#else
    setUndoDepth( oldUndoDepth );
-#endif
 
    setCursorPosition(saveline, savecol);
-   setAutoUpdate(true);
+//   setAutoUpdate(true);
 
-   if (!repaintTimer->isActive())
-      repaintTimer->start(0,TRUE);
-   repaint();
+//   repaint();
 
    setModified(true);
    setFocus();
@@ -201,8 +191,6 @@ KEdit::cleanWhiteSpace()
    {
       deselect();
       setAutoUpdate(TRUE);
-      if (!repaintTimer->isActive())
-         repaintTimer->start(0,TRUE);
       repaint();
       return;
    }
@@ -228,8 +216,6 @@ KEdit::cleanWhiteSpace()
 
    insert(newText);
    setAutoUpdate(TRUE);
-   if (!repaintTimer->isActive())
-      repaintTimer->start(0,TRUE);
    repaint();
 
    setModified(true);
@@ -242,15 +228,47 @@ KEdit::saveText(QTextStream *stream)
    int line_count = numLines()-1;
    if (line_count < 0)
       return;
-   for(int i = 0; i < line_count; i++)
+   
+   if (wordWrap() == NoWrap)
    {
-      (*stream) << textLine(i) << '\n';
+      for(int i = 0; i < line_count; i++)
+      {
+         (*stream) << textLine(i) << '\n';
+      }
+      (*stream) << textLine(line_count);
    }
-   (*stream) << textLine(line_count);
-}
-
-void KEdit::repaintAll(){
-    repaint(FALSE);
+   else
+   {
+      for(int i = 0; i <= line_count; i++)
+      {
+         int lines_in_parag = linesOfParagraph(i);
+         if (lines_in_parag == 1)
+         {
+            (*stream) << textLine(i);
+         }
+         else
+         {
+            QString parag_text = textLine(i);
+            int pos = 0;
+            int first_pos = 0;
+            int current_line = 0;
+            while(true) {
+               while(lineOfChar(i, pos) == current_line) pos++;
+               (*stream) << parag_text.mid(first_pos, pos - first_pos - 1) << '\n';
+               current_line++;
+               first_pos = pos;
+               if (current_line+1 == lines_in_parag)
+               {
+                  // Last line
+                  (*stream) << parag_text.mid(pos);
+                  break;
+               }
+            }
+         }
+         if (i < line_count)
+            (*stream) << '\n';
+      }
+   }
 }
 
 int KEdit::currentLine(){
@@ -264,15 +282,48 @@ int KEdit::currentColumn(){
 
   computePosition();
   return col_pos;
-
 }
 
-void KEdit::computePosition(){
+void KEdit::slotCursorPositionChanged()
+{
+  d->posDirty = true;
+  emit CursorPositionChanged();
+}
 
-  int line, col, coltemp;
+void KEdit::computePosition()
+{
+  if (!d->posDirty) return;
+  d->posDirty = false;
+
+  int line, col;
 
   getCursorPosition(&line,&col);
+
+  // line is expressed in paragraphs, we now need to convert to lines
+  line_pos = 0;
+  if (wordWrap() == NoWrap)
+  {
+     line_pos = line;
+  }
+  else
+  {
+     for(int i = 0; i < line; i++)
+        line_pos += linesOfParagraph(i);
+  }
+  
+  int line_offset = lineOfChar(line, col);
+  line_pos += line_offset;
+  
+  // We now calculate where the current line starts in the paragraph.
   QString linetext = textLine(line);
+  int start_of_line = 0;
+  if (line_offset > 0)
+  {
+     start_of_line = col;
+     while(lineOfChar(line, --start_of_line) == line_offset);
+     start_of_line++;
+  }
+  
 
   // O.K here is the deal: The function getCursorPositoin returns the character
   // position of the cursor, not the screenposition. I.e,. assume the line
@@ -281,7 +332,7 @@ void KEdit::computePosition(){
   // Therefore we need to compute the screen position from the character position.
   // That's what all the following trouble is all about:
 
-  coltemp  = 	col;
+  int coltemp = col-start_of_line;
   int pos  = 	0;
   int find = 	0;
   int mem  = 	0;
@@ -289,9 +340,10 @@ void KEdit::computePosition(){
 
   // if you understand the following algorithm you are worthy to look at the
   // kedit+ sources -- if not, go away ;-)
+  
 
   while(find >=0 && find <= coltemp- 1 ){
-    find = linetext.find('\t', find, TRUE );
+    find = linetext.find('\t', find+start_of_line, TRUE )-start_of_line;
     if( find >=0 && find <= coltemp - 1 ){
       found_one = true;
       pos = pos + find - mem;
@@ -301,16 +353,14 @@ void KEdit::computePosition(){
     }
   }
 
-  pos = pos + coltemp - mem ;  // add the number of characters behind the
-                               // last tab on the line.
+  pos = pos + coltemp - mem;  // add the number of characters behind the
+                              // last tab on the line.
 
   if (found_one){
     pos = pos - 1;
   }
 
-  line_pos = line;
   col_pos = pos;
-
 }
 
 
@@ -360,7 +410,6 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
 
     QMultiLineEdit::keyPressEvent(e);
     setModified(true);
-    emit CursorPositionChanged();
     return;
   }
 
@@ -378,7 +427,6 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
 
     killing = false;
     setModified(true);
-    emit CursorPositionChanged();
     return;
   }
 
@@ -392,14 +440,12 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
   if ((e->state() & ShiftButton ) && (e->key() == Key_Insert) ){
     paste();
     setModified(true);
-    emit CursorPositionChanged();
     return;
   }
 
   if ((e->state() & ShiftButton ) && (e->key() == Key_Delete) ){
     cut();
     setModified(true);
-    emit CursorPositionChanged();
     return;
   }
 
@@ -413,52 +459,27 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
   }
 
   if ( KStdAccel::isEqual( e, KStdAccel::deleteWordBack()) ) {
-      deleteWordBack();  // to be replaced with QT3 function
-      e->accept();
-      setModified(true);
-      emit CursorPositionChanged();
-      return;
-  }
-  else if ( KStdAccel::isEqual( e, KStdAccel::deleteWordForward()) ) {
-    deleteWordForward(); // to be replaced with QT3 function
+    moveCursor(MoveWordBackward, true);  
+    if (hasSelectedText())
+      del();
     e->accept();
     setModified(true);
-    emit CursorPositionChanged();
+    return;
+  }
+  else if ( KStdAccel::isEqual( e, KStdAccel::deleteWordForward()) ) {
+    moveCursor(MoveWordForward, true);  
+    if (hasSelectedText())
+      del();
+    e->accept();
+    setModified(true);
     return;
   }
 
   QMultiLineEdit::keyPressEvent(e);
-  emit CursorPositionChanged();
 }
-
-
-void KEdit::mousePressEvent (QMouseEvent* e){
-
-
-  QMultiLineEdit::mousePressEvent(e);
-  emit CursorPositionChanged();
-
-}
-
-void KEdit::mouseMoveEvent (QMouseEvent* e){
-
-  QMultiLineEdit::mouseMoveEvent(e);
-  emit CursorPositionChanged();
-
-
-}
-
 
 void KEdit::installRBPopup(QPopupMenu *p) {
   KContextMenuManager::insert( this, p );
-}
-
-void KEdit::mouseReleaseEvent (QMouseEvent* e){
-
-
-  QMultiLineEdit::mouseReleaseEvent(e);
-  emit CursorPositionChanged();
-
 }
 
 void KEdit::selectFont(){
@@ -469,41 +490,47 @@ void KEdit::selectFont(){
 
 }
 
-#if QT_VERSION < 300
-void KEdit::setModified(bool _mod){
-  setEdited(_mod);
-}
-
-bool KEdit::isModified(){
-    return edited();
-}
-#endif
-
-// ### KDE3: remove!
-bool KEdit::eventFilter(QObject* o, QEvent* ev)
-{
-  return QMultiLineEdit::eventFilter( o, ev );
-}
-
-QString KEdit::markedText(){
-  return QMultiLineEdit::markedText();
-}
-
 void KEdit::doGotoLine() {
 
-	if( !gotodialog )
-		gotodialog = new KEdGotoLine( parent, "gotodialog" );
+   if( !gotodialog )
+      gotodialog = new KEdGotoLine( parent, "gotodialog" );
 
-	this->clearFocus();
+   this->clearFocus();
 
-	gotodialog->show();
-	// this seems to be not necessary
-	// gotodialog->setFocus();
-	if( gotodialog->result() ) {
-		setCursorPosition( gotodialog->getLineNumber()-1 , 0, FALSE );
-		emit CursorPositionChanged();
-		setFocus();
-	}
+   gotodialog->exec();
+   // this seems to be not necessary
+   // gotodialog->setFocus();
+   if( gotodialog->result() != KEdGotoLine::Accepted) 
+      return;
+   int target_line = gotodialog->getLineNumber()-1;
+   if (wordWrap() == NoWrap)
+   {
+      setCursorPosition( target_line, 0 );
+      setFocus();
+      return;
+   }
+  
+   int max_parag = paragraphs();
+     
+   int line = 0;
+   int parag = -1;
+   int lines_in_parag = 0; 
+   while ((++parag < max_parag) && (line + lines_in_parag < target_line))
+   {
+      line += lines_in_parag;
+      lines_in_parag = linesOfParagraph(parag);
+   }
+
+   int col = 0;
+   if (parag >= max_parag)
+   {
+      target_line = line + lines_in_parag - 1;
+      parag = max_parag-1;
+   }
+
+   while(1+line+lineOfChar(parag,col) < target_line) col++;
+   setCursorPosition( parag, col );
+   setFocus();
 }
 
 
@@ -546,18 +573,4 @@ void KEdit::create( WId id, bool initializeWindow, bool destroyOldWindow )
   KCursor::setAutoHideCursor( this, true, true );
 }
 
-// Temporary functions until QT3 appears. - Seth Chaiklin 20 may 2001
-void KEdit::deleteWordForward()
-{
-  cursorWordForward(TRUE);
-  if ( hasMarkedText() )
-    del();
-}
-
-void KEdit::deleteWordBack()
-{
-  cursorWordBackward(TRUE);
-  if ( hasMarkedText() )
-    del();
-}
 

@@ -192,11 +192,6 @@ public:
     void saveText(QTextStream *);
 
     /**
-     * Retrieve the currently marked text.
-     */
-    QString 	markedText();
-
-    /**
      *  Let the user select a font and set the font of the textwidget to that
      * selected font.
      **/
@@ -231,21 +226,6 @@ public:
      * Clean up redundant whitespace from selected text.
      */
     void        cleanWhiteSpace();
-
-#if QT_VERSION < 300
-    /**
-     * @return @p true if the document has been modified.
-     */
-    bool 	isModified();
-
-    /**
-     * Set the modification status of the document.
-     *
-     *  @p true = Modified, @p false = UNMODIFIED.
-     *  This can be used to test whether the document needs to be saved.
-     **/
-    void 	setModified( bool = true);
-#endif
 
     /**
      * Install a context menu for KEdit.
@@ -360,15 +340,13 @@ private slots:
        **/
     void replacedone_slot();
 
-    void computePosition();
-
       /**
-       * Repaint the widget.
-       **/
-    void repaintAll();
-
+       * Cursor moved...
+       */
+    void slotCursorPositionChanged();
 
 protected:
+    void computePosition();
     int 	doSearch(QString s_pattern, bool case_sensitive,
 			 bool regex, bool forward,int line, int col);
 
@@ -389,11 +367,7 @@ protected:
 
 protected:
 
-    bool 	eventFilter	 ( QObject *, QEvent * ); // ### KDE3: remove!
     void 	keyPressEvent 	 ( QKeyEvent *  );
-    void 	mousePressEvent  ( QMouseEvent* );
-    void 	mouseReleaseEvent( QMouseEvent* );
-    void 	mouseMoveEvent 	 ( QMouseEvent* );
 
     // DnD inteface
 
@@ -402,13 +376,6 @@ protected:
     void        dropEvent(QDropEvent* e);
 
 private:
-    /** 
-     * Temporary functions to delete words back and foward until
-     * alternatives are available in QT3 (Seth Chaiklin, 21 may 2001)
-     */
-    void deleteWordBack();
-    void deleteWordForward();
-
     QTimer* repaintTimer;
 
     QString	killbufferstring;

@@ -926,6 +926,7 @@ KEdGotoLine::KEdGotoLine( QWidget *parent, const char *name, bool modal )
   QVBoxLayout *topLayout = new QVBoxLayout( page, 0, spacingHint() );
 
   lineNum = new KIntNumInput( 1, page);
+  lineNum->setRange(1, 1000000, 1, false);
   lineNum->setLabel(i18n("Goto Line:"), AlignVCenter | AlignLeft);
 //  lineNum->setMinimumWidth(fontMetrics().maxWidth()*20);
   topLayout->addWidget( lineNum );
@@ -963,8 +964,7 @@ void KEdit::misspelling (QString word, QStringList *, unsigned pos)
   unsigned int l = 0;
   unsigned int cnt = 0;
   posToRowCol (pos, l, cnt);
-  setCursorPosition (l, cnt);
-  setCursorPosition (l, cnt+word.length(), TRUE);
+  setSelection(l, cnt, l, cnt+word.length());
 
   /*
   if (cursorPoint().y()>height()/2)
@@ -987,39 +987,27 @@ void KEdit::corrected (QString originalword, QString newword, unsigned pos)
   if( newword != originalword )
   {
     posToRowCol (pos, l, cnt);
-    setCursorPosition (l, cnt);
-    setCursorPosition (l, cnt+originalword.length(), TRUE);
-    cut();
-    insertAt (newword, l, cnt);
-  }
+    setSelection(l, cnt, l, cnt+originalword.length());
 
-  deselect();
+    setReadOnly ( false );
+    removeSelectedText();
+    insert(newword);
+    setReadOnly ( true );
+  }
+  else 
+  {
+    deselect();
+  }
 }
 
 void KEdit::posToRowCol(unsigned int pos, unsigned int &line, unsigned int &col)
 {
   for (line = 0; line < static_cast<uint>(numLines()) && col <= pos; line++)
   {
-    col += lineLength(line);
-#if QT_VERSION < 300
-    if( isEndOfParagraph(line) )
-    {
-      col++;
-    }
-#else
-#if defined(Q_CC_GNU)
-#warning FIXME!
-#endif
-#endif
+    col += lineLength(line)+1;
   }
   line--;
-  col = pos - col + lineLength(line);
-#if QT_VERSION < 300
-  if( isEndOfParagraph(line) )
-  {
-     col++;
-  }
-#endif
+  col = pos - col + lineLength(line) + 1;
 }
 
 void KEdit::spellcheck_stop()
