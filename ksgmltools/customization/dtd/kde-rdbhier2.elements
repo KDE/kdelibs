@@ -38,6 +38,10 @@
 <!ENTITY % kde.rdbhier2 "INCLUDE">
 <![ %kde.rdbhier2; [
 
+<!ENTITY % beginpage.module "IGNORE">
+<!ENTITY % bridgehead.module "IGNORE">
+<!ENTITY % revhistory.content.module "IGNORE">
+
 <![ %kde.compulsory.id; [
 
 <!ENTITY % chapter.attlist "IGNORE">
