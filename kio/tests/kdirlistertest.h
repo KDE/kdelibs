@@ -1,8 +1,21 @@
-/* This file is part of KDE desktop environment
+/* This file is part of the KDE desktop environment
 
-   Copyright 2001 Michael Brade <brade@informatik.uni-muenchen.de>
+   Copyright (C) 2001, 2002 Michael Brade <brade@kde.org>
 
-   This file is licensed under LGPL version 2.
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 
 #ifndef _KDIRLISTERTEST_H_
@@ -69,6 +82,21 @@ public slots:
       // TODO
    }
    void closeView() { cout << "*** closeView()" << endl; }
+
+   void infoMessage( const QString& msg )
+   { cout << "*** infoMessage: " << msg.local8Bit() << endl; }
+
+   void percent( int percent )
+   { cout << "*** percent: " << percent << endl; }
+
+   void totalSize( KIO::filesize_t size )
+   { cout << "*** totalSize: " << (long)size << endl; }
+
+   void processedSize( KIO::filesize_t size )
+   { cout << "*** processedSize: " << (long)size << endl; }
+
+   void speed( int bytes_per_second )
+   { cout << "*** speed: " << bytes_per_second << endl; }
 };
 
 class KDirListerTest : public QWidget
@@ -80,7 +108,6 @@ public:
 
 public slots:
    void start();
-   void setURL();
    void test();
 
 private:
