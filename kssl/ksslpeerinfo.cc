@@ -71,9 +71,11 @@ bool KSSLPeerInfo::certMatchesAddress() {
             << endl;
 
   for (KAddressInfo *x = cns.first(); x; x = cns.next()) {
-     // kdDebug(7029) << "Found address: " << (**x).pretty() << endl;
-     if ((*x).address()->isCoreEqual(d->host))
+     kdDebug(7029) << "Testing address: " << (*x).address()->pretty() << endl;
+     if ((*x).address()->isEqual(d->host)) {
+        kdDebug(7029) << "+++ Found address: " << (*x).address()->pretty() << endl;
         return true;
+     }
   }
 
 #endif
