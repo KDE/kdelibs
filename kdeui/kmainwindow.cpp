@@ -1091,9 +1091,9 @@ KAccel * KMainWindow::accel()
     return d->kaccel;
 }
 
-void KMainWindow::paintEvent( QPaintEvent * )
+void KMainWindow::paintEvent( QPaintEvent * pe )
 {
-    // do nothing
+    QMainWindow::paintEvent(pe); //Upcall to handle SH_MainWindow_SpaceBelowMenuBar rendering
 }
 
 QSize KMainWindow::sizeForCentralWidgetSize(QSize size)
