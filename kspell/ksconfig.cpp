@@ -382,7 +382,7 @@ void KSpellConfig::fillInDialog (void)
 	      // so place it first in the lists (overwrite "Default")
 
 	      //	      kdebug (KDEBUG_INFO, 750, "default is [%s][%s]",hname.data(),fname.data());
-	      langfnames->removeFirst();
+	      langfnames->remove (  );
 	      langfnames->insert (0,fname.ascii());
 
 	      hname="Default - "+hname+"("+fname+")";

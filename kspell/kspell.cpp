@@ -505,6 +505,10 @@ int KSpell::parseOneResponse (const QString &buffer, QString &word, QStrList *su
 	      i=j+2;
 	    }
 	}
+
+      if (sugg->count()==1 && sugg->at(0) == word)
+	return GOOD;
+
       return MISTAKE;
     }
       
@@ -669,7 +673,7 @@ bool KSpell::check (QString _buffer)
   if (newbuffer.at(newbuffer.length()-1)!='\n')
     {
       newbuffer+='\n';
-      newbuffer+='\n'; //shouldn't these be removed at some point?
+      origbuffer+='\n';
     }
   OUTPUT(check2);
   proc->fputs ("!");
