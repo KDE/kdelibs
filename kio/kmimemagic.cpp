@@ -21,9 +21,11 @@
 #include <qfile.h>
 #include <ksimpleconfig.h>
 #include <kstddirs.h>
+#include <kstaticdeleter.h>
 #include <assert.h>
 
 KMimeMagic* KMimeMagic::s_pSelf = 0L;
+KStaticDeleter<KMimeMagic> kmimemagicsd;
 
 KMimeMagic* KMimeMagic::self()
 {
@@ -36,7 +38,7 @@ void KMimeMagic::initStatic()
 {
   // Magic file detection init
   QString mimefile = locate( "mime", "magic" );
-  s_pSelf = new KMimeMagic( mimefile );
+  s_pSelf = kmimemagicsd.setObject( new KMimeMagic( mimefile ) );
   s_pSelf->setFollowLinks( TRUE );
 }
 
