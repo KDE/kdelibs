@@ -221,7 +221,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             QString old_txt = text();
             QLineEdit::keyPressEvent ( e );
             QString txt = text();
-            int len = txt.length();            
+            int len = txt.length();
             QString keycode = e->text();
 
             if ( txt != old_txt && len && cursorPosition() == len )
@@ -233,6 +233,9 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                     makeCompletion( txt );  // handle when requested...
                 e->accept();
             }
+            else if (!len && d->completionBox && d->completionBox->isVisible())
+                d->completionBox->hide();
+
             return;
         }
 
