@@ -1994,6 +1994,11 @@ void HTTPProtocol::http_close()
      kdDebug(7113) << "(" << getpid() << ") http_close: keep alive" << endl;
 }
 
+void HTTPProtocol::closeConnection()
+{
+  http_closeConnection();
+}
+
 void HTTPProtocol::http_closeConnection()
 {
   kdDebug(7113) << "http_closeConnection: closing (" << getpid() << ")" << endl;

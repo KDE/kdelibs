@@ -120,6 +120,8 @@ public:
 
   virtual void reparseConfiguration();
 
+  virtual void closeConnection(); // Forced close of connection
+
 protected:
 
   void error( int _errid, const QString &_text );
