@@ -187,7 +187,7 @@ protected:
   /**
    * Write configuration file back.
    *
-   * @param rFile The name of the file to write.
+   * @param filename The name of the file to write.
    * @param bGlobal Specifies whether to write only entries which
    *        are marked as belonging to the global KDE config file.
    *        If this is false, it skips those entries.
@@ -198,7 +198,7 @@ protected:
    * @return Whether some entries are left to be written to other
    *         files. 
    */
-  bool writeConfigFile(QFile& rFile, bool bGlobal = false, bool bMerge = true);
+  bool writeConfigFile(QString filename, bool bGlobal = false, bool bMerge = true);
 
   /**
    * Retrieve the state of the app-config object.

@@ -24,6 +24,7 @@
 #include <qdir.h>
 #include <qfileinfo.h>
 #include <qtextstream.h>
+#include <qdatetime.h>
 
 #include <kapp.h>
 
@@ -32,8 +33,13 @@
 #include <kglobal.h>
 #include <kstddirs.h>
 
+#include <sys/types.h>
+
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
+#endif
+#ifdef HAVE_FCNTL_H
+#include <fcntl.h>
 #endif
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -41,6 +47,8 @@
 #ifdef HAVE_TEST
 #include <test.h>
 #endif
+
+#include <stdlib.h>
 
 /* translate escaped escape sequences to their actual values. */
 static QString printableToString(const QString& s)
@@ -233,6 +241,56 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
   }
 }
 
+static FILE *interimFileStream;
+
+static bool openInterimFile(QFile &file, QString filename)
+{
+   int maxTries = 3;
+   if (!checkAccess(filename, W_OK)) 
+      return false;
+    
+   srand( QTime::currentTime().msecsTo(QTime()));
+   QString interimFilename;
+   int fd = -1;
+   int tries = 0;
+   do {
+      tries++;
+      interimFilename = filename+QString(".new%1").arg(rand());
+      fd = open(interimFilename.ascii(), O_WRONLY|O_CREAT|O_EXCL, 0666);
+
+      if ((fd <= 0) && (tries >= maxTries))
+         return false;
+   }
+   while( fd <= 0);
+
+   file.setName(interimFilename);
+
+   // We need to open a stream otherwise we use 1 system call for each byte writtten.
+   interimFileStream = fdopen(fd, "w");
+   file.open(IO_WriteOnly, interimFileStream);
+
+   // Set uid/gid (neccesary for SUID programs)
+   chown(interimFilename.ascii(), getuid(), getgid());
+   return true;
+}
+
+static bool closeInterimFile(QFile &file, QString filename)
+{
+   file.flush();
+   int result = fclose( interimFileStream );
+
+   if ( result == 0 )
+   {
+      result = rename( file.name().ascii(), filename.ascii());
+      if ( result == 0 )
+         return true; // Success!
+   }
+    
+   // Something went wrong, make sure to delete the interim file.
+   unlink(file.name().ascii());
+   return false;
+}
+
 void KConfigINIBackEnd::sync(bool bMerge)
 {
   // write-sync is only necessary if there are dirty entries
@@ -241,7 +299,6 @@ void KConfigINIBackEnd::sync(bool bMerge)
 
   bool bEntriesLeft = true;
   bool bLocalGood = false;
-
 
   // find out the file to write to (most specific writable file)
   // try local app-specific file first
@@ -260,13 +317,8 @@ void KConfigINIBackEnd::sync(bool bMerge)
     // it wasn't SUID.
     if (checkAccess(aLocalFileName, W_OK)) {
       // is it writable?
-      QFile aConfigFile(aLocalFileName);
-      aConfigFile.open( IO_ReadWrite );
-      // Set uid/gid (neccesary for SUID programs)
-      chown(aConfigFile.name().ascii(), getuid(), getgid());
-      bEntriesLeft = writeConfigFile( aConfigFile, false, bMerge );
+      bEntriesLeft = writeConfigFile( aLocalFileName, false, bMerge );
       bLocalGood = true;
-      aConfigFile.close();
     }
   }
 
@@ -277,21 +329,17 @@ void KConfigINIBackEnd::sync(bool bMerge)
 
     QString aFileName = KGlobal::dirs()->saveLocation("config") +
       "kdeglobals";
-    QFile aConfigFile( aFileName );
 
     // can we allow the write? (see above)
     if (checkAccess ( aFileName, W_OK )) {
-      aConfigFile.open( IO_ReadWrite );
-      // Set uid/gid (neccesary for SUID programs)
-      chown(aConfigFile.name().ascii(), getuid(), getgid());
-      writeConfigFile( aConfigFile, true, bMerge );
-      aConfigFile.close();
+      writeConfigFile( aFileName, true, bMerge );
     }
   }
 
 }
 
-bool KConfigINIBackEnd::writeConfigFile(QFile &rConfigFile, bool bGlobal,
+
+bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
 					bool bMerge)
 {
   KEntryMap aTempMap;
@@ -301,50 +349,59 @@ bool KConfigINIBackEnd::writeConfigFile(QFile &rConfigFile, bool bGlobal,
   if (pConfig->isReadOnly())
     return true; // pretend we wrote it
 
-
-  QTextStream* pStream;
-  if (bMerge) {
-    // merge entries on disk
-
-    pStream = new QTextStream( &rConfigFile );
-
-    // fill the temporary structure with entries from the file
-    parseSingleConfigFile( rConfigFile, &aTempMap, bGlobal );
+  if (bMerge) 
+  {
+    // Read entries from disk
+    QFile rConfigFile( filename );
+    if (rConfigFile.open(IO_ReadOnly))
+    {
+       // fill the temporary structure with entries from the file
+       parseSingleConfigFile( rConfigFile, &aTempMap, bGlobal );
+       rConfigFile.close();
+    }
 
     KEntryMap aMap = pConfig->internalEntryMap();
 
     // augment this structure with the dirty entries from the config object
     for (KEntryMapIterator aInnerIt = aMap.begin();
-	 aInnerIt != aMap.end(); ++aInnerIt) {
+          aInnerIt != aMap.end(); ++aInnerIt) 
+    {
       KEntry currentEntry = *aInnerIt;
 
-      if (currentEntry.bDirty) {
-	// only write back entries that have the same
-	// "globality" as the file
-	if (currentEntry.bGlobal == bGlobal) {
-	  KEntryKey entryKey = aInnerIt.key();
-	
-	  // put this entry from the config object into the
-	  // temporary map, possibly replacing an existing entry
-	  if (aTempMap.contains(entryKey))
-	    aTempMap.replace(entryKey, currentEntry);
-	  else {
-	    // add special group key and then the entry
-	    KEntryKey groupKey = { entryKey.group, "" };
-	    if (!aTempMap.contains(groupKey))
-	      aTempMap.insert(groupKey, KEntry());
+      if (!currentEntry.bDirty) 
+         continue;
 
-	    aTempMap.insert(entryKey, currentEntry);
-	  }
-	} else
-	  // wrong "globality" - might have to be saved later
-	  bEntriesLeft = true;
+      // only write back entries that have the same
+      // "globality" as the file
+      if (currentEntry.bGlobal == bGlobal) 
+      {
+        KEntryKey entryKey = aInnerIt.key();
+	
+        // put this entry from the config object into the
+        // temporary map, possibly replacing an existing entry
+        if (aTempMap.contains(entryKey))
+        {
+          aTempMap.replace(entryKey, currentEntry);
+        }
+	else 
+        {
+	  // add special group key and then the entry
+	  KEntryKey groupKey = { entryKey.group, "" };
+	  if (!aTempMap.contains(groupKey))
+	    aTempMap.insert(groupKey, KEntry());
+
+	  aTempMap.insert(entryKey, currentEntry);
+        }
+      } 
+      else
+      {
+        // wrong "globality" - might have to be saved later
+        bEntriesLeft = true;
       }
     } // loop
-
-    // truncate file
-    delete pStream;
-  } else {
+  }
+  else 
+  { 
     // don't merge, just get the regular entry map and use that.
     aTempMap = pConfig->internalEntryMap();
     bEntriesLeft = true; // maybe not true, but we aren't sure
@@ -352,21 +409,14 @@ bool KConfigINIBackEnd::writeConfigFile(QFile &rConfigFile, bool bGlobal,
 
   // OK now the temporary map should be full of ALL entries.
   // write it out to disk.
-  rConfigFile.close();
 
-  // Does program run SUID and user would not be allowed to write
-  // to the file, if it doesn't run  SUID?
-  if (!checkAccess(rConfigFile.name(), W_OK)) // write not allowed
-    return false; // can't allow to write config data.
+  QFile rConfigFile;
 
+  if (!openInterimFile(rConfigFile, filename))
+     return bEntriesLeft;
 
-  rConfigFile.open(IO_Truncate | IO_WriteOnly);
-  // Set uid/gid (neccesary for SUID programs)
-  chown(rConfigFile.name().ascii(), getuid(), getgid());
+  QTextStream pStream( &rConfigFile );
 
-  pStream = new QTextStream( &rConfigFile );
-
-  
   // write back -- start with the default group
   KEntryMapConstIterator aWriteIt;
   for (aWriteIt = aTempMap.begin(); aWriteIt != aTempMap.end(); ++aWriteIt) {
@@ -375,12 +425,12 @@ bool KConfigINIBackEnd::writeConfigFile(QFile &rConfigFile, bool bGlobal,
 	  if ( (*aWriteIt).bNLS &&
 	       aWriteIt.key().key.right(1) != "]")
 	      // not yet localized, but should be
-	      *pStream << aWriteIt.key().key << '['
+	      pStream << aWriteIt.key().key << '['
 		       << pConfig->locale() << ']' << "="
 		       << stringToPrintable( (*aWriteIt).aValue) << '\n';
 	  else
 	      // need not be localized or already is
-	      *pStream << aWriteIt.key().key << "="
+	      pStream << aWriteIt.key().key << "="
 		       << stringToPrintable( (*aWriteIt).aValue) << '\n';
       }
   } // for loop
@@ -394,7 +444,7 @@ bool KConfigINIBackEnd::writeConfigFile(QFile &rConfigFile, bool bGlobal,
     
     if ( currentGroup != aWriteIt.key().group ) {
 	currentGroup = aWriteIt.key().group;
-	*pStream << '[' << aWriteIt.key().group << ']' << '\n';
+	pStream << '[' << aWriteIt.key().group << ']' << '\n';
     }
 
     if (aWriteIt.key().key.isEmpty()) {
@@ -404,29 +454,17 @@ bool KConfigINIBackEnd::writeConfigFile(QFile &rConfigFile, bool bGlobal,
       if ( (*aWriteIt).bNLS &&
 	  aWriteIt.key().key.right(1) != "]")
 	// not yet localized, but should be
-	*pStream << aWriteIt.key().key << '['
+	pStream << aWriteIt.key().key << '['
 		 << pConfig->locale() << ']' << "="
 		 << stringToPrintable( (*aWriteIt).aValue) << '\n';
       else
 	// need not be localized or already is
-	*pStream << aWriteIt.key().key << "="
+	pStream << aWriteIt.key().key << "="
 		 << stringToPrintable( (*aWriteIt).aValue) << '\n';
     }
   } // for loop
 
-  // clean up
-  delete pStream;
-  rConfigFile.close();
-
-
-  // Reopen the config file.
-
-  // Can we allow the write? (see above)
-  if( checkAccess( rConfigFile.name(), W_OK ) )
-    // Yes, write OK
-    rConfigFile.open( IO_ReadWrite );
-  else
-    rConfigFile.open( IO_ReadOnly );
+  closeInterimFile(rConfigFile, filename);
 
   return bEntriesLeft;
 }
