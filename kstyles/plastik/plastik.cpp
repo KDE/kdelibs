@@ -3585,9 +3585,6 @@ bool PlastikStyle::eventFilter(QObject *obj, QEvent *ev)
         if ((ev->type() == QEvent::Show) && !animationTimer->isActive())
         {
             animationTimer->start( 50, false );
-        } else if ((ev->type() == QEvent::Hide) && animationTimer->isActive())
-        {
-            animationTimer->stop();
         }
     }
     if ( !qstrcmp(obj->name(), "kde toolbar widget") )
