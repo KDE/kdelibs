@@ -47,6 +47,26 @@ in the khtml sourcecode.
 # ecma
 ===========================================================================
 
+TODO:
+- ScriptInterpreter domObjectsPerDocument + getDOMDocumentNode
+
+To investigate:
+- kjs_navigator (PluginBase refcount ; ProductSub)
+   hmm, why is e.g. the ref/deref stuff in APPLE_CHANGES?
+- scope changes  (kjs_events.cpp, DOMNode::pushEventHandlerScope)
+- Image object: DOM::Document doc -> QGuardedPtr<DOM::DocumentImpl> doc;
+  (why? Or rather: should this also be done in all other domobject-wrappers?)
+- window.scroll == scrollto or scrollby ?? 
+- ScheduledAction: ObjectImp -> Object. Sounds good - why did we have an imp? refcount problem?
+
+Needs other stuff before it can be applied:
+- Identifier change (needs kjs2)
+- DOMRange::createContextualFragment
+- lengthPropertyName - where is it defined ?? in kjs maybe?
+- doc.preferredStylesheetSet() and doc.selectedStylesheetSet() :
+   patch ready (DF), but needs the dom method to be added first
+- DOMUIEvent, 6 new properties, needs new DOM methods
+- createContextualFragment (needs DOM method)
 
 ===========================================================================
 # html
