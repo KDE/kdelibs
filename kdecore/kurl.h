@@ -33,7 +33,7 @@
  * would result in a decoded path "/cgi-bin/test me.pl"
  * and in the encoded query "cmd=Hello%20you".
  * Since path is internally always encoded you may NOT use
- * "%00" in tha path while this is ok for the query.
+ * "%00" in the path while this is ok for the query.
  */
 class KURL
 {

@@ -356,7 +356,7 @@ QWidget* KClipboard::makeOwner()
 
 void KClipboard::setURLList( QStringList& _urls )
 {
-  open( IO_WriteOnly | IO_Truncate, "url/url" );
+  open( IO_WriteOnly | IO_Truncate, "text/uri-list" );
 
   QStringList::Iterator iterator = _urls.begin();
   for( ; iterator != _urls.end(); iterator++ )
@@ -375,7 +375,7 @@ bool KClipboard::urlList( QStringList& _urls)
   if ( !isOwner() )
     fetchData();
 
-  if ( m_strFormat != "url/url" )
+  if ( m_strFormat != "text/uri-list" )
     return false;
 
   QByteArray ba = octetStream();
