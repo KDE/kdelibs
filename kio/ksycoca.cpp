@@ -81,6 +81,7 @@ KSycoca::~KSycoca()
    delete str;
    delete device;
    delete m_lstFactories;
+   _self = 0L;
 }
 
 QDataStream * KSycoca::findEntry(int offset, KSycocaType &type)

@@ -83,6 +83,7 @@ KServiceTypeFactory::createEntry(const QString &file)
 
 KServiceTypeFactory::~KServiceTypeFactory()
 {
+  _self = 0L;
 }
 
 KServiceTypeFactory * KServiceTypeFactory::self()

@@ -43,6 +43,7 @@ KServiceFactory::KServiceFactory()
 
 KServiceFactory::~KServiceFactory()
 {
+   _self = 0L;
 }
 
 KSycocaEntry * KServiceFactory::createEntry( const QString& file )
