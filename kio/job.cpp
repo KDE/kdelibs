@@ -21,7 +21,6 @@
 
 #include <config.h>
 
-#include <iostream.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
@@ -1933,7 +1932,7 @@ void CopyJob::createNextDir()
         // Create the directory - with default permissions so that we can put files into it
         // TODO : change permissions once all is finished
         KIO::SimpleJob *newjob = KIO::mkdir( (*it).uDest, -1 );
-        Scheduler::scheduleJob(newjob);	
+        Scheduler::scheduleJob(newjob);
 
         //emit creatingDir( this, (*it).uDest );
         m_currentDestURL=(*it).uDest;
@@ -1972,7 +1971,7 @@ void CopyJob::slotResultCopyingFiles( Job * job )
                 // We need to stat the existing file, to get its last-modification time
                 KURL existingFile( (*it).uDest );
                 SimpleJob * newJob = KIO::stat( existingFile, false );
-                Scheduler::scheduleJob(newJob);	
+                Scheduler::scheduleJob(newJob);
                 kdDebug(7007) << "KIO::stat for resolving conflict on " << existingFile.prettyURL() << endl;
                 state = STATE_CONFLICT_COPYING_FILES;
                 addSubjob(newJob);
@@ -2183,7 +2182,7 @@ void CopyJob::copyNextFile()
                 // This is the case of creating a real symlink
                 KIO::SimpleJob *newJob = KIO::symlink( (*it).uSource.path(), (*it).uDest, bOverwrite, false /*no GUI*/ );
                 newjob = newJob;
-                Scheduler::scheduleJob(newJob);	
+                Scheduler::scheduleJob(newJob);
                 kdDebug(7007) << "CopyJob::copyNextFile : Linking target=" << (*it).uSource.path() << " link=" << (*it).uDest.prettyURL() << endl;
                 //emit linking( this, (*it).uSource.path(), (*it).uDest );
                 m_bCurrentOperationIsLink = true;
@@ -2254,7 +2253,7 @@ void CopyJob::copyNextFile()
             // Copying a symlink - only on the same protocol/host/etc. (#5601, downloading an FTP file through its link),
         {
             KIO::SimpleJob *newJob = KIO::symlink( (*it).linkDest, (*it).uDest, bOverwrite, false /*no GUI*/ );
-            Scheduler::scheduleJob(newJob);	
+            Scheduler::scheduleJob(newJob);
             newjob = newJob;
             kdDebug(7007) << "CopyJob::copyNextFile : Linking target=" << (*it).linkDest << " link=" << (*it).uDest.prettyURL() << endl;
             //emit linking( this, (*it).linkDest, (*it).uDest );
@@ -2323,7 +2322,7 @@ void CopyJob::deleteNextDir()
         // Take first dir to delete out of list - last ones first !
         KURL::List::Iterator it = dirsToRemove.fromLast();
         SimpleJob *job = KIO::rmdir( *it );
-        Scheduler::scheduleJob(job);	
+        Scheduler::scheduleJob(job);
         dirsToRemove.remove(it);
         addSubjob( job );
     }
@@ -2645,7 +2644,7 @@ void DeleteJob::startNextJob()
     {
         // Stat first
         KIO::SimpleJob * job = KIO::stat( *it, false );
-        Scheduler::scheduleJob(job);	
+        Scheduler::scheduleJob(job);
         //kdDebug(7007) << "KIO::stat (DeleteJob) " << (*it).prettyURL() << endl;
         state = STATE_STATING;
         addSubjob(job);
@@ -2695,7 +2694,7 @@ void DeleteJob::deleteNextFile()
         {
             // Normal deletion
             job = KIO::file_delete( *it, false /*no GUI*/);
-            Scheduler::scheduleJob(job);	
+            Scheduler::scheduleJob(job);
             m_currentURL=(*it);
             //emit deleting( this, *it );
         }
@@ -2718,7 +2717,7 @@ void DeleteJob::deleteNextDir()
         // Take first dir to delete out of list - last ones first !
         KURL::List::Iterator it = dirs.fromLast();
         SimpleJob *job = KIO::rmdir( *it );
-        Scheduler::scheduleJob(job);	
+        Scheduler::scheduleJob(job);
         dirs.remove(it);
         addSubjob( job );
     }
@@ -2809,7 +2808,7 @@ void DeleteJob::slotResult( Job *job )
             // List it
             state = STATE_LISTING;
             ListJob *newjob = listRecursive( url, false );
-            Scheduler::scheduleJob(newjob);	
+            Scheduler::scheduleJob(newjob);
             connect(newjob, SIGNAL(entries( KIO::Job *,
                                             const KIO::UDSEntryList& )),
                     SLOT( slotEntries( KIO::Job*,

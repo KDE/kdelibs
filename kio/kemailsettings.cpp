@@ -31,7 +31,6 @@
 #include <kconfig.h>
 #include <klocale.h>
 #include <kdebug.h>
-#include <iostream.h>
 
 class KEMailSettingsPrivate {
 public:

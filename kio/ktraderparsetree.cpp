@@ -19,8 +19,7 @@
 
 #include "ktraderparsetree.h"
 
-#include <iostream>
-#include <assert.h>
+// #include <iostream>
 
 bool ParseTreeOR::eval( ParseContext *_context ) const
 {

@@ -29,8 +29,6 @@
 
 #include "kdirwatch.h"
 
-#include <iostream.h>
-
 #ifdef HAVE_FAM
 #include <fam.h>
 #endif
@@ -339,7 +337,7 @@ void KDirWatch::resetList( bool skippedToo )
          (*it).m_status = Normal;
       }
       else
-      { 
+      {
          (*it).m_ctime = NO_NOTIFY;
          (*it).m_status = NonExistent;
       }
