@@ -32,12 +32,12 @@
  * The file looks like this:
  * <pre>
  * [!Global!]
- * appname=executable
- * friendly=FriendlyNameOfApp
+ * Name=executable
+ * Comment=FriendlyNameOfApp
  *
  * [eventname]
- * friendly=FriendlyNameOfEvent
- * description=DescriptionOfEvent
+ * Name=FriendlyNameOfEvent
+ * Comment=Description Of Event
  * default_sound=filetoplay.wav
  * default_presentation=1
  *  ...
