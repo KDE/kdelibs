@@ -494,6 +494,11 @@ public:
     */
   int xioErrhandler();
 
+  /**
+   * Valid values for the settingsChanged signal
+   */
+  enum { SETTINGS_MOUSE, SETTINGS_COMPLETION, SETTINGS_PATHS };
+
   signals:
   /**
    * KApplication has changed its Palette due to a KDisplay request.
@@ -539,8 +544,9 @@ public:
    * The global settings have been changed - see KGlobalSettings
    * KApplication takes care of calling reparseConfiguration on KGlobal::config()
    * so that applications/classes using this only have to re-read the configuration
+   * @param category the category among the enum above
    */
-  void settingsChanged();
+  void settingsChanged(int category);
 
   /**
    * Emitted when a KIPC user message has been received.
@@ -652,6 +658,21 @@ public:
 #endif
 
 // $Log$
+// Revision 1.138  2000/03/19 13:33:06  jansen
+// * Improved KIPC. There are 2 message types now: system messages and user
+//   messages. There is an event mask related to the system messages so they
+//   can be blocked. The system messages invoke a certain action inside
+//   KApplication, the user messages emit KApplication::kipcMessage(id, arg).
+//
+// * Cleaned up the change message handlers. The "ChangeGeneral" is gone and
+//   has been renamed to FontChanged. Ever wondered why there was so much
+//   flicker when changing the font? Previously, kapp would emit 1 style
+//   changed, 1 font changed, 2 palette changed and 4 (!) appearance changed
+//   singals on _one_ font change request...
+//
+// David, I suggested the name "IconviewChanged" for the iconview changes in
+// this patch. There's a notice in KApplication::x11EventFilter() for it.
+//
 // Revision 1.137  2000/03/17 00:16:45  faure
 // Added atom for KDEChangeSettings, thanks Geert for the very precious tips.
 // Added signal in kapp.h : settingsChanged(), used by K*Views

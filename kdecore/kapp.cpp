@@ -724,17 +724,17 @@ public:
 
 bool KApplication::x11EventFilter( XEvent *_event )
 {
-    if (x11Filter) 
+    if (x11Filter)
     {
-	for (QWidget* w=x11Filter->first(); w; w=x11Filter->next()) 
+	for (QWidget* w=x11Filter->first(); w; w=x11Filter->next())
 	{
 	    if (((KAppX11HackWidget*) w)->publicx11Event(_event))
 		return true;
 	}
     }
 
-    if ((_event->type == ClientMessage) && 
-	    (_event->xclient.message_type == kipcCommAtom)) 
+    if ((_event->type == ClientMessage) &&
+	    (_event->xclient.message_type == kipcCommAtom))
     {
 	XClientMessageEvent *cme = (XClientMessageEvent *) _event;
 
@@ -763,8 +763,9 @@ bool KApplication::x11EventFilter( XEvent *_event )
 		emit backgroundChanged(arg);
 		break;
 
-	    case KIPC::IconviewChanged:
-		// GJ: David, you could insert your stuff here.
+	    case KIPC::SettingsChanged:
+		KGlobal::config()->reparseConfiguration();
+                emit settingsChanged(arg);
 		break;
 	    }
 	}
@@ -780,7 +781,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
 
 void KApplication::addKipcEventMask(int id)
 {
-    if (id >= 32) 
+    if (id >= 32)
     {
 	kdDebug(101) << "Cannot use KIPC event mask for message IDs >= 32\n";
 	return;
@@ -1040,9 +1041,9 @@ void KApplication::kdisplaySetPalette()
     // GJ: The cursor blink rate doesn't belong here. It should get it's own
     // change message but it doesn't really matter because it isn't set.
     int num = config->readNumEntry("cursorBlinkRate", cursorFlashTime());
-    if (num < 200) 
+    if (num < 200)
 	num = 200;
-    if (num > 2000) 
+    if (num > 2000)
 	num = 2000;
     setCursorFlashTime(num);
 
