@@ -634,9 +634,11 @@ void RenderBox::calcHeight()
 void RenderBox::calcAbsoluteHorizontal()
 {
     const int AUTO = -666666;
-    int l,r,w, cw;
+    int l,r,w,ml,mr,cw;
 
-    l=r=w=AUTO;
+    int pab = borderLeft()+ borderRight()+ paddingLeft()+ paddingRight();
+    
+    l=r=ml=mr=w=AUTO;
     cw = containingBlockWidth()
     	+containingBlock()->paddingLeft() +containingBlock()->paddingRight();
 
@@ -646,16 +648,25 @@ void RenderBox::calcAbsoluteHorizontal()
 	r = m_style->right().width(cw);		
     if(!m_style->width().isVariable())
 	w = m_style->width().width(cw);
+    if(!m_style->marginLeft().isVariable())
+	ml = m_style->marginLeft().width(cw);		
+    if(!m_style->marginRight().isVariable())
+	mr = m_style->marginRight().width(cw);
 
+    
+    // css2 spec 10.3.7
+    // 1
     RenderObject* o=parent();
-    if (style()->direction()==LTR && l==AUTO)
+    if (style()->direction()==LTR && l==AUTO && r==AUTO)
     {
 	if (m_next) l = m_next->xPos();
 	else if (m_previous) l = m_previous->xPos()+m_previous->contentWidth();
 	else l=0;
 	while (o && o!=containingBlock()) { l+=o->xPos(); o=o->parent(); }
     }
-    else if (r==AUTO)
+    
+    // 2
+    else if (style()->direction()==RTL && r==AUTO && r==AUTO)
     {
     	if (m_previous) r = cw - (m_previous->xPos() + m_previous->contentWidth());
 	else if (m_next) r = cw - m_next->xPos();
@@ -663,24 +674,57 @@ void RenderBox::calcAbsoluteHorizontal()
 	while (o && o!=containingBlock()) { r+=o->xPos(); o=o->parent(); }	
     }
 
+    // 3
     if (w==AUTO)
     {
     	if (l==AUTO) l=0;
 	if (r==AUTO) r=0;
-	w = cw - ( r+l+marginLeft()+marginRight()
-	    + borderLeft()+ borderRight()+ paddingLeft()+ paddingRight());
     };
-
-    m_width = w + borderLeft()+ borderRight()+ paddingLeft()+ paddingRight();
-	
+    
+    // 4
+    if (w==AUTO || l==AUTO || r==AUTO)
+    {
+        if (ml==AUTO) ml=0;
+        if (mr==AUTO) mr=0;
+    }
+    
+    // 5
+    if (ml==AUTO && mr==AUTO)
+    {
+        int ot = w + r + l + pab;
+        ml = (cw - ot)/2;
+        mr = cw - ot - ml;
+    }
+    
+    // 6
+    if (w==AUTO)
+        w = cw - ( r + l + ml + mr + pab);
     if (l==AUTO)
-    	l=0;
+        l = cw - ( r + w + ml + mr + pab);
+    if (r==AUTO)
+        r = cw - ( l + w + ml + mr + pab);
+    if (ml==AUTO)
+        ml = cw - ( r + l + w + mr + pab);
+    if (mr==AUTO)
+        mr = cw - ( r + l + w + ml + pab);
 
-    m_x = l + marginLeft() +
-    	containingBlock()->paddingLeft() + containingBlock()->borderLeft();
+    // 7
+    if (cw != l + r + w + ml + mr + pab)
+    {
+        if (style()->direction()==LTR)
+            r = cw - ( l + w + ml + mr + pab);
+        else 
+            l = cw - ( r + w + ml + mr + pab);
+    }
+    
+    m_width = w + pab;
+    m_marginLeft = ml;
+    m_marginLeft = mr;
+    m_x = l + ml + containingBlock()->paddingLeft() + containingBlock()->borderLeft();
 	
 //    printf("h: %d, %d, %d\n",l,w,r);
 }
+
 
 void RenderBox::calcAbsoluteVertical()
 {
