@@ -317,6 +317,9 @@ protected: // Members
 
   short unsigned int mDefaultPort;
 
+  // Values that determine the remote connection timeouts.
+  int m_proxyConnTimeout, m_remoteConnTimeout, m_remoteRespTimeout;
+
 #ifdef DO_SSL
   bool m_bUseSSL;
   KSSL m_ssl;

@@ -93,14 +93,6 @@ using namespace KIO;
 // Default expire time in seconds: 1 min.
 #define DEFAULT_EXPIRE (1*60)
 
-// Timeout for connections to remote sites in seconds
-#define REMOTE_CONNECT_TIMEOUT 20
-
-// Timeout for connections to proxy in seconds
-#define PROXY_CONNECT_TIMEOUT 10
-
-// Timeout for receiving an answer from a remote side in seconds.
-#define RESPONSE_TIMEOUT 60
 
 extern "C" {
   const char* create_basic_auth (const char *header, const char *user, const char *passwd);
@@ -758,7 +750,7 @@ HTTPProtocol::http_openConnection()
           return false;
         }
         // Wait for connection
-        if (!waitForConnect(m_sock, PROXY_CONNECT_TIMEOUT))
+        if (!waitForConnect(m_sock, m_proxyConnTimeout))
         {
           error(ERR_COULD_NOT_CONNECT, proxy_host );
           kdDebug(7103) << "Timed out waiting to connect to PROXY server!!" << endl;
@@ -789,7 +781,7 @@ HTTPProtocol::http_openConnection()
         return false;
       }
 
-      if (!waitForHeader(m_sock, RESPONSE_TIMEOUT) ) {
+      if (!waitForHeader(m_sock, m_remoteRespTimeout) ) {
         // FIXME: a good workaround would be to fallback to non-proxy mode
         //        here if we can.
         // FIXME: do we have to close() the connection here?
@@ -835,7 +827,7 @@ HTTPProtocol::http_openConnection()
           return false;
         }
         // Wait for connection
-        if (!waitForConnect(m_sock, REMOTE_CONNECT_TIMEOUT))
+        if (!waitForConnect(m_sock, m_remoteConnTimeout))
         {
           error(ERR_COULD_NOT_CONNECT, m_state.hostname );
           return false;
@@ -1344,7 +1336,8 @@ bool HTTPProtocol::readHeader()
 
   QCString locationStr; // In case we get a redirect.
   QCString cookieStr; // In case we get a cookie.
-  QString charsetStr;
+  QString charsetStr; // Incase we get a charset
+  QString disposition; // Incase we get a Content-Disposition
 
   // read in 4096 bytes at a time (HTTP cookies can be quite large.)
   int len = 0;
@@ -1355,7 +1348,7 @@ bool HTTPProtocol::readHeader()
   bool cacheValidated = false; // Revalidation was successfull
   bool mayCache = true;
 
-  if (!waitForHeader(m_sock, RESPONSE_TIMEOUT))
+  if (!waitForHeader(m_sock, m_remoteRespTimeout))
   {
      // No response error
      error( ERR_SERVER_TIMEOUT , m_state.hostname );
@@ -1371,7 +1364,7 @@ bool HTTPProtocol::readHeader()
         http_closeConnection();
         if ( !http_open() )
            return false;
-        if (!waitForHeader(m_sock, RESPONSE_TIMEOUT))
+        if (!waitForHeader(m_sock, m_remoteRespTimeout))
         {
            // No response error
            error( ERR_SERVER_TIMEOUT, m_state.hostname );
@@ -1669,6 +1662,38 @@ bool HTTPProtocol::readHeader()
       else if (strncasecmp(buffer, "Content-MD5:", 12) == 0) {
         m_sContentMD5 = strdup(trimLead(buffer + 12));
       }
+      // Refer to RFC 2616 sec 15.5/19.5.1 and RFC 2183
+      else if(strncasecmp(buffer, "Content-Disposition:", 20) == 0) {
+        disposition = trimLead(buffer + 20);
+        int pos = disposition.find( ';' );
+        // For those servers that do things the "Right way" by
+        // following the spec, we check if the dispostion response
+        // beigns with "attachment" and go past it.
+        if( pos > 1 ) {
+          if( disposition.find( QString::fromLatin1("attachment"), 0, false ) == 0 )
+            disposition = disposition.mid(pos+1).stripWhiteSpace();
+        }
+        // Extract the "filename=" part taking into consideration a number
+        // of spaces that might be present! If not found we will ignore the
+        // deposition string...
+        if( disposition.find( QString::fromLatin1("filename"), 0, false) == 0 ) {
+          pos = disposition.find('=');
+          if( pos > 1 )
+            disposition = disposition.mid(pos+1).stripWhiteSpace();
+          else
+            disposition = QString::null;
+        }
+        else {
+          disposition = QString::null;
+        }
+
+        // Content-Dispostion is not allowed to dictate
+        // directory path, extract only the filename only
+        // to avoid this scenario.
+        pos = disposition.findRev( '/' );
+        if( pos > -1 )
+          disposition = disposition.mid(pos+1);
+      }
     }
 
     // clear out our buffer for further use
@@ -1859,8 +1884,24 @@ bool HTTPProtocol::readHeader()
     kdDebug(7113) << "request.url: " << m_request.url.url() << endl
                   << "LocationStr: " << locationStr.data() << endl;
 
+    // Workaround for "BRAIN-DEAD" server implementation where
+    // they expect the client to know that a re-direction to
+    // "//www.somehost.tld" actually means
+    // "current_protocol:// www.somehost.tld". For the record
+    // the spec states (RFC 2616 section 14.30)
+    // Location = "Location" ":" absoluteURI.  BTW, this workaround
+    // will not tamper with someone doing //mydir/mydir2 to specify
+    // a VALID relative URL...
+    if( locationStr.find("//", 0) == 0 )
+    {
+      QCString temp =  m_protocol + ':' + locationStr;
+      KURL u( temp.data() );
+      if( !u.isMalformed() )
+        locationStr = temp;
+    }
+
     KURL u(m_request.url, locationStr);
-    if(u.isMalformed())
+    if(u.isMalformed() || u.isLocalFile() )
     {
       error(ERR_MALFORMED_URL, u.url());
       return false;
@@ -1942,6 +1983,12 @@ bool HTTPProtocol::readHeader()
   {
      kdDebug(7103) << "Setting charset metadata to " << charsetStr << endl;
      setMetaData("charset", charsetStr);
+  }
+
+  if( !disposition.isEmpty() )
+  {
+     kdDebug(7103) << "Sending Content-Disposition: " << disposition << endl;
+     setMetaData("content-disposition", disposition);
   }
 
   if (m_request.method == HTTP_HEAD)
@@ -3283,6 +3330,10 @@ void HTTPProtocol::reparseConfiguration()
     m_strCacheDir = KGlobal::dirs()->saveLocation("data", "kio_http/cache");
     m_maxCacheAge = KProtocolManager::maxCacheAge();
   }
+  // Update the proxy and remote server connection timeout values
+  m_proxyConnTimeout = KProtocolManager::proxyConnectTimeout();
+  m_remoteConnTimeout = KProtocolManager::connectTimeout();
+  m_remoteRespTimeout = KProtocolManager::responseTimeout();
 
   // Define language and charset settings from KLocale (David)
   QStringList languageList = KGlobal::locale()->languageList();
