@@ -620,7 +620,8 @@ void KMainWindow::childEvent( QChildEvent* e)
 KToolBar *KMainWindow::toolBar( int id )
 {
     if ( idBarMap.find( id ) == idBarMap.end() ) {
-        KToolBar *tb = new KToolBar( this );
+        bool honor_mode = (id == 0);
+        KToolBar *tb = new KToolBar( this, 0, honor_mode );
         idBarMap.insert( id, tb );
         return tb;
     }
