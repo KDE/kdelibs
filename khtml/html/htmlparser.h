@@ -86,8 +86,6 @@ protected:
 
     void insertNode(DOM::NodeImpl *n);
 
-    DOM::HTMLElementImpl *openBody();
-
     /*
      * The currently active element (the one new elements will be added to)
      */
@@ -122,6 +120,7 @@ protected:
     DOM::HTMLMapElementImpl *map;
 
     bool inBody;
+    bool haveFrameSet;
     bool _inline;
     bool end;
     /*

@@ -262,6 +262,7 @@ void KHTMLParser::reset()
     memset(forbiddenTag, 0, (ID_CLOSE_TAG+1)*sizeof(ushort));
 
     inBody = false;
+    haveFrameSet = false;
     _inline = false;
 
     form = 0;
@@ -747,7 +748,10 @@ NodeImpl *KHTMLParser::getElement(Token *t)
 	break;
     case ID_FRAMESET:
 	popBlock(ID_HEAD);
+	if ( haveFrameSet && current->id() == ID_HTML ) 
+	    break;
 	n = new HTMLFrameSetElementImpl(document);
+	haveFrameSet = true;
 	break;
 	// a bit a special case, since the frame is inlined...
     case ID_IFRAME:
