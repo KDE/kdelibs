@@ -42,6 +42,11 @@ public slots:
     */
    void recreate();
 
+   /**
+    * Collect all directories to watch
+    */
+   void build();
+   
 protected slots:
 
    /**
@@ -56,11 +61,6 @@ protected slots:
 
 protected:
 
-   /**
-    * Collect all directories to watch
-    */
-   void build();
-   
    /**
     * Scans dir for new files and new subdirectories.
     */

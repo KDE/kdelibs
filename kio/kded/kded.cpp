@@ -43,12 +43,7 @@ Kded::Kded()
   m_pTimer = new QTimer(this);
   connect (m_pTimer, SIGNAL(timeout()), this, SLOT(recreate()));
 
-  m_pDirWatch = new KDirWatch;
-
-  QObject::connect( m_pDirWatch, SIGNAL(dirty(const QString&)),
-	   this, SLOT(update(const QString&)));
-  QObject::connect( m_pDirWatch, SIGNAL(deleted(const QString&)),
-	   this, SLOT(dirDeleted(const QString&)));
+  m_pDirWatch = 0;
 }
    
 Kded::~Kded()
@@ -60,11 +55,24 @@ Kded::~Kded()
 
 void Kded::build()
 {
+  delete m_pDirWatch;
+  m_pDirWatch = new KDirWatch;
+
+  QObject::connect( m_pDirWatch, SIGNAL(dirty(const QString&)),
+	   this, SLOT(update(const QString&)));
+  QObject::connect( m_pDirWatch, SIGNAL(deleted(const QString&)),
+	   this, SLOT(dirDeleted(const QString&)));
+
+  // It is very important to build the servicetype one first
+  // Both are registered in KSycoca, no need to keep the pointers
+  KSycocaFactory *stf = new KBuildServiceTypeFactory;
+  (void) new KBuildServiceFactory(stf);
+
   // For each factory
   QListIterator<KSycocaFactory> factit ( *m_lstFactories );
-  for (KSycocaFactory *factory = m_lstFactories->take(0); 
+  for (KSycocaFactory *factory = m_lstFactories->first(); 
        factory;
-       factory = m_lstFactories->take(0) )
+       factory = m_lstFactories->first() )
   {
     // For each resource the factory deals with
     for( QStringList::ConstIterator it1 = factory->resourceList()->begin();
@@ -80,13 +88,14 @@ void Kded::build()
          readDirectory( *it2 );
       }
     }
-    delete factory;
+    m_lstFactories->removeRef(factory);
   }
 }
 
 void Kded::recreate()
 {
   system("kbuildsycoca"); // Use KLauncher
+  build();
 }
 
 void Kded::dirDeleted(const QString& /*path*/)
@@ -108,7 +117,7 @@ void Kded::update(const QString& path)
 
 void Kded::readDirectory( const QString& _path )
 {
-  //kdebug(KDEBUG_INFO, 7020, QString("reading %1").arg(_path));
+  // kdebug(KDEBUG_INFO, 7020, QString("reading %1").arg(_path));
 
   QDir d( _path, QString::null, QDir::Unsorted, QDir::AccessMask | QDir::Dirs );         
   // set QDir ...
@@ -159,6 +168,8 @@ int main(int argc, char *argv[])
      KUniqueApplication k(argc,argv, "kded", false, false );
 
      Kded *kded= new Kded; // Build data base
+
+     kded->build();
      kded->recreate();
      return k.exec(); // keep running
 }
