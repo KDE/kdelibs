@@ -368,7 +368,7 @@ void KeramikStyle::polish( QPalette& )
 {
 	// Using QApplication::palette, because we follow the main palette, not the one set for
 	// only some classes (e.g. tooltips)
-//	Keramik::PixmapLoader::the().setColor( QApplication::palette().color( QPalette::Active, QColorGroup::Button ) );
+	Keramik::PixmapLoader::the().setColor( QApplication::palette().color( QPalette::Active, QColorGroup::Button ) );
 }
 
 // This function draws primitive elements as well as their masks.
@@ -490,7 +490,10 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			// -------------------------------------------------------------------
 		case PE_HeaderSection:
 		{
-			Keramik::RectTilePainter( "listview" ).draw( p, r );
+			if ( flags & Style_Down )
+				Keramik::RectTilePainter( "listview-pressed" ).draw( p, r );
+			else
+				Keramik::RectTilePainter( "listview" ).draw( p, r );
 			break;
 		}
 

@@ -53,6 +53,7 @@ void PixmapLoader::colorize( QImage &img )
 	if ( img.isNull() || !m_color.isValid() ) return;
 	int newh, news, newv;
 	m_color.hsv( &newh, &news, &newv );
+	if ( newh == -1 ) return ;
 
 	for ( register int y = 0; y < img.height(); ++y )
 	{
@@ -77,7 +78,7 @@ QPixmap PixmapLoader::pixmap( const QString& name )
 	QImage* img = m_cache[ name ];
 	if ( !img ) {
 		img = new QImage( qembed_findImage( name ).copy() );
-		colorize( *img );
+//		colorize( *img );
 		m_cache.insert( name, img );
 	}
 	result.convertFromImage( *img );
