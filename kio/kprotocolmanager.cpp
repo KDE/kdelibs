@@ -391,10 +391,22 @@ QString KProtocolManager::userAgentForHost( const QString& hostname )
     return user_agent;
 
   // Now, we need to do our pattern matching on the host name.
+  QString sep = "::";
   QStringList::ConstIterator it(list.begin());
   for( ; it != list.end(); ++it)
   {
-    QStringList split(QStringList::split( ':', (*it) ));
+    QStringList split;
+    int pos = (*it).find(sep); 
+    if ( pos == -1 )
+    {
+      sep = ':';
+      split.append((*it).left(pos));
+      split.append((*it).mid(pos+1));
+    }
+    else
+    {
+       split = QStringList::split( sep, (*it) );
+    }
 
     // if our user agent is null, we go to the next one
     if ( split[1].isNull() )
@@ -435,7 +447,7 @@ QStringList KProtocolManager::userAgentList()
   for( int i = 0; i < entries; i++ )
   {
     QString entry = cfg->readEntry( QString("Entry%1").arg(i), "" );
-    if (entry.left(37) == "*:Mozilla/5.0 (compatible; Konqueror/") // update version number
+    if ( entry.startsWith("*:Mozilla/5.0 (compatible; Konqueror/") ) // update version number
       settingsList.append( "*:" + DEFAULT_USERAGENT_STRING );
     else
       settingsList.append( entry );
@@ -446,15 +458,11 @@ QStringList KProtocolManager::userAgentList()
 void KProtocolManager::setUserAgentList( const QStringList& agentList )
 {
   KConfig *cfg = config();
-
   cfg->setGroup("UserAgent");
 
-  int count = agentList.count();
   int i = 0;
-  cfg->writeEntry( "EntriesCount", count );
+  cfg->writeEntry( "EntriesCount", agentList.count() );
   for( QStringList::ConstIterator it = agentList.begin(); it != agentList.end() ; ++it )
-  {
       cfg->writeEntry( QString("Entry%1").arg(i++), *it );
-  }
   cfg->sync();
 }
