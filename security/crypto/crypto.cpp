@@ -532,7 +532,7 @@ void KCryptoConfig::defaults()
 {
   mUseTLS->setChecked(false);
   mUseSSLv2->setChecked(true);
-  mUseSSLv3->setChecked(true);
+  mUseSSLv3->setChecked(false);  // GS 3/2001 - this seems to be more compatible
   mWarnOnEnter->setChecked(false);
   mWarnOnLeave->setChecked(true);
 #if 0  // NOT IMPLEMENTED IN KDE 2.0
