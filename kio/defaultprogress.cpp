@@ -35,10 +35,7 @@
 class DefaultProgress::DefaultProgressPrivate
 {
 public:
-  bool noCaption;
-  QString sourceLabelText;
-  QString destLabelText;
-  QFontMetrics *fontMetrics;
+  bool noCaptionYet;
 };
 
 DefaultProgress::DefaultProgress( bool showNow )
@@ -58,18 +55,13 @@ DefaultProgress::DefaultProgress( bool showNow )
   // filenames or action name
   grid->addWidget(new QLabel(i18n("Source:"), this), 0, 0);
 
-  QSizePolicy myLabelSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
-
-  sourceLabel = new QLabel(this);
-  sourceLabel->setSizePolicy(myLabelSizePolicy);
-  d->fontMetrics = new QFontMetrics(sourceLabel->font());
+  sourceLabel = new KSqueezedTextLabel(this);
   grid->addWidget(sourceLabel, 0, 2);
 
   destInvite = new QLabel(i18n("Destination:"), this);
   grid->addWidget(destInvite, 1, 0);
 
-  destLabel = new QLabel(this);
-  destLabel->setSizePolicy(myLabelSizePolicy);
+  destLabel = new KSqueezedTextLabel(this);
   grid->addWidget(destLabel, 1, 2);
 
   progressLabel = new QLabel(this);
@@ -103,7 +95,8 @@ DefaultProgress::DefaultProgress( bool showNow )
   resize( sizeHint() );
   setMaximumHeight(sizeHint().height());
 
-  d->noCaption = true;
+  d->noCaptionYet = true;
+
   if ( showNow ) {
     show();
   }
@@ -207,84 +200,71 @@ void DefaultProgress::slotSpeed( KIO::Job*, unsigned long bytes_per_second )
 
 void DefaultProgress::slotCopying( KIO::Job*, const KURL& from, const KURL& to )
 {
-  if ( d->noCaption )
-  {
+  if ( d->noCaptionYet ) {
     setCaption(i18n("Copy file(s) progress"));
-    d->noCaption = false;
+    d->noCaptionYet = false;
   }
   mode = Copy;
-  d->sourceLabelText = from.prettyURL();
-  squeezeStringToLabel( d->sourceLabelText, sourceLabel);
+  sourceLabel->setText(from.prettyURL());
   setDestVisible( true );
-  d->destLabelText = to.prettyURL();
-  squeezeStringToLabel( d->destLabelText, destLabel);
+  destLabel->setText(to.prettyURL());
 }
 
 
 void DefaultProgress::slotMoving( KIO::Job*, const KURL& from, const KURL& to )
 {
-  if ( d->noCaption )
-  {
+  if ( d->noCaptionYet ) {
     setCaption(i18n("Move file(s) progress"));
-    d->noCaption = false;
+    d->noCaptionYet = false;
   }
   mode = Move;
-  d->sourceLabelText = from.prettyURL();
-  squeezeStringToLabel( d->sourceLabelText, sourceLabel);
+  sourceLabel->setText(from.prettyURL());
   setDestVisible( true );
-  d->destLabelText = to.prettyURL();
-  squeezeStringToLabel( d->destLabelText, destLabel);
+  destLabel->setText(to.prettyURL());
 }
 
 
 void DefaultProgress::slotCreatingDir( KIO::Job*, const KURL& dir )
 {
-  if ( d->noCaption )
-  {
+  if ( d->noCaptionYet ) {
     setCaption(i18n("Creating directory"));
-    d->noCaption = false;
+    d->noCaptionYet = false;
   }
   mode = Create;
-  d->sourceLabelText = dir.prettyURL();
-  squeezeStringToLabel( d->sourceLabelText, sourceLabel);
+  sourceLabel->setText(dir.prettyURL());
   setDestVisible( false );
 }
 
 
 void DefaultProgress::slotDeleting( KIO::Job*, const KURL& url )
 {
-  if ( d->noCaption )
-  {
+  if ( d->noCaptionYet ) {
     setCaption(i18n("Delete file(s) progress"));
-    d->noCaption = false;
+    d->noCaptionYet = false;
   }
   mode = Delete;
-  d->sourceLabelText = url.prettyURL();
-  squeezeStringToLabel( d->sourceLabelText, sourceLabel);
+  sourceLabel->setText(url.prettyURL());
   setDestVisible( false );
 }
 
 void DefaultProgress::slotStating( KIO::Job*, const KURL& url )
 {
   setCaption(i18n("Examining file progress"));
-  d->sourceLabelText = url.prettyURL();
-  squeezeStringToLabel( d->sourceLabelText, sourceLabel);
+  sourceLabel->setText(url.prettyURL());
   setDestVisible( false );
 }
 
 void DefaultProgress::slotMounting( KIO::Job*, const QString & dev, const QString & point )
 {
   setCaption(i18n("Mounting %1").arg(dev));
-  d->sourceLabelText = point;
-  squeezeStringToLabel( d->sourceLabelText, sourceLabel);
+  sourceLabel->setText(point);
   setDestVisible( false );
 }
 
 void DefaultProgress::slotUnmounting( KIO::Job*, const QString & point )
 {
   setCaption(i18n("Unmounting"));
-  d->sourceLabelText = point;
-  squeezeStringToLabel( d->sourceLabelText, sourceLabel);
+  sourceLabel->setText(point);
   setDestVisible( false );
 }
 
@@ -312,24 +292,5 @@ void DefaultProgress::setDestVisible( bool visible )
   }
 }
 
-void DefaultProgress::resizeEvent ( QResizeEvent * ) {
-  squeezeStringToLabel( d->sourceLabelText, sourceLabel);
-  squeezeStringToLabel( d->destLabelText, destLabel);
-}
-
-void DefaultProgress::squeezeStringToLabel( QString text , QLabel *label) {
-  int labelWidth = label->size().width();
-  int textWidthInPixel = d->fontMetrics->width(text);
-  int textChars = text.length();
-  // squeeze text until it fits
-  QString squeezedText = text;
-  while (textWidthInPixel > labelWidth) {
-    textChars--;
-    squeezedText = KStringHandler::csqueeze(text, textChars);
-    textWidthInPixel = d->fontMetrics->width(squeezedText);
-  };
-  label->setText(squeezedText);
-  QToolTip::add( label, text );
-}
-
 #include "defaultprogress.moc"
+

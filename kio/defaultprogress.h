@@ -21,6 +21,7 @@
 #include <qlabel.h>
 
 #include <kprogress.h>
+#include <ksqueezedtextlabel.h>
 
 #include "progressbase.h"
 
@@ -61,12 +62,11 @@ public slots:
   void slotCanResume( KIO::Job*, unsigned long );
 
 protected:
-  void resizeEvent( QResizeEvent * );
   void setDestVisible( bool visible );
 
+  KSqueezedTextLabel* sourceLabel;
+  KSqueezedTextLabel* destLabel;
   QLabel* progressLabel;
-  QLabel* sourceLabel;
-  QLabel* destLabel;
   QLabel* destInvite;
   QLabel* speedLabel;
   QLabel* sizeLabel;
@@ -87,9 +87,7 @@ protected:
 
   class DefaultProgressPrivate;
   DefaultProgressPrivate* d;
-
-private:
-  void squeezeStringToLabel( QString string , QLabel *label);
 };
 
 #endif // __defaultprogress_h__
+
