@@ -350,11 +350,12 @@ int KJSLexer::lex()
     kjsyylval.ival = i; return INTEGER;
   case Decimal:
     kjsyylval.dval = strtod(buffer8, 0L); return DOUBLE;
+  case Bad:
+    fprintf(stderr, "yylex: ERROR.\n");
+    return Bad;
   default:
     assert(!"unhandled numeration value in switch");
   }
-  fprintf(stderr, "yylex: ERROR.\n");
-  return Bad;
 }
 
 bool KJSLexer::isWhiteSpace() const
