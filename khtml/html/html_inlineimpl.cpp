@@ -183,11 +183,13 @@ void HTMLAnchorElementImpl::parseAttribute(AttributeImpl *attr)
     case ATTR_HREF:
     {
         DOMString s = khtml::parseURL(attr->val());
+        if (href) href->deref();
         href = s.implementation();
         if(href) href->ref();
         break;
     }
     case ATTR_TARGET:
+        if (target) target->deref();
         target = attr->val();
         target->ref();
         break;

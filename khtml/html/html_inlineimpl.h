@@ -37,8 +37,7 @@ public:
     HTMLAnchorElementImpl(DocumentPtr *doc);
     ~HTMLAnchorElementImpl();
 
-    DOMString areaHref() const { return href; }
-    DOMString targetRef() const { return target; }
+     DOMString areaHref() const { return href; }
 
     virtual bool isSelectable() const { return href!=0; }
     virtual Id id() const;
@@ -48,8 +47,8 @@ public:
                                     MouseEvent *ev);
     virtual void defaultEventHandler(EventImpl *evt);
 protected:
-    DOMStringImpl *href;
-    DOMStringImpl *target;
+    DOMStringImpl* href;
+    DOMStringImpl* target;
 };
 
 // -------------------------------------------------------------------------
