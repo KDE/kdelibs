@@ -116,7 +116,7 @@ void KMJobViewer::init()
 		m_view->addColumn(i18n("Name"));
 		m_view->addColumn(i18n("Owner"));
 		m_view->addColumn(i18n("Status", "State"));
-		m_view->addColumn(i18n("Size (kB)"));
+		m_view->addColumn(i18n("Size (KB)"));
 		m_view->setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
 		m_view->setLineWidth(1);
 		m_view->setSorting(0);
