@@ -117,8 +117,6 @@ static QString encodeHost( const QString& segment, bool encode_slash, int encodi
 #ifndef KDE_QT_ONLY
   Q_UNUSED( encode_slash );
   Q_UNUSED( encoding_hint );
-  if (!segment.isEmpty() && (segment[0] == '.'))
-     return '.' + KIDNA::toAscii(segment.mid(1));
   return KIDNA::toAscii(segment);
 #else
   return encode(segment, encode_slash ? 0 : 1, encoding_hint);
@@ -1900,10 +1898,7 @@ KURL::setHost( const QString& _txt )
   {
   case URL:
 #ifndef KDE_QT_ONLY
-   if (!_txt.isEmpty() && (_txt[0] == '.'))
-      m_strHost = "." + KIDNA::toUnicode(_txt.mid(1));
-   else
-      m_strHost = KIDNA::toUnicode(_txt);
+   m_strHost = KIDNA::toUnicode(_txt);
    if (m_strHost.isEmpty())
       m_strHost = _txt.lower(); // Probably an invalid hostname, but...
 #else
