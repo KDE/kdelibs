@@ -163,12 +163,32 @@ public:
 
     /**
      * Call this when requesting for a login and password.
+     *
+     * BCI - remove me and use default value for the function
+     * below.
+     *
      * @param head and i18n'ed message to explain the dialog box
      * @param user user name, in and out
      * @param pass password, in and out
      * @return true on ok, false on cancel
+     *
      */
     bool openPassDlg( const QString& head, QString& user, QString& pass );
+
+    /**
+     * Call this when requesting for a login and password.
+     *
+     * This function is only different from the above only because
+     * it takes one more extra argument, the name of the host, so
+     * that any authorization can kept around for a whole session.
+     *
+     * @param head and i18n'ed message to explain the dialog box
+     * @param user user name, in and out
+     * @param pass password, in and out
+     * @param host host whose password is to be stored
+     * @return true on ok, false on cancel
+     */
+    bool openPassDlg( const QString& head, QString& user, QString& pass, const QString& host );
 
     ///////////
     // Commands sent by the job, the slave has to override what it wants to implement
