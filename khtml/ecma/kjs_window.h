@@ -92,6 +92,7 @@ namespace KJS {
     KJSO getListener(int eventId) const;
     JSEventListener *getJSEventListener(const KJSO &obj, bool html = false);
     void clear();
+    virtual String toString() const;
 
     QList<JSEventListener> jsEventListeners;
     virtual const TypeInfo* typeInfo() const { return &info; }
@@ -110,7 +111,8 @@ namespace KJS {
     WindowFunc(const Window *w, int i) : window(w), id(i) { };
     Completion tryExecute(const List &);
     enum { Alert, Confirm, Prompt, Open, SetTimeout, ClearTimeout, Focus, Blur, Close,
-          MoveBy, MoveTo, ResizeBy, ResizeTo, ScrollBy, ScrollTo, SetInterval, ClearInterval };
+          MoveBy, MoveTo, ResizeBy, ResizeTo, ScrollBy, ScrollTo, SetInterval, ClearInterval,
+          ToString };
 
   private:
     const Window *window;

@@ -341,6 +341,11 @@ bool Window::hasProperty(const UString &/*p*/, bool /*recursive*/) const
 #endif
 }
 
+String Window::toString() const
+{
+  return UString( "[object Window]" );
+}
+
 KJSO Window::get(const UString &p) const
 {
   //kdDebug() << "Window::get " << p.qstring() << endl;
@@ -350,6 +355,10 @@ KJSO Window::get(const UString &p) const
   // we don't want any operations on a closed window
   if (m_part.isNull())
     return Undefined();
+
+  // Reimplement toString ourselves to avoid getting [object Object] from our prototype
+  if (p == "toString")
+    return Function(new WindowFunc(this, WindowFunc::ToString));
 
   if (Imp::hasProperty(p,true)) {
     if (isSafeScript())
@@ -441,7 +450,7 @@ KJSO Window::get(const UString &p) const
   else if (p == "resizeTo")
     return Function(new WindowFunc(this, WindowFunc::ResizeTo));
   else if (p == "self" || p == "window")
-    return KJSO(retrieveWindow(m_part));
+    return KJSO(retrieve(m_part));
   else if (p == "top") {
     KHTMLPart *p = m_part;
     while (p->parentPart())
@@ -1098,6 +1107,9 @@ Completion WindowFunc::tryExecute(const List &args)
     }
 
     result = Undefined();
+    break;
+  case ToString:
+    result = window->toString();
     break;
   }
   return Completion(ReturnValue, result);
