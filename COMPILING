@@ -10,10 +10,10 @@ Make sure you get the following stuff from CVS:
 
 qt-copy (This is qt-2.1.1)
 kde-qt-addon (stuff which TrollTech forgot to add to Qt :-)
-kdesupport (stuff from others which we use, most notably mimelib)
+kdesupport (stuff from others which we use)
 kdelibs
-kdebase (not strictly necassery)
-kdenetwork (this is where kmail lives)
+kdebase (strongly recommended but not strictly necassery)
+<any other package you are interested in>
 
 It is important that you compile AND INSTALL the above packages in the 
 above order.
