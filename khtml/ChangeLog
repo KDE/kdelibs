@@ -1,3 +1,13 @@
+2005-03-29  Germain Garand  <germain@ebooksfrance.org>
+
+        offsetLeft/Top/width/Height/Parent improvements
+
+        * rendering/render_object.cpp (offsetLeft/offsetTop/offsetParent):
+        match IE behaviour in strict mode.
+
+        * rendering/render_table.{h,cpp} (RenderTableRow::offsetLeft/offsetTop/offsetHeight/offsetWidth):
+        reimplemented to return meaningful values (#102127)
+
 2005-03-22  Allan Sandfeld Jensen <kde@carewolf.com>
 
         * css/parser.y: Parse pseudo-elements and pseudo-classes separately.

@@ -386,7 +386,7 @@ int RenderObject::offsetLeft() const
     if ( isPositioned() )
         return xPos();
 
-    if ( isBody() )
+    if ( isBody() && style()->htmlHacks() )
         return 0;
 
     int x = xPos();
@@ -401,7 +401,7 @@ int RenderObject::offsetLeft() const
          curr = curr->parent() )
         x += curr->xPos();
 
-    if ( offsetPar && offsetPar->isBody() )
+    if ( offsetPar && offsetPar->isBody() && style()->htmlHacks() )
         x += offsetPar->xPos();
 
     return x;
@@ -412,7 +412,7 @@ int RenderObject::offsetTop() const
     if ( isPositioned() )
         return yPos();
 
-    if ( isBody() )
+    if ( isBody() && style()->htmlHacks() )
         return 0;
 
     int y = yPos();
@@ -426,7 +426,7 @@ int RenderObject::offsetTop() const
          curr = curr->parent() )
         y += curr->yPos();
 
-    if ( offsetPar && offsetPar->isBody() )
+    if ( offsetPar && offsetPar->isBody() && style()->htmlHacks() )
         y += offsetPar->yPos();
 
     return y;
@@ -434,6 +434,12 @@ int RenderObject::offsetTop() const
 
 RenderObject* RenderObject::offsetParent() const
 {
+    if (!style()->htmlHacks()) {
+        // match IE in strict mode
+        if (isRoot()||isBody())
+            return 0;
+        return containingBlock();   
+    }
     bool skipTables = isPositioned() || isRelPositioned();
     RenderObject* curr = parent();
     while (curr && !curr->isPositioned() && !curr->isRelPositioned() && !curr->isBody()) {

@@ -1809,6 +1809,59 @@ void RenderTableRow::layout()
     setNeedsLayout(false);
 }
 
+int RenderTableRow::offsetLeft() const
+{
+    RenderObject *child = firstChild();
+    while (child && !child->isTableCell())
+        child = child->nextSibling();
+    
+    if (!child)
+        return 0;    
+
+    return child->offsetLeft();
+}
+
+int RenderTableRow::offsetTop() const
+{
+    RenderObject *child = firstChild();
+    while (child && !child->isTableCell())
+        child = child->nextSibling();
+    
+    if (!child)
+        return 0;
+
+    return child->offsetTop() - 
+                  static_cast<RenderTableCell*>(child)->cellTopExtra();
+}
+
+int RenderTableRow::offsetHeight() const
+{
+    RenderObject *child = firstChild();
+    while (child && !child->isTableCell())
+        child = child->nextSibling();
+    
+    if (!child)
+        return 0;
+
+    return child->offsetHeight() + 
+                  static_cast<RenderTableCell*>(child)->cellTopExtra() + 
+                  static_cast<RenderTableCell*>(child)->cellBottomExtra();
+}
+
+short RenderTableRow::offsetWidth() const
+{
+    RenderObject *fc = firstChild();
+    RenderObject *lc = lastChild();
+    while (fc && !fc->isTableCell())
+        fc = fc->nextSibling();
+    while (lc && !lc->isTableCell())
+        lc = lc->previousSibling();
+    if (!lc || !fc)
+        return 0;
+
+    return lc->xPos()+lc->width()-fc->xPos();
+}
+
 void RenderTableRow::paintRow( PaintInfo& pI, int tx, int ty, int w, int h )
 {
     if (pI.phase == PaintActionOutline)

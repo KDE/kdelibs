@@ -309,6 +309,11 @@ public:
     virtual void addChild(RenderObject *child, RenderObject *beforeChild = 0);
     virtual RenderObject* removeChildNode(RenderObject* child);
 
+    virtual short offsetWidth() const;
+    virtual int offsetHeight() const;
+    virtual int offsetLeft() const;
+    virtual int offsetTop() const;
+
     virtual short lineHeight( bool ) const { return 0; }
     virtual void position(InlineBox*, int, int, bool) {}
 
@@ -373,6 +378,8 @@ public:
 
     void setCellTopExtra(int p) { _topExtra = p; }
     void setCellBottomExtra(int p) { _bottomExtra = p; }
+    int cellTopExtra() const { return _topExtra; }
+    int cellBottomExtra() const { return _bottomExtra; }
 
     virtual void paint( PaintInfo& i, int tx, int ty);
 
