@@ -16,7 +16,7 @@ void fin(char *msg)
 	exit(0);
 }
 
-void main( int argc, char ** argv )
+int main( int argc, char ** argv )
 {
 	char qt_path[200], line[200];
 	char *token, *result;
@@ -71,8 +71,3 @@ void main( int argc, char ** argv )
 	
 	fin("conversion done\n");
 }
-
-		
-	
-		
-			

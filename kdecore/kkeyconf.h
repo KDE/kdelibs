@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 1997 Nicolas Hadacek <hadacek@via.ecp.fr>
+    Copyright (C) 1997 Nicolas Hadacek <hadacek@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -54,25 +54,25 @@ const QString keyToString( uint keyCode );
  *  the config file or via a dialog window.
  *
  *  There is three differents levels :
- *  \begin{itemize}
- * 	\item the "functionName" : it is just a string which represents an action
- *   which can be handle via different methods in different widgets. 
- *  \item the "keyCode" : it represents a key + modifiers (SHIFT, CTRL
- *  or/and ALT).
- *  \item the "widgetName" : each widget using keys should have such a name.
- *  \end{itemize}
+ *  <UL>
+ * 	 <LI> the "functionName" : it is just a string which represents an action
+ *        which can be handle via different methods in different widgets. 
+ *   <LI> the "keyCode" : it represents a key + modifiers (SHIFT, CTRL
+ *        or/and ALT).
+ *   <LI> the "widgetName" : each widget using keys should have such a name.
+ *  </UL>
  * 	 
  * How it works :
- *  \begin{itemize}
- *  \item Each "functionName" is associated with exactly one "keyCode" :
- *  addKey( functionName, keyCode )
- *  \item Each widget is registered with a "widgetName" :
- *  registerWidget( widgetName, this )
- *  \item For a given widget you can connect a "functionName/keyCode"
- *  association to a SLOT :
- *  connectFunction( widgetName, functionName, receiver, SLOT(...) )
- *  \item Then KKeyConfig manages automatically the keypress.
- * 	\end{itemize}
+ * 	<UL>
+ *   <LI> Each "functionName" is associated with exactly one "keyCode" :
+ *        addKey( functionName, keyCode )
+ *   <LI> Each widget is registered with a "widgetName" :
+ *        registerWidget( widgetName, this )
+ *   <LI> For a given widget you can connect a "functionName/keyCode"
+ *        association to a SLOT :
+ *        connectFunction( widgetName, functionName, receiver, SLOT(...) )
+ *   <LI> Then KKeyConfig manages automatically the keypress.
+ * 	</UL>
  *
  * @version $Id$
  * @short Allows easy management of function/accelerator association.
@@ -100,12 +100,14 @@ class KKeyConfig
 	static KKeyConfig * getKKeyConfig() { return pKKeyConfig; }
 
 	/** 
-	* Read the current key code associated with the function. 
+	* Read the current key code associated with the function.
+	* Return 0 if the function does not exist. 
 	*/
 	uint readCurrentKey( const QString& functionName );
 	
 	/** 
-	* Read the default key code associated with the function. 
+	* Read the default key code associated with the function.
+	* Return 0 if the function does not exist.
 	*/
 	uint readDefaultKey( const QString& functionName);
 	

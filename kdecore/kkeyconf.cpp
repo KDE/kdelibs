@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 1997 Nicolas Hadacek <hadacek@via.ecp.fr>
+    Copyright (C) 1997 Nicolas Hadacek <hadacek@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -666,7 +666,7 @@ void KeyButton::paint( QPainter *painter )
 /*****************************************************************************/
 /* KKeyConfigure                                                             */
 /*                                                                           */
-/* Originally by Nicolas Hadacek <hadacek@via.ecp.fr>                        */
+/* Originally by Nicolas Hadacek <hadacek@kde.org>                           */
 /*                                                                           */
 /* Substantially revised by Mark Donohoe <donohoe@kde.org>                   */
 /*                                                                           */
@@ -1064,7 +1064,7 @@ void KKeyConfigure::allDefault()
 	}
 }
 
-#define MAX_FCTN_LENGTH 15
+#define MAX_FCTN_LENGTH 20
 
 const QString KKeyConfigure::item( uint keyCode, const QString& entryKey )
 {
