@@ -825,7 +825,8 @@ int UIServer::messageBox( int progressId, int type, const QString &text, const Q
                         meta["ssl_cipher_bits"].toInt(),
                         KSSLCertificate::KSSLValidation(meta["ssl_cert_state"].toInt()),
                         meta["ssl_good_from"],
-                        meta["ssl_good_until"] );
+                        meta["ssl_good_until"],
+			meta["ssl_peer_cert_serial"]);
             kdDebug(7024) << "Showing SSL Info dialog" << endl;
             kid->exec();
             kdDebug(7024) << "SSL Info dialog closed" << endl;

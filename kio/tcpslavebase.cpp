@@ -599,6 +599,7 @@ int TCPSlaveBase::verifyCertificate()
     setMetaData("ssl_cert_state", QString::number(ksv));
     setMetaData("ssl_good_from", pc.getNotBefore());
     setMetaData("ssl_good_until", pc.getNotAfter());
+    setMetaData("ssl_peer_cert_serial", pc.getSerialNumber());
 
    if (ksv == KSSLCertificate::Ok) {
       rc = 1;
