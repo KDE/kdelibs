@@ -138,6 +138,7 @@ public:
     bool foreign_server;
     bool accept_calls;
     bool accept_calls_override; // If true, user has specified policy.
+    bool qt_bridge_enabled;
 
     QCString senderId;
     QCString objId;
@@ -495,9 +496,10 @@ DCOPClient::DCOPClient()
     d->notifier = 0L;
     d->non_blocking_call_lock = false;
     d->registered = false;
+    d->foreign_server = true;
     d->accept_calls = true;
     d->accept_calls_override = false;
-    d->foreign_server = true;
+    d->qt_bridge_enabled = true;
     d->transactionList = 0L;
     d->transactionId = 0;
     QObject::connect( &d->postMessageTimer, SIGNAL( timeout() ), this, SLOT( processPostedMessagesInternal() ) );
@@ -784,6 +786,16 @@ void DCOPClient::setAcceptCalls(bool b)
 {
     d->accept_calls = b;
     d->accept_calls_override = true;
+}
+
+bool DCOPClient::qtBridgeEnabled()
+{
+    return d->qt_bridge_enabled;
+}
+
+void DCOPClient::setQtBridgeEnabled(bool b)
+{
+    d->qt_bridge_enabled = b;
 }
 
 QCString DCOPClient::registerAs( const QCString &appId, bool addPID )
@@ -1356,7 +1368,10 @@ bool DCOPClient::receive(const QCString &/*app*/, const QCString &objId,
 	    replyType = "QCStringList";
 	    QDataStream reply( replyData, IO_WriteOnly );
 	    QCStringList l;
-	    l << "qt"; // the Qt bridge object
+	    if (d->qt_bridge_enabled)
+	    {
+	       l << "qt"; // the Qt bridge object
+	    }
 	    if ( dcopObjMap ) {
 		QMap<QCString, DCOPObject *>::ConstIterator it( dcopObjMap->begin());
 		for (; it != dcopObjMap->end(); ++it) {
@@ -1391,7 +1406,8 @@ bool DCOPClient::receive(const QCString &/*app*/, const QCString &objId,
 	    return true;
 	// fall through and send to defaultObject if available
 
-    } else if ( objId == "qt" || objId.left(3) == "qt/" ) { // dcop <-> qt bridge
+    } else if (d->qt_bridge_enabled &&
+               (objId == "qt" || objId.left(3) == "qt/") ) { // dcop <-> qt bridge
 	return receiveQtObject( objId, fun, data, replyType, replyData );
     }
 

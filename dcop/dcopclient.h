@@ -143,6 +143,19 @@ class DCOPClient : public QObject
   void setAcceptCalls(bool b);
 
   /**
+   * Returns whether the DCOP - Qt bridge is enabled.
+   * By default the DCOP - Qt bridge is enabled.
+   */
+  bool qtBridgeEnabled();
+
+  /**
+   * Specify whether Qt objects of the application should be accessible 
+   * via DCOP.
+   * By default the DCOP - Qt bridge is enabled.
+   */
+  void setQtBridgeEnabled(bool b);
+
+  /**
    * Registers at the DCOP server.
    *
    * If the application was already registered,
