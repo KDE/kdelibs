@@ -92,8 +92,8 @@
 <!ENTITY traducteurYvesGuillou    '<othercredit role="translator"><firstname>Yves</firstname><surname>Guillou</surname><affiliation><address><email>yv_guil@club-internet.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurYvesGuillou     '<othercredit role="reviewer"><firstname>Yves</firstname><surname>Guillou</surname><affiliation><address><email>yv_guil@club-internet.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
-<!ENTITY traducteurYohannHammon    '<othercredit role="translator"><firstname>Yohann</firstname><surname>Hammon</surname><affiliation><address><email>yohann_hamon@yahoo.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
-<!ENTITY relecteurYohannHammon     '<othercredit role="reviewer"><firstname>Yohann</firstname><surname>Hammon</surname><affiliation><address><email>yohann_hamon@yahoo.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+<!ENTITY traducteurYohannHamon    '<othercredit role="translator"><firstname>Yohann</firstname><surname>Hamon</surname><affiliation><address><email>yohann_hamon@yahoo.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY relecteurYohannHamon     '<othercredit role="reviewer"><firstname>Yohann</firstname><surname>Hamon</surname><affiliation><address><email>yohann_hamon@yahoo.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
 <!ENTITY traducteurRobertJacolin      '<othercredit role="translator"><firstname>Robert</firstname><surname>Jacolin</surname><affiliation><address><email>rjacolin@ifrance.com</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurRobertJacolin      '<othercredit role="reviewer"><firstname>Robert</firstname><surname>Jacolin</surname><affiliation><address><email>rjacolin@ifrance.com</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
@@ -173,7 +173,7 @@
 <!ENTITY LudovicGrossard   'Ludovic Grossard <email>grossard@kde.org</email>'>
 <!ENTITY YvesGuillou   'Yves Guillou <email>yv_guil@club-internet.fr</email>'>
 <!ENTITY PhilippeGuilbert  'Philippe Guilbert <email>guilbertph@wanadoo.fr</email>'>
-<!ENTITY YohannHammon  'Yohann Hammon <email>yohann_hamon@yahoo.fr</email>'>
+<!ENTITY YohannHamon  'Yohann Hamon <email>yohann_hamon@yahoo.fr</email>'>
 <!ENTITY RobertJacolin     'Robert Jacolin <email>rjacolin@ifrance.com</email>'>
 <!ENTITY EquipeKDE         'l&apos;équipe française &kde;<email>doc@kde-france.org</email>'>
 <!ENTITY GoneriLeBouder    'Gonéri Le Bouder <email>goneri@gnuart.org</email>'>
