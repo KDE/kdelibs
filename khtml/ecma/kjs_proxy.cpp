@@ -152,13 +152,13 @@ KJSProxy *kjs_html_init(KHTMLPart *khtmlpart)
     delete script;
   }
 
-  QVariant kjs_execFuncCall( KJS::KJSO &thisVal, KJS::KJSO &functionObj, KJS::List &args, bool inEvaluate, KHTMLPart *khtmlpart)
+  QVariant kjs_execFuncCall( KJS::KJSO &thisVal, KJS::KJSO &functionObj, KJS::List &args, KJS::List &extraScope, bool inEvaluate, KHTMLPart *khtmlpart)
   {
     QVariant ret;
     if (functionObj.implementsCall()) {
       if (!inEvaluate)
 	KJS::Global::current().setExtra(khtmlpart);
-      ret = KJSOToVariant(functionObj.executeCall(thisVal,&args));
+      ret = KJSOToVariant(functionObj.executeCall(thisVal,&args,&extraScope));
       if (!inEvaluate)
 	KJS::Global::current().setExtra(0L);
     }

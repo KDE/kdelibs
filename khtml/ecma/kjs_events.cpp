@@ -57,7 +57,12 @@ void JSEventListener::handleEvent(DOM::Event &evt)
 
     win->part()->jScript()->jScript()->init(); // set a valid current interpreter
     KJSO thisVal = getDOMNode(evt.currentTarget());
-    QVariant ret = win->part()->executeKJSFunctionCall(thisVal,listener,args); // ### currect this value ?
+    List *scope = 0;
+    if (thisVal.type() != NullType)
+      scope = static_cast<DOMNode*>(thisVal.imp())->eventHandlerScope();
+    QVariant ret = win->part()->executeKJSFunctionCall(thisVal,listener,args,*scope);
+    if (scope)
+      delete scope;
     if (ret.type() == QVariant::Bool && ret.toBool() == false)
         evt.preventDefault();
   }

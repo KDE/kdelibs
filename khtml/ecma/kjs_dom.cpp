@@ -301,6 +301,11 @@ KJSO DOMNode::getListener(int eventId) const
 	return Null();
 }
 
+List *DOMNode::eventHandlerScope() const
+{
+  return 0;
+}
+
 Completion DOMNodeFunc::tryExecute(const List &args)
 {
   KJSO result;

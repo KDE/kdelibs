@@ -57,6 +57,7 @@ namespace KJS {
     void addParameter(const UString &n);
     void setLength(int l);
     KJSO executeCall(Imp *thisV, const List *args);
+    KJSO executeCall(Imp *thisV, const List *args, const List *extraScope);
     UString name() const;
   protected:
     UString ident;

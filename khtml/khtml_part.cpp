@@ -4152,14 +4152,14 @@ DOM::Node KHTMLPart::activeNode() const
     return DOM::Node(d->m_doc?d->m_doc->focusNode():0);
 }
 
-QVariant KHTMLPart::executeKJSFunctionCall( KJS::KJSO &thisVal, KJS::KJSO &functionObj, KJS::List &args)
+QVariant KHTMLPart::executeKJSFunctionCall( KJS::KJSO &thisVal, KJS::KJSO &functionObj, KJS::List &args, KJS::List &extraScope)
 {
     KJSProxy *proxy = jScript();
 
     if (!proxy)
         return QVariant();
 
-    return proxy->executeFunctionCall(thisVal,functionObj,args);
+    return proxy->executeFunctionCall(thisVal,functionObj,args,extraScope);
 }
 
 

@@ -138,6 +138,11 @@ void FunctionImp::processParameters(const List *args)
 // ECMA 13.2.1
 KJSO FunctionImp::executeCall(Imp *thisV, const List *args)
 {
+  return executeCall(thisV,args,0);
+}
+
+KJSO FunctionImp::executeCall(Imp *thisV, const List *args, const List *extraScope)
+{
   bool dummyList = false;
   if (!args) {
     args = new List();
@@ -150,6 +155,16 @@ KJSO FunctionImp::executeCall(Imp *thisV, const List *args)
   Context *ctx = new Context(codeType(), save, this, args, thisV);
   curr->setContext(ctx);
 
+  int numScopes = 0;
+  if (extraScope) {
+    ListIterator scopeIt = extraScope->begin();
+    for (; scopeIt != extraScope->end(); scopeIt++) {
+      KJSO obj(*scopeIt);
+      ctx->pushScope(obj);
+      numScopes++;
+    }
+  }
+
   // assign user supplied arguments to parameters
   processParameters(args);
 
@@ -157,6 +172,10 @@ KJSO FunctionImp::executeCall(Imp *thisV, const List *args)
 
   if (dummyList)
     delete args;
+
+  int i;
+  for (i = 0; i < numScopes; i++)
+    ctx->popScope();
 
   put("arguments", Null());
   delete ctx;

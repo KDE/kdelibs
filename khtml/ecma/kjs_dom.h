@@ -49,6 +49,7 @@ namespace KJS {
     virtual String toString() const;
     void setListener(int eventId,KJSO func) const;
     KJSO getListener(int eventId) const;
+    virtual List *eventHandlerScope() const;
 
   protected:
     DOM::Node node;

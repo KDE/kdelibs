@@ -281,6 +281,13 @@ KJSO KJSO::executeCall(const KJSO &thisV, const List *args)
   return (static_cast<FunctionImp*>(rep))->executeCall(thisV.imp(), args);
 }
 
+KJSO KJSO::executeCall(const KJSO &thisV, const List *args, const List *extraScope)
+{
+  assert(rep);
+  assert(implementsCall());
+  return (static_cast<FunctionImp*>(rep))->executeCall(thisV.imp(), args, extraScope);
+}
+
 void KJSO::setConstructor(KJSO c)
 {
   put("constructor", c, DontEnum | DontDelete | ReadOnly);

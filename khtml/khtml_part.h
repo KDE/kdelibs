@@ -1018,7 +1018,7 @@ private:
 
   bool requestObject( khtml::ChildFrame *child, const KURL &url, const KParts::URLArgs &args = KParts::URLArgs() );
 
-  QVariant executeKJSFunctionCall( KJS::KJSO &thisVal, KJS::KJSO &functionObj, KJS::List &args);
+  QVariant executeKJSFunctionCall( KJS::KJSO &thisVal, KJS::KJSO &functionObj, KJS::List &args, KJS::List &extraScope);
   DOM::EventListener *createHTMLEventListener( QString code );
 
   DOM::HTMLDocumentImpl *docImpl() const;

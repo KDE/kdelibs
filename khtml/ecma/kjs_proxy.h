@@ -40,7 +40,7 @@ namespace KJS {
 typedef KJScript* (KJSCreateFunc)(KHTMLPart *);
 typedef QVariant (KJSEvalFunc)(KJScript *script, const QChar *, unsigned int,
 			   const DOM::Node &, KHTMLPart *);
-typedef QVariant (KJSExecFuncCall)(KJS::KJSO &, KJS::KJSO &, KJS::List &, bool, KHTMLPart *);
+typedef QVariant (KJSExecFuncCall)(KJS::KJSO &, KJS::KJSO &, KJS::List &, KJS::List &, bool, KHTMLPart *);
 typedef void (KJSClearFunc)(KJScript *script, KHTMLPart *part);
 typedef const char* (KJSSpecialFunc)(KJScript *script, const char *);
 typedef void (KJSDestroyFunc)(KJScript *script);
@@ -69,7 +69,7 @@ public:
   QVariant evaluate(const QChar *c, unsigned int l, const DOM::Node &n);
   const char *special(const char *c);
   void clear();
-  QVariant executeFunctionCall( KJS::KJSO &thisVal, KJS::KJSO &functionObj, KJS::List &args);
+  QVariant executeFunctionCall( KJS::KJSO &thisVal, KJS::KJSO &functionObj, KJS::List &args, KJS::List &extraScope);
   DOM::EventListener *createHTMLEventHandler(QString code);
   KHTMLPart *khtmlpart;
   KJScript *jScript();
@@ -100,11 +100,11 @@ inline QVariant KJSProxy::evaluate(const QChar *c, unsigned int l,
   return r;
 }
 
-inline QVariant KJSProxy::executeFunctionCall( KJS::KJSO &thisVal, KJS::KJSO &functionObj, KJS::List &args)
+inline QVariant KJSProxy::executeFunctionCall( KJS::KJSO &thisVal, KJS::KJSO &functionObj, KJS::List &args, KJS::List &extraScope)
 {
   if (!script)
     script = (*create)(khtmlpart);
-  return (*execFuncCall)(thisVal,functionObj,args,inEvaluate, khtmlpart);
+  return (*execFuncCall)(thisVal,functionObj,args,extraScope,inEvaluate,khtmlpart);
 }
 
 inline const char *KJSProxy::special(const char *c) {

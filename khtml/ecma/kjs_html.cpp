@@ -894,6 +894,35 @@ bool KJS::HTMLElement::hasProperty(const UString &p, bool recursive) const
     return recursive && DOMElement::hasProperty(p, true);
 }
 
+List *KJS::HTMLElement::eventHandlerScope() const
+{
+  DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
+  DOM::HTMLFormElement form;
+  switch (element.elementId()) {
+    case ID_INPUT:
+      form = static_cast<DOM::HTMLInputElement>(element).form();
+      break;
+    case ID_SELECT:
+      form = static_cast<DOM::HTMLSelectElement>(element).form();
+      break;
+    case ID_TEXTAREA:
+      form = static_cast<DOM::HTMLTextAreaElement>(element).form();
+      break;
+    // ### add scoping rules for other types of elements
+    default:
+      break;
+  }
+
+  if (!form.isNull()) {
+    List *scope = new List();
+    scope->append(getDOMNode(form));
+    scope->append(getDOMNode(element.ownerDocument()));
+    return scope;
+  }
+
+  return 0;
+}
+
 Completion KJS::HTMLElementFunction::tryExecute(const List &args)
 {
   KJSO result;
