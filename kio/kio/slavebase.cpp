@@ -748,38 +748,25 @@ bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
     QDataStream stream(params, IO_WriteOnly);
     stream << info << errorMsg << windowId << seqNr;
             
-    bool attemptedRestart = false;
-    while ( 1 )
+    if (!d->dcopClient->call( "kded", "kpasswdserver", "queryAuthInfo(KIO::AuthInfo, QString, long int, long int)",
+                               params, replyType, reply ) )
     {
-        if ( !d->dcopClient->call( "kcookiejar", "kpasswdserver", "queryAuthInfo(KIO::AuthInfo, QString, long int, long int)",
-                                   params, replyType, reply ) )
-        {
-            if ( !initCookieJar() || attemptedRestart )
-            {
-                kdWarning(7019) << "Can't communicate with cookiejar!" << endl;
-                return false;
-            }
-            else
-            {
-                attemptedRestart = true;
-            }
-        }
-        else
-        {
-            if ( replyType == "KIO::AuthInfo" )
-            {
-                QDataStream stream2( reply, IO_ReadOnly );
-                stream2 >> authResult >> seqNr;
-                break;
-            }
-            else
-            {
-                kdError(7019) << "DCOP function queryAuthInfo(...) returns "
-                              << replyType << ", expected KIO::AuthInfo" << endl;
-                return false;
-            }
-        }
+       kdWarning(7019) << "Can't communicate with kded!" << endl;
+       return false;
     }
+    
+    if ( replyType == "KIO::AuthInfo" )
+    {
+       QDataStream stream2( reply, IO_ReadOnly );
+       stream2 >> authResult >> seqNr;
+    }
+    else
+    {
+       kdError(7019) << "DCOP function queryAuthInfo(...) returns "
+                     << replyType << ", expected KIO::AuthInfo" << endl;
+       return false;
+    }
+
     if (!authResult.isModified())
        return false;
 
@@ -1032,6 +1019,7 @@ QString SlaveBase::createAuthCacheKey( const KURL& url )
 
 bool SlaveBase::pingCacheDaemon() const
 {
+    // TODO: Ping kded / kpasswdserver
     KDEsuClient client;
     int sucess = client.ping();
     if( sucess == -1 )
@@ -1060,37 +1048,23 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
     QDataStream stream(params, IO_WriteOnly);
     stream << info << windowId;
 
-    bool attemptedRestart = false;
-    while ( 1 )
+    if ( !d->dcopClient->call( "kded", "kpasswdserver", "checkAuthInfo(KIO::AuthInfo, long int)",
+                               params, replyType, reply ) )
     {
-        if ( !d->dcopClient->call( "kcookiejar", "kpasswdserver", "checkAuthInfo(KIO::AuthInfo, long int)",
-                                   params, replyType, reply ) )
-        {
-            if ( !initCookieJar() || attemptedRestart )
-            {
-                kdWarning(7019) << "Can't communicate with cookiejar!" << endl;
-                return false;
-            }
-            else
-            {
-                attemptedRestart = true;
-            }
-        }
-        else
-        {
-            if ( replyType == "KIO::AuthInfo" )
-            {
-                QDataStream stream2( reply, IO_ReadOnly );
-                stream2 >> authResult;
-                break;
-            }
-            else
-            {
-                kdError(7019) << "DCOP function checkCachedAuthInfo(...) returns "
-                              << replyType << ", expected KIO::AuthInfo" << endl;
-                return false;
-            }
-        }
+       kdWarning(7019) << "Can't communicate with kded!" << endl;
+       return false;
+    }
+    
+    if ( replyType == "KIO::AuthInfo" )
+    {
+       QDataStream stream2( reply, IO_ReadOnly );
+       stream2 >> authResult;
+    }
+    else
+    {
+       kdError(7019) << "DCOP function checkAuthInfo(...) returns "
+                     << replyType << ", expected KIO::AuthInfo" << endl;
+       return false;
     }
     if (!authResult.isModified())
     {
@@ -1103,53 +1077,11 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
     return true;
 }
 
-
-bool SlaveBase::initCookieJar()
-{
-  (void) dcopClient(); // Make sure to have a dcop client.
-  if ( !d->dcopClient->isApplicationRegistered( "kcookiejar" ) )
-  {
-     QString error;
-     if ( KApplication::startServiceByDesktopName( "kcookiejar", QStringList(),
-                                                  &error ) )
-     {
-        kdDebug(7019) << "Error starting KCookiejar: " << error << endl;
-        return false;
-     }
-  }
-  return true;
-}
-
 bool SlaveBase::storeAuthInfo( const QCString& key, const QCString& group,
                                const AuthInfo& info )
 {
-    if ( !pingCacheDaemon() )
-        return false;
-
-    KDEsuClient client;
-
-    // Add the new Authentication entry...
-    client.setVar( (key+"-user"), info.username.utf8(), 0, group );
-    client.setVar( (key+"-pass"), info.password.utf8(), 0, group );
-    if ( !info.realmValue.isEmpty() )
-    {
-      client.setVar( (key+"-realm"), info.realmValue.utf8(), 0, group );
-      QString new_path = info.url.path();
-      if( new_path.isEmpty() )
-        new_path = '/';
-      client.setVar( (key+"-path"), new_path.utf8(), 0, group );
-    }
-    if ( !info.digestInfo.isEmpty() )
-      client.setVar( (key+"-extra"), info.digestInfo.utf8(), 0, group );
-
-    kdDebug(7019) << "Cached new authentication for: " << key << endl
-                  << "  User= " << info.username << endl
-                  << "  Password= [hidden]" << endl
-                  << "  Realm= " << info.realmValue << endl
-                  << "  Extra= " << info.digestInfo << endl;
-
-    sendAuthenticationKey (key, group, info.keepPassword );
-    return true;
+    // Obsolete
+    return false;
 }
 
 bool SlaveBase::cacheAuthentication( const AuthInfo& info )
@@ -1162,7 +1094,7 @@ bool SlaveBase::cacheAuthentication( const AuthInfo& info )
     QDataStream stream(params, IO_WriteOnly);
     stream << info << windowId;
 
-    d->dcopClient->send( "kcookiejar", "kpasswdserver", "addAuthInfo(KIO::AuthInfo, long int)", params );
+    d->dcopClient->send( "kded", "kpasswdserver", "addAuthInfo(KIO::AuthInfo, long int)", params );
 
     return true;
 }

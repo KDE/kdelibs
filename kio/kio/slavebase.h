@@ -627,19 +627,10 @@ public:
     bool checkCachedAuthentication( AuthInfo& info );
 
     /**
-     * Initializes the cookiejar if it is not running already
-     * and returns true if successful, i.e. the cookiejar started
-     * okay or is currently running.
-     *
-     * The cookiejar is used for HTTP cookies and password storage.
-     */
-    bool initCookieJar();
-
-    /**
-     * @obsolete
-     *
-     * Cache authentication information is now stored automatically
-     * by openPassDlg.
+     * Explicitly store authentication information. openPassDlg already
+     * stores password information automatically, you only need to call 
+     * this function if you want to store authentication information that 
+     * is different from the information returned by openPassDlg.
      */
     bool cacheAuthentication( const AuthInfo& info );
 
