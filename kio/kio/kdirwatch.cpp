@@ -796,7 +796,12 @@ int KDirWatchPrivate::scanEntry(Entry* e)
 void KDirWatchPrivate::emitEvent(Entry* e, int event, const QString &fileName)
 {
   QString path = e->path;
-  if (!fileName.isEmpty()) path += "/" + fileName;
+  if (!fileName.isEmpty()) {
+    if (fileName[0] == '/')
+      path = fileName;
+    else
+      path += "/" + fileName;
+  }
 
   Client* c = e->m_clients.first();
   for(;c;c=e->m_clients.next()) {
@@ -983,8 +988,9 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
   if (e->isDir)
     switch (fe->code)
     {
-      case FAMDeleted: 
-        if (strlen(fe->filename) == 0)
+      case FAMDeleted:
+       // file absolute: watched dir
+        if (fe->filename[0] == '/')
         {
           // a watched directory was deleted
 
