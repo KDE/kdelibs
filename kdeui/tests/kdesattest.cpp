@@ -12,18 +12,18 @@ KDesatWidget::KDesatWidget(QWidget *parent, const char *name)
 {
 
     image = QImage("testimage.png");
-    slide = new KIntNumInput("Desaturate: ",
-			     0, 1000, 1, 700, "", 10,  
-			     true, this, "desat");
-    connect(slide,SIGNAL(valueChanged(int)), this, SLOT(change(int)));
+    slide = new KDoubleNumInput(700, this, "desat");
+    slide->setRange(0, 1, 0.001);
+    slide->setLabel("Desaturate: ", AlignVCenter | AlignLeft);
+    connect(slide,SIGNAL(valueChanged(double)), this, SLOT(change(double)));
 
     resize(image.width()*2, image.height() + slide->height());
     slide->setGeometry(0, image.height(), image.width()*2, slide->height());
 }
 
-void KDesatWidget::change(int) { 
-    desat_value = slide->value() / 1000.;
-    repaint(); 
+void KDesatWidget::change(double) {
+    desat_value = slide->value();
+    repaint(false);
 }
 
 void KDesatWidget::paintEvent(QPaintEvent */*ev*/)

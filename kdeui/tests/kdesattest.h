@@ -18,14 +18,14 @@ public:
     KDesatWidget(QWidget *parent=0, const char *name=0);
 
 public slots:
-    void change(int);
+    void change(double);
 
 protected:
     void paintEvent(QPaintEvent *ev);
 private:
     float desat_value;
     QImage image;
-    KIntNumInput *slide;
+    KDoubleNumInput *slide;
 };
 
 #endif
