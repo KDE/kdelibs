@@ -78,7 +78,7 @@ public:
     void setURL( const KURL& url );
 
 
-    void setURLs( const QStringList &urls );
+    void setURLs( QStringList urls );
 
     /**
      * @returns a list of all urls currently handled. The list contains at most

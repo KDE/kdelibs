@@ -136,7 +136,7 @@ void KURLComboBox::setDefaults()
 }
 
 
-void KURLComboBox::setURLs( const QStringList &urls )
+void KURLComboBox::setURLs( QStringList urls )
 {
     setDefaults();
     itemList.clear();
