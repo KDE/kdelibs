@@ -36,7 +36,7 @@
  * Desktop-directory, as well as a number of URLs set via @ref setURLs()
  * and one additional entry to be set via @ref setURL().
  *
- * @short A ComboBox showing a number of recent URLs/directories
+ * @short A combo box showing a number of recent URLs/directories
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
 class KURLComboBox : public KComboBox
@@ -69,6 +69,9 @@ public:
      */
     KURLComboBox( Mode mode, QWidget *parent=0, const char *name=0 );
     KURLComboBox( Mode mode, bool rw, QWidget *parent=0, const char *name=0 );
+    /**
+     * Destructs the combo box.
+     */
     ~KURLComboBox();
 
     /**
@@ -163,7 +166,7 @@ public:
 
 signals:
     /**
-     * emitted when an item was clicked at
+     * Emitted when an item was clicked at.
      * @param url is the url of the now current item. If it is a local url,
      * it won't have a protocol (file:/), otherwise it will.
      */

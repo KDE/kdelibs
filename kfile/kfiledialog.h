@@ -54,7 +54,7 @@ class KPreviewWidgetBase;
 struct KFileDialogPrivate;
 
 /**
- * Provide a user (and developer) friendly way to
+ * Provides a user (and developer) friendly way to
  * select files and directories.
  *
  * The widget can be used as a drop in replacement for the
@@ -93,7 +93,7 @@ public:
     enum OperationMode { Other = 0, Opening, Saving };
 
     /**
-      * Construct a file dialog.
+      * Constructs a file dialog.
       *
       * @param startDir This can either be
       *         @li The URL of the directory to start in.
@@ -119,7 +119,7 @@ public:
 		bool modal);
 
     /**
-     * Destruct the file dialog.
+     * Destructs the file dialog.
      */
     ~KFileDialog();
 
@@ -139,18 +139,18 @@ public:
     KURL baseURL() const;
 
     /**
-     * Retrieve the full path of the selected file in the local filesystem.
+     * Returns the full path of the selected file in the local filesystem.
      * (Local files only)
      */
     QString selectedFile() const;
 
     /**
-     * Retrieve a list of all selected local files.
+     * Returns a list of all selected local files.
      */
     QStringList selectedFiles() const;
 
     /**
-     * Set the directory to view.
+     * Sets the directory to view.
      *
      * @param url URL to show.
      * @param clearforward Indicates whether the forward queue
@@ -159,7 +159,7 @@ public:
     void setURL(const KURL &url, bool clearforward = true);
 
     /**
-     * Set the file name to preselect to @p name
+     * Sets the file name to preselect to @p name
      *
      * This takes absolute URLs and relative file names.
      */
@@ -210,7 +210,7 @@ public:
     bool keepsLocation() const;
 
     /**
-     * Set the filter to be used to @p filter.
+     * Sets the filter to be used to @p filter.
      *
      * You can set more
      * filters for the user to select seperated by '\n'. Every
@@ -242,7 +242,7 @@ public:
     void setFilter(const QString& filter);
 
     /**
-     * Retrieve the current filter as entered by the user or one of the
+     * Returns the current filter as entered by the user or one of the
      * predefined set via @ref setFilter().
      *
      * @param filter Contains the new filter (only the extension part,
@@ -254,7 +254,7 @@ public:
     QString currentFilter() const;
 
     /**
-     * Set the filter up to specify the output type.
+     * Sets the filter up to specify the output type.
      *
      * @param label the label to use instead of "Filter:"
      * @param types a list of mimetypes that can be used as output format
@@ -266,7 +266,7 @@ public:
     void setFilterMimeType(const QString &label, const KMimeType::List &types, const KMimeType::Ptr &defaultType);
 
     /**
-     * The mimetype for the desired output format.
+     * Returns the mimetype for the desired output format.
      *
      * This is only valid if @ref setFilterMimeType() has been called
      * previously.
@@ -276,7 +276,7 @@ public:
     KMimeType::Ptr currentFilterMimeType();
 
     /**
-     * Set the filter up to specify the output type.
+     * Sets the filter up to specify the output type.
      *
      * @param types a list of mimetypes that can be used as output format
      * @param defaultType the default mimetype to use as output format, if any.
@@ -321,7 +321,7 @@ public:
     void setPreviewWidget(const QWidget *w);
 
     /**
-     * Add a preview widget and enter the preview mode.
+     * Adds a preview widget and enters the preview mode.
      *
      * In this mode the dialog is split and the right part contains your
      * preview widget.
@@ -334,7 +334,7 @@ public:
    void setPreviewWidget(const KPreviewWidgetBase *w);
 
     /**
-     * Create a modal file dialog and return the selected
+     * Creates a modal file dialog and return the selected
      * filename or an empty string if none was chosen.
      *
      * Note that with
@@ -362,7 +362,7 @@ public:
 
 
     /**
-     * Create a modal file dialog and return the selected
+     * Creates a modal file dialog and returns the selected
      * filenames or an empty list if none was chosen.
      *
      * Note that with
@@ -389,7 +389,7 @@ public:
 					const QString& caption= QString::null);
 
     /**
-     * Create a modal file dialog and return the selected
+     * Creates a modal file dialog and returns the selected
      * URL or an empty string if none was chosen.
      *
      * Note that with
@@ -417,7 +417,7 @@ public:
 
 
     /**
-     * Create a modal file dialog and return the selected
+     * Creates a modal file dialog and returns the selected
      * URLs or an empty list if none was chosen.
      *
      * Note that with
@@ -444,7 +444,7 @@ public:
 				  const QString& caption= QString::null);
 
     /**
-     * Create a modal file dialog and return the selected
+     * Creates a modal file dialog and returns the selected
      * filename or an empty string if none was chosen.
      *
      * Note that with this
@@ -473,7 +473,7 @@ public:
 				   const QString& caption = QString::null);
 
     /**
-     * Create a modal file dialog and returns the selected
+     * Creates a modal file dialog and returns the selected
      * filename or an empty string if none was chosen.
      *
      * Note that with this
@@ -501,7 +501,7 @@ public:
 			   QWidget *parent= 0,
 			   const QString& caption = QString::null);
     /**
-     * Create a modal file dialog and returns the selected
+     * Creates a modal file dialog and returns the selected
      * directory or an empty string if none was chosen.
      *
      * Note that with this
@@ -526,7 +526,7 @@ public:
 					const QString& caption= QString::null);
 
     /**
-     * Create a modal file dialog with an image previewer and returns the
+     * Creates a modal file dialog with an image previewer and returns the
      * selected url or an empty string if none was chosen.
      *
      * @param startDir This can either be
@@ -557,7 +557,7 @@ public:
     void setMode( KFile::Mode m );
 
     /**
-     * Set the mode of the dialog.
+     * Sets the mode of the dialog.
      *
      * The mode is defined as (in kfile.h):
      * <pre>    enum Mode {
@@ -579,14 +579,13 @@ public:
     void setMode( unsigned int m );
 
     /**
-     * Retrieve the mode of the filedialog.
+     * Returns the mode of the filedialog.
      * @see #setMode()
      */
     KFile::Mode mode() const;
 
     /**
-     * Set the text to be displayed in front of the
-     * selection.
+     * Sets the text to be displayed in front of the selection.
      *
      * The default is "Location".
      * Most useful if you want to make clear what
@@ -595,7 +594,7 @@ public:
     void setLocationLabel(const QString& text);
 
     /**
-     * Retrieve a pointer to the toolbar.
+     * Returns a pointer to the toolbar.
      *
      * You can use this to insert custom
      * items into it, e.g.:

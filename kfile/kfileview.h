@@ -124,8 +124,8 @@ public:
     virtual KFileViewItem *currentFileItem() const = 0;
 
     /**
-     * clears the view and all item lists
-      */
+     * Clears the view and all item lists.
+     */
     virtual void clear();
 
     /**
@@ -139,19 +139,19 @@ public:
     virtual void updateView(const KFileViewItem*);
 
     /**
-     * Remove an item from the list; has to be implemented by the view.
+     * Removes an item from the list; has to be implemented by the view.
      * Call KFileView::removeItem( item ) after removing it.
      */
     virtual void removeItem(const KFileViewItem *item);
 
     /**
-      * specifies the sorting of the internal list. Newly added files
+      * Returns the sorting order of the internal list. Newly added files
       * are added through this sorting.
       */
     QDir::SortSpec sorting() const { return mySorting; }
 
     /**
-      * set the sorting of the view
+      * Sets the sorting order of the view.
       *
       * Default is QDir::Name | QDir::IgnoreCase | QDir::DirsFirst
       * Don't use QDir::Reversed, use @ref sortReversed() if you want to
@@ -165,7 +165,7 @@ public:
     virtual void setSorting(QDir::SortSpec sort);
 
     /**
-      * set the sorting mode. Default mode is Increasing. Affects only
+      * Sets the sorting mode. Default mode is Increasing. Affects only
       * newly added items.
       * @see #setSorting
       **/
@@ -251,7 +251,7 @@ public:
     virtual void ensureItemVisible( const KFileViewItem *i ) = 0;
 
     /**
-     * Clear any selection, unhighlight everything. Must be implemented by the
+     * Clears any selection, unhighlights everything. Must be implemented by the
      * view.
      */
     virtual void clearSelection() = 0;
@@ -270,9 +270,9 @@ public:
     virtual void invertSelection();
 
     /**
-      * Tells the view that it should highlight the item.
-      * This function must be implemented by the view
-      **/
+     * Tells the view that it should highlight the item.
+     * This function must be implemented by the view.
+     **/
     virtual void setSelected(const KFileViewItem *, bool enable) = 0;
 
     /**

@@ -37,7 +37,7 @@ class QTimer;
 
 /**
  * This class is a widget showing a lineedit and a button, which invokes a
- * filedialog. File completion is available in the lineedit.
+ * filedialog. File name completion is available in the lineedit.
  *
  * The defaults for the filedialog are to ask for one existing local file, i.e.
  * KFileDialog::setMode( KFile::File | KFile::ExistingOnly | KFile::LocalOnly )
@@ -57,7 +57,7 @@ class KURLRequester : public QHBox
 
 public:
     /**
-     * Constructs a KURLRequester widget
+     * Constructs a KURLRequester widget.
      * @param modal specifies whether the filedialog should be opened as modal
      * or not.
      */
@@ -83,7 +83,7 @@ public:
 		   bool modal = true );
 
     /**
-     * Destructs the KURLRequester
+     * Destructs the KURLRequester.
      */
     ~KURLRequester();
 

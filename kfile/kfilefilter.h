@@ -46,7 +46,7 @@ class KFileFilter : public KComboBox
     QString currentFilter() const;
 
     /**
-     * Set a list of mimetypes.
+     * Sets a list of mimetypes.
      * If @p defaultType is set, it will be set as the current item.
      * Otherwise, a first item showing all the mimetypes will be created.
      */

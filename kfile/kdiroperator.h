@@ -130,7 +130,7 @@ class KDirOperator : public QWidget
     void close();
 
     /**
-     * Set a filter like "*.cpp *.h *.o". Only files matching that filter
+     * Sets a filter like "*.cpp *.h *.o". Only files matching that filter
      * will be shown. Call @ref rereadDir() to apply it.
      *
      * @see KDirLister::setNameFilter
@@ -162,6 +162,9 @@ class KDirOperator : public QWidget
      */
     void setMimeFilter( const QStringList& mimetypes );
 
+    /**
+     * @returns the current mime filter.
+     */
     QStringList mimeFilter() const { return dir->mimeFilters(); }
 
     /**
@@ -216,7 +219,7 @@ class KDirOperator : public QWidget
     QWidget * viewWidget() const { return fileView ? fileView->widget() : 0L; }
 
     /**
-     * Sets one of the predefine fileviews
+     * Sets one of the predefined fileviews
      * @see KFile::FileView
      */
     void setView(KFile::FileView view);
@@ -260,6 +263,9 @@ class KDirOperator : public QWidget
      * single-selection mode, the latter multi-selection.
      */
     void setMode( KFile::Mode m );
+    /**
+     * @returns the listing/selection mode.
+     */
     KFile::Mode mode() const;
 
     /**
