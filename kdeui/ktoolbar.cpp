@@ -1204,7 +1204,7 @@ void KToolBar::rebuildLayout()
     while ( it.current() )
         it.deleteCurrent();
 
-     for ( QWidget *w = widgets.first(); w; w = widgets.next() ) {
+    for ( QWidget *w = widgets.first(); w; w = widgets.next() ) {
         if ( w == rightAligned )
             continue;
         if ( w->inherits( "KToolBarSeparator" ) &&
@@ -1216,6 +1216,7 @@ void KToolBar::rebuildLayout()
         if ( w->inherits( "QPopupMenu" ) )
             continue;
         l->addWidget( w );
+        w->show();
     }
     if ( rightAligned ) {
         l->addStretch();
@@ -1249,7 +1250,6 @@ void KToolBar::childEvent( QChildEvent *e )
                 {
                     int dummy = -1;
                     insertWidgetInternal( w, dummy, -1 );
-                    w->show();
                 }
 	    }
 	} else {
@@ -1257,7 +1257,7 @@ void KToolBar::childEvent( QChildEvent *e )
             //removeWidgetInternal( w );
 	}
 	if ( isVisibleTo( 0 ) )
-	    layoutTimer->start( 0, TRUE );
+	    layoutTimer->start( 50, TRUE );
     }
     QToolBar::childEvent( e );
 }
@@ -1335,20 +1335,6 @@ void KToolBar::hide()
 
 void KToolBar::show()
 {
-    // unlike in qt2 we don't want to iterate over all child widgets but
-    // instead we iterate over all items of the boxlayout. that easily
-    // allows us to exclude all the qdockwindow internal widgets without
-    // an inherits() check for each.
-    // I actually don't really understand why we show() all the items
-    // explicitly though. Reggie?
-    QLayoutIterator it = boxLayout()->iterator();
-    for (; it.current(); ++it )
-    {
-        QWidget *w = it.current()->widget();
-        if ( !w || w->inherits( "QPopupMenu" ) )
-            continue;
-        w->show();
-    }
     QToolBar::show();
 }
 
@@ -1613,6 +1599,16 @@ bool KToolBar::event( QEvent *e )
 {
     if ( e->type() == QEvent::LayoutHint )
         QTimer::singleShot( 100, this, SLOT( slotRepaint() ) );
+        
+    if (e->type() == QEvent::ChildInserted )
+    {
+       // By pass QToolBar::event, 
+       // it will show() the inserted child and we don't want to 
+       // do that until we have rebuild the layout.
+       childEvent((QChildEvent *)e);
+       return true;
+    }
+        
     return QToolBar::event( e );
 }
 
