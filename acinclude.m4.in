@@ -303,7 +303,9 @@ LDFLAGS=$ac_ldflags_safe
 LIBS=$ac_libs_safe
 
 LD_LIBRARY_PATH=$ac_LD_LIBRARY_PATH_safe
+export LD_LIBRARY_PATH
 LIBRARY_PATH=$ac_LIBRARY_PATH
+export LIBRARY_PATH
 ])
 
 if test "$kde_cv_qt_direct" = "yes"; then
