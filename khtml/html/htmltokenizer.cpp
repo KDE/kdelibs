@@ -766,7 +766,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             // as attribute names. ### judge if this causes problems
             if(finish || CBUFLEN == cBufferPos) {
                 bool beginTag;
-                const char* ptr = cBuffer;
+                char* ptr = cBuffer;
                 unsigned int len = cBufferPos;
                 cBuffer[cBufferPos] = '\0';
                 if ((cBufferPos > 0) && (*ptr == '/'))
@@ -780,12 +780,12 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     // Start Tag
                     beginTag = true;
                 // limited xhtml support. Accept empty xml tags like <br/>
-                if((len > 1) && (*(ptr+len-1) == '/')) len--;
+                if(len > 1 && ptr[len-1] == '/' ) ptr[--len] = '\0';
 
                 uint tagID = khtml::getTagID(ptr, len);
                 if (!tagID) {
 #ifdef TOKEN_DEBUG
-                    QCString tmp(cBuffer, cBufferPos+1);
+                    QCString tmp(ptr, len+1);
                     kdDebug( 6036 ) << "Unknown tag: \"" << tmp.data() << "\"" << endl;
 #endif
                     dest = buffer;
@@ -793,7 +793,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 else
                 {
 #ifdef TOKEN_DEBUG
-                    QCString tmp(cBuffer, cBufferPos+1);
+                    QCString tmp(ptr, len+1);
                     kdDebug( 6036 ) << "found tag id=" << tagID << ": " << tmp.data() << endl;
 #endif
                     currToken.id = beginTag ? tagID : tagID + ID_CLOSE_TAG;
