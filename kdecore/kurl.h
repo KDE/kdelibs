@@ -367,7 +367,8 @@ public:
   bool cd( const QString& _dir, bool zapRef = true );
 
   /**
-   * @return The complete URL.
+   * @return The complete URL, with all escape sequences intact.
+   * Example: http://localhost:8080/test.cgi?test=hello%20world&name=fred
    *
    * @param _trailing This may be ( -1, 0 +1 ). -1 strips a trailing '/' from the path, +1 adds
    *                  a trailing '/' if there is none yet and 0 returns the
@@ -376,7 +377,9 @@ public:
   QString url( int _trailing = 0 ) const;
 
   /**
-   * @return A human readable URL.
+   * @return A human readable URL, with no non-necessary encodings/escaped
+   * characters.
+   * Example: http://localhost:8080/test.cgi?test=hello world&name=fred
    */
   QString prettyURL() const;
 
