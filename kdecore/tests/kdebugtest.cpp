@@ -3,6 +3,8 @@
 #include <kinstance.h>
 #include <iostream>
 #include <qapplication.h>
+#include <qpen.h>
+#include <qvariant.h>
 
 class TestWidget : public QWidget
 {
@@ -14,6 +16,10 @@ public:
     kdDebug().form("mytest %s", "hello") << endl;
     QString test = "%20C this is a string";
     kdDebug(150) << test << endl;
+    QChar ch = 'a';
+    kdDebug() << "QChar a: " << ch << endl;
+    ch = '\r';
+    kdDebug() << "QChar \\r: " << ch << endl;
     kdDebug() << k_lineinfo << "error on this line" << endl;
     kdDebug(2 == 2) << "this is right " << perror << endl;
     kdDebug() << "Before instance creation" << endl;
@@ -53,11 +59,16 @@ public:
 
     Q_LLONG big = 65536LL*65536*500;
     kdDebug() << big << endl;
+
+    QVariant v( 0.12345 );
+    kdDebug() << "Variant: " << v << endl;
+    v = QPen( Qt::red );
+    kdDebug() << "Variant: " << v << endl;
   }
   void resizeEvent(QResizeEvent*)
   {
     kdDebug() << this << endl;
-  }    
+  }
 };
 
 int main(int argc, char** argv)
