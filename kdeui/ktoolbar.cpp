@@ -909,7 +909,7 @@ int KToolBar::iconSize() const
          if (!::qstrcmp(QObject::name(), "mainToolBar"))
              return KGlobal::iconLoader()->currentSize(KIcon::MainToolbar);
          else
-             return KGlobal::iconLoader()->currentSize(KIcon::MainToolbar);
+             return KGlobal::iconLoader()->currentSize(KIcon::Toolbar);
     }
     return d->m_iconSize;
 }
