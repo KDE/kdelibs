@@ -92,12 +92,10 @@ string_object.lo: string_object.lut.h
 CLEANFILES = $(LUT_FILES)
 
 ## test program (in one program for easier profiling/memory debugging)
-EXTRA_PROGRAMS = testkjs_static testavl
+EXTRA_PROGRAMS = testkjs_static
 testkjs_static_SOURCES = testkjs.cpp 
 testkjs_static_LDADD = $(LIBPCRE) libkjs.la
 testkjs_static_LDFLAGS = -static
-testavl_SOURCES = testavl.cpp 
-testavl_LDADD = $(LIBPCRE) libkjs.la
 
 ## test program (linked to libkjs)
 check_PROGRAMS = testkjs
