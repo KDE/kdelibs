@@ -42,7 +42,8 @@ public:
 	Directory    = 2,
 	Files        = 4,
 	ExistingOnly = 8,
-	LocalOnly    = 16
+	LocalOnly    = 16,
+        ModeMax      = 65536
     };
 
     enum FileView {
@@ -51,7 +52,8 @@ public:
 	Detail          = 2,
 	SeparateDirs    = 4,
 	PreviewContents = 8,
-	PreviewInfo     = 16 // not implemented yet!
+	PreviewInfo     = 16,
+        FileViewMax     = 65536
     };
 
     enum SelectionMode {
