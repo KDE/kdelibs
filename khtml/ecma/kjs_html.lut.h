@@ -1,0 +1,46 @@
+/* Automatically generated from kjs_html.cpp using ../../kjs/create_hash_table. DO NOT EDIT ! */
+
+namespace KJS {
+
+const struct HashEntry HTMLDocumentTableEntries[] = {
+   { "open", HTMLDocument::Open, DontDelete|ReadOnly|Function, 0, 0 },
+   { 0, 0, 0, 0, 0 },
+   { 0, 0, 0, 0, 0 },
+   { "all", HTMLDocument::All, DontDelete|ReadOnly|Function, 0, &HTMLDocumentTableEntries[33] },
+   { 0, 0, 0, 0, 0 },
+   { "vlinkColor", HTMLDocument::VlinkColor, DontDelete|ReadOnly, 0, 0 },
+   { "anchors", HTMLDocument::Anchors, DontDelete|ReadOnly|Function, 0, 0 },
+   { "close", HTMLDocument::Close, DontDelete|ReadOnly|Function, 0, 0 },
+   { 0, 0, 0, 0, 0 },
+   { 0, 0, 0, 0, 0 },
+   { "images", HTMLDocument::Images, DontDelete|ReadOnly|Function, 0, 0 },
+   { "linkColor", HTMLDocument::LinkColor, DontDelete|ReadOnly, 0, 0 },
+   { "domain", HTMLDocument::Domain, DontDelete|ReadOnly, 0, 0 },
+   { "height", HTMLDocument::Height, DontDelete|ReadOnly, 0, 0 },
+   { "cookie", HTMLDocument::Cookie, DontDelete|ReadOnly, 0, 0 },
+   { "alinkColor", HTMLDocument::AlinkColor, DontDelete|ReadOnly, 0, 0 },
+   { "getElementsByName", HTMLDocument::GetElementsByName, DontDelete|ReadOnly|Function, 1, 0 },
+   { "applets", HTMLDocument::Applets, DontDelete|ReadOnly|Function, 0, &HTMLDocumentTableEntries[35] },
+   { "links", HTMLDocument::Links, DontDelete|ReadOnly|Function, 0, 0 },
+   { "title", HTMLDocument::Title, DontDelete|ReadOnly, 0, 0 },
+   { "location", HTMLDocument::Location, DontDelete|ReadOnly, 0, 0 },
+   { 0, 0, 0, 0, 0 },
+   { 0, 0, 0, 0, 0 },
+   { 0, 0, 0, 0, 0 },
+   { "referrer", HTMLDocument::Referrer, DontDelete|ReadOnly, 0, &HTMLDocumentTableEntries[31] },
+   { 0, 0, 0, 0, 0 },
+   { "URL", HTMLDocument::URL, DontDelete|ReadOnly, 0, 0 },
+   { "body", HTMLDocument::Body, DontDelete|ReadOnly, 0, 0 },
+   { "write", HTMLDocument::Write, DontDelete|ReadOnly|Function, 1, &HTMLDocumentTableEntries[34] },
+   { "writeln", HTMLDocument::WriteLn, DontDelete|ReadOnly|Function, 1, 0 },
+   { "getElementById", HTMLDocument::GetElementById, DontDelete|ReadOnly|Function, 1, &HTMLDocumentTableEntries[32] },
+   { "forms", HTMLDocument::Forms, DontDelete|ReadOnly|Function, 0, 0 },
+   { "bgColor", HTMLDocument::BgColor, DontDelete|ReadOnly, 0, 0 },
+   { "fgColor", HTMLDocument::FgColor, DontDelete|ReadOnly, 0, 0 },
+   { "lastModified", HTMLDocument::LastModified, DontDelete|ReadOnly, 0, 0 },
+   { "width", HTMLDocument::Width, DontDelete|ReadOnly, 0, 0 }
+};
+
+const struct HashTable HTMLDocumentTable = { 2, 36, HTMLDocumentTableEntries, 31 };
+
+}; // namespace
