@@ -509,11 +509,15 @@ bool ReadWritePart::saveToURL()
     return true;
   }
 }
-
+#include <iostream.h>
 void ReadWritePart::slotUploadFinished( KIO::Job * job )
 {
+	cerr << "=================================" << endl;
   if (job->error())
+  {
     emit canceled( job->errorString() );
+    cerr <<  "====================================" << job->errorString().utf8() << endl;
+  }
   else
   {
     setModified( false );

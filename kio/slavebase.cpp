@@ -74,12 +74,22 @@ return false; }
 
    QStringList groupList() const { return QStringList(); }
 
-   bool hasKey(const QString &pKey) const
+   bool hasKey(const QCString&, const QString &pKey) const
    {
       return slave->hasMetaData(pKey);
    }
-   bool hasKey(const char *pKey) const { return hasKey(QString::fromLatin1(pKey)); }
+   
+   bool hasKey(const QCString&, const char *pKey) const { return hasKey(QString::fromLatin1(pKey)); }
 
+   bool hasKey(const QString &pKey) const
+   {
+      return hasKey("", pKey);
+   }
+   
+   bool hasKey(const char *pKey) const { return hasKey("", pKey); }
+
+		
+   
    QMap<QString,QString> entryMap(const QString &) const
       { return QMap<QString,QString>(); }
 

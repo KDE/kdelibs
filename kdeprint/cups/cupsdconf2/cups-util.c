@@ -45,7 +45,7 @@ cupsGetConf()
   * Get a temp file...
   */
 
-  if ((fd = cupsTempFd(filename, sizeof(filename))) < 0)
+  if ((fd = cupsTempFile(filename, sizeof(filename))) < 0)
   {
    /*
     * Can't open file; close the server connection and return NULL...
