@@ -128,9 +128,6 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	d->m_cmdlabel->setBuddy(d->m_cmd);
 	d->m_dummy = new QVBox(this);
 	d->m_plugin = new PluginComboBox(this);
-	QLabel	*pluginlabel = new QLabel(i18n("Print s&ystem currently used:"), this);
-	pluginlabel->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
-	pluginlabel->setBuddy(d->m_plugin);
 	d->m_extbtn = new KPushButton(this);
 	QToolTip::add(d->m_extbtn, i18n("Show/Hide Advanced Options"));
 	d->m_persistent = new QCheckBox(i18n("&Keep this dialog open after printing"), this);
@@ -140,10 +137,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	QVBoxLayout	*l1 = new QVBoxLayout(this, 10, 10);
 	l1->addWidget(m_pbox,0);
 	l1->addWidget(d->m_dummy,1);
-	QHBoxLayout	*ll1 = new QHBoxLayout(0, 0, 5);
-	l1->addLayout(ll1, 0);
-	ll1->addWidget(pluginlabel, 1);
-	ll1->addWidget(d->m_plugin, 0);
+	l1->addWidget(d->m_plugin,0);
 	l1->addWidget(d->m_persistent);
 	QHBoxLayout	*l2 = new QHBoxLayout(0, 0, 10);
 	l1->addLayout(l2);

@@ -117,6 +117,7 @@ public:
 
 	// configuration functions
 	bool invokeOptionsDialog(QWidget *parent = 0);
+	virtual QString stateInformation();
 
 	// server functions
 	int serverOperationMask() const 	{ return m_serveroperationmask; }

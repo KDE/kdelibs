@@ -20,27 +20,30 @@
 #ifndef PLUGINCOMBOBOX_H
 #define PLUGINCOMBOBOX_H
 
-#include <qcombobox.h>
+#include <qwidget.h>
 #include <qstringlist.h>
 
 #include "kpreloadobject.h"
 
-class PluginComboBox : public QComboBox, public KPReloadObject
+class QComboBox;
+class QLabel;
+
+class PluginComboBox : public QWidget, public KPReloadObject
 {
 	Q_OBJECT
 public:
 	PluginComboBox(QWidget *parent = 0, const char *name = 0);
-
-signals:
-	void aboutToChange();
 
 protected slots:
 	void slotActivated(int);
 
 protected:
 	void reload();
+	void configChanged();
 
 private:
+	QComboBox	*m_combo;
+	QLabel		*m_plugininfo;
 	QStringList	m_pluginlist;
 };
 

@@ -537,3 +537,6 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
   * print dialog: re-added the "Set as default" button in the case the
     user default printer is used on first print instead of the last used
     printer (it does make sense again to have it)
+  * general: added a small (but useful) information string about the
+    current plugin below the plugin combobox (ex: in CUPS, shows the current
+    server:port).

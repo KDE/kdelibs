@@ -59,9 +59,5 @@ WISHES
 - log viewer: page_log, error_log, ... This could be based on XML
   templates and produce printable HTML reports.
 
-- add somewhere a descriptive string about the print server: for CUPS,
-  the current CUPS server (localhost:631) could be shown. Question is
-  "Where?".
-
 - in CUPS possibility to filter printer using printer-type attribute,
   to get only printers having a specified capability

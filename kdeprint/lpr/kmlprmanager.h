@@ -56,6 +56,7 @@ public:
 
 	void createPluginActions(KActionCollection*);
 	void validatePluginActions(KActionCollection*, KMPrinter*);
+	QString stateInformation();
 
 protected slots:
 	void slotEditPrintcap();

@@ -481,4 +481,9 @@ void KMLprManager::slotEditPrintcap()
 	}
 }
 
+QString KMLprManager::stateInformation()
+{
+	return i18n("Spooler type: %1").arg(LprSettings::self()->mode() == LprSettings::LPR ? "LPR (BSD compatible)" : "LPRng");
+}
+
 #include "kmlprmanager.moc"

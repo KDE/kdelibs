@@ -513,4 +513,9 @@ bool KMManager::isFilterEnabled() const
 	return m_printerfilter->isEnabled();
 }
 
+QString KMManager::stateInformation()
+{
+	return i18n("No plugin information available");
+}
+
 #include "kmmanager.moc"

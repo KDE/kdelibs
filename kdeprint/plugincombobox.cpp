@@ -19,21 +19,39 @@
 
 #include "plugincombobox.h"
 #include "kmfactory.h"
+#include "kmmanager.h"
+
+#include <qcombobox.h>
+#include <qlabel.h>
+#include <qlayout.h>
+#include <klocale.h>
 
 PluginComboBox::PluginComboBox(QWidget *parent, const char *name)
-:QComboBox(parent, name)
+:QWidget(parent, name)
 {
+	m_combo = new QComboBox(this, "PluginCombo");
+	QLabel	*m_label = new QLabel(i18n("Print s&ystem currently used:"), this);
+	m_label->setAlignment(AlignVCenter|AlignRight);
+	m_label->setBuddy(m_combo);
+	m_plugininfo = new QLabel("Plugin information", this);
+	QGridLayout	*l0 = new QGridLayout(this, 2, 2, 0, 5);
+	l0->setColStretch(0, 1);
+	l0->addWidget(m_label, 0, 0);
+	l0->addWidget(m_combo, 0, 1);
+	l0->addWidget(m_plugininfo, 1, 1);
+
 	QValueList<PluginInfo>	list = KMFactory::self()->pluginList();
 	QString			currentPlugin = KMFactory::self()->printSystem();
 	for (QValueList<PluginInfo>::ConstIterator it=list.begin(); it!=list.end(); ++it)
 	{
-		insertItem((*it).comment);
+		m_combo->insertItem((*it).comment);
 		if ((*it).name == currentPlugin)
-			setCurrentItem(count()-1);
+			m_combo->setCurrentItem(m_combo->count()-1);
 		m_pluginlist.append((*it).name);
 	}
 
-	connect(this, SIGNAL(activated(int)), SLOT(slotActivated(int)));
+	connect(m_combo, SIGNAL(activated(int)), SLOT(slotActivated(int)));
+	configChanged();
 }
 
 void PluginComboBox::slotActivated(int index)
@@ -41,7 +59,6 @@ void PluginComboBox::slotActivated(int index)
 	QString	plugin = m_pluginlist[index];
 	if (!plugin.isEmpty())
 	{
-		emit aboutToChange();
 		// the factory will notify all registered objects of the change
 		KMFactory::self()->reload(plugin, true);
 	}
@@ -52,7 +69,13 @@ void PluginComboBox::reload()
 	QString	syst = KMFactory::self()->printSystem();
 	int	index(-1);
 	if ((index=m_pluginlist.findIndex(syst)) != -1)
-		setCurrentItem(index);
+		m_combo->setCurrentItem(index);
+	configChanged();
+}
+
+void PluginComboBox::configChanged()
+{
+	m_plugininfo->setText(KMManager::self()->stateInformation());
 }
 
 #include "plugincombobox.moc"

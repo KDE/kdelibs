@@ -97,8 +97,6 @@ KMMainView::KMMainView(QWidget *parent, const char *name, KActionCollection *col
 	m_toolbar->setMovingEnabled(false);
 	//static_cast<QWidget*>(m_toolbar)->layout()->setMargin(1);
 	m_plugin = new PluginComboBox(this, "Plugin");
-	QLabel	*l1 = new QLabel(i18n("Print system currently used:"), this);
-	l1->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
 
 	// layout
 	QVBoxLayout	*m_layout = new QVBoxLayout(this, 0, 0);
@@ -109,9 +107,7 @@ KMMainView::KMMainView(QWidget *parent, const char *name, KActionCollection *col
 	m_boxlayout->addWidget(m_printerpages);
 	QHBoxLayout	*lay0 = new QHBoxLayout(0, 0, 10);
 	m_layout->addSpacing(5);
-	m_layout->addLayout(lay0, 0);
-	lay0->addWidget(l1, 1);
-	lay0->addWidget(m_plugin, 0);
+	m_layout->addWidget(m_plugin, 0);
 
 	// connections
 	connect(KMTimer::self(),SIGNAL(timeout()),SLOT(slotTimer()));

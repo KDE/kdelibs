@@ -952,6 +952,11 @@ void KMCupsManager::ippReport(IppRequest& req, int group, const QString& caption
 	IppReportDlg::report(&req, group, caption);
 }
 
+QString KMCupsManager::stateInformation()
+{
+	return i18n("Connected to %1:%2").arg(CupsInfos::self()->host()).arg(CupsInfos::self()->port());
+}
+
 //*****************************************************************************************************
 
 void extractMaticData(QString& buf, const QString& filename)

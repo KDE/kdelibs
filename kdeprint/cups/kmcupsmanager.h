@@ -62,6 +62,7 @@ public:
 
 	void createPluginActions(KActionCollection*);
 	void validatePluginActions(KActionCollection*, KMPrinter*);
+	QString stateInformation();
 
 public slots:
 	void exportDriver();
