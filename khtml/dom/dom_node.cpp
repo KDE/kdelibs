@@ -447,7 +447,7 @@ unsigned long Node::index() const
     if (!impl)
 	return 0; // ### enable	throw throw DOMException(DOMException::NOT_FOUND_ERR);
 
-    return impl->index();
+    return impl->nodeIndex();
 }
 
 QString Node::toHTML()

@@ -253,7 +253,7 @@ public:
 
     virtual DOMString namespaceURI() const;
 
-    unsigned long index() const;
+    virtual unsigned long nodeIndex() const;
 
     virtual DocumentImpl *getDocument()
         { return document->document(); } // different from ownerDocument() in that it is never null
@@ -329,7 +329,7 @@ public:
 
     virtual void setPreviousSibling(NodeImpl *);
     virtual void setNextSibling(NodeImpl *);
-    unsigned long index() const;
+    virtual unsigned long nodeIndex() const;
 
 protected:
     NodeImpl *_parent;

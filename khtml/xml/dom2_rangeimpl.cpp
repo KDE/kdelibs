@@ -315,8 +315,7 @@ short RangeImpl::compareBoundaryPoints( NodeImpl *containerA, long offsetA, Node
             n = n->nextSibling();
         }
 
-        if( offsetA == offsetC )  return 0;    // A is equal to B
-        if( offsetA < offsetC )  return -1;    // A is before B
+        if( offsetA <= offsetC )  return -1;    // A is before B
         else  return 1;                        // A is after B
     }
 
@@ -332,12 +331,12 @@ short RangeImpl::compareBoundaryPoints( NodeImpl *containerA, long offsetA, Node
             n = n->nextSibling();
         }
 
-        if( offsetC == offsetB )  return 0;    // A is equal to B
         if( offsetC < offsetB )  return -1;    // A is before B
         else  return 1;                        // A is after B
     }
 
     // case 4: containers A & B are siblings, or children of siblings
+    // ### we need to do a traversal here instead
     NodeImpl *cmnRoot = commonAncestorContainer(containerA,containerB);
     NodeImpl *childA = containerA;
     while (childA->parentNode() != cmnRoot)
@@ -397,6 +396,22 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
     NodeImpl *cmnRoot = commonAncestorContainer(exceptioncode);
     if (exceptioncode)
         return 0;
+
+    // what is the highest node that partially selects the start of the range?
+    NodeImpl *partialStart = 0;
+    if (m_startContainer != cmnRoot) {
+    	partialStart = m_startContainer;
+	    while (partialStart->parentNode() != cmnRoot)
+	    	partialStart = partialStart->parentNode();
+	}
+	
+	// what is the highest node that partially selects the end of the range?
+	NodeImpl *partialEnd = 0;
+	if (m_endContainer != cmnRoot) {
+		partialEnd = m_endContainer;
+		while (partialEnd->parentNode() != cmnRoot)
+			partialEnd = partialEnd->parentNode();
+	}
 
     DocumentFragmentImpl *fragment = 0;
     if (action == EXTRACT_CONTENTS || action == CLONE_CONTENTS)
@@ -482,7 +497,8 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
             // leftContents = ...
         }
         else {
-            leftContents = m_startContainer->parentNode()->cloneNode(false,exceptioncode);
+            if (action == EXTRACT_CONTENTS || action == CLONE_CONTENTS)
+	            leftContents = m_startContainer->parentNode()->cloneNode(false,exceptioncode);
             NodeImpl *n = m_startContainer->firstChild();
             unsigned long i;
             for(i = 0; i < m_startOffset; i++) // skip until m_startOffset
@@ -503,9 +519,11 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
         NodeImpl *leftParent = m_startContainer->parentNode();
         NodeImpl *n = m_startContainer->nextSibling();
         for (; leftParent != cmnRoot; leftParent = leftParent->parentNode()) {
-            NodeImpl *leftContentsParent = leftParent->cloneNode(false,exceptioncode);
-            leftContentsParent->appendChild(leftContents,exceptioncode);
-            leftContents = leftContentsParent;
+            if (action == EXTRACT_CONTENTS || action == CLONE_CONTENTS) {
+	            NodeImpl *leftContentsParent = leftParent->cloneNode(false,exceptioncode);
+	            leftContentsParent->appendChild(leftContents,exceptioncode);
+	            leftContents = leftContentsParent;
+			}
 
             NodeImpl *next;
             for (; n; n = next ) {
@@ -542,7 +560,8 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
             // rightContents = ...
         }
         else {
-            rightContents = m_endContainer->parentNode()->cloneNode(false,exceptioncode);
+        	if (action == EXTRACT_CONTENTS || action == CLONE_CONTENTS)
+	            rightContents = m_endContainer->parentNode()->cloneNode(false,exceptioncode);
             NodeImpl *n = m_endContainer->firstChild();
             unsigned long i;
             for(i = 0; i+1 < m_endOffset; i++) // skip to m_endOffset
@@ -562,9 +581,11 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
         NodeImpl *rightParent = m_endContainer->parentNode();
         NodeImpl *n = m_endContainer->previousSibling();
         for (; rightParent != cmnRoot; rightParent = rightParent->parentNode()) {
-            NodeImpl *rightContentsParent = rightParent->cloneNode(false,exceptioncode);
-            rightContentsParent->appendChild(rightContents,exceptioncode);
-            rightContents = rightContentsParent;
+        	if (action == EXTRACT_CONTENTS || action == CLONE_CONTENTS) {
+	            NodeImpl *rightContentsParent = rightParent->cloneNode(false,exceptioncode);
+	            rightContentsParent->appendChild(rightContents,exceptioncode);
+	            rightContents = rightContentsParent;
+            }
 
             NodeImpl *prev;
             for (; n; n = prev ) {
@@ -633,8 +654,21 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
     if ((action == EXTRACT_CONTENTS || action == CLONE_CONTENTS) && rightContents)
       fragment->appendChild(rightContents,exceptioncode);
 
-    // ### collapse to the proper position
-    collapse(true,exceptioncode);
+    // collapse to the proper position - see spec section 2.6
+    if (action == EXTRACT_CONTENTS || action == DELETE_CONTENTS) {
+		if (!partialStart && !partialEnd)
+			collapse(true,exceptioncode);
+		else if (partialStart) {
+			setStartContainer(partialStart->parentNode());
+			setEndContainer(partialStart->parentNode());
+			m_startOffset = m_endOffset = partialStart->nodeIndex()+1;
+		}
+		else if (partialEnd) {
+			setStartContainer(partialEnd->parentNode());
+			setEndContainer(partialEnd->parentNode());
+			m_startOffset = m_endOffset = partialEnd->nodeIndex();
+		}
+	}
     return fragment;
 }
 
@@ -907,7 +941,7 @@ void RangeImpl::setStartAfter( NodeImpl *refNode, int &exceptioncode )
     if (exceptioncode)
         return;
 
-    setStart( refNode->parentNode(), refNode->index()+1, exceptioncode );
+    setStart( refNode->parentNode(), refNode->nodeIndex()+1, exceptioncode );
 }
 
 void RangeImpl::setEndBefore( NodeImpl *refNode, int &exceptioncode )
@@ -922,7 +956,7 @@ void RangeImpl::setEndBefore( NodeImpl *refNode, int &exceptioncode )
         return;
     }
 
-    if ((DOM::DocumentPtr*)refNode->getDocument() != m_ownerDocument) {
+    if (refNode->getDocument() != m_ownerDocument->document()) {
         exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
         return;
     }
@@ -931,7 +965,7 @@ void RangeImpl::setEndBefore( NodeImpl *refNode, int &exceptioncode )
     if (exceptioncode)
         return;
 
-    setEnd( refNode->parentNode(), refNode->index(), exceptioncode );
+    setEnd( refNode->parentNode(), refNode->nodeIndex(), exceptioncode );
 }
 
 void RangeImpl::setEndAfter( NodeImpl *refNode, int &exceptioncode )
@@ -955,7 +989,7 @@ void RangeImpl::setEndAfter( NodeImpl *refNode, int &exceptioncode )
     if (exceptioncode)
         return;
 
-    setEnd( refNode->parentNode(), refNode->index()+1, exceptioncode );
+    setEnd( refNode->parentNode(), refNode->nodeIndex()+1, exceptioncode );
 
 }
 
@@ -1159,7 +1193,7 @@ void RangeImpl::setStartBefore( NodeImpl *refNode, int &exceptioncode )
     if (exceptioncode)
         return;
 
-    setStart( refNode->parentNode(), refNode->index(), exceptioncode );
+    setStart( refNode->parentNode(), refNode->nodeIndex(), exceptioncode );
 }
 
 void RangeImpl::setStartContainer(NodeImpl *_startContainer)
