@@ -35,6 +35,8 @@ protected:
 
 public:
 	vector<TraderOffer> *doQuery(const vector<TraderRestriction>& query);
+	void load();
+	void unload();
 	static TraderHelper *the();
 	static void shutdown();
 };
@@ -142,13 +144,23 @@ vector<string>* TraderOffer_impl::getProperty(const string& name)
 
 TraderHelper::TraderHelper()
 {
+	load();
+}
+
+TraderHelper::~TraderHelper()
+{
+	unload();
+}
+
+void TraderHelper::load()
+{
 	const vector<string> *path = MCOPUtils::traderPath();
 
 	vector<string>::const_iterator pi;
 	for(pi = path->begin(); pi != path->end(); pi++) addDirectory(*pi);
 }
 
-TraderHelper::~TraderHelper()
+void TraderHelper::unload()
 {
 	vector<TraderOffer_impl *>::iterator i;
 
@@ -262,3 +274,10 @@ public:
 static TraderShutdown traderShutdown;
 
 };
+
+// Dispatcher function for reloading the trader data:
+void Dispatcher::reloadTraderData()
+{
+	TraderHelper::the()->unload();
+	TraderHelper::the()->load();
+}

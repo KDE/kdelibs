@@ -16,7 +16,7 @@ namespace Arts {
 class Header : public Arts::Type {
 public:
 	Header();
-	Header(Arts::HeaderMagic magic, long messageLength, Arts::MessageType messageType);
+	Header(Arts::HeaderMagic _a_magic, long _a_messageLength, Arts::MessageType _a_messageType);
 	Header(Arts::Buffer& stream);
 	Header(const Header& copyType);
 	Header& operator=(const Header& assignType);
@@ -32,7 +32,7 @@ public:
 class Invocation : public Arts::Type {
 public:
 	Invocation();
-	Invocation(long objectID, long methodID, long requestID);
+	Invocation(long _a_objectID, long _a_methodID, long _a_requestID);
 	Invocation(Arts::Buffer& stream);
 	Invocation(const Invocation& copyType);
 	Invocation& operator=(const Invocation& assignType);
@@ -48,7 +48,7 @@ public:
 class OnewayInvocation : public Arts::Type {
 public:
 	OnewayInvocation();
-	OnewayInvocation(long objectID, long methodID);
+	OnewayInvocation(long _a_objectID, long _a_methodID);
 	OnewayInvocation(Arts::Buffer& stream);
 	OnewayInvocation(const OnewayInvocation& copyType);
 	OnewayInvocation& operator=(const OnewayInvocation& assignType);
@@ -63,7 +63,7 @@ public:
 class ServerHello : public Arts::Type {
 public:
 	ServerHello();
-	ServerHello(const std::string& mcopVersion, const std::string& serverID, const std::vector<std::string>& authProtocols, const std::string& authSeed);
+	ServerHello(const std::string& _a_mcopVersion, const std::string& _a_serverID, const std::vector<std::string>& _a_authProtocols, const std::string& _a_authSeed);
 	ServerHello(Arts::Buffer& stream);
 	ServerHello(const ServerHello& copyType);
 	ServerHello& operator=(const ServerHello& assignType);
@@ -80,7 +80,7 @@ public:
 class ClientHello : public Arts::Type {
 public:
 	ClientHello();
-	ClientHello(const std::string& serverID, const std::string& authProtocol, const std::string& authData);
+	ClientHello(const std::string& _a_serverID, const std::string& _a_authProtocol, const std::string& _a_authData);
 	ClientHello(Arts::Buffer& stream);
 	ClientHello(const ClientHello& copyType);
 	ClientHello& operator=(const ClientHello& assignType);
@@ -96,7 +96,7 @@ public:
 class AuthAccept : public Arts::Type {
 public:
 	AuthAccept();
-	AuthAccept(const std::vector<std::string>& hints);
+	AuthAccept(const std::vector<std::string>& _a_hints);
 	AuthAccept(Arts::Buffer& stream);
 	AuthAccept(const AuthAccept& copyType);
 	AuthAccept& operator=(const AuthAccept& assignType);
@@ -110,7 +110,7 @@ public:
 class ObjectReference : public Arts::Type {
 public:
 	ObjectReference();
-	ObjectReference(const std::string& serverID, long objectID, const std::vector<std::string>& urls);
+	ObjectReference(const std::string& _a_serverID, long _a_objectID, const std::vector<std::string>& _a_urls);
 	ObjectReference(Arts::Buffer& stream);
 	ObjectReference(const ObjectReference& copyType);
 	ObjectReference& operator=(const ObjectReference& assignType);
@@ -126,7 +126,7 @@ public:
 class ParamDef : public Arts::Type {
 public:
 	ParamDef();
-	ParamDef(const std::string& type, const std::string& name, const std::vector<std::string>& hints);
+	ParamDef(const std::string& _a_type, const std::string& _a_name, const std::vector<std::string>& _a_hints);
 	ParamDef(Arts::Buffer& stream);
 	ParamDef(const ParamDef& copyType);
 	ParamDef& operator=(const ParamDef& assignType);
@@ -142,7 +142,7 @@ public:
 class MethodDef : public Arts::Type {
 public:
 	MethodDef();
-	MethodDef(const std::string& name, const std::string& type, Arts::MethodType flags, const std::vector<Arts::ParamDef>& signature, const std::vector<std::string>& hints);
+	MethodDef(const std::string& _a_name, const std::string& _a_type, Arts::MethodType _a_flags, const std::vector<Arts::ParamDef>& _a_signature, const std::vector<std::string>& _a_hints);
 	MethodDef(Arts::Buffer& stream);
 	MethodDef(const MethodDef& copyType);
 	MethodDef& operator=(const MethodDef& assignType);
@@ -160,7 +160,7 @@ public:
 class AttributeDef : public Arts::Type {
 public:
 	AttributeDef();
-	AttributeDef(const std::string& name, const std::string& type, Arts::AttributeType flags, const std::vector<std::string>& hints);
+	AttributeDef(const std::string& _a_name, const std::string& _a_type, Arts::AttributeType _a_flags, const std::vector<std::string>& _a_hints);
 	AttributeDef(Arts::Buffer& stream);
 	AttributeDef(const AttributeDef& copyType);
 	AttributeDef& operator=(const AttributeDef& assignType);
@@ -177,7 +177,7 @@ public:
 class InterfaceDef : public Arts::Type {
 public:
 	InterfaceDef();
-	InterfaceDef(const std::string& name, const std::vector<std::string>& inheritedInterfaces, const std::vector<Arts::MethodDef>& methods, const std::vector<Arts::AttributeDef>& attributes, const std::vector<std::string>& defaultPorts, const std::vector<std::string>& hints);
+	InterfaceDef(const std::string& _a_name, const std::vector<std::string>& _a_inheritedInterfaces, const std::vector<Arts::MethodDef>& _a_methods, const std::vector<Arts::AttributeDef>& _a_attributes, const std::vector<std::string>& _a_defaultPorts, const std::vector<std::string>& _a_hints);
 	InterfaceDef(Arts::Buffer& stream);
 	InterfaceDef(const InterfaceDef& copyType);
 	InterfaceDef& operator=(const InterfaceDef& assignType);
@@ -196,7 +196,7 @@ public:
 class TypeComponent : public Arts::Type {
 public:
 	TypeComponent();
-	TypeComponent(const std::string& type, const std::string& name, const std::vector<std::string>& hints);
+	TypeComponent(const std::string& _a_type, const std::string& _a_name, const std::vector<std::string>& _a_hints);
 	TypeComponent(Arts::Buffer& stream);
 	TypeComponent(const TypeComponent& copyType);
 	TypeComponent& operator=(const TypeComponent& assignType);
@@ -212,7 +212,7 @@ public:
 class TypeDef : public Arts::Type {
 public:
 	TypeDef();
-	TypeDef(const std::string& name, const std::vector<Arts::TypeComponent>& contents, const std::vector<std::string>& hints);
+	TypeDef(const std::string& _a_name, const std::vector<Arts::TypeComponent>& _a_contents, const std::vector<std::string>& _a_hints);
 	TypeDef(Arts::Buffer& stream);
 	TypeDef(const TypeDef& copyType);
 	TypeDef& operator=(const TypeDef& assignType);
@@ -228,7 +228,7 @@ public:
 class EnumComponent : public Arts::Type {
 public:
 	EnumComponent();
-	EnumComponent(const std::string& name, long value, const std::vector<std::string>& hints);
+	EnumComponent(const std::string& _a_name, long _a_value, const std::vector<std::string>& _a_hints);
 	EnumComponent(Arts::Buffer& stream);
 	EnumComponent(const EnumComponent& copyType);
 	EnumComponent& operator=(const EnumComponent& assignType);
@@ -244,7 +244,7 @@ public:
 class EnumDef : public Arts::Type {
 public:
 	EnumDef();
-	EnumDef(const std::string& name, const std::vector<Arts::EnumComponent>& contents, const std::vector<std::string>& hints);
+	EnumDef(const std::string& _a_name, const std::vector<Arts::EnumComponent>& _a_contents, const std::vector<std::string>& _a_hints);
 	EnumDef(Arts::Buffer& stream);
 	EnumDef(const EnumDef& copyType);
 	EnumDef& operator=(const EnumDef& assignType);
@@ -260,7 +260,7 @@ public:
 class ModuleDef : public Arts::Type {
 public:
 	ModuleDef();
-	ModuleDef(const std::string& moduleName, const std::vector<Arts::EnumDef>& enums, const std::vector<Arts::TypeDef>& types, const std::vector<Arts::InterfaceDef>& interfaces, const std::vector<std::string>& hints);
+	ModuleDef(const std::string& _a_moduleName, const std::vector<Arts::EnumDef>& _a_enums, const std::vector<Arts::TypeDef>& _a_types, const std::vector<Arts::InterfaceDef>& _a_interfaces, const std::vector<std::string>& _a_hints);
 	ModuleDef(Arts::Buffer& stream);
 	ModuleDef(const ModuleDef& copyType);
 	ModuleDef& operator=(const ModuleDef& assignType);
@@ -278,12 +278,27 @@ public:
 class Any : public Arts::Type {
 public:
 	Any();
-	Any(const std::string& type, const std::vector<Arts::mcopbyte>& value);
+	Any(const std::string& _a_type, const std::vector<Arts::mcopbyte>& _a_value);
 	Any(Arts::Buffer& stream);
 	Any(const Any& copyType);
 	Any& operator=(const Any& assignType);
 	std::string type;
 	std::vector<Arts::mcopbyte> value;
+
+// marshalling functions
+	void readType(Arts::Buffer& stream);
+	void writeType(Arts::Buffer& stream) const;
+};
+
+class TraderEntry : public Arts::Type {
+public:
+	TraderEntry();
+	TraderEntry(const std::string& _a_interfaceName, const std::vector<std::string>& _a_lines);
+	TraderEntry(Arts::Buffer& stream);
+	TraderEntry(const TraderEntry& copyType);
+	TraderEntry& operator=(const TraderEntry& assignType);
+	std::string interfaceName;
+	std::vector<std::string> lines;
 
 // marshalling functions
 	void readType(Arts::Buffer& stream);
@@ -301,6 +316,7 @@ class GlobalComm;
 class TmpGlobalComm;
 class TraderOffer;
 class TraderQuery;
+class Loader;
 
 class InterfaceRepo_base : virtual public Arts::Object_base {
 public:
@@ -641,6 +657,12 @@ public:
 };
 
 class FlowSystemReceiver_skel : virtual public FlowSystemReceiver_base, virtual public Arts::Object_skel {
+protected:
+	// emitters for change notifications
+	inline void receiveHandlerID_changed(long newValue) {
+		_emit_changed("receiveHandlerID_changed",newValue);
+	}
+
 public:
 	FlowSystemReceiver_skel();
 
@@ -1025,6 +1047,12 @@ public:
 };
 
 class TraderOffer_skel : virtual public TraderOffer_base, virtual public Arts::Object_skel {
+protected:
+	// emitters for change notifications
+	inline void interfaceName_changed(const std::string& newValue) {
+		_emit_changed("interfaceName_changed",newValue);
+	}
+
 public:
 	TraderOffer_skel();
 
@@ -1172,6 +1200,110 @@ public:
 
 	inline void supports(const std::string& property, const std::string& value);
 	inline std::vector<Arts::TraderOffer> * query();
+};
+
+class Loader_base : virtual public Arts::Object_base {
+public:
+	static unsigned long _IID; // interface ID
+
+	static Loader_base *_create(const std::string& subClass = "Arts::Loader");
+	static Loader_base *_fromString(std::string objectref);
+	static Loader_base *_fromReference(Arts::ObjectReference ref, bool needcopy);
+
+	inline Loader_base *_copy() {
+		assert(_refCnt > 0);
+		_refCnt++;
+		return this;
+	}
+
+	virtual std::vector<std::string> _defaultPortsIn() const;
+	virtual std::vector<std::string> _defaultPortsOut() const;
+
+	void *_cast(unsigned long iid);
+
+	virtual std::string dataVersion() = 0;
+	virtual std::vector<Arts::TraderEntry> * traderEntries() = 0;
+	virtual std::vector<Arts::ModuleDef> * modules() = 0;
+	virtual Arts::Object loadObject(Arts::TraderOffer offer) = 0;
+};
+
+class Loader_stub : virtual public Loader_base, virtual public Arts::Object_stub {
+protected:
+	Loader_stub();
+
+public:
+	Loader_stub(Arts::Connection *connection, long objectID);
+
+	std::string dataVersion();
+	std::vector<Arts::TraderEntry> * traderEntries();
+	std::vector<Arts::ModuleDef> * modules();
+	Arts::Object loadObject(Arts::TraderOffer offer);
+};
+
+class Loader_skel : virtual public Loader_base, virtual public Arts::Object_skel {
+protected:
+	// emitters for change notifications
+	inline void dataVersion_changed(const std::string& newValue) {
+		_emit_changed("dataVersion_changed",newValue);
+	}
+
+public:
+	Loader_skel();
+
+	static std::string _interfaceNameSkel();
+	std::string _interfaceName();
+	bool _isCompatibleWith(const std::string& interfacename);
+	void _buildMethodTable();
+	void dispatch(Arts::Buffer *request, Arts::Buffer *result,long methodID);
+};
+
+};
+#include "reference.h"
+namespace Arts {
+class Loader : public Arts::Object {
+private:
+	static Arts::Object_base* _Creator();
+	Loader_base *_cache;
+	inline Loader_base *_method_call() {
+		_pool->checkcreate();
+		if(_pool->base) {
+			_cache=(Loader_base *)_pool->base->_cast(Loader_base::_IID);
+			assert(_cache);
+		}
+		return _cache;
+	}
+
+protected:
+	inline Loader(Loader_base* b) : Arts::Object(b), _cache(0) {}
+
+
+public:
+	typedef Loader_base _base_class;
+
+	inline Loader() : Arts::Object(_Creator), _cache(0) {}
+	inline Loader(const Arts::SubClass& s) :
+		Arts::Object(Loader_base::_create(s.string())), _cache(0) {}
+	inline Loader(const Arts::Reference &r) :
+		Arts::Object(r.isString()?(Loader_base::_fromString(r.string())):(Loader_base::_fromReference(r.reference(),true))), _cache(0) {}
+	inline Loader(const Arts::DynamicCast& c) : Arts::Object(Loader_base::_fromString(c.object().toString())), _cache(0) {}
+	inline Loader(const Loader& target) : Arts::Object(target._pool), _cache(target._cache) {}
+	inline Loader(Arts::Object::Pool& p) : Arts::Object(p), _cache(0) {}
+	inline static Loader null() {return Loader((Loader_base*)0);}
+	inline static Loader _from_base(Loader_base* b) {return Loader(b);}
+	inline Loader& operator=(const Loader& target) {
+		if (_pool == target._pool) return *this;
+		_pool->Dec();
+		_pool = target._pool;
+		_cache = target._cache;
+		_pool->Inc();
+		return *this;
+	}
+	inline Loader_base* _base() {return _cache?_cache:_method_call();}
+
+	inline std::string dataVersion();
+	inline std::vector<Arts::TraderEntry> * traderEntries();
+	inline std::vector<Arts::ModuleDef> * modules();
+	inline Arts::Object loadObject(Arts::TraderOffer offer);
 };
 
 // Forward wrapper calls to _base classes:
@@ -1374,6 +1506,26 @@ inline void Arts::TraderQuery::supports(const std::string& property, const std::
 inline std::vector<Arts::TraderOffer> * Arts::TraderQuery::query()
 {
 	return _cache?static_cast<Arts::TraderQuery_base*>(_cache)->query():static_cast<Arts::TraderQuery_base*>(_method_call())->query();
+}
+
+inline std::string Arts::Loader::dataVersion()
+{
+	return _cache?static_cast<Arts::Loader_base*>(_cache)->dataVersion():static_cast<Arts::Loader_base*>(_method_call())->dataVersion();
+}
+
+inline std::vector<Arts::TraderEntry> * Arts::Loader::traderEntries()
+{
+	return _cache?static_cast<Arts::Loader_base*>(_cache)->traderEntries():static_cast<Arts::Loader_base*>(_method_call())->traderEntries();
+}
+
+inline std::vector<Arts::ModuleDef> * Arts::Loader::modules()
+{
+	return _cache?static_cast<Arts::Loader_base*>(_cache)->modules():static_cast<Arts::Loader_base*>(_method_call())->modules();
+}
+
+inline Arts::Object Arts::Loader::loadObject(Arts::TraderOffer offer)
+{
+	return _cache?static_cast<Arts::Loader_base*>(_cache)->loadObject(offer):static_cast<Arts::Loader_base*>(_method_call())->loadObject(offer);
 }
 
 };

@@ -245,6 +245,12 @@ public:
 	 * @see DelayedReturn
 	 */
 	DelayedReturn *delayReturn();	
+
+	/**
+	 * reloads the trader data (do this if things have been added/changed
+	 * there)
+	 */
+	void reloadTraderData();
 };
 };
 #endif

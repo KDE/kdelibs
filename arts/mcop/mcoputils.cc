@@ -201,7 +201,13 @@ const vector<string> *MCOPUtils::traderPath()
 {
 	static vector<string> *result = 0;
 
-	if(!result) result = readPath("TraderPath", TRADER_DIR);
+	if(!result)
+	{
+		result = readPath("TraderPath", TRADER_DIR);
+
+		const char *home = getenv("HOME");
+		if(home) result->push_back(home + string("/.mcop/trader-cache"));
+	}
 	return result;
 }
 

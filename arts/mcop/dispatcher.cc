@@ -1041,3 +1041,7 @@ void Dispatcher::wakeUp()
 
 	_instance->d->wakeUpHandler->wakeUp();
 }
+
+/*
+void Dispatcher::reloadTraderData() is declared in trader_impl.cc
+*/

@@ -680,4 +680,36 @@ struct Any {
 	sequence<byte> value;
 };
 
+/**
+ * TraderEntries as produced by the loader
+ */
+
+struct TraderEntry {
+	string interfaceName;
+	sequence<string> lines;
+};
+
+/**
+ * loader to load plugins (implemented in some language/binary format)
+ */
+interface Loader {
+	object loadObject(TraderOffer offer);
+
+	/*
+	 * this is used for the type system to cache your trader data and
+	 * module data as long as it stays unchanged
+	 */
+	readonly attribute string dataVersion;
+
+	/*
+	 * the trader entries of the components that can be loaded
+	 */
+	readonly attribute sequence<TraderEntry> traderEntries;
+
+	/*
+	 * the interface information of the components that can be loaded
+	 */
+	readonly attribute sequence<ModuleDef> modules;
+};
+ 
 };

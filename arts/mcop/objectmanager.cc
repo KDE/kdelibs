@@ -1,7 +1,7 @@
     /*
 
-    Copyright (C) 2000 Stefan Westerfeld
-                       stefan@space.twc.de
+    Copyright (C) 2000,2001 Stefan Westerfeld
+                            stefan@space.twc.de
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -36,8 +36,15 @@ using namespace Arts;
 
 class Arts::ObjectManagerPrivate {
 public:
+	struct LoaderData {
+		LoaderData() : init(false) { }
+		bool init;
+		Loader loader;
+	};
+
 	list<ExtensionLoader *> extensions;
 	map<string, long> capabilities;
+	map<string, LoaderData> loaders;
 };
 
 Object_skel *ObjectManager::create(string name)
@@ -75,12 +82,22 @@ Object_skel *ObjectManager::create(string name)
 				requirementsOk = false;
 		}
 
-		/*
-		 * this currently assumes Language = C++
-		 */
+		vector<string> *language = oi->getProperty("Language");
 		vector<string> *libs = oi->getProperty("Library");
 
-		if(requirementsOk && libs->size() == 1)
+		if(language->size() == 0 && libs->size() == 1)
+		{
+			arts_warning("ObjectManager: %s - assuming 'Language=C++' because library given",name.c_str());
+			language->push_back("C++");
+		}
+		if(language->size() != 1)
+		{
+			arts_warning("ObjectManager: %s - Language missing");
+			requirementsOk = false;
+		}
+
+		/* loading C++ components */
+		if(requirementsOk && language->front() == "C++")
 		{
 			string library = libs->front();
 
@@ -107,7 +124,51 @@ Object_skel *ObjectManager::create(string name)
 			}
 		}
 		delete libs;
+
+		/* other languages/binary formats */
+		if(requirementsOk)
+		{
+			string lang = language->front();
+			ObjectManagerPrivate::LoaderData &ld = d->loaders[lang];
+
+			if(!ld.init)
+			{
+				TraderQuery query;
+				query.supports("Interface", "Arts::Loader");
+				query.supports("LoadLanguage", lang);
+
+				vector<TraderOffer> *loffers = query.query();
+				
+				// TODO: error checking for SubClass
+				if(loffers->size() > 0)
+				{
+					arts_warning("match: %s",loffers->front().interfaceName().c_str());
+					ld.loader = SubClass(loffers->front().interfaceName());
+				}
+				else
+				{
+					ld.loader = Arts::Loader::null();
+				}
+
+				delete loffers;
+			}
+			ld.init = true;
+
+			if(!ld.loader.isNull())
+			{
+				/*
+				 * ### change when breaking BC:
+				 * it's bad that ObjectManager has to return _skel()s, but
+				 * well, can't change it now
+				 */
+
+				Object obj = ld.loader.loadObject(*oi);
+				delete offers;
+				return obj._base()->_copy()->_skel();
+			}
+		}
 	}
+
 	arts_warning("MCOP ObjectManager: can't find implementation for %s.",
 							name.c_str());
 
@@ -161,6 +222,9 @@ ObjectManager *ObjectManager::the()
 
 void ObjectManager::shutdownExtensions()
 {
+	// give up references to the loaders
+	d->loaders.clear();
+
 	// shuts down all dynamically loaded extensions
 	list<ExtensionLoader *>::iterator i;
 	for(i=d->extensions.begin(); i != d->extensions.end(); i++)
@@ -173,7 +237,7 @@ void ObjectManager::removeExtensions()
 	list<ExtensionLoader *>::iterator i;
 	for(i=d->extensions.begin(); i != d->extensions.end(); i++)
 		delete *i;
-	
+
 	d->extensions.clear();
 }
 

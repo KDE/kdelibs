@@ -56,12 +56,14 @@ class MethodDef;
 class ObjectReference;
 class WeakReferenceBase;
 class Object;
+class ObjectManager;
 class DynamicSkeletonData;
 class DynamicSkeletonBase;
 
 class Object_base : public NotificationClient {
 private:
 	friend class DynamicRequest;
+	friend class ObjectManager;
 	bool _deleteOk;				// ensure that "delete" is not called manually
 
 protected:
