@@ -43,16 +43,25 @@ class KURLDrag : public QUriDrag
 {
 public:
   /**
-   * Constructs an object to drag the list of URLs in urls.
-   * The dragSource and name arguments are passed on to QUriDrag,
+   * Constructs an object to drag the list of URLs in @p urls.
+   * The @p dragSource and @p name arguments are passed on to QUriDrag,
    * and the list of urls is converted to UTF-8 before being passed
    * to QUriDrag.
+   */
+   KURLDrag::KURLDrag( const KURL::List &urls, QWidget* dragSource, const char * name );
+  /**
+   * Constructs an object to drag the list of URLs in @p urls.
+   * This version also includes metadata.
+   */
+   KURLDrag::KURLDrag( const KURL::List &urls, const QMap<QString, QString>& metaData,
+                       QWidget* dragSource, const char * name );
+  /**
+   * @deprecated Is equivalent with "new KURLDrag(urls, dragSource, name)".
    */
   static KURLDrag * newDrag( const KURL::List &urls, QWidget* dragSource = 0, const char * name = 0 );
 
   /**
-   * Constructs an object to drag the list of URLs in urls.
-   * This version also includes metadata
+   * @deprecated Is equivalent with "new KURLDrag(urls, metaData, dragSource, name)".
    */
   static KURLDrag * newDrag( const KURL::List &urls, const QMap<QString, QString>& metaData,
                              QWidget* dragSource = 0, const char * name = 0 );
@@ -99,9 +108,10 @@ protected:
   virtual QByteArray encodedData( const char* mime ) const;
 
 private:
+  void init(const KURL::List &urls);
+  
   QStrList m_urls;
   QMap<QString,QString> m_metaData;
 };
 
 #endif
-

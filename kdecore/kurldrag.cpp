@@ -22,22 +22,39 @@
 #include <qdragobject.h>
 #include <qfont.h>
 
-KURLDrag * KURLDrag::newDrag( const KURL::List &urls, QWidget* dragSource, const char * name )
+KURLDrag::KURLDrag( const KURL::List &urls, QWidget* dragSource, const char * name )
+    : QUriDrag(dragSource, name), m_metaData(QMap<QString, QString>())
 {
-    return newDrag( urls, QMap<QString, QString>(), dragSource, name );
+    init(urls);
 }
 
-KURLDrag * KURLDrag::newDrag( const KURL::List &urls, const QMap<QString, QString>& metaData,
-                              QWidget* dragSource, const char * name )
+KURLDrag::KURLDrag( const KURL::List &urls, const QMap<QString,QString>& metaData,
+                    QWidget* dragSource, const char * name )
+    : QUriDrag(dragSource, name), m_metaData(metaData)
 {
-    QStrList uris;
+    init(urls);
+}
+
+void KURLDrag::init(const KURL::List &urls)
+{
     KURL::List::ConstIterator uit = urls.begin();
     KURL::List::ConstIterator uEnd = urls.end();
     // Get each URL encoded in utf8 - and since we get it in escaped
     // form on top of that, .latin1() is fine.
     for ( ; uit != uEnd ; ++uit )
-        uris.append( (*uit).url(0, 106).latin1() ); // 106 is mib enum for utf8 codec
-    return new KURLDrag( uris, metaData, dragSource, name );
+        m_urls.append( (*uit).url(0, 106).latin1() ); // 106 is mib enum for utf8 codec
+    setUris(m_urls);
+}
+
+KURLDrag * KURLDrag::newDrag( const KURL::List &urls, QWidget* dragSource, const char * name )
+{
+    return new KURLDrag( urls, QMap<QString, QString>(), dragSource, name );
+}
+
+KURLDrag * KURLDrag::newDrag( const KURL::List &urls, const QMap<QString, QString>& metaData,
+                              QWidget* dragSource, const char * name )
+{
+    return new KURLDrag( urls, metaData, dragSource, name );
 }
 
 bool KURLDrag::decode( const QMimeSource *e, KURL::List &uris )

@@ -20,6 +20,23 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2001/08/26 20:14:19  lunakl
+ * Ok, watch closely :
+ * const is your friend !
+ *
+ * static int blah[] = { 1, 2, .... }
+ * should be
+ * static const int blah[] = { 1, 2, ... }
+ *
+ * static const char* txt[] = { "blah", "foo", ... }
+ * should be
+ * static const char* const txt[] = { "blah", "foo", ... }
+ *
+ * And just in case you wonder about those const_cast< const char** >, that's
+ * because QPixmap( const char** xpm ) and QImage( const char** xpm ) got it
+ * wrong too. Everybody guessing correctly where the const is missing wins
+ * a free cvs update.
+ *
  * Revision 1.2  2000/02/12 12:46:41  espen
  * Added a black frame around the drag pixmap. Looks better.
  *
@@ -44,6 +61,7 @@ KColorDrag::KColorDrag( const QColor &color, QWidget *dragsource,
 KColorDrag::KColorDrag( QWidget *dragsource, const char *name)
      : QStoredDrag( color_mime_string, dragsource, name)
 {
+    setColor( white );
 }
 
 void
@@ -59,6 +77,14 @@ KColorDrag::setColor( const QColor &color)
      rgba[3] = 0xFFFF; // Alpha not supported yet.
      memcpy( data.data(), rgba, sizeof( rgba));
      setEncodedData( data);
+
+     QPixmap colorpix( 25, 20);
+     colorpix.fill( color);
+     QPainter p( &colorpix );
+     p.setPen( black );
+     p.drawRect(0,0,25,20);
+     p.end();
+     setPixmap(colorpix, QPoint(-5,-7));
 }
 
 bool 
@@ -82,17 +108,6 @@ KColorDrag::decode( QMimeSource *e, QColor &color)
 KColorDrag* 
 KColorDrag::makeDrag( const QColor &color,QWidget *dragsource)
 {
-     KColorDrag *d = new KColorDrag( color, dragsource);
-     QPixmap colorpix( 25, 20);
-     colorpix.fill( color);
-     QPainter p( &colorpix );
-     p.setPen( black );
-     p.drawRect(0,0,25,20);
-     p.end();
-     d->setPixmap(colorpix, QPoint(-5,-7));
-     return d;
+     return new KColorDrag( color, dragsource);
 }
 #include "kcolordrag.moc"
-
-
-

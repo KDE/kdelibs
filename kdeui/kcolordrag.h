@@ -26,33 +26,44 @@
 #include <qcolor.h>
 
 /**
- * Drag (XDnD) objects of type @p application/x-color.
- *
- * 
+ * A drag-and-drop object for colors. The according MIME type
+ * is set to application/x-color.
  *
  * See the Qt drag'n'drop documentation.
  */
 class KColorDrag : public QStoredDrag {
-     Q_OBJECT
+    Q_OBJECT
 
 public:
-     KColorDrag( const QColor&, QWidget *dragsource = 0, const char *name = 0);
-     KColorDrag( QWidget *dragsource = 0, const char *name = 0);
-     virtual ~KColorDrag() {};
-     void setColor( const QColor&);
+    /**
+     * Constructs a color drag with a white color.
+     */
+    KColorDrag( QWidget *dragsource = 0, const char *name = 0 );
+    /**
+     * Constructs a color drag with the color @p.
+     */
+    KColorDrag( const QColor &col, QWidget *dragsource = 0, const char *name = 0 );
+    virtual ~KColorDrag() {};
 
-     static bool canDecode( QMimeSource *);
-     static bool decode( QMimeSource *, QColor&);
-     
-     /**
-      * Convenience function for making a dragobject with an
-      * associated pixmap.
-      */
-     static KColorDrag* makeDrag( const QColor&,QWidget *dragsource);
-protected:
-     QColor m_color;
+    /**
+     * Sets the color of the drag to @p col.
+     */
+    void setColor(const QColor &col);
+    /**
+     * Returns true if the MIME source @p e contains a color object.
+     */
+    static bool canDecode(QMimeSource *e);
+    /**
+     * Decodes the MIME source @e and puts the resulting color into @p col.
+     */
+    static bool decode(QMimeSource *, QColor &col);
+    /**
+     * @deprecated This is equivalent with "new KColorDrag(color, dragsource)".
+     */
+    static KColorDrag* makeDrag( const QColor&,QWidget *dragsource);
 
 private:
+     QColor m_color; // unused
      class KColorDragPrivate;
      KColorDragPrivate *d;
 };
