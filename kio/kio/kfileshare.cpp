@@ -103,7 +103,7 @@ void KFileShare::readConfig() // static
             if ( line[length-1] != '/' )
                 line += '/';
             s_shareList->append(line);
-            kdDebug() << "Shared dir:" << line << endl;
+            kdDebug(7000) << "Shared dir:" << line << endl;
         }
     } while (length > -1);
 
