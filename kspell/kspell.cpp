@@ -63,9 +63,7 @@ KSpell::KSpell (QWidget *_parent, const char *_caption,
   else
     ksconfig = new KSpellConfig;
 
-#ifdef KSDEBUG      
   dsdebug ("now here\n");
-#endif
 
   ok=texmode=dlgon=FALSE;
   progres=10;
@@ -121,9 +119,7 @@ KSpell::startIspell(void)
     {
       if (ksconfig->dictionary()[0]!='\0')
 	{
-#ifdef KSDEBUG
 	  dsdebug ("using dictionary [%s]\n",ksconfig->dictionary());
-#endif
 	  *proc << "-d";
 	  *proc << ksconfig->dictionary();
 	}
@@ -140,9 +136,7 @@ KSpell::startIspell(void)
   /*
   if (ksconfig->personalDict()[0]!='\0')
     {
-#ifdef KSDEBUG
       dsdebug ("personal dictionary [%s]\n",ksconfig->personalDict());
-#endif
       *proc << "-p";
       *proc << ksconfig->personalDict();
     }
@@ -631,9 +625,7 @@ bool KSpell::check (char *_buffer)
 {
   QString qs;
 
-#ifdef KSDEBUG
   dsdebug ("KS: check\n");
-#endif
   buffer=_buffer;
   if ((totalpos=buffer.length())==0)
     {
@@ -651,22 +643,14 @@ bool KSpell::check (char *_buffer)
   newbuffer=buffer.data();
 
   OUTPUT(check2);
-#ifdef KSDEBUG
   dsdebug ("! says %d\n", proc->fputs ("!"));
-#else
-  proc->fputs ("!");
-#endif
 
   offset=lastlastline=lastpos=lastline=0;
 
   i=buffer.find('\n', lastline)+1;
   qs=buffer.mid (lastpos, i-lastline);
-#ifdef KSDEBUG
   dsdebug ("KS: [%s], %d\n",qs.data(),  cleanFputs (qs,FALSE));
-#else
-  cleanFputs (qs,FALSE);
-#endif
-  
+
   lastline=i;
 
 
@@ -675,9 +659,7 @@ bool KSpell::check (char *_buffer)
 
 void KSpell::check2 (KProcIO *)
 {
-#ifdef KSDEBUG
   dsdebug ("KS: check2\n");
-#endif
   //This is here for historical reasons and I'm not quite ready to
   //remove it.
   check2a();
@@ -691,16 +673,11 @@ void KSpell::check2a (void)
   do
     {
       tempe=proc->fgets (temp, TEMPsz); //get ispell's response      
-#ifdef KSDEBUG
 	  dsdebug ("2:(%d)\n",tempe);
-#endif
       
       if (tempe>0)
 	{
-#ifdef KSDEBUG
 	  dsdebug ("2:[%s]\n",temp);
-#endif
-	  
 	  
 	  if ((e=parseOneResponse (temp, word, &sugg))==MISTAKE ||
 	      e==REPLACE)
@@ -744,9 +721,7 @@ void KSpell::check2a (void)
       int i;
       QString qs;
       
-#ifdef KSDEBUG      
       dsdebug ("[EOL](%d)[%s]\n",tempe,temp);
-#endif
       //      getchar();
       
       lastpos=(lastlastline=lastline)+offset;
@@ -769,10 +744,8 @@ void KSpell::check3 ()
 {
   disconnect (this, SIGNAL (dialog3()), this, SLOT (check3()));
 
-#ifdef KSDEBUG
   dsdebug ("check3 %s %s %d\n",cwword.data(),replacement(),
 	  dlgresult);
-#endif
 
   //others should have been processed by dialog() already
   switch (dlgresult)
