@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="khtmlpart" version="15">
+<kpartgui name="khtmlpart" version="16">
 <MenuBar>
  <Menu name="file"><text>&amp;File</text>
   <Action name="saveBackground" />
@@ -22,7 +22,7 @@
   <Action name="security" />
   <Action name="setEncoding" />
   <Action name="useStylesheet" />
-  <Action name="debugScript" />
+  <ActionList name="debugScriptList" />
 <!--
   <Separator />
   <Action name="debugRenderTree" />

@@ -1470,6 +1470,8 @@ private:
 
   void emitCaretPositionChanged(const DOM::Node &node, long offset);
 
+  void setDebugScript( bool enable );
+  
   KHTMLPartPrivate *d;
   friend class KHTMLPartPrivate;
 };

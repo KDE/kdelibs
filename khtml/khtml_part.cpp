@@ -196,6 +196,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
   d->m_bSecurityInQuestion = false;
   d->m_paLoadImages = 0;
+  d->m_paDebugScript = 0;
   d->m_bMousePressed = false;
   d->m_bRightMousePressed = false;
   d->m_paViewDocument = new KAction( i18n( "View Do&cument Source" ), CTRL + Key_U, this, SLOT( slotViewDocumentSource() ), actionCollection(), "viewDocumentSource" );
@@ -213,7 +214,6 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 				       "certificate.<p> "
 				       "Hint: If the image shows a closed lock, the page has been transmitted over a "
 				       "secure connection.") );
-  d->m_paDebugScript = new KAction( i18n( "JavaScript &Debugger" ), 0, this, SLOT( slotDebugScript() ), actionCollection(), "debugScript" );
   d->m_paDebugRenderTree = new KAction( i18n( "Print Rendering Tree to STDOUT" ), 0, this, SLOT( slotDebugRenderTree() ), actionCollection(), "debugRenderTree" );
   d->m_paDebugDOMTree = new KAction( i18n( "Print DOM Tree to STDOUT" ), 0, this, SLOT( slotDebugDOMTree() ), actionCollection(), "debugDOMTree" );
   d->m_paStopAnimations = new KAction( i18n( "Stop Animated Images" ), 0, this, SLOT( slotStopAnimations() ), actionCollection(), "stopAnimations" );
@@ -351,7 +351,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   // set the default java(script) flags according to the current host.
   d->m_bBackRightClick = d->m_settings->isBackRightClickEnabled();
   d->m_bJScriptEnabled = d->m_settings->isJavaScriptEnabled();
-  d->m_bJScriptDebugEnabled = d->m_settings->isJavaScriptDebugEnabled();
+  setDebugScript( d->m_settings->isJavaScriptDebugEnabled() );
   d->m_bJavaEnabled = d->m_settings->isJavaEnabled();
   d->m_bPluginsEnabled = d->m_settings->isPluginsEnabled();
 
@@ -468,7 +468,7 @@ bool KHTMLPart::restoreURL( const KURL &url )
 
   // set the java(script) flags according to the current host.
   d->m_bJScriptEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptEnabled(url.host());
-  d->m_bJScriptDebugEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptDebugEnabled();
+  setDebugScript( KHTMLFactory::defaultHTMLSettings()->isJavaScriptDebugEnabled() );
   d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaEnabled(url.host());
   d->m_bPluginsEnabled = KHTMLFactory::defaultHTMLSettings()->isPluginsEnabled(url.host());
 
@@ -617,7 +617,7 @@ bool KHTMLPart::openURL( const KURL &url )
 
   // set the javascript flags according to the current url
   d->m_bJScriptEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptEnabled(url.host());
-  d->m_bJScriptDebugEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptDebugEnabled();
+  setDebugScript( KHTMLFactory::defaultHTMLSettings()->isJavaScriptDebugEnabled() );
   d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaEnabled(url.host());
   d->m_bPluginsEnabled = KHTMLFactory::defaultHTMLSettings()->isPluginsEnabled(url.host());
 
@@ -3622,7 +3622,8 @@ void KHTMLPart::updateActions()
 
   d->m_paSaveBackground->setEnabled( !bgURL.isEmpty() );
 
-  d->m_paDebugScript->setEnabled( d->m_jscript && d->m_bJScriptDebugEnabled );
+  if ( d->m_paDebugScript )
+    d->m_paDebugScript->setEnabled( d->m_jscript );
 }
 
 KParts::LiveConnectExtension *KHTMLPart::liveConnectExtension( const khtml::RenderPart *frame) const {
@@ -4992,7 +4993,7 @@ void KHTMLPart::reparseConfiguration()
 
   d->m_bBackRightClick = settings->isBackRightClickEnabled();
   d->m_bJScriptEnabled = settings->isJavaScriptEnabled(m_url.host());
-  d->m_bJScriptDebugEnabled = settings->isJavaScriptDebugEnabled();
+  setDebugScript( settings->isJavaScriptDebugEnabled() );
   d->m_bJavaEnabled = settings->isJavaEnabled(m_url.host());
   d->m_bPluginsEnabled = settings->isPluginsEnabled(m_url.host());
   d->m_metaRefreshEnabled = settings->isAutoDelayedActionsEnabled ();
@@ -6125,6 +6126,21 @@ KURL KHTMLPart::toplevelURL()
     return KURL();
 
   return part->url();
+}
+
+void KHTMLPart::setDebugScript( bool enable )
+{
+  unplugActionList( "debugScriptList" );
+  if ( enable ) {
+    if (!d->m_paDebugScript) {
+      d->m_paDebugScript = new KAction( i18n( "JavaScript &Debugger" ), 0, this, SLOT( slotDebugScript() ), actionCollection(), "debugScript" );
+    }
+    d->m_paDebugScript->setEnabled( d->m_jscript );
+    QPtrList<KAction> lst;
+    lst.append( d->m_paDebugScript );
+    plugActionList( "debugScriptList", lst );
+  }
+  d->m_bJScriptDebugEnabled = enable;
 }
 
 using namespace KParts;
