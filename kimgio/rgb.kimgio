@@ -1,0 +1,10 @@
+[Image Format]
+Type=SGI
+Header=^\x01\xda[\x00|\x01][\x01|\x02]
+Name=SGI Image (RGB)
+Name[de]=SGI-Bild (RGB)
+Read=true
+Write=true
+Suffices=rgb,RGB,rgba,RGBA,bw,BW,sgi,SGI
+Mimetype=image/x-rgb
+Library=kimg_rgb.la

@@ -12,7 +12,8 @@ NETPBM	<incomplete>
 PNG	<read> <write, only with newer libraries>
 TIFF	<read>
 TGA	<read> <write>
-PCX <read> <write>
+PCX	<read> <write>
+RGB	<read> <write>
 
 To use these formats, you only need to:
 

@@ -17,7 +17,7 @@ endif
 
 kde_module_LTLIBRARIES= kimg_eps.la kimg_xview.la  \
 	         $(KIMGIO_TIFF_MODULES) kimg_ico.la $(KIMGIO_JP2_MODULES) \
-             kimg_pcx.la kimg_tga.la $(KIMGIO_EXR_MODULES)
+             kimg_pcx.la kimg_tga.la kimg_rgb.la $(KIMGIO_EXR_MODULES)
 
 KIMGIO_PLUGIN = -avoid-version -export-symbols-regex 'kimgio_.*_(read|write)'
 
@@ -53,11 +53,15 @@ kimg_tga_la_SOURCES = tga.cpp
 kimg_tga_la_LDFLAGS = -module $(KIMGIO_PLUGIN) -no-undefined $(all_libraries)
 kimg_tga_la_LIBADD = $(LIB_QT) $(LIB_KDECORE)
 
+kimg_rgb_la_SOURCES = rgb.cpp
+kimg_rgb_la_LDFLAGS = -module $(KIMGIO_PLUGIN) -no-undefined $(all_libraries)
+kimg_rgb_la_LIBADD = $(LIB_QT) $(LIB_KDECORE)
+
 kimg_exr_la_SOURCES = exr.cpp
 kimg_exr_la_LDFLAGS = -module $(KIMGIO_PLUGIN) -no-undefined $(all_libraries)
 kimg_exr_la_LIBADD = $(LIB_QT) $(LIB_KDECORE) $(LIB_EXR)
 
-noinst_HEADERS= xview.h eps.h tiffr.h g3r.h ico.h jp2.h pcx.h tga.h exr.h
+noinst_HEADERS= xview.h eps.h tiffr.h g3r.h ico.h jp2.h pcx.h tga.h rgb.h exr.h
 
 INCLUDES = -I$(top_srcdir)/kio -I$(top_srcdir)/dcop -I$(top_srcdir)/libltdl $(all_includes) -Drestrict= $(EXR_FLAGS)
 
@@ -65,4 +69,5 @@ servicedir = $(kde_servicesdir)
 service_DATA = png.kimgio xpm.kimgio bmp.kimgio pbm.kimgio pgm.kimgio \
 	       ppm.kimgio xbm.kimgio jpeg.kimgio xv.kimgio eps.kimgio \
            $(KIMGIO_TIFF_DATAFILES) ico.kimgio $(KIMGIO_JP2_DATAFILES) \
-           gif.kimgio pcx.kimgio tga.kimgio $(KIMGIO_EXR_DATAFILES)
+           gif.kimgio pcx.kimgio tga.kimgio rgb.kimgio \
+           $(KIMGIO_EXR_DATAFILES)
