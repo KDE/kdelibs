@@ -164,6 +164,8 @@
 <!ENTITY Brad.Hards.mail '<email>bradh@frogmouth.net</email>'>
 <!ENTITY Jason.Harris '<personname><firstname>Jason</firstname><surname>Harris</surname></personname>'>
 <!ENTITY Jason.Harris.mail '<email>kstars@30doradus.org</email>'>
+<!ENTITY Dominik.Haumann '<personname><firstname>Dominik</firstname><surname>Haumann</surname></personname>'>
+<!ENTITY Dominik.Haumann.mail '<email>dhdev@gmx.de</email>'>
 <!ENTITY Simon.Hausmann '<personname><firstname>Simon</firstname><surname>Hausmann</surname></personname>'>
 <!ENTITY Simon.Hausmann.mail '<email>hausmann@kde.org</email>'>
 <!ENTITY Kurt.Hindenburg '<personname><firstname>Kurt</firstname><surname>Hindenburg</surname></personname>'>
