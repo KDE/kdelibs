@@ -586,7 +586,7 @@ void RenderBox::calcWidth()
     else
     {
         Length w;
-        if ( isReplaced () )
+        if ( isInline() && isReplaced () )
             w = Length( calcReplacedWidth(), Fixed );
         else
             w = style()->width();
@@ -624,7 +624,7 @@ void RenderBox::calcWidth()
         else
         {
             LengthType widthType, minWidthType, maxWidthType;
-            if (isReplaced()) {
+            if (isInline() && isReplaced()) {
                 m_width = w.width(cw);
                 m_width += paddingLeft() + paddingRight() + borderLeft() + borderRight();
                 widthType = w.type();
@@ -692,7 +692,7 @@ int RenderBox::calcWidthUsing(WidthType widthType, int cw, LengthType& lengthTyp
         // size to max width?
         if (isFloating() ||
             style()->display() == COMPACT ||
-            style()->display() == INLINE_BLOCK) {
+            ( isReplaced() && !isInline() ) ) {
             if (width < m_minWidth)
                 width = m_minWidth;
             if (width > m_maxWidth)
@@ -758,7 +758,7 @@ void RenderBox::calcHeight()
     else
     {
         Length h;
-        if ( isReplaced() && !isBlockFlow())
+        if ( isReplaced() && !isBlockFlow() && isInline())
             h = Length( calcReplacedHeight(), Fixed );
         else
             h = style()->height();
