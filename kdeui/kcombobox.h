@@ -428,11 +428,22 @@ public:
     KHistoryCombo( QWidget *parent = 0L, const char *name = 0L );
 
     /**
+     * Calls @ref clearHistory and sets @p items as the list of history and
+     * completion items. Might get truncated if it is longer than 
+     * @ref maxCount()
+     *
+     * @see #historyItems
+     */
+    inline void setHistoryItems( QStringList items ) {
+        setHistoryItems(items, false);
+    }
+
+    /**
      * Calls @ref clearHistory and sets the list of history items. Might get
      * truncated if it is longer than @ref maxCount()
      *
      * Set @p setCompletionList to true, if you don't have a list of
-     * completions. This tells KHistoryCombo to  use all the items for the
+     * completions. This tells KHistoryCombo to use all the items for the
      * completion object as well.
      * You won't have the benefit of weighted completion though, so normally
      * you should do something like
@@ -468,8 +479,7 @@ public:
      * @see KCompletion::setItems
      * @see KCompletion::items
      */
-    void setHistoryItems(QStringList items,
-			 bool setCompletionList = false );
+    void setHistoryItems( QStringList items, bool setCompletionList );
 
     /**
      * Returns the list of history items. Empty, when this is not a read-write
