@@ -377,3 +377,23 @@ ConnectorImpl::rollback()
 {
     execute("ROLLBACK");
 }
+
+bool 
+ConnectorImpl::appendField(const QString &table, KDB::Field *f)
+{
+    return false;
+}
+
+bool 
+ConnectorImpl::removeField(const QString &table, const QString &field)
+{
+    return false;
+}
+
+bool 
+ConnectorImpl::changeField(const QString &table, KDB::Field *f)
+{
+    return false;
+}
+
+
