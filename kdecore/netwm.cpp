@@ -4050,32 +4050,38 @@ NETExtendedStrut NETWinInfo::extendedStrut() const {
     return p->extended_strut;
 }
 
+bool NET::typeMatchesMask( WindowType type, unsigned long mask ) {
+    switch( type ) {
+#define CHECK_TYPE_MASK( type ) \
+        case type: \
+    	    if( mask & type##Mask ) \
+	        return true; \
+	    break;
+        CHECK_TYPE_MASK( Normal )
+        CHECK_TYPE_MASK( Desktop )
+        CHECK_TYPE_MASK( Dock )
+        CHECK_TYPE_MASK( Toolbar )
+        CHECK_TYPE_MASK( Menu )
+        CHECK_TYPE_MASK( Dialog )
+        CHECK_TYPE_MASK( Override )
+        CHECK_TYPE_MASK( TopMenu )
+        CHECK_TYPE_MASK( Utility )
+        CHECK_TYPE_MASK( Splash )
+#undef CHECK_TYPE_MASK
+        default:
+            break;
+    }
+    return false;
+}
+
 NET::WindowType NETWinInfo::windowType( unsigned long supported_types ) const {
     for( int i = 0;
 	 i < p->types.size();
 	 ++i ) {
-	switch( p->types[ i ] ) {
 	// return the type only if the application supports it
-#define CHECK_TYPE_MASK( type ) \
-	    case type: \
-		if( supported_types & type##Mask ) \
-		    return type; \
-		break;
-	    CHECK_TYPE_MASK( Normal )
-	    CHECK_TYPE_MASK( Desktop )
-	    CHECK_TYPE_MASK( Dock )
-	    CHECK_TYPE_MASK( Toolbar )
-	    CHECK_TYPE_MASK( Menu )
-	    CHECK_TYPE_MASK( Dialog )
-	    CHECK_TYPE_MASK( Override )
-	    CHECK_TYPE_MASK( TopMenu )
-	    CHECK_TYPE_MASK( Utility )
-	    CHECK_TYPE_MASK( Splash )
-#undef CHECK_TYPE_MASK
-	    default:
-		break;
+        if( typeMatchesMask( p->types[ i ], supported_types ))
+            return p->types[ i ];
 	}
-    }
     return Unknown;
 }
 

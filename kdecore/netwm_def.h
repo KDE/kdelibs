@@ -307,11 +307,17 @@ public:
 	OverrideMask = 1<<6,
         TopMenuMask  = 1<<7,
 	UtilityMask  = 1<<8,
-	SplashMask   = 1<<9,
+	SplashMask   = 1<<9
     };
 
     // KDE4 move to WindowTypeMask
     enum { AllTypesMask = -1LU };
+
+    /**
+     * Returns true if the given window type matches the mask given
+     * using WindowTypeMask flags.
+     */    
+    static bool typeMatchesMask( WindowType type, unsigned long mask );
 
     /**
        Window state.
