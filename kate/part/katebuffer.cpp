@@ -170,7 +170,7 @@ class KateBufBlock
 
    inline uint firstLineIndentation () { return m_firstLineIndentation; }
    inline bool firstLineOnlySpaces () { return m_firstLineOnlySpaces; }
-   
+
    inline TextLine::Ptr lastLine () { return m_lastLine; }
 
   private:
@@ -679,21 +679,63 @@ bool KateBuffer::saveFile (const QString &m_file)
 
   QString eol = m_doc->config()->eolString ();
 
-  QString tabs;
-  if (m_doc->configFlags() & KateDocument::cfReplaceTabs)
-    tabs.fill (QChar(' '), m_doc->config()->tabWidth());
+//   QString tabs;
+//   if (m_doc->configFlags() & KateDocument::cfReplaceTabs)
+//     tabs.fill (QChar(' '), m_doc->config()->tabWidth());
+
+  // for tab replacement, initialize only once
+  uint pos, found, ml, l;
+  QChar onespace(' ');
+  QString onetab("\t");
+  uint tw = m_doc->config()->tabWidth();
+
+  // Use the document methods
+  if ( m_doc->configFlags() & KateDocument::cfReplaceTabs ||
+       m_doc->configFlags() & KateDocument::cfRemoveSpaces )
+    m_doc->editStart();
 
   for (uint i=0; i < m_lines; i++)
   {
-    // if enabled strip the trailing spaces !
-    if (m_doc->configFlags() & KateDocument::cfReplaceTabs)
-      stream << textLine (i, m_doc->configFlags() & KateDocument::cfRemoveSpaces).replace (QChar('\t'), tabs);
-    else
-      stream << textLine (i, m_doc->configFlags() & KateDocument::cfRemoveSpaces);
+    TextLine::Ptr textLine = plainLine(i);
 
-    if (i < (m_lines-1))
-      stream << eol;
+    if (textLine)
+    {
+      // replace tabs if required
+      if ( m_doc->configFlags() & KateDocument::cfReplaceTabs )
+      {
+        pos = 0;
+        while ( textLine->searchText( pos, onetab, &found, &ml ) )
+        {
+          l = tw - ( found%tw );
+          if ( l )
+          {
+            QString t;
+            m_doc->editRemoveText( i, found, 1 );
+            m_doc->editInsertText( i, found, t.fill(onespace, l) ); // ### anything more eficient?
+            pos += l-1;
+          }
+        }
+      }
+
+      // remove trailing spaces if required
+      if ( (m_doc->configFlags() & KateDocument::cfRemoveSpaces) && textLine->length() )
+      {
+        pos = textLine->length() - 1;
+        uint lns = textLine->lastChar();
+        if ( lns != pos )
+          m_doc->editRemoveText( i, lns + 1, pos - lns );
+      }
+
+      stream << textLine->string();
+
+      if ((i+1) < m_lines)
+        stream << eol;
+    }
   }
+
+  if ( m_doc->configFlags() & KateDocument::cfReplaceTabs ||
+       m_doc->configFlags() & KateDocument::cfRemoveSpaces )
+    m_doc->editEnd();
 
   file.close ();
 
@@ -748,11 +790,11 @@ bool KateBuffer::needHighlight(KateBufBlock *buf, uint startLine, uint endLine)
   // nothing to update, still up to date ;)
   if (!m_hlUpdate)
     return false;
-    
+
   // we tried to start in a line behind this buf block !
   if (startLine >= (buf->startLine()+buf->lines()))
     return false;
-    
+
   // parse this block if needed, very important !
   if (!buf->b_stringListValid)
     parseBlock(buf);
@@ -760,7 +802,7 @@ bool KateBuffer::needHighlight(KateBufBlock *buf, uint startLine, uint endLine)
   // get the previous line, if we start at the beginning of this block
   // take the last line of the previous block
   TextLine::Ptr prevLine = 0;
-  
+
   if (startLine == buf->startLine())
   {
     int pos = m_blocks.findRef (buf);
@@ -778,32 +820,32 @@ bool KateBuffer::needHighlight(KateBufBlock *buf, uint startLine, uint endLine)
   {
     prevLine = buf->line(startLine - buf->startLine() - 1);
   }
-  
+
   if (!prevLine)
     prevLine = new TextLine ();
-  
+
   bool line_continue = prevLine->hlLineContinue();
-  
+
   QMemArray<short> ctxNum, endCtx;
-  ctxNum.duplicate (prevLine->ctxArray ()); 
+  ctxNum.duplicate (prevLine->ctxArray ());
 
   // does we need to emit a signal for the folding changes ?
   bool codeFoldingUpdate = false;
-  
+
   // here we are atm, start at start line in the block
   uint current_line = startLine - buf->startLine();
-  
+
   // does we need to continue
   bool stillcontinue=false;
-   
+
   // loop over the lines of the block, from startline to endline or end of block
   // if stillcontinue forces us to do so
   while ( (current_line < buf->lines())
           && (stillcontinue || ((current_line + buf->startLine()) <= endLine)) )
-  {    
-    // current line  
+  {
+    // current line
     TextLine::Ptr textLine = buf->line(current_line);
-  
+
     endCtx.duplicate (textLine->ctxArray ());
 
     QMemArray<signed char> foldingList;
@@ -819,7 +861,7 @@ bool KateBuffer::needHighlight(KateBufBlock *buf, uint startLine, uint endLine)
       QMemArray<unsigned short> indentDepth;
       indentDepth.duplicate (prevLine->indentationDepthArray());
 
-      // current indentation of this line      
+      // current indentation of this line
       uint iDepth = textLine->indentDepth(m_tabWidth);
 
       // this line is empty, beside spaces, use indentation depth of the previous line !
@@ -830,15 +872,15 @@ bool KateBuffer::needHighlight(KateBufBlock *buf, uint startLine, uint endLine)
           iDepth = (prevLine->indentationDepthArray())[prevLine->indentationDepthArray().size()-1];
         else
           iDepth = prevLine->indentDepth(m_tabWidth);
-        
+
         // run over empty lines ;)
         indentChanged = true;
       }
-       
+
       // query the next line indentation, if we are at the end of the block
       // use the first line of the next buf block
       uint nextLineIndentation = 0;
-      
+
       if ((current_line+1) < buf->lines())
       {
         if (buf->line(current_line+1)->firstChar() == -1)
@@ -852,7 +894,7 @@ bool KateBuffer::needHighlight(KateBufBlock *buf, uint startLine, uint endLine)
         if (uint(pos + 1) < m_blocks.count())
         {
           KateBufBlock *blk = m_blocks.at (pos+1);
-    
+
           if (blk->b_stringListValid && (blk->lines() > 0))
           {
             if (blk->line (0)->firstChar() == -1)
@@ -896,25 +938,25 @@ bool KateBuffer::needHighlight(KateBufBlock *buf, uint startLine, uint endLine)
           }
         }
       }
-      
+
       // just for debugging always true to start with !
       indentChanged = indentChanged || (indentDepth.size() != textLine->indentationDepthArray().size())
                                     || (indentDepth != textLine->indentationDepthArray());
- 
+
       // set the new array in the textline !
       textLine->setIndentationDepth (indentDepth);
-      
+
       // add folding start to the list !
       if (newIn)
       {
         foldingList.resize (foldingList.size() + 1);
         foldingList[foldingList.size()-1] = 1;
       }
-      
+
       // calculate how much end folding symbols must be added to the list !
       // remIn gives you the count of them
       uint remIn = 0;
-      
+
       for (int z=indentDepth.size()-1; z > -1; z--)
       {
         if (indentDepth[z] > nextLineIndentation)
@@ -961,7 +1003,7 @@ bool KateBuffer::needHighlight(KateBufBlock *buf, uint startLine, uint endLine)
 
     // move around the lines
     prevLine = textLine;
-    
+
     // increment line
     current_line++;
   }
@@ -1518,10 +1560,10 @@ void KateBufBlock::buildStringList()
   {
     m_lastLine = 0;
   }
-  
+
   m_firstLineIndentation = 0;
   m_firstLineOnlySpaces = true;
-  
+
   assert(m_stringList.size() == m_lines);
   b_stringListValid = true;
   //kdDebug(13020)<<"END: KateBufBlock: buildStringList LINES: "<<m_endState.lineNr - m_beginState.lineNr<<endl;
@@ -1536,7 +1578,7 @@ void KateBufBlock::flushStringList()
   //kdDebug(13020)<<"KateBufBlock: flushStringList this ="<< this<<endl;
   assert(b_stringListValid);
   assert(!b_rawDataValid);
-  
+
   // Calculate size.
   uint size = 0;
   for(TextLine::List::const_iterator it = m_stringList.begin(); it != m_stringList.end(); ++it)
@@ -1560,7 +1602,7 @@ void KateBufBlock::disposeStringList()
 {
   //kdDebug(13020)<<"KateBufBlock: disposeStringList this = "<< this<<endl;
   assert(b_rawDataValid || b_vmDataValid);
-  
+
   if (m_lines > 0)
   {
     m_firstLineIndentation = m_stringList[0]->indentDepth (m_parent->tabWidth());
