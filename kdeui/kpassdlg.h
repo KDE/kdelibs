@@ -69,10 +69,13 @@ public:
 
 protected:
     virtual void keyPressEvent(QKeyEvent *);
+    virtual void focusInEvent(QFocusEvent *e);
+    virtual bool event(QEvent *e);
+
+    // KDE 3.0: remove me, handled by event()
     virtual void mousePressEvent(QMouseEvent *);
     virtual void mouseMoveEvent(QMouseEvent *);
     virtual void mouseReleaseEvent(QMouseEvent *);
-    virtual void focusInEvent(QFocusEvent *e);
 
 private:
     void showPass();

@@ -51,6 +51,7 @@ const int KPasswordEdit::PassLen = 100;
 KPasswordEdit::KPasswordEdit(QWidget *parent, const char *name)
     : QLineEdit(parent, name), m_EchoMode(OneStar)
 {
+    setAcceptDrops(false);
     m_Password = new char[PassLen];
     m_Password[0] = '\000';
     m_Length = 0;
@@ -146,6 +147,36 @@ void KPasswordEdit::keyPressEvent(QKeyEvent *e)
 	    e->ignore();
 	break;
     }
+}
+
+bool KPasswordEdit::event(QEvent *e) {
+    switch(e->type()) {
+
+      case QEvent::MouseButtonPress:
+      case QEvent::MouseButtonRelease:
+      case QEvent::MouseButtonDblClick:
+      case QEvent::MouseMove:
+        return TRUE; //Ignore
+
+      case QEvent::AccelOverride:
+      {
+        QKeyEvent *k = (QKeyEvent*) e;
+        switch (k->key()) {
+            case Key_U:
+                if (k->state() & ControlButton) {
+                    m_Length = 0;
+                    m_Password[m_Length] = '\000';
+                    showPass();
+                }
+        }
+        return TRUE; // stop bubbling
+      }
+
+      default:
+        // Do nothing
+        break;
+    }
+    return QLineEdit::event(e);
 }
 
 void KPasswordEdit::showPass()
