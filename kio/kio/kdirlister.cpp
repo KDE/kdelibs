@@ -453,6 +453,8 @@ void KDirListerCache::forgetDirs( KDirLister *lister )
         kdDebug(7004) << k_funcinfo << lister << " item moved into cache: " << (*it).prettyURL() << endl;
         itemsCached.insert( (*it).url(), item ); // TODO: may return false!!
       }
+      else
+        delete item;
     }
   }
 
