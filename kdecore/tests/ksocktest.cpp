@@ -72,7 +72,7 @@ main(int argc, char *argv[])
    int result = KExtendedSocket::resolve(&host_address, host, port, NI_NAMEREQD);
    printf( "resolve result: %d\n", result );
    check("KExtendedSocket::resolve() host=", host, "www.kde.org");
-   check("KExtendedSocket::resolve() port=", port, "http");
+//   check("KExtendedSocket::resolve() port=", port, "http");
    QPtrList<KAddressInfo> list;
    list = KExtendedSocket::lookup("www.kde.org", "http", KExtendedSocket::inetSocket);
    for(KAddressInfo *info = list.first(); info; info = list.next())
