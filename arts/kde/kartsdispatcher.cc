@@ -27,35 +27,26 @@ int KArtsDispatcher::m_refCount = 0;
 Arts::Dispatcher *KArtsDispatcher::artsDispatcher = 0;
 Arts::QIOManager *KArtsDispatcher::artsQIOManager = 0;
 
-KArtsDispatcher::KArtsDispatcher() : QObject()
+KArtsDispatcher::KArtsDispatcher(QObject *parent, const char *name)
+	: QObject(parent, name)
 {
-	m_refCount = 0;
+	m_refCount++;
+	if(artsDispatcher == 0)
+	{
+		artsQIOManager = new Arts::QIOManager();
+		artsDispatcher = new Arts::Dispatcher(artsQIOManager);
+	}
 }
 
 KArtsDispatcher::~KArtsDispatcher()
 {
-}
-
-void KArtsDispatcher::free()
-{
 	m_refCount--;
-
 	if(m_refCount == 0)
 	{
 		delete KArtsDispatcher::artsDispatcher;
-		KArtsDispatcher::artsDispatcher = 0;
+		artsDispatcher = 0;
 
 		delete KArtsDispatcher::artsQIOManager;
-		KArtsDispatcher::artsQIOManager = 0;
-	}
-}
-
-void KArtsDispatcher::init()
-{
-	m_refCount++;
-	if(KArtsDispatcher::artsDispatcher == 0)
-	{
-		KArtsDispatcher::artsQIOManager = new Arts::QIOManager();
-		KArtsDispatcher::artsDispatcher = new Arts::Dispatcher(KArtsDispatcher::artsQIOManager);
+		artsQIOManager = 0;
 	}
 }

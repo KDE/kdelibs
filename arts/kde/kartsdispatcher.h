@@ -30,17 +30,53 @@ namespace Arts
 	class Dispatcher;
 };
 
+/**
+ * KArtsDispatcher ensures that an instance of Arts::Dispatcher using an
+ * Arts::QIOManager exists. When the last KArtsDispatcher is deleted, the
+ * Arts::Dispatcher is released as well.
+ *
+ * Using KArtsDispatcher is especially useful in setups where another plugin
+ * might also already use an Arts::Dispatcher, for instance in konqueror.
+ *
+ * <pre>
+ * {
+ *   // old code
+ *   Arts::QIOManager qiomanager;
+ *   Arts::Dispatcher dispatcher(&qiomanager);
+ *
+ *   Arts::SoundServer server = Arts::Reference("global:Arts_SoundServer");
+ *   server.play("/usr/share/sounds/pop.wav");
+ * }
+ * </pre>
+ *
+ * <pre>
+ * {
+ *   // new code
+ *   KArtsDispatcher dispatcher;
+ *
+ *   Arts::SoundServer server = Arts::Reference("global:Arts_SoundServer");
+ *   server.play("/usr/share/sounds/pop.wav");
+ * }
+ * </pre>
+ */
 class KArtsDispatcher : public QObject
 {
 Q_OBJECT
 public:
-	static void init();
-	static void free();
+	/**
+	 * Constructor.
+	 *
+	 * @param parent  the parent Qt object
+	 * @param name    the Qt object name of this object
+	 */
+	KArtsDispatcher(QObject *parent = 0, const char *name = 0);
+
+	/**
+	 * Destructor
+	 */
 	~KArtsDispatcher();
 	
 private:
-	KArtsDispatcher();
-
 	static int m_refCount;
 	static Arts::Dispatcher *artsDispatcher;
 	static Arts::QIOManager *artsQIOManager;
