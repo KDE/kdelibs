@@ -73,6 +73,7 @@
 #include <kmacroexpander.h>
 #include <kshell.h>
 #include <kprotocolinfo.h>
+#include <kkeynative.h>
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
 #include <kstartupinfo.h>
@@ -2967,6 +2968,33 @@ uint KApplication::mouseState()
     //TODO for win32
     return 0;
 #endif
+}
+
+Qt::ButtonState KApplication::keyboardMouseState()
+{
+    Window root;
+    Window child;
+    int root_x, root_y, win_x, win_y;
+    uint state;
+    XQueryPointer( qt_xdisplay(), qt_xrootwin(), &root, &child,
+                   &root_x, &root_y, &win_x, &win_y, &state );
+    // transform the same way like Qt's qt_x11_translateButtonState()
+    int ret = 0;
+    if( state & Button1Mask )
+        ret |= LeftButton;
+    if( state & Button2Mask )
+        ret |= MidButton;
+    if( state & Button3Mask )
+        ret |= RightButton;
+    if( state & ShiftMask )
+        ret |= ShiftButton;
+    if( state & ControlMask )
+        ret |= ControlButton;
+    if( state & KKeyNative::modX( KKey::ALT ))
+        ret |= AltButton;
+    if( state & KKeyNative::modX( KKey::WIN ))
+        ret |= MetaButton;
+    return static_cast< ButtonState >( ret );
 }
 
 void KApplication::installSigpipeHandler()
