@@ -24,6 +24,6 @@ INCLUDES = -I$(top_srcdir)/kdefx $(all_includes)
 noinst_HEADERS = kthemestyle.h kthemebase.h kstyledirs.h
 kde_style_LTLIBRARIES = kthemestyle.la
 kthemestyle_la_LDFLAGS = $(all_libraries) $(KDE_PLUGIN) -module
-kthemestyle_la_LIBADD = ../../kdefx/libkdefx.la 
+kthemestyle_la_LIBADD = ../../kdefx/libkdefx.la  ../../kdecore/libkdecore.la
 kthemestyle_la_SOURCES = kthemebase.cpp kthemestyle.cpp kstyledirs.cpp
 kthemestyle_la_METASOURCES = AUTO

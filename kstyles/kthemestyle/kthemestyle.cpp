@@ -5,7 +5,7 @@
  Copyright (C) 1999 Daniel M. Duley <mosfet@kde.org>
 
  KDE3 port (C) 2001-2002 Maksim Orlovich <mo002j@mail.rochester.edu>
-Port version 0.9.4
+Port version 0.9.5
 
  Includes code portions from the dotNET style, and the KDE HighColor style.
 
@@ -105,6 +105,9 @@ Possibly some bugs unpolishing menus..
 TODO:
 Nicer disabled buttons.
 Sliders are not disabled properly
+
+Drop the ToolBarButton NoBackground workaround when/if the patch to konsole
+is commited. 
 */
 
 
@@ -120,9 +123,8 @@ public:
 
     QStringList keys() const
     {
-        KStyleDirs dirs;
         QSettings cfg;
-        dirs.addToSearch( cfg, "share/config" );
+        KStyleDirs::dirs()->addToSearch( "config", cfg );
 
         QStringList keys;
         bool ok;
@@ -139,9 +141,8 @@ public:
 
     QStyle* create( const QString& key )
     {
-        KStyleDirs dirs;
         QSettings cfg;
-        dirs.addToSearch( cfg, "share/config" );
+        KStyleDirs::dirs()->addToSearch( "config", cfg );
 
         QString file = cfg.readEntry( "/kthemestyle/" + key + "/file" );
         if ( !key.isEmpty() )
@@ -311,6 +312,8 @@ int KThemeStyle::pixelMetric ( PixelMetric metric, const QWidget * widget ) cons
     switch ( metric )
     {
         case PM_MenuBarFrameWidth:
+            return 1;
+
         case PM_DefaultFrameWidth:
             return ( frameWidth() );
 
@@ -471,7 +474,7 @@ void KThemeStyle::polish( QWidget *w )
             w->setBackgroundOrigin( QWidget::ParentOrigin );
         }
     }
-    if ( w->inherits( "QMenuBar" ) || w->inherits( "QScrollBar" ) || w->inherits( "QToolBar" ) )
+    if ( w->inherits( "QMenuBar" ) || w->inherits( "QScrollBar" ) || w->inherits( "QToolBar" ) || w->inherits ("QToolButton") )
     {
         w->setBackgroundMode( QWidget::NoBackground );
     }
@@ -556,7 +559,7 @@ void KThemeStyle::unPolish( QWidget* w )
         }
     }
     if ( w->inherits( "QMenuBar" ) || w->inherits( "QPopupMenu" ) || w->inherits( "QMenuItem" ) ||
-            w->inherits( "QScrollBar" ) || w->inherits( "QToolBar" ) )
+            w->inherits( "QScrollBar" ) || w->inherits( "QToolBar" )  || w->inherits ("QToolButton") )
         w->setBackgroundMode( QWidget::PaletteBackground );
     else if ( w->inherits( "QPopupMenu" ) )
         w->unsetPalette();

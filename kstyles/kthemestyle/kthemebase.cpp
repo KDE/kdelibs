@@ -5,7 +5,7 @@
  Copyright (C) 1999 Daniel M. Duley <mosfet@kde.org>
 
  KDE3 port (C) 2001-2002 Maksim Orlovich <mo002j@mail.rochester.edu>
- Port version 0.9.4
+ Port version 0.9.5
 
  Palette setup code is from KApplication,
 		Copyright (C) 1997 Matthias Kalle Dalheimer (kalle@kde.org)
@@ -164,7 +164,6 @@ public:
 
     int contrast;
 
-    KStyleDirs dirs;
 
     QMap <QString, QMap<QString, QString> > props;
 
@@ -421,7 +420,7 @@ void KThemeBase::readConfig( Qt::GUIStyle /*style*/ )
     QSettings config;
     if (configDirName.isEmpty() || configDirName == ".")
     {
-    	d->dirs.addToSearch( config, "share/apps/kstyle/themes/" );
+    	KStyleDirs::dirs()->addToSearch( "themerc", config );
     }
     else config.insertSearchPath( QSettings::Unix, configDirName );
 
@@ -462,6 +461,10 @@ void KThemeBase::readConfig( Qt::GUIStyle /*style*/ )
     //Handle the rotated background separately..
     d->props[ widgetEntries[ RotSliderGroove ] ] = d->props[ widgetEntries[ SliderGroove ] ];
 
+    // misc items
+    readMiscResourceGroup();
+
+
     for ( i = 0; i < WIDGETS; ++i )
         readResourceGroup( i, pixnames, brdnames, loaded );
 
@@ -480,8 +483,6 @@ void KThemeBase::readConfig( Qt::GUIStyle /*style*/ )
     }
 
 
-    // misc items
-    readMiscResourceGroup();
 
     // Handle preblend items
     for ( i = 0; i < PREBLEND_ITEMS; ++i )
@@ -500,6 +501,7 @@ KThemeBase::KThemeBase( const QString& dir, const QString & configFile )
     d = new KThemeBasePrivate;
     if ( configFileName.isEmpty() )
         configFileName = "kstylerc";
+
 
     configDirName = dir;
     //Strip of rc from the configFileName
@@ -617,6 +619,7 @@ KThemeBase::~KThemeBase()
         if ( grHighColors[ i ] )
             delete( grHighColors[ i ] );
     }
+    KStyleDirs::release();
     delete cache;
     delete d;
 }
@@ -624,7 +627,7 @@ KThemeBase::~KThemeBase()
 QImage* KThemeBase::loadImage( QString &name )
 {
     QImage * image = new QImage;
-    QString path = d->dirs.locate( "share/apps/kstyle/pixmaps/", name );
+    QString path = KStyleDirs::dirs()->findResource( "themepixmap",name );
     image->load( path );
     if ( !image->isNull() )
         return ( image );
@@ -636,7 +639,7 @@ QImage* KThemeBase::loadImage( QString &name )
 KThemePixmap* KThemeBase::loadPixmap( QString &name )
 {
     KThemePixmap * pixmap = new KThemePixmap( false );
-    QString path = d->dirs.locate( "share/apps/kstyle/pixmaps/", name );
+    QString path = KStyleDirs::dirs()->findResource( "themepixmap", name );
     pixmap->load( path );
     if ( !pixmap->isNull() )
         return pixmap;
