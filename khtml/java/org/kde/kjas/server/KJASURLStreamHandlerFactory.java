@@ -306,9 +306,9 @@ final class KIOHttpConnection extends KIOConnection
     }
 }
 
-final class KIOFtpConnection extends KIOConnection
+final class KIOSimpleConnection extends KIOConnection
 {
-    KIOFtpConnection(URL u) {
+    KIOSimpleConnection(URL u) {
         super(u);
     }
 }
@@ -367,13 +367,13 @@ final class KJASHttpURLConnection extends HttpURLConnection
     }
 }
 
-final class KJASFtpURLConnection extends URLConnection
+final class KJASSimpleURLConnection extends URLConnection
 {
-    private KIOFtpConnection kioconnection;
+    private KIOSimpleConnection kioconnection;
 
-    KJASFtpURLConnection(URL u) {
+    KJASSimpleURLConnection(URL u) {
         super(u);
-        kioconnection = new KIOFtpConnection(u);
+        kioconnection = new KIOSimpleConnection(u);
     }
     public boolean usingProxy() {
         return false; // FIXME
@@ -395,28 +395,32 @@ final class KJASFtpURLConnection extends URLConnection
 
 final class KJASHttpURLStreamHandler extends URLStreamHandler
 {
-    KJASHttpURLStreamHandler() {
+    KJASHttpURLStreamHandler(int port) {
+        default_port = port;
     }
     protected URLConnection openConnection(URL u) throws IOException {
         Main.debug ("openConnection " + u);
         return new KJASHttpURLConnection(u);
     }
     protected int getDefaultPort() {
-        return 80;
+        return default_port;
     }
+    private int default_port;
 }
 
-final class KJASFtpURLStreamHandler extends URLStreamHandler
+final class KJASSimpleURLStreamHandler extends URLStreamHandler
 {
-    KJASFtpURLStreamHandler() {
+    KJASSimpleURLStreamHandler(int port) {
+        default_port = port;
     }
     protected URLConnection openConnection(URL u) throws IOException {
-        Main.debug ("KJASFtpURLStreamHandler.openConnection " + u);
-        return new KJASFtpURLConnection(u);
+        Main.debug ("KJASSimpleURLStreamHandler.openConnection " + u);
+        return new KJASSimpleURLConnection(u);
     }
     protected int getDefaultPort() {
-        return 21;
+        return default_port;
     }
+    private int default_port;
 }
 
 public final class KJASURLStreamHandlerFactory 
@@ -425,9 +429,15 @@ public final class KJASURLStreamHandlerFactory
     public URLStreamHandler createURLStreamHandler(String protocol) {
         //outputs to early: Main.debug ("createURLStreamHandler " + protocol);
         if (protocol.equals("http"))
-            return new KJASHttpURLStreamHandler();
+            return new KJASHttpURLStreamHandler(80);
+        else if (protocol.equals("https"))
+            return new KJASHttpURLStreamHandler(443);
         else if (protocol.equals("ftp"))
-            return new KJASFtpURLStreamHandler();
+            return new KJASSimpleURLStreamHandler(21);
+        else if (protocol.equals("smb"))
+            return new KJASSimpleURLStreamHandler(139);
+        else if (protocol.equals("fish"))
+            return new KJASSimpleURLStreamHandler(22);
         return null;
     }
 }
