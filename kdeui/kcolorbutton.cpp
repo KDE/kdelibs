@@ -115,7 +115,7 @@ void KColorButton::mouseMoveEvent( QMouseEvent *e)
 
 void KColorButton::chooseColor()
 {
-  QColor c;
+  QColor c = color();
   if( KColorDialog::getColor( c, this ) != QDialog::Rejected ) {
     setColor( c );
   }
