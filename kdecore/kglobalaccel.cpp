@@ -149,7 +149,7 @@ bool KGlobalAccel::grabKey( uint keysym, uint mod ) {
 
 	debug("KGlobalAccel::grabKey");
 	
-	if (!XKeysymToKeycode(qt_xdisplay(), keysym)) return false; 
+	if (!keysym || !XKeysymToKeycode(qt_xdisplay(), keysym)) return false; 
 	if (!NumLockMask){
 		XModifierKeymap* xmk = XGetModifierMapping(qt_xdisplay());
 		int i;
@@ -434,7 +434,7 @@ bool KGlobalAccel::ungrabKey( uint keysym, uint mod ) {
 
 	debug("KGlobalAccel::ungrabKey");
 	
-	if (!XKeysymToKeycode(qt_xdisplay(), keysym)) return false; 
+	if (!keysym||!XKeysymToKeycode(qt_xdisplay(), keysym)) return false; 
 	if (!NumLockMask){
 		XModifierKeymap* xmk = XGetModifierMapping(qt_xdisplay());
 		int i;
