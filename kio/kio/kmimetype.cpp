@@ -814,7 +814,7 @@ pid_t KDEDesktopMimeType::runMimeType( const KURL& url , const KSimpleConfig & )
   KProcess p;
   p << "kfmclient" << args;
   p.start(KProcess::DontCare);
-  return p.getPid();
+  return p.pid();
 }
 
 QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::builtinServices( const KURL& _url )
