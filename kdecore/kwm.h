@@ -97,6 +97,15 @@ public:
    * used. You can also set it to TRUE to indicate that the user will
    * certainly have some data loss. All these things may of course
    * have no effect with other window- or session managers.  
+   *
+   * Note 4: kwm also supports session management for toplevel windows
+   * that are not mapped (and never have been mapped). This is very
+   * usefull for programms with n windows, where n can be 0 (like kfm,
+   * for example), which want to recieve a WM_SAVE_YOURSELF message
+   * nevertheless. The same as usual: If you do not want the session
+   * manager to restart your application, since it is already started
+   * by the usual startup script (True for kfm), set the command to an
+   * empty string (setWmCommand(<your window>, QString(""));)
    */
   static void enableSessionManagement(Window w);
 

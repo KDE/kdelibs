@@ -768,11 +768,14 @@ void KWM::close(Window w){
     for (i = 0; i < n; i++){
       if (p[i] == a){
 	sendClientMessage(w, ap, a);
+	XFree(p);
 	return;
       }
     }
+    if (n>0)
+      XFree(p);
   }
-  // client will not react on wm_delete_window. We have not choice
+  // client will not react on wm_delete_window. We have no choice
   // but destroy his connection to the XServer.
   XDestroyWindow(qt_xdisplay(), w);
 }
