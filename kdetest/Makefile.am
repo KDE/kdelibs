@@ -22,73 +22,36 @@ top_realbuilddir = `cd $(top_builddir) && pwd`
 
 INCLUDES = -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui \
           -I$(top_srcdir)/kformula -I$(top_srcdir)/kio\
-	  -I$(top_srcdir)/kfile $(all_includes)
+	  -I$(top_srcdir)/kfile -I$(top_srcdir)/khtml \
+	  $(all_includes)
 
 LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 
-check_PROGRAMS = kprogresstest kcolordlgtest kdatepicktest kfontdialogtest	\
-		kpopuptest ktabctltest kseparatortest kiconloadertest \
-		kwindowtest kstatusbartest kbuttonboxtest \
-		kledtest kcontainertest krulertest \
-		kwizardtest kformulatest kcharselecttest khtmltest \
-        kopenwithtest kaboutdialogtest dialogbasetest \
-		kgradienttest kmemtest \
-		kunbalancedgrdtest kcolortest knuminputtest kblendtest \
-		kdualcolortest kpalettetest kmessageboxtest khashtest ktartest \
-		kspelltest kidlservertest kidlclienttest
+check_PROGRAMS = kformulatest \
+        	kopenwithtest \
+		ktartest \
+		khtmltest \
+		kspelltest \
+		kmemtest \
+		kidlservertest kidlclienttest
 
 
-noinst_HEADERS = \
-		ktabctltest.h kiconloadertestmain.h	\
-		kwindowtest.h kstatusbartest.h \
-		kledtest.h kcontainertest.h \
-		krulertest.h kgradienttest.h \
-		kcolortest.h kunbalancedgrdtest.h kblendtest.h \
-		kdualcolortest.h khashtest.h KIDLTest.h
+noinst_HEADERS = KIDLTest.h
 
-METASOURCES = AUTO
+# METASOURCES = AUTO
 
-LDADD =  $(LIB_KDEUI)
-
-kbuttonboxtest_SOURCES = kbuttonboxtest.cpp
-kaboutdialogtest_SOURCES = kaboutdialogtest.cpp
-kaboutdialogtest_LDADD = $(LIB_KIMGIO) $(LIB_KDEUI)
-dialogbasetest_SOURCES = dialogbasetest.cpp
-kcolordlgtest_SOURCES = kcolordlgtest.cpp
-kcontainertest_SOURCES = kcontainertest.cpp
-kdatepicktest_SOURCES = kdatepicktest.cpp
-kfontdialogtest_SOURCES = kfontdialogtest.cpp
 kformulatest_SOURCES = kformulatest.cpp
 kformulatest_LDADD = $(LIB_KFORMULA)
-kiconloadertest_SOURCES = kiconloadertest.cpp kiconloadertestmain.cpp
-kledtest_SOURCES = kledtest.cpp
-kmessageboxtest_SOURCES = kmessageboxtest.cpp
-knuminputtest_SOURCES = knuminputtest.cpp
 kopenwithtest_SOURCES = kopenwithtest.cpp
 kopenwithtest_LDADD = $(LIB_KIO)
-kpopuptest_SOURCES = kpopuptest.cpp
-kprogresstest_SOURCES = kprogresstest.cpp
-krulertest_SOURCES = krulertest.cpp
-kseparatortest_SOURCES = kseparatortest.cpp
-kstatusbartest_SOURCES = kstatusbartest.cpp
-ktabctltest_SOURCES = ktabctltest.cpp
-kwindowtest_SOURCES = kwindowtest.cpp
-kwizardtest_SOURCES = kwizardtest.cpp
-kcharselecttest_SOURCES = kcharselecttest.cpp
-khtmltest_SOURCES = khtmltest.cpp
-khtmltest_LDADD = $(LIB_KHTML)
-kcolortest_SOURCES = kcolortest.cpp
-kgradienttest_SOURCES = kgradienttest.cpp
-khashtest_SOURCES = khashtest.cpp
-kunbalancedgrdtest_SOURCES = kunbalancedgrdtest.cpp
-kblendtest_SOURCES = kblendtest.cpp
-kdualcolortest_SOURCES = kdualcolortest.cpp
-kpalettetest_SOURCES = kpalettetest.cpp
-kspelltest_SOURCES = kspelltest.cpp
-kspelltest_LDADD = $(top_builddir)/kspell/libkspell.la
 ktartest_SOURCES = ktartest.cpp
 ktartest_LDADD = $(LIB_KIO)
+khtmltest_SOURCES = khtmltest.cpp
+khtmltest_LDADD = $(LIB_KHTML)
+kspelltest_SOURCES = kspelltest.cpp
+kspelltest_LDADD = $(top_builddir)/kspell/libkspell.la
 kmemtest_SOURCES = kmemtest.cpp
+kmemtest_LDADD = $(LIB_KDECORE)
 kidlservertest_SOURCES = KIDLTest.cpp KIDLTest_skel.cpp
 kidlservertest_LDADD = $(LIB_KDECORE)
 kidlclienttest_SOURCES = KIDLTestClient.cpp KIDLTest_stub.cpp
