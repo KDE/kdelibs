@@ -608,6 +608,8 @@ void KXmlCommandManager::preload()
 		for (QStringList::Iterator it=d->m_cmdlist.begin(); it!=d->m_cmdlist.end(); ++it)
 		{
 			KXmlCommand	*xmlCmd = loadCommand(*it);
+			if (!xmlCmd) continue; // Error!
+
 			QStringList	inputMime = xmlCmd->inputMimeTypes();
 			for (QStringList::ConstIterator mime=inputMime.begin(); mime!=inputMime.end(); ++mime)
 			{
@@ -689,6 +691,9 @@ int KXmlCommandManager::insertCommand(QStringList& list, const QString& filterna
 		for (QStringList::Iterator it=list.begin(); it!=list.end(); ++it, pos++)
 		{
 			f2 = command(*it);
+			if (!f2)
+				return -1; // Shouldn't happen
+
 			if (f2->acceptMimeType(f1->mimeType()) && f1->acceptMimeType(mimetype))
 			{
 				list.insert(it, filtername);

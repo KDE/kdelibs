@@ -350,6 +350,11 @@ int KPrinterImpl::doFilterFiles(KPrinter *printer, QStringList& files, const QSt
 	for (uint i=0;i<flist.count();i++)
 	{
 		KXmlCommand	*filter = KXmlCommandManager::self()->loadCommand(flist[i]);
+		if (!filter)
+		{
+			printer->setErrorMessage(i18n("<p>Could not load filter description for <b>%1</b>.</p>").arg(flist[i]));
+			return -1; // Error
+		}
 		if (i == 0)
 			inputMimeTypes = filter->inputMimeTypes();
 
