@@ -779,12 +779,12 @@ Arts::InterfaceRepo_base *Arts::InterfaceRepo_base::_fromReference(Arts::ObjectR
 	return result;
 }
 
-vector<std::string> Arts::InterfaceRepo_base::_defaultPortsIn() const {
-	vector<std::string> ret;
+std::vector<std::string> Arts::InterfaceRepo_base::_defaultPortsIn() const {
+	std::vector<std::string> ret;
 	return ret;
 }
-vector<std::string> Arts::InterfaceRepo_base::_defaultPortsOut() const {
-	vector<std::string> ret;
+std::vector<std::string> Arts::InterfaceRepo_base::_defaultPortsOut() const {
+	std::vector<std::string> ret;
 	return ret;
 }
 
@@ -980,12 +980,12 @@ Arts::FlowSystemSender_base *Arts::FlowSystemSender_base::_fromReference(Arts::O
 	return result;
 }
 
-vector<std::string> Arts::FlowSystemSender_base::_defaultPortsIn() const {
-	vector<std::string> ret;
+std::vector<std::string> Arts::FlowSystemSender_base::_defaultPortsIn() const {
+	std::vector<std::string> ret;
 	return ret;
 }
-vector<std::string> Arts::FlowSystemSender_base::_defaultPortsOut() const {
-	vector<std::string> ret;
+std::vector<std::string> Arts::FlowSystemSender_base::_defaultPortsOut() const {
+	std::vector<std::string> ret;
 	return ret;
 }
 
@@ -1088,12 +1088,12 @@ Arts::FlowSystemReceiver_base *Arts::FlowSystemReceiver_base::_fromReference(Art
 	return result;
 }
 
-vector<std::string> Arts::FlowSystemReceiver_base::_defaultPortsIn() const {
-	vector<std::string> ret;
+std::vector<std::string> Arts::FlowSystemReceiver_base::_defaultPortsIn() const {
+	std::vector<std::string> ret;
 	return ret;
 }
-vector<std::string> Arts::FlowSystemReceiver_base::_defaultPortsOut() const {
-	vector<std::string> ret;
+std::vector<std::string> Arts::FlowSystemReceiver_base::_defaultPortsOut() const {
+	std::vector<std::string> ret;
 	return ret;
 }
 
@@ -1203,12 +1203,12 @@ Arts::FlowSystem_base *Arts::FlowSystem_base::_fromReference(Arts::ObjectReferen
 	return result;
 }
 
-vector<std::string> Arts::FlowSystem_base::_defaultPortsIn() const {
-	vector<std::string> ret;
+std::vector<std::string> Arts::FlowSystem_base::_defaultPortsIn() const {
+	std::vector<std::string> ret;
 	return ret;
 }
-vector<std::string> Arts::FlowSystem_base::_defaultPortsOut() const {
-	vector<std::string> ret;
+std::vector<std::string> Arts::FlowSystem_base::_defaultPortsOut() const {
+	std::vector<std::string> ret;
 	return ret;
 }
 
@@ -1494,12 +1494,12 @@ Arts::GlobalComm_base *Arts::GlobalComm_base::_fromReference(Arts::ObjectReferen
 	return result;
 }
 
-vector<std::string> Arts::GlobalComm_base::_defaultPortsIn() const {
-	vector<std::string> ret;
+std::vector<std::string> Arts::GlobalComm_base::_defaultPortsIn() const {
+	std::vector<std::string> ret;
 	return ret;
 }
-vector<std::string> Arts::GlobalComm_base::_defaultPortsOut() const {
-	vector<std::string> ret;
+std::vector<std::string> Arts::GlobalComm_base::_defaultPortsOut() const {
+	std::vector<std::string> ret;
 	return ret;
 }
 
@@ -1669,12 +1669,12 @@ Arts::TmpGlobalComm_base *Arts::TmpGlobalComm_base::_fromReference(Arts::ObjectR
 	return result;
 }
 
-vector<std::string> Arts::TmpGlobalComm_base::_defaultPortsIn() const {
-	vector<std::string> ret;
+std::vector<std::string> Arts::TmpGlobalComm_base::_defaultPortsIn() const {
+	std::vector<std::string> ret;
 	return ret;
 }
-vector<std::string> Arts::TmpGlobalComm_base::_defaultPortsOut() const {
-	vector<std::string> ret;
+std::vector<std::string> Arts::TmpGlobalComm_base::_defaultPortsOut() const {
+	std::vector<std::string> ret;
 	return ret;
 }
 

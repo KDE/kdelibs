@@ -193,7 +193,7 @@ public:
 	inline void _sendCustomMessage(Buffer *data) const {
 		_pool->checkcreate();
 		assert(_pool->base);
-		return _pool->base->_sendCustomMessage(data);
+		_pool->base->_sendCustomMessage(data);
 	}
 	
 	// generic capabilities, which allow find out what you can do with an
@@ -230,7 +230,7 @@ public:
 	inline void calculateBlock(unsigned long cycles) const {
 		_pool->checkcreate();
 		assert(_pool->base);
-		return _pool->base->calculateBlock(cycles);
+		_pool->base->calculateBlock(cycles);
 	}
 	// Node info
 	inline ScheduleNode *_node() const {
@@ -245,26 +245,26 @@ public:
 	inline void _copyRemote() const {
 		_pool->checkcreate();
 		assert(_pool->base);
-		return _pool->base->_copyRemote();
+		_pool->base->_copyRemote();
 	}
 	inline void _useRemote() const {
 		_pool->checkcreate();
 		assert(_pool->base);
-		return _pool->base->_useRemote();
+		_pool->base->_useRemote();
 	}
 	inline void _releaseRemote() const {
 		_pool->checkcreate();
 		assert(_pool->base);
-		return _pool->base->_releaseRemote();
+		_pool->base->_releaseRemote();
 	}
 	
 	// Default I/O info
-	inline vector<std::string> _defaultPortsIn() const {
+	inline std::vector<std::string> _defaultPortsIn() const {
 		_pool->checkcreate();
 		assert(_pool->base);
 		return _pool->base->_defaultPortsIn();
 	}
-	inline vector<std::string> _defaultPortsOut() const {
+	inline std::vector<std::string> _defaultPortsOut() const {
 		_pool->checkcreate();
 		assert(_pool->base);
 		return _pool->base->_defaultPortsOut();

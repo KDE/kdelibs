@@ -56,7 +56,7 @@ void yyerror( const char *s )
   unsigned short	_char;
   double	_float;
 
-  vector<char *> *_strs;
+  vector<char*> *_strs;
 
   // types
   vector<TypeComponent *> *_typeComponentSeq;
@@ -239,7 +239,8 @@ classbody:
 	| defaultdef classbody
 	  {
 	    $$ = $2;
-	    $$->defaultPorts.insert($$->defaultPorts.begin(),$1->begin(),$1->end());
+	    for (vector<char *>::iterator i=$1->begin(); i!=$1->end(); i++)
+	       $$->defaultPorts.insert($$->defaultPorts.begin(), *i);
 	  };
 
 attributedef:

@@ -41,6 +41,8 @@ class ScheduleNode;
 class Object_skel;
 class Object_stub;
 class FlowSystem;
+class MethodDef;
+class ObjectReference;
 
 class Object_base : public NotificationClient {
 private:
@@ -65,7 +67,7 @@ protected:
 
 	virtual ObjectLocation _location();
 
-	string _internalObjectID;	// two objects are "_isEqual" when these match
+	std::string _internalObjectID;	// two objects are "_isEqual" when these match
 	long _nextNotifyID;
 	long _refCnt;				// reference count
 	static long _staticObjectCount;
@@ -90,7 +92,7 @@ public:
 	 * generic capabilities, which allow find out what you can do with an
 	 * object even if you don't know it's interface
 	 */
-	virtual long _lookupMethod(const class MethodDef &) = 0;
+	virtual long _lookupMethod(const Arts::MethodDef &) = 0;
 	virtual std::string _interfaceName() = 0;
 	virtual class InterfaceDef* _queryInterface(const std::string& name) = 0;
 	virtual class TypeDef* _queryType(const std::string& name) = 0;
@@ -118,8 +120,8 @@ public:
 	}
 	
 	// Default I/O info
-	virtual vector<std::string> _defaultPortsIn() const;
-	virtual vector<std::string> _defaultPortsOut() const;
+	virtual std::vector<std::string> _defaultPortsIn() const;
+	virtual std::vector<std::string> _defaultPortsOut() const;
 
 	// cast operation
 	virtual void *_cast(unsigned long iid);

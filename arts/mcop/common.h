@@ -95,7 +95,7 @@ void freeTypeSeq(std::vector<T *>& sequence) {
 		delete sequence[l];
 
 	sequence.clear();
-};
+}
 
 template<class T>
 void readTypeSeq(Buffer& stream, std::vector<T *>& sequence) {
@@ -103,14 +103,14 @@ void readTypeSeq(Buffer& stream, std::vector<T *>& sequence) {
 
 	unsigned long l = stream.readLong();
 	while(l--) sequence.push_back(new T(stream));
-};
+}
 
 template<class T>
 void writeTypeSeq(Buffer& stream, const std::vector<T *>& sequence) {
 	stream.writeLong(sequence.size());
 	for(unsigned long l=0;l<sequence.size();l++)
 		sequence[l]->writeType(stream);
-};
+}
 
 template<class T>
 void writeObject(Buffer& stream, T* object) {
@@ -138,7 +138,7 @@ void writeObject(Buffer& stream, T* object) {
 		null_reference.objectID = 0;
 		null_reference.writeType(stream);
 	}
-};
+}
 
 template<class T>
 void readObject(Buffer& stream, T*& result) {
@@ -148,7 +148,7 @@ void readObject(Buffer& stream, T*& result) {
 		result = 0;		// null reference?
 	else
 		result = T::_fromReference(reference,false);
-};
+}
 
 #ifndef MCOPBYTE_DEFINED
 #define MCOPBYTE_DEFINED

@@ -28,20 +28,20 @@ class Object;
 
 // Connect function overloaded for components with default port
 void connect(const Object& src, const std::string& output, const Object& dest, const std::string& input);
-void connect(const Object& src, const string& output, const Object& dest);
-void connect(const Object& src, const Object& dest, const string& input);
+void connect(const Object& src, const std::string& output, const Object& dest);
+void connect(const Object& src, const Object& dest, const std::string& input);
 void connect(const Object& src, const Object& dest);
 // Same for disconnect function
 void disconnect(const Object& src, const std::string& output, const Object& dest, const std::string& input);
-void disconnect(const Object& src, const string& output, const Object& dest);
-void disconnect(const Object& src, const Object& dest, const string& input);
+void disconnect(const Object& src, const std::string& output, const Object& dest);
+void disconnect(const Object& src, const Object& dest, const std::string& input);
 void disconnect(const Object& src, const Object& dest);
 
 // setValue function overloaded for components with default port
 void setValue(const Object& c, const std::string& port, const float fvalue);
 void setValue(const Object& c, const float fvalue);
-//void setValue(const Object& c, const string& port, const string& svalue);
-//void setValue(const Object& c, const string& svalue);
+//void setValue(const Object& c, const std::string& port, const std::string& svalue);
+//void setValue(const Object& c, const std::string& svalue);
 
 };
 

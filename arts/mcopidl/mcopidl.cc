@@ -1161,8 +1161,8 @@ void doInterfacesHeader(FILE *header)
 					   "\t}\n\n",iname.c_str());
 				
 		// Default I/O info
-		fprintf(header,"\tvirtual vector<std::string> _defaultPortsIn() const;\n");
-		fprintf(header,"\tvirtual vector<std::string> _defaultPortsOut() const;\n");
+		fprintf(header,"\tvirtual std::vector<std::string> _defaultPortsIn() const;\n");
+		fprintf(header,"\tvirtual std::vector<std::string> _defaultPortsOut() const;\n");
 		fprintf(header,"\n");
 
 		// Casting
@@ -1485,6 +1485,7 @@ void doInterfacesHeader(FILE *header)
 			{
 				if(ad->flags & streamOut)  /* readable from outside */
 				{
+					assert(strcmp(rc.c_str(), "void"));
 					fprintf(header,"\tinline %s %s() {return _cache?_cache->%s():_method_call()->%s();}\n",
 						rc.c_str(), ad->name.c_str(), ad->name.c_str(), ad->name.c_str());
 				}
@@ -1514,8 +1515,9 @@ void doInterfacesHeader(FILE *header)
 					iname.c_str(), params.c_str(), iname.c_str(),
 					iname.c_str(), iname.c_str(), callparams.c_str());
 			} else {
-					fprintf(header,"\tinline %s %s(%s) {return _cache?_cache->%s(%s):_method_call()->%s(%s);}\n",
+					fprintf(header,"\tinline %s %s(%s) {%s _cache?_cache->%s(%s):_method_call()->%s(%s);}\n",
 						rc.c_str(),	md->name.c_str(), params.c_str(),
+						(strcmp(rc.c_str(), "void")?"return":""),
 						md->name.c_str(), callparams.c_str(), md->name.c_str(), callparams.c_str());
 			}
 		}
@@ -1711,8 +1713,8 @@ void doInterfacesSource(FILE *source)
 		addDefaults(*d, portsOut, defaultOut);
 		
 		vector<std::string> done; // don't repeat values
-		fprintf(source,"vector<std::string> %s_base::_defaultPortsIn() const {\n",d->name.c_str());
-		fprintf(source,"\tvector<std::string> ret;\n");
+		fprintf(source,"std::vector<std::string> %s_base::_defaultPortsIn() const {\n",d->name.c_str());
+		fprintf(source,"\tstd::vector<std::string> ret;\n");
 		// Loop through all the values
 		for (si = portsIn.begin(); si != portsIn.end(); si++)
 		{
@@ -1727,8 +1729,8 @@ void doInterfacesSource(FILE *source)
 		}
 		fprintf(source,"\treturn ret;\n}\n");
 		done.clear();
-		fprintf(source,"vector<std::string> %s_base::_defaultPortsOut() const {\n",d->name.c_str());
-		fprintf(source,"\tvector<std::string> ret;\n");
+		fprintf(source,"std::vector<std::string> %s_base::_defaultPortsOut() const {\n",d->name.c_str());
+		fprintf(source,"\tstd::vector<std::string> ret;\n");
 		// Loop through all the values
 		for (si = portsOut.begin(); si != portsOut.end(); si++)
 		{
@@ -2178,7 +2180,7 @@ int main(int argc, char **argv)
 	char *prefix = strdup(inputfile);
 
 	if(strlen(prefix) < 4 || strcmp(&prefix[strlen(prefix)-4],".idl")) {
-		fprintf(stderr,"filename must end in .idl");
+		fprintf(stderr,"filename must end in .idl\n");
 		exit(1);
 	} else {
 		prefix[strlen(prefix)-4] = 0;

@@ -304,8 +304,8 @@ public:
 		return this;
 	}
 
-	virtual vector<std::string> _defaultPortsIn() const;
-	virtual vector<std::string> _defaultPortsOut() const;
+	virtual std::vector<std::string> _defaultPortsIn() const;
+	virtual std::vector<std::string> _defaultPortsOut() const;
 
 	void *_cast(unsigned long iid);
 
@@ -388,7 +388,7 @@ public:
 	inline InterfaceRepo_base* _base() {return _cache?_cache:_method_call();}
 
 	inline long insertModule(const Arts::ModuleDef& newModule) {return _cache?_cache->insertModule(newModule):_method_call()->insertModule(newModule);}
-	inline void removeModule(long moduleID) {return _cache?_cache->removeModule(moduleID):_method_call()->removeModule(moduleID);}
+	inline void removeModule(long moduleID) { _cache?_cache->removeModule(moduleID):_method_call()->removeModule(moduleID);}
 	inline Arts::InterfaceDef* queryInterface(const std::string& name) {return _cache?_cache->queryInterface(name):_method_call()->queryInterface(name);}
 	inline Arts::TypeDef* queryType(const std::string& name) {return _cache?_cache->queryType(name):_method_call()->queryType(name);}
 };
@@ -407,8 +407,8 @@ public:
 		return this;
 	}
 
-	virtual vector<std::string> _defaultPortsIn() const;
-	virtual vector<std::string> _defaultPortsOut() const;
+	virtual std::vector<std::string> _defaultPortsIn() const;
+	virtual std::vector<std::string> _defaultPortsOut() const;
 
 	void *_cast(unsigned long iid);
 
@@ -484,7 +484,7 @@ public:
 	}
 	inline FlowSystemSender_base* _base() {return _cache?_cache:_method_call();}
 
-	inline void processed() {return _cache?_cache->processed():_method_call()->processed();}
+	inline void processed() { _cache?_cache->processed():_method_call()->processed();}
 };
 
 class FlowSystemReceiver_base : virtual public Arts::Object_base {
@@ -501,8 +501,8 @@ public:
 		return this;
 	}
 
-	virtual vector<std::string> _defaultPortsIn() const;
-	virtual vector<std::string> _defaultPortsOut() const;
+	virtual std::vector<std::string> _defaultPortsIn() const;
+	virtual std::vector<std::string> _defaultPortsOut() const;
 
 	void *_cast(unsigned long iid);
 
@@ -595,8 +595,8 @@ public:
 		return this;
 	}
 
-	virtual vector<std::string> _defaultPortsIn() const;
-	virtual vector<std::string> _defaultPortsOut() const;
+	virtual std::vector<std::string> _defaultPortsIn() const;
+	virtual std::vector<std::string> _defaultPortsOut() const;
 
 	void *_cast(unsigned long iid);
 
@@ -682,10 +682,10 @@ public:
 	}
 	inline FlowSystem_base* _base() {return _cache?_cache:_method_call();}
 
-	inline void startObject(Arts::Object node) {return _cache?_cache->startObject(node):_method_call()->startObject(node);}
-	inline void stopObject(Arts::Object node) {return _cache?_cache->stopObject(node):_method_call()->stopObject(node);}
-	inline void connectObject(Arts::Object sourceObject, const std::string& sourcePort, Arts::Object destObject, const std::string& destPort) {return _cache?_cache->connectObject(sourceObject, sourcePort, destObject, destPort):_method_call()->connectObject(sourceObject, sourcePort, destObject, destPort);}
-	inline void disconnectObject(Arts::Object sourceObject, const std::string& sourcePort, Arts::Object destObject, const std::string& destPort) {return _cache?_cache->disconnectObject(sourceObject, sourcePort, destObject, destPort):_method_call()->disconnectObject(sourceObject, sourcePort, destObject, destPort);}
+	inline void startObject(Arts::Object node) { _cache?_cache->startObject(node):_method_call()->startObject(node);}
+	inline void stopObject(Arts::Object node) { _cache?_cache->stopObject(node):_method_call()->stopObject(node);}
+	inline void connectObject(Arts::Object sourceObject, const std::string& sourcePort, Arts::Object destObject, const std::string& destPort) { _cache?_cache->connectObject(sourceObject, sourcePort, destObject, destPort):_method_call()->connectObject(sourceObject, sourcePort, destObject, destPort);}
+	inline void disconnectObject(Arts::Object sourceObject, const std::string& sourcePort, Arts::Object destObject, const std::string& destPort) { _cache?_cache->disconnectObject(sourceObject, sourcePort, destObject, destPort):_method_call()->disconnectObject(sourceObject, sourcePort, destObject, destPort);}
 	inline Arts::AttributeType queryFlags(Arts::Object node, const std::string& port) {return _cache?_cache->queryFlags(node, port):_method_call()->queryFlags(node, port);}
 	inline Arts::FlowSystemReceiver createReceiver(Arts::Object destObject, const std::string& destPort, Arts::FlowSystemSender sender) {return _cache?_cache->createReceiver(destObject, destPort, sender):_method_call()->createReceiver(destObject, destPort, sender);}
 };
@@ -704,8 +704,8 @@ public:
 		return this;
 	}
 
-	virtual vector<std::string> _defaultPortsIn() const;
-	virtual vector<std::string> _defaultPortsOut() const;
+	virtual std::vector<std::string> _defaultPortsIn() const;
+	virtual std::vector<std::string> _defaultPortsOut() const;
 
 	void *_cast(unsigned long iid);
 
@@ -787,7 +787,7 @@ public:
 
 	inline bool put(const std::string& variable, const std::string& value) {return _cache?_cache->put(variable, value):_method_call()->put(variable, value);}
 	inline std::string get(const std::string& variable) {return _cache?_cache->get(variable):_method_call()->get(variable);}
-	inline void erase(const std::string& variable) {return _cache?_cache->erase(variable):_method_call()->erase(variable);}
+	inline void erase(const std::string& variable) { _cache?_cache->erase(variable):_method_call()->erase(variable);}
 };
 
 class TmpGlobalComm_base : virtual public Arts::GlobalComm_base {
@@ -804,8 +804,8 @@ public:
 		return this;
 	}
 
-	virtual vector<std::string> _defaultPortsIn() const;
-	virtual vector<std::string> _defaultPortsOut() const;
+	virtual std::vector<std::string> _defaultPortsIn() const;
+	virtual std::vector<std::string> _defaultPortsOut() const;
 
 	void *_cast(unsigned long iid);
 
@@ -882,7 +882,7 @@ public:
 
 	inline bool put(const std::string& variable, const std::string& value) {return _cache?_cache->put(variable, value):_method_call()->put(variable, value);}
 	inline std::string get(const std::string& variable) {return _cache?_cache->get(variable):_method_call()->get(variable);}
-	inline void erase(const std::string& variable) {return _cache?_cache->erase(variable):_method_call()->erase(variable);}
+	inline void erase(const std::string& variable) { _cache?_cache->erase(variable):_method_call()->erase(variable);}
 };
 
 };

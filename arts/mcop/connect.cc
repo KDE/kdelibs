@@ -30,6 +30,8 @@
 #define mywarning(a,b) if (!(a)) cerr<<"MCOP connection warning: "<<b<<endl;
 #endif
 
+using namespace std;
+
 namespace Arts {
 
 // Connect function overloaded for objects with default port

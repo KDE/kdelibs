@@ -6,7 +6,7 @@ typedef union
   unsigned short	_char;
   double	_float;
 
-  vector<char *> *_strs;
+  vector<char*> *_strs;
 
   // types
   vector<TypeComponent *> *_typeComponentSeq;

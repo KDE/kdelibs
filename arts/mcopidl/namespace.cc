@@ -26,6 +26,7 @@
 #include <string>
 #include <map>
 #include "namespace.h"
+#include <cassert>
 
 using namespace std;
 
