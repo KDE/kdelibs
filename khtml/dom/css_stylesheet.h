@@ -31,6 +31,7 @@
 #include <dom/dom_node.h>
 #include <dom/dom_misc.h>
 
+#include <kdelibs_export.h>
 
 namespace DOM {
 
@@ -54,7 +55,7 @@ class DocumentImpl;
  * instruction </a> .
  *
  */
-class StyleSheet
+class KHTML_EXPORT StyleSheet
 {
 public:
     StyleSheet();
