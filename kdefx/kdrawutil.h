@@ -31,60 +31,145 @@
  */
 
 /**
- * Draw a Next-style button (solid black shadow with light and midlight
- * highlight).
+ * @relates KStyle
+ * @c \#include @c <kdrawutil.h>
+ *
+ * Draws a Next-style button (solid black shadow with light and midlight highlight).
+ * 
+ * @param p       The painter to use for drawing the button.
+ * @param r       Specifies the rect in which to draw the button.
+ * @param g       Specifies the shading colors.
+ * @param sunken  Whether to draw the button as sunken (pressed) or not.
+ * @param fill    The brush to use for filling the interior of the button.
+ *                Pass @a null to prevent the button from being filled.
  */
 void kDrawNextButton(QPainter *p, const QRect &r, const QColorGroup &g,
                      bool sunken=false, const QBrush *fill=0);
 
+/**
+ * @relates KStyle
+ * @overload
+ */
 void kDrawNextButton(QPainter *p, int x, int y, int w, int h,
                      const QColorGroup &g, bool sunken=false, 
                      const QBrush *fill=0);
 
 /**
- * Draw a Be-like style button.
+ * @relates KStyle
+ * @c \#include @c <kdrawutil.h>
+ *
+ * Draws a Be-style button.
+ *
+ * @param p       The painter to use for drawing the button.
+ * @param r       Specifies the rect in which to draw the button.
+ * @param g       Specifies the shading colors.
+ * @param sunken  Whether to draw the button as sunken (pressed) or not.
+ * @param fill    The brush to use for filling the interior of the button.
+ *                Pass @a null to prevent the button from being filled.
  */
 void kDrawBeButton(QPainter *p, QRect &r, const QColorGroup &g,
                    bool sunken=false, const QBrush *fill=0);
 
+/**
+ * @relates KStyle
+ * @c \#include @c <kdrawutil.h>
+ * @overload
+ */
 void kDrawBeButton(QPainter *p, int x, int y, int w, int h,
                    const QColorGroup &g, bool sunken=false, 
                    const QBrush *fill=0);
 
 /**
- * Draw a rounded oval button. This does not fill the button, see
- * kRoundMask() and kRoundMaskRegion() for setting masks for fills.
+ * @relates KStyle
+ * @c \#include @c <kdrawutil.h>
+ *
+ * Draws a rounded oval button. This function doesn't fill the button.
+ * See kRoundMaskRegion() for setting masks for fills.
+ *
+ * @param p       The painter to use for drawing the button.
+ * @param r       Specifies the rect in which to draw the button.
+ * @param g       Specifies the shading colors.
+ * @param sunken  Whether to draw the button as sunken (pressed) or not.
  */
 void kDrawRoundButton(QPainter *p, const QRect &r, const QColorGroup &g,
                       bool sunken=false);
 
+/**
+ * @relates KStyle
+ * @overload
+ */
 void kDrawRoundButton(QPainter *p, int x, int y, int w, int h,
                       const QColorGroup &g, bool sunken=false);
 
 /**
- * Set the region to the pixels contained in a round button of the given
+ * @relates KStyle
+ * @c \#include @c <kdrawutil.h>
+ *
+ * Sets a region to the pixels covered by a round button of the given
  * size. You can use this to set clipping regions.
+ * 
+ * @param r  Reference to the region to set.
+ * @param x  The X coordinate of the button.
+ * @param y  The Y coordinate of the button.
+ * @param w  The width of the button.
+ * @param h  The height of the button.
+ *
+ * @see kDrawRoundButton() and kDrawRoundMask()
  */
 void kRoundMaskRegion(QRegion &r, int x, int y, int w, int h);
 
 /**
- * Paint the bitmap with the pixels contained in a round button of the given
- * size. This is mostly useful inside QStyle routines.
+ * @relates KStyle
+ * @c \#include @c <kdrawutil.h>
+ *
+ * Paints the pixels covered by a round button of the given size with
+ * Qt::color1. This function is useful in QStyle::drawControlMask().
+ *
+ * @param p      The painter to use for drawing the button.
+ * @param x      The X coordinate of the button.
+ * @param y      The Y coordinate of the button.
+ * @param w      The width of the button.
+ * @param h      The height of the button.
+ * @param clear  Whether to clear the rectangle specified by @p (x, y, w, h) to
+ *               Qt::color0 before drawing the mask.
  */
 void kDrawRoundMask(QPainter *p, int x, int y, int w, int h, bool clear=false);
 
 /**
- * Paint the supplied bitmaps onto the QPainter using the colorgroup for
- * the foreground colors. Note: The bitmaps will be self-masked automatically
- * if not masked prior to calling this routine.
+ * @relates KStyle
+ * @c \#include @c <kdrawutil.h>
  *
+ * Paints the provided bitmaps in the painter, using the supplied colorgroup for
+ * the foreground colors. There's one bitmap for each color. If you want to skip
+ * a color, pass @a null for the corresponding bitmap.
+ *
+ * @note The bitmaps will be self-masked automatically if not masked
+ *       prior to calling this routine.
+ *
+ * @param p             The painter to use for drawing the bitmaps.
+ * @param g             Specifies the shading colors.
+ * @param x             The X coordinate at which to draw the bitmaps.
+ * @param y             The Y coordinate at which to draw the bitmaps.
+ * @param lightColor    The bitmap to use for the light part.
+ * @param midColor      The bitmap to use for the mid part.
+ * @param midlightColor The bitmap to use for the midlight part.
+ * @param darkColor     The bitmap to use for the dark part.
+ * @param blackColor    The bitmap to use for the black part.
+ * @param whiteColor    The bitmap to use for the white part.
+ *
+ * @see QColorGroup
  */
 void kColorBitmaps(QPainter *p, const QColorGroup &g, int x, int y,
                    QBitmap *lightColor=0, QBitmap *midColor=0,
                    QBitmap *midlightColor=0, QBitmap *darkColor=0,
                    QBitmap *blackColor=0, QBitmap *whiteColor=0);
 
-void kColorBitmaps(QPainter *p, const QColorGroup &g, int x, int y, int w,
+/**
+ * @relates KStyle
+ * @c \#include @c <kdrawutil.h>
+ * @overload
+ */
+ void kColorBitmaps(QPainter *p, const QColorGroup &g, int x, int y, int w,
                    int h, bool isXBitmaps=true, const uchar *lightColor = 0,
                    const uchar *midColor=0, const uchar *midlightColor=0,
                    const uchar *darkColor=0, const uchar *blackColor=0,
