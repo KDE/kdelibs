@@ -209,6 +209,11 @@ KTMainWindow::~KTMainWindow()
 
 
 void KTMainWindow::closeEvent ( QCloseEvent *e){
+    // quickly save the toolbar state
+    KToolBar *toolbar;
+    for (toolbar = toolbars.first(); toolbar != 0; toolbar = toolbars.next())
+      toolbar->saveState();
+
     if (queryClose()) {
 	e->accept();
 
@@ -242,6 +247,11 @@ bool KTMainWindow::queryExit(){
 
 void KTMainWindow::shuttingDown()
 {
+   // quickly save the toolbar state
+  KToolBar *toolbar;
+  for (toolbar = toolbars.first(); toolbar != 0; toolbar = toolbars.next())
+    toolbar->saveState();
+ 
   // call the virtual queryExit
   queryExit();
 }
