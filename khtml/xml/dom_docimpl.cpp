@@ -571,7 +571,7 @@ void DocumentImpl::recalcStyle()
     QFont f = KGlobalSettings::generalFont();
     f.setFamily(settings->stdFontName());
     f.setPointSize(size);
-    //kdDebug() << "HTMLDocumentImpl::attach: setting to charset " << settings->charset() << endl;
+    //kdDebug() << "DocumentImpl::attach: setting to charset " << settings->charset() << endl;
     KGlobal::charsets()->setQFont(f, settings->charset());
     m_style->setFont(f);
 
@@ -927,6 +927,175 @@ void DocumentImpl::determineParseMode( const QString &str )
 	kdDebug() << " using transitional parseMode" << endl;
 }
 
+// Please see if there`s a possibility to merge that code
+// with the next function and getElementByID().
+NodeImpl *DocumentImpl::findElement( int id )
+{
+    QStack<NodeImpl> nodeStack;
+    NodeImpl *current = _first;
+
+    while(1)
+    {
+        if(!current)
+        {
+            if(nodeStack.isEmpty()) break;
+            current = nodeStack.pop();
+            current = current->nextSibling();
+        }
+        else
+        {
+            if(current->id() == id)
+                return current;
+
+            NodeImpl *child = current->firstChild();
+            if(child)
+            {
+                nodeStack.push(current);
+                current = child;
+            }
+            else
+            {
+                current = current->nextSibling();
+            }
+        }
+    }
+
+    return 0;
+}
+
+HTMLElementImpl *DocumentImpl::findSelectableElement(NodeImpl *start, bool forward)
+{
+    if (!start)
+	start = forward?_first:_last;
+    if (!start)
+	return 0;
+    if (forward)
+	while(1)
+	{
+	    if (start->firstChild())
+		start = start->firstChild();
+	    else if (start->nextSibling())
+		start = start->nextSibling();
+	    else // find the next sibling of the first parent that has a nextSibling
+	    {
+		NodeImpl *pa = start;
+		while (pa)
+		{
+		    pa = pa->parentNode();
+		    if (!pa)
+			return 0;
+		    if (pa->nextSibling())
+		    {
+			start = pa->nextSibling();
+			pa = 0;
+		    }
+		}
+	    }
+	    if (start->isElementNode() && static_cast<ElementImpl *>(start)->isHTMLElement() &&
+		static_cast<ElementImpl *>(start)->isSelectable())
+		return static_cast<HTMLElementImpl*>(start);
+	}
+    else
+	while (1)
+	{
+	    if (start->lastChild())
+		start = start->lastChild();
+	    else if (start->previousSibling())
+		start = start->previousSibling();
+	    else
+	    {
+		NodeImpl *pa = start;
+		while (pa)
+		{
+		  // find the previous sibling of the first parent that has a prevSibling
+		    pa = pa->parentNode();
+		    if (!pa)
+			return 0;
+		    if (pa->previousSibling())
+		    {
+			start = pa->previousSibling();
+			pa = 0;
+			break;
+		    }
+		}
+	    }
+	    if (start->isElementNode() && static_cast<ElementImpl *>(start)->isHTMLElement() &&
+		static_cast<ElementImpl*>(start)->isSelectable())
+		return static_cast<HTMLElementImpl*>(start);
+	}
+    kdFatal(6000) << "some error in findElement\n";
+}
+
+
+int DocumentImpl::findHighestTabIndex()
+{
+    NodeImpl *n=this;
+    NodeImpl *next=0;
+    HTMLAreaElementImpl *a;
+    int retval=-1;
+    int tmpval;
+    while(n)
+    {
+	//find out tabindex of current element, if availiable
+	if (n->id()==ID_A && n->renderer())
+        {
+	    a=static_cast<HTMLAreaElementImpl *>(n);
+	    tmpval=a->tabIndex();
+	    if (tmpval>retval)
+		retval=tmpval;
+        }
+	//iterate to next element.
+	if (n->firstChild())
+	    n=n->firstChild();
+	else if (n->nextSibling())
+	    n=n->nextSibling();
+	else
+        {
+	    next=0;
+	    while(!next)
+            {
+		n=n->parentNode();
+		if (!n)
+		    return retval;
+		next=n->nextSibling();
+            }
+	    n=next;
+        }
+    }
+    return retval;
+}
+
+HTMLElementImpl *DocumentImpl::findLink(HTMLElementImpl *n, bool forward, int tabIndexHint)
+{
+    // tabIndexHint is the tabIndex that should be found.
+    // if tabIndex is -1, items containing tabIndex are skipped.
+
+  kdDebug(6000)<<"DocumentImpl:findLink: Node: "<<n<<" forward: "<<(forward?"true":"false")<<" tabIndexHint: "<<tabIndexHint<<"\n";
+
+    int maxTabIndex;
+
+    if (forward) maxTabIndex = findHighestTabIndex();
+    else maxTabIndex = -1;
+
+    do
+    {
+	n = findSelectableElement(n, forward);
+	// this is alright even for non-tabindex-searches,
+	// because DOM::NodeImpl::tabIndex() defaults to -1.
+    } while (n && (n->tabIndex()!=tabIndexHint));
+    return n;
+}
+
+bool DocumentImpl::mouseEvent( int _x, int _y,
+                                   int, int,
+                                   MouseEvent *ev )
+{
+    NodeImpl *n = documentElement();
+    if ( n )
+        return n->mouseEvent( _x, _y, 0, 0, ev );
+    else
+	return false;
+}
 
 // ----------------------------------------------------------------------------
 

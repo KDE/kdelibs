@@ -58,6 +58,7 @@ namespace DOM {
     class DocumentTypeImpl;
     class NamedEntityMapImpl;
     class ProcessingInstructionImpl;
+    class HTMLElementImpl;
 
     class StyleSheetImpl;
     class StyleSheetListImpl;
@@ -201,6 +202,17 @@ public:
     void setTextColor( DOMString color ) { m_textColor = color; }
     DOMString textColor() const { return m_textColor; }
     
+    // internal
+    NodeImpl *findElement( int id );
+    HTMLElementImpl *findSelectableElement( NodeImpl *start, bool forward = true);
+    HTMLElementImpl *findLink(HTMLElementImpl *start, bool forward, int tabIndexHint=-1);
+    int findHighestTabIndex();
+
+    // oeverrides NodeImpl
+    virtual bool mouseEvent( int x, int y,
+			     int _tx, int _ty,
+                             MouseEvent *ev );
+
 signals:
     virtual void finishedParsing();
 

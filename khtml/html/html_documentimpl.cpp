@@ -132,104 +132,6 @@ NodeListImpl *HTMLDocumentImpl::getElementsByName( const DOMString &elementName 
     return new NameNodeListImpl( documentElement(), elementName );
 }
 
-// Please see if there`s a possibility to merge that code
-// with the next function and getElementByID().
-NodeImpl *HTMLDocumentImpl::findElement( int id )
-{
-    QStack<NodeImpl> nodeStack;
-    NodeImpl *current = _first;
-
-    while(1)
-    {
-        if(!current)
-        {
-            if(nodeStack.isEmpty()) break;
-            current = nodeStack.pop();
-            current = current->nextSibling();
-        }
-        else
-        {
-            if(current->id() == id)
-                return current;
-
-            NodeImpl *child = current->firstChild();
-            if(child)
-            {
-                nodeStack.push(current);
-                current = child;
-            }
-            else
-            {
-                current = current->nextSibling();
-            }
-        }
-    }
-
-    return 0;
-}
-
-HTMLElementImpl *HTMLDocumentImpl::findSelectableElement(NodeImpl *start, bool forward)
-{
-    if (!start)
-	start = forward?_first:_last;
-    if (!start)
-	return 0;
-    if (forward)
-	while(1)
-	{
-	    if (start->firstChild())
-		start = start->firstChild();
-	    else if (start->nextSibling())
-		start = start->nextSibling();
-	    else // find the next sibling of the first parent that has a nextSibling
-	    {
-		NodeImpl *pa = start;
-		while (pa)
-		{
-		    pa = pa->parentNode();
-		    if (!pa)
-			return 0;
-		    if (pa->nextSibling())
-		    {
-			start = pa->nextSibling();
-			pa = 0;
-		    }
-		}
-	    }
-	    if (start->isElementNode() && static_cast<HTMLElementImpl *>(start)->isSelectable())
-		return static_cast<HTMLElementImpl*>(start);
-	}
-    else
-	while (1)
-	{
-	    if (start->lastChild())
-		start = start->lastChild();
-	    else if (start->previousSibling())
-		start = start->previousSibling();
-	    else
-	    {
-		NodeImpl *pa = start;
-		while (pa)
-		{
-		  // find the previous sibling of the first parent that has a prevSibling
-		    pa = pa->parentNode();
-		    if (!pa)
-			return 0;
-		    if (pa->previousSibling())
-		    {
-			start = pa->previousSibling();
-			pa = 0;
-			break;
-		    }
-		}
-	    }
-	    if (start->isElementNode() && static_cast<HTMLElementImpl*>(start)->isSelectable())
-		return static_cast<HTMLElementImpl*>(start);
-	}
-    kdFatal(6000) << "some error in findElement\n";
-}
-
-
 StyleSheetListImpl *HTMLDocumentImpl::styleSheets()
 {
     // ### implement for html
@@ -240,20 +142,6 @@ StyleSheetListImpl *HTMLDocumentImpl::styleSheets()
 // --------------------------------------------------------------------------
 // not part of the DOM
 // --------------------------------------------------------------------------
-
-bool HTMLDocumentImpl::mouseEvent( int _x, int _y,
-                                   int, int,
-                                   MouseEvent *ev )
-{
-    bool inside = false;
-    NodeImpl *n = firstChild();
-    while ( n && n->id() != ID_HTML )
-        n = n->nextSibling();
-    if ( n )
-        inside = n->mouseEvent( _x, _y, 0, 0, ev );
-    //kdDebug(0) << "documentImpl::mouseEvent " << n->id() << " " << inside << endl;
-    return inside;
-}
 
 void HTMLDocumentImpl::detach()
 {
@@ -269,65 +157,6 @@ void HTMLDocumentImpl::detach()
     m_view = 0;
 
     DocumentImpl::detach();
-}
-
-int HTMLDocumentImpl::findHighestTabIndex()
-{
-    NodeImpl *n=body();
-    NodeImpl *next=0;
-    HTMLAreaElementImpl *a;
-    int retval=-1;
-    int tmpval;
-    while(n)
-    {
-	//find out tabindex of current element, if availiable
-	if (n->id()==ID_A)
-        {
-	    a=static_cast<HTMLAreaElementImpl *>(n);
-	    tmpval=a->tabIndex();
-	    if (tmpval>retval)
-		retval=tmpval;
-        }
-	//iterate to next element.
-	if (n->firstChild())
-	    n=n->firstChild();
-	else if (n->nextSibling())
-	    n=n->nextSibling();
-	else
-        {
-	    next=0;
-	    while(!next)
-            {
-		n=n->parentNode();
-		if (!n)
-		    return retval;
-		next=n->nextSibling();
-            }
-	    n=next;
-        }
-    }
-    return retval;
-}
-
-HTMLElementImpl *HTMLDocumentImpl::findLink(HTMLElementImpl *n, bool forward, int tabIndexHint)
-{
-    // tabIndexHint is the tabIndex that should be found.
-    // if tabIndex is -1, items containing tabIndex are skipped.
-
-  kdDebug(6000)<<"HTMLDocumentImpl:findLink: Node: "<<n<<" forward: "<<(forward?"true":"false")<<" tabIndexHint: "<<tabIndexHint<<"\n";
-
-    int maxTabIndex;
-
-    if (forward) maxTabIndex = findHighestTabIndex();
-    else maxTabIndex = -1;
-
-    do
-    {
-	n = findSelectableElement(n, forward);
-	// this is alright even for non-tabindex-searches,
-	// because DOM::NodeImpl::tabIndex() defaults to -1.
-    } while (n && (n->tabIndex()!=tabIndexHint));
-    return n;
 }
 
 void HTMLDocumentImpl::slotFinishedParsing()

@@ -122,6 +122,7 @@ public:
 
 class CDATASectionImpl : public TextImpl
 {
+// ### should these have id==ID_TEXT
 public:
     CDATASectionImpl(DocumentImpl *impl, const DOMString &_text);
     CDATASectionImpl(DocumentImpl *impl);

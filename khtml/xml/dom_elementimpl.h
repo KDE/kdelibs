@@ -164,6 +164,8 @@ public:
     virtual int findSelectionNode( int _x, int _y, int _tx, int _ty,
                                     DOM::Node & node, int & offset );
 
+    virtual bool isSelectable();
+
 protected: // member variables
 
     NamedAttrMapImpl *namedAttrMap;

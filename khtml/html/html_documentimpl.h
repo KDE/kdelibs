@@ -68,19 +68,6 @@ public:
 
     virtual StyleSheetListImpl *styleSheets();
 
-    // internal
-    NodeImpl *findElement( int id );
-    HTMLElementImpl *findSelectableElement( NodeImpl *start, bool forward = true);
-
-    HTMLElementImpl *findLink(HTMLElementImpl *start, bool forward, int tabIndexHint=-1);
-
-    int findHighestTabIndex();
-
-    // oeverrides NodeImpl
-    virtual bool mouseEvent( int x, int y,
-			     int _tx, int _ty,
-                             MouseEvent *ev );
-
     virtual void detach();
 
     virtual bool childAllowed( NodeImpl *newChild );

@@ -675,6 +675,12 @@ int ElementImpl::findSelectionNode( int _x, int _y, int _tx, int _ty, DOM::Node 
     return -1; // after
 }
 
+bool ElementImpl::isSelectable()
+{
+    return false;
+}
+
+
 // -------------------------------------------------------------------------
 
 XMLElementImpl::XMLElementImpl(DocumentImpl *doc, DOMStringImpl *_name) : ElementImpl(doc)

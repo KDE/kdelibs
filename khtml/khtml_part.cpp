@@ -1617,7 +1617,7 @@ bool KHTMLPart::findTextNext( const QRegExp &exp, bool forward )
 
     while(1)
     {
-        if(d->m_findNode->id() == ID_TEXT && d->m_findNode->renderer() )
+        if( (d->m_findNode->nodeType() == Node::TEXT_NODE) || (d->m_findNode->nodeType() == Node::CDATA_SECTION_NODE) && d->m_findNode->renderer() )
         {
             DOMStringImpl *t = (static_cast<TextImpl *>(d->m_findNode))->string();
             QConstString s(t->s, t->l);
@@ -1685,7 +1685,7 @@ bool KHTMLPart::findTextNext( const QString &str, bool forward, bool caseSensiti
 
     while(1)
     {
-        if(d->m_findNode->id() == ID_TEXT && d->m_findNode->renderer() )
+        if( (d->m_findNode->nodeType() == Node::TEXT_NODE) || (d->m_findNode->nodeType() == Node::CDATA_SECTION_NODE) && d->m_findNode->renderer() )
         {
             DOMStringImpl *t = (static_cast<TextImpl *>(d->m_findNode))->string();
             QConstString s(t->s, t->l);
@@ -3547,7 +3547,7 @@ void KHTMLPart::selectAll()
     first = d->m_doc;
   NodeImpl *next;
 
-  while ( first && first->id() != ID_TEXT )
+  while ( first && !((first->nodeType() == Node::TEXT_NODE) || (first->nodeType() == Node::CDATA_SECTION_NODE) && first->renderer()) )
   {
     next = first->firstChild();
     if ( !next ) next = first->nextSibling();
@@ -3565,7 +3565,7 @@ void KHTMLPart::selectAll()
     last = static_cast<HTMLDocumentImpl*>(d->m_doc)->body();
   else
     last = d->m_doc;
-  while ( last && last->id() != ID_TEXT )
+  while ( last && !((last->nodeType() == Node::TEXT_NODE) || (last->nodeType() == Node::CDATA_SECTION_NODE) && last->renderer()) )
   {
     next = last->lastChild();
     if ( !next ) next = last->previousSibling();

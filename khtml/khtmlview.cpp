@@ -633,7 +633,7 @@ bool KHTMLView::gotoLink(HTMLElementImpl *n)
 
 bool KHTMLView::gotoLink(bool forward)
 {
-    if (!m_part->docImpl())
+    if (!m_part->xmlDocImpl())
         return false;
 
     if (!d->currentNode && forward)
@@ -651,7 +651,7 @@ bool KHTMLView::gotoLink(bool forward)
 bool KHTMLView::notabindex(HTMLElementImpl *cur, bool forward)
 {
     // REQ: n must be after the current node and its tabindex must be -1
-    if ((cur = m_part->docImpl()->findLink(cur, forward, -1)))
+    if ((cur = m_part->xmlDocImpl()->findLink(cur, forward, -1)))
         return gotoLink(cur);
 
     if (forward)
@@ -663,7 +663,7 @@ bool KHTMLView::notabindex(HTMLElementImpl *cur, bool forward)
 bool KHTMLView::intabindex(HTMLElementImpl *cur, bool forward)
 {
     short tmptabindex;
-    short maxtabindex = m_part->docImpl()->findHighestTabIndex();
+    short maxtabindex = m_part->xmlDocImpl()->findHighestTabIndex();
     short increment=(forward?1:-1);
     if (cur)
     {
@@ -673,7 +673,7 @@ bool KHTMLView::intabindex(HTMLElementImpl *cur, bool forward)
 
     while(tmptabindex>0 && tmptabindex<=maxtabindex)
     {
-        if ((cur = m_part->docImpl()->findLink(cur, forward, tmptabindex)))
+        if ((cur = m_part->xmlDocImpl()->findLink(cur, forward, tmptabindex)))
             return gotoLink(cur);
         tmptabindex+=increment;
     }
@@ -686,7 +686,7 @@ bool KHTMLView::intabindex(HTMLElementImpl *cur, bool forward)
 bool KHTMLView::tabindexzero(HTMLElementImpl *cur, bool forward)
 {
     //REQ: tabindex of result must be 0 and it must be after the current node ;
-    if ((cur = m_part->docImpl()->findLink(cur, forward, 0)))
+    if ((cur = m_part->xmlDocImpl()->findLink(cur, forward, 0)))
         return gotoLink(cur);
     if (!forward)
         return intabindex(cur, forward);
