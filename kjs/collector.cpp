@@ -52,7 +52,7 @@ CollectorBlock::CollectorBlock(int s)
 
 CollectorBlock::~CollectorBlock()
 {
-  delete mem;
+  delete [] mem;
 }
 
 Collector* Collector::curr = 0L;
