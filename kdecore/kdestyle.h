@@ -153,6 +153,8 @@ public:
     void drawPanel(QPainter *p, int x, int y, int w, int h,
                    const QColorGroup &g, bool sunken, int lineWidth,
                    const QBrush *fill);
+    void drawKickerAppletHandle(QPainter *p, int x, int y, int w, int h,
+                                const QColorGroup &g, QBrush *);
     bool eventFilter(QObject *obj, QEvent *ev);
 protected:
     void drawSBDeco(QPainter *p, const QRect &r, const QColorGroup &g,

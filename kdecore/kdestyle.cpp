@@ -1484,6 +1484,39 @@ void KDEStyle::kColorBitmaps(QPainter *p, const QColorGroup &g, int x, int y,
     }
 }
 
+void KDEStyle::drawKickerAppletHandle(QPainter *p, int x, int y, int w, int h,
+                                      const QColorGroup &g, QBrush *)
+{
+    if(h > w){
+        int y2 = y+h-1;
+
+        p->setPen(g.light());
+
+        p->drawLine(x+1, y+2, x+1, y2-2);
+        p->drawLine(x+4, y+2, x+4, y2-2);
+
+        p->setPen(g.mid());
+        p->drawLine(x+2, y+2, x+2, y2-2);
+        p->drawLine(x+5, y+2, x+5, y2-2);
+
+    }
+    else{
+        int x2 = x+w-1;
+
+        p->setPen(g.light());
+
+        p->drawLine(x+2, y+1, x2-2, y+1);
+        p->drawLine(x+2, y+4, x2-2, y+4);
+
+        p->setPen(g.mid());
+        p->drawLine(x+2, y+2, x2-2, y+2);
+        p->drawLine(x+2, y+5, x2-2, y+5);
+        
+    }
+        
+}
+
+
                 
 #include "kdestyle.moc"
 
