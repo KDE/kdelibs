@@ -92,7 +92,6 @@ private slots:
   void slotPopupCompletion( const QString& );
   void slotStartLDAPLookup();
   void slotLDAPSearchData( const QStringList& );
-  void slotSetTextAsEdited( const QString &text );
 
 private:
   void init();
