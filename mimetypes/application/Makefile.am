@@ -5,7 +5,7 @@ mimetypeapplicationdata_DATA = x-dvi.desktop x-gzdvi.desktop x-bz2dvi.desktop \
 	x-tar.desktop x-trash.desktop x-zip.desktop \
 	x-core.desktop x-java.desktop x-java-applet.desktop \
 	x-jar.desktop x-arj.desktop x-tarz.desktop \
-	postscript.desktop octet-stream.desktop \
+	x-gzpostscript.desktop postscript.desktop octet-stream.desktop \
 	x-shellscript.desktop x-desktop.desktop \
 	x-executable.desktop x-archive.desktop x-lha.desktop \
 	x-tbz.desktop x-tgz.desktop x-awk.desktop \
