@@ -218,6 +218,8 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *pa
 
   d->m_extension = new KHTMLPartBrowserExtension( this );
 
+  d->m_paLoadImages = 0;
+  
   d->m_bJScriptEnabled = KHTMLFactory::defaultHTMLSettings()->enableJavaScript();
   d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->enableJava();
 
@@ -238,9 +240,11 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *pa
   d->m_paIncFontSizes = new KAction( i18n( "Increase Font Sizes" ), "viewmag+", 0, this, SLOT( slotIncFontSizes() ), actionCollection(), "incFontSizes" );
   d->m_paDecFontSizes = new KAction( i18n( "Decrease Font Sizes" ), "viewmag-", 0, this, SLOT( slotDecFontSizes() ), actionCollection(), "decFontSizes" );
 
+  /*
   if ( !autoloadImages() )
     d->m_paLoadImages = new KAction( i18n( "Display Images on Page" ), "image", 0, this, SLOT( slotLoadImages() ), actionCollection(), "loadImages" );
-
+  */
+  
   connect( this, SIGNAL( completed() ),
 	   this, SLOT( updateActions() ) );
   connect( this, SIGNAL( started( KIO::Job * ) ),
@@ -412,7 +416,27 @@ bool KHTMLPart::javaEnabled() const
 
 void KHTMLPart::autoloadImages( bool enable )
 {
+  if ( enable == khtml::Cache::autoloadImages() )
+    return;
+ 
   khtml::Cache::autoloadImages( enable );
+  
+  KXMLGUIFactory *guiFactory = factory();
+  if ( guiFactory )
+    guiFactory->removeClient( this );
+  
+  if ( enable )
+  {
+    if ( d->m_paLoadImages )
+      delete d->m_paLoadImages;
+    d->m_paLoadImages = 0;
+  }
+  else if ( !d->m_paLoadImages )
+    d->m_paLoadImages = new KAction( i18n( "Display Images on Page" ), "image", 0, this, SLOT( slotLoadImages() ), actionCollection(), "loadImages" );
+
+  if ( guiFactory )
+    guiFactory->addClient( this );
+
 }
 
 bool KHTMLPart::autoloadImages() const
@@ -1727,15 +1751,6 @@ void KHTMLPart::updateFontSize( int add )
   setFontSizes( sizes );
 
   if(d->m_doc) d->m_doc->applyChanges();
-#if 0
-  // HACK until khtml supports setting the font size dynamically
-  KParts::URLArgs args( d->m_extension->urlArgs() );
-  args.reload = true;
-
-  closeURL();
-  d->m_extension->setURLArgs( args );
-  openURL( m_url );
-#endif
 }
 
 void KHTMLPart::slotLoadImages()
@@ -1743,6 +1758,17 @@ void KHTMLPart::slotLoadImages()
   autoloadImages( false );
   autoloadImages( true );
 }
+
+void KHTMLPart::reparseConfiguration()
+{
+  KHTMLSettings *settings = KHTMLFactory::defaultHTMLSettings(); 
+  settings->init();
+  
+  autoloadImages( settings->autoLoadImages() );
+  
+  d->m_bJScriptEnabled = settings->enableJavaScript();
+  d->m_bJavaEnabled = settings->enableJava();
+} 
 
 KHTMLPartBrowserExtension::KHTMLPartBrowserExtension( KHTMLPart *parent, const char *name )
 : KParts::BrowserExtension( parent, name )
@@ -1782,7 +1808,7 @@ void KHTMLPartBrowserExtension::copy()
 
 void KHTMLPartBrowserExtension::reparseConfiguration()
 {
-  kdDebug() << "void KHTMLPartBrowserExtension::reparseConfiguration()" << endl;
+  m_part->reparseConfiguration();
 }
 
 class KHTMLPopupGUIClient::KHTMLPopupGUIClientPrivate

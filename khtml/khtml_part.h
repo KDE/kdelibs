@@ -117,6 +117,7 @@ class KHTMLPart : public KParts::ReadOnlyPart
   friend class DOM::HTMLFormElementImpl;
   friend class khtml::RenderPartObject;
   friend class KJS::WindowFunc;
+  friend class KHTMLPartBrowserExtension;
 public:
   /**
    * Constructs a new KHTMLPart.
@@ -515,6 +516,11 @@ protected:
    * derived classes can use this hook to process paint events from the KHTMLView.
    */
   virtual void drawContentsHook(QPainter *) {}
+
+  /**
+   * Internal. Called by the @ref BrowserExtension .
+   */
+  void reparseConfiguration();
 
 private slots:
   /**
