@@ -43,8 +43,8 @@ protected slots:
   void checkFilePermissions( const QString& fileName );
 
 private:
-  KComboBox* formatBox;
-  KURLRequester* fileNameEdit;
+  KComboBox* mFormatBox;
+  KURLRequester* mFileNameEdit;
 
   QStringList mFormatTypes;
 };

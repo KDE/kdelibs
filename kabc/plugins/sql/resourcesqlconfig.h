@@ -40,12 +40,11 @@ public slots:
   void saveSettings( KConfig *config );
 
 private:
-  KLineEdit* user;
-  KLineEdit* dbName;
-  KLineEdit* host;
-  KLineEdit* password;
-
-  QSpinBox* port;
+  KLineEdit* mUser;
+  KLineEdit* mPassword;
+  KLineEdit* mDbName;
+  KLineEdit* mHost;
+  QSpinBox* mPort;
 };
 
 }

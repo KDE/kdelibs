@@ -38,7 +38,7 @@ public:
   ResourceLDAP( AddressBook *ab, const KConfig * );
   ResourceLDAP( AddressBook *ab, const QString &user, const QString &password,
       const QString &dn, const QString &host,
-	    const QString &port, const QString &filter );
+	    const QString &port, const QString &filter, const bool anonymous );
   
   bool open();
   void close();
@@ -59,6 +59,7 @@ private:
   QString mHost;
   QString mPort;
   QString mFilter;
+  bool mAnonymous;
 
   LDAP *mLdap;
 };

@@ -24,6 +24,8 @@
 #include <klocale.h>
 #include <kstandarddirs.h>
 
+#include <unistd.h>
+
 #include "formatfactory.h"
 #include "resourcefileconfig.h"
 #include "stdaddressbook.h"
@@ -37,18 +39,18 @@ ResourceFileConfig::ResourceFileConfig( QWidget* parent,  const char* name )
   QGridLayout *mainLayout = new QGridLayout( this, 2, 2 );
 
   QLabel *label = new QLabel( i18n( "Format:" ), this );
-  formatBox = new KComboBox( this );
+  mFormatBox = new KComboBox( this );
 
   mainLayout->addWidget( label, 0, 0 );
-  mainLayout->addWidget( formatBox, 0, 1 );
+  mainLayout->addWidget( mFormatBox, 0, 1 );
 
   label = new QLabel( i18n( "Location:" ), this );
-  fileNameEdit = new KURLRequester( this );
+  mFileNameEdit = new KURLRequester( this );
 
-  connect( fileNameEdit, SIGNAL( textChanged( const QString & ) ), SLOT( checkFilePermissions( const QString & ) ) );
+  connect( mFileNameEdit, SIGNAL( textChanged( const QString & ) ), SLOT( checkFilePermissions( const QString & ) ) );
 
   mainLayout->addWidget( label, 1, 0 );
-  mainLayout->addWidget( fileNameEdit, 1, 1 );
+  mainLayout->addWidget( mFileNameEdit, 1, 1 );
 
   FormatFactory *factory = FormatFactory::self();
   QStringList formats = factory->formats();
@@ -57,7 +59,7 @@ ResourceFileConfig::ResourceFileConfig( QWidget* parent,  const char* name )
     FormatInfo *info = factory->info( *it );
     if ( info ) {
       mFormatTypes << (*it);
-      formatBox->insertItem( info->nameLabel );
+      mFormatBox->insertItem( info->nameLabel );
     }
   }
 }
@@ -65,30 +67,24 @@ ResourceFileConfig::ResourceFileConfig( QWidget* parent,  const char* name )
 void ResourceFileConfig::loadSettings( KConfig *config )
 {
   QString format = config->readEntry( "FileFormat" );
-  formatBox->setCurrentItem( mFormatTypes.findIndex( format ) );
+  mFormatBox->setCurrentItem( mFormatTypes.findIndex( format ) );
 
-  fileNameEdit->setURL( config->readEntry( "FileName" ) );    
-  if ( fileNameEdit->url().isEmpty() )
-    fileNameEdit->setURL( KABC::StdAddressBook::fileName() );
+  mFileNameEdit->setURL( config->readEntry( "FileName" ) );    
+  if ( mFileNameEdit->url().isEmpty() )
+    mFileNameEdit->setURL( KABC::StdAddressBook::fileName() );
 }
 
 void ResourceFileConfig::saveSettings( KConfig *config )
 {
-  config->writeEntry( "FileFormat", mFormatTypes[ formatBox->currentItem() ] );
-  config->writeEntry( "FileName", fileNameEdit->url() );
+  config->writeEntry( "FileFormat", mFormatTypes[ mFormatBox->currentItem() ] );
+  config->writeEntry( "FileName", mFileNameEdit->url() );
 }
 
 void ResourceFileConfig::checkFilePermissions( const QString& fileName )
 {
-/**
-  we need some clever code here to check access
-
-  QFile file( fileName );
-  if ( !file.open( IO_Append ) )
-    emit setReadOnly( true );
-
-  file.close();
-*/
+  // If file exist but is not writeable...
+  if ( access( QFile::encodeName( fileName ), F_OK ) == 0 )
+      emit setReadOnly( access( QFile::encodeName( fileName ), W_OK ) < 0 );
 }
 
 #include "resourcefileconfig.moc"

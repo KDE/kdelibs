@@ -25,6 +25,7 @@
 #include "resourceconfigwidget.h"
 
 class KLineEdit;
+class QCheckBox;
 class QSpinBox;
 
 namespace KABC {
@@ -36,16 +37,18 @@ class ResourceLDAPConfig : public ResourceConfigWidget
 public:
   ResourceLDAPConfig( QWidget* parent = 0, const char* name = 0 );
 
-  KLineEdit* user;
-  KLineEdit* password;
-  KLineEdit* host;
-  QSpinBox * port;
-  KLineEdit* dn;
-  KLineEdit* filter;
-
 public slots:
   void loadSettings( KConfig *config );
   void saveSettings( KConfig *config );
+
+private:
+  KLineEdit* mUser;
+  KLineEdit* mPassword;
+  KLineEdit* mHost;
+  QSpinBox * mPort;
+  KLineEdit* mDn;
+  KLineEdit* mFilter;
+  QCheckBox* mAnonymous;
 };
 
 }

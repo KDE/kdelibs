@@ -39,57 +39,57 @@ ResourceSqlConfig::ResourceSqlConfig( QWidget* parent,  const char* name )
   QGridLayout *mainLayout = new QGridLayout( this, 4, 2 );
 
   QLabel *label = new QLabel( i18n( "Username:" ), this );
-  user = new KLineEdit( this );
+  mUser = new KLineEdit( this );
 
   mainLayout->addWidget( label, 0, 0 );
-  mainLayout->addWidget( user, 0, 1 );
+  mainLayout->addWidget( mUser, 0, 1 );
 
   label = new QLabel( i18n( "Password:" ), this );
-  password = new KLineEdit( this );
-  password->setEchoMode( KLineEdit::Password );
+  mPassword = new KLineEdit( this );
+  mPassword->setEchoMode( KLineEdit::Password );
 
   mainLayout->addWidget( label, 1, 0 );
-  mainLayout->addWidget( password, 1, 1 );
+  mainLayout->addWidget( mPassword, 1, 1 );
 
   label = new QLabel( i18n( "Host:" ), this );
-  host = new KLineEdit( this );
+  mHost = new KLineEdit( this );
 
   mainLayout->addWidget( label, 2, 0 );
-  mainLayout->addWidget( host, 2, 1 );
+  mainLayout->addWidget( mHost, 2, 1 );
 
   label = new QLabel( i18n( "Port:" ), this );
   QVBox *box = new QVBox(this);
-  port = new QSpinBox(0, 65535, 1, box );
-  port->setSizePolicy(QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred));
-  port->setValue(389);
+  mPort = new QSpinBox(0, 65535, 1, box );
+  mPort->setSizePolicy(QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred));
+  mPort->setValue(389);
   new QWidget(box, "dummy");
 
   mainLayout->addWidget( label, 3, 0 );
   mainLayout->addWidget( box, 3, 1 );
 
   label = new QLabel( i18n( "Database:" ), this );
-  dbName = new KLineEdit( this );
+  mDbName = new KLineEdit( this );
 
   mainLayout->addWidget( label, 4, 0 );
-  mainLayout->addWidget( dbName, 4, 1 );
+  mainLayout->addWidget( mDbName, 4, 1 );
 }
 
 void ResourceSqlConfig::loadSettings( KConfig *config )
 {
-  user->setText( config->readEntry( "SqlUser" ) );
-  password->setText( KABC::Resource::cryptStr( config->readEntry( "SqlPassword" ) ) );
-  dbName->setText( config->readEntry( "SqlName" ) );
-  host->setText( config->readEntry( "SqlHost" ) );
-  port->setValue( config->readNumEntry( "SqlPort" ) );
+  mUser->setText( config->readEntry( "SqlUser" ) );
+  mPassword->setText( KABC::Resource::cryptStr( config->readEntry( "SqlPassword" ) ) );
+  mDbName->setText( config->readEntry( "SqlName" ) );
+  mHost->setText( config->readEntry( "SqlHost" ) );
+  mPort->setValue( config->readNumEntry( "SqlPort" ) );
 }
 
 void ResourceSqlConfig::saveSettings( KConfig *config )
 {
-  config->writeEntry( "SqlUser", user->text() );
-  config->writeEntry( "SqlPassword", KABC::Resource::cryptStr( password->text() ) );
-  config->writeEntry( "SqlName", dbName->text() );
-  config->writeEntry( "SqlHost", host->text() );
-  config->writeEntry( "SqlPort", port->value() );
+  config->writeEntry( "SqlUser", mUser->text() );
+  config->writeEntry( "SqlPassword", KABC::Resource::cryptStr( mPassword->text() ) );
+  config->writeEntry( "SqlName", mDbName->text() );
+  config->writeEntry( "SqlHost", mHost->text() );
+  config->writeEntry( "SqlPort", mPort->value() );
 }
 
 #include "resourcesqlconfig.moc"

@@ -54,11 +54,13 @@ ResourceLDAP::ResourceLDAP( AddressBook *ab, const KConfig *config )
   mHost = config->readEntry( "LdapHost" );
   mPort = config->readEntry( "LdapPort" );
   mFilter = config->readEntry( "LdapFilter" );
+  mAnonymous = config->readBoolEntry( "LdapAnonymous" );
 }
 
 ResourceLDAP::ResourceLDAP( AddressBook *ab, const QString &user,
 	const QString &password, const QString &dn,
-	const QString &host, const QString &port, const QString &filter )
+	const QString &host, const QString &port, const QString &filter,
+  const bool anonymous )
     : Resource( ab )
 {
   mLdap = 0;
@@ -69,6 +71,7 @@ ResourceLDAP::ResourceLDAP( AddressBook *ab, const QString &user,
   mHost = host;
   mPort = port;
   mFilter = filter;
+  mAnonymous = anonymous;
 }
 
 Ticket *ResourceLDAP::requestSaveTicket()
@@ -95,7 +98,7 @@ bool ResourceLDAP::open()
 	  return false;
   }
 
-  if ( !mUser.isEmpty() ) {
+  if ( !mUser.isEmpty() && !mAnonymous ) {
 	  if ( ldap_simple_bind_s( mLdap, mUser.latin1(), mPassword.latin1() ) != LDAP_SUCCESS ) {
 	    addressBook()->error( i18n( "Unable to bind to server '%1'" ).arg( mHost ) );
       return false;

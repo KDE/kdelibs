@@ -40,8 +40,8 @@ public slots:
   void saveSettings( KConfig *config );
 
 private:
-  KComboBox* formatBox;
-  KURLRequester* fileNameEdit;
+  KComboBox* mFormatBox;
+  KURLRequester* mFileNameEdit;
 
   QStringList mFormatTypes;
 };

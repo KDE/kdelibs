@@ -37,17 +37,17 @@ ResourceDirConfig::ResourceDirConfig( QWidget* parent,  const char* name )
   QGridLayout *mainLayout = new QGridLayout( this, 2, 2 );
 
   QLabel *label = new QLabel( i18n( "Format:" ), this );
-  formatBox = new KComboBox( this );
+  mFormatBox = new KComboBox( this );
 
   mainLayout->addWidget( label, 0, 0 );
-  mainLayout->addWidget( formatBox, 0, 1 );
+  mainLayout->addWidget( mFormatBox, 0, 1 );
 
   label = new QLabel( i18n( "Location:" ), this );
-  fileNameEdit = new KURLRequester( this );
-  fileNameEdit->setMode( KFile::Directory );
+  mFileNameEdit = new KURLRequester( this );
+  mFileNameEdit->setMode( KFile::Directory );
 
   mainLayout->addWidget( label, 1, 0 );
-  mainLayout->addWidget( fileNameEdit, 1, 1 );
+  mainLayout->addWidget( mFileNameEdit, 1, 1 );
 
   FormatFactory *factory = FormatFactory::self();
   QStringList formats = factory->formats();
@@ -56,7 +56,7 @@ ResourceDirConfig::ResourceDirConfig( QWidget* parent,  const char* name )
     FormatInfo *info = factory->info( *it );
     if ( info ) {
       mFormatTypes << (*it);
-      formatBox->insertItem( info->nameLabel );
+      mFormatBox->insertItem( info->nameLabel );
     }
   }
 }
@@ -64,17 +64,17 @@ ResourceDirConfig::ResourceDirConfig( QWidget* parent,  const char* name )
 void ResourceDirConfig::loadSettings( KConfig *config )
 {
   QString format = config->readEntry( "FileFormat" );
-  formatBox->setCurrentItem( mFormatTypes.findIndex( format ) );
+  mFormatBox->setCurrentItem( mFormatTypes.findIndex( format ) );
 
-  fileNameEdit->setURL( config->readEntry( "FilePath" ) );    
-  if ( fileNameEdit->url().isEmpty() )
-    fileNameEdit->setURL( KABC::StdAddressBook::directoryName() );
+  mFileNameEdit->setURL( config->readEntry( "FilePath" ) );    
+  if ( mFileNameEdit->url().isEmpty() )
+    mFileNameEdit->setURL( KABC::StdAddressBook::directoryName() );
 }
 
 void ResourceDirConfig::saveSettings( KConfig *config )
 {
-  config->writeEntry( "FileFormat", mFormatTypes[ formatBox->currentItem() ] );
-  config->writeEntry( "FilePath", fileNameEdit->url() );
+  config->writeEntry( "FileFormat", mFormatTypes[ mFormatBox->currentItem() ] );
+  config->writeEntry( "FilePath", mFileNameEdit->url() );
 }
 
 #include "resourcedirconfig.moc"
