@@ -1262,7 +1262,7 @@ CachedScript *Cache::requestScript( DocLoader* dl, const DOM::DOMString &url, bo
 
     o->setExpireDate(_expireDate);
 
-    if(!o->type() == CachedObject::Script)
+    if(!(o->type() == CachedObject::Script))
     {
 #ifdef CACHE_DEBUG
         kdDebug( 6060 ) << "Cache::Internal Error in requestScript url=" << kurl.url() << "!" << endl;
