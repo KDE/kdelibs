@@ -195,14 +195,12 @@ signals:
 protected:
     void		init();
 
-    KLineEdit *		myEdit; // FIXME: obsolete, remove me
     QPushButton *	myButton; // FIXME: make it private KURLDragPushButton
     KURLCompletion *    myCompletion;
     bool 		myModal;
 
 
 private:
-    KURL 		myURL;  // FIXME: obsolete, remove me
     bool 		myShowLocalProt;
     mutable KFileDialog * myFileDialog;
 
