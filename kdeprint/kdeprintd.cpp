@@ -29,6 +29,8 @@
 #include <kio/passdlg.h>
 #include <qlabel.h>
 #include <kpushbutton.h>
+#include <kiconloader.h>
+#include <kwin.h>
 #include <qlayout.h>
 
 #include <unistd.h>
@@ -50,41 +52,48 @@ static void cleanFileList(const QStringList& files)
 class StatusWindow : public QWidget
 {
 public:
-	StatusWindow();
+	StatusWindow(int pid = -1);
 	void setMessage(const QString&);
+	int pid() const { return m_pid; }
 
 private:
 	QLabel		*m_label;
 	QPushButton	*m_button;
+	int		m_pid;
+	QLabel		*m_icon;
 };
 
-StatusWindow::StatusWindow()
-: QWidget(NULL, "StatusWindow", WType_TopLevel|WStyle_DialogBorder|WStyle_StaysOnTop|WDestructiveClose)
+StatusWindow::StatusWindow(int pid)
+: QWidget(NULL, "StatusWindow", WType_TopLevel|WStyle_DialogBorder|WStyle_StaysOnTop|WDestructiveClose), m_pid(pid)
 {
-	setCaption(i18n("Printing status"));
 	m_label = new QLabel(this);
 	m_label->setAlignment(AlignCenter);
 	m_button = new KPushButton(KStdGuiItem::close(), this);
-	QGridLayout	*l0 = new QGridLayout(this, 2, 2, 10, 10);
+	m_icon = new QLabel(this);
+	m_icon->setPixmap(DesktopIcon("fileprint"));
+	m_icon->setAlignment(AlignCenter);
+	KWin::setIcons(winId(), *(m_icon->pixmap()), SmallIcon("fileprint"));
+	QGridLayout	*l0 = new QGridLayout(this, 2, 3, 10, 10);
 	l0->setRowStretch(0, 1);
-	l0->setColStretch(0, 1);
-	l0->addMultiCellWidget(m_label, 0, 0, 0, 1);
-	l0->addWidget(m_button, 1, 1);
-	connect(m_button, SIGNAL(clicked()), SLOT(close()));
+	l0->setColStretch(1, 1);
+	l0->addMultiCellWidget(m_label, 0, 0, 1, 2);
+	l0->addWidget(m_button, 1, 2);
+	l0->addMultiCellWidget(m_icon, 0, 1, 0, 0);
+	connect(m_button, SIGNAL(clicked()), SLOT(hide()));
 	resize(200, 50);
 }
 
 void StatusWindow::setMessage(const QString& msg)
 {
-	QSize	oldSz = size();
+	//QSize	oldSz = size();
 	m_label->setText(msg);
-	QSize	sz = m_label->sizeHint();
-	sz += QSize(layout()->margin()*2, layout()->margin()*2+layout()->spacing()+m_button->sizeHint().height());
+	//QSize	sz = m_label->sizeHint();
+	//sz += QSize(layout()->margin()*2, layout()->margin()*2+layout()->spacing()+m_button->sizeHint().height());
 	// dialog will never be smaller
-	sz = sz.expandedTo(oldSz);
-	resize(sz);
-	setFixedSize(sz);
-	layout()->activate();
+	//sz = sz.expandedTo(oldSz);
+	//resize(sz);
+	//setFixedSize(sz);
+	//layout()->activate();
 }
 
 //*****************************************************************************************************
@@ -92,9 +101,9 @@ void StatusWindow::setMessage(const QString& msg)
 KDEPrintd::KDEPrintd(const QCString& obj)
 : KDEDModule(obj)
 {
-	kdDebug() << "kdeprintd: construcing KDEPrintd" << endl;
 	m_processpool.setAutoDelete(true);
 	m_tempfiles.setAutoDelete(true);
+	m_windows.setAutoDelete(false);
 }
 
 KDEPrintd::~KDEPrintd()
@@ -191,19 +200,35 @@ bool KDEPrintd::checkFiles(QString& cmd, const QStringList& files)
 	return true;
 }
 
-void KDEPrintd::statusMessage(const QString& msg)
+void KDEPrintd::statusMessage(const QString& msg, int pid, const QString& appName)
 {
-	if (!m_statuswindow && !msg.isEmpty())
+	StatusWindow	*w = m_windows.find(pid);
+	if (!w && !msg.isEmpty())
 	{
-		m_statuswindow = new StatusWindow;
-		m_statuswindow->show();
+		w = new StatusWindow(pid);
+		if (appName.isEmpty())
+			w->setCaption(i18n("Printing status - %1").arg("(pid="+QString::number(pid)+")"));
+		else
+			w->setCaption(i18n("Printing status - %1").arg(appName));
+		connect(w, SIGNAL(destroyed()), SLOT(slotClosed()));
+		w->show();
+		m_windows.insert(pid, w);
 	}
-	if (m_statuswindow)
+	if (w)
 	{
 		if (!msg.isEmpty())
-			m_statuswindow->setMessage(msg);
+			w->setMessage(msg);
 		else
-			m_statuswindow->close();
+			w->close();
+	}
+}
+
+void KDEPrintd::slotClosed()
+{
+	const StatusWindow	*w = static_cast<const StatusWindow*>(sender());
+	if (w)
+	{
+		m_windows.remove(w->pid());
 	}
 }
 

@@ -25,6 +25,7 @@
 #include <qstringlist.h>
 #include <qptrdict.h>
 #include <qguardedptr.h>
+#include <qintdict.h>
 
 class KPrintProcess;
 class KProcess;
@@ -42,10 +43,11 @@ public:
 k_dcop:
 	int print(const QString& cmd, const QStringList& files, bool remove);
 	QString openPassDlg(const QString& user);
-	ASYNC statusMessage(const QString& msg);
+	ASYNC statusMessage(const QString& msg, int pid = -1, const QString& appName = QString::null);
 
 protected slots:
 	void slotProcessExited(KProcess*);
+	void slotClosed();
 
 protected:
 	void cleanTempFiles();
@@ -55,7 +57,7 @@ protected:
 private:
 	QPtrList<KPrintProcess>	m_processpool;
 	QPtrDict<QStringList>	m_tempfiles;
-	QGuardedPtr<StatusWindow>	m_statuswindow;
+	QIntDict<StatusWindow>	m_windows;
 };
 
 #endif

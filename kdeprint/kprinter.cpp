@@ -236,10 +236,10 @@ bool KPrinter::cmd(int c, QPainter *painter, QPDevCmdParam *p)
 	bool value(true);
 	if (c == QPaintDevice::PdcBegin)
 	{
-		d->m_impl->statusMessage(i18n("Initialization..."));
+		d->m_impl->statusMessage(i18n("Initialization..."), this);
 		d->m_pagenumber = 1;
 		preparePrinting();
-		d->m_impl->statusMessage(i18n("Generating print data: page %1").arg(d->m_pagenumber));
+		d->m_impl->statusMessage(i18n("Generating print data: page %1").arg(d->m_pagenumber), this);
 	}
 	value = d->m_wrapper->cmd(c,painter,p);
 	if (c == QPaintDevice::PdcEnd)
@@ -305,7 +305,7 @@ bool KPrinter::printFiles(const QStringList& l, bool flag, bool startviewer)
 		// Show preview if needed (only possible for a single file !), and stop
 		// if the user requested it. Force preview if preview-only mode has been set: it
 		// then use by default the first file in the list.
-		if (((files.count() != 1 || option("kde-preview") != "1") && !d->m_previewonly) || KPrintPreview::preview(files[0], d->m_previewonly, d->m_parentId))
+		if (((files.count() != 1 || option("kde-preview") != "1") && !d->m_previewonly) || doPreview(files[0]))
 		{
 			// check if printing has been prepared (it may be not prepared if the KPrinter object is not
 			// use as a QPaintDevice object)
@@ -338,6 +338,12 @@ bool KPrinter::printFiles(const QStringList& l, bool flag, bool startviewer)
 	return status;
 }
 
+bool KPrinter::doPreview(const QString& file)
+{
+	d->m_impl->statusMessage(i18n("Previewing..."), this);
+	return KPrintPreview::preview(file, d->m_previewonly, d->m_parentId);
+}
+
 void KPrinter::preparePrinting()
 {
 	// check if already prepared (-> do nothing)
@@ -365,7 +371,7 @@ void KPrinter::finishPrinting()
 {
 	d->m_ready = false;
 	// close the status window
-	d->m_impl->statusMessage(QString::null);
+	d->m_impl->statusMessage(QString::null, this);
 }
 
 QValueList<int> KPrinter::pageList() const
@@ -807,7 +813,7 @@ void KPrinter::setSearchName(const QString& s)
 bool KPrinter::newPage()
 {
 	d->m_pagenumber++;
-	d->m_impl->statusMessage(i18n("Generating print data: page %1").arg(d->m_pagenumber));
+	d->m_impl->statusMessage(i18n("Generating print data: page %1").arg(d->m_pagenumber), this);
 	return d->m_wrapper->newPage();
 }
 

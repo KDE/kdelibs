@@ -708,6 +708,7 @@ protected:
 	void finishPrinting();
 	void reload();
 	void init(bool restore = true, QPrinter::PrinterMode m = QPrinter::ScreenResolution);
+	bool doPreview(const QString& file);
 
 protected:
 	KPrinterPrivate		*d;

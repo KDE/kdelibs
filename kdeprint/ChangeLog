@@ -525,3 +525,9 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
   * general: added a user feedback mechanism in the form of a dialog showgin
     status messages, including initialization, number of the page currently
     generated, filtering and sending to the printer.
+
+29/03/2002 Michael Goffioul <goffioul@imec.be>
+  * general: enhanced the status feedback mechanism
+  	. possibility to have multiple status boxes (one for each app)
+	. added an icon (eye-candy) and the document name being printed
+	. made it configurable in the options dialog

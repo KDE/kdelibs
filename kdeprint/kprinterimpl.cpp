@@ -43,6 +43,7 @@
 #include <kmimemagic.h>
 #include <kmessagebox.h>
 #include <kprocess.h>
+#include <kconfig.h>
 
 #include <stdlib.h>
 
@@ -177,9 +178,17 @@ int KPrinterImpl::dcopPrint(const QString& cmd, const QStringList& files, bool r
 	return result;
 }
 
-void KPrinterImpl::statusMessage(const QString& msg)
+void KPrinterImpl::statusMessage(const QString& msg, KPrinter *printer)
 {
 	kdDebug() << "kdeprint: status message: " << msg << endl;
+	KConfig	*conf = KMFactory::self()->printConfig();
+	conf->setGroup("General");
+	if (!conf->readBoolEntry("ShowStatusMsg", true))
+		return;
+
+	QString	message(msg);
+	if (printer && !msg.isEmpty())
+		message.prepend(i18n("Printing document: %1").arg(printer->docName())+"\n");
 
 	DCOPClient	*dclient = kapp->dcopClient();
 	if (!dclient || (!dclient->isAttached() && !dclient->attach()))
@@ -190,13 +199,15 @@ void KPrinterImpl::statusMessage(const QString& msg)
 	QByteArray data, replyData;
 	QCString replyType;
 	QDataStream arg( data, IO_WriteOnly );
-	arg << msg;
-	dclient->call( "kded", "kdeprintd", "statusMessage(QString)", data, replyType, replyData );
+	arg << message;
+	arg << (int)getpid();
+	arg << kapp->caption();
+	dclient->call( "kded", "kdeprintd", "statusMessage(QString,int,QString)", data, replyType, replyData );
 }
 
 bool KPrinterImpl::startPrinting(const QString& cmd, KPrinter *printer, const QStringList& files, bool flag)
 {
-	statusMessage(i18n("Sending print data to printer: %1").arg(printer->printerName()));
+	statusMessage(i18n("Sending print data to printer: %1").arg(printer->printerName()), printer);
 
 	QString	command(cmd), filestr;
 	QStringList	printfiles;
@@ -381,7 +392,7 @@ int KPrinterImpl::doFilterFiles(KPrinter *printer, QStringList& files, const QSt
 		cmd.replace(rout,quote(tmpfile));
 		cmd.replace(rpsl,ps.lower());
 		cmd.replace(rpsu,ps);
-		statusMessage(i18n("Filtering print data"));
+		statusMessage(i18n("Filtering print data"), printer);
 		int status = system(cmd.latin1());
 		if (status < 0 || WEXITSTATUS(status) == 127)
 		{

@@ -44,6 +44,7 @@ private:
 	KURLRequester	*m_testpage;
 	QCheckBox	*m_defaulttestpage;
 	QPushButton	*m_preview;
+	QCheckBox	*m_statusmsg;
 };
 
 #endif

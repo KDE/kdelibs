@@ -52,7 +52,7 @@ public:
 	const QMap<QString,QString>& loadOptions() const 	{ return m_options; }
 	QString tempFile();
 	QString quote(const QString&);
-	void statusMessage(const QString&);
+	void statusMessage(const QString&, KPrinter* = 0);
 
 protected:
 	bool startPrinting(const QString& cmd, KPrinter *printer, const QStringList& files, bool removeflag = false);

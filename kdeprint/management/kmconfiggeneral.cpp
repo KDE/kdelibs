@@ -63,10 +63,14 @@ KMConfigGeneral::KMConfigGeneral(QWidget *parent)
 	m_preview->setDisabled(true);
 	m_defaulttestpage->setCursor(KCursor::handCursor());
 
+	QGroupBox	*m_statusbox = new QGroupBox(0, Qt::Vertical, i18n("Status feedback"), this);
+	m_statusmsg = new QCheckBox(i18n("Show printing status message box"), m_statusbox);
+
 	//layout
 	QVBoxLayout	*lay0 = new QVBoxLayout(this, 5, 10);
 	lay0->addWidget(m_timerbox);
 	lay0->addWidget(m_testpagebox);
+	lay0->addWidget(m_statusbox);
 	lay0->addStretch(1);
 	QVBoxLayout	*lay1 = new QVBoxLayout(m_timerbox->layout(), 0);
 	lay1->addSpacing(5);
@@ -78,6 +82,8 @@ KMConfigGeneral::KMConfigGeneral(QWidget *parent)
 	lay2->addLayout(lay3);
 	lay3->addStretch(1);
 	lay3->addWidget(m_preview);
+	QVBoxLayout	*lay4 = new QVBoxLayout(m_statusbox->layout(), 10);
+	lay4->addWidget(m_statusmsg);
         m_preview->setEnabled( !m_testpage->lineEdit()->text().isEmpty());
 }
 
@@ -101,6 +107,7 @@ void KMConfigGeneral::loadConfig(KConfig *conf)
 		m_defaulttestpage->setChecked(true);
 		m_testpage->setURL(tpage);
 	}
+	m_statusmsg->setChecked(conf->readBoolEntry("ShowStatusMsg", true));
 }
 
 void KMConfigGeneral::saveConfig(KConfig *conf)
@@ -111,6 +118,7 @@ void KMConfigGeneral::saveConfig(KConfig *conf)
 	if (m_defaulttestpage->isChecked() && KMimeMagic::self()->findFileType(m_testpage->url())->mimeType() != "application/postscript")
 		KMessageBox::sorry(this, i18n("The selected test page is not a PostScript file. You may not "
 		                              "be able to test your printer anymore."));
+	conf->writeEntry("ShowStatusMsg", m_statusmsg->isChecked());
 }
 
 void KMConfigGeneral::slotTestPagePreview()
