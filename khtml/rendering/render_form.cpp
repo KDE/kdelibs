@@ -953,6 +953,12 @@ void RenderSelect::updateFromElement()
                 KHTMLAssert(false);
             m_selectionChanged = true;
         }
+
+        // QComboBox caches the size hint unless you call setFont (ref: TT docu)
+        if(!m_useListBox) {
+            KComboBox *that = static_cast<KComboBox*>(m_widget);
+            that->setFont( that->font() );
+        }
         setMinMaxKnown(false);
         setLayouted(false);
         m_optionsChanged = false;
