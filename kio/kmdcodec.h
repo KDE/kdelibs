@@ -123,7 +123,7 @@ private:
  * constructors are used to perform quick digest calculations whenever
  * the message to be does not require subsequent updating.  Additionally,
  * you can obtain either the result in a 16-byte binary format or 
- * 33-byte hexidecimal by invoking @ref rawDigest and @ hexDigest
+ * 33-byte hexidecimal by invoking @ref rawDigest and @ref hexDigest
  * respectivelly.  NOTE the extra byte in the latter format is is a
  * NULL character to terminate the string.
  *
