@@ -142,7 +142,7 @@ QStringList KConfig::groupList() const
 
   KEntryMapConstIterator aIt;
   for (aIt = aEntryMap.begin(); aIt != aEntryMap.end(); ++aIt)
-    if (aIt.key().key == QString())
+    if (aIt.key().key == QString::null)
       retList.append(aIt.key().group);
 
   return retList;
