@@ -23,11 +23,11 @@
 #include <qpixmap.h>
 #include <qstring.h>
 #include <qregexp.h>
+#include <qstyle.h>
 
 #include "kprogress.h"
 
 #include <kapplication.h>
-#include <kstyle.h>
 
 KProgress::KProgress(QWidget *parent, const char *name)
 	: QFrame(parent, name),
@@ -86,12 +86,6 @@ void KProgress::paletteChange()
 	   bar_color = colorGroup.highlight();
 	bar_text_color = colorGroup.highlightedText();
 	text_color = colorGroup.text();
-
-        if(kapp->kstyle()){
-            QBrush b;
-            kapp->kstyle()->getKProgressBackground(colorGroup, b);
-            p.setBrush(QColorGroup::Base, b);
-        }
         setPalette(p);
 
 	adjustStyle();

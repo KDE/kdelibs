@@ -1043,7 +1043,6 @@ signals:
 
 protected:
     void mousePressEvent( QMouseEvent * );
-    void paintEvent(QPaintEvent*);
     void childEvent( QChildEvent *e );
     void showEvent( QShowEvent *e );
     void resizeEvent( QResizeEvent *e );

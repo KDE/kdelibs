@@ -52,7 +52,6 @@
 #include <kconfig.h>
 #include <kiconloader.h>
 #include <kcombobox.h>
-#include <kstyle.h>
 #include <kpopupmenu.h>
 #include <kanimwidget.h>
 #include <kipc.h>
@@ -1204,147 +1203,10 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
 }
 
 
-void KToolBar::paintEvent(QPaintEvent *e)
-{
-#if QT_VERSION < 300
-    QColorGroup g = QWidget::colorGroup();
-    QPainter paint;
-    paint.begin( this );
-
-    if ( widgets.isEmpty() ) {
-        //hide(); // don't hide! e.g. it breaks the taskbar mechanism in KDevelop
-        paint.fillRect( 0, 0, width(), height(), QBrush( g.background() ) );// , false, 1 );
-        paint.end();
-        return;
-    }
-    bool moving = FALSE;
-    if ( mainWindow() )
-        moving = mainWindow()->toolBarsMovable();
-    // Moved around a little to make variables available for KStyle (mosfet).
-
-    int stipple_height;
-    // Took higlighting handle from kmenubar - sven 040198
-    QBrush b;
-    if ( /*mouseEntered && d->m_highlight */ FALSE ) // ##############
-        b = colorGroup().highlight(); // this is much more logical then
-    // the hardwired value used before!!
-    else
-        b = QWidget::backgroundColor();
-
-    KStyle::KToolBarPos pos = KStyle::Top;
-    if ( mainWindow() ) {
-        QMainWindow::ToolBarDock dock;
-        int dm1, dm2;
-        bool dm3;
-        mainWindow()->getLocation( this, dock, dm1, dm3, dm2 );
-        pos = (KStyle::KToolBarPos)dock;
-    }
-
-    if(kapp->kstyle()){
-        kapp->kstyle()->drawKToolBar(&paint, 0, 0, width(), height(),
-                                     colorGroup(), pos,
-                                     &b);
-        if( moving ){
-            if( orientation() == Horizontal )
-                kapp->kstyle()->drawKBarHandle(&paint, 0, 0, 9, height(),
-                                               colorGroup(), pos, &b);
-            else
-                kapp->kstyle()->drawKBarHandle(&paint, 0, 0, width(), 9,
-                                               colorGroup(), pos, &b);
-        }
-        paint.end();
-        return;
-    }
-    if (moving) {
-        // Handle point
-        if ( orientation() == Horizontal ) {
-            qDrawShadePanel( &paint, 0, 0, 9, height(),
-                             g , false, 1, &b);
-            paint.setPen( g.light() );
-            paint.drawLine( 9, 0, 9, height());
-            stipple_height = 3;
-            while ( stipple_height < height()-4 ) {
-                paint.drawPoint( 1, stipple_height+1);
-                paint.drawPoint( 4, stipple_height);
-                stipple_height+=3;
-            }
-            paint.setPen( g.dark() );
-            stipple_height = 4;
-            while ( stipple_height < height()-4 ) {
-                paint.drawPoint( 2, stipple_height+1);
-                paint.drawPoint( 5, stipple_height);
-                stipple_height+=3;
-            }
-        } else {
-            qDrawShadePanel( &paint, 0, 0, width(), 9,
-                             g , false, 1, &b);
-
-            paint.setPen( g.light() );
-            paint.drawLine( 0, 9, width(), 9);
-            stipple_height = 3;
-            while ( stipple_height < width()-4 ) {
-                paint.drawPoint( stipple_height+1, 1);
-                paint.drawPoint( stipple_height, 4 );
-                stipple_height+=3;
-            }
-            paint.setPen( g.dark() );
-            stipple_height = 4;
-            while ( stipple_height < width()-4 ) {
-                paint.drawPoint( stipple_height+1, 2 );
-                paint.drawPoint( stipple_height, 5);
-                stipple_height+=3;
-            }
-        }
-    } //endif moving
-
-    qDrawShadePanel(&paint, 0, 0, width(), height(), g , false, 1);
-
-    paint.end();
-#else
-    QToolBar::paintEvent( e );
-#endif
-}
-
 void KToolBar::rebuildLayout()
 {
     layoutTimer->stop();
     QApplication::sendPostedEvents( this, QEvent::ChildInserted );
-#if QT_VERSION < 300
-    delete layout();
-    QBoxLayout *bl = new QBoxLayout( this, orientation() == Vertical
-				     ? QBoxLayout::Down : QBoxLayout::LeftToRight, 2, 0 );
-    bl->addSpacing( 9 );
-    bl->setDirection( orientation() == Horizontal ? QBoxLayout::LeftToRight :
-		      QBoxLayout::TopToBottom );
-    for ( QWidget *w = widgets.first(); w; w = widgets.next() ) {
-        if ( w == rightAligned )
-            continue;
-        if ( w->inherits( "KToolBarSeparator" ) &&
-             !( (KToolBarSeparator*)w )->showLine() ) {
-            bl->addSpacing( 6 );
-            w->hide();
-            continue;
-        }
-        if ( w->inherits( "QPopupMenu" ) )
-            continue;
-        bl->addWidget( w );
-    }
-    if ( rightAligned ) {
-        bl->addStretch();
-        bl->addWidget( rightAligned );
-    }
-
-    if ( fullSize() ) {
-        if ( !stretchableWidget && widgets.last() &&
-             !widgets.last()->inherits( "QButton" ) && !widgets.last()->inherits( "KAnimWidget" ) )
-            setStretchableWidget( widgets.last() );
-        if ( !rightAligned )
-            bl->addStretch();
-        if ( stretchableWidget )
-            bl->setStretchFactor( stretchableWidget, 10 );
-    }
-    bl->activate();
-#else
     QBoxLayout *l = boxLayout();
 
     // clear the old layout
@@ -1381,7 +1243,6 @@ void KToolBar::rebuildLayout()
     }
     l->invalidate();
     QApplication::postEvent( this, new QEvent( QEvent::LayoutHint ) );
-#endif
 }
 
 void KToolBar::childEvent( QChildEvent *e )
@@ -1484,26 +1345,6 @@ void KToolBar::hide()
 
 void KToolBar::show()
 {
-    //kdDebug(220) << "KToolBar::show " << name() << endl;
-#if 0
-    // Reggie: Ugly hack, I hate it
-    if ( d->hasRealPos && d->realPos != QMainWindow::DockUnmanaged && mainWindow() ) {
-        d->hasRealPos = FALSE;
-        //kdDebug(220) << "KToolBar::show " << name() << " moveToolBar with realPos=" << d->realPos << " realNl=" << d->realNl << endl;
-        mainWindow()->moveToolBar( this, d->realPos, d->realNl, d->realIndex, d->realOffset );
-    }
-    d->hasRealPos = FALSE;
-#endif
-#if QT_VERSION < 300
-    QObject *o = 0;
-    QObjectListIt it( *children() );
-    while ( ( o = it.current() ) ) {
-        ++it;
-        if ( !o->inherits( "QWidget" ) || o->inherits( "QPopupMenu" ) )
-            continue;
-        ( (QWidget*)o )->show();
-    }
-#else
     // unlike in qt2 we don't want to iterate over all child widgets but
     // instead we iterate over all items of the boxlayout. that easily
     // allows us to exclude all the qdockwindow internal widgets without
@@ -1518,7 +1359,6 @@ void KToolBar::show()
             continue;
         w->show();
     }
-#endif
     QToolBar::show();
 }
 
@@ -1835,11 +1675,7 @@ void KToolBar::loadState( const QDomElement &element )
     }
 
     QMainWindow::ToolBarDock dock = QMainWindow::DockTop;
-#if QT_VERSION < 300
-    int index = 0xffffff /*append by default*/, offset = -1;
-#else
     int index = -1 /*append by default*/, offset = -1;
-#endif
     bool nl = FALSE;
 
     //kdDebug(220) << "KToolBar::loadState attrPosition=" << attrPosition << endl;

@@ -27,6 +27,7 @@
 #include "ktoolbarbutton.h"
 #include "ktoolbar.h"
 
+#include <qstyle.h>
 #include <qimage.h>
 #include <qtimer.h>
 #include <qdrawutil.h>
@@ -39,7 +40,6 @@
 #include <kapplication.h>
 #include <kdebug.h>
 #include <kglobal.h>
-#include <kstyle.h>
 #include <kglobalsettings.h>
 #include <kiconeffect.h>
 #include <kiconloader.h>

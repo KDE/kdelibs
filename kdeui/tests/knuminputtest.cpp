@@ -49,9 +49,10 @@ TopLevel::TopLevel(QWidget *parent, const char *name)
 
     QGroupBox* b2 = new QVGroupBox("KDoubleNumInput", this);
 
-    d1 = new KDoubleNumInput(0.42, b2, "perc_double_no_slider");
+    d1 = new KDoubleNumInput(4.0, b2, "perc_double_no_slider");
     d1->setLabel("percent of usage (no slider)", AlignTop | AlignRight);
-    d1->setRange(0.0, 1.0, 0.005, false);
+    d1->setRange(0.0, 4000.0, 0.01, false);
+    //d1->setValue(1.00000000000000000001);
 
     d2 = new KDoubleNumInput(d1, 0.422, b2, "perc_double_with_slider");
     d2->setLabel("percentage of usage (with slider)", AlignBottom | AlignLeft);
