@@ -719,7 +719,7 @@ bool KKeyChooser::isKeyPresent( const KShortcut& cut, bool bWarnUser )
 			}
 		}
 	}
-        
+
         if( isKeyPresentLocally( cut, pItem, bWarnUser ? i18n("Key Conflict") : QString::null ))
             return true;
 
@@ -738,6 +738,8 @@ bool KKeyChooser::isKeyPresent( const KShortcut& cut, bool bWarnUser )
 
 bool KKeyChooser::isKeyPresentLocally( const KShortcut& cut, KKeyChooserItem* ignoreItem, const QString& warnText )
 {
+    if ( cut.toString().isEmpty())
+        return false;
 	// Search for shortcut conflicts with other actions in the
 	//  lists we're configuring.
 	for( QListViewItemIterator it( d->pList ); it.current(); ++it ) {
@@ -751,7 +753,7 @@ bool KKeyChooser::isKeyPresentLocally( const KShortcut& cut, KKeyChooserItem* ig
 			}
 		}
 	}
-        return false;            
+        return false;
 }
 
 /* antlarr: KDE 4: make them const QString & */
