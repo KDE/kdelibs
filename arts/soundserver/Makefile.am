@@ -40,7 +40,7 @@ libartswavplayobject_la_LDFLAGS = -no-undefined -module
 
 ###### "real" programs
 
-bin_PROGRAMS = artsd artsplay artscat artswrapper artsshell
+bin_PROGRAMS = artsd artsplay artscat artswrapper artsshell artsrec
 
 artsd_LDADD = libsoundserver_idl.la $(FLOWLIBS) \
               $(top_builddir)/arts/mcop_mt/libmcop_mt.la $(USE_THREADS) $(LIBPTHREAD)
@@ -48,6 +48,9 @@ artsd_SOURCES = soundserverv2_impl.cc soundserver_impl.cc simplesoundserver_impl
 
 artscat_LDADD = libsoundserver_idl.la $(FLOWLIBS)
 artscat_SOURCES = artscat.cc
+
+artsrec_LDADD = libsoundserver_idl.la $(FLOWLIBS)
+artsrec_SOURCES = artsrec.cc
 
 artsplay_LDADD = libsoundserver_idl.la 
 artsplay_SOURCES = artsplay.cc
@@ -83,6 +86,7 @@ artsversion.h: artsversion-new.h
 	  || cp artsversion-new.h artsversion.h) 
 
 artscat.cc: soundserver.h artsversion.h
+artsrec.cc: soundserver.h artsversion.h
 artsd.cc: soundserver.h artsversion.h
 artsplay.cc: soundserver.h artsversion.h
 artsshell.cc: soundserver.h artsversion.h

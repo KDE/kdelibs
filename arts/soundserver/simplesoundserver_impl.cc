@@ -2,6 +2,8 @@
 
     Copyright (C) 1999-2001 Stefan Westerfeld
                             stefan@space.twc.de
+					   2001 Matthias Kretz
+					        kretz@kde.org
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -29,6 +31,8 @@
 #include "audiosubsys.h"
 #include "connect.h"
 #include "debug.h"
+#include "reference.h"
+
 #include <stdio.h>
 #include <iostream>
 
@@ -103,6 +107,8 @@ void PlayStreamJob::detach(const Object& object)
 void PlayStreamJob::terminate()
 {
 	sender = ByteSoundProducer::null();
+	convert.stop();
+	out.stop();
 }
 
 bool PlayStreamJob::done()
@@ -112,6 +118,57 @@ bool PlayStreamJob::done()
 		sender = ByteSoundProducer::null();
 
 	return sender.isNull() && !convert.running();
+}
+
+RecordStreamJob::RecordStreamJob(ByteSoundReceiver bsr) : receiver(bsr)
+{
+	int samplingRate = bsr.samplingRate();
+	int channels = bsr.channels();
+	int bits = bsr.bits();
+
+	arts_debug("outgoing stream, parameters: rate=%d, %d bit, %d channels",
+		samplingRate, bits, channels);
+
+	if((samplingRate < 500 || samplingRate > 2000000)
+	|| (channels != 1 && channels != 2) || (bits != 8 && bits != 16))
+	{
+		arts_warning("invalid stream parameters: rate=%d, %d bit, %d channels",
+						samplingRate, bits, channels);
+		terminate();
+		return;
+	}
+
+	convert.samplingRate(samplingRate);
+	convert.channels(channels);
+	convert.bits(bits);
+
+	connect(in,convert);
+	connect(convert,"outdata",receiver,"indata");
+
+	in.start();
+	convert.start();
+}
+
+void RecordStreamJob::detach(const Object& object)
+{
+	if(object._isEqual(receiver))
+		terminate();
+}
+
+void RecordStreamJob::terminate()
+{
+	receiver = ByteSoundReceiver::null();
+	convert.stop();
+	in.stop();
+}
+
+bool RecordStreamJob::done()
+{
+	// when the sender is not alive any longer, assign a null object
+	if(!receiver.isNull() && receiver.error())
+		receiver = ByteSoundReceiver::null();
+
+	return receiver.isNull();
 }
 
 /*
@@ -221,6 +278,23 @@ void SimpleSoundServer_impl::detach(ByteSoundProducer bsp)
 
 	for(j = jobs.begin();j != jobs.end();j++)
 		(*j)->detach(bsp);
+}
+
+void SimpleSoundServer_impl::attachRecorder(ByteSoundReceiver bsr)
+{
+	arts_return_if_fail(!bsr.isNull());
+	jobs.push_back(new RecordStreamJob(bsr));
+}
+
+void SimpleSoundServer_impl::detachRecorder(ByteSoundReceiver bsr)
+{
+	arts_return_if_fail(!bsr.isNull());
+	arts_debug("detach outgoing stream");
+
+	list<SoundServerJob *>::iterator j;
+
+	for(j = jobs.begin();j != jobs.end();j++)
+		(*j)->detach(bsr);
 }
 
 StereoEffectStack SimpleSoundServer_impl::outstack()

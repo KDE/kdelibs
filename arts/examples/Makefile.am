@@ -10,6 +10,7 @@ FLOWLIBS = $(LDFLAGS) $(top_builddir)/arts/flow/libartsflow.la
 
 check_PROGRAMS = helloserver helloclient referenceinfo \
   irdemo x11commtest streamsound hellomain flow artsctest \
+  artscrec artsccat \
   dcasttest hellodynamic hellodynamic2 testasubsys testaggregation \
   playtofile tradercheck testthreads testnothreads catfile
 helloserver_SOURCES = hello.cc helloserver.cc hello_impl.cc
@@ -47,6 +48,12 @@ dcasttest_SOURCES = dcasttest.cc
 
 artsctest_LDFLAGS = $(top_builddir)/arts/artsc/libartsc.la
 artsctest_SOURCES = artsctest.c
+
+artsccat_LDFLAGS = $(top_builddir)/arts/artsc/libartsc.la
+artsccat_SOURCES = artsccat.c
+
+artscrec_LDFLAGS = $(top_builddir)/arts/artsc/libartsc.la
+artscrec_SOURCES = artscrec.c
 
 playtofile_SOURCES = playtofile.cc playtofile_impl.cc playtofile_main.cc
 

@@ -69,6 +69,18 @@ interface ByteSoundProducer : SynthModule
 };
 
 /**
+ * Receiver of byte sound
+ */
+interface ByteSoundReceiver : SynthModule
+{
+	readonly attribute long samplingRate;
+	readonly attribute long channels;
+	readonly attribute long bits;
+
+	async in byte stream indata;
+};
+
+/**
  * This is a very simple sound server interface
  *
  * WARNING: This currently inherits a KMedia2 PlayObjectFactory for test
@@ -125,6 +137,17 @@ interface SimpleSoundServer : PlayObjectFactory
 	 * detaches a previous attached byte sound producer
 	 */
 	void detach(ByteSoundProducer producer);
+
+	/**
+	 * attaches a byte sound receiver (a client that records an
+	 * audio stream from the soundserver)
+	 */
+	void attachRecorder(ByteSoundReceiver receiver);
+
+	/**
+	 * detaches a previous attached byte sound receiver
+	 */
+	void detachRecorder(ByteSoundReceiver receiver);
 
 	object createObject(string name);
 };

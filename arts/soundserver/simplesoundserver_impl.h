@@ -2,6 +2,8 @@
 
     Copyright (C) 1999-2000 Stefan Westerfeld
                             stefan@space.twc.de
+                       2001 Matthias Kretz
+                            kretz@kde.org
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -72,6 +74,21 @@ public:
 	bool done();
 };
 
+class RecordStreamJob : public SoundServerJob
+{
+protected:
+	ByteSoundReceiver receiver;
+	AudioToByteStream convert;
+	Synth_AMAN_RECORD in;
+
+public:
+	RecordStreamJob(ByteSoundReceiver bsr);
+
+	void detach(const Object& object);
+	void terminate();
+	bool done();
+};
+
 class SimpleSoundServer_impl : virtual public SimpleSoundServer_skel,
 										public TimeNotify
 {
@@ -98,6 +115,8 @@ public:
 	float serverBufferTime();
 	void attach(ByteSoundProducer bsp);
 	void detach(ByteSoundProducer bsp);
+	void attachRecorder(ByteSoundReceiver bsr);
+	void detachRecorder(ByteSoundReceiver bsr);
 
 	// simple soundserver interface
 	long play(const std::string& s);
