@@ -78,20 +78,14 @@ public:
     {
         int index = m_formats.find( format );
         if ( index > -1 )
-        {
-            // grmbl, gcc (2.95.3 at least) doesn't let me call m_data.at(),
-            // due to it being non-const. Even if mutable.
-            QPtrList<QByteArray> *list =
-                const_cast<QPtrList<QByteArray> *>( &m_data );
-            return *(list->at( index ));
-        }
+            return *(m_data.at( index ));
 
         return QByteArray();
     }
 
 private:
     mutable QStrList m_formats;
-    QPtrList<QByteArray> m_data;
+    mutable QPtrList<QByteArray> m_data;
 };
 
 
