@@ -408,6 +408,7 @@ private:
   UIServerSystemTray *m_systemTray;
 
   static int s_jobId;
+  friend class no_bogus_warning_from_gcc;
 };
 
 // -*- mode: c++; c-basic-offset: 2 -*-
