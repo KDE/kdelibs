@@ -26,16 +26,18 @@
 #include <qptrlist.h>
 #include <qdict.h>
 
-
 #include "resourcemanageriface.h"
+
 class KConfig;
+
 namespace KRES {
 
 class Resource;
 class ResourceFactory;
 
-struct ResourceItem {
-  Resource* resource;
+struct ResourceItem
+{
+  Resource *resource;
 //  QString key;
   bool active : 1;
   bool standard : 1;
@@ -43,69 +45,73 @@ struct ResourceItem {
 
 class ManagerImplListener
 {
-public:
-  virtual void resourceAdded( Resource* resource ) = 0;
-  virtual void resourceModified( Resource* resource ) = 0;
-  virtual void resourceDeleted( Resource* resource ) = 0;
+  public:
+    virtual void resourceAdded( Resource *resource ) = 0;
+    virtual void resourceModified( Resource *resource ) = 0;
+    virtual void resourceDeleted( Resource *resource ) = 0;
 };
 
 
 /**
- * Do not use this class directly. Use ResourceManager instead
- */
+  @internal
+
+  Do not use this class directly. Use ResourceManager instead
+*/
 class ResourceManagerImpl : public QObject, virtual public ResourceManagerIface
 {
-  Q_OBJECT
-public:
-  ResourceManagerImpl( const QString& family );
-  ~ResourceManagerImpl();
+    Q_OBJECT
+  public:
+    ResourceManagerImpl( const QString &family );
+    ~ResourceManagerImpl();
 
-  void sync();
+    void sync();
 
-  void add( Resource* resource, bool useDCOP=true );
-  void remove( const Resource* resource, bool useDCOP=true );
+    void add( Resource *resource, bool useDCOP = true );
+    void remove( const Resource *resource, bool useDCOP = true );
 
-  Resource* standardResource();
-  void setStandardResource( const Resource* resource );
+    Resource *standardResource();
+    void setStandardResource( const Resource *resource );
 
-  void setActive( Resource* resource, bool active );
+    void setActive( Resource *resource, bool active );
 
-  QPtrList<Resource> resources();
-  // Get only active or passive resources
-  QPtrList<Resource> resources( bool active );
+    QPtrList<Resource> resources();
+    // Get only active or passive resources
+    QPtrList<Resource> resources( bool active );
 
-  QStringList resourceNames() const;
+    QStringList resourceNames() const;
 
-  void setListener( ManagerImplListener* listener ) {
-    mListener = listener;
-  }
+    void setListener( ManagerImplListener *listener )
+    {
+      mListener = listener;
+    }
 
-public slots:
-  void resourceChanged( const Resource* resource );
+  public slots:
+    void resourceChanged( const Resource *resource );
 
-private:
-  // dcop calls
-  void dcopResourceAdded( QString identifier );
-  void dcopResourceModified( QString identifier );
-  void dcopResourceDeleted( QString identifier );
+  private:
+    // dcop calls
+    void dcopResourceAdded( QString identifier );
+    void dcopResourceModified( QString identifier );
+    void dcopResourceDeleted( QString identifier );
 
-private:
-  void load();
-  void save();
-  ResourceItem* loadResource( const QString& identifier, bool checkActive, bool active=false );
-  void saveResource( const ResourceItem* item, bool checkActive );
-  void removeResource( const ResourceItem* item );
-  ResourceItem* getItem( const Resource* resource );
-  ResourceItem* getItem( const QString& identifier );
+  private:
+    void load();
+    void save();
+    ResourceItem *loadResource( const QString& identifier, bool checkActive, bool active=false );
+    void saveResource( const ResourceItem *item, bool checkActive );
+    void removeResource( const ResourceItem *item );
+    ResourceItem *getItem( const Resource *resource );
+    ResourceItem *getItem( const QString& identifier );
 
-  ResourceItem *mStandard;
-  QString mFamily;
-  QPtrList<ResourceItem> *mResources;
-  ManagerImplListener *mListener;
-  bool mChanged;
-  ResourceFactory* mFactory;
-  KConfig *config;
+    ResourceItem *mStandard;
+    QString mFamily;
+    QPtrList<ResourceItem> *mResources;
+    ManagerImplListener *mListener;
+    bool mChanged;
+    ResourceFactory *mFactory;
+    KConfig *mConfig;
 };
 
 }
+
 #endif

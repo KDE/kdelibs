@@ -36,7 +36,7 @@ ResourceManagerImpl::ResourceManagerImpl( const QString& family ) :
   mFamily( family )
 {
   kdDebug(5700) << "ResourceManagerImpl::ResourceManagerImpl()" << endl;
-  config = 0;
+  mConfig = 0;
   mStandard = 0;
   mResources = 0;
   mFactory = 0;
@@ -68,7 +68,7 @@ ResourceManagerImpl::~ResourceManagerImpl()
 {
   kdDebug(5700) << "ResourceManagerImpl::~ResourceManagerImpl()" << endl;
   delete mResources;
-  delete config;
+  delete mConfig;
 }
 
 void ResourceManagerImpl::sync()
@@ -79,7 +79,7 @@ void ResourceManagerImpl::sync()
   }
 }
 
-void ResourceManagerImpl::add( Resource* resource, bool useDCOP )
+void ResourceManagerImpl::add( Resource *resource, bool useDCOP )
 {
   ResourceItem* item = new ResourceItem;
 //  item->key = resource->identifier();
@@ -100,7 +100,7 @@ void ResourceManagerImpl::add( Resource* resource, bool useDCOP )
   if ( useDCOP ) signalResourceAdded( resource->identifier() );
 }
 
-void ResourceManagerImpl::remove( const Resource* resource, bool useDCOP )
+void ResourceManagerImpl::remove( const Resource *resource, bool useDCOP )
 {
   ResourceItem *item = getItem( resource );
   if ( item ) {
@@ -118,7 +118,7 @@ void ResourceManagerImpl::remove( const Resource* resource, bool useDCOP )
   kdDebug() << "Finished REsourceManagerImpl::remove()" << endl;
 }
 
-void ResourceManagerImpl::setActive( Resource* resource, bool active )
+void ResourceManagerImpl::setActive( Resource *resource, bool active )
 {
   ResourceItem *item = getItem( resource );
   if ( item && item->active != active ) {
@@ -135,7 +135,7 @@ Resource* ResourceManagerImpl::standardResource()
     return 0;
 }
 
-void ResourceManagerImpl::setStandardResource( const Resource* resource ) 
+void ResourceManagerImpl::setStandardResource( const Resource *resource ) 
 {
   if ( mStandard )
     mStandard->standard = false;
@@ -148,7 +148,7 @@ void ResourceManagerImpl::setStandardResource( const Resource* resource )
     kdDebug( 5700 ) << "ERROR: ResourceManagerImpl::setStandardResource(): Unknown resource" << endl;
 }
 
-void ResourceManagerImpl::resourceChanged( const Resource* resource )
+void ResourceManagerImpl::resourceChanged( const Resource *resource )
 {
   mChanged = true;
 
@@ -173,7 +173,7 @@ void ResourceManagerImpl::dcopResourceAdded( QString identifier )
     kdDebug() << "Wait a minute! This resource is already known to me!" << endl;
   }
 
-  config->reparseConfiguration();
+  mConfig->reparseConfiguration();
   ResourceItem* item = loadResource( identifier, true );
 
   if ( item ) {
@@ -283,8 +283,8 @@ void ResourceManagerImpl::load()
   delete mFactory;
   mFactory = ResourceFactory::self( mFamily );
 
-  delete config;
-  config = new KConfig( mFamily );
+  delete mConfig;
+  mConfig = new KConfig( mFamily );
 
   delete mResources;
   mResources = new QPtrList<ResourceItem>;
@@ -292,13 +292,13 @@ void ResourceManagerImpl::load()
 
   mStandard = 0;
 
-  config->setGroup( "General" );
+  mConfig->setGroup( "General" );
 
-  QStringList keys = config->readListEntry( "ResourceKeys" );
+  QStringList keys = mConfig->readListEntry( "ResourceKeys" );
   uint numActiveKeys = keys.count();
-  keys += config->readListEntry( "PassiveResourceKeys" );
+  keys += mConfig->readListEntry( "PassiveResourceKeys" );
 
-  QString standardKey = config->readEntry( "Standard" );
+  QString standardKey = mConfig->readEntry( "Standard" );
 
   uint counter = 0;
 //  bool haveStandardResource = false;
@@ -313,13 +313,13 @@ void ResourceManagerImpl::load()
 
 ResourceItem* ResourceManagerImpl::loadResource( const QString& identifier, bool checkActive, bool active )
 {
-  if ( ! config ) config = new KConfig( mFamily );
-  config->setGroup( "Resource_" + identifier );
+  if ( !mConfig ) mConfig = new KConfig( mFamily );
+  mConfig->setGroup( "Resource_" + identifier );
 
-  QString type = config->readEntry( "ResourceType" );
-  QString name = config->readEntry( "ResourceName" );
-  Resource* resource = mFactory->resource( type, config );
-  if ( ! resource ) {
+  QString type = mConfig->readEntry( "ResourceType" );
+  QString name = mConfig->readEntry( "ResourceName" );
+  Resource *resource = mFactory->resource( type, mConfig );
+  if ( !resource ) {
     kdDebug() << "Failed to create resource with id " << identifier << endl;
     return 0;
   }
@@ -327,12 +327,12 @@ ResourceItem* ResourceManagerImpl::loadResource( const QString& identifier, bool
   if ( resource->identifier().isEmpty() )
     resource->setIdentifier( identifier );
 
-  ResourceItem* item = new ResourceItem;
+  ResourceItem *item = new ResourceItem;
   item->resource = resource;
 
-  config->setGroup( "General" );
+  mConfig->setGroup( "General" );
 
-  QString standardKey = config->readEntry( "Standard" );
+  QString standardKey = mConfig->readEntry( "Standard" );
   if ( standardKey == identifier ) {
     item->standard = true;
     mStandard = item;
@@ -340,7 +340,7 @@ ResourceItem* ResourceManagerImpl::loadResource( const QString& identifier, bool
     item->standard = false;
 
   if ( checkActive ) {
-    QStringList activeKeys = config->readListEntry( "ResourceKeys" );
+    QStringList activeKeys = mConfig->readListEntry( "ResourceKeys" );
     item->active = ( activeKeys.contains( identifier ) );
   } else {
     item->active = active;
@@ -371,15 +371,15 @@ void ResourceManagerImpl::save()
   // And then the general group
 
   kdDebug() << "Saving general info" << endl;
-  config->setGroup( "General" );
-  config->writeEntry( "ResourceKeys", activeKeys );
-  config->writeEntry( "PassiveResourceKeys", passiveKeys );
+  mConfig->setGroup( "General" );
+  mConfig->writeEntry( "ResourceKeys", activeKeys );
+  mConfig->writeEntry( "PassiveResourceKeys", passiveKeys );
   if ( mStandard ) 
-    config->writeEntry( "Standard", mStandard->resource->identifier() );
+    mConfig->writeEntry( "Standard", mStandard->resource->identifier() );
   else
-    config->writeEntry( "Standard", "" );
+    mConfig->writeEntry( "Standard", "" );
 
-  config->sync();
+  mConfig->sync();
   mChanged = false;
   kdDebug() << "ResourceManagerImpl::save() finished" << endl;
 }
@@ -391,31 +391,31 @@ void ResourceManagerImpl::saveResource( const ResourceItem* item, bool checkActi
 
   kdDebug() << "Saving resource " << key << endl;
 
-  if ( ! config ) config = new KConfig( mFamily );
+  if ( !mConfig ) mConfig = new KConfig( mFamily );
 
-  config->setGroup( "Resource_" + key );
-  resource->writeConfig( config );
+  mConfig->setGroup( "Resource_" + key );
+  resource->writeConfig( mConfig );
 
-  config->setGroup( "General" );
-  QString standardKey = config->readEntry( "Standard" );
+  mConfig->setGroup( "General" );
+  QString standardKey = mConfig->readEntry( "Standard" );
 
   if ( item->standard  && standardKey != key )
-    config->writeEntry( "Standard", resource->identifier() );
+    mConfig->writeEntry( "Standard", resource->identifier() );
   else if ( !item->standard && standardKey == key )
-    config->writeEntry( "Standard", "" );
+    mConfig->writeEntry( "Standard", "" );
   
   if ( checkActive ) {
-    QStringList activeKeys = config->readListEntry( "ResourceKeys" );
+    QStringList activeKeys = mConfig->readListEntry( "ResourceKeys" );
     if ( item->active && !activeKeys.contains( key ) ) {
       activeKeys.append( resource->identifier() );
-      config->writeEntry( "ResourceKeys", activeKeys );
+      mConfig->writeEntry( "ResourceKeys", activeKeys );
     } else if ( !item->active && activeKeys.contains( key ) ) {
       activeKeys.remove( key );
-      config->writeEntry( "ResourceKeys", activeKeys );
+      mConfig->writeEntry( "ResourceKeys", activeKeys );
     }
   }
 
-  config->sync();
+  mConfig->sync();
 }
 
 void ResourceManagerImpl::removeResource( const ResourceItem* item )
@@ -423,26 +423,26 @@ void ResourceManagerImpl::removeResource( const ResourceItem* item )
   Resource* resource = item->resource;
   QString key = resource->identifier();
 
-  if ( ! config ) config = new KConfig( mFamily );
+  if ( !mConfig ) mConfig = new KConfig( mFamily );
   
-  config->setGroup( "General" );
-  QStringList activeKeys = config->readListEntry( "ResourceKeys" );
+  mConfig->setGroup( "General" );
+  QStringList activeKeys = mConfig->readListEntry( "ResourceKeys" );
   if ( activeKeys.contains( key ) ) {
     activeKeys.remove( key );
-    config->writeEntry( "ResourceKeys", activeKeys );
+    mConfig->writeEntry( "ResourceKeys", activeKeys );
   } else {
-    QStringList passiveKeys = config->readListEntry( "PassiveResourceKeys" );
+    QStringList passiveKeys = mConfig->readListEntry( "PassiveResourceKeys" );
     passiveKeys.remove( key );
-    config->writeEntry( "PassiveResourceKeys", passiveKeys );
+    mConfig->writeEntry( "PassiveResourceKeys", passiveKeys );
   }
 
-  QString standardKey = config->readEntry( "Standard" );
+  QString standardKey = mConfig->readEntry( "Standard" );
   if ( standardKey == key ) {
-    config->writeEntry( "Standard", "" );
+    mConfig->writeEntry( "Standard", "" );
   }
 
-  config->deleteGroup( "Resource_" + resource->identifier() );
-  config->sync();
+  mConfig->deleteGroup( "Resource_" + resource->identifier() );
+  mConfig->sync();
 }
 
 /////////////////////////////////////////////
