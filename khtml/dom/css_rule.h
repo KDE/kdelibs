@@ -186,7 +186,7 @@ class CSSFontFaceRuleImpl;
 /**
  * The \c CSSFontFaceRule interface represents a <a
  * href="http://www.w3.org/TR/REC-CSS2/fonts.html#font-descriptions">
- * @font-face rule </a> in a CSS style sheet. The \c @font-face
+ * \c \@font-face rule </a> in a CSS style sheet. The \c \@font-face
  * rule is used to hold a set of font descriptions.
  *
  */
@@ -216,7 +216,7 @@ class CSSImportRuleImpl;
 /**
  * The \c CSSImportRule interface represents a <a
  * href="http://www.w3.org/TR/REC-CSS2/cascade.html#at-import">
- * @import rule </a> within a CSS style sheet. The \c @import
+ * \c \@import rule </a> within a CSS style sheet. The \c \@import
  * rule is used to import style rules from other style sheets.
  *
  */
@@ -312,9 +312,9 @@ public:
      * @return The index within the media block's rule collection of
      * the newly inserted rule.
      *
-     * @exception DOMException
+     * \exception DOMException
      * HIERARCHY_REQUEST_ERR: Raised if the rule cannot be inserted at
-     * the specified index. e.g. if an \c @import rule is
+     * the specified index. e.g. if an \c \@import rule is
      * inserted after a standard rule set or other at-rule.
      *
      *  INDEX_SIZE_ERR: Raised if the specified index is not a valid
@@ -323,7 +323,7 @@ public:
      *  NO_MODIFICATION_ALLOWED_ERR: Raised if this media rule is
      * readonly.
      *
-     * @exception CSSException
+     * \exception CSSException
      *  SYNTAX_ERR: Raised if the specified rule has a syntax error
      * and is unparsable.
      *
@@ -338,7 +338,7 @@ public:
      *
      * @return
      *
-     * @exception DOMException
+     * \exception DOMException
      * INDEX_SIZE_ERR: Raised if the specified index does not
      * correspond to a rule in the media rule list.
      *
@@ -353,7 +353,7 @@ public:
 class CSSPageRuleImpl;
 /**
  * The \c CSSPageRule interface represents a <a
- * href="http://www.w3.org/TR/REC-CSS2/page.html#page-box"> @page rule
+ * href="http://www.w3.org/TR/REC-CSS2/page.html#page-box"> page rule
  * </a> within a CSS style sheet. The \c @page rule is
  * used to specify the dimensions, orientation, margins, etc. of a
  * page box for paged media.

@@ -55,19 +55,18 @@ class HTMLElement;
  *  The following properties have been deprecated in favor of the
  * corresponding ones for the BODY element:
  *
- *  <ulist> <item> alinkColor
+ *  \li \c alinkColor
  *
- *  </item> <item> background
+ *  \li \c background
  *
- *  </item> <item> bgColor
+ *  \li \c bgColor
  *
- *  </item> <item> fgColor
+ *  \li \c fgColor
  *
- *  </item> <item> linkColor
+ *  \li \c linkColor
  *
- *  </item> <item> vlinkColor
+ *  \li \c vlinkColor
  *
- *  </item> </ulist>
  *
  */
 class HTMLDocument : public Document

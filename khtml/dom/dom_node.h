@@ -296,7 +296,6 @@ public:
      * <p>The values of \c nodeName, \c nodeValue,
      *  and \c attributes vary according to the node type as follows:
      *   <table  border="1">
-     *     <tbody>
      *     <tr>
      *       <td></td>
      *       <td>nodeName</td>
@@ -375,7 +374,6 @@ public:
      *       <td>null</td>
      *       <td>null</td>
      *     </tr>
-     *     </tbody>
      *   </table>
      * </p>
      */

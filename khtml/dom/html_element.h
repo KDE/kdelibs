@@ -45,22 +45,22 @@ class HTMLCollection;
  * \c HTMLElement interface. These elements are as
  * follows:
  *
- *  <ulist> <item> HEAD
+ *  \li \c HEAD
  *
- *  </item> <item> special: SUB, SUP, SPAN, BDO
+ *  \li special: <tt> SUB, SUP, SPAN, BDO </tt>
  *
- *  </item> <item> font: TT, I, B, U, S, STRIKE, BIG, SMALL
+ *  \li font: <tt> TT, I, B, U, S, STRIKE, BIG, SMALL </tt>
  *
- *  </item> <item> phrase: EM, STRONG, DFN, CODE, SAMP, KBD, VAR,
- * CITE, ACRONYM, ABBR
+ *  \li phrase: <tt> EM, STRONG, DFN, CODE, SAMP, KBD, VAR,
+ * CITE, ACRONYM, ABBR</tt>
  *
- *  </item> <item> list: DD, DT
+ *  \li list: <tt> DD, DT </tt>
  *
- *  </item> <item> NOFRAMES, NOSCRIPT
+ *  \li <tt> NOFRAMES, NOSCRIPT </tt>
  *
- *  </item> <item> ADDRESS, CENTER
+ *  \li <tt> ADDRESS, CENTER </tt>
  *
- *  </item> </ulist> Note. The \c style attribute for this
+ *  Note: The \c style attribute for this
  * interface is reserved for future usage.
  *
  */

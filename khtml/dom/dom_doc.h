@@ -190,8 +190,8 @@ public:
      * @param title The advisory title. See also the Style Sheet Interfaces
      * section.
      *
-     * media The comma-separated list of media associated with the new style
-     * sheet. See also the Style Sheet Interfaces section.
+     * @param media The comma-separated list of media associated with the 
+     * new style sheet. See also the Style Sheet Interfaces section.
      *
      * @return A new CSS style sheet.
      *

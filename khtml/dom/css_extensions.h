@@ -902,7 +902,6 @@ public:
      * A code defining the type of the value as define in
      * \c CSSvalue . It would be one of \c CSS_UNKNOWN
      * , \c CSS_INHERIT , \c CSS_IDENT
-     * .
      *
      */
     unsigned short playDuringType() const;

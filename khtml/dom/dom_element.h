@@ -124,21 +124,22 @@ public:
      * attribute available with \c specified set to
      * \c false and the default value (if one exists).
      *
-     *  In summary: <ulist> <item> If the attribute has an assigned
+     *  In summary: 
+     *  \li If the attribute has an assigned
      * value in the document then \c specified is
      * \c true , and the value is the assigned value.
      *
-     *  </item> <item> If the attribute has no assigned value in the
+     *  \li If the attribute has no assigned value in the
      * document and has a default value in the DTD, then
      * \c specified is \c false , and the value is
      * the default value in the DTD.
      *
-     *  </item> <item> If the attribute has no assigned value in the
+     *  \li If the attribute has no assigned value in the
      * document and has a value of #IMPLIED in the DTD, then the
      * attribute does not appear in the structure model of the
      * document.
      *
-     *  </item> </ulist>
+     *
      *
      */
     bool specified() const;

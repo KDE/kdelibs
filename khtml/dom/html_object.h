@@ -133,7 +133,7 @@ public:
     /**
      * see codeBase
      */
-    void setCodeBase( const DOMString & );
+    void setCodeBase( const DOMString &value );
 
     /**
      * Override height. See the <a
