@@ -23,7 +23,6 @@
 #include <kparts/part.h>
 #include <kglobal.h>
 #include <kdebug.h>
-#include <kdebugclasses.h>
 
 #include <qapplication.h>
 

@@ -305,9 +305,9 @@ public:
 };
 
 BrowserExtension::ActionSlotMap * BrowserExtension::s_actionSlotMap = 0L;
-KStaticDeleter<BrowserExtension::ActionSlotMap> actionSlotMapsd;
+static KStaticDeleter<BrowserExtension::ActionSlotMap> actionSlotMapsd;
 BrowserExtension::ActionNumberMap * BrowserExtension::s_actionNumberMap = 0L;
-KStaticDeleter<BrowserExtension::ActionNumberMap> actionNumberMapsd;
+static KStaticDeleter<BrowserExtension::ActionNumberMap> actionNumberMapsd;
 
 BrowserExtension::BrowserExtension( KParts::ReadOnlyPart *parent,
                                     const char *name )
