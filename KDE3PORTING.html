@@ -53,6 +53,13 @@ instead, everything else is source compatible.
 
 <H3><A NAME="kdeui">Changes in kdeui</A></H3>
 
+<H4>KPanelApplet</H4>
+A new protected member method 'void reportBug()' was added. It gets called by
+Kicker if the 'Report Bug' entry in the context menu gets selected and should
+be overridden by applets which support the KPanelApplet::ReportBug action. This
+means that you don't have to extend KPanelApplet's generic action dispatcher
+void KPanelApplet::action() anymore.
+
 <H4>KPanelMenu</H4>
 The old KPanelMenu class has been renamed to KPanelAppMenu. The KPanelMenu
 class now corresponds to a new Kicker menu extension that is handled
