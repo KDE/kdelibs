@@ -29,6 +29,7 @@
 #include <qvbox.h>
 #include <qvgroupbox.h>
 #include <qstylesheet.h>
+#include <qtooltip.h>
 
 #include <kapplication.h>
 #include <kconfig.h>
@@ -40,6 +41,7 @@
 #include <kmessagebox.h>
 #include <qlayout.h>
 #include <kstdguiitem.h>
+#include <kstringhandler.h>
 
  /**
   * Easy MessageBox Dialog.
@@ -75,15 +77,27 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const 
     label1->setPixmap(QMessageBox::standardIcon(icon));
 #endif
     lay->add( label1 );
-    // Enforce <qt>text</qt> otherwise the word-wrap doesn't work well (qt bug ?)
-    QString qt_text;
-    if ( text.find('<') == -1 )
-        qt_text = QStyleSheet::convertFromPlainText( text );
-    else
-        qt_text = text;
-    QLabel *label2 = new QLabel( qt_text, contents);
-    label2->setAlignment( Qt::AlignAuto | Qt::AlignVCenter | Qt::ExpandTabs | Qt::WordBreak );
-    label2->setMinimumSize(label2->sizeHint());
+    
+    bool bTooSmall = false;
+    QStringList textList = QStringList::split('\n', text, true);
+    for(QStringList::Iterator it = textList.begin(); 
+        it != textList.end(); ++it)
+    {
+        if ((*it).length() > 80)
+        {
+           *it = KStringHandler::csqueeze(*it, 80);
+           bTooSmall = true;
+        }
+    }
+    
+    QLabel *label2 = new QLabel( textList.join("\n"), contents);
+    
+    if (bTooSmall)
+       QToolTip::add(label2, text);
+    
+    label2->setAlignment( Qt::AlignAuto | Qt::AlignVCenter | Qt::ExpandTabs );
+    QSize sh = label2->sizeHint();
+    label2->setMinimumSize(sh);
     lay->add( label2 );
     lay->addStretch(1);
 
