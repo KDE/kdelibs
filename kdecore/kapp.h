@@ -549,7 +549,7 @@ public:
   /**
    * Valid values for the settingsChanged signal
    */
-  enum { SETTINGS_MOUSE, SETTINGS_COMPLETION, SETTINGS_PATHS };
+  enum { SETTINGS_MOUSE, SETTINGS_COMPLETION, SETTINGS_PATHS, SETTINGS_POPUPMENU };
 
   signals:
   /**
@@ -715,6 +715,9 @@ public:
 #endif
 
 // $Log$
+// Revision 1.143  2000/04/21 16:04:12  jansen
+// Adding a signal to KApplication for notification of icon changes.
+//
 // Revision 1.142  2000/04/13 19:14:34  sschiman
 // Added KApp constructor to pass a X display handle to Qt.
 //

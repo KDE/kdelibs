@@ -22,6 +22,7 @@
 class QColor;
 
 #define KDE_DEFAULT_SINGLECLICK true
+#define KDE_DEFAULT_INSERTTEAROFFHANDLES true
 #define KDE_DEFAULT_AUTOSELECTDELAY -1
 #define KDE_DEFAULT_CHANGECURSOR true
 
@@ -89,6 +90,11 @@ class KGlobalSettings
      * see @ref http://developer.kde.org/documentation/standards/kde/style/mouse/index.html
      **/
     static bool singleClick();
+
+    /**
+     * Returns whether tear-off handles are inserted in KPopupMenus.
+     **/
+    static bool insertTearOffHandle();
 
     /**
      * @return the KDE setting for "change cursor over icon"
