@@ -140,10 +140,12 @@ KEdit::insertText(QTextStream *stream)
 void
 KEdit::cleanWhiteSpace()
 {
-   if (!hasMarkedText()) return;
+   setAutoUpdate(FALSE);
+   if (!hasMarkedText()) 
+      selectAll();
    QString oldText = markedText();
    QString newText;
-   QStringList lines = QStringList::split('\n', oldText);
+   QStringList lines = QStringList::split('\n', oldText, true);
    bool addSpace = false;
    bool firstLine = true;
    QChar lastChar = oldText[oldText.length()-1];
@@ -190,10 +192,13 @@ KEdit::cleanWhiteSpace()
    if (oldText == newText)
    {
       deselect();
+      setAutoUpdate(TRUE);
+      if (!repaintTimer->isActive())
+         repaintTimer->start(0,TRUE);
+      repaint();
       return;
    }
 
-   setAutoUpdate(FALSE);
    del();
    insert(newText);
    setAutoUpdate(TRUE);
