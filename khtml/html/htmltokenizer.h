@@ -125,7 +125,9 @@ class Tokenizer : public QObject
 public:
     virtual void begin() = 0;
     // script output must be prepended, while new data
-    // received during executing a script must be appended, hence the bool
+    // received during executing a script must be appended, hence the
+    // extra bool to be able to distinguish between both cases. document.write()
+    // always uses false, while khtmlpart uses true
     virtual void write( const QString &str, bool appendData) = 0;
     virtual void end() = 0;
     virtual void finish() = 0;

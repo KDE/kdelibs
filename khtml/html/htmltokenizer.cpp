@@ -28,7 +28,8 @@
 // KDE HTML Widget - Tokenizers
 // $Id$
 
-//#define TOKEN_DEBUG
+//#define TOKEN_DEBUG 1
+//#define TOKEN_DEBUG 2
 //#define TOKEN_PRINT
 
 #ifdef HAVE_CONFIG_H
@@ -435,7 +436,7 @@ void HTMLTokenizer::parseComment(DOMStringIt &src)
     checkScriptBuffer(src.length());
     while ( src.length() )
     {
-        if (src->unicode() == '>' && scriptCodeSize > 2 &&
+        if (src->unicode() == '>' && scriptCodeSize >= 2 &&
             scriptCode[scriptCodeSize-2] == '-' && scriptCode[scriptCodeSize-1] == '-' )
         {
             ++src;
@@ -682,7 +683,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
     {
         checkBuffer();
         char curchar = src[0].latin1();
-#ifdef TOKEN_DEBUG
+#if defined(TOKEN_DEBUG) && TOKEN_DEBUG > 1
         int l = 0;
         while(l < src.length() && (*(src.current()+l)).latin1() != '>')
             l++;
@@ -696,7 +697,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
         }
         case TagName:
         {
-#ifdef TOKEN_DEBUG
+#if defined(TOKEN_DEBUG) &&  TOKEN_DEBUG > 1
             qDebug("TagName");
 #endif
             if (searchCount > 0)
@@ -787,7 +788,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
         }
         case SearchAttribute:
         {
-#ifdef TOKEN_DEBUG
+#if defined(TOKEN_DEBUG) && TOKEN_DEBUG > 1
                 qDebug("SearchAttribute");
 #endif
             bool atespace = false;
@@ -816,7 +817,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
         }
         case AttributeName:
         {
-#ifdef TOKEN_DEBUG
+#if defined(TOKEN_DEBUG) && TOKEN_DEBUG > 1
                 qDebug("AttributeName");
 #endif
             ushort curchar;
@@ -857,7 +858,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
         }
         case SearchEqual:
         {
-#ifdef TOKEN_DEBUG
+#if defined(TOKEN_DEBUG) && TOKEN_DEBUG > 1
                 qDebug("SearchEqual");
 #endif
             while(src.length()) {
@@ -909,7 +910,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
         }
         case QuotedValue:
         {
-#ifdef TOKEN_DEBUG
+#if defined(TOKEN_DEBUG) && TOKEN_DEBUG > 1
                 qDebug("QuotedValue");
 #endif
             while(src.length()) {
@@ -963,7 +964,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
         }
         case Value:
         {
-#ifdef TOKEN_DEBUG
+#if defined(TOKEN_DEBUG) && TOKEN_DEBUG > 1
             qDebug("Value");
 #endif
             while(src.length()) {
@@ -1003,7 +1004,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
         }
         case SearchEnd:
         {
-#ifdef TOKEN_DEBUG
+#if defined(TOKEN_DEBUG) && TOKEN_DEBUG > 1
                 qDebug("SearchEnd");
 #endif
             while(src.length()) {
@@ -1024,7 +1025,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 return;
 
             uint tagID = currToken.id;
-#ifdef TOKEN_DEBUG
+#if defined(TOKEN_DEBUG) && TOKEN_DEBUG > 1
             kdDebug( 6036 ) << "appending Tag: " << tagID << endl;
 #endif
             bool beginTag = tagID < ID_CLOSE_TAG;
@@ -1088,7 +1089,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             {
                 if (beginTag)
                 {
-#ifdef TOKEN_DEBUG
+#if defined(TOKEN_DEBUG) && TOKEN_DEBUG > 1
                     kdDebug( 6036 ) << "start of script, token->id = " << currToken.id << endl;
 #endif
                     script = true;
@@ -1096,7 +1097,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     searchFor = scriptEnd;
                     tquote = NoQuote;
                     parseScript(src);
-#ifdef TOKEN_DEBUG
+#if defined(TOKEN_DEBUG) && TOKEN_DEBUG > 1
                     kdDebug( 6036 ) << "end of script" << endl;
 #endif
                 }
@@ -1174,7 +1175,7 @@ void HTMLTokenizer::addPending()
             break;
 
         default:
-#ifdef TOKEN_DEBUG
+#if defined(TOKEN_DEBUG) && TOKEN_DEBUG > 1
             kdDebug( 6036 ) << "Assertion failed: pending = " << (int) pending << endl;
 #endif
             break;
@@ -1266,6 +1267,11 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
         checkBuffer();
 
         ushort cc = src[0].unicode();
+
+//         if(!startTag && cc != '<') {
+//             ++src;
+//             continue;
+//         }
 
         if (skipLF && (cc != '\n'))
             skipLF = false;
