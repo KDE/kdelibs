@@ -23,7 +23,6 @@
     */
 
 #include "wrapper.h"
-#include "utils.h"
 #include <iostream.h>
 #include <stdio.h>
 
@@ -65,9 +64,6 @@ public:
 	string b() { return "b"; }
 };
 REGISTER_IMPLEMENTATION(B_impl);
-
-/* these are no longer automatically generated */
-typedef ReferenceHelper<D_base> D_var;
 
 #define CALLS 50000000
 
@@ -130,61 +126,13 @@ void test0()
 	
 }
 
-/*
-- SmartWrappers should be fast when doing method calls
- 
-  => check that calling a "base->x()" function is not more than factor 2 or so
-     faster than calling a "wrapper.x()" function                               
-*/
-void test1()
-{
-	int i;
-
-	/* "old" calls */
-	benchmark(BENCH_BEGIN);
-	D_var d_oldstyle = D_base::_create();
-	x = 0;
-	for(i=0;i<CALLS;i++) d_oldstyle->dummy();
-	assert(x == CALLS);
-	float oldspeed = (float)CALLS/benchmark(BENCH_END);
-
-	/* "new" calls */
-	benchmark(BENCH_BEGIN);
-	D d_newstyle;
-	x = 0;
-	for(i=0;i<CALLS;i++) d_newstyle.dummy();
-	assert(x == CALLS);
-
-	float newspeed = (float)CALLS/benchmark(BENCH_END);
-
-	check("speed for calls",oldspeed < newspeed * 2.0);
-	cout << "  -> old " << (long)(oldspeed) << " calls/sec" << endl;
-	cout << "  -> new " << (long)(newspeed) << " calls/sec" << endl;
-}
-
 D afunc(D arg)
 {
 	arg.value(42);
 	return arg;
 }
 
-D_base *afunc_old(D_base *arg)
-{
-	arg->value(42);
-	return arg->_copy();
-}
-
-void bfunc(D arg)
-{
-	arg.value(42);
-}
-
-void bfunc_old(D_base *arg)
-{
-	arg->value(42);
-}
-
-void test2()
+void test1()
 {
 	// test cache invalidation
 	B b;
@@ -202,74 +150,6 @@ void test2()
 	check("SmartWrapper as argument",a.value()==42 && b.value()==42 && d.value()==42);
 }
 
-/*
-  this test checks the speed difference for paramters and arguments with and
-  without SmartWrappers
-*/
-void test3()
-{
-	int i;
-
-	/* "old" calls */
-	benchmark(BENCH_BEGIN);
-
-	D_var d_oldstyle = D_base::_create(), d_oldreturn;
-	for(i=0;i<CALLS;i++) d_oldreturn = afunc_old(d_oldstyle);
-	assert(d_oldreturn->value() == 42);
-
-	float oldspeed = (float)CALLS/benchmark(BENCH_END);
-
-	/* "new" calls */
-	benchmark(BENCH_BEGIN);
-
-	D d_newstyle, d_newreturn;
-	// since we don't want to benchmark lazy creation performance, we assume
-	// that the object already exists before calling our function
-	d_newstyle.value(0);
-	for(i=0;i<CALLS;i++) d_newreturn = afunc(d_newstyle);
-	assert(d_newreturn.value() == 42);
-
-	float newspeed = (float)CALLS/benchmark(BENCH_END);
-
-	check("speed for params & returncodes",oldspeed < newspeed * 2.0);
-	cout << "  -> old " << (long)(oldspeed) << " calls/sec" << endl;
-	cout << "  -> new " << (long)(newspeed) << " calls/sec" << endl;
-}
-
-/*
-  this test checks the speed difference for paramters and arguments with and
-  without SmartWrappers
-*/
-void test4()
-{
-	int i;
-
-	/* "old" calls */
-	benchmark(BENCH_BEGIN);
-
-	D_var d_oldstyle = D_base::_create();
-	for(i=0;i<CALLS;i++) bfunc_old(d_oldstyle);
-	assert(d_oldstyle->value() == 42);
-
-	float oldspeed = (float)CALLS/benchmark(BENCH_END);
-
-	/* "new" calls */
-	benchmark(BENCH_BEGIN);
-
-	D d_newstyle;
-	// since we don't want to benchmark lazy creation performance, we assume
-	// that the object already exists before calling our function
-	d_newstyle.value(0);
-	for(i=0;i<CALLS;i++) bfunc(d_newstyle);
-	assert(d_newstyle.value() == 42);
-
-	float newspeed = (float)CALLS/benchmark(BENCH_END);
-
-	check("speed for params",oldspeed < newspeed * 2.0);
-	cout << "  -> old " << (long)(oldspeed) << " calls/sec" << endl;
-	cout << "  -> new " << (long)(newspeed) << " calls/sec" << endl;
-}
-
 int main()
 {
 	Dispatcher dispatcher;
@@ -277,13 +157,7 @@ int main()
 	assert(active_d_objects == 0);
 	test0();
 	assert(active_d_objects == 0);
-	test2();
-	assert(active_d_objects == 0);
-//	test1();
-	assert(active_d_objects == 0);
-//	test3();
-	assert(active_d_objects == 0);
-//	test4();
+	test1();
 	assert(active_d_objects == 0);
 
 	return 0;
