@@ -1458,6 +1458,7 @@ bool DCOPClient::find(const QCString &app, const QCString &objId,
 		      const QCString &fun, const QByteArray &data,
                       QCString& replyType, QByteArray &replyData)
 {
+    d->transaction = false; // Transactions are not allowed.
     if ( !app.isEmpty() && app != d->appId && app[app.length()-1] != '*') {
 	qWarning("WEIRD! we somehow received a DCOP message w/a different appId");
 	return false;
