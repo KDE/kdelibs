@@ -523,6 +523,9 @@ public:
          * adds action to show/hide the toolbar(s) and adds
          * action to configure the toolbar(s).
          * @see setStandardToolBarMenuEnabled
+         *
+         * Do NOT use this option if this is a KParts::MainWindow.
+         * You have to use KEditToolbar directly for now.
          */
         ToolBar = 1,
 
@@ -621,7 +624,7 @@ public slots:
      *
      * @since 3.3
      */
-   int configureToolbars();
+   int configureToolbars(); // TODO KDE4: make virtual and reimplement in KParts::MainWindow
 
     /**
      * Makes a KDE compliant caption.
@@ -873,10 +876,10 @@ protected:
 
 protected slots:
    /**
-    * Stores the new toolbar
+    * Rebuilds the GUI after KEditToolbar changed the toolbar layout.
     * @see configureToolbars()
     */
-   void saveNewToolbarConfig();
+   void saveNewToolbarConfig(); // TODO KDE4: make virtual and reimplement in KParts::MainWindow
 
     /**
     * This slot does nothing.
