@@ -37,12 +37,14 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kaudioplayer.h kdestyle.h kdcoppropertyproxy.h kdatastream.h  netwm.h \
 	netwm_def.h netwm_p.h kpixmapprovider.h kunload.h kstaticdeleter.h \
 	kextsock.h ksockaddr.h kprocio.h \
-	kurldrag.h kmimesourcefactory.h kpixmapsplitter.h kmdcodec.h ksocks.h
+	kurldrag.h kmimesourcefactory.h kpixmapsplitter.h kmdcodec.h ksocks.h \
+	ksycoca.h ksycocaentry.h ksycocatype.h
 
 libkdefakes_la_SOURCES = fakes.c vsnprintf.c
 libkdefakes_la_LDFLAGS = -version-info 3:0
 
-noinst_HEADERS = kckey.h kregpriv.h kcompletion_private.h netsupp.h
+noinst_HEADERS = kckey.h kregpriv.h kcompletion_private.h netsupp.h \
+	ksycocafactory.h ksycocadict.h
 
 libkdecore_la_SOURCES = libintl.cpp kdebug.cpp netwm.cpp kapp.cpp \
 	kconfigbase.cpp kstyle.cpp \
@@ -61,7 +63,9 @@ libkdecore_la_SOURCES = libintl.cpp kdebug.cpp netwm.cpp kapp.cpp \
 	kcmdlineargs.cpp kaboutdata.cpp kcompletionbase.cpp knotifyclient.cpp \
 	kaudioplayer.cpp kdestyle.cpp kdcoppropertyproxy.cpp \
 	kextsock.cpp ksockaddr.cpp netsupp.cpp kprocio.cpp \
-	kpixmapprovider.cpp kurldrag.cpp kpixmapsplitter.cpp kmdcodec.cpp ksocks.cpp
+	kpixmapprovider.cpp kurldrag.cpp kpixmapsplitter.cpp \
+        kmdcodec.cpp ksocks.cpp \
+	ksycoca.cpp ksycocadict.cpp ksycocafactory.cpp ksycoca.skel
 
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 3:0 -no-undefined
