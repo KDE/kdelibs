@@ -218,7 +218,11 @@ KTempFile::sync()
 
    if (mStream)
    {
-      result = fflush(mStream); // We need to flush first otherwise fsync may not have our data
+      do {
+         result = fflush(mStream); // We need to flush first otherwise fsync may not have our data
+      }
+      while ((result == -1) && (errno == EINTR));
+      
       if (result)
       {
          qWarning("KTempFile: Error trying to flush %s: %s", mTmpName.latin1(), strerror(errno));
