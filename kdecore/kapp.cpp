@@ -406,6 +406,7 @@ public:
     refCount = 1;
     oldIceIOErrorHandler = 0;
     checkAccelerators = 0;
+    styleFile="kstylerc";
   }
 
   ~KApplicationPrivate()
@@ -420,6 +421,7 @@ public:
   int refCount;
   IceIOErrorHandler oldIceIOErrorHandler;
   KCheckAccelerators* checkAccelerators;
+  QString styleFile;
 };
 
 
@@ -548,11 +550,9 @@ KApplication::KApplication( int& argc, char** argv, const QCString& rAppName,
     ASSERT (!rAppName.isEmpty());
     setName(rAppName);
 
-    init(GUIenabled);
-
     KCmdLineArgs::initIgnore(argc, argv, rAppName.data());
-
     parseCommandLine( );
+    init(GUIenabled);
 }
 
 KApplication::KApplication( bool allowStyles, bool GUIenabled ) :
@@ -566,8 +566,8 @@ KApplication::KApplication( bool allowStyles, bool GUIenabled ) :
     useStyles = allowStyles;
     setName( instanceName() );
 
-    init(GUIenabled);
     parseCommandLine( );
+    init(GUIenabled);
 }
 
 KApplication::KApplication(Display *display, int& argc, char** argv, const QCString& rAppName,
@@ -582,9 +582,9 @@ KApplication::KApplication(Display *display, int& argc, char** argv, const QCStr
     ASSERT (!rAppName.isEmpty());
     setName(rAppName);
 
-    init(GUIenabled);
     KCmdLineArgs::initIgnore(argc, argv, rAppName.data());
     parseCommandLine( );
+    init(GUIenabled);
 }
 
 int KApplication::xioErrhandler()
@@ -970,7 +970,6 @@ static const KCmdLineOptions qt_options[] =
    { "nograb", I18N_NOOP("tells Qt to never grab the mouse or the keyboard."), 0},
    { "dograb", I18N_NOOP("running under a debugger can cause an implicit -nograb, use -dograb to override."), 0},
    { "sync", I18N_NOOP("switches to synchronous mode for debugging."), 0},
-   { "style <style>", I18N_NOOP("sets the application GUI style. Possible values are motif, windows, and platinum."), 0}, // FIXME: not the others ? (David)
    { "geometry <geometry>", I18N_NOOP("sets the client geometry of the main widget."), 0},
    { "fn", 0, 0},
    { "font <font>", I18N_NOOP("defines the application font."), 0},
@@ -991,12 +990,13 @@ static const KCmdLineOptions qt_options[] =
 
 static const KCmdLineOptions kde_options[] =
 {
-   { "caption <caption>",       I18N_NOOP("Use 'caption' as name in the titlebar"), 0},
-   { "icon <icon>",             I18N_NOOP("Use 'icon' as the application icon"), 0},
-   { "miniicon <icon>",         I18N_NOOP("Use 'icon' as the icon in the titlebar"), 0},
-   { "dcopserver <server>",     I18N_NOOP("Use the DCOP Server specified by 'server'"), 0},
-   { "nocrashhandler",          I18N_NOOP("Disable crash handler, to get core dumps"), 0},
-   { "waitforwm",          I18N_NOOP("Waits for a WM_NET compatible windowmanager"), 0},
+   { "caption <caption>",       I18N_NOOP("Use 'caption' as name in the titlebar."), 0},
+   { "icon <icon>",             I18N_NOOP("Use 'icon' as the application icon."), 0},
+   { "miniicon <icon>",         I18N_NOOP("Use 'icon' as the icon in the titlebar."), 0},
+   { "dcopserver <server>",     I18N_NOOP("Use the DCOP Server specified by 'server'."), 0},
+   { "nocrashhandler",          I18N_NOOP("Disable crash handler, to get core dumps."), 0},
+   { "waitforwm",          I18N_NOOP("Waits for a WM_NET compatible windowmanager."), 0},
+   { "style <style>", I18N_NOOP("sets the application GUI style."), 0},
    { 0, 0, 0 }
 };
 
@@ -1010,6 +1010,35 @@ KApplication::addCmdLineOptions()
 void KApplication::parseCommandLine( )
 {
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
+
+    if (args->isSet("style"))
+    {
+       KGlobal::dirs()->addResourceType("kstylefile", KStandardDirs::kde_default("data") + "kstyle/themes");
+       QString style(args->getOption("style"));
+
+       QString styleExtension(".themerc");
+       if (style.right(8) == styleExtension)
+          style.truncate(style.length()-8);
+
+       // Look in local dir first.
+       QString styleFile(style+styleExtension);
+       if (!KStandardDirs::exists(styleFile))
+       {
+          styleFile = locate("kstylefile", style+styleExtension);
+          if (styleFile.isEmpty())
+          {
+             styleFile = locate("kstylefile", "qt"+style+styleExtension);
+          }
+       }
+       if (styleFile.isEmpty())
+       {
+          fprintf(stderr, "%s", i18n("The style %1 was not found\n").arg(style).local8Bit().data());
+       }
+       else
+       {
+          d->styleFile = styleFile;
+       }
+    }   
 
     if (args->isSet("caption"))
     {
@@ -1041,10 +1070,6 @@ void KApplication::parseCommandLine( )
         // set default crash handler / set emergency save function to nothing
         KCrash::setCrashHandler(KCrash::defaultCrashHandler);
         KCrash::setEmergencySaveFunction(NULL);
-
-// WABA: What's the use of a path if you can't guarantee that
-// it is the right one?
-// KCrash::setApplicationPath(KStandardDirs::findExe(QCString(args->appName()),NULL,0));
 
         KCrash::setApplicationName(QString(args->appName()));
     }
@@ -1091,7 +1116,7 @@ QPixmap KApplication::miniIcon() const
 
 KApplication::~KApplication()
 {
-  // cleanup in the library loader: destruct all factories and unload the libraries (Simon)
+qWarning("~Kapp: cleanup in the library loader: destruct all factories and unload the libraries (Simon)");
   KLibLoader::cleanUp();
   KGlobal::deleteStaticDeleters();
 
@@ -1268,7 +1293,7 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
      */
 
     static bool dlregistered = false;
-    KSimpleConfig pConfig( "kstylerc", true );
+    KSimpleConfig pConfig(d->styleFile , true );
     QString oldGroup = pConfig.group();
     pConfig.setGroup("KDE");
     QString styleStr = pConfig.readEntry("widgetStyle",
@@ -1342,8 +1367,11 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
             setStyle(pKStyle);
         }
         else{
-            lt_ptr_t alloc_func = lt_dlsym(styleHandle,
-                                           "allocate");
+            lt_ptr_t alloc_func;
+            if (styleStr.find("basicstyle.la",0,false)==-1)
+                alloc_func=lt_dlsym(styleHandle,"allocate");
+            else
+                alloc_func= lt_dlsym(styleHandle,"allocateCustomTheme");
 
             if(!alloc_func){
                 qWarning("KApp: Unable to init style plugin %s (%s).",
@@ -1354,13 +1382,22 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
                 styleHandle = 0;
             }
             else{
-                KStyle* (*alloc_ptr)();
-                alloc_ptr = (KStyle* (*)())(alloc_func);
-                pKStyle = alloc_ptr();
-                if(pKStyle){
-                    setStyle(pKStyle);
+                if (styleStr.find("basicstyle.la",0,false)!=-1)
+                {
+                 KStyle* (*alloc_ptr)(QString &configFile);
+                 alloc_ptr = (KStyle* (*)(QString &configFile))(alloc_func);
+                 pKStyle=alloc_ptr(d->styleFile);
                 }
-                else{
+                else
+                    {
+                     KStyle* (*alloc_ptr)();
+                     alloc_ptr = (KStyle* (*)())(alloc_func);
+                     pKStyle = alloc_ptr();
+                    }
+               if(pKStyle){
+                  setStyle(pKStyle);
+               }
+               else{
                     qWarning("KApp: Style plugin unable to allocate style.");
                     pKStyle = new KDEStyle;
                     setStyle(pKStyle);
@@ -1375,6 +1412,7 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
         setStyle(pKStyle);
         styleHandle=0;
     }
+
     if(oldHandle){
         lt_dlclose((lt_dlhandle*)oldHandle);
     }
