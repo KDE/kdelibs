@@ -115,11 +115,11 @@ void KMenuBar::ContextCallback( int index )
       break;
       if (position == Floating){
       setMenuBarPos( Bottom );
-	show();
       break;
     case CONTEXT_FLOAT:
       if (position == Floating || position == FloatingSystem){
         setMenuBarPos (lastPosition);
+      }
       else {
         setMenuBarPos( Floating );
       break;
