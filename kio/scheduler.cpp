@@ -95,14 +95,14 @@ Scheduler::debug_info()
     for(; slave; slave = slaveList->next())
     {
         ProtocolInfo *protInfo = protInfoDict->get(slave->protocol());
-        kdDebug(7006) << " Slave: " << slave->protocol() << " " << slave->host() << slave->port() << endl;
+        kdDebug(7006) << " Slave: " << slave->protocol() << " " << slave->host() << " " << slave->port() << endl;
         kdDebug(7006) << " -- activeSlaves: " << protInfo->activeSlaves << endl;
     }
     kdDebug(7006) << "Idle Slaves: " << idleSlaves->count() << endl;
     slave = idleSlaves->first();
     for(; slave; slave = idleSlaves->next())
     {
-        kdDebug(7006) << " IdleSlave: " << slave->protocol() << " " << slave->host() << slave->port() << endl;
+        kdDebug(7006) << " IdleSlave: " << slave->protocol() << " " << slave->host() << " " << slave->port() << endl;
 
     }
     kdDebug(7006) << "Jobs in Queue: " << joblist.count() << endl;
