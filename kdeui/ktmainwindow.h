@@ -92,7 +92,7 @@ class KTMainWindowPrivate;
 
  */
 
-class KTMainWindow : public QWidget, public KXMLGUIBuilder, public KXMLGUIBase
+class KTMainWindow : public QWidget, public KXMLGUIBuilder, virtual public KXMLGUIBase
 {
     Q_OBJECT
 
