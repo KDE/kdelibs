@@ -173,7 +173,7 @@ KJSO DOMNodeList::tryGet(const UString &p) const
   // array index ?
   long unsigned int idx;
   if (sscanf(p.cstring().c_str(), "%lu", &idx) == 1)
-    result = getDOMNode(const_cast<DOM::NodeList>(list).item(idx));
+    result = getDOMNode(const_cast<DOM::NodeList&>(list).item(idx));
 
   return result;
 }
@@ -527,7 +527,7 @@ KJSO DOMNamedNodeMap::tryGet(const UString &p) const
   // array index ?
   long unsigned int idx;
   if (sscanf(p.cstring().c_str(), "%lu", &idx) == 1)
-    result = getDOMNode(const_cast<DOM::NamedNodeMap>(map).item(idx));
+    result = getDOMNode(const_cast<DOM::NamedNodeMap&>(map).item(idx));
 
   return result;
 }
