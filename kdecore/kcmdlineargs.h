@@ -501,8 +501,8 @@ protected:
    * @internal
    *  Constructor.
    */
-  KCmdLineArgs( const KCmdLineOptions *_options, const char *_id,
-		const char *_name);
+  KCmdLineArgs( const KCmdLineOptions *_options, const char *_name,
+                const char *_id);
 
   /**
    *  @internal use only.
