@@ -112,7 +112,7 @@ void KMenuBar::show()
     // why is this still needed? (Simon)
     if ( d->topLevel && isVisible() )
 	return;
-    return QMenuBar::show();
+    QMenuBar::show();
 }
 
 void KMenuBar::slotReadConfig()
