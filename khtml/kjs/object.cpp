@@ -30,6 +30,7 @@
 #include "nodes.h"
 #include "object_object.h"
 #include "function_object.h"
+#include "array_object.h"
 #include "bool_object.h"
 #include "math_object.h"
 #include "html_object.h"
@@ -315,9 +316,11 @@ KJSGlobal::KJSGlobal(KHTMLWidget *htmlw)
   // constructor properties. prototypes as Global's member variables first.
   objProto = new ObjectPrototype();
   funcProto = new FunctionPrototype();
+  arrayProto = new ArrayPrototype(this);
   boolProto = new BooleanPrototype(this);
 
   put("Object", zeroRef(new ObjectObject(this)), DontEnum);
+  put("Array", zeroRef(new ArrayObject(this)), DontEnum);
   put("Boolean", zeroRef(new BooleanObject(this)), DontEnum);
 
   // other properties

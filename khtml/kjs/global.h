@@ -49,7 +49,8 @@ namespace KJS {
 		   DontDelete = 1 >> 3,
 		   Internal   = 1 >> 4 };
 
-  enum Class { StringClass, BooleanClass, NumberClass, ObjectClass };
+  enum Class { ArrayClass, StringClass, BooleanClass, NumberClass,
+	       ObjectClass };
 
   enum Hint { NoneHint, StringHint, NumberHint };
 

@@ -178,6 +178,7 @@ public:
 class KJSNumber : public KJSO {
 public:
   KJSNumber(int i) { val.d = static_cast<double>(i); }
+  KJSNumber(unsigned int u) { val.d = static_cast<double>(u); }
   KJSNumber(double d) { val.d = d; }
   Type type() const { return Number; }
 };
@@ -319,7 +320,7 @@ class KJSGlobal : public KJSO {
 public:
   KJSGlobal(KHTMLWidget *htmlw = 0L);
   Type type() const { return Object; }
-  KJSPrototype *objProto, *funcProto, *boolProto;
+  KJSPrototype *objProto, *funcProto, *arrayProto, *boolProto;
 private:
   static KJSO* eval();
 };
