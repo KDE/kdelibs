@@ -671,7 +671,14 @@ void HTTPProtocol::slotGetSize( const char *_url )
 
 string HTTPProtocol::getUserAgentString ()
 {
-  return "Konqueror/1.1";
+  QString user_agent("Konqueror/1.1");
+#ifdef DO_MD5
+  user_agent+="; I\'ve got MD5";
+#endif
+#ifdef DO_GZIP
+  user_agent+="; I\'ve got GZIP";
+#endif
+  return user_agent.ascii();
 }
 
 
@@ -827,7 +834,7 @@ void HTTPProtocol::decodeChunked()
   // **
   // The chunk format basically consists of
   // length in hex+\n+data
-  while (m_bLastChunk !=true && offset < big_buffer.size()) {
+  while (!m_bLastChunk && (offset < big_buffer.size())) {
     if (m_iLeftInChunk == -1) {
       QString s_length;
       while ((chunk_id[0] != '\r' && chunk_id[0] != '\n')) {
@@ -867,7 +874,9 @@ void HTTPProtocol::decodeChunked()
     }
   }
   // Is this necesary?
-
+  big_buffer.resize(0);
+  big_buffer=ar;
+  big_buffer.detach();
 }
 
 void HTTPProtocol::decodeGzip()
@@ -881,17 +890,15 @@ void HTTPProtocol::decodeGzip()
   // header implies.. like with gzip.
   // eek. This is no fun for progress indicators.
   QByteArray ar;
-  void *my_buf=malloc(big_buffer.size());
-  char tmp_buf[1024];
-  unsigned long _size, len;
-  _size =big_buffer.size();
-  bzero(my_buf, _size);
-  memcpy(my_buf, big_buffer.data(), _size);
 
-  int f=mkstemp(strdup("kio_http"));
-  write(f, my_buf, _size);
-  lseek(f, 0, SEEK_SET);
-  gzFile gzf = gzdopen(f, "rb");
+  char tmp_buf[1024], *filename=strdup("/tmp/XXXkio_httpXXX");
+  unsigned long len;
+  int fd;
+
+  fd=mkstemp(filename);
+  write(fd, big_buffer.data(), big_buffer.size());
+  lseek(fd, 0, SEEK_SET);
+  gzFile gzf = gzdopen(fd, "rb");
   while ( (len=gzread(gzf, tmp_buf, 1024))>0){
     int old_len=ar.size();
     ar.resize(ar.size()+len);
@@ -901,6 +908,7 @@ void HTTPProtocol::decodeGzip()
   big_buffer.resize(0);
   big_buffer=ar;
   big_buffer.detach();
+  unlink(filename); // If you want to inspect the raw data, comment this line out
 #endif
 }
 
@@ -927,37 +935,32 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
   string dest = _dest;
   
   KURL usrc( _source );
-  if ( usrc.isMalformed() )
-  {
+  if ( usrc.isMalformed() ) {
     error( ERR_MALFORMED_URL, source.c_str() );
     m_cmd = CMD_NONE;
     return;
   }
 
   KURL udest( _dest );
-  if ( udest.isMalformed() )
-  {
+  if ( udest.isMalformed() ) {
     error( ERR_MALFORMED_URL, dest.c_str() );
     m_cmd = CMD_NONE;
     return;
   }
 
-  if ( strcmp( usrc.protocol(), "http" ) != 0 )
-  {
+  if ( strcmp( usrc.protocol(), "http" ) != 0 ) {
     error( ERR_INTERNAL, "kio_http got non http protocol as source in copy command" );
     m_cmd = CMD_NONE;
     return;
   }
 
   KURLList lst;
-  if ( !KURL::split( _dest, lst )  )
-  {
+  if ( !KURL::split( _dest, lst )  ) {
     error( ERR_MALFORMED_URL, dest.c_str() );
     m_cmd = CMD_NONE;
     return;
   }
-  if ( lst.count() > 1 )
-  {
+  if ( lst.count() > 1 ) {
     error( ERR_NOT_FILTER_PROTOCOL, "http" );
     m_cmd = CMD_NONE;
     return;
@@ -965,16 +968,14 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
   
   string exec = ProtocolManager::self()->find( lst.getLast()->protocol() );
 
-  if ( exec.empty() )
-  {
+  if ( exec.empty() ) {
     error( ERR_UNSUPPORTED_PROTOCOL, lst.getLast()->protocol() );
     m_cmd = CMD_NONE;
     return;
   }
 
   // Is the right most protocol a filesystem protocol ?
-  if ( ProtocolManager::self()->outputType( lst.getLast()->protocol() ) != ProtocolManager::T_FILESYSTEM )
-  {
+  if ( ProtocolManager::self()->outputType( lst.getLast()->protocol() ) != ProtocolManager::T_FILESYSTEM ) {
     error( ERR_PROTOCOL_IS_NOT_A_FILESYSTEM, lst.getLast()->protocol() );
     m_cmd = CMD_NONE;
     return;
@@ -986,8 +987,7 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
   files.push_back( _source );
   
   Slave slave( exec.c_str() );
-  if ( slave.pid() == -1 )
-  {
+  if ( slave.pid() == -1 ) {
     error( ERR_CANNOT_LAUNCH_PROCESS, exec.c_str() );
     m_cmd = CMD_NONE;
     return;
@@ -1015,16 +1015,14 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
   m_bIgnoreJobErrors = true;
   
   list<string>::iterator fit = files.begin();
-  for( ; fit != files.end(); fit++ )
-  { 
+  for( ; fit != files.end(); fit++ ) { 
     bool overwrite = false;
     bool skip_copying = false;
     bool resume = false;
     unsigned long offset = 0;
 
     KURL u1( fit->c_str() );
-    if ( u1.isMalformed() )
-    {
+    if ( u1.isMalformed() ) {
       error( ERR_MALFORMED_URL, source.c_str() );
       m_cmd = CMD_NONE;
       return;
@@ -1045,8 +1043,7 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
       d += it->url();
     
     // Repeat until we got no error
-    do
-    { 
+    do { 
       job.clearError();
 
       m_bIgnoreErrors = true;
@@ -1067,8 +1064,7 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 
 	list<string>::iterator tmpit = fit;
 	tmpit++;
-	if( tmpit == files.end() )
-	{
+	if( tmpit == files.end() ) {
 	  debug( "slotCopy 12");
 	  open_CriticalDlg( "Error", tmp.c_str(), "Cancel" );
 	  debug( "slotCopy 13");
@@ -1080,8 +1076,7 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 	}
 	
 	debug( "slotCopy 2");
-	if ( !open_CriticalDlg( "Error", tmp.c_str(), "Continue", "Cancel" ) )
-	{
+	if ( !open_CriticalDlg( "Error", tmp.c_str(), "Continue", "Cancel" ) ) {
 	  http_close();
 	  clearError();
 	  error( ERR_USER_CANCELED, "" );
@@ -1112,16 +1107,13 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 	job.dispatch();
 
       // Did we have an error ?
-      if ( job.hasError() )
-      {
+      if ( job.hasError() ) {
 	int currentError = job.errorId();
 
 	debug( "kio_http : ################# COULD NOT PUT %d",currentError);
-	if ( /* m_bGUI && */ currentError == ERR_WRITE_ACCESS_DENIED )
-	{
+	if ( /* m_bGUI && */ currentError == ERR_WRITE_ACCESS_DENIED ) {
 	  // Should we skip automatically ?
-	  if ( auto_skip )
-	  {
+	  if ( auto_skip ) {
 	    job.clearError();
 	    skip_copying = true;
 	    continue;
@@ -1129,37 +1121,29 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 	  QString tmp2 = l.getLast()->url();
 	  SkipDlg_Result r;
 	  r = open_SkipDlg( tmp2, ( files.size() > 1 ) );
-	  if ( r == S_CANCEL )
-	  {
+	  if ( r == S_CANCEL ) {
 	    http_close();
 	    error( ERR_USER_CANCELED, "" );
 	    m_cmd = CMD_NONE;
 	    return;
-	  }
-	  else if ( r == S_SKIP )
-	  {
+	  } else if ( r == S_SKIP ) {
 	    // Clear the error => The current command is not repeated => skipped
 	    job.clearError();
 	    skip_copying = true;
 	    continue;
-	  }
-	  else if ( r == S_AUTO_SKIP )
-	  {
+	  } else if ( r == S_AUTO_SKIP ) {
 	    // Clear the error => The current command is not repeated => skipped
 	    job.clearError();
 	    skip_copying = true;
 	    continue;
-	  }
-	  else
+	  } else
 	    assert( 0 );
 	}
 	// Can we prompt the user and ask for a solution ?
 	else if ( /* m_bGUI && */ currentError == ERR_DOES_ALREADY_EXIST ||
-		  currentError == ERR_DOES_ALREADY_EXIST_FULL )
-	{    
+		  currentError == ERR_DOES_ALREADY_EXIST_FULL ) {    
 	  // Should we skip automatically ?
-	  if ( auto_skip )
-	  {
+	  if ( auto_skip ) {
 	    job.clearError();
 	    continue;
 	  }
@@ -1191,15 +1175,12 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 	    QString tmp2 = l.getLast()->url();
 	    r = open_RenameDlg( fit->c_str(), tmp2, m, n );
 	  }
-	  if ( r == R_CANCEL ) 
-	  {
+	  if ( r == R_CANCEL ) {
 	    http_close();
 	    error( ERR_USER_CANCELED, "" );
 	    m_cmd = CMD_NONE;
 	    return;
-	  }
-	  else if ( r == R_RENAME )
-	  {
+	  } else if ( r == R_RENAME ) {
 	    KURL u( n.c_str() );
 	    // The Dialog should have checked this.
 	    if ( u.isMalformed() )
@@ -1214,46 +1195,32 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 
 	    d = u.path();
 	    // Dont clear error => we will repeat the current command
-	  }
-	  else if ( r == R_SKIP )
-	  {
+	  } else if ( r == R_SKIP ) {
 	    // Clear the error => The current command is not repeated => skipped
 	    job.clearError();
-	  }
-	  else if ( r == R_AUTO_SKIP )
-	  {
+	  } else if ( r == R_AUTO_SKIP ) {
 	    // Clear the error => The current command is not repeated => skipped
 	    job.clearError();
 	    auto_skip = true;
-	  }
-	  else if ( r == R_OVERWRITE )
-	  {
+	  } else if ( r == R_OVERWRITE ) {
 	    overwrite = true;
 	    // Dont clear error => we will repeat the current command
-	  }
-	  else if ( r == R_OVERWRITE_ALL )
-	  {
+	  } else if ( r == R_OVERWRITE_ALL ) {
 	    overwrite_all = true;
 	    // Dont clear error => we will repeat the current command
-	  }
-	  else if ( r == R_RESUME )
-	  {
+	  } else if ( r == R_RESUME ) {
 	    resume = true;
 	    offset = getOffset( l.getLast()->url().data() );
 	    // Dont clear error => we will repeat the current command
-	  }
-	  else if ( r == R_RESUME_ALL )
-	  {
+	  } else if ( r == R_RESUME_ALL ) {
 	    resume_all = true;
 	    offset = getOffset( l.getLast()->url().data() );
 	    // Dont clear error => we will repeat the current command
-	  }
-	  else
+	  } else
 	    assert( 0 );
 	}
 	// No need to ask the user, so raise an error and finish
-	else
-	{    
+	else {    
 	  http_close();
 	  error( currentError, job.errorText() );
 	  m_cmd = CMD_NONE;
@@ -1277,31 +1244,27 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
      */
     char buffer[ 2048 ];
     int read_size = 0;
-    while( !feof( m_fsocket ) )
-    {
+    while( !feof( m_fsocket ) ) {
       setup_alarm( ProtocolManager::self()->getReadTimeout() ); // start timeout
       long n = fread( buffer, 1, 2048, m_fsocket );
 
       // !!! slow down loop for local testing
 //       for ( int tmpi = 0; tmpi < 800000; tmpi++ ) ;
 
-      if ( n == -1 && !sigbreak )
-      {
+      if ( n == -1 && !sigbreak ) {
 	http_close();
 	error( ERR_CONNECTION_BROKEN, usrc.host() );
 	m_cmd = CMD_NONE;
 	return;
       }
    
-      if ( n > 0 )
-      {
+      if ( n > 0 ) {
 	job.data( buffer, n );
 
 	processed_size += n;
 	read_size += n;
 	time_t t = time( 0L );
-	if ( t - t_last >= 1 )
-        {
+	if ( t - t_last >= 1 ) {
 	  processedSize( processed_size );
 	  speed( read_size / ( t - t_start ) );
 	  t_last = t;
@@ -1319,8 +1282,7 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
     time_t t = time( 0L );
     
     processedSize( processed_size );
-    if ( t - t_start >= 1 )
-    {
+    if ( t - t_start >= 1 ) {
       speed( read_size / ( t - t_start ) );
       t_last = t;
     }
@@ -1344,13 +1306,11 @@ void HTTPProtocol::jobError( int _errid, const char *_txt )
 
 bool HTTPProtocol::error( int _err, const char *_txt )
 {
-  if ( m_bIgnoreErrors )
-  {
+  if ( m_bIgnoreErrors ) {
     m_iSavedError = _err;
     m_strSavedError = _txt;
     return true;
-  }
-  else
+  } else
     return IOProtocol::error( _err, _txt );
 }
 
