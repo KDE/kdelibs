@@ -23,18 +23,14 @@
 #ifndef __KFILEDIALOG_H__
 #define __KFILEDIALOG_H__
 
-#include <qcombobox.h>
-#include <qlineedit.h>
 #include <qstring.h>
-#include <qobjectlist.h>
 
 #include <kdialogbase.h>
 
 #include <kfile.h>
-#include <kfilereader.h>
 #include <kurl.h>
-#include <kurlcombobox.h>
 #include <kmimetype.h>
+#include <jobclasses.h>
 
 class QCheckBox;
 class QHBoxLayout;
@@ -46,11 +42,11 @@ class QVBoxLayout;
 class KDirOperator;
 class KFileBookmark;
 class KFileBookmarkManager;
-class KFileComboBox;
+class KURLComboBox;
 class KFileFilter;
 class KFileView;
+class KFileViewItem;
 class KToolBar;
-class KIO::Job;
 
 struct KFileDialogPrivate;
 

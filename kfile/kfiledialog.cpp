@@ -30,8 +30,10 @@
 #include <qbuttongroup.h>
 #include <qcollection.h>
 #include <qcolor.h>
+#include <qcombobox.h>
 #include <qlabel.h>
 #include <qlayout.h>
+#include <qlineedit.h>
 #include <qlist.h>
 #include <qlistbox.h>
 #include <qpixmap.h>
@@ -62,6 +64,7 @@
 #include <ktoolbar.h>
 #include <ktoolbarbutton.h>
 #include <kurl.h>
+#include <kurlcombobox.h>
 
 #include "config-kfile.h"
 
@@ -270,7 +273,6 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
 
     locationEdit = new KURLComboBox(KURLComboBox::Files, true,
 				    d->mainWidget, "LocationEdit");
-    // locationEdit = new KFileComboBox(true, d->mainWidget, "LocationEdit");
     locationEdit->setInsertionPolicy(QComboBox::NoInsertion);
     locationEdit->setFocus();
     locationEdit->setCompletionObject( ops->completionObject(), false );
@@ -461,7 +463,7 @@ void KFileDialog::slotOk()
     d->statJobs.clear();
 
 
-    if ( (mode() & KFile::Files) == KFile::Files && 
+    if ( (mode() & KFile::Files) == KFile::Files &&
 	 !locationEdit->currentText().contains( '/' )) {
         kdDebug(kfile_area) << "Files\n";
         d->filenames = locationEdit->currentText();
@@ -692,6 +694,7 @@ void KFileDialog::pathComboChanged( const QString& txt )
         url.setPath( text );
     else
         url = text;
+
 
     // don't mess with malformed urls or remote urls without directory or host
     if ( url.isMalformed() ||
@@ -1304,7 +1307,6 @@ void KFileDialog::readConfig( KConfig *kc, const QString& group )
     combo->setURL( ops->url() );
     autoDirectoryFollowing = kc->readBoolEntry( AutoDirectoryFollowing,
                                                 DefaultDirectoryFollowing );
-
 
     int w, h;
     QWidget *desk = QApplication::desktop();

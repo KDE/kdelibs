@@ -278,6 +278,7 @@ void KFileIconView::removeItem( const KFileViewItem *i )
     if ( !i )
 	return;
     delete (KFileIconViewItem*)i->viewItem( this );
+    KFileView::removeItem( i );
 }
 
 void KFileIconView::setIconSize( int size )

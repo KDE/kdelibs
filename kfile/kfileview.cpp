@@ -153,7 +153,7 @@ void KFileView::addItemList(const KFileItemList& list)
     KFileViewItem *tmp, *tfirst = 0;
     int counter = 0;
 
-    for (KFileItemListIterator it(list); 
+    for (KFileItemListIterator it(list);
 	 (tmp = static_cast<KFileViewItem*>(it.current())); ++it) {
 
 	if (!updateNumbers(tmp))
@@ -521,7 +521,7 @@ void KFileView::setViewMode( ViewMode vm )
 
 void KFileView::removeItem( const KFileViewItem *item )
 {
-    if ( !item )
+    if ( !item && !myFirstItem )
 	return;
 
     KFileViewItem *it = myFirstItem;

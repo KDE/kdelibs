@@ -97,7 +97,8 @@ void KFilePreview::updateView(const KFileViewItem *i) {
 }
 
 void KFilePreview::removeItem(const KFileViewItem *i) {
-    left->updateView(i);
+    left->removeItem(i);
+    KFileView::removeItem( i );
 }
 
 void KFilePreview::clear() {

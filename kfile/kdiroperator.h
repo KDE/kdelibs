@@ -21,7 +21,7 @@
 #ifndef KDIROPERATOR_H_
 #define KDIROPERATOR_H_
 
-#include <qobject.h>
+#include <qwidget.h>
 #include <qstack.h>
 
 #include <kaction.h>

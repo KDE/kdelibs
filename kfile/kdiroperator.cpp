@@ -96,7 +96,7 @@ KDirOperator::KDirOperator(const KURL& url,
     connect(dir, SIGNAL(canceled()), SLOT(resetCursor()));
     connect(dir, SIGNAL(deleteItem(KFileItem *)),
             SLOT(itemDeleted(KFileItem *)));
-    connect(dir, SIGNAL(redirection( const KURL& )), 
+    connect(dir, SIGNAL(redirection( const KURL& )),
 	    SLOT( slotRedirected( const KURL& )));
 
     connect(&myCompletion, SIGNAL(match(const QString&)),

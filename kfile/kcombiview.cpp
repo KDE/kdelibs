@@ -144,8 +144,9 @@ void KCombiView::updateView( const KFileViewItem *i )
 
 void KCombiView::removeItem( const KFileViewItem *i )
 {
-    left->updateView( i );
-    right->updateView( i );
+    left->removeItem( i );
+    right->removeItem( i );
+    KFileView::removeItem( i );
 }
 
 void KCombiView::clear()

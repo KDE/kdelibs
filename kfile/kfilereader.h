@@ -29,8 +29,6 @@
 #include <kdirlister.h>
 #include <kurl.h>
 
-#include "kfileviewitem.h"
-
 class KFileReader : public KDirLister
 {
     Q_OBJECT
