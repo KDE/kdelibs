@@ -115,8 +115,10 @@ void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
 		  sizeof(DCOPMsg), DCOPMsg, pMsg );
     int datalen = replyData.size();
     pMsg->length += datalen;
-    IceWriteData( iceConn, datalen, (char *) replyData.data());
-    IceFlush( iceConn );
+    // use IceSendData not IceWriteData to avoid a copy.  Output buffer
+    // shouldn't need to be flushed.
+    IceSendData( iceConn, datalen, (char *) replyData.data());
+    //    IceFlush( iceConn );
   }
 }
 
@@ -339,9 +341,10 @@ bool DCOPClient::send(const QCString &remApp, const QCString &remObjId,
   int datalen = ba.size();
   pMsg->length += datalen;
 
-  IceWriteData(d->iceConn, datalen, (char *) ba.data());
-
-  IceFlush(d->iceConn);
+  //  IceWriteData(d->iceConn, datalen, (char *) ba.data());
+  IceSendData(d->iceConn, datalen, (char *) ba.data());
+  
+  //  IceFlush(d->iceConn);
 
   if (IceConnectionStatus(d->iceConn) != IceConnectAccepted)
     return false;
@@ -448,9 +451,10 @@ bool DCOPClient::call(const QCString &remApp, const QCString &remObjId,
   int datalen = ba.size();
   pMsg->length += datalen;
 
-  IceWriteData(d->iceConn, datalen, (char *) ba.data());
+  //IceWriteData(d->iceConn, datalen, (char *) ba.data());
+  IceSendData(d->iceConn, datalen, (char *) ba.data());
 
-  IceFlush(d->iceConn);
+  //  IceFlush(d->iceConn);
 
   if (IceConnectionStatus(d->iceConn) != IceConnectAccepted)
     return false;

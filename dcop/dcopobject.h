@@ -26,6 +26,16 @@
 #include <qmap.h>
 #include <qstring.h>
 
+/**
+ * DCOPObject provides an interface for receiving DCOP messages.
+ *
+ * This class provides an interface for receiving DCOP messages.  To use it,
+ * simply multiply-inherit from DCOPObject and from some other class, and
+ * then implement the DCOPObject::process method.  Because this method is
+ * pure virtual, you <em>must</em> implement the method.
+ *
+ * @author Preston Brown <pbrown@kde.org>, Matthias Ettrich <ettrich@kde.org>
+ */
 class DCOPObject
 {
  public:
@@ -38,7 +48,8 @@ class DCOPObject
   /**
    * dispatch a message.
    *
-   * Note that @param fun is normalized. See DCopClient::normalizeFunctionSignature().
+   * Note that @param fun is normalized. 
+   * @see DCOPClient::normalizeFunctionSignature
    */
   virtual bool process(const QCString &fun, const QByteArray &data,
 		       QByteArray &replyData) = 0;

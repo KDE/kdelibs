@@ -123,8 +123,9 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode, unsigned long leng
 		     sizeof(DCOPMsg), DCOPMsg, pMsg );
 	int datalen = ba.size();
 	pMsg->length += datalen;
-	IceWriteData( target->iceConn, datalen, (char *) ba.data());
-	IceFlush( target->iceConn );
+	//IceWriteData( target->iceConn, datalen, (char *) ba.data());
+	IceSendData(target->iceConn, datalen, (char *) ba.data());
+	//IceFlush( target->iceConn );
       } else if ( app == "DCOPServer" ) {
 	QCString obj, fun;
 	QByteArray data;
@@ -152,8 +153,9 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode, unsigned long leng
 	IceGetHeader( target->iceConn, majorOpcode, DCOPCall,
 		     sizeof(DCOPMsg), DCOPMsg, pMsg );
 	pMsg->length += datalen;
-	IceWriteData( target->iceConn, datalen, (char *) ba.data());
-	IceFlush( target->iceConn );
+	//IceWriteData( target->iceConn, datalen, (char *) ba.data());
+	IceSendData(target->iceConn, datalen, (char *) ba.data());
+	//IceFlush( target->iceConn );
       } else {
 	QByteArray replyData;
 	bool b = FALSE;
@@ -169,8 +171,9 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode, unsigned long leng
 	IceGetHeader( iceConn, majorOpcode, b? DCOPReply : DCOPReplyFailed,
 		      sizeof(DCOPMsg), DCOPMsg, pMsg );
 	pMsg->length += datalen;
-	IceWriteData( iceConn, datalen, (char *) replyData.data());
-	IceFlush( iceConn );
+	//IceWriteData( iceConn, datalen, (char *) replyData.data());
+	IceSendData(iceConn, datalen, (char *) replyData.data());
+	//IceFlush( iceConn );
       }
     }
     break;
@@ -189,8 +192,9 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode, unsigned long leng
 			sizeof(DCOPMsg), DCOPMsg, pMsg );
 	  int datalen = ba.size();
 	  pMsg->length += datalen;
-	  IceWriteData( connreply->iceConn, datalen, (char *) ba.data());
-	  IceFlush( connreply->iceConn );
+	  //IceWriteData( connreply->iceConn, datalen, (char *) ba.data());
+	  IceSendData(connreply->iceConn, datalen, (char *) ba.data());
+	  //IceFlush( connreply->iceConn );
 	}
       }
     }
@@ -438,8 +442,9 @@ void DCOPServer::removeConnection( void* data )
 	      IceGetHeader( c->iceConn, majorOpcode, DCOPSend,
 			    sizeof(DCOPMsg), DCOPMsg, pMsg );
 	      pMsg->length += datalen;
-	      IceWriteData( c->iceConn, datalen, (char *) ba.data());
-	      IceFlush( c->iceConn );
+	      //IceWriteData( c->iceConn, datalen, (char *) ba.data());
+	      IceSendData(c->iceConn, datalen, (char *) ba.data());
+	      //IceFlush( c->iceConn );
 	  }
       }
   } 

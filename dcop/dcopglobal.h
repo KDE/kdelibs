@@ -38,6 +38,9 @@ extern IcePaAuthStatus _IcePaMagicCookie1Proc (_IceConn *, void **, int, int, vo
 IcePoAuthProc DCOPClientAuthProcs[] = {_IcePoMagicCookie1Proc};
 IcePaAuthProc DCOPServerAuthProcs[] = {_IcePaMagicCookie1Proc};
 
+/**
+ * @internal
+ */
 struct DCOPMsg {
   CARD8 majorOpcode;
   CARD8 minorOpcode;

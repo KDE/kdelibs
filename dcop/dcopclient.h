@@ -57,6 +57,7 @@ typedef QValueList<QCString> QCStringList;
  * </pre>
  *
  * @see KApplication::dcopClient
+ * @author Preston Brown <pbrown@kde.org>, Matthias Ettrich <ettrich@kde.org>
  */
 class DCOPClient : public QObject
 {
@@ -109,10 +110,10 @@ class DCOPClient : public QObject
    * registered with the same name, the server will add a number to the
    * id to unify it.
    *
-   * Registration is necessary if you want to allow other clients to talk to you.
-   * They can do so using your @param appId as first parameter for send() or
-   * call(). If you just want to talk to other clients, you do not need to register
-   * at the server. In that case attach() is enough.
+   * Registration is necessary if you want to allow other clients to talk 
+   * to you.  They can do so using your @param appId as first parameter 
+   * for send() or call(). If you just want to talk to other clients, you
+   * do not need to register at the server. In that case attach() is enough.
    *
    * @returns the actuall appId used for the registration or a null string
    * if the registration wasn't successfull.
