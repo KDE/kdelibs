@@ -336,13 +336,13 @@ void KHTMLWidget::paintEvent( QPaintEvent* _pe )
     }
 
     // painter->translate( x_offset, -y_offset );    
-    int tx = x_offset + LEFT_BORDER;
+    int tx = -x_offset + LEFT_BORDER;
     int ty = -y_offset;
     
     if ( !bgPixmap.isNull() )
 	drawBackground( x_offset, y_offset, _pe->rect().x(), _pe->rect().y(),
 			_pe->rect().width(), _pe->rect().height() );
-    clue->print( painter, _pe->rect().x()+x_offset, _pe->rect().y()+y_offset,
+    clue->print( painter, _pe->rect().x()-x_offset, _pe->rect().y()+y_offset,
 		 _pe->rect().width(), _pe->rect().height(), tx, ty );
     
     if ( newPainter )
@@ -759,7 +759,7 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
 	    // The tag used for line break when we are in <pre>...</pre>
 	    if ( *str == '\n' )
 	    {
-		flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
+		flow = new HTMLClueH( 0, 0, _clue->getMaxWidth() );
 		_clue->append( flow );
 	    }
 		else if ( *str == '<' )
@@ -1484,7 +1484,9 @@ void KHTMLWidget::parseP( HTMLClueV *_clue, const char *str )
 	else if ( strncasecmp( str, "<pre", 4 ) == 0 )
 	{
 		vspace_inserted = insertVSpace( _clue, vspace_inserted );
-		flow = 0;
+//		flow = 0;
+		flow = new HTMLClueH( 0, 0, _clue->getMaxWidth() );
+		_clue->append( flow );
 		selectFont( fixedFont, fontBase, QFont::Normal, FALSE );
 	}	
 	else if ( strncasecmp( str, "</pre>", 6 ) == 0 )
@@ -2523,12 +2525,18 @@ void KHTMLWidget::select( QPainter *_painter, QRegExp& _pattern, bool _select )
 
 int KHTMLWidget::docWidth()
 {
-    return clue->getWidth() + LEFT_BORDER + RIGHT_BORDER;
+	if ( clue )
+    	return clue->getWidth() + LEFT_BORDER + RIGHT_BORDER;
+	else
+		return LEFT_BORDER + RIGHT_BORDER;
 }
 
 int KHTMLWidget::docHeight()
 {
-    return clue->getHeight();
+	if ( clue )
+    	return clue->getHeight();
+
+	return 0;
 }
 
 KHTMLWidget::~KHTMLWidget()

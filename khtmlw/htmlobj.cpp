@@ -18,22 +18,21 @@
 #include <qdrawutl.h>
 
 QList<HTMLCachedImage> HTMLImage::cache;
+int HTMLObject::objCount = 0;
 
 //-----------------------------------------------------------------------------
 
 HTMLObject::HTMLObject()
 {
-    separator = false;
-    printing = true;
+	flags = 0;
+	setFixedWidth( true );
+	setPrinting( true );
     max_width = 0;
-    max_ascent = 0;
-    newline = false;
-    selected = false;
-	fixedWidth = true;
     width = 0;
     ascent = 0;
     descent = 0;
 	percent = 0;
+	objCount++;
 }
 
 HTMLObject* HTMLObject::checkPoint( int _x, int _y )
@@ -47,7 +46,7 @@ HTMLObject* HTMLObject::checkPoint( int _x, int _y )
 
 void HTMLObject::getSelected( QStrList &_list )
 {
-    if ( selected && url[0] != 0 )
+    if ( isSelected() && url[0] != 0 )
     {
 	char *s;
 	
@@ -63,7 +62,7 @@ void HTMLObject::selectByURL( QPainter *_painter, const char *_url, bool _select
 {
     if ( _url == url )
     {
-	selected = _select;
+	setSelected( _select );
 
 	_painter->eraseRect( x + _tx, y - ascent + _ty, width, ascent+descent );
 	print( _painter, _tx, _ty );
@@ -82,7 +81,7 @@ void HTMLObject::select( QPainter *_painter, QRegExp& _pattern, bool _select, in
     
     if ( filename.find( _pattern ) != -1 )
     {
-	selected = _select;
+	setSelected( _select );
 
 	_painter->eraseRect( x + _tx, y - ascent + _ty, width, ascent+descent );
 	print( _painter, _tx, _ty );
@@ -91,10 +90,10 @@ void HTMLObject::select( QPainter *_painter, QRegExp& _pattern, bool _select, in
 
 void HTMLObject::select( QPainter *_painter, bool _select, int _tx, int _ty )
 {
-    if ( _select == selected || url[0] == 0 )
+    if ( _select == isSelected() || url[0] == 0 )
 	return;
 	
-    selected = _select;
+    setSelected( _select );
 
     _painter->eraseRect( x + _tx, y - ascent + _ty, width, ascent+descent );
     print( _painter, _tx, _ty );
@@ -118,7 +117,6 @@ HTMLText::HTMLText( const char* _text, const HTMLFont *_font, QPainter *_painter
     ascent = _painter->fontMetrics().ascent();
     descent = _painter->fontMetrics().descent();
     width = _painter->fontMetrics().width( (const char*)_text );
-    separator = false;
     url = _url;
     url.detach();
 }
@@ -130,7 +128,7 @@ HTMLText::HTMLText( const HTMLFont *_font, QPainter *_painter ) : HTMLObject()
     ascent = _painter->fontMetrics().ascent();
     descent = _painter->fontMetrics().descent();
     width = _painter->fontMetrics().width( (const char*)text );
-    separator = true;
+    setSeparator( true );
 }
 
 void HTMLText::print( QPainter *_painter, int, int _y, int, int _height, int _tx, int _ty )
@@ -149,14 +147,14 @@ void HTMLText::print( QPainter *_painter, int, int _y, int, int _height, int _tx
 
 void HTMLText::print( QPainter *_painter, int _tx, int _ty )
 {
-    if ( !printing )
+    if ( !isPrinting() )
 	return;
  
     const QPen & pen = _painter->pen();
     
     _painter->setFont( *font );
     
-    if ( selected )
+    if ( isSelected() )
     {
 	_painter->fillRect( x + _tx, y - ascent + _ty, width, ascent + descent, black );
 	_painter->setPen( white );
@@ -170,7 +168,7 @@ void HTMLText::print( QPainter *_painter, int _tx, int _ty )
     
     _painter->drawText( x + _tx, y + _ty, text );
 
-    if ( selected )
+    if ( isSelected() )
 	_painter->setPen( pen );
 }
 
@@ -189,12 +187,11 @@ HTMLRule::HTMLRule( int _max_width, int _width, int _percent, int _size,
 	percent = _percent;
 	align = _align;
 	shade = _shade;
-    separator = false;
 
 	if ( percent )
 	{
 		width = max_width * percent / 100;
-		fixedWidth = false;
+		setFixedWidth( false );
 	}
 }
 
@@ -216,7 +213,7 @@ void HTMLRule::print( QPainter *_painter, int, int _y, int, int _height, int _tx
 
 void HTMLRule::print( QPainter *_painter, int _tx, int _ty )
 {
-	if ( !printing )
+	if ( !isPrinting() )
 		return;
 
 	QColorGroup colorGrp( black, lightGray, white, darkGray, gray,
@@ -254,7 +251,6 @@ HTMLBullet::HTMLBullet( int _height, int _level, const QColor &col )
     descent = 0;
     width = 14;
 	level = _level;
-	separator = false;
 }
 
 void HTMLBullet::print( QPainter *_painter, int, int _y, int, int _height, int _tx, int _ty )
@@ -267,7 +263,7 @@ void HTMLBullet::print( QPainter *_painter, int, int _y, int, int _height, int _
 
 void HTMLBullet::print( QPainter *_painter, int _tx, int _ty )
 {
-    if ( !printing )
+    if ( !isPrinting() )
 	return;
 
 	int yp = y + _ty - 9;
@@ -410,7 +406,7 @@ void HTMLImage::init()
     {
 	width = max_width * percent / 100;
 	ascent = pixmap->height() * width / pixmap->width();
-	fixedWidth = false;
+	setFixedWidth( false );
     }
     else if ( width != -1 )
     {
@@ -535,10 +531,10 @@ HTMLTableCell::HTMLTableCell( int _x, int _y, int _max_width, int _width,
 	if ( _width )
 	{
 		width = _width;
-		fixedWidth = true;
+		setFixedWidth( true );
 	}
 	else
-		fixedWidth = false;
+		setFixedWidth( false );
 }
 
 //-----------------------------------------------------------------------------
@@ -555,8 +551,7 @@ HTMLTable::HTMLTable( int _x, int _y, int _max_width, int _width, int _percent,
 	spacing = _spacing;
 	border  = _border;
 
-	fixedWidth = false;
-    max_ascent = 0;
+	setFixedWidth( false );
 	row = 0;
 	col = 0;
 
@@ -577,7 +572,7 @@ HTMLTable::HTMLTable( int _x, int _y, int _max_width, int _width, int _percent,
 	else if ( width == 0 )
 		width = max_width;
 	else
-		fixedWidth = TRUE;
+		setFixedWidth( TRUE );
 }
 
 void HTMLTable::startRow()
@@ -856,7 +851,7 @@ void HTMLTable::optimiseCellWidth()
 			}
 		}
 	}
-	else if ( percent || fixedWidth )
+	else if ( percent || isFixedWidth() )
 	{
 		columnPos = columnPrefPos;
 		int extra = tableWidth - columnPrefPos[totalCols];
@@ -919,7 +914,7 @@ void HTMLTable::setMaxWidth( int _max_width )
 
 	if ( percent )
 		width = max_width * percent / 100;
-	else if ( !fixedWidth )
+	else if ( !isFixedWidth() )
 		width = max_width;
 
 	calcColumnWidths();
@@ -927,8 +922,7 @@ void HTMLTable::setMaxWidth( int _max_width )
 
 void HTMLTable::setMaxAscent( int _a )
 {
-    max_ascent = _a;
-	ascent = max_ascent;
+	ascent = _a;
 }
 
 HTMLObject *HTMLTable::checkPoint( int _x, int _y )
@@ -1030,7 +1024,7 @@ void HTMLTable::print( QPainter *_painter, int _x, int _y, int _width, int _heig
     if ( _y + _height < y - getHeight() || _y > y )
 	return;
     
-    if ( !printing )
+    if ( !isPrinting() )
 	return;
     
     _tx += x;
@@ -1117,7 +1111,6 @@ HTMLClue::HTMLClue( int _x, int _y, int _max_width, int _percent )
     y = _y;
     max_width = _max_width;
 	percent = _percent;
-    max_ascent = 0;
     valign = Bottom;
     halign = Left;
     list.setAutoDelete( TRUE );
@@ -1125,7 +1118,7 @@ HTMLClue::HTMLClue( int _x, int _y, int _max_width, int _percent )
 	if ( percent )
 	{
 		width = max_width * percent / 100;
-		fixedWidth = false;
+		setFixedWidth( false );
 	}
 	else
 		width = max_width;
@@ -1289,7 +1282,7 @@ int HTMLClue::calcMinWidth()
 
 int HTMLClue::calcPreferredWidth()
 {
-	if ( fixedWidth )
+	if ( isFixedWidth() )
 		return width;
 
 	HTMLObject *obj;
@@ -1307,25 +1300,15 @@ int HTMLClue::calcPreferredWidth()
 
 void HTMLClue::setMaxAscent( int _a )
 {
-    max_ascent = _a;
-    
     HTMLObject *obj;
-
-    if ( valign == Top )
-    {
-//	for ( obj = list.first(); obj != 0L; obj = list.next() )
-//	    obj->setYPos( obj->getYPos() + ( max_ascent - ascent )/8 );
-	ascent = max_ascent;
-    }
 
     if ( valign == VCenter )
     {
 	for ( obj = list.first(); obj != 0L; obj = list.next() )
-	    obj->setYPos( obj->getYPos() + ( max_ascent - ascent )/2 );
-	ascent = max_ascent;
+	    obj->setYPos( obj->getYPos() + ( _a - ascent )/2 );
     }
 
-	ascent = max_ascent;
+	ascent = _a;
 }
 
 void HTMLClue::append( HTMLObject *_object)
@@ -1338,7 +1321,7 @@ void HTMLClue::print( QPainter *_painter, int _x, int _y, int _width, int _heigh
     if ( _y + _height < y - getHeight() || _y > y )
 	return;
     
-    if ( !printing )
+    if ( !isPrinting() )
 	return;
     
     HTMLObject *obj;
@@ -1362,7 +1345,7 @@ void HTMLClue::print( QPainter *_painter, int _x, int _y, int _width, int _heigh
     if ( _y + _height < y - getHeight() || _y > y )
 	return;
     
-    if ( !printing )
+    if ( !isPrinting() )
 	return;
     
     HTMLObject *obj;
@@ -1390,7 +1373,7 @@ void HTMLClueV::setMaxWidth( int _max_width )
 
     if ( percent )
 		width = _max_width * percent / 100;
-	else if ( !fixedWidth )
+	else if ( !isFixedWidth() )
 		width = max_width;
 
 	for ( obj = list.first(); obj != 0L; obj = list.next() )
@@ -1884,7 +1867,9 @@ HTMLTokenizer::HTMLTokenizer( QString &str )
 	{
 	    if ( !space )
 	    {
-		buffer[ j++ ] = 0;
+// MRJ - taking line this out nearly halves mem usage and makes almost no
+// difference to output
+//		buffer[ j++ ] = 0;
 		buffer[ j++ ] = ' ';
 		buffer[ j++ ] = 0;
 	    }

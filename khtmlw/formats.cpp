@@ -11,10 +11,6 @@
 #include<string.h>
 #include<stdlib.h>
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include<qimage.h>
 
 #include "formats.h"

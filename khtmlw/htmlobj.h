@@ -75,7 +75,7 @@ public:
     virtual void select( QPainter *, bool, int _tx, int _ty );
     /// Select all objects matching the regular expression.
     virtual void select( QPainter *_painter, QRegExp& _pattern, bool _select, int _tx, int _ty );
-    virtual void select( bool _s ) { selected = _s; }
+    virtual void select( bool _s ) { setSelected( _s ); }
     virtual void getSelected( QStrList & );
 
     /************************************************************
@@ -102,12 +102,21 @@ public:
     void setPos( int _x, int _y ) { y=_y; x=_x; }
     void setXPos( int _x ) { x=_x; }
     void setYPos( int _y ) { y=_y; }
-    void setPrinting( bool _p ) { printing = _p; }
-    void setNewline( bool _n ) { newline = _n; }
-    bool isSeparator() { return separator; }
-    bool isNewline() { return newline; }
-    bool isSelected() { return selected; }
-	bool isFixedWidth() { return fixedWidth; }
+
+	enum ObjectFlags { Separator = 0x01, NewLine = 0x02, Selected = 0x04,
+				FixedWidth = 0x08, Printing = 0x10 };
+
+    bool isSeparator() { return flags & Separator; }
+    bool isNewline() { return flags & NewLine; }
+    bool isSelected() { return flags & Selected; }
+	bool isFixedWidth() { return flags & FixedWidth; }
+	bool isPrinting() { return flags & Printing; }
+
+	void setSeparator( bool s ) { s ? flags|=Separator : flags&=~Separator; }
+	void setNewline( bool n ) { n ? flags|=NewLine : flags&=~NewLine; }
+	void setSelected( bool s ) { s ? flags|=Selected : flags&=~Selected; }
+	void setFixedWidth( bool f ) { f ? flags|=FixedWidth : flags&=~FixedWidth; }
+	void setPrinting( bool p ) { p ? flags|=Printing : flags&=~Printing; }
 
     /************************************************************
      * Searches in all children ( and tests itself ) for an HTMLAnchor object
@@ -118,6 +127,9 @@ public:
     virtual HTMLAnchor* findAnchor( const char */*_name*/, QPoint */*_point*/ )
 			{ return 0L; }
 
+	void printCount()
+		{	printf( "Object count: %d\n", objCount ); }
+
 protected:
     int x;
     int y;
@@ -125,16 +137,18 @@ protected:
     int ascent;
     int descent;
     int max_width;
-    // May be 0 to indicate that it is not used
-    int max_ascent;
     // percent stuff added for table support
-    int percent;	// width = max_width * percent / 100
+    short percent;	// width = max_width * percent / 100
+	unsigned char flags;
+/*
     bool fixedWidth;
     bool separator;
     bool printing;
     bool newline;
     bool selected;
+*/
     QString url;
+	static int objCount;
 };
 
 //-----------------------------------------------------------------------------

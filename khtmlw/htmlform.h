@@ -227,7 +227,6 @@ class HTMLForm : public QObject
 	Q_OBJECT
 public:
 	HTMLForm( const char *a, const char *m );
-	~HTMLForm() {};
 
 	void addElement( HTMLElement *e );
 

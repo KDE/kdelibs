@@ -37,6 +37,9 @@ public:
     KHTMLWidget( QWidget *parent, const char *name, const char *_pix_path );
     virtual ~KHTMLWidget();
 
+	// we don't want global palette changes affecting us
+	virtual void setPalette( const QPalette & ) {}
+
     /*********************************************************
      * Start writing HTML code using the write functions.
      * '_url' is the URL we are going to display. The value is
@@ -558,7 +561,7 @@ protected:
 	/*********************************************************
 	 * The current flow box to add objects to
 	 */
-	HTMLClueFlow *flow;
+	HTMLClue *flow;
 
 	/*********************************************************
 	 * Array of paser functions, e.g.

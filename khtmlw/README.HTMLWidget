@@ -1,7 +1,7 @@
 KDE HTML Widget
 ---------------
 
-This is the alpha version 0.5.2
+This is the alpha version 0.5.3
 
 Developers
 ----------
@@ -221,8 +221,21 @@ Version 0.5.1 - Martin
 Version 0.5.2 - Martin
 
  Spent some quality time with the profiler - now at least twice as fast
- for large HTML documents (qwidget.html is a good test).
+  for large HTML documents (qwidget.html is a good test).
+ setStandardFont() and setFixedFont() added.
+
+
+Version 0.5.3 - Martin
+
+ Fixed horizontal scrolling while partially covered bug.
+ Catch setPalette() so that global color changes don't screw up html page.
+ Modified HTMLTokenizer so that it keeps space appended to the word
+  preceding it.  This means that there are considerably (~35%) less objects
+  in the parsed HTML - thats a lot less memory and processing in a large
+  document.  I have yet to see a situation where this has caused poor
+  formatting.
+ Fixed <pre> so that inline markups don't cause lines to be broken.
 
 Last change
-9.4.97 Martin Jones
+21.4.97 Martin Jones
 
