@@ -90,23 +90,23 @@ public:
                           const KAboutData *aboutData = KGlobal::instance()->aboutData() );
 
     /**
-     * With this method, you can add the KNotify events of one eventsrc 
+     * With this method, you can add the KNotify events of one eventsrc
      * files to the view.
      * KNotifyDialog can handle events for multiple applications (i.e. eventsrc files).
      * Successive calls with a different @p appName will add them.
-     * @param appName The application's name, i.e. the name passed to the @ref 
+     * @param appName The application's name, i.e. the name passed to the @ref
      *                KApplication constructor or @ref KAboutData.
      * @see clearApplicationEvents()
      */
     virtual void addApplicationEvents( const char *appName );
 
     /**
-     * With this method, you can add the KNotify events of one eventsrc 
+     * With this method, you can add the KNotify events of one eventsrc
      * files to the view.
      * KNotifyDialog can handle events for multiple applications (i.e. eventsrc files).
      * Successive calls with a different @p path will add them.
      * @param path The absolute or relative path to the eventsrc file to be configured.
-     *             A relative path would be e.g. "kwin/eventsrc". 
+     *             A relative path would be e.g. "kwin/eventsrc".
      * @see clearApplicationEvents()
      */
     virtual void addApplicationEvents( const QString& path );
@@ -243,6 +243,7 @@ namespace KNotify
 
     protected slots:
         void playSound();
+        void emitChanged() {emit changed( true ); }
 
     private slots:
         void slotEventChanged( QListViewItem * );
