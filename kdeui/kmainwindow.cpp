@@ -1211,9 +1211,11 @@ QSize KMainWindow::sizeForCentralWidgetSize(QSize size)
 void KMainWindow::setIcon( const QPixmap& p )
 {
     QMainWindow::setIcon( p );
+#ifdef Q_WS_X11 
     // Qt3 doesn't support _NET_WM_ICON, but KApplication::setTopWidget(), which
     // is used by KMainWindow, sets it
     KWin::setIcons( winId(), p, QPixmap());
+#endif
 }
 
 // why do we support old gcc versions? using KXMLGUIBuilder::finalizeGUI;
