@@ -22,7 +22,6 @@
 // Syntax?
 
 #include "kurl.h"
-#include <iostream.h>
 #include <qregexp.h>
 
 void KURL::encodeURL( QString& _url ) {
