@@ -3,7 +3,7 @@
     Copyright (C) 1997, 1998 Richard Moore <rich@kde.org>
                   1998 Stephan Kulow <coolo@kde.org>
                   1998 Daniel Grana <grana@ie.iwi.unibe.ch>
-		  1999,2000 Carsten Pfeiffer <pfeiffer@kde.org>
+                  1999,2000 Carsten Pfeiffer <pfeiffer@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -75,9 +75,10 @@
 #include <kfilefilter.h>
 #include <kfilebookmark.h>
 #include <kdiroperator.h>
+#include <kstaticdeleter.h>
 
 enum Buttons { HOTLIST_BUTTON,
-	       PATH_COMBO, CONFIGURE_BUTTON };
+               PATH_COMBO, CONFIGURE_BUTTON };
 
 const int idStart = 1;
 
@@ -128,8 +129,10 @@ struct KFileDialogPrivate
 
 KURL *KFileDialog::lastDirectory; // to set the start path
 
+static KStaticDeleter<KURL> ldd;
+
 KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
-			 QWidget *parent, const char* name, bool modal)
+                         QWidget *parent, const char* name, bool modal)
     : KDialogBase( parent, name, modal, QString::null, 0 )
 {
     d = new KFileDialogPrivate();
@@ -148,7 +151,7 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     toolbar= new KToolBar( d->mainWidget, "KFileDialog::toolbar", true);
 
     KURLComboBox *combo = new KURLComboBox( KURLComboBox::Directories, true,
-					    toolbar, "path combo" );
+                                            toolbar, "path combo" );
     KURL u;
     u.setPath( QDir::rootDirPath() );
     QString text = i18n("Root Directory: %1").arg( u.path() );
@@ -170,18 +173,18 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     QFileInfoListIterator it(*list);
     QString tmp;
     if(list){
-	QFileInfo *fi;
-	for(; (fi = it.current()); ++it){
+        QFileInfo *fi;
+        for(; (fi = it.current()); ++it){
             KDesktopFile dFile(fi->absFilePath());
             if(dFile.hasDeviceType()) {
-		kdDebug()"got one: " << fi->absFilePath() << endl;
-		tmp = dFile.readURL();
-		if ( !tmp.isEmpty() )
-		    combo->addDefaultURL( tmp,
-					  SmallIcon( dFile.readIcon() ),
-					  dFile.readName() );
-	    }
-	}
+                kdDebug()"got one: " << fi->absFilePath() << endl;
+                tmp = dFile.readURL();
+                if ( !tmp.isEmpty() )
+                    combo->addDefaultURL( tmp,
+                                          SmallIcon( dFile.readIcon() ),
+                                          dFile.readName() );
+            }
+        }
     }
     */
 
@@ -192,30 +195,29 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
 
     if (!lastDirectory)
     {
-	qAddPostRoutine( cleanup );
-	lastDirectory = new KURL();
+        lastDirectory = ldd.setObject(new KURL());
     }
 
     if (!dirName.isEmpty())
-	*lastDirectory = KCmdLineArgs::makeURL( QFile::encodeName(dirName) );
+        *lastDirectory = KCmdLineArgs::makeURL( QFile::encodeName(dirName) );
     else
-	if (lastDirectory->isEmpty())
-	    *lastDirectory = QDir::currentDirPath();
+        if (lastDirectory->isEmpty())
+            *lastDirectory = QDir::currentDirPath();
 
     d->url = *lastDirectory;
 
     ops = new KDirOperator(*lastDirectory, d->mainWidget, "KFileDialog::ops");
     ops->setOnlyDoubleClickSelectsFiles( true );
     connect(ops, SIGNAL(updateInformation(int, int)),
-	    SLOT(updateStatusLine(int, int)));
+            SLOT(updateStatusLine(int, int)));
     connect(ops, SIGNAL(urlEntered(const KURL&)),
-	    SLOT(urlEntered(const KURL&)));
+            SLOT(urlEntered(const KURL&)));
     connect(ops, SIGNAL(fileHighlighted(const KFileViewItem *)),
-	    SLOT(fileHighlighted(const KFileViewItem *)));
+            SLOT(fileHighlighted(const KFileViewItem *)));
     connect(ops, SIGNAL(fileSelected(const KFileViewItem *)),
-	    SLOT(fileSelected(const KFileViewItem *)));
+            SLOT(fileSelected(const KFileViewItem *)));
     connect(ops, SIGNAL(finishedLoading()),
-	    SLOT(slotLoadingFinished()));
+            SLOT(slotLoadingFinished()));
 
     KActionCollection *coll = ops->actionCollection();
     coll->action( "up" )->plug( toolbar );
@@ -228,25 +230,25 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     bookmarks= new KFileBookmarkManager();
     CHECK_PTR( bookmarks );
     connect( bookmarks, SIGNAL( changed() ),
-	     this, SLOT( bookmarksChanged() ) );
+             this, SLOT( bookmarksChanged() ) );
 
     QString bmFile = locate("data", QString::fromLatin1("kdeui/bookmarks.html"));
     if (!bmFile.isNull())
-	bookmarks->read(bmFile);
+        bookmarks->read(bmFile);
 
     toolbar->insertButton(QString::fromLatin1("flag"),
-			  (int)HOTLIST_BUTTON, true,
-			  i18n("Bookmarks"));
+                          (int)HOTLIST_BUTTON, true,
+                          i18n("Bookmarks"));
 
     toolbar->insertButton(QString::fromLatin1("configure"),
-			  (int)CONFIGURE_BUTTON, true,
-			  i18n("Configure this dialog"));
+                          (int)CONFIGURE_BUTTON, true,
+                          i18n("Configure this dialog"));
 
     connect(toolbar, SIGNAL(clicked(int)),
-	    SLOT(toolbarCallback(int)));
+            SLOT(toolbarCallback(int)));
     // for the bookmark "menu"
     connect(toolbar, SIGNAL(pressed(int)),
-    	    this, SLOT(toolbarPressedCallback(int)));
+            this, SLOT(toolbarPressedCallback(int)));
 
     toolbar->insertWidget(PATH_COMBO, 0, d->pathCombo);
 
@@ -263,28 +265,28 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
 
     connect( locationEdit, SIGNAL( returnPressed() ), SLOT( slotOk()));
     connect(locationEdit, SIGNAL( activated( const QString&  )),
-	    this,  SLOT( locationActivated( const QString& ) ));
+            this,  SLOT( locationActivated( const QString& ) ));
     connect( locationEdit, SIGNAL( completion( const QString& )),
-    	     SLOT( fileCompletion( const QString& )));
+             SLOT( fileCompletion( const QString& )));
     connect( locationEdit, SIGNAL( textRotation(KCompletionBase::KeyBindingType) ),
-	     locationEdit, SLOT( rotateText(KCompletionBase::KeyBindingType) ));
+             locationEdit, SLOT( rotateText(KCompletionBase::KeyBindingType) ));
 
     d->pathCombo->setCompletionObject( ops->dirCompletionObject(), false );
 
     connect( d->pathCombo, SIGNAL( urlActivated( const KURL&  )),
-	     this,  SLOT( pathComboActivated( const KURL& ) ));
+             this,  SLOT( pathComboActivated( const KURL& ) ));
     connect( d->pathCombo, SIGNAL( returnPressed( const QString&  )),
-	     this,  SLOT( pathComboReturnPressed( const QString& ) ));
+             this,  SLOT( pathComboReturnPressed( const QString& ) ));
     connect( d->pathCombo, SIGNAL(textChanged( const QString& )),
-	     SLOT( pathComboChanged( const QString& ) ));
+             SLOT( pathComboChanged( const QString& ) ));
     connect( d->pathCombo, SIGNAL( completion( const QString& )),
-    	     SLOT( dirCompletion( const QString& )));
+             SLOT( dirCompletion( const QString& )));
     connect( d->pathCombo, SIGNAL( textRotation(KCompletionBase::KeyBindingType) ),
-    	     d->pathCombo, SLOT( rotateText(KCompletionBase::KeyBindingType) ));
+             d->pathCombo, SLOT( rotateText(KCompletionBase::KeyBindingType) ));
 
     d->filterLabel = new QLabel(i18n("&Filter:"), d->mainWidget);
     d->locationLabel = new QLabel(locationEdit, i18n("&Location:"),
-				  d->mainWidget);
+                                  d->mainWidget);
 
     filterWidget = new KFileFilter(d->mainWidget, "KFileDialog::filterwidget");
     filterWidget->setFilter(filter);
@@ -298,7 +300,7 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     QString oldGroup = kc->group();
     kc->setGroup( ConfigGroup );
     d->showStatusLine = kc->readBoolEntry(ConfigShowStatusLine,
-					  DefaultShowStatusLine);
+                                          DefaultShowStatusLine);
 
     initGUI(); // activate GM
 
@@ -318,12 +320,6 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
 void KFileDialog::setLocationLabel(const QString& text)
 {
     d->locationLabel->setText(text);
-}
-
-void KFileDialog::cleanup()
-{
-    delete lastDirectory;
-    lastDirectory = 0;
 }
 
 void KFileDialog::setFilter(const QString& filter)
@@ -348,19 +344,19 @@ void KFileDialog::slotOk()
     kdDebug(kfile_area) << "slotOK\n";
 
     if ( (mode() & KFile::Directory) != KFile::Directory )
-	if ( locationEdit->currentText().stripWhiteSpace().isEmpty() )
-	    return;
+        if ( locationEdit->currentText().stripWhiteSpace().isEmpty() )
+            return;
 
     KURL selectedURL;
 
 
     if ( (mode() & KFile::Files) == KFile::Files ) // multiselection mode
-	selectedURL = ops->url();
+        selectedURL = ops->url();
 
     else {
-	QString url = locationEdit->currentText();
-	KURL u( ops->url(), url );
-	selectedURL = u;
+        QString url = locationEdit->currentText();
+        KURL u( ops->url(), url );
+        selectedURL = u;
     }
 
     if ( selectedURL.isMalformed() ) {
@@ -369,11 +365,11 @@ void KFileDialog::slotOk()
     }
 
     if ( (mode() & KFile::LocalOnly) == KFile::LocalOnly &&
-	 !selectedURL.isLocalFile() ) {
-	KMessageBox::sorry( d->mainWidget,
-			    i18n("You can only select local files."),
-			    i18n("Remote files not accepted") );
-	return;
+         !selectedURL.isLocalFile() ) {
+        KMessageBox::sorry( d->mainWidget,
+                            i18n("You can only select local files."),
+                            i18n("Remote files not accepted") );
+        return;
     }
 
     d->url = selectedURL;
@@ -381,16 +377,16 @@ void KFileDialog::slotOk()
     // d->url is a correct URL now
 
     if ( (mode() & KFile::Directory) == KFile::Directory ) {
-	kdDebug(kfile_area) << "Directory\n";
-	if ( QFileInfo(d->url.path()).isDir() ) { // FIXME QFileInfo == local!
-	    locationEdit->insertItem( d->url.url(+1), 1 );
-	    accept();
-	}
-	else // FIXME: !exists() -> create dir
-	    KMessageBox::error( d->mainWidget,
-				i18n("You have to select a directory!"),
-				i18n("Not a directory") );
-	return;
+        kdDebug(kfile_area) << "Directory\n";
+        if ( QFileInfo(d->url.path()).isDir() ) { // FIXME QFileInfo == local!
+            locationEdit->insertItem( d->url.url(+1), 1 );
+            accept();
+        }
+        else // FIXME: !exists() -> create dir
+            KMessageBox::error( d->mainWidget,
+                                i18n("You have to select a directory!"),
+                                i18n("Not a directory") );
+        return;
     }
 
     KIO::StatJob *job = 0L;
@@ -398,17 +394,17 @@ void KFileDialog::slotOk()
 
 
     if ( (mode() & KFile::Files) == KFile::Files ) {
-	kdDebug(kfile_area) << "Files\n";
-	d->filenames = locationEdit->currentText();
-	KURL::List list = parseSelectedURLs();
-	KURL::List::ConstIterator it = list.begin();
-	for ( ; it != list.end(); ++it ) {
-	    job = KIO::stat( *it, !(*it).isLocalFile() );
-	    d->statJobs.append( job );
-	    connect( job, SIGNAL( result(KIO::Job *) ),
-		     SLOT( slotStatResult( KIO::Job *) ));
-	}
-	return;
+        kdDebug(kfile_area) << "Files\n";
+        d->filenames = locationEdit->currentText();
+        KURL::List list = parseSelectedURLs();
+        KURL::List::ConstIterator it = list.begin();
+        for ( ; it != list.end(); ++it ) {
+            job = KIO::stat( *it, !(*it).isLocalFile() );
+            d->statJobs.append( job );
+            connect( job, SIGNAL( result(KIO::Job *) ),
+                     SLOT( slotStatResult( KIO::Job *) ));
+        }
+        return;
     }
 
     job = KIO::stat(d->url,!d->url.isLocalFile());
@@ -426,7 +422,7 @@ void KFileDialog::slotStatResult(KIO::Job* job)
     KIO::StatJob *sJob = static_cast<KIO::StatJob *>( job );
 
     if ( !d->statJobs.removeRef( sJob ) ) {
-	return;
+        return;
     }
 
     int count = d->statJobs.count();
@@ -449,17 +445,17 @@ void KFileDialog::slotStatResult(KIO::Job* job)
     // currently, we only stat in File[s] mode, not Directory mode, so a
     // directory means ERROR
     if (isDir) {
-	if ( count == 0 )
-	    setURL( sJob->url() );
-	d->statJobs.clear();
-	return;
+        if ( count == 0 )
+            setURL( sJob->url() );
+        d->statJobs.clear();
+        return;
     }
 
     kdDebug(kfile_area) << "filename " << sJob->url().url() << endl;
     locationEdit->insertItem( sJob->url().url(), 1 );
 
     if ( count == 0 )
-	accept();
+        accept();
 }
 
 
@@ -483,21 +479,21 @@ void KFileDialog::fileHighlighted(const KFileViewItem *i)
 
 
     if ( (ops->mode() & KFile::Files) != KFile::Files ) {
-	if ( !i )
-	    return;
+        if ( !i )
+            return;
 
-	d->url = i->url();
+        d->url = i->url();
 
-	if ( !d->completionLock ) {
-	    locationEdit->setCurrentItem( 0 );
-	    locationEdit->setEditText( i->name() );
-	}
-	emit fileHighlighted(d->url.url());
+        if ( !d->completionLock ) {
+            locationEdit->setCurrentItem( 0 );
+            locationEdit->setEditText( i->name() );
+        }
+        emit fileHighlighted(d->url.url());
     }
 
     else {
-	multiSelectionChanged();
-	emit selectionChanged();
+        multiSelectionChanged();
+        emit selectionChanged();
     }
 }
 
@@ -507,17 +503,17 @@ void KFileDialog::fileSelected(const KFileViewItem *i)
         return;
 
     if ( (ops->mode() & KFile::Files) != KFile::Files ) {
-	if ( !i )
-	    return;
+        if ( !i )
+            return;
 
-	d->url = i->url();
-	locationEdit->setCurrentItem( 0 );
-	locationEdit->setEditText( i->name() );
-	emit fileSelected(d->url.url());
+        d->url = i->url();
+        locationEdit->setCurrentItem( 0 );
+        locationEdit->setEditText( i->name() );
+        emit fileSelected(d->url.url());
     }
     else {
-	multiSelectionChanged();
-	emit selectionChanged();
+        multiSelectionChanged();
+        emit selectionChanged();
     }
     slotOk();
 }
@@ -528,21 +524,21 @@ void KFileDialog::fileSelected(const KFileViewItem *i)
 void KFileDialog::multiSelectionChanged()
 {
     if ( d->completionLock ) // FIXME: completion with multiselection?
-	return;
+        return;
 
     KFileViewItem *item;
     const KFileViewItemList *list = ops->selectedItems();
     if ( !list ) {
-	locationEdit->clearEdit();
-	return;
+        locationEdit->clearEdit();
+        return;
     }
 
     static const QString &begin = KGlobal::staticQString(" \"");
     KFileViewItemListIterator it ( *list );
     QString text;
     while ( (item = it.current()) ) {
-	text.append( begin ).append( item->name() ).append( '\"' );
-	++it;
+        text.append( begin ).append( item->name() ).append( '\"' );
+        ++it;
     }
     locationEdit->setCurrentItem( 0 );
     locationEdit->setEditText( text.stripWhiteSpace() );
@@ -552,7 +548,7 @@ void KFileDialog::multiSelectionChanged()
 void KFileDialog::initGUI()
 {
     if (d->boxLayout)
-	delete d->boxLayout; // deletes all sub layouts
+        delete d->boxLayout; // deletes all sub layouts
 
     d->boxLayout = new QVBoxLayout( d->mainWidget, 0, KDialog::spacingHint());
     d->boxLayout->addWidget(toolbar, AlignTop);
@@ -576,23 +572,23 @@ void KFileDialog::initGUI()
 
     // Add the status line
     if ( d->showStatusLine ) {
-	d->myStatusLine = new QLabel( d->mainWidget, "StatusBar" );
-	updateStatusLine(ops->numDirs(), ops->numFiles());
+        d->myStatusLine = new QLabel( d->mainWidget, "StatusBar" );
+        updateStatusLine(ops->numDirs(), ops->numFiles());
         d->myStatusLine->adjustSize();
-	d->myStatusLine->setFrameStyle( QFrame::Panel | QFrame::Sunken );
-	d->myStatusLine->setAlignment( AlignHCenter | AlignVCenter );
-	d->myStatusLine->setMinimumSize( d->myStatusLine->sizeHint() );
-	d->boxLayout->addWidget( d->myStatusLine, 0 );
-	d->myStatusLine->show();
+        d->myStatusLine->setFrameStyle( QFrame::Panel | QFrame::Sunken );
+        d->myStatusLine->setAlignment( AlignHCenter | AlignVCenter );
+        d->myStatusLine->setMinimumSize( d->myStatusLine->sizeHint() );
+        d->boxLayout->addWidget( d->myStatusLine, 0 );
+        d->myStatusLine->show();
     }
 
     d->boxLayout->addSpacing(3);
 
-	setTabOrder(ops,  locationEdit);
-	setTabOrder(locationEdit, filterWidget);
-	setTabOrder(filterWidget, d->okButton);
-	setTabOrder(d->okButton, d->cancelButton);
-	setTabOrder(d->cancelButton, d->pathCombo);
+        setTabOrder(ops,  locationEdit);
+        setTabOrder(locationEdit, filterWidget);
+        setTabOrder(filterWidget, d->okButton);
+        setTabOrder(d->okButton, d->cancelButton);
+        setTabOrder(d->cancelButton, d->pathCombo);
 
 }
 
@@ -617,20 +613,20 @@ void KFileDialog::slotFilterChanged() // SLOT
 void KFileDialog::pathComboChanged( const QString& txt )
 {
     if ( d->completionLock )
-	return;
+        return;
 
     KURLComboBox *combo = d->pathCombo;
     QString text = txt;
     QString newText = text.left(combo->cursorPosition() -1);
     if ( text.at( 0 ) == '/' )
-	text.prepend(QString::fromLatin1("file:"));
+        text.prepend(QString::fromLatin1("file:"));
 
     KURL url( text );
 
     // don't mess with malformed urls or remote urls without directory or host
     if ( url.isMalformed() ||
-	 ( text.find(QString::fromLatin1("file:/")) != 0 &&
-	   ( url.directory().isNull() || url.host().isNull()) ) ) {
+         ( text.find(QString::fromLatin1("file:/")) != 0 &&
+           ( url.directory().isNull() || url.host().isNull()) ) ) {
         d->completionHack = newText;
         return;
     }
@@ -639,30 +635,30 @@ void KFileDialog::pathComboChanged( const QString& txt )
     // follow directories
     if ( combo->cursorPosition() != (int) combo->currentText().length() ) {
         d->completionHack = newText;
-	return;
+        return;
     }
 
     // the user is backspacing -> don't annoy him with completions
     if ( autoDirectoryFollowing && d->completionHack.find( newText ) == 0 ) {
         // but we can follow the directories, if configured so
 
-	// find out the current directory according to combobox and cd into
-	int l = text.length() - 1;
-	while (!text.isEmpty() && text[l] != '/')
-	    l--;
+        // find out the current directory according to combobox and cd into
+        int l = text.length() - 1;
+        while (!text.isEmpty() && text[l] != '/')
+            l--;
 
-	KURL newLocation(text.left(l+1));
+        KURL newLocation(text.left(l+1));
 
-	if ( !newLocation.isMalformed() && newLocation != ops->url() ) {
-	    setURL(newLocation, true);
-	    combo->setEditText(text);
-	}
+        if ( !newLocation.isMalformed() && newLocation != ops->url() ) {
+            setURL(newLocation, true);
+            combo->setEditText(text);
+        }
     }
 
     // typing forward, ending with a / -> cd into the directory
     else if ( autoDirectoryFollowing &&
-	      text.at(text.length()-1) == '/' && ops->url() != text ) {
-	d->selection = QString::null;
+              text.at(text.length()-1) == '/' && ops->url() != text ) {
+        d->selection = QString::null;
         setURL( text, false );
     }
 
@@ -686,7 +682,7 @@ void KFileDialog::urlEntered(const KURL& url)
     d->selection = QString::null;
 
     if ( d->pathCombo->count() != 0 ) { // little hack
-	d->pathCombo->setURL( url );
+        d->pathCombo->setURL( url );
     }
     const QString urlstr = url.url(1);
 
@@ -728,47 +724,47 @@ void KFileDialog::fillBookmarkMenu( KFileBookmark *parent, QPopupMenu *menu, int
     KFileBookmark *bm;
 
     for ( bm = parent->getChildren().first(); bm != NULL;
-	  bm = parent->getChildren().next() )
+          bm = parent->getChildren().next() )
     {
-	if ( bm->getType() == KFileBookmark::URL )
-	{
-	    QPixmap pix = KMimeType::pixmapForURL( bm->getURL() );
-	    if ( !pix.isNull() )
-	      menu->insertItem( pix, bm->getText(), id );
-	    else
-  	      menu->insertItem( bm->getText(), id );
-	    id++;
-	}
-	else
-	{
-	    QPopupMenu *subMenu = new QPopupMenu;
-	    menu->insertItem( bm->getText(), subMenu );
-	    fillBookmarkMenu( bm, subMenu, id );
-	}
+        if ( bm->getType() == KFileBookmark::URL )
+        {
+            QPixmap pix = KMimeType::pixmapForURL( bm->getURL() );
+            if ( !pix.isNull() )
+              menu->insertItem( pix, bm->getText(), id );
+            else
+              menu->insertItem( bm->getText(), id );
+            id++;
+        }
+        else
+        {
+            QPopupMenu *subMenu = new QPopupMenu;
+            menu->insertItem( bm->getText(), subMenu );
+            fillBookmarkMenu( bm, subMenu, id );
+        }
     }
 }
 
 void KFileDialog::toolbarCallback(int i) // SLOT
 {
     if (i == CONFIGURE_BUTTON) {
-	KFileDialogConfigureDlg conf(this, "filedlgconf");
-	if (conf.exec() == QDialog::Accepted) {
+        KFileDialogConfigureDlg conf(this, "filedlgconf");
+        if (conf.exec() == QDialog::Accepted) {
 
-	    KSimpleConfig *c = new KSimpleConfig(QString::fromLatin1("kdeglobals"),
-						 false);
-	    c->setGroup( ConfigGroup );
+            KSimpleConfig *c = new KSimpleConfig(QString::fromLatin1("kdeglobals"),
+                                                 false);
+            c->setGroup( ConfigGroup );
 
-	    delete d->boxLayout; // this removes all child layouts too
-	    d->boxLayout = 0;
+            delete d->boxLayout; // this removes all child layouts too
+            d->boxLayout = 0;
 
-	    d->showStatusLine =
-		c->readBoolEntry(QString::fromLatin1("ShowStatusLine"), DefaultShowStatusLine);
-	    delete c;
-	    kdDebug(kfile_area) << "showStatusLine " << d->showStatusLine
-				<< endl;
+            d->showStatusLine =
+                c->readBoolEntry(QString::fromLatin1("ShowStatusLine"), DefaultShowStatusLine);
+            delete c;
+            kdDebug(kfile_area) << "showStatusLine " << d->showStatusLine
+                                << endl;
 
-	    initGUI(); // add them back to the layout managment
-	}
+            initGUI(); // add them back to the layout managment
+        }
     }
 }
 
@@ -778,48 +774,48 @@ void KFileDialog::toolbarPressedCallback(int i)
 {
     int id= idStart;
     if (i == HOTLIST_BUTTON) {
-	// Build the menu on first use
-	if (bookmarksMenu == 0) {
-	    bookmarksMenu= new QPopupMenu;
-	    bookmarksMenu->insertItem(i18n("Add to bookmarks"), this,
-				      SLOT(addToBookmarks()));
-	    bookmarksMenu->insertSeparator();
-	    fillBookmarkMenu( bookmarks->getRoot(), bookmarksMenu, id );
-	}
+        // Build the menu on first use
+        if (bookmarksMenu == 0) {
+            bookmarksMenu= new QPopupMenu;
+            bookmarksMenu->insertItem(i18n("Add to bookmarks"), this,
+                                      SLOT(addToBookmarks()));
+            bookmarksMenu->insertSeparator();
+            fillBookmarkMenu( bookmarks->getRoot(), bookmarksMenu, id );
+        }
 
-	QPoint p;
-	KToolBarButton *btn= toolbar->getButton(HOTLIST_BUTTON);
-	p= btn->mapToGlobal(QPoint(0, btn->height()));
-	bookmarksMenu->move(p);
+        QPoint p;
+        KToolBarButton *btn= toolbar->getButton(HOTLIST_BUTTON);
+        p= btn->mapToGlobal(QPoint(0, btn->height()));
+        bookmarksMenu->move(p);
 
-	int choice= bookmarksMenu->exec();
-	QEvent ev(QEvent::Leave);
-	QMouseEvent mev (QEvent::MouseButtonRelease,
-			 QCursor::pos(), LeftButton, LeftButton);
-	QApplication::sendEvent(btn, &ev);
-	QApplication::sendEvent(btn, &mev);
+        int choice= bookmarksMenu->exec();
+        QEvent ev(QEvent::Leave);
+        QMouseEvent mev (QEvent::MouseButtonRelease,
+                         QCursor::pos(), LeftButton, LeftButton);
+        QApplication::sendEvent(btn, &ev);
+        QApplication::sendEvent(btn, &mev);
 
-	if (choice == 0) {
-	    // add current to bookmarks
-	    addToBookmarks();
-	}
-	else if (choice > 0) {
-	    // Select a bookmark (this will not work if there are submenus)
-	    int i= 1;
-	    kdDebug(kfile_area) << "Bookmark: choice was " << choice << endl;
-	    KFileBookmark *root= bookmarks->getRoot();
-	    for (KFileBookmark *b= root->getChildren().first();
-		 b != 0; b= root->getChildren().next()) {
-		if (i == choice) {
+        if (choice == 0) {
+            // add current to bookmarks
+            addToBookmarks();
+        }
+        else if (choice > 0) {
+            // Select a bookmark (this will not work if there are submenus)
+            int i= 1;
+            kdDebug(kfile_area) << "Bookmark: choice was " << choice << endl;
+            KFileBookmark *root= bookmarks->getRoot();
+            for (KFileBookmark *b= root->getChildren().first();
+                 b != 0; b= root->getChildren().next()) {
+                if (i == choice) {
                     kdDebug(kfile_area) << "Bookmark: opening " << b->getURL() << endl;
-		    setURL(b->getURL(), true);
-		}
-		i++;
-	    }
-	}
+                    setURL(b->getURL(), true);
+                }
+                i++;
+            }
+        }
 
-	delete bookmarksMenu;
-	bookmarksMenu= 0;
+        delete bookmarksMenu;
+        bookmarksMenu= 0;
     }
 }
 
@@ -828,8 +824,8 @@ void KFileDialog::setSelection(const QString& url)
     kdDebug(kfile_area) << "setSelection " << url << endl;
 
     if (url.isEmpty()) {
-	d->selection = QString::null;
-	return;
+        d->selection = QString::null;
+        return;
     }
 
     KURL u;
@@ -840,7 +836,7 @@ void KFileDialog::setSelection(const QString& url)
 
     if (u.isMalformed()) { // if it still is
         kdWarning() << url << " is not a correct argument for setSelection!" << endl;
-	return;
+        return;
     }
 
     /* we strip the first / from the path to avoid file://usr which means
@@ -849,33 +845,33 @@ void KFileDialog::setSelection(const QString& url)
     KFileViewItem i(-1, -1, u, true );
     //    KFileViewItem i(u.path());
     if ( i.isDir() && u.isLocalFile() && QFile::exists( u.path() ) )
-	// trust isDir() only if the file is
-	// local (we cannot stat non-local urls) and if it exists!
-	// (as KFileItem does not check if the file exists or not
-	// -> the statbuffer is undefined -> isDir() is unreliable) (Simon)
-	setURL(u, true);
+        // trust isDir() only if the file is
+        // local (we cannot stat non-local urls) and if it exists!
+        // (as KFileItem does not check if the file exists or not
+        // -> the statbuffer is undefined -> isDir() is unreliable) (Simon)
+        setURL(u, true);
     else {
-	QString filename = u.url();
-	int sep = filename.findRev('/');
-	if (sep >= 0) { // there is a / in it
-	    setURL(filename.left(sep), true);
-	    // filename must be decoded, or "name with space" would become
-	    // "name%20with%20space", so we use KURL::fileName()
-	    filename = u.fileName();
-	    kdDebug(kfile_area) << "filename " << filename << endl;
-	    d->selection = filename;
-	    locationEdit->setCurrentItem( 0 );
-	    locationEdit->setEditText( filename );
-	}
+        QString filename = u.url();
+        int sep = filename.findRev('/');
+        if (sep >= 0) { // there is a / in it
+            setURL(filename.left(sep), true);
+            // filename must be decoded, or "name with space" would become
+            // "name%20with%20space", so we use KURL::fileName()
+            filename = u.fileName();
+            kdDebug(kfile_area) << "filename " << filename << endl;
+            d->selection = filename;
+            locationEdit->setCurrentItem( 0 );
+            locationEdit->setEditText( filename );
+        }
 
-	d->url = KURL(ops->url(), filename);
+        d->url = KURL(ops->url(), filename);
     }
 }
 
 void KFileDialog::slotLoadingFinished()
 {
     if ( !d->selection.isNull() )
-	ops->setCurrentItem( d->selection );
+        ops->setCurrentItem( d->selection );
 }
 
 
@@ -888,22 +884,22 @@ void KFileDialog::dirCompletion( const QString& dir ) // SLOT
 
     QString text = dir;
     if ( text.at( 0 ) == '/' )
-	text.prepend( QString::fromLatin1("file:") );
+        text.prepend( QString::fromLatin1("file:") );
 
     if ( KURL(text).isMalformed() )
-	return; // invalid entry in path combo
+        return; // invalid entry in path combo
 
     d->completionLock = true;
 
     if (text.left(base.length()) == base) {
-	QString complete =
-	    ops->makeDirCompletion( text.right(text.length() - base.length()));
+        QString complete =
+            ops->makeDirCompletion( text.right(text.length() - base.length()));
 
-	if (!complete.isNull()) {
-	    QString newText = base + complete;
-	    d->pathCombo->setCompletedText( newText );
-	    d->url = newText;
-	}
+        if (!complete.isNull()) {
+            QString newText = base + complete;
+            d->pathCombo->setCompletedText( newText );
+            d->url = newText;
+        }
     }
     d->completionLock = false;
 }
@@ -914,42 +910,42 @@ void KFileDialog::fileCompletion( const QString& file )
     d->completionLock = true;
     QString text = ops->makeCompletion( file );
     if ( !text.isEmpty() )
-	locationEdit->setCompletion( text );
+        locationEdit->setCompletion( text );
     d->completionLock = false;
 }
 
 void KFileDialog::updateStatusLine(int dirs, int files)
 {
     if (!d->myStatusLine)
-	return;
+        return;
 
     QString lStatusText;
     QString lFileText, lDirText;
 
     if ( dirs == 1 )
-	lDirText = i18n("directory");
+        lDirText = i18n("directory");
     else
-	lDirText = i18n("directories");
+        lDirText = i18n("directories");
 
     if ( files == 1 )
         lFileText = i18n("file");
     else
-	lFileText = i18n("files");
+        lFileText = i18n("files");
 
     if (dirs != 0 && files != 0) {
-	lStatusText = i18n("%1 %2 and %3 %4")
-	    .arg(dirs).arg( lDirText )
-	    .arg(files).arg( lFileText );
+        lStatusText = i18n("%1 %2 and %3 %4")
+            .arg(dirs).arg( lDirText )
+            .arg(files).arg( lFileText );
     } else if ( dirs == 0 )
-	lStatusText = i18n("%1 %2").arg(files).arg( lFileText );
+        lStatusText = i18n("%1 %2").arg(files).arg( lFileText );
     else
-	lStatusText = i18n("%1 %2").arg(dirs).arg( lDirText );
+        lStatusText = i18n("%1 %2").arg(dirs).arg( lDirText );
 
     d->myStatusLine->setText(lStatusText);
 }
 
 QString KFileDialog::getOpenFileName(const QString& dir, const QString& filter,
-				     QWidget *parent, const QString& caption)
+                                     QWidget *parent, const QString& caption)
 {
     KFileDialog dlg(dir, filter, parent, "filedialog", true);
 
@@ -965,7 +961,7 @@ QString KFileDialog::getOpenFileName(const QString& dir, const QString& filter,
 }
 
 QStringList KFileDialog::getOpenFileNames(const QString& dir,const QString& filter,
-				     QWidget *parent, const QString& caption)
+                                     QWidget *parent, const QString& caption)
 {
     KFileDialog dlg(dir, filter, parent, "filedialog", true);
 
@@ -982,7 +978,7 @@ QStringList KFileDialog::getOpenFileNames(const QString& dir,const QString& filt
 }
 
 KURL KFileDialog::getOpenURL(const QString& dir, const QString& filter,
-				QWidget *parent, const QString& caption)
+                                QWidget *parent, const QString& caption)
 {
     KFileDialog dlg(dir, filter, parent, "filedialog", true);
 
@@ -998,9 +994,9 @@ KURL KFileDialog::getOpenURL(const QString& dir, const QString& filter,
 }
 
 KURL::List KFileDialog::getOpenURLs(const QString& dir,
-					  const QString& filter,
-					  QWidget *parent,
-					  const QString& caption)
+                                          const QString& filter,
+                                          QWidget *parent,
+                                          const QString& caption)
 {
     KFileDialog dlg(dir, filter, parent, "filedialog", true);
 
@@ -1011,16 +1007,16 @@ KURL::List KFileDialog::getOpenURLs(const QString& dir,
     KURL::List list = dlg.selectedURLs();
     KURL::List::ConstIterator it = list.begin();
     for( ; it != list.end(); ++it ) {
-	if ( !(*it).isMalformed() )
-	    KRecentDocument::add( (*it).url(-1), false );
+        if ( !(*it).isMalformed() )
+            KRecentDocument::add( (*it).url(-1), false );
     }
 
     return list;
 }
 
 QString KFileDialog::getExistingDirectory(const QString& dir,
-					  QWidget *parent,
-					  const QString& caption)
+                                          QWidget *parent,
+                                          const QString& caption)
 {
     KFileDialog dlg(dir, QString::null, parent, "filedialog", true);
     dlg.setMode(KFile::Directory);
@@ -1034,19 +1030,19 @@ QString KFileDialog::getExistingDirectory(const QString& dir,
 KURL KFileDialog::selectedURL() const
 {
     if ( result() == QDialog::Accepted )
-	return d->url;
+        return d->url;
     else
-	return KURL();
+        return KURL();
 }
 
 KURL::List KFileDialog::selectedURLs() const
 {
     KURL::List list;
     if ( result() == QDialog::Accepted ) {
-	if ( (ops->mode() & KFile::Files) == KFile::Files )
-	    list = parseSelectedURLs();
-	else
-	    list.append( d->url );
+        if ( (ops->mode() & KFile::Files) == KFile::Files )
+            list = parseSelectedURLs();
+        else
+            list.append( d->url );
     }
     return list;
 }
@@ -1055,27 +1051,27 @@ KURL::List KFileDialog::selectedURLs() const
 KURL::List& KFileDialog::parseSelectedURLs() const
 {
     if ( d->filenames.isEmpty() ) {
-	return d->urlList;
+        return d->urlList;
     }
 
     d->urlList.clear();
     if ( d->filenames.contains( '/' )) { // assume _one_ absolute filename
-	static const QString &prot = KGlobal::staticQString(":/");
-	KURL u;
-	if ( d->filenames.find( prot ) != -1 )
-	    u = d->filenames;
-	else
-	    u.setPath( d->filenames );
+        static const QString &prot = KGlobal::staticQString(":/");
+        KURL u;
+        if ( d->filenames.find( prot ) != -1 )
+            u = d->filenames;
+        else
+            u.setPath( d->filenames );
 
-	if ( !u.isMalformed() )
-	    d->urlList.append( u );
-	else
-	    KMessageBox::error( d->mainWidget,
-				i18n("The chosen filename(s) don't\nappear to be valid."), i18n("Invalid filename(s)") );
+        if ( !u.isMalformed() )
+            d->urlList.append( u );
+        else
+            KMessageBox::error( d->mainWidget,
+                                i18n("The chosen filename(s) don't\nappear to be valid."), i18n("Invalid filename(s)") );
     }
 
     else
-	d->urlList = tokenize( d->filenames );
+        d->urlList = tokenize( d->filenames );
 
     d->filenames = QString::null; // indicate that we parsed that one
 
@@ -1092,35 +1088,35 @@ KURL::List KFileDialog::tokenize( const QString& line ) const
 
     int count = line.contains( '"' );
     if ( count == 0 ) { // no " " -> assume one single file
-	u.setFileName( line );
-	if ( !u.isMalformed() )
-	    urls.append( u );
+        u.setFileName( line );
+        if ( !u.isMalformed() )
+            urls.append( u );
 
-	return urls;
+        return urls;
     }
 
     if ( (count % 2) == 1 ) { // odd number of " -> error (FIXME: Messagebox?)
-	QWidget *that = const_cast<KFileDialog *>(this);
-	KMessageBox::sorry(that, i18n("The requested filenames\n%1\ndon't look valid to me.\nMake sure every filename is enclosed in doublequotes").arg(line), i18n("Filename error"));
-	return urls;
+        QWidget *that = const_cast<KFileDialog *>(this);
+        KMessageBox::sorry(that, i18n("The requested filenames\n%1\ndon't look valid to me.\nMake sure every filename is enclosed in doublequotes").arg(line), i18n("Filename error"));
+        return urls;
     }
 
     int start = 0;
     int index1 = -1, index2 = -1;
     while ( true ) {
-	index1 = line.find( '"', start );
-	index2 = line.find( '"', index1 + 1 );
+        index1 = line.find( '"', start );
+        index2 = line.find( '"', index1 + 1 );
 
-	if ( index1 < 0 )
-	    break;
+        if ( index1 < 0 )
+            break;
 
-	// get everything between the " "
-	name = line.mid( index1 + 1, index2 - index1 - 1 );
-	u.setFileName( name );
-	if ( !u.isMalformed() )
-	    urls.append( u );
+        // get everything between the " "
+        name = line.mid( index1 + 1, index2 - index1 - 1 );
+        u.setFileName( name );
+        if ( !u.isMalformed() )
+            urls.append( u );
 
-	start = index2 + 1;
+        start = index2 + 1;
     }
     return urls;
 }
@@ -1146,26 +1142,26 @@ QStringList KFileDialog::selectedFiles() const
     QStringList list;
 
     if ( result() == QDialog::Accepted ) {
-	QString name;
-	QString url = ops->url().path( +1 );
-	// FIXME: check for local files?
+        QString name;
+        QString url = ops->url().path( +1 );
+        // FIXME: check for local files?
 
-	static QRegExp r( QString::fromLatin1( "\"" ) );
-	static const QString &empty = KGlobal::staticQString("");
-	QTextStream t( &(d->filenames), IO_ReadOnly );
-	while ( !t.eof() ) {
-	    t >> name;
-	    name.replace( r, empty );
-	    name.prepend( url );
-	    list.append( name );
-	}
+        static QRegExp r( QString::fromLatin1( "\"" ) );
+        static const QString &empty = KGlobal::staticQString("");
+        QTextStream t( &(d->filenames), IO_ReadOnly );
+        while ( !t.eof() ) {
+            t >> name;
+            name.replace( r, empty );
+            name.prepend( url );
+            list.append( name );
+        }
     }
     return list;
 }
 
 QString KFileDialog::getSaveFileName(const QString& dir, const QString& filter,
-				     QWidget *parent,
-				     const QString& caption)
+                                     QWidget *parent,
+                                     const QString& caption)
 {
     KFileDialog dlg(dir, filter, parent, "filedialog", true);
 
@@ -1181,8 +1177,8 @@ QString KFileDialog::getSaveFileName(const QString& dir, const QString& filter,
 }
 
 KURL KFileDialog::getSaveURL(const QString& dir, const QString& filter,
-				     QWidget *parent,
-				     const QString& caption)
+                                     QWidget *parent,
+                                     const QString& caption)
 {
     KFileDialog dlg(dir, filter, parent, "filedialog", true);
 
@@ -1216,21 +1212,21 @@ KFile::Mode KFileDialog::mode() const
 void KFileDialog::readConfig( KConfig *kc, const QString& group )
 {
     if ( !kc )
-	return;
+        return;
 
     QString oldGroup = kc->group();
     if ( !group.isEmpty() )
-	kc->setGroup( group );
+        kc->setGroup( group );
 
     ops->readConfig( kc, group );
 
     KURLComboBox *combo = d->pathCombo;
     combo->setMaxItems( kc->readNumEntry( RecentURLsNumber,
-					  DefaultRecentURLsNumber ) );
+                                          DefaultRecentURLsNumber ) );
     combo->setURLs( kc->readListEntry( RecentURLs ) );
     combo->setURL( ops->url() );
     autoDirectoryFollowing = kc->readBoolEntry( AutoDirectoryFollowing,
-						DefaultDirectoryFollowing );
+                                                DefaultDirectoryFollowing );
 
 
     int w, h;
@@ -1244,7 +1240,7 @@ void KFileDialog::readConfig( KConfig *kc, const QString& group )
     int w1 = minimumSize().width();
     int w2 = toolbar->sizeHint().width() + 10;
     if (w1 < w2)
-	setMinimumWidth(w2);
+        setMinimumWidth(w2);
 
     resize(w, h);
     kc->setGroup( oldGroup );
@@ -1253,11 +1249,11 @@ void KFileDialog::readConfig( KConfig *kc, const QString& group )
 void KFileDialog::saveConfig( KConfig *kc, const QString& group )
 {
     if ( !kc )
-	return;
+        return;
 
     QString oldGroup = kc->group();
     if ( !group.isEmpty() )
-	kc->setGroup( group );
+        kc->setGroup( group );
 
     QWidget *desk = kapp->desktop();
     kc->writeEntry( RecentURLs, d->pathCombo->urls() );
@@ -1280,7 +1276,7 @@ void KFileDialog::readRecentFiles( KConfig *kc )
 #endif
     kc->reparseConfiguration();
     locationEdit->setMaxItems( kc->readNumEntry( RecentFilesNumber,
-						 DefaultRecentURLsNumber ) );
+                                                 DefaultRecentURLsNumber ) );
     locationEdit->setURLs( kc->readListEntry( RecentFiles ) );
     locationEdit->insertItem( QString::null, 0 ); // dummy item without pixmap
     locationEdit->setCurrentItem( 0 );
@@ -1308,18 +1304,18 @@ void KFileComboBox::setCompletion(const QString& completion)
     int pos = cursorPosition();
 
     if ( currentText() != completion ) {
-	//	edit->blockSignals( true ); // FIXME, to be determined
-	setEditText( completion );
-	//	edit->blockSignals( false );
+        //      edit->blockSignals( true ); // FIXME, to be determined
+        setEditText( completion );
+        //      edit->blockSignals( false );
     }
 
     if (KGlobalSettings::completionMode() == KGlobalSettings::CompletionAuto ||
-	KGlobalSettings::completionMode() == KGlobalSettings::CompletionMan ) {
-	lineEdit()->setSelection( pos, currentText().length() );
-	lineEdit()->setCursorPosition( pos );
+        KGlobalSettings::completionMode() == KGlobalSettings::CompletionMan ) {
+        lineEdit()->setSelection( pos, currentText().length() );
+        lineEdit()->setCursorPosition( pos );
     }
     else
-      	lineEdit()->setCursorPosition( completion.length() );
+        lineEdit()->setCursorPosition( completion.length() );
 }
 
 
