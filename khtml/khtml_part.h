@@ -222,7 +222,7 @@ public:
    * error description a as page, depending on the users configuration.
    * @p job is the job that signaled the error situation
    */
-  virtual void showError(KIO::Job* job);
+  virtual void showError( KIO::Job* job );
 
   /**
    * Returns a reference to the DOM HTML document (for non-HTML documents, returns null)
@@ -274,15 +274,7 @@ public:
   bool metaRefreshEnabled() const;
 
   /**
-   * Execute the specified snippet of JavaScript code.
-   *
-   * Returns @p true if JavaScript was enabled, no error occured
-   * and the code returned true itself or @p false otherwise.
-   * @deprecated, use the one below.
-   */
-  QVariant executeScript( const QString &script );
-  /**
-   * Same as above except the Node parameter specifying the 'this' value.
+   * Same as executeScript( const QString & ) except with the Node parameter specifying the 'this' value.
    */
   QVariant executeScript( const DOM::Node &n, const QString &script );
 
@@ -352,7 +344,7 @@ public:
    * should be loaded. ( default false - everything is loaded, if the more specific
    * options allow )
    */
-  void setOnlyLocalReferences(bool enable);
+  void setOnlyLocalReferences( bool enable );
 
   /**
    * Returnd whether references should be loaded ( default false )
@@ -360,11 +352,11 @@ public:
   bool onlyLocalReferences() const;
 
 #ifndef KDE_NO_COMPAT
-  void enableJScript(bool e) { setJScriptEnabled(e); }
-  void enableJava(bool e) { setJavaEnabled(e); }
-  void enablePlugins(bool e) { setPluginsEnabled(e); }
-  void autoloadImages(bool e) { setAutoloadImages(e); }
-  void enableMetaRefresh(bool e) { setMetaRefreshEnabled(e); }
+  void enableJScript( bool e ) { setJScriptEnabled(e); }
+  void enableJava( bool e ) { setJavaEnabled(e); }
+  void enablePlugins( bool e ) { setPluginsEnabled(e); }
+  void autoloadImages( bool e ) { setAutoloadImages(e); }
+  void enableMetaRefresh( bool e ) { setMetaRefreshEnabled(e); }
   bool setCharset( const QString &, bool ) { return true; }
 
   KURL baseURL() const;
@@ -451,7 +443,7 @@ public:
   /**
    * Paints the HTML page to a QPainter. See @ref KHTMLView::paint for details
    */
-  void paint(QPainter *, const QRect &, int = 0, bool * = 0);
+  void paint( QPainter *, const QRect &, int = 0, bool * = 0 );
 
   /**
    * Sets the encoding the page uses.
@@ -475,7 +467,7 @@ public:
    * This gives a wide range of possibilities to
    * change the layout of the page.
    */
-  void setUserStyleSheet(const KURL &url);
+  void setUserStyleSheet( const KURL &url );
 
   /**
    * Sets a user defined style sheet to be used on top of the HTML 4
@@ -484,7 +476,7 @@ public:
    * This gives a wide range of possibilities to
    * change the layout of the page.
    */
-  void setUserStyleSheet(const QString &styleSheet);
+  void setUserStyleSheet( const QString &styleSheet );
 
 public:
 
@@ -708,12 +700,12 @@ public:
   /**
    * Loads a style sheet into the stylesheet cache.
    */
-  void preloadStyleSheet(const QString &url, const QString &stylesheet);
+  void preloadStyleSheet( const QString &url, const QString &stylesheet );
 
   /**
    * Loads a script into the script cache.
    */
-  void preloadScript(const QString &url, const QString &script);
+  void preloadScript( const QString &url, const QString &script );
 
   /**
    * @internal
@@ -729,7 +721,7 @@ signals:
   /**
    * Emitted when the user clicks the right mouse button on the document.
    */
-  void popupMenu(const QString &url, const QPoint &point);
+  void popupMenu( const QString &url, const QPoint &point );
 
   /**
    * This signal is emitted when the selection changes.
@@ -743,7 +735,7 @@ signals:
    * has explicitly been deactivated without a new one
    * becoming active.
    */
-  void nodeActivated(const DOM::Node &);
+  void nodeActivated( const DOM::Node & );
 
   /**
    * @internal */
@@ -763,7 +755,7 @@ protected:
    * @p text kio additional information text.
    * @p url the url that triggered the error.
    */
-  void htmlError(int errorCode, const QString& text, const KURL& reqUrl);
+  void htmlError( int errorCode, const QString& text, const KURL& reqUrl );
 
   virtual void customEvent( QCustomEvent *event );
 
@@ -816,8 +808,8 @@ protected:
 
   // This is for RenderPartObject. We want to ask the 'download plugin?'
   // question only once per mimetype
-  bool pluginPageQuestionAsked(const QString& mimetype) const;
-  void setPluginPageQuestionAsked(const QString& mimetype);
+  bool pluginPageQuestionAsked( const QString& mimetype ) const;
+  void setPluginPageQuestionAsked( const QString& mimetype );
 
 public slots:
 
@@ -830,7 +822,7 @@ public slots:
    *
    * @param node The node to focus
    */
-  void setActiveNode(const DOM::Node &node);
+  void setActiveNode( const DOM::Node &node );
 
   /**
    * Stops all animated images on the current and child pages
@@ -838,6 +830,15 @@ public slots:
   void stopAnimations();
 
   QCString dcopObjectId() const;
+
+  /**
+   * Execute the specified snippet of JavaScript code.
+   *
+   * Returns @p true if JavaScript was enabled, no error occured
+   * and the code returned true itself or @p false otherwise.
+   * @deprecated, use the one below.
+   */
+  QVariant executeScript( const QString &script );
 
 private slots:
 
@@ -873,7 +874,7 @@ private slots:
   /**
    * @internal
    */
-  void slotRedirection(KIO::Job*, const KURL&);
+  void slotRedirection( KIO::Job*, const KURL& );
   /**
    * @internal
    */
@@ -1002,17 +1003,17 @@ private slots:
   /*
    * @internal
    */
-  void slotJobPercent(KIO::Job*, unsigned long);
+  void slotJobPercent( KIO::Job*, unsigned long );
 
   /*
    * @internal
    */
-  void slotJobDone(KIO::Job*);
+  void slotJobDone( KIO::Job* );
 
   /*
    * @internal
    */
-  void slotJobSpeed(KIO::Job*, unsigned long);
+  void slotJobSpeed( KIO::Job*, unsigned long );
 
   /**
    * @internal
@@ -1103,16 +1104,16 @@ private:
 
   khtml::ChildFrame *recursiveFrameRequest( const KURL &url, const KParts::URLArgs &args, bool callParent = true );
 
-  bool checkLinkSecurity(const KURL &linkURL,const QString &message = QString::null, const QString &button = QString::null);
-  QVariant executeScript(QString filename, int baseLine, const DOM::Node &n, const QString &script);
+  bool checkLinkSecurity( const KURL &linkURL,const QString &message = QString::null, const QString &button = QString::null );
+  QVariant executeScript( QString filename, int baseLine, const DOM::Node &n, const QString &script );
 
   KJSProxy *jScript();
 
   KHTMLPart *opener();
   long cacheId() const;
-  void setOpener(KHTMLPart *_opener);
+  void setOpener( KHTMLPart *_opener );
   bool openedByJS();
-  void setOpenedByJS(bool _openedByJS);
+  void setOpenedByJS( bool _openedByJS );
 
   void checkEmitLoadEvent();
   void emitLoadEvent();
