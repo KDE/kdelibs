@@ -30,6 +30,8 @@
 #include <qclipboard.h>
 #include <qtimer.h>
 #include <kbutton.h>
+#include <kglobal.h>
+#include <kiconloader.h>
 #include <kfiledialog.h>
 #include "kab.h"
 #include "debug.h"
@@ -72,7 +74,6 @@ AddressWidget::AddressWidget(QWidget* parent,  const char* name, bool readonly_)
   string path;
   string lastCurrentKey;
   KeyValueMap* keys;
-  QPixmap pixmap;
   // ----- 
   if(!readonly_ && isRO())
     { // if r/w requested, but file locked
@@ -169,18 +170,13 @@ AddressWidget::AddressWidget(QWidget* parent,  const char* name, bool readonly_)
   // -----
   keys->get("Background", bgFilename);
   CHECK(keys->get("Background", bgFilename));
-  path=locate( "data", "" );
-  path+=(string)"/kab/pics/"+bgFilename;
+  path=(string) KGlobal::iconLoader()->getIconPath(QString(bgFilename.c_str()) ).data();
   LG(GUARD, "AddressWidget constructor: loading widget background "
      "from file \n             \"%s\".\n", path.c_str());
   card->setBackground(path.c_str());
-  // -----
-  path=locate( "data", "" );
-  path+=(string)"/kab/pics/"+dlgBackground;
-  LG(GUARD, "AddressWidget constructor: loading dialog background "
-     "from file \n             \"%s\".\n", path.c_str());
-  pixmap.load(path.c_str());
-  DialogBase::setBackgroundTile(&pixmap);
+
+  DialogBase::setBackgroundTile( &Icon( QString( dlgBackground.c_str()) ) );
+
   // -----
   timer=new QTimer(this);
   CHECK(timer!=0);
