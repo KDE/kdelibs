@@ -28,6 +28,8 @@ DEALINGS IN THE SOFTWARE.
 #define __KMANAGERSELECTION_H
 
 #include <qobject.h>
+#include <kdelibs_export.h>
+
 #ifdef Q_WS_X11 // FIXME(E)
 
 #include <X11/Xlib.h>
@@ -162,7 +164,7 @@ class KSelectionWatcherPrivate;
  @since 3.2
  @short ICCCM manager selection watching
 */
-class KSelectionWatcher
+class KDECORE_EXPORT KSelectionWatcher
     : public QObject
     {
     Q_OBJECT

@@ -27,6 +27,7 @@
 
 #include <qvaluelist.h>
 #include <qwindowdefs.h>
+#include <kdelibs_export.h>
 #include <X11/Xlib.h>
 
 /**
@@ -53,7 +54,7 @@
  * @author Lubos Lunak <l.lunak@kde.org>
  * @short Handler for X errors
  */
-class KXErrorHandler
+class KDECORE_EXPORT KXErrorHandler
     {
     public:
         /**

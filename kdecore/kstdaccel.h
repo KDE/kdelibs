@@ -44,7 +44,7 @@ namespace KStdAccel
   /**
    * Defines the identifier of all standard accelerators.
    */
-  KDECORE_EXPORT enum StdAccel {
+  enum StdAccel {
     AccelNone,
     // File menu
     Open, New, Close, Save,

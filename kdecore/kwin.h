@@ -58,7 +58,7 @@ class NETWinInfo;
  * @see NetWinInfo
  * @author Matthias Ettrich (ettrich@kde.org)
 */
-class KWin
+class KDECORE_EXPORT KWin
 {
 public:
 
