@@ -291,7 +291,7 @@ bool AudioIOSun::open()
 
     int tolerance = _samplingRate/10+1000;
 
-    if (abs(auinfo.play.sample_rate - _samplingRate) > tolerance)
+    if (abs(int(auinfo.play.sample_rate - _samplingRate)) > tolerance)
     {
 		_error = "can't set requested playback sampling rate";
 
@@ -305,7 +305,7 @@ bool AudioIOSun::open()
     }
 
     if (param(direction) == 3 &&
-		abs(auinfo.record.sample_rate - _samplingRate) > tolerance)
+		abs(int(auinfo.record.sample_rate - _samplingRate)) > tolerance)
     {
 		_error = "can't set requested record sampling rate";
 

@@ -175,6 +175,8 @@ public:
 	~SetSystemThreads() { SystemThreads::init(0); }
 } initOnStartup;
 
+}
+
 };
-};
+
 #endif
