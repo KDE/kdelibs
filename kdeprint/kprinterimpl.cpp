@@ -494,10 +494,17 @@ int KPrinterImpl::autoConvertFiles(KPrinter *printer, QStringList& files, bool f
 		else if (mimeTypes.findIndex(mime) == -1)
 		{
 			if ((result=KMessageBox::warningYesNoCancel(NULL,
-					       i18n("The file format %1 is not directly supported by the current print system. "
-					            "KDE can try to convert this file automatically to a supported format. But you can "
-						    "still try to send the file to the printer without any conversion. Do you want KDE "
-						    "to try to convert this file to %2?").arg(mime).arg(primaryMimeType),
+					       i18n("<qt>The file format <em> %1 </em> is not directly supported by the current print system. You "
+						    "now have 3 options: "
+						    "<ul> "
+						    "<li> KDE can attempt to convert this file automatically to a supported format. "
+						    "(Select <em>Convert</em>) </li>"
+						    "<li> You can try to send the file to the printer without any conversion. "
+						    "(Select <em>Keep</em>) </li>"
+						    "<li> You can cancel the printjob. "
+						    "(Select <em>Cancel</em>) </li>"
+						    "</ul> "
+						    "Do you want KDE to attempt and convert this file to %2?</qt>").arg(mime).arg(primaryMimeType),
 					       QString::null,
 					       i18n("Convert"),
 					       i18n("Keep"),
@@ -507,20 +514,19 @@ int KPrinterImpl::autoConvertFiles(KPrinter *printer, QStringList& files, bool f
 				QStringList	flist = KXmlCommandManager::self()->autoConvert(mime, primaryMimeType);
 				if (flist.count() == 0)
 				{
-					if (KMessageBox::warningYesNo(NULL,
-								      i18n("No appropriate filter was found to convert the file "
-								           "format %1 into %2. Do you want to print the "
-									   "file using its original format?").arg(mime).arg(primaryMimeType),
-								      QString::null,
-								      i18n("Print"),
-								      i18n("Skip")) == KMessageBox::No)
-					{
-						if (flag)
-							QFile::remove(*it);
-						it = files.remove(it);
-					}
-					else
-						++it;
+					KMessageBox::error(NULL,
+							i18n("<qt>No appropriate filter was found to convert the file format %1 into %2.<br>"
+							     "<ul>"
+							     "<li>Go to <i>System Options -> Commands</i> to look through the list of "
+							     "possible filters. Each filter executes an external program.</li>"
+							     "<li> See if the required extermal program is available.on your "
+							     "system.</li>"
+							     "</ul>"
+							     "</qt>").arg(mime).arg(primaryMimeType),
+							      i18n("Print"));
+					if (flag)
+						QFile::remove(*it);
+					it = files.remove(it);
 					continue;
 				}
 				QStringList	l(*it);

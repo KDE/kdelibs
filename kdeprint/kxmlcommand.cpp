@@ -733,6 +733,10 @@ QStringList KXmlCommandManager::autoConvert(const QString& mimesrc, const QStrin
 		const QValueList<KXmlCommand*>	l = d->m_mimemap[mimesrc];
 		for (QValueList<KXmlCommand*>::ConstIterator it=l.begin(); it!=l.end(); ++it)
 		{
+			// check filter availability
+			if (!KdeprintChecker::check((*it)->requirements()))
+				continue;
+
 			// direct filter: shortest path => return immediately
 			if ((*it)->mimeType() == mimedest)
 			{
