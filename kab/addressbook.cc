@@ -619,9 +619,9 @@ AddressBook::ErrorCode AddressBook::load(const QString& filename)
 	} else {
 	  if(KMessageBox::questionYesNo
 	     (this,
-	      i18n("The file\n\"")
-	      +fname+"\"\n"+
-	      i18n(" cannot be found. Create a new one?"), i18n("No Such File"),
+	      i18n("The file \"%1\" cannot be found. "
+	           "Create a new one?").arg(fname), 
+	      i18n("No Such File"),
 	      i18n("OK"), i18n("Cancel"))==0)
 	    {
 	      if(createNew(fname)==NoError)
