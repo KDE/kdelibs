@@ -357,7 +357,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
       d->m_bAutoLoadImages = config->readBoolEntry( "AutoLoadImages", true );
 
     if ( reset || config->hasKey( "UnfinishedImageFrame" ) )
-      d->m_bUnfinishedImageFrame = config->readBoolEntry( "UnfinishedImageFrame", false );
+      d->m_bUnfinishedImageFrame = config->readBoolEntry( "UnfinishedImageFrame", true );
 
     if ( reset || config->hasKey( "ShowAnimations" ) )
     {
