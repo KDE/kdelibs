@@ -61,11 +61,10 @@ public:
     QString m_toolTip;
     QString m_whatsThis;
     QString m_statusText;
-    bool m_enabled : 1;
-    
     QString m_iconName;
     QIconSet m_iconSet;
-    bool m_hasIcon;
+    bool m_hasIcon : 1;
+    bool m_enabled : 1;
 };
 
 
