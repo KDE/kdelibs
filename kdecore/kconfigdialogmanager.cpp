@@ -40,11 +40,12 @@
 class KConfigDialogManager::Private {
 
 public:
-  Private() { }
+  Private() : insideGroupBox(false) { }
 
 public:
   QDict<QWidget> knownWidget;
   QDict<QWidget> buddyWidget;
+  bool insideGroupBox;
 };
 
 KConfigDialogManager::KConfigDialogManager(QWidget *parent, KConfigSkeleton *conf, const char *name)
@@ -164,6 +165,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
 
     const char *widgetName = childWidget->name(0);
     bool bParseChildren = true;
+    bool bSaveInsideGroupBox = d->insideGroupBox;
 
     if (widgetName && (strncmp(widgetName, "kcfg_", 5) == 0))
     {
@@ -189,6 +191,8 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
           QGroupBox *gb = dynamic_cast<QGroupBox *>(childWidget);
           if (!gb)
             bParseChildren = false;
+          else
+            d->insideGroupBox = true;
 
           QComboBox *cb = dynamic_cast<QComboBox *>(childWidget);
           if (cb && cb->editable())
@@ -216,12 +220,18 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
         d->buddyWidget.insert(configId, childWidget);
       }
     }
+#ifndef NDEBUG
     else if (widgetName)
     {
       QMap<QString, QCString>::const_iterator changedIt = changedMap.find(childWidget->className());
       if (changedIt != changedMap.end())
-        kdDebug(178) << "Widget '" << widgetName << "' (" << childWidget->className() << ") remains unmanaged." << endl;
+      {
+        if ((!d->insideGroupBox || !childWidget->inherits("QRadioButton")) && 
+            !childWidget->inherits("QGroupBox"))
+          kdDebug(178) << "Widget '" << widgetName << "' (" << childWidget->className() << ") remains unmanaged." << endl;
+      }        
     }
+#endif
 
     if(bParseChildren)
     {
@@ -229,6 +239,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
       // Maybe we can store one of its children.
       valueChanged |= parseChildren(childWidget, trackChanges);
     }
+    d->insideGroupBox = bSaveInsideGroupBox;
   }
   return valueChanged;
 }
