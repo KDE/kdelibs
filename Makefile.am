@@ -27,7 +27,7 @@ acinclude.m4: admin/acinclude.m4.in admin/libtool.m4.in
 messages:
 	$(XGETTEXT) -C -ktranslate -ki18n */*.cpp */*.cc && mv messages.po po/kdelibs.pot
 	$(XGETTEXT) -C -ktranslate -ki18n po/texts.cpp && mv messages.po po/kde.pot
-	(cd po && $(MAKE) merge)
+	(cd po && $(MAKE) -f Makefile.am merge)
 
 EXTRA_DIST = admin/acinclude.m4.in admin/libtool.m4.in
 
