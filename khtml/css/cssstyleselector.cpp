@@ -322,7 +322,8 @@ void CSSStyleSelector::computeFontSizesFor(QPaintDeviceMetrics* paintDeviceMetri
 
     fontSizes.clear();
     float scale = 1.0;
-    const float fontFactors[] = {3./5., 3./4., 8./9., 1., 6./5., 3./2., 2., 3., 4.};
+    static const float fontFactors[] =      {3./5., 3./4., 8./9., 1., 6./5., 3./2., 2., 3., 4.};
+    static const float smallFontFactors[] = {3./4., 5./6., 8./9., 1., 6./5., 3./2., 2., 3., 4.};
     float mediumFontSize, minFontSize, factor;
     if (!khtml::printpainter) {
         scale *= zoomFactor / 100.0;
@@ -339,11 +340,11 @@ void CSSStyleSelector::computeFontSizesFor(QPaintDeviceMetrics* paintDeviceMetri
         mediumFontSize = 12;
         minFontSize = 6;
     }
-
+    const float* factors = scale*mediumFontSize >= 12.5 ? fontFactors : smallFontFactors;
     for ( int i = 0; i < MAXFONTSIZES; i++ ) {
-        factor = scale*fontFactors[i];
+        factor = scale*factors[i];
         fontSizes << int(KMAX( mediumFontSize*factor +.5f, minFontSize));
-        // kdDebug( 6080 ) << "index: " << i << " factor: " << fontFactors[i] << " font pix size: " << int(KMAX( mediumFontSize*factor +.5f, minFontSize)) << endl;
+        //kdDebug( 6080 ) << "index: " << i << " factor: " << factors[i] << " font pix size: " << int(KMAX( mediumFontSize*factor +.5f, minFontSize)) << endl;
     }
 }
 

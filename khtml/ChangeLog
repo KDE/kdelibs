@@ -1,3 +1,9 @@
+2004-11-05  Germain Garand  <germain@ebooksfrance.com>
+
+        * css/cssstyleselector.cpp (computeFontSizes): add compensated font scale
+        from Todd Fahrner's "Toward a standard font size interval system"
+        article for 12ppem and below (suggested by Bert Bos <bert@w3.org>)
+
 2004-11-04  Stephan Kulow  <coolo@kde.org>
 
         * rendering/bidi.cpp (bidiReorderLine): applying patch by Mitz Pettel
