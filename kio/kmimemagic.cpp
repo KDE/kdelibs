@@ -487,8 +487,8 @@ int KMimeMagic::apprentice()
 
 	fclose(f);
 
-	kdDebug(7018) << "apprentice: conf=" << conf << " file=" << conf->magicfile.local8Bit().data() << " m=" << (conf->magic ? "set" : "NULL") << " m->next=" << ((conf->magic && conf->magic->next) ? "set" : "NULL") << " last=" << (conf->last ? "set" : "NULL") << endl;
-	kdDebug(7018) << "apprentice: read " << lineno << " lines, " << rule << " rules, " << errs << " errors" << endl;
+	//kdDebug(7018) << "apprentice: conf=" << conf << " file=" << conf->magicfile.local8Bit().data() << " m=" << (conf->magic ? "set" : "NULL") << " m->next=" << ((conf->magic && conf->magic->next) ? "set" : "NULL") << " last=" << (conf->last ? "set" : "NULL") << endl;
+	//kdDebug(7018) << "apprentice: read " << lineno << " lines, " << rule << " rules, " << errs << " errors" << endl;
 
 #if (MIME_MAGIC_DEBUG_TABLE > 1)
 	test_table();
@@ -525,8 +525,8 @@ int KMimeMagic::buff_apprentice(char *buff)
 		lineno++;
 	} while (len > 0);
 
-	kdDebug(7018) << "buff_apprentice: conf=" << conf << " m=" << (conf->magic ? "set" : "NULL") << " m->next=" << ((conf->magic && conf->magic->next) ? "set" : "NULL") << " last=" << (conf->last ? "set" : "NULL") << endl;
-	kdDebug(7018) << "buff_apprentice: read " << lineno << " lines, " << rule << " rules, " << errs << " errors" << endl;
+	//kdDebug(7018) << "buff_apprentice: conf=" << conf << " m=" << (conf->magic ? "set" : "NULL") << " m->next=" << ((conf->magic && conf->magic->next) ? "set" : "NULL") << " last=" << (conf->last ? "set" : "NULL") << endl;
+	//kdDebug(7018) << "buff_apprentice: read " << lineno << " lines, " << rule << " rules, " << errs << " errors" << endl;
 
 #if ( MIME_MAGIC_DEBUG_TABLE > 1 )
 	test_table();
@@ -1471,7 +1471,7 @@ KMimeMagic::match(unsigned char *s, int nbytes)
 	union VALUETYPE p;
 	struct magic *m;
 
-	kdDebug(7018) << "match: conf=" << conf << " file=" << conf->magicfile.local8Bit().data() << " m=" << (conf->magic ? "set" : "NULL") << " m->next=" << ((conf->magic && conf->magic->next) ? "set" : "NULL") << " last=" << (conf->last ? "set" : "NULL") << endl;
+	//kdDebug(7018) << "match: conf=" << conf << " file=" << conf->magicfile.local8Bit().data() << " m=" << (conf->magic ? "set" : "NULL") << " m->next=" << ((conf->magic && conf->magic->next) ? "set" : "NULL") << " last=" << (conf->last ? "set" : "NULL") << endl;
 	for (m = conf->magic; m; m = m->next) {
 		if (isprint((((unsigned long) m) >> 24) & 255) &&
 		    isprint((((unsigned long) m) >> 16) & 255) &&
@@ -1510,7 +1510,7 @@ KMimeMagic::match(unsigned char *s, int nbytes)
 		}
 		/* if we get here, the main entry rule was a match */
 		/* this will be the last run through the loop */
-		kdDebug(7018) << "match: rule matched, line=" << m->lineno << " type=" << m->type << " " << ((m->type == STRING) ? m->value.s : "") << endl;
+		//kdDebug(7018) << "match: rule matched, line=" << m->lineno << " type=" << m->type << " " << ((m->type == STRING) ? m->value.s : "") << endl;
 
 		/* print the match */
 		mprint(&p, m);
@@ -1529,7 +1529,7 @@ KMimeMagic::match(unsigned char *s, int nbytes)
 		 */
 		m = m->next;
 		while (m && (m->cont_level != 0)) {
-			kdDebug(7018) << "match: line=" << m->lineno << " cont=" << m->cont_level << " type=" << m->type << " " << ((m->type == STRING) ? m->value.s : "") << endl;
+			//kdDebug(7018) << "match: line=" << m->lineno << " cont=" << m->cont_level << " type=" << m->type << " " << ((m->type == STRING) ? m->value.s : "") << endl;
 			if (cont_level >= m->cont_level) {
 				if (cont_level > m->cont_level) {
 					/*
@@ -1568,10 +1568,10 @@ KMimeMagic::match(unsigned char *s, int nbytes)
 			/* move to next continuation record */
 			m = m->next;
 		}
-		kdDebug(7018) << "match: matched" << endl;
+		//kdDebug(7018) << "match: matched" << endl;
 		return 1;       /* all through */
 	}
-	kdDebug(7018) << "match: failed" << endl;
+	//kdDebug(7018) << "match: failed" << endl;
 	return 0;               /* no match at all */
 }
 
@@ -1760,7 +1760,7 @@ KMimeMagic::ascmagic(unsigned char *buf, int nbytes)
 		    maxpct = pct;
 		    mostaccurate = i;
 		  }
-		  kdDebug(7018) << "" << types[i].type << " has " << typecount[i] << " hits, " << types[i].kwords << " kw, weight " << types[i].weight << ", " << pct << " -> max = " << maxpct << "\n" << endl;
+		  //kdDebug(7018) << "" << types[i].type << " has " << typecount[i] << " hits, " << types[i].kwords << " kw, weight " << types[i].weight << ", " << pct << " -> max = " << maxpct << "\n" << endl;
 	  }
 	}
 	if (mostaccurate >= 0.0) {
