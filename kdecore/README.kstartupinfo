@@ -106,7 +106,7 @@ icon would sometimes stay for too long, which is oftern annoying ).
 On the other hand, KWin, which maps the first window of the starting apps
 to the given virtual desktop, sets it to false, because there's no visual
 representation and if a window for a starting non-compliant application is
-detected later, it still will be sucessfully places on the correct virtual
+detected later, it still will be successfully places on the correct virtual
 desktop.
  Note that the ASN info is often send in several messages, and the slots
 will be therefore emitted several times, with the updated info ( e.g. the

@@ -19,7 +19,7 @@ int main(int argc, char **argv)
         kdDebug() << "Dialog ended successfully\ntext: " << dlg->text() << endl;
     }
     else
-        kdDebug() << "Dialog was cancelled." << endl;
+        kdDebug() << "Dialog was canceled." << endl;
 
     return 0;
 }

@@ -96,7 +96,7 @@ public:
      * Sets a list of regular expressions to filter by name.
      * The file will only pass if its name matches one of the regular
      * expressions.
-     * @param nameFilters a list of regular expressions, seperated by
+     * @param nameFilters a list of regular expressions, separated by
      *                    the character @p separator
      * @param caseSensitive if true, matches case sensitive. False 
      *                      otherwise
@@ -109,7 +109,7 @@ public:
      * Sets a list of regular expressions to filter by name.
      * The file will only pass if its name matches one of the regular
      * expressions.
-     * @param nameFilters a list of regular expressions, seperated by
+     * @param nameFilters a list of regular expressions, separated by
      *                    space (' ')
      */
     virtual void setNameFilters( const QString& nameFilters );

@@ -35,7 +35,7 @@ class KSaveFilePrivate;
  *   All changes have been written successfully to the file.
  *
  * b)
- *   Some error occured, no changes have been written whatsoever and the
+ *   Some error occurred, no changes have been written whatsoever and the
  *   old file is still in place.
  */
 class KSaveFile
@@ -122,9 +122,9 @@ public:
 
    /**
     * Closes the file and makes the changes definitive.
-    * Returns 'true' is successful, or 'false' if an error has occured.
+    * Returns 'true' is successful, or 'false' if an error has occurred.
     * See status() for details about errors.
-    * @return true if successful, or false if an error has occured.
+    * @return true if successful, or false if an error has occurred.
     **/
    bool close();
 

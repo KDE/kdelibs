@@ -111,7 +111,7 @@ public:
 
     /**
      * Returns a file descriptor for this socket.
-     * @return the file descriptor, or -1 when an error occured.
+     * @return the file descriptor, or -1 when an error occurred.
      */
     int socket() const { return sock; }
 
@@ -279,7 +279,7 @@ public:
 
     /**
      * Returns the file descriptor associated with the socket.
-     * @return the file descriptor, -1 when an error occured during
+     * @return the file descriptor, -1 when an error occurred during
      *         construction or @ref bindAndListen
      */
     int socket() const { return sock; }

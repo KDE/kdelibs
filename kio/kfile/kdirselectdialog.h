@@ -71,7 +71,7 @@ public:
      * @param startDir the directory, initially shown
      * The tree will display this directory and subdirectories of it.
      * @param localOnly unused. You can only select paths below the startDir
-     * @return The URL selected, or an empty URL if the user cancelled
+     * @return The URL selected, or an empty URL if the user canceled
      * or no URL was selected.
      */
     static KURL selectDirectory( const QString& startDir = QString::null,

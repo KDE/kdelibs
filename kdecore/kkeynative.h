@@ -77,21 +77,21 @@ class KKeyNative
 	 * Initializes the native key by extracting the information
 	 * from the given xevent.
 	 * @param xevent the XEvent that contains the key
-	 * @return true if succesful, false otherwise
+	 * @return true if successful, false otherwise
 	 */
 	bool init( const XEvent* xevent );
 
 	/**
 	 * Creates a new native key for the given KKey code.
 	 * @param key the @ref KKey that contains the generic key
-	 * @return true if succesful, false otherwise
+	 * @return true if successful, false otherwise
 	 */
 	bool init( const KKey& key );
 
 	/**
 	 * Copies the given key into this key.
 	 * @param key the key to copy
-	 * @return true if succesful, false otherwise
+	 * @return true if successful, false otherwise
 	 */
 	bool init( const KKeyNative& key );
 

@@ -73,7 +73,7 @@ class KURL;
  *
  * The default key-bindings for completion and rotation is determined
  * from the global settings in @ref KStdAccel.  These values, however,
- * can be overriden locally by invoking @ref KCompletionBase::setKeyBinding().
+ * can be overridden locally by invoking @ref KCompletionBase::setKeyBinding().
  * The values can easily be reverted back to the default setting, by simply
  * calling @ref useGlobalSettings(). An alternate method would be to default
  * individual key-bindings by usning @ref setKeyBinding() with the default

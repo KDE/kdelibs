@@ -1,6 +1,6 @@
 # Format of this file:
 #
-# Lines beggining with '#' are comments
+# Lines beginning with '#' are comments
 # The file consists of a repetion of the following pattern
 # (\n means newline and + means you can repeat the line):
 #

@@ -471,7 +471,7 @@ public:
    *
    * @param file       a pointer to FILE as returned by calls like f{d,re}open
    *
-   * @returns false if an error occured during reading.
+   * @returns false if an error occurred during reading.
    */
   bool update(QIODevice& file);
 

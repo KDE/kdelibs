@@ -93,7 +93,7 @@ signals:
     /** 
      * This signal is raised when a pixmap load operation has finished.
      *
-     * @param success True if successfull, false otherwise.
+     * @param success True if successful, false otherwise.
      */
     void done(bool success);
 

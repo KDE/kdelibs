@@ -375,7 +375,7 @@ public:
   /**
    * Terminate the sending of data to the part.
    * With some data types (text, html...) @ref closeStream might never actually be called,
-   * in the case of continous streams, for instance plain text or HTML data.
+   * in the case of continuous streams, for instance plain text or HTML data.
    */
   bool closeStream();
 
@@ -391,7 +391,7 @@ private: // Makes no sense for inherited classes to call those. But make it prot
    * Receive some data from the hosting application.
    * In this method the part should attempt to display the data progressively.
    * With some data types (text, html...) @ref closeStream might never actually be called,
-   * in the case of continous streams. This can't happen with e.g. images.
+   * in the case of continuous streams. This can't happen with e.g. images.
    */
   virtual bool doWriteStream( const QByteArray& /*data*/ ) { return false; }
   /**
@@ -596,7 +596,7 @@ public slots:
 
   /**
    * Waits for any pending upload job to finish and returns whether the
-   * last @ref save() action was successfull.
+   * last @ref save() action was successful.
    */
   bool waitSaveComplete();
 

@@ -31,7 +31,7 @@
  * @short A class for invoking a Java VM
  *
  * This class is a general tool for invoking a Java interpreter. It allows you
- * to specifiy some of the standard options that should be understood by all
+ * to specify some of the standard options that should be understood by all
  * JVMs.
  *
  * @author Richard J. Moore, rich@kde.org

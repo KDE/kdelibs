@@ -71,7 +71,7 @@ void KMPropWidget::configureWizard(KMWizard*)
 
 // return status:
 //   -1 : error
-//    0 : nothing to be done (cancelled)
+//    0 : nothing to be done (canceled)
 //    1 : success
 int KMPropWidget::requestChange()
 {

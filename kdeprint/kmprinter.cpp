@@ -189,7 +189,7 @@ bool KMPrinter::autoConfigure(KPrinter *printer, QWidget *parent)
 			}
 			else
 			{
-				// action cancelled
+				// action canceled
 				return false;
 			}
 		}

@@ -97,7 +97,7 @@ KTempDir::create(const QString &directoryPrefix, int mode)
    // Success!
    bExisting = true;
 
-   // Set uid/gid (neccesary for SUID programs)
+   // Set uid/gid (necessary for SUID programs)
    chown(nme, getuid(), getgid());
    return true;
 }

@@ -99,7 +99,7 @@ class KPanelExtension : public QFrame
 
 public:
 
-    /// The type of the extention (TODO)
+    /// The type of the extension (TODO)
     enum Type { Normal = 0, Stretch };
     enum Action { About = 1, Help = 2, Preferences = 4, ReportBug = 8 };
     enum Position { Left = 0, Right, Top, Bottom };
@@ -125,11 +125,11 @@ public:
     ~KPanelExtension();
 
     /**
-     * Returns the prefered size for a given Position.
+     * Returns the preferred size for a given Position.
      *
      * Every extension should reimplement this function.
      *
-     * Depending on the panel position the extensions can choose a prefered size for that
+     * Depending on the panel position the extensions can choose a preferred size for that
      * location in the Window Manager Dock. Please note that the size can not be larger than the
      * maxsize given by the handler.
      **/
@@ -172,7 +172,7 @@ public:
 
 
     /**
-     * Reimplement this function to set a prefered dock position for your extension.
+     * Reimplement this function to set a preferred dock position for your extension.
      * The extension manager will try to place new instances of this extension according
      * to this setting.
      * @return Position
@@ -210,7 +210,7 @@ signals:
     /**
      * Emit this signal to make the panel relayout all extensions in the dock, when you want
      * to change the extensions size.
-     * The panel is going to relayout all extensions based on their prefered size.
+     * The panel is going to relayout all extensions based on their preferred size.
      **/
     void updateLayout();
 

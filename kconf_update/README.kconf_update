@@ -34,7 +34,7 @@ from one place to another.
 Updating the configuration happens automatically, either when KDE gets started
 or when kded detects a new update file in the above mentioned location.
 
-Update files are seperated into sections. Each section has an Id. When a 
+Update files are separated into sections. Each section has an Id. When a 
 section describing a configuration change has been applied, the Id will be 
 stored in the file "kconf_updaterc". This information is used to make sure
 that a configuration update is only performed once.
@@ -205,7 +205,7 @@ your application KHello's config file khellorc, you can test by using
     cat ~/.kde/share/config/khellorc | khello_conf_update.sh
 
 (assuming khello_conf_update.sh is the kconf_update script and ~/.kde is your
-$KDEHOME). This is easier than making install everytime, but has the obvious
+$KDEHOME). This is easier than making install every time, but has the obvious
 downside that you need to 'parse' your script's output yourself instead of
 letting kconf_update do it and check the resulting output file.
 

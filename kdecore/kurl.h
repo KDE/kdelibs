@@ -286,7 +286,7 @@ public:
    * Some servers seem not to like the removal of extra '/'
    * even though it is against the specification in RFC 2396.
    *
-   * @param cleanDirSeparator if true, occurrances of consecutive
+   * @param cleanDirSeparator if true, occurrences of consecutive
    * directory separators (e.g. /foo//bar) are cleaned up as well.
    */
   void cleanPath(bool cleanDirSeparator = true);

@@ -267,7 +267,7 @@ protected:
    * @param mergeFile if not null, the dirty entries for this file will
    * be merged.
    *
-   * @return Whether there will be some entries left for writting to other
+   * @return Whether there will be some entries left for writing to other
    * files.
    */
   bool getEntryMap(KEntryMap &map, bool bGlobal, QFile *mergeFile);

@@ -1182,7 +1182,7 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
             int i = contextMenu()->exec( m->globalPos(), 0 );
             switch ( i ) {
             case -1:
-                return; // popup cancelled
+                return; // popup canceled
             case CONTEXT_LEFT:
                 mw->moveDockWindow( this, DockLeft );
                 break;

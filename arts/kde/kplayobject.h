@@ -231,7 +231,7 @@ public:
 	/**
 	 * immediately stops the play back and resets the media to the
 	 * start of the content. If playing from a stream, halt() causes
-	 * the connection to be cancelled.
+	 * the connection to be canceled.
 	 */
 	 
 	void halt();

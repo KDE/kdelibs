@@ -381,7 +381,7 @@ protected:
 
     void 	keyPressEvent 	 ( QKeyEvent *  );
 
-    // DnD inteface
+    // DnD interface
     void        dragMoveEvent(QDragMoveEvent* e);
     void        dragEnterEvent(QDragEnterEvent* e);
     void        dropEvent(QDropEvent* e);

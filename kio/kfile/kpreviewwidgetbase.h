@@ -56,7 +56,7 @@ public:
 
 public slots:
     /**
-     * This slot is called everytime the user selects another file in the
+     * This slot is called every time the user selects another file in the
      * file dialog. Implement the stuff necessary to reflect the change here.
      *
      * @param url The URL of the currently selected file.

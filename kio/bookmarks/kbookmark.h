@@ -54,7 +54,7 @@ public:
 
     /**
      * @return true if bookmark is contained by a QDomDocument,
-     * if not it is most likely that it has become seperated and
+     * if not it is most likely that it has become separated and
      * is thus invalid and/or has been deleted from the bookmarks.
      * @since 3.2
      */

@@ -78,7 +78,7 @@ public:
     int waitForChild();
 
     /**
-     * Waits until the pty has cleared the ECHO flag. This is usefull 
+     * Waits until the pty has cleared the ECHO flag. This is useful 
      * when programs write a password prompt before they disable ECHO.
      * Disabling it might flush any input that was written.
      */

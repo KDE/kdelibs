@@ -794,7 +794,7 @@ signals:
     /**
      * Emitted when files are dropped. Dropping files is disabled by
      * default. You need to enable it with @ref setAcceptDrops()
-     * @param item the item on which the drop occured or 0.
+     * @param item the item on which the drop occurred or 0.
      * @param event the drop event itself.
      * @param urls the urls that where dropped.
      * @since 3.2

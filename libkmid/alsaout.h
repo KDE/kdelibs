@@ -220,7 +220,7 @@ class AlsaOut : public MidiOut
   /**
    * @internal
    * If i==1 syncronizes by cleaning the buffer instead of sending it (in fact,
-   * this is what syncronizing really means :-) )
+   * this is what synchronizing really means :-) )
    */
   void sync        (int i=0);
 

@@ -199,7 +199,7 @@ KImageIOFactory::createPattern( KImageIO::Mode _mode)
   QStringList patterns;
   QString allPatterns;
   QString wildCard("*.");
-  QString seperator("|");
+  QString separator("|");
   for( KImageIOFormatList::ConstIterator it = formatList->begin();
        it != formatList->end();
        ++it )
@@ -223,12 +223,12 @@ KImageIOFactory::createPattern( KImageIO::Mode _mode)
         }
         if (!pattern.isEmpty())
         {
-           pattern = pattern + seperator + format->mPattern;
+           pattern = pattern + separator + format->mPattern;
            patterns.append(pattern);
         }
      }
   }
-  allPatterns = allPatterns + seperator + i18n("All Pictures");
+  allPatterns = allPatterns + separator + i18n("All Pictures");
   patterns.sort();
   patterns.prepend(allPatterns);
 

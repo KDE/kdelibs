@@ -54,7 +54,7 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
 
 25/09/2001 Michael Goffioul <goffioul@imec.be>
   * CUPS plugin: made the new configuration wizard as default one.
-  * other QList -> QPtrList fixes (commited to CVS)
+  * other QList -> QPtrList fixes (committed to CVS)
   * Avoid to call plugin functions "completePrinter<xxx>" for pseudo
     printers (to not confuse the CUPS daemon for example)
   * Improved how the default printer is selected in print dialog to
@@ -117,7 +117,7 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
 	. set KPrinter object in KPrintDialog before adding other
 	  dialog pages (some pages may need it)
   * wizard: changed button layout and added a side graphic. Not
-    commited as the graphic comes from HP driver (copyright).
+    committed as the graphic comes from HP driver (copyright).
 
 08/11/2001 Michael Goffioul <goffioul@imec.be>
   * CUPS plugin:
@@ -498,7 +498,7 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
     be tested.
   * general: finished the generic print margins widget to be used in non
     full page mode. Requires a patched Qt (hope TrollTech will add the
-    missing setMargins soon) -> cannot be commited.
+    missing setMargins soon) -> cannot be committed.
   * general: added help button to the wizard and the print dialog. They
     are connected to the main help (should probably add an anchor to go
     directly to the associated part).
@@ -600,7 +600,7 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
 
 02/09/2002 Michael Goffioul <goffioul@imec.be>
   * print dialog: added graphical interface to the poster XML command
-    (still to be commited)
+    (still to be committed)
   * manager: added a condensed toolbar with actions grouped by topics in
     sub-menus.
 

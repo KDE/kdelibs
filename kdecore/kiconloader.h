@@ -425,7 +425,7 @@ QPixmap BarIcon(const QString& name, int size=0, int state=KIcon::DefaultState,
 QPixmap BarIcon(const QString& name, KInstance *instance);
 
 /**
- * Load a toolbar icon, and apply the neccesary effects to get an IconSet.
+ * Load a toolbar icon, and apply the necessary effects to get an IconSet.
  */
 QIconSet BarIconSet(const QString& name, int size=0,
 		    KInstance *instance=KGlobal::instance());
@@ -443,7 +443,7 @@ QPixmap SmallIcon(const QString& name, int size=0,
 QPixmap SmallIcon(const QString& name, KInstance *instance);
 
 /**
- * Load a small icon, and apply the neccesary effects to get an IconSet.
+ * Load a small icon, and apply the necessary effects to get an IconSet.
  */
 QIconSet SmallIconSet(const QString& name, int size=0,
 		    KInstance *instance=KGlobal::instance());

@@ -142,7 +142,7 @@ KSpell::startIspell()
     {
     case HTML:
       //Debian uses an ispell version that has the -h option instead.
-      //Not sure what they did, but the prefered spell checker
+      //Not sure what they did, but the preferred spell checker
       //on that platform is aspell anyway, so use -H untill I'll come
       //up with something better.
       *proc << "-H";
@@ -989,7 +989,7 @@ void KSpell::check3 ()
     emit corrected (dlgorigword, replacement(), lastpos);
     break;
   case KS_CANCEL:
-    //      kdDebug(750) << "cancelled\n" << endl;
+    //      kdDebug(750) << "canceled\n" << endl;
     ksdlg->hide();
     emit done (origbuffer);
     return;

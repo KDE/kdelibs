@@ -142,7 +142,7 @@ public:
      * Returns the filtered or the original URL.
      *
      * This function returns the filtered url if one
-     * of the plugins sucessfully filtered the original
+     * of the plugins successfully filtered the original
      * URL.  Otherwise, it returns the original URL.
      * See @ref #hasBeenFiltered() and
      *
@@ -380,7 +380,7 @@ public:
     /**
      * Creates a configuration module for the filter.
      *
-     * It is the responsability of the caller to delete the module
+     * It is the responsibility of the caller to delete the module
      * once it is not needed anymore.
      *
      * @return A configuration module, 0 if the filter isn't configurable.

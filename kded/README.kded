@@ -93,7 +93,7 @@ Tasks loaded on demand
 Some things can be greatly simplified if they can be coordinated from a 
 central place. KDED has support for modules that will be demand-loaded 
 whenever an application attempts to make DCOP call to the module.
-This can be usefull for central administration tasks.
+This can be useful for central administration tasks.
 
 An example of a KDED module is the print module. When an application prints
 a file, the print module will watch over the print-job while the file

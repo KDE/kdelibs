@@ -27,7 +27,7 @@ namespace KABC {
 
 /**
  * Abstract class that provides displaying of error messages.
- * We need this to make libkabc gui independend on the one side
+ * We need this to make libkabc gui independent on the one side
  * and provide user friendly error messages on the other side.
  * Use @p ConsoleErrorHandler or @p GUIErrorHandler in your
  * application.

@@ -25,7 +25,7 @@ class QStrList;
 /**
  * TerminalInterface is an interface implemented by KonsolePart to
  * allow developers access to the KonsolePart in ways that are not
- * possible throught the normal KPart interface.
+ * possible through the normal KPart interface.
  *
  * Note that besides the functions below here, KonsolePart also has
  * some signals you can connect to.  They aren't in this class cause

@@ -237,7 +237,7 @@ class DeviceManager
      */
     int usingAlsa(void) { return alsa; };
 
-    // The following funtion are here to emulate a midi, so that the
+    // The following function are here to emulate a midi, so that the
     // DeviceManager sends the events to the appropriate devices.
 
     /**

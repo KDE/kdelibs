@@ -502,7 +502,7 @@ Observation5 does not cause additional code in libkparts. It just shows a possib
 action concept.
 
 
-Something else comes to my mind: We can savely reintroduce the shell pattern. The KPartManager/KHostPart is
+Something else comes to my mind: We can safely reintroduce the shell pattern. The KPartManager/KHostPart is
 split of the shell and that is a MUST.
 But it does not make sense to create a KTMainWindow and then a KTMainWindowGUIBuilder to manage menubar/toolbars/statusbar.
 Imagine an application that uses KTMainWindow. Either the application programmer knows that he wants to embed

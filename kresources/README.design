@@ -150,7 +150,7 @@ I can imagine karm looking only in the business calendar, so it
 should have only one active calendar, while KORganizer would also
 have my wife's calendar active read-only.
 
-- There should be a way to synchronise the concurrent use of a 
+- There should be a way to synchronize the concurrent use of a 
 resource, be it in the same process, on different processes in
 the same KDE session, or even when e.g. korganizer uses an
 Exchange calendar while also Outlook is running on a Windows PC.

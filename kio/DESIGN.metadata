@@ -15,7 +15,7 @@ referrer        string          The URL from which the request originates. (read
 
 modified        string          The modification date of the document (set by http)
 
-accept          string          List of mimetypes to accept seperated by a ", ". (read by http)
+accept          string          List of mimetypes to accept separated by a ", ". (read by http)
 
 UserAgent       string          The user agent name to send to remote host (read by http)
 

@@ -281,7 +281,7 @@ char 	   *errorStringRet;
     if (ioErrorOccured)
     {
 	_IceFreeConnection (iceConn);
-	strncpy (errorStringRet, "IO error occured opening connection",
+	strncpy (errorStringRet, "IO error occurred opening connection",
 	     errorLength);
 	return (NULL);
     }
@@ -379,7 +379,7 @@ char 	   *errorStringRet;
 
 	if (ioErrorOccured)
 	{
-	    strncpy (errorStringRet, "IO error occured opening connection",
+	    strncpy (errorStringRet, "IO error occurred opening connection",
 		errorLength);
 	    _IceFreeConnection (iceConn);
 	    iceConn = NULL;

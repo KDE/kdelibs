@@ -244,7 +244,7 @@ public:
   /**
    * Toolbar buttons naturally will assume the global styles
    * concerning icons, icons sizes, etc.  You can use this function to
-   * explicitely turn this off, if you like.
+   * explicitly turn this off, if you like.
    *
    * @param no_style Will disable styles if true
    */

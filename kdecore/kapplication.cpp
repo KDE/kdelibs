@@ -1022,26 +1022,26 @@ void KApplication::propagateSessionManager()
 void KApplication::commitData( QSessionManager& sm )
 {
     d->session_save = true;
-    bool cancelled = false;
+    bool canceled = false;
     for (KSessionManaged* it = sessionClients()->first();
-         it && !cancelled;
+         it && !canceled;
          it = sessionClients()->next() ) {
-        cancelled = !it->commitData( sm );
+        canceled = !it->commitData( sm );
     }
-    if ( cancelled )
+    if ( canceled )
         sm.cancel();
 
     if ( sm.allowsInteraction() ) {
         QWidgetList done;
         QWidgetList *list = QApplication::topLevelWidgets();
-        bool cancelled = FALSE;
+        bool canceled = FALSE;
         QWidget* w = list->first();
-        while ( !cancelled && w ) {
+        while ( !canceled && w ) {
             if ( !w->testWState( WState_ForceHide ) && !w->inherits("KMainWindow") ) {
                 QCloseEvent e;
                 sendEvent( w, &e );
-                cancelled = !e.isAccepted();
-                if ( !cancelled )
+                canceled = !e.isAccepted();
+                if ( !canceled )
                     done.append( w );
                 delete list; // one never knows...
                 list = QApplication::topLevelWidgets();
@@ -1134,11 +1134,11 @@ void KApplication::saveState( QSessionManager& sm )
 
     // finally: do session management
     emit saveYourself(); // for compatibility
-    bool cancelled = false;
+    bool canceled = false;
     for (KSessionManaged* it = sessionClients()->first();
-         it && !cancelled;
+         it && !canceled;
          it = sessionClients()->next() ) {
-        cancelled = !it->saveState( sm );
+        canceled = !it->saveState( sm );
     }
 
     // if we created a new session config object, register a proper discard command
@@ -1151,7 +1151,7 @@ void KApplication::saveState( QSessionManager& sm )
 	sm.setDiscardCommand( "" );
     }
 
-    if ( cancelled )
+    if ( canceled )
         sm.cancel();
 #else
     // FIXME(E): Implement for Qt Embedded

@@ -70,7 +70,7 @@ signals:
   /** 
    * One or more of the settings have been permanently changed such as if
    * the user clicked on the Apply or Ok button.
-   * This signal is usefull when using kautoconfigdialog to configure
+   * This signal is useful when using kautoconfigdialog to configure
    * items in a list.  When emits the main class would then know what
    * item in the list was actually changed.
    * @param dialogName the name of the dialog.

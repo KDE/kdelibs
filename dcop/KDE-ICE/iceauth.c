@@ -118,7 +118,7 @@ char    	**errorStringRet;
     {
 	/*
 	 * This is the first time we're being called.  Search the
-	 * authentication data for the first occurence of
+	 * authentication data for the first occurrence of
 	 * MIT-MAGIC-COOKIE-1 that matches iceConn->connection_string.
 	 */
 
@@ -200,7 +200,7 @@ char    	**errorStringRet;
     else
     {
 	/*
-	 * Search the authentication data for the first occurence of
+	 * Search the authentication data for the first occurrence of
 	 * MIT-MAGIC-COOKIE-1 that matches iceConn->connection_string.
 	 */
 

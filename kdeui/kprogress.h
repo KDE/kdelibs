@@ -179,7 +179,7 @@ private:
  * and an optional cancel button with a KDE look 'n feel.
  *
  * Since knowing how long it can take to complete an action and it is
- * undesireable to show a dialog for a split second before hiding it,
+ * undesirable to show a dialog for a split second before hiding it,
  * there are a few ways to control the timing behavior of KProgressDialog.
  * There is a time out that can be set before showing the dialog as well
  * as an option to autohide or keep displaying the dialog once complete.
@@ -259,14 +259,14 @@ class KProgressDialog : public KDialogBase
         void setAllowCancel(bool allowCancel);
 
         /**
-         * Returns true if the dialog can be cancelled, false otherwise
+         * Returns true if the dialog can be canceled, false otherwise
          * @deprecated
          */
         // ### Remove this KDE 4.0
         bool allowCancel();
 
         /**
-         * Returns true if the dialog can be cancelled, false otherwise
+         * Returns true if the dialog can be canceled, false otherwise
          */
         bool allowCancel() const;
 
@@ -320,7 +320,7 @@ class KProgressDialog : public KDialogBase
         bool autoReset() const;
 
         /**
-         * Returns true if the dialog was closed or cancelled
+         * Returns true if the dialog was closed or canceled
          * before completion. If the dialog is not cancellable
          * it will always return false.
          * @deprecated
@@ -329,7 +329,7 @@ class KProgressDialog : public KDialogBase
         bool wasCancelled();
 
         /**
-         * Returns true if the dialog was closed or cancelled
+         * Returns true if the dialog was closed or canceled
          * before completion. If the dialog is not cancellable
          * it will always return false.
          */

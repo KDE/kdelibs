@@ -29,6 +29,6 @@ allow saving of ignore/replace lists for multiple spellchecks of a
   given document across multiple sessions
 
 add a "move()" function to move the dialog box (calling app should use this
-	in response to a mispelled() signal to move the d.b.  out of the way
+	in response to a misspelled() signal to move the d.b.  out of the way
 	of the misspelled word)
  This is done, but it doesn't work on the first call -- any ideas?

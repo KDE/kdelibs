@@ -68,7 +68,7 @@ public:
 
   /**
    * Connects to a ftp server and logs us in
-   * @ref m_bLoggedOn is set to true if logging on was successfull.
+   * @ref m_bLoggedOn is set to true if logging on was successful.
    * It is set to false if the connection becomes closed.
    *
    */
@@ -127,7 +127,7 @@ private:
   /**
    * Called by @ref openConnection. It logs us in.
    * @ref m_initialPath is set to the current working directory
-   * if logging on was successfull.
+   * if logging on was successful.
    *
    * @return true on success.
    */

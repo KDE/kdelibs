@@ -303,7 +303,7 @@ public:
    *   @ref ShutdownConfirm
    * @param sdtype The action to take after logging out. @ref ShutdownType
    * @param sdmode If/When the action should be taken. @ref ShutdownMode
-   * @return true on sucess, false if the session manager could not be
+   * @return true on success, false if the session manager could not be
    * contacted.
    */
   bool requestShutDown( ShutdownConfirm confirm = ShutdownConfirmDefault,

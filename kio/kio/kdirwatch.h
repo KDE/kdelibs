@@ -66,7 +66,7 @@ class KDirWatch : public QObject
    /**
     * Constructor.
     *
-    * Scanning begins immediatly when a dir/file watch
+    * Scanning begins immediately when a dir/file watch
     * is added.
     * @param parent the parent of the QObject (or 0 for parent-less KDataTools)
     * @param name the name of the QObject, can be 0

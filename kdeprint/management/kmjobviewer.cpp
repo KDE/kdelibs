@@ -129,7 +129,7 @@ void KMJobViewer::setPrinter(KMPrinter *p)
 void KMJobViewer::setPrinter(const QString& prname)
 {
 	// We need to trigger a refresh even if the printer
-	// has not changed, some jobs may have been cancelled
+	// has not changed, some jobs may have been canceled
 	// outside kdeprint. We can't return simply if
 	// prname == m_prname.
 	if (m_prname != prname)

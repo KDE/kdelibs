@@ -40,7 +40,7 @@ class DrPageSize;
  * This class is the main interface to access the KDE print framework. It allows KDE
  * applications to easily access the print system, through an interface that is compatible
  * with @ref QPrinter. So that the porting of an existing application should be as easy as
- * replacing any occurence of @ref QPrinter by KPrinter. However applications that explicitly
+ * replacing any occurrence of @ref QPrinter by KPrinter. However applications that explicitly
  * used the @ref QPrintDialog class must be changed to the standard KPrinter way of accessing
  * the print dialog.
  *
@@ -534,7 +534,7 @@ public:
 	 * is used by the printer, as selected by the user in the driver settings. If @p on is true,
 	 * this KPrinter object will use the actual printer resolution if it is able to extract it.
 	 * If nothing can be found, the default resolution will be the one defined by the PrinterMode
-	 * argument used in the KPrinter constructor, or set explicitely by setResolution().
+	 * argument used in the KPrinter constructor, or set explicitly by setResolution().
 	 * @param on true if the KPrinter object should use the actual printer resolution
 	 * @see resolution(), setResolution()
 	 */
@@ -549,7 +549,7 @@ public:
 	 * options selected by the user in the print dialog, then send the filtered files to the printer
 	 * with the print options selected. This function is called automatically when calling
 	 * @ref QPainter::end() for a painter object constructed on KPrinter. In normal use, you don't need
-	 * this use this function explicitely.
+	 * this use this function explicitly.
 	 */
 	bool printFiles(const QStringList& files, bool removeafter = false, bool startviewer = true);
 
@@ -645,7 +645,7 @@ public:
 	const QString& option(const QString& key) const;
 	/**
 	 * Adds or modifies an option in the KPrinter object. You probably don't need to use this function
-	 * explicitely. This will be done implicitely for example when reimplementing @ref
+	 * explicitly. This will be done implicitely for example when reimplementing @ref
 	 * KPrintDialogPage::getOptions().
 	 * @param key the option name
 	 * @param value the option value

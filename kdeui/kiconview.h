@@ -28,7 +28,7 @@
  *
  * There is a new signal executed(). It gets connected to either
  * @ref QIconView::clicked() or @ref QIconView::doubleClicked() depending on the KDE
- * wide Single Click/Double Click settings. It is strongly recomended that
+ * wide Single Click/Double Click settings. It is strongly recommended that
  * you use this signal instead of the above mentioned. This way you don´t
  * need to care about the current settings.
  * If you want to get informed when the user selects something connect to the

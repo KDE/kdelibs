@@ -156,7 +156,7 @@ class CategoriesMap : public QMap<int, QString>
  *  (at least programmer...) defined descriptors. Usually, the descriptors are 
  *  created as a combination of the entry data, and then displayed in aphabetical 
  *  order in the selector combobox. This map is called the mirror map throughout 
- *  the documentation. It is created or updated everytime the database changes.
+ *  the documentation. It is created or updated every time the database changes.
  *  Thus the way to find a special entry is: <OL>
  *  <LI> the user selects an item in the selector combo box, returning its 
  *       index, </LI>
@@ -199,7 +199,7 @@ public:
     NoEntry, /**< You tried to retrieve an entry but there is none. */
     NoFile, /**< No file has been loaded by now. */
     NoSuchFile, /**< A filename could not be found on the filesystem. */
-    InternError, /**< A error in kab's internal logic occured. */
+    InternError, /**< A error in kab's internal logic occurred. */
     OutOfRange, /**< An index value was out of the allowed range. */
     NoSuchField, /**< You queried a field that does not exist. */ 
     NotImplemented /**< The requested operation is not implemented. */
@@ -439,7 +439,7 @@ public:
   ~AddressBook(); /**< The destructor. */
   /**
    * Get the internal state of the object. 
-   * If no problem occured, it returns ::NoError. 
+   * If no problem occurred, it returns ::NoError. 
    * If the standard or the latest opened file could not be loaded,
    * it returns ::PermDenied
    */

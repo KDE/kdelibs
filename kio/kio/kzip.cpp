@@ -18,7 +18,7 @@
 */
 
 /*
-	This class implements a kioslave to acces ZIP files from KDE.
+	This class implements a kioslave to access ZIP files from KDE.
     you can use it in IO_ReadOnly or in IO_WriteOnly mode, and it
     behaves just as expected (i hope ;-) ).
     It can also be used in IO_ReadWrite mode, in this case one can

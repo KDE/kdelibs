@@ -130,7 +130,7 @@ public:
 
 public slots:
   /**
-   * This method should be called for correct cancelation of IO operation
+   * This method should be called for correct cancellation of IO operation
    * Connect this to the progress widgets buttons etc.
    */
   void slotStop();

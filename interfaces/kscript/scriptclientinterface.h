@@ -35,17 +35,17 @@ class QString;
 		enum Result { ResultSuccess, ResultFailure, ResultContinue, ResultBreak };
 		/**
 		*	This function will allow the main application of any errors
-		*	that have occured during processing of the script.
+		*	that have occurred during processing of the script.
 		*/
 		virtual void error( const QString &msg ) =0;
 		/**
 		*	This function will allow the main application of any warnings
-		*	that have occured during the processing of the script.
+		*	that have occurred during the processing of the script.
 		*/
 		virtual void warning( const QString &msg ) =0;
 		/**
 		*	This function will allow the main application of any normal
-		*	output that has occured during the processing of the script.
+		*	output that has occurred during the processing of the script.
 		*/
 		virtual void output( const QString &msg ) =0;
 		/**

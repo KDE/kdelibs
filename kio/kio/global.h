@@ -385,7 +385,7 @@ namespace KIO
    * Checks the capabilities of the filesystem to which a given file belongs.
    * given feature (e.g. chmod).
    * @param flag the flag to check
-   * @return true if the filesystem has that flag, false if not (or some error occured)
+   * @return true if the filesystem has that flag, false if not (or some error occurred)
    *
    * The availables flags are:
    * @li SupportsChmod: returns true if the filesystem supports chmod

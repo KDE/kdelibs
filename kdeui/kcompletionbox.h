@@ -121,7 +121,7 @@ public slots:
      * Sets the text to be emitted if the user chooses not to
      * pick from the available matches.
      *
-     * If the cancelled text is not set through this function, the
+     * If the canceled text is not set through this function, the
      * @ref userCancelled signal will not be emitted.
      *
      * @see userCancelled( const QString& )
@@ -216,7 +216,7 @@ protected slots:
 private slots:
     void slotSetCurrentItem( QListBoxItem *i ) { setCurrentItem( i ); } // grrr
     void slotCurrentChanged();
-    void cancelled();
+    void canceled();
     void slotItemClicked( QListBoxItem * );
 
 protected:

@@ -111,16 +111,16 @@ public:
     {
         // not really a fast method but the only compatible one
         if ( sm.allowsInteraction() ) {
-            bool cancelled = false;
+            bool canceled = false;
             QPtrListIterator<KMainWindow> it(*KMainWindow::memberList);
             ::no_query_exit = true;
-            for (it.toFirst(); it.current() && !cancelled;){
+            for (it.toFirst(); it.current() && !canceled;){
                 KMainWindow *window = *it;
                 ++it; // Update now, the current window might get deleted
                 if ( window->isVisible()) {
                     QCloseEvent e;
                     QApplication::sendEvent( window, &e );
-                    cancelled = !e.isAccepted();
+                    canceled = !e.isAccepted();
 		    /* Don't even think_about deleting widgets with
 		     Qt::WDestructiveClose flag set at this point. We
 		     are faking a close event, but we are *not*_
@@ -138,11 +138,11 @@ public:
                 }
             }
             ::no_query_exit = false;
-            if (cancelled)
+            if (canceled)
                return false;
 
             KMainWindow* last = 0;
-            for (it.toFirst(); it.current() && !cancelled; ++it){
+            for (it.toFirst(); it.current() && !canceled; ++it){
                 KMainWindow *window = *it;
                 if ( window->isVisible()) {
                     last = window;

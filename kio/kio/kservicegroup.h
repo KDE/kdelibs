@@ -152,7 +152,7 @@ public:
   /**
    * Returns a list of untranslated generic names that should be 
    * be supressed when showing this group.
-   * E.g. The group "Games/Arcade" might want to supress the generic name
+   * E.g. The group "Games/Arcade" might want to suppress the generic name
    * "Arcade Game" since it's redundant in this particular context.
    * @since 3.2
    */

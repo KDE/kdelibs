@@ -96,7 +96,7 @@ public:
     * If "receiverObj" is empty, every object is disconnected.
     * If "slot" is empty, every slot is disconnected.
     *
-    * Returns true if successfull, false if no connection was found.
+    * Returns true if successful, false if no connection was found.
     */
    bool disconnectSignal( const QCString &sender, const QCString &senderObj,
                        const QCString &signal,

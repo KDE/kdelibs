@@ -103,7 +103,7 @@ Group=Views (KDE)
 
 [KListView]
 ToolTip=Extended List View (KDE)
-WhatsThis=An improved version of the QListView that allows certain KDE extentions
+WhatsThis=An improved version of the QListView that allows certain KDE extensions
 Group=Views (KDE)
 
 [KLineEdit]
@@ -144,7 +144,7 @@ Group=Buttons (KDE)
 [KIconView]
 IncludeFile=kiconview.h
 ToolTip=Extended Icon View (KDE)
-WhatsThis=An improved version of the QIconView that allows certain KDE extentions
+WhatsThis=An improved version of the QIconView that allows certain KDE extensions
 Group=Views (KDE)
 
 [KIntSpinBox]
@@ -165,12 +165,12 @@ Group=Display (KDE)
 
 [KTextBrowser]
 ToolTip=Improved QTextBrowser (KDE)
-WhatsThis=An improved version of the QTextBrowser with mail or system browser invokation support
+WhatsThis=An improved version of the QTextBrowser with mail or system browser invocation support
 Group=Display (KDE)
 
 [KTextEdit]
 ToolTip=Improved QTextEdit (KDE)
-WhatsThis=An improved version of the QTextEdit with mail or system browser invokation support
+WhatsThis=An improved version of the QTextEdit with mail or system browser invocation support
 Group=Input (KDE)
 
 [KURLLabel]

@@ -174,7 +174,7 @@ Contents:
  TCP and have a second TCP connection open for RTSP. Because of the
  rich features provided by the protocol suite, it is not very well
  suited to allow people to download the stream and therefore the
- download via HTTP method might still be prefered by some.
+ download via HTTP method might still be preferred by some.
 
  . Live Broadcast Streaming via RTSP/RTP
 
@@ -348,7 +348,7 @@ Contents:
  URLs pretty early on by some players and got the mime type 
  audio/x-mpegurl and is now used by Icecast and many destination sites
  such as MP3.com. The format is exactly the same as that of the RAM
- file, just a list of urls that are seperated by line feeds.
+ file, just a list of urls that are separated by line feeds.
 
  . PLS
  
@@ -527,7 +527,7 @@ References and Further Reading:
        <http://www.ietf.org/html.charters/sip-charter.html>
 
 [IPMULTICAST]
-       Transmit information to a group of recipients via a single transmittion
+       Transmit information to a group of recipients via a single transmission
        by the source, in contrast to unicast.
        IP Multicast Initiative
        <http://www.ipmulticast.com/>

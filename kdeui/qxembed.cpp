@@ -428,7 +428,7 @@ void QXEmbed::initialize()
   embedClientIntoWindow() or the high-level wrapper
   processClientCmdline().
 
-  If a window has been embedded succesfully, embeddedWinId() returns
+  If a window has been embedded successfully, embeddedWinId() returns
   its id.
 
   Reimplement the change handler windowChanged() to catch embedding or

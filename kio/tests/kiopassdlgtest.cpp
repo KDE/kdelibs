@@ -25,7 +25,7 @@ int main ( int argc, char** argv )
                                            "  Password: %2").arg(usr).arg(pass),
                                 	"Test Result");
     else
-        KMessageBox::information( 0L, "Password dialog was cancelled!",
+        KMessageBox::information( 0L, "Password dialog was canceled!",
                                       "Test Result");
 
     return 0;

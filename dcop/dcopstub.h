@@ -86,7 +86,7 @@ public:
 
 
     /**
-     * Return whether no error occured,
+     * Return whether no error occurred,
      *
      * @return true if the last call was successful, false otherwise
      * @see status();

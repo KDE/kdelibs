@@ -156,7 +156,7 @@ namespace khtml
         virtual bool schedule() const { return false; }
 
         /**
-         * List of acceptable mimetypes seperated by ",". A mimetype may contain a wildcard.
+         * List of acceptable mimetypes separated by ",". A mimetype may contain a wildcard.
          */
         // e.g. "text/*"
         QString accept() const { return m_accept; }

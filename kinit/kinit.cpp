@@ -651,7 +651,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
 #ifdef Q_WS_X11
   if( !startup_id.none())
   {
-     if( d.fork && d.result == 0 ) // launched succesfully
+     if( d.fork && d.result == 0 ) // launched successfully
         complete_startup_info( startup_id, d.fork );
      else // failure, cancel ASN
         complete_startup_info( startup_id, 0 );

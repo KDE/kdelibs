@@ -72,7 +72,7 @@ class KCardGsmImplementation:public KCardImplementation{
    *   
    *   @param fileID For GSM cards this fileID is a two byte identifier
    *   @returns Returns -1 in case of error, and 0 if the file has been
-   *   succesfully selected.
+   *   successfully selected.
    *   In error case use @ref lastErrorMessage to retrieve a human readable
    *   error explanation.
    *   
@@ -199,7 +199,7 @@ class KCardGsmImplementation:public KCardImplementation{
    * @param mode is the mode used for the search
    * @param recordNumber will contain the record where the patter is found or -1 if no pattern was found
    * Type 2 search is used by default (see ETSI 11.11); so the pointer in the record file will be set to the record were the patter is found.
-   *  @returns -1 in case of error and 0 if the search was successfull
+   *  @returns -1 in case of error and 0 if the search was successful
    *  In error case use @ref lastErrorMessage to retrieve a human readable
    *  error explanation.
    */
@@ -234,7 +234,7 @@ class KCardGsmImplementation:public KCardImplementation{
   /**
    * This method unblocks the CHV1 code of the GSM card.
    * @param unblockCHV1 contains the unblock CHV1 code
-   * @param newCHV1 contains the new value the CHV1 will get after sucessfull unblocking
+   * @param newCHV1 contains the new value the CHV1 will get after successful unblocking
    *
    *Those secret codes length is fixed to of 8 bytes, so only the first 8 bytes of both QString parameters  will be presented to the card.
    *  @returns -1 in case of error and 0 if the code was successfully unblocked
@@ -248,7 +248,7 @@ class KCardGsmImplementation:public KCardImplementation{
   /**
    * This method unblocks the CHV2 code of the GSM card.
    * @param unblockCHV2 contains the unblock CHV2 code
-   * @param newCHV2 contains the new value the CHV2 will get after sucessfull unblocking
+   * @param newCHV2 contains the new value the CHV2 will get after successful unblocking
    *
    *Those secret codes length is fixed to of 8 bytes, so only the first 8 bytes of both QString parameters  will be presented to the card.
    *  @returns -1 in case of error and 0 if the code was successfully unblocked

@@ -178,7 +178,7 @@ public:
      * valid KHttpCookie objects for all cookies found in cookie_headers.
      * If no cookies could be found 0 is returned.
      *
-     * cookie_domstr should be a concatenation of "name=value" pairs, seperated
+     * cookie_domstr should be a concatenation of "name=value" pairs, separated
      * by a semicolon ';'.
      */
     KHttpCookieList makeDOMCookies(const QString &_url, const QCString &cookie_domstr, long windowId);

@@ -1653,7 +1653,7 @@ QString KLocale::formatTime(const QTime &pTime, bool includeSecs) const
 		put_it_in( buffer, index, pTime.second() );
 	      else if ( index > 0 )
 		{
-		  // we remove the seperator sign before the seconds and
+		  // we remove the separator sign before the seconds and
 		  // assume that works everywhere
 		  --index;
 		  break;

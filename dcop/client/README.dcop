@@ -38,7 +38,7 @@ With the -a option it prints out "<app-id>" instead of a DCOPRef.
 
 With the -l option it calls "dcopstart <app-id>" if no object is found, 
 stripping off any wildcard from the <app-id>. If the dcopstart command is 
-successfull the find command is repeated, if the dcopstart command fails, an 
+successful the find command is repeated, if the dcopstart command fails, an 
 error message is printed to stderr and the command exits with exit-code '2'.
 
 The default selection criteria is "any". Applications can declare their own 

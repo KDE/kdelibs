@@ -526,7 +526,7 @@ public:
    * @li #closed() will only be sent if we are indeed reading from the input
    *    stream. That is, if this socket is buffering the input. See @ref setBufferSize
    *
-   * Note that, in general, functions inherited/overriden from KBufferedIO will only
+   * Note that, in general, functions inherited/overridden from KBufferedIO will only
    * work on buffered sockets, like bytesAvailable and bytesToWrite.
    * @return    The return values are:
    * @li 0: success

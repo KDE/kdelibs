@@ -557,7 +557,7 @@ public:
     /**
      * Changes the value of the item.
      * @param value the new value
-     * @return true if successfull, false otherwise
+     * @return true if successful, false otherwise
      */
     bool setValue( const QVariant& value );
 
@@ -938,7 +938,7 @@ public:
    /**
     * Another constructor
     *
-    * Similar to the above, but takes a URL so that meta-data may be retreived
+    * Similar to the above, but takes a URL so that meta-data may be retrieved
     * over other protocols (ftp, etc.)
     *
     **/

@@ -400,17 +400,17 @@ A DCOPCall message can get a DCOPReply, a DCOPReplyFailed
 or a DCOPReplyWait message in response.
 data: << fromId << toId << objId << fun << dataSize + data[dataSize]
 
-DCOPReply is the successfull reply to a DCOPCall message
+DCOPReply is the successful reply to a DCOPCall message
 data: << fromId << toId << replyType << replyDataSize + replyData[replyDataSize]
 
 DCOPReplyFailed indicates failure of a DCOPCall message
 data: << fromId << toId
 
-DCOPReplyWait indicates that a DCOPCall message is succesfully
+DCOPReplyWait indicates that a DCOPCall message is successfully
 being processed but that response will come later.
 data: << fromId << toId << transactionId
 
-DCOPReplyDelayed is the successfull reply to a DCOPCall message
+DCOPReplyDelayed is the successful reply to a DCOPCall message
 after a DCOPReplyWait message.
 data: << fromId << toId << transactionId << replyType << replyData
 

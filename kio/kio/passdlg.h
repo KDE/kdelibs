@@ -67,7 +67,7 @@ public:
      * Adds a comment line to the dialog.
      *
      * This function allows you to add one additional comment
-     * line to this widget.  Calling this fucntion after a
+     * line to this widget.  Calling this function after a
      * comment has already been added will not have any effect.
      *
      * @param label       label for comment (ex:"Command:")

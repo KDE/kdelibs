@@ -30,7 +30,7 @@
 /**
    Resizable array class.
 
-   This resizable array is used to simplify the implementation.  The existance of
+   This resizable array is used to simplify the implementation.  The existence of
    this class is to keep the implementation from depending on a separate
    framework/library.
    @internal  

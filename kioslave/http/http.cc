@@ -4336,7 +4336,7 @@ void HTTPProtocol::cacheUpdate( const KURL& url, bool no_cache, time_t expireDat
 
 FILE* HTTPProtocol::checkCacheEntry( bool readWrite)
 {
-   const QChar seperator = '_';
+   const QChar separator = '_';
 
    QString CEF = m_request.path;
 
@@ -4344,7 +4344,7 @@ FILE* HTTPProtocol::checkCacheEntry( bool readWrite)
 
    while(p != -1)
    {
-      CEF[p] = seperator;
+      CEF[p] = separator;
       p = CEF.find('/', p);
    }
 

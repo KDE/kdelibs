@@ -64,7 +64,7 @@
 - Language specific parts in document (eg links to dictionaries etc should be
   done with an entity), eg in Translation howto
 - Write FPI script (for external references).
-- decide on distinction notice and full licence (and adapt files 
+- decide on distinction notice and full license (and adapt files 
   accordingly)
 - CSS: position graphics centered or let text flow around them
 - reorganise DTDs such that independent parts are really independent

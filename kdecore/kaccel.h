@@ -235,7 +235,7 @@ class KAccel : public QAccel
 
 	/**
 	 * Updates the connections of the accelerations after changing them. 
-	 * This is only neccessary if you have disabled auto updates which are
+	 * This is only necessary if you have disabled auto updates which are
 	 * on by default.
 	 * @return true if successful, false otherwise
 	 * @see setAutoUpdate()

@@ -84,7 +84,7 @@ namespace KShell {
      * @param flags operation flags, see @ref Options
      * @param err if not NULL, a status code will be stored at the pointer
      *  target, see @ref Errors
-     * @return a list of unquoted words or an empty list if an error occured
+     * @return a list of unquoted words or an empty list if an error occurred
      */
     QStringList splitArgs( const QString &cmd, int flags = 0, int *err = 0 );
 

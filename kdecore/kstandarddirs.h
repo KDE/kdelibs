@@ -59,7 +59,7 @@ class KStandardDirsPrivate;
  * defined suffixes where specific resource types are to be found.
  * For example, for the resource type "html" the suffixes could be
  * share/doc/HTML and share/doc/kde/HTML.
- * So the search algorithm basicly appends to each prefix each registered
+ * So the search algorithm basically appends to each prefix each registered
  * suffix and tries to locate the file there.
  * To make the thing even more complex, it's also possible to register
  * absolute paths that KStandardDirs looks up after not finding anything
@@ -88,7 +88,7 @@ class KStandardDirsPrivate;
  * @li sound - Application sounds.
  * @li templates - Templates
  * @li wallpaper - Wallpapers.
- * @li tmp - Temporary files (specfic for both current host and current user)
+ * @li tmp - Temporary files (specific for both current host and current user)
  * @li socket - UNIX Sockets (specific for both current host and current user)
  *
  * A type that is added by the class @ref KApplication if you use it, is
@@ -106,7 +106,7 @@ class KStandardDirsPrivate;
  * @sect KStandardDirs supports the following environment variables:
  *
  * @li KDEDIRS: This may set an additional number of directory prefixes to
- *          search for resources. The directories should be seperated
+ *          search for resources. The directories should be separated
  *          by ':'. The directories are searched in the order they are
  *          specified.
  * @li KDEDIR:  Used for backwards compatibility. As KDEDIRS but only a single
@@ -376,7 +376,7 @@ public:
 				bool ignoreExecBit=false );
 
 	/**
-	 * Finds all occurences of an executable in the system path.
+	 * Finds all occurrences of an executable in the system path.
 	 *
 	 * @param list	Will be filled with the pathnames of all the
 	 *		executables found. Will be empty if the executable

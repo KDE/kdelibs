@@ -78,7 +78,7 @@ public:
   /**
    * Get the next number from the pseudo-random sequence.
    *
-   * @return a psuedo-random double value between [0,1[
+   * @return a pseudo-random double value between [0,1[
    */
   double getDouble(); 
   
@@ -112,7 +112,7 @@ public:
    * then S(i) != S(j) for i != j and   
    *      S(i) == S(j) for i == j.
    *
-   * This can be usefull in game situation where "undo" restores
+   * This can be useful in game situation where "undo" restores
    * the state of the random sequence. If the game modulates the
    * random sequence with the move chosen by the player, the 
    * random sequence will be identical whenever the player "redo"-s 

@@ -36,7 +36,7 @@ class KCalendarSystemPrivate;
  * Derived classes must be created through KCalendarFactory class
  *
  * @author Carlos Moro <cfmoro@correo.uniovi.es>
- * @licence GNU-GPL v.2
+ * @license GNU-GPL v.2
  * @version $Id$
  * @since 3.2
  */

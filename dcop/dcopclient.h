@@ -213,7 +213,7 @@ class DCOPClient : public QObject
 
   /**
    * Temporarily suspends processing of DCOP events.
-   * This can be usefull if you need to show e.g. a dialog before
+   * This can be useful if you need to show e.g. a dialog before
    * your application is ready to accept DCOP requests. Normally the
    * dialog would start an event loop and in this event loop DCOP
    * requests will be handled.

@@ -11,9 +11,9 @@
     220,  // greeting from server
     221,  // server acknolages goodbye
     250,  // command successful
-    354,  // ready to recieve data
+    354,  // ready to receive data
     501,  // error
-    550,  // user unkown
+    550,  // user unknown
     0     // null
 };
 
@@ -63,7 +63,7 @@ public:
         GREET = 220,          // greeting from server
         GOODBYE = 221,        // server acknolages quit
         SUCCESSFUL = 250,     // command successful
-        READYDATA = 354,      // server ready to recieve data
+        READYDATA = 354,      // server ready to receive data
         ERROR = 501,          // error
         UNKNOWN = 550        // user unknown
     }SMTPServerStatus;

@@ -229,7 +229,7 @@ public:
     static int getNewPassword(QCString &password, QString prompt);
 
     /**
-     * Static helper funtion that disables core dumps.
+     * Static helper function that disables core dumps.
      */
     static void disableCoreDumps();
 

@@ -134,7 +134,7 @@ public:
 
    /**
     * When you receive a "databaseChanged" signal, you can query here if
-    * a change has occured in a specific resource type.
+    * a change has occurred in a specific resource type.
     * @see KStandardDirs for the various resource types.
     */
    static bool isChanged(const char *type);

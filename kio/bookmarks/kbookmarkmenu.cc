@@ -606,7 +606,7 @@ void KBookmarkMenu::slotAddBookmarksList()
     Q_ASSERT(!parentBookmark.isNull());
     KBookmarkGroup group = parentBookmark.createNewFolder( m_pManager );
     if ( group.isNull() )
-        return; // user cancelled i guess
+        return; // user canceled i guess
 
     KExtendedBookmarkOwner::QStringPairList::const_iterator it;
     for ( it = list.begin(); it != list.end(); ++it ) 

@@ -93,7 +93,7 @@ public:
    *    before will be deselected first.
    *
    *    Additionally the current item is always selected automatically when
-   *    navigating using the keyboard, except other items were selected explicitely.
+   *    navigating using the keyboard, except other items were selected explicitly.
    *
    *   This way e.g. SHIFT+up/PgUp then SHIFT+down/PgDn leaves no item selected
    */
@@ -412,7 +412,7 @@ signals:
    * dropped onto the listview.
    *
    * @param e is the drop event itself (it has already been accepted)
-   * @param after is the item after which the drop occured (or 0L, if
+   * @param after is the item after which the drop occurred (or 0L, if
    * the drop was above all items)
    *
    * @see #acceptDrop()
@@ -428,7 +428,7 @@ signals:
    *
    * @param list is the listview
    * @param e is the drop event itself (it has already been accepted)
-   * @param after is the item after which the drop occured (or 0L, if
+   * @param after is the item after which the drop occurred (or 0L, if
    * the drop was above all items
    */
   void dropped (KListView* list, QDropEvent* e, QListViewItem* after);
@@ -442,7 +442,7 @@ signals:
    * @param list is the listview
    * @param e is the drop event itself (it has already been accepted)
    * @param parent the item that is to be the parent of the new item
-   * @param after is the item after which the drop occured (or 0L, if
+   * @param after is the item after which the drop occurred (or 0L, if
    * the drop was above all items
    */
   void dropped (KListView* list, QDropEvent* e, QListViewItem* parent, QListViewItem* after);
@@ -455,7 +455,7 @@ signals:
    * is a tree
    * @param e is the drop event itself (it has already been accepted)
    * @param parent the item that is to be the parent of the new item
-   * @param after is the item after which the drop occured (or 0L, if
+   * @param after is the item after which the drop occurred (or 0L, if
    * the drop was above all items
    */
   void dropped (QDropEvent* e, QListViewItem* parent, QListViewItem* after);
@@ -843,19 +843,19 @@ protected:
   virtual void viewportPaintEvent(QPaintEvent*);
 
   /**
-   * In FileManager selection mode: explicitely activate the mode
+   * In FileManager selection mode: explicitly activate the mode
    * in which the current item is automatically selected.
    */
   void activateAutomaticSelection();
   /**
-   * In FileManager selection mode: explicitely deactivate the mode
+   * In FileManager selection mode: explicitly deactivate the mode
    * in which the current item is automatically selected.
    */
   void deactivateAutomaticSelection();
   /**
    * In FileManager selection mode: return whether it is currently in the mode
    * where the current item is selected automatically.
-   * Returns false if items were selected explicitely, e.g. using the mouse.
+   * Returns false if items were selected explicitly, e.g. using the mouse.
    */
   bool automaticSelection() const;
 

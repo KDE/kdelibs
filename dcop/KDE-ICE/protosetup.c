@@ -198,7 +198,7 @@ char 	   *errorStringRet;
 	if (ioErrorOccured)
 	{
 	    strncpy (errorStringRet,
-		"IO error occured doing Protocol Setup on connection",
+		"IO error occurred doing Protocol Setup on connection",
 		errorLength);
 	    return (IceProtocolSetupIOError);
 	}

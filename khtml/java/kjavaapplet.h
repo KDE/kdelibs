@@ -233,7 +233,7 @@ public:
     bool failed() const;
     bool isAlive() const;
     /**
-     * JavaScript comming from Java
+     * JavaScript coming from Java
      **/
     void jsData (const QStringList & args) { emit jsEvent (args); }
 signals:

@@ -19,7 +19,7 @@
 //----------------------------------------------------------------------
 // KDE color selection dialog.
 
-// layout managment added Oct 1997 by Mario Weilguni
+// layout management added Oct 1997 by Mario Weilguni
 // <mweilguni@sime.com>
 
 #ifndef __KCOLORDIALOG_H__
@@ -402,7 +402,7 @@ private:
  * The color dialog is really a collection of several widgets which can
  * you can also use separately: the quadratic plane in the top left of
  * the dialog is a @ref KXYSelector. Right next to it is a @ref KHSSelector
- * for chosing hue/saturation.
+ * for choosing hue/saturation.
  *
  * On the right side of the dialog you see a @ref KPaletteTable showing
  * up to 40 colors with a combo box which offers several predefined

@@ -405,7 +405,7 @@ bool KPrinter::printFiles(const QStringList& l, bool flag, bool startviewer)
 			}
 		}
 		else if (flag)
-		// situation: only one file, it has been previewed and printing has been cancelled, then
+		// situation: only one file, it has been previewed and printing has been canceled, then
 		//            we should remove the file ourself
 		{
 			QFile::remove(files[0]);

@@ -160,7 +160,7 @@ not be available.
 		Key_Up, this, SLOT(scrollUp()) );
 </pre>
 	Note that a What's This parameter is now a part of the insert function.
-	You might replace the QString::null paramter with
+	You might replace the QString::null parameter with
 	<pre> i18n("Scroll the current document's contents up by one line.") </pre>
 	for example.</li>
 	<li> KAccel::changeMenuAccel() has been deprecated because it was
@@ -323,7 +323,7 @@ present in Qt3/KDE3. KThemeBase is no longer in kdeui, but in kstyles/kthemestyl
 as its use is basically limited to KThemeStyle.
 
 <H4>KAction, KToolBar, KToolBarButton and icons</H4>
-The prefered way for specifying icons is passing the icon names (and the icons will be loaded by KIconLoader),
+The preferred way for specifying icons is passing the icon names (and the icons will be loaded by KIconLoader),
 instead of using QIconSet or QPixmap. This results in always using the correct icon size and allows delayed
 on-demand icon loading.
 <p>
@@ -332,7 +332,7 @@ KAction::iconSet() now has an argument specifying icon group, the old KAction::i
 is defined and returns KIcon::Small iconset, just like in KDE2.
 <p>
 KToolBarButton methods setPixmap(), setDefaultPixmap(), setDisabledPixmap(), setDefaultIcon() and setDisabledIcon() are deprecated.
-Use KToolBarButton::setIcon() (prefered) or KToolBarButton::setIconSet() instead.
+Use KToolBarButton::setIcon() (preferred) or KToolBarButton::setIconSet() instead.
 
 <H4>KAction and derived classes</H4>
 The protected set* methods have been renamed to update* and they now take only one argument (i.e. setText(int, const QString&)

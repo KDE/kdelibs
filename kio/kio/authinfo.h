@@ -41,7 +41,7 @@ namespace KIO {
  * username (if already supplied), comment and commentLabel fields.
  *
  * <u>SPECIAL NOTE:</u> If you extend this class to add additional
- * paramters do not forget to overload the stream insertion and
+ * parameters do not forget to overload the stream insertion and
  * extraction operators ("<<" and ">>") so that the added data can
  * be correctly serialzed.
  *

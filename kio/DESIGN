@@ -7,7 +7,7 @@ which are notified by DCOP.
 
 Connection is the most low-level class, the one that encapsulate the pipe.
 
-SlaveInterface is the main class for transfering anything to the slave
+SlaveInterface is the main class for transferring anything to the slave
 and Slave, which inherits SlaveInterface, is the sub class that Job should handle.
 
 A slave inherits SlaveBase, which is the other half of SlaveInterface.
@@ -162,7 +162,7 @@ PROGRESS DISPLAYING :
 Taj brought up the idea of deligating all progress informations to an extern
 GUI daemon which could be provided in several implementations - examples
 are popup dialogs (most are annoyed by them, like me :) or a kicker applet
-or something completly different. This would also remove the dependency on
+or something completely different. This would also remove the dependency on
 libkdeui (I hope).
 Conclusion: kio_uiserver is this single GUI daemon, but the dependency on
 libkdeui couldn't be removed (for many reasons, including Job::showErrorDialog())

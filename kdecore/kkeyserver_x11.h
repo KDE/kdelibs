@@ -48,7 +48,7 @@ namespace KKeyServer
 		/**
 		 * Initializes the symbol with the given Qt key code.
 		 * @param keyQt the qt key code
-		 * @return true if succesful, false otherwise
+		 * @return true if successful, false otherwise
 		 * @see Qt::Key
 		 */
 		bool initQt( int keyQt );
@@ -56,7 +56,7 @@ namespace KKeyServer
 		/**
 		 * Initializes the key with the given string description.
 		 * @param s the string description
-		 * @return true if succesful, false otherwise
+		 * @return true if successful, false otherwise
 		 * @see toString()
 		 */
 		bool init( const QString &s );

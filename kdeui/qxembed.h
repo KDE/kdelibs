@@ -48,7 +48,7 @@ class QXEmbedData;
  * @ref #embedClientIntoWindow() or the high-level wrapper
  * @ref #processClientCmdline().
  * 
- * If a window has been embedded succesfully, @ref #embeddedWinId() returns
+ * If a window has been embedded successfully, @ref #embeddedWinId() returns
  * its id.
  * 
  * Reimplement the change handler @ref #windowChanged() to catch embedding or
@@ -151,7 +151,7 @@ public:
      * client will be embedded in the window that is passed as
      * -embed command line argument.
      * 
-     * The function returns TRUE on sucess or FALSE if no such command line
+     * The function returns TRUE on success or FALSE if no such command line
      * parameter is specified.
      *
      * @see #embedClientIntoWindow()

@@ -264,7 +264,7 @@ QRect KMdiChildView::restoreGeometry()
       return mdiParent()->restoreGeometry();
    }
    else {
-      // XXX not really supported, may be we must use Windows or X11 funtions
+      // XXX not really supported, may be we must use Windows or X11 functions
       return geometry();
    }
 }
@@ -277,7 +277,7 @@ void  KMdiChildView::setRestoreGeometry(const QRect& newRestGeo)
       mdiParent()->setRestoreGeometry(newRestGeo);
    }
    else {
-      // XXX not supported, may be we must use Windows or X11 funtions
+      // XXX not supported, may be we must use Windows or X11 functions
    }
 }
 

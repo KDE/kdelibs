@@ -33,7 +33,7 @@ class DCOPClient;
 
 /**
  * Represents the return value of a @ref DCOPRef:call() or 
- * @ref DCOPRef:send() invokation.
+ * @ref DCOPRef:send() invocation.
  *
  * @see DCOPRef
  * @see DCOPRef::call()
@@ -268,7 +268,7 @@ inline QDataStream & operator << (QDataStream & str, const DCOPArg& arg )
  * </pre>
  *
  * A DCOP reference operates on DCOPClient::mainClient(), unless you
- * explicitely specify another client with setDCOPClient().
+ * explicitly specify another client with setDCOPClient().
  *
  * @see DCOPArg
  * @see DCOPReply

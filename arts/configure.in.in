@@ -31,7 +31,7 @@ else
   	ARTS_HAVE_PREFIX=`$ARTSCCONFIG --arts-prefix`
   fi
 
-  # And delete superflous '/' to make compares easier
+  # And delete superfluous '/' to make compares easier
   ARTS_HAVE_PREFIX=`echo "$ARTS_HAVE_PREFIX" | sed 's,//*,/,g' | sed -e 's,/$,,'`
 
   ARTS_MAJOR=`echo $ARTS_HAVE_VERSION | sed 's/\.[[0-9]]*\.[[0-9]]*$//'`

@@ -171,7 +171,7 @@ class KDialog : public QDialog
  /**
   * Queue for showing modal dialog one after the other from the main event loop.
   *
-  * This is usefull if you want to show a modal dialog but are not in the
+  * This is useful if you want to show a modal dialog but are not in the
   * position to start a new event loop at that point in your code.
   *
   * The disadvantage is that you will not be able to get any information from

@@ -103,7 +103,7 @@ Author: Ralph Mor, X Consortium
  * for a reply, and while calling IceProcessMessages, a callback can be
  * invoked which will wait for another reply).  We take advantage of the
  * fact that for a given protocol, we are guaranteed that messages are
- * processed in the order we sent them.  So, everytime we have a new
+ * processed in the order we sent them.  So, every time we have a new
  * replyWait, we add it to the END of the 'saved_reply_waits' list.  When
  * we read a message and want to see if it matches a replyWait, we use the
  * FIRST replyWait in the list with the major opcode of the message.  If the
@@ -115,7 +115,7 @@ Author: Ralph Mor, X Consortium
  * The return value of IceProcessMessages is one of the following:
  *
  * IceProcessMessagesSuccess - the message was processed successfully.
- * IceProcessMessagesIOError - an IO error occured.  The caller should
+ * IceProcessMessagesIOError - an IO error occurred.  The caller should
  *			       invoked IceCloseConnection.
  * IceProcessMessagesConnectionClosed - the connection was closed as a
  *					result of shutdown negotiation.
@@ -163,7 +163,7 @@ Bool		 *replyReadyRet;
     if (!iceConn->io_ok)
     {
 	/*
-	 * An unexpected IO error occured.  The caller of IceProcessMessages
+	 * An unexpected IO error occurred.  The caller of IceProcessMessages
 	 * should call IceCloseConnection which will cause the watch procedures
 	 * to be invoked and the ICE connection to be freed.
 	 */

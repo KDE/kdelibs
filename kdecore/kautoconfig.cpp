@@ -106,7 +106,7 @@ bool KAutoConfig::retrieveSettings(bool trackChanges){
   if(d->retrievedSettings){
       kdDebug(180) << "This should not happen.  Function "
        "KAutoConfig::retrieveSettings() called more then once, returning "
-       "first.  It is not recomended unless you know the implementation "
+       "first.  It is not recommended unless you know the implementation "
        "details of KAutoConfig and what this breaks.  Please fix." << endl;
     return false;
   }

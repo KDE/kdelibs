@@ -164,7 +164,7 @@ public:
 	/**
 	 * Change the page state when a non real printer is selected in the print dialog.
 	 * Usually, the default value (false) is OK in most cases and you don't need to
-	 * call this function explicitely.
+	 * call this function explicitly.
 	 * @param on if true, then the page will be disabled if a non real printer is selected
 	 * @see onlyRealPrinters()
 	 */

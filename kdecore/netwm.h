@@ -1072,9 +1072,9 @@ public:
        the closest it can find (the next biggest).  If width and height are omitted,
        then the first icon in the list is returned.
 
-       @param width the prefered width for the icon, -1 to ignore
+       @param width the preferred width for the icon, -1 to ignore
 
-       @param height the prefered height for the icon, -1 to ignore
+       @param height the preferred height for the icon, -1 to ignore
 
        @return the icon
     **/

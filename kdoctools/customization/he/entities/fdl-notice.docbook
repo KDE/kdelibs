@@ -21,7 +21,7 @@
 
     Alternatively, you can include the text literally.
 
-    Include a copy of the licence in the documentation distribution.
+    Include a copy of the license in the documentation distribution.
  -->
 <para>ניתנת רשות להעתיק, להפיץ, ו\או לשנות מסמך זה תחת התנאים של גירסה 1.1 של רישיון התיעוד החופשי של GNU או כל גירסה עדכנית יותר שפורסמה על ידי אירגון התוכנה החופשית; כאשר &FDLInvariantSections;, &FDLFrontCoverText;, ו&FDLBackCoverText;. עותק של הרישיון כלול ב<xref linkend="gnu-fdl"/>.</para>
 

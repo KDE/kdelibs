@@ -61,7 +61,7 @@ extern char *strchr(const char *, int);
  * Each transport is assigned a unique transport id.
  *
  * New transports can be added by adding an entry in this table.
- * For compatiblity, the transport ids should never be renumbered.
+ * For compatibility, the transport ids should never be renumbered.
  * Always add to the end of the list.
  */
 
@@ -233,7 +233,7 @@ TRANS(ParseAddress) (char *address, char **protocol, char **host, char **port)
 
     if ((mybuf = strpbrk (mybuf,"/:")) == NULL)
     {
-	/* adress is in a bad format */
+	/* address is in a bad format */
 	*protocol = NULL;
 	*host = NULL;
 	*port = NULL;

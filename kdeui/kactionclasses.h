@@ -444,7 +444,7 @@ public:
     bool removeAmpersandsInCombo() const;
 
     /**
-     * Sets whether any occurence of the ampersand character ( &amp; ) in items
+     * Sets whether any occurrence of the ampersand character ( &amp; ) in items
      * should be interpreted as keyboard accelerator for items displayed in a
      * menu or not.
      * @since 3.1

@@ -3713,7 +3713,7 @@ CacheInfo::CacheInfo(const KURL &url)
 
 QString CacheInfo::cachedFileName()
 {
-   const QChar seperator = '_';
+   const QChar separator = '_';
 
    QString CEF = m_url.path();
 
@@ -3721,7 +3721,7 @@ QString CacheInfo::cachedFileName()
 
    while(p != -1)
    {
-      CEF[p] = seperator;
+      CEF[p] = separator;
       p = CEF.find('/', p);
    }
 

@@ -224,7 +224,7 @@ public class KJASProtocolHandler
         } else
         if( cmd_code_value == ShutdownServerCode )
         {
-            Main.debug( "shutDownServer recieved" );
+            Main.debug( "shutDownServer received" );
             System.exit( 1 );
         }
         else
@@ -233,7 +233,7 @@ public class KJASProtocolHandler
             
             String id = getArg( command );
             String code = getArg( command );
-            Main.debug( "URLData recieved(" + id + ") code:" + code );
+            Main.debug( "URLData received(" + id + ") code:" + code );
 
             //rest of the command should be the data...
             byte[] data = null;

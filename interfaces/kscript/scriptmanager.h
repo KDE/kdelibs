@@ -69,17 +69,17 @@ class ScriptInfo;
 		void clear();
 		/**
 		*	This function will allow the main application of any errors
-		*	that have occured during processing of the script.
+		*	that have occurred during processing of the script.
 		*/
 		void error( const QString &msg ) {emit scriptError(msg);}
 		/**
 		*	This function will allow the main application of any warnings
-		*	that have occured during the processing of the script.
+		*	that have occurred during the processing of the script.
 		*/
 		void warning( const QString &msg ) {emit scriptWarning(msg);}
 		/**
 		*	This function will allow the main application of any normal
-		*	output that has occured during the processing of the script.
+		*	output that has occurred during the processing of the script.
 		*/
 		void output( const QString &msg ) {emit scriptOutput(msg);}
 		/**

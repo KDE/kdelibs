@@ -162,7 +162,7 @@ $$
 # <b>PreserveJobHistory</b>
 # <p>
 # Whether or not to preserve the job history after a
-# job is completed, cancelled, or stopped.  Default is Yes.</p>
+# job is completed, canceled, or stopped.  Default is Yes.</p>
 # <p>
 # <i>ex</i>: Yes</p>
 $$
@@ -172,7 +172,7 @@ $$
 # <b>PreserveJobFiles</b>
 # <p>
 # Whether or not to preserve the job files after a
-# job is completed, cancelled, or stopped.  Default is No.</p>
+# job is completed, canceled, or stopped.  Default is No.</p>
 # <p>
 # <i>ex</i>: No</p>
 $$

@@ -211,7 +211,7 @@ signals:
    void dropped( QWidget*, QDropEvent* );
    void dropped( QWidget*, QDropEvent*, KURL::List& );
    void dropped( KURL::List&, KURL& );
-   // The drop event allows to differenciate between move and copy
+   // The drop event allows to differentiate between move and copy
    void dropped( QWidget*, QDropEvent*, KURL::List&, KURL& );
 
    void dropped( QDropEvent *, QListViewItem * );

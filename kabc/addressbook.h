@@ -210,7 +210,7 @@ class AddressBook : public QObject
     Addressee::List findByEmail( const QString & );
 
     /**
-      Find all entries wich have the specified category in the address book.
+      Find all entries which have the specified category in the address book.
       Returns an empty list, if no entries could be found.
     */
     Addressee::List findByCategory( const QString & );

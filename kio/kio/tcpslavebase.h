@@ -244,7 +244,7 @@ protected:
 
     /**
      * Call this if you use persistent connections and want all the
-     * metadata restored.  This is particularily important for SSL
+     * metadata restored.  This is particularly important for SSL
      * sessions since the app needs to know the state of connection,
      * certificates, etc.
      */

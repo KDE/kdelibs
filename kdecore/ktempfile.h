@@ -165,7 +165,7 @@ public:
     * Closes the file.
     * 
     * See @ref #status() for details about errors.
-    * @return true if successful, or false if an error has occured.
+    * @return true if successful, or false if an error has occurred.
     **/
    bool close();
 

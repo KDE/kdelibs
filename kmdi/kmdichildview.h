@@ -416,7 +416,7 @@ protected:
    /** 
    * If attached, the childframe will be activated and the MDI taskbar button will be pressed. Additionally, the
    * memorized old focused child widget of this is focused again.
-   * Sends the focusInEventOccurs signal befor changing the focus and the 
+   * Sends the focusInEventOccurs signal before changing the focus and the 
    * gotFocus signal after changing the focus.
    */
    virtual void focusInEvent(QFocusEvent *e);

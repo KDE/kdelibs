@@ -400,12 +400,12 @@ public:
    *  @return The value of the option. If the option was not
    *          present on the command line the default is returned.
    *          If the option was present more than the value of the
-   *          last occurence is used.
+   *          last occurrence is used.
    */
   QCString getOption(const char *option) const;
 
   /**
-   *  Read out all occurences of a string option.
+   *  Read out all occurrences of a string option.
    *
    *  The option must have a corresponding KCmdLineOptions entry
    *  of the form:

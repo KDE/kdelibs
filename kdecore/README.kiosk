@@ -128,7 +128,7 @@ KDE3 Action Restrictions
 .desktop files can have an additional field "X-KDE-AuthorizeAction". If this
 field is present the .desktop file is only considered if the action(s) 
 mentioned in this field get(s) authorized. If multiple actions are listed
-they should be seperated by commas (','). 
+they should be separated by commas (','). 
 
 To restrict access to function the kdeglobals file should contain the 
 group "[KDE Action Restrictions]", each action can then restricted by 

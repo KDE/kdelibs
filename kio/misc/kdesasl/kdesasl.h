@@ -77,7 +77,7 @@ public:
    */
   KDESasl(const KURL &aUrl);
   /**
-   * This is a conveniece funtion and differs from the above function only by
+   * This is a conveniece function and differs from the above function only by
    * what arguments it accepts.
    */
   KDESasl(const QString &aUser, const QString &aPass, const QString &aProtocol);

@@ -199,7 +199,7 @@ class KPluginInfo
  *
  * Since the user needs a way to know what a specific plugin does every plugin
  * sould install a desktop file containing a name, comment and type field. The
- * type is usefull for applications that can use different kinds of plugins like
+ * type is useful for applications that can use different kinds of plugins like
  * a playlist, skin or visualization.
  *
  * The location of these desktop files is the

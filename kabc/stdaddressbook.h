@@ -98,7 +98,7 @@ class StdAddressBook : public AddressBook
       Set the automatic save property of the address book.
       If @p enable is TRUE (default) the address book is saved at
       destruction time otherwise you have to call @ref save() to
-      explicitely save it.
+      explicitly save it.
      */
     static void setAutomaticSave( bool enable );
 

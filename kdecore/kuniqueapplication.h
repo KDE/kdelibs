@@ -95,7 +95,7 @@ public:
    * called automatically before creating KUniqueApplication if it hasn't
    * been called yet, without any performance impact.
    *
-   * @return true if registration is succesful.
+   * @return true if registration is successful.
    *         false if another process was already running.
    */
   static bool start();
@@ -132,7 +132,7 @@ public:
    *
    * The default implementation ensures the mainwindow of the already
    * running instance is shown and activated if necessary. You should
-   * prefer using it from your overriden method instead of doing
+   * prefer using it from your overridden method instead of doing
    * it directly.
    * 
    * Note that newInstance() is called also in the first started 

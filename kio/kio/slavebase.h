@@ -256,7 +256,7 @@ public:
     void setMetaData(const QString &key, const QString &value);
 
     /**
-     * Queries for the existance of a certain config/meta-data entry
+     * Queries for the existence of a certain config/meta-data entry
      * send by the application to the slave.
      * @since 3.2
      */
@@ -270,7 +270,7 @@ public:
 
     /**
      * @obsolete kept for binary compatibility
-     * Queries for the existance of a certain config/meta-data entry
+     * Queries for the existence of a certain config/meta-data entry
      * send by the application to the slave.
      */
     bool hasMetaData(const QString &key);

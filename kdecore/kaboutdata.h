@@ -308,7 +308,7 @@ class KAboutData
     void setTranslator(const char* name, const char* emailAddress);
 
     /**
-     * Defines a licence text.
+     * Defines a license text.
      *
      * The text will be translated if it got marked for
      * translations with the I18N_NOOP() macro.
@@ -325,7 +325,7 @@ class KAboutData
     void setLicenseText( const char *license );
 
     /**
-     * Defines a licence text.
+     * Defines a license text.
      *
      * @param file File containing the license text.
      */

@@ -163,7 +163,7 @@ public:
     void setDefaults();
 
     /**
-     * Removes any occurence of @p url. If @p checkDefaultURLs is false
+     * Removes any occurrence of @p url. If @p checkDefaultURLs is false
      * default-urls won't be removed.
      */
     void removeURL( const KURL& url, bool checkDefaultURLs = true );

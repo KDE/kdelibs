@@ -139,7 +139,7 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                         ev->accept();
                         return true;
                     case Key_Escape:
-                        cancelled();
+                        canceled();
                         ev->accept();
                         return true;
                     case Key_Enter:
@@ -412,7 +412,7 @@ QString KCompletionBox::cancelledText() const
     return d->cancelText;
 }
 
-void KCompletionBox::cancelled()
+void KCompletionBox::canceled()
 {
     if ( !d->cancelText.isNull() )
         emit userCancelled( d->cancelText );

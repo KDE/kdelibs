@@ -181,7 +181,7 @@ namespace KIO {
          *            connect with.
          * @param config Configuration data for the slave.
          *
-         * @return A pointer to a connected slave or 0 if an error occured.
+         * @return A pointer to a connected slave or 0 if an error occurred.
          * @see assignJobToSlave()
          * @see disconnectSlave()
          */
@@ -197,7 +197,7 @@ namespace KIO {
          *              be currently assigned to any other job.
          * @param job The job to do.
          *
-         * @return true is successfull, false otherwise.
+         * @return true is successful, false otherwise.
          *
          * @see getConnectedSlave()
          * @see disconnectSlave()

@@ -1478,7 +1478,7 @@ void Ftp::stat( const KURL &url)
         statAnswerNotFound( path, filename );
         return;
      }
-     shortStatAnswer( filename, isDir ); // succesfully found a dir or a file -> done
+     shortStatAnswer( filename, isDir ); // successfully found a dir or a file -> done
      return;
   }
 

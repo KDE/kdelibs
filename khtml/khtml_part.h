@@ -560,7 +560,7 @@ public:
   void findTextBegin();
 
   /**
-   * Finds the next occurence of the string or expression.
+   * Finds the next occurrence of the string or expression.
    * If isRegExp is true then str is converted to a QRegExp, and caseSensitive is ignored.
    */
   bool findTextNext( const QString &str, bool forward, bool caseSensitive, bool isRegExp );
@@ -882,7 +882,7 @@ public slots:
   /**
    * Execute the specified snippet of JavaScript code.
    *
-   * Returns @p true if JavaScript was enabled, no error occured
+   * Returns @p true if JavaScript was enabled, no error occurred
    * and the code returned true itself or @p false otherwise.
    * @deprecated, use the one below.
    */

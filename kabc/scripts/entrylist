@@ -1,6 +1,6 @@
 # This file describes the fields of an address book entry.
 #
-# The following comma-seperated fields are used:
+# The following comma-separated fields are used:
 #
 #          Control: A generates accessor functions.
 #                   L generates a static function for returning a tranlsated label

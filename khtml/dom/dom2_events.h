@@ -617,7 +617,7 @@ public:
      * invocation takes precedence. Unless explicitly give a value of
      * true, all modifiers have a value of false. This method has no
      * effect if called after the event has been dispatched.  The list of
-     * keys below represents the allowable modifier paramaters for this
+     * keys below represents the allowable modifier parameters for this
      * method:
      *    DOM_VK_LEFT_ALT
      *    DOM_VK_RIGHT_ALT
@@ -708,7 +708,7 @@ public:
      * modifier in question is passed into the CheckModifier function. If
      * the modifier is triggered it will return true. If not, it will
      * return false.  The list of keys below represents the allowable
-     * modifier paramaters for this method:
+     * modifier parameters for this method:
      *     DOM_VK_LEFT_ALT
      *     DOM_VK_RIGHT_ALT
      *     DOM_VK_LEFT_CONTROL

@@ -42,7 +42,7 @@ namespace KJS {
   bool equal(ExecState *exec, const Value& v1, const Value& v2);
   bool strictEqual(ExecState *exec, const Value &v1, const Value &v2);
   /**
-   * This operator performs an abstract relational comparision of the two
+   * This operator performs an abstract relational comparison of the two
    * arguments that can be of arbitrary type. If possible, conversions to the
    * string or number type will take place before the comparison.
    *

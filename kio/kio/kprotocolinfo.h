@@ -141,7 +141,7 @@ public:
    * Name, Type, Size, Date, AccessDate, Access, Owner, Group, Link, URL, MimeType
    *
    * This corresponds to the "listing=" field in the protocol description file.
-   * The supported fields should be seperated with ',' in the protocol description file.
+   * The supported fields should be separated with ',' in the protocol description file.
    *
    * @param url the url to check
    * @return a list of field names
@@ -329,7 +329,7 @@ public:
 
   /**
    * Returns the name of the config file associated with the 
-   * specified protocol. This is usefull if two similar protocols
+   * specified protocol. This is useful if two similar protocols
    * need to share a single config file, e.g. http and https.
    *
    * This corresponds to the "config=" field in the protocol description file.

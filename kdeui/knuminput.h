@@ -480,7 +480,7 @@ public:
     virtual ~KDoubleNumInput();
 
     /**
-     * @deprecated (rounds @p value to a mulitple of 1/100)
+     * @deprecated (rounds @p value to a multiple of 1/100)
      * Constructor
      *
      * puts it below other KNumInput

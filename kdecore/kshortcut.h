@@ -498,7 +498,7 @@ class KKeySequence
 
 	/**
 	 * Returns the key sequence as a number of key presses as
-	 * returned by @ref KKey::toString(), seperated by commas.
+	 * returned by @ref KKey::toString(), separated by commas.
 	 * @return the string represenation of this key sequence
 	 * @see KKey::toString()
 	 */

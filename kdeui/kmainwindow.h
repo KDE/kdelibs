@@ -666,7 +666,7 @@ protected:
 
        A typical usage of @ref queryExit() is to write configuration data back.
        Note that the application may continue to run after @ref queryExit()
-       (the user may have cancelled a shutdown), so you should not do any cleanups
+       (the user may have canceled a shutdown), so you should not do any cleanups
        here. The purpose of @ref queryExit() is purely to prepare the application
        (with possible user interaction) so it can safely be closed later (without
        user interaction).
@@ -714,7 +714,7 @@ protected:
        within this method, as it may be called by the session manager before the
        session is saved. If the document is closed before the session save occurs,
        its location might not be properly saved. In addition, the session shutdown
-       may be cancelled, in which case the document should remain open.
+       may be canceled, in which case the document should remain open.
 
        @see queryExit()
        @see KApplication::sessionSaving()

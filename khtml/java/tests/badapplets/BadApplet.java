@@ -117,7 +117,7 @@ public class BadApplet extends JApplet {
             PrintWriter writer = new PrintWriter(new FileOutputStream(writePath.getText()));
             writer.println("Here is some text");
             writer.close();
-            output.setText("Write was successfull");
+            output.setText("Write was successful");
         } catch (Exception ex){output.setText(ex.getMessage());}
     }
 
@@ -130,7 +130,7 @@ public class BadApplet extends JApplet {
     void readFileButton_actionPerformed(ActionEvent e) {
         try{
             BufferedReader reader = new BufferedReader(new FileReader(readPath.getText()));
-            output.setText("Read was successfull: " + reader.readLine());
+            output.setText("Read was successful: " + reader.readLine());
         } catch (Exception ex){output.setText(ex.getMessage());}
     }
 
@@ -139,7 +139,7 @@ public class BadApplet extends JApplet {
             Integer thePort = new Integer(port.getText());
             Socket socket = new Socket(url.getText(), thePort.intValue());
             socket.getOutputStream();
-            output.setText("Socket connection successfull");
+            output.setText("Socket connection successful");
         } catch (Exception ex){output.setText("Socket unsuccessfull: " + ex.getMessage());}
     }
 
