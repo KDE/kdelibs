@@ -21,7 +21,6 @@
 #include "ksycoca.h"
 #include "ksycocatype.h"
 #include "ksycocafactory.h"
-#include "kuserprofile.h"
 
 #include <qdatastream.h>
 #include <qfile.h>
