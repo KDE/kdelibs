@@ -271,6 +271,16 @@ int KSSL::pending() {
 }
 
 
+int KSSL::peek(void *buf, int len) {
+#ifdef HAVE_SSL
+  if (!m_bInit) return -1;
+  return d->kossl->SSL_peek(d->m_ssl, buf, len);
+#else
+  return -1;
+#endif
+}
+
+
 int KSSL::read(void *buf, int len) {
 #ifdef HAVE_SSL
   if (!m_bInit) return -1;

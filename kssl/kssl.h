@@ -93,6 +93,7 @@ public:
   int connect(int sock);
 
   int read(void *buf, int len);
+  int peek(void *buf, int len);  // standard peek method
   int write(const void *buf, int len);
 
   int pending();

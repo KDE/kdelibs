@@ -129,6 +129,11 @@ public:
    int SSL_pending(SSL *ssl);
 
    /*
+    *   SSL_peek - obtain bytes buffered in an SSL object
+    */
+   int SSL_peek(SSL *ssl, void *buf, int num);
+
+   /*
     *   SSL_CTX_set_cipher_list - choose list of available SSL_CIPHERs
     */
    int SSL_CTX_set_cipher_list(SSL_CTX *ctx, const char *str);

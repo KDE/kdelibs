@@ -36,6 +36,7 @@ static SSL_CTX *(*K_SSL_CTX_new)(SSL_METHOD *) = NULL;
 static void (*K_SSL_CTX_free)   (SSL_CTX *) = NULL;
 static int (*K_SSL_set_fd)      (SSL *, int) = NULL;
 static int (*K_SSL_pending)     (SSL *) = NULL;
+static int (*K_SSL_peek)        (SSL *, void *, int) = NULL;
 static int (*K_SSL_CTX_set_cipher_list)(SSL_CTX *, const char *) = NULL;
 static void (*K_SSL_CTX_set_verify)(SSL_CTX *, int,
                          int (*)(int, X509_STORE_CTX *)) = NULL;
@@ -401,6 +402,7 @@ KConfig *cfg;
       K_SSL_get_error = (int (*)(SSL*, int)) _sslLib->symbol("SSL_get_error");
       K_SSL_get_peer_cert_chain = (STACK_OF(X509)* (*)(SSL*)) _sslLib->symbol("SSL_get_peer_cert_chain");
       K_SSL_load_client_CA_file = (STACK_OF(X509_NAME)* (*)(const char *)) _sslLib->symbol("SSL_load_client_CA_file");
+      K_SSL_peek = (int (*)(SSL*,void*,int)) _sslLib->symbol("SSL_peek");
 #endif
 
 
@@ -1038,6 +1040,11 @@ X509 *KOpenSSLProxy::X509_d2i_fp(FILE *out, X509** buf) {
    else return NULL;
 }
 
+
+int KOpenSSLProxy::SSL_peek(SSL *ssl,void *buf,int num) {
+   if (K_SSL_peek) return (K_SSL_peek)(ssl,buf,num);
+   else return -1;
+}
 
 #endif
 
