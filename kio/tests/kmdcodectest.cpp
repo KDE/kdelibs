@@ -70,23 +70,24 @@ int readContent( int fd, const char* err_msg, QByteArray& buf, bool closefd = tr
     int result = read( fd, buf.data(), 1024 );
     if ( result == 0 )
     {
-        if ( closefd )
-            if ( close(fd) == -1 )
-                kdDebug() << "WARNING: unable to close the file properly!" << endl;
+      if ( closefd )
+        if ( close(fd) == -1 )
+          kdDebug() << "WARNING: unable to close the file properly!" << endl;
     }
     else if ( result == -1 )
-        kdDebug() << err_msg << endl
-                  << "Could not read the file!" << endl;
-    buf.resize(result);
+      kdDebug() << err_msg << endl
+                << "Could not read the file!" << endl;
+    buf.resize( result );
     return result;
 }
 
 void Base64Encode( const char* msg, bool isFile )
 {
+    QCString data;
     if ( isFile )
     {
         int old_size;
-        QByteArray data, encoded_data;
+        QCString encoded_data;
         const char* err_msg = "Encoding with \"base64\" failed!";
         int res, fd = openFile( msg, err_msg );
         if ( fd == -1 ) return;
@@ -100,22 +101,22 @@ void Base64Encode( const char* msg, bool isFile )
             encoded_data.resize( old_size+data.size() );
             memcpy(encoded_data.data()+old_size, data.data(), data.size());
         }
-        kdDebug() << "Base64 Encoded data: " << endl
-                  << QString( encoded_data ) << endl;
+        kdDebug() << "Base64 Encoded data: " << endl << encoded_data << endl;
     }
     else
     {
-        kdDebug() << "Base64 Encoded data: " << endl
-                  << KCodecs::base64Encode( QString::fromLatin1(msg) ) << endl;
+        data = msg;
+        kdDebug() << "Base64 Encoded data: " << KCodecs::base64Encode(data) << endl;
     }
 }
 
 void Base64Decode( const char* msg, bool isFile )
 {
+    QCString data;
     if ( isFile )
     {
         int old_size;
-        QByteArray data, decoded_data;
+        QCString decoded_data;
         const char* err_msg = "Decoding with \"base64\" failed!";
         int res, fd = openFile( msg, err_msg );
         if ( fd == -1 ) return;
@@ -130,11 +131,13 @@ void Base64Decode( const char* msg, bool isFile )
             memcpy(decoded_data.data()+old_size, data.data(), data.size());
         }
         kdDebug() << "Decoded data (base64): " << endl
-                  << QString ( decoded_data ) << endl;
+                  << decoded_data << endl;
     }
     else
-        kdDebug() << "Decoded data (base64): " << endl
-                  << KCodecs::base64Decode( QString::fromLatin1(msg) ) << endl;
+    {
+        data = msg;
+        kdDebug() << "Decoded data (base64): " << KCodecs::base64Decode(data) << endl;
+    }
 }
 
 void UUEncode( const char* msg, bool isFile )
@@ -142,7 +145,7 @@ void UUEncode( const char* msg, bool isFile )
     if ( isFile )
     {
         int old_size;
-        QByteArray data, encoded_data;
+        QCString data, encoded_data;
         const char* err_msg = "Encoding with \"uuencode\" failed!";
         int res, fd = openFile( msg, err_msg );
         if ( fd == -1 ) return;
@@ -157,7 +160,7 @@ void UUEncode( const char* msg, bool isFile )
             memcpy(encoded_data.data()+old_size, data.data(), data.size());
         }
         kdDebug() << "UUEncoded data: " << endl
-                  << QString( encoded_data ) << endl;
+                  << encoded_data << endl;
     }
     else
         kdDebug() << "UUEncoded data: " << endl
@@ -184,7 +187,7 @@ void UUDecode( const char* msg, bool isFile )
             memcpy(decoded_data.data()+old_size, data.data(), data.size());
         }
         kdDebug() << "Decoded data (uudecode): " << endl
-                  << QString( decoded_data ) << endl;
+                  << decoded_data << endl;
     }
     else
         kdDebug() << "Decoded data (uudecode): " << endl
@@ -278,18 +281,18 @@ void MD5_file (const char *filename, bool rawOutput )
     {
        KMD5 context( f );
        if ( rawOutput )
-	 kdDebug() <<  "MD5 ("  << filename <<  ") = "  <<  context.rawDigest() << endl;
+          kdDebug() <<  "MD5 ("  << filename <<  ") = "  <<  context.rawDigest() << endl;
        else
-	 kdDebug() <<  "MD5 ("  << filename <<  ") = "  <<  context.hexDigest() << endl;
+          kdDebug() <<  "MD5 ("  << filename <<  ") = "  <<  context.hexDigest() << endl;
     }
 }
 
 void MD5_string (const char *input, const char* expected, bool rawOutput )
 {
   KMD5 context;
-  Q_UINT32 len = strlen (input);
+  QCString data = input;
 
-  context.update ( reinterpret_cast<Q_UINT8*>(const_cast<char*>(input)), len );
+  context.update ( data );
   context.finalize ();
   if ( rawOutput )
     kdDebug() << endl << "Result: MD5 (\"" << input << "\") = " << context.rawDigest() << endl;
@@ -298,7 +301,6 @@ void MD5_string (const char *input, const char* expected, bool rawOutput )
   if ( expected )
     kdDebug() << "Expected: MD5 (\"" << input << "\") = " << expected << endl
               << "Result is a match: " << context.verify( expected ) << endl << endl;
-
 }
 
 int main (int argc, char *argv[])
