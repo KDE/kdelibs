@@ -60,7 +60,7 @@ QString VCardFormat::typeInfo() const
 bool VCardFormat::checkFormat( const QString &fileName ) const
 {
     QFile file( fileName );
-    if ( !file.open( IO_ReadOnly ) )
+    if ( !file.open( IO_ReadWrite ) )
 	return false;
 
     if ( file.size() == 0 )

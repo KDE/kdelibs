@@ -118,7 +118,11 @@ void ConfigPage::load()
 	item->type = config->readEntry( "ResourceType" );
     }
 
-    emit changed( false );
+    if ( listView->childCount() == 0 ) {
+	defaults();
+	config->sync();
+    } else
+	emit changed( false );
 }
 
 void ConfigPage::save()
@@ -169,6 +173,8 @@ void ConfigPage::defaults()
     ConfigViewItem *item = new ConfigViewItem( listView, "Default", type );
     item->key = key;
     item->type = type;
+
+    emit changed( true );
 }
 
 void ConfigPage::slotAdd()

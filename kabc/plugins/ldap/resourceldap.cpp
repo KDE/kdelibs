@@ -108,6 +108,17 @@ bool ResourceLDAP::open()
 	kdDebug(5700) << "ResourceLDAP: bind to server successfully" << endl;
     }
 
+    int deref = LDAP_DEREF_ALWAYS;
+    if ( ldap_set_option( mLdap, LDAP_OPT_DEREF, (void *) &deref ) != LDAP_OPT_SUCCESS ) {
+	kdDebug(5700) << "ResourceLDAP: can't set 'deref' option" << endl;
+	return false;
+    }
+
+    if ( ldap_set_option( mLdap, LDAP_OPT_REFERRALS, LDAP_OPT_ON ) != LDAP_OPT_SUCCESS ) {
+	kdDebug(5700) << "ResourceLDAP: can't set 'referrals' option" << endl;
+	return false;
+    }
+
     return true;
 }
 

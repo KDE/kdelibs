@@ -19,12 +19,15 @@
 */
 
 #include <kapplication.h>
+#include <kdebug.h>
 #include <kstandarddirs.h>
 #include <ksimpleconfig.h>
-#include <kdebug.h>
 
 #include "stdaddressbook.h"
+
 #include "resourcefactory.h"
+#include "resourcefile.h"
+#include "vcardformat.h"
 
 using namespace KABC;
 
@@ -78,6 +81,14 @@ StdAddressBook::StdAddressBook()
 
 	if ( !addResource( resource ) )
 	    delete resource;
+    }
+
+    if ( mResources.count() == 0 ) {  // default resource
+	Resource *resource = new ResourceFile( this,
+		locateLocal( "data", "kabc/std.vcf" ), new VCardFormat );
+	resource->setName( "Default" );
+	resource->setReadOnly( false );
+	resource->setFastResource( true );
     }
 
     load();

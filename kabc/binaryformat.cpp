@@ -134,7 +134,7 @@ bool BinaryFormat::checkFormat( const QString& fileName ) const
 
     QFile file( fileName );
 
-    if ( !file.open( IO_ReadOnly ) )
+    if ( !file.open( IO_ReadWrite ) )
 	return false;
 
     QDataStream s( &file );
