@@ -81,6 +81,7 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name)
     paintBuffer = 0;
 
     init();
+
 }
 
 KHTMLWidget::KHTMLWidget( QWidget *parent, KHTMLWidget *_parent_browser, QString name )
@@ -159,6 +160,12 @@ void KHTMLWidget::init()
 
   findPos = -1;
   findNode = 0;
+
+  QPainter p(viewport());
+  QBrush b(defaultSettings->bgColor);
+  p.fillRect(0, 0, viewport()->width(), viewport()->height(), b);
+
+
 }
 
 void KHTMLWidget::clear()
@@ -191,6 +198,11 @@ void KHTMLWidget::clear()
 
     findPos = -1;
     findNode = 0;
+    
+    QPainter p(viewport());
+    QBrush b(defaultSettings->bgColor);
+    p.fillRect(0, 0, viewport()->width(), viewport()->height(), b);
+
 }
 
 void KHTMLWidget::setFollowsLinks( bool follow )
