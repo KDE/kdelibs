@@ -173,12 +173,15 @@ public:
 	m_value = 0;
 	m_bImportant = false;
     }
-
     ~CSSProperty();
 
+    void setValue(CSSValueImpl *val);
+    CSSValueImpl *value();
+
     int   m_id;
-    CSSValueImpl *m_value;
     bool m_bImportant;
+protected:
+    CSSValueImpl *m_value;
 };
 
 }; // namespace

@@ -65,7 +65,7 @@ CSSValueImpl *CSSStyleDeclarationImpl::getPropertyCSSValue( int propertyID )
     int i = 0;
     while(i < m_lstValues->count())
     {
-	if(propertyID == m_lstValues->at(i)->m_id) return m_lstValues->at(i)->m_value;
+	if(propertyID == m_lstValues->at(i)->m_id) return m_lstValues->at(i)->value();
 	i++;
     }
     return 0;
@@ -107,7 +107,7 @@ bool CSSStyleDeclarationImpl::getPropertyPriority( int propertyID )
     }
     return false;
 }
- 
+
 void CSSStyleDeclarationImpl::setProperty( const DOMString &propertyName, const DOMString &value, const DOMString &priority )
 {
     // ###

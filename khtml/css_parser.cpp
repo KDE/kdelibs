@@ -187,12 +187,12 @@ StyleBaseImpl::parseAtRule(const QChar *&curP, const QChar *endP)
     const QChar *startP = curP;
     while( *curP != ' ' && *curP != '{' && *curP != '\'')
 	curP++;
-    
+
     QString rule(startP, curP-startP);
     rule = rule.lower();
 
     printf("rule = '%s'\n", rule.ascii());
-    
+
     if(rule == "import")
     {
 	// ### load stylesheet and pass it over
@@ -527,7 +527,7 @@ printf("Property-value = \"%s\"\n", propVal.data());
     CSSProperty *prop = new CSSProperty();
     prop->m_id = propPtr->id;
 
-    prop->m_value = val;
+    prop->setValue(val);
     prop->m_bImportant = important;
 
     return(prop);
@@ -739,7 +739,7 @@ CSSValueImpl *StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, in
 	return new CSSPrimitiveValueImpl(value, CSSPrimitiveValue::CSS_URI);
 	break;
     }
-    
+
 // length
     case CSS_PROP_BORDER_TOP_WIDTH:
     case CSS_PROP_BORDER_RIGHT_WIDTH:
@@ -811,6 +811,7 @@ CSSValueImpl *StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, in
 
 // string
     case CSS_PROP_TEXT_ALIGN:
+	// only for table columns.
 	break;
 
 // rect
@@ -1063,7 +1064,7 @@ StyleBaseImpl::parseRule(const QChar *&curP, const QChar *endP)
     CSSRuleImpl *rule = 0;
 
     //printf("parse rule: current = %c\n", curP->latin1());
-    
+
     if (*curP == '@')
 	rule = parseAtRule(curP, endP);
     else
@@ -1118,4 +1119,16 @@ void CSSSelector::print(void)
 CSSProperty::~CSSProperty()
 {
     if(m_value) m_value->deref();
+}
+
+void CSSProperty::setValue(CSSValueImpl *val)
+{
+    if(m_value) m_value->deref();
+    m_value = val;
+    if(m_value) m_value->ref();
+}
+
+CSSValueImpl *CSSProperty::value()
+{
+    return m_value;
 }
