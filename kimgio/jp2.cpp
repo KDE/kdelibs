@@ -14,6 +14,9 @@
 #include <qfile.h>
 #include <qimage.h>
 
+// dirty, but avoids a warning because jasper.h includes jas_config.h.
+#undef PACKAGE
+#undef VERSION
 #include <jasper/jasper.h>
 
 // code taken in parts from JasPer's jiv.c
@@ -25,9 +28,13 @@ namespace {
 	typedef struct {
 		jas_image_t*	image;
 
-		jas_matrix_t*	cmpts[MAXCMPTS];
-
 		int				cmptlut[MAXCMPTS];
+
+#ifdef JAS_IMAGE_CS_RGB
+		jas_matrix_t*	cmpts[MAXCMPTS];
+#else
+		jas_image_t*	altimage;
+#endif
 	} gs_t;
 
 
@@ -77,6 +84,7 @@ namespace {
 		return image;
 	} // read_image
 
+#ifdef JAS_IMAGE_CS_RGB
 	void
 	init_cmptlut( gs_t& gs )
 	{
@@ -221,6 +229,70 @@ namespace {
 		return;
 	} // draw_view
 
+#else
+
+	bool
+	convert_colorspace( gs_t& gs )
+	{
+		jas_cmprof_t *outprof = jas_cmprof_createfromclrspc( JAS_CLRSPC_SRGB );
+		if( !outprof ) return false;
+
+		gs.altimage = jas_image_chclrspc( gs.image, outprof,
+				JAS_CMXFORM_INTENT_PER );
+		if( !gs.altimage ) return false;
+
+		return true;
+	} // convert_colorspace
+
+	bool
+	render_view( gs_t& gs, QImage& qti )
+	{
+		if((gs.cmptlut[0] = jas_image_getcmptbytype(gs.altimage,
+			JAS_IMAGE_CT_COLOR(JAS_CLRSPC_CHANIND_RGB_R))) < 0 ||
+			(gs.cmptlut[1] = jas_image_getcmptbytype(gs.altimage,
+			JAS_IMAGE_CT_COLOR(JAS_CLRSPC_CHANIND_RGB_G))) < 0 ||
+			(gs.cmptlut[2] = jas_image_getcmptbytype(gs.altimage,
+			JAS_IMAGE_CT_COLOR(JAS_CLRSPC_CHANIND_RGB_B))) < 0) {
+			return false;
+		} // if
+
+		const int* cmptlut = gs.cmptlut;
+		int v[3];
+
+		// check that all components have the same size.
+		const int width = jas_image_cmptwidth( gs.altimage, cmptlut[0] );
+		const int height = jas_image_cmptheight( gs.altimage, cmptlut[0] );
+		for( int i = 1; i < 3; ++i ) {
+			if (jas_image_cmptwidth( gs.altimage, cmptlut[i] ) != width ||
+					jas_image_cmptheight( gs.altimage, cmptlut[i] ) != height)
+				return false;
+		} // for
+
+		if( !qti.create( jas_image_width( gs.altimage ),
+					jas_image_height( gs.altimage ), 32 ) )
+				return false;
+
+		uint32_t* data = (uint32_t*)qti.bits();
+
+		for( int y = 0; y < height; ++y ) {
+			for( int x = 0; x < width; ++x ) {
+				for( int k = 0; k < 3; ++k ) {
+					v[k] = jas_image_readcmptsample( gs.altimage, cmptlut[k], x, y );
+					// if the precision of the component is too small, increase
+					// it to use the complete value range.
+					v[k] <<= 8 - jas_image_cmptprec( gs.altimage, cmptlut[k] );
+
+					if( v[k] < 0 ) v[k] = 0;
+					else if( v[k] > 255 ) v[k] = 255;
+				} // for k
+
+				*data++ = qRgb( v[0], v[1], v[2] );
+			} // for x
+		} // for y
+		return true;
+	} // render_view
+#endif
+
 } // namespace
 
 
@@ -232,15 +304,26 @@ kimgio_jp2_read( QImageIO* io )
 	gs_t gs;
 	if( !(gs.image = read_image( io )) ) return;
 
-	if( !init_components( gs ) ) return;
+#ifdef JAS_IMAGE_CS_RGB
+	if( !init_components( gs ) ) return; // TODO: free resources!
 	init_cmptlut( gs );
 
 	QImage image;
 	draw_view( gs, image );
+#else
+	if( !convert_colorspace( gs ) ) return;
+
+	QImage image;
+	render_view( gs, image );
+#endif
 
 	if( gs.image ) jas_image_destroy( gs.image );
+#ifdef JAS_IMAGE_CS_RGB
 	for( uint i = 0; i < MAXCMPTS; ++i )
 		if( gs.cmpts[i] ) jas_matrix_destroy( gs.cmpts[i] );
+#else
+	if( gs.altimage ) jas_image_destroy( gs.altimage );
+#endif
 
 	io->setImage( image );
 	io->setStatus( 0 );
@@ -248,6 +331,7 @@ kimgio_jp2_read( QImageIO* io )
 
 
 namespace { // _write helpers
+#ifdef JAS_IMAGE_CS_RGB
 	jas_image_t*
 	create_image( const QImage& qi )
 	{
@@ -308,11 +392,13 @@ namespace { // _write helpers
 
 		return true;
 	} // write_components
+#endif
 } // namespace
 
 void
 kimgio_jp2_write( QImageIO* io )
 {
+#ifdef JAS_IMAGE_CS_RGB
 	if( jas_init() ) return;
 
 	// open the stream. we write directly to the file if possible, to a
@@ -388,6 +474,7 @@ kimgio_jp2_write( QImageIO* io )
 
 	// everything went fine
 	io->setStatus( 0 );
+#endif
 } // kimgio_jp2_write
 
 #endif // HAVE_JASPER
