@@ -56,10 +56,8 @@ KTar::KTar( const QString& filename, const QString & _mimetype )
     bool forced = true;
     if ( mimetype.isEmpty() )
     {
-        KURL url;
-        url.setPath( filename );
-        mimetype = KMimeType::findByURL( url )->name();
-        //kdDebug() << "KTar::KTar mimetype=" << mimetype << endl;
+        mimetype = KMimeType::findByFileContent( filename )->name();
+        kdDebug() << "KTar::KTar mimetype=" << mimetype << endl;
 
         // Don't move to prepareDevice - the other constructor theoretically allows ANY filter
         if ( mimetype == "application/x-tgz" || mimetype == "application/x-targz" || // the latter is deprecated but might still be around
@@ -68,6 +66,27 @@ KTar::KTar( const QString& filename, const QString & _mimetype )
             mimetype = "application/x-gzip";
         else if ( mimetype == "application/x-tbz" ) // that's a bzipped2 tar file, so ask for bz2 filter
             mimetype = "application/x-bzip2";
+        else
+        {
+            // Something else. Check if it's not really gzip though (e.g. for KOffice docs)
+            QFile file( filename );
+            if ( file.open( IO_ReadOnly ) )
+            {
+                char firstByte = file.getch();
+                char secondByte = file.getch();
+                char thirdByte = file.getch();
+                if ( firstByte == 0037 && secondByte == 0213 )
+                    mimetype = "application/x-gzip";
+                else if ( firstByte == 'B' && secondByte == 'Z' && thirdByte == 'h' )
+                    mimetype = "application/x-bzip2";
+                else if ( firstByte == 'P' && secondByte == 'K' && thirdByte == 3 )
+                {
+                    char fourthByte = file.getch();
+                    if ( fourthByte == 4 )
+                        mimetype = "application/x-zip";
+                }
+            }
+        }
         forced = false;
     }
 
