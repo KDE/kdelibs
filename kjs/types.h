@@ -140,6 +140,13 @@ namespace KJS {
   };
 
   /**
+   * Completion objects are used to convey the return status and value
+   * from functions.
+   *
+   * See @ref FunctionImp::execute()
+   *
+   * @see FunctionImp
+   *
    * @short Handle for a Completion type.
    */
   class Completion : public KJSO {

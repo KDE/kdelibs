@@ -491,15 +491,48 @@ namespace KJS {
 
   class KJScriptImp;
   /**
+   * The Global object represents the global namespace. It holds the native
+   * objects like String and functions like eval().
+   *
+   * It also serves as a container for variables created by the user, i.e.
+   * the statement
+   * <pre>
+   *   var i = 2;
+   * </pre>
+   * will basically perform a Global::current().put("i", Number(2)); operation.
+   *
    * @short Unique global object containing initial native properties.
    */
   class Global : public Object {
     friend KJScriptImp;
   public:
+    /**
+     * Constructs a Global object. This is done by the interpreter once and
+     * there should be no need to create an instance on your own. Usually,
+     * you'll just want to access the current instance.
+     * For example like this:
+     * <pre>
+     * Global global(Global::current());
+     * KJSO proto = global.objectPrototype();
+     * </pre>
+     */
     Global();
+    /**
+     * Destruct the Global object.
+     */
     virtual ~Global();
+    /**
+     * @return A reference to the Global object belonging to the current
+     * interpreter instance.
+     */
     static Global current();
+    /**
+     * @return A handle to Object.prototype.
+     */
     KJSO objectPrototype() const;
+    /**
+     * @return A handle to Function.prototype.
+     */
     KJSO functionPrototype() const;
   private:
     Global(void *);
