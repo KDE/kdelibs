@@ -1121,7 +1121,8 @@ KSelectAction::KSelectAction( QObject* parent, const char* name )
 
 KSelectAction::~KSelectAction()
 {
-  //delete d->m_menu; // the menu is plugged into a menubar...
+  assert(d);
+  delete d->m_menu;
   delete d; d = 0;
 }
 
