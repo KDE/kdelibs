@@ -19,7 +19,7 @@
 
 AM_CPPFLAGS = -DQT_NO_CAST_ASCII -DQT_NO_ASCII_CAST
 
-INCLUDES= -I$(top_srcdir) $(all_includes)
+INCLUDES= -I$(top_srcdir) -I$(top_srcdir)/kio $(all_includes)
 
 lib_LTLIBRARIES  = libkfile.la
 
