@@ -1,4 +1,7 @@
 
+- KSSLServer class needs to be written (in a separate lib!!) so that an app
+  can act as an SSL server.
+
 - KHTML needs a dialog to warn on an insecure post (unencrypted)
   if the user has selected to do so in kcmcrypto
 
