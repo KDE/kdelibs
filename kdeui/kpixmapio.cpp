@@ -360,6 +360,23 @@ void KPixmapIO::destroyShmSegment()
     }
 }
 
+static bool use_xshm = true;
+static unsigned long kpixmapio_serial;
+static int (*old_errhandler)(Display *dpy, XErrorEvent *ev) = 0;
+
+static int kpixmapio_errorhandler(Display *dpy, XErrorEvent *ev)
+{
+    if(ev->serial == kpixmapio_serial) {
+        /* assuming that xshm errors mean it can't be used at all
+           (e.g. remote display) */
+        use_xshm = false;
+        kdDebug(290) << "Disabling Xshm" << endl;
+        return 0;
+    } else {
+        // another error
+        return old_errhandler(dpy, ev);
+    }
+}
 
 bool KPixmapIO::createShmSegment(int size)
 {
@@ -382,18 +399,29 @@ bool KPixmapIO::createShmSegment(int size)
     }
 
     d->shminfo->readOnly = false;
+
+    // make sure that we don't get errors of old stuff
+    XSync(qt_xdisplay(), False);
+    old_errhandler = XSetErrorHandler(kpixmapio_errorhandler);
+    kpixmapio_serial = NextRequest(qt_xdisplay());
+
     if ( !XShmAttach(qt_xdisplay(), d->shminfo))
     {
 	kdWarning() << "X-Server could not attach shared memory segment.\n";
 	m_bShm = false;
 	shmdt(d->shminfo->shmaddr);
 	shmctl(d->shminfo->shmid, IPC_RMID, 0);
-	return false;
     }
 
-    d->shmsize = size;
     XSync(qt_xdisplay(), false);
-    return true;
+
+    if (!use_xshm)
+        m_bShm = false;
+
+    XSetErrorHandler(old_errhandler);
+    d->shmsize = size;
+
+    return m_bShm;
 }
 
 
