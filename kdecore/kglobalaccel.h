@@ -118,7 +118,7 @@ class KGlobalAccel : public QObject
 	bool updateConnections();
 
 	/**
-	 * Set the shortcut to be associated with the action named by @p sAction.
+	 * Return the shortcut associated with the action named by @p sAction.
 	 * @param sAction the name of the action
 	 * @return the shortcut. If the action does not exist a null shortcut will be returned.
 	 */
@@ -139,6 +139,14 @@ class KGlobalAccel : public QObject
 	 * @return true if successful, false otherwise
 	 */
 	bool setSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot );
+
+	/**
+	 * Return the label (i18n'ized short description) associated with the action named by @p sAction.
+	 * @param sAction the name of the action
+	 * @return the label
+         * @since 3.3
+	 */
+	QString label( const QString& sAction ) const;
 
 	/**
 	 * Returns the configuration group that is used to save the accelerators.

@@ -71,6 +71,11 @@ bool KGlobalAccel::setShortcut( const QString& sAction, const KShortcut& cut )
 	{ return d->setShortcut( sAction, cut ); }
 bool KGlobalAccel::setSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot )
 	{ return d->setActionSlot( sAction, pObjSlot, psMethodSlot ); }
+QString KGlobalAccel::label( const QString& sAction ) const
+{
+	const KAccelAction* pAction = d->actions().actionPtr( sAction );
+	return (pAction) ? pAction->label() : QString();
+}
 
 const QString& KGlobalAccel::configGroup() const
 	{ return d->configGroup(); }
