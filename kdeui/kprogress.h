@@ -124,6 +124,21 @@ public:
   virtual QSize sizeHint() const;
 
   virtual QSizePolicy sizePolicy() const;
+
+  /**
+   * Set the format of the text to use to display status.
+   *
+   * The default format is "%p%" (which looks like "42%".)
+   * 
+   * @param format %p is replaced by percentage done, %v is replaced by actual
+   * value, %m is replaced by the maximum value.
+   */
+  void setFormat(const QString & format);
+
+  /**
+   * @return the current format for printing status text.
+   */
+  QString format() const;
 			
 public slots:
 	void setValue(int);
@@ -148,6 +163,7 @@ private:
 	BarStyle	bar_style;
 	Orientation orient;
 	bool		text_enabled;
+  QString   format_;
 	void initialize();
 	int recalcValue(int);
 	void drawText(QPainter *);

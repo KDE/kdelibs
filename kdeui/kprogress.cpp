@@ -50,6 +50,7 @@ void KProgress::initialize()
 	//setFrameStyle(QFrame::Panel | QFrame::Sunken);
 	//setLineWidth(2);
         //setMidLineWidth(2);
+  format_ = "%p%";
 	bar_pixmap = 0;
 	bar_style = Solid;
 	bar_color = colorGroup().highlight();
@@ -210,9 +211,15 @@ void KProgress::drawText(QPainter *p)
 {
 	QRect r(contentsRect());
 	//QColor c(bar_color.rgb() ^ backgroundColor().rgb());
-	QString s;
-	
-	s = QString("%1%").arg( recalcValue(100));
+
+  // Rik: Replace the tags '%p', '%v' and '%m' with the current percentage,
+  // the current value and the maximum value respectively.
+  QString s(format_);
+
+  s.replace(QRegExp("%p"), QString::number(recalcValue(100)));
+  s.replace(QRegExp("%v"), QString::number(value()));
+  s.replace(QRegExp("%m"), QString::number(maxValue()));
+
 	p->setPen(text_color);
 	//p->setRasterOp(XorROP);
 	p->drawText(r, AlignCenter, s);
@@ -310,28 +317,18 @@ void KProgress::drawContents(QPainter *p)
 		drawText(p);
 		
 }			
+
+  void
+KProgress::setFormat(const QString & format)
+{
+  format_ = format;
+}
+
+  QString
+KProgress::format() const
+{
+  return format_;
+}
+
 #include "kprogress.moc"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
