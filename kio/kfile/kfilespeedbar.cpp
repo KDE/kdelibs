@@ -63,13 +63,12 @@ KFileSpeedBar::KFileSpeedBar( QWidget *parent, const char *name )
                                    KProtocolInfo::icon( "floppy" ) );
         u = "media:/";
         if ( KProtocolInfo::isKnownProtocol( u ) )
-            insertItem( u, i18n("Devices"), false,
+            insertItem( u, i18n("Storage Media"), false,
                                    KProtocolInfo::icon( "media" ) );
-	//FIXME i18n("Devices") should be i18n("Media") after string freeze
 
         u = "remote:/";
         if ( KProtocolInfo::isKnownProtocol( u ) )
-            insertItem( u, i18n("Network"), false,
+            insertItem( u, i18n("Network Folders"), false,
                                    KProtocolInfo::icon( "remote" ) );
     }
 }
