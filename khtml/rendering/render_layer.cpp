@@ -95,6 +95,7 @@ RenderLayer::~RenderLayer()
     delete m_hBar;
     delete m_vBar;
     delete m_scrollMediator;
+    delete zOrderList;
 }
 
 void RenderLayer::updateLayerPosition()
@@ -731,12 +732,14 @@ RenderLayer::nodeAtPoint(RenderObject::NodeInfo& info, int x, int y, int tx, int
     tx += xPos();
     ty += yPos();
 
+    if (!zOrderList)
+	return renderer()->nodeAtPoint(info, x, y, tx - renderer()->xPos(), ty - renderer()->yPos());
+
     bool inside = false;
     RenderLayer *insideLayer = 0;
 
-    if (!zOrderList)
-	return false;
 
+//     qDebug("%p nodeAtPoint: numlayers=%d x=%d y=%d, tx=%d, ty=%d, xPos=%d, yPos=%d", this->renderer(), zOrderList->count(), x, y, tx, ty, xPos(), yPos());
     for (int i = zOrderList->count()-1; i >= 0; i--) {
         const PositionedLayer &pLayer = zOrderList->at(i);
 	RenderLayer *l = pLayer.layer;
@@ -744,13 +747,21 @@ RenderLayer::nodeAtPoint(RenderObject::NodeInfo& info, int x, int y, int tx, int
 	int xOff = 0, yOff = 0;
 	l->convertToLayerCoords(this, xOff, yOff);
 
-        inside = r->nodeAtPoint(info, x, y, tx + xOff - r->xPos(), ty + yOff - r->yPos());
+// 	qDebug("   testing %p x=%d y=%d, w=%d, h=%d", r, tx+xOff, ty+yOff, l->width(), l->height());
+	if (l != this)
+	    inside = l->nodeAtPoint(info, x, y, tx + xOff - l->xPos(), ty + yOff - l->yPos());
+	else
+	    inside = r->nodeAtPoint(info, x, y, tx + xOff - r->xPos(), ty + yOff - r->yPos());
         if (inside) {
             insideLayer = l;
             break;
         }
     }
 
+//     if (insideLayer)
+// 	qDebug("      insideLayer: %p     %d %d %d %d", insideLayer->renderer(), insideLayer->xPos(), insideLayer->yPos(), insideLayer->width(), insideLayer->height());
+//     else
+// 	qDebug("      no layer found");
     if (insideLayer) {
         // Clear out the other layers' hover/active state
         insideLayer->clearOtherLayersHoverActiveState();
