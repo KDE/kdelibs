@@ -1216,7 +1216,9 @@ bool HTTPProtocol::readHeader()
 
     // whoops.. we received a warning
     else if (strncasecmp(buffer, "Warning:", 8) == 0) {
-      warning(trimLead(buffer + 8));
+      //Don't use warning() here, no need to bother the user.
+      //Those warnings are mostly about caches.
+      infoMessage(trimLead(buffer + 8));
     }
 
     // Cache management (HTTP 1.0)
