@@ -106,7 +106,7 @@
                         <string>Ru&amp;n as a different user</string>
                     </property>
                     <property name="whatsThis" stdset="0">
-                        <string>Check this option if you want to run this application with a different user id. Every process has a different user id associated with it. This id code determines file acess and other permissions. The password of the user is required to use this option.</string>
+                        <string>Check this option if you want to run this application with a different user id. Every process has a different user id associated with it. This id code determines file access and other permissions. The password of the user is required to use this option.</string>
                     </property>
                 </widget>
                 <spacer row="1" column="0">
