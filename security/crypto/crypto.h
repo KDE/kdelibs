@@ -35,7 +35,7 @@
 #include <qlistview.h>
 #include <qlineedit.h>
 // #include <qvaluelist.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qdatetime.h>
 
 class KURLLabel;
@@ -320,9 +320,9 @@ private:
   QLineEdit *oPath;
   QPushButton *oFind;
   QPushButton *oTest;
-  QList<OtherCertItem> otherCertDelList;
-  QList<YourCertItem> yourCertDelList;
-  QList<CAItem> caDelList;
+  QPtrList<OtherCertItem> otherCertDelList;
+  QPtrList<YourCertItem> yourCertDelList;
+  QPtrList<CAItem> caDelList;
 
   /* Personal Cert Policies tab */
   QComboBox *defCertBox;
@@ -334,7 +334,7 @@ private:
   QListView *hostAuthList;
   QPushButton *authAdd, *authRemove;
   QLineEdit *authHost;
-  QList<HostAuthItem> authDelList;
+  QPtrList<HostAuthItem> authDelList;
 
   /* CA stuff */
   KSSLCertBox *caSubject, *caIssuer;
