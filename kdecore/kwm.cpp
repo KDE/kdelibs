@@ -880,15 +880,9 @@ QRect KWM::iconGeometry(Window w){
   }
   return result;
 }
+#undef IconicState
 bool KWM::isIconified(Window w){
-  static Atom a = 0;
-  if (!a)
-    a = XInternAtom(qt_xdisplay(), "KWM_WIN_ICONIFIED", False);
-  long result = 0;
-  if (!getSimpleProperty(w, a, result)){
-    setIconify(w, result != 0);
-  }
-  return result != 0;
+    return ( KWin::windowState( w ) == KWin::IconicState );
 }
 bool KWM::isMaximized(Window w){
   static Atom a = 0;
