@@ -200,7 +200,11 @@ void KTabWidget::moveTab( int from, int to )
     blockSignals(true);
     removePage( w );
 
-    insertTab( w, tablabel, to );
+    // Work-around kmdi brain damage which calls showPage() in insertTab()
+    QTab * t = new QTab();
+    t->setText(tablabel);
+    QTabWidget::insertTab( w, t, to );
+    
     w = page( to );
     changeTab( w, tabiconset, tablabel );
     setTabToolTip( w, tabtooltip );
