@@ -72,10 +72,11 @@ RegExp::RegExp(const UString &p, int f)
   //    ;
   // Note: the Global flag is already handled by RegExpProtoFunc::execute
 
-  regcomp(&preg, p.ascii(), regflags);
-  /* TODO check for errors */
+  if (regcomp(&preg, p.ascii(), regflags) != 0) {
+    /* TODO: throw JS exception */
+    regcomp(&preg, "", regflags);
+  }
 #endif
-
 }
 
 RegExp::~RegExp()
