@@ -120,11 +120,55 @@ public:
      **/
     void insertCatalogue(const char *catalogue);
 
+    /**
+       The category argument tells the setlocale() function which attributes to
+       set.  The choices are:
+       
+       LC_COLLATE      Changes the behavior of the strcoll() and strxfrm() functions.
+       LC_CTYPE        Changes the behavior of the character-handling functions:
+                       isalpha(), islower(), isupper(), isprint(), ...
+       LC_MESSAGES     Changes the language in which messages are displayed.
+       LC_MONETARY     Changes the information returned by localeconv().
+       LC_NUMERIC      Changes the radix character for numeric conversions.
+       LC_TIME         Changes the behavior of the strftime() function.
+       LC_ALL          Changes all of the above.
+    **/
+    const char *getLocale(int CATEGORY);
+
+    /** 
+     * returns the parts of the parameter str understood as language setting
+     * the format is language_country.charset
+     */ 
+    void splitLocale(const QString& str,QString& language,QString& country,
+                     QString &charset) const;
+
+    /** 
+     * does the same as the above, just reverse
+     */
+    const QString mergeLocale(const QString& lang, const QString& country,
+			      const QString &charset) const;
+
+    /**
+     * if the application can handle localized numeric values, it should
+     * call this function.
+     * 
+     * By default, this is disabled
+     **/
+    void enableNumericLocale(bool on = true);
+
+    /**
+     * returns, if the radix character for numeric conversions is set to
+     * locale settings or to the POSIX standards.
+     **/
+    bool numericLocaleEnabled() const;
+     
 private:
     QStrList *catalogues;
-    QString lang;
     QIntDict<char> aliases;
+    QString lang;
     QString chset;
+    QString lc_numeric;
+    bool numeric_enabled;
 };
 
 #endif
