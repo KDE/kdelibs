@@ -7,11 +7,12 @@
 class QPoint;
 
 /**
- * Class for reperesenting a point by its X and Y coordinate. It's sorce compatible
- * to the Qt class QPoint, but KPoint uses 32 bit integers for the coordinates.
- * @short Class for representing a point by (x,y)
+ * Cartesian (X,Y) point with 32-bit integer coordinates. This is
+ * very similar to the Qt @ref QPoint class.
+ *
+ * @see QPoint
  * @author Reginald Stadlbauer <reggie@kde.org>
- * @version 0.0.1
+ * @version $Id$
  */
 
 class  KPoint
