@@ -136,18 +136,7 @@ public:
     /************************************************************
      * Make an object a child of this Box.
      */
-    void append( HTMLObject *_object )
-	{
-	    if ( !head )
-	    {
-		head = tail = _object;
-	    }
-	    else
-	    {
-		tail->setNext( _object );
-		tail = _object;
-	    }
-	}
+    virtual void append( HTMLObject *_object );
 	
     virtual void findFreeArea( int _y, int, int, int,
                                int *_y_pos, int *_lmargin, int *_rmargin)

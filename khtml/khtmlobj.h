@@ -220,7 +220,7 @@ public:
      */
     virtual void pixmapChanged( QPixmap * = 0 ) { }
 
-    enum ObjectType { Object, Clue };
+    enum ObjectType { Object, Clue, Table, TableCell };
 
     /**
      * sometimes a clue would like to know if an object is a 

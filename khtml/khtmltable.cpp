@@ -47,18 +47,23 @@
 
 //-----------------------------------------------------------------------------
 
-HTMLTableCell::HTMLTableCell( int _percent, int _width, int rs, int cs, int pad )
+HTMLTableCell::HTMLTableCell( int _width, int _colType,
+			      int rs, int cs, int pad )
 	 : HTMLClueV()
 {
     rspan = rs;
     cspan = cs;
     padding = pad;
+    colType = _colType;
+    cellClosed = false;
 
-    percent = _percent;
-    if (percent == 0)
+    if( colType == HTMLTable::Percent )
+	percent = _width;
+    if ( colType == HTMLTable::Fixed )
         fixed_width = _width;
     else
         fixed_width = UNDEFINED;
+    
 }
 
 bool HTMLTableCell::print( QPainter *_painter, int _x, int _y, int _width,
@@ -128,9 +133,76 @@ void HTMLTableCell::calcSize( HTMLClue *parent )
     HTMLClueV::calcSize(parent);
 }
 //-----------------------------------------------------------------------------
+void HTMLRowInfo::newRow()
+{
+//    if( r > 0 )
+//	current = new Row(entry[r-1]->len);
+//    else
+	current = new Row(5);
+    printf("finished newRow()\n");
+}
+
+void HTMLRowInfo::endRow()
+{
+    if(!current) return;
+
+    //see if we need a new line
+    // remove last rowInfo if duplicated
+    int j;
+    bool exists = false;
+    
+    for(j = 0; j < r; j++)
+    {
+	if(len(j) == current->len)
+	{
+	    bool match = true;
+	    int k = len(j);
+	    while (k--)
+	    {
+		if (current->row[k] != entry[j]->row[k])
+		{
+		    match = FALSE;
+		    break;
+		}
+	    }
+	    if (match)
+	    {
+		exists = true;
+		break;
+	    }
+	}
+    }
+    if(exists)
+    {
+	printf("row existed; deleting\n");
+	delete current;
+	current = 0;
+	printf("finished delete\n");
+	return;
+    }
+    // add the new row
+    if(r >= alloc)
+    {
+	Row **newData = new Row *[r + 5];
+	memcpy( newData, entry, r * sizeof(Row *) );
+	if(entry) delete [] entry;
+	entry = newData;
+	alloc += 5;
+    }
+    entry[r] = current;
+    current = 0;
+    r++;
+    printf("finished endRow()\n");
+}
+
+int HTMLRowInfo::pos()
+{ 
+    if( !current ) return 0;
+    return current->len; 
+}
 
 HTMLTable::HTMLTable( int _percent, int _width,
-	int _padding, int _spacing, int _border ) : HTMLObject()
+	int _padding, int _spacing, int _border ) : HTMLClue()
 {
     percent = _percent;
     if (percent == 0)
@@ -143,35 +215,46 @@ HTMLTable::HTMLTable( int _percent, int _width,
     border  = _border;
     caption = 0L;
 
-    row = 0;
+    // don't do progressive layout
+    progressive = false;
+    finished = false;
+
+    row = 0;         // haven't started the table
     col = 0;
 
-    totalCols = 1;	// this should be expanded to the maximum number of cols
-				    // by the first row parsed
-    totalRows = 1;
-    allocRows = 5;	// allocate five rows initially
+    totalCols = 0;    // this should be expanded to the maximum number of cols
+		      // by the first row parsed or by <col>
+    totalRows = 0;
+    allocRows = 0;    // allocate 0 rows initially
 
-    cells = new HTMLTableCell ** [allocRows];
+    totalColInfos = 0;
+    colInfo.resize(0);
+    maxColSpan = 0;
 
-    for ( unsigned int r = 0; r < allocRows; r++ )
-    {
-	cells[r] = new HTMLTableCell * [totalCols];
-	memset( cells[r], 0, totalCols * sizeof( HTMLTableCell * ) );
-    }
+    cells = 0;
+    addRows(1);
+    addColumns(1);
 }
 
 HTMLIterator *HTMLTable::getIterator()
 { 
     return totalRows ? new HTMLTableIterator( this ) : 0; 
 }
-            
-void HTMLTable::startRow()
-{
-    col = 0;
-}
 
-void HTMLTable::addCell( HTMLTableCell *cell )
+void HTMLTable::append( HTMLObject *obj )
 {
+    HTMLTableCell *cell;
+
+    if ( obj->getObjectType() != TableCell )
+    {
+	// start a new cell
+	cell = new HTMLTableCell( UNDEFINED, Variable, 1, 1, padding );
+	cell->append( obj );
+    }
+    else
+	cell = (HTMLTableCell *) obj;
+
+    // skip already taken cells
     while ( col < totalCols && cells[row][col] != 0L )
 	col++;
     setCells( row, col, cell );
@@ -179,13 +262,118 @@ void HTMLTable::addCell( HTMLTableCell *cell )
     col++;
 }
 
+HTMLTableCell *HTMLTable::append( int width, ColType colType,
+				  int rowSpan, int colSpan, 
+				  QColor bgcolor,  HTMLClue::VAlign valign )
+{
+    HTMLTableCell *cell;
+    int pref_size = 0;
+
+    if( colType == Fixed )
+	pref_size = width;
+
+    // skip taken cells
+    while ( col < totalCols && cells[row][col] != 0L )
+	col++;
+
+    addColInfo(col, colSpan, UNDEFINED,
+	       pref_size, colType, width,
+	       HTMLClue::HNone, valign );
+
+    cell = new HTMLTableCell( width, colType, rowSpan, colSpan, padding );
+    cell->setVAlign( valign );
+    if ( bgcolor.isValid() )
+	cell->setBGColor( bgcolor );
+
+    setCells( row, col, cell );
+    return cell;
+}
+
+void HTMLTable::endCell()
+{
+    if( !cells ) return;
+    HTMLTableCell *cell = cells[row][col];
+    if( !cell )
+    {
+	printf("EndCells() called without cell to end (%d,%d)!\n", row, col);
+	return;
+    }
+    if( cell->closed() )
+    {
+	printf("EndCells() called for closed cell (%d,%d)!\n", row, col);
+	return;
+    }
+    cell->setClosed(true);
+
+    int pref_size;
+    int borderExtra = ( border == 0 ) ? 0 : 1;
+
+    cell->reset();
+
+    // calculate minimum size
+    int min_size = cell->calcMinWidth() + padding + padding + 
+	spacing + borderExtra;
+    
+    
+    ColType col_type = (ColType) cell->type();
+    
+    // calculate preferred pos
+    if ( col_type == Fixed )
+    {
+	// Fixed size, preffered width == min width
+	pref_size = min_size;
+    }
+    else if ( col_type == Percent && fixed_width != UNDEFINED )
+    {
+	pref_size = ( fixed_width * cell->getPercent() / 100 ) + 
+	    padding + padding + spacing + borderExtra;
+    }
+    else
+    {
+	pref_size = cell->calcPreferredWidth() + 
+	    padding + padding + spacing + borderExtra;
+    }
+    int colInfoIndex = addColInfo(col, cell->colSpan(), min_size, 
+			      pref_size, col_type);
+
+    if(colInfoIndex != -1) rowInfo.append(colInfoIndex);
+    printf("EndCell: pos = %d; row = %d; min = %d pref = %d type = %d\n",
+	   rowInfo.pos(), rowInfo.row(), min_size, pref_size, col_type);
+}
+            
+void HTMLTable::startRow()
+{
+    col = 0;
+
+    rowInfo.newRow();
+}
+
 void HTMLTable::endRow()
 {
+    if( !cells ) return;
+    endCell();
+
     while ( col < totalCols && cells[row][col] != 0 )
 	col++;
+
     if ( col )
+    {
 	row++;
+	addRows( 1 );
+    }
+    rowInfo.endRow();
 }
+
+void HTMLTable::endTable()
+{
+    endRow();
+
+    finished = true;
+
+    // calculate min/max widths
+    calcColInfoI();
+}
+
 
 void HTMLTable::setCells( unsigned int r, unsigned int c, HTMLTableCell *cell )
 {
@@ -219,8 +407,11 @@ void HTMLTable::setCells( unsigned int r, unsigned int c, HTMLTableCell *cell )
 void HTMLTable::addRows( int num )
 {
     HTMLTableCell ***newRows = new HTMLTableCell ** [allocRows + num];
-    memcpy( newRows, cells, allocRows * sizeof(HTMLTableCell **) );
-    delete [] cells;
+    if(cells) 
+    {
+	memcpy( newRows, cells, allocRows * sizeof(HTMLTableCell **) );
+	delete [] cells;
+    }
     cells = newRows;
 
     for ( unsigned int r = allocRows; r < allocRows + num; r++ )
@@ -239,21 +430,46 @@ void HTMLTable::addColumns( int num )
     for ( unsigned int r = 0; r < allocRows; r++ )
     {
 	newCells = new HTMLTableCell * [totalCols+num];
-	memcpy( newCells, cells[r], totalCols * sizeof( HTMLTableCell * ) );
+	if( cells[r] )
+	{
+	    memcpy( newCells, cells[r], totalCols * sizeof(HTMLTableCell *) );
+	    delete [] cells[r];
+	}
 	memset( newCells + totalCols, 0, num * sizeof( HTMLTableCell * ) );
-	delete [] cells[r];
 	cells[r] = newCells;
     }
 
     totalCols += num;
 }
 
-void HTMLTable::endTable()
+void HTMLTable::addColumns(int num, int width, ColType colType, 
+			   HTMLClue::HAlign halign, HTMLClue::VAlign valign)
 {
-//    totalRows = row;
+    if( row || col ) return; // ignore after the table contents started
+    progressive = true;
 
-    // calculate min/max widths
-    calcColInfoI();
+    if (totalCols + num > colInfo.size())
+    {
+	   totalColInfos += num;
+           colInfo.resize( totalColInfos );
+    }
+
+    unsigned int indx = totalCols;
+    while( indx < totalCols + num )
+    {
+       colInfo[indx].startCol = indx;
+       colInfo[indx].colSpan = 1;
+       colInfo[indx].minSize = UNDEFINED;
+       if(colType == Fixed)
+	   colInfo[indx].prefSize = width; // assume that until we know better
+       else if(colType == Percent && fixed_width != UNDEFINED)
+	   colInfo[indx].prefSize = width * fixed_width / 100;
+       colInfo[indx].defWidth = width; 
+       colInfo[indx].colType = colType;
+       colInfo[indx].valign = valign;
+       indx++;
+    }
+    totalCols += num;
 }
 
 void HTMLTable::calcAbsolutePos( int _x, int _y )
@@ -346,6 +562,9 @@ HTMLAnchor* HTMLTable::findAnchor( const char *_name, int &_x, int &_y )
 
 void HTMLTable::reset()
 {
+    // only do layout, if progressive or finished
+    if(!progressive && !finished) return;
+
     unsigned int r, c;
     HTMLTableCell *cell;
 
@@ -368,6 +587,11 @@ void HTMLTable::reset()
 
 void HTMLTable::calcSize( HTMLClue * )
 {
+    printf("@@@@@@@@@@@@@ calcSize in table @@@@@@@@@@@@\n");
+    // only do the calculation if we have progressive layout or
+    // we finished parsing the table
+    if(!progressive && !finished) return;
+
     unsigned int r, c;
     int indx;
     HTMLTableCell *cell;
@@ -464,39 +688,45 @@ void HTMLTable::calcSize( HTMLClue * )
 // New table layout function
 void HTMLTable::addRowInfo(int _row, int _colInfoIndex)
 {
-    rowInfo[_row].entry[rowInfo[_row].nrEntries++] = _colInfoIndex;
+    printf("------------- WARNING ------------------\n");
+    rowInfo.append( _colInfoIndex);
 }
 
 // New table layout function
 int HTMLTable::addColInfo(int _startCol, int _colSpan, 
                           int _minSize, int _prefSize, 
-                          ColType _colType)
+                          ColType _colType, int _defWidth = 0,
+			  HTMLClue::HAlign _halign = HTMLClue::HNone, 
+			  HTMLClue::VAlign _valign = HTMLClue::VNone )
 {
     unsigned int indx;
+    if(_colSpan == 0)
+    {
+	printf("FIXME: colspan == 0 in addColInfo()!!!\n");
+	return -1;
+    }
 
-    if (_startCol + _colSpan > (int) totalCols)
+    if (_startCol + _colSpan > (int) totalCols && row != 0)
     	_colSpan = totalCols - _startCol;
 
-    // Is there already some info present?
-    for(indx = 0; indx < totalColInfos; indx++)
-    {
-       if ((colInfo[indx].startCol == _startCol) &&
-           (colInfo[indx].colSpan == _colSpan))
-           break;
-    } 
+    indx = getColInfo( _startCol, _colSpan );
+
     if (indx == totalColInfos)
     {
        // No colInfo present allocate some
        totalColInfos++;
        if (totalColInfos >= colInfo.size())
        {
-           colInfo.resize( colInfo.size() + totalCols );
+           colInfo.resize( colInfo.size() + totalCols + 1 );
        }
        colInfo[indx].startCol = _startCol;
        colInfo[indx].colSpan = _colSpan;
        colInfo[indx].minSize = _minSize;
-       colInfo[indx].prefSize = _prefSize;
+       colInfo[indx].prefSize = width; // assume that until we know better
        colInfo[indx].colType = _colType;
+       colInfo[indx].defWidth = _defWidth;
+       colInfo[indx].halign = _halign;
+       colInfo[indx].valign = _valign;
     }
     else
     {
@@ -507,14 +737,36 @@ int HTMLTable::addColInfo(int _startCol, int _colSpan,
        if (_colType < colInfo[indx].colType)
        {
            colInfo[indx].prefSize = _prefSize;
+           colInfo[indx].colType = _colType;
+	   if( _defWidth != 0 )
+	       colInfo[indx].defWidth = _defWidth;
        }
        else if (_colType == colInfo[indx].colType)
        {
-           if (_prefSize > colInfo[indx].prefSize)
-               colInfo[indx].prefSize = _prefSize;
+	   colInfo[indx].prefSize = _prefSize;
        }
     }
+
+    // Prefered size is at least the minimum size
+    if (colInfo[indx].minSize > colInfo[indx].prefSize)
+	colInfo[indx].prefSize = colInfo[indx].minSize;
+    if (colInfo[indx].colSpan > maxColSpan)
+	maxColSpan = colInfo[indx].colSpan;
+
     return (indx); /* Return the ColInfo Index */
+}
+
+int HTMLTable::getColInfo( int _startCol, int _colSpan )
+{
+    unsigned int indx;
+
+    for(indx = 0; indx < totalColInfos; indx++)
+    {
+       if ((colInfo[indx].startCol == _startCol) &&
+           (colInfo[indx].colSpan == _colSpan))
+           break;
+    } 
+    return indx;
 }
 
 void HTMLTable::addColMinWidth(int k, int delta, ColType t)
@@ -709,125 +961,11 @@ void HTMLTable::addColsPrefWidthVar(int kol, int span, int tooAdd, int varCount)
 // min_width and pref_idth are calculated here
 void HTMLTable::calcColInfoI( void )
 {
-    unsigned int r, c;
+    unsigned int i, r, c;
     int borderExtra = ( border == 0 ) ? 0 : 1;
 
 printf("START calcColInfoI() this = %p\n", this);
 
-    // Allocate some memory for column info
-    colInfo.resize( totalCols*2 );
-    rowInfo = (RowInfo_t *) malloc( totalRows * sizeof(RowInfo_t) );
-    totalColInfos = 0;
-    
-    for ( r = 0; r < totalRows; r++ )
-    {
-	rowInfo[r].entry = (int *) malloc( totalCols * sizeof(int));
-	rowInfo[r].nrEntries = 0;
-        for ( c = 0; c < totalCols; c++ )
-	{
-	    HTMLTableCell *cell = cells[r][c];
-	    int            min_size;
-	    int            pref_size;
-	    int            colInfoIndex;
-	    int            cellPercent;
-	    ColType        col_type;
-
-	    if ( cell == 0 )
-	    {
-	        // Add dummy info
-	        colInfoIndex = addColInfo(c, 1, 1, 1, Variable);
-                addRowInfo(r, colInfoIndex);
-		continue; 
-            }
-	    if ( (c > 0) && (cells[r][c-1] == cell) )
-		continue;
-	    if ( (r > 0) && (cells[r-1][c] == cell) )
-		continue;
-
-	    // calculate minimum size
-	    min_size = cell->calcMinWidth() + padding + padding + 
-	              spacing + borderExtra;
-	
-	    cellPercent = cell->getPercent();
-
-	    // calculate preferred pos
-	    if ( cellPercent == 0 )
-	    {
-	    	// Fixed size, preffered width == min width
-		pref_size = min_size;
-		col_type = Fixed;
-	    }
-	    else
-	    {
-		pref_size = cell->calcPreferredWidth() + 
-		            padding + padding + spacing + borderExtra;
-		col_type = Variable;
-	    }
-	    colInfoIndex = addColInfo(c, cell->colSpan(), min_size, 
-	                              pref_size, col_type);
-	    addRowInfo(r, colInfoIndex);
-	}
-    }
-
-    // Remove redundant rows
-    unsigned int i;
-    unsigned int totalRowInfos;
-    totalRowInfos = 1;
-    for(i = 1; i < totalRows; i++)
-    {
-    	bool unique = TRUE;
-    	for(unsigned int j = 0; (j < totalRowInfos) && (unique == TRUE); j++)
-    	{
-    	    unsigned k;
-    	    if (rowInfo[i].nrEntries == rowInfo[j].nrEntries)
-    	        unique = FALSE;
-    	    else
-    	    {
-    	        bool match = TRUE;
-    	        k = rowInfo[i].nrEntries;
-    	        while (k--)
-    	        {
-    	            if (rowInfo[i].entry[k] != rowInfo[j].entry[k])
-    	            {
-    	            	match = FALSE;
-    	            	break;
-    	            }
-    	        }
-    	        if (match)
-    	            unique = FALSE;
-    	    }
-    	}
-    	if (!unique)
-    	{
-    	     free( rowInfo[i].entry);
-    	}
-    	else 
-    	{
-    	    if (totalRowInfos != i)
-    	    {
-    	        rowInfo[totalRowInfos].entry = rowInfo[i].entry;
-    	        rowInfo[totalRowInfos].nrEntries = rowInfo[i].nrEntries;
-    	    }
-    	    totalRowInfos++;
-    	}
-    }
-
-    // Calculate pref width and min width for each row
-    
-    int maxColSpan = 0;
-    for(i = 0; i < totalRowInfos; i++)
-    {
-        for(int j = 0; j < rowInfo[i].nrEntries; j++)
-        {
-           int index = rowInfo[i].entry[j];
-           
-           // Prefered size is at least the minimum size
-	   if (colInfo[index].minSize > colInfo[index].prefSize)
-	   	colInfo[index].prefSize = colInfo[index].minSize;
-           if (colInfo[index].colSpan > maxColSpan)
-	        maxColSpan = colInfo[index].colSpan;
-	}
-    }
 
     columnPos.resize( totalCols + 1 );
     columnPrefPos.resize( totalCols + 1 );
@@ -841,11 +979,11 @@ printf("START calcColInfoI() this = %p\n", this);
     // Calculate minimum widths for each column.
     for(int col_span = 1; col_span <= maxColSpan; col_span++)
     {
-        for(i = 0; i < totalRowInfos; i++)
+        for(i = 0; i < rowInfo.row(); i++)
         {
-            for(int j = 0; j < rowInfo[i].nrEntries; j++)
+            for(int j = 0; j < rowInfo.len(i); j++)
             {
-                int index = rowInfo[i].entry[j];
+                int index = rowInfo[i][j];
                 if (colInfo[index].colSpan != col_span)
                     continue;
 		int currMinSize = 0;
@@ -939,15 +1077,15 @@ printf("START calcColInfoI() this = %p\n", this);
                  colInfo[i].minSize, colInfo[i].prefSize,
                  (int) colInfo[i].colType);
     }
-    for(i = 0; i < totalRowInfos; i++)
+    for(i = 0; i < rowInfo.row(); i++)
     {
         printf("row #%d: ", i);
-        for(unsigned int j = 0; j < (unsigned int) rowInfo[i].nrEntries; j++)
+        for(unsigned int j = 0; j < (unsigned int) rowInfo.len(i); j++)
         {
            if (j == 0)
-              printf("%d", rowInfo[i].entry[j]);
+              printf("%d", rowInfo[i][j]);
            else
-              printf("- %d", rowInfo[i].entry[j]);
+              printf("- %d", rowInfo[i][j]);
         } 
     }
     printf("min = %d, pref = %d\n", min_width, pref_width);
@@ -960,35 +1098,23 @@ printf("START calcColInfoI() this = %p\n", this);
 // During this phase we are going to calculate the actual widths.
 void HTMLTable::calcColInfoII(void)
 {
-    unsigned int r, c;
+    unsigned int r, c, i;
     int borderExtra = ( border == 0 ) ? 0 : 1;
 
 printf("START calcColInfoII() this = %p\n", this);
-    // Allocate some memory for column info
-    colInfo.resize( totalCols*2 );
-    rowInfo = (RowInfo_t *) malloc( totalRows * sizeof(RowInfo_t) );
-    totalColInfos = 0;
     
     for ( r = 0; r < totalRows; r++ )
     {
-	rowInfo[r].entry = (int *) malloc( totalCols * sizeof(int));
-	rowInfo[r].nrEntries = 0;
         for ( c = 0; c < totalCols; c++ )
 	{
 	    HTMLTableCell *cell = cells[r][c];
 	    int            min_size;
 	    int            pref_size;
-	    int            colInfoIndex;
 	    int            cellPercent;
 	    ColType        col_type;
 
 	    if ( cell == 0 )
-	    {
-	        // Add dummy info
-	        colInfoIndex = addColInfo(c, 1, 1, 1, Variable);
-                addRowInfo(r, colInfoIndex);
 		continue; 
-            }
 	    if ( (c > 0) && (cells[r][c-1] == cell) )
 		continue;
 	    if ( (r > 0) && (cells[r-1][c] == cell) )
@@ -998,82 +1124,35 @@ printf("START calcColInfoII() this = %p\n", this);
 	    min_size = cell->calcMinWidth() + padding + padding + 
 	              spacing + borderExtra;
 	
-	    cellPercent = cell->getPercent();
+	    col_type = cell->type();
 
 	    // calculate preferred pos
-	    if ( cellPercent > 0 )
+	    if ( col_type == Percent )
 	    {
 		pref_size = ( width * cell->getPercent() / 100 ) + 
 		           padding + padding + spacing + borderExtra;
-		col_type = Percent;
 	    }
-	    else if ( cellPercent == 0 )
+	    else if ( col_type == Fixed )
 	    {
 	    	// Fixed size, preffered width == min width
 		pref_size = min_size;
-		col_type = Fixed;
 	    }
 	    else
 	    {
 		pref_size = cell->calcPreferredWidth() + 
 		            padding + padding + spacing + borderExtra;
-		col_type = Variable;
 	    }
-	    colInfoIndex = addColInfo(c, cell->colSpan(), min_size, 
-	                              pref_size, col_type);
-	    addRowInfo(r, colInfoIndex);
+	    addColInfo(c, cell->colSpan(), min_size, 
+		       pref_size, col_type);
 	}
     }
 
-    // Remove redundant rows
-    unsigned int i;
-    unsigned int totalRowInfos;
-    totalRowInfos = 1;
-    for(i = 1; i < totalRows; i++)
-    {
-    	bool unique = TRUE;
-    	for(unsigned int j = 0; (j < totalRowInfos) && (unique == TRUE); j++)
-    	{
-    	    unsigned k;
-    	    if (rowInfo[i].nrEntries == rowInfo[j].nrEntries)
-    	        unique = FALSE;
-    	    else
-    	    {
-    	        bool match = TRUE;
-    	        k = rowInfo[i].nrEntries;
-    	        while (k--)
-    	        {
-    	            if (rowInfo[i].entry[k] != rowInfo[j].entry[k])
-    	            {
-    	            	match = FALSE;
-    	            	break;
-    	            }
-    	        }
-    	        if (match)
-    	            unique = FALSE;
-    	    }
-    	}
-    	if (!unique)
-    	{
-    	     free( rowInfo[i].entry);
-    	}
-    	else 
-    	{
-    	    if (totalRowInfos != i)
-    	    {
-    	        rowInfo[totalRowInfos].entry = rowInfo[i].entry;
-    	        rowInfo[totalRowInfos].nrEntries = rowInfo[i].nrEntries;
-    	    }
-    	    totalRowInfos++;
-    	}
-    }
-
     int maxColSpan = 0;
-    for(i = 0; i < totalRowInfos; i++)
+    for(i = 0; i < rowInfo.row(); i++)
     {
-        for(int j = 0; j < rowInfo[i].nrEntries; j++)
+        for(int j = 0; j < rowInfo.len(i); j++)
         {
-           int index = rowInfo[i].entry[j];
+           int index = rowInfo[i][j];
            
            // Prefered size is at least the minimum size
 	   if (colInfo[index].minSize > colInfo[index].prefSize)
@@ -1093,15 +1172,15 @@ printf("START calcColInfoII() this = %p\n", this);
                  colInfo[i].minSize, colInfo[i].prefSize,
                  (int) colInfo[i].colType);
     }
-    for(i = 0; i < totalRowInfos; i++)
+    for(i = 0; i < rowInfo.row(); i++)
     {
         printf("row #%d: ", i);
-        for(unsigned int j = 0; j < (unsigned int) rowInfo[i].nrEntries; j++)
+        for(unsigned int j = 0; j < (unsigned int) rowInfo.len(i); j++)
         {
            if (j == 0)
-              printf("%d", rowInfo[i].entry[j]);
+              printf("%d", rowInfo[i][j]);
            else
-              printf("- %d", rowInfo[i].entry[j]);
+              printf("- %d", rowInfo[i][j]);
         } 
         printf("\n");
     }
@@ -1120,11 +1199,11 @@ printf("START calcColInfoII() this = %p\n", this);
     // Calculate minimum widths for each column.
     for(int col_span = 1; col_span <= maxColSpan; col_span++)
     {
-        for(i = 0; i < totalRowInfos; i++)
+        for(i = 0; i < rowInfo.row(); i++)
         {
-            for(int j = 0; j < rowInfo[i].nrEntries; j++)
+            for(int j = 0; j < rowInfo.len(i); j++)
             {
-                int index = rowInfo[i].entry[j];
+                int index = rowInfo[i][j];
                 if (colInfo[index].colSpan != col_span)
                     continue;
 		int currMinSize = 0;

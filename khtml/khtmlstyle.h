@@ -56,20 +56,20 @@ typedef void (KHTMLParser::*blockFunc)(HTMLStackElem *stackElem);
 class HTMLStackElem
 {
 public:
-	HTMLStackElem(		int _id, 
-	 					int _level, 
-	 					CSSStyle * _style,
-	 				   	blockFunc _exitFunc, 
-	 				   	int _miscData1,
-	 				   	HTMLStackElem * _next
-	 				  ) 
-	 				  :	id(_id), 
-	 				   	level(_level),
-	 				   	style(_style),
-	 				   	exitFunc(_exitFunc), 
-	 				   	miscData1(_miscData1), 
-	 				   	next(_next) 
-                 { }
+     HTMLStackElem( int _id, 
+		    int _level, 
+		    CSSStyle * _style,
+		    blockFunc _exitFunc, 
+		    int _miscData1,
+		    HTMLStackElem * _next
+	  ) 
+	  :	id(_id), 
+	  level(_level),
+	  style(_style),
+	  exitFunc(_exitFunc), 
+	  miscData1(_miscData1), 
+	  next(_next) 
+	  { }
 
     int       id;
     int       level;
@@ -80,7 +80,7 @@ public:
    
     int       miscData1;
 
-	HTMLStackElem *next;
+    HTMLStackElem *next;
 };
 
 class CSSStyleFont
@@ -92,8 +92,9 @@ public:
     int     style;
     enum varEnum { varNormal = 0, varSmallCaps };
     int	    variant;
-	enum decEnum { decNormal = 0, decUnderline, decOverline, decLineThrough, decBlink };
-	int     decoration;
+    enum decEnum { decNormal = 0, decUnderline, decOverline, decLineThrough, 
+		   decBlink };
+    int     decoration;
     enum weightEnum { Normal=400, Bold=700 };
     int     weight; // 100 - 900, ( <= 500 : Normal, > 500 : Bold )
     int     size;
@@ -103,13 +104,13 @@ public:
 class CSSStyleText
 {
 public:
-	enum valEnum { valBaseline = 0, valOffset, valTop, valTextTop, valMiddle,
+    enum valEnum { valBaseline = 0, valOffset, valTop, valTextTop, valMiddle,
 		valBottom, valTextBottom };
-	int     valign; 
-	int     valignOffset; // sub, super and percentage set valOffset and
-	                      // should specify with valigOffset the number of 
-	                      // pixels the element should be raised above the
-	                      // bottomline.
+    int     valign; 
+    int     valignOffset; // sub, super and percentage set valOffset and
+                          // should specify with valigOffset the number of 
+	                  // pixels the element should be raised above the
+	                  // bottomline.
     enum transEnum { transNormal = 0, transCapital, transUpper, transLower};
     int     transform;
     enum halEnum { halLeft = 0, halRight, halCenter, halJustify };
@@ -214,4 +215,3 @@ protected:
 };
 
 #endif // HTMLSTYLE_H
-

@@ -61,7 +61,8 @@ class KHTMLWidget;
 class HTMLTableCell : public HTMLClueV
 {
 public:
-    HTMLTableCell( int _percent, int _width, int rs, int cs, int pad );
+    HTMLTableCell( int _width, int colType, 
+		   int rs, int cs, int pad );
     virtual ~HTMLTableCell() { }
 
     int rowSpan() const
@@ -79,6 +80,10 @@ public:
 
     int getPercent()
         {   return percent; }
+    // cell type (fixed, percent, ... )
+    int type() { return colType; }
+    bool closed() { return cellClosed; };
+    void setClosed(bool c) { cellClosed = c; };
 
     virtual bool print( QPainter *_painter, int _x, int _y, int _width,
 		int _height, int _tx, int _ty, bool toPrinter );
@@ -89,6 +94,8 @@ public:
 	{ HTMLClueV::print(_painter,_obj,_x,_y,_width,_height,_tx,_ty); }
 
     virtual const char * objectName() const { return "HTMLTableCell"; };
+    virtual ObjectType getObjectType() const
+	    {	return TableCell; }
 
 protected:
     int percent;
@@ -96,24 +103,116 @@ protected:
     int cspan;
     int padding;
     QColor bg;
+    int colType;
+    bool cellClosed;
 };
 
 //-----------------------------------------------------------------------------
 //
-class HTMLTable : public HTMLObject
+class HTMLRowInfo
+{
+public:
+    struct Row 
+    {
+	Row()
+	{
+	    row = new int[5];
+	    alloc = 5;
+	    len = 0;
+	}
+	Row(int l)
+	{
+	    row = new int[l];
+	    alloc = l;
+	    len = 0;
+	}
+	~Row()
+	{
+	    if( row && alloc )
+		delete [] row;
+	}
+	void append(int num)
+	{
+	    if(len == alloc)
+	    {
+		alloc += 5;
+		int *newrow = new int[alloc];
+		memcpy( newrow, row, len * sizeof(int) );		
+		memset( newrow + len, 0, 5 * sizeof(int) );
+		delete row;
+		row = newrow;
+	    }
+	    row[len] = num;
+	    len++;
+	}
+	int *row;
+	int len;
+	int alloc;
+    };
+
+    HTMLRowInfo()
+    {
+	r = 0;
+	entry = new Row *[5];
+	alloc = 5;
+	current = 0;
+    }
+    ~HTMLRowInfo() 
+    { 
+	if(entry) 
+	{
+	    for( int i = 0; i < r; i++ ) 
+		if( entry[i] ) delete entry[i];
+	    delete [] entry; 
+	}
+    }
+    int *operator[](int num) { return entry[num]->row; }
+    void append( int i ) 
+    { 
+	if( !current ) newRow();
+	current->append(i); 
+    }
+    int pos();
+    int row() { return r; }
+    int len(int row) { return entry[row]->len; }
+    void newRow();
+    void endRow();
+
+protected:
+    Row **entry;
+    Row *current;
+    int r;
+    int alloc;
+};
+
+
+class HTMLTable : public HTMLClue
 {
 public:
     HTMLTable( int _percent, int _width,
 		int _padding = 1, int _spacing = 2, int _border = 0 );
     virtual ~HTMLTable();
 
+    void setCaption( HTMLClueV *cap, HTMLClue::VAlign al )
+	    {	caption = cap; capAlign = al; }
+
+    enum ColType { Fixed, Percent, Relative, Variable };
+
+    virtual void append( HTMLObject *obj );
+    HTMLTableCell *append( int width, ColType colType,
+		 int rowSpan, int colSpan, 
+		 QColor bgcolor,  HTMLClue::VAlign valign );
+    void endCell();
     void startRow();
-    void addCell( HTMLTableCell *cell );
     void endRow();
     void endTable();
 
-    void setCaption( HTMLClueV *cap, HTMLClue::VAlign al )
-	    {	caption = cap; capAlign = al; }
+    virtual ObjectType getObjectType() const
+	    {	return Table; }
+
+    // function for incremental layout, used by <col> tag
+    void addColumns(int num, int width, ColType colType, 
+		    HTMLClue::HAlign halign, HTMLClue::VAlign valign);
 
     virtual void reset();
     virtual int  calcMinWidth();
@@ -142,9 +241,6 @@ public:
     virtual void calcAbsolutePos( int _x, int _y );
     virtual bool getObjectPosition( const HTMLObject *objp, int &xp, int &yp );
 
-    virtual ObjectType getObjectType() const
-	    {	return Clue; }
-
     virtual HTMLAnchor *findAnchor( const char *_name, int &_x, int &_y );
 
     virtual int  findPageBreak( int _y );
@@ -163,6 +259,25 @@ public:
     HTMLTableCell *cell( int r, int c )
 	{ return cells[r][c]; }
 
+    int getPadding() { return padding; }
+    void setColor ( QColor c ) { tableColor = c; tableRowColor = c; }
+    QColor color() { return tableColor; }
+    void setRowColor ( QColor c ) { tableRowColor = c; }
+    QColor rowColor() { return tableRowColor; }
+    void setRowVAlign( HTMLClue::VAlign a ) { rowvalign = a; }
+    HTMLClue::VAlign rowVAlign() { return rowvalign; }
+    void setRowHAlign( HTMLClue::HAlign a ) { rowhalign = a; }
+    HTMLClue::HAlign rowHAlign() { return rowhalign; }
+
+    void setOldClue ( HTMLClue *c ) { oldclue = c; }
+    HTMLClue *oldClue() { return oldclue; }
+    void setOldFlow ( HTMLClue *c ) { oldflow = c; }
+    HTMLClue *oldFlow() { return oldflow; }
+    void setOldDivAlign ( HTMLClue::HAlign a ) { olddivalign = a; }
+    HTMLClue::HAlign oldDivAlign() { return olddivalign; }
+    void setOldIndent ( int i ) { oldindent = i; }
+    int oldIndent() { return oldindent; }
+
     /*
      * Create an iterator.
      * The returned iterator must be deleted by the caller.
@@ -172,7 +287,6 @@ public:
     virtual const char * objectName() const { return "HTMLTable"; };
 
 protected:
-    enum ColType { Fixed, Percent, Variable };
 
     void setCells( unsigned int r, unsigned int c, HTMLTableCell *cell );
 
@@ -196,7 +310,11 @@ protected:
     void calcColInfoII(void);
 
     int  addColInfo(int _startCol, int _colSpan, int _minSize,
-                    int _prefSize, ColType _colType);
+                    int _prefSize, ColType _colType, int defWidth = 0,
+		    HTMLClue::HAlign halign = HTMLClue::HNone, 
+		    HTMLClue::VAlign valign = HTMLClue::VNone );
+    int getColInfo( int _startCol, int _colSpan = 1);
+
     void addRowInfo(int _row, int _colInfoIndex);
     void calcRowHeights();
     void addRows( int );
@@ -224,11 +342,14 @@ protected:
      */
     typedef struct ColInfo_struct
     {
-       int     startCol;
-       int     colSpan;
-       int     minSize;
-       int     prefSize;
-       ColType colType;
+	int     startCol;
+	int     colSpan;
+	int     minSize;
+	int     prefSize;
+	int     defWidth; // width given by the parser 
+	ColType colType;  // type of table column
+	HTMLClue::HAlign halign;
+	HTMLClue::VAlign valign;
     } ColInfo_t;
     /*
      * The RowInfo structs maintains relations between the various ColInfo
@@ -248,15 +369,10 @@ protected:
      *
      * { 1,2,3 } refers to ColInfo[1], ColInfo[2] and ColInfo[3]
      */
-    typedef struct RowInfo_struct
-    {
-       int *entry;
-       int  nrEntries;
-    } RowInfo_t;
-    
+     
     HTMLTableCell ***cells;
     QArray<ColInfo_t> colInfo;
-    RowInfo_t   *rowInfo;
+    HTMLRowInfo rowInfo;
 
     int         percent;
     int         fixed_width;
@@ -276,6 +392,20 @@ protected:
     int border;
     HTMLClueV *caption;
     HTMLClue::VAlign capAlign;
+
+    QColor tableColor;
+    QColor tableRowColor;
+    HTMLClue::VAlign rowvalign;
+    HTMLClue::HAlign rowhalign;
+
+    HTMLClue *oldclue;
+    HTMLClue *oldflow;
+    HTMLClue::HAlign olddivalign;
+    int oldindent;
+
+    bool progressive;
+    bool finished;
+    int maxColSpan;
 };
 
 //-----------------------------------------------------------------------------

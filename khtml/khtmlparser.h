@@ -42,6 +42,7 @@
 #include "khtmlclue.h"
 #include "khtmltags.h"
 #include "khtmlstyle.h"
+#include "khtmltable.h"
 
 //
 // External Classes
@@ -168,10 +169,13 @@ protected:
     void parseTagBody(void); 
     void parseTagBr(void);
     void parseTagButton(void);
+    void parseTagCaption(void);
     void parseTagCell(void);
     void parseTagCenter(void);
     void parseTagCite(void);
     void parseTagCode(void);
+    void parseTagCol(void);
+    void parseTagColgroup(void);
     void parseTagDD(void);
     void parseTagDel(void);
     void parseTagDfn(void);
@@ -230,13 +234,20 @@ protected:
     void parseTagSub(void); 	
     void parseTagSup(void); 	
     void parseTagTable(void); 	
+    void parseTagTableEnd(void); 	
+    void parseTagTD(void); 	
     void parseTagTextarea(void); 	
     void parseTagTextareaEnd(void); 	
     void parseTagTitle(void); 	
+    void parseTagTR(void); 	
     void parseTagTT(void); 	
     void parseTagU(void); 	
     void parseTagUL(void); 	
     void parseTagVar(void); 	
+
+    // this does the actual parsing of the <col> tag.
+    void parseTagCol(int defWidth, HTMLTable::ColType colType,
+		     HTMLClue::VAlign valign, HTMLClue::HAlign halign);
 	
     /*
      * This function is used for convenience only. It inserts a vertical space
@@ -422,6 +433,11 @@ protected:
      * Stack of glossary entries currently active
      */
     QStack<GlossaryEntry> glossaryStack;
+
+    /*
+     * Stack of HTMLTables used during paring
+     */
+    QStack<HTMLTable> tableStack;
 
     /*
      * The current alignment, set by <DIV > or <CENTER>

@@ -263,6 +263,19 @@ HTMLIterator * HTMLClue::getIterator()
 { 
     return head ? new HTMLListIterator( this ) : 0; 
 }
+
+void HTMLClue::append( HTMLObject *_object )
+{
+    if ( !head )
+    {
+	head = tail = _object;
+    }
+    else
+    {
+	tail->setNext( _object );
+	tail = _object;
+    }
+}
             
 
 bool HTMLClue::selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,

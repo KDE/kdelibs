@@ -153,13 +153,13 @@ tagFunc KHTMLParser::tagJumpTable[ID_MAX+1] =
 &KHTMLParser::parseTagBody,		0,			// ID_BODY
 &KHTMLParser::parseTagBr,		0,			// ID_BR
 &KHTMLParser::parseTagButton,		0,			// ID_BUTTON
-	0,		0,	// ID_CAPTION ( Tables only )
+&KHTMLParser::parseTagCaption,		0,	                // ID_CAPTION
 &KHTMLParser::parseTagCell,		0,			// ID_CELL
 &KHTMLParser::parseTagCenter,	&KHTMLParser::parseTagEnd,	// ID_CENTER
 &KHTMLParser::parseTagCite,	&KHTMLParser::parseTagEnd,	// ID_CITE
 &KHTMLParser::parseTagCode,	&KHTMLParser::parseTagEnd,	// ID_CODE
-	0,		0,	// ID_COL ( Tables only )
-	0,		0,	// ID_COLGROUP ( Tables only )
+&KHTMLParser::parseTagCol,		0,	                // ID_COL
+&KHTMLParser::parseTagColgroup,		0,	                // ID_COLGROUP
 &KHTMLParser::parseTagDD,		0,			// ID_DD
 &KHTMLParser::parseTagDel,		0,			// ID_DEL
 &KHTMLParser::parseTagDfn,		0,			// ID_DFN
@@ -219,15 +219,15 @@ tagFunc KHTMLParser::tagJumpTable[ID_MAX+1] =
 &KHTMLParser::parseTagStyle,		0,			// ID_STYLE
 &KHTMLParser::parseTagSub,		0,			// ID_SUB
 &KHTMLParser::parseTagSup,		0,			// ID_SUP
-&KHTMLParser::parseTagTable,		0,			// ID_TABLE
-	0,		0,		// ID_TBODY (Tables only)
-	0,		0,		// ID_TD (Tables only)
+&KHTMLParser::parseTagTable,	&KHTMLParser::parseTagTableEnd,	// ID_TABLE
+	0,		0,		// ID_TBODY
+&KHTMLParser::parseTagTD,	&KHTMLParser::parseTagEnd,	// ID_TD
 &KHTMLParser::parseTagTextarea,	&KHTMLParser::parseTagEnd,	// ID_TEXTAREA
 	0,		0,		// ID_TFOOT (Tables only)
-	0,		0,		// ID_TH (Tables only)
+&KHTMLParser::parseTagTD,	&KHTMLParser::parseTagEnd,	// ID_TH
 	0,		0,		// ID_THEAD (Tables only)
 &KHTMLParser::parseTagTitle,	&KHTMLParser::parseTagEnd, 	// ID_TITLE
-	0,		0,		// ID_TR (Tables only)
+&KHTMLParser::parseTagTR,	&KHTMLParser::parseTagEnd,     	// ID_TR
 &KHTMLParser::parseTagTT,	&KHTMLParser::parseTagEnd,	// ID_TT
 &KHTMLParser::parseTagU,	&KHTMLParser::parseTagEnd,	// ID_U
 &KHTMLParser::parseTagUL,	&KHTMLParser::parseTagEnd,	// ID_UL
@@ -903,67 +903,6 @@ void KHTMLParser::parseOneToken()
         (this->*(func))();
 }
 
-/* the following attributes are standard sets used quite often for specific
-   tags. There parsing can be done in functions, and return a struct defining 
-   the atributes.
-
-<!ENTITY % coreattrs
-"id          ID             #IMPLIED  -- document-wide unique id --
-class       CDATA          #IMPLIED  -- space separated list of classes --
-style       %StyleSheet;   #IMPLIED  -- associated style info --
-title       %Text;         #IMPLIED  -- advisory title/amplification --"
->
-
-struct coreattrs
-{
-    QString id;
-    QString class;
-    StyleSheet style;
-    QString title;
-};
-
-<!ENTITY % i18n
-"lang        %LanguageCode; #IMPLIED  -- language code --
-dir         (ltr|rtl)      #IMPLIED  -- direction for weak/neutral text --"
->
-
-struct i18n
-{
-    Language lang;
-    Direction dir;
-};
-
-<!ENTITY % events
-"onclick     %Script;       #IMPLIED  -- a pointer button was clicked --
-ondblclick  %Script;       #IMPLIED  -- a pointer button was double clicked--
-onmousedown %Script;       #IMPLIED  -- a pointer button was pressed down --
-onmouseup   %Script;       #IMPLIED  -- a pointer button was released --
-onmouseover %Script;       #IMPLIED  -- a pointer was moved onto --
-onmousemove %Script;       #IMPLIED  -- a pointer was moved within --
-onmouseout  %Script;       #IMPLIED  -- a pointer was moved away --
-onkeypress  %Script;       #IMPLIED  -- a key was pressed and released --
-onkeydown   %Script;       #IMPLIED  -- a key was pressed down --
-onkeyup     %Script;       #IMPLIED  -- a key was released --"
->
-
-struct events
-{
-    JScript onclick;
-    JScript ondblclick;
-    JScript onmousedown;
-    JScript onmouseup;
-    JScript onmouseover;
-    JScript onmousemove;
-    JScript onmouseout;
-    JScript onkeypress;
-    JScript onkeydown;
-    JScript onkeyup;
-};
-
-<!ENTITY % attrs "%coreattrs; %i18n; %events;">
-
-*/
-
 void KHTMLParser::parseTagEnd(void)
 {
     popBlock(tagID - ID_CLOSE_TAG);
@@ -1294,6 +1233,49 @@ void KHTMLParser::parseTagButton(void)
     // forms... HTML4 unimplemented
 }
 
+void KHTMLParser::parseTagCaption(void)
+{
+    HTMLTable *table = tableStack.current();
+    if(!table) return;
+
+    HTMLClueV *caption;
+    HTMLClue::VAlign capAlign = HTMLClue::Bottom;
+
+    static const char endcap[] = { ID_CAPTION + ID_CLOSE_TAG,
+    				   ID_TABLE + ID_CLOSE_TAG,
+    				   ID_TR, ID_TD, ID_TH,
+   				   ID_BODY + ID_CLOSE_TAG, 
+    				   0 };    
+
+    const char *token;
+    while ( (token = ht->nextOption()) != 0)
+    {
+	if ( strncasecmp( token, "align=", 6 ) == 0)
+	{
+	    if ( strncasecmp( token+6, "top", 3 ) == 0)
+		capAlign = HTMLClue::Top;
+	}
+    }
+    caption = new HTMLClueV();
+    divAlign = HTMLClue::HCenter;
+    flow = 0;
+    _clue = caption;
+    pushBlock(ID_CAPTION, 3 );
+    tagID = parseBody( _clue, endcap );
+    popBlock( ID_CAPTION );
+    table->setCaption( caption, capAlign );
+    flow = 0;
+
+    if ( tagID == 0 )
+    { 
+	// CC: Close table description in case of a malformed table
+	// before returning!
+	table->endRow();
+	table->endTable(); 
+	popBlock( ID_TABLE );
+    }
+}
+
 void KHTMLParser::parseTagCell(void)
 {
     if (!flow)
@@ -1380,6 +1362,146 @@ void KHTMLParser::parseTagCode(void)
     currentStyle->font.style = CSSStyleFont::stNormal;
     currentStyle->font.weight = CSSStyleFont::Normal;
     setFont();
+}
+
+void KHTMLParser::parseTagCol(void)
+{
+    parseTagCol( UNDEFINED, HTMLTable::Variable,
+		 HTMLClue::VNone, HTMLClue::HNone);
+}
+
+void KHTMLParser::parseTagCol(int defWidth, HTMLTable::ColType colType,
+			      HTMLClue::VAlign valign, HTMLClue::HAlign halign)
+{
+    HTMLTable *table = tableStack.current();
+    if(!table) return;
+
+    int span = 1;
+
+    const char *token;
+    while ( (token = ht->nextOption()) != 0)
+    {
+	if ( strncasecmp( token, "span=", 5 ) == 0)
+	{
+	    span = atoi( token+5 );
+	    if ( span < 1 )
+		span = 1;
+	}
+	else if ( strncasecmp( token, "valign=", 7 ) == 0)
+	{
+	    if ( strncasecmp( token+7, "top", 3 ) == 0)
+		valign = HTMLClue::Top;
+	    else if ( strncasecmp( token+7, "bottom", 6 ) == 0)
+		valign = HTMLClue::Bottom;
+	    else
+		valign = HTMLClue::VCenter;
+	}
+	else if ( strncasecmp( token, "align=", 6 ) == 0)
+	{
+	    if ( strcasecmp( token+6, "center" ) == 0)
+		halign = HTMLClue::HCenter;
+	    else if ( strcasecmp( token+6, "right" ) == 0)
+		halign = HTMLClue::Right;
+	    else if ( strcasecmp( token+6, "left" ) == 0)
+		halign = HTMLClue::Left;
+	}
+	else if ( strncasecmp( token, "width=", 6 ) == 0 )
+	{
+	    if ( strchr( token + 6, '%' ) )
+		colType = HTMLTable::Percent;
+	    else if ( strchr( token+6, '*' ) )
+		colType = HTMLTable::Relative;
+	    else
+		colType = HTMLTable::Fixed; // Fixed with
+	    defWidth = atoi( token + 6 );
+	}
+    }
+
+    table->addColumns(span, defWidth, colType, halign, valign);
+}
+
+void KHTMLParser::parseTagColgroup(void)
+{
+    HTMLTable *table = tableStack.current();
+    if(!table) return;
+
+    HTMLTable::ColType colType = HTMLTable::Variable;
+    HTMLClue::VAlign valign = HTMLClue::VNone;
+    HTMLClue::HAlign halign = HTMLClue::HNone;
+    int defWidth = UNDEFINED;
+    int span = 1;
+    int width = UNDEFINED;
+
+    const char *token;
+    while ( (token = ht->nextOption()) != 0)
+    {
+	if ( strncasecmp( token, "span=", 5 ) == 0)
+	{
+	    span = atoi( token+5 );
+	    if ( span < 1 )
+		span = 1;
+	}
+	else if ( strncasecmp( token, "valign=", 7 ) == 0)
+	{
+	    if ( strncasecmp( token+7, "top", 3 ) == 0)
+		valign = HTMLClue::Top;
+	    else if ( strncasecmp( token+7, "bottom", 6 ) == 0)
+		valign = HTMLClue::Bottom;
+	    else
+		valign = HTMLClue::VCenter;
+	}
+	else if ( strncasecmp( token, "align=", 6 ) == 0)
+	{
+	    if ( strcasecmp( token+6, "center" ) == 0)
+		halign = HTMLClue::HCenter;
+	    else if ( strcasecmp( token+6, "right" ) == 0)
+		halign = HTMLClue::Right;
+	    else if ( strcasecmp( token+6, "left" ) == 0)
+		halign = HTMLClue::Left;
+	}
+	else if ( strncasecmp( token, "width=", 6 ) == 0 )
+	{
+	    if ( strchr( token + 6, '%' ) )
+		colType = HTMLTable::Percent;
+	    else if ( strchr( token+6, '*' ) )
+		colType = HTMLTable::Relative;
+	    else
+		colType = HTMLTable::Fixed; // Fixed with
+	    defWidth = atoi( token + 6 );
+	}
+    }
+
+    bool found_col = false;
+    bool found_end = false;
+
+    // parse until we find anything else than <col> or </colgroup>
+    const char *str;
+    while ( ht->hasMoreTokens() )
+    {
+	str = ht->nextToken();
+    
+	if( *str != TAG_ESCAPE ) break; //FIXME: what if some text follows???
+	str++;
+	
+	if( *str == ID_COL )
+	    parseTagCol( width, colType, valign, halign);
+	else if( *str == (ID_COLGROUP + ID_CLOSE_TAG) )
+	{
+	    found_end = true;
+	    break;
+	}
+	else
+	    break;
+    }
+
+    if(!found_col)
+	table->addColumns(span, defWidth, colType, halign, valign);
+    if(!found_end)
+    {
+	// the current token is not </colgroup>
+	tagID = *((unsigned char *) str);
+	parseOneToken();
+    }
 }
 
 void KHTMLParser::parseTagDD(void)
@@ -2728,52 +2850,12 @@ void KHTMLParser::parseTagTable(void)
     if ( !vspace_inserted || !flow )
         newFlow();
 
-    // missing tags:
-    // <col> <colgroup> </colgroup>
-    // <thead> </thead> <tbody> </tbody> <tfoot> </tfoot>
- 
-    static const char endthtd[] = { ID_TH + ID_CLOSE_TAG, 
-    				    ID_TD + ID_CLOSE_TAG,
-    				    ID_TR + ID_CLOSE_TAG,
-    				    ID_TH, ID_TD, ID_TR,
-    				    ID_TABLE + ID_CLOSE_TAG, 
-    				    ID_BODY + ID_CLOSE_TAG, 
-    				    0 };
-    static const char endcap[] = { ID_CAPTION + ID_CLOSE_TAG,
-    				   ID_TABLE + ID_CLOSE_TAG,
-    				   ID_TR, ID_TD, ID_TH,
-   				   ID_BODY + ID_CLOSE_TAG, 
-    				   0 };    
-    static const char endall[] = { ID_CAPTION + ID_CLOSE_TAG,
-    				   ID_TABLE + ID_CLOSE_TAG,
-				   ID_TH + ID_CLOSE_TAG, 
-    				   ID_TD + ID_CLOSE_TAG,
-    				   ID_TR + ID_CLOSE_TAG,
-    				   ID_TR, ID_TD, ID_TH,
-   				   ID_BODY + ID_CLOSE_TAG, 
-    				   0 };    
-
-    const char* str = 0;
-    bool firstRow = true;
-    bool tableTag = true;
-    bool noCell = true;
     int padding = 1;
     int spacing = 2;
     int width = 0;
     int percent = UNDEFINED;
     int border = 0;
-    char has_cell = 0;
-    HTMLClue::VAlign rowvalign = HTMLClue::VNone;
-    HTMLClue::HAlign rowhalign = HTMLClue::HNone;
     HTMLClue::HAlign align = HTMLClue::HNone;
-    HTMLClueV *caption = 0;
-    HTMLTableCell *tmpCell = 0;
-    HTMLClue::VAlign capAlign = HTMLClue::Bottom;
-    HTMLClue::HAlign olddivalign = divAlign;
-    HTMLClue *__clue = flow;
-    HTMLClue *oldFlow = flow;
-    HTMLClue *oldClue = _clue;
-    int oldindent = currentStyle->text.indent;
     QColor tableColor;
     QColor rowColor;
 
@@ -2821,359 +2903,144 @@ void KHTMLParser::parseTagTable(void)
     }
 
     HTMLTable *table = new HTMLTable( percent, width, padding, spacing, border );
-    //       __clue->append( table ); 
-    // CC: Moved at the end since we might decide to discard the table while parsing...
+    table->setColor( tableColor );
+    table->setOldDivAlign( divAlign );
+    table->setOldIndent( currentStyle->text.indent );
+    table->setOldClue( _clue );
+    table->setOldFlow( flow );
 
-    currentStyle->text.indent = 0;
-    
-    bool done = false;
-
-    while ( !done && ht->hasMoreTokens() )
+    if ( align != HTMLClue::Left && align != HTMLClue::Right )
     {
-	str = ht->nextToken();
-
-	// Every tag starts with an escape character
-	if ( str[0] == TAG_ESCAPE )
-	{
-	    str++;
-
-	    tableTag = true;
-
-	    tagID = *((unsigned char *)str++);
-	    for(;;) 
-	    {
-		if ( tagID == ID_CAPTION )
-		{
-		    while ( (token = ht->nextOption()) != 0)
-		    {
-			if ( strncasecmp( token, "align=", 6 ) == 0)
-			{
-			    if ( strncasecmp( token+6, "top", 3 ) == 0)
-				capAlign = HTMLClue::Top;
-			}
-		    }
-		    caption = new HTMLClueV();
-		    divAlign = HTMLClue::HCenter;
-		    flow = 0;
-		    _clue = caption;
-		    pushBlock(ID_CAPTION, 3 );
-		    tagID = parseBody( _clue, endcap );
-                    popBlock( ID_CAPTION );
-		    table->setCaption( caption, capAlign );
-		    flow = 0;
-
-		    if ( tagID == 0 )
-		    { 
-			// CC: Close table description in case of a malformed table
-			// before returning!
-			if ( !firstRow )
-			    table->endRow();
-			table->endTable(); 
-			delete table;
-			divAlign = olddivalign;
-			flow = oldFlow;
-			_clue = oldClue;
-			delete tmpCell;
-			return;
-		    }
-
-		    if ( tagID == (ID_CAPTION + ID_CLOSE_TAG))
-		    {
-		        // HTML Ok!
-		        break; // Get next token from 'ht'
-		    }
-		    else
-		    {
-		    	// Bad HTML
-		    	// caption ended with </table> <td> <tr> or <th>
-		       continue; // parse the returned tag
-		    }
-		}
-
-		if ( tagID == ID_TR )
-		{
-		    if ( !firstRow )
-			table->endRow();
-		    table->startRow();
-		    firstRow = FALSE;
-		    rowvalign = HTMLClue::VNone;
-		    rowhalign = HTMLClue::HNone;
-		    rowColor = tableColor;
-
-		    while ( (token = ht->nextOption()) != 0)
-		    {
-			if ( strncasecmp( token, "valign=", 7 ) == 0)
-			{
-			    if ( strncasecmp( token+7, "top", 3 ) == 0)
-				rowvalign = HTMLClue::Top;
-			    else if ( strncasecmp( token+7, "bottom", 6 ) == 0)
-				rowvalign = HTMLClue::Bottom;
-			    else
-				rowvalign = HTMLClue::VCenter;
-			}
-			else if ( strncasecmp( token, "align=", 6 ) == 0)
-			{
-			    if ( strcasecmp( token+6, "left" ) == 0)
-				rowhalign = HTMLClue::Left;
-			    else if ( strcasecmp( token+6, "right" ) == 0)
-				rowhalign = HTMLClue::Right;
-			    else if ( strcasecmp( token+6, "center" ) == 0)
-				rowhalign = HTMLClue::HCenter;
-			}
-			else if ( strncasecmp( token, "bgcolor=", 8 ) == 0 )
-			{
-			    setNamedColor( rowColor, token+8 );
-			}
-		    }
-		    break; // Get next token from 'ht'
-		}
-		
-		if ( tagID == (ID_TABLE + ID_CLOSE_TAG))
-		{
-		    popBlock(ID_A); // Close any <A..> tags
-		    done = true;
-		    break;
-		}
-
-		// <td, <th, or we get something before the 
-		// first <td or <th. Lets put that into one row 
-		// of it's own... (Lars)
-		bool tableEntry = (tagID == ID_TD) || (tagID == ID_TH);
-		if ( tableEntry || noCell ) 
-		{
-		    bool heading = false;
-		    noCell = false;
-
-		    // if ( strncasecmp( str, "<th", 3 ) == 0 )
-		    if (tagID == ID_TH)
-			    heading = true;
-		    // <tr> may not be specified for the first row
-		    if ( firstRow )
-		    {
-			// Bad HTML: No <tr> tag present
-			table->startRow();
-			firstRow = FALSE;
-		    }
-
-		    int rowSpan = 1, colSpan = 1;
-		    int cellWidth = UNDEFINED;
-		    int percent = UNDEFINED;
-		    QColor bgcolor = rowColor;
-		    HTMLClue::VAlign valign = (rowvalign == HTMLClue::VNone ?
-					    HTMLClue::VCenter : rowvalign);
-
-		    if ( heading )
-			divAlign = (rowhalign == HTMLClue::HNone ? HTMLClue::HCenter :
-			    rowhalign);
-		    else
-			divAlign = (rowhalign == HTMLClue::HNone ? HTMLClue::Left :
-			    rowhalign);
-
-		    if(tableEntry)
-		    {
- 		      while ( (token = ht->nextOption()) != 0)
-		      {
-			if ( strncasecmp( token, "rowspan=", 8 ) == 0)
-			{
-			    rowSpan = atoi( token+8 );
-			    if ( rowSpan < 1 )
-				rowSpan = 1;
-			}
-			else if ( strncasecmp( token, "colspan=", 8 ) == 0)
-			{
-			    colSpan = atoi( token+8 );
-			    if ( colSpan < 1 )
-				colSpan = 1;
-			}
-			else if ( strncasecmp( token, "valign=", 7 ) == 0)
-			{
-			    if ( strncasecmp( token+7, "top", 3 ) == 0)
-				valign = HTMLClue::Top;
-			    else if ( strncasecmp( token+7, "bottom", 6 ) == 0)
-				valign = HTMLClue::Bottom;
-			    else
-				valign = HTMLClue::VCenter;
-			}
-			else if ( strncasecmp( token, "align=", 6 ) == 0)
-			{
-			    if ( strcasecmp( token+6, "center" ) == 0)
-				divAlign = HTMLClue::HCenter;
-			    else if ( strcasecmp( token+6, "right" ) == 0)
-				divAlign = HTMLClue::Right;
-			    else if ( strcasecmp( token+6, "left" ) == 0)
-				divAlign = HTMLClue::Left;
-			}
-			else if ( strncasecmp( token, "width=", 6 ) == 0 )
-			{
-			    if ( strchr( token + 6, '%' ) )
-				percent = atoi( token + 6 );
-			    else if ( strchr( token+6, '*' ) )
-			    { /* ignore */ }
-			    else
-			    {
-				cellWidth = atoi( token + 6 );
-				percent = 0; // Fixed with
-			    }
-			}
-			else if ( strncasecmp( token, "bgcolor=", 8 ) == 0 )
-			{
-			    setNamedColor( bgcolor, token+8 );
-			}
-		      } // while (ht->nextOption)
-		    } // if(tableEntry)
-
-		    HTMLTableCell *cell = new HTMLTableCell( percent, cellWidth,
-			rowSpan, colSpan, padding );
-		    if ( bgcolor.isValid() )
-			cell->setBGColor( bgcolor );
-		    cell->setVAlign( valign );
-		    table->addCell( cell );
-		    has_cell = 1;
-		    flow = 0;
-		    _clue = cell;
-		    if ( heading )
-		    {
-			pushBlock( ID_TH, 3 );
-		        currentStyle->font.weight = CSSStyleFont::Bold;
-			setFont();
-		        tagID = parseBody( _clue, endthtd );
-                        popBlock( ID_TH );
-		    }
-		    else if ( !tableEntry )
-		    {
-			// put all the junk between <table> and the first table
-			// tag into one row.
-		    	pushBlock( ID_TD, 3 );
-			parseOneToken();
-			tagID = parseBody( _clue, endall );
-			popBlock( ID_TD );
-			table->endRow();
-			table->startRow();
-		    }
-		    else
-		    {
-		    	pushBlock( ID_TD, 3 );
-			tagID = parseBody( _clue, endthtd );
-			popBlock( ID_TD );
-		    }
-
-		    if ( tagID == 0 )
-		    { 
-			// CC: Close table description in case of a malformed table
-			// before returning!
-			if ( !firstRow )
-			    table->endRow();
-			table->endTable(); 
-			delete table;
-			divAlign = olddivalign;
-			flow = oldFlow;
-			_clue = oldClue;
-			delete tmpCell;
-			return;
-		    }
-
-		    if ((tagID == (ID_TD + ID_CLOSE_TAG)) ||
-		        (tagID == (ID_TH + ID_CLOSE_TAG)))
-		    {
-		        // HTML Ok!
-		        break; // Get next token from 'ht'
-		    }
-		    else
-		    {
-		    	// Bad HTML
-		        // td/th tag ended with </table> <th> <td> or <tr> 
-		        continue; // parse the returned tag
-		    }
-		}
-		
-		// Unknown or unhandled table-tag: ignore
-		break;
-#if 0
-		else
-		{
-		  // catch-all for broken tables
-      		  if ( *str != '<' || *(str+1) != '/' || *(str+2) != 't' ||
-                      ( *(str+3)!='d' && *(str+3)!='h' && *(str+3)!='r' ) )
-/*
-		    if ( strncmp( str, "</td", 4 ) &&
-			    strncmp( str, "</th", 4 ) &&
-			    strncmp( str, "</tr", 4 ) )
-*/
-		    {
-			flow = 0;
-			if ( !tmpCell )
-			{
-			    // Variable width cell
-			    tmpCell = new HTMLTableCell( UNDEFINED, UNDEFINED, 1, 1, padding );
-			    if ( tableColor.isValid() )
-				tmpCell->setBGColor( tableColor );
-			}
-			_clue = tmpCell;
-    			parseOneToken( str );
-			str = parseBody( _clue, endall );
-			closeAnchor();
-		    }
-		    else
-			tableTag = false;
-		}
-#endif
-	    }
-	}
-    }
-
-    // Did we catch any illegal HTML
-    if ( tmpCell )
-    {
-	// if no cells have been added then this must be a table with
-	// one cell and no <tr, <td, etc.  I HATE people who abuse HTML
-	// like this.
-	if ( !has_cell )
-	{
-	    if ( firstRow )
-	    {
-		table->startRow();
-		firstRow = FALSE;
-	    }
-	    table->addCell( tmpCell );
-	    has_cell = 1;
-	}
-	else
-	    delete tmpCell;
-    }
-
-    if (has_cell)
-    {
-	// CC: the ending "</table>" might be missing, so 
-	// we close the table here... ;-) 
-	if ( !firstRow )
-	    table->endRow();
-	table->endTable();
-	if ( align != HTMLClue::Left && align != HTMLClue::Right )
-	{
-	    __clue->append ( table );
-	}
-	else
-	{
-	    HTMLClueAligned *aligned = new HTMLClueAligned( __clue );
-	    aligned->setHAlign( align );
-	    aligned->append( table );
-	    __clue->append( aligned );
-	}
+	_clue->append ( table );
     }
     else
     {
-	// CC: last ressort -- remove tables that do not contain any cells
-	delete table;
+	HTMLClueAligned *aligned = new HTMLClueAligned( _clue );
+	aligned->setHAlign( align );
+	aligned->append( table );
+	_clue->append( aligned );
     }
 
-    currentStyle->text.indent = oldindent;
-    divAlign = olddivalign;
-    flow = oldFlow;
-    _clue = oldClue;
+    _clue = table;
+    flow = 0;
+    currentStyle->text.indent = 0;
+    pushBlock( ID_TABLE, 4 );
+    tableStack.push( table );
+}
+
+void KHTMLParser::parseTagTableEnd(void)
+{
+    popBlock( ID_TABLE );
+    HTMLTable *table = tableStack.pop();
+    table->endTable();
+    currentStyle->text.indent = table->oldIndent();
+    divAlign = table->oldDivAlign();
+    flow = table->oldFlow();
+    _clue = table->oldClue();
 
     flow = 0;
 }
 
+void KHTMLParser::parseTagTD(void)
+{
+    // parses <TD> and <TH>
+    HTMLTable *table = tableStack.current();
+    if(!table) return;
+
+    // close open <td> or <th> tags
+    popBlock(ID_TD);
+    popBlock(ID_TH);
+
+    // tell table the last cell has ended
+    table->endCell();
+
+    bool heading = false;
+
+    if (tagID == ID_TH)
+	heading = true;
+	
+    int rowSpan = 1, colSpan = 1;
+    int cellWidth = UNDEFINED;
+    HTMLTable::ColType colType = HTMLTable::Variable;
+    QColor bgcolor = table->rowColor();
+    HTMLClue::VAlign valign = (table->rowVAlign() == HTMLClue::VNone ?
+			       HTMLClue::Top : table->rowVAlign() );
+
+    if ( heading )
+	divAlign = (table->rowHAlign() == HTMLClue::HNone ? HTMLClue::HCenter :
+		    table->rowHAlign() );
+    else
+	divAlign = (table->rowHAlign() == HTMLClue::HNone ? HTMLClue::Left :
+		    table->rowHAlign() );
+
+    const char *token;
+    while ( (token = ht->nextOption()) != 0)
+    {
+	if ( strncasecmp( token, "rowspan=", 8 ) == 0)
+	{
+	    rowSpan = atoi( token+8 );
+	    if ( rowSpan < 1 )
+		rowSpan = 1;
+	}
+	else if ( strncasecmp( token, "colspan=", 8 ) == 0)
+	{
+	    colSpan = atoi( token+8 );
+	    if ( colSpan < 1 )
+		colSpan = 1;
+	}
+	else if ( strncasecmp( token, "valign=", 7 ) == 0)
+	{
+	    if ( strncasecmp( token+7, "top", 3 ) == 0)
+		valign = HTMLClue::Top;
+	    else if ( strncasecmp( token+7, "bottom", 6 ) == 0)
+		valign = HTMLClue::Bottom;
+	    else
+		valign = HTMLClue::VCenter;
+	}
+	else if ( strncasecmp( token, "align=", 6 ) == 0)
+	{
+	    if ( strcasecmp( token+6, "center" ) == 0)
+		divAlign = HTMLClue::HCenter;
+	    else if ( strcasecmp( token+6, "right" ) == 0)
+		divAlign = HTMLClue::Right;
+	    else if ( strcasecmp( token+6, "left" ) == 0)
+		divAlign = HTMLClue::Left;
+	}
+	else if ( strncasecmp( token, "width=", 6 ) == 0 )
+	{
+	    if ( strchr( token + 6, '%' ) )
+		colType = HTMLTable::Percent;
+	    else if ( strchr( token+6, '*' ) )
+		colType = HTMLTable::Relative;
+	    else
+		colType = HTMLTable::Fixed; // Fixed with
+	    cellWidth = atoi( token + 6 );
+	}
+	else if ( strncasecmp( token, "bgcolor=", 8 ) == 0 )
+	{
+	    setNamedColor( bgcolor, token+8 );
+	}
+    } // while (ht->nextOption)
+
+    
+    HTMLTableCell *cell;
+    cell = table->append( cellWidth, colType, rowSpan, colSpan, 
+			  bgcolor, valign );
+    flow = 0;
+    _clue = cell;
+    if ( heading )
+    {
+	pushBlock( ID_TH, 3 );
+	currentStyle->font.weight = CSSStyleFont::Bold;
+	setFont();
+    }
+    else
+	pushBlock( ID_TD, 3 );
+
+    vspace_inserted = true;
+}	
+
+    
 void KHTMLParser::parseTagTextarea(void)
 {
     if ( !form )
@@ -3222,6 +3089,57 @@ void KHTMLParser::parseTagTitle(void)
     title = "";
     inTitle = true;
     pushBlock(tagID, 3, &KHTMLParser::blockEndTitle);
+}
+
+
+void KHTMLParser::parseTagTR(void)
+{
+    HTMLTable *table = tableStack.current();
+    if(!table) return;
+    
+    // close open <tr> tag
+    popBlock(ID_TR);
+
+    table->endRow();
+    table->startRow();
+    HTMLClue::VAlign rowvalign = HTMLClue::VNone;
+    HTMLClue::HAlign rowhalign = HTMLClue::HNone;
+    QColor rowColor = table->color();
+
+    const char *token;
+    while ( (token = ht->nextOption()) != 0)
+    {
+	if ( strncasecmp( token, "valign=", 7 ) == 0)
+	{
+	    if ( strncasecmp( token+7, "top", 3 ) == 0)
+		rowvalign = HTMLClue::Top;
+	    else if ( strncasecmp( token+7, "bottom", 6 ) == 0)
+		rowvalign = HTMLClue::Bottom;
+	    else
+		rowvalign = HTMLClue::VCenter;
+	}
+	else if ( strncasecmp( token, "align=", 6 ) == 0)
+	{
+	    if ( strcasecmp( token+6, "left" ) == 0)
+		rowhalign = HTMLClue::Left;
+	    else if ( strcasecmp( token+6, "right" ) == 0)
+		rowhalign = HTMLClue::Right;
+	    else if ( strcasecmp( token+6, "center" ) == 0)
+		rowhalign = HTMLClue::HCenter;
+	}
+	else if ( strncasecmp( token, "bgcolor=", 8 ) == 0 )
+	{
+	    setNamedColor( rowColor, token+8 );
+	}
+    }
+
+    table->setRowColor( rowColor );
+    table->setRowVAlign( rowvalign );
+    table->setRowHAlign( rowhalign );
+
+    pushBlock( ID_TR, 3 );
+
+    vspace_inserted = true;
 }
 
 void KHTMLParser::parseTagTT(void)
