@@ -845,7 +845,9 @@ QStringList KLocale::languageList() const
 
 QString KLocale::formatDateTime(const QDateTime &pDateTime) const
 {
-  return formatDate(pDateTime.date()) + ' ' + formatTime(pDateTime.time());
+  return translate("concatenation of dates and time", "%1 %2")
+    .arg( formatDate( pDateTime.date() ) )
+    .arg( formatTime( pDateTime.time() ) );
 }
 
 QString i18n(const char* text)
