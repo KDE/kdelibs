@@ -20,7 +20,7 @@
 #include <kglobal.h>
 #include <kiconloader.h>
 #include <kmainwindow.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <kurl.h>
 #include <kdebug.h>
 #include <kstatusbar.h>

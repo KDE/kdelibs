@@ -22,7 +22,7 @@
 #include <qtextstream.h>
 
 #include <kaboutdata.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <kdebug.h>
 #include <klocale.h>
 #include <kcmdlineargs.h>

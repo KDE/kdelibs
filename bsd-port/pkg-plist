@@ -117,7 +117,7 @@ include/kaccelmenu.h
 include/kaction.h
 include/kallocator.h
 include/kanimwidget.h
-include/kapp.h
+include/kapplication.h
 include/kaudioplayer.h
 include/kauthicon.h
 include/kautomount.h

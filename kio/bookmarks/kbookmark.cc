@@ -24,7 +24,7 @@
 #include <kglobal.h>
 #include <klocale.h>
 #include <assert.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <dcopclient.h>
 #include <kbookmarkmanager.h>
 

@@ -17,7 +17,7 @@
 #include <qobject.h>
 
 #include "kdirwatch.h"
-#include "kapp.h"
+#include "kapplication.h"
 
 class myTest : public QObject 
 {

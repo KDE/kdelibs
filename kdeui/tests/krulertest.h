@@ -3,7 +3,7 @@
 #ifndef krulertest_h
 #define krulertest_h
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <kmainwindow.h>
 #include <qwidget.h>
 #include <qcheckbox.h>

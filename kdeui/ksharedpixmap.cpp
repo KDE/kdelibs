@@ -23,7 +23,7 @@
 
 #ifndef Q_WS_QWS
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <krootprop.h>
 #include <ksharedpixmap.h>
 #include <kdebug.h>

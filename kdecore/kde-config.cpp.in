@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <kaboutdata.h>
 #include <config.h>
-#include <kapp.h>
+#include <kapplication.h>
 
 static const char *description = I18N_NOOP("A little program to output installation paths");
 

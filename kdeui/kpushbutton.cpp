@@ -22,7 +22,7 @@
 #include <kconfig.h>
 #include <kglobal.h>
 #include <kipc.h>
-#include <kapp.h>
+#include <kapplication.h>
 
 #include "kpushbutton.h"
 

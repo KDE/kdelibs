@@ -16,7 +16,7 @@
 #include <qimage.h>
 
 #ifndef Q_WS_QWS //FIXME
-#include <kapp.h>
+#include <kapplication.h>
 #include <kimageeffect.h>
 #include <kpixmapio.h>
 #include <kwinmodule.h>

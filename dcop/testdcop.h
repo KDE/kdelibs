@@ -26,7 +26,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef _TESTDCOP_H_
 #define _TESTDCOP_H_
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <qbitarray.h>
 #include <dcopclient.h>
 #include <dcopobject.h>

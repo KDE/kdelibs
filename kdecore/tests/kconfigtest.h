@@ -19,7 +19,7 @@
 #ifndef _KCONFIG_TEST_H
 #define _KCONFIG_TEST_H
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <qdialog.h>
 #include <qfile.h>
 #include <qfileinfo.h>
