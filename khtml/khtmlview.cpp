@@ -74,6 +74,7 @@ public:
         tp=0;
         paintBuffer=0;
         formCompletions=0;
+        prevScrollbarVisible = true;
     }
     ~KHTMLViewPrivate()
     {
@@ -116,6 +117,7 @@ public:
 
     QScrollView::ScrollBarMode vmode;
     QScrollView::ScrollBarMode hmode;
+    bool prevScrollbarVisible;
     bool linkPressed;
     bool useSlowRepaints;
 
@@ -245,7 +247,7 @@ void KHTMLView::clear()
 
     QScrollView::setHScrollBarMode(d->hmode);
     if (d->vmode==Auto)
-        QScrollView::setVScrollBarMode(AlwaysOn);
+        QScrollView::setVScrollBarMode(d->prevScrollbarVisible?AlwaysOn:Auto);
     else
         QScrollView::setVScrollBarMode(d->vmode);
     resizeContents(visibleWidth(), visibleHeight());
@@ -1014,8 +1016,9 @@ void KHTMLView::restoreScrollBar ( )
     if (visibleWidth() != ow)
     {
         layout();
-        updateContents(contentsX(),contentsY(),visibleWidth(),visibleHeight());
+        updateContents(contentsX(),contentsY(),visibleWidth(),visibleHeight());        
     }
+    d->prevScrollbarVisible = verticalScrollBar()->isVisible();
 }
 
 void KHTMLView::toggleActLink(bool pressed)
