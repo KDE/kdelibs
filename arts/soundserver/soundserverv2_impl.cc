@@ -35,6 +35,12 @@
 using namespace Arts;
 using namespace std;
 
+SoundServerV2_impl::SoundServerV2_impl()
+	: _sampleStorage(SampleStorage(
+		MCOPUtils::createFilePath("artsd-samples"),true))
+{
+}
+
 std::string SoundServerV2_impl:: audioMethod() {
 	return AudioSubSystem::the()->audioIO();
 }
@@ -90,6 +96,11 @@ void SoundServerV2_impl::bufferSizeMultiplier(long newValue) {
 StereoVolumeControl SoundServerV2_impl::outVolume() {
 	return _outVolume;
 }
+
+SampleStorage SoundServerV2_impl::sampleStorage() {
+	return _sampleStorage;
+}
+
 
 #ifndef __SUNPRO_CC
 /* See bottom of simplesoundserver_impl.cc for the reason this is here.  */

@@ -36,7 +36,7 @@ bin_PROGRAMS = artsd artsplay artscat artswrapper artsshell
 
 artsd_LDADD = libsoundserver_idl.la $(FLOWLIBS) \
               $(top_builddir)/arts/mcop_mt/libmcop_mt.la
-artsd_SOURCES = soundserverv2_impl.cc soundserver_impl.cc simplesoundserver_impl.cc artsd.cc cpuusage.cc
+artsd_SOURCES = soundserverv2_impl.cc soundserver_impl.cc simplesoundserver_impl.cc artsd.cc cpuusage.cc samplestorage_impl.cc
 
 artscat_LDADD = libsoundserver_idl.la $(FLOWLIBS)
 artscat_SOURCES = artscat.cc

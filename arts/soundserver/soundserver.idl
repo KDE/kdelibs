@@ -2,6 +2,58 @@
 #include "kmedia2.idl"
 
 module Arts {
+
+/**
+ * One entry of the sample storage - initially, you'll need to fill the entry.
+ *
+ * To do so, call write repeatedly to fill it with data, and finish() when
+ * you are done. After that you can use the filename attribute to get the
+ * name of the file on the server that has stored the data. You can use
+ * this filename for other things (i.e. SimpleSoundServer::play).
+ */
+interface SampleStorageEntry {
+	readonly attribute string name;
+	readonly attribute string filename;
+	readonly attribute boolean complete;
+
+	void write(sequence<byte> data);
+	void finish();
+};
+
+/**
+ * Interface for storing files on the sound server
+ */
+interface SampleStorage {
+	void constructor(string directory, boolean clearOnInit);
+
+	/**
+	 * creates a new entry which you can use to store a sample - if you just
+	 * create an entry, it will be private to you, i.e. you can use it, and
+	 * as soon as you don't need it any longer, it will be freed
+	 *
+	 * if you want that the entry stays in the storage, you need to add it,
+	 * and it will stay then until you remove it
+	 */
+	SampleStorageEntry createEntry(string name);
+
+	/**
+	 * add an entry (which will make it accessible via findEntry) - remember
+	 * to eventually call removeEntry, or the entry will stay there forever
+	 */
+	void addEntry(SampleStorageEntry entry);
+
+	/**
+	 * removes an entry, that is, the entry will only stay there until
+	 * nobody needs it any more and then get freed
+	 */
+	void removeEntry(SampleStorageEntry entry);
+
+	/**
+	 * finds an entry by name
+	 */
+	SampleStorageEntry findEntry(string name);
+};
+
 /**
  * Producer of byte sound
  *
@@ -153,6 +205,11 @@ interface SoundServerV2 : SoundServer
 	 * global output volume for the sound server
 	 */
 	readonly attribute StereoVolumeControl outVolume;
+
+	/**
+	 * for storing samples on the sound server
+	 */
+	readonly attribute SampleStorage sampleStorage;
 };
 
 /**
@@ -162,5 +219,6 @@ interface WavPlayObject : PlayObject, SynthModule
 {
 	out audio stream left,right;
 };
+
 
 };

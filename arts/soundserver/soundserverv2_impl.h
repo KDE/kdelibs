@@ -35,7 +35,11 @@ namespace Arts {
 	class SoundServerV2_impl : virtual public SoundServerV2_skel,
 							   public SoundServer_impl
 	{
+	protected:
+		SampleStorage _sampleStorage;
 	public:
+		SoundServerV2_impl();
+
 		long autoSuspendSeconds();
 		void autoSuspendSeconds(long newValue);
 		std::string audioMethod();
@@ -50,6 +54,7 @@ namespace Arts {
 		long bufferSizeMultiplier();
 		void bufferSizeMultiplier(long newValue);
 		StereoVolumeControl outVolume();
+		SampleStorage sampleStorage();
 	};
 };
 
