@@ -68,25 +68,25 @@ LUT_FILES = math_object.lut.h lexer.lut.h array_object.lut.h date_object.lut.h s
 CREATE_HASH_TABLE = $(srcdir)/create_hash_table
 
 lexer.lut.h: $(srcdir)/keywords.table $(CREATE_HASH_TABLE)
-	$(PERL) $(CREATE_HASH_TABLE) $< -i > $@
+	$(PERL) $(CREATE_HASH_TABLE) $(srcdir)/keywords.table -i > $@
 lexer.lo: lexer.lut.h
 
 # Can't use %.lut.h: %.cpp, it's not portable.
 
 array_object.lut.h : $(srcdir)/array_object.cpp $(CREATE_HASH_TABLE)
-	$(PERL) $(CREATE_HASH_TABLE) $< -i > $@
+	$(PERL) $(CREATE_HASH_TABLE) $(srcdir)/array_object.cpp -i > $@
 array_object.lo: array_object.lut.h
 math_object.lut.h : $(srcdir)/math_object.cpp $(CREATE_HASH_TABLE)
-	$(PERL) $(CREATE_HASH_TABLE) $< -i > $@
+	$(PERL) $(CREATE_HASH_TABLE) $(srcdir)/math_object.cpp -i > $@
 math_object.lo: math_object.lut.h
 date_object.lut.h : $(srcdir)/date_object.cpp $(CREATE_HASH_TABLE)
-	$(PERL) $(CREATE_HASH_TABLE) $< -i > $@
+	$(PERL) $(CREATE_HASH_TABLE) $(srcdir)/date_object.cpp -i > $@
 date_object.lo: date_object.lut.h
 number_object.lut.h : $(srcdir)/number_object.cpp $(CREATE_HASH_TABLE)
-	$(PERL) $(CREATE_HASH_TABLE) $< -i > $@
+	$(PERL) $(CREATE_HASH_TABLE) $(srcdir)/number_object.cpp -i > $@
 number_object.lo: number_object.lut.h
 string_object.lut.h : $(srcdir)/string_object.cpp $(CREATE_HASH_TABLE)
-	$(PERL) $(CREATE_HASH_TABLE) $< -i > $@
+	$(PERL) $(CREATE_HASH_TABLE) $(srcdir)/string_object.cpp -i > $@
 string_object.lo: string_object.lut.h
 
 CLEANFILES = $(LUT_FILES)

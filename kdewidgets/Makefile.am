@@ -33,8 +33,8 @@ kdewidgets_la_LDFLAGS = $(KDE_PLUGIN) -module $(all_libraries)
 kdewidgets_la_LIBADD = $(LIB_KIO) $(LIB_KABC)
 kdewidgets_la_SOURCES = classpreviews.cpp kdewidgets.cpp
 
-kdewidgets.cpp: kde.widgets makekdewidgets
-	./makekdewidgets -o kdewidgets.cpp $<
+kdewidgets.cpp: $(srcdir)/kde.widgets makekdewidgets
+	./makekdewidgets -o kdewidgets.cpp $(srcdir)/kde.widgets
 
 CLEANFILES = kdewidgets.cpp
 

@@ -18,13 +18,13 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-test-local: testwithpixmaps.cpp testkde.cpp
+check-local: testwithpixmaps.cpp testkde.cpp
 	md5sum -c $(srcdir)/sums
 
-testwithpixmaps.cpp: test.widgets
-	../makekdewidgets -o testwithpixmaps.cpp -p $(top_srcdir)/kdewidgets/pics $<
-testkde.cpp: test.widgets
-	../makekdewidgets -o testkde.cpp $<
+testwithpixmaps.cpp: $(srcdir)/test.widgets
+	../makekdewidgets -o testwithpixmaps.cpp -p $(top_srcdir)/kdewidgets/pics $(srcdir)/test.widgets
+testkde.cpp: $(srcdir)/test.widgets
+	../makekdewidgets -o testkde.cpp $(srcdir)/test.widgets
 
 CLEANFILES = testwithpixmaps.cpp testkde.cpp
 
