@@ -162,6 +162,19 @@ Value Node::throwError(ExecState *exec, ErrorType e, const char *msg) const
   return err;
 }
 
+Value Node::throwError(ExecState *exec, ErrorType e, const char *msg, Identifier label)
+{
+  const char *l = label.ascii();
+  int length = strlen(msg) - 2 /* %s */ + strlen(l) + 1 /* null terminator */;
+  char *message = new char[length];
+  sprintf(message, msg, l);
+
+  Value result = throwError(exec, e, message);
+  delete [] message;
+
+  return result;
+}
+
 // ----------------------------- StatementNode --------------------------------
 StatementNode::StatementNode() : l0(-1), l1(-1), sourceCode(0), breakPoint(false)
 {
@@ -350,7 +363,7 @@ Reference ResolveNode::evaluateReference(ExecState *exec) const
       //     << " in " << (void*)o << " " << o->classInfo()->className << endl;
       return Reference(o, ident);
     }
-    
+
     chain.pop();
   }
 
@@ -1663,9 +1676,9 @@ Completion StatListNode::execute(ExecState *exec)
 
   if (c.complType() != Normal)
     return c;
-  
+
   Value v = c.value();
-  
+
   for (StatListNode *n = list; n; n = n->list) {
     Completion c2 = n->statement->execute(exec);
     KJS_ABORTPOINT
@@ -2299,7 +2312,7 @@ Completion ContinueNode::execute(ExecState *exec)
 		      throwError(exec, SyntaxError, "continue used outside of iteration statement"));
   else if (!ident.isEmpty() && !exec->context().imp()->seenLabels()->contains(ident))
     return Completion(Throw,
-		      throwError(exec, SyntaxError, "Label not found in containing block"));
+                      throwError(exec, SyntaxError, "Label %s not found in containing block. Can't continue.", ident));
   else
     return Completion(Continue, dummy, ident);
 }
@@ -2319,7 +2332,7 @@ Completion BreakNode::execute(ExecState *exec)
 		      throwError(exec, SyntaxError, "break used outside of iteration or switch statement"));
   else if (!ident.isEmpty() && !exec->context().imp()->seenLabels()->contains(ident))
     return Completion(Throw,
-		      throwError(exec, SyntaxError, "Label not found in containing block"));
+                      throwError(exec, SyntaxError, "Label %s not found in containing block. Can't break.", ident));
   else
     return Completion(Break, dummy, ident);
 }
@@ -2502,7 +2515,7 @@ void CaseBlockNode::reverseLists()
     head = n;
   }
   list1 = head;
-  
+
   head = 0;
   for (ClauseListNode *n = list2; n; n = next) {
     next = n->nx;
@@ -2678,7 +2691,7 @@ Completion LabelNode::execute(ExecState *exec)
 
   if (!exec->context().imp()->seenLabels()->push(label)) {
     return Completion( Throw,
-		       throwError(exec, SyntaxError, "Duplicated label found" ));
+                       throwError(exec, SyntaxError, "Duplicated label %s found.", label));
   };
   e = statement->execute(exec);
   exec->context().imp()->seenLabels()->pop();

@@ -31,7 +31,8 @@
 #define DUMP_STATISTICS 0
 #define USE_SINGLE_ENTRY 1
 
-// At the time I added USE_SINGLE_ENTRY, the optimization still gave a 1.5% performance boost so I couldn't remove it.
+// At the time I added USE_SINGLE_ENTRY, the optimization still gave a 1.5%
+// performance boost to the iBench JavaScript benchmark so I didn't remove it.
 
 #if !DO_CONSISTENCY_CHECK
 #define checkConsistency() ((void)0)
@@ -134,6 +135,8 @@ inline int PropertyMap::hash(const UString::Rep *s) const
 
 ValueImp *PropertyMap::get(const Identifier &name, int &attributes) const
 {
+    assert(!name.isNull());
+
     UString::Rep *rep = name._ustring.rep;
 
     if (!_table) {
@@ -164,6 +167,8 @@ ValueImp *PropertyMap::get(const Identifier &name, int &attributes) const
 
 ValueImp *PropertyMap::get(const Identifier &name) const
 {
+    assert(!name.isNull());
+
     UString::Rep *rep = name._ustring.rep;
 
     if (!_table) {
@@ -208,14 +213,17 @@ static void printAttributes(int attributes)
 
 void PropertyMap::put(const Identifier &name, ValueImp *value, int attributes)
 {
+    assert(!name.isNull());
+    assert(value != 0);
+
     checkConsistency();
 
     UString::Rep *rep = name._ustring.rep;
 
 #if DEBUG_PROPERTIES
-    printf ("adding property %s, attributes = 0x%08x (", name.ascii(), attributes);
+    printf("adding property %s, attributes = 0x%08x (", name.ascii(), attributes);
     printAttributes(attributes);
-    printf (")\n");
+    printf(")\n");
 #endif
 
 #if USE_SINGLE_ENTRY
@@ -317,6 +325,8 @@ void PropertyMap::expand()
 
 void PropertyMap::remove(const Identifier &name)
 {
+    assert(!name.isNull());
+
     checkConsistency();
 
     UString::Rep *rep = name._ustring.rep;

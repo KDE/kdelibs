@@ -162,7 +162,7 @@ UString ObjectImp::className() const
 Value ObjectImp::get(ExecState *exec, const Identifier &propertyName) const
 {
   ValueImp *imp = getDirect(propertyName);
-  if ( imp )
+  if (imp)
     return Value(imp);
 
   Object proto = Object::dynamicCast(prototype());
@@ -172,7 +172,7 @@ Value ObjectImp::get(ExecState *exec, const Identifier &propertyName) const
     if (!proto.isValid())
       return Null();
     else
-      return proto;
+      return Value(proto);
   }
 
   if (proto.isNull())
