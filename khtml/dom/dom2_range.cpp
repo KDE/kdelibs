@@ -84,28 +84,24 @@ Node Range::startContainer() const
 {
     checkCommon();
     return impl->getStartContainer();
-    return 0;
 }
 
 long Range::startOffset() const
 {
     checkCommon();
     return impl->getStartOffset();
-    return 0;
 }
 
 Node Range::endContainer() const
 {
     checkCommon();
     return impl->getEndContainer();
-    return 0;
 }
 
 long Range::endOffset() const
 {
     checkCommon();
     return impl->getEndOffset();
-    return 0;
 }
 
 bool Range::collapsed() const
@@ -119,7 +115,6 @@ Node Range::commonAncestorContainer()
 {
     checkCommon();
     return impl->getCommonAncestorContainer();
-    return 0;
 }
 
 void Range::setStart( const Node &refNode, long offset )
