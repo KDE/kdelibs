@@ -265,6 +265,14 @@ QPtrListIterator<KURIFilterPlugin> KURIFilter::pluginsIterator() const
     return QPtrListIterator<KURIFilterPlugin>(m_lstPlugins);
 };
 
+QStringList KURIFilter::pluginNames() const
+{
+    QStringList list;
+    for(QPtrListIterator<KURIFilterPlugin> i = pluginsIterator(); *i; ++i)
+        list.append((*i)->name());
+    return list;
+}
+
 void KURIFilter::loadPlugins()
 {
     KTrader::OfferList offers = KTrader::self()->query( "KURIFilter/Plugin" );

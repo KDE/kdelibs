@@ -562,6 +562,15 @@ public:
      */
     QPtrListIterator<KURIFilterPlugin> pluginsIterator() const;
 
+    /**
+     * Return a list of the names of all loaded plugins
+     *
+     * @since 3.1
+     *
+     * @return a QStringList of plugin names
+     */
+    QStringList pluginNames() const;
+
 protected:
 
     /**
