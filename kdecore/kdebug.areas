@@ -254,6 +254,7 @@
 26001	KSVG - Parser
 26002	KSVG - Rendering
 26003	KSVG - KPart
+26004	KSVG - Ecma
 
 # libkscan / kooka
 28000   Kooka
