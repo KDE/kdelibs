@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=MimeType
+MimeType=application/x-applix
+Icon=document
+Patterns=*.as;*.aw;*.ag
+Comment=Applix office document
