@@ -417,7 +417,7 @@ void KIconDialog::slotFinished()
 class KIconButton::KIconButtonPrivate
 {
   public:
-    KIconButtonPrivate() { m_bStrictIconSize = true; }
+    KIconButtonPrivate() { m_bStrictIconSize = false; }
     ~KIconButtonPrivate() {}
     bool m_bStrictIconSize;
 };
