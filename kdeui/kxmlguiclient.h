@@ -33,8 +33,10 @@ class KXMLGUIFactory;
 class KXMLGUIBuilder;
 
 /**
- * A KXMLGUIClient can be used with @ref KXMLGUIFactory to create a GUI from actions
- * and an XML document, and can be dynamically merged with other KXMLGUIClients.
+ *
+ * A KXMLGUIClient can be used with @ref KXMLGUIFactory to create a
+ * GUI from actions and an XML document, and can be dynamically merged
+ * with other KXMLGUIClients.
  */
 class KXMLGUIClient
 {
@@ -183,7 +185,39 @@ public:
    */
   void reloadXML();
 
+  /**
+   * ActionLists are a way for XMLGUI to support dynamic lists of
+   * actions.  E.g. if you are writing a file manager, and there is a
+   * menu file whose contents depend on the mimetype of the file that
+   * is selected, then you can achieve this using ActionLists. It
+   * works as follows:
+   * In your xxxui.rc file ( the one that you set in @ref setXMLFile()
+   * ), you put an <ActionList name="xxx"> tag.  E.g.
+   * \verbatim
+   * <kpartgui name="xxx_part" version="1">
+   * <MenuBar>
+   *   <Menu name="file">
+   *     ...  <!-- some useful actions-->
+   *     <ActionList name="xxx_file_actionlist" />
+   *     ...  <!-- even more useful actions-->
+   *   </Menu>
+   *   ...
+   * </MenuBar>
+   * </kpartgui>
+   * \endverbatim
+   *
+   * This tag will get expanded to a list of actions.  In the example
+   * above ( a file manager with a dynamic file menu ), you would call
+   * \code
+   * plugActionList( "xxx_file_actionlist", some_actions );
+   * \endcode
+   * every time a file is selected, unselected or ...
+   */
   void plugActionList( const QString &name, const QPtrList<KAction> &actionList );
+
+  /**
+   * The complement of \ref plugActionList() ...
+   */
   void unplugActionList( const QString &name );
 
   static QString findMostRecentXMLFile( const QStringList &files, QString &doc );
