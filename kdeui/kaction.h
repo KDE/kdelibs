@@ -1300,6 +1300,8 @@ class KActionMenu : public KAction
 {
   Q_OBJECT
   Q_PROPERTY( bool delayed READ delayed WRITE setDelayed )
+  Q_PROPERTY( bool stickyMenu READ stickyMenu WRITE setStickyMenu )
+
 public:
     KActionMenu( const QString& text, QObject* parent = 0,
                  const char* name = 0 );
@@ -1381,6 +1383,9 @@ private:
 class KToolBarPopupAction : public KAction
 {
   Q_OBJECT
+  Q_PROPERTY( bool delayed READ delayed WRITE setDelayed )
+  Q_PROPERTY( bool stickyMenu READ stickyMenu WRITE setStickyMenu )
+
 public:
     //Not all constructors - because we need an icon, since this action only makes
     // sense in a toolbar (as well as menubar)
