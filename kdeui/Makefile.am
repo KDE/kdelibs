@@ -57,7 +57,7 @@ include_HEADERS = kprogress.h kcolordlg.h \
 		kactionshortcutlist.h kstdaction.h kcombobox.h \
 		kiconview.h klistview.h klistbox.h kbugreport.h kpassdlg.h \
 		kxmlguiclient.h kxmlgui.h kxmlguibuilder.h kxmlguifactory.h \
-		kpixmapio.h kwordwrap.h kautoconfigdialog.h kcautoconfigmodule.h \
+		kpixmapio.h kwordwrap.h kautoconfigdialog.h \
 		kedittoolbar.h kdockwidget.h kanimwidget.h \
 		krootpixmap.h kaboutkde.h kaboutapplication.h \
 		kpanelapplet.h kpushbutton.h kdcopactionproxy.h kcolorcombo.h \
@@ -108,7 +108,7 @@ libkdeui_la_SOURCES = \
 		kcommand.cpp kwindowlistmenu.cpp kfontcombo.cpp ktip.cpp \
 		kdatewidget.cpp karrowbutton.cpp kmainwindowiface.cpp \
                 kmainwindowiface.skel kguiitem.cpp kstdguiitem.cpp \
-		kstringvalidator.cpp kactivelabel.cpp kcautoconfigmodule.cpp \
+		kstringvalidator.cpp kactivelabel.cpp \
 		kwindowinfo.cpp ktextedit.cpp kwizard.cpp kpassivepopup.cpp \
 		ktoolbarhandler.cpp kdatetimewidget.cpp ktimewidget.cpp \
 		ksconfig.cpp kspelldlg.cpp \
