@@ -95,7 +95,7 @@ void FunctionImp::processParameters(const List *args)
 #ifdef KJS_VERBOSE
   fprintf(stderr, "---------------------------------------------------\n"
 	  "processing parameters for %s call\n",
-	  name().isEmpty() ? UString( "(internal)" ) : name().ascii());
+	  name().isEmpty() ? "(internal)" : name().ascii());
 #endif
 
   if (param) {
