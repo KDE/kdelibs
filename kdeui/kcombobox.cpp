@@ -429,14 +429,19 @@ void KHistoryCombo::addContextMenuItems( QPopupMenu* menu )
 
 void KHistoryCombo::addToHistory( const QString& item )
 {
-    if ( item.isEmpty() || (count() > 0 && item == text(0) ))
+    if ( item.isEmpty() || (count() > 0 && item == text(0) )) {
         return;
+    }
 
+    bool wasCurrent = false;
     // remove all existing items before adding
     if ( !duplicatesEnabled() ) {
         for ( int i = 0; i < count(); i++ ) {
-            if ( text( i ) == item )
+            if ( text( i ) == item ) {
+                if ( !wasCurrent )
+                  wasCurrent = ( i == currentItem() );
                 removeItem( i );
+            }
         }
     }
 
@@ -445,6 +450,9 @@ void KHistoryCombo::addToHistory( const QString& item )
         insertItem( myPixProvider->pixmapFor(item, KIcon::SizeSmall), item, 0);
     else
         insertItem( item, 0 );
+
+    if ( wasCurrent )
+        setCurrentItem( 0 );
 
     int last;
     QString rmItem;
