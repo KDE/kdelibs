@@ -965,7 +965,7 @@ bool KZip::closeArchive()
         d->m_saveFile = 0;
     }
 
-    //kdDebug(7040) << "kzip.cpp reached." << endl;
+    //kdDebug(7040) << __FILE__" reached." << endl;
     return true;
 }
 
