@@ -42,7 +42,7 @@ static int time_periods[] = {
 	604800,		// week
 	2592000		// month (30 days)
 };
-static char* time_keywords[] = {
+static const char* time_keywords[] = {
 	I18N_NOOP("second(s)"),
 	I18N_NOOP("minute(s)"),
 	I18N_NOOP("hour(s)"),
