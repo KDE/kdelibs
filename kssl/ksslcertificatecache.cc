@@ -160,9 +160,8 @@ void KSSLCertificateCache::saveToDisk() {
       for (KSSLCertificate *c = cl.first(); c != 0; c = cl.next()) {
          //kdDebug() << "Certificate in chain: " <<  c->toString() << endl;
          qsl << c->toString();
-         cl.remove(c);
-         delete c;
       }
+      cl.setAutoDelete(true);
       d->cfg->writeEntry("Chain", qsl);
     }
   }  

@@ -36,7 +36,6 @@
 #include <openssl/pem.h>
 #include <openssl/stack.h>
 #include <openssl/safestack.h>
-DECLARE_STACK_OF(X509)
 #undef crypt
 #endif
 
@@ -154,7 +153,10 @@ void KSSLCertChain::setChain(QStringList chain) {
     QList<KSSLCertificate> cl;
     cl.setAutoDelete(true);
     for (QStringList::Iterator s = chain.begin(); s != chain.end(); ++s) {
-       cl.append(KSSLCertificate::fromString((*s).local8Bit()));
+       KSSLCertificate *c = KSSLCertificate::fromString((*s).local8Bit());
+       if (c) {
+          cl.append(c);
+       }
     }
     setChain(cl);
 }
