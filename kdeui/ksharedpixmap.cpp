@@ -161,7 +161,11 @@ bool KSharedPixmap::x11Event(XEvent *event)
     if (d->rect.isEmpty()) 
     {
 	QPixmap::resize(width, height);
+#if QT_VERSION < 300
 	XCopyArea(qt_xdisplay(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(),
+#else
+	XCopyArea(qt_xdisplay(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(qt_xscreen(), false),
+#endif
 		0, 0, width, height, 0, 0);
 
         XFree(pixmap_id);
@@ -181,6 +185,7 @@ bool KSharedPixmap::x11Event(XEvent *event)
 
     QPixmap::resize(tw, th);
 
+#if QT_VERSION < 300
     XCopyArea(qt_xdisplay(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(),
 	    xa, ya, t1w, t1h, 0, 0);
     XCopyArea(qt_xdisplay(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(),
@@ -189,6 +194,16 @@ bool KSharedPixmap::x11Event(XEvent *event)
 	    xa, 0, t1w, th-t1h, 0, t1h);
     XCopyArea(qt_xdisplay(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(),
 	    0, 0, tw-t1w, th-t1h, t1w, t1h);
+#else
+    XCopyArea(qt_xdisplay(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(qt_xscreen(), false),
+	    xa, ya, t1w, t1h, 0, 0);
+    XCopyArea(qt_xdisplay(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(qt_xscreen(), false),
+	    0, ya, tw-t1w, t1h, t1w, 0);
+    XCopyArea(qt_xdisplay(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(qt_xscreen(), false),
+	    xa, 0, t1w, th-t1h, 0, t1h);
+    XCopyArea(qt_xdisplay(), *pixmap_id, ((KPixmap*)this)->handle(), qt_xget_temp_gc(qt_xscreen(), false),
+	    0, 0, tw-t1w, th-t1h, t1w, t1h);
+#endif
 
     XFree(pixmap_id);
 

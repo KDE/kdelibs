@@ -20,6 +20,7 @@
 
 #include <qfontdatabase.h>
 #include <qlistbox.h>
+#include <qpainter.h>
 
 #include <kapp.h>
 #include <kcharsets.h>

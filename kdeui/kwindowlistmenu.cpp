@@ -32,6 +32,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <kapp.h>
 #include <dcopclient.h>
 
+#undef Bool
 #include "kwindowlistmenu.h"
 #include "kwindowlistmenu.moc"
 
