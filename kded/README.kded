@@ -1,10 +1,10 @@
-Welcome to this readme about KDED. 
+Welcome to this readme about KDED.
 
 KDED stands for KDE Daemon which isn't very descriptive.
 KDED runs in the background and performs a number of small tasks.
-Some of these tasks are build in, others are started on demand.
+Some of these tasks are built in, others are started on demand.
 
-Build in tasks
+Built in tasks
 ==============
 *) Checking for newly installed software and updating ksycoca when new
 software is detected. Updating of ksycoca is done by the program kbuildsycoca
@@ -28,9 +28,9 @@ changes and if it detects one it will make the necassery changes to the
 KDE environemnt and X-server to allow continued proper operation. The 
 program kdontchangethehostname is executed to make the actual changes.
 
-Configuration of build in tasks.
+Configuration of built in tasks.
 ================================
-The build in tasks have some configuration options that can be changed by
+The built in tasks have some configuration options that can be changed by
 editing the kdedrc configuration file. Changes need to be made with a text-
 editor, there is no GUI available. All options are listed under the [General]
 group:
@@ -40,8 +40,8 @@ the hostname is checked for changes. The time is specified in milliseconds
 and has a default of 5000 (5 seconds).
 
 CheckSycoca: This option can be used to disable checking for new software.
-ksycoca will still be build when kded starts up and when applications
-explicitly request for a rebuild of the ksycoca database. The user can 
+ksycoca will still be built when kded starts up and when applications
+explicitly request a rebuild of the ksycoca database. The user can 
 also manually rebuild ksycoca by running the kbuildsycoca program.
 The default value of this option is "true". Checking can be disabled by 
 setting this option to "false".
