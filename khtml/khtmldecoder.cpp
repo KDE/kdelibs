@@ -119,6 +119,7 @@ QString KHTMLDecoder::decode(const char *data)
 			    endpos++;
 			
 			enc = str.mid(pos, endpos-pos);
+			enc = enc.lower();
 			printf("KHTMLDecoder: found charset: %s\n", enc.data());
 			codec = QTextCodec::codecForName(enc);
 			goto found;
