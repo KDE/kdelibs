@@ -17,16 +17,16 @@
 #    Boston, MA 02111-1307, USA.
 
 YACC = bison
-INCLUDES = \
+INCLUDES = -I$(top_srcdir)/libltdl \
  -I$(top_srcdir)/khtml -I$(top_srcdir)/khtml/misc -I$(top_srcdir)/khtml/css \
  -I$(top_srcdir)/khtml/dom -I$(top_srcdir)/khtml/xml -I$(top_srcdir)/khtml/html \
  $(all_includes)
 
-lib_LTLIBRARIES = libkjs.la
+lib_LTLIBRARIES = libkjs.la kjs_html.la
 
 libkjs_la_SOURCES =  kjs.cpp grammar.cpp lexer.cpp nodes.cpp object.cpp \
 	operations.cpp property.cpp kjsstring.cpp math_object.cpp \
-	html_object.cpp bool_object.cpp object_object.cpp array_object.cpp
+	bool_object.cpp object_object.cpp array_object.cpp
 
 include_HEADERS = kjs.h
 
@@ -34,8 +34,8 @@ noinst_HEADERS = global.h object.h nodes.h operations.h lexer.h \
 	kjsstring.h grammar.h object_object.h function_object.h \
 	bool_object.h math_object.h html_object.h array_object.h
 
-libkjs_la_LDFLAGS = -version-info 1:0 $(QT_LDFLAGS)
-libkjs_la_LIBADD = $(LIB_KDECORE) -lm
+libkjs_la_LDFLAGS = -version-info 1:0 -dlopen kjs_html.la
+libkjs_la_LIBADD = $(top_builddir)/libltdl/libltdlc.la -lm
 
 parser: $(srcdir)/grammar.y
 	cd $(srcdir); \
@@ -45,9 +45,13 @@ parser: $(srcdir)/grammar.y
 	else mv grammar.tab.h grammar.h; fi \
 	else :; fi
 
+# HTML module
+kjs_html_la_SOURCES = html_object.cpp
+kjs_html_la_LDFLAGS = -module $(QT_LDFLAGS) -avoid-version
+kjs_html_la_LIBADD = $(LIB_KDECORE)
 
 ## test program
 check_PROGRAMS = testkjs
 testkjs_SOURCES = testkjs.cpp
-testkjs_LDADD = $(LIB_KHTML) $(LIB_QT)
+testkjs_LDADD = libkjs.la
 

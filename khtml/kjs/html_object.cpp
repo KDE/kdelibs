@@ -27,6 +27,18 @@
 #include "operations.h"
 #include "html_object.h"
 
+// initialize HTML module
+extern "C" {
+  int kjs_html_init(void *arg)
+  {
+    KJS::KJSGlobal *global = KJScript::global();
+    KHTMLWidget *w = (KHTMLWidget*) arg;
+    global->put("document", new KJS::HTMLDocument(w), KJS::DontEnum, true);
+
+    return 0;
+  }
+};
+
 using namespace KJS;
 
 /* TODO: make these a shallow copies */

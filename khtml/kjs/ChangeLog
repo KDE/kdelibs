@@ -1,3 +1,9 @@
+2000-01-23  Harri Porten  <porten@kde.org>
+
+	* loadable module support via useModule(module, arg). Extensions
+	like DOM bindings will be put into modules while the stub library
+	remains small and simple.
+
 1999-11-14  Harri Porten  <porten@kde.org>
 
 	* quick & dirty error catching via global KJSWorld::error that

@@ -22,9 +22,6 @@
 #include <stdio.h>
 #include <math.h>
 
-#include <qstring.h>
-#include <qmessagebox.h>
-
 #include "kjs.h"
 #include "global.h"
 #include "kjsstring.h"
@@ -879,9 +876,9 @@ KJSO *AlertNode::evaluate()
   Ptr s = toString(v);
 
   cout << "---> " << s->sVal().ascii() << endl;
-  UString u = s->sVal();
-  QString str = QString((QChar*) u.unicode(), u.length());
-  QMessageBox::information(0L, "KJS", str);
+  //  UString u = s->sVal();
+  //  QString str = QString((QChar*) u.unicode(), u.length());
+  //  QMessageBox::information(0L, "KJS", str);
 
   return new KJSCompletion(Normal);
 }

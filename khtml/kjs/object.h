@@ -26,8 +26,6 @@
 #include "global.h"
 #include "kjsstring.h"
 
-class KHTMLWidget;
-
 namespace KJS {
 
 union Value {
@@ -367,7 +365,7 @@ private:
 
 class KJSGlobal : public KJSO {
 public:
-  KJSGlobal(KHTMLWidget *htmlw = 0L);
+  KJSGlobal();
   Type type() const { return Object; }
   KJSPrototype *objProto, *funcProto, *arrayProto, *boolProto;
 };

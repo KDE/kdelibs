@@ -36,7 +36,6 @@
 #include "array_object.h"
 #include "bool_object.h"
 #include "math_object.h"
-#include "html_object.h"
 
 namespace KJS {
 
@@ -303,7 +302,7 @@ KJSArguments::KJSArguments(KJSFunction *func, KJSArgList *args)
 }
 #endif
 
-KJSGlobal::KJSGlobal(KHTMLWidget *htmlw)
+KJSGlobal::KJSGlobal()
 {
   // value properties
   put("NaN", NaN);
@@ -323,9 +322,6 @@ KJSGlobal::KJSGlobal(KHTMLWidget *htmlw)
 
   // other properties
   put("Math", zeroRef(new KJSMath()), DontEnum);
-
-  // DOM & HTML objects
-  put("document", new HTMLDocument(htmlw), DontEnum, true);
 
   objProto->deref();
   funcProto->deref();

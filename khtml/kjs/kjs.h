@@ -48,7 +48,7 @@ public:
    * code by pass it via @ref #evaluate.
    * @param w is pointing to the KHTMLWidget you wish the script to operate on.
    */
-  KJScript(KHTMLWidget *w);
+  KJScript();
   /**
    *  Destructor
    */
@@ -67,6 +67,15 @@ public:
    * @param length of the string.
    */
   bool evaluate(const KJS::UnicodeChar *code, unsigned int length);
+  /**
+   * Load and initialize an extension module.
+   * @param module is the name of the module. If an absolute path is passed
+   * the directories specified in /etc/od.so.conf and LD_LIBRARY_PATH will
+   * be searched. If neither an absolute path nor an extension is given
+   * .la will be appended by default.
+   * @param An optional argument to initialize the module.
+   */
+  bool useModule(const char *module, void *arg = 0L);
 public:
   static KJScript *current() { return curr; }
   void setCurrent(KJScript *c) { curr = c; }
@@ -89,7 +98,9 @@ private:
   KJS::KJSError *err;
   KJS::KJSContext *con;
   KJS::KJSGlobal *glob;
-  KHTMLWidget *htmlw;
+  static bool ltdlInit;
 };
+
+typedef int (*initFunction)(void*);
 
 #endif

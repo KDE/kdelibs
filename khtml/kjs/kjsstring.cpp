@@ -86,6 +86,24 @@ CString::~CString()
   delete [] data;
 }
 
+CString &CString::append(const CString &t)
+{
+  char *n;
+  if (data) {
+    n = new char[strlen(data)+t.length()+1];
+    strcpy(n, data);
+  } else {
+    n = new char[t.length()+1];
+    n[0] = '\0';
+  }
+  strcat(n, t.ascii());
+
+  delete [] data;
+  data = n;
+
+  return *this;
+}
+
 CString &CString::operator=(const char *c)
 {
   if (data)
@@ -106,9 +124,23 @@ CString &CString::operator=(const CString &str)
   return *this;
 }
 
+CString &CString::operator+=(const CString &str)
+{
+  return append(str.ascii());
+}
+
 int CString::length() const
 {
   return strlen(data);
+}
+
+void CString::resize(unsigned int l)
+{
+  char *tmp = new char[l];
+  strncpy(tmp, data, l-1);
+  tmp[l-1] = '\0';
+  delete [] data;
+  data = tmp;
 }
 
 const char * CString::ascii() const

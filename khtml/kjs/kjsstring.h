@@ -42,10 +42,13 @@ namespace KJS {
 
     ~CString();
 
+    CString &append(const CString &);
     CString &operator=(const char *c);
     CString &operator=(const CString &);
+    CString &operator+=(const CString &);
 
     int length() const;
+    void resize(unsigned int l);
 
     const char * ascii() const;
   private:

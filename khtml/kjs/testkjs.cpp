@@ -20,10 +20,6 @@
 
 #include <stdio.h>
 
-#include <qapplication.h>
-#include <khtml.h>
-#include <html_document.h>
-
 #include "kjs.h"
 
 extern int kjsyyparse();
@@ -50,11 +46,11 @@ int main(int argc, char **argv)
   if(num == BufferSize - 1)
     fprintf(stderr, "Warning: File may have been too long.\n");
 
-  QApplication a(argc, argv);
-
-  KJScript *kjs = new KJScript(0L);
+  KJScript *kjs = new KJScript();
 
   kjs->evaluate(code);
+
+  delete kjs;
 
   fprintf(stderr, "OK.\n");
 }

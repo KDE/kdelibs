@@ -21,6 +21,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <ltdl.h>
+
 #include "kjs.h"
 #include "object.h"
 #include "nodes.h"
@@ -35,6 +37,7 @@ extern const char* typeName[];
 using namespace KJS;
 
 KJScript* KJScript::curr = 0L;
+bool KJScript::ltdlInit = false;
 
 class KJScriptLock {
   friend KJScript;
@@ -42,18 +45,19 @@ class KJScriptLock {
   ~KJScriptLock() { KJScript::current()->setCurrent(0L); }
 };
 
-KJScript::KJScript(KHTMLWidget *w)
-  : htmlw(w)
+KJScript::KJScript()
 {
   printf("KJScript::KJScript()\n");
 
   KJScriptLock lock(this);
-  setGlobal(new KJSGlobal(htmlw));
+  setGlobal(new KJSGlobal());
   setContext(new KJSContext());
 }
 
 KJScript::~KJScript()
 {
+  KJScriptLock lock(this);
+
   delete context();
   global()->deref();
 
@@ -68,6 +72,9 @@ KJScript::~KJScript()
     }
   }
 #endif
+
+  if (ltdlInit)
+    lt_dlexit();
 }
 
 bool KJScript::evaluate(const char *code)
@@ -103,6 +110,65 @@ bool KJScript::evaluate(const KJS::UnicodeChar *code, unsigned int length)
     error()->deref();
 
   KJS::Node::deleteAllNodes();
+
+  return true;
+}
+
+bool KJScript::useModule(const char *module, void *arg)
+{
+  if (!module) {
+    fprintf(stderr, "KJScript::useModule(): module == NULL\n");
+    return false;
+  }
+
+  KJScriptLock lock(this);
+
+  // initialize libtool's dlopen wrapper
+  if (!ltdlInit) {
+    ltdlInit = true;
+    lt_dlinit();
+  }
+
+  CString lib = module;
+  CString name;
+  // did we get an absolute path ?
+  if (module[0] == '/') {
+    const char *p = strrchr(module, '/') + 1;
+    name = p;
+    const char *e = strchr(p, '.');
+    if (e)
+      name.resize(e-p+1);
+  } else {
+    name = module;
+    if (strchr(module, '.'))
+      name.resize(strchr(module, '.')-module+1);
+    else
+      lib += ".la";
+  }
+
+  // try to dlopen the module
+  lt_dlhandle handle = lt_dlopen(lib.ascii());
+  if (!handle) {
+    fprintf(stderr, "error loading %s: %s\n", lib.ascii(), lt_dlerror());
+    return false;
+  }
+
+  // look for a C symbol called {name}_init
+  CString init = name;
+  init += "_init";
+  lt_ptr_t sym = lt_dlsym(handle, init.ascii());
+  const char *error;
+  if ((error = lt_dlerror()) != 0L) {
+    fprintf(stderr, "error finding init symbol: %s\n", error);
+    return false;
+  }
+
+  initFunction initSym = (initFunction) sym;
+
+  if ((*initSym)(arg)) {
+    fprintf(stderr, "initialization of module %s failed\n", name);
+    return false;
+  }
 
   return true;
 }
