@@ -1,2 +1,2 @@
-libkmid 0 libkmid 
-libqtmcop 0 libkmid
+libkmid 0 libkmid | libkmid-alsa
+libqtmcop 0 libkmid | libkmid-alsa

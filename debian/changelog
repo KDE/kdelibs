@@ -1,3 +1,19 @@
+kdelibs (4:2.2.2-3) unstable; urgency=low
+
+  * Include crypto
+  * debianrules cleanup
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 24 Nov 2001 02:46:00 -0700
+
+kdelibs (4:2.2.2-2) unstable; urgency=low
+
+  * Remove recommends for libssl as I'm breaking policy by recommending
+    something outside of main.  Will put this back once libssl goes into
+    main.
+  * libkmid | libkmid-alsa to help users out a bit
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 22 Nov 2001 20:14:00 -0700
+
 kdelibs (4:2.2.2-1) unstable; urgency=low
 
   * New upstream version
@@ -12,7 +28,6 @@ kdelibs (4:2.2.2-1) unstable; urgency=low
   * Use libasound2
   * Fix printing to files with spaces in the name (Closes: #117962)
   * Fix build with new libxml2 (Closes: #118638)
-  * Include SSL support in main package
   * Update build-depends
   * Fix overwrite issues (Closes: #118802)
   * Updates to take care of changes in Qt 2.3.2 (Closes: #118868)
@@ -23,7 +38,7 @@ kdelibs (4:2.2.2-1) unstable; urgency=low
   * Move certain -dev binaries over to the -dev package
   * Should fix socks autodetection (Closes: #118925)
 
- -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 09 Nov 2001 10:39:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 19 Nov 2001 23:17:00 -0700
 
 kdelibs (4:2.2.1-14) unstable; urgency=low
 

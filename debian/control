@@ -1,7 +1,7 @@
 Source: kdelibs
-Build-Depends: automake (>= 1:1.4-p4-1.1), autoconf, debhelper (>> 3.0.0), flex, bison, gettext, libqt-dev (>= 2:2.3.2-1), uic (>= 2.3.2-1), libtiff3g-dev | libtiff-dev, libaudiofile-dev, libasound2-dev (>= 0.9.0beta7-1), docbook, libbz2-dev, libpcre3-dev, libcupsys2-dev | cupsys-dev, libxml2-dev (>= 2.4.8), libxslt1-dev (>= 1.0.6), binutils (>= 2.11.92.0.5-3), libsasl-dev, libssl-dev
+Build-Depends: automake (>= 1:1.4-p4-1.1), autoconf, debhelper (>> 3.0.0), flex, bison, gettext, libqt-dev (>= 3:2.3.1-1), uic (>= 3:2.3.1-1), libtiff3g-dev | libtiff-dev, libaudiofile-dev, libasound2-dev (>= 0.9.0beta7-1), docbook, libbz2-dev, libpcre3-dev, libcupsys2-dev | cupsys-dev, libxml2-dev (>= 2.4.8), libxslt1-dev (>= 1.0.6), binutils (>= 2.11.92.0.5-3), libsasl-dev, libssl-dev (>= 0.9.6b-1)
 Build-Depends-Indep: kdoc, qt-doc
-Build-Conflicts: nas-lib, qt3-tools, libglib1.3-dev, kdelibs3-crypto
+Build-Conflicts: nas-lib, qt3-tools, libglib1.3-dev
 Section: libs
 Priority: optional
 Maintainer: Ivan E. Moore II <rkrusty@debian.org>
@@ -10,7 +10,7 @@ Standards-Version: 3.5.6
 Package: kdelibs3
 Architecture: any
 Section: libs
-Replaces: kdelibs2g, keystone, kdebase (<< 4:2.2.1-1), kdebase-libs (<< 4:2.2.1-2), konqueror (<< 4:2.2.1-1), kdelibs3-crypto
+Replaces: kdelibs2g, keystone, kdebase (<< 4:2.2.1-1), kdebase-libs (<< 4:2.2.1-2), konqueror (<< 4:2.2.1-1), kdelibs3-crytpo
 Depends: ${shlibs:Depends}, python, xbase-clients
 Recommends: libarts | libarts-bin, libkmid | libkmid-bin, kdelibs3-cups | kdelibs4-cups, aspell | ispell, libssl0.9.6
 Conflicts: keystone, kdelibs3-crypto
@@ -137,7 +137,7 @@ Package: kdelibs-dev
 Architecture: any
 Section: devel
 Replaces: kdelibs2g-dev, kdelibs4-dev, kdepim-dev (<< 4:2.2.2-1), kdelibs3 (<< 4:2.2.2-1)
-Depends: kdelibs3 (= ${Source-Version}), libarts-dev (= ${Source-Version}), libkmid-dev (= ${Source-Version}), libqt-dev (>= 2:2.3.2-1), uic (>= 2:2.3.2-1) | kde-designer, libaudiofile-dev, gettext, libtiff3g-dev | libtiff-dev, docbook, libpcre3-dev, libbz2-dev
+Depends: kdelibs3 (= ${Source-Version}), libarts-dev (= ${Source-Version}), libkmid-dev (= ${Source-Version}), libqt-dev (>= 3:2.3.1-1), uic (>= 3:2.3.1-1) | kde-designer, libaudiofile-dev, gettext, libtiff3g-dev | libtiff-dev, docbook, libpcre3-dev, libbz2-dev
 Recommends: kdelibs3-cups (= ${Source-Version})
 Conflicts: kdelibs2g-dev, qt3-tools, kdelibs4-dev
 Suggests: kdelibs3-doc, kdoc, libxml2-dev, libxslt1-dev

@@ -38,8 +38,7 @@ build-stamp:
 	version=`head -1 debian/changelog | sed -e "s#.*(\([^)]*\)).*#Debian Package \1#"` ;\
 	$(COMPILER_FLAGS) \
 	./configure $(configkde) --with-distribution="$$version (`cat /etc/debian_version`)" \
-	--includedir=/usr/include/kde --without-alsa \
-	--disable-cups
+	--disable-cups --without-alsa
 
 	$(MAKE)
 	$(MAKE) DESTDIR=`pwd`/debian/install-tmp/ install
@@ -53,8 +52,7 @@ alsa-stamp:
 	-$(MAKE) -C libkmid/ clean
 	-$(MAKE) -C kdeprint/cups clean
 	$(COMPILER_FLAGS) \
-	./configure $(configkde) --with-alsa --enable-cups \
-		--includedir=/usr/include/kde
+	./configure $(configkde) --with-alsa --enable-cups
 	$(MAKE) -C libkmid/ 
 	$(MAKE) -C arts/ 
 	$(MAKE) -C kdeprint/cups 
@@ -161,10 +159,6 @@ binary-arch:  build install
 	dh_movefiles -plibkmid-alsa --sourcedir=debian/alsa-tmp
 	dh_installchangelogs -a 
 	dh_strip -a
-	#for i in `find debian/ -type l -name "common"`; do \
-	#	rm $$i; \
-	#	ln -s ../common $$i ;\
-	#done
 	dh_perl -a
 	dh_link -a
 	dh_compress -a -X.docbook -X.css -X-license -X.dcl -X.bz2
