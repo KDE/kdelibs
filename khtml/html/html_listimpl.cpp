@@ -19,7 +19,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 #include "html_listimpl.h"
 
@@ -138,16 +137,19 @@ void HTMLLIElementImpl::attach()
     if ( m_render && m_render->style()->display() == LIST_ITEM ) {
         RenderListItem* render = static_cast<RenderListItem*>( renderer() );
         NodeImpl* listNode = 0;
-        for ( NodeImpl* n = parentNode(); !listNode && n; n = n->parentNode() ) {
+        NodeImpl* n = parentNode();
+        while ( !listNode && n ) {
             switch( n->id() ) {
             case ID_UL:
             case ID_OL:
                 listNode = n;
                 break;
             }
+            n = n->parentNode();
         }
 
-        // if we are not in a list, then position us inside, even if CSS says otherwise
+        // if we are not in a list, then position us inside
+        // can't use addCSSProperty cause its inherited attribute
         render->setInsideList( listNode );
 
         DOMString v = getAttribute(ATTR_VALUE);
