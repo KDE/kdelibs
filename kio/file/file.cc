@@ -149,7 +149,7 @@ void FileProtocol::get( const KURL& url )
 	error( KIO::ERR_IS_DIRECTORY, url.path() );
 	return;
     }
-    if ( S_ISFIFO( buff.st_mode ) || S_ISSOCK ( buff.st_mode ) ) {
+    if ( !S_ISREG( buff.st_mode ) ) {
 	error( KIO::ERR_CANNOT_OPEN_FOR_READING, url.path() );
 	return;
     }
