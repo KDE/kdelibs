@@ -95,19 +95,27 @@ bool ResourceFile::doOpen()
 {
   QFile file( mFileName );
 
-  if ( !file.exists() )
-    return true;
+  if ( !file.exists() ) {
+    // try to create the file
+    bool ok = file.open( IO_WriteOnly );
+    if ( ok )
+      file.close();
 
-  if ( !file.open( IO_ReadOnly ) )
-    return true;
+    return ok;
+  } else {
+    if ( !file.open( IO_ReadWrite ) )
+      return false;
 
-  if ( file.size() == 0 )
-    return true;
+    if ( file.size() == 0 ) {
+      file.close();
+      return true;
+    }
 
-  bool ok = mFormat->checkFormat( &file );
-  file.close();
+    bool ok = mFormat->checkFormat( &file );
+    file.close();
 
-  return ok;
+    return ok;
+  }
 }
 
 void ResourceFile::doClose()
