@@ -250,6 +250,8 @@ KSocks::KSocks(KConfigBase *config) : _socksLib(0L), _st(0L) {
              << "/usr/local/socks5/lib/"
              << "/opt/socks5/lib/";
    _libNames << "libsocks.so"                  // Dante
+             << "libdsocksd.so.0"              // Dante 1.1.14-2 on
+                                               // Debian unstable 17-12-2003
              << "libsocks5.so"                 // ?
              << "libsocks5_sh.so";             // NEC
 
