@@ -41,6 +41,7 @@ public:
 
     KTabWidgetPrivate() {
         m_automaticResizeTabs = false;
+        KConfigGroupSaver groupsaver(KGlobal::config(), "General");
         m_maxLength = KGlobal::config()->readNumEntry("MaximumTabLength", 30);
         m_minLength = KGlobal::config()->readNumEntry("MinimumTabLength", 3);
         m_CurrentMaxLength = m_minLength;
