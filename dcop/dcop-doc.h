@@ -57,9 +57,9 @@ you are communicating anonymously.  Use the
 DCOPClient::registerAs(const QCString &name) to do so.  In the simple
 case:
 
-<pre>
+<code>
 appId = client->registerAs(kApp->name());
-</pre>
+</code>
 
 If you never retrieve the DCOPClient pointer from KApplication, the
 object will not be created and thus there will be no memory overhead.
@@ -108,14 +108,14 @@ called function, but you will not hang while the RPC is processed either.
 The return value of send() indicates whether DCOP communication succeeded
 or not.
 
-<pre>
+<code>
 QByteArray data;
 QDataStream arg(data, IO_WriteOnly);
 arg << 5;
 if (!client->send("someAppId", "fooObject/barObject", "doIt(int)",
 	          data))
   qDebug("there was some error using DCOP.");
-</pre>
+</code>
 
 OK, now let's say we wanted to get the data back from the remotely
 called function.  You have to execute a call() instead of a send().
@@ -123,7 +123,7 @@ The returned value will then be available in the data parameter "reply".
 The actual return value of call() is still whether or not DCOP
 communication was successful.
 
-<pre>
+<code>
 QByteArray data, replyData;
 QCString replyType;
 QDataStream arg(data, IO_WriteOnly);
@@ -140,7 +140,7 @@ else {
   } else
     qDebug("doIt returned an unexpected type of reply!");
 }
-</pre>
+</code>
 
 
 @sect Receiving Data via DCOP:
@@ -160,7 +160,7 @@ this method for you.  However, until that point you need to examine
 the incoming function signature and take action accordingly.  Here is
 an example implementation.
 
-<pre>
+<code>
 bool BarObject::process(const QCString &fun, const QByteArray &data,
 		        QCString &replyType, QByteArray &replyData)
 {
@@ -178,7 +178,7 @@ bool BarObject::process(const QCString &fun, const QByteArray &data,
     return false;
   }
 }
-</pre>
+</code>
 
 
 @sect Receiving Calls and processing them:
@@ -196,7 +196,7 @@ can receive incoming DCOP function calls from other clients.
 
 Such code could like this:
 
-<pre>
+<code>
 bool BarObject::process(const QCString &fun, const QByteArray &data,
 		        QCString &, QByteArray &)
 {
@@ -228,7 +228,7 @@ slotProcessingDone(DCOPClientTransaction *myTransaction, const QString &result)
     reply << result;
     kapp->dcopClient()->endTransaction( myTransaction, replyType, replyData );
 }
-</pre>
+</code>
 
 
 @sect Using the dcopidl compiler:
@@ -247,7 +247,7 @@ expands to 'void'.
 
 Example:
 
-<pre>
+<code>
 #ifndef MY_INTERFACE_H
 #define MY_INTERFACE_H
 
@@ -264,7 +264,7 @@ class MyInterface : virtual public DCOPObject
 };
 
 #endif
-</pre>
+</code>
 
 As you can see, you're essentially declaring an abstract base class, which
 virtually inherits from DCOPObject.
@@ -287,7 +287,7 @@ but virtual, not pure virtual.
 
 Example:
 
-<pre>
+<code>
 class MyClass: public QObject, virtual public MyInterface
 {
   Q_OBJECT
@@ -299,7 +299,7 @@ class MyClass: public QObject, virtual public MyInterface
     ASYNC myAsynchronousMethod(QString someParameter);
     QRect mySynchronousMethod();
 };
-</pre>
+</code>
 Note: (Qt issue) Remember that if you are inheriting from QObject, you must
 place it first in the list of inherited classes.
 
@@ -310,14 +310,14 @@ the interface which your are implementing.
 
 Example:
 
-<pre>
+<code>
 MyClass::MyClass()
   : QObject(),
     DCOPObject("MyInterface")
 {
   // whatever...
 }
-</pre>
+</code>
 
 
 Now you can simply implement the methods you have declared in your interface,
@@ -325,18 +325,18 @@ exactly the same as you would normally.
 
 Example:
 
-<pre>
+<code>
 void MyClass::myAsynchronousMethod(QString someParameter)
 {
   qDebug("myAsyncMethod called with param `" + someParameter + "'");
 }
-</pre>
+</code>
 
 It is not necessary (though very clean) to define an interface as an
 abstract class of its own, like we did in the example above. We could
 just as well have defined a k_dcop section directly within MyClass:
 
-<pre>
+<code>
 class MyClass: public QObject, virtual public DCOPObject
 {
   Q_OBJECT
@@ -350,7 +350,7 @@ class MyClass: public QObject, virtual public DCOPObject
     ASYNC myAsynchronousMethod(QString someParameter);
     QRect mySynchronousMethod();
 };
-</pre>
+</code>
 
 In addition to skeletons, dcopidl2cpp also generate stubs. Those make
 it easy to call a DCOP interface without doing the marshalling

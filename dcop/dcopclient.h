@@ -54,12 +54,12 @@ typedef QValueList<QCString> QCStringList;
  * initialized with the @ref QByteArray that you actually intend to send
  * the data in.  An example of how you might do this:
  *
- * <pre>
+ * <code>
  *   QByteArray data;
  *   QDataStream arg(data, IO_WriteOnly);
  *   arg << QString("This is text I am serializing");
  *   client->send("someApp", "someObject", "someFunction(QString)", arg);
- * </pre>
+ * </code>
  *
  * @see KApplication::dcopClient()
  * @author Preston Brown <pbrown@kde.org>, Matthias Ettrich <ettrich@kde.org>
@@ -595,9 +595,9 @@ class DCOPClient : public QObject
    * anymore. The remaining whitespace consists of single blanks only (0x20).
    *
    * Example for a normalized signature:
-   * <pre>
+   * <code>
    *   "someFunction(QString,int)"
-   * </pre>
+   * </code>
    *
    * When using @ref send() or @ref call(), normalization is done
    * automatically for you.

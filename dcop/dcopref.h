@@ -170,7 +170,7 @@ inline QDataStream & operator << (QDataStream & str, const DCOPArg& arg )
  * objects in a DCOP interface, for example in the method
  * giveMeAnotherObject() in an interface like this:
  *
- * <pre>
+ * <code>
  *	class Example : public DCOPObject
  *	{
  *	   K_DCOP
@@ -181,7 +181,7 @@ inline QDataStream & operator << (QDataStream & str, const DCOPArg& arg )
  *	   ASYNC pingMe( QCString message );
  *	   UserType userFunction( UserType );
  *	};
- * </pre>
+ * </code>
  *
  * In addition, the reference can operate as a comfortable generic
  * stub to call remote DCOP objects in cases where no DCOPStub is
@@ -193,22 +193,22 @@ inline QDataStream & operator << (QDataStream & str, const DCOPArg& arg )
  * interface on an object called "example" that lives in application
  * "foo". Using DCOPRef, you would write
  *
- * <pre>
+ * <code>
  *	DCOPRef example( "foo", "example" );
  *	int result = example.call( "doSomething", QString("Hello World"), (float)2.5, true );
- * </pre>
+ * </code>
  *
  * If it is important for you to know whether the call succeeded or
  * not, you can use the slightly more elaborate pattern:
  *
- * <pre>
+ * <code>
  *	DCOPRef example( "foo", "example" );
  *	DCOPReply reply = example.call( "doSomething", QString("Hello World"), (float)2.5, true );
  *	if ( reply.isValid() ) {
  *	    int result = reply;
  *	    // ...
  *	}
- * </pre>
+ * </code>
  * 
  * Note that you must pass a QString for the first argument. If you use a 
  * regular char pointer, it will be converted to a @ref QCString.
@@ -216,7 +216,7 @@ inline QDataStream & operator << (QDataStream & str, const DCOPArg& arg )
  * For curiosity, here is how you would achieve the exactly same
  * functionality by using DCOPClient::call() directly:
  *
- * <pre>
+ * <code>
  *    QByteArray data, replyData;
  *    QCString replyType;
  *    QDataStream arg( data, IO_WriteOnly );
@@ -231,41 +231,41 @@ inline QDataStream & operator << (QDataStream & str, const DCOPArg& arg )
  *	    // ...
  *	}
  *    }
- * </pre>
+ * </code>
  *
  * As you might see from the code snippet, the DCOPRef has to "guess"
  * the names of the datatypes of the arguments to construct a dcop
  * call. This is done through global inline overloads of the
  * dcopTypeName function, for example
  *
- * <pre>
+ * <code>
  *	inline const char* dcopTypeName( const QString& ) { return "QString"; }
- * </pre>
+ * </code>
  *
  * If you use custom data types that do support QDataStream but have
  * no corrsponding dcopTypeName overload, you can either provide such
  * an overload or use a DCOPArg wrapper that allows you to specify the type.
  *
- * <pre>
+ * <code>
  *	UserType userType;
  *	DCOPReply reply = example.call( "userFunction", DCOPArg( userType, "UserType" ) );
- * </pre>
+ * </code>
  *
  * Similar, when you retrieve such a data type, you can use an
  * explicit call to DCOPReply::get():
  *
- * <pre>
+ * <code>
  *	UserType userType;
  *	reply.get( userType, "UserType" );
- * </pre>
+ * </code>
  *
  * The function send() works very similar to call(), only that it
  * returns a simple bool on whether the signal could be sent or not:
  *
- * <pre>
+ * <code>
  *	if ( example.pingMe( "message" ) == false )
  *	   qWarning("could not ping example" );
- * </pre>
+ * </code>
  *
  * A DCOP reference operates on DCOPClient::mainClient(), unless you
  * explicitly specify another client with setDCOPClient().
