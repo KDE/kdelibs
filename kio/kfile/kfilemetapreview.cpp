@@ -57,6 +57,10 @@ void KFileMetaPreview::initPreviewProviders()
 KPreviewWidgetBase * KFileMetaPreview::previewProviderFor( const QString& mimeType )
 {
 //     qDebug("### looking for: %s", mimeType.latin1());
+    // often the first highlighted item, where we can be sure, there is no plugin
+    // (this "folders reflect icons" is a konq-specific thing, right?)
+    if ( mimeType == "inode/directory" ) 
+        return 0L;
 
     KPreviewWidgetBase *provider = m_previewProviders.find( mimeType );
     if ( provider )
