@@ -230,6 +230,17 @@ bool Kded::unloadModule(const QCString &obj)
   return true;
 }
 
+// DCOP
+QCStringList Kded::loadedModules()
+{
+	QCStringList modules;
+	QAsciiDictIterator<KDEDModule> it( m_modules );
+	for ( ; it.current(); ++it)
+		modules.append( it.currentKey() );
+
+	return modules;
+}
+
 QCStringList Kded::functions()
 {
     QCStringList res = DCOPObject::functions();
@@ -587,6 +598,7 @@ public:
        res += "bool unloadModule(QCString)";
        res += "void registerWindowId(long int)";
        res += "void unregisterWindowId(long int)";
+       res += "QCStringList loadedModules()";
        return res;
     }
 
@@ -621,12 +633,18 @@ public:
       Kded::self()->registerWindowId(windowId);
       return true;
     }
-    else if (fun == "unregisterWindowId(long int)") {
+     else if (fun == "unregisterWindowId(long int)") {
       long windowId;
       QDataStream arg( data, IO_ReadOnly );
       arg >> windowId;
       Kded::self()->setCallingDcopClient(callingDcopClient());
       Kded::self()->unregisterWindowId(windowId);
+      return true;
+    }
+    else if (fun == "loadedModules()") {
+      replyType = "QCStringList";
+      QDataStream _replyStream(replyData, IO_WriteOnly);
+      _replyStream << Kded::self()->loadedModules();
       return true;
     }
     return KUniqueApplication::process(fun, data, replyType, replyData);

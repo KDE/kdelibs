@@ -66,6 +66,7 @@ public:
 
    KDEDModule *loadModule(const QCString &obj, bool onDemand);
    KDEDModule *loadModule(const KService *service, bool onDemand);
+   QCStringList loadedModules();
    bool unloadModule(const QCString &obj);
    bool isWindowRegistered(long windowId);
    void registerWindowId(long windowId);
