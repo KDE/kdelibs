@@ -1238,7 +1238,26 @@ class KConfigGroupPrivate;
 class KConfigGroup: public KConfigBase
 {
 public:
+   /**
+    * Construct a config group corresponding to @p group in @p master.
+    * @p group is the group name encoded in UTF-8.
+    */
    KConfigGroup(KConfigBase *master, const QCString &group);
+   /**
+    * This is an overloaded constructor provided for convenience.
+    * It behaves essentially like the above function.
+    *
+    * Construct a config group corresponding to @p group in @p master
+    */
+   KConfigGroup(KConfigBase *master, const QString &group);
+   /**
+    * This is an overloaded constructor provided for convenience.
+    * It behaves essentially like the above function.
+    *
+    * Construct a config group corresponding to @p group in @p master
+    * @p group is the group name encoded in UTF-8.
+    */
+   KConfigGroup(KConfigBase *master, const char * group);
 
    /**
     * Delete all entries in the entire group

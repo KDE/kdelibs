@@ -1581,7 +1581,31 @@ void KConfigBase::rollback( bool /*bDeep = true*/ )
   bDirty = false;
 }
 
+KConfigGroup::KConfigGroup(KConfigBase *master, const QString &group)
+{
+  mMaster = master;
+  backEnd = 0;
+  bLocaleInitialized = true;
+  bReadOnly = mMaster->bReadOnly;
+  bExpand = false;
+  bDirty = false; // Not used
+  mGroup = group.utf8();
+  aLocaleString = mMaster->aLocaleString;
+}
+
 KConfigGroup::KConfigGroup(KConfigBase *master, const QCString &group)
+{
+  mMaster = master;
+  backEnd = 0;
+  bLocaleInitialized = true;
+  bReadOnly = mMaster->bReadOnly;
+  bExpand = false;
+  bDirty = false; // Not used
+  mGroup = group;
+  aLocaleString = mMaster->aLocaleString;
+}
+
+KConfigGroup::KConfigGroup(KConfigBase *master, const char * group)
 {
   mMaster = master;
   backEnd = 0;
