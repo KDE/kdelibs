@@ -22,6 +22,8 @@
 
 */
 
+#undef NETWMDEBUG
+
 #include <string.h>
 #include <stdio.h>
 
