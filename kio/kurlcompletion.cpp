@@ -416,9 +416,6 @@ public:
 
 	DirLister         *dir_lister;
 	
-	QStringList man_dirs;
-	QStringList man_pages;
-	
 	// urlCompletion() in Auto/Popup mode?
 	bool url_auto_completion;
 	
@@ -520,33 +517,16 @@ QString KURLCompletion::makeCompletion(const QString &text)
 		if ( exeCompletion( url, &match ) )
 			return match;
 
-		// KRun can run "man:" and "info:" so why not treat them
+		// KRun can run "man:" and "info:" etc. so why not treat them
 		// as executables...
 		
-		// Man pages
-		//
-		if ( manCompletion( url, &match ) )
-			return match;
-
-		// Info pages
-		//
-		if ( infoCompletion( url, &match ) )
+		if ( urlCompletion( url, &match ) )
 			return match;
 	}
 	else {
 		// Local files
 		//
 		if ( fileCompletion( url, &match ) )
-			return match;
-
-		// Man pages
-		//
-		if ( manCompletion( url, &match ) )
-			return match;
-
-		// Info pages
-		//
-		if ( infoCompletion( url, &match ) )
 			return match;
 
 		// All other...
@@ -733,214 +713,6 @@ bool KURLCompletion::envCompletion(const MyURL &url, QString *match)
 	return true;
 }
 
-/////////////////////////////////////////////////////
-/////////////////////////////////////////////////////
-// Man page completion
-//
-bool KURLCompletion::manCompletion(const MyURL &url, QString *match)
-{
-	if ( url.protocol() != "man" || !url.dir().isEmpty() )
-		return false;
-
-	// Don't list all manpages in auto or popup completion mode
-	//
-	if( url.file().isEmpty() && isAutoCompletion() )
-		return false;
-
-	// Get a list of man page directories if we don't have it
-	//
-	if ( d->man_dirs.isEmpty() )
-		d->man_dirs = getManDirectories();
-
-	// List files in all man directories if needed
-	//
-	if ( !isListedURL( CTMan, "", url.file() ) ) {	
-		stop();
-		clear();
-		
-		setListedURL( CTMan, "", url.file() );
-
-		*match = listDirectories( d->man_dirs, url.file(), false, false, false );
-	}
-	else if ( !isRunning() ) {
-		*match = finished();
-	}
-	else {
-		*match = QString::null;
-	}
-
-	return true;
-}
-
-/*
- * getManDirectories
- *
- * Read man directories from /etc/man.conf, MANPATH and MANSECT
- * TODO: use manpath if it exists...
- */
-static QStringList getManDirectories()
-{
-	QString manpath_str;
-	QString mansect_str;
-
-	// Parse /etc/man.config if either of MANPATH or MANSECT is not set
-	//
-	if ( !::getenv("MANPATH") || !::getenv("MANSECT") ) {
-		QFile f( "/etc/man.config" );
-				
-		if ( f.open(IO_ReadOnly) ) {
-			QTextStream t( &f );
-			t.setEncoding( QTextStream::Latin1 );
-			QString s;
-
-			while ( !t.eof() ) {
-				s = t.readLine();
-
-				if ( s[7] == ' ' || s[7] == '\t' ) {
-					if ( s.left(7) == "MANPATH" )
-						manpath_str += s.mid(8).stripWhiteSpace() + ':';
-					else if ( s.left(7) == "MANSECT" )
-						mansect_str += s.mid(8).stripWhiteSpace() + ':';
-					else if ( s.left(11) == "MANPATH_MAP" )
-						{} // TODO: add to manpath map...
-						
-				}
-			}
-			f.close();
-		}
-	}
-
-	// Use MANPATH instead of man.config if it's set
-	//
-	if ( ::getenv("MANPATH") )
-		manpath_str = QString::fromLocal8Bit( ::getenv("MANPATH") );
-
-	// Use MANSECT instead of man.config if it's set
-	//
-	if ( ::getenv("MANSECT") )
-		mansect_str = QString::fromLocal8Bit( ::getenv("MANSECT") );
-
-	QStringList manpath = QStringList::split( ":", manpath_str );
-	QStringList mansect = QStringList::split( ":", mansect_str );
-
-	// Some default directories
-	//
-	const char* default_path[] = { "/usr/local/man",
-	                               "/usr/share/man",
-	                               "/usr/X11R6/man",
-	                               "/usr/man",
-	                               0L };
-
-	for ( int i = 0; default_path[i] != 0L; i++ )
-		if ( manpath.findIndex( QString( default_path[i] ) ) == -1 )
-			manpath.append( QString( default_path[i] ) );
-
-	// Some directories in the $PATH
-	//
-	if ( !::getenv("MANPATH") && ::getenv("PATH") ) {
-		QStringList path =
-			QStringList::split( ":",
-				QString::fromLocal8Bit( ::getenv("PATH") ) );
-
-		for ( QStringList::Iterator it = path.begin();
-		      it != path.end();
-		      it++ )
-		{
-			QString s = (*it) + "/man";
-			if ( manpath.findIndex( s ) == -1 )
-				manpath.append( s );
-		}
-	}
-
-	// And some default sections
-	//
-	const char* default_sect[] =
-		{ "1", "2", "3", "4", "5", "6", "7", "8", "9", "n", 0L };
-
-	for ( int i = 0; default_sect[i] != 0L; i++ )
-		if ( mansect.findIndex( QString( default_sect[i] ) ) == -1 )
-			mansect.append( QString( default_sect[i] ) );
-
-	// Put all combinations "<path>/man<sect>/" that actually exist
-	// in manDirs
-	//
-	QStringList manDirs;
-	
-	QStringList::Iterator it;
-	QStringList::Iterator it2;
-
-	for ( it = manpath.begin(); it != manpath.end(); it++ ) {
-		for ( it2 = mansect.begin(); it2 != mansect.end(); it2++ ) {
-			QString dir = (*it) + "/man" + (*it2) + "/";
-			struct stat sbuff;
-
-			if ( ::stat( QFile::encodeName(dir), &sbuff ) == 0
-				&& S_ISDIR( sbuff.st_mode ) )
-			{
-				manDirs.append( dir );
-			}
-		}
-	}
-	
-	// And translations "<path>/<lang>/man<sect>/"...
-	//
-	QStringList languages = KGlobal::locale()->languageList();
-
-	QStringList::Iterator it_l;
-
-	for ( it = manpath.begin(); it != manpath.end(); it++ ) {
-		for ( it_l = languages.begin(); it_l != languages.end(); it_l++ ) {
-			for ( it2 = mansect.begin(); it2 != mansect.end(); it2++ ) {
-				QString dir = (*it) + "/" + (*it_l) + "/man" + (*it2) + "/";
-				struct stat sbuff;
-
-				if ( ::stat( QFile::encodeName(dir), &sbuff ) == 0
-					&& S_ISDIR( sbuff.st_mode ) )
-				{
-					manDirs.append( dir );
-				}
-			}
-		}
-	}
-
-	return manDirs;
-}
-
-/////////////////////////////////////////////////////
-/////////////////////////////////////////////////////
-// Info page completion
-//
-bool KURLCompletion::infoCompletion(const MyURL &url, QString *match)
-{
-	if ( url.protocol() != "info" )
-		return false;
-
-	// List info pages if needed
-	//
-	if ( !isListedURL( CTInfo ) ) {
-		stop();
-		clear();
-		
-		KURL *url_dir = new KURL( *url.kurl() );
-	
-		QValueList<KURL*> url_list;
-		url_list.append(url_dir);
-
-		setListedURL( CTInfo );
-
-		listURLs( url_list, "", false );
-		*match = QString::null;
-	}
-	else if ( !isRunning() ) {
-		*match = finished();
-	}
-	else {
-		*match = QString::null;
-	}
-
-	return true;
-}
-
 //////////////////////////////////////////////////
 //////////////////////////////////////////////////
 // Executables
@@ -1089,10 +861,15 @@ bool KURLCompletion::urlCompletion(const MyURL &url, QString *match)
 	// 3. there is no directory (e.g. "ftp://ftp.kd" shouldn't do anything)
 	// 4. auto or popup completion mode depending on settings
 
+	bool man_or_info = ( url.protocol() == QString("man")
+	                     || url.protocol() == QString("info") );
+
 	if ( url.kurl()->isMalformed()
-	       || !KProtocolInfo::supportsListing( *url.kurl() )
-	          || url.dir().isEmpty()
-	             || (isAutoCompletion() && !d->url_auto_completion) )
+	     || !KProtocolInfo::supportsListing( *url.kurl() )
+	     || ( !man_or_info
+	          && ( url.dir().isEmpty()
+	               || ( isAutoCompletion()
+	                    && !d->url_auto_completion ) ) ) ) 
 		return false;
 
 	// 1. remove the file name
@@ -1150,42 +927,11 @@ bool KURLCompletion::urlCompletion(const MyURL &url, QString *match)
  */
 void KURLCompletion::addMatches( QStringList *matches )
 {
-	if ( m_last_compl_type == CTMan ) {
-		
-		QStringList::Iterator it = matches->begin();
-		QStringList::Iterator end = matches->end();
+	QStringList::Iterator it = matches->begin();
+	QStringList::Iterator end = matches->end();
 
-		for ( ; it != end; it++ ) {
-			// Drop trailing ".section[.gz]" before adding
-			// to matches
-			QString name = (*it);
-			
-			int pos = name.length();
-
-			if ( name.find(".gz", -3) != -1 )
-				pos -= 3;
-			else if ( name.find(".z", -2, false) != -1 )
-				pos -= 2;
-			else if ( name.find(".bz2", -4) != -1 )
-				pos -= 4;
-			else if ( name.find(".bz", -3) != -1 )
-				pos -= 3;
-
-			if ( pos > 0 )
-				pos = name.findRev('.', pos-1);
-
-//			if ( pos > 0 && name.startsWith( m_last_file_listed ) )
-			if ( pos > 0 )
-				addItem( m_prepend + name.left(pos) );
-		}
-	}
-	else {
-		QStringList::Iterator it = matches->begin();
-		QStringList::Iterator end = matches->end();
-
-		for ( ; it != end; it++ )
-			addItem( m_prepend + (*it));
-	}
+	for ( ; it != end; it++ )
+		addItem( m_prepend + (*it));
 }
 
 /*

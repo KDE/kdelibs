@@ -160,8 +160,6 @@ private:
 	bool exeCompletion(const MyURL &url, QString *match);
 	bool fileCompletion(const MyURL &url, QString *match);
 	bool urlCompletion(const MyURL &url, QString *match);
-	bool infoCompletion(const MyURL &url, QString *match);
-    bool manCompletion(const MyURL &url, QString *match);
 
 	// List a directory using readdir()
 	void listDir( const QString& dir,
