@@ -123,12 +123,12 @@ void Kded::recreate()
    // Using KLauncher here is difficult since we might not have a
    // database
 
+   build(); // Update tree first, to be sure to miss nothing.
    // Avoid relying on $PATH and on /bin/sh -> don't use system()
    KProcess proc;
    proc << locate("exe","kbuildsycoca");
    proc << "--incremental";
    proc.start( KProcess::Block );
-   build();
 }
 
 void Kded::dirDeleted(const QString& /*path*/)
@@ -174,20 +174,20 @@ void Kded::readDirectory( const QString& _path )
 
   QDir d( _path, QString::null, QDir::Unsorted, QDir::AccessMask | QDir::Dirs );
   // set QDir ...
-  if ( !d.exists() )                            // exists&isdir?
-  {
-    kdDebug(7020) << QString("Does not exist! (%1)").arg(_path) << endl;
-    return;                             // return false
-  }
 
-
-  QString file;
 
   //************************************************************************
   //                           Setting dirs
   //************************************************************************
 
   m_pDirWatch->addDir(path);          // add watch on this dir
+
+  if ( !d.exists() )                            // exists&isdir?
+  {
+    kdDebug(7020) << QString("Does not exist! (%1)").arg(_path) << endl;
+    return;                             // return false
+  }
+
   if (!m_needUpdate)
   {
      time_t ctime = m_pDirWatch->ctime(path);
@@ -199,7 +199,7 @@ void Kded::readDirectory( const QString& _path )
   //************************************************************************
   //                               Reading
   //************************************************************************
-
+  QString file;
   unsigned int i;                           // counter and string length.
   unsigned int count = d.count();
   for( i = 0; i < count; i++ )                        // check all entries
