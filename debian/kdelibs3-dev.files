@@ -1,0 +1,3 @@
+opt/kde2pre/include
+opt/kde2pre/lib/lib*.so
+opt/kde2pre/lib/lib*.la
