@@ -58,11 +58,12 @@ class KPopupMenu;
 class KMainWindow;
 
 /**
+ *  @short Checkbox like action.
+ *
  *  Checkbox like action.
  *
  *  This action provides two states: checked or not.
  *
- *  @short Checkbox like action.
  */
 class KDEUI_EXPORT KToggleAction : public KAction
 {
@@ -221,6 +222,8 @@ private:
 };
 
 /**
+ *  @short Radiobox like action.
+ *
  * An action that operates like a radio button. At any given time
  * only a single action from the group will be active.
  */
@@ -313,6 +316,8 @@ private:
 };
 
 /**
+ *  @short Action for selecting one of several items
+ *
  *  Action for selecting one of several items.
  *
  *  This action shows up a submenu with a list of items.
@@ -320,8 +325,6 @@ private:
  *  this item will automatically be checked,
  *  the formerly checked item becomes unchecked.
  *  There can be only one item checked at a time.
- *
- *  @short Action for selecting one of several items
  */
 class KDEUI_EXPORT KSelectAction : public KAction
 {
@@ -671,13 +674,14 @@ private:
 };
 
 /**
+ *  @short Recent files action
+ *
  *  This class is an action to handle a recent files submenu.
  *  The best way to create the action is to use KStdAction::openRecent.
  *  Then you simply need to call loadEntries on startup, saveEntries
  *  on shutdown, addURL when your application loads/saves a file.
  *
  *  @author Michael Koch
- *  @short Recent files action
  */
 class KDEUI_EXPORT KRecentFilesAction : public KListAction  // TODO public KSelectAction
 {

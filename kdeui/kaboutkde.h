@@ -25,32 +25,32 @@
 #include <kaboutdialog.h>
 
 /**
+ * @short Standard "About KDE" dialog box,
+ *
  * This class provides the standard "About KDE" dialog box that is used
- * KHelpMenu Normally you should not use this class directly but 
- * rather the KHelpMenu class or even better just subclass your 
+ * KHelpMenu Normally you should not use this class directly but
+ * rather the KHelpMenu class or even better just subclass your
  * toplevel window from KMainWindow. If you do the latter, the help
- * menu and thereby this dialog box is available through the 
+ * menu and thereby this dialog box is available through the
  * KMainWindow::helpMenu() function.
  *
- * @short Standard "About KDE" dialog box,
  * @author Espen Sand (espen@kde.org)
- * @version $Id:
  */
 
 class KDEUI_EXPORT KAboutKDE : public KAboutDialog
 {
   public:
     /**
-     * Constructor. Creates a fully featured "About KDE" dialog box. 
-     * Note that this dialog is made modeless in the KHelpMenu class so 
+     * Constructor. Creates a fully featured "About KDE" dialog box.
+     * Note that this dialog is made modeless in the KHelpMenu class so
      * the users may expect a modeless dialog.
      *
-     * @param parent The parent of the dialog box. You should use the 
+     * @param parent The parent of the dialog box. You should use the
      *        toplevel window so that the dialog becomes centered.
      * @param name Internal name of the widget. This name in not used in the
      *        caption.
-     * @param modal If false, this widget will be modeless and must be 
-     *        made visible using QWidget::show(). Otherwise it will be 
+     * @param modal If false, this widget will be modeless and must be
+     *        made visible using QWidget::show(). Otherwise it will be
      *        modal and must be made visible using QWidget::exec()
      */
     KAboutKDE( QWidget *parent=0, const char *name=0, bool modal=true );
