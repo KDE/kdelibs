@@ -332,7 +332,7 @@ static const short yyrline[] = { 0,
    519,   520,   527,   532,   537,   539,   543,   545,   548,   550,
    553,   555,   558,   560,   563,   569,   573,   575,   576,   579,
    584,   588,   591,   594,   597,   602,   604,   609,   611,   615,
-   618,   622,   625,   629,   631,   634,   636
+   618,   622,   626,   630,   632,   635,   637
 };
 #endif
 
@@ -2002,27 +2002,28 @@ case 191:
 case 192:
 #line 623 "grammar.y"
 { yyval.prog = new ProgramNode(0L);
+                                     yyval.prog->setLoc(0, 0, Parser::source);
                                      Parser::progNode = yyval.prog; ;
     break;}
 case 193:
-#line 625 "grammar.y"
+#line 626 "grammar.y"
 { yyval.prog = new ProgramNode(yyvsp[0].srcs);
                                      Parser::progNode = yyval.prog; ;
     break;}
 case 194:
-#line 630 "grammar.y"
+#line 631 "grammar.y"
 { yyval.srcs = new SourceElementsNode(yyvsp[0].stat); ;
     break;}
 case 195:
-#line 631 "grammar.y"
+#line 632 "grammar.y"
 { yyval.srcs = new SourceElementsNode(yyvsp[-1].srcs, yyvsp[0].stat); ;
     break;}
 case 196:
-#line 635 "grammar.y"
+#line 636 "grammar.y"
 { yyval.stat = yyvsp[0].stat; ;
     break;}
 case 197:
-#line 636 "grammar.y"
+#line 637 "grammar.y"
 { yyval.stat = yyvsp[0].func; ;
     break;}
 }
@@ -2247,7 +2248,7 @@ yyerrhandle:
     }
   return 1;
 }
-#line 639 "grammar.y"
+#line 640 "grammar.y"
 
 
 int yyerror (const char *)  /* Called by yyparse on error */

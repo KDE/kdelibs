@@ -621,6 +621,7 @@ FunctionBody:
 
 Program:
     /* nothing, empty script */      { $$ = new ProgramNode(0L);
+                                     $$->setLoc(0, 0, Parser::source);
                                      Parser::progNode = $$; }
     | SourceElements                 { $$ = new ProgramNode($1);
                                      Parser::progNode = $$; }
