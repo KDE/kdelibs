@@ -1850,7 +1850,7 @@ void KApplication::installKDEPropertyMap()
      * If you are adding a widget that was missing please
      * make sure to also add it to KAutoConfig's retrieveSettings() function.
      * Thanks.
-     */ 
+     */
     // QSqlPropertyMap takes ownership of the new default map.
     QSqlPropertyMap *kdeMap = new QSqlPropertyMap;
     kdeMap->insert( "KColorButton", "color" );
@@ -1868,8 +1868,9 @@ void KApplication::installKDEPropertyMap()
     kdeMap->insert( "KURLRequester", "url" );
     kdeMap->insert( "KPasswordEdit", "password" );
     kdeMap->insert( "KIntNumInput", "value" );
+    kdeMap->insert( "KDoubleNumInput", "value" );
     //#if QT_VERSION < 0x030300
-      // Temp till fixed in QT then enable ifdef with the correct version num
+      // Temp til fixed in QT then enable ifdef with the correct version num
       kdeMap->insert( "QRadioButton", "checked" );
     //#endif
     QSqlPropertyMap::installDefaultMap( kdeMap );
@@ -2561,12 +2562,12 @@ bool KApplication::authorizeURLAction(const QString &action, const KURL &_baseUR
   bool result = false;
   if (d->urlActionRestrictions.isEmpty())
      initUrlActionRestrictions();
-  
+
   KURL baseURL(_baseURL);
   baseURL.setPath(QDir::cleanDirPath(baseURL.path()));
   KURL destURL(_destURL);
   destURL.setPath(QDir::cleanDirPath(destURL.path()));
-     
+
   for(KApplicationPrivate::URLActionRule *rule = d->urlActionRestrictions.first();
       rule; rule = d->urlActionRestrictions.next())
   {
