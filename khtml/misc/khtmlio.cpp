@@ -86,11 +86,11 @@ HTMLURLRequestJob::HTMLURLRequestJob( KHTMLWidget* _browser, HTMLURLRequest *r, 
 
 HTMLURLRequestJob::~HTMLURLRequestJob()
 {
-  kdebug(0,1202,"Destructor 1");
+  kDebugInfo(1202,"Destructor 1");
   if ( m_job )
     m_job->kill();
 
-  kdebug(0,1202,"Destructor 2");
+  kDebugInfo(1202,"Destructor 2");
 }
 
 void HTMLURLRequestJob::slotFinished( KIO::Job * job )
@@ -100,7 +100,7 @@ void HTMLURLRequestJob::slotFinished( KIO::Job * job )
     // TODO use errorString() instead
     emit error( m_req->m_strURL, job->error(), job->errorText() );
   } else {
-    kdebug(0,1202,"BROWSER JOB FINISHED %s\n", m_req->m_strURL.ascii());
+    kDebugInfo(1202,"BROWSER JOB FINISHED %s\n", m_req->m_strURL.ascii());
   }
   m_job = 0;
   m_pBrowser->data( this, "", 0, true );
