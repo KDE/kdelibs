@@ -729,9 +729,36 @@ void RangeImpl::insertNode( NodeImpl *newNode, int &exceptioncode )
 
     // HIERARCHY_REQUEST_ERR: Raised if the container of the start of the Range is of a type that
     // does not allow children of the type of newNode or if newNode is an ancestor of the container.
-    if (!m_startContainer->childTypeAllowed(newNode->nodeType())) {
+
+    // an extra one here - if a text node is going to split, it must have a parent to insert into
+    if (m_startContainer->nodeType() == Node::TEXT_NODE && !m_startContainer->parentNode()) {
         exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
         return;
+    }
+
+    // In the case where the container is a text node, we check against the container's parent, because
+    // text nodes get split up upon insertion.
+    NodeImpl *checkAgainst;
+    if (m_startContainer->nodeType() == Node::TEXT_NODE)
+	checkAgainst = m_startContainer->parentNode();
+    else
+	checkAgainst = m_startContainer;
+	
+    if (newNode->nodeType() == Node::DOCUMENT_FRAGMENT_NODE) {
+	// check each child node, not the DocumentFragment itself
+    	NodeImpl *c;
+    	for (c = newNode->firstChild(); c; c = c->nextSibling()) {
+	    if (!checkAgainst->childTypeAllowed(c->nodeType())) {
+		exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
+		return;
+	    }
+    	}
+    }
+    else {
+	if (!checkAgainst->childTypeAllowed(newNode->nodeType())) {
+	    exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
+	    return;
+	}
     }
 
     for (n = m_startContainer; n; n = n->parentNode()) {
@@ -756,10 +783,6 @@ void RangeImpl::insertNode( NodeImpl *newNode, int &exceptioncode )
         TextImpl *newText = static_cast<TextImpl*>(m_startContainer)->splitText(m_startOffset,exceptioncode);
         if (exceptioncode)
             return;
-        if (!m_startContainer->parentNode()) {
-            exceptioncode = DOMException::NOT_SUPPORTED_ERR; // ### what are we supposed to do here?
-            return;
-        }
         m_startContainer->parentNode()->insertBefore( newNode, newText, exceptioncode );
     }
     else {
