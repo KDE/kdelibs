@@ -39,13 +39,14 @@ libksycoca_la_SOURCES = \
 	kuserprofile.cpp \
 	kdirwatch.cpp kurifilter.cpp \
 	kautomount.cpp krun.cpp \
+	kfileitem.cpp \
 	yacc.c lex.c
 
 include_HEADERS = ksycoca.h ksycocaentry.h ksycocatype.h \
         kservicetype.h kmimetype.h kmimemagic.h kservice.h \
         krun.h kdirwatch.h kautomount.h kuserprofile.h \
 	kshred.h ktar.h ktrader.h kurifilter.h kurlcompletion.h \
-	kshellcompletion.h \
+	kshellcompletion.h kfileitem.h \
 	progressbase.h defaultprogress.h statusbarprogress.h
 
 libkio_la_LDFLAGS = -version-info 3:0 -no-undefined $(all_libraries)
