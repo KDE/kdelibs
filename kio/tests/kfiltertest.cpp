@@ -1,6 +1,7 @@
 #include "kfilterdev.h"
 #include "kfilterbase.h"
 #include <qfile.h>
+#include <qtextstream.h>
 #include <kdebug.h>
 #include <kinstance.h>
 
@@ -8,6 +9,7 @@ void test_block( const QString & fileName )
 {
     QFile f(fileName);
     KFilterBase * filter = KFilterBase::findFilterByFileName( fileName );
+    if (!filter) return;
     filter->setDevice( &f );
     KFilterDev dev(filter);
     dev.open( IO_ReadOnly );
@@ -33,6 +35,7 @@ void test_getch( const QString & fileName )
 {
     QFile f(fileName);
     KFilterBase * filter = KFilterBase::findFilterByFileName( fileName );
+    if (!filter) return;
     filter->setDevice( &f );
     KFilterDev dev(filter);
     dev.open( IO_ReadOnly );
@@ -43,16 +46,34 @@ void test_getch( const QString & fileName )
     delete filter;
 }
 
+void test_textstream(  const QString & fileName )
+{
+    QFile f(fileName);
+    KFilterBase * filter = KFilterBase::findFilterByFileName( fileName );
+    if (!filter) return;
+    filter->setDevice( &f );
+    KFilterDev dev(filter);
+    dev.open( IO_ReadOnly );
+    QTextStream ts( &dev );
+    printf("%s\n", ts.read().latin1());
+    dev.close();
+    delete filter;
+}
+
 int main()
 {
     KInstance instance("kfiltertest");
-    kdDebug() << " -- testgz_block -- " << endl;
+    kdDebug() << " -- test_block gzip -- " << endl;
     test_block("test.gz");
-    kdDebug() << " -- testgz_getch -- " << endl;
+    kdDebug() << " -- test_getch gzip -- " << endl;
     test_getch("test.gz");
-    kdDebug() << " -- testbz2_block -- " << endl;
+    kdDebug() << " -- test_textstream gzip -- " << endl;
+    test_textstream("test.gz");
+
+    kdDebug() << " -- test_block bzip2 -- " << endl;
     test_block("test.bz2");
-    kdDebug() << " -- testbz2_getch -- " << endl;
+    kdDebug() << " -- test_getch bzip2 -- " << endl;
     test_getch("test.bz2");
+
     return 0;
 }
