@@ -571,8 +571,28 @@ public:
    */
   QDate readDate( const QString &intstr, const QString &fmt, bool* ok = 0) const;
 
+  enum ReadDateFlags {
+      NormalFormat = 1,
+      ShortFormat = 2
+  };
+
+  /**
+   * Converts a localized date string to a QDate.
+   * This method is stricter than readDate(str,&ok): it will either accept
+   * a date in full format or a date in short format, depending on @p flags.
+   *
+   * @param str the string we want to convert.
+   * @param flags whether the date string is to be in full format or in short format.
+   * @param ok the boolean that is set to false if it's not a valid date.
+   *           If @p ok is 0, it will be ignored
+   *
+   * @return The string converted to a QDate
+   */
+  QDate readDate(const QString &str, ReadDateFlags flags, bool *ok = 0) const;
+
   /**
    * Converts a localized time string to a QTime.
+   * This method will try to parse it with seconds, then without seconds.
    * The bool pointed by ok will be false if the time entered was not valid.
    *
    * @param str the string we want to convert.
@@ -582,6 +602,25 @@ public:
    * @return The string converted to a QTime
    */
   QTime readTime(const QString &str, bool* ok = 0) const;
+
+  enum ReadTimeFlags {
+      WithSeconds = 0, // default (no flag set)
+      WithoutSeconds = 1
+  }; // (maybe use this enum as a bitfield, if adding independent features?)
+  /**
+   * Converts a localized time string to a QTime.
+   * This method is stricter than readTime(str,&ok): it will either accept
+   * a time with seconds or a time without seconds.
+   * Use this method when the format is known by the application.
+   *
+   * @param str the string we want to convert.
+   * @param flags whether the time string is expected to contain seconds or not.
+   * @param ok the boolean that is set to false if it's not a valid time.
+   *           If @p ok is 0, it will be ignored
+   *
+   * @return The string converted to a QTime
+   */
+  QTime readTime(const QString &str, ReadTimeFlags flags, bool *ok = 0) const;
 
   /**
    * Returns the language used by this object. The domain AND the
@@ -1083,16 +1122,6 @@ private:
    * @internal QFile filename decoding function (QFile::decodeFn).
    */
   static QString decodeFileNameUTF8( const QCString & localFileName );
-
-  /**
-   * @internal function used by readTime(const QString &) const.
-   */
-  QTime readTime(const QString &str, bool seconds, bool *ok) const;
-
-  /**
-   * @internal function used by readDate(const QString &) const.
-   */
-  QDate readDate(const QString &str, bool shortFormat, bool *ok) const;
 
   /**
    * @internal Changes the file name of the catalogue to the correct

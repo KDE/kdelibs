@@ -1334,14 +1334,14 @@ static int readInt(const QString &str, uint &pos)
 QDate KLocale::readDate(const QString &intstr, bool* ok) const
 {
   QDate date;
-  date = readDate(intstr, true, ok);
+  date = readDate(intstr, ShortFormat, ok);
   if (date.isValid()) return date;
-  return readDate(intstr, false, ok);
+  return readDate(intstr, NormalFormat, ok);
 }
 
-QDate KLocale::readDate(const QString &intstr, bool shortFormat, bool* ok) const
+QDate KLocale::readDate(const QString &intstr, ReadDateFlags flags, bool* ok) const
 {
-  QString fmt = (shortFormat ? dateFormatShort() : dateFormat()).simplifyWhiteSpace();
+  QString fmt = ((flags & ShortFormat) ? dateFormatShort() : dateFormat()).simplifyWhiteSpace();
   return readDate( intstr, fmt, ok );
 }
 
@@ -1479,19 +1479,20 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
 QTime KLocale::readTime(const QString &intstr, bool *ok) const
 {
   QTime _time;
-  _time = readTime(intstr, true, ok);
+  _time = readTime(intstr, WithSeconds, ok);
   if (_time.isValid()) return _time;
-  return readTime(intstr, false, ok);
+  return readTime(intstr, WithoutSeconds, ok);
 }
 
-QTime KLocale::readTime(const QString &intstr, bool seconds, bool *ok) const
+QTime KLocale::readTime(const QString &intstr, ReadTimeFlags flags, bool *ok) const
 {
   QString str = intstr.simplifyWhiteSpace().lower();
   QString Format = timeFormat().simplifyWhiteSpace();
-  if (!seconds)
+  if (flags & WithoutSeconds)
     Format.replace(QRegExp(QString::fromLatin1(".%S")), QString::null);
 
-  int hour = -1, minute = -1, second = seconds ? -1 : 0; // don't require seconds
+  int hour = -1, minute = -1;
+  int second = ( flags & WithoutSeconds == 0 ) ? -1 : 0; // don't require seconds
   bool g_12h = false;
   bool pm = false;
   uint strpos = 0;
