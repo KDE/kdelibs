@@ -1,36 +1,68 @@
+#include <qstring.h>
 #include <qpushbutton.h>
+#include <qlayout.h>
 
 #include <kapp.h>
-#include <klineedit.h>
+#include <kdebug.h>
+#include <kdialog.h>
 #include <klocale.h>
+#include <klineedit.h>
 #include <kglobalsettings.h>
+
+#include "klineedittest.h"
+
+KLineEditTest::KLineEditTest (QWidget* widget, const char* name )
+              :QWidget( widget, name )
+{
+    QVBoxLayout* layout = new QVBoxLayout( this, KDialog::marginHint(), KDialog::spacingHint() );
+    QStringList list;
+    list << "Tree" << "Suuupa" << "Stroustrup" << "Stone" << "Slick"
+         << "Slashdot" << "Sand" << "Peables" << "Mankind" << "Ocean"
+         << "Chips" << "Computer";
+    list.sort();
+
+    lineedit = new KLineEdit( this, "klineedittest" );
+    lineedit->completionObject()->setItems( list );
+    connect( lineedit, SIGNAL( returnPressed() ), SLOT( slotReturnPressed() ) );
+    lineedit->setFixedSize(500,30);
+    lineedit->setFocus();
+
+    button = new QPushButton( i18n("E&xit"), this );
+    button->setFixedSize(100,30);
+    QObject::connect( button, SIGNAL( clicked() ), SLOT( quitApp() ) );
+
+    layout->addWidget( lineedit );
+    layout->addWidget( button );
+    setCaption( i18n("KLineEdit Unit Test" ) );
+}
+
+void KLineEditTest::quitApp()
+{
+    kapp->closeAllWindows();
+}
+
+void KLineEditTest::slotReturnPressed()
+{
+    kdDebug() << "Return pressed" << endl;
+}
+
+void KLineEditTest::resultOutput( const QString& text )
+{
+    kdDebug() << "KlineEditTest Debug: " << text << endl;
+}
+
+KLineEditTest::~KLineEditTest()
+{
+}
 
 int main ( int argc, char **argv)
 {
-    KApplication a(argc, argv, "klineedittest");
-    //make a central widget to contain the other widgets
-    QWidget * w = new QWidget( );
-    // Create the widget with the last argument set to "true" to
-    // have KLineEdit automatically handle the completion and
-    // rotation signals.
-    KLineEdit *l = new KLineEdit( w, "mylineedit" );
-    //l->hideModeChanger();
-    QStringList list;
-    list << "Stroustrup" << "Slick" << "Suuupa" << "Slashdot" << "Stone" << "Tree" << "Peables" << "Ocean" << "Sand" << "Chips" << "Computer" << "Mankind";
-    list.sort();
-    l->completionObject()->setItems( list );
-    // Shows of the value of the returnPressed signals with the QString argument.
-    // We simply insert the entered items into the completion object.
-    // QObject::connect( l, SIGNAL( returnPressed( const QString& ) ), l->completionObject(), SLOT( addItem( const QString& ) ) );
-    l->resize(500,30);
-    l->setFocus();
-////////// l->setCompletionMode( KGlobalSettings::CompletionPopup );
-    QPushButton * push = new QPushButton( "E&xit", w );
-    push->resize(100,30);
-    push->move(50,50);
-    QObject::connect( push, SIGNAL( clicked() ), &a, SLOT( closeAllWindows() ) );
-    a.setMainWidget(w);
-    w->show();
-
-    return a.exec();
+    KApplication *a = new KApplication (argc, argv, "klineedittest");
+    KLineEditTest *t = new KLineEditTest();
+    t->lineEdit()->setTrapReturnKey( true );
+    a->setMainWidget(t);
+    t->show();
+    return a->exec();
 }
+
+#include "klineedittest.moc"

@@ -45,7 +45,7 @@ noinst_HEADERS = \
 		kdualcolortest.h khashtest.h knuminputtest.h \
 		kdockwidgetdemo.h kdocktabctltest.h kdockwidgettest.h \
 		itemcontainertest.h kpanelmenutest.h kalphaicontest.h \
-		kcompletiontest.h
+		kcompletiontest.h klineedittest.h
 
 METASOURCES = AUTO
 
