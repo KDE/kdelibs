@@ -218,11 +218,15 @@ public:
 
     /**
      * Converts a localized monetary string to a double.
+     * @param numStr the string we want to convert.
+     * @param ok the boolean that is set to false if it's not a number.
      */
     double readMoney(const QString &numStr, bool * ok=0) const;
 
     /**
      * Converts a localized numeric string to a double.
+     * @param numStr the string we want to convert.
+     * @param ok the boolean that is set to false if it's not a number.
      */
     double readNumber(const QString &numStr, bool * ok=0) const;
 
