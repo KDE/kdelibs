@@ -1236,6 +1236,25 @@ void KApplication::invokeHTMLHelp( QString filename, QString topic ) const
    if( filename.isEmpty() )
       filename = QString(name()) + "/index.html";
 
+   // Note: This is a dummy implementation and will be replaced once
+   // the khelpcenter is up to date, or the replacement is finished.
+   // 20000418 (mhk)
+
+   QString url = "help:" + filename;
+   if (!topic.isEmpty())
+     url += "#" + topic;
+
+   QCString dcopService;
+   QString error;
+ 
+   if (startServiceByDesktopName("kfmclient", url, dcopService, error))
+   {
+      warning("Could not launch browser:\n%s\n", error.local8Bit().data());
+      return;
+   }                                                                                 
+
+   /*
+
    // first try the locale setting
    QString file = locate("html", KGlobal::locale()->language() + '/' + filename);
    if (file.isEmpty())
@@ -1260,6 +1279,7 @@ void KApplication::invokeHTMLHelp( QString filename, QString topic ) const
       warning("Could not launch help:\n%s\n", error.local8Bit().data());
       return;
    }
+  */
 }
 
 
