@@ -355,10 +355,9 @@ bool KZip::closeArchive()
     for ( ; it.current() ; ++it )
     {	//set crc and compressed size in each local file header
         device()->at( it.current()->headerStart() + 14 );
-	kdDebug(7040) << "closearchive setcrcandcsize: filename: "
-	    << it.current()->path()
-	    << " encoding: "<< it.current()->encoding() << endl;
-	kdDebug(7040) << "close archive: seeking to ..." << QString::number ( it.current()->headerStart() + 14, 16) << endl;
+	//kdDebug(7040) << "closearchive setcrcandcsize: filename: "
+	//    << it.current()->path()
+	//    << " encoding: "<< it.current()->encoding() << endl;
 
         uLong mycrc = it.current()->crc32();
         buffer[0] = char(mycrc); // crc checksum, at headerStart+14
@@ -384,8 +383,8 @@ bool KZip::closeArchive()
 
     for ( it.toFirst(); it.current() ; ++it )
     {
-        kdDebug(7040) << "closearchive: filename: " << it.current()->path()
-                      << " encoding: "<< it.current()->encoding() << endl;
+        //kdDebug(7040) << "closearchive: filename: " << it.current()->path()
+        //              << " encoding: "<< it.current()->encoding() << endl;
 
         QCString path = QFile::encodeName(it.current()->path());
 
@@ -401,14 +400,9 @@ bool KZip::closeArchive()
             0x14, 0         // version needed to extract
         };
 
-	kdDebug(7040) << "closearchive: buffer starts with"
-	    << " 0x" << QString::number(uchar(buffer[0]), 16)
-	    << " 0x" << QString::number(uchar(buffer[1]), 16) << endl;
+	// I do not know why memcpy is not working here
         //memcpy(buffer, head, sizeof(head));
         qmemmove(buffer, head, sizeof(head));
-	kdDebug(7040) << "closearchive: buffer starts with"
-	    << " 0x" << QString::number(uchar(buffer[0]), 16)
-	    << " 0x" << QString::number(uchar(buffer[1]), 16) << endl;
 
         if ( it.current()->encoding() == 8 )
         {
@@ -449,11 +443,7 @@ bool KZip::closeArchive()
         strncpy( buffer + 46, path, path.length() );
 	//kdDebug(7040) << "closearchive length to write: " << bufferSize << endl;
         crc = crc32(crc, (Bytef *)buffer, bufferSize );
-	kdDebug(7040) << "closearchive: writing at 0x" << QString::number(device()->at(),16) << endl;
         device()->writeBlock( buffer, bufferSize );
-	kdDebug(7040) << "closearchive: buffer starts with"
-	    << " 0x" << QString::number(uchar(buffer[0]), 16)
-	    << " 0x" << QString::number(uchar(buffer[1]), 16) << endl;
         delete[] buffer;
     }
     Q_LONG centraldirendoffset = device()->at();
