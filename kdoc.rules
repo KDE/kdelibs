@@ -6,7 +6,7 @@
 #
 # $Id$
 
-kde_MODULES = dcop kdefx kdecore kdeui kio kded kssl kfile kparts kjs khtml kdejava kspell kab kdeprint libkmid interfaces
+kde_MODULES = dcop kdefx kdecore kdeui kio kded kssl kfile kparts kjs kdeprint khtml kdejava kspell kabc libkmid interfaces
 
 dcop_FILES = *.h
 dcop_LIBS = -lqt
@@ -20,8 +20,8 @@ kdecore_LIBS = -lkdefx -ldcop -lqt
 kdeui_FILES = *.h
 kdeui_LIBS = -lkdecore -lkdefx -ldcop -lqt
 
-kab_FILES = kabapi.h addressbook.h
-kab_LIBS = -lkdecore -lkdeui -lqt
+kabc_FILES = address.h addressbook.h addressee.h addresseedialog.h distributionlist.h distributionlisteditor.h format.h geo.h phonenumber.h resource.h resourcefile.h simpleformat.h stdaddressbook.h timezone.h vcardformat.h
+kabc_LIBS = -lkdecore -lkdeui -lqt
 
 kfile_FILES= *.h
 kfile_PATH = kio/kfile
@@ -33,8 +33,11 @@ kspell_LIBS = -lkdecore -lkdeui -lkdefx -lqt
 kjs_FILES = value.h types.h object.h interpreter.h operations.h ustring.h
 kjs_LIBS = -lqt
 
+kdeprint_FILES = kprinter.h kprintdialogpage.h kpreloadobject.h
+kdeprint_LIBS = -lkdefx -lkdeui -lkdecore -lqt
+
 khtml_FILES = *.h dom/*.h
-khtml_LIBS = -lkio -lkparts -lkdecore -lkdeui -lkdefx -lqt
+khtml_LIBS = -ldcop -lkjs -lkio -lkparts -lkdecore -lkdeui -lkdefx -lkdeprint -lqt
 
 kdejava_FILES = *.h
 kdejava_PATH = khtml/java
@@ -54,9 +57,6 @@ kssl_LIBS = -lkdeui -lkdefx -ldcop -lqt
 
 kparts_FILES = *.h
 kparts_LIBS = -lkio -lkdeui -lkdefx -lkdecore -lqt
-
-kdeprint_FILES = kprinter.h kprintdialogpage.h kpreloadobject.h
-kdeprint_LIBS = -lkdefx -lkdeui -lkdecore -lqt
 
 libkmid_FILES = *.h
 libkmid_LIBS = -lqt
