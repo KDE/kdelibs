@@ -23,7 +23,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************************************************/
 
 #include "dcopstub.h"
-#include <dcopclient.h>
+#include "dcopclient.h"
 
 class DCOPStubPrivate
 {

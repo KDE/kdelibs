@@ -43,7 +43,7 @@ dcopserver_la_METASOURCES = dcopserver.moc
 testdcop_METASOURCES = testdcop.moc
 
 # dcopstub needs to go first for --enable-final to work
-libDCOP_la_SOURCES = dcopstub.cpp dcopref.cpp dcopobject.cpp dcopclient.cppy
+libDCOP_la_SOURCES = dcopstub.cpp dcopref.cpp dcopobject.cpp dcopclient.cpp
 
 dcopserver_la_LDFLAGS = -module -avoid-version $(all_libraries)
 dcopserver_la_SOURCES = dcopserver.cpp dcopsignals.cpp
