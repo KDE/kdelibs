@@ -308,7 +308,7 @@ QRect B2Style::buttonRect(int x, int y, int w, int h)
 
 void B2Style::drawComboButton(QPainter *p, int x, int y, int w, int h,
                                  const QColorGroup &g, bool sunken,
-                                 bool, bool, const QBrush *fill)
+                                 bool edit, bool, const QBrush *fill)
 {
     int x2 = x+w-1;
     int y2 = y+h-1;
@@ -327,6 +327,15 @@ void B2Style::drawComboButton(QPainter *p, int x, int y, int w, int h,
 
     p->setPen(g.dark());
     p->drawPoint(x+1, y+1);
+
+    if(edit){
+        x2 = x2-17;
+        y2 = y2-3;
+        p->setPen(g.dark());
+        //p->drawRect(x+2, y+2, x2, y2);
+        p->drawLine(x+3, y+2, x2, y+2);
+        p->drawLine(x+2, y+3, x+2, y2);
+    }
     
     int arrow_h = h / 3;
     int arrow_w = arrow_h;
