@@ -12,6 +12,7 @@ BUILDDIR = $(shell pwd)
 QTDOCDIR  = usr/share/doc/qt-doc/doc/html
 KDEDOCDIR = usr/share/doc/kdelibs3-doc/html
 export KDB2HTML_UNINSTALLED=$(BUILDDIR)/ksgmltools/customization/
+
 tmp = $(shell pwd)/debian/kdelibs3
 
 build: build-stamp
@@ -154,8 +155,10 @@ binary-arch:  build
 	dh_makeshlibs -a -V
 	dh_installdeb -a
 	dh_shlibdeps -a -l`pwd`/debian/kdelibs3/usr/lib:`pwd`/debian/libarts/usr/lib:`pwd`/debian/libkmid/usr/lib:`pwd`/debian/kdelibs3-cups/usr/lib
-	dh_shlibdeps -plibarts-alsa -l`pwd`/debian/libarts-alsa/usr/lib:`pwd`/debian/libkmid-alsa/usr/lib
-	dh_shlibdeps -plibkmid-alsa -l`pwd`/debian/libarts-alsa/usr/lib:`pwd`/debian/libkmid-alsa/usr/lib
+	echo -n `cat debian/libarts.substvars` > debian/libarts-alsa.substvars
+	echo ", libasound1 (>= 0.5.5)" >> debian/libarts-alsa.substvars
+	echo -n `cat debian/libkmid.substvars` > debian/libkmid-alsa.substvars
+	echo ", libasound1 (>= 0.5.5)" >> debian/libkmid-alsa.substvars
 	dh_gencontrol 
 	dh_md5sums 
 	dh_builddeb -a
