@@ -100,6 +100,7 @@ public:
     virtual ushort id() const;
 
     virtual void attach(KHTMLView *);
+    virtual void detach();
     virtual void applyChanges(bool top=true);
 
     virtual bool mouseEvent( int _x, int _y, int, MouseEventType,

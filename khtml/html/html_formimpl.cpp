@@ -158,7 +158,7 @@ void HTMLFormElementImpl::attach(KHTMLView *_view)
 void HTMLFormElementImpl::detach()
 {
     view = 0;
-    NodeBaseImpl::detach();
+    HTMLElementImpl::detach();
 }
 
 void HTMLFormElementImpl::radioClicked( RenderFormElement *caller )
@@ -279,7 +279,7 @@ void HTMLGenericFormElementImpl::attach(KHTMLView *_view)
 void HTMLGenericFormElementImpl::detach()
 {
     view = 0;
-    NodeBaseImpl::detach();
+    HTMLElementImpl::detach();
 }
 
 // -------------------------------------------------------------------------
@@ -632,12 +632,6 @@ void HTMLInputElementImpl::attach(KHTMLView *_view)
     }
     NodeBaseImpl::attach(_view);
 }
-
-void HTMLInputElementImpl::detach()
-{
-    HTMLGenericFormElementImpl::detach();
-}
-
 
 // -------------------------------------------------------------------------
 

@@ -90,7 +90,6 @@ public:
     virtual void parseAttribute(khtml::Attribute *token);
 
     virtual void attach(KHTMLView *w);
-    virtual void detach();
 
     QString serviceType;
     QString url;

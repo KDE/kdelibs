@@ -361,11 +361,6 @@ void HTMLTableElementImpl::attach(KHTMLView *w)
     style()->setFlowAroundFloats(true);
 }	
 
-void HTMLTableElementImpl::detach()
-{
-    NodeBaseImpl::detach();
-}
-
 // --------------------------------------------------------------------------
 
 void HTMLTablePartElementImpl::parseAttribute(Attribute *attr)
@@ -390,11 +385,6 @@ void HTMLTablePartElementImpl::parseAttribute(Attribute *attr)
 void HTMLTablePartElementImpl::attach(KHTMLView *w)
 {
     HTMLElementImpl::attach(w);
-}
-
-void HTMLTablePartElementImpl::detach()
-{
-    NodeBaseImpl::detach();
 }
 
 // -------------------------------------------------------------------------
@@ -617,6 +607,7 @@ void HTMLTableCellElementImpl::attach(KHTMLView *_view)
     if(r)
     {
 	m_render = khtml::RenderObject::createObject(this);
+	m_render->ref();
 	if(m_render && m_render->style()->display() == TABLE_CELL)
 	{
 	    RenderTableCell *cell = static_cast<RenderTableCell *>(m_render);

@@ -73,7 +73,7 @@ public:
 
     void registerFormElement(khtml::RenderFormElement *);
     void removeFormElement(khtml::RenderFormElement *);
-    
+
 
 protected:
     DOMString url;
@@ -222,7 +222,6 @@ public:
     virtual void parseAttribute(khtml::Attribute *attr);
 
     virtual void attach(KHTMLView *w);
-    virtual void detach();
 
 protected:
     typeEnum _type;

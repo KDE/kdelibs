@@ -112,7 +112,6 @@ public:
     virtual void parseAttribute(khtml::Attribute *attr);
 
     virtual void attach(KHTMLView *);
-    virtual void detach();
 
 protected:
     HTMLTableSectionElementImpl *head;
@@ -139,7 +138,6 @@ public:
     virtual void parseAttribute(khtml::Attribute *attr);
 
     void attach(KHTMLView *);
-    void detach();
 };
 
 // -------------------------------------------------------------------------

@@ -174,7 +174,7 @@ void HTMLAppletElementImpl::attach(KHTMLView *_view)
 void HTMLAppletElementImpl::detach()
 {
     view = 0;
-    NodeBaseImpl::detach();
+    HTMLElementImpl::detach();
 }
 
 // -------------------------------------------------------------------------
@@ -251,11 +251,6 @@ void HTMLObjectElementImpl::attach(KHTMLView *w)
   r->addChild( m_render, _next ? _next->renderer() : 0 );
 
   NodeBaseImpl::attach( w );
-}
-
-void HTMLObjectElementImpl::detach()
-{
-  NodeBaseImpl::detach();
 }
 
 // -------------------------------------------------------------------------

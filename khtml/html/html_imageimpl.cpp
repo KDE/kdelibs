@@ -186,6 +186,7 @@ void HTMLImageElementImpl::attach(KHTMLView *w)
 	renderImage->setAlt(alt);
 	renderImage->setImageUrl(imageURL, static_cast<HTMLDocumentImpl *>(document)->baseURL());
 	m_render = renderImage;
+	m_render->ref();
 	if(m_render) r->addChild(m_render, _next ? _next->renderer() : 0);
 	
     }

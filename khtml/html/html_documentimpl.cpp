@@ -321,9 +321,12 @@ void HTMLDocumentImpl::attach(KHTMLView *w)
 
 void HTMLDocumentImpl::detach()
 {
+    kdDebug( 6090 ) << "HTMLDocumentImpl::detach()" << endl;
     m_view = 0;
 
-    NodeBaseImpl::detach();
+    if(m_render) m_render->deref();
+    m_render = 0;
+    DocumentImpl::detach();
 }
 
 void HTMLDocumentImpl::setVisuallyOrdered()

@@ -226,6 +226,13 @@ void TextImpl::attach(KHTMLView *w)
     CharacterDataImpl::attach(w);
 }
 
+void TextImpl::detach()
+{
+    if(m_render) m_render->deref();
+    m_render = 0;
+    CharacterDataImpl::detach();
+}
+
 void TextImpl::applyChanges(bool)
 {
     m_style = parentNode()->style();

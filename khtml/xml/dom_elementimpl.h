@@ -136,7 +136,8 @@ public:
     virtual QString state() { return QString::null; }
 
     virtual void attach(KHTMLView *w);
-    
+    virtual void detach(); 
+
     const khtml::AttributeList getAttributes();
 
 protected: // member variables

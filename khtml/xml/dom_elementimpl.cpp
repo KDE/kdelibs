@@ -395,6 +395,13 @@ void ElementImpl::attach(KHTMLView *w)
     NodeBaseImpl::attach(w);
 }
 
+void ElementImpl::detach() 
+{
+    if(m_render) m_render->deref();
+    m_render = 0;
+    NodeBaseImpl::detach();
+}
+
 void ElementImpl::applyChanges(bool top)
 {
 
@@ -406,7 +413,7 @@ void ElementImpl::applyChanges(bool top)
 
     m_style->setFlowAroundFloats(faf);
     m_render->setStyle(m_style);
-    
+
 
     // a style change can influence the children, so we just go
     // through them and trigger an appplyChanges there too
@@ -415,7 +422,7 @@ void ElementImpl::applyChanges(bool top)
 	n->applyChanges(false);
 	n = n->nextSibling();
     }
-    
+
     // calc min and max widths starting from leafs
     // might belong to renderer, but this is simple to do here
     m_render->calcMinMaxWidth();

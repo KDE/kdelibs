@@ -235,7 +235,7 @@ void HTMLFrameElementImpl::detach()
 {
     delete view;
     parentWidget = 0;
-    NodeBaseImpl::detach();
+    HTMLElementImpl::detach();
 }
 
 // -------------------------------------------------------------------------
