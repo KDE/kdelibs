@@ -53,6 +53,12 @@
 #include <linux/asequencer.h>
 #endif
 
+#if 1
+#include <kinstance.h>
+#include <kglobal.h>
+#include <kconfig.h>
+#endif
+
 //#define DEVICEMANDEBUG
 //#define GENERAL_DEBUG_MESSAGES
 
@@ -86,7 +92,33 @@ void DEBUGPRINTF(const char *,const char * ) { }
 
 DeviceManager::DeviceManager(int def)
 {
-  default_dev=def;
+#if 1
+  if (def==-1)
+  {
+    KInstance *tmp_instance=0L;
+    if (!KGlobal::_instance) tmp_instance=new KInstance("nonKDEapp");
+    KConfig *config = new KConfig("kcmmidirc", true);
+
+    config->setGroup("Configuration");
+    default_dev=config->readNumEntry("midiDevice",0);
+    QString mapurl(config->readEntry("mapFilename",""));
+    if ((config->readBoolEntry("useMidiMapper", false))&&(!mapurl.isEmpty()))
+    {
+      mapper_tmp = new MidiMapper( mapurl.mid(mapurl.find(":")+1 ).local8Bit() );
+    }
+    else 
+      mapper_tmp = 0L;
+    
+    delete config;     
+    delete tmp_instance;
+  }
+  else
+#endif
+  {  
+    default_dev = def;
+    mapper_tmp = 0L;
+  }
+  
   initialized=0;
   _ok=1;
   alsa=false;
@@ -95,7 +127,6 @@ DeviceManager::DeviceManager(int def)
   rate=100;
   convertrate=10;
 #endif
-  mapper_tmp = 0L;
   seqfd=-1;
   timerstarted=0;
   for (int i=0;i<16;i++) chn2dev[i]=default_dev;
@@ -126,7 +157,6 @@ int DeviceManager::checkInit(void)
   {
     int r=initManager();
     if (default_dev>=n_total) default_dev=0;
-    setMidiMap(mapper_tmp);
     DEBUGPRINTF("check : %d\n",r);
     return r;
   }
@@ -294,6 +324,8 @@ int DeviceManager::initManager(void)
 #endif  
 
   }
+  
+  if (mapper_tmp!=0L) setMidiMap(mapper_tmp);
 
   initialized=1;
 

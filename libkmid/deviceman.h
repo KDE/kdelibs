@@ -167,10 +167,10 @@ class DeviceManager
      * Constructor. It just initializes internal variables, before playing any
      * music, you should call @ref #initManager(), @ref #setMidiMap() 
      * (optional), @ref #openDev(), @ref #initDev(), @ref #setPatchesToUse()
-     * (optional, except if you're playing to a GUS device, which must load
+     * (not required, unless you're playing to a GUS device, which must load
      * the patches), @ref #tmrStart(), and finally, play the music.
      */
-    DeviceManager(int def=0);
+    DeviceManager(int def=-1);
 
     /**
      * Destructor. It closes the device (calling @ref #closeDev() ) if it wasn't
@@ -181,8 +181,9 @@ class DeviceManager
     /**
      * Initializes the MIDI Device Manager object.
      * 
-     * The /dev/sequencer file is opened,  available devices are analyzed and
-     * *Out objects are created. Then, the /dev/sequencer file is closed.
+     * The /dev/sequencer and/or /dev/snd/seq files are opened, available
+     * devices are analyzed and *Out objects are created. Then, the 
+     * device files are closed.
      *
      * @return 0 if everything was OK, or -1 if there was an error and it
      * couldn't be initialized (for example, because it couldn't open the 

@@ -41,7 +41,7 @@ struct kMidData kMid;
 
 int KMidSimpleAPI::kMidInit(void)
 {
-  kMid.midi = new DeviceManager(0);
+  kMid.midi = new DeviceManager();
   if ( kMid.midi == 0L ) return 1;
   kMid.midi->initManager();
   if (!kMid.midi->ok()) return 1;
