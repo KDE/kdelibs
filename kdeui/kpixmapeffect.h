@@ -15,10 +15,11 @@ public:
     /**
      * Draws a pyramid gradient from color ca to color cb.
      */
-    enum Effect { PyramidGradient, RectangleGradient, ConicGradient };
+    enum GradientType { PyramidGradient, RectangleGradient, ConicGradient };
 
-    static void apply(KPixmap &pixmap, const QColor &ca,
-                                const QColor &cb, Effect eff, int ncols=3);
+    static void advancedGradient(KPixmap &pixmap, const QColor &ca,
+                                 const QColor &cb, GradientType eff,
+                                 int ncols=3);
 };
     
 

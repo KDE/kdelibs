@@ -57,7 +57,7 @@ void KGradientWidget::paintEvent(QPaintEvent *ev)
 
     // pyramidal
     it = time.elapsed();
-    KPixmapEffect::apply(pix, Qt::black, Qt::red, 
+    KPixmapEffect::advancedGradient(pix, Qt::black, Qt::red, 
 			 KPixmapEffect::PyramidGradient);
     ft = time.elapsed();
     say.setNum( ft - it); say += " ms";
@@ -66,7 +66,7 @@ void KGradientWidget::paintEvent(QPaintEvent *ev)
 
     // rectangular
     it = time.elapsed();
-    KPixmapEffect::apply(pix, Qt::black, Qt::red, 
+    KPixmapEffect::advancedGradient(pix, Qt::black, Qt::red, 
 			 KPixmapEffect::RectangleGradient);
     ft = time.elapsed();
     say.setNum( ft - it); say += " ms";

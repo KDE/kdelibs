@@ -3,8 +3,9 @@
 #include <dither.h>
 #include <qcolor.h>
 
-void KPixmapEffect::apply(KPixmap &pixmap, const QColor &ca,
-                                    const QColor &cb, Effect eff, int ncols)
+void KPixmapEffect::advancedGradient(KPixmap &pixmap, const QColor &ca,
+                                     const QColor &cb, GradientType eff,
+                                     int ncols)
 {
     int rDiff, gDiff, bDiff;
     int rca, gca, bca;
