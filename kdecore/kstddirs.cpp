@@ -60,7 +60,7 @@ void KStandardDirs::addPrefix( QString dir )
 	dir += '/';
 
     if (!prefixes.contains(dir)) {
-	prefixes.prepend(dir);
+	prefixes.append(dir);
 	dircache.clear();
     }
 }
@@ -111,6 +111,16 @@ QString KStandardDirs::findResource( const char *type,
 {
     if (filename.at(0) == '/')
 	return filename; // absolute dirs are absolute dirs, right? :-/
+
+#if 0
+fprintf(stderr, "Find resource:\n");
+for (QStringList::ConstIterator pit = prefixes.begin();
+     pit != prefixes.end(); 
+     pit++)
+{
+  fprintf(stderr, "Prefix: %s\n", (*pit).ascii());
+}
+#endif
 
     QString dir = findResourceDir(type, filename);
     if (dir.isNull())
@@ -390,8 +400,11 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
       }
     dirs = relatives.find(type);
     if (dirs)
-      for (QStringList::ConstIterator pit = prefixes.fromLast();
-	   pit != prefixes.end(); --pit)
+    {
+      for (QStringList::ConstIterator pit = prefixes.begin();
+	   pit != prefixes.end(); 
+           pit++)
+      {
 	for (QStringList::ConstIterator it = dirs->begin();
 	     it != dirs->end(); ++it) {
 	  QString path = *pit + *it;
@@ -399,6 +412,8 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
 	  if (testdir.exists() && !candidates->contains(path))
 	    candidates->append(path);
 	}
+      }
+    }
     dircache.insert(type, candidates);
   }
   return *candidates;
@@ -600,14 +615,28 @@ void KStandardDirs::addKDEDefaults()
     QStringList kdedirList;
 
     const char *kdedirs = getenv("KDEDIRS");
-    if (kdedirs && strlen(kdedirs))
+    if (kdedirs)
 	tokenize(kdedirList, kdedirs, ":");
     else {
 	QString kdedir = getenv("KDEDIR");
 	if (!kdedir.isEmpty())
 	  kdedirList.append(kdedir);
-        kdedirList.append(QDir::homeDirPath() + "/.kde/");
     }
+    kdedirList.append(KDEDIR);
+
+    QString localKdeDir;
+    const char *localkde = getenv("KDEHOME");
+    if (localkde && strlen(localkde))
+    {
+       localKdeDir = QFile::decodeName(localkde);
+       if (localKdeDir[localKdeDir.length()-1] != '/')
+          localKdeDir += '/';
+    }
+    else
+    {
+       localKdeDir =  QDir::homeDirPath() + "/.kde/";
+    }
+    addPrefix(localKdeDir);
 
     for (QStringList::ConstIterator it = kdedirList.begin();
 	 it != kdedirList.end(); it++)
@@ -631,7 +660,9 @@ bool KStandardDirs::addCustomized(KConfig *config)
     uint configdirs = resourceDirs("config").count();
 
     // reading the prefixes in
-    KConfigGroupSaver(config, "Directories");
+    QString oldGroup = config->group();
+    config->setGroup("Directories");
+
     QStringList list;
     QStringList::ConstIterator it;
     list = config->readListEntry("prefixes");
@@ -658,6 +689,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
 
     // save it for future calls - that will return
     addedCustoms = true;
+    config->setGroup(oldGroup);
 
     // return true if the number of config dirs changed
     return (resourceDirs("config").count() != configdirs);
@@ -665,7 +697,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
 
 QString KStandardDirs::localkdedir() const
 {
-    // The first dir in KDEDIRS is the local dir.
+    // Return the prefix to use for saving
     return prefixes.first();
 }
 
