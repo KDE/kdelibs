@@ -30,67 +30,27 @@
 #include <kconfig.h>
 #include <kurl.h>
 #include <qtl.h>
+#include <qfontdatabase.h>
 
 #include <X11/Xlib.h>
 
 #include <kiconloader.h>
 
+static QFontDatabase *fontDataBase = 0;
+
+static void cleanupFontDatabase()
+{
+    delete fontDataBase;
+    fontDataBase = 0;
+}
+
 static void get_fonts( QStringList &lst )
 {
-    int numFonts;
-    Display *kde_display;
-    char** fontNames;
-    char** fontNames_copy;
-    QString qfontname;
-
-    kde_display = kapp->getDisplay();
-
-    bool have_installed = kapp->kdeFonts( lst );
-
-    if ( have_installed )
-	return;
-
-    fontNames = XListFonts( kde_display, "*", 32767, &numFonts );
-    fontNames_copy = fontNames;
-
-    for( int i = 0; i < numFonts; i++ ) {
-
-	if ( **fontNames != '-' ) {
-	    fontNames ++;
-	    continue;
-	};
-
-	qfontname = "";
-	qfontname = *fontNames;
-	int dash = qfontname.find ( '-', 1, TRUE );
-
-	if ( dash == -1 ) {
-	    fontNames ++;
-	    continue;
-	}
-
-	int dash_two = qfontname.find ( '-', dash + 1 , TRUE );
-
-	if ( dash == -1 ) {
-	    fontNames ++;
-	    continue;
-	}
-
-
-	qfontname = qfontname.mid( dash +1, dash_two - dash -1 );
-
-	if ( !qfontname.contains( QString::fromLatin1("open look"), TRUE ) ) {
-	    if( qfontname != QString::fromLatin1("nil") ){
-		if( lst.find( qfontname ) == lst.end() )
-		    lst.append( qfontname );
-	    }
-	}
-
-	fontNames ++;
-
+    if ( !fontDataBase ) {
+	fontDataBase = new QFontDatabase();
+	qAddPostRoutine( cleanupFontDatabase );
     }
-
-    XFreeFontNames( fontNames_copy );
+    lst = fontDataBase->families();
 }
 
 int KAction::getToolButtonID()
@@ -978,7 +938,7 @@ KSelectAction::KSelectAction( const QString& text, int accel, QObject* parent,
 }
 
 KSelectAction::KSelectAction( const QString& text, int accel,
-                              const QObject* receiver, const char* slot,
+                              const QObject*, const char*,
                               QObject* parent, const char* name )
   : KAction( text, accel, parent, name )
 {
@@ -1617,66 +1577,79 @@ KFontAction::KFontAction( const QString& text, int accel, QObject* parent,
                           const char* name )
   : KSelectAction( text, accel, parent, name )
 {
-  get_fonts( d->m_fonts );
-  KSelectAction::setItems( d->m_fonts );
-  setEditable( TRUE );
+    d = new KFontActionPrivate;
+    get_fonts( d->m_fonts );
+    KSelectAction::setItems( d->m_fonts );
+    setEditable( TRUE );
 }
 
 KFontAction::KFontAction( const QString& text, int accel,
                           const QObject* receiver, const char* slot,
                           QObject* parent, const char* name )
-  : KSelectAction( text, accel, receiver, slot, parent, name )
+    : KSelectAction( text, accel, receiver, slot, parent, name )
 {
-  get_fonts( d->m_fonts );
-  KSelectAction::setItems( d->m_fonts );
-  setEditable( TRUE );
+    d = new KFontActionPrivate;
+    get_fonts( d->m_fonts );
+    KSelectAction::setItems( d->m_fonts );
+    setEditable( TRUE );
 }
 
 KFontAction::KFontAction( const QString& text, const QIconSet& pix, int accel,
                           QObject* parent, const char* name )
-  : KSelectAction( text, pix, accel, parent, name )
+    : KSelectAction( text, pix, accel, parent, name )
 {
-  get_fonts( d->m_fonts );
-  KSelectAction::setItems( d->m_fonts );
-  setEditable( TRUE );
+    d = new KFontActionPrivate;
+    get_fonts( d->m_fonts );
+    KSelectAction::setItems( d->m_fonts );
+    setEditable( TRUE );
 }
 
 KFontAction::KFontAction( const QString& text, const QString& pix, int accel,
                           QObject* parent, const char* name )
-  : KSelectAction( text, pix, accel, parent, name )
+    : KSelectAction( text, pix, accel, parent, name )
 {
-  get_fonts( d->m_fonts );
-  KSelectAction::setItems( d->m_fonts );
-  setEditable( TRUE );
+    d = new KFontActionPrivate;
+    get_fonts( d->m_fonts );
+    KSelectAction::setItems( d->m_fonts );
+    setEditable( TRUE );
 }
 
 KFontAction::KFontAction( const QString& text, const QIconSet& pix, int accel,
                           const QObject* receiver, const char* slot,
                           QObject* parent, const char* name )
-  : KSelectAction( text, pix, accel, receiver, slot, parent, name )
+    : KSelectAction( text, pix, accel, receiver, slot, parent, name )
 {
-  get_fonts( d->m_fonts );
-  KSelectAction::setItems( d->m_fonts );
-  setEditable( TRUE );
+    d = new KFontActionPrivate;
+    get_fonts( d->m_fonts );
+    KSelectAction::setItems( d->m_fonts );
+    setEditable( TRUE );
 }
 
 KFontAction::KFontAction( const QString& text, const QString& pix, int accel,
                           const QObject* receiver, const char* slot,
                           QObject* parent, const char* name )
-  : KSelectAction( text, pix, accel, receiver, slot, parent, name )
+    : KSelectAction( text, pix, accel, receiver, slot, parent, name )
 {
-  get_fonts( d->m_fonts );
-  KSelectAction::setItems( d->m_fonts );
-  setEditable( TRUE );
+    d = new KFontActionPrivate;
+    get_fonts( d->m_fonts );
+    KSelectAction::setItems( d->m_fonts );
+    setEditable( TRUE );
 }
 
 
 KFontAction::KFontAction( QObject* parent, const char* name )
   : KSelectAction( parent, name )
 {
-  get_fonts( d->m_fonts );
-  KSelectAction::setItems( d->m_fonts );
-  setEditable( TRUE );
+    d = new KFontActionPrivate;
+    get_fonts( d->m_fonts );
+    KSelectAction::setItems( d->m_fonts );
+    setEditable( TRUE );
+}
+
+KFontAction::~KFontAction()
+{
+    delete d;
+    d = 0;
 }
 
 void KFontAction::setFont( const QString &family )
@@ -2156,6 +2129,7 @@ KActionCollection::KActionCollection( QObject *parent, const char *name,
 }
 
 KActionCollection::KActionCollection( const KActionCollection &copy )
+    : QObject()
 {
   d = new KActionCollectionPrivate;
   d->m_actions = copy.d->m_actions;

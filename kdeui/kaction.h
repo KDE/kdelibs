@@ -1086,6 +1086,7 @@ public:
                  const char* name = 0 );
 
     KFontAction( QObject* parent = 0, const char* name = 0 );
+    ~KFontAction();
 
     void setFont( const QString &family );
     QString font() const {
