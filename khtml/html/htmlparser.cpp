@@ -322,7 +322,7 @@ void KHTMLParser::parseToken(Token *t)
 
     // holy shit. apparently some sites use </br> instead of <br>
     // be compatible with IE and NS
-    if(document->document()->parseMode() != DocumentImpl::Strict && t->id == ID_BR+ID_CLOSE_TAG)
+    if(t->id == ID_BR+ID_CLOSE_TAG && document->document()->parseMode() != DocumentImpl::Strict)
         t->id -= ID_CLOSE_TAG;
 
     if(t->id > ID_CLOSE_TAG)
@@ -331,6 +331,7 @@ void KHTMLParser::parseToken(Token *t)
         return;
     }
 
+#if 1
     // ignore spaces, if we're not inside a paragraph or other inline code
     if( t->id == ID_TEXT ) {
 #ifdef PARSER_DEBUG
@@ -338,13 +339,15 @@ void KHTMLParser::parseToken(Token *t)
             kdDebug(6035) << "length="<< t->text->l << " text='" << QConstString(t->text->s, t->text->l).string() << "'" << endl;
 #endif
         if (!_inline  || !inBody || current->id() == ID_OPTION)  {
-            if(t->text && t->text->l == 1 && (*t->text->s).latin1() == ' ')
+            if(t->text && t->text->l == 1 && (*t->text->s).latin1() == ' ') {
                 return;
+            }
+
         } else if ( inBody ) {
             noRealBody = false;
         }
     }
-
+#endif
 
     NodeImpl *n = getElement(t);
     // just to be sure, and to catch currently unimplemented stuff
@@ -411,6 +414,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
 #if SPEED_DEBUG < 2
             if(!n->attached() && HTMLWidget )  n->attach(HTMLWidget);
 #endif
+            //_inline = current->isInline();
             if(current->isInline()) _inline = true;
         }
         else {
@@ -421,10 +425,8 @@ bool KHTMLParser::insertNode(NodeImpl *n)
         }
 
 #if SPEED_DEBUG < 1
-        if(tagPriority[id] == 0 && n->renderer()) {
+        if(tagPriority[id] == 0 && n->renderer())
             n->renderer()->calcMinMaxWidth();
-            if (n->id() == ID_EMBED) n->renderer()->close();
-        }
 #endif
         return true;
     } else {
@@ -570,6 +572,13 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 return false;
             return true;
         }
+        case ID_TD:
+        case ID_TH:
+            // lets try to close the konqblock
+            // ### do we need a flag here so we don't fall
+            // into recursion if there is no konqblock ?
+            popBlock( ID__KONQBLOCK );
+            return insertNode( n );
         default:
             break;
         }
