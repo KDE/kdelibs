@@ -1635,6 +1635,39 @@ void RenderTextArea::close( )
     RenderFormElement::close();
 }
 
+static QString expandLF(const QString& s) 
+{ 
+    // LF -> CRLF 
+    unsigned crs = s.contains( '\n' ); 
+    if (crs == 0)
+	return s;
+    unsigned len = s.length(); 
+ 
+    QString r;
+    r.reserve(len + crs + 1); 
+    unsigned pos2 = 0; 
+    for(unsigned pos = 0; pos < len; pos++) 
+    { 
+       QChar c = s.at(pos); 
+       switch(c.unicode()) 
+       { 
+         case '\n': 
+           r[pos2++] = '\r'; 
+           r[pos2++] = '\n'; 
+           break; 
+ 
+         case '\r': 
+           break; 
+ 
+         default: 
+           r[pos2++]= c; 
+           break; 
+       } 
+    } 
+    r.squeeze();
+    return r; 
+} 
+
 QString RenderTextArea::text()
 {
     QString txt;
@@ -1661,7 +1694,7 @@ QString RenderTextArea::text()
     else
         txt = w->text();
 
-    return txt;
+    return expandLF(txt);
 }
 
 
