@@ -1099,37 +1099,37 @@ void KToolBar::saveSettings(KConfig *config, const QString &_configGroup)
     if ( position != d->PositionDefault )
       config->writeEntry("Position", position);
     else
-      if(config->hasKey("Position")) config->deleteEntry("Position");
+      config->deleteEntry("Position");
 
     if ( icontext != d->IconTextDefault )
       config->writeEntry("IconText", icontext);
     else
-      if(config->hasKey("IconText")) config->deleteEntry("IconText");
-
+      config->deleteEntry("IconText");
+	    
     if ( iconSize() != d->IconSizeDefault )
       config->writeEntry("IconSize", iconSize());
     else
-      if(config->hasKey("IconSize")) config->deleteEntry("IconSize");
+      config->deleteEntry("IconSize");
 
     if ( isHidden() != d->HiddenDefault )
       config->writeEntry("Hidden", isHidden());
     else
-      if(config->hasKey("Hidden")) config->deleteEntry("Hidden");
+      config->deleteEntry("Hidden");
 
     if ( index != d->IndexDefault )
       config->writeEntry( "Index", index );
     else
-      if(config->hasKey("Index")) config->deleteEntry("Index");
+      config->deleteEntry("Index");
 
     if ( offset() != d->OffsetDefault )
       config->writeEntry( "Offset", offset() );
     else
-      if(config->hasKey("Offset")) config->deleteEntry("Offset");
+      config->deleteEntry("Offset");
 
     if ( newLine() != d->NewLineDefault )
       config->writeEntry( "NewLine", newLine() );
     else
-      if(config->hasKey("NewLine")) config->deleteEntry("NewLine");
+      config->deleteEntry("NewLine");
 }
 
 
