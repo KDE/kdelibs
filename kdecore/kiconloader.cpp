@@ -513,14 +513,14 @@ QStringList KIconLoader::loadAnimated(const QString& name, int group, int size) 
     }
     if (file.isEmpty())
 	return lst;
-    lst += file;
+    lst += (name + file.right(file.length() - file.findRev('/')));
 
     int i=1;
     QString fmt = file.left(file.length() - 8) + "%04d.png";
     file.sprintf(fmt.latin1(), i);
     while (KStandardDirs::exists(file))
     {
-	lst += file;
+        lst += (name + file.right(file.length() - file.findRev('/')));
 	file.sprintf(fmt.latin1(), ++i);
     }
     return lst;
