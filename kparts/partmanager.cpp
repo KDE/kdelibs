@@ -73,7 +73,7 @@ PartManager::PartManager( QWidget * parent, const char * name )
   qApp->installEventFilter( this );
 
   d->m_policy = Direct;
-  
+
   addManagedTopLevelWidget( parent );
 }
 
@@ -83,7 +83,7 @@ PartManager::~PartManager()
   for (; it.current(); ++it )
     disconnect( it.current(), SIGNAL( destroyed() ),
 		this, SLOT( slotManagedTopLevelWidgetDestroyed() ) );
- 
+
   // core dumps ... setActivePart( 0L );
   qApp->removeEventFilter( this );
   delete d;
@@ -228,11 +228,13 @@ void PartManager::addPart( Part *part, bool setActive )
   }
 
   // Prevent focus problems
-  if ( part->widget() &&
-      ( part->widget()->focusPolicy() == QWidget::NoFocus ||
-        part->widget()->focusPolicy() == QWidget::TabFocus ) )
+  if ( part->widget() && part->widget()->focusPolicy() == QWidget::NoFocus )
   {
-    kdWarning(1000) << QString("Part %1 must have at least a ClickFocus policy. Prepare for trouble !").arg(part->name()) << endl;
+    kdWarning(1000) << "Part '" << part->name() << "' has a widget " << part->widget()->name() << " with a focus policy of NoFocus. It should have at least a ClickFocus policy, for part activation to work well." << endl;
+  }
+  if ( part->widget() && part->widget()->focusPolicy() == QWidget::TabFocus )
+  {
+    kdWarning(1000) << "Part '" << part->name() << "' has a widget " << part->widget()->name() << " with a focus policy of TabFocus. It should have at least a ClickFocus policy, for part activation to work well." << endl;
   }
 
   if ( part->widget() )
@@ -389,10 +391,10 @@ void PartManager::addManagedTopLevelWidget( const QWidget *topLevel )
 {
   if ( !topLevel->isTopLevel() )
     return;
-  
+
   if ( d->m_managedTopLevelWidgets.containsRef( topLevel ) )
     return;
-  
+
   d->m_managedTopLevelWidgets.append( topLevel );
   connect( topLevel, SIGNAL( destroyed() ),
 	   this, SLOT( slotManagedTopLevelWidgetDestroyed() ) );
@@ -402,10 +404,10 @@ void PartManager::removeManagedTopLevelWidget( const QWidget *topLevel )
 {
   if ( !topLevel->isTopLevel() )
     return;
-  
+
   if ( d->m_managedTopLevelWidgets.findRef( topLevel ) == -1 )
     return;
-  
+
   d->m_managedTopLevelWidgets.remove();
 }
 
@@ -413,6 +415,6 @@ void PartManager::slotManagedTopLevelWidgetDestroyed()
 {
   const QWidget *widget = static_cast<const QWidget *>( sender() );
   removeManagedTopLevelWidget( widget );
-} 
+}
 
 #include "partmanager.moc"
