@@ -102,6 +102,9 @@
 2001        kregexpeditor
 2002        kfloppy
 2003        ksim
+2100	    kgpg
+2200	    kdf
+2300        kwallet
 
 # kdeadmin
 3000        ksysv 
