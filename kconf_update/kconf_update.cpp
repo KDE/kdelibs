@@ -669,7 +669,7 @@ void KonfUpdate::gotScript(const QString &_script)
    if (path.isEmpty())
    {
       if (interpreter.isEmpty())
-         path = locate("exe", "kconf_update_bin/"+script);
+         path = locate("lib", "kconf_update_bin/"+script);
 
       if (path.isEmpty())
       {
