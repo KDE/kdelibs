@@ -15,7 +15,7 @@ $(BUILDDIR)/build-stamp:
 	fi
 	test -d $(BUILDDIR) || mkdir $(BUILDDIR) ;\
 	cd $(BUILDDIR) ;\
-	eval `perl -w ../debian/kderules echodirs`; \
+	eval `perl -w ../admin/debianrules echodirs`; \
 	INSTALL_DATA='install -p -c -m 644' \
 	CFLAGS="-O2 -Wall -Wno-uninitialized -g -pipe" \
 	CXXFLAGS="-O2 -Wall -Wno-uninitialized -g -pipe" \
@@ -50,8 +50,8 @@ binary-arch:  build
 	dh_installdirs
 	make -C $(BUILDDIR) DESTDIR=`pwd`/debian/tmp install
 
-	perl -w debian/kderules kdelibs3-cvs
-	eval `perl -w debian/kderules echodirs`; \
+	perl -w admin/debianrules kdelibs3-cvs
+	eval `perl -w admin/debianrules echodirs`; \
 	dh_movefiles -pkdelibs3-cvs-dev $$includedir $$libdir/lib*.so $$libdir/lib*.la
 	dh_installdocs 
 	dh_installchangelogs
