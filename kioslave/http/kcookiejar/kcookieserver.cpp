@@ -195,7 +195,8 @@ void KCookieServer::checkCookies(KCookie *cookie, bool queue)
 
 void KCookieServer::slotSave()
 {
-printf("Saving cookie stuff!\n");
+   kdebug(KDEBUG_INFO, 7104, "Saving cookie stuff!\n");
+   
    delete mTimer;
    mTimer = 0;
    QString filename = locateLocal("appdata", "cookies");
