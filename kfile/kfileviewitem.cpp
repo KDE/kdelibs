@@ -318,50 +318,6 @@ QString KFileViewItem::dateTime(time_t _time) {
     return KGlobal::locale()->formatDateTime( t );
 }
 
-#if 0
-/* the following will go into KLocale after Beta4!!! */
-static QString *months[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-
-QString KFileViewItem::dateTime(time_t _time) {
-
-    if (!months[0]) {
-	months[ 0] = new QString(i18n("Jan"));
-	months[ 1] = new QString(i18n("Feb"));
-	months[ 2] = new QString(i18n("Mar"));
-	months[ 3] = new QString(i18n("Apr"));
-	months[ 4] = new QString(i18n("May"));
-	months[ 5] = new QString(i18n("Jun"));
-	months[ 6] = new QString(i18n("Jul"));
-	months[ 7] = new QString(i18n("Aug"));
-	months[ 8] = new QString(i18n("Sep"));
-	months[ 9] = new QString(i18n("Oct"));
-	months[10] = new QString(i18n("Nov"));
-	months[11] = new QString(i18n("Dec"));
-    }
-
-    QDateTime t;
-    time_t now = time(0);
-    t.setTime_t(_time);
-
-    QString sTime;
-    if (_time > now || now - _time >= 365 * 24 * 60 * 60)
-	sTime.sprintf(" %04d", t.date().year());
-    else
-	sTime.sprintf("%02d:%02d", t.time().hour(), t.time().minute());
-
-    QString text = QString("%1 %2 %3").
-      arg(months[t.date().month() - 1]->left(3), 3).
-      arg(t.date().day(), 2).arg(sTime);
-
-    /* hmm... supposed to be in KLocale after Beta4, huh? :D
-       QDateTime t;
-       t.setTime_t(_time);
-       return KGlobal::locale()->formatDateTime( t );
-    */
-    return text;
-}
-#endif
-
 void KFileViewItem::readUserInfo()
 {
     struct passwd *pass;
