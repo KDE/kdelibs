@@ -101,19 +101,10 @@ autostartdir = $(prefix)/share/autostart
 
 DOXYGEN_REFERENCES = kdecore kdeui
 
-kde_module_LTLIBRARIES = kcm_kabc.la
-
-kcm_kabc_la_SOURCES = kcmkabc.cpp 
-kcm_kabc_la_LDFLAGS = $(all_libraries) -module -avoid-version -no-undefined
-kcm_kabc_la_LIBADD = $(LIB_KIO) libkabc.la
-
-kabcdata_DATA = kabc.desktop
-kabcdatadir = $(kde_appsdir)/Settings/Components
-
 map_DATA = countrytransl.map
 mapdir = $(kde_datadir)/kabc
 
-EXTRA_DIST = $(kabcdata_DATA) $(map_DATA)
+EXTRA_DIST = $(map_DATA)
 
 include ../admin/Doxyfile.am
 
