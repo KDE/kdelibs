@@ -111,7 +111,7 @@ void KTabBar::mouseMoveEvent( QMouseEvent *e )
 
     if ( mHoverCloseButtonEnabled && mReorderStartTab==-1) {
         QTab *t = selectTab( e->pos() );
-        if( t && t->iconSet() ) {
+        if( t && t->iconSet() && t->isEnabled() ) {
             QPixmap pixmap = t->iconSet()->pixmap( QIconSet::Small, QIconSet::Normal );
             QRect rect( 0, 0, pixmap.width() + 4, pixmap.height() );
 
