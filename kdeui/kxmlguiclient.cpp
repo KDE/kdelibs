@@ -33,6 +33,8 @@
 #include <kaction.h>
 #include <kapplication.h>
 
+#include <assert.h>
+
 class KXMLGUIClientPrivate
 {
 public:
@@ -561,14 +563,17 @@ KXMLGUIClient *KXMLGUIClient::parentClient() const
 
 void KXMLGUIClient::insertChildClient( KXMLGUIClient *child )
 {
-  //if ( child->addSuperClient( this ) )
-    d->m_children.append( child );
+  if (  child->d->m_parent )
+    child->d->m_parent->removeChildClient( child );
+   d->m_children.append( child );
+   child->d->m_parent = this;
 }
 
 void KXMLGUIClient::removeChildClient( KXMLGUIClient *child )
 {
+  assert( d->m_children.containsRef( child ) );
   d->m_children.removeRef( child );
-  //child->d->m_supers.removeRef( this );
+  child->d->m_parent = 0;
 }
 
 /*bool KXMLGUIClient::addSuperClient( KXMLGUIClient *super )
