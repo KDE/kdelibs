@@ -62,8 +62,7 @@ int setenv(const char *name, const char *value, int overwrite) {
 
 extern char ** environ;
 
-int
-unsetenv (name)
+void unsetenv (name)
      const char *name;
 {
   size_t len;
@@ -72,7 +71,7 @@ unsetenv (name)
   if (name == NULL || *name == '\0' || strchr (name, '=') != NULL)
     {
       errno = EINVAL;
-      return -1;
+      return;
     }
 
   len = strlen (name);
@@ -92,7 +91,6 @@ unsetenv (name)
     else
       ++ep;
 
-  return 0;
 }
 
 #endif
