@@ -1,9 +1,10 @@
 #This is a dummy kdebug.areas
 #when you get a set of KDebug areas, and various descriptions for them
-#please email kde@kde.org with the appropiate descriptions.
+#please email kde-devel@kde.org with the appropriate descriptions.
 0	generic
-750	kspell (kdelibs)
 125	kaccel (kdecore)
+250	kfile (kdelibs)
+750	kspell (kdelibs)
 1201	kfm (kdebase)
 1202    konqueror (kdebase)
 1300	kfm (kioslave)
