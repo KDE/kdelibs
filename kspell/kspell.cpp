@@ -387,7 +387,10 @@ bool KSpell::checkWord (QString buffer, bool _usedialog)
   usedialog=_usedialog;
   setUpDialog(FALSE);
   if (_usedialog)
-    ksdlg->show();
+    {
+      emitProgress();
+      ksdlg->show();
+    }
   else
     ksdlg->hide();
 
@@ -727,6 +730,7 @@ bool KSpell::check( const QString &_buffer )
 
   lastline=i; //the character position, not a line number
 
+  emitProgress();
   ksdlg->show();
 
   return TRUE;
@@ -870,6 +874,8 @@ void KSpell::dialog (QString word, QStringList *sugg, const char *_slot)
   connect (ksdlg, SIGNAL (command (int)), this, SLOT (dialog2(int)));
   ksdlg->init (word, sugg);
   emit misspelling (word, sugg, lastpos);
+
+  emitProgress();
   ksdlg->show();
 }
 
@@ -980,7 +986,7 @@ void KSpell::setProgressResolution (unsigned int res)
 
 void KSpell::emitProgress ()
 {
-  uint nextprog = (uint) (100.*lastpos/totalpos);
+  uint nextprog = (uint) (100.*lastpos/(double)totalpos);
 
   if (nextprog>=curprog)
     {
