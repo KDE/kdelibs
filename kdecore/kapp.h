@@ -413,16 +413,9 @@ public:
   KStyle* kstyle() const {return pKStyle;}
 
   /**
-   * Get the KDE font list.
-   *
-   * This method allows you to get the KDE font list which was
-   * composed by the user with kfontmanager. Usually you should
-   * work only with those fonts in your KDE application.
-   *
-   * @param fontlist A reference to a list to fill with fonts.
-   * @return true on success.
+   * @deprecated Don't use.
    */
-  bool kdeFonts(QStringList &fontlist) const;
+  bool kdeFonts(QStringList &) const;
 
   /**
    * Return a text for the window caption.
@@ -800,6 +793,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.210.2.1  2001/03/06 23:17:59  mueller
+// new version number to distinguish from 2.1 release
+//
 // Revision 1.210  2001/02/19 11:05:10  faure
 // 2.1, and fixing a docu bug found by werner
 //
