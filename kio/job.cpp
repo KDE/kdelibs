@@ -1402,6 +1402,8 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
             QString oldPath = (*it).uDest.path( 1 );
             KURL newUrl( (*it).uDest );
             newUrl.setPath( newPath );
+            emit renamed( this, (*it).uDest, newUrl );
+
             // Change the current one and strip the trailing '/'
             (*it).uDest = newUrl.path( -1 );
             newPath = newUrl.path( 1 ); // With trailing slash
@@ -1606,8 +1608,8 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
         {
             KURL newUrl( (*it).uDest );
             newUrl.setPath( newPath );
+            emit renamed( this, (*it).uDest, newUrl );
             (*it).uDest = newUrl;
-            // emit renamed ??
         }
         break;
         case R_AUTO_SKIP:

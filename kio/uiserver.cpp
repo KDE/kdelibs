@@ -180,13 +180,6 @@ void ProgressItem::setMoving( const KURL& from, const KURL& to ) {
 }
 
 
-void ProgressItem::setRenaming( const KURL& old_name, const KURL& new_name ) {
-  setText( listProgress->lv_filename, new_name.filename() );
-
-  defaultProgress->slotRenaming( 0, old_name, new_name );
-}
-
-
 void ProgressItem::setCreatingDir( const KURL& dir ) {
   setText( listProgress->lv_operation, i18n("Creating") );
   setText( listProgress->lv_url, dir.url() );
@@ -516,16 +509,6 @@ void UIServer::deleting( int id, KURL url )
   ProgressItem *item = findItem( id );
   if ( item ) {
     item->setDeleting( url );
-  }
-}
-
-void UIServer::renaming( int id, KURL old_name, KURL new_name )
-{
-  kdDebug(7024) << "UIServer::renaming " << id << " " << old_name.url() << "  " << new_name.url() << endl;
-
-  ProgressItem *item = findItem( id );
-  if ( item ) {
-    item->setRenaming( old_name, new_name );
   }
 }
 

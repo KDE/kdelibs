@@ -72,7 +72,6 @@ public:
   void setMoving( const KURL& from, const KURL& to );
   void setDeleting( const KURL& url );
   void setCreatingDir( const KURL& dir );
-  void setRenaming( const KURL& old_name, const KURL& new_name );
 
   void setCanResume( bool );
 
@@ -208,7 +207,6 @@ k_dcop:
   void copying( int id, KURL from, KURL to );
   void moving( int id, KURL from, KURL to );
   void deleting( int id, KURL url );
-  void renaming( int id, KURL old_name, KURL new_name );
   void creatingDir( int id, KURL dir );
 
   void canResume( int id, unsigned int can_resume );

@@ -40,7 +40,7 @@ void ProgressBase::setJob( KIO::Job *job )
 
   connect( job, SIGNAL( result( KIO::Job* ) ),
 	   SLOT( slotFinished( KIO::Job* ) ) );
-  
+
   connect( job, SIGNAL( canceled( KIO::Job* ) ),
 	   SLOT( slotFinished( KIO::Job* ) ) );
 
@@ -77,9 +77,6 @@ void ProgressBase::setJob( KIO::CopyJob *job )
 	   SLOT( slotMoving( KIO::Job*, const KURL&, const KURL& ) ) );
   connect( job, SIGNAL( creatingDir( KIO::Job*, const KURL& ) ),
  	   SLOT( slotCreatingDir( KIO::Job*, const KURL& ) ) );
-
-  connect( job, SIGNAL( renaming( KIO::Job*, const KURL&, const KURL& ) ),
- 	   SLOT( slotRenaming( KIO::Job*, const KURL&, const KURL& ) ) );
 
   connect( job, SIGNAL( canResume( KIO::Job*, bool ) ),
  	   SLOT( slotCanResume( KIO::Job*, bool ) ) );

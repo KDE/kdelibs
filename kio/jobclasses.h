@@ -500,13 +500,22 @@ namespace KIO {
 
         void speed( KIO::Job *, unsigned long bytes_per_second );
 
+        /**
+         * The job is copying a file or directory
+         */
         void copying( KIO::Job *, const KURL& from, const KURL& to );
+        /**
+         * The job is moving a file or directory
+         */
         void moving( KIO::Job *, const KURL& from, const KURL& to );
         /**
-         * The @p job is creating the directory @dir
+         * The job is creating the directory @dir
          */
         void creatingDir( KIO::Job *, const KURL& dir );
-        void renaming( KIO::Job *, const KURL& old_name, const KURL& new_name );
+        /**
+         * The _user_ renamed a file using the rename dialog
+         */
+        void renamed( KIO::Job *, const KURL& old_name, const KURL& new_name );
 
         // ?
         void canResume( KIO::Job *, bool can_resume );

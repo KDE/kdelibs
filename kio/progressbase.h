@@ -114,8 +114,6 @@ public slots:
   virtual void slotDeleting( KIO::Job*, const KURL& ) {}
   virtual void slotCreatingDir( KIO::Job*, const KURL& ) {}
 
-  virtual void slotRenaming( KIO::Job*, const KURL&, const KURL& ) {}
-
   virtual void slotCanResume( KIO::Job*, bool ) {}
 
 signals:
