@@ -216,13 +216,13 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
   }
 
   else {
-  
+
     KService::Ptr service = KService::serviceByDesktopName(_bin_name);
 
     if (0 != service) {
       _dot_desktop = service->desktopEntryPath();
       _dot_desktop = locate("apps", service->desktopEntryPath());
-    
+
       qDebug("I found the desktop file, `%s' myself", _dot_desktop.ascii());
     }
 
@@ -233,15 +233,15 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
   // Have we got a desktop file path now ?
   if (!_dot_desktop.isNull()) {
 
-  
+
     qDebug("Reading the config from `%s'", _dot_desktop.ascii());
     KConfig c(_dot_desktop, true);
     c.setDesktopGroup();
-    
+
     // Find out if the app is buggy and doesn't set res_name at all.
     _appStartNotify = c.readBoolEntry("NoAppStartNotify", true);
     qDebug("_appStartNotify == `%s'", _appStartNotify ? "true" : "false");
-    
+
     // Find out if we can fake it by knowing the res_name in advance.
     _res_name = c.readEntry("XClassHintResName", _bin_name);
     qDebug("XClassHintResName == `%s'", _res_name.ascii());
@@ -249,7 +249,7 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
   } else {
     qDebug("No desktop file at all :(");
   }
-  
+
   qDebug("res_name == `%s'", _res_name.ascii());
 
   // End app starting notification stuff.
@@ -359,6 +359,7 @@ pid_t KRun::run( const QString& _cmd )
 bool KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool _allow_multiple )
 {
   char **argv = 0L;
+  int argvSize = 0;
 
   // find kfmexec in $PATH
   QString kfmexec = KStandardDirs::findExe( "kfmexec" );
@@ -366,7 +367,8 @@ bool KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool 
   if ( _allow_multiple )
   {
     kdDebug(7010) << "Allow Multiple" << endl;
-    argv = new char*[ _urls.count() + 3 ];
+    argvSize = _urls.count() + 3;
+    argv = new char*[ argvSize ];
     argv[ 0 ] = qstrdup(kfmexec.latin1());
 
     int i = 1;
@@ -384,6 +386,11 @@ bool KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool 
       _exit(0);
     }
 	
+    for (int i = 0; i < argvSize; i++) {
+        delete [] argv[i];
+    }
+    delete [] argv;
+
   }
   else
   {
@@ -391,7 +398,8 @@ bool KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool 
     KURL::List::ConstIterator it = _urls.begin();
     for( ; it != _urls.end(); ++it )
     {
-      argv = new char*[ 3 ];
+      argvSize = 3;
+      argv = new char*[ argvSize ];
       argv[ 0 ] = qstrdup(kfmexec.latin1());
       argv[ 1 ] = qstrdup(app.latin1());
       argv[ 2 ] = qstrdup((*it).url().latin1());
@@ -404,13 +412,14 @@ bool KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool 
 	execvp( argv[0], argv );
 	_exit(1);
       }
+
+      for (int i = 0; i < argvSize; i++) {
+          delete [] argv[i];
+      }
+      delete [] argv;
+
     }
   }
-
-  for (size_t i = 0; i < sizeof(argv)/sizeof(char*); i++) {
-      delete [] argv[i];
-  }
-  delete [] argv;
 
   return true;
 }
