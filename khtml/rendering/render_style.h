@@ -319,7 +319,7 @@ enum ETableLayout {
 };
 
 enum EUnicodeBidi {
-    UBNormal, Embed, Override 
+    UBNormal, Embed, Override
 };
 
 class StyleVisualData : public SharedData
@@ -446,7 +446,7 @@ public:
     StyleInheritedData() : SharedData(), font() { setDefaultValues(); }
     virtual ~StyleInheritedData() { }
 
-    StyleInheritedData(const StyleInheritedData& o ) 
+    StyleInheritedData(const StyleInheritedData& o )
 	: SharedData(), font( o.font ), color( o.color ), decoration_color( o.decoration_color )
     {
 	indent = o.indent;
@@ -709,7 +709,7 @@ public:
     Length clipTop() const { return visual->clip.top; }
     Length clipBottom() const { return visual->clip.bottom; }
     bool jsClipMode() const { return noninherited_flags._jsClipMode; }
-    
+
     EUnicodeBidi unicodeBidi() const { return noninherited_flags._unicodeBidi; }
 
     EClear clear() const { return  noninherited_flags._clear; }
@@ -825,10 +825,13 @@ public:
     void setTableLayout(ETableLayout v) {  noninherited_flags._table_layout = v; }
     void ssetColSpan(short v) { SET_VAR(visual,colspan,v) }
 
-    void setFontDef(const khtml::FontDef & v) {
-	if (!(inherited->font.fontDef == v)) {
-	    inherited.access()->font = Font( v );
-	}
+    bool setFontDef(const khtml::FontDef & v) {
+        // bah, this doesn't compare pointers. broken! (Dirk)
+        if (!(inherited->font.fontDef == v)) {
+            inherited.access()->font = Font( v );
+            return true;
+        }
+        return false;
     }
 
     void setColor(const QColor & v) { SET_VAR(inherited,color,v) }

@@ -197,7 +197,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
     usedDynamicStates = StyleSelector::None;
     ::encodedurl = &encodedurl;
     pseudoState = PseudoUnknown;
-    
+
     element = e;
     parentNode = e->parentNode();
     parentStyle = ( parentNode && parentNode->renderer()) ? parentNode->renderer()->style() : 0;
@@ -256,7 +256,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
     RenderStyle *style = new RenderStyle();
     if( parentStyle )
         style->inheritFrom( parentStyle );
-    else 
+    else
 	parentStyle = style;
 
     //qDebug("applying properties, count=%d", propsToApply->count() );
@@ -264,21 +264,14 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
     // we can't apply style rules without a view() and a part. This
     // tends to happen on delayed destruction of widget Renderobjects
     if ( part ) {
-        if ( propsToApply->count() != 0 ) {
-	    CSSStyleSelector::style = style;
-	    fontDirty = false;
-            CSSOrderedProperty *ordprop = propsToApply->first();
-            while( ordprop ) {
-                //qDebug("property %d has spec %x", ordprop->prop->m_id, ordprop->priority );
+        fontDirty = false;
+
+        if (propsToApply->count()) {
+            CSSStyleSelector::style = style;
+            for (CSSOrderedProperty *ordprop = propsToApply->first();
+                 ordprop;
+                 ordprop = propsToApply->next())
                 applyRule( ordprop->prop );
-		if ( fontDirty && ordprop->priority >= (1 << 30) ) {
-		    // we are past the font properties, time to update to the
-		    // correct font
-		    CSSStyleSelector::style->htmlFont().update( paintDeviceMetrics );
-		    fontDirty = false;
-		}
-                ordprop = propsToApply->next();
-            }
         }
 
         if ( pseudoProps->count() != 0 ) {
@@ -287,7 +280,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
             while( ordprop ) {
                 RenderStyle *pseudoStyle;
                 pseudoStyle = style->getPseudoStyle(ordprop->pseudoId);
-		
+
                 if (!pseudoStyle)
                 {
                     pseudoStyle = style->addPseudoStyle(ordprop->pseudoId);
@@ -299,13 +292,13 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 		CSSStyleSelector::style = pseudoStyle;
                 if ( pseudoStyle )
                     applyRule( ordprop->prop );
-		
-		if ( fontDirty ) // ### fixme: should be optimised
-		    CSSStyleSelector::style->htmlFont().update( paintDeviceMetrics );
+
 
                 ordprop = pseudoProps->next();
             }
         }
+        if ( fontDirty )
+            CSSStyleSelector::style->htmlFont().update( paintDeviceMetrics );
     }
 
     if ( usedDynamicStates & StyleSelector::Hover )
@@ -1245,7 +1238,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
 
     case CSS_PROP_FONT_STYLE:
     {
-	FontDef fontDef = style->htmlFont().fontDef;
+        FontDef fontDef = style->htmlFont().fontDef;
         if(value->cssValueType() == CSSValue::CSS_INHERIT) {
             if(!parentNode) return;
             fontDef.italic = parentStyle->htmlFont().fontDef.italic;
@@ -1264,9 +1257,9 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
 		    return;
 	    }
 	}
-	style->setFontDef( fontDef );
+        if (style->setFontDef( fontDef ))
 	fontDirty = true;
-	break;
+        break;
     }
 
 
@@ -1291,7 +1284,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
 
     case CSS_PROP_FONT_WEIGHT:
     {
-	FontDef fontDef = style->htmlFont().fontDef;
+        FontDef fontDef = style->htmlFont().fontDef;
         if(value->cssValueType() == CSSValue::CSS_INHERIT) {
             if(!parentNode) return;
             fontDef.weight = parentStyle->htmlFont().fontDef.weight;
@@ -1320,9 +1313,9 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
 		// ### fix parsing of 100-900 values in parser, apply them here
 	    }
 	}
-	style->setFontDef( fontDef );
+        if (style->setFontDef( fontDef ))
 	fontDirty = true;
-	break;
+        break;
     }
 
     case CSS_PROP_LIST_STYLE_POSITION:
@@ -2073,7 +2066,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
 
     case CSS_PROP_FONT_SIZE:
     {
-	FontDef fontDef = style->htmlFont().fontDef;
+        FontDef fontDef = style->htmlFont().fontDef;
         int oldSize;
         float size = 0;
         int minFontSize = settings->minFontSize();
@@ -2138,8 +2131,8 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
 
         //kdDebug( 6080 ) << "computed raw font size: " << size << endl;
 
-	fontDef.size = size;
-	style->setFontDef( fontDef );
+	fontDef.size = int(size);
+        if (style->setFontDef( fontDef ))
 	fontDirty = true;
         return;
     }
@@ -2218,7 +2211,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
             style->setTextAlign( (ETextAlign) (primitiveValue->getIdent() - CSS_VAL__KONQ_AUTO) );
 	return;
     }
-    
+
 // rect
 	case CSS_PROP__KONQ_JS_CLIP:
     case CSS_PROP_CLIP:
@@ -2255,7 +2248,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
 	style->setClipBottom( bottom );
 	style->setClipLeft( left );
 
-	
+
 	style->setJsClipMode( (prop->m_id == CSS_PROP__KONQ_JS_CLIP) ? true : false );
         // rect, ident
         break;
@@ -2268,24 +2261,24 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
         if (!(style->styleType()==RenderStyle::BEFORE ||
                 style->styleType()==RenderStyle::AFTER))
             break;
-                
+
         if(!value->isValueList()) return;
         CSSValueListImpl *list = static_cast<CSSValueListImpl *>(value);
         int len = list->length();
-        
+
         for(int i = 0; i < len; i++) {
             CSSValueImpl *item = list->item(i);
             if(!item->isPrimitiveValue()) continue;
             CSSPrimitiveValueImpl *val = static_cast<CSSPrimitiveValueImpl *>(item);
             if(val->primitiveType()==CSSPrimitiveValue::CSS_STRING)
-            {                
+            {
                 style->setContent(val->getStringValue());
-            } 
+            }
             else if (val->primitiveType()==CSSPrimitiveValue::CSS_URI)
             {
                 CSSImageValueImpl *image = static_cast<CSSImageValueImpl *>(val);
                 style->setContent(image->image());
-            }    
+            }
 
         }
         break;
@@ -2330,7 +2323,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
 		    face = settings->stdFontName();
 		}
 		fontDef.family = face;
-		style->setFontDef( fontDef );
+                if (style->setFontDef( fontDef ))
 		fontDirty = true;
                 return;
 	    }

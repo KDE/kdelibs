@@ -32,60 +32,66 @@
 
 class QPaintDeviceMetrics;
 
+
 namespace khtml
 {
+class RenderStyle;
+class CSSStyleSelector;
 
-    class FontDef
-    {
-    public:
-	FontDef()
-	    : size( 0 ), italic( false ), smallCaps( false ), weight( 50 ) {}
-	bool operator == ( const FontDef &other ) const {
-	    return ( family == other.family &&
-		     size == other.size &&
-		     italic == other.italic &&
-		     smallCaps == other.smallCaps &&
-		     weight == other.weight );
-	}
+class FontDef
+{
+public:
+    FontDef()
+        : size( 0 ), italic( false ), smallCaps( false ), weight( 50 ) {}
+    bool operator == ( const FontDef &other ) const {
+        return ( family == other.family &&
+                 size == other.size &&
+                 italic == other.italic &&
+                 smallCaps == other.smallCaps &&
+                 weight == other.weight );
+    }
 
-	QString family;
-	short int size;
-	bool italic 		: 1;
-	bool smallCaps 		: 1;
-	unsigned int weight 		: 8;
-    };
+    QString family;
+    short int size;
+    bool italic 		: 1;
+    bool smallCaps 		: 1;
+    unsigned int weight 		: 8;
+};
 
 
-    class Font
-    {
-    public:
-	Font() : fontDef(), f(), fm( f ), scFont( 0 ), letterSpacing( 0 ), wordSpacing( 0 ) {}
-	Font( const FontDef &fd )
-	    :  fontDef( fd ), f(), fm( f ), scFont( 0 ), letterSpacing( 0 ), wordSpacing( 0 )
-	    {
-	    }
+class Font
+{
+    friend class RenderStyle;
+    friend class CSSStyleSelector;
 
-	bool operator == ( const Font &other ) const {
-	    return (fontDef == other.fontDef &&
-		    letterSpacing == other.letterSpacing &&
-		    wordSpacing == other.wordSpacing );
-	}
+public:
+    Font() : fontDef(), f(), fm( f ), scFont( 0 ), letterSpacing( 0 ), wordSpacing( 0 ) {}
+    Font( const FontDef &fd )
+        :  fontDef( fd ), f(), fm( f ), scFont( 0 ), letterSpacing( 0 ), wordSpacing( 0 )
+        {}
 
-	void update( QPaintDeviceMetrics *devMetrics ) const;
+    bool operator == ( const Font &other ) const {
+        return (fontDef == other.fontDef &&
+                letterSpacing == other.letterSpacing &&
+                wordSpacing == other.wordSpacing );
+    }
 
-	void drawText( QPainter *p, int x, int y, QChar *str, int len, int width,
-                QPainter::TextDirection d, int from=-1, int to=-1, QColor bg=QColor() ) const;
+    void update( QPaintDeviceMetrics *devMetrics ) const;
 
-	int width( QChar *str, int len ) const;
-	int width( QChar ch ) const;
+    void drawText( QPainter *p, int x, int y, QChar *str, int len, int width,
+                   QPainter::TextDirection d, int from=-1, int to=-1, QColor bg=QColor() ) const;
 
-	FontDef fontDef;
-	mutable QFont f;
-	mutable QFontMetrics fm;
-	QFont *scFont;
-	short letterSpacing;
-	short wordSpacing;
-    };
+    int width( QChar *str, int len ) const;
+    int width( QChar ch ) const;
+
+private:
+    FontDef fontDef;
+    mutable QFont f;
+    mutable QFontMetrics fm;
+    QFont *scFont;
+    short letterSpacing;
+    short wordSpacing;
+};
 
 };
 

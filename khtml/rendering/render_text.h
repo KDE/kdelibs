@@ -54,7 +54,7 @@ public:
         m_width = width;
         m_reversed = reversed;
         m_firstLine = firstLine;
-	m_toAdd = toAdd;
+        m_toAdd = toAdd;
     }
     ~TextSlave();
     void printDecoration( QPainter *pt, RenderText* p, int _tx, int _ty, int decoration, bool begin, bool end);
@@ -87,7 +87,7 @@ public:
     // different slaves.
     bool m_reversed : 1;
     bool m_firstLine : 1;
-    int m_toAdd : 29; // for justified text
+    int m_toAdd : 14; // for justified text
 private:
     // this is just for QVector::bsearch. Don't use it otherwise
     TextSlave(int _x, int _y)
