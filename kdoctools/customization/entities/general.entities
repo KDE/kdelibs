@@ -184,7 +184,7 @@
 <!ENTITY kfract	"<application>KFract</application>">
 <!ENTITY kghostview	"<application>Kghostview</application>">
 <!ENTITY khelpcenter	"<application>KHelpcenter</application>">
-<!ENTITY khexedit	"<application>KHexedit</application>">
+<!ENTITY khexedit	"<application>KHexEdit</application>">
 <!ENTITY kicker	"<application>Kicker</application>">
 <!ENTITY kiconedit "<application>KIconEdit</application>">
 <!ENTITY killustrator "<application>KIllustrator</application>">
@@ -195,6 +195,7 @@
 <!ENTITY kjots	"<application>KJots</application>">
 <!ENTITY kjumpingcube	"<application>KJumpingCube</application>">
 <!ENTITY klaptopdaemon	"<application>klaptopdaemon</application>">
+<!ENTITY klines "<application>Kolor Lines</application>">
 <!ENTITY klipper	"<application>Klipper</application>">
 <!ENTITY kljettool	"<application>KLjettool</application>">
 <!ENTITY klpq	"<application>Klpq</application>">
