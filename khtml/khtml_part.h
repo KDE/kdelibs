@@ -509,6 +509,8 @@ public:
    **/
   virtual void restoreState( QDataStream &stream );
 
+  bool restoreURL( const KURL &url, int charset );
+
   /**
    * Retrieve the @p Node currently under the mouse
    */
