@@ -922,7 +922,7 @@ void RangeImpl::setEndBefore( NodeImpl *refNode, int &exceptioncode )
         return;
     }
 
-    if (refNode->getDocument() != m_ownerDocument) {
+    if ((DOM::DocumentPtr*)refNode->getDocument() != m_ownerDocument) {
         exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
         return;
     }
