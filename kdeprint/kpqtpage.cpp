@@ -95,7 +95,7 @@ void KPQtPage::init()
 			" pages per sheet: "
 			" <ul> "
 			" <li> go to the tab headlined \"Filter\"</li>"
-			" <ii> enable the <em>Multiple Pages per Sheet</em> filter </li>"
+			" <li> enable the <em>Multiple Pages per Sheet</em> filter </li>"
 			" <li> and configure it (bottom-most button on the right of the \"Filters\" tab). </li>"
 			" </ul>"
 			" </qt>" );
