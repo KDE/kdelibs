@@ -162,7 +162,7 @@ public:
      * Desaturates an image evenly.
      *
      * @param image The QImage to process.
-     * @param desat A value between 0 and 1 setting the desaturation
+     * @param desat A value between 0 and 1 setting the degree of desaturation
      * @return Returns the @ref #image, provided for convenience.
      */
     static QImage& desaturate(QImage &image, float desat = 0.3);

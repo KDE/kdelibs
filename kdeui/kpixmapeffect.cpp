@@ -40,10 +40,10 @@ KPixmap& KPixmapEffect::gradient(KPixmap &pixmap, const QColor &ca,
 {
     if(pixmap.depth() > 8 &&
        (eff == VerticalGradient || eff == HorizontalGradient)) {
-        
+
         int rDiff, gDiff, bDiff;
         int rca, gca, bca, rcb, gcb, bcb;
-        
+
         register int x, y;
 
         rDiff = (rcb = cb.red())   - (rca = ca.red());
@@ -92,7 +92,7 @@ KPixmap& KPixmapEffect::gradient(KPixmap &pixmap, const QColor &ca,
                                               (KImageEffect::GradientType) eff, ncols);
         pixmap.convertFromImage(image);
     }
-    
+
     return pixmap;
 }
 
@@ -281,6 +281,16 @@ KPixmap& KPixmapEffect::toGray(KPixmap &pixmap, bool fast)
 {
     QImage img = pixmap.convertToImage();
     KImageEffect::toGray(img, fast);
+    pixmap.convertFromImage(img);
+
+    return pixmap;
+}
+
+// -----------------------------------------------------------------------------
+KPixmap& KPixmapEffect::desaturate(KPixmap &pixmap, float desat)
+{
+    QImage img = pixmap.convertToImage();
+    KImageEffect::desaturate(img, desat);
     pixmap.convertFromImage(img);
 
     return pixmap;

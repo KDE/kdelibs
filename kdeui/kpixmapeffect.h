@@ -175,6 +175,15 @@ public:
      * @return Returns the @ref #pixmap, provided for convenience.
      */
     static KPixmap& toGray(KPixmap& pixmap, bool fast=false);
+
+    /**
+     * Desaturates a pixmap.
+     *
+     * @param pixmap The pixmap to process.
+     * @param desat A value between 0 and 1 setting the degree of desaturation
+     * @return Returns the @ref #pixmap, provided for convenience.
+     */
+    static KPixmap& toGray(KPixmap& pixmap, bool fast=false);
 };
 
 
