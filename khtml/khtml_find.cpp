@@ -43,19 +43,19 @@ KHTMLFind::KHTMLFind( KHTMLPart *part, QWidget *parent, const char *name )
   m_part = part;
   m_found = false;
 
+  QHBox* row = new QHBox( group );
+  m_asRegExp = new QCheckBox( i18n("As &Regular Expression"), row, "asRegexp" );
+
   if (!KTrader::self()->query("KRegExpEditor/KRegExpEditor").isEmpty())
-  {	
-      QHBox* row = new QHBox( group );
-      m_asRegExp = new QCheckBox( i18n("As &Regular Expression"), row, "asRegexp" );
-      m_editRegExp = new QPushButton( i18n("Edit"), row, "editRegExp" );
-  
+  {
+      m_editRegExp = new QPushButton( i18n("&Edit..."), row, "editRegExp" );
+
       connect( m_asRegExp, SIGNAL( toggled(bool) ), m_editRegExp, SLOT( setEnabled(bool) ) );
       connect( m_editRegExp, SIGNAL( clicked() ), this, SLOT( slotEditRegExp() ) );
       m_editRegExp->setEnabled( false );
   }
   else
   {
-      m_asRegExp = 0;
       m_editRegExp = 0;
   }
 }
@@ -80,7 +80,7 @@ void KHTMLFind::slotSearch()
   bool forward = !get_direction();
 
   if ( m_part->findTextNext( getText(), forward, case_sensitive(),
-	                     m_asRegExp ? m_asRegExp->isChecked() : false ) )
+	                     m_asRegExp->isChecked() ) )
     m_found = true;
   else if ( m_found )
   {
@@ -125,13 +125,13 @@ void KHTMLFind::slotEditRegExp()
       m_editorDialog = KParts::ComponentFactory::createInstanceFromQuery<QDialog>( "KRegExpEditor/KRegExpEditor", QString::null, this );
 
   assert( m_editorDialog );
-  
-  KRegExpEditorInterface *iface = dynamic_cast<KRegExpEditorInterface *>( m_editorDialog );
+
+  KRegExpEditorInterface *iface = static_cast<KRegExpEditorInterface *>( m_editorDialog->qt_cast( "KRegExpEditorInterface" ) );
   assert( iface );
 
   iface->setRegExp( getText() );
   bool ret = m_editorDialog->exec();
-  if ( ret == QDialog::Accepted) 
+  if ( ret == QDialog::Accepted)
     setText( iface->regExp() );
 }
 

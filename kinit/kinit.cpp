@@ -441,7 +441,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
      {
        QCString procTitle( name );
        d.argv = (char **) malloc(sizeof(char *) * (argc+1));
-       d.argv[0] = name.data();
+       d.argv[0] = (char *) _name;
        for (int i = 1;  i < argc; i++)
        {
           d.argv[i] = (char *) args;
@@ -1300,7 +1300,10 @@ static int initXconnection()
     fprintf(stderr, "kdeinit: opened connection to %s\n", DisplayString(X11display));
 #endif
     net_current_desktop = XInternAtom( X11display, "_NET_CURRENT_DESKTOP", False );
-    return XConnectionNumber( X11display );
+    int fd = XConnectionNumber( X11display );
+    int on = 1;
+    (void) setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, (char *) &on, (int) sizeof(on));
+    return fd;
   } else
     fprintf(stderr, "kdeinit: Can't connect to the X Server.\n" \
      "kdeinit: Might not terminate at end of session.\n");

@@ -1,7 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=Troff document with manpage macros
-Comment[af]=troff dokument met handleiding makros
+Comment[af]=Troff dokument met handleiding makros
 Comment[ar]=مستند Troff مع ماكروات صفحات الدليل
 Comment[az]=man-səhifəsi makrolu Troff sənədi
 Comment[bg]=Документ на Troff с макроси на man
@@ -48,7 +48,7 @@ Comment[th]=เอกสาร Troff พร้อมด้วยมาโคร 
 Comment[tr]=man-sayfası makrolu Troff belgesi
 Comment[uk]=Документ Troff з макросом сторінки довідки
 Comment[ven]=Manwalwa a Troff a rena siatari la macros
-Comment[vi]=Tài liệu Troff với manpage macros 
+Comment[vi]=Tài liệu Troff với manpage macros
 Comment[xh]=Uxwebhu lwe Troff elinephepha lomntu elinezinto ezipheleleyo
 Comment[xx]=xx
 Comment[zh_CN]=带有 manpage 宏的 Troff 文档

@@ -285,37 +285,11 @@ void readKAddressBookEntries( const QString &dataString, Addressee &a )
   if ( !otherAddress.isEmpty() ) a.insertAddress( otherAddress );
 }
 
-int main(int argc,char **argv)
+void importKab( KABC::AddressBook *ab, bool override )
 {
-  KAboutData aboutData("kab2kabc",I18N_NOOP("Kab to Kabc Converter"),"0.1");
-  aboutData.addAuthor("Cornelius Schumacher", 0, "schumacher@kde.org");
-
-  KCmdLineArgs::init(argc,argv,&aboutData);
-  KCmdLineArgs::addCmdLineOptions( options );
-
-  KApplication app;
-
-  KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-
-  bool override = false;
-
-  if ( args->isSet( "override" ) ) {
-    kdDebug() << "Override existing entries." << endl;
-
-    override = true;
-  }
-
-  if ( args->isSet( "disable-autostart" ) ) {
-    kdDebug() << "Disable autostart." << endl;
-
-    KConfig *config = app.config();
-    config->setGroup( "Startup" );
-    config->writeEntry( "EnableAutostart", false );
-  }
-
   if (!QFile::exists(locateLocal("data", "kab/addressbook.kab") )) {
-    kdDebug() << "No KDE 2 addressbook found. Exiting." << endl;
-    return 0;
+    kdDebug() << "No KDE 2 addressbook found." << endl;
+    return;
   }
 
   kdDebug(5700) << "Converting old-style kab addressbook to "
@@ -326,8 +300,6 @@ int main(int argc,char **argv)
     kdDebug(5700) << "Error initing kab" << endl;
     exit(1);
   }
-
-  KABC::AddressBook *kabcBook = StdAddressBook::self();
 
   KabKey key;
   ::AddressBook::Entry entry;
@@ -454,12 +426,45 @@ int main(int argc,char **argv)
 
     kdDebug(5700) << "Addressee: " << a.familyName() << endl;
 
-    kabcBook->insertAddressee( a );
+    ab->insertAddressee( a );
   }
 
   kab.save( true );
+}
+
+int main(int argc,char **argv)
+{
+  KAboutData aboutData("kab2kabc",I18N_NOOP("Kab to Kabc Converter"),"0.1");
+  aboutData.addAuthor("Cornelius Schumacher", 0, "schumacher@kde.org");
+
+  KCmdLineArgs::init(argc,argv,&aboutData);
+  KCmdLineArgs::addCmdLineOptions( options );
+
+  KApplication app;
+
+  KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+
+  bool override = false;
+
+  if ( args->isSet( "override" ) ) {
+    kdDebug() << "Override existing entries." << endl;
+
+    override = true;
+  }
+
+  if ( args->isSet( "disable-autostart" ) ) {
+    kdDebug() << "Disable autostart." << endl;
+
+    KConfig *config = app.config();
+    config->setGroup( "Startup" );
+    config->writeEntry( "EnableAutostart", false );
+  }
+
+  KABC::AddressBook *kabcBook = StdAddressBook::self();
 
   importKMailAddressBook( kabcBook );
+
+  importKab( kabcBook, override );
 
   StdAddressBook::save();
   

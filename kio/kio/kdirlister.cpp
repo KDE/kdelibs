@@ -86,7 +86,9 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
                                bool _keep, bool _reload )
 {
   // like this we don't have to worry about trailing slashes any further
-  KURL _url( _u.url(-1) );
+  KURL _url = _u;
+  _url.cleanPath(); // kill consecutive slashes
+  _url.adjustPath(-1);
 
 #ifdef DEBUG_CACHE
   printDebug();
@@ -114,7 +116,7 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
     stop( lister, _url );
 
     // clear _url for lister
-    forgetDirs( lister, _url );
+    forgetDirs( lister, _url, true );
 
     if ( lister->d->url == _url )
       lister->d->rootFileItem = 0;
@@ -412,36 +414,32 @@ void KDirListerCache::forgetDirs( KDirLister *lister )
 {
   kdDebug(7004) << k_funcinfo << lister << endl;
 
-  for ( KURL::List::Iterator it = lister->d->lstDirs.begin();
-        it != lister->d->lstDirs.end(); ++it )
+  // clear lister->d->lstDirs before calling forgetDirs(), so that
+  // it doesn't contain things that itemsInUse doesn't. When emitting
+  // the canceled signals, lstDirs must not contain anything that
+  // itemsInUse does not contain. (otherwise it might crash in findByName()).
+  KURL::List lstDirsCopy = lister->d->lstDirs;
+  lister->d->lstDirs.clear();
+
+  for ( KURL::List::Iterator it = lstDirsCopy.begin();
+        it != lstDirsCopy.end(); ++it )
   {
-    forgetDirInternal( lister, *it );
+    forgetDirs( lister, *it, false );
   }
 
-  lister->d->lstDirs.clear();
   emit lister->clear();
 }
 
-void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& url )
+void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& url, bool notify )
 {
   kdDebug(7004) << k_funcinfo << lister << " url: " << url << endl;
 
-  forgetDirInternal( lister, url );
-
-  lister->d->lstDirs.remove( url.url() );
-  emit lister->clear( url );
-}
-
-void KDirListerCache::forgetDirInternal( KDirLister *lister, const KURL& url )
-{
-  kdDebug(7004) << k_funcinfo << "lister=" << lister << " url=" << url << endl;
   QString urlStr = url.url(-1);
   QPtrList<KDirLister> *holders = urlsCurrentlyHeld[urlStr];
   Q_ASSERT( holders );
   holders->removeRef( lister );
 
   DirItem *item = itemsInUse[urlStr];
-
   Q_ASSERT( item );
 
   if ( holders->isEmpty() )
@@ -467,6 +465,12 @@ void KDirListerCache::forgetDirInternal( KDirLister *lister, const KURL& url )
         }
       }
 
+      if ( notify )
+      {
+        lister->d->lstDirs.remove( url.url() );
+        emit lister->clear( url );
+      }
+
       if ( item->complete )
       {
         kdDebug(7004) << k_funcinfo << lister << " item moved into cache: " << url << endl;
@@ -475,12 +479,14 @@ void KDirListerCache::forgetDirInternal( KDirLister *lister, const KURL& url )
         // watch cached directories
         item->incAutoUpdate();
       }
-      else
+      else {
         delete item;
+        item = 0;
+      }
     }
   }
 
-  if ( lister->d->autoUpdate )
+  if ( item && lister->d->autoUpdate )
     item->decAutoUpdate();
 }
 
@@ -1319,8 +1325,17 @@ void KDirListerCache::deleteDir( const KURL& dirUrl )
             kdl->d->rootFileItem = 0;
           }
           else
-            forgetDirs( kdl, deletedUrl );
+          {
+            bool treeview = kdl->d->lstDirs.count() > 1;
+            forgetDirs( kdl, deletedUrl, treeview );
+            if ( !treeview )
+            {
+              kdl->d->lstDirs.clear();
+              emit kdl->clear();
+            }
+          }
         }
+
         delete kdls;
       }
 
@@ -1718,7 +1733,7 @@ bool KDirLister::matchesMimeFilter( const KFileItem *item ) const
 bool KDirLister::doNameFilter( const QString& name, const QPtrList<QRegExp>& filters ) const
 {
   for ( QPtrListIterator<QRegExp> it( filters ); it.current(); ++it )
-    if ( it.current()->search( name ) != -1 )
+    if ( it.current()->exactMatch( name ) )
       return true;
 
   return false;

@@ -1,50 +1,49 @@
 Source: kdelibs
+Section: libs
 Priority: optional
 Maintainer: Christopher L Cheney <ccheney@debian.org>
-Build-Depends: debhelper (>> 3.0.0), automake, gettext, libarts1-dev, libasound2-dev, libbz2-dev, libcupsys2-dev, libfam-dev, libpcre3-dev, libqt3-mt-dev, libssl-dev, libtiff3g-dev, libxml2-dev, libxslt1-dev, texinfo, xlibmesa3, xlibs-dev, zlib1g-dev
+Build-Depends: debhelper (>> 4.0.0), automake1.5, gawk, gettext, libarts1-dev, libasound2-dev, libbz2-dev, libcupsys2-dev, libfam-dev, libpcre3-dev, libqt3-mt-dev, libssl-dev, libtiff3g-dev, libxml2-dev, libxslt1-dev, texinfo, xlibmesa3, xlibs-dev, zlib1g-dev
 Build-Depends-Indep: doxygen
-Standards-Version: 3.5.6
+Standards-Version: 3.5.6.0
 
 Package: kdelibs
 Section: libs
 Architecture: all
-Depends: kdelibs4 (= ${Source-Version}), kdelibs4-bin (= ${Source-Version}), kdelibs4-data (= ${Source-Version})
+Depends: kdelibs4 (= ${Source-Version}), kdelibs-bin (= ${Source-Version}), kdelibs-data (= ${Source-Version})
 Description: KDE core libraries metapackage
  KDE core libraries metapackage.
+
+Package: kdelibs-bin
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, python
+Description: KDE core binaries
+ KDE core binaries.
+ You need these binaries to run kde applications.
+
+Package: kdelibs-data
+Section: libs
+Architecture: all
+Description: KDE core shared data
+ KDE core shared data
+ You need these data files to run kde applications.
 
 Package: kdelibs4
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}
+Depends: ${shlibs:Depends}, kdelibs-bin (= ${Source-Version}), kdelibs-data (= ${Source-Version})
+Conflicts: kdelibs3
 Replaces: kdelibs3
 Description: KDE core libraries
  KDE core libraries.
  You need these libraries to run kde applications.
 
-Package: kdelibs4-bin
-Section: libs
-Architecture: any
-Depends: ${shlibs:Depends}, kdelibs4-data (= ${Source-Version})
-Provides: kdelibs-bin
-Replaces: kdelibs-bin
-Description: KDE core binaries
- KDE core binaries.
- You need these binaries to run kde applications.
-
-Package: kdelibs4-data
-Section: libs
-Architecture: all
-Provides: kdelibs-data
-Replaces: kdelibs-data
-Description: KDE core shared data
- KDE core shared data
- You need these data files to run kde applications.
-
 Package: kdelibs4-dev
 Section: devel
 Architecture: any
-Depends: kdelibs4 (= ${Source-Version}), kdelibs4-bin (= ${Source-Version}), libc6-dev
+Depends: kdelibs4 (= ${Source-Version}), kdelibs-bin (= ${Source-Version}), libc6-dev
 Provides: kdelibs-dev
+Conflicts: kdelibs-dev
 Replaces: kdelibs-dev
 Description: KDE core libraries (development files)
  KDE core libraries.
@@ -54,6 +53,7 @@ Package: kdelibs4-doc
 Section: doc
 Architecture: all
 Provides: kdelibs-doc
+Conflicts: kdelibs-doc
 Replaces: kdelibs-doc
 Description: KDE core library documentation
  KDE core library documentation.

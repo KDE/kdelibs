@@ -49,6 +49,7 @@
 
 #include <kglobalsettings.h>
 #include <kstringhandler.h>
+#include <krfcdate.h>
 #include "khtml_settings.h"
 #include "khtmlpart_p.h"
 
@@ -185,11 +186,15 @@ DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceU
     return doc;
 }
 
-CSSStyleSheetImpl *DOMImplementationImpl::createCSSStyleSheet(DOMStringImpl */*title*/, DOMStringImpl */*media*/,
+CSSStyleSheetImpl *DOMImplementationImpl::createCSSStyleSheet(DOMStringImpl */*title*/, DOMStringImpl *media,
                                                               int &/*exceptioncode*/)
 {
-    // ### implement
-    return 0;
+    // ### TODO : title should be set, and media could have wrong syntax, in which case we should
+	// generate an exception.
+	CSSStyleSheetImpl *parent = 0L;
+	CSSStyleSheetImpl *sheet = new CSSStyleSheetImpl(parent, DOMString());
+	sheet->setMedia(new MediaListImpl(sheet, media));
+	return sheet;
 }
 
 DocumentImpl *DOMImplementationImpl::createDocument( KHTMLView *v )
@@ -222,7 +227,6 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     : NodeBaseImpl( new DocumentPtr() )
 {
     document->doc = this;
-
     m_paintDeviceMetrics = 0;
 
     m_view = v;
@@ -285,12 +289,12 @@ DocumentImpl::~DocumentImpl()
 {
     if (changedDocuments && m_docChanged)
         changedDocuments->remove(this);
+    delete m_tokenizer;
     document->doc = 0;
     delete m_sheet;
     delete m_styleSelector;
     delete m_docLoader;
     if (m_elemSheet )  m_elemSheet->deref();
-    delete m_tokenizer;
     if (m_doctype)
         m_doctype->deref();
     m_implementation->deref();
@@ -366,7 +370,7 @@ ProcessingInstructionImpl *DocumentImpl::createProcessingInstruction ( const DOM
 
 Attr DocumentImpl::createAttribute( NodeImpl::Id id )
 {
-    return new AttrImpl(0, new AttributeImpl(id, DOMString("").implementation()));
+    return new AttrImpl(0, docPtr(), new AttributeImpl(id, DOMString("").implementation()));
 }
 
 EntityReferenceImpl *DocumentImpl::createEntityReference ( const DOMString &name )
@@ -374,21 +378,84 @@ EntityReferenceImpl *DocumentImpl::createEntityReference ( const DOMString &name
     return new EntityReferenceImpl(docPtr(), name.implementation());
 }
 
-NodeImpl *DocumentImpl::importNode( NodeImpl */*importedNode*/, bool /*deep*/,
-                                           int &/*exceptioncode*/ )
+NodeImpl *DocumentImpl::importNode(NodeImpl *importedNode, bool deep, int &exceptioncode)
 {
-    // ### implement
-    return 0;
+	NodeImpl *result = 0;
+
+	if(importedNode->nodeType() == Node::ELEMENT_NODE)
+	{
+		ElementImpl *tempElementImpl = createElementNS(getDocument()->namespaceURI(id()), importedNode->nodeName());
+		result = tempElementImpl;
+
+		if(static_cast<ElementImpl *>(importedNode)->attributes(true) && static_cast<ElementImpl *>(importedNode)->attributes(true)->length())
+		{
+			NamedNodeMapImpl *attr = static_cast<ElementImpl *>(importedNode)->attributes();
+
+			for(unsigned int i = 0; i < attr->length(); i++)
+			{
+				DOM::DOMString qualifiedName = attr->item(i)->nodeName();
+				DOM::DOMString value = attr->item(i)->nodeValue();
+
+				int colonpos = qualifiedName.find(':');
+				DOMString localName = qualifiedName;
+				if(colonpos >= 0)
+				{
+					localName.remove(0, colonpos + 1);
+					// ### extract and set new prefix
+				}
+
+				NodeImpl::Id nodeId = getDocument()->attrId(getDocument()->namespaceURI(id()), localName.implementation(), false /* allocate */);
+				tempElementImpl->setAttribute(nodeId, value.implementation(), exceptioncode);
+
+				if(exceptioncode != 0)
+					break;
+			}
+		}
+	}
+	else if(importedNode->nodeType() == Node::TEXT_NODE)
+	{
+		result = createTextNode(importedNode->nodeValue());
+		deep = false;
+	}
+	else if(importedNode->nodeType() == Node::CDATA_SECTION_NODE)
+	{
+		result = createCDATASection(importedNode->nodeValue());
+		deep = false;
+	}
+	else if(importedNode->nodeType() == Node::ENTITY_REFERENCE_NODE)
+		result = createEntityReference(importedNode->nodeName());
+	else if(importedNode->nodeType() == Node::PROCESSING_INSTRUCTION_NODE)
+	{
+		result = createProcessingInstruction(importedNode->nodeName(), importedNode->nodeValue());
+		deep = false;
+	}
+	else if(importedNode->nodeType() == Node::COMMENT_NODE)
+	{
+		result = createComment(importedNode->nodeValue());
+		deep = false;
+	}
+	else
+		exceptioncode = DOMException::NOT_SUPPORTED_ERR;
+
+	if(deep)
+	{
+		for(Node n = importedNode->firstChild(); !n.isNull(); n = n.nextSibling())
+			result->appendChild(importNode(n.handle(), true, exceptioncode), exceptioncode);
+	}
+
+	return result;
 }
 
 ElementImpl *DocumentImpl::createElementNS( const DOMString &_namespaceURI, const DOMString &_qualifiedName )
 {
     ElementImpl *e = 0;
-    if (_namespaceURI == XHTML_NAMESPACE) {
+    QString qName = _qualifiedName.string();
+    int colonPos = qName.find(':',0);
+
+    if ((_namespaceURI.isNull() && colonPos < 0) ||
+        _namespaceURI == XHTML_NAMESPACE) {
         // User requested an element in the XHTML namespace - this means we create a HTML element
         // (elements not in this namespace are treated as normal XML elements)
-        QString qName = _qualifiedName.string();
-        int colonPos = qName.find(':',0);
         e = createHTMLElement(qName.mid(colonPos+1));
         int exceptioncode = 0;
         if (colonPos >= 0)
@@ -444,6 +511,10 @@ void DocumentImpl::setTitle(DOMString _title)
     m_title = _title;
 
     QString titleStr = m_title.string();
+    for (unsigned i = 0; i < titleStr.length(); ++i)
+        if (titleStr[i] < ' ')
+            titleStr[i] = ' ';
+    titleStr = titleStr.stripWhiteSpace();
     titleStr.compose();
     if ( !view()->part()->parentPart() ) {
 	if (titleStr.isNull() || titleStr.isEmpty()) {
@@ -991,7 +1062,7 @@ void DocumentImpl::write( const QString &text )
 {
     if (!m_tokenizer) {
         open();
-        write(QString::fromLatin1("<html>"));
+        write(QString::fromLatin1("<html><title></title><body>"));
     }
     m_tokenizer->write(text, false);
 
@@ -1327,9 +1398,11 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
             if(ok) v->part()->scheduleRedirection(delay, v->part()->url().url() );
         } else {
             int delay = 0;
+            int fract = pos;
             bool ok = false;
-
-	    DOMStringImpl* s = content.implementation()->substring(0, pos);
+            if ( (fract = str.find('.') ) < 0 || fract > pos)
+                fract = pos;
+	    DOMStringImpl* s = content.implementation()->substring(0, fract);
 	    delay = s->toInt(&ok);
 	    delete s;
 
@@ -1339,16 +1412,22 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
             if(str.find("url", 0,  false ) == 0)  str = str.mid(3);
             str = str.stripWhiteSpace();
             if ( str.length() && str[0] == '=' ) str = str.mid( 1 ).stripWhiteSpace();
+            while(str.length() && 
+                  (str[str.length()-1] == ';' || str[str.length()-1] == ','))
+                str.setLength(str.length()-1);
             str = parseURL( DOMString(str) ).string();
-            if ( ok )
+            if ( ok  || !fract)
                 v->part()->scheduleRedirection(delay, getDocument()->completeURL( str ));
         }
     }
     else if(strcasecmp(equiv, "expires") == 0)
     {
         QString str = content.string().stripWhiteSpace();
-        time_t expire_date = str.toLong();
-        KURL url = v->part()->url();
+        time_t expire_date = KRFCDate::parseDate(str);
+        if (!expire_date)
+            expire_date = str.toULong();
+        if (!expire_date)
+            expire_date = 1; // expire now
         if (m_docLoader)
             m_docLoader->setExpireDate(expire_date);
     }
@@ -1369,11 +1448,11 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
     }
 }
 
-bool DocumentImpl::prepareMouseEvent( int _x, int _y, MouseEvent *ev )
+bool DocumentImpl::prepareMouseEvent( bool readonly, int _x, int _y, MouseEvent *ev )
 {
     if ( m_render ) {
         assert(m_render->isRoot());
-        RenderObject::NodeInfo renderInfo(false, ev->type == MousePress);
+        RenderObject::NodeInfo renderInfo(readonly, ev->type == MousePress);
         bool isInside = m_render->nodeAtPoint(renderInfo, _x, _y, 0, 0);
         ev->innerNode = renderInfo.innerNode();
 
@@ -1392,7 +1471,8 @@ bool DocumentImpl::prepareMouseEvent( int _x, int _y, MouseEvent *ev )
 //            qDebug("url: *%s*", ev->url.string().latin1());
         }
 
-        updateRendering();
+        if (!readonly)
+            updateRendering();
 
         return isInside;
     }
@@ -1722,23 +1802,33 @@ void DocumentImpl::recalcStyleSelector()
                 HTMLLinkElementImpl* l = static_cast<HTMLLinkElementImpl*>(n);
                 // awful hack to ensure that we ignore the title attribute for non-stylesheets
                 // ### make that nicer!
-                if (!l->sheet() || l->isLoading())
+                if (!(l->sheet() || l->isLoading()))
                     title = QString::null;
             }
+            else {
+                HTMLStyleElementImpl* s = static_cast<HTMLStyleElementImpl*>(n);
+                // awful hack to ensure that we ignore the title attribute for non-stylesheets
+                // ### make that nicer!
+                if (!(s->sheet() || s->isLoading()))
+                    title = QString::null;
+            }
+
             QString sheetUsed = view()->part()->d->m_sheetUsed;
+            if ( n->id() == ID_LINK )
+                sheet = static_cast<HTMLLinkElementImpl*>(n)->sheet();
+            else
+                // <STYLE> element
+                sheet = static_cast<HTMLStyleElementImpl*>(n)->sheet();
+
             if ( !title.isEmpty() ) {
                 if ( sheetUsed.isEmpty() )
                     sheetUsed = view()->part()->d->m_sheetUsed = title;
                 if ( !m_availableSheets.contains( title ) )
                     m_availableSheets.append( title );
+
+                if ( title != sheetUsed )
+                    sheet = 0; // this stylesheet wasn't selected
             }
-            if ( n->id() == ID_LINK ) {
-                if (title.isEmpty() || title == sheetUsed)
-                    sheet = static_cast<HTMLLinkElementImpl*>(n)->sheet();
-            }
-            else
-                // <STYLE> element
-                sheet = static_cast<HTMLStyleElementImpl*>(n)->sheet();
 	}
 	else if (n->id() == ID_BODY) {
             // <BODY> element (doesn't contain styles as such but vlink="..." and friends
@@ -1802,19 +1892,21 @@ void DocumentImpl::setFocusNode(NodeImpl *newFocusNode)
         if (m_focusNode) {
             m_focusNode->ref();
             m_focusNode->dispatchHTMLEvent(EventImpl::FOCUS_EVENT,false,false);
+            if (m_focusNode != newFocusNode) return;
             m_focusNode->dispatchUIEvent(EventImpl::DOMFOCUSIN_EVENT);
-            if (m_focusNode == newFocusNode) {
-                m_focusNode->setFocus();
-                // eww, I suck. set the qt focus correctly
-                // ### find a better place in the code for this
-                if (getDocument()->view()) {
-                    if (!m_focusNode->renderer() || !m_focusNode->renderer()->isWidget())
-                        getDocument()->view()->setFocus();
-                    else if (static_cast<RenderWidget*>(m_focusNode->renderer())->widget())
-                            static_cast<RenderWidget*>(m_focusNode->renderer())->widget()->setFocus();
-                }
+            if (m_focusNode != newFocusNode) return;
+            m_focusNode->setFocus();
+            // eww, I suck. set the qt focus correctly
+            // ### find a better place in the code for this
+            if (getDocument()->view()) {
+                if (!m_focusNode->renderer() || !m_focusNode->renderer()->isWidget())
+                    getDocument()->view()->setFocus();
+                else if (static_cast<RenderWidget*>(m_focusNode->renderer())->widget())
+                    static_cast<RenderWidget*>(m_focusNode->renderer())->widget()->setFocus();
             }
         }
+
+        updateRendering();
     }
 }
 

@@ -1,10 +1,28 @@
-kdelibs (3.0.0-0rc2-1) unstable; urgency=low
+kdelibs (4:3.0.4-1) unstable; urgency=low
+
+  * New upstream.
+
+ -- Christopher L Cheney <ccheney@debian.org>  Sat,  5 Oct 2002 15:36:25 +1000
+
+kdelibs (4:3.0.3a-1) unstable; urgency=low
+
+  * Bloody hell; cross-site scripting vulnerability. I've got 2.2.2 to work
+    through now as well, *sigh*.
+
+ -- Daniel Stone <dstone@kde.org>  Wed, 11 Sep 2002 22:04:32 +1000
+
+kdelibs (4:3.0.3-1) unstable; urgency=low
+
+  * Update to KDE 3.0.3, fixing SSL security issue with Konq.
+
+ -- Daniel Stone <dstone@kde.org>  Tue, 13 Aug 2002 20:17:29 +1000
+
+kdelibs (4:3.0.2-1) unstable; urgency=low
 
   * New upstream.
   * rebuilt debian dir.
-  * can't use doxygen for docs due to graphviz being non-free
 
- -- Christopher L Cheney <ccheney@debian.org>  Fri,  8 Mar 2002 16:00:00 -0600
+ -- Christopher L Cheney <ccheney@debian.org>  Mon, 17 Jun 2002 23:00:00 -0500
 
 kdelibs (4:2.2.2-13) unstable; urgency=high
 

@@ -387,6 +387,7 @@ void PreviewJob::getOrCreateThumbnail()
         localURL.setPath( d->tempName = localFile.name() );
         KIO::Job * job = KIO::file_copy( currentURL, localURL, -1, true,
                                          false, false /* No GUI */ );
+        job->addMetaData("thumbnail","1");
         addSubjob(job);
     }
 }

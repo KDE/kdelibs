@@ -22,13 +22,13 @@
 #define BBOX "%%BoundingBox:"
 #define BBOX_LEN strlen(BBOX)
 
-int bbox ( QImageIO *imageio, int *x1, int *y1, int *x2, int *y2)
+bool bbox ( QImageIO *imageio, int *x1, int *y1, int *x2, int *y2)
 {
-        int ret = FALSE;
+        int ret = false;
         char buf[BUFLEN+1];
         char dummy[BUFLEN+1];
 
-        while (imageio->ioDevice()->readLine(buf, BUFLEN) != -1)
+        while (imageio->ioDevice()->readLine(buf, BUFLEN) > 0)
         {
                 if (strncmp (buf, BBOX, BBOX_LEN) == 0)
                 {
@@ -38,7 +38,7 @@ int bbox ( QImageIO *imageio, int *x1, int *y1, int *x2, int *y2)
                         if ( sscanf (buf, "%s %f %f %f %f", dummy,
                                 &_x1, &_y1, &_x2, &_y2) == 5) {
                                 *x1=(int)_x1; *y1=(int)_y1; *x2=(int)_x2; *y2=(int)_y2;
-                                ret = TRUE;
+                                ret = true;
                                 break;
                         }
                 }
@@ -58,7 +58,7 @@ void kimgio_eps_read (QImageIO *image)
         QString tmp;
 
         // find bounding box
-        if ( bbox (image, &x1, &y1, &x2, &y2) == 0 ) {
+        if ( !bbox (image, &x1, &y1, &x2, &y2)) {
             return;
         }
 
@@ -139,7 +139,6 @@ void kimgio_eps_read (QImageIO *image)
         // load image
         QImage myimage;
         if( myimage.load (tmpFile.name()) ) {
-                myimage.createHeuristicMask();
                 image->setImage (myimage);
                 image->setStatus (0);
         }

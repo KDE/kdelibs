@@ -36,19 +36,6 @@
 
 namespace KABC {
 
-struct AddresseeData : public KShared
-{
-  --VARIABLES--
-
-  PhoneNumber::List phoneNumbers;
-  Address::List addresses;
-  QStringList emails;
-  QStringList categories;
-  QStringList custom;
-
-  bool empty;
-};
-
 /**
   @short address book entry
   
@@ -220,6 +207,7 @@ class Addressee
     Addressee copy();
     void detach();
   
+    struct AddresseeData;
     KSharedPtr<AddresseeData> mData;
 };
 

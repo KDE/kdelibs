@@ -21,7 +21,9 @@
  *
  * $Id$
  */
+
 #include "render_list.h"
+#include "rendering/render_root.h"
 
 #include <qpainter.h>
 
@@ -285,8 +287,8 @@ void RenderListMarker::print(QPainter *p, int _x, int _y, int _w, int _h,
     printObject(p, _x, _y, _w, _h, _tx, _ty);
 }
 
-void RenderListMarker::printObject(QPainter *p, int, int,
-                                    int, int, int _tx, int _ty)
+void RenderListMarker::printObject(QPainter *p, int, int _y,
+                                    int, int _h, int _tx, int _ty)
 {
     if (style()->visibility() != VISIBLE) return;
 
@@ -297,6 +299,24 @@ void RenderListMarker::printObject(QPainter *p, int, int,
     const QFontMetrics fm = p->fontMetrics();
     int offset = fm.ascent()*2/3;
 
+    bool isPrinting = (p->device()->devType() == QInternal::Printer);
+    if (isPrinting)
+    {
+        if (_ty < _y)
+        {
+            // This has been printed already we suppose.
+            return;
+        }
+        if (_ty + m_height + paddingBottom() + borderBottom() >= _y+_h)
+        {
+            RenderRoot *rootObj = root();
+            if (_ty < rootObj->truncatedAt())
+                rootObj->setTruncatedAt(_ty);
+            // Let's print this on the next page.
+            return; 
+        }
+    }
+    
 
     int xoff = 0;
     int yoff = fm.ascent() - offset;

@@ -29,6 +29,7 @@
 #include "dom_nodeimpl.h"
 #include "dom/dom_element.h"
 #include "xml/dom_stringimpl.h"
+#include "misc/shared.h"
 
 namespace khtml {
     class CSSStyleSelector;
@@ -45,7 +46,7 @@ class NamedAttrMapImpl;
 // the actual Attr (AttrImpl) with its value as textchild
 // is only allocated on demand by the DOM bindings.
 // Any use of AttrImpl inside khtml should be avoided.
-class AttributeImpl : public DOM::DomShared
+class AttributeImpl : public khtml::Shared<AttributeImpl>
 {
     friend class NamedAttrMapImpl;
     friend class ElementImpl;
@@ -54,8 +55,7 @@ class AttributeImpl : public DOM::DomShared
 public:
     // null value is forbidden !
     AttributeImpl(NodeImpl::Id id, DOMStringImpl* value)
-        : DomShared(),
-          m_id(id), _prefix(0), _value(value), _impl(0)
+        : m_id(id), _prefix(0), _value(value), _impl(0)
         { _value->ref(); };
     ~AttributeImpl() {
         if (_prefix) _prefix->deref();
@@ -101,7 +101,7 @@ class AttrImpl : public NodeBaseImpl
     friend class NamedAttrMapImpl;
 
 public:
-    AttrImpl(ElementImpl* element, AttributeImpl* a);
+    AttrImpl(ElementImpl* element, DocumentPtr* docPtr, AttributeImpl* a);
     ~AttrImpl();
 
 private:

@@ -49,7 +49,6 @@ const Q_UINT32 NodeImpl::IdLocalMask = 0x0000ffff;
 
 NodeImpl::NodeImpl(DocumentPtr *doc)
     : document(doc),
-      m_parent(0),
       m_previous(0),
       m_next(0),
       m_render(0),
@@ -471,7 +470,7 @@ bool NodeImpl::dispatchEvent(EventImpl *evt, int &exceptioncode, bool tempEvent)
     // If tempEvent is true, this means that the DOM implementation will not be storing a reference to the event, i.e.
     // there is no way to retrieve it from javascript if a script does not already have a reference to it in a variable.
     // So there is no need for the interpreter to keep the event in it's cache
-    if (tempEvent && view && view->part()->jScript())
+    if (tempEvent && view && view->part() && view->part()->jScript())
         view->part()->jScript()->finishedWithEvent(evt);
 
     return ret;
@@ -904,11 +903,6 @@ void NodeImpl::dump(QTextStream *stream, QString ind) const
 }
 #endif
 
-bool NodeImpl::deleteMe()
-{
-    return !m_parent  && !_ref;
-}
-
 void NodeImpl::init()
 {
 }
@@ -1002,8 +996,7 @@ NodeBaseImpl::~NodeBaseImpl()
         n->setPreviousSibling(0);
         n->setNextSibling(0);
         n->setParent(0);
-
-        if(n->deleteMe())
+	if ( !n->refCount() )
             delete n;
     }
 }
@@ -1234,7 +1227,7 @@ void NodeBaseImpl::removeChildren()
         n->setPreviousSibling(0);
         n->setNextSibling(0);
         n->setParent(0);
-        if(n->deleteMe())
+        if( !n->refCount() )
             delete n;
     }
     _first = _last = 0;

@@ -268,10 +268,10 @@ public:
         SunkenArrowRight,
         // Everything else (indicators must have separate settings)
         HScrollGroove, VScrollGroove, Slider, SliderGroove, IndicatorOn,
-        IndicatorOff, ExIndicatorOn, ExIndicatorOff, HBarHandle, VBarHandle,
+        IndicatorOff, IndicatorTri, ExIndicatorOn, ExIndicatorOff, HBarHandle, VBarHandle,
         ToolBar, Splitter, CheckMark, MenuBar, DisArrowUp, DisArrowDown,
         DisArrowLeft, DisArrowRight, ProgressBar, ProgressBg, MenuBarItem,
-        Background, RotSliderGroove, WIDGETS};
+        Background, RotSliderGroove, RotInactiveTab, RotActiveTab, WIDGETS};
 
     /**
      * The scaling type specified by the KConfig file.

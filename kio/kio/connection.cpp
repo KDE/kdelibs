@@ -229,8 +229,8 @@ int Connection::read( int* _cmd, QByteArray &data )
     data.resize( len );
 
     if ( len > 0L ) {
-	size_t bytesToGo = len;
-	size_t bytesRead = 0;
+	int bytesToGo = len;
+	int bytesRead = 0;
 	do {
 	    n = ::read(fd_in, data.data()+bytesRead, bytesToGo);
 	    if (n == -1) {

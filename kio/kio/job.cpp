@@ -59,6 +59,7 @@ extern "C" {
 #include "kio/observer.h"
 
 #include <kdirnotify_stub.h>
+#include <ktempfile.h>
 
 using namespace KIO;
 template class QPtrList<KIO::Job>;
@@ -1688,6 +1689,7 @@ void CopyJob::slotResultStating( Job *job )
             // Append filename or dirname to destination URL, if allowed
             if ( destinationState == DEST_IS_DIR && !m_asMethod )
                 info.uDest.addPath( srcurl.fileName() );
+
             files.append( info );
             ++m_currentStatSrc;
             statNextSrc();
@@ -1928,7 +1930,25 @@ void CopyJob::statNextSrc()
             info.uDest = m_currentDest;
             // Append filename or dirname to destination URL, if allowed
             if ( destinationState == DEST_IS_DIR && !m_asMethod )
-                info.uDest.addPath( m_currentSrcURL.fileName() );
+            {
+                if (
+                    (m_currentSrcURL.protocol() == info.uDest.protocol()) &&
+                    (m_currentSrcURL.host() == info.uDest.host()) &&
+                    (m_currentSrcURL.port() == info.uDest.port()) &&
+                    (m_currentSrcURL.user() == info.uDest.user()) &&
+                    (m_currentSrcURL.pass() == info.uDest.pass()) )
+                {
+                    // This is the case of creating a real symlink
+                    info.uDest.addPath( m_currentSrcURL.fileName() );
+                }
+                else
+                {
+                    // Different protocols, we'll create a .desktop file
+                    // We have to change the extension anyway, so while we're at it,
+                    // name the file like the URL
+                    info.uDest.addPath( KIO::encodeFileName( m_currentSrcURL.prettyURL() )+".desktop" );
+                }
+            }
             files.append( info ); // Files and any symlinks
             ++m_currentStatSrc;
             statNextSrc(); // we could use a loop instead of a recursive call :)
@@ -1952,7 +1972,7 @@ void CopyJob::statNextSrc()
             addSubjob( newJob );
             if ( m_currentSrcURL.directory() != dest.directory() ) // For the user, moving isn't renaming. Only renaming is.
                 m_bOnlyRenames = false;
-    }
+        }
         else
         {
             // Stat the next src url
@@ -2000,6 +2020,7 @@ void CopyJob::skip( const KURL & sourceUrl )
         //kdDebug(7007) << "CopyJob::skip: removing " << sourceUrl.prettyURL() << " from list" << endl;
         m_srcList.remove( sit );
     }
+    dirsToRemove.remove( sourceUrl );
 }
 
 void CopyJob::slotResultCreatingDirs( Job * job )
@@ -2471,9 +2492,6 @@ void CopyJob::copyNextFile()
                 kdDebug(7007) << "CopyJob::copyNextFile : Linking URL=" << (*it).uSource.prettyURL() << " link=" << (*it).uDest.prettyURL() << endl;
                 if ( (*it).uDest.isLocalFile() )
                 {
-                    // We have to change the extension anyway, so while we're at it,
-                    // name the file like the URL
-                    (*it).uDest.setFileName( KIO::encodeFileName( (*it).uSource.prettyURL() )+".desktop" );
                     QString path = (*it).uDest.path();
                     kdDebug(7007) << "CopyJob::copyNextFile path=" << path << endl;
                     QFile f( path );
@@ -2672,14 +2690,47 @@ void CopyJob::slotResult( Job *job )
             assert ( subjobs.isEmpty() );
             if ( err )
             {
-                // Only try copy+del if the reason for not renaming was "unsupported" (which includes EXDEV)
-                // One case where we really don't want to go to copy+del is renaming 'a' to 'A' on a FAT partition
-                if ( err != KIO::ERR_UNSUPPORTED_ACTION )
+                // Determine dest again
+                KURL dest = m_dest;
+                if ( destinationState == DEST_IS_DIR && !m_asMethod )
+                    dest.addPath( m_currentSrcURL.fileName() );
+                // Direct renaming didn't work. Try renaming to a temp name,
+                // this can help e.g. when renaming 'a' to 'A' on a VFAT partition.
+                // In that case it's the _same_ dir, we don't want to copy+del (data loss!)
+                if ( m_currentSrcURL.isLocalFile() &&
+                     m_currentSrcURL.url(-1).lower() == dest.url(-1).lower() &&
+                     ( job->error() == ERR_FILE_ALREADY_EXIST || job->error() == ERR_DIR_ALREADY_EXIST ) )
                 {
-                    Job::slotResult( job ); // will set the error and emit result(this)
-                    return;
+                    kdDebug(7007) << "Couldn't rename directly, dest already exists. Detected special case of lower/uppercase renaming in same dir, try with 2 rename calls" << endl;
+                    QCString _src( QFile::encodeName(m_currentSrcURL.path()) );
+                    QCString _dest( QFile::encodeName(dest.path()) );
+                    KTempFile tmpFile( m_currentSrcURL.directory() );
+                    QCString _tmp( QFile::encodeName(tmpFile.name()) );
+                    kdDebug() << "CopyJob::slotResult KTempFile status:" << tmpFile.status() << " using " << _tmp << " as intermediary" << endl;
+                    tmpFile.unlink();
+                    if ( ::rename( _src, _tmp ) == 0 )
+                    {
+                        if ( ::rename( _tmp, _dest ) == 0 )
+                        {
+                            kdDebug(7007) << "Success." << endl;
+                            err = 0;
+                        }
+                        else
+                        {
+                            // Revert back to original name!
+                            bool b = ::rename( QFile::encodeName(tmpFile.name()), _src );
+                            if (!b) {
+                                kdError(7007) << "Couldn't rename " << tmpFile.name() << " back to " << _src << " !" << endl;
+                                // Severe error, abort
+                                Job::slotResult( job ); // will set the error and emit result(this)
+                                return;
+                            }
+                        }
+                    }
                 }
-
+            }
+            if ( err )
+            {
                 m_currentSrcURL=*m_currentStatSrc;
                 m_currentDestURL=m_dest;
                 kdDebug(7007) << "Couldn't rename, reverting to normal way, starting with stat" << endl;

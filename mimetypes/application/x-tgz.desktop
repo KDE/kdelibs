@@ -1,7 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=Gzipped Tar Archive
-Comment[af]=gzip gekompakteerde tar argief
+Comment[af]=Gzip gekompakteerde Tar Argief
 Comment[ar]=أرشيف TAR عن طريق Gzip
 Comment[az]=Gzip'lənmiş Tar Arxivi
 Comment[bg]=Компресиран с gzip архив на tar
@@ -42,7 +42,7 @@ Comment[pt_BR]=Pacote Tar comprimido via gzip
 Comment[ro]=Arhivă Tar comprimată cu GZip
 Comment[ru]=Сжатый gzip архив tar
 Comment[sk]=Gzipované Tar archívy
-Comment[sl]=Z gzip-om stisnjeni arhiv tar
+Comment[sl]=Z gzip stisnjeni arhiv tar
 Comment[sr]=GZipovana TAR arhiva
 Comment[sv]=Gzip-komprimerat Tar-arkiv
 Comment[ta]=Gzip ¦ºö¾ Tar ¸¡ôÀ¸õ
@@ -50,7 +50,7 @@ Comment[th]=แฟ้มบีบอัด Gzip - Tar
 Comment[tr]=Gzip'lenmiş Tar Arşivi
 Comment[uk]=Архів tar стиснутий gzip
 Comment[ven]=Fhethu hau vhulungela hone zwithu zwa kale ha Tar ha Gzipped
-Comment[vi]=File nén gzipped tar 
+Comment[vi]=Lưu trữ Tar được gzip
 Comment[xh]=Ushicilelo lukawonke-wonke nexwebhu leMbali le Gzipped Tar
 Comment[xx]=xx
 Comment[zh_CN]=Gzip 压缩的 Tar 归档文件

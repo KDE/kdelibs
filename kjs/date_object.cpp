@@ -17,7 +17,6 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *  $Id$
  */
 
 #ifdef HAVE_CONFIG_H
@@ -77,7 +76,7 @@ const ClassInfo DatePrototypeImp::info = {"Date", 0, &dateTable, 0};
    We use a negative ID to denote the "UTC" variant.
 @begin dateTable 61
   toString		DateProtoFuncImp::ToString		DontEnum|Function	0
-  toUTCString		-DateProtoFuncImp::ToString		DontEnum|Function	0
+  toUTCString		DateProtoFuncImp::ToUTCString		DontEnum|Function	0
   toDateString		DateProtoFuncImp::ToDateString		DontEnum|Function	0
   toTimeString		DateProtoFuncImp::ToTimeString		DontEnum|Function	0
   toLocaleString	DateProtoFuncImp::ToLocaleString	DontEnum|Function	0
@@ -190,20 +189,18 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
 
   switch (id) {
   case ToString:
-    s = ctime(&tv);
-    result = String(s.substr(0, s.size() - 1));
-    break;
   case ToDateString:
   case ToTimeString:
   case ToGMTString:
+  case ToUTCString:
     setlocale(LC_TIME,"C");
     if (id == DateProtoFuncImp::ToDateString) {
       strftime(timebuffer, bufsize, "%x",t);
     } else if (id == DateProtoFuncImp::ToTimeString) {
       strftime(timebuffer, bufsize, "%X",t);
-    } else {
-      t = gmtime(&tv);
-      strftime(timebuffer, bufsize, "%a, %d-%b-%y %H:%M:%S %Z", t);
+    } else { // ToString, toGMTString & toUTCString
+      t = (id == ToString ? localtime(&tv) : gmtime(&tv));
+      strftime(timebuffer, bufsize, "%a, %d %b %Y %H:%M:%S %z", t);
     }
     setlocale(LC_TIME,oldlocale.c_str());
     result = String(timebuffer);
@@ -466,7 +463,9 @@ Value KJS::parseDate(const String &s)
     time_t seconds = KRFCDate_parseDate( u );
 #ifdef KJS_VERBOSE
     fprintf(stderr,"KRFCDate_parseDate returned seconds=%d\n",seconds);
+    fprintf(stderr, "this is: %s\n", ctime(&seconds));
 #endif
+
     if ( seconds == -1 )
       return Undefined();
     else
@@ -614,6 +613,9 @@ time_t KJS::KRFCDate_parseDate(const UString &_date)
      while(*dateString && isspace(*dateString))
      	dateString++;
 
+     if (*dateString == ',')
+       dateString++;
+
      if ( month == -1 ) // not found yet
      {
         for(int i=0; i < 3;i++)
@@ -717,6 +719,14 @@ time_t KJS::KRFCDate_parseDate(const UString &_date)
      // broken mail-/news-clients omit the time zone
      if (*dateString) {
 
+       if (dateString[0] == 'G' && dateString[1] == 'M' && dateString[2] == 'T')
+         dateString += 3;
+       else if (dateString[0] == 'U' && dateString[1] == 'T' && dateString[2] == 'C')
+         dateString += 3;
+
+       while (*dateString && isspace(*dateString))
+         ++dateString;
+
         if ((*dateString == '+') || (*dateString == '-')) {
            offset = strtol(dateString, &newPosStr, 10);
 
@@ -735,6 +745,7 @@ time_t KJS::KRFCDate_parseDate(const UString &_date)
            }
         }
      }
+
      if (sizeof(time_t) == 4)
      {
          if ((time_t)-1 < 0)

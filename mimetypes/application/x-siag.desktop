@@ -2,7 +2,7 @@
 Encoding=UTF-8
 MimeType=application/x-siag
 Comment=Siag Spreadsheet
-Comment[af]=siag spreiblad
+Comment[af]=Siag Spreiblad
 Comment[ar]=جدول Siag
 Comment[az]=Siag Hesab Cədvəli
 Comment[be]=Электронная табліца Siag
@@ -28,7 +28,7 @@ Comment[lt]=Siag elektroninė lentelė
 Comment[lv]=Siag Elektroniska Tabula
 Comment[mt]=Spreadsheet Siag
 Comment[nb]=Siag Regneark
-Comment[nl]=Siag-rekenblad
+Comment[nl]=Siag-spreadsheet
 Comment[nn]=Siag-rekneark
 Comment[pl]=Arkusz Siag
 Comment[pt]=Folha de cálculo Siag

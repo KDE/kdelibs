@@ -236,9 +236,9 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
     case DASHED:
         if(style == DASHED)
             p->setPen(QPen(c, width == 1 ? 0 : width, Qt::DashLine));
-        {
-            switch(s)
-            {
+
+        if (width > 0)
+            switch(s) {
             case BSBottom:
             case BSTop:
                 p->drawLine(x1, (y1+y2)/2, x2, (y1+y2)/2);
@@ -246,9 +246,8 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
             case BSLeft:
                 p->drawLine((x1+x2)/2, y1, (x1+x2)/2, y2);
             }
-        }
-        break;
 
+        break;
     case DOUBLE:
     {
         int third = (width+1)/3;
@@ -534,6 +533,7 @@ QString RenderObject::information() const
     if (layouted()) ts << "lt ";
     if (m_recalcMinMax) ts << "rmm ";
     if (mouseInside()) ts << "mi ";
+    if (style() && style()->zIndex()) ts << "zI: " << style()->zIndex();
     if (element() && element()->active()) ts << "act ";
     if (element() && element()->hasAnchor()) ts << "anchor ";
     if (element() && element()->focused()) ts << "focus ";
@@ -839,9 +839,9 @@ bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
     bool inner = !info.innerNode();
 
     // ### table should have its own, more performant method
-    if (isInline() || isRoot() || isTableRow() || isTableSection() || inside || mouseInside() ) {
+    if (overhangingContents() || isInline() || isRoot() || isTableRow() || isTableSection() || isPositioned() || inside || mouseInside() ) {
         for (RenderObject* child = lastChild(); child; child = child->previousSibling())
-            if (!child->isPositioned() && child->nodeAtPoint(info, _x, _y, _tx+xPos(), _ty+yPos()))
+            if (!child->isSpecial() && child->nodeAtPoint(info, _x, _y, tx, ty))
                 inside = true;
     }
 
@@ -1026,4 +1026,9 @@ void RenderObject::scheduleRelayout()
     KHTMLView *view = static_cast<RenderRoot *>(this)->view();
     if ( view )
 	view->scheduleRelayout();
+}
+
+
+void RenderObject::removeLeftoverAnonymousBoxes()
+{
 }

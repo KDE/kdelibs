@@ -2,7 +2,7 @@
 Encoding=UTF-8
 MimeType=text/x-makefile
 Comment=Makefile
-Comment[af]=maakleêr
+Comment[af]=Maakleêr
 Comment[da]=Make-fil
 Comment[eo]=Muntdosiero
 Comment[es]=Script Makefile
@@ -12,6 +12,7 @@ Comment[hu]=Makefájl
 Comment[is]=Make-skrá
 Comment[ko]=Make 파일
 Comment[mk]=Makefile датотека
+Comment[nb]=Make-fil
 Comment[nn]=Make-fil
 Comment[uk]=Файл Makefile
 Comment[ven]=Itanifaela

@@ -103,6 +103,9 @@ void FileProtocol::mkdir( const KURL& url, int permissions )
 	    if ( errno == EACCES ) {
 		error( KIO::ERR_ACCESS_DENIED, url.path() );
 		return;
+	    } else if ( errno == ENOSPC ) {
+		error( KIO::ERR_DISK_FULL, url.path() );
+		return;
 	    } else {
 		error( KIO::ERR_COULD_NOT_MKDIR, url.path() );
 		return;
@@ -193,7 +196,7 @@ write_all(int fd, const char *buf, size_t len)
 {
    while (len > 0)
    {
-      ssize_t written = write(fd, buf, len);
+      int written = write(fd, buf, len);
       if (written < 0)
       {
           if (errno == EINTR)

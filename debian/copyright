@@ -1,5 +1,5 @@
 This package was debianized by Christopher L Cheney <ccheney@debian.org> on
-Fri,  8 Mar 2002 16:00:00 -0600.
+Tue, 16 Apr 2002 22:00:00 -0500.
 
 It was downloaded via cvs from cvs.kde.org
 
@@ -8,4 +8,16 @@ Upstream Author(s): Kalle Dalheimer <kalle@kde.org>
 
 Copyright:
 
-<Must follow here>
+libartskde, interfaces, kabc, kate, kcert, kconf_update, kdecore, kded, kdefx,
+kdeprint, kdesu, kdeui, kdewidgets, khtml, kimgio, kinit, kio, kioslave, kjs,
+kparts, ksmartcard, kspell, kstyles, libkmid, libkscreensaver, 
+------------------------------------------------------------------------------
+LGPL
+
+knotify, artsmessage, kab
+-------------------------
+GPL
+
+dcop
+----
+BSD

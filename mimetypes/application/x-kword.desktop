@@ -2,7 +2,7 @@
 Encoding=UTF-8
 MimeType=application/x-kword
 Comment=KWord
-Comment[af]=kword
+Comment[af]=Kword
 Comment[ar]=مستند KWord
 Comment[bg]=Текстов процесор KWord
 Comment[ca]=Processador de textos KWord
@@ -17,7 +17,6 @@ Comment[ru]=Текстовый процессор KWord
 Comment[sr]=KWord dokument
 Comment[sv]=Kword
 Comment[th]=เวิร์ด - K
-Comment[ven]=Fhungo la K
 Comment[xx]=xx
 Icon=kword
 Type=MimeType

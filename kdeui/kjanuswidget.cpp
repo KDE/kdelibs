@@ -233,7 +233,8 @@ void KJanusWidget::pageGone()
     return;
 
   int index = mPageList->findRef( page );
-  mTitleList->remove(mTitleList->at(index));
+  if ( mTitleList )
+    mTitleList->remove(mTitleList->at(index));
 
   mPageList->removeRef(page);
 

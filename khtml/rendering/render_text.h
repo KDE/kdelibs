@@ -26,6 +26,7 @@
 
 #include "dom/dom_string.h"
 #include "xml/dom_stringimpl.h"
+#include "xml/dom_textimpl.h"
 #include "rendering/render_object.h"
 
 #include <qptrvector.h>
@@ -137,6 +138,7 @@ public:
 
     unsigned int length() const { return str->l; }
     QChar *text() const { return str->s; }
+    unsigned int stringLength() const { return str->l; } // non virtual implementation of length()
     virtual void position(int x, int y, int from, int len, int width, bool reverse, bool firstLine, int spaceAdd);
 
     virtual unsigned int width(unsigned int from, unsigned int len, const Font *f) const;
@@ -167,7 +169,7 @@ public:
 
     bool isFixedWidthFont() const;
 
-    void setText(DOM::DOMStringImpl *text);
+    void setText(DOM::DOMStringImpl *text, bool force=false);
 
     virtual SelectionState selectionState() const {return m_selectionState;}
     virtual void setSelectionState(SelectionState s) {m_selectionState = s; }
@@ -185,6 +187,9 @@ public:
     bool hasBreakableChar() const { return m_hasBreakableChar; }
     const QFontMetrics &metrics(bool firstLine) const;
     const Font *htmlFont(bool firstLine) const;
+
+    DOM::TextImpl *element() const
+    { return static_cast<DOM::TextImpl*>(RenderObject::element()); }
 
 protected:
     void printTextOutline(QPainter *p, int tx, int ty, const QRect &prevLine, const QRect &thisLine, const QRect &nextLine);

@@ -37,6 +37,7 @@ public:
 
   KSSLCertificate& getPeerCertificate();
   bool certMatchesAddress();
+  bool cnMatchesAddress(QString cn);
 
   void setPeerHost(QString host = QString::null);
 

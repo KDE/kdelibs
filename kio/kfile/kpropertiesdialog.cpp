@@ -435,7 +435,7 @@ void KPropertiesDialog::insertPages()
   for (; it != end; ++it )
   {
     KPropsDlgPlugin *plugin = KParts::ComponentFactory
-        ::createInstanceFromLibrary<KPropsDlgPlugin>( (*it)->library().local8Bit(),
+        ::createInstanceFromLibrary<KPropsDlgPlugin>( (*it)->library().local8Bit().data(),
                                                       this,
                                                       (*it)->name().latin1() );
     if ( !plugin )
@@ -453,10 +453,11 @@ void KPropertiesDialog::updateUrl( const KURL& _newUrl )
   m_items.first()->setURL( _newUrl );
   assert(!m_singleUrl.isEmpty());
   // If we have an Exec page, set it dirty, so that a full file is saved locally
+  // Same for a URL page (because of the Name= hack)
   for ( QPtrListIterator<KPropsDlgPlugin> it(m_pageList); it.current(); ++it )
-   if ( it.current()->isA("KExecPropsPlugin") )
+   if ( it.current()->isA("KExecPropsPlugin") || it.current()->isA("KURLPropsPlugin") )
    {
-     kdDebug(250) << "Setting exec page dirty" << endl;
+     //kdDebug(250) << "Setting page dirty" << endl;
      it.current()->setDirty();
      break;
    }
@@ -1171,6 +1172,7 @@ public:
 
   QFrame *m_frame;
   QCheckBox *cbRecursive;
+  mode_t partialPermissions;
 };
 
 KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_props )
@@ -1191,7 +1193,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   bool isDir = item->isDir(); // all dirs
   bool hasDir = item->isDir(); // at least one dir
   permissions = item->permissions(); // common permissions to all files
-  mode_t partialPermissions = permissions; // permissions that only some files have (at first we take everything)
+  d->partialPermissions = permissions; // permissions that only some files have (at first we take everything)
   strOwner = item->user();
   strGroup = item->group();
 
@@ -1210,7 +1212,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
       if ( (*it)->permissions() != permissions )
       {
         permissions &= (*it)->permissions();
-        partialPermissions |= (*it)->permissions();
+        d->partialPermissions |= (*it)->permissions();
       }
       if ( (*it)->user() != strOwner )
         strOwner = QString::null;
@@ -1220,7 +1222,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   }
 
   // keep only what's not in the common permissions
-  partialPermissions = partialPermissions & ~permissions;
+  d->partialPermissions = d->partialPermissions & ~permissions;
 
   bool isMyFile = false;
 
@@ -1305,7 +1307,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
     for (int col = 0; col < 4; ++col) {
       QCheckBox *cb = new QCheckBox(gb);
       cb->setChecked(permissions & fperm[row][col]);
-      if ( partialPermissions & fperm[row][col] )
+      if ( d->partialPermissions & fperm[row][col] )
       {
         cb->setTristate( true );
         cb->setNoChange();
@@ -1404,10 +1406,12 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
       groupList += name;
   }
 
+  bool isMyGroup = groupList.contains(strGroup);
+
   /* add the group the file currently belongs to ..
    * .. if its not there already
    */
-  if (!groupList.contains(strGroup))
+  if (!isMyGroup)
     groupList += strGroup;
 
   l = new QLabel( i18n("Group:"), gb );
@@ -1462,7 +1466,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 
   if (isMyFile)
     cl[0]->setText(i18n("<b>User</b>"));
-  else if (groupList.contains(strGroup))
+  else if (isMyGroup)
     cl[1]->setText(i18n("<b>Group</b>"));
   else
     cl[2]->setText(i18n("<b>Others</b>"));
@@ -1498,6 +1502,7 @@ void KFilePermissionsPropsPlugin::slotRecursiveClicked()
 void KFilePermissionsPropsPlugin::applyChanges()
 {
   mode_t newPermission = 0;
+  mode_t newPartialPermission = 0;
   mode_t permissionMask = 0;
   for (int row = 0;row < 3; ++row)
     for (int col = 0; col < 4; ++col)
@@ -1511,6 +1516,7 @@ void KFilePermissionsPropsPlugin::applyChanges()
             permissionMask |= fperm[row][col];
             break;
           default: // NoChange
+	    newPartialPermission |= fperm[ row ][ col ];
             break;
       }
     }
@@ -1534,7 +1540,8 @@ void KFilePermissionsPropsPlugin::applyChanges()
   kdDebug(250) << "permissions mask : " << QString::number(permissionMask,8) << endl;
   kdDebug(250) << "url=" << properties->items().first()->url().url() << endl;
 
-  if ( permissions != newPermission || !owner.isEmpty() || !group.isEmpty() )
+  if ( permissions != newPermission || d->partialPermissions != newPartialPermission
+		  || !owner.isEmpty() || !group.isEmpty() )
   {
     KIO::Job * job = KIO::chmod( properties->items(), newPermission, permissionMask,
                                  owner, group,
@@ -1912,6 +1919,18 @@ void KURLPropsPlugin::applyChanges()
   config.setDesktopGroup();
   config.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("Link"));
   config.writeEntry( QString::fromLatin1("URL"), URLEdit->url() );
+  // Users can't create a Link .desktop file with a Name field,
+  // but distributions can. Update the Name field in that case.
+  if ( config.hasKey("Name") )
+  {
+    // ### duplicated from KApplicationPropsPlugin
+    QString nameStr = properties->kurl().fileName();
+    if ( nameStr.right(8) == QString::fromLatin1(".desktop") )
+      nameStr.truncate( nameStr.length() - 8 );
+    if ( nameStr.right(7) == QString::fromLatin1(".kdelnk") )
+      nameStr.truncate( nameStr.length() - 7 );
+    config.writeEntry( QString::fromLatin1("Name"), nameStr );
+  }
 }
 
 /* ----------------------------------------------------
@@ -1925,12 +1944,14 @@ class KApplicationPropsPlugin::KApplicationPropsPluginPrivate
 public:
   KApplicationPropsPluginPrivate()
   {
+      m_kdesktopMode = QCString(qApp->name()) == "kdesktop"; // nasty heh?
   }
   ~KApplicationPropsPluginPrivate()
   {
   }
 
   QFrame *m_frame;
+  bool m_kdesktopMode;
 };
 
 KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
@@ -1950,11 +1971,19 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
   grid->setColStretch(1, 1);
   toplayout->addLayout(grid);
 
-  l = new QLabel(i18n("Name:"), d->m_frame, "Label_4" );
-  grid->addWidget(l, 0, 0);
+  if ( d->m_kdesktopMode )
+  {
+      // in kdesktop the name field comes from the first tab
+      nameEdit = 0L;
+  }
+  else
+  {
+      l = new QLabel(i18n("Name:"), d->m_frame, "Label_4" );
+      grid->addWidget(l, 0, 0);
 
-  nameEdit = new KLineEdit( d->m_frame, "LineEdit_3" );
-  grid->addWidget(nameEdit, 0, 1);
+      nameEdit = new KLineEdit( d->m_frame, "LineEdit_3" );
+      grid->addWidget(nameEdit, 0, 1);
+  }
 
   l = new QLabel(i18n("Comment:"),  d->m_frame, "Label_3" );
   grid->addWidget(l, 1, 0);
@@ -1996,7 +2025,7 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
   selectedTypes += config.readListEntry( "MimeType", ';' );
 
   QString nameStr = config.readEntry( QString::fromLatin1("Name") );
-  if ( nameStr.isEmpty() ) {
+  if ( nameStr.isEmpty() || d->m_kdesktopMode ) {
     // We'll use the file name if no name is specified
     // because we _need_ a Name for a valid file.
     // But let's do it in apply, not here, so that we pick up the right name.
@@ -2004,7 +2033,8 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
   }
 
   commentEdit->setText( commentStr );
-  nameEdit->setText( nameStr );
+  if ( nameEdit )
+      nameEdit->setText( nameStr );
 
   selectedTypes.sort();
   QStringList::Iterator sit = selectedTypes.begin();
@@ -2026,8 +2056,9 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
            this, SIGNAL( changed() ) );
   connect( delExtensionButton, SIGNAL( clicked() ),
            this, SIGNAL( changed() ) );
-  connect( nameEdit, SIGNAL( textChanged( const QString & ) ),
-           this, SIGNAL( changed() ) );
+  if ( nameEdit )
+      connect( nameEdit, SIGNAL( textChanged( const QString & ) ),
+               this, SIGNAL( changed() ) );
   connect( commentEdit, SIGNAL( textChanged( const QString & ) ),
            this, SIGNAL( changed() ) );
   connect( extensionsList, SIGNAL( selected( int ) ),
@@ -2088,7 +2119,8 @@ void KApplicationPropsPlugin::applyChanges()
   KSimpleConfig config( path );
   config.setDesktopGroup();
   config.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("Application"));
-  config.writeEntry( QString::fromLatin1("Comment"), commentEdit->text(), true, false, true );
+  config.writeEntry( QString::fromLatin1( "Comment" ), commentEdit->text() );
+  config.writeEntry( QString::fromLatin1( "Comment" ), commentEdit->text(), true, false, true ); // for compa
 
   QStringList selectedTypes;
   for ( uint i = 0; i < extensionsList->count(); i++ )
@@ -2098,8 +2130,8 @@ void KApplicationPropsPlugin::applyChanges()
   config.writeEntry( QString::fromLatin1("ServiceTypes"), "" );
   // hmm, actually it should probably be the contrary (but see also typeslistitem.cpp)
 
-  QString nameStr = nameEdit->text();
-  if ( nameStr.isEmpty() )
+  QString nameStr = nameEdit ? nameEdit->text() : QString::null;
+  if ( nameStr.isEmpty() ) // nothing entered, or widget not existing at all (kdesktop mode)
   {
     nameStr = properties->kurl().fileName();
     if ( nameStr.right(8) == QString::fromLatin1(".desktop") )
@@ -2107,6 +2139,7 @@ void KApplicationPropsPlugin::applyChanges()
     if ( nameStr.right(7) == QString::fromLatin1(".kdelnk") )
       nameStr.truncate( nameStr.length() - 7 );
   }
+  config.writeEntry( QString::fromLatin1("Name"), nameStr );
   config.writeEntry( QString::fromLatin1("Name"), nameStr, true, false, true );
 
   config.sync();
@@ -2284,7 +2317,8 @@ void KBindingPropsPlugin::applyChanges()
   config.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("MimeType") );
 
   config.writeEntry( QString::fromLatin1("Patterns"),  patternEdit->text() );
-  config.writeEntry( QString::fromLatin1("Comment"), commentEdit->text(), true, false, true );
+  config.writeEntry( QString::fromLatin1("Comment"), commentEdit->text() );
+  config.writeEntry( QString::fromLatin1("Comment"), commentEdit->text(), true, false, true ); // for compat
   config.writeEntry( QString::fromLatin1("MimeType"), mimeEdit->text() );
   if ( cbAutoEmbed->state() == QButton::NoChange )
       config.deleteEntry( QString::fromLatin1("X-KDE-AutoEmbed"), false );

@@ -28,6 +28,8 @@
 #include "config.h"
 #endif
 
+#include <limits.h>
+
 #include <qapplication.h>
 #include <qbitmap.h>
 #include <qcleanuphandler.h>
@@ -98,7 +100,6 @@ struct KStylePrivate
 	TransparencyEngine   transparencyEngine;
 	KStyle::KStyleScrollBarType  scrollbarType;
 	TransparencyHandler* menuHandler;
-	QStyle* winstyle;		// ### REMOVE
 	KStyle::KStyleFlags flags;
 };
 
@@ -144,23 +145,15 @@ KStyle::KStyle( KStyleFlags flags, KStyleScrollBarType sbtype )
 			d->menuHandler = new TransparencyHandler(this, d->transparencyEngine, d->menuOpacity);
 		}
 	}
-
-	// ### Remove this ugly dependency!!!
-	d->winstyle = QStyleFactory::create("Windows");
-	if (!d->winstyle)
-		d->winstyle = QStyleFactory::create( *(QStyleFactory::keys().begin()) );
 }
 
 
 KStyle::~KStyle()
 {
-	if (d->winstyle)
-		delete d->winstyle;
 	if (d->menuHandler)
 		delete d->menuHandler;
 
 	d->menuHandler = NULL;
-	d->winstyle    = NULL;
 	delete d;
 }
 
@@ -456,7 +449,7 @@ void KStyle::drawPrimitive( PrimitiveElement pe,
 		QWidget *widget, *parent;
 
 		if (p && p->device()->devType() == QInternal::Widget) {
-			widget = dynamic_cast<QWidget*>(p->device());
+			widget = static_cast<QWidget*>(p->device());
 			parent = widget->parentWidget();
 		} else
 			return;		// Don't paint on non-widgets
@@ -680,8 +673,33 @@ void KStyle::drawControl( ControlElement element,
 
 			// Draw progress bar
 			if (progress > 0 || steps == 0) {
-				double pg = (steps == 0) ? 1.0 : progress / steps;
+				double pg = (steps == 0) ? 0.1 : progress / steps;
 				int width = QMIN(cr.width(), (int)(pg * cr.width()));
+				if (steps == 0) { //Busy indicator
+				
+					if (width < 1) width = 1; //A busy indicator with width 0 is kind of useless
+					
+					int remWidth = cr.width() - width; //Never disappear completely
+					if (remWidth <= 0) remWidth = 1; //Do something non-crashy when too small...                                       
+					
+					int pstep =  int(progress) % ( 2 *  remWidth ); 
+					
+					if ( pstep > remWidth ) {
+						//Bounce about.. We're remWidth + some delta, we want to be remWidth - delta...                                           
+						// - ( (remWidth + some delta) - 2* remWidth )  = - (some deleta - remWidth) = remWidth - some delta..
+						pstep = - (pstep - 2 * remWidth );                                                                                      
+					}
+					
+					if (reverse)
+						p->fillRect(cr.x() + cr.width() - width - pstep, cr.y(), width, cr.height(),
+									cg.brush(QColorGroup::Highlight));                                       
+					else
+						p->fillRect(cr.x() + pstep, cr.y(), width, cr.height(),
+									cg.brush(QColorGroup::Highlight));
+					
+					return;                                       
+				}
+                                
 	
 				// Do fancy gradient for highcolor displays
 				if (d->highcolor) {
@@ -1318,13 +1336,277 @@ QRect KStyle::querySubControlMetrics( ComplexControl control,
 	return ret;
 }
 
+static const char * const kstyle_close_xpm[] = {
+"12 12 2 1",
+"# c #000000",
+". c None",
+"............",
+"............",
+"..##....##..",
+"...##..##...",
+"....####....",
+".....##.....",
+"....####....",
+"...##..##...",
+"..##....##..",
+"............",
+"............",
+"............"};
+
+static const char * const kstyle_maximize_xpm[]={
+"12 12 2 1",
+"# c #000000",
+". c None",
+"............",
+"............",
+".##########.",
+".##########.",
+".#........#.",
+".#........#.",
+".#........#.",
+".#........#.",
+".#........#.",
+".#........#.",
+".##########.",
+"............"};
+
+
+static const char * const kstyle_minimize_xpm[] = {
+"12 12 2 1",
+"# c #000000",
+". c None",
+"............",
+"............",
+"............",
+"............",
+"............",
+"............",
+"............",
+"...######...",
+"...######...",
+"............",
+"............",
+"............"};
+
+static const char * const kstyle_normalizeup_xpm[] = {
+"12 12 2 1",
+"# c #000000",
+". c None",
+"............",
+"...#######..",
+"...#######..",
+"...#.....#..",
+".#######.#..",
+".#######.#..",
+".#.....#.#..",
+".#.....###..",
+".#.....#....",
+".#.....#....",
+".#######....",
+"............"};
+
+
+static const char * const kstyle_shade_xpm[] = {
+"12 12 2 1",
+"# c #000000",
+". c None",
+"............",
+"............",
+"............",
+"............",
+"............",
+".....#......",
+"....###.....",
+"...#####....",
+"..#######...",
+"............",
+"............",
+"............"};
+
+static const char * const kstyle_unshade_xpm[] = {
+"12 12 2 1",
+"# c #000000",
+". c None",
+"............",
+"............",
+"............",
+"............",
+"..#######...",
+"...#####....",
+"....###.....",
+".....#......",
+"............",
+"............",
+"............",
+"............"};
+
+static const char * dock_window_close_xpm[] = {
+"8 8 2 1",
+"# c #000000",
+". c None",
+"##....##",
+".##..##.",
+"..####..",
+"...##...",
+"..####..",
+".##..##.",
+"##....##",
+"........"};
+
+// Message box icons, from page 210 of the Windows style guide.
+
+// Hand-drawn to resemble Microsoft's icons, but in the Mac/Netscape
+// palette.  The "question mark" icon, which Microsoft recommends not
+// using but a lot of people still use, is left out.
+
+/* XPM */
+static const char * const information_xpm[]={
+"32 32 5 1",
+". c None",
+"c c #000000",
+"* c #999999",
+"a c #ffffff",
+"b c #0000ff",
+"...........********.............",
+"........***aaaaaaaa***..........",
+"......**aaaaaaaaaaaaaa**........",
+".....*aaaaaaaaaaaaaaaaaa*.......",
+"....*aaaaaaaabbbbaaaaaaaac......",
+"...*aaaaaaaabbbbbbaaaaaaaac.....",
+"..*aaaaaaaaabbbbbbaaaaaaaaac....",
+".*aaaaaaaaaaabbbbaaaaaaaaaaac...",
+".*aaaaaaaaaaaaaaaaaaaaaaaaaac*..",
+"*aaaaaaaaaaaaaaaaaaaaaaaaaaaac*.",
+"*aaaaaaaaaabbbbbbbaaaaaaaaaaac*.",
+"*aaaaaaaaaaaabbbbbaaaaaaaaaaac**",
+"*aaaaaaaaaaaabbbbbaaaaaaaaaaac**",
+"*aaaaaaaaaaaabbbbbaaaaaaaaaaac**",
+"*aaaaaaaaaaaabbbbbaaaaaaaaaaac**",
+"*aaaaaaaaaaaabbbbbaaaaaaaaaaac**",
+".*aaaaaaaaaaabbbbbaaaaaaaaaac***",
+".*aaaaaaaaaaabbbbbaaaaaaaaaac***",
+"..*aaaaaaaaaabbbbbaaaaaaaaac***.",
+"...caaaaaaabbbbbbbbbaaaaaac****.",
+"....caaaaaaaaaaaaaaaaaaaac****..",
+".....caaaaaaaaaaaaaaaaaac****...",
+"......ccaaaaaaaaaaaaaacc****....",
+".......*cccaaaaaaaaccc*****.....",
+"........***cccaaaac*******......",
+"..........****caaac*****........",
+".............*caaac**...........",
+"...............caac**...........",
+"................cac**...........",
+".................cc**...........",
+"..................***...........",
+"...................**..........."};
+/* XPM */
+static const char* const warning_xpm[]={
+"32 32 4 1",
+". c None",
+"a c #ffff00",
+"* c #000000",
+"b c #999999",
+".............***................",
+"............*aaa*...............",
+"...........*aaaaa*b.............",
+"...........*aaaaa*bb............",
+"..........*aaaaaaa*bb...........",
+"..........*aaaaaaa*bb...........",
+".........*aaaaaaaaa*bb..........",
+".........*aaaaaaaaa*bb..........",
+"........*aaaaaaaaaaa*bb.........",
+"........*aaaa***aaaa*bb.........",
+".......*aaaa*****aaaa*bb........",
+".......*aaaa*****aaaa*bb........",
+"......*aaaaa*****aaaaa*bb.......",
+"......*aaaaa*****aaaaa*bb.......",
+".....*aaaaaa*****aaaaaa*bb......",
+".....*aaaaaa*****aaaaaa*bb......",
+"....*aaaaaaaa***aaaaaaaa*bb.....",
+"....*aaaaaaaa***aaaaaaaa*bb.....",
+"...*aaaaaaaaa***aaaaaaaaa*bb....",
+"...*aaaaaaaaaa*aaaaaaaaaa*bb....",
+"..*aaaaaaaaaaa*aaaaaaaaaaa*bb...",
+"..*aaaaaaaaaaaaaaaaaaaaaaa*bb...",
+".*aaaaaaaaaaaa**aaaaaaaaaaa*bb..",
+".*aaaaaaaaaaa****aaaaaaaaaa*bb..",
+"*aaaaaaaaaaaa****aaaaaaaaaaa*bb.",
+"*aaaaaaaaaaaaa**aaaaaaaaaaaa*bb.",
+"*aaaaaaaaaaaaaaaaaaaaaaaaaaa*bbb",
+"*aaaaaaaaaaaaaaaaaaaaaaaaaaa*bbb",
+".*aaaaaaaaaaaaaaaaaaaaaaaaa*bbbb",
+"..*************************bbbbb",
+"....bbbbbbbbbbbbbbbbbbbbbbbbbbb.",
+".....bbbbbbbbbbbbbbbbbbbbbbbbb.."};
+/* XPM */
+static const char* const critical_xpm[]={
+"32 32 4 1",
+". c None",
+"a c #999999",
+"* c #ff0000",
+"b c #ffffff",
+"...........********.............",
+".........************...........",
+".......****************.........",
+"......******************........",
+".....********************a......",
+"....**********************a.....",
+"...************************a....",
+"..*******b**********b*******a...",
+"..******bbb********bbb******a...",
+".******bbbbb******bbbbb******a..",
+".*******bbbbb****bbbbb*******a..",
+"*********bbbbb**bbbbb*********a.",
+"**********bbbbbbbbbb**********a.",
+"***********bbbbbbbb***********aa",
+"************bbbbbb************aa",
+"************bbbbbb************aa",
+"***********bbbbbbbb***********aa",
+"**********bbbbbbbbbb**********aa",
+"*********bbbbb**bbbbb*********aa",
+".*******bbbbb****bbbbb*******aa.",
+".******bbbbb******bbbbb******aa.",
+"..******bbb********bbb******aaa.",
+"..*******b**********b*******aa..",
+"...************************aaa..",
+"....**********************aaa...",
+"....a********************aaa....",
+".....a******************aaa.....",
+"......a****************aaa......",
+".......aa************aaaa.......",
+".........aa********aaaaa........",
+"...........aaaaaaaaaaa..........",
+".............aaaaaaa............"};
 
 QPixmap KStyle::stylePixmap( StylePixmap stylepixmap,
 						  const QWidget* widget,
 						  const QStyleOption& opt) const
 {
-	// ### Only need new images for the others to use KStyle
-	return d->winstyle->stylePixmap(stylepixmap, widget, opt);
+	switch (stylepixmap) {
+		case SP_TitleBarShadeButton:
+			return QPixmap(const_cast<const char**>(kstyle_shade_xpm));
+		case SP_TitleBarUnshadeButton:
+			return QPixmap(const_cast<const char**>(kstyle_unshade_xpm));
+		case SP_TitleBarNormalButton:
+			return QPixmap(const_cast<const char**>(kstyle_normalizeup_xpm));
+		case SP_TitleBarMinButton:
+			return QPixmap(const_cast<const char**>(kstyle_minimize_xpm));
+		case SP_TitleBarMaxButton:
+			return QPixmap(const_cast<const char**>(kstyle_maximize_xpm));
+		case SP_TitleBarCloseButton:
+			return QPixmap(const_cast<const char**>(kstyle_close_xpm));
+		case SP_DockWindowCloseButton:
+			return QPixmap(const_cast<const char**>(dock_window_close_xpm ));
+		case SP_MessageBoxInformation:
+			return QPixmap(const_cast<const char**>(information_xpm));
+		case SP_MessageBoxWarning:
+			return QPixmap(const_cast<const char**>(warning_xpm));
+		case SP_MessageBoxCritical:
+			return QPixmap(const_cast<const char**>(critical_xpm));
+		default:
+			break;
+    }
+    return QCommonStyle::stylePixmap(stylepixmap, widget, opt);
 }
 
 
@@ -1367,9 +1649,6 @@ bool KStyle::eventFilter( QObject* object, QEvent* event )
 {
 	if ( d->useFilledFrameWorkaround )
 	{
-		QMenuBar* menubar = dynamic_cast<QMenuBar*>(object);
-		QToolBar* toolbar = dynamic_cast<QToolBar*>(object);
-
 		// Make the QMenuBar/QToolBar paintEvent() cover a larger area to 
 		// ensure that the filled frame contents are properly painted.
 		// We essentially modify the paintEvent's rect to include the
@@ -1377,9 +1656,15 @@ bool KStyle::eventFilter( QObject* object, QEvent* event )
 		// This is nasty, but I see no other way to properly repaint 
 		// filled frames in all QMenuBars and QToolBars.
 		// -- Karol.
-		if ( menubar || toolbar ) 
+		if (event->type() == QEvent::Paint) 
 		{
-			if (event->type() == QEvent::Paint) 
+			QMenuBar* menubar = 0;
+			QToolBar* toolbar = 0;
+			if (object->inherits("QMenuBar"))
+				menubar = static_cast<QMenuBar*>(object);
+			else if (object->inherits("QToolBar"))
+				toolbar = static_cast<QToolBar*>(object);
+			if ( menubar || toolbar ) 
 			{
 				bool horizontal = true;
 				QPaintEvent* pe = (QPaintEvent*)event;

@@ -5,7 +5,7 @@ This file is part of the KDE libraries
 Copyright (C) 1999 Daniel M. Duley <mosfet@kde.org>
 
 KDE3 port (C) 2001-2002 Maksim Orlovich <mo002j@mail.rochester.edu>
-Port version 0.9.6
+Port version 0.9.7-3.0.x
 
 Includes code portions from the dotNET style, and the KDE HighColor style.
 
@@ -20,7 +20,7 @@ Copyright (C) 2001 Karol Szwed       <gallium@kde.org>
 Drawing routines adapted from the KDE2 HCStyle,
 Copyright (C) 2000 Daniel M. Duley   <mosfet@kde.org>
   (C) 2000 Dirk Mueller      <mueller@kde.org>
-  (C) 2001 Martijn Klingens  <mklingens@yahoo.com>
+  (C) 2001 Martijn Klingens  <klingens@kde.org>
 
 
  This library is free software; you can redistribute it and/or
@@ -131,6 +131,7 @@ public:
 
     virtual void polish( QWidget* );
     virtual void unPolish( QWidget* );
+    virtual bool eventFilter( QObject* object, QEvent* event );
     /**
      * By default this just sets the background brushes to the pixmapped
      * background.
@@ -199,6 +200,9 @@ protected:
 
     mutable QPixmap* menuCache;
     mutable QPixmap* vsliderCache;
+
+    int brushHandle;
+    bool brushHandleSet;
 
 protected slots:
     void paletteChanged();

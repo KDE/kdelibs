@@ -59,7 +59,6 @@ INPUT                  = dcop \
                          kparts \
                          kjs \
                          interfaces \
-                         kab \
                          kabc \
                          kspell
 FILE_PATTERNS          = *.h
