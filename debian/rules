@@ -77,7 +77,7 @@ binary-arch:  build
 	dh_compress
 	dh_fixperms
 	dh_suidregister
-	dh_makeshlibs -V "kdelibs0g" -m1
+	dh_makeshlibs -V
 	dh_installdeb
 	dh_shlibdeps
 	dh_gencontrol
