@@ -43,11 +43,11 @@ public:
   /**
     * Create an empty container for buttons.
     *
-    * If @p _orientation is Vertical, the buttons inserted with
-    * @ref addButton() are laid out from top to bottom, otherwise they
+    * If @p _orientation is @p Vertical, the buttons inserted with 
+    * @ref addButton() are laid out from top to bottom, otherwise they 
     * are laid out from left to right.
     */
-  KButtonBox(QWidget *parent, int _orientation = Horizontal,
+  KButtonBox(QWidget *parent, Orientation _orientation = Horizontal,
 	     int border = 0, int _autoborder = 6);
 
   /**
@@ -81,16 +81,16 @@ public:
   /**
     * Add a stretch to the buttonbox. 
     *
-    * @see QBoxLayout for details.
     * Can be used to separate buttons (i.e. if you add the buttons "OK",
     * "Cancel", add a stretch and then add the button "Help", "OK" and
     * "Cancel" will be left-aligned (or top-aligned for vertical) while
     * "Help" will be right-aligned (or bottom-aligned for vertical).
+    * @see QBoxLayout for details.
     */
   void addStretch(int scale = 1);
 
   /**
-    * This function must be called @bf once after all buttons have been
+    * This function must be called @em once after all buttons have been
     * inserted.
     *
     * It will start layout control.

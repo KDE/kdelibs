@@ -47,6 +47,7 @@ As a start you should have a look at doc/porting.doc in the Qt package.<P>
 <LI><A HREF="#kstring">kstring.h / KString</A></LI>
 <LI><A HREF="#ktopwidget">ktopwidget.h / KTopWidget</A></LI>
 <LI><A HREF="#kbutton">kbutton.h / KButton</A></LI>
+<LI><A HREF="#kbuttonbox">kbuttonbox.h / KButtonBox</A></LI>
 <LI><A HREF="#kcolorgroup">kcolorgroup.h / KColorGroup</A></LI>
 <LI><A HREF="#kcharsets2">kcharsets.h / KCharsets</A></LI>
 <LI><A HREF="#get">Methods for getting the value of a member object named getXy*() are renamed to xy*()</A></LI>
@@ -671,6 +672,10 @@ reason to have a class providing the same feature in KDE libs. All
 occurrences of KButton in the KDE CVS have been replaced by QToolButtons,
 but for applications not in the CVS it has to be done by the respective
 developer. (<A HREF="mailto:mirko@kde.org">mirko@kde.org</A>)<P>
+
+<H3><A NAME="kbuttonbox">kbuttonbox.h / KButtonBox</A></H3>
+
+KButtonBox::Orientation has been removed in favor of Qt::Orientation.
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 

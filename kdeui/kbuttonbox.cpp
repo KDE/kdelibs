@@ -70,7 +70,7 @@ public:
   QList<KButtonBox::Item> buttons;
 };
 
-KButtonBox::KButtonBox(QWidget *parent, int _orientation,
+KButtonBox::KButtonBox(QWidget *parent, Orientation _orientation,
 		       int border, int autoborder)
   :  QWidget(parent)
 {
