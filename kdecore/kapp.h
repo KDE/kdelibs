@@ -349,7 +349,7 @@ public:
    */
   bool getKDEFonts(QStringList &fontlist);
 
-  QString appName () const { return name(); }
+  // QString appName () const { return name(); }
 
   /**
 	* Return a text for the window caption.
@@ -637,6 +637,11 @@ private:
 #endif
 
 // $Log$
+// Revision 1.83  1999/06/11 20:41:41  kulow
+// appName is depreacted. Just use kapp->name() (from QApplication). I didn't
+// removed the function, but made it a wrapper for name, but I would, if I had
+// the time to fix all KDE ;)
+//
 // Revision 1.82  1999/06/11 19:58:53  knoll
 // committing the new kcharsets class.
 //

@@ -143,7 +143,7 @@ static int getNum (const char *key, int _default)
     return _default;
 }
 
-static QString getString (const char *key, char * _default)
+static QString getString (const char *key, const char * _default)
 {
   if (kapp)
     return kapp->getConfig()->readEntry(key, _default);
@@ -170,7 +170,7 @@ void kdebug( ushort nLevel, ushort nArea,
   QString aCaption;
   QString aAppName = getDescrFromNum(nArea);
   if (aAppName.isEmpty())
-    aAppName=kapp?kapp->appName():QString("unknown");
+    aAppName=kapp?kapp->name():"unknown";
   switch( nLevel )
         {
         case KDEBUG_INFO:
@@ -224,11 +224,11 @@ void kdebug( ushort nLevel, ushort nArea,
                 va_start( arguments, pFormat );
 #ifdef HAVE_VSNPRINTF
                 // use the more secure version if we have it
-                int nSize = vsnprintf( buf, sizeof(buf)-1, pFormat, arguments );
+                unsigned int nSize = vsnprintf( buf, sizeof(buf)-1, pFormat, arguments );
 #else
-                int nSize = vsprintf( buf, pFormat, arguments );
+                unsigned int nSize = vsprintf( buf, pFormat, arguments );
 #endif
-                if( nSize > ((sizeof(buf)-2)-nPrefix) ) nSize = (sizeof(buf)-2)-nPrefix;
+		nSize = QMIN(nSize, sizeof(buf)-2-nPrefix);
                 buf[nSize] = '\n';
                 buf[nSize+1] = '\0';
                 va_end( arguments );

@@ -581,7 +581,7 @@ private:
   */
   bool isExecutable(const char *fname);
 
-  char *shell;
+  const char *shell;
 
   // Disallow assignment and copy-construction
   KShellProcess( const KShellProcess& );

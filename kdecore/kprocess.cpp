@@ -536,15 +536,14 @@ KShellProcess::KShellProcess(const char *shellname):
 
 
 KShellProcess::~KShellProcess() {
-  if(shell)
-    free(shell);
+  delete [] shell;
 }
 
 bool KShellProcess::start(RunMode runmode, Communication comm)
 {
   uint i;
   uint n = arguments.count();
-  char *arglist[4];
+  const char *arglist[4];
   QString cmd;
 
   if (runs || (0 == n)) {

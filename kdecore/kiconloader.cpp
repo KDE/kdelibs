@@ -20,6 +20,24 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.45  1999/06/05 01:15:11  dmuell
+   global configuration will now be searched in the following paths:
+
+   KDEDIR/share/config/kdeglobals
+   /usr/lib/KDE/system.kdeglobals
+   /usr/local/lib/KDE/system.kdeglobals
+   ~/.kde/share/config/kdeglobals
+
+   it did it previously in
+
+   KDEDIR/share/config/kderc
+   /usr/lib/KDE/system.kderc
+   /usr/local/lib/KDE/system.kderc
+   ~/.kderc
+
+   Note: It's better not to use a "rc" suffix - there might be an
+   application that has that name.
+
    Revision 1.44  1999/06/03 09:21:32  ssk
    Added arg to loadInternal to ignore cache if requested.
    Updated reloadIcon to use it.
@@ -130,22 +148,22 @@ void KIconLoader::initPath()
     KGlobal::dirs()->addResourceType("icon", "/share/icons/large");
 
   addPath( KApplication::kde_datadir() + "/"
-	   + kapp->appName() + "/toolbar" );
+	   + kapp->name() + "/toolbar" );
   addPath( KApplication::localkdedir() + "/share/apps/"
-	   + kapp->appName() + "/toolbar" );
+	   + kapp->name() + "/toolbar" );
   addPath( KApplication::kde_datadir() + "/"
-	   + kapp->appName() + "/pics" );
+	   + kapp->name() + "/pics" );
 
   if ( large )
     addPath( KApplication::kde_datadir() + "/"
-	     + kapp->appName() + "/pics/large" );
+	     + kapp->name() + "/pics/large" );
 
   addPath( KApplication::localkdedir() + "/share/apps/"
-	   + kapp->appName() + "/pics" );
+	   + kapp->name() + "/pics" );
 
   if ( large )
     addPath( KApplication::localkdedir() + "/share/apps/"
-	     + kapp->appName() + "/pics/large" );
+	     + kapp->name() + "/pics/large" );
 
 }
 
@@ -202,7 +220,7 @@ QPixmap KIconLoader::loadIcon ( const QString& name, int w,
 	 */
 	if (result.isNull() && !canReturnNull) {
 		warning("%s : ERROR: couldn't find icon: %s",
-				kapp->appName().ascii(), name.ascii() );
+				kapp->name(), name.ascii() );
 		result = loadInternal("unknown.xpm", w, h);
 	}
 
