@@ -193,6 +193,7 @@ KPGeneralPage::KPGeneralPage(KMPrinter *pr, DrMain *dr, QWidget *parent, const c
 	lay4->addWidget(m_duplong, 1, 0);
 	lay4->addWidget(m_dupshort, 2, 0);
 	lay4->addMultiCellWidget(m_duplexpix, 0, 2, 1, 1);
+	lay4->setRowStretch( 0, 1 );
 	QGridLayout	*lay5 = new QGridLayout(m_nupbox->layout(), 3, 2, 5);
 	lay5->addWidget(m_nup1, 0, 0);
 	lay5->addWidget(m_nup2, 1, 0);
@@ -239,10 +240,21 @@ void KPGeneralPage::initialize()
 		opt = (DrListOption*)driver()->findOption("Duplex");
 		if (opt)
 		{
+			if ( opt->choices()->count() == 2 )
+			{
+				// probably a On/Off option instead of the standard PS one
+				QButton *btn = m_duplexbox->find( DUPLEX_SHORT_ID );
+				m_duplexbox->remove( btn );
+				btn->hide();
+				//delete btn;
+				m_duplexbox->find( DUPLEX_NONE_ID )->setText( i18n( "Disabled" ) );
+				m_duplexbox->find( DUPLEX_LONG_ID )->setText( i18n( "Enabled" ) );
+				m_duplexpix->hide();
+			}
 			if (opt->currentChoice())
 			{
 				int	ID(DUPLEX_NONE_ID);
-				if (opt->currentChoice()->name() == "DuplexNoTumble") ID = DUPLEX_LONG_ID;
+				if (opt->currentChoice()->name() == "DuplexNoTumble" || opt->currentChoice()->name() == "On") ID = DUPLEX_LONG_ID;
 				else if (opt->currentChoice()->name() == "DuplexTumble") ID = DUPLEX_SHORT_ID;
 				m_duplexbox->setButton(ID);
 				slotDuplexChanged(ID);
@@ -319,7 +331,7 @@ void KPGeneralPage::setOptions(const QMap<QString,QString>& opts)
 		if (m_duplexbox->isEnabled() && !value.isEmpty())
 		{
 			int	ID(0);
-			if (value == "DuplexNoTumble") ID = 1;
+			if (value == "DuplexNoTumble" || value == "On") ID = 1;
 			else if (value == "DuplexTumble") ID = 2;
 			m_duplexbox->setButton(ID);
 			slotDuplexChanged(ID);
@@ -411,10 +423,11 @@ void KPGeneralPage::getOptions(QMap<QString,QString>& opts, bool incldef)
 
 		if (m_duplexbox->isEnabled() && (opt=(DrListOption*)driver()->findOption("Duplex")) != NULL)
 		{
+			bool twoChoices = ( m_duplexbox->count() == 2 );
 			switch (m_duplexbox->id(m_duplexbox->selected()))
 			{
-				case DUPLEX_NONE_ID: value = "None"; break;
-				case DUPLEX_LONG_ID: value = "DuplexNoTumble"; break;
+				case DUPLEX_NONE_ID: value = ( twoChoices ? "Off" : "None" ); break;
+				case DUPLEX_LONG_ID: value = ( twoChoices ? "On" : "DuplexNoTumble" ); break;
 				case DUPLEX_SHORT_ID: value = "DuplexTumble"; break;
 			}
 			if (incldef || value != opt->get("default")) opts["Duplex"] = value;
