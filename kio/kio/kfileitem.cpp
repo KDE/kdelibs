@@ -633,41 +633,38 @@ bool KFileItem::acceptsDrops()
 
 QString KFileItem::getStatusBarInfo()
 {
-  QString comment = determineMimeType()->comment( m_url, m_bIsLocalURL );
   QString text = m_strText;
-  // Extract from the KIO::UDSEntry the additional info we didn't get previously
-  QString myLinkDest = linkDest();
-  KIO::filesize_t mySize = size();
 
   if ( m_bLink )
   {
+      QString comment = determineMimeType()->comment( m_url, m_bIsLocalURL );
       QString tmp;
       if ( comment.isEmpty() )
         tmp = i18n ( "Symbolic Link" );
       else
         tmp = i18n("%1 (Link)").arg(comment);
       text += "->";
-      text += myLinkDest;
+      text += linkDest();
       text += "  ";
       text += tmp;
   }
   else if ( S_ISREG( m_fileMode ) )
   {
-      text += QString(" (%1)").arg( KIO::convertSize( mySize ) );
+      text += QString(" (%1)").arg( KIO::convertSize( size() ) );
       text += "  ";
-      text += comment;
+      text += mimeComment();
   }
   else if ( S_ISDIR ( m_fileMode ) )
   {
       text += "/  ";
-      text += comment;
-    }
-    else
-    {
+      text += mimeComment();
+  }
+  else
+  {
       text += "  ";
-      text += comment;
-    }
-    return text;
+      text += mimeComment();
+  }
+  return text;
 }
 
 QString KFileItem::getToolTipText(int maxcount)
@@ -687,7 +684,7 @@ QString KFileItem::getToolTipText(int maxcount)
   tip += start + i18n("Name:") + mid + text() + end;
   tip += start + i18n("Type:") + mid;
 
-  QString type = QStyleSheet::escape(determineMimeType()->comment());
+  QString type = QStyleSheet::escape(mimeComment());
   if ( m_bLink ) {
    tip += i18n("Link to %1 (%2)").arg(linkDest(), type) + end;
   } else
