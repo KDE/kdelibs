@@ -24,7 +24,6 @@
 //
 // KDE HTML Widget -- HTML Parser
 //#define PARSER_DEBUG
-//#define COMMENTS_IN_DOM
 
 #include "htmlparser.h"
 
@@ -43,9 +42,8 @@
 #include "html_tableimpl.h"
 #include "html_objectimpl.h"
 #include "dom_textimpl.h"
-
 #include "htmlhashes.h"
-#include "htmltoken.h"
+#include "htmltokenizer.h"
 #include "khtmlview.h"
 #include "khtml_part.h"
 #include "cssproperties.h"
@@ -149,7 +147,7 @@ const unsigned short tagPriority[] = {
     3, // ID_P
     0, // ID_PARAM
     1, // ID_PLAIN
-    1, // ID_PRE
+    5, // ID_PRE
     1, // ID_Q
     1, // ID_S
     1, // ID_SAMP
@@ -329,7 +327,7 @@ void KHTMLParser::parseToken(Token *t)
 	kdDebug(6035) << "length="<< t->text.length() << "text='" << t->text.string() << "'" << endl;
 #endif
 	if (!_inline  || !inBody || current->id() == ID_OPTION)  {
-	    if(t->text.length() == 1 && t->text[0].latin1() == ' ')
+	    if(t->text && t->text->l == 1 && (*t->text->s).latin1() == ' ')
 		return;
 	} else if ( inBody ) {
 	    noRealBody = false;
@@ -346,7 +344,7 @@ void KHTMLParser::parseToken(Token *t)
     if(n->isElementNode())
     {
         ElementImpl *e = static_cast<ElementImpl *>(n);
-        e->setAttribute(t->attrs);
+        e->setAttributeMap(t->attrs);
 
         // take care of optional close tags
         if(e->endTag() == DOM::OPTIONAL)
@@ -1362,7 +1360,13 @@ NodeImpl *KHTMLParser::handleIsindex( Token *t )
 	n = new HTMLDivElementImpl( document );
     NodeImpl *child = new HTMLHRElementImpl( document );
     n->addChild( child );
-    DOMString text = t->attrs.valueForId( ATTR_PROMPT );
+    AttrImpl* a = 0;
+    DOMString text;
+
+    if(t->attrs)
+        a = t->attrs->getIdItem(ATTR_PROMPT);
+    if(a)
+        text = a->value();
     if( text.isNull() )
 	text =  i18n("This is a searchable index. Enter search keywords: ");
     child = new TextImpl(document, text);

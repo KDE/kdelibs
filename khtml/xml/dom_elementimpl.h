@@ -26,7 +26,6 @@
 
 #include "dom_nodeimpl.h"
 
-#include "htmltoken.h"
 #include "dtd.h"
 
 namespace DOM {
@@ -73,8 +72,6 @@ public:
     virtual bool childAllowed( NodeImpl *newChild );
 
 protected:
-//    AttrImpl(const DOMString &name, const DOMString &value, DocumentImpl *doc, bool specified);
-    AttrImpl(const khtml::Attribute *attr, DocumentImpl *doc, ElementImpl *element);
     AttrImpl(const DOMString &name, const DOMString &value, DocumentImpl *doc);
     AttrImpl(int _id, const DOMString &value, DocumentImpl *doc);
 
@@ -123,10 +120,8 @@ public:
 
     void normalize ( int &exceptioncode );
 
-    virtual void applyChanges(bool = true, bool = true);
-
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
-    virtual NamedNodeMapImpl *attributes() const;
+    virtual NamedNodeMapImpl *attributes();
 
     /**
      * override this in subclasses if you need to parse
@@ -138,12 +133,11 @@ public:
     virtual tagStatus endTag() const { return DOM::REQUIRED; }
 
     // not part of the DOM
-
     DOMString getAttribute ( int id );
     AttrImpl *getAttributeNode ( int index ) const;
     int getAttributeCount() const;
     void setAttribute ( int id, const DOMString &value );
-    void setAttribute ( const khtml::AttributeList &list );
+    void setAttributeMap ( NamedAttrMapImpl* list );
 
     // State of the element.
     virtual QString state() { return QString::null; }
@@ -177,7 +171,7 @@ protected: // member variables
     // map of default attributes. derived element classes are responsible
     // for setting this according to the corresponding element description
     // in the DTD
-    virtual khtml::AttributeList *defaultMap() const;
+    virtual NamedAttrMapImpl* defaultMap() const;
     DOM::CSSStyleDeclarationImpl *m_styleDecls;
 };
 
@@ -207,7 +201,6 @@ class NamedAttrMapImpl : public NamedNodeMapImpl
 public:
     NamedAttrMapImpl(ElementImpl *e);
     virtual ~NamedAttrMapImpl();
-    NamedAttrMapImpl &operator =(const khtml::AttributeList &list);
     NamedAttrMapImpl &operator =(const NamedAttrMapImpl &other);
 
     unsigned long length(int &exceptioncode) const;
@@ -225,15 +218,20 @@ public:
 
     NodeImpl *item ( unsigned long index, int &exceptioncode ) const;
     NodeImpl *item ( unsigned long index ) const; // ### remove?
+
     AttrImpl *removeAttr( AttrImpl *oldAttr, int &exceptioncode );
+
+    // only use this during parsing !
+    void insertAttr(AttrImpl* newAtt);
+
     void detachFromElement();
 
 protected:
+    friend class ElementImpl;
     ElementImpl *element;
     AttrImpl **attrs;
     uint len;
     void clearAttrs();
-
 };
 
 }; //namespace

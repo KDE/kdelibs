@@ -112,7 +112,7 @@ NodeImpl *NodeImpl::nextSibling() const
   return 0;
 }
 
-NamedNodeMapImpl *NodeImpl::attributes() const
+NamedNodeMapImpl *NodeImpl::attributes()
 {
   return 0;
 }
@@ -203,12 +203,14 @@ QString NodeImpl::recursive_toHTML( ) const
             ElementImpl *el = const_cast<ElementImpl*>(static_cast<const ElementImpl *>(this));
             AttrImpl *attr;
             int exceptioncode;
-            NamedNodeMapImpl *attrs = el->attributes();
+            if(el->namedAttrMap) {
+                NamedNodeMapImpl *attrs = el->namedAttrMap;
             unsigned long lmap = attrs->length(exceptioncode);
             for( unsigned int j=0; j<lmap; j++ )
             {
                 attr = static_cast<AttrImpl*>(attrs->item(j,exceptioncode));
                 me += " " + attr->name().string() + "=\"" + attr->value().string() + "\"";
+                }
             }
         }
 
@@ -757,6 +759,58 @@ NodeImpl *NodeBaseImpl::addChild(NodeImpl *newChild)
 	return newChild;
     return this;
 }
+
+void NodeBaseImpl::applyChanges(bool top, bool force)
+{
+        // ### find a better way to handle non-css attributes
+    setChanged(false);
+
+    int ow = (m_style?m_style->outlineWidth():0);
+
+    if (top)
+	recalcStyle();
+
+    // a style change can influence the children, so we just go
+    // through them and trigger an appplyChanges there too
+    NodeImpl *n = _first;
+    while(n) {
+	n->applyChanges(false,force || changed());
+	n = n->nextSibling();
+    }
+
+    if (!m_render)
+	return;
+
+    // calc min and max widths starting from leafs
+    // might belong to renderer, but this is simple to do here
+    if (force || changed())
+	m_render->calcMinMaxWidth();
+
+    if(top) {
+	if (force)
+	{
+	    // force a relayout of this part of the document
+	    m_render->updateSize();
+	    // force a repaint of this part.
+	    // ### if updateSize() changes any size, it will already force a
+	    // repaint, so we might do double work here...
+	    m_render->repaint();
+	}
+	else
+	{
+            // ### FIX ME
+	    if (m_style) ow = QMAX(ow, m_style->outlineWidth());
+	    RenderObject *cb = m_render->containingBlock();
+	    if (cb && cb != m_render)
+		cb->repaintRectangle(-ow, -ow, cb->width()+2*ow, cb->height()+2*ow);
+            else
+                m_render->repaint();
+	}
+    }
+    setChanged(false);
+}
+
+
 
 void NodeBaseImpl::attach(KHTMLView *w)
 {

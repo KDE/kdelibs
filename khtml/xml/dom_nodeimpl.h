@@ -90,7 +90,7 @@ public:
 
     virtual NodeImpl *nextSibling() const;
 
-    virtual NamedNodeMapImpl *attributes() const;
+    virtual NamedNodeMapImpl *attributes();
 
     DocumentImpl *ownerDocument() const
 	{ return document; }
@@ -328,6 +328,7 @@ public:
 
     virtual void setFocus(bool=true);
     virtual void setActive(bool=true);
+    virtual void applyChanges(bool top = true, bool force = true);
 
 protected:
     NodeImpl *_first;

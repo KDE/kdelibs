@@ -5,6 +5,7 @@
               (C) 1997 Torben Weis (weis@kde.org)
               (C) 1998 Waldo Bastian (bastian@kde.org)
               (C) 2001 Dirk Mueller (mueller@kde.org)
+              (C) 2001 Dirk Mueller (mueller@kde.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -50,6 +51,9 @@ class HTMLTokenizer;
 
 #include "stringit.h"
 #include "loader_client.h"
+#include "xml/dom_elementimpl.h"
+#include "misc/htmltags.h"
+#include "xml/dom_stringimpl.h"
 
 class KHTMLParser;
 class KHTMLView;
@@ -61,8 +65,54 @@ namespace DOM {
 
 namespace khtml {
     class CachedScript;
-    class Token;
-}
+
+    /**
+     * @internal
+     * represents one HTML tag. Consists of a numerical id, and the list
+     * of attributes. Can also represent text. In this case the id = 0 and
+     * text contains the text.
+     */
+    class Token
+    {
+    public:
+        Token() {
+            id = 0;
+            complexText = false;
+            attrs = 0;
+            text = 0;
+            //qDebug("new token, creating %08lx", attrs);
+        }
+        ~Token() {
+            if(attrs) attrs->deref();
+            if(text) text->deref();
+        }
+        void insertAttr(AttrImpl* a)
+        {
+            if(!attrs) {
+                attrs = new DOM::NamedAttrMapImpl(0);
+                attrs->ref();
+            }
+            attrs->insertAttr(a);
+        }
+        void reset()
+        {
+            if(attrs) {
+                attrs->deref();
+                attrs = 0;
+            }
+            id = 0;
+            complexText = false;
+            if(text) {
+                text->deref();
+                text = 0;
+            }
+        }
+        DOM::NamedAttrMapImpl* attrs;
+        ushort id;
+        DOMStringImpl* text;
+        bool complexText;
+    };
+};
 
 // The count of spaces used for each tab.
 #define TAB_SIZE 8
@@ -146,7 +196,7 @@ protected:
     QChar *buffer;
     QChar *dest;
 
-    khtml::Token *currToken;
+    khtml::Token currToken;
 
     // the size of buffer
     int size;

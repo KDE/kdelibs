@@ -19,7 +19,7 @@
 
 noinst_LTLIBRARIES = libkhtmlhtml.la
 libkhtmlhtml_la_SOURCES = \
-	htmlparser.cpp         htmltoken.cpp          htmltokenizer.cpp \
+	htmlparser.cpp         htmltokenizer.cpp \
 	dtd.cpp                html_headimpl.cpp      html_blockimpl.cpp  \
 	html_elementimpl.cpp   html_inlineimpl.cpp    html_documentimpl.cpp \
 	html_baseimpl.cpp      html_imageimpl.cpp     html_listimpl.cpp \
@@ -32,7 +32,7 @@ libkhtmlhtml_la_METASOURCES = AUTO
 noinst_HEADERS = \
 	dtd.h                html_headimpl.h      html_tableimpl.h \
 	html_baseimpl.h      html_imageimpl.h     htmlparser.h \
-	html_blockimpl.h     html_inlineimpl.h    htmltoken.h \
+	html_blockimpl.h     html_inlineimpl.h    \
 	html_documentimpl.h  html_listimpl.h      htmltokenizer.h \
 	html_elementimpl.h   html_miscimpl.h \
 	html_formimpl.h      html_objectimpl.h
