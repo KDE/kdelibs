@@ -93,8 +93,6 @@ using namespace DOM;
 #include <qdragobject.h>
 #include <qmetaobject.h>
 
-//#define KHTML_NO_SELECTION
-
 namespace khtml
 {
   struct ChildFrame
@@ -3583,8 +3581,8 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
     }
 #else
     d->m_dragLastPos = _mouse->globalPos();
-  }
 #endif
+  }
 
   if ( _mouse->button() == RightButton )
   {
