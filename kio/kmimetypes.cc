@@ -17,7 +17,6 @@
 #include <ksimpleconfig.h>
 #include <kapp.h>
 #include <k2url.h>
-#include <kstring.h>
 #include <kdebug.h>
 
 // This function is implemented in kfmgui.cc and in kfmlib
@@ -513,8 +512,8 @@ bool KDELnkMimeType::run( const char *_url, bool _is_local )
   QString type = cfg.readEntry( "Type" );
   if ( type.isEmpty() )
   {
-    QString tmp;
-    ksprintf( &tmp, i18n("The kdelnk file\n%s\nhas no Type=... entry"), _url );
+    QString tmp = i18n("The kdelnk file\n%1\n"
+		       "has no Type=... entry").arg(_url );
     QMessageBox::critical( 0L, i18n("Error"), tmp, i18n( "OK" ) );
     return false;
   }
@@ -531,8 +530,7 @@ bool KDELnkMimeType::run( const char *_url, bool _is_local )
     return runMimeType( _url, cfg );
   
   
-  QString tmp;
-  ksprintf( &tmp, i18n("The kdelnk type\n%s\nis unknown"), type.data() );
+  QString tmp = i18n("The kdelnk type\n%1\nis unknown").arg( type );
   QMessageBox::critical( 0L, i18n("Error"), tmp, i18n( "OK" ) );
   
   return false;    
@@ -545,8 +543,7 @@ bool KDELnkMimeType::runFSDevice( const char *_url, KSimpleConfig &cfg )
 
   if ( dev.isEmpty() )
   {
-    QString tmp;
-    ksprintf( &tmp, i18n("The kdelnk file\n%s\nis of type FSDevice but has no Dev=... entry"), _url );
+    QString tmp = i18n("The kdelnk file\n%1\nis of type FSDevice but has no Dev=... entry").arg( _url );
     QMessageBox::critical( 0L, i18n("Error"), tmp, i18n( "OK" ) );
     return false;
   }
@@ -592,8 +589,7 @@ bool KDELnkMimeType::runLink( const char *_url, KSimpleConfig &cfg )
   QString url = cfg.readEntry( "URL" );
   if ( url.isEmpty() )
   {
-    QString tmp;
-    ksprintf( &tmp, i18n("The kdelnk file\n%s\nis of type Link but has no URL=... entry"), _url );
+    QString tmp = i18n("The kdelnk file\n%1\nis of type Link but has no URL=... entry").arg( _url );
     QMessageBox::critical( 0L, i18n("Error"), tmp, i18n( "OK" ) );
     return false;
   }
@@ -625,8 +621,7 @@ void KDELnkMimeType::builtinServices( K2URL& _url, list<Service>& _lst )
     QString dev = cfg.readEntry( "Dev" );
     if ( dev.isEmpty() )
     {
-      QString tmp;
-      ksprintf( &tmp, i18n("The kdelnk file\n%s\nis of type FSDevice but has no Dev=... entry"), _url.path() );
+      QString tmp = i18n("The kdelnk file\n%1\nis of type FSDevice but has no Dev=... entry").arg( _url.path() );
       QMessageBox::critical( 0L, i18n("Error"), tmp, i18n( "OK" ) );
     }
     else
@@ -685,8 +680,7 @@ void KDELnkMimeType::userDefinedServices( K2URL& _url, list<KDELnkMimeType::Serv
     }
     else
     {
-      QString tmp;
-      ksprintf( &tmp, i18n("The kdelnk file\n%s\n has an invalid menu entry\n%s"), _url.path(), k );
+      QString tmp = i18n("The kdelnk file\n%1\n has an invalid menu entry\n%2").arg( _url.path()).arg( k );
       QMessageBox::critical( 0L, i18n("Error"), tmp, i18n("OK" ) );
     }
   }
@@ -717,8 +711,7 @@ void KDELnkMimeType::executeService( const char *_url, KDELnkMimeType::Service& 
     QString dev = cfg.readEntry( "Dev" );
     if ( dev.isEmpty() )
     {
-      QString tmp;
-      ksprintf( &tmp, i18n("The kdelnk file\n%s\nis of type FSDevice but has no Dev=... entry"), u.path() );
+      QString tmp = i18n("The kdelnk file\n%1\nis of type FSDevice but has no Dev=... entry").arg( u.path() );
       QMessageBox::critical( 0L, i18n("Error"), tmp, i18n( "OK" ) );
       return;
     }

@@ -4,7 +4,6 @@
 #include "kio_interface.h"
 #include "kio_job.h"
 
-#include <kstring.h>
 #include <kclipboard.h>
 #include <k2url.h>
 #include <kapp.h>
@@ -93,8 +92,7 @@ void pasteData( const char *_dest_url, QByteArray _data )
     struct stat buff;
     if ( stat( u.path(), &buff ) == 0 )
     {
-      QString tmp;
-      ksprintf( &tmp, i18n("The file %s does already exist. Do you really want to overwrite it ?" ), u.path() );
+      QString tmp = i18n("The file %s does already exist. Do you really want to overwrite it ?" ).arg( u.path() );
       if ( QMessageBox::critical( 0L, i18n("Warning"), tmp,i18n("Yes"), i18n("No") ) == 1 )
 	return;
     }

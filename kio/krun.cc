@@ -10,7 +10,6 @@
 
 #include <k2url.h>
 #include <kapp.h>
-#include <kstring.h>
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -34,8 +33,7 @@ bool KRun::runURL( const char *_url, const char *_mimetype )
   }
   else if ( strcmp( _mimetype, "inode/directory-locked" ) == 0 )
   {
-    QString tmp;
-    ksprintf( &tmp, i18n("Can not enter\n%s\nAccess denied"), _url );
+    QString tmp = i18n("Can not enter\n%1\nAccess denied").arg(_url);
     QMessageBox::critical( 0L, i18n("Error"), tmp, i18n("OK") );
     return false;
   }

@@ -37,7 +37,7 @@ libkdecore_la_SOURCES = kconfig.cpp kconfigbase.cpp ksimpleconfig.cpp \
 	 kprocess.cpp kprocctrl.cpp klocale.cpp \
 	libintl.cpp fakes.cpp kiconloader.cpp kdebug.cpp \
 	kstdaccel.cpp kwm.cpp krootprop.cpp kcharsets.cpp kcharsetsdata.cpp \
-	kchartables.cpp kstring.cpp kpixmap.cpp dither.cpp \
+	kchartables.cpp kpixmap.cpp dither.cpp \
 	kckey.cpp kaccel.cpp kglobalaccel.cpp kclipboard.cpp \
 	krect.cpp ksize.cpp kpoint.cpp
 

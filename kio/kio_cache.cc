@@ -16,7 +16,6 @@
 #include <ksimpleconfig.h>
 #include <k2url.h>
 #include <kapp.h>
-#include <kstring.h>
 #include <kdebug.h>
 
 /************************************************

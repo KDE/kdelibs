@@ -28,7 +28,6 @@
 
 #include "kfm.h"
 #include <kapp.h>
-#include <kstring.h>
 
 QString displayName()
 {
@@ -193,9 +192,8 @@ void KFM::init()
     f = fopen( fn.data(), "rb" );
     if ( f == 0L )
     {
-	QString ErrorMessage;
-	ksprintf(&ErrorMessage, i18n("You dont have the file %s\n"
-				    "Could not do Authorization"), fn.data());
+	QString ErrorMessage = i18n("You dont have the file %1\n"
+				    "Could not do Authorization").arg(fn);
 	
 	QMessageBox::message( i18n("KFM Error"), ErrorMessage );
 	return;
@@ -204,9 +202,8 @@ void KFM::init()
     fclose( f );
     if ( p == 0L )
     {
-	QString ErrorMessage;
-	ksprintf(&ErrorMessage, i18n("The file %s is corrupted\n"
-				    "Could not do Authorization"), fn.data());
+	QString ErrorMessage  = i18n("The file %1 is corrupted\n"
+				    "Could not do Authorization").arg(fn);
 	QMessageBox::message( i18n("KFM Error"), ErrorMessage );
 	return;
     }
