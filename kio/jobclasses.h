@@ -412,7 +412,7 @@ namespace KIO {
     };
 
     /**
-     * The tranfer job pumps data into and/or out of a Slave.
+     * The transfer job pumps data into and/or out of a Slave.
      * Data is sent to the slave on request of the slave (@ref dataReq).
      * If data coming from the slave can not be handled, the
      * reading of data from the slave should be suspended.
