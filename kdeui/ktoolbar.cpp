@@ -2014,10 +2014,13 @@ KPopupMenu *KToolBar::contextMenu()
   // Query the current theme for available sizes
   KIconTheme *theme = KGlobal::instance()->iconLoader()->theme();
   QValueList<int> avSizes;
-  if (!::qstrcmp(QObject::name(), "mainToolBar"))
-      avSizes = theme->querySizes( KIcon::MainToolbar);
-  else
-      avSizes = theme->querySizes( KIcon::Toolbar);
+  if (theme)
+  {
+      if (!::qstrcmp(QObject::name(), "mainToolBar"))
+          avSizes = theme->querySizes( KIcon::MainToolbar);
+      else
+          avSizes = theme->querySizes( KIcon::Toolbar);
+  }
 
   d->iconSizes = avSizes;
 
