@@ -41,8 +41,6 @@
    IMPORTANT Note: This file compiles also in Qt-only mode by using the NO_KDE2 precompiler definition!
 */
 
-#define _JOWENN_EXPERIMENTAL_
-
 
 #ifndef KDOCKWIDGET_H
 #define KDOCKWIDGET_H
@@ -1373,9 +1371,6 @@ private:
 
 
 
-#ifdef _JOWENN_EXPERIMENTAL_
-/* Joseph Wenninger jowenn@kde.org Experimental (Just all KMainWindow references changed to QWidget, otherwise nearly exactly the 
-same as KDockMainWindow*/
 
 class EXPORT_DOCKCLASS KDockArea : public QWidget
 {
@@ -1439,7 +1434,6 @@ private:
   KDockMainWindowPrivate *d;
 };
 
-#endif
 
 #endif
 

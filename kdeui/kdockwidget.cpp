@@ -2567,7 +2567,6 @@ void KDockManager::drawDragRectangle()
 }
 
 
-#ifdef _JOWENN_EXPERIMENTAL_
 
 KDockArea::KDockArea( QWidget* parent, const char *name)
 :QWidget( parent, name)
@@ -2677,7 +2676,6 @@ void KDockArea::setMainDockWidget( KDockWidget* mdw )
 #endif
 
 
-#endif
 
 // KDOCKCONTAINER - AN ABSTRACTION OF THE KDOCKTABWIDGET
 KDockContainer::KDockContainer(){m_childrenListBegin=0; m_childrenListEnd=0;}
