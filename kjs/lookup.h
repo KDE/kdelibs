@@ -99,6 +99,25 @@ namespace KJS {
 
   class ExecState;
   class UString;
+  /** @internal
+   * Helper for lookupFunction and lookupValueOrFunction */
+  template <class FuncImp, class ThisImp>
+  inline Value lookupOrCreateFunction(ExecState *exec, const UString &propertyName,
+                                      const ThisImp *thisObj, const HashEntry *entry)
+  {
+      // Look for cached value in dynamic map of properties (in ObjectImp)
+      ValueImp * cachedVal = thisObj->ObjectImp::getDirect(propertyName);
+      /*if (cachedVal)
+        fprintf(stderr, "lookupOrCreateFunction: Function -> looked up in ObjectImp, found type=%d (object=%d)\n",
+                 cachedVal->type(),  ObjectType);*/
+      if (cachedVal && cachedVal->type() == ObjectType)
+        return cachedVal;
+
+      Value val = new FuncImp(exec, entry->value, entry->params);
+      const_cast<ThisImp *>(thisObj)->ObjectImp::put(exec, propertyName, val, entry->attr);
+      return val;
+  }
+
   /**
    * Helper method for property lookups
    *
@@ -120,37 +139,46 @@ namespace KJS {
    * @param thisObj "this"
    */
   template <class FuncImp, class ThisImp, class ParentImp>
-  inline Value lookupOrCreate(ExecState *exec, const UString &propertyName,
-                              const HashTable* table, const ThisImp* thisObj)
+  inline Value lookupGet(ExecState *exec, const UString &propertyName,
+                         const HashTable* table, const ThisImp* thisObj)
   {
     const HashEntry* entry = Lookup::findEntry(table, propertyName);
 
     if (!entry) // not found, forward to parent
       return thisObj->ParentImp::get(exec, propertyName);
 
-    //fprintf(stderr, "lookupOrCreate: found value=%d attr=%d\n", entry->value, entry->attr);
+    //fprintf(stderr, "lookupGet: found value=%d attr=%d\n", entry->value, entry->attr);
     if (entry->attr & Function)
-    {
-      // Look for cached value in dynamic map of properties (in ObjectImp)
-      ValueImp * cachedVal = thisObj->ObjectImp::getDirect(propertyName);
-      /*if (cachedVal)
-        fprintf(stderr, "lookupOrCreate: Function -> looked up in ObjectImp, found type=%d (object=%d)\n",
-                 cachedVal->type(),  ObjectType);*/
-      if (cachedVal && cachedVal->type() == ObjectType)
-        return cachedVal;
-
-      Value val = new FuncImp(exec, entry->value, entry->params);
-      const_cast<ThisImp *>(thisObj)->ObjectImp::put(exec, propertyName, val, entry->attr);
-      return val;
-    }
+      return lookupOrCreateFunction<FuncImp, ThisImp>(exec, propertyName, thisObj, entry);
     return thisObj->getValue(exec, entry->value);
   }
 
   /**
-   * Simplified version of lookupOrCreate in case there are no functions, only "values".
+   * Simplified version of lookupGet in case there are only functions.
+   * Using this instead of lookupGet prevents 'this' from implementing a dummy getValue.
+   */
+  template <class FuncImp, class ThisImp, class ParentImp>
+  inline Value lookupGetFunction(ExecState *exec, const UString &propertyName,
+                         const HashTable* table, const ThisImp* thisObj)
+  {
+    const HashEntry* entry = Lookup::findEntry(table, propertyName);
+
+    if (!entry) // not found, forward to parent
+      return thisObj->ParentImp::get(exec, propertyName);
+
+    if (entry->attr & Function)
+      return lookupOrCreateFunction<FuncImp, ThisImp>(exec, propertyName, thisObj, entry);
+
+    fprintf(stderr, "Function bit not set! Shouldn't happen in lookupGetFunction!\n" );
+    return Undefined();
+  };
+
+  /**
+   * Simplified version of lookupGet in case there are no functions, only "values".
+   * Using this instead of lookupGet removes the need for a FuncImp class.
    */
   template <class ThisImp, class ParentImp>
-  inline Value lookupValue(ExecState *exec, const UString &propertyName,
+  inline Value lookupGetValue(ExecState *exec, const UString &propertyName,
                            const HashTable* table, const ThisImp* thisObj)
   {
     const HashEntry* entry = Lookup::findEntry(table, propertyName);
@@ -159,7 +187,7 @@ namespace KJS {
       return thisObj->ParentImp::get(exec, propertyName);
 
     if (entry->attr & Function)
-      fprintf(stderr, "Function bit set! Shouldn't happen in lookupValue!\n" );
+      fprintf(stderr, "Function bit set! Shouldn't happen in lookupGetValue!\n" );
     return thisObj->getValue(exec, entry->value);
   }
 
@@ -168,20 +196,17 @@ namespace KJS {
    * Lookup hash entry for property to be set, and set the value.
    */
   template <class ThisImp, class ParentImp>
-  inline void lookupPutValue(ExecState *exec, const UString &propertyName,
-                             const Value& value, int attr,
-                             const HashTable* table, const ThisImp* thisObj)
+  inline void lookupPut(ExecState *exec, const UString &propertyName,
+                        const Value& value, int attr,
+                        const HashTable* table, const ThisImp* thisObj)
   {
     const HashEntry* entry = Lookup::findEntry(table, propertyName);
 
-    if (!entry) { // not found, forward to parent
+    if (!entry || (entry->attr & Function)) { // not found, or function: forward to parent
        thisObj->ParentImp::put(exec, propertyName, value, attr);
-       return;
     }
-
-    if (entry->attr & Function)
-      fprintf(stderr, "Function bit set! Shouldn't happen in lookupPutValue!\n" );
-    thisObj->putValue(exec, entry->value, value, attr);
+    else
+      thisObj->putValue(exec, entry->value, value, attr);
   }
 
   /*

@@ -124,14 +124,7 @@ ArrayPrototypeImp::ArrayPrototypeImp(ExecState *exec,
 Value ArrayPrototypeImp::get(ExecState *exec, const UString &propertyName) const
 {
   //fprintf( stderr, "ArrayPrototypeImp::get(%s)\n", propertyName.ascii() );
-  return lookupOrCreate<ArrayProtoFuncImp, ArrayPrototypeImp, ArrayInstanceImp>( exec, propertyName, &arrayTable, this );
-}
-
-Value ArrayPrototypeImp::getValue(ExecState *, int) const
-{
-  // Can't be called, all properties in the hashtable have the Function bit
-  fprintf( stderr, "ArrayPrototypeImp::getValue called - impossible\n" );
-  return Null();
+  return lookupGetFunction<ArrayProtoFuncImp, ArrayPrototypeImp, ArrayInstanceImp>( exec, propertyName, &arrayTable, this );
 }
 
 // ------------------------------ ArrayProtoFuncImp ----------------------------

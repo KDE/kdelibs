@@ -134,14 +134,7 @@ DatePrototypeImp::DatePrototypeImp(ExecState *,
 
 Value DatePrototypeImp::get(ExecState *exec, const UString &propertyName) const
 {
-  return lookupOrCreate<DateProtoFuncImp, DatePrototypeImp, ObjectImp>( exec, propertyName, &dateTable, this );
-}
-
-Value DatePrototypeImp::getValue(ExecState *, int) const
-{
-  // Can't be called, all properties in the hashtable have the Function bit
-  fprintf( stderr, "DatePrototypeImp::getValue called - impossible\n" );
-  return Null();
+  return lookupGetFunction<DateProtoFuncImp, DatePrototypeImp, ObjectImp>( exec, propertyName, &dateTable, this );
 }
 
 // ------------------------------ DateProtoFuncImp -----------------------------

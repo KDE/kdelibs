@@ -95,14 +95,7 @@ StringPrototypeImp::StringPrototypeImp(ExecState *exec,
 
 Value StringPrototypeImp::get(ExecState *exec, const UString &propertyName) const
 {
-  return lookupOrCreate<StringProtoFuncImp, StringPrototypeImp, StringInstanceImp>( exec, propertyName, &stringTable, this );
-}
-
-Value StringPrototypeImp::getValue(ExecState *, int) const
-{
-  // Can't be called, all properties in the hashtable have the Function bit
-  fprintf( stderr, "StringPrototypeImp::getValue called - impossible\n" );
-  return Null();
+  return lookupGetFunction<StringProtoFuncImp, StringPrototypeImp, StringInstanceImp>( exec, propertyName, &stringTable, this );
 }
 
 // ------------------------------ StringProtoFuncImp ---------------------------

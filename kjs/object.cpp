@@ -298,7 +298,7 @@ Value ObjectImp::get(ExecState *exec, const UString &propertyName) const
 
 // This get method only looks at the property map.
 // A bit like hasProperty(recursive=false), this doesn't go to the prototype.
-// This is used e.g. by lookupOrCreate (to cache a function, we don't want
+// This is used e.g. by lookupOrCreateFunction (to cache a function, we don't want
 // to look up in the prototype, it might already exist there)
 ValueImp* ObjectImp::getDirect(const UString& propertyName) const
 {
@@ -379,7 +379,7 @@ bool ObjectImp::deleteProperty(ExecState */*exec*/, const UString &propertyName)
       return false;
     _prop->remove(propertyName);
   }
-  
+
   // Look in the static hashtable of properties
   if (findPropertyHashEntry(propertyName))
     return false; // No builtin property can be deleted

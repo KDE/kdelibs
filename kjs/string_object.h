@@ -47,7 +47,6 @@ namespace KJS {
     StringPrototypeImp(ExecState *exec,
                        ObjectPrototypeImp *objProto);
     Value get(ExecState *exec, const UString &p) const;
-    Value getValue(ExecState *exec, int token) const;
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
   };
