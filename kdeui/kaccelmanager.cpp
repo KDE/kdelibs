@@ -245,7 +245,7 @@ void KAcceleratorManagerPrivate::traverseChildren(QWidget *widget, Item *item)
       continue;
     }
 
-    if (w->inherits("QComboBox") || w->inherits("QLineEdit"))
+    if (w->inherits("QComboBox") || w->inherits("QLineEdit") || w->inherits("QTextEdit") || w->inherits("QTextView"))
         continue;
 
     // now treat 'ordinary' widgets

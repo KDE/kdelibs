@@ -197,7 +197,8 @@ void KCheckAccelerators::checkAccelerators( bool automatic ) {
                      ++i )
                     findAccel( w->className(), mbar->text( mbar->idAt( i )), accels );
             }
-            if (w->inherits("QLineEdit") || w->inherits("QComboBox") || !w->isFocusEnabled())
+            if (w->inherits("QLineEdit") || w->inherits("QComboBox") || w->inherits("QTextEdit") || w->inherits("QTextView") ||
+				!w->isFocusEnabled())
                 continue;
 
 	    QMetaObject *mo = w->metaObject();
