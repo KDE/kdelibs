@@ -2713,6 +2713,22 @@ bool HTTPProtocol::readHeader()
         m_bKeepAlive = true;
       }
     }
+    else if (strncasecmp(buf, "Link:", 5) == 0) {
+      // We only support Link: <url>; rel="type"   so far
+      QStringList link = QStringList::split(";", QString(buf)
+                                                 .replace(QRegExp("^Link:[ ]*"),
+                                                          ""));
+      if (link.count() == 2) {
+        QString rel = link[1].stripWhiteSpace();
+        if (rel.startsWith("rel=\"")) {
+          rel = rel.mid(5, rel.length() - 6);
+          if (rel.lower() == "pageservices") {
+            QString url = link[0].replace(QRegExp("[<>]"),"").stripWhiteSpace();
+            setMetaData("PageServices", url);
+          }
+        }
+      }
+    }
     else if (strncasecmp(buf, "P3P:", 4) == 0) {
       QString p3pstr = buf;
       p3pstr = p3pstr.mid(4).simplifyWhiteSpace();
