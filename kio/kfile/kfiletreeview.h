@@ -164,12 +164,12 @@ protected:
    /**
     * @returns true if we can decode the drag and support the action
     */
-   virtual bool acceptDrag(QDropEvent* event) const;
 
+   virtual bool acceptDrag(QDropEvent* event) const;
     virtual QDragObject * dragObject();
+
     virtual void startAnimation( KFileTreeViewItem* item, const char * iconBaseName = "kde", uint iconCount = 6 );
     virtual void stopAnimation( KFileTreeViewItem* item );
-
     virtual void contentsDragEnterEvent( QDragEnterEvent *e );
     virtual void contentsDragMoveEvent( QDragMoveEvent *e );
     virtual void contentsDragLeaveEvent( QDragLeaveEvent *e );
@@ -207,6 +207,12 @@ signals:
    /* New signals if you like it ? */
    void dropped( QWidget*, QDropEvent* );
    void dropped( QWidget*, QDropEvent*, KURL::List& );
+   void dropped( KURL::List&, KURL& );
+
+   void dropped( QDropEvent *, QListViewItem * );
+   void dropped (KFileTreeView *, QDropEvent *, QListViewItem *);
+   void dropped (QDropEvent *, QListViewItem *, QListViewItem *);
+   void dropped (KFileTreeView *, QDropEvent *, QListViewItem *, QListViewItem *);
 
 protected:
    KURL m_nextUrlToSelect;

@@ -40,11 +40,17 @@ testFrame::testFrame():KMainWindow(0,"Test FileTreeView"),
    treeView->setAcceptDrops( true );
    treeView->setDropVisualizer( true );
 
+   
    /* Connect to see the status bar */
    KStatusBar* sta = statusBar();
    connect( treeView, SIGNAL( onItem( const QString& )),
 	    sta, SLOT( message( const QString& )));
    
+   connect( treeView, SIGNAL( dropped( QWidget*, QDropEvent*, KURL::List& )),
+	    this, SLOT( urlsDropped( QWidget*, QDropEvent*, KURL::List& )));
+
+   connect( treeView, SIGNAL( dropped( KURL::List&, KURL& )), this,
+	    SLOT( copyURLs( KURL::List&, KURL& )));
    
    treeView->addColumn( "File" );
    treeView->addColumn( "ChildCount" );
@@ -77,6 +83,25 @@ void testFrame::showPath( KURL &url )
 
 
 }
+
+void testFrame::urlsDropped( QWidget* , QDropEvent* , KURL::List& list )
+{
+   KURL::List::ConstIterator it = list.begin();
+   for ( ; it != list.end(); ++it ) {
+      kdDebug() << "Url dropped: " << (*it).prettyURL() << endl;
+   }  
+}
+
+void testFrame::copyURLs( KURL::List& list, KURL& to )
+{
+   KURL::List::ConstIterator it = list.begin();
+   kdDebug() << "Copy to " << to.prettyURL() << endl;
+   for ( ; it != list.end(); ++it ) {
+      kdDebug() << "Url: " << (*it).prettyURL() << endl;
+   }  
+   
+}
+
 
 void testFrame::slotPopulateFinished(KFileTreeViewItem *item )
 {
@@ -124,8 +149,6 @@ int main(int argc, char **argv)
 	     tf->setDirOnly();
 	  else
 	  {
-	     if( argv1.endsWith( "/" ))
-		argv1.truncate( argv1.length() -1  );
 	  KURL u( argv1 );
 	  tf->showPath( u );
        }

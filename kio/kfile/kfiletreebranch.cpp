@@ -45,7 +45,8 @@ KFileTreeBranch::KFileTreeBranch( KFileTreeView *parent, const KURL& url,
       m_name ( name ),
       m_rootIcon( pix ),
       m_openRootIcon( pix ),
-      m_recurseChildren(true)
+      m_recurseChildren(true),
+	  m_showExtensions(true)
 {
    kdDebug( 250) << "Creating branch for url " << url.prettyURL() << endl;
 
@@ -84,6 +85,9 @@ KFileTreeBranch::KFileTreeBranch( KFileTreeView *parent, const KURL& url,
    connect( this, SIGNAL( clear(const KURL&)),
 	    this, SLOT( slotDirlisterClearURL(const KURL&)));
    
+   connect( this, SIGNAL( redirection( const KURL& , const KURL& ) ),
+	    this, SLOT( slotRedirect( const KURL&, const KURL& )));
+
    m_openChildrenURLs.append( url );
 }
 
@@ -128,7 +132,7 @@ KFileTreeViewItem *KFileTreeBranch::parentKFTVItem( KFileItem *item )
 void KFileTreeBranch::addItems( const KFileItemList& list )
 {
    KFileItemListIterator it( list );
-   kdDebug(250) << "Adding items !" << endl;
+   kdDebug(250) << "Adding " << list.count() << " items !" << endl;
    KFileItem *currItem;
    KFileTreeViewItemList treeViewItList;
    KFileTreeViewItem *parentItem = 0;
@@ -207,6 +211,10 @@ KFileTreeViewItem* KFileTreeBranch::createTreeViewItem( KFileTreeViewItem *paren
       tvi = new KFileTreeViewItem( parent,
 				   fileItem,
 				   this );
+   }
+   else
+   {
+      kdDebug(250) << "createTreeViewItem: Have no parent" << endl;
    }
    return( tvi );
 }
@@ -296,6 +304,15 @@ void KFileTreeBranch::slotDirlisterClear()
    }
 }
 
+void KFileTreeBranch::slotRedirect( const KURL& oldUrl, const KURL&newUrl )
+{
+   if( oldUrl.cmp( m_startURL, true ))
+   {
+      m_startURL = newUrl;
+   }
+   
+}
+
 void KFileTreeBranch::slotDirlisterClearURL( const KURL& url )
 {
    kdDebug(250)<< "*** Clear for URL !" << url.prettyURL() << endl;
@@ -314,15 +331,18 @@ KFileTreeViewItem* KFileTreeBranch::findTVIByURL( const KURL& url )
    KFileTreeViewItem *resultItem = 0;
    if( m_startURL.cmp(url, true) )
    {
-      kdDebug(250) << "Returning root as a parent !" << endl;
+      kdDebug(250) << "findByURL: Returning root as a parent !" << endl;
       resultItem = m_root;
    }
    else if( m_lastFoundURL.cmp( url, true ))
    {
+      kdDebug(250) << "findByURL: Returning from lastFoundURL!" << endl;
       resultItem = m_lastFoundItem;
    }
    else
    {
+      kdDebug(250) << "findByURL: searching by dirlister!" << endl;
+
       KFileItem *it = findByURL( url );
 
       if( it )

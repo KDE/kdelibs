@@ -48,7 +48,7 @@ KFileTreeView::KFileTreeView( QWidget *parent, const char *name )
       m_wantOpenFolderPixmaps( true ),
       m_toolTip( this )
 {
-    setSelectionMode( QListView::Single );
+    setSelectionModeExt( KListView::Single );
 
     m_animationTimer = new QTimer( this );
     connect( m_animationTimer, SIGNAL( timeout() ),
@@ -101,26 +101,35 @@ void KFileTreeView::contentsDragEnterEvent( QDragEnterEvent *ev )
       return;
    }
    ev->acceptAction();
+   m_currentBeforeDropItem = selectedItem();
+
    QListViewItem *item = itemAt( contentsToViewport( ev->pos() ) );
    if( item )
    {
       m_dropItem = item;
-      m_currentBeforeDropItem = selectedItem();
       m_autoOpenTimer->start( autoOpenTimeout );
    }
+   else
+   {
    m_dropItem = 0;
-   m_currentBeforeDropItem = selectedItem();
+}
 }
 
 void KFileTreeView::contentsDragMoveEvent( QDragMoveEvent *e )
 {
-   if( ! acceptDrag( e ) ) {
+   if( ! acceptDrag( e ) )
+   {
       e->ignore();
       return;
    }
    e->acceptAction();
 
-   QListViewItem *item = itemAt( contentsToViewport( e->pos() ) );
+
+   QListViewItem *item; // itemAt( contentsToViewport( e->pos() ) );
+   QListViewItem *par;
+
+   findDrop( e->pos(), par, item );
+   
    if( item && item->isSelectable() )
    {
       setSelected( item, true );
@@ -142,7 +151,10 @@ void KFileTreeView::contentsDragLeaveEvent( QDragLeaveEvent * )
 
    // Restore the current item to what it was before the dragging (#17070)
    if ( m_currentBeforeDropItem )
+   {
       setSelected( m_currentBeforeDropItem, true );
+      ensureItemVisible( m_currentBeforeDropItem );
+   }
    else
       setSelected( m_dropItem, false ); // no item selected
    m_currentBeforeDropItem = 0;
@@ -161,20 +173,52 @@ void KFileTreeView::contentsDropEvent( QDropEvent *e )
        e->ignore();
        return;
     }
-    e->acceptAction();
 
-    /* the drop was accepted so lets emit this to the outside world
-       Not sure about what signals to emit ? */
+    e->acceptAction();
+    QListViewItem *afterme;
+    QListViewItem *parent;
+    findDrop(e->pos(), parent, afterme);
+
+    if (e->source() == viewport() && itemsMovable())
+        movableDropEvent(parent, afterme);
+    else
+    {
+       emit dropped(e, afterme);
+       emit dropped(this, e, afterme);
+       emit dropped(e, parent, afterme);
+       emit dropped(this, e, parent, afterme);
+
+       
+       KURL parentURL;
+       if( afterme )
+       {
+	  if(  static_cast<KFileTreeViewItem*>(afterme)->isDir() )
+	     parentURL = static_cast<KFileTreeViewItem*>(afterme)->url();
+	  else
+	     parentURL = static_cast<KFileTreeViewItem*>(parent)->url();
+       }
+
     KURL::List urls;
     KURLDrag::decode( e, urls );
-    emit dropped( this, e );
     emit dropped( this, e, urls );
+       emit dropped( urls, parentURL );
+    }
 }
 
 bool KFileTreeView::acceptDrag(QDropEvent* e ) const
 {
-   //Maybe we don't want to support all these actions ?
-   return QUriDrag::canDecode( e ) &&
+
+   bool ancestOK= acceptDrops();
+   // kdDebug(250) << "Do accept drops: " << parentOK << endl;
+   ancestOK = ancestOK && itemsMovable();
+   // kdDebug(250) << "ismovable: " << parentOK << endl;
+
+   /*  KListView::acceptDrag(e);  */
+   /* this is what KListView does:
+    * acceptDrops() && itemsMovable() && (e->source()==viewport());
+    * ask acceptDrops and itemsMovable, but not the third
+    */
+   return ancestOK && QUriDrag::canDecode( e ) &&
       ( e->action() == QDropEvent::Copy
 	|| e->action() == QDropEvent::Move
 	|| e->action() == QDropEvent::Link );
@@ -230,7 +274,7 @@ void KFileTreeView::slotExpanded( QListViewItem *item )
    KFileTreeBranch *branch = it->branch();
 
    /* Start the animation for the branch object */
-   if( branch )
+   if( it->isDir() && branch )
    {
       /* check here if the branch really needs to be populated again */
       kdDebug(250 ) << "starting to open " << it->url().prettyURL() << endl;
@@ -449,7 +493,7 @@ void KFileTreeView::slotAnimation()
    {
       uint & iconNumber = it.data().iconNumber;
       QString icon = QString::fromLatin1( it.data().iconBaseName ).append( QString::number( iconNumber ) );
-      kdDebug(250) << "Loading icon " << icon << endl;
+      // kdDebug(250) << "Loading icon " << icon << endl;
       it.key()->setPixmap( 0, SmallIcon( icon )); // KFileTreeViewFactory::instance() ) );
 
       iconNumber++;

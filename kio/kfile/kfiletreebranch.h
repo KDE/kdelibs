@@ -196,6 +196,7 @@ private slots:
    void slotDeleteItem( KFileItem* );
    void slotDirlisterClear();
    void slotDirlisterClearURL( const KURL& url );
+   void slotRedirect( const KURL& oldUrl, const KURL&newUrl );
    
 private:
    KFileTreeViewItem    *parentKFTVItem( KFileItem *item );
