@@ -433,6 +433,9 @@ void KFontChooser::setFont( const QFont& aFont, bool onlyFixed )
 {
   selFont = aFont;
   selectedSize=aFont.pointSize();
+  if (selectedSize == -1)
+     selectedSize = QFontInfo(aFont).pointSize();
+
   if( onlyFixed != usingFixed)
   {
     usingFixed = onlyFixed;
@@ -568,6 +571,8 @@ void KFontChooser::setupDisplay()
   QString family = selFont.family().lower();
   int style = (selFont.bold() ? 2 : 0) + (selFont.italic() ? 1 : 0);
   int size = selFont.pointSize();
+  if (size == -1)
+     size = QFontInfo(selFont).pointSize();
   QString sizeStr = QString::number(size);
 
   int numEntries, i;
@@ -577,6 +582,44 @@ void KFontChooser::setupDisplay()
     if (family == familyListBox->text(i).lower()) {
       familyListBox->setCurrentItem(i);
       break;
+    }
+  }
+
+  // 1st Fallback
+  if ( (i == numEntries) )
+  {
+    if (family.contains('['))
+    {
+      family = family.left(family.find('[')).stripWhiteSpace();
+      for (i = 0; i < numEntries; i++) {
+        if (family == familyListBox->text(i).lower()) {
+          familyListBox->setCurrentItem(i);
+          break;
+        }
+      }
+    }
+  }
+
+  // 2nd Fallback
+  if ( (i == numEntries) )
+  {
+    QString fallback = family+" [";
+    for (i = 0; i < numEntries; i++) {
+      if (familyListBox->text(i).lower().startsWith(fallback)) {
+        familyListBox->setCurrentItem(i);
+        break;
+      }
+    }
+  }
+
+  // 3rd Fallback
+  if ( (i == numEntries) )
+  {
+    for (i = 0; i < numEntries; i++) {
+      if (familyListBox->text(i).lower().startsWith(family)) {
+        familyListBox->setCurrentItem(i);
+        break;
+      }
     }
   }
 
