@@ -85,6 +85,12 @@ class KDirOperator : public QWidget {
     //this also reads the current url(), so you better call this after setURL()
     void setView(KFileView *view);
     const KFileView * view() const { return fileView; }
+
+    /**
+     * Returns the widget of the current view. 0L if there is no view/widget.
+     */
+    QWidget * viewWidget() const { return fileView ? fileView->widget() : 0L; }
+
     void setView(KFile::FileView view);
 
     void setSorting( QDir::SortSpec );
@@ -233,6 +239,11 @@ class KDirOperator : public QWidget {
      */
     bool mkdir( const QString& directory, bool enterDirectory=true );
 
+    /**
+     * Clears the forward and backward history.
+     */
+    void clearHistory();
+    
 protected:
     void setFileReader( KFileReader *reader );
     void resizeEvent( QResizeEvent * );

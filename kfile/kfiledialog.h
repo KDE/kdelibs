@@ -535,6 +535,7 @@ protected slots:
     virtual void updateStatusLine(int dirs, int files);
     virtual void slotOk();
     virtual void accept();
+    virtual void slotCancel();
 
 
     /**

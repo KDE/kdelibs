@@ -333,7 +333,7 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     setSelection(d->url.url());
     ops->setView(KFile::Default);
 
-    coll->action( "back" )->setEnabled( false );
+    ops->clearHistory();
 }
 
 void KFileDialog::setLocationLabel(const QString& text)
@@ -391,7 +391,7 @@ void KFileDialog::slotOk()
 {
     kdDebug(kfile_area) << "slotOK\n";
 
-    if ( (mode() & KFile::Directory) != KFile::Directory )
+    if ( (mode() & KFile::Directory) != KFile::Directory ) {
         if ( locationEdit->currentText().stripWhiteSpace().isEmpty() ) {
 	    const KFileViewItemList *items = ops->selectedItems();
 	    if ( !items || items->isEmpty() )
@@ -418,6 +418,7 @@ void KFileDialog::slotOk()
 		return;
 	    }
 	}
+    }
 
     KURL selectedURL;
 
@@ -460,40 +461,54 @@ void KFileDialog::slotOk()
 
     if ( (mode() & KFile::Directory) == KFile::Directory ) {
         kdDebug(kfile_area) << "Directory\n";
+	bool done = true;
         if ( d->url.isLocalFile() ) {
-	    QFileInfo info( d->url.path() );
-            if ( info.isDir() ) {
-                locationEdit->insertItem( d->url.path(+1), 1 );
-                accept();
-            }
-
-            else if ( !info.exists() && (mode() & KFile::File) != KFile::File ) {
-	        // directory doesn't exist, create and enter it
-	        if ( ops->mkdir( d->url.url(), true ))
-		    return;
-
-		else {
-		    locationEdit->insertItem( d->url.prettyURL(+1), 1 );
+	    if ( locationEdit->currentText().stripWhiteSpace().isEmpty() ) {
+		QFileInfo info( d->url.path() );
+		if ( info.isDir() ) {
+		    locationEdit->insertItem( d->url.path(+1), 1 );
 		    accept();
 		}
+
+		else if (!info.exists() && (mode() & KFile::File) != KFile::File) {
+		    // directory doesn't exist, create and enter it
+		    if ( ops->mkdir( d->url.url(), true ))
+			return;
+
+		    else {
+			locationEdit->insertItem( d->url.prettyURL(+1), 1 );
+			accept();
+		    }
+		}
+	
+		else { // d->url is not a directory,
+		    // maybe we are in File(s) | Directory mode
+		    if ( mode() & KFile::File == KFile::File ||
+			 mode() & KFile::Files == KFile::Files )
+			done = false;
+		}
 	    }
+	    else { // Directory mode, with file[s]/dir[s] selected
+		d->filenames = locationEdit->currentText();
+		accept(); // what can we do?
+	    }
+
 	}
 
 	else { // FIXME: remote directory, should we allow that?
-
 	}
 
-	return;
+	if ( done )
+	    return;
     }
 
     KIO::StatJob *job = 0L;
     d->statJobs.clear();
-
+    d->filenames = locationEdit->currentText();
 
     if ( (mode() & KFile::Files) == KFile::Files &&
 	 !locationEdit->currentText().contains( '/' )) {
         kdDebug(kfile_area) << "Files\n";
-        d->filenames = locationEdit->currentText();
         KURL::List list = parseSelectedURLs();
         KURL::List::ConstIterator it = list.begin();
         for ( ; it != list.end(); ++it ) {
@@ -567,10 +582,11 @@ void KFileDialog::accept()
     delete c;
 
     KDialogBase::accept();
-    
+
     if ( mode() & KFile::Files != KFile::Files ) // single selection
 	emit fileSelected(d->url.url());
 
+    ops->close();
     emit okClicked();
 }
 
@@ -1061,6 +1077,7 @@ QString KFileDialog::getOpenFileName(const QString& dir, const QString& filter,
 
     dlg.setCaption(caption.isNull() ? i18n("Open") : caption);
 
+    dlg.ops->clearHistory();
     dlg.exec();
 
     QString filename = dlg.selectedFile();
@@ -1077,6 +1094,7 @@ QStringList KFileDialog::getOpenFileNames(const QString& dir,const QString& filt
 
     dlg.setCaption(caption.isNull() ? i18n("Open") : caption);
     dlg.setMode(KFile::Files);
+    dlg.ops->clearHistory();
     dlg.exec();
 
     QStringList list = dlg.selectedFiles();
@@ -1093,7 +1111,7 @@ KURL KFileDialog::getOpenURL(const QString& dir, const QString& filter,
     KFileDialog dlg(dir, filter, parent, "filedialog", true);
 
     dlg.setCaption(caption.isNull() ? i18n("Open") : caption);
-
+    dlg.ops->clearHistory();
     dlg.exec();
 
     const KURL& url = dlg.selectedURL();
@@ -1112,6 +1130,7 @@ KURL::List KFileDialog::getOpenURLs(const QString& dir,
 
     dlg.setCaption(caption.isNull() ? i18n("Open") : caption);
     dlg.setMode(KFile::Files);
+    dlg.ops->clearHistory();
     dlg.exec();
 
     KURL::List list = dlg.selectedURLs();
@@ -1130,7 +1149,7 @@ QString KFileDialog::getExistingDirectory(const QString& dir,
 {
     KFileDialog dlg(dir, QString::null, parent, "filedialog", true);
     dlg.setMode(KFile::Directory);
-
+    dlg.ops->clearHistory();
     dlg.setCaption(caption.isNull() ? i18n("Select Directory") : caption);
     dlg.exec();
 
@@ -1410,6 +1429,12 @@ QPushButton * KFileDialog::okButton() const
 QPushButton * KFileDialog::cancelButton() const
 {
     return d->cancelButton;
+}
+
+void KFileDialog::slotCancel()
+{
+    ops->close();
+    KDialogBase::slotCancel();
 }
 
 void KFileDialog::setKeepLocation( bool keep )

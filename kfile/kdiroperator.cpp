@@ -115,7 +115,7 @@ KDirOperator::KDirOperator(const KURL& url,
     connect( d->progressDelayTimer, SIGNAL( timeout() ),
 	     SLOT( slotShowProgress() ));
 
-    finished = true;
+    finished = false;
     myCompleteListDirty = false;
 
     backStack.setAutoDelete( true );
@@ -278,7 +278,7 @@ void KDirOperator::mkdir()
 
     // Create widgets, and display using geometry management
     //
-    lMakeDir = new KDialogBase( fileView ? fileView->widget() : 0L,
+    lMakeDir = new KDialogBase( viewWidget(),
 				"MakeDir Dialog", true, i18n("New Directory"),
 				KDialogBase::Ok | KDialogBase::Cancel );
     vbox = new QVBox( lMakeDir );
@@ -324,8 +324,8 @@ bool KDirOperator::mkdir( const QString& directory, bool enterDirectory )
         writeOk = KIO::NetAccess::mkdir( url );
 
     if ( !writeOk )
-        KMessageBox::sorry(0, i18n("You don't have permissions to create "
-                                   "that directory." ));
+        KMessageBox::sorry(viewWidget(), i18n("You don't have permissions to "
+					      "create that directory." ));
     else {
         if ( enterDirectory )
             setURL( url, true );
@@ -340,6 +340,8 @@ void KDirOperator::close()
     pendingMimeTypes.clear();
     myCompletion.clear();
     myDirCompletion.clear();
+    myCompleteListDirty = true;
+    dir->stop();
 }
 
 void KDirOperator::checkPath(const QString &, bool /*takeFiles*/) // SLOT
@@ -410,14 +412,14 @@ void KDirOperator::setURL(const KURL& _newurl, bool clearforward)
     QString pathstr = newurl.path(+1);
     newurl.setPath(pathstr);
 
-    if (newurl == dir->url()) // already set
+    if (finished && newurl == dir->url()) // already set
         return;
 
     pendingMimeTypes.clear();
 
     if (clearforward) {
         // autodelete should remove this one
-        backStack.push(new KURL(dir->url()));
+	backStack.push(new KURL(dir->url()));
         forwardStack.clear();
     }
     /* // FIXME: (pfeiffer) we should have a flag "onlyLocal", I guess
@@ -442,7 +444,7 @@ void KDirOperator::setURL(const KURL& _newurl, bool clearforward)
         dir->setURL(newurl);
 
         if ( !dir->isReadable() ) {
-            KMessageBox::error(0,
+            KMessageBox::error(viewWidget(),
                                i18n("The specified directory does not exist\n"
                                     "or was not readable."));
             dir->setURL(backup);
@@ -500,7 +502,7 @@ void KDirOperator::pathChanged()
     *lastDirectory = dir->url();
 
     if (!dir->isReadable()) {
-        KMessageBox::error(0,
+        KMessageBox::error(viewWidget(),
                            i18n("The specified directory does not exist "
                                 "or was not readable."));
         if (backStack.isEmpty())
@@ -578,7 +580,7 @@ bool KDirOperator::isRoot() const
 void KDirOperator::setView( KFile::FileView view )
 {
     bool separateDirs = KFile::isSeparateDirs( view );
-
+    
     if (view == KFile::Default) {
         if ( KFile::isDetailView( (KFile::FileView) defaultView ) )
             view = KFile::Detail;
@@ -593,8 +595,10 @@ void KDirOperator::setView( KFile::FileView view )
 
     // we only have a dual combi view, not a triple one. So in Directory and
     // preview mode, we don't allow separating dirs & files
-    if ( (mode() & KFile::Directory) == KFile::Directory || preview )
+    if ( (mode() & KFile::Directory) == KFile::Directory || preview ) {
         separateDirs = false;
+	separateDirsAction->setEnabled( false );
+    }
 
     viewKind = static_cast<int>(view) | (separateDirs ? KFile::SeparateDirs : 0);
 
@@ -628,11 +632,6 @@ void KDirOperator::setView( KFile::FileView view )
             new_view=tmp;
         }
     }
-
-    if ( (mode() & KFile::Directory) )
-        new_view->setViewMode(KFileView::Directories);
-    else
-        new_view->setViewMode(KFileView::All);
 
     setFocusProxy(new_view->widget());
     new_view->setSorting( mySorting );
@@ -673,21 +672,16 @@ void KDirOperator::connectView(KFileView *view)
     if ( reverseAction->isChecked() != fileView->isReversed() )
         fileView->sortReversed();
 
-    if ( (myMode & KFile::File) == KFile::File ) {
-        fileView->setViewMode( KFileView::All );
-        fileView->setSelectionMode( KFile::Single );
-    } else if ( (myMode & KFile::Directory) == KFile::Directory ) {
-        fileView->setViewMode( KFileView::Directories );
-        fileView->setSelectionMode( KFile::Single );
-    } else if ( (myMode & KFile::Files) == KFile::Files ) {
-        fileView->setViewMode( KFileView::All );
-        fileView->setSelectionMode( KFile::Extended );
-    }
-    else if ( (viewKind & KFile::PreviewContents) == KFile::PreviewContents ||
-              (viewKind & KFile::PreviewInfo) == KFile::PreviewInfo ) {
-        fileView->setViewMode( KFileView::All );
-        fileView->setSelectionMode( KFile::Single );
-    }
+     if ( myMode & KFile::Directory && 
+	  (myMode & (KFile::File | KFile::Files) == 0 ))
+         fileView->setViewMode(KFileView::Directories);
+     else {
+         fileView->setViewMode(KFileView::All);
+     }
+     if ( myMode & KFile::Files )
+	 fileView->setSelectionMode( KFile::Extended );
+     else
+	 fileView->setSelectionMode( KFile::Single );
 
     dir->listDirectory();
 
@@ -709,7 +703,7 @@ void KDirOperator::setMode(KFile::Mode m)
     myMode = m;
 
     dir->setDirOnlyMode( ( myMode == KFile::Directory ) );
-
+    
     // reset the view with the different mode
     setView( static_cast<KFile::FileView>(viewKind) );
 }
@@ -996,7 +990,11 @@ void KDirOperator::updateViewActions()
 {
     KFile::FileView fv = static_cast<KFile::FileView>( viewKind );
 
-    separateDirsAction->setChecked( KFile::isSeparateDirs( fv ));
+    bool separate = KFile::isSeparateDirs( fv ) && 
+                    myMode & KFile::Directory == 0 &&
+		    myMode & KFile::PreviewContents == 0 &&
+                    myMode & KFile::PreviewInfo == 0;
+    separateDirsAction->setChecked( separate );
 
     shortAction->setChecked( KFile::isSimpleView( fv ));
     detailedAction->setChecked( KFile::isDetailView( fv ));
@@ -1159,6 +1157,14 @@ void KDirOperator::slotIOFinished()
 
 KProgress * KDirOperator::progressBar() const {
     return progress;
+}
+
+void KDirOperator::clearHistory()
+{
+    backStack.clear();
+    backAction->setEnabled( false );
+    forwardStack.clear();
+    forwardAction->setEnabled( false );
 }
 
 #include "kdiroperator.moc"

@@ -91,16 +91,26 @@ int main(int argc, char **argv)
 			QString::fromLatin1("*|All files\n"
 					    "*.lo *.o *.la|All libtool files"),
 			0, 0, true);
-	dlg.setMode( KFile::Files );
-    dlg.setSelection(QString::fromLatin1("kfiledialog.cpp"));
+	dlg.setMode( (KFile::Mode) (KFile::Files) );
+	dlg.setSelection(QString::fromLatin1("kfiledialog.cpp"));
 	if ( dlg.exec() == QDialog::Accepted ) {
 	    KURL::List list = dlg.selectedURLs();
 	    KURL::List::ConstIterator it = list.begin();
+        qDebug("*** selectedURLs(): ");
 	    while ( it != list.end() ) {
 		name1 = (*it).url();
-		kdDebug() << "Selected URL: " << name1 << endl;
+		qDebug("  -> %s", name1.latin1());
 		++it;
-	    }
+        }
+qDebug("*** selectedFile: %s", dlg.selectedFile().latin1());
+qDebug("*** selectedURL: %s", dlg.selectedURL().url().latin1());
+qDebug("*** selectedFiles: ");
+QStringList l = dlg.selectedFiles();
+QStringList::Iterator it2 = l.begin();
+while ( it2 != l.end() ) {
+  qDebug("  -> %s", (*it2).latin1());
+  ++it2;
+}
 	}
     }
 
