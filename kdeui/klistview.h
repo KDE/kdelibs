@@ -250,6 +250,18 @@ public:
    * Returns whether the last column is set to fit the available width.
    */
   bool fullWidth() const;
+  /**
+   * Reimplemented for full width support
+   */
+  virtual int addColumn(const QString& label, int width = -1);
+  /**
+   * Reimplemented for full width support
+   */
+  virtual int addColumn(const QIconSet& iconset, const QString& label, int width = -1);
+  /**
+   * Reimplemented for full width support
+   */
+  virtual void removeColumn(int index);
 
   /**
    * sets the alternate background background color.
