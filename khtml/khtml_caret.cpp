@@ -216,6 +216,7 @@ InlineBoxIterator& InlineBoxIterator::operator --()
 
 
 // code copied from khtml_part.cpp
+// ### please, use DOM::Range before you rewrite the functionality!
 #ifndef KDE_USE_FINAL
 /** Determines whether @p start_sp appears before @p end_sp in document order
  */

@@ -125,7 +125,7 @@ private slots:
   void slotSaveLinkAs();
   void slotSaveImageAs();
   void slotCopyLinkLocation();
-    void slotSendImage();
+  void slotSendImage();
   void slotStopAnimations();
   void slotCopyImageLocation();
   void slotViewImage();
