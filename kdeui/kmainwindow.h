@@ -47,7 +47,7 @@ class KMainWindowPrivate;
  * It manages the geometry for all its children, including your
  * main widget.
  *
- * Normally, you will inherit from KMainWindow (known also as KTMW),
+ * Normally, you will inherit from KMainWindow,
  * then construct (or use some existing) widget as
  * your main view. You can set only one main view.
  *
@@ -100,7 +100,7 @@ public:
     /**
      * Construct a main window.
      *
-     * @param the widget parent, usually 0 but may also be the window
+     * @param parent The widget parent. This is usually 0 but it may also be the window
      * group leader. In that case, the KMainWindow becomes sort of a
      * secondary window.
      *
@@ -110,14 +110,14 @@ public:
      * such a name for you. So simply never pass anything else ;-)
      *
      * @param f Specify the widget flags. The default is
-     * WType_TopLevel and WDestructiveClose.  TopLeve indicates that a
-     * main window is a toplevel window, regardless whether it has a
+     * WType_TopLevel and WDestructiveClose.  TopLevel indicates that a
+     * main window is a toplevel window, regardless of whether it has a
      * parent or not. DestructiveClose indicates that a main window is
      * automatically destroyed when its window is closed. Pass 0 if
      * you do not want this behaviour.
      *
      * KMainWindows must be created on the heap with 'new', like:
-     *  <pre> KMainWindow *ktmw = new KMainWindow (...</pre>
+     *  <pre> KMainWindow *kmw = new KMainWindow (...</pre>
      **/
     KMainWindow( QWidget* parent = 0, const char *name = 0, WFlags f = WType_TopLevel | WDestructiveClose );
 
@@ -130,7 +130,9 @@ public:
     virtual ~KMainWindow();
 
     /**
-     * Retrieve the standard help menu which contains entires for the
+     * Retrieve the standard help menu.
+     *
+     * It contains entires for the
      * help system (activated by F1), an optional "What's This?" entry
      * (activated by Shift F1), an application specific dialog box,
      * and an "About KDE" dialog box.
@@ -155,13 +157,15 @@ public:
 			  bool showWhatsThis = TRUE );
 
     /**
-     * Retrieve the standard help menu which contains entires for the
+     * Retrieve the standard help menu.
+     *
+     * It contains entires for the
      * help system (activated by F1), an optional "What's This?" entry
      * (activated by Shift F1), an application specific dialog box,
      * and an "About KDE" dialog box. You must create the application
      * specific dialog box yourself. When the "About application"
-     * menu entry is activated, a signal will trigger the @ref
-     * showAboutApplication slot. See @ref showAboutApplication for more
+     * menu entry is activated, a signal will trigger the 
+     * @ref showAboutApplication slot. See @ref showAboutApplication for more
      * information.
      *
      * Example (adding a help menu to your application):
@@ -169,7 +173,7 @@ public:
      * menuBar()->insertItem( i18n("&Help"), customHelpMenu() );
      * </pre>
      *
-     * @param showWhatsThis Set this to false if you do not want to include
+     * @param showWhatsThis Set this to @p false if you do not want to include
      *        the "What's This" menu entry.
      *
      * @return A standard help menu.
@@ -227,10 +231,10 @@ public:
     static bool canBeRestored( int number );
 
     /**
-     * Retrieve the @ref className() of the @p number th toplevel window which
+     * Retrieve the @ref className() of the @p number of the toplevel window which
      * should be restored.
      *
-     *  This is only useful if you application uses
+     *  This is only useful if your application uses
      * different kinds of toplevel windows.
      */
     static const QString classNameOfToplevel( int number );
@@ -238,17 +242,19 @@ public:
     /**
      * Restore the session specified by @p number.
      *
-     * Return @p false if this
+     * Returns @p false if this
      * fails, otherwise returns @p true and shows the window.
      * You should call @ref canBeRestored() first.
-     * If @p show is true (default), this widget will be show()n automatically.
+     * If @p show is true (default), this widget will be shown automatically.
      */
     bool restore( int number, bool show = TRUE );
 
     virtual KXMLGUIFactory *guiFactory();
 
     /**
-     * Create a GUI given a local XML file.  If @ref #xmlfile is NULL,
+     * Create a GUI given a local XML file.  
+     *
+     * If @ref xmlfile is NULL,
      * then it will try to construct a local XML filename like
      * appnameui.rc where 'appname' is your app's name.  If that file
      * does not exist, then the XML UI code will only use the global
@@ -262,14 +268,15 @@ public:
     void createGUI( const QString &xmlfile = QString::null, bool _conserveMemory = TRUE );
 
     /**
-     * enables the build of a standard help menu when calling createGUI().
-     * The default behaviour is to build one, you must call this function
+     * Enables the build of a standard help menu when calling createGUI().
+     *
+     * The default behavior is to build one, you must call this function
      * to disable it
      */
     void setHelpMenuEnabled(bool showHelpMenu = true);
 
     /**
-     * return @p true when the help menu is enabled
+     * Return @p true when the help menu is enabled
      */
     bool isHelpMenuEnabled();
 
@@ -289,7 +296,7 @@ public:
     KStatusBar *statusBar();
 
     /**
-     * List of members of KMainWindow class
+     * List of members of KMainWindow class.
      */
     static QList<KMainWindow>* memberList;
 
@@ -301,7 +308,7 @@ public:
      * @param name The internal name of the toolbar. If no name is
      *             specified "mainToolBar" is assumed.
      *
-     * @return A pointer to the toolbar or 0L if it doesn't exist
+     * @return A pointer to the toolbar or @p 0L if it doesn't exist
      **/
     KToolBar *toolBar( const char *name=0 );
 
@@ -314,7 +321,7 @@ public:
 
     /**
      * Read settings for statusbar, menubar and toolbar from their respective
-     * groups in the config file @p and apply them.
+     * groups in the config file and apply them.
      *
      * @param config Config file to read the settings from.
      * @param groupName For internal use only.
@@ -334,7 +341,7 @@ public slots:
     /**
      * Makes a KDE compliant caption.
      *
-     * @param caption Your caption. DO NOT include the application name
+     * @param caption Your caption. @em Do @em notx include the application name
      * in this string. It will be added automatically according to the KDE
      * standard.
      */
@@ -342,16 +349,16 @@ public slots:
     /**
      * Makes a KDE compliant caption.
      *
-     * @param caption Your caption. DO NOT include the application name
+     * @param caption Your caption. @em Do @em not include the application name
      * in this string. It will be added automatically according to the KDE
      * standard.
-     * @param modified Whether the document is modified. This displays
+     * @param modified Specify whether the document is modified. This displays
      * an additionnal sign in the title bar, usually "**".
      */
     virtual void setCaption( const QString &caption, bool modified );
 
     /**
-     * Makes a plain caption without any modifications.
+     * Make a plain caption without any modifications.
      *
      * @param caption Your caption. This is the string that will be
      * displayed in the window title.
@@ -359,12 +366,14 @@ public slots:
     virtual void setPlainCaption( const QString &caption );
 
     /**
-     * Opens the help page for the application. The application name is
+     * Open the help page for the application.
+     *
+     *  The application name is
      * used as a key to determine what to display and the system will attempt
      * to open <appName>/index.html.
      *
      * This method is intended for use by a help button in the toolbar or
-     * components outside the regular help menu. Use @ref helpMenu when you
+     * components outside the regular help menu. Use @ref helpMenu() when you
      * want to provide access to the help system from the help menu.
      *
      * Example (adding a help button to the first toolbar):
@@ -385,9 +394,9 @@ protected:
     /**
      * Reimplemented to call the queryClose() and queryExit() handlers.
      *
-     * We recommend to reimplement the handlers rather than closeEvent().
+     * We recommend that you reimplement the handlers rather than @ref closeEvent().
      * If you do it anyway, ensure to call the base implementation to keep
-     * queryExit() running.
+     * @ref queryExit() running.
      */
     virtual void closeEvent ( QCloseEvent *);
     /**
@@ -396,14 +405,14 @@ protected:
 
        It is not recommended to do any user interaction in this
        function other than indicating severe errors. Better ask the
-       user on queryClose() (see below).
+       user on @ref queryClose() (see below).
 
-       However, queryExit() is useful to do some final cleanups. A
+       However, @ref queryExit() is useful to do some final cleanups. A
        typical example would be to write configuration data back.
 
-       Note that the application may continue to run after queryExit()
+       Note that the application may continue to run after @ref queryExit()
        (the user may have cancelled a shutdown). The purpose of
-       queryExit() is purely to prepare the application (with possible
+       @ref queryExit() is purely to prepare the application (with possible
        user interaction) so it can safely be closed later (without
        user interaction).
 
@@ -411,13 +420,14 @@ protected:
        dial-up connection down), connect to the signal
        @ref KApplication::shutDown().
 
-       Default implementation returns true. Returning false will
+       Default implementation returns @p true. Returning @p false will
        cancel the exiting. In the latter case, the last window will
        remain visible.
 
-       @see #queryClose
+       @see queryClose()
      */
     virtual bool queryExit();
+
     /**
        Called before the window is closed, either by the user or indirectely by
        the session manager.
@@ -425,10 +435,10 @@ protected:
        The purpose of this function is to prepare the window in a way that it is
        safe to close it, i.e. without the user losing some data.
 
-       Default implementation returns true. Returning false will cancel
+       Default implementation returns true. Returning @p false will cancel
        the closing.
 
-       Reimplement this function to prevent the user from loosing data.
+       Reimplement this function to prevent the user from losing data.
        Example:
        <pre>
 
@@ -445,6 +455,7 @@ protected:
     </pre>
 
    @see queryExit()
+
     */
     virtual bool queryClose();
     /**
@@ -452,39 +463,43 @@ protected:
      * invoked when the session manager requests your application
      * to save its state.
      *
-     * You MUST NOT change the group of the kconfig object, since
-     * KMainWindow uses one group for each window.  Please
+     * You @em must @em not change the group of the @p kconfig object, since
+     * @ref KMainWindow uses one group for each window.  Please
      * reimplement these function in childclasses.
      *
-     * Note that no user interaction is allowed
+     * Note: Noo user interaction is allowed
      * in this function!
      *
      */
-    virtual void saveProperties( KConfig* ){};
+    virtual void saveProperties( KConfig *kconfig ){};
+
    /**
     * Read your instance-specific properties.
     */
     virtual void readProperties( KConfig* ){};
+
    /**
      * Save your application-wide properties. The function is
      * invoked when the session manager requests your application
      * to save its state.
      *
-     * The function is similar to saveProperties() but is only called for
+     * This function is similar to @ref saveProperties() but is only called for
      * the very first main window, regardless how many main window are open.
 
-    * Override it if you need to save other data about your documents on
-    * session end. sessionConfig is a config to which that data should be
-    * saved. Normally, you don't need this function. But if you want to save
-    * data about your documents that are not in opened windows you might need
-    * it.
-    *
-    * Default implementation does nothing.
-    */
+     * Override it if you need to save other data about your documents on
+     * session end. sessionConfig is a config to which that data should be
+     * saved. Normally, you don't need this function. But if you want to save
+     * data about your documents that are not in opened windows you might need
+     * it.
+     *
+     * Default implementation does nothing.
+     */
     virtual void saveGlobalProperties( KConfig* sessionConfig );
+
     /**
-     * The counter-part of saveGlobalProperties(). Reads the application
-     * specific properties in again.
+     * The counterpart of @ref saveGlobalProperties(). 
+     *
+     * Read the application-specific properties in again.
      */
     virtual void readGlobalProperties( KConfig* sessionConfig );
     void savePropertiesInternal( KConfig*, int );
@@ -493,9 +508,11 @@ protected:
 protected slots:
 
    /**
-    * This slot does nothing. It must be reimplemented if you want
+    * This slot does nothing.
+    *
+    * It must be reimplemented if you want
     * to use a custom About Application dialog box. This slot is
-    * connected to the "About Application" entry in the menu returned
+    * connected to the About Application entry in the menu returned
     * by @ref customHelpMenu.
     *
     * Example:
