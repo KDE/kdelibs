@@ -109,6 +109,10 @@ class KFloatValidator : public QValidator {
      */
     KFloatValidator ( double bottom, double top, QWidget * parent, const char * name = 0 );
     /**
+     * Constructor.  Sets the validator to be locale aware if @p localeAware is true.
+     */
+    KFloatValidator ( double bottom, double top, bool localeAware, QWidget * parent, const char * name = 0 );
+    /**
      * Destructs the validator.
      */
     virtual ~KFloatValidator ();

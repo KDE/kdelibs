@@ -174,6 +174,15 @@ KFloatValidator::KFloatValidator ( double bottom, double top, QWidget * parent, 
     _max = top;
 }
 
+KFloatValidator::KFloatValidator ( double bottom, double top, bool localeAware, QWidget * parent, const char * name )
+  : QValidator(parent, name)
+{
+    d = new KFloatValidatorPrivate;
+    d->acceptLocalizedNumbers = localeAware;
+    _min = bottom;
+    _max = top;
+}
+
 KFloatValidator::~KFloatValidator ()
 {
      delete d;
