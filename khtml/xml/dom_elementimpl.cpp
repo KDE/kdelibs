@@ -128,8 +128,12 @@ DOMString AttrImpl::nodeValue() const
 DOMString AttrImpl::name() const
 {
     DOMString n = getDocument()->getName(AttributeId, m_attrId);
+
+    // compat mode always return attribute names in lowercase.
+    // that's not formally in the specification, but common 
+    // practice - a w3c erratum to DOM L2 is pending.
     if (m_htmlCompat)
-        n = n.upper();
+        n = n.lower();
 
     if (m_prefix && m_prefix->l)
         return DOMString(m_prefix) + ":" + n;

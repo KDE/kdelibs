@@ -1,3 +1,9 @@
+2004-01-29  Germain Garand  <germain@ebooksfrance.org>
+
+        * xml/dom_elementimpl.cpp (name): return attribute names in lowercase
+	in compatibility mode. Solves contradiction between DOM L2/L3. Erratum
+	to DOM L2 is pending, thanks to David Faure. 
+
 2004-01-29  David Faure  <faure@kde.org>
 
 	* ecma/kjs_window.cpp (get): update frame sizes before returning value for
