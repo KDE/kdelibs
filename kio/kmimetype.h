@@ -136,12 +136,18 @@ public:
                                int _force_size = 0, int _state = 0, QString * _path = 0L );
 
   /**
+   * @return The desriptive comment associated with the MIME type.
+   */
+  QString comment() const { return m_strComment; }
+
+  /**
    * The arguments are unused, but provided so that @ref KMimeType derived classes
    * can use them.
    *
    * @return The descriptive comment associated with the MIME type, if any.
    */
   virtual QString comment( const QString&, bool ) const { return m_strComment; }
+
   /**
    * This function differs from the above only in that a @ref KURL may be
    * provided instead of a @ref QString for convenience.
