@@ -19,7 +19,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id: $
+ * $Id$
  */
 
 #include "html_objectimpl.h"
@@ -97,7 +97,7 @@ void HTMLAppletElementImpl::parseAttribute(Attribute *attr)
     }
 }
 
-void HTMLAppletElementImpl::layout( bool deep )
+void HTMLAppletElementImpl::layout( bool /*deep*/ )
 {
 
     if(!applet || layouted()) return;
@@ -209,12 +209,14 @@ ushort HTMLObjectElementImpl::id() const
     return ID_OBJECT;
 }
 
-HTMLFormElement HTMLObjectElementImpl::form() const
+HTMLFormElementImpl *HTMLObjectElementImpl::form() const
 {
+  return 0;
 }
 
 long HTMLObjectElementImpl::tabIndex() const
 {
+  return 0;
 }
 
 void HTMLObjectElementImpl::setTabIndex( long  )

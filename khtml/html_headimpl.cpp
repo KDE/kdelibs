@@ -102,8 +102,10 @@ ushort HTMLIsIndexElementImpl::id() const
     return ID_ISINDEX;
 }
 
-HTMLFormElement HTMLIsIndexElementImpl::form() const
+HTMLFormElementImpl *HTMLIsIndexElementImpl::form() const
 {
+  // ###
+  return 0;
 }
 
 // -------------------------------------------------------------------------
@@ -128,6 +130,8 @@ ushort HTMLLinkElementImpl::id() const
 
 bool HTMLLinkElementImpl::disabled() const
 {
+  // ###
+  return true;
 }
 
 void HTMLLinkElementImpl::setDisabled( bool )
@@ -176,6 +180,8 @@ ushort HTMLScriptElementImpl::id() const
 
 bool HTMLScriptElementImpl::defer() const
 {
+  // ###
+  return false;
 }
 
 void HTMLScriptElementImpl::setDefer( bool )
@@ -204,6 +210,8 @@ ushort HTMLStyleElementImpl::id() const
 
 bool HTMLStyleElementImpl::disabled() const
 {
+  // ###
+  return true;
 }
 
 void HTMLStyleElementImpl::setDisabled( bool )

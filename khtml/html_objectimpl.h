@@ -25,7 +25,6 @@
 #define HTML_OBJECTIMPL_H
 
 #include "html_elementimpl.h"
-#include "html_form.h"
 
 class KHTMLWidget;
 class KJavaAppletWidget;
@@ -34,6 +33,8 @@ using namespace DOM;
 
 // -------------------------------------------------------------------------
 namespace DOM {
+
+class HTMLFormElementImpl;
 
 class HTMLAppletElementImpl : public HTMLPositionedElementImpl
 {
@@ -84,7 +85,7 @@ public:
     virtual tagStatus startTag() { return OBJECTStartTag; }
     virtual tagStatus endTag() { return OBJECTEndTag; }
 
-    HTMLFormElement form() const;
+    HTMLFormElementImpl *form() const;
 
     long tabIndex() const;
     void setTabIndex( long );

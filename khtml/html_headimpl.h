@@ -32,7 +32,7 @@ class KHTMLWidget;
 namespace DOM {
 
 class DOMString;
-class HTMLFormElement;
+class HTMLFormElementImpl;
 
 class HTMLBaseElementImpl : public HTMLElementImpl
 {
@@ -69,7 +69,7 @@ public:
 
     virtual tagStatus startTag() { return ISINDEXStartTag; }
     virtual tagStatus endTag() { return ISINDEXEndTag; }
-    HTMLFormElement form() const;
+    HTMLFormElementImpl *form() const;
 };
 
 // -------------------------------------------------------------------------

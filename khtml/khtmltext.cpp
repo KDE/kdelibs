@@ -23,7 +23,7 @@
 #include "khtmltext.h"
 #include "dom_stringimpl.h"
 
-void TextSlave::print( QPainter *p, int _x, int _y, int _w, int _h, 
+void TextSlave::print( QPainter *p, int /*_x*/, int _y, int /*_w*/, int _h, 
 		       int _tx, int _ty)
 {
     if((_ty + y - ascent > _y + _h) || (_ty + y + descent < _y)) return;

@@ -415,7 +415,7 @@ DOMString HTMLScriptElement::event() const
     return 0;
 }
 
-void HTMLScriptElement::setEvent( const DOMString &value )
+void HTMLScriptElement::setEvent( const DOMString &/*value*/ )
 {
     // DOM Level 1 says: reserved for future use...
 }

@@ -522,7 +522,8 @@ void HTMLButtonElementImpl::attach(KHTMLWidget *_view)
     if(w && _disabled) w->setEnabled(false);
 }
 
-void HTMLButtonElementImpl::layout( bool deep )
+// ### honour the deep flag, and layout contents into the button
+void HTMLButtonElementImpl::layout( bool /*deep*/ )
 {
     if(!w) return;
 

@@ -631,7 +631,7 @@ bool HTMLFrameSetElementImpl::mouseEvent( int _x, int _y, int button, MouseEvent
 	
 	hSplit = -1;
 	vSplit = -1;
-	bool resizePossible = true;
+	//bool resizePossible = true;
 
 	// check if we're over a horizontal or vertical boundary
 	int pos = colWidth[0];
@@ -707,6 +707,7 @@ bool HTMLFrameSetElementImpl::mouseEvent( int _x, int _y, int button, MouseEvent
 	}
 	positionFrames(true);
     }
+    return true;
 }
 // -------------------------------------------------------------------------
 

@@ -503,8 +503,6 @@ unsigned long NodeListImpl::recursiveLength(NodeImpl *start) const
 
 NodeImpl *NodeListImpl::recursiveItem ( NodeImpl *start, unsigned long &offset ) const
 {
-    unsigned long len = 0;
-
     for(NodeImpl *n = start->firstChild(); n != 0; n = n->nextSibling()) {
 	if ( n->nodeType() == Node::ELEMENT_NODE ) {
 	    if (nodeMatches(n))
@@ -520,8 +518,9 @@ NodeImpl *NodeListImpl::recursiveItem ( NodeImpl *start, unsigned long &offset )
     return 0; // no matching node in this subtree
 }
 
-bool NodeListImpl::nodeMatches( NodeImpl *testNode ) const
+bool NodeListImpl::nodeMatches( NodeImpl */*testNode*/ ) const
 {
+  // ###
     return false;
 }
 

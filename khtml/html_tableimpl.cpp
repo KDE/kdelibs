@@ -553,7 +553,7 @@ void HTMLTableElementImpl::addColumns( int num )
     {
     	colInfos[c]->resize(newCols);
     }
-    for ( unsigned int c = totalCols; c < newCols; c++ )
+    for ( unsigned int c = totalCols; (int)c < newCols; c++ )
     {
     	colInfos.insert(c, new ColInfoLine(newCols-c+1));
     }
@@ -854,7 +854,7 @@ void HTMLTableElementImpl::calcColMinMax()
 
     // PHASE 2, calculate simple minimums and maximums
 
-    for ( unsigned int s=0;  s<maxColSpan ; ++s)
+    for ( unsigned int s=0;  (int)s<maxColSpan ; ++s)
     {	
     	ColInfoLine* spanCols = colInfos[s];
 
@@ -898,7 +898,7 @@ void HTMLTableElementImpl::calcColMinMax()
     minWidth=border + border + spacing;
     maxWidth=border + border + spacing;
 
-    for(int i = 0; i < totalCols; i++)
+    for(int i = 0; i < (int)totalCols; i++)
     {
     	minWidth += colMinWidth[i] + spacing;
 	maxWidth += colMaxWidth[i] + spacing;
@@ -981,7 +981,7 @@ void HTMLTableElementImpl::calcColMinMax()
 
     // PHASE 4, calculate maximums for percent and relative columns
 
-    for ( unsigned int s=0;  s<maxColSpan ; ++s)
+    for ( unsigned int s=0;  (int)s<maxColSpan ; ++s)
     {	
     	ColInfoLine* spanCols = colInfos[s];
 
@@ -1010,7 +1010,7 @@ void HTMLTableElementImpl::calcColMinMax()
     {
         maxWidth=border + border + spacing;
 
-    	for(int i = 0; i < totalCols; i++)
+    	for(int i = 0; i < (int)totalCols; i++)
 	    maxWidth += colMaxWidth[i] + spacing;
     }
     
@@ -1175,7 +1175,7 @@ int HTMLTableElementImpl::distributeWidth(int distrib, LengthType type, int type
 	    actColWidth[c]+=delta;		
 	    tdis-=delta;
 	}
-	if (++c==totalCols)
+	if (++c == (int)totalCols)
 	{
 	    c=0;
 	    if (olddis==tdis)
@@ -1210,7 +1210,7 @@ int HTMLTableElementImpl::distributeRest(int distrib, LengthType type, int divid
 	    actColWidth[c] += delta;
 	    tdis -= delta;
 	}
-	if (++c==totalCols)
+	if (++c == (int)totalCols)
 	{
 	    c=0;
 	    if (olddis==tdis)
@@ -1264,7 +1264,7 @@ void HTMLTableElementImpl::calcRowHeights()
 
     for ( r = 0; r < totalRows; r++ )
     {
-    	int oldheight = rowHeights[r+1] - rowHeights[r];
+      //int oldheight = rowHeights[r+1] - rowHeights[r];
 	rowHeights[r+1] = 0;
 	
 	int baseline=0;
@@ -2055,7 +2055,7 @@ void HTMLTableCellElementImpl::print(QPainter *p, int _x, int _y,
 					int _w, int _h,
 					int _tx, int _ty)
 {
-    int padding = table->cellPadding();
+  //int padding = table->cellPadding();
 
     int _ascent = parentNode()->getAscent();
 

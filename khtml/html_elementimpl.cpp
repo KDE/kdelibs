@@ -1472,7 +1472,7 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
 	    endPos++;
 	    assert(endNode.current()->id() == ID_TEXT);
 	    TextImpl *t = static_cast<TextImpl *>(endNode.current());
-	    if(endPos > t->string()->l)
+	    if(endPos > (int)t->string()->l)
 	    {
 		endPos = 0;
 		++endNode;

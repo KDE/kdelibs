@@ -544,7 +544,7 @@ void KHTMLWidget::slotRedirection( int /*_id*/, const char *_url )
   m_strWorkingURL = _url;
 }
 
-void KHTMLWidget::slotData( int _id, const char *_p, int _len )
+void KHTMLWidget::slotData( int /*_id*/, const char *_p, int _len )
 {
     //if(_id != m_jobId) return; // the data is still from the previous page.
 
@@ -795,10 +795,10 @@ void KHTMLWidget::urlSelected( const QString &_url, int _button, const QString &
 void KHTMLWidget::slotFormSubmitted( const QString &_method, const QString &_url,
 				     const char *_data, const QString &_target )
 {
-    // ### add target!!!
-    // ### add baseURL and baseTarget!
+  QString target = _target;
+  if(target.isEmpty()) target = _baseTarget;
 
-    QString url = completeURL( _url );
+  QString url = completeURL( _url, target );
 
   KURL u( _url );
   if ( u.isMalformed() )
