@@ -40,8 +40,16 @@
 		     ismap
 		     usemap
 		     border)))
-    (make empty-element gi: "IMG"
-	  attributes: img-attr)))
+    (make sequence
+      (make empty-element gi: "IMG"
+	    attributes: (list '("BORDER" "0") '("CLASS" "nexttoclickable")
+			      '("ALT" "Clickable map") ; to be localised if accepted!
+			      (list "SRC"
+				    (string-append %kde-doc-common-path%
+						   "question"
+						   %graphic-default-extension%))))
+      (make empty-element gi: "IMG"
+	    attributes: img-attr))))
 
 (define (make-html-area area)
   (let* ((shape  (attribute-string (normalize "otherunits") area))
