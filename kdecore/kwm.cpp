@@ -249,7 +249,7 @@ void KWM::enableSessionManagement(Window w){
     Atom *pn = new Atom[n+1];
     for (i=0; i<n; i++)
       pn[i] = p[i];
-    p[i] = a;
+    pn[i] = a;
     XSetWMProtocols(qt_xdisplay(), w, pn, n+1);
     if (n>0)
       XFree(p);
