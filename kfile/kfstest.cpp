@@ -84,7 +84,7 @@ int main(int argc, char **argv)
 	name1 = KFileDialog::getOpenFileURL(0, 
 					   "*.cpp|C++-Files (*.cpp)\n"
 					   "*.h|Header-Files (*.h)\n"
-					   "*.o *.a|Object-Files");
+					   "*.o *.a *.lo *.la|Object-Files");
 	break;
     case Preselect:
 	name1 = KFileDialog::getOpenFileURL("/text.txt");

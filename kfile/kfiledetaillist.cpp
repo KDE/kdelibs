@@ -25,19 +25,28 @@
 #include "qkeycode.h"
 #include <kapp.h>
 
-KFileDetailList::KFileDetailList(bool s, QDir::SortSpec sorting, QWidget *parent, const char *name)
+KFileDetailList::KFileDetailList(bool s, QDir::SortSpec sorting, 
+				 QWidget *parent, const char *name)
     : KTabListBox(parent, name, 7), KFileInfoContents(s,sorting)
 {
     QWidget::setFocusPolicy(QWidget::StrongFocus);
     setSeparator('\t');
-    setColumn(0, "", file_pixmap->width() + 4, KTabListBox::PixmapColumn);
-    setColumn(1, i18n("Name"), 100);
-    setColumn(2, i18n("Size"), 50);
-    setColumn(3, i18n("Permissions"), 60);
-    setColumn(4, i18n("Date"), 50);
-    setColumn(5, i18n("Owner"), 70);
-    setColumn(6, i18n("Group"), 70);
-
+    setColumn(0, "", file_pixmap->width() + 10, KTabListBox::PixmapColumn);
+    QFontMetrics fm = fontMetrics();
+    QString text = i18n("Name");
+    setColumn(1, text, QMAX(fm.width(text + "_"), 150));
+    text = i18n("Size");
+    setColumn(2, text, QMAX(fm.width(text + "_"), 50));
+    text = i18n("Permissions");
+    setColumn(3, text, QMAX(fm.width(text + "_"), 80));
+    text = i18n("Date");
+    int _width = QMAX(fm.width(text + "_"), 50);
+    setColumn(4, text, QMAX(_width, fm.width(KFileInfo::dateTime(0) + "_")));
+    text = i18n("Owner");
+    setColumn(5, text, QMAX(fm.width(text + "_"), 70));
+    text = i18n("Group");
+    setColumn(6, text, QMAX(fm.width(text + "_"), 70));
+    
     dict().insert("file", file_pixmap);
     dict().insert("l_file", locked_file);
     dict().insert("folder", folder_pixmap);

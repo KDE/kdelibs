@@ -26,6 +26,7 @@
 #include <qstring.h>
 #include <qdatetm.h>
 #include <qlist.h>
+#include <time.h>
 
 class QFileInfo;
 class KDirEntry;
@@ -117,7 +118,9 @@ public:
     
     // overriding QFileInfo's function
     bool isReadable() const ;
-    
+
+    static QString dateTime(time_t secsSince1Jan1970UTC);
+
 protected:
     void parsePermissions(const char *perms);
     void parsePermissions(uint perm);
