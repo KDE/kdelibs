@@ -38,19 +38,19 @@ class KBufferedIOPrivate;
  *
  * This class was intentionally written to resemble QSocket, because
  * @ref KExtendedSocket is a subclass of this one. This is so that applications
- * written using QSocket's buffering characteristics will be more easily
- * ported to the more powerful KExtendedSocket class.
+ * written using @ref QSocket's buffering characteristics will be more easily
+ * ported to the more powerful @ref KExtendedSocket class.
  *
  * KBufferedIO already provides a powerful internal buffering algorithm. However,
  * this does not include the I/O itself, which must be implemented in
  * derived classes. Thus, to implement a class that does some I/O, you must
- * override, in addition to the pure virtual QIODevice methods, these two:
- * @li closeNow
- * @li waitForMore
+ * override, in addition to the pure virtual @ref QIODevice methods, these two:
+ * @li @ref closeNow()
+ * @li @ref waitForMore()
  *
  * If your derived class reimplements the buffering algorithm, you must then
  * decide which buffering functions to override. For instance, you may want to
- * change the protected functions like @ref feedReadBuffer and @ref consumeReadBuffer.
+ * change the protected functions like @ref feedReadBuffer() and @ref consumeReadBuffer().
  *
  * @author Thiago Macieira <thiagom@mail.com>
  * @version $Id$
@@ -106,40 +106,43 @@ public:
    * the current size of the buffer will force it to flush first,
    * which can make this call blocking.
    *
-   * Returns true if setting both was ok. If false is returned, the
-   * buffers were left unchanged.
-   *
    * The default implementation does not support setting the buffer
    * sizes. You can only call this function with values -1 for "don't care"
    * or -2 for "unchanged"
    * @param rsize	the size of the read buffer
    * @param wsize	the size of the write buffer
+   * @return true if setting both was ok. If false is returned, the
+   * buffers were left unchanged.
    */
   virtual bool setBufferSize(int rsize, int wsize = -2);
 
   /**
    * Returns the number of bytes available for reading in the read buffer
+   * @return the number of bytes available for reading
    */
   virtual int bytesAvailable() const;
 
   /**
    * Waits for more data to be available and returns the amount of available data then.
-   * Returns -1 if we cannot wait (e.g., that doesn't make sense in this stream)
+   * 
    * @param msec	number of milliseconds to wait, -1 to wait forever
+   * @return -1 if we cannot wait (e.g., that doesn't make sense in this stream)
    */
   virtual int waitForMore(int msec) = 0;
 
   /**
    * Returns the number of bytes yet to write, still in the write buffer
+   * @return the number of unwritten bytes in the write buffer
    */
   virtual int bytesToWrite() const;
 
   /**
-   * Returns true when there is enough data in the buffer to read a line
+   * Checks whether there is enough data in the buffer to read a line
    *
    * The default implementation reads directly from @ref inBuf, so if your
    * implementation changes the meaning of that member, then you must override
    * this function.
+   * @return true when there is enough data in the buffer to read a line
    */
   virtual bool canReadLine() const;
 
@@ -158,9 +161,9 @@ public:
    * This function may want to try and read more data from the system
    * provided it won't block.
    *
-   * Returns the number of bytes actually copied.
    * @param data	the user buffer pointer, at least maxlen bytes long
    * @param maxlen	the maximum length to be peeked
+   * @return the number of bytes actually copied.
    */
   virtual int peekBlock(char *data, uint maxlen) = 0;
 
@@ -174,13 +177,14 @@ public:
    * accept unreading.
    * @param data	the data to be unread
    * @param size	the size of the data
+   * @return the number of bytes actually unread
    */
   virtual int unreadBlock(const char *data, uint len);
 
 signals:
   /**
    * This signal gets sent whenever bytes are written from the buffer.
-   * The @p nbytes parameter contains the number of bytes sent.
+   * @param nbytes the number of bytes sent.
    */
   void bytesWritten(int nbytes);
 
@@ -199,16 +203,21 @@ signals:
    * @li closedNow:	the stream was closed voluntarily by the user, by
    *			explicitly calling @ref closeNow, which means the
    *			write buffer's contents may have been discarded
+   * @param state the state (see function description)
    */
   void closed(int state);
 
 protected:
   /**
-   * For an explanation on how these buffers work, please refer to the comments
+   * For an explanation on how this buffer work, please refer to the comments
    * at the top of kbufferedio.cpp
    */
-
   QPtrList<QByteArray> inBuf;
+
+  /**
+   * For an explanation on how this buffer work, please refer to the comments
+   * at the top of kbufferedio.cpp
+   */
   QPtrList<QByteArray> outBuf;
 
   unsigned inBufIndex, outBufIndex;
@@ -217,11 +226,11 @@ protected:
    * Consumes data from the input buffer.
    * That is, this will copy the data stored in the input (read) buffer
    * into the given @p destbuffer, as much as @p nbytes.
-   * The return value is the real amount of data copied. If it is less than
-   * nbytes, then all the buffer was copied.
    * @param nbytes	the maximum amount of bytes to copy into the buffer
    * @param destbuffer	the destination buffer into which to copy the data
    * @param discard	whether to discard the copied data after the operation
+   * @return the real amount of data copied. If it is less than
+   * nbytes, then all the buffer was copied.
    */
   virtual unsigned consumeReadBuffer(unsigned nbytes, char *destbuffer, bool discard = true);
 
@@ -247,6 +256,7 @@ protected:
    * @param nbytes	the number of bytes in the buffer
    * @param buffer	the data that was read
    * @param atBeginning	whether to append or insert at the beginning
+   * @return the number of bytes that have been appended
    */
   virtual unsigned feedReadBuffer(unsigned nbytes, const char *buffer, bool atBeginning = false);
 
@@ -256,16 +266,19 @@ protected:
    * The data will be appended to the buffer.
    * @param nbytes	the number of bytes in the buffer
    * @param buffer	the data that is to be written
+   * @return the number of bytes that have been appended
    */
   virtual unsigned feedWriteBuffer(unsigned nbytes, const char *buffer);
 
   /**
    * Returns the number of bytes in the read buffer
+   * @return the size of the read buffer in bytes
    */
   virtual unsigned readBufferSize() const;
 
   /**
    * Returns the number of bytes in the write buffer
+   * @return the size of the write buffer in bytes
    */
   virtual unsigned writeBufferSize() const;
 
