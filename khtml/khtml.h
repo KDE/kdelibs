@@ -59,7 +59,7 @@ namespace khtml {
 };
 
 // JScript class
-class KJSWorld;
+class KJScript;
 
 
 /**
@@ -533,7 +533,7 @@ public:
     /**
      * @return the JavaScript engine, or 0 if JScript is disabled.
      */
-    KJSWorld *jScript();
+    KJScript *jScript();
 
     /**
      * Return the job id of the KIOJob responsible for loading the current
@@ -900,7 +900,7 @@ private:
     bool _javaEnabled;
     bool _jScriptEnabled;
 
-    KJSWorld *_jscript;
+    KJScript *_jscript;
 
     int _marginWidth;
     int _marginHeight;

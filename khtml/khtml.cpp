@@ -277,7 +277,7 @@ bool KHTMLWidget::jScriptEnabled() const
 void KHTMLWidget::executeScript(const QString &c)
 {
     if(!_jScriptEnabled) return;
-    if(!_jscript) _jscript = new KJSWorld(this);
+    if(!_jscript) _jscript = new KJScript(this);
     _jscript->evaluate((KJS::UnicodeChar*)c.unicode(), c.length());
 }
 
@@ -1624,10 +1624,10 @@ void KHTMLWidget::setBaseUrl(const QString &base)
   _baseURL = base;
 }
 
-KJSWorld *KHTMLWidget::jScript()
+KJScript *KHTMLWidget::jScript()
 {
     if(!_jScriptEnabled) return 0;
-    if(!_jscript) _jscript = new KJSWorld(this);
+    if(!_jscript) _jscript = new KJScript(this);
     return _jscript;
 }
 
