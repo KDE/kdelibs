@@ -215,8 +215,7 @@ public:
    * from misuse of the function since it first converts the given
    * data into Latin-1.  Additionally this conversion is very slow!
    */
-  static QString base64Encode( const QString& str ){
-    return base64Encode(QCString(str.latin1())); }
+  static QString base64Encode( const QString& str );
 
   /**
    * @deprecated.  Use @ref QCString base64Decode(const QCString&) instead!
@@ -226,8 +225,7 @@ public:
    * from misuse of the function since it first converts the given
    * data into Latin-1.  Additionally this conversion is very slow!
    */
-  static QString base64Decode( const QString& str ) {
-    return base64Decode(QCString(str.latin1())); }
+  static QString base64Decode( const QString& str );
 
   /**
    * @deprecated.  Use @ref QCString uuencode(const QCString&) instead!
@@ -237,8 +235,7 @@ public:
    * from misuse of the function since it first converts the given
    * data into Latin-1.  Additionally this conversion is very slow!
    */
-  static QString uuencode( const QString& str )  {
-    return uuencode(QCString(str.latin1())); }
+  static QString uuencode( const QString& str );
 
   /**
    * @deprecated.  Use @ref QCString uudecode(const QCString&) instead!
@@ -248,20 +245,17 @@ public:
    * from misuse of the function since it first converts the given
    * data into Latin-1.  Additionally this conversion is very slow!
    */
-  static QString uudecode( const QString& str )  {
-    return uudecode(QCString(str.latin1())); }
+  static QString uudecode( const QString& str );
 
   /**
    * @deprecated. See @ref base64Encode(const QString&) instead.
    */
-  static QString encodeString( const QString& data ) {
-    return base64Encode(data); }
+  static QString encodeString( const QString& data );
 
   /**
    * @deprecated. See @ref base64Decode(const QString&) instead.
    */
-  static QString decodeString( const QString& data ) {
-    return base64Decode(data); }
+  static QString decodeString( const QString& data );
 
 private:
   KCodecs();
