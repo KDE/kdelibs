@@ -5,40 +5,59 @@
 #include <qobject.h>
 #include <qstringlist.h>
 #include <qvariant.h>
+#include <qtimer.h>
+
+#include <qmap.h>
 
 #include <kurl.h>
 
 class QValidator;
 class KFileItem;
+class KFilePlugin;
+//template <class Key, class T> class QMap<Key,T>;
 
 /**
  * This is one item of the meta information about a file (see
  * @ref KFileMetaInfo).
  */
+
 class KFileMetaInfoItem
 {
 public:
+    class Data;
+    
+
     KFileMetaInfoItem( const QString& key, const QString& translatedKey,
                        const QVariant& value, bool editable = false,
                        const QString& prefix  = QString::null,
-                       const QString& postfix = QString::null );
+                       const QString& suffix = QString::null );
+
+    KFileMetaInfoItem( const KFileMetaInfoItem & item );
+    
+    const KFileMetaInfoItem& operator= (const KFileMetaInfoItem & item );
+
+    /**
+     * Default constructor. This creates an "invalid" item
+     */
+    KFileMetaInfoItem();
+
     virtual ~KFileMetaInfoItem();
 
     /**
      * @return the key of this item
      */
-    const QString& key() const                  { return m_key;           }
+    const QString& key() const;
 
     /**
      * @return a translation of the key for displaying to the user. If the
      * plugin provides translation to the key, it's also in the user's language
      */
-    const QString& translatedKey() const        { return m_translatedKey; }
+    const QString& translatedKey() const;
 
     /**
      * @return the value of the item.
      */
-    const QVariant& value() const               { return m_value;         }
+    const QVariant& value() const;
 
     /**
      * changes the value of the item
@@ -48,53 +67,54 @@ public:
     /**
      * convenience method. It does the same as value()->type()
      */
-    QVariant::Type type() const                 { return m_value.type();  }
+    QVariant::Type type() const;
 
     /**
      * @return true if the item's value can be changed, false if not
      */
-    bool isEditable() const                     { return m_editable;      }
+    bool isEditable() const;
 
     /**
-     * remove this item from the meta info of the file.
+     * remove this item from the meta info of the file. @ref remove() doesn't
+     * actually remove the item, but only mark it as removed until
+     * @ref KFileMetaInfo::applyChanges() is called
      */
     void remove();
 
     /**
-     * @return true if the item was removed, false if not
+     * @return true if the item was removed, false if not.
      */
     bool isRemoved() const;
     
     /**
-     * @return true if the item is "dirty"
+     * @return true if the item contains changes that have not yet been written
+     * back into the file. Removing an item counts as a change
      */
-    bool isModified() const                     { return m_dirty;         }
+    bool isModified() const;
 
     /**
-     * @return a translated prefix to be displayed before the value
-     * think of the $ in $30
+     * @return a translated prefix to be displayed before the value.
+     * Think e.g. of the $ in $30
      */
-    const QString& prefix()  const              { return m_prefix;        }
+    const QString& prefix() const;
 
     /**
-     * @return a translated postfix to be displayed after the value
-     * think of the kbps in 128kbps
+     * @return a translated suffix to be displayed after the value.
+     * Think of the kbps in 128kbps
      */
-    const QString& postfix() const              { return m_postfix;       }
+    const QString& suffix() const;
+    
+    /**
+     * @return true if the item is valid, i.e. if it contains data, false
+     * if it's invalid (created with the default constructor and not been
+     * assigned anything)
+     *
+     */
+    bool isValid() const;
 
 protected:
-    QString             m_key;
-    QString             m_translatedKey;
-
-    QString             m_prefix;
-    QString             m_postfix;
-
-    QVariant            m_value;
-
-    bool m_editable :1;
-    bool m_dirty    :1;
+    Data *d;
 };
-
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
@@ -104,11 +124,11 @@ protected:
  * This is the base class for objects that hold meta information about a file.
  * The information is kept in form of a system of key/value pairs. See also
  * @ref KFileMetaInfoItem.
- * This information is retrieved from the file through a plugin system. If yo
- * want to write your own plugin, you need to derive from two classes: this one
- * and @ref KFilePlugin.
- * There are basically two different kinds of meta information itmes: Fixed
- * ones that the plugin knows about (e.g. an mp3 id3v1 tag has a well defined
+ * This information is retrieved from the file through a plugin system, and
+ * this class is the main interface to it.
+ * If you want to write your own plugin, have a look at @ref KFilePlugin.
+ * There are basically two different kinds of meta information: Fixed ones
+ * that the plugin knows about (e.g. an mp3 id3v1 tag has a well defined
  * fixed list of fields), and variable keys that exist in mimetypes that
  * support their own key/value system (comments in png files are of this type).
  */
@@ -116,81 +136,238 @@ class KFileMetaInfo
 {
 public:
     /**
-     * The constructor. Never create KFileMetaInfo objects yourself. Use the
-     * @ref KFileMetaInfoProvider for this
+     * The constructor. 
+     *
+     * creating a KFileMetaInfo item through this will autoload the plugin
+     * belonging to the mimetype and try to get meta information about
+     * the specified file.
+     *
+     * If no info is available, you'll get an empty (not invalid) object.
+     *
+     *
+     *  @param path The file name. This must be the path to a local file.
+     *  @param mimeType The name of the file's mimetype. If ommited, the
+     *         mimetype is autodetected
+     *
      */
-    KFileMetaInfo( const QString& path );
-    virtual ~KFileMetaInfo();
+    KFileMetaInfo( const QString& path, const QString& mimeType = QString::null );
+
+    /**
+     * Default constructor. This will create an invalid object (see 
+     * @ref isValid().
+     */
+    KFileMetaInfo();
+    
+    /**
+     * Copy constructor
+     */
+    KFileMetaInfo( const KFileMetaInfo& original);
+    
+    ~KFileMetaInfo();
+
+    const KFileMetaInfo& operator= (const KFileMetaInfo& info );
 
     /**
      * @return the specified item
      */
-    virtual KFileMetaInfoItem * item( const QString& key ) const;
+    KFileMetaInfoItem & item( const QString& key ) const
+    { return d->items[key];}
 
     /**
-     * operator for convenience. It does the same as @ref item
+     * operator for convenience. It does the same as @ref item()
      */
-    KFileMetaInfoItem * operator[]( const QString& key ) const {
-        return item( key );
-    }
+    KFileMetaInfoItem & operator[]( const QString& key ) const
+    { return d->items[key]; }
 
     /**
-     * Convenience function. Returns the value of the named key.
+     * Convenience function. Returns the value of the specified key.
      * you can also use item(key)->value()
      */
-    QVariant value( const QString& key ) {
-        KFileMetaInfoItem *i = item( key );
-        if ( i )
-            return i->value();
-        return QVariant();
+    const QVariant value( const QString& key ) const
+    {
+        const KFileMetaInfoItem &i = item( key );
+        return i.value();
     }
 
     /**
      * @return The list of keys the plugin knows about. No variable keys.
      */
-    virtual QStringList supportedKeys() const = 0;
+    const QStringList supportedKeys() const
+    { return d->supportedKeys; }
 
    /**
     * @return all keys that the file has, but in preference order. The
     *         preference order is determined by the plugin's .desktop file.
+    *         Any key in the file that isn't specified in the .desktop will
+    *         be appended to the end
     */
-    virtual QStringList preferredKeys() const;
+    const QStringList preferredKeys() const;
 
    /**
     * @return true if the mimetype supports adding or removing arbitrary keys,
     * false if not.
     */
-    virtual bool supportsVariableKeys() const;
+    bool supportsVariableKeys() const
+    { return d->supportsVariableKeys; }
 
    /**
     * @return the type of the value for the specified key. You can use this to
-    * determine the type for new keys befor you add them.
+    * determine the type for new keys before you add them.
     */
-    virtual QVariant::Type type( const QString& key ) const = 0;
-    virtual KFileMetaInfoItem * addItem( const QString& key, 
-                                         const QVariant& value );
+//    const QVariant::Type type( const QString& key ) const;
+
+    KFileMetaInfoItem & addItem( const QString& key, const QVariant& value );
 
    /**
-    * This method writes all changes to the meta info back to the file.
+    * This method writes all pending changes to the meta info back to the file.
+    * If any items are marked as removed, they are really removed from the 
+    * list now
+    * @return true if successful, false if not
     */
-    virtual void applyChanges();
+    bool applyChanges();
 
     /**
      * Creates a validator for this item. Make sure to supply a proper parent
      * argument or delete the validator yourself.
      */
-    virtual QValidator * createValidator( const QString& key, QObject *parent, const char *name ) const;
+    QValidator * createValidator( const QString& key,
+                                  QObject *parent, const char *name = 0 ) const;
 
+    /**
+     * @return true if the item is valid, i.e. if actually represents the info
+     * about a file, false if the object is uninitialized
+     */
+    bool isValid()    { return d != &Data::null; }
+
+#ifdef GNUC_    
+#warning TODO: add a factory for appropriate widgets
+#endif
+//    QWidget* createWidget(const QWidget* parent, const char* name);
+    class Internal;
+    
 protected:
-    const QString& path() const { return m_path; }
+    /**
+     * @return a pointer to the plugin that belogs to this object's mimetype.
+     *         It will be auto-loaded if it's currently not loaded
+     **/
+    KFilePlugin * const plugin() const;
 
-    QDict<KFileMetaInfoItem> m_items;
+// shared data of a KFileMetaInfo
+    class Data : public QShared
+    {
+    public:
+        Data(const QString& path)
+            : QShared(),
+              path(path)
+        {}
 
-private:
-    QString m_path;
+        QString                           path;
+        QString                           mimetype;
+        QStringList                       supportedKeys;
+        QStringList                       preferredKeys;
+        bool                              supportsVariableKeys;
+        QMap<QString, KFileMetaInfoItem>  items;
+    
+        static Data null;
 
+    };
+
+    Data* d;
 };
 
+/**
+ * This class is used by @ref KFilePlugin internally to write data to the
+ * metainfo items. It basically is the same as @ref KFileMetaInfo, but
+ * contains additional functions that the plugins need to write the data into
+ * the object
+ **/
+#include <kdebug.h>
+class KFileMetaInfo::Internal : public KFileMetaInfo
+{
+public:
+    /**
+     * This is just the same as @ref KFileMetaInfo()
+     **/
+    Internal() : ::KFileMetaInfo() {}
+
+    /**
+     * Copy constructor to topy a @ref KFileMetaInfo object into a
+     * KFileMetaInfo::Internal
+     **/
+    Internal( ::KFileMetaInfo& info ) : ::KFileMetaInfo(info) {}
+    
+    /**
+     * The metainfo items are stored in a map internally. Normally, a 
+     * plugin doesn't need direct access to the map, but if it needs it,
+     * here's the function to get it.
+     *
+     * @return the map of @ref KFileMetaInfoItem objects
+     **/
+    QMap<QString, KFileMetaInfoItem>* map() const
+    {
+        return &d->items;
+    }
+    
+    /**
+     * set the list of keys that are supported by the plugin. If the info
+     * supports variable keys, all special keys the plugin knows about
+     * (e.g. common keys for which a translation is available) should be
+     * specified with this function.
+     **/
+    void setSupportedKeys(QStringList keys)
+    {
+        if (d==&Data::null) return;
+        d->supportedKeys = keys;
+    }
+
+    /**
+     * Specify the list of preferred keys. Most plugins just write the
+     * list they get on the constructor.
+     **/
+    void setPreferredKeys(QStringList keys)
+    {
+        if (d==&Data::null) return;
+        d->preferredKeys = keys;
+    }
+    
+    /**
+     * Specify if the object supports variable keys, i.e. arbitrary key/value
+     * pairs can be added
+     **/
+    void setSupportsVariableKeys(bool b   )
+    {
+        if (d==&Data::null) return;
+        d->supportsVariableKeys = b;
+    }
+    
+    /**
+     * Adds an item to the object. That's the most important function
+     * for the plugins.
+     *
+     * use it like this:
+     * @pre
+     *  info.insert(KFileMetaInfoItem("Bitrate", i18n("Bitrate"),
+     *                                QVariant(bitrate));
+     *
+     * @/pre
+     *
+     */
+    void insert( const KFileMetaInfoItem &item )
+    {
+        kdDebug(7033) << "insert\n";
+        if (d==&Data::null) return;
+        kdDebug(7033) << "insert really " << item.key() << endl;
+        d->items.insert( item.key(), item );
+        kdDebug(7033) << "inserted " << item.key() << endl;
+    }
+        
+    /**
+     * returns the path to the file that belongs to this object
+     */
+    const QString& path() const { return d->path; }
+    
+};
+  
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
@@ -198,79 +375,106 @@ private:
 
 /**
  * Baseclass for a meta info plugin. If you want to write your own plugin,
- * you need to derive from two classes: this one and @ref KFileMetaInfo.
- */
+ * you need to derive from this class. Also look at
+ * @ref KFileMetaInfo::Internal
+ *
+ * In your plugin, you need to create a factory for the KFilePlugin
+ *
+ * Example:
+ *  <pre>
+ * typedef KGenericFactory<KMyPlugin> MyFactory;
+ * K_EXPORT_COMPONENT_FACTORY(kfile_foo, MyFactory("kfile_foo"));
+ *
+ * and then just overwrite the @ref readInfo(), @ref writeInfo() and
+ * @ref createValidator() methods
+ *
+ **/
 class KFilePlugin : public QObject
 {
     Q_OBJECT
 
 public:
-    KFilePlugin( QObject *parent, const char *name, const QStringList& preferredItems );
+    KFilePlugin( QObject *parent, const char *name,
+                 const QStringList& preferredItems );
+
     virtual ~KFilePlugin();
 
-   /**
-    * @return If you want to write an own plugin, you just have to create a
-    *         new object of your @ref KFileMetaInfo derived class in this
-    *         function and return a pointer to it.
-    *         
-    *   KFileMetaInfo* KFooPlugin::createInfo( const QString& path )
-    *   {
-    *   return new KFooMetaInfo(path);
-    *   }
-    */
-    virtual KFileMetaInfo * createInfo( const QString& path ) = 0;
+    /**
+     * Read the info from the file in this method and insert it into the
+     * provided @ref KFileMetaInfo::Internal object. You can get the path to
+     * the file with info.path()
+     *
+     **/
+    virtual bool readInfo( KFileMetaInfo::Internal& info )               = 0;
 
+    /**
+     * Same as the above method, but for writing the info back to the file.
+     * If you don't have any writable keys, don't overwrite the method
+     **/
+    virtual bool writeInfo( const KFileMetaInfo::Internal& /*info*/ ) const 
+    {
+        return true;
+    }
+    
+    /**
+     * This method should create an appropriate validator for the specified
+     * item if it's editable or return a null pointer if not. If you don't
+     * have any editable items, you don't need to overwrite
+     **/
+    virtual QValidator* createValidator( const KFileMetaInfoItem& /*item*/,
+                                         QObject* /*parent*/,
+                                         const char* /*name*/ ) const
+    {
+        return 0;
+    }
+    
+    void setMimeType(const QString& mimeType) { m_mimetype = mimeType; }
+    QString mimeType() const                  { return m_mimetype; }
+
+protected:
+    QString       m_mimetype;
+    QStringList   m_preferred;
 };
-
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
 
 
 /**
- * Synchronous access to metadata of a local file. You can use this class
- * to get meta information about a file.
- * If you have a file, you can just do:
- *   info = @ref KFileMetaInfoProvider::self()->metaInfo( filename );
- * and you'll get a @ref KFileMetaInfo Object
- */
-class KFileMetaInfoProvider
+ * @Internal
+ *
+ * Synchronous access to metadata of a local file. Ususally, you don't want
+ * to use this class. Use @ref KFileMetaInfo directly.
+ **/
+class KFileMetaInfoProvider: QObject
 {
+  Q_OBJECT
 public:
-    static KFileMetaInfoProvider * self();
-    KFileMetaInfoProvider();
     virtual ~KFileMetaInfoProvider();
 
-  /**
-   *  Try to get meta information about a file.
-   *  @param path The file name. This must be the path to a local file.
-   *              The mimetype will be determined automatically.
-   *
-   *  @return a pointer to an object of the class @ref KFileMetaInfo that
-   *          contains the information about the file. It may also be a
-   *          null pointer if the file doesn't exist or if there is no meta
-   *          info available about the file.
-   */
-
-    KFileMetaInfo * metaInfo( const QString& path );
+    static KFileMetaInfoProvider * self();
 
   /**
-   *  This function does the same as the above one, but without the automatic
-   *  mimetype determination. Use this function if you already know the
-   *  mimetype.
-   *
-   *  @param path The file name. This must be the path to a local file.
-   *              The mimetype will be determined automatically.
-   *  @param mimeType The file's mimetype name.
-   *
-   *  @return a pointer to an object of the class @ref KFileMetaInfo that
-   *          contains the information about the file. It may also be a
-   *          null pointer if the file doesn't exist or if there is no meta
-   *          info available about the file.
-   */
-    KFileMetaInfo * metaInfo( const QString& path, const QString& mimeType );
+   *  Try to get meta information about a file. Use
+   *  @KFileMetaInfo::KFileMetaInfo(const QString&, const QString&) instead
+   **/
+   KFileMetaInfo metaInfo( const QString& path );
 
+  /**
+   *  Try to get meta information about a file. Use
+   *  @KFileMetaInfo::KFileMetaInfo(const QString&, const QString&) instead
+   **/
+    KFileMetaInfo metaInfo( const QString& path,
+                            const QString& mimeType );
+                            
+  /**
+   *  @return a pointer to the plugin that belongs to the specified mimetype
+   **/
+    KFilePlugin * plugin( const QString& mimeType );
+                           
 protected:
+    KFileMetaInfoProvider();
+
     QDict<KFilePlugin> m_plugins;
 
 private:
@@ -279,4 +483,3 @@ private:
 };
 
 #endif // KILEMETAINFO_H
-/*@}*/

@@ -48,7 +48,6 @@ class KFileItem::KFileItemPrivate
 public:
   KFileItemPrivate() {
     bMimeTypeKnown = false;
-    metaInfo = 0L;
     refresh();
   }
 
@@ -75,7 +74,7 @@ public:
   QString access;
   bool bMimeTypeKnown;
   QMap<const void*, void*> extra;
-  KFileMetaInfo *metaInfo;
+  KFileMetaInfo metaInfo;
 
   enum { Modification = 0, Access = 1, Creation = 2, NumFlags = 3 };
   time_t time[3];
@@ -565,24 +564,18 @@ QString KFileItem::getStatusBarInfo()
     return text;
 }
 
-QString KFileItem::getToolTipText()
+QString KFileItem::getToolTipText(int maxcount)
 {
   // we can return QString::null if no tool tip should be shown
-#ifdef _GNUC  
-#warning move that tool tip maxcount elsewhere (make it configurable?)
-#endif
-  const int maxcount = 6;
-
   QString tip;
-  KFileMetaInfo* info = 0L;
+  KFileMetaInfo info;
   
   if ( m_url.isLocalFile() ) 
   {
-    KFileMetaInfoProvider *prov = KFileMetaInfoProvider::self();
-    if ( !d->metaInfo )
+    if ( !d->metaInfo.isValid() )
     {
-      info = prov->metaInfo( m_url.path() );
-      d->metaInfo = info;
+        info = KFileMetaInfo( m_url.path() );
+        d->metaInfo = info;
     }
     else
       info = d->metaInfo;
@@ -594,53 +587,60 @@ QString KFileItem::getToolTipText()
          "<tr>"
           "<th colspan=2>"
            "<center>"
-            "<b>";
+            "<b>"
+             "<nobr>";
 
   // if we got no or empty info, show a default tip
-  if ( !info || (keys = info->preferredKeys()) .isEmpty() )
+  if ( !info.isValid() || (keys = info.preferredKeys()) .isEmpty() )
   {
     kdDebug() << "Found no meta info" << endl;
-    tip  += QStyleSheet::escape(m_url.fileName()) + "</center></b></th></tr>";
 
-    tip += "<tr><td>" + i18n("Type:") + "</td><td>";
+    tip += QStyleSheet::escape(m_url.fileName()) + 
+           
+           "</nobr></b></center></th></tr>";
+
+    tip += "<tr><td><nobr>" + i18n("Type:") + "</nobr></td><td><nobr>";
         
     QString type = QStyleSheet::escape(determineMimeType()->comment());
     if ( m_bLink )
-      tip += i18n("Link to %1").arg(type) + "</td></tr><tr><td>";
+      tip += i18n("Link to %1").arg(type) + "</nobr></td></tr><tr><td><nobr>";
     else
-      tip += type + "</td></tr><tr><td>";
+      tip += type + "</nobr></td></tr><tr><td><nobr>";
 
     if ( !S_ISDIR ( m_fileMode ) )
-      tip += i18n("Size:") + "</td><td>" + KIO::convertSize( size() ) +
-                              "</td></tr><tr><td>";
+      tip += i18n("Size:") + "</nobr></td><td><nobr>" +
+             KIO::convertSize( size() ) + "</nobr></td></tr><tr><td><nobr>";
 
-    tip += i18n("Modified:") + "</td><td>" +
-                timeString( KIO::UDS_MODIFICATION_TIME) + "</td></tr><tr><td>" +
-           i18n("Permissions:") + "</td><td>" + parsePermissions(m_permissions) +
-                "</td></tr></table></nobr>";
+    tip += i18n("Modified:") + "</nobr></td><td><nobr>" +
+           timeString( KIO::UDS_MODIFICATION_TIME) +
+           "</nobr></td></tr><tr><td><nobr>" +
+           i18n("Permissions:") + "</nobr></td><td><nobr>" +
+           parsePermissions(m_permissions) +
+           "</nobr></td></tr></table>";
   }
   else
   {
     // first the title in bold and centered
-    KFileMetaInfoItem *item;
+    KFileMetaInfoItem item;
     
     // if we don't find a title, show the file name instead
-    if (! (item = info->item("Title")) && ! (item = info->item("Name")))
+    if (! (item = info.item("Title")).isValid() &&
+        ! (item = info.item("Name")).isValid())
       tip += QStyleSheet::escape(m_url.fileName());
     else
-      tip += QStyleSheet::escape(item->value().toString());
+      tip += QStyleSheet::escape(item.value().toString());
       
-    tip += "</center></b></th></tr>";
+    tip += "</nobr></b></center></th></tr>";
     
     // now the rest
     QStringList::Iterator it = keys.begin();
-    for (int count = 0; count<=maxcount && it!=keys.end() ; ++it)
+    for (int count = 0; count<maxcount && it!=keys.end() ; ++it)
     {
-      item = info->item( *it );
-      if ( item && (item->key() != "Title") && (item->key() != "Name") )
+      item = info.item( *it );
+      if ( item.isValid() && (item.key() != "Title") && (item.key() != "Name") )
       {
         QString s;
-        const QVariant& value = item->value();
+        const QVariant& value = item.value();
         switch ( value.type() ) {
           case QVariant::Bool:
             s = value.toBool() ? i18n("Yes") : i18n("No");
@@ -669,18 +669,23 @@ QString KFileItem::getToolTipText()
         if ( !s.isEmpty() )
         {
           count++;
-          tip += "<tr><td>" +
-                 QStyleSheet::escape( item->translatedKey() ) + ":</td><td>" +
-                 item->prefix() +
+          tip += "<tr><td><nobr>" +
+                 QStyleSheet::escape( item.translatedKey() ) +
+                 ":</nobr></td><td><nobr>" +
+                 item.prefix() +
                  QStyleSheet::escape( s ) +
-                 item->postfix() +
-                 "</td></tr>";
+                 item.suffix() +
+                 "</nobr></td></tr>";
         }
 
       }
     }
     tip += "</table>";
   }
+  
+  kdDebug() << "making this the tool tip rich text:\n";
+  kdDebug() << tip;
+  
   return tip;
 }
 
@@ -802,12 +807,12 @@ QString KFileItem::timeString( unsigned int which ) const
     return KGlobal::locale()->formatDateTime( t );
 }
 
-void KFileItem::setMetaInfo( KFileMetaInfo *info )
+void KFileItem::setMetaInfo( const KFileMetaInfo & info )
 {
     d->metaInfo = info;
 }
 
-KFileMetaInfo * KFileItem::metaInfo() const
+const KFileMetaInfo & KFileItem::metaInfo() const
 {
     return d->metaInfo;
 }

@@ -261,11 +261,13 @@ public:
   QString getStatusBarInfo();
   
   /**
+   * @param maxcount the maximum number of entries shown
+   *
    * @return the string to be displayed in the tool tip when the mouse
    * is over this item. This may load a plugin to determine additional
    * information specific to the mimetype of the file
    */
-  QString getToolTipText();
+  QString getToolTipText(int maxcount = 6);
   
   /**
    * Returns true if files can be dropped over this item.
@@ -362,8 +364,8 @@ public:
    */
   virtual void removeExtraData( const void *key );
 
-  void setMetaInfo( KFileMetaInfo * info );
-  KFileMetaInfo * metaInfo() const;
+  void setMetaInfo( const KFileMetaInfo & info );
+  const KFileMetaInfo & metaInfo() const;
 
   /**
    * Somewhat like an assignment operator, but more explicit.
