@@ -1423,7 +1423,7 @@ bool KListView::dropHighlighter() const
 
 bool KListView::showTooltip(QListViewItem *item, const QPoint &, int column) const
 {
-        return ((tooltip(item, column).length()>0) && (column==tooltipColumn()));
+        return ((column==tooltipColumn()) && !tooltip(item, column).isEmpty());
 }
 
 QString KListView::tooltip(QListViewItem *item, int column) const
