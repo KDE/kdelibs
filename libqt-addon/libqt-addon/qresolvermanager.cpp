@@ -28,9 +28,7 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <limits.h>
-#ifndef NDEBUG
-# include <unistd.h>
-#endif
+#include <unistd.h>		// only needed for pid_t
 
 #ifdef HAVE_RES_INIT
 # include <sys/stat.h>
@@ -209,9 +207,7 @@ public:
 static const int maxThreadWaitTime = 20000; // 20 seconds
 static const int maxThreads = 5;
 
-#ifndef NDEBUG
-static pid_t pid;
-#endif
+static pid_t pid;		// FIXME -- disable when everything is ok
 
 QResolverThread::QResolverThread()
   : data(0L)
@@ -272,9 +268,7 @@ QResolverManager::QResolverManager()
   currentRequests.setAutoDelete(true);
   initStandardWorkers();
 
-#ifndef NDEBUG
   pid = getpid();
-#endif
 }
 
 QResolverManager::~QResolverManager()
