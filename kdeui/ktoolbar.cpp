@@ -91,7 +91,6 @@ public:
 
         m_xmlguiClient   = 0;
         m_configurePlugged = false;
-        //hasRealPos = FALSE;
 
         oldPos = QMainWindow::DockUnmanaged;
 
@@ -111,10 +110,6 @@ public:
 
     QWidget *m_parent;
 
-    //bool hasRealPos;
-    //QMainWindow::ToolBarDock realPos;
-    //int realIndex, realOffset;
-    //bool realNl;
     QMainWindow::ToolBarDock oldPos;
 
     KXMLGUIClient *m_xmlguiClient;
@@ -202,8 +197,8 @@ KToolBar::KToolBar( QMainWindow *parentWindow, QWidget *dock, bool newLine, cons
 KToolBar::~KToolBar()
 {
     for ( QWidget *w = widgets.first(); w; w = widgets.next() )
-	disconnect( w, SIGNAL( destroyed() ),
-		    this, SLOT( widgetDestroyed() ) );
+        disconnect( w, SIGNAL( destroyed() ),
+                    this, SLOT( widgetDestroyed() ) );
     delete d;
 }
 
@@ -774,18 +769,7 @@ void KToolBar::setBarPos (BarPosition bpos)
 {
     if ( !mainWindow() )
         return;
-
-#if 0
-    if ( d->hasRealPos ) {
-        if ( d->realPos != (QMainWindow::ToolBarDock)bpos ) {
-            d->realPos = (QMainWindow::ToolBarDock)bpos;
-            d->realOffset = -1;
-            d->realIndex = 0;
-            d->realNl = FALSE;
-        }
-    } else
-#endif
-        mainWindow()->moveToolBar( this, (QMainWindow::ToolBarDock)bpos );
+    mainWindow()->moveToolBar( this, (QMainWindow::ToolBarDock)bpos );
 }
 
 
@@ -798,10 +782,6 @@ KToolBar::BarPosition KToolBar::barPos() const
     bool dm3;
     this->mainWindow()->getLocation( (QToolBar*)this, dock, dm1, dm3, dm2 );
     if ( dock == QMainWindow::DockUnmanaged ) {
-#if 0
-        if ( d->hasRealPos )
-            return (KToolBar::BarPosition)d->realPos;
-#endif
         return (KToolBar::BarPosition)QMainWindow::DockTop;
     }
     return (BarPosition)dock;
@@ -926,6 +906,13 @@ void KToolBar::setIconSize(int size, bool update)
 
 int KToolBar::iconSize() const
 {
+    if ( !d->m_iconSize ) // default value?
+    {
+         if (!::qstrcmp(QObject::name(), "mainToolBar"))
+             return KGlobal::iconLoader()->currentSize(KIcon::MainToolbar);
+         else
+             return KGlobal::iconLoader()->currentSize(KIcon::MainToolbar);
+    }
     return d->m_iconSize;
 }
 
@@ -1211,7 +1198,7 @@ void KToolBar::childEvent( QChildEvent *e )
 {
     if ( e->child()->isWidgetType() ) {
         QWidget * w = (QWidget*)e->child();
-	if ( e->type() == QEvent::ChildInserted ) {
+        if ( e->type() == QEvent::ChildInserted ) {
             if ( !e->child()->inherits( "QPopupMenu" ) &&
                  ::qstrcmp( "qt_dockwidget_internal", e->child()->name() ) != 0 ) {
 
@@ -1222,13 +1209,13 @@ void KToolBar::childEvent( QChildEvent *e )
                     int dummy = -1;
                     insertWidgetInternal( w, dummy, -1 );
                 }
-	    }
-	} else {
+            }
+        } else {
             widgets.removeRef(w);
             //removeWidgetInternal( w );
-	}
-	if ( isVisibleTo( 0 ) )
-	    layoutTimer->start( 50, TRUE );
+        }
+        if ( isVisibleTo( 0 ) )
+            layoutTimer->start( 50, TRUE );
     }
     QToolBar::childEvent( e );
 }
@@ -1239,10 +1226,10 @@ void KToolBar::insertWidgetInternal( QWidget *w, int &index, int id )
     //widgets.removeRef( w );
 
     connect( w, SIGNAL( destroyed() ),
-	     this, SLOT( widgetDestroyed() ) );
+             this, SLOT( widgetDestroyed() ) );
     if ( index == -1 || index > (int)widgets.count() ) {
         widgets.append( w );
-	index = (int)widgets.count();
+        index = (int)widgets.count();
     }
     else
         widgets.insert( index, w );
@@ -1350,20 +1337,6 @@ bool KToolBar::highlight() const
 
 void KToolBar::hide()
 {
-#if 0
-    //kdDebug(220) << "KToolBar::hide " << name() << endl;
-    // Reggie: Ugly hack, I hate it
-    if ( mainWindow() ) {
-        QMainWindow::ToolBarDock dock;
-        mainWindow()->getLocation( (QToolBar*)this, dock, d->realIndex, d->realNl, d->realOffset );
-        //kdDebug(220) << "KToolBar::hide " << name() << " realNl set to " << d->realNl << endl;
-        mainWindow()->moveToolBar( this, QMainWindow::DockUnmanaged );
-        if ( dock != QMainWindow::DockUnmanaged ) {
-            d->hasRealPos = TRUE;
-            d->realPos = dock;
-        }
-    }
-#endif
     QToolBar::hide();
 }
 
@@ -1621,8 +1594,6 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
 
             mw->moveToolBar( this, (QMainWindow::ToolBarDock)pos, newLine, index, offset );
             //kdDebug(220) << "KToolBar::applySettings " << name() << " moveToolBar with pos=" << pos << " newLine=" << newLine << " idx=" << index << " offs=" << offset << endl;
-            // Yeah, we just did it... I guess it's for saving the "realpos" again ?
-            // Hmm, in that case we could simply do the hide/show after the moveToolBar, no ? (David)
             if ( doHide )
                 hide();
         }
