@@ -20,7 +20,7 @@ AM_CPPFLAGS = -D_LARGEFILE64_SOURCE
 
 INCLUDES=  -I$(srcdir)/.. $(all_includes) $(SSL_INCLUDES)
 
-SUBDIRS = kssl kio bookmarks kfile . misc pics tests
+SUBDIRS = kssl kio bookmarks kfile . kpasswdserver misc pics tests
 
 lib_LTLIBRARIES = libkio.la
 
@@ -45,6 +45,9 @@ updatedir = $(kde_datadir)/kconf_update
 
 servicetype_DATA = renamedlgplugin.desktop
 servicetypedir = $(kde_servicetypesdir)
+
+kded_DATA = kpasswdserver.desktop
+kdeddir = $(kde_servicesdir)/kded
 
 dummy.cpp:
 	echo >dummy.cpp
