@@ -781,6 +781,22 @@ KCmdLineArgs::getOption(const char *opt)
 bool
 KCmdLineArgs::isSet(const char *opt)
 {
+   // Look up the default.
+   const char *opt_name;
+   const char *def;
+   int result = ::findOption( options, opt, opt_name, def);
+
+   if (result == 0)
+   {
+      fprintf(stderr, "\n\nFAILURE (KCmdLineArgs):\n");
+      fprintf(stderr, "Application requests for isSet(\"%s\") but the \"%s\" option\n", 
+                      opt, opt);
+      fprintf(stderr, "has never been specified via addCmdLineOptions( ... )\n\n");
+ 
+      assert( 0 ); 
+      exit(255);
+   }
+
    QCString *value = 0;
    if (parsedOptionList)
    {
@@ -788,15 +804,13 @@ KCmdLineArgs::isSet(const char *opt)
    }
 
    if (value)
-      return ((*value)[0] == 't');
+   {
+      if (result == 3)
+         return true;
+      else 
+         return ((*value)[0] == 't');
+   }
 
-   // Look up the default.
-   const char *opt_name;
-   const char *def;
-   int result = ::findOption( options, opt, opt_name, def);
-
-   assert(result != 0); // Make sure to add an option to 
-                        // the list of options before querying it!
    if (result == 3)
       return false; // String option has 'false' as default.
 
