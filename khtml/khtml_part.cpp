@@ -1555,35 +1555,41 @@ void KHTMLPart::checkCompleted()
     if ( !(*it).m_bCompleted )
       return;
 
-  requests = khtml::Cache::loader()->numRequests( m_url.url() );
-  //kdDebug( 6060 ) << "number of loader requests: " << requests << endl;
-  if ( requests > 0 )
-    return;
-
   if ( d->m_bParsing || d->m_bComplete )
     return;
 
   d->m_bComplete = true;
 
+  if ( d->m_doc && d->m_doc->isHTMLDocument() ) {
+    HTMLDocumentImpl* hdoc = static_cast<HTMLDocumentImpl*>( d->m_doc );
+
+    if ( hdoc->body() ) {
+      if ( hdoc->body()->id() == ID_BODY ) {
+        HTMLBodyElementImpl* hbody = static_cast<HTMLBodyElementImpl*>( hdoc->body() );
+        if ( !hbody->m_loaded ) {
+          hbody->m_loaded = true;
+          hbody->dispatchWindowEvent( EventImpl::LOAD_EVENT, false, false );
+        }
+      }
+      else if ( hdoc->body()->id() == ID_FRAMESET ) {
+        HTMLFrameSetElementImpl* hbody = static_cast<HTMLFrameSetElementImpl*>( hdoc->body() );
+        if ( !hbody->m_loaded ) {
+          hbody->m_loaded = true;
+          hbody->dispatchWindowEvent( EventImpl::LOAD_EVENT, false, false );
+        }
+      }
+      else
+        assert ( false );
+    }
+  }
+
+  requests = khtml::Cache::loader()->numRequests( m_url.url() );
+  //kdDebug( 6060 ) << "number of loader requests: " << requests << endl;
+  if ( requests > 0 )
+    return;
+
   if (!parentPart())
     emit setStatusBarText(i18n("Done."));
-
-  //kdDebug( 6050 ) << "KHTMLPart::checkCompleted() emitting completed()"  << endl;
-
-/*
-  if ( !d->m_redirectURL.isEmpty() )
-  {
-    // Actually we should emit completed since the META redirections are
-    // supposed to be started after the current loading is finished. Thus,
-    // a new signal is needed to  (DA)
-    //
-    // We don't emit completed as long as we have a redirection pending.
-    // We might want to add a message to the statusbar when we are not
-    // i18n-frozen.
-    emit completed();
-    return;
-  }
-*/
 
   // check for a <link rel="SHORTCUT ICON" href="url to icon">,
   // IE extension to set an icon for this page to use in
@@ -3754,7 +3760,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
       if ( d->m_doc && d->m_view ) {
         QPoint diff( _mouse->globalPos() - d->m_dragLastPos );
 
-        if ( abs( diff.x() ) > 32 || abs( diff.y() ) > 64 ) {
+        if ( abs( diff.x() ) > 64 || abs( diff.y() ) > 64 ) {
           d->m_view->scrollBy( -diff.x(), -diff.y() );
           d->m_dragLastPos = _mouse->globalPos();
         }
