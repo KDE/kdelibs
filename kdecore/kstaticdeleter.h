@@ -46,7 +46,7 @@ public:
  */
 template<class type> class KStaticDeleter : public KStaticDeleterBase {
 public:
-    KStaticDeleter() { deleteit = 0; globalReference = 0; }
+    KStaticDeleter() { deleteit = 0; globalReference = 0; array = false; }
     /**
      * sets the object to delete and registers the object to be
      * deleted to KGlobal. if the given object is 0, the former
