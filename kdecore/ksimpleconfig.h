@@ -6,12 +6,12 @@
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-   
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -26,39 +26,39 @@
 
 class KSimpleConfigPrivate;
 
-/** 
+/**
  * KDE Configuration entries
  *
  * This is a trivial extension of @ref KConfig for applications that need
- * only one configuration file and no default system.  
- * A difference with KConfig is that when the data in memory is written back 
- * it is not merged with what is on disk.  
+ * only one configuration file and no default system.
+ * A difference with KConfig is that when the data in memory is written back
+ * it is not merged with what is on disk.
  * Whatever is in memory simply replaces what is on disk entirely.
  *
  * @author Kalle Dalheimer <kalle@kde.org>, Preston Brown <pbrown@kde.org>
  * @version $Id$
  * @see KConfigBase KConfig
- * @short KDE Configuration Management class with deletion ability 
+ * @short KDE Configuration Management class with deletion ability
  */
 class KSimpleConfig : public KConfig
 {
-  Q_OBJECT 
+  Q_OBJECT
 
 public:
-  /** 
+  /**
    * Construct a KSimpleConfig object and make it either read-write
-   * or read-only.  
+   * or read-only.
    *
    * @param pFileName The file used for saving the config data. Either
-   *                  a full path can be specified or just the filename. 
-   *                  If only a flename is specified, the default 
+   *                  a full path can be specified or just the filename.
+   *                  If only a filename is specified, the default
    *                  directory for "config" files is used.
    * @param bReadOnly Whether the object should be read-only.
    */
   KSimpleConfig( const QString &fileName, bool bReadOnly = false);
 
-  /** 
-   * Destructor. 
+  /**
+   * Destructor.
    *
    * Writes back any dirty configuration entries.
    */
@@ -74,7 +74,7 @@ private:
 
   KSimpleConfigPrivate *d;
 };
-  
+
 #endif
 
 
