@@ -36,7 +36,7 @@ AddressBook *StdAddressBook::mSelf = 0;
 
 QString StdAddressBook::fileName()
 {
-    return mName;
+  return locateLocal( "data", "kabc/std.vcf" );
 }
 
 AddressBook *StdAddressBook::self()
