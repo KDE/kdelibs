@@ -468,30 +468,36 @@ void KEdit::keyPressEvent ( QKeyEvent *e)
   else if ( KStdAccel::paste().contains( key ) ) {
     paste();
     setModified(true);
+    slotCursorPositionChanged();
   }
   else if ( KStdAccel::cut().contains( key ) ) {
     cut();
     setModified(true);
+    slotCursorPositionChanged();
   }
   else if ( KStdAccel::undo().contains( key ) ) {
     undo();
     setModified(true);
+    slotCursorPositionChanged();
   }
   else if ( KStdAccel::redo().contains( key ) ) {
     redo();
     setModified(true);
+    slotCursorPositionChanged();
   }
   else if ( KStdAccel::deleteWordBack().contains( key ) ) {
     moveCursor(MoveWordBackward, true);
     if (hasSelectedText())
       del();
     setModified(true);
+    slotCursorPositionChanged();
   }
   else if ( KStdAccel::deleteWordForward().contains( key ) ) {
     moveCursor(MoveWordForward, true);
     if (hasSelectedText())
       del();
     setModified(true);
+    slotCursorPositionChanged();
   }
   else if ( d->overwriteEnabled && key == Key_Insert ) {
     this->setOverwriteMode(!this->isOverwriteMode());
