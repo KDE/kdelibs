@@ -124,16 +124,36 @@ signals:
    */
   void openURLRequest( const KURL &url, bool reload, int xOffset, int yOffset, const QString &serviceType = QString::null );
 
+  /**
+   * Send a message to the browser's status bar
+   */
   void setStatusBarText( const QString &text );
 
   /**
    * Update the URL shown in the browser's location bar to @p url
    */
   void setLocationBarURL( const QString &url );
+
   void createNewWindow( const KURL &url );
+
+  /**
+   * Since the part emits the jobid in the started() signal,
+   * progress information is automatically displayed.
+   * However, if you don't use a KIOJob in the part,
+   * you can use @ref loadingProgress and @ref speedProgress
+   * to display progress information
+   */
   void loadingProgress( int percent );
+  /**
+   * @see loadingProgress
+   */
   void speedProgress( int bytesPerSecond );
-  void popupMenu( const QPoint &_global, const KFileItemList &_items );
+
+  /**
+   * Emit this to make the browser show a standard popup menu
+   * at the point @p global for the files @p items.
+   */
+  void popupMenu( const QPoint &global, const KFileItemList &items );
 
 private:
   KParts::ReadOnlyPart *m_part;
