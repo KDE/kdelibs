@@ -175,7 +175,7 @@ int **RegExpObjectImp::registerRegexp( const RegExp* re, const UString& s )
   return &lastOvector;
 }
 
-Value RegExpObjectImp::arrayOfMatches(ExecState *exec, const UString &result) const
+Object RegExpObjectImp::arrayOfMatches(ExecState *exec, const UString &result) const
 {
   List list;
   // The returned array contains 'result' as first item, followed by the list of matches
@@ -186,7 +186,10 @@ Value RegExpObjectImp::arrayOfMatches(ExecState *exec, const UString &result) co
       UString substring = lastString.substr( lastOvector[2*i], lastOvector[2*i+1] - lastOvector[2*i] );
       list.append(String(substring));
     }
-  return exec->interpreter()->builtinArray().construct(exec, list);
+  Object arr = exec->interpreter()->builtinArray().construct(exec, list);
+  arr.put(exec, "index", Number(lastOvector[0]));
+  arr.put(exec, "input", String(lastString));
+  return arr;
 }
 
 Value RegExpObjectImp::get(ExecState *, const UString &p) const
@@ -216,9 +219,8 @@ bool RegExpObjectImp::implementsConstruct() const
 // ECMA 15.10.4
 Object RegExpObjectImp::construct(ExecState *exec, const List &args)
 {
-  String p = args[0].toString(exec);
-  String f = args[1].toString(exec);
-  UString flags = f.value();
+  String p = args.isEmpty() ? UString("") : args[0].toString(exec);
+  UString flags = args[1].toString(exec);
 
   RegExpPrototypeImp *proto = static_cast<RegExpPrototypeImp*>(exec->interpreter()->builtinRegExpPrototype().imp());
   RegExpImp *dat = new RegExpImp(proto);
@@ -233,7 +235,7 @@ Object RegExpObjectImp::construct(ExecState *exec, const List &args)
   dat->put(exec, "ignoreCase", Boolean(ignoreCase));
   dat->put(exec, "multiline", Boolean(multiline));
 
-  dat->put(exec, "source", String(p.value()));
+  dat->put(exec, "source", p);
   dat->put(exec, "lastIndex", Number(0), DontDelete | DontEnum);
 
   int reflags = RegExp::None;

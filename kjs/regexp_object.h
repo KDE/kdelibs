@@ -75,7 +75,7 @@ namespace KJS {
     Value get(ExecState *exec, const UString &p) const;
     int ** registerRegexp( const RegExp* re, const UString& s );
     void setSubPatterns(int num) { lastNrSubPatterns = num; }
-    Value arrayOfMatches(ExecState *exec, const UString &result) const;
+    Object arrayOfMatches(ExecState *exec, const UString &result) const;
   private:
     UString lastString;
     int *lastOvector;
