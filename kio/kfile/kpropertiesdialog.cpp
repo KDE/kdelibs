@@ -152,7 +152,7 @@ KPropertiesDialog::KPropertiesDialog (const QString& title,
 KPropertiesDialog::KPropertiesDialog (KFileItemList _items,
                                       QWidget* parent, const char* name,
                                       bool modal, bool autoShow)
-  : KDialogBase (KDialogBase::Tabbed, 
+  : KDialogBase (KDialogBase::Tabbed,
 		 i18n( "Properties for %1" ).arg(KIO::decodeFileName(_items.first()->url().fileName())),
                  KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
                  parent, name, modal)
@@ -175,7 +175,7 @@ KPropertiesDialog::KPropertiesDialog (KFileItemList _items,
 KPropertiesDialog::KPropertiesDialog (const KURL& _url, mode_t /* _mode is now unused */,
                                       QWidget* parent, const char* name,
                                       bool modal, bool autoShow)
-  : KDialogBase (KDialogBase::Tabbed, 
+  : KDialogBase (KDialogBase::Tabbed,
 		 i18n( "Properties for %1" ).arg(KIO::decodeFileName(_url.fileName())),
                  KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
                  parent, name, modal),
@@ -196,7 +196,7 @@ KPropertiesDialog::KPropertiesDialog (const KURL& _url, mode_t /* _mode is now u
 KPropertiesDialog::KPropertiesDialog (const KURL& _url,
                                       QWidget* parent, const char* name,
                                       bool modal, bool autoShow)
-  : KDialogBase (KDialogBase::Tabbed, 
+  : KDialogBase (KDialogBase::Tabbed,
 		 i18n( "Properties for %1" ).arg(KIO::decodeFileName(_url.fileName())),
                  KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
                  parent, name, modal),
@@ -217,7 +217,7 @@ KPropertiesDialog::KPropertiesDialog (const KURL& _tempUrl, const KURL& _current
                                       const QString& _defaultName,
                                       QWidget* parent, const char* name,
                                       bool modal, bool autoShow)
-  : KDialogBase (KDialogBase::Tabbed, 
+  : KDialogBase (KDialogBase::Tabbed,
 		 i18n( "Properties for %1" ).arg(KIO::decodeFileName(_tempUrl.fileName())),
                  KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
                  parent, name, modal),
@@ -629,6 +629,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   // Those things only apply to 'single file' mode
   QString filename = QString::null;
   bool isTrash = false;
+  bool isIntoTrash = false;
   m_bFromTemplate = false;
 
   // And those only to 'multiple' mode
@@ -666,9 +667,13 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     if ( !m_bFromTemplate ) {
       QString tmp = properties->kurl().path( 1 );
       // is it the trash bin ?
-      if ( isLocal && tmp == KGlobalSettings::trashPath())
-        isTrash = true;
-
+      if ( isLocal )
+      {
+          if ( tmp == KGlobalSettings::trashPath())
+              isTrash = true;
+          if ( tmp.startsWith(KGlobalSettings::trashPath()))
+              isIntoTrash = true;
+      }
       // Extract the full name, but without file: for local files
       if ( isLocal )
         path = properties->kurl().path();
@@ -770,7 +775,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   }
   grid->addWidget(iconArea, curRow, 0, AlignLeft);
 
-  if (d->bMultiple || isTrash || filename == QString::fromLatin1("/"))
+  if (d->bMultiple || isTrash || isIntoTrash || filename == QString::fromLatin1("/"))
   {
     QLabel *lab = new QLabel(d->m_frame );
     if ( d->bMultiple )
@@ -972,12 +977,12 @@ void KFilePropsPlugin::determineRelativePath( const QString & path )
         while ( m_sRelativePath.at(0) == '/' ) m_sRelativePath.remove( 0, 1 );
 }
 
-void KFilePropsPlugin::slotFoundMountPoint( const QString&, 
-					    unsigned long kBSize, 
-					    unsigned long /*kBUsed*/, 
+void KFilePropsPlugin::slotFoundMountPoint( const QString&,
+					    unsigned long kBSize,
+					    unsigned long /*kBUsed*/,
 					    unsigned long kBAvail )
 {
-    d->m_freeSpaceLabel->setText( 
+    d->m_freeSpaceLabel->setText(
 	i18n("Available space out of total partition size (percent used)", "%1/%2 (%3% used)")
 	.arg(KIO::convertSizeFromKB(kBAvail))
 	.arg(KIO::convertSizeFromKB(kBSize))
@@ -1402,7 +1407,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 			  "owner nor in the group, are allowed to do."));
 
   if (!isLink) {
-    l = d->extraCheckbox = new QCheckBox(hasDir ? 
+    l = d->extraCheckbox = new QCheckBox(hasDir ?
 					 i18n("Only own&er can rename and delete directory content") :
 					 i18n("Is &executable"),
 					 gb );
@@ -2243,7 +2248,7 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
   // check to see if we use konsole if not do not add the nocloseonexit
   // because we don't know how to do this on other terminal applications
   KConfigGroup confGroup( KGlobal::config(), QString::fromLatin1("General") );
-  QString preferredTerminal = confGroup.readEntry(QString::fromLatin1("TerminalApplication"), 
+  QString preferredTerminal = confGroup.readEntry(QString::fromLatin1("TerminalApplication"),
 						  QString::fromLatin1("konsole"));
 
   int posOptions = 1;
@@ -3002,7 +3007,7 @@ void KBindingPropsPlugin::applyChanges()
 
   config.writeEntry( QString::fromLatin1("Patterns"),  patternEdit->text() );
   config.writeEntry( QString::fromLatin1("Comment"), commentEdit->text() );
-  config.writeEntry( QString::fromLatin1("Comment"), 
+  config.writeEntry( QString::fromLatin1("Comment"),
 		     commentEdit->text(), true, false, true ); // for compat
   config.writeEntry( QString::fromLatin1("MimeType"), mimeEdit->text() );
   if ( cbAutoEmbed->state() == QButton::NoChange )
