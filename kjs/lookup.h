@@ -73,13 +73,13 @@ namespace KJS {
     /**
      * type is a version number. Currently always 2
      */
-    const int type;
+    int type;
     /**
      * size is the total number of entries in the hashtable, including the null entries,
      * i.e. the size of the "entries" array.
      * Used to iterate over all entries in the table
      */
-    const int size;
+    int size;
     /**
      * pointer to the array of entries
      * Mind that some entries in the array are null (0,0,0,0).
@@ -88,7 +88,7 @@ namespace KJS {
     /**
      * the maximum value for the hash. Always smaller than size.
      */
-    const int hashSize;
+    int hashSize;
 
     /**
      * pointer to the string table.
