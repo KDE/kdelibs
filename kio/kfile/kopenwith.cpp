@@ -414,14 +414,14 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   nocloseonexit = new QCheckBox( i18n("Do not &close when command exits"), this );
   nocloseonexit->setChecked( true );
   nocloseonexit->setDisabled( true );
-  
+
   // check to see if we use konsole if not disable the nocloseonexit
   // because we don't know how to do this on other terminal applications
   KSimpleConfig conf(QString::fromLatin1("kdeglobals"), true);
   conf.setGroup(QString::fromLatin1("General"));
-  m_command = conf.readEntry(QString::fromLatin1("TerminalApplication"), QString::fromLatin1("konsole"));
+  QString preferredTerminal = conf.readEntry(QString::fromLatin1("TerminalApplication"), QString::fromLatin1("konsole"));
 
-  if (bReadOnly || m_command != "konsole")
+  if (bReadOnly || preferredTerminal != "konsole")
      nocloseonexit->hide();
 
   topLayout->addWidget(nocloseonexit);
@@ -629,11 +629,18 @@ void KOpenWithDlg::slotOK()
     m_command = conf.readEntry(QString::fromLatin1("TerminalApplication"), QString::fromLatin1("konsole"));
     // only add --noclose when we are sure it is konsole we'r using
     if (m_command == "konsole" && nocloseonexit->isChecked())
+    {
       desktop.writeEntry(QString::fromLatin1("TerminalOptions"), " --noclose ");
+      m_command += " --noclose";
+    }
+    m_command += QString::fromLatin1(" -e ");
+    m_command += edit->url();
+    kdDebug(250) << "Setting m_command to " << m_command << endl;
   }
   else
     desktop.writeEntry(QString::fromLatin1("Terminal"), false);
   desktop.writeEntry(QString::fromLatin1("InitialPreference"), maxPreference + 1);
+
   if (remember)
     if (remember->isChecked()) {
       QStringList mimeList;
