@@ -356,12 +356,7 @@ void ElementImpl::attach(KHTMLView *w)
 	}
     }
 
-    NodeImpl *child = _first;
-    while(child != 0)
-    {
-	child->attach(w);
-	child = child->nextSibling();
-    }
+    NodeBaseImpl::attach(w);
 }
 
 void ElementImpl::applyChanges(bool top)

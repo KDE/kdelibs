@@ -209,7 +209,7 @@ void HTMLBRElementImpl::parseAttribute(Attribute *attr)
     }
 }
 
-void HTMLBRElementImpl::attach(KHTMLView *)
+void HTMLBRElementImpl::attach(KHTMLView *w)
 {
     //kdDebug( 6030 ) << "HTMLBRElementImpl::attach" << endl;
     m_style = document->styleSelector()->styleForElement(this);
@@ -221,6 +221,7 @@ void HTMLBRElementImpl::attach(KHTMLView *)
 	m_render->ref();
 	r->addChild(m_render, _next ? _next->renderer() : 0);	
     }
+    NodeBaseImpl::attach( w );
 }
 
 // -------------------------------------------------------------------------

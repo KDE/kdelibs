@@ -42,3 +42,30 @@ short RenderBR::verticalPositionHint() const
     else
     	return RenderText::verticalPositionHint();
 }
+
+void RenderBR::cursorPos(int /*offset*/, int &_x, int &_y, int &height)
+{
+    if (previousSibling() && !previousSibling()->isBR()) {
+	int offset = 0;
+	if (previousSibling()->isText())
+	    offset = static_cast<RenderText*>(previousSibling())->length();
+
+	previousSibling()->cursorPos(offset,_x,_y,height);
+	return;
+    }
+
+    int absx, absy;
+    absolutePosition(absx,absy);
+    if (absx == -1) {
+	// we don't know out absoluate position, and there is not point returning
+	// just a relative one
+	_x = _y = -1;
+    }
+    else {
+	_x += absx;
+	_y += absy;
+    }
+    height = RenderText::verticalPositionHint();
+
+}
+

@@ -1482,7 +1482,7 @@ void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
 	static_cast<RenderTableCell *>(child);
     cell->setTable(table);
     cell->setRowImpl(this);
-    table->addCell(cell);
+    table->addCell(cell);  // ### may not work for beforeChild != 0
 
     RenderObject::addChild(child,beforeChild);
 }

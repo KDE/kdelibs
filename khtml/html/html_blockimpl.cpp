@@ -135,7 +135,7 @@ void HTMLHRElementImpl::parseAttribute(Attribute *attr)
     }
 }
 
-void HTMLHRElementImpl::attach(KHTMLView *)
+void HTMLHRElementImpl::attach(KHTMLView *w)
 {
     m_style = document->styleSelector()->styleForElement(this);
     khtml::RenderObject *r = _parent->renderer();
@@ -149,6 +149,7 @@ void HTMLHRElementImpl::attach(KHTMLView *)
 	if(m_render) r->addChild(m_render, _next ? _next->renderer() : 0);
 	
     }
+    NodeBaseImpl::attach( w );
 }
 
 // -------------------------------------------------------------------------

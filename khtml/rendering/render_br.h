@@ -61,6 +61,7 @@ public:
     virtual short verticalPositionHint() const;
 
     virtual bool isBR() const { return true; }
+    virtual void cursorPos(int offset, int &_x, int &_y, int &height);
 };
 
 };

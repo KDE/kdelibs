@@ -167,7 +167,8 @@ public:
 	HasStyle    = 0x0080,
 	HasTooltip  = 0x0100,
 	Pressed     = 0x0200,
-	MouseInside = 0x0400
+	MouseInside = 0x0400,
+	Attached    = 0x0800
     };
     bool layouted()    { return (flags & Layouted);    }
     bool parsing()     { return (flags & Parsing);     }
@@ -178,7 +179,8 @@ public:
     bool hasStyle()    { return (flags & HasStyle);    }
     bool hasTooltip()  { return (flags & HasTooltip);  }
     bool pressed()     { return (flags & Pressed);     }
-    bool mouseInside()     { return (flags & MouseInside);     }
+    bool mouseInside() { return (flags & MouseInside); }
+    bool attached()    { return (flags & Attached);    }
     void setLayouted(bool b=true)
 	{ b ? flags|=Layouted : flags&=~Layouted; }
     void setParsing(bool b=true)
@@ -199,16 +201,18 @@ public:
 	{ b ? flags|=Pressed : flags&=~Pressed; }
     void setMouseInside(bool b=true)
 	{ b ? flags|=MouseInside : flags&=~MouseInside; }
+    void setAttached(bool b=true)
+	{ b ? flags|=Attached : flags&=~Attached; }
 
     /**
      * attach to a KHTMLView. Additional info (like style information,
      * frames, etc...) will only get loaded, when attached to a widget.
      */
-    virtual void attach(KHTMLView *) {}
+    virtual void attach(KHTMLView *) { setAttached(true); }
     /**
      * detach from a HTMLWidget
      */
-    virtual void detach() {}
+    virtual void detach() { setAttached(false); }
 
     // ### check if this function is still needed at all...
     virtual bool isInline() { return true; }

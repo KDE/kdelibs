@@ -630,6 +630,7 @@ void HTMLInputElementImpl::attach(KHTMLView *_view)
 	    r->addChild(m_render, _next ? _next->renderer() : 0);
 	}
     }
+    NodeBaseImpl::attach(_view);
 }
 
 void HTMLInputElementImpl::detach()
@@ -827,6 +828,7 @@ void HTMLSelectElementImpl::attach(KHTMLView *_view)
 	    r->addChild(m_render, _next ? _next->renderer() : 0);
 	}
     }
+    NodeBaseImpl::attach(_view);
 }
 
 // -------------------------------------------------------------------------
@@ -1032,6 +1034,7 @@ void HTMLTextAreaElementImpl::attach(KHTMLView *_view)
 	    r->addChild(m_render, _next ? _next->renderer() : 0);
 	}
     }
+    NodeBaseImpl::attach(_view);
 }
 
 

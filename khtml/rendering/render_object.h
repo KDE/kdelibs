@@ -339,7 +339,7 @@ public:
     virtual SelectionState selectionState() const { return SelectionNone;}
     virtual void setSelectionState(SelectionState) {}
 
-    virtual void cursorPos(int /*offset*/, int &/*_x*/, int &/*_y*/, int &/*height*/){}
+    virtual void cursorPos(int /*offset*/, int &/*_x*/, int &/*_y*/, int &/*height*/);
 
     virtual void setKeyboardFocus(DOM::ActivationState b=DOM::ActivationPassive);// { hasKeyboardFocus=b; };
 

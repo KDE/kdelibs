@@ -118,7 +118,7 @@ const QChar &BiDiIterator::current()
 
 QChar::Direction BiDiIterator::direction()
 {
-    if(!obj || !obj->isText()) return QChar::DirON;
+    if(!obj || !obj->isText() || obj->length() <= 0) return QChar::DirON;
     return obj->text()[pos].direction();
 }
 
@@ -439,7 +439,7 @@ static void addWord(BiDiParagraph *par, QList<BiDiWord> &line, const BiDiIterato
     BiDiObject *o = it1.obj;
     int pos = it1.pos;
 
-    if(!o) return;
+    if(!o || o->length() <= 0) return;
     while(o && o != it2.obj)
     {
 	if(!o->isHidden())

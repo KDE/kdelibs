@@ -91,6 +91,7 @@ void HTMLBaseElementImpl::attach(KHTMLView *v)
     {
       v->part()->setBaseTarget(_target.string());
     }
+    NodeBaseImpl::attach( v );
 }
 
 // -------------------------------------------------------------------------
@@ -155,7 +156,7 @@ void HTMLLinkElementImpl::setDisabled( bool )
 }
 
 // other stuff...
-void HTMLLinkElementImpl::attach(KHTMLView *)
+void HTMLLinkElementImpl::attach(KHTMLView *v)
 {
     m_style = document->styleSelector()->styleForElement(this);
 
@@ -174,6 +175,7 @@ void HTMLLinkElementImpl::attach(KHTMLView *)
 	    m_cachedSheet->ref(this);
 	}
     }
+    NodeBaseImpl::attach( v );
 }
 
 void HTMLLinkElementImpl::parseAttribute(Attribute *attr)
@@ -275,6 +277,7 @@ void HTMLMetaElementImpl::attach(KHTMLView *v)
 	    v->part()->scheduleRedirection(delay, str);
 	}
     }
+    NodeBaseImpl::attach( v );
 }
 
 // -------------------------------------------------------------------------

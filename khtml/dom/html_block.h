@@ -21,6 +21,10 @@
  * $Id$
  */
 // --------------------------------------------------------------------------
+
+#ifndef HTML_BLOCK_H
+#define HTML_BLOCK_H
+
 #include <dom/html_element.h>
 
 namespace DOM {
@@ -317,3 +321,5 @@ public:
 };
 
 }; //namespace
+
+#endif

@@ -626,13 +626,7 @@ void HTMLTableCellElementImpl::attach(KHTMLView *_view)
 	if(m_render) r->addChild(m_render, _next ? _next->renderer() : 0);
     }
 
-    NodeImpl *child = _first;
-    while(child != 0)
-    {
-	child->attach(_view);
-	child = child->nextSibling();
-    }
-
+    NodeBaseImpl::attach(_view);
 }
 
 

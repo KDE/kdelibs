@@ -167,6 +167,8 @@ void RenderObject::addChild(RenderObject *newChild, RenderObject *beforeChild)
 	}
     }
     else {
+	if (beforeChild == m_first)
+	    m_first = newChild;
         RenderObject *newPrev = beforeChild->previousSibling();
 	newChild->setNextSibling(beforeChild);
 	beforeChild->setPreviousSibling(newChild);
@@ -418,5 +420,10 @@ void RenderObject::absolutePosition(int &xPos, int &yPos)
 	m_parent->absolutePosition(xPos, yPos);
     else
 	xPos = yPos = -1;
+}
+
+void RenderObject::cursorPos(int /*offset*/, int &_x, int &_y, int &height)
+{
+    _x = _y = height = -1;
 }
 

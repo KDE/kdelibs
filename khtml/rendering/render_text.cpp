@@ -51,6 +51,8 @@ using namespace DOM;
 
 void TextSlave::print( QPainter *p, int _tx, int _ty)
 {
+    if (!m_text || len <= 0)
+	return;
 
     _ty += m_baseline;
 
@@ -277,6 +279,11 @@ bool RenderText::checkPoint(int _x, int _y, int _tx, int _ty, int &offset)
 
 void RenderText::cursorPos(int offset, int &_x, int &_y, int &height)
 {
+  if (!m_first) {
+    _x = _y = height = -1;
+    return;
+  }
+
   _x = 0;
   TextSlave *s = m_first;
   int off = s->len;

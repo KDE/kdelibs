@@ -153,7 +153,12 @@ TextImpl *TextImpl::splitText( const unsigned long offset )
     if (offset > str->l)
 	throw DOMException(DOMException::INDEX_SIZE_ERR);
 
-    return new TextImpl(document, str->split(offset));
+    if (!_parent)
+          throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
+
+    TextImpl *newText = new TextImpl(document, str->split(offset));
+    _parent->insertBefore(newText,_next);
+    return newText;
 }
 
 const DOMString TextImpl::nodeName() const
@@ -171,7 +176,7 @@ unsigned short TextImpl::nodeType() const
     return Node::TEXT_NODE;
 }
 
-void TextImpl::attach(KHTMLView *)
+void TextImpl::attach(KHTMLView *w)
 {
     m_style = parentNode()->style();
     RenderObject *r = _parent->renderer();
@@ -182,8 +187,8 @@ void TextImpl::attach(KHTMLView *)
 	r->addChild(m_render, _next ? _next->renderer() : 0);
 	m_render->ref();
     }
+    CharacterDataImpl::attach(w);
 }
-
 
 void TextImpl::applyChanges(bool)
 {

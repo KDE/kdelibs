@@ -174,7 +174,7 @@ void HTMLImageElementImpl::parseAttribute(Attribute *attr)
     }
 }
 
-void HTMLImageElementImpl::attach(KHTMLView *)
+void HTMLImageElementImpl::attach(KHTMLView *w)
 {
     //kdDebug( 6030 ) << "HTMLImageImpl::attach" << endl;
     m_style = document->styleSelector()->styleForElement(this);
@@ -189,6 +189,7 @@ void HTMLImageElementImpl::attach(KHTMLView *)
 	if(m_render) r->addChild(m_render, _next ? _next->renderer() : 0);
 	
     }
+    NodeBaseImpl::attach( w );
 }
 
 void HTMLImageElementImpl::applyChanges(bool top)

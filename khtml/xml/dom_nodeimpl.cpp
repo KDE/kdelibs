@@ -287,6 +287,7 @@ void NodeImpl::applyChanges(bool)
 void NodeImpl::getCursor(int offset, int &_x, int &_y, int &height)
 {
     if(m_render) m_render->cursorPos(offset, _x, _y, height);
+    else _x = _y = height = -1;
 }
 
 QRect NodeImpl::getRect()
@@ -396,6 +397,8 @@ NodeBaseImpl::~NodeBaseImpl()
 
     for( n = _first; n != 0; n = next )
     {
+	n->setPreviousSibling(0);
+	n->setNextSibling(0);
 	n->setParent(0);
 	next = n->nextSibling();
 	if(n->deleteMe()) delete n;
@@ -447,7 +450,8 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild )
     newChild->setParent(this);
     newChild->setPreviousSibling(prev);
     newChild->setNextSibling(refChild);
-    newChild->attach(document->view());
+    if (attached())
+      newChild->attach(document->view());
 
     // ### set style in case it's attached
     applyChanges();
@@ -484,7 +488,8 @@ NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild )
     newChild->setParent(this);
     newChild->setPreviousSibling(prev);
     newChild->setNextSibling(next);
-    newChild->attach(document->view());
+    if (attached())
+      newChild->attach(document->view());
 
     // ### set style in case it's attached
     applyChanges();
@@ -540,7 +545,8 @@ NodeImpl *NodeBaseImpl::appendChild ( NodeImpl *newChild )
     {
 	_first = _last = newChild;
     }
-    newChild->attach(document->view());
+    if (attached())
+      newChild->attach(document->view());
 
     applyChanges();
     // ### set style in case it's attached
@@ -608,7 +614,7 @@ void NodeBaseImpl::checkNoOwner( NodeImpl *newChild )
 // check for being child:
 void NodeBaseImpl::checkIsChild( NodeImpl *oldChild )
 {
-    if(oldChild->parentNode() != this)
+    if(!oldChild || oldChild->parentNode() != this)
 	throw DOMException(DOMException::NOT_FOUND_ERR);
 }
 
@@ -651,6 +657,7 @@ void NodeBaseImpl::attach(KHTMLView *w)
 	child->attach(w);
 	child = child->nextSibling();
     }
+    NodeWParentImpl::attach(w);
 }
 
 void NodeBaseImpl::detach()
@@ -661,6 +668,7 @@ void NodeBaseImpl::detach()
 	child->detach();
 	child = child->nextSibling();
     }
+    NodeWParentImpl::detach();
 }
 
 // ---------------------------------------------------------------------------
