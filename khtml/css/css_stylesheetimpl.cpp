@@ -226,6 +226,31 @@ bool CSSStyleSheetImpl::parseString(const DOMString &string)
 
     //printf("parsing sheet, len=%d, sheet is %s\n", string.length(), string.string().ascii());
 
+    // remove leading spaces
+    while (curP && (curP < endP))
+    {
+	if(!curP->isSpace()) break;
+	++curP;
+    }
+    // remove leading '<!--' (html start of coment)
+    char comment[5] = "<!--";
+    int count = 0;
+    const QChar *startP = curP;
+    while (startP && (startP < endP))
+    {
+	if(*startP == comment[count])
+	    count++;
+	else
+	    break;
+	if(count == 4)
+	{
+	    curP = ++startP;
+	    break;
+	}
+	++startP;
+    }
+
+
     while (curP && (curP < endP))
     {
 	CSSRuleImpl *rule = parseRule(curP, endP);
