@@ -176,7 +176,6 @@ void RenderWidget::detach()
 {
     remove();
     if ( m_widget ) {
-        m_widget->hide();
         if ( m_view )
             m_view->removeChild( m_widget );
 
