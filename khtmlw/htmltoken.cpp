@@ -127,7 +127,7 @@ void HTMLTokenizer::write( const char *str )
 
     KCharsets *charsets=KApplication::getKApplication()->getCharsets();
     
-    if ( str == 0L )
+    if ( str == 0L || buffer == 0L )
 	return;
     
     const char *src = str;
