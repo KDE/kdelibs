@@ -92,7 +92,7 @@ public:
     // RenderObject tree manipulation
     //////////////////////////////////////////
     virtual void addChild(RenderObject *newChild, RenderObject *beforeChild = 0);
-    virtual void removeChild(RenderObject *oldChild);
+    void removeChild(RenderObject *oldChild);
 
     // raw tree manipulation
     virtual RenderObject* removeChildNode(RenderObject* child);

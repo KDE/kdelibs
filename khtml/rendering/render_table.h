@@ -156,7 +156,14 @@ public:
 
     RenderTableCol *colElement( int col );
 
+    void setNeedSectionRecalc();
+
+    virtual RenderObject* removeChildNode(RenderObject* child);
+
 protected:
+
+    void recalcSections();
+
     friend class AutoTableLayout;
     friend class FixedTableLayout;
 
@@ -173,7 +180,7 @@ protected:
     bool has_col_elems		: 1;
     uint spacing                : 11;
     uint padding		: 11;
-    uint unused			: 1;
+    uint needSectionRecalc	: 1;
 };
 
 // -------------------------------------------------------------------------
@@ -224,16 +231,22 @@ public:
     int numRows() const { return grid.size(); }
     int getBaseline(int row) {return grid[row].baseLine;}
 
+    void setNeedCellRecalc();
+    virtual RenderObject* removeChildNode(RenderObject* child);
+
     // this gets a cell grid data structure. changing the number of
     // columns is done by the table
     QMemArray<RowStruct> grid;
     QMemArray<int> rowPos;
 
-    short cRow : 16;
     short cCol : 16;
+    short cRow : 15;
+    bool needCellRecalc : 1;
 
+    void recalcCells();
 protected:
     void ensureRows( int numRows );
+    void clearGrid();
 };
 
 // -------------------------------------------------------------------------
@@ -250,15 +263,15 @@ public:
 
     // overrides
     virtual void addChild(RenderObject *child, RenderObject *beforeChild = 0);
+    virtual RenderObject* removeChildNode(RenderObject* child);
 
     virtual short lineHeight( bool ) const { return 0; }
     virtual void position(int, int, int, int, int, bool, bool, int) {}
 
-    virtual void repaint();
-
     virtual void layout();
 
     RenderTable *table() const { return static_cast<RenderTable *>(parent()->parent()); }
+    RenderTableSection *section() const { return static_cast<RenderTableSection *>(parent()); }
 
 #ifndef NDEBUG
     virtual void dump(QTextStream *stream, QString ind = "") const;
@@ -299,7 +312,6 @@ public:
     virtual void calcWidth();
     virtual void setWidth( int width );
     virtual void setStyle( RenderStyle *style );
-    virtual void repaint();
 
     virtual void updateFromElement();
 
@@ -320,6 +332,7 @@ public:
     virtual short baselinePosition( bool = false ) const;
 
     RenderTable *table() const { return static_cast<RenderTable *>(parent()->parent()->parent()); }
+    RenderTableSection *section() const { return static_cast<RenderTableSection *>(parent()->parent()); }
 
 #ifndef NDEBUG
     virtual void dump(QTextStream *stream, QString ind = "") const;

@@ -58,6 +58,7 @@ RenderTable::RenderTable(DOM::NodeImpl* node)
     rules = None;
     frame = Void;
     has_col_elems = false;
+    needSectionRecalc = false;
 
     columnPos.resize( 2 );
     columnPos.fill( 0 );
@@ -74,6 +75,7 @@ RenderTable::~RenderTable()
 
 void RenderTable::setStyle(RenderStyle *_style)
 {
+    ETableLayout oldTableLayout = style() ? style()->tableLayout() : TAUTO;
     RenderFlow::setStyle(_style);
 
     // init RenderObject attributes
@@ -82,15 +84,17 @@ void RenderTable::setStyle(RenderStyle *_style)
 
     spacing = style()->borderSpacing();
 
-    delete tableLayout;
+    if ( !tableLayout || style()->tableLayout() != oldTableLayout ) {
+	delete tableLayout;
 
-    if (style()->tableLayout() == TFIXED ) {
-        tableLayout = new FixedTableLayout(this);
+	if (style()->tableLayout() == TFIXED ) {
+	    tableLayout = new FixedTableLayout(this);
 #ifdef DEBUG_LAYOUT
-	kdDebug( 6040 ) << "using fixed table layout" << endl;
+	    kdDebug( 6040 ) << "using fixed table layout" << endl;
 #endif
-    } else
-        tableLayout = new AutoTableLayout(this);
+	} else
+	    tableLayout = new AutoTableLayout(this);
+    }
 }
 
 void RenderTable::position(int x, int y, int, int, int, bool, bool, int)
@@ -202,6 +206,7 @@ void RenderTable::layout()
 {
     KHTMLAssert( !layouted() );
     KHTMLAssert( minMaxKnown() );
+    KHTMLAssert( !needSectionRecalc );
 
     //kdDebug( 6040 ) << renderName() << "(Table)"<< this << " ::layout0() width=" << width() << ", layouted=" << layouted() << endl;
 
@@ -384,6 +389,9 @@ void RenderTable::calcMinMaxWidth()
 {
     KHTMLAssert( !minMaxKnown() );
 
+    if ( needSectionRecalc )
+	recalcSections();
+
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(Table " << this << ")::calcMinMaxWidth()" <<  endl;
 #endif
@@ -514,6 +522,70 @@ RenderTableCol *RenderTable::colElement( int col ) {
     return 0;
 }
 
+void RenderTable::setNeedSectionRecalc()
+{
+//     qDebug("setNeedSectionRecalc: %p",  this );
+    needSectionRecalc = true;
+}
+
+
+void RenderTable::recalcSections()
+{
+//     qDebug("recalcSections, %p",  this);
+    tCaption = 0;
+    head = foot = firstBody = 0;
+    has_col_elems = false;
+
+    RenderObject *child = firstChild();
+    // We need to get valid pointers to caption, head, foot and firstbody again
+    while ( child ) {
+	switch(child->style()->display()) {
+	case TABLE_CAPTION:
+	    if ( !tCaption)
+		tCaption = static_cast<RenderTableCaption *>(child);
+	    break;
+	case TABLE_COLUMN:
+	case TABLE_COLUMN_GROUP:
+	    has_col_elems = true;
+	    return;
+	case TABLE_HEADER_GROUP: {
+	    RenderTableSection *section = static_cast<RenderTableSection *>(child);
+	    if ( !head )
+		head = section;
+	    if ( section->needCellRecalc )
+		section->recalcCells();
+	    break;
+	}
+	case TABLE_FOOTER_GROUP: {
+	    RenderTableSection *section = static_cast<RenderTableSection *>(child);
+	    if ( !foot )
+		foot = section;
+	    if ( section->needCellRecalc )
+		section->recalcCells();
+	    break;
+	}
+	case TABLE_ROW_GROUP: {
+	    RenderTableSection *section = static_cast<RenderTableSection *>(child);
+	    if ( !firstBody )
+		firstBody = section;
+	    if ( section->needCellRecalc )
+		section->recalcCells();
+	}
+	default:
+	    break;
+	}
+	child = child->nextSibling();
+    }
+    needSectionRecalc = false;
+    setLayouted( false );
+}
+
+RenderObject* RenderTable::removeChildNode(RenderObject* child)
+{
+    setNeedSectionRecalc();
+    return RenderContainer::removeChildNode( child );
+}
+
 
 #ifndef NDEBUG
 void RenderTable::dump(QTextStream *stream, QString ind) const
@@ -530,12 +602,6 @@ void RenderTable::dump(QTextStream *stream, QString ind) const
 	*stream << " " << columns[i].span;
     *stream << endl << ind;
 
-// ###    RenderTableCell ***cells;
-// ###    QPtrVector<ColInfoLine> colInfos;
-// ###    Frame frame;
-// ###    Rules rules;
-// ###    RenderTableCol *_oldColElem;
-
     RenderFlow::dump(stream,ind);
 }
 #endif
@@ -547,22 +613,19 @@ RenderTableSection::RenderTableSection(DOM::NodeImpl* node)
 {
     // init RenderObject attributes
     setInline(false);   // our object is not Inline
-    cRow = -1;
     cCol = -1;
+    cRow = -1;
+    needCellRecalc = false;
 }
 
 RenderTableSection::~RenderTableSection()
 {
     // recalc cell info because RenderTable has unguarded pointers
     // stored that point to this RenderTableSection.
-    // ###
-//     if (table)
-//         table->setNeedsCellsRecalc();
+    if (table())
+        table()->setNeedSectionRecalc();
 
-    int rows = grid.size();
-    while ( rows-- ) {
-	delete grid[rows].row;
-    }
+    clearGrid();
 }
 
 void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild)
@@ -665,7 +728,7 @@ void RenderTableSection::addCell( RenderTableCell *cell )
 	cCol++;
 #endif
 
-    //qDebug("adding cell at %d/%d span=(%d/%d)",  cRow, cCol, rSpan, cSpan );
+//     qDebug("adding cell at %d/%d span=(%d/%d)",  cRow, cCol, rSpan, cSpan );
 
     // make sure we have enough rows
     ensureRows( cRow + rSpan );
@@ -764,7 +827,7 @@ void RenderTableSection::calcRowHeight()
 
 	int baseline=0;
 	int bdesc=0;
-	int ch;
+	int ch = 0;
 
 	Row *row = grid[r].row;
 	int totalCols = row->size();
@@ -818,11 +881,14 @@ void RenderTableSection::calcRowHeight()
 
 	if ( rowPos[r+1] < rowPos[r] )
 	    rowPos[r+1] = rowPos[r];
+// 	qDebug("rowpos(%d)=%d",  r, rowPos[r] );
     }
 }
 
 int RenderTableSection::layoutRows( int th )
 {
+//     qDebug("layoutRows: th = %d",  th );
+
     int rHeight;
     int rindx;
     int totalRows = grid.size();
@@ -971,6 +1037,50 @@ void RenderTableSection::print( QPainter *p, int x, int y, int w, int h,
     }
 }
 
+
+void RenderTableSection::setNeedCellRecalc()
+{
+//     qDebug("setNeedCellRecalc: %p, table=%p",  this, table() );
+    needCellRecalc = true;
+    table()->setNeedSectionRecalc();
+}
+
+void RenderTableSection::recalcCells()
+{
+//     qDebug("recalcCells, %p",  this);
+    cCol = cRow = 0;
+    clearGrid();
+    grid.resize( 0 );
+    ensureRows( 1 );
+
+    RenderObject *row = firstChild();
+    while ( row ) {
+	RenderObject *cell = row->firstChild();
+	while ( cell ) {
+	    if ( cell->isTableCell() )
+		addCell( static_cast<RenderTableCell *>(cell) );
+	    cell = cell->nextSibling();
+	}
+	row = row->nextSibling();
+    }
+    needCellRecalc = false;
+    setLayouted( false );
+}
+
+void RenderTableSection::clearGrid()
+{
+    int rows = grid.size();
+    while ( rows-- ) {
+	delete grid[rows].row;
+    }
+}
+
+RenderObject* RenderTableSection::removeChildNode(RenderObject* child)
+{
+    setNeedCellRecalc();
+    return RenderContainer::removeChildNode( child );
+}
+
 #ifndef NDEBUG
 void RenderTableSection::dump(QTextStream *stream, QString ind) const
 {
@@ -1000,9 +1110,8 @@ RenderTableRow::RenderTableRow(DOM::NodeImpl* node)
 
 RenderTableRow::~RenderTableRow()
 {
-    // ###
-//     if (table)
-//         table->setNeedsCellsRecalc();
+    if (section())
+        section()->setNeedCellRecalc();
 }
 
 void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
@@ -1048,16 +1157,15 @@ void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
 
     RenderContainer::addChild(cell,beforeChild);
 
-    // ###
-//     if (beforeChild || nextSibling())
-// 	table->setNeedsCellsRecalc();
-
+    if ( (beforeChild || nextSibling()) && section() )
+	section()->setNeedCellRecalc();
 }
 
-void RenderTableRow::repaint()
+RenderObject* RenderTableRow::removeChildNode(RenderObject* child)
 {
-    // ###
-//     if ( table ) table->repaint();
+    if ( section() )
+	section()->setNeedCellRecalc();
+    return RenderContainer::removeChildNode( child );
 }
 
 #ifndef NDEBUG
@@ -1101,9 +1209,8 @@ RenderTableCell::RenderTableCell(DOM::NodeImpl* _node)
 
 RenderTableCell::~RenderTableCell()
 {
-    // ###
-//     if (m_table)
-//         m_table->setNeedsCellsRecalc();
+    if (parent() && section())
+        section()->setNeedCellRecalc();
 }
 
 void RenderTableCell::updateFromElement()
@@ -1127,20 +1234,11 @@ void RenderTableCell::calcMinMaxWidth()
     kdDebug( 6040 ) << renderName() << "(TableCell)::calcMinMaxWidth() known=" << minMaxKnown() << endl;
 #endif
 
-    //if(minMaxKnown()) return;
-
-    //int oldMin = m_minWidth;
-    //int oldMax = m_maxWidth;
-
     RenderFlow::calcMinMaxWidth();
 
     if(nWrap && !(style()->width().type==Fixed))
         m_minWidth = m_maxWidth;
 
-    // ###
-//     if (m_minWidth!=oldMin || m_maxWidth!=oldMax) {
-//         m_table->addColInfo(this);
-//     }
     setMinMaxKnown();
 }
 
@@ -1297,11 +1395,6 @@ void RenderTableCell::printBoxDecorations(QPainter *p,int, int _y,
         printBorder(p, _tx, _ty, w, h, style());
 }
 
-void RenderTableCell::repaint()
-{
-    // ###
-//     if ( m_table ) m_table->repaint();
-}
 
 #ifndef NDEBUG
 void RenderTableCell::dump(QTextStream *stream, QString ind) const

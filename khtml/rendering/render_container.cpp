@@ -172,13 +172,6 @@ RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
     return oldChild;
 }
 
-void RenderContainer::removeChild(RenderObject *oldChild)
-{
-    removeChildNode(oldChild);
-    setLayouted(false);
-}
-
-
 void RenderContainer::insertPseudoChild(RenderStyle::PseudoId type, RenderObject* child, RenderObject* beforeChild)
 {
 
@@ -286,7 +279,7 @@ void RenderContainer::removeLeftoverAnonymousBoxes()
     RenderObject *child = firstChild();
     while( child ) {
 	RenderObject *next = child->nextSibling();
-	
+
 	if ( child->isFlow() && child->isAnonymousBox() && !child->childrenInline() ) {
 	    RenderObject *firstAnChild = child->firstChild();
 	    RenderObject *lastAnChild = child->lastChild();
@@ -307,7 +300,7 @@ void RenderContainer::removeLeftoverAnonymousBoxes()
 		    child->previousSibling()->setNextSibling( child->nextSibling() );
 		if ( child->nextSibling() )
 		    child->nextSibling()->setPreviousSibling( child->previousSibling() );
-		
+
 	    }
 	    if ( child == firstChild() )
 		m_first = firstAnChild;
@@ -328,5 +321,5 @@ void RenderContainer::removeLeftoverAnonymousBoxes()
     if ( parent() )
 	parent()->removeLeftoverAnonymousBoxes();
 }
-    
+
 #undef DEBUG_LAYOUT

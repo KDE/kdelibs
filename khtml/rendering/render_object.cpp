@@ -169,9 +169,10 @@ RenderObject* RenderObject::removeChildNode(RenderObject* )
     return 0;
 }
 
-void RenderObject::removeChild(RenderObject* )
+void RenderObject::removeChild(RenderObject *o )
 {
-    KHTMLAssert(0);
+    removeChildNode( o );
+    setLayouted(false);
 }
 
 void RenderObject::appendChildNode(RenderObject*)

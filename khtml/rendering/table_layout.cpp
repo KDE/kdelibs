@@ -596,7 +596,9 @@ int AutoTableLayout::calcEffectiveWidth()
 	bool allColsAreFixed = true;
 	bool haveVariable = false;
 	int fixedWidth = spacing;
+#ifdef DEBUG_LAYOUT
 	int cSpan = span;
+#endif
 	while ( lastCol < nEffCols && span > 0 ) {
 	    switch( layoutStruct[lastCol].width.type ) {
 	    case Percent:
@@ -739,7 +741,8 @@ void AutoTableLayout::insertSpanCell( RenderTableCell *cell )
     int size = spanCells.size();
     if ( !size || spanCells[size-1] != 0 ) {
 	spanCells.resize( size + 10 );
-	spanCells[size] = 0;
+	for ( int i = 0; i < 10; i++ )
+	    spanCells[size+i] = 0;
 	size += 10;
     }
 

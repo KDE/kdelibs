@@ -42,7 +42,6 @@ public:
     RenderObject *lastChild() const { return m_last; }
 
     virtual void addChild(RenderObject *newChild, RenderObject *beforeChild = 0);
-    virtual void removeChild(RenderObject *oldChild);
 
     virtual RenderObject* removeChildNode(RenderObject* child);
     virtual void appendChildNode(RenderObject* child);
@@ -52,7 +51,7 @@ public:
     virtual void calcMinMaxWidth() { setMinMaxKnown( true ); }
 
     virtual void removeLeftoverAnonymousBoxes();
-    
+
 private:
 
     void setFirstChild(RenderObject *first) { m_first = first; }
