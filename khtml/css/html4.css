@@ -82,7 +82,7 @@
       SMALL, SUB, SUP { font-size: small }
 /*      SUB             { vertical-align: sub }
       SUP             { vertical-align: super }*/
-/* hack... should get removed once we support the two lines above */
+/* ### hack... should get removed once we support the two lines above */
       SUB             { position: relative; top: 0.5em; }
       SUP             { position: relative; top: -0.5em; }
 
