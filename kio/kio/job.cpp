@@ -1625,7 +1625,7 @@ CopyJob::CopyJob( const KURL::List& src, const KURL& dest, CopyMode mode, bool a
     m_totalSize(0), m_processedSize(0), m_fileProcessedSize(0),
     m_processedFiles(0), m_processedDirs(0),
     m_srcList(src), m_currentStatSrc(m_srcList.begin()),
-    m_bCurrentOperationIsLink(false), m_bSingleFileCopy(false),
+    m_bCurrentOperationIsLink(false), m_bSingleFileCopy(false), m_bOnlyRenames(mode==Move),
     m_dest(dest), m_bAutoSkip( false ), m_bOverwriteAll( false ),
     m_conflictError(0), m_reportTimer(0)
 {
@@ -1716,6 +1716,8 @@ void CopyJob::slotResultStating( Job *job )
         }
         subjobs.remove( job );
         assert ( subjobs.isEmpty() );
+
+        // After knowing what the dest is, we can start stat'ing the first src.
         statNextSrc();
         return;
     }
@@ -1769,25 +1771,6 @@ void CopyJob::slotResultStating( Job *job )
             // (This even works with other src urls in the list, since the
             //  dir has effectively been created)
             destinationState = DEST_IS_DIR;
-        }
-
-        // If moving,
-        // Before going for the full list+copy+del thing, try to rename
-        if ( m_mode == Move )
-        {
-            if ((srcurl.protocol() == m_currentDest.protocol()) &&
-                (srcurl.host() == m_currentDest.host()) &&
-                (srcurl.port() == m_currentDest.port()) &&
-                (srcurl.user() == m_currentDest.user()) &&
-                (srcurl.pass() == m_currentDest.pass()))
-            {
-                kdDebug(7007) << "This seems to be a suitable case for trying to rename the dir before copy+del" << endl;
-                state = STATE_RENAMING;
-                SimpleJob * newJob = KIO::rename( srcurl, m_currentDest, false /*no overwrite */);
-                Scheduler::scheduleJob(newJob);
-                addSubjob( newJob );
-                return;
-            }
         }
 
         startListing( srcurl );
@@ -1925,6 +1908,7 @@ void CopyJob::statNextSrc()
 {
     if ( m_currentStatSrc != m_srcList.end() )
     {
+        m_currentSrcURL = (*m_currentStatSrc);
         if ( m_mode == Link )
         {
             // Skip the "stating the source" stage, we don't need it for linking
@@ -1934,24 +1918,44 @@ void CopyJob::statNextSrc()
             info.mtime = (time_t) -1;
             info.ctime = (time_t) -1;
             info.size = (off_t)-1;
-            info.uSource = *m_currentStatSrc;
+            info.uSource = m_currentSrcURL;
             info.uDest = m_currentDest;
             // Append filename or dirname to destination URL, if allowed
             if ( destinationState == DEST_IS_DIR && !m_asMethod )
-                info.uDest.addPath( (*m_currentStatSrc).fileName() );
+                info.uDest.addPath( m_currentSrcURL.fileName() );
             files.append( info ); // Files and any symlinks
             ++m_currentStatSrc;
             statNextSrc(); // we could use a loop instead of a recursive call :)
         }
+        // If moving, before going for the full stat+[list+]copy+del thing, try to rename
+        else if ( m_mode == Move &&
+                  (m_currentSrcURL.protocol() == m_dest.protocol()) &&
+                  (m_currentSrcURL.host() == m_dest.host()) &&
+                  (m_currentSrcURL.port() == m_dest.port()) &&
+                  (m_currentSrcURL.user() == m_dest.user()) &&
+                  (m_currentSrcURL.pass() == m_dest.pass()) )
+        {
+            KURL dest = m_dest;
+            // Append filename or dirname to destination URL, if allowed
+            if ( destinationState == DEST_IS_DIR && !m_asMethod )
+                dest.addPath( m_currentSrcURL.fileName() );
+            kdDebug(7007) << "This seems to be a suitable case for trying to rename before stat+[list+]copy+del" << endl;
+            state = STATE_RENAMING;
+            SimpleJob * newJob = KIO::rename( m_currentSrcURL, dest, false /*no overwrite */);
+            Scheduler::scheduleJob(newJob);
+            addSubjob( newJob );
+            if ( m_currentSrcURL.directory() != dest.directory() ) // For the user, moving isn't renaming. Only renaming is.
+                m_bOnlyRenames = false;
+    }
         else
         {
             // Stat the next src url
-            Job * job = KIO::stat( *m_currentStatSrc, true, 2, false );
+            Job * job = KIO::stat( m_currentSrcURL, true, 2, false );
             //kdDebug(7007) << "KIO::stat on " << (*it).prettyURL() << endl;
             state = STATE_STATING;
             addSubjob(job);
-            m_currentSrcURL=(*m_currentStatSrc);
             m_currentDestURL=m_dest;
+            m_bOnlyRenames = false;
         }
     } else
     {
@@ -2582,16 +2586,18 @@ void CopyJob::deleteNextDir()
     else
     {
         // Finished - tell the world
-        KDirNotify_stub allDirNotify("*", "KDirNotify*");
-        KURL url( m_dest );
-        if ( destinationState != DEST_IS_DIR || m_asMethod )
-            url.setPath( url.directory() );
-        //kdDebug(7007) << "KDirNotify'ing FilesAdded " << url.prettyURL() << endl;
-        allDirNotify.FilesAdded( url );
+        if ( !m_bOnlyRenames )
+        {
+            KDirNotify_stub allDirNotify("*", "KDirNotify*");
+            KURL url( m_dest );
+            if ( destinationState != DEST_IS_DIR || m_asMethod )
+                url.setPath( url.directory() );
+            //kdDebug(7007) << "KDirNotify'ing FilesAdded " << url.prettyURL() << endl;
+            allDirNotify.FilesAdded( url );
 
-        if ( m_mode == Move && !m_srcList.isEmpty() )
-            allDirNotify.FilesRemoved( m_srcList );
-
+            if ( m_mode == Move && !m_srcList.isEmpty() )
+                allDirNotify.FilesRemoved( m_srcList );
+        }
         if (m_reportTimer!=0)
             m_reportTimer->stop();
         emitResult();
@@ -2653,7 +2659,7 @@ void CopyJob::slotResult( Job *job )
         case STATE_STATING: // We were trying to stat a src url or the dest
             slotResultStating( job );
             break;
-        case STATE_RENAMING: // We were trying to rename a directory
+        case STATE_RENAMING: // We were trying to do a direct renaming, before even stat'ing
         {
             int err = job->error();
             subjobs.remove( job );
@@ -2667,14 +2673,20 @@ void CopyJob::slotResult( Job *job )
                     Job::slotResult( job ); // will set the error and emit result(this)
                     return;
                 }
-                kdDebug(7007) << "Couldn't rename, starting listing, for copy and del" << endl;
-                startListing( *m_currentStatSrc );
+
+                m_currentSrcURL=*m_currentStatSrc;
+                m_currentDestURL=m_dest;
+                kdDebug(7007) << "Couldn't rename, reverting to normal way, starting with stat" << endl;
+                Job * job = KIO::stat( m_currentSrcURL, true, 2, false );
+                //kdDebug(7007) << "KIO::stat on " << (*it).prettyURL() << endl;
+                state = STATE_STATING;
+                addSubjob(job);
+                m_bOnlyRenames = false;
             }
             else
             {
                 kdDebug(7007) << "Renaming succeeded, move on" << endl;
                 emit copyingDone( this, *m_currentStatSrc, m_currentDest, true, true );
-                dirs.remove( dirs.fromLast() );
                 ++m_currentStatSrc;
                 statNextSrc();
             }

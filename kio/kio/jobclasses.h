@@ -290,7 +290,7 @@ namespace KIO {
          * is emitted. This has obviously to be called before
          * the finish signal is emitted by the slave.
          *
-         * If @p inheritMetaData is true, the subjob will 
+         * If @p inheritMetaData is true, the subjob will
          * inherit the meta data from this job.
          */
         virtual void addSubjob( Job *job, bool inheritMetaData=true );
@@ -662,7 +662,7 @@ namespace KIO {
          * Mimetype determined
          */
         void mimetype( long id, const QString &type );
-        
+
         /**
          * File transfer completed.
          *
@@ -687,7 +687,7 @@ namespace KIO {
         };
         bool findCurrentEntry();
         void flushQueue(QPtrList<GetRequest> &queue);
-   
+
         QPtrList<GetRequest> m_waitQueue;
         QPtrList<GetRequest> m_activeQueue;
         bool b_multiGetActive;
@@ -805,7 +805,7 @@ namespace KIO {
 
     public:
         ListJob(const KURL& url, bool showProgressInfo,
-                bool recursive = false, QString prefix = QString::null, 
+                bool recursive = false, QString prefix = QString::null,
                 bool includeHidden = true);
 
         virtual void start( Slave *slave );
@@ -965,6 +965,7 @@ namespace KIO {
         bool m_bCurrentSrcIsDir;
         bool m_bCurrentOperationIsLink;
         bool m_bSingleFileCopy;
+        bool m_bOnlyRenames;
         KURL m_dest;
         KURL m_currentDest;
         //
