@@ -21,7 +21,6 @@
 
 #include <qcheckbox.h>
 #include <qcombobox.h>
-#include <qfiledialog.h>
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qpushbutton.h>
@@ -30,6 +29,7 @@
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kdialog.h>
+#include <kfiledialog.h>
 #include <kglobal.h>
 #include <klineedit.h>
 #include <klocale.h>
@@ -639,7 +639,7 @@ KSpellConfig::sBrowseDict()
 {
   return;
 
-  QString qs( QFileDialog::getOpenFileName ("/usr/local/lib","*.hash") );
+  QString qs( KFileDialog::getOpenFileName ("/usr/local/lib","*.hash") );
   if ( !qs.isNull() )
     kle1->setText (qs);
 
@@ -650,7 +650,7 @@ KSpellConfig::sBrowseDict()
 void KSpellConfig::sBrowsePDict()
 {
   //how do I find home directory path??
-  QString qs( QFileDialog::getOpenFileName ("",".ispell_*") );
+  QString qs( KFileDialog::getOpenFileName ("",".ispell_*") );
   if ( !qs.isNull() )
       kle2->setText (qs);
 
