@@ -970,7 +970,7 @@ void doInterfacesHeader(FILE *header)
 		fprintf(header,"class %s_base : %s {\n",d->name.c_str(),inherits.c_str());
 		fprintf(header,"public:\n");
 		fprintf(header,"\tstatic %s_base *_create(const std::string& subClass"
-						" = \"%s_base\");\n", d->name.c_str(),d->name.c_str());
+						" = \"%s\");\n", d->name.c_str(),d->name.c_str());
 		fprintf(header,"\tstatic %s_base *_fromString(std::string objectref);\n",
 														d->name.c_str());
 		fprintf(header,"\tstatic %s_base *_fromReference(ObjectReference ref,"
@@ -1309,7 +1309,7 @@ void doInterfacesSource(FILE *source)
 		fprintf(source,"\tObject_skel *skel = "
 							"ObjectManager::the()->create(subClass);\n");
 		fprintf(source,"\tassert(skel);\n");
-		fprintf(source,"\t%s_base *castedObject = (%s_base *)skel->_cast(\"%s_base\");\n",
+		fprintf(source,"\t%s_base *castedObject = (%s_base *)skel->_cast(\"%s\");\n",
 							d->name.c_str(),d->name.c_str(),d->name.c_str());
 		fprintf(source,"\tassert(castedObject);\n");
 		fprintf(source,"\treturn castedObject;\n");
@@ -1331,7 +1331,7 @@ void doInterfacesSource(FILE *source)
 		fprintf(source,"{\n");
 		fprintf(source,"\t%s_base *result;\n",d->name.c_str());
 		fprintf(source,
-		"\tresult = (%s_base *)Dispatcher::the()->connectObjectLocal(r,\"%s_base\");\n",
+		"\tresult = (%s_base *)Dispatcher::the()->connectObjectLocal(r,\"%s\");\n",
 										d->name.c_str(),d->name.c_str());
 		fprintf(source,"\tif(!result)\n");
 		fprintf(source,"\t{\n");
@@ -1411,20 +1411,20 @@ void doInterfacesSource(FILE *source)
 		fprintf(source,"std::string %s_skel::_interfaceName()\n",	
 													d->name.c_str());
 		fprintf(source,"{\n");
-		fprintf(source,"\treturn \"%s_base\";\n",d->name.c_str());
+		fprintf(source,"\treturn \"%s\";\n",d->name.c_str());
 		fprintf(source,"}\n\n");
 
 		fprintf(source,"std::string %s_skel::_interfaceNameSkel()\n",	
 													d->name.c_str());
 		fprintf(source,"{\n");
-		fprintf(source,"\treturn \"%s_base\";\n",d->name.c_str());
+		fprintf(source,"\treturn \"%s\";\n",d->name.c_str());
 		fprintf(source,"}\n\n");
 
 		/** _cast operation **/
 		fprintf(source,"void *%s_skel::_cast(std::string interface)\n",
 			d->name.c_str());
 		fprintf(source,"{\n");
-		fprintf(source,"\tif(interface == \"%s_base\") return (%s_base *)this;\n",
+		fprintf(source,"\tif(interface == \"%s\") return (%s_base *)this;\n",
 			d->name.c_str(),d->name.c_str());
 
 		if(d->inheritedInterfaces.size())

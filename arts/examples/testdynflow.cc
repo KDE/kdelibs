@@ -55,7 +55,7 @@ int main()
 			new PortDesc(11,"pos",pt,true,false,connect(20),440.0,"")
 		);
 		mdseq.push_back(
-			new ModuleDesc(12,"Synth_FREQUENCY_base",pdseq,0,0,0,0,false,false)
+			new ModuleDesc(12,"Synth_FREQUENCY",pdseq,0,0,0,0,false,false)
 		);
 	}
 
@@ -72,7 +72,7 @@ int main()
 		);
 
 		mdseq.push_back(
-			new ModuleDesc(22,"Synth_WAVE_SIN_base",pdseq,0,0,0,0,false,false)
+			new ModuleDesc(22,"Synth_WAVE_SIN",pdseq,0,0,0,0,false,false)
 		);
 	}
 
@@ -88,7 +88,7 @@ int main()
 			new PortDesc(31,"pos",pt,true,false,connect(40),0.0,"")
 		);
 		mdseq.push_back(
-			new ModuleDesc(32,"Synth_FREQUENCY_base",pdseq,0,0,0,0,false,false)
+			new ModuleDesc(32,"Synth_FREQUENCY",pdseq,0,0,0,0,false,false)
 		);
 	}
 
@@ -105,7 +105,7 @@ int main()
 		);
 
 		mdseq.push_back(
-			new ModuleDesc(42,"Synth_WAVE_SIN_base",pdseq,0,0,0,0,false,false)
+			new ModuleDesc(42,"Synth_WAVE_SIN",pdseq,0,0,0,0,false,false)
 		);
 	}
 
@@ -148,7 +148,7 @@ int main()
 		);
 
 		mdseq.push_back(
-			new ModuleDesc(53,"Synth_MULTI_ADD_base",pdseq,0,0,0,0,false,false)
+			new ModuleDesc(53,"Synth_MULTI_ADD",pdseq,0,0,0,0,false,false)
 		);
 	}
 
@@ -168,7 +168,7 @@ int main()
 		);
 
 		mdseq.push_back(
-			new ModuleDesc(63,"Synth_MUL_base",pdseq,0,0,0,0,false,false)
+			new ModuleDesc(63,"Synth_MUL",pdseq,0,0,0,0,false,false)
 		);
 	}
 
@@ -190,7 +190,7 @@ int main()
 		);
 	
 		mdseq.push_back(
-			new ModuleDesc(4,"Synth_PLAY_base",pdseq,0,0,0,0,false,false)
+			new ModuleDesc(4,"Synth_PLAY",pdseq,0,0,0,0,false,false)
 		);
 	}
 

@@ -133,7 +133,7 @@ bool ArtsServer_impl::createModule(long mid, const ModuleDesc& desc)
 	Object_skel *object = ObjectManager::the()->create(desc.Name);
 	assert(object);
 
-	SynthModule_base *NewModule = (SynthModule_base *)object->_cast("SynthModule_base");
+	SynthModule_base *NewModule = (SynthModule_base *)object->_cast("SynthModule");
 	assert(NewModule);
 
 	SynthExecNode *schedNode = new SynthExecNode(NewModule);

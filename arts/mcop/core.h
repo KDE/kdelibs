@@ -279,7 +279,7 @@ public:
 
 class InterfaceRepo_base : virtual public Object {
 public:
-	static InterfaceRepo_base *_create(const std::string& subClass = "InterfaceRepo_base");
+	static InterfaceRepo_base *_create(const std::string& subClass = "InterfaceRepo");
 	static InterfaceRepo_base *_fromString(std::string objectref);
 	static InterfaceRepo_base *_fromReference(ObjectReference ref, bool needcopy);
 
@@ -348,7 +348,7 @@ public:
 
 class FlowSystemSender_base : virtual public Object {
 public:
-	static FlowSystemSender_base *_create(const std::string& subClass = "FlowSystemSender_base");
+	static FlowSystemSender_base *_create(const std::string& subClass = "FlowSystemSender");
 	static FlowSystemSender_base *_fromString(std::string objectref);
 	static FlowSystemSender_base *_fromReference(ObjectReference ref, bool needcopy);
 
@@ -408,7 +408,7 @@ public:
 
 class FlowSystemReceiver_base : virtual public Object {
 public:
-	static FlowSystemReceiver_base *_create(const std::string& subClass = "FlowSystemReceiver_base");
+	static FlowSystemReceiver_base *_create(const std::string& subClass = "FlowSystemReceiver");
 	static FlowSystemReceiver_base *_fromString(std::string objectref);
 	static FlowSystemReceiver_base *_fromReference(ObjectReference ref, bool needcopy);
 
@@ -468,7 +468,7 @@ public:
 
 class FlowSystem_base : virtual public Object {
 public:
-	static FlowSystem_base *_create(const std::string& subClass = "FlowSystem_base");
+	static FlowSystem_base *_create(const std::string& subClass = "FlowSystem");
 	static FlowSystem_base *_fromString(std::string objectref);
 	static FlowSystem_base *_fromReference(ObjectReference ref, bool needcopy);
 
@@ -543,7 +543,7 @@ public:
 
 class GlobalComm_base : virtual public Object {
 public:
-	static GlobalComm_base *_create(const std::string& subClass = "GlobalComm_base");
+	static GlobalComm_base *_create(const std::string& subClass = "GlobalComm");
 	static GlobalComm_base *_fromString(std::string objectref);
 	static GlobalComm_base *_fromReference(ObjectReference ref, bool needcopy);
 
@@ -609,7 +609,7 @@ public:
 
 class TmpGlobalComm_base : virtual public GlobalComm_base {
 public:
-	static TmpGlobalComm_base *_create(const std::string& subClass = "TmpGlobalComm_base");
+	static TmpGlobalComm_base *_create(const std::string& subClass = "TmpGlobalComm");
 	static TmpGlobalComm_base *_fromString(std::string objectref);
 	static TmpGlobalComm_base *_fromReference(ObjectReference ref, bool needcopy);
 

@@ -70,6 +70,12 @@ static void printInterface(InterfaceDef *id)
  * as well).
  */
 
+/**
+ * Interface repository demo - reasonable testcase:
+ *
+ *  - make sure artsd is running
+ *  - irdemo global:Arts_SimpleSoundServer
+ */
 int main(int argc, char **argv)
 {
 	if(argc != 2)

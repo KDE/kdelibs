@@ -91,7 +91,7 @@ int main(int argc, char **argv)
 	Dispatcher dispatcher;
 	SimpleSoundServer_var server;
 
-	server = SimpleSoundServer_base::_fromString("global:Arts_SimpleSoundServer_base");
+	server = SimpleSoundServer_base::_fromString("global:Arts_SimpleSoundServer");
 	if(!server)
 	{
 		cerr << "Can't connect to sound server" << endl;
