@@ -28,7 +28,7 @@ INCLUDES=  $(all_includes)
 LDFLAGS = $(all_libraries)
 
 bin_PROGRAMS = dcopserver
-check_PROGRAMS = testdcop
+check_PROGRAMS = testdcop testdcopc
 
 lib_LTLIBRARIES  = libDCOP.la dcopserver.la
 #LIB_QT already includes LIBSM (and thereby -lSM -lICE)
@@ -55,5 +55,8 @@ dcopserver_LDADD   = libDCOP.la
 
 testdcop_SOURCES = testdcop.cpp
 testdcop_LDADD = ../kdecore/libkdecore.la
+
+testdcopc_SOURCES = testdcopc.c dcopc.c
+testdcopc_LDADD = $(LIBSM)
 
 EXTRA_DIST = HOWTO ICE
