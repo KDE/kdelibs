@@ -86,8 +86,11 @@ void KStepStyle::drawPushButton(QPushButton *btn, QPainter *p)
 
 void KStepStyle::drawPushButtonLabel(QPushButton *btn, QPainter *p)
 {
-    int x1, y1, x2, y2;
+    int x1, y1, x2, y2, w, h;
     btn->rect().coords(&x1, &y1, &x2, &y2);
+    w = btn->width();
+    h = btn->height();
+
     bool act = btn->isOn() || btn->isDown();
     if (arrowLightBmp.isNull())
     {
@@ -99,6 +102,22 @@ void KStepStyle::drawPushButtonLabel(QPushButton *btn, QPainter *p)
         arrowMidBmp.setMask(arrowMidBmp);
     }
 
+    // Draw iconset first, if any
+    if ( btn->iconSet() && !btn->iconSet()->isNull() )
+    {
+	QIconSet::Mode mode = btn->isEnabled()
+			      ? QIconSet::Normal : QIconSet::Disabled;
+	if ( mode == QIconSet::Normal && btn->hasFocus() )
+	    mode = QIconSet::Active;
+	QPixmap pixmap = btn->iconSet()->pixmap( QIconSet::Small, mode );
+	int pixw = pixmap.width();
+	int pixh = pixmap.height();
+
+	p->drawPixmap( x1+6, y1+h/2-pixh/2, pixmap );
+	x1 += pixw + 8;
+	w -= pixw + 8;
+    }
+    
     if (btn->isDefault()) {
 
       // If this is a default button, we have a 4 pixel border which is
@@ -114,16 +133,15 @@ void KStepStyle::drawPushButtonLabel(QPushButton *btn, QPainter *p)
                       NULL, &arrowDarkBmp, NULL, NULL);
 
 
-        drawItem(p,
-          (x1+act?1:0) + 6, y1+act?1:0,
-          btn->width() - 26, btn->height(),
+        drawItem( p,
+          ( x1 + ( act ? 1 : 0 ) ) + 6, y1 + ( act ? 1 : 0 ), w - 26, h,
           AlignCenter | ShowPrefix, btn->colorGroup(), btn->isEnabled(),
           btn->pixmap(), btn->text(), -1,
           act ? &btn->colorGroup().light() : &btn->colorGroup().buttonText());
 
     } else {
 
-        drawItem(p, x1+act?1:0, y1+act?1:0, btn->width(), btn->height(),
+        drawItem( p, x1 + ( act ? 1 : 0 ), y1 + ( act ? 1 : 0 ), w, h,
           AlignCenter | ShowPrefix, btn->colorGroup(), btn->isEnabled(),
           btn->pixmap(), btn->text(), -1,
           act ? &btn->colorGroup().light() : &btn->colorGroup().buttonText());

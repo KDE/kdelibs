@@ -483,33 +483,53 @@ void HCStyle::drawPushButton(QPushButton *btn, QPainter *p)
 
 void HCStyle::drawPushButtonLabel(QPushButton *btn, QPainter *p)
 {
-    int x1, y1, x2, y2;
+    int x1, y1, x2, y2, w, h;
     btn->rect().coords(&x1, &y1, &x2, &y2);
+    w = btn->width();
+    h = btn->height();
 
     bool act = btn->isOn() || btn->isDown();
     if(act){
         ++x1, ++y1;
     }
 
+    // Draw iconset first, if any
+    if ( btn->iconSet() && !btn->iconSet()->isNull() )
+    {
+	QIconSet::Mode mode = btn->isEnabled()
+			      ? QIconSet::Normal : QIconSet::Disabled;
+	if ( mode == QIconSet::Normal && btn->hasFocus() )
+	    mode = QIconSet::Active;
+	QPixmap pixmap = btn->iconSet()->pixmap( QIconSet::Small, mode );
+	int pixw = pixmap.width();
+	int pixh = pixmap.height();
+
+	p->drawPixmap( x1+6, y1+h/2-pixh/2, pixmap );
+	x1 += pixw + 8;
+	w -= pixw + 8;
+    }
+    
     if(act || btn->isDefault()){
         QFont font = btn->font();
         font.setBold(true);
         p->setFont(font);
-        drawItem(p, x1+1, y1+1, btn->width(), btn->height(),
+        drawItem( p, x1+1, y1+1, w, h,
                  AlignCenter | ShowPrefix, btn->colorGroup(), btn->isEnabled(),
                  btn->pixmap(), btn->text(), -1, act ?
                  &btn->colorGroup().dark() : &btn->colorGroup().mid());
 
-        drawItem(p, x1, y1, btn->width(), btn->height(),
+        drawItem( p, x1, y1, w, h,
                  AlignCenter | ShowPrefix, btn->colorGroup(), btn->isEnabled(),
                  btn->pixmap(), btn->text(), -1, act ?
                  &btn->colorGroup().light() : &btn->colorGroup().text());
     }
     else{
-        drawItem(p, x1+act?1:0, y1+act?1:0, btn->width(), btn->height(),
-                 AlignCenter | ShowPrefix, btn->colorGroup(), btn->isEnabled(),
-                 btn->pixmap(), btn->text(), -1,
-                 act ? &btn->colorGroup().light() : &btn->colorGroup().buttonText());
+        drawItem( p, x1 + ( act ? 1 : 0 ), y1 + ( act ? 1 : 0 ), w, h,
+                  AlignCenter | ShowPrefix,
+		  btn->colorGroup(), btn->isEnabled(),
+                  btn->pixmap(), btn->text(), -1,
+                  act ? &btn->colorGroup().light()
+		      : &btn->colorGroup().buttonText());
     }
 }
 
@@ -1909,4 +1929,4 @@ void HCStyle::drawKickerTaskButton(QPainter *p, int x, int y, int w, int h,
 
 #include "hcstyle.moc"
 
-
+/* vim: set noet sw=8 ts=8: */

@@ -1040,6 +1040,22 @@ void KThemeStyle::drawPushButtonLabel(QPushButton *btn, QPainter *p)
     w-=decoWidth(widget)*2;
     h-=decoWidth(widget)*2;
 
+    // Draw iconset first, if any
+    if ( btn->iconSet() && !btn->iconSet()->isNull() )
+    {
+        QIconSet::Mode mode = btn->isEnabled()
+			      ? QIconSet::Normal : QIconSet::Disabled;
+        if ( mode == QIconSet::Normal && btn->hasFocus() )
+            mode = QIconSet::Active;
+        QPixmap pixmap = btn->iconSet()->pixmap( QIconSet::Small, mode );
+        int pixw = pixmap.width();
+        int pixh = pixmap.height();
+
+        p->drawPixmap( x+6, y+h/2-pixh/2, pixmap );
+        x += pixw + 8;
+        w -= pixw + 8;
+    }
+    
     if(widget == PushButtonDown){
         drawItem(p, x+buttonXShift(), y+buttonYShift(),
                  w, h, AlignCenter | ShowPrefix, *cg, btn->isEnabled(),
