@@ -1570,6 +1570,8 @@ void HTMLTokenizer::processToken()
 
     if ( currToken.flat && currToken.id != ID_TEXT && !parser->noSpaces() )
 	discard = NoneDiscard;
+    else if ( parser->selectMode() )
+        discard = AllDiscard;
 
     currToken.reset();
     if (jsProxy)
