@@ -58,8 +58,7 @@ public:
    *  @li @p StyleList -  Identifies the style (center) list.
    *  @li @p SizeList -   Identifies the size (rightmost) list.
    */
-  enum FontColumn { FamilyList=0x01, StyleList=0x02, SizeList=0x04,
-    CharsetList=0x08 };
+  enum FontColumn { FamilyList=0x01, StyleList=0x02, SizeList=0x04};
 
   /**
    *  @li @p FontDiffFamily - Identifies a requested change in the font family.
@@ -179,18 +178,6 @@ public:
   QButton::ToggleState sizeIsRelative() const;
 
 
-#if QT_VERSION < 300
-  /**
-   * Set the currently selected charset in the chooser.
-   */
-  void setCharset( const QString & charset );
-
-  /**
-   * @return The currently selected charset in the dialog.
-   */
-  QString charset() const;
-#endif
-
   /**
    * @return The current text in the sample text input area.
    */
@@ -260,12 +247,10 @@ private slots:
   void size_chosen_slot(const QString&);
   void style_chosen_slot(const QString&);
   void displaySample(const QFont &font);
-  void charset_chosen_slot(const QString&);
   void showXLFDArea(bool);
 
 private:
   void fillFamilyListBox(bool onlyFixedFonts = false);
-  void fillCharsetsCombo();
   void fillSizeList();
   // This one must be static since getFontList( QStringList, char*) is so
   static void addFont( QStringList &list, const char *xfont );
@@ -290,7 +275,6 @@ private:
   KListBox     *familyListBox;
   KListBox     *styleListBox;
   KListBox     *sizeListBox;
-  QComboBox    *charsetsCombo;
   QCheckBox    *sizeIsRelativeCheckBox;
 
   QFont        selFont;
@@ -393,19 +377,6 @@ public:
    */
   QButton::ToggleState sizeIsRelative() const
     { return chooser->sizeIsRelative(); }
-
-#if QT_VERSION < 300
-  /**
-   * Sets the currently selected charset in the dialog.
-   */
-  void setCharset( const QString & charset )
-    { chooser->setCharset( charset ); }
-
-  /**
-   * @return The currently selected charset in the dialog.
-   */
-  QString charset() const { return chooser->charset(); }
-#endif
 
   /**
    * Creates a modal font dialog, lets the user choose a font,
