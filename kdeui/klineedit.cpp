@@ -248,7 +248,13 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                 if (hasSelectedText() )
                 {
                     if (d->userSelection)
-                        deselect();
+                    {
+			deselect();
+			
+			// Don't swallow the Escape press event for the case
+			// of dialogs, which have Escape associated to Cancel
+		        QLineEdit::keyPressEvent ( e );
+                    }
                     else
                     {
                         d->autoSuggest=false;
@@ -747,8 +753,6 @@ void KLineEdit::setCompletedItems( const QStringList& items )
     {
         if ( !d->completionBox )
             makeCompletionBox();
-
-	    kdDebug() << "setCompletedItems" << endl;
 
         if ( !txt.isEmpty() )
             d->completionBox->setCancelledText( txt );
