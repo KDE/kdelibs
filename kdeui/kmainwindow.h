@@ -484,14 +484,9 @@ public:
     virtual void finalizeGUI( KXMLGUIClient *client );
 
     /**
-     * @internal Remove in KDE 4.0
-     * @deprecated
-     */
-    void finalizeGUI( bool force );
-    /**
      * @internal
      */
-    void finalizeGUI( bool force, KConfig *cnf, const QString& configGroup = QString::null );
+    void finalizeGUI( bool force );
 
     /**
      * @return true if a -geometry argument was given on the command line,

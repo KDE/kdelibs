@@ -758,27 +758,6 @@ void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &config
             mb->show();
     }
 
-    finalizeGUI( true, config, configGroup );
-}
-
-void KMainWindow::finalizeGUI( bool force )
-{
-    finalizeGUI( force, 0L );
-}
-
-void KMainWindow::finalizeGUI( bool force, KConfig* config, const QString &_configGroup )
-{
-    QString configGroup = _configGroup;
-
-    //kdDebug(200) << "KMainWindow::finalizeGUI force=" << force << endl;
-    if ( config == 0 && d->autoSaveSettings )
-    {
-        config = KGlobal::config();
-        configGroup = d->autoSaveGroup;
-    }
-
-    if ( config != 0 )
-    {
         int n = 1; // Toolbar counter. toolbars are counted from 1,
         KToolBar *toolbar;
         QPtrListIterator<KToolBar> it( toolBarIterator() ); // must use own iterator
@@ -797,7 +776,13 @@ void KMainWindow::finalizeGUI( bool force, KConfig* config, const QString &_conf
             toolbar->applySettings(config, group);
             n++;
         }
+
+    finalizeGUI( true );
     }
+
+void KMainWindow::finalizeGUI( bool force )
+{
+    //kdDebug(200) << "KMainWindow::finalizeGUI force=" << force << endl;
     // The whole reason for this is that moveToolBar relies on the indexes
     // of the other toolbars, so in theory it should be called only once per
     // toolbar, but in increasing order of indexes.
