@@ -23,7 +23,8 @@ content-type    string          The content type of the data to be uploaded (rea
 
 cache           "cache"         Use entry from cache if available.
                 "cacheonly"     Do not do any remote lookups, fail if not in cache. (read by http)
-                "verify"        Use entry from after verifying with remote server
+                "verify"        Use entry from cache, verify with remote server if expired
+                "refresh"       Use entry from cache after verifying with remote server
                 "reload"        Do not do any cache lookups.
 
 no-cache        bool            Flag that indicates whether caching is enabled/disabled
