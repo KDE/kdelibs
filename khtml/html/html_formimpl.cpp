@@ -23,22 +23,12 @@
  */
 #include "html_formimpl.h"
 
-//#define BUTTON_DEBUG
+//#include <klocale.h>
 
-#include <stdio.h>
-
-#include <klocale.h>
-
-#include <qpushbutton.h>
-#include <qcombobox.h>
-#include <qlistbox.h>
-#include <qstack.h>
+//#include <qstack.h>
 
 #include "khtmlview.h"
 #include "khtml_part.h"
-#include "html_form.h"
-#include "dom_string.h"
-#include "dom_textimpl.h"
 #include "html_documentimpl.h"
 
 #include "htmlhashes.h"
@@ -47,6 +37,8 @@
 #include "css/cssproperties.h"
 
 #include "rendering/render_form.h"
+
+#include <stdio.h>
 
 using namespace DOM;
 using namespace khtml;
@@ -63,6 +55,11 @@ HTMLFormElementImpl::HTMLFormElementImpl(DocumentImpl *doc)
 HTMLFormElementImpl::~HTMLFormElementImpl()
 {
     // ### set the form for all formElements to 0
+}
+
+ushort HTMLFormElementImpl::id() const
+{
+    return ID_FORM;
 }
 
 long HTMLFormElementImpl::length() const
@@ -692,6 +689,11 @@ HTMLSelectElementImpl::HTMLSelectElementImpl(DocumentImpl *doc, HTMLFormElementI
     m_size = 0;
 }
 
+ushort HTMLSelectElementImpl::id() const
+{
+    return ID_SELECT;
+}
+
 DOMString HTMLSelectElementImpl::type() const
 {
     // ###
@@ -811,6 +813,11 @@ HTMLOptGroupElementImpl::~HTMLOptGroupElementImpl()
 {
 }
 
+ushort HTMLOptGroupElementImpl::id() const
+{
+    return ID_OPTGROUP;
+}
+
 // -------------------------------------------------------------------------
 
 HTMLOptionElementImpl::HTMLOptionElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f)
@@ -823,6 +830,11 @@ HTMLOptionElementImpl::HTMLOptionElementImpl(DocumentImpl *doc)
     : HTMLGenericFormElementImpl(doc)
 {
     m_selected = false;
+}
+
+ushort HTMLOptionElementImpl::id() const
+{
+    return ID_OPTION;
 }
 
 DOMString HTMLOptionElementImpl::text() const
@@ -874,6 +886,10 @@ HTMLTextAreaElementImpl::HTMLTextAreaElementImpl(DocumentImpl *doc, HTMLFormElem
     m_wrap = ta_Virtual;
 }
 
+ushort HTMLTextAreaElementImpl::id() const
+{
+    return ID_TEXTAREA;
+}
 
 long HTMLTextAreaElementImpl::tabIndex() const
 {

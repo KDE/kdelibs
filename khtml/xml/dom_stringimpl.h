@@ -28,8 +28,6 @@
 #include <khtmllayout.h>
 #include <qlist.h>
 
-#include <stdlib.h>
-
 namespace DOM {
 
 class DOMStringImpl : public DomShared
@@ -51,7 +49,7 @@ public:
     khtml::Length toLength() const;
     int toInt() const;
     QList<khtml::Length> *toLengthList() const;
-    
+
     uint l;
     QChar *s;
 };

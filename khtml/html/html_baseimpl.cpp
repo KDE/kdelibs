@@ -22,37 +22,23 @@
  * $Id$
  */
 // -------------------------------------------------------------------------
-
-#include "dom_string.h"
-
-#include <kapp.h>
-
 #include "html_baseimpl.h"
+
 #include "html_documentimpl.h"
-using namespace DOM;
 
 #include "khtmlview.h"
 #include "khtml_part.h"
-#include "htmlhashes.h"
-#include <stdio.h>
-#include <kurl.h>
 
-#include <qcursor.h>
-#include <qnamespace.h>
-
-#include <kapp.h>
-
-#include "rendering/render_object.h"
 #include "rendering/render_frames.h"
 #include "css/cssstyleselector.h"
 #include "css/cssproperties.h"
 #include "misc/loader.h"
-#include <qframe.h>
-#include <qstring.h>
-#include <qscrollview.h>
+#include "misc/htmlhashes.h"
 
-#include <assert.h>
+#include <kurl.h>
+#include <stdio.h>
 
+using namespace DOM;
 
 HTMLBodyElementImpl::HTMLBodyElementImpl(DocumentImpl *doc)
     : HTMLElementImpl(doc)
@@ -61,7 +47,6 @@ HTMLBodyElementImpl::HTMLBodyElementImpl(DocumentImpl *doc)
 
 HTMLBodyElementImpl::~HTMLBodyElementImpl()
 {
-    if(m_style && m_style->backgroundImage()) m_style->backgroundImage()->deref(this);
 }
 
 const DOMString HTMLBodyElementImpl::nodeName() const

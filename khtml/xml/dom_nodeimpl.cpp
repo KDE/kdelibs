@@ -21,20 +21,17 @@
  *
  * $Id$
  */
+#include "dom_nodeimpl.h"
 
 #include "dom_node.h"
-#include "dom_doc.h"
 #include "dom_exception.h"
 #include "dom_string.h"
-#include "dtd.h"
 
-#include "dom_nodeimpl.h"
 #include "dom_elementimpl.h"
 #include "dom_docimpl.h"
 
 #include <stdio.h>
 
-#include "rendering/render_style.h"
 #include "rendering/render_object.h"
 
 using namespace DOM;

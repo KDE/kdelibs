@@ -25,12 +25,9 @@
 #ifndef HTML_BASEIMPL_H
 #define HTML_BASEIMPL_H 1
 
-#include <qpixmap.h>
-
 #include "dtd.h"
 #include "html_elementimpl.h"
 #include "qscrollview.h"
-#include "misc/loader.h"
 
 class KHTMLView;
 
@@ -38,8 +35,7 @@ namespace DOM {
 
 class DOMString;
 
-class HTMLBodyElementImpl : public HTMLElementImpl,
-    public khtml::CachedObjectClient
+class HTMLBodyElementImpl : public HTMLElementImpl
 {
 public:
     HTMLBodyElementImpl(DocumentImpl *doc);
@@ -59,7 +55,6 @@ public:
 
 class HTMLFrameElementImpl : public HTMLElementImpl
 {
-    friend class KHTMLView;
 public:
     HTMLFrameElementImpl(DocumentImpl *doc);
 
@@ -94,7 +89,6 @@ protected:
 
 class HTMLFrameSetElementImpl : public HTMLElementImpl
 {
-    friend class KHTMLView;
 public:
     HTMLFrameSetElementImpl(DocumentImpl *doc);
 

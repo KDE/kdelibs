@@ -23,11 +23,10 @@
  */
 
 #include "dom_stringimpl.h"
-using namespace DOM;
+
 #include <qregexp.h>
 
-#include <stdio.h>
-
+using namespace DOM;
 using namespace khtml;
 
 template class QList<Length>;

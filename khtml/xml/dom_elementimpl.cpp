@@ -21,12 +21,8 @@
  *
  * $Id$
  */
-
-#include "dom_string.h"
-#include "htmlhashes.h"
-
 #include "dom_elementimpl.h"
-#include "dom_nodeimpl.h"
+
 #include "dom_exception.h"
 #include "dom_node.h"
 #include "dom_textimpl.h"
@@ -34,8 +30,7 @@
 
 #include "css/cssstyleselector.h"
 #include "rendering/render_object.h"
-
-#include <stdio.h>
+#include "misc/htmlhashes.h"
 
 using namespace DOM;
 

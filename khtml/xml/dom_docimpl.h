@@ -24,9 +24,8 @@
 #define _DOM_DocumentImpl_h_
 
 #include "dom_nodeimpl.h"
-#include "dom_node.h"
 #include "dom_string.h"
-class HTMLImageRequester;
+
 class KHTMLView;
 
 namespace khtml {
@@ -35,13 +34,12 @@ namespace khtml {
 
 namespace DOM {
 
-class DocumentImpl;
-class ElementImpl;
-class DocumentFragmentImpl;
-class TextImpl;
-class AttrImpl;
-class NodeListImpl;
-class StyleSheetListImpl;
+    class ElementImpl;
+    class DocumentFragmentImpl;
+    class TextImpl;
+    class AttrImpl;
+    class NodeListImpl;
+    class StyleSheetListImpl;
 
 /**
  * @internal
@@ -85,17 +83,14 @@ public:
 
     virtual StyleSheetListImpl *styleSheets();
 
-    // for KHTML
-    virtual DOMString requestImage(HTMLImageRequester *, DOMString ) { return DOMString(); }
-
     khtml::CSSStyleSelector *styleSelector() { return m_styleSelector; }
     virtual void createSelector();
 
-    KHTMLView *HTMLWidget() { return view; }
+    KHTMLView *view() { return m_view; }
 
 protected:
     khtml::CSSStyleSelector *m_styleSelector;
-    KHTMLView *view;
+    KHTMLView *m_view;
 };
 
 class DocumentFragmentImpl : public NodeImpl

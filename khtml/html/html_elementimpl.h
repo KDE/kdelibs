@@ -24,15 +24,7 @@
 #ifndef HTML_ELEMENTIMPL_H
 #define HTML_ELEMENTIMPL_H
 
-#include <qptrdict.h>
-#include <qstring.h>
-#include <qfontmetrics.h>
-
-#include "dtd.h"
 #include "dom_elementimpl.h"
-#include "htmlhashes.h"
-#include "rendering/render_style.h"
-
 
 namespace DOM {
 

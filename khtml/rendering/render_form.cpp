@@ -41,6 +41,7 @@
 #include "dom_textimpl.h"
 
 #include "html/html_formimpl.h"
+#include "misc/htmlhashes.h"
 
 #include "rendering/render_form.h"
 #include "rendering/render_style.h"

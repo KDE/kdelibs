@@ -24,16 +24,13 @@
 #ifndef HTML_FORMIMPL_H
 #define HTML_FORMIMPL_H
 
-// -------------------------------------------------------------------------
-#include "dtd.h"
 #include "html_elementimpl.h"
-#include "khtmlview.h"
+#include "dtd.h"
+#include "html_element.h"
+
+#include <qlist.h>
 
 class KHTMLView;
-class QWidget;
-class QMultiLineEdit;
-#include <qpixmap.h>
-#include <qlist.h>
 
 namespace khtml
 {
@@ -55,7 +52,7 @@ public:
     virtual ~HTMLFormElementImpl();
 
     virtual const DOMString nodeName() const { return "FORM"; }
-    virtual ushort id() const { return ID_FORM; }
+    virtual ushort id() const;
 
     virtual tagStatus startTag() { return FORMStartTag; }
     virtual tagStatus endTag() { return FORMEndTag; }
@@ -153,7 +150,6 @@ protected:
     bool _clicked;
     typeEnum _type;
     QString currValue;
-    QPixmap pixmap;
     bool dirty;
 };
 
@@ -276,7 +272,7 @@ public:
     HTMLSelectElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f);
 
     virtual const DOMString nodeName() const { return "SELECT"; }
-    virtual ushort id() const { return ID_SELECT; }
+    virtual ushort id() const;
 
     virtual tagStatus startTag() { return SELECTStartTag; }
     virtual tagStatus endTag() { return SELECTEndTag; }
@@ -319,7 +315,7 @@ public:
     virtual ~HTMLOptGroupElementImpl();
 
     virtual const DOMString nodeName() const { return "OPTGROUP"; }
-    virtual ushort id() const { return ID_OPTGROUP; }
+    virtual ushort id() const;
 
     virtual tagStatus startTag() { return OPTGROUPStartTag; }
     virtual tagStatus endTag() { return OPTGROUPEndTag; }
@@ -335,8 +331,8 @@ public:
     HTMLOptionElementImpl(DocumentImpl *doc);
     HTMLOptionElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f);
 
-    virtual const DOMString nodeName() const { return "OPTION"; }
-    virtual ushort id() const { return ID_OPTION; }
+    virtual const DOMString nodeName() const;
+    virtual ushort id() const;
 
     virtual tagStatus startTag() { return OPTIONStartTag; }
     virtual tagStatus endTag() { return OPTIONEndTag; }
@@ -347,7 +343,7 @@ public:
     void setIndex( long );
     virtual void parseAttribute(Attribute *attr);
 
-    bool selected() const { return m_selected; }
+    bool selected() const;
 
 protected:
     bool m_selected;
@@ -372,7 +368,7 @@ public:
     HTMLTextAreaElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f);
 
     virtual const DOMString nodeName() const { return "TEXTAREA"; }
-    virtual ushort id() const { return ID_TEXTAREA; }
+    virtual ushort id() const;
 
     virtual tagStatus startTag() { return TEXTAREAStartTag; }
     virtual tagStatus endTag() { return TEXTAREAEndTag; }

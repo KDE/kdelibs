@@ -26,9 +26,9 @@
 #ifndef HTML_BLOCKIMPL_H
 #define HTML_BLOCKIMPL_H
 
-#include "dtd.h"
 #include "html_elementimpl.h"
-#include "khtmllayout.h"
+#include "dtd.h"
+#include "rendering/render_style.h"
 
 namespace DOM {
 

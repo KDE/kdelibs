@@ -33,6 +33,7 @@
 #include "html_documentimpl.h"
 #include "html_elementimpl.h"
 #include "html_miscimpl.h"
+#include "htmlhashes.h"
 using namespace DOM;
 
 

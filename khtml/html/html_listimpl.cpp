@@ -33,6 +33,7 @@ using namespace DOM;
 
 #include "css/cssproperties.h"
 #include "rendering/render_list.h"
+#include "misc/htmlhashes.h"
 
 #include <stdio.h>
 

@@ -33,7 +33,6 @@
 class KHTMLParser;
 class HTMLTokenizer;
 class KHTMLView;
-class HTMLImageRequester;
 
 namespace DOM {
 

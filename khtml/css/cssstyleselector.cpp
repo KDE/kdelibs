@@ -37,6 +37,7 @@ using namespace DOM;
 
 #include "misc/khtmllayout.h"
 #include "misc/khtmldata.h"
+#include "misc/htmlhashes.h"
 
 #include "html/html_headimpl.h"
 #include "khtmlview.h"
@@ -161,23 +162,23 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
     if(e->parentNode())
 	style = new RenderStyle(e->parentNode()->style());
     else
-	style = new RenderStyle();	    
+	style = new RenderStyle();	
 
     for(int i = 0; i < (int)propsToApply->count(); i++)
 	applyRule(style, propsToApply->at(i)->prop, e);
 	
 	
 //    printf("STYLE count=%d, DATA count=%d\n",RenderStyle::counter, SharedData::counter);
-    
+
     // experimental -antti
-    
+
     for ( int n=0; n<(int)lastStyles.count(); n++)
     {
     	style->mergeData(lastStyles.at(n));
     }
-    
+
     lastStyles.append(style);
-        
+
     if (lastStyles.count()>5)
     	lastStyles.removeFirst();
 	
@@ -1234,7 +1235,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	QFontDatabase db;
 	int oldSize;
 	float size = 0;
-	const int *standardSizes = e->ownerDocument()->HTMLWidget()->part()->fontSizes();
+	const int *standardSizes = e->ownerDocument()->view()->part()->fontSizes();
 	if(e->parentNode())
 	{
 	    QFontInfo fi(e->parentNode()->style()->font());

@@ -21,21 +21,13 @@
  *
  * $Id$
  */
-#include "dom_exception.h"
-#include "dom_string.h"
+#include "dom_textimpl.h"
+
 #include "dom_stringimpl.h"
 
-#include "dom_textimpl.h"
-#include "dom_node.h"
-#include "dom_docimpl.h"
-
-#include <stdio.h>
-
-#include "rendering/render_style.h"
+#include "dom/dom_node.h"
+#include "misc/htmlhashes.h"
 #include "rendering/render_text.h"
-
-#include <qcolor.h>
-#include <qfont.h>
 
 using namespace DOM;
 using namespace khtml;
@@ -162,4 +154,9 @@ bool TextImpl::mouseEvent( int _x, int _y, int, MouseEventType,
 	return true;
     }
     return false;
+}
+
+ushort TextImpl::id() const
+{
+    return ID_TEXT;
 }

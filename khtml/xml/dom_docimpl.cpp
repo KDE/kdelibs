@@ -21,26 +21,28 @@
  *
  * $Id$
  */
-
 #include "dom_docimpl.h"
+
+#include "dom_node.h"
 #include "dom_elementimpl.h"
 #include "dom_textimpl.h"
 #include "dom_exception.h"
-using namespace DOM;
 
 #include "css/cssstyleselector.h"
+
+using namespace DOM;
 using namespace khtml;
 
 DocumentImpl::DocumentImpl() : NodeBaseImpl(0)
 {
     m_styleSelector = 0;
-    view = 0;
+    m_view = 0;
 }
 
 DocumentImpl::DocumentImpl(KHTMLView *v) : NodeBaseImpl(0)
 {
     m_styleSelector = 0;
-    view = v;
+    m_view = v;
 }
 
 DocumentImpl::~DocumentImpl()

@@ -494,19 +494,6 @@ public:
     const QCursor& urlCursor() { return linkCursor; }
 
     /**
-     * Function used to save the current html-page into the datastream
-     * This does only work, if the page has a valid URL, pages
-     * filled with the write() method are not saveable, and might give
-     * unwanted results.
-     */
-    //    virtual void saveState( QDataStream &stream );
-
-    /**
-     * restore a page previously saved with @ref saveState()
-     */
-    //    virtual void restoreState( QDataStream &stream );
-
-    /**
      * hook to get the Document. Used eg by jscript to manipulate the document.
      * See also the <a href="http://www.w3.org/TR/REC-DOM-Level-1/">
      * DOM Level 1 recommodation</a> of the <a href=http://www.w3.org>W3C</a>.

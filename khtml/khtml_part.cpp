@@ -31,6 +31,7 @@
 #include "html/html_miscimpl.h"
 #include "html/html_inlineimpl.h"
 #include "rendering/render_frames.h"
+#include "misc/htmlhashes.h"
 
 #include "khtmlview.h"
 #include "decoder.h"

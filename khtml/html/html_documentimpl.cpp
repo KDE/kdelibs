@@ -21,29 +21,14 @@
  *
  * $Id$
  */
-
-#include <qstack.h>
+#include "html_documentimpl.h"
 
 #include "htmlparser.h"
 #include "htmltokenizer.h"
-#include "khtmldata.h"
-#include "khtmlview.h"
-#include "khtml_part.h"
 #include "htmlhashes.h"
 
-#include "html_misc.h"
-#include "dom_node.h"
-#include "dom_element.h"
 #include "dom_exception.h"
-#include "html_element.h"
-#include "html_elementimpl.h"
-#include "html_baseimpl.h"
-#include "dom_string.h"
-#include "html_imageimpl.h"
 #include "html_headimpl.h"
-
-#include "dom_nodeimpl.h"
-#include "html_documentimpl.h"
 
 #include <stdio.h>
 #include <kurl.h>
@@ -52,7 +37,9 @@
 #include "css/cssstyleselector.h"
 #include "rendering/render_style.h"
 #include "rendering/render_root.h"
-#include <qstring.h>
+
+#include <qstack.h>
+
 
 using namespace DOM;
 using namespace khtml;
@@ -114,8 +101,8 @@ void HTMLDocumentImpl::open(  )
 {
     //printf("HTMLDocumentImpl::open()\n");
     clear();
-    parser = new KHTMLParser(view, this);
-    tokenizer = new HTMLTokenizer(parser, view);
+    parser = new KHTMLParser(m_view, this);
+    tokenizer = new HTMLTokenizer(parser, m_view);
     tokenizer->begin();
 }
 
@@ -288,7 +275,7 @@ bool HTMLDocumentImpl::mouseEvent( int _x, int _y, int button, MouseEventType ty
 
 void HTMLDocumentImpl::attach(KHTMLView *w)
 {
-    view = w;
+    m_view = w;
     if(!m_styleSelector) createSelector();
     m_style = new RenderStyle();
     m_style->setDisplay(BLOCK);
@@ -303,7 +290,7 @@ void HTMLDocumentImpl::attach(KHTMLView *w)
 
 void HTMLDocumentImpl::detach()
 {
-    view = 0;
+    m_view = 0;
 
     NodeBaseImpl::detach();
 }

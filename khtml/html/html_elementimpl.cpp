@@ -26,37 +26,18 @@
 //#define DEBUG_LAYOUT
 //#define PAR_DEBUG
 //#define EVENT_DEBUG
-
-#include "dom_string.h"
-
-#include <qpainter.h>
-#include <qfontmetrics.h>
-#include <qstack.h>
-#include <qlist.h>
-
 #include "html_elementimpl.h"
-#include "html_inlineimpl.h"
-#include "html_blockimpl.h"
-#include "html_imageimpl.h"
+
 #include "html_documentimpl.h"
-#include "dom_node.h"
-#include "dom_textimpl.h"
-#include "dom_stringimpl.h"
-#include "dom_exception.h"
 
 #include "htmlhashes.h"
 #include "khtmlview.h"
 #include "khtml_part.h"
 
-#include "rendering/render_style.h"
 #include "rendering/render_object.h"
 #include "css/css_valueimpl.h"
-#include "css/cssproperties.h"
 
 #include <stdio.h>
-#include <assert.h>
-
-template class QList<DOM::NodeImpl>;
 
 using namespace DOM;
 using namespace khtml;
@@ -141,8 +122,8 @@ void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bo
 {
     if(!hasEvents()) return;
 
-    KHTMLView *htmlwidget = (KHTMLView *) static_cast<HTMLDocumentImpl *>(document)->HTMLWidget();
-    if(!htmlwidget) return;
+    KHTMLView *view = (KHTMLView *) static_cast<HTMLDocumentImpl *>(document)->view();
+    if(!view) return;
 
     int id;
     bool click = false;
@@ -175,7 +156,7 @@ void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bo
     if(script.length())
     {
 	printf("emit executeScript( %s )\n", script.string().ascii());
-	htmlwidget->part()->executeScript( script.string() );
+	view->part()->executeScript( script.string() );
     }
 
     if(click)
@@ -183,7 +164,7 @@ void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bo
 	script = getAttribute(ATTR_ONCLICK);
 	if(script.length())
 	{
-	    htmlwidget->part()->executeScript( script.string() );
+	    view->part()->executeScript( script.string() );
 	    printf("emit executeScript( %s )\n", script.string().ascii());
 	}
     }
@@ -197,7 +178,7 @@ void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bo
 	script = getAttribute(ATTR_ONCLICK);
 	if(script.length())
 	{
-	    htmlwidget->part()->executeScript( script.string() );
+	    view->part()->executeScript( script.string() );
 	    printf("emit executeScript( %s )\n", script.string().ascii());
 	}
     }

@@ -26,19 +26,10 @@
 
 #include "dom_nodeimpl.h"
 #include "dom_string.h"
-#include "htmlhashes.h"
-#include "qfontmetrics.h"
-
-namespace khtml
-{
-    class TextSlave;
-};
-
 
 namespace DOM {
 
-class DOMString;
-class DocumentImpl;
+    class DocumentImpl;
 
 class CharacterDataImpl : public NodeWParentImpl
 {
@@ -69,11 +60,9 @@ protected:
 };
 
 // ----------------------------------------------------------------------------
-class HTMLElementImpl;
 
 class TextImpl : public CharacterDataImpl
 {
-    friend class HTMLPreElementImpl;
 public:
     TextImpl(DocumentImpl *impl, const DOMString &_text);
     TextImpl(DocumentImpl *impl);
@@ -85,7 +74,7 @@ public:
 
     TextImpl *splitText ( const unsigned long offset );
 
-    virtual ushort id() const { return ID_TEXT; }
+    virtual ushort id() const;
 
     virtual void attach(KHTMLView *);
 

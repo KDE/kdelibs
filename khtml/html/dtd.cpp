@@ -22,8 +22,7 @@
  */
 #include "dtd.h"
 #include "htmlhashes.h"
-#include "htmlhashes.h"
-#include "dom_string.h"
+
 using namespace DOM;
 
 #include <stdio.h>

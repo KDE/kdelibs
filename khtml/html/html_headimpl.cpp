@@ -381,5 +381,5 @@ void HTMLTitleElementImpl::close()
     QString s = t->data().string();
 
     HTMLDocumentImpl *d = static_cast<HTMLDocumentImpl *>(document);
-    emit d->HTMLWidget()->part()->setWindowCaption( s );
+    emit d->view()->part()->setWindowCaption( s );
 }

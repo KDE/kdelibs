@@ -24,8 +24,7 @@
 #ifndef _DOM_NodeImpl_h_
 #define _DOM_NodeImpl_h_
 
-#include "dom_misc.h"
-#include "khtmllayout.h"
+#include "dom/dom_misc.h"
 
 class QPainter;
 class KHTMLView;

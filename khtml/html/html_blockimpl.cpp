@@ -23,24 +23,13 @@
  */
 // -------------------------------------------------------------------------
 //#define DEBUG
-
-#include <qpainter.h>
-#include <qpalette.h>
-#include <qdrawutil.h>
-
-#include "dom_string.h"
-#include "dom_textimpl.h"
 #include "html_blockimpl.h"
+
 #include "css/cssproperties.h"
-using namespace DOM;
-
-#include "htmlhashes.h"
-
-#include <stdio.h>
+#include "misc/htmlhashes.h"
 
 using namespace khtml;
-
-#define BLOCKQUOTEINDENT 20
+using namespace DOM;
 
 HTMLBlockquoteElementImpl::HTMLBlockquoteElementImpl(DocumentImpl *doc)
     : HTMLElementImpl(doc)
