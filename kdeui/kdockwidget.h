@@ -346,7 +346,8 @@ public:
    * @param strTabPageLabel The title of the tab page (shown when in tab page mode), if it is "", only the icon will be shown, if it is 0L, the label is set to strCaption
    */
   KDockWidget( KDockManager* dockManager, const char* name,
-               const QPixmap &pixmap, QWidget* parent = 0L, const QString& strCaption = 0L, const QString& strTabPageLabel = " ");
+               const QPixmap &pixmap, QWidget* parent = 0L, const QString& strCaption = 0L,
+               const QString& strTabPageLabel = " ", WFlags f = 0);
 
   /**
    * Destructs a dockwidget.
@@ -960,13 +961,15 @@ private:
  *   ...
  *   KDockWidget* mainDock;
  *   mainDock = createDockWidget( "Falk's MainDockWidget", mainPixmap);
- *   AnyContentsWidget* cw( mainDock);
+ *   AnyContentsWidget* cw = new AnyContentsWidget( mainDock);
+ *   mainDock->setWidget( cw);
  *   setView( mainDock);
  *   setMainDockWidget( mainDock);
  *   ...
  *   KDockWidget* dockLeft;
- *   dockLeft = createDockWiget( "Intially left one", anyOtherPixmap, 0L, i18n("The left dockwidget"));
- *   AnotherWidget* aw( dockLeft);
+ *   dockLeft = createDockWidget( "Intially left one", anyOtherPixmap, 0L, i18n("The left dockwidget"));
+ *   AnotherWidget* aw = new AnotherWidget( dockLeft);
+ *   dockLeft->setWidget( aw);
  *   dockLeft->manualDock( mainDock,              // dock target
  *                         KDockWidget::DockLeft, // dock site
  *                         20 );                  // relation target/this (in percent)
@@ -996,7 +999,7 @@ public:
    *
    * @param name object name
    */
-  KDockMainWindow( const char *name = 0L );
+  KDockMainWindow( QWidget* parent = 0L, const char *name = 0L, WFlags f = WType_TopLevel | WDestructiveClose );
 
   /**
    * Destructs a dockmainwindow.
