@@ -351,7 +351,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paSaveBackground = new KAction( i18n( "Save &Background Image As.." ), 0, this, SLOT( slotSaveBackground() ), actionCollection(), "saveBackground" );
   d->m_paSaveDocument = new KAction( i18n( "&Save As.." ), 0, this, SLOT( slotSaveDocument() ), actionCollection(), "saveDocument" );
   d->m_paSaveFrame = new KAction( i18n( "Save &Frame As.." ), 0, this, SLOT( slotSaveFrame() ), actionCollection(), "saveFrame" );
-  d->m_paSecurity = new KAction( i18n( "Security..." ), 0, this, SLOT( slotSecurity() ), actionCollection(), "security" );
+  d->m_paSecurity = new KAction( i18n( "Security..." ), "unlock", 0, this, SLOT( slotSecurity() ), actionCollection(), "security" );
 
   d->m_paSetEncoding = new KSelectAction( i18n( "Set &Encoding.." ), 0, this, SLOT( slotSetEncoding() ), actionCollection(), "setEncoding" );
   QStringList encodings = KGlobal::charsets()->availableEncodingNames();
@@ -830,6 +830,7 @@ void KHTMLPart::slotRestoreData(const QByteArray &data )
 void KHTMLPart::slotFinished( KIO::Job * job )
 {
   d->m_ssl_in_use = (d->m_job->queryMetaData("ssl_in_use") == "TRUE");
+  d->m_paSecurity->setIcon( d->m_ssl_in_use ? "lock" : "unlock" );
   d->m_ssl_peer_cert_subject = d->m_job->queryMetaData("ssl_peer_cert_subject");
   d->m_ssl_peer_cert_issuer = d->m_job->queryMetaData("ssl_peer_cert_issuer");
   d->m_ssl_peer_ip = d->m_job->queryMetaData("ssl_peer_ip");
@@ -1645,10 +1646,10 @@ void KHTMLPart::slotSecurity()
                d->m_ssl_peer_cert_issuer,
                d->m_ssl_peer_ip,
                m_url.url(),
-               d->m_ssl_cipher, 
+               d->m_ssl_cipher,
                d->m_ssl_cipher_desc,
                d->m_ssl_cipher_version,
-               d->m_ssl_cipher_used_bits.toInt(), 
+               d->m_ssl_cipher_used_bits.toInt(),
                d->m_ssl_cipher_bits.toInt());
   }
   kid->show();
@@ -1778,10 +1779,16 @@ void KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
   child->m_args = args;
   child->m_serviceName = QString::null;
 
-  if ( args.serviceType.isEmpty() )
+  // Use a KHTMLRun if the service type is unknown, but only if this is not a POST
+  // We can't put POSTs on hold, nor rely on HTTP HEAD, so we have to assume html for POSTs (DF).
+  if ( args.serviceType.isEmpty() && args.postData.size() == 0 )
     child->m_run = new KHTMLRun( this, child, url );
   else
+  {
+    if (args.serviceType.isEmpty())
+      args.serviceType = "text/html";
     processObjectRequest( child, url, args.serviceType );
+  }
 }
 
 void KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url, const QString &mimetype )
