@@ -115,7 +115,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   {
     page = new QGroupBox( i18n("Requested Font"), this );
     topLayout->addWidget(page);
-    gridLayout = new QGridLayout( page, 5, 3, 0, KDialog::spacingHint() );
+    gridLayout = new QGridLayout( page, 5, 3, KDialog::marginHint(), KDialog::spacingHint() );
     gridLayout->addRowSpacing( 0, fontMetrics().lineSpacing() );
     row = 1;
   }
@@ -552,22 +552,15 @@ void KFontChooser::family_chosen_slot(const QString& family)
         currentStyles.insert(i18n("Regular"), "Normal");
     }
 
-    QString origSelectedStyle = selectedStyle; // don't let the next line overwrite our cache via signals/slots..
-    styleListBox->setSelected(styleListBox->findItem(selectedStyle), true);
+    styleListBox->blockSignals(true);
+    QListBoxItem *item = styleListBox->findItem(selectedStyle);
+    if (item)
+       styleListBox->setSelected(styleListBox->findItem(selectedStyle), true);
+    else
+       styleListBox->setSelected(0, true);
+    styleListBox->blockSignals(false);
 
-    QString style = selectedStyle;
-    if(styleListBox->currentItem() < 0) { // fallback if the style does not exist for this font.
-        style = styleListBox->text(0);
-    }
-
-    if(styleListBox->currentItem() < 0) { 
-        // only do this if the style was not present; because the slot of the style list would have done this 
-        // allready
-        //kdDebug() << "Showing2: " << family << ", " << currentStyles[style] << ", " << selectedSize << endl;
-        selFont= dbase.font(family, currentStyles[style], selectedSize);
-        emit fontSelected(selFont);
-        selectedStyle = origSelectedStyle;
-    }
+    style_chosen_slot(QString::null);
 }
 
 void KFontChooser::size_chosen_slot(const QString& size){
@@ -580,16 +573,22 @@ void KFontChooser::size_chosen_slot(const QString& size){
 
 void KFontChooser::style_chosen_slot(const QString& style)
 {
+    QString currentStyle;    
+    if (style.isEmpty())
+       currentStyle = styleListBox->currentText(); 
+    else
+       currentStyle = style;
+
     int diff=0; // the difference between the font size requested and what we can show.
 
     sizeListBox->clear();
     QFontDatabase dbase;
-    if(dbase.isSmoothlyScalable(familyListBox->currentText(), currentStyles[style])) {  // is vector font
+    if(dbase.isSmoothlyScalable(familyListBox->currentText(), currentStyles[currentStyle])) {  // is vector font
         //sampleEdit->setPaletteBackgroundPixmap( VectorPixmap ); // TODO
         fillSizeList();
     } else {                                // is bitmap font.
         //sampleEdit->setPaletteBackgroundPixmap( BitmapPixmap ); // TODO
-        QValueList<int> sizes = dbase.smoothSizes(familyListBox->currentText(), currentStyles[style]);
+        QValueList<int> sizes = dbase.smoothSizes(familyListBox->currentText(), currentStyles[currentStyle]);
         if(sizes.count() > 0) {
             QValueList<int>::iterator it;
             diff=1000;
@@ -600,17 +599,16 @@ void KFontChooser::style_chosen_slot(const QString& style)
         } else // there are times QT does not provide the list..
             fillSizeList(); 
     }
-    int origSelectedSize = selectedSize; // backup
+    sizeListBox->blockSignals(true);
     sizeListBox->setSelected(sizeListBox->findItem(QString::number(selectedSize)), true);
-    if(! sizeListBox->itemVisible (sizeListBox->findItem(QString::number(selectedSize)) ) ) {
-        sizeListBox->centerCurrentItem();
-    }
+    sizeListBox->blockSignals(false);
+    sizeListBox->ensureCurrentVisible();
 
-    //kdDebug() << "Showing: " << familyListBox->currentText() << ", " << currentStyles[style] << ", " << selectedSize-diff << endl;
-    selFont = dbase.font(familyListBox->currentText(), currentStyles[style], selectedSize-diff);
+    //kdDebug() << "Showing: " << familyListBox->currentText() << ", " << currentStyles[currentStyle] << ", " << selectedSize-diff << endl;
+    selFont = dbase.font(familyListBox->currentText(), currentStyles[currentStyle], selectedSize-diff);
     emit fontSelected(selFont);
-    selectedSize=origSelectedSize;
-    selectedStyle= style;
+    if (!style.isEmpty())
+        selectedStyle = style;
 }
 
 void KFontChooser::displaySample(const QFont& font)
@@ -820,6 +818,9 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.84  2002/01/08 00:23:58  djarvie
+* Add KFontChooser::setBackgroundColor(), KFontChooser::backgroundColor()
+*
 * Revision 1.83  2001/12/28 11:09:27  zander
 * Various fixes in updating the font styles and sizes shown
 *
