@@ -85,7 +85,7 @@ public:
 
 
 KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
-    : QScrollView( parent, name, WResizeNoErase | WRepaintNoErase)
+    : QScrollView( parent, name, WResizeNoErase | WRepaintNoErase | WPaintClever )
 {
     m_part = part;
 
@@ -94,8 +94,8 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
     enableClipper(true);
 
     viewport()->setMouseTracking(true);
-    viewport()->setBackgroundMode(PaletteBase);
-    //viewport()->setBackgroundMode(NoBackground);
+    //viewport()->setBackgroundMode(PaletteBase);
+    viewport()->setBackgroundMode(NoBackground);
 
 
     KImageIO::registerFormats();
@@ -176,18 +176,18 @@ void KHTMLView::clear()
 
 void KHTMLView::resizeEvent ( QResizeEvent * event )
 {
-    //kdDebug() << "KHTMLView::resizeEvent" << endl; 
+    //kdDebug() << "KHTMLView::resizeEvent" << endl;
 
     QScrollView::resizeEvent(event);
-    
+
     int w = visibleWidth();
     int h = visibleHeight();
-    
+
     layout();
 
     if(visibleHeight() != h || visibleWidth() != w)
-	layout();
-    
+        layout();
+
     KApplication::sendPostedEvents(viewport(), QEvent::Paint);
 }
 
@@ -198,41 +198,36 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
     if( m_part->docImpl() )
         body = m_part->docImpl()->body();
 
-    if(!body)
+    if(!body) {
+        p->fillRect(ex, ey, ew, eh, palette().normal().brush(QColorGroup::Background));
         return;
+    }
 
     //kdDebug( 6000 ) << "drawContents x=" << ex << ",y=" << ey << ",w=" << ew << ",h=" << eh << endl;
 
     if(!paintBuffer)
         paintBuffer = new QPixmap( visibleWidth(),PAINT_BUFFER_HEIGHT );
     if ( paintBuffer->width() < visibleWidth() )
-	paintBuffer->resize(visibleWidth(),PAINT_BUFFER_HEIGHT);
+        paintBuffer->resize(visibleWidth(),PAINT_BUFFER_HEIGHT);
 
     //QTime qt;
     //   qt.start();
 
+    QPainter tp( paintBuffer );
+    tp.translate(-ex, -ey);
+
     int py=0;
-
-    //kdDebug(0) << "pbHeight = " << pbHeight << endl;
     while (py < eh) {
-        QPainter* tp = new QPainter;
-        tp->begin( paintBuffer );
-        tp->translate(-ex,-ey-py);
-
         int ph = eh-py < PAINT_BUFFER_HEIGHT ? eh-py : PAINT_BUFFER_HEIGHT;
 
         // ### fix this for frames...
+        tp.fillRect(ex, ey+py, ew, ph, palette().normal().brush(QColorGroup::Background));
+        m_part->docImpl()->renderer()->print(&tp, ex, ey+py, ew, ph, 0, 0);
 
-        tp->fillRect(ex, ey+py, ew, ph, palette().normal().brush(QColorGroup::Background));
-        m_part->docImpl()->renderer()->print(tp, ex, ey+py, ew, ph, 0, 0);
-        tp->end();
-
-        delete tp;
-
-        //kdDebug( 6000 ) << "bitBlt x=" << ex << ",y=" << ey+py << ",sw=" << ew << ",sh=" << ph << endl;
         p->drawPixmap(ex, ey+py, *paintBuffer, 0, 0, ew, ph);
-
         py += PAINT_BUFFER_HEIGHT;
+
+        tp.translate(0, -PAINT_BUFFER_HEIGHT);
     }
 //    kdDebug(0) << "repaint time=" << qt.elapsed() << endl;
 }
@@ -258,8 +253,8 @@ void KHTMLView::layout(bool)
         }
 
 
-	_height = visibleHeight();
-	_width = visibleWidth();
+        _height = visibleHeight();
+        _width = visibleWidth();
 
             //      QTime qt;
             //      qt.start();
