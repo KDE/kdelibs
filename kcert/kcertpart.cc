@@ -108,6 +108,10 @@ KCertPart::KCertPart(QWidget *parent, const char *name)
  tabGrid->addWidget(new QLabel(i18n("MD5 Digest:"), tab), 0, 0);
  _digest = new QLabel(tab);
  tabGrid->addMultiCellWidget(_digest, 0, 0, 1, 4);
+ tabGrid->addWidget(new QLabel(i18n("Signature:"), tab), 1, 0);
+ _sig = new QMultiLineEdit(tab);
+ tabGrid->addMultiCellWidget(_sig, 1, 3, 1, 4);
+ _sig->setReadOnly(true);
 
  _tabs->addTab(tab, i18n("Signature"));
 
@@ -264,6 +268,7 @@ void KCertPart::displayCert(KSSLCertificate *c) {
 
   _pubkey->setText(c->getPublicKeyText());
   _digest->setText(c->getMD5DigestText());
+  _sig->setText(c->getSignatureText());
 }
 
 
