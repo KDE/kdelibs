@@ -19,5 +19,5 @@
 <!ENTITY kcontrolcenter       '<application>Centre de Configuration de &kde;</application>'>
 <!ENTITY khelpcenter	'<application>Aide centralisée de &kde;</application>'>
 <!ENTITY pex    "par exemple">
+<!ENTITY Maj    '<keycap>Maj</keycap>'>
 <!ENTITY SE     "système d'exploitation"> <!-- <acronym>SE</acronym> -->
-<!ENTITY Shift  '<keycap>Maj</keycap>'>
