@@ -149,11 +149,9 @@ bool KURIFilter::filterURI( KURIFilterData& data, const QStringList& filters )
         }
     }
     QListIterator<KURIFilterPlugin> it( plugins );
-    for (; it.current(); ++it)
+    for (; it.current() && !filtered; ++it)
     {
-        filtered = it.current()->filterURI( data );
-        if( it.count() > 1 && filtered )
-            break;  // If already filtered and have more than one filter plugin why continue ?? (DA)
+        filtered |= it.current()->filterURI( data );
     }
     return filtered;
 }
