@@ -348,9 +348,12 @@ KFileMetaInfo::KFileMetaInfo( const QString& path, const QString& mimeType,
     if ( d->mimeTypeInfo )
     {
         kdDebug(7033) << "Found mimetype info for " << mT << endl;
-        if (!plugin()->readInfo( item, what)) *this=KFileMetaInfo();
+        KFilePlugin *p = plugin();
+        if (p && !p->readInfo( item, what))
+            *this=KFileMetaInfo();
     }
-    else {
+    else 
+    {
         kdDebug(7033) << "No mimetype info for " << mimeType << endl;
         d = Data::makeNull();
     }
