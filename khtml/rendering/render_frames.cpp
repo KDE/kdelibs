@@ -724,3 +724,5 @@ void RenderPartObject::slotWidgetDestructed()
 {
     RenderWidget::slotWidgetDestructed();
 }
+
+#include "render_frames.moc"
