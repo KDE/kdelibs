@@ -95,7 +95,7 @@ KInstance *KCModule::instance() const
     return d->_instance;
 }
 
-void KCModule::virtual_hook( int id, void* data )
+void KCModule::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
 #include "kcmodule.moc"
