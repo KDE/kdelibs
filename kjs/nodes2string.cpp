@@ -136,7 +136,7 @@ void StringNode::streamTo(SourceStream &s) const
   s << '"' << unescapeStr(val) << '"';
 }
 
-void RegExpNode::streamTo(SourceStream &s) const { s <<  pattern; }
+void RegExpNode::streamTo(SourceStream &s) const { s << "/" << pattern << "/" << flags; }
 
 void ThisNode::streamTo(SourceStream &s) const { s << "this"; }
 
