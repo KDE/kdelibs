@@ -30,6 +30,7 @@
 #include <kicontheme.h>
 #include <kdebug.h>
 // #include <kcompletionbox.h>
+#include <kurl.h>
 
 #include "kcombobox.h"
 #include "kcombobox.moc"
@@ -432,6 +433,32 @@ void KComboBox::setTrapReturnKey( bool grab )
 bool KComboBox::trapReturnKey() const
 {
     return m_trapReturnKey;
+}
+
+
+void KComboBox::setEditURL( const KURL& url )
+{
+    QComboBox::setEditText( url.prettyURL() );
+}
+
+void KComboBox::insertURL( const KURL& url, int index )
+{
+    QComboBox::insertItem( url.prettyURL(), index );
+}
+
+void KComboBox::insertURL( const QPixmap& pixmap, const KURL& url, int index )
+{
+    QComboBox::insertItem( pixmap, url.prettyURL(), index );
+}
+
+void KComboBox::changeURL( const KURL& url, int index )
+{
+    QComboBox::changeItem( url.prettyURL(), index );
+}
+
+void KComboBox::changeURL( const QPixmap& pixmap, const KURL& url, int index )
+{
+    QComboBox::changeItem( pixmap, url.prettyURL(), index );
 }
 
 

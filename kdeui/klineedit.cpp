@@ -29,6 +29,7 @@
 #include <kpopupmenu.h>
 #include <kdebug.h>
 // #include <kcompletionbox.h>
+#include <kurl.h>
 
 #include "klineedit.h"
 #include "klineedit.moc"
@@ -181,7 +182,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             {
                 QLineEdit::keyPressEvent ( e );
                 QString txt = text();
-                if( !hasMarkedText() && txt.length() && 
+                if( !hasMarkedText() && txt.length() &&
 		    cursorPosition() == (int) txt.length() )
                 {
                     if( emitSignals() )
@@ -362,4 +363,9 @@ void KLineEdit::setTrapReturnKey( bool grab )
 bool KLineEdit::trapReturnKey() const
 {
     return d->grabReturnKeyEvents;
+}
+
+void KLineEdit::setURL( const KURL& url )
+{
+    QLineEdit::setText( url.prettyURL() );
 }

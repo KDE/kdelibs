@@ -29,6 +29,7 @@
 
 class QListBoxItem;
 class QLineEdit;
+class KURL;
 
 /**
  * A combined button, line-edit and a popup list widget.
@@ -148,6 +149,42 @@ public:
     * Destructor.
     */
     virtual ~KComboBox();
+
+    /**
+     * Sets @p url into the edit field of the combobox. It uses
+     * @ref KURL::prettyURL() so that the url is properly decoded for
+     * displaying.
+     */
+    void setEditURL( const KURL& url );
+
+    /**
+     * Inserts @p url at position @p index into the combobox. The item will
+     * be appended if @p index is negative. @ref KURL::prettyURL() is used
+     * so that the url is properly decoded for displaying.
+     */
+    void insertURL( const KURL& url, int index = -1 );
+
+    /**
+     * Inserts @p url with the pixmap &p pixmap at position @p index into
+     * the combobox. The item will be appended if @p index is negative.
+     * @ref KURL::prettyURL() is used so that the url is properly decoded
+     * for displaying.
+     */
+    void insertURL( const QPixmap& pixmap, const KURL& url, int index = -1 );
+
+    /**
+     * Replaces the item at position @p index with @p url.
+     * @ref KURL::prettyURL() is used so that the url is properly decoded
+     * for displaying.
+     */
+    void changeURL( const KURL& url, int index );
+
+    /**
+     * Replaces the item at position @p index with @p url and pixmap @p pixmap.
+     * @ref KURL::prettyURL() is used so that the url is properly decoded
+     * for displaying.
+     */
+    void changeURL( const QPixmap& pixmap, const KURL& url, int index );
 
     /**
     * Retreive the current cursor position.

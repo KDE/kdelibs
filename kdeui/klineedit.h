@@ -32,6 +32,8 @@
 #include <qlineedit.h>
 #include <kcompletion.h>
 
+class KURL;
+
 /**
  * An enhanced QLineEdit widget for inputting text.
  *
@@ -153,6 +155,12 @@ public:
     *  Destructor.
     */
     virtual ~KLineEdit ();
+
+    /**
+     * Sets @p url into the lineedit. It uses @ref KURL::prettyURL() so
+     * that the url is properly decoded for displaying.
+     */
+    void setURL( const KURL& url );
 
     /**
     * Put cursor at the end of the string.
