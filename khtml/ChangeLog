@@ -14,6 +14,9 @@
         * rendering/render_table.h (position): remove empty reimplementation:
         inline-tables need positioning. cf.webcore/fast/inline-block/001.html
 
+        * rendering/render_box.cpp (calcAbsoluteHorizontal): subtract p/b width
+        when shrinking-to-fit, otherwise it gets accounted for twice. 
+
 2004-06-22  Zack Rusin  <zack@kde.org>
 
         * ecma/kjs_events.cpp (JSLazyEventListener): Adding a destructor

@@ -1061,7 +1061,7 @@ void RenderBox::calcAbsoluteHorizontal()
         else
         //3. solve width & right.
         if (l!=AUTO && w==AUTO && r==AUTO) {
-            w = kMin(int ( m_maxWidth ), kMax( int ( m_minWidth ), cw - ( l + ml + mr + pab)));
+            w = kMin(int ( m_maxWidth - pab ), kMax( int ( m_minWidth - pab ), cw - ( l + ml + mr + pab)));
             r = cw - ( l + w + ml + mr + pab);
         }
         else
@@ -1135,6 +1135,7 @@ void RenderBox::calcAbsoluteVertical()
         if (m_height-pab > h) {
             if ( isRenderBlock() )
               static_cast<RenderBlock*>( this )->setOverflowHeight( m_height + pab - ( paddingBottom() + borderBottom() ) );
+
         }
 	m_height = h + pab;
     }
