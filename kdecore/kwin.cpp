@@ -501,7 +501,7 @@ bool KWin::avoid(WId win)
   return avoid;
 }
 
-long KWin::pid(WId win)
+pid_t KWin::pid(WId win)
 {
   XTextProperty prop;
 
@@ -521,7 +521,7 @@ long KWin::pid(WId win)
 
   char * pidStr = stringList[0];
 
-  long pid = QString::fromUtf8(pidStr).toLong();
+  pid_t pid = static_cast<pid_t>(QString::fromUtf8(pidStr).toLong());
 
   XFreeStringList(stringList);
 

@@ -174,7 +174,7 @@ public:
     /**
      * @return pid of process that owns this window, or -1 if unavailable.
      */
-    static long pid(WId win);
+    static pid_t pid(WId win);
 };
 
 #endif
