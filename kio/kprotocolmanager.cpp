@@ -27,36 +27,19 @@
 #include <klocale.h>
 #include <kconfig.h>
 #include <kio/kpac.h>
+#include <kio/ioslave_defaults.h>
+#include <kio/http_slave_defaults.h>
 
 #include "kprotocolmanager.h"
-
-// CACHE SETTINGS
-#define DEFAULT_MAX_CACHE_SIZE          5120          //  5 MB
-#define DEFAULT_MAX_CACHE_AGE           60*60*24*14   // 14 DAYS
-#define DEFAULT_EXPIRE_TIME             1*60          //  1 MIN
-#define DEFAULT_CACHE_CONTROL		KIO::CC_Verify     // Verify with remote
-
-// DEFAULT TIMEOUT VALUE FOR REMOTE AND PROXY CONNECTION
-// AND RESPONSE WAIT PERIOD.  NOTE: CHANGING THESE VALUES
-// ALSO CHANGES THE DEFAULT ESTABLISHED INITIALLY.
-#define DEFAULT_RESPONSE_TIMEOUT         60           //  1 MIN
-#define DEFAULT_CONNECT_TIMEOUT          20           // 20 SEC
-#define DEFAULT_READ_TIMEOUT             15           // 15 SEC
-#define DEFAULT_PROXY_CONNECT_TIMEOUT    10           // 10 SEC
-
-// MINIMUM TIMEOUT VALUE ALLOWED
-#define MIN_TIMEOUT_VALUE                 2           //  2 SEC
-
-// DEFUALT USERAGENT STRING
-#define CFG_DEFAULT_UAGENT(X) \
-QString("Mozilla/5.0 (compatible; Konqueror/%1%2)").arg(KDE_VERSION_STRING).arg(X)
-
 
 KConfig *KProtocolManager::_config = 0;
 KConfig *KProtocolManager::_http_config = 0;
 KPAC *KProtocolManager::_pac = 0;
 KStaticDeleter<KPAC> _pacDeleter;
 
+// DEFUALT USERAGENT STRING
+#define CFG_DEFAULT_UAGENT(X) \
+QString("Mozilla/5.0 (compatible; Konqueror/%1%2)").arg(KDE_VERSION_STRING).arg(X)
 
 void KProtocolManager::reparseConfiguration()
 {
@@ -209,17 +192,12 @@ bool KProtocolManager::useCache()
   return cfg->readBoolEntry( "UseCache", true );
 }
 
-KIO::CacheControl KProtocolManager::defaultCacheControl()
-{
-    return DEFAULT_CACHE_CONTROL;
-}
-
 KIO::CacheControl KProtocolManager::cacheControl()
 {
     KConfig *cfg = http_config();
     QString tmp = cfg->readEntry("cache");
     if (tmp.isEmpty())
-       return defaultCacheControl();   
+       return DEFAULT_CACHE_CONTROL;   
     return KIO::parseCacheControl(tmp);
 }
 
@@ -231,20 +209,10 @@ void KProtocolManager::setCacheControl(KIO::CacheControl policy)
     cfg->sync();
 }
 
-int KProtocolManager::defaultMaxCacheAge()
-{
-  return DEFAULT_MAX_CACHE_AGE;
-}
-
 int KProtocolManager::maxCacheAge()
 {
   KConfig *cfg = http_config();
   return cfg->readNumEntry( "MaxCacheAge", DEFAULT_MAX_CACHE_AGE ); // 14 days
-}
-
-int KProtocolManager::defaultMaxCacheSize()
-{
-  return DEFAULT_MAX_CACHE_SIZE;
 }
 
 int KProtocolManager::maxCacheSize()

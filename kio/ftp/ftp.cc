@@ -46,7 +46,6 @@
 #endif
 
 #include <qdir.h>
-#include <kprotocolmanager.h>
 
 #include <kdebug.h>
 #include <klocale.h>
@@ -56,6 +55,7 @@
 #include <kextsock.h>
 #include <ksockaddr.h>
 #include <ksocks.h>
+#include <kio/ioslave_defaults.h>
 
 #define FTP_LOGIN QString::fromLatin1("anonymous")
 #define FTP_PASSWD QString::fromLatin1("kde-user@kde.org")
@@ -1928,7 +1928,7 @@ void Ftp::put( const KURL& dest_url, int permissions, bool overwrite, bool resum
   QString dest_part( dest_orig );
   dest_part += QString::fromLatin1(".part");
 
-  bool bMarkPartial = KProtocolManager::markPartial();
+  bool bMarkPartial = config()->readBoolEntry("MarkPartial", true);
 
   // Don't use mark partial over anonymous FTP.
   // My incoming dir allows put but not rename...
@@ -2021,7 +2021,7 @@ void Ftp::put( const KURL& dest_url, int permissions, bool overwrite, bool resum
     {
       // Remove if smaller than minimum size
       if ( ftpSize( dest, 'I' ) &&
-           ( m_size < (unsigned long) KProtocolManager::minimumKeepSize() ) )
+           ( m_size < (unsigned long) config()->readNumEntry("MinimumKeepSize", DEFAULT_MINIMUM_KEEP_SIZE) ) )
       {
         QCString cmd = "DELE ";
         cmd += dest.ascii();

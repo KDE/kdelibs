@@ -101,7 +101,8 @@ kioinclude_HEADERS = connection.h \
 	statusbarprogress.h uiserver.h uiserver_stub.h tcpslavebase.h \
 	renamedlg.h skipdlg.h slave.h \
 	observer.h chmodjob.h \
-        kpac.h kmdbase.h authinfo.h
+        kpac.h kmdbase.h authinfo.h \
+	ioslave_defaults.h http_slave_defaults.h
 
 # Internal
 noinst_HEADERS = kservicetypefactory.h kservicefactory.h \

@@ -68,6 +68,9 @@
 #include <kssl.h>
 #endif
 
+#include <kio/http_slave_defaults.h>
+#include <kio/ioslave_defaults.h>
+
 #include "http.h"
 
 using namespace KIO;
@@ -156,10 +159,10 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, cons
   }
 
   // Make sure to set some values here... just to be on the safe side.
-  m_proxyConnTimeout = KProtocolManager::defaultProxyConnectTimeout();
-  m_remoteConnTimeout = KProtocolManager::defaultConnectTimeout();
-  m_remoteRespTimeout = KProtocolManager::defaultResponseTimeout();
-  m_maxCacheAge = KProtocolManager::defaultMaxCacheAge();
+  m_proxyConnTimeout = DEFAULT_PROXY_CONNECT_TIMEOUT;
+  m_remoteConnTimeout = DEFAULT_CONNECT_TIMEOUT;
+  m_remoteRespTimeout = DEFAULT_RESPONSE_TIMEOUT;
+  m_maxCacheAge = DEFAULT_MAX_CACHE_AGE;
   m_bUseCache = true;
 
   reparseConfiguration();
@@ -2043,7 +2046,7 @@ void HTTPProtocol::setHost(const QString& host, int port, const QString& user, c
   m_strCacheDir = config()->readEntry("CacheDir");
   if (m_strCacheDir.isEmpty())
      m_strCacheDir = KGlobal::dirs()->saveLocation("data", "kio_http/cache");
-  m_maxCacheAge = config()->readNumEntry("MaxCacheAge", KProtocolManager::defaultMaxCacheAge());
+  m_maxCacheAge = config()->readNumEntry("MaxCacheAge", DEFAULT_MAX_CACHE_AGE);
 
   kdDebug(7103) << "UseCache: " << metaData("UseCache") << endl;
   kdDebug(7103) << "CacheDir: " << metaData("CacheDir") << endl;
@@ -2123,7 +2126,7 @@ void HTTPProtocol::get( const KURL& url )
   if (!tmp.isEmpty())   
     m_request.cache = parseCacheControl(tmp);
   else
-    m_request.cache = KProtocolManager::defaultCacheControl();
+    m_request.cache = DEFAULT_CACHE_CONTROL;
 
   m_request.offset = 0;
   m_request.do_proxy = m_bUseProxy;

@@ -234,38 +234,26 @@ public:
   static int defaultConnectTimeout();
 
   /**
-   * Returns the set default timeout value for reading from
-   * the socket.
-   *
-   * @return timeout value in seconds
+   * @deprecated  Use DEFAULT_READ_TIMEOUT instead.
+   * TODO KDE 3.0: Remove
    */
   static int defaultReadTimeout();
 
   /**
-   * Returns (in seconds) the set default timeout value
-   * for connecting to a proxy machine.
-   *
-   * This method returns the value defined by
-   * DEFAULT_PROXY_CONNECT timeout in the source file.
+   * @deprecated  Use DEFAULT_PROXY_CONNECT_TIMEOUT instead.
+   * TODO KDE 3.0: Remove
    */
   static int defaultProxyConnectTimeout();
 
   /**
-   * Returns (in seconds) the set default timeout value
-   * for connecting to a proxy machine.
-   *
-   * This method returns the value defined by
-   * DEFAULT_RESPONSEtimeout in the source file.
+   * @deprecated  Use DEFAULT_RESPONSE_TIMEOUT instead.
+   * TODO KDE 3.0: Remove
    */
   static int defaultResponseTimeout();
 
   /**
-   * Returns the minimum timeout value that can be
-   * assigned for connecting and responses to and
-   * from remote and proxy machines.
-   *
-   * This method returns the value defined by
-   * MINtimeout_VALUE in the source file.
+   * @deprecated  Use MIN_TIMEOUT_VALUE instead.
+   * TODO KDE 3.0: Remove
    */
   static int minimumTimeoutThreshold();
 
@@ -437,7 +425,6 @@ public:
    */
   static int maxCacheAge();  // Maximum cache age in seconds.
   static void setMaxCacheAge( int cache_age );
-  static int defaultMaxCacheAge(); 
 
   /**
    * Returns the maximum age (in seconds) cached files
@@ -445,7 +432,6 @@ public:
    */
   static int maxCacheSize(); // Maximum cache size in Kb.
   static void setMaxCacheSize( int cache_size );
-  static int defaultMaxCacheSize(); 
 
   /**
    * The directory which contains the cache files
@@ -456,14 +442,6 @@ public:
    * Returns the Cache control directive to be used.
    */
   static KIO::CacheControl cacheControl();
-
-  /**
-   * Returns the Cache control directive to be used by default.
-   *
-   * This method returns the value defined by
-   * DEFAULT_CACHE_CONTROL in the source file.
-   */
-  static KIO::CacheControl defaultCacheControl();
 
   /**
    * Sets the Cache control directive.
