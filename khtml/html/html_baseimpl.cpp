@@ -116,7 +116,8 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
         if(!m_styleSheet) {
             m_styleSheet = new CSSStyleSheetImpl(this,0,true);
             m_styleSheet->ref();
-            getDocument()->registerStyleSheet(m_styleSheet);
+            if (attached())
+		getDocument()->registerStyleSheet(m_styleSheet);
         }
         QString aStr;
 	if ( attr->attrId == ATTR_LINK )
@@ -172,6 +173,9 @@ void HTMLBodyElementImpl::attach()
     m_render = new RenderBody(this);
     m_render->setStyle(m_style);
     r->addChild( m_render, _next ? _next->renderer() : 0 );
+
+    if (m_styleSheet)
+	getDocument()->registerStyleSheet(m_styleSheet);
 
     HTMLElementImpl::attach();
 
