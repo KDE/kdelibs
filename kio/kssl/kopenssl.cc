@@ -21,6 +21,7 @@
 #include <kdebug.h>
 #include <kconfig.h>
 #include <kstaticdeleter.h>
+#include <qregexp.h>
 
 
 #include <stdio.h>
@@ -295,7 +296,9 @@ KConfig *cfg;
          if (!alib.isEmpty() && !alib.endsWith("/"))
             alib += "/";
          alib += *shit;
-	 if (!access(alib.latin1(), R_OK))
+	 QString tmpStr(alib.latin1());
+	 tmpStr.replace(QRegExp("\\(.*\\)"), "");
+	 if (!access(tmpStr.latin1(), R_OK))
             _cryptoLib = ll->globalLibrary(alib.latin1());
          if (_cryptoLib) break;
       }
@@ -416,7 +419,9 @@ KConfig *cfg;
          if (!alib.isEmpty() && !alib.endsWith("/"))
             alib += "/";
          alib += *shit;
-	 if (!access(alib.latin1(), R_OK))
+	 QString tmpStr(alib.latin1());
+	 tmpStr.replace(QRegExp("\\(.*\\)"), "");
+	 if (!access(tmpStr.latin1(), R_OK))
          	_sslLib = ll->globalLibrary(alib.latin1());
          if (_sslLib) break;
       }
