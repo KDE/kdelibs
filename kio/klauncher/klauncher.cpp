@@ -141,7 +141,24 @@ KLauncher::KLauncher(int _kdeinitSocket)
    bProcessingQueue = false;
 }
 
+KLauncher::~KLauncher()
+{
+   if (!mPoolSocketName.isEmpty())
+   {
+      QCString filename = QFile::encodeName(mPoolSocketName);
+      unlink(filename.data());
+   }
+}
 
+void
+KLauncher::destruct(int exit_code)
+{
+   if (kapp)
+   {
+      delete kapp;
+   }
+   ::exit(exit_code);
+}
 
 bool
 KLauncher::process(const QCString &fun, const QByteArray &data,
@@ -277,7 +294,7 @@ KLauncher::slotKInitData(int)
    if (result == -1)
    {
       kdDebug(7016) << "KLauncher: KInit communication error! Commiting suicide!" << endl;
-      ::exit(255);
+      destruct(255); // Exit!
    }
    requestData.resize(request_header.arg_length);
    result = read_socket(kdeinitSocket, (char *) requestData.data(),

@@ -24,10 +24,16 @@
 #include "kcmdlineargs.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <signal.h>
 #include <qcstring.h>
 
 
 extern "C" { int start_launcher(int); }
+
+static void sig_handler(int)
+{
+   KLauncher::destruct(255);
+}
 
 int
 start_launcher(int socket)
@@ -43,6 +49,9 @@ start_launcher(int socket)
    putenv("SESSION_MANAGER=");
 
    KLauncher launcher(socket);
+
+   signal( SIGTERM, sig_handler);
+   signal( SIGSEGV, sig_handler);
 
 #ifdef __USE_GNU 
 #warning Temporary hack to get KLocale initialised

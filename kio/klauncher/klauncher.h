@@ -86,6 +86,10 @@ class KLauncher : public KUniqueApplication
 public:
    KLauncher(int _kdeinitSocket);
 
+   ~KLauncher();
+
+   static void destruct(int exit_code); // exit!
+
 protected:
    bool process(const QCString &fun, const QByteArray &data,
                 QCString &replyType, QByteArray &replyData);
