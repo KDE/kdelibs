@@ -131,17 +131,22 @@ public:
     ///////////
 
     /**
-     * Opens a connection
+     * Set the host
      * @param host
      * @param user
      * @param pass
      * Called directly by createSlave, this is why there is no equivalent in
      * SlaveInterface, unlike the other methods.
      */
-    virtual void openConnection(const QString& host, int port, const QString& user, const QString& pass);
+    virtual void setHost(const QString& host, int port, const QString& user, const QString& pass);
 
     /**
-     * Closes the connection
+     * Opens the connection (forced)
+     */
+    virtual void openConnection();
+
+    /**
+     * Closes the connection (forced)
      */
     virtual void closeConnection();
 

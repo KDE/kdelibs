@@ -212,19 +212,15 @@ void SlaveBase::sigsegv_handler (int)
     exit(1);
 }
 
-void SlaveBase::openConnection(QString const &host, int, QString const &, QString const &)
+void SlaveBase::setHost(QString const &host, int, QString const &, QString const &)
 {
-   kdDebug( 7007 ) << "openConnection( host = " << host << ")";
-   connected();
+   kdDebug( 7007 ) << "setHost( host = " << host << ")";
 }
 
+void SlaveBase::openConnection(void)
+{ error(  ERR_UNSUPPORTED_ACTION, "open" ); }
 void SlaveBase::closeConnection(void)
-{
-   //ready();
-}
-
-
-
+{ error(  ERR_UNSUPPORTED_ACTION, "close" ); }
 void SlaveBase::stat(QString const &)
 { error(  ERR_UNSUPPORTED_ACTION, "stat" ); }
 void SlaveBase::put(QString const &, int, bool, bool)
@@ -317,12 +313,15 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     int i;
 
     switch( command ) {
-    case CMD_CONNECT: {
+    case CMD_HOST: {
         QString passwd;
 	stream >> str1 >> i >> str2 >> passwd;
-	openConnection( str1, i, str2, passwd );
+	setHost( str1, i, str2, passwd );
     }
     break;
+    case CMD_CONNECT:
+	openConnection( );
+	break;
     case CMD_DISCONNECT:
 	closeConnection( );
 	break;

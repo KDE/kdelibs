@@ -60,14 +60,19 @@ namespace KIO {
         bool isAlive() { return !dead; }
 
         /**
-         * Open connection for url
+         * Set host for url
          * @param host to connect to.
          * @param port to connect to.
          * @param user to login as
          * @param passwd to login with
          */
-        void openConnection( const QString &host, int port,
-                             const QString &user, const QString &passwd);
+        void setHost( const QString &host, int port,
+                      const QString &user, const QString &passwd);
+
+        /**
+         * Open connection (forced).
+         */
+        void openConnection();
 
         /**
          * Close connection (forced).

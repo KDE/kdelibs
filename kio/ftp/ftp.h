@@ -61,14 +61,15 @@ public:
   Ftp( KIO::Connection *connection = 0 );
   virtual ~Ftp();
 
+  virtual void setHost( const QString& host, int port, const QString& user, const QString& pass );
+
   /**
    * Connects to a ftp server and logs us in
    * @ref m_bLoggedOn is set to true if logging on was successfull.
    * It is set to false if the connection becomes closed.
    *
-  // * @return true on success.
    */
-  virtual void openConnection( const QString& host, int port, const QString& user, const QString& pass );
+  virtual void openConnection();
 
   /**
    * Closes the connection
@@ -85,6 +86,8 @@ public:
 
   virtual void get( const QString& path, const QString& query, bool reload );
   virtual void put( const QString& path, int permissions, bool overwrite, bool resume);
+
+  virtual void slave_status();
 
   // unsupported, AFAIK
   // virtual void copy( const QString &src, const QString &dest, int permissions, bool overwrite );
@@ -245,7 +248,9 @@ private:
   int sDatal;
 
   QString m_host;
+  int m_port;
   QString m_user;
+  QString m_pass;
   /**
    * Where we end up after connecting
    */

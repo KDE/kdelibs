@@ -145,20 +145,10 @@ void Scheduler::startStep()
            (slave->user() != user) ||
            (slave->passwd() != passwd))
        {
-           slave->openConnection(host, port, user, passwd);
-	   // halt the queue til we know it's connected
-	   slave->queueOnly(true);
-	   connect(slave, SIGNAL(connected()),
-		   SLOT(slotSlaveConnected()));
+           slave->setHost(host, port, user, passwd);
        }
        job->start(slave);
     }
-}
-
-void Scheduler::slotSlaveConnected() {
-    kDebugInfo(7006, "slave connected");
-    Slave *slave = (Slave*)sender();
-    slave->queueOnly(false);
 }
 
 void Scheduler::slotSlaveStatus(pid_t pid, const QCString &protocol, const QString &host, bool connected) {

@@ -131,8 +131,8 @@ void Slave::kill()
     }
 }
 
-void Slave::openConnection( const QString &host, int port,
-                            const QString &user, const QString &passwd)
+void Slave::setHost( const QString &host, int port,
+                     const QString &user, const QString &passwd)
 {
     m_host = host;
     m_port = port;
@@ -144,7 +144,7 @@ void Slave::openConnection( const QString &host, int port,
     QByteArray data;
     QDataStream stream( data, IO_WriteOnly );
     stream << m_host << m_port << m_user << m_passwd;
-    slaveconn.send( CMD_CONNECT, data );
+    slaveconn.send( CMD_HOST, data );
 }
 
 

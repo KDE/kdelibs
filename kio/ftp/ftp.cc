@@ -212,55 +212,46 @@ void Ftp::disconnect( bool really )
 }
 
 
-void Ftp::openConnection( const QString& _host, int _port, const QString& _user, const QString& _pass )
+void Ftp::setHost( const QString& _host, int _port, const QString& _user, const QString& _pass )
 {
-    kDebugInfo( 7102, "openConnection %s:%d %s %s", _host.ascii(), _port, _user.ascii(), _pass.ascii());
-  m_bPersistent = KProtocolManager::self().persistentConnections();
+   closeConnection( );
+   m_host = _host;
+   m_port = _port;
 
-  if ( m_bLoggedOn )
-    if ( m_bPersistent ) {
-      if ( m_host != _host || m_user != _user ) {
-        kDebugInfo( 7102, "%s %s -> %s %s  ---> Disconnecting. The scheduler should have taken care of it !", m_host.ascii(), m_user.ascii(), _host.ascii(), _user.ascii());
-        disconnect( true );
-      } else
-      // this should check whether there is still opened data connection.
-      // is it enough ?  Should we check also the control connection ?
-      if ( ftpOpenDataConnection() )
-          return;
-      else
-          m_bLoggedOn = false;
-    }
+   if( !_user.isEmpty() ) 
+   {
+      m_user = _user;
+      if ( !_pass.isEmpty() ) 
+      {
+         m_pass = _pass;
+      } else {
+         m_pass = "";
+      }
+   } else {
+      m_user = FTP_LOGIN;
+      m_pass = FTP_PASSWD;
+   }
+}
+
+void Ftp::openConnection()
+{
+  kDebugInfo( 7102, "openConnection %s:%d %s %s", m_host.ascii(), m_port, m_user.ascii(), m_pass.ascii());
 
   assert( !m_bLoggedOn );
 
   m_redirect = "";
 
-  if (!connect( _host, _port ))
+  if (!connect( m_host, m_port ))
     return; // error emitted by connect
 
   m_bFtpStarted = true;
 
-  QString user;
-  QString passwd;
-
-  if( !_user.isEmpty() ) {
-    user = _user;
-    if ( !_pass.isEmpty() ) {
-      passwd = _pass;
-    } else {
-      passwd = "";
-    }
-  } else {
-    user = FTP_LOGIN;
-    passwd = FTP_PASSWD;
-  }
-
   kDebugInfo( 7102, "Connected ...." );
 
-  m_bLoggedOn = ftpLogin( user, passwd );
+  m_bLoggedOn = ftpLogin( m_user, m_pass );
   if ( !m_bLoggedOn ) {
     kDebugError( 7102, "Could not login" );
-    error( ERR_COULD_NOT_LOGIN, _host );
+    error( ERR_COULD_NOT_LOGIN, m_host );
     return;
   }
 
@@ -278,7 +269,6 @@ void Ftp::openConnection( const QString& _host, int _port, const QString& _user,
   m_bLoggedOn = true;
 
   connected();
-
 }
 
 
@@ -292,9 +282,6 @@ bool Ftp::connect( const QString &host, unsigned short int port )
   ksockaddr_in sin;
   struct servent *pse;
   int on = 1;
-
-  m_host = "";
-  m_user = "";
 
   memset( &sin, 0, sizeof( sin ) );
 
@@ -343,8 +330,6 @@ bool Ftp::connect( const QString &host, unsigned short int port )
     return false; // error emitted by readresp
   }
 
-  m_host = host;
-
   return true;
 }
 
@@ -361,9 +346,6 @@ bool Ftp::ftpLogin( const QString & user, const QString & _pass )
 
   assert( !m_bLoggedOn );
 
-  m_user = user;
-  QString pass = _pass;
-
   if ( !m_user.isEmpty() ) {
     QCString tempbuf = "user ";
     tempbuf += m_user;
@@ -377,16 +359,16 @@ bool Ftp::ftpLogin( const QString & user, const QString & _pass )
         return true; /* no password required */
     }
 
-    kDebugInfo( 7102, "Old pass is '%s'", pass.ascii());
-    if ( pass.isEmpty() ) {
+    kDebugInfo( 7102, "Old pass is '%s'", m_pass.ascii());
+    if ( m_pass.isEmpty() ) {
       QString tmp = m_user + "@" + m_host;
-      if ( !openPassDlg( tmp, m_user, pass ) ) ;
+      if ( !openPassDlg( tmp, m_user, m_pass ) ) ;
       // return false;
     }
-    kDebugInfo( 7102, "New pass is '%s'", pass.ascii());
+    kDebugInfo( 7102, "New pass is '%s'", m_pass.ascii());
 
     tempbuf = "pass ";
-    tempbuf += pass;
+    tempbuf += m_pass;
 
     if ( !ftpSendCmd( tempbuf, '2' ) ) {
       kDebugInfo( 7102, "Wrong password");
@@ -723,6 +705,9 @@ bool Ftp::ftpCloseCommand()
 
 void Ftp::mkdir( const QString & path, int permissions )
 {
+  if (!m_bLoggedOn)
+     openConnection();
+
   assert( m_bLoggedOn );
 
   QCString buf = "mkd ";
@@ -742,6 +727,9 @@ void Ftp::mkdir( const QString & path, int permissions )
 
 void Ftp::rename( const QString & src, const QString & dst, bool overwrite )
 {
+  if (!m_bLoggedOn)
+     openConnection();
+
   // The actual functionality is in ftpRename because put needs it
   if ( ftpRename( src, dst, overwrite ) )
     finished();
@@ -766,6 +754,9 @@ bool Ftp::ftpRename( const QString & src, const QString & dst, bool /* overwrite
 
 void Ftp::del( const QString& path, bool isfile )
 {
+  if (!m_bLoggedOn)
+     openConnection();
+
   assert( m_bLoggedOn );
 
   QCString cmd = isfile ? "DELE " : "RMD ";
@@ -779,6 +770,9 @@ void Ftp::del( const QString& path, bool isfile )
 
 void Ftp::chmod( const QString & path, int permissions )
 {
+  if (!m_bLoggedOn)
+     openConnection();
+
   assert( m_bLoggedOn );
 
   QCString cmd = "SITE CHMOD ";
@@ -850,6 +844,9 @@ void Ftp::createUDSEntry( const QString & filename, FtpEntry * e, UDSEntry & ent
 
 void Ftp::stat( const QString & path )
 {
+  if (!m_bLoggedOn)
+     openConnection();
+
   kDebugInfo( 7102, "stat : %s", path.ascii() );
 
   // We can't stat root, but we know it's a dir.
@@ -950,6 +947,9 @@ void Ftp::stat( const QString & path )
 
 void Ftp::listDir( const QString & _path )
 {
+  if (!m_bLoggedOn)
+     openConnection();
+
   QString path = _path;
   // Did we get a redirect and did not we specify a path ourselves ?
   if ( !m_redirect.isEmpty() && path.isEmpty() )
@@ -993,6 +993,13 @@ void Ftp::listDir( const QString & _path )
   finished();
 }
 
+void Ftp::slave_status()
+{
+  kDebugInfo( 7102, "Got slave_status host = %s [%s]", 
+	m_host.ascii() ? m_host.ascii() : "[None]",
+        m_bLoggedOn ? "Connected" : "Not connected" );
+  slaveStatus( m_host, m_bLoggedOn );
+}
 
 bool Ftp::ftpOpenDir( const QString & path )
 {
@@ -1219,6 +1226,9 @@ bool Ftp::ftpCloseDir()
 
 void Ftp::get( const QString & path, const QString & /*query*/, bool /*reload*/ )
 {
+  if (!m_bLoggedOn)
+     openConnection();
+ 
   // Old code used to start by stat'ing, just to make sure it exists
   // Waste of time, I'd say. (David)
 
@@ -1292,6 +1302,9 @@ void Ftp::get( const QString & path, const QString & /*query*/, bool /*reload*/ 
 
 void Ftp::put( const QString& dest_orig, int permissions, bool overwrite, bool resume )
 {
+  if (!m_bLoggedOn)
+     openConnection();
+
   kDebugInfo( 7102, "Put %s", debugString(dest_orig) );
   QString dest_part( dest_orig );
   dest_part += ".part";

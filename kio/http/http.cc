@@ -1342,7 +1342,7 @@ const char *HTTPProtocol::getUserAgentString ()
   return strdup(user_agent.ascii());
 }
 
-void HTTPProtocol::openConnection(const QString& host, int port, const QString& user, const QString& pass)
+void HTTPProtocol::setHost(const QString& host, int port, const QString& user, const QString& pass)
 {
   m_request.hostname = host;
 
@@ -1356,16 +1356,6 @@ void HTTPProtocol::openConnection(const QString& host, int port, const QString& 
   m_request.do_proxy = m_bUseProxy;
 
   connected();
-}
-
-void HTTPProtocol::closeConnection( )
-{
-  m_request.hostname = QString::null;
-  m_request.port = 0;
-  m_request.user = QString::null;
-  m_request.passwd = QString::null;
-  m_request.do_proxy = QString::null;
-  http_closeConnection();
 }
 
 void HTTPProtocol::slave_status()

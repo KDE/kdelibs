@@ -261,7 +261,7 @@ void KioslaveTest::startJob() {
     break;
 
   case Get:
-    job = KIO::get( src );
+    job = KIO::get( src, true );
     connect(job, SIGNAL( data( KIO::Job*, const QByteArray &)),
             SLOT( slotData( KIO::Job*, const QByteArray &)));
     break;

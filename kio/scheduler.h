@@ -45,7 +45,6 @@ namespace KIO {
 
     public slots:
         void slotSlaveDied(KIO::Slave *slave);
-	void slotSlaveConnected();
 	void slotSlaveStatus(pid_t pid, const QCString &protocol, 
 	                     const QString &host, bool connected);
 

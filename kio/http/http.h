@@ -91,7 +91,7 @@ public:
   void buildURL();
 
   /**
-   * Opens a connection
+   * Sets the host
    * @param host
    * @param port
    * @param user
@@ -99,12 +99,7 @@ public:
    * Called directly by createSlave, this is why there is no equivalent in
    * SlaveInterface, unlike the other methods.
    */
-  virtual void openConnection(const QString& host, int port, const QString& user, const QString& pass);
-
-  /**
-   * Closes the connection (forced)
-   */
-  virtual void closeConnection();
+  virtual void setHost(const QString& host, int port, const QString& user, const QString& pass);
 
   virtual void slave_status();
 
