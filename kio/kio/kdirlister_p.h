@@ -49,12 +49,13 @@ public:
     errorParent = 0;
     
     delayedMimeTypes = false;
-    urlChanged = false;
-    
+
     rootFileItem = 0;
     lstNewItems = 0;
     lstRefreshItems = 0;
     lstMimeFilteredItems = 0;
+    
+    changes = NONE;
   }
 
   /**
@@ -78,7 +79,6 @@ public:
   QWidget *errorParent;
 
   bool delayedMimeTypes;
-  bool urlChanged;
 
   struct JobData {
     long unsigned int percent, speed;
@@ -91,10 +91,12 @@ public:
   KFileItem *rootFileItem;
 
   KFileItemList *lstNewItems, *lstRefreshItems, *lstMimeFilteredItems;
+  
+  int changes;
 
   QString nameFilter;
-  QPtrList<QRegExp> lstFilters;
-  QStringList mimeFilter;
+  QPtrList<QRegExp> lstFilters, oldFilters;
+  QStringList mimeFilter, oldMimeFilter;
 };
 
 
@@ -117,12 +119,14 @@ public:
 
   void forgetDirs( KDirLister *lister );
   void forgetDirs( KDirLister *lister, const KURL &_url );
-  
+
   void updateDirectory( const KURL &_dir );
+
+  KFileItemList* items( const KURL &_dir ) const;
 
   KFileItem* findByName( const KDirLister *lister, const QString &_name ) const;
   KFileItem* findByURL( const KDirLister *lister, const KURL &_url ) const;
-  
+
   /**
    * Notify that files have been added in @p directory
    * The receiver will list that directory again to find

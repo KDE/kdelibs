@@ -107,8 +107,6 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
   if ( lister->d->url.isEmpty() || !_keep ) // set toplevel URL only if not set yet
     lister->d->url = _url;
 
-  lister->d->urlChanged = false;
-
   DirItem *itemU = itemsInUse[_url.url()];
   DirItem *itemC;
 
@@ -419,9 +417,6 @@ void KDirListerCache::forgetDirInternal( KDirLister *lister, const KURL& url )
   Q_ASSERT( listers );
   listers->removeRef( lister );
 
-  if ( listers->isEmpty() )
-    urlsCurrentlyHeld.remove( url.url() );
-
   DirItem *item = itemsInUse[url.url()];
 
   Q_ASSERT( item );
@@ -436,11 +431,13 @@ void KDirListerCache::forgetDirInternal( KDirLister *lister, const KURL& url )
     kdirwatch->removeDir( url.path() );
   }
 
-  // item not in use anymore -> move into cache if complete
   if ( item->count == 0 )
-  {
     Q_ASSERT( listers->isEmpty() );
 
+  // item not in use anymore -> move into cache if complete
+  if ( listers->isEmpty() )
+  {
+    urlsCurrentlyHeld.remove( url.url() ); // this deletes listers!
     itemsInUse.remove( url.url() );
 
     // this job is a running update
@@ -521,6 +518,11 @@ void KDirListerCache::updateDirectory( const KURL& _dir )
     }
 }
 
+KFileItemList* KDirListerCache::items( const KURL &_dir ) const
+{
+  return itemsInUse[_dir.url()]->lstItems;
+}
+
 KFileItem* KDirListerCache::findByName( const KDirLister *lister, const QString& _name ) const
 {
   Q_ASSERT( lister );
@@ -584,17 +586,22 @@ KFileItem* KDirListerCache::findByURL( const KDirLister *lister, const KURL& _u 
   return 0L;
 }
 
-void KDirListerCache::FilesAdded( const KURL & directory )
+void KDirListerCache::FilesAdded( const KURL &dir )
+{
+  kdDebug(7004) << "FilesAdded " << dir.prettyURL() << endl;
+  updateDirectory( dir );
+}
+
+void KDirListerCache::FilesRemoved( const KURL::List &fileList )
 {
   kdWarning(7004) << k_funcinfo << "NOT IMPLEMENTED YET!" << endl;
 }
 
-void KDirListerCache::FilesRemoved( const KURL::List & fileList )
-{
-  kdWarning(7004) << k_funcinfo << "NOT IMPLEMENTED YET!" << endl;
-}
+// TODO:
+// - is fileList guaranteed to contain *only* files? -> NO!
+// - difference between path and directory?
 
-void KDirListerCache::FilesChanged( const KURL::List & fileList )
+void KDirListerCache::FilesChanged( const KURL::List &fileList )
 {
   kdWarning(7004) << k_funcinfo << "NOT IMPLEMENTED YET!" << endl;
 }
@@ -1022,7 +1029,6 @@ bool KDirListerCache::killJob( const QString& _url )
 //          cache as well.
 void KDirListerCache::deleteUnmarkedItems( QPtrList<KDirLister> *listers, KFileItemList *lstItems, bool really )
 {
-kdDebug(7004) << k_funcinfo << endl;
   // Find all unmarked items and delete them
   KFileItem* item;
   lstItems->first();
@@ -1037,32 +1043,35 @@ kdDebug(7004) << k_funcinfo << endl;
         // unregister and remove the childs of the deleted item.
         // Idea: tell all the KDirListers that they should forget the dir
         //       and then remove it from the cache.
-/*
+
         QDictIterator<DirItem> itu( itemsInUse );
         while ( itu.current() )
         {
           KURL deletedUrl = itu.current()->rootItem->url();
           if ( item->url().isParentOf( deletedUrl ) )
           {
-kdDebug(7004) << k_funcinfo << "deleting " << deletedUrl.url() << endl;
             // stop all jobs for deletedUrl
 
             QPtrList<KDirLister> *kdls = urlsCurrentlyListed[deletedUrl.url()];
-            if ( kdls )  // yeah, I'm lacking good names
+            if ( kdls )  // yeah, I lack good names
             {
-kdDebug(7004) << k_funcinfo << "num of listers listing this: " << kdls->count() << endl;
+              // we need a copy because stop modifies the list
+              kdls = new QPtrList<KDirLister>( *kdls );
               for ( KDirLister *kdl = kdls->first(); kdl; kdl = kdls->next() )
                 stop( kdl, deletedUrl );
+
+              delete kdls;
             }
-            else
-kdDebug(7004) << k_funcinfo << "num of listers listing this: 0!!!" << endl;
 
             // tell listers holding deletedUrl to forget about it
             // this will stop running updates for deletedUrl as well
 
             kdls = urlsCurrentlyHeld[deletedUrl.url()];
-kdDebug(7004) << k_funcinfo << "num of listers holding this: " << kdls->count() << endl;
             if ( kdls )
+            {
+              // we need a copy because forgetDirs modifies the list
+              kdls = new QPtrList<KDirLister>( *kdls );
+
               for ( KDirLister *kdl = kdls->first(); kdl; kdl = kdls->next() )
               {
                 // lister's root is the deleted item
@@ -1075,6 +1084,8 @@ kdDebug(7004) << k_funcinfo << "num of listers holding this: " << kdls->count() 
                 else
                   forgetDirs( kdl, deletedUrl );
               }
+              delete kdls;
+            }
 
             // delete the entry for deletedUrl - should not be needed, it's in
             // items cached now
@@ -1085,7 +1096,7 @@ kdDebug(7004) << k_funcinfo << "num of listers holding this: " << kdls->count() 
           else
             ++itu;
         }
-*/
+
         // remove the childs from the cache
         QCacheIterator<DirItem> itc( itemsCached );
         while ( itc.current() )
@@ -1155,6 +1166,12 @@ bool KDirLister::openURL( const KURL& _url, bool _keep, bool _reload )
   kdDebug(7003) << k_funcinfo << _url.prettyURL()
                 << " keep=" << _keep << " reload=" << _reload << endl;
 
+  // emit the current changes made to avoid an inconsistent treeview
+  if ( d->changes != NONE && _keep )
+    emitChanges();
+
+  d->changes = NONE;
+
   s_pCache->listDir( this, _url, _keep, _reload );
 
   return true;
@@ -1197,6 +1214,7 @@ void KDirLister::setShowingDotFiles( bool _showDotFiles )
     return;
 
   d->isShowingDotFiles = _showDotFiles;
+  d->changes |= DOT_FILES;
 }
 
 bool KDirLister::dirOnlyMode() const
@@ -1210,6 +1228,7 @@ void KDirLister::setDirOnlyMode( bool _dirsOnly )
     return;
 
   d->dirOnlyMode = _dirsOnly;
+  d->changes |= DIR_ONLY_MODE;
 }
 
 bool KDirLister::autoErrorHandlingEnabled()
@@ -1223,12 +1242,6 @@ void KDirLister::setAutoErrorHandlingEnabled( bool enable, QWidget* parent )
   d->errorParent = parent;
 }
 
-void KDirLister::handleError( KIO::Job *job )
-{
-  if ( d->autoErrorHandling )
-    job->showErrorDialog( d->errorParent );
-}
-
 const KURL& KDirLister::url() const
 {
   return d->url;
@@ -1236,7 +1249,59 @@ const KURL& KDirLister::url() const
 
 void KDirLister::emitChanges()
 {
-  // FIXME TODO!!
+  if ( d->changes == NONE )
+    return;
+
+  static const QString& dot = KGlobal::staticQString(".");
+  static const QString& dotdot = KGlobal::staticQString("..");
+
+  for ( KURL::List::Iterator it = d->lstDirs.begin();
+        it != d->lstDirs.end(); ++it )
+  {
+    KFileItemListIterator kit( *s_pCache->items( *it ) );
+
+    if ( d->changes & DIR_ONLY_MODE )
+    {
+      // the lister switched to dirOnlyMode
+      if ( d->dirOnlyMode )
+      {
+        for ( ; kit.current(); ++kit )
+          if ( !(*kit)->isDir() )
+            emit deleteItem( *kit );
+      }
+      else
+      {
+        for ( ; kit.current(); ++kit )
+          if ( !(*kit)->isDir() )
+            addNewItem( *kit );
+
+        emitItems();
+      }
+      continue;
+    }
+
+    if ( d->changes & DOT_FILES )
+    {
+      // the lister switched to dot files mode
+      if ( d->isShowingDotFiles )
+      {
+        KFileItemList items;
+        for ( ; kit.current(); ++kit )
+          if ( (*kit)->text()[0] == dot && (*kit)->text() != dotdot )
+            items.append( *kit );
+
+        emit newItems( items );
+      }
+      else
+      {
+        for ( ; kit.current(); ++kit )
+          if ( (*kit)->text()[0] == dot && (*kit)->text() != dotdot )
+            emit deleteItem( *kit );
+      }
+    }
+  }
+
+  d->changes = NONE;
 }
 
 void KDirLister::updateDirectory( const KURL& _u )
@@ -1278,14 +1343,16 @@ KFileItem* KDirLister::find( const KURL& _url ) const
 // public
 void KDirLister::setNameFilter( const QString& nameFilter )
 {
+  d->oldFilters = d->lstFilters;
   d->lstFilters.clear();
-  d->urlChanged = true;         // TODO do not reload the cache, but just emit the changed items!
   d->nameFilter = nameFilter;
 
   // Split on white space
   QStringList list = QStringList::split( ' ', nameFilter );
   for ( QStringList::Iterator it = list.begin(); it != list.end(); ++it )
     d->lstFilters.append( new QRegExp(*it, false, true ) );
+    
+  d->changes |= NAME_FILTER;
 }
 
 const QString& KDirLister::nameFilter() const
@@ -1295,7 +1362,9 @@ const QString& KDirLister::nameFilter() const
 
 void KDirLister::setMimeFilter( const QStringList& mimeFilter )
 {
+  d->oldMimeFilter = d->mimeFilter;
   d->mimeFilter = mimeFilter;
+  d->changes |= MIME_FILTER;
 }
 
 void KDirLister::clearMimeFilter()
@@ -1310,15 +1379,11 @@ const QStringList& KDirLister::mimeFilters() const
 
 bool KDirLister::matchesFilter( const QString& name ) const
 {
-  bool matched = false;
   for ( QPtrListIterator<QRegExp> it( d->lstFilters ); it.current(); ++it )
     if ( it.current()->search( name ) != -1 )
-    {
-      matched = true;
-      break;
-    }
+      return true;
 
-  return matched;
+  return false;
 }
 
 bool KDirLister::matchesMimeFilter( const QString& mime ) const
@@ -1377,6 +1442,8 @@ bool KDirLister::validURL( const KURL& _url ) const
 
   return true;
 }
+
+// ================= private methods ================= //
 
 void KDirLister::addNewItem( const KFileItem *item )
 {
@@ -1459,7 +1526,14 @@ void KDirLister::emitDeleteItem( KFileItem *item )
     emit deleteItem( item );
 }
 
-// ================ protected slots ================ //
+void KDirLister::handleError( KIO::Job *job )
+{
+  if ( d->autoErrorHandling )
+    job->showErrorDialog( d->errorParent );
+}
+
+
+// ================ private slots ================ //
 
 void KDirLister::slotInfoMessage( KIO::Job *, const QString& message )
 {
@@ -1554,6 +1628,9 @@ void KDirLister::slotClearState()
 {
   d->jobData.clear();
 }
+
+
+// to keep BC changes
 
 void KDirLister::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }

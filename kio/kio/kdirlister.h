@@ -134,8 +134,6 @@ public:
   bool autoErrorHandlingEnabled();
   void setAutoErrorHandlingEnabled( bool enable, QWidget* parent );
 
-  virtual void handleError( KIO::Job* );
-
   /**
    * @return whether dotfiles are shown
    */
@@ -385,16 +383,6 @@ signals:
    */
   void speed( int bytes_per_second );
 
-protected slots:
-  void slotInfoMessage( KIO::Job *, const QString& );
-  void slotPercent( KIO::Job *, unsigned long );
-  void slotTotalSize( KIO::Job *, KIO::filesize_t );
-  void slotProcessedSize( KIO::Job *, KIO::filesize_t );
-  void slotSpeed( KIO::Job *, unsigned long );
-
-  void slotJobToBeKilled( const KURL& );
-  void slotClearState();
-
 protected:
   /**
    * Called for every new item before emitting @ref newItems().
@@ -413,21 +401,39 @@ protected:
   virtual bool matchesMimeFilter( const KFileItem * ) const;
 
   /**
-   * Checks if a url is malformed or not and displays an error message if it
-   * is. Returns true if it is valid, otherwise false.
+   * Checks if an url is malformed or not and displays an error message 
+   * if it is and autoErrorHandling is set to true. 
+   * @return true if url is valid, otherwise false.
    */
-  bool validURL( const KURL& ) const;
+  virtual bool validURL( const KURL& ) const;
 
+protected:
+  virtual void virtual_hook( int id, void* data );
+
+private slots:
+  void slotInfoMessage( KIO::Job *, const QString& );
+  void slotPercent( KIO::Job *, unsigned long );
+  void slotTotalSize( KIO::Job *, KIO::filesize_t );
+  void slotProcessedSize( KIO::Job *, KIO::filesize_t );
+  void slotSpeed( KIO::Job *, unsigned long );
+
+  void slotJobToBeKilled( const KURL& );
+  void slotClearState();
+
+private:
   virtual void addNewItem( const KFileItem *item );
   virtual void addNewItems( const KFileItemList& items );
   virtual void addRefreshItem( const KFileItem *item );
   virtual void emitItems();
   virtual void emitDeleteItem( KFileItem *item );
 
-protected:
-  virtual void virtual_hook( int id, void* data );
+  /** Reimplement to customize error handling */
+  virtual void handleError( KIO::Job* );
 
-private:
+  enum Changes {
+    NONE=0, NAME_FILTER=1, MIME_FILTER=2, DOT_FILES=4, DIR_ONLY_MODE=8
+  };
+
   class KDirListerPrivate;
   KDirListerPrivate *d;
 };
