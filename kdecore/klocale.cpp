@@ -161,6 +161,43 @@ QString KLocale::language() const
   return lang;
 }
 
+QString KLocale::MonthName(int i) const
+{
+    switch (i)
+    {
+      case 1:   return translate("January");
+      case 2:   return translate("February");
+      case 3:   return translate("March");
+      case 4:   return translate("April");
+      case 5:   return translate("May");
+      case 6:   return translate("June");
+      case 7:   return translate("July");
+      case 8:   return translate("August");
+      case 9:   return translate("September");
+      case 10:  return translate("October");
+      case 11:  return translate("November");
+      case 12:  return translate("December");
+    }
+
+    return QString::null;
+}
+
+QString KLocale::WeekDayName (int i) const
+{
+    switch (i )
+    {
+      case 1:  return translate("Monday");
+      case 2:  return translate("Tuesday");
+      case 3:  return translate("Wednesday");
+      case 4:  return translate("Thursday");
+      case 5:  return translate("Friday");
+      case 6:  return translate("Saturday");
+      case 7:  return translate("Sunday");
+    }
+
+    return QString::null;
+}
+
 #ifdef ENABLE_NLS
 
 KLocale::KLocale( const QString& _catalogue )
@@ -514,42 +551,6 @@ KLocale::SignPosition KLocale::negativeMonetarySignPosition() const
   return _negativeMonetarySignPosition;
 }
 
-QString KLocale::MonthName(int i) const
-{
-    switch (i)
-    {
-      case 1:   return translate("January");
-      case 2:   return translate("February");
-      case 3:   return translate("March");
-      case 4:   return translate("April");
-      case 5:   return translate("May");
-      case 6:   return translate("June");
-      case 7:   return translate("July");
-      case 8:   return translate("August");
-      case 9:   return translate("September");
-      case 10:  return translate("October");
-      case 11:  return translate("November");
-      case 12:  return translate("December");
-    }
-
-    return QString::null;
-}
-
-QString KLocale::WeekDayName (int i) const
-{
-    switch (i )
-    {
-      case 1:  return translate("Monday");
-      case 2:  return translate("Tuesday");
-      case 3:  return translate("Wednesday");
-      case 4:  return translate("Thursday");
-      case 5:  return translate("Friday");
-      case 6:  return translate("Saturday");
-      case 7:  return translate("Sunday");
-    }
-
-    return QString::null;
-}
 
 QString KLocale::formatMoney(double num) const
 {
@@ -933,7 +934,7 @@ QString KLocale::formatMoney(const QString &numStr) const
 
 QString KLocale::formatNumber(double num, int precision) const
 {
-  return QString::number( num, precision==-1?2:precision);
+  return QString::number( num, 'f', precision==-1?2:precision);
 }
 
 QString KLocale::formatNumber(const QString &numStr) const
@@ -941,16 +942,19 @@ QString KLocale::formatNumber(const QString &numStr) const
   return numStr;
 }
 
-QString KLocale::formatDate(const QDate &pDate, bool shortfmt) const
+QString KLocale::formatDate(const QDate &pDate, bool) const
 {
   QString buf;
   buf.sprintf("%.2d/%.2d/%.2d", pDate.month(), pDate.day(), pDate.year() % 100);
   return buf;
 }
 
-QString KLocale::formatTime(const QTime &pTime) const
+QString KLocale::formatTime(const QTime &pTime, bool includeSecs) const
 {
-  return pTime.toString();
+  QString result = pTime.toString();
+  if (!includeSecs)
+     result = result.left(5);
+  return result;
 }
 
 QString KLocale::formatDateTime(const QDateTime &pDateTime) const
@@ -967,7 +971,7 @@ QString KLocale::getLocale(const QString& ) {
     return "C";
 }
 
-void  KLocale::enableNumericLocale(bool enable) {
+void  KLocale::enableNumericLocale(bool /* enable */) {
 }
 
 QStringList KLocale::languageList() const {
@@ -977,7 +981,10 @@ QStringList KLocale::languageList() const {
 void KLocale::insertCatalogue( const QString& ) {
 }
 
-void KLocale::setLanguage(const QString &_lang, const QString &_langs, const QString &_number, const QString &_money, const QString &_time)
+void KLocale::setLanguage(
+  const QString & /* _lang */, const QString & /* _langs */, 
+  const QString & /* _number */, const QString & /* _money */, 
+  const QString & /* _time */)
 {
 }
 
