@@ -1,6 +1,6 @@
 /*  This file is part of the KDE Libraries
  *  Copyright (C) 1998 Thomas Tanghus (tanghus@earthling.net)
- *  Additions 1999-2000 by Espen Sand (espen@kde.org) 
+ *  Additions 1999-2000 by Espen Sand (espen@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -16,7 +16,7 @@
  *  along with this library; see the file COPYING.LIB.  If not, write to
  *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  *  Boston, MA 02111-1307, USA.
- */  
+ */
 
 #ifndef _KDIALOG_H_
 #define _KDIALOG_H_
@@ -26,10 +26,10 @@ class QLayoutItem;
 #include <qdialog.h>
 
 /**
- * Dialog with extended modeless support and methods for KDE standard
+ * Dialog with extended nonmodal support and methods for KDE standard
  * compliance.
  *
- * If the dialog is modeless and has a parent, the default keybindings 
+ * If the dialog is non-modal and has a parent, the default keybindings
  * (@p escape = @p reject(), @p enter = @p accept(), etc.) are disabled.
  *
  * The @ref marginHint() and @ref spacingHint() sizes shall be used
@@ -51,21 +51,21 @@ class KDialog : public QDialog
   public:
 
     /**
-     * Constructor. 
+     * Constructor.
      *
      * Takes the same arguments as @ref QDialog.
      */
-    KDialog(QWidget *parent = 0, const char *name = 0, 
+    KDialog(QWidget *parent = 0, const char *name = 0,
 	    bool modal = false, WFlags f = 0);
 
     /**
-     * Return the number of pixels you shall use between a 
+     * Return the number of pixels you shall use between a
      * dialog edge and the outermost widget(s) according to the KDE standard.
      **/
     static int marginHint();
 
     /**
-     * Return the number of pixels you shall use between 
+     * Return the number of pixels you shall use between
      * widgets inside a dialog according to the KDE standard.
      */
     static int spacingHint();
@@ -79,7 +79,7 @@ class KDialog : public QDialog
     static void resizeLayout( QWidget *widget, int margin, int spacing );
 
     /**
-     * Reszie every layout associated with @p lay and its children. 
+     * Reszie every layout associated with @p lay and its children.
      *
      * @param margin The new layout margin
      * @param margin The new layout spacing
@@ -93,7 +93,7 @@ class KDialog : public QDialog
 
     /**
      * Make a KDE compliant caption.
-     * 
+     *
      * @param caption Your caption. Do @p not include the application name
      * in this string. It will be added automatically according to the KDE
      * standard.
@@ -102,8 +102,8 @@ class KDialog : public QDialog
 
     /**
      * Make a plain caption without any modifications.
-     * 
-     * @param caption Your caption. This is the string that will be 
+     *
+     * @param caption Your caption. This is the string that will be
      * displayed in the window title.
      */
     virtual void setPlainCaption( const QString &caption );
@@ -118,7 +118,7 @@ class KDialog : public QDialog
 
    signals:
     /**
-     * Emitted when the margin size and/or spacing size 
+     * Emitted when the margin size and/or spacing size
      * have changed.
      *
      * Use @ref marginHint() and  @ref spacingHint() in your slot
@@ -155,11 +155,11 @@ class KDialogQueuePrivate;
 class KDialogQueue : public QObject
 {
       Q_OBJECT
-   
+
 public:
-   
+
       static void queueDialog(QDialog *);
-      
+
       ~KDialogQueue();
 
 protected:
@@ -167,7 +167,7 @@ protected:
       static KDialogQueue *self();
 
 private slots:
-      void slotShowQueuedDialog(); 
+      void slotShowQueuedDialog();
 
 protected:
       KDialogQueuePrivate *d;
