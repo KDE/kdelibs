@@ -7,9 +7,9 @@ using namespace KABC;
 Resource::Resource( AddressBook *ab ) :
   mAddressBook( ab )
 {
-    mReadOnly = true;
-    mFastResource = true;
-    mName = "NoName";
+  mReadOnly = true;
+  mFastResource = true;
+  mName = "NoName";
 }
 
 Resource::~Resource()
@@ -18,7 +18,7 @@ Resource::~Resource()
 
 bool Resource::open()
 {
-    kdDebug() << "resource: standard" << endl;
+  kdDebug() << "resource: standard" << endl;
   return true;
 }
 
@@ -33,6 +33,8 @@ Ticket *Resource::requestSaveTicket()
 
 bool Resource::load()
 {
+  kdDebug() << "Resource::load()" << endl;
+
   return true;
 }
 
@@ -48,60 +50,60 @@ Ticket *Resource::createTicket( Resource *resource )
 
 QString Resource::identifier()
 {
-    return "NoIdentifier";
+  return "NoIdentifier";
 }
 
 void Resource::removeAddressee( const Addressee& )
 {
-    // do nothing
+  // do nothing
 }
 
 void Resource::setReadOnly( bool value )
 {
-	mReadOnly = value;
+  mReadOnly = value;
 }
 
 bool Resource::readOnly()
 {
-	return mReadOnly;
+  return mReadOnly;
 }
 
 void Resource::setFastResource( bool value )
 {
-	mFastResource = value;
+  mFastResource = value;
 }
 
 bool Resource::fastResource()
 {
-	return mFastResource;
+  return mFastResource;
 }
 
 void Resource::setName( const QString& name )
 {
-    mName = name;
+  mName = name;
 }
 
 QString Resource::name() const
 {
-    return mName;
+  return mName;
 }
 
 QString Resource::cryptStr( const QString &str )
 {
-    QString result;
-    for ( uint i = 0; i < str.length(); ++i )
-	result += ( str[ i ].unicode() < 0x20 ) ? str[ i ] :
-		QChar( 0x1001F - str[ i ].unicode() );
-
-    return result;
+  QString result;
+  for ( uint i = 0; i < str.length(); ++i )
+    result += ( str[ i ].unicode() < 0x20 ) ? str[ i ] :
+              QChar( 0x1001F - str[ i ].unicode() );
+                
+  return result;
 }
 
 QString Resource::typeInfo() const
 {
-    return "noType";
+  return "noType";
 }
 
 QString Resource::paramInfo() const
 {
-    return "noParameter";
+  return "noParameter";
 }

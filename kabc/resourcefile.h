@@ -16,7 +16,8 @@ class Format;
 /**
   @internal
 */
-class ResourceFile : public QObject, public Resource {
+class ResourceFile : public QObject, public Resource
+{
     Q_OBJECT
   public:
     ResourceFile( AddressBook *, const KConfig * );

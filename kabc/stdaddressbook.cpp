@@ -35,66 +35,70 @@ AddressBook *StdAddressBook::mSelf = 0;
 
 QString StdAddressBook::fileName()
 {
-    return locateLocal( "data", "kabc/std.vcf" );
+  return locateLocal( "data", "kabc/std.vcf" );
 }
 
 AddressBook *StdAddressBook::self()
 {
-    kdDebug(5700) << "StdAddressBook::self()" << endl;
+  kdDebug(5700) << "StdAddressBook::self()" << endl;
 
-    if ( !mSelf ) {
-	mSelf = new StdAddressBook;
-    }
+  if ( !mSelf ) {
+    mSelf = new StdAddressBook;
+  }
 
-    kdDebug() << "self: " << mSelf->identifier() << endl;
+  kdDebug() << "self: " << mSelf->identifier() << endl;
 
-    return mSelf;
+  return mSelf;
 }
 
 bool StdAddressBook::save()
 {
-    kdDebug(5700) << "StdAddressBook::save()" << endl;
+  kdDebug(5700) << "StdAddressBook::save()" << endl;
 
-    return self()->saveAll();
+  return self()->saveAll();
 }
 
 
 StdAddressBook::StdAddressBook()
 {
-    KSimpleConfig config( "kabcrc", true );
-    ResourceFactory *factory = ResourceFactory::self();
-    config.setGroup( "General" );
+  kdDebug() << "StdAddressBook::StdAddressBook()" << endl;
 
-    QStringList keys = config.readListEntry( "ResourceKeys" );
-    for ( QStringList::Iterator it = keys.begin(); it != keys.end(); ++it ) {
-	config.setGroup( "Resource_" + (*it) );
-	QString type = config.readEntry( "ResourceType" );
+  KSimpleConfig config( "kabcrc", true );
+  ResourceFactory *factory = ResourceFactory::self();
+  config.setGroup( "General" );
 
-	Resource *resource = factory->resource( type, this, &config );
+  QStringList keys = config.readListEntry( "ResourceKeys" );
+  for ( QStringList::Iterator it = keys.begin(); it != keys.end(); ++it ) {
+    kdDebug() << " -- " << (*it) << endl; 
+    config.setGroup( "Resource_" + (*it) );
+    QString type = config.readEntry( "ResourceType" );
 
-	if ( !resource )
-	    continue;
+    Resource *resource = factory->resource( type, this, &config );
 
-	resource->setReadOnly( config.readBoolEntry( "ResourceIsReadOnly" ) );
-	resource->setFastResource( config.readBoolEntry( "ResourceIsFast" ) );
-	resource->setName( config.readEntry( "ResourceName" ) );
+    if ( !resource ) continue;
 
-	if ( !addResource( resource ) )
-	    delete resource;
-    }
+    resource->setReadOnly( config.readBoolEntry( "ResourceIsReadOnly" ) );
+    resource->setFastResource( config.readBoolEntry( "ResourceIsFast" ) );
+    resource->setName( config.readEntry( "ResourceName" ) );
 
-    if ( mResources.count() == 0 ) {  // default resource
-	Resource *resource = new ResourceFile( this,
-		locateLocal( "data", "kabc/std.vcf" ), new VCardFormat );
-	resource->setName( "Default" );
-	resource->setReadOnly( false );
-	resource->setFastResource( true );
-    }
+    if ( !addResource( resource ) ) delete resource;
+  }
 
-    load();
+  if ( mResources.count() == 0 ) {  // default resource
+    kdDebug() << "Default resource" << endl;
+
+    Resource *resource = new ResourceFile( this, fileName(), new VCardFormat );
+    resource->setName( "Default" );
+    resource->setReadOnly( false );
+    resource->setFastResource( true );
+        
+    if ( !addResource( resource ) ) delete resource;
+  }
+
+  load();
 }
 
 StdAddressBook::~StdAddressBook()
 {
-    save();
+  save();
 }

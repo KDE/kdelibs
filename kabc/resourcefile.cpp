@@ -15,41 +15,42 @@
 #include "addressbook.h"
 #include "binaryformat.h"
 #include "vcardformat.h"
+#include "stdaddressbook.h"
 
 #include "resourcefile.h"
 
 using namespace KABC;
 
 ResourceFile::ResourceFile( AddressBook *addressBook, const KConfig *config )
-    : Resource( addressBook )      
+    : Resource( addressBook )
 {
-	QString fileName = config->readEntry( "FileName" );
-	uint type = config->readNumEntry( "FileFormat", FORMAT_VCARD );
+  QString fileName = config->readEntry( "FileName" );
+  uint type = config->readNumEntry( "FileFormat", FORMAT_VCARD );
 
-	Format *format = 0;
-        switch ( type ) {
-	    case FORMAT_VCARD:
-		if ( fileName.isEmpty() )
-		    fileName = locateLocal( "data", "kabc/std.vcf" );
-		format = new VCardFormat;
-		break;
-	    case FORMAT_BINARY:
-		if ( fileName.isEmpty() )
-		    fileName = locateLocal( "data", "kabc/std.bin" );
-		format = new BinaryFormat;
-		break;
-	    default:
-		kdDebug( 5700 ) << "ResourceFile: no valid format type." << endl;
-	}
+  Format *format = 0;
+  switch ( type ) {
+    case FORMAT_VCARD:
+      if ( fileName.isEmpty() )
+        fileName = StdAddressBook::fileName();
+      format = new VCardFormat;
+      break;
+    case FORMAT_BINARY:
+      if ( fileName.isEmpty() )
+        fileName = locateLocal( "data", "kabc/std.bin" );
+      format = new BinaryFormat;
+      break;
+    default:
+      kdDebug( 5700 ) << "ResourceFile: no valid format type." << endl;
+ }
 
-	init( fileName, format );
+  init( fileName, format );
 }
 
 ResourceFile::ResourceFile( AddressBook *addressBook, const QString &filename,
                             Format *format ) :
-  Resource( addressBook )      
+  Resource( addressBook )
 {
-	init( filename, format );
+  init( filename, format );
 }
 
 ResourceFile::~ResourceFile()

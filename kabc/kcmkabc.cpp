@@ -77,10 +77,10 @@ ConfigPage::ConfigPage( QWidget *parent, const char *name )
     groupBoxLayout->addWidget( listView );
 
     KButtonBox *buttonBox = new KButtonBox( groupBox, Vertical );
-    addButton = buttonBox->addButton( i18n( "&Add" ), this, SLOT(slotAdd()) );
+    addButton = buttonBox->addButton( i18n( "&Add..." ), this, SLOT(slotAdd()) );
     removeButton = buttonBox->addButton( i18n( "&Remove" ), this, SLOT(slotRemove()) );
     removeButton->setEnabled( false );
-    editButton = buttonBox->addButton( i18n( "&Edit" ), this, SLOT(slotEdit()) );
+    editButton = buttonBox->addButton( i18n( "&Edit..." ), this, SLOT(slotEdit()) );
     editButton->setEnabled( false );
     buttonBox->layout();
 

@@ -203,11 +203,13 @@ bool AddressBook::load()
 
   Resource *r;
   bool ok = true;
-  for( r = mResources.first(); r; r = mResources.next() )
+  for( r = mResources.first(); r; r = mResources.next() ) {
+    kdDebug() << "AddressBook::load(): Resource '" << r->name() << "'" << endl;
     if ( !r->load() ) {
-	kdDebug(5700) << "AddressBook::load(): can't load resource '" << r->name() << "'" << endl;
-	ok = false;
+      kdDebug(5700) << "AddressBook::load(): can't load resource '" << r->name() << "'" << endl;
+      ok = false;
     }
+  }
 
   return ok;
 }
@@ -296,7 +298,7 @@ void AddressBook::insertAddressee( const Addressee &a )
 
 void AddressBook::removeAddressee( const Addressee &a )
 {
-    kdDebug() << "removeAddressee: " << a.uid() << endl;
+  kdDebug() << "removeAddressee: " << a.uid() << endl;
   Iterator it;
   for ( it = begin(); it != end(); ++it ) {
     if ( a.uid() == (*it).uid() ) {
@@ -396,14 +398,14 @@ void AddressBook::dump() const
 
 QString AddressBook::identifier()
 {
-    QString identifier;
+  QString identifier;
 
-    for ( uint i = 0; i < mResources.count(); ++i ) {
-	Resource *resource = mResources.at( i );
-	identifier += ( i == 0 ? "" : ":" ) + resource->identifier();
-    }
+  for ( uint i = 0; i < mResources.count(); ++i ) {
+    Resource *resource = mResources.at( i );
+    identifier += ( i == 0 ? "" : ":" ) + resource->identifier();
+  }
 
-    return identifier;
+  return identifier;
 }
 
 Field::List AddressBook::fields( int category )
@@ -444,20 +446,18 @@ bool AddressBook::addCustomField( const QString &label, int category,
 
 QDataStream &KABC::operator<<( QDataStream &s, const AddressBook &ab )
 {
-    if (!ab.d)
-	return s;
+  if (!ab.d) return s;
 
-    return s << ab.d->mAddressees;
+  return s << ab.d->mAddressees;
 }
 
 QDataStream &KABC::operator>>( QDataStream &s, AddressBook &ab )
 {
-    if (!ab.d)
-	return s;
+  if (!ab.d) return s;
 
-    s >> ab.d->mAddressees;
+  s >> ab.d->mAddressees;
 
-    return s;
+  return s;
 }
 
 bool AddressBook::addResource( Resource *resource )
@@ -478,40 +478,41 @@ bool AddressBook::removeResource( Resource *resource )
 
 bool AddressBook::saveAll()
 {
-    kdDebug(5700) << "AddressBook::saveAll()" << endl;
+  kdDebug(5700) << "AddressBook::saveAll()" << endl;
 
-    bool ok = true;
-    Resource *resource = 0;
+  bool ok = true;
+  Resource *resource = 0;
 
-    for ( uint i = 0; i < mResources.count(); ++i ) {
-	resource = mResources.at( i );
-	if ( !resource->readOnly() ) {
-	    Ticket *ticket = requestSaveTicket( resource );
-	    if ( !ticket ) {
-		kdError(5700) << "Can't save to standard addressbook. It's locked." << endl;
-	        return false;
-	    }
+  for ( uint i = 0; i < mResources.count(); ++i ) {
+    resource = mResources.at( i );
+    if ( !resource->readOnly() ) {
+      Ticket *ticket = requestSaveTicket( resource );
+      if ( !ticket ) {
+        kdError(5700) << "Can't save to standard addressbook. It's locked." << endl;
+        return false;
+      }
 
-	    if ( !save( ticket ) )
-		ok = false;
-	}
+      if ( !save( ticket ) ) {
+        ok = false;
+      }
     }
+  }
 
-    return ok;
+  return ok;
 }
 
 void AddressBook::resourceAddressee( Addressee& addr, Resource *resource )
 {
-    Resource *res = addr.resource();
+  Resource *res = addr.resource();
     
-    // remove addressee from old resource before adding to the new one
-    if ( res )
-	res->removeAddressee( addr );
+  // remove addressee from old resource before adding to the new one
+  if ( res )
+    res->removeAddressee( addr );
 
-    addr.setResource( resource );
+  addr.setResource( resource );
 }
 
 QPtrList<Resource> AddressBook::resources()
 {
-    return mResources;
+  return mResources;
 }
