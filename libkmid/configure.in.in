@@ -43,7 +43,7 @@ AC_CHECK_HEADERS(sys/soundcard.h machine/soundcard.h linux/awe_voice.h awe_voice
 dnl check for ALSA audio support
 
 kde_with_alsa=yes
-AC_ARG_WITH(alsa, [  --with-alsa             enable libKMid ALSA support],
+AC_ARG_WITH(alsa, AC_HELP_STRING([--with-alsa],[enable libKMid ALSA support]),
 [kde_with_alsa=$withval])
 
 if test "$kde_with_alsa" = "yes"; then

@@ -64,7 +64,7 @@ AC_REQUIRE([AC_LTDL_SYS_DLOPEN_DEPLIBS])dnl
 
 AC_DEFUN([AC_LTDL_ENABLE_INSTALL],
 [AC_ARG_ENABLE(ltdl-install,
-[  --enable-ltdl-install   install libltdl])
+AC_HELP_STRING([--enable-ltdl-install],[install libltdl]))
 
 AM_CONDITIONAL(INSTALL_LTDL, test x"${enable_ltdl_install-no}" != xno)
 AM_CONDITIONAL(CONVENIENCE_LTDL, test x"${enable_ltdl_convenience-no}" != xno)
