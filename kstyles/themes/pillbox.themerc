@@ -6,6 +6,8 @@ Name[de]=Pillenschachtel
 Name[fi]=Pillerirasia
 Name[hu]=Gyógyszeresdoboz
 Name[no]=Pilleboks
+Name[pt]=Caixa
+Name[pt_BR]=Caixa
 Name[sl]=©katlica tablet
 Comment=Pillbox unthemed style.
 Comment[af]=Pilhouer temalose styl
@@ -19,6 +21,8 @@ Comment[hu]=Gyógyszeresdoboz stílus
 Comment[it]=Stile pillbox (senza tema)
 Comment[no]=Pilleboks uten tema
 Comment[no_NY]='Pillbox'-stil utan tema
+Comment[pt]=Estilo caixa
+Comment[pt_BR]=Estilo caixa
 Comment[sl]=Netematski slog ¹katlice tablet.
 [KDE]
 widgetStyle=pillboxstyle.la
