@@ -51,3 +51,13 @@ WISHES
   works on text and image files. It is not clear to me, if it 
   is also supposed to work for other kinds of input files.
   * make this an option in the kprinter dialog		 -kp-
+ 
+- CUPS: a "Printer/Server Debugging Helper" would be nice: you could 
+  vary the LogLevel there, restart the server, provide a viewer
+  for the error_log (maybe the other logs too) with life updates
+  including means to "grep" for errors and keywords. It could even
+  become extended to provide for some automatic reporting tool that
+  collects the data to be send in for bug reports (like PPD in use,
+  CUPS version, KDEPrint version, printer-make-and-modell, usage
+  of foomatic/cupsomatic, ghostscript version etc.).	-kp-
+ 
