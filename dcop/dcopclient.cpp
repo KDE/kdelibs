@@ -386,6 +386,7 @@ static void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
             {
                 if ((rs->transactionId == id) && (rs->calledApp == calledApp))
                 {
+                    d->pendingReplies.remove();
                     QByteArray* b = rs->replyData;
                     QCString* t =  rs->replyType;
                     ds >> *t >> *b;
