@@ -297,3 +297,13 @@ bool DCOPClient::isAttached() const
 {
     return false;
 }
+
+#include <qapplication.h>
+#include <qpalette.h>
+
+void QApplication::setPalette( const QPalette &palette, bool informWidgets,
+                               const char* className )
+{
+      qDebug("QApplication::setPalette");
+}
+
