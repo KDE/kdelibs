@@ -85,8 +85,7 @@ binary-arch:  build
 	fi
 
 # libraries not starting with lib are modules
-	dh_movefiles -pkdelibs3-dev $(kde_includedir) $(kde_libdir)/lib*.so $(kde_libdir)/lib*.a
-	-mv `find debian/kdelibs3-dev/$(kde_libdir) -type f -name "*.so"` debian/tmp/$(kde_libdir)/
+	dh_movefiles -pkdelibs3-dev $(kde_includedir) $(kde_libdir)/lib*.a
 	dh_installchangelogs
 	dh_undocumented
 	dh_link

@@ -1,3 +1,10 @@
+kdelibs (4:2.0-20000820-1.0) experimental; urgency=low
+ 
+  * New upstream fixes
+  * No requirement for -dev package now
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 20 Aug 2000 07:45:00 -0700
+                                                                                
 kdelibs (4:2.0-20000816-1.0) experimental; urgency=low
 
   * Major hacking to fix tons of issues
