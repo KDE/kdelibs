@@ -340,7 +340,7 @@ public:
   KActionCollection* m_collection;
   KInstance         *m_instance;
 
-  XmlData     m_currentXmlData;
+  XmlData*     m_currentXmlData;
   QDomElement m_currentToolbarElem;
 
   QString            m_xmlFile;
@@ -612,6 +612,7 @@ bool KEditToolbarWidget::save()
 
     dump_xml((*it).m_document);
 
+    kdDebug(240) << "Saving " << (*it).m_xmlFile << endl;
     // if we got this far, we might as well just save it
     KXMLGUIFactory::saveConfigFile((*it).m_document, (*it).m_xmlFile);
   }
@@ -850,7 +851,8 @@ void KEditToolbarWidget::loadToolbarCombo(const QString& defaultToolbar)
   slotToolbarSelected(m_toolbarCombo->currentText());
 }
 
-void KEditToolbarWidget::loadActionList(QDomElement& elem)
+// KDE4: rename method to e.g. fillLists to disambiguate from <ActionList>
+void KEditToolbarWidget::loadActionList(QDomElement& elem) // KDE4: const QDomElement&
 {
   static const QString &tagSeparator = KGlobal::staticQString( "Separator" );
   static const QString &tagMerge     = KGlobal::staticQString( "Merge" );
@@ -870,7 +872,7 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
   m_downAction->setEnabled(false);
 
   // We'll use this action collection
-  KActionCollection* actionCollection = d->m_currentXmlData.m_actionCollection;
+  KActionCollection* actionCollection = d->m_currentXmlData->m_actionCollection;
 
   // store the names of our active actions
   QMap<QString, bool> active_list;
@@ -982,7 +984,7 @@ void KEditToolbarWidget::slotToolbarSelected(const QString& _text)
       if ( name == _text )
       {
         // save our current settings
-        d->m_currentXmlData     = (*xit);
+        d->m_currentXmlData     = & (*xit);
         d->m_currentToolbarElem = (*it);
 
         // load in our values
@@ -1074,23 +1076,29 @@ void KEditToolbarWidget::slotDropped(KListView *list, QDropEvent *e, QListViewIt
 
 void KEditToolbarWidget::slotInsertButton()
 {
-  ToolbarItem *item = (ToolbarItem*)m_inactiveList->currentItem();
+  ToolbarItem *item = static_cast<ToolbarItem *>( m_inactiveList->currentItem() );
   insertActive(item, m_activeList->currentItem(), false);
 
   // we're modified, so let this change
   emit enableOk(true);
 
-  slotToolbarSelected( m_toolbarCombo->currentText() );
+  //slotToolbarSelected( m_toolbarCombo->currentText() ); causes #97572
+  delete item;
+  // TODO loadActionList( ... , ActiveListOnly );
 }
 
 void KEditToolbarWidget::slotRemoveButton()
 {
-  removeActive( dynamic_cast<ToolbarItem*>(m_activeList->currentItem()) );
+  ToolbarItem *item = dynamic_cast<ToolbarItem *>( m_activeList->currentItem() );
+  removeActive( item );
 
   // we're modified, so let this change
   emit enableOk(true);
 
-  slotToolbarSelected( m_toolbarCombo->currentText() );
+  //slotToolbarSelected( m_toolbarCombo->currentText() );
+  delete item;
+  // TODO loadActionList ( ..., InactiveListOnly )
+  //     or just add it to the left again.
 }
 
 void KEditToolbarWidget::insertActive(ToolbarItem *item, QListViewItem *before, bool prepend)
@@ -1284,7 +1292,7 @@ void KEditToolbarWidget::updateLocal(QDomElement& elem)
     if ( (*xit).m_type == XmlData::Shell ||
          (*xit).m_type == XmlData::Part )
     {
-      if ( d->m_currentXmlData.m_xmlFile == (*xit).m_xmlFile )
+      if ( d->m_currentXmlData->m_xmlFile == (*xit).m_xmlFile )
       {
         (*xit).m_isModified = true;
         return;
@@ -1358,10 +1366,12 @@ void KEditToolbarWidget::slotProcessExited( KProcess* )
   if(item){
     item->setPixmap(0, BarIcon(icon, 16));
 
-    d->m_currentXmlData.m_isModified = true;
+    Q_ASSERT( d->m_currentXmlData->m_type != XmlData::Merged );
+
+    d->m_currentXmlData->m_isModified = true;
 
     // Get hold of ActionProperties tag
-    QDomElement elem = KXMLGUIFactory::actionPropertiesElement( d->m_currentXmlData.m_document );
+    QDomElement elem = KXMLGUIFactory::actionPropertiesElement( d->m_currentXmlData->m_document );
     // Find or create an element for this action
     QDomElement act_elem = KXMLGUIFactory::findActionByName( elem, item->internalName(), true /*create*/ );
     Q_ASSERT( !act_elem.isNull() );
