@@ -38,6 +38,7 @@ dnl ------------------------------------------------------------------------
 dnl Try to find if we have Linux Dir Notification
 dnl ------------------------------------------------------------------------
 
+AC_CHECK_GNU_EXTENSIONS
 
 AC_MSG_CHECKING([for Linux Directory Notification])
 AC_CACHE_VAL(kde_cv_have_dnotify,
@@ -68,7 +69,6 @@ AC_LANG_RESTORE
 
 if test "$kde_cv_have_dnotify" = "yes" ; then
   AC_DEFINE_UNQUOTED(HAVE_DNOTIFY, 1, [Define if your system has Linux Directory Notification])
-  AC_CHECK_GNU_EXTENSIONS
   AC_MSG_RESULT(yes)
 else
   AC_MSG_RESULT(no)
