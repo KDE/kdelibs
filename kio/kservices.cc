@@ -98,7 +98,7 @@ KService::KService( KSimpleConfig& config, bool _put_in_list )
   m_lstRepoIds = config.readListEntry( "RepoIds" );
   m_lstServiceTypes = config.readListEntry( "ServiceTypes" );
   // For compatibility with KDE 1.x
-  m_lstServiceTypes += config.readListEntry( "MimeType" );
+  m_lstServiceTypes += config.readListEntry( "MimeType", ';' );
 
   m_bAllowAsDefault = config.readBoolEntry( "AllowDefault" );
   
