@@ -48,6 +48,7 @@ public:
     virtual void layout();
     virtual short intrinsicWidth() const;
     virtual int intrinsicHeight() const;
+    virtual bool isApplet() const { return true; }
 
     DOM::HTMLElementImpl *element() const
     { return static_cast<DOM::HTMLElementImpl*>(RenderObject::element()); }

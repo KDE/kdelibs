@@ -134,7 +134,7 @@ void HTMLAppletElementImpl::attach()
 
 bool HTMLAppletElementImpl::getMember(const QString & name, JType & type, QString & val) {
 #ifndef Q_WS_QWS // We don't have Java in Qt Embedded
-    if (!m_render)
+    if ( !m_render || !m_render->isApplet() )
         return false;
     KJavaAppletWidget *w = static_cast<KJavaAppletWidget*>(static_cast<RenderApplet*>(m_render)->widget());
     return (w && w->applet() && w->applet()->getMember(name, type, val));
@@ -145,7 +145,7 @@ bool HTMLAppletElementImpl::getMember(const QString & name, JType & type, QStrin
 
 bool HTMLAppletElementImpl::callMember(const QString & name, const QStringList & args, JType & type, QString & val) {
 #ifndef Q_WS_QWS // We don't have Java in Qt Embedded
-    if (!m_render)
+    if ( !m_render || !m_render->isApplet() )
         return false;
     KJavaAppletWidget *w = static_cast<KJavaAppletWidget*>(static_cast<RenderApplet*>(m_render)->widget());
     return (w && w->applet() && w->applet()->callMember(name, args, type, val));
