@@ -87,6 +87,8 @@ int KDEsuClient::connect()
 	return -1;
     }
 
+#ifndef SO_PEERCRED
+#warning "Using sloppy security checks"
     // We check the owner of the socket after we have connected.
     // If the socket was somehow not ours an attacker will be able
     // to delete it after we connect but shouldn't be able to
@@ -110,6 +112,21 @@ int KDEsuClient::connect()
 	close(sockfd); sockfd = -1;
 	return -1;
     }
+#else
+    struct ucred cred; 
+    socklen_t siz = sizeof(cred); 
+ 
+    // Security: if socket exists, we must own it 
+    if (getsockopt(sockfd, SOL_SOCKET, SO_PEERCRED, &cred, &siz) == 0) 
+    {
+        if (cred.uid != getuid()) 
+        { 
+            kdWarning(900) << "socket not owned by me! socket uid = " << cred.uid << endl;
+            close(sockfd); sockfd = -1;
+            return -1;
+        } 
+    } 
+#endif
 
     return 0;
 }
