@@ -28,6 +28,34 @@
 
 namespace KABC {
 
+/** @short Class that holds a Sound clip for a contact.
+ *
+ *  The sound can be played doing something like this:
+ *
+ *  \code
+ *    KTempFile tmp;
+ *    if(sound.isIntern()) {
+ *      tmp.file()->writeBlock( sound.data() );
+ *      tmp.close();
+ *      KAudioPlayer::play( tmp.name() );
+ *    } else if(!sound.url().isEmpty()) {
+ *      QString tmpFile;
+ *      if(!KIO::NetAccess::download(KURL(themeURL.url()), tmpFile, NULL))
+ *      {
+ *        KMessageBox::error(0L,
+ *                           KIO::NetAccess::lastErrorString(),
+ *                           i18n("Failed to download sound file"),
+ *                           KMessageBox::Notify
+ *                          );
+ *        return;
+ *      }
+ *      KAudioPlayer::play( tmpFile ); 
+ *    }
+ *  \code
+ *       
+ *  Unfortunetly KAudioPlayer::play is ASync, so to delete the temporary file, the best you can really do is set a timer.
+ *
+ */
 class KABC_EXPORT Sound
 {
   friend KABC_EXPORT QDataStream &operator<<( QDataStream &, const Sound & );
