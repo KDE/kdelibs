@@ -1,7 +1,7 @@
 /*****************************************************************
 
-Copyright (c) 1999 Preston Brown <pbrown@kde.org>
-Copyright (c) 1999 Matthias Ettrich <ettrich@kde.org>
+Copyright (c) 1999,2000 Preston Brown <pbrown@kde.org>
+Copyright (c) 1999,2000 Matthias Ettrich <ettrich@kde.org>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -904,7 +904,7 @@ void IoErrorHandler ( IceConn iceConn)
 const char* const ABOUT =
 "Usage: dcopserver [--nofork] [--nosid] [--help]\n"
 "\n"
-"DCOP is KDE's Desktop Communications Protocol. It's a lightweight IPC/RPC\n"
+"DCOP is KDE's Desktop Communications Protocol. It is a lightweight IPC/RPC\n"
 "mechanism built on top of the X Consortium's Inter Client Exchange protocol.\n"
 "It enables desktop applications to communicate reliably with low overhead.\n"
 "\n"

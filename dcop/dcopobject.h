@@ -1,5 +1,5 @@
 /*
-Copyright (c) 1999 Preston Brown <pbrown@kde.org>
+Copyright (c) 1999,2000 Preston Brown <pbrown@kde.org>
 Copyright (c) 1999 Matthias Ettrich <ettrich@kde.org>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,6 +26,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qobject.h>
 #include <qmap.h>
 #include <qstring.h>
+#include <qlist.h>
 
 class DCOPClient;
 
@@ -146,6 +147,17 @@ public:
    */
   static DCOPObject *find(const QCString &objId);
 
+    
+  /**
+   *
+   * @return a list of DCOPObjects beginning with the string
+   * contained in @p partialId.
+   *
+   * This function is used for multicasting a DCOP message to
+   * several objects inside a single process.
+   */
+  static QList<DCOPObject> match(const QCString &partialId);
+       
   /**
    * Creates an object id for the QObject @p obj. This is done
    * using the @ref QObject::name function.

@@ -1,6 +1,6 @@
 /*****************************************************************
 
-Copyright (c) 1999 Preston Brown <pbrown@kde.org>
+Copyright (c) 1999,2000 Preston Brown <pbrown@kde.org>
 Copyright (c) 1999 Matthias Ettrich <ettrich@kde.org>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -89,6 +89,17 @@ DCOPObject *DCOPObject::find(const QCString &objId)
   else
     return 0L;
 }
+
+QList<DCOPObject> DCOPObject::match(const QCString &partialId)
+{
+    QList<DCOPObject> mlist;
+    QMap<QCString, DCOPObject *>::ConstIterator it(objMap()->begin());
+    for (; it != objMap()->end(); ++it)
+	if (it.key().left(partialId.length()) == partialId) // found it?
+	    mlist.append(it.data());
+    return mlist;
+}
+
 
 QCString DCOPObject::objectName( QObject* obj )
 {

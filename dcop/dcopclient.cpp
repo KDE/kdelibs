@@ -664,7 +664,19 @@ bool DCOPClient::receive(const QCString &app, const QCString &objId,
 	// fall through and send to object proxies
     }
     d->transaction = false; // Assume no transaction.
-    if (!DCOPObject::hasObject(objId)) {
+
+    if (objId[objId.length()-1] == '*') {
+	// handle a multicast to several objects.
+	// doesn't handle proxies currently.  should it?
+	QList<DCOPObject> matchList = 
+	    DCOPObject::match(objId.left(objId.length()-1));
+	for (DCOPObject *objPtr = matchList.first();
+	     objPtr != 0L; objPtr = matchList.next()) {
+	    if (!objPtr->process(fun, data, replyType, replyData))
+		return false;
+	}
+	return true;
+    } else if (!DCOPObject::hasObject(objId)) {
 
 	for ( DCOPObjectProxy* proxy = d->proxies.first(); proxy; proxy = d->proxies.next() ) {
 	    if ( proxy->process( objId, fun, data, replyType, replyData ) )
