@@ -173,7 +173,7 @@ void DOMString::remove(unsigned int pos, int len)
 
 DOMString DOMString::split(unsigned int pos)
 {
-  if(!impl) return 0;
+  if(!impl) return DOMString();
   return impl->split(pos);
 }
 
@@ -211,7 +211,7 @@ int DOMString::toInt() const
 
 DOMString DOMString::copy() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return impl->copy();
 }
 

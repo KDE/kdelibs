@@ -59,7 +59,7 @@ CSSStyleDeclaration::~CSSStyleDeclaration()
 
 DOMString CSSStyleDeclaration::cssText() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return static_cast<CSSStyleDeclarationImpl *>(impl)->cssText();
 }
 
@@ -71,7 +71,7 @@ void CSSStyleDeclaration::setCssText( const DOMString &value )
 
 DOMString CSSStyleDeclaration::getPropertyValue( const DOMString &propertyName )
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return static_cast<CSSStyleDeclarationImpl *>(impl)->getPropertyValue( propertyName );
 }
 
@@ -83,14 +83,14 @@ CSSValue CSSStyleDeclaration::getPropertyCSSValue( const DOMString &propertyName
 
 DOMString CSSStyleDeclaration::removeProperty( const DOMString &propertyName )
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return static_cast<CSSStyleDeclarationImpl *>(impl)->removeProperty( propertyName );
-    return 0;
+    return DOMString();
 }
 
 DOMString CSSStyleDeclaration::getPropertyPriority( const DOMString &propertyName )
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return impl->getPropertyPriority(propertyName);
 }
 
@@ -108,7 +108,7 @@ unsigned long CSSStyleDeclaration::length() const
 
 DOMString CSSStyleDeclaration::item( unsigned long index )
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return static_cast<CSSStyleDeclarationImpl *>(impl)->item( index );
 }
 
@@ -162,7 +162,7 @@ CSSValue::~CSSValue()
 
 DOMString CSSValue::cssText() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((CSSValueImpl *)impl)->cssText();
 }
 
@@ -349,7 +349,7 @@ void CSSPrimitiveValue::setStringValue( unsigned short stringType, const DOMStri
 
 DOMString CSSPrimitiveValue::getStringValue(  )
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((CSSPrimitiveValueImpl *)impl)->getStringValue(  );
 }
 
@@ -405,19 +405,19 @@ Counter::~Counter()
 
 DOMString Counter::identifier() const
 {
-  if (!impl) return 0;
+  if (!impl) return DOMString();
   return impl->identifier();
 }
 
 DOMString Counter::listStyle() const
 {
-  if (!impl) return 0;
+  if (!impl) return DOMString();
   return impl->listStyle();
 }
 
 DOMString Counter::separator() const
 {
-  if (!impl) return 0;
+  if (!impl) return DOMString();
   return impl->separator();
 }
 

@@ -72,7 +72,7 @@ Node NamedNodeMap::getNamedItem( const DOMString &name ) const
 {
     if (!impl)
 	return 0; // ### enable	throw DOMException(DOMException::NOT_FOUND_ERR);
-	
+
     int exceptioncode = 0;
     NodeImpl *r = impl->getNamedItem(name,exceptioncode);
     if (exceptioncode)
@@ -84,7 +84,7 @@ Node NamedNodeMap::setNamedItem( const Node &arg )
 {
     if (!impl)
 	return 0; // ### enable	throw throw DOMException(DOMException::NOT_FOUND_ERR);
-	
+
     int exceptioncode = 0;
     Node r = impl->setNamedItem(arg,exceptioncode);
     if (exceptioncode)
@@ -96,7 +96,7 @@ Node NamedNodeMap::removeNamedItem( const DOMString &name )
 {
     if (!impl)
 	return 0; // ### enable	throw throw DOMException(DOMException::NOT_FOUND_ERR);
-	
+
     int exceptioncode = 0;
     Node r = impl->removeNamedItem(name,exceptioncode);
     if (exceptioncode)
@@ -108,7 +108,7 @@ Node NamedNodeMap::item( unsigned long index ) const
 {
     if (!impl)
 	return 0; // ### enable	throw throw DOMException(DOMException::NOT_FOUND_ERR);
-	
+
     int exceptioncode = 0;
     NodeImpl *r = impl->item(index,exceptioncode);
     if (exceptioncode)
@@ -120,7 +120,7 @@ unsigned long NamedNodeMap::length() const
 {
     if (!impl)
 	return 0; // ### enable	throw throw DOMException(DOMException::NOT_FOUND_ERR);
-	
+
     int exceptioncode = 0;
     unsigned long r = impl->length(exceptioncode);
     if (exceptioncode)
@@ -190,13 +190,13 @@ Node::~Node()
 DOMString Node::nodeName() const
 {
     if(impl) return impl->nodeName();
-    return 0;
+    return DOMString();
 }
 
 DOMString Node::nodeValue() const
 {
     if(impl) return impl->nodeValue();
-    return 0;
+    return DOMString();
 }
 
 void Node::setNodeValue( const DOMString &_str )
@@ -383,7 +383,7 @@ Node Node::cloneNode( bool deep )
 {
     if (!impl)
 	return 0; // ### enable	throw throw DOMException(DOMException::NOT_FOUND_ERR);
-	
+
     int exceptioncode = 0;
     NodeImpl *r = impl->cloneNode( deep, exceptioncode );
     if (exceptioncode)
@@ -403,7 +403,7 @@ void Node::addEventListener(const DOMString &type,
     if (exceptioncode)
 	throw DOMException(exceptioncode);
 }
-			
+
 void Node::removeEventListener(const DOMString &type,
 			     EventListener *listener,
 			     bool useCapture)

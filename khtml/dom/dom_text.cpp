@@ -62,7 +62,7 @@ CharacterData::~CharacterData()
 
 DOMString CharacterData::data() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((CharacterDataImpl *)impl)->data();
 }
 
@@ -120,7 +120,7 @@ void CharacterData::replaceData( const unsigned long offset, const unsigned long
     if ( impl )
 	((CharacterDataImpl *)impl)->replaceData(offset, count, arg, exceptioncode);
     if ( exceptioncode )
-	throw DOMException( exceptioncode );    
+	throw DOMException( exceptioncode );
 }
 
 CharacterData::CharacterData(CharacterDataImpl *i) : Node(i)

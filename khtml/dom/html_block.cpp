@@ -65,7 +65,7 @@ HTMLBlockquoteElement::~HTMLBlockquoteElement()
 
 DOMString HTMLBlockquoteElement::cite() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_CITE);
 }
 
@@ -111,7 +111,7 @@ HTMLDivElement::~HTMLDivElement()
 
 DOMString HTMLDivElement::align() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_ALIGN);
 }
 
@@ -157,7 +157,7 @@ HTMLHRElement::~HTMLHRElement()
 
 DOMString HTMLHRElement::align() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_ALIGN);
 }
 
@@ -185,7 +185,7 @@ void HTMLHRElement::setNoShade( bool _noShade )
 
 DOMString HTMLHRElement::size() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_SIZE);
 }
 
@@ -196,7 +196,7 @@ void HTMLHRElement::setSize( const DOMString &value )
 
 DOMString HTMLHRElement::width() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_WIDTH);
 }
 
@@ -247,7 +247,7 @@ HTMLHeadingElement::~HTMLHeadingElement()
 
 DOMString HTMLHeadingElement::align() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_ALIGN);
 }
 
@@ -293,7 +293,7 @@ HTMLParagraphElement::~HTMLParagraphElement()
 
 DOMString HTMLParagraphElement::align() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_ALIGN);
 }
 

@@ -288,7 +288,7 @@ NodeIterator Document::createNodeIterator(Node root, unsigned long whatToShow,
 {
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
-	
+
     int exceptioncode = 0;
     NodeIteratorImpl *r = static_cast<DocumentImpl*>(impl)->createNodeIterator(root.handle(),
 			  whatToShow,filter,entityReferenceExpansion,exceptioncode);
@@ -421,7 +421,7 @@ DOMString DocumentType::name() const
 {
     if (impl)
 	return static_cast<DocumentTypeImpl*>(impl)->name();
-    return 0;
+    return DOMString();
 }
 
 NamedNodeMap DocumentType::entities() const

@@ -66,7 +66,7 @@ HTMLBodyElement::~HTMLBodyElement()
 
 DOMString HTMLBodyElement::aLink() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_ALINK);
 }
 
@@ -77,7 +77,7 @@ void HTMLBodyElement::setALink( const DOMString &value )
 
 DOMString HTMLBodyElement::background() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_BACKGROUND);
 }
 
@@ -88,7 +88,7 @@ void HTMLBodyElement::setBackground( const DOMString &value )
 
 DOMString HTMLBodyElement::bgColor() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_BGCOLOR);
 }
 
@@ -99,7 +99,7 @@ void HTMLBodyElement::setBgColor( const DOMString &value )
 
 DOMString HTMLBodyElement::link() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_LINK);
 }
 
@@ -110,7 +110,7 @@ void HTMLBodyElement::setLink( const DOMString &value )
 
 DOMString HTMLBodyElement::text() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_TEXT);
 }
 
@@ -121,7 +121,7 @@ void HTMLBodyElement::setText( const DOMString &value )
 
 DOMString HTMLBodyElement::vLink() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_VLINK);
 }
 
@@ -167,7 +167,7 @@ HTMLFrameElement::~HTMLFrameElement()
 
 DOMString HTMLFrameElement::frameBorder() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_FRAMEBORDER);
 }
 
@@ -178,7 +178,7 @@ void HTMLFrameElement::setFrameBorder( const DOMString &value )
 
 DOMString HTMLFrameElement::longDesc() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_LONGDESC);
 }
 
@@ -189,7 +189,7 @@ void HTMLFrameElement::setLongDesc( const DOMString &value )
 
 DOMString HTMLFrameElement::marginHeight() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_MARGINHEIGHT);
 }
 
@@ -200,7 +200,7 @@ void HTMLFrameElement::setMarginHeight( const DOMString &value )
 
 DOMString HTMLFrameElement::marginWidth() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_MARGINWIDTH);
 }
 
@@ -211,7 +211,7 @@ void HTMLFrameElement::setMarginWidth( const DOMString &value )
 
 DOMString HTMLFrameElement::name() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_NAME);
 }
 
@@ -239,7 +239,7 @@ void HTMLFrameElement::setNoResize( bool _noResize )
 
 DOMString HTMLFrameElement::scrolling() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_SCROLLING);
 }
 
@@ -250,7 +250,7 @@ void HTMLFrameElement::setScrolling( const DOMString &value )
 
 DOMString HTMLFrameElement::src() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_SRC);
 }
 
@@ -296,7 +296,7 @@ HTMLFrameSetElement::~HTMLFrameSetElement()
 
 DOMString HTMLFrameSetElement::cols() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_COLS);
 }
 
@@ -307,7 +307,7 @@ void HTMLFrameSetElement::setCols( const DOMString &value )
 
 DOMString HTMLFrameSetElement::rows() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_ROWS);
 }
 
@@ -353,7 +353,7 @@ HTMLHeadElement::~HTMLHeadElement()
 
 DOMString HTMLHeadElement::profile() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_PROFILE);
 }
 
@@ -399,7 +399,7 @@ HTMLHtmlElement::~HTMLHtmlElement()
 
 DOMString HTMLHtmlElement::version() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_VERSION);
 }
 

@@ -68,7 +68,7 @@ HTMLElement::~HTMLElement()
 
 DOMString HTMLElement::id() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_ID);
 }
 
@@ -79,7 +79,7 @@ void HTMLElement::setId( const DOMString &value )
 
 DOMString HTMLElement::title() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_TITLE);
 }
 
@@ -90,7 +90,7 @@ void HTMLElement::setTitle( const DOMString &value )
 
 DOMString HTMLElement::lang() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_LANG);
 }
 
@@ -101,7 +101,7 @@ void HTMLElement::setLang( const DOMString &value )
 
 DOMString HTMLElement::dir() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_DIR);
 }
 
@@ -112,7 +112,7 @@ void HTMLElement::setDir( const DOMString &value )
 
 DOMString HTMLElement::className() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_CLASS);
 }
 
@@ -141,7 +141,7 @@ void HTMLElement::addCSSProperty( const DOMString &property, const DOMString &va
 
 DOMString HTMLElement::innerHTML() const
 {
-    if ( !impl ) return 0;
+    if ( !impl ) return DOMString();
     return ((HTMLElementImpl *)impl)->innerHTML();
 }
 
@@ -156,7 +156,7 @@ void HTMLElement::setInnerHTML( const DOMString &html )
 
 DOMString HTMLElement::innerText() const
 {
-    if ( !impl ) return 0;
+    if ( !impl ) return DOMString();
     return ((HTMLElementImpl *)impl)->innerText();
 }
 

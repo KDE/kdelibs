@@ -69,7 +69,7 @@ HTMLTableCaptionElement::~HTMLTableCaptionElement()
 
 DOMString HTMLTableCaptionElement::align() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_ALIGN);
 }
 
@@ -127,7 +127,7 @@ void HTMLTableCellElement::setCellIndex( long /*_cellIndex*/ )
 
 DOMString HTMLTableCellElement::abbr() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_ABBR);
 }
 
@@ -138,7 +138,7 @@ void HTMLTableCellElement::setAbbr( const DOMString &value )
 
 DOMString HTMLTableCellElement::align() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_ALIGN);
 }
 
@@ -149,7 +149,7 @@ void HTMLTableCellElement::setAlign( const DOMString &value )
 
 DOMString HTMLTableCellElement::axis() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_AXIS);
 }
 
@@ -160,7 +160,7 @@ void HTMLTableCellElement::setAxis( const DOMString &value )
 
 DOMString HTMLTableCellElement::bgColor() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_BGCOLOR);
 }
 
@@ -171,7 +171,7 @@ void HTMLTableCellElement::setBgColor( const DOMString &value )
 
 DOMString HTMLTableCellElement::ch() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_CHAR);
 }
 
@@ -182,7 +182,7 @@ void HTMLTableCellElement::setCh( const DOMString &value )
 
 DOMString HTMLTableCellElement::chOff() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_CHAROFF);
 }
 
@@ -207,7 +207,7 @@ void HTMLTableCellElement::setColSpan( long _colSpan )
 
 DOMString HTMLTableCellElement::headers() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_HEADERS);
 }
 
@@ -218,7 +218,7 @@ void HTMLTableCellElement::setHeaders( const DOMString &value )
 
 DOMString HTMLTableCellElement::height() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_HEIGHT);
 }
 
@@ -229,7 +229,7 @@ void HTMLTableCellElement::setHeight( const DOMString &value )
 
 bool HTMLTableCellElement::noWrap() const
 {
-    if(!impl) return 0;
+    if(!impl) return false;
     return !((ElementImpl *)impl)->getAttribute(ATTR_NOWRAP).isNull();
 }
 
@@ -255,7 +255,7 @@ void HTMLTableCellElement::setRowSpan( long _rowSpan )
 
 DOMString HTMLTableCellElement::scope() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_SCOPE);
 }
 
@@ -266,7 +266,7 @@ void HTMLTableCellElement::setScope( const DOMString &value )
 
 DOMString HTMLTableCellElement::vAlign() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_VALIGN);
 }
 
@@ -277,7 +277,7 @@ void HTMLTableCellElement::setVAlign( const DOMString &value )
 
 DOMString HTMLTableCellElement::width() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_WIDTH);
 }
 
@@ -324,7 +324,7 @@ HTMLTableColElement::~HTMLTableColElement()
 
 DOMString HTMLTableColElement::align() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_ALIGN);
 }
 
@@ -335,7 +335,7 @@ void HTMLTableColElement::setAlign( const DOMString &value )
 
 DOMString HTMLTableColElement::ch() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_CHAR);
 }
 
@@ -346,7 +346,7 @@ void HTMLTableColElement::setCh( const DOMString &value )
 
 DOMString HTMLTableColElement::chOff() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_CHAROFF);
 }
 
@@ -371,7 +371,7 @@ void HTMLTableColElement::setSpan( long _span )
 
 DOMString HTMLTableColElement::vAlign() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_VALIGN);
 }
 
@@ -382,7 +382,7 @@ void HTMLTableColElement::setVAlign( const DOMString &value )
 
 DOMString HTMLTableColElement::width() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_WIDTH);
 }
 
@@ -481,7 +481,7 @@ HTMLCollection HTMLTableElement::tBodies() const
 
 DOMString HTMLTableElement::align() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_ALIGN);
 }
 
@@ -492,7 +492,7 @@ void HTMLTableElement::setAlign( const DOMString &value )
 
 DOMString HTMLTableElement::bgColor() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_BGCOLOR);
 }
 
@@ -503,7 +503,7 @@ void HTMLTableElement::setBgColor( const DOMString &value )
 
 DOMString HTMLTableElement::border() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_BORDER);
 }
 
@@ -514,7 +514,7 @@ void HTMLTableElement::setBorder( const DOMString &value )
 
 DOMString HTMLTableElement::cellPadding() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_CELLPADDING);
 }
 
@@ -525,7 +525,7 @@ void HTMLTableElement::setCellPadding( const DOMString &value )
 
 DOMString HTMLTableElement::cellSpacing() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_CELLSPACING);
 }
 
@@ -536,7 +536,7 @@ void HTMLTableElement::setCellSpacing( const DOMString &value )
 
 DOMString HTMLTableElement::frame() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_FRAME);
 }
 
@@ -547,7 +547,7 @@ void HTMLTableElement::setFrame( const DOMString &value )
 
 DOMString HTMLTableElement::rules() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_RULES);
 }
 
@@ -558,7 +558,7 @@ void HTMLTableElement::setRules( const DOMString &value )
 
 DOMString HTMLTableElement::summary() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_SUMMARY);
 }
 
@@ -569,7 +569,7 @@ void HTMLTableElement::setSummary( const DOMString &value )
 
 DOMString HTMLTableElement::width() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_WIDTH);
 }
 
@@ -696,7 +696,7 @@ void HTMLTableRowElement::setCells( const HTMLCollection & /*_cells*/ )
 
 DOMString HTMLTableRowElement::align() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_ALIGN);
 }
 
@@ -707,7 +707,7 @@ void HTMLTableRowElement::setAlign( const DOMString &value )
 
 DOMString HTMLTableRowElement::bgColor() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_BGCOLOR);
 }
 
@@ -718,7 +718,7 @@ void HTMLTableRowElement::setBgColor( const DOMString &value )
 
 DOMString HTMLTableRowElement::ch() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_CHAR);
 }
 
@@ -729,7 +729,7 @@ void HTMLTableRowElement::setCh( const DOMString &value )
 
 DOMString HTMLTableRowElement::chOff() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_CHAROFF);
 }
 
@@ -740,7 +740,7 @@ void HTMLTableRowElement::setChOff( const DOMString &value )
 
 DOMString HTMLTableRowElement::vAlign() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_VALIGN);
 }
 
@@ -800,7 +800,7 @@ HTMLTableSectionElement::~HTMLTableSectionElement()
 
 DOMString HTMLTableSectionElement::align() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_ALIGN);
 }
 
@@ -811,7 +811,7 @@ void HTMLTableSectionElement::setAlign( const DOMString &value )
 
 DOMString HTMLTableSectionElement::ch() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_CHAR);
 }
 
@@ -822,7 +822,7 @@ void HTMLTableSectionElement::setCh( const DOMString &value )
 
 DOMString HTMLTableSectionElement::chOff() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_CHAROFF);
 }
 
@@ -833,7 +833,7 @@ void HTMLTableSectionElement::setChOff( const DOMString &value )
 
 DOMString HTMLTableSectionElement::vAlign() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_VALIGN);
 }
 

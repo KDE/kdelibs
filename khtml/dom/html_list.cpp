@@ -167,7 +167,7 @@ HTMLLIElement::~HTMLLIElement()
 
 DOMString HTMLLIElement::type() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_TYPE);
 }
 
@@ -311,7 +311,7 @@ void HTMLOListElement::setStart( long _start )
 
 DOMString HTMLOListElement::type() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_TYPE);
 }
 
@@ -374,7 +374,7 @@ void HTMLUListElement::setCompact( bool _compact )
 
 DOMString HTMLUListElement::type() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_TYPE);
 }
 

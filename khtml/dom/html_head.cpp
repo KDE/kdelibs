@@ -65,7 +65,7 @@ HTMLBaseElement::~HTMLBaseElement()
 
 DOMString HTMLBaseElement::href() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_HREF);
 }
 
@@ -76,7 +76,7 @@ void HTMLBaseElement::setHref( const DOMString &value )
 
 DOMString HTMLBaseElement::target() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_TARGET);
 }
 
@@ -134,7 +134,7 @@ void HTMLLinkElement::setDisabled( bool _disabled )
 
 DOMString HTMLLinkElement::charset() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_CHARSET);
 }
 
@@ -145,7 +145,7 @@ void HTMLLinkElement::setCharset( const DOMString &value )
 
 DOMString HTMLLinkElement::href() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_HREF);
 }
 
@@ -156,7 +156,7 @@ void HTMLLinkElement::setHref( const DOMString &value )
 
 DOMString HTMLLinkElement::hreflang() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_HREFLANG);
 }
 
@@ -167,7 +167,7 @@ void HTMLLinkElement::setHreflang( const DOMString &value )
 
 DOMString HTMLLinkElement::media() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_MEDIA);
 }
 
@@ -178,7 +178,7 @@ void HTMLLinkElement::setMedia( const DOMString &value )
 
 DOMString HTMLLinkElement::rel() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_REL);
 }
 
@@ -189,7 +189,7 @@ void HTMLLinkElement::setRel( const DOMString &value )
 
 DOMString HTMLLinkElement::rev() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_REV);
 }
 
@@ -200,7 +200,7 @@ void HTMLLinkElement::setRev( const DOMString &value )
 
 DOMString HTMLLinkElement::target() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_TARGET);
 }
 
@@ -211,7 +211,7 @@ void HTMLLinkElement::setTarget( const DOMString &value )
 
 DOMString HTMLLinkElement::type() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_TYPE);
 }
 
@@ -263,7 +263,7 @@ HTMLMetaElement::~HTMLMetaElement()
 
 DOMString HTMLMetaElement::content() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_CONTENT);
 }
 
@@ -274,7 +274,7 @@ void HTMLMetaElement::setContent( const DOMString &value )
 
 DOMString HTMLMetaElement::httpEquiv() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_HTTP_EQUIV);
 }
 
@@ -285,7 +285,7 @@ void HTMLMetaElement::setHttpEquiv( const DOMString &value )
 
 DOMString HTMLMetaElement::name() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_NAME);
 }
 
@@ -296,7 +296,7 @@ void HTMLMetaElement::setName( const DOMString &value )
 
 DOMString HTMLMetaElement::scheme() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_SCHEME);
 }
 
@@ -342,7 +342,7 @@ HTMLScriptElement::~HTMLScriptElement()
 
 DOMString HTMLScriptElement::text() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_TEXT);
 }
 
@@ -354,7 +354,7 @@ void HTMLScriptElement::setText( const DOMString &value )
 DOMString HTMLScriptElement::htmlFor() const
 {
     // DOM Level 1 says: reserved for future use...
-    return 0;
+    return DOMString();
 }
 
 void HTMLScriptElement::setHtmlFor( const DOMString &/*value*/ )
@@ -365,7 +365,7 @@ void HTMLScriptElement::setHtmlFor( const DOMString &/*value*/ )
 DOMString HTMLScriptElement::event() const
 {
     // DOM Level 1 says: reserved for future use...
-    return 0;
+    return DOMString();
 }
 
 void HTMLScriptElement::setEvent( const DOMString &/*value*/ )
@@ -375,7 +375,7 @@ void HTMLScriptElement::setEvent( const DOMString &/*value*/ )
 
 DOMString HTMLScriptElement::charset() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_CHARSET);
 }
 
@@ -399,7 +399,7 @@ void HTMLScriptElement::setDefer( bool _defer )
 
 DOMString HTMLScriptElement::src() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_SRC);
 }
 
@@ -410,7 +410,7 @@ void HTMLScriptElement::setSrc( const DOMString &value )
 
 DOMString HTMLScriptElement::type() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_TYPE);
 }
 
@@ -469,7 +469,7 @@ void HTMLStyleElement::setDisabled( bool _disabled )
 
 DOMString HTMLStyleElement::media() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_MEDIA);
 }
 
@@ -480,7 +480,7 @@ void HTMLStyleElement::setMedia( const DOMString &value )
 
 DOMString HTMLStyleElement::type() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_TYPE);
 }
 
@@ -533,7 +533,7 @@ HTMLTitleElement::~HTMLTitleElement()
 
 DOMString HTMLTitleElement::text() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_TEXT);
 }
 

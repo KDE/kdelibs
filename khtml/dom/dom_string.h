@@ -45,7 +45,7 @@ class DOMString
 public:
     /** default constructor. Gives an empty DOMString */
     DOMString();
-    /* constructs an empty DOMString. Like this assignment to 0 works */
+    /* constructs a null DOMString. Like this assignment to 0 works */
     DOMString(int);
 
     DOMString(const QChar *str, uint len);

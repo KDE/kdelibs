@@ -70,7 +70,7 @@ StyleSheet::~StyleSheet()
 
 DOMString StyleSheet::type() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((StyleSheetImpl *)impl)->type();
 }
 
@@ -100,13 +100,13 @@ StyleSheet StyleSheet::parentStyleSheet() const
 
 DOMString StyleSheet::href() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((StyleSheetImpl *)impl)->href();
 }
 
 DOMString StyleSheet::title() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((StyleSheetImpl *)impl)->title();
 }
 
@@ -294,13 +294,13 @@ MediaList::~MediaList()
 
 DOM::DOMString MediaList::mediaText()
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return static_cast<MediaListImpl *>(impl)->mediaText();
 }
 
 DOM::DOMString MediaList::mediaText() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return static_cast<MediaListImpl *>(impl)->mediaText();
 }
 
@@ -318,7 +318,7 @@ unsigned long MediaList::length()
 
 DOM::DOMString MediaList::item(unsigned long index)
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((MediaListImpl *)impl)->item( index );
 }
 

@@ -65,7 +65,7 @@ HTMLBaseFontElement::~HTMLBaseFontElement()
 
 DOMString HTMLBaseFontElement::color() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_COLOR);
 }
 
@@ -76,7 +76,7 @@ void HTMLBaseFontElement::setColor( const DOMString &value )
 
 DOMString HTMLBaseFontElement::face() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_FACE);
 }
 
@@ -87,7 +87,7 @@ void HTMLBaseFontElement::setFace( const DOMString &value )
 
 DOMString HTMLBaseFontElement::size() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((ElementImpl *)impl)->getAttribute(ATTR_SIZE);
 }
 

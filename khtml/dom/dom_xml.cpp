@@ -95,19 +95,19 @@ Entity::~Entity()
 DOMString Entity::publicId() const
 {
     if (impl) return ((EntityImpl*)impl)->publicId();
-    return 0;
+    return DOMString();
 }
 
 DOMString Entity::systemId() const
 {
     if (impl) return ((EntityImpl*)impl)->systemId();
-    return 0;
+    return DOMString();
 }
 
 DOMString Entity::notationName() const
 {
     if (impl) return ((EntityImpl*)impl)->notationName();
-    return 0;
+    return DOMString();
 }
 
 Entity::Entity(EntityImpl *i) : Node(i)
@@ -183,13 +183,13 @@ Notation::~Notation()
 DOMString Notation::publicId() const
 {
     if (impl) return ((EntityImpl*)impl)->publicId();
-    return 0;
+    return DOMString();
 }
 
 DOMString Notation::systemId() const
 {
     if (impl) return ((EntityImpl*)impl)->systemId();
-    return 0;
+    return DOMString();
 }
 
 Notation::Notation(NotationImpl *i) : Node(i)
@@ -232,13 +232,13 @@ ProcessingInstruction::~ProcessingInstruction()
 DOMString ProcessingInstruction::target() const
 {
     if (impl) return ((ProcessingInstructionImpl*)impl)->target();
-    return 0;
+    return DOMString();
 }
 
 DOMString ProcessingInstruction::data() const
 {
     if (impl) return ((ProcessingInstructionImpl*)impl)->data();
-    return 0;
+    return DOMString();
 }
 
 void ProcessingInstruction::setData( const DOMString &_data )

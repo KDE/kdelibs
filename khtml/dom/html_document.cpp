@@ -93,13 +93,13 @@ HTMLDocument::~HTMLDocument()
 
 DOMString HTMLDocument::title() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
 
     NodeImpl *e = static_cast<HTMLDocumentImpl *>(impl)->findElement(ID_TITLE);
-    if(!e) return 0;
+    if(!e) return DOMString();
 
     NodeImpl *t = e->firstChild();
-    if(!t) return 0;
+    if(!t) return DOMString();
 
     // ### join all text nodes within <TITLE>
     return static_cast<TextImpl *>(t)->data();
@@ -112,19 +112,19 @@ void HTMLDocument::setTitle( const DOMString &/*value*/ )
 
 DOMString HTMLDocument::referrer() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((HTMLDocumentImpl *)impl)->referrer();
 }
 
 DOMString HTMLDocument::domain() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((HTMLDocumentImpl *)impl)->domain();
 }
 
 DOMString HTMLDocument::URL() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((HTMLDocumentImpl *)impl)->URL();
 }
 
@@ -186,14 +186,14 @@ DOMString HTMLDocument::cookie() const
     if (!kapp->dcopClient()->call("kcookiejar", "kcookiejar",
 				  "findDOMCookies(QString)", params, replyType, reply)) {
 	 kdWarning(6010) << "Can't communicate with cookiejar!" << endl;
-	 return 0;
+	 return DOMString();
     }
 
     QDataStream stream2(reply, IO_ReadOnly);
     if(replyType != "QString") {
 	 kdError(6010) << "DCOP function findDOMCookies(...) returns "
 		       << replyType << ", expected QString" << endl;
-	 return 0;
+	 return DOMString();
     }
 
     QString result;

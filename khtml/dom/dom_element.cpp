@@ -66,7 +66,7 @@ Attr::~Attr()
 DOMString Attr::name() const
 {
   if (impl) return ((AttrImpl *)impl)->name();
-  return 0;
+  return DOMString();
 }
 
 bool Attr::specified() const
@@ -78,7 +78,7 @@ bool Attr::specified() const
 DOMString Attr::value() const
 {
   if (impl) return ((AttrImpl *)impl)->value();
-  return 0;
+  return DOMString();
 }
 
 void Attr::setValue( const DOMString &newValue )
@@ -124,13 +124,13 @@ Element::~Element()
 DOMString Element::tagName() const
 {
   if (impl) return ((ElementImpl *)impl)->tagName();
-  return 0;
+  return DOMString();
 }
 
 DOMString Element::getAttribute( const DOMString &name )
 {
   if (impl) return ((ElementImpl *)impl)->getAttribute(name);
-  return 0;
+  return DOMString();
 }
 
 void Element::setAttribute( const DOMString &name, const DOMString &value )

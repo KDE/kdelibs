@@ -68,7 +68,7 @@ unsigned short CSSRule::type() const
 
 DOMString CSSRule::cssText() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return impl->cssText();
 }
 
@@ -147,7 +147,7 @@ CSSCharsetRule::~CSSCharsetRule()
 
 DOMString CSSCharsetRule::encoding() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((CSSCharsetRuleImpl*)impl)->encoding();
 }
 
@@ -252,7 +252,7 @@ CSSImportRule::~CSSImportRule()
 
 DOMString CSSImportRule::href() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((CSSImportRuleImpl *)impl)->href();
 }
 
@@ -382,7 +382,7 @@ CSSPageRule::~CSSPageRule()
 
 DOMString CSSPageRule::selectorText() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((CSSPageRuleImpl*)impl)->selectorText();
 }
 
@@ -445,7 +445,7 @@ CSSStyleRule::~CSSStyleRule()
 
 DOMString CSSStyleRule::selectorText() const
 {
-    if(!impl) return 0;
+    if(!impl) return DOMString();
     return ((CSSStyleRuleImpl*)impl)->selectorText();
 }
 
