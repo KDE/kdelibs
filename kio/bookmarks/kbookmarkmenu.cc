@@ -165,18 +165,18 @@ void KBookmarkMenu::slotAboutToShow()
 }
 
 QString KBookmarkMenu::s_highlightedAddress;
+QString KBookmarkMenu::s_highlightedImportType;
 
 void KBookmarkMenu::slotActionHighlighted( KAction* action )
 {
   if (action->isA("KBookmarkActionMenu") || action->isA("KBookmarkAction")) 
-  {
     s_highlightedAddress = action->property("address").toString();
-    //kdDebug(7043) << "KBookmarkMenu::slotActionHighlighted" << s_highlightedAddress << endl;
-  } 
+
+  else if (action->isA("KImportedBookmarksActionMenu"))
+    s_highlightedImportType = action->property("type").toString();
+
   else 
-  {
     s_highlightedAddress = QString::null;
-  }
 }
 
 bool KBookmarkMenu::invalid( int val )

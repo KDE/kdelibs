@@ -180,6 +180,7 @@ protected:
   QString m_parentAddress;
 
   static QString s_highlightedAddress;
+  static QString s_highlightedImportType;
 };
 
 /*

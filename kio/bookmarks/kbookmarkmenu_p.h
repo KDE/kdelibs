@@ -48,6 +48,23 @@ class KBookmarkOwner;
 class KBookmarkMenu;
 class KPopupMenu;
 
+class KImportedBookmarksActionMenu : public KActionMenu {
+  Q_OBJECT
+  Q_PROPERTY( QString type READ getType WRITE setType )
+public:
+  const QString getType() const { return m_type; }
+  void setType(const QString &type) { m_type = type; }
+private:
+  QString m_type;
+public:
+  KImportedBookmarksActionMenu( 
+    const QString &text, const QString& sIconName,
+    KActionCollection* parent, const char* name)
+  : KActionMenu(text, sIconName, parent, name) {
+     ;
+  }
+};
+
 class KBookmarkActionMenu : public KActionMenu {
   Q_OBJECT
   Q_PROPERTY( QString url READ getUrl WRITE setUrl )
