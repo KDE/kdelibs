@@ -229,6 +229,11 @@ void KFontCombo::setCurrentFont(const QString &family)
     }
 }
 
+void KFontCombo::slotModified( int )
+{
+   d->modified = 1;
+}
+
 QString KFontCombo::currentFont() const
 {
    if (d->modified)
@@ -249,6 +254,7 @@ void KFontCombo::init()
     setInsertionPolicy(NoInsertion);
     setAutoCompletion(true);
     setSize(12);
+    connect( this, SIGNAL(highlighted(int)), SLOT(slotModified(int)));
 }
 
 KFontCombo::~KFontCombo()

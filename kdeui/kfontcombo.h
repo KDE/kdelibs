@@ -152,6 +152,13 @@ public:
 
     virtual void setCurrentItem(int i);
 
+protected slots:
+    /**
+     * @internal
+     * Listens to highlighted(int)
+     */
+    void slotModified( int i );
+
 protected:
     /**
      * Updated the combo's listBox() to reflect changes made to the
