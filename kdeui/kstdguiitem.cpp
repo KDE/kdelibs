@@ -46,6 +46,7 @@ KGuiItem KStdGuiItem::guiItem ( StdItem ui_enum )
   case Quit     : return quit();
   case AdminMode: return adminMode();
   case Reset    : return reset();
+  case Delete   : return del();
   default       : return KGuiItem();
   };
 }
@@ -72,6 +73,7 @@ QString KStdGuiItem::stdItem( StdItem ui_enum )
   case Open     : return QString::fromLatin1("open");
   case Quit     : return QString::fromLatin1("quit");
   case AdminMode: return QString::fromLatin1("adminMode");
+  case Delete   : return QString::fromLatin1("delete");
   default       : return QString::null;
   };
 }
@@ -195,6 +197,12 @@ KGuiItem KStdGuiItem::cont()
 {
   return KGuiItem( i18n( "C&ontinue" ), QString::null,
                    i18n( "Continue operation" ) );
+}
+
+KGuiItem KStdGuiItem::del()
+{
+  return KGuiItem( i18n( "&Delete" ), "editdelete",
+                   i18n( "Delete item(s)" ) );
 }
 
 KGuiItem KStdGuiItem::open()

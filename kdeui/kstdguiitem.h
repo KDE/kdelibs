@@ -26,10 +26,10 @@
 #include <qpair.h>
 
 /**
- * @short Provides a set of standardized KGuiItems. 
+ * @short Provides a set of standardized KGuiItems.
  *
  * The various static methods returns standardized @ref KGuiItem's
- * conforming to the KDE UI Standards. Use them instead of creating 
+ * conforming to the KDE UI Standards. Use them instead of creating
  * your own.
  *
  * @author Holger Freyther <freyther@kde.org>
@@ -43,12 +43,12 @@ public:
      * and force 'Western' behavior instead, use the IgnoreRTL value instead.
      */
     enum BidiMode { UseRTL = 0, IgnoreRTL };
-    
+
     enum StdItem
     {
         Ok=1, Cancel, Yes, No, Discard, Save, DontSave, SaveAs,
         Apply, Clear, Help, Defaults, Close, Back, Forward, Print,
-        Continue, Open, Quit, AdminMode, Reset
+        Continue, Open, Quit, AdminMode, Reset, Delete
     };
     static KGuiItem guiItem ( StdItem ui_enum );
     static QString  stdItem ( StdItem ui_enum );
@@ -68,7 +68,7 @@ public:
     static KGuiItem print();
     static KGuiItem reset();
     /**
-     * Returns a KGuiItem suiting for cases where code or functionality 
+     * Returns a KGuiItem suiting for cases where code or functionality
      * runs under root privileges. Used in conjunction with KConfig Modules.
      */
     static KGuiItem adminMode();
@@ -78,6 +78,13 @@ public:
      * reserved word in the C++ language.
      */
     static KGuiItem cont();
+
+    /**
+     * Returns a "delete" item. The short name is due to "delete" being a
+     * reserved word in the C++ language.
+     * @since 3.3
+     */
+    static KGuiItem del();
 
     static KGuiItem open();
 
@@ -92,7 +99,7 @@ public:
      * in the separate backAndForward() method.
      */
     static KGuiItem back( BidiMode useBidi = IgnoreRTL );
-    
+
     /**
      * Return a GUI item for a 'forward' action, like Konqueror's forward
      * button. This GUI item can optionally honor the user's setting for BiDi,
