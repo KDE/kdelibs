@@ -17,6 +17,7 @@
 #include <kinstance.h>
 #include <xslt.h>
 #include <qfile.h>
+#include <qdir.h>
 #include <kcmdlineargs.h>
 #include <klocale.h>
 #include <kaboutdata.h>
@@ -108,9 +109,8 @@ int main(int argc, char **argv) {
 
     // Need to set SRCDIR before calling fillInstance
     QString srcdir;
-    if ( args->isSet( "srcdir" ) ) {
-        srcdir = args->getOption("srcdir") ;
-    }
+    if ( args->isSet( "srcdir" ) )
+        srcdir = QDir( QFile::decodeName( args->getOption( "srcdir" ) ) ).absPath();
     fillInstance(ins,srcdir);
 
     LIBXML_TEST_VERSION
