@@ -975,7 +975,7 @@ KFilePermissionsPropsPage::KFilePermissionsPropsPage( KPropertiesDialog *_props 
   {
     usrEdit = new KLineEdit( gb );
     KCompletion *kcom = usrEdit->completionObject();
-    kcom->setSorted(true);
+    kcom->setOrder(KCompletion::Sorted);
     setpwent();
     for (i=0; ((user = getpwent()) != 0L) && (i < maxEntries); i++)
       kcom->addItem(QString::fromLatin1(user->pw_name));
@@ -1317,7 +1317,7 @@ KExecPropsPage::KExecPropsPage( KPropertiesDialog *_props )
 
   // Provide username completion up to 1000 users.
   KCompletion *kcom = new KCompletion;
-  kcom->setSorted(true);
+  kcom->setOrder(KCompletion::Sorted);
   struct passwd *pw;
   int i, maxEntries = 1000;
   setpwent();
