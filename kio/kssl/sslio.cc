@@ -32,7 +32,7 @@
 
 #include "sslio.h"
 #include "kopenssl.h"
-// #include "qdaemon.h"
+#include <kdebug.h>
 
 #include <qsocketnotifier.h>
 #include <qmutex.h>
@@ -47,7 +47,7 @@ extern "C" {
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-};
+}
 
 using namespace KDESSL;
 
@@ -169,6 +169,9 @@ IODevice::ErrorCode IODevice::setFd(int fd_)
 
 IODevice::ErrorCode IODevice::setBlocking(bool yes)
 {
+    qDebug( "IODevice::setBlocking(%d): %s",
+            yes, kdBacktrace().latin1() );
+
     int state;
     IODevice::ErrorCode rc;
     // -----
