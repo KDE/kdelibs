@@ -95,7 +95,7 @@ public:
 
 signals:
     void objectCreated( QObject *obj );
-
+public:
     KLibFactoryPrivate *d;
 };
 
