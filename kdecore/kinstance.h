@@ -63,6 +63,14 @@ class KInstance
      */
     KInstance( const KAboutData * aboutData );
 
+    /*
+     * @internal
+     * Only for K(Unique)Application
+     * Initialize from src and delete it.
+     */
+     
+    KInstance( KInstance* src );
+
     /**
      * Destructor.
      */

@@ -81,6 +81,30 @@ KInstance::KInstance( const KAboutData * aboutData )
     d->ownAboutdata = false;
 }
 
+KInstance::KInstance( KInstance* src )
+  : _dirs ( src->_dirs ),
+    _config ( src->_config ),
+    _iconLoader ( src->_iconLoader ),
+    _name( src->_name ), _aboutData( src->_aboutData )
+{
+    Q_ASSERT(!_name.isEmpty());
+
+    if (!KGlobal::_instance || KGlobal::_instance == src )
+    {
+      KGlobal::_instance = this;
+      KGlobal::_activeInstance = this;
+    }
+
+    d = new KInstancePrivate ();
+    d->ownAboutdata = src->d->ownAboutdata;
+
+    src->_dirs = 0L;
+    src->_config = 0L;
+    src->_iconLoader = 0L;
+    src->_aboutData = 0L;
+    delete src;
+}
+
 KInstance::~KInstance()
 {
     if (d->ownAboutdata)

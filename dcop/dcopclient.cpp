@@ -715,21 +715,26 @@ QCString DCOPClient::registerAs( const QCString &appId, bool addPID )
 
     QCString _appId = appId;
 
+    if (addPID) {
+	QCString pid;
+	pid.sprintf("-%d", getpid());
+	_appId = _appId + pid;
+    }
+    
+    if( d->appId == _appId )
+        return d->appId;
+
+#if 0 // no need to detach, dcopserver can handle renaming
     // Detach before reregistering.
     if ( isRegistered() ) {
 	detach();
     }
+#endif
 
     if ( !isAttached() ) {
         if (!attachInternal( false ))
             if (!attachInternal( false ))
                 return result; // Try two times
-    }
-
-    if (addPID) {
-	QCString pid;
-	pid.sprintf("-%d", getpid());
-	_appId = _appId + pid;
     }
 
     // register the application identifier with the server

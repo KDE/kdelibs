@@ -89,35 +89,14 @@ public:
    *    a.exec();
    * }
    * </pre>
-   * or
-   * <pre>
-   * int main(int argc, char **argv) {
-   *    KAboutData about("myappname", "myAppName", .....);
-   *    KCmdLineArgs::init(argc, argv, &about);
-   *    KCmdLineArgs::addCmdLineOptions( myCmdOptions );
-   *    KUniqueApplication::addCmdLineOptions();
-   *
-   *    if (!KUniqueApplication::start())
-   *       exit(0);
-   *    KUniqueApplication a;
-   *    a.exec();
-   * }
-   * </pre>
-   * Although it is not necessary to call @ref start() before creating a
-   * KUniqueApplication, it is adviced to so because it is about
-   * 40% faster if the application was already running:
-   * If you use @ref start() the @ref KApplication constructor will not be
-   * called if this isn't necessary.
+   * Note that it's not necessary to call @ref start() explicitly. It will be
+   * called automatically before creating KUniqueApplication if it hasn't
+   * been called yet, without any performance impact.
    */
   static bool start();
 
   /** Destructor */
   virtual ~KUniqueApplication();
-
-  /**
-   * Returns the DCOP client object.
-   **/
-  virtual DCOPClient *dcopClient();
 
   /**
    * Dispatches any incoming DCOP message for a new instance.
@@ -136,17 +115,15 @@ public:
    *
    * Command line arguments have been passed to KCmdLineArgs before this
    * function is called and can be checked in the usual way.
+   * 
+   * Note that newInstance() is called also in the first started 
+   * application process.
    *
    * @return An exit value. The calling process will exit with this value.
    */
   virtual int newInstance();
 
 private:
-  /**
-   * @deprecated Do not use!
-   */
-  virtual int newInstance(QValueList<QCString>);
-
   /**
    * Delays the processing of a DCOP request.
    */
@@ -159,11 +136,13 @@ private slots:
   void processDelayed();
 
   void newInstanceNoFork();
-
+  
+  KInstance* initHack( bool configUnique );
+ 
 private:
-  static DCOPClient *s_DCOPClient;
   static bool s_nofork;
   static bool s_multipleInstances;
+  static bool s_uniqueTestDone;
 
   KUniqueApplicationPrivate *d;
 };

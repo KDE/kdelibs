@@ -49,9 +49,9 @@
 #define DISPLAY "QWS_DISPLAY"
 #endif
 
-DCOPClient *KUniqueApplication::s_DCOPClient = 0;
 bool KUniqueApplication::s_nofork = false;
 bool KUniqueApplication::s_multipleInstances = false;
+bool KUniqueApplication::s_uniqueTestDone = false;
 
 static KCmdLineOptions kunique_options[] =
 {
@@ -72,13 +72,6 @@ public:
    bool firstInstance;
 };
 
-DCOPClient *
-KUniqueApplication::dcopClient()
-{
-  assert( s_DCOPClient);
-  return s_DCOPClient;
-}
-
 void
 KUniqueApplication::addCmdLineOptions()
 {
@@ -88,6 +81,9 @@ KUniqueApplication::addCmdLineOptions()
 bool
 KUniqueApplication::start()
 {
+  if( s_uniqueTestDone )
+    return true;
+  s_uniqueTestDone = true;
   addCmdLineOptions(); // Make sure to add cmd line options
   KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kuniqueapp");
   s_nofork = !args->isSet("fork");
@@ -103,8 +99,8 @@ KUniqueApplication::start()
 
   if (s_nofork)
   {
-     s_DCOPClient = new DCOPClient();
-     s_DCOPClient->registerAs(appName, false );
+     ( void ) dcopClient();
+     dcopClient()->registerAs(appName, false );
      // We'll call newInstance in the constructor. Do nothing here.
      return true;
   }
@@ -124,7 +120,7 @@ KUniqueApplication::start()
   case 0:
      // Child
      ::close(fd[0]);
-     dc = new DCOPClient();
+     dc = dcopClient();
      {
         QCString regName = dc->registerAs(appName, false);
         if (regName.isEmpty())
@@ -200,13 +196,14 @@ KUniqueApplication::start()
 #else //FIXME(E): Implement
 #endif
      }
-     s_DCOPClient = dc;
      result = 0;
      ::write(fd[1], &result, 1);
      ::close(fd[1]);
      return true; // Finished.
   default:
      // Parent
+//     DCOPClient::emergencyClose();
+//     dcopClient()->detach();
      ::close(fd[1]);
      for(;;)
      {
@@ -268,25 +265,9 @@ KUniqueApplication::start()
 
 
 KUniqueApplication::KUniqueApplication(bool allowStyles, bool GUIenabled, bool configUnique)
-  : KApplication(allowStyles, GUIenabled),
+  : KApplication( allowStyles, GUIenabled, initHack( configUnique )),
     DCOPObject(KCmdLineArgs::about->appName())
 {
-  if (configUnique)
-  {
-    KConfig* cfg = config();
-    KConfigGroupSaver saver( cfg, "KDE" );
-    s_multipleInstances = cfg->readBoolEntry("MultipleInstances", false);
-  }
-
-  if (!s_DCOPClient)
-  {
-     if (!start())
-     {
-         // Already running
-         ::exit(0);
-     }
-  }
-  s_DCOPClient->bindToApp(); // Make sure we get events from the DCOPClient.
   d = new KUniqueApplicationPrivate;
   d->processingRequest = false;
   d->firstInstance = true;
@@ -298,18 +279,9 @@ KUniqueApplication::KUniqueApplication(bool allowStyles, bool GUIenabled, bool c
 
 // KDE 3.0: remove me
 KUniqueApplication::KUniqueApplication(bool allowStyles, bool GUIenabled)
-  : KApplication(allowStyles, GUIenabled),
+  : KApplication( allowStyles, GUIenabled, initHack( false )),
     DCOPObject(KCmdLineArgs::about->appName())
 {
-  if (!s_DCOPClient)
-  {
-     if (!start())
-     {
-         // Already running
-         ::exit(0);
-     }
-  }
-  s_DCOPClient->bindToApp(); // Make sure we get events from the DCOPClient.
   d = new KUniqueApplicationPrivate;
   d->processingRequest = false;
   d->firstInstance = true;
@@ -322,6 +294,21 @@ KUniqueApplication::KUniqueApplication(bool allowStyles, bool GUIenabled)
 KUniqueApplication::~KUniqueApplication()
 {
   delete d;
+}
+
+// this gets called before even entering QApplication::QApplication()
+KInstance* KUniqueApplication::initHack( bool configUnique )
+{
+  KInstance* inst = new KInstance( KCmdLineArgs::about );
+  if (configUnique)
+  {
+    KConfigGroupSaver saver( inst->config(), "KDE" );
+    s_multipleInstances = inst->config()->readBoolEntry("MultipleInstances", false);
+  }
+  if( !start())
+         // Already running
+      ::exit( 0 );
+  return inst;
 }
 
 void KUniqueApplication::newInstanceNoFork()
@@ -390,12 +377,6 @@ int KUniqueApplication::newInstance()
   }
   d->firstInstance = false;
   return 0; // do nothing in default implementation
-}
-
-// OBSOLETE FUNCTION, DO NOT USE //
-int KUniqueApplication::newInstance(QValueList<QCString>)
-{
-  return 0;
 }
 
 #include "kuniqueapplication.moc"

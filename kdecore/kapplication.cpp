@@ -138,6 +138,8 @@ bool kde_have_kipc = true; // magic hook to disable kipc in kdm
 
 KApplication* KApplication::KApp = 0L;
 bool KApplication::loadedByKdeinit = false;
+DCOPClient *KApplication::s_DCOPClient = 0L;
+bool KApplication::s_dcopClientNeedsPostInit = false;
 
 template class QPtrList<KSessionManaged>;
 
@@ -429,7 +431,6 @@ public:
     checkAccelerators = 0;
     styleFile="kstylerc";
     startup_id = "0";
-    autoDcopRegistration = true;
   }
 
   ~KApplicationPrivate()
@@ -447,11 +448,12 @@ public:
   QString styleFile;
   QString geometry_arg;
   QCString startup_id;
-  bool autoDcopRegistration;
 };
 
 
 static QPtrList<QWidget>*x11Filter = 0;
+static bool autoDcopRegistration = true;
+
 void KApplication::installX11EventFilter( QWidget* filter )
 {
     if ( !filter )
@@ -607,6 +609,25 @@ KApplication::KApplication( bool allowStyles, bool GUIenabled ) :
     init(GUIenabled);
 }
 
+KApplication::KApplication( bool allowStyles, bool GUIenabled, KInstance* _instance ) :
+  QApplication( *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv(),
+                GUIenabled ),
+  KInstance( _instance ),
+#ifdef Q_WS_X11
+  display(0L),
+#endif
+  d (new KApplicationPrivate)
+{
+    read_app_startup_id();
+    if (!GUIenabled)
+       allowStyles = false;
+    useStyles = allowStyles;
+    setName( instanceName() );
+
+    parseCommandLine( );
+    init(GUIenabled);
+}
+
 #ifdef Q_WS_X11
 KApplication::KApplication(Display *display, int& argc, char** argv, const QCString& rAppName,
                            bool allowStyles, bool GUIenabled ) :
@@ -670,6 +691,9 @@ void KApplication::init(bool GUIenabled)
 
   KApp = this;
 
+  dcopAutoRegistration();
+  dcopClientPostInit();
+  
   smw = 0;
 
   // Initial KIPC event mask.
@@ -733,7 +757,6 @@ void KApplication::init(bool GUIenabled)
   KGlobal::dirs()->addResourceType("appdata", KStandardDirs::kde_default("data")
                                    + QString::fromLatin1(name()) + '/');
   pSessionConfig = 0L;
-  pDCOPClient = 0L; // don't instantiate until asked to do so.
   bSessionManagement = true;
 
 #ifdef Q_WS_X11
@@ -751,8 +774,6 @@ void KApplication::init(bool GUIenabled)
 #endif
 
   d->oldIceIOErrorHandler = IceSetIOErrorHandler( kde_ice_ioerrorhandler );
-
-  QTimer::singleShot(0, this, SLOT(dcopAutoRegistration()));
 }
 
 static int my_system (const char *command) {
@@ -779,32 +800,47 @@ static int my_system (const char *command) {
 
 DCOPClient *KApplication::dcopClient()
 {
-  if (pDCOPClient)
-    return pDCOPClient;
+  if (s_DCOPClient)
+    return s_DCOPClient;
 
-  pDCOPClient = new DCOPClient();
-  connect(pDCOPClient, SIGNAL(attachFailed(const QString &)),
-          SLOT(dcopFailure(const QString &)));
-  connect(pDCOPClient, SIGNAL(blockUserInput(bool) ),
-          SLOT(dcopBlockUserInput(bool)) );
-
-  DCOPClient::setMainClient( pDCOPClient );
-  if (d->autoDcopRegistration)
-  {
-     pDCOPClient->registerAs(name());
+  s_DCOPClient = new DCOPClient();
+  if( kapp ) {
+    connect(s_DCOPClient, SIGNAL(attachFailed(const QString &)),
+            kapp, SLOT(dcopFailure(const QString &)));
+    connect(s_DCOPClient, SIGNAL(blockUserInput(bool) ),
+            kapp, SLOT(dcopBlockUserInput(bool)) );
   }
-  return pDCOPClient;
+  else
+    s_dcopClientNeedsPostInit = true;
+
+  DCOPClient::setMainClient( s_DCOPClient );
+  return s_DCOPClient;
+}
+
+void KApplication::dcopClientPostInit()
+{
+  if( s_dcopClientNeedsPostInit )
+    {
+    s_dcopClientNeedsPostInit = false;
+    connect(s_DCOPClient, SIGNAL(blockUserInput(bool) ),
+            SLOT(dcopBlockUserInput(bool)) );
+    s_DCOPClient->bindToApp(); // Make sure we get events from the DCOPClient.
+    }
 }
 
 void KApplication::dcopAutoRegistration()
 {
-  if (d->autoDcopRegistration)
-     (void) dcopClient();
+  if (autoDcopRegistration)
+     {
+     ( void ) dcopClient();
+     if( dcopClient()->appId().isEmpty())
+         dcopClient()->registerAs(name());
+     }
 }
 
 void KApplication::disableAutoDcopRegistration()
 {
-  d->autoDcopRegistration = false;
+  autoDcopRegistration = false;
 }
 
 KConfig* KApplication::sessionConfig()
@@ -1286,7 +1322,8 @@ KApplication::~KApplication()
   delete smw;
 
   // close down IPC
-  delete pDCOPClient;
+  delete s_DCOPClient;
+  s_DCOPClient = 0L;
 
   // Carefully shut down the process controller: It is very likely
   // that we receive a SIGCHLD while the destructor is running

@@ -232,12 +232,13 @@ public:
    * If a client does not exist yet, it is created when this
    * function is called.
    */
-  virtual DCOPClient *dcopClient();
+  static DCOPClient *dcopClient();
   
   /**
    * Disable automatic dcop registration
+   * Must be called before creating a KApplication instance to have an effect.
    */
-  void disableAutoDcopRegistration();
+  static void disableAutoDcopRegistration();
 
   /**
    * Returns a @ref QPixmap with the application icon.
@@ -576,6 +577,11 @@ public slots:
   void deref();
 
 protected:
+  /**
+   * @internal Used by KUniqueApplication
+   */
+  KApplication( bool allowStyles, bool GUIenabled, KInstance* _instance );
+
 #ifdef Q_WS_X11
   /**
    * Used to catch X11 events
@@ -595,12 +601,12 @@ private slots:
   void dcopFailure(const QString &);
   void dcopBlockUserInput( bool );
   void x11FilterDestroyed();
-  void dcopAutoRegistration();
 
 private:
   KApplicationPrivate* d;
   KConfig* pSessionConfig; //instance specific application config object
-  DCOPClient *pDCOPClient; // instance specific application communication client
+  static DCOPClient *s_DCOPClient; // app specific application communication client
+  static bool s_dcopClientNeedsPostInit;
   QString aCaption; // the name for the window title
   bool bSessionManagement;
   QPixmap aIconPixmap;
@@ -613,6 +619,9 @@ private:
   void parseCommandLine( ); // Handle KDE arguments (Using KCmdLineArgs)
 
   void read_app_startup_id();
+
+  void dcopAutoRegistration();
+  void dcopClientPostInit();
 
 public:
   /**
