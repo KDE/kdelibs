@@ -44,4 +44,40 @@ public:
 	static QString type(const QString& filename);
 };
 
+/**
+ * @libdoc The KDE Image I/O Library
+ *
+ * This library allows KDE applications to read and write images in a
+ * variety of formats, transparently via the @ref QImage and QPixmap load
+ * and save methods.
+ *
+ * The image processing backends are written as image handlers compatible
+ * with the @ref QImageIO handler format. The backends are loaded on demand
+ * when a particular format is requested.
+ * 
+ * @sect Usage
+ *
+ * Simply call the @ref KImageIO::registerFormats static method declared
+ * in kimgio.h, and link libkimgio into your project.
+ * 
+ * @sect Example
+ *
+ * <pre>
+	#include<qpixmap.h>
+ 	#include<kimgio.h>
+
+	int main( int argc, char **argv )
+	{
+		....
+		KImageIO::registerFormats();
+		
+		...	// start main program
+	}
+ * </pre>
+ *
+ * @see KImageIO, QPixmap, QImage, QImageIO
+ * @author Sirtaj Singh Kang
+ * @version $Id$
+ */
+
 #endif
