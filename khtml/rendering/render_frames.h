@@ -50,6 +50,7 @@ public:
   virtual ~RenderFrameSet();
 
   virtual const char *renderName() const { return "RenderFrameSet"; }
+  virtual bool isFrameSet() const { return true; }
 
   virtual void layout();
 

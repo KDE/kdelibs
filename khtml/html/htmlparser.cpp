@@ -471,15 +471,6 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                     handled = true;
                 }
                 break;
-            case ID_FRAME:
-                if( haveFrameSet ) break;
-                e = new HTMLFrameSetElementImpl(document);
-                inBody = true;
-                noRealBody = false;
-                haveFrameSet = true;
-                insertNode(e);
-                handled = true;
-                break;
             default:
                 if ( haveFrameSet ) break;
                 e = new HTMLBodyElementImpl(document);

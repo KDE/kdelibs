@@ -98,8 +98,7 @@ RenderFrameSet::~RenderFrameSet()
 
 void RenderFrameSet::layout( )
 {
-    if ( strcmp( parent()->renderName(), "RenderFrameSet" ) != 0 )
-    {
+    if ( !parent()->isFrameSet() ) {
         m_width = m_view->visibleWidth();
         m_height = m_view->visibleHeight();
     }
@@ -338,7 +337,7 @@ void RenderFrameSet::layout( )
             {
                 bool fixed = false;
 
-                if ( strcmp( child->renderName(), "RenderFrameSet" ) == 0 )
+                if ( child->isFrameSet() )
                   fixed = static_cast<RenderFrameSet *>(child)->frameSetImpl()->noResize();
                 else
                   fixed = static_cast<RenderFrame *>(child)->frameImpl()->noResize();
@@ -399,13 +398,13 @@ void RenderFrameSet::positionFrames()
     int xPos = 0;
     for(c = 0; c < m_frameset->totalCols(); c++)
     {
-    //      HTMLElementImpl *e = static_cast<HTMLElementImpl *>(child);
       child->setPos( xPos, yPos );
 #ifdef DEBUG_LAYOUT
       kdDebug(6040) << "child frame at (" << xPos << "/" << yPos << ") size (" << m_colWidth[c] << "/" << m_rowHeight[r] << ")" << endl;
 #endif
       child->setWidth( m_colWidth[c] );
       child->setHeight( m_rowHeight[r] );
+      child->setVisible( true );
       child->layout( );
 
       xPos += m_colWidth[c] + m_frameset->border();
@@ -413,19 +412,22 @@ void RenderFrameSet::positionFrames()
 
       if ( !child )
         return;
-    /*
-            e->renderer()->setPos(xPos, yPos);
-            e->setWidth(colWidth[c]);
-            e->setAvailableWidth(colWidth[c]);
-            e->setDescent(rowHeight[r]);
-            e->layout();
-            xPos += colWidth[c] + border;
-            child = child->nextSibling();
-            if(!child) return;
-    */
-        }
-        yPos += m_rowHeight[r] + m_frameset->border();
+
     }
+
+    yPos += m_rowHeight[r] + m_frameset->border();
+  }
+
+  // all the remaining frames are hidden to avoid ugly
+  // spurious nonlayouted frames
+  while ( child ) {
+      child->setWidth( 0 );
+      child->setHeight( 0 );
+      child->setVisible( false );
+      child->setLayouted();
+
+      child = child->nextSibling();
+  }
 }
 
 bool RenderFrameSet::userResize( MouseEventImpl *evt )
