@@ -41,6 +41,12 @@ public:
     void init();
 
     /** 
+     * @returns true if an effect is configured for the given @p group
+     * in @p state, otherwise false.
+     */
+    bool hasEffect(int group, int state) const;
+    
+    /**
      * Returns a fingerprint for the effect selected by 
      * [@p group, @p state]. This is usefull for caching.
      */ 
