@@ -1,7 +1,6 @@
 [KDE Print Entry]
 PrintSystem=ext
 Comment=Print through an external program (generic)
-Comment[af]=DRUK DEUR 'N EKSTERNE PROGRAM (GENERIES)
 Comment[az]=Xarici proqram üstündən çap et (generik)
 Comment[bg]=Печат посредством външна програма
 Comment[cs]=Tisk pomocí externího programu (obecné)
@@ -13,7 +12,7 @@ Comment[es]=Imprime a través de un programa externo (genérico)
 Comment[et]=Trükkimine läbi välise rakenduse (üldine)
 Comment[fi]=Tulosta ulkoisen sovelluksen kautta (yleinen)
 Comment[fr]=Imprimer par un programme externe (générique)
-Comment[he]=תינוציח תינכות תועצמאב הספדה
+Comment[he]=הדפסה באמצעות תוכנית חיצונית
 Comment[hu]=Nyomtatás egy megadott külső program segítségével (általános)
 Comment[is]=Prenta í gegnum utanaðkomandi forrit (almennt)
 Comment[it]=Stampa attraverso un programma esterno (generico)
@@ -25,8 +24,8 @@ Comment[nl]=Print met behulp van een extern programma (algemeen)
 Comment[no]=Skriv ut gjennom et eksternt program (generisk)
 Comment[no_NY]=Skriv ut gjennom eit eksternt program (generelt)
 Comment[pl]=Drukuj używając zewnętrznego programu
-Comment[pt_BR]=Imprimir através dum programa externo (genérico)
 Comment[pt]=Imprimir através dum programa externo (genérico)
+Comment[pt_BR]=Imprimir através dum programa externo (genérico)
 Comment[ru]=печать посредством внешней программы
 Comment[sk]=Tlač pomocou externého programu (generické)
 Comment[sl]=Tiskanje skozi zunanji program (splošno)

@@ -1,7 +1,6 @@
 [KDE Print Entry]
 PrintSystem=rlpr
 Comment=RLPR environment (Remote LPD servers)
-Comment[af]=RLPR OMGEWING (AFGELEë LPD BEDIENERS)
 Comment[az]=RLPR vasitəsi (Uzaq LPD vericiləri)
 Comment[bg]=Среда RLPR (отдалечени LPD сървъри)
 Comment[cs]=Prostředí RLPR (Vzdálené LPD servery)
@@ -13,7 +12,7 @@ Comment[es]=Entorno RLPR (servidores LPD remotos)
 Comment[et]=RLPR keskkond (LPD kaugserverid)
 Comment[fi]=RLPR tulostus (LPD palvelin)
 Comment[fr]=Environnement RLPR (serveurs LPD distants)
-Comment[he]=(םיקחורמ LPD יתרש) RLPR תביבס
+Comment[he]=סביבת RLPR )שרתי LPD מרוחקים(
 Comment[hu]=RLPR környezet (távoli LPD kiszolgálók)
 Comment[is]=RLPR umhverfi (fjarlægir LPD þjónar)
 Comment[it]=Ambiente RLPR (Server LPD remoti)
@@ -25,8 +24,8 @@ Comment[nl]=RLPR omgeving (Remote LPD servers)
 Comment[no]=RLPR miljø (Remote LPD servers)
 Comment[no_NY]=RLPR-miljø (LPD-tenarar over nettverk)
 Comment[pl]=Środowisko RLPR (zdalne serwery LPD)
-Comment[pt_BR]=Ambiente RLPR (servidores remotos de LPD)
 Comment[pt]=Ambiente RLPR (servidores remotos de LPD)
+Comment[pt_BR]=Ambiente RLPR (servidores remotos de LPD)
 Comment[ru]=Среда RLPR (сетевые принт-серверы LPD)
 Comment[sk]=Prostredie RLPR (Vzdialené LPD servery)
 Comment[sl]=Okolje RLPR (oddaljeni strežniki LPD)
