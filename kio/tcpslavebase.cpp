@@ -303,8 +303,9 @@ void TCPSlaveBase::stopTLS()
 
 bool TCPSlaveBase::canUseTLS()
 {
-KSSLSettings kss;
         if (m_bIsSSL || !KSSL::doesSSLWork()) return false;
+
+KSSLSettings kss;
         return kss.tlsv1();
 }
 
@@ -325,7 +326,11 @@ bool send = false, prompt = false, save = false, forcePrompt = false;
         forcePrompt = false;
   }
 
-  forcePrompt = true;   // FIXME
+  KSSLSettings kss;
+
+  if (kss.autoSendX509()) {   // FIXME: or if a host-based setting exists
+    // FIXME: set the certificate name here
+  }
 
   // Delete the old cert since we're certainly done with it now
   if (d->pkcs) {
@@ -344,6 +349,9 @@ bool send = false, prompt = false, save = false, forcePrompt = false;
      certname = 
       KSSLCertificateHome::getDefaultCertificateName(&send, &prompt);
   }
+
+  if (certname.isEmpty() && !prompt)
+     prompt = kss.promptSendX509();
 
   if (certname.isEmpty() && !prompt && !forcePrompt) return;
 
@@ -461,7 +469,7 @@ int rc = 0;
 bool permacache = false;
 bool isChild = false;
 QString theurl = QString(m_sServiceName)+"://"+d->host+":"+QString::number(m_iPort);
-bool _IPmatchesCN;
+bool _IPmatchesCN = false;
 
    if (!d->cc) d->cc = new KSSLCertificateCache;
 
