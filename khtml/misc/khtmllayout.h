@@ -42,7 +42,7 @@ namespace khtml
     /*
      * %multiLength and %Length
      */
-    enum LengthType { Undefined = 0, Variable = 1, Relative, Percent, Fixed };
+    enum LengthType { Undefined = 0, Variable = 1, Relative, Percent, Fixed, Static };
     struct Length
     {
 	Length() { value = 0; type = Variable; }
@@ -108,6 +108,7 @@ namespace khtml
 	bool isRelative() const { return (type == Relative); }
 	bool isPercent() const { return (type == Percent); }
 	bool isFixed() const { return (type == Fixed); }
+        bool isStatic() const { return (type == Static); }
 	int value : 29;
 	LengthType type : 3;
     };

@@ -154,6 +154,7 @@ solid, CSS_VAL_SOLID
 spell-out, CSS_VAL_SPELL_OUT
 square, CSS_VAL_SQUARE
 static, CSS_VAL_STATIC
+static-position, CSS_VAL_STATIC_POSITION
 status-bar, CSS_VAL_STATUS_BAR
 sub, CSS_VAL_SUB
 super, CSS_VAL_SUPER

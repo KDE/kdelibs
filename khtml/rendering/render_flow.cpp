@@ -365,10 +365,7 @@ void RenderFlow::layoutBlockChildren()
 
         int chPos = xPos + child->marginLeft();
 
-        if( style()->textAlign() == KONQ_CENTER && !child->style()->marginLeft().isVariable()) {
-            //kdDebug() << "should align to center" << endl;
-            chPos += ( width() - child->width() )/2;
-        } else if(style()->direction() == LTR) {
+        if(style()->direction() == LTR) {
             // html blocks flow around floats
             if (style()->htmlHacks() && child->style()->flowAroundFloats() )
                 chPos = leftOffset(m_height) + child->marginLeft();
@@ -1109,26 +1106,35 @@ void RenderFlow::calcMinMaxWidth()
 
             int margin=0;
             //  auto margins don't affect minwidth
-
+            
             Length ml = child->style()->marginLeft();
             Length mr = child->style()->marginRight();
-            if (ml.type!=Variable && mr.type!=Variable)
+            
+            if (style()->textAlign() == KONQ_CENTER)
             {
-                if (child->style()->width().type!=Variable)
+                if (ml.type==Fixed) margin+=ml.value;   
+                if (mr.type==Fixed) margin+=mr.value;   
+            } 
+            else
+            {
+                if (ml.type!=Variable && mr.type!=Variable)
                 {
-                    if (child->style()->direction()==LTR)
-                        margin = child->marginLeft();
+                    if (child->style()->width().type!=Variable)
+                    {
+                        if (child->style()->direction()==LTR)
+                            margin = child->marginLeft();
+                        else
+                            margin = child->marginRight();
+                    }
                     else
-                        margin = child->marginRight();
-                }
-                else
-                    margin = child->marginLeft()+child->marginRight();
+                        margin = child->marginLeft()+child->marginRight();
 
+                }
+                else if (ml.type != Variable)
+                    margin = child->marginLeft();
+                else if (mr.type != Variable)
+                    margin = child->marginRight();
             }
-            else if (ml.type != Variable)
-                margin = child->marginLeft();
-            else if (mr.type != Variable)
-                margin = child->marginRight();
 
             if (margin<0) margin=0;
 

@@ -1518,11 +1518,20 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     case CSS_PROP_MAX_WIDTH:
         // +none +inherit
         if(primitiveValue && primitiveValue->getIdent() == CSS_VAL_NONE)
-            apply = true;
-    case CSS_PROP_BOTTOM:
+            apply = true;    
     case CSS_PROP_TOP:
     case CSS_PROP_LEFT:
     case CSS_PROP_RIGHT:
+        // http://www.w3.org/Style/css2-updates/REC-CSS2-19980512-errata
+        // introduces static-position value for top, left & right
+        if(prop->m_id != CSS_PROP_MAX_WIDTH && primitiveValue &&
+           primitiveValue->getIdent() == CSS_VAL_STATIC_POSITION)
+        {
+            //kdDebug( 6080 ) << "found value=static-position" << endl;
+            l = Length ( 0, Static);
+            apply = true;
+        }    
+    case CSS_PROP_BOTTOM:
     case CSS_PROP_WIDTH:
     case CSS_PROP_MIN_WIDTH:
     case CSS_PROP_MARGIN_TOP:
