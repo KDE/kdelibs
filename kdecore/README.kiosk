@@ -181,19 +181,19 @@ action/go_goto_page
 action/go_goto_line
 action/go_first
 action/go_last
-action/bookmarks
+action/bookmarks // See note below
 action/bookmark_add
 action/bookmark_edit
 action/tools_spelling
 action/options_show_menubar
-action/options_show_toolbar
+action/options_show_toolbar  // See note below
 action/options_show_statusbar
 action/options_save_options
 action/options_configure
 action/options_configure_keybinding
 action/options_configure_toolbars
 action/options_configure_notifications
-action/help
+action/help // See note below
 action/help_contents
 action/help_whats_this
 action/help_report_bug
@@ -206,7 +206,8 @@ action/editfiletype
 action/properties
 action/openwith
 action/openintab
-action/kdesktop_rmb // RMB menu
+action/kdesktop_rmb // RMB menu, see note below
+action/iconview_preview 
 
 Kicker related: 
 action/kicker_rmb // RMB menu
@@ -287,6 +288,12 @@ Notes:
 * action/help is not yet implemented
 * action/kdesktop_rmb disables the RMB menu but some actions may still be accesible
   via keyboard shortcuts: cut/copy/rename/trash/delete
+* action/iconview_preview disables the option to toggle previews on or off
+  in icon mode but the actual preview settings remains unaffected.
+  To disable previews you also need to add the following lines to
+  konqiconviewrc:
+	[Settings]
+	PreviewsEnabled[$i]=false
 
 
 Applications may use additional actions that they defined themselves.
