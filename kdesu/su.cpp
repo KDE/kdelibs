@@ -120,7 +120,7 @@ int SuProcess::exec(const char *password, int check)
     {
 	kill(m_Pid, SIGTERM);
 	waitForChild();
-	ret = SuIncorrectPassword;
+	return SuIncorrectPassword;
     }
     if (check == 1)
     {
