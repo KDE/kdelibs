@@ -218,7 +218,7 @@ KLocale::KLocale( const QString& _catalogue )
       catalogue = QString::fromLatin1(maincatalogue);
 
     if (catalogue.isEmpty()) {
-        kdDebug() << "KLocale instance created called without valid catalogue! Give an argument or call setMaintCatalogue before init\n";
+        kdDebug(173) << "KLocale instance created called without valid catalogue! Give an argument or call setMaintCatalogue before init\n";
         catalogue = QString::fromLatin1("kdelibs");
     }
     initLanguage(config, catalogue);
@@ -321,7 +321,7 @@ void KLocale::initFormat(KConfig *config)
 {
   if (!config)
     return;
-  //kdDebug() << "KLocale::initFormat" << endl;
+  //kdDebug(173) << "KLocale::initFormat" << endl;
 
   // make sure the config files are read using the correct locale
   KLocale *lsave = KGlobal::_locale;
@@ -345,7 +345,7 @@ void KLocale::initFormat(KConfig *config)
     _thousandsSeparator = entry.readEntry(QString::fromLatin1("ThousandsSeparator"), QString::fromLatin1(","));
   _thousandsSeparator.replace( QRegExp(QString::fromLatin1("$0")),
 				       "" );
-  //kdDebug() << "_thousandsSeparator=" << _thousandsSeparator << endl;
+  //kdDebug(173) << "_thousandsSeparator=" << _thousandsSeparator << endl;
 
   _positiveSign = config->readEntry(QString::fromLatin1("PositiveSign"));
   if (_positiveSign.isNull())
@@ -413,7 +413,7 @@ void KLocale::initFormat(KConfig *config)
 
   QString pf = translate_priv( I18N_NOOP("_: Dear translator, please do not translate this string in any form, but pick the _right_ value out of NoPlural/TwoForms/French.... If not sure what to do mail thd@kde.org and coolo@kde.org, they will tell you. Better leave that out if unsure, the programs will crash!!\nDefinition of PluralForm - to be set by the translator of kdelibs.po"), 0);
   if ( pf.isEmpty() ) {
-      kdWarning() << "found no definition of PluralForm" << endl;
+      kdWarning(173) << "found no definition of PluralForm" << endl;
       d->plural_form = -1;
   } else if ( pf == "NoPlural" )
       d->plural_form = 0;
@@ -438,7 +438,7 @@ void KLocale::initFormat(KConfig *config)
   else if ( pf == "Maltese" )
       d->plural_form = 10;
   else {
-      kdWarning() << "Definition of PluralForm is none of NoPlural/TwoForms/French/Gaeilge/Russian/Polish/Slovenian/Lithuanian/Czech/Slovak/Maltese: " << pf << endl;
+      kdWarning(173) << "Definition of PluralForm is none of NoPlural/TwoForms/French/Gaeilge/Russian/Polish/Slovenian/Lithuanian/Czech/Slovak/Maltese: " << pf << endl;
       exit(1);
   }
   }
@@ -488,7 +488,7 @@ QString KLocale::translate_priv(const char *msgid, const char *fallback, const c
 
   if (!msgid || !msgid[0])
   {
-    kdDebug() << "KLocale: trying to look up \"\" in catalouge. Fix the program" << endl;
+    kdDebug(173) << "KLocale: trying to look up \"\" in catalouge. Fix the program" << endl;
     return QString::null;
   }
 
@@ -519,7 +519,7 @@ QString KLocale::translate( const char *index, const char *fallback) const
 {
   if (!index || !index[0] || !fallback || !fallback[0])
   {
-    kdDebug() << ("KLocale: trying to look up \"\" in catalouge. Fix the program");
+    kdDebug(173) << ("KLocale: trying to look up \"\" in catalouge. Fix the program");
     return QString::null;
   }
 
@@ -555,7 +555,7 @@ QString KLocale::translate( const char *singular, const char *plural,
 {
     if (!singular || !singular[0] || !plural || !plural[0])
     {
-        kdDebug() << ("KLocale: trying to look up \"\" in catalouge. Fix the program");
+        kdDebug(173) << ("KLocale: trying to look up \"\" in catalouge. Fix the program");
         return QString::null;
     }
 
@@ -667,7 +667,7 @@ QString KLocale::translateQt( const char *index, const char *fallback) const
 {
     if (!index || !index[0] || !fallback || !fallback[0])
     {
-        kdDebug() << ("KLocale: trying to look up \"\" in catalouge. Fix the program");
+        kdDebug(173) << ("KLocale: trying to look up \"\" in catalouge. Fix the program");
         return QString::null;
     }
 
@@ -1385,7 +1385,7 @@ void KLocale::initInstance()
     if (app)
         KGlobal::_locale = new KLocale(app->instanceName());
     else
-        kdDebug() << "no app name available using KLocale - nothing to do\n";
+        kdDebug(173) << "no app name available using KLocale - nothing to do\n";
 }
 
 QString KLocale::langLookup(const QString &fname, const char *rtype)
@@ -1410,7 +1410,7 @@ QString KLocale::langLookup(const QString &fname, const char *rtype)
     QStringList::Iterator it;
     for (it = search.begin(); it != search.end(); ++it)
     {
-        kdDebug() << "Looking for help in: " << *it << endl;
+        kdDebug(173) << "Looking for help in: " << *it << endl;
 
         QFileInfo info(*it);
         if (info.exists() && info.isFile() && info.isReadable())
