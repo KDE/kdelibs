@@ -2360,7 +2360,9 @@ startServiceInternal( const QCString &function,
        envs.append( QCString("DISPLAY=") + dpystring );
    }
 #endif
-   stream << envs << startup_id;
+   stream << envs;
+   // make sure there is id, so that user timestamp exists
+   stream << ( startup_id.isEmpty() ? KStartupInfo::createNewStartupId() : startup_id );
    if( function.left( 12 ) != "kdeinit_exec" )
        stream << noWait;
 
@@ -2615,7 +2617,14 @@ void KApplication::setStartupId( const QCString& startup_id )
     if( startup_id.isEmpty())
         d->startup_id = "0";
     else
+        {
         d->startup_id = startup_id;
+        KStartupInfoId id;
+        id.initId( startup_id );
+        long timestamp = id.timestamp();
+        if( timestamp != 0 )
+            updateUserTimestamp( timestamp );
+        }
 }
 
 // read the startup notification env variable, save it and unset it in order

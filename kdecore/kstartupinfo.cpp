@@ -877,6 +877,28 @@ void KStartupInfo::clean_all_noncompliant()
         }
     }
 
+QCString KStartupInfo::createNewStartupId()
+    {
+    // Assign a unique id, use hostname+time+pid, that should be 200% unique.
+    // Also append the user timestamp (for focus stealing prevention).
+    struct timeval tm;
+    gettimeofday( &tm, NULL );
+    char hostname[ 256 ];
+    hostname[ 0 ] = '\0';
+    if (!gethostname( hostname, 255 ))
+	hostname[sizeof(hostname)-1] = '\0';
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+    extern Time qt_x_user_time;
+#else
+    long qt_x_user_time = 0;
+#endif
+    QCString id = QString( "%1;%2;%3;%4_TIME%5" ).arg( hostname ).arg( tm.tv_sec )
+        .arg( tm.tv_usec ).arg( getpid()).arg( qt_x_user_time ).utf8();
+    kdDebug( 172 ) << "creating: " << id << ":" << qAppName() << endl;
+    return id;
+    }
+
+
 struct KStartupInfoIdPrivate
     {
     KStartupInfoIdPrivate() : id( "" ) {};
@@ -927,22 +949,9 @@ void KStartupInfoId::initId( const QCString& id_P )
 #endif
         return;
         }
-    // assign a unique id  CHECKME
-    // use hostname+time+pid, that should be 200% unique
-    // hmm, probably something 99.9% unique and much shorter would be enough
-    struct timeval tm;
-    gettimeofday( &tm, NULL );
-    char hostname[ 256 ];
-    hostname[ 0 ] = '\0';
-    if (!gethostname( hostname, 255 ))
-	hostname[sizeof(hostname)-1] = '\0';
-    d->id = QString( "%1;%2;%3;%4" ).arg( hostname ).arg( tm.tv_sec )
-        .arg( tm.tv_usec ).arg( getpid()).utf8();
-#ifdef KSTARTUPINFO_ALL_DEBUG
-    kdDebug( 172 ) << "creating: " << d->id << endl;
-#endif
+    d->id = KStartupInfo::createNewStartupId();
     }
-
+    
 bool KStartupInfoId::setupStartupEnv() const
     {
     if( id().isEmpty())
@@ -1012,6 +1021,38 @@ bool KStartupInfoId::operator<( const KStartupInfoId& id_P ) const
 bool KStartupInfoId::none() const
     {
     return d->id.isEmpty() || d->id == "0";
+    }
+
+unsigned long KStartupInfoId::timestamp() const
+    {
+    if( none())
+        return 0;
+    int pos = d->id.findRev( "_TIME" );
+    if( pos >= 0 )
+        {
+        bool ok;
+        long time = d->id.mid( pos + 5 ).toLong( &ok );
+        if( ok )
+            return time;
+        }
+    // libstartup-notification style :
+    // snprintf (s, len, "%s/%s/%lu/%d-%d-%s",
+    //   canonicalized_launcher, canonicalized_launchee, (unsigned long) timestamp,
+    //  (int) getpid (), (int) sequence_number, hostbuf);
+    int pos1 = d->id.findRev( '/' );
+    if( pos1 > 0 )
+        {
+        int pos2 = d->id.findRev( '/', pos1 - 1 );
+        if( pos2 >= 0 )
+            {
+            bool ok;
+            long time = d->id.mid( pos2 + 1, pos1 - pos2 - 1 ).toLong( &ok );
+            if( ok )
+                return time;
+            }
+        }
+    // bah ... old KStartupInfo or a problem
+    return 0;
     }
 
 struct KStartupInfoDataPrivate

@@ -114,6 +114,12 @@ class KStartupInfo
          */
         static void silenceStartup( bool silence );
 
+        /**
+         * Creates and returns new startup id. The id includes properly setup
+         * user timestamp.
+         * @since 3.3
+         */
+        static QCString createNewStartupId();
 	/**
 	 *
 	 */
@@ -414,6 +420,12 @@ class KStartupInfoId
 	 * @return the identification string for the notification
 	 */
         const QCString& id() const;
+        /**
+         * Return the user timestamp for the startup notification, or 0 if no timestamp
+         * is set.
+         * @since 3.3
+         */
+        unsigned long timestamp() const;
 	/**
 	 * Sets the startup notification environment variable to this identification.
 	 * @return true if successful, false otherwise
@@ -600,6 +612,7 @@ class KStartupInfoData
 	TriState silent() const;
         
         /**
+         * @obsolete Timestamp is already assigned in KStartupInfoId::initId().
          * Sets timestamp for the startup notification. The timestamp is expressed
          * as XServer time, and is used to prevent activation of the matching
          * window if user interaction took place after this timestamp.
@@ -609,6 +622,7 @@ class KStartupInfoData
         void setTimestamp( unsigned long time );
         
         /**
+         * @obsolete Use KStartupInfoId::timestamp().
          * Return the timestamp for the startup notification, or -1 if no timestamp
          * is set.
          */
