@@ -99,4 +99,4 @@ Comment[xxx]=xx
 Comment[zh_CN.GB2312]=默认风格的高色彩版本
 Comment[zh_TW.Big5]=預設風格的高彩版本
 [KDE]
-widgetStyle=hcstyle.la
+WidgetStyle=HighColor
