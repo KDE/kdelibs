@@ -42,8 +42,7 @@ KFindNextDialog::KFindNextDialog(const QString &pattern, QWidget *parent) :
         false,
         i18n("&Yes"))
 {
-    setMainWidget( new QLabel( i18n("Find next '%1'").arg(pattern), this ) );
-    resize(minimumSize());
+    setMainWidget( new QLabel( i18n("<qt>Find next occurrence of '<b>%1</b>'?</qt>").arg(pattern), this ) );
 }
 
 ////
@@ -314,7 +313,7 @@ void KFind::displayFinalDialog() const
     if ( numMatches() )
         message = i18n( "1 match found.", "%n matches found.", numMatches() );
     else
-        message = i18n("No matches found for '%1'.").arg(m_pattern);
+        message = i18n("<qt>No matches found for '<b>%1</b>'.</qt>").arg(m_pattern);
     KMessageBox::information(parentWidget(), message);
 }
 
@@ -332,10 +331,10 @@ bool KFind::shouldRestart( bool forceAsking ) const
     if ( numMatches() )
         message = i18n( "1 match found.", "%n matches found.", numMatches() );
     else
-        message = i18n("No matches found for '%1'.").arg(m_pattern);
+        message = i18n("<qt>No matches found for '<b>%1</b>'.").arg(m_pattern);
     message += "\n"; // can't be in the i18n() because of the plural form.
     // Hope this word puzzle is ok, it's a different sentence
-    message += i18n("Do you want to restart search at the beginning?");
+    message += i18n("Do you want to restart search at the beginning?</qt>");
 
     int ret = KMessageBox::questionYesNo( parentWidget(), message );
     bool yes = ( ret == KMessageBox::Yes );
