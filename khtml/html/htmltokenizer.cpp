@@ -97,6 +97,7 @@ static const char textareaEnd [] = "</textarea";
                 case 0x96: (x) = '-'; break; \
                 case 0x97: (x) = '-'; break; \
                 case 0x98: (x) = '~'; break; \
+                case 0x99: (x) = 0x2122; break; \
                 case 0xb7: (x) = '*'; break; \
                 default: break; \
                 } \
@@ -109,6 +110,8 @@ static const char textareaEnd [] = "</textarea";
                 case 0x2019: (x) = '\''; break; \
                 case 0x201c: (x) = '"'; break; \
                 case 0x201d: (x) = '"'; break; \
+                case 0x2022: (x) = '*'; break; \
+                case 0x2122: (x) = 0x2122; break; \
                 default: break; \
                 } \
             }
