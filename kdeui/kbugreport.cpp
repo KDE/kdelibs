@@ -266,7 +266,7 @@ void KBugReport::slotConfigureEmail()
   if (m_process) return;
   m_process = new KProcess;
   *m_process << QString::fromLatin1("kcmshell") << QString::fromLatin1("Personalization/email");
-  connect(m_process, SIGNAL(processExited(KProcess *)), this, SLOT(slotSetFrom()));
+  connect(m_process, SIGNAL(processExited(KProcess *)), SLOT(slotSetFrom()));
   if (!m_process->start())
   {
     kdDebug() << "Couldn't start kcmshell.." << endl;
@@ -279,11 +279,12 @@ void KBugReport::slotConfigureEmail()
 
 void KBugReport::slotSetFrom()
 {
+    kdDebug() << "slotSetFrom\n";
   delete m_process;
   m_process = 0;
   m_configureEmail->setEnabled(true);
   KConfig emailConf( QString::fromLatin1("emaildefaults") );
-  emailConf.setGroup( QString::fromLatin1("UserInfo") );
+  emailConf.setGroup( QString::fromLatin1("PROFILE_Default") );
   QString fromaddr = emailConf.readEntry( QString::fromLatin1("EmailAddress") );
   if (fromaddr.isEmpty()) {
      struct passwd *p;
