@@ -26,7 +26,7 @@ libkdeprint_la_SOURCES = kmfactory.cpp kmjob.cpp kmjobmanager.cpp kmmanager.cpp 
 			 kprintaction.cpp kpfileselectpage.cpp treecombobox.cpp kmfactory.skel kxmlcommand.cpp \
 			 util.cpp printerfilter.cpp marginpreview.cpp marginvaluewidget.cpp marginwidget.cpp \
 			 kpmarginpage.cpp messagewindow.cpp posterpreview.cpp kpposterpage.cpp foomatic2loader.cpp \
-			 fooparser.cpp fooscanner.cpp
+			 fooparser.cpp fooscanner.cpp ppdparser.cpp ppdscanner.cpp ppdloader.cpp
 
 libkdeprint_la_LDFLAGS = $(all_libraries) -version-info 6:0:2 -no-undefined
 libkdeprint_la_LIBADD = $(LIB_KPARTS) $(LIBZ)
@@ -42,7 +42,7 @@ noinst_HEADERS = kmdbentry.h kmfactory.h \
 		 kfilelist.h kpfileselectpage.h treecombobox.h kxmlcommand.h \
 		 util.h driverparse.h printerfilter.h marginpreview.h marginwidget.h \
 		 marginvaluewidget.h kpmarginpage.h messagewindow.h \
-		 posterpreview.h kpposterpage.h foomatic2loader.h
+		 posterpreview.h kpposterpage.h foomatic2loader.h ppdloader.h
 
 include_HEADERS = kprinter.h kprintaction.h
 
@@ -69,7 +69,7 @@ configdir = $(kde_confdir)
 config_DATA = kdeprintrc
 
 # parser and scanner
-parser2:
+fooparser:
 	bison -v -d -p kdeprint_foomatic2 $(srcdir)/fooparser.y -o $(srcdir)/fooparser.cpp
 	flex -o$(srcdir)/fooscanner.cpp -Pkdeprint_foomatic2 $(srcdir)/fooscanner.l
 	echo "#ifndef fooparser_cpp_h" > $(srcdir)/fooparser.cpp.hh
@@ -77,6 +77,15 @@ parser2:
 	cat $(srcdir)/fooparser.cpp.h >> $(srcdir)/fooparser.cpp.hh
 	echo "#endif" >> $(srcdir)/fooparser.cpp.hh
 	mv $(srcdir)/fooparser.cpp.hh $(srcdir)/fooparser.cpp.h
+
+ppdparser:
+	bison -v -d -p kdeprint_ppd $(srcdir)/ppdparser.y -o $(srcdir)/ppdparser.cpp
+	flex -o$(srcdir)/ppdscanner.cpp -Pkdeprint_ppd $(srcdir)/ppdscanner.l
+	echo "#ifndef ppdparser_cpp_h" > $(srcdir)/ppdparser.cpp.hh
+	echo "#define ppdparser_cpp_h" >> $(srcdir)/ppdparser.cpp.hh
+	cat $(srcdir)/ppdparser.cpp.h >> $(srcdir)/ppdparser.cpp.hh
+	echo "#endif" >> $(srcdir)/ppdparser.cpp.hh
+	mv $(srcdir)/ppdparser.cpp.hh $(srcdir)/ppdparser.cpp.h
 
 noinst_DATA = kdeprint
 
