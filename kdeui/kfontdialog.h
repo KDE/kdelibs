@@ -1,9 +1,9 @@
 /*
     $Id$
-    
-    Requires the Qt widget libraries, available at no cost at 
+
+    Requires the Qt widget libraries, available at no cost at
     http://www.troll.no
-    
+
     Copyright (C) 1997 Bernd Johannes Wuebben <wuebben@kde.org>
     Copyright (c) 1999 Preston Brown <pbrown@kde.org>
     Copyright (c) 1999 Mario Weilguni <mweilguni@kde.org>
@@ -51,7 +51,7 @@ class KListBox;
 class KFontChooser : public QWidget
 {
   Q_OBJECT
-  
+
 public:
   /**
    *  @li @p FamilyList - Identifies the family (leftmost) list.
@@ -71,22 +71,22 @@ public:
    *        no list is formatted, the internal KDE font list is used.
    *        If that has not been created, X is queried, and all fonts
    *        available on the system are displayed.
-   * @param visibleListSize The minimum number of visible entries in the 
+   * @param visibleListSize The minimum number of visible entries in the
    *        fontlists.
    */
-  KFontChooser(QWidget *parent = 0L, const char *name = 0L, 
+  KFontChooser(QWidget *parent = 0L, const char *name = 0L,
 	       bool onlyFixed = false,
 	       const QStringList &fontList = QStringList(),
 	       bool makeFrame = true, int visibleListSize=8 );
 
   /**
-   * Enable or disable a font column in the chooser. 
+   * Enable or disable a font column in the chooser.
    *
-   * Use this 
-   * function if your application does not need or supports all font 
+   * Use this
+   * function if your application does not need or supports all font
    * properties.
    *
-   * @param font Specifie the columns. An or'ed combination of 
+   * @param font Specifie the columns. An or'ed combination of
    *        @p FamilyList, @p StyleList and @p SizeList is possible.
    * @param state If @p false the columns are disabled.
    */
@@ -94,19 +94,29 @@ public:
 
   /**
    * Set the currently selected font in the chooser.
-   * 
+   *
    * @param font The font to select.
    * @param onlyFixed Readjust the font list to display only fixed
    *        width fonts if @p true, or vice-versa.
    */
   void setFont( const QFont &font, bool onlyFixed = false );
 
-  
+
   /**
    * @return The currently selected font in the chooser.
    */
   QFont font() const { return selFont; }
-  
+
+  /**
+   * Set the currently selected charset in the chooser.
+   */
+  void setCharset( const QString & charset );
+
+  /**
+   * @return The currently selected charset in the dialog.
+   */
+  QString charset() const;
+
   /**
    * @return The current text in the sample text input area.
    */
@@ -115,7 +125,7 @@ public:
   /**
    * Set the sample text.
    *
-   * Normally you should not change this 
+   * Normally you should not change this
    * text, but it can be better to do this if the default text is
    * too large for the edit area when using the default font of your
    * application.
@@ -128,7 +138,7 @@ public:
   }
 
   /**
-   * Convert a @ref QFont into the corresponding X Logical Font 
+   * Convert a @ref QFont into the corresponding X Logical Font
    * Description (XLFD).
    *
    * @param theFont The font to convert.
@@ -139,7 +149,7 @@ public:
 
   /**
    * Create a list of font strings that match @p pattern.
-   * 
+   *
    * @param list The list is returned here.
    * @param pattern The font pattern.
    */
@@ -147,7 +157,7 @@ public:
 
   /**
    * Create a list of font strings.
-   * 
+   *
    * @param list The list is returned here.
    * @param fixed Flag, when true only fixed fonts are returned.
    */
@@ -179,11 +189,11 @@ private:
   static void addFont( QStringList &list, const char *xfont );
 
   void setupDisplay();
-    
-  // pointer to an optinally supplied list of fonts to 
+
+  // pointer to an optinally supplied list of fonts to
   // inserted into the fontdialog font-family combo-box
-  QStringList  fontList; 
-  
+  QStringList  fontList;
+
   QGroupBox    *xlfdBox;
 
   QLineEdit    *sampleEdit;
@@ -196,7 +206,7 @@ private:
   KListBox     *styleListBox;
   KListBox     *sizeListBox;
   QComboBox    *charsetsCombo;
-  
+
   QFont        selFont;
 
   bool usingFixed;
@@ -254,19 +264,30 @@ public:
 
   /**
    * Sets the currently selected font in the dialog.
-   * 
+   *
    * @param font The font to select.
    * @param onlyFixed readjust the font list to display only fixed
    *        width fonts if true, or vice-versa
    */
   void setFont( const QFont &font, bool onlyFixed = false )
     { chooser->setFont(font, onlyFixed); }
-  
+
   /**
    * @return The currently selected font in the dialog.
    */
   QFont font() const { return chooser->font(); }
-  
+
+  /**
+   * Sets the currently selected charset in the dialog.
+   */
+  void setCharset( const QString & charset )
+    { chooser->setCharset( charset ); }
+
+  /**
+   * @return The currently selected charset in the dialog.
+   */
+  QString charset() const { return chooser->charset(); }
+
   /**
    * Creates a modal font dialog, lets the user choose a font,
    * and returns when the dialog is closed.
@@ -280,9 +301,9 @@ public:
    *
    * @returns @ref QDialog::result().
    */
-  static int getFont( QFont &theFont, bool onlyFixed = false, 
+  static int getFont( QFont &theFont, bool onlyFixed = false,
 		      QWidget *parent = 0L, bool makeFrame = true );
-  
+
   /**
    * When you are not only interested in the font selected, but also
    * in the example string typed in, you can call this method.
@@ -297,12 +318,12 @@ public:
    * @return The result of the dialog.
    */
   static int getFontAndText( QFont &theFont, QString &theString,
-			     bool onlyFixed = false, QWidget *parent = 0L, 
+			     bool onlyFixed = false, QWidget *parent = 0L,
 			     bool makeFrame = true );
 
 signals:
   /**
-   * Emitted whenever the currently selected font changes. 
+   * Emitted whenever the currently selected font changes.
    * Connect to this to monitor the font as it is selected if you are
    * not running modal.
    */

@@ -48,6 +48,7 @@
 #include <klistbox.h>
 #include <klocale.h>
 #include <kstddirs.h>
+#include <kdebug.h>
 
 #include <X11/Xlib.h>
 
@@ -266,19 +267,33 @@ void KFontChooser::setFont( const QFont& aFont, bool onlyFixed )
   displaySample(selFont);
 }
 
+void KFontChooser::setCharset( const QString & charset )
+{
+    for ( int i = 0; i < charsetsCombo->count(); i++ ) {
+        if ( charsetsCombo->text( i ) == charset ) {
+            charsetsCombo->setCurrentItem( i );
+            return;
+        }
+    }
+}
 
 void KFontChooser::charset_chosen_slot(const QString& chset)
 {
   KCharsets *charsets = KGlobal::charsets();
-  if (chset == QString::fromLatin1("default")) {
+  if (chset == i18n("default")) {
     charsets->setQFont(selFont, KGlobal::locale()->charset());
   } else {
+    kdDebug() << "KFontChooser::charset_chosen_slot chset=" << chset << endl;
     charsets->setQFont(selFont, chset);
   }
 
   emit fontSelected(selFont);
 }
 
+QString KFontChooser::charset() const
+{
+  return charsetsCombo->currentText();
+}
 
 void KFontChooser::fillCharsetsCombo()
 {
@@ -290,7 +305,8 @@ void KFontChooser::fillCharsetsCombo()
   charsetsCombo->insertItem( i18n("default") );
   for ( QStringList::Iterator it = sets.begin(); it != sets.end(); ++it )
       charsetsCombo->insertItem( *it );
-  charsetsCombo->insertItem( i18n("any") );
+  // This doesn't make any sense, according to everyone I asked (DF)
+  // charsetsCombo->insertItem( i18n("any") );
 
   QString charset=charsets->xCharsetName(selFont.charSet());
   for(i = 0; i < charsetsCombo->count(); i++){
@@ -530,6 +546,12 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.55  2000/09/22 12:37:26  faure
+* Fixed another charset bug: KFontDialog didn't find the charset in
+* the list.
+* -  QString charset=charsets->name(selFont);
+* +  QString charset=charsets->xCharsetName(selFont.charSet());
+*
 * Revision 1.54  2000/06/16 11:40:38  coolo
 * removing the #ifdef HAVE_CONFIG_H stuff. This isn't logical anymore now we
 * define even prototypes within config.h. someone I know tried kdevelop to setup
