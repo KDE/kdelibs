@@ -127,3 +127,5 @@ KServiceFactory::createService(int offset)
 }
 
 KServiceFactory *KServiceFactory::self = 0;
+
+#include "kservicefactory.moc"

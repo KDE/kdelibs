@@ -57,7 +57,7 @@ KServiceTypeFactory::createEntry(const QString &file)
   if ( mime.isEmpty() && service.isEmpty() )
   {
     QString tmp = i18n( "The service/mime type config file\n%1\n"
-			"does not contain a ServiceType=...\nor MimeType=... entry").arg( _file );
+			"does not contain a ServiceType=...\nor MimeType=... entry").arg( file );
     KMessageBox::error( 0L, tmp);
     return 0;
   }
@@ -153,3 +153,5 @@ KServiceTypeFactory::createServiceType(int offset)
 }
 
 KServiceTypeFactory *KServiceTypeFactory::self = 0;
+
+#include "kservicetypefactory.moc"

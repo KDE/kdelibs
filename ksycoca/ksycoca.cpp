@@ -135,3 +135,5 @@ bool KSycoca::isBuilding()
 }
 
 KSycoca * KSycoca::self = 0;
+
+#include "ksycoca.moc"
