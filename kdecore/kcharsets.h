@@ -113,6 +113,8 @@ public:
          */
         QStringList availableEncodingNames();
 
+    QString languageForEncoding( const QString &encoding );
+    
     /**
      * @returns a QFont, which can print the character given, and is closest
      * to the font given. if no mathing font could be found, the returned font

@@ -36,11 +36,7 @@
 
 template class QList<QFont::CharSet>;
 
-#if QT_VERSION > 220
 #define CHARSETS_COUNT 30
-#else
-#define CHARSETS_COUNT 29
-#endif
 
 static const char * const charsetsStr[CHARSETS_COUNT] = {
     "unicode",
@@ -71,9 +67,7 @@ static const char * const charsetsStr[CHARSETS_COUNT] = {
     "utf-8",
     "utf-16",
     "iso-8859-11",
-#if QT_VERSION > 220
     "koi8u",
-#endif
     "Any"
 };
 
@@ -108,9 +102,7 @@ static const char * const xNames[CHARSETS_COUNT] = {
     "utf8",
     "utf16",
     "tis620-*",
-#if QT_VERSION > 220
     "koi8-u",
-#endif
     ""  // this will always return true...
         // adjust xNameToId if you remove this
 };
@@ -144,12 +136,28 @@ static const QFont::CharSet charsetsIds[CHARSETS_COUNT] = {
     QFont::Unicode,
     QFont::Unicode,
     QFont::ISO_8859_11,
-#if QT_VERSION > 220
     QFont::KOI8U,
-#endif
     QFont::AnyCharSet
 };
 
+static const char * const languages[] = {
+    I18N_NOOP( "other" ),
+	I18N_NOOP( "Arabic" ),
+	I18N_NOOP( "Baltic" ),
+	I18N_NOOP( "Central European" ),
+	I18N_NOOP( "Chinese Simplified" ),
+	I18N_NOOP( "Chinese Traditional" ),
+	I18N_NOOP( "Cyrillic" ),
+	I18N_NOOP( "Greek" ),
+	I18N_NOOP( "Hebrew" ),
+	I18N_NOOP( "Japanese" ),
+	I18N_NOOP( "Korean" ),
+	I18N_NOOP( "Thai" ),
+	I18N_NOOP( "Turkish" ),
+	I18N_NOOP( "Western European" ),
+	I18N_NOOP( "Unicode" )
+};
+	
 
 class KCharsetsPrivate
 {
@@ -353,6 +361,14 @@ QStringList KCharsets::availableEncodingNames()
     return available;
 }
 
+QString KCharsets::languageForEncoding( const QString &encoding )
+{
+    KConfig conf( "charsets", true );
+    conf.setGroup("LanguageForEncoding");
+    
+    int lang = conf.readNumEntry(encoding, 0 );
+    return i18n( languages[lang] );
+}
 
 QFont KCharsets::fontForChar( const QChar &c, const QFont &_f ) const
 {
