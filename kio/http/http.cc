@@ -23,6 +23,9 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/wait.h>
+#ifdef HAVE_SYS_SELECT_H
+#include <sys/select.h>		// Needed on some systems.
+#endif
 
 #include <assert.h>
 #include <signal.h>
@@ -974,14 +977,26 @@ bool HTTPProtocol::readHeader()
     else if (strncasecmp(buffer, "Pragma: no-cache", 16) == 0) {
       m_bCachedWrite = false; // Don't put in cache
     }
-    else if (strncasecmp(buffer, "Cache-Control:", 14) == 0) {
-      const char *cacheControl = trimLead( buffer+14);
-      if (strncasecmp(cacheControl, "no-cache", 8) == 0)
-         m_bCachedWrite = false; // Don't put in cache
-      else if (strncasecmp(cacheControl, "no-store", 8) == 0)
-         m_bCachedWrite = false; // Don't put in cache
+    else if (strncasecmp(buffer, "Expires:", 8) == 0) {
+      const char *expire = trimLead( buffer+8);
+//WABA
+ kdDebug(7103) << "Expires =!" << expire << "!" << endl;
     }
-		
+    else if (strncasecmp(buffer, "Cache-Control:", 14) == 0) {
+      QStringList cacheControls = QStringList::split(',', 
+                                     QString::fromLatin1(trimLead(buffer+14)));
+      for(QStringList::ConstIterator it = cacheControls.begin();
+          it != cacheControls.end();
+          it++)
+      {
+         QString cacheControl = (*it).stripWhiteSpace();
+ kdDebug(7103) << "Cache-Control =!" << cacheControl << "!" << endl;
+         if (strncasecmp(cacheControl.ascii(), "no-cache", 8) == 0)
+            m_bCachedWrite = false; // Don't put in cache
+         else if (strncasecmp(cacheControl.ascii(), "no-store", 8) == 0)
+            m_bCachedWrite = false; // Don't put in cache
+      }
+    }
     // oh no.. i think we're about to get a page not found
     else if (strncasecmp(buffer, "HTTP/1.0 ", 9) == 0) {
       m_HTTPrev = HTTP_10;
@@ -1327,7 +1342,6 @@ void HTTPProtocol::http_close()
      if (m_bCachedWrite)
      {
         QString filename = m_state.cef + ".new";
-        kdDebug(7103) << "deleting cache entry: " << filename << endl;
         unlink( filename.ascii());
         return;
      }
@@ -2197,12 +2211,13 @@ HTTPProtocol::closeCacheEntry()
    {
       if (::rename( filename.ascii(), m_state.cef.ascii()) == 0)
       {
-         kdWarning(7103) << "closeCacheEntry: cache written correctly! (" << m_state.cef << ")" << endl;
          return; // Success
       }
-      kdWarning(7103) << "closeCacheEntry: error renaming cache entry." << endl;
+      kdWarning(7103) << "closeCacheEntry: error renaming cache entry. (" 
+                   << filename << " -> " << m_state.cef << ")" << endl;
    }
-   kdWarning(7103) << "closeCacheEntry: error closing cache entry." << endl;
+   kdWarning(7103) << "closeCacheEntry: error closing cache entry. (" 
+                   << filename<< ")" << endl;
 }
 
 void
