@@ -1390,30 +1390,44 @@ void KeramikStyle::drawControl( ControlElement element,
 				if (button->isToggleButton() && button->isOn())
 					state = QIconSet::On;
 
-				QPixmap pixmap = button->iconSet()->pixmap( QIconSet::Small, mode, state );
+				QPixmap icon = button->iconSet()->pixmap( QIconSet::Small, mode, state );
 
-				if (button->text().isEmpty() && !button->pixmap())
-					p->drawPixmap( x + w/2 - pixmap.width()/2, y + h / 2 - pixmap.height() / 2,
-									pixmap );
+				if (!button->text().isEmpty())
+				{
+					//Center text + icon w/margin in between..
+					
+					//Calculate length of both.
+					int length = icon.width() + 4 + p->fontMetrics().size(ShowPrefix, button->text()).width();
+					
+					//Calculate offset.
+					int offset = (w - length)/2;
+					
+					//draw icon
+					p->drawPixmap( x + offset, y + h / 2 - icon.height() / 2, icon );
+					
+					//new bounding rect for the text
+					x += offset + icon.width() + 4;
+					w =  length - icon.width() - 4;
+				}
 				else
-					p->drawPixmap( x + 4, y + h / 2 - pixmap.height() / 2, pixmap );
+				{
+					//Icon only. Center it. 
+					if (!button->pixmap())
+						p->drawPixmap( x + w/2 - icon.width()/2, y + h / 2 - icon.height() / 2,
+										icon );
+					else  //icon + pixmap. Ugh. 
+						p->drawPixmap( x + button->isDefault() ? 8 : 4 , y + h / 2 - icon.height() / 2, icon );
+				}
 
 				if (cornArrow) //Draw over the icon
 					drawPrimitive( PE_ArrowDown, p, visualRect( QRect(x + w - 6, x + h - 6, 7, 7), r ),
 							   cg, flags, opt );
-
-
-				int  pw = pixmap.width();
-				x += pw + 4;
-				w -= pw + 4;
 			}
 
 			// Make the label indicate if the button is a default button or not
 			drawItem( p, QRect(x, y, w, h), AlignCenter | ShowPrefix, button->colorGroup(),
 						button->isEnabled(), button->pixmap(), button->text(), -1,
 						&button->colorGroup().buttonText() );
-
-
 
 			if ( flags & Style_HasFocus )
 				drawPrimitive( PE_FocusRect, p,
