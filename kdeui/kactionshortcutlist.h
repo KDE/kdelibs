@@ -4,7 +4,7 @@
 #include <kshortcutlist.h>
 
 class KActionCollection;
-class KActionPtrList;
+typedef QValueList<KAction *> KActionPtrList;
 
 //---------------------------------------------------------------------
 // class KActionShortcutList
