@@ -166,7 +166,9 @@ void ScriptInterpreter::forgetDOMObject( void* objectHandle )
 void ScriptInterpreter::mark()
 {
   Interpreter::mark();
+#ifdef KJS_VERBOSE
   kdDebug(6070) << "ScriptInterpreter::mark marking " << m_domObjects.count() << " DOM objects" << endl;
+#endif
   QPtrDictIterator<DOMObject> it( m_domObjects );
   for( ; it.current(); ++it )
     it.current()->mark();
