@@ -1,4 +1,4 @@
-SUBDIRS = ktexteditor kscript kregexpeditor kmediaplayer kio terminal khexedit kimproxy
+SUBDIRS = ktexteditor kscript kregexpeditor kmediaplayer kio terminal khexedit kimproxy kspeech
 
 DOXYGEN_REFERENCES = kdecore kdefx kdeui kparts dcop
 DOXYGEN_EXCLUDE = kscript/sample
