@@ -1092,7 +1092,9 @@ void RenderSelect::slotSelected(int index)
         }
     }
 
+    ref();
     element()->onChange();
+    deref();
 }
 
 
@@ -1110,9 +1112,10 @@ void RenderSelect::slotSelectionChanged()
             static_cast<HTMLOptionElementImpl*>( listItems[i] )
                 ->m_selected = static_cast<KListBox*>( m_widget )->isSelected( i );
 
+    ref();
     element()->onChange();
+    deref();
 }
-
 
 void RenderSelect::setOptionsChanged(bool _optionsChanged)
 {
