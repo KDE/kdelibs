@@ -17,6 +17,7 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
+#include <kmimetype.h>
 #include <klibloader.h>
 #include <ktrader.h>
 
@@ -37,6 +38,7 @@ void KURIFilterPlugin::setFilteredURI( KURIFilterData& data, const KURL& uri ) c
     {
         data.m_pURI = uri;
         data.m_bFiltered = true;
+        data.m_bChanged = true;
     }
 }
 
@@ -45,7 +47,10 @@ KURIFilterData::KURIFilterData( const KURIFilterData& data )
     m_iType = data.m_iType;
     m_pURI = data.m_pURI;
     m_strErrMsg = data.m_strErrMsg;
+    m_strIconName = data.m_strIconName;
     m_bFiltered = data.m_bFiltered;
+    m_bChanged = data.m_bChanged;
+    
 }
 
 void KURIFilterData::init( const KURL& url )
@@ -53,7 +58,58 @@ void KURIFilterData::init( const KURL& url )
     m_iType = KURIFilterData::UNKNOWN;
     m_pURI = url;
     m_strErrMsg = QString::null;
+    m_strIconName = QString::null;    
     m_bFiltered = false;
+    m_bChanged = true;
+}
+
+QString KURIFilterData::iconName()
+{
+    if( m_bChanged )
+    {      
+        switch ( m_iType )
+        {
+    	    case KURIFilterData::LOCAL_FILE:
+        	case KURIFilterData::LOCAL_DIR:
+        	case KURIFilterData::NET_PROTOCOL:
+        	{
+	            KMimeType::Ptr mimetype = KMimeType::findByURL( m_pURI );
+        	    if (mimetype)
+            		m_strIconName = mimetype->icon( m_pURI, false );
+                break;
+        	}
+        	case KURIFilterData::EXECUTABLE:
+        	{
+	            KService::Ptr service = KService::serviceByDesktopName( m_pURI.url() );
+        	    if (service)
+            		m_strIconName = service->icon();
+        	    else 
+            		m_strIconName = QString::fromLatin1("exec");
+                break;
+            }
+            case KURIFilterData::HELP:
+            {
+                m_strIconName = QString::fromLatin1("khelpcenter");
+        	    break;
+            }
+            case KURIFilterData::SHELL:
+            {
+                m_strIconName = QString::fromLatin1("konsole");
+        	    break;
+            }            
+            case KURIFilterData::ERROR:
+            case KURIFilterData::BLOCKED:
+            {
+                m_strIconName = QString::fromLatin1("error");
+                break;
+            }
+            default:
+                m_strIconName = QString::null;
+                break;
+        }
+        m_bChanged = false;   
+    }
+    return m_strIconName;
 }
 
 //********************************************  KURIFilter **********************************************

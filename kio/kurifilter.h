@@ -115,7 +115,7 @@ public:
      *
      * @param data the uri filter data to be copied.
      */
-    KURIFilterData( const KURIFilterData& );
+    KURIFilterData( const KURIFilterData& /*data*/);
 
     /**
      * Destructor.
@@ -165,12 +165,46 @@ public:
      * if the given URL was not filtered.
      */
     URITypes uriType() const { return m_iType; }
-
+    
+    /**
+     * Sets the URL to be filtered.
+     *
+     * Use this function to set the string to be
+     * filtered when you construct an empty filter
+     * object.
+     *
+     * @param url the string to be filtered.     
+     */    
+    void setData( const QString& url ) { init( url ); }
+    
+    /**
+     * Same as above except the argument is a URL.
+     *
+     * Use this function to set the string to be
+     * filtered when you construct an empty filter
+     * object.
+     *
+     * @param url the URL to be filtered.     
+     */        
+    void setData( const KURL& url ) { init( url ); }
+    
+    /**
+     * Returns the name of the icon that matches
+     * the current filtered URL.
+     *
+     * NOTE that this function will return a NULL
+     * string by default and when no associated icon
+     * is found.
+     *
+     * @return the name of the icon associated with the resource
+     */    
+    QString iconName();
+    
     /**
      * Overloaded assigenment operator.
-
-     * This function allows you to easily assign a KURL to
-     * a KURIFilterData object.
+     *
+     * This function allows you to easily assign a KURL
+     * to a KURIFilterData object.
      *
      * @return an instance of a KURIFilterData object.
      */
@@ -195,10 +229,14 @@ protected:
 
 private:
     bool m_bFiltered;
-    URITypes m_iType;
-    KURL m_pURI;
+    bool m_bChanged;
+    
     QString m_strErrMsg;
-    KURIFilterPrivate *d; // BCI
+    QString m_strIconName;
+    
+    KURL m_pURI; 
+    URITypes m_iType;
+    KURIFilterPrivate *d; // BCI    
 };
 
 
@@ -287,12 +325,17 @@ protected:
     /**
      * Sets the error message in @p data to @p errormsg.
      */
-    void setErrorMsg ( KURIFilterData& data, const QString& errmsg ) const { data.m_strErrMsg = errmsg; }
+    void setErrorMsg ( KURIFilterData& data, const QString& errmsg ) const {
+        data.m_strErrMsg = errmsg;
+    }
 
     /**
      * Sets the URI type in @p data to @p type.
      */
-    void setURIType ( KURIFilterData& data, KURIFilterData::URITypes type) const { data.m_iType = type; }
+    void setURIType ( KURIFilterData& data, KURIFilterData::URITypes type) const {
+        data.m_iType = type;
+        data.m_bChanged = true;
+    }
 
     QString m_strName;
     double m_dblPriority;
@@ -328,45 +371,47 @@ private:
  * and returns the filtered version if successful. The filters
  * are implemented using plugins to provide easy extensibility
  * of the filtering mechanism.  Any new filters can be added in
- * the future without having to modify this manager by simply
- * inheriting from @ref KURIFilterPlugin.
+ * the future without modifying this manager.  New plugins can
+ * be simply added at anytime by inheriting from @ref KURIFilterPlugin.
  *
- * Use of this plugin is simple and straight.  Since KURIFilter
- * is a Singleton object, you obtain an instance of it by doing
- * <pre>KURIFilter::self()</pre>.  Then you can use any of the
- * public member functions to preform the filtering.  
+ * Use of this plugin is simple and straight forward.  Since
+ * KURIFilter is a Singleton object, you obtain an instance of
+ * it by doing @p KURIFilter::self().  Then you can use any of
+ * the public member functions to preform the filtering.  
  * 
  * @sect Example
  *
  * To simply filter a given string
  *
  * <pre>
- * bool filtered = KURIFilter::self()->filterURI( "kde.org" ); // should return "http://kde.org"
+ * // Should return "http://kde.org"
+ * bool filtered = KURIFilter::self()->filterURI( "kde.org" );
  * </pre>
  * 
  * You can alternatively use a KURL
  * 
  * <pre>
  * KURL url = "kde.org";
- * bool filtered = KURIFilter::self()->filterURI( url ); // should also return "http://kde.org"
+ * // Should also return "http://kde.org"
+ * bool filtered = KURIFilter::self()->filterURI( url );
  * </pre>
  *
- * If you have a constant string or url simply invoke the corresponding
- * function that return the filtered string or URL instead of a boolean
- * flag:
+ * If you have a constant string or url simply invoking
+ * the corresponding function that return the filtered
+ * string or URL instead of a boolean flag:
  *
  * <pre>
  * QString u = KURIFilter::self()->filteredURI( "kde.org" );
  * </pre>
  *
- * With any of the filter functions you can specify which specific
- * filter(s) are supposed to be applied by supplying the a single
- * or a list of filter name(s) as a second argument.  By defualt
- * all filters that are found are loded when the KURIFilter object
- * is created.  The names of the filters are those used in the
- * .desktop files of the specific filters.  This information can alsp
- * be easily obtained from the control panel. Here are a couple of
- * examples:
+ * With any of the filter functions you can specify which
+ * specific filter(s) are supposed to be applied by supplying
+ * the a single or a list of filter name(s) as a second
+ * argument.  By defualt all filters that are found are loaded
+ * when the KURIFilter object is created.  These names are taken
+ * from the enteries in the desktop files.  This information can
+ * also be easily obtained from the control panel. Here are a
+ * couple of examples:
  *
  * <pre>
  * QString text = "kde.org";
@@ -377,11 +422,12 @@ private:
  * bool filtered = KURIFilter::self()->filterURI( text, list );
  * </pre>
  *
- * KURIFilter also allows richer data exchange through @p KURIFilterData.
- * Using this message object you can find out more information about the
- * URL you want to filter.  See @ref KURIFilterData for examples and details.
+ * KURIFilter also allows richer data exchange through a simple
+ * object called @p KURIFilterData.  Using this message object
+ * you can find out more information about the URL you want to
+ * filter.  See @ref KURIFilterData for examples and details.
  *
- * @short Filters a given URL to a proper and valid format.
+ * @short Filters, whenever possible, a given URL into its proper format.
  */
 
 class KURIFilter
