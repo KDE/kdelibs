@@ -348,20 +348,20 @@ void KLocale::initFormat()
   numentry.setGroup("KCM Locale");
 
   _decimalSymbol = config->readEntry("DecimalSymbol");
-  if (_decimalSymbol.isEmpty())
+  if (_decimalSymbol.isNull())
     _decimalSymbol = numentry.readEntry("DecimalSymbol", ".");
 
   _thousandsSeparator = config->readEntry("ThousandsSeparator");
-  if (_thousandsSeparator.isEmpty())
+  if (_thousandsSeparator.isNull())
     _thousandsSeparator = numentry.readEntry("ThousandsSeparator", ",");
 
   _positiveSign = config->readEntry("PositiveSign");
-  if (_positiveSign.isEmpty())
+  if (_positiveSign.isNull())
     _positiveSign = numentry.readEntry("PositiveSign");
 
   config->readEntry("NegativeSign");
   _negativeSign = config->readEntry("NegativeSign");
-  if (_negativeSign.isEmpty())
+  if (_negativeSign.isNull())
     _negativeSign = numentry.readEntry("NegativeSign", "-");
 
   // Monetary
@@ -369,15 +369,15 @@ void KLocale::initFormat()
   monentry.setGroup("KCM Locale");
 
   _currencySymbol = config->readEntry("CurrencySymbol");
-  if (_currencySymbol.isEmpty())
+  if (_currencySymbol.isNull())
     _currencySymbol = monentry.readEntry("CurrencySymbol", "$");
 
   _monetaryDecimalSymbol = config->readEntry("MonetaryDecimalSymbol");
-  if (_monetaryDecimalSymbol.isEmpty())
+  if (_monetaryDecimalSymbol.isNull())
     _monetaryDecimalSymbol = monentry.readEntry("MonetaryDecimalSymbol", ".");
 
   _monetaryThousandsSeparator = config->readEntry("MonetaryThousendSeparator");
-  if (_monetaryThousandsSeparator.isEmpty())
+  if (_monetaryThousandsSeparator.isNull())
     _monetaryThousandsSeparator = monentry.readEntry("MonetaryThousandsSeparator", ",");
 
   _fracDigits = config->readNumEntry("FractDigits", -1);
@@ -403,15 +403,15 @@ void KLocale::initFormat()
   timentry.setGroup("KCM Locale");
 
   _timefmt = config->readEntry("TimeFormat");
-  if (_timefmt.isEmpty())
+  if (_timefmt.isNull())
     _timefmt = timentry.readEntry("TimeFormat", "%I:%M:%S %p");
 
   _datefmt = config->readEntry("DateFormat");
-  if (_datefmt.isEmpty())
+  if (_datefmt.isNull())
     _datefmt = timentry.readEntry("DateFormat", "%A %d %B %Y");
 
   _datefmtshort = config->readEntry("DateFormatShort");
-  if (_datefmtshort.isEmpty())
+  if (_datefmtshort.isNull())
     _datefmtshort = timentry.readEntry("DateFormatShort", "%m/%d/%y");
 }
 
