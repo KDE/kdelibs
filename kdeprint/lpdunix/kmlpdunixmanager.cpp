@@ -29,21 +29,50 @@
 #include <qtextstream.h>
 #include <klocale.h>
 
+/*****************
+ * Utility class *
+ *****************/
+class KTextBuffer
+{
+public:
+	KTextBuffer(QIODevice *dev) : m_stream(dev) {}
+	bool eof() const { return (m_stream.eof() && m_linebuf.isEmpty()); }
+	QString readLine();
+	void unreadLine(const QString& l) { m_linebuf = l; }
+private:
+	QTextStream	m_stream;
+	QString		m_linebuf;
+};
+
+QString KTextBuffer::readLine()
+{
+	QString	line;
+	if (!m_linebuf.isEmpty())
+	{
+		line = m_linebuf;
+		m_linebuf = QString::null;
+	}
+	else
+		line = m_stream.readLine();
+	return line;
+}
+
 /*****************************
  * Various parsing functions *
  *****************************/
 
-// Extract a line from a QTextStream:
+// Extract a line from a KTextBuffer:
 //	'#' -> comments
 //	'\' -> line continue
 //	':' or '|' -> line continue (LPRng)
 //
 // New entry is detected by a line which have first character different from
 // '#', '|', ':'. The line is then put back in the IODevice.
-QString readLine(QTextStream& t)
+QString readLine(KTextBuffer& t)
 {
 	QString	line, buffer;
 	bool	lineContinue(false);
+
 	while (!t.eof())
 	{
 		buffer = t.readLine().stripWhiteSpace();
@@ -63,9 +92,7 @@ QString readLine(QTextStream& t)
 		}
 		else
 		{
-			QIODevice	*iodev = t.device();
-			for (int i=buffer.length()-1;i>=0;i--)
-				iodev->ungetch(buffer[i].unicode());
+			t.unreadLine(buffer);
 			break;
 		}
 	}
@@ -73,7 +100,7 @@ QString readLine(QTextStream& t)
 }
 
 // extact an entry (printcap-like)
-QMap<QString,QString> readEntry(QTextStream& t)
+QMap<QString,QString> readEntry(KTextBuffer& t)
 {
 	QString	line = readLine(t);
 	QMap<QString,QString>	entry;
@@ -115,7 +142,7 @@ void KMLpdUnixManager::parseEtcPrintcap()
 	QFile	f("/etc/printcap");
 	if (f.exists() && f.open(IO_ReadOnly))
 	{
-		QTextStream	t(&f);
+		KTextBuffer	t(&f);
 		QMap<QString,QString>	entry;
 
 		while (!t.eof())
@@ -139,7 +166,7 @@ void KMLpdUnixManager::parseEtcPrintersConf()
 	QFile	f("/etc/printers.conf");
 	if (f.exists() && f.open(IO_ReadOnly))
 	{
-		QTextStream	t(&f);
+		KTextBuffer	t(&f);
 		QMap<QString,QString>	entry;
 		QString		default_printer;
 
@@ -189,7 +216,7 @@ void KMLpdUnixManager::parseEtcLpPrinters()
 		QFile	f(it.current()->absFilePath() + "/configuration");
 		if (f.exists() && f.open(IO_ReadOnly))
 		{
-			QTextStream	t(&f);
+			KTextBuffer	t(&f);
 			QString		line, remote;
 			while (!t.eof())
 			{
@@ -250,7 +277,7 @@ void KMLpdUnixManager::parseSpoolInterface()
 		QFile	f(it.current()->absFilePath());
 		if (f.exists() && f.open(IO_ReadOnly))
 		{
-			QTextStream	t(&f);
+			KTextBuffer	t(&f);
 			QString		line, remote;
 
 			while (!t.eof())
