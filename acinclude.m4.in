@@ -1559,11 +1559,17 @@ AC_DEFUN(AC_PATH_PAM,
  pam_libraries=NONE
  
  AC_MSG_CHECKING(for PAM)
- AC_ARG_WITH(pam, [  --without-pam           disable Pluggable Authentication Modules])
- if test "x$with_pam" = xno; then
-   no_pam=yes
- else
-   if test "x$pam_includes" != xNONE && test "x$pam_libraries" != xNONE; then
+ AC_ARG_WITH(pam, [  --with-pam              disable Pluggable Authentication Modules],
+  [
+    if test "x$withval" = "xyes"; then
+      no_pam=
+    else
+      no_pam=yes
+    fi
+  ], no_pam=yes
+ )
+
+ if test "x$pam_includes" != xNONE && test "x$pam_libraries" != xNONE; then
      no_pam=
    else
  AC_CACHE_VAL(ac_cv_path_pam,
@@ -1576,9 +1582,8 @@ AC_DEFUN(AC_PATH_PAM,
  else
    ac_cv_path_pam="no_pam= ac_pam_includes=$ac_pam_includes ac_pam_libraries=$ac_pam_libraries"
  fi])dnl
-   fi
-   eval "$ac_cv_path_pam"
- fi # with_pam != no
+ fi
+ eval "$ac_cv_path_pam"
  
  if test "$no_pam" = yes; then
    AC_MSG_RESULT(no)
