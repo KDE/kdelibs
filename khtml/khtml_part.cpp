@@ -21,6 +21,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+//#define SPEED_DEBUG
 #include "khtml_part.h"
 
 #include "khtml_factory.h"
@@ -280,7 +281,9 @@ public:
   QString m_baseTarget;
 
   QTimer m_redirectionTimer;
+#ifdef SPEED_DEBUG
   QTime m_parsetime;
+#endif
   int m_delayRedirect;
   QString m_redirectURL;
 
@@ -608,7 +611,9 @@ bool KHTMLPart::openURL( const KURL &url )
   kdDebug( 6050 ) << "KHTMLPart::openURL " << url.url() << endl;
 
   d->m_redirectionTimer.stop();
+#ifdef SPEED_DEBUG
   d->m_parsetime.start();
+#endif
 
   KParts::URLArgs args( d->m_extension->urlArgs() );
 
@@ -1560,8 +1565,9 @@ void KHTMLPart::checkCompleted()
     emit completed();
 
   emit setStatusBarText( i18n("Loading complete") );
-  // ###
+#ifdef SPEED_DEBUG
   kdDebug() << "DONE: " <<d->m_parsetime.elapsed() << endl;
+#endif
 }
 
 const KHTMLSettings *KHTMLPart::settings() const
