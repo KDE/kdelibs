@@ -766,6 +766,53 @@ QString RegressionTest::getPartOutput( OutputType type)
     return dump;
 }
 
+QPixmap RegressionTest::outputPixmap()
+{
+    int ew = m_part->view()->contentsWidth();
+    int eh = m_part->view()->contentsHeight();
+    QPixmap paintBuffer(ew,eh);
+
+    QPainter* tp = new QPainter;
+    tp->begin( &paintBuffer );
+
+    tp->fillRect(0, 0, ew, eh, Qt::white);
+    m_part->paint( tp, QRect( 0, 0, ew, eh ) );
+    tp->end();
+    delete tp;
+
+    return paintBuffer;
+}
+
+bool RegressionTest::pixmapsSame( const QPixmap &lhs, const QPixmap &rhs )
+{
+    if ( lhs.width() != rhs.width() || lhs.height() != rhs.height() ) {
+        kdDebug() << "dimensions different " << lhs.size() << " " << rhs.size() << endl;
+        return false;
+    }
+
+    QImage lhsi = lhs.convertToImage();
+    QImage rhsi = rhs.convertToImage();
+    int bytes = lhsi.bytesPerLine();
+    if ( bytes != rhsi.bytesPerLine() ) {
+        kdDebug() << "different number of bytes per line\n";
+        return false;
+    }
+
+    for ( int i = 0; i < lhs.height(); ++i )
+    {
+        if ( memcmp( lhsi.scanLine( i ), rhsi.scanLine( i ), bytes ) ) {
+            for ( int x = 0; x < rhs.width(); ++x ) {
+                if ( lhsi.pixel ( x, i ) != rhsi.pixel( x, i ) ) {
+                    kdDebug() << "pixel (" << x << ", " << i << ") is different " << QColor( lhsi.pixel ( x, i ) ) << " " << QColor( rhsi.pixel ( x, i ) ) << endl;
+                    return false;
+                }
+            }
+        }
+    }
+    kdDebug() << "pixmaps are the same\n";
+    return true;
+}
+
 void RegressionTest::testStaticFile(const QString & filename)
 {
     qApp->mainWidget()->resize( 800, 600); // restore size
@@ -828,6 +875,7 @@ void RegressionTest::testStaticFile(const QString & filename)
             m_known_failures = AllFailure;
         reportResult( checkOutput(filename+"-render"), QString::null );
         m_known_failures = known_failures;
+        outputPixmap().save(m_baseDir + "/baseline/" + filename + "-dump.png","PNG");
     } else {
         // compare with output file
         if ( m_known_failures & DomFailure)
@@ -837,21 +885,13 @@ void RegressionTest::testStaticFile(const QString & filename)
             m_known_failures = AllFailure;
         reportResult( checkOutput(filename+"-render"), QString::null );
         m_known_failures = known_failures;
-
 #if 0
-        int ew = m_part->view()->contentsWidth();
-        int eh = m_part->view()->contentsHeight();
-        QPixmap paintBuffer(ew,eh);
-
-        QPainter* tp = new QPainter;
-        tp->begin( &paintBuffer );
-
-        tp->fillRect(0, 0, ew, eh, Qt::white);
-        m_part->paint( tp, QRect( 0, 0, ew, eh ) );
-        tp->end();
-        delete tp;
-
-        paintBuffer.save(m_baseDir + "/baseline/" + filename + ".png","PNG");
+        QPixmap baseline;
+        baseline.load( m_baseDir + "/baseline/" + filename + "-dump.png", "PNG");
+        QPixmap output = outputPixmap();
+        if ( !pixmapsSame( baseline, output ) ) {
+            output.save(m_baseDir + "/output/" + filename + "-dump.png","PNG");
+        }
 #endif
     }
 }

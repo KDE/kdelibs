@@ -138,6 +138,10 @@ public:
     bool reportResult( bool passed, const QString & description = QString::null, bool error = false );
     void createMissingDirs(QString path);
 
+
+    QPixmap RegressionTest::outputPixmap();
+    bool pixmapsSame( const QPixmap &lhs, const QPixmap &rhs );
+
     KHTMLPart *m_part;
     QString m_baseDir;
     bool m_genOutput;
