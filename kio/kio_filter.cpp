@@ -28,7 +28,6 @@
 
 KIOFilter::KIOFilter( const char *_cmd , const char **arguments)
 {
-  unsigned int i=0;
   // Indicate an error;
   m_pid = -1;
   send_in = -1;
@@ -37,8 +36,7 @@ KIOFilter::KIOFilter( const char *_cmd , const char **arguments)
   if( !buildPipe( &recv_in, &send_in ) ) return;
   if( !buildPipe( &recv_out, &send_out ) ) return;
 
-  m_pid = vfork();
-  if( m_pid == 0 )
+  if( (m_pid = vfork()) == 0 )
   {
     dup2( recv_in, 0 );	fcntl(0,F_SETFD,0);
     dup2( send_out, 1 ); fcntl(1,F_SETFD,0);
@@ -47,6 +45,7 @@ KIOFilter::KIOFilter( const char *_cmd , const char **arguments)
     close( send_in );
     close( send_out );
 
+    unsigned int i = 0;
     if (arguments) {
       while(arguments[i]) i++;
     }
