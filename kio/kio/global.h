@@ -242,7 +242,8 @@ namespace KIO
   {
       CC_CacheOnly, // Fail request if not in cache
       CC_Cache,     // Use cached entry if available
-      CC_Verify,    // Validate cached entry with remote site
+      CC_Verify,    // Validate cached entry with remote site if expired
+      CC_Refresh,   // Always validate cached entry with remote site
       CC_Reload     // Always fetch from remote site.
   };
 
