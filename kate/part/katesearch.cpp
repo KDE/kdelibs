@@ -643,7 +643,7 @@ KateReplacePrompt::KateReplacePrompt ( QWidget *parent )
                   User3 | User2 | User1 | Close | Ok , Ok, true,
                   i18n("Replace &All"), i18n("Replace && Close"), i18n("&Replace") )
 {
-  setButtonOK( i18n("Find Next") );
+  setButtonOK( i18n("&Find Next") );
   QWidget *page = new QWidget(this);
   setMainWidget(page);
 
