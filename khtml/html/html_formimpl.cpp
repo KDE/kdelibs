@@ -478,30 +478,50 @@ void HTMLFormElementImpl::submit(  )
         }
 
         int savePassword = KMessageBox::Yes;
+        QString key = calculateAutoFillKey(*this);
+        bool doesnotexist = KWallet::Wallet::keyDoesNotExist(KWallet::Wallet::NetworkWallet(),
+                                                             KWallet::Wallet::FormDataFolder(), key);
 
-        if (havePassword && !haveTextarea &&
-            (savePassword=KMessageBox::questionYesNoCancel(
-                0,
-                i18n("Konqueror has the ability to store the password "
-                     "in an encrypted wallet. When the wallet is unlocked, it "
-                     "can then automatically restore the login information "
-                     "next time you visit this site. Do you want to store "
-                     "the information now?"),
-                i18n("Save Passwords"),
-                KStdGuiItem::yes(),
-                KGuiItem(i18n("Never for This Site")))) == KMessageBox::Yes)  {
+        if (havePassword && !haveTextarea ) {
             KWallet::Wallet* w = view->part()->wallet();
             if (w)  {
-                QString key = calculateAutoFillKey(*this);
-                // ensure that we have the user / password inside the url
-                // otherwise we might have a potential security problem
-                // by saving passwords under wrong lookup key.
-
                 w->setFolder(KWallet::Wallet::FormDataFolder());
-                w->writeMap(key, walletMap);
-            }
-        } else if (savePassword == KMessageBox::No) {
-            view->addNonPasswordStorableSite(formUrl.host());
+                bool login_changed = false;
+                if ( !doesnotexist ) {
+                    // check if the login information changed from what
+                    // we had so far.
+                    QMap<QString, QString> map;
+                    if (!w->readMap(key, map)) {
+                        for ( QMapIterator<QString, QString> it( map.begin() ); it != map.end(); ++it )
+                            if ( map[it.key()] != walletMap[it.key()] ) {
+                                login_changed = true;
+                                break;
+                            }
+                    }
+                    else
+                        login_changed = true;
+                }
+
+                if ( ( doesnotexist || login_changed ) &&
+                     (savePassword=KMessageBox::questionYesNoCancel(
+                         0,
+                         i18n("Konqueror has the ability to store the password "
+                              "in an encrypted wallet. When the wallet is unlocked, it "
+                              "can then automatically restore the login information "
+                              "next time you visit this site. Do you want to store "
+                              "the information now?"),
+                         i18n("Save Login Information"),
+                         KStdGuiItem::yes(),
+                         KGuiItem(i18n("Never for This Site")))) == KMessageBox::Yes)  {
+                    // ensure that we have the user / password inside the url
+                    // otherwise we might have a potential security problem
+                    // by saving passwords under wrong lookup key.
+
+                    w->setFolder(KWallet::Wallet::FormDataFolder());
+                    w->writeMap(key, walletMap);
+                }
+            } else if (savePassword == KMessageBox::No)
+                view->addNonPasswordStorableSite(formUrl.host());
         }
 
         DOMString url(khtml::parseURL(getAttribute(ATTR_ACTION)));

@@ -1,3 +1,7 @@
+2003-12-09  Dirk Mueller  <mueller@kde.org>
+
+	* html/html_formimpl.cpp (submit): don't ask over and over again the same question.
+
 2003-12-08  Zack Rusin  <zack@kde.org>
 
 	* khtmlview.*, html/html_formimpl.cpp (submit):  Fixing 67179 -
