@@ -73,9 +73,14 @@ ProgressItem::ProgressItem( ListProgress* view, QListViewItem *after, QCString a
   m_sAppId = app_id;
   m_iJobId = job_id;
 
-  defaultProgress = new DefaultProgress( showDefault );
+  // create dialog, but don't show it
+  defaultProgress = new DefaultProgress( false );
   defaultProgress->setOnlyClean( true );
   connect ( defaultProgress, SIGNAL( stopped() ), this, SLOT( slotCanceled() ) );
+
+  if ( showDefault ) {
+    QTimer::singleShot( 500, this, SLOT(slotShowDefaultProgress()) ); // start a 1/2 second timer
+  }
 }
 
 
@@ -215,7 +220,7 @@ void ProgressItem::slotCanceled() {
 }
 
 
-void ProgressItem::showDefaultProgress() {
+void ProgressItem::slotShowDefaultProgress() {
   defaultProgress->show();
 }
 
@@ -587,7 +592,7 @@ void UIServer::slotUpdate() {
 
 
 void UIServer::slotDefaultProgress( QListViewItem *item ) {
-  ((ProgressItem*) item )->showDefaultProgress();
+  ((ProgressItem*) item )->slotShowDefaultProgress();
 }
 
 

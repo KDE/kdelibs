@@ -53,8 +53,6 @@ public:
   QCString appId() { return m_sAppId; }
   int jobId() { return m_iJobId; }
 
-  void showDefaultProgress();
-
   void setTotalSize( unsigned long bytes );
   void setTotalFiles( unsigned long files );
   void setTotalDirs( unsigned long dirs );
@@ -80,6 +78,9 @@ public:
   unsigned long processedFiles() { return m_iProcessedFiles; }
   unsigned long speed() { return m_iSpeed; }
   QTime remainingTime() { return m_remainingTime; }
+
+public slots:
+  void slotShowDefaultProgress();
 
 protected slots:
   void slotCanceled();
