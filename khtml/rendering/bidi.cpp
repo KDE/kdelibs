@@ -109,8 +109,9 @@ static inline RenderObject *Bidinext(RenderObject *par, RenderObject *current)
 	    next = current->firstChild();
 	    if ( next && adjustEmbeddding ) {
 		EUnicodeBidi ub = next->style()->unicodeBidi();
-		if ( ub != UBNormal && !emptyRun ) {
+		if ( ub != UBNormal ) {
 		    EDirection dir = next->style()->direction();
+// 		    qDebug("element: unicode-bidi=%d, dir=%d", ub, dir);
 		    QChar::Direction d = ( ub == Embed ? ( dir == RTL ? QChar::DirRLE : QChar::DirLRE )
 					   : ( dir == RTL ? QChar::DirRLO : QChar::DirLRO ) );
 		    embed( d );
@@ -155,9 +156,19 @@ inline BidiIterator::BidiIterator()
     pos = 0;
 }
 
-inline BidiIterator::BidiIterator(RenderFlow *_par)
+BidiIterator::BidiIterator(RenderFlow *_par)
 {
     par = _par;
+    if ( par && adjustEmbeddding ) {
+	EUnicodeBidi ub = par->style()->unicodeBidi();
+	if ( ub != UBNormal ) {
+	    EDirection dir = par->style()->direction();
+	    qDebug("element: unicode-bidi=%d, dir=%d", ub, dir);
+	    QChar::Direction d = ( ub == Embed ? ( dir == RTL ? QChar::DirRLE : QChar::DirLRE )
+				   : ( dir == RTL ? QChar::DirRLO : QChar::DirLRO ) );
+	    embed( d );
+	}
+    }
     obj = first( par );
     pos = 0;
     isText = obj ? obj->isText() : false;
@@ -379,8 +390,15 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
 #ifndef QT_NO_UNICODETABLES
 
 #if BIDI_DEBUG > 1
-        kdDebug(6041) << "directions: dir=" << (int)dir << " current=" << (int)dirCurrent << " last=" << status.last << " eor=" << status.eor << " lastStrong=" << status.lastStrong << " embedding=" << (int)context->dir << " level =" << (int)context->level << endl;
+        kdDebug(6041) << "directions: dir=" << (int)dir << " current=" << (int)dirCurrent << " last=" << status.last << " eor=" << status.eor << " lastStrong=" << status.lastStrong << " embedding=" << (int)context->dir << " level =" << (int)context->level << " override=" << context->override << endl;
 #endif
+	if ( context->override &&
+	     dirCurrent != QChar::DirRLE &&
+	     dirCurrent != QChar::DirLRE &&
+	     dirCurrent != QChar::DirRLO &&
+	     dirCurrent != QChar::DirLRO &&
+	     dirCurrent != QChar::DirPDF )
+	    goto skipbidi;
 
         switch(dirCurrent) {
 
@@ -391,6 +409,7 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
         case QChar::DirLRO:
         case QChar::DirPDF:
 	    eor = last;
+	    qDebug("embed called from bidi");
 	    embed( dirCurrent );
 	    break;
 
@@ -636,6 +655,7 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
             break;
         }
 
+    skipbidi:
         //cout << "     after: dir=" << //        dir << " current=" << dirCurrent << " last=" << status.last << " eor=" << status.eor << " lastStrong=" << status.lastStrong << " embedding=" << context->dir << endl;
 
         if(current.atEnd()) break;
@@ -852,15 +872,15 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
         else
             r->vertical += m_height + maxAscent - r->baseline;
 
-#if BIDI_DEBUG > 0
-	kdDebug(6040) << "object="<< r->obj << " placing at vertical=" << r->vertical <<endl;
-#endif
         if(r->obj->isText())
             r->width = static_cast<RenderText *>(r->obj)->width(r->start, r->stop-r->start, firstLine);
         else {
             r->obj->calcWidth();
             r->width = r->obj->width()+r->obj->marginLeft()+r->obj->marginRight();
         }
+#if BIDI_DEBUG > 0
+	kdDebug(6040) << "object="<< r->obj << " placing at vertical=" << r->vertical <<" width=" << r->width <<endl;
+#endif
         totWidth += r->width;
         r = runs.next();
     }
@@ -897,7 +917,7 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
     }
     while ( r ) {
 #if BIDI_DEBUG > 1
-        kdDebug(6040) << "positioning " << r->obj << " start=" << r->start << " stop=" << r->stop << " yPos=" << r->vertical << endl;
+        kdDebug(6040) << "positioning " << r->obj << " start=" << r->start << " stop=" << r->stop << " x=" << x << " width=" << r->width << " yPos=" << r->vertical << endl;
 #endif
 	int spaceAdd = 0;
 	if ( numSpaces > 0 ) {
@@ -938,6 +958,8 @@ void RenderFlow::layoutInlineChildren()
 #endif
     int toAdd = style()->borderBottomWidth();
     m_height = style()->borderTopWidth();
+
+    emptyRun = true;
 
     if(style()->hasPadding())
     {
