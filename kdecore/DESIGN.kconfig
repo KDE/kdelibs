@@ -165,3 +165,60 @@ Host=wantelbos.zogje.fr
 
 - having translations in these files is very arguable. external po's would be
   better.
+
+
+
+Class overview
+
+                       KConfigBase
+                            |
+                            v
+ KConfigBackend  <-----> KConfig <------> KConfigSkeleton           /--< myapp.kcfg
+       |                    |                    |                 /
+       v                    v                    |*---------------<
+KConfigINIBackend      KSimpleConfig             |kconfig_compiler \
+                                                 |                  \--< myconfig.kcfg-codegen
+                                                 v                                                    
+                                             MyConfig <-----KConfigDialogManager----> MyConfigWidget *---< myconfigwidget.ui
+                                                                                                      uic
+
+KConfigBase: defines API for generic config class
+
+KConfig: functional generic config class that supports merging of cascaded
+         configuration files
+
+KSimpleConfig: functional generic config class without support for cascading
+               configuration files.
+
+KConfigBackend: defines API for config backend, t.i. the actual handling
+                of the storage method and storage format.
+
+KConfigINIBackend: the standard (and only one so far) class that implements
+                   the config backend using the file-based .INI format
+                   for configuration files
+
+KConfigSkeleton: base class for deriving classes that store application
+                 specific options providing type-safety and single-point
+                 defaults.
+
+MyConfig: An application specific class that offers configuration options
+          to the applications via variables or accessor functions and that
+          handles type-safety and defaults. MyConfig is just an example
+          name, the application developer choses the actual name.
+
+myapp.kcfg: File describing the configuration options used by a specific
+            application. myapp.kcfg is just an example name, the application
+            developer choses the actual name.
+
+myconfig.kcfg-codegen: Implementation specific code generation instructions
+                       for the MyConfig class. myconfig.kcfg-codegen is
+                       just an example name, the application developer
+                       choses the actual name.
+
+KConfigDialogManager: Class that links widgets in a dialog up with their
+                      corresponding confguration options in a configuration
+                      object derived from KConfigSkeleton.
+
+MyConfigWidget: Dialog generated from a .ui description file. Widget names
+                in the dialog that start with "kcfg_" refer to configuration
+                options.

@@ -27,12 +27,13 @@ SVGICONS=svgicons
 SVGICON_LIB=svgicons/libkdesvgicons.la
 endif
 
-SUBDIRS = malloc $(SVGICONS) . tests
+SUBDIRS = malloc $(SVGICONS) . kconfig_compiler tests
 
 lib_LTLIBRARIES = libkdefakes.la libkdecore.la
 lib_LIBRARIES = libkdefakes_nonpic.a
 
-include_HEADERS = kautoconfig.h kconfig.h kconfigdata.h ksimpleconfig.h \
+include_HEADERS = kautoconfig.h kconfig.h kconfigskeleton.h \
+	kconfigdata.h ksimpleconfig.h kconfigdialogmanager.h \
 	kconfigbase.h kdesktopfile.h kurl.h ksock.h kaboutdata.h \
 	kcmdlineargs.h kconfigbackend.h kapp.h kapplication.h kuniqueapp.h \
 	kuniqueapplication.h kcharsets.h kdeversion.h kpty.h kprocess.h \
@@ -106,7 +107,7 @@ libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kautoconfig.cpp \
 	kcalendarsystemfactory.cpp kmacroexpander.cpp kidna.cpp \
 	ktempdir.cpp kshell.cpp kmountpoint.cpp kcalendarsystemjalali.cpp \
 	kprotocolinfo_kdecore.cpp kprotocolinfofactory.cpp kxerrorhandler.cpp \
-	kuser.cpp
+	kuser.cpp kconfigskeleton.cpp kconfigdialogmanager.cpp
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(KDE_RPATH) $(KDE_MT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 6:0:2 -no-undefined
 libkdecore_la_LIBADD = malloc/libklmalloc.la $(SVGICON_LIB) ../dcop/libDCOP.la ../libltdl/libltdlc.la $(LIB_XEXT) $(LIBRESOLV) $(LIBUTIL) $(LIBART_LIBS) ../kdefx/libkdefx.la

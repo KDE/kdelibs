@@ -1937,6 +1937,9 @@ void KApplication::propagateSettings(SettingsCategory arg)
 void KApplication::installKDEPropertyMap()
 {
 #ifndef QT_NO_SQL
+    static bool installed = false;
+    if (installed) return;
+    installed = true;
     /**
      * If you are adding a widget that was missing please
      * make sure to also add it to KAutoConfig's retrieveSettings() function.
