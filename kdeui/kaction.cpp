@@ -345,9 +345,10 @@ void KAction::setShortcut( int i, const KShortcut& cut )
   if ( w->inherits( "QPopupMenu" ) ) {
     QPopupMenu* menu = static_cast<QPopupMenu*>(w);
 
-    if( a || cut.seq(0).isNull() )
-      menu->setAccel( a, id );
-    else {
+    //if( a || cut.seq(0).isNull() )
+    //  menu->setAccel( a, id );
+    //else {
+    {
       QString s = menu->text( id );
       int i = s.find( '\t' );
       if ( i >= 0 )
@@ -585,13 +586,6 @@ void KAction::unplug( QWidget *w )
 
 void KAction::plugAccel(KAccel *kacc, bool configurable)
 {
-  /*static int iHomeCount = 0; // ellis
-  kdDebug(125) << "KAction::plugAccel( this = \"" << name() << "\", kacc = " << kacc << " )" << endl; // -- ellis
-  if (name() == "home") {
-    if (++iHomeCount == 1) {
-      (char*)0 = 0;
-    }
-  }*/
   if ( d->m_kaccel )
     unplugAccel();
 
@@ -618,7 +612,6 @@ void KAction::unplugAccel()
   {
     d->m_kaccel->removeAction(name());
     d->m_kaccel = 0;
-    //d->m_pAccelAction = 0;
   }
 }
 
