@@ -78,12 +78,13 @@ public:
 class KIO::Scheduler::ProtocolInfo
 {
   public:
-     ProtocolInfo() : maxSlaves(3)
+     ProtocolInfo() : maxSlaves(3), skipCount(0)
 	{ joblist.setAutoDelete(false); }
 
      QList<SimpleJob> joblist;
      SlaveList activeSlaves;
      int maxSlaves;
+     int skipCount;
      QString protocol;
 };
 
@@ -267,12 +268,48 @@ bool Scheduler::startJobScheduled(ProtocolInfo *protInfo)
 
 //       kdDebug(7006) << "Scheduling job" << endl;
     debug_info();
-    SimpleJob *job = protInfo->joblist.at(0);
-
     bool newSlave = false;
 
-    // Look for matching slave
-    Slave *slave = findIdleSlave(protInfo, job);
+    SimpleJob *job;
+    Slave *slave = 0;
+
+    if (protInfo->skipCount > 2)
+    {
+       bool dummy;
+       // Prevent starvation. We skip the first entry in the queue at most
+       // 2 times in a row. The 
+       protInfo->skipCount = 0;
+       job = protInfo->joblist.at(0);
+       slave = findIdleSlave(protInfo, job, dummy );
+    }
+    else
+    {
+       bool exact=false;
+       SimpleJob *firstJob = 0;
+       Slave *firstSlave = 0; 
+       for(int i = 0; (i < protInfo->joblist.count()) && (i < 10); i++)
+       {
+          job = protInfo->joblist.at(i);
+          slave = findIdleSlave(protInfo, job, exact);
+          if (!firstSlave)
+          {
+             firstJob = job;
+             firstSlave = slave;
+          }
+          if (!slave) break;
+          if (exact) break;
+       }
+    
+       if (!exact)
+       {
+         slave = firstSlave;
+         job = firstJob;
+       }
+       if (job == firstJob)
+         protInfo->skipCount = 0;
+       else
+         protInfo->skipCount++;
+    }
 
     if (!slave)
     {
@@ -333,9 +370,10 @@ if (!jobData)
     ProtocolInfo *protInfo = protInfoDict->get(protocol);
 
     bool newSlave = false;
+    bool dummy;
 
     // Look for matching slave
-    Slave *slave = findIdleSlave(protInfo, job);
+    Slave *slave = findIdleSlave(protInfo, job, dummy);
 
     if (!slave)
     {
@@ -371,11 +409,12 @@ if (!jobData)
     return true;
 }
 
-static Slave *searchIdleList(SlaveList *idleSlaves, const KURL &url, const QString &protocol)
+static Slave *searchIdleList(SlaveList *idleSlaves, const KURL &url, const QString &protocol, bool &exact)
 {
     QString host = url.host();
     int port = url.port();
     QString user = url.user();
+    exact = true;
 
     for( Slave *slave = idleSlaves->first();
          slave;
@@ -388,6 +427,8 @@ static Slave *searchIdleList(SlaveList *idleSlaves, const KURL &url, const QStri
            return slave;
     }
 
+    exact = false; 
+
     // Look for slightly matching slave
     for( Slave *slave = idleSlaves->first();
          slave;
@@ -399,7 +440,7 @@ static Slave *searchIdleList(SlaveList *idleSlaves, const KURL &url, const QStri
     return 0;
 }
 
-Slave *Scheduler::findIdleSlave(ProtocolInfo *, SimpleJob *job)
+Slave *Scheduler::findIdleSlave(ProtocolInfo *, SimpleJob *job, bool &exact)
 {
     Slave *slave = 0;
     if (slaveOnHold)
@@ -444,7 +485,7 @@ if (!jobData)
     kdFatal(7006) << "BUG! findIdleSlave(): No extraJobData for job!" << endl;
     return 0;
 }
-    return searchIdleList(idleSlaves, job->url(), jobData->protocol);
+    return searchIdleList(idleSlaves, job->url(), jobData->protocol, exact);
 }
 
 Slave *Scheduler::createSlave(ProtocolInfo *protInfo, SimpleJob *job, const KURL &url)
@@ -615,7 +656,8 @@ Scheduler::_getConnectedSlave(const KURL &url, const KIO::MetaData &config )
 {
     QString proxy;
     QString protocol = KProtocolManager::slaveProtocol(url, proxy);
-    Slave *slave = searchIdleList(idleSlaves, url, protocol);
+    bool dummy;
+    Slave *slave = searchIdleList(idleSlaves, url, protocol, dummy);
     if (!slave)
     {
        ProtocolInfo *protInfo = protInfoDict->get(protocol);

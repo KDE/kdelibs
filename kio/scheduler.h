@@ -238,7 +238,7 @@ namespace KIO {
         bool _assignJobToSlave(KIO::Slave *slave, KIO::SimpleJob *job);
         bool _disconnectSlave(KIO::Slave *slave);
 
-        Slave *findIdleSlave(ProtocolInfo *protInfo, SimpleJob *job);
+        Slave *findIdleSlave(ProtocolInfo *protInfo, SimpleJob *job, bool &exact);
         Slave *createSlave(ProtocolInfo *protInfo, SimpleJob *job, const KURL &url);
 
 	QTimer slaveTimer;
