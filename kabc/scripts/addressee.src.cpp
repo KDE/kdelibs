@@ -287,7 +287,7 @@ QString Addressee::fullEmail( const QString &email ) const
   if ( realName().isEmpty() )
     text = e;
   else
-    text = realName() + " <" + e + ">";
+    text = assembledName() + " <" + e + ">";
 
   return text;
 }
