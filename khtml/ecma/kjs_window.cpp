@@ -1317,6 +1317,11 @@ Value Window::openWindow(ExecState *exec, const List& args)
     if (args.size()>2) {
       features = args[2].toString(exec).qstring();
       // specifying window params means false defaults
+
+      // Buggy scripts have ' at beginning and end, cut those
+      if (features.startsWith("\'") && features.endsWith("\'"))
+        features = features.mid(1, features.length()-2);
+
       winargs.menuBarVisible = false;
       winargs.toolBarsVisible = false;
       winargs.statusBarVisible = false;
