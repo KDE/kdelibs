@@ -182,7 +182,7 @@ public:
    * Dynamically means that they may appear and vanish
    * during runtime.
    *
-   * @return A list of the aditional interfaces, default is an empty list.
+   * @return A list of the additional interfaces, default is an empty list.
    *
    * @see interfaces(),
    */
@@ -341,7 +341,7 @@ private:
 class DCOPObjectProxyPrivate;
 /**
  * You must use a proxy if you want to dispatch method calls for
- * object IDs which dont have (yet) a corresponding DCOPObject.
+ * object IDs which don't have (yet) a corresponding DCOPObject.
  * This is somewhat like virtual object references in CORBA.
  *
  * @see DCOPObject

@@ -306,7 +306,7 @@ place it first in the list of inherited classes.
 
 In the implementation of your class' ctor, you must explicitly initialize
 those classes from which you are inheriting from. This is, of course, good
-practise, but it is essential here as you need to tell DCOPObject the name of
+practice, but it is essential here as you need to tell DCOPObject the name of
 the interface which your are implementing.
 
 Example:
