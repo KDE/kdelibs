@@ -100,6 +100,7 @@ KDirOperator::KDirOperator(const KURL& url,
 
 KDirOperator::~KDirOperator()
 {
+    resetCursor();
     delete fileView;
     delete dir;
 }
