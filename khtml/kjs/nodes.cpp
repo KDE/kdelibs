@@ -620,7 +620,18 @@ KJSO *WithNode::evaluate()
 // ECMA 13
 void FuncDeclNode::processFuncDecl()
 {
-  KJSO *f = new KJSDeclaredFunction(ident, param, block);
+  int num = 1;
+  ParameterNode *p = param;
+  while (p->nextParam()) {
+    p = p->nextParam();
+    num++;
+  }
+  KJSParamList *plist = new KJSParamList(num);
+  p = param;
+  for(int i = 0; i < num; i++, p = p->nextParam())
+    plist->insert(num - i - 1, p->ident());
+
+  KJSO *f = new KJSDeclaredFunction(ident, plist, block);
 
   /* TODO: decide between global and activation object */
   KJSWorld::global->put(ident, f);

@@ -1,11 +1,15 @@
-var i;
+var i = 0;
 
-function test()
+function sum(a, b)
 {
  print("inside test()");
  i = i + 1;
+ print(a);
+ print(b);
+ return a + b;
 }
 
-i = 0;
-test();
-print(i);
+s = sum(10, sum(20, 30));
+print("s = " + s);
+print("i = " + i);
+

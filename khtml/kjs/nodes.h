@@ -495,12 +495,15 @@ private:
 
 class ParameterNode : public Node {
 public:
-  ParameterNode(const CString &i) : ident(i) { }
-  ParameterNode *append(const CString &i) { /* TODO */ return this; };
-  ~ParameterNode() { }
+  ParameterNode(const CString &i) : id(i), next(0L) { }
+  ParameterNode(ParameterNode *l, const CString &i) : id(i), next(l) { } 
+  ~ParameterNode() { delete next; }
   KJSO *evaluate();
+  CString ident() { return id; }
+  ParameterNode *nextParam() { return next; }
 private:
-  CString ident;
+  CString id;
+  ParameterNode *next;
 };
 
 class FuncDeclNode : public StatementNode {

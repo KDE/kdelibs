@@ -38,6 +38,7 @@ union Value {
 // forward declarations
 class KJSProperty;
 class KJSArgList;
+class KJSParamList;
 class StatementNode;
 
 class KJSO {
@@ -160,10 +161,12 @@ class KJSFunction : public KJSO {
 public:
   KJSFunction() { attr = ImplicitNone; }
   KJSFunction(char *i, void *, void*) { /* TODO */ }
+  void processParameters(KJSArgList *);
   virtual KJSO* execute() = 0;
   virtual bool hasAttribute(FunctionAttribute a) const { return (attr & a); }
 protected:
   FunctionAttribute attr;
+  KJSParamList *param;
 };
 
 class KJSInternalFunction : public KJSFunction {
@@ -177,7 +180,7 @@ private:
 
 class KJSDeclaredFunction : public KJSFunction {
 public:
-  KJSDeclaredFunction(const CString &i, void *, StatementNode *b);
+  KJSDeclaredFunction(const CString &i, KJSParamList *p, StatementNode *b);
   Type type() const { return DeclaredFunction; }
   KJSO* execute();
 private:
@@ -280,10 +283,26 @@ public:
   Type type() const { return ArgList; }
   KJSArgList *append(KJSO *o);
   KJSArg *firstArg() const { return first; }
-  int numArgs() const;
+  int count() const;
 private:
   KJSArg *first;
 };
+
+class KJSParamList {
+public:
+  KJSParamList(int s) : size(s){ param = new CString[s]; }
+  ~KJSParamList() { delete [] param; }
+  int count() const { return size; }
+  void insert(int i, const CString &s) { if (i<size) param[i] = s; }
+  const char *at(int i) { if (i<size)
+                            return param[i].ascii();
+                          else
+			    return 0L; }
+private:
+  int size;
+  CString *param;
+};
+
 
 };
 

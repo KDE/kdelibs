@@ -18,6 +18,7 @@
  *  Boston, MA 02111-1307, USA.
  */
 
+#include <stdio.h>
 #include <iostream.h>
 
 #include "kjs.h"
@@ -33,7 +34,7 @@ namespace KJS {
 using namespace KJS;
 
 // [[call]]
-KJSO *KJSO::executeCall(KJSO *, KJSArgList *)
+KJSO *KJSO::executeCall(KJSO *, KJSArgList *args)
 {
   KJSFunction *func = static_cast<KJSFunction*>(this);
 
@@ -53,7 +54,10 @@ KJSO *KJSO::executeCall(KJSO *, KJSArgList *)
       assert(!"KJSO::executeCall(): unhandled switch case");
   }
 
-  KJSWorld::context = new KJSContext(ctype, save, func, 0L /* TODO */ );
+  KJSWorld::context = new KJSContext(ctype, save, func, args);
+  
+  // assign user supplied arguments to parameter
+  func->processParameters(args);
 
   KJSO *compl = func->execute();
 
@@ -146,19 +150,28 @@ KJSActivation::~KJSActivation()
     func->put("arguments", get("OldArguments")); /* TODO: deep copy ? */
 }
 
+#include "operations.h"
 // ECMA 10.1.8
 KJSArguments::KJSArguments(KJSFunction *func, KJSArgList *args)
 {
+  char buffer[10];
+  KJSArg *arg;
+
   assert(func);
   // TODO:
   // put("Prototype", _Object.prototype_ );
   put("callee", func, DontEnum);
+  // what is this needed for anyway ?
   if(args) {
-    int iarg = args->numArgs();
+    int iarg = args->count();
     put("length", new KJSNumber(iarg), DontEnum);
-    for (int i = 0; i < iarg; i++) {
-    /* TODO */
+    arg = args->firstArg();
+    for (int i = 0; i < iarg && i < 100; i++) {
+      sprintf(buffer, "%d", i);
+      put(buffer, arg->object());
+      arg = arg->nextArg();
     }
+    /* TODO: length != num. of arguments */
   }
 }
 
@@ -296,7 +309,7 @@ KJSArgList *KJSArgList::append(KJSO *o)
   return this;
 }
 
-int KJSArgList::numArgs() const
+int KJSArgList::count() const
 {
   if (!first)
     return 0;
@@ -309,11 +322,29 @@ int KJSArgList::numArgs() const
   return num;
 }
 
-KJSDeclaredFunction::KJSDeclaredFunction(const CString &i, void *,
+// ECMA 10.1.3
+void KJSFunction::processParameters(KJSArgList *args)
+{
+  //  cout << "processParameters: " << param->list() << endl;
+
+  KJSO *variable = KJSWorld::context->variableObject();
+
+  assert(args);
+  assert(param);
+  KJSArg *arg = args->firstArg();
+  for(int i = 0; i < param->count(); i++)
+    if (arg) {
+      variable->put(param->at(i), arg->object());
+      arg = arg->nextArg();
+    } else
+      variable->put(param->at(i), new KJSUndefined());
+}
+
+KJSDeclaredFunction::KJSDeclaredFunction(const CString &i, KJSParamList *p,
 					 StatementNode *b)
   : block(b)
 {
-  /* TODO */
+  param = p;
 }
 
 KJSO* KJSDeclaredFunction::execute()

@@ -222,8 +222,8 @@ static const short yyrline[] = { 0,
    281,   282,   283,   284,   285,   286,   287,   288,   291,   293,
    296,   298,   301,   305,   307,   311,   313,   316,   320,   324,
    328,   330,   334,   336,   338,   340,   342,   345,   350,   352,
-   355,   359,   363,   365,   368,   372,   375,   380,   382,   385,
-   390,   392,   395,   397
+   355,   359,   363,   365,   368,   372,   375,   380,   382,   386,
+   391,   393,   396,   398
 };
 #endif
 
@@ -498,7 +498,7 @@ static const short yycheck[] = {    12,
     -1,    59,    60,    61,    62
 };
 /* -*-C-*-  Note some compilers choke on comments on `#line' lines.  */
-#line 3 "/usr/share/bison.simple"
+#line 3 "/usr/lib/bison.simple"
 
 /* Skeleton output parser for bison,
    Copyright (C) 1984, 1989, 1990 Free Software Foundation, Inc.
@@ -647,13 +647,9 @@ int yydebug;			/*  nonzero means print parse trace	*/
 #define YYMAXDEPTH 10000
 #endif
 
-#ifndef YYPARSE_RETURN_TYPE
-#define YYPARSE_RETURN_TYPE int
-#endif
-
 /* Prevent warning if -Wstrict-prototypes.  */
 #ifdef __GNUC__
-YYPARSE_RETURN_TYPE yyparse (void);
+int yyparse (void);
 #endif
 
 #if __GNUC__ > 1		/* GNU C and GNU C++ define this.  */
@@ -695,7 +691,7 @@ __yy_memcpy (char *to, char *from, int count)
 #endif
 #endif
 
-#line 196 "/usr/share/bison.simple"
+#line 196 "/usr/lib/bison.simple"
 
 /* The user can define YYPARSE_PARAM as the name of an argument to be passed
    into yyparse.  The argument should have type void *.
@@ -716,7 +712,7 @@ __yy_memcpy (char *to, char *from, int count)
 #define YYPARSE_PARAM_DECL
 #endif /* not YYPARSE_PARAM */
 
-YYPARSE_RETURN_TYPE
+int
 yyparse(YYPARSE_PARAM_ARG)
      YYPARSE_PARAM_DECL
 {
@@ -1395,32 +1391,33 @@ case 128:
     break;}
 case 129:
 #line 382 "grammar.y"
-{ yyval.param = yyvsp[-2].param->append(yyvsp[0].cstr); delete yyvsp[0].cstr; ;
+{ yyval.param = new ParameterNode(yyvsp[-2].param, yyvsp[0].cstr);
+	                             delete yyvsp[0].cstr; ;
     break;}
 case 130:
-#line 386 "grammar.y"
+#line 387 "grammar.y"
 { yyval.prog = KJSWorld::prog
 					= new ProgramNode(yyvsp[0].srcs); ;
     break;}
 case 131:
-#line 391 "grammar.y"
+#line 392 "grammar.y"
 { yyval.srcs = new SourceElementsNode(yyvsp[0].src); ;
     break;}
 case 132:
-#line 392 "grammar.y"
+#line 393 "grammar.y"
 { yyval.srcs = new SourceElementsNode(yyvsp[-1].srcs, yyvsp[0].src); ;
     break;}
 case 133:
-#line 396 "grammar.y"
+#line 397 "grammar.y"
 { yyval.src = new SourceElementNode(yyvsp[0].stat); ;
     break;}
 case 134:
-#line 397 "grammar.y"
+#line 398 "grammar.y"
 { yyval.src = new SourceElementNode(yyvsp[0].func); ;
     break;}
 }
    /* the action file gets copied in in place of this dollarsign */
-#line 498 "/usr/share/bison.simple"
+#line 498 "/usr/lib/bison.simple"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -1616,7 +1613,7 @@ yyerrhandle:
   yystate = yyn;
   goto yynewstate;
 }
-#line 400 "grammar.y"
+#line 401 "grammar.y"
 
 
 int yyerror (char *s)  /* Called by yyparse on error */
