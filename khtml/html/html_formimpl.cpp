@@ -2008,8 +2008,8 @@ QString HTMLTextAreaElementImpl::state( )
 
 void HTMLTextAreaElementImpl::restoreState(const QString &state)
 {
-    m_value = state.left(state.length()-1);
-    setChanged(true);
+    setDefaultValue(state.left(state.length()-1));
+    // the close() in the rendertree will take care of transferring defaultvalue to 'value'
 }
 
 void HTMLTextAreaElementImpl::select(  )
