@@ -33,12 +33,11 @@ KPopupTitle::KPopupTitle(QWidget *parent, const char *name)
     : QWidget(parent, name)
 {
     KConfig *config = KGlobal::config();
-    QString oldGroup = config->group();
     QString tmpStr;
 
     setFont(KGlobal::menuFont());
 
-    config->setGroup(QString::fromLatin1("PopupTitle"));
+    KConfigGroupSaver saver(config, QString::fromLatin1("PopupTitle"));
     bgColor = config->readColorEntry(QString::fromLatin1("Color"), &colorGroup().mid());
     grHigh = bgColor.light(150);
     grLow = bgColor.dark(150);
@@ -80,7 +79,6 @@ KPopupTitle::KPopupTitle(QWidget *parent, const char *name)
 
     useGradient = true;
     setMinimumSize(16, fontMetrics().height()+8);
-    config->setGroup(oldGroup);
 }
 
 KPopupTitle::KPopupTitle(KPixmapEffect::GradientType gradient,

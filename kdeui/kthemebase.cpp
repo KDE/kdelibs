@@ -318,7 +318,7 @@ void KThemeBase::applyConfigFile(const QString &file)
     // handle std color scheme
     KConfig inConfig(file, true, false);
     KConfig *globalConfig = KGlobal::config();
-    globalConfig->setGroup("General");
+    KConfigGroupSaver saver(globalConfig, "General");
     inConfig.setGroup("General");
     if(inConfig.hasKey("foreground"))
         globalConfig->writeEntry("foreground",
@@ -811,7 +811,7 @@ void KThemeBase::applyMiscResourceGroup(KConfig *config)
     delete tmpProp;
 
     KRootProp prop("Misc");
-    config->setGroup("Misc");
+    KConfigGroupSaver saver(config, "Misc");
     QString tmpStr;
 
     tmpStr = config->readEntry("SButtonPosition");
@@ -875,7 +875,7 @@ void KThemeBase::applyResourceGroup(KConfig *config, int i)
     delete tmpProp;
 
     KRootProp prop(widgetEntries[i]);
-    config->setGroup(widgetEntries[i]);
+    KConfigGroupSaver saver(config, widgetEntries[i]);
 
     tmpStr = config->readEntry("CopyWidget", "");
     prop.writeEntry("CopyWidget", tmpStr);

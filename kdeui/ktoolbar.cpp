@@ -261,7 +261,8 @@ void KToolBar::slotReadConfig()
 
   // this is the first iteration
   QString grpToolbar(QString::fromLatin1("Toolbar style"));
-  config->setGroup(grpToolbar);
+  { // start block for KConfigGroupSaver
+  KConfigGroupSaver saver(config, grpToolbar);
 
   // first, get the generic settings
   highlight   = config->readBoolEntry(attrHighlight, true);
@@ -296,7 +297,7 @@ void KToolBar::slotReadConfig()
   }
 
   // revert back to the old group
-  config->setGroup(group);
+  } // end block for KConfigGroupSaver
 
   bool doUpdate = false;
 

@@ -69,7 +69,7 @@ KTMLayout::setGeometry(const QRect& rect)
     static QString keyMac = QString::fromLatin1("macStyle");
 
     KConfig *config = KGlobal::config();
-    config->setGroup( grpKDE );
+    KConfigGroupSaver saver( config, grpKDE );
     bool mac_mode = config->readBoolEntry( keyMac, false );
 
 	/* position top menu bar */

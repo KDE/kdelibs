@@ -225,7 +225,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   fillCharsetsCombo();
 
   KConfig *config = KGlobal::config();
-  config->setGroup(QString::fromLatin1("General"));
+  KConfigGroupSaver saver(config, QString::fromLatin1("General"));
   showXLFDArea(config->readBoolEntry(QString::fromLatin1("fontSelectorShowXLFD"), false));
 }
 
@@ -532,6 +532,12 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.50  2000/04/23 11:44:20  espen
+*
+* New (bin. compatible) feature to allow an application to
+* disable columns in the KFontChooser. Useful if only the font
+* size should be selectable etc. kmail will use this capability.
+*
 * Revision 1.49  2000/01/18 21:15:02  espen
 * QListBox -> KListBox
 *

@@ -571,7 +571,7 @@ void KEditToolbarWidget::loadToolbarStyles(QDomElement& elem)
   else if ( name == "mainToolBar")
   {
     KConfig *config = KGlobal::config();
-    config->setGroup(QString::fromLatin1("Toolbar style"));
+    KConfigGroupSaver saver(config, QString::fromLatin1("Toolbar style"));
     int index = config->readNumEntry(QString::fromLatin1("IconText"), 0);
     m_textCombo->setCurrentItem(index);
   }

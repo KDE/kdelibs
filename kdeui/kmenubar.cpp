@@ -90,7 +90,7 @@ void KMenuBar::slotReadConfig()
   static QString keyMac = QString::fromLatin1("macStyle");
 
   KConfig *config = KGlobal::config();
-  config->setGroup( grpKDE );
+  KConfigGroupSaver saver( config, grpKDE );
   d->m_macMode = config->readBoolEntry( keyMac, false );
 }
 

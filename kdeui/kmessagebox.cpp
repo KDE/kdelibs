@@ -304,19 +304,17 @@ KMessageBox::information(QWidget *parent,const QString &text,
                    const QString &caption, const QString &dontShowAgainName, bool notify)
 {
     KConfig *config = 0;
+    QString grpNotifMsgs = QString::fromLatin1("Notification Messages");
     bool showMsg = true;
-    QString originalConfigGroup;
     QCheckBox *checkbox = 0;
     
     if (!dontShowAgainName.isEmpty())
     {
        config = kapp->config();
-       originalConfigGroup = config->group();
-       config->setGroup(QString::fromLatin1("Notification Messages"));
+       KConfigGroupSaver saver( config, grpNotifMsgs );
        showMsg = config->readBoolEntry( dontShowAgainName, true);
        if (!showMsg)
        {
-          config->setGroup(originalConfigGroup);
           return;
        }
     }
@@ -358,9 +356,9 @@ KMessageBox::information(QWidget *parent,const QString &text,
        showMsg = !checkbox->isChecked(); 
        if (!showMsg)
        {
+          KConfigGroupSaver saver( config, grpNotifMsgs );
           config->writeEntry( dontShowAgainName, showMsg);
        }
-       config->setGroup(originalConfigGroup);
        config->sync();
     }
 
@@ -371,20 +369,19 @@ void
 KMessageBox::enableAllMessages()
 {
    KConfig *config = kapp->config();
-   QString originalConfigGroup = config->group();
-   if (!config->hasGroup(QString::fromLatin1("Notification Messages")))
+   QString grpNotifMsgs = QString::fromLatin1("Notification Messages");
+   if (!config->hasGroup(grpNotifMsgs))
       return;
 
-   config->setGroup(QString::fromLatin1("Notification Messages"));
+   KConfigGroupSaver saver( config, grpNotifMsgs );
 
    typedef QMap<QString, QString> configMap;
    
-   configMap map = config->entryMap(QString::fromLatin1("Notification Messages"));
+   configMap map = config->entryMap(grpNotifMsgs);
 
    configMap::Iterator it;
    for (it = map.begin(); it != map.end(); ++it)
       config->writeEntry( it.key(), true);
-   config->setGroup(originalConfigGroup);
    config->sync();
 }
 
