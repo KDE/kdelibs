@@ -22,6 +22,7 @@
 #include <qlist.h>
 #include <qdict.h>
 #include <kdebug.h>
+#include <kprotocolmanager.h>
 #include <assert.h>
 
 //
@@ -131,6 +132,8 @@ bool Scheduler::process(const QCString &fun, const QByteArray &data, QCString &r
   stream >> proto;
 
   kdDebug( 7006 ) << "reparseConfiguration( " << proto << " )" << endl;
+
+  KProtocolManager::self().scanConfig();
 
   Slave *slave = slaveList->first();
   for (; slave; slave = slaveList->next() )
