@@ -1,8 +1,8 @@
 /*
 This file is part of KDE
 
-  Copyright (C) 2000 Waldo Bastian <bastian@kde.org>
-  Copyright (C) 2000-2001 Dawit Alemayehu <adawit@kde.org>
+  Copyright (C) 2000- Waldo Bastian <bastian@kde.org>
+  Copyright (C) 2000- Dawit Alemayehu <adawit@kde.org>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -208,10 +208,15 @@ void KCookieWin::slotCookieDetails()
 KCookieAdvice KCookieWin::advice( KCookieJar *cookiejar, KHttpCookie* cookie )
 {
     int result = exec();
+    
+    cookiejar->setShowCookieDetails ( m_showDetails );
+    
     KCookieAdvice advice = (result==QDialog::Accepted) ? KCookieAccept:KCookieReject;
-    cookiejar->defaultRadioButton = m_btnGrp->id( m_btnGrp->selected() );
-    cookiejar->showCookieDetails = m_showDetails;
-    switch ( cookiejar->defaultRadioButton )
+    
+    int preferredPolicy = m_btnGrp->id( m_btnGrp->selected() );
+    cookiejar->setPreferredDefaultPolicy( preferredPolicy );
+    
+    switch ( preferredPolicy )
     {
         case 2:
             cookiejar->setGlobalAdvice( advice );
@@ -264,7 +269,7 @@ KCookieDetail::KCookieDetail( KHttpCookieList cookieList, int cookieCount,
     if ( cookie->expireDate() )
       m_expires->setText( KGlobal::locale()->formatDateTime(cookiedate) );
     else
-      m_expires->setText( i18n("Not specified") );
+      m_expires->setText( i18n("End Of Session") );
     m_expires->setMaximumWidth(fontMetrics().width('W') * 25 );
     grid->addWidget( m_expires, 3, 1);
 
@@ -341,7 +346,7 @@ void KCookieDetail::slotNextCookie()
         if ( m_cookie->expireDate() )
           m_expires->setText( KGlobal::locale()->formatDateTime(cookiedate) );
         else
-          m_expires->setText( i18n("Not specified") );
+          m_expires->setText( i18n("End of Session") );
         m_secure->setText( m_cookie->isSecure() ? i18n("True"):i18n("False") );
     }
 }

@@ -1,8 +1,8 @@
 /*
     This file is part of the KDE File Manager
 
-    Copyright (C) 1998-2000 Waldo Bastian (bastian@kde.org)
-    Copyright (C) 2000      Dawit Alemayehu (adawit@kde.org)
+    Copyright (C) 1998- Waldo Bastian (bastian@kde.org)
+    Copyright (C) 2000- Dawit Alemayehu (adawit@kde.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License

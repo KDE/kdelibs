@@ -1,4 +1,16 @@
-#Update for old cookie config files, if present
+# Update for old cookie config files, if present
 Id=kde2.2/b1
 File=kcookiejarrc
 Group=Browser Settings/HTTP,Cookie Policy
+
+# Update cookies config file...
+Id=kde3.1/cvs
+File=kcookiejarrc
+Group=<default>,Cookie Dialog
+Key=DefaultRadioButton,PreferredPolicy
+Key=ShowCookieDetails
+Group=Cookie Policy
+Key=AcceptTempCookies,AcceptSessionCookies
+Key=AutoAcceptSessionCookies,AcceptSessionCookies
+Key=RejectCrossDomain,RejectCrossDomainCookies
+Key=IgnoreCookieExpirationDate,IgnoreExpirationDate
