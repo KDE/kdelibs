@@ -309,5 +309,6 @@ int RenderImage::intrinsicHeight() const
 
 void RenderImage::notifyFinished(CachedObject *finishedObj)
 {
-    element->dispatchHTMLEvent(EventImpl::LOAD_EVENT,false,false);
+    if ( image == finishedObj )
+        element->dispatchHTMLEvent(EventImpl::LOAD_EVENT,false,false);
 }
