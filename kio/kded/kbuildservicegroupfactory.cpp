@@ -35,7 +35,7 @@ KBuildServiceGroupFactory::KBuildServiceGroupFactory() :
    m_resourceList->add( "apps", "*.directory" );
 }
 
-KBuildServiceGroupFactory::~KBuildServiceGroupFactory() 
+KBuildServiceGroupFactory::~KBuildServiceGroupFactory()
 {
    delete m_resourceList;
 }
@@ -86,13 +86,14 @@ KBuildServiceGroupFactory::addNewEntry( const QString& file, const char *resourc
         {
            parentEntry = addNewEntry( parent, resource, 0 );
         }
-        if (!entry->isDeleted())
+        if (parentEntry && !entry->isDeleted())
            parentEntry->addEntry( entry );
      }
   }
   if (newEntry)
      entry->addEntry( newEntry );
-  return 0;
+
+  return entry;
 }
 
 void
