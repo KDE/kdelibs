@@ -62,6 +62,7 @@ void initEditPrinter(KMPrinter *p)
 KPrinterImpl::KPrinterImpl(QObject *parent, const char *name)
 : QObject(parent,name)
 {
+	loadAppOptions();
 }
 
 KPrinterImpl::~KPrinterImpl()
@@ -244,11 +245,11 @@ bool KPrinterImpl::startPrinting(const QString& cmd, KPrinter *printer, const QS
 			return false;
 		}
 	}
-	else
-	{
+	//else
+	//{
 		printer->setErrorMessage(i18n("No valid file was found for printing. Operation aborted."));
 		return false;
-	}
+	//}
 }
 
 QString KPrinterImpl::tempFile()
@@ -468,7 +469,7 @@ int KPrinterImpl::autoConvertFiles(KPrinter *printer, QStringList& files, bool f
 	return status;
 }
 
-bool KPrinterImpl::setupSpecialCommand(QString& cmd, KPrinter *p, const QStringList& files)
+bool KPrinterImpl::setupSpecialCommand(QString& cmd, KPrinter *p, const QStringList&)
 {
 	QString	s(p->option("kde-special-command"));
 	if (s.isEmpty())
@@ -489,5 +490,33 @@ bool KPrinterImpl::setupSpecialCommand(QString& cmd, KPrinter *p, const QStringL
 
 QString KPrinterImpl::quote(const QString& s)
 { return KShellProcess::quote(s); }
+
+void KPrinterImpl::saveOptions(const QMap<QString,QString>& opts)
+{
+	m_options = opts;
+	saveAppOptions();
+}
+
+void KPrinterImpl::loadAppOptions()
+{
+	KConfig	*conf = KGlobal::config();
+	conf->setGroup("KPrinter Settings");
+	QStringList	opts = conf->readListEntry("ApplicationOptions");
+	for (uint i=0; i<opts.count(); i+=2)
+		if (opts[i].startsWith("app-"))
+			m_options[opts[i]] = opts[i+1];
+}
+
+void KPrinterImpl::saveAppOptions()
+{
+	QStringList	optlist;
+	for (QMap<QString,QString>::ConstIterator it=m_options.begin(); it!=m_options.end(); ++it)
+		if (it.key().startsWith("app-"))
+			optlist << it.key() << it.data();
+
+	KConfig	*conf = KGlobal::config();
+	conf->setGroup("KPrinter Settings");
+	conf->writeEntry("ApplicationOptions", optlist);
+}
 
 #include "kprinterimpl.moc"

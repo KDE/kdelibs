@@ -48,7 +48,7 @@ public:
 	//	1	->	files filterd
 	int filterFiles(KPrinter*, QStringList&, bool removeflag = false);
 	int autoConvertFiles(KPrinter*, QStringList&, bool removeflag = false);
-	void saveOptions(const QMap<QString,QString>& opts)	{ m_options = opts; }
+	void saveOptions(const QMap<QString,QString>& opts);
 	const QMap<QString,QString>& loadOptions() const 	{ return m_options; }
 	QString tempFile();
 	QString quote(const QString&);
@@ -59,6 +59,8 @@ protected:
 	int dcopPrint(const QString& cmd, const QStringList& files, bool removeflag = false);
 	bool setupSpecialCommand(QString&, KPrinter*, const QStringList&);
 	int doFilterFiles(KPrinter* pr, QStringList& files, const QStringList& flist, const QMap<QString,QString>& opts, bool removeflag = false);
+	void loadAppOptions();
+	void saveAppOptions();
 
 protected:
 	QMap<QString,QString>	m_options;	// use to save current options
