@@ -132,8 +132,7 @@ SimpleJob::SimpleJob(const KURL& url, int command,
     {
         m_error = ERR_MALFORMED_URL;
         m_errorText = m_url.url();
-	emit result(this);
-        delete this; // Suicide is painless
+        QTimer::singleShot(0, this, SLOT(slotFinished()) );
     } else
         Scheduler::doJob(this);
 }
@@ -170,8 +169,10 @@ void SimpleJob::start(Slave *slave)
 void SimpleJob::slotFinished( )
 {
     // Return slave to the scheduler
-    Scheduler::jobFinished( this, m_slave );
-    m_slave = 0;
+    if(m_slave) {
+        Scheduler::jobFinished( this, m_slave );
+        m_slave = 0;
+    }
 
     if (subjobs.isEmpty())
     {
