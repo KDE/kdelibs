@@ -26,6 +26,8 @@
 
 #include <kdebug.h>
 
+#include <math.h> // sqrtf
+
 typedef Q_UINT32 uint;
 typedef Q_UINT16 ushort;
 typedef Q_UINT8 uchar;
@@ -87,6 +89,7 @@ namespace {	// Private.
 	static const uint FOURCC_DXT4 = MAKEFOURCC('D', 'X', 'T', '4');
 	static const uint FOURCC_DXT5 = MAKEFOURCC('D', 'X', 'T', '5');
 	static const uint FOURCC_RXGB = MAKEFOURCC('R', 'X', 'G', 'B');
+	static const uint FOURCC_ATI2 = MAKEFOURCC('A', 'T', 'I', '2');
 
 	static const uint DDSD_CAPS = 0x00000001l;
 	static const uint DDSD_PIXELFORMAT = 0x00001000l;
@@ -121,6 +124,7 @@ namespace {	// Private.
 		DDS_DXT4 = 8,
 		DDS_DXT5 = 9,
 		DDS_RXGB = 10,
+		DDS_ATI2 = 11,
 		DDS_UNKNOWN
 	};
 
@@ -251,6 +255,8 @@ namespace {	// Private.
 					return DDS_DXT5;
 				case FOURCC_RXGB:
 					return DDS_RXGB;
+				case FOURCC_ATI2:
+					return DDS_ATI2;
 			}
 		}
 		return DDS_UNKNOWN;
@@ -648,7 +654,13 @@ namespace {	// Private.
 
 		return true;
 	}
-	
+	static bool LoadDXT4( QDataStream & s, const DDSHeader & header, QImage & img )
+	{
+		if( !LoadDXT5(s, header, img) ) return false;
+		//UndoPremultiplyAlpha(img);
+		return true;
+	}
+
 	static bool LoadRXGB( QDataStream & s, const DDSHeader & header, QImage & img )
 	{
 		const uint w = header.width;
@@ -697,12 +709,61 @@ namespace {	// Private.
 
 		return true;
 	}
-	static bool LoadDXT4( QDataStream & s, const DDSHeader & header, QImage & img )
+
+	static bool LoadATI2( QDataStream & s, const DDSHeader & header, QImage & img )
 	{
-		if( !LoadDXT5(s, header, img) ) return false;
-		//UndoPremultiplyAlpha(img);
+		const uint w = header.width;
+		const uint h = header.height;
+
+		BlockDXTAlphaLinear xblock;
+		BlockDXTAlphaLinear yblock;
+		QRgb * scanline[4];
+
+		for( uint y = 0; y < h; y += 4 ) {
+			for( uint j = 0; j < 4; j++ ) {
+				scanline[j] = (QRgb *) img.scanLine( y + j );
+			}
+			for( uint x = 0; x < w; x += 4 ) {
+
+				// Read 128bit color block.
+				s >> xblock;
+				s >> yblock;
+
+				// Decode color block.
+				uchar xblock_array[8];
+				xblock.GetAlphas(xblock_array);
+
+				uchar xbit_array[16];
+				xblock.GetBits(xbit_array);
+
+				uchar yblock_array[8];
+				yblock.GetAlphas(yblock_array);
+
+				uchar ybit_array[16];
+				yblock.GetBits(ybit_array);
+
+				// Write color block.
+				for( uint j = 0; j < 4; j++ ) {
+					for( uint i = 0; i < 4; i++ ) {
+						if( img.valid( x+i, y+j ) ) {
+							const uchar nx = xblock_array[xbit_array[j*4+i]];
+							const uchar ny = yblock_array[ybit_array[j*4+i]];
+							
+							const float fx = float(nx) / 127.5f - 1.0f;
+							const float fy = float(ny) / 127.5f - 1.0f;
+							const float fz = sqrtf(1.0f - fx*fx - fy*fy);
+							const uchar nz = uchar((fz + 1.0f) * 127.5f);
+							
+							scanline[j][x+i] = qRgb(nx, ny, nz);
+						}
+					}
+				}
+			}
+		}
+
 		return true;
 	}
+
 
 
 	typedef bool (* TextureLoader)( QDataStream & s, const DDSHeader & header, QImage & img );
@@ -732,6 +793,8 @@ namespace {	// Private.
 				return LoadDXT5;
 			case DDS_RXGB:
 				return LoadRXGB;
+			case DDS_ATI2:
+				return LoadATI2;
 			default:
 				return NULL;
 		};
