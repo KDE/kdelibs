@@ -56,29 +56,29 @@ TextSlave::~TextSlave()
 
 void TextSlave::print( QPainter *p, int _tx, int _ty)
 {
-    if (!m_text || len <= 0)
+    if (!m_text || m_len <= 0)
         return;
 
-    QConstString s(m_text, len);
+    QConstString s(m_text, m_len);
     //kdDebug( 6040 ) << "textSlave::printing(" << s.string() << ") at(" << x+_tx << "/" << y+_ty << ")" << endl;
     p->drawText(m_x + _tx, m_y + _ty + m_baseline, s.string());
 }
 
 void TextSlave::printSelection(QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos)
 {
-    if(startPos > len) return;
+    if(startPos > m_len) return;
     if(startPos < 0) startPos = 0;
 
-    int _len = len;
+    int _len = m_len;
     int _width = m_width;
-    if(endPos > 0 && endPos < len) {
+    if(endPos > 0 && endPos < m_len) {
         _len = endPos;
     }
     _len -= startPos;
 
     QConstString s(m_text+startPos , _len);
 
-    if (_len != len)
+    if (_len != m_len)
         _width = p->fontMetrics().width(s.string());
 
     int _offset = 0;
@@ -289,7 +289,7 @@ bool RenderText::checkPoint(int _x, int _y, int _tx, int _ty, int &offset)
             // now we need to get the exact position
             int delta = _x - _tx - s->m_x;
             int pos = 0;
-            while(pos < s->len)
+            while(pos < s->m_len)
             {
                 // ### this will produce wrong results for RTL text!!!
                 int w = fm->width(*(s->m_text+pos));
@@ -321,17 +321,17 @@ void RenderText::cursorPos(int offset, int &_x, int &_y, int &height)
   TextSlave* s = m_lines[0];
   int si = 0;
   _x = 0;
-  int off = s->len;
+  int off = s->m_len;
   while(offset > off && si < (int)m_lines.count())
   {
       s = m_lines[++si];
-      off = s->m_text - m_lines[0]->m_text + s->len;
+      off = s->m_text - m_lines[0]->m_text + s->m_len;
   }   // we are now in the correct text slave
-  int pos = (offset > off ? s->len : s->len - (off - offset ));
+  int pos = (offset > off ? s->m_len : s->m_len - (off - offset ));
   _y = s->m_y;
   height = s->m_height;
 
-  QString tekst(s->m_text, s->len);
+  QString tekst(s->m_text, s->m_len);
   _x = s->m_x + (fm->boundingRect(tekst, pos)).right();
   if(pos)
       _x += fm->rightBearing( *(s->m_text + pos - 1 ) );
@@ -373,21 +373,23 @@ void RenderText::posOfChar(int chr, int &x, int &y)
        return;
     }
     m_parent->absolutePosition( x, y, false );
+    if ( m_lines.isEmpty() )
+      return;
+
     if( chr > (int) str->l )
 	chr = str->l;
 
-    int si = 0;
-    TextSlave *s = m_lines[0];
-    TextSlave *last = s;
-    QChar *ch = str->s + chr;
-    while ( s && ch >= s->m_text )
-    {
-        last = s;
-        s = m_lines[++si];
-    }
+    int len = 0; // length found until here
+    unsigned int si = 0;  // line number
+    for ( ; si < m_lines.count() && len < chr ; ++si )
+        len += m_lines[si]->m_len;
 
-    x += last->m_x;
-    y += last->m_y;
+    if ( si == m_lines.count() ) // should never happen
+        si--;
+
+    // si is the line containing the character
+    x += m_lines[si]->m_x; // this is the x of the beginning of the line, but it's good enough for now
+    y += m_lines[si]->m_y;
 }
 
 void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
@@ -463,7 +465,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                 if(si < (int)m_lines.count()-1)
                     diff = m_lines[si+1]->m_text - s->m_text;
                 else
-                    diff = s->len;
+                    diff = s->m_len;
                 endPos -= diff;
                 startPos -= diff;
             }
@@ -490,7 +492,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                 if(si < (int) m_lines.count()-1)
                     diff = m_lines[si+1]->m_text - s->m_text;
                 else
-                    diff = s->len;
+                    diff = s->m_len;
 
             } while (++si < (int)m_lines.count() && m_lines[si]->checkVerticalPoint(y, ty, h));
             p->setRasterOp(Qt::CopyROP);

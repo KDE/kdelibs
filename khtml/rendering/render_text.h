@@ -49,7 +49,7 @@ public:
         m_x = _x;
         m_y = _y;
         m_text = text;
-        len = _len;
+        m_len = _len;
         m_height = height;
         m_baseline = baseline;
         m_width = width;
@@ -74,7 +74,7 @@ public:
 
     QChar* m_text;
     int m_y;
-    unsigned short len;
+    unsigned short m_len;
     unsigned short m_x;
     unsigned short m_height;
     unsigned short m_baseline;
