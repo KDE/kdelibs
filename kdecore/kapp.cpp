@@ -1196,7 +1196,7 @@ void KApplication::kdisplaySetStyle()
   QApplication::setFont( generalFont, TRUE );
   applyGUIStyle(applicationStyle);   
     
-	  QString path = KApplication::kdedir();
+  emit kdisplayStyleChanged();
   emit kdisplayFontChanged();
   emit appearanceChanged();
   
@@ -1221,11 +1221,10 @@ void KApplication::resizeAll()
 
 
 void KApplication::invokeHTMLHelp( QString filename, QString topic ) const
-
 {
 	    // filename = aAppName + '/' + aAppName + ".html";
   if ( fork() == 0 )	
-  
+	  if( filename.isEmpty() )
 	  path.append("/share/doc/HTML/default/");
 	  path.append(filename);
          if( !QFileInfo( file ).exists() )
@@ -1237,7 +1236,23 @@ void KApplication::invokeHTMLHelp( QString filename, QString topic ) const
                  file.append( "#" );
                  file.append(topic);
 		}
-  return kdedir.copy();
+	
+	  /* Since this is a library, we must conside the possibilty that
+	   * we are being used by a suid root program. These next two
+	   * lines drop all privileges.
+	   */
+	  setuid( getuid() );
+	  setgid( getgid() );
+	  path.prepend("kdehelp ");
+	  execl(shell, shell, "-c", path.data(), 0L);
+		shell = getenv("SHELL");
+         file.prepend("kdehelp ");
+         execl(shell, shell, "-c", file.data(), 0L);
+	  exit( 1 );
+    }
+}
+
+		  "Value is reseted now, but please report this error!\n"
 {
   static QString kdedir;
 
