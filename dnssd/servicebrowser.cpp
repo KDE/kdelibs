@@ -162,7 +162,7 @@ bool ServiceBrowser::allFinished()
 	return all;
 }
 
-QValueList<RemoteService::Ptr> ServiceBrowser::services() const
+const QValueList<RemoteService::Ptr>& ServiceBrowser::services() const
 {
 	return d->m_services;
 }
