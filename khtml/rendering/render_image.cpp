@@ -274,7 +274,7 @@ void RenderImage::layout()
         resizeCache = QPixmap();
 
     // ### this shouldn't be necessary
-    if ( oldwidth == m_width && oldheight == m_height )
+    if ( m_minWidth == m_maxWidth && m_minWidth == m_width )
         setLayouted();
 }
 
