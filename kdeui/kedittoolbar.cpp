@@ -30,6 +30,7 @@
 
 #include <kstddirs.h>
 #include <klocale.h>
+#include <kicontheme.h>
 #include <kiconloader.h>
 #include <kinstance.h>
 #include <kxmlgui.h>
@@ -456,9 +457,7 @@ void KEditToolbarWidget::setupLayout()
 
   QLabel *icon_label = new QLabel(i18n("Icon size:"), this);
   m_iconCombo = new QComboBox(this);
-  m_iconCombo->insertItem(i18n("Small icons"));
-  m_iconCombo->insertItem(i18n("Normal icons"));
-  m_iconCombo->insertItem(i18n("Large icons"));
+  // the sizes are generated later
   connect(m_iconCombo, SIGNAL(highlighted(int)),
           this,        SLOT(slotIconClicked(int)));
 
@@ -601,14 +600,33 @@ void KEditToolbarWidget::loadToolbarStyles(QDomElement& elem)
   else
     m_textCombo->setCurrentItem(0);
 
+  // load the sizes now
+  m_iconCombo->clear();
+  KIconTheme *theme = instance()->iconLoader()->theme();
+  QValueList<int> sizes = theme->querySizes( name == "mainToolBar" ?
+                                             KIcon::MainToolbar :
+                                             KIcon::Toolbar );
+  QValueList<int>::Iterator it(sizes.begin());
+  for ( ; it != sizes.end(); ++it )
+  {
+      QString text;
+      if ( *it < 20 )
+          text = i18n("Small (%1x%2)").arg(*it).arg(*it);
+      else if (*it < 25)
+          text = i18n("Medium (%1x%2)").arg(*it).arg(*it);
+      else
+          text = i18n("Large (%1x%2)").arg(*it).arg(*it);
+      m_iconCombo->insertItem(text);
+  }
+
   if ( (icon_size == -1) && (name == "mainToolBar") )
   {
     KConfig *config = KGlobal::config();
     config->setGroup(QString::fromLatin1("Toolbar style"));
-    int index = config->readNumEntry(QString::fromLatin1("IconSize"), 1);
-    m_iconCombo->setCurrentItem(index);
+    icon_size = config->readNumEntry(QString::fromLatin1("IconSize"), 22);
   }
-  else if ( icon_size == -1 )
+
+  if ( icon_size == -1 )
     m_iconCombo->setCurrentItem(1);
   else if ( icon_size < 20)
     m_iconCombo->setCurrentItem(0);
@@ -1055,19 +1073,17 @@ void KEditToolbarWidget::slotIconClicked(int index)
 
   enableOk(true);
   d->m_currentToolbarElem.setAttribute(attrNoMerge, "1");
-  switch (index)
-  {
-  case 0:
-  default:
-    d->m_currentToolbarElem.setAttribute(attrIconSize, QString::fromLatin1("16"));
-    break;
-  case 1:
-    d->m_currentToolbarElem.setAttribute(attrIconSize, QString::fromLatin1("22"));
-    break;
-  case 2:
-    d->m_currentToolbarElem.setAttribute(attrIconSize, QString::fromLatin1("32"));
-    break;
-  }
+
+  KIconTheme *theme = instance()->iconLoader()->theme();
+  QString name(d->m_currentToolbarElem.attribute( attrName ));
+  QValueList<int> sizes = theme->querySizes( name == "mainToolBar" ?
+                                             KIcon::MainToolbar :
+                                             KIcon::Toolbar );
+
+  QString size;
+  size.setNum(sizes[index]);
+  d->m_currentToolbarElem.setAttribute(attrIconSize, size);
+
   updateLocal(d->m_currentToolbarElem);
 }
 
