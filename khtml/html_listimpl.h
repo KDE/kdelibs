@@ -62,6 +62,9 @@ public:
 
     ListType type() { return _type; }
     void setType(ListType t) { _type = t; }
+    
+    virtual void calcMinMaxWidth();
+    
 protected:
     ListType _type;
 };
@@ -117,6 +120,7 @@ public:
     void setStart( long );
 
     virtual void layout(bool deep = false);
+    virtual void calcMinMaxWidth();    
 };
 
 // -------------------------------------------------------------------------
@@ -167,6 +171,7 @@ public:
     virtual tagStatus endTag() { return DLEndTag; }
 
     virtual void layout(bool deep = false);
+    virtual void calcMinMaxWidth();    
 };
 
 }; //namespace

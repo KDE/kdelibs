@@ -222,6 +222,13 @@ void HTMLUListElementImpl::setAvailableWidth(int w)
 	child = child->nextSibling();
     }
 }    
+
+void HTMLUListElementImpl::calcMinMaxWidth()
+{
+    HTMLBlockElementImpl::calcMinMaxWidth();
+    minWidth +=INDENT;
+    maxWidth +=INDENT;
+}
 // -------------------------------------------------------------------------
 
 
@@ -329,6 +336,13 @@ void HTMLOListElementImpl::layout(bool deep)
     }
     descent += 5;
     setLayouted();
+}
+
+void HTMLOListElementImpl::calcMinMaxWidth()
+{
+    HTMLBlockElementImpl::calcMinMaxWidth();
+    minWidth +=INDENT;
+    maxWidth +=INDENT;
 }
 
 // -------------------------------------------------------------------------
@@ -450,6 +464,7 @@ void HTMLLIElementImpl::printObject(QPainter *p, int _x, int _y,
     HTMLBlockElementImpl::printObject(p, _x, _y, _w, _h, _tx, _ty);
 }
 
+
 // -------------------------------------------------------------------------
 
 
@@ -509,5 +524,10 @@ void HTMLDListElementImpl::layout(bool deep)
     setLayouted();
 }
 
-
+void HTMLDListElementImpl::calcMinMaxWidth()
+{
+    HTMLBlockElementImpl::calcMinMaxWidth();
+    minWidth +=INDENT;
+    maxWidth +=INDENT;
+}
 

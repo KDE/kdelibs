@@ -128,13 +128,11 @@ void HTMLBodyElementImpl::detach()
 void  HTMLBodyElementImpl::setPixmap( QPixmap *p )
 {
     printf("setting bg pixmap\n");
-    //if(view) view->viewport()->setBackgroundPixmap( *p );
     bgPixmap = p;
 }
 
 void  HTMLBodyElementImpl::pixmapChanged( QPixmap *p )
 {
-    //if(view) view->viewport()->setBackgroundPixmap( *p );
     bgPixmap = p;
 }
 
