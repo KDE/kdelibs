@@ -1977,8 +1977,7 @@ NodeImpl::Id HTMLOptionElementImpl::id() const
 
 DOMString HTMLOptionElementImpl::text() const
 {
-    DOMString label = getAttribute(ATTR_LABEL);
-    if (label.isEmpty() && firstChild() && firstChild()->nodeType() == Node::TEXT_NODE) {
+    if (firstChild() && firstChild()->nodeType() == Node::TEXT_NODE) {
 	if (firstChild()->nextSibling()) {
 	    DOMString ret = "";
 	    NodeImpl *n = firstChild();
@@ -1992,8 +1991,6 @@ DOMString HTMLOptionElementImpl::text() const
 	else
 	    return firstChild()->nodeValue();
     }
-    else
-        return label;
 }
 
 long HTMLOptionElementImpl::index() const
