@@ -349,7 +349,6 @@ ushort HTMLAreaElementImpl::id() const
 
 void HTMLAreaElementImpl::parseAttribute(AttrImpl *attr)
 {
-    DOMString indexstring;
     switch (attr->attrId)
     {
     case ATTR_SHAPE:
