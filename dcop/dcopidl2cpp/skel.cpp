@@ -31,6 +31,21 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <unistd.h>
 #include "main.h"
 
+static int const primes[] =
+{
+    2,  3,  5,  7, 11, 13, 17, 19, 23, 29,
+    31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 
+    73, 79, 83, 89, 97, 101, 103, 107, 109, 113,
+    127, 131, 137, 139, 149, 151, 157, 163, 167, 173,
+    179, 181, 191, 193, 197, 199, 211, 223, 227, 229,
+    233, 239, 241, 251, 257, 263, 269, 271, 277, 281,
+    283, 293, 307, 311, 313, 317, 331, 337, 347, 349,
+    353, 359, 367, 373, 379, 383, 389, 397, 401, 409,
+    419, 421, 431, 433, 439, 443, 449, 457, 461, 463,
+    467, 479, 487, 491, 499, 503, 509, 521, 523, 541,
+    547, 557, 563, 569, 571, 577, 587, 593, 599, 601,0
+};
+
 /**
  * Writes the skeleton
  */
@@ -106,31 +121,47 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	    }
 
 	    // create static tables
-	    str << "static const int " << className << "_fcount = " << funcNames.count() << ";" << endl;
+	    
+	    int fhash = funcNames.count() + 1;
+	    for ( int i = 0; primes[i]; i++ ) {
+		if ( primes[i] > (int) funcNames.count() ) {
+		    fhash = primes[i];
+		    break;
+		}
+	    }
+	    
+	    bool useHashing = funcNames.count() > 7;
+	    if ( useHashing ) 
+		str << "static const int " << className << "_fhash = " << fhash << ";" << endl;
 	    str << "static const char* const " << className << "_ftable[ " << funcNames.count() + 1 << " ] = {" << endl;
 	    for( QStringList::Iterator it = funcNames.begin(); it != funcNames.end(); ++it ){
 		str << "    \"" << *it << "\"," << endl;
 	    }
 	    str << "    0" << endl;
 	    str << "};" << endl;
+	    
+	    str << endl;
 	
 	
 	    // Write dispatcher
 	    str << "bool " << className;
 	    str << "::process(const QCString &fun, const QByteArray &data, QCString& replyType, QByteArray &replyData)" << endl;
 	    str << "{" << endl;
-	    str << "    static QAsciiDict<int>* fdict = 0;" << endl;
+	    if ( useHashing ) {
+		str << "    static QAsciiDict<int>* fdict = 0;" << endl;
 	
-	    str << "    if ( !fdict ) {" << endl;
-	    str << "\tfdict = new QAsciiDict<int>( 2 * " << className << "_fcount, TRUE, FALSE );" << endl;
-	    str << "\tfor ( int i = 0; i < " << className << "_fcount; i++ )" << endl;
-	    str << "\t    fdict->insert( " << className << "_ftable[i],  new int( i ) );" << endl;
-	    str << "    }" << endl;
+		str << "    if ( !fdict ) {" << endl;
+		str << "\tfdict = new QAsciiDict<int>( " << className << "_fhash, TRUE, FALSE );" << endl;
+		str << "\tfor ( int i = 0; " << className << "_ftable[i]; i++ )" << endl;
+		str << "\t    fdict->insert( " << className << "_ftable[i],  new int( i ) );" << endl;
+		str << "    }" << endl;
 	
-	    str << "    int* fp = fdict->find( fun );" << endl;
-	    str << "    switch ( fp?*fp:-1) {" << endl;
+		str << "    int* fp = fdict->find( fun );" << endl;
+		str << "    switch ( fp?*fp:-1) {" << endl;
+	    }
 	    s = n.nextSibling().toElement();
 	    int fcount = 0;
+	    bool firstFunc = TRUE;
 	    for( ; !s.isNull(); s = s.nextSibling().toElement() ) {
 		if ( s.tagName() == "FUNC" ) {
 		    QDomElement r = s.firstChild().toElement();
@@ -149,9 +180,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 			QDomElement a = r.firstChild().toElement();
 			ASSERT( a.tagName() == "TYPE" );
 			argtypes.append( a.firstChild().toText().data() );
-			a = a.nextSibling().toElement();
-			ASSERT ( a.tagName() == "NAME" );
-			args.append ( a.firstChild().toText().data() );
+			args.append( QString("arg" ) + QString::number( args.count() ) );
 		    }
 		    QString plainFuncName = funcName;
 		    funcName += "(";
@@ -164,7 +193,15 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 		    }
 		    funcName += ")";
 			
-		    str << "    case " << fcount++ << ": { // " << funcName << endl;
+		    if ( useHashing ) {
+			str << "    case " << fcount++ << ": { // " << funcName << endl;
+		    } else {
+			if ( firstFunc )
+			    str << "    if ( fun == " << className << "_ftable[" << fcount++ << "] ) {" << endl;
+			else
+			    str << " else if ( fun == " << className << "_ftable[" << fcount++ << "] ) {" << endl;
+			firstFunc = FALSE;
+		    }
 		    if ( !args.isEmpty() ) {
 			QStringList::Iterator ittypes = argtypes.begin();
 			for( QStringList::Iterator it = args.begin(); it != args.end(); ++it ){
@@ -193,10 +230,18 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 			str << *it;
 		    }
 		    str << " );" << endl;
-		    str << "    } break;" << endl;
+		    if (useHashing ) {
+			str << "    } break;" << endl;
+		    } else {
+			str << "    }";
+		    }
 		}
 	    }
-	    str << "    default: " << endl;
+	    if ( useHashing ) {
+		str << "    default: " << endl;
+	    } else {
+		str << " else {" << endl;
+	    }
 	    if (!DCOPParent.isEmpty()) {
 		str << "\treturn " << DCOPParent << "::process( fun, data, replyType, replyData );" << endl;
 	    } else {
@@ -214,7 +259,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	    } else {
 		str << "    QCString s;" << endl;
 	    }
-	    str << "    for ( int i = 0; i < " << className << "_fcount; i++ ) {" << endl;
+	    str << "    for ( int i = 0; " << className << "_ftable[i]; i++ ) {" << endl;
 	    str << "\ts += " << className << "_ftable[i];" << endl;
 	    str << "\ts += ';';" << endl;
 	    str << "    };" << endl;

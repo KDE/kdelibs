@@ -83,7 +83,7 @@ all copies or substantial portions of the Software.
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
-X CONSORTIUM BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
 AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
@@ -260,11 +260,11 @@ static const short yyrline[] = { 0,
    375,   376,   377,   378,   379,   380,   381,   382,   383,   384,
    385,   386,   387,   390,   391,   394,   398,   399,   406,   407,
    408,   409,   410,   415,   423,   428,   435,   440,   445,   450,
-   458,   462,   468,   477,   483,   491,   494,   497,   500,   503,
-   506,   512,   513,   516,   516,   516,   516,   519,   544,   551,
-   554,   555,   558,   561,   562,   565,   569,   573,   577,   583,
-   589,   595,   602,   608,   609,   610,   613,   614,   617,   620,
-   621,   623,   626,   627,   628
+   458,   462,   468,   477,   485,   493,   496,   499,   502,   505,
+   508,   514,   515,   518,   518,   518,   518,   521,   546,   553,
+   556,   557,   560,   563,   564,   567,   571,   575,   579,   585,
+   591,   597,   604,   610,   611,   612,   615,   616,   619,   622,
+   623,   625,   628,   629,   630
 };
 #endif
 
@@ -1457,59 +1457,61 @@ case 103:
 case 104:
 #line 478 "yacc.yy"
 {
-		if (dcop_area)
-		  yyerror("in dcoparea you have to specify paramater names!");
-		yyval._str = new QString();
+		if (dcop_area) {
+		   QString* tmp = new QString("\n        <ARG>%1</ARG>");
+  		   *tmp = tmp->arg( *(yyvsp[-1]._str) );
+		   yyval._str = tmp;		
+		} else yyval._str = new QString();
 	  ;
     break;}
 case 105:
-#line 484 "yacc.yy"
+#line 486 "yacc.yy"
 {
 		if (dcop_area)
-			yyerror("variable arguments not supported in dcop area!");
+			yyerror("variable arguments not supported in dcop area.");
 		yyval._str = new QString("");
 	  ;
     break;}
 case 106:
-#line 492 "yacc.yy"
+#line 494 "yacc.yy"
 {
 	  ;
     break;}
 case 107:
-#line 495 "yacc.yy"
+#line 497 "yacc.yy"
 {
 	  ;
     break;}
 case 108:
-#line 498 "yacc.yy"
+#line 500 "yacc.yy"
 {
 	  ;
     break;}
 case 109:
-#line 501 "yacc.yy"
+#line 503 "yacc.yy"
 {
 	  ;
     break;}
 case 110:
-#line 504 "yacc.yy"
+#line 506 "yacc.yy"
 {
 	  ;
     break;}
 case 111:
-#line 507 "yacc.yy"
+#line 509 "yacc.yy"
 {
 	  ;
     break;}
 case 112:
-#line 512 "yacc.yy"
+#line 514 "yacc.yy"
 { yyval._int = 0; ;
     break;}
 case 113:
-#line 513 "yacc.yy"
+#line 515 "yacc.yy"
 { yyval._int = 1; ;
     break;}
 case 118:
-#line 520 "yacc.yy"
+#line 522 "yacc.yy"
 {
 	     if (dcop_area) {
 		QString* tmp = 0;
@@ -1536,7 +1538,7 @@ case 118:
 	  ;
     break;}
 case 119:
-#line 545 "yacc.yy"
+#line 547 "yacc.yy"
 {
 	     if (dcop_area)
 		yyerror("operators aren't allowed in dcop areas!");
@@ -1544,49 +1546,49 @@ case 119:
 	  ;
     break;}
 case 120:
-#line 551 "yacc.yy"
+#line 553 "yacc.yy"
 {;
     break;}
 case 121:
-#line 554 "yacc.yy"
+#line 556 "yacc.yy"
 {;
     break;}
 case 122:
-#line 555 "yacc.yy"
+#line 557 "yacc.yy"
 {;
     break;}
 case 123:
-#line 558 "yacc.yy"
+#line 560 "yacc.yy"
 {;
     break;}
 case 124:
-#line 561 "yacc.yy"
+#line 563 "yacc.yy"
 {;
     break;}
 case 125:
-#line 562 "yacc.yy"
+#line 564 "yacc.yy"
 {;
     break;}
 case 126:
-#line 566 "yacc.yy"
+#line 568 "yacc.yy"
 {
 	        yyval._str = yyvsp[-1]._str;
 	  ;
     break;}
 case 127:
-#line 570 "yacc.yy"
+#line 572 "yacc.yy"
 {
 		yyval._str = yyvsp[-3]._str;
 	  ;
     break;}
 case 128:
-#line 574 "yacc.yy"
+#line 576 "yacc.yy"
 {
 		yyval._str = yyvsp[-1]._str;
 	  ;
     break;}
 case 129:
-#line 578 "yacc.yy"
+#line 580 "yacc.yy"
 {
 	      /* The constructor */
 	      assert(!dcop_area);
@@ -1594,7 +1596,7 @@ case 129:
 	  ;
     break;}
 case 130:
-#line 584 "yacc.yy"
+#line 586 "yacc.yy"
 {
 	      /* The constructor */
 	      assert(!dcop_area);
@@ -1602,7 +1604,7 @@ case 130:
 	  ;
     break;}
 case 131:
-#line 590 "yacc.yy"
+#line 592 "yacc.yy"
 {
 	      /* The destructor */
   	      assert(!dcop_area);
@@ -1610,7 +1612,7 @@ case 131:
 	  ;
     break;}
 case 132:
-#line 596 "yacc.yy"
+#line 598 "yacc.yy"
 {
 		if (dcop_area)
 		  yyerror("static is not allowed in dcop area!");
@@ -1618,33 +1620,33 @@ case 132:
 	  ;
     break;}
 case 133:
-#line 603 "yacc.yy"
+#line 605 "yacc.yy"
 {
 		function_mode = 1;
 	;
     break;}
 case 137:
-#line 613 "yacc.yy"
+#line 615 "yacc.yy"
 {;
     break;}
 case 138:
-#line 614 "yacc.yy"
+#line 616 "yacc.yy"
 {;
     break;}
 case 142:
-#line 623 "yacc.yy"
+#line 625 "yacc.yy"
 {;
     break;}
 case 143:
-#line 626 "yacc.yy"
+#line 628 "yacc.yy"
 {;
     break;}
 case 144:
-#line 627 "yacc.yy"
+#line 629 "yacc.yy"
 {;
     break;}
 case 145:
-#line 628 "yacc.yy"
+#line 630 "yacc.yy"
 {;
     break;}
 }
@@ -1845,7 +1847,7 @@ yyerrhandle:
   yystate = yyn;
   goto yynewstate;
 }
-#line 630 "yacc.yy"
+#line 632 "yacc.yy"
 
 
 void dcopidlParse( const char *_code )

@@ -42,7 +42,7 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de )
 	qFatal("Could not write to %s", filename.latin1() );
 	
     QTextStream str( &stub );
-    
+
     str << "/****************************************************************************" << endl;
     str << "**" << endl;
     str << "** DCOP Stub Definition created by dcopidl2cpp from " << idl << endl;
@@ -68,11 +68,11 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de )
 	    str << "#include <" << e.firstChild().toText().data() << ">" << endl;
 	} else if ( e.tagName() == "CLASS" ) {
 	    str << endl;
-	    
+	
 	    QDomElement n = e.firstChild().toElement();
 	    ASSERT( n.tagName() == "NAME" );
 	    QString className = n.firstChild().toText().data() + "_stub";
-	    
+	
 	    // find dcop parent ( rightmost super class )
 	    QString DCOPParent;
 	    QDomElement s = n.nextSibling().toElement();
@@ -95,7 +95,7 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de )
 	    str << endl;
 	    str << "{" << endl;
 	    str << "public:" << endl;
-	    
+	
 	    // Constructor
 	    str << "    " << className << "( const QCString& app, const QCString& id );" << endl;
 
@@ -136,8 +136,8 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de )
 			else
 			    str << " ";
 			a = a.nextSibling().toElement();
-			ASSERT ( a.tagName() == "NAME" );
-			str << a.firstChild().toText().data();
+			if ( a.tagName() == "NAME" )
+			    str << a.firstChild().toText().data();
 		    }
 		    if ( !first )
 			str << " ";
@@ -153,7 +153,7 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de )
 	    str << endl;
 	}
     }
-    
+
     str << "#endif" << endl;
     stub.close();
 }

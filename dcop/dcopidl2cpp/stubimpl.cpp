@@ -126,9 +126,7 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 			    str << a.attribute("qright") << " ";
 			else
 			    str << " ";
-			a = a.nextSibling().toElement();
-			ASSERT ( a.tagName() == "NAME" );
-			args.append ( a.firstChild().toText().data() );
+			args.append( QString("arg" ) + QString::number( args.count() ) ) ;
 			str << args.last();
 		    }
 		    if ( !first )
@@ -141,7 +139,7 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 		
 		    str << "{" << endl ;
 
-		    
+		
 		    funcName += "(";
 		    first = TRUE;
 		    for( QStringList::Iterator it = argtypes.begin(); it != argtypes.end(); ++it ){
@@ -151,7 +149,7 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 			funcName += *it;
 		    }
 		    funcName += ")";
-		    
+		
 		    if ( async ) {
 			str << "    QByteArray data;" << endl;
 			if ( !args.isEmpty() ) {
@@ -163,7 +161,7 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 			str << "    kapp->dcopClient()->send( DCOPStub::app(), DCOPStub::obj(), \"" << funcName << "\", data );" << endl;
 			str << "    setStatus( CallSucceeded );" << endl;
 		    } else {
-		    
+		
 			if ( result != "void" )
 			    str << "    " << result << " result;" << endl;
 

@@ -476,14 +476,16 @@ param
 	  }
 	| type default
 	  {
-		if (dcop_area)
-		  yyerror("in dcoparea you have to specify paramater names!");
-		$$ = new QString();
+		if (dcop_area) {
+		   QString* tmp = new QString("\n        <ARG>%1</ARG>");
+  		   *tmp = tmp->arg( *($1) );
+		   $$ = tmp;		
+		} else $$ = new QString();
 	  }
 	| T_TRIPLE_DOT
 	  {
 		if (dcop_area)
-			yyerror("variable arguments not supported in dcop area!");
+			yyerror("variable arguments not supported in dcop area.");
 		$$ = new QString("");
 	  }
 
