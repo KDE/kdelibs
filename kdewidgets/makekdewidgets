@@ -92,6 +92,8 @@ print OUT <<EOT;
  */
 
 #include <qwidgetplugin.h>
+// for pixmap search
+#include <kstandarddirs.h>
 
 EOT
 
@@ -115,7 +117,8 @@ public:
 	virtual QWidget *create(const QString &key, QWidget *parent = 0, const char *name = 0);
 	virtual QIconSet iconSet(const QString &key) const
 	{
-		return QIconSet(m_widgets[key].iconSet);
+		QString path = locate("data", "kdewidgets/pics/" + m_widgets[key].iconSet);
+		return QIconSet(path);
 	}
 	virtual bool isContainer(const QString &key) const
 	{

@@ -3,6 +3,7 @@
  */
 
 #include <qwidgetplugin.h>
+#include <kstandarddirs.h>
 
 #include "kinstance.h"
 #include "classpreviews.h"
@@ -44,6 +45,7 @@ public:
 	virtual QStringList keys() const
 	{
 		QStringList result;
+
 		for (WidgetInfos::ConstIterator it = m_widgets.begin(); it != m_widgets.end(); ++it)
 			result << it.key();
 		return result;
@@ -51,7 +53,8 @@ public:
 	virtual QWidget *create(const QString &key, QWidget *parent = 0, const char *name = 0);
 	virtual QIconSet iconSet(const QString &key) const
 	{
-		return QIconSet(m_widgets[key].iconSet);
+		QString path = locate("data", "kdewidgets/pics/" + m_widgets[key].iconSet);
+		return QIconSet(path);
 	}
 	virtual bool isContainer(const QString &key) const
 	{
