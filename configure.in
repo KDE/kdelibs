@@ -178,6 +178,8 @@ DCOPIDL2CPP='$(top_builddir)/dcop/dcopidl2cpp/dcopidl2cpp'
 AC_SUBST(DCOPIDL)
 AC_SUBST(DCOPIDL2CPP)
 
+KDE_APPEND_CXXFLAGS
+
 AC_OUTPUT(Makefile \
 	kdecore/Makefile \
 	qk/Makefile \
