@@ -1086,7 +1086,7 @@ Value Window::openWindow(ExecState *exec, const List& args)
                                     i18n( "This site is requesting to open up a new browser "
                                           "window via JavaScript.\n"
                                           "Do you want to allow this?" ) :
-                                    i18n( "<qt>This site is requesting to open<p>%1</p>in a new browser window via Javascript.<br />"
+                                    i18n( "<qt>This site is requesting to open<p>%1</p>in a new browser window via JavaScript.<br />"
                                           "Do you want to allow this?</qt>").arg(KStringHandler::csqueeze(url.htmlURL(),  100)),
                                     i18n( "Confirmation: JavaScript Popup" ) ) == KMessageBox::Yes )
       policy = KHTMLSettings::KJSWindowOpenAllow;
