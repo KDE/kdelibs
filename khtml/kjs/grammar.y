@@ -384,8 +384,7 @@ FormalParameterList:
 ;
 
 Program:
-    SourceElements                 { $$ = new ProgramNode($1);
-                                     KJScript::setProgNode($$); }
+    SourceElements                 { $$ = new ProgramNode($1); }
 ;
 
 SourceElements:

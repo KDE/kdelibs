@@ -32,6 +32,7 @@ namespace KJS {
 
 class KJSO;
 class KJSArgList;
+class ProgramNode;
 
 class Node {
 public:
@@ -39,13 +40,16 @@ public:
   virtual ~Node();
   virtual KJSO *evaluate() = 0;
   int lineNo() { return line; }
+  static ProgramNode *progNode() { return prog; }
   static void deleteAllNodes();
+protected:
+  static ProgramNode *prog;
 private:
   // disallow assignment and copy-construction
   Node(const Node &);
   Node& operator=(const Node&);
   int line;
-static  int nodeCount;
+  static  int nodeCount;
   Node *nextNode;
   static Node *firstNode;
 };
@@ -517,7 +521,7 @@ private:
 
 class ProgramNode : public Node {
 public:
-  ProgramNode(SourceElementsNode *s) : source(s) { }
+  ProgramNode(SourceElementsNode *s) : source(s) { Node::prog = this; }
   KJSO *evaluate();
 private:
   SourceElementsNode *source;

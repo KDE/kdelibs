@@ -230,7 +230,7 @@ static const short yyrline[] = { 0,
    296,   298,   301,   305,   307,   311,   313,   316,   320,   324,
    328,   330,   334,   336,   338,   340,   342,   345,   350,   352,
    355,   359,   363,   365,   368,   372,   375,   380,   382,   386,
-   391,   393,   396,   398
+   390,   392,   395,   397
 };
 #endif
 
@@ -1403,23 +1403,22 @@ case 129:
     break;}
 case 130:
 #line 387 "grammar.y"
-{ yyval.prog = new ProgramNode(yyvsp[0].srcs);
-                                     KJScript::setProgNode(yyval.prog); ;
+{ yyval.prog = new ProgramNode(yyvsp[0].srcs); ;
     break;}
 case 131:
-#line 392 "grammar.y"
+#line 391 "grammar.y"
 { yyval.srcs = new SourceElementsNode(yyvsp[0].src); ;
     break;}
 case 132:
-#line 393 "grammar.y"
+#line 392 "grammar.y"
 { yyval.srcs = new SourceElementsNode(yyvsp[-1].srcs, yyvsp[0].src); ;
     break;}
 case 133:
-#line 397 "grammar.y"
+#line 396 "grammar.y"
 { yyval.src = new SourceElementNode(yyvsp[0].stat); ;
     break;}
 case 134:
-#line 398 "grammar.y"
+#line 397 "grammar.y"
 { yyval.src = new SourceElementNode(yyvsp[0].func); ;
     break;}
 }
@@ -1620,7 +1619,7 @@ yyerrhandle:
   yystate = yyn;
   goto yynewstate;
 }
-#line 401 "grammar.y"
+#line 400 "grammar.y"
 
 
 int yyerror (const char *s)  /* Called by yyparse on error */

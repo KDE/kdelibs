@@ -36,6 +36,7 @@
 using namespace KJS;
 
 int   Node::nodeCount = 0;
+ProgramNode *Node::prog = 0L;
 Node *Node::firstNode = 0L;
 
 Node::Node()

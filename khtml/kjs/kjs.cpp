@@ -96,8 +96,7 @@ bool KJScript::evaluate(const KJS::UnicodeChar *code, unsigned int length)
 
   setError(0L);
 
-  assert(progNode());
-  Ptr res = progNode()->evaluate();
+  Ptr res = KJS::Node::progNode()->evaluate();
   res.release();
 
   if (error())

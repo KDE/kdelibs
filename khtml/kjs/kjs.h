@@ -80,9 +80,6 @@ public:
   static KJS::KJSGlobal *global() { return current()->glob; }
   static void setGlobal(KJS::KJSGlobal *g) { current()->glob = g; }
 
-  static KJS::ProgramNode *progNode() { return current()->prog; }
-  static void setProgNode(KJS::ProgramNode *p) { current()->prog = p; }
-
   static KJS::KJSLexer *lexer() { return current()->lex; }
   static void setLexer(KJS::KJSLexer *l) { current()->lex = l; }
 private:
@@ -92,7 +89,6 @@ private:
   KJS::KJSError *err;
   KJS::KJSContext *con;
   KJS::KJSGlobal *glob;
-  KJS::ProgramNode *prog;
   KHTMLWidget *htmlw;
 };
 
