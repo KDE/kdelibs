@@ -185,13 +185,13 @@ xmlParserInputPtr meinExternalEntityLoader(const char *URL, const char *ID,
                     "failed to load external entity \"%s\"\n", ID);
         return(NULL);
     }
-    if (!strcmp(ID, "-//OASIS//DTD DocBook XML V4.1.2//EN"))
+    if (!qstrcmp(ID, "-//OASIS//DTD DocBook XML V4.1.2//EN"))
         URL = "docbook/xml-dtd-4.1.2/docbookx.dtd";
-    if (!strcmp(ID, "-//OASIS//DTD XML DocBook V4.1.2//EN"))
+    if (!qstrcmp(ID, "-//OASIS//DTD XML DocBook V4.1.2//EN"))
 	URL = "docbook/xml-dtd-4.1.2/docbookx.dtd";
-    if (!strcmp(ID, "-//KDE//DTD DocBook XML V4.1-Based Variant V1.0//EN"))
+    if (!qstrcmp(ID, "-//KDE//DTD DocBook XML V4.1-Based Variant V1.0//EN"))
         URL = "customization/dtd/kdex.dtd";
-    if (!strcmp(ID, "-//KDE//DTD DocBook XML V4.1.2-Based Variant V1.0//EN"))
+    if (!qstrcmp(ID, "-//KDE//DTD DocBook XML V4.1.2-Based Variant V1.0//EN"))
         URL = "customization/dtd/kdex.dtd";
 
     QString file;
