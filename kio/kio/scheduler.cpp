@@ -294,7 +294,7 @@ void Scheduler::setupSlave(KIO::Slave *slave, const KURL &url, const QString &pr
         (slave->passwd() != passwd))
     {
         slaveConfig = SlaveConfig::self();
-        
+
         MetaData configData = slaveConfig->configData(protocol, host);
         sessionData->configDataFor( configData, protocol, host );
 
@@ -415,12 +415,12 @@ bool Scheduler::startJobDirect()
     debug_info();
     SimpleJob *job = newJobs.take(0);
     JobData *jobData = extraJobData->find(job);
-if (!jobData)
-{
+    if (!jobData)
+    {
         kdFatal(7006) << "BUG! startjobDirect(): No extraJobData for job!"
                       << endl;
-    return false;
-}
+        return false;
+    }
     QString protocol = jobData->protocol;
     ProtocolInfo *protInfo = protInfoDict->get(protocol);
 
@@ -482,11 +482,11 @@ Slave *Scheduler::findIdleSlave(ProtocolInfo *, SimpleJob *job, bool &exact)
 {
     Slave *slave = 0;
     JobData *jobData = extraJobData->find(job);
-if (!jobData)
-{
-    kdFatal(7006) << "BUG! findIdleSlave(): No extraJobData for job!" << endl;
-    return 0;
-}
+    if (!jobData)
+    {
+        kdFatal(7006) << "BUG! findIdleSlave(): No extraJobData for job!" << endl;
+        return 0;
+    }
     if (jobData->checkOnHold)
     {
        slave = Slave::holdSlave(jobData->protocol, job->url());
@@ -571,11 +571,11 @@ void Scheduler::slotSlaveStatus(pid_t, const QCString &, const QString &, bool)
 void Scheduler::_jobFinished(SimpleJob *job, Slave *slave)
 {
     JobData *jobData = extraJobData->take(job);
-if (!jobData)
-{
-    kdFatal(7006) << "BUG! _jobFinished(): No extraJobData for job!" << endl;
-    return;
-}
+    if (!jobData)
+    {
+        kdFatal(7006) << "BUG! _jobFinished(): No extraJobData for job!" << endl;
+        return;
+    }
     ProtocolInfo *protInfo = protInfoDict->get(jobData->protocol);
     delete jobData;
     slave->disconnect(job);
