@@ -2002,7 +2002,7 @@ int KActionMenu::plug( QWidget* widget, int index )
 
     id = bar->insertItem( text(), popupMenu(), -1, index );
     bar->setItemEnabled( id, isEnabled() );
-    
+
     addContainer( bar, id );
     connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
 
@@ -2277,7 +2277,7 @@ KAction* KActionCollection::take( KAction* action )
 }
 
 KAction* KActionCollection::action( const char* name, const char* classname,
-                                    QObject* component )
+                                    QObject* component ) const
 {
   QListIterator<KAction> it( d->m_actions );
   for( ; it.current(); ++it )

@@ -1221,7 +1221,7 @@ public:
 
   virtual KAction* action( int index );
   virtual uint count() const;
-  virtual KAction* action( const char* name, const char* classname = 0, QObject* component = 0 );
+  virtual KAction* action( const char* name, const char* classname = 0, QObject* component = 0 ) const;
 
   virtual QStringList groups() const;
   virtual QValueList<KAction*> actions( const QString& group ) const;
