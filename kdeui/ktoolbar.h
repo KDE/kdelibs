@@ -993,6 +993,10 @@ signals:
      */
     static IconText iconTextSetting();
 
+public slots:
+    virtual void setIconText( const QString &txt )
+    { QToolBar::setIconText( txt ); }
+
 protected:
     void mousePressEvent( QMouseEvent * );
     void childEvent( QChildEvent *e );
