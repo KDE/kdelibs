@@ -287,16 +287,16 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
     QCString _dest_part( QFile::encodeName(dest_part));
 
     KDE_struct_stat buff_orig;
-    bool orig_exists = (KDE_lstat( _dest_orig.data(), &buff_orig ) != -1);
-    bool part_exists = false;
+    bool bOrigExists = (KDE_lstat( _dest_orig.data(), &buff_orig ) != -1);
+    bool bPartExists = false;
     bool bMarkPartial = config()->readBoolEntry("MarkPartial", true);
 
     if (bMarkPartial)
     {
         KDE_struct_stat buff_part;
-        part_exists = (KDE_stat( _dest_part.data(), &buff_part ) != -1);
+        bPartExists = (KDE_stat( _dest_part.data(), &buff_part ) != -1);
 
-        if (part_exists && !_resume && buff_part.st_size > 0)
+        if (bPartExists && !_resume && buff_part.st_size > 0 && S_ISREG(buff_part.st_mode))
         {
             kdDebug(7101) << "FileProtocol::put : calling canResume with "
                           << KIO::number(buff_part.st_size) << endl;
@@ -305,7 +305,7 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
             // Tell about the size we have, and the app will tell us
             // if it's ok to resume or not.
             _resume = canResume( buff_part.st_size );
-            
+
             kdDebug(7101) << "FileProtocol::put got answer " << _resume << endl;
         }
     }
@@ -327,7 +327,7 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
         {
             if (dest.isEmpty())
             {
-                if ( orig_exists &&  !_overwrite && !_resume)
+                if ( bOrigExists &&  !_overwrite && !_resume)
                 {
                     if (S_ISDIR(buff_orig.st_mode))
                       error( KIO::ERR_DIR_ALREADY_EXIST, dest_orig );
@@ -340,7 +340,7 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
                 {
                     kdDebug(7101) << "Appending .part extension to " << dest_orig << endl;
                     dest = dest_part;
-                    if ( part_exists && !_resume )
+                    if ( bPartExists && !_resume )
                     {
                         kdDebug(7101) << "Deleting partial file " << dest_part << endl;
                         remove( _dest_part.data() );
@@ -350,7 +350,7 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
                 else
                 {
                     dest = dest_orig;
-                    if ( orig_exists && !_resume )
+                    if ( bOrigExists && !_resume )
                     {
                         kdDebug(7101) << "Deleting destination file " << dest_orig << endl;
                         remove( _dest_orig.data() );
