@@ -639,8 +639,6 @@ QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
   if (!d->m_runningScripts && d->m_doc && !d->m_doc->parsing() && d->m_submitForm )
       submitFormAgain();
 
-  DocumentImpl::updateDocumentsRendering();
-
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "KHTMLPart::executeScript - done" << endl;
 #endif
@@ -4488,7 +4486,6 @@ QVariant KHTMLPart::executeScript(QString filename, int baseLine, const DOM::Nod
   if (!proxy || proxy->paused())
     return QVariant();
   QVariant ret = proxy->evaluate(filename,baseLine,script, n );
-  DocumentImpl::updateDocumentsRendering();
   return ret;
 }
 
