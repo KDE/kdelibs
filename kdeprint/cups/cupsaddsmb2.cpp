@@ -354,7 +354,7 @@ void CupsAddSmb::slotProcessExited(KProcess*)
 
 void CupsAddSmb::showError(const QString& msg)
 {
-	m_text->setText(i18n("<h3>Operation failed !</h3><p>%1</p>").arg(msg));
+	m_text->setText(i18n("<h3>Operation failed!</h3><p>%1</p>").arg(msg));
 	m_cancel->setEnabled(true);
 	m_logined->setEnabled( true );
 	m_servered->setEnabled( true );

@@ -650,7 +650,7 @@ void KMJobViewer::slotConfigure()
 {
 	KMTimer::self()->hold();
 
-	KDialogBase	dlg(this, 0, true, i18n("Print jobs settings"), KDialogBase::Ok|KDialogBase::Cancel);
+	KDialogBase	dlg(this, 0, true, i18n("Print job settings"), KDialogBase::Ok|KDialogBase::Cancel);
 	KMConfigJobs	*w = new KMConfigJobs(&dlg);
 	dlg.setMainWidget(w);
 	dlg.resize(300, 10);
