@@ -503,12 +503,12 @@ void KFindDialog::showPlaceholders()
 void KFindDialog::slotPlaceholdersAboutToShow()
 {
     m_placeholders->clear();
-    m_placeholders->insertItem( i18n("Complete match"), 0 );
+    m_placeholders->insertItem( i18n("Complete Match"), 0 );
 
     QRegExp r( pattern() );
     uint n = r.numCaptures();
     for ( uint i=0; i < n; i++ )
-        m_placeholders->insertItem( i18n("Captured text (%1)").arg( i+1 ), i+1 );
+        m_placeholders->insertItem( i18n("Captured Text (%1)").arg( i+1 ), i+1 );
 }
 
 void KFindDialog::slotOk()
