@@ -2,8 +2,8 @@
  * $Id$
  *
  * KDE3 HighColor Style (version 0.0.3a)
- * Copyright (C) 2001 Karol Szwed <gallium@kde.org>
- *           (C) 2001 Fredrik Höglund <fredrik@kde.org> 
+ * Copyright (C) 2001 Karol Szwed      <gallium@kde.org>
+ *           (C) 2001 Fredrik Höglund  <fredrik@kde.org> 
  *
  * Drawing routines adapted from the KDE2 HCStyle,
  * Copyright (C) 2000 Daniel M. Duley  <mosfet@kde.org>
@@ -65,8 +65,12 @@ class HighColorStylePlugin : public QStylePlugin
 
 		QStyle* create( const QString& key )
 		{
-			if ( key == "highcolor" || key == "default" )
-				return new HighColorStyle;
+			if ( key == "highcolor" )
+				return new HighColorStyle( true );
+			
+			else if ( key == "default" )
+				return new HighColorStyle( false );
+			
 			return 0;
 		}
 };
@@ -79,15 +83,16 @@ Q_EXPORT_PLUGIN( HighColorStylePlugin )
 QBitmap lightBmp;
 QBitmap grayBmp;
 QBitmap dgrayBmp;
+QBitmap centerBmp;
 QBitmap maskBmp;
 QBitmap xBmp;
 QIntDict<GradientSet> gDict;
 
-static const int motifItemFrame         = 2;
-static const int motifItemHMargin       = 3;
-static const int motifItemVMargin       = 2;
-static const int motifArrowHMargin      = 6;
-static const int windowsRightBorder     = 12;
+static const int itemFrame       = 2;
+static const int itemHMargin     = 3;
+static const int itemVMargin     = 1;
+static const int arrowHMargin    = 6;
+static const int rightBorder     = 12;
 
 // ---------------------------------------------------------------------------
 
@@ -115,44 +120,44 @@ KPixmap* GradientSet::gradient(GradientType type)
 	switch(type)
 	{
 		case VSmall: {
-				gradients[VSmall] = new KPixmap;
-				gradients[VSmall]->resize(18, 24);
-				KPixmapEffect::gradient(*gradients[VSmall], c.light(110), c.dark(110),
-												KPixmapEffect::VerticalGradient);
-			}
+			gradients[VSmall] = new KPixmap;
+			gradients[VSmall]->resize(18, 24);
+			KPixmapEffect::gradient(*gradients[VSmall], c.light(110), c.dark(110),
+											KPixmapEffect::VerticalGradient);
 			break;
+		}
 
 		case VMed: {
-				gradients[VMed] = new KPixmap;
-				gradients[VMed]->resize(18, 34);
-				KPixmapEffect::gradient(*gradients[VMed], c.light(110), c.dark(110),
-												KPixmapEffect::VerticalGradient);
-			}
+			gradients[VMed] = new KPixmap;
+			gradients[VMed]->resize(18, 34);
+			KPixmapEffect::gradient(*gradients[VMed], c.light(110), c.dark(110),
+											KPixmapEffect::VerticalGradient);
 			break;
+		}
 
 		case VLarge: {
-				gradients[VLarge] = new KPixmap;
-				gradients[VLarge]->resize(18, 64);
-				KPixmapEffect::gradient(*gradients[VLarge], c.light(110), c.dark(110),
-												KPixmapEffect::VerticalGradient);
-			}
+			gradients[VLarge] = new KPixmap;
+			gradients[VLarge]->resize(18, 64);
+			KPixmapEffect::gradient(*gradients[VLarge], c.light(110), c.dark(110),
+											KPixmapEffect::VerticalGradient);
 			break;
+		}
 
 		case HMed: {
-				gradients[HMed] = new KPixmap;
-				gradients[HMed]->resize(34, 18);
-				KPixmapEffect::gradient(*gradients[HMed], c.light(110), c.dark(110),
-												KPixmapEffect::HorizontalGradient);
-			}
+			gradients[HMed] = new KPixmap;
+			gradients[HMed]->resize(34, 18);
+			KPixmapEffect::gradient(*gradients[HMed], c.light(110), c.dark(110),
+											KPixmapEffect::HorizontalGradient);
 			break;
+		}
 
 		case HLarge: {
-				gradients[HLarge] = new KPixmap;
-				gradients[HLarge]->resize(52, 18);
-				KPixmapEffect::gradient(*gradients[HLarge], c.light(110), c.dark(110),
-												KPixmapEffect::HorizontalGradient);
-			}
+			gradients[HLarge] = new KPixmap;
+			gradients[HLarge]->resize(52, 18);
+			KPixmapEffect::gradient(*gradients[HLarge], c.light(110), c.dark(110),
+											KPixmapEffect::HorizontalGradient);
 			break;
+		}
 
 		default:
 			break;
@@ -164,7 +169,7 @@ KPixmap* GradientSet::gradient(GradientType type)
 
 // ---------------------------------------------------------------------------
 
-HighColorStyle::HighColorStyle() : QCommonStyle()
+HighColorStyle::HighColorStyle( bool hc ) : QCommonStyle()
 {
 	winstyle = QStyleFactory::create("Windows");
 	if(!winstyle) {
@@ -172,7 +177,7 @@ HighColorStyle::HighColorStyle() : QCommonStyle()
 		// Use any style rather than crashing.
 		winstyle = QStyleFactory::create(*(QStyleFactory::keys().begin()));
 	}
-	highcolor = QPixmap::defaultDepth() > 8;
+	highcolor = (QPixmap::defaultDepth() > 8) ? hc : false;
 	gDict.setAutoDelete(true);
 }
 
@@ -232,9 +237,21 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 	{
 		// BUTTONS
 		// -------------------------------------------------------------------
-		case PE_ButtonDefault:
-			break;		// Override Windows style dark box default indicator
-
+		case PE_ButtonDefault: {
+			if ( ! highcolor ) {
+				int x1, y1, x2, y2;
+				r.coords( &x1, &y1, &x2, &y2 );
+				
+				// Button default indicator
+				p->setPen( cg.shadow() );
+				p->drawLine( x1+1, y1, x2-1, y1 );
+				p->drawLine( x1, y1+1, x1, y2-1 );
+				p->drawLine( x1+1, y2, x2-1, y2 );
+				p->drawLine( x2, y1+1, x2, y2-1 );
+			}
+			break;
+		}
+			
 		case PE_ButtonDropDown:
 		case PE_ButtonTool: {
 			bool sunken = on || down;
@@ -474,7 +491,10 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 		// CHECKBOX (indicator)
 		// -------------------------------------------------------------------
 		case PE_Indicator: {
-
+			
+			bool enabled  = flags & Style_Enabled;
+			bool nochange = flags & Style_NoChange;
+			
 			if (xBmp.isNull()) {
 				xBmp = QBitmap(7, 7, x_bits, true);
 				xBmp.setMask(xBmp);
@@ -501,18 +521,21 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 			p->drawLine(x2-1, y+2, x2-1, y2-1);
 			p->drawLine(x+2, y2-1, x2-1, y2-1);
 
-			p->fillRect(x+2, y+2, w-4, h-4, 
-						down ? cg.background(): cg.light());
-
+			if ( enabled )
+				p->fillRect(x+2, y+2, w-4, h-4, 
+						down ? cg.button(): cg.base());
+			else
+				p->fillRect(x+2, y+2, w-4, h-4, cg.background());
+			
 			if (!(flags & Style_Off)) {
-				if(on) {
-					p->setPen(Qt::black);
+				if (on) {
+					p->setPen(nochange ? cg.dark() : cg.text());
 					p->drawPixmap(3, 3, xBmp);
 				}
 				else {
 					p->setPen(cg.shadow());
 					p->drawRect(x+2, y+2, w-4, h-4);
-					p->setPen(Qt::black);
+					p->setPen(nochange ? cg.text() : cg.dark());
 					p->drawLine(x+3, (y+h)/2-2, x+w-4, (y+h)/2-2);
 					p->drawLine(x+3, (y+h)/2, x+w-4, (y+h)/2);
 					p->drawLine(x+3, (y+h)/2+2, x+w-4, (y+h)/2+2);
@@ -525,23 +548,42 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 		// RADIOBUTTON (exclusive indicator)
 		// -------------------------------------------------------------------
 		case PE_ExclusiveIndicator: {
+			
+			bool enabled = flags & Style_Enabled;
+			
 			if (lightBmp.isNull()) {
-				lightBmp = QBitmap(13, 13, radiooff_light_bits, true);
-				grayBmp  = QBitmap(13, 13, radiooff_gray_bits,  true);
-				dgrayBmp = QBitmap(13, 13, radiooff_dgray_bits, true);
+				lightBmp  = QBitmap(13, 13, radiooff_light_bits,  true);
+				grayBmp   = QBitmap(13, 13, radiooff_gray_bits,   true);
+				dgrayBmp  = QBitmap(13, 13, radiooff_dgray_bits,  true);
+				centerBmp = QBitmap(13, 13, radiooff_center_bits, true);
 			}
 
+			// Surrouding background
 			p->fillRect(r, cg.brush(QColorGroup::Background));
+			
+			// The center fill of the indicator (grayed out when disabled)
+			if ( enabled )
+				p->setPen( down ? cg.button() : cg.base() );
+			else
+				p->setPen( cg.background() );
+			
+			p->drawPixmap( r.x(), r.y(), centerBmp );
+			
+			// Bevel
 			kColorBitmaps(p, cg, r.x(), r.y(), &lightBmp , &grayBmp,
 						  NULL, &dgrayBmp);
 
-			if(on || down) {
-				p->setPen(Qt::black);
+			// Indicator "dot"
+			if ( on ) {
+				QColor color = flags & Style_NoChange ?
+					cg.dark() : cg.text();
+				
+				p->setPen(color);
 				p->drawLine(5, 4, 7, 4);
 				p->drawLine(4, 5, 4, 7);
 				p->drawLine(5, 8, 7, 8);
 				p->drawLine(8, 5, 8, 7);
-				p->fillRect(5, 5, 3, 3, Qt::black);
+				p->fillRect(5, 5, 3, 3, color);
 			}
 
 			break;
@@ -550,15 +592,10 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 
 		// Draw the exclusive indicator (radio button) mask.
 		case PE_ExclusiveIndicatorMask: {
-			// ### Fixme - the mask isn't exactly the right shape
-//			if (maskBmp.isNull())
-//				maskBmp = QBitmap(13, 13, radiomask_bits, true);
-//			p->setPen(Qt::color1);
-//			p->drawPixmap(r.x(), r.y(), maskBmp);
-
-			p->setPen(color1);
-			p->setBrush(color1);
-			p->drawEllipse(r);
+			if (maskBmp.isNull())
+				maskBmp = QBitmap(13, 13, radiomask_bits, true);
+			p->setPen(Qt::color0);
+			p->drawPixmap(r.x(), r.y(), maskBmp);
 			break;
 		}
 
@@ -845,8 +882,30 @@ void HighColorStyle::drawControl( ControlElement element,
 		case CE_PushButton: {
 			if ( widget == hoverWidget )
 				flags |= Style_MouseOver;
+			
+			if ( ! highcolor ) {
+				QPushButton *button = (QPushButton*) widget;
+				QRect br = r;
+				
+				// ### Optimize!
+				//   Dont't call button->isDefault() twice.
+				//   Dont't call pixelMetric() - use a constant or variable instead.
+				//   Dont't call drawPrimitive() to draw the indicator - draw it inline.
+				
+				if ( button->isDefault() || button->autoDefault() ) {
+					// Compensate for default indicator
+					int di = pixelMetric( PM_ButtonDefaultIndicator );
+					br.addCoords( di, di, -di, -di );
+				}
 
-			drawPrimitive( PE_ButtonCommand, p, r, cg, flags );
+				if ( button->isDefault() )
+					drawPrimitive( PE_ButtonDefault, p, r, cg, flags );
+				
+				drawPrimitive( PE_ButtonCommand, p, br, cg, flags );
+				
+			} else
+				drawPrimitive( PE_ButtonCommand, p, r, cg, flags );
+			
 			break;
 		}
 
@@ -1089,14 +1148,14 @@ void HighColorStyle::drawControl( ControlElement element,
 				SFlags cflags = Style_Default;
 				cflags |= active ? Style_Enabled : Style_On;
 
-				drawPrimitive( PE_CheckMark, p, QRect( cx + motifItemFrame, y + motifItemFrame,
-								checkcol - motifItemFrame*2, h - motifItemFrame*2), cg, cflags );
+				drawPrimitive( PE_CheckMark, p, QRect( cx + itemFrame, y + itemFrame,
+								checkcol - itemFrame*2, h - itemFrame*2), cg, cflags );
 			}
 
 			// Time to draw the menu item label...
-			int xm = motifItemFrame + checkcol + motifItemHMargin; // X position margin
+			int xm = itemFrame + checkcol + itemHMargin; // X position margin
 			int xp = reverse ?
-					x + tab + windowsRightBorder + motifItemHMargin + motifItemFrame :
+					x + tab + rightBorder + itemHMargin + itemFrame :
 					x + xm;
 			int offset = reverse ? -1 : 1;	// Shadow offset for etched text
 
@@ -1109,7 +1168,7 @@ void HighColorStyle::drawControl( ControlElement element,
 
 			// Does the menu item draw it's own label?
 			if ( mi->custom() ) {
-				int m = motifItemVMargin;
+				int m = itemVMargin;
 				// Save the painter state in case the custom
 				// paint method changes it in some way
 				p->save();
@@ -1130,13 +1189,13 @@ void HighColorStyle::drawControl( ControlElement element,
 				// Does the menu item have a text label?
 				if ( !s.isNull() ) {
 					int t = s.find( '\t' );
-					int m = motifItemVMargin;
+					int m = itemVMargin;
 					const int text_flags = AlignVCenter | ShowPrefix | DontClip | SingleLine;
 
 					// Does the menu item have a tabstop? (for the accelerator text)
 					if ( t >= 0 ) {
-						int tabx = reverse ? x + windowsRightBorder + motifItemFrame :
-							x + w - tab - windowsRightBorder - motifItemHMargin - motifItemFrame;
+						int tabx = reverse ? x + rightBorder + itemFrame :
+							x + w - tab - rightBorder - itemHMargin - itemFrame;
 
 						// Draw the right part of the label (accelerator text)
 						if ( !enabled && !active ) {
@@ -1172,7 +1231,7 @@ void HighColorStyle::drawControl( ControlElement element,
 
 					int diffw = ( ( w - pixmap->width() ) / 2 )
 									+ ( ( w - pixmap->width() ) % 2 );
-					p->drawPixmap( x+diffw, y+motifItemFrame, *pixmap );
+					p->drawPixmap( x+diffw, y+itemFrame, *pixmap );
 					
 					if ( pixmap->depth() == 1 )
 						p->setBackgroundMode( TransparentMode );
@@ -1182,9 +1241,9 @@ void HighColorStyle::drawControl( ControlElement element,
 			// Does the menu item have a popup menu?
 			if ( mi->popup() ) {
 				PrimitiveElement arrow = reverse ? PE_ArrowLeft : PE_ArrowRight;
-				int dim = (h-2*motifItemFrame) / 2;
-				int xp  = reverse ? x + motifArrowHMargin + motifItemFrame :
-					x + w - motifArrowHMargin - motifItemFrame - dim;
+				int dim = (h-2*itemFrame) / 2;
+				int xp  = reverse ? x + arrowHMargin + itemFrame :
+					x + w - arrowHMargin - itemFrame - dim;
 
 				// Draw an arrow at the far end of the menu item
 				if ( active ) {
@@ -1557,8 +1616,12 @@ int HighColorStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 		case PM_ButtonMargin:				// Space btw. frame and label
 			return 4;
 
-		case PM_ButtonDefaultIndicator:
-			return 0;						// No indicator
+		case PM_ButtonDefaultIndicator: {
+			if ( highcolor )
+				return 0;					// No indicator when highcolor
+			else
+				return 3;
+		}
 
 		case PM_ButtonShiftHorizontal:		// Offset by 1
 		case PM_ButtonShiftVertical:		// ### Make configurable
@@ -1643,12 +1706,20 @@ QSize HighColorStyle::sizeFromContents( ContentsType contents,
 			h += bm + fw;
 
 			// Ensure we stick to standard width and heights.
-			if ( button->isDefault() || button->autoDefault() )
+			if ( button->isDefault() || button->autoDefault() ) {
 				if ( w < 80 && !button->pixmap() )
 					w = 80;
 
+				if ( ! highcolor ) {
+					// Compensate for default indicator
+					int di = pixelMetric( PM_ButtonDefaultIndicator );
+					w += di * 2;
+					h += di * 2;
+				}
+			}
+				
 			if ( h < 22 )
-					h = 22;
+				h = 22;
 
 			return QSize( w, h );
 		}
@@ -1670,7 +1741,7 @@ QSize HighColorStyle::sizeFromContents( ContentsType contents,
 				w = mi->custom()->sizeHint().width();
 				h = mi->custom()->sizeHint().height();
 				if ( ! mi->custom()->fullSpan() )
-					h += 2*motifItemVMargin + 2*motifItemFrame;
+					h += 2*itemVMargin + 2*itemFrame;
 			}
 			else if ( mi->widget() ) {
 			} else if ( mi->isSeparator() ) {
@@ -1679,21 +1750,21 @@ QSize HighColorStyle::sizeFromContents( ContentsType contents,
 			}
 			else {
 				if ( mi->pixmap() )
-					h = QMAX( h, mi->pixmap()->height() + 2*motifItemFrame );
+					h = QMAX( h, mi->pixmap()->height() + 2*itemFrame );
 				else
 					h = QMAX( h, popup->fontMetrics().height()
-							+ 2*motifItemVMargin + 2*motifItemFrame );
+							+ 2*itemVMargin + 2*itemFrame );
 
 				if ( mi->iconSet() )
 					h = QMAX( h, mi->iconSet()->pixmap(
 								QIconSet::Small, QIconSet::Normal).height() +
-								2 * motifItemFrame );
+								2 * itemFrame );
 			}
 
 			if ( ! mi->text().isNull() && mi->text().find('\t') >= 0 )
 				w += 12;
 			else if ( mi->popup() )
-				w += 2 * motifArrowHMargin;
+				w += 2 * arrowHMargin;
 
 			if ( maxpmw )
 				w += maxpmw + 6;
@@ -1702,7 +1773,7 @@ QSize HighColorStyle::sizeFromContents( ContentsType contents,
 			if ( checkable || maxpmw > 0 )
 				w += 12;
 
-			w += windowsRightBorder;
+			w += rightBorder;
 
 			return QSize( w, h );
 		}
@@ -1862,6 +1933,9 @@ int HighColorStyle::styleHint( StyleHint sh, const QWidget *w, const QStyleOptio
 		case SH_ItemView_ChangeHighlightOnFocus:
 			return 1;
 
+		case SH_PopupMenu_SubMenuPopupDelay:
+			return 128;
+			
 		default:
 			return QCommonStyle::styleHint(sh, w, opt, shr);
 	}

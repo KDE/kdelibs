@@ -58,7 +58,7 @@ class HighColorStyle : public QCommonStyle
 	Q_OBJECT
 
 	public:
-		HighColorStyle();
+		HighColorStyle( bool hc );
 		virtual ~HighColorStyle();
 
 		void polish( QWidget* widget );
