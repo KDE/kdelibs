@@ -1730,41 +1730,32 @@ bool KImageEffect::blend(
 //  output.setAlphaBuffer(true); // I should do some benchmarks to see if
 	// this is worth the effort
 
-  register uchar *i, *o, *b;
+  register QRgb *i, *o, *b;
 
   register int a;
   register int j,k;
-  for (int j=0; j<ch; j++)
+  for (j=0; j<ch; j++)
   {
-    b=&lower.scanLine(y+j) [ (x+cw) << 2 ];
-    i=&upper.scanLine(cy+j)[ (cx+cw) << 2 ];
-    o=&output.scanLine(j)  [ cw << 2 ];
+    b=reinterpret_cast<QRgb *>(&lower.scanLine(y+j) [ (x+cw) << 2 ]);
+    i=reinterpret_cast<QRgb *>(&upper.scanLine(cy+j)[ (cx+cw) << 2 ]);
+    o=reinterpret_cast<QRgb *>(&output.scanLine(j)  [ cw << 2 ]);
 
     k=cw-1;
     --b; --i; --o;
     do
     {
-      while ( !(a=*i) && k>0 ) 
+      while ( !(a=qAlpha(*i)) && k>0 ) 
       {
-        i-=4;
+        i--;
 //	*o=0;
-	--o; --b;
-	*o=*b;
-	--o; --b;
-	*o=*b;
-	--o; --b;
 	*o=*b;
 	--o; --b;
 	k--;
       };
 //      *o=0xFF;
-    
-      --i; --o; --b;
-      *o = *b + ( ((*i - *b) * a) >> 8 );
-      --i; --o; --b;
-      *o = *b + ( ((*i - *b) * a) >> 8 );
-      --i; --o; --b;
-      *o = *b + ( ((*i - *b) * a) >> 8 );
+      *o = qRgb(qRed(*b) + (((qRed(*i) - qRed(*b)) * a) >> 8),
+                qGreen(*b) + (((qGreen(*i) - qGreen(*b)) * a) >> 8),
+                qBlue(*b) + (((qBlue(*i) - qBlue(*b)) * a) >> 8));
       --i; --o; --b;
     } while (k--);
   } 
