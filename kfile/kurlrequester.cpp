@@ -261,6 +261,11 @@ void KURLRequester::setShowLocalProtocol( bool b )
     setURL( url() );
 }
 
+void KURLRequester::clear()
+{
+    d->setText( QString::null );
+}
+
 KLineEdit * KURLRequester::lineEdit() const
 {
     return d->edit;

@@ -88,12 +88,6 @@ public:
     ~KURLRequester();
 
     /**
-     * Sets the url in the lineedit to @p url. Depending on the state of
-     * @ref showLocalProtocol(), file:/ on local files will be shown or not.
-     */
-    void setURL(const QString& url);
-
-    /**
      * @returns the current url in the lineedit. May be malformed, if the user
      * entered something weird.
      */
@@ -152,6 +146,18 @@ public:
      * construction of the filedialog.
      */
     void setFileDialogMode( KFile::Mode mode );
+
+public slots:
+    /**
+     * Sets the url in the lineedit to @p url. Depending on the state of
+     * @ref showLocalProtocol(), file:/ on local files will be shown or not.
+     */
+    void setURL(const QString& url);
+
+    /**
+     * Clears the lineedit/combobox.
+     */
+    void clear();
     
 signals:
     // forwards from LineEdit
