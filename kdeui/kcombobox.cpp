@@ -75,6 +75,19 @@ void KComboBox::init()
     connect( listBox(), SIGNAL( clicked( QListBoxItem* ) ), SLOT( itemSelected( QListBoxItem* ) ) );
 }
 
+bool KComboBox::isInserted( const QString& text ) const
+{
+    if ( text.isEmpty() )
+	return false;
+
+    for (int i = 0; i < count(); i++ ) {
+	if ( text(i) == text )
+	    return true;
+    }
+    return false;
+}
+
+
 void KComboBox::setAutoCompletion( bool autocomplete )
 {
     setCompletionMode( autocomplete ? KGlobalSettings::CompletionAuto : KGlobalSettings::completionMode() );
@@ -190,7 +203,7 @@ void KComboBox::rotateText( KCompletionBase::KeyBindingType type )
 	      index = (policy == QComboBox::AtTop) ? -1 : count();
 	      m_strHistoryIterator = currentText();
 	   }
-	   
+	
 	   if( type == KCompletionBase::RotateUp )
 	   {
 	      switch( policy )

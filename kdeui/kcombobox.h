@@ -54,7 +54,7 @@
  *
  * This widget by default creates a completion object when you invoke
  * the @ref #completionObject() member function for the first time or use
- * @ref #setCompletionObject() to assign your own completion object.  
+ * @ref #setCompletionObject() to assign your own completion object.
  * Additionally, to make this widget more functional, KComboBox will
  * automatically handle the iteration and completion signals internally
  * when a completion object is created through either one of the methods
@@ -242,7 +242,7 @@ signals:
     * set to KGlobalSettings::CompletionNone.
     */
     void completion( const QString& );
-    
+
     /**
     * Emitted when the text rotation key-bindings are pressed.
     *
@@ -257,6 +257,14 @@ signals:
     */
     void textRotation( KCompletionBase::KeyBindingType );
 
+    /**
+     * Convenience method which iterates over all items and checks if 
+     * any of them is equal to @p text. If @p text is an empty string, false
+     * is returned.
+     * @returns true if an item with the string @p text is in the combobox.
+     */
+    bool isInserted( const QString& text ) const;
+    
 public slots:
 
     /**
