@@ -34,6 +34,8 @@
 	*   <i>Access to the KDE address book.</i>
 	* - <a href="kabc/html/index.html"><b>kabc</b></a>\n
 	*   <i>A replacement for kab.</i>
+	* - <a href="kutils/html/index.html"><b>kutils</b></a>\n
+	*   <i>High-level utils, like search/replace support.</i>
 	*
 	* More information about the KDE architecture in form of tutorials, HOWTOs,
 	* and FAQs can be found at

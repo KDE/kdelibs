@@ -105,6 +105,9 @@ Here is an alphabetical list:
     The theme engine lies within. It handles nearly anything relating to
     customizing the appearance of widgets.
 
+* kutils
+    Search/Replace dialog and functionality.
+
 * kwallet
     Client and backend to store values in encrypted files.
 
