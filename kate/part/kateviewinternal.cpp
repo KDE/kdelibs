@@ -481,7 +481,7 @@ void KateViewInternal::updateView(bool changed, int viewLinesScrolled)
       }
       else
       {
-        if (lineRanges[z].line != realLine)
+        if (lineRanges[z].line != realLine || lineRanges[z].startCol != startCol)
           alreadyDirty = lineRanges[z].dirty = true;
         
         if (lineRanges[z].dirty || (changed && alreadyDirty)) {
@@ -1467,15 +1467,14 @@ void KateViewInternal::cursorToMatchingBracket( bool sel )
 
 void KateViewInternal::topOfView( bool sel )
 {
-  WrappingCursor c( *m_doc, m_doc->getRealLine( startLine() ), 0 );
+  KateTextCursor c = startPos();
   updateSelection( c, sel );
   updateCursor( c );
 }
 
 void KateViewInternal::bottomOfView( bool sel )
 {
-  // FIXME account for wordwrap
-  WrappingCursor c( *m_doc, m_doc->getRealLine( endLine() ), 0 );
+  KateTextCursor c = endPos();
   updateSelection( c, sel );
   updateCursor( c );
 }
