@@ -115,10 +115,10 @@ void KTabWidget::wheelEvent( QWheelEvent *e )
     if ( e->orientation() == Horizontal )
         return;
 
-    QPoint point( e->pos() );
-    QSize size( tabBar()->sizeHint() );
-    if ( ( tabPosition()==Top && point.y()< size.height() ) || ( tabPosition()==Bottom && point.y()>(height()-size.height() ) ) )
-         wheelDelta( e->delta() );
+    if ( isEmptyTabbarSpace( e->pos() ) )
+        wheelDelta( e->delta() );
+    else
+        e->ignore();
 }
 
 void KTabWidget::wheelDelta( int delta )
