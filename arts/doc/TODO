@@ -19,7 +19,7 @@
 - support multiple artsd instances on one computer (like multiple displays),
   and think of a clever way to register them
 - more support for different audio input/output methods (i.e. SDL, NAS, ESD,
-  AIX, Solaris)
+  AIX, alternative OSS driver using threads)
 - support channels != 2
 - expand capabilities of shell utils (making them eventually as powerful as
   artscontrol, or better ;)
