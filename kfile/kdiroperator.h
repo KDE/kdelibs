@@ -32,6 +32,8 @@
 #include <kfile.h>
 
 class QPopupMenu;
+class QTimer;
+
 class KAction;
 class KToggleAction;
 class KActionSeparator;
@@ -296,9 +298,9 @@ private:
 
     QWidget *myPreview;    // temporary pointer for the preview widget
 
-    QPopupMenu *actionMenu;
-
     // actions for the popupmenus
+    KActionMenu *actionMenu;
+
     KAction 	*backAction;
     KAction 	*forwardAction;
     KAction 	*homeAction;
