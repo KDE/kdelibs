@@ -336,11 +336,13 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 			p->drawLine(x+2, y2-1, x2-1, y2-1);
 			p->drawLine(x2-1, y+2, x2-1, y2-1);
 
-			if (sunken)
-				p->fillRect(x+2, y+2, w-4, h-4, cg.button());
-			else
-				renderGradient( p, QRect(x+2, y+2, w-4, h-4),
-							    cg.button(), flags & Style_Horizontal );
+			if (w > 4) {
+				if (sunken)
+					p->fillRect(x+2, y+2, w-4, h-4, cg.button());
+				else
+					renderGradient( p, QRect(x+2, y+2, w-4, h-4),
+								    cg.button(), flags & Style_Horizontal );
+			}
 			break;
 		}
 
@@ -1519,7 +1521,7 @@ QRect HighColorStyle::subRect(SubRect r, const QWidget *widget) const
 		// We want the focus rect for buttons to be adjusted from
 		// the Qt3 defaults to be similar to Qt 2's defaults.
 		case SR_PushButtonFocusRect: {
-			const QPushButton *button = (const QPushButton *) widget;
+			const QPushButton* button = (const QPushButton*) widget;
 
 			QRect wrect(widget->rect());
 			int dbw1 = 0, dbw2 = 0;
@@ -1669,7 +1671,8 @@ QSize HighColorStyle::sizeFromContents( ContentsType contents,
 				if ( ! mi->custom()->fullSpan() )
 					h += 2*motifItemVMargin + 2*motifItemFrame;
 			}
-			else if ( mi->isSeparator() ) {
+			else if ( mi->widget() ) {
+			} else if ( mi->isSeparator() ) {
 				w = 10; // Arbitrary
 				h = 2;
 			}
@@ -1925,15 +1928,15 @@ bool HighColorStyle::eventFilter( QObject *object, QEvent *event )
 	{
 		QPushButton* button = (QPushButton*) object;
 
-		if (button->isEnabled()) {
-			if (event->type() == QEvent::Enter) {
-				hoverWidget = button;
-				button->repaint( false );
-			} 
-			else if (event->type() == QEvent::Leave) {
-				hoverWidget = 0L;
-				button->repaint( false );
-			}
+		if ( (event->type() == QEvent::Enter) &&
+			 (button->isEnabled()) ) {
+			hoverWidget = button;
+			button->repaint( false );
+		} 
+		else if ( (event->type() == QEvent::Leave) &&
+				  (object == hoverWidget) ) {
+			hoverWidget = 0L;
+			button->repaint( false );
 		}
 	}
 	
