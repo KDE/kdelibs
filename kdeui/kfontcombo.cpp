@@ -37,6 +37,7 @@ struct KFontComboPrivate
           italic(false),
           underline(false),
           strikeOut(false),
+	  modified(false),
           size(0),
           lineSpacing(0)
     {
@@ -188,7 +189,6 @@ void KFontCombo::setFonts(const QStringList &fonts)
  */
 void KFontCombo::setCurrentFont(const QString &family)
 {
-    d->defaultFamily = family;
     QString lowerName = family.lower();
     int c = count();
     for(int i = 0; i < c; i++)
@@ -196,7 +196,8 @@ void KFontCombo::setCurrentFont(const QString &family)
        if (text(i).lower() == lowerName)
        {
           setCurrentItem(i);
-          d->modified = false;
+          d->defaultFamily = text(i);
+	  d->modified = false;
           return;
        }
     }
@@ -209,7 +210,8 @@ void KFontCombo::setCurrentFont(const QString &family)
           if (text(i).lower() == lowerName)
           {
              setCurrentItem(i);
-             d->modified = false;
+             d->defaultFamily = text(i);
+	     d->modified = false;
              return;
           }
        }
@@ -221,7 +223,8 @@ void KFontCombo::setCurrentFont(const QString &family)
        if (text(i).lower().startsWith(lowerName))
        {
           setCurrentItem(i);
-          d->modified = false;
+          d->defaultFamily = text(i);
+	  d->modified = false;
           return;
        }
     }
