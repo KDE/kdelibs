@@ -31,44 +31,44 @@
 
 KCModule* KCModuleLoader::load(const KCModuleInfo &mod, const QString &libname, KLibLoader *loader)
 {
-    // attempt to load modules with ComponentFactory, only if the symbol init_<lib> exists
-    // (this is because some modules, e.g. kcmkio with multiple modules in the library,
-    // cannot be ported to KGenericFactory)
-    KLibrary *lib = loader->library(QFile::encodeName(libname.arg(mod.library())));
-    if (lib) {
-        QString initSym("init_");
-        initSym += libname.arg(mod.library());
+  // attempt to load modules with ComponentFactory, only if the symbol init_<lib> exists
+  // (this is because some modules, e.g. kcmkio with multiple modules in the library,
+  // cannot be ported to KGenericFactory)
+  KLibrary *lib = loader->library(QFile::encodeName(libname.arg(mod.library())));
+  if (lib) {
+    QString initSym("init_");
+    initSym += libname.arg(mod.library());
 
-        if ( lib->hasSymbol(QFile::encodeName(initSym)) )
-        {
-            // Reuse "lib" instead of letting createInstanceFromLibrary recreate it
-            //KCModule *module = KParts::ComponentFactory::createInstanceFromLibrary<KCModule>(QFile::encodeName(libname.arg(mod.library())));
-            KLibFactory *factory = lib->factory();
-            if ( factory )
-            {
-                KCModule *module = KParts::ComponentFactory::createInstanceFromFactory<KCModule>( factory );
-                if (module)
-                    return module;
-            }
-            // else do a fallback
-            kdDebug(1208) << "Unable to load module using ComponentFactory! Falling back to old loader." << endl;
-        }
-    
-	// get the create_ function
-	QString factory("create_%1");
-	void *create = lib->symbol(QFile::encodeName(factory.arg(mod.handle())));
-	
-	if (create)
-	    {
-		// create the module
-		KCModule* (*func)(QWidget *, const char *);
-		func = (KCModule* (*)(QWidget *, const char *)) create;
-		return  func(0, 0);
-	    }
-
-        lib->unload();
+    if ( lib->hasSymbol(QFile::encodeName(initSym)) )
+    {
+      // Reuse "lib" instead of letting createInstanceFromLibrary recreate it
+      //KCModule *module = KParts::ComponentFactory::createInstanceFromLibrary<KCModule>(QFile::encodeName(libname.arg(mod.library())));
+      KLibFactory *factory = lib->factory();
+      if ( factory )
+      {
+        KCModule *module = KParts::ComponentFactory::createInstanceFromFactory<KCModule>( factory );
+        if (module)
+          return module;
+      }
+      // else do a fallback
+      kdDebug(1208) << "Unable to load module using ComponentFactory! Falling back to old loader." << endl;
     }
-    return 0;
+
+    // get the create_ function
+    QString factory("create_%1");
+    void *create = lib->symbol(QFile::encodeName(factory.arg(mod.handle())));
+
+    if (create)
+    {
+      // create the module
+      KCModule* (*func)(QWidget *, const char *);
+      func = (KCModule* (*)(QWidget *, const char *)) create;
+      return  func(0, 0);
+    }
+
+    lib->unload();
+  }
+  return 0;
 }
 
 
@@ -82,19 +82,19 @@ KCModule* KCModuleLoader::loadModule(const KCModuleInfo &mod, bool withfallback)
 
   if (!mod.library().isEmpty())
   {
-      // get the library loader instance
+    // get the library loader instance
 
-      KLibLoader *loader = KLibLoader::self();
+    KLibLoader *loader = KLibLoader::self();
 
-       KCModule *module = load(mod, "kcm_%1", loader);
-       if (!module)
-	   module = load(mod, "libkcm_%1", loader);
-       if (module)
-	   return module;
-    }
-    else
-      kdWarning() << "Module " << mod.fileName() << " doesn't specify a library!" << endl;
-	
+    KCModule *module = load(mod, "kcm_%1", loader);
+    if (!module)
+      module = load(mod, "libkcm_%1", loader);
+    if (module)
+      return module;
+  }
+  else
+    kdWarning() << "Module " << mod.fileName() << " doesn't specify a library!" << endl;
+
   /*
    * Ok, we could not load the library.
    * Try to run it as an executable.
@@ -104,13 +104,13 @@ KCModule* KCModuleLoader::loadModule(const KCModuleInfo &mod, bool withfallback)
    *
    */
   if(withfallback)
-      KApplication::startServiceByDesktopPath(mod.fileName(), QString::null);
+    KApplication::startServiceByDesktopPath(mod.fileName(), QString::null);
   return 0;
 }
 
 void KCModuleLoader::unloadModule(const KCModuleInfo &mod)
 {
-	// get the library loader instance
+  // get the library loader instance
   KLibLoader *loader = KLibLoader::self();
 
   // try to unload the library
