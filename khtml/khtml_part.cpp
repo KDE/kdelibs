@@ -3590,7 +3590,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
   }
   else
       // selection stuff
-      if( d->m_bMousePressed && !innerNode.isNull() ) {
+      if( d->m_bMousePressed && !innerNode.isNull() && ( _mouse->state() == LeftButton )) {
         int offset;
         DOM::Node node;
         //kdDebug(6000) << "KHTMLPart::khtmlMouseMoveEvent x=" << event->x() << " y=" << event->y()
@@ -3720,6 +3720,15 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
      }
 
      urlSelected( url, _mouse->button(), _mouse->state(), target );
+   }
+   else if (_mouse->button() == MidButton)
+   {
+     QClipboard *cb = QApplication::clipboard();
+     QCString plain("plain");
+     QString url = cb->text(plain);
+     KURL u(url);
+     if (u.isValid())
+        urlSelected(url, 0,0, "_top");
    }
 
 #if 0 // We shouldn't need this, we had to move here anyway
