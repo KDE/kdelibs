@@ -98,9 +98,9 @@ static const char * const xNames[CHARSETS_COUNT] = {
     "koi8-r",
     "jisx0208.1983-0",
     /* ### not sure about the next seven ones. Lars */
-    "ksx1001.1997-0",
     "ksc5601.1987-0",
-    "gb2312*",
+    "ksx1001.1997-0",
+    "gbk*",
     "unknown",
     "unknown",
     "big5-0",
@@ -401,6 +401,16 @@ QFont KCharsets::fontForChar( const QChar &c, const QFont &_f ) const
     return f;
 }
 
+QStringList KCharsets::availableFamilies( QFont::CharSet ch )
+{
+    QStringList families;
+    QValueList<QCString> chFamilies = (*d->availableCharsets)[ch];
+    for ( QValueList<QCString>::Iterator it = chFamilies.begin(); it != chFamilies.end(); ++it ) {
+	families.append( QString(*it) );
+    }
+    return families;
+}
+
 void KCharsets::setQFont(QFont &f, QString charset) const
 {
     setQFont(f, nameToID(charset));
@@ -613,7 +623,7 @@ QFont::CharSet KCharsets::xNameToID(QString name) const
     int i = 0;
     while(i < CHARSETS_COUNT)
     {
-       if( name == xNames[i] )
+       if( !QRegExp( xNames[i] ).match(name) )
             return charsetsIds[i];
         i++;
     }

@@ -117,6 +117,10 @@ public:
     // or unicode...
 
     /**
+     * @returns all families that have a font in the give charset
+     */
+    QStringList availableFamilies( QFont::CharSet ch );
+    /**
      * sets the @ref QFont f to the charset given in charset.
      * Opposed to @ref QFont's setCharset() function, this function will do
      * it's best to find a font which can display the given charset. It might
