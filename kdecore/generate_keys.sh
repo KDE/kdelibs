@@ -22,6 +22,12 @@ sed -n '/enum Key/!d
 		$s/.*/& }/
 		p' \
 > kckey_a
+list=`grep '{ "' kckey_a | sed -e 's#.*{ "\([^"]*\)".*#\1#'`
+for i in $list; do 
+    if grep -q "i18n(\"key accelerator\", \"$i\");" ../common_texts.cpp; then
+        sed -e "s#^\(.*\"$i\",.*\$\)#\1 // translated#" kckey_a > kckey_a.new && mv kckey_a.new kckey_a
+    fi
+done
 
 # write header file
 begin_line="// This file has been automatically genrated by \"generate_keys.sh\""

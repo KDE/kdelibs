@@ -207,5 +207,7 @@ i18n("key accelerator", "BraceRight");
 i18n("key accelerator", "AsciiTilde");
 i18n("key accelerator", "PgUp");
 i18n("key accelerator", "PgDown");
+i18n("key accelerator", "Apostrophe");
+i18n("key accelerator", "Ampersand");
 i18n("Main Toolbar");
 

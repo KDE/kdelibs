@@ -5,32 +5,32 @@
 #include "kckey.h" 
 
 const KKeys KKEYS[NB_KEYS] = {
-	{ "Escape", 0x1000 },
-	{ "Tab", 0x1001 },
-	{ "Backtab", 0x1002 },
-	{ "Backspace", 0x1003 },
-	{ "Return", 0x1004 },
-	{ "Enter", 0x1005 },
-	{ "Insert", 0x1006 },
-	{ "Delete", 0x1007 },
-	{ "Pause", 0x1008 },
-	{ "Print", 0x1009 },
-	{ "SysReq", 0x100a },
-	{ "Home", 0x1010 },
-	{ "End", 0x1011 },
-	{ "Left", 0x1012 },
-	{ "Up", 0x1013 },
-	{ "Right", 0x1014 },
-	{ "Down", 0x1015 },
-	{ "Prior", 0x1016 },
-	{ "Next", 0x1017 },
-	{ "Shift", 0x1020 },
-	{ "Control", 0x1021 },
-	{ "Meta", 0x1022 },
-	{ "Alt", 0x1023 },
-	{ "CapsLock", 0x1024 },
-	{ "NumLock", 0x1025 },
-	{ "ScrollLock", 0x1026 },
+	{ "Escape", 0x1000 }, // translated
+	{ "Tab", 0x1001 }, // translated
+	{ "Backtab", 0x1002 }, // translated
+	{ "Backspace", 0x1003 }, // translated
+	{ "Return", 0x1004 }, // translated
+	{ "Enter", 0x1005 }, // translated
+	{ "Insert", 0x1006 }, // translated
+	{ "Delete", 0x1007 }, // translated
+	{ "Pause", 0x1008 }, // translated
+	{ "Print", 0x1009 }, // translated
+	{ "SysReq", 0x100a }, // translated
+	{ "Home", 0x1010 }, // translated
+	{ "End", 0x1011 }, // translated
+	{ "Left", 0x1012 }, // translated
+	{ "Up", 0x1013 }, // translated
+	{ "Right", 0x1014 }, // translated
+	{ "Down", 0x1015 }, // translated
+	{ "Prior", 0x1016 }, // translated
+	{ "Next", 0x1017 }, // translated
+	{ "Shift", 0x1020 }, // translated
+	{ "Control", 0x1021 }, // translated
+	{ "Meta", 0x1022 }, // translated
+	{ "Alt", 0x1023 }, // translated
+	{ "CapsLock", 0x1024 }, // translated
+	{ "NumLock", 0x1025 }, // translated
+	{ "ScrollLock", 0x1026 }, // translated
 	{ "F1", 0x1030 },
 	{ "F2", 0x1031 },
 	{ "F3", 0x1032 },
@@ -72,23 +72,23 @@ const KKeys KKEYS[NB_KEYS] = {
 	{ "Hyper_L", 0x1056 },
 	{ "Hyper_R", 0x1057 },
 	{ "Help", 0x1058 },
-	{ "Space", 0x20 },
+	{ "Space", 0x20 }, // translated
 	{ "Any", Qt::Key_Space },
 	{ "Exclam", 0x21 },
 	{ "QuoteDbl", 0x22 },
 	{ "NumberSign", 0x23 },
 	{ "Dollar", 0x24 },
 	{ "Percent", 0x25 },
-	{ "Ampersand", 0x26 },
-	{ "Apostrophe", 0x27 },
-	{ "ParenLeft", 0x28 },
-	{ "ParenRight", 0x29 },
-	{ "Asterisk", 0x2a },
-	{ "Plus", 0x2b },
-	{ "Comma", 0x2c },
-	{ "Minus", 0x2d },
-	{ "Period", 0x2e },
-	{ "Slash", 0x2f },
+	{ "Ampersand", 0x26 }, // translated
+	{ "Apostrophe", 0x27 }, // translated
+	{ "ParenLeft", 0x28 }, // translated
+	{ "ParenRight", 0x29 }, // translated
+	{ "Asterisk", 0x2a }, // translated
+	{ "Plus", 0x2b }, // translated
+	{ "Comma", 0x2c }, // translated
+	{ "Minus", 0x2d }, // translated
+	{ "Period", 0x2e }, // translated
+	{ "Slash", 0x2f }, // translated
 	{ "0", 0x30 },
 	{ "1", 0x31 },
 	{ "2", 0x32 },
@@ -99,12 +99,12 @@ const KKeys KKEYS[NB_KEYS] = {
 	{ "7", 0x37 },
 	{ "8", 0x38 },
 	{ "9", 0x39 },
-	{ "Colon", 0x3a },
-	{ "Semicolon", 0x3b },
-	{ "Less", 0x3c },
-	{ "Equal", 0x3d },
-	{ "Greater", 0x3e },
-	{ "Question", 0x3f },
+	{ "Colon", 0x3a }, // translated
+	{ "Semicolon", 0x3b }, // translated
+	{ "Less", 0x3c }, // translated
+	{ "Equal", 0x3d }, // translated
+	{ "Greater", 0x3e }, // translated
+	{ "Question", 0x3f }, // translated
 	{ "At", 0x40 },
 	{ "A", 0x41 },
 	{ "B", 0x42 },
@@ -132,16 +132,16 @@ const KKeys KKEYS[NB_KEYS] = {
 	{ "X", 0x58 },
 	{ "Y", 0x59 },
 	{ "Z", 0x5a },
-	{ "BracketLeft", 0x5b },
-	{ "Backslash", 0x5c },
-	{ "BracketRight", 0x5d },
-	{ "AsciiCircum", 0x5e },
-	{ "Underscore", 0x5f },
-	{ "QuoteLeft", 0x60 },
-	{ "BraceLeft", 0x7b },
+	{ "BracketLeft", 0x5b }, // translated
+	{ "Backslash", 0x5c }, // translated
+	{ "BracketRight", 0x5d }, // translated
+	{ "AsciiCircum", 0x5e }, // translated
+	{ "Underscore", 0x5f }, // translated
+	{ "QuoteLeft", 0x60 }, // translated
+	{ "BraceLeft", 0x7b }, // translated
 	{ "Bar", 0x7c },
-	{ "BraceRight", 0x7d },
-	{ "AsciiTilde", 0x7e },
+	{ "BraceRight", 0x7d }, // translated
+	{ "AsciiTilde", 0x7e }, // translated
 	{ "nobreakspace", 0x0a0 },
 	{ "exclamdown", 0x0a1 },
 	{ "cent", 0x0a2 },
