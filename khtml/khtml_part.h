@@ -784,7 +784,7 @@ protected:
   virtual void submitForm( const char *action, const QString &url, const QByteArray &formData,
                            const QString &target, const QString& contentType = QString::null,
                            const QString& boundary = QString::null ); // ### KDE 3.0: make private
-
+			   
   /**
    * @internal
    */
@@ -899,6 +899,13 @@ private slots:
   void slotDecFontSizes();
 
   void slotLoadImages();
+
+  /**
+   * We try to submit the form again
+   * if someone tries to submit a form
+   * while parsing
+   */
+  void submitFormAgain();
 
   /**
    * @internal

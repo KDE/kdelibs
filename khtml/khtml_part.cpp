@@ -317,6 +317,17 @@ public:
 
   QString m_strSelectedURL;
 
+  struct SubmitForm
+  {
+    const char *submitAction;
+    QString submitUrl;
+    QByteArray submitFormData;
+    QString submitContentType;
+    QString submitBoundary;
+  };
+  
+  SubmitForm *m_submitForm;
+  
   bool m_bMousePressed;
   DOM::Node m_mousePressNode; //node under the mouse when the mouse was pressed (set in the mouse handler)
 
@@ -2635,6 +2646,18 @@ KParts::PartManager *KHTMLPart::partManager()
   return d->m_manager;
 }
 
+void KHTMLPart::submitFormAgain()
+{
+  if( !d->m_bParsing )
+  {
+    KHTMLPart::submitForm( d->m_submitForm->submitAction, d->m_submitForm->submitUrl, d->m_submitForm->submitFormData, d->m_submitForm->submitContentType, d->m_submitForm->submitBoundary );
+    delete d->m_submitForm;
+    d->m_submitForm = 0;
+  }
+  else
+    QTimer::singleShot( 3000, this, SLOT(submitFormAgain()) );
+}
+
 void KHTMLPart::submitForm( const char *action, const QString &url, const QByteArray &formData, const QString &_target, const QString& contentType, const QString& boundary )
 {
   QString target = _target;
@@ -2682,13 +2705,22 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
       args.setContentType( "Content-Type: " + contentType + "; boundary=" + boundary );
   }
 
-  // ### bail out if a submit() call from JS occured while parsing
   if ( d->m_bParsing ) {
-    kdWarning( 6070 ) << "Ignoring submit() while parsing" << endl;
-    return;
+    if( d->m_submitForm ) {
+        kdWarning( 6070 ) << "Submit() while parsing, but another submit (while parsing) was going on before... Please report this as a bug!" << endl;
+	return;
+    }
+    kdWarning( 6070 ) << "Submit() while parsing, will try to submit again in 3 seconds" << endl;
+    d->m_submitForm = new KHTMLPartPrivate::SubmitForm;
+    d->m_submitForm->submitAction = action;
+    d->m_submitForm->submitUrl = url;
+    d->m_submitForm->submitFormData = formData;
+    d->m_submitForm->submitContentType = contentType;
+    d->m_submitForm->submitBoundary = boundary;
+    QTimer::singleShot( 3000, this, SLOT(submitFormAgain()) );
   }
-
-  emit d->m_extension->openURLRequest( u, args );
+  else
+    emit d->m_extension->openURLRequest( u, args );
 
 }
 
