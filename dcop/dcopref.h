@@ -277,6 +277,7 @@ class DCOPRef
 public:
     /**
      * Creates a null reference.
+     * @see isNull()
      */
     DCOPRef();
 
@@ -312,8 +313,9 @@ public:
     DCOPRef( const QCString& app, const QCString& obj, const QCString& type );
 
     /**
-     * Tests wether it is a null reference.
+     * Tests whether this is a null reference.
      * @return true if this object is a null reference
+     * @see clear()
      */
     bool isNull() const;
 
@@ -349,6 +351,7 @@ public:
 
     /**
      * Changes the referenced object. Resets the type to unknown (null).
+     * The type is not needed for @ref call() and @ref send().
      * @param app the application id.
      * @param obj the object id
      */
@@ -358,13 +361,14 @@ public:
      * Changes the referenced object.
      * @param app the application id.
      * @param obj the object id
-     * @param tyoe the object's type
+     * @param type the object's type
      */
     void setRef( const QCString& app, const QCString& obj, const QCString& type );
 
 
     /**
      * Makes this a null reference.
+     * @see isNull()
      */
     void clear();
 
