@@ -368,6 +368,7 @@ void RenderTable::recalcColInfo( ColInfo *col )
     ColInfoLine *line = (colInfos[col->span-1]);
     ColInfo **data = line->data() + col->start;
     *data = 0;
+    KHTMLAssert( colInfos[col->span-1]->data()[col->start] == 0 );
 
     // add table-column if exists
     RenderObject *child = firstChild();
@@ -386,7 +387,6 @@ void RenderTable::recalcColInfo( ColInfo *col )
     }
 
     // now the cells
-    KHTMLAssert( colInfos[col->span-1]->data()[col->start] == 0 );
     for ( unsigned int r = 0; r < totalRows; r++ ) {
 	RenderTableCell *cell = cells[r][col->start];
 	if ( cell && cell->colSpan() == col->span ) 
