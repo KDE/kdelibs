@@ -52,6 +52,7 @@
 #include <kprotocolmanager.h>
 #include <kdatastream.h>
 #include <kextsock.h>
+#include <ksocks.h>
 #include <kurl.h>
 #include <kinstance.h>
 #include <kglobal.h>
@@ -378,6 +379,7 @@ ssize_t HTTPProtocol::read (void *b, size_t nbytes)
     return ret;
   }
 #endif
+  // EW, can we use read() here?
   ret=fread(b, 1, nbytes, m_fsocket);
   m_bEOF = feof(m_fsocket);
   return ret;
@@ -561,7 +563,7 @@ HTTPProtocol::http_openConnection()
 
       infoMessage( i18n("Connecting to <b>%1</b>...").arg(m_state.hostname) );
 
-      if (::connect(m_sock, (struct sockaddr*)(&m_proxySockaddr), sizeof(m_proxySockaddr))) {
+      if (KSocks::self()->connect(m_sock, (struct sockaddr*)(&m_proxySockaddr), sizeof(m_proxySockaddr))) {
         if ((errno != EINPROGRESS) && (errno != EWOULDBLOCK)) {
           // Error
           error(ERR_COULD_NOT_CONNECT, i18n("proxy %1, port %2").arg(proxy_host).arg(proxy_port) );
@@ -630,7 +632,7 @@ HTTPProtocol::http_openConnection()
 
       // In SSL mode we normally don't use this.  Does it cause a resource
       // leak that I'm not cleaning this up here if we're in SSL mode?
-      int rhrc = ::read(m_sock, buffer, sizeof(buffer)-1);
+      int rhrc = KSocks::self()->read(m_sock, buffer, sizeof(buffer)-1);
       buffer[sizeof(buffer)-1] = 0;  // just in case so we don't run away!
       if (rhrc == -1 || strncmp(buffer, "HTTP/1.0 200", 12)) {
         // FIXME: a good workaround would be to fallback to non-proxy mode
@@ -668,7 +670,7 @@ HTTPProtocol::http_openConnection()
 
       infoMessage( i18n("Connecting to <b>%1</b>...").arg(m_state.hostname) );
 
-      if (::connect(m_sock, (struct sockaddr*)( &server_name ), sizeof(server_name))) {
+      if (KSocks::self()->connect(m_sock, (struct sockaddr*)( &server_name ), sizeof(server_name))) {
         if ((errno != EINPROGRESS) && (errno != EWOULDBLOCK)) {
           // Error
           if (m_state.port != m_DefaultPort)
