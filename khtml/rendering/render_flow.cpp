@@ -102,7 +102,14 @@ void RenderFlow::setStyle(RenderStyle *_style)
 
     // ### we could save this call when the change only affected
     // non inherited properties
-    RenderObject *child = firstChild();
+    RenderObject*child = firstChild();
+    RenderStyle* newStyle;
+    if (!isInline() && child &&
+        ( newStyle=style()->getPseudoStyle(RenderStyle::FIRST_LETTER) ) ) {
+        child->setStyle(newStyle);
+        child = child->nextSibling();
+    }
+
     while(child != 0)
     {
         if(child->isAnonymousBox())
@@ -1258,6 +1265,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
 	    RenderFlow* firstLetter = new RenderFlow(0 /* anonymous box */);
 	    pseudoStyle->setDisplay( INLINE );
 	    firstLetter->setStyle(pseudoStyle);
+            firstLetter->setIsAnonymousBox(true);
 
 	    addChild(firstLetter);
 
@@ -1276,6 +1284,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
 		RenderStyle* newStyle = new RenderStyle();
 		newStyle->inheritFrom(pseudoStyle);
 		letter->setStyle(newStyle);
+                letter->setIsAnonymousBox(true);
 		firstLetter->addChild(letter);
 	    }
 	    firstLetter->close();
