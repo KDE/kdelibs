@@ -811,4 +811,15 @@ const QString &KHTMLSettings::availableFamilies()
 
   return *avFamilies;
 }
+
+int QPaintDevice::x11AppDpiY( int screen )
+{
+    return 96;
+}
+
+int QPaintDevice::x11AppDpiX( int screen )
+{
+    return 90;
+}
+
 #include "test_regression.moc"
