@@ -209,7 +209,8 @@ SessionData::~SessionData()
 void KIO::SessionData::configDataFor( KIO::MetaData &configData, const QString &proto,
                                       const QString & )
 {
-    if ( proto.find("http", 0, false) == 0 )
+    if ( (proto.find("http", 0, false) == 0 ) ||
+         (proto.find("webdav", 0, false) == 0) )
     {
         if (!d->initDone)
             reset();
