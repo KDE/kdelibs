@@ -273,7 +273,7 @@ bool ReadOnlyPart::openURL( const KURL &url )
   if ( !closeURL() )
     return false;
   m_url = url;
-  emit setWindowCaption( m_url.decodedURL() );
+  emit setWindowCaption( m_url.prettyURL() );
   if ( m_url.isLocalFile() )
   {
     emit started( 0 );
@@ -340,8 +340,8 @@ void ReadOnlyPart::guiActivateEvent( GUIActivateEvent * event )
   {
     if (!m_url.isEmpty())
     {
-      kdDebug(1000) << "ReadOnlyPart::guiActivateEvent -> " << m_url.decodedURL() << endl;
-      emit setWindowCaption( m_url.decodedURL() );
+      kdDebug(1000) << "ReadOnlyPart::guiActivateEvent -> " << m_url.prettyURL() << endl;
+      emit setWindowCaption( m_url.prettyURL() );
     } else emit setWindowCaption( "" );
   }
 }

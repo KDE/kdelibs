@@ -40,7 +40,7 @@ KImageIOFormat::KImageIOFormat( const QString &path)
    config.setGroup("Image Format");
    mType = config.readEntry("Type");
    mHeader = config.readEntry("Header");
-   KURL::decode(mHeader); // Use URL-like encoding!
+   KURL::decode_string(mHeader); // Use URL-like encoding!
    mFlags = config.readEntry("Flags");
    bRead = config.readBoolEntry("Read");
    bWrite = config.readBoolEntry("Write");

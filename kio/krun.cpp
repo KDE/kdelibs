@@ -420,22 +420,16 @@ void KRun::init()
 {
   kdDebug(7010) << "INIT called" << endl;
 
-  QString myurl = m_strURL.url();
-
-  if ( myurl.left( 7 ) == "mailto:" )
+  if ( m_strURL.protocol() == "mailto" )
   {
     emit finished();
 
-    QString addr = myurl.mid( 7 );
-
-    KURL::decode( addr );
+    QString addr = m_strURL.path();
     QString subj;
 
-    int subjPos = addr.find( "?subject=" );
-    if ( subjPos != -1 )
+    if (m_strURL.query().left(9) == "?subject=")
     {
-      subj = addr.mid( subjPos + 9 );
-      addr.truncate( subjPos );
+       subj = KURL::decode_string( m_strURL.query().mid(9) );
     }
 
     kapp->invokeMailer( addr, subj );

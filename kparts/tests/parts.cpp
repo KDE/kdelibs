@@ -50,7 +50,7 @@ bool Part1::openFile()
     return false;
   m_edit->setText(s);
 
-  emit setStatusBarText( m_url.decodedURL() );
+  emit setStatusBarText( m_url.prettyURL() );
 
   return true;
 }

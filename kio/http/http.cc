@@ -846,12 +846,12 @@ bool HTTPProtocol::http_open()
   // Let the path be "/" if it is empty ( => true )
   {
      QString encoded = m_request.path;
-     if (encoded.isEmpty())
+     if (m_request.path.isEmpty())
         encoded = "/";
      else
-        KURL::encode(encoded);
-     if (!m_request.query.isEmpty())
-        encoded += "?" + m_request.query;
+        encoded = KURL::encode_string(m_request.path);
+
+     encoded += m_request.query;
 
      header += encoded;
   }

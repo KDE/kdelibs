@@ -247,7 +247,7 @@ KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, const QString&_text,
 			    const QString& _value, QWidget *parent)
     : QDialog( parent, 0L, true )
 {
-  QString caption = _urls.first().decodedURL();
+  QString caption = _urls.first().prettyURL();
   if (_urls.count() > 1)
       caption += QString::fromLatin1("...");
   setCaption(caption);

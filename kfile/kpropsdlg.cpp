@@ -741,7 +741,7 @@ void KFilePropsPage::applyChanges()
                 QString newDest;
                 KIO::RenameDlg_Result res = KIO::open_RenameDlg(
                     i18n("File already exists"),
-                    oldurl.decodedURL(),
+                    oldurl.prettyURL(),
                     path,
                     (KIO::RenameDlg_Mode) (KIO::M_OVERWRITE | KIO::M_SINGLE),
                     newDest,

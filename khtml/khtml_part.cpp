@@ -66,6 +66,7 @@
 #include <unistd.h>
 #include <qstring.h>
 #include <qfont.h>
+#include <qfile.h>
 #include <qfontinfo.h>
 #include <qobject.h>
 #include <qregexp.h>
@@ -944,9 +945,7 @@ void KHTMLPart::overURL( const QString &url )
 
   if ( u.isMalformed() )
   {
-    QString decodedURL = url;
-    KURL::decode( decodedURL );
-    emit setStatusBarText( decodedURL );
+    emit setStatusBarText( u.prettyURL() );
     return;
   }
 
@@ -954,14 +953,13 @@ void KHTMLPart::overURL( const QString &url )
   {
     // TODO : use KIO::stat() and create a KFileItem out of its result,
    // to use KFileItem::statusBarText()
-    QString decodedPath( u.path() );
-    QString decodedName( u.filename( true ) );
+    QCString path = QFile::encodeName( u.path() );
 	
     struct stat buff;
-    stat( decodedPath.latin1(), &buff );
+    stat( path.data(), &buff );
 
     struct stat lbuff;
-    lstat( decodedPath.latin1(), &lbuff );
+    lstat( path.data(), &lbuff );
 
     QString text = u.url();
     QString text2 = text;
@@ -975,7 +973,7 @@ void KHTMLPart::overURL( const QString &url )
 	tmp = i18n("%1 (Link)").arg(com);
       char buff_two[1024];
       text += " -> ";
-      int n = readlink ( decodedPath.latin1(), buff_two, 1022);
+      int n = readlink ( path.data(), buff_two, 1022);
       if (n == -1)
       {
         text2 += "  ";
@@ -1014,7 +1012,7 @@ void KHTMLPart::overURL( const QString &url )
     emit setStatusBarText( text );
   }
   else
-    emit setStatusBarText( u.decodedURL() );
+    emit setStatusBarText( u.prettyURL() );
 
 }
 

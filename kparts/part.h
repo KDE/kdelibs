@@ -295,7 +295,7 @@ public slots:
    * Otherwise, reimplement @ref openFile() only .
    *
    * If you reimplement it, don't forget to set the caption, usually with
-   * emit setWindowCaption( url.decodedURL() );
+   * emit setWindowCaption( url.prettyURL() );
    */
   virtual bool openURL( const KURL &url );
 
