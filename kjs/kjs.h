@@ -78,6 +78,11 @@ public:
    */
   static KJScript *current();
   /**
+   * Don't use. May disappear.
+   */
+  static void setCurrent( KJScript *newCurr );
+
+  /**
    * Current level of recursive calls to this interpreter. 0 initially.
    */
   int recursion() const;
