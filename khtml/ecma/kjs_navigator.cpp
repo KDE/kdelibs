@@ -78,7 +78,7 @@ KJSO Navigator::get(const UString &p) const
   } else if (p == "userAgent") {
     return String(userAgent);
   } else if (p == "platform") {
-    return String("Unix");
+    return String("X11");
   } else if (p == "plugins")
     return KJSO(new Plugins());
   else
