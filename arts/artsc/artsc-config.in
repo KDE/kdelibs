@@ -9,6 +9,8 @@ options:
 	[--libs]
 	[--cflags]
 	[--version]
+	[--arts-version]
+	[--arts-prefix]
 EOH
 	exit 1;
 }
@@ -32,6 +34,12 @@ do
 	  ;;
     --version)
 	  echo 0.9.5
+	  ;;
+    --arts-version)
+	  echo @ARTS_VERSION@
+	  ;;
+    --arts-prefix)
+	  echo $prefix
 	  ;;
 	*)
 	  echo "$0: unknown option $1"
