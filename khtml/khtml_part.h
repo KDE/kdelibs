@@ -1031,11 +1031,6 @@ private slots:
   /**
    * @internal
    */
-  void slotShowDocument( const QString &url, const QString &target );
-
-  /**
-   * @internal
-   */
   void slotAutoScroll();
 
   void slotPrintFrame();

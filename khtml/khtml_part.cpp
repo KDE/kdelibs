@@ -904,66 +904,6 @@ bool KHTMLPart::pluginsEnabled() const
   return d->m_bPluginsEnabled;
 }
 
-void KHTMLPart::slotShowDocument( const QString &url, const QString &target )
-{
-  // this is mostly copied from KHTMLPart::slotChildURLRequest. The better approach
-  // would be to put those functions into a single one.
-  khtml::ChildFrame *child = 0;
-  KParts::URLArgs args;
-  args.frameName = target;
-
-  QString frameName = args.frameName.lower();
-  if ( !frameName.isEmpty() )
-  {
-    if ( frameName == QString::fromLatin1( "_top" ) )
-    {
-      emit d->m_extension->openURLRequest( url, args );
-      return;
-    }
-    else if ( frameName == QString::fromLatin1( "_blank" ) )
-    {
-      emit d->m_extension->createNewWindow( url, args );
-      return;
-    }
-    else if ( frameName == QString::fromLatin1( "_parent" ) )
-    {
-      KParts::URLArgs newArgs( args );
-      newArgs.frameName = QString::null;
-
-      emit d->m_extension->openURLRequest( url, newArgs );
-      return;
-    }
-    else if ( frameName != QString::fromLatin1( "_self" ) )
-    {
-      khtml::ChildFrame *_frame = recursiveFrameRequest( url, args );
-
-      if ( !_frame )
-      {
-        emit d->m_extension->openURLRequest( url, args );
-        return;
-      }
-
-      child = _frame;
-    }
-  }
-
-  // TODO: handle child target correctly! currently the script are always executed fur the parent
-  // When target attribute is supported, make sure it doesn't produce a XSS leak!
-  if ( !child && url.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 ) {
-      executeScript( KURL::decode_string( url.right( url.length() - 11) ) );
-      return;
-  }
-
-  if ( child ) {
-      requestObject( child, KURL(url), args );
-  }  else if ( frameName == "_self" )
-  {
-      KParts::URLArgs newArgs( args );
-      newArgs.frameName = QString::null;
-      emit d->m_extension->openURLRequest( KURL(url), newArgs );
-  }
-}
-
 void KHTMLPart::slotDebugDOMTree()
 {
   if ( d->m_doc && d->m_doc->firstChild() )
@@ -3936,8 +3876,7 @@ void KHTMLPart::slotChildURLRequest( const KURL &url, const KParts::URLArgs &arg
   }
 
   QString frameName = args.frameName.lower();
-  if ( !frameName.isEmpty() )
-  {
+  if ( !frameName.isEmpty() ) {
     if ( frameName == QString::fromLatin1( "_top" ) )
     {
       emit d->m_extension->openURLRequest( url, args );
