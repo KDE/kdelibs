@@ -19,6 +19,7 @@ libkformula_la_LIBADD  = ../kdeui/libkdeui.la -lm
 
 libkformula_la_METASOURCES = AUTO
 
-
-
+check_PROGRAMS = kformulatest
+kformulatest_SOURCES = kformulatest.cpp
+kformulatest_LDADD = libkformula.la
 

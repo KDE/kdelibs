@@ -32,3 +32,6 @@ libkspell_la_SOURCES = ksconfig.cpp kspelldlg.cpp kspell.cpp kprocio.cpp
 
 libkspell_la_METASOURCES = AUTO
 
+check_PROGRAMS = kspelltest
+kspelltest_SOURCES = kspelltest.cpp
+kspelltest_LDADD = libkspell.la
