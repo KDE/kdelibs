@@ -65,6 +65,7 @@ void KRegistry::addFactory( KRegFactory *_factory )
   QStringList::Iterator end = _factory->pathList().end();
   for( ; it != end; ++it )
   {    
+    kdebug( KDEBUG_INFO, 7011, "addFactory : adding path %s", *it->ascii() );
     m_lstToplevelDirs.append( *it );
     if ( m_bLoaded )
       readDirectory( *it, true );

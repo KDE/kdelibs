@@ -17,7 +17,7 @@
 #include "ktypecode.h"
 #include "kservicetype.h"
 
-class KMimeTypeFactory;
+class KServiceTypeFactory;
 
 /**
  * Represents a mime type.
@@ -29,7 +29,7 @@ class KMimeTypeFactory;
  * #include <kregfactories.h> 
  *
  *   KRegistry registry;
- *   registry.addFactory( new KMimeTypeFactory );
+ *   registry.addFactory( new KServiceTypeFactory );
  *   registry.load();
  * </pre>
  */

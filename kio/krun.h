@@ -41,7 +41,7 @@ class KService;
  * #include <kregfactories.h> 
  *
  *   KRegistry registry;
- *   registry.addFactory( new KMimeTypeFactory );
+ *   registry.addFactory( new KServiceTypeFactory );
  *   registry.addFactory( new KServiceFactory );
  *   registry.load();
  * </pre>

@@ -15,16 +15,6 @@
  *
  **************************************************/
 
-QString systemArchDir()
-{
-  QString tmp( "/opt/kde" );
-  const char* env = getenv( "KDEDIR" );
-  if ( env )
-    tmp = env;
-  
-  return tmp;
-}
-
 QString systemShareDir()
 {
   QString tmp( "/opt/kde" );
@@ -35,11 +25,6 @@ QString systemShareDir()
   tmp += "/share";
   
   return tmp;
-}
-
-QString userArchDir()
-{
-  return kapp->localkdedir();
 }
 
 QString userShareDir()
