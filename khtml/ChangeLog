@@ -1,3 +1,22 @@
+2004-09-16  Leo Savernik  <l.savernik@aon.at>
+
+ * rendering/render_inline.{cpp,h} (paintOutline): removed.
+ (paintOutlinePath): Paints an outline by following a path consisting of
+ rectangular line segments.
+ (appendIfNew): Append point if not contained at end.
+ (reduceSpike): Reduce spikes.
+ (reduceSegmentSeparators): Redoce segment separators.
+ (appendPoint): Appends point with reductions.
+ (collectHorizontalBoxCoordinates): Determines points for top-/bottommost line box.
+ (lineBoxesDisjoint): Checks whether two line boxes don't share a common x-range.
+ (collectVerticalBoxCoordinates): Determines points for left/right sides of line boxes.
+ (linkBeginToEnd): Links the last point to the first one, reducing even more.
+ (paintOutlines): Uses new painting outline algorithm.
+ (kSwap): Swaps two variables (candidate for misc?)
+ (bsOrientation): returns whether border side is horizontal/vertical.
+ (newBorderSide): Determines new border side.
+ (paintOutlineSegment): Paints a straight outline segment.
+
 2004-09-11  David Faure  <faure@kde.org>
 
         * khtml_part.cpp (defaultEncoding, encoding, createDecoder): 
@@ -5,7 +24,7 @@
 
 2004-09-02  Leo Savernik  <l.savernik@aon.at>
 
-	* html_formimpl.{cpp,h} (HTMLTextAreaElementImpl::value):
+ * html_formimpl.{cpp,h} (HTMLTextAreaElementImpl::value):
         Only take text from RenderTextArea when it has been fully initialized.
         Mark it fully initialized when RenderTextArea has been initialized
         from the DOM.

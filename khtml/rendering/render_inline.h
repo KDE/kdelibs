@@ -78,7 +78,7 @@ public:
 
 protected:
     static RenderInline* cloneInline(RenderFlow* src);
-    void paintOutline(QPainter *p, int tx, int ty, const QRect &prevLine, const QRect &thisLine, const QRect &nextLine);
+    void paintOutlinePath(QPainter *p, int tx, int ty, const QPoint *begin, const QPoint *end, BorderSide startingBS, int initialDirection, BorderSide endingBS);
     void paintOutlines(QPainter *p, int tx, int ty);
 
 private:

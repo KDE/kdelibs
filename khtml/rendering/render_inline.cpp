@@ -326,107 +326,497 @@ void RenderInline::paintFocusRing(QPainter *p, int tx, int ty)
 }
 #endif
 
+/**
+ * Appends the given coordinate-pair to the point-array if it is not
+ * equal to the last element.
+ * @param pointArray point-array
+ * @param pnt point to append
+ * @return \c true if \c pnt has actually been appended
+ */
+inline static bool appendIfNew(QValueVector<QPoint> &pointArray, const QPoint &pnt)
+{
+//   if (!pointArray.isEmpty()) kdDebug(6040) << "appifnew: " << pointArray.back() << " == " << pnt << ": " << (pointArray.back() == pnt) << endl;
+//   else kdDebug(6040) << "appifnew: " << pnt << " (unconditional)" << endl;
+    if (!pointArray.isEmpty() && pointArray.back() == pnt) return false;
+    pointArray.append(pnt);
+    return true;
+} 
+
+/**
+ * Does spike-reduction on the given point-array's stack-top.
+ *
+ * Spikes are path segments of which one goes forward, and the sucessor
+ * goes backward on the predecessor's segment:
+ *
+ * 2      0      1
+ * x------x<-----x
+ * (0 is stack-top in point-array)
+ *
+ * This will be reduced to
+ * 1      0
+ * x------x
+ *
+ * Preconditions:
+ * - No other spikes exist in the whole point-array except at most
+ *   one at the end
+ * - No two succeeding points are ever equal
+ * - For each two succeeding points either p1.x == p2.x or p1.y == p2.y holds
+ *   true
+ * - No such spike exists where 2 is situated between 0 and 1.
+ *
+ * Postcondition:
+ * - No spikes exist in the whole point-array
+ *
+ * If no spike is found, the point-array is left unchanged.
+ * @return \c true if an actual reduction was done
+ */
+inline static bool reduceSpike(QValueVector<QPoint> &pointArray)
+{
+    if (pointArray.size() < 3) return false;
+    QValueVector<QPoint>::Iterator it = pointArray.end();
+    QPoint p0 = *--it;
+    QPoint p1 = *--it;
+    QPoint p2 = *--it;
+
+    bool elide = false;
+  
+    if (p0.x() == p1.x() && p1.x() == p2.x()
+        && (p1.y() < p0.y() && p0.y() < p2.y()
+            || p2.y() < p0.y() && p0.y() < p1.y()
+            || p1.y() < p2.y() && p2.y() < p0.y()
+            || p0.y() < p2.y() && p2.y() < p1.y()
+            || (elide = p2.y() == p0.y() && p0.y() < p1.y())
+            || (elide = p1.y() < p0.y() && p0.y() == p2.y()))
+        || p0.y() == p1.y() && p1.y() == p2.y()
+        && (p1.x() < p0.x() && p0.x() < p2.x()
+            || p2.x() < p0.x() && p0.x() < p1.x()
+            || p1.x() < p2.x() && p2.x() < p0.x()
+            || p0.x() < p2.x() && p2.x() < p1.x()
+            || (elide = p2.x() == p0.x() && p0.x() < p1.x())
+            || (elide = p1.x() < p0.x() && p0.x() == p2.x())))
+    {
+//     kdDebug(6040) << "spikered p2" << (elide ? " (elide)" : "") << ": " << p2 << " p1: " << p1 << " p0: " << p0 << endl;
+        pointArray.pop_back(); pointArray.pop_back();
+        if (!elide)
+            pointArray.push_back(p0);
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Reduces segment separators.
+ *
+ * A segment separator separates a segment into two segments, thus causing
+ * two adjacent segment with the same orientation.
+ *
+ * 2       1     0
+ * x-------x---->x
+ * (0 means stack-top)
+ *
+ * Here, 1 is a segment separator. As segment separators not only make
+ * the line drawing algorithm inefficient, but also make the spike-reduction
+ * fail, they must be eliminated:
+ *
+ * 1             0
+ * x------------>x
+ *
+ * Preconditions:
+ * - No other segment separators exist in the whole point-array except
+ *   at most one at the end
+ * - No two succeeding points are ever equal
+ * - For each two succeeding points either p1.x == p2.x or p1.y == p2.y holds
+ *   true
+ * - No such spike exists where 2 is situated between 0 and 1.
+ *
+ * Postcondition:
+ * - No segment separators exist in the whole point-array
+ *
+ * If no segment separator is found at the end of the point-array, it is
+ * left unchanged.
+ * @return \c true if a segment separator was actually reduced.
+ */
+inline static bool reduceSegmentSeparator(QValueVector<QPoint> &pointArray)
+{
+    if (pointArray.size() < 3) return false;
+    QValueVector<QPoint>::Iterator it = pointArray.end();
+    QPoint p0 = *--it;
+    QPoint p1 = *--it;
+    QPoint p2 = *--it;
+//     kdDebug(6040) << "checking p2: " << p2 << " p1: " << p1 << " p0: " << p0 << endl;
+  
+    if (p0.x() == p1.x() && p1.x() == p2.x()
+        && (p2.y() < p1.y() && p1.y() < p0.y()
+            || p0.y() < p1.y() && p1.y() < p2.y())
+        || p0.y() == p1.y() && p1.y() == p2.y()
+        && (p2.x() < p1.x() && p1.x() < p0.x()
+            || p0.x() < p1.x() && p1.x() < p2.x()))
+    {
+//     kdDebug(6040) << "segred p2: " << p2 << " p1: " << p1 << " p0: " << p0 << endl;
+        pointArray.pop_back(); pointArray.pop_back();
+        pointArray.push_back(p0);
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Appends the given point to the point-array, doing necessary reductions to
+ * produce a path without spikes and segment separators.
+ */
+static void appendPoint(QValueVector<QPoint> &pointArray, QPoint &pnt)
+{
+  if (!appendIfNew(pointArray, pnt)) return;
+//   kdDebug(6040) << "appendPoint: appended " << pnt << endl;
+  reduceSegmentSeparator(pointArray)
+  || reduceSpike(pointArray);
+}
+
+/**
+ * Traverses the horizontal inline boxes and appends the point coordinates to
+ * the given array.
+ * @param box inline box
+ * @param pointArray array collecting coordinates
+ * @param bottom \c true, collect bottom coordinates, \c false, collect top
+ * 	coordinates.
+ * @param limit lower limit that an y-coordinate must at least reach. Note
+ *	that limit designates the highest y-coordinate for \c bottom, and
+ *	the lowest for !\c bottom.
+ */
+static void collectHorizontalBoxCoordinates(InlineBox *box,
+                                            QValueVector<QPoint> &pointArray,
+                                            bool bottom, int limit = -500000)
+{
+//   kdDebug(6000) << "collectHorizontalBoxCoordinates: " << endl;
+    int y = box->yPos() + bottom*box->height();
+    if (limit != -500000 && (bottom ? y < limit : y > limit))
+        y = limit;
+    int x = box->xPos() + bottom*box->width();
+    QPoint newPnt(x, y);
+    // Add intersection point if point-array not empty.
+    if (!pointArray.isEmpty()) {
+        QPoint lastPnt = pointArray.back();
+        QPoint insPnt(newPnt.x(), lastPnt.y());
+//         kdDebug(6040) << "left: " << lastPnt << " == " << insPnt << ": " << (insPnt == lastPnt) << endl;
+        appendPoint(pointArray, insPnt);
+    }
+    // Insert starting point of box
+    appendPoint(pointArray, newPnt);
+          
+    newPnt.rx() += bottom ? -box->width() : box->width();
+
+    if (box->isInlineFlowBox()) {
+        InlineFlowBox *flowBox = static_cast<InlineFlowBox *>(box);
+        for (InlineBox *b = bottom ? flowBox->lastChild() : flowBox->firstChild(); b; b = bottom ? b->prevOnLine() : b->nextOnLine()) {
+            // Don't let boxes smaller than this flow box' height influence
+            // the vertical position of the outline if they have a different
+            // x-coordinate
+            int l2;
+            if (b->xPos() != box->xPos() && b->xPos() + b->width() != box->xPos() + box->width())
+              l2 = y;
+            else
+              l2 = limit;
+            collectHorizontalBoxCoordinates(b, pointArray, bottom, l2);
+        }
+        
+        // Add intersection point if flow box contained any children
+        if (flowBox->firstChild()) {
+            QPoint lastPnt = pointArray.back();
+            QPoint insPnt(lastPnt.x(), newPnt.y());
+//             kdDebug(6040) << "right: " << lastPnt << " == " << insPnt << ": " << (insPnt == lastPnt) << endl;
+            appendPoint(pointArray, insPnt);
+        }
+    }
+
+    // Insert ending point of box
+    appendPoint(pointArray, newPnt);
+          
+//     kdDebug(6000) << "collectHorizontalBoxCoordinates: " << "ende" << endl;
+}
+
+/**
+ * Checks whether the given line box' extents and the following line box'
+ * extents are disjount (i. e. do not share the same x-coordinate range).
+ * @param line line box
+ * @param toBegin \c true, compare with preceding line box, \c false, with
+ *	succeeding
+ * @return \c true if this and the next box are disjoint
+ */
+inline static bool lineBoxesDisjoint(InlineRunBox *line, bool toBegin)
+{
+  InlineRunBox *next = toBegin ? line->prevLineBox() : line->nextLineBox();
+  return !next || next->xPos() + next->width() < line->xPos()
+               || next->xPos() > line->xPos() + line->width();
+}
+
+/**
+ * Traverses the vertical outer borders of the given render flow's line
+ * boxes and appends the point coordinates to the given point array.
+ * @param line line box to begin traversal
+ * @param pointArray point array
+ * @param left \c true, traverse the left vertical coordinates,
+ *	\c false, traverse the right vertical coordinates.
+ * @param lastline if not 0, returns the pointer to the last line box traversed
+ */
+static void collectVerticalBoxCoordinates(InlineRunBox *line,
+                                          QValueVector<QPoint> &pointArray,
+                                          bool left, InlineRunBox **lastline = 0)
+{
+    InlineRunBox *last = 0;
+    for (InlineRunBox* curr = line; curr && !last; curr = left ? curr->prevLineBox() : curr->nextLineBox()) {
+        InlineBox *root = curr;
+
+        bool isLast = lineBoxesDisjoint(curr, left);
+        if (isLast) last = curr;
+        
+        if (root != line && !isLast)
+            while (root->parent()) root = root->parent();
+        QPoint newPnt(curr->xPos() + !left*curr->width(),
+                      left ? root->topOverflow() : root->bottomOverflow());
+        if (!pointArray.isEmpty()) {
+            QPoint lastPnt = pointArray.back();
+            QPoint insPnt(newPnt.x(), lastPnt.y());
+//         kdDebug(6040) << "left: " << lastPnt << " == " << insPnt << ": " << (insPnt == lastPnt) << endl;
+            appendPoint(pointArray, insPnt);
+        }
+        appendPoint(pointArray, newPnt);
+    }
+    if (lastline) *lastline = last;
+}
+
+/**
+ * Links up the end of the given point-array such that the starting point
+ * is not a segment separator.
+ *
+ * To achieve this, improper points are removed from the beginning of
+ * the point-array (by changing the array's starting iterator), and
+ * proper ones appended to the point-array's back.
+ *
+ * @param pointArray point-array
+ * @return actual begin of point array
+ */
+static QPoint *linkEndToBegin(QValueVector<QPoint> &pointArray)
+{
+    uint index = 0;
+    Q_ASSERT(pointArray.size() >= 3);
+  
+    // if first and last points match, ignore the last one.
+    bool linkup = false; QPoint linkupPnt;
+    if (pointArray.front() == pointArray.back()) {
+        linkupPnt = pointArray.back();
+        pointArray.pop_back();
+        linkup = true;
+    }
+    
+    const QPoint *it = pointArray.begin() + index;
+    QPoint pfirst = *it;
+    QPoint pnext = *++it;
+    QPoint plast = pointArray.back();
+//     kdDebug(6040) << "linkcheck plast: " << plast << " pfirst: " << pfirst << " pnext: " << pnext << endl;
+
+    if (plast.x() == pfirst.x() && pfirst.x() == pnext.x()
+        || plast.y() == pfirst.y() && pfirst.y() == pnext.y()) {
+
+        index++;
+        appendPoint(pointArray, pfirst);
+        appendPoint(pointArray, pnext);
+    } else if (linkup)
+      pointArray.push_back(linkupPnt);
+    return pointArray.begin() + index;
+}
+
 void RenderInline::paintOutlines(QPainter *p, int _tx, int _ty)
 {
     if (style()->outlineWidth() == 0 || style()->outlineStyle() <= BHIDDEN)
         return;
 
-    QValueVector<QRect> rects;
-
-    rects.append(QRect(0,0,0,0));
-    for (InlineRunBox* curr = firstLineBox(); curr; curr = curr->nextLineBox()) {
-        rects.append(QRect(curr->xPos(), curr->yPos(), curr->width(), curr->height()));
+    // We may have to draw more than one outline path as they may be
+    // disjoint.
+    for (InlineRunBox *curr = firstLineBox(); curr; curr = curr->nextLineBox()) {
+        QValueVector<QPoint> path;
+    
+        // collect topmost outline
+        collectHorizontalBoxCoordinates(curr, path, false);
+        // collect right outline
+        collectVerticalBoxCoordinates(curr, path, false, &curr);
+        // collect bottommost outline
+        collectHorizontalBoxCoordinates(curr, path, true);
+        // collect left outline
+        collectVerticalBoxCoordinates(curr, path, true);
+    
+        const QPoint *begin = linkEndToBegin(path);
+        
+        // paint the outline
+        paintOutlinePath(p, _tx, _ty, begin, path.end(), BSLeft, -1, BSTop);
     }
-    rects.append(QRect(0,0,0,0));
-
-    for (unsigned int i = 1; i < rects.count() - 1; i++)
-        paintOutline(p, _tx, _ty, rects[i-1], rects[i], rects[i+1]);
 }
 
-void RenderInline::paintOutline(QPainter *p, int tx, int ty, const QRect &lastline, const QRect &thisline, const QRect &nextline)
+template<class T> inline void kSwap(T &a1, T &a2)
+{
+    T tmp = a2;
+    a2 = a1;
+    a1 = tmp;
+}
+
+enum BSOrientation { BSHorizontal, BSVertical };
+
+/**
+ * Returns the orientation of the given border side.
+ */
+inline BSOrientation bsOrientation(RenderObject::BorderSide bs)
+{
+    switch (bs) {
+    case RenderObject::BSTop:
+    case RenderObject::BSBottom:
+        return BSHorizontal;
+    case RenderObject::BSLeft:
+    case RenderObject::BSRight:
+        return BSVertical;
+    }
+    return BSHorizontal;	// make gcc happy (sigh)
+}
+
+/**
+ * Determines the new border side by evaluating the new direction as determined
+ * by the given coordinates, the old border side, and the relative direction.
+ *
+ * The relative direction specifies whether the old border side meets with the
+ * straight given by the coordinates from below (negative), or above (positive).
+ */
+inline RenderObject::BorderSide newBorderSide(RenderObject::BorderSide oldBS, int direction, const QPoint &last, const QPoint &cur)
+{
+    bool below = direction < 0;
+    if (last.x() == cur.x()) {	// new segment is vertical
+        bool t = oldBS == RenderObject::BSTop;
+        bool b = oldBS == RenderObject::BSBottom;
+        if ((t || b) && last.y() != cur.y())
+            return (cur.y() < last.y()) ^ (t && below || b && !below)
+                    ? RenderObject::BSLeft : RenderObject::BSRight;
+    } else /*if (last.y() == cur.y())*/ {	// new segment is horizontal
+        bool l = oldBS == RenderObject::BSLeft;
+        bool r = oldBS == RenderObject::BSRight;
+        if ((l || r) && last.x() != cur.x())
+            return (cur.x() < last.x()) ^ (l && below || r && !below)
+                    ? RenderObject::BSTop : RenderObject::BSBottom;
+    }
+    return oldBS;			// same direction
+}
+
+/**
+ * Draws an outline segment between the given two points.
+ * @param o render object
+ * @param p painter
+ * @param tx absolute x-coordinate of containing block
+ * @param ty absolute y-coordinate of containing block
+ * @param p1 starting point
+ * @param p2 end point
+ * @param prevBS border side of previous segment
+ * @param curBS border side of this segment
+ * @param nextBS border side of next segment
+ */
+static void paintOutlineSegment(RenderObject *o, QPainter *p, int tx, int ty,
+                                const QPoint &p1, const QPoint &p2,
+                                RenderObject::BorderSide prevBS,
+                                RenderObject::BorderSide curBS,
+                                RenderObject::BorderSide nextBS)
+{
+    int ow = o->style()->outlineWidth();
+    EBorderStyle os = o->style()->outlineStyle();
+    QColor oc = o->style()->outlineColor();
+    int offset = 0;// o->style()->outlineOffset(); ### to be assessed and ported
+  
+    int x1 = tx + p1.x() - offset;
+    int y1 = ty + p1.y() - offset;
+    int x2 = tx + p2.x() + offset;
+    int y2 = ty + p2.y() + offset;
+    if (x1 > x2) {
+        kSwap(x1, x2);
+        if (bsOrientation(curBS) == BSHorizontal) kSwap(prevBS, nextBS);
+    }
+    if (y1 > y2) {
+        kSwap(y1, y2);
+        if (bsOrientation(curBS) == BSVertical) kSwap(prevBS, nextBS);
+    }
+
+//     kdDebug(6040) << "segment(" << x1 << "," << y1 << ") - (" << x2 << "," << y2 << ")" << endl;
+/*    p->setPen(Qt::gray);
+    p->drawLine(x1,y1,x2,y2);*/
+    switch (curBS) {
+    case RenderObject::BSLeft:
+    case RenderObject::BSRight:
+/*        p->setPen(QColor("#ffe4dd"));
+        p->drawLine(
+                      x1 - (curBS == RenderObject::BSLeft ? ow : 0),
+                      y1 - (prevBS == RenderObject::BSTop ? ow : 0),
+                      x2 + (curBS == RenderObject::BSRight ? ow : 0),
+                      y2 + (nextBS == RenderObject::BSBottom ? ow : 0)
+                      );*/
+        o->drawBorder(p,
+                      x1 - (curBS == RenderObject::BSLeft ? ow : 0),
+                      y1 - (prevBS == RenderObject::BSTop ? ow : 0),
+                      x2 + (curBS == RenderObject::BSRight ? ow : 0),
+                      y2 + (nextBS == RenderObject::BSBottom ? ow : 0),
+                      curBS, oc, o->style()->color(), os,
+                      prevBS == RenderObject::BSTop ? ow
+                              : prevBS == RenderObject::BSBottom ? -ow : 0,
+                      nextBS == RenderObject::BSTop ? -ow
+                              : nextBS == RenderObject::BSBottom ? ow : 0,
+                      true);
+        break;
+    case RenderObject::BSBottom:
+    case RenderObject::BSTop:
+//       kdDebug(6040) << "BSTop/BSBottom: prevBS " << prevBS << " curBS " << curBS << " nextBS " << nextBS << endl;
+        o->drawBorder(p,
+                      x1 - (prevBS == RenderObject::BSLeft ? ow : 0),
+                      y1 - (curBS == RenderObject::BSTop ? ow : 0),
+                      x2 + (nextBS == RenderObject::BSRight ? ow : 0),
+                      y2 + (curBS == RenderObject::BSBottom ? ow : 0),
+                      curBS, oc, o->style()->color(), os,
+                      prevBS == RenderObject::BSLeft ? ow
+                              : prevBS == RenderObject::BSRight ? -ow : 0,
+                      nextBS == RenderObject::BSLeft ? -ow
+                              : nextBS == RenderObject::BSRight ? ow : 0,
+                      true);
+        break;
+    }
+}
+
+void RenderInline::paintOutlinePath(QPainter *p, int tx, int ty, const QPoint *begin, const QPoint *end, BorderSide bs, int direction, BorderSide endingBS)
 {
     int ow = style()->outlineWidth();
     if (ow == 0 || m_isContinuation) // Continuations get painted by the original inline.
         return;
+  
+    QPoint last = *begin;
+    BorderSide lastBS = bs;
+    Q_ASSERT(begin != end);
+    ++begin;
 
-    EBorderStyle os = style()->outlineStyle();
-    QColor oc = style()->outlineColor();
+//     kdDebug(6040) << "last: " << last << endl;
+    
+    bs = newBorderSide(bs, direction, last, *begin);
+//     kdDebug(6040) << "newBorderSide: " << lastBS << " " << direction << "d " << last << " - " << *begin << " => " << bs << endl;
+    
+    for (const QPoint *it = begin; it != end; it++) {
+        QPoint cur = *it;
+//         kdDebug(6040) << "cur: " << cur << endl;
+        BorderSide nextBS;
+        if (it + 1 != end) {
+            QPoint diff = cur - last;
+            direction = diff.x() + diff.y();
+            nextBS = newBorderSide(bs, direction, cur, *(it + 1));
+//             kdDebug(6040) << "newBorderSide*: " << bs << " " << direction << "d " << cur << " - " << *(it + 1) << " => " << nextBS << endl;
+        } else
+            nextBS = endingBS;
 
-    int offset = 0;// style()->outlineOffset(); ### to be assessed and ported
+        Q_ASSERT(bsOrientation(bs) != bsOrientation(nextBS));
+        paintOutlineSegment(this, p, tx, ty, last, cur,
+                            lastBS, bs, nextBS);
+        lastBS = bs;
+        last = cur;
+        bs = nextBS;
+    }
 
-    int t = ty + thisline.top() - offset;
-    int l = tx + thisline.left() - offset;
-    int b = ty + thisline.bottom() + offset + 1;
-    int r = tx + thisline.right() + offset + 1;
-
-    // left edge
-    drawBorder(p,
-               l - ow,
-               t - (lastline.isEmpty() || thisline.left() < lastline.left() || lastline.right() <= thisline.left() ? ow : 0),
-               l,
-               b + (nextline.isEmpty() || thisline.left() <= nextline.left() || nextline.right() <= thisline.left() ? ow : 0),
-               BSLeft,
-               oc, style()->color(), os,
-               (lastline.isEmpty() || thisline.left() < lastline.left() || lastline.right() <= thisline.left() ? ow : -ow),
-               (nextline.isEmpty() || thisline.left() <= nextline.left() || nextline.right() <= thisline.left() ? ow : -ow),
-               true);
-
-    // right edge
-    drawBorder(p,
-               r,
-               t - (lastline.isEmpty() || lastline.right() < thisline.right() || thisline.right() <= lastline.left() ? ow : 0),
-               r + ow,
-               b + (nextline.isEmpty() || nextline.right() <= thisline.right() || thisline.right() <= nextline.left() ? ow : 0),
-               BSRight,
-               oc, style()->color(), os,
-               (lastline.isEmpty() || lastline.right() < thisline.right() || thisline.right() <= lastline.left() ? ow : -ow),
-               (nextline.isEmpty() || nextline.right() <= thisline.right() || thisline.right() <= nextline.left() ? ow : -ow),
-               true);
-    // upper edge
-    if ( thisline.left() < lastline.left())
-        drawBorder(p,
-                   l - ow,
-                   t - ow,
-                   kMin(r+ow, (lastline.isValid()? tx+lastline.left() : 1000000)),
-                   t ,
-                   BSTop, oc, style()->color(), os,
-                   ow,
-                   (lastline.isValid() && tx+lastline.left()+1<r+ow ? -ow : ow),
-                   true);
-
-    if (lastline.right() < thisline.right())
-        drawBorder(p,
-                   kMax(lastline.isValid()?tx + lastline.right() + 1:-1000000, l - ow),
-                   t - ow,
-                   r + ow,
-                   t ,
-                   BSTop, oc, style()->color(), os,
-                   (lastline.isValid() && l-ow < tx+lastline.right()+1 ? -ow : ow),
-                   ow,
-                   true);
-
-    // lower edge
-    if ( thisline.left() < nextline.left())
-        drawBorder(p,
-                   l - ow,
-                   b,
-                   kMin(r+ow, nextline.isValid()? tx+nextline.left()+1 : 1000000),
-                   b + ow,
-                   BSBottom, oc, style()->color(), os,
-                   ow,
-                   (nextline.isValid() && tx+nextline.left()+1<r+ow? -ow : ow),
-                   true);
-
-    if (nextline.right() < thisline.right())
-        drawBorder(p,
-                   kMax(nextline.isValid()?tx+nextline.right()+1:-1000000 , l-ow),
-                   b,
-                   r + ow,
-                   b + ow,
-                   BSBottom, oc, style()->color(), os,
-                   (nextline.isValid() && l-ow < tx+nextline.right()+1? -ow : ow),
-                   ow,
-                   true);
 }
 
 void RenderInline::calcMinMaxWidth()
