@@ -6,15 +6,15 @@
 class DCOPStub
 {
 public:
-    DCOPStub( const QString& app, const QString& obj );
+    DCOPStub( const QCString& app, const QCString& obj );
     virtual ~DCOPStub();
-    
-    QString app() const;
-    QString obj() const;
-    
+
+    QCString app() const;
+    QCString obj() const;
+
 private:
-    QString m_app;
-    QString m_obj;
+    QCString m_app;
+    QCString m_obj;
 };
 
 #endif

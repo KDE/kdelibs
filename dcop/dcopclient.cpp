@@ -57,8 +57,8 @@ public:
   bool registered;
 
   QCString senderId;
-    
-   QList<DCOPObjectProxy> proxies;
+
+  QList<DCOPObjectProxy> proxies;
 };
 
 struct ReplyStruct
@@ -91,11 +91,11 @@ void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
       IceReadMessageHeader(iceConn, sizeof(DCOPMsg), DCOPMsg, pMsg);
       QByteArray tmp( length );
       IceReadData(iceConn, length, tmp.data() );
-      
+
       // TODO: avoid this data copying
       QDataStream tmpStream( tmp, IO_ReadOnly );
       tmpStream >> *t >> *b;
-      
+
       *replyWaitRet = True;
       return;
     } else {
@@ -125,7 +125,7 @@ void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
     QByteArray reply;
     QDataStream replyStream( reply, IO_WriteOnly );
     replyStream << replyType << replyData.size();
-    
+
     // we are calling, so we need to set up reply data
     IceGetHeader( iceConn, 1, b ? DCOPReply : DCOPReplyFailed,
 		  sizeof(DCOPMsg), DCOPMsg, pMsg );
@@ -231,7 +231,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
 	emit attachFailed("DCOP server did not accept the connection.");
 	return false;
     }
-    
+
     // check if we have a qApp instantiated.  If we do,
     // we can create a QSocketNotifier and use it for receiving data.
     if (qApp) {
@@ -382,6 +382,8 @@ bool DCOPClient::send(const QCString &remApp, const QCString &remObjId,
   IceSendData( d->iceConn, ba.size(), (char *) ba.data() );
   IceSendData( d->iceConn, data.size(), (char *) data.data() );
 
+  //  IceFlush(d->iceConn);
+
   if (IceConnectionStatus(d->iceConn) != IceConnectAccepted)
     return false;
   else
@@ -456,14 +458,14 @@ bool DCOPClient::receive(const QCString &app, const QCString &objId,
       return process( fun, data, replyType, replyData );
   }
   if (!DCOPObject::hasObject(objId)) {
-      
+
       for ( DCOPObjectProxy* proxy = d->proxies.first(); proxy; proxy = d->proxies.next() ) {
 	  if ( proxy->process( objId, fun, data, replyType, replyData ) )
 	      return TRUE;
       }
       qDebug("we received a DCOP message for an object '%s' we don't know about!", objId.data());
       return false;
-      
+
   } else {
     DCOPObject *objPtr = DCOPObject::find(objId);
     if (!objPtr->process(fun, data, replyType, replyData)) {

@@ -458,7 +458,7 @@ void DCOPServer::removeConnection( void* data )
 
 bool DCOPServer::receive(const QCString &app, const QCString &obj,
 			 const QCString &fun, const QByteArray& data,
-			 QCString& replyType, QByteArray &replyData,  
+			 QCString& replyType, QByteArray &replyData,
 			 IceConn iceConn)
 {
   if ( fun == "registerAs(QCString)" ) {

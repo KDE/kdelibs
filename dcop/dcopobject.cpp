@@ -87,6 +87,25 @@ DCOPObject *DCOPObject::find(const QCString &objId)
     return 0L;
 }
 
+QCString DCOPObject::objectName( QObject* obj )
+{
+    if ( obj == 0 )
+	return QCString();
+
+    QCString ident;
+
+    QObject *currentObj = obj;
+    while (currentObj != 0 )
+    {
+	ident.prepend( currentObj->name() );
+	ident.prepend("/");
+	currentObj = currentObj->parent();
+    }
+    if ( ident[0] == '/' )
+	ident = ident.mid(1);
+
+    return ident;
+}
 
 DCOPObjectProxy::DCOPObjectProxy( DCOPClient* client )
 {
@@ -103,9 +122,10 @@ DCOPObjectProxy:: ~DCOPObjectProxy()
     if ( parent )
 	parent->removeObjectProxy( this );
 }
-    
-bool DCOPObjectProxy::process( const QCString& obj, const QCString& fun, const QByteArray& data, 
+
+bool DCOPObjectProxy::process( const QCString& obj, const QCString& fun, const QByteArray& data,
 			       QCString& replyType, QByteArray &replyData )
 {
     return FALSE;
 }
+

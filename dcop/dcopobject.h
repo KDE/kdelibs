@@ -31,8 +31,10 @@ class DCOPClient;
 
 #define K_DCOP \
 public:        \
-  virtual bool process(const QString &fun, const QByteArray &data, QCString& replyType, QByteArray &replyData); \
+  virtual bool process(const QCString &fun, const QByteArray &data, QCString& replyType, QByteArray &replyData); \
 private:
+
+#define k_dcop public
 
 /**
  * DCOPObject provides an interface for receiving DCOP messages.
@@ -65,6 +67,7 @@ class DCOPObject
 
   static bool hasObject(const QCString &objId);
   static DCOPObject *find(const QCString &objId);
+  static QCString objectName( QObject* obj );
 
  private:
   QCString ident;
@@ -75,8 +78,8 @@ class DCOPObjectProxy
 public:
     DCOPObjectProxy( DCOPClient* client );
     virtual ~DCOPObjectProxy();
-    
-    virtual bool process( const QCString& obj, const QCString& fun, const QByteArray& data, 
+
+    virtual bool process( const QCString& obj, const QCString& fun, const QByteArray& data,
 			  QCString& replyType, QByteArray &replyData );
 private:
     DCOPClient* parent;

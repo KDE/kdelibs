@@ -30,12 +30,12 @@ lib_LTLIBRARIES  = libDCOP.la
 libDCOP_la_LIBADD = $(LIB_QT)
 libDCOP_la_LDFLAGS = -version-info 1:0 $(all_libraries)
 
-include_HEADERS = dcopclient.h dcopserver.h dcopobject.h dcopglobal.h dcopstub.h
+include_HEADERS = dcopclient.h dcopserver.h dcopobject.h dcopglobal.h dcopstub.h dcopref.h
 noinst_HEADERS = version.h dcopglobal.h
 
 METASOURCES = AUTO
 
-libDCOP_la_SOURCES = dcopclient.cpp dcopobject.cpp dcopstub.cpp
+libDCOP_la_SOURCES = dcopclient.cpp dcopobject.cpp dcopstub.cpp dcopref.cpp
 
 dcopserver_LDFLAGS = $(KDE_RPATH)
 dcopserver_SOURCES = dcopserver.cpp
