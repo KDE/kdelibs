@@ -148,6 +148,7 @@ public:
     int m_passes;
     int m_failures;
     int m_errors;
+    bool saw_failure;
 
     static RegressionTest *curr;
 

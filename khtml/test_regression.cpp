@@ -133,6 +133,8 @@ Value RegTestFunction::call(ExecState *exec, Object &/*thisObj*/, const List &ar
     switch (id) {
 	case Print: {
 	    UString str = args[0].toString(exec);
+            if ( str.qstring().lower().find( "failed" ) >= 0 )
+                m_regTest->saw_failure = true;
 	    fprintf(stderr, "%s\n",str.ascii());
 	    break;
 	}
@@ -634,8 +636,11 @@ void RegressionTest::evalJS( ScriptInterpreter &interp, const QString &filename,
             } else {
                 reportResult( true, QString( "Expected Failure: %1" ).arg( errmsg ) );
             }
-        } else
+        } else if ( saw_failure ) {
+            reportResult( false, "failed" );
+        } else {
             reportResult( true, "passed" );
+        }
     }
 
 }
@@ -647,6 +652,8 @@ public:
 
 void RegressionTest::testJSFile(const QString & filename)
 {
+    saw_failure = false;
+
     // create interpreter
     // note: this is different from the interpreter used by the part,
     // it contains regression test-specific objects & functions
