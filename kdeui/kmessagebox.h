@@ -20,6 +20,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.1  1999/07/25 19:38:58  waba
+ * WABA: Added some i18n'ed qmessagebox'es for convenience
+ *
  *
  */
 
@@ -204,7 +207,28 @@ public:
                           const QString &text, 
                           const QString &caption = QString::null);
 
+  
+  /**
+   * Displays an "About" dialog. 
+   *
+   * @param parent  If parent is 0, then the message box becomes an 
+   *                application-global modal dialog box. If parent is a
+   *                widget, the message box becomes modal relative to parent.
+   * @param text    Message string. May contain newlines.
+   * @param caption Message box title. The application name is added to
+   *                the title. The default title is i18n("About <appname>").
+   *
+   *
+   * Your program wants to show some general informations about the application
+   * like the authors's names and email addresses.
+   *
+   * The default button is "&Ok". 
+   *
+   *  NOTE: The ok button will always have the i18n'ed text '&Ok'.
+   */
+  static void about(QWidget *parent,
+		    const QString& text,
+		    const QString& caption = QString::null);
 };
 
 #endif
-

@@ -20,6 +20,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.2  1999/07/26 07:27:04  kulow
+ * it's OK
+ *
  * Revision 1.1  1999/07/25 19:38:57  waba
  * WABA: Added some i18n'ed qmessagebox'es for convenience
  *
@@ -27,7 +30,6 @@
  */
 
 #include "kmessagebox.h"
-
 #include <qmessagebox.h>
 
 #include "kapp.h"
@@ -126,7 +128,7 @@ KMessageBox::sorry(QWidget *parent, const QString &text,
     QString _caption = caption;
     if (_caption.isEmpty())
         _caption = i18n("Sorry");
-    _caption += " - "+kapp->getCaption();
+    _caption += " - " + kapp->getCaption();
 
     (void) QMessageBox::warning(parent, _caption, text, 
 	       i18n("&OK"), QString::null, QString::null, 0, 0);
@@ -144,6 +146,26 @@ KMessageBox::information(QWidget *parent,const QString &text,
 
     (void) QMessageBox::information(parent, _caption, text,  
 	       i18n("&OK"), QString::null, QString::null, 0, 0);
+    return;
+}
+
+void
+KMessageBox::about(QWidget *parent, const QString &text,
+                   const QString &caption)
+{
+    QString _caption = caption;
+    if (_caption.isEmpty())
+        _caption = i18n("About %1").arg(kapp->getCaption());
+
+    QMessageBox *box = new QMessageBox( _caption, text,
+					QMessageBox::Information,
+					QMessageBox::Ok + QMessageBox::Default, 
+					0, 0,
+					parent, "about" );
+    box->setButtonText(0, i18n("&OK"));
+    box->setIconPixmap(kapp->getIcon());
+    box->exec();
+    delete box;
     return;
 }
 

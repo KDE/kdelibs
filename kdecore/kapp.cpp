@@ -248,20 +248,29 @@ void KApplication::appHelpActivated()
 
 void KApplication::aboutKDE()
 {
-  QMessageBox::about( 0L, i18n( "About KDE" ),
-					  i18n(
-"\nThe KDE Desktop Environment was written by the KDE Team,\n"
-"a world-wide network of software engineers committed to\n"
-"free software development.\n\n"
-"Visit http://www.kde.org for more information on the KDE\n"
-"Project. Please consider joining and supporting KDE.\n\n"
-"Please report bugs at http://bugs.kde.org.\n"
-));
+  QMessageBox about(i18n( "About KDE" ), 
+		    i18n(
+			 "\nThe KDE Desktop Environment was written by the KDE Team,\n"
+			 "a world-wide network of software engineers committed to\n"
+			 "free software development.\n\n"
+			 "Visit http://www.kde.org for more information on the KDE\n"
+			 "Project. Please consider joining and supporting KDE.\n\n"
+			 "Please report bugs at http://bugs.kde.org.\n"),
+		    QMessageBox::Information, 
+		    QMessageBox::Ok + QMessageBox::Default, 0, 0,
+		    0, "aboutkde");
+  about.setButtonText(0, i18n("&OK"));
+  about.exec();
 }
 
 void KApplication::aboutApp()
 {
-  QMessageBox::about( 0L, getCaption(), aAppAboutString );
+  QString caption = i18n("About %1").arg(kapp->getCaption());
+  QMessageBox about(caption, aAppAboutString, QMessageBox::Information, 
+		   QMessageBox::Ok + QMessageBox::Default, 0, 0, 0, "aboutapp");
+  about.setButtonText(0, i18n("&OK"));
+  about.setIconPixmap(getIcon());
+  about.exec();
 }
 
 
@@ -578,9 +587,9 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
     QString styleStr = pConfig->readEntry("widgetStyle", "Platinum");
 
     if(styleHandle){
-        warning("KApp: Unloading previous style plugin.");
-        lt_dlclose((lt_dlhandle*)styleHandle);
-        styleHandle = 0;
+      // warning("KApp: Unloading previous style plugin.");
+      lt_dlclose((lt_dlhandle*)styleHandle);
+      styleHandle = 0;
     }
 
     if(styleStr == "Platinum"){
