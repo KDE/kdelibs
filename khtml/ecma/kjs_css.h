@@ -150,8 +150,7 @@ namespace KJS {
     DOMCSSRuleList(DOM::CSSRuleList rl) : cssRuleList(rl) { }
     virtual ~DOMCSSRuleList();
     virtual KJSO tryGet(const UString &p) const;
-    virtual void tryPut(const UString &p, const KJSO& v);
-    virtual bool hasProperty(const UString &p, bool recursive = true) const;
+    // no put - all read-only
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
   protected:
@@ -176,7 +175,6 @@ namespace KJS {
     virtual ~DOMCSSRule();
     virtual KJSO tryGet(const UString &p) const;
     virtual void tryPut(const UString &p, const KJSO& v);
-    virtual bool hasProperty(const UString &p, bool recursive = true) const;
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
     DOM::CSSRule toCSSRule() const { return cssRule; }
