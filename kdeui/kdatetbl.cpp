@@ -182,6 +182,15 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
           painter->setBrush(lightGray);
           painter->setPen(lightGray);
         }
+
+      QDate cur_date = QDate::currentDate();
+      if ( (date.year()  == cur_date.year()) &&
+           (date.month() == cur_date.month()) && 
+           (firstday+cur_date.day()-1 == pos) )
+      {
+         painter->setPen(black);
+      }
+
       painter->drawRect(0, 0, w, h);
       painter->setPen(pen);
       painter->drawText(0, 0, w, h, AlignCenter, text, -1, &rect);
