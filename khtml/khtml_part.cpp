@@ -3628,6 +3628,7 @@ void KHTMLPart::setStatusBarText( const QString& text, StatusBarPriority p)
     if (d->m_jobspeed)
       tobe += i18n( "(%1/s)" ).arg( KIO::convertSize( d->m_jobspeed ) );
   }
+  tobe = "<qt>"+tobe;
 
   emit ReadOnlyPart::setStatusBarText(tobe);
 }
