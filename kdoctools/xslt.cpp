@@ -301,7 +301,6 @@ static QIODevice *getBZip2device(const QString &fileName )
 
 bool saveToCache( const QString &contents, const QString &filename )
 {
-    kdDebug() << "saveToCache " << filename << endl;
     QIODevice *fd = ::getBZip2device(filename);
 
     if (!fd->open(IO_WriteOnly))
