@@ -75,6 +75,8 @@ KJSO Window::get(const UString &p) const
     return String(part->name());
   else if (p == "Image")
     return KJSO(new ImageConstructor(Global::current()));
+  else if (p == "[[==]]")
+    return Number((unsigned long)part);
   else if (p == "alert")
     return Function(new WindowFunc(this, WindowFunc::Alert));
   else if (p == "confirm")
