@@ -91,6 +91,34 @@ void dumpRequest(ipp_t *req, bool answer = false, const QString& s = QString::nu
 	}
 }
 
+QString errorString(int status)
+{
+	// FIXME: in the end, should use translation => 3.1
+	QString	str;
+	switch (status)
+	{
+		case IPP_FORBIDDEN:
+			str = "You don't have access to the requested resource.";
+			break;
+		case IPP_NOT_AUTHORIZED:
+			str = "You are not authorized to access the requested resource.";
+			break;
+		case IPP_NOT_POSSIBLE:
+			str = "The requested operation cannot be completed.";
+			break;
+		case IPP_SERVICE_UNAVAILABLE:
+			str = "The requested service is currently unavailable.";
+			break;
+		case IPP_NOT_ACCEPTING:
+			str = "The target printer is not accepting print jobs.";
+			break;
+		default:
+			str = QString::fromLocal8Bit(ippErrorString((ipp_status_t)status));
+			break;
+	}
+	return str;
+}
+
 //*************************************************************************************
 
 IppRequest::IppRequest()
@@ -197,7 +225,7 @@ QString IppRequest::statusMessage()
 			msg = i18n("The IPP request failed for an unknown reason.");
 			break;
 		default:
-			msg = QString::fromLocal8Bit(ippErrorString((ipp_status_t)status()));
+			msg = errorString(status());
 			break;
 	}
 	return msg;
