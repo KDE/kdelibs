@@ -231,6 +231,10 @@ void KJanusWidget::pageGone()
 
   if (!mPageList || !mPageList->containsRef(page))
     return;
+
+  int index = mPageList->findRef( page );
+  mTitleList->remove(mTitleList->at(index));
+
   mPageList->removeRef(page);
 
   if ( mFace == TreeList )
