@@ -454,8 +454,7 @@ void TilePainter::draw( QPainter *p, int x, int y, int width, int height, const 
 			
 			if ( columnMode( col ) == Tiled ) w = 0;
 			
-			//if ( row == 2 && col == 2)
-			if (  tileW ) //!t.isNull() )
+			if ( tileW )
 				if ( w || h )
 				{
 					//Scaling
@@ -502,10 +501,6 @@ void TilePainter::draw( QPainter *p, int x, int y, int width, int height, const 
 		}
 		ypos += realH;
 	}    
-	
-	//if (destHandle)
-	//	XFreeGC(qt_xdisplay(), gc);
-
 }
 
 RectTilePainter::RectTilePainter( int name,
@@ -519,7 +514,7 @@ RectTilePainter::RectTilePainter( int name,
 	m_rows       = rows;
 	
 	TileMode mh = m_scaleH ? Scaled : Tiled;
-	TileMode mv =m_scaleV ? Scaled : Tiled;
+	TileMode mv = m_scaleV ? Scaled : Tiled;
 	for (int c=0; c<4; c++)
 	{
 		if (c != 1)
