@@ -188,7 +188,7 @@ bool ResourceLDAP::load()
 
   QString filter = mFilter;
   if ( filter.isEmpty() )
-    filter = "objectclass=*person";
+    filter = "cn=*";
 
   int result;
   if ( ( result = ldap_search_s( mLdap, mDn.local8Bit(), LDAP_SCOPE_SUBTREE, QString( "(%1)" ).arg( filter ).local8Bit(),
