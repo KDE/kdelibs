@@ -44,11 +44,12 @@ class KAboutData;
  *  It takes into account Qt-specific options, KDE-specific options
  *  and application specific options.
  *
- *  This class is used in @ds main() via the static method
- *   @ref init().
+ *  This class is used in main() via the static method
+ *  @ref init().
  *
  *  A typical KDE application should look like this:
  *
+ *  <pre>
  *  int main(int argc, char *argv[])
  *  {
  *     // Initialize command line args
@@ -91,9 +92,11 @@ class KAboutData;
  *     args->clear(); // Free up some memory. 
  *     ....
  *  }
+ *  </pre>
  *
  *  options are defined as follow
  *
+ *  <pre>
  *  static KCmdLineOptions options[] = 
  *  {
  *     { "a", I18N_NOOP("A short binary option."), 0 },
@@ -113,6 +116,7 @@ class KAboutData;
  *     { "+[arg1]", I18N_NOOP("An optional argument 'arg1'."), 0 },
  *     { 0, 0, 0 } // End of options.
  *  }
+ *  </pre>
  *
  *  The I18N_NOOP macro is used to indicate that these strings should be
  *  marked for translation. The actual translation is done by KCmdLineArgs.
@@ -125,14 +129,20 @@ class KAboutData;
  *  only check for the long option.
  *
  *  With the above options a command line could look like:
+ *  <pre>
  *     myapp -a -c 4800 --display localhost:0.0 --nooption5 -d /tmp/file 
+ *  </pre>
  *
  *  Long binary options can be in the form 'option' and 'nooption'.
  *  A command line may contain the same binary option multiple times,
  *  the last option determines the outcome:
+ *  <pre>
  *     myapp --nooption4 --option4 --nooption4
+ *  </pre>
  *  is the same as:
+ *  <pre>
  *     myapp --nooption4
+ *  </pre>
  *
  *  @short A class for command-line argument handling.
  *  @author Waldo Bastian
