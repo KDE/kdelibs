@@ -531,9 +531,9 @@ Espen Sand <espen@kde.org>
 
 KPixmap::gradientFill, KPixmap::patternFill, KPixmap::tile and
 KPixmap::mapFill have been moved to KPixmapEffect, which is now part
-of libkdeui. 
+of libkdeui.
 
-KPixmap::tile() has been renamed to KPixmapEffects::createTile(). 
+KPixmap::tile() has been renamed to KPixmapEffects::createTile().
 
 Dirk A. Mueller <mueller@kde.org>
 
@@ -541,7 +541,7 @@ Dirk A. Mueller <mueller@kde.org>
 ///////////////////////////////////////////////////////////////////////
 // * KDE Control Center
 
-The format for modules for the KDE Control Center has changed quite 
+The format for modules for the KDE Control Center has changed quite
 a bit. If you want to port your module to the new schema, please
 consult
 
@@ -551,3 +551,15 @@ which explains what needs to be done.
 
 Matthias Hoelzer-Kluepfel <hoelzer@kde.org>
 
+
+///////////////////////////////////////////////////////////////////////
+// * KWMModuleApplication libkdeui/kwmmapp.h
+
+The KWMModuleApplication has been removed. Instead, use the class
+KWinModule in libkdecore. The API is a bit cleaner but very similar,
+so you will feel comfortable immediately. One of the advantages of
+KWinModule is that it doesn't require a special KApplication
+subclass. This lead to many problems and missunderstandings in the
+past. KWinModule is now just an object that emitts fancy signals (and
+provides some useful lists, like the list of all managed windows).
+(ettrich@kde.org)
