@@ -33,7 +33,7 @@ PreferencesDlg::PreferencesDlg( KWrite* kwrite, QWidget* parent, char* name )
   // view options
   vbox = addVBoxPage( i18n( "View" ), QString::null, UserIcon( "misc" ) );
   m_viewConfig = new ViewConfigTab( vbox, kwrite );
-  
+
   // color options
   vbox = addVBoxPage( i18n( "Colors" ), QString::null, UserIcon( "colors" ) );
   m_colorConfig = new ColorConfig( vbox );
@@ -120,3 +120,5 @@ void PreferencesDlg::slotApply()
 void PreferencesDlg::slotDefault()
 {
 }
+
+#include "prefdialog.moc"

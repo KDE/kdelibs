@@ -30,9 +30,9 @@
 #include "kwdialog.h"
 
 
-SearchDialog::SearchDialog(QWidget *parent, QStringList &searchFor, 
+SearchDialog::SearchDialog(QWidget *parent, QStringList &searchFor,
   QStringList &replaceWith, int flags)
-  : KDialogBase(parent, 0L, true, i18n("Find Text"), Ok | Cancel, Ok), 
+  : KDialogBase(parent, 0L, true, i18n("Find Text"), Ok | Cancel, Ok),
   m_replace(0L) {
 
   QWidget *page = new QWidget(this);
@@ -200,8 +200,8 @@ IndentConfigTab::IndentConfigTab(QWidget *parent, KWrite *kWrite)
   QVBoxLayout *layout;
   int configFlags;
   static const char *labels[numFlags] = {
-    i18nop("&Auto Indent"), i18nop("Indent With &Spaces"), 
-    i18nop("&Backspace Key Indents"), i18nop("&Tab Key Indents"), 
+    i18nop("&Auto Indent"), i18nop("Indent With &Spaces"),
+    i18nop("&Backspace Key Indents"), i18nop("&Tab Key Indents"),
     i18nop("Keep Indent &Profile"), i18nop("&Keep Extra Spaces")};
   int z;
 
@@ -235,8 +235,8 @@ SelectConfigTab::SelectConfigTab(QWidget *parent, KWrite *kWrite)
   QVBoxLayout *layout;
   int configFlags;
   static const char *labels[numFlags] = {
-    i18nop("&Persistent Selections"), i18nop("&Overwrite Selections"), 
-    i18nop("Mouse &Autocopy"), i18nop("&X11-like Single Selection"), 
+    i18nop("&Persistent Selections"), i18nop("&Overwrite Selections"),
+    i18nop("Mouse &Autocopy"), i18nop("&X11-like Single Selection"),
     i18nop("&Vertical Selections"), i18nop("&Toggle Old")};
   int z;
 
@@ -272,9 +272,9 @@ EditConfigTab::EditConfigTab(QWidget *parent, KWrite *kWrite)
   QVBoxLayout *cbLayout, *elLayout;
   int configFlags;
   static const char *labels[numFlags] = {
-    i18nop("&Word Wrap"), i18nop("Replace &Tabs By Spaces"), 
-    i18nop("&Remove Trailing Spaces"), i18nop("&Auto Brackets"), 
-    i18nop("Group &Undos"), /*i18nop("&Show Tabs"),*/ i18nop("Smart &Home"), 
+    i18nop("&Word Wrap"), i18nop("Replace &Tabs By Spaces"),
+    i18nop("&Remove Trailing Spaces"), i18nop("&Auto Brackets"),
+    i18nop("Group &Undos"), /*i18nop("&Show Tabs"),*/ i18nop("Smart &Home"),
     i18nop("&Page Up/Down Moves Cursor"), i18nop("Wrap &Cursor")};
   int z;
 
@@ -619,3 +619,5 @@ ColorDialog::ColorDialog(QWidget *parent, QColor *colors)
 void ColorDialog::getColors(QColor *colors) {
   m_colors->getColors(colors);
 }
+
+#include "kwdialog.moc"

@@ -111,13 +111,13 @@ void UndoHistory::newUndo()
 
   m_mainview->undoTypeList( undoList );
   lbUndo->clear();
- 
+
   for( it = undoList.begin(); it != undoList.end() ; ++it )
     lbUndo->insertItem( i18n( m_mainview->undoTypeName( *it ) ) );
 
   m_mainview->redoTypeList( undoList );
   lbRedo->clear();
-  
+
   for( it = undoList.begin() ; it != undoList.end() ; ++it )
     lbRedo->insertItem( i18n( m_mainview->undoTypeName( *it ) ) );
 
@@ -237,7 +237,7 @@ void UndoListBox::_slotSelectionChanged()
       m_selCount = 0;
       emit sigSelected( m_selCount );
     }
-    
+
     return;
   }
 
@@ -256,7 +256,7 @@ void UndoListBox::_slotSelectionChanged()
     }
     else
     {
-      if( !isSelected( i ) ) 
+      if( !isSelected( i ) )
         setSelected( i, true );
     }
   }
@@ -267,3 +267,5 @@ void UndoListBox::_slotSelectionChanged()
     emit sigSelected( m_selCount );
   }
 }
+
+#include "undohistory.moc"

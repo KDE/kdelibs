@@ -464,7 +464,7 @@ bool KWriteDoc::isLastView(int numViews) {
   return ((int) m_views.count() == numViews);
 }
 
- 
+
 TextLine *KWriteDoc::textLine(int line) {
 //  if (line < 0) line = 0;
   if (line >= (int) m_contents.count())
@@ -661,7 +661,7 @@ void KWriteDoc::addLineAttribute(KWLineAttribute *a) {
   KWriteView *view;
 
   m_lineAttribs.insert(a);
-  
+
   for (view = m_views.first(); view != 0L; view = m_views.next()) {
     view->updateBorder();
   }
@@ -1162,7 +1162,7 @@ void KWriteDoc::backspace(VConfig &c) {
 }
 
 void KWriteDoc::backspaceWord(VConfig &c) {
- 
+
   if (c.cursor.x() <= 0 && c.cursor.y() <= 0)
     return;
 
@@ -2116,14 +2116,14 @@ void KWriteDoc::printTextLine(QPainter &paint, int line, int xEnd, int y) {
 }
 */
 
-void KWriteDoc::paintBorder(KWrite *kWrite, QPainter &paint, int line, 
+void KWriteDoc::paintBorder(KWrite *kWrite, QPainter &paint, int line,
   int yStart, int yEnd) {
 
   KWLineAttribute *current;
   int y;
-  
+
   current = m_lineAttribs.first();
-  
+
   // attribs are ordered by line number, find the first attribute to paint
   while (current != 0L) {
     if (current->line() >= line) break;
@@ -2149,7 +2149,7 @@ void KWriteDoc::paintBorder(KWrite *kWrite, QPainter &paint, int line,
 
     a = &m_attribs[0];
     paint.setFont(a->font);
-    paint.setPen(a->col);  
+    paint.setPen(a->col);
 
     numberString.fill(' ', kWrite->numbersDigits());
 
@@ -2160,7 +2160,7 @@ void KWriteDoc::paintBorder(KWrite *kWrite, QPainter &paint, int line,
       // do number to string by hand to make it fast (no heap-operations)
       number = line;
       z = kWrite->numbersDigits();
-      do {      
+      do {
         z--;
         numberString[z] = '0' + number % 10;
 	number /= 10;
@@ -2168,7 +2168,7 @@ void KWriteDoc::paintBorder(KWrite *kWrite, QPainter &paint, int line,
 
       paint.drawText(kWrite->numbersX(), y + m_fontAscent - 1, numberString);
       y += fontHeight();
-    }      
+    }
   }
 }
 
@@ -2611,7 +2611,7 @@ void KWriteDoc::recordStart(KWriteView *, KWCursor &cursor, int flags,
 
   if (!keepModal) setPseudoModal(0L);
 
-  // try to append to last action 
+  // try to append to last action
   g = m_undoList.getLast();
   if (g != 0L && ((m_undoCount < 1024 && flags & cfGroupUndo
     && g->end == cursor) || mergeUndo)) {
@@ -2975,3 +2975,5 @@ void KWriteDoc::setColors(QColor *colors) {
   m_colors[3] = colors[3];
   m_colors[4] = colors[4];
 }
+
+#include "kwrite_doc.moc"

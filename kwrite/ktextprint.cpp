@@ -27,7 +27,7 @@
 #include "ktextprint.h"
 
 struct MediaDef {
-  const char *name;          
+  const char *name;
   int width;
   int height;
 };
@@ -1295,3 +1295,5 @@ int KPipe::writeBlock(const char *data, uint len) {
   return n;
 }
 
+
+#include "ktextprint.moc"

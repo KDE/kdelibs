@@ -23,12 +23,12 @@ KAboutData* KWriteFactory::s_about = 0L;
 KWriteFactory::KWriteFactory( QObject* parent, const char* name )
     : KParts::Factory( parent, name )
 {
-  HlManager::incRef(); 
+  HlManager::incRef();
 }
 
 KWriteFactory::~KWriteFactory()
 {
-  HlManager::decRef(); 
+  HlManager::decRef();
   delete s_instance;
   delete s_about;
 }
@@ -58,3 +58,5 @@ KInstance* KWriteFactory::instance()
 
   return s_instance;
 }
+
+#include "kwrite_factory.moc"

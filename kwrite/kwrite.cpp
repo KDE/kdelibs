@@ -150,7 +150,7 @@ void KWBookmark::paint(QPainter &paint, int y, int height) {
 
 // KWriteWidget
 
-KWriteWidget::KWriteWidget(QWidget *parent) 
+KWriteWidget::KWriteWidget(QWidget *parent)
   : QWidget(parent, "KWriteWidget") {
 
   setFocusPolicy(ClickFocus);
@@ -211,7 +211,7 @@ void KWriteWidget::resizeEvent(QResizeEvent *) {
 
 KWrite::KWrite(QWidget *parentWidget, QObject *parent, int flags, KWriteDoc *doc)
   : KParts::ReadWritePart(parent, "KWritePart") {
-  
+
 //KWrite::KWrite(KWriteDoc *doc, QWidget *parent, const QString &name, bool HandleOwnDND)
 //  : QWidget(parent, name) {
 
@@ -254,12 +254,12 @@ KWrite::KWrite(QWidget *parentWidget, QObject *parent, int flags, KWriteDoc *doc
   // geometry
   m_widget->resize(parentWidget->width(), parentWidget->height());
 //  m_view->setBorderWidth(32);
-  
+
 
   // KWrite commands
   m_dispatcher = new KWCommandDispatcher(m_view);
   KWCommandGroup *g;
-  
+
   // cursor commands
   m_persistent = false;
   g = m_dispatcher->addGroup(i18nop("Cursor Movement"));
@@ -367,7 +367,7 @@ KWrite::KWrite(QWidget *parentWidget, QObject *parent, int flags, KWriteDoc *doc
     langList.append(hlManager->hlName(z));
   }
 
-  m_langAction = new KSelectAction( i18n( "Set highlighting" ), 0, 
+  m_langAction = new KSelectAction( i18n( "Set highlighting" ), 0,
     actionCollection(), "highlight_select" );
   m_langAction->setItems( langList );
   m_langAction->setCurrentItem( 1 );
@@ -378,10 +378,10 @@ KWrite::KWrite(QWidget *parentWidget, QObject *parent, int flags, KWriteDoc *doc
   KStdAction::findNext( this, SLOT( findAgain() ), actionCollection(), "find_again" );
   KStdAction::gotoLine( this, SLOT( gotoLine() ), actionCollection(), "goto_line" );
 
-  (void) new KAction( i18n( "Set bookmark" ), KStdAccel::addBookmark(), this, SLOT( setBookmark() ), 
+  (void) new KAction( i18n( "Set bookmark" ), KStdAccel::addBookmark(), this, SLOT( setBookmark() ),
     actionCollection(), "set_bookmark" );
   KStdAction::addBookmark( this, SLOT( addBookmark() ), actionCollection(), "add_bookmark" );
-  (void) new KAction( i18n( "Clear bookmarks" ), 0, this, SLOT( clearBookmarks() ), 
+  (void) new KAction( i18n( "Clear bookmarks" ), 0, this, SLOT( clearBookmarks() ),
     actionCollection(), "clear_bookmarks" );
 
   // TODO: add KListAction here for bookmark list.
@@ -403,7 +403,7 @@ KWrite::~KWrite() {
   delete m_dispatcher;
   delete popup; // right mouse button popup
   clearBookmarks(); // deletes bookmark objects
-  
+
   if (kspell.kspell) {
     kspell.kspell->setAutoDelete(true);
     kspell.kspell->cleanUp(); // need a way to wait for this to complete
@@ -472,7 +472,7 @@ void KWrite::setConfig(int flags) {
     emit newConfig();
     if (changedFlags & cfShowTabs) m_view->update();
     if (changedFlags & cfBorder) {
-      m_view->setBorderWidth((flags & cfBorder) ? 
+      m_view->setBorderWidth((flags & cfBorder) ?
         m_numbersX + m_numbersDigits*7 : 0);
     }
   }
@@ -1079,7 +1079,7 @@ void KWrite::doCursorCommand(int cmdNum) {
   if (cmdNum & kSelectFlag) {
     c.flags |= cfMark;
     m_persistent = false;
-  }    
+  }
   if (cmdNum & kMultiSelectFlag) {
     c.flags |= cfMark | cfKeepSelection;
     m_persistent = true;
@@ -1100,13 +1100,13 @@ void KWrite::doEditCommand(int cmdNum) {
 
 void KWrite::doBookmarkCommand(int cmdNum) {
   if (cmdNum == cmSetBookmark)
-    setBookmark(); 
+    setBookmark();
   else if (cmdNum == cmAddBookmark)
     addBookmark();
   else if (cmdNum == cmClearBookmarks)
     clearBookmarks();
   else if (cmdNum >= cmSetBookmarks && cmdNum < cmSetBookmarks + 10)
-    setBookmark(cmdNum - cmSetBookmarks); 
+    setBookmark(cmdNum - cmSetBookmarks);
   else if (cmdNum >= cmGotoBookmarks && cmdNum < cmGotoBookmarks + 10)
     gotoBookmark(cmdNum - cmGotoBookmarks);
 }
@@ -1114,20 +1114,20 @@ void KWrite::doBookmarkCommand(int cmdNum) {
 /*
 void KWrite::configureKWriteKeys() {
   KWKeyData data;
-  
+
   m_dispatcher->getData(data);
-  
-  KDialogBase *dlg = new KDialogBase(m_widget, "tabdialog", true, 
+
+  KDialogBase *dlg = new KDialogBase(m_widget, "tabdialog", true,
     i18n("KWrite Keys"), KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok);
-  
+
   KWKeyConfigTab *keys = new KWKeyConfigTab(dlg, data);
   dlg->setMainWidget(keys);
   dlg->resize(450, 320);
-  
+
   if (dlg->exec()) {
-    m_dispatcher->setData(data);  
+    m_dispatcher->setData(data);
   }
-  
+
   delete dlg;
 }
 */
@@ -1322,7 +1322,7 @@ void KWrite::findAgain() {
   initSearch(s, m_searchFlags | sfFromCursor | sfPrompt | sfAgain);
 
   if (s.flags & sfReplace)
-    replaceAgain(); 
+    replaceAgain();
   else
     searchAgain(s);
 }
@@ -1348,10 +1348,10 @@ void KWrite::initSearch(SConfig &s, int flags) {
   s.flags = flags;
 
   if (s.flags & sfFromCursor)
-    s.cursor = m_view->cursor; 
+    s.cursor = m_view->cursor;
   else {
     if (!(s.flags & sfBackward))
-      s.cursor.set(0, 0); 
+      s.cursor.set(0, 0);
     else
       s.cursor.set(-1, m_doc->lastLine());
 
@@ -1369,7 +1369,7 @@ void KWrite::initSearch(SConfig &s, int flags) {
 
 void KWrite::continueSearch(SConfig &s) {
   if (!(s.flags & sfBackward))
-    s.cursor.set(0, 0); 
+    s.cursor.set(0, 0);
   else
     s.cursor.set(-1, m_doc->lastLine());
 
@@ -1423,7 +1423,7 @@ void KWrite::replaceAgain() {
   m_replaces = 0;
 
   if (s.flags & sfPrompt)
-    doReplaceAction(-1); 
+    doReplaceAction(-1);
   else
     doReplaceAction(srAll);
 }
@@ -1621,8 +1621,8 @@ void KWrite::setBookmark(int n) {
 
   if (bookmark[n] != 0L) {
     delete bookmark[n]; // removes itself from the doc
-  }  
-  bookmark[n] = new KWBookmark(m_view->xPos, m_view->yPos, m_view->cursor, this);;  
+  }
+  bookmark[n] = new KWBookmark(m_view->xPos, m_view->yPos, m_view->cursor, this);;
   m_doc->addLineAttribute(bookmark[n]);
 }
 
@@ -1804,7 +1804,7 @@ void KWrite::writeSessionConfig(KConfig *config) {
     b = bookmark[z];
     if (b != 0L) {
       sprintf(s1, "Bookmark%d", z + 1);
-      sprintf(s2, "%d, %d, %d, %d", b->cursorX(), b->line(), 
+      sprintf(s2, "%d, %d, %d, %d", b->cursorX(), b->line(),
         b->xPos(), b->yPos());
       config->writeEntry(s1, s2);
     }
@@ -2114,3 +2114,5 @@ void KWrite::spellCleanDone() {
      emit spellcheck_done();
   }
 }
+
+#include "kwrite.moc"

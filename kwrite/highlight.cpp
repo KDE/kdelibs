@@ -1879,7 +1879,7 @@ void HlManager::decRef()
       delete s_hlManager;
     s_hlManager = 0;
   }
-} 
+}
 
 HlManager::HlManager() : QObject(0L) {
 
@@ -2498,3 +2498,4 @@ void HighlightDialog::done(int r) {
   QDialog::done(r);
 }
 
+#include "highlight.moc"

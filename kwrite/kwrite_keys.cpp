@@ -55,7 +55,7 @@ const int modifierMask = SHIFT | CTRL | ALT;// | META | MOD2 | MOD3 | MOD5;
 //int globalModifiers;
 
 static bool isSpecialKey(int keyCode) {
-  int special[] = {Qt::Key_CapsLock, Qt::Key_NumLock, Qt::Key_ScrollLock, 
+  int special[] = {Qt::Key_CapsLock, Qt::Key_NumLock, Qt::Key_ScrollLock,
     Qt::Key_unknown, 0};
 //    Key_Shift, Key_Control, Key_Meta, Key_Alt, 0};
   int *i;
@@ -313,7 +313,7 @@ void KGuiCmd::changeAccels() {
 void KWCommand::getData(KWCommandData &data) {
 //  data.setData(m_name, m_accels);
   int z;
-  
+
   data.m_name = m_name;
   for (z = 0; z < nAccels; z++) {
     data.m_accels[z] = m_accels[z];
@@ -322,7 +322,7 @@ void KWCommand::getData(KWCommandData &data) {
 
 void KWCommand::setData(const KWCommandData &data) {
   int z;
-  
+
   for (z = 0; z < nAccels; z++) {
     m_accels[z] = data.m_accels[z];
   }
@@ -448,9 +448,9 @@ void KWCommand::matchKey(int keyCode, int modifiers, KWAccelMatch &match) {
       toSecond = !second && a->keyCode2 != 0;
       b = (m == modifiers); // match modifiers
 
-      if (toSecond) { 
-        // accel switches to second keypress 
-        if (b) { 
+      if (toSecond) {
+        // accel switches to second keypress
+        if (b) {
           m_second[z] = true;
           match.consumeKeyEvent = true;
         }
@@ -507,7 +507,7 @@ void KWCommandGroup::addCommand(KWCommand *command) {
 */
 KWCommand *KWCommandGroup::addCommand(int id, const QString &name, int keyCode01,
   int keyCode11, int keyCode21) {
-  
+
   KWCommand *command = new KWCommand(id, name, this);
   command->addAccel(keyCode01, 0);
   command->addAccel(keyCode11, 0);
@@ -520,7 +520,7 @@ void KWCommandGroup::getData(KWCommandGroupData &data) {
   int z;
   int count = m_commandList.count();
   KWCommandData *commandList = new KWCommandData[count];
-  
+
   for (z = 0; z < count; z++) {
     m_commandList.at(z)->getData(commandList[z]);
   }
@@ -531,7 +531,7 @@ void KWCommandGroup::getData(KWCommandGroupData &data) {
 
 void KWCommandGroup::setData(const KWCommandGroupData &data) {
   int z;
-  
+
   for (z = 0; z < data.m_count; z++) {
     m_commandList.at(z)->setData(data.m_commandList[z]);
   }
@@ -584,7 +584,7 @@ void KWCommandDispatcher::getData(KWKeyData &data) {
   int z;
   int count = m_groupList.count();
   KWCommandGroupData *groupList = new KWCommandGroupData[count];
-  
+
   for (z = 0; z < count; z++) {
     m_groupList.at(z)->getData(groupList[z]);
   }
@@ -594,7 +594,7 @@ void KWCommandDispatcher::getData(KWKeyData &data) {
 
 void KWCommandDispatcher::setData(const KWKeyData &data) {
   int z;
-  
+
   for (z = 0; z < data.m_count; z++) {
     m_groupList.at(z)->setData(data.m_groupList[z]);
   }
@@ -616,7 +616,7 @@ void KWCommandDispatcher::writeConfig(KConfig *config) {
 
 static int convertModifiers(Qt::ButtonState state) {
   int r = 0;
-  
+
   if (state & Qt::ShiftButton  ) r = SHIFT;
   if (state & Qt::ControlButton) r |= CTRL;
   if (state & Qt::AltButton    ) r |= ALT;
@@ -640,7 +640,7 @@ bool KWCommandDispatcher::eventFilter(QObject *, QEvent *e) {
     for (z = 0; z < (int) m_groupList.count(); z++) {
       m_groupList.at(z)->matchKey(keyCode, modifiers, match);
     }
-    
+
     if (match.consumeKeyEvent) {
       if (match.unmatchedModifiers != -1) {
         emit match.command->activated(match.id);
@@ -711,7 +711,7 @@ void KWCommandData::removeAccel(int keyCode1, int keyCode2) {
 /*
 void KWCommandData::setData(const QString &name, KWAccel *accels) {
   int z;
-  
+
   m_name = name;
   for (z = 0; z < KWCommand::nAccels; z++) {
     m_accels[z] = accels[z];
@@ -763,7 +763,7 @@ KWKeyData::~KWKeyData() {
 
 void KWKeyData::containsAccel(int keyCode1, int keyCode2, Contains &contains) {
   int z;
-  
+
   for (z = 0; z < m_count; z++) {
     contains.group = &m_groupList[z];
     contains.command = contains.group->containsAccel(keyCode1, keyCode2);
@@ -1003,7 +1003,7 @@ void KWKeyConfigTab::accelChanged() {
   } else {
 //    if (m_accelInput->getKeyCode1() == Key_Escape+META+ALT+CTRL+SHIFT)
 //      m_currentBinding->setText(i18n("Hi Emacs Fan! ;-)"));
-//      else 
+//      else
      m_currentBinding->setText("");
   }
 }
@@ -1030,3 +1030,4 @@ void KWKeyConfigTab::defaults() {
   updateAccelList();
 }
 
+#include "kwrite_keys.moc"

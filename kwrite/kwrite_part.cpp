@@ -430,3 +430,5 @@ KWriteBrowserExtension::KWriteBrowserExtension( KWrite *part )
  : KParts::BrowserExtension( part )
 {
 }
+
+#include "kwrite_part.moc"
