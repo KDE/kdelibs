@@ -425,8 +425,8 @@ AddressBook::AddressBook(QWidget* parent, const char* name, bool loadit)
 		  "\"%1\"\n"
 		  "could not be created. kab will probably not\n"
 		  "work correctly without it.\n"
-		  "Make sure you did not remove writing permission\n"
-		  "from your local kde directory.").arg(filename),
+		  "Make sure you did not remove write permission\n"
+		  "from your local KDE directory.").arg(filename),
 	     i18n("File error"));
 	  state=PermDenied;
 	} else {
@@ -455,8 +455,8 @@ AddressBook::AddressBook(QWidget* parent, const char* name, bool loadit)
 		  "\"%1\"\n"
 		  "could not be created. kab will probably not\n"
 		  "work correctly without it.\n"
-		  "Make sure you did not remove writing permission\n"
-		  "from your local kde directory.").arg(filename),
+		  "Make sure you did not remove write permission\n"
+		  "from your local KDE directory.").arg(filename),
 	     i18n("File error"));
 	  state=PermDenied;
 	} else {
@@ -580,7 +580,7 @@ AddressBook::ErrorCode AddressBook::load(QString filename)
 	      if(!data->save(i18n("(Safety copy on file error)").ascii(), true))
 		{
 		  KMessageBox::information(this,
-		     i18n("Cannot save the file, will close it now."),
+		     i18n("Cannot save the file; will close it now."),
 		     i18n("File error"));
 		  closeFile(false);
 		  state=NoFile;
@@ -1675,8 +1675,8 @@ AddressBook::loadConfigFile()
 	  return NoError;
 	} else {
 	  KMessageBox::information(this,
-	     i18n("Cannot load kab's local configuration file,\n"
-		  "there is possibly a formatting error.\n"
+	     i18n("Cannot load kab's local configuration file.\n"
+		  "There may be a formatting error.\n"
 		  "kab cannot be configured."),
 	     i18n("File error"));
 	  return InternError;

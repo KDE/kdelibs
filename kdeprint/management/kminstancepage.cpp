@@ -134,7 +134,7 @@ void KMInstancePage::slotRemove()
 	bool	reload(false);
 
 	QString	src = m_view->currentText();
-        QString msg = (src != i18n("(Default)") ? i18n("<nobr>Do you really want to remove instance <b>%1</b> ?</nobr>") : i18n("<nobr>You can't remove default instance. However all<br>settings of <b>%1</b> will be discarded. Continue ?</nobr>"));
+        QString msg = (src != i18n("(Default)") ? i18n("<nobr>Do you really want to remove instance <b>%1</b> ?</nobr>") : i18n("<nobr>You can't remove the default instance. However all<br>settings of <b>%1</b> will be discarded. Continue ?</nobr>"));
 	if (!src.isEmpty() && KMessageBox::warningYesNo(this,msg.arg(src)) == KMessageBox::Yes)
 	{
 		if (src == i18n("(Default)"))

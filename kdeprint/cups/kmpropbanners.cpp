@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -45,7 +45,7 @@ KMPropBanners::KMPropBanners(QWidget *parent, const char *name)
 	main_->addWidget(m_stopbanner,1,1);
 
 	m_title = i18n("Banners");
-	m_header = i18n("Banners settings");
+	m_header = i18n("Banner settings");
 	m_pixmap = "editcopy";
 }
 

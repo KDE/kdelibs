@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -61,7 +61,7 @@ KMWBanners::KMWBanners(QWidget *parent, const char *name)
 : KMWizardPage(parent,name)
 {
 	m_ID = KMWizard::Banners;
-	m_title = i18n("Banners selection");
+	m_title = i18n("Banner selection");
 	m_nextpage = KMWizard::Name;
 
 	m_start = new QComboBox(this);

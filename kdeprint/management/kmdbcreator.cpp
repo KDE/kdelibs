@@ -82,7 +82,7 @@ bool KMDBCreator::createDriverDB(const QString& dirname, const QString& filename
 		m_dlg = 0;
 	}
 	m_dlg = new QProgressDialog(parent,"progress-dialog",true);
-	m_dlg->setLabelText(i18n("Please wait while KDE is rebuilding a driver database."));
+	m_dlg->setLabelText(i18n("Please wait while KDE rebuilds a driver database."));
 	m_dlg->setCaption(i18n("Driver database"));
 	m_dlg->setMinimumDuration(0);	// always show the dialog
 	m_dlg->setProgress(0);		// to force showing

@@ -59,7 +59,7 @@ KMWIppPrinter::KMWIppPrinter(QWidget *parent, const char *name)
 	m_info = new QTextView(this);
 	m_info->setPaper(colorGroup().background());
 	m_info->setMinimumHeight(100);
-	m_info->setText(i18n("<p>Either enter directly the printer URI, or use the network scanning facility.</p>"));
+	m_info->setText(i18n("<p>Either enter the printer URI directly, or use the network scanning facility.</p>"));
 
 	QPushButton	*settings_ = new QPushButton(i18n("Settings"),this);
 	QPushButton	*scan_ = new QPushButton(i18n("Scan"),this);
@@ -109,7 +109,7 @@ bool KMWIppPrinter::isValid(QString& msg)
 {
 	if (m_uri->text().isEmpty())
 	{
-		msg = i18n("You must enter a printer uri !");
+		msg = i18n("You must enter a printer URI !");
 		return false;
 	}
 	/*if (!m_util->checkPrinter(m_printer->text().utf8(),p))

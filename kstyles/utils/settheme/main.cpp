@@ -7,15 +7,15 @@
 #include <klocale.h>
 #include <kipc.h>
 
-static const char *description = 
-	I18N_NOOP("KDE tool to change themes.");
+static const char *description =
+	I18N_NOOP("KDE tool to change themes");
 
 static const char *version = "v0.0.1";
 
 static KCmdLineOptions options[] =
 {
-   { "+Theme", I18N_NOOP("Input file containing a theme."), 0 },
-   { "apply", I18N_NOOP("Apply to all apps immediately."), 0 },
+   { "+Theme", I18N_NOOP("Input file containing a theme"), 0 },
+   { "apply", I18N_NOOP("Apply to all apps immediately"), 0 },
    { 0, 0, 0 }
 };
 
