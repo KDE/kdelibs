@@ -47,7 +47,7 @@ SoundServerJob::~SoundServerJob()
 
 PlayWavJob::PlayWavJob(const string& filename) :terminated(false)
 {
-	arts_debug("play '%s'!\n",filename.c_str());
+	arts_debug("play '%s'!",filename.c_str());
 
 	connect(wav,out);
 	wav.filename(filename);
