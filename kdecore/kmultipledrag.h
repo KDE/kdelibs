@@ -42,7 +42,7 @@ class KMultipleDragPrivate;
  * \code
  * KMultipleDrag *drag = new KMultipleDrag( parentWidget );
  * drag->addDragObject( new QImageDrag( someQImage, 0L ) );
- * drag->addDragObject( KURLDrag::newDrag( someKURL, 0L ) );
+ * drag->addDragObject( new KURLDrag( someKURL, 0L ) );
  * drag->drag();
  * \endcode
  *
