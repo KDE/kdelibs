@@ -294,9 +294,9 @@ void KApplication::dcopFailure( const QString & )
 
 #include <kparts/historyprovider.h>
 
-bool KParts::HistoryProvider::contains( const QString&  ) const
+bool KParts::HistoryProvider::contains( const QString& t ) const
 {
-    return false;
+    return ( t == "http://www.kde.org/" || t == "http://www.google.com/");
 }
 
 
