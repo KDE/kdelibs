@@ -20,7 +20,7 @@
  *
  * $Id$
  */
-//#define DEBUG_LAYOUT
+#define DEBUG_LAYOUT
 //#define BIDI_DEBUG
 
 #if 0
@@ -491,17 +491,18 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
 	deleteChar = true;
 	// reverse String
 	QString aStr = QConstString(str->s+from, len).string();
-#ifdef DEBUG_LAYOUT
-	printf("reversing '%s' len=%d\n", (const char *)aStr.utf8(), len);
-#endif
 	aStr.compose();
+#ifdef DEBUG_LAYOUT
+	printf("reversing '%s' len=%d oldlen=%d\n", (const char *)aStr.utf8(), aStr.length(), len);
+#endif
 	len = aStr.length();
 	ch = new QChar[len];
 	int half =  len/2;
+	const QChar *s = aStr.unicode();
 	for(int i = 0; i <= half; i++)
 	{
-	    ch[len-1-i] = str->s[from+i];
-	    ch[i] = str->s[from+len-1-i];
+	    ch[len-1-i] = s[i];
+	    ch[i] = s[len-1-i];
 	    if(ch[i].mirrored() && !m_style->visuallyOrdered())
 		ch[i] = ch[i].mirroredChar();
 	    if(ch[len-i].mirrored() && !m_style->visuallyOrdered())
@@ -535,8 +536,10 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
 unsigned int RenderText::width( int from, int len) const
 {
     if(!str->s) return 0;
-    QConstString s(str->s+from, len);
-    int w = fm->width(s.string());
+    QString s = QConstString(str->s+from, len).string();
+    // take care of most non spacing marks
+    s.compose();
+    int w = fm->width(s);
     // ### add margins and support for RTL
 
     if(m_parent->isInline())
