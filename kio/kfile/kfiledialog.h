@@ -871,6 +871,7 @@ protected slots:
 private:
     KFileDialog(const KFileDialog&);
     KFileDialog operator=(const KFileDialog&);
+    static void initStatic();
 
 protected:
     KDirOperator *ops;

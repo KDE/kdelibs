@@ -25,7 +25,9 @@
 
 class QVBoxLayout;
 class KConfig;
+class KFileTreeBranch;
 class KFileTreeView;
+class KFileTreeViewItem;
 
 /**
  * A pretty dialog for a KDirSelect control for selecting directories.

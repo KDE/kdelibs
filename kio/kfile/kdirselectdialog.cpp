@@ -47,6 +47,7 @@ public:
     {
         urlCombo = 0L;
         branch = 0L;
+        comboLocked = false;
     }
     
     KFileSpeedBar *speedBar;
@@ -55,6 +56,8 @@ public:
     QString recentDirClass;
     KURL startURL;
     QValueStack<KURL> dirsToList;
+
+    bool comboLocked : 1;
 };
 
 KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
@@ -133,10 +136,18 @@ void KDirSelectDialog::setCurrentURL( const KURL& url )
     root.setPath( "/" );
 
     d->startURL = url;
-    if ( url.protocol() != d->branch->url().protocol() )
+    if ( !d->branch || 
+         url.protocol() != d->branch->url().protocol() ||
+         url.host() != d->branch->url().host() )
     {
         if ( d->branch )
+        {
+            // removing the root-item causes the currentChanged() signal to be
+            // emitted, but we don't want to update the location-combo yet.
+            d->comboLocked = true;
             view()->removeBranch( d->branch );
+            d->comboLocked = false;
+        }
 
         d->branch = createBranch( root );
     }
@@ -150,6 +161,12 @@ void KDirSelectDialog::setCurrentURL( const KURL& url )
     d->dirsToList.clear();
     QString path = url.path(+1);
     int pos = path.length();
+    
+    if ( path.isEmpty() ) // e.g. ftp://host.com/ -> just list the root dir
+        d->dirsToList.push( root );
+
+    else
+    {
     while ( pos > 0 )
     {
         pos = path.findRev( '/', pos -1 );
@@ -159,6 +176,7 @@ void KDirSelectDialog::setCurrentURL( const KURL& url )
             d->dirsToList.push( dirToList );
 //             qDebug( "List: %s", dirToList.url().latin1());
         }
+    }
     }
 
     if ( !d->dirsToList.isEmpty() )
@@ -256,7 +274,12 @@ KURL KDirSelectDialog::url() const
 
 void KDirSelectDialog::slotCurrentChanged()
 {
-    KURL u = url();
+    if ( d->comboLocked )
+        return;
+    
+    KFileTreeViewItem *current = view()->currentKFileTreeViewItem();
+    KURL u = current ? current->url() : (d->branch ? d->branch->rootUrl() : KURL());
+    
     if ( u.isValid() )
     {
         if ( u.isLocalFile() )
