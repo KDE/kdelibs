@@ -373,6 +373,7 @@ kdbgstream &kdbgstream::form(const char *format, ...)
 kdbgstream::~kdbgstream() {
     if (!output.isEmpty()) {
 	fprintf(stderr, "ASSERT: debug output not ended with \\n\n");
+        abort();
 	*this << "\n";
     }
 }
