@@ -146,7 +146,7 @@ bool KMultiPart::openURL( const KURL &url )
 void KMultiPart::slotData( KIO::Job *, const QByteArray &data )
 {
     // Append to m_currentLine until eol
-    for ( int i = 0; i < data.size() ; ++i )
+    for ( uint i = 0; i < data.size() ; ++i )
     {
         // Store char. Skip if '\n' and currently parsing a header.
         m_lineParser->addChar( data[i], !m_bParsingHeader );
@@ -315,7 +315,7 @@ bool KMultiPart::closeURL()
     return true;
 }
 
-void KMultiPart::guiActivateEvent( KParts::GUIActivateEvent *e )
+void KMultiPart::guiActivateEvent( KParts::GUIActivateEvent * )
 {
     // Not public!
     //if ( m_part )
