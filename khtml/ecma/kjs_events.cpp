@@ -187,14 +187,12 @@ void JSLazyEventListener::parseCode() const
 
         // failed to parse, so let's just make this listener a no-op
         listener = Object();
-      }
-
-      if (!listener.inherits(&DeclaredFunctionImp::info)) {
+      } else if (!listener.inherits(&DeclaredFunctionImp::info)) {
         listener = Object();// Error creating function
+      } else {
+        DeclaredFunctionImp *declFunc = static_cast<DeclaredFunctionImp*>(listener.imp());
+        declFunc->setName(Identifier(name));
       }
-
-      DeclaredFunctionImp *declFunc = static_cast<DeclaredFunctionImp*>(listener.imp());
-      declFunc->setName(Identifier(name));
     }
 
     // no more need to keep the unparsed code around
