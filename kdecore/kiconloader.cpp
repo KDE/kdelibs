@@ -20,6 +20,9 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.69  1999/08/15 22:02:40  porten
+   unknown.png
+
    Revision 1.68  1999/08/15 13:14:36  kulow
    get rid of ICON and Icon. These macros names are very misleading as it doesn't
    load anything than toolbar pictures. I added the function BarIcon as replacement
@@ -311,7 +314,7 @@ QPixmap KIconLoader::loadIcon ( const QString& name, int w,
 	if (result.isNull() && !canReturnNull) {
 	    warning("%s : ERROR: couldn't find icon: %s",
 		    appname.ascii(), name.ascii() );
-	    result = loadInternal("unknown.png", w, h);
+	    result = loadInternal("unknown", w, h);
 	}
 
 	return result;
