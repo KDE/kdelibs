@@ -33,7 +33,6 @@
 
 #include "ktablistbox.moc"
 
-
 int KTabListBox::mMouseCol=-1;
 int KTabListBox::mMouseColLeft=0;
 int KTabListBox::mMouseColWidth=0;
@@ -229,7 +228,7 @@ KTabListBox::KTabListBox(QWidget *parent, const char *name, int columns,
 
   f = kapp->kdedir();
   f.detach();
-  f += "/lib/pics/khtmlw_dnd.xpm";
+  f += "/share/apps/khtmlw/pics/khtmlw_dnd.xpm";
   dndDefaultPixmap.load(f.data());
 
   tabPixels = 10;
@@ -292,7 +291,7 @@ void KTabListBox::setNumCols(int aCols)
 {
   int i;
   if (colList) {
-      for (i = 0; i < aCols; i++)
+      for (i = 0; i < numColumns; i++)
 	  delete colList[i];
       ::free(colList);
   }
