@@ -461,16 +461,14 @@ protected slots:
     virtual void makeCompletion( const QString& );
 
     /**
-     * Stores the current text whenever the completion box is
-     * displayed for the first time.
+     * @deprecated.  This function does nothing and will be removed in the next major release!
      */
-    void slotAboutToShow();
+    void slotAboutToShow(){};
 
     /**
-     * Re-stores the current text if the completion box is
-     * cancelled by the user.
+     * @deprecated.  This function does nothing and will be removed in the next major release!
      */
-    void slotCancelled();
+    void slotCancelled(){};
 
 protected:
     /**
@@ -521,7 +519,10 @@ private:
     QPopupMenu* contextMenuInternal();
     /** initializes the context menu */
     void initPopup();
-    
+    /** hides the popup box if completion mode is set to Popup */
+    void hideCompletionBox();
+
+    // Flag that indicates whether the popup menu should be enabled.
     bool m_bEnableMenu;
 
     // Pointer to the line editor.

@@ -363,16 +363,14 @@ protected slots:
     virtual void makeCompletion( const QString& );
 
     /**
-     * Stores the current text whenever the completion box is
-     * displayed for the first time.
+     * @deprecated.  Will be rmeoved in the next major release!
      */
-    void slotAboutToShow();
+    void slotAboutToShow(){};
 
     /**
-     * Re-stores the current text if the completion box is
-     * cancelled by the user.
+     * @deprecated.  Will be rmeoved in the next major release!
      */
-    void slotCancelled();
+    void slotCancelled(){};
 
 protected:
 
@@ -440,6 +438,8 @@ private:
     QPopupMenu* contextMenuInternal();
     /** initializes the context menu */
     void initPopup();
+    /** hides the popup box if completion mode is set to Popup */
+    void hideCompletionBox();
 
     bool m_bEnableMenu;
     class KLineEditPrivate;
