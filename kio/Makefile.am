@@ -52,6 +52,8 @@ libksycoca_la_SOURCES = \
 #(different programs), but nevertheless kmimetype.cpp includes
 #kdirnotify_stub.h
 $(srcdir)/kmimetype.cpp: kdirnotify_stub.h
+$(srcdir)/kautomount.cpp: kdirnotify_stub.h
+$(srcdir)/chmodjob.cpp: kdirnotify_stub.h
 
 include_HEADERS = \
         kservicetype.h kmimetype.h kmimemagic.h kservice.h \
