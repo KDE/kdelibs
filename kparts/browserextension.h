@@ -397,6 +397,8 @@ signals:
   void selectionInfo( const QString &text );
   void selectionInfo( const KURL::List &urls );
 
+  void goHistory( int steps );
+  
 private slots:
   void slotCompleted();
   void slotOpenURLRequest( const KURL &url, const KParts::URLArgs &args );
