@@ -306,7 +306,7 @@ bool TCPSlaveBase::connectToHost( const QString &host,
                                         "means that a third party could "
                                         "observe your data in transit."),
                                    i18n("Security Information"),
-                                   i18n("Continue Loading") );
+                                   i18n("C&ontinue Loading") );
           if ( result == KMessageBox::Cancel ) {
              d->userAborted = true;
              return false;
@@ -998,7 +998,7 @@ int TCPSlaveBase::verifyCertificate()
                                  msg.arg(ourHost),
                                  i18n("Server Authentication"),
                                  i18n("&Details"),
-                                 i18n("Co&ntinue"));
+                                 i18n("Co&nnect"));
                 if (result == KMessageBox::Yes) {
                    if (!d->dcc) {
                       d->dcc = new DCOPClient;
@@ -1064,9 +1064,9 @@ int TCPSlaveBase::verifyCertificate()
                                                         "easily observe your "
                                                         "data in transit."),
                                                    i18n("Security Information"),
-                                                   i18n("Display SSL "
+                                                   i18n("&Display SSL "
                                                         "Information"),
-                                                   i18n("Continue") );
+                                                   i18n("C&onnect") );
       if ( result == KMessageBox::Yes )
       {
           if (!d->dcc) {
