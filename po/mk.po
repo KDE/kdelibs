@@ -1,0 +1,650 @@
+# kdelibs for .mk
+# Copyright (C) 1998 Free Software Foundation, Inc.
+# Vasko Temelkoski <vasko@monarchy.com>, 1998.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: kdelibs\n"
+"POT-Creation-Date: 1998-01-17 07:40+0100\n"
+"PO-Revision-Date: 1998-05-17 20:00-0500-\n"
+"Last-Translator: Vasko Temelkoski <vasko@monarchy.com>\n"
+"Language-Team: Macedonian\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=iso-8859-5\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: kdecore/kapp.cpp:416
+msgid "&Help..."
+msgstr "&Pomo{"
+
+#: kdecore/kapp.cpp:421
+msgid "&About"
+msgstr "&Okolu"
+
+#: kdecore/kapp.cpp:425
+msgid "About &KDE..."
+msgstr "Okolu &KDE..."
+
+#: kdecore/kapp.cpp:446
+msgid "About KDE"
+msgstr "Okolu KDE"
+
+#: kdecore/kapp.cpp:448
+msgid ""
+"The KDE Desktop Environment was written by the KDE team.\n"
+"\n"
+"Please report bugs at http://buglist.kde.org.\n"
+"\n"
+"\n"
+"KDE was developed with Qt, a cross-platform GUI library.\n"
+"\n"
+"Qt is a product of Troll Tech (http://www.troll.no, info@troll.no).\n"
+"Qt may be used freely to develop free software on the X Window System.\n"
+msgstr "KDE Rabotnata okolinata e napi{ana od KDE timot.\n"
+"\n"
+"Ve molime prijavete gi site gre{ki na http://buglist.kde.org.\n"
+"\n"
+"\n"
+""
+
+#: kdeui/kcolordlg.cpp:283
+msgid "Select Color"
+msgstr "Odberete boja"
+
+#: kdeui/kcolordlg.cpp:295
+msgid "System Colors"
+msgstr "Sistemski boi"
+
+#: kdeui/kcolordlg.cpp:326
+msgid "Custom Colors"
+msgstr "Voobi~aeni boi"
+
+#: kdeui/kcolordlg.cpp:339
+msgid "Add to Custom Colors"
+msgstr "Dodadi vo voobi~aeni boi"
+
+#: kdeui/kcolordlg.cpp:461 kdeui/kfontdialog.cpp:351
+#: kdeui/kiconloaderdialog.cpp:210 po/texts.cpp:37
+msgid "Ok"
+msgstr "Vo red"
+
+#: kdeui/kcolordlg.cpp:464 kdeui/kcontrol.cpp:41 kdeui/keditcl1.cpp:397
+#: kdeui/keditcl1.cpp:479 kdeui/keditcl2.cpp:897 kdeui/kfontdialog.cpp:346
+#: kdeui/kiconloaderdialog.cpp:211 kdeui/kmsgbox.cpp:509 po/texts.cpp:40
+msgid "Cancel"
+msgstr "Poni{ti"
+
+#: kdeui/kcolordlg.cpp:469 kdeui/kcontrol.cpp:34 po/texts.cpp:45
+msgid "Help"
+msgstr "Pomo{"
+
+#: kdeui/kcolordlg.cpp:786 kdeui/kcolordlg.cpp:838
+msgid "Custom..."
+msgstr "Voobi~aena..."
+
+#: kdeui/kcontrol.cpp:39 kdeui/keditcl1.cpp:129 kdeui/keditcl1.cpp:143
+#: kdeui/keditcl1.cpp:158 kdeui/keditcl1.cpp:179 kdeui/keditcl1.cpp:192
+#: kdeui/keditcl1.cpp:1472 kdeui/keditcl1.cpp:1629 kdeui/kmsgbox.cpp:477
+#: po/texts.cpp:35
+msgid "OK"
+msgstr "Vo red"
+
+#: kdeui/kcontrol.cpp:40 po/texts.cpp:42
+msgid "Apply"
+msgstr "Apliciraj"
+
+#: kdeui/keditcl1.cpp:127 kdeui/keditcl1.cpp:156 kdeui/keditcl1.cpp:177
+#: kdeui/keditcl1.cpp:190 kdeui/keditcl1.cpp:1470 po/texts.cpp:87
+msgid "Sorry"
+msgstr "Izvinete"
+
+#: kdeui/keditcl1.cpp:128
+msgid "The specified File does not exist"
+msgstr "Poso~eniot fajl ne postoi"
+
+#: kdeui/keditcl1.cpp:141 kdeui/keditcl1.cpp:413 kdeui/keditcl1.cpp:494
+#: kdeui/keditcl1.cpp:1626
+msgid "Sorry:"
+msgstr "Izvinete:"
+
+#: kdeui/keditcl1.cpp:142
+msgid "You have specificated a directory"
+msgstr "Vie poso~ivte direktorium"
+
+#: kdeui/keditcl1.cpp:157 kdeui/keditcl1.cpp:178
+msgid "You do not have read permission to this file."
+msgstr "Vie nemate dozvola da go ~itate ovoj fajl"
+
+#: kdeui/keditcl1.cpp:191
+msgid "An Error occured while trying to open this Document"
+msgstr "Za vreme na otvaraweto na ovoj dokument nastanata e gre{ka "
+
+#: kdeui/keditcl1.cpp:356
+msgid "Select Document to Insert"
+msgstr "Odberete go dokumentot {to sakate da go vmetnete"
+
+#: kdeui/keditcl1.cpp:392 kdeui/keditcl1.cpp:474 kdeui/keditcl1.cpp:1569
+msgid "Warning:"
+msgstr "Predupreduvawe"
+
+#: kdeui/keditcl1.cpp:393 kdeui/keditcl1.cpp:475
+msgid ""
+"The current Document has been modified.\n"
+"Would you like to save it?"
+msgstr "Dokumentot e izmenet.\n"
+"Dali sakate da gi za~uvate izmenite"
+
+#: kdeui/keditcl1.cpp:395 kdeui/keditcl1.cpp:416 kdeui/keditcl1.cpp:477
+#: kdeui/keditcl1.cpp:497 kdeui/keditcl1.cpp:1572 kdeui/keditcl2.cpp:108
+#: kdeui/keditcl2.cpp:125 kdeui/keditcl2.cpp:365 kdeui/keditcl2.cpp:382
+#: kdeui/keditcl2.cpp:428 kdeui/keditcl2.cpp:458 kdeui/keditcl2.cpp:475
+#: kdeui/kmsgbox.cpp:492 kdeui/kmsgbox.cpp:507 po/texts.cpp:27
+msgid "Yes"
+msgstr "Da"
+
+#: kdeui/keditcl1.cpp:396 kdeui/keditcl1.cpp:417 kdeui/keditcl1.cpp:478
+#: kdeui/keditcl1.cpp:498 kdeui/keditcl1.cpp:1573 kdeui/keditcl2.cpp:109
+#: kdeui/keditcl2.cpp:126 kdeui/keditcl2.cpp:366 kdeui/keditcl2.cpp:383
+#: kdeui/keditcl2.cpp:429 kdeui/keditcl2.cpp:459 kdeui/keditcl2.cpp:476
+#: kdeui/kmsgbox.cpp:490 kdeui/kmsgbox.cpp:505 po/texts.cpp:28
+msgid "No"
+msgstr "Ne"
+
+#: kdeui/keditcl1.cpp:414
+msgid ""
+"Could not save the document.\n"
+"Open a new document anyways?"
+msgstr ""
+"Dokumentot ne mo`e da se za~uva"
+"Otvori nov dokument bezrazlika?"
+
+#: kdeui/keditcl1.cpp:445
+msgid "Select Document to Open"
+msgstr "Odberete dokument za otvarawe"
+
+#: kdeui/keditcl1.cpp:495
+msgid ""
+"Could not save the document.\n"
+"Create a new document anyways?"
+msgstr ""
+"Dokumentot ne mo`e da se za~uva"
+"Sozdadi nov dokument bezrazlika"
+
+#: kdeui/keditcl1.cpp:530 kdeui/kpopmenu.cpp:10 po/texts.cpp:34
+msgid "Untitled"
+msgstr "Bez naslov"
+
+#: kdeui/keditcl1.cpp:1471
+msgid "Could not save the document\n"
+msgstr "Dokumentot ne mo`e da se za~uva\n"
+
+#: kdeui/keditcl1.cpp:1541
+msgid "Save Document As"
+msgstr "Za~uvaj go dokumetot  pod ime"
+
+#: kdeui/keditcl1.cpp:1570
+msgid ""
+"A Document with this Name exists already\n"
+"Do you want to overwrite it ?"
+msgstr ""
+"Dokumet so ova ime ve}e postoi\n"
+"Dali bi sakale da go koregirate?"
+
+#: kdeui/keditcl1.cpp:1627
+msgid "You do not have write permission to this file.\n"
+msgstr "Vie nemate dozvola da pi{uvate vo ovoj fajl\n"
+
+#: kdeui/keditcl2.cpp:105 kdeui/keditcl2.cpp:122 kdeui/keditcl2.cpp:362
+#: kdeui/keditcl2.cpp:379 kdeui/keditcl2.cpp:678 kdeui/keditcl2.cpp:687
+#: kdeui/keditcl2.cpp:788
+msgid "Find"
+msgstr "Pronajdi"
+
+#: kdeui/keditcl2.cpp:106 kdeui/keditcl2.cpp:363 kdeui/keditcl2.cpp:456
+msgid ""
+"End of document reached.\n"
+"Continue from the beginning?"
+msgstr ""
+"Stignavte do krajot na dokumentot.\n"
+"Dali bi sakale da po~nete od po~etok?"
+
+#: kdeui/keditcl2.cpp:123 kdeui/keditcl2.cpp:380 kdeui/keditcl2.cpp:426
+#: kdeui/keditcl2.cpp:473
+msgid ""
+"Beginning of document reached.\n"
+"Continue from the end?"
+msgstr ""
+"Stignavte do po~etokot na dokumentot.\n"
+"Dali bi sakale da prodol`ite od krajot?"
+
+#: kdeui/keditcl2.cpp:425 kdeui/keditcl2.cpp:455 kdeui/keditcl2.cpp:472
+#: kdeui/keditcl2.cpp:791
+msgid "Replace"
+msgstr "Zameni"
+
+#: kdeui/keditcl2.cpp:684 kdeui/keditcl2.cpp:782
+msgid "Case Sensitive"
+msgstr "Osetlivost na golemi i mali bukvi"
+
+#: kdeui/keditcl2.cpp:685 kdeui/keditcl2.cpp:785
+msgid "Find Backwards"
+msgstr "Pronajdi odej}i nanazad"
+
+#: kdeui/keditcl2.cpp:690 kdeui/keditcl2.cpp:797 po/texts.cpp:86
+msgid "Done"
+msgstr "Gotovo"
+
+#: kdeui/keditcl2.cpp:770
+msgid "Find:"
+msgstr "Pronajdi:"
+
+#: kdeui/keditcl2.cpp:780
+msgid "Replace with:"
+msgstr "Zameni go so:"
+
+#: kdeui/keditcl2.cpp:794
+msgid "Replace All"
+msgstr "Zameni gi site"
+
+#: kdeui/keditcl2.cpp:891
+msgid "Goto Line"
+msgstr "Odi na linija"
+
+#: kdeui/keditcl2.cpp:896
+msgid "Go"
+msgstr "Odi"
+
+#: kdeui/kfontdialog.cpp:164
+msgid "Select Font"
+msgstr "Odberi font"
+
+#: kdeui/kfontdialog.cpp:168
+msgid "Requested Font"
+msgstr "Baraniot Font"
+
+#: kdeui/kfontdialog.cpp:173
+msgid "Actual Font"
+msgstr "Vistinskiot Font"
+
+#: kdeui/kfontdialog.cpp:177 kdeui/kfontdialog.cpp:181
+msgid "Family:"
+msgstr "Familija:"
+
+#: kdeui/kfontdialog.cpp:188 kdeui/kfontdialog.cpp:194 po/texts.cpp:26
+msgid "Charset:"
+msgstr "Podesena{ifra:"
+
+#: kdeui/kfontdialog.cpp:201 kdeui/kfontdialog.cpp:206
+msgid "Size:"
+msgstr "Golemina:"
+
+#: kdeui/kfontdialog.cpp:215 kdeui/kfontdialog.cpp:220
+msgid "Weight:"
+msgstr "Te`ina:"
+
+#: kdeui/kfontdialog.cpp:229 kdeui/kfontdialog.cpp:237
+msgid "Style:"
+msgstr "Stil:"
+
+#: kdeui/kfontdialog.cpp:272
+msgid "Charset"
+msgstr "Podesena{ifra"
+
+#: kdeui/kfontdialog.cpp:284
+msgid "Size"
+msgstr "Golemina:"
+
+#: kdeui/kfontdialog.cpp:323
+msgid "Weight"
+msgstr "Te`ina:"
+
+#: kdeui/kfontdialog.cpp:324 kdeui/kfontdialog.cpp:433
+msgid "normal"
+msgstr "normalno"
+
+#: kdeui/kfontdialog.cpp:325 kdeui/kfontdialog.cpp:435
+msgid "bold"
+msgstr "podebeli bukvi"
+
+#: kdeui/kfontdialog.cpp:334
+msgid "Style"
+msgstr "Stil"
+
+#: kdeui/kfontdialog.cpp:335 kdeui/kfontdialog.cpp:446
+#: kdeui/kfontdialog.cpp:476
+msgid "roman"
+msgstr "rimski"
+
+#: kdeui/kfontdialog.cpp:336 kdeui/kfontdialog.cpp:448
+#: kdeui/kfontdialog.cpp:474
+msgid "italic"
+msgstr "rakopisno"
+
+#: kdeui/kfontdialog.cpp:364
+msgid "Dolor Ipse"
+msgstr "Dolor Ipse"
+
+#: kdeui/kfontdialog.cpp:469
+msgid "Bold"
+msgstr "Podebeli Bukvi"
+
+#: kdeui/kfontdialog.cpp:471
+msgid "Normal"
+msgstr "Normalno"
+
+#: kdeui/kiconloaderdialog.cpp:193
+msgid "Select Icon"
+msgstr "Odberi Ikona"
+
+#: kdeui/kiconloaderdialog.cpp:198
+msgid "Filter:"
+msgstr "Filter:"
+
+#: kdeui/kmenubar.cpp:149 kdeui/ktoolbar.cpp:315
+msgid "Top"
+msgstr "Gore"
+
+#: kdeui/kmenubar.cpp:150 kdeui/ktoolbar.cpp:317
+msgid "Bottom"
+msgstr "Dole"
+
+#: kdeui/kmenubar.cpp:151 kdeui/ktoolbar.cpp:318
+msgid "Floating"
+msgstr "Lebdej}i"
+
+#: kdeui/kmenubar.cpp:191 kdeui/kmenubar.cpp:330 kdeui/ktoolbar.cpp:784
+#: kdeui/ktoolbar.cpp:1329
+msgid "Float"
+msgstr "Lebdi"
+
+#: kdeui/kmenubar.cpp:319 kdeui/ktoolbar.cpp:1315
+msgid "UnFloat"
+msgstr "Nelebdi"
+
+#: kdeui/ktoolbar.cpp:118 kdeui/ktoolbar.cpp:177
+msgid "KToolBarButton: pixmap is empty, perhaps some missing file"
+msgstr "KTablenaAlatkaSoKop~iwa:pihmapata e prazna, mo`no e nekoi fajlovi da nedostasuvaat"
+
+#: kdeui/ktoolbar.cpp:314
+msgid "Left"
+msgstr "Levo"
+
+#: kdeui/ktoolbar.cpp:316
+msgid "Right"
+msgstr "Desno"
+
+#: po/texts.cpp:24
+msgid "Error"
+msgstr "Gre{ka"
+
+#: po/texts.cpp:25
+msgid "Malformed URL"
+msgstr "Defekten URL"
+
+#: po/texts.cpp:29
+msgid "Warning"
+msgstr "Predupreduvawe"
+
+#: po/texts.cpp:30
+msgid "Save a file"
+msgstr "Za~uvaj go fajlot"
+
+#: po/texts.cpp:31
+msgid "Contents"
+msgstr "Sod`ina"
+
+#: po/texts.cpp:32
+msgid "About"
+msgstr "Okolu"
+
+#: po/texts.cpp:33
+msgid "A&bout..."
+msgstr "O&kolu"
+
+#: po/texts.cpp:36
+msgid "&OK"
+msgstr "&Vo red"
+
+#: po/texts.cpp:38
+msgid "On"
+msgstr "Uklu~eno"
+
+#: po/texts.cpp:39
+msgid "Off"
+msgstr "Isklu~eno"
+
+#: po/texts.cpp:41
+msgid "&Cancel"
+msgstr "&Otka`i"
+
+#: po/texts.cpp:43
+msgid "File"
+msgstr "Fajl"
+
+#: po/texts.cpp:44
+msgid "&File"
+msgstr "&Fajl "
+
+#: po/texts.cpp:46
+msgid "&Help"
+msgstr "&Pomo{"
+
+#: po/texts.cpp:47
+msgid "Edit"
+msgstr "Izmeni"
+
+#: po/texts.cpp:48
+msgid "&Edit"
+msgstr "&Izmeni "
+
+#: po/texts.cpp:49
+msgid "&Options"
+msgstr "&Opcii"
+
+#: po/texts.cpp:50
+msgid "View"
+msgstr "Pregled"
+
+#: po/texts.cpp:51
+msgid "&View"
+msgstr "&Pregled"
+
+#: po/texts.cpp:52
+msgid "E&xit"
+msgstr "I&zlez"
+
+#: po/texts.cpp:53
+msgid "Quit"
+msgstr "Zatvori"
+
+#: po/texts.cpp:54
+msgid "&Quit"
+msgstr "&Zavr{i"
+
+#: po/texts.cpp:55
+msgid "Reload"
+msgstr "Prenapolni"
+
+#: po/texts.cpp:56
+msgid "Back"
+msgstr "Nazad"
+
+#: po/texts.cpp:57
+msgid "Forward"
+msgstr "Napred"
+
+#: po/texts.cpp:58
+msgid "Copy"
+msgstr "Kopiraj"
+
+#: po/texts.cpp:59
+msgid "&Copy"
+msgstr "&Kopiraj"
+
+#: po/texts.cpp:60
+msgid "Paste"
+msgstr "Vmetni"
+
+#: po/texts.cpp:61
+msgid "&Paste"
+msgstr "&Vmetni"
+
+#: po/texts.cpp:62
+msgid "New"
+msgstr "Novo"
+
+#: po/texts.cpp:63
+msgid "&New"
+msgstr "&Novo"
+
+#: po/texts.cpp:64
+msgid "&New..."
+msgstr "&Novo..."
+
+#: po/texts.cpp:65
+msgid "&New Window..."
+msgstr "&Nov Prozorec..."
+
+#: po/texts.cpp:66
+msgid "New &Window..."
+msgstr "Nov &Prozorec..."
+
+#: po/texts.cpp:67
+msgid "New Game"
+msgstr "Nova Igra"
+
+#: po/texts.cpp:68
+msgid "&New Game"
+msgstr "&Nova Igra"
+
+#: po/texts.cpp:69
+msgid "Open"
+msgstr "Otvori"
+
+#: po/texts.cpp:70
+msgid "Open a file"
+msgstr "Otvori go fajl-ot"
+
+#: po/texts.cpp:71
+msgid "Open..."
+msgstr "Otvori..."
+
+#: po/texts.cpp:72
+msgid "&Open..."
+msgstr "&Otvori..."
+
+#: po/texts.cpp:73
+msgid "Cut"
+msgstr "Ise~i"
+
+#: po/texts.cpp:74
+msgid "C&ut"
+msgstr "I&se~i"
+
+#: po/texts.cpp:75
+msgid "Font"
+msgstr "Font"
+
+#: po/texts.cpp:76
+msgid "&Foreground Color"
+msgstr "&Boja vo Prednina"
+
+#: po/texts.cpp:77
+msgid "&Background Color"
+msgstr "&Boja vo Pozadina"
+
+#: po/texts.cpp:78
+msgid "Save"
+msgstr "Za~uvaj"
+
+#: po/texts.cpp:79
+msgid "&Save"
+msgstr "&Za~uvaj"
+
+#: po/texts.cpp:80
+msgid "Save As"
+msgstr "Za~uvaj kako"
+
+#: po/texts.cpp:81
+msgid "Save as..."
+msgstr "Za~uvaj go kako..."
+
+#: po/texts.cpp:82
+msgid "S&ave as..."
+msgstr "Z&~uvaj go kako..."
+
+#: po/texts.cpp:83
+msgid "Close"
+msgstr "Zatvori"
+
+#: po/texts.cpp:84
+msgid "&Close"
+msgstr "&Zatvori"
+
+#: po/texts.cpp:85
+msgid "&Print..."
+msgstr "&Odpe~ati..."
+
+#: po/texts.cpp:88
+msgid "Options"
+msgstr "Opcii"
+
+#: po/texts.cpp:89
+msgid "Remove"
+msgstr "Odzemi"
+
+#: po/texts.cpp:90
+msgid "Add"
+msgstr "Dodadi"
+
+#: po/texts.cpp:91
+msgid "Change"
+msgstr "Promeni"
+
+#: po/texts.cpp:92
+msgid "Delete"
+msgstr "Izbri{i"
+
+#: po/texts.cpp:93
+msgid "&Delete"
+msgstr "&Izbri{i"
+
+#: po/texts.cpp:94
+msgid "Clear"
+msgstr "Is~isti"
+
+#: po/texts.cpp:95
+msgid "Italic"
+msgstr "Rakopisno"
+
+#: po/texts.cpp:96
+msgid "Roman"
+msgstr "Rimsko"
+
+#: po/texts.cpp:97
+msgid "Undo"
+msgstr "Odpravi"
+
+#: po/texts.cpp:98
+msgid "&Undo"
+msgstr "&Odpravi"
+
+#: po/texts.cpp:99
+msgid "Redo"
+msgstr "Prepravi"
+
+#: po/texts.cpp:100
+msgid "&Redo"
+msgstr "&Prepravi"
+
+#: po/texts.cpp:101
+msgid "&Game"
+msgstr "&Igra"
+
+#: po/texts.cpp:102
+msgid "Information"
+msgstr "Informacija"
+
+#: po/texts.cpp:103
+msgid "Browse..."
+msgstr "Baraj..."
