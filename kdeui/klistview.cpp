@@ -485,8 +485,11 @@ bool KListView::isExecuteArea( int x, QListViewItem* item )
 	width = treeStepSize()*( item->depth() + ( rootIsDecorated() ? 1 : 0 ) );
 	width += itemMargin();
 	int ca = AlignHorizontal_Mask & columnAlignment( 0 );
-	if ( ca == AlignRight || ca == AlignAuto )
+	if ( ca == AlignLeft || ca == AlignAuto ) {
 	    width += item->width( fontMetrics(), this, 0 );
+	    if ( width > columnWidth( 0 ) )
+		width = columnWidth( 0 );
+	}
     }
 
     return ( x > offset && x < ( offset + width ) );
