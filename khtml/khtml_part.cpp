@@ -4889,10 +4889,7 @@ KJSProxy *KHTMLPart::framejScript(KParts::ReadOnlyPart *framePart)
 
 KHTMLPart *KHTMLPart::parentPart()
 {
-  if ( !parent() || !parent()->inherits( "KHTMLPart" ) )
-    return 0L;
-
-  return (KHTMLPart *)parent();
+  return ::qt_cast<KHTMLPart *>( parent() );
 }
 
 khtml::ChildFrame *KHTMLPart::recursiveFrameRequest( KHTMLPart *callingHtmlPart, const KURL &url,

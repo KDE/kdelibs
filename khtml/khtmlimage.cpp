@@ -50,20 +50,24 @@ KHTMLImageFactory::~KHTMLImageFactory()
 
 KParts::Part *KHTMLImageFactory::createPartObject( QWidget *parentWidget, const char *widgetName,
                                                    QObject *parent, const char *name,
-                                                   const char *, const QStringList & )
+                                                   const char *className, const QStringList & )
 {
-    return new KHTMLImage( parentWidget, widgetName, parent, name );
+  KHTMLPart::GUIProfile prof = KHTMLPart::DefaultGUI;
+  if ( strcmp( className, "Browser/View" ) == 0 )
+    prof = KHTMLPart::BrowserViewGUI;
+  return new KHTMLImage( parentWidget, widgetName, parent, name, prof );
 }
 
 KHTMLImage::KHTMLImage( QWidget *parentWidget, const char *widgetName,
-                        QObject *parent, const char *name )
+                        QObject *parent, const char *name, KHTMLPart::GUIProfile prof )
     : KParts::ReadOnlyPart( parent, name ), m_image( 0 )
 {
-    setInstance( KHTMLImageFactory::instance() );
+    KHTMLPart* parentPart = ::qt_cast<KHTMLPart *>( parent );
+    setInstance( KHTMLImageFactory::instance(), prof == KHTMLPart::BrowserViewGUI && !parentPart );
 
     QVBox *box = new QVBox( parentWidget, widgetName );
 
-    m_khtml = new KHTMLPart( box, widgetName, this, "htmlimagepart", KHTMLPart::BrowserViewGUI );
+    m_khtml = new KHTMLPart( box, widgetName, this, "htmlimagepart", prof );
     m_khtml->setAutoloadImages( true );
     m_khtml->widget()->installEventFilter(this);
 
@@ -79,7 +83,7 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget, const char *widgetName,
     if ( encodingAction )
     {
         encodingAction->unplugAll();
-        delete encodingAction;      
+        delete encodingAction;
     }
     KAction *viewSourceAction= actionCollection()->action( "viewDocumentSource" );
     if ( viewSourceAction )
@@ -96,7 +100,7 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget, const char *widgetName,
     }
 
     // forward important signals from the khtml part
-    
+
     // forward opening requests to parent frame (if existing)
     KHTMLPart *p = ::qt_cast<KHTMLPart *>(parent);
     KParts::BrowserExtension *be = p ? p->browserExtension() : m_ext;

@@ -20,7 +20,7 @@
 #ifndef __khtmlimage_h__
 #define __khtmlimage_h__
 
-#include <kparts/part.h>
+#include "khtml_part.h"
 #include <kparts/factory.h>
 #include <kparts/browserextension.h>
 
@@ -62,7 +62,7 @@ class KHTMLImage : public KParts::ReadOnlyPart, public khtml::CachedObjectClient
     Q_OBJECT
 public:
     KHTMLImage( QWidget *parentWidget, const char *widgetName,
-                QObject *parent, const char *name );
+                QObject *parent, const char *name, KHTMLPart::GUIProfile prof );
     virtual ~KHTMLImage();
 
     virtual bool openFile() { return true; } // grmbl, should be non-pure in part.h, IMHO
