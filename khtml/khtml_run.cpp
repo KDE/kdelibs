@@ -59,6 +59,7 @@ void KHTMLRun::foundMimeType( const QString &_type )
     if ( m_bFinished )
     {
         m_timer.start( 0, true );
+        emit static_cast<KHTMLPart *>(m_part)->canceled(QString::null);
         return;
     }
 
