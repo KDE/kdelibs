@@ -167,3 +167,10 @@ mainViewGeometry() instead.
 KStartParams is a new class for easy command-line argument parsing.
 It's included in kdecore and defined in kstartparams.h. See 
 html-documentation for further informations about using.
+
+////////////////////////////////////////////////////////////////////////
+// * automoc
+
+automoc has been removed from the admin directory. It has been replaced
+by am_edit which provides a lot of additional features.
+
