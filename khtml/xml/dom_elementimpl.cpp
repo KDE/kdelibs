@@ -458,21 +458,6 @@ void ElementImpl::dispatchAttrAdditionEvent(AttributeImpl * /*attr*/)
    //attr->value(),getDocument()->attrName(attr->id()),MutationEvent::ADDITION),exceptioncode);
 }
 
-#ifndef NDEBUG
-void ElementImpl::dump(QTextStream *stream, QString ind) const
-{
-    if (namedAttrMap) {
-        for (uint i = 0; i < namedAttrMap->length(); i++) {
-            AttributeImpl *attr = namedAttrMap->attributeItem(i);
-            *stream << " " << DOMString(getDocument()->attrName(attr->id())).string().ascii()
-                    << "=\"" << DOMString(attr->value()).string().ascii() << "\"";
-        }
-    }
-
-    NodeBaseImpl::dump(stream,ind);
-}
-#endif
-
 // -------------------------------------------------------------------------
 
 XMLElementImpl::XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_tagName)

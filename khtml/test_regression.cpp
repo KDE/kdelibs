@@ -144,9 +144,8 @@ Value RegTestFunction::call(ExecState *exec, Object &/*thisObj*/, const List &ar
             break;
         }
 	case CheckOutput: {
-            QByteArray dumpData = m_regTest->getPartOutput();
             QString filename = args[0].toString(exec).qstring();
-            result = Boolean(m_regTest->checkOutput(filename+".dump",dumpData));
+            result = Boolean(m_regTest->checkOutput(filename+"-dom"));
             break;
         }
     }
@@ -456,12 +455,85 @@ QByteArray RegressionTest::getPartOutput()
     QByteArray dumpData;
     QTextStream outputStream(dumpData,IO_WriteOnly);
 
-    outputStream << "Rendering Tree" << endl;
-    outputStream << "--------------" << endl;
-    m_part->document().handle()->renderer()->dump(&outputStream);
-    outputStream << "DOM Tree" << endl;
-    outputStream << "--------" << endl;
-    m_part->document().handle()->dump(&outputStream);
+    Node node = m_part->document();
+    uint indent = 0;
+    while (!node.isNull()) {
+	// process
+
+	for (uint i = 0; i < indent; i++)
+	    outputStream << "  ";
+	outputStream << node.nodeName().string().latin1();
+
+	switch (node.nodeType()) {
+	    case Node::ELEMENT_NODE: {
+		// Sort strings to ensure consistent output
+		QStringList attrNames;
+		NamedNodeMap attrs = node.attributes();
+		for (uint a = 0; a < attrs.length(); a++)
+		    attrNames.append(attrs.item(a).nodeName().string());
+		attrNames.sort();
+
+		QStringList::iterator it;
+		Element elem(node);
+		for (it = attrNames.begin(); it != attrNames.end(); ++it) {
+		    QString name = *it;
+		    QString value = elem.getAttribute(*it).string();
+		    outputStream << " " << name.latin1() << "=\"" << value.latin1() << "\"";
+		}
+		break;
+	    }
+	    case Node::ATTRIBUTE_NODE:
+		// Should not be present in tree
+		assert(false);
+		break;
+            case Node::TEXT_NODE:
+		outputStream << " \"" << Text(node).data().string().latin1() << "\"";
+		break;
+            case Node::CDATA_SECTION_NODE:
+		outputStream << " \"" << CDATASection(node).data().string().latin1() << "\"";
+		break;
+            case Node::ENTITY_REFERENCE_NODE:
+		break;
+            case Node::ENTITY_NODE:
+		break;
+            case Node::PROCESSING_INSTRUCTION_NODE:
+		break;
+            case Node::COMMENT_NODE:
+		outputStream << " \"" << Comment(node).data().string().latin1() << "\"";
+		break;
+            case Node::DOCUMENT_NODE:
+		break;
+            case Node::DOCUMENT_TYPE_NODE:
+		break;
+            case Node::DOCUMENT_FRAGMENT_NODE:
+		// Should not be present in tree
+		assert(false);
+		break;
+            case Node::NOTATION_NODE:
+		break;
+            default:
+		assert(false);
+		break;
+	}
+
+	outputStream << endl;
+
+	if (!node.firstChild().isNull()) {
+	    node = node.firstChild();
+	    indent++;
+	}
+	else if (!node.nextSibling().isNull()) {
+	    node = node.nextSibling();
+	}
+	else {
+	    while (!node.isNull() && node.nextSibling().isNull()) {
+		node = node.parentNode();
+		indent--;
+	    }
+	    if (!node.isNull())
+		node = node.nextSibling();
+	}
+    }
 
     return dumpData;
 }
@@ -477,8 +549,7 @@ void RegressionTest::testStaticFile(QString filename)
     pm.waitForCompletion();
 
     // compare with (or generate) output file
-    QByteArray dumpData = getPartOutput();
-    reportResult(checkOutput(filename+".dump",dumpData));
+    reportResult(checkOutput(filename+"-dom"));
 }
 
 void RegressionTest::testJSFile(QString filename)
@@ -524,8 +595,9 @@ void RegressionTest::testJSFile(QString filename)
     }
 }
 
-bool RegressionTest::checkOutput(QString againstFilename, QByteArray data)
+bool RegressionTest::checkOutput(QString againstFilename)
 {
+    QByteArray data = getPartOutput();
     QString absFilename = QFileInfo(m_outputFilesDir+"/"+againstFilename).absFilePath();
     if (!m_genOutput) {
 	// compare result to existing file

@@ -196,10 +196,6 @@ public:
     void dispatchAttrRemovalEvent(AttributeImpl *attr);
     void dispatchAttrAdditionEvent(AttributeImpl *attr);
 
-#ifndef NDEBUG
-    virtual void dump(QTextStream *stream, QString ind = "") const;
-#endif
-
 protected:
     void createAttributeMap() const;
     void createDecl();

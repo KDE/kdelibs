@@ -124,7 +124,7 @@ public:
     QByteArray getPartOutput();
     void testStaticFile(QString filename);
     void testJSFile(QString filename);
-    bool checkOutput(QString againstFilename, QByteArray data);
+    bool checkOutput(QString againstFilename);
     bool runTests(QString relPath = "", bool mustExist = false);
     void reportResult(bool passed, QString description = "");
     void createMissingDirs(QString path);

@@ -220,15 +220,6 @@ void CharacterDataImpl::checkCharDataOperation( const unsigned long offset, int 
     }
 }
 
-#ifndef NDEBUG
-void CharacterDataImpl::dump(QTextStream *stream, QString ind) const
-{
-    *stream << " str=\"" << DOMString(str).string().ascii() << "\"";
-
-    NodeImpl::dump(stream,ind);
-}
-#endif
-
 // ---------------------------------------------------------------------------
 
 DOMString CommentImpl::nodeName() const

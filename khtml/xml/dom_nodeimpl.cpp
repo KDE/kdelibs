@@ -862,34 +862,6 @@ NodeImpl::StyleChange NodeImpl::diff( khtml::RenderStyle *s1, khtml::RenderStyle
     return ch;
 }
 
-#ifndef NDEBUG
-void NodeImpl::dump(QTextStream *stream, QString ind) const
-{
-    // ### implement dump() for all appropriate subclasses
-
-    if (m_hasId) { *stream << " hasId"; }
-    if (m_hasStyle) { *stream << " hasStyle"; }
-    if (m_specified) { *stream << " specified"; }
-    if (m_focused) { *stream << " focused"; }
-    if (m_active) { *stream << " active"; }
-    if (m_styleElement) { *stream << " styleElement"; }
-    if (m_implicit) { *stream << " implicit"; }
-
-    *stream << " tabIndex=" << m_tabIndex;
-    if (m_regdListeners)
-	*stream << " #regdListeners=" << m_regdListeners->count(); // ### more detail
-    *stream << endl;
-
-    NodeImpl *child = firstChild();
-    while( child != 0 )
-    {
-	*stream << ind << child->nodeName().string().ascii() << ": ";
-        child->dump(stream,ind+"  ");
-        child = child->nextSibling();
-    }
-}
-#endif
-
 void NodeImpl::closeRenderer()
 {
     // It's important that we close the renderer, even if it hasn't been

@@ -66,9 +66,6 @@ public:
     DOMString data() const { return str; }
 
     virtual void checkCharDataOperation( const unsigned long offset, int &exceptioncode );
-#ifndef NDEBUG
-    virtual void dump(QTextStream *stream, QString ind = "") const;
-#endif
 
 protected:
     // note: since DOMStrings are shared, str should always be copied when making

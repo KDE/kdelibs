@@ -270,9 +270,6 @@ public:
     void checkAddChild(NodeImpl *newChild, int &exceptioncode);
     bool isAncestor( NodeImpl *other );
     virtual bool childAllowed( NodeImpl *newChild );
-#ifndef NDEBUG
-    virtual void dump(QTextStream *stream, QString ind = "") const;
-#endif
 
     // -----------------------------------------------------------------------------
     // Integration with rendering tree
