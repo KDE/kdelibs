@@ -846,7 +846,7 @@ bool KCharsetsData::isDisplayable(KCharsetEntry *charset){
   
   kchdebug("searching for charset %s\n", charset->name);
   if (charset->good_family){
-      printf("found good family\n");
+      kchdebug("found good family\n");
       if (charset->good_family->isEmpty()) /* no good_family is known */
 	  return  isDisplayableHack(charset);
       return TRUE;
