@@ -26,6 +26,7 @@
 #include <kparts/factory.h>
 #include <kparts/browserextension.h>
 #include <kaboutdata.h>
+#include <qdatetime.h>
 
 class KHTMLPart;
 class KInstance;
@@ -69,6 +70,8 @@ private slots:
 
     void startHeader();
 
+    void slotProgressInfo();
+
 private:
     KParts::BrowserExtension* m_extension;
     QGuardedPtr<KParts::ReadOnlyPart> m_part;
@@ -85,6 +88,12 @@ private:
     bool m_bGotAnyHeader;
     bool m_gzip;
     HTTPFilterBase *m_filter;
+    // Speed measurements
+    long m_totalNumberOfFrames;
+    long m_numberOfFrames;
+    long m_numberOfFramesSkipped;
+    QTime m_qtime;
+    QTimer* m_timer;
 };
 
 #if 0

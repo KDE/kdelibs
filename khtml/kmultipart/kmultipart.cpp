@@ -32,6 +32,7 @@
 #include <khtml_part.h>
 #include <unistd.h>
 #include <kxmlguifactory.h>
+#include <qtimer.h>
 
 typedef KParts::GenericFactory<KMultiPart> KMultiPartFactory; // factory for the part
 K_EXPORT_COMPONENT_FACTORY( libkmultipart /*library name*/, KMultiPartFactory )
@@ -111,6 +112,9 @@ KMultiPart::KMultiPart( QWidget *parentWidget, const char *widgetName,
     m_job = 0L;
     m_lineParser = new KLineParser;
     m_tempFile = 0L;
+
+    m_timer = new QTimer( this );
+    connect( m_timer, SIGNAL( timeout() ), this, SLOT( slotProgressInfo() ) );
 }
 
 KMultiPart::~KMultiPart()
@@ -126,7 +130,10 @@ KMultiPart::~KMultiPart()
         delete static_cast<KParts::ReadOnlyPart *>( m_part );
     delete m_job;
     delete m_lineParser;
-    delete m_tempFile;
+    if ( m_tempFile ) {
+        m_tempFile->setAutoDelete( true );
+        delete m_tempFile;
+    }
     delete m_filter;
     m_filter = 0L;
 }
@@ -157,12 +164,18 @@ bool KMultiPart::openURL( const KURL &url )
 
     m_job = KIO::get( url, args.reload, false );
 
-    emit started( m_job );
+    emit started( 0 /*m_job*/ ); // don't pass the job, it would interfer with our own infoMessage
 
     connect( m_job, SIGNAL( result( KIO::Job * ) ),
              this, SLOT( slotJobFinished( KIO::Job * ) ) );
     connect( m_job, SIGNAL( data( KIO::Job *, const QByteArray & ) ),
              this, SLOT( slotData( KIO::Job *, const QByteArray & ) ) );
+
+    m_numberOfFrames = 0;
+    m_numberOfFramesSkipped = 0;
+    m_totalNumberOfFrames = 0;
+    m_qtime.start();
+    m_timer->start( 1000 ); //1s
 
     return true;
 }
@@ -307,6 +320,7 @@ void KMultiPart::setPart( const QString& mimeType )
     connect( m_part, SIGNAL( completed() ),
              this, SLOT( slotPartCompleted() ) );
 
+    m_isHTMLPart = ( mimeType == "text/html" );
     KParts::BrowserExtension* childExtension = KParts::BrowserExtension::childObject( m_part );
 
     if ( childExtension )
@@ -341,8 +355,10 @@ void KMultiPart::setPart( const QString& mimeType )
                  m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const KParts::URLArgs &, KParts::BrowserExtension::PopupFlags, mode_t ) ) );
 
 
-        connect( childExtension, SIGNAL( infoMessage( const QString & ) ),
-                 m_extension, SIGNAL( infoMessage( const QString & ) ) );
+        if ( m_isHTMLPart )
+            connect( childExtension, SIGNAL( infoMessage( const QString & ) ),
+                     m_extension, SIGNAL( infoMessage( const QString & ) ) );
+        // For non-HTML we prefer to show our infoMessage ourselves.
 
         childExtension->setBrowserInterface( m_extension->browserInterface() );
 
@@ -354,8 +370,9 @@ void KMultiPart::setPart( const QString& mimeType )
                  m_extension, SIGNAL( setIconURL( const KURL& ) ) );
         connect( childExtension, SIGNAL( loadingProgress( int ) ),
                  m_extension, SIGNAL( loadingProgress( int ) ) );
-        connect( childExtension, SIGNAL( speedProgress( int ) ),
-                 m_extension, SIGNAL( speedProgress( int ) ) );
+        if ( m_isHTMLPart ) // for non-HTML we have our own
+            connect( childExtension, SIGNAL( speedProgress( int ) ),
+                     m_extension, SIGNAL( speedProgress( int ) ) );
         connect( childExtension, SIGNAL( selectionInfo( const KFileItemList& ) ),
                  m_extension, SIGNAL( selectionInfo( const KFileItemList& ) ) );
         connect( childExtension, SIGNAL( selectionInfo( const QString& ) ),
@@ -370,7 +387,6 @@ void KMultiPart::setPart( const QString& mimeType )
                  m_extension, SIGNAL( resizeTopLevelWidget( int, int ) ) );
     }
 
-    m_isHTMLPart = ( mimeType == "text/html" );
     m_partIsLoading = false;
     // Load the part's plugins too.
     // ###### This is a hack. The bug is that KHTMLPart doesn't load its plugins
@@ -407,8 +423,11 @@ void KMultiPart::startOfData()
         childExtension->setURLArgs( m_extension->urlArgs() );
 
     m_nextMimeType = QString::null;
-    delete m_tempFile;
-    m_tempFile = 0L;
+    if ( m_tempFile ) {
+        m_tempFile->setAutoDelete( true );
+        delete m_tempFile;
+        m_tempFile = 0;
+    }
     if ( m_isHTMLPart )
     {
         KHTMLPart* htmlPart = static_cast<KHTMLPart *>( static_cast<KParts::ReadOnlyPart *>( m_part ) );
@@ -461,6 +480,7 @@ void KMultiPart::endOfData()
             // The part is still loading the last data! Let it proceed then
             // Otherwise we'd keep cancelling it, and nothing would ever show up...
             kdDebug() << "KMultiPart::endOfData part isn't ready, skipping frame" << endl;
+            ++m_numberOfFramesSkipped;
             m_tempFile->setAutoDelete( true );
         }
         else
@@ -486,12 +506,14 @@ void KMultiPart::slotPartCompleted()
 	kdDebug() << "slotPartCompleted deleting " << m_part->url().path() << endl;
         (void) unlink( QFile::encodeName( m_part->url().path() ) );
         m_partIsLoading = false;
+        ++m_numberOfFrames;
         // Do not emit completed from here.
     }
 }
 
 bool KMultiPart::closeURL()
 {
+    m_timer->stop();
     if ( m_part )
         return m_part->closeURL();
     return true;
@@ -525,6 +547,21 @@ void KMultiPart::slotJobFinished( KIO::Job *job )
         //QTimer::singleShot( 0, this, SLOT( updateWindowCaption() ) );
     }
     m_job = 0L;
+}
+
+void KMultiPart::slotProgressInfo()
+{
+    int time = m_qtime.elapsed();
+    if ( !time ) return;
+    if ( m_totalNumberOfFrames == m_numberOfFrames + m_numberOfFramesSkipped )
+        return; // No change, don't overwrite statusbar messages if any
+    //kdDebug() << m_numberOfFrames << " in " << time << " milliseconds" << endl;
+    QString str( "%1 frames per second, %2 frames skipped per second" );
+    str = str.arg( 1000.0 * (double)m_numberOfFrames / (double)time );
+    str = str.arg( 1000.0 * (double)m_numberOfFramesSkipped / (double)time );
+    m_totalNumberOfFrames = m_numberOfFrames + m_numberOfFramesSkipped;
+    //kdDebug() << str << endl;
+    emit m_extension->infoMessage( str );
 }
 
 KAboutData* KMultiPart::createAboutData()
