@@ -80,6 +80,9 @@ KBuildServiceTypeFactory::createEntry(const QString &file, const char *resource)
 
   KDesktopFile desktopFile(file, true, resource);
 
+  if ( desktopFile.readBoolEntry( "Hidden", false ) == true )
+      return 0;
+
   // TODO check Type field first
   QString mime = desktopFile.readEntry( "MimeType" );
   QString service = desktopFile.readEntry( "X-KDE-ServiceType" );
@@ -133,7 +136,7 @@ KBuildServiceTypeFactory::saveHeader(QDataStream &str)
    {
      str << it.key() << (Q_INT32)it.data();
    }
-     
+
 }
 
 void
@@ -253,6 +256,6 @@ KBuildServiceTypeFactory::addEntry(KSycocaEntry *newEntry, const char *resource)
        m_propertyTypeDict.insert(pit.key(), pit.data());
      else
        qWarning("Property '%s' is defined multiple times (%s)", pit.key().latin1(), serviceType->name().latin1());
-   }   
+   }
 }
 
