@@ -557,7 +557,13 @@ protected:
      * <pre>
      * AuthInfo info;
      * info.url = KURL("http://www.foobar.org/foo/bar");
-     * bool result = openPassDlg( info );
+     * info.username = "somename";
+     * info.verifyPath = true;
+     * if ( !checkCachedAuthentication( info ) )
+     * {
+     *    if ( !openPassDlg(info) )
+     *     error(
+     * }
      * </pre>
      *
      * If the protocol allows multiple resources within the same
@@ -574,9 +580,9 @@ protected:
      * info.realmValue = "unique_identifier";
      * </pre>
      *
-     * NOTE: A call to this function can also fail and result
-     * in a return value of @p false, if "kdesud" could not be
-     * started for whatever reason or if no URL was supplied.
+     * NOTE: A call to this function will fail and return false,
+     * whenever the "kdesud" could not be started for whatever reason
+     * or an invalid URL is supplied.
      *
      * @param       See @ref AuthInfo.
      * @return      @p TRUE if cached Authorization is found, false otherwise.
@@ -616,7 +622,6 @@ protected:
                                     QString& user,
                                     QString& passwd);
 
-
     /**
      * Caches authentication information in the "kdesud" deamon.
      *
@@ -626,28 +631,28 @@ protected:
      * application that cached it is shutdown properly.  You can
      * change this by setting the @AuthInfo::keepPassword flag so
      * that the password is cached for the duration of the current
-     * KDE session or the end-user manually does "kdesu -s" to stop
-     * the running "kdesud" process.
+     * KDE session or until the end-user manually clears it by
+     * stopping the "kdesud" process.
      *
-     * This method allows for caching of different passwords for the
-     * same location if a uniquie identifier is supplied through @ref
-     * AuthInfo::realmValue.  This identifier can be any unique value
-     * such as the path.  Multiple passwords for the same site are
-     * groupped under a group key so that they can be properly discarded
-     * when the last application referencing it is shut down.
+     * This method also allows you to cache different passwords for the
+     * same location by utilizing the @ref AuthInfo::realmValue variable.
+     * This identifier can be any value such as the path so long as it is
+     * @p unique.  However this function, by default, does not check whether
+     * the actual login information that is supposed to be cached is unique.
+     * Thus, if login information has previously been stored with the same
+     * key, it will simply be overwritten with this newer one.  If you require
+     * the ability to cache more than one login information per server, you
+     * can override this default behavior using @ref setMultipleAuthCaching(bool).
      *
-     * Note that this function does not check whether the provided
-     * authorization info is already cached and hence will simply
-     * overwrite it.  This means that if the same key is generated
-     * by the call @ref createAuthenticationKey, the last caching
-     * request always wins.  Also note that a call to this function
-     * can fail and result in a return value of @p false, if the
-     * "kdesud" daemon used to cache the password is not running and
-     * cannot not be started for whatever reason. This also applies
-     * when no URL is supplied and thus a caching key could not be
-     * generated!  Additionally, if application that cached the password
-     * crashes, the password will be kept for the duration of the current
-     * KDE session.
+     * NOTE: A call to this function can fail and return a negative result if
+     * the "kdesud" daemon used to cache the login information is not running
+     * and cannot for whatever reason not be re-started. The same is true if
+     * no or invalid URL is supplied since a storage key cannot be generated
+     * without it!  Additionally, if the application that requested the caching
+     * of the login info terminates abnormally (ex: crashes), then the cached
+     * password will be kept for the entire duration of the current KDE session
+     * or until such time as the end-user manually stops the running "kdesud"
+     * process.
      *
      * @param       See @ref AuthInfo.
      * @return      @p TRUE if the authorization info was sucessfully cached.
@@ -713,13 +718,15 @@ protected:
      * to a single server.
      *
      * Calling this function with the argument set to @p true
-     * will allow a user to work on resources under different
-     * accounts on a single server without being prompted for
-     * authorization whenever the goes back and forth between
-     * these accounts.  For example, if a user has a "foo" and
-     * "bar" account on a given ftp server, then the login
-     * information supplied for both accounts is retained (cached).
-     * Otherwise, the default behavior is for the last login to
+     * will allow a user to work on multiple resources located
+     * under different accounts but on the same server without
+     * being re-prompted for authorization each time. Simply put
+     * if you have a "foo" and a "bar" account on a given machine
+     * at "foobar.com" and you log into this machine using both of
+     * the accounts, then the authorization information you supplied
+     * for both accounts will be cached. This is also true if you
+     * have N number of accounts and you logged into all of them.
+     * Otherwise, the default behavior is for the latest login will
      * simply overwrite the previous one.
      *
      * @param enable if true allow multiple auth-info caching.
