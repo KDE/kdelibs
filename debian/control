@@ -2,7 +2,7 @@ Source: kdelibs
 Section: contrib/libs
 Priority: extra
 Maintainer: Stephan Kulow <coolo@kde.org>
-Standards-Version: 2.5.0
+Standards-Version: 2.5.1
 
 Package: kdelibs2g-dev
 Architecture: any
