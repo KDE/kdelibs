@@ -78,6 +78,15 @@
      Make sure you always add full markup to the text.
      Good naming strategy: name the entity exactly like you would
      see the text.
+
+     DO NOT JUST RENAME ENTITIES!  That implies removal of an existing
+     entity and that may change the validity of documents, which must
+     not happen.  Place the name you wish to remove in the list of
+     obsolete entities, with the _same_ expansion as it used to have; 
+     the new name goes in the official list.
+     A later version of the DTD (with another version number!) will 
+     effectively remove these entities.  In that way, old documents 
+     remain valid, while new ones can only use the new declarations.
  -->
 
 <!ENTITY AIX	"<trademark>AIX</trademark>">
@@ -274,6 +283,10 @@
 
 <!ENTITY % DBGED1.0 "INCLUDE">
 <![%DBGED1.0;[
-<!ENTITY HewlettPackard	'<trademark class="registered">Hewlett-Packard</trademark>' -- use Hewlett-Packard instead -->
-<!ENTITY X	"<trademark>X Window System</trademark>" -- use X-Windows instead -->
+<!-- use Hewlett-Packard instead -->
+<!ENTITY HewlettPackard	'<trademark class="registered">Hewlett-Packard</trademark>'>
+<!-- use X-Windows instead -->
+<!ENTITY X	"<trademark>X Window System</trademark>">
+<!-- use pixie instead -->
+<!ENTITY Pixie	"<application>Pixie</application>">
 ]]>
