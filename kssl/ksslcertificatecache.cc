@@ -157,7 +157,7 @@ KSSLCertificatePolicy KSSLCertificateCache::getPolicyByCertificate(KSSLCertifica
 
 
 bool KSSLCertificateCache::seenCN(QString& cn) {
-
+  return false;
 }
 
 
@@ -172,12 +172,12 @@ bool KSSLCertificateCache::seenCertificate(KSSLCertificate& cert) {
 
 
 bool KSSLCertificateCache::removeByCN(QString& cn) {
-
+  return false;
 }
 
 
 bool KSSLCertificateCache::removeByCertificate(KSSLCertificate& cert) {
-
+  return false;
 }
 
 
