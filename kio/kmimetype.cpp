@@ -53,7 +53,8 @@ void KMimeType::buildDefaultType()
   assert ( !s_pDefaultType );
   // Try to find the default type
   KMimeType::Ptr defaultType = KMimeType::mimeType( "application/octet-stream" );
-  if (defaultType == 0L)  
+  if (!defaultType)  
+//if (defaultType == 0L )  
   {
      errorMissingMimeType( "application/octet-stream" );
      KStandardDirs stdDirs;
