@@ -98,8 +98,8 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     int count = cookieList.count();
 
     QVBox* vBox = new QVBox( hBox );
-    QString txt = (count == 1) ? i18n("You received a cookie from"):
-                  i18n("You received %1 cookies from").arg(count);
+    QString txt = i18n("You received a cookie from",
+                       "You received %n cookies from", count):
     QLabel* lbl = new QLabel( txt, vBox );
     lbl->setAlignment( Qt::AlignCenter );
     KHttpCookiePtr cookie = cookieList.first();
