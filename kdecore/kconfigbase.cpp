@@ -19,6 +19,12 @@
 // $Id$
 //
 // $Log$
+// Revision 1.22  1998/03/27 23:41:34  torben
+// Torben: Changed return aValue.copy() to
+//          return QString( aValue.data() );
+//
+//         Hope it works now.
+//
 // Revision 1.21  1998/03/27 15:51:57  torben
 // Torben: Bug fix. It was possible to modify internal data of kconfig.
 //
@@ -296,7 +302,7 @@ const QString KConfigBase::readEntry( const char* pKey,
 	  }
 	  nDollarPos = aValue.find( '$', nDollarPos+2 );
 	};
-  return QString( aValue.data() );
+  return aValue;
 }
 
 int KConfigBase::readListEntry( const char* pKey, QStrList &list,  
