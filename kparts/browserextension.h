@@ -119,14 +119,6 @@ public:
   virtual URLArgs urlArgs();
 
   /**
-   * Move the view to the position (x,y)
-   * (This allows the browser to restore a view at the exact
-   *  position it was when we left it, during navigation)
-   * For a scrollview, implement this using setContentsPos()
-   */
-  virtual void setXYOffset( int /* x */, int /* y */ );
-
-  /**
    * @return the current x offset
    * For a scrollview, implement this using contentsX()
    */

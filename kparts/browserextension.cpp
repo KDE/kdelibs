@@ -31,7 +31,7 @@ URLArgs::URLArgs( const URLArgs &args )
   postData = args.postData;
   frameName = args.frameName;
   d = 0;
-  
+
   //copy contents of args.d here
   /*
     if ( args.d )
@@ -50,20 +50,20 @@ URLArgs::URLArgs( bool _reload, int _xOffset, int _yOffset, const QString &_serv
   yOffset = _yOffset;
   serviceType = _serviceType;
   d = 0;
-} 
+}
 
 URLArgs::~URLArgs()
 {
   if ( d )
     delete d;
-} 
+}
 
 namespace KParts
 {
 
 class BrowserExtensionPrivate
 {
-public: 
+public:
   BrowserExtensionPrivate()
   {
   }
@@ -86,26 +86,22 @@ BrowserExtension::BrowserExtension( KParts::ReadOnlyPart *parent,
 
 BrowserExtension::~BrowserExtension()
 {
-  delete d; 
+  delete d;
 }
 
 void BrowserExtension::setURLArgs( const URLArgs &args )
 {
-  m_args = args; 
-} 
+  m_args = args;
+}
 
 URLArgs BrowserExtension::urlArgs()
 {
   return m_args;
 }
 
-void BrowserExtension::setXYOffset( int, int )
-{
-} 
-
 int BrowserExtension::xOffset()
 {
-  return 0; 
+  return 0;
 }
 
 int BrowserExtension::yOffset()
@@ -116,19 +112,25 @@ int BrowserExtension::yOffset()
 void BrowserExtension::saveState( QDataStream &stream )
 {
   stream << m_part->url() << (Q_INT32)xOffset() << (Q_INT32)yOffset();
-} 
+}
 
 void BrowserExtension::restoreState( QDataStream &stream )
 {
   KURL u;
   Q_INT32 xOfs, yOfs;
   stream >> u >> xOfs >> yOfs;
+
+  URLArgs args( urlArgs() );
+  args.xOffset = xOfs;
+  args.yOffset = yOfs;
+
+  setURLArgs( args );
+
   m_part->openURL( u );
-  setXYOffset( xOfs, yOfs );
 }
 
 void BrowserExtension::slotCompleted()
 {
   //empty the argument stuff, to avoid bogus/invalid values when opening a new url
-  setURLArgs( URLArgs() ); 
-} 
+  setURLArgs( URLArgs() );
+}
