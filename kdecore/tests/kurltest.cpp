@@ -291,6 +291,13 @@ int main(int argc, char *argv[])
   check("http: URL with empty path string path", waba1.query(),
         "?link=home_c_login_login");
 
+  // Urls without path (BR21387)
+  waba1 = "http://meine.db24.de#link=home_c_login_login";
+  check("http: URL with empty path string", waba1.url(),
+        "http://meine.db24.de#link=home_c_login_login");
+  check("http: URL with empty path string path", waba1.path(),
+        "");
+
   // IPV6
   waba1 = "http://[::FFFF:129.144.52.38]:81/index.html";
   check("http: IPV6 host", waba1.host(),
