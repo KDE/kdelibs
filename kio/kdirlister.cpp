@@ -96,7 +96,7 @@ void KDirLister::slotURLDirty( const KURL & dir )
   for ( KURL::List::Iterator it = m_lstDirs.begin(); it != m_lstDirs.end(); ++it )
     if ( dir.cmp( (*it), true /* ignore trailing slash */ ) )
     {
-      updateDirectory( dir );
+      updateDirectory( *it );
       break;
     }
 }
