@@ -337,7 +337,7 @@ void HTMLFormElementImpl::setEnctype( const DOMString& type )
 
 void HTMLFormElementImpl::submitFromKeyboard()
 {
-    // Activate the first submit button - like other browsers do
+    // Activate the first nondisabled submit button
     for (QPtrListIterator<HTMLGenericFormElementImpl> it(formElements); it.current(); ++it) {
         if (it.current()->id() == ID_BUTTON) {
             HTMLButtonElementImpl* current = static_cast<HTMLButtonElementImpl *>(it.current());
@@ -390,19 +390,8 @@ void HTMLFormElementImpl::submit(  )
     kdDebug( 6030 ) << "submitting!" << endl;
 #endif
 
-    KHTMLView *view = getDocument()->view();
-    for (QPtrListIterator<HTMLGenericFormElementImpl> it(formElements); it.current(); ++it) {
-        HTMLGenericFormElementImpl* current = it.current();
-        if (current->id() == ID_INPUT &&
-            static_cast<HTMLInputElementImpl*>(current)->inputType() == HTMLInputElementImpl::TEXT &&
-            static_cast<HTMLInputElementImpl*>(current)->autoComplete() )
-        {
-            HTMLInputElementImpl *input = static_cast<HTMLInputElementImpl *>(current);
-            view->addFormCompletionItem(input->name().string(), input->value().string());
-        }
-    }
-
     bool ok;
+    KHTMLView* view = getDocument()->view();
     QByteArray form_data = formData(ok);
     if (ok) {
         DOMString url(khtml::parseURL(getAttribute(ATTR_ACTION)));
@@ -924,6 +913,10 @@ QString HTMLInputElementImpl::state( )
     case CHECKBOX:
     case RADIO:
         return QString::fromLatin1(m_checked ? "on" : "off");
+    case TEXT:
+        if (autoComplete() && value() != getAttribute(ATTR_VALUE))
+            getDocument()->view()->addFormCompletionItem(name().string(), value().string());
+        /* nobreak */
     default:
         return value().string()+'.'; // Make sure the string is not empty!
     }
