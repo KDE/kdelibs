@@ -18,7 +18,8 @@ Shell::Shell( KReadOnlyPart *part1, KPart *part2 )
   m_part1 = part1;
   m_part2 = part2;
 
-  (void)new KAction( i18n( "&Open example file" ), 0, this, SLOT( slotFileOpen() ), actionCollection(), "open_file" );
+  (void)new KAction( i18n( "&Open local file" ), 0, this, SLOT( slotFileOpen() ), actionCollection(), "open_local_file" );
+  (void)new KAction( i18n( "&Open remote file" ), 0, this, SLOT( slotFileOpenRemote() ), actionCollection(), "open_remote_file" );
   (void)new KAction( i18n( "&Quit" ), 0, this, SLOT( close() ), actionCollection(), "shell_quit" );
 
   m_manager = new KEmbedManager( this );
@@ -48,6 +49,12 @@ Shell::~Shell()
 void Shell::slotFileOpen()
 {
   if ( ! m_part1->openURL( QDir::current().absPath()+"/example_shell.rc" ) )
+    KMessageBox::error(this,"Couldn't open file !");
+}
+
+void Shell::slotFileOpenRemote()
+{
+  if ( ! m_part1->openURL( "http://www.kde.org/index.html" ) )
     KMessageBox::error(this,"Couldn't open file !");
 }
 

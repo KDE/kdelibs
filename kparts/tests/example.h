@@ -18,6 +18,7 @@ public:
 
 protected slots:
   void slotFileOpen();
+  void slotFileOpenRemote();
   void slotActivePartChanged( KPart *newPart, KPart *oldPart );
 
 protected:

@@ -8,13 +8,7 @@
 #include <klibloader.h>
 #include <kio_job.h>
 
-#include <stdlib.h>
-#ifdef HAVE_PATHS_H
-#include <paths.h>
-#endif
-#ifndef _PATH_TMP
-#define _PATH_TMP "/tmp"
-#endif
+#include <stdio.h>
 
 KPart::KPart( QWidget* parent, const char* name )
     : QWidget( parent, name )
@@ -119,11 +113,9 @@ bool KReadOnlyPart::openURL( const QString &url )
   }
   else
   {
-    char tempfname[256];
-    sprintf(tempfname, _PATH_TMP"/kpartXXXXXX");
-    if (mkstemp(tempfname) == -1)
-      return false;
-    m_file = tempfname;
+    m_file = tmpnam(0);
+    // We can't use mkstemp since we don't want to create the file here
+    // KIOJob has to create it
 
     KIOJob * job = new KIOJob;
     connect( job, SIGNAL( sigFinished (int) ), this, SLOT( slotJobFinished (int) ) );
