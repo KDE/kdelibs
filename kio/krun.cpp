@@ -62,7 +62,7 @@ bool KRun::runURL( const KURL& u, const QString& _mimetype )
 
   if ( !offer )
   {
-    KOpenWithDlg l( u, i18n("Open With:"), "", (QWidget *)0L );
+    KOpenWithDlg l( lst, i18n("Open With:"), "", (QWidget *)0L );
     if ( l.exec() )
     {
       KService::Ptr service = l.service();

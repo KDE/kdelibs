@@ -320,19 +320,27 @@ void KApplicationTree::resizeEvent( QResizeEvent * e)
  *
  ***************************************************************/
 
-KOpenWithDlg::KOpenWithDlg( const KURL& _url, const QString&_text,
+KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, const QString&_text,
 			    const QString& _value, QWidget *parent)
     : QDialog( parent, 0L, true )
 {
-  qServiceType = KMimeType::findByURL(_url)->name();
-  if (qServiceType == "application/octet-stream")
-    qServiceType = QString::null;
+  if ( _urls.count() == 1 )
+  {
+    qServiceType = KMimeType::findByURL(_urls.first())->name();
+    if (qServiceType == "application/octet-stream")
+      qServiceType = QString::null;
+  }
+  else
+      qServiceType = QString::null;
 
   m_pTree = 0L;
   m_pService = 0L;
   haveApp = false;
 
-  setCaption(_url.decodedURL());
+  QString caption = _urls.first().decodedURL();
+  if (_urls.count() > 1)
+      caption += QString::fromLatin1("...");
+  setCaption(caption);
 
   QBoxLayout* topLayout = new QVBoxLayout(this, KDialog::marginHint(),
 					  KDialog::spacingHint());

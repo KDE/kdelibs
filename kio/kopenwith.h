@@ -10,6 +10,7 @@
 
 #include <kapp.h>
 #include <klineedit.h>
+#include <kurl.h>
 #include <kurlcompletion.h>
 #include "kservice.h"
 
@@ -19,7 +20,6 @@ class QCheckBox;
 class QPushButton;
 class QLabel;
 class QStringList;
-class KURL;
 
 /* ------------------------------------------------------------------------- */
 
@@ -32,14 +32,15 @@ class KOpenWithDlg : public QDialog
     Q_OBJECT
 public:
     /**
-     * Create a dialog that asks for a application to open a given URL(s) with. _
+     * Create a dialog that asks for a application to open a given URL(s) with.
      *
-     * @param _url   is the URL that should be opened
-     * @param _text  appears as a label on top of the entry box.
-     * @param _value is the initial value of the line
+     * @param urls   is the URL that should be opened
+     * @param text   appears as a label on top of the entry box.
+     * @param value  is the initial value of the line
+     * @param parent parent widget
      */
 
-    KOpenWithDlg( const KURL& _url, const QString&_text, const QString&_value, QWidget *parent );
+    KOpenWithDlg( const KURL::List& urls, const QString&text, const QString&value, QWidget *parent );
     ~KOpenWithDlg();
 
     /**

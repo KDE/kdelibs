@@ -8,12 +8,12 @@
 int main(int argc, char **argv)
 {
     KApplication app(argc, argv, "kopenwithtest");
-    QStringList list;
+    KURL::List list;
 
-    list += "file://home/testfile";
-    list += "http://www.kde.org/index.html";
+    list += KURL("file://home/testfile");
+    list += KURL("http://www.kde.org/index.html");
 
-    KOpenWithDlg* dlg = new KOpenWithDlg(KURL("file://home/testfile"), "OpenWith_Text", "OpenWith_Value", 0);
+    KOpenWithDlg* dlg = new KOpenWithDlg(list, "OpenWith_Text", "OpenWith_Value", 0);
     if(dlg->exec()) {
         debug("Dialog ended successfully\ntext: %s", dlg->text().ascii());
     }
