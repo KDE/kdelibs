@@ -81,7 +81,7 @@
 <!-- without FPIs, this is nearly impossible to use -->
 <!ENTITY documentation.index SYSTEM "docindex.docbook">
 ]]>
-<!ENTITY documentation.index "">
+<!ENTITY documentation.index "<!-- -->">
 
 <!-- Entities to fill in slots in docbook version of FDL notice -->
 <!ENTITY % FDLIS "IGNORE">
