@@ -413,6 +413,13 @@ KCmdLineArgs::findOption(const char *_opt, QCString opt, int &i, bool _enabled, 
    KCmdLineArgs *args = argsList->first();
    const char *opt_name;
    const char *def;
+   QCString argument;
+   int j = opt.find('=');
+   if (j != -1)
+   {
+      argument = opt.mid(j+1);
+      opt = opt.left(j);
+   }
 
    bool enabled = true;
    int result = 0;
@@ -447,13 +454,17 @@ KCmdLineArgs::findOption(const char *_opt, QCString opt, int &i, bool _enabled, 
          enable_i18n();
          usage( i18n("Unknown option '%1'.").arg(_opt));
       }
-      i++;
-      if (i >= argc)
+      if (argument.isEmpty())
       {
-         enable_i18n();
-         usage( i18n("'%1' missing.").arg( opt_name));
+         i++;
+         if (i >= argc)
+         {
+            enable_i18n();
+            usage( i18n("'%1' missing.").arg( opt_name));
+         }
+         argument = argv[i];
       }
-      args->setOption(opt, argv[i]);
+      args->setOption(opt, argument);
    }
    else
    {
