@@ -67,18 +67,6 @@ public:
 	 */
 	virtual ~KStandardDirs();
 
-	/** 
-	 * The scope of a directory. App is the application-specific
-	 * directory in the user's local KDE directory, User is the
-	 * user's local KDE directory, SysApp is the application-specific
-	 * directory in the system directory and System is the system
-	 * directory in which KDE is installed.
-	 *
-	 * Closest is used for searching the first directory in the
-	 * list that exists, in the order App, User, SysApp, System.
-	 */
-	enum DirScope { Closest, App, User, SysApp, System };
-
 	/*
 	 * This adds another search dir to front of the fsstnd list.
 	 * @li when compiling kdelibs, the prefix is added to this.
@@ -227,6 +215,8 @@ public:
 	 * The functions updates the cache if possible
 	 */
 	QStringList getResourceDirs(const QString& type) const;
+
+	QString getSaveLocation(const QString& type) const;
 
 	static QString kde_data_relative();
 

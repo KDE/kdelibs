@@ -125,11 +125,11 @@ QString KStandardDirs::findResourceDir( const QString& type,
     }
 
     QStringList candidates = getResourceDirs(type);
-    QDir testdir;
+    QFileInfo testfile;
     for (QStringList::ConstIterator it = candidates.begin();
 	 it != candidates.end(); it++) {
-	testdir.setPath(*it);
-	if (testdir.exists(filename, false))
+	testfile.setFile(*it + filename);
+	if (testfile.isFile())
 	    return *it;
     }
     
@@ -287,6 +287,22 @@ static int tokenize( QStringList& tokens, const QString& str,
 QString KStandardDirs::kde_data_relative()
 {
     return "share/apps/";
+}
+
+QString KStandardDirs::getSaveLocation(const QString& type) const
+{
+    QString local = QDir::homeDirPath() + "/.kde/";
+    int length = local.length();
+
+    QStringList candidates = getResourceDirs(type);
+    for (QStringList::ConstIterator it = candidates.begin();
+         it != candidates.end(); it++) 
+    {
+	if ((*it).left(length) == local)
+	    return *it;
+    }
+    debug("couldn't find save location for type %s", type.ascii());
+    return local;
 }
 
 void KStandardDirs::addKDEDefaults(const QString &appName) {
