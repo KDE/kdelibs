@@ -42,6 +42,8 @@
 #include "ecma/kjs_window.h"
 #include "ecma/kjs_html.lut.h"
 
+#include "kjavaappletcontext.h"
+
 #include "misc/htmltags.h"
 
 #include <kdebug.h>
@@ -961,7 +963,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
 
 class EmbedLiveConnect : public ObjectImp {
 public:
-    EmbedLiveConnect(DOM::HTMLElement elm, UString n, KParts::LiveConnectExtension::Type t, int id = 0)
+    EmbedLiveConnect(DOM::HTMLElement elm, UString n, KParts::LiveConnectExtension::Type t, int id)
         : element (elm), name(n), objtype(t), objid(id) {}
     ~EmbedLiveConnect() {
         DOM::LiveConnectElementImpl * elm = static_cast<DOM::LiveConnectElementImpl*>(element.handle());
@@ -970,7 +972,7 @@ public:
     }
     static Value getValue(const DOM::HTMLElement elm, const QString & name,
                           const KParts::LiveConnectExtension::Type t,
-                          const QString & value, int id=0)
+                          const QString & value, int id)
     {
         switch(t) {
             case KParts::LiveConnectExtension::TypeBool: {
@@ -991,7 +993,7 @@ public:
                     return Number(value.toDouble(&ok));
             }
             case KParts::LiveConnectExtension::TypeObject:
-                return Value(new EmbedLiveConnect(elm, name, t, value.toInt()));
+                return Value(new EmbedLiveConnect(elm, name, t, id));
             case KParts::LiveConnectExtension::TypeString:
                 return String(value);
             case KParts::LiveConnectExtension::TypeVoid:
@@ -1033,7 +1035,20 @@ public:
         return String(toString(exec));
     }
     virtual UString toString(ExecState *) const {
-        return UString(objtype == KParts::LiveConnectExtension::TypeFunction ? "[Function]" : "[Object]");
+        QString str;
+        const char *type = objtype == KParts::LiveConnectExtension::TypeFunction ? "Function" : "Object";
+        if (element.elementId() == ID_APPLET) {
+            DOM::HTMLAppletElementImpl * elm = static_cast<DOM::HTMLAppletElementImpl*>(element.handle());
+            if (elm) {
+                KJavaApplet* applet = elm->applet();
+                if (applet) {
+                    str.sprintf("[embed %s ref=%d,%d,%d]", type, applet->getContext()->contextId(), applet->appletId(), (int) objid);
+                    return UString(str);
+                }
+            }
+        }
+        str.sprintf("[embed %s ref=%d]", type, (int) objid);
+        return UString(str);
     }
 private:
     EmbedLiveConnect(const EmbedLiveConnect &);
@@ -1094,7 +1109,7 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &propertyName) con
       KParts::LiveConnectExtension::Type rettype;
       unsigned long retobjid;
       if (elm && elm->get(0, propertyName.qstring(), rettype, retobjid, retvalue))
-          return EmbedLiveConnect::getValue(element, propertyName.qstring(), rettype, retvalue);
+          return EmbedLiveConnect::getValue(element, propertyName.qstring(), rettype, retvalue, retobjid);
       break;
   }
   default:
@@ -1817,8 +1832,21 @@ UString KJS::HTMLElement::toString(ExecState *exec) const
 {
   if (node.elementId() == ID_A)
     return UString(static_cast<const DOM::HTMLAnchorElement&>(node).href());
-  else
-    return DOMElement::toString(exec);
+  if (node.elementId() == ID_APPLET)
+  {
+    DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
+    DOM::HTMLAppletElementImpl * elm = static_cast<DOM::HTMLAppletElementImpl*>(element.handle());
+    if (elm) {
+      KJavaApplet* applet = elm->applet();
+      if (applet) {
+        QString str;
+        str.sprintf("[object APPLET ref=%d,%d]", 
+                    applet->getContext()->contextId(), applet->appletId());
+        return UString(str);
+      }
+    }
+  }
+  return DOMElement::toString(exec);
 }
 
 List KJS::HTMLElement::eventHandlerScope(ExecState *exec) const
