@@ -272,16 +272,17 @@ kde_addrinfo* KExtendedSocketLookup::results()
   addrinfo *p = NULL;
   kde_addrinfo *res = new kde_addrinfo;
   QValueList<QHostAddress>::Iterator it;
-  char *canonname;
   unsigned short port;
 
-  {
-    QString canon = dnsIpv4.canonicalName();
-    if (canon.isNull())
-      canon = dnsIpv6.canonicalName();
-    if (!canon.isNull())
-      canonname = strdup(canon.latin1());
-  }
+  QString canon = dnsIpv4.canonicalName();
+  if (canon.isNull())
+    canon = dnsIpv6.canonicalName();
+
+  char* canonname;
+  if (!canon.isNull())
+    canonname = strdup(canon.latin1());
+  else
+    canonname = 0L;
 
   if (hint.ai_socktype == 0)
     hint.ai_socktype = SOCK_STREAM;
