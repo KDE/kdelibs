@@ -81,8 +81,12 @@ int main(int argc, char *argv[])
     e = d.createElement( "action" );
     e.setAttribute( "name", "reload" );
     toolBar.insertBefore( e, toolBar.firstChild() );
+    e = d.createElement( "action" );
+    e.setAttribute( "name", "print" );
+    toolBar.insertBefore( e, toolBar.firstChild() );
 
     (void)new KAction( "Reload", "reload", Qt::Key_F5, dummy, SLOT( reload() ), doc->actionCollection(), "reload" );
+    (void)new KAction( "Print", "print", 0, doc->browserExtension(), SLOT( print() ), doc->actionCollection(), "print" );
 
     toplevel->guiFactory()->addClient( doc );
 
