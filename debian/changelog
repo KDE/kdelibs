@@ -1,4 +1,17 @@
-kdelibs (4:2.1-20001213-2) unstable; urgency=low
+kdelibs (4:2.1-20001218-1) unstable; urgency=low
+ 
+  * more upstream bug fixes
+  * New i18n patch to fix japanese support
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 18 Dec 2000 22:44:00 -0700
+
+kdelibs (4:2.1-20001216-1) unstable; urgency=low
+ 
+  * more upstream bug fixes
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 16 Dec 2000 18:44:00 -0700
+
+kdelibs (4:2.1-20001214-1) unstable; urgency=low
 
   * new kdelibs-doc rules thanks to Gordon Sadler w/ tweaks to allow building
     when kdelibs is not already installed... (Closes: #79583)
