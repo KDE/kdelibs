@@ -2,6 +2,9 @@
  * $Id$
  * 
  * $Log$
+ * Revision 1.14  1997/10/16 11:14:26  torben
+ * Kalle: Copyright headers
+ * kdoctoolbar removed
  *
  * Revision 1.13  1997/10/12 11:05:32  kulow
  * don't export debugWin. kmenuedit used the same name
@@ -45,6 +48,12 @@
  * merged changes from 0.52
  *
  * Revision 1.2  1996/12/07 22:21:18  kalle
+ * RCS header, include kapp.h
+ *
+ *
+ * Drag 'n Drop implementation, taken from kfm
+ *
+ * Author: Torben Weis
  */
 
 #include "drag.h"
@@ -53,13 +62,33 @@
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
+
+#include <stdio.h>
+#ifdef STDC_HEADERS
+#include <stdlib.h>
+#endif
+
+#include <qlist.h>
+#include <qcursor.h>
+#include <qbitmap.h>
+
 #if TIME_WITH_SYS_TIME
 # include <sys/time.h>
 # include <time.h>
 #else
 # if HAVE_SYS_TIME_H
 #  include <sys/time.h>
+# else
+#  include <time.h>
 # endif
+#endif    
+
+#include "drag.moc"
+#include "kapp.h"
+#include <X11/Xlib.h>
+#include <X11/Xatom.h>
+#include <X11/Xutil.h>
 #include <X11/Xos.h>
 Window debugWin = 0;
 #ifdef HAVE_X11_EXTENSTIONS_SHAPE_H
