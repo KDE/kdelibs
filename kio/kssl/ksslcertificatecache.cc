@@ -210,8 +210,8 @@ void KSSLCertificateCache::loadDefaultPolicies() {
     KSSLCNode *n = new KSSLCNode;
     QByteArray qba, qbb = encodedCert.copy();
     KCodecs::base64Decode(qbb, qba);
-    char *qbap = qba.data();
-    X509 *x5c = d2i_X509(NULL, &(unsigned char *)qbap, qba.size());
+    unsigned char *qbap = reinterpret_cast<unsigned char *>(qba.data());
+    X509 *x5c = d2i_X509(NULL, &qbap, qba.size());
     if (!x5c) {
       delete n;
       continue;
