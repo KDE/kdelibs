@@ -39,7 +39,7 @@ public:
     {
         Ok=1, Cancel, Yes, No, Discard, Save, DontSave, SaveAs,
         Apply, Clear, Help, Defaults, Close, Back, Forward, Print,
-        Continue, Open
+        Continue, Open, Quit
     };
     static KGuiItem guiItem ( StdItem ui_enum );
     static QString  stdItem ( StdItem ui_enum );
@@ -94,6 +94,8 @@ public:
      * buttons, please use the @ref back() and @ref forward() items instead.
      */
     static QPair<KGuiItem, KGuiItem> backAndForward();
+
+    static KGuiItem quit();
 };
 
 #endif

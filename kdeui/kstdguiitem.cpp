@@ -43,6 +43,7 @@ KGuiItem KStdGuiItem::guiItem ( StdItem ui_enum )
   case Print    : return print();
   case Continue : return cont();
   case Open     : return open();
+  case Quit     : return quit();
   default       : return KGuiItem();
   };
 }
@@ -67,6 +68,7 @@ QString KStdGuiItem::stdItem( StdItem ui_enum )
   case Print    : return QString::fromLatin1("print");
   case Continue : return QString::fromLatin1("continue");
   case Open     : return QString::fromLatin1("open");
+  case Quit     : return QString::fromLatin1("quit");
   default       : return QString::null;
   };
 }
@@ -192,5 +194,10 @@ KGuiItem KStdGuiItem::open()
                    i18n( "Open file" ) );
 }
 
+KGuiItem KStdGuiItem::quit()
+{
+  return KGuiItem( i18n( "&Quit" ), "exit", 
+                   i18n( "Quit application" ) );
+}
 
 // vim: set ts=2 sts=2 sw=2 et:
