@@ -1291,8 +1291,8 @@ bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty,
     if (isRelPositioned())
         static_cast<RenderBox*>(this)->relativePositionOffset(tx, ty);
 
-    bool checkPoint = style()->visibility() != HIDDEN && (_y >= ty) && (_y < ty + height());
-    inside |= (checkPoint && (_x >= tx) && (_x < tx + width())) || isBody() || isRoot();
+    inside |= ( style()->visibility() != HIDDEN &&
+                (_y >= ty) && (_y < ty + height()) && (_x >= tx) && (_x < tx + width())) || isRoot() || isBody();
     bool inOverflowRect = inside;
     if ( !inOverflowRect ) {
         QRect overflowRect( tx, ty, overflowWidth(), overflowHeight() );
@@ -1301,16 +1301,17 @@ bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty,
 
     // ### table should have its own, more performant method
     if (hitTestAction != HitTestSelfOnly &&
-        ( !isRenderBlock() || !static_cast<RenderBlock*>( this )->isPointInScrollbar( _x, _y, _tx, _ty ) ) &&
-        overhangingContents() || inOverflowRect || isInline() || isCanvas() ||
+        (( !isRenderBlock() ||
+           !static_cast<RenderBlock*>( this )->isPointInScrollbar( _x, _y, _tx, _ty )) &&
+        (overhangingContents() || inOverflowRect || isInline() || isRoot() || isCanvas() ||
         isTableRow() || isTableSection() || inside || mouseInside() ||
-        (childrenInline() && firstChild() && firstChild()->style()->display() == COMPACT )) {
-        if ( hitTestAction == HitTestChildrenOnly && firstChild() )
+        (childrenInline() && firstChild() && firstChild()->style()->display() == COMPACT )))) {
+        if ( hitTestAction == HitTestChildrenOnly )
             inside = false;
         if ( style()->hidesOverflow() && layer() )
             layer()->subtractScrollOffset(tx, ty);
         for (RenderObject* child = lastChild(); child; child = child->previousSibling())
-            if (!child->layer() && child->nodeAtPoint(info, _x, _y, tx, ty, hitTestAction))
+            if (!child->layer() && child->nodeAtPoint(info, _x, _y, tx, ty, HitTestAll))
                 inside = true;
     }
 
@@ -1411,6 +1412,13 @@ short RenderObject::getVerticalPosition( bool firstLine ) const
 
 short RenderObject::lineHeight( bool firstLine ) const
 {
+    // Inline blocks are replaced elements. Otherwise, just pass off to
+    // the base class.  If we're being queried as though we're the root line
+    // box, then the fact that we're an inline-block is irrelevant, and we behave
+    // just like a block.
+    if (isReplaced())
+        return height()+marginTop()+marginBottom();
+
     Length lh;
     if( firstLine && hasFirstLine() ) {
         RenderStyle *pseudoStyle  = style()->getPseudoStyle(RenderStyle::FIRST_LINE);
@@ -1433,8 +1441,15 @@ short RenderObject::lineHeight( bool firstLine ) const
 
 short RenderObject::baselinePosition( bool firstLine ) const
 {
+    // Inline blocks are replaced elements. Otherwise, just pass off to
+    // the base class.  If we're being queried as though we're the root line
+    // box, then the fact that we're an inline-block is irrelevant, and we behave
+    // just like a block.
+    if (isReplaced())
+        return height()+marginTop()+marginBottom();
+
     const QFontMetrics &fm = fontMetrics( firstLine );
-    return fm.ascent() + ( lineHeight( firstLine ) - fm.height() ) / 2;
+    return fm.ascent() + ( lineHeight( firstLine) - fm.height() ) / 2;
 }
 
 void RenderObject::invalidateVerticalPositions()

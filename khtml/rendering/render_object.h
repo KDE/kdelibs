@@ -400,7 +400,7 @@ public:
     virtual FindSelectionResult checkSelectionPoint( int _x, int _y, int _tx, int _ty,
                                                      DOM::NodeImpl*&, int & offset,
 						     SelPointState & );
-    virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty, HitTestAction = HitTestAll, bool inside = false);
+    virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty, HitTestAction, bool inside = false);
 
     // set the style of the object.
     virtual void setStyle(RenderStyle *style);
