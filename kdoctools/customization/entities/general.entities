@@ -224,6 +224,7 @@
 <!ENTITY kljettool	"<application>KLjettool</application>">
 <!ENTITY klpq	"<application>Klpq</application>">
 <!ENTITY klprfax	"<application>Klprfax</application>">
+<!ENTITY kmagnifier	"<application>KMagnifier</application>">
 <!ENTITY kmahjongg	"<application>KMahjongg</application>">
 <!ENTITY kmail	"<application>KMail</application>">
 <!ENTITY kmathtool "<application>KMathTool</application>">
@@ -234,6 +235,7 @@
 <!ENTITY kmines	"<application>KMines</application>">
 <!ENTITY kmix	"<application>KMix</application>">
 <!ENTITY kmoon	"<application>KMoon</application>">
+<!ENTITY kmouth "<application>KMouth</application>">
 <!ENTITY knewsticker	"<application>KNewsTicker</application>">
 <!ENTITY knode	"<application>KNode</application>">
 <!ENTITY knotes	"<application>KNotes</application>">
