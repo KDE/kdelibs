@@ -846,7 +846,7 @@ void KFileDialog::setSelection(const QString& url)
         qWarning("%s is not a correct argument for setSelection!", url.latin1());
 	return;
     }
-
+    
     /** hmm, this would prevent using remote urls, right?
     if (!u.isLocalFile()) { // no way to detect, if we have a directory!?
 	d->url = u;
@@ -868,11 +868,12 @@ void KFileDialog::setSelection(const QString& url)
 	    setURL(filename.left(sep), true);
 	    filename = filename.mid(sep+1, filename.length() - sep);
 	    kdDebug(kfile_area) << "filename " << filename << endl;
-	    d->selection = filename;
-	    locationEdit->setCurrentItem( 0 );
-	    locationEdit->setEditText( filename );
+        d->selection = filename;
+        locationEdit->setCurrentItem( 0 );
+        locationEdit->setEditText( filename );
 	}
-	d->url = KURL(ops->url(), filename); // FIXME make filename an url
+	
+	d->url = KURL(ops->url(), filename);
     }
 }
 

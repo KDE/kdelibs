@@ -86,6 +86,7 @@ int main(int argc, char **argv)
 					    "*.lo *.o *.la|All libtool files"),
 			0, 0, true);
 	dlg.setMode( KFile::Files );
+    dlg.setSelection(QString::fromLatin1("kfiledialog.cpp"));
 	if ( dlg.exec() == QDialog::Accepted ) {
 	    KURL::List list = dlg.selectedURLs();
 	    KURL::List::ConstIterator it = list.begin();
