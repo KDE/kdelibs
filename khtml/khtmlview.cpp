@@ -233,6 +233,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
     } else {
 	if ( paintBuffer->width() < visibleWidth() ) {
 	    paintBuffer->resize(visibleWidth(),PAINT_BUFFER_HEIGHT);
+	    pbHeight = PAINT_BUFFER_HEIGHT;
 	}
     }
 
