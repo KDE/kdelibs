@@ -251,7 +251,7 @@ KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, QWidget* parent )
 }
 
 KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, const QString&_text,
-			    const QString& _value, QWidget *parent)
+                            const QString& _value, QWidget *parent)
     : QDialog( parent, 0L, true )
 {
   QString caption = _urls.first().prettyURL();
@@ -296,7 +296,7 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   haveApp = false;
 
   QBoxLayout* topLayout = new QVBoxLayout(this, KDialog::marginHint(),
-					  KDialog::spacingHint());
+                                          KDialog::spacingHint());
   label = new QLabel( _text , this );
   topLayout->addWidget(label);
 
@@ -397,10 +397,20 @@ void KOpenWithDlg::slotOK()
     KService::List sList = KService::allServices();
     QValueListIterator<KService::Ptr> it(sList.begin());
     QString text = edit->url();
+
     for (; it != sList.end(); ++it)
-      if ((*it)->exec() == text ||
-	  (*it)->name().lower() == text.lower())
-	m_pService = *it;
+    {
+      QString exec = (*it)->exec().stripWhiteSpace();
+
+      int argPos = exec.find( ' ' ); // separate the executable from arguments ("blah -caption foo" or "bar %f") .
+      if ( argPos != -1 )            // this increases the change to find a dedicated service. Example: choose
+          exec = exec.left( argPos );// "open with" on a remote html document and type "kwrite" in the lineedit.
+                                     // in this case we don't want to use kfmexec but we want to use the kwrite
+                                     // service which handles network transparency the right way :)
+      if (exec == text ||
+          (*it)->name().lower() == text.lower())
+        m_pService = *it;
+    }
     if (m_pService) {
       edit->setURL(m_pService->exec());
       haveApp = true;
@@ -457,12 +467,12 @@ void KOpenWithDlg::slotOK()
       KDesktopFile oldDesktop(locate("apps", pathName), true);
       mimeList = oldDesktop.readListEntry(QString::fromLatin1("MimeType"), ';');
       if (!mimeList.contains(qServiceType))
-	mimeList.append(qServiceType);
+        mimeList.append(qServiceType);
       desktop.writeEntry(QString::fromLatin1("MimeType"), mimeList, ';');
       if (terminal->isChecked())
-	desktop.writeEntry(QString::fromLatin1("Terminal"), true);
+        desktop.writeEntry(QString::fromLatin1("Terminal"), true);
       else
-	desktop.writeEntry(QString::fromLatin1("Terminal"), false);
+        desktop.writeEntry(QString::fromLatin1("Terminal"), false);
     }
 
 
@@ -475,7 +485,7 @@ void KOpenWithDlg::slotOK()
   QByteArray replyData;
   QCString retType;
   dcc->call("kded", "kbuildsycoca", "recreate()", QByteArray(),
-	    retType, replyData);
+            retType, replyData);
 
   // get the new service pointer
   kdDebug() << pathName << endl;
@@ -506,7 +516,7 @@ bool KFileOpenWithHandler::displayOpenWithDialog( const KURL::List& urls )
       KService::Ptr service = l.service();
       if ( !!service )
         return KRun::run( *service, urls );
-	
+
       QString exec = l.text();
       exec += QString::fromLatin1(" %f");
       return KRun::run( exec, urls );
