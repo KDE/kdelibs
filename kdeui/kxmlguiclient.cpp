@@ -87,7 +87,7 @@ KXMLGUIClient::~KXMLGUIClient()
 
 KAction *KXMLGUIClient::action( const char *name )
 {
-  return d->m_actionCollection.action( name );
+  return actionCollection()->action( name );
 }
 
 KActionCollection *KXMLGUIClient::actionCollection() const
