@@ -12,7 +12,7 @@ Architecture: any
 Section: libs
 Replaces: kdelibs2g, keystone, kdebase (<< 4:2.2.1-1), kdebase-libs (<< 4:2.2.1-2), konqueror (<< 4:2.2.1-1), kdelibs3-crypto
 Depends: ${shlibs:Depends}, python, xbase-clients
-Recommends: libarts, libkmid, kdelibs3-cups, aspell | ispell, libssl0.9.6
+Recommends: libarts | libarts-bin, libkmid | libkmid-bin, kdelibs3-cups | kdelibs4-cups, aspell | ispell, libssl0.9.6
 Conflicts: keystone, kdelibs3-crypto
 Suggests: anti-aliasing-howto, gdb, libsocksd, libsocks4
 Description: KDE core libraries (runtime files)
@@ -36,7 +36,7 @@ Replaces: libarts-alsa, libarts1, libarts1-alsa
 Depends: ${shlibs:Depends}
 Suggests: kdelibs3, artsbuilder
 Enhances: kdebase
-Conflicts: suidmanager (<< 0.50), libarts-alsa
+Conflicts: suidmanager (<< 0.50), libarts-alsa, libarts-bin
 Description: aRts Sound system
  aRts is a short form for "analog realtime synthesizer". The idea of the whole
  thing is to create/process sound using small modules which do certain tasks.
@@ -52,7 +52,7 @@ Section: libs
 Replaces: libkmid-alsa, libkmid0, libkmid0-alsa
 Depends: ${shlibs:Depends}
 Enhances: kdebase
-Conflicts: libkmid-alsa
+Conflicts: libkmid-alsa, libkmid-bin
 Description: aRts Sound system (midi/kmedia support libraries)
  aRts is a short form for "analog realtime synthesizer". The idea of the whole
  thing is to create/process sound using small modules which do certain tasks.
@@ -71,6 +71,7 @@ Replaces: libkmid, libkmid0, libkmid0-alsa
 Depends: ${shlibs:Depends}
 Enhances: kdebase
 Provides: libkmid
+Conflicts: libkmid, libkmid-bin
 Description: aRts Sound system (midi/kmedia support libraries with alsa)
  aRts is a short form for "analog realtime synthesizer". The idea of the whole
  thing is to create/process sound using small modules which do certain tasks.
@@ -89,8 +90,8 @@ Replaces: libarts, libarts1, libarts1-alsa
 Depends: ${shlibs:Depends}
 Suggests: kdelibs3, artsbuilder
 Enhances: kdebase
-Conflicts: suidmanager (<< 0.50)
 Provides: libarts
+Conflicts: suidmanager (<< 0.50), libarts, libarts-bin
 Description: aRts Sound system (built with alsa support)
  aRts is a short form for "analog realtime synthesizer". The idea of the whole
  thing is to create/process sound using small modules which do certain tasks.
