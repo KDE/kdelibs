@@ -36,9 +36,9 @@ extern "C" { int start_launcher(int); }
 static void sig_handler(int sig_num)
 {
    // No recursion
-   signal( SIGHUP, SIG_DFL);
-   signal( SIGPIPE, SIG_DFL);
-   signal( SIGTERM, SIG_DFL);
+   signal( SIGHUP, SIG_IGN);
+   signal( SIGPIPE, SIG_IGN);
+   signal( SIGTERM, SIG_IGN);
 fprintf(stderr, "KLauncher: Exiting on signal %d\n", sig_num);
    KLauncher::destruct(255);
 }
