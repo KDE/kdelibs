@@ -607,8 +607,8 @@ void RenderFlow::positionNewFloats()
                         {
                             SpecialObject* so = new SpecialObject(*f);
                             so->count = specialObjects->count();
-                            so->startY = so->startY + m_y;
-                            so->endY = so->endY + m_y;
+                            so->startY += m_y;
+                            so->endY += m_y;
                             par->specialObjects->append(so);
                         }
                     }
@@ -821,12 +821,10 @@ RenderFlow::clearFloats()
             prev = prev->previousSibling();
 
     int offset = m_y;
-    if(prev ) {
+    if(prev ) {        
         if(prev->isTableCell()) return;
-        // ### FIXME
-        //offset = m_previous->height() + collapseMargins(prev->marginBottom(), marginTop());
+        
         offset -= prev->yPos();
-        //      offsetX -= prev->xPos();
     } else {
         prev = m_parent;
         if(!prev) return;
@@ -861,10 +859,10 @@ RenderFlow::clearFloats()
                 // we need to add the float here too
                 SpecialObject *special = new SpecialObject;
                 special->count = specialObjects->count();
-                special->startY = r->startY - offset;
+                special->startY = r->startY - offset; 
                 special->endY = r->endY - offset;
-                special->left = r->left;// - offsetX; // ### the object might have different m,p&b
-                special->width = r->width;// - offsetX;
+                special->left = r->left + prev->marginLeft() - marginLeft();
+                special->width = r->width;
                 special->node = r->node;
                 special->type = r->type;
                 specialObjects->append(special);
@@ -931,8 +929,13 @@ void RenderFlow::calcMinMaxWidth()
         {
             if( !child->isBR() )
             {    
-                int childMin = child->minWidth() + child->marginLeft() + child->marginRight();
-                int childMax = child->maxWidth() + child->marginLeft() + child->marginRight();
+                int margins = 0;
+                if (child->style()->marginLeft().isVariable())
+                    margins += child->marginLeft();
+                if (child->style()->marginRight().isVariable())
+                    margins += child->marginRight();
+                int childMin = child->minWidth() + margins;
+                int childMax = child->maxWidth() + margins;
                                                     
                 if (child->isText() && static_cast<RenderText *>(child)->length() > 0)
                 {
