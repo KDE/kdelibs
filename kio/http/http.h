@@ -182,6 +182,7 @@ protected:
   bool readHeader();
   bool sendBody();
   bool readBody();
+  bool checkSSL();
 
   /**
    * Send a cookie to the cookiejar

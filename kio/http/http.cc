@@ -725,7 +725,19 @@ HTTPProtocol::http_openConnection()
       return false;
     }
 
-    // Check if we need to pop up a dialog box to the user
+    kdDebug() << time(0L) << " Sending connected" << endl;
+    // Tell the application that we are connected, and that the metadata (e.g. ssl) is ready
+    connected();
+
+    return true;
+}
+
+bool HTTPProtocol::checkSSL()
+{
+  // Check if we need to pop up a dialog box to the user
+  if ( metaData( "ssl_activate_warnings" ) == "TRUE" )
+  {
+    kdDebug() << "*** SSL WARNINGS ACTIVATED ***" << endl;
     bool ssl_was_in_use = metaData( "ssl_was_in_use" ) == "TRUE";
     kdDebug() << "ssl_was_in_use: " << ssl_was_in_use << endl;
 
@@ -741,6 +753,7 @@ HTTPProtocol::http_openConnection()
       kdDebug() << "ENTERING SSL" << endl;
       kdDebug() << "DIALOG BOX HERE [calling kio_uiserver]" << endl;
       // TODO
+      // (and emit some error (user aborted), and return false, if the user says no)
     }
 #else
 
@@ -754,22 +767,20 @@ HTTPProtocol::http_openConnection()
       {
         // TODO
         kdDebug() << "DIALOG BOX HERE [calling kio_uiserver]" << endl;
+        // (and emit some error (user aborted), and return false, if the user says no)
       }
     }
 #endif
 /*
-        if ( doing a post :/ && !m_bUseSSL && m_ssl.settings()->warnOnUnencrypted() )
-        {
-          kdDebug() << "UNENCRYPTED" << endl;
-          // TODO
-        }
+  if ( doing a post :/ && !m_bUseSSL && m_ssl.settings()->warnOnUnencrypted() )
+  {
+  kdDebug() << "UNENCRYPTED" << endl;
+  // TODO
+  }
 */
 
-    kdDebug() << time(0L) << " Sending connected" << endl;
-    // Tell the application that we are connected, and that the metadata (e.g. ssl) is ready
-    connected();
-
-    return true;
+  }
+  return true;
 }
 
 /**
@@ -1928,6 +1939,9 @@ void HTTPProtocol::get( const KURL& url )
      return;
 
   if (!readHeader())
+     return;
+
+  if (!checkSSL())
      return;
 
   if (!readBody())
