@@ -22,6 +22,7 @@
 #include <qclipboard.h>
 
 #include <klocale.h>
+#include <kpixmapprovider.h>
 #include <kstdaccel.h>
 
 #include "kcombobox.h"
@@ -398,9 +399,15 @@ KHistoryCombo::KHistoryCombo( QWidget *parent, const char *name )
     setInsertionPolicy( NoInsertion );
     myIterateIndex = -1;
     myRotated = false;
+    myPixProvider = 0L;
 
     connect( this, SIGNAL( activated(int) ), SLOT( slotReset() ));
     connect( this, SIGNAL( returnPressed(const QString&) ), SLOT(slotReset()));
+}
+
+KHistoryCombo::~KHistoryCombo()
+{
+    delete myPixProvider;
 }
 
 void KHistoryCombo::setHistoryItems( QStringList items,
@@ -412,7 +419,7 @@ void KHistoryCombo::setHistoryItems( QStringList items,
     while ( (int) items.count() > maxCount() && !items.isEmpty() )
 	items.remove( items.begin() );
 
-    insertStringList( items );
+    insertItems( items );
 
     if ( setCompletionList ) {
 	// we don't have any weighting information here ;(
@@ -458,8 +465,11 @@ void KHistoryCombo::addToHistory( const QString& item )
 	    completionObject()->removeItem( item );
     }
 
-    // now add the items
-    insertItem( item, 0 );
+    // now add the item
+    if ( myPixProvider )
+	insertItem( myPixProvider->pixmapFor( item ), 0 );
+    else
+	insertItem( item, 0 );
     completionObject()->addItem( item );
 }
 
@@ -535,4 +545,36 @@ void KHistoryCombo::slotReset()
     myRotated = false;
     // clearEdit(); // FIXME, use a timer for that? slotReset is called
     // before addToHistory() so we can't clear the edit here :-/
+}
+
+
+void KHistoryCombo::setPixmapProvider( KPixmapProvider *prov )
+{
+    if ( myPixProvider == prov )
+	return;
+
+    myPixProvider = prov;
+
+    // re-insert all the items with/without pixmap
+    // I would prefer to use changeItem(), but that doesn't honour the pixmap
+    // when using an editable combobox (what we do)
+    if ( count() > 0 ) {
+	QStringList items( historyItems() );
+	clear();
+	insertItems( items );
+    }
+}
+
+void KHistoryCombo::insertItems( const QStringList& items )
+{
+    QStringList::ConstIterator it = items.begin();
+    QString item;
+    while ( it != items.end() ) {
+	item = *it;
+	if ( myPixProvider )
+	    insertItem( myPixProvider->pixmapFor( item, KIcon::SizeSmall ), item );
+	else
+	    insertItem( item );
+	++it;
+    }
 }

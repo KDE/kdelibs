@@ -28,7 +28,7 @@
 #include <qlistbox.h>
 
 #include <kcompletion.h>
-
+#include <kicontheme.h>
 
 /**
  * A combined button, line-edit and a popup list widget.
@@ -404,6 +404,8 @@ private:
 };
 
 
+class KPixmapProvider;
+
 /**
  * A combobox which implements a history like a unix shell. You can navigate
  * through all the items by using the Up or Down arrows (configurable of
@@ -439,6 +441,11 @@ public:
      * @p name the name of this widget.
      */
     KHistoryCombo( QWidget *parent = 0L, const char *name = 0L );
+
+    /**
+     * Destructs the combo, the completion-object and the pixmap-provider
+     */
+    ~KHistoryCombo();
 
     /**
      * Inserts @p items into the combobox. @p items might get
@@ -510,6 +517,27 @@ public:
      */
     bool removeFromHistory( const QString& item );
 
+    /**
+     * Sets a pixmap provider, so that items in the combobox can have a pixmap.
+     * @ref KPixmapProvider is just an abstract class with the one pure virtual
+     * method @ref KPixmapProvider::pixmapFor(). This method is called whenever
+     * an item is added to the KHistoryComboBox. Implement it to return your
+     * own custom pixmaps, or use the @ref KURLPixmapProvider from libkio,
+     * which uses @ref KMimeType::pixmapForURL to resolve icons.
+     *
+     * Set @p prov to 0L if you want to disable pixmaps. Default no pixmaps.
+     *
+     * @see #pixmapProvider
+     */
+    void setPixmapProvider( KPixmapProvider *prov );
+
+    /**
+     * @returns the current pixmap provider.
+     * @see #setPixmapProvider
+     * @see KPixmapProvider
+     */
+    KPixmapProvider * pixmapProvider() const { return myPixProvider; }
+
 public slots:
     /**
      * Adds an item to the end of the history list and to the completion list.
@@ -539,6 +567,14 @@ protected:
      */
     virtual void keyPressEvent( QKeyEvent * );
 
+    /**
+     * Inserts @p items into the combo, honouring @ref pixmapProvider()
+     * Does not update the completionObject.
+     *
+     * Called from @ref setHistoryItems() and @ref setPixmapProvider()
+     */
+    void insertItems( const QStringList& items );
+
 private slots:
     /**
      * resets the iterate index to -1
@@ -561,6 +597,11 @@ private:
      * Needed to allow going back after rotation.
      */
     bool myRotated;
+    KPixmapProvider *myPixProvider;
+
+private:
+    class KHistoryComboPrivate;
+    KHistoryComboPrivate *d;
 };
 
 
