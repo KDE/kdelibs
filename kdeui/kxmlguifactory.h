@@ -163,8 +163,6 @@ class KXMLGUIFactory : public QObject
 
  private:
 
-  void resetInternal( KXMLGUI::ContainerNode *node );
-
   void buildRecursive( const QDomElement &element, KXMLGUI::ContainerNode *parentNode );
   bool removeRecursive( QDomElement &element, KXMLGUI::ContainerNode *node );
 

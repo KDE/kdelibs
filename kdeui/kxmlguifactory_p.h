@@ -141,6 +141,8 @@ struct ContainerNode
     void unplugActionList( BuildState &state, const MergingIndexList::Iterator &mergingIdxIt );
 
     void adjustMergingIndices( int offset, const MergingIndexList::Iterator &it );
+
+    void reset();
 };
 
 typedef QPtrList<ContainerNode> ContainerNodeList;
@@ -188,6 +190,8 @@ private:
 struct BuildState
 {
     BuildState() : guiClient( 0 ) {}
+
+    void reset();
 
     QString clientName;
 

@@ -267,6 +267,16 @@ void ContainerNode::adjustMergingIndices( int offset,
     index += offset;
 }
 
+void ContainerNode::reset()
+{
+    QPtrListIterator<ContainerNode> childIt( children );
+    for (; childIt.current(); ++childIt )
+        childIt.current()->reset();
+
+    if ( client )
+        client->setFactory( 0L );
+}
+
 BuildHelper::BuildHelper( BuildState &state, const QStringList &_customTags,
                           const QStringList &_containerTags, ContainerNode *node, 
                           KXMLGUIFactory *_factory )
@@ -557,6 +567,16 @@ void BuildHelper::processContainerElement( const QDomElement &e, const QString &
         m_factory->calcMergingIndex( parentNode, QString::null, m_state.currentClientMergingIt,
                                      ignoreDefaultMergingIndex );
     }
+}
+
+void BuildState::reset()
+{
+    clientName = QString::null;
+    actionListName = QString::null;
+    actionList.clear();
+    guiClient = 0;
+
+    currentDefaultMergingIt = currentClientMergingIt = MergingIndexList::Iterator();
 }
 
 /* vim: et sw=4

@@ -266,8 +266,7 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
     d->builder->finalizeGUI( d->guiClient );
 
     // reset some variables, for safety
-    d->guiClient = 0L;
-    d->clientName = QString::null;
+    d->BuildState::reset();
     d->m_clientBuilder = 0L;
 
     emit clientAdded( client );
@@ -326,9 +325,8 @@ void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
     removeRecursive( tmp, d->m_rootNode );
 
     // reset some variables
-    d->guiClient = 0L;
+    d->BuildState::reset();
     d->m_clientBuilder = 0L;
-    d->clientName = QString::null;
 
     emit clientRemoved( client );
 }
@@ -359,7 +357,7 @@ QPtrList<QWidget> KXMLGUIFactory::containers( const QString &tagName )
 
 void KXMLGUIFactory::reset()
 {
-    resetInternal( d->m_rootNode );
+    d->m_rootNode->reset();
 
     d->m_rootNode->clearChildren();
 }
@@ -381,16 +379,6 @@ void KXMLGUIFactory::resetContainer( const QString &containerName, bool useTagNa
     //  resetInternal( container );
 
     parent->removeChild( container );
-}
-
-void KXMLGUIFactory::resetInternal( KXMLGUI::ContainerNode *node )
-{
-    QPtrListIterator<ContainerNode> childIt( node->children );
-    for (; childIt.current(); ++childIt )
-        resetInternal( childIt.current() );
-
-    if ( node->client )
-        node->client->setFactory( 0L );
 }
 
 void KXMLGUIFactory::buildRecursive( const QDomElement &element, 
@@ -681,10 +669,7 @@ void KXMLGUIFactory::plugActionList( KXMLGUIClient *client, const QString &name,
 
     d->m_rootNode->plugActionList( *d );
 
-    d->guiClient = 0;
-    d->actionListName = QString::null;
-    d->actionList = QPtrList<KAction>();
-    d->clientName = QString::null;
+    d->BuildState::reset();
 }
 
 void KXMLGUIFactory::unplugActionList( KXMLGUIClient *client, const QString &name )
@@ -695,9 +680,7 @@ void KXMLGUIFactory::unplugActionList( KXMLGUIClient *client, const QString &nam
 
     d->m_rootNode->unplugActionList( *d );
 
-    d->guiClient = 0;
-    d->actionListName = QString::null;
-    d->clientName = QString::null;
+    d->BuildState::reset();
 }
 
 void KXMLGUIFactory::applyActionProperties( const QDomElement &actionPropElement )
