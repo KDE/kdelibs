@@ -179,6 +179,12 @@ class KPluginInfo
         { return m_propertymap[ QString::fromLatin1("Comment") ]; }
 
         /**
+         * @return A icon for the plugin.
+         */
+        const QString & icon() const 
+        { return m_propertymap[ QString::fromLatin1("Icon") ]; }
+
+        /**
          * @return The file containing the information about the plugin.
          */
         const QString & specfile() const;
