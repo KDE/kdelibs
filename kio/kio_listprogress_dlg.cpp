@@ -135,7 +135,7 @@ void KIOListViewItem::slotPercent( int, unsigned long _percent ) {
 
 void KIOListViewItem::slotProcessedFiles( int, unsigned long _files ) {
   QString tmps;
-  tmps.sprintf( "%lu / %lu\n", _files, m_iTotalFiles );
+  tmps.sprintf( "%lu / %lu", _files, m_iTotalFiles );
   setText( listView->lv_count, tmps );
 }
 
@@ -146,7 +146,7 @@ void KIOListViewItem::slotSpeed( int, unsigned long _bytes_per_second ) {
     tmps = i18n( "Stalled");
     tmps2 = tmps;
   } else {
-    tmps = i18n( "%1/s %2").arg( KIOJob::convertSize( _bytes_per_second ));
+    tmps = i18n( "%1/s").arg( KIOJob::convertSize( _bytes_per_second ));
     tmps2 = m_pJob->getRemainingTime().toString();
   }
 
@@ -219,9 +219,9 @@ void KIOListViewItem::slotFinished( int ) {
 
 
 void KIOListViewItem::showSmallGUI() {
-  qDebug( "showSmallGUI" );
   if ( ! m_pJob->progressDlg() ) {
     m_pJob->setProgressDlg( new KIOSimpleProgressDlg() );
+    m_pJob->progressDlg()->refill();
     m_pJob->progressDlg()->show();
   }
 }
@@ -379,7 +379,7 @@ void KIOListProgressDlg::slotUpdate() {
   int totalSpeed = 0;
   QTime totalRemTime;
 
-  // count totals !!! how ?
+  // TODO :  count totals, how ?
 
   // update statusbar
   statusBar()->changeItem( i18n( " Files : %1 ").arg( totalFiles ), ID_TOTAL_FILES);
@@ -394,7 +394,6 @@ void KIOListProgressDlg::slotUpdate() {
 
 
 void KIOListProgressDlg::slotOpenSimple( QListViewItem *item ) {
-  qDebug( "slotOpenSimple"  );
   ((KIOListViewItem*) item )->showSmallGUI();
 }
 
@@ -412,13 +411,14 @@ void KIOListProgressDlg::slotSelection() {
 }
 
 
-void KIOListProgressDlg::readSettings() { // finish !!!
+// TODO : read and write settings
+void KIOListProgressDlg::readSettings() {
   KConfig config("kioslaverc");
   config.setGroup( "ListProgress" );
 }
 
 
-void KIOListProgressDlg::writeSettings() { // finish !!!
+void KIOListProgressDlg::writeSettings() {
   KConfig config("kioslaverc");
   config.setGroup( "ListProgress" );
 }

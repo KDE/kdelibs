@@ -12,6 +12,11 @@
 class QTimer;
 class KIOListView;
 
+
+/** 
+* One item in the @ref #KIOListView, connected to a @ref #KIOJob.
+* @internal
+*/ 
 class KIOListViewItem : public QObject, public QListViewItem, KIO {
 
   Q_OBJECT
@@ -64,6 +69,10 @@ signals:
 };
 
 
+/** 
+* List view in the @ref #KIOListProgressDlg.
+* @internal
+*/ 
 class KIOListView : public QListView {
 
   Q_OBJECT
@@ -106,8 +115,7 @@ protected:
 * This class is not meant for a general usage.
 *
 * It's purpose is to show progress of IO operations.
-* However, as opposed to @ref #KIOSimpleProgressDlg or @ref #KIOLittleProgressDlg,
-* there is only one instance of this window for all KIOJobs.
+* There is only one instance of this window for all KIOJobs.
 * The main advantage is, that all downloads, deletions etc. are shown in one place,
 * thus saving precious desktop space.
 *
@@ -115,7 +123,11 @@ protected:
 * All IO operations ( KIOJobs ) are displayed in this window, one line per operation.
 * User can cancel operations with Cancel button on statusbar.
 *
+* Double clicking on an item in the list opens a small download window ( @ref #KIOSimpleProgressDlg ).
+*
 * @short All-in-one IO progress window.
+* @author Matej Koss <koss@miesto.sk>
+* @internal
 */ 
 class KIOListProgressDlg : public KTMainWindow {
 
