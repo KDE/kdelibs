@@ -352,7 +352,8 @@ void Kded::updateResourceList()
 void Kded::crashHandler(int)
 {
    DCOPClient::emergencyClose();
-   system("kded");
+   if (_self) // Don't restart if we were closing down
+      system("kded");
 qWarning("Last DCOP call before KDED crash was from application '%s'\n"
          "to object '%s', function '%s'.",
          DCOPClient::postMortemSender(),
