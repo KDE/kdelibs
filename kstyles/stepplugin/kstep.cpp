@@ -482,7 +482,9 @@ void KStepStyle::drawIndicatorMask(QPainter *p, int x, int y, int w, int h,
 void KStepStyle::drawExclusiveIndicatorMask(QPainter *p, int x, int y, int w,
                                             int h, bool)
 {
-    p->fillRect(x, y, w, h, Qt::color1);
+  p->setPen(Qt::color1);
+  p->setBrush(Qt::color1);
+  p->drawEllipse(x, y, w, h);
 }
 
 void KStepStyle::drawStepBarArrow(QPainter *p, Qt::ArrowType type, int x,
