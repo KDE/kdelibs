@@ -2151,60 +2151,7 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
 		  }		
 		}
 		else{
-		  debugM("Getting current font...");
-	          const HTMLFont *fp = currentFont();
-		  debugM("OK\n");
-		  if (*str=='&'){ // we don't need converter for this
-		     debugM("Amperstand found!\n");
-		     debugM("Allocating buffer of length: %i...",strlen(str)+2);
-		     char *buffer=new char[strlen(str)+2]; // buffer will never
-		                                           // have to be longer
-		     debugM("OK: %p\n",buffer);
-		     int l;
-		     const char *str1;
-		     debugM("Getting charset object...");
-		     KCharsets *charsets=KApplication::getKApplication()
-		                                           ->getCharsets();
-		     debugM("got: %p\n",charsets);
-		     debugM("converting sequence: '%s'...",str);
-		     const KCharsetConversionResult &r=charsets->convertTag(str,l);
-		     debugM("OK - length: %i\n",l);
-		     str1=r;					 
-		     if (str1 && l){
-		       debugM("sequence OK\n");
-		       HTMLFont f=*fp;
-		       if (r.charset().ok()){
-		         debugM("charset OK\n");
-			 debugM("Setting charset to: %s...",(const char *)r.charset());
-		         f.setCharset(r.charset());
-		         debugM("OK\n");
-			 debugM("Getting preloaded font...");
-	                 fp = pFontManager->getFont( f );
-		         debugM("OK\n");
-		       } 
-		       debugM("Copying result ('%s') to buffer %p...",str1,buffer);
-		       strcpy(buffer,str1);
-		       debugM("OK\n");
-		       debugM("Adding rest ('%s') to buffer...",str+l);
-		       strcat(buffer,str+l);
-		       debugM("OK\n");
-		       str=buffer;
-
-		       // Add this string to our own garbage collector
-		       if ((memPoolMax % 256) == 0)
-		       {
-		           memPool.resize(memPoolMax+256);
-		       }
-		       memPool[memPoolMax++] = buffer;
-
-		     }  
-		  }
-		
-		  debugM("Adding string to flow...");
-
-		  insertText((char *)str, fp); // Override constness
-
-	  	  debugM("OK\n");
+		  insertText((char *)str, currentFont() ); // Override constness
 		}      
 	    }
 	}
@@ -2235,8 +2182,49 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
 	
 		newFlow(_clue); // Explicitly make a new flow! 
 	    }
+	    else if (*str == '&')
+	    {
+		int l;
+		const char *str1;
+
+	    	const HTMLFont *fp = currentFont();
+		// Handling entities
+		char *buffer=new char[strlen(str)+2]; // buffer will never
+		                                      // have to be longer
+
+		KCharsets *charsets=
+			KApplication::getKApplication()->getCharsets();
+
+		const KCharsetConversionResult &r=charsets->convertTag(str,l);
+		
+		str1=r;					 
+		
+		if (str1 && l){
+		    HTMLFont f=*fp;
+		    if (r.charset().ok()){
+		        f.setCharset(r.charset());
+	                fp = pFontManager->getFont( f );
+		    } 
+		    strcpy(buffer,str1);
+		    strcat(buffer,str+l);
+
+		    // Add this string to our own garbage collector
+		    if ((memPoolMax % 256) == 0)
+		    {
+		        memPool.resize(memPoolMax+256);
+		    }
+		    memPool[memPoolMax++] = buffer;
+		    insertText((char *)buffer, fp); // Override constness
+		}
+		else
+		{
+		    insertText((char *)str, currentFont());
+		}
+	    }	    
 	    else
+	    {
 		parseOneToken( _clue, str );
+	    }
 	}
 
 	// perhaps we have the frame read complete. So skip the rest

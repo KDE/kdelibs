@@ -316,30 +316,30 @@ void HTMLTokenizer::write( const char *str )
             int entityValue = 0;
 	    QString res = 0;
 
-	    searchBuffer[ searchCount] = *src;
-	    searchBuffer[ searchCount+1] = '\0';
+	    searchBuffer[ searchCount+1] = *src;
+	    searchBuffer[ searchCount+2] = '\0';
 	    
 	    // Check for '&#000' sequence
-	    if (searchBuffer[1] == '#')
+	    if (searchBuffer[2] == '#')
 	    {
 		if ((searchCount > 1) && 
 		    (!isdigit(*src)))
 	        {	
-	    	    searchBuffer[ searchCount] = '\0';
-	    	    entityValue = (int) strtol( &(searchBuffer[2]), 
+	    	    searchBuffer[ searchCount+1] = '\0';
+	    	    entityValue = (int) strtol( &(searchBuffer[3]), 
 	    	    				NULL, 10 );
 	    	    charEntity = false;
 	        }
 	    }
 	    else
 	    {
-	        // Check for &abc sequence
-	        if (!isalpha(*src))
+	        // Check for &abc12 sequence
+	        if (!isalnum(*src))
 	        {
                     int len;
 		    charEntity = false;
-	    	    searchBuffer[ searchCount] = '\0';
-		    res = charsets->convertTag(searchBuffer, len).copy();
+	    	    searchBuffer[ searchCount+1] = '\0';
+		    res = charsets->convertTag(searchBuffer+1, len).copy();
 		    if (len <= 0)
 		    {
 		    	res = 0;
@@ -351,9 +351,11 @@ void HTMLTokenizer::write( const char *str )
 	    {
 	    	// This sequence is too long.. we ignore it
 	        charEntity = false;
-                memcpy(dest,searchBuffer, searchCount);
+                memcpy(dest,searchBuffer+1, searchCount);
 		dest += searchCount;
 		*dest++ = *src++;
+		if ( pre )
+		    prePos += searchCount;	    
 	    }
 	    else if (charEntity)
 	    {
@@ -381,7 +383,19 @@ void HTMLTokenizer::write( const char *str )
 		{
 		    // Just insert plain ascii
 		    *dest++ = (char) entityValue;
+		    if (pre)
+		    	prePos++;
+		    if (*src == ';')
+		        src++;
 		}	    	
+		else if (!entityValue && !res)
+		{
+		    // ignore the sequence, add it to the buffer as plaintext
+		    memcpy(dest,searchBuffer+1, searchCount);
+		    dest += searchCount;
+		    if (pre)
+		    	prePos += searchCount;
+		}
 		else if (!tag && !textarea && !select && !title) 
 		{
 		    // add current token first
@@ -393,28 +407,33 @@ void HTMLTokenizer::write( const char *str )
 		    }
 		    
 		    // add token with the amp-sequence for further conversion
-		    appendToken(searchBuffer, searchCount);
+		    appendToken(searchBuffer, searchCount+1);
 		    dest = buffer;
+		    // Assume a width of 1
+		    if (pre)
+		    	prePos++;
+		    if (*src == ';')
+		        src++;
 		}
 		else if (res)
 		{
 		    // insert the characters, assuming iso-8859-1
 		    memcpy(dest, res.data(), res.length());
 		    dest += res.length();
+		    if (pre)
+		    	prePos += res.length();
+		    if (*src == ';')
+		        src++;
 		}
 		else if (entityValue > 0) 
 		{
 		    // insert the character, assuming iso-8859-1
 		    *dest++ = (char) entityValue;
+		    if (pre)
+		    	prePos++;
+		    if (*src == ';')
+		        src++;
 		}
-		else
-		{
-		    // ignore the sequence, add it to the buffer as plaintext
-		    memcpy(dest,searchBuffer, searchCount);
-		    dest += searchCount;
-		}
-		if (*src == ';')
-		    src++;
 		searchCount = 0;
 	    }
 	}
@@ -468,16 +487,15 @@ void HTMLTokenizer::write( const char *str )
 	else if ( *src == '&' ) 
 	{
             src++;
-	    if ( pre )
-		prePos++;	    
 	    
 	    discard = NoneDiscard; 
 	    if (pending)
 	    	addPending();
 	    
 	    charEntity = true;
-            searchCount = 0;
-            searchBuffer[searchCount++] = '&';
+            searchBuffer[0] = TAG_ESCAPE;
+            searchBuffer[1] = '&';
+            searchCount = 1;
 	}
 	else if ( *src == '<' && !tag)
 	{
