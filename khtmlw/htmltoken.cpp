@@ -48,6 +48,8 @@ static const char *commentStart = "<!--";
 static const char *scriptEnd = "</script>";
 static const char *styleEnd = "</style>";
 
+enum quoteEnum { NO_QUOTE=0, SINGLE_QUOTE, DOUBLE_QUOTE };
+
 //-----------------------------------------------------------------------------
 
 const char *BlockingToken::tokenName()
@@ -125,7 +127,7 @@ void HTMLTokenizer::begin()
     comment = false;
     textarea = false;
     startTag = false;
-    tquote = false;
+    tquote = NO_QUOTE;
     searchCount = 0;
     title = false;
     charEntity = false;
@@ -710,26 +712,35 @@ void HTMLTokenizer::write( const char *str )
 	    if ( tag )
 	    {
 	        searchCount = 0; // Stop looking for '<!--' sequence
-		src++;
-		if ( *(dest-1) == '=' && !tquote )
+                if ( ((tquote == SINGLE_QUOTE) && (*src == '\"')) ||
+                    ((tquote == DOUBLE_QUOTE) && (*src == '\'')))
 		{
+                   // just add it
+                   *dest++ = *src;
+                }
+                else if ( *(dest-1) == '=' && !tquote )
+                {
 		    // according to HTML4 DTD, we can simplify
 		    // strings like "  my \nstring " to "my string"
 		    discard = SpaceDiscard; // ignore leading spaces
 		    pending = NonePending;
-		    tquote = true;
-		    *dest++ = '\"';
+                   if (*src == '\"')
+                        tquote = DOUBLE_QUOTE;
+                   else
+                       tquote = SINGLE_QUOTE;           
+                   *dest++ = *src;
 		}
 		else if ( tquote )
 		{
-		    tquote = false;
-		    *dest++ = '\"';
+                   tquote = NO_QUOTE;
+                   *dest++ = *src;
 		    pending = SpacePending; // Add space automatically
 		}
 		else
 		{
 		    // Ignore stray "\'"
 		}
+                src++;
 	    }
 	    else
 	    {
@@ -917,13 +928,18 @@ void StringTokenizer::tokenize( const char *str, const char *_separators )
 
     const char *src = str;
     end = buffer;
-    bool quoted = false;
+    int quoted = NO_QUOTE;
     
     for ( ; *src != '\0'; src++ )
     {
 	char *x = strchr( _separators, *src );
-	if ( *src == '\"' )
-	    quoted = !quoted;
+        if (( *src == '\"' ) && !quoted)
+           quoted = DOUBLE_QUOTE;
+        else if (( *src == '\'') && !quoted)
+           quoted = SINGLE_QUOTE;
+        else if ( (( *src == '\"') && (quoted == DOUBLE_QUOTE)) ||
+                 (( *src == '\'') && (quoted == SINGLE_QUOTE)))
+           quoted = NO_QUOTE;
 	else if ( x && !quoted )
 	    *end++ = 0;
 	else

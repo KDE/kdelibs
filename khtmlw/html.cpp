@@ -2505,7 +2505,7 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
 	    }
 	}
 
-	if ( !coords.isEmpty() )
+	if ( !coords.isEmpty() && !href.isEmpty() )
 	{
 	    HTMLArea *area = 0;
 

@@ -123,7 +123,7 @@ protected:
     bool tag;
 
     // are we in quotes within a html tag
-    bool tquote;
+    int tquote;
     
 	typedef enum 
 	{ 
