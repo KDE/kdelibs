@@ -1122,6 +1122,8 @@ public:
      *         KMessageBox::Yes [3]). Will return KMessageBox::Cancel
      *         if the message box is queued for display instead of 
      *         exec()ed immediately or if the option NoExec is set.
+     * @note   The @p dialog that is passed in is deleted by this
+     *         function. Do not delete it yourself.
      */
     static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon,
                              const QString &text, const QStringList &strlist,
@@ -1151,6 +1153,8 @@ public:
      *         KMessageBox::Yes [3]). Will return KMessageBox::Cancel
      *         if the message box is queued for display instead of 
      *         exec()ed immediately or if the option NoExec is set.
+     * @note   The @p dialog that is passed in is deleted by this
+     *         function. Do not delete it yourself.
      */
     static int createKMessageBox(KDialogBase *dialog, QPixmap icon,
                              const QString &text, const QStringList &strlist,
