@@ -446,7 +446,7 @@ char *getcwd ();
 # endif
 
 # ifndef HAVE_STPCPY
-static char *stpcpy  ((char *dest, const char *src));
+static char *stpcpy  (char *dest, const char *src);
 # endif
 #endif
 
@@ -1104,14 +1104,11 @@ hash_string (const char *str_param)
 
 /* Define function which are usually not available.  */
 
-#if !defined _LIBC && !defined HAVE___ARGZ_COUNT
+#if !defined HAVE___ARGZ_COUNT
 /* Returns the number of strings in ARGZ.  */
-static size_t argz_count__  ((const char *argz, size_t len));
 
 static size_t
-argz_count__ (argz, len)
-     const char *argz;
-     size_t len;
+argz_count__ (const char *argz, size_t len)
 {
   size_t count = 0;
   while (len > 0)
@@ -1125,18 +1122,15 @@ argz_count__ (argz, len)
 }
 # undef __argz_count
 # define __argz_count(argz, len) argz_count__ (argz, len)
-#endif	/* !_LIBC && !HAVE___ARGZ_COUNT */
+#endif	/* !HAVE___ARGZ_COUNT */
 
-#if !defined _LIBC && !defined HAVE___ARGZ_STRINGIFY
+#if !defined HAVE___ARGZ_STRINGIFY
 /* Make '\0' separated arg vector ARGZ printable by converting all the '\0's
    except the last into the character SEP.  */
-static void argz_stringify__  ((char *argz, size_t len, int sep));
+static void argz_stringify__  (char *argz, size_t len, int sep);
 
 static void
-argz_stringify__ (argz, len, sep)
-     char *argz;
-     size_t len;
-     int sep;
+argz_stringify__ (char *argz,size_t  len, int sep)
 {
   while (len > 0)
     {
@@ -1149,17 +1143,11 @@ argz_stringify__ (argz, len, sep)
 }
 # undef __argz_stringify
 # define __argz_stringify(argz, len, sep) argz_stringify__ (argz, len, sep)
-#endif	/* !_LIBC && !HAVE___ARGZ_STRINGIFY */
+#endif	/* !HAVE___ARGZ_STRINGIFY */
 
-#if !defined _LIBC && !defined HAVE___ARGZ_NEXT
-static char *argz_next__  ((char *argz, size_t argz_len,
-				  const char *entry));
-
+#if !defined HAVE___ARGZ_NEXT
 static char *
-argz_next__ (argz, argz_len, entry)
-     char *argz;
-     size_t argz_len;
-     const char *entry;
+argz_next__ ( char *argz,size_t  argz_len, const char *entry)
 {
   if (entry)
     {
@@ -1177,7 +1165,7 @@ argz_next__ (argz, argz_len, entry)
 
 # undef __argz_next
 # define __argz_next(argz, len, entry) argz_next__ (argz, len, entry)
-#endif	/* !_LIBC && !HAVE___ARGZ_NEXT */
+#endif	/* !HAVE___ARGZ_NEXT */
 
 static inline int pop (int x)
 {
