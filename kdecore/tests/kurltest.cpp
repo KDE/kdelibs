@@ -282,17 +282,20 @@ int main(int argc, char *argv[])
   check("http: URL with empty query string", waba1.url(),
         "http://www.kde.org/cgi/test.cgi?");
 
-  // Empty references should be left out.
+  // Empty references should be preserved
   waba1 = "http://www.kde.org/cgi/test.cgi#";
   check("http: URL with empty reference string", waba1.url(),
-        "http://www.kde.org/cgi/test.cgi");
+        "http://www.kde.org/cgi/test.cgi#");
+  check("hasRef()", waba1.hasRef()?"true":"false","true");
+  check("hasHTMLRef()", waba1.hasHTMLRef()?"true":"false","true");
+  check("encodedHtmlRef()", waba1.encodedHtmlRef(),QString::null);
 
-  // URLs who forgot to encoded spaces in the query. 
+  // URLs who forgot to encode spaces in the query. 
   waba1 = "http://www.kde.org/cgi/test.cgi?hello=My Value";
   check("http: URL with incorrect encoded query", waba1.url(),
         "http://www.kde.org/cgi/test.cgi?hello=My%20Value");
 
-  // URLs who forgot to encoded spaces in the query. 
+  // URLs who forgot to encode spaces in the query. 
   waba1 = "http://www.kde.org/cgi/test.cgi?hello=My Value+20";
   check("http: URL with incorrect encoded query", waba1.url(),
         "http://www.kde.org/cgi/test.cgi?hello=My%20Value+20");
@@ -332,7 +335,7 @@ int main(int argc, char *argv[])
         "81");
 
   // IPV6
-  waba1 = "http://www.kde.org/cgi/test.cgi#";
+  waba1 = "http://www.kde.org/cgi/test.cgi";
   waba1.setHost("::FFFF:129.144.52.38");
   check("http: IPV6 host", waba1.url(),
         "http://[::FFFF:129.144.52.38]/cgi/test.cgi");
