@@ -20,6 +20,7 @@
 #ifndef KCOMPLETION_H
 #define KCOMPLETION_H
 
+#include <qmap.h>
 #include <qlist.h>
 #include <qobject.h>
 #include <qstring.h>
@@ -419,7 +420,7 @@ private:
 };
 
 
- /**
+/**
  * An abstract base class for adding completion feature
  * into widgets.
  *
@@ -442,12 +443,20 @@ class KCompletionBase
 public:
 
 	/**
-	 * Constants used to determine the direction of
-	 * the rotation ( Up/Down ). Widgets should use
-	 * this constant as needed to indicate the direction
-	 * of rotation.
-	 */
-	enum RotationEvent { UpKeyEvent, DownKeyEvent };
+	* Constants that represent the items whose short-cut
+	* key-binding is programmable.  The default key-bindings
+	* for these items are defined in @ref KStdAccel.
+	*/	
+	enum KeyBindingType {
+		TextCompletion,
+		PrevCompletionMatch,
+		NextCompletionMatch,
+		RotateUp,
+		RotateDown
+	};
+	
+	// Map for the key binding types mentioned above.
+	typedef QMap<KeyBindingType, int> KeyBindingMap;
 
     /**
     * Default constructor.
@@ -607,102 +616,56 @@ public:
     KGlobalSettings::Completion completionMode() const { return m_iCompletionMode; }
 
     /**
-    * Sets the key-binding(s) to be used for rotating through
-    * a list to find the next match.
+    * Sets the key-binding to be used for manual text
+    * completion, text rotation in a history list as
+    * well as a completion list.
     *
-    * When this key is activated by the user a @ref rotateDown
-    * signal will be emitted.  If no value is supplied for
-    * rDnkey or it is set to 0, then the completion key will
-    * be defaulted to the global setting.  This method returns
-    * false if rDnkey is negative or the supplied key-binding
-    * conflicts with either @ref completion or @ref rotateUp keys.
+	*
+    * When the keys set by this function are pressed, a
+    * signal defined by the inherting widget will be activated.
+    * If the default value or 0 is specified by the second
+    * parameter, then the key-binding as defined in the global
+    * setting should be used.  This method returns false value
+    * for @p key is negative or the supplied key-binding conflicts
+    * with the ones set for one of the other features.
     *
-    * @param rDnkey key-binding used to rotate up in a list.
-    * @return true if key-binding can successfully be set.
-    */
-    bool setRotateDownKey( int rDnKey = 0 );
-
-    /**
-    * Sets the key-binding to be used for rotating through a
-    * list to find the previous match.
+    * NOTE: To use a modifier key (Shift, Ctrl, Alt) as part of
+    * the key-binding simply simply @p sum up the values of the
+    * modifier and the actual key.  For example, to use CTRL+E as
+    * a key binding for one of the items, you would simply supply
+    * @p "Qt::CtrlButton + Qt::Key_E" as the second argument to this
+    * function.
     *
-    * When this key is activated by the user a @ref rotateUp
-    * signal will be emitted.  If no value is supplied for
-    * rUpkey or it is set to 0, then the completion key
-    * will be defaulted to the global setting.  This method
-    * returns false if rUpkey is negative or the supplied
-    * key-binding conflicts with either @ref completion or
-    * @ref rotateDown keys.
+    * @param item the feature whose key-binding needs to be set:
     *
-    * @param rUpkey key-binding used to rotate down in a list.
+	*		@li TextCompletion			the manual completion
+	*									key-binding.
+	*		@li PrevCompletionMatch		the previous match key
+	*									for mutiple completion.
+	*		@li	NextCompletionMatch		the next match key for
+	*									for multiple completion.
+	*		@li	RotateUp				the key for rotating up
+	*									in a given list.
+	*		@li	RotateDown				the key for rotating down
+	*									in a given list.
+    *
+    * @param key key-binding used to rotate down in a list.
+    *
     * @return  true if key-binding can successfully be set.
     */
-    bool setRotateUpKey( int rUpKey = 0 );
+    bool setKeyBinding( KeyBindingType /*item*/ , int key = 0 );
 
     /**
-    * Sets the key-binding to be used for the two manual
-    * completion types: CompletionMan and CompletionShell.
+    * Returns the key-binding used for the specified item.
     *
-    * This function expects the value of the modifier keys
-    * (Shift, Ctrl, Alt), if present, to be @bf summed up
-    * with actual key, ex: Qt::CTRL+Qt::Key_E.  If no value
-    * is supplied for  ckey or it is set to 0, then the
-    * completion key will be defaulted to the global setting.
-    * This function returns true if the supplied key-binding
-    * can be successfully assigned.
+    * This methods returns the key-binding used to activate
+    * the feature feature given by @p item.  If the binding
+    * contains modifier key(s), the SUM of the modifier key
+    * and the actual key code are returned.
     *
-    * Note that if  ckey is negative or the key-binding
-    * conflicts with either @ref completion or @ref rotateDown
-    * keys, this function will return false.  This method
-    * will also always returns false if the widget is not
-    * editable.
-    *
-    * @param ckey Key binding to use for completion
-    * @return true if key-binding is successfully set.
+    * @return the key-binding used for the feature given by @p item.
     */
-    bool setCompletionKey( int ckey = 0 );
-
-    /**
-    * Returns the key-binding used for completion.
-    *
-    * If the key binding contains modifier key(s), the @bf sum
-    * of the key and the modifier will be returned. See also
-    * @ref setCompletionKey.  Note that this method is only
-    * useful when this widget is editable.  Otherwise this
-    * method has no meaning.
-    *
-    * @return the key-binding used for rotating through a list.
-    */
-    int completionKey() const { return m_iCompletionKey; }
-
-    /**
-    * Returns the key-binding used for rotating up in a list.
-    *
-    * This methods returns the key used to iterate through a
-    * list in the "UP" direction.  This is opposite to what
-    * the @ref rotateDown key does.
-    *
-    * If the key binding contains modifier key(s), the SUM of
-    * their values is returned.  See also @ref setRotateUpKey.
-    *
-    * @return the key-binding used for rotating up in a list.
-    */
-    int rotateUpKey() const { return m_iRotateUpKey; }
-
-    /**
-    * Returns the key-binding used for rotating down in a list.
-    *
-    * This methods returns the key used to match the previous
-    * item in a list.  Everytime this key is pressed most
-    * widgets that inherit from it emit a signal that indicates
-    * this action.
-    *
-    * If the key binding contains modifier key(s), the SUM of
-    * their values is returned.  See also @ref setRotateDownKey.
-    *
-    * @return the key-binding used for rotating down in a list.
-    */
-    int rotateDownKey() const { return m_iRotateDnKey; }
+    int getKeyBinding( KeyBindingType item ) const { return m_keyMap[ item ]; }
 
     /**
     * Sets this object to use global values for key-bindings.
@@ -711,12 +674,11 @@ public:
     * rotation and completion features to the default values
     * provided in KGlobalSettings.
     *
-    * By default this object uses the global key-bindings.
-    * There is no need to call this method unless you have
-    * locally modified the key bindings and want to revert
-    * back.
+    * NOTE: By default inheriting widgets should uses the
+    * global key-bindings so that there will be no need to
+    * call this method.
     */
-    void useGlobalSettings();
+    void useGlobalKeyBindings();
 
     /**
     * Makes the completion mode changer visible in the context
@@ -813,17 +775,23 @@ protected:
     */
     bool hasBeenInserted() { return m_iCompletionID != -1; }
 
-private :
-    // Stores the completion menu id - Use it
-    // to determine whether the completion menu
+protected:
+
+    /**
+    * Returns a key-binding maps
+    *
+    * This method is the same as @ref getKeyBinding except it
+    * returns the whole keymap containing the key-bindings.
+    *
+    * @return the key-binding used for the feature given by @p item.
+    */
+	KeyBindingMap getKeyBindings() const { return m_keyMap; }
+
+private:
+    // Stores the completion menu id.  Used to
+    // determine whether the completion menu
     // has already been inserted or not!!
     int m_iCompletionID;
-    // Stores the completion key locally
-    int m_iCompletionKey;
-    // Stores the Rotate up key locally
-    int m_iRotateUpKey;
-    // Stores the Rotate down key locally
-    int m_iRotateDnKey;
 
     // Flag that determined whether the completion object
     // should be deleted when this object is destroyed.
@@ -845,7 +813,8 @@ private :
     QPopupMenu* m_pCompletionMenu;
     // Pointer for future binary compatabilty.
     KCompletionPrivate *d;
-
+    // Keybindings
+	KeyBindingMap m_keyMap;
 };
 
 #endif // KCOMPLETION_H

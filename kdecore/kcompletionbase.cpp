@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
 
-   Copyright (c) 2000 Dawit Alemayehu <adawit@earthlink.net>
+   Copyright (c) 2000 Dawit Alemayehu <adawit@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -59,9 +59,7 @@ KCompletionBase::KCompletionBase()
 
     // Initialize all key-bindings to 0 by default so that
     // the event filter will use the global settings.
-    m_iCompletionKey = 0;
-    m_iRotateUpKey = 0;
-    m_iRotateDnKey = 0;
+    useGlobalKeyBindings();
 }
 
 KCompletionBase::~KCompletionBase()
@@ -109,41 +107,29 @@ void KCompletionBase::setCompletionMode( KGlobalSettings::Completion mode )
         m_pCompObj->setCompletionMode( m_iCompletionMode );
 }
 
-bool KCompletionBase::setCompletionKey( int ckey )
+bool KCompletionBase::setKeyBinding( KeyBindingType item, int key )
 {
-    if( ckey >= 0 && ckey != m_iRotateDnKey && ckey != m_iRotateUpKey )
+    if( key >= 0 )
     {
-        m_iCompletionKey = ckey;
+        if( key > 0 )
+        {
+            for( KeyBindingMap::Iterator it = m_keyMap.begin(); it != m_keyMap.end(); ++it )
+                if( it.data() == key )  return false;
+        }
+        m_keyMap.replace( item, key );
         return true;
     }
     return false;
 }
 
-bool KCompletionBase::setRotateUpKey( int rUpKey )
+void KCompletionBase::useGlobalKeyBindings()
 {
-    if( rUpKey >= 0 && rUpKey != m_iRotateDnKey && rUpKey != m_iCompletionKey )
-    {
-        m_iRotateUpKey = rUpKey;
-        return true;
-    }
-    return false;
-}
-
-bool KCompletionBase::setRotateDownKey( int rDnKey )
-{
-    if ( rDnKey >= 0 && rDnKey != m_iRotateUpKey && rDnKey != m_iCompletionKey )
-    {
-        m_iRotateDnKey = rDnKey;
-        return true;
-    }
-    return false;
-}
-
-void KCompletionBase::useGlobalSettings()
-{
-    m_iCompletionKey = 0;
-    m_iRotateUpKey = 0;
-    m_iRotateDnKey = 0;
+	m_keyMap.clear();
+	m_keyMap.insert( TextCompletion, 0 );
+	m_keyMap.insert( PrevCompletionMatch, 0 );
+	m_keyMap.insert( NextCompletionMatch, 0 );
+	m_keyMap.insert( RotateUp, 0 );
+	m_keyMap.insert( RotateDown, 0 );
 }
 
 void KCompletionBase::insertCompletionItems( QObject* parent, const char* member )
