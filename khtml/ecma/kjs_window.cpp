@@ -260,8 +260,8 @@ KJSO Window::get(const UString &p) const
     return Boolean(true);
   else if (p == "opener")
     if (opener.isNull())
-      return Undefined();
-    else
+      return Null(); 	// ### a null Window might be better, but == null
+    else                // doesn't work yet
       return newWindow(opener);
   else if (p == "outerHeight")
     return Number(part->view() ? part->view()->height() : 0); // ###
