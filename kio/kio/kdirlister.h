@@ -59,6 +59,7 @@ class KDirLister : public QObject
   Q_PROPERTY( bool autoUpdate READ autoUpdate WRITE setAutoUpdate )
   Q_PROPERTY( bool showingDotFiles READ showingDotFiles WRITE setShowingDotFiles )
   Q_PROPERTY( bool dirOnlyMode READ dirOnlyMode WRITE setDirOnlyMode )
+  Q_PROPERTY( bool autoErrorHandlingEnabled READ autoErrorHandlingEnabled WRITE setAutoErrorHandlingEnabled )
   Q_PROPERTY( QString nameFilter READ nameFilter WRITE setNameFilter )
   Q_PROPERTY( QStringList mimeFilter READ mimeFilters WRITE setMimeFilter RESET clearMimeFilter )
 public:
@@ -320,13 +321,13 @@ signals:
 
   /**
    * Signal to clear all items.
-   * It must always be connected!
+   * It must always be connected to this signal to avoid doubled items!
    */
   void clear();
 
   /**
-   * Signal to clear all the items with parent _url.
-   * It should always be conntected!
+   * Signal to empty the directory _url.
+   * It is only emitted if the lister is holding more than one directory.
    */
   void clear( const KURL& _url );
 
