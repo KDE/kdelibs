@@ -84,8 +84,7 @@ bool HTMLAnchorElementImpl::prepareMouseEvent( int _x, int _y,
 
 void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
 {
-    if ( ( evt->id() == EventImpl::KHTML_CLICK_EVENT ||
-           evt->id() == EventImpl::DOMACTIVATE_EVENT ||
+    if ( ( evt->id() == EventImpl::DOMACTIVATE_EVENT ||
          ( evt->id() == EventImpl::KHTML_KEYUP_EVENT && m_focused)) && href ) {
 
         MouseEventImpl *e = 0;
