@@ -299,7 +299,7 @@ Following the command, you can have several place holders which will be replaced
                 <cstring>advancedButton</cstring>
             </property>
             <property name="text">
-                <string>Ad&amp;vanced Options...</string>
+                <string>Ad&amp;vanced Options</string>
             </property>
             <property name="whatsThis" stdset="0">
                 <string>Click here to modify the way this application will run, launch feedback, DCOP options or to run it as a different user.</string>

@@ -116,7 +116,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 						" Printer Wizard</em> which is available for the CUPS and RLPR printing"
 						" systems (click button to the left of the 'Properties' button),</li>"
 						" <li>...or you can try to connect to a remote"
-						" CUPS print server by clicking the <em>System Options...</em> button"
+						" CUPS print server by clicking the <em>System Options</em> button"
 						" below. A new dialog opens: click on the <em>CUPS server</em>"
 						" icon and fill in the information required to use the remote"
 						" server.</li>"
@@ -130,7 +130,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 						" <p>This is particularly useful in enterprise environments"
 						" with lots of printers. The default is to show <b>all</b> printers.</p>"
 						" <p>To create a personal filter list, click on the"
-						" <em>\"System Options...</em>\" button at the bottom of this dialog."
+						" <em>\"System Options</em>\" button at the bottom of this dialog."
 						" Then, in the new dialog, select <em>\"Filter\"</em> (left column in the"
 						" <em>KDE Print Configuration</em> dialog).</p>"
 						" </qt>" );
@@ -238,7 +238,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 					        " </qt>" );
 
 	QString whatsThisSetDefaultPrinter = i18n(" <qt> This button sets the current printer as the user's"
-						" default. (Button is only visible if the <em>System Options...</em>"
+						" default. (Button is only visible if the <em>System Options</em>"
 						" --> <em>General</em> --> <em>Miscellaneous</em>: <em>\"Defaults"
 						" to the last printer used in the application\"</em> is disabled.)"
 					        " </qt>" );
@@ -276,7 +276,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	m_printerlabel->setBuddy(d->m_printers);
 	d->m_properties = new KPushButton(KGuiItem(i18n("P&roperties"), "edit"), m_pbox);
 	QWhatsThis::add( d->m_properties, whatsThisPrintJobProperties);
-	d->m_options = new KPushButton(KGuiItem(i18n("System Op&tions..."), "kdeprint_configmgr"), this);
+	d->m_options = new KPushButton(KGuiItem(i18n("System Op&tions"), "kdeprint_configmgr"), this);
 	QWhatsThis::add(d->m_options,whatsThisSystemOptions);
 	d->m_default = new KPushButton(KGuiItem(i18n("Set as &Default"), "kdeprint_defaultsoft"), m_pbox);
 	QWhatsThis::add(d->m_default,whatsThisSetDefaultPrinter);

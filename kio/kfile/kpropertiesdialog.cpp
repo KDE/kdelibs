@@ -1563,7 +1563,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
     QLayoutItem *spacer = new QSpacerItem(0, 20, QSizePolicy::Minimum, QSizePolicy::Expanding);
     gl->addMultiCell(spacer, 5, 5, 0, 1);
 
-    pbAdvancedPerm = new QPushButton(i18n("A&dvanced Permissions..."), gb);
+    pbAdvancedPerm = new QPushButton(i18n("A&dvanced Permissions"), gb);
     gl->addMultiCellWidget(pbAdvancedPerm, 6, 6, 0, 1, AlignRight);
     connect(pbAdvancedPerm, SIGNAL( clicked() ), this, SLOT( slotShowAdvancedPermissions() ));
   }
@@ -2753,7 +2753,7 @@ void KDevicePropsPlugin::updateInfo()
                                            const unsigned long&, const QString& ) ),
              this, SLOT( slotFoundMountPoint( const unsigned long&, const unsigned long&,
                                               const unsigned long&, const QString& ) ) );
-        
+
     job->readDF( mountpoint->text() );
   }
 }
