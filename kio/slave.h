@@ -47,6 +47,8 @@ namespace KIO {
 	Slave(KServerSocket *unixdomain,
 	      const QString &protocol, const QString &socketname);
 
+        virtual ~Slave();
+
 	void setPID(pid_t);
 
         int slave_pid() { return m_pid; }

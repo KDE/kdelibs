@@ -122,10 +122,12 @@ void Scheduler::_cancelJob(SimpleJob *job) {
     kdDebug(7006) << "Scheduler: canceling job " << job << endl;
     if ( job->slave() ) // was running
     {
-        ProtocolInfo *protInfo = protInfoDict->get(job->slave()->protocol());
-        kdDebug(7006) << "Scheduler: killing slave " << job->slave()->slave_pid() << endl;
-        job->slave()->kill();
-        _jobFinished( job, job->slave() );
+	Slave *slave = job->slave();
+        ProtocolInfo *protInfo = protInfoDict->get(slave->protocol());
+        kdDebug(7006) << "Scheduler: killing slave " << slave->slave_pid() << endl;
+        slave->kill();
+        _jobFinished( job, slave );
+	slotSlaveDied( slave);
     } else { // was not yet running (don't call this on a finished job!)
         joblist.remove(job);
     }

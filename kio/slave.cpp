@@ -79,6 +79,12 @@ Slave::Slave(KServerSocket *socket, const QString &protocol, const QString &sock
 	    SLOT(accept(KSocket*) ) );
 }
 
+Slave::~Slave()
+{
+    kdDebug() << "destructing slave object pid = " << m_pid << endl;
+    m_pid = 99999;
+}
+
 void Slave::setIdle()
 {
     idle_since = time(0);
@@ -98,14 +104,18 @@ void Slave::gotInput()
 {
     if (!dispatch())
     {
+        slaveconn.close();
         dead = true;
         QString arg = m_protocol;
         if (!m_host.isEmpty())
             arg += "://"+m_host;
+        kdDebug() << "slave died (1) pid = " << m_pid << endl;
         // Tell the job about the problem.
         emit error(ERR_SLAVE_DIED, arg);
+        kdDebug() << "slave died (2) pid = " << m_pid << endl;
         // Tell the scheduler about the problem.
         emit slaveDied(this);
+        kdDebug() << "slave died (3) pid = " << m_pid << endl;
     }
 }
 
