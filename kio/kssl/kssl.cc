@@ -230,10 +230,8 @@ void KSSL::close() {
 	if (!m_bInit)
 		return;
 
-	if (d->session) {
-		delete d->session;
-		d->session = 0L;
-	}
+	delete d->session;
+	d->session = 0L;
 
 	if (d->m_ssl) {
 		d->kossl->SSL_shutdown(d->m_ssl);
