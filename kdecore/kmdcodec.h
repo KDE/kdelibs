@@ -208,42 +208,54 @@ public:
 
 
   /**
-   * @deprecated.  Use @ref QCString base64Encode(const QCString&) instead!
+   * Encodes the QString data using the base64 algorithm.
    *
-   * <u>IMPORTANT:</u> This function has depricated and will be
-   * removed in future release.  This is done to avoid loss of data
-   * from misuse of the function since it first converts the given
-   * data into Latin-1.  Additionally this conversion is very slow!
+   * <u>IMPORTANT:</u> This function is ONLY provided for convenience
+   * and backward compatability!  Using it can result in an incorrectly
+   * encoded data since the conversion of the QString input to latin-1
+   * can and will result in data loss if the input data contains non-
+   * latin1 characters.  As such it is highly recommended that you avoid
+   * this function unless you are absolutely certain that your input
+   * does not contain any non-latin1 character!!
    */
   static QString base64Encode( const QString& str );
 
   /**
-   * @deprecated.  Use @ref QCString base64Decode(const QCString&) instead!
+   * Decodes the encoded QString data using the base64 algorithm.
    *
-   * <u>IMPORTANT:</u> This function has depricated and will be
-   * removed in future release.  This is done to avoid loss of data
-   * from misuse of the function since it first converts the given
-   * data into Latin-1.  Additionally this conversion is very slow!
+   * <u>IMPORTANT:</u> This function is ONLY provided for convenience
+   * and backward compatability!  Using it can result in an incorrectly
+   * decoded data since the conversion of the QString input to latin-1
+   * can and will result in data loss if the input data contains non-
+   * latin1 characters.  As such it is highly recommended that you avoid
+   * this function unless you are absolutely certain that your input
+   * does not contain any non-latin1 character!!
    */
   static QString base64Decode( const QString& str );
 
   /**
-   * @deprecated.  Use @ref QCString uuencode(const QCString&) instead!
+   * Encodes the QString data using the uuencode algorithm.
    *
-   * <u>IMPORTANT:</u> This function has depricated and will be
-   * removed in future release.  This is done to avoid loss of data
-   * from misuse of the function since it first converts the given
-   * data into Latin-1.  Additionally this conversion is very slow!
+   * <u>IMPORTANT:</u> This function is ONLY provided for convenience
+   * and backward compatability!  Using it can result in an incorrectly
+   * encoded data since the conversion of the QString input to latin-1
+   * can and will result in data loss if the input data contains non-
+   * latin1 characters.  As such it is highly recommended that you avoid
+   * this function unless you are absolutely certain that your input
+   * does not contain any non-latin1 character!!
    */
   static QString uuencode( const QString& str );
 
   /**
-   * @deprecated.  Use @ref QCString uudecode(const QCString&) instead!
+   * Decodes the QString data using the uuencode algorithm.
    *
-   * <u>IMPORTANT:</u> This function has depricated and will be
-   * removed in future release.  This is done to avoid loss of data
-   * from misuse of the function since it first converts the given
-   * data into Latin-1.  Additionally this conversion is very slow!
+   * <u>IMPORTANT:</u> This function is ONLY provided for convenience
+   * and backward compatability!  Using it can result in an incorrectly
+   * decoded data since the conversion of the QString input to latin-1
+   * can and will result in data loss if the input data contains non-
+   * latin1 characters.  As such it is highly recommended that you avoid
+   * this function unless you are absolutely certain that your input
+   * does not contain any non-latin1 character!!
    */
   static QString uudecode( const QString& str );
 
@@ -442,12 +454,15 @@ public:
   void update ( const QCString& in );
 
   /**
-   * @deprecated.  Use @ref update( const QCString& ) instead!
+   * Same as above except it accepts a QString as its argument.
    *
-   * <u>IMPORTANT:</u> This function has depricated and will be
-   * removed in future release.  This is done to avoid loss of data
-   * from misuse of the function since it first converts the given
-   * data into Latin-1.  Additionally this conversion is very slow!
+   * <u>IMPORTANT:</u> This function is ONLY provided for convenience
+   * and backward compatability!  Using it can result in an incorrect
+   * digest caclculation since the conversion of the QString input to
+   * latin-1 can and will result in data loss if the input data contains
+   * non-latin1 characters.  As such it is highly recommended that you
+   * avoid this function unless you are absolutely certain that your
+   * input does not contain any non-latin1 character!!
    */
   void update ( const QString& in );
 
@@ -463,7 +478,7 @@ public:
    * Compares the message digest supplied messaged digest @p msg_digest
    * with the one calculated for the input QCString @p input.
    *
-   * NOTE: Calling this function will reset any previously calcualted
+   * <u>NOTE:</u> Calling this function will reset any previously calcualted
    * digests.  If you want to verify your token with the current digest
    * value, use @ref verify( const char*, DigestType ) instead.
    *
@@ -477,36 +492,44 @@ public:
                DigestType type = HEX );
 
   /**
-   * @deprecated. Use the above function instead!
+   * Same as above except it takes a QString argument as its input.
    *
-   * <u>IMPORTANT:</u> This function has depricated and will be
-   * removed in future release.  This is done to avoid loss of data
-   * from misuse of the function since it first converts the given
-   * data into Latin-1.  Additionally this conversion is very slow!
+   * <u>IMPORTANT:</u> This function is ONLY provided for convenience
+   * and backward compatability!  Using it can result in an incorrect
+   * verification since the conversion of the QString input to latin-1
+   * can and will result in data loss if the input data contains non-
+   * latin1 characters.  As such it is highly recommended that you
+   * avoid this function unless you are absolutely certain that your
+   * input does not contain any non-latin1 character!!
    */
   bool verify( const QString& in, const char * msg_digest,
                DigestType type = HEX );
 
   /**
-   * Same as above except the input is a pointer for a FILE instead.
+   * Same as above except it takes a pointer to a FILE as its input.
    *
-   * NOTE: Calling this function will reset any previously calcualted
-   * digests.  If you want to verify your token with the current digest
-   * value, use @ref verify( const char*, DigestType ) instead.
+   * <u>NOTE:</u> Calling this function will reset any previously
+   * calcualted digests.  If you want to verify your token with the
+   * current digest value, use @ref verify(const char*, DigestType)
+   * instead.
    */
   bool verify( FILE* f, const char * msg_digest, DigestType type = HEX );
 
   /**
    * Compares the given string with with the current message digest.
    *
-   * Unlike the other verify functions this one does not reset the current
-   * message digest if one is already present.  It is meant to allow you to
-   * compare against the existing message digest.  Note that this function
-   * will also return false if a digest has yet to be calculated.  Use the
-   * error functions to determine which is the case.
+   * Unlike the other verification functions this one does not reset
+   * the calculated message digest if one is already present.  Rather
+   * it simply compares the given digest value against the calculated
+   * one.
+   *
+   * <u>NOTE:</u> This function will return false if there was an error
+   * calculating the message digest as well as when the verification
+   * fails. You can use @ref hasErrored() to determine which is the case.
    *
    * @param msg_digest  the digest to compare the result against
-   * @param type        the format of the result for comparison (binary or hexidecimal).
+   * @param type        the format of the result for comparison (binary
+   *                    or hexidecimal).
    *
    * @return true if the digests match, otherwise false.
    */
@@ -523,9 +546,14 @@ public:
   void reset();
 
   /**
-   * Returns the raw 16-byte binary value of the message digest.
+   * Returns the raw 16-byte binary value of the message
+   * digest.
    *
-   * NOTE: you are responsible for making a copy of this string.
+   * NOTE: you are responsible for making a copy of this
+   * string.
+   *
+   * @return the hex represenation of the digest or NULL
+   *         if there was error calculating the digest.
    */
   Q_UINT8* rawDigest ();
 
@@ -537,16 +565,22 @@ public:
    * copy of the digest once you obtain it.
    *
    * @param bin an array of 16 characters ( char[16] )
-   * @return true if the raw digest is ready, otherwise false.
    */
   void rawDigest( HASH bin );
 
   /**
-   * Returns a the value of the calculated message digest.
-   * This is a 32 byte hexidecimal value terminated by a NULL
-   * character.
+   * Returns the value of the calculated message digest in
+   * a hexcidecimal representation.
    *
-   * NOTE: you are responsible for making a copy of this string.
+   * The 32-byte hexidecimal value is terminated by a NULL
+   * character to form a properly terminated string.  Also
+   * note that that if
+   *
+   * <u>NOTE:</u> You are responsible for making a copy of
+   * this string!
+   *
+   * @return the hex represenation of the digest or NULL if
+   *         there was error calculating the digest.
    */
   char * hexDigest ();
 
@@ -555,26 +589,26 @@ public:
    * the message digest.
    *
    * Use this method if you do not want to worry about making
-   * copy of the digest once you obtain it. Also note that this
-   * method will append a terminating NULL charater to form a
-   * properly terminated string.
+   * copy of the digest once you obtain it.  Also note that this
+   * method appends a NULL charater to the end of the array to
+   * form a properly terminated string.
    *
    * @param bin an array of 33 characters ( char[33] )
-   * @return true if the digest is ready, otherwise false.
    */
   void hexDigest( HASHHEX hex );
 
   /**
-   * Indicates whether the message digest calculation failed
-   * or succeeded.  Use @ref error() to determine the error type.
+   * Indicates whether the message digest calculation failed or
+   * succeeded.  Use @ref error() to determine the error type.
    *
-   * @return true if
+   * @return false if errors are present, otherwise true
    */
   bool hasErrored() const { return (m_error != ERR_NONE); }
 
   /**
    * Returns the type of error that occurred.
-   * See @ref ErrorType for descriptions.
+   *
+   * @return the error type. See @ref ErrorType for details.
    */
   int error() const { return m_error; }
 

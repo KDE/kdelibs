@@ -487,14 +487,17 @@ KMD5::KMD5(FILE *f)
     finalize ();
 }
 
-void KMD5::update ( const QString& in )
+void KMD5::update ( const QString& str )
 {
-    update( QCString( in.latin1() ) );
+    QByteArray in;
+    in.setRawData( str.latin1(), str.length() );
+    update( in );
+    in.resetRawData( str.latin1(), str.length() );
 }
 
 void KMD5::update ( const QCString& in )
 {
-    update( reinterpret_cast<Q_UINT8*>(in.data()), in.length() );
+    update( reinterpret_cast<Q_UINT8*>(in.data()) );
 }
 
 void KMD5::update( const QByteArray& in )
@@ -609,7 +612,7 @@ void KMD5::reset()
 
 bool KMD5::verify( const char * msg_digest, DigestType type )
 {
-    if ( !m_finalized || !m_digest || m_error!=ERR_NONE )
+    if ( !m_finalized || !m_digest || m_error!= ERR_NONE )
       return false;
     return isDigestMatch( msg_digest,  type );
 }
@@ -634,13 +637,16 @@ bool KMD5::verify( const QCString& in, const char * msg_digest,
 bool KMD5::verify( const QString& in, const char * msg_digest,
                    DigestType type )
 {
-  return verify( QCString(in.latin1()), msg_digest, type );
+    init();
+    update( in );
+    finalize();
+    return isDigestMatch( msg_digest,  type );
 }
 
 Q_UINT8* KMD5::rawDigest()
 {
     Q_UINT8* s = new Q_UINT8[16];
-    rawDigest( (char*)s );
+    rawDigest( reinterpret_cast<char*>(s) );
     if ( m_error == ERR_NONE )
         return s;
     else
