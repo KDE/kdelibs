@@ -442,7 +442,6 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
           kdDebug(7113) << "(" << m_pid << ") Unset tunneling flag!" << endl;
           setEnableSSLTunnel( false );
           m_bIsTunneled = true;
-          m_bNeedTunnel = false;
           // Reset the CONNECT response code...
           m_responseCode = m_prevResponseCode;
           continue;
@@ -1941,115 +1940,6 @@ bool HTTPProtocol::httpOpen()
   // Check the validity of the current connection, if one exists.
   httpCheckConnection();
 
-  // Determine if this is a POST or GET method
-  switch (m_request.method)
-  {
-  case HTTP_GET:
-      header = "GET ";
-      break;
-  case HTTP_PUT:
-      header = "PUT ";
-      moreData = !m_bNeedTunnel;
-      m_request.bCachedWrite = false; // Do not put any result in the cache
-      break;
-  case HTTP_POST:
-      header = "POST ";
-      moreData = !m_bNeedTunnel;
-      m_request.bCachedWrite = false; // Do not put any result in the cache
-      break;
-  case HTTP_HEAD:
-      header = "HEAD ";
-      break;
-  case HTTP_DELETE:
-      header = "DELETE ";
-      m_request.bCachedWrite = false; // Do not put any result in the cache
-      break;
-  case HTTP_OPTIONS:
-      header = "OPTIONS ";
-      m_request.bCachedWrite = false; // Do not put any result in the cache
-      break;
-  case DAV_PROPFIND:
-      header = "PROPFIND ";
-      davData = true;
-      davHeader = "Depth: ";
-      if ( hasMetaData( "davDepth" ) ) 
-      {
-        kdDebug(7113) << "Reading DAV depth from metadata: " << metaData( "davDepth" ) << endl;
-        davHeader += metaData( "davDepth" );
-      } 
-      else
-      {
-        if ( m_request.davData.depth == 2 )
-          davHeader += "infinity";
-        else
-          davHeader += QString("%1").arg( m_request.davData.depth );
-      }
-      davHeader += "\r\n";
-      m_request.bCachedWrite = false; // Do not put any result in the cache
-      break;
-  case DAV_PROPPATCH:
-      header = "PROPPATCH ";
-      davData = true;
-      m_request.bCachedWrite = false; // Do not put any result in the cache
-      break;
-  case DAV_MKCOL:
-      header = "MKCOL ";
-      m_request.bCachedWrite = false; // Do not put any result in the cache
-      break;
-  case DAV_COPY:
-  case DAV_MOVE:
-      header = ( m_request.method == DAV_COPY ) ? "COPY " : "MOVE ";
-      davHeader = "Destination: " + m_request.davData.desturl;
-      // infinity depth means copy recursively
-      // (optional for copy -> but is the desired action)
-      davHeader += "\r\nDepth: infinity\r\nOverwrite: ";
-      davHeader += m_request.davData.overwrite ? "T" : "F";
-      davHeader += "\r\n";
-      m_request.bCachedWrite = false; // Do not put any result in the cache
-      break;
-  case DAV_LOCK:
-      header = "LOCK ";
-      davHeader = "Timeout: ";
-      {
-        uint timeout = 0;
-        if ( hasMetaData( "davTimeout" ) )
-          timeout = metaData( "davTimeout" ).toUInt();
-        if ( timeout == 0 )
-          davHeader += "Infinite";
-        else
-          davHeader += "Seconds-" + timeout;
-      }
-      davHeader += "\r\n";
-      m_request.bCachedWrite = false; // Do not put any result in the cache
-      davData = true;
-      break;
-  case DAV_UNLOCK:
-      header = "UNLOCK ";
-      davHeader = "Lock-token: " + metaData("davLockToken") + "\r\n";
-      m_request.bCachedWrite = false; // Do not put any result in the cache
-      break;
-  case DAV_SEARCH:
-      header = "SEARCH ";
-      davData = true;
-      m_request.bCachedWrite = false;
-      break;
-  case DAV_SUBSCRIBE:
-      header = "SUBSCRIBE ";
-      m_request.bCachedWrite = false;
-      break;
-  case DAV_UNSUBSCRIBE:
-      header = "UNSUBSCRIBE ";
-      m_request.bCachedWrite = false;
-      break;
-  case DAV_POLL:
-      header = "POLL ";
-      m_request.bCachedWrite = false;
-      break;
-  default:
-      error (ERR_UNSUPPORTED_ACTION, QString::null);
-      return false;
-  }
-  // DAV_POLL; DAV_NOTIFY
 
   if ( !m_bIsTunneled && m_bNeedTunnel )
   {
@@ -2085,6 +1975,116 @@ bool HTTPProtocol::httpOpen()
   }
   else
   {
+    // Determine if this is a POST or GET method
+    switch (m_request.method)
+    {
+    case HTTP_GET:
+        header = "GET ";
+        break;
+    case HTTP_PUT:
+        header = "PUT ";
+        moreData = true;
+        m_request.bCachedWrite = false; // Do not put any result in the cache
+        break;
+    case HTTP_POST:
+        header = "POST ";
+        moreData = true;
+        m_request.bCachedWrite = false; // Do not put any result in the cache
+        break;
+    case HTTP_HEAD:
+        header = "HEAD ";
+        break;
+    case HTTP_DELETE:
+        header = "DELETE ";
+        m_request.bCachedWrite = false; // Do not put any result in the cache
+        break;
+    case HTTP_OPTIONS:
+        header = "OPTIONS ";
+        m_request.bCachedWrite = false; // Do not put any result in the cache
+        break;
+    case DAV_PROPFIND:
+        header = "PROPFIND ";
+        davData = true;
+        davHeader = "Depth: ";
+        if ( hasMetaData( "davDepth" ) ) 
+        {
+          kdDebug(7113) << "Reading DAV depth from metadata: " << metaData( "davDepth" ) << endl;
+          davHeader += metaData( "davDepth" );
+        } 
+        else
+        {
+          if ( m_request.davData.depth == 2 )
+            davHeader += "infinity";
+          else
+            davHeader += QString("%1").arg( m_request.davData.depth );
+        }
+        davHeader += "\r\n";
+        m_request.bCachedWrite = false; // Do not put any result in the cache
+        break;
+    case DAV_PROPPATCH:
+        header = "PROPPATCH ";
+        davData = true;
+        m_request.bCachedWrite = false; // Do not put any result in the cache
+        break;
+    case DAV_MKCOL:
+        header = "MKCOL ";
+        m_request.bCachedWrite = false; // Do not put any result in the cache
+        break;
+    case DAV_COPY:
+    case DAV_MOVE:
+        header = ( m_request.method == DAV_COPY ) ? "COPY " : "MOVE ";
+        davHeader = "Destination: " + m_request.davData.desturl;
+        // infinity depth means copy recursively
+        // (optional for copy -> but is the desired action)
+        davHeader += "\r\nDepth: infinity\r\nOverwrite: ";
+        davHeader += m_request.davData.overwrite ? "T" : "F";
+        davHeader += "\r\n";
+        m_request.bCachedWrite = false; // Do not put any result in the cache
+        break;
+    case DAV_LOCK:
+        header = "LOCK ";
+        davHeader = "Timeout: ";
+        {
+          uint timeout = 0;
+          if ( hasMetaData( "davTimeout" ) )
+            timeout = metaData( "davTimeout" ).toUInt();
+          if ( timeout == 0 )
+            davHeader += "Infinite";
+          else
+            davHeader += "Seconds-" + timeout;
+        }
+        davHeader += "\r\n";
+        m_request.bCachedWrite = false; // Do not put any result in the cache
+        davData = true;
+        break;
+    case DAV_UNLOCK:
+        header = "UNLOCK ";
+        davHeader = "Lock-token: " + metaData("davLockToken") + "\r\n";
+        m_request.bCachedWrite = false; // Do not put any result in the cache
+        break;
+    case DAV_SEARCH:
+        header = "SEARCH ";
+        davData = true;
+        m_request.bCachedWrite = false;
+        break;
+    case DAV_SUBSCRIBE:
+        header = "SUBSCRIBE ";
+        m_request.bCachedWrite = false;
+        break;
+    case DAV_UNSUBSCRIBE:
+        header = "UNSUBSCRIBE ";
+        m_request.bCachedWrite = false;
+        break;
+    case DAV_POLL:
+        header = "POLL ";
+        m_request.bCachedWrite = false;
+        break;
+    default:
+        error (ERR_UNSUPPORTED_ACTION, QString::null);
+        return false;
+    }
+    // DAV_POLL; DAV_NOTIFY
+
     // format the URI
     if (m_state.doProxy && !m_bIsTunneled)
     {
@@ -2287,24 +2287,24 @@ bool HTTPProtocol::httpOpen()
     // Do we need to authorize to the proxy server ?
     if ( m_state.doProxy && !m_bIsTunneled )
       header += proxyAuthenticationHeader();
-  }
 
-  if ( m_protocol == "webdav" || m_protocol == "webdavs" )
-  {
-    header += davProcessLocks();
+    if ( m_protocol == "webdav" || m_protocol == "webdavs" )
+    {
+      header += davProcessLocks();
 
-    // add extra webdav headers, if supplied
-    QString davExtraHeader = metaData("davHeader");
-    if ( !davExtraHeader.isEmpty() )
-      davHeader += davExtraHeader;
+      // add extra webdav headers, if supplied
+      QString davExtraHeader = metaData("davHeader");
+      if ( !davExtraHeader.isEmpty() )
+        davHeader += davExtraHeader;
 
-    // Set content type of webdav data
-    if (davData)
-      davHeader += "Content-Type: text/xml; charset=utf-8\r\n";
+      // Set content type of webdav data
+      if (davData)
+        davHeader += "Content-Type: text/xml; charset=utf-8\r\n";
 
-    // add extra header elements for WebDAV
-    if ( !davHeader.isNull() )
-      header += davHeader;
+      // add extra header elements for WebDAV
+      if ( !davHeader.isNull() )
+        header += davHeader;
+    }
   }
 
   kdDebug(7103) << "(" << m_pid << ") ============ Sending Header:" << endl;
