@@ -730,10 +730,19 @@ int TextEventImpl::keyCode() const
     if (!m_keyEvent)
         return 0;
 
-    if (m_virtKeyVal != DOM_VK_UNDEFINED)
+    if (m_virtKeyVal != DOM_VK_UNDEFINED) {
         return m_virtKeyVal;
-    else
-        return QChar( charCode() ).upper().unicode();
+    } else {
+        int c = charCode();
+        if (c != 0) {
+            return QChar(charCode()).upper().unicode();
+        } else {
+            c = m_keyEvent->key();
+            if (c == Qt::Key_unknown)
+                kdDebug( 6020 ) << "Unknown key" << endl;
+            return c;
+        }
+    }
 }
 
 int TextEventImpl::charCode() const

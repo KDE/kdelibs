@@ -1,3 +1,9 @@
+2005-02-28  Harri Porten  <porten@kde.org>
+
+        * xml/dom2_eventsimpl.cpp: always return a non-zero keyCode()
+        value even if it is Qt::Key_unknown as it is the case with the
+        AltGr key for example.
+
 2005-02-28  David Faure  <faure@kde.org>
 
         * html/html_formimpl.cpp (setName): Also set ATTR_NAME so that
