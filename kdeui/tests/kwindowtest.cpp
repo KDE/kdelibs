@@ -215,8 +215,8 @@ testWindow::testWindow (QWidget *parent, const char *name)
     // Setup is now complete
 
     // add two toolbars
-    addToolBar (tb1);
-    addToolBar (tb);
+    //addToolBar (tb1);
+    //addToolBar (tb);
 
     connect (tb, SIGNAL(highlighted(int,bool)), this, SLOT(slotMessage(int, bool)));
     connect (tb1, SIGNAL(highlighted(int, bool)), this, SLOT(slotMessage(int, bool)));
