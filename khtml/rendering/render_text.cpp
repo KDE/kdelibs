@@ -62,11 +62,6 @@ void TextSlave::print( QPainter *p, int _tx, int _ty)
     QConstString s(m_text, m_len);
     //kdDebug( 6040 ) << "textSlave::printing(" << s.string() << ") at(" << x+_tx << "/" << y+_ty << ")" << endl;
     p->drawText(m_x + _tx, m_y + _ty + m_baseline, s.string());
-
-    p->setBrush( Qt::NoBrush );
-    p->setPen( Qt::black );
-    p->drawRect(m_x + _tx, m_y + _ty /*+ m_baseline*/, m_width, QFontMetrics( p->font() ).height() );
-
 }
 
 void TextSlave::printSelection(QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos)
@@ -292,7 +287,6 @@ void RenderText::setStyle(RenderStyle *_style)
         fm = new QFontMetrics( style()->font() );
     }
     m_lineHeight = style()->lineHeight().width(metrics( false ).height());
-    m_lineHeight =  style()->lineHeight().width( QFontInfo( style()->font() ).pixelSize() );
 
     if(m_lineHeight<=0)
         m_lineHeight = metrics( false ).height();
@@ -547,7 +541,11 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
         int minx =  1000000;
         int maxx = -1000000;
         int outlinebox_y = m_lines[si]->m_y;
+#if QT_VERSION < 300
 	QList <QRect> linerects;
+#else
+	QPtrList <QRect> linerects;
+#endif
         linerects.setAutoDelete(true);
         linerects.append(new QRect());
 
@@ -711,7 +709,6 @@ void RenderText::calcMinMaxWidth()
     if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
     if(currMaxWidth > m_maxWidth) m_maxWidth = currMaxWidth;
 
-    qDebug( "RenderText::calcMinMaxWidth(): min: %d   max: %d", m_minWidth, m_maxWidth );
     setMinMaxKnown();
 }
 
@@ -767,7 +764,7 @@ void RenderText::setText(DOMStringImpl *text)
         cb->setLayouted(false);
         cb->layout();
     }
-#ifdef BIDI_DEBUG
+#ifdef DEBUG_LAYOUT
     QConstString cstr(str->s, str->l);
     kdDebug( 6040 ) << "RenderText::setText( " << cstr.string().length() << " ) '" << cstr.string() << "'" << endl;
 #endif
@@ -788,27 +785,15 @@ int RenderText::height() const
 
 int RenderText::lineHeight( bool firstLine ) const
 {
-    //qDebug( "RenderObject::lineHeight(%d): %d", firstLine, RenderObject::lineHeight( firstLine ) );
-    qDebug( "m_lineHeight: %d", m_lineHeight );
-
-//     if ( firstLine )
-// 	return RenderObject::lineHeight( firstLine );
+    if ( firstLine )
+	return RenderObject::lineHeight( firstLine );
     return m_lineHeight;
 }
 
 // #### fix for printpainter and :first-line needed
 short RenderText::baselinePosition( bool firstLine ) const
 {
-    short bp = metrics( firstLine ).ascent();
-    int fontheight = QFontMetrics( style()->font() ).height();
-    int fontsize = QFontInfo( style()->font() ).pixelSize();
-    int halfleading;
-    halfleading = fontheight - fontsize;
-
-//     if ( m_lineHeight > QFontInfo( style()->font() ).pixelSize() )
-//         bp += ( m_lineHeight - QFontInfo( style()->font() ).pixelSize() ) / 2;
-
-    return bp + halfleading;
+    return metrics( firstLine ).ascent();
 }
 
 void RenderText::position(int x, int y, int from, int len, int width, bool reverse, bool firstLine)
@@ -968,7 +953,6 @@ QFontMetrics RenderText::metrics(bool firstLine) const
 void RenderText::printTextOutline(QPainter *p, int tx, int ty, const QRect &lastline, const QRect &thisline, const QRect &nextline)
 {
   int ow = style()->outlineWidth();
-  qDebug( "RenderText::printTextOutline: ow: %d", ow );
   EBorderStyle os = style()->outlineStyle();
   QColor oc = style()->outlineColor();
 
@@ -1048,4 +1032,3 @@ void RenderText::printTextOutline(QPainter *p, int tx, int ty, const QRect &last
 }
 
 #undef BIDI_DEBUG
-#undef DEBUG_LAYOUT
