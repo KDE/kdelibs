@@ -161,13 +161,21 @@ KToolBarSeparator::KToolBarSeparator(Orientation o , bool l, QToolBar *parent,
 void KToolBarSeparator::setOrientation( Orientation o )
 {
     orient = o;
+    setFrameStyle( NoFrame );
+}
+
+void KToolBarSeparator::drawContents( QPainter* p )
+{
     if ( line ) {
-        if ( orientation() == Vertical )
-            setFrameStyle( HLine + Sunken );
-        else
-            setFrameStyle( VLine + Sunken );
+        QStyle::SFlags flags = QStyle::Style_Default;        
+        
+        if ( orientation() == Horizontal )
+            flags = flags | QStyle::Style_Horizontal;
+            
+        style().drawPrimitive(QStyle::PE_DockWindowSeparator, p, 
+                              contentsRect(), colorGroup(), flags);
     } else {
-            setFrameStyle( NoFrame );
+        QFrame::drawContents(p);
     }
 }
 

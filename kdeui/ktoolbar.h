@@ -68,6 +68,7 @@ public slots:
    void setOrientation( Orientation );
 protected:
     void styleChange( QStyle& );
+    void drawContents( QPainter* );
 private:
     Orientation orient;
     bool line;
