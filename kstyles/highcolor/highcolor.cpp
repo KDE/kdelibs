@@ -1150,7 +1150,14 @@ void HighColorStyle::drawControl( ControlElement element,
 					state = QIconSet::On;
 
 				QPixmap pixmap = button->iconSet()->pixmap( QIconSet::Small, mode, state );
-				p->drawPixmap( x + 4, y + h / 2 - pixmap.height() / 2, pixmap );
+
+				// Center the iconset if there's no text or pixmap
+				if (button->text().isEmpty() && !button->pixmap())
+					p->drawPixmap( x + (w - pixmap.width())  / 2, 
+								   y + (h - pixmap.height()) / 2, pixmap );
+				else
+					p->drawPixmap( x + 4, y + (h - pixmap.height()) / 2, pixmap );
+
 				int  pw = pixmap.width();
 				x += pw + 4;
 				w -= pw + 4;
@@ -1167,14 +1174,14 @@ void HighColorStyle::drawControl( ControlElement element,
 				if (button->isEnabled()) // Don't draw double-shadow when disabled
 					for(i=0; i<2; i++)
 						drawItem( p, QRect(x+i+1, y+1, w, h), AlignCenter | ShowPrefix, 
-								button->colorGroup(), button->isEnabled(), button->pixmap(),
+								button->colorGroup(), button->isEnabled(), NULL,
 								button->text(), -1,	
 								active ? &button->colorGroup().dark() : &button->colorGroup().mid() );
 
 				// Normal Text
 				for(i=0; i<2; i++)
 					drawItem( p, QRect(x+i, y, w, h), AlignCenter | ShowPrefix, 
-							button->colorGroup(), button->isEnabled(), button->pixmap(),
+							button->colorGroup(), button->isEnabled(), i == 0 ? button->pixmap() : NULL,
 							button->text(), -1,
 							active ? &button->colorGroup().light() : &button->colorGroup().buttonText() );
 			} else
