@@ -28,7 +28,9 @@
 #include "internal.h"
 //#include "debugger.h"
 #ifndef NDEBUG
+#ifndef __osf__
 #include <list>
+#endif
 #endif
 
 namespace KJS {

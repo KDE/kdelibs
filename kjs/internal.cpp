@@ -24,6 +24,9 @@
 #include <stdio.h>
 #include <math.h>
 #include <assert.h>
+#ifndef NDEBUG
+#include <strings.h>      // for strdup
+#endif
 
 #include "array_object.h"
 #include "bool_object.h"
