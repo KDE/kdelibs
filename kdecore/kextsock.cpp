@@ -749,6 +749,10 @@ int KExtendedSocket::lookup()
     }
 
   d->status = lookupDone;
+  if (d->resRemote.error() != KResolver::NoError)
+    return d->resRemote.error();
+  if (d->resLocal.error() != KResolver::NoError)
+    return d->resLocal.error();
   return 0;
 }
 
@@ -1795,6 +1799,7 @@ void KExtendedSocket::connectionEvent()
 
 	  sockfd = -1;
 	  d->qsnIn = d->qsnOut = NULL;
+	  d->current++;
 	  setError(IO_ConnectError, errcode);
 	}
       else
