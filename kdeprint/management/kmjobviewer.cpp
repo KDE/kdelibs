@@ -261,7 +261,7 @@ void KMJobViewer::initActions()
 	// job actions
 	KAction	*hact = new KAction(i18n("&Hold"),"stop",0,this,SLOT(slotHold()),actionCollection(),"job_hold");
 	KAction	*ract = new KAction(i18n("&Resume"),"run",0,this,SLOT(slotResume()),actionCollection(),"job_resume");
-	KAction	*dact = new KAction(i18n("R&emove"),"edittrash",Qt::Key_Delete,this,SLOT(slotRemove()),actionCollection(),"job_remove");
+	KAction	*dact = new KAction(i18n("Remo&ve"),"edittrash",Qt::Key_Delete,this,SLOT(slotRemove()),actionCollection(),"job_remove");
 	KAction *sact = new KAction(i18n("Res&tart"),"redo",0,this,SLOT(slotRestart()),actionCollection(),"job_restart");
 	KActionMenu *mact = new KActionMenu(i18n("&Move to Printer"),"fileprint",actionCollection(),"job_move");
 	mact->setDelayed(false);
