@@ -8,7 +8,7 @@
 #ifndef HTML_H
 #define HTML_H
 
-#define KHTMLW_VERSION  811		// 00.08.11
+#define KHTMLW_VERSION  901		// 00.09.01
 
 #include <qpainter.h>
 #include <qstrlist.h>

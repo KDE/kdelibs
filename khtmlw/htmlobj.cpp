@@ -588,7 +588,7 @@ void HTMLImage::cacheImage( const char *_filename )
 }
 
 HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
-	char *_url, const char *_target,
+	char *_url, char *_target,
 	int _max_width, int _width, int _height, int _percent, int bdr )
     : QObject(), HTMLObject()
 {
@@ -1028,7 +1028,7 @@ const HTMLArea *HTMLMap::containsPoint( int _x, int _y )
 //----------------------------------------------------------------------------
 
 HTMLImageMap::HTMLImageMap( KHTMLWidget *widget, const char *_filename,
-	    char *_url, const char *_target,
+	    char *_url, char *_target,
 	    int _max_width, int _width, int _height, int _percent, int bdr )
     : HTMLImage( widget, _filename, _url, _target, _max_width, _width,
 	    _height, _percent, bdr )
@@ -1054,13 +1054,13 @@ HTMLObject* HTMLImageMap::checkPoint( int _x, int _y )
 		    if ( area )
 		    {
 			strcpy( url, area->getURL() );
-			target = area->getTarget();
+			strcpy( target, area->getTarget() );
 			return this;
 		    }
 		    else
 		    {
 			*url = '\0';
-			target = 0;
+			*target = '\0';
 		    }
 		}
 	    }

@@ -1573,6 +1573,7 @@ void HTMLClueV::appendLeftAligned( HTMLClueAligned *_clue )
 	while ( obj->nextClue() )
 	    obj = obj->nextClue();
 	obj->setNextClue( _clue );
+	_clue->setNextClue( 0 );
     }
 }
 
@@ -1588,6 +1589,7 @@ void HTMLClueV::appendRightAligned( HTMLClueAligned *_clue )
 	while ( obj->nextClue() )
 	    obj = obj->nextClue();
 	obj->setNextClue( _clue );
+	_clue->setNextClue( 0 );
     }
 }
 

@@ -324,7 +324,7 @@ class HTMLImage : public QObject, public HTMLObject
     Q_OBJECT
 public:
     HTMLImage( KHTMLWidget *widget, const char *, char *_url,
-		const char *_target, int _max_width, int _width = -1,
+		char *_target, int _max_width, int _width = -1,
 		int _height = -1, int _percent = 0, int bdr = 0 );
     virtual ~HTMLImage();
 
@@ -429,7 +429,7 @@ protected:
     QColor borderColor;
 
     char *url;
-    const char *target;
+    char *target;
 };
 
 //----------------------------------------------------------------------------
@@ -498,7 +498,7 @@ class HTMLImageMap : public HTMLImage
 {
 public:
 	HTMLImageMap( KHTMLWidget *widget, const char*, char *_url,
-		const char *_target, int _max_width, int _width = -1,
+		char *_target, int _max_width, int _width = -1,
 		int _height = -1, int _percent = 0, int brd = 0 );
 	virtual ~HTMLImageMap() {}
 

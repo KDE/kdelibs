@@ -2394,6 +2394,15 @@ void KHTMLWidget::parseI( HTMLClueV *_clue, const char *str )
 		parsedURLs.removeLast();
 		parsedURLs.append( url );
 
+		// allocate enough mem for any target which might be in the
+		// image map
+		char *newtarget = new char [256];
+		strcpy( newtarget, target );
+		delete [] target;
+		target = newtarget;
+		parsedTargets.removeLast();
+		parsedTargets.append( target );
+
 		image =  new HTMLImageMap( this, kurl.url(), url, target,
 			 _clue->getMaxWidth(), width, height, percent, border );
 		if ( !usemap.isEmpty() )

@@ -1,9 +1,15 @@
 KHTMLW CHANGES
 ==============
 
-Last Change: 17 September 1997 - Martin Jones.
+Last Change: 22 September 1997 - Martin Jones.
 
-Version 0.8.12 - Martin
+Version 0.9.1 - Martin
+----------------------
+
+Bug fixes
+
+
+Version 0.8.12 - Martin  (actually 0.9.0)
 -----------------------
 
 Many changes to data structures to reduce memory usage.
