@@ -69,7 +69,7 @@ RenderBox::RenderBox()
 void RenderBox::setStyle(RenderStyle *style)
 {
     RenderObject::setStyle(style);
-    
+
     switch(style->position())
     {
     case ABSOLUTE:
@@ -204,12 +204,11 @@ void RenderBox::printBoxDecorations(QPainter *p,int, int _y,
 
     if(c.isValid())
 	p->fillRect(_tx, my, w, mh, c);
-    CachedImage *i = m_style->backgroundImage();
-    if(i)
+    if(m_bgImage)
     {
 	// ### might need to add some correct offsets
 	// ### use paddingX/Y
-	p->drawTiledPixmap(_tx + borderLeft(), _ty + borderTop(), w, h, i->pixmap());
+	p->drawTiledPixmap(_tx + borderLeft(), _ty + borderTop(), w, h, m_bgImage->pixmap());
     }
     if(m_style->hasBorder())
     {
