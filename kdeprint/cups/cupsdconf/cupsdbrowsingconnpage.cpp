@@ -108,7 +108,7 @@ bool CupsdBrowsingConnPage::saveConfig(CupsdConf *conf, QString& msg)
 		if (ok) conf->browseport_ = val;
 		else
 		{
-			msg = i18n("%1 wrong argumnet").arg(i18n("Browse port:"));
+			msg = i18n("%1 wrong argument").arg(i18n("Browse port:"));
 			return false;
 		}
 	}
