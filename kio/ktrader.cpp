@@ -103,10 +103,10 @@ KTrader::OfferList KTrader::query( const QString& _servicetype, const QString& _
   ParseTreeBase::Ptr constr;
   ParseTreeBase::Ptr prefs;
 
-  if ( _constraint != QString::null )
+  if ( !_constraint.isEmpty() )
     constr = parseConstraints( _constraint );
 
-  if ( _preferences != QString::null )
+  if ( !_preferences.isEmpty() )
     prefs = parsePreferences( _preferences );
 
   KServiceTypeProfile::OfferList lst;
