@@ -115,6 +115,20 @@ void Buffer::write(void *data, long len) {
 	contents.insert(contents.end(),c,c+len);
 }
 
+void Buffer::write(const vector<mcopbyte>& raw)
+{
+	contents.insert(contents.end(), raw.begin(), raw.end());
+}
+
+void Buffer::read(vector<mcopbyte>& raw, long l)
+{
+	if(remaining() >= l) {
+		raw.insert(raw.end(), contents[rpos], contents[rpos+l]);
+		rpos += l;
+	} else {
+		_readError = true;
+	}
+}
 
 void *Buffer::read(long l) {
 	void *result = 0;
@@ -356,3 +370,4 @@ bool Buffer::fromString(const string& data, const string& name)
 	}
 	return true;
 }
+

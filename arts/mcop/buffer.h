@@ -72,11 +72,13 @@ public:
 	long size();
 	long remaining();
 	void *read(long l);
+	void read(std::vector<mcopbyte>& raw, long l);
 	void *peek(long l);
 	void skip(long l);
 	void rewind();
 
 	void write(void *data, long l);
+	void write(const std::vector<mcopbyte>& raw);
 
 	bool readBool();
 	mcopbyte readByte();
