@@ -35,6 +35,7 @@
 1207	kdesktop (Minicli)
 1208	kcontrol
 1210	kicker
+1211	konsole
 
 1400	khelpcenter (kdebase)
 
@@ -50,6 +51,7 @@
 1501	khexedit (kdeutils)
 1511	kdessh (kdeutils)
 1512	kdepasswd (kdeutils)
+1520	knotes (kdeutils)
 1601	ark (kdeutils)
 1901	kfind
 1902	kfind (KfindWindow::updateResults)
@@ -67,6 +69,11 @@
 5001	caitoo
 5002	kppp
 5003	knode
+
+# kdepim
+5510	kpilot
+5511	kpilotdaemon
+5512	kpilotconduit
 
 # libkhtml
 6000	khtml
