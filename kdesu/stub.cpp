@@ -18,7 +18,7 @@
 
 #include <qglobal.h>
 #include <qcstring.h>
-#include <qdatastream.h>
+#include <kdatastream.h>
 
 #include <kapp.h>
 #include <kdebug.h>
