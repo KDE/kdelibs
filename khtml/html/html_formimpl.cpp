@@ -2065,6 +2065,7 @@ void HTMLTextAreaElementImpl::attach()
     assert(parentNode());
 
     addCSSProperty(CSS_PROP_COLOR, CSS_VAL_WINDOWTEXT);
+    addCSSProperty(CSS_PROP_FONT_FAMILY, CSS_VAL_MONOSPACE);
 
     RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
     _style->ref();
