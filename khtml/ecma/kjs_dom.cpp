@@ -217,7 +217,7 @@ Completion DOMNodeFunc::tryExecute(const List &args)
 
 // -------------------------------------------------------------------------
 
-const TypeInfo DOMNodeList::info = { "DOMNodeList", HostType, 0, 0, 0 };
+const TypeInfo DOMNodeList::info = { "NodeList", HostType, 0, 0, 0 };
 
 DOMNodeList::~DOMNodeList()
 {
@@ -232,14 +232,14 @@ KJSO DOMNodeList::tryGet(const UString &p) const
     result = Number(list.length());
   else if (p == "item")
     result = new DOMNodeListFunc(list, DOMNodeListFunc::Item);
-  else
-    result = Undefined();
 
   // array index ?
   bool ok;
   long unsigned int idx = p.toULong(&ok);
   if (ok)
     result = getDOMNode(list.item(idx));
+  else
+    result = HostImp::get(p);
 
   return result;
 }
@@ -509,7 +509,7 @@ KJSO DOMDOMImplementation::tryGet(const UString &p) const
 //  else if (p == "createDocument") // new for DOM2 - not yet in khtml
 //    return new DOMDOMImplementationFunction(implementation, DOMDOMImplementationFunction::CreateDocument);
   else
-    return Undefined();
+    return HostImp::get(p);
 }
 
 DOMDOMImplementationFunction::DOMDOMImplementationFunction(DOM::DOMImplementation impl, int i)
