@@ -1368,7 +1368,6 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
 
 bool DocumentImpl::prepareMouseEvent( int _x, int _y, MouseEvent *ev )
 {
-    NodeImpl *n = documentElement();
     if ( m_render ) {
         assert(m_render->isRoot());
         RenderObject::NodeInfo renderInfo(false, ev->type == MousePress);

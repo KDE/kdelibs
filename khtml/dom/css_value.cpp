@@ -73,13 +73,16 @@ void CSSStyleDeclaration::setCssText( const DOMString &value )
 DOMString CSSStyleDeclaration::getPropertyValue( const DOMString &propertyName )
 {
     if(!impl) return DOMString();
-    return static_cast<CSSStyleDeclarationImpl *>(impl)->getPropertyValue( propertyName );
+    CSSValue v(getPropertyCSSValue(propertyName));
+    return v.cssText();
 }
 
 CSSValue CSSStyleDeclaration::getPropertyCSSValue( const DOMString &propertyName )
 {
     if(!impl) return 0;
-    return static_cast<CSSStyleDeclarationImpl *>(impl)->getPropertyCSSValue( propertyName );
+    int id = getPropertyID(propertyName.string().ascii(), propertyName.length());
+    if (!id) return 0;
+    return static_cast<CSSStyleDeclarationImpl *>(impl)->getPropertyCSSValue(id);
 }
 
 DOMString CSSStyleDeclaration::removeProperty( const DOMString &property )
@@ -87,7 +90,6 @@ DOMString CSSStyleDeclaration::removeProperty( const DOMString &property )
     int id = getPropertyID(property.string().ascii(), property.length());
     if(!impl || !id) return DOMString();
     return static_cast<CSSStyleDeclarationImpl *>(impl)->removeProperty( id );
-    return DOMString();
 }
 
 DOMString CSSStyleDeclaration::getPropertyPriority( const DOMString &propertyName )
@@ -99,10 +101,17 @@ DOMString CSSStyleDeclaration::getPropertyPriority( const DOMString &propertyNam
     return DOMString();
 }
 
-void CSSStyleDeclaration::setProperty( const DOMString &propertyName, const DOMString &value, const DOMString &priority )
+void CSSStyleDeclaration::setProperty( const DOMString &propName, const DOMString &value, const DOMString &priority )
 {
     if(!impl) return;
-    static_cast<CSSStyleDeclarationImpl *>(impl)->setProperty( propertyName, value, priority );
+    int id = getPropertyID(propName.string().lower().ascii(), propName.length());
+    if (!id) return;
+    bool important = false;
+    QString str = priority.string();
+    if (str.find("important", 0, false) != -1)
+        important = true;
+
+    static_cast<CSSStyleDeclarationImpl *>(impl)->setProperty( id, value, important );
 }
 
 unsigned long CSSStyleDeclaration::length() const

@@ -62,75 +62,31 @@ CSSStyleDeclarationImpl::~CSSStyleDeclarationImpl()
     // we don't use refcounting for m_node, to avoid cyclic references (see ElementImpl)
 }
 
-DOMString CSSStyleDeclarationImpl::getPropertyValue( const DOMString &propertyName )
-{
-    CSSValueImpl *val = getPropertyCSSValue( propertyName );
-    if ( !val )
-	return DOMString();
-    return val->cssText();
-}
-
-DOMString CSSStyleDeclarationImpl::getPropertyValue( int id )
-{
-    CSSValueImpl *val = getPropertyCSSValue( id );
-    if ( !val )
-	return DOMString();
-    return val->cssText();
-}
-
-CSSValueImpl *CSSStyleDeclarationImpl::getPropertyCSSValue( const DOMString &propertyName )
-{
-    int id = getPropertyID(propertyName.string().ascii(), propertyName.length());
-    return getPropertyCSSValue(id);
-}
-
 CSSValueImpl *CSSStyleDeclarationImpl::getPropertyCSSValue( int propertyID )
 {
     if(!m_lstValues) return 0;
 
-    unsigned int i = 0;
-    while(i < m_lstValues->count())
-    {
-	if(propertyID == m_lstValues->at(i)->m_id) return m_lstValues->at(i)->value();
-	i++;
-    }
-    return 0;
-}
-
-
-bool CSSStyleDeclarationImpl::removeProperty( int propertyID, bool onlyNonCSSHints )
-{
     QPtrListIterator<CSSProperty> lstValuesIt(*m_lstValues);
-    lstValuesIt.toLast();
-    while (lstValuesIt.current() &&
-           ( lstValuesIt.current()->m_id != propertyID || onlyNonCSSHints != lstValuesIt.current()->nonCSSHint) )
-        --lstValuesIt;
-    if (lstValuesIt.current()) {
-	if ( onlyNonCSSHints && !lstValuesIt.current()->nonCSSHint )
-	    return false;
-	m_lstValues->removeRef(lstValuesIt.current());
-	return true;
-	if (m_node)
-	    m_node->setChanged(true);
-    }
-    return true;
+    for (lstValuesIt.toLast(); lstValuesIt.current(); --lstValuesIt)
+        if (lstValuesIt.current()->m_id == propertyID && !lstValuesIt.current()->nonCSSHint)
+            return lstValuesIt.current()->value();
 }
 
-DOMString CSSStyleDeclarationImpl::removeProperty(int id)
+DOMString CSSStyleDeclarationImpl::removeProperty( int propertyID, bool NonCSSHint )
 {
     if(!m_lstValues) return DOMString();
     DOMString value;
 
     QPtrListIterator<CSSProperty> lstValuesIt(*m_lstValues);
-    lstValuesIt.toLast();
-    while (lstValuesIt.current() && lstValuesIt.current()->m_id != id)
-        --lstValuesIt;
-    if (lstValuesIt.current()) {
-	value = lstValuesIt.current()->value()->cssText();
-        m_lstValues->removeRef(lstValuesIt.current());
-	if (m_node)
-	    m_node->setChanged(true);
-    }
+    for (lstValuesIt.toLast(); lstValuesIt.current(); --lstValuesIt)
+        if (lstValuesIt.current()->m_id == propertyID && NonCSSHint == lstValuesIt.current()->nonCSSHint) {
+            value = lstValuesIt.current()->value()->cssText();
+            m_lstValues->removeRef(lstValuesIt.current());
+            if (m_node)
+                m_node->setChanged(true);
+            return value;
+        }
+
     return value;
 }
 
@@ -147,35 +103,13 @@ bool CSSStyleDeclarationImpl::getPropertyPriority( int propertyID )
     return false;
 }
 
-void CSSStyleDeclarationImpl::setProperty( const DOMString &propName, const DOMString &value, const DOMString &priority )
-{
-    int id = getPropertyID(propName.string().lower().ascii(), propName.length());
-    if (!id) return;
-
-    bool important = false;
-    QString str = priority.string().lower();
-    if(str.contains("important"))
-	important = true;
-
-    setProperty(id, value, important);
-}
-
-void CSSStyleDeclarationImpl::setProperty(const DOMString &propName, const DOMString &value, bool important, bool nonCSSHint)
-{
-    int id = getPropertyID(propName.string().lower().ascii(), propName.length());
-    if (!id) return;
-    setProperty(id, value, important, nonCSSHint);
-}
-
-
 void CSSStyleDeclarationImpl::setProperty(int id, const DOMString &value, bool important, bool nonCSSHint)
 {
     if(!m_lstValues) {
 	m_lstValues = new QPtrList<CSSProperty>;
 	m_lstValues->setAutoDelete(true);
     }
-    if ( !removeProperty(id, nonCSSHint ) )
-	return;
+    removeProperty(id, nonCSSHint );
 
     DOMString ppValue = preprocess(value.string(),true);
     bool success = parseValue(ppValue.unicode(), ppValue.unicode()+ppValue.length(), id, important, nonCSSHint, m_lstValues);
@@ -193,8 +127,7 @@ void CSSStyleDeclarationImpl::setProperty(int id, int value, bool important, boo
 	m_lstValues = new QPtrList<CSSProperty>;
 	m_lstValues->setAutoDelete(true);
     }
-    if ( !removeProperty(id, nonCSSHint ) )
-	return;
+    removeProperty(id, nonCSSHint );
 
     CSSValueImpl * cssValue = new CSSPrimitiveValueImpl(value);
     setParsedValue(id, cssValue, important, nonCSSHint, m_lstValues);
@@ -642,8 +575,8 @@ FontFamilyValueImpl::FontFamilyValueImpl( const QString &string)
     // a languge tag is often added in braces at the end. Remove it.
     face = face.replace(QRegExp(" \\(.*\\)$"), "");
     //kdDebug(0) << "searching for face '" << face << "'" << endl;
-    if(face == "serif" || 
-       face == "sans-serif" || 
+    if(face == "serif" ||
+       face == "sans-serif" ||
        face == "cursive" ||
        face == "fantasy" ||
        face == "monospace" ||

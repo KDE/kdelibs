@@ -52,14 +52,7 @@ public:
 
     unsigned long length() const;
     CSSRuleImpl *parentRule() const;
-    DOM::DOMString getPropertyValue ( const DOM::DOMString &propertyName );
-    DOM::DOMString getPropertyValue ( int id );
-    CSSValueImpl *getPropertyCSSValue ( const DOM::DOMString &propertyName );
-    bool removeProperty( int propertyID, bool onlyNonCSSHints );
-    DOM::DOMString removeProperty ( int propertyId );
-    void setProperty ( const DOM::DOMString &propertyName, const DOM::DOMString &value,
-		       const DOM::DOMString &priority );
-    void setProperty( const DOMString &propName, const DOMString &value, bool important, bool nonCSSHint);
+    DOM::DOMString removeProperty( int propertyID, bool NonCSSHints = false );
     void setProperty ( int propertyId, const DOM::DOMString &value, bool important = false, bool nonCSSHint = false);
     void setProperty ( int propertyId, int value, bool important = false, bool nonCSSHint = false);
     // this treats integers as pixels!
@@ -169,10 +162,10 @@ public:
 
     void setStringValue ( unsigned short stringType, const DOM::DOMString &stringValue, int &exceptioncode );
     DOM::DOMStringImpl *getStringValue () const {
-	return ( ( m_type < CSSPrimitiveValue::CSS_STRING || 
-		   m_type > CSSPrimitiveValue::CSS_ATTR || 
+	return ( ( m_type < CSSPrimitiveValue::CSS_STRING ||
+		   m_type > CSSPrimitiveValue::CSS_ATTR ||
 		   m_type == CSSPrimitiveValue::CSS_IDENT ) ? // fix IDENT
-		 0 : m_value.string ); 
+		 0 : m_value.string );
     }
     CounterImpl *getCounterValue () const {
         return ( m_type != CSSPrimitiveValue::CSS_COUNTER ? 0 : m_value.counter );
@@ -185,7 +178,7 @@ public:
     RGBColor *getRGBColorValue () const {
 	return ( m_type != CSSPrimitiveValue::CSS_RGBCOLOR ? 0 : m_value.rgbcolor );
     }
-    
+
     virtual bool isPrimitiveValue() const { return true; }
     virtual unsigned short cssValueType() const;
 
@@ -284,7 +277,7 @@ public:
 	    if(m_value) m_value->ref();
 	}
     }
-    
+
     CSSValueImpl *value() { return m_value; }
 
     // make sure the following fits in 4 bytes.

@@ -161,13 +161,6 @@ void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
     }
 }
 
-void HTMLElementImpl::addCSSProperty( const DOMString &property, const DOMString &value, bool nonCSSHint)
-{
-    if(!m_styleDecls) createDecl();
-    m_styleDecls->setProperty(property, value, false, nonCSSHint);
-    setChanged();
-}
-
 void HTMLElementImpl::addCSSProperty(int id, const DOMString &value)
 {
     if(!m_styleDecls) createDecl();
@@ -190,9 +183,9 @@ void HTMLElementImpl::addCSSLength(int id, const DOMString &value)
     DOMStringImpl* v = value.implementation();
     if ( v ) {
         unsigned int l = 0;
-        
+
         while ( l < v->l && v->s[l].latin1()==' ') l++;
-        
+
         for ( ;l < v->l; l++ ) {
             char cc = v->s[l].latin1();
             if ( cc > '9' || ( cc < '0' && cc != '*' && cc != '%' && cc != '.') )
@@ -216,13 +209,6 @@ void HTMLElementImpl::removeCSSProperty(int id)
     m_styleDecls->setParent(getDocument()->elementSheet());
     m_styleDecls->removeProperty(id);
     setChanged();
-}
-
-DOMString HTMLElementImpl::getCSSProperty( int id )
-{
-    if(!m_styleDecls)
-        return DOMString();
-    return m_styleDecls->getPropertyValue( id );
 }
 
 DOMString HTMLElementImpl::innerHTML() const
