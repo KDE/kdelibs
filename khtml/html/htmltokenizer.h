@@ -106,9 +106,9 @@ protected:
     inline void checkBuffer(int len = 10)
     {
         if ( (dest - buffer) > size-len )
-            enlargeBuffer(len);
+            enlargeBuffer();
     }
-    void enlargeBuffer(int len);
+    void enlargeBuffer();
 
     // from CachedObjectClient
     void notifyFinished(khtml::CachedObject *finishedObj);

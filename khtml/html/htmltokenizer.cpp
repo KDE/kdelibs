@@ -93,7 +93,7 @@ void HTMLTokenizer::reset()
     size = 0;
 
     if ( scriptCode )
-        delete [] scriptCode;
+        QT_DELETE_QCHAR_VEC(scriptCode);
     scriptCode = 0;
 
     delete currToken;
@@ -235,14 +235,17 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
         // 10 characers.
         if ( scriptCodeSize + 10 > scriptCodeMaxSize )
         {
-            QChar *newbuf = new QChar [ scriptCodeMaxSize + 1024 ];
+            int newsize = QMAX(scriptCodeMaxSize*2, scriptCodeMaxSize+1024);
+            QChar *newbuf = QT_ALLOC_QCHAR_VEC( newsize );
             memcpy( newbuf, scriptCode, scriptCodeSize*sizeof(QChar) );
-            delete [] scriptCode;
+            QT_DELETE_QCHAR_VEC(scriptCode);
             scriptCode = newbuf;
-            scriptCodeMaxSize += 1024;
+            scriptCodeMaxSize = newsize;
         }
 
-        if ( ( src[0] == '>' ) && ( searchFor[ searchCount ] == '>'))
+        char ch = src[0].latin1();
+
+        if ( ( ch == '>' ) && ( searchFor[ searchCount ] == '>'))
         {
             ++src;
             scriptCode[ scriptCodeSize ] = 0;
@@ -301,7 +304,8 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
                 executingScript = false;
             }
             script = style = listing = comment = false;
-            delete [] scriptCode;
+            if(scriptCode)
+                QT_DELETE_QCHAR_VEC(scriptCode);
             scriptCode = 0;
 
             addScriptOutput();
@@ -314,8 +318,8 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
         else if ( searchCount > 0 )
         {
             QChar cmp = src[0];
-            if (comment && searchCount == 2 && src[0] == '-') { // Watch out for '--->'
-                scriptCode[ scriptCodeSize++ ] = '-';
+            if (comment && searchCount == 2 && cmp.latin1() == '-') { // Watch out for '--->'
+                scriptCode[ scriptCodeSize++ ] = src[0];
                 ++src;
             }
             else if ( cmp.lower() == searchFor[ searchCount ] )
@@ -336,7 +340,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
             }
         }
         // Is this perhaps the start of the </script> or </style> tag, or --> (end of comment)?
-        else if ( src[0] == '<' || src[0] == '-' )
+        else if ( ch == '<' || ch == '-' )
         {
             searchCount = 1;
             searchBuffer[ 0 ] = src[0];
@@ -610,7 +614,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                             comment = true;
                             searchCount = 0;
                             searchFor = commentEnd;
-                            scriptCode = new QChar[ 1024 ];
+                            scriptCode = QT_ALLOC_QCHAR_VEC( 1024 );
                             scriptCodeSize = 0;
                             scriptCodeMaxSize = 1024;
                             tag = NoTag;
@@ -977,7 +981,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         listing = true;
                         searchCount = 0;
                         searchFor = textareaEnd;
-                        scriptCode = new QChar[ 1024 ];
+                        scriptCode = QT_ALLOC_QCHAR_VEC( 1024 );
                         scriptCodeSize = 0;
                         scriptCodeMaxSize = 1024;
                         parseListing(src);
@@ -993,7 +997,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         script = true;
                         searchCount = 0;
                         searchFor = scriptEnd;
-                        scriptCode = new QChar[ 1024 ];
+                        scriptCode = QT_ALLOC_QCHAR_VEC( 1024 );
                         scriptCodeSize = 0;
                         scriptCodeMaxSize = 1024;
                         parseScript(src);
@@ -1009,7 +1013,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         style = true;
                         searchCount = 0;
                         searchFor = styleEnd;
-                        scriptCode = new QChar[ 1024 ];
+                        scriptCode = QT_ALLOC_QCHAR_VEC( 1024 );
                         scriptCodeSize = 0;
                         scriptCodeMaxSize = 1024;
                         parseStyle(src);
@@ -1022,7 +1026,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         listing = true;
                         searchCount = 0;
                         searchFor = listingEnd;
-                        scriptCode = new QChar[ 1024 ];
+                        scriptCode = QT_ALLOC_QCHAR_VEC( 1024 );
                         scriptCodeSize = 0;
                         scriptCodeMaxSize = 1024;
                         parseListing(src);
@@ -1440,7 +1444,7 @@ HTMLTokenizer::~HTMLTokenizer()
 }
 
 
-void HTMLTokenizer::enlargeBuffer(int len)
+void HTMLTokenizer::enlargeBuffer()
 {
     QChar *newbuf = QT_ALLOC_QCHAR_VEC( size*2 );
     memcpy( newbuf, buffer, (dest - buffer + 1)*sizeof(QChar) );

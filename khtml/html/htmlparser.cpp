@@ -424,14 +424,14 @@ void KHTMLParser::insertNode(NodeImpl *n)
             if(inBody) throw exception;
             break;
         case ID_BODY:
-            if(inBody && document->body() && !explicitBody) {
+            if(inBody && document->body() && explicitBody) {
                 // we have another <BODY> element.... apply attributes to existing one
                 NamedNodeMapImpl *map = n->attributes();
                 unsigned long attrNo;
                 for (attrNo = 0; attrNo < map->length(); attrNo++)
                     document->body()->setAttributeNode(static_cast<AttrImpl*>(map->item(attrNo)->cloneNode(false)));
                 document->body()->applyChanges(true,false);
-                explicitBody = true;
+                explicitBody = false;
             }
             throw exception;
             break;
