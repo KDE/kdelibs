@@ -645,7 +645,8 @@ KJSO *ForNode::evaluate()
   Ptr e, v, b, cval;
   if (expr1) {
     e = expr1->evaluate();
-    v = e->getValue();
+    if (e)
+      v = e->getValue();
   }
   while (1) {
     if (expr2) {
