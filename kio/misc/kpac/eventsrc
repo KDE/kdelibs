@@ -101,6 +101,7 @@ Comment[es]=El procedimiento de configuración del proxy no se pudo descargar
 Comment[eu]=Proxyaren konfiguraziorako scripta ezin da jaitsi
 Comment[fa]=بارگیری نوشتک تنظیم پراکسی امکان‌پذیر نبود
 Comment[fr]=Le script de configuration du proxy n'a pas pu être téléchargé
+Comment[hr]=Skripta za podešavanje proxy-ja nije mogla biti preuzeta s interneta. 
 Comment[hu]=A proxybeállító szkript letöltése nem sikerült
 Comment[is]=Gat ekki sótt sel-stilli-skriftu
 Comment[pt]=O ficheiro de configuração do 'proxy' não pôde ser obtido
