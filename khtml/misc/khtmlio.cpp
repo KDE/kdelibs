@@ -29,7 +29,6 @@
 #include "khtml.h"
 
 #include <kio_job.h>
-#include <kio_error.h>
 
 #undef CACHE_DEBUG
 #define CACHE_DEBUG
@@ -74,63 +73,46 @@ HTMLURLRequestJob::HTMLURLRequestJob( KHTMLWidget* _browser, HTMLURLRequest *r, 
   m_pBrowser = _browser;
   m_req = r;
 
-  // WABA: Caching moved to kio_http. 
-  KIOJob* job = new KIOJob; 
-  job->setGUImode( KIOJob::NONE );
+  m_job = KIO::get( m_req->m_strURL, _reload );
+
+  //job->setGUImode( KIOJob::NONE );
 
   kdebug(0,1202,"BROWSER JOB %s", m_req->m_strURL.ascii());
 
-  connect( job, SIGNAL( sigFinished( int ) ), this, SLOT( slotFinished( int ) ) );
-  connect( job, SIGNAL( sigData( int, const char*, int ) ), this, SLOT( slotData( int, const char*, int ) ) );
-  connect( job, SIGNAL( sigError( int, int, const char* ) ), this, SLOT( slotError( int, int, const char* ) ) );
-
-  m_jobId = job->id();
-//  job->get( m_req->m_strURL, _reload );
-#ifdef __GNUC__
-#warning WABA: Reload support is missing from KIOJob!
-#endif
-  job->get( m_req->m_strURL );
+  connect( m_job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotFinished( KIO::Job * ) ) );
+  connect( m_job, SIGNAL( data( KIO::Job*, const QByteArray &)),
+           SLOT( slotData( KIO::Job*, const QByteArray &)));
 }
 
 HTMLURLRequestJob::~HTMLURLRequestJob()
 {
   kdebug(0,1202,"Destructor 1");
-  if ( m_jobId )
-  {
-    KIOJob* job = KIOJob::find( m_jobId );
-    if ( job )
-	job->kill();
-    m_jobId = 0;
-  }
+  if ( m_job )
+    m_job->kill();
+
   kdebug(0,1202,"Destructor 2");
 }
 
-void HTMLURLRequestJob::slotFinished( int /*_id*/ )
+void HTMLURLRequestJob::slotFinished( KIO::Job * job )
 {
-  m_jobId = 0;
-
-  kdebug(0,1202,"BROWSER JOB FINISHED %s\n", m_req->m_strURL.ascii());
-  m_pBrowser->data( this, "", 0, true ); //lars, why was this commented out?
-    	    	    	    	    	 //it broke jpegs!
-  m_pBrowser->urlRequestFinished( this );
-}
-
-void HTMLURLRequestJob::slotData( int /*_id*/, const char* _data, int _len )
-{
-    //m_pBrowser->data( m_strSimpleURL, _data, _len, false );
-  m_pBrowser->data( this, _data, _len, false );
-}
-
-void HTMLURLRequestJob::slotError( int /*_id*/, int _err, const char *_text )
-{
-  m_jobId = 0;
-
-  emit error( m_req->m_strURL, _err, _text );
-
+  if (job->error())
+  {
+    // TODO use errorString() instead
+    emit error( m_req->m_strURL, job->error(), job->errorText() );
+  } else {
+    kdebug(0,1202,"BROWSER JOB FINISHED %s\n", m_req->m_strURL.ascii());
+  }
+  m_job = 0;
   m_pBrowser->data( this, "", 0, true );
   m_pBrowser->urlRequestFinished( this );
 }
 
+void HTMLURLRequestJob::slotData( KIO::Job*, const QByteArray &data )
+{
+    //m_pBrowser->data( m_strSimpleURL, _data, _len, false );
+  //m_pBrowser->data( this, _data, _len, false );
+  m_pBrowser->data( this, data.data(), data.size(), false );
+}
 
 
 /*!

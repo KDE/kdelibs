@@ -44,6 +44,10 @@ class QPainter;
 // ### FIXME: get rid of this include
 #include "khtmlio.h"
 
+namespace KIO {
+class Job;
+}
+
 namespace DOM {
     class HTMLDocumentImpl;
     class HTMLElementImpl;
@@ -587,12 +591,12 @@ public:
     KJSProxy *jScript();
 
     /**
-     * @return The job id of the @ref KIOJob responsible for loading the current
+     * @return The job of the @ref KIO::Job responsible for loading the current
      * document (or 0 if none).
      *
-     * @see m_jobId
+     * @see m_job
      */
-    int jobId() const { return m_jobId; }
+    KIO::TransferJob * job() const { return m_job; }
 
     /**
      * Set a margin in x direction.
@@ -716,10 +720,9 @@ signals:
 
 
 protected slots:
-    void slotData( int _id, const char* data, int _len );
+    void slotData( KIO::Job*, const QByteArray &data );
     void data( HTMLURLRequestJob *job, const char *_data, int _len, bool _eof );
-    void slotFinished( int _id );
-    void slotError( int _id, int _err, const char *_text );
+    void slotFinished( KIO::Job * job );
 
     // gets called for redirection triggered by the http header
     void slotRedirection( int _id, const char *_url );
@@ -898,7 +901,7 @@ protected:
      * This is the id of the job that fetches the HTML page for us.
      * A value of 0 indicates that we have no running job.
      */
-    int m_jobId;
+    KIO::TransferJob * m_job;
 
     /**
      * This flag is set to true after calling the method @ref #begin and

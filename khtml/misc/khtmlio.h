@@ -47,6 +47,11 @@ class QMovie;
 
 #include "dom/dom_string.h"
 
+namespace KIO {
+  class Job;
+  class TransferJob;
+}
+
 class KHTMLWidget;
 
 /**
@@ -107,12 +112,11 @@ signals:
   void error( const QString &_url, int _err, const char* _errtext );
 
 protected slots:
-  void slotFinished( int _id );
-  void slotData( int _id, const char*, int _len );
-  void slotError( int _id, int _err, const char *_text );
+  void slotFinished( KIO::Job * );
+  void slotData( KIO::Job *, const QByteArray & );
 
 protected:
-    int m_jobId;
+    KIO::TransferJob * m_job;
     KHTMLWidget *m_pBrowser;
     HTMLURLRequest *m_req;
 };

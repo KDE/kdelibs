@@ -30,7 +30,6 @@
 #include <kmimetype.h>
 
 #include <kio_job.h>
-#include <kio_error.h>
 
 #include <assert.h>
 
@@ -156,7 +155,7 @@ void KHTMLWidget::init()
   m_bStartedRubberBand = false;
   m_pRubberBandPainter = 0L;
   m_bRubberBandVisible = false;
-  m_jobId              = 0;
+  m_job                = 0L;
   m_bParsing           = false;
   m_bComplete          = true;
   m_bReload            = false;
@@ -415,12 +414,10 @@ void KHTMLWidget::slotStop()
 {
   printf("----> KHTMLWidget::slotStop()\n");
 
-  if ( m_jobId )
+  if ( m_job )
   {
-    KIOJob* job = KIOJob::find( m_jobId );
-    if ( job )
-      job->kill();
-    m_jobId = 0;
+    m_job->kill();
+    m_job = 0;
   }
 
   if ( m_bParsing )
@@ -493,11 +490,10 @@ void KHTMLWidget::openURL( const QString &_url, bool _reload, int _xoffset, int 
       if(body && body->id() == ID_FRAMESET) frameset = true;
   }
 
+  KURL u( _url );
   if ( !m_bReload && !frameset && urlcmp( _url, m_strURL, true, true )
        && !_post_data )
   {
-    KURL u( _url );
-
     emit started( _url );
 
     if ( !u.htmlRef().isEmpty() )
@@ -515,29 +511,29 @@ void KHTMLWidget::openURL( const QString &_url, bool _reload, int _xoffset, int 
 
   slotStop();
 
-  KIOJob *job = new KIOJob;
-  m_jobId = job->id();
-
-  job->setGUImode( KIOJob::NONE );
-
-  // ###
-  connect( job, SIGNAL( sigFinished( int ) ), this, SLOT( slotFinished( int ) ) );
-  connect( job, SIGNAL( sigRedirection( int, const char* ) ), this, SLOT( slotRedirection( int, const char* ) ) );
-  connect( job, SIGNAL( sigData( int, const char*, int ) ), this, SLOT( slotData( int, const char*, int ) ) );
-  connect( job, SIGNAL( sigError( int, int, const char* ) ), this, SLOT( slotError( int, int, const char* ) ) );
-
   if ( _post_data )
   {
       post_data = _post_data;
-      connect( job, SIGNAL( sigReady( int ) ),
-	       this, SLOT( slotPost( int ) ) );
-      job->put( _url.ascii(), -1, true, false, strlen(_post_data) );
-  }	
+      //connect( job, SIGNAL( sigReady( int ) ),
+//	       this, SLOT( slotPost( int ) ) );
+      // TODO !!! m_job = KIO::http_post( u, post_data);
+      // was put, but I guess it has to use http_post ? (David)
+      // I guess it means converting the char * or QCString to a QByteArray 
+  }
   else
   {
-      job->get( _url.ascii() );
+      m_job = KIO::get( u );
       post_data = 0;
   }
+
+  //m_job->setGUImode( KIOJob::NONE );
+
+  connect( m_job, SIGNAL( result( KIO::Job * ) ),
+           SLOT( slotFinished( KIO::Job * ) ) );
+  connect( m_job, SIGNAL( data( KIO::Job*, const QByteArray &)),
+           SLOT( slotData( KIO::Job*, const QByteArray &)));
+  //connect( job, SIGNAL( sigRedirection( int, const char* ) ), this, SLOT( slotRedirection( int, const char* ) ) );
+
 
   m_bComplete = false;
   m_strWorkingURL = _url;
@@ -545,6 +541,7 @@ void KHTMLWidget::openURL( const QString &_url, bool _reload, int _xoffset, int 
   emit started( m_strWorkingURL );
 }
 
+/*
 void KHTMLWidget::slotPost( int id )
 {
     KIOJob* job = KIOJob::find( id );
@@ -554,24 +551,45 @@ void KHTMLWidget::slotPost( int id )
     job->data((const char *)post_data, post_data.length());
 #endif
 }
+*/
 
-void KHTMLWidget::slotFinished( int /*_id*/ )
+void KHTMLWidget::slotFinished( KIO::Job * job )
 {
-  kdebug(0,1202,"SLOT_FINISHED 1");
-
-  m_strWorkingURL = "";
-
-  if ( m_bParsing )
+  if (job->error() )
   {
-    kdebug(0,1202,"SLOT_FINISHED 2");
-    end();
-  }
+    kdebug(0,1202,"+++++++++++++ ERROR %d, %s ", job->error(), job->errorText().ascii() );
+ 
+    slotStop();
+ 
+    // TODO : use errorString() instead
+    emit error( job->error(), job->errorText() );
+ 
+    // !!!!!! HACK !!!!!!!!!!
+    job->showErrorDialog();
+ 
+    kdebug(0,1202,"+++++++++++ RETURN from error ++++++++++");
+ 
+    emit canceled();
 
-  m_jobId = 0;
-  m_bParsing = false;
-  m_bComplete = true;
+  } else {
+
+    kdebug(0,1202,"SLOT_FINISHED 1");
+
+    m_strWorkingURL = "";
+
+    if ( m_bParsing )
+    {
+      kdebug(0,1202,"SLOT_FINISHED 2");
+      end();
+    }
+
+    m_job = 0;
+    m_bParsing = false;
+    m_bComplete = true;
+  }
 }
 
+//TODO
 void KHTMLWidget::slotRedirection( int /*_id*/, const char *_url )
 {
   // We get this only !before! we receive the first data
@@ -579,15 +597,11 @@ void KHTMLWidget::slotRedirection( int /*_id*/, const char *_url )
   m_strWorkingURL = _url;
 }
 
-void KHTMLWidget::slotData( int /*_id*/, const char *_p, int _len )
+void KHTMLWidget::slotData( KIO::Job*, const QByteArray &data )
 {
-    //if(_id != m_jobId) return; // the data is still from the previous page.
+  //if(job != m_job) return; // the data is still from the previous page.
 
-    kdebug(0,1202,"SLOT_DATA %d", _len);
-
-  /** DEBUG **/
-  assert( (int)strlen(_p ) <= _len );
-  /** End DEBUG **/
+  kdebug(0,1202,"SLOT_DATA %d", data.size());
 
   // The first data ?
   if ( !m_strWorkingURL.isEmpty() )
@@ -599,7 +613,7 @@ void KHTMLWidget::slotData( int /*_id*/, const char *_p, int _len )
     m_strWorkingURL = "";
   }
 
-  write( _p );
+  write( data.data() );
 }
 
 void KHTMLWidget::data( HTMLURLRequestJob *job, const char *_data, int _len, bool _eof )
@@ -635,26 +649,6 @@ void KHTMLWidget::data( HTMLURLRequestJob *job, const char *_data, int _len, boo
       //emit documentDone();
       cache->flush();
   }
-}
-
-
-void KHTMLWidget::slotError( int /*_id*/, int _err, const char *_text )
-{
-  if ( _err == KIO::ERR_WARNING )
-    return; //let's ignore warnings for now
-
-  kdebug(0,1202,"+++++++++++++ ERROR %d, %s ", _err, _text);
-
-  slotStop();
-
-  emit error( _err, _text );
-
-  // !!!!!! HACK !!!!!!!!!!
-  kioErrorDialog( _err, _text );
-
-  kdebug(0,1202,"+++++++++++ RETURN from error ++++++++++");
-
-  emit canceled();
 }
 
 //
@@ -820,7 +814,7 @@ void KHTMLWidget::urlSelected( const QString &_url, int _button, const QString &
       KURL u1( url );
       if ( u1.isMalformed() )
       {
-	  kioErrorDialog( KIO::ERR_MALFORMED_URL, url );
+	  KMessageBox::error( 0, i18n("Malformed URL\n%1").arg(url));
 	  return;
       }
 
