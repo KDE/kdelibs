@@ -525,11 +525,15 @@ void KDirListerCache::updateDirectory( const KURL& _dir )
 
   // restart the job for _dir if it is running already
   bool killed = false;
+  QWidget *window = 0;
   KIO::ListJob *job = jobForUrl( urlStr );
   if ( job )
   {
-     killed = true;
+     window = job->window();
+
      killJob( job );
+     killed = true;
+
      if ( listers )
         for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
            kdl->jobDone( job );
@@ -561,7 +565,7 @@ void KDirListerCache::updateDirectory( const KURL& _dir )
 
   if ( holders )
   {
-     if ( killed )
+     if ( !killed )
      {
         bool first = true;
         for ( KDirLister *kdl = holders->first(); kdl; kdl = holders->next() )
@@ -578,6 +582,8 @@ void KDirListerCache::updateDirectory( const KURL& _dir )
      }
      else
      {
+        job->setWindow( window );
+
         for ( KDirLister *kdl = holders->first(); kdl; kdl = holders->next() )
            kdl->jobStarted( job );
      }
