@@ -33,6 +33,7 @@
 #include <qstyleplugin.h>
 
 #include <qcombobox.h>
+#include <qheader.h>
 #include <qmenubar.h>
 #include <qpushbutton.h>
 #include <qscrollbar.h>
@@ -214,7 +215,7 @@ void HighColorStyle::unPolish(QWidget* widget)
 /* reimp. */
 void HighColorStyle::renderMenuBlendPixmap( KPixmap& pix, const QColorGroup &cg )
 {
-	QColor col = cg.background();
+	QColor col = cg.button();
 
 	if ( highcolor )
 		KPixmapEffect::gradient( pix, col.light(120), col.dark(115),
@@ -380,6 +381,14 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 		// HEADER SECTION
 		// -------------------------------------------------------------------
 		case PE_HeaderSection: {
+			// Temporary solution for the proper orientation of gradients.
+			bool horizontal = true;
+			if (p && p->device()->devType() == QInternal::Widget) {
+				QHeader* hdr = dynamic_cast<QHeader*>(p->device());
+				if (hdr)
+					horizontal = hdr->orientation() == Horizontal;
+			}
+
 			int x,y,w,h;
 			r.rect(&x, &y, &w, &h);
 			bool sunken = on || down;
@@ -402,7 +411,7 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 				p->fillRect(x+1, y+1, w-3, h-3, cg.button());
 			else
 				renderGradient( p, QRect(x+1, y+1, w-3, h-3),
-							    cg.button(), flags & Style_Horizontal );
+							    cg.button(), !horizontal );
 			p->setPen( oldPen );
 			break;
 		}
