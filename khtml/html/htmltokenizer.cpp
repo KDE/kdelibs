@@ -196,7 +196,7 @@ void HTMLTokenizer::addListing(DOMStringIt list)
 
     while ( list.length() )
     {
-        checkBuffer();
+        checkBuffer(3*TAB_SIZE);
 
         if (skipLF && ( *list != '\n' ))
         {
