@@ -430,6 +430,17 @@ int operator==(KSSLCertificate &x, KSSLCertificate &y) {
 }
 
 
+KSSLCertificate::KSSLCertificate(KSSLCertificate& x) {
+  KSSLCertificate();
+#ifdef HAVE_SSL
+  setCert(d->kossl->X509_dup(x.getCert()));
+  KSSLCertChain *c = x.d->_chain.replicate();
+  setChain(c->rawChain());
+  delete c;
+#endif
+}
+
+
 KSSLCertificate *KSSLCertificate::replicate() {
   // The new certificate doesn't have the cached value.  It's probably
   // better this way.  We can't anticipate every reason for doing this.

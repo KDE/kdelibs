@@ -106,6 +106,7 @@ public:
   static QString verifyText(KSSLValidation x);
 
   KSSLCertificate *replicate();
+  KSSLCertificate(KSSLCertificate& x); // copy constructor
 
          friend int operator==(KSSLCertificate &x, KSSLCertificate &y);
   inline friend int operator!=(KSSLCertificate &x, KSSLCertificate &y) 
