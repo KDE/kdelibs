@@ -71,6 +71,7 @@ void KURLComboBox::init( Mode mode )
     defaultList.setAutoDelete( true );
     setInsertionPolicy( NoInsertion );
     setTrapReturnKey( true );
+    setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ));
 
     opendirPix = SmallIcon(QString::fromLatin1("folder_open"));
 
