@@ -197,6 +197,10 @@ DOMString HTMLDocument::cookie() const
 
     QString result;
     stream2 >> result;
+    // Shave the header name away
+    if( result.left(7).lower() == "cookie:") {
+      result = result.mid(8);
+    }
     return DOMString(result);
 }
 
