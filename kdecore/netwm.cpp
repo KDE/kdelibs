@@ -354,6 +354,8 @@ NETRootInfo::NETRootInfo(Display *dp, Window sw, const char *nm,
     p->active = None;
     p->clients = p->stacking = p->virtual_roots = (Window *) 0;
     p->clients_count = p->stacking_count = p->virtual_roots_count = 0;
+    p->kde_docking_windows = 0;
+    p->kde_docking_windows_count = 0;
 
     role = WindowManager;
 
@@ -384,6 +386,8 @@ NETRootInfo::NETRootInfo(Display *d, unsigned long pr, int s) {
     p->active = None;
     p->clients = p->stacking = p->virtual_roots = (Window *) 0;
     p->clients_count = p->stacking_count = p->virtual_roots_count = 0;
+    p->kde_docking_windows = 0;
+    p->kde_docking_windows_count = 0;
 
     role = Client;
 
