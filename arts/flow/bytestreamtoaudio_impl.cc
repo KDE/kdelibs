@@ -1,5 +1,6 @@
 #include "artsflow.h"
 #include "stdsynthmodule.h"
+#include <iostream>
 
 using namespace std;
 
