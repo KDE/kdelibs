@@ -513,6 +513,19 @@ public:
     // Another option to feed image data into the HTML Widget
     void data( const char *_url, const char *_data, int _len, bool _eof );
 
+    /** tell the widget to save himself. Returns a struct, that can be used
+     * to restore it's contents
+     * @see restore()
+     */
+    SavedPage *saveYourself();
+
+    /**
+     * restores the contents of the widget to the state gotten by a call
+     * to @ref saveYourself()
+     */
+    void restore(SavedPage *);
+    void restorePosition( int x, int y);
+
 signals:
     /**
      * This signal is emitted if we deal with frames ( or one of the child
@@ -882,7 +895,7 @@ protected slots:
      * The user pressed ALT + Left
      */
     void slotGoLeft();
-    
+
 protected:
     virtual void resizeEvent( QResizeEvent* _ev );
     virtual void closeEvent( QCloseEvent *e );

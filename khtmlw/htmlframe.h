@@ -27,6 +27,7 @@
 class HTMLFramePanner;
 class HTMLFrameSet;
 class KHTMLView;
+class KHTMLWidget;
 
 class HTMLFramePanner : public QFrame
 {
@@ -67,6 +68,8 @@ class HTMLFrameSet : public QWidget
 {
     Q_OBJECT
 public:
+    friend class KHTMLWidget;
+
     HTMLFrameSet( QWidget *_parent, const char *_src );
     ~HTMLFrameSet();
     

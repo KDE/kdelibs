@@ -43,7 +43,7 @@
 
 class KHTMLWidget;
 class HTMLIterator;
-
+struct SavedPage;
 
 #include "drag.h"
 #include "htmldata.h"
@@ -80,6 +80,31 @@ public:
   QString m_strURL;
   QList<HTMLObject> m_lstClients;
 };
+
+struct FrameLayout
+{
+    QString rows;
+    QString cols;
+    int frameBorder;
+    bool allowResize;
+};
+
+struct SavedPage
+{
+    SavedPage();
+    ~SavedPage();
+    QString frameName;
+    bool isFrame;
+    bool isFrameSet;
+    QString url;
+    QString title;
+    int xOffset;
+    int yOffset;
+    FrameLayout *frameLayout;
+    QList<SavedPage> *frames;
+};
+  
+
 
 typedef void (KHTMLWidget::*parseFunc)(HTMLClueV *_clue, const char *str);
 
@@ -623,6 +648,16 @@ public:
 
     // Another option to feed image data into the HTML Widget
     void data( const char *_url, const char *_data, int _len, bool _eof );
+
+    //for saving and restoring pages
+    SavedPage *saveYourself(SavedPage *p = 0);
+    void restore(SavedPage *);
+
+protected:
+    void buildFrameSet(SavedPage *p, QString *s);
+    void buildFrameTree(SavedPage *p, HTMLFrameSet *f);
+
+public:
   
 signals:
     /**

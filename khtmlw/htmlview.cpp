@@ -740,5 +740,44 @@ void KHTMLView::data( const char *_url, const char *_data, int _len, bool _eof )
   view->data( _url, _data, _len, _eof );
 }
 
+SavedPage * KHTMLView::saveYourself()
+{
+    SavedPage *p = new SavedPage();
+    p->isFrame = isFrame();
+    p->frameName = frameName;
+    p = view->saveYourself(p);
+    KURL url(p->url);
+    if(url.isMalformed()) return 0;
+    return p;
+}
+
+void KHTMLView::restore(SavedPage *p)
+{
+    KHTMLView *v;
+    KHTMLView *top = findView( "_top" );
+    for ( v = viewList->first(); v != 0; v = viewList->next() )
+    {
+	if ( v->getFrameName() )
+	{
+	    if ( strcmp( v->getFrameName(), p->frameName ) == 0 ) 
+		if( top != v->findView( "_top" ) )
+		    continue;
+		else
+		    break;
+	}
+    }
+
+    if(v)
+	v->view->restore( p );
+    else
+	view->restore( p );
+}
+
+void KHTMLView::restorePosition( int x, int y )
+{
+	scrollToX = x;
+	scrollToY = y;
+}
+
 #include "htmlview.moc"
 
