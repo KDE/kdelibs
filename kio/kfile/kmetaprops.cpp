@@ -103,7 +103,7 @@ KFileMetaPropsPlugin::KFileMetaPropsPlugin(KPropertiesDialog* props)
     d = new KFileMetaPropsPluginPrivate;
   
     KFileItem * fileitem = properties->item();
-    cout << "KFileMetaPropsPlugin constructor" << endl;
+    kdDebug(250) << "KFileMetaPropsPlugin constructor" << endl;
 
     d->m_info  = fileitem->metaInfo();
     if (!d->m_info.isValid()) 
@@ -216,10 +216,10 @@ void KFileMetaPropsPlugin::createLayout()
                 if ( l.find(*it)==l.end() )
                 {
                     d->m_add->setEnabled(true);
-                    cout << "**first addable key is " << (*it).latin1() << "**" <<endl;
+                    kdDebug(250) << "**first addable key is " << (*it).latin1() << "**" <<endl;
                     break;
                 }
-                cout << "**already existing key is " << (*it).latin1() << "**" <<endl;
+                kdDebug(250) << "**already existing key is " << (*it).latin1() << "**" <<endl;
         }
     }
 }
@@ -254,7 +254,7 @@ QWidget* KFileMetaPropsPlugin::makeIntWidget(const KFileMetaInfoItem& item,
   QSpinBox* sb = new QSpinBox(parent);
   sb->setValue(item.value().toInt());
 
-  cout << "creating validator for " << item.key().local8Bit() << endl;
+  kdDebug(250) << "creating validator for " << item.key().local8Bit() << endl;
   QValidator* val = d->m_info.createValidator(item.key(), 0, 0);
 
   Q_ASSERT(val);
@@ -291,9 +291,11 @@ QWidget* KFileMetaPropsPlugin::makeStringWidget(const KFileMetaInfoItem& item,
     KComboBox* b = new KComboBox( false, parent );
 
     // only debugging output
+#ifndef NDEBUG
     QStringList l = dynamic_cast<KStringListValidator*>(validator)->stringList();
     QStringList::Iterator it = l.begin();
-    for (; it!=l.end(); ++it) cout << (*it).local8Bit() << endl;
+    for (; it!=l.end(); ++it) kdDebug(250) << (*it).local8Bit() << endl;
+#endif
         
     b->insertStringList(static_cast<KStringListValidator*>(validator)->stringList());
     b->setCurrentText( item.value().toString() );
@@ -328,7 +330,7 @@ bool KFileMetaPropsPlugin::supports( KFileItemList _items )
 
 void KFileMetaPropsPlugin::applyChanges()
 {
-  cout << "applying changes" << endl;
+  kdDebug(250) << "applying changes" << endl;
   // insert the fields that changed into the info object
   
   QPtrListIterator<MetaPropsItem> it( d->m_items );
@@ -336,8 +338,8 @@ void KFileMetaPropsPlugin::applyChanges()
   for (; (item = it.current()); ++it)
   {
     // we depend on having the correct widget type here
-    cout << "wanna add " << item->info.key().latin1() << endl;
-    cout << "validator class is " << item->vclass.latin1() << endl;
+    kdDebug(250) << "wanna add " << item->info.key().latin1() << endl;
+    kdDebug(250) << "validator class is " << item->vclass.latin1() << endl;
     switch (item->info.type())
     {
       case QVariant::Int:
