@@ -36,6 +36,7 @@ public:
   bool showPreviews;
   KURL::URIMode uriMode;
   QStringList capabilities;
+  QString proxyProtocol;
 };
 
 //
@@ -115,6 +116,7 @@ KProtocolInfo::KProtocolInfo(const QString &path)
      d->uriMode = KURL::Auto;
 
   d->capabilities = config.readListEntry( "Capabilities" );
+  d->proxyProtocol = config.readEntry( "ProxiedBy" );
 }
 
 KProtocolInfo::KProtocolInfo( QDataStream& _str, int offset) :
@@ -140,6 +142,7 @@ KProtocolInfo::load( QDataStream& _str)
           i_supportsMoving, i_determineMimetypeFromExtension,
           i_canCopyFromFile, i_canCopyToFile, i_showPreviews,
           i_uriMode;
+          
    _str >> m_name >> m_exec >> m_listing >> m_defaultMimetype
         >> i_determineMimetypeFromExtension
         >> m_icon
@@ -152,7 +155,8 @@ KProtocolInfo::load( QDataStream& _str)
         >> i_canCopyFromFile >> i_canCopyToFile
         >> m_config >> m_maxSlaves >> d->docPath >> d->protClass
         >> d->extraFields >> i_showPreviews >> i_uriMode
-        >> d->capabilities;
+        >> d->capabilities >> d->proxyProtocol;
+        
    m_inputType = (Type) i_inputType;
    m_outputType = (Type) i_outputType;
    m_isSourceProtocol = (i_isSourceProtocol != 0);
@@ -214,7 +218,7 @@ KProtocolInfo::save( QDataStream& _str)
         << i_canCopyFromFile << i_canCopyToFile
         << m_config << m_maxSlaves << d->docPath << d->protClass
         << d->extraFields << i_showPreviews << i_uriMode
-        << d->capabilities;
+        << d->capabilities << d->proxyProtocol;
 }
 
 
@@ -475,6 +479,15 @@ QStringList KProtocolInfo::capabilities( const QString& _protocol )
     return QStringList();
 
   return prot->d->capabilities;
+}
+
+QString KProtocolInfo::proxiedBy( const QString& _protocol )
+{
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
+  if ( !prot )
+    return false;
+
+  return prot->d->proxyProtocol;
 }
 
 QDataStream& operator>>( QDataStream& s, KProtocolInfo::ExtraField& field )  {
