@@ -5,5 +5,5 @@ Name=GIMP Image
 Read=true
 Write=false
 Suffices=xcf,XCF
-Mimetype=image/x-xcf
+Mimetype=image/x-xcf-gimp
 Library=kimg_xcf.la
