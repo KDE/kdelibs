@@ -38,7 +38,6 @@ class KSpellDlg;
  *  access to the spellchecker.
  *
  * @author David Sweet <dsweet@kde.org>
- * @version $Id$
  * @see KSpellConfig, KSyntaxHighlighter
  */
 
