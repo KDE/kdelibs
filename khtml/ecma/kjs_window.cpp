@@ -419,29 +419,8 @@ void Window::put(const UString &p, const KJSO &v)
     part->setJSDefaultStatusBarText(s.value().qstring());
   } else if (p == "location") {
     QString str = v.toString().value().qstring();
-
-//     if (!opener.isNull()) {
-//       DOM::HTMLDocument doc = opener->htmlDocument();
-//       KURL parent (doc.URL().string());
-//       KURL next = v.toString().value().qstring();
-
-//       if (!parent.protocol().isNull() && !next.protocol().isNull())
-//         next.setProtocol (parent.protocol());
-//       if (parent.hasUser() && !next.hasUser())
-//         next.setUser (parent.user());
-//       if (parent.hasPass() && !next.hasPass())
-//         next.setPass (parent.pass());
-//       if (parent.hasHost() && !next.hasHost())
-//         next.setHost (parent.host());
-//       if (parent.port() && !next.port())
-//         next.setPort (parent.port());
-//       str = next.url();
-//       str = v.toString().value().qstring();
-//     }
-    /*else*/ {
-      part->scheduleRedirection(0, getInstance()->
-                                completeURL(str).url().prepend( "target://_self/#" ));
-    }
+    part->scheduleRedirection(0, getInstance()->
+                              completeURL(str).url().prepend( "target://_self/#" ));
   } else if (p == "onload") {
     if (isSafeScript() && v.isA(ConstructorType)) {
       // ### other attributes like this?
