@@ -119,7 +119,7 @@ void KCommandHistory::clear() {
         m_redo->setText(i18n("Nothing to Redo"));
     }
     d->m_present = 0L;
-    d->m_savedAt=-1;
+    d->m_savedAt=-42;
 }
 
 void KCommandHistory::addCommand(KCommand *command, bool execute) {
@@ -177,7 +177,7 @@ void KCommandHistory::undo() {
 
     if (m_first || (d->m_present == 0L))
         return;
-    
+
     d->m_present->unexecute();
     emit commandExecuted();
     if (m_redo != 0) {
