@@ -1057,7 +1057,7 @@ public slots:
    * and the code returned true itself or @p false otherwise.
    * @deprecated, use executeString( DOM::Node(), script)
    */
-  QVariant executeScript( const QString &script ) KDE_DEPRECATED;
+  QVariant executeScript( const QString &script );
 
   /**
    * Enables/disables caret mode.
