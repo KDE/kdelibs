@@ -11,10 +11,14 @@
  
 //#define KSDEBUG
 
+#ifndef __GNUC__
+#define inline
+#endif
+
 #ifdef KSDEBUG
 #define dsdebug printf
 #else
-inline void dsdebug (...)  {}
+inline void dsdebug (const char *, ...)  {}
 #endif
 
 
@@ -49,7 +53,7 @@ inline void dsdebug (...)  {}
 
 
 KSpell::KSpell (QWidget *_parent, const char *_caption,
-		QObject *obj, char *slot, KSpellConfig *_ksc=0)
+		QObject *obj, char *slot, KSpellConfig *_ksc)
 {
   proc=0;
 

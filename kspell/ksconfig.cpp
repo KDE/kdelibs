@@ -10,10 +10,14 @@
 
 //#define KSDEBUG
 
+#ifndef __GNUC__
+#define inline
+#endif
+
 #ifdef KSDEBUG
 #define dsdebug printf
 #else
-inline void dsdebug (...)  {}
+inline void dsdebug (const char *, ...)  {}
 #endif
 
 #define NLS(s) i18n(s)
@@ -33,7 +37,7 @@ KSpellConfig::KSpellConfig (const KSpellConfig &_ksc)
 }
 
 KSpellConfig::KSpellConfig (QWidget *parent, char *name,
-			    KSpellConfig *_ksc=0) : QWidget (parent, name)
+			    KSpellConfig *_ksc) : QWidget (parent, name)
 {
   kc=kapp->getConfig();
 

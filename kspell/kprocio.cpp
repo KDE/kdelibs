@@ -3,10 +3,14 @@
 
 //#define __KPIODEBUG
 
+#ifndef __GNUC__
+#define inline
+#endif
+
 #ifdef __KPIODEBUG
 #define dsdebug printf
 #else
-inline void dsdebug (...)  {}
+inline void dsdebug (const char *, ...)  {}
 #endif
 
 KProcIO::KProcIO (void)
@@ -35,7 +39,7 @@ KProcIO::resetAll (void)
 
 }
 
-bool KProcIO::start (RunMode  runmode = NotifyOnExit)
+bool KProcIO::start (RunMode runmode)
 {
   connect (this, SIGNAL (receivedStdout (KProcess *, char *, int)),
 	   this, SLOT (received (KProcess *, char *, int)));
