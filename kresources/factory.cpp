@@ -50,7 +50,7 @@ Factory *Factory::self( const QString& resourceFamily )
   if ( !factory ) {
     factory = new Factory( resourceFamily );
     mSelves->insert( resourceFamily, factory );
-  } 
+  }
 
   return factory;
 }
@@ -100,8 +100,7 @@ ConfigWidget *Factory::configWidget( const QString& type, QWidget *parent )
 
   ConfigWidget *wdg = pluginFactory->configWidget( parent );
   if ( !wdg ) {
-    kdDebug(5650) << "'" << ptr->library() << "' is not a " + mResourceFamily +
-                     " plugin." << endl;
+    kdDebug(5650) << "'" << ptr->library() << "' doesn't provide a ConfigWidget" << endl;
     return 0;
   }
 
@@ -149,7 +148,7 @@ Resource *Factory::resource( const QString& type, const KConfig *config )
   }
 
   Resource *resource = pluginFactory->resource( config );
-  if ( !resource ) {  
+  if ( !resource ) {
     kdDebug(5650) << "'" << ptr->library() << "' is not a " + mResourceFamily +
                      " plugin." << endl;
     return 0;
