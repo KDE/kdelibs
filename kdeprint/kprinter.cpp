@@ -33,6 +33,9 @@
 #include <kglobal.h>
 #include <kconfig.h>
 #include <krun.h>
+#include <knotifyclient.h>
+#include <kdebug.h>
+#include <klocale.h>
 
 void dumpOptions(const QMap<QString,QString>& opts);
 
@@ -179,8 +182,6 @@ KPrinter::ApplicationType KPrinter::applicationType()
 bool KPrinter::cmd(int c, QPainter *painter, QPDevCmdParam *p)
 {
 	bool value(true);
-	if (c == PdcBegin)        // TO BE CHANGED: there should be a test to see if
-		preparePrinting();     // printing has been already prepared !
 	value = m_wrapper->cmd(c,painter,p);
 	if (c == QPaintDevice::PdcEnd && !m_outputtofile)
 	{
@@ -204,11 +205,21 @@ bool KPrinter::printFiles(const QStringList& l)
 {
 	QString	cmd = QString("kjobviewer -d %1").arg(printerName());
 	KRun::runCommand(cmd);
-	return m_impl->printFiles(this, l);
+	if (m_impl->printFiles(this, l))
+		return true;
+	else
+	{
+		if (!KNotifyClient::event("printerror",i18n("<p><nobr>A print error occured. Error message received from system:</nobr></p><br>%1").arg(errorMessage())))
+			kdDebug() << "could not send notify event" << endl;
+		return false;
+	}
 }
 
 void KPrinter::preparePrinting()
 {
+	// re-initialize error
+	setErrorMessage(QString::null);
+
 	// re-initialize margins and page size (by default, use Qt mechanism)
 	setMargins(QSize(-1,-1));
 	setRealPageSize(QSize(-1,-1));
@@ -240,7 +251,6 @@ void KPrinter::setOutputFileName(const QString& f)
 {
 	m_psbuffer = f;
 	m_wrapper->setOutputFileName(m_psbuffer);
-	setOutputToFile(!f.isEmpty());
 }
 
 int KPrinter::numCopies() const
@@ -555,3 +565,9 @@ QSize KPrinter::realPageSize() const
 
 void KPrinter::setRealPageSize(QSize p)
 { m_pagesize = p; }
+
+QString KPrinter::errorMessage() const
+{ return m_errormsg; }
+
+void KPrinter::setErrorMessage(const QString& msg)
+{ m_errormsg = msg; }

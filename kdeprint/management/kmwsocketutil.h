@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -24,6 +24,7 @@
 
 #include <qstring.h>
 #include <qlist.h>
+#include <kdialog.h>
 
 struct SocketInfo
 {
@@ -33,8 +34,24 @@ struct SocketInfo
 };
 
 class QProgressBar;
-class SocketConfig;
-class QWidget;
+class QLineEdit;
+class QComboBox;
+
+class SocketConfig : public KDialog
+{
+	friend class KMWSocketUtil;
+	Q_OBJECT
+public:
+	SocketConfig(KMWSocketUtil *util, QWidget *parent = 0, const char *name = 0);
+	~SocketConfig();
+
+protected slots:
+	virtual void done(int);
+
+private:
+	QLineEdit	*mask_, *tout_;
+	QComboBox	*port_;
+};
 
 class KMWSocketUtil
 {
@@ -49,6 +66,7 @@ public:
 	const QList<SocketInfo>* printerList() { return &printerlist_; }
 	bool scanNetwork(QProgressBar *bar = 0);
 	void configureScan(QWidget *parent = 0);
+	void setDefaultPort(int p) { port_ = p; }
 
 private:
 	QList<SocketInfo>	printerlist_;

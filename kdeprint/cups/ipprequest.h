@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -53,6 +53,8 @@ public:
 	void addBoolean(int group, const QString& name, const QValueList<bool>& values);
 
 	void setOperation(int op);
+	void setHost(const QString& host);
+	void setPort(int p);
 
 	// request answer functions
 	int status();
@@ -86,6 +88,8 @@ protected:
 
 private:
 	ipp_t	*request_;
+	QString	host_;
+	int 	port_;
 };
 
 inline void IppRequest::addMime(int group, const QString& name, const QString& mime)
@@ -168,5 +172,11 @@ inline ipp_attribute_t* IppRequest::first()
 
 inline ipp_attribute_t* IppRequest::last()
 { return (request_ ? request_->last : NULL); }
+
+inline void IppRequest::setHost(const QString& host)
+{ host_ = host; }
+
+inline void IppRequest::setPort(int p)
+{ port_ = p; }
 
 #endif

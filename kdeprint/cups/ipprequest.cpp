@@ -55,6 +55,8 @@ void dumpRequest(ipp_t *req)
 IppRequest::IppRequest()
 {
 	request_ = 0;
+	port_ = -1;
+	host_ = QString::null;
 	init();
 }
 
@@ -72,6 +74,8 @@ void IppRequest::init()
 	}
 	request_ = ippNew();
 	cups_lang_t*	lang = cupsLangDefault();
+	// default charset to UTF-8 (ugly hack)
+	lang->encoding = CUPS_UTF8;
 	ippAddString(request_, IPP_TAG_OPERATION, IPP_TAG_CHARSET, "attributes-charset", NULL, cupsLangEncoding(lang));
 	ippAddString(request_, IPP_TAG_OPERATION, IPP_TAG_LANGUAGE, "attributes-natural-language", NULL, lang->language);
 }
@@ -188,15 +192,24 @@ bool IppRequest::boolean(const QString& name, bool& value)
 
 bool IppRequest::doFileRequest(const QString& res, const QString& filename)
 {
-	http_t	*HTTP = httpConnect(CupsInfos::self()->host().latin1(),CupsInfos::self()->port());
+	QString	myHost = host_;
+	int 	myPort = port_;
+	if (myHost.isEmpty()) myHost = CupsInfos::self()->host();
+	if (myPort <= 0) myPort = CupsInfos::self()->port();
+	http_t	*HTTP = httpConnect(myHost.latin1(),myPort);
 
 	if (HTTP == NULL)
 		return false;
+#if 0
+qDebug("---------------------\nRequest\n---------------------");
+dumpRequest(request_);
+#endif
 	request_ = cupsDoFileRequest(HTTP, request_, (res.isEmpty() ? "/" : res.latin1()), (filename.isEmpty() ? NULL : filename.latin1()));
 	httpClose(HTTP);
 	if (!request_ || request_->state == IPP_ERROR)
 		return false;
 #if 0
+qDebug("---------------------\nAnswer\n---------------------");
 dumpRequest(request_);
 #endif
 	return true;

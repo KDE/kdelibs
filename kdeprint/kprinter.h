@@ -174,6 +174,8 @@ public:
 
 	QString searchName() const;
 	void setSearchName(const QString& n);
+	QString errorMessage() const;
+	void setErrorMessage(const QString& msg);
 
 protected:
 	virtual bool cmd(int, QPainter*, QPDevCmdParam*);
@@ -192,6 +194,7 @@ protected:
 	QString			m_searchname;
 	QSize			m_margins;
 	QSize			m_pagesize;
+	QString			m_errormsg;
 };
 
 //**************************************************************************************

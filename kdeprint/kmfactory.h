@@ -22,6 +22,8 @@
 #ifndef KMFACTORY_H
 #define KMFACTORY_H
 
+#include <qstring.h>
+
 class KMManager;
 class KMJobManager;
 class KMUiManager;
@@ -45,6 +47,7 @@ public:
 	KMVirtualManager* virtualManager();
 	KPrinterImpl* printerImplementation();
 	KConfig* printConfig();
+	QString printSystem();
 
 private:
 	void createManager();

@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -87,22 +87,27 @@ bool KMWClass::isValid(QString& msg)
 void KMWClass::initPrinter(KMPrinter *p)
 {
 	QStringList	members = p->members();
+	KMManager	*mgr = KMFactory::self()->manager();
 
 	// first load available printers
-	QList<KMPrinter>	*list = KMFactory::self()->manager()->printerList(false);
+	QList<KMPrinter>	*list = mgr->printerList(false);
 	m_list1->clear();
 	if (list)
 	{
 		QListIterator<KMPrinter>	it(*list);
 		for (;it.current();++it)
 			if (it.current()->instanceName().isEmpty() && !it.current()->isClass(true) && !members.contains(it.current()->name()))
-				m_list1->insertItem(it.current()->name());
+				m_list1->insertItem(SmallIcon(it.current()->pixmap()), it.current()->name());
 		m_list1->sort();
 	}
 
 	// set class printers
 	m_list2->clear();
-	m_list2->insertStringList(members);
+	for (QStringList::ConstIterator it=members.begin(); it!=members.end(); ++it)
+	{
+		KMPrinter	*pr = mgr->findPrinter(*it);
+		if (pr) m_list2->insertItem(SmallIcon(pr->pixmap()), *it);
+	}
 	m_list2->sort();
 }
 
@@ -119,7 +124,7 @@ void KMWClass::slotAdd()
 	for (uint i=0;i<m_list1->count();i++)
 		if (m_list1->isSelected(i))
 		{
-			m_list2->insertItem(m_list1->text(i));
+			m_list2->insertItem(*(m_list1->pixmap(i)), m_list1->text(i));
 			m_list1->removeItem(i--);
 		}
 	m_list2->sort();
@@ -130,7 +135,7 @@ void KMWClass::slotRemove()
 	for (uint i=0;i<m_list2->count();i++)
 		if (m_list2->isSelected(i))
 		{
-			m_list1->insertItem(m_list2->text(i));
+			m_list1->insertItem(*(m_list2->pixmap(i)), m_list2->text(i));
 			m_list2->removeItem(i--);
 		}
 	m_list1->sort();

@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -60,7 +60,7 @@ KMDriverDB::~KMDriverDB()
 QString KMDriverDB::dbFile()
 {
 	// this calls insure missing directories creation
-	QString	filename = locateLocal("data","kdeprint/printerdb.txt");
+	QString	filename = locateLocal("data",QString::fromLatin1("kdeprint/printerdb_%1.txt").arg(KMFactory::self()->printSystem()));
 	return filename;
 }
 

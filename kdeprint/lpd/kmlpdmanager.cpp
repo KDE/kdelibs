@@ -21,6 +21,9 @@
 
 #include "kmlpdmanager.h"
 #include "kmprinter.h"
+#include "kmdbentry.h"
+#include "driver.h"
+#include "lpdtools.h"
 
 #include <qfile.h>
 #include <qtextstream.h>
@@ -28,65 +31,9 @@
 
 #include <klocale.h>
 
-class PrintcapEntry
-{
-friend class KMLpdManager;
-public:
-	bool readLine(const QString& line);
-	KMPrinter* createPrinter();
-	QString arg(const QString& key) const 	{ return m_args[key]; }
-private:
-	QString			m_name;
-	QMap<QString,QString>	m_args;
-};
-
-bool PrintcapEntry::readLine(const QString& line)
-{
-	QStringList	l = QStringList::split(':',line,false);
-	if (l.count() > 0)
-	{
-		m_name = l[0];
-		m_args.clear();
-		for (uint i=1; i<l.count(); i++)
-		{
-			QString	key = l[i].left(2);
-			QString	value = l[i].right(l[i].length()-(l[i][2] == '=' ? 3 : 2));
-			m_args[key] = value;
-		}
-		return true;
-	}
-	return false;
-}
-
-KMPrinter* PrintcapEntry::createPrinter()
-{
-	KMPrinter	*printer = new KMPrinter();
-	printer->setName(m_name);
-	printer->setPrinterName(m_name);
-	printer->setInstanceName(QString::null);
-	printer->setState(KMPrinter::Idle);
-	printer->setType(KMPrinter::Printer);
-	return printer;
-}
-
-QString getPrintcapLine(QTextStream& t)
-{
-	QString	line, buffer;
-	while (!t.eof())
-	{
-		buffer = t.readLine().stripWhiteSpace();
-		if (buffer.isEmpty() || buffer[0] == '#')
-			continue;
-		line.append(buffer);
-		if (line.right(1) == "\\")
-		{
-			line.truncate(line.length()-1);
-			line = line.stripWhiteSpace();
-		}
-		else break;
-	}
-	return line;
-}
+// only there to allow testing on my system. Should be removed
+// when everything has proven to be working and stable
+QString	lpdprefix = "/tmp/opt";
 
 //************************************************************************************************
 
@@ -94,11 +41,23 @@ KMLpdManager::KMLpdManager(QObject *parent, const char *name)
 : KMManager(parent,name)
 {
 	m_entries.setAutoDelete(true);
+	m_ptentries.setAutoDelete(true);
 	setHasManagement(true);
+	setPrinterOperationMask(KMManager::PrinterCreation|KMManager::PrinterConfigure);
 }
 
 KMLpdManager::~KMLpdManager()
 {
+}
+
+QString KMLpdManager::driverDbCreationProgram()
+{
+	return QString::fromLatin1("make_driver_db_lpd");
+}
+
+QString KMLpdManager::driverDirectory()
+{
+	return QString::fromLatin1("/usr/lib/rhs/rhs-printfilters");
 }
 
 bool KMLpdManager::completePrinter(KMPrinter *printer)
@@ -120,7 +79,7 @@ bool KMLpdManager::completePrinterShort(KMPrinter *printer)
 void KMLpdManager::listPrinters()
 {
 	m_entries.clear();
-	loadPrintcapFile(QString::fromLatin1("/etc/printcap"));
+	loadPrintcapFile(QString::fromLatin1("%1/etc/printcap").arg(lpdprefix));
 
 	QDictIterator<PrintcapEntry>	it(m_entries);
 	for (;it.current();++it)
@@ -153,4 +112,104 @@ void KMLpdManager::loadPrintcapFile(const QString& filename)
 			}
 		}
 	}
+}
+
+void KMLpdManager::loadPrinttoolDb(const QString& filename)
+{
+	QFile	f(filename);
+	if (f.exists() && f.open(IO_ReadOnly))
+	{
+		QTextStream	t(&f);
+		PrinttoolEntry	*entry = new PrinttoolEntry;
+		while (entry->readEntry(t))
+		{
+			m_ptentries.insert(entry->m_name,entry);
+			entry = new PrinttoolEntry;
+		}
+		delete entry;
+	}
+}
+
+DrMain* KMLpdManager::loadDbDriver(KMDBEntry *entry)
+{
+	QString	ptdbfilename = driverDirectory() + "/printerdb";
+	if (entry->file == ptdbfilename)
+	{
+		if (m_ptentries.count() == 0)
+			loadPrinttoolDb(ptdbfilename);
+		PrinttoolEntry	*ptentry = m_ptentries.find(entry->modelname);
+		if (ptentry)
+		{
+			DrMain	*dr = ptentry->createDriver();
+			return dr;
+		}
+	}
+	return NULL;
+}
+
+DrMain* KMLpdManager::loadPrinterDriver(KMPrinter *printer, bool config)
+{
+	PrintcapEntry	*entry = m_entries.find(printer->name());
+	if (!entry)
+		return NULL;
+
+	// check for printtool driver (only for configuration)
+	QString	sd = entry->arg("sd");
+	if (QFile::exists(sd+"/postscript.cfg") && config)
+	{
+		QMap<QString,QString>	map = loadPrinttoolCfgFile(sd+"/postscript.cfg");
+		PrinttoolEntry	*ptentry = findGsDriver(map["GSDEVICE"]);
+		if (!ptentry)
+			return NULL;
+		DrMain	*dr = ptentry->createDriver();
+		dr->setOptions(map);
+		map = loadPrinttoolCfgFile(sd+"/general.cfg");
+		dr->setOptions(map);
+		map = loadPrinttoolCfgFile(sd+"/textonly.cfg");
+		dr->setOptions(map);
+		return dr;
+	}
+
+	// default
+	return NULL;
+}
+
+PrinttoolEntry* KMLpdManager::findGsDriver(const QString& gsdriver)
+{
+	if (m_ptentries.count() == 0)
+		loadPrinttoolDb(driverDirectory()+"/printerdb");
+	QDictIterator<PrinttoolEntry>	it(m_ptentries);
+	for (;it.current();++it)
+		if (it.current()->m_gsdriver == gsdriver)
+			return it.current();
+	return NULL;
+}
+
+QMap<QString,QString> KMLpdManager::loadPrinttoolCfgFile(const QString& filename)
+{
+	QFile	f(filename);
+	QMap<QString,QString>	map;
+	if (f.exists() && f.open(IO_ReadOnly))
+	{
+		QTextStream	t(&f);
+		QString		line, name, val;
+		int 		p(-1);
+		while (!t.eof())
+		{
+			line = getPrintcapLine(t);
+			if (line.isEmpty())
+				break;
+			if (line.startsWith("export "))
+				line.replace(0,7,"");
+			if ((p=line.find('=')) != -1)
+			{
+				name = line.left(p);
+				val = line.right(line.length()-p-1);
+				val.replace(QRegExp("\""),"");
+				if (!name.isEmpty() && !val.isEmpty())
+					map[name] = val;
+			}
+		}
+	}
+	return map;
 }

@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -68,7 +68,9 @@ bool KCupsPrinterImpl::printFiles(KPrinter *printer, const QStringList& files)
 		free(cfiles[i]);
 	free(cfiles);
 
-	// return status
+	// error message and return status
+	if (jobID <= 0)
+		printer->setErrorMessage(ippErrorString(cupsLastError()));
 	return (jobID > 0);
 }
 

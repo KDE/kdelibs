@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -22,7 +22,6 @@
 #include "kmwsocketutil.h"
 
 #include <qprogressbar.h>
-#include <qdialog.h>
 #include <qlineedit.h>
 #include <qlabel.h>
 #include <qcombobox.h>
@@ -55,73 +54,83 @@ unsigned long getIPStep();
 
 //----------------------------------------------------------------------------------------
 
-class SocketConfig : public QDialog
-{
-	friend class KMWSocketUtil;
-
-public:
-	SocketConfig(KMWSocketUtil *util, QWidget *parent = 0, const char *name = 0);
-	~SocketConfig();
-
-private:
-	QLineEdit	*start_, *stop_, *tout_;
-	QComboBox	*port_;
-	QLabel		*startlabel, *stoplabel, *portlabel, *toutlabel;
-	QPushButton	*ok, *cancel;
-};
-
 SocketConfig::SocketConfig(KMWSocketUtil *util, QWidget *parent, const char *name)
-: QDialog(parent,name,true)
+: KDialog(parent,name,true)
 {
-	ok = new QPushButton(i18n("Ok"),this);
-	cancel = new QPushButton(i18n("Cancel"),this);
+	QPushButton	*ok = new QPushButton(i18n("Ok"),this);
+	QPushButton	*cancel = new QPushButton(i18n("Cancel"),this);
 	ok->setDefault(true);
 
 	connect(ok,SIGNAL(clicked()),SLOT(accept()));
 	connect(cancel,SIGNAL(clicked()),SLOT(reject()));
 
-	startlabel = new QLabel(i18n("IP Start"),this);
-	stoplabel = new QLabel(i18n("IP Stop"),this);
-	portlabel = new QLabel(i18n("Port"),this);
-	toutlabel = new QLabel(i18n("Timeout (ms)"),this);
+	QLabel	*masklabel = new QLabel(i18n("Subnetwork"),this);
+	QLabel	*portlabel = new QLabel(i18n("Port"),this);
+	QLabel	*toutlabel = new QLabel(i18n("Timeout (ms)"),this);
+	QLineEdit	*mm = new QLineEdit(this);
+	mm->setText(QString::fromLatin1(".[1-254]"));
+	mm->setReadOnly(true);
+	mm->setFixedWidth(fontMetrics().width(mm->text())+10);
 
-	start_ = new QLineEdit(this);
-	stop_ = new QLineEdit(this);
+	mask_ = new QLineEdit(this);
+	mask_->setAlignment(Qt::AlignRight);
 	port_ = new QComboBox(true,this);
 	tout_ = new QLineEdit(this);
 
-	start_->setText(inet_ntoa(LONGTOIN(util->start_)));
-	stop_->setText(inet_ntoa(LONGTOIN(util->stop_)));
+	QString	IPTest = inet_ntoa(LONGTOIN(util->start_));
+	int 	p = IPTest.findRev('.');
+	mask_->setText(IPTest.left(p));
+	port_->insertItem("631");
 	port_->insertItem("9100");
 	port_->insertItem("9101");
 	port_->insertItem("9102");
-	QString	num;
-	num.setNum(util->port_);
-	port_->setEditText(num);
-	num.setNum(util->timeout_);
-	tout_->setText(num);
+	port_->setEditText(QString::number(util->port_));
+	tout_->setText(QString::number(util->timeout_));
 
-	QGridLayout	*main_ = new QGridLayout(this, 5, 2, 10, 10);
-	QHBoxLayout	*btn_ = new QHBoxLayout(0, 0, 10);
-	main_->addWidget(startlabel, 0, 0);
-	main_->addWidget(stoplabel, 1, 0);
-	main_->addWidget(portlabel, 2, 0);
-	main_->addWidget(toutlabel, 3, 0);
-	main_->addWidget(start_, 0, 1);
-	main_->addWidget(stop_, 1, 1);
-	main_->addWidget(port_, 2, 1);
-	main_->addWidget(tout_, 3, 1);
+	QGridLayout	*main_ = new QGridLayout(this, 4, 2, 10, 10);
+	QHBoxLayout	*btn_ = new QHBoxLayout(0, 0, 10), *lay1 = new QHBoxLayout(0, 0, 5);
+	main_->addWidget(masklabel, 0, 0);
+	main_->addWidget(portlabel, 1, 0);
+	main_->addWidget(toutlabel, 2, 0);
+	main_->addLayout(lay1, 0, 1);
+	main_->addWidget(port_, 1, 1);
+	main_->addWidget(tout_, 2, 1);
 	main_->addMultiCellLayout(btn_, 4, 4, 0, 1);
 	btn_->addStretch(1);
 	btn_->addWidget(ok);
 	btn_->addWidget(cancel);
+	lay1->addWidget(mask_,1);
+	lay1->addWidget(mm,0);
 
-	resize(250,150);
+	resize(250,130);
 	setCaption(i18n("Scan configuration"));
 }
 
 SocketConfig::~SocketConfig()
 {
+}
+
+void SocketConfig::done(int result)
+{
+	if (result == Accepted)
+	{
+		QString	test(mask_->text() + ".1"), msg;
+		if (inet_addr(test.latin1()) == INADDR_NONE)
+			msg = i18n("Wrong subnetwork specification.");
+		bool 	ok(false);
+		int 	v = tout_->text().toInt(&ok);
+		if (!ok || v <= 0)
+			msg = i18n("Wrong timeout specification.");
+		v = port_->currentText().toInt(&ok);
+		if (!ok || v <= 0)
+			msg = i18n("Wrong port specification.");
+		if (!msg.isEmpty())
+		{
+			KMessageBox::error(this,msg);
+			return;
+		}
+	}
+	KDialog::done(result);
 }
 
 //----------------------------------------------------------------------------------------
@@ -218,19 +227,12 @@ void KMWSocketUtil::configureScan(QWidget *parent)
 	SocketConfig	*dlg = new SocketConfig(this,parent);
 	if (dlg->exec())
 	{
-		unsigned long	i1(inet_addr(dlg->start_->text().latin1())), i2(inet_addr(dlg->stop_->text().latin1()));
-		bool	ok1, ok2;
-		int	p = QString(dlg->port_->currentText()).toInt(&ok1);
-		int	t = QString(dlg->tout_->text()).toInt(&ok2);
-		if (i2 < i1 || (long)i2 == -1 || (long)i1 == -1 || !ok1 || !ok2)
-		{
-			KMessageBox::error(parent,i18n("Wrong settings."));
-			return;
-		}
-		start_ = i1;
-		stop_ = i2;
-		port_ = p;
-		timeout_ = t;
+		QString	IPTest(dlg->mask_->text()+".1");
+		int 	IP = inet_addr(IPTest.latin1());
+		start_ = getIPStart(IP);
+		stop_ = getIPStop(IP);
+		port_ = dlg->port_->currentText().toInt();
+		timeout_ = dlg->tout_->text().toInt();
 	}
 }
 
@@ -260,3 +262,4 @@ unsigned long getIPStep()
 {
 	return (inet_addr("0.0.0.1"));
 }
+#include "kmwsocketutil.moc"

@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -94,7 +94,10 @@ bool KMDBCreator::createDriverDB(const QString& dirname, const QString& filename
 
 	// start the child process
 	m_proc.clearArguments();
-	m_proc.setExecutable(KMFactory::self()->manager()->driverDbCreationProgram());
+	QString	exestr = KMFactory::self()->manager()->driverDbCreationProgram();
+	if (exestr.isEmpty())
+		return true;
+	m_proc.setExecutable(exestr);
 	m_proc << dirname << filename;
 	if (!m_proc.start(KProcess::NotifyOnExit, KProcess::AllOutput))
 	{

@@ -2,8 +2,6 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id$
- *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
  *  License version 2 as published by the Free Software Foundation.
@@ -19,36 +17,26 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#ifndef KMWBACKEND_H
-#define KMWBACKEND_H
+#ifndef KPRINTPROCESS_H
+#define KPRINTPROCESS_H
 
-#include "kmwizardpage.h"
-#include <qmap.h>
+#include <kprocess.h>
 
-class QButtonGroup;
-class QVBoxLayout;
-
-class KMWBackend : public KMWizardPage
+class KPrintProcess : public KProcess
 {
+	Q_OBJECT
 public:
-	KMWBackend(QWidget *parent = 0, const char *name = 0);
+	KPrintProcess();
+	~KPrintProcess();
 
-	bool isValid(QString&);
-	void initPrinter(KMPrinter*);
-	void updatePrinter(KMPrinter*);
+	bool print();
+	QString errorMessage() const;
 
-	void addBackend(int ID = -1, const QString& txt = QString::null, bool on = true, int nextpage = -1);
-	void enableBackend(int ID, bool on = true);
+protected slots:
+	void slotReceivedStderr(KProcess*, char*, int);
 
 private:
-	QButtonGroup	*m_buttons;
-	QVBoxLayout	*m_layout;
-	// keep a map between button ID and the real next page to switch to. This enables
-	// to have different backends switching to the same page (like backends requiring
-	// a password). If the next page is not given when adding the backend, the ID is
-	// used by default.
-	QMap<int,int>	m_map;
-	int 		m_count;
+	QString	m_buffer;
 };
 
 #endif

@@ -21,10 +21,11 @@
 
 #include "klpdunixprinterimpl.h"
 #include "kprinter.h"
+#include "kprintprocess.h"
 
 #include <qfile.h>
-#include <kprocess.h>
 #include <kstddirs.h>
+#include <klocale.h>
 
 KLpdUnixPrinterImpl::KLpdUnixPrinterImpl(QObject *parent, const char *name)
 : KPrinterImpl(parent,name)
@@ -59,7 +60,7 @@ bool KLpdUnixPrinterImpl::printFiles(KPrinter *printer, const QStringList& files
 	QString		exe = executable();
 	if (!exe.isEmpty())
 	{
-		KProcess	proc;
+		KPrintProcess	proc;
 		proc.setExecutable(exe);
 		if (exe.right(3) == "lpr")
 			initLprPrint(&proc,printer);
@@ -74,8 +75,21 @@ bool KLpdUnixPrinterImpl::printFiles(KPrinter *printer, const QStringList& files
 			}
 			else
 				qDebug("File not found: %s",(*it).latin1());
-		if (canPrint && proc.start(KProcess::Block,KProcess::NoCommunication) && proc.normalExit())
-			return (proc.exitStatus() == 0);
+		if (canPrint)
+			if (!proc.print())
+			{
+				QString	msg = proc.errorMessage();
+				printer->setErrorMessage(i18n("The execution of <b>%1</b> failed with message:<p>%2</p>").arg(exe).arg(proc.errorMessage()));
+				return false;
+			}
+			else return true;
+		else
+		{
+			printer->setErrorMessage(i18n("No valid file was found for printing. Operation aborted."));
+			return false;
+		}
 	}
+	else
+		printer->setErrorMessage(i18n("No valid print executable was found in your path. Check your installation."));
 	return false;
 }

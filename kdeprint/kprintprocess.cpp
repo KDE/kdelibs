@@ -2,8 +2,6 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id$
- *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
  *  License version 2 as published by the Free Software Foundation.
@@ -19,36 +17,38 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#include "kmlpdfactory.h"
-#include "kmlpdmanager.h"
-#include "kmlpduimanager.h"
-#include "klpdprinterimpl.h"
+#include "kprintprocess.h"
+#include <kapp.h>
 
-extern "C"
+KPrintProcess::KPrintProcess()
+: KProcess()
 {
-	void* init_libkdeprint_lpd()
-	{
-		return new KLpdFactory;
-	}
-};
+	// redirect everything to a single buffer
+	connect(this,SIGNAL(receivedStdout(KProcess*,char*,int)),SLOT(slotReceivedStderr(KProcess*,char*,int)));
+	connect(this,SIGNAL(receivedStderr(KProcess*,char*,int)),SLOT(slotReceivedStderr(KProcess*,char*,int)));
+}
 
-KLpdFactory::KLpdFactory(QObject *parent, const char *name)
-: KLibFactory(parent,name)
+KPrintProcess::~KPrintProcess()
 {
 }
 
-KLpdFactory::~KLpdFactory()
+QString KPrintProcess::errorMessage() const
 {
+	return m_buffer;
 }
 
-QObject* KLpdFactory::createObject(QObject *parent, const char *name, const char *classname, const QStringList&)
+bool KPrintProcess::print()
 {
-	if (strcmp(classname,"KMManager") == 0)
-		return new KMLpdManager(parent,name);
-	else if (strcmp(classname,"KMUiManager") == 0)
-		return new KMLpdUiManager(parent,name);
-	else if (strcmp(classname,"KPrinterImpl") == 0)
-		return new KLpdPrinterImpl(parent,name);
-	else
-		return NULL;
+	m_buffer = QString::null;
+	if (start(DontCare,AllOutput))
+		while (isRunning())
+			kapp->processEvents(100);
+	return (normalExit() && (exitStatus() == 0));	// Did everything go right ?
 }
+
+void KPrintProcess::slotReceivedStderr(KProcess *proc, char *buf, int len)
+{
+	if (proc == this)
+		m_buffer.append(QCString(buf,len)).append("\n");
+}
+#include "kprintprocess.moc"

@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -55,6 +55,8 @@ KMWBackend::KMWBackend(QWidget *parent, const char *name)
 	m_buttons->hide();
 
 	m_layout = new QVBoxLayout(this, 10, 10);
+	m_layout->addStretch(1);
+	m_count = 0;
 }
 
 bool KMWBackend::isValid(QString& msg)
@@ -108,7 +110,7 @@ void KMWBackend::addBackend(int ID, const QString& txt, bool on, int nextpage)
 		QFrame	*fr = new QFrame(this);
 		fr->setFrameStyle(QFrame::HLine|QFrame::Sunken);
 		fr->setLineWidth(1);
-		m_layout->addWidget(fr);
+		m_layout->insertWidget(m_count, fr);
 	}
 	else
 	{
@@ -116,8 +118,9 @@ void KMWBackend::addBackend(int ID, const QString& txt, bool on, int nextpage)
 		btn->setEnabled(on);
 		m_buttons->insert(btn, ID);
 		m_map[ID] = (nextpage == -1 ? ID : nextpage);	// use nextpage if specified, default to ID
-		m_layout->addWidget(btn);
+		m_layout->insertWidget(m_count, btn);
 	}
+	m_count++;
 }
 
 void KMWBackend::enableBackend(int ID, bool on)

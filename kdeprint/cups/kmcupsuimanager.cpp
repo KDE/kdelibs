@@ -32,6 +32,7 @@
 #include "kmwbanners.h"
 #include "kmwipp.h"
 #include "kmwippselect.h"
+#include "kmwippprinter.h"
 #include "kmconfigcups.h"
 #include "kmconfigcupsdir.h"
 
@@ -71,7 +72,8 @@ void KMCupsUiManager::setupWizard(KMWizard *wizard)
 	backend->addBackend(KMWizard::LPD,i18n("Remote LPD queue"),false);
 	backend->addBackend(KMWizard::SMB,i18n("SMB shared printer (Windows)"),false,KMWizard::Password);
 	backend->addBackend(KMWizard::TCP,i18n("Network printer (TCP)"),false);
-	backend->addBackend(KMWizard::IPP,i18n("Network printer (IPP/HTTP)"),false,KMWizard::Password);
+	backend->addBackend(KMWizard::IPP,i18n("Remote CUPS server (IPP/HTTP)"),false,KMWizard::Password);
+	backend->addBackend(KMWizard::Custom+1,i18n("Network printer w/IPP (IPP/HTTP)"),false);
 	backend->addBackend(KMWizard::File,i18n("File printer (print to file)"),false);
 	backend->addBackend();
 	backend->addBackend(KMWizard::Class,i18n("Class of printers"));
@@ -97,8 +99,11 @@ void KMCupsUiManager::setupWizard(KMWizard *wizard)
 				else if (strncmp(attr->values[0].string.text,"lpd",3) == 0) backend->enableBackend(KMWizard::LPD,true);
 				else if (strncmp(attr->values[0].string.text,"usb",3) == 0) backend->enableBackend(KMWizard::Local,true);
 				else if (strncmp(attr->values[0].string.text,"file",4) == 0) backend->enableBackend(KMWizard::File,true);
-				else if (strncmp(attr->values[0].string.text,"http",4) == 0) backend->enableBackend(KMWizard::IPP,true);
-				else if (strncmp(attr->values[0].string.text,"ipp",3) == 0) backend->enableBackend(KMWizard::IPP,true);
+				else if (strncmp(attr->values[0].string.text,"http",4) == 0 || strncmp(attr->values[0].string.text,"ipp",3) == 0)
+				{
+					backend->enableBackend(KMWizard::IPP,true);
+					backend->enableBackend(KMWizard::Custom+1,true);
+				}
 			}
 			attr = attr->next;
 		}
@@ -109,6 +114,7 @@ void KMCupsUiManager::setupWizard(KMWizard *wizard)
 	wizard->setNextPage(KMWizard::DriverTest,KMWizard::Banners);
 	wizard->addPage(new KMWIpp(wizard));
 	wizard->addPage(new KMWIppSelect(wizard));
+	wizard->addPage(new KMWIppPrinter(wizard));
 }
 
 void KMCupsUiManager::setupPrinterPropertyDialog(KPrinterPropertyDialog *dlg)

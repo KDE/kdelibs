@@ -31,8 +31,6 @@
 #include <kstddirs.h>
 #include <kiconloader.h>
 #include <kdebug.h>
-#include <kmessagebox.h>
-#include <klocale.h>
 
 KMFactory* KMFactory::m_self = 0;
 
@@ -147,19 +145,11 @@ void KMFactory::loadFactory()
 {
 	if (!m_factory)
 	{
-		KConfig	*conf = printConfig();
-		conf->setGroup("General");
-		QString	sys = conf->readEntry("PrintSystem","lpdunix");
-                if (sys.length()==1 && sys[0].isNumber()) // old-style key, like 0 or 1
-                    sys = "lpdunix";
+		QString	sys = printSystem();
 		QString	libname = QString::fromLatin1("libkdeprint_%1").arg(sys);
 		m_factory = KLibLoader::self()->factory(libname.latin1());
 		if (!m_factory)
-		{
-			KMessageBox::error(0,
-                           i18n("There was an error loading %1.\nThe diagnostic is:\n%2")
-                           .arg(libname).arg(KLibLoader::self()->lastErrorMessage()));
-		}
+			kdWarning() << QString::fromLatin1("Unable to locate library '%1'.").arg(libname) << endl;
 	}
 }
 
@@ -171,4 +161,12 @@ KConfig* KMFactory::printConfig()
 		CHECK_PTR(m_printconfig);
 	}
 	return m_printconfig;
+}
+
+QString KMFactory::printSystem()
+{
+	KConfig	*conf = printConfig();
+	conf->setGroup("General");
+	QString	sys = conf->readEntry("PrintSystem","lpdunix");
+	return sys;
 }

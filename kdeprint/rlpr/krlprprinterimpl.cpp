@@ -20,11 +20,14 @@
 #include "krlprprinterimpl.h"
 #include "kprinter.h"
 #include "kmfactory.h"
+#include "kmmanager.h"
+#include "kmprinter.h"
+#include "kprintprocess.h"
 
 #include <qfile.h>
 #include <kstddirs.h>
-#include <kprocess.h>
 #include <kconfig.h>
+#include <klocale.h>
 
 KRlprPrinterImpl::KRlprPrinterImpl(QObject *parent, const char *name)
 : KPrinterImpl(parent,name)
@@ -37,11 +40,22 @@ KRlprPrinterImpl::~KRlprPrinterImpl()
 
 bool KRlprPrinterImpl::printFiles(KPrinter *printer, const QStringList& files)
 {
-	QString	host(printer->option("host")), queue(printer->option("queue"));
-	if (host.isEmpty() && queue.isEmpty())
+	// retrieve the KMPrinter object, to get host and queue name
+	KMPrinter	*rpr = KMFactory::self()->manager()->findPrinter(printer->printerName());
+	if (!rpr)
+		return false;
+
+	QString	host(rpr->option("host")), queue(rpr->option("queue"));
+	if (!host.isEmpty() && !queue.isEmpty())
 	{
-		KProcess	proc;
-		proc << KStandardDirs::findExe("rlpr");
+		KPrintProcess	proc;
+		QString		exestr = KStandardDirs::findExe("rlpr");
+		if (exestr.isEmpty())
+		{
+			printer->setErrorMessage(i18n("The <b>%1</b> executable could not be found in your path. Check your installation.").arg("rlpr"));
+			return false;
+		}
+		proc << exestr;
 		proc << QString::fromLatin1("-H%1").arg(host) << QString::fromLatin1("-P%1").arg(queue) << QString::fromLatin1("-#%1").arg(printer->numCopies());
 
 		// proxy settings
@@ -63,9 +77,23 @@ bool KRlprPrinterImpl::printFiles(KPrinter *printer, const QStringList& files)
 			}
 			else
 				qDebug("File not found: %s",(*it).latin1());
-		if (canPrint) return proc.start(KProcess::Block,KProcess::NoCommunication);
-		else return false;
+		if (canPrint)
+			if (!proc.print())
+			{
+				QString	msg = proc.errorMessage();
+				printer->setErrorMessage(i18n("The execution of <b>%1</b> failed with message:<p>%2</p>").arg("rlpr").arg(proc.errorMessage()));
+				return false;
+			}
+			else return true;
+		else
+		{
+			printer->setErrorMessage(i18n("No valid file was found for printing. Operation aborted."));
+			return false;
+		}
 	}
 	else
+	{
+		printer->setErrorMessage(i18n("The printer is incompletely defined. Try to reinstall it."));
 		return false;
+	}
 }
