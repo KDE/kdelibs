@@ -147,6 +147,7 @@ static QString lazy_encode( const QString& segment )
           (hex2int(segment[i+1].unicode())!= -1) &&
           (hex2int(segment[i+2].unicode())!= -1)) ||
         (character == '?') || // Start of query delimiter
+        (character == '@') || // Username delimiter
         (character == '#') || // Start of reference delimiter
         ((character == 32) && (i+1 == old_length))) // A trailing space
     {
