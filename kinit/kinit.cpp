@@ -616,20 +616,20 @@ static void init_signals()
 
   if (pipe(d.deadpipe) != 0)
   {
-     perror("Aborting. Can't create pipe: ");
+     perror("kdeinit: Aborting. Can't create pipe: ");
      exit(255);
   }
 
   options = fcntl(d.deadpipe[0], F_GETFL);
   if (options == -1)
   {
-     perror("Aborting. Can't make pipe non-blocking: ");
+     perror("kdeinit: Aborting. Can't make pipe non-blocking: ");
      exit(255);
   }
 
   if (fcntl(d.deadpipe[0], F_SETFL, options | O_NONBLOCK) == -1)
   {
-     perror("Aborting. Can't make pipe non-blocking: ");
+     perror("kdeinit: Aborting. Can't make pipe non-blocking: ");
      exit(255);
   }
 
@@ -669,10 +669,28 @@ static void init_kdeinit_socket()
   int max_tries = 10;
   if (!home_dir || !home_dir[0])
   {
-     fprintf(stderr, "Aborting. $HOME not set!");
+     fprintf(stderr, "kdeinit: Aborting. $HOME not set!");
      exit(255);
   }
   chdir(home_dir);
+
+  {
+     QCString path = home_dir;
+     if (access(path.data(), R_OK|W_OK))
+     {
+       if (errno == ENOENT)
+          fprintf(stderr, "kdeinit: Aborting. $HOME directory (%s) does not exist.\n", path.data());
+       else
+          fprintf(stderr, "kdeinit: Aborting. No write access to $HOME directory (%s).\n", path.data());
+       exit(255);
+     }
+     path += "/.ICEauthority";
+     if (access(path.data(), R_OK|W_OK) && (errno != ENOENT))
+     {
+       fprintf(stderr, "kdeinit: Aborting. No write access to '%s'.\n", path.data());
+       exit(255);
+     }
+  }
 
   /** Test if socket file is already present
    *  note that access() resolves symlinks, and so we check the actual
@@ -716,21 +734,21 @@ static void init_kdeinit_socket()
   d.wrapper = socket(PF_UNIX, SOCK_STREAM, 0);
   if (d.wrapper < 0)
   {
-     perror("Aborting. socket() failed: ");
+     perror("kdeinit: Aborting. socket() failed: ");
      exit(255);
   }
 
   options = fcntl(d.wrapper, F_GETFL);
   if (options == -1)
   {
-     perror("Aborting. Can't make socket non-blocking: ");
+     perror("kdeinit: Aborting. Can't make socket non-blocking: ");
      close(d.wrapper);
      exit(255);
   }
 
   if (fcntl(d.wrapper, F_SETFL, options | O_NONBLOCK) == -1)
   {
-     perror("Aborting. Can't make socket non-blocking: ");
+     perror("kdeinit: Aborting. Can't make socket non-blocking: ");
      close(d.wrapper);
      exit(255);
   }
@@ -743,7 +761,7 @@ static void init_kdeinit_socket()
       if(bind(d.wrapper, (struct sockaddr *)&sa, socklen) != 0)
       {
           if (max_tries == 0) {
-	      perror("Aborting. bind() failed: ");
+	      perror("kdeinit: Aborting. bind() failed: ");
 	      close(d.wrapper);
 	      exit(255);
 	  }
@@ -755,7 +773,7 @@ static void init_kdeinit_socket()
   /** set permissions **/
   if (chmod(sock_file, 0600) != 0)
   {
-     perror("Aborting. Can't set permissions on socket: ");
+     perror("kdeinit: Aborting. Can't set permissions on socket: ");
      unlink(sock_file);
      close(d.wrapper);
      exit(255);
@@ -763,7 +781,7 @@ static void init_kdeinit_socket()
 
   if(listen(d.wrapper, SOMAXCONN) < 0)
   {
-     perror("Aborting. listen() failed: ");
+     perror("kdeinit: Aborting. listen() failed: ");
      unlink(sock_file);
      close(d.wrapper);
      exit(255);
@@ -1169,7 +1187,7 @@ static void kdeinit_library_path()
    QCString display = getenv("DISPLAY");
    if (display.isEmpty())
    {
-     fprintf(stderr, "Aborting. $DISPLAY is not set.\n");
+     fprintf(stderr, "kdeinit: Aborting. $DISPLAY is not set.\n");
      exit(255);
    }
    int i;
@@ -1179,7 +1197,8 @@ static void kdeinit_library_path()
    QCString socketName = QFile::encodeName(locateLocal("socket", QString("kdeinit-%1").arg(display), s_instance));
    if (socketName.length() >= MAX_SOCK_FILE)
    {
-     fprintf(stderr, "Aborting. Socket name will be too long.\n");
+     fprintf(stderr, "kdeinit: Aborting. Socket name will be too long:\n");
+     fprintf(stderr, "         '%s'\n", socketName.data());
      exit(255);
    }
    strcpy(sock_file, socketName.data());
@@ -1316,7 +1335,6 @@ int main(int argc, char **argv, char **envp)
    d.lt_dlopen_flag = lt_dlopen_flag;
    lt_dlopen_flag |= LTDL_GLOBAL;
    init_signals();
-
 
    if (keep_running)
    {
