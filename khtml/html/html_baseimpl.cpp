@@ -267,8 +267,10 @@ void HTMLFrameElementImpl::init()
 {
     HTMLElementImpl::init();
 
-    // id is preferred over name
-    if (!getAttribute(ATTR_ID).isNull() && !getAttribute(ATTR_NAME).isNull())
+    // we should first look up via id, then via name.
+    // this shortterm hack fixes the ugly case. ### rewrite needed for next release
+    name = getAttribute(ATTR_NAME);
+    if (name.isNull())
         name = getAttribute(ATTR_ID);
 
     // inherit default settings from parent frameset
