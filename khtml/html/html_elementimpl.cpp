@@ -265,7 +265,6 @@ void HTMLElementImpl::addCSSProperty( const DOMString &property, const DOMString
     if(!m_styleDecls) m_styleDecls = new CSSStyleDeclarationImpl(0);
     m_styleDecls->setParent(doc->elementSheet());
     m_styleDecls->setProperty(property, value, important, nonCSSHint);
-    setChanged(true);
 }
 
 void HTMLElementImpl::addCSSProperty(int id, const DOMString &value, bool important, bool nonCSSHint)
@@ -274,7 +273,6 @@ void HTMLElementImpl::addCSSProperty(int id, const DOMString &value, bool import
     if(!m_styleDecls) m_styleDecls = new CSSStyleDeclarationImpl(0);
     m_styleDecls->setParent(doc->elementSheet());
     m_styleDecls->setProperty(id, value, important, nonCSSHint);
-    setChanged(true);
 }
 
 void HTMLElementImpl::addCSSLength(int id, const DOMString &value, bool important, bool nonCSSHint)
@@ -283,7 +281,6 @@ void HTMLElementImpl::addCSSLength(int id, const DOMString &value, bool importan
     if(!m_styleDecls) m_styleDecls = new CSSStyleDeclarationImpl(0);
     m_styleDecls->setParent(doc->elementSheet());
     m_styleDecls->setLengthProperty(id, value, important, nonCSSHint);
-    setChanged(true);
 }
 
 void HTMLElementImpl::addCSSProperty(const DOMString &property)
@@ -292,7 +289,6 @@ void HTMLElementImpl::addCSSProperty(const DOMString &property)
     if(!m_styleDecls) m_styleDecls = new CSSStyleDeclarationImpl(0);
     m_styleDecls->setParent(doc->elementSheet());
     m_styleDecls->setProperty(property);
-    setChanged(true);
 }
 
 void HTMLElementImpl::removeCSSProperty(int id)
@@ -302,7 +298,6 @@ void HTMLElementImpl::removeCSSProperty(int id)
     HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(document);
     m_styleDecls->setParent(doc->elementSheet());
     m_styleDecls->removeProperty(id);
-    setChanged(true);
 }
 
 void HTMLElementImpl::removeCSSProperty( const DOMString &id )
@@ -312,7 +307,6 @@ void HTMLElementImpl::removeCSSProperty( const DOMString &id )
     HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(document);
     m_styleDecls->setParent(doc->elementSheet());
     m_styleDecls->removeProperty(id);
-    setChanged(true);
 }
 
 DOMString HTMLElementImpl::getCSSProperty( const DOM::DOMString &prop )

@@ -122,12 +122,20 @@ void HTMLElement::setClassName( const DOMString &value )
 
 void HTMLElement::removeCSSProperty( const DOMString &property )
 {
-    if(impl) ((HTMLElementImpl *)impl)->removeCSSProperty( property );
+    if(impl) {
+	HTMLElementImpl *e = ((HTMLElementImpl *)impl);
+	e->removeCSSProperty( property );
+	e->setChanged( true );
+    }
 }    
 
 void HTMLElement::addCSSProperty( const DOMString &property, const DOMString &value )
 {
-    if(impl) ((HTMLElementImpl *)impl)->addCSSProperty( property, value, false, true );
+    if(impl) {
+	HTMLElementImpl *e = ((HTMLElementImpl *)impl);
+	e->addCSSProperty( property, value, false, true );
+	e->setChanged( true );
+    }
 }    
     
 DOMString HTMLElement::getCSSProperty( const DOM::DOMString &prop )
