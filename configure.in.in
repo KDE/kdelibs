@@ -26,6 +26,7 @@ AM_CONFIG_HEADER(config.h) dnl at the distribution this done
 
 dnl Checks for programs.
 AC_CHECK_COMPILERS
+KDE_ENABLE_HIDDEN_VISIBILITY
 AC_LIBLTDL_CONVENIENCE
 
 AC_ENABLE_SHARED(yes)
