@@ -2,7 +2,6 @@ usr/lib/libmcop.so
 usr/lib/libmcop_mt.so
 usr/lib/libartsflow_idl.so
 usr/lib/libartsflow.so
-usr/lib/libkmedia2_idl.so
 usr/lib/libsoundserver_idl.so
 usr/lib/libartswavplayobject.so
 usr/lib/libx11globalcomm.so

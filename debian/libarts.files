@@ -11,6 +11,8 @@ usr/lib/libsoundserver_idl.so.*
 usr/lib/libsoundserver_idl.la
 usr/lib/libx11globalcomm.so.*
 usr/lib/libx11globalcomm.la
+usr/lib/libartskde.so
+usr/lib/libartskwrapper.so
 usr/bin/artsmessage
 usr/bin/mcopidl
 usr/bin/artsd

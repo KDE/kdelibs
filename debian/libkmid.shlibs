@@ -1,2 +1,4 @@
 libqtmcop 0 libkmid (>= 4:2.2-0) | libkmid-alsa (>= 4:2.2-0)
 libkmid 0 libkmid (>= 4:2.2-0) | libkmid-alsa (>= 4:2.2-0)
+libkmedia2 0 libkmid (>= 4:2.2-0) | libkmid-alsa (>= 4:2.2-0)
+libkmedia2_idl 0 libkmid (>= 4:2.2-0) | libkmid-alsa (>= 4:2.2-0)

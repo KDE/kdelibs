@@ -70,14 +70,15 @@ Section: libs
 Replaces: libkmid-alsa
 Depends: ${shlibs:Depends}
 Conflicts: libkmid-alsa
-Description: aRts Sound system (midi support libraries)
+Description: aRts Sound system (midi/kmedia support libraries)
  aRts is a short form for "analog realtime synthesizer". The idea of the whole
  thing is to create/process sound using small modules which do certain tasks.
  These may be create a waveform (oscillators), play samples, filter data, add
  signals, perform effects like delay/flanger/chorus, or output the data to
  the soundcard.
  .
- This package contains the midi support files for aRts as well as knotify
+ This package contains the midi and kmedia support files for aRts as well as 
+ knotify
 
 Package: libkmid-alsa
 Architecture: any
@@ -85,14 +86,15 @@ Section: libs
 Replaces: libkmid
 Depends: ${shlibs:Depends}
 Conflicts: libkmid
-Description: aRts Sound system (midi support libraries with alsa)
+Description: aRts Sound system (midi/kmedia support libraries with alsa)
  aRts is a short form for "analog realtime synthesizer". The idea of the whole
  thing is to create/process sound using small modules which do certain tasks.
  These may be create a waveform (oscillators), play samples, filter data, add
  signals, perform effects like delay/flanger/chorus, or output the data to
  the soundcard.
  .
- This package contains the midi support files for aRts as well as knotify
+ This package contains the midi and kmdedia support files for aRts as well as 
+ knotify
 
 Package: libarts-alsa
 Architecture: any
@@ -144,7 +146,7 @@ Package: kdelibs-dev
 Architecture: any
 Section: devel
 Replaces: kdelibs2g-dev, kdelibs3 (<< 4:2.2-alpha1-2), kdelibs3-dev
-Depends: kdelibs3 (= ${Source-Version}), libarts-dev (= ${Source-Version}), libkmid-dev (= ${Source-Version}), libqt-dev (>= 2:2.3.0), kdelibs3-cups (= ${Source-Version}), libaudiofile-dev, gettext, libtiff3g-dev | libtiff-dev, jade, jadetex, sgml-base, docbook, docbook-stylesheets, docbook-utils, libpcre3-dev, libbz2-dev, libsasl-dev
+Depends: kdelibs3 (= ${Source-Version}), libarts-dev (= ${Source-Version}), libkmid-dev (= ${Source-Version}), libqt-dev (>= 2:2.3.0), kdelibs3-cups (= ${Source-Version}), libaudiofile-dev, gettext, libtiff3g-dev | libtiff-dev, jade, jadetex, sgml-base, docbook, docbook-stylesheets, libpcre3-dev, libbz2-dev, libsasl-dev
 Conflicts: kdelibs2g-dev, kdelibs3 (<< 4:2.2-alpha1-2), kdelibs3-dev
 Suggests: kdelibs3-doc, kdoc, libasound1-dev, automake, autoconf, libtool
 Description: KDE core libraries (development files)

@@ -1,2 +1,4 @@
 usr/lib/libkmid.so
+usr/lib/libkmedia2_idl.so
+usr/lib/libkmedia2.so
 usr/include/kde/libkmid/*

@@ -1,1 +1,3 @@
 libarts: setuid-binary usr/bin/artswrapper 4755 root/root
+libarts: shlib-missing-in-control-file libartskde.so usr/lib/libartskde.so
+libarts: shlib-missing-in-control-file libartskwrapper.so usr/lib/libartskwrapper.so
