@@ -98,6 +98,7 @@ public:
         prevScrollbarVisible = true;
 	timerId = 0;
         repaintTimerId = 0;
+        scrollTimerId = 0;
         complete = false;
 	tooltip = 0;
     }
@@ -139,6 +140,7 @@ public:
 	scrollingSelf = false;
 	timerId = 0;
         repaintTimerId = 0;
+        scrollTimerId = 0;
         complete = false;
         firstRelayout = true;
         layoutSchedulingEnabled = true;
@@ -174,6 +176,8 @@ public:
     int timerId;
 
     int repaintTimerId;
+    int scrollTimerId;
+    int scrollBy;
     bool complete;
     bool firstRelayout;
     bool layoutSchedulingEnabled;
@@ -334,18 +338,17 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
         d->tp->fillRect(ex, ey+py, ew, ph, palette().normal().brush(QColorGroup::Base));
         m_part->xmlDocImpl()->renderer()->print(d->tp, ex, ey+py, ew, ph, 0, 0);
 #ifdef BOX_DEBUG
-	if (m_part->xmlDocImpl()->focusNode())
-	{
-	    d->tp->setBrush(Qt::NoBrush);
-	    d->tp->drawRect(m_part->xmlDocImpl()->focusNode()->getRect());
-	}
+        if (m_part->xmlDocImpl()->focusNode())
+        {
+            d->tp->setBrush(Qt::NoBrush);
+            d->tp->drawRect(m_part->xmlDocImpl()->focusNode()->getRect());
+        }
 #endif
         d->tp->end();
 
         p->drawPixmap(ex, ey+py, *d->paintBuffer, 0, 0, ew, ph);
         py += PAINT_BUFFER_HEIGHT;
     }
-
     khtml::DrawContentsEvent event( p, ex, ey, ew, eh );
     QApplication::sendEvent( m_part, &event );
 
@@ -636,8 +639,18 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
         case Key_J:
             if ( d->vmode == QScrollView::AlwaysOff )
                 _ke->accept();
-            else
+            else if (_ke->isAutoRepeat()) {
+                if (d->scrollTimerId) {
+                    killTimer(d->scrollTimerId);
+                    d->scrollTimerId = 0;
+                }
                 scrollBy( 0, 10 );
+            } else if (!d->scrollTimerId) {
+                d->scrollBy = 1;
+                scrollBy( 0, d->scrollBy );
+                d->scrollTimerId = startTimer(30);
+            } else if (d->scrollBy < 10)
+                d->scrollBy++;
             break;
 
         case Key_Space:
@@ -652,7 +665,12 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
         case Key_K:
             if ( d->vmode == QScrollView::AlwaysOff )
                 _ke->accept();
-            else
+            else if (d->scrollTimerId) {
+                if (--d->scrollBy <= 0) {
+                    killTimer(d->scrollTimerId);
+                    d->scrollTimerId = 0;
+                }
+            } else
                 scrollBy( 0, -10 );
             break;
 
@@ -1462,6 +1480,15 @@ void KHTMLView::slotScrollBarMoved()
 void KHTMLView::timerEvent ( QTimerEvent *e )
 {
 //    kdDebug() << "timer event " << e->timerId() << endl;
+    if (e->timerId() == d->scrollTimerId) {
+        if (contentsY() + visibleHeight () >= contentsHeight() || d->scrollBy <= 0) {
+            kdDebug() << "timer event killing timer" << endl;
+            killTimer(d->scrollTimerId);
+            d->scrollTimerId = 0;
+        } else
+            scrollBy( 0, d->scrollBy );
+        return;
+    }
     if (e->timerId()==d->timerId)
     {
         d->firstRelayout = false;
