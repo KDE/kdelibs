@@ -877,6 +877,8 @@ void RenderFlow::layoutInlineChildren()
     }
     m_height += toAdd;
 
+    // in case we have a float on the last line, it might not be positioned up to now.
+    positionNewFloats();
 
     //kdDebug() << "RenderFlow::layoutInlineChildren time used " << qt.elapsed() << endl;
     //kdDebug(6040) << "height = " << m_height <<endl;

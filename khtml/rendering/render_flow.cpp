@@ -1280,7 +1280,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
     // RenderFlow has to either have all of it's children inline, or all of it's children as blocks.
     // So, if our children are currently inline and block child has to be inserted, we move all our
     // inline children into anonymous block boxes
-    if ((m_childrenInline && !newChild->isInline()))
+    if ( m_childrenInline && !newChild->isInline() && !newChild->isSpecial() )
     {
         makeChildrenNonInline(beforeChild);
         if (beforeChild) {
