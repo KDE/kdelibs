@@ -165,7 +165,7 @@ public:
    */
   virtual QStringList groups() const;
   /**
-   * Returns the list of actions in a particular managed by this action collection.
+   * Returns the list of actions in a particular group managed by this action collection.
    * @param group The name of the group.
    */
   virtual KActionPtrList actions( const QString& group ) const;

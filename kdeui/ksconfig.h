@@ -109,11 +109,11 @@ class KSpellConfig : public QWidget
 
     /**
      *
-     * @short Get the translated dictionary names and, optionally, the 
+     * @short Get the translated dictionary names and, optionally, the
      * corresponding internal dictionary names.
      *
      * Fills @p box with the human readable, translated dictionary names and
-     * selects the currently used dictionary (this will be the global 
+     * selects the currently used dictionary (this will be the global
      * dictionary if you call @ref fillDicts directly after the constructor).
      * If @p dictionaries isn't 0 then @p dictionaries will be filled with the
      * corresponding internal dictionary names that are necessary to set the
@@ -145,7 +145,7 @@ class KSpellConfig : public QWidget
 
     /**
      * The @p _replaceAllList contains word you like that replace
-     * word. Becarefull this list contains word which is replaced
+     * word. Be careful this list contains word which is replaced
      * and new word.
      */
     void setReplaceAllList( QStringList _replaceAllList );
@@ -229,7 +229,7 @@ class KSpellConfig : public QWidget
   protected slots:
     /**
      * Invokes the help documentation for kspell
-     */ 
+     */
     void sHelp();
     //void sBrowseDict();
     //void sBrowsePDict();
