@@ -1,3 +1,17 @@
+kdelibs (4:2.2.1-15) unstable; urgency=low
+
+  * Sync with upstream
+  * Provide replace/etc bits for easier migration to/from kde3
+  * Update python deps 
+  * Fix glib inclusion bits for gmcop stuff...however we are still
+    not going to build with it until someone has a need for it.
+  * Remove some other hacks
+  * Update deps for qt as qt 2.3.2 has a fix which breaks a piece of kdelibs
+    so let's make sure we match up across the board.
+  * Update shlibs for the same reason
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 01 Nov 2001 01:30:00 -0700
+
 kdelibs (4:2.2.1-14) unstable; urgency=low
 
   * Fix overwrite problem (Closes: #116773)

@@ -72,8 +72,6 @@ clean: debian-clean
 	  $(MAKE) -f admin/Makefile.common cvs-clean ;\
 	fi
 	-$(MAKE) distclean
-	#-rm -f `find arts -name "*.mcoptype"`
-	#-rm -f kdoctools/kgzipfilter.cpp kdoctools/kbzip2filter.cpp
 
 binary-indep:	build-stamp alsa-stamp indep-stamp
 indep-stamp:
