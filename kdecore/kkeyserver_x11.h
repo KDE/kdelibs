@@ -325,6 +325,14 @@ namespace KKeyServer
 	KDECORE_EXPORT uint modXScrollLock();
 
 	/**
+	 * Returns the X11 Mode_switch modifier mask/flag. 
+	 * @return the X11 Mode_switch modifier mask/flag. 
+	 * @see accelModMaskX()
+	 * @since 3.5
+	 */
+	KDECORE_EXPORT uint modXModeSwitch();
+
+	/**
 	 * Returns bitwise OR'ed mask containing Shift, Ctrl, Alt, and
 	 * Win (if available).
 	 * @see modXShift()

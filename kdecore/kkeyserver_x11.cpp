@@ -324,13 +324,13 @@ static const TransKey g_rgQtToSymX[] =
 static bool g_bInitializedMods, g_bInitializedVariations, g_bInitializedKKeyLabels;
 static bool g_bMacLabels;
 #ifdef Q_WS_X11
-static uint g_modXNumLock, g_modXScrollLock;
+static uint g_modXNumLock, g_modXScrollLock, g_modXModeSwitch; 
 
 bool initializeMods()
 {
 	XModifierKeymap* xmk = XGetModifierMapping( qt_xdisplay() );
 
-	g_rgModInfo[3].modX = g_modXNumLock = g_modXScrollLock = 0;
+	g_rgModInfo[3].modX = g_modXNumLock = g_modXScrollLock = g_modXModeSwitch = 0; 
 
         int min_keycode, max_keycode;
         int keysyms_per_keycode = 0;
@@ -354,6 +354,7 @@ bool initializeMods()
 			case XK_Meta_L:
 			case XK_Meta_R:      if( !g_rgModInfo[3].modX ) g_rgModInfo[3].modX = mask; break; // Win alternate
 			case XK_Scroll_Lock: g_modXScrollLock = mask; break;  // Normally Mod5Mask
+			case XK_Mode_switch: g_modXModeSwitch = mask; break; 
 		}
 	}
 
@@ -609,6 +610,7 @@ uint modXAlt()        { return Mod1Mask; }
 uint modXNumLock()    { if( !g_bInitializedMods ) { initializeMods(); } return g_modXNumLock; }
 uint modXWin()        { if( !g_bInitializedMods ) { initializeMods(); } return g_rgModInfo[3].modX; }
 uint modXScrollLock() { if( !g_bInitializedMods ) { initializeMods(); } return g_modXScrollLock; }
+uint modXModeSwitch() { if( !g_bInitializedMods ) { initializeMods(); } return g_modXModeSwitch; } 
 
 uint accelModMaskX()
 {
