@@ -96,7 +96,6 @@ int main(int argc, char *argv[])
   //check("KURL::htmlRef()", url1.htmlRef(), "myref");
   check("KURL::upURL()", url1.upURL().url(), "file:/home/dfaure/");
 
-/*
   u1 = "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/";
   url1 = u1;
   check("KURL::url()", url1.url(), "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/");
@@ -114,7 +113,6 @@ int main(int argc, char *argv[])
   check("KURL::htmlRef()", url1.htmlRef(), "");
   check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "yes");
   check("KURL::upURL()", url1.upURL().url(), "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/");
-*/
 
   KURL notPretty("http://ferret.lmh.ox.ac.uk/%7Ekdecvs/");
   check("KURL::prettyURL()", notPretty.prettyURL(), "http://ferret.lmh.ox.ac.uk/~kdecvs/");
@@ -405,6 +403,11 @@ int main(int argc, char *argv[])
   baseURL = "file:/home/coolo";
   KURL russian = baseURL.directory(false, true) + QString::fromLocal8Bit( "ÆÇÎ7" );
   check( "russian", russian.url(), "file:/home/%C6%C7%CE7" );
+
+  KURL tobi1("http://some.host.net/path/to/file#fragmentPrecedes?theQuery");
+  check("wrong order of query and hypertext reference #1", tobi1.ref(), "fragmentPrecedes");
+  check("wrong order of query and hypertext reference #2", tobi1.query(), "?theQuery");
+
   printf("\nTest OK !\n");
 }
 
