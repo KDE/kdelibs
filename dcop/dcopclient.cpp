@@ -209,7 +209,8 @@ int DCOPClient::socket() const
 }
 
 bool DCOPClient::send(const QString &remApp, const QString &remObjId, 
-		      const QString &remFun, const QByteArray &data)
+		      const QString &remFun, const QByteArray &data, 
+		      bool fast)
 {
   DCOPMsg *pMsg;
   
@@ -234,7 +235,8 @@ bool DCOPClient::send(const QString &remApp, const QString &remObjId,
 }
 
 bool DCOPClient::send(const QString &remApp, const QString &remObjId,
-		      const QString &remFun, const QString &data)
+		      const QString &remFun, const QString &data, 
+		      bool fast)
 {
   QByteArray ba;
   QDataStream ds(ba, IO_WriteOnly);
@@ -277,7 +279,7 @@ bool DCOPClient::receive(const QString &app, const QString &objId,
 
 bool DCOPClient::call(const QString &remApp, const QString &remObjId,
 		      const QString &remFun, const QByteArray &data,
-		      QByteArray &replyData)
+		      QByteArray &replyData, bool fast)
 {
   DCOPMsg *pMsg;
   

@@ -52,25 +52,35 @@ class DCOPClient : public QObject
    * @param remObj the name of the remote object.
    * @param remFun the remote function in the specified object to call.
    * @param data the data to provide to the remote function.
+   * @param fast if set to true, a "fast" form of IPC will be used.
+   *        Fast connections are not guaranteed to be implemented, but
+   *        if they are they work only on the local machine, not across
+   *        the network.  "fast" is only a hint not an order.
    *
    * @return whether or not the server was able to accept the send.
    */
   bool send(const QString &remApp, const QString &remObj, 
-	    const QString &remFun, const QByteArray &data);
+	    const QString &remFun, const QByteArray &data,
+	    bool fast=false);
 
   /**
    * This function acts exactly the same as the above, but the data
    * parameter can be specified as a QString for convenience.
    */
   bool send(const QString &remApp, const QString &remObj, 
-	    const QString &remFun, const QString &data);
+	    const QString &remFun, const QString &data,
+	    bool fast=false);
 
   /**
-   * performs a synchronous send and receive.
+   * performs a synchronous send and receive.  The parameters are
+   * the same as for send, with the exception of another QByteArray
+   * being provided for results to be (optionally) returned in.
+   *
+   * @see #send
    */
   bool call(const QString &remApp, const QString &remObj,
 	    const QString &remFun, const QByteArray &data,
-	    QByteArray &replyData);
+	    QByteArray &replyData, bool fast=false);
 
 
   /**
