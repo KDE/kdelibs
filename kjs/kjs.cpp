@@ -40,7 +40,7 @@ KJScript::KJScript()
 KJScript::KJScript(const KJSO &global)
 {
 #ifdef KJS_DEBUG_GLOBAL
-  fprintf( stderr, "KJScript::KJScript() creating KJScriptImp with global=%p\n", global.imp() );
+  fprintf( stderr, "KJScript::KJScript() creating KJScriptImp with global=%p\n", (void*)global.imp() );
 #endif
   rep = new KJScriptImp(this,global);
   rep->init();
@@ -49,7 +49,7 @@ KJScript::KJScript(const KJSO &global)
 KJScript::~KJScript()
 {
 #ifdef KJS_DEBUG_GLOBAL
-  fprintf( stderr, "KJScript::~KJScript() deleting KJScriptImp %p\n", rep );
+  fprintf( stderr, "KJScript::~KJScript() deleting KJScriptImp %p\n", (void*)rep );
 #endif
   delete rep;
 
@@ -69,9 +69,17 @@ Imp *KJScript::globalObject() const
   return rep->glob.imp();
 }
 
+void KJScript::setExtra( void *e ) const
+{
+  rep->globalObjectAsGlobal().setExtra(e);
+}
+
 void KJScript::setCurrent( KJScript *newCurr )
 {
   KJScriptImp::curr = newCurr ? newCurr->rep : 0L;
+#ifdef KJS_DEBUG_GLOBAL
+  fprintf(stderr,"KJScript::setCurrent newCurr(KJScript)=%p -> curr=%p\n", (void*)newCurr, (void*)KJScriptImp::curr);
+#endif
 }
 
 KJScript *KJScript::current()

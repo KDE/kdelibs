@@ -357,7 +357,11 @@ namespace KJS {
     KJScript *scr;
 
     static void initGlobal(Imp *global);
-    KJSO globalObject() { return glob; }
+    // The global object, whatever it is
+    KJSO globalObject() const { return glob; }
+    // The global object, assuming it was a default GlobalImp (otherwise 0L)
+    // ### TODO better name
+    Global globalObjectAsGlobal() const;
 
     KJSO objectPrototype() const;
     KJSO functionPrototype() const;

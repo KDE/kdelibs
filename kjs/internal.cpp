@@ -651,7 +651,7 @@ KJScriptImp::KJScriptImp(KJScript *s, KJSO global)
   instances++;
   KJScriptImp::curr = this;
 #ifdef KJS_DEBUG_GLOBAL
-  fprintf(stderr,"KJScriptImp::KJScriptImp this=curr=%p\n", this);
+  fprintf(stderr,"KJScriptImp::KJScriptImp this=curr=%p\n", (void*)this);
 #endif
   // are we the first interpreter instance ? Initialize some stuff
   if (instances == 1)
@@ -665,7 +665,7 @@ KJScriptImp::KJScriptImp(KJScript *s, KJSO global)
 KJScriptImp::~KJScriptImp()
 {
 #ifdef KJS_DEBUG_GLOBAL
-  fprintf(stderr,"KJScriptImp::~KJScriptImp this=curr=%p\n", this);
+  fprintf(stderr,"KJScriptImp::~KJScriptImp this=curr=%p\n", (void*)this);
 #endif
   KJScriptImp::curr = this;
 
@@ -676,7 +676,7 @@ KJScriptImp::~KJScriptImp()
 
   KJScriptImp::curr = 0L;
 #ifdef KJS_DEBUG_GLOBAL
-  fprintf(stderr,"KJScriptImp::~KJScriptImp (this=%p. Setting curr to 0L)\n", this);
+  fprintf(stderr,"KJScriptImp::~KJScriptImp (this=%p. Setting curr to 0L)\n", (void*)this);
 #endif
   // are we the last of our kind ? Free global stuff.
   if (instances == 1)
@@ -725,7 +725,7 @@ void KJScriptImp::mark()
 void KJScriptImp::init()
 {
 #ifdef KJS_DEBUG_GLOBAL
-  fprintf(stderr,"KJScriptImp::init() this=curr=%p\n", this);
+  fprintf(stderr,"KJScriptImp::init() this=curr=%p\n", (void*)this);
 #endif
   KJScriptImp::curr = this;
 
@@ -767,7 +767,7 @@ void KJScriptImp::clear()
   if (initialized) {
     KJScriptImp::curr = this;
 #ifdef KJS_DEBUG_GLOBAL
-  fprintf(stderr,"KJScriptImp::clear() this=%p, curr temporarily set\n", this);
+  fprintf(stderr,"KJScriptImp::clear() this=%p, curr temporarily set\n", (void*)this);
 #endif
 
     clearException();
@@ -793,7 +793,7 @@ void KJScriptImp::clear()
       KJScriptImp::curr = 0L;
 
 #ifdef KJS_DEBUG_GLOBAL
-  fprintf(stderr,"KJScriptImp::clear() this=%p, curr is now %p\n", this, curr);
+  fprintf(stderr,"KJScriptImp::clear() this=%p, curr is now %p\n", this, (void*)curr);
 #endif
 }
 
@@ -1039,6 +1039,28 @@ KJSO KJScriptImp::objectPrototype() const
 KJSO KJScriptImp::functionPrototype() const
 {
   return glob.get("[[Function.prototype]]");
+}
+
+Global KJScriptImp::globalObjectAsGlobal() const
+{
+  // Applications that do not pass in their own global object to the
+  // KJScript constructor will get a GlobalImp, and Global::current()
+  // will return a global object. However, if the app uses it's own
+  // global object, then this will return 0.
+  if (glob.derivedFrom(GlobalType))
+  {
+#ifdef KJS_DEBUG_GLOBAL
+    fprintf( stderr, "KJScriptImp::globalObjectAsGlobal(): returning glob.imp()=%p\n",(void*)glob.imp() );
+#endif
+    return Global(static_cast<GlobalImp*>(glob.imp()));
+  }
+  else
+  {
+#ifdef KJS_DEBUG_GLOBAL
+    fprintf( stderr, "KJScriptImp::globalObjectAsGlobal(): returning Global() (imp=0L)\n" );
+#endif
+    return Global();
+  }
 }
 
 // ------------------------------ PropList -------------------------------------

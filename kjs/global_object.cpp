@@ -71,21 +71,7 @@ Global Global::current()
   // will return a global object. However, if the app uses it's own
   // global object, then this will return 0.
   assert(KJScriptImp::current());
-  KJSO glob(KJScriptImp::current()->globalObject());
-  if (glob.derivedFrom(GlobalType))
-  {
-#ifdef KJS_DEBUG_GLOBAL
-    fprintf( stderr, "Global.current(): returning glob.imp()=%p\n",glob.imp() );
-#endif
-    return Global(static_cast<GlobalImp*>(glob.imp()));
-  }
-  else
-  {
-#ifdef KJS_DEBUG_GLOBAL
-    fprintf( stderr, "Global.current(): returning Global() (imp=0L)\n" );
-#endif
-    return Global();
-  }
+  return (KJScriptImp::current()->globalObjectAsGlobal());
 }
 
 KJSO Global::objectPrototype() const
@@ -112,7 +98,7 @@ KJSO Global::filter() const
 void *Global::extra() const
 {
 #ifdef KJS_DEBUG_GLOBAL
-  fprintf( stderr, "Global::extra this=%p rep=%p\n", this, rep );
+  fprintf( stderr, "Global::extra this=%p rep=%p\n", (void*)this, (void*)rep );
 #endif
   assert( rep );
   return static_cast<GlobalImp*>(rep)->extraData;
@@ -121,7 +107,7 @@ void *Global::extra() const
 void Global::setExtra(void *e)
 {
 #ifdef KJS_DEBUG_GLOBAL
-  fprintf( stderr, "Global::setExtra this=%p rep=%p extraData=%p\n", this, rep, e );
+  fprintf( stderr, "Global::setExtra this=%p rep=%p extraData=%p\n", (void*)this, (void*)rep, (void*)e );
 #endif
   static_cast<GlobalImp*>(rep)->extraData = e;
 }
@@ -132,7 +118,7 @@ GlobalImp::GlobalImp()
     extraData(0L)
 {
 #ifdef KJS_DEBUG_GLOBAL
-      fprintf( stderr, "GlobalImp::GlobalImp %p\n", this );
+      fprintf( stderr, "GlobalImp::GlobalImp %p\n", (void*)this );
 #endif
 }
 
@@ -142,7 +128,7 @@ void GlobalImp::init()
 
 GlobalImp::~GlobalImp() {
 #ifdef KJS_DEBUG_GLOBAL
-    fprintf( stderr, "GlobalImp::~GlobalImp %p\n", this );
+    fprintf( stderr, "GlobalImp::~GlobalImp %p\n", (void*)this );
 #endif
 }
 

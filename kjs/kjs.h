@@ -91,6 +91,11 @@ public:
    */
   KJS::Imp *globalObject() const;
   /**
+   * Sets the "extra" data on the global object,
+   * assuming you used the first constructor (i.e. not a custom global object).
+   */
+  void setExtra( void *e ) const;
+  /**
    * Don't use. May disappear.
    */
   static KJScript *current();
