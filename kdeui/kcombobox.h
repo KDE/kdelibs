@@ -491,7 +491,7 @@ protected:
     /**
      * Reimplemented for internal reasons, the API is not affected.
      */
-    virtual void create( WId = 0, bool initializeWindow = true, 
+    virtual void create( WId = 0, bool initializeWindow = true,
                          bool destroyOldWindow = true );
 
 private:
@@ -519,7 +519,9 @@ private:
     void makeCompletionBox();
     /** Returns the context menu, creates a new one if did not exist. */
     QPopupMenu* contextMenuInternal();
-
+    /** initializes the context menu */
+    void initPopup();
+    
     bool m_bEnableMenu;
 
     // Pointer to the line editor.

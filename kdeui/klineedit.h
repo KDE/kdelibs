@@ -438,6 +438,8 @@ private:
     void makeCompletionBox();
     /** Returns the context menu, creates a new one if did not exist. */
     QPopupMenu* contextMenuInternal();
+    /** initializes the context menu */
+    void initPopup();
 
     bool m_bEnableMenu;
     class KLineEditPrivate;

@@ -287,35 +287,8 @@ void KLineEdit::mousePressEvent( QMouseEvent* e )
             d->hasReference = false;
         }
 
-        if( compObj() )
-        {
-            d->subMenu->clear();
-            KGlobalSettings::Completion mode = completionMode();
-            d->subMenu->insertItem( i18n("None"), NoCompletion );
-            d->subMenu->setItemChecked( NoCompletion, mode == KGlobalSettings::CompletionNone );
-            d->subMenu->insertItem( i18n("Manual"), ShellCompletion );
-            d->subMenu->setItemChecked( ShellCompletion, mode == KGlobalSettings::CompletionShell );
-            d->subMenu->insertItem( i18n("Popup"), PopupCompletion );
-            d->subMenu->setItemChecked( PopupCompletion, mode == KGlobalSettings::CompletionPopup );
-            d->subMenu->insertItem( i18n("Automatic"), AutoCompletion );
-            d->subMenu->setItemChecked( AutoCompletion, mode == KGlobalSettings::CompletionAuto );
-            d->subMenu->insertItem( i18n("Short Automatic"), SemiAutoCompletion );
-            d->subMenu->setItemChecked( SemiAutoCompletion, mode == KGlobalSettings::CompletionMan );
-            if ( mode != KGlobalSettings::completionMode() )
-            {
-                d->subMenu->insertSeparator();
-                d->subMenu->insertItem( i18n("Default"), Default );
-            }
-        }
+        initPopup();
 
-        bool flag = ( echoMode()==QLineEdit::Normal && !isReadOnly() );
-        bool allMarked = ( markedText().length() == text().length() );
-        d->popupMenu->setItemEnabled( Cut, flag && hasMarkedText() );
-        d->popupMenu->setItemEnabled( Copy, flag && hasMarkedText() );
-        d->popupMenu->setItemEnabled( Paste, flag && (bool)QApplication::clipboard()->text().length() );
-        d->popupMenu->setItemEnabled( Clear, flag && ( text().length() > 0) );
-        d->popupMenu->setItemEnabled( Unselect, hasMarkedText() );
-        d->popupMenu->setItemEnabled( SelectAll, flag && !allMarked );
         KGlobalSettings::Completion oldMode = completionMode();
         int result = d->popupMenu->exec( e->globalPos() );
         if ( !d->hasReference ) {
@@ -360,6 +333,46 @@ void KLineEdit::mousePressEvent( QMouseEvent* e )
     QLineEdit::mousePressEvent( e );
 }
 
+void KLineEdit::initPopup()
+{
+    if( compObj() ) 
+    {
+        d->subMenu->clear();
+    
+        d->subMenu->insertItem( i18n("None"), NoCompletion );
+        d->subMenu->insertItem( i18n("Manual"), ShellCompletion );
+        d->subMenu->insertItem( i18n("Popup"), PopupCompletion );
+        d->subMenu->insertItem( i18n("Automatic"), AutoCompletion );
+        d->subMenu->insertItem( i18n("Short Automatic"), SemiAutoCompletion );
+    
+        KGlobalSettings::Completion mode = completionMode();
+        d->subMenu->setItemChecked( NoCompletion, 
+                                    mode == KGlobalSettings::CompletionNone );
+        d->subMenu->setItemChecked( ShellCompletion, 
+                                    mode == KGlobalSettings::CompletionShell );
+        d->subMenu->setItemChecked( PopupCompletion, 
+                                    mode == KGlobalSettings::CompletionPopup );
+        d->subMenu->setItemChecked( AutoCompletion, 
+                                    mode == KGlobalSettings::CompletionAuto );
+        d->subMenu->setItemChecked( SemiAutoCompletion, 
+                                    mode == KGlobalSettings::CompletionMan );
+        if ( mode != KGlobalSettings::completionMode() )
+        {
+            d->subMenu->insertSeparator();
+            d->subMenu->insertItem( i18n("Default"), Default );
+        }
+    }
+
+    bool flag = ( echoMode() == Normal && !isReadOnly() );
+    bool allMarked = (markedText().length() == text().length());
+    d->popupMenu->setItemEnabled( Cut, flag && hasMarkedText() );
+    d->popupMenu->setItemEnabled( Copy, flag && hasMarkedText() );
+    d->popupMenu->setItemEnabled( Paste, flag && 
+                                 !QApplication::clipboard()->text().isEmpty());
+    d->popupMenu->setItemEnabled( Clear, flag && !text().isEmpty() );
+    d->popupMenu->setItemEnabled( Unselect, hasMarkedText() );
+    d->popupMenu->setItemEnabled( SelectAll, flag && !allMarked );
+}
 
 void KLineEdit::dropEvent(QDropEvent *e)
 {
