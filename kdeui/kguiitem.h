@@ -34,6 +34,10 @@ class KGuiItem
 public:
     KGuiItem();
 
+    // ### This should probably be explicit in KDE 4; it's easy to get
+    // subtle bugs otherwise - the icon name, tooltip and whatsthis text
+    // get changed behind your back if you do 'setButtonFoo( "Bar" );'
+    // It gives the wrong impression that you just change the text.
     KGuiItem( const QString &text, 
               const QString &iconName  = QString::null,
               const QString &toolTip   = QString::null, 
