@@ -119,9 +119,17 @@ class KKeyButton: public QPushButton
 
 public:
 
+  KKeyButton( QWidget *parent=0, const char *name=0 );
+  // Obsolete
   KKeyButton( const char* name = 0, QWidget *parent = 0);
   ~KKeyButton();
+  /**
+   * Reimplemented for internal purposes.
+   */
   void setText( const QString& text );
+  // FIXME: make variable editing private and add accessor editing()
+  void setEditing(bool editing);
+  // Obsolete
   void setEdit( bool edit );
   bool editing;
 

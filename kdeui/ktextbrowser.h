@@ -62,7 +62,11 @@ class KTextBrowser : public QTextBrowser
      * @param notifyClick @p true causes signals to be emitted.
      */
     void setNotifyClick( bool notifyClick );
-
+    /**
+     * Returns whether a click on a link should be handled internally
+     * or if a signal should be emitted.
+     */
+    bool isNotifyClick() const;
 
   protected:
     /**

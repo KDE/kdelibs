@@ -151,6 +151,14 @@ void KSplitList::setVisibleItems( int numItem )
 /* Added by Mark Donohoe <donohoe@kde.org>                             */
 /*                                                                     */
 /***********************************************************************/
+
+KKeyButton::KKeyButton(QWidget *parent, const char *name)
+  : QPushButton( parent, name )
+{
+  setFocusPolicy( QWidget::StrongFocus );
+  editing = FALSE;
+}
+
 KKeyButton::KKeyButton( const char* name, QWidget *parent)
   : QPushButton( parent, name )
 {
@@ -166,6 +174,12 @@ void KKeyButton::setText( const QString& text )
 {
   QPushButton::setText( text );
   setFixedSize( sizeHint().width()+12, sizeHint().height()+8 );
+}
+
+void KKeyButton::setEditing(bool editing)
+{
+  editing = editing;
+  repaint();
 }
 
 void KKeyButton::setEdit( bool edit )

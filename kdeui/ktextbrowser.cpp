@@ -21,6 +21,17 @@
 ****************************************************************************
 *
 * $Log$
+* Revision 1.7  2000/05/26 04:20:33  granroth
+* Use the KCursor::handCursor instead of the Qt hand cursor with
+* KTextBrowser.  This is for consistency.
+*
+* There is a little bit of flicker when it switches to the hand, though.
+* That's because it first switches to the Qt version in the
+* QTextBrowser code and I use that in the KTextBrowser version to know
+* when to switch to the hand.  I couldn't figure out any other way to do
+* this without completely reimplementing all of the enter events -- what
+* a pain.
+*
 * Revision 1.6  2000/01/03 18:48:57  espen
 * The widget will ignore a key sequence
 * containing F1. Since this widget is used
@@ -54,6 +65,12 @@ KTextBrowser::~KTextBrowser( void )
 void KTextBrowser::setNotifyClick( bool notifyClick )
 {
   mNotifyClick = notifyClick;
+}
+
+
+bool KTextBrowser::isNotifyClick() const
+{
+  return mNotifyClick;
 }
 
 

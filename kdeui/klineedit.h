@@ -192,6 +192,7 @@ public:
     * @param showMenu if true, show the context menu.
     * @param showMode if true, show the mode changer item.
     */
+    // FIXME: For uniformity, this should be setContextMenuEnabled()
     virtual void setEnableContextMenu( bool showMenu );
 
     /**

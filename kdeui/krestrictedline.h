@@ -60,6 +60,7 @@ public:
    * acceptable characters.
    */
   void	setValidChars(const QString& valid);
+  QString validChars() const;
   
 signals:
 

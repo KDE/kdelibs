@@ -56,7 +56,7 @@
  * invoke the member function @ref completionObject for the first
  * time.  You can also assign your own completion object through
  * @ref setCompletionObject function if you want to control the kind
- * of completion object that needs to be used.  Additionally, to make
+ * of completion object that is used.  Additionally, to make
  * this widget more functional, KComboBox will automatically handle the
  * iteration and completion signals internally when a completion object
  * is created through either one of the previously defined methods.  If
@@ -70,7 +70,7 @@
  * @ref useGlobalSettings then allows you to immediately default the
  * bindings back to the global settings again.  You can also default
  * the key-bindings by simply invoking the @ref setXXXKey method without
- * any argumet.  Note that if this widget is not editable, i.e. it is
+ * any argument.  Note that if this widget is not editable, i.e. it is
  * constructed as a "select-only" widget, then only one completion mode,
  * CompletionAuto, is allowed.  All the other modes are simply ignored.
  * The CompletionAuto mode in this case allows you to automatically select
@@ -98,7 +98,7 @@
  * connect(combo,SIGNAL(returnPressed(const QString&)),comp,SLOT(addItem(const QString&));
  * </pre>
  *
- * Other miscelanous functions :
+ * Miscellaneous functions :
  *
  * <pre>
  * // Tell the widget not to handle completion and rotation
@@ -177,6 +177,7 @@ public:
     *
     * @return true when completion mode is automatic.
     */
+    // FIXME: For uniformity, this should be isAutoCompletion()
     bool autoCompletion() const { return completionMode() == KGlobalSettings::CompletionAuto; }
 
     /**
@@ -195,6 +196,7 @@ public:
     * @param showMenu if true, show the context menu.
     * @param showMode if true, show the mode changer.
     */
+    // FIXME: For uniformity, this should be setContextMenuEnabled()
     virtual void setEnableContextMenu( bool showMenu );
 
     /**

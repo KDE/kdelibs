@@ -71,4 +71,9 @@ void KRestrictedLine::setValidChars( const QString& valid)
   qsValidChars = valid;
 }
 
+QString KRestrictedLine::validChars() const
+{
+  return qsValidChars;
+}
+
 #include "krestrictedline.moc"
