@@ -224,16 +224,16 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
         // Cut off trailing slash if any
         if( jPath[jPath.length()-1] == '/' )
             jPath.remove(jPath.length()-1, 1);
-            
+
         QDir dir( jPath );
         if( dir.exists( "bin/java" ) )
         {
             jvm_path = jPath + "/bin/java";
-        } 
+        }
         else if (dir.exists( "/jre/bin/java" ) )
-        { 
+        {
             jvm_path = jPath + "/jre/bin/java";
-        } 
+        }
         else if( QFile::exists(jPath) )
         {
             //check here to see if they entered the whole path the java exe
@@ -479,7 +479,7 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
     }
     bool ok;
     int ID_num = contextID.toInt( &ok ); // context id or kio job id
-    /*if (d->locked_context > -1 && 
+    /*if (d->locked_context > -1 &&
         ID_num != d->locked_context &&
         (cmd_code == KJAS_JAVASCRIPT_EVENT ||
          cmd_code == KJAS_APPLET_STATE ||
@@ -577,7 +577,7 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
             int ticket = args[0].toInt();
             JSStack::iterator it = d->jsstack.find(ticket);
             if (it != d->jsstack.end()) {
-                kdDebug(6100) << "slotJavaRequest: " << ticket << endl; 
+                kdDebug(6100) << "slotJavaRequest: " << ticket << endl;
                 args.pop_front();
                 it.data()->args.operator=(args); // just in case ..
                 it.data()->ready = true;
@@ -624,9 +624,9 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
                     if (cert) {
                         certs.prepend(cert);
                         if (cert->isSigner())
-                            text += QString(i18n("Signed by (validation: "));
+                            text += i18n("Signed by (validation: ");
                         else
-                            text += QString(i18n("Certificate (validation: "));
+                            text += i18n("Certificate (validation: ");
                         switch (cert->validate()) {
                             case KSSLCertificate::Ok:
                                 text += i18n("Ok"); break;
@@ -697,7 +697,7 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
     KJavaAppletContext* context = d->contexts[ ID_num ];
     if( context )
         context->processCmd( cmd, args );
-    else if (cmd != "AppletStateNotification") 
+    else if (cmd != "AppletStateNotification")
         kdError(6100) << "no context object for this id" << endl;
 }
 
@@ -765,7 +765,7 @@ bool KJavaAppletServer::usingKIO() {
 }
 
 
-PermissionDialog::PermissionDialog( QWidget* parent ) 
+PermissionDialog::PermissionDialog( QWidget* parent )
     : QObject(parent), m_button("no")
 {}
 
