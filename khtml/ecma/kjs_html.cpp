@@ -181,7 +181,13 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
       Q_ASSERT(view);
       Q_ASSERT(view->part());
       if ( view && view->part() )
-        return Value(Window::retrieveWindow(view->part())->location());
+      {
+        Window* win = Window::retrieveWindow(view->part());
+        if (win)
+          return Value(win->location());
+	else
+          return Undefined();
+      }
       else
         return Undefined();
     case Cookie:
@@ -986,10 +992,10 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &propertyName) con
       if ( doc && doc->view() ) {
         KHTMLPart* part = doc->view()->part();
         if ( part ) {
-          Object globalObject = Window::retrieve( part );
+          Object globalObject = Object::dynamicCast( Window::retrieve( part ) );
           // Calling hasProperty on a Window object doesn't work, it always says true.
           // Hence we need to use getDirect instead.
-          if ( static_cast<ObjectImp *>(globalObject.imp())->getDirect( propertyName ) )
+          if ( !globalObject.isNull() && static_cast<ObjectImp *>(globalObject.imp())->getDirect( propertyName ) )
             return globalObject.get( exec, propertyName );
         }
       }

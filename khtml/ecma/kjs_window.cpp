@@ -266,18 +266,20 @@ Window::~Window()
 
 Window *Window::retrieveWindow(KHTMLPart *p)
 {
-  ValueImp *imp = retrieve( p ).imp();
+  Object obj = Object::dynamicCast( retrieve( p ) );
 #ifndef NDEBUG
-  // imp should never be 0L, except when javascript has been disabled in that part.
+  // obj should never be null, except when javascript has been disabled in that part.
   if ( p && p->jScriptEnabled() )
   {
-    assert( imp );
+    assert( !obj.isNull() );
 #ifndef QWS
-    assert( dynamic_cast<KJS::Window*>(imp) );
+    assert( dynamic_cast<KJS::Window*>(obj.imp()) ); // type checking
 #endif
   }
 #endif
-  return static_cast<KJS::Window*>(imp);
+  if ( obj.isNull() ) // JS disabled
+    return 0;
+  return static_cast<KJS::Window*>(obj.imp());
 }
 
 Window *Window::retrieveActive(ExecState *exec)
@@ -290,7 +292,7 @@ Window *Window::retrieveActive(ExecState *exec)
   return static_cast<KJS::Window*>(imp);
 }
 
-Object Window::retrieve(KHTMLPart *p)
+Value Window::retrieve(KHTMLPart *p)
 {
   assert(p);
   KJSProxy *proxy = KJSProxy::proxy( p );
@@ -300,7 +302,7 @@ Object Window::retrieve(KHTMLPart *p)
 #endif
     return proxy->interpreter()->globalObject(); // the Global object is the "window"
   } else
-    return Object();
+    return Undefined(); // This can happen with JS disabled on the domain of that window
 }
 
 Location *Window::location() const
@@ -639,13 +641,16 @@ Value Window::get(ExecState *exec, const UString &p) const
   // give access to functions (and variables ?) from parent frameset
   if (m_part->parentPart())
   {
-    Object parentObject = retrieve(m_part->parentPart());
-    Value ret = parentObject.get(exec,p);
-    if (ret.type() != UndefinedType ) {
+    Object parentObject = Object::dynamicCast( retrieve(m_part->parentPart()) );
+    if ( !parentObject.isNull() )
+    {
+      Value ret = parentObject.get(exec,p);
+      if (ret.type() != UndefinedType ) {
 #ifdef KJS_VERBOSE
-      kdDebug() << "Window::get property " << p.qstring() << " found in parent part" << endl;
+        kdDebug() << "Window::get property " << p.qstring() << " found in parent part" << endl;
 #endif
-      return ret;
+        return ret;
+      }
     }
   }
 
@@ -1094,10 +1099,11 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
           khtmlpart->begin();
           khtmlpart->write("<HTML><BODY>");
           khtmlpart->end();
-	  if ( part->docImpl() ) {
-	    khtmlpart->docImpl()->setDomain( part->docImpl()->domain(), true );
-	    khtmlpart->docImpl()->setBaseURL( part->docImpl()->baseURL() );
-	  }
+          if ( part->docImpl() ) {
+            kdDebug(6070) << "Setting domain to " << part->docImpl()->domain().string() << endl;
+            khtmlpart->docImpl()->setDomain( part->docImpl()->domain(), true );
+            khtmlpart->docImpl()->setBaseURL( part->docImpl()->baseURL() );
+          }
         }
         uargs.serviceType = QString::null;
         if (uargs.frameName == "_blank")
@@ -1421,7 +1427,12 @@ Value FrameArray::get(ExecState *exec, const UString &p) const
   if (p == "length")
     return Number(len);
   else if (p== "location") // non-standard property, but works in NS and IE
-    return Window::retrieve( part ).get( exec, "location" );
+  {
+    Object obj = Object::dynamicCast( Window::retrieve( part ) );
+    if ( !obj.isNull() )
+      return obj.get( exec, "location" );
+    return Undefined();
+  }
 
   // check for the name or number
   KParts::ReadOnlyPart *frame = part->findFrame(p.qstring());

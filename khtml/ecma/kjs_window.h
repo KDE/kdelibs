@@ -71,7 +71,7 @@ namespace KJS {
      * for the specified part p this will be returned in order to have unique
      * bindings.
      */
-    static Object retrieve(KHTMLPart *p);
+    static Value retrieve(KHTMLPart *p);
     /**
      * Returns the Window object for a given HTML part
      */
