@@ -116,7 +116,15 @@ void KComboBox::makeCompletion( const QString& text )
     if( m_pEdit != 0 )
     {
 	    KCompletion *comp = compObj();
-	    if( !comp ) return; // No Completion object
+	    // We test for zero length text because for some
+	    // reason we get an extra text completion with an empty
+	    // text when the insertion policy is set to "NoInsertion"	    
+	    if( !comp || text.length() == 0 )
+	    {
+	        return; // No Completion object or empty completion text allowed!!
+	    }
+	    
+	    debug( "Text to be matched : %s\nText Length : %i", text.latin1(), text.length() );
 		
 		QString match;
     	int pos = cursorPosition();		
@@ -145,25 +153,52 @@ void KComboBox::makeCompletion( const QString& text )
          	return;
       	}
 
-		
-		int index = ( match.length() == 0 ) ? -1 : listBox()->index( listBox()->findItem( match ) );
-		if( index > -1 )
+		if( insertionPolicy() == KComboBox::NoInsertion )
 		{
-			setCurrentItem( index );
+    		int index = ( count() > 0 && match.length() == 0 ) ? -1 : listBox()->index( listBox()->findItem( match ) );
+		    if( index == -1 )
+		    {
+    		    setEditText( match );
+            }
+            else
+            {
+                setCurrentItem( index );
+            }
+            
+            if( mode == KGlobalSettings::CompletionAuto ||
+		       	mode == KGlobalSettings::CompletionMan )
+            {
+                m_pEdit->setSelection( pos, match.length() );
+                m_pEdit->setCursorPosition( pos );
+            }
 		}
+		else
+		{
+    		int index = ( match.length() == 0 ) ? -1 : listBox()->index( listBox()->findItem( match ) );
+	    	if( index > -1 )
+		    {
+			    setCurrentItem( index );
+    		}
 			
-		if( mode == KGlobalSettings::CompletionAuto ||
-			mode == KGlobalSettings::CompletionMan )
-        {
-            m_pEdit->setSelection( pos, match.length() );
-            m_pEdit->setCursorPosition( pos );
-        }
+	    	if( mode == KGlobalSettings::CompletionAuto ||
+		    	mode == KGlobalSettings::CompletionMan )
+            {
+                m_pEdit->setSelection( pos, match.length() );
+                m_pEdit->setCursorPosition( pos );
+            }
+       }       
 	}
     else if( m_pEdit == 0 )
     {
-		if( text.isNull() ) return;
+		if( text.isNull() )
+		{
+		    return;
+		}
 		int index = listBox()->index( listBox()->findItem( text ) );
-		if( index >= 0 ) setCurrentItem( index );
+		if( index >= 0 )
+		{
+		    setCurrentItem( index );
+		}
     }
 
 }
@@ -186,12 +221,25 @@ void KComboBox::rotateText( KCompletionBase::KeyBindingType type )
 			QString input = ( type == KCompletionBase::PrevCompletionMatch ) ? comp->previousMatch() : comp->nextMatch();
 			
 			// Ignore rotating to the same text			
-            if( input.isNull() || input == m_pEdit->text() )  return;
-
-       		m_pEdit->setText( input );       		
-            if( m_pEdit->hasMarkedText() )
+            if( input.isNull() || input == currentText() )
             {
-                int pos = cursorPosition();
+                return;
+            }
+            bool marked = m_pEdit->hasMarkedText(); // See if it had marked text
+            int pos = cursorPosition(); // Note the current cursor position
+       		int index = ( count() > 0 && input.length() == 0 ) ? -1 : listBox()->index( listBox()->findItem( input ) );
+		    if( index == -1 )
+		    {
+    		    setEditText( input );
+            }
+            else
+            {
+                setCurrentItem( index );
+            }
+            // Re-mark the selection if it was previously
+            // selected
+            if( marked )
+            {
                 m_pEdit->setSelection( pos, input.length() );
                 m_pEdit->setCursorPosition( pos );				
 			}
@@ -205,7 +253,6 @@ void KComboBox::rotateText( KCompletionBase::KeyBindingType type )
         	// Other insertion policies are not well equipped to support
         	// "save the last written text" feature of *nix like shells.        	
         	int index = -1;        	
-        	debug( "Rotating through item : %i", currentItem() );
 			QComboBox::Policy policy = insertionPolicy();
 			if( m_strCurrentText.isNull() &&
 				( policy == QComboBox::AtTop ||
@@ -215,11 +262,9 @@ void KComboBox::rotateText( KCompletionBase::KeyBindingType type )
 				{
 					index = ( policy == QComboBox::AtTop ) ? 0 : count() - 1;
 				}
-                debug( "Current item is : %i\nTotal items in list : %i", index, count() );
 				if( index == 0 || index == count() - 1 )
 				{
-					m_strCurrentText = m_pEdit->text();  //Store the current text.
-				    debug( "Storing the current text : %s ", m_strCurrentText.latin1() );					
+					m_strCurrentText = currentText();  //Store the current text.
 				}
 			}
 			else			
@@ -250,8 +295,7 @@ void KComboBox::rotateText( KCompletionBase::KeyBindingType type )
 					( ( policy == QComboBox::AtTop && index < 0 ) ||
 					  ( policy == QComboBox::AtBottom && index >= count() ) ) )
 				{
-				    debug( "Setting the text editor to : %s", m_strCurrentText.latin1() );
-					m_pEdit->setText( m_strCurrentText );
+					setEditText( m_strCurrentText );
 					m_strCurrentText = QString::null;				
 				}
 			}
@@ -263,7 +307,7 @@ void KComboBox::itemSelected( QListBoxItem* item )
 {
     if( item != 0 && m_pEdit != 0 )
     {
-		m_pEdit->setSelection( 0, m_pEdit->text().length() );
+		m_pEdit->setSelection( 0, currentText().length() );
     }
 }
 
@@ -310,17 +354,18 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
         if( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter )
         {
             emit returnPressed();
-            emit returnPressed( m_pEdit->text() );
+            emit returnPressed( currentText() );
         }
 
     	KGlobalSettings::Completion mode = completionMode();
         if( mode == KGlobalSettings::CompletionAuto )
         {
             QString keycode = e->text();
+            debug( "Auto Completion ==> User pressed : %s", keycode.latin1() );
             if( !keycode.isNull() && keycode.unicode()->isPrint() && emitSignals() )
             {
                 QComboBox::keyPressEvent ( e );
-                emit completion( m_pEdit->text() );
+                emit completion( currentText() );
                 return;
             }
         }
@@ -339,7 +384,7 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
                     (mode == KGlobalSettings::CompletionShell &&
 	                 m_pEdit->cursorPosition() == (int) currentText().length() ) )
                 {
-                    emit completion( m_pEdit->text() );
+                    emit completion( currentText() );
                     return;
                 }
 

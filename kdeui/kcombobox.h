@@ -356,7 +356,7 @@ protected slots:
     * is left to iterate through the list as usual.
     */
     virtual void makeCompletion( const QString& );
-
+        
 protected:
 
     /**

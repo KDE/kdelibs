@@ -95,10 +95,11 @@ void KLineEdit::rotateText( KCompletionBase::KeyBindingType type )
 		QString input = (type == KCompletionBase::PrevCompletionMatch) ? comp->previousMatch() : comp->nextMatch();
 		// Skip rotation if previous/next match is null or the same text.
         if( input.isNull() || input == text() ) return;
+        bool marked = hasMarkedText(); // Note if current text has been marked
+		int pos = cursorPosition(); // Note the current cursor position
 		setText( input );
-        if( hasMarkedText() )
+        if( marked )
         {
-			int pos = cursorPosition();
 			setSelection( pos, input.length() );
 			setCursorPosition( pos );				
 		}
@@ -108,7 +109,10 @@ void KLineEdit::rotateText( KCompletionBase::KeyBindingType type )
 void KLineEdit::makeCompletion( const QString& text )
 {
 	KCompletion *comp = compObj();
-	if( !comp ) return;  // No completion object...
+	if( !comp && text.length() == 0 )
+	{
+	    return;  // No completion object...
+	}
 	
 	QString match;
    	int pos = cursorPosition();
@@ -136,7 +140,7 @@ void KLineEdit::makeCompletion( const QString& text )
     	}
         return;
     }
-
+    
     setText( match );
 	if( mode == KGlobalSettings::CompletionAuto ||
 		mode == KGlobalSettings::CompletionMan )
