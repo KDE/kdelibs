@@ -126,6 +126,7 @@ class KDirOperator : public QWidget
     /**
      * Enables/disables showing hidden files.
      */
+	// ### KDE4: make virtual
     void setShowHiddenFiles ( bool s ) { showHiddenAction->setChecked( s ); }
 
     /**
@@ -196,6 +197,7 @@ class KDirOperator : public QWidget
      * @param clearforward specifies whether the "forward" history should be
      * cleared.
      */
+	// ### KDE4: make virtual
     void setURL(const KURL& url, bool clearforward);
 
     /**
@@ -214,6 +216,7 @@ class KDirOperator : public QWidget
      * @see KFileCombiView
      * @see #view
      */
+	// ### KDE4: make virtual
     void setView(KFileView *view);
 
     /**
@@ -232,6 +235,7 @@ class KDirOperator : public QWidget
      * Sets one of the predefined fileviews
      * @see KFile::FileView
      */
+	// ### KDE4: make virtual
     void setView(KFile::FileView view);
 
     /**
@@ -271,6 +275,7 @@ class KDirOperator : public QWidget
      * You cannot mix File and Files of course, as the former means
      * single-selection mode, the latter multi-selection.
      */
+	// ### KDE4: make virtual
     void setMode( KFile::Mode m );
     /**
      * @returns the listing/selection mode.
@@ -282,6 +287,7 @@ class KDirOperator : public QWidget
      * The ownership of @p w is transferred to KDirOperator, so don't
      * delete it yourself!
      */
+	// ### KDE4: make virtual
     void setPreviewWidget(const QWidget *w);
 
     /**
@@ -397,6 +403,7 @@ class KDirOperator : public QWidget
      * @see #viewConfigGroup
      * @since 3.1
      */
+	// ### KDE4: make virtual
     void setViewConfig( KConfig *config, const QString& group );
     
     /**
@@ -468,6 +475,7 @@ class KDirOperator : public QWidget
      * to the user.
      * @returns true if the directory could be created.
      */
+	// ### KDE4: make virtual
     bool mkdir( const QString& directory, bool enterDirectory = true );
 
     /**
@@ -476,6 +484,7 @@ class KDirOperator : public QWidget
      * @param ask specifies whether a confirmation dialog should be shown
      * @param showProgress passed to the DeleteJob to show a progress dialog
      */
+	// ### KDE4: make virtual
     KIO::DeleteJob * del( const KFileItemList& items,
                           bool ask = true, bool showProgress = true );
 
@@ -487,6 +496,7 @@ class KDirOperator : public QWidget
      * @param showProgress passed to the DeleteJob to show a progress dialog
      * @since 3.1
      */
+	// ### KDE4: make virtual
     KIO::DeleteJob * del( const KFileItemList& items, QWidget *parent,
                           bool ask = true, bool showProgress = true );
 
@@ -504,6 +514,7 @@ class KDirOperator : public QWidget
      *
      * Default is off.
      */
+	// ### KDE4: make virtual
     void setEnableDirHighlighting( bool enable );
 
     /**
@@ -561,14 +572,15 @@ protected:
      */
      virtual KFileView* createView( QWidget* parent, KFile::FileView view );
      /**
-     * Sets a custom KFileReader to list directories.
+     * Sets a custom KDirLister to list directories.
      */
+	// ### KDE4: make virtual
     void setDirLister( KDirLister *lister );
 
     /**
      * @reimplemented
      */
-    void resizeEvent( QResizeEvent * );
+    virtual void resizeEvent( QResizeEvent * );
 
     /**
      * Sets up all the actions. Called from the constructor, you usually
@@ -615,21 +627,25 @@ public slots:
     /**
      * Goes one step back in the history and opens that url.
      */
+	// ### KDE4: make virtual
     void back();
 
     /**
      * Goes one step forward in the history and opens that url.
      */
+	// ### KDE4: make virtual
     void forward();
 
     /**
      * Enters the home directory.
      */
+	// ### KDE4: make virtual
     void home();
 
     /**
      * Goes one directory up from the current url.
      */
+	// ### KDE4: make virtual
     void cdUp();
 
     /**
@@ -640,16 +656,19 @@ public slots:
     /**
      * Re-reads the current url.
      */
+	// ### KDE4: make virtual
     void rereadDir();
 
     /**
      * Opens a dialog to create a new directory.
      */
+	// ### KDE4: make virtual
     void mkdir();
 
     /**
      * Deletes the currently selected files/directories.
      */
+	// ### KDE4: make virtual
     void deleteSelected();
 
     /**
@@ -697,6 +716,7 @@ protected slots:
     /**
      * Enters the directory specified by the given @p item.
      */
+	// ### KDE4: make virtual
     void selectDir(const KFileItem *item );
 
     /**
