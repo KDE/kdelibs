@@ -328,7 +328,8 @@ uint RLEMap::insert(const uchar *d, uint l)
 QPtrVector<RLEData> RLEMap::vector()
 {
 	QPtrVector<RLEData> v(size());
-	for (Iterator it = begin(); it != end(); it++)
+	Iterator end(end());
+	for (Iterator it = begin(); it != end; it++)
 		v.insert(it.data(), &it.key());
 
 	return v;
