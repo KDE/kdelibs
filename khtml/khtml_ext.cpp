@@ -387,10 +387,10 @@ void KHTMLPopupGUIClient::slotSaveImageAs()
 
 void KHTMLPopupGUIClient::slotCopyLinkLocation()
 {
-  KURL::List lst;
-  lst.append( d->m_url );
 #ifndef QT_NO_MIMECLIPBOARD
   // Set it in both the mouse selection and in the clipboard
+  KURL::List lst;
+  lst.append( d->m_url.url() );
   QApplication::clipboard()->setSelectionMode(true);
   QApplication::clipboard()->setData( KURLDrag::newDrag( lst ) );
   QApplication::clipboard()->setSelectionMode(false);
@@ -407,10 +407,10 @@ void KHTMLPopupGUIClient::slotStopAnimations()
 
 void KHTMLPopupGUIClient::slotCopyImageLocation()
 {
-  KURL::List lst;
-  lst.append( d->m_imageURL );
 #ifndef QT_NO_MIMECLIPBOARD
   // Set it in both the mouse selection and in the clipboard
+  KURL::List lst;
+  lst.append( d->m_imageURL.url() );
   QApplication::clipboard()->setSelectionMode(true);
   QApplication::clipboard()->setData( KURLDrag::newDrag( lst ) );
   QApplication::clipboard()->setSelectionMode(false);
