@@ -980,7 +980,7 @@ protected:
   virtual void virtual_hook( int id, void* data );
 private:
   class KListViewPrivate;
-  KListViewPrivate *d;
+  KListViewPrivate* const d;
   bool isExecuteArea( int x, QListViewItem* item );
 };
 

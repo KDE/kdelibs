@@ -28,7 +28,7 @@
 #include "klistbox.h"
 
 KListBox::KListBox( QWidget *parent, const char *name, WFlags f )
-    : QListBox( parent, name, f )
+    : QListBox( parent, name, f ), d(0)
 {
     connect( this, SIGNAL( onViewport() ),
 	     this, SLOT( slotOnViewport() ) );
