@@ -198,17 +198,20 @@ bool PPDLoader::endUi( const QString& name )
 		else
 		{
 			QString defval = m_option->get( "default" );
+			DrGroup *grp = 0;
 			if ( !defval.isEmpty() )
 				m_option->setValueText( defval );
 			if ( m_groups.size() == 1 )
 			{
 				// we don't have any group defined, create the
 				// most adapted one.
-				DrGroup *grp = findOrCreateGroupForOption( m_option->name() );
-				grp->addOption( m_option );
+				grp = findOrCreateGroupForOption( m_option->name() );
 			}
 			else
-				m_groups.top()->addOption( m_option );
+				grp = m_groups.top();
+			grp->addOption( m_option );
+			if ( grp->get( "text" ).contains( "install", false ) )
+				m_option->set( "fixed", "1" );
 		}
 		m_option = 0;
 		return true;
@@ -241,7 +244,6 @@ bool PPDLoader::endGroup( const QString& name )
 
 bool PPDLoader::putStatement( const QString& keyword, const QString& name, const QString& desc, const QStringList& values )
 {
-	qDebug( "Statement: keyword=%s, name=%s, values=%d", keyword.latin1(), name.latin1(), values.size() );
 	if ( m_option )
 	{
 		if ( !name.isEmpty() && m_option->name() == keyword )
@@ -398,7 +400,6 @@ bool PPDLoader::putFooProcessedData( const QVariant& var )
 					delete o;
 				}
 			}
-			qDebug( "FOO_OPTION: %s", it.key().latin1() );
 		}
 	}
 	return true;
@@ -484,10 +485,10 @@ void PPDLoader::processPageSizes( DrMain *driver )
 	QDictIterator<PS_private> it( m_ps );
 	for ( ; it.current(); ++it )
 	{
-		qDebug( "ADDING PAGESIZE: %16s, Size = ( %.2f, %.2f ),  Area = ( %.2f, %.2f, %.2f, %.2f )", it.current()->name.latin1(),
-				it.current()->size.width, it.current()->size.height,
-				it.current()->area.left, it.current()->area.bottom,
-				it.current()->area.right, it.current()->area.top );
+		//qDebug( "ADDING PAGESIZE: %16s, Size = ( %.2f, %.2f ),  Area = ( %.2f, %.2f, %.2f, %.2f )", it.current()->name.latin1(),
+		//		it.current()->size.width, it.current()->size.height,
+		//		it.current()->area.left, it.current()->area.bottom,
+		//		it.current()->area.right, it.current()->area.top );
 		driver->addPageSize( new DrPageSize( it.current()->name,
 					( int )it.current()->size.width, ( int )it.current()->size.height,
 					( int )it.current()->area.left, ( int )it.current()->area.bottom,

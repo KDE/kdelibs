@@ -33,6 +33,7 @@
 #include "kpipeprocess.h"
 #include "util.h"
 #include "foomatic2loader.h"
+#include "ppdloader.h"
 
 #include <qfile.h>
 #include <qtextstream.h>
@@ -52,6 +53,7 @@
 #include <kdialogbase.h>
 #include <kextendedsocket.h>
 #include <kprocess.h>
+#include <kfilterdev.h>
 #include <cups/cups.h>
 #include <cups/ppd.h>
 #include <math.h>
@@ -600,110 +602,25 @@ DrMain* KMCupsManager::loadDriverFile(const QString& fname)
 {
 	if (QFile::exists(fname))
 	{
-		QString	unzipfname;
-		if (!uncompressFile(fname,unzipfname))
-			return NULL;
-
-		DrMain	*driver = new DrMain();
-		if (unzipfname.isEmpty()) unzipfname = fname;
-		else driver->set("temporary",unzipfname);
-
-		// at this point we can only work with unzipfname
-		ppd_file_t	*ppd = ppdOpenFile(unzipfname.local8Bit());
-		if (ppd)
+		DrMain *driver = PPDLoader::loadDriver( fname );
+		if ( driver )
 		{
-			ppdMarkDefaults(ppd);
-
-			driver->set("text",QString::fromLocal8Bit(ppd->nickname));
-			driver->set("manufacturer",QString::fromLocal8Bit(ppd->manufacturer));
-			driver->set("model",QString::fromLocal8Bit(ppd->shortnickname));
-			driver->set("description",QString::fromLocal8Bit(ppd->nickname));
-			driver->set("template",unzipfname);
-			driver->set("colordevice", QString::number(ppd->color_device));
-			for (int i=0;i<ppd->num_groups;i++)
-			{
-				ppd_group_t	*grp = ppd->groups+i;
-				DrGroup	*gr = new DrGroup();
-				gr->set("text",ppdi18n(grp->text));
-				bool 	fixed = QString::fromLocal8Bit(grp->text).contains("install",false);
-				driver->addGroup(gr);
-				for (int k=0;k<grp->num_options;k++)
-				{
-					ppd_option_t	*opt = grp->options+k;
-					if (strcmp(opt->keyword,"PageRegion") == 0) continue;
-					DrListOption	*op;
-					switch (opt->ui)
-					{
-						case PPD_UI_BOOLEAN:
-							op = new DrBooleanOption();
-							break;
-						case PPD_UI_PICKONE:
-							op = new DrListOption();
-							break;
-						default:
-							continue;	// skip option
-					}
-					op->setName(QString::fromLocal8Bit(opt->keyword));
-					op->set("text",ppdi18n(opt->text));
-					op->set("default",QString::fromLocal8Bit(opt->defchoice));
-					if (fixed) op->set("fixed","1");
-					gr->addOption(op);
-					for (int n=0;n<opt->num_choices;n++)
-					{
-						ppd_choice_t	*cho = opt->choices+n;
-						DrBase	*ch = new DrBase();
-						ch->setName(QString::fromLocal8Bit(cho->choice));
-						ch->set("text",ppdi18n(cho->text));
-						op->addChoice(ch);
-					}
-					op->setValueText(QString::fromLocal8Bit(opt->defchoice));
-				}
-			}
-
-			// add constraints
-			for (int i=0; i<ppd->num_consts; i++)
-			{
-				ppd_const_t	*cst = ppd->consts+i;
-				driver->addConstraint(new DrConstraint(QString::fromLatin1(cst->option1),QString::fromLatin1(cst->option2),QString::fromLatin1(cst->choice1),QString::fromLatin1(cst->choice2)));
-			}
-
-			// add page sizes
-			for (int i=0; i<ppd->num_sizes; i++)
-			{
-				ppd_size_t	*sz = ppd->sizes+i;
-				//kdDebug( 500 ) << "PageSize " << sz->name << ", " << sz->width << ", " << sz->length << ", " << sz->left << ", "
-				//	<< sz->bottom << ", " << sz->right << ", " << sz->top << endl;
-				driver->addPageSize(new DrPageSize(QString::fromLatin1(sz->name),sz->width,sz->length,sz->left,sz->bottom,
-							( sz->width - sz->right ),( sz->length - sz->top )));
-			}
-
-			ppdClose(ppd);
-
-			// try to extract Matic data
-			QString	maticdata;
-			extractMaticData(maticdata,unzipfname);
-			if (!maticdata.isEmpty())
-			{
-				driver->set("matic","1");
-				Foomatic2Loader loader;
-				if ( loader.readFromBuffer( maticdata ) )
-				{
-					driver = loader.modifyDriver( driver );
-				}
-			}
-			return driver;
+			driver->set( "template", fname );
+			// FIXME: should fix option in group "install"
 		}
-		else delete driver;
+		return driver;
 	}
 	return NULL;
 }
 
 void KMCupsManager::saveDriverFile(DrMain *driver, const QString& filename)
 {
-	QFile	in(driver->get("template")), out(filename);
-	if (in.exists() && in.open(IO_ReadOnly) && out.open(IO_WriteOnly))
+	kdDebug( 500 ) << "Saving PPD file with template=" << driver->get( "template" ) << endl;
+	QIODevice *in = KFilterDev::deviceForFile( driver->get( "template" ) );
+	QFile	out(filename);
+	if (in && in->open(IO_ReadOnly) && out.open(IO_WriteOnly))
 	{
-		QTextStream	tin(&in), tout(&out);
+		QTextStream	tin(in), tout(&out);
 		QString		line, keyword;
 		bool 		isnumeric(false);
 		DrBase		*opt(0);
@@ -789,6 +706,7 @@ void KMCupsManager::saveDriverFile(DrMain *driver, const QString& filename)
 				tout << line << endl;
 		}
 	}
+	delete in;
 }
 
 bool KMCupsManager::savePrinterDriver(KMPrinter *p, DrMain *d)
