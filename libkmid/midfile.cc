@@ -44,7 +44,7 @@ double metronomeTempoToTempo(ulong x)
     return ((double)60*x)/1000000;
 }
 
-int decompressFile(char *gzname,char *tmpname)
+int decompressFile(const char *gzname, char *tmpname)
 // Returns 0 if OK, 1 if error (tmpname not set)
 {
     char *cmd=new char[20+strlen(gzname)];
@@ -97,7 +97,7 @@ int decompressFile(char *gzname,char *tmpname)
     return 0;
 }
 
-track **readMidiFile(char *name,midifileinfo *info,int &ok)
+track **readMidiFile(const char *name,midifileinfo *info,int &ok)
 {
     ok=1;
     track **Tracks;

@@ -80,7 +80,7 @@ void player::removeSong(void)
     songLoaded=0;
 }
 
-int player::loadSong(char *filename)
+int player::loadSong(const char *filename)
 {
     removeSong();
 #ifdef PLAYERDEBUG

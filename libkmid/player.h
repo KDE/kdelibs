@@ -125,7 +125,7 @@ public:
     player(DeviceManager *midi_,PlayerController *pctl);
     ~player();
     
-    int loadSong(char *filename);
+    int loadSong(const char *filename);
     void removeSong(void); // Unload the current song, so that everything is empty
     
     int isSongLoaded(void) { return songLoaded; };

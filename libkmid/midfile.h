@@ -50,7 +50,7 @@ struct midifileinfo
 double tempoToMetronomeTempo(ulong x);
 double metronomeTempoToTempo(ulong x);
 
-track **readMidiFile(char *name,midifileinfo *info,int &ok);
+track **readMidiFile(const char *name,midifileinfo *info,int &ok);
 
 void parseInfoData(midifileinfo *info,track **Tracks,float ratioTempo);
 
