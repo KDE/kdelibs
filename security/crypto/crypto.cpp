@@ -1131,6 +1131,17 @@ QString KCryptoConfig::quickHelp() const
 }
 
 
+const KAboutData* KCryptoConfig::aboutData() const {
+     KAboutData *about =
+     new KAboutData(I18N_NOOP("kcmcrypto"), I18N_NOOP("KDE Crypto Control Module"),
+                    0, 0, KAboutData::License_GPL,
+                    I18N_NOOP("(c) 2000 - 2001 George Staikos"));
+     about->addAuthor("George Staikos", 0, "staikos@kde.org");
+     about->addAuthor("Carsten Pfeiffer", 0, "pfeiffer@kde.org");
+     return about;
+} 
+
+
 void KCryptoConfig::slotCWcompatible() {
   #ifdef HAVE_SSL
   CipherItem *item;
