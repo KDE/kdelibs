@@ -499,20 +499,23 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP,
                 root = root->parent();
             if (root->isCSSStyleSheet())
                 doc = static_cast<CSSStyleSheetImpl*>(root)->doc();
-            if (doc && !doc->isHTMLDocument()) {
-                const DOMString s = tag;
-                cs->tag = doc->elementId(s.implementation());
-            } else {
-		int tagID = khtml::getTagID(tag.lower().ascii(), tag.length());
-		if (tagID != 0) {
-		    cs->tag = tagID;
-		} else if (!(tag.isEmpty())) {
+            if ( doc ) {
+                if ( doc->isHTMLDocument() ) {
+                    int tagID = khtml::getTagID(tag.lower().ascii(), tag.length());
+                    if (tagID != 0) {
+                        cs->tag = tagID;
+                    } else if (!(tag.isEmpty())) {
+                        const DOMString s = tag;
+                        cs->tag = doc->elementId(s.implementation());
+                    } else {
+                        kdWarning() << "Error in CSS" << endl;
+                    }
+                }
+                else {
                     const DOMString s = tag;
                     cs->tag = doc->elementId(s.implementation());
-		} else {
-		    kdWarning() << "Error in CSS" << endl;
-		}
-	    }
+                }
+            }
         }
    }
 #ifdef CSS_DEBUG
