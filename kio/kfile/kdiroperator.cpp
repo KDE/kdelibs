@@ -47,6 +47,7 @@
 #include <kio/jobclasses.h>
 #include <kio/netaccess.h>
 #include <kio/previewjob.h>
+#include <kio/renamedlg.h>
 #include <kpropertiesdialog.h>
 #include <kservicetypefactory.h>
 #include <kstdaccel.h>
@@ -383,9 +384,13 @@ void KDirOperator::mkdir()
 {
     bool ok;
     QString where = url().prettyURL( +1, KURL::StripFileProtocol );
+    QString name = i18n( "New Folder" );
+    if ( url().isLocalFile() && QFileInfo( url().path(+1) + name ).exists() )
+         name = KIO::RenameDlg::suggestName( url(), name );
+    
     QString dir = KInputDialog::getText( i18n( "New Folder" ),
                                          i18n( "Create new folder in:\n%1" ).arg( where ),
-                                         i18n("New Folder"), &ok, this);
+                                         name, &ok, this);
     if (ok)
       mkdir( KIO::encodeFileName( dir ), true );
 }
