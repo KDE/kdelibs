@@ -314,7 +314,7 @@ protected:
     virtual void alignmentChange( Alignment /*a*/ ) {};
 
     /**
-     * Use this method to set the custom menu for this applet so that is ca be shown 
+     * Use this method to set the custom menu for this applet so that it can be shown 
      * in the applet handle menu and other appropriate places that the applet many not itself
      * be aware of. The applet itself is still responsible for deleting and managing the
      * the menu.
