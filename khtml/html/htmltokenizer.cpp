@@ -281,7 +281,7 @@ void HTMLTokenizer::parseSpecial(DOMStringIt &src, bool begin)
     while ( src.length() ) {
         checkScriptBuffer();
         unsigned char ch = src->latin1();
-        if ( !scriptCodeResync && ch == '-' && scriptCodeSize >= 3 && !src.escaped() && QConstString( scriptCode+scriptCodeSize-3, 3 ).string() == "<!-" ) {
+        if ( !scriptCodeResync && !textarea && ch == '-' && scriptCodeSize >= 3 && !src.escaped() && QConstString( scriptCode+scriptCodeSize-3, 3 ).string() == "<!-" ) {
             comment = true;
             parseComment( src );
             continue;
