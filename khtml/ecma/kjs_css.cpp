@@ -73,5 +73,6 @@ void Style::put(const UString &p, const KJSO& v)
         propvalue += "px";
     }
     el.removeCSSProperty( prop );
-    el.addCSSProperty( prop, DOM::DOMString(propvalue) );
+    if(!propvalue.isEmpty())
+        el.addCSSProperty( prop, DOM::DOMString(propvalue) );
 }
