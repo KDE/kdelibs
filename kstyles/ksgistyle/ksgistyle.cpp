@@ -1,3 +1,7 @@
+//--------------------------------------------------------------------
+//
+//  
+
 #ifndef INCLUDE_MENUITEM_DEF
 #define INCLUDE_MENUITEM_DEF
 #endif
@@ -218,40 +222,41 @@ void
 KSgiStyle::drawFullShadeButton(QPainter *p, int x, int y, int w, int h,
                     const QColorGroup &g, bool sunken, const QBrush* fill)
 {
-	int x2 = x+w-1;
-	int y2 = y+h-1;
+  int x2 = x+w-1;
+  int y2 = y+h-1;
 
-	QPen oldPen = p->pen();
-	//
-	// draw first step
-	//
-	p->setPen(sunken ? g.light() : g.dark());
-	p->drawLine(x, y2, x2, y2);
-	p->drawLine(x2, y, x2, y2);
-	p->setPen(sunken ? g.mid() : g.light());
-	p->drawLine(x, y, x2, y);
-	p->drawLine(x, y, x, y2);
-	
-	//
-	// draw inner step
-	//
-	
-	p->setPen(sunken ? g.midlight() : g.mid());
-	p->drawLine(x+1, y2-1, x2-1, y2-1);
-	p->drawLine(x2-1, y+1, x2-1, y2-1);
-	p->setPen(sunken ? g.dark() : g.midlight());
-	p->drawLine(x+1, y+1, x2-1, y+1);
-	p->drawLine(x+1, y+1, x+1, y2-1);
+  QPen oldPen = p->pen();
 
-	if ( fill ) {
-	    QBrush oldBrush = p->brush();
-	    p->setBrush( *fill );
-	    p->setPen( NoPen );
-	    p->drawRect( x+2, y+2, w-4, h-4 );
-	    p->setBrush( oldBrush );
-	}
+  //
+  // draw first step
+  //
+  p->setPen(sunken ? g.light() : g.dark());
+  p->drawLine(x, y2, x2, y2);
+  p->drawLine(x2, y, x2, y2);
+  p->setPen(sunken ? g.dark() : g.light());
+  p->drawLine(x, y, x2, y);
+  p->drawLine(x, y, x, y2);
 	
-	p->setPen(oldPen);
+  //
+  // draw inner step
+  //
+	
+  p->setPen(sunken ? g.midlight() : g.mid());
+  p->drawLine(x+1, y2-1, x2-1, y2-1);
+  p->drawLine(x2-1, y+1, x2-1, y2-1);
+  p->setPen(sunken ? g.mid() : g.midlight());
+  p->drawLine(x+1, y+1, x2-1, y+1);
+  p->drawLine(x+1, y+1, x+1, y2-1);
+
+  if ( fill ) {
+    QBrush oldBrush = p->brush();
+    p->setBrush( *fill );
+    p->setPen( NoPen );
+    p->drawRect( x+2, y+2, w-4, h-4 );
+    p->setBrush( oldBrush );
+  }
+	
+  p->setPen(oldPen);
 }
 
 //--------------------------------------------------------------------
@@ -263,47 +268,47 @@ void
 KSgiStyle::drawPartShadeButton(QPainter *p, int x, int y, int w, int h,
                     const QColorGroup &g, bool sunken, const QBrush* fill)
 {
-	int	x2 = x+w-1;
-	int y2 = y+h-1;
+  int	x2 = x+w-1;
+  int y2 = y+h-1;
 
-	QPen oldPen = p->pen();
+  QPen oldPen = p->pen();
 
-	//
-	// draw first step
-	//
-	p->setPen(sunken ? g.light() : g.mid());
-	p->drawLine(x, y2, x2, y2);
-	p->drawLine(x2, y, x2, y2);
-	p->setPen(sunken ? g.mid() : g.light());
-	p->drawLine(x, y, x2, y);
-	p->drawLine(x, y, x, y2);
+  //
+  // draw first step
+  //
+  p->setPen(sunken ? g.light() : g.mid());
+  p->drawLine(x, y2, x2, y2);
+  p->drawLine(x2, y, x2, y2);
+  p->setPen(sunken ? g.mid() : g.light());
+  p->drawLine(x, y, x2, y);
+  p->drawLine(x, y, x, y2);
 	
-	//
-	// draw inner step
-	//
+  //
+  // draw inner step
+  //
 	
-	p->setPen(sunken ? g.midlight() : g.mid());
-	p->drawLine(x+1, y2-1, x2-1, y2-1);
-	p->drawLine(x2-1, y+1, x2-1, y2-1);
-	p->setPen(sunken ? g.mid() : g.midlight());
-	p->drawLine(x+1, y+1, x2-1, y+1);
-	p->drawLine(x+1, y+1, x+1, y2-1);
+  p->setPen(sunken ? g.midlight() : g.mid());
+  p->drawLine(x+1, y2-1, x2-1, y2-1);
+  p->drawLine(x2-1, y+1, x2-1, y2-1);
+  p->setPen(sunken ? g.mid() : g.midlight());
+  p->drawLine(x+1, y+1, x2-1, y+1);
+  p->drawLine(x+1, y+1, x+1, y2-1);
 	
-	if ( fill ) {
-	    QBrush oldBrush = p->brush();
-	    p->setBrush( *fill );
-	    p->setPen( NoPen );
-	    p->drawRect( x+2, y+2, w-4, h-4 );
-	    p->setBrush( oldBrush );
-	}
+  if ( fill ) {
+    QBrush oldBrush = p->brush();
+    p->setBrush( *fill );
+    p->setPen( NoPen );
+    p->drawRect( x+2, y+2, w-4, h-4 );
+    p->setBrush( oldBrush );
+  }
 
-	p->setPen(oldPen);
+  p->setPen(oldPen);
 }
 
 //--------------------------------------------------------------------
 //
 //	drawBevelButton - draws a simple beveled button, used in scroll
-//										lists
+//			lists
 //
 
 void 
@@ -316,7 +321,7 @@ KSgiStyle::drawBevelButton( QPainter *p, int x, int y, int w, int h,
 //--------------------------------------------------------------------
 //
 //	drawPushButton - draws a standard push button. This is the
-//									 implementation that QPushbutton would call.
+//			implementation that QPushbutton would call.
 //
 
 void 
@@ -426,14 +431,14 @@ void
 KSgiStyle::drawIndicatorMask(QPainter *p, int x, int y, int w, int h, 
 																int state)
 {
-	static QBitmap checkMask(16, 16, check_mask, true);
+  static QBitmap checkMask(16, 16, check_mask, true);
 	
-	p->fillRect(x, y, w, h, Qt::color0);
-	p->fillRect(x, y, w, h-2, Qt::color1);
+  p->fillRect(x, y, w, h, Qt::color0);
+  p->fillRect(x, y, w, h-2, Qt::color1);
 
-	if (state)
-		p->drawPixmap(x, y, checkMask);
-	}
+  if (state)
+    p->drawPixmap(x, y, checkMask);
+  }
 
 //--------------------------------------------------------------------
 //
@@ -442,19 +447,19 @@ KSgiStyle::drawIndicatorMask(QPainter *p, int x, int y, int w, int h,
 
 void 
 KSgiStyle::drawCheckMark( QPainter *p, int x, int y, int w, int h,
-									const QColorGroup&, bool, bool)
+			const QColorGroup&, bool, bool)
 {
-	static QPixmap checkPix(check_xpm);
-	static QBitmap checkMask(16, 16, check_mask, true);
+  static QPixmap checkPix(check_xpm);
+  static QBitmap checkMask(16, 16, check_mask, true);
 	
-	//
-	// This should only happen the first time through to set the mask
-	//
-	if (!checkPix.mask()) {
-		checkPix.setMask (checkMask);
-	}
+  //
+  // This should only happen the first time through to set the mask
+  //
+  if (!checkPix.mask()) {
+    checkPix.setMask (checkMask);
+  }
 
-	p->drawPixmap (x+(w-16)/2, y+(h-16)/2, checkPix);
+  p->drawPixmap (x+(w-16)/2, y+(h-16)/2, checkPix);
 }
 
 //--------------------------------------------------------------------
@@ -475,7 +480,7 @@ KSgiStyle::exclusiveIndicatorSize() const
 
 void
 KSgiStyle::drawExclusiveIndicator(QPainter *p, int x, int y, int w, int h,
-                               const QColorGroup &g, bool on, bool, bool)
+                               const QColorGroup &g, bool on, bool, bool enabled)
 {
 static unsigned char exclusive_outline_bits[] = {
   0x80, 0x01, 0x40, 0x02, 0x20, 0x04, 0x10, 0x08, 0x08, 0x10, 0x04, 0x20,
@@ -497,63 +502,76 @@ static unsigned char exclusive_shadow_bits[] = {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x10, 0x00, 0x08, 0x00, 0x04, 0x00, 0x02, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, };
+static unsigned char exclusive_inactfill_bits[] = {
+  0x00, 0x00, 0x80, 0x01, 0xc0, 0x03, 0xe0, 0x07, 0xf0, 0x0f, 0xf8, 0x1f,
+  0xfc, 0x3f, 0xfe, 0x7f, 0xfe, 0x7f, 0xfc, 0x3f, 0xf8, 0x1f, 0xf0, 0x0f,
+  0xe0, 0x07, 0xc0, 0x03, 0x80, 0x01, 0x00, 0x00, };
 
-	static QBitmap outlineBitmap (16, 16, exclusive_outline_bits, true);
-	static QBitmap fillBitmap (16, 16, exclusive_fill_bits, true);
-	static QBitmap hiliteBitmap (16, 16, exclusive_hilite_bits, true);
-	static QBitmap arrowBitmap (16, 16, exclusive_arrow_bits, true);
-	static QBitmap shadowBitmap (16, 16, exclusive_shadow_bits, true);
+  static QBitmap outlineBitmap (16, 16, exclusive_outline_bits, true);
+  static QBitmap fillBitmap (16, 16, exclusive_fill_bits, true);
+  static QBitmap inactfillBitmap (16, 16, exclusive_inactfill_bits, true);
+  static QBitmap hiliteBitmap (16, 16, exclusive_hilite_bits, true);
+  static QBitmap arrowBitmap (16, 16, exclusive_arrow_bits, true);
+  static QBitmap shadowBitmap (16, 16, exclusive_shadow_bits, true);
 
-	if (!outlineBitmap.mask()) outlineBitmap.setMask(outlineBitmap);
-	if (!fillBitmap.mask()) fillBitmap.setMask(fillBitmap);
-	if (!hiliteBitmap.mask()) hiliteBitmap.setMask(hiliteBitmap);
-	if (!arrowBitmap.mask()) arrowBitmap.setMask(arrowBitmap);
-	if (!shadowBitmap.mask()) shadowBitmap.setMask(shadowBitmap);
+  if (!outlineBitmap.mask()) outlineBitmap.setMask(outlineBitmap);
+  if (!fillBitmap.mask()) fillBitmap.setMask(fillBitmap);
+  if (!inactfillBitmap.mask()) inactfillBitmap.setMask(inactfillBitmap);
+  if (!hiliteBitmap.mask()) hiliteBitmap.setMask(hiliteBitmap);
+  if (!arrowBitmap.mask()) arrowBitmap.setMask(arrowBitmap);
+  if (!shadowBitmap.mask()) shadowBitmap.setMask(shadowBitmap);
  
- 	QPen oldPen = p->pen();
+  QPen oldPen = p->pen();
 	
-	p->fillRect( x, y, w, h, g.brush(QColorGroup::Background));
+  p->fillRect( x, y, w, h, g.brush(QColorGroup::Background));
 
-	p->setPen(g.dark());
-	p->drawPixmap(x, y, outlineBitmap);
-	p->setPen((g.shadow() == Qt::white) ? g.background() : g.midlight());
-	p->drawPixmap(x, y, fillBitmap);
-	p->setPen(g.light());
-	p->drawPixmap(x, y, hiliteBitmap);
+  
+  p->setPen(g.dark());
+  p->drawPixmap(x, y, outlineBitmap);
+  
+  if (enabled) {
+    p->setPen((g.shadow() == Qt::white) ? g.background() : g.midlight());
+    p->drawPixmap(x, y, fillBitmap);
+    p->setPen(g.light());
+    p->drawPixmap(x, y, hiliteBitmap);
+  } else {
+    p->setPen(g.mid());
+    p->drawPixmap(x, y, inactfillBitmap);
+  }
+  
+  
+  if (on) {
+    p->setPen(Qt::blue);
+    p->drawPixmap(x, y, arrowBitmap);
+    p->setPen(Qt::black);
+    p->drawPixmap(x, y, shadowBitmap);
+  }
 	
-	if (on) {
-		p->setPen(Qt::blue);
-		p->drawPixmap(x, y, arrowBitmap);
-		p->setPen(Qt::black);
-		p->drawPixmap(x, y, shadowBitmap);
-	}
-	
-	p->setPen(oldPen);
+  p->setPen(oldPen);
 }
 
 //--------------------------------------------------------------------
 //
 // comboButtonRect - specify where the contents of a combo button
-//									 button pulldown can live.
+//		     button pulldown can live.
 //
 
 QRect 
 KSgiStyle::comboButtonRect (int x, int y, int w, int h)
 {
-	return(QRect(x+4, y+3, w - 23, h-6));
+  return(QRect(x+3, y+3, w-24, h-6));
 
 }		
 
 //--------------------------------------------------------------------
 //
 // comboButtonFocusRect - specify where the text of a combo button
-//									 button.
 //
 
 QRect 
 KSgiStyle::comboButtonFocusRect (int x, int y, int w, int h)
 {
-	return(QRect(x+4, y+4, w - 23, h-8));
+  return(QRect(x+3, y+3, w-22, h-6));
 }
 
 //--------------------------------------------------------------------
@@ -579,11 +597,22 @@ KSgiStyle::drawComboButton(QPainter *p, int x, int y, int w, int h,
   p->drawRect(w-16, midY, 8, 3);
 
   if(editable){
-  	int x2 = w-x-18-1;
-    int y2 = h-y-4-1;
+    int x2 = w-x-20-1;
+    int y2 = h-y-2-1;
     p->setPen(g.dark());
-    p->drawLine(x+3, y+3, x2, y+3);
-    p->drawLine(x+3, y+4, x+3, y2);
+    p->drawLine(x+2, y+2, x2, y+2);
+    p->drawLine(x+2, y+3, x+2, y2);
+    p->setPen(g.midlight());
+    p->drawLine(x+3, y2, x2, y2);
+    p->drawLine(x2, y+3, x2, y2);
+  
+    //
+    // normal dark shadow looks too dark in conjunction with the
+    // black outline here so lighten it up under the editable section
+    //
+    
+    p->setPen(g.mid());
+    p->drawLine(x+2, y2+1, x2-1, y2+1);
   }
  	
   p->setPen(oldPen);
@@ -614,6 +643,10 @@ KSgiStyle::drawSliderGroove(QPainter *p, int x, int y, int w, int h,
   int x2 = x+w-1;
   int y2 = y+h-1;
 
+  //
+  // frame in
+  //
+  
   p->setPen(g.mid());
   p->drawLine(x, y, x2, y);
   p->drawLine(x, y, x, y2);
@@ -628,12 +661,20 @@ KSgiStyle::drawSliderGroove(QPainter *p, int x, int y, int w, int h,
   p->drawLine(x2-1, y+1, x2-1, y2-1);
   p->drawLine(x+1, y2-1, x2-1, y2-1);
 
+  //
+  // inner black outline
+  //
+  
   p->setPen(Qt::black);
   p->drawLine(x+2, y+2, x2-2, y+2);
   p->drawLine(x+2, y+2, x+2, y2-2);
   p->drawLine(x2-2, y+2, x2-2, y2-2);
   p->drawLine(x+2, y2-2, x2-2, y2-2);
 
+  //
+  // inner raised groove
+  //
+  
   p->setPen(g.midlight());
   p->drawLine(x+3, y+3, x2-3, y+3);
   p->drawLine(x+3, y+3, x+3, y2-3);
@@ -641,6 +682,11 @@ KSgiStyle::drawSliderGroove(QPainter *p, int x, int y, int w, int h,
   p->drawLine(x2-3, y+3, x2-3, y2-3);
   p->drawLine(x+3, y2-3, x2-3, y2-3);
 
+  //
+  // fill trough
+  //
+  
+  p->fillRect(x+4, y+4, w-8, h-8, g.brush(QColorGroup::Background));
   p->setPen(oldPen);
 }
 
@@ -654,46 +700,47 @@ KSgiStyle::drawSlider(QPainter *p, int x, int y, int w, int h,
                             const QColorGroup &g, Orientation orient,
                             bool, bool)
 {
-//  if (orient == Horizontal) {
-	y += 2;
-	h -= 4;
-//  } else {
-	x += 2;
-	w -= 4;
-//  }
+  x += 2;
+  y += 2;
+  w -= 4;
+  h -= 4;
+
+  int x2 = x+w-1;
+  int y2 = y+h-1;
 
   QPen oldPen = p->pen();
 	
-  p->fillRect(x+3, y+3, w-6, h-6, g.brush(QColorGroup::Background));
-
   //
   // draw outline
   //
   p->setPen (Qt::black);
-//  p->drawRect(x, y, w, h);
+  p->drawLine(x, y, x, y2);
+  p->drawLine(x2, y, x2, y2);
 	
+  //
+  // slider button
+  //
+  
   drawPartShadeButton(p, x+1, y+1, w-2, h-2, g);
-	
-  if (orient == Horizontal) {
-	int midX = w/2;
-	
-        //
-        // draw notch in middle
-        //		
-	p->setPen(g.light());
-	p->drawLine(x+midX-1, y+2, x+midX-1, h-y+1);
-	p->setPen(Qt::black);
-	p->drawLine(x+midX, y+2, x+midX, h-y+1);
-  } else {
-	int midY = h/2;
+  p->fillRect(x+3, y+3, w-6, h-6, g.brush(QColorGroup::Background));
 
-        //
-        // draw notch in middle
-        //		
-	p->setPen(g.light());
-	p->drawLine(x+2, y+midY-1, w-x+1, y+midY-1);
-	p->setPen(Qt::black);
-	p->drawLine(x+2, y+midY, w-x+1, y+midY);
+ 	
+	
+  //
+  // draw notch in middle
+  //		
+  if (orient == Horizontal) {
+    int midX = w/2;
+    p->setPen(g.light());
+    p->drawLine(x+midX-1, y+2, x+midX-1, h-y+1);
+    p->setPen(Qt::black);
+    p->drawLine(x+midX, y+2, x+midX, h-y+1);
+  } else {
+    int midY = h/2;
+    p->setPen(g.light());
+    p->drawLine(x+2, y+midY-1, w-x+1, y+midY-1);
+    p->setPen(Qt::black);
+    p->drawLine(x+2, y+midY, w-x+1, y+midY);
   }
 		
   p->setPen(oldPen);
@@ -703,7 +750,7 @@ KSgiStyle::drawSlider(QPainter *p, int x, int y, int w, int h,
 //--------------------------------------------------------------------
 //
 // drawScrollBarControls - draw the scroll bar controls (up and down
-//												buttons, trench and slider)
+//			   buttons, trench and slider)
 //			FIXME want to find a way to hilight on mouse over
 //
 
@@ -1067,7 +1114,7 @@ KSgiStyle::drawScrollBarArrow(QPainter *p, Qt::ArrowType type, int x,
 int 
 KSgiStyle::splitterWidth() const
 {
- 	return 6;
+  return 6;
 }
 
 //--------------------------------------------------------------------
@@ -1079,7 +1126,7 @@ void
 KSgiStyle::drawSplitter( QPainter *p,  int x, int y, int w, int h,
 				  const QColorGroup &g,  Orientation)
 {
-	drawFullShadeButton( p, x, y, w, h, g );
+  drawFullShadeButton( p, x, y, w, h, g );
 }
 
 //--------------------------------------------------------------------
@@ -1091,15 +1138,16 @@ void
 KSgiStyle::drawPopupPanel(QPainter *p, int x, int y, int w, int h,
 			            const QColorGroup &g,  int lineWidth, const QBrush *fill )
 {
-	QPen oldPen = p->pen();
-	p->setPen(Qt::black);
-	p->drawRect(x, y, w, h);
-	if (lineWidth <= 2) {
-		drawPartShadeButton(p, x+1, y+1, w-2, h-2, g, 0, fill);
-	} else {
-		drawFullShadeButton(p, x+1, y+1, w-2, h-2, g, 0, fill);
-	}		
-	p->setPen(oldPen);
+  QPen oldPen = p->pen();
+  p->setPen(Qt::black);
+  p->drawRect(x, y, w, h);
+  if (lineWidth <= 2) {
+    drawPartShadeButton(p, x+1, y+1, w-2, h-2, g, 0, fill);
+  } else {
+    drawFullShadeButton(p, x+1, y+1, w-2, h-2, g, 0, fill);
+  }		
+  
+  p->setPen(oldPen);
 }
 
 //--------------------------------------------------------------------
