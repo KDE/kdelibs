@@ -206,7 +206,12 @@ public:
    */
   static QMap<QCString,QCString> actionSlotMap();
 
+// KDE invents support for public signals...
+#undef signals
+#define signals public
 signals:
+#undef signals
+#define signals protected
   /**
    * Enable or disable a standard action held by the browser.
    *
