@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Comment=XML Document
+Icon=html
+Type=MimeType
+MimeType=application/xml
+# This mimetype is an alias for text/xml. Both are referenced by the W3C.
+X-KDE-IsAlso=text/xml
+
+[Property::X-KDE-text]
+Type=bool
+Value=true
