@@ -375,7 +375,8 @@ int KThemeStyle::pixelMetric ( PixelMetric metric, const QWidget * widget ) cons
 
 
 KThemeStyle::KThemeStyle( const QString& configDir, const QString &configFile )
-        : KThemeBase( configDir, configFile ), paletteSaved( false ), polishLock( false ), menuCache( 0 ), vsliderCache( 0 )
+        : KThemeBase( configDir, configFile ), paletteSaved( false ), polishLock( false ), menuCache( 0 ), vsliderCache( 0 ),
+         brushHandle(0), brushHandleSet(false)
 {
     mtfstyle = QStyleFactory::create( "Motif" );
     if ( !mtfstyle )
@@ -413,13 +414,12 @@ void KThemeStyle::polish( QPalette &p )
 
     if ( isPixmap( Background ) )
     {
-        if ( isPixmap( Background ) )
-        {
-            QBrush bgBrush( p.color( QPalette::Normal,
-                                     QColorGroup::Background ),
-                            *uncached( Background ) );
-            p.setBrush( QColorGroup::Background, bgBrush );
-        }
+        QBrush bgBrush( p.color( QPalette::Normal,
+                                QColorGroup::Background ),
+                                *uncached( Background ) );
+        brushHandle = uncached( Background )->handle();
+        brushHandleSet = true;
+        p.setBrush( QColorGroup::Background, bgBrush );
     }
 
 }
@@ -437,8 +437,57 @@ void KThemeStyle::unPolish( QApplication *app )
     app->setPalette( oldPalette, true );
 }
 
+bool KThemeStyle::eventFilter( QObject* object, QEvent* event )
+{
+    if( object->inherits("KActiveLabel"))
+    {
+        if(event->type() == QEvent::Move || event->type() == QEvent::Resize ||
+            event->type() == QEvent::Show)
+        {
+            QWidget *w = static_cast<QWidget*>(object);
+            QPoint pos(0, 0);
+            pos = w->mapTo(w->topLevelWidget(), pos);
+            QPixmap pix(uncached( Background )->size());
+            QPainter p;
+            p.begin(&pix);
+            p.drawTiledPixmap(0, 0,
+                            uncached( Background )->width(),
+                            uncached( Background )->height() ,
+                            *uncached( Background ),
+                            pos.x(), pos.y());
+            p.end();
+            QPalette pal(w->palette());
+            QBrush brush( pal.color( QPalette::Normal,
+                                                    QColorGroup::Background),
+                                pix );
+            pal.setBrush(QColorGroup::Base, brush);
+            w->setPalette(pal);
+        }
+    }
+
+    return KStyle::eventFilter(object, event);
+}
+
 void KThemeStyle::polish( QWidget *w )
 {
+    //if (!w->backgroundPixmap() || w->inherits("KAboutContributor") )
+
+    if (w->backgroundPixmap() && !w->isTopLevel())
+    {
+        //The brushHandle check verifies that the bg pixmap is actually the brush..
+        if (!brushHandleSet || brushHandle ==w->backgroundPixmap()->handle())
+        {
+            w->setBackgroundOrigin( QWidget::WindowOrigin );
+        }
+        //	w->setBackgroundMode( QWidget::X11ParentRelative );
+    }
+
+    if (w->inherits("KActiveLabel"))
+    {
+        if (uncached( Background ))
+            w->installEventFilter(this);
+    }
+
     if ( w->inherits( "QTipLabel" ) )
     {
         polishLock = true;
@@ -458,24 +507,6 @@ void KThemeStyle::polish( QWidget *w )
         return ;
     }
 
-    if ( !w->isTopLevel() )
-    {
-        if ( w->inherits( "QGroupBox" ) )   //#### Doing this for TabWidget created problems -- should this one go as well?
-        {
-            w->setAutoMask( TRUE );
-            return ;
-        }
-        if ( w->inherits( "QLabel" )
-                || w->inherits( "QSlider" )
-                || w->inherits( "QButton" )
-                || w->inherits( "QProgressBar" )
-                || w->inherits( "KActiveLabel" )
-                || w->inherits( "KJanusWidget" )
-           )
-        {
-            w->setBackgroundOrigin( QWidget::ParentOrigin );
-        }
-    }
     if ( w->inherits( "QMenuBar" ) || w->inherits( "QScrollBar" ) || w->inherits( "QToolBar" ) || w->inherits ("QToolButton") )
     {
         w->setBackgroundMode( QWidget::NoBackground );

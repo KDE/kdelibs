@@ -131,6 +131,7 @@ public:
 
     virtual void polish( QWidget* );
     virtual void unPolish( QWidget* );
+    virtual bool eventFilter( QObject* object, QEvent* event );
     /**
      * By default this just sets the background brushes to the pixmapped
      * background.
@@ -199,6 +200,9 @@ protected:
 
     mutable QPixmap* menuCache;
     mutable QPixmap* vsliderCache;
+
+    int brushHandle;
+    bool brushHandleSet;
 
 protected slots:
     void paletteChanged();
