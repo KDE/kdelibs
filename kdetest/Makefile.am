@@ -95,7 +95,8 @@ kidlclienttest_SOURCES = KIDLTestClient.cpp KIDLTest_stub.cpp
 kidlclienttest_LDADD = $(LIB_KDECORE)
 
 KIDLTest.kidl: KIDLTest.h
-	( ../kidl/kidl KIDLTest.h >KIDLTest.kidl; ../kidl2cpp/kidl2cpp KIDLTest.kidl )
+	( ../dcop/dcopidl/dcopidl KIDLTest.h >KIDLTest.kidl; ../dcop/dcopidl2cpp/dcopidl2cpp KIDLTest.kidl )
 KIDLTest_skel.cpp: KIDLTest.kidl
 KIDLTest_stub.cpp: KIDLTest.kidl
 KIDLTest_stub.h: KIDLTest.kidl
+
