@@ -114,7 +114,7 @@ static int cssyylex( YYSTYPE *yylval ) {
 
 %}
 
-%expect 12
+%expect 16
 
 %token S SGML_CD
 
@@ -186,7 +186,7 @@ static int cssyylex( YYSTYPE *yylval ) {
 %type <string> hexcolor
 
 %type <mediaList> media_list
-%type <mediaList> media_list2
+%type <mediaList> maybe_media_list
 
 %type <ruleList> ruleset_list
 
@@ -324,7 +324,7 @@ rule:
     ;
 
 import:
-    IMPORT_SYM maybe_space string_or_uri maybe_space media_list ';' {
+    IMPORT_SYM maybe_space string_or_uri maybe_space maybe_media_list ';' {
 #ifdef CSS_DEBUG
 	kdDebug( 6080 ) << "@import: " << qString($3) << endl;
 #endif
@@ -347,23 +347,32 @@ string_or_uri:
   | URI
     ;
 
-media_list:
+maybe_media_list:
     /* empty */ {
 	$$ = 0;
     }
-    | medium {
+    | media_list
+;
+
+
+media_list:
+    medium {
 	$$ = new MediaListImpl();
 	$$->appendMedium( domString($1) );
     }
     | media_list ',' maybe_space medium {
 	$$ = $1;
-	if ( !$$ ) $$ = new MediaListImpl();
 	$$->appendMedium( domString($4) );
     }
-;
+    | media_list error {
+	delete $1;
+	$$ = 0;
+    }
+    ;
+
 
 media:
-    MEDIA_SYM maybe_space media_list2 '{' maybe_space ruleset_list '}' {
+    MEDIA_SYM maybe_space media_list '{' maybe_space ruleset_list '}' {
 	CSSParser *p = static_cast<CSSParser *>(parser);
 	if ( $3 && $6 &&
 	     p->styleElement && p->styleElement->isCSSStyleSheet() ) {
@@ -375,17 +384,6 @@ media:
 	}
     }
   ;
-
-media_list2:
-    medium {
-	$$ = new MediaListImpl();
-	$$->appendMedium( domString($1) );
-    }
-    | media_list ',' maybe_space medium {
-	$$ = $1;
-	$$->appendMedium( domString($4) );
-    }
-    ;
 
 
 ruleset_list:
@@ -485,18 +483,22 @@ selector_list:
 	}
     }
     | selector_list ',' maybe_space selector {
-	$$ = $1;
-	if ( $4 ) {
-	    if ( !$$ ) {
-                $$ = new QPtrList<CSSSelector>;
-                $$->setAutoDelete(true);
-            }
+	if ( $1 && $4 ) {
+	    $$ = $1;
 	    $$->append( $4 );
 #ifdef CSS_DEBUG
 	    kdDebug( 6080 ) << "   got simple selector:" << endl;
 	    $4->print();
 #endif
+	} else {
+	    delete $1;
+	    delete $4;
+	    $$ = 0;
 	}
+    }
+  | selector_list error {
+	delete $1;
+	$$ = 0;
     }
    ;
 
@@ -508,6 +510,10 @@ selector:
 	$$ = $3;
 	$$->relation = $2;
 	$$->tagHistory = $1;
+    }
+    | selector error {
+	delete $1;
+	$$ = 0;
     }
     ;
 
@@ -559,6 +565,10 @@ specifier_list:
 	$$->relation = CSSSelector::SubSelector;
 	$$->tagHistory = $2;
     }
+    | specifier_list error {
+	delete $1;
+	$$ = 0;
+}
 ;
 
 specifier:
@@ -767,6 +777,10 @@ expr:
 	    $$->addValue( v );
 	}
 	$$->addValue( $3 );
+    }
+    | expr error {
+	delete $1;
+	$$ = 0;
     }
   ;
 
