@@ -458,24 +458,54 @@ void HTTPProtocol::initSSL() {
 
   SSL_CTX_set_verify(ctx, SSL_VERIFY_NONE, verify_callback);
 
-#if 0
   // now we use only the ciphers that the user wants
   if (!m_bUseTLS1) {
-    QString clist;
+    QString clist = "";
     QString tcipher;
+    bool firstcipher = true;
+    bool v2ciphers_unset = false, v3ciphers_unset = false;
+
     // The user might have v2 and v3 enabled so we start with an
     // empty buffer and add v2 if needed, then v3 if needed.
     // we assume that the config file will have consecutive entries.
-    config->setGroup("SSLv2");
-    for(int i = 0;; i++) {
-      tcipher.sprintf("cipher_%d", i);
-      
+    for (int k = 0; k < 2; k++) {
+
+      if (k == 0)                    // do v2, then v3
+        config->setGroup("SSLv2");
+      else config->setGroup("SSLv3");
+
+      for(int i = 0;; i++) {
+        tcipher.sprintf("cipher_%d", i);
+
+        if (!config->hasKey(tcipher)) {
+          if (i == 0)
+            if (k == 0)
+              v2ciphers_unset = true;
+            else v3ciphers_unset = true;
+          break;
+        } // if
+
+        if (config->readBoolEntry(tcipher)) {  // add it to the list
+          SSL_CIPHER *sc = (meth->get_cipher)(i);
+          if (!sc) continue;
+
+          if (firstcipher)          // we don't start with a ':'
+            firstcipher = false;
+          else clist.append(":");
+
+          clist.append(sc->name);
+        } // if
+      } // for  i
+    } // for    k
+
+    if (m_bUseSSL2 && m_bUseSSL3 && v2ciphers_unset && v3ciphers_unset) {
+    } else if (m_bUseSSL2 && v2ciphers_unset) {
+    } else if (m_bUseSSL3 && v3ciphers_unset) {
     }
-    config->setGroup("SSLv3");
-    
+
+    kdDebug(7103) << "SSL CIPHERS IN USE: " << clist << endl;
     SSL_CTX_set_cipher_list(ctx, clist.ascii());
-  }
-#endif
+  } // if
 
   hand=SSL_new(ctx);
   m_bssl_init = true;
@@ -507,6 +537,7 @@ int HTTPProtocol::openStream() {
     if (SSL_connect(hand) == -1) {
       return false;
     }
+    kdDebug(7103) << "SSL CIPHER NEGOTIATED: " << SSL_get_cipher_name(hand) << endl;
     return true;
   }
 #endif
