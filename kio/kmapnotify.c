@@ -28,6 +28,7 @@
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
+#include <X11/Xatom.h>
 
 #include <ltdl.h>
 #include <config.h>
@@ -35,53 +36,64 @@
 int XMapWindow(Display *, Window);
 int XMapRaised(Display *, Window);
 
-/* overridden functions, need these to call the real function */
+/* this lib, when LD_PRELOADed, overrides XMapWindow and XMapRaised.
+ * we need somewhere to store pointers to the real functions */
 typedef Window (*KDE_XMapRequestSignature)(Display *, Window);
 
 KDE_XMapRequestSignature KDE_RealXMapWindow = NULL;
 KDE_XMapRequestSignature KDE_RealXMapRaised = NULL;
 
-/* other functions from X11, so we don't need to link at build time */
+/* other functions we need from X11 are found using lt_dlsym, instead
+ * of assuming the application we're preloaded in is linked to X11 */
 typedef Atom (*KDE_XInternAtomSignature)(Display *, char *, Bool);
 typedef Atom *(*KDE_XListPropertiesSignature)(Display *, Window, int *);
-typedef void (*KDE_XSetTextPropertySignature)(Display *, Window,
-  XTextProperty *, Atom);
 typedef int (*KDE_XChangePropertySignature)(Display *, Window, Atom,
   Atom, int, int, unsigned char *, int);
-typedef Status (*KDE_XStringListToTextPropertySignature)(char **list,
-  int, XTextProperty *);
 
 KDE_XInternAtomSignature KDE_XInternAtom = NULL;
 KDE_XListPropertiesSignature KDE_XListProperties = NULL;
-KDE_XSetTextPropertySignature KDE_XSetTextProperty = NULL;
 KDE_XChangePropertySignature KDE_XChangeProperty = NULL;
-KDE_XStringListToTextPropertySignature KDE_XStringListToTextProperty = NULL;
 
 static long KDE_initialDesktop = 0;
+static long KDE_mapNotifyEnabled = 1;
 
 void KDE_InterceptXMapRequest(Display *, Window);
 void KDE_SetInitialDesktop(Display *, Window);
+void KDE_SetNetWmPid(Display *, Window);
 
   int
 XMapWindow(Display * d, Window w)
 {
-  if (NULL == KDE_RealXMapWindow)
+  //fprintf(stderr, "XMapWindow\n");
+  if (NULL == KDE_RealXMapWindow) {
+    //fprintf(stderr, "intercepting XMapWindow\n");
     KDE_InterceptXMapRequest(d, w);
+  }
 
-  /* The first Window that's mapped doesn't seem to actually be the
-   * first Window that KWin manages.  The first window that KWin manages
-   * seems to be the first one that has more than 0 properties.
-   * Is this a valid assumption? */
+  /* kdeinit needs to have libkmapnotify preloaded, so all new
+   * applications spawned are in effect also preloaded.  however,
+   * we need to disable kmapnotify for some apps (e.g. kwin) */
+  if (KDE_mapNotifyEnabled) {
 
-  /* only set the KWIN_INITIAL_DESKTOP property on the first window
-   * that already has properties */
-  if (KDE_initialDesktop) {
-    int num;
-    (void)KDE_XListProperties(d, w, &num);
-    if (num>1) {
-      KDE_SetInitialDesktop(d, w);
-      KDE_initialDesktop=0;
+    /* The first Window that's mapped doesn't seem to actually be the
+     * first Window that KWin manages.  The first window that KWin manages
+     * seems to be the first one that has more than 0 properties.
+     * Is this a valid assumption? */
+
+    /* only set the desktop property on the first window that has
+     * properties */
+    if (KDE_initialDesktop) {
+      int num=0;
+      (void)KDE_XListProperties(d, w, &num);
+      if (num) {
+        KDE_SetInitialDesktop(d, w);
+        KDE_initialDesktop=0;
+      }
     }
+
+    /* all application windows should have _NET_WM_PID set */
+    KDE_SetNetWmPid(d, w);
+
   }
 
   return KDE_RealXMapWindow(d, w);
@@ -93,22 +105,30 @@ XMapRaised(Display * d, Window w)
   if (NULL == KDE_RealXMapRaised)
     KDE_InterceptXMapRequest(d, w);
 
-  /* The first Window that's mapped doesn't seem to actually be the
-   * first Window that KWin manages.  The first window that KWin manages
-   * seems to be the first one that has more than 0 properties.
-   * Is this a valid assumption? */
+  /* kdeinit needs to have libkmapnotify preloaded, so all new
+   * applications spawned are in effect also preloaded.  however,
+   * we need to disable kmapnotify for some apps (e.g. kwin) */
+  if (KDE_mapNotifyEnabled) {
 
-  /* only set the KWIN_INITIAL_DESKTOP property on the first window
-   * that already has properties */
-  if (KDE_initialDesktop) {
-    int num;
-    (void)KDE_XListProperties(d, w, &num);
-    if (num>1) {
-      KDE_SetInitialDesktop(d, w);
-      KDE_initialDesktop=0;
+    /* The first Window that's mapped doesn't seem to actually be the
+     * first Window that KWin manages.  The first window that KWin manages
+     * seems to be the first one that has more than 0 properties.
+     * Is this a valid assumption? */
+
+    /* only set the desktop property on the first window that has
+     * properties */
+    if (KDE_initialDesktop) {
+      int num=0;
+      (void)KDE_XListProperties(d, w, &num);
+      if (num) {
+        KDE_SetInitialDesktop(d, w);
+        KDE_initialDesktop=0;
+      }
     }
-  }
 
+    /* all application windows should have _NET_WM_PID set */
+    KDE_SetNetWmPid(d, w);
+  }
 
   return KDE_RealXMapRaised(d, w);
 }
@@ -122,18 +142,23 @@ KDE_InterceptXMapRequest(Display * d, Window w)
   XTextProperty prop;
   Status status;
   char * pidString = 0L;
-  char *xInitialDesktop;
+  char * envStr;
 
   lt_dlhandle libX11Handle;
 
   /* Init *****************************************************************/
 
-  xInitialDesktop = getenv("X_INITIAL_DESKTOP");
-  if (xInitialDesktop)
-    KDE_initialDesktop = atoi(xInitialDesktop);
+  envStr = getenv("KDE_INITIAL_DESKTOP");
+  if (envStr)
+    KDE_initialDesktop = atoi(envStr);
+
+  envStr = getenv("KDE_DISABLE_KMAPNOTIFY");
+  if (envStr)
+    KDE_mapNotifyEnabled = !atoi(envStr);
   
-  putenv("LD_PRELOAD=");
-  putenv("X_INITIAL_DESKTOP=");
+  unsetenv("LD_PRELOAD");
+  unsetenv("KDE_INITIAL_DESKTOP");
+  unsetenv("KDE_DISABLE_KMAPNOTIFY");
 
   /* Find symbols *********************************************************/
 
@@ -179,15 +204,6 @@ KDE_InterceptXMapRequest(Display * d, Window w)
     exit(1);
   }
 
-  KDE_XSetTextProperty =
-    (KDE_XSetTextPropertySignature)lt_dlsym(libX11Handle, "XSetTextProperty");
-
-  if (NULL == KDE_XSetTextProperty) {
-    fprintf(stderr, 
-      "KDE: Could not find symbol XSetTextProperty in libX11\n");
-    exit(1);
-  }
-
   KDE_XChangeProperty =
     (KDE_XChangePropertySignature)lt_dlsym(libX11Handle, "XChangeProperty");
 
@@ -196,41 +212,28 @@ KDE_InterceptXMapRequest(Display * d, Window w)
     exit(1);
   }
 
-  KDE_XStringListToTextProperty = (KDE_XStringListToTextPropertySignature)
-    lt_dlsym(libX11Handle, "XStringListToTextProperty");
-
-  if (NULL == KDE_XStringListToTextProperty) {
-    fprintf(stderr, 
-      "KDE: Could not find symbol XStringListToTextProperty in libX11\n");
-    exit(1);
-  }
-
-  /* Set property on initial window ***************************************/
-
-  netMapNotify = KDE_XInternAtom(d, "_NET_WM_PID", False);
-
-  pidString = (char *)malloc(32);
-
-  snprintf(pidString, 32, "%d", getpid());
-
-  status = KDE_XStringListToTextProperty(&pidString, 1, &prop);
-
-  if (0 != status)
-    KDE_XSetTextProperty(d, w, &prop, netMapNotify);
-  else
-    fprintf(stderr, "KDE: kmapnotify: Could not set text property\n");
 }
 
   void
 KDE_SetInitialDesktop(Display *d, Window w) {
 
   Atom a;
+  long net_desktop = KDE_initialDesktop-1;
 
   a = KDE_XInternAtom(d, "_NET_WM_DESKTOP", False);
 
-  KDE_XChangeProperty(d, w, a, a, 32, PropModeReplace, (unsigned char *)
-    &KDE_initialDesktop, 1);
+  KDE_XChangeProperty(d, w, a, XA_CARDINAL, 32, PropModeReplace, 
+    (unsigned char *)&net_desktop, 1);
 
 }
 
+  void
+KDE_SetNetWmPid(Display *d, Window w) {
 
+  Atom a = KDE_XInternAtom(d, "_NET_WM_PID", False);
+  int pid = getpid();
+
+  KDE_XChangeProperty(d, w, a, XA_CARDINAL, 32, PropModeReplace,
+    (unsigned char *)&pid, 1);
+
+}
