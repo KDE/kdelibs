@@ -25,11 +25,11 @@ lib_LTLIBRARIES  = libkfile.la
 
 DISTCLEANFILES = bookmark.moc kdir.moc kdirlistbox.moc kfiledialog.moc \
 	kfiledialogconf.moc kfiledetaillist.moc kfilesimpleview.moc \
-	kcombiview.moc
+	kcombiview.moc kpreview.moc kfilepreview.moc
 
 include_HEADERS = kfiledialog.h kfileinfo.h bookmark.h  \
 	kremotefile.h kdir.h kdirlistbox.h kfileinfocontents.h \
-	booktoken.h kfiledetaillist.h kcombiview.h
+	booktoken.h kfiledetaillist.h kcombiview.h kpreview.h kfilepreview.h
 
 noinst_HEADERS = kfiledialogconf.h
 
@@ -37,7 +37,7 @@ kfstest_SOURCES =  kfstest.cpp
 libkfile_la_SOURCES = bookmark.cpp kfiledialogconf.cpp kcombiview.cpp \
 	kdir.cpp kfileinfo.cpp kremotefile.cpp kdirlistbox.cpp \
 	kfiledetaillist.cpp kfiledialog.cpp booktoken.cpp \
-	kfileinfocontents.cpp kfilesimpleview.cpp 
+	kfileinfocontents.cpp kfilesimpleview.cpp kpreview.cpp kfilepreview.cpp
 
 toolbar_DATA = configure.xpm 
 # I'm not sure, if they really should go there
@@ -85,5 +85,13 @@ kfilesimpleview.moc: kfilesimpleview.h
 kcombiview.cpp:kcombiview.moc
 kcombiview.moc: kcombiview.h
 	$(MOC) kcombiview.h -o kcombiview.moc
+
+kpreview.cpp:kpreview.moc
+kpreview.moc: kpreview.h
+	$(MOC) kpreview.h -o kpreview.moc
+
+kfilepreview.cpp:kfilepreview.moc
+kfilepreview.moc: kfilepreview.h
+	$(MOC) kfilepreview.h -o kfilepreview.moc
 
 

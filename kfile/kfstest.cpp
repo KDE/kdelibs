@@ -37,11 +37,11 @@ int main(int argc, char **argv)
     QString name1;
     
     if (argc != 2) {
-	warning("usage: %s {dirs, filter, preselect, normal}", argv[0]);
+	warning("usage: %s {dirs, filter, preselect, normal, preview}", argv[0]);
 	exit(0);
     }
     
-    enum { Dirs, Filter, Preselect, Normal } mode;
+    enum { Dirs, Filter, Preselect, Normal, Preview } mode;
     
     if (QString(argv[1]) == "dirs")
 	mode = Dirs;
@@ -49,6 +49,8 @@ int main(int argc, char **argv)
 	mode = Filter;
     else if (QString(argv[1]) == "preselect")
 	mode = Preselect;
+    else if (QString(argv[1]) == "preview")
+        mode = Preview;
     else mode = Normal;
 
     switch (mode) {
@@ -66,6 +68,10 @@ int main(int argc, char **argv)
 	break;
     case Normal:
 	name1 = KFileDialog::getOpenFileURL();
+        break;
+    case Preview:
+        KFilePreviewDialog::getOpenFileURL(0,"*.cpp|C++-Files (*.cpp)\n""*|All Files");
+        break;
     }
     
     if (!(name1.isNull()))

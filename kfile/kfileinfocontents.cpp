@@ -82,6 +82,7 @@ KFileInfoContents::~KFileInfoContents()
 
 bool KFileInfoContents::addItem(const KFileInfo *i) 
 {
+
     if (!acceptsFiles() && i->isFile())
 	return false;
     if (!acceptsDirs() && i->isDir())

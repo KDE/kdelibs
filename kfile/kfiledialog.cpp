@@ -29,6 +29,9 @@
 #include "kfiledialog.h"
 #include "kfiledetaillist.h"
 #include "kfilesimpleview.h"
+
+#include "kfilepreview.h"
+
 #include "kcombiview.h"
 #include "kdirlistbox.h"
 #include "kdir.h"
@@ -510,11 +513,11 @@ void KFileBaseDialog::setDir(const char *_pathstr, bool clearforward)
 			     this, "kfiledlgmsg");      
 	dir->setPath(backup);
     } else {
-	
+
 	emit dirEntered(pathstr);
-	
+
 	updateHistory( !forwardStack.isEmpty(), !backStack.isEmpty() );
-	
+
 	pathChanged();
     }
 
@@ -1035,6 +1038,7 @@ void KFileBaseDialog::fileHighlighted()
 
 KFileInfoContents *KFileDialog::initFileList( QWidget *parent )
 {
+
     bool mixDirsAndFiles = 
 	kapp->getConfig()->readNumEntry("MixDirsAndFiles", 0);
     
@@ -1271,6 +1275,100 @@ void KDirDialog::updateStatusLine()
 
     myStatusLine->setText(lDirText);
 }
+
+
+KFilePreviewDialog::KFilePreviewDialog(const char *dirName, const char *filter= 0,
+                                       QWidget *parent= 0, const char *name= 0, 
+                                       bool modal = false, bool acceptURLs = true)
+    : KFileBaseDialog(dirName, filter, parent, name, modal, acceptURLs) 
+{
+    init();
+}
+
+KFileInfoContents *KFilePreviewDialog::initFileList( QWidget *parent )
+{
+    bool useSingleClick = 
+	kapp->getConfig()->readNumEntry("SingleClick",1);
+    return new KFilePreview( dir, useSingleClick, dir->sorting(), parent, "_prev" );
+
+}
+
+QString KFilePreviewDialog::getOpenFileName(const char *dir, const char *filter,
+				            QWidget *parent, const char *name)
+{
+    QString filename;
+    KFilePreviewDialog *dlg= new KFilePreviewDialog(dir, filter, parent, name, true, false);
+    
+    dlg->setCaption(i18n("Open"));
+    
+    if (dlg->exec() == QDialog::Accepted)
+	filename = dlg->selectedFile();
+    
+    delete dlg;
+    
+    return filename;
+}
+ 
+QString KFilePreviewDialog::getSaveFileName(const char *dir, const char *filter,
+				            QWidget *parent, const char *name)
+{
+    KFilePreviewDialog *dlg= new KFilePreviewDialog(dir, filter, parent, name, true, false);
+    
+    dlg->setCaption(i18n("Save As"));
+    
+    QString filename;
+    
+    if (dlg->exec() == QDialog::Accepted)
+	filename= dlg->selectedFile();
+    
+    delete dlg;
+    
+    return filename;
+}
+
+QString KFilePreviewDialog::getOpenFileURL(const char *url, const char *filter,
+				           QWidget *parent, const char *name)
+{
+    QString retval;
+    
+    KFilePreviewDialog *dlg= new KFilePreviewDialog(url, filter, parent, name, true, true);
+    
+    dlg->setCaption(i18n("Open"));
+    
+    if (dlg->exec() == QDialog::Accepted)
+	retval = dlg->selectedFileURL();
+    else
+	retval= 0;
+    
+    delete dlg;
+    if (!retval.isNull())
+	debug("getOpenFileURL: returning %s", retval.data());
+    
+    return retval;
+}
+
+QString KFilePreviewDialog::getSaveFileURL(const char *url, const char *filter,
+				           QWidget *parent, const char *name)
+{
+    QString retval;
+    
+    KFilePreviewDialog *dlg= new KFilePreviewDialog(url, filter, parent, name, true, true);
+    
+    dlg->setCaption(i18n("Save"));
+    
+    if (dlg->exec() == QDialog::Accepted)
+	retval= dlg->selectedFileURL();
+    
+    delete dlg;
+    
+    return retval;
+}
+
+bool KFilePreviewDialog::getShowFilter() 
+{
+    return (kapp->getConfig()->readNumEntry("ShowFilter", 1) != 0);
+}
+
 
 #include "kfiledialog.moc"
 

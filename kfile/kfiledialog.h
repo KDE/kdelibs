@@ -449,6 +449,29 @@ protected:
     virtual bool getShowFilter();
 };
 
+
+class KFilePreviewDialog : public KFileBaseDialog
+{
+public:
+    
+    KFilePreviewDialog(const char *dirName, const char *filter= 0,
+		       QWidget *parent= 0, const char *name= 0, 
+		       bool modal = false, bool acceptURLs = true);
+
+    static QString getOpenFileName(const char *dir= 0, const char *filter= 0,
+				   QWidget *parent= 0, const char *name= 0);
+    static QString getSaveFileName(const char *dir= 0, const char *filter= 0,
+				   QWidget *parent= 0, const char *name= 0);
+    static QString getOpenFileURL(const char *url= 0, const char *filter= 0,
+				  QWidget *parent= 0, const char *name= 0);
+    static QString getSaveFileURL(const char *url= 0, const char *filter= 0,
+				  QWidget *parent= 0, const char *name= 0);
+    
+protected:
+    virtual KFileInfoContents *initFileList( QWidget *parent );
+    virtual bool getShowFilter();
+};
+
 #endif
 
 
