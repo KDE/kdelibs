@@ -26,36 +26,138 @@
 
 class QImage;
 
-// baseclass for scan-dialogs
+/**
+ * This is a base class for scanning dialogs. You can derive from this class
+ * and implement your own dialog. An implementation is available in 
+ * kdegraphics/libkscan.
+ *
+ * Application developers that wish to add scanning support to their program
+ * can use the static method @p KScanDialog::getScanDialog() to get an instance
+ * of the user's preferred scanning dialog.
+ * 
+ * Typical usage looks like this (e.g. in a slotShowScanDialog() method):
+ *
+ * <pre>
+ * if ( !m_scanDialog ) {
+ *     m_scanDialog = KScanDialog::getScanDialog( this, "scandialog" );
+ *     if ( !m_scanDialog ) // no scanning support installed?
+ *         return;
+ *
+ *     connect( m_scanDialog, SIGNAL( finalImage( const QImage&, int )),
+ *              SLOT( slotScanned( const QImage&, int ) ));
+ * }
+ *  
+ * if ( m_scanDialog->isValid() ) // only if scanner configured/available
+ *     m_scanDialog->show();
+ * </pre>
+ * 
+ * This will create and show a non-modal scanning dialog. Connect to more
+ * signals if you like.
+ *
+ * If you implement an own scan-dialog, you also have to implement a 
+ * KScanDialogFactory.
+ *
+ * @short A baseclass and accessor for Scanning Dialogs
+ * @author Carsten Pfeiffer <pfeiffer@kde.org>
+ */
 class KScanDialog : public KDialogBase
 {
     Q_OBJECT
 
 public:
+    /**
+     * @returns the user's preferred scanning dialog, or 0L if no scan-support
+     * is available. Pass a suitable @p parent widget, if you like. If you
+     * don't you have to 'delete' the returned pointer yourself.
+     */
     static KScanDialog * getScanDialog( QWidget *parent=0L,
 					const char *name=0, bool modal=false );
     ~KScanDialog();
 
+    /**
+     * @returns true if there is a configured scanner and the initialization
+     * wasn't aborted.
+     */
+    bool isValid() const { return m_valid; }
+    
 protected:
+    /**
+     * Constructs the scan dialog. If you implement an own dialog, you can 
+     * customize it with the usual @ref KDialogBase flags.
+     *
+     * @see KDialogBase
+     */
     KScanDialog( int dialogFace=Tabbed, int buttonMask = Close|Help,
 		 QWidget *parent=0L, const char *name=0, bool modal=false );
 
+    /**
+     * Sets the status of this scandialog to valid or invalid. If the user
+     * didn't configure a device to scan with, the ScanDialog should set this
+     * to invalid right in the constructor, so that the dialog will not be
+     * shown to the user.
+     */
+    void setValid( bool valid );
+    
+    /**
+     * @returns the current id for an image. You can use that in your subclass
+     * for the signals. The id is used in the signals to let people know
+     * which preview and which text-recognition belongs to which scan.
+     *
+     * @see #nextId
+     * @see #finalImage
+     * @see #preview
+     * @see #textRecognized
+     */
     int id() const { return m_currentId; }
+    
+    /**
+     * @returns the id for the next image. You can use that in your subclass
+     * for the signals.
+     *
+     * @see #id
+     * @see #finalImage
+     * @see #preview
+     * @see #textRecognized
+     * 
+     */
     int nextId() { return ++m_currentId; }
 
 signals:
-    // we need an id so that applications can distinguish between new
-    // scans and redone scans!
+    /**
+     * Informs you that an image has been previewed.
+     */
     void preview( const QImage&, int id );
-    void finalImage( const QImage&, int id );
-    void textRecognized( const QString&, int id );
     
+    /**
+     * Informs you that an image has scanned. @p id is the same as in the
+     * @p preview() signal, if this image had been previewed before.
+     *
+     * Note, that those id's may not be properly implemented in the current
+     * libkscan.
+     */
+    void finalImage( const QImage&, int id );
+    
+    /**
+     * Informs you that the image with the id @p id has been run through
+     * text-recognition. The text is in the QString parameter. In the future,
+     * a compound document, using rich text will be used instead.
+     */
+    void textRecognized( const QString&, int id );
+
 private:
     int m_currentId;
+    bool m_valid;
 
+    class KScanDialogPrivate;
+    KScanDialogPrivate *d;
 };
 
 
+/**
+ * A factory for creating a KScanDialog. You need to reimplement 
+ * @p createDialog().
+ *
+ */
 class KScanDialogFactory : public KLibFactory
 {
 public:
@@ -110,6 +212,9 @@ signals:
 
 private:
     int m_currentId;
+
+    class KOCRDialogPrivate;
+    KOCRDialogPrivate *d;
 
 };
 

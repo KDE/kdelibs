@@ -49,15 +49,19 @@ KScanDialog::KScanDialog( int dialogFace, int buttonMask,
 			  QWidget *parent, const char *name, bool modal )
     : KDialogBase( dialogFace, i18n("Acquire image"), buttonMask, Close,
 		   parent, name, modal, true ),
-      m_currentId( 1 )
+      m_currentId( 1 ),
+      m_valid( true ) // be a bit optimistic
 {
-
 }
 
 KScanDialog::~KScanDialog()
 {
 }
 
+void KScanDialog::setValid( bool valid )
+{
+    m_valid = valid;
+}
 
 ///////////////////////////////////////////////////////////////////
 
