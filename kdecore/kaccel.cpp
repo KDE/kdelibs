@@ -20,12 +20,7 @@ public:
 	QAccel* m_pAccel;
 	int m_nIDAccelNext;
 
-	KAccelPrivate( KAccel* pParent )
-	{
-		m_pAccel = pParent;
-		m_nIDAccelNext = 1;
-		m_bAutoUpdate = false;
-	}
+	KAccelPrivate( KAccel* pParent );
 
 	virtual void setEnabled( bool );
 
@@ -38,6 +33,14 @@ public:
 
 	void setAutoUpdateTemp( bool b ) { m_bAutoUpdate = b; }
 };
+
+KAccelPrivate::KAccelPrivate( KAccel* pParent )
+{
+	m_pAccel = pParent;
+	m_nIDAccelNext = 1;
+	m_bAutoUpdate = false;
+	actions().setKAccel( pParent );
+}
 
 void KAccelPrivate::setEnabled( bool bEnabled )
 {
@@ -56,25 +59,6 @@ bool KAccelPrivate::removeAction( const QString& sAction )
 	} else
 		return false;
 }
-
-/*bool KAccelPrivate::setActionSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot )
-{
-	KAccelAction* pAction = m_rgActions.actionPtr( sAction );
-	if( pAction ) {
-		// Disconnect if connection might exist,
-		if( pAction->getID() && pAction->m_pObjSlot )
-			m_pAccel->disconnectItem( pAction->getID(), pAction->m_pObjSlot, pAction->m_psMethodSlot );
-
-		pAction->m_pObjSlot = pObjSlot;
-		pAction->m_psMethodSlot = psMethodSlot;
-
-		// Reconnect if ID has already be set.
-		if( pAction->getID() && pAction->m_pObjSlot )
-			m_pAccel->connectItem( pAction->getID(), pAction->m_pObjSlot, pAction->m_psMethodSlot );
-		return true;
-	} else
-		return false;
-}*/
 
 bool KAccelPrivate::connectKey( KAccelAction& action, KKeySequence key )
 {
@@ -111,10 +95,6 @@ KAccel::KAccel( QWidget* pParent, const char* psName )
 
 KAccel::~KAccel()
 {
-	// KAccelPrivate is not a QObject subclass, but it contains
-	//  a QAccel object.  We delete d here, but KAccelPrivate
-	//  must not delete m_pAccel, because it was made a child of
-	//  this KAccel object and will be automatically deleted.
 	delete d;
 }
 
@@ -226,8 +206,24 @@ bool KAccel::setActionEnabled( const QString& sAction, bool bEnabled )
 
 bool KAccel::updateConnections()
 	{ return d->updateConnections(); }
+
 bool KAccel::setShortcuts( const QString& sAction, const KShortcuts& rgCuts )
-	{ return d->setShortcuts( sAction, rgCuts ); }
+{
+	KAccelAction* pAction = actions().actionPtr( sAction );
+	if( pAction ) {
+		if( pAction->m_rgShortcuts != KAccelShortcuts(rgCuts) ) {
+			bool bAutoUpdate = d->getAutoUpdate();
+			d->setAutoUpdateTemp( true );
+
+			bool b = d->setShortcuts( sAction, rgCuts );
+
+			d->setAutoUpdateTemp( bAutoUpdate );
+			return b;
+		}
+		return true;
+	}
+	return false;
+}
 
 void KAccel::readSettings( KConfig* pConfig )
 {
