@@ -13,12 +13,12 @@
 
 #include <kglobal.h>
 #include <kglobalsettings.h>
-#include <klocale.h>
+#include "klocale.h"
 #include <kapp.h>
 #include <kcharsets.h>
 #include <kdebug.h>
 
-#include "klocaletest.h"
+#include "klocaletest2.h"
 
 Test::Test( QWidget *parent, const char *name )
   : QWidget( parent, name )

@@ -1662,7 +1662,7 @@ void KLocale::setCurrencySymbol(const QString & symbol)
 
 QString KLocale::internalLanguage()
 {
-  return QString::fromLatin1("C");
+  return QString::fromLatin1("en_US");
 }
 
 QString KLocale::internalCountry()

@@ -21,11 +21,11 @@ INCLUDES = -I$(top_srcdir)/kdecore $(all_includes)
 
 LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 
-check_PROGRAMS = kconfigtest klocaletest kprocesstest ksimpleconfigtest \
+check_PROGRAMS = kconfigtest klocaletest klocaletest2 kprocesstest ksimpleconfigtest \
 	kstddirstest kurltest kuniqueapptest ktempfiletest krandomsequencetest \
 	kdebugtest ksocktest kstringhandlertest kcmdlineargstest kapptest \
 	kmemtest kidlservertest kidlclienttest dcopkonqtest kipctest \
-	cplusplustest kiconloadertest kresolvertest kmdcodectest knotifytest
+	cplusplustest kiconloadertest kresolvertest kmdcodectest knotifytest kcatalogue
 
 noinst_HEADERS = kconfigtest.h klocaletest.h kprocesstest.h KIDLTest.h kipctest.h
 
@@ -35,6 +35,7 @@ LDADD = ../libkdecore.la
 kconfigtest_SOURCES = kconfigtest.cpp
 kdebugtest_SOURCES = kdebugtest.cpp
 klocaletest_SOURCES = klocaletest.cpp
+klocaletest2_SOURCES = klocaletest2.cpp klocale.cpp libintl.cpp kcatalogue.cpp
 ksimpleconfigtest_SOURCES = ksimpleconfigtest.cpp
 kurltest_SOURCES = kurltest.cpp
 kstddirstest_SOURCES = kstddirstest.cpp
@@ -56,4 +57,5 @@ kiconloadertest_SOURCES = kiconloadertest.cpp
 kresolvertest_SOURCES = kresolvertest.cpp
 kmdcodectest_SOURCES = kmdcodectest.cpp 
 knotifytest_SOURCES = knotifytest.cpp
+kcatalogue_SOURCES = kcatalogue.cpp libintl.cpp
 
