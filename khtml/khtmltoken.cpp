@@ -46,6 +46,8 @@
 
 // Include Java Script
 #include <jsexec.h>
+#include <kcharsets.h>
+#include <kglobal.h>
 
 // Token buffers are allocated in units of TOKEN_BUFFER_SIZE bytes.
 #define TOKEN_BUFFER_SIZE ((128*1024)-1)
@@ -77,6 +79,7 @@ HTMLTokenizer::HTMLTokenizer( )
     buffer = 0;
     scriptCode = 0;
     decoder = 0;
+    charsets = KGlobal::charsets();
 
     reset();
 }
@@ -429,7 +432,7 @@ void HTMLTokenizer::parseEntity(HTMLString &src, bool start)
 	else // end of entity... try to decode it 
 	{
 	    QConstString cStr(entityBuffer, entityPos);
-	    QChar res = decoder->decodeEntity(cStr.string());
+	    QChar res = charsets->fromEntity(cStr.string());
 	    
 	    if (tag && src[0] != QChar(';') ) {
 		// Don't translate entities in tags with a missing ';'

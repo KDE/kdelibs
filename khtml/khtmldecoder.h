@@ -39,9 +39,6 @@ public:
 
     QString decode(const char *data);
 
-    QChar decodeEntity(const QString str);
-
-
 protected:
     // codec used for decoding. default is Latin1.
     QTextCodec *codec;

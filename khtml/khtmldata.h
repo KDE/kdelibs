@@ -30,7 +30,7 @@
 #include <qcolor.h>
 #include <qcursor.h>
 #include <qstring.h>
-#include <kcharsets.h>
+#include <qfont.h>
 
 // Also defined in khtmlfont.h
 #ifndef MAXFONTSIZES
@@ -61,7 +61,7 @@ public:
 
     QColor  bgColor;
 
-    KCharset charset; 
+    QFont::CharSet charset; 
 
     bool    underlineLinks;
 

@@ -19,6 +19,8 @@
 
 #AM_CXXFLAGS += -DTABLE_DEBUG
 
+#AM_CXXFLAGS += -pg
+
 lib_LTLIBRARIES = libkhtml.la
 libkhtml_la_SOURCES = khtmlcache.cpp khtmlparser.cpp khtmljscript.cpp \
 	khtml.cpp khtmlobj.cpp khtmlfont.cpp khtmlform.cpp khtmltoken.cpp \
@@ -60,5 +62,5 @@ EXTRA_DIST = $(khtmltags_DIST) makeprop maketags test $(data_DATA) \
 
 #bin_PROGRAMS = debugkhtml
 #debugkhtml_LDADD = -lkhtml -lkdecore -lqt
-
+#
 #debugkhtml_SOURCES = debugkhtml.cpp

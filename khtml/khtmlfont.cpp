@@ -33,16 +33,18 @@
 
 HTMLFontManager* pFontManager = 0;
 
-HTMLFont::HTMLFont( const char *_family, int _size, const int fontSizes[7], 
-                    int _weight, bool _italic, const char *_charset)
+HTMLFont::HTMLFont( QString _family, int _size, const int fontSizes[7], 
+                    int _weight, bool _italic, QFont::CharSet _charset)
     : font( _family, fontSizes[ _size ], _weight, _italic )
 {
     textCol = Qt::black;
     fsize = _size;
-    if (_charset) setCharset(_charset);
-    else setCharset(KGlobal::locale()->charset());
+    if(KGlobal::charsets()->hasUnicode(_family))
+	_charset = QFont::Unicode;
+    else if (_charset) setCharset(_charset);
+    else setCharset(KGlobal::charsets()->charsetForLocale());
     pointsize = fontSizes[ _size ];
-	
+    dirty = true;
 }
 
 HTMLFontManager::HTMLFontManager()

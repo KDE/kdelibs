@@ -28,14 +28,10 @@
 
 #include <ctype.h>
 
-#include "khtmlentities.c"
-
 int getTagID(const char *tagStr, int len);
-
 
 KHTMLDecoder::KHTMLDecoder()
 {
-// WABA: is8859-1 seems to end up as ISO 8859-15, bloody trolls
     codec = QTextCodec::codecForName("ISO 8859-1");
 printf("INIT HTML Codec name= %s\n", codec->name());
     enc = 0;
@@ -172,39 +168,4 @@ QString KHTMLDecoder::decode(const char *data)
 	out.truncate(out.length() - 1);
     return out;
 }
-
-QChar KHTMLDecoder::decodeEntity(const QString str)
-{
-    printf("decoding entity: %s\n", str.ascii());
-
-    QChar res = QChar::null;
-
-    // Check for '&#000' or '&#x0000' sequence
-    if (str[0] == '#' && str.length() > 1) {
-	bool ok;
-	if (str[1] == 'x' || str[1] == 'X') {
-	    // '&#x0000', hexadeciaml character reference	
-	    QString tmp(str.unicode()+2,str.length()-2);
-	    res = tmp.toInt(&ok, 16); 
-	} else {
-	    //  '&#0000', deciaml character reference
-	    QString tmp(str.unicode()+1,str.length()-1);
-	    res = tmp.toInt(&ok, 10); 
-	}
-	printf("decoded to %x\n", res.unicode());
-	return res;
-    }
-
-    const entity *e = findEntity(str.ascii(), str.length());
-
-    if(!e)
-    {
-	printf("unknown entity '%s', len = %d\n", str.ascii(), str.length());
-	return QChar::null;
-    }
-    //printf("got entity %s = %x\n", str.ascii(), e->code);	
-
-    return QChar(e->code);
-}
-
 

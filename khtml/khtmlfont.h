@@ -31,6 +31,7 @@
 #include <qcolor.h>
 #include <qfont.h>
 #include <kcharsets.h>
+#include <kglobal.h>
 
 // Also defined in khtmldata.h
 #ifndef MAXFONTSIZES
@@ -40,8 +41,8 @@
 class HTMLFont
 {
 public:
-	HTMLFont( const char *_family, int _size, const int fontSizes[MAXFONTSIZES],
-	          int _weight=QFont::Normal, bool _italic=FALSE, const char *charset=0 );
+	HTMLFont( QString _family, int _size, const int fontSizes[MAXFONTSIZES],
+	          int _weight=QFont::Normal, bool _italic=FALSE, QFont::CharSet charset=QFont::Latin1 );
 	HTMLFont( const HTMLFont &f );
 
 	void setWeight( int w )
@@ -54,11 +55,11 @@ public:
 		{	font.setStrikeOut( s ); }
 	void setTextColor( const QColor &col )
 		{	textCol = col; }
-	void setCharset( KCharset ch )
-		{	 chset=ch; chset.setQFont(font);}
+	void setCharset( QFont::CharSet ch )
+	    {	chset=ch;  dirty = true; }
 
-	const char *family() const
-		{	return font.family().ascii(); }
+	QString family() const
+		{	return font.family(); }
 	const int  weight() const
 		{	return font.weight(); }
 	const bool italic() const
@@ -71,22 +72,30 @@ public:
 		{	return pointsize; }
 	const QColor &textColor() const
 		{	return textCol; }
-	const KCharset charset () const
+	const QFont::CharSet charset () const
         {	return chset; }
 	const int size () const
 		{	return fsize; }
 
 	const HTMLFont &operator=( const HTMLFont &f );
 	bool operator==( const HTMLFont &f );
-	operator QFont() const
-		{	return font; }
+	operator QFont() const {
+	    if(dirty)
+	    {
+		// I hate hacks like this...
+		KGlobal::charsets()->setQFont((QFont &)font, chset);
+		((HTMLFont *)this)->dirty = false;
+	    }
+	    return font; 
+	}
 
 private:
 	QFont  font;
 	QColor textCol;
-	KCharset chset;
+	QFont::CharSet chset;
 	int    fsize;
 	int    pointsize;
+	bool dirty;
 };
 
 inline HTMLFont::HTMLFont( const HTMLFont &f ) : font( f.font )

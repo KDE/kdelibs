@@ -24,6 +24,7 @@
 // KDE HTML Widget -- Settings
 // $Id$
 
+
 #include "khtmldata.h"
 #include <kapp.h>
 
@@ -41,16 +42,16 @@ HTMLSettings::HTMLSettings()
     memcpy( fontSizes, defaultFontSizes, sizeof(fontSizes) );
     memcpy( fixedFontSizes, defaultFontSizes, sizeof(fixedFontSizes) );
     fontBaseColor = Qt::black;
-    fontBaseFace  = "times";
+    fontBaseFace  = kapp->generalFont().family();
 
-    fixedFontFace = "courier";
+    fixedFontFace = kapp->fixedFont().family();
 
     linkColor     = Qt::blue;
     vLinkColor    = Qt::darkMagenta;
 
     bgColor       = Qt::lightGray;
 
-    charset	  = KApplication::getKApplication()->getCharsets()->defaultCh();
+    charset	  = QFont::Latin1;
     
     underlineLinks = true;
 }

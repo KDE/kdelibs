@@ -36,6 +36,7 @@
 
 class JSEnvironment;
 class KHTMLDecoder;
+class KCharsets;
 
 //
 // Internal Classes
@@ -306,6 +307,8 @@ protected:
 
     QChar entityBuffer[10];
     uint entityPos;
+
+    KCharsets *charsets;
 };
 
 //-----------------------------------------------------------------------------
