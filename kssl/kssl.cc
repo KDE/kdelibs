@@ -35,6 +35,7 @@
 #include "kssl.h"
 
 #include <kdebug.h>
+#include <kstddirs.h>
 
 class KSSLPrivate {
 public:
@@ -138,22 +139,32 @@ bool KSSL::reInitialize() {
 
 
 bool KSSL::setVerificationLogic() {
+//#if 0
   kdDebug() << "KSSL verification logic" << endl;
-#if 0
 #ifdef HAVE_SSL
 // FIXME - check return code
 SSL_set_verify_result(d->m_ssl, X509_V_OK);
 SSL_CTX_set_verify(d->m_ctx, SSL_VERIFY_PEER, X509Callback);
 
-if (!SSL_CTX_load_verify_locations(d->m_ctx, NULL, "/home/kde/kde/kdelibs/kssl/carootfiles")) {
+QStringList qsl = KGlobal::dirs()->resourceDirs("kssl");
+ 
+if (qsl.isEmpty()) {
+  kdDebug() << "KSSL verification logic -- path lookup FAILED!" << endl;
+  return false;
+}
+
+QString _j = *(qsl.begin())+"caroot/";
+  kdDebug() << "KSSL verification logic -- path is " << _j << endl;
+
+if (!SSL_CTX_load_verify_locations(d->m_ctx, NULL, _j.ascii())) {
 // FIXME: recover here
+  kdDebug() << "KSSL verification logic -- FAILED!" << endl;
   return false;
 }
 
 return true;
 #endif
-return false;
-#endif
+//#endif
 return true;
 }
 
@@ -175,6 +186,7 @@ int rc;
   if (rc != -1) {
     setConnectionInfo();
     setPeerInfo();
+    kdDebug() << "KSSL connected properly - Connection and Peer info set" << endl;
   }
   return rc;
 #else
@@ -252,8 +264,8 @@ char buf[1024];
 
 void KSSL::setPeerInfo() {
 #ifdef HAVE_SSL
-//  m_pi.m_cert.setPeerCert(SSL_get_peer_certificate(d->m_ssl), 
-//                          (KSSLCertificate::KSSLValidation)SSL_get_verify_result(d->m_ssl));
+kdDebug() << "KSSL setting Peer info - verify result is " << SSL_get_verify_result(d->m_ssl) << endl;
+
 // FIXME: Set the right value here
 //                          d->m_cert_vfy_res);
 

@@ -34,6 +34,7 @@
 #include "ksslsettings.h"
 #include <kglobal.h>
 #include <kstddirs.h>
+#include <kdebug.h>
 
 // this hack provided by Malte Starostik to avoid glibc/openssl bug
 // on some systems
@@ -52,6 +53,11 @@
 
 KSSLSettings::KSSLSettings(bool readConfig) {
   m_cfg = new KConfig("cryptodefaults");
+
+  if (!KGlobal::dirs()->addResourceType("kssl", "share/apps/kssl")) {
+    kdDebug("Error adding (kssl, share/apps/kssl)");
+  }
+
   if (readConfig) load();
 }
 
@@ -77,6 +83,9 @@ bool KSSLSettings::tlsv1() const {
 }
 
  
+// FIXME: we should make a default list available if this fails
+//        since OpenSSL seems to just choose any old thing if it's given an
+//        empty list.  This behaviour is not confirmed though.
 QString KSSLSettings::getCipherList() {
 QString clist = "";
 #ifdef HAVE_SSL
