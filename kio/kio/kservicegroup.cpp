@@ -23,6 +23,7 @@
 #include <kstandarddirs.h>
 #include <klocale.h>
 #include <kdebug.h>
+#include <ksortablevaluelist.h>
 #include "kservicefactory.h"
 #include "kservicegroupfactory.h"
 #include "kservicegroup.h"
@@ -192,36 +193,43 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay)
         return group->m_serviceList;
 
 
-    // Sort the list alphabetically.
+    // Sort the list alphabetically, according to locale.
     // Groups come first, then services.
 
-    QMap<QString,SPtr> slist;
-    QMap<QString,SPtr> glist;
+    KSortableValueList<SPtr,QCString> slist;
+    KSortableValueList<SPtr,QCString> glist;
     for (List::ConstIterator it(group->m_serviceList.begin()); it != group->m_serviceList.end(); ++it)
     {
-        // Choose the right map
-        QMap<QString,SPtr> & map = (*it)->isType(KST_KServiceGroup) ? glist : slist;
-        // Check for duplicates - QMap doesn't like that
-        QString name = (*it)->name();
-        int n = 1;
-        while (map.contains(name))
-           name = (*it)->name()+QString::number(++n); // we append a number to make the entry unique
-        map.insert(name,SPtr(*it));
+        // Choose the right list
+        KSortableValueList<SPtr,QCString> & list = (*it)->isType(KST_KServiceGroup) ? glist : slist;
+        QCString key( (*it)->name().length() * 4 );
+        if( strxfrm( key.data(), (*it)->name().local8Bit().data(), key.size()) >= key.size())
+        { // didn't fit?
+            unsigned int ln = 0;
+            do
+            {
+                key.resize( key.size() * 2 );
+                ln = strxfrm( key.data(), (*it)->name().local8Bit().data(), key.size());
+            } while ( ln >= key.size());
+        }
+        list.insert(key,SPtr(*it));
     }
+    // Now sort
+    slist.sort();
+    glist.sort();
 
-    // Iterating over the QMap returns sorted items
     List lsort;
-    for(QMap<QString,SPtr>::ConstIterator it = glist.begin(); it != glist.end(); ++it)
-        lsort.append(it.data());
-    for(QMap<QString,SPtr>::ConstIterator it = slist.begin(); it != slist.end(); ++it)
+    for(KSortableValueList<SPtr,QCString>::ConstIterator it = glist.begin(); it != glist.end(); ++it)
+        lsort.append((*it).value());
+    for(KSortableValueList<SPtr,QCString>::ConstIterator it = slist.begin(); it != slist.end(); ++it)
     {
         if (excludeNoDisplay)
         {
-           KService *service = (KService *)((KSycocaEntry *)(*it));
+           KService *service = (KService *)((KSycocaEntry *)((*it).value()));
            if (service->noDisplay())
               continue;
         }
-        lsort.append(it.data());
+        lsort.append((*it).value());
     }
 
     // honor the SortOrder Key
