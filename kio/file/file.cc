@@ -979,7 +979,6 @@ void FileProtocol::slotDel( QStringList& _source )
   source_it = _source.begin();
   qDebug( "kio_file : Looping" );
   for( ; source_it != _source.end(); ++source_it ) {
-    struct stat stat_buf;
     qDebug( "kio_file : Checking %s", (*source_it).ascii() );
     KURL victim( (*source_it) );
     int s;
