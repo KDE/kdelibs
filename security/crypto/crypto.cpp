@@ -2,6 +2,7 @@
  * crypto.cpp
  *
  * Copyright (c) 2000 George Staikos <staikos@kde.org>
+ *               2000 Carsten Pfeiffer <pfeiffer@kde.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -54,6 +55,31 @@
 #include <openssl/ssl.h>
 #endif
 
+
+CipherItem::CipherItem( QListView *view, const QString& cipher, int bits,
+			int maxBits, KCryptoConfig *module )
+    : QCheckListItem( view, QString::null, CheckBox )
+{
+    m_cipher = cipher;
+    m_bits = bits;
+    m_module = module;
+
+    QString tmp( "%1 (%2 of %3 bits)" );
+    setText( 0, tmp.arg( cipher ).arg( bits ).arg( maxBits ));
+}
+
+void CipherItem::stateChange( bool )
+{
+    m_module->configChanged();
+}
+
+QString CipherItem::configName() const
+{
+    QString cipherName("cipher_%1");
+    return cipherName.arg( m_cipher );
+}
+
+
 KCryptoConfig::KCryptoConfig(QWidget *parent, const char *name)
   : KCModule(parent, name)
 {
@@ -76,7 +102,7 @@ QString whatstr;
   // FIRST TAB
   ///////////////////////////////////////////////////////////////////////////
   tabSSL = new QFrame(this);
-  grid = new QGridLayout(tabSSL, 9, 2, KDialog::marginHint(),
+  grid = new QGridLayout(tabSSL, 5, 2, KDialog::marginHint(),
                                         KDialog::spacingHint() );
   mUseTLS = new QCheckBox(i18n("Use &TLS instead of SSLv2/v3"), tabSSL);
   connect(mUseTLS, SIGNAL(clicked()), SLOT(configChanged()));
@@ -101,70 +127,62 @@ QString whatstr;
   QWhatsThis::add(mUseSSLv3, whatstr);
 
 #ifdef HAVE_SSL
-  QLabel *cipherlabel = new QLabel(i18n("SSLv2 Ciphers To Use:"), tabSSL);
-  grid->addWidget(cipherlabel, 2, 0);
-  
-  SSLv2Box = new QListBox(tabSSL, "v2ciphers");
-  connect(SSLv2Box, SIGNAL(selectionChanged()), SLOT(configChanged()));
+  SSLv2Box = new QListView(tabSSL, "v2ciphers");
+  (void) SSLv2Box->addColumn(i18n("SSLv2 Ciphers To Use:"));
   whatstr = i18n("Select the ciphers you wish to enable when using the"
                 " SSL v2 protocol.  The actual protocol used will be"
                 " negotiated with the server at connection time.");
   QWhatsThis::add(SSLv2Box, whatstr);
-  SSLv2Box->setSelectionMode(QListBox::Multi);
-  SSLv2Box->setColumnMode(QListBox::FixedNumber);
+  SSLv2Box->setSelectionMode(QListView::NoSelection);
 
-  grid->addMultiCellWidget(SSLv2Box, 3, 5, 0, 0);
-  SSLv2Box->resize(SSLv2Box->sizeHint());
-
+  grid->addWidget( SSLv2Box, 2, 0 );
 #else
   QLabel *nossllabel = new QLabel(i18n("SSL ciphers cannot be configured"
                                " because this module was not linked"
                                " with OpenSSL."), tabSSL); 
-  grid->addMultiCellWidget(nossllabel, 3, 3, 0, 1);
-  grid->addRowSpacing( 3, 100 ); // give minimum height to look bette
+  grid->addWidget(nossllabel, 2, 0);
+  grid->addRowSpacing( 3, 100 ); // give minimum height to look better
 #endif
 
-#ifdef HAVE_SSL
-  cipherlabel = new QLabel(i18n("SSLv3 Ciphers To Use:"), tabSSL);
-  grid->addWidget(cipherlabel, 2, 1);
+  config = new KConfig("cryptodefaults");
 
-  SSLv3Box = new QListBox(tabSSL, "v3ciphers");
-  connect(SSLv3Box, SIGNAL(selectionChanged()), SLOT(configChanged()));
+#ifdef HAVE_SSL
+  SSLv3Box = new QListView(tabSSL, "v3ciphers");
+  (void) SSLv3Box->addColumn(i18n("SSLv3 Ciphers To Use:"));
   whatstr = i18n("Select the ciphers you wish to enable when using the"
                 " SSL v3 protocol.  The actual protocol used will be"
                 " negotiated with the server at connection time.");
   QWhatsThis::add(SSLv3Box, whatstr);
-  SSLv3Box->setSelectionMode(QListBox::Multi);
-  SSLv3Box->setColumnMode(QListBox::FixedNumber);
-  grid->addMultiCellWidget(SSLv3Box, 3, 5, 1, 1);
+  SSLv3Box->setSelectionMode(QListView::NoSelection);
+  grid->addWidget(SSLv3Box, 2, 1);
 
   loadCiphers();
 #endif
 
   mWarnOnEnter = new QCheckBox(i18n("Warn on &entering SSL mode"), tabSSL);
   connect(mWarnOnEnter, SIGNAL(clicked()), SLOT(configChanged()));
-  grid->addWidget(mWarnOnEnter, 7, 0);
+  grid->addWidget(mWarnOnEnter, 3, 0);
   whatstr = i18n("If selected, you will be notified when entering an SSL"
                 " enabled site");
   QWhatsThis::add(mWarnOnEnter, whatstr);
 
   mWarnOnLeave = new QCheckBox(i18n("Warn on &leaving SSL mode"), tabSSL);
   connect(mWarnOnLeave, SIGNAL(clicked()), SLOT(configChanged()));
-  grid->addWidget(mWarnOnLeave, 7, 1);
+  grid->addWidget(mWarnOnLeave, 3, 1);
   whatstr = i18n("If selected, you will be notified when leaving an SSL"
                 " based site.");
   QWhatsThis::add(mWarnOnLeave, whatstr);
 
   mWarnOnUnencrypted = new QCheckBox(i18n("Warn on sending &unencrypted data"), tabSSL);
   connect(mWarnOnUnencrypted, SIGNAL(clicked()), SLOT(configChanged()));
-  grid->addWidget(mWarnOnUnencrypted, 8, 0);
+  grid->addWidget(mWarnOnUnencrypted, 4, 0);
   whatstr = i18n("If selected, you will be notified before sending"
                 " unencrypted data via a web browser.");
   QWhatsThis::add(mWarnOnUnencrypted, whatstr);
 
   mWarnOnMixed = new QCheckBox(i18n("Warn on &mixed SSL/non-SSL pages"), tabSSL);
   connect(mWarnOnMixed, SIGNAL(clicked()), SLOT(configChanged()));
-  grid->addWidget(mWarnOnMixed, 8, 1);
+  grid->addWidget(mWarnOnMixed, 4, 1);
   whatstr = i18n("If selected, you will be notified if you view a page"
                 " that has both encrypted and non-encrypted parts.");
   QWhatsThis::add(mWarnOnMixed, whatstr);
@@ -364,6 +382,7 @@ QString whatstr;
 
 KCryptoConfig::~KCryptoConfig()
 {
+    delete config;
 }
 
 void KCryptoConfig::configChanged()
@@ -374,8 +393,6 @@ void KCryptoConfig::configChanged()
 
 void KCryptoConfig::load()
 {
-  KConfig *config = new KConfig("cryptodefaults");
-
   config->setGroup("TLSv1");
   mUseTLS->setChecked(config->readBoolEntry("Enabled", false));
 
@@ -398,22 +415,26 @@ void KCryptoConfig::load()
 
 #ifdef HAVE_SSL
   config->setGroup("SSLv2");
-  for (unsigned int i = 0; i < v2ciphers.count(); i++) {
-    QString ciphername;
-    ciphername.sprintf("cipher_%s", v2ciphers[i].ascii());
-    SSLv2Box->setSelected(i, config->readBoolEntry(ciphername, (v2bits[i] >= 40)));
+  CipherItem *item = static_cast<CipherItem *>(SSLv2Box->firstChild());
+  while ( item ) {
+      QString ciphername("cipher_%1");
+      item->setOn(config->readBoolEntry(item->configName(),
+					item->bits() >= 40));
+      item = static_cast<CipherItem *>(item->nextSibling());
   }
 
   config->setGroup("SSLv3");
-  for (unsigned int i = 0; i < v3ciphers.count(); i++) {
-    QString ciphername;
-    ciphername.sprintf("cipher_%s", v3ciphers[i].ascii());
-    SSLv3Box->setSelected(i, config->readBoolEntry(ciphername, (v3bits[i] >= 40)));
+  item = static_cast<CipherItem *>(SSLv3Box->firstChild());
+  while ( item ) {
+      QString ciphername("cipher_%1");
+      item->setOn(config->readBoolEntry(item->configName(),
+					item->bits() >= 40));
+      item = static_cast<CipherItem *>(item->nextSibling());
   }
+
 #endif
 
   emit changed(false);
-  delete config;
 }
 
 void KCryptoConfig::save()
@@ -452,13 +473,15 @@ void KCryptoConfig::save()
 #ifdef HAVE_SSL
   int ciphercount = 0;
   config->setGroup("SSLv2");
-  for (unsigned int i = 0; i < v2ciphers.count(); i++) {
-    QString ciphername;
-    ciphername.sprintf("cipher_%s", v2ciphers[i].ascii());
-    if (SSLv2Box->isSelected(i)) {
-      config->writeEntry(ciphername, true);
+  CipherItem *item = static_cast<CipherItem *>(SSLv2Box->firstChild());
+  while ( item ) {
+    QString ciphername("cipher_%1");
+    if (item->isOn()) {
+      config->writeEntry(item->configName(), true);
       ciphercount++;
-    } else config->writeEntry(ciphername, false);
+    } else config->writeEntry(item->configName(), false);
+
+    item = static_cast<CipherItem *>(item->nextSibling());
   }
 
   if (mUseSSLv2->isChecked() && ciphercount == 0)
@@ -468,13 +491,15 @@ void KCryptoConfig::save()
 
   ciphercount = 0;
   config->setGroup("SSLv3");
-  for (unsigned int i = 0; i < v3ciphers.count(); i++) {
-    QString ciphername;
-    ciphername.sprintf("cipher_%s", v3ciphers[i].ascii());
-    if (SSLv3Box->isSelected(i)) {
-      config->writeEntry(ciphername, true);
+  item = static_cast<CipherItem *>(SSLv3Box->firstChild());
+  while ( item ) {
+    QString ciphername("cipher_%1");
+    if (item->isOn()) {
+      config->writeEntry(item->configName(), true);
       ciphercount++;
-    } else config->writeEntry(ciphername, false);
+    } else config->writeEntry(item->configName(), false);
+
+    item = static_cast<CipherItem *>(item->nextSibling());
   }
 
   if (mUseSSLv3->isChecked() && ciphercount == 0)
@@ -513,12 +538,15 @@ void KCryptoConfig::defaults()
     // I have already witnessed OpenSSL negotiate a 0 bit connection
     // on me after tracing the https ioslave on a suspicion.
  
-  for (unsigned int i = 0; i < v2ciphers.count(); i++) {
-    SSLv2Box->setSelected(i, (v2bits[i] >= 40));
+  CipherItem *item;
+  for ( item = static_cast<CipherItem *>(SSLv2Box->firstChild()); item;
+	item = static_cast<CipherItem *>(item->nextSibling()) ) {
+    item->setOn( item->bits() >= 40 );
   }
 
-  for (unsigned int i = 0; i < v3ciphers.count(); i++) {
-    SSLv3Box->setSelected(i, (v3bits[i] >= 40));
+  for ( item = static_cast<CipherItem *>(SSLv3Box->firstChild()); item;
+	item = static_cast<CipherItem *>(item->nextSibling()) ) {
+    item->setOn( item->bits() >= 40 );
   }
 #endif
 
@@ -548,6 +576,7 @@ SSL_METHOD *meth;
   ssl = SSL_new(ctx);
   if (!ssl) return false;
 
+  CipherItem *item;
   for (i=0; ; i++) {
     int j, k;
     SSL_CIPHER *sc;
@@ -556,12 +585,7 @@ SSL_METHOD *meth;
     if (!sc) break;
     k = SSL_CIPHER_get_bits(sc, &j);
 
-    cname = sc->name;
-    v2ciphers.append(cname);
-    v2bits.append(k);
-
-    cname.sprintf("%s (%d of %d bits)", sc->name, k, j);
-    SSLv2Box->insertItem(cname);
+    item = new CipherItem( SSLv2Box, sc->name, k, j, this );
   }
  
   if (ctx) SSL_CTX_free(ctx);
@@ -584,12 +608,7 @@ SSL_METHOD *meth;
     if (!sc) break;
     k = SSL_CIPHER_get_bits(sc, &j);
 
-    cname = sc->name;
-    v3ciphers.append(cname);
-    v3bits.append(k);
-
-    cname.sprintf("%s (%d of %d bits)", sc->name, k, j);
-    SSLv3Box->insertItem(cname);
+    item = new CipherItem( SSLv3Box, sc->name, k, j, this );
   }
  
   if (ctx) SSL_CTX_free(ctx);

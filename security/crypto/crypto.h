@@ -30,9 +30,34 @@
 #include <qtabwidget.h>
 #include <qcheckbox.h>
 #include <qvbuttongroup.h>
-#include <qlistbox.h>
+#include <qlistview.h>
 #include <qlineedit.h>
-#include <qvaluelist.h>
+// #include <qvaluelist.h>
+
+class KCryptoConfig;
+
+class CipherItem : public QCheckListItem
+{
+public:
+    CipherItem( QListView *view, const QString& cipher, int bits, int maxBits,
+		KCryptoConfig *module );
+    ~CipherItem() {}
+
+    void setCipher( const QString& cipher ) { m_cipher = cipher; }
+    const QString& cipher() const { return m_cipher; }
+    void setBits( int bits ) { m_bits = bits; }
+    int bits() const { return m_bits; }
+    
+    QString configName() const;
+
+protected:
+    virtual void stateChange( bool );
+
+private:
+    int m_bits;
+    QString m_cipher;
+    KCryptoConfig *m_module; // just to call configChanged()
+};
 
 class KCryptoConfig : public KCModule
 {
@@ -60,7 +85,8 @@ private:
   QWidget *tabSSL, *tabYourSSLCert, *tabOtherSSLCert, *tabSSLCA, *tabSSLCOpts;
   QCheckBox *mUseTLS, *mUseSSLv2, *mUseSSLv3;
   QCheckBox *mWarnOnEnter, *mWarnOnLeave, *mWarnOnUnencrypted, *mWarnOnMixed;
-  QListBox *SSLv2Box, *SSLv3Box, *yourSSLBox, *otherSSLBox, *caSSLBox;
+  QListBox *yourSSLBox, *otherSSLBox, *caSSLBox;
+  QListView *SSLv2Box, *SSLv3Box;
   QCheckBox *mWarnSelfSigned, *mWarnExpired, *mWarnRevoked;
   QPushButton *macAdd, *macRemove, *macClear;
   QListBox *macBox;
@@ -70,11 +96,7 @@ private:
               *yourSSLDefault, *yourSSLVerify;
   QRadioButton *yourSSLUseDefault, *yourSSLList, *yourSSLDont;
   QLineEdit *macCert;
-
-  // The new Ciphers data
-  QValueList<QString> v2ciphers, v3ciphers;
-  QValueList<int> v2bits, v3bits;
-  
+  KConfig *config;
 };
 
 #endif
