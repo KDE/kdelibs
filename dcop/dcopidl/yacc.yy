@@ -87,6 +87,9 @@ includes
           {
 		printf("<INCLUDE file=\"%s\"/>\n", $1->latin1() );
 	  }
+	| T_CLASS T_IDENTIFIER T_SEMICOLON includes
+	  {
+	  }
         |
           {
           }
@@ -96,9 +99,6 @@ rest
 	: T_CLASS T_IDENTIFIER class_header T_DCOP body T_SEMICOLON
 	  {
 		printf("<CLASS name=\"%s\">\n%s\n%s</CLASS>\n", $2->latin1(), $3->latin1(), $5->latin1() );
-	  }
-	| T_CLASS T_IDENTIFIER T_SEMICOLON includes
-	  {
 	  }
 	;
 
