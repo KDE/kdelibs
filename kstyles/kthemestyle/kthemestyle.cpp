@@ -2122,9 +2122,6 @@ int KThemeStyle::styleHint( StyleHint sh, const QWidget *w, const QStyleOption &
         case SH_GUIStyle:
             return WindowsStyle;
 
-        case SH_PopupMenu_SubMenuPopupDelay:
-            return 128;
-
         default:
             return KThemeBase::styleHint( sh, w, opt, shr );
     };
