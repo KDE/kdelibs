@@ -116,7 +116,7 @@ QString KIO::decodeFileName( const QString & _str )
 {
   QString str;
 
-  int i = 0;
+  uint i = 0;
   for ( ; i < _str.length() ; ++i )
   {
     if ( _str[i]=='%' )
@@ -422,8 +422,8 @@ QString KIO::findDeviceMountPoint( const QString& filename )
     /* Get the list of mounted file systems */
 
     if ((mtab = SETMNTENT(MNTTAB, "r")) == 0) {
-	perror("setmntent");
-	return QString::null;
+        perror("setmntent");
+        return QString::null;
     }
 
     /* Loop over all file systems and see if we can find our
@@ -448,10 +448,10 @@ QString KIO::findDeviceMountPoint( const QString& filename )
 
       /*
       if (!strncmp(FSNAME(me), realname.data(), length)   // mountpoint included in real path
-	  && length > max                                 // better than previous matches
+          && length > max                                 // better than previous matches
           && realname.length() >= length) {               // real path long enough
-	max = length;
-	if (length == 1 || realname.length() == length || realname[length] == '/' )
+        max = length;
+        if (length == 1 || realname.length() == length || realname[length] == '/' )
         {
         */
 
@@ -475,24 +475,24 @@ QString KIO::findDeviceMountPoint( const QString& filename )
  **/
 bool probably_slow_mounted(const QString& filename)
 {
-    STRUCT_SETMNTENT	mtab;
-    char		realname[MAXPATHLEN];
-    int		        length, max;
+    STRUCT_SETMNTENT    mtab;
+    char                realname[MAXPATHLEN];
+    int                 length, max;
 
     memset(realname, 0, MAXPATHLEN);
 
     /* If the path contains symlinks, get the real name */
     if (realpath(QFile::encodeName(filename), realname) == 0) {
-	if (filename.length() >= sizeof(realname))
-	    return false;
-	strcpy(realname, QFile::encodeName(filename));
+        if (filename.length() >= sizeof(realname))
+            return false;
+        strcpy(realname, QFile::encodeName(filename));
     }
 
     /* Get the list of mounted file systems */
 
     if ((mtab = SETMNTENT(MNTTAB, "r")) == 0) {
-	perror("setmntent");
-	return false;
+        perror("setmntent");
+        return false;
     }
 
     /* Loop over all file systems and see if we can find our
@@ -512,35 +512,35 @@ bool probably_slow_mounted(const QString& filename)
 
     while (true) {
       if (!GETMNTENT(mtab, me))
-	break;
+        break;
 
       length = strlen(MOUNTPOINT(me));
 
       if (!strncmp(MOUNTPOINT(me), realname, length)
-	  && length > max) {
-	  max = length;
-	  if (length == 1 || realname[length] == '/' || realname[length] == '\0') {
+          && length > max) {
+          max = length;
+          if (length == 1 || realname[length] == '/' || realname[length] == '\0') {
 
-	      bool nfs = !strcmp(MOUNTTYPE(me), "nfs");
-	      bool autofs = !strcmp(MOUNTTYPE(me), "autofs");
-	      bool pid = (strstr(FSNAME(me), ":(pid") != 0);
+              bool nfs = !strcmp(MOUNTTYPE(me), "nfs");
+              bool autofs = !strcmp(MOUNTTYPE(me), "autofs");
+              bool pid = (strstr(FSNAME(me), ":(pid") != 0);
 
-	      if (nfs && !pid)
-		  isslow = Right;
-	      else if (isslow == Right)
-		  isslow = Wrong;
+              if (nfs && !pid)
+                  isslow = Right;
+              else if (isslow == Right)
+                  isslow = Wrong;
 
-	      /* Does this look like automounted? */
-	      if (autofs || (nfs && pid)) {
-		  isauto = Right;
-		  isslow = Right;
-	      }
-	  }
+              /* Does this look like automounted? */
+              if (autofs || (nfs && pid)) {
+                  isauto = Right;
+                  isslow = Right;
+              }
+          }
       }
     }
 
     if (isauto == Right && isslow == Unseen)
-	isslow = Right;
+        isslow = Right;
 
     ENDMNTENT(mtab);
     return (isslow == Right);
