@@ -131,6 +131,7 @@
 <!ENTITY cervisia	"<application>Cervisia</application>">
 <!ENTITY CSS	"<trademark>CSS</trademark>">
 <!ENTITY drkonqi	"<application>DrKonqi</application>">
+<!ENTITY DCOP	"<acronym>DCOP</acronym>">
 <!ENTITY DVI	"<acronym>DVI</acronym>">
 <!ENTITY ELF	"<acronym>ELF</acronym>">
 <!ENTITY Emacs	"<application>Emacs</application>">
@@ -154,6 +155,8 @@
 <!ENTITY kabalone	"<application>KAbalone</application>">
 <!ENTITY kaboodle	"<application>Kaboodle</application>">
 <!ENTITY kaddressbook "<application>KAddressBook</application>">
+<!ENTITY kalarm	"<application>KAlarm</application>">
+<!ENTITY kalarmd "<application>KAlarmd</application>">
 <!ENTITY kandy        "<application>Kandy</application>">
 <!ENTITY kappfinder	"<application>Kappfinder</application>">
 <!ENTITY karm	"<application>KArm</application>">
