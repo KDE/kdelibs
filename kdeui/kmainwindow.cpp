@@ -601,7 +601,6 @@ void KMainWindow::savePropertiesInternal( KConfig *config, int number )
 void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configGroup)
 {
     kdDebug(200) << "KMainWindow::saveMainWindowSettings " << configGroup << endl;
-    QString entry;
     QStrList entryList;
     QString oldGroup;
 
@@ -642,7 +641,6 @@ void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configG
 
     int n = 1; // Toolbar counter. toolbars are counted from 1,
     KToolBar *toolbar = 0;
-    QString toolKey;
     QPtrListIterator<KToolBar> it( toolBarIterator() );
     while ( ( toolbar = it.current() ) ) {
         ++it;
@@ -749,7 +747,6 @@ void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &config
 
     int n = 1; // Toolbar counter. toolbars are counted from 1,
     KToolBar *toolbar;
-    QString toolKey;
     QPtrListIterator<KToolBar> it( toolBarIterator() ); // must use own iterator
 
     for ( ; it.current(); ++it) {
@@ -867,7 +864,6 @@ QString KMainWindow::settingsGroup() const
 void KMainWindow::setAutoSaveSettings( const QString & groupName, bool saveWindowSize )
 {
     d->autoSaveSettings = true;
-    d->settingsDirty = true;
     d->autoSaveGroup = groupName;
     d->autoSaveWindowSize = saveWindowSize;
     // Get notified when the user moves a toolbar around
