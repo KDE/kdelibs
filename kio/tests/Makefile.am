@@ -24,7 +24,7 @@ check_PROGRAMS = ksycocatest getalltest kruntest ktartest \
                  kioslavetest kdirwatchtest kshredtest speed kurifiltertest \
                  ktradertest kdefaultprogresstest kclipboardtest kmimemagictest \
                  kfiltertest kiopassdlgtest kscantest kdirlistertest \
-                 previewtest kionetrctest
+                 previewtest kionetrctest kdcopcheck
 
 METASOURCES = AUTO
 
@@ -46,6 +46,7 @@ kionetrctest_SOURCES = kionetrctest.cpp
 kiopassdlgtest_SOURCES = kiopassdlgtest.cpp
 kurifiltertest_SOURCES = kurifiltertest.cpp
 ksycocatest_SOURCES = ksycocatest.cpp
+kdcopcheck_SOURCES = kdcopcheck.cpp
 getalltest_SOURCES = getalltest.cpp
 kruntest_SOURCES = kruntest.cpp
 kdirwatchtest_SOURCES = kdirwatchtest.cpp kdirwatchtest.h
