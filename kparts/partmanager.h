@@ -47,6 +47,9 @@ class PartManagerPrivate;
 class PartManager : public QObject
 {
   Q_OBJECT
+  Q_ENUMS( SelectionPolicy )
+  Q_PROPERTY( SelectionPolicy selectionPolicy READ selectionPolicy WRITE setSelectionPolicy )
+  Q_PROPERTY( bool allowNestedParts READ allowNestedParts WRITE setAllowNestedParts )
 public:
   // the default policy of a PartManager is Direct!
   enum SelectionPolicy { Direct, TriState };
@@ -147,7 +150,18 @@ public:
    */
   const QList<Part> *parts() const;
 
+  /**
+   * Adds the @p topLevel widget to the list of managed toplevel widgets.
+   * Usually a PartManager only listens for events (for activation/selection)
+   * for one toplevel widget (and its children) , the one specified in the
+   * constructor. Sometimes however (like for example when using the KDE dockwidget
+   * library) , it is necessary to extend this.
+   */
   void addManagedTopLevelWidget( const QWidget *topLevel );
+  /**
+   * Removes the @p topLevel widget from the list of managed toplevel widgets.
+   * @see addManagedTopLevelWidget
+   */
   void removeManagedTopLevelWidget( const QWidget *topLevel );
 
 signals:
