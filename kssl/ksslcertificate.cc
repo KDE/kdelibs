@@ -29,6 +29,7 @@
 
 #include <kstddirs.h>
 #include <kmdcodec.h>
+#include <klocale.h>
 #include <qdatetime.h>
 
 #include <sys/types.h>
@@ -139,6 +140,7 @@ void KSSLCertificate::setCert(X509 *c) {
   d->m_cert = c;
 #endif
   d->m_stateCached = false;
+  d->m_stateCache = KSSLCertificate::Unknown;
 }
 
 X509 *KSSLCertificate::getCert() {
@@ -173,9 +175,9 @@ KSSLCertificate::KSSLValidation KSSLCertificate::validate() {
   X509_STORE *certStore;
   X509_LOOKUP *certLookup;
   X509_STORE_CTX *certStoreCTX;
-  int rc;
+  int rc = 0;
 
-  if (!d->m_cert) return Unknown;
+  if (!d->m_cert) return KSSLCertificate::Unknown;
 
   if (d->m_stateCached) {
     // kdDebug() << "KSSL returning a cached value" << d->m_stateCached << endl;
@@ -199,7 +201,7 @@ KSSLCertificate::KSSLValidation KSSLCertificate::validate() {
 
     certStore = d->kossl->X509_STORE_new();
     if (!certStore)
-      return Unknown;
+      return KSSLCertificate::Unknown;
 
     X509_STORE_set_verify_cb_func(certStore, X509Callback);
 
@@ -441,5 +443,33 @@ return certEncoded;
 return QString::null;
 }
 
+
+QString KSSLCertificate::verifyText(KSSLValidation x) {
+  switch (x) {
+  case KSSLCertificate::Ok:
+     return i18n("The certificate is valid.");
+  case KSSLCertificate::PathLengthExceeded:
+  case KSSLCertificate::ErrorReadingRoot:
+  case KSSLCertificate::NoCARoot:
+     return i18n("Certificate signing authority root files could not be found so the certificate is not verified.");
+  case KSSLCertificate::InvalidCA:
+     return i18n("Certificate signing authority is unknown or invalid.");
+  case KSSLCertificate::SelfSigned:
+     return i18n("Certificate is self-signed and thus may not be trustworthy.");
+  case KSSLCertificate::Expired:
+     return i18n("Certificate has expired.");
+  case KSSLCertificate::Revoked:
+     return i18n("Certificate has been revoked.");
+  case KSSLCertificate::NoSSL:
+     return i18n("SSL support was not found.");
+  case KSSLCertificate::Untrusted:
+  case KSSLCertificate::SignatureFailed:
+  case KSSLCertificate::Rejected:
+  case KSSLCertificate::InvalidPurpose:
+  break;
+  }
+
+return i18n("The certificate is invalid.");
+}
 
 

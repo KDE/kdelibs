@@ -150,38 +150,8 @@ void KSSLInfoDlg::setup(const QString& peername, const QString& issuer,
       cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
       csl->setPalette(cspl);
     break;
-    case KSSLCertificate::NoCARoot:
-      layout->addWidget(csl = new QLabel(i18n("Certificate signing authority root files could not be found so the certificate is not verified."), this), 2, 1);
-      cspl = csl->palette();
-      cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
-      csl->setPalette(cspl);
-    break;
-    case KSSLCertificate::InvalidCA:
-      layout->addWidget(csl = new QLabel(i18n("Certificate signing authority is unknown or invalid."), this), 2, 1);
-      cspl = csl->palette();
-      cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
-      csl->setPalette(cspl);
-    break;
-    case KSSLCertificate::SelfSigned:
-      layout->addWidget(csl = new QLabel(i18n("Certificate is self signed and thus may not be trustworthy."), this), 2, 1);
-      cspl = csl->palette();
-      cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
-      csl->setPalette(cspl);
-    break;
-    case KSSLCertificate::Expired:
-      layout->addWidget(csl = new QLabel(i18n("Certificate has expired."), this), 2, 1);
-      cspl = csl->palette();
-      cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
-      csl->setPalette(cspl);
-    break;
-    case KSSLCertificate::Revoked:
-      layout->addWidget(csl = new QLabel(i18n("Certificate has been revoked."), this), 2, 1);
-      cspl = csl->palette();
-      cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
-      csl->setPalette(cspl);
-    break;
     default:
-      layout->addWidget(csl = new QLabel(i18n("Certificate is not valid."), this), 2, 1);
+      layout->addWidget(csl = new QLabel(KSSLCertificate::verifyText(certState), this), 2, 1);
       cspl = csl->palette();
       cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
       csl->setPalette(cspl);

@@ -78,6 +78,8 @@ public:
   KSSLValidation validate();
   KSSLValidation revalidate();
 
+  static QString verifyText(KSSLValidation x);
+
   KSSLCertificate *replicate();
 
          friend int operator==(KSSLCertificate &x, KSSLCertificate &y);
