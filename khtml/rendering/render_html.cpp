@@ -86,13 +86,8 @@ void RenderHtml::printBoxDecorations(QPainter *p,int, int _y,
     // hence, print the background even in the margin areas (unlike for every other element!)
     // I just love these little inconsistencies .. :-( (Dirk)
     int my = QMAX(by,_y);
-    int mh;
-    if (by<_y)
-    	mh= QMAX(0,bh-(_y-by));
-    else
-    	mh = _h; // special case for root element
 
-    printBackground(p, c, bg, my, mh, bx, by, bw, bh);
+    printBackground(p, c, bg, my, _h, bx, by, bw, bh);
 
     if(m_style->hasBorder())
 	printBorder( p, _tx, _ty, w, h, m_style );
