@@ -158,6 +158,60 @@ KAboutData::setLicenseTextFile( const QString &file )
 }
 
 void
+KAboutData::setAppName( const char *appName )
+{
+  mAppName = appName;
+}
+
+void
+KAboutData::setProgramName( const char* programName )
+{
+  mProgramName = programName;
+}
+
+void
+KAboutData::setVersion( const char* version )
+{
+  mVersion = version;
+}
+
+void
+KAboutData::setShortDescription( const char *shortDescription )
+{
+  mShortDescription = shortDescription;
+}
+
+void
+KAboutData::setLicense( LicenseKey licenseKey)
+{
+  mLicenseKey = licenseKey;
+}
+
+void
+KAboutData::setCopyrightStatement( const char *copyrightStatement )
+{
+  mCopyrightStatement = copyrightStatement;
+}
+
+void
+KAboutData::setOtherText( const char *otherText )
+{
+  mOtherText = otherText;
+}
+
+void
+KAboutData::setHomepage( const char *homepage )
+{
+  mHomepageAddress = homepage;
+}
+
+void
+KAboutData::setBugAddress( const char *bugAddress )
+{
+  mBugEmailAddress = bugAddress;
+}
+
+void
 KAboutData::setProductName( const char *productName )
 {
   d->productName = productName;

@@ -333,6 +333,81 @@ class KAboutData
     void setLicenseTextFile( const QString &file );
 
     /**
+     * Defines the program name used internally.
+     *
+     * @param appName The application name. Example: "kate".
+     */
+    void setAppName( const char *appName );
+    
+    /**
+     * Defines the displayable program name string.
+     *
+     * @param programName The program name. This string should be
+     *        marked for translation.
+     *        Example: I18N_NOOP("Advanced Text Editor").
+     */
+    void setProgramName( const char* programName );
+    
+    /**
+     * Defines the program version string.
+     *
+     * @param version The program version.
+     */
+    void setVersion( const char* version );
+    
+    /**
+     * Defines a short description of what the program does.
+     *
+     * @param version The program version This string should be marked
+     *        for translation. Example: I18N_NOOP("An advanced text editor
+     *        with syntax highlithing support.").
+     */
+    void setShortDescription( const char *shortDescription );
+    
+    /**
+     * Defines the license identifier.
+     *
+     * @param licenseKey The license identifier.
+     */
+    void setLicense( LicenseKey licenseKey);
+    
+    /**
+     * Defines the copyright statement to show when displaying the license.
+     *
+     * @param copyrightStatement A copyright statement, that can look like
+     *        this: "(c) 1999-2000, Name". The string specified here is not
+     *        modified in any manner. The author information from addAuthor
+     *        is not used.
+     */
+    void setCopyrightStatement( const char *copyrightStatement );
+    
+    /**
+     * Defines the additional text to show in the about dialog.
+     *
+     * @param otherText Some free form text, that can contain any kind of
+     *        information. The text can contain newlines. This string
+     *        should be marked for translation.
+     */
+    void setOtherText( const char *otherText );
+    
+    /**
+     * Defines the program homepage.
+     *
+     * @param homepage The program homepage string.
+     *        Start the address with "http://". "http://kate.kde.org" is
+     *        is correct, "kde.kde.org" is not.
+     */
+    void setHomepage( const char *homepage );
+    
+    /**
+     * Defines the address where bug reports should be sent.
+     *
+     * @param bugAddress The bug report email address string.
+     *        This defaults to the kde.org bug system.
+     */
+    void setBugAddress( const char *bugAddress );
+    
+    /**
      * Defines the product name wich will be used in the KBugReport dialog.
      * By default it's the appName, but you can overwrite it here to provide
      * support for special components e.g. 'product/component' like
