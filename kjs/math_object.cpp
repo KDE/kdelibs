@@ -65,7 +65,7 @@ KJSO Math::get(const UString &p) const
     d = sqrt(2.0);
     break;
   default:
-    if (token == Math::Max || token == Math::Max || token == Math::Pow)
+    if (token == Math::Min || token == Math::Max || token == Math::Pow)
       len = 2;
     return Function(new MathFunc(token, len));
   };
