@@ -75,15 +75,13 @@ QString KStdGuiItem::stdItem( StdItem ui_enum )
 
 KGuiItem KStdGuiItem::ok()
 {
-  return KGuiItem( i18n( "&OK" ), "button_ok", i18n( "Accept settings" ),
-                   i18n( "If you press the <b>OK</b> button, all changes\n"
-                         "you made will be used to proceed." ) ); 
+  return KGuiItem( i18n( "&OK" ), "button_ok" ); 
 }
 
 
 KGuiItem KStdGuiItem::cancel()
 {
-  return KGuiItem( i18n( "&Cancel" ), "button_cancel", i18n( "Cancel operation" ) );
+  return KGuiItem( i18n( "&Cancel" ), "button_cancel" );
 }
 
 KGuiItem KStdGuiItem::yes()
