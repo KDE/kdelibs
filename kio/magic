@@ -705,19 +705,19 @@
 0       belong          0x000001ba              video/mpeg
 
 # MPEG 1.0 audio (layer III,II,I)
-0       beshort&0xff80  0xff80
+0       beshort&0xfff8  0xfff8
 >0      beshort&0x0006  0x0002         		audio/x-mp3
 >0      beshort&0x0006  0x0004         		audio/x-mp2
 >0      beshort&0x0006  0x0006         		audio/mpeg
 
 # MPEG 2.0 audio (layer III,II,I)
-0       beshort&0xff80  0xff00
+0       beshort&0xfff8  0xfff0
 >0      beshort&0x0006  0x0002         		audio/x-mp3
 >0      beshort&0x0006  0x0004         		audio/x-mp2
 >0      beshort&0x0006  0x0006         		audio/mpeg
 
 # MPEG 2.5 audio (layer III,II,I)
-0       beshort&0xff80  0xf800
+0       beshort&0xfff8  0xff80
 >0      beshort&0x0006  0x0002         		audio/x-mp3
 >0      beshort&0x0006  0x0004         		audio/x-mp2
 >0      beshort&0x0006  0x0006         		audio/mpeg
