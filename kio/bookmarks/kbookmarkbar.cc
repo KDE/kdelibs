@@ -151,7 +151,10 @@ KBookmarkBar::~KBookmarkBar()
 
 void KBookmarkBar::clear()
 {
-    m_toolBar->clear();
+    QPtrListIterator<KAction> it( dptr()->m_actions );
+    for (; it.current(); ++it ) {
+        (*it)->unplugAll();
+    }
     dptr()->m_actions.clear();
     m_lstSubMenus.clear();
 }
