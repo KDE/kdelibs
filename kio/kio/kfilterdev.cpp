@@ -238,7 +238,7 @@ Q_LONG KFilterDev::readBlock( char *data, Q_ULONG maxlen )
 
     filter->setOutBuffer( data, maxlen );
 
-    bool readEverything = false;
+    bool decompressedAll = false;
     uint dataReceived = 0;
     uint availOut = maxlen;
     while ( dataReceived < maxlen )
@@ -254,8 +254,7 @@ Q_LONG KFilterDev::readBlock( char *data, Q_ULONG maxlen )
             if ( size )
                 filter->setInBuffer( d->buffer.data(), size );
             else {
-                readEverything = true;
-                if ( filter->inBufferEmpty() && filter->outBufferAvailable() != 0 )
+                if ( decompressedAll )
                 {
                     // We decoded everything there was to decode. So -> done.
                     //kdDebug(7005) << "Seems we're done. dataReceived=" << dataReceived << endl;
@@ -294,12 +293,9 @@ Q_LONG KFilterDev::readBlock( char *data, Q_ULONG maxlen )
             //kdDebug(7005) << "KFilterDev::readBlock got END. dataReceived=" << dataReceived << endl;
             break; // Finished.
         }
-        if (readEverything && filter->inBufferEmpty() && filter->outBufferAvailable() != 0 )
+        if (filter->inBufferEmpty() && filter->outBufferAvailable() != 0 )
         {
-            // We decoded everything there was to decode. So -> done.
-            //kdDebug(7005) << "Seems we're done. dataReceived=" << dataReceived << endl;
-            d->result = KFilterBase::END;
-            break;
+            decompressedAll = true;
         }
         availOut = maxlen - dataReceived;
         filter->setOutBuffer( data, availOut );
