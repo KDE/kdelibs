@@ -35,7 +35,8 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kinstance.h kpalette.h kipc.h klibloader.h ktempfile.h ksavefile.h \
 	krandomsequence.h kstringhandler.h knotifyclient.h kiconeffect.h \
 	kaudioplayer.h kdestyle.h kdcoppropertyproxy.h kdatastream.h  netwm.h \
-	netwm_def.h netwm_p.h kpixmapprovider.h kunload.h kstaticdeleter.h
+	netwm_def.h netwm_p.h kpixmapprovider.h kunload.h kstaticdeleter.h \
+	kurldrag.h
 
 noinst_HEADERS = kckey.h kregpriv.h kcompletion_private.h
 
@@ -54,7 +55,7 @@ libkdecore_la_SOURCES = libintl.cpp kdebug.cpp kstddirs.cpp \
 	ksavefile.cpp krandomsequence.cpp kstringhandler.cpp kcompletion.cpp \
 	kcmdlineargs.cpp kaboutdata.cpp kcompletionbase.cpp knotifyclient.cpp \
 	kaudioplayer.cpp kdestyle.cpp kdcoppropertyproxy.cpp \
-	kpixmapprovider.cpp
+	kpixmapprovider.cpp kurldrag.cpp
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 3:0 -no-undefined
 libkdecore_la_LIBADD = ../libltdl/libltdlc.la -lXext $(LIB_DCOP) $(LIB_DMALLOC)
