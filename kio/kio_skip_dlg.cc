@@ -6,7 +6,7 @@
 #include <qmessagebox.h>
 
 #include <kapp.h>
-#include <k2url.h>
+#include <kurl.h>
 
 KIOSkipDlg::KIOSkipDlg(QWidget *parent, const char *_dest, bool _multi, bool _modal ) :
   QDialog ( parent, "" , _modal )

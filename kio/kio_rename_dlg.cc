@@ -8,7 +8,7 @@
 #include <qfileinfo.h>
 
 #include <kapp.h>
-#include <k2url.h>
+#include <kurl.h>
 
 
 KIORenameDlg::KIORenameDlg(QWidget *parent, const char *_src, const char *_dest,
@@ -206,7 +206,7 @@ void KIORenameDlg::b1Pressed()
   if ( strcmp( "", m_pLineEdit->text() ) == 0 )
     return;
 
-  K2URL u( m_pLineEdit->text() );
+  KURL u( m_pLineEdit->text() );
   if ( u.isMalformed() )
   {
     string str = (const char*)i18n( "Malformed URL\n" );
@@ -215,7 +215,7 @@ void KIORenameDlg::b1Pressed()
     return;
   }
 
-  K2URL d( dest.c_str() );
+  KURL d( dest.c_str() );
   if ( strcmp( u.protocol(), d.protocol() ) != 0 )
   {
     QMessageBox::critical( this, i18n( "Error" ), i18n( "You must not change the protocol" ), i18n( "OK" ) );
@@ -305,7 +305,7 @@ unsigned long getOffset( string dest ) {
   if ( ProtocolManager::self()->getMarkPartial() )
     dest += ".part";
 
-  K2URL d( dest.c_str() );
+  KURL d( dest.c_str() );
   QFileInfo info;
   info.setFile( d.path() );
 

@@ -14,7 +14,7 @@
 #include <qfile.h>
 
 #include <ksimpleconfig.h>
-#include <k2url.h>
+#include <kurl.h>
 #include <kapp.h>
 #include <kdebug.h>
 
@@ -392,17 +392,16 @@ QString KIOCache::htmlIndex()
 	    }
 	}
 	QString cachedFile = cachePath + it.current()->localFile();
-	string f = cachedFile.data();
-	K2URL::encode( f );
+	KURL::encode( cachedFile );
 	// First table entry is a href to the local file,
 	// displaying a mini icon of the document's mime type.
 	cacheIndex += "<tr><td><a href=\"";
-	cacheIndex += f.c_str();
+	cacheIndex += cachedFile;
 	cacheIndex += "\"><img border=0 src=\"";
 	if ( !it.current()->mimeType().isEmpty() )
 	  cacheIndex += KPixmapCache::pixmapFileForMimeType( it.current()->mimeType(), true );
 	else
-	  cacheIndex += KPixmapCache::pixmapFileForURL( f.c_str(), 0, true, true );
+	  cacheIndex += KPixmapCache::pixmapFileForURL( cachedFile, 0, true, true );
 	
 	cacheIndex += "\"></a></td> ";
 	// Second entry is a href to the actual URL, displaying the
@@ -503,9 +502,8 @@ bool KIOCache::insert( KIOCacheEntry *entry )
     {
       QString file( cachePath.data() );
       file += entry->localFile();
-      string f = file.data();
-      K2URL::encode( f );
-      K2URL u( f );
+      KURL::encode( file );
+      KURL u( file );
       
       KMimeType* mime = KMimeType::findByURL( u, 0, true );
       entry->setMimeType( mime->mimeType() );
@@ -519,7 +517,7 @@ bool KIOCache::insert( KIOCacheEntry *entry )
 
 bool KIOCache::isCacheable(const QString &_url)
 {
-    K2URL url(_url);
+    KURL url(_url);
     
     if (url.isMalformed()) return false;
 
@@ -540,13 +538,13 @@ bool KIOCache::isCacheable(const QString &_url)
 QString KIOCache::trimURL(const QString &url)
 {
   // Delete the reference of the right most (sub)protocol.
-  K2URLList lst;
-  assert( K2URL::split( url, lst ) );
-  lst.back().setRef( "" );
-  string s1;
-  K2URL::join( lst, s1 );
+  KURLList lst;
+  assert( KURL::split( url, lst ) );
+  lst.getLast()->setRef( "" );
+  QString s1;
+  KURL::join( lst, s1 );
 
-  QString s2 = s1.c_str();  
+  QString s2 = s1;  
   return s2;
 }
 
@@ -562,13 +560,13 @@ QString KIOCache::localKey(const KIOCacheEntry *entry)
     static time_t lastCall;    
     static int sequence = 0;
     time_t timestamp = time(0l);
-    K2URL url(entry->url());
+    KURL url(entry->url());
 
     if ( timestamp != lastCall ) 
       sequence = 0;
     
     QString localName( "entry-%1.%2-%3" );
-    localName = localName.arg( timestamp ).arg(sequence).arg(url.filename().c_str() );
+    localName = localName.arg( timestamp ).arg(sequence).arg(url.filename() );
 
     lastCall = timestamp;
     

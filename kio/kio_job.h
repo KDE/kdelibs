@@ -3,7 +3,7 @@
 
 #include "kio_base.h"
 
-#include <k2url.h>
+#include <kurl.h>
 
 #include <qobject.h>
 #include <qstring.h>

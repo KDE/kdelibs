@@ -16,7 +16,7 @@
 
 #include <ksimpleconfig.h>
 #include <kapp.h>
-#include <k2url.h>
+#include <kurl.h>
 #include <kdebug.h>
 
 // This function is implemented in kfmgui.cc and in kfmlib
@@ -208,7 +208,7 @@ KMimeType* KMimeType::find( const char *_name )
   return mime;
 }
 
-KMimeType* KMimeType::findByURL( K2URL& _url, mode_t _mode, bool _is_local_file, bool _fast_mode )
+KMimeType* KMimeType::findByURL( KURL& _url, mode_t _mode, bool _is_local_file, bool _fast_mode )
 {
   initStatic();
 
@@ -229,7 +229,7 @@ KMimeType* KMimeType::findByURL( K2URL& _url, mode_t _mode, bool _is_local_file,
     // are allowed to enter the directory
     if ( _is_local_file )
     {
-      string path = _url.path( 0 );
+      string path ( _url.path( 0 ) );
       if ( access( path.c_str(), R_OK ) == -1 )
 	return find( "inode/directory-locked" );
     }
@@ -247,7 +247,7 @@ KMimeType* KMimeType::findByURL( K2URL& _url, mode_t _mode, bool _is_local_file,
   if ( !_is_local_file && S_ISREG( _mode ) && ( _mode & ( S_IXUSR | S_IXGRP | S_IXOTH ) ) )
     return find( "application/x-executable" );
       
-  string path = _url.path( 0 );
+  string path ( _url.path( 0 ) );
   
   // Try to find it out by looking at the filename
   assert( s_mapTypes );
@@ -343,7 +343,7 @@ QString KFolderType::icon( const char *_url, bool _is_local )
   if ( !_is_local || !_url )
     return KMimeType::icon( _url, _is_local );
 
-  K2URL u( _url );
+  KURL u( _url );
   u.addPath( ".directory" );
   
   KSimpleConfig cfg( u.path(), true );
@@ -376,12 +376,12 @@ QString KFolderType::icon( const char *_url, bool _is_local )
   return icon;
 }
 
-QString KFolderType::icon( K2URL& _url, bool _is_local )
+QString KFolderType::icon( KURL& _url, bool _is_local )
 {
   if ( !_is_local )
     return KMimeType::icon( _url, _is_local );
 
-  K2URL u( _url );
+  KURL u( _url );
   u.addPath( ".directory" );
   
   KSimpleConfig cfg( u.path(), true );
@@ -398,7 +398,7 @@ QString KFolderType::comment( const char *_url, bool _is_local )
   if ( !_is_local || !_url )
     return KMimeType::comment( _url, _is_local );
 
-  K2URL u( _url );
+  KURL u( _url );
   u.addPath( ".directory" );
 
   KSimpleConfig cfg( u.path(), true );
@@ -410,12 +410,12 @@ QString KFolderType::comment( const char *_url, bool _is_local )
   return comment;
 }
 
-QString KFolderType::comment( K2URL& _url, bool _is_local )
+QString KFolderType::comment( KURL& _url, bool _is_local )
 {
   if ( !_is_local )
     return KMimeType::comment( _url, _is_local );
 
-  K2URL u( _url );
+  KURL u( _url );
   u.addPath( ".directory" );
 
   KSimpleConfig cfg( u.path(), true );
@@ -443,11 +443,11 @@ QString KDELnkMimeType::icon( const char *_url, bool _is_local )
   if ( !_is_local || !_url )
     return KMimeType::icon( _url, _is_local );
 
-  K2URL u( _url );
+  KURL u( _url );
   return icon( u, _is_local );
 }
 
-QString KDELnkMimeType::icon( K2URL& _url, bool _is_local )
+QString KDELnkMimeType::icon( KURL& _url, bool _is_local )
 {
   if ( !_is_local )
     return KMimeType::icon( _url, _is_local );
@@ -481,11 +481,11 @@ QString KDELnkMimeType::comment( const char *_url, bool _is_local )
   if ( !_is_local || !_url )
     return KMimeType::comment( _url, _is_local );
 
-  K2URL u( _url );
+  KURL u( _url );
   return comment( u, _is_local );
 }
 
-QString KDELnkMimeType::comment( K2URL& _url, bool _is_local )
+QString KDELnkMimeType::comment( KURL& _url, bool _is_local )
 {
   if ( !_is_local )
     return KMimeType::comment( _url, _is_local );
@@ -505,7 +505,7 @@ bool KDELnkMimeType::run( const char *_url, bool _is_local )
   if ( !_is_local )
     return false;
 
-  K2URL u( _url );
+  KURL u( _url );
   
   KSimpleConfig cfg( u.path(), true );
   cfg.setGroup( "KDE Desktop Entry" );
@@ -605,7 +605,7 @@ bool KDELnkMimeType::runMimeType( const char *_url, KSimpleConfig &cfg )
   return false;
 }
 
-void KDELnkMimeType::builtinServices( K2URL& _url, list<Service>& _lst )
+void KDELnkMimeType::builtinServices( KURL& _url, list<Service>& _lst )
 {
   if ( !_url.isLocalFile() )
     return;
@@ -651,7 +651,7 @@ void KDELnkMimeType::builtinServices( K2URL& _url, list<Service>& _lst )
   _lst.push_back( props );   */
 }
 
-void KDELnkMimeType::userDefinedServices( K2URL& _url, list<KDELnkMimeType::Service>& _lst )
+void KDELnkMimeType::userDefinedServices( KURL& _url, list<KDELnkMimeType::Service>& _lst )
 {
   if ( !_url.isLocalFile() )
     return;
@@ -690,7 +690,7 @@ void KDELnkMimeType::executeService( const char *_url, KDELnkMimeType::Service& 
 {
   kdebug( KDEBUG_INFO, 7009, "EXECUTING Service %s", _service.m_strName.data() );
   
-  K2URL u( _url );
+  KURL u( _url );
   
   if ( _service.m_type == ST_USER_DEFINED )
   {

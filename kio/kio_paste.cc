@@ -5,7 +5,7 @@
 #include "kio_job.h"
 
 #include <kclipboard.h>
-#include <k2url.h>
+#include <kurl.h>
 #include <kapp.h>
 
 #include <qmessagebox.h>
@@ -32,8 +32,8 @@ bool isClipboardEmpty()
 
 void pasteClipboard( const char *_dest_url )
 {
-  list<K2URL> lst;
-  if ( !K2URL::split( _dest_url, lst ) )
+  KURLList lst;
+  if ( !KURL::split( _dest_url, lst ) )
   {
     kioErrorDialog( ERR_MALFORMED_URL, _dest_url );
     return;
@@ -67,7 +67,7 @@ void pasteClipboard( const char *_dest_url )
 
 void pasteData( const char *_dest_url, QByteArray _data )
 {
-  K2URL u( _dest_url );
+  KURL u( _dest_url );
   if ( !u.isLocalFile() )
   {
     // TODO: Use KIO put command here for writing the data.

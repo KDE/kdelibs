@@ -8,7 +8,7 @@
 
 #include <qmessagebox.h>
 
-#include <k2url.h>
+#include <kurl.h>
 #include <kapp.h>
 
 #include <stdlib.h>
@@ -39,7 +39,7 @@ bool KRun::runURL( const char *_url, const char *_mimetype )
   }
   else if ( strcmp( _mimetype, "application/x-kdelnk" ) == 0 )
   {
-    K2URL u( _url );
+    KURL u( _url );
     if ( u.isLocalFile() )
       return KDELnkMimeType::run( _url, true );
   }
@@ -93,7 +93,7 @@ bool KRun::run( const char *_exec, QStrList& _urls, const char *_name, const cha
   const char* it = _urls.first();
   for( ; it != 0L; it = _urls.next() )
   {
-    K2URL url( it );
+    KURL url( it );
     if ( url.isMalformed() )
     {
       string tmp = (const char*)i18n( "Malformed URL" );
@@ -130,7 +130,7 @@ bool KRun::run( const char *_exec, QStrList& _urls, const char *_name, const cha
     b_local_app = true;
     
   // Did the user forget to append something like '%f' ?
-  // If so, then assume that '%f' is the right joice => the application
+  // If so, then assume that '%f' is the right choice => the application
   // accepts only local files.
   if ( exec.find( "%f" ) == string::npos && exec.find( "%u" ) == string::npos && exec.find( "%n" ) == string::npos &&
        exec.find( "%d" ) == string::npos && exec.find( "%F" ) == string::npos && exec.find( "%U" ) == string::npos &&
@@ -202,15 +202,15 @@ bool KRun::run( const char *_exec, QStrList& _urls, const char *_name, const cha
   for( ; it != 0L; it = _urls.next() )
   {
     string e = exec;
-    K2URL url( it );
+    KURL url( it );
     assert( !url.isMalformed() );
-    string f = url.path( -1 );
+    string f ( url.path( -1 ) );
     shellQuote( f );
-    string d = url.directory();
+    string d ( url.directory() );
     shellQuote( d );
-    string n = url.filename();
+    string n ( url.filename() );
     shellQuote( n );
-    string u = it;
+    string u ( it );
     shellQuote( u );
    
     while ( ( pos = e.find( "%f" )) != (int)string::npos )
@@ -310,7 +310,7 @@ void KRun::init()
 {
   kdebug( KDEBUG_INFO, 7010, "INIT called" );
   
-  K2URL url( m_strURL );
+  KURL url( m_strURL );
   
   if ( !m_bIsLocalFile && url.isLocalFile() )
     m_bIsLocalFile = true;
@@ -346,10 +346,10 @@ void KRun::init()
     return;
   }
 
-  // Lets see wether it is a directory
-  K2URLList lst;
-  K2URL::split( m_strURL, lst );
-  if ( !ProtocolManager::self()->supportsListing( lst.back().protocol() ) )
+  // Let's see whether it is a directory
+  KURLList lst;
+  KURL::split( m_strURL, lst );
+  if ( !ProtocolManager::self()->supportsListing( lst.getLast()->protocol() ) )
   {
     kdebug( KDEBUG_INFO, 7010, "##### NOT A DIRECTORY" );
     // No support for listing => we can scan the file
@@ -500,8 +500,8 @@ void KRun::foundMimeType( const char *_type )
   
   if ( strcmp( _type, "application/x-gzip" ) == 0 )
   {
-    list<K2URL> lst;
-    if ( !K2URL::split( m_strURL, lst ) )
+    KURLList lst;
+    if ( !KURL::split( m_strURL, lst ) )
     {
       QString tmp = i18n( "Malformed URL" );
       tmp += "\n";
@@ -510,20 +510,20 @@ void KRun::foundMimeType( const char *_type )
       return;
     }
 
-    string tmp = lst.back().ref();
-    string ref;
-    if ( tmp.empty() )
+    QString tmp = lst.getLast()->ref();
+    QString ref;
+    if ( tmp.isEmpty() )
       ref = "gzip:/decompress";
     else
     {
-      string ref = "gzip:/decompress#";
+      ref = "gzip:/decompress#";
       ref += tmp;
     }
-    lst.back().setRef( ref.c_str() );
+    lst.getLast()->setRef( ref );
     
     // Create the new URL
-    K2URL::join( lst, tmp );
-    m_strURL = tmp.c_str();
+    KURL::join( lst, tmp );
+    m_strURL = tmp;
     
     kdebug( KDEBUG_INFO, 7010, "Now trying with %s", m_strURL.data() );
     

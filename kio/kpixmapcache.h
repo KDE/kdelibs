@@ -2,10 +2,11 @@
 #define __kpixmapcache_h__
 
 #include <sys/stat.h>
+#include <sys/types.h>
 
 #include <qstring.h>
 
-#include <k2url.h>
+#include <kurl.h>
 
 class QPixmap;
 class KMimeType;
@@ -16,7 +17,7 @@ public:
   /**
    * May return 0L if the pixmap and the default pixmap is not available
    */
-  static QPixmap* pixmapForURL( K2URL& _url, mode_t _mode = 0, bool _is_local_file = false, bool _mini = false );
+  static QPixmap* pixmapForURL( KURL & _url, mode_t _mode = 0, bool _is_local_file = false, bool _mini = false );
   /**
    * May return 0L if the pixmap and the default pixmap is not available
    */
@@ -44,7 +45,7 @@ public:
   /**
    * May return 0L if the pixmap and the default pixmap is not available
    */
-  static QPixmap* pixmapForMimeType( KMimeType *_mime_type, K2URL& _url, bool _is_local_file, bool _mini );
+  static QPixmap* pixmapForMimeType( KMimeType *_mime_type, KURL& _url, bool _is_local_file, bool _mini );
   /**
    * Never returns an empty string. If the image was not found, then the default pixmap is returned.
    *

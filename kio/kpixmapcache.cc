@@ -1,4 +1,3 @@
-#include "kpixmapcache.h"
 #include "kmimetypes.h"
 
 #include <qpixmapcache.h>
@@ -10,21 +9,23 @@
 
 #include <sys/stat.h>
 
-QPixmap* KPixmapCache::pixmapForURL( K2URL& _url, mode_t _mode, bool _is_local_file, bool _mini )
+#include "kpixmapcache.h"
+
+QPixmap* KPixmapCache::pixmapForURL( KURL& _url, mode_t _mode, bool _is_local_file, bool _mini )
 {
   return pixmap( KMimeType::findByURL( _url, _mode, _is_local_file )->icon( _url, _is_local_file ), _mini );
 }
 
 QPixmap* KPixmapCache::pixmapForURL( const char* _url, mode_t _mode, bool _is_local_file, bool _mini )
 {
-  K2URL url( _url );
+  KURL url( _url );
   
   return pixmap( KMimeType::findByURL( url, _mode, _is_local_file )->icon( url, _is_local_file ), _mini );
 }
 
 QString KPixmapCache::pixmapFileForURL( const char* _url, mode_t _mode, bool _is_local_file, bool _mini )
 {
-  K2URL url( _url );
+  KURL url( _url );
   
   return pixmapFile( KMimeType::findByURL( url, _mode, _is_local_file )->icon( url, _is_local_file ), _mini );
 }
@@ -39,7 +40,7 @@ QPixmap* KPixmapCache::pixmapForMimeType( KMimeType *_mime_type, bool _mini )
   return pixmap( _mime_type->icon( 0L, false ), _mini );
 }
 
-QPixmap* KPixmapCache::pixmapForMimeType( KMimeType *_mime_type, K2URL& _url, bool _is_local_file, bool _mini )
+QPixmap* KPixmapCache::pixmapForMimeType( KMimeType *_mime_type, KURL& _url, bool _is_local_file, bool _mini )
 {
   return pixmap( _mime_type->icon( _url, _is_local_file ), _mini );
 }

@@ -11,7 +11,7 @@
 #include <qstrlist.h>
 #include <qdict.h>
 
-#include <k2url.h>
+#include <kurl.h>
 #include <ksimpleconfig.h>
 
 class KMimeTypeFactory;
@@ -27,12 +27,12 @@ public:
    * @param _url may be 0L
    */
   virtual QString icon( const char *_url, bool _is_local ) { return m_strIcon; }
-  virtual QString icon( K2URL& _url, bool _is_local ) { return m_strIcon; }
+  virtual QString icon( KURL& _url, bool _is_local ) { return m_strIcon; }
   /**
    * @param _url may be 0L
    */
   virtual QString comment( const char *_url, bool _is_local ) { return m_strComment; }
-  virtual QString comment( K2URL& _url, bool _is_local ) { return m_strComment; }
+  virtual QString comment( KURL& _url, bool _is_local ) { return m_strComment; }
   virtual const char* mimeType() { return m_strMimeType; }
   
   virtual QStrList patterns() { return m_lstPatterns; }
@@ -69,7 +69,7 @@ public:
    *                   but it is FAST.
    * @return a pointer to the matching mimetype. 0L is NEVER returned.
    */
-  static KMimeType* findByURL( K2URL& _url, mode_t _mode = 0, bool _is_local_file = false, bool _fast_mode = false );
+  static KMimeType* findByURL( KURL& _url, mode_t _mode = 0, bool _is_local_file = false, bool _fast_mode = false );
 
   /**
    * Called by the main function after the registry parsed all mimetype
@@ -100,9 +100,9 @@ public:
   KFolderType( const char *_type, const char *_icon, const char *_comment, QStrList& _patterns );
 
   virtual QString icon( const char *_url, bool _is_local );
-  virtual QString icon( K2URL& _url, bool _is_local );
+  virtual QString icon( KURL& _url, bool _is_local );
   virtual QString comment( const char *_url, bool _is_local );
-  virtual QString comment( K2URL& _url, bool _is_local );
+  virtual QString comment( KURL& _url, bool _is_local );
 };
 
 class KDELnkMimeType : public KMimeType
@@ -121,12 +121,12 @@ public:
   KDELnkMimeType( const char *_type, const char *_icon, const char *_comment, QStrList& _patterns );
 
   virtual QString icon( const char *_url, bool _is_local );
-  virtual QString icon( K2URL& _url, bool _is_local );
+  virtual QString icon( KURL& _url, bool _is_local );
   virtual QString comment( const char *_url, bool _is_local );
-  virtual QString comment( K2URL& _url, bool _is_local );
+  virtual QString comment( KURL& _url, bool _is_local );
 
-  static void builtinServices( K2URL& _url, list<Service>& _lst );
-  static void userDefinedServices( K2URL& _url, list<Service>& _lst );
+  static void builtinServices( KURL& _url, list<Service>& _lst );
+  static void userDefinedServices( KURL& _url, list<Service>& _lst );
 
   /**
    * @param _url is the URL of the kdelnk file. The URL must be local, otherwise

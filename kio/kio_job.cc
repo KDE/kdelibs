@@ -215,8 +215,8 @@ bool KIOJob::unmount( const char *_point )
 
 bool KIOJob::copy( const char *_source, const char *_dest, bool _move )
 {
-  list<K2URL> lst;
-  if ( !K2URL::split( _source, lst ) )
+  KURLList lst;
+  if ( !KURL::split( _source, lst ) )
   {
     slotError( ERR_MALFORMED_URL, _source );
     return false;
@@ -224,8 +224,8 @@ bool KIOJob::copy( const char *_source, const char *_dest, bool _move )
 
   string error;
   int errid = 0;
-  if ( !createSlave( lst.back().protocol(), lst.back().host(), lst.back().user(),
-		      lst.back().pass(), errid, error ) )
+  if ( !createSlave( lst.getLast()->protocol(), lst.getLast()->host(), lst.getLast()->user(),
+		      lst.getLast()->pass(), errid, error ) )
   {
     slotError( errid, error.c_str() );
     return false;
@@ -265,8 +265,8 @@ bool KIOJob::copy( list<string>& _source, const char *_dest, bool _move )
   list<string>::iterator it = _source.begin();
   for( ; it != _source.end(); ++it )
   {    
-    list<K2URL> lst;
-    if ( !K2URL::split( it->c_str(), lst ) )
+    KURLList lst;
+    if ( !KURL::split( it->c_str(), lst ) )
     {
       slotError( ERR_MALFORMED_URL, it->c_str() );
       return false;
@@ -274,13 +274,13 @@ bool KIOJob::copy( list<string>& _source, const char *_dest, bool _move )
 
     if ( protocol.empty() )
     {
-      protocol = lst.back().protocol();
-      host = lst.back().host();
-      user = lst.back().user();
-      pass = lst.back().pass();
+      protocol = lst.getLast()->protocol();
+      host = lst.getLast()->host();
+      user = lst.getLast()->user();
+      pass = lst.getLast()->pass();
     }
     // Still the same host and protocol ?
-    else if ( protocol != lst.back().protocol() || host != lst.back().host() )
+    else if ( protocol != lst.getLast()->protocol() || host != lst.getLast()->host() )
     {
       // URGENTLY TODO: extract these sources and start a second copy command with them
       assert( 0 );
@@ -328,8 +328,8 @@ bool KIOJob::move( list<string>& _source, const char *_dest )
 
 bool KIOJob::del( const char *_source )
 {
-  list<K2URL> lst;
-  if ( !K2URL::split( _source, lst ) )
+  KURLList lst;
+  if ( !KURL::split( _source, lst ) )
   {
     slotError( ERR_MALFORMED_URL, _source );
     return false;
@@ -337,8 +337,8 @@ bool KIOJob::del( const char *_source )
 
   string error;
   int errid = 0;
-  if ( !createSlave( lst.back().protocol(), lst.back().host(), lst.back().user(),
-		      lst.back().pass(), errid, error ) )
+  if ( !createSlave( lst.getLast()->protocol(), lst.getLast()->host(), lst.getLast()->user(),
+		      lst.getLast()->pass(), errid, error ) )
   {
     slotError( errid, error.c_str() );
     return false;
@@ -375,8 +375,8 @@ bool KIOJob::del( list<string>& _source )
   list<string>::iterator it = _source.begin();
   for( ; it != _source.end(); ++it )
   {    
-    list<K2URL> lst;
-    if ( !K2URL::split( it->c_str(), lst ) )
+    KURLList lst;
+    if ( !KURL::split( it->c_str(), lst ) )
     {
       slotError( ERR_MALFORMED_URL, it->c_str() );
       return false;
@@ -384,13 +384,13 @@ bool KIOJob::del( list<string>& _source )
 
     if ( protocol.empty() )
     {
-      protocol = lst.back().protocol();
-      host = lst.back().host();
-      user = lst.back().user();
-      pass = lst.back().pass();
+      protocol = lst.getLast()->protocol();
+      host = lst.getLast()->host();
+      user = lst.getLast()->user();
+      pass = lst.getLast()->pass();
     }
     // Still the same host and protocol ?
-    else if ( protocol != lst.back().protocol() || host != lst.back().host() )
+    else if ( protocol != lst.getLast()->protocol() || host != lst.getLast()->host() )
     {
       // URGENTLY TODO: extract these sources and start a second copy command with them
       assert( 0 );
@@ -419,8 +419,8 @@ bool KIOJob::testDir( const char *_url )
 {
   assert( !m_pSlave );
 
-  list<K2URL> lst;
-  if ( !K2URL::split( _url, lst ) )
+  KURLList lst;
+  if ( !KURL::split( _url, lst ) )
   {
     slotError( ERR_MALFORMED_URL, _url );
     return false;
@@ -428,8 +428,8 @@ bool KIOJob::testDir( const char *_url )
 
   string error;
   int errid;
-  if ( !createSlave( lst.back().protocol(), lst.back().host(), lst.back().user(),
-		      lst.back().pass(), errid, error ) )
+  if ( !createSlave( lst.getLast()->protocol(), lst.getLast()->host(), lst.getLast()->user(),
+		      lst.getLast()->pass(), errid, error ) )
   {
     slotError( errid, error.c_str() );
     return false;
@@ -448,8 +448,8 @@ bool KIOJob::get( const char *_url )
 {
   assert( !m_pSlave );
 
-  list<K2URL> lst;
-  if ( !K2URL::split( _url, lst ) )
+  KURLList lst;
+  if ( !KURL::split( _url, lst ) )
   {
     slotError( ERR_MALFORMED_URL, _url );
     return false;
@@ -457,8 +457,8 @@ bool KIOJob::get( const char *_url )
 
   string error;
   int errid;
-  if ( !createSlave( lst.back().protocol(), lst.back().host(), lst.back().user(),
-		      lst.back().pass(), errid, error ) )
+  if ( !createSlave( lst.getLast()->protocol(), lst.getLast()->host(), lst.getLast()->user(),
+		      lst.getLast()->pass(), errid, error ) )
   {
     slotError( errid, error.c_str() );
     return false;
@@ -486,8 +486,8 @@ bool KIOJob::getSize( const char *_url )
 {
   assert( !m_pSlave );
 
-  list<K2URL> lst;
-  if ( !K2URL::split( _url, lst ) )
+  KURLList lst;
+  if ( !KURL::split( _url, lst ) )
   {
     slotError( ERR_MALFORMED_URL, _url );
     return false;
@@ -495,8 +495,8 @@ bool KIOJob::getSize( const char *_url )
 
   string error;
   int errid;
-  if ( !createSlave( lst.back().protocol(), lst.back().host(), lst.back().user(),
-		      lst.back().pass(), errid, error ) )
+  if ( !createSlave( lst.getLast()->protocol(), lst.getLast()->host(), lst.getLast()->user(),
+		      lst.getLast()->pass(), errid, error ) )
   {
     slotError( errid, error.c_str() );
     return false;
@@ -525,8 +525,8 @@ bool KIOJob::listDir( const char *_url )
 {
   assert( !m_pSlave );
 
-  list<K2URL> lst;
-  if ( !K2URL::split( _url, lst ) )
+  KURLList lst;
+  if ( !KURL::split( _url, lst ) )
   {
     slotError( ERR_MALFORMED_URL, _url );
     return false;
@@ -534,8 +534,8 @@ bool KIOJob::listDir( const char *_url )
 
   string error;
   int errid;
-  if ( !createSlave( lst.back().protocol(), lst.back().host(), lst.back().user(),
-		      lst.back().pass(), errid, error ) )
+  if ( !createSlave( lst.getLast()->protocol(), lst.getLast()->host(), lst.getLast()->user(),
+		      lst.getLast()->pass(), errid, error ) )
   {
     slotError( errid, error.c_str() );
     return false;
@@ -916,6 +916,7 @@ Slave* KIOJob::createSlave( const char *_protocol, const char *_host,
 			    int& _error, string& _error_text )
 {
   Slave *s = KIOSlavePool::self()->slave( _protocol, _host, _user, _pass );
+  debug("KIOJob::createSlave : Slave got");
   if ( s )
   {
     m_pSlave = s;
@@ -923,6 +924,7 @@ Slave* KIOJob::createSlave( const char *_protocol, const char *_host,
     m_strSlaveHost = _host;
     m_strSlaveUser = _user;
     m_strSlavePass = _pass;
+    debug(" m_strSlavePass ok ");
     connectSlave( s );
     return s;
   }
@@ -945,11 +947,13 @@ Slave* KIOJob::createSlave( const char *_protocol, const char *_host,
     return 0L;
   }
 
+    debug(" trying m_strSlave...Pass");
   m_pSlave = s;
   m_strSlaveProtocol = _protocol;
   m_strSlaveHost = _host;
   m_strSlaveUser = _user;
   m_strSlavePass = _pass;
+    debug(" m_strSlavePass ok (1)");
   connectSlave( s );
   return s;
 }
