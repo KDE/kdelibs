@@ -30,14 +30,14 @@ check_PROGRAMS =kledlamptest kprogresstest \
 		kcolordlgtest kdatepicktest kfontdialogtest	\
 		kpopuptest ktabctltest kseparatortest kiconloadertest \
 		kwindowtest kstatusbartest kbuttonboxtest \
-	        kledtest kcontainertest krulertest \
+		kledtest kcontainertest krulertest \
 		kwizardtest kformulatest \
 		kcharselecttest kstddirstest khtmltest \
 		kopenwithtest kaboutdialogtest dialogbasetest \
 		kgradienttest \
 		kunbalancedgrdtest kcolortest knuminputtest kblendtest \
 		kdualcolortest kpalettetest kmessageboxtest khashtest ktartest \
-		kruntest kspelltest
+		kruntest kspelltest kidlservertest kidlclienttest
 
 
 noinst_HEADERS = \
@@ -46,7 +46,7 @@ noinst_HEADERS = \
 		kledtest.h kcontainertest.h \
 		krulertest.h kgradienttest.h \
 		kcolortest.h kunbalancedgrdtest.h kblendtest.h \
-		kdualcolortest.h khashtest.h kruntest.h
+		kdualcolortest.h khashtest.h kruntest.h KIDLTest.h
 
 METASOURCES = AUTO
 
@@ -95,5 +95,13 @@ ktartest_SOURCES = ktartest.cpp
 ktartest_LDADD = $(LIB_KIO)
 kruntest_SOURCES = kruntest.cpp
 kruntest_LDADD = $(LIB_KIO)
+kidlservertest_SOURCES = KIDLTest.cpp KIDLTest_skel.cpp
+kidlservertest_LDADD = $(LIB_KDECORE)
+kidlclienttest_SOURCES = KIDLTestClient.cpp KIDLTest_stub.cpp
+kidlclienttest_LDADD = $(LIB_KDECORE)
 
-
+KIDLTest.kidl: KIDLTest.h
+	( ../kidl/kidl KIDLTest.h >KIDLTest.kidl; ../kidl2cpp/kidl2cpp KIDLTest.kidl )
+KIDLTest_skel.cpp: KIDLTest.kidl
+KIDLTest_stub.cpp: KIDLTest.kidl
+KIDLTest_stub.h: KIDLTest.kidl
