@@ -36,6 +36,7 @@
 #include "css/cssstyleselector.h"
 #include <dom_string.h>
 #include "rendering/render_style.h"
+#include "rendering/render_layer.h"
 
 #include <kaction.h>
 #include <kcmdlineargs.h>
@@ -657,7 +658,7 @@ QString RegressionTest::getPartOutput( OutputType type)
     QTextStream outputStream(dump,IO_WriteOnly);
 
     if ( type == RenderTree ) {
-        static_cast<DocumentImpl*>( m_part->document().handle() )->renderer()->dump( outputStream );
+        static_cast<DocumentImpl*>( m_part->document().handle() )->renderer()->layer()->dump( outputStream );
     } else {
         assert( type == DOMTree );
         getPartDOMOutput( outputStream );

@@ -869,77 +869,17 @@ void RenderObject::printTree(int indent) const
     }
 }
 
-// static void writeLayers(QTextStream &ts, const RenderObject &o, int indent = 0);
-
 static QTextStream &operator<<(QTextStream &ts, const QRect &r)
 {
     return ts << "at (" << r.x() << "," << r.y() << ") size " << r.width() << "x" << r.height();
 }
 
-#if 0
-static void write(QTextStream &ts, const RenderLayerElement &e, int indent = 0)
-{
-    RenderLayer &l = *e.layer;
-
-    writeIndent(ts, indent);
-
-    ts << "layer";
-
-    QRect r(e.absBounds);
-
-    ts << " " << r;
-
-    if (r != r.intersect(e.backgroundClipRect)) {
-        ts << " backgroundClip " << e.backgroundClipRect;
-    }
-    if (r != r.intersect(e.clipRect)) {
-        ts << " clip " << e.clipRect;
-    }
-
-    if (e.layerElementType == RenderLayerElement::Background)
-        ts << " layerType: background only";
-    else if (e.layerElementType == RenderLayerElement::Foreground)
-        ts << " layerType: foreground only";
-
-    ts << "\n";
-
-    if (e.layerElementType != RenderLayerElement::Background)
-        write(ts, *l.renderer(), indent + 1);
-}
-
-static void writeLayers(QTextStream &ts, const RenderObject &o, int indent)
-{
-    RenderZTreeNode *node;
-    QPtrVector<RenderLayerElement> list = o.layer()->elementList(node);
-    for (unsigned i = 0; i != list.count(); ++i) {
-        write(ts, *list[i], indent);
-    }
-    if (node) {
-        node->detach(o.renderArena());
-    }
-}
-#endif
-
-static void write( QTextStream &ts, const RenderObject &o, const QString &ind )
-{
-    o.dump( ts, ind);
-    for (RenderObject *child = o.firstChild(); child; child = child->nextSibling()) {
-        if (child->layer()) {
-            // continue;
-        }
-        write( ts, *child, ind + "   " );
-    }
-}
-
 void RenderObject::dump(QTextStream &ts, const QString &ind) const
 {
-    if ( document()->renderer() != this ) {
+    if ( !layer() )
         ts << endl;
-    }
 
-    ts << ind;
-
-    ts << renderName();
+    ts << ind << renderName();
 
     if (style() && style()->zIndex()) {
         ts << " zI: " << style()->zIndex();
@@ -970,14 +910,6 @@ void RenderObject::dump(QTextStream &ts, const QString &ind) const
     if (minMaxKnown()) { ts << " minMaxKnown"; }
     if (overhangingContents()) { ts << " overhangingContents"; }
     if (hasFirstLine()) { ts << " hasFirstLine"; }
-
-    if ( document()->renderer() == this ) {
-        // I'm root
-        for (RenderObject *child = firstChild(); child; child = child->nextSibling()) {
-            // if (child->layer()) continue;
-            write( ts, *child, ind + "   ");
-        }
-    }
 }
 #endif
 

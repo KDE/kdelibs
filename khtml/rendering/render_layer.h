@@ -190,6 +190,10 @@ public:
 
     void detach(RenderArena* renderArena);
 
+#ifndef NDEBUG
+    void dump(QTextStream &stream, const QString &ind = QString::null);
+#endif
+
      // Overloaded new operator.  Derived classes must override operator new
     // in order to allocate out of the RenderArena.
     void* operator new(size_t sz, RenderArena* renderArena) throw();

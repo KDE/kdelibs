@@ -1153,4 +1153,92 @@ void RenderLayer::collectLayers(QPtrVector<RenderLayer>*& posBuffer, QPtrVector<
     }
 }
 
+#ifndef NDEBUG
+
+static QTextStream &operator<<(QTextStream &ts, const QRect &r)
+{
+    return ts << "at (" << r.x() << "," << r.y() << ") size " << r.width() << "x" << r.height();
+}
+
+static void write(QTextStream &ts, RenderObject& o, const QString& indent )
+{
+    o.dump(ts, indent);
+
+    for (RenderObject *child = o.firstChild(); child; child = child->nextSibling()) {
+        if (child->layer()) continue;
+        write( ts, *child, indent + "   " );
+    }
+}
+
+static void write(QTextStream &ts, const RenderLayer &l,
+                  const QRect& layerBounds, const QRect& backgroundClipRect, const QRect& clipRect,
+                  int layerType = 0, const QString& indent = QString::null)
+
+{
+    ts << indent << "layer";
+
+    ts << " at (" << l.xPos() << "," << l.yPos() << ") size " << l.width() << "x" << l.height();
+
+    if (layerBounds != layerBounds.intersect(backgroundClipRect)) {
+        ts << " backgroundClip " << backgroundClipRect;
+    }
+    if (layerBounds != layerBounds.intersect(clipRect)) {
+        ts << " clip " << clipRect;
+    }
+
+    if (layerType == -1)
+         ts << " layerType: background only";
+    else if (layerType == 1)
+        ts << " layerType: foreground only";
+
+    ts << "\n";
+
+    if (layerType != -1)
+        write( ts, *l.renderer(), indent + "   " );
+
+    ts << "\n";
+}
+
+static void writeLayers(QTextStream &ts, const RenderLayer* rootLayer, RenderLayer* l,
+                        const QRect& paintDirtyRect, const QString& indent)
+{
+    // Calculate the clip rects we should use.
+    QRect layerBounds, damageRect, clipRectToApply;
+    l->calculateRects(rootLayer, paintDirtyRect, layerBounds, damageRect, clipRectToApply);
+
+    // Ensure our z-order lists are up-to-date.
+    l->updateZOrderLists();
+
+    bool shouldPaint = l->intersectsDamageRect(layerBounds, damageRect);
+    QPtrVector<RenderLayer>* negList = l->negZOrderList();
+    if (shouldPaint && negList && negList->count() > 0)
+        write(ts, *l, layerBounds, damageRect, clipRectToApply, -1, indent);
+
+    if (negList) {
+        for (unsigned i = 0; i != negList->count(); ++i)
+            writeLayers(ts, rootLayer, negList->at(i), paintDirtyRect, indent );
+    }
+
+    if (shouldPaint)
+        write(ts, *l, layerBounds, damageRect, clipRectToApply, negList && negList->count() > 0, indent);
+
+    QPtrVector<RenderLayer>* posList = l->posZOrderList();
+    if (posList) {
+        for (unsigned i = 0; i != posList->count(); ++i)
+            writeLayers(ts, rootLayer, posList->at(i), paintDirtyRect, indent);
+    }
+}
+
+
+void RenderLayer::dump(QTextStream &ts, const QString &ind)
+{
+    assert( renderer()->isCanvas() );
+
+    writeLayers(ts, this, this, QRect(xPos(), yPos(), width(), height()), ind);
+}
+
+
+#endif
+
+
 #include "render_layer.moc"
