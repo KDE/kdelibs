@@ -396,15 +396,6 @@ khtml::FindSelectionResult ElementImpl::findSelectionNode( int _x, int _y, int _
 
     if (!m_render) return SelectionPointAfter;
 
-    RenderObject *p = m_render->parent();
-    while( p && p->isAnonymousBox() ) {
-//      kdDebug( 6030 ) << "parent is anonymous!" << endl;
-        // we need to add the offset of the anonymous box
-        _tx += p->xPos();
-        _ty += p->yPos();
-        p = p->parent();
-    }
-
     if(!m_render->isInline() || !m_render->firstChild() || m_render->isFloating() )
     {
         m_render->absolutePosition(_tx, _ty);

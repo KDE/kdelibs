@@ -373,13 +373,6 @@ khtml::FindSelectionResult TextImpl::findSelectionNode( int _x, int _y, int _tx,
     //           << " _tx=" << _tx << " _ty=" << _ty << endl;
     if(!m_render) return SelectionPointBefore;
 
-    if(m_render->parent() && m_render->parent()->isAnonymousBox())
-    {
-        // we need to add the offset of the anonymous box
-        _tx += m_render->parent()->xPos();
-        _ty += m_render->parent()->yPos();
-    }
-
     node = this;
     return static_cast<RenderText *>(m_render)->checkSelectionPoint(_x, _y, _tx, _ty, offset);
 }
