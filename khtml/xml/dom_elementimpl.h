@@ -183,7 +183,7 @@ public:
     virtual void attach();
     virtual void recalcStyle( StyleChange = NoChange );
 
-    virtual void mouseEventHandler( MouseEvent */*ev*/, bool /*inside*/ ) {};
+    virtual void mouseEventHandler( MouseEvent* /*ev*/, bool /*inside*/ ) {};
     virtual bool isSelectable() const;
     virtual bool childAllowed( NodeImpl *newChild );
     virtual bool childTypeAllowed( unsigned short type );
@@ -250,11 +250,11 @@ public:
     NamedAttrMapImpl &operator =(const NamedAttrMapImpl &other);
 
     // DOM methods & attributes for NamedNodeMap
-    virtual AttrImpl *getNamedItem ( NodeImpl::Id id ) const;
+    virtual NodeImpl *getNamedItem ( NodeImpl::Id id ) const;
     virtual Node removeNamedItem ( NodeImpl::Id id, int &exceptioncode );
     virtual Node setNamedItem ( NodeImpl* arg, int &exceptioncode );
 
-    virtual AttrImpl *item ( unsigned long index ) const;
+    virtual NodeImpl *item ( unsigned long index ) const;
     virtual unsigned long length(  ) const;
 
     // Other methods (not part of DOM)

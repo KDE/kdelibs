@@ -555,7 +555,7 @@ NamedAttrMapImpl::~NamedAttrMapImpl()
 }
 
 
-AttrImpl *NamedAttrMapImpl::getNamedItem ( NodeImpl::Id id ) const
+NodeImpl *NamedAttrMapImpl::getNamedItem ( NodeImpl::Id id ) const
 {
     AttributeImpl* a = getAttributeItem(id);
     if (!a) return 0;
@@ -635,7 +635,7 @@ Node NamedAttrMapImpl::removeNamedItem ( NodeImpl::Id id, int &exceptioncode )
     return r;
 }
 
-AttrImpl *NamedAttrMapImpl::item ( unsigned long index ) const
+NodeImpl *NamedAttrMapImpl::item ( unsigned long index ) const
 {
     if (index >= len)
         return 0;
