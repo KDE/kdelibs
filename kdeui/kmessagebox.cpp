@@ -73,6 +73,7 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const 
 #endif
     lay->add( label1 );
     QLabel *label2 = new QLabel( text, contents);
+    label2->setAlignment( Qt::AlignAuto | Qt::AlignVCenter | Qt::ExpandTabs | Qt::WordBreak );
     label2->setMinimumSize(label2->sizeHint());
     lay->add( label2 );
     lay->addStretch(1);
