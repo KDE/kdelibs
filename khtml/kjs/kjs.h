@@ -113,24 +113,30 @@ private:
 class QChar;
 typedef bool (KJSEvalFunc)(KJScript *script, const QChar *, unsigned int);
 typedef void (KJSClearFunc)(KJScript *script);
+typedef void (KJSDestroyFunc)(KJScript *script);
 extern "C" {
   KJSEvalFunc kjs_eval;
   KJSClearFunc kjs_clear;
+  KJSDestroyFunc kjs_destroy;
 }
 
 // hack: a proxy for applications that dlopen our lib.
 class KJSProxy {
 public:
-  KJSProxy(KJScript *s, KJSEvalFunc e, KJSClearFunc c)
-    : script(s), eval(e), clr(c) {};
-  ~KJSProxy() { (*clr)(script); }
+  KJSProxy(KJScript *s, KJSEvalFunc e, KJSClearFunc c, KJSDestroyFunc d)
+    : script(s), eval(e), clr(c), destr(d) {};
+  ~KJSProxy() { (*destr)(script); }
   bool evaluate(const QChar *c, unsigned int l) {
     return (*eval)(script, c, l);
+  }
+  void clear() {
+    (*clr)(script);
   }
 private:
   KJScript *script;
   KJSEvalFunc *eval;
   KJSClearFunc *clr;
+  KJSDestroyFunc *destr;
 };
 
 #endif
