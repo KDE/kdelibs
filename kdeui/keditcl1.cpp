@@ -19,7 +19,6 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include <qdragobject.h>
 #include <qpopupmenu.h>
 #include <qtextstream.h>
 #include <qtimer.h>
@@ -32,6 +31,7 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kstdaccel.h>
+#include <kurldrag.h>
 
 #include "keditcl.h"
 #include "keditcl.moc"
@@ -564,17 +564,30 @@ void KEdit::doGotoLine() {
 
 void  KEdit::dragMoveEvent(QDragMoveEvent* e) {
 
-  if(QUriDrag::canDecode(e))
+  if(KURLDrag::canDecode(e))
     e->accept();
   else if(QTextDrag::canDecode(e))
     QMultiLineEdit::dragMoveEvent(e);
 }
 
+void  KEdit::contentsDragMoveEvent(QDragMoveEvent* e) {
+
+  if(KURLDrag::canDecode(e))
+    e->accept();
+  else if(QTextDrag::canDecode(e))
+    QMultiLineEdit::contentsDragMoveEvent(e);
+}
 
 void  KEdit::dragEnterEvent(QDragEnterEvent* e) {
 
   kdDebug() << "KEdit::dragEnterEvent()" << endl;
-  e->accept(QUriDrag::canDecode(e) || QTextDrag::canDecode(e));
+  e->accept(KURLDrag::canDecode(e) || QTextDrag::canDecode(e));
+}
+
+void  KEdit::contentsDragEnterEvent(QDragEnterEvent* e) {
+
+  kdDebug() << "KEdit::contentsDragEnterEvent()" << endl;
+  e->accept(KURLDrag::canDecode(e) || QTextDrag::canDecode(e));
 }
 
 
@@ -582,11 +595,22 @@ void  KEdit::dropEvent(QDropEvent* e) {
 
   kdDebug() << "KEdit::dropEvent()" << endl;
 
-  if(QUriDrag::canDecode(e)) {
+  if(KURLDrag::canDecode(e)) {
    emit gotUrlDrop(e);
   }
   else if(QTextDrag::canDecode(e))
     QMultiLineEdit::dropEvent(e);
+}
+
+void  KEdit::contentsDropEvent(QDropEvent* e) {
+
+  kdDebug() << "KEdit::contentsDropEvent()" << endl;
+
+  if(KURLDrag::canDecode(e)) {
+   emit gotUrlDrop(e);
+  }
+  else if(QTextDrag::canDecode(e))
+    QMultiLineEdit::contentsDropEvent(e);
 }
 
 void KEdit::setOverwriteEnabled(bool b)
