@@ -2,9 +2,11 @@
 	* @mainpage The&nbsp;KDE&nbsp;API&nbsp;Reference
 	*
 	* This section contains the KDE online class reference for the current
-	* development version of KDE. You can also download (~11&nbsp;MB)
-	* the complete API documentation.  Additionally, you can subscribe or
-	* read the mailing lists for any additions and/or modifications to the API.
+	* development version of KDE. You can also 
+        * <a href="http://developers.kde.org/~danimo/apidocs.tar.bz2">download
+        * (~11&nbsp;MB)</a> the complete API documentation.  Additionally, you 
+        * can subscribe or read the mailing lists for any additions and/or 
+        * modifications to the API.
 	*
 	* - <a href="kdecore/html/index.html"><b>kdecore</b></a>
         *   (<a href="kdecore/html/classes.html">classes</a>)\n
