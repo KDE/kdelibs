@@ -59,11 +59,10 @@
  *
  * @author Charles Samuels <charles@kde.org>
  */
-class KNotifyClient : public QObject
-{
-Q_OBJECT
 
-public:
+
+namespace KNotifyClient
+{
 	enum {
 		Default=-1,
 		None=0,
@@ -80,48 +79,15 @@ public:
 		Catastrophe=8
 	};
 	
-public:
-	/**
-	 * The Default constructor.  You should have little use
-	 * for this thanks to the @ref event method.
-	 * This will launch the KNotify service if needed.
-	 *
-	 * @param message The event type to send, such as "Desktop1" for a virtual
-	 *                desktop change
-	 * @param text If you need to send off a message with your alert.  This
-	 *             will happen for an error level of 2 or more.
-	 * @param present How to present it.  If "Default" is chosen, the server
-	 *                will decide according to the config
-	 * @param level How important is this message
-	 * @param sound The sound to play (KDEDIR/share/sounds/ if not absolute)
-	 * @param file file to write to (if selected)
-	 * @param client The DCOPClient to use.  Usually it pulls the one from
-	 *               your KApplication.
-     */
-	KNotifyClient(QObject *parent, const QString &message, const QString &text=0,
-	             int present=Default, int level=Default,
-	             const QString &sound=0, const QString &file=0,
-	             DCOPClient* client=0);
-
-	virtual ~KNotifyClient();
-	
-public slots:
-	/**
-	 * If you need to send a message a whole lot sequentially, for reasons I 
-	 * don't want to know, you might instanciate a KNotifyClient, and call
-	 * this function when needed.
-	 */
-	bool send();
-
-public: //static methods
 	/**
 	 * This starts the KNotify Daemon, if it's not already started.
 	 * This will be useful for games that use sound effects. Run this
 	 * at the start of the program, and there won't be a pause when it is
 	 * first triggered.
-	 * @returns if the daemon is still running.
+	 * @return true if daemon is running
 	 **/
-	static bool startDaemon();
+	bool startDaemon();
+
 	/**
 	 * This should be the most used method in here.
 	 * Call it by KNotifyClient::event("EventName");
@@ -131,14 +97,15 @@ public: //static methods
 	 * @param text The text to put in a dialog box.  This won't be shown if
 	 *             the user connected the event to sound, only.
 	 */
-	static bool event(const QString &message, const QString &text=0);
+	bool event(const QString &message, const QString &text=QString::null);
+
 	/**
 	 * Will fire an event that's not registered.
 	 * @param text The error message text, if applicable
 	 * @param present The error message level, defaulting to "Default"
 	 * @param file The sound file to play if selected with present
 	 */
-	static bool userEvent(const QString &text=0, int present=Default, int level=Default,
+	bool userEvent(const QString &text=0, int present=Default, int level=Default,
 	                      const QString &sound=0, const QString &file=0);
 	
 	/**
@@ -146,21 +113,21 @@ public: //static methods
 	 * Remeber that they may be ORed:
 	 * if (present & KNotifyClient::Sound) { [Yes, sound is a default] }	
 	 */
-	static int getPresentation(const QString &eventname);
+	int getPresentation(const QString &eventname);
 	
 	/**
 	 * Gets the default file associated with a certain event name
 	 * The control panel module will list all the event names
 	 * This has the potential for being slow.
 	 */
-	static QString getFile(const QString &eventname, int present);
+	QString getFile(const QString &eventname, int present);
 	
 	/**
 	 * Gets the default presentation for the event of this program.
 	 * Remember that the Presentation may be ORed.  Try this:
 	 * if (present & KNotifyClient::Sound) { [Yes, sound is a default] }
 	 */
-	static int getDefaultPresentation(const QString &eventname);
+	int getDefaultPresentation(const QString &eventname);
 	
 	/**
 	 * Gets the default File for the event of this program.
@@ -168,11 +135,7 @@ public: //static methods
 	 * Some events don't apply to this function ("Message Box")
 	 * Some do (Sound)
 	 */
-	static QString getDefaultFile(const QString &eventname, int present);
-
-private:
-    class KNotifyClientPrivate;
-    KNotifyClientPrivate *d;
+	QString getDefaultFile(const QString &eventname, int present);
 };
 
 #endif

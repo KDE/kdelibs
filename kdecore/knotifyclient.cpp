@@ -24,67 +24,40 @@
 #include <kconfig.h>
 #include <dcopclient.h>
 
-class KNotifyClient::KNotifyClientPrivate
+static bool sendNotifyEvent(const QString &message, const QString &text, 
+                 int present, int level, const QString &sound, 
+                 const QString &file)
 {
-public:
-	QString message;
-	QString text;
-	int present;
-	int level;
-	QString sound;
-	QString file;
-	DCOPClient *client;
-};
+  static bool triedItOnceAlready=false;
+  if (!triedItOnceAlready)
+  {
+    triedItOnceAlready=true;
+    KNotifyClient::startDaemon();
+  }
+     
+  DCOPClient *client=kapp->dcopClient();
+  if (!client->isAttached())
+    client->attach();
+  if (!client->isAttached())
+    return false;
 
-KNotifyClient::KNotifyClient(QObject *parent, const QString &message, const QString &text,
-                             int present, int level, const QString &sound, const QString &file,
-                             DCOPClient* client) : QObject(parent)
-{
-	if (!client) client=KApplication::kApplication()->dcopClient();
-	
-	d=new KNotifyClientPrivate;
-	d->message=message;
-	d->text=text;
-	d->present=present;
-	d->level=level;
-	d->sound=sound;
-	d->file=file;
-	d->client=client;
-	startDaemon();
-}
+  QByteArray data;
+  QDataStream ds(data, IO_WriteOnly);
+  QString appname = kapp->name();
+  ds << message << appname << text << sound << file << present << level;
 
-KNotifyClient::~KNotifyClient()
-{
-	delete d;
-}
-
-bool KNotifyClient::send()
-{
-	DCOPClient *client=d->client;
-	if (!client->isAttached())
-		client->attach();
-	if (!client->isAttached())
-		return false;
-
-	QByteArray data;
-	QDataStream ds(data, IO_WriteOnly);
-	QString appname = kapp->name();
-	ds << d->message << appname << d->text << d->sound << d->file << d->present << d->level;
-
-	return client->send("knotify", "Notify", "notify(QString,QString,QString,QString,QString,int,int)", data, true);
+  return client->send("knotify", "Notify", "notify(QString,QString,QString,QString,QString,int,int)", data, true);
 }
 
 bool KNotifyClient::event(const QString &message, const QString &text)
 {
-	KNotifyClient c(0,message, text);
-	return c.send();
+  return sendNotifyEvent(message, text, Default, Default, QString::null, QString::null);
 }
 
 bool KNotifyClient::userEvent(const QString &text, int present, int level,
                               const QString &sound, const QString &file)
 {
-	KNotifyClient c(0,0, text, present, level, sound, file);
-	return c.send();
+  return sendNotifyEvent(QString::null, text, present, level, sound, file);
 }
 
 int KNotifyClient::getPresentation(const QString &eventname)
@@ -151,12 +124,7 @@ QString KNotifyClient::getDefaultFile(const QString &eventname, int present)
 
 bool KNotifyClient::startDaemon()
 {
-	static bool triedItOnceAlready=false;
-	if (!triedItOnceAlready)
-		KApplication::startServiceByDesktopName("knotify");
-	triedItOnceAlready=true;
-	return true;
+   return KApplication::startServiceByDesktopName("knotify");
 }
 
-#include "knotifyclient.moc"
 
