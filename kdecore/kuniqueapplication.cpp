@@ -423,7 +423,6 @@ int KUniqueApplication::newInstance()
       mainWidget()->show();
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
       KStartupInfo::setNewStartupId( mainWidget(), kapp->startupId());
-      KStartupInfo::handleAutoAppStartedSending();
 #endif
     }
   }

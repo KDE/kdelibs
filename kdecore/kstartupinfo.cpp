@@ -527,7 +527,6 @@ void KStartupInfo::setNewStartupId( QWidget* window, const QCString& startup_id 
         if( i.isSupported( NET::WM2StartupId ))
             {
             KStartupInfo::setWindowStartupId( window->winId(), startup_id );
-            KStartupInfo::handleAutoAppStartedSending();
             activate = false; // WM will take care of it
             }
         }
@@ -537,6 +536,7 @@ void KStartupInfo::setNewStartupId( QWidget* window, const QCString& startup_id 
     // And even with ASN, it's not possible to get the timestamp here,
     // so if the WM doesn't have support for ASN, it can't be used either.
         KWin::forceActiveWindow( window->winId());
+    KStartupInfo::handleAutoAppStartedSending();
     }
 
 KStartupInfo::startup_t KStartupInfo::checkStartup( WId w_P, KStartupInfoId& id_O,
