@@ -283,7 +283,7 @@ LdapSearch::LdapSearch()
   }
 
   // stolen from KAddressBook
-  KConfig config( "kaddressbookrc", true );
+  KConfig config( "kabldaprc", true );
   config.setGroup( "LDAP" );
   int numHosts = config.readUnsignedNumEntry( "NumSelectedHosts"); 
   if ( !numHosts ) {
