@@ -320,6 +320,7 @@ int kde_getaddrinfo(const char *name, const char *service,
   else
     res->data = p;
   res->origin = KAI_LOCALUNIX;
+  *result = res;
   return 0;
 
  out:
