@@ -35,3 +35,8 @@ Future plans:
 
 Josef Spillner, 01.04.2004, last updated 08.03.2005
 
+Add d pointers to ALL public classes for KDE 4 or maintaining binary
+compatibility is a nightmare. 12/3/05.
+
+Rich.
+
