@@ -23,7 +23,7 @@ noinst_LTLIBRARIES = libqk.la
 include_HEADERS = qaction.h qdom.h qvariant.h qxml.h
 libqk_la_SOURCES = qaction.cpp qdom.cpp qvariant.cpp qxml.cpp qaction.moc.cpp
 
-libqk_la_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 1:0 -no-undefined
+libqk_la_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) 
 libqk_la_LIBADD = $(LIB_QT)
 
 qaction.moc.cpp: $(srcdir)/qaction.h
