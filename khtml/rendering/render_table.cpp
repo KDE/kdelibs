@@ -1382,11 +1382,17 @@ void RenderTable::layoutRows(int yoff)
         if (ch.isFixed())
             th = h.width(ch.value);
         else 
-        {
-            th = h.width(viewRect().height())-5;
-            // not really, but this way the view height change
-            // gets propagated correctly
-            setContainsPositioned(true);
+        {        
+            // check we or not inside a table
+            RenderObject* ro = parent();    
+            for (; ro && !ro->isTableCell(); ro=ro->parent());            
+            if (!ro)
+            {            
+                th = h.width(viewRect().height())-5;
+                // not really, but this way the view height change
+                // gets propagated correctly
+                setContainsPositioned(true);
+            }
         }
     }
     if (th && totalRows && rowHeights[totalRows])
