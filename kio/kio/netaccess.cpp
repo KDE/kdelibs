@@ -77,7 +77,7 @@ bool NetAccess::download(const KURL& u, QString & target, QWidget* window)
   NetAccess kioNet;
   KURL dest;
   dest.setPath( target );
-  return kioNet.copyInternal( u, dest, true /*overwrite*/, window);
+  return kioNet.copyInternal( u, dest, -1, true /*overwrite*/, false, window);
 }
 
 bool NetAccess::upload(const QString& src, const KURL& target)
@@ -99,18 +99,24 @@ bool NetAccess::upload(const QString& src, const KURL& target, QWidget* window)
   NetAccess kioNet;
   KURL s;
   s.setPath(src);
-  return kioNet.copyInternal( s, target, true /*overwrite*/, window );
+  return kioNet.copyInternal( s, target, -1, true /*overwrite*/, false, window );
 }
 
 bool NetAccess::copy( const KURL & src, const KURL & target )
 {
-  return NetAccess::copy( src, target, 0 );
+  return NetAccess::file_copy( src, target, -1, false /*not overwrite*/, false, 0L );
 }
 
 bool NetAccess::copy( const KURL & src, const KURL & target, QWidget* window )
 {
+  return NetAccess::file_copy( src, target, -1, false /*not overwrite*/, false, window );
+}
+
+bool NetAccess::file_copy( const KURL& src, const KURL& target, int permissions,
+ bool overwrite, bool resume, QWidget* window )
+{
   NetAccess kioNet;
-  return kioNet.copyInternal( src, target, false /*not overwrite*/, window );
+  return kioNet.copyInternal( src, target, permissions, overwrite, resume, window );
 }
 
 bool NetAccess::dircopy( const KURL & src, const KURL & target )
@@ -137,8 +143,8 @@ bool NetAccess::exists( const KURL & url, QWidget* window )
     return QFile::exists( url.path() );
   NetAccess kioNet;
   return kioNet.statInternal( url, 0 /*no details*/, true /*source assumed*/, window );
-#endif  
-  
+#endif
+
   return NetAccess::exists( url, true, window );
 }
 
@@ -220,13 +226,13 @@ void NetAccess::removeTempFile(const QString& name)
   }
 }
 
-bool NetAccess::copyInternal(const KURL& src, const KURL& target, bool overwrite,
-                             QWidget* window)
+bool NetAccess::copyInternal(const KURL& src, const KURL& target, int permissions,
+                             bool overwrite, bool resume, QWidget* window)
 {
   bJobOK = true; // success unless further error occurs
 
   KIO::Scheduler::checkSlaveOnHold(true);
-  KIO::Job * job = KIO::file_copy( src, target, -1, overwrite );
+  KIO::Job * job = KIO::file_copy( src, target, permissions, overwrite, resume );
   job->setWindow (window);
   connect( job, SIGNAL( result (KIO::Job *) ),
            this, SLOT( slotResult (KIO::Job *) ) );
@@ -235,7 +241,7 @@ bool NetAccess::copyInternal(const KURL& src, const KURL& target, bool overwrite
   return bJobOK;
 }
 
-bool NetAccess::dircopyInternal(const KURL& src, const KURL& target, 
+bool NetAccess::dircopyInternal(const KURL& src, const KURL& target,
                                 QWidget* window)
 {
   bJobOK = true; // success unless further error occurs
@@ -274,7 +280,7 @@ bool NetAccess::delInternal( const KURL & url, QWidget* window )
   return bJobOK;
 }
 
-bool NetAccess::mkdirInternal( const KURL & url, int permissions, 
+bool NetAccess::mkdirInternal( const KURL & url, int permissions,
                                QWidget* window )
 {
   bJobOK = true; // success unless further error occurs
@@ -333,12 +339,12 @@ QString NetAccess::fish_executeInternal(const KURL & url, const QString command,
     connect( job, SIGNAL( result (KIO::Job *) ),
              this, SLOT( slotResult (KIO::Job *) ) );
     enter_loop();
-  
+
     // since the KIO::special does not provide feedback we need to download the result
     if( NetAccess::download( tempPathUrl, target, window ) )
     {
       QFile resultFile( target );
-  
+
       if (resultFile.open( IO_ReadOnly ))
       {
         QTextStream ts( &resultFile );
