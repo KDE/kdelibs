@@ -26,10 +26,6 @@ are:
     An all purpose extension to the qimgio class that supports PNG and
     other image formats.
 
-* khtml
-    The main HTML rendering widget, due to be replaced by khwml (For the
-    next release of kfm).
-
 * kfile
     This library contains the KFileDialog in all its glory.  A reasonably
     source compatable replacement to QFileDialog.
@@ -57,6 +53,12 @@ are:
     improvments and redesigns, kio does not require KFM to operate.
     This library also contains "Ksycoca", the system configure cache
     containing services, applications, servicetypes and mimetypes.
+
+* kparts
+    KDE component model. Stay tuned.
+
+* kstyles
+    Widget styles.
 
 Licensing
 ---------
