@@ -25,7 +25,7 @@ public:
   /**
    * @param _mode is the st_mode field of <tt>struct stat</tt>. If you dont know this set it to 0.
    * @param _is_local_file if this parameter is set to false, then '_url' is examnined to find out
-   *                       wether it is a local URL or not. This flag is just used to improve speed, since
+   *                       whether it is a local URL or not. This flag is just used to improve speed, since
    *                       the function @ref KURL::isLocalFile is a bit slow.
    */
   KRun( const char *_url, mode_t _mode = 0, bool _is_local_file = false, bool _auto_delete = true );
@@ -76,7 +76,7 @@ protected:
   virtual void scanFile();
   
   /**
-   * Called if the mimetype has been detected. The function checks wether the document
+   * Called if the mimetype has been detected. The function checks whether the document
    * and appends the gzip protocol to the URL. Otherwise @ref #runURL is called to
    * finish the job.
    */

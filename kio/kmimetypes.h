@@ -38,7 +38,7 @@ public:
   virtual QStrList patterns() { return m_lstPatterns; }
   
   /**
-   * Looks wether the given filename matches this mimetypes extension patterns.
+   * Looks whether the given filename matches this mimetypes extension patterns.
    *
    * @param _filename is the real decoded filename or the decoded path without trailing '/'.
    *

@@ -89,7 +89,7 @@ public:
   /**
    * Intern function.
    *
-   * Checks wether @ref #m_strFile is modified. If it is modified,
+   * Checks whether @ref #m_strFile is modified. If it is modified,
    * then @ref #updateIntern is called.
    *
    * @return 0L is this instance is still valid. If this instance

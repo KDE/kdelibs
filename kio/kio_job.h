@@ -211,7 +211,7 @@ public:
 
   /**
    * Stops the current action ( that means kills any running servers associated with
-   * this job and deletes itself ignoring wether auto-delete mode is on or off.
+   * this job and deletes itself ignoring whether auto-delete mode is on or off.
    *
    * @param  quiet  if true - KIOJob will not emit sigCanceled when killed. This is a default value.
    */
