@@ -98,7 +98,7 @@ ResourceExample::ResourceExample( const KConfig *config )
     : Resource( config )
 {
   if ( config ) {
-    mLocation = config->readEntry( "Location" );
+    mLocation = config->readPathEntry( "Location" );
     mPassword = KStringHandler::obscure( config->readEntry( "Password" ) );
   } else {
     mLocation = ""; // Or some sensible default
@@ -109,7 +109,7 @@ ResourceExample::ResourceExample( const KConfig *config )
 void ResourceExample::writeConfig( KConfig *config )
 {
   KRES::Resource::writeConfig( config );
-  config->writeEntry( "Location", mLocation );
+  config->writePathEntry( "Location", mLocation );
   config->writeEntry( "Password", KStringHandler::obscure( mPassword ) );
 }
 
