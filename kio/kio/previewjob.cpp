@@ -303,7 +303,7 @@ void PreviewJob::slotResult( KIO::Job *job )
                 }
                 else if ( (*it).m_uds == KIO::UDS_SIZE )
                     {
-                    if ( static_cast<unsigned long>((*it).m_long) > d->maximumSize )
+                    if ( static_cast<unsigned long>((*it).m_long) > d->maximumSize && !d->currentItem.plugin->property("IgnoreMaximumSize").toBool() )
                     {
                         determineNextFile();
                         return;
