@@ -164,7 +164,7 @@ int Ftp::ftpReadline(char *buf,int max,netbuf *ctl)
     }
     if ((x = ::read(ctl->handle,ctl->cput,ctl->cleft)) == -1)
     {
-      kdError(7102) << "read failed" << endl;
+      kdError(7102) << "read failed: " << strerror(errno) << endl;
       retval = -1;
       break;
     }
@@ -533,7 +533,7 @@ bool Ftp::ftpSendCmd( const QCString& cmd, char expresp, int maxretries )
   if (!rsp || ( rsp == '4' && rspbuf[1] == '2' ))
   {
     // 421 is "421 No Transfer Timeout (300 seconds): closing control connection"
-    if ( maxretries > 0 )
+    if ( cmd=="list" && maxretries > 0 ) // Only retry for "list". retr/stor/... need to redo the whole thing
     {
       // It might mean a timeout occured, let's try logging in again
       m_bLoggedOn = false;
@@ -549,7 +549,7 @@ bool Ftp::ftpSendCmd( const QCString& cmd, char expresp, int maxretries )
       return ftpSendCmd( cmd, expresp, maxretries - 1 );
     } else
     {
-      error( ERR_COULD_NOT_READ, QString::null );
+      error( ERR_SERVER_TIMEOUT, m_host );
       return false;
     }
   }
