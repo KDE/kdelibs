@@ -23,8 +23,8 @@
 module Arts {
 // MCOP protocol
 
-enum HeaderMagic { MCOP_MAGIC = 0x504f434d }; /* gets marshalled as "MCOP" */
-
+enum HeaderMagic { MCOP_MAGIC = 0x4d434f50 }; /* gets marshalled as "MCOP" */
+											  /* decimal 1296256848 */                                                                                    
 enum MessageType {
  mcopInvocation  = 1,
  mcopReturn      = 2,

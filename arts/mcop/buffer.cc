@@ -46,10 +46,10 @@ void Buffer::writeByte(mcopbyte b) {
 }
 
 void Buffer::writeLong(long l) {
-	contents.push_back(l & 0xff);
-	contents.push_back((l >> 8) & 0xff);
-	contents.push_back((l >> 16) & 0xff);
 	contents.push_back((l >> 24) & 0xff);
+	contents.push_back((l >> 16) & 0xff);
+	contents.push_back((l >> 8) & 0xff);
+	contents.push_back(l & 0xff);
 }
 
 void Buffer::writeByteSeq(const vector<mcopbyte>& seq) {
@@ -175,10 +175,10 @@ long Buffer::readLong()
 {
 	long result = 0;
 	if(remaining() >= 4) {
-		result = contents[rpos]
-		       + (contents[rpos+1] << 8)
-			   + (contents[rpos+2] << 16)
-			   + (contents[rpos+3] << 24);
+		result = (contents[rpos]   << 24)
+			   + (contents[rpos+1] << 16)
+			   + (contents[rpos+2] << 8)
+	 		   +  contents[rpos+3];
 		rpos += 4;
 	} else {
 		_readError = true;
@@ -218,7 +218,10 @@ void Buffer::readString(string& result)
 	long len = readLong();
 	char *data = (char *)read(len);
 
-	if(data && len) result.assign(data,len-1);
+	if(data && len)
+		result.assign(data,len-1);
+	else
+		result = "";
 }
 
 void Buffer::readStringSeq(vector<string>& result)
@@ -244,10 +247,10 @@ void Buffer::patchLength()
 	long len = size();
 	assert(len >= 8);
 
-	contents[4] = len & 0xff;
-	contents[5] = (len >> 8) & 0xff;
-	contents[6] = (len >> 16) & 0xff;
-	contents[7] = (len >> 24) & 0xff;
+	contents[4] = (len >> 24) & 0xff;
+	contents[5] = (len >> 16) & 0xff;
+	contents[6] = (len >> 8) & 0xff;
+	contents[7] = len & 0xff;
 }
 
 void Buffer::patchLong(long position, long value)
@@ -255,10 +258,10 @@ void Buffer::patchLong(long position, long value)
 	long len = size();
 	assert(len >= position+4);
 
-	contents[position] = value & 0xff;
-	contents[position+1] = (value >> 8) & 0xff;
-	contents[position+2] = (value >> 16) & 0xff;
-	contents[position+3] = (value >> 24) & 0xff;
+	contents[position]   = (value >> 24) & 0xff;
+	contents[position+1] = (value >> 16) & 0xff;
+	contents[position+2] = (value >> 8) & 0xff;
+	contents[position+3] = value & 0xff;
 }
 
 string Buffer::toString(const string& name)

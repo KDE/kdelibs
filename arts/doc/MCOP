@@ -74,10 +74,10 @@ type  | marshalling process
 void    void types are marshalled by omitting them, so nothing is written
         to the stream for them
 
-long    is marshalled as four bytes, the least significant byte first,
+long    is marshalled as four bytes, the most significant byte first,
         so the number 10001025 (which is 0x989a81) would be marshalled as
 
-        0x81 0x9a 0x98 0x00
+        0x00 0x98 0x9a 0x81
 
 enums   are marshalled like longs
          
@@ -92,8 +92,8 @@ string  is marshalled as a long, containing the length of the following
             
         "hello" would be marshalled as
 
-        0x06 0x00 0x00 0x00   0x68 0x65 0x6c 0x6c   0x6f 0x00
-        ^^^^
+        0x00 0x00 0x00 0x06   0x68 0x65 0x6c 0x6c   0x6f 0x00
+                       ^^^^
         important: include the trailing 0 byte in length counting!
 
 boolean is marshalled as a byte, containing 0 if false or 1 if true, so
@@ -105,29 +105,29 @@ float   is marshalled after the four byte IEEE representation (please,
         if you got a pointer describing that format, tell me), so the
         value 2.15 would be marshalled as
 
-        0x40 0x09 0x99 0x9a
+        0x9a 0x99 0x09 0x40
 
 struct  a structure is marshalled by marshalling it's contents. There
         are no additional prefixes or suffixes required, so the structure
 
         struct test {
             string name;        // which is "hello"
-            long value;         // which is 10001025 
+            long value;         // which is 10001025  (0x989a81)
         };
 
         would be marshalled as
 
-        0x06 0x00 0x00 0x00   0x68 0x65 0x6c 0x6c
-        0x6f 0x00 0x81 0x9a   0x98 0x00
+        0x00 0x00 0x00 0x06   0x68 0x65 0x6c 0x6c
+        0x6f 0x00 0x00 0x98   0x9a 0x81
 
 sequence  a sequence is marshalled by listing the number of elements that
         follow, and then marshalling the elements one by one.
 
-        So a sequence of 3 longs a, with a[0] = 0x123456, a[1] = 0x01
+        So a sequence of 3 longs a, with a[0] = 0x12345678, a[1] = 0x01
         and a[2] = 0x42 would be marshalled as
 
-        0x03 0x00 0x00 0x00   0x56 0x34 0x12 0x00
-        0x01 0x00 0x00 0x00   0x42 0x00 0x00 0x00
+        0x00 0x00 0x00 0x03   0x12 0x34 0x56 0x78
+        0x00 0x00 0x00 0x01   0x00 0x00 0x00 0x42
 
 If you need to refer to a type, all primitive types are referred by the
 names given above. Structures and enums get own names (like Header). Sequences
@@ -140,7 +140,7 @@ a sequence of Header struct's is "*Header".
 The MCOP message header format is defined as defined by that structure
 
 struct Header {
-    long magic;          // the value 0x504f434d, which is marshalled as MCOP
+    long magic;          // the value 0x4d434f50, which is marshalled as MCOP
     long messageLength;
     long messageType;
 };

@@ -6,7 +6,7 @@
 #include "common.h"
 
 namespace Arts {
-enum HeaderMagic {MCOP_MAGIC = 1347371853};
+enum HeaderMagic {MCOP_MAGIC = 1296256848};
 enum MessageType {mcopInvocation = 1, mcopReturn = 2, mcopServerHello = 3, mcopClientHello = 4, mcopAuthAccept = 5, mcopOnewayInvocation = 6};
 enum MethodType {methodOneway = 1, methodTwoway = 2};
 enum AttributeType {streamIn = 1, streamOut = 2, streamMulti = 4, attributeStream = 8, attributeAttribute = 16, streamAsync = 32, streamDefault = 64};
