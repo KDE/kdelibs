@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.16  1999/03/08 16:05:17  rbeutler
+// added writeEntry( const QString &, const char *, ... ) method to fix the problem with the implicitely conversion to bool
+//
 // Revision 1.15  1999/03/01 23:33:21  kulow
 // CVS_SILENT ported to Qt 2.0
 //
@@ -785,5 +788,12 @@ private:
   KConfigGroupSaver(const KConfigGroupSaver&);
   KConfigGroupSaver& operator=(const KConfigGroupSaver&);
 };
+
+inline const QString KConfigBase::writeEntry( const QString &pKey, 
+                                        const char *pValue,
+                                        bool bPersistent, bool bGlobal, 
+					bool bNLS ) {
+      return writeEntry( pKey, QString(pValue), bPersistent, bGlobal, bNLS );
+}
 
 #endif

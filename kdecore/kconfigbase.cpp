@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.40  1999/03/08 16:05:16  rbeutler
+// added writeEntry( const QString &, const char *, ... ) method to fix the problem with the implicitely conversion to bool
+//
 // Revision 1.39  1999/03/02 16:22:20  kulow
 // i18n is no longer a macro, but a function defined in klocale.h. So you
 // don't need to include kapp.h when you want to use i18n. I see klocale->translate
@@ -907,14 +910,6 @@ void KConfigBase::writeEntry ( const QString& pKey, QStrList &list,
   if( str_list.right(1).at(0) == sep )
     str_list.truncate( str_list.length() -1 );
   writeEntry( pKey, str_list, bPersistent, bGlobal, bNLS );
-}
-
-
-const QString KConfigBase::writeEntry( const QString &pKey, const char *pValue,
-                                                            bool bPersistent, bool bGlobal, 
-                                                            bool bNLS )
-{
-  return writeEntry( pKey, QString(pValue), bPersistent, bGlobal, bNLS );
 }
 
 
