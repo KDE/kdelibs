@@ -176,6 +176,7 @@ HighColorStyle::HighColorStyle( StyleType styleType )
 	type = styleType;
 	highcolor = (type == HighColor && QPixmap::defaultDepth() > 8);
 	gDict.setAutoDelete(true);
+	hoverWidget = 0L;
 }
 
 
