@@ -26,6 +26,8 @@
 #ifndef   __netwm_def_h
 #define   __netwm_def_h
 
+#include <kdelibs_export.h>
+
 /**
   Simple point class for NET classes.
 
@@ -230,7 +232,7 @@ struct NETStrut {
   @see http://www.freedesktop.org/standards/wm-spec/
  **/
 
-class NET {
+class KDECORE_EXPORT NET {
 public:
     /**
        Application role.  This is used internally to determine how several action
